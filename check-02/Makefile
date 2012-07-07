@@ -42,11 +42,11 @@ install-debug: lib$(LIBNAME)-g.a
 	mkdir -p $(INSTALLDIR)/lib
 	$(INSTALL) -c -m 0644 lib$(LIBNAME)-g.a $(INSTALLDIR)/lib
 
-testx86vec-02: testx86vec-02.ol lib$(LIBNAME).a ../libmath++.a
-	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lmath++ -Wl,-Bdynamic -lstdc++
+testx86vec-02: testx86vec-02.ol lib$(LIBNAME).a ../libcftal.a
+	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
 
-testx86vec-02-g: testx86vec-02.od lib$(LIBNAME)-g.a ../libmath++.a
-	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lmath++-g -Wl,-Bdynamic -lstdc++
+testx86vec-02-g: testx86vec-02.od lib$(LIBNAME)-g.a ../libcftal-g.a
+	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++
 
 
 #################################################################
