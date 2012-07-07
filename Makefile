@@ -4,7 +4,7 @@ INSTALLDIR=$(HOME)
 endif
 
 # Name  of the library
-LIBNAME=math++
+LIBNAME=cftal
 MAJOR=0#
 MINOR=1#
 
