@@ -2,8 +2,8 @@
 #define __X86VEC_REF_H__ 1
 
 #include <cstdint>
-#include <bitops.h>
-#include <x86vec_intrin.h>
+#include <cftal/bitops.h>
+#include <cftal/x86vec_intrin.h>
 
 namespace x86vec {
 

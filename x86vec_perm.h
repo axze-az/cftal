@@ -1,7 +1,7 @@
 #if !defined (__X86VEC_PERM_H__)
 #define __X86VEC_PERM_H__ 1
 
-#include <x86vec_ops_0.h>
+#include <cftal/x86vec_ops_0.h>
 
 namespace x86vec {
 	

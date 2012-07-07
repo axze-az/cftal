@@ -2,8 +2,8 @@
 #define __X86VEC_SELECT_H__ 1
 
 #include <cstdint>
-#include <x86vec_intrin.h>
-#include <x86vec_const.h>
+#include <cftal/x86vec_intrin.h>
+#include <cftal/x86vec_const.h>
 
 namespace x86vec {
 

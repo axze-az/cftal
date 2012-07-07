@@ -1,10 +1,10 @@
 #if !defined (__X86VEC_IVEC_H__)
 #define __X86VEC_IVEC_H__ 1
 
-#include <x86vec_const.h>
-#include <x86vec_vreg.h>
-#include <x86vec_perm.h>
-#include <x86vec_ops_1.h>
+#include <cftal/x86vec_const.h>
+#include <cftal/x86vec_vreg.h>
+#include <cftal/x86vec_perm.h>
+#include <cftal/x86vec_ops_1.h>
 
 namespace x86vec
 {

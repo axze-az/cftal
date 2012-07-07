@@ -1,11 +1,11 @@
 #if !defined (__X86VEC_VREG_H__)
 #define __X86VEC_VREG_H__ 1
 
-#include <x86vec_intrin.h>
-#include <x86vec_select.h>
-#include <x86vec_ins_ext.h>
-#include <x86vec_perm.h>
-#include <x86vec_load_store.h>
+#include <cftal/x86vec_intrin.h>
+#include <cftal/x86vec_select.h>
+#include <cftal/x86vec_ins_ext.h>
+#include <cftal/x86vec_perm.h>
+#include <cftal/x86vec_load_store.h>
 
 namespace x86vec {
 

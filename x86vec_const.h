@@ -1,7 +1,7 @@
 #if !defined (__X86VEC_CONST_H__)
 #define __X86VEC_CONST_H__ 1
 
-#include <x86vec_intrin.h>
+#include <cftal/x86vec_intrin.h>
 #include <cstdint>
 
 namespace x86vec {

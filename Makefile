@@ -11,7 +11,7 @@ MINOR=1#
 SLDFLAGS:= $(SLDFLAGS) -L../sysio -lsysio++ -L../thread -lthread++
 #ARCH=#-march=bdver1 -mxop #-march=bdver1 #-mdispatch-scheduler
 ARCH+=#-mno-sse4
-CXXFLAGS+=-I. -I../stlex -I../thread  -I../sysio -march=native
+CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 
 #CSRCS=solver_stats.cc exception.cc ex_overflow.cc ex_div_by_zero.cc	\
 #ex_invalid_op.cc real16.cc real8.cc real4.cc fpvec.cc

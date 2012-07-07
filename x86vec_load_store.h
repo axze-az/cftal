@@ -2,7 +2,7 @@
 #define __X86VEC_LOAD_STORE_H__ 1
 
 #include <cstdint>
-#include <x86vec_intrin.h>
+#include <cftal/x86vec_intrin.h>
 
 namespace x86vec {
 

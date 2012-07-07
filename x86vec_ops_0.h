@@ -1,9 +1,9 @@
 #if !defined (__X86VEC_OPS_0_H__)
 #define __X86VEC_OPS_0_H__ 1
 
-#include <x86vec_intrin.h>
-#include <x86vec_const.h>
-#include <x86vec_select.h>
+#include <cftal/x86vec_intrin.h>
+#include <cftal/x86vec_const.h>
+#include <cftal/x86vec_select.h>
 
 namespace x86vec {
 
