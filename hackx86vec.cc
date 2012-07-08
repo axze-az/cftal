@@ -1,6 +1,6 @@
-#include <x86vec.h>
-#include <bitops.h>
-#include <x86vec_test.h>
+#include "x86vec.h"
+#include "divisor.h"
+#include "x86vec_test.h"
 
 #if 0
 void check_float()
@@ -107,7 +107,7 @@ void chk_u16_cases()
 
 void check_div()
 {
-	bitops::divisor<std::int16_t, std::int16_t> dd(-32768);
+	cftal::divisor<std::int16_t, std::int16_t> dd(-32768);
 	std::int16_t n = 16384;
 	std::int16_t q = n / dd;
 	std::cout << n << " / " << dd.d() << " = " << q  << " : "

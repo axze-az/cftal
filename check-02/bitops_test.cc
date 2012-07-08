@@ -1,4 +1,4 @@
-#include <bitops.h>
+#include "divisor.h"
 #include <iostream>
 #include <iomanip>
 
@@ -20,7 +20,7 @@ bool check_div_res(_T n, _T d, _T q, _T qr, _T r, _T rr)
 	return true;
 }
 
-bool bitops::test::div_u16()
+bool cftal::test::div_u16()
 {
 	const unsigned N =0x10000;
 	for (unsigned d = 0; d < N; ++d) {
@@ -50,7 +50,7 @@ bool bitops::test::div_u16()
 	return true;
 }
 
-bool bitops::test::div_s16()
+bool cftal::test::div_s16()
 {
 	const unsigned N =0x10000;
 	for (unsigned d = 0; d < N; ++d) {
@@ -80,12 +80,12 @@ bool bitops::test::div_s16()
 	return true;
 }
 
-bool bitops::test::div_u32()
+bool cftal::test::div_u32()
 {
 	return true;
 }
 
-bool bitops::test::div_s32()
+bool cftal::test::div_s32()
 {
 	return true;
 }
