@@ -1,4 +1,5 @@
 #include "x86vec.h"
+#include "emuvec.h"
 #include "divisor.h"
 #include "x86vec_test.h"
 
@@ -10,7 +11,7 @@ void check_float()
         // __m128 b = x86vec::test::load_float(true);
         __m128 r;
         r = x86vec::perm_float<0, -1, 1, -1>(a);
-        rc &= x86vec::test::check_float("perm1_float", r, 
+        rc &= x86vec::test::check_float("perm1_float", r,
 					x86vec::test::idx(0,-1,1,-1));
 }
 
@@ -22,7 +23,7 @@ void check_u32()
         // __m128 b = x86vec::test::load_u32(true);
         __m128i r;
         r = x86vec::perm_u32<_P0, _P1, _P2, _P3>(a);
-        rc &= x86vec::test::check_u32("perm1_u32", r, 
+        rc &= x86vec::test::check_u32("perm1_u32", r,
 				      x86vec::test::idx(_P0,_P1,_P2,_P3));
 }
 
@@ -58,7 +59,7 @@ void chk_u16()
         // __m128 b = load_u16(true);
         __m128i r;
         r = x86vec::perm_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>(a);
-        rc &= check_u16("perm1_u16", r, 
+        rc &= check_u16("perm1_u16", r,
 			idx(_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7));
 }
 

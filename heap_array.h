@@ -84,9 +84,9 @@ namespace cftal {
                 typedef std::ptrdiff_t difference_type;
 		
 		// vector interface
-		const_iterator begin() const { return _v; }
-		const_iterator cbegin() const { return _v; }
-		iterator begin() { return _v; }
+		const_iterator begin() const { return const_iterator(_v); }
+		const_iterator cbegin() const { return const_iterator(_v); }
+		iterator begin() { return iterator(_v); }
 		const_iterator end() const { return begin() + _N; }
 		const_iterator cend() const { return cbegin() + _N; }
 		iterator end() { return begin() + _N; }
@@ -121,12 +121,12 @@ namespace cftal {
                                                                      r._v)) {
                 }
 		// move construction
-                heap_array(heap_array&& r) : _v(alloc(*this, _T())) {
+                heap_array(heap_array&& r) : _v(alloc_(*this, _T())) {
                         std::swap(_v, r._v);
                 }
 		// destruction
 		~heap_array() { 
-			destroy(*this); 
+			destroy_(*this); 
 		}
 		// assignment
                 heap_array& operator=(const heap_array& r) {

@@ -18,7 +18,7 @@ namespace cftal {
                 std::size_t _max_blocks;
         public:
                 ptr_cache(const ptr_cache&) = delete;
-                ptr_cache& operator(const ptr_cache&) = delete;
+                ptr_cache& operator=(const ptr_cache&) = delete;
                 ptr_cache(std::size_t blocks=1024)
                         : _mtx(), _free_list(nullptr), _free_blocks(0),
                           _max_blocks(blocks) {
@@ -58,10 +58,10 @@ namespace cftal {
         template <std::size_t _N>
         class global_ptr_cache {
                 static_assert(_N >= sizeof(void*), "_N >= sizeof(void*)");
-                ptr_cache _cache;
+                static ptr_cache _cache;
         public:
                 static void* put(void* p) { return _cache.put(p); }
-                static void* get(void* p) { return _cache.get(); }
+                static void* get() { return _cache.get(); }
                 static void max_blocks(std::size_t n) { _cache.max_blocks(n); }
                 static std::size_t max_blocks() { return _cache.max_blocks(); }
         };
@@ -76,11 +76,13 @@ namespace cftal {
                 typedef std::allocator<_T> base_type;
                 static const std::size_t CACHE_SIZE= _N * sizeof(_T);
         public:
+		typedef typename std::allocator<_T>::size_type size_type;
+		typedef typename std::allocator<_T>::pointer pointer;
                 cache_allocator() : base_type() {}
                 cache_allocator(const cache_allocator& r) : base_type(r) {};
                 ~cache_allocator() {}
                 template<typename _Tp1>
-                struct rebind { typedef cache_allocator<_Tp1> other; };
+                struct rebind { typedef cache_allocator<_Tp1, _N> other; };
                 pointer allocate(size_type __n, const void* __p= nullptr) {
                         if (__n==_N) {
                                 void* r= global_ptr_cache<CACHE_SIZE>::get();
