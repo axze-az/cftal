@@ -407,6 +407,8 @@ namespace x86vec
 #include <cftal/x86vec_v128u1_inl.h>
 #include <cftal/x86vec_v8s16_inl.h>
 #include <cftal/x86vec_v8u16_inl.h>
+#include <cftal/x86vec_v4s32_inl.h>
+#include <cftal/x86vec_v4u32_inl.h>
 
 #endif
 // kate: indent-mode cstyle; indent-width 8; replace-tabs on; ;
