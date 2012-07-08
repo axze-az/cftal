@@ -105,6 +105,16 @@ void chk_u16_cases()
 #endif
 }
 
+x86vec::v4u32 muluh(x86vec::v4u32 a, x86vec::v4u32 b)
+{
+	return mulh(a, b);
+}
+
+x86vec::v4s32 mulsh(x86vec::v4s32 a, x86vec::v4s32 b)
+{
+	return mulh(a, b);
+}
+
 void check_div()
 {
 	cftal::divisor<std::int16_t, std::int16_t> dd(-32768);

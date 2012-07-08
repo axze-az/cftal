@@ -2,6 +2,7 @@
 #define __X86VEC_V128U1_INL_H__ 1
 
 #if !defined (__X86VEC_IVEC_H__)
+#include <cftal/x86vec_ivec.h>
 #error "never use this file directly"
 #endif
 

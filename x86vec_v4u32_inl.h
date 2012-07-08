@@ -2,6 +2,7 @@
 #define __X86VEC_V4U32_INL_H__ 1
 
 #if !defined (__X86VEC_IVEC_H__)
+#include <cftal/x86vec_ivec.h>
 #error "never use this file directly"
 #endif
 
@@ -377,14 +378,8 @@ x86vec::v4u32 x86vec::max(const v4u32& a, const v4u32& b)
 #if defined (__SSE4_1__)
 	return _mm_max_epu32(a(), b());
 #else
-	// add 0x8000
-	__m128i a0= _mm_xor_si128(a(), v_sign_s32_msk::iv());           
-	// add 0x8000
-	__m128i b0= _mm_xor_si128(b(), v_sign_s32_msk::iv());       
-	// signed max
-	__m128i m0= _mm_max_epi32(a1,b1);               
-	// sub 0x8000
-	return  _mm_xor_si128(m0,v_sign_s32_msk::iv());
+	v4u32 _gt(a > b);
+	return select(_gt, a, b);
 #endif
 }
 
@@ -392,16 +387,10 @@ inline
 x86vec::v4u32 x86vec::min(const v4u32& a, const v4u32& b)
 {
 #if defined (__SSE4_1__)
-        return v4u32(_mm_min_epu32(a(), b()));
+        return _mm_min_epu32(a(), b());
 #else
-	// add 0x8000
-	__m128i a0= _mm_xor_si128(a(), v_sign_s32_msk::iv());           
-	// add 0x8000
-	__m128i b0= _mm_xor_si128(b(), v_sign_s32_msk::iv());       
-	// signed min
-	__m128i m0= _mm_min_epi32(a1,b1);               
-	// sub 0x8000
-	return  _mm_xor_si128(m0,v_sign_s32_msk::iv());
+	v4u32 _lt(a < b);
+	return select(_lt, a, b);
 #endif
 }
 
@@ -414,10 +403,15 @@ x86vec::v4u32 x86vec::mulh(const v4u32& a, const v4u32& b)
 	// 1, 3 at positions 1 3
 	__m128i o= _mm_mul_epu32(_mm_srli_epi64(a(), 32),
 				 _mm_srli_epi64(b(), 32));
-	const __m128i msk = const4_u32<0, -1, 0, -1>::iv();
+	// 0, 2 at position 0, 2
 	e = _mm_slli_epi64(e, 32);
-	o = _mm_and_si128(e, msk);
+#if defined (__SSE4_1__)
+	return select_u32<1, 0, 1, 0>(e, o);
+#else
+	const __m128i msk = const4_u32<0, -1, 0, -1>::iv();
+	o = _mm_and_si128(o, msk);
 	return _mm_or_si128(e, o);
+#endif
 }
 
 template < bool _P0, bool _P1, bool _P2, bool _P3 >

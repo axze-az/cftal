@@ -2,6 +2,7 @@
 #define __X86VEC_V4S32_INL_H__ 1
 
 #if !defined (__X86VEC_IVEC_H__)
+#include <cftal/x86vec_ivec.h>
 #error "never use this file directly"
 #endif
 
@@ -388,13 +389,23 @@ bool x86vec::no_signs(const v4s32& a)
 inline
 x86vec::v4s32 x86vec::max(const v4s32& a, const v4s32& b)
 {
+#if defined (__SSE4_1__)
         return _mm_max_epi32(a(), b());
+#else
+	v4s32 _gt(a > b);
+	return select(_gt, a, b);
+#endif
 }
 
 inline
 x86vec::v4s32 x86vec::min(const v4s32& a, const v4s32& b)
 {
+#if defined (__SSE4_1__)
         return _mm_min_epi32(a(), b());
+#else
+	v4s32 _lt(a < b);
+	return select(_lt, a, b);
+#endif
 }
 
 inline
@@ -413,16 +424,15 @@ inline
 x86vec::v4s32 x86vec::mulh(const v4s32& x, const v4s32& y)
 {
 	// return _mm_mulhi_epi32(x(), y());
-#if defined __SSE4_1__
+#if defined(__SSE4_1__)
 	// 0, 2 at positions 1 3
 	__m128i e= _mm_mul_epi32(x(), y());
 	// 1, 3 at positions 1 3
 	__m128i o= _mm_mul_epi32(_mm_srli_epi64(x(), 32),
 				 _mm_srli_epi64(y(), 32));
-	const __m128i msk = const4_u32<0, -1, 0, -1>::iv();
+	// 0, 2 at positions 0 2
 	e = _mm_slli_epi64(e, 32);
-	o = _mm_and_si128(e, msk);
-	return _mm_or_si128(e, o);
+	return select_u32<1, 0, 1, 0>(e, o);
 #else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));

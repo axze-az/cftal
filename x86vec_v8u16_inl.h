@@ -2,6 +2,7 @@
 #define __X86VEC_V8U16_INL_H__ 1
 
 #if !defined (__X86VEC_IVEC_H__)
+#include <cftal/x86vec_ivec.h>
 #error "never use this file directly"
 #endif
 
@@ -381,13 +382,13 @@ x86vec::v8u16 x86vec::max(const v8u16& a, const v8u16& b)
 	return _mm_max_epu16(a(), b());
 #else
 	// add 0x8000
-	__m128i a0= _mm_xor_si128(a(), v_sign_s16_msk::iv());           
+	__m128i a0= _mm_xor_si128(a(), v_sign_s16_msk::iv());
 	// add 0x8000
-	__m128i b0= _mm_xor_si128(b(), v_sign_s16_msk::iv());       
+	__m128i b0= _mm_xor_si128(b(), v_sign_s16_msk::iv());
 	// signed max
-	__m128i m0= _mm_max_epi16(a1,b1);               
+	__m128i m0= _mm_max_epi16(a0, b0);
 	// sub 0x8000
-	return  _mm_xor_si128(m0,v_sign_s16_msk::iv());
+	return  _mm_xor_si128(m0, v_sign_s16_msk::iv());
 #endif
 }
 
@@ -398,13 +399,13 @@ x86vec::v8u16 x86vec::min(const v8u16& a, const v8u16& b)
         return v8u16(_mm_min_epu16(a(), b()));
 #else
 	// add 0x8000
-	__m128i a0= _mm_xor_si128(a(), v_sign_s16_msk::iv());           
+	__m128i a0= _mm_xor_si128(a(), v_sign_s16_msk::iv());
 	// add 0x8000
-	__m128i b0= _mm_xor_si128(b(), v_sign_s16_msk::iv());       
+	__m128i b0= _mm_xor_si128(b(), v_sign_s16_msk::iv());
 	// signed min
-	__m128i m0= _mm_min_epi16(a1,b1);               
+	__m128i m0= _mm_min_epi16(a0 , b0);
 	// sub 0x8000
-	return  _mm_xor_si128(m0,v_sign_s16_msk::iv());
+	return  _mm_xor_si128(m0, v_sign_s16_msk::iv());
 #endif
 }
 
