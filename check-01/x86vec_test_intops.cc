@@ -1,8 +1,9 @@
-#include <x86intrin.h>
-#include <x86vec_ops_1.h>
-#include <x86vec_ins_ext.h>
-#include <x86vec_test.h>
-#include <x86vec_ref.h>
+#include "bitops.h"
+#include "x86intrin.h"
+#include "x86vec_ops_1.h"
+#include "x86vec_ins_ext.h"
+#include "x86vec_test.h"
+#include "x86vec_ref.h"
 #include <iostream>
 
 namespace {
@@ -41,14 +42,14 @@ bool x86vec::test::check_popcnt()
         for (int i=0; i<256; i+=16) {
                 for (int j=0; j<16;++j) {
                         src._u8[j] = j+i;
-                        exp_u8[j] = bitops::popcnt(src._u8[j]);
+                        exp_u8[j] = cftal::popcnt(src._u8[j]);
                 };
                 for (int j=0; j<8; ++j)
-                        exp_u16[j] = bitops::popcnt(src._u16[j]);
+                        exp_u16[j] = cftal::popcnt(src._u16[j]);
                 for (int j=0; j<4; ++j)
-                        exp_u32[j] = bitops::popcnt(src._u32[j]);
+                        exp_u32[j] = cftal::popcnt(src._u32[j]);
                 for (int j=0; j<2; ++j)
-                        exp_u64[j] = bitops::popcnt(src._u64[j]);
+                        exp_u64[j] = cftal::popcnt(src._u64[j]);
                 exp_u128 = exp_u64[0] + exp_u64[1];
 
                 __m128i ru8 = popcnt_u8(src._v);
@@ -142,14 +143,14 @@ bool x86vec::test::check_bitrev()
         for (int i=0; i<256; i+=16) {
                 for (int j=0; j<16;++j) {
                         src._u8[j] = j+i;
-                        exp_u8[j] = bitops::bitrev(src._u8[j]);
+                        exp_u8[j] = cftal::bitrev(src._u8[j]);
                 };
                 for (int j=0; j<8; ++j)
-                        exp_u16[j] = bitops::bitrev(src._u16[j]);
+                        exp_u16[j] = cftal::bitrev(src._u16[j]);
                 for (int j=0; j<4; ++j)
-                        exp_u32[j] = bitops::bitrev(src._u32[j]);
+                        exp_u32[j] = cftal::bitrev(src._u32[j]);
                 for (int j=0; j<2; ++j)
-                        exp_u64[j] = bitops::bitrev(src._u64[j]);
+                        exp_u64[j] = cftal::bitrev(src._u64[j]);
                 __m128i ru8 = bitrev_u8(src._v);
                 __m128i ru16= bitrev_u16(src._v);
                 __m128i ru32= bitrev_u32(src._v);

@@ -15,7 +15,7 @@ CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 
 #CSRCS=solver_stats.cc exception.cc ex_overflow.cc ex_div_by_zero.cc	\
 #ex_invalid_op.cc real16.cc real8.cc real4.cc fpvec.cc
-CSRCS=fpvec.cc x86vec_ops_1.cc x86vec_test.cc
+CSRCS=fpvec.cc heap_array.cc x86vec_ops_1.cc x86vec_test.cc
 
 all: lib tests
 

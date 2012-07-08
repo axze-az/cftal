@@ -1,5 +1,6 @@
-#include <x86vec_test.h>
-#include <x86vec_ref.h>
+#include "bitops.h"
+#include "x86vec_test.h"
+#include "x86vec_ref.h"
 #include <iostream>
 #include <iomanip>
 
@@ -32,11 +33,11 @@ bool x86vec::test::check_div_16(const char* msg)
                                                    j + 4, j + 5, j + 6, j + 7);
                         __m128i r = impl::make_zero_int::v();
                         __m128i rr = impl::make_zero_int::v();
-			t_dc = bitops::rdtsc();
+			t_dc = cftal::rdtsc();
                         __m128i q = _DIV::v(u, v, &r);
-			t_rc = bitops::rdtsc();
+			t_rc = cftal::rdtsc();
                         __m128i qr = _DIV::ref(u, v, &rr);
-			t_r += bitops::rdtsc() - t_rc;
+			t_r += cftal::rdtsc() - t_rc;
 			t_d += t_rc - t_dc;
                         __m128i qeq = _mm_cmpeq_epi16(qr, q);
                         __m128i req = _mm_cmpeq_epi16(rr, r);
