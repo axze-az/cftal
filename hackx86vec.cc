@@ -115,6 +115,7 @@ void check_div()
 		  << std::endl;
 }
 
+
 int main(int argc, char** argv)
 {
 	check_div();

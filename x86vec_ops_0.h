@@ -644,7 +644,9 @@ __m128i x86vec::impl::vpmulld::v(__m128i a, __m128i b)
 #if defined (__SSE4_1__)
 		return _mm_mullo_epi32(a, b);
 #else
+		// 0, 2
 		__m128i e= _mm_mul_epu32(a, b);
+		// 1, 3
 		__m128i o= _mm_mul_epu32(_mm_srli_epi64(a, 32),
 					 _mm_srli_epi64(b, 32));
 		const __m128i msk = const4_u32<-1, 0, -1, 0>::iv();

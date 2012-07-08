@@ -11,6 +11,17 @@ bool chk_u16(__m128i a, x86vec::test::idx& id)
         return rc;
 }
 
+template <int _P0, int _P1, int _P2, int _P3,
+          int _P4, int _P5, int _P6, int _P7>
+bool chk_u16(__m128i a, __m128i b, x86vec::test::idx& id)
+{
+        __m128i r(x86vec::perm_u16<_P0, _P1, _P2, _P3, 
+				   _P4, _P5, _P6, _P7>(a, b));
+        id.assign(_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7);
+        bool rc(x86vec::test::check_u16("perm2_u16", r, id));
+        return rc;
+}
+
 bool x86vec::test::check_select_perm_specializations()
 {
         // we have only to check perm1_u16 specializations because
@@ -87,5 +98,12 @@ bool x86vec::test::check_select_perm_specializations()
         r &= chk_u16< 6, 7, 4, 5, 2, 3, 0, 1>(a, id);
         // zero only
         r &= chk_u16< 0,-1, 2, 3, 4, 5,-1, 7>(a, id);
+
+        __m128i b= load_u16(true);
+	r &= chk_u16< 0, 8, 1, 9, 2,10, 3,11>(a, b, id);
+	r &= chk_u16< 8, 0, 9, 1,10, 2,11, 3>(a, b, id);
+	r &= chk_u16< 4,12, 5,13, 6,14, 7,15>(a, b, id);
+	r &= chk_u16<12, 4,13, 5,14, 6,15, 7>(a, b, id);
+
         return r;
 }

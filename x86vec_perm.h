@@ -4,8 +4,8 @@
 #include <cftal/x86vec_ops_0.h>
 
 namespace x86vec {
-	
-	namespace impl {
+
+        namespace impl {
 
                 // generic permutation of one double vector
                 template <int _P0, int _P1>
@@ -28,13 +28,13 @@ namespace x86vec {
                 struct perm1_f64< 1, 1> : public vunpckhpd {};
                 template <>
                 struct perm1_f64< 0, 0> : public vunpcklpd {};
-		template <>
-		struct perm1_f64<-1, 0> 
-			: public exec_int< vpslldq<8> > {};
-		template <>
-		struct perm1_f64< 1,-1>
-			: public exec_int< vpsrldq<8> > {};
-		
+                template <>
+                struct perm1_f64<-1, 0>
+                        : public exec_int< vpslldq<8> > {};
+                template <>
+                struct perm1_f64< 1,-1>
+                        : public exec_int< vpsrldq<8> > {};
+
                 // specializations for perm2_f64
                 template <>
                 struct perm2_f64<-1,-1> : public make_zero_f64 {};
@@ -46,63 +46,63 @@ namespace x86vec {
                 struct perm2_f64<0,2> : public vunpcklpd {};
                 template <>
                 struct perm2_f64<2,0> :
-                        public swap_ab<__m128d, vunpcklpd> {};
-                template <>
-                struct perm2_f64<1,3> : public vunpckhpd {};
-                template <>
-                struct perm2_f64<3,1> :
-                        public swap_ab<__m128d, vunpckhpd> {};
+			public swap_ab<__m128d, vunpcklpd> {};
+		template <>
+		struct perm2_f64<1,3> : public vunpckhpd {};
+		template <>
+		struct perm2_f64<3,1> :
+			public swap_ab<__m128d, vunpckhpd> {};
 
-                // generic permutation of one float vector
-                template <int _P0, int _P1, int _P2, int _P3>
-                struct perm1_f32 {
-                        static __m128 v(__m128 a);
-                };
+		// generic permutation of one float vector
+		template <int _P0, int _P1, int _P2, int _P3>
+		struct perm1_f32 {
+			static __m128 v(__m128 a);
+		};
 
-                // generic permutation of two float vectors
-                template <int _P0, int _P1, int _P2, int _P3>
-                struct perm2_f32 {
-                        static __m128 v(__m128 a, __m128 b);
-                };
+		// generic permutation of two float vectors
+		template <int _P0, int _P1, int _P2, int _P3>
+		struct perm2_f32 {
+			static __m128 v(__m128 a, __m128 b);
+		};
 
-                // specializations for perm1_f32
-                template <>
-                struct perm1_f32<-1,-1,-1,-1> : public make_zero_f32 {};
-                template <>
-                struct perm1_f32<0,1,2,3> : public select_arg_1<__m128> {};
-                template <>
-                struct perm1_f32<0,1,0,1> : public exec_f64<vunpcklpd> {};
-                template <>
-                struct perm1_f32<2,3,2,3> : public exec_f64<vunpckhpd> {};
-                template <>
-                struct perm1_f32<0,0,1,1> : public vunpcklps {};
-                template <>
-                struct perm1_f32<2,2,3,3> : public vunpckhps {};
+		// specializations for perm1_f32
+		template <>
+		struct perm1_f32<-1,-1,-1,-1> : public make_zero_f32 {};
+		template <>
+		struct perm1_f32<0,1,2,3> : public select_arg_1<__m128> {};
+		template <>
+		struct perm1_f32<0,1,0,1> : public exec_f64<vunpcklpd> {};
+		template <>
+		struct perm1_f32<2,3,2,3> : public exec_f64<vunpckhpd> {};
+		template <>
+		struct perm1_f32<0,0,1,1> : public vunpcklps {};
+		template <>
+		struct perm1_f32<2,2,3,3> : public vunpckhps {};
 
-                template <>
-                struct perm1_f32< 0,-1, 1,-1>
-                        : public fixed_arg_2<__m128, make_zero_f32,
-                                             vunpcklps> {};
-                template <>
-                struct perm1_f32< 2,-1, 3,-1>
-                        : public fixed_arg_2<__m128, make_zero_f32,
-                                             vunpckhps> {};
-                template <>
-                struct perm1_f32<-1, 0, -1, 1>
-                        : public fixed_arg_1<__m128, make_zero_f32,
-                                             vunpcklps> {};
-                template <>
-                struct perm1_f32<-1, 2, -1, 3>
-                        : public fixed_arg_1<__m128, make_zero_f32,
-                                             vunpckhps> {};
-                template <>
-                struct perm1_f32< 0, 1,-1,-1>
-                        : public fixed_arg_2<__m128, make_zero_f32,
-                                             exec_f64<vunpcklpd> > {};
-                template <>
-                struct perm1_f32<-1,-1, 2, 3>
-                        : public fixed_arg_1<__m128, make_zero_f32,
-                                             exec_f64<vunpckhpd> > {};
+		template <>
+		struct perm1_f32< 0,-1, 1,-1>
+			: public fixed_arg_2<__m128, make_zero_f32,
+					     vunpcklps> {};
+		template <>
+		struct perm1_f32< 2,-1, 3,-1>
+			: public fixed_arg_2<__m128, make_zero_f32,
+					     vunpckhps> {};
+		template <>
+		struct perm1_f32<-1, 0, -1, 1>
+			: public fixed_arg_1<__m128, make_zero_f32,
+					     vunpcklps> {};
+		template <>
+		struct perm1_f32<-1, 2, -1, 3>
+			: public fixed_arg_1<__m128, make_zero_f32,
+					     vunpckhps> {};
+		template <>
+		struct perm1_f32< 0, 1,-1,-1>
+			: public fixed_arg_2<__m128, make_zero_f32,
+					     exec_f64<vunpcklpd> > {};
+		template <>
+		struct perm1_f32<-1,-1, 2, 3>
+			: public fixed_arg_1<__m128, make_zero_f32,
+					     exec_f64<vunpckhpd> > {};
 		template <>
 		struct perm1_f32<0, 0, 0, 0> : public splat_f32<0> {};
 		template <>
@@ -113,137 +113,137 @@ namespace x86vec {
 		struct perm1_f32<3, 3, 3, 3> : public splat_f32<3> {};
 
 		template <>
-		struct perm1_f32<-1, 0, 1, 2> 
+		struct perm1_f32<-1, 0, 1, 2>
 			: public exec_int< vpslldq<4> > {};
 		template <>
-		struct perm1_f32<-1,-1, 0, 1> 
+		struct perm1_f32<-1,-1, 0, 1>
 			: public exec_int< vpslldq<8> > {};
 		template <>
-		struct perm1_f32<-1,-1,-1, 0> 
+		struct perm1_f32<-1,-1,-1, 0>
 			: public exec_int< vpslldq<12> > {};
 		template <>
-		struct perm1_f32< 1, 2, 3,-1> 
+		struct perm1_f32< 1, 2, 3,-1>
 			: public exec_int< vpsrldq<4> > {};
 		template <>
-		struct perm1_f32< 2, 3,-1,-1> 
+		struct perm1_f32< 2, 3,-1,-1>
 			: public exec_int< vpsrldq<8> > {};
 		template <>
-		struct perm1_f32< 3,-1,-1,-1> 
+		struct perm1_f32< 3,-1,-1,-1>
 			: public exec_int< vpsrldq<12> > {};
 		template <>
-		struct perm1_f32<-1, 0,-1, 2> 
+		struct perm1_f32<-1, 0,-1, 2>
 			: public exec_int< vpsllq_const<32> > {};
 		template <>
-		struct perm1_f32< 1,-1, 3,-1> 
+		struct perm1_f32< 1,-1, 3,-1>
 			: public exec_int< vpsrlq_const<32> > {};
 
-                // specializations for perm2_f32
-                template <>
-                struct perm2_f32<-1,-1,-1,-1> : public make_zero_f32 {};
-                template <>
-                struct perm2_f32<0,1,2,3> : public select_arg_1<__m128> {};
-                template <>
-                struct perm2_f32<4,5,6,7> : public select_arg_2<__m128> {};
+		// specializations for perm2_f32
+		template <>
+		struct perm2_f32<-1,-1,-1,-1> : public make_zero_f32 {};
+		template <>
+		struct perm2_f32<0,1,2,3> : public select_arg_1<__m128> {};
+		template <>
+		struct perm2_f32<4,5,6,7> : public select_arg_2<__m128> {};
 
-                template <>
-                struct perm2_f32<0,1,0,1> :
-                        public use_arg_1<__m128, exec_f64<vunpcklpd> > {};
-                template <>
-                struct perm2_f32<4,5,4,5> :
-                        public use_arg_2<__m128, exec_f64<vunpcklpd> > {};
+		template <>
+		struct perm2_f32<0,1,0,1> :
+			public use_arg_1<__m128, exec_f64<vunpcklpd> > {};
+		template <>
+		struct perm2_f32<4,5,4,5> :
+			public use_arg_2<__m128, exec_f64<vunpcklpd> > {};
 
-                template <>
-                struct perm2_f32<2,3,2,3> :
-                        public use_arg_1<__m128, exec_f64<vunpckhpd> > {};
-                template <>
-                struct perm2_f32<6,7,6,7> :
-                        public use_arg_2<__m128, exec_f64<vunpckhpd> > {};
+		template <>
+		struct perm2_f32<2,3,2,3> :
+			public use_arg_1<__m128, exec_f64<vunpckhpd> > {};
+		template <>
+		struct perm2_f32<6,7,6,7> :
+			public use_arg_2<__m128, exec_f64<vunpckhpd> > {};
 
-                template <>
-                struct perm2_f32<0,0,1,1> :
-                        public use_arg_1<__m128, vunpcklps> {};
-                template <>
-                struct perm2_f32<4,4,5,5> :
-                        public use_arg_2<__m128, vunpcklps> {};
+		template <>
+		struct perm2_f32<0,0,1,1> :
+			public use_arg_1<__m128, vunpcklps> {};
+		template <>
+		struct perm2_f32<4,4,5,5> :
+			public use_arg_2<__m128, vunpcklps> {};
 
-                template <>
-                struct perm2_f32<2,2,3,3> :
-                        public use_arg_1<__m128, vunpckhps> {};
-                template <>
-                struct perm2_f32<6,6,7,7> :
-                        public use_arg_2<__m128, vunpckhps> {};
+		template <>
+		struct perm2_f32<2,2,3,3> :
+			public use_arg_1<__m128, vunpckhps> {};
+		template <>
+		struct perm2_f32<6,6,7,7> :
+			public use_arg_2<__m128, vunpckhps> {};
 
-                template <>
-                struct perm2_f32<0,4,1,5> : public vunpcklps {};
-                template <>
-                struct perm2_f32<4,0,5,1>
-                        : public swap_ab<__m128, vunpcklps> {};
-                template <>
-                struct perm2_f32<2,6,3,7> : public vunpckhps {};
-                template <>
-                struct perm2_f32<6,2,7,3>
-                        : public swap_ab<__m128, vunpckhps> {};
+		template <>
+		struct perm2_f32<0,4,1,5> : public vunpcklps {};
+		template <>
+		struct perm2_f32<4,0,5,1>
+			: public swap_ab<__m128, vunpcklps> {};
+		template <>
+		struct perm2_f32<2,6,3,7> : public vunpckhps {};
+		template <>
+		struct perm2_f32<6,2,7,3>
+			: public swap_ab<__m128, vunpckhps> {};
 
-                template <>
-                struct perm2_f32<0,1,4,5> : public exec_f64<vunpcklpd> {};
-                template <>
-                struct perm2_f32<4,5,0,1>
-                        : public swap_ab<__m128, exec_f64<vunpcklpd> > {};
+		template <>
+		struct perm2_f32<0,1,4,5> : public exec_f64<vunpcklpd> {};
+		template <>
+		struct perm2_f32<4,5,0,1>
+			: public swap_ab<__m128, exec_f64<vunpcklpd> > {};
 
-                template <>
-                struct perm2_f32<2,3,6,7> : public exec_f64<vunpckhpd> {};
-                template <>
-                struct perm2_f32<6,7,2,3>
-                        : public swap_ab<__m128, exec_f64<vunpckhpd> > {};
+		template <>
+		struct perm2_f32<2,3,6,7> : public exec_f64<vunpckhpd> {};
+		template <>
+		struct perm2_f32<6,7,2,3>
+			: public swap_ab<__m128, exec_f64<vunpckhpd> > {};
 
-                // generic permutation of one uint32_t vector
-                template <int _P0, int _P1, int _P2, int _P3>
-                struct perm1_u32 {
-                        static __m128i v(__m128i a);
-                };
+		// generic permutation of one uint32_t vector
+		template <int _P0, int _P1, int _P2, int _P3>
+		struct perm1_u32 {
+			static __m128i v(__m128i a);
+		};
 
-                // generic permutation of two uint32_t vectors
-                template <int _P0, int _P1, int _P2, int _P3>
-                struct perm2_u32 {
-                        static __m128i v(__m128i a, __m128i b);
-                };
+		// generic permutation of two uint32_t vectors
+		template <int _P0, int _P1, int _P2, int _P3>
+		struct perm2_u32 {
+			static __m128i v(__m128i a, __m128i b);
+		};
 
-                // specializations for one uint32_t vector
-                template <>
-                struct perm1_u32<-1,-1,-1,-1> : public make_zero_int {};
-                template <>
-                struct perm1_u32<0,1,2,3> : public select_arg_1<__m128i> {};
-                template <>
-                struct perm1_u32<0,1,0,1> : public vpunpcklqdq {};
-                template <>
-                struct perm1_u32<2,3,2,3> : public vpunpckhqdq {};
-                template <>
-                struct perm1_u32<0,0,1,1> : public vpunpckldq {};
-                template <>
-                struct perm1_u32<2,2,3,3> : public vpunpckhdq {};
+		// specializations for one uint32_t vector
+		template <>
+		struct perm1_u32<-1,-1,-1,-1> : public make_zero_int {};
+		template <>
+		struct perm1_u32<0,1,2,3> : public select_arg_1<__m128i> {};
+		template <>
+		struct perm1_u32<0,1,0,1> : public vpunpcklqdq {};
+		template <>
+		struct perm1_u32<2,3,2,3> : public vpunpckhqdq {};
+		template <>
+		struct perm1_u32<0,0,1,1> : public vpunpckldq {};
+		template <>
+		struct perm1_u32<2,2,3,3> : public vpunpckhdq {};
 
-                template <>
-                struct perm1_u32< 0,-1, 1,-1> : public vpmovzxdq {};
-                template <>
-                struct perm1_u32< 2,-1, 3,-1>
-                        : public fixed_arg_2<__m128i, make_zero_int,
-                                             vpunpckhdq> {};
-                template <>
-                struct perm1_u32<-1, 0,-1, 1>
-                        : public fixed_arg_1<__m128i, make_zero_int,
-                                             vpunpckldq> {};
-                template <>
-                struct perm1_u32<-1, 2,-1, 3>
-                        : public fixed_arg_1<__m128i, make_zero_int,
-                                             vpunpckhdq> {};
-                template <>
-                struct perm1_u32< 0, 1,-1,-1>
-                        : public fixed_arg_2<__m128i, make_zero_int,
-                                             vpunpcklqdq> {};
-                template <>
-                struct perm1_u32<-1,-1, 2, 3>
-                        : public fixed_arg_1<__m128i, make_zero_int,
-                                             vpunpckhqdq> {};
+		template <>
+		struct perm1_u32< 0,-1, 1,-1> : public vpmovzxdq {};
+		template <>
+		struct perm1_u32< 2,-1, 3,-1>
+			: public fixed_arg_2<__m128i, make_zero_int,
+					     vpunpckhdq> {};
+		template <>
+		struct perm1_u32<-1, 0,-1, 1>
+			: public fixed_arg_1<__m128i, make_zero_int,
+					     vpunpckldq> {};
+		template <>
+		struct perm1_u32<-1, 2,-1, 3>
+			: public fixed_arg_1<__m128i, make_zero_int,
+					     vpunpckhdq> {};
+		template <>
+		struct perm1_u32< 0, 1,-1,-1>
+			: public fixed_arg_2<__m128i, make_zero_int,
+					     vpunpcklqdq> {};
+		template <>
+		struct perm1_u32<-1,-1, 2, 3>
+			: public fixed_arg_1<__m128i, make_zero_int,
+					     vpunpckhqdq> {};
 		template <>
 		struct perm1_u32< 0, 0, 0, 0> : public splat_u32<0> {};
 		template <>
@@ -273,117 +273,117 @@ namespace x86vec {
 		struct perm1_u32< 1,-1, 3,-1> : public vpsrlq_const<32> {};
 
 
-                // specialisations for two uint32_t vectors.
-                template <>
-                struct perm2_u32<-1,-1,-1,-1> : public make_zero_int {};
-                template <>
-                struct perm2_u32<0,1,2,3> : public select_arg_1<__m128i> {};
-                template <>
-                struct perm2_u32<4,5,6,7> : public select_arg_2<__m128i> {};
+		// specialisations for two uint32_t vectors.
+		template <>
+		struct perm2_u32<-1,-1,-1,-1> : public make_zero_int {};
+		template <>
+		struct perm2_u32<0,1,2,3> : public select_arg_1<__m128i> {};
+		template <>
+		struct perm2_u32<4,5,6,7> : public select_arg_2<__m128i> {};
 
-                template <>
-                struct perm2_u32<0,1,0,1> :
-                        public use_arg_1<__m128i, vpunpcklqdq> {};
-                template <>
-                struct perm2_u32<4,5,4,5> :
-                        public use_arg_2<__m128i, vpunpcklqdq> {};
+		template <>
+		struct perm2_u32<0,1,0,1> :
+			public use_arg_1<__m128i, vpunpcklqdq> {};
+		template <>
+		struct perm2_u32<4,5,4,5> :
+			public use_arg_2<__m128i, vpunpcklqdq> {};
 
-                template <>
-                struct perm2_u32<2,3,2,3> :
-                        public use_arg_1<__m128i, vpunpckhqdq> {};
-                template <>
-                struct perm2_u32<6,7,6,7> :
-                        public use_arg_2<__m128i, vpunpckhqdq> {};
+		template <>
+		struct perm2_u32<2,3,2,3> :
+			public use_arg_1<__m128i, vpunpckhqdq> {};
+		template <>
+		struct perm2_u32<6,7,6,7> :
+			public use_arg_2<__m128i, vpunpckhqdq> {};
 
-                template <>
-                struct perm2_u32<0,0,1,1> :
-                        public use_arg_1<__m128i, vpunpckldq> {};
-                template <>
-                struct perm2_u32<4,4,5,5> :
-                        public use_arg_2<__m128i, vpunpckldq> {};
+		template <>
+		struct perm2_u32<0,0,1,1> :
+			public use_arg_1<__m128i, vpunpckldq> {};
+		template <>
+		struct perm2_u32<4,4,5,5> :
+			public use_arg_2<__m128i, vpunpckldq> {};
 
-                template <>
-                struct perm2_u32<2,2,3,3> :
-                        public use_arg_1<__m128i, vpunpckhdq> {};
-                template <>
-                struct perm2_u32<6,6,7,7> :
-                        public use_arg_2<__m128i, vpunpckhdq> {};
+		template <>
+		struct perm2_u32<2,2,3,3> :
+			public use_arg_1<__m128i, vpunpckhdq> {};
+		template <>
+		struct perm2_u32<6,6,7,7> :
+			public use_arg_2<__m128i, vpunpckhdq> {};
 
-                template <>
-                struct perm2_u32<0,4,1,5> : public vpunpckldq {};
-                template <>
-                struct perm2_u32<4,0,5,1>
-                        : public swap_ab<__m128i, vpunpckldq> {};
-                template <>
-                struct perm2_u32<2,6,3,7> : public vpunpckhdq {};
-                template <>
-                struct perm2_u32<6,2,7,3>
-                        : public swap_ab<__m128i, vpunpckhdq> {};
+		template <>
+		struct perm2_u32<0,4,1,5> : public vpunpckldq {};
+		template <>
+		struct perm2_u32<4,0,5,1>
+			: public swap_ab<__m128i, vpunpckldq> {};
+		template <>
+		struct perm2_u32<2,6,3,7> : public vpunpckhdq {};
+		template <>
+		struct perm2_u32<6,2,7,3>
+			: public swap_ab<__m128i, vpunpckhdq> {};
 
-                template <>
-                struct perm2_u32<0,1,4,5> : public vpunpcklqdq {};
-                template <>
-                struct perm2_u32<4,5,0,1>
-                        : public swap_ab<__m128i, vpunpcklqdq> {};
+		template <>
+		struct perm2_u32<0,1,4,5> : public vpunpcklqdq {};
+		template <>
+		struct perm2_u32<4,5,0,1>
+			: public swap_ab<__m128i, vpunpcklqdq> {};
 
-                template <>
-                struct perm2_u32<2,3,6,7> : public vpunpckhqdq {};
-                template <>
-                struct perm2_u32<6,7,2,3>
-                        : public swap_ab<__m128i, vpunpckhqdq> {};
+		template <>
+		struct perm2_u32<2,3,6,7> : public vpunpckhqdq {};
+		template <>
+		struct perm2_u32<6,7,2,3>
+			: public swap_ab<__m128i, vpunpckhqdq> {};
 
-                // generic permutation of one uint16_t vector
-                template <int _P0, int _P1, int _P2, int _P3,
-                          int _P4, int _P5, int _P6, int _P7>
-                struct perm1_u16 {
-                        static __m128i v(__m128i a);
-                };
+		// generic permutation of one uint16_t vector
+		template <int _P0, int _P1, int _P2, int _P3,
+			  int _P4, int _P5, int _P6, int _P7>
+		struct perm1_u16 {
+			static __m128i v(__m128i a);
+		};
 
-                // generic permutation of two uint16_t vectors
-                template <int _P0, int _P1, int _P2, int _P3,
-                          int _P4, int _P5, int _P6, int _P7>
-                struct perm2_u16 {
-                        static __m128i v(__m128i a, __m128i b);
-                };
+		// generic permutation of two uint16_t vectors
+		template <int _P0, int _P1, int _P2, int _P3,
+			  int _P4, int _P5, int _P6, int _P7>
+		struct perm2_u16 {
+			static __m128i v(__m128i a, __m128i b);
+		};
 
 #if 0
-                // permutation of the high half of one uint16_t vector
-                template <int _P4, int _P5, int _P6, int _P7>
-                struct perm1_u16<0, 1, 2, 3, _P4, _P5, _P6, _P7> {
-                        static __m128i v(__m128i a);
-                };
-                // permutation of the low half of one uint16_t vector
-                template <int _P0, int _P1, int _P2, int _P3>
-                struct perm1_u16<_P0, _P1, _P2, _P3, 4, 5, 6, 7> {
-                        static __m128i v(__m128i a);
-                };
+		// permutation of the high half of one uint16_t vector
+		template <int _P4, int _P5, int _P6, int _P7>
+		struct perm1_u16<0, 1, 2, 3, _P4, _P5, _P6, _P7> {
+			static __m128i v(__m128i a);
+		};
+		// permutation of the low half of one uint16_t vector
+		template <int _P0, int _P1, int _P2, int _P3>
+		struct perm1_u16<_P0, _P1, _P2, _P3, 4, 5, 6, 7> {
+			static __m128i v(__m128i a);
+		};
 #endif
-                // specialisations of permutations of one uint16_t
-                // vector
-                template <>
-                struct perm1_u16<-1,-1,-1,-1,-1,-1,-1,-1>
-                        : public make_zero_int {};
-                template <>
-                struct perm1_u16< 0, 1, 2, 3, 4, 5, 6, 7>
-                        : public select_arg_1<__m128i> {};
-                template <>
-                struct perm1_u16< 0, 0, 1, 1, 2, 2, 3, 3>
-                        : public vpunpcklwd {};
-                template <>
-                struct perm1_u16< 4, 4, 5, 5, 6, 6, 7, 7>
-                        : public vpunpckhwd {};
-                template <>
-                struct perm1_u16< 0, 1, 0, 1, 2, 3, 2, 3>
-                        : public vpunpckldq {};
-                template <>
-                struct perm1_u16< 4, 5, 4, 5, 6, 7, 6, 7>
-                        : public vpunpckhdq {};
-                template <>
-                struct perm1_u16< 0, 1, 2, 3, 0, 1, 2, 3>
-                        : public vpunpcklqdq {};
-                template <>
-                struct perm1_u16< 4, 5, 6, 7, 4, 5, 6, 7>
-                        : public vpunpckhqdq {};
+		// specialisations of permutations of one uint16_t
+		// vector
+		template <>
+		struct perm1_u16<-1,-1,-1,-1,-1,-1,-1,-1>
+			: public make_zero_int {};
+		template <>
+		struct perm1_u16< 0, 1, 2, 3, 4, 5, 6, 7>
+			: public select_arg_1<__m128i> {};
+		template <>
+		struct perm1_u16< 0, 0, 1, 1, 2, 2, 3, 3>
+			: public vpunpcklwd {};
+		template <>
+		struct perm1_u16< 4, 4, 5, 5, 6, 6, 7, 7>
+			: public vpunpckhwd {};
+		template <>
+		struct perm1_u16< 0, 1, 0, 1, 2, 3, 2, 3>
+			: public vpunpckldq {};
+		template <>
+		struct perm1_u16< 4, 5, 4, 5, 6, 7, 6, 7>
+			: public vpunpckhdq {};
+		template <>
+		struct perm1_u16< 0, 1, 2, 3, 0, 1, 2, 3>
+			: public vpunpcklqdq {};
+		template <>
+		struct perm1_u16< 4, 5, 6, 7, 4, 5, 6, 7>
+			: public vpunpckhqdq {};
 		template <>
 		struct perm1_u16< 0,-1, 1,-1, 2,-1, 3,-1>
 			: public vpmovzxwd {};
@@ -394,64 +394,64 @@ namespace x86vec {
 		template <>
 		struct perm1_u16<-1, 0,-1, 1,-1, 2, -1, 3>
 			: public fixed_arg_1<__m128i, make_zero_int,
-                                             vpunpcklwd> {};
+					     vpunpcklwd> {};
 		template <>
 		struct perm1_u16<-1, 4,-1, 5,-1, 6, -1, 7>
 			: public fixed_arg_1<__m128i, make_zero_int,
-                                             vpunpckhwd> {};
+					     vpunpckhwd> {};
 		template <>
-		struct perm1_u16<0, 0, 0, 0, 0, 0, 0, 0> 
+		struct perm1_u16<0, 0, 0, 0, 0, 0, 0, 0>
 			: public splat_u16<0> {};
 		template <>
-		struct perm1_u16<1, 1, 1, 1, 1, 1, 1, 1> 
+		struct perm1_u16<1, 1, 1, 1, 1, 1, 1, 1>
 			: public splat_u16<1> {};
 		template <>
-		struct perm1_u16<2, 2, 2, 2, 2, 2, 2, 2> 
+		struct perm1_u16<2, 2, 2, 2, 2, 2, 2, 2>
 			: public splat_u16<2> {};
 		template <>
-		struct perm1_u16<3, 3, 3, 3, 3, 3, 3, 3> 
+		struct perm1_u16<3, 3, 3, 3, 3, 3, 3, 3>
 			: public splat_u16<3> {};
 		template <>
-		struct perm1_u16<4, 4, 4, 4, 4, 4, 4, 4> 
+		struct perm1_u16<4, 4, 4, 4, 4, 4, 4, 4>
 			: public splat_u16<4> {};
 		template <>
-		struct perm1_u16<5, 5, 5, 5, 5, 5, 5, 5> 
+		struct perm1_u16<5, 5, 5, 5, 5, 5, 5, 5>
 			: public splat_u16<5> {};
 		template <>
-		struct perm1_u16<6, 6, 6, 6, 6, 6, 6, 6> 
+		struct perm1_u16<6, 6, 6, 6, 6, 6, 6, 6>
 			: public splat_u16<6> {};
 		template <>
-		struct perm1_u16<7, 7, 7, 7, 7, 7, 7, 7> 
+		struct perm1_u16<7, 7, 7, 7, 7, 7, 7, 7>
 			: public splat_u16<7> {};
 		template <>
-		struct perm1_u16<-1, 0, 1, 2, 3, 4, 5, 6> 
+		struct perm1_u16<-1, 0, 1, 2, 3, 4, 5, 6>
 			: public vpslldq<2> {};
 		template <>
-		struct perm1_u16<-1, -1, 0, 1, 2, 3, 4, 5> 
+		struct perm1_u16<-1, -1, 0, 1, 2, 3, 4, 5>
 			: public vpslldq<4> {};
 		template <>
-		struct perm1_u16<-1,-1,-1, 0, 1, 2, 3, 4> 
+		struct perm1_u16<-1,-1,-1, 0, 1, 2, 3, 4>
 			: public vpslldq<6> {};
 		template <>
-		struct perm1_u16<-1,-1,-1,-1, 0, 1, 2, 3> 
+		struct perm1_u16<-1,-1,-1,-1, 0, 1, 2, 3>
 			: public vpslldq<8> {};
 		template <>
-		struct perm1_u16<-1,-1,-1,-1,-1, 0, 1, 2> 
+		struct perm1_u16<-1,-1,-1,-1,-1, 0, 1, 2>
 			: public vpslldq<10> {};
 		template <>
-		struct perm1_u16<-1,-1,-1,-1,-1,-1, 0, 1> 
+		struct perm1_u16<-1,-1,-1,-1,-1,-1, 0, 1>
 			: public vpslldq<12> {};
 		template <>
-		struct perm1_u16<-1,-1,-1,-1,-1,-1,-1, 0> 
+		struct perm1_u16<-1,-1,-1,-1,-1,-1,-1, 0>
 			: public vpslldq<14> {};
 		template <>
-		struct perm1_u16< 1, 2, 3, 4, 5, 6, 7,-1> 
+		struct perm1_u16< 1, 2, 3, 4, 5, 6, 7,-1>
 			: public vpsrldq<2> {};
 		template <>
-		struct perm1_u16< 2, 3, 4, 5, 6, 7,-1,-1> 
+		struct perm1_u16< 2, 3, 4, 5, 6, 7,-1,-1>
 			: public vpsrldq<4> {};
 		template <>
-		struct perm1_u16< 3, 4, 5, 6, 7,-1,-1,-1> 
+		struct perm1_u16< 3, 4, 5, 6, 7,-1,-1,-1>
 			: public vpsrldq<6> {};
 		template <>
 		struct perm1_u16< 4, 5, 6, 7,-1,-1,-1,-1>
@@ -463,7 +463,7 @@ namespace x86vec {
 		struct perm1_u16< 6, 7,-1,-1,-1,-1,-1,-1>
 			: public vpsrldq<12> {};
 		template <>
-		struct perm1_u16< 7,-1,-1,-1,-1,-1,-1,-1> 
+		struct perm1_u16< 7,-1,-1,-1,-1,-1,-1,-1>
 			: public vpsrldq<14> {};
 
 		template <>
@@ -492,6 +492,20 @@ namespace x86vec {
 		template <>
 		struct perm1_u16< 3,-1,-1,-1, 7,-1,-1,-1>
 			: public vpsrlq_const<48> {};
+
+		// specialisations for two uint16_t vectors
+		template <>
+		struct perm2_u16< 0, 8, 1, 9, 2,10, 3,11>
+			: public vpunpcklwd {};
+		template <>
+		struct perm2_u16< 8, 0, 9, 1,10, 2,11, 3>
+			: public swap_ab<__m128i, vpunpcklwd> {};
+		template <>
+		struct perm2_u16< 4,12, 5,13, 6,14, 7,15>
+			: public vpunpckhwd {};
+		template <>
+		struct perm2_u16<12, 4,13, 5,14, 6,15, 7>
+			: public swap_ab<__m128i, vpunpckhwd> {};
         }
 
         template <int _P0, int _P1>
@@ -546,27 +560,27 @@ __m128d x86vec::impl::perm1_f64<_P0, _P1>::v(__m128d a)
                         (_P1<0 ? 0 : -1),
                         (_P1<0 ? 0 : -1)>::dv();
                 return _mm_and_pd(a, msk);
-        }
+}
 
         if (do_shuffle && !do_zero) {
                 // shuffling, not zeroing
-		return vshufpd<_P0, _P1>::v(a);
+                return vshufpd<_P0, _P1>::v(a);
         }
-        if (do_shuffle && do_zero) {
-                // shuffling and zeroing
-                const __m128d zero= _mm_setzero_pd();
-                // both shuffle and zero
-                if (_P0 < 0 && _P1 >= 0) {
-                        // zero low half, shuffle high half
-			return vshufpd<0, _P1>::v(zero, a);
-                }
-                if (_P0 >= 0 && _P1 < 0) {
-                        // shuffle low half, zero high half
-			return vshufpd<_P1, 0>::v(a, zero);
-                }
-        }
-        // trivial case: do n
-        return a;
+if (do_shuffle && do_zero) {
+	// shuffling and zeroing
+	const __m128d zero= _mm_setzero_pd();
+	// both shuffle and zero
+	if (_P0 < 0 && _P1 >= 0) {
+		// zero low half, shuffle high half
+		return vshufpd<0, _P1>::v(zero, a);
+	}
+	if (_P0 >= 0 && _P1 < 0) {
+		// shuffle low half, zero high half
+		return vshufpd<_P1, 0>::v(a, zero);
+	}
+}
+// trivial case: do n
+return a;
 }
 
 template <int _P0, int _P1>
@@ -591,10 +605,10 @@ __m128d x86vec::impl::perm2_f64<_P0, _P1>::v(__m128d a, __m128d b)
         // selecting from both a and b without zeroing
         if ((_P0 & 2) == 0) {
                 // first element from a, second element from b
-		return vshufpd<_P0, _P1>::v(a, b);
+                return vshufpd<_P0, _P1>::v(a, b);
         }
         // first element from b, second element from a
-	return vshufpd<_P0, _P1>::v(b, a);
+        return vshufpd<_P0, _P1>::v(b, a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -628,16 +642,16 @@ __m128 x86vec::impl::perm1_f32<_P0, _P1, _P2, _P3>::v(__m128 a)
 
         if (do_shuffle && !do_zero) {
                 // shuffling, not zeroing
-		return vshufps<_P0, _P1, _P2, _P3>::v(a, a);
+                return vshufps<_P0, _P1, _P2, _P3>::v(a, a);
         }
         // both shuffle and zero
         if (m2 == 0xFF00) {
                 // zero low half, shuffle high half
-		return vshufps<0, 0, _P2, _P3>::v(_mm_setzero_ps(), a);
+                return vshufps<0, 0, _P2, _P3>::v(_mm_setzero_ps(), a);
         }
         if (m2 == 0x00FF) {
                 // shuffle low half, zero high half
-		return vshufps<_P0, _P1, 0, 0>::v(a, _mm_setzero_ps());
+                return vshufps<_P0, _P1, 0, 0>::v(a, _mm_setzero_ps());
         }
 #ifdef __SSSE3__
         const int c00 = (_P0<0 ? -1 : 4*(_P0&3)+0);
@@ -657,9 +671,9 @@ __m128 x86vec::impl::perm1_f32<_P0, _P1, _P2, _P3>::v(__m128 a)
         const int c14 = (_P3<0 ? -1 : 4*(_P3&3)+2);
         const int c15 = (_P3<0 ? -1 : 4*(_P3&3)+3);
         const __m128i msk=const16_u8<c00, c01, c02, c03,
-                c04, c05, c06, c07,
-                c08, c09, c10, c11,
-                c12, c13, c14, c15>::iv();
+				     c04, c05, c06, c07,
+				     c08, c09, c10, c11,
+				     c12, c13, c14, c15>::iv();
         return _mm_castsi128_ps(_mm_shuffle_epi8(_mm_castps_si128(a),
                                                  msk));
 #else
@@ -691,7 +705,7 @@ __m128 x86vec::impl::perm2_f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
         if (((m1^0x4444) & 0x4444 & m2) == 0) {
                 // no elements from a
                 return perm1_f32<_P0 & ~4, _P1 & ~4,
-                        _P2 & ~4, _P3 &~4>::v(b);
+				 _P2 & ~4, _P3 &~4>::v(b);
         }
 
         if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
@@ -717,7 +731,7 @@ __m128 x86vec::impl::perm2_f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                         (_P2 < 0 ? 0 : -1),
                         (_P3 < 0 ? 0 : -1)>::fv();
                 return  _mm_and_ps(t, zm);
-        }
+}
         if (((m1 & 0x4400)==0x4400) && ((m1 & 0x0044)==0x00)) {
                 // lower half from a, higher half from b
                 __m128 t = vshufps<_P0, _P1, _P2, _P3>::v(a, b);
@@ -729,12 +743,12 @@ __m128 x86vec::impl::perm2_f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                                 (_P2 < 0 ? 0 : -1),
                                 (_P3 < 0 ? 0 : -1)>::fv();
                         return  _mm_and_ps(t, zm);
-		}
-                return t;
 	}
+                return t;
+}
         if (((m1 & 0x4400)==0x0000) && ((m1 & 0x0044)==0x44)) {
                 // lower half from b, higher half from a
-		__m128 t=vshufps<_P0, _P1, _P2, _P3>::v(b, a);
+                __m128 t=vshufps<_P0, _P1, _P2, _P3>::v(b, a);
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128 zm = const4_u32<
@@ -743,23 +757,23 @@ __m128 x86vec::impl::perm2_f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                                 (_P2 < 0 ? 0 : -1),
                                 (_P3 < 0 ? 0 : -1)>::fv();
                         return  _mm_and_ps(t, zm);
-		}
-                return t;
 	}
+                return t;
+}
         // general case
         // select all elements to clear or from 1st vector
         const int ma0 = _P0 < 4 ? _P0 : -1;
-        const int ma1 = _P1 < 4 ? _P1 : -1;
-        const int ma2 = _P2 < 4 ? _P2 : -1;
-        const int ma3 = _P3 < 4 ? _P3 : -1;
-        __m128 a1 = perm1_f32<ma0, ma1, ma2, ma3>::v(a);
-        // select all elements from second vector
-        const int mb0 = _P0 > 3 ? (_P0-4) : -1;
-        const int mb1 = _P1 > 3 ? (_P1-4) : -1;
-        const int mb2 = _P2 > 3 ? (_P2-4) : -1;
-        const int mb3 = _P3 > 3 ? (_P3-4) : -1;
-        __m128 b1 = perm1_f32<mb0, mb1, mb2, mb3>::v(b);
-        return  _mm_or_ps(a1,b1);
+const int ma1 = _P1 < 4 ? _P1 : -1;
+const int ma2 = _P2 < 4 ? _P2 : -1;
+const int ma3 = _P3 < 4 ? _P3 : -1;
+__m128 a1 = perm1_f32<ma0, ma1, ma2, ma3>::v(a);
+// select all elements from second vector
+const int mb0 = _P0 > 3 ? (_P0-4) : -1;
+const int mb1 = _P1 > 3 ? (_P1-4) : -1;
+const int mb2 = _P2 > 3 ? (_P2-4) : -1;
+const int mb3 = _P3 > 3 ? (_P3-4) : -1;
+__m128 b1 = perm1_f32<mb0, mb1, mb2, mb3>::v(b);
+return  _mm_or_ps(a1,b1);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -788,25 +802,25 @@ __m128i x86vec::impl::perm1_u32<_P0, _P1, _P2, _P3>::v(__m128i a)
                 return  _mm_and_si128(a,zm);
         }
         if (do_shuffle && !do_zero) {
-		// No zero, high elements kept in order, low elements
-		// only from low half.
-		if (((m1 & 0xFF00) == 0x3200) && ((m1 & 0x22)==0)) {
-			const int l0= 2*_P0+0;
-			const int l1= 2*_P0+1;
-			const int l2= 2*_P1+0;
-			const int l3= 2*_P1+1;
-			return vpshuflw<l0, l1, l2, l3>::v(a);
-		}
-		// No zero, low elements kept in order, high elements 
-		// only from high half
-		if (((m1 & 0xFF) == 0x10) && ((m1 & 0x2200)==0x2200)) {
-			const int h0= 2*(_P2-2) + 0;
-			const int h1= 2*(_P2-2) + 1;
-			const int h2= 2*(_P3-2) + 0;
-			const int h3= 2*(_P3-2) + 1;
-			return vpshufhw<h0, h1, h2, h3>::v(a);
-		}
-		return vpshufd<_P0, _P1, _P2, _P3>::v(a);
+                // No zero, high elements kept in order, low elements
+                // only from low half.
+                if (((m1 & 0xFF00) == 0x3200) && ((m1 & 0x22)==0)) {
+                        const int l0= 2*_P0+0;
+                        const int l1= 2*_P0+1;
+                        const int l2= 2*_P1+0;
+                        const int l3= 2*_P1+1;
+                        return vpshuflw<l0, l1, l2, l3>::v(a);
+                }
+                // No zero, low elements kept in order, high elements
+                // only from high half
+                if (((m1 & 0xFF) == 0x10) && ((m1 & 0x2200)==0x2200)) {
+                        const int h0= 2*(_P2-2) + 0;
+                        const int h1= 2*(_P2-2) + 1;
+                        const int h2= 2*(_P3-2) + 0;
+                        const int h3= 2*(_P3-2) + 1;
+                        return vpshufhw<h0, h1, h2, h3>::v(a);
+                }
+                return vpshufd<_P0, _P1, _P2, _P3>::v(a);
         }
 #if defined (__SSSE3__)
         //if (do_shuffle && do_zero) {
@@ -836,13 +850,13 @@ __m128i x86vec::impl::perm1_u32<_P0, _P1, _P2, _P3>::v(__m128i a)
         // both shuffle and zero
         if (m2 == 0xFF00) {
                 // zero low half, shuffle high half
-		return exec_f32<vshufps<0, 0, _P2, _P3> >::
-			v(make_zero_int::v(), a);
+                return exec_f32<vshufps<0, 0, _P2, _P3> >::
+                        v(make_zero_int::v(), a);
         }
         if (m2 == 0x00FF) {
                 // shuffle low half, zero high half
-		return exec_f32<vshufps<_P0, _P1, 0, 0> >::
-			v(a, make_zero_int::v());
+                return exec_f32<vshufps<_P0, _P1, 0, 0> >::
+                        v(a, make_zero_int::v());
         }
         // both
         __m128i t= vpshufd<_P0, _P1, _P2, _P3>::v(a);
@@ -897,10 +911,10 @@ __m128i x86vec::impl::perm2_u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                         (_P2 < 0 ? 0 : -1),
                         (_P3 < 0 ? 0 : -1)>::iv();
                 return  _mm_and_si128(t, zm);
-	}
+}
         if (((m1 & 0x4400)==0x4400) && ((m1 & 0x0044)==0x00)) {
                 // lower half from a, higher half from b
-		__m128i t= exec_f32<vshufps<_P0, _P1, _P2, _P3> >::v(a, b);
+                __m128i t= exec_f32<vshufps<_P0, _P1, _P2, _P3> >::v(a, b);
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128i zm = const4_u32<
@@ -909,12 +923,12 @@ __m128i x86vec::impl::perm2_u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                                 (_P2 < 0 ? 0 : -1),
                                 (_P3 < 0 ? 0 : -1)>::iv();
                         return  _mm_and_si128(t, zm);
-		}
-                return t;
 	}
+                return t;
+}
         if (((m1 & 0x4400)==0x0000) && ((m1 & 0x0044)==0x44)) {
                 // lower half from b, higher half from a
-		__m128i t= exec_f32<vshufps<_P0, _P1, _P2, _P3> >::v(b, a);
+                __m128i t= exec_f32<vshufps<_P0, _P1, _P2, _P3> >::v(b, a);
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128i zm = const4_u32<
@@ -923,23 +937,23 @@ __m128i x86vec::impl::perm2_u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                                 (_P2 < 0 ? 0 : -1),
                                 (_P3 < 0 ? 0 : -1)>::iv();
                         return  _mm_and_si128(t, zm);
-		}
-                return t;
 	}
+                return t;
+}
         // general case
         // select all elements to clear or from 1st vector
         const int ma0 = _P0 < 4 ? _P0 : -1;
-	const int ma1 = _P1 < 4 ? _P1 : -1;
-	const int ma2 = _P2 < 4 ? _P2 : -1;
-	const int ma3 = _P3 < 4 ? _P3 : -1;
-	__m128i a1 = perm1_u32<ma0, ma1, ma2, ma3>::v(a);
-	// select all elements from second vector
-	const int mb0 = _P0 > 3 ? (_P0-4) : -1;
-	const int mb1 = _P1 > 3 ? (_P1-4) : -1;
-	const int mb2 = _P2 > 3 ? (_P2-4) : -1;
-	const int mb3 = _P3 > 3 ? (_P3-4) : -1;
-	__m128i b1 = perm1_u32<mb0, mb1, mb2, mb3>::v(b);
-	return _mm_or_si128(a1,b1);
+const int ma1 = _P1 < 4 ? _P1 : -1;
+const int ma2 = _P2 < 4 ? _P2 : -1;
+const int ma3 = _P3 < 4 ? _P3 : -1;
+__m128i a1 = perm1_u32<ma0, ma1, ma2, ma3>::v(a);
+// select all elements from second vector
+const int mb0 = _P0 > 3 ? (_P0-4) : -1;
+const int mb1 = _P1 > 3 ? (_P1-4) : -1;
+const int mb2 = _P2 > 3 ? (_P2-4) : -1;
+const int mb3 = _P3 > 3 ? (_P3-4) : -1;
+__m128i b1 = perm1_u32<mb0, mb1, mb2, mb3>::v(b);
+return _mm_or_si128(a1,b1);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -992,28 +1006,28 @@ __m128i x86vec::impl::perm1_u16<_P0, _P1, _P2, _P3,
                                              z4, z5, z6, z7>::iv();
                 return _mm_and_si128(a, zm);
         }
-	// No zero, high elements kept in order, low elements
-	// only from low half.
-	if ((m2 == -1) && 
-	    ((m1 & 0xFFFF0000) == 0x76540000) && 
-	    ((m1 & 0x00004444)==0) ) {
-		const int l0= _P0;
-		const int l1= _P1;
-		const int l2= _P2;
-		const int l3= _P3;
-		return vpshuflw<l0, l1, l2, l3>::v(a);
-	}
-	// No zero, low elements kept in order, high elements 
-	// only from high half
-	if ((m2 == -1) && 
-	    ((m1 & 0xFFFF) == 0x3210) && 
-	    ((m1 & 0x44440000)==0x44440000)) {
-		const int h0= _P4&3;
-		const int h1= _P5&3;
-		const int h2= _P6&3;
-		const int h3= _P7&3;
-		return vpshufhw<h0, h1, h2, h3>::v(a);
-	}
+        // No zero, high elements kept in order, low elements
+        // only from low half.
+        if ((m2 == -1) &&
+            ((m1 & 0xFFFF0000) == 0x76540000) &&
+            ((m1 & 0x00004444)==0) ) {
+                const int l0= _P0;
+                const int l1= _P1;
+                const int l2= _P2;
+                const int l3= _P3;
+                return vpshuflw<l0, l1, l2, l3>::v(a);
+        }
+        // No zero, low elements kept in order, high elements
+        // only from high half
+        if ((m2 == -1) &&
+            ((m1 & 0xFFFF) == 0x3210) &&
+            ((m1 & 0x44440000)==0x44440000)) {
+                const int h0= _P4&3;
+                const int h1= _P5&3;
+                const int h2= _P6&3;
+                const int h3= _P7&3;
+                return vpshufhw<h0, h1, h2, h3>::v(a);
+        }
 #if defined (__SSSE3__)
         if ((m2 == -1) &&
             ((m1 == 0x65432107) || (m1 == 0x54321076) ||
@@ -1121,10 +1135,10 @@ __m128i x86vec::impl::perm1_u16<_P0, _P1, _P2, _P3,
                         // 32-bit permute
                         r = vpshufd<j0, j1, j2, j3>::v(r);
                         // 16-bit permutes
-			// 16 bit permute of low  half
-			r = vpshuflw<r0, r1, r2, r3>::v(r);
-			// 16 bit permute of high half
-			r = vpshufhw<s0, s1, s2, s3>::v(r);
+                        // 16 bit permute of low  half
+                        r = vpshuflw<r0, r1, r2, r3>::v(r);
+                        // 16 bit permute of high half
+                        r = vpshufhw<s0, s1, s2, s3>::v(r);
                 } else {
                         // Worst case. We need two sets of 16-bit permutes
                         // swap low and high 64-bits
@@ -1155,14 +1169,14 @@ __m128i x86vec::impl::perm1_u16<_P0, _P1, _P2, _P3,
                         const int v2 = _P6 < 4 ? 2 : _P6 & 3;
                         const int v3 = _P7 < 4 ? 3 : _P7 & 3;
                         // 16-bit permutes
-			// 16 bit permute of low half swapped
-			t0 = vpshuflw<r0, r1, r2, r3>::v(r);
-			// 16 bit permute of low half orignal
-			t1 = vpshuflw<u0, u1, u2, u3>::v(a);
-			// 16 bit permute of high half swapped
-			t0 = vpshufhw<s0, s1, s2, s3>::v(t0);
+                        // 16 bit permute of low half swapped
+                        t0 = vpshuflw<r0, r1, r2, r3>::v(r);
+                        // 16 bit permute of low half orignal
+                        t1 = vpshuflw<u0, u1, u2, u3>::v(a);
+                        // 16 bit permute of high half swapped
+                        t0 = vpshufhw<s0, s1, s2, s3>::v(t0);
                         // merge data from t0 and t1
-			t1 = vpshufhw<v0, v1, v2, v3>::v(t1);
+                        t1 = vpshufhw<v0, v1, v2, v3>::v(t1);
                         r = select_u16<
                                 (_P0 & 4) != 0,
                                 (_P1 & 4) != 0,
@@ -1172,8 +1186,8 @@ __m128i x86vec::impl::perm1_u16<_P0, _P1, _P2, _P3,
                                 (_P5 & 4) == 0,
                                 (_P6 & 4) == 0,
                                 (_P7 & 4) == 0>::v(t0, t1);
-		}
 	}
+}
         // any zeros?
         if (m2 != -1) {
                 const int z0= (_P0<0 ? 0 : -1);
@@ -1188,7 +1202,7 @@ __m128i x86vec::impl::perm1_u16<_P0, _P1, _P2, _P3,
                                              z4, z5, z6, z7>::iv();
                 r = _mm_and_si128(r, zm);
         }
-	return r;
+return r;
 #endif
 }
 
