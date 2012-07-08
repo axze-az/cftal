@@ -150,11 +150,13 @@ namespace cftal {
 			}
 			static
 			uword muluh(uword a, uword b) {
-				return (std::uint32_t(a) * std::uint32_t(b)) >> 16;
+				return (std::uint32_t(a) * 
+					std::uint32_t(b)) >> 16;
 			}
 			static
 			sword mulsh(sword a, sword b) {
-				return (std::int32_t(a) * std::int32_t(b))>>16;
+				return (std::int32_t(a) * 
+					std::int32_t(b))>>16;
 			}
 			enum {
 				_N = 16

@@ -5,6 +5,7 @@
 #include <cftal/x86vec_vreg.h>
 #include <cftal/x86vec_perm.h>
 #include <cftal/x86vec_ops_1.h>
+#include <cftal/divisor.h>
 
 namespace x86vec
 {
@@ -60,6 +61,7 @@ namespace x86vec
         v8s16& operator-= (v8s16& a, const v8s16& b);
         v8s16& operator*= (v8s16& a, const v8s16& b);
         v8s16& operator/= (v8s16& a, const v8s16& b);
+        v8s16& operator%= (v8s16& a, const v8s16& b);
 
         template <std::uint32_t _P>
         v8s16& operator<<= (v8s16& a, const const_u32<_P>& b);
@@ -93,6 +95,8 @@ namespace x86vec
         v8s16 operator+ (const v8s16& a, const v8s16& b);
         v8s16 operator- (const v8s16& a, const v8s16& b);
         v8s16 operator* (const v8s16& a, const v8s16& b);
+        v8s16 operator/ (const v8s16& a, const v8s16& b);
+        v8s16 operator% (const v8s16& a, const v8s16& b);
 
         v8s16 operator< (const v8s16& a, const v8s16& b);
         v8s16 operator<= (const v8s16& a, const v8s16& b);
@@ -111,18 +115,19 @@ namespace x86vec
         v8s16 max(const v8s16& a, const v8s16& b);
         v8s16 min(const v8s16& a, const v8s16& b);
         v8s16 abs(const v8s16& a);
+	v8s16 mulh(const v8s16& a, const v8s16& b);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3,
-                 bool _P4, bool _P5, bool _P6, bool _P7 >
+		   bool _P4, bool _P5, bool _P6, bool _P7 >
         v8s16 select(const v8s16& a, const v8s16& b);
         v8s16 select(const v8s16& msk, const v8s16& on_true,
                      const v8s16& on_false);
 
         template < int _P0, int _P1, int _P2, int _P3,
-                 int _P4, int _P5, int _P6, int _P7 >
+		   int _P4, int _P5, int _P6, int _P7 >
         v8s16 permute(const v8s16& a);
         template < int _P0, int _P1, int _P2, int _P3,
-                 int _P4, int _P5, int _P6, int _P7 >
+		   int _P4, int _P5, int _P6, int _P7 >
         v8s16 permute(const v8s16& a, const v8s16& b);
 
         class v8u16 : public v8s16
@@ -145,18 +150,41 @@ namespace x86vec
                 v8u16(const mem::unaligned::addr<element_type>& r);
         };
 
+
         class v4s32 : public v128u1
         {
         public:
                 typedef int32_t element_type;
+                typedef v128u1 base_type;
                 v4s32();
                 v4s32(vector_type r);
-                v4s32(const v128u1& r);
+                v4s32(const base_type& r);
                 v4s32(element_type r);
+                v4s32(element_type r, bool broadcast);
+                v4s32(element_type p00, element_type p01,
+                      element_type p02, element_type p03);
                 v4s32(const mem::addr_bcast<element_type>& r);
                 v4s32(const mem::addr<element_type>& r);
                 v4s32(const mem::aligned::addr<element_type>& r);
                 v4s32(const mem::unaligned::addr<element_type>& r);
+        };
+
+        class v4u32 : public v4s32
+        {
+        public:
+		typedef int32_t element_type;
+		typedef v128u1 base_type;
+		v4u32();
+		v4u32(vector_type r);
+		v4u32(const base_type& r);
+		v4u32(element_type r);
+		v4u32(element_type r, bool broadcast);
+		v4u32(element_type p00, element_type p01,
+		      element_type p02, element_type p03);
+		v4u32(const mem::addr_bcast<element_type>& r);
+		v4u32(const mem::addr<element_type>& r);
+		v4u32(const mem::aligned::addr<element_type>& r);
+		v4u32(const mem::unaligned::addr<element_type>& r);
         };
 }
 
@@ -357,6 +385,31 @@ x86vec::operator-= (v8s16& a, const v8s16& b)
         return a;
 }
 
+inline
+x86vec::v8s16&
+x86vec::operator*= (v8s16& a, const v8s16& b)
+{
+        a = _mm_mullo_epi16(a(), b());
+        return a;
+}
+
+inline
+x86vec::v8s16&
+x86vec::operator/=(v8s16& a, const v8s16& b)
+{
+        a= impl::div_s16::v(a(), b());
+        return a;
+}
+
+inline
+x86vec::v8s16&
+x86vec::operator%=(v8s16& a, const v8s16& b)
+{
+        v8s16 q(a/b);
+        a = cftal::remainder(a, b, q);
+        return a;
+}
+
 template <unsigned _P>
 inline
 x86vec::v8s16&
@@ -430,14 +483,6 @@ x86vec::operator>> (const v8s16& a, uint32_t r)
         return impl::vpsraw::v(a(), s);
 }
 
-
-inline
-x86vec::v8s16&
-x86vec::operator*= (v8s16& a, const v8s16& b)
-{
-        a = _mm_mullo_epi16(a(), b());
-        return a;
-}
 
 inline
 x86vec::v8s16&
@@ -550,6 +595,20 @@ x86vec::v8s16 x86vec::operator* (const v8s16& a, const v8s16& b)
 }
 
 inline
+x86vec::v8s16
+x86vec::operator/(const v8s16& a, const v8s16& b)
+{
+        return impl::div_s16::v(a(), b());
+}
+
+inline
+x86vec::v8s16
+x86vec::operator%(const v8s16& a, const v8s16& b)
+{
+        return cftal::remainder(a, b, a/b);
+}
+
+inline
 x86vec::v8s16 x86vec::operator< (const v8s16& a, const v8s16& b)
 {
         return _mm_cmpgt_epi16(b(), a());
@@ -588,37 +647,37 @@ x86vec::v8s16 x86vec::operator> (const v8s16& a, const v8s16& b)
 }
 
 inline
-bool x86vec::all_signs(const x86vec::v8s16& a)
+bool x86vec::all_signs(const v8s16& a)
 {
         return all_signs_s16(a());
 }
 
 inline
-bool x86vec::both_signs(const x86vec::v8s16& a)
+bool x86vec::both_signs(const v8s16& a)
 {
         return both_signs_s16(a());
 }
 
 inline
-bool x86vec::no_signs(const x86vec::v8s16& a)
+bool x86vec::no_signs(const v8s16& a)
 {
         return no_signs_s16(a());
 }
 
 inline
-x86vec::v8s16 x86vec::max(const x86vec::v8s16& a, const x86vec::v8s16& b)
+x86vec::v8s16 x86vec::max(const v8s16& a, const v8s16& b)
 {
         return v8s16(_mm_max_epi16(a(), b()));
 }
 
 inline
-x86vec::v8s16 x86vec::min(const x86vec::v8s16& a, const x86vec::v8s16& b)
+x86vec::v8s16 x86vec::min(const v8s16& a, const v8s16& b)
 {
         return v8s16(_mm_min_epi16(a(), b()));
 }
 
 inline
-x86vec::v8s16 x86vec::abs(const x86vec::v8s16& a)
+x86vec::v8s16 x86vec::abs(const v8s16& a)
 {
 #if defined (__SSSE3__)
         return v8s16(_mm_abs_epi16(a()));
@@ -629,42 +688,47 @@ x86vec::v8s16 x86vec::abs(const x86vec::v8s16& a)
 #endif
 }
 
+inline
+x86vec::v8s16 x86vec::mulh(const v8s16& a, const v8s16& b)
+{
+	return _mm_mulhi_epi16(a(), b());
+}
+
 template < bool _P0, bool _P1, bool _P2, bool _P3,
-         bool _P4, bool _P5, bool _P6, bool _P7 >
+	   bool _P4, bool _P5, bool _P6, bool _P7 >
 inline
-x86vec::v8s16 x86vec::select(const x86vec::v8s16& a, const x86vec::v8s16& b)
+x86vec::v8s16 x86vec::select(const v8s16& a, const v8s16& b)
 {
-        return select_u16 < _P0, _P1, _P2, _P3,  _P4, _P5, _P6, _P7 > (a(), b());
+        return select_u16 <
+		_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7 > (a(), b());
 }
 
 inline
-x86vec::v8s16 x86vec::select(const x86vec::v8s16& msk,
-                             const x86vec::v8s16& on_true,
-                             const x86vec::v8s16& on_false)
+x86vec::v8s16 x86vec::select(const v8s16& msk,
+                             const v8s16& on_true,
+                             const v8s16& on_false)
 {
-        return v8s16(select(msk(), on_true(), on_false()));
-}
-
-template < int _P0, int _P1, int _P2, int _P3,
-         int _P4, int _P5, int _P6, int _P7 >
-inline
-x86vec::v8s16 x86vec::permute(const x86vec::v8s16& a)
-{
-        return v8s16(perm_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>(a()));
+        return select(msk(), on_true(), on_false());
 }
 
 template < int _P0, int _P1, int _P2, int _P3,
-         int _P4, int _P5, int _P6, int _P7 >
+	   int _P4, int _P5, int _P6, int _P7 >
 inline
-x86vec::v8s16 x86vec::permute(const x86vec::v8s16& a, const x86vec::v8s16& b)
+x86vec::v8s16 x86vec::permute(const v8s16& a)
 {
-        return v8s16(perm_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>(a(), b()));
+        return perm_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>(a());
 }
 
-
+template < int _P0, int _P1, int _P2, int _P3,
+	   int _P4, int _P5, int _P6, int _P7 >
+inline
+x86vec::v8s16 x86vec::permute(const v8s16& a, const v8s16& b)
+{
+        return perm_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>(a(), b());
+}
 
 // Local variables:
 // mode: c++
 // end:
 #endif
-// kate: indent-mode cstyle; indent-width 8; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 8; replace-tabs on; ;
