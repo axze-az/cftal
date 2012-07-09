@@ -1,8 +1,8 @@
 /****************************  vectori256.h   *******************************
 * Author:        Agner Fog
 * Date created:  2012-05-30
-* Last modified: 2012-05-30
-* Version:       1.00 Beta
+* Last modified: 2012-07-08
+* Version:       1.01 Beta
 * Project:       vector classes
 * Description:
 * Header file defining integer vector classes as interface to intrinsic 
@@ -208,6 +208,13 @@ static inline Vec256b & operator ^= (Vec256b & a, Vec256b const & b) {
     return a;
 }
 
+// Define functions for this class
+
+// function andnot: a & ~ b
+static inline Vec256b andnot (Vec256b const & a, Vec256b const & b) {
+    return _mm256_andnot_si256(b, a);
+}
+
 
 /*****************************************************************************
 *
@@ -348,7 +355,7 @@ public:
         static const union {
             int32_t i[16];
             char    c[64];
-        } mask = {-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0};
+        } mask = {{-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0}};
         *this &= Vec32c().load(mask.c+32-n);
         return *this;
     }
@@ -408,7 +415,7 @@ static inline Vec32c operator ++ (Vec32c & a, int) {
 }
 
 // prefix operator ++
-static inline Vec32c operator ++ (Vec32c & a) {
+static inline Vec32c & operator ++ (Vec32c & a) {
     a = a + 1;
     return a;
 }
@@ -437,7 +444,7 @@ static inline Vec32c operator -- (Vec32c & a, int) {
 }
 
 // prefix operator --
-static inline Vec32c operator -- (Vec32c & a) {
+static inline Vec32c & operator -- (Vec32c & a) {
     a = a - 1;
     return a;
 }
@@ -798,6 +805,32 @@ static inline Vec32c operator < (Vec32uc const & a, Vec32uc const & b) {
     return b > a;
 }
 
+// vector operator & : bitwise and
+static inline Vec32uc operator & (Vec32uc const & a, Vec32uc const & b) {
+    return Vec32uc(Vec256b(a) & Vec256b(b));
+}
+static inline Vec32uc operator && (Vec32uc const & a, Vec32uc const & b) {
+    return a & b;
+}
+
+// vector operator | : bitwise or
+static inline Vec32uc operator | (Vec32uc const & a, Vec32uc const & b) {
+    return Vec32uc(Vec256b(a) | Vec256b(b));
+}
+static inline Vec32uc operator || (Vec32uc const & a, Vec32uc const & b) {
+    return a | b;
+}
+
+// vector operator ^ : bitwise xor
+static inline Vec32uc operator ^ (Vec32uc const & a, Vec32uc const & b) {
+    return Vec32uc(Vec256b(a) ^ Vec256b(b));
+}
+
+// vector operator ~ : bitwise not
+static inline Vec32uc operator ~ (Vec32uc const & a) {
+    return Vec32uc( ~ Vec256b(a));
+}
+
 // Functions for this class
 
 // Select between two operands. Corresponds to this pseudocode:
@@ -989,7 +1022,7 @@ static inline Vec16s operator ++ (Vec16s & a, int) {
 }
 
 // prefix operator ++
-static inline Vec16s operator ++ (Vec16s & a) {
+static inline Vec16s & operator ++ (Vec16s & a) {
     a = a + 1;
     return a;
 }
@@ -1018,7 +1051,7 @@ static inline Vec16s operator -- (Vec16s & a, int) {
 }
 
 // prefix operator --
-static inline Vec16s operator -- (Vec16s & a) {
+static inline Vec16s & operator -- (Vec16s & a) {
     a = a - 1;
     return a;
 }
@@ -1123,6 +1156,7 @@ static inline Vec16s operator ^ (Vec16s const & a, Vec16s const & b) {
 static inline Vec16s operator ~ (Vec16s const & a) {
     return Vec16s( ~ Vec256b(a));
 }
+
 // vector operator ! : logical not, returns true for elements == 0
 static inline Vec16s operator ! (Vec16s const & a) {
     return _mm256_cmpeq_epi16(a,_mm256_setzero_si256());
@@ -1350,6 +1384,32 @@ static inline Vec16s operator < (Vec16us const & a, Vec16us const & b) {
     return b > a;
 }
 
+// vector operator & : bitwise and
+static inline Vec16us operator & (Vec16us const & a, Vec16us const & b) {
+    return Vec16us(Vec256b(a) & Vec256b(b));
+}
+static inline Vec16us operator && (Vec16us const & a, Vec16us const & b) {
+    return a & b;
+}
+
+// vector operator | : bitwise or
+static inline Vec16us operator | (Vec16us const & a, Vec16us const & b) {
+    return Vec16us(Vec256b(a) | Vec256b(b));
+}
+static inline Vec16us operator || (Vec16us const & a, Vec16us const & b) {
+    return a | b;
+}
+
+// vector operator ^ : bitwise xor
+static inline Vec16us operator ^ (Vec16us const & a, Vec16us const & b) {
+    return Vec16us(Vec256b(a) ^ Vec256b(b));
+}
+
+// vector operator ~ : bitwise not
+static inline Vec16us operator ~ (Vec16us const & a) {
+    return Vec16us( ~ Vec256b(a));
+}
+
 // Functions for this class
 
 // Select between two operands. Corresponds to this pseudocode:
@@ -1543,7 +1603,7 @@ static inline Vec8i operator ++ (Vec8i & a, int) {
 }
 
 // prefix operator ++
-static inline Vec8i operator ++ (Vec8i & a) {
+static inline Vec8i & operator ++ (Vec8i & a) {
     a = a + 1;
     return a;
 }
@@ -1572,7 +1632,7 @@ static inline Vec8i operator -- (Vec8i & a, int) {
 }
 
 // prefix operator --
-static inline Vec8i operator -- (Vec8i & a) {
+static inline Vec8i & operator -- (Vec8i & a) {
     a = a - 1;
     return a;
 }
@@ -1930,6 +1990,32 @@ static inline Vec8i operator <= (Vec8ui const & a, Vec8ui const & b) {
     return b >= a;
 }
 
+// vector operator & : bitwise and
+static inline Vec8ui operator & (Vec8ui const & a, Vec8ui const & b) {
+    return Vec8ui(Vec256b(a) & Vec256b(b));
+}
+static inline Vec8ui operator && (Vec8ui const & a, Vec8ui const & b) {
+    return a & b;
+}
+
+// vector operator | : bitwise or
+static inline Vec8ui operator | (Vec8ui const & a, Vec8ui const & b) {
+    return Vec8ui(Vec256b(a) | Vec256b(b));
+}
+static inline Vec8ui operator || (Vec8ui const & a, Vec8ui const & b) {
+    return a | b;
+}
+
+// vector operator ^ : bitwise xor
+static inline Vec8ui operator ^ (Vec8ui const & a, Vec8ui const & b) {
+    return Vec8ui(Vec256b(a) ^ Vec256b(b));
+}
+
+// vector operator ~ : bitwise not
+static inline Vec8ui operator ~ (Vec8ui const & a) {
+    return Vec8ui( ~ Vec256b(a));
+}
+
 // Functions for this class
 
 // Select between two operands. Corresponds to this pseudocode:
@@ -2013,8 +2099,7 @@ public:
 #if defined (_MSC_VER) && ! defined (__x86_64__) && ! defined(__INTEL_COMPILER)
         // MS compiler cannot use _mm256_set1_epi64x in 64 bit mode, and  
         // cannot put 64-bit values into xmm register without using
-        // mmx registers, and it makes no emms
-        // !!
+        // mmx registers, and it makes no emms // !!
         union {
             int64_t q[4];
             int32_t r[8];
@@ -2162,7 +2247,7 @@ static inline Vec4q operator ++ (Vec4q & a, int) {
 }
 
 // prefix operator ++
-static inline Vec4q operator ++ (Vec4q & a) {
+static inline Vec4q & operator ++ (Vec4q & a) {
     a = a + 1;
     return a;
 }
@@ -2191,7 +2276,7 @@ static inline Vec4q operator -- (Vec4q & a, int) {
 }
 
 // prefix operator --
-static inline Vec4q operator -- (Vec4q & a) {
+static inline Vec4q & operator -- (Vec4q & a) {
     a = a - 1;
     return a;
 }
@@ -2530,6 +2615,26 @@ static inline Vec4q operator <= (Vec4uq const & a, Vec4uq const & b) {
     return b >= a;
 }
 
+// vector operator & : bitwise and
+static inline Vec4uq operator & (Vec4uq const & a, Vec4uq const & b) {
+    return Vec4uq(Vec256b(a) & Vec256b(b));
+}
+static inline Vec4uq operator && (Vec4uq const & a, Vec4uq const & b) {
+    return a & b;
+}
+
+// vector operator | : bitwise or
+static inline Vec4uq operator | (Vec4uq const & a, Vec4uq const & b) {
+    return Vec4uq(Vec256b(a) | Vec256b(b));
+}
+static inline Vec4uq operator || (Vec4uq const & a, Vec4uq const & b) {
+    return a | b;
+}
+
+// vector operator ^ : bitwise xor
+static inline Vec4uq operator ^ (Vec4uq const & a, Vec4uq const & b) {
+    return Vec4uq(Vec256b(a) ^ Vec256b(b));
+}
 
 // Functions for this class
 
@@ -2582,7 +2687,7 @@ static inline Vec4uq min(Vec4uq const & a, Vec4uq const & b) {
 * mode with optimization on.
 *****************************************************************************/
 
-// Shuffle vector of 4 64-bit integers.
+// Permute vector of 4 64-bit integers.
 // Index -1 gives 0, index -256 means don't care.
 template <int i0, int i1, int i2, int i3 >
 static inline Vec4q permute4q(Vec4q const & a) {
@@ -2649,7 +2754,7 @@ static inline Vec4uq permute4uq(Vec4uq const & a) {
     return Vec4uq (permute4q<i0,i1,i2,i3> (a));
 }
 
-// Shuffle vector of 8 32-bit integers.
+// Permute vector of 8 32-bit integers.
 // Index -1 gives 0, index -256 means don't care.
 template <int i0, int i1, int i2, int i3, int i4, int i5, int i6, int i7 >
 static inline Vec8i permute8i(Vec8i const & a) {
@@ -2733,11 +2838,11 @@ static inline Vec8i permute8i(Vec8i const & a) {
 #if defined (_MSC_VER) && _MSC_VER <= 1700 && ! defined(__INTEL_COMPILER)
     // bug in MS VS 11 beta: operands in wrong order  //!!
     t1 = _mm256_permutevar8x32_epi32(mask, a);   // ms
-#elif defined (GCC_VERSION) && GCC_VERSION <= 40700 && ! defined(__INTEL_COMPILER)        
-    // Gcc 4.7.0 also has operands in wrong order
-    t1 = _mm256_permutevar8x32_epi32( mask, a);   // GCC
+#elif defined (GCC_VERSION) && GCC_VERSION <= 40700 && ! defined(__INTEL_COMPILER)
+    // Gcc 4.7.0 also has operands in wrong order. fixed in version 4.7.1
+    t1 = _mm256_permutevar8x32_epi32(mask, a);   // GCC
 #else
-    t1 = _mm256_permutevar8x32_epi32( a, mask);   // intel
+    t1 = _mm256_permutevar8x32_epi32(a, mask);   // no-bug version
 #endif
 
     if (dozero) {
@@ -2755,7 +2860,7 @@ static inline Vec8ui permute8ui(Vec8ui const & a) {
     return Vec8ui (permute8i<i0,i1,i2,i3,i4,i5,i6,i7> (a));
 }
 
-// Shuffle vector of 16 16-bit integers.
+// Permute vector of 16 16-bit integers.
 // Index -1 gives 0, index -256 means don't care.
 template <int i0, int i1, int i2, int i3, int i4, int i5, int i6, int i7,
     int i8, int i9, int i10, int i11, int i12, int i13, int i14, int i15 >
@@ -3669,7 +3774,7 @@ static inline Vec32c blend32c(Vec32c const & a, Vec32c const & b) {
 
         t1 = _mm256_blendv_epi8(a, b, mask);  // blend
 
-        if (mz != 0xFFFFFFFF) {
+        if (mz != -1) {
             // zero some elements
             const __m256i maskz = constant8i <
                 (i0 <0?0:0xFF) | (i1 <0?0:0xFF00) | (i2 <0?0:0xFF0000) | (i3 <0?0:0xFF000000),
@@ -3699,7 +3804,7 @@ static inline Vec32c blend32c(Vec32c const & a, Vec32c const & b) {
         t1 = _mm256_permute2x128_si256(a, b, 0x21);
         if (slb < 16) t1 = _mm256_alignr_epi8(t1, a, slb & 15);
         else          t1 = _mm256_alignr_epi8(b, t1, slb & 15);
-        if (mz != 0xFFFFFFFF) {
+        if (mz != -1) {
             // zero some elements
             const __m256i maskz = constant8i <
                 (i0 <0?0:0xFF) | (i1 <0?0:0xFF00) | (i2 <0?0:0xFF0000) | (i3 <0?0:0xFF000000),
@@ -3728,7 +3833,7 @@ static inline Vec32c blend32c(Vec32c const & a, Vec32c const & b) {
         t1 = _mm256_permute2x128_si256(b, a, 0x21);
         if (srb < 16) t1 = _mm256_alignr_epi8(t1, b, srb & 15);
         else          t1 = _mm256_alignr_epi8(a, t1, srb & 15);
-        if (mz != 0xFFFFFFFF) {
+        if (mz != -1) {
             // zero some elements
             const __m256i maskz = constant8i <
                 (i0 <0?0:0xFF) | (i1 <0?0:0xFF00) | (i2 <0?0:0xFF0000) | (i3 <0?0:0xFF000000),
@@ -3745,7 +3850,7 @@ static inline Vec32c blend32c(Vec32c const & a, Vec32c const & b) {
     }
 
     // general case: permute and blend and possible zero
-    const int blank = (mz == 0xFFFFFFFF) ? -0x100 : -1;  // ignore or zero
+    const int blank = (mz == -1) ? -0x100 : -1;  // ignore or zero
 
     // permute and blend
     __m256i ta = permute32c <
@@ -3958,11 +4063,40 @@ static inline Vec4q lookup(Vec4q const & index, void const * table) {
         index1 = Vec4uq(min(Vec8ui(index), constant8i<n-1, 0, n-1, 0, n-1, 0, n-1, 0>()));
     }
 #if defined (__GNUC__) && ! defined(__INTEL_COMPILER)  
-// compilers can't agree how to define a 64 bit integer (doc. error reported to Intel 2011-04-14)
+// compilers can't agree how to define a 64 bit integer (doc. error reported to Intel 2012-04-14)
     return _mm256_i64gather_epi64((const long long *)table, index1, 8);
 #else
     return _mm256_i64gather_epi64((const int64_t *)table, index1, 8);
 #endif
+}
+
+
+/*****************************************************************************
+*
+*          Other permutations with variable indexes
+*
+*****************************************************************************/
+
+// Function shift_bytes_up: shift whole vector left by b bytes.
+// You may use a permute function instead if b is a compile-time constant
+static inline Vec32c shift_bytes_up(Vec32c const & a, int b) {
+    if (b < 16) {    
+        return Vec32c(shift_bytes_up(a.get_low(),b), shift_bytes_up(a.get_high(),b) | shift_bytes_down(a.get_low(),16-b));
+    }
+    else {
+        return Vec32c(Vec16c(0), shift_bytes_up(a.get_high(),b-16));
+    }
+}
+
+// Function shift_bytes_down: shift whole vector right by b bytes
+// You may use a permute function instead if b is a compile-time constant
+static inline Vec32c shift_bytes_down(Vec32c const & a, int b) {
+    if (b < 16) {    
+        return Vec32c(shift_bytes_down(a.get_low(),b) | shift_bytes_up(a.get_high(),16-b), shift_bytes_down(a.get_high(),b));
+    }
+    else {
+        return Vec32c(shift_bytes_down(a.get_high(),b-16), Vec16c(0));
+    }
 }
 
 
@@ -4598,6 +4732,5 @@ static inline Vec32uc & operator /= (Vec32uc & a, Const_int_t<d> b) {
     a = a / b;
     return a;
 }
-
 
 #endif // VECTORI128_H

@@ -1,8 +1,8 @@
 /****************************  vectori256e.h   *******************************
 * Author:        Agner Fog
 * Date created:  2012-05-30
-* Last modified: 2012-05-30
-* Version:       1.00 Beta
+* Last modified: 2012-07-08
+* Version:       1.01 Beta
 * Project:       vector classes
 * Description:
 * Header file defining 256-bit integer point vector classes as interface
@@ -198,6 +198,14 @@ static inline Vec256b & operator ^= (Vec256b & a, Vec256b const & b) {
     a = a ^ b;
     return a;
 }
+
+// Define functions for this class
+
+// function andnot: a & ~ b
+static inline Vec256b andnot (Vec256b const & a, Vec256b const & b) {
+    return Vec256b(andnot(a.get_low(), b.get_low()), andnot(a.get_high(), b.get_high()));
+}
+
 
 
 /*****************************************************************************
@@ -400,7 +408,7 @@ static inline Vec32c operator ++ (Vec32c & a, int) {
 }
 
 // prefix operator ++
-static inline Vec32c operator ++ (Vec32c & a) {
+static inline Vec32c & operator ++ (Vec32c & a) {
     a = a + 1;
     return a;
 }
@@ -429,7 +437,7 @@ static inline Vec32c operator -- (Vec32c & a, int) {
 }
 
 // prefix operator --
-static inline Vec32c operator -- (Vec32c & a) {
+static inline Vec32c & operator -- (Vec32c & a) {
     a = a - 1;
     return a;
 }
@@ -746,6 +754,32 @@ static inline Vec32c operator < (Vec32uc const & a, Vec32uc const & b) {
     return b > a;
 }
 
+// vector operator & : bitwise and
+static inline Vec32uc operator & (Vec32uc const & a, Vec32uc const & b) {
+    return Vec32uc(a.get_low() & b.get_low(), a.get_high() & b.get_high());
+}
+static inline Vec32uc operator && (Vec32uc const & a, Vec32uc const & b) {
+    return a & b;
+}
+
+// vector operator | : bitwise or
+static inline Vec32uc operator | (Vec32uc const & a, Vec32uc const & b) {
+    return Vec32uc(a.get_low() | b.get_low(), a.get_high() | b.get_high());
+}
+static inline Vec32uc operator || (Vec32uc const & a, Vec32uc const & b) {
+    return a | b;
+}
+
+// vector operator ^ : bitwise xor
+static inline Vec32uc operator ^ (Vec32uc const & a, Vec32uc const & b) {
+    return Vec32uc(a.get_low() ^ b.get_low(), a.get_high() ^ b.get_high());
+}
+
+// vector operator ~ : bitwise not
+static inline Vec32uc operator ~ (Vec32uc const & a) {
+    return Vec32uc(~a.get_low(), ~a.get_high());
+}
+
 // Functions for this class
 
 // Select between two operands. Corresponds to this pseudocode:
@@ -930,7 +964,7 @@ static inline Vec16s operator ++ (Vec16s & a, int) {
 }
 
 // prefix operator ++
-static inline Vec16s operator ++ (Vec16s & a) {
+static inline Vec16s & operator ++ (Vec16s & a) {
     a = a + 1;
     return a;
 }
@@ -959,7 +993,7 @@ static inline Vec16s operator -- (Vec16s & a, int) {
 }
 
 // prefix operator --
-static inline Vec16s operator -- (Vec16s & a) {
+static inline Vec16s & operator -- (Vec16s & a) {
     a = a - 1;
     return a;
 }
@@ -1061,8 +1095,9 @@ static inline Vec16s operator ^ (Vec16s const & a, Vec16s const & b) {
 
 // vector operator ~ : bitwise not
 static inline Vec16s operator ~ (Vec16s const & a) {
-    return ~ Vec256b(a);
+    return Vec16s(~Vec256b(a));
 }
+
 // vector operator ! : logical not, returns true for elements == 0
 static inline Vec16s operator ! (Vec16s const & a) {
     return Vec16s(!a.get_low(), !a.get_high());
@@ -1273,6 +1308,32 @@ static inline Vec16s operator < (Vec16us const & a, Vec16us const & b) {
     return b > a;
 }
 
+// vector operator & : bitwise and
+static inline Vec16us operator & (Vec16us const & a, Vec16us const & b) {
+    return Vec16us(a.get_low() & b.get_low(), a.get_high() & b.get_high());
+}
+static inline Vec16us operator && (Vec16us const & a, Vec16us const & b) {
+    return a & b;
+}
+
+// vector operator | : bitwise or
+static inline Vec16us operator | (Vec16us const & a, Vec16us const & b) {
+    return Vec16us(a.get_low() | b.get_low(), a.get_high() | b.get_high());
+}
+static inline Vec16us operator || (Vec16us const & a, Vec16us const & b) {
+    return a | b;
+}
+
+// vector operator ^ : bitwise xor
+static inline Vec16us operator ^ (Vec16us const & a, Vec16us const & b) {
+    return Vec16us(a.get_low() ^ b.get_low(), a.get_high() ^ b.get_high());
+}
+
+// vector operator ~ : bitwise not
+static inline Vec16us operator ~ (Vec16us const & a) {
+    return Vec16us(~ Vec256b(a));
+}
+
 
 // Functions for this class
 
@@ -1456,7 +1517,7 @@ static inline Vec8i operator ++ (Vec8i & a, int) {
 }
 
 // prefix operator ++
-static inline Vec8i operator ++ (Vec8i & a) {
+static inline Vec8i & operator ++ (Vec8i & a) {
     a = a + 1;
     return a;
 }
@@ -1485,7 +1546,7 @@ static inline Vec8i operator -- (Vec8i & a, int) {
 }
 
 // prefix operator --
-static inline Vec8i operator -- (Vec8i & a) {
+static inline Vec8i & operator -- (Vec8i & a) {
     a = a - 1;
     return a;
 }
@@ -1804,6 +1865,32 @@ static inline Vec8i operator <= (Vec8ui const & a, Vec8ui const & b) {
     return b >= a;
 }
 
+// vector operator & : bitwise and
+static inline Vec8ui operator & (Vec8ui const & a, Vec8ui const & b) {
+    return Vec8ui(a.get_low() & b.get_low(), a.get_high() & b.get_high());
+}
+static inline Vec8ui operator && (Vec8ui const & a, Vec8ui const & b) {
+    return a & b;
+}
+
+// vector operator | : bitwise or
+static inline Vec8ui operator | (Vec8ui const & a, Vec8ui const & b) {
+    return Vec8ui(a.get_low() | b.get_low(), a.get_high() | b.get_high());
+}
+static inline Vec8ui operator || (Vec8ui const & a, Vec8ui const & b) {
+    return a | b;
+}
+
+// vector operator ^ : bitwise xor
+static inline Vec8ui operator ^ (Vec8ui const & a, Vec8ui const & b) {
+    return Vec8ui(a.get_low() ^ b.get_low(), a.get_high() ^ b.get_high());
+}
+
+// vector operator ~ : bitwise not
+static inline Vec8ui operator ~ (Vec8ui const & a) {
+    return Vec8ui(~a.get_low(), ~a.get_high());
+}
+
 // Functions for this class
 
 // Select between two operands. Corresponds to this pseudocode:
@@ -1986,7 +2073,7 @@ static inline Vec4q operator ++ (Vec4q & a, int) {
 }
 
 // prefix operator ++
-static inline Vec4q operator ++ (Vec4q & a) {
+static inline Vec4q & operator ++ (Vec4q & a) {
     a = a + 1;
     return a;
 }
@@ -2015,7 +2102,7 @@ static inline Vec4q operator -- (Vec4q & a, int) {
 }
 
 // prefix operator --
-static inline Vec4q operator -- (Vec4q & a) {
+static inline Vec4q & operator -- (Vec4q & a) {
     a = a - 1;
     return a;
 }
@@ -2291,6 +2378,31 @@ static inline Vec4q operator <= (Vec4uq const & a, Vec4uq const & b) {
     return b >= a;
 }
 
+// vector operator & : bitwise and
+static inline Vec4uq operator & (Vec4uq const & a, Vec4uq const & b) {
+    return Vec4uq(a.get_low() & b.get_low(), a.get_high() & b.get_high());
+}
+static inline Vec4uq operator && (Vec4uq const & a, Vec4uq const & b) {
+    return a & b;
+}
+
+// vector operator | : bitwise or
+static inline Vec4uq operator | (Vec4uq const & a, Vec4uq const & b) {
+    return Vec4q(a.get_low() | b.get_low(), a.get_high() | b.get_high());
+}
+static inline Vec4uq operator || (Vec4uq const & a, Vec4uq const & b) {
+    return a | b;
+}
+
+// vector operator ^ : bitwise xor
+static inline Vec4uq operator ^ (Vec4uq const & a, Vec4uq const & b) {
+    return Vec4uq(a.get_low() ^ b.get_low(), a.get_high() ^ b.get_high());
+}
+
+// vector operator ~ : bitwise not
+static inline Vec4uq operator ~ (Vec4uq const & a) {
+    return Vec4uq(~a.get_low(), ~a.get_high());
+}
 
 // Functions for this class
 
@@ -2714,6 +2826,7 @@ template <int i0,  int i1,  int i2,  int i3,  int i4,  int i5,  int i6,  int i7,
           int i24, int i25, int i26, int i27, int i28, int i29, int i30, int i31 > 
 static inline Vec32c blend32c(Vec32c const & a, Vec32c const & b) {  
 
+    // j0 - j31 indicate one of four 16-byte sources
     const int j0  = i0  >= 0 ? i0 /16 : i0;
     const int j1  = i1  >= 0 ? i1 /16 : i1;
     const int j2  = i2  >= 0 ? i2 /16 : i2;
@@ -2749,6 +2862,8 @@ static inline Vec32c blend32c(Vec32c const & a, Vec32c const & b) {
 
     Vec16c x0, x1;
 
+    // r0, s0 = first two sources of low  destination (i0  - i15)
+    // r1, s1 = first two sources of high destination (i16 - i31)
     const int r0 = j0 >= 0 ? j0 : j1 >= 0 ? j1 : j2  >= 0 ? j2  : j3  >= 0 ? j3  : j4  >= 0 ? j4  : j5  >= 0 ? j5  : j6  >= 0 ? j6  : j7 >= 0 ? j7 : 
                    j8 >= 0 ? j8 : j9 >= 0 ? j9 : j10 >= 0 ? j10 : j11 >= 0 ? j11 : j12 >= 0 ? j12 : j13 >= 0 ? j13 : j14 >= 0 ? j14 : j15;
     const int r1 = j16>= 0 ? j16: j17>= 0 ? j17: j18 >= 0 ? j18 : j19 >= 0 ? j19 : j20 >= 0 ? j20 : j21 >= 0 ? j21 : j22 >= 0 ? j22 : j23>= 0 ? j23: 
@@ -2807,11 +2922,11 @@ static inline Vec32c blend32c(Vec32c const & a, Vec32c const & b) {
         const int n14= j14>= 0 ? j14/2*16 +14 : j14;
         const int n15= j15>= 0 ? j15/2*16 +15 : j15;
 
-        x0 = blend16c<n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15> (
-             blend16c< j0   & 2 ? -256 : i0 & 31,  j1   & 2 ? -256 : i1 & 31,  j2    & 2 ? -256 : i2 & 31,  j3    & 2 ? -256 : i3 & 31,  j4    & 2 ? -256 : i4 & 31,  j5    & 2 ? -256 : i5 & 31,  j6    & 2 ? -256 : i6 & 31,  j7    & 2 ? -256 : i7 & 31,
-                       j8   & 2 ? -256 : i8 & 31,  j9   & 2 ? -256 : i9 & 31,  j10   & 2 ? -256 : i10& 31,  j11   & 2 ? -256 : i11& 31,  j12   & 2 ? -256 : i12& 31,  j13   & 2 ? -256 : i13& 31,  j14   & 2 ? -256 : i14& 31,  j15   & 2 ? -256 : i15& 31 > (a.get_low(),a.get_high()),
-             blend16c<(j0^2)& 6 ? -256 : i0 & 31, (j1^2)& 6 ? -256 : i1 & 31, (j2 ^2)& 6 ? -256 : i2 & 31, (j3 ^2)& 6 ? -256 : i3 & 31, (j4 ^2)& 6 ? -256 : i4 & 31, (j5 ^2)& 6 ? -256 : i5 & 31, (j6 ^2)& 6 ? -256 : i6 & 31, (j7 ^2)& 6 ? -256 : i7 & 31,
-                      (j8^2)& 6 ? -256 : i8 & 31, (j9^2)& 6 ? -256 : i9 & 31, (j10^2)& 6 ? -256 : i10& 31, (j11^2)& 6 ? -256 : i11& 31, (j12^2)& 6 ? -256 : i12& 31, (j13^2)& 6 ? -256 : i13& 31, (j14^2)& 6 ? -256 : i14& 31, (j15^2)& 6 ? -256 : i15& 31 > (b.get_low(),b.get_high()));
+        Vec16c x0a = blend16c< j0   & 2 ? -256 : i0 & 31,  j1   & 2 ? -256 : i1 & 31,  j2    & 2 ? -256 : i2 & 31,  j3    & 2 ? -256 : i3 & 31,  j4    & 2 ? -256 : i4 & 31,  j5    & 2 ? -256 : i5 & 31,  j6    & 2 ? -256 : i6 & 31,  j7    & 2 ? -256 : i7 & 31,
+                               j8   & 2 ? -256 : i8 & 31,  j9   & 2 ? -256 : i9 & 31,  j10   & 2 ? -256 : i10& 31,  j11   & 2 ? -256 : i11& 31,  j12   & 2 ? -256 : i12& 31,  j13   & 2 ? -256 : i13& 31,  j14   & 2 ? -256 : i14& 31,  j15   & 2 ? -256 : i15& 31 > (a.get_low(),a.get_high());
+        Vec16c x0b = blend16c<(j0^2)& 6 ? -256 : i0 & 31, (j1^2)& 6 ? -256 : i1 & 31, (j2 ^2)& 6 ? -256 : i2 & 31, (j3 ^2)& 6 ? -256 : i3 & 31, (j4 ^2)& 6 ? -256 : i4 & 31, (j5 ^2)& 6 ? -256 : i5 & 31, (j6 ^2)& 6 ? -256 : i6 & 31, (j7 ^2)& 6 ? -256 : i7 & 31,
+                              (j8^2)& 6 ? -256 : i8 & 31, (j9^2)& 6 ? -256 : i9 & 31, (j10^2)& 6 ? -256 : i10& 31, (j11^2)& 6 ? -256 : i11& 31, (j12^2)& 6 ? -256 : i12& 31, (j13^2)& 6 ? -256 : i13& 31, (j14^2)& 6 ? -256 : i14& 31, (j15^2)& 6 ? -256 : i15& 31 > (b.get_low(),b.get_high());
+        x0         = blend16c<n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15> (x0a, x0b);
     }
 
     if (r1 < 0) {
@@ -3047,6 +3162,35 @@ static inline Vec4q lookup(Vec4q const & index, void const * table) {
     uint32_t ii[8];  index1.store(ii);  // use only lower 32 bits of each index
     int64_t const * tt = (int64_t const *)table;
     return Vec4q(tt[ii[0]], tt[ii[2]], tt[ii[4]], tt[ii[6]]);    
+}
+
+
+/*****************************************************************************
+*
+*          Other permutations with variable indexes
+*
+*****************************************************************************/
+
+// Function shift_bytes_up: shift whole vector left by b bytes.
+// You may use a permute function instead if b is a compile-time constant
+static inline Vec32c shift_bytes_up(Vec32c const & a, int b) {
+    if (b < 16) {    
+        return Vec32c(shift_bytes_up(a.get_low(),b), shift_bytes_up(a.get_high(),b) | shift_bytes_down(a.get_low(),16-b));
+    }
+    else {
+        return Vec32c(Vec16c(0), shift_bytes_up(a.get_high(),b-16));
+    }
+}
+
+// Function shift_bytes_down: shift whole vector right by b bytes
+// You may use a permute function instead if b is a compile-time constant
+static inline Vec32c shift_bytes_down(Vec32c const & a, int b) {
+    if (b < 16) {    
+        return Vec32c(shift_bytes_down(a.get_low(),b) | shift_bytes_up(a.get_high(),16-b), shift_bytes_down(a.get_high(),b));
+    }
+    else {
+        return Vec32c(shift_bytes_down(a.get_high(),b-16), Vec16c(0));
+    }
 }
 
 
@@ -3401,6 +3545,5 @@ static inline Vec32uc & operator /= (Vec32uc & a, Const_int_t<d> b) {
     a = a / b;
     return a;
 }
-
 
 #endif // VECTORI128_H

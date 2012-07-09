@@ -1,8 +1,8 @@
 /****************************  vectorf256e.h   *******************************
 * Author:        Agner Fog
 * Date created:  2012-05-30
-* Last modified: 2012-05-30
-* Version:       1.00 Beta
+* Last modified: 2012-07-08
+* Version:       1.01 Beta
 * Project:       vector classes
 * Description:
 * Header file defining 256-bit floating point vector classes as interface
@@ -208,6 +208,7 @@ public:
 static inline Vec8fb operator & (Vec8fb const & a, Vec8fb const & b) {
     return Vec8fb(a.get_low() & b.get_low(), a.get_high() & b.get_high());
 }
+
 static inline Vec8fb operator && (Vec8fb const & a, Vec8fb const & b) {
     return a & b;
 }
@@ -254,6 +255,14 @@ static inline Vec8fb operator ~ (Vec8fb const & a) {
 static inline Vec8fb operator ! (Vec8fb const & a) {
     return Vec8fb(!a.get_low(), !a.get_high());
 }
+
+// Functions for Vec8fb
+
+// andnot: a & ~ b
+static inline Vec8fb andnot(Vec8fb const & a, Vec8fb const & b) {
+    return Vec8fb(andnot(a.get_low(), b.get_low()), andnot(a.get_high(), b.get_high()));
+}
+
 
 
 /*****************************************************************************
@@ -417,6 +426,12 @@ static inline Vec4db operator ! (Vec4db const & a) {
     return Vec4db(!a.get_low(), !a.get_high());
 }
 
+// Functions for Vec4db
+
+// andnot: a & ~ b
+static inline Vec4db andnot(Vec4db const & a, Vec4db const & b) {
+    return Vec4db(andnot(a.get_low(), b.get_low()), andnot(a.get_high(), b.get_high()));
+}
 
 
 /*****************************************************************************
@@ -592,7 +607,7 @@ static inline Vec8f operator ++ (Vec8f & a, int) {
 }
 
 // prefix operator ++
-static inline Vec8f operator ++ (Vec8f & a) {
+static inline Vec8f & operator ++ (Vec8f & a) {
     a = a + 1.0f;
     return a;
 }
@@ -622,7 +637,7 @@ static inline Vec8f operator -- (Vec8f & a, int) {
 }
 
 // prefix operator --
-static inline Vec8f operator -- (Vec8f & a) {
+static inline Vec8f & operator -- (Vec8f & a) {
     a = a - 1.0f;
     return a;
 }
@@ -1078,7 +1093,7 @@ static inline Vec4d operator ++ (Vec4d & a, int) {
 }
 
 // prefix operator ++
-static inline Vec4d operator ++ (Vec4d & a) {
+static inline Vec4d & operator ++ (Vec4d & a) {
     a = a + 1.0;
     return a;
 }
@@ -1108,7 +1123,7 @@ static inline Vec4d operator -- (Vec4d & a, int) {
 }
 
 // prefix operator --
-static inline Vec4d operator -- (Vec4d & a) {
+static inline Vec4d & operator -- (Vec4d & a) {
     a = a - 1.0;
     return a;
 }
@@ -1748,6 +1763,5 @@ static inline Vec4d lookup(Vec4q const & index, double const * table) {
     return Vec4d().load(rr);
 }
 #endif  // VECTORI256_H
-
 
 #endif // VECTORF256_H

@@ -1,8 +1,8 @@
 /**************************  instrset_detect.cpp   ****************************
 | Author:        Agner Fog
 | Date created:  2012-05-30
-| Last modified: 2012-05-30
-| Version:       1.00 Beta
+| Last modified: 2012-07-08
+| Version:       1.01 Beta
 | Project:       vector classes
 | Description:
 | Functions for checking which instruction sets are supported.

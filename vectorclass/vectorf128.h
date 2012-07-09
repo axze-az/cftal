@@ -1,8 +1,8 @@
 /****************************  vectorf128.h   *******************************
 * Author:        Agner Fog
 * Date created:  2012-05-30
-* Last modified: 2012-05-30
-* Version:       1.00 Beta
+* Last modified: 2012-07-08
+* Version:       1.01 Beta
 * Project:       vector classes
 * Description:
 * Header file defining floating point vector classes as interface to 
@@ -209,6 +209,13 @@ static inline Vec4fb operator ! (Vec4fb const & a) {
     return Vec4fb( ! Vec4i(a));
 }
 
+// Functions for Vec4fb
+
+// andnot: a & ~ b
+static inline Vec4fb andnot(Vec4fb const & a, Vec4fb const & b) {
+    return _mm_andnot_ps(b, a);
+}
+
 
 /*****************************************************************************
 *
@@ -354,6 +361,13 @@ static inline Vec2db operator ~ (Vec2db const & a) {
 // all bits in an element are the same)
 static inline Vec2db operator ! (Vec2db const & a) {
     return Vec2db (! Vec2q(a));
+}
+
+// Functions for Vec2db
+
+// andnot: a & ~ b
+static inline Vec2db andnot(Vec2db const & a, Vec2db const & b) {
+    return _mm_andnot_pd(b, a);
 }
 
 
@@ -543,7 +557,7 @@ static inline Vec4f operator ++ (Vec4f & a, int) {
 }
 
 // prefix operator ++
-static inline Vec4f operator ++ (Vec4f & a) {
+static inline Vec4f & operator ++ (Vec4f & a) {
     a = a + 1.0f;
     return a;
 }
@@ -573,7 +587,7 @@ static inline Vec4f operator -- (Vec4f & a, int) {
 }
 
 // prefix operator --
-static inline Vec4f operator -- (Vec4f & a) {
+static inline Vec4f & operator -- (Vec4f & a) {
     a = a - 1.0f;
     return a;
 }
@@ -1336,7 +1350,7 @@ static inline Vec2d operator ++ (Vec2d & a, int) {
 }
 
 // prefix operator ++
-static inline Vec2d operator ++ (Vec2d & a) {
+static inline Vec2d & operator ++ (Vec2d & a) {
     a = a + 1.0;
     return a;
 }
@@ -1366,7 +1380,7 @@ static inline Vec2d operator -- (Vec2d & a, int) {
 }
 
 // prefix operator --
-static inline Vec2d operator -- (Vec2d & a) {
+static inline Vec2d & operator -- (Vec2d & a) {
     a = a - 1.0;
     return a;
 }
@@ -2133,6 +2147,5 @@ static inline Vec2d lookup(Vec2q const & index, double const * table) {
     return Vec2d(table[ii[0]], table[ii[2]]);
 #endif
 }
-
 
 #endif // VECTORF128_H

@@ -1,8 +1,8 @@
 /****************************  vectori128.h   *******************************
 * Author:        Agner Fog
 * Date created:  2012-05-30
-* Last modified: 2012-05-30
-* Version:       1.00 Beta
+* Last modified: 2012-07-08
+* Version:       1.01 Beta
 * Project:       vector classes
 * Description:
 * Header file defining integer vector classes as interface to intrinsic 
@@ -185,6 +185,13 @@ static inline Vec128b & operator |= (Vec128b & a, Vec128b const & b) {
 static inline Vec128b & operator ^= (Vec128b & a, Vec128b const & b) {
     a = a ^ b;
     return a;
+}
+
+// Define functions for this class
+
+// function andnot: a & ~ b
+static inline Vec128b andnot (Vec128b const & a, Vec128b const & b) {
+    return _mm_andnot_si128(b, a);
 }
 
 
@@ -420,7 +427,7 @@ static inline Vec16c operator ++ (Vec16c & a, int) {
 }
 
 // prefix operator ++
-static inline Vec16c operator ++ (Vec16c & a) {
+static inline Vec16c & operator ++ (Vec16c & a) {
     a = a + 1;
     return a;
 }
@@ -449,7 +456,7 @@ static inline Vec16c operator -- (Vec16c & a, int) {
 }
 
 // prefix operator --
-static inline Vec16c operator -- (Vec16c & a) {
+static inline Vec16c & operator -- (Vec16c & a) {
     a = a - 1;
     return a;
 }
@@ -497,7 +504,7 @@ static inline Vec16c operator >> (Vec16c const & a, int b) {
     return res;
 }
 
-// vector operator >>= : shift right artihmetic
+// vector operator >>= : shift right arithmetic
 static inline Vec16c & operator >>= (Vec16c & a, int b) {
     a = a >> b;
     return a;
@@ -667,9 +674,8 @@ static inline Vec16c abs(Vec16c const & a) {
 #if INSTRSET >= 4     // SSSE3 supported
     return _mm_sign_epi8(a,a);
 #else                 // SSE2
-    __m128i sign = _mm_cmpgt_epi8(_mm_setzero_si128(),a);  // 0 > a
-    __m128i inv  = _mm_xor_si128(a,sign);                  // invert bits if negative
-    return         _mm_sub_epi8(inv,sign);                 // add 1
+    __m128i nega = _mm_sub_epi8(_mm_setzero_si128(), a);
+    return _mm_min_epu8(a, nega);   // unsigned min (the negative value is bigger when compared as unsigned)
 #endif
 }
 
@@ -680,7 +686,7 @@ static inline Vec16c abs_saturated(Vec16c const & a) {
     return           _mm_add_epi8(absa,overfl);            // subtract 1 if 0x80
 }
 
-// function rotate_left all elements
+// function rotate_left: rotate each element left by b bits 
 // Use negative count to rotate right
 static inline Vec16c rotate_left(Vec16c const & a, int b) {
 #ifdef __XOP__  // AMD XOP instruction set
@@ -701,7 +707,6 @@ static inline Vec16c rotate_left(Vec16c const & a, int b) {
     return  allrot;
 #endif
 }
-
 
 
 /*****************************************************************************
@@ -789,6 +794,12 @@ static inline Vec16uc operator >> (Vec16uc const & a, int32_t b) {
     return a >> (uint32_t)b;
 }
 
+// vector operator >>= : shift right logical
+static inline Vec16uc & operator >>= (Vec16uc & a, int b) {
+    a = a >> b;
+    return a;
+}
+
 // vector operator >= : returns true for elements for which a >= b (unsigned)
 static inline Vec16c operator >= (Vec16uc const & a, Vec16uc const & b) {
 #ifdef __XOP__  // AMD XOP instruction set
@@ -830,6 +841,32 @@ static inline Vec16uc operator - (Vec16uc const & a, Vec16uc const & b) {
 // vector operator * : multiply
 static inline Vec16uc operator * (Vec16uc const & a, Vec16uc const & b) {
     return Vec16uc (Vec16c(a) * Vec16c(b));
+}
+
+// vector operator & : bitwise and
+static inline Vec16uc operator & (Vec16uc const & a, Vec16uc const & b) {
+    return Vec16uc(Vec128b(a) & Vec128b(b));
+}
+static inline Vec16uc operator && (Vec16uc const & a, Vec16uc const & b) {
+    return a & b;
+}
+
+// vector operator | : bitwise or
+static inline Vec16uc operator | (Vec16uc const & a, Vec16uc const & b) {
+    return Vec16uc(Vec128b(a) | Vec128b(b));
+}
+static inline Vec16uc operator || (Vec16uc const & a, Vec16uc const & b) {
+    return a | b;
+}
+
+// vector operator ^ : bitwise xor
+static inline Vec16uc operator ^ (Vec16uc const & a, Vec16uc const & b) {
+    return Vec16uc(Vec128b(a) ^ Vec128b(b));
+}
+
+// vector operator ~ : bitwise not
+static inline Vec16uc operator ~ (Vec16uc const & a) {
+    return Vec16uc( ~ Vec128b(a));
 }
 
 // Functions for this class
@@ -1050,7 +1087,7 @@ static inline Vec8s operator ++ (Vec8s & a, int) {
 }
 
 // prefix operator ++
-static inline Vec8s operator ++ (Vec8s & a) {
+static inline Vec8s & operator ++ (Vec8s & a) {
     a = a + 1;
     return a;
 }
@@ -1079,7 +1116,7 @@ static inline Vec8s operator -- (Vec8s & a, int) {
 }
 
 // prefix operator --
-static inline Vec8s operator -- (Vec8s & a) {
+static inline Vec8s & operator -- (Vec8s & a) {
     a = a - 1;
     return a;
 }
@@ -1184,6 +1221,7 @@ static inline Vec8s operator ^ (Vec8s const & a, Vec8s const & b) {
 static inline Vec8s operator ~ (Vec8s const & a) {
     return Vec8s( ~ Vec128b(a));
 }
+
 // vector operator ! : logical not, returns true for elements == 0
 static inline Vec8s operator ! (Vec8s const & a) {
     return _mm_cmpeq_epi16(a,_mm_setzero_si128());
@@ -1280,9 +1318,8 @@ static inline Vec8s abs(Vec8s const & a) {
 #if INSTRSET >= 4     // SSSE3 supported
     return _mm_sign_epi16(a,a);
 #else                 // SSE2
-    __m128i sign = _mm_srai_epi16(a,15);                   // sign of a
-    __m128i inv  = _mm_xor_si128(a,sign);                  // invert bits if negative
-    return         _mm_sub_epi16(inv,sign);                // add 1
+    __m128i nega = _mm_sub_epi16(_mm_setzero_si128(), a);
+    return _mm_max_epi16(a, nega);
 #endif
 }
 
@@ -1366,6 +1403,24 @@ public:
 
 // Define operators for this class
 
+// vector operator + : add
+static inline Vec8us operator + (Vec8us const & a, Vec8us const & b) {
+    return Vec8us (Vec8s(a) + Vec8s(b));
+}
+
+// vector operator - : subtract
+static inline Vec8us operator - (Vec8us const & a, Vec8us const & b) {
+    return Vec8us (Vec8s(a) - Vec8s(b));
+}
+
+// vector operator * : multiply
+static inline Vec8us operator * (Vec8us const & a, Vec8us const & b) {
+    return Vec8us (Vec8s(a) * Vec8s(b));
+}
+
+// vector operator / : divide
+// See bottom of file
+
 // vector operator >> : shift right logical all elements
 static inline Vec8us operator >> (Vec8us const & a, uint32_t b) {
     return _mm_srl_epi16(a,_mm_cvtsi32_si128(b)); 
@@ -1374,6 +1429,12 @@ static inline Vec8us operator >> (Vec8us const & a, uint32_t b) {
 // vector operator >> : shift right logical all elements
 static inline Vec8us operator >> (Vec8us const & a, int32_t b) {
     return a >> (uint32_t)b;
+}
+
+// vector operator >>= : shift right logical
+static inline Vec8us & operator >>= (Vec8us & a, int b) {
+    a = a >> b;
+    return a;
 }
 
 // vector operator << : shift left all elements
@@ -1419,23 +1480,31 @@ static inline Vec8s operator < (Vec8us const & a, Vec8us const & b) {
     return b > a;
 }
 
-// vector operator + : add
-static inline Vec8us operator + (Vec8us const & a, Vec8us const & b) {
-    return Vec8us (Vec8s(a) + Vec8s(b));
+// vector operator & : bitwise and
+static inline Vec8us operator & (Vec8us const & a, Vec8us const & b) {
+    return Vec8us(Vec128b(a) & Vec128b(b));
+}
+static inline Vec8us operator && (Vec8us const & a, Vec8us const & b) {
+    return a & b;
 }
 
-// vector operator - : subtract
-static inline Vec8us operator - (Vec8us const & a, Vec8us const & b) {
-    return Vec8us (Vec8s(a) - Vec8s(b));
+// vector operator | : bitwise or
+static inline Vec8us operator | (Vec8us const & a, Vec8us const & b) {
+    return Vec8us(Vec128b(a) | Vec128b(b));
+}
+static inline Vec8us operator || (Vec8us const & a, Vec8us const & b) {
+    return a | b;
 }
 
-// vector operator * : multiply
-static inline Vec8us operator * (Vec8us const & a, Vec8us const & b) {
-    return Vec8us (Vec8s(a) * Vec8s(b));
+// vector operator ^ : bitwise xor
+static inline Vec8us operator ^ (Vec8us const & a, Vec8us const & b) {
+    return Vec8us(Vec128b(a) ^ Vec128b(b));
 }
 
-// vector operator / : divide
-// See bottom of file
+// vector operator ~ : bitwise not
+static inline Vec8us operator ~ (Vec8us const & a) {
+    return Vec8us( ~ Vec128b(a));
+}
 
 // Functions for this class
 
@@ -1674,7 +1743,7 @@ static inline Vec4i operator ++ (Vec4i & a, int) {
 }
 
 // prefix operator ++
-static inline Vec4i operator ++ (Vec4i & a) {
+static inline Vec4i & operator ++ (Vec4i & a) {
     a = a + 1;
     return a;
 }
@@ -1703,7 +1772,7 @@ static inline Vec4i operator -- (Vec4i & a, int) {
 }
 
 // prefix operator --
-static inline Vec4i operator -- (Vec4i & a) {
+static inline Vec4i & operator -- (Vec4i & a) {
     a = a - 1;
     return a;
 }
@@ -2016,6 +2085,24 @@ public:
 
 // Define operators for this class
 
+// vector operator + : add
+static inline Vec4ui operator + (Vec4ui const & a, Vec4ui const & b) {
+    return Vec4ui (Vec4i(a) + Vec4i(b));
+}
+
+// vector operator - : subtract
+static inline Vec4ui operator - (Vec4ui const & a, Vec4ui const & b) {
+    return Vec4ui (Vec4i(a) - Vec4i(b));
+}
+
+// vector operator * : multiply
+static inline Vec4ui operator * (Vec4ui const & a, Vec4ui const & b) {
+    return Vec4ui (Vec4i(a) * Vec4i(b));
+}
+
+// vector operator / : divide
+// See bottom of file
+
 // vector operator >> : shift right logical all elements
 static inline Vec4ui operator >> (Vec4ui const & a, uint32_t b) {
     return _mm_srl_epi32(a,_mm_cvtsi32_si128(b)); 
@@ -2024,6 +2111,12 @@ static inline Vec4ui operator >> (Vec4ui const & a, uint32_t b) {
 // vector operator >> : shift right logical all elements
 static inline Vec4ui operator >> (Vec4ui const & a, int32_t b) {
     return a >> (uint32_t)b;
+}
+
+// vector operator >>= : shift right logical
+static inline Vec4ui & operator >>= (Vec4ui & a, int b) {
+    a = a >> b;
+    return a;
 }
 
 // vector operator << : shift left all elements
@@ -2070,23 +2163,31 @@ static inline Vec4i operator <= (Vec4ui const & a, Vec4ui const & b) {
     return b >= a;
 }
 
-// vector operator + : add
-static inline Vec4ui operator + (Vec4ui const & a, Vec4ui const & b) {
-    return Vec4ui (Vec4i(a) + Vec4i(b));
+// vector operator & : bitwise and
+static inline Vec4ui operator & (Vec4ui const & a, Vec4ui const & b) {
+    return Vec4ui(Vec128b(a) & Vec128b(b));
+}
+static inline Vec4ui operator && (Vec4ui const & a, Vec4ui const & b) {
+    return a & b;
 }
 
-// vector operator - : subtract
-static inline Vec4ui operator - (Vec4ui const & a, Vec4ui const & b) {
-    return Vec4ui (Vec4i(a) - Vec4i(b));
+// vector operator | : bitwise or
+static inline Vec4ui operator | (Vec4ui const & a, Vec4ui const & b) {
+    return Vec4ui(Vec128b(a) | Vec128b(b));
+}
+static inline Vec4ui operator || (Vec4ui const & a, Vec4ui const & b) {
+    return a | b;
 }
 
-// vector operator * : multiply
-static inline Vec4ui operator * (Vec4ui const & a, Vec4ui const & b) {
-    return Vec4ui (Vec4i(a) * Vec4i(b));
+// vector operator ^ : bitwise xor
+static inline Vec4ui operator ^ (Vec4ui const & a, Vec4ui const & b) {
+    return Vec4ui(Vec128b(a) ^ Vec128b(b));
 }
 
-// vector operator / : divide
-// See bottom of file
+// vector operator ~ : bitwise not
+static inline Vec4ui operator ~ (Vec4ui const & a) {
+    return Vec4ui( ~ Vec128b(a));
+}
 
 // Functions for this class
 
@@ -2349,7 +2450,7 @@ static inline Vec2q operator ++ (Vec2q & a, int) {
 }
 
 // prefix operator ++
-static inline Vec2q operator ++ (Vec2q & a) {
+static inline Vec2q & operator ++ (Vec2q & a) {
     a = a + 1;
     return a;
 }
@@ -2378,7 +2479,7 @@ static inline Vec2q operator -- (Vec2q & a, int) {
 }
 
 // prefix operator --
-static inline Vec2q operator -- (Vec2q & a) {
+static inline Vec2q & operator -- (Vec2q & a) {
     a = a - 1;
     return a;
 }
@@ -2673,6 +2774,21 @@ public:
 
 // Define operators for this class
 
+// vector operator + : add
+static inline Vec2uq operator + (Vec2uq const & a, Vec2uq const & b) {
+    return Vec2uq (Vec2q(a) + Vec2q(b));
+}
+
+// vector operator - : subtract
+static inline Vec2uq operator - (Vec2uq const & a, Vec2uq const & b) {
+    return Vec2uq (Vec2q(a) - Vec2q(b));
+}
+
+// vector operator * : multiply element by element
+static inline Vec2uq operator * (Vec2uq const & a, Vec2uq const & b) {
+    return Vec2uq (Vec2q(a) * Vec2q(b));
+}
+
 // vector operator >> : shift right logical all elements
 static inline Vec2uq operator >> (Vec2uq const & a, uint32_t b) {
     return _mm_srl_epi64(a,_mm_cvtsi32_si128(b)); 
@@ -2681,6 +2797,12 @@ static inline Vec2uq operator >> (Vec2uq const & a, uint32_t b) {
 // vector operator >> : shift right logical all elements
 static inline Vec2uq operator >> (Vec2uq const & a, int32_t b) {
     return a >> (uint32_t)b;
+}
+
+// vector operator >>= : shift right logical
+static inline Vec2uq & operator >>= (Vec2uq & a, int b) {
+    a = a >> b;
+    return a;
 }
 
 // vector operator << : shift left all elements
@@ -2730,19 +2852,30 @@ static inline Vec2q operator <= (Vec2uq const & a, Vec2uq const & b) {
     return b >= a;
 }
 
-// vector operator + : add
-static inline Vec2uq operator + (Vec2uq const & a, Vec2uq const & b) {
-    return Vec2uq (Vec2q(a) + Vec2q(b));
+// vector operator & : bitwise and
+static inline Vec2uq operator & (Vec2uq const & a, Vec2uq const & b) {
+    return Vec2uq(Vec128b(a) & Vec128b(b));
+}
+static inline Vec2uq operator && (Vec2uq const & a, Vec2uq const & b) {
+    return a & b;
 }
 
-// vector operator - : subtract
-static inline Vec2uq operator - (Vec2uq const & a, Vec2uq const & b) {
-    return Vec2uq (Vec2q(a) - Vec2q(b));
+// vector operator | : bitwise or
+static inline Vec2uq operator | (Vec2uq const & a, Vec2uq const & b) {
+    return Vec2uq(Vec128b(a) | Vec128b(b));
+}
+static inline Vec2uq operator || (Vec2uq const & a, Vec2uq const & b) {
+    return a | b;
 }
 
-// vector operator * : multiply element by element
-static inline Vec2uq operator * (Vec2uq const & a, Vec2uq const & b) {
-    return Vec2uq (Vec2q(a) * Vec2q(b));
+// vector operator ^ : bitwise xor
+static inline Vec2uq operator ^ (Vec2uq const & a, Vec2uq const & b) {
+    return Vec2uq(Vec128b(a) ^ Vec128b(b));
+}
+
+// vector operator ~ : bitwise not
+static inline Vec2uq operator ~ (Vec2uq const & a) {
+    return Vec2uq( ~ Vec128b(a));
 }
 
 
@@ -2784,7 +2917,7 @@ static inline Vec2uq min(Vec2uq const & a, Vec2uq const & b) {
 *
 * The indexes are inserted as template parameters in <>. These indexes must be
 * constants. Each template parameter is an index to the element you want to 
-* select. A negative index will generate zero.
+* select. A negative index will generate zero. an index of -256 means don't care.
 *
 * Example:
 * Vec4i a(10,11,12,13);         // a is (10,11,12,13)
@@ -2800,6 +2933,119 @@ static inline Vec2uq min(Vec2uq const & a, Vec2uq const & b) {
 * will be reduced out to leave only a few vector instructions in release
 * mode with optimization on.
 *****************************************************************************/
+
+template <int i0, int i1>
+static inline Vec2q permute2q(Vec2q const & a) {
+    if (i0 == 0) {
+        if (i1 == 0) {       // 0,0
+            return _mm_unpacklo_epi64(a, a);
+        }
+        else if (i1 == 1 || i1 == -0x100) {  // 0,1
+            return a;
+        }
+        else {               // 0,-1
+            // return _mm_mov_epi64(a); // doesn't work with MS VS 2008
+            return _mm_and_si128(a, constant4i<-1,-1,0,0>());
+        }
+    }
+    else if (i0 == 1) {
+        if (i1 == 0) {       // 1,0
+            return _mm_shuffle_epi32(a, 0x4E);
+        }
+        else if (i1 == 1) {  // 1,1
+            return _mm_unpackhi_epi64(a, a);
+        }
+        else {               // 1,-1
+            return _mm_srli_si128(a, 8);
+        }
+    }
+    else { // i0 < 0
+        if (i1 == 0) {       // -1,0
+            return _mm_slli_si128(a, 8);
+        }
+        else if (i1 == 1) {  // -1,1
+            if (i0 == -0x100) return a;
+            return _mm_and_si128(a, constant4i<0,0,-1,-1>());
+        }
+        else {               // -1,-1
+            return _mm_setzero_si128();
+        }
+    }
+}
+
+template <int i0, int i1>
+static inline Vec2uq permute2uq(Vec2uq const & a) {
+    return Vec2uq (permute2q <i0, i1> ((__m128i)a));
+}
+
+// permute vector Vec4i
+template <int i0, int i1, int i2, int i3>
+static inline Vec4i permute4i(Vec4i const & a) {
+
+    // Combine all the indexes into a single bitfield, with 4 bits for each
+    const int m1 = (i0&3) | (i1&3)<<4 | (i2&3)<<8 | (i3&3)<<12; 
+
+    // Mask to zero out negative indexes
+    const int mz = (i0<0?0:0xF) | (i1<0?0:0xF)<<4 | (i2<0?0:0xF)<<8 | (i3<0?0:0xF)<<12;
+
+    // Mask indicating required zeroing of all indexes, with 4 bits for each, 0 for index = -1, 0xF for index >= 0 or -256
+    const int ssz = ((i0 & 0x80) ? 0 : 0xF) | ((i1 & 0x80) ? 0 : 0xF) << 4 | ((i2 & 0x80) ? 0 : 0xF) << 8 | ((i3 & 0x80) ? 0 : 0xF) << 12;
+
+    // Mask indicating 0 for don't care, 0xF for non-negative value of required zeroing
+    const int md = mz | ~ ssz;
+
+    // Test if permutation needed
+    const bool do_shuffle = ((m1 ^ 0x00003210) & mz) != 0;
+
+    // is zeroing needed
+    const bool do_zero    = (ssz != 0xFFFF);
+
+    if (mz == 0) {
+        return _mm_setzero_si128();    // special case: all zero or don't care
+    }
+    // Test if we can do with 64-bit permute only
+    if ((m1 & 0x0101 & mz) == 0        // even indexes are even or negative
+    && (~m1 & 0x1010 & mz) == 0        // odd  indexes are odd  or negative
+    && ((m1 ^ ((m1 + 0x0101) << 4)) & 0xF0F0 & mz & (mz << 4)) == 0  // odd index == preceding even index +1 or at least one of them negative
+    && ((mz ^ (mz << 4)) & 0xF0F0 & md & md << 4) == 0) {      // each pair of indexes are both negative or both positive or one of them don't care
+        const int j0 = i0 >= 0 ? i0 / 2 : (i0 & 0x80) ? i0 : i1 >= 0 ? i1/2 : i1;
+        const int j1 = i2 >= 0 ? i2 / 2 : (i2 & 0x80) ? i2 : i3 >= 0 ? i3/2 : i3;
+        return Vec4i(permute2q<j0, j1> (Vec2q(a)));    // 64 bit permute
+    }
+#if  INSTRSET >= 4  // SSSE3
+    if (do_shuffle && do_zero) {
+        // With SSSE3 we can do both with the PSHUFB instruction
+        const int j0 = (i0 & 3) << 2;
+        const int j1 = (i1 & 3) << 2;
+        const int j2 = (i2 & 3) << 2;
+        const int j3 = (i3 & 3) << 2;
+        __m128i mask1 = constant4i <
+            i0 < 0 ? -1 : j0 | (j0+1)<<8 | (j0+2)<<16 | (j0+3) << 24,
+            i1 < 0 ? -1 : j1 | (j1+1)<<8 | (j1+2)<<16 | (j1+3) << 24,
+            i2 < 0 ? -1 : j2 | (j2+1)<<8 | (j2+2)<<16 | (j2+3) << 24,
+            i3 < 0 ? -1 : j3 | (j3+1)<<8 | (j3+2)<<16 | (j3+3) << 24 > ();
+        return _mm_shuffle_epi8(a,mask1);
+    }
+#endif
+    __m128i t1;
+
+    if (do_shuffle) {  // permute
+        t1 = _mm_shuffle_epi32(a, (i0&3) | (i1&3)<<2 | (i2&3)<<4 | (i3&3)<<6);
+    }
+    else {
+        t1 = a;
+    }
+    if (do_zero) {     // set some elements to zero
+        __m128i mask2 = constant4i< -int(i0>=0), -int(i1>=0), -int(i2>=0), -int(i3>=0) >();
+        t1 = _mm_and_si128(t1,mask2);
+    }
+    return t1;
+}
+
+template <int i0, int i1, int i2, int i3>
+static inline Vec4ui permute4ui(Vec4ui const & a) {
+    return Vec4ui (permute4i <i0,i1,i2,i3> (a));
+}
 
 template <int i0, int i1, int i2, int i3, int i4, int i5, int i6, int i7>
 static inline Vec8s permute8s(Vec8s const & a) {
@@ -2994,7 +3240,7 @@ static inline Vec8s permute8s(Vec8s const & a) {
         }
     }
     // Set any elements to zero if required
-    if ((i0 | i1 | i2 | i3 | i4 | i5 | i6 | i7) < 0) {
+    if (m2 != -1 && ((i0 | i1 | i2 | i3 | i4 | i5 | i6 | i7) & 0x80)) {
         // some elements need to be set to 0
         __m128i mask = constant4i <
             (i0 < 0 ? 0xFFFF0000 : -1) & (i1 < 0 ? 0x0000FFFF : -1),
@@ -3018,43 +3264,165 @@ static inline Vec8us permute8us(Vec8us const & a) {
 template <int i0, int i1, int i2,  int i3,  int i4,  int i5,  int i6,  int i7, 
           int i8, int i9, int i10, int i11, int i12, int i13, int i14, int i15 > 
 static inline Vec16c permute16c(Vec16c const & a) {
-#if  INSTRSET >= 4  // SSSE3 (PSHUFB available only under SSSE3)
 
-    // special case: all zero
-    if ((i0&i1&i2&i3&i4&i5&i6&i7&i8&i9&i10&i11&i12&i13&i14&i15) < 0) {
-        return _mm_setzero_si128();  
-    }
-    // special case: rotate
-    if (i0>=0 && i0 < 16   && i1==((i0+1)&15) && i2 ==((i0+2 )&15) && i3 ==((i0+3 )&15) && i4 ==((i0+4 )&15) && i5 ==((i0+5 )&15) && i6 ==((i0+6 )&15) && i7 ==((i0+7 )&15) 
-        && i8==((i0+8)&15) && i9==((i0+9)&15) && i10==((i0+10)&15) && i11==((i0+11)&15) && i12==((i0+12)&15) && i13==((i0+13)&15) && i14==((i0+14)&15) && i15==((i0+15)&15)) {
-        if (i0 == 0) return a;  // do nothing
-        return _mm_alignr_epi8(a, a, i0 & 15);
-    }
-    // general case: use PSHUFB
-    __m128i mask = constant4i< 
-        (i0  & 0xFF) | (i1  & 0xFF) << 8 | (i2  & 0xFF) << 16 | (i3  & 0xFF) << 24 ,
-        (i4  & 0xFF) | (i5  & 0xFF) << 8 | (i6  & 0xFF) << 16 | (i7  & 0xFF) << 24 ,
-        (i8  & 0xFF) | (i9  & 0xFF) << 8 | (i10 & 0xFF) << 16 | (i11 & 0xFF) << 24 ,
-        (i12 & 0xFF) | (i13 & 0xFF) << 8 | (i14 & 0xFF) << 16 | (i15 & 0xFF) << 24 > ();
-    return _mm_shuffle_epi8(a,mask);
-#else  // SSE2 has no 8-bit permute. Do four 16-bit permutes
+    __m128i temp;
 
     // Combine all even indexes into a single bitfield, with 4 bits for each
-    const int me = (i0&15) | (i2&15)<<4 | (i4&15)<<8 | (i6&15)<<12 
+    const uint32_t me = (i0&15) | (i2&15)<<4 | (i4&15)<<8 | (i6&15)<<12 
         | (i8&15)<<16 | (i10&15)<<20 | (i12&15)<<24 | (i14&15)<<28; 
 
     // Combine all odd indexes into a single bitfield, with 4 bits for each
-    const int mo = (i1&15) | (i3&15)<<4 | (i5&15)<<8 | (i7&15)<<12 
+    const uint32_t mo = (i1&15) | (i3&15)<<4 | (i5&15)<<8 | (i7&15)<<12 
         | (i9&15)<<16 | (i11&15)<<20 | (i13&15)<<24 | (i15&15)<<28; 
 
     // Mask indicating sign of all even indexes, with 4 bits for each, 0 for negative, 0xF for non-negative
-    const int se = (i0<0?0:0xF) | (i2<0?0:0xF)<<4 | (i4<0?0:0xF)<<8 | (i6<0?0:0xF)<<12
+    const uint32_t se = (i0<0?0:0xF) | (i2<0?0:0xF)<<4 | (i4<0?0:0xF)<<8 | (i6<0?0:0xF)<<12
         | (i8<0?0:0xF)<<16 | (i10<0?0:0xF)<<20 | (i12<0?0:0xF)<<24 | (i14<0?0:0xF)<<28;
 
     // Mask indicating sign of all odd indexes, with 4 bits for each, 0 for negative, 0xF for non-negative
-    const int so = (i1<0?0:0xF) | (i3<0?0:0xF)<<4 | (i5<0?0:0xF)<<8 | (i7<0?0:0xF)<<12
+    const uint32_t so = (i1<0?0:0xF) | (i3<0?0:0xF)<<4 | (i5<0?0:0xF)<<8 | (i7<0?0:0xF)<<12
         | (i9<0?0:0xF)<<16 | (i11<0?0:0xF)<<20 | (i13<0?0:0xF)<<24 | (i15<0?0:0xF)<<28;
 
+    // Mask indicating sign of all indexes, with 2 bits for each, 0 for negative (means set to zero or don't care), 0x3 for non-negative
+    const uint32_t ss = (se & 0x33333333) | (so & 0xCCCCCCCC);
+
+    // Mask indicating required zeroing of all indexes, with 2 bits for each, 0 for index = -1, 3 for index >= 0 or -256
+    const uint32_t ssz = ((i0&0x80)?0:3) | ((i1 &0x80)?0:3)<< 2 | ((i2 &0x80)?0:3)<< 4 | ((i3 &0x80)?0:3)<< 6 | 
+                    ((i4 &0x80)?0:3)<< 8 | ((i5 &0x80)?0:3)<<10 | ((i6 &0x80)?0:3)<<12 | ((i7 &0x80)?0:3)<<14 | 
+                    ((i8 &0x80)?0:3)<<16 | ((i9 &0x80)?0:3)<<18 | ((i10&0x80)?0:3)<<20 | ((i11&0x80)?0:3)<<22 | 
+                    ((i12&0x80)?0:3)<<24 | ((i13&0x80)?0:3)<<26 | ((i14&0x80)?0:3)<<28 | ((i15&0x80)?0:3)<<30 ;
+
+    // These indexes are used only to avoid bogus compiler warnings in false branches
+    const int I0  = i0  > 0 ? (i0  & 0xF) : 0;
+    const int I15 = i15 > 0 ? (i15 & 0xF) : 0;
+
+    // special case: all zero
+    if (ss == 0) {
+        return _mm_setzero_si128();  
+    }
+
+    // remember if extra zeroing is needed
+    bool do_and_zero = (ssz != 0xFFFFFFFFu);
+
+    // check for special shortcut cases
+    int shortcut = 0;
+
+    // check if any permutation
+    if (((me ^ 0xECA86420) & se) == 0 && ((mo ^ 0xFDB97531) & so) == 0) {
+        shortcut = 1;
+    }
+    // check if we can use punpcklbw
+    else if (((me ^ 0x76543210) & se) == 0 && ((mo ^ 0x76543210) & so) == 0) {
+        shortcut = 2;
+    }
+    // check if we can use punpckhbw
+    else if (((me ^ 0xFEDCBA98) & se) == 0 && ((mo ^ 0xFEDCBA98) & so) == 0) {
+        shortcut = 3;
+    }
+
+    #if defined (_MSC_VER) && ! defined(__INTEL_COMPILER)
+    #pragma warning(disable: 4307)  // disable MS warning C4307: '+' : integral constant overflow
+    #endif
+
+    // check if we can use byte shift right
+    else if (i0 > 0 && ((me ^ (uint32_t(I0)*0x11111111u + 0xECA86420u)) & se) == 0 && 
+    ((mo ^ (uint32_t(I0)*0x11111111u + 0xFDB97531u)) & so) == 0) {
+        shortcut = 4;
+        do_and_zero = ((0xFFFFFFFFu >> 2*I0) & ~ ssz) != 0;
+    }
+    // check if we can use byte shift left
+    else if (i15 >= 0 && i15 < 15 &&         
+    ((mo ^ (uint32_t(I15*0x11111111u) - (0x02468ACEu & so))) & so) == 0 && 
+    ((me ^ (uint32_t(I15*0x11111111u) - (0x13579BDFu & se))) & se) == 0) {
+        shortcut = 5;
+        do_and_zero = ((0xFFFFFFFFu << 2*(15-I15)) & ~ ssz) != 0;
+    }
+
+#if  INSTRSET >= 4  // SSSE3 (PSHUFB available only under SSSE3)
+
+    // special case: rotate
+    if (i0>0 && i0 < 16    && i1==((i0+1)&15) && i2 ==((i0+2 )&15) && i3 ==((i0+3 )&15) && i4 ==((i0+4 )&15) && i5 ==((i0+5 )&15) && i6 ==((i0+6 )&15) && i7 ==((i0+7 )&15) 
+    && i8==((i0+8)&15) && i9==((i0+9)&15) && i10==((i0+10)&15) && i11==((i0+11)&15) && i12==((i0+12)&15) && i13==((i0+13)&15) && i14==((i0+14)&15) && i15==((i0+15)&15)) {
+        temp = _mm_alignr_epi8(a, a, i0 & 15);
+        shortcut = -1;
+    }
+    if (shortcut == 0 || do_and_zero) {
+        // general case: use PSHUFB
+        __m128i mask = constant4i< 
+            (i0  & 0xFF) | (i1  & 0xFF) << 8 | (i2  & 0xFF) << 16 | (i3  & 0xFF) << 24 ,
+            (i4  & 0xFF) | (i5  & 0xFF) << 8 | (i6  & 0xFF) << 16 | (i7  & 0xFF) << 24 ,
+            (i8  & 0xFF) | (i9  & 0xFF) << 8 | (i10 & 0xFF) << 16 | (i11 & 0xFF) << 24 ,
+            (i12 & 0xFF) | (i13 & 0xFF) << 8 | (i14 & 0xFF) << 16 | (i15 & 0xFF) << 24 > ();
+        temp = _mm_shuffle_epi8(a,mask);
+        shortcut = -1;
+        do_and_zero = false;
+    }
+
+#endif
+
+    // Check if we can use 16-bit permute. Even numbered indexes must be even and odd numbered
+    // indexes must be equal to the preceding index + 1, except for negative indexes.
+    if (shortcut == 0 && (me & 0x11111111 & se) == 0 && ((mo ^ 0x11111111) & 0x11111111 & so) == 0 && ((me ^ mo) & 0xEEEEEEEE & se & so) == 0) {
+        temp = permute8s <
+            i0  >= 0 ? i0 /2 : i1  >= 0 ? i1 /2 : (i0  | i1 ),
+            i2  >= 0 ? i2 /2 : i3  >= 0 ? i3 /2 : (i2  | i3 ),
+            i4  >= 0 ? i4 /2 : i5  >= 0 ? i5 /2 : (i4  | i5 ),
+            i6  >= 0 ? i6 /2 : i7  >= 0 ? i7 /2 : (i6  | i7 ),
+            i8  >= 0 ? i8 /2 : i9  >= 0 ? i9 /2 : (i8  | i9 ),
+            i10 >= 0 ? i10/2 : i11 >= 0 ? i11/2 : (i10 | i11),
+            i12 >= 0 ? i12/2 : i13 >= 0 ? i13/2 : (i12 | i13),
+            i14 >= 0 ? i14/2 : i15 >= 0 ? i15/2 : (i14 | i15) > (Vec8s(a));
+        shortcut = 100;
+        do_and_zero = (se != so && ssz != 0xFFFFFFFFu);
+    }
+  
+    // Check if we can use 16-bit permute with bytes swapped. Even numbered indexes must be odd and odd 
+    // numbered indexes must be equal to the preceding index - 1, except for negative indexes.
+    // (this case occurs when reversing byte order)
+    if (shortcut == 0 && ((me ^ 0x11111111) & 0x11111111 & se) == 0 && (mo & 0x11111111 & so) == 0 && ((me ^ mo) & 0xEEEEEEEE & se & so) == 0) {
+        Vec16c swapped = Vec16c(rotate_left(Vec8s(a), 8)); // swap odd and even bytes
+        temp = permute8s <
+            i0  >= 0 ? i0 /2 : i1  >= 0 ? i1 /2 : (i0  | i1 ),
+            i2  >= 0 ? i2 /2 : i3  >= 0 ? i3 /2 : (i2  | i3 ),
+            i4  >= 0 ? i4 /2 : i5  >= 0 ? i5 /2 : (i4  | i5 ),
+            i6  >= 0 ? i6 /2 : i7  >= 0 ? i7 /2 : (i6  | i7 ),
+            i8  >= 0 ? i8 /2 : i9  >= 0 ? i9 /2 : (i8  | i9 ),
+            i10 >= 0 ? i10/2 : i11 >= 0 ? i11/2 : (i10 | i11),
+            i12 >= 0 ? i12/2 : i13 >= 0 ? i13/2 : (i12 | i13),
+            i14 >= 0 ? i14/2 : i15 >= 0 ? i15/2 : (i14 | i15) > (Vec8s(swapped));
+        shortcut = 101;
+        do_and_zero = (se != so && ssz != 0xFFFFFFFFu);
+    }
+
+    // all shortcuts end here
+    if (shortcut) {
+        switch (shortcut) {
+        case 1:
+            temp = a;  break;
+        case 2:
+            temp = _mm_unpacklo_epi8(a,a);  break;
+        case 3:
+            temp = _mm_unpackhi_epi8(a,a);  break;
+        case 4:
+            temp = _mm_srli_si128(a, I0);  break;
+        case 5:
+            temp = _mm_slli_si128(a, 15-I15);  break;
+        default:
+            break;  // result is already in temp
+        }
+        if (do_and_zero) {
+            // additional zeroing needed
+            __m128i maskz = constant4i < 
+                (i0  < 0 ? 0 : 0xFF) | (i1  < 0 ? 0 : 0xFF00) | (i2  < 0 ? 0 : 0xFF0000) | (i3  < 0 ? 0 : 0xFF000000) ,
+                (i4  < 0 ? 0 : 0xFF) | (i5  < 0 ? 0 : 0xFF00) | (i6  < 0 ? 0 : 0xFF0000) | (i7  < 0 ? 0 : 0xFF000000) ,
+                (i8  < 0 ? 0 : 0xFF) | (i9  < 0 ? 0 : 0xFF00) | (i10 < 0 ? 0 : 0xFF0000) | (i11 < 0 ? 0 : 0xFF000000) ,
+                (i12 < 0 ? 0 : 0xFF) | (i13 < 0 ? 0 : 0xFF00) | (i14 < 0 ? 0 : 0xFF0000) | (i15 < 0 ? 0 : 0xFF000000) > ();
+            temp = _mm_and_si128(temp, maskz);
+        }
+        return temp;
+    }
+
+    // complicated cases: use 16-bit permute up to four times
     const bool e2e = (~me & 0x11111111 & se) != 0;  // even bytes of source to even bytes of destination
     const bool e2o = (~mo & 0x11111111 & so) != 0;  // even bytes of source to odd  bytes of destination
     const bool o2e = (me  & 0x11111111 & se) != 0;  // odd  bytes of source to even bytes of destination
@@ -3101,107 +3469,12 @@ static inline Vec16c permute16c(Vec16c const & a) {
     return  _mm_or_si128(            // combine even and odd bytes
         _mm_and_si128(combeven, maske),
         _mm_and_si128(combodd, masko));
-#endif
 }
 
 template <int i0, int i1, int i2,  int i3,  int i4,  int i5,  int i6,  int i7, 
           int i8, int i9, int i10, int i11, int i12, int i13, int i14, int i15 > 
 static inline Vec16uc permute16uc(Vec16uc const & a) {
     return Vec16uc (permute16c <i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15> (a));
-}
-
-
-// permute vector Vec4i
-template <int i0, int i1, int i2, int i3>
-static inline Vec4i permute4i(Vec4i const & a) {
-    // is shuffling needed
-    const bool do_shuffle = (i0 > 0) || (i1 != 1 && i1 >= 0) || (i2 != 2 && i2 >= 0) || (i3 != 3 && i3 >= 0);
-    // is zeroing needed
-    const bool do_zero    = (i0 | i1 | i2 | i3) < 0 && ((i0 | i1 | i2 | i3) & 0x80);
-    // can we do both combined
-    const bool do_both    = INSTRSET >= 4 && do_shuffle && do_zero;
-    __m128i t1;
-
-#if  INSTRSET >= 4  // SSSE3
-    if (do_both) {
-        // With SSSE3 we can do both with the PSHUFB instruction
-        const int j0 = (i0 & 3) << 2;
-        const int j1 = (i1 & 3) << 2;
-        const int j2 = (i2 & 3) << 2;
-        const int j3 = (i3 & 3) << 2;
-        __m128i mask1 = constant4i <
-            i0 < 0 ? -1 : j0 | (j0+1)<<8 | (j0+2)<<16 | (j0+3) << 24,
-            i1 < 0 ? -1 : j1 | (j1+1)<<8 | (j1+2)<<16 | (j1+3) << 24,
-            i2 < 0 ? -1 : j2 | (j2+1)<<8 | (j2+2)<<16 | (j2+3) << 24,
-            i3 < 0 ? -1 : j3 | (j3+1)<<8 | (j3+2)<<16 | (j3+3) << 24 > ();
-        return _mm_shuffle_epi8(a,mask1);
-    }
-#endif
-    if ((i0 & i1 & i2 & i3) < 0) {
-        return _mm_setzero_si128();     // special case: all zero
-    }
-    else {
-        if (do_shuffle && ! do_both) {  // permute
-            t1 = _mm_shuffle_epi32(a, (i0&3) | (i1&3)<<2 | (i2&3)<<4 | (i3&3)<<6);
-        }
-        else {
-            t1 = a;
-        }
-        if (do_zero && ! do_both) {     // set some elements to zero
-            __m128i mask2 = constant4i< -int(i0>=0), -int(i1>=0), -int(i2>=0), -int(i3>=0) >();
-            t1 = _mm_and_si128(t1,mask2);
-        }
-        return t1;
-    }
-}
-
-template <int i0, int i1, int i2, int i3>
-static inline Vec4ui permute4ui(Vec4ui const & a) {
-    return Vec4ui (permute4i <i0,i1,i2,i3> (a));
-}
-
-template <int i0, int i1>
-static inline Vec2q permute2q(Vec2q const & a) {
-    if (i0 == 0) {
-        if (i1 == 0) {       // 0,0
-            return _mm_unpacklo_epi64(a, a);
-        }
-        else if (i1 == 1) {  // 0,1
-            return a;
-        }
-        else {               // 0,-1
-            // return _mm_mov_epi64(a); // doesn't work with MS VS 2008
-            return _mm_and_si128(a, constant4i<-1,-1,0,0>());
-        }
-    }
-    else if (i0 == 1) {
-        if (i1 == 0) {       // 1,0
-            return _mm_shuffle_epi32(a, 0x4E);
-        }
-        else if (i1 == 1) {  // 1,1
-            return _mm_unpackhi_epi64(a, a);
-        }
-        else {               // 1,-1
-            return _mm_srli_si128(a, 8);
-        }
-    }
-    else {
-        if (i1 == 0) {       // -1,0
-            return _mm_slli_si128(a, 8);
-        }
-        else if (i1 == 1) {  // -1,1
-            return _mm_and_si128(a, constant4i<0,0,-1,-1>());
-        }
-        else {               // -1,-1
-            return _mm_setzero_si128();
-        }
-    }
-//    return Vec2q (permute4i <i0*2, i0*2+1, i1*2, i1*2+1> ((__m128i)a));
-}
-
-template <int i0, int i1>
-static inline Vec2uq permute2uq(Vec2uq const & a) {
-    return Vec2uq (permute2q <i0, i1> ((__m128i)a));
 }
 
 
@@ -3240,15 +3513,82 @@ template <int i0, int i1, int i2,  int i3,  int i4,  int i5,  int i6,  int i7,
           int i8, int i9, int i10, int i11, int i12, int i13, int i14, int i15 > 
 static inline Vec16c blend16c(Vec16c const & a, Vec16c const & b) {
 
+    // Combine bit 0-3 of all even indexes into a single bitfield, with 4 bits for each
+    const int me = (i0&15) | (i2&15)<<4 | (i4&15)<<8 | (i6&15)<<12 
+        | (i8&15)<<16 | (i10&15)<<20 | (i12&15)<<24 | (i14&15)<<28; 
+
+    // Combine bit 0-3 of all odd indexes into a single bitfield, with 4 bits for each
+    const int mo = (i1&15) | (i3&15)<<4 | (i5&15)<<8 | (i7&15)<<12 
+        | (i9&15)<<16 | (i11&15)<<20 | (i13&15)<<24 | (i15&15)<<28; 
+
+    // Mask indicating sign of all even indexes, with 4 bits for each, 0 for negative, 0xF for non-negative
+    const int se = (i0<0?0:0xF) | (i2<0?0:0xF)<<4 | (i4<0?0:0xF)<<8 | (i6<0?0:0xF)<<12
+        | (i8<0?0:0xF)<<16 | (i10<0?0:0xF)<<20 | (i12<0?0:0xF)<<24 | (i14<0?0:0xF)<<28;
+
+    // Mask indicating sign of all odd indexes, with 4 bits for each, 0 for negative, 0xF for non-negative
+    const int so = (i1<0?0:0xF) | (i3<0?0:0xF)<<4 | (i5<0?0:0xF)<<8 | (i7<0?0:0xF)<<12
+        | (i9<0?0:0xF)<<16 | (i11<0?0:0xF)<<20 | (i13<0?0:0xF)<<24 | (i15<0?0:0xF)<<28;
+
+    // Combine bit 4 of all even indexes into a single bitfield, with 4 bits for each
+    const int ne = (i0&16)>>4 | (i2&16) | (i4&16)<<4 | (i6&16)<<8 
+        | (i8&16)<<12 | (i10&16)<<16 | (i12&16)<<20 | (i14&16)<<24; 
+
+    // Combine bit 4 of all odd indexes into a single bitfield, with 4 bits for each
+    const int no = (i1&16)>>4 | (i3&16) | (i5&16)<<4 | (i7&16)<<8
+        | (i9&16)<<12 | (i11&16)<<16 | (i13&16)<<20 | (i15&16)<<24; 
+
+    // Check if zeroing needed
+    const bool do_zero = ((i0|i1|i2|i3|i4|i5|i6|i7|i8|i9|i10|i11|i12|i13|i14|i15) & 0x80) != 0; // needs zeroing
+
     // no elements from b
-    if (i0 < 16 && i1 < 16 && i2 < 16 && i3 < 16 && i4 < 16 && i5 < 16 && i6 < 16 && i7 < 16 && 
-        i8 < 16 && i9 < 16 && i10< 16 && i11< 16 && i12< 16 && i13< 16 && i14< 16 && i15< 16 ) {
+    if (((ne & se) | (no & so)) == 0) {
         return permute16c <i0, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15> (a);
     }
+
     // no elements from a
-    if ((i0^16) < 16 && (i1^16) < 16 && (i2 ^16) < 16 && (i3 ^16) < 16 && (i4 ^16) < 16 && (i5 ^16) < 16 && (i6 ^16) < 16 && (i7 ^16) < 16 && 
-        (i8^16) < 16 && (i9^16) < 16 && (i10^16) < 16 && (i11^16) < 16 && (i12^16) < 16 && (i13^16) < 16 && (i14^16) < 16 && (i15^16) < 16 ) {
+    if ((((ne^0x11111111) & se) | ((no^0x11111111) & so)) == 0) {
         return permute16c <i0^16, i1^16, i2^16, i3^16, i4^16, i5^16, i6^16, i7^16, i8^16, i9^16, i10^16, i11^16, i12^16, i13^16, i14^16, i15^16> (b);
+    }
+    __m128i t;
+
+    // check if we can use punpcklbw
+    if (((me ^ 0x76543210) & se) == 0 && ((mo ^ 0x76543210) & so) == 0) {
+        if ((ne & se) == 0 && ((no ^ 0x11111111) & so) == 0) {        
+            t = _mm_unpacklo_epi8(a,b);
+        }
+        if ((no & so) == 0 && ((ne ^ 0x11111111) & se) == 0) {        
+            t = _mm_unpacklo_epi8(b,a);
+        }
+        if (do_zero) {
+            // additional zeroing needed
+            __m128i maskz = constant4i < 
+                (i0  < 0 ? 0 : 0xFF) | (i1  < 0 ? 0 : 0xFF00) | (i2  < 0 ? 0 : 0xFF0000) | (i3  < 0 ? 0 : 0xFF000000) ,
+                (i4  < 0 ? 0 : 0xFF) | (i5  < 0 ? 0 : 0xFF00) | (i6  < 0 ? 0 : 0xFF0000) | (i7  < 0 ? 0 : 0xFF000000) ,
+                (i8  < 0 ? 0 : 0xFF) | (i9  < 0 ? 0 : 0xFF00) | (i10 < 0 ? 0 : 0xFF0000) | (i11 < 0 ? 0 : 0xFF000000) ,
+                (i12 < 0 ? 0 : 0xFF) | (i13 < 0 ? 0 : 0xFF00) | (i14 < 0 ? 0 : 0xFF0000) | (i15 < 0 ? 0 : 0xFF000000) > ();
+            t = _mm_and_si128(t, maskz);
+        }
+        return t;
+    }
+
+    // check if we can use punpckhbw
+    if (((me ^ 0xFEDCBA98) & se) == 0 && ((mo ^ 0xFEDCBA98) & so) == 0) {
+        if ((ne & se) == 0 && ((no ^ 0x11111111) & so) == 0) {        
+            t = _mm_unpackhi_epi8(a,b);
+        }
+        if ((no & so) == 0 && ((ne ^ 0x11111111) & se) == 0) {        
+            t = _mm_unpackhi_epi8(b,a);
+        }
+        if (do_zero) {
+            // additional zeroing needed
+            __m128i maskz = constant4i < 
+                (i0  < 0 ? 0 : 0xFF) | (i1  < 0 ? 0 : 0xFF00) | (i2  < 0 ? 0 : 0xFF0000) | (i3  < 0 ? 0 : 0xFF000000) ,
+                (i4  < 0 ? 0 : 0xFF) | (i5  < 0 ? 0 : 0xFF00) | (i6  < 0 ? 0 : 0xFF0000) | (i7  < 0 ? 0 : 0xFF000000) ,
+                (i8  < 0 ? 0 : 0xFF) | (i9  < 0 ? 0 : 0xFF00) | (i10 < 0 ? 0 : 0xFF0000) | (i11 < 0 ? 0 : 0xFF000000) ,
+                (i12 < 0 ? 0 : 0xFF) | (i13 < 0 ? 0 : 0xFF00) | (i14 < 0 ? 0 : 0xFF0000) | (i15 < 0 ? 0 : 0xFF000000) > ();
+            t = _mm_and_si128(t, maskz);
+        }
+        return t;
     }
     
 #if  INSTRSET >= 4  // SSSE3
@@ -3264,6 +3604,28 @@ static inline Vec16c blend16c(Vec16c const & a, Vec16c const & b) {
         return _mm_alignr_epi8(a, b, (i0 & 15));
     }
 #endif
+
+#if INSTRSET >= 5   // SSE4.1 supported
+    // special case: blend without permute
+    if (((me ^ 0xECA86420) & se) == 0 && ((mo ^ 0xFDB97531) & so) == 0) {
+        __m128i maskbl = constant4i<
+            ((i0 & 16) ? 0xFF : 0) | ((i1 & 16) ? 0xFF00 : 0) | ((i2 & 16) ? 0xFF0000 : 0) | ((i3 & 16) ? 0xFF000000 : 0) ,
+            ((i4 & 16) ? 0xFF : 0) | ((i5 & 16) ? 0xFF00 : 0) | ((i6 & 16) ? 0xFF0000 : 0) | ((i7 & 16) ? 0xFF000000 : 0) ,
+            ((i8 & 16) ? 0xFF : 0) | ((i9 & 16) ? 0xFF00 : 0) | ((i10& 16) ? 0xFF0000 : 0) | ((i11& 16) ? 0xFF000000 : 0) ,
+            ((i12& 16) ? 0xFF : 0) | ((i13& 16) ? 0xFF00 : 0) | ((i14& 16) ? 0xFF0000 : 0) | ((i15& 16) ? 0xFF000000 : 0) > ();
+        t = _mm_blendv_epi8(a, b, maskbl);
+        if (do_zero) {
+            // additional zeroing needed
+            __m128i maskz = constant4i < 
+                (i0  < 0 ? 0 : 0xFF) | (i1  < 0 ? 0 : 0xFF00) | (i2  < 0 ? 0 : 0xFF0000) | (i3  < 0 ? 0 : 0xFF000000) ,
+                (i4  < 0 ? 0 : 0xFF) | (i5  < 0 ? 0 : 0xFF00) | (i6  < 0 ? 0 : 0xFF0000) | (i7  < 0 ? 0 : 0xFF000000) ,
+                (i8  < 0 ? 0 : 0xFF) | (i9  < 0 ? 0 : 0xFF00) | (i10 < 0 ? 0 : 0xFF0000) | (i11 < 0 ? 0 : 0xFF000000) ,
+                (i12 < 0 ? 0 : 0xFF) | (i13 < 0 ? 0 : 0xFF00) | (i14 < 0 ? 0 : 0xFF0000) | (i15 < 0 ? 0 : 0xFF000000) > ();
+            t = _mm_and_si128(t, maskz);
+        }
+        return t;
+    }
+#endif // SSE4.1
 
 #if defined ( __XOP__ )    // Use AMD XOP instruction VPPERM
     __m128i mask = constant4i<
@@ -3346,37 +3708,79 @@ static inline Vec8s blend8s(Vec8s const & a, Vec8s const & b) {
         | (i4&0xF)<<16 | (i5&0xF)<<20 | (i6&0xF)<<24 | (i7&0xF)<<28; 
 
     // Mask to zero out negative indexes
-    const int m2 = (i0<0?0:0xF) | (i1<0?0:0xF)<<4 | (i2<0?0:0xF)<<8 | (i3<0?0:0xF)<<12
+    const int mz = (i0<0?0:0xF) | (i1<0?0:0xF)<<4 | (i2<0?0:0xF)<<8 | (i3<0?0:0xF)<<12
         | (i4<0?0:0xF)<<16 | (i5<0?0:0xF)<<20 | (i6<0?0:0xF)<<24 | (i7<0?0:0xF)<<28;
 
-    if ((m1 & 0x88888888 & m2) == 0) {
+    // Some elements must be set to zero
+    const bool do_zero = (mz != -1) && ((i0 | i1 | i2 | i3 | i4 | i5 | i6 | i7) & 0x80) != 0;
+
+    // temp contains temporary result, some zeroing needs to be done
+    bool zeroing_pending = false;
+
+    // partially finished result
+    __m128i temp;
+
+    if ((m1 & 0x88888888 & mz) == 0) {
         // no elements from b
         return permute8s <i0, i1, i2, i3, i4, i5, i6, i7> (a);
     }
 
-    if (((m1^0x88888888) & 0x88888888 & m2) == 0) {
+    if (((m1^0x88888888) & 0x88888888 & mz) == 0) {
         // no elements from a
         return permute8s <i0&~8, i1&~8, i2&~8, i3&~8, i4&~8, i5&~8, i6&~8, i7&~8> (b);
     }
 
+    // special case: PUNPCKLWD 
+    if (((m1 ^ 0xB3A29180) & mz) == 0) {
+        temp = _mm_unpacklo_epi16(a, b);
+        if (do_zero) zeroing_pending = true; else return temp;
+    }
+    if (((m1 ^ 0x3B2A1908) & mz) == 0) {
+        temp = _mm_unpacklo_epi16(b, a);
+        if (do_zero) zeroing_pending = true; else return temp;
+    }
+    // special case: PUNPCKHWD 
+    if (((m1 ^ 0xF7E6D5C4) & mz) == 0) {
+        temp = _mm_unpackhi_epi16(a, b);
+        if (do_zero) zeroing_pending = true; else return temp;
+    }
+    if (((m1 ^ 0x7F6E5D4C) & mz) == 0) {
+        temp = _mm_unpackhi_epi16(b, a);
+        if (do_zero) zeroing_pending = true; else return temp;
+    }
+
 #if  INSTRSET >= 4  // SSSE3
     // special case: shift left
-    if (i0 > 0 && i0 < 8 && m2 == -1 && (m1 ^ ((i0 & 7) * 0x11111111u + 0x76543210u)) == 0) {
-        return _mm_alignr_epi8(b, a, (i0 & 7) * 2);
+    if (i0 > 0 && i0 < 8 && ((m1 ^ ((i0 & 7) * 0x11111111u + 0x76543210u)) & mz) == 0) {
+        temp = _mm_alignr_epi8(b, a, (i0 & 7) * 2);
+        if (do_zero) zeroing_pending = true; else return temp;
     }
+
     // special case: shift right
-    if (i0 > 8 && i0 < 16 && m2 == -1 && (m1 ^ 0x88888888 ^ ((i0 & 7) * 0x11111111u + 0x76543210u)) == 0) {
-        return _mm_alignr_epi8(a, b, (i0 & 7) * 2);
+    if (i0 > 8 && i0 < 16 && ((m1 ^ 0x88888888 ^ ((i0 & 7) * 0x11111111u + 0x76543210u)) & mz) == 0) {
+        temp = _mm_alignr_epi8(a, b, (i0 & 7) * 2);
+        if (do_zero) zeroing_pending = true; else return temp;
     }
 #endif // SSSE3
 
 #if INSTRSET >= 5   // SSE4.1 supported
-    if (((m1 & ~0x88888888) ^ 0x76543210) == 0 && m2 == -1) {
-        // selecting without shuffling or zeroing
-        return _mm_blend_epi16(a, b, (i0>>3&1) | (i1>>3&1)<<1 | (i2>>3&1)<<2 | (i3>>3&1)<<3 
+    // special case: blending without permuting
+    if ((((m1 & ~0x88888888) ^ 0x76543210) & mz) == 0) {
+        temp = _mm_blend_epi16(a, b, (i0>>3&1) | (i1>>3&1)<<1 | (i2>>3&1)<<2 | (i3>>3&1)<<3 
             | (i4>>3&1)<<4 | (i5>>3&1)<<5 | (i6>>3&1)<<6 | (i7>>3&1)<<7);
+        if (do_zero) zeroing_pending = true; else return temp;
     }
 #endif // SSE4.1
+
+    if (zeroing_pending) {
+        // additional zeroing of temp needed
+        __m128i maskz = constant4i < 
+            (i0 < 0 ? 0 : 0xFFFF) | (i1 < 0 ? 0 : 0xFFFF0000) ,
+            (i2 < 0 ? 0 : 0xFFFF) | (i3 < 0 ? 0 : 0xFFFF0000) ,
+            (i4 < 0 ? 0 : 0xFFFF) | (i5 < 0 ? 0 : 0xFFFF0000) ,
+            (i6 < 0 ? 0 : 0xFFFF) | (i7 < 0 ? 0 : 0xFFFF0000) > ();
+        return _mm_and_si128(temp, maskz);
+    }        
 
     // general case
 #ifdef __XOP__     // Use AMD XOP instruction PPERM
@@ -3413,7 +3817,7 @@ static inline Vec8s blend8s(Vec8s const & a, Vec8s const & b) {
 
 template <int i0, int i1, int i2, int i3, int i4, int i5, int i6, int i7>
 static inline Vec8us blend8us(Vec8us const & a, Vec8us const & b) {
-    return Vec8u (blend8s<i0,i1,i2,i3,i4,i5,i6,i7> (a,b));
+    return Vec8us(blend8s<i0,i1,i2,i3,i4,i5,i6,i7> (a,b));
 }
 
 template <int i0, int i1, int i2, int i3>
@@ -3423,38 +3827,76 @@ static inline Vec4i blend4i(Vec4i const & a, Vec4i const & b) {
     const int m1 = (i0 & 7) | (i1 & 7) << 8 | (i2 & 7) << 16 | (i3 & 7) << 24; 
 
     // Mask to zero out negative indexes
-    const int m2 = (i0 < 0 ? 0 : 0xFF) | (i1 < 0 ? 0 : 0xFF) << 8 | (i2 < 0 ? 0 : 0xFF) << 16 | (i3 < 0 ? 0 : 0xFF) << 24;
+    const int mz = (i0 < 0 ? 0 : 0xFF) | (i1 < 0 ? 0 : 0xFF) << 8 | (i2 < 0 ? 0 : 0xFF) << 16 | (i3 < 0 ? 0 : 0xFF) << 24;
 
-    if ((m1 & 0x04040404 & m2) == 0) {
-        // no elements from b
+    // Some elements must be set to zero
+    const bool do_zero = (mz != -1) && ((i0 | i1 | i2 | i3) & 0x80) != 0;
+
+    // temp contains temporary result, some zeroing needs to be done
+    bool zeroing_pending = false;
+
+    // partially finished result
+    __m128i temp;
+
+    // special case: no elements from b
+    if ((m1 & 0x04040404 & mz) == 0) {
         return permute4i<i0,i1,i2,i3>(a);
     }
-    if (((m1^0x04040404) & 0x04040404 & m2) == 0) {
-        // no elements from a
+
+    // special case: no elements from a
+    if (((m1^0x04040404) & 0x04040404 & mz) == 0) {
         return permute4i<i0&~4, i1&~4, i2&~4, i3&~4>(b);
+    }
+
+    // special case: PUNPCKLDQ
+    if (((m1 ^ 0x05010400) & mz) == 0) {
+        temp = _mm_unpacklo_epi32(a, b);
+        if (do_zero) zeroing_pending = true; else return temp;
+    }
+    if (((m1 ^ 0x01050004) & mz) == 0) {
+        temp = _mm_unpacklo_epi32(b, a);
+        if (do_zero) zeroing_pending = true; else return temp;
+    }
+
+    // special case: PUNPCKHDQ 
+    if (((m1 ^ 0x07030602) & mz) == 0) {
+        temp = _mm_unpackhi_epi32(a, b);
+        if (do_zero) zeroing_pending = true; else return temp;
+    }
+    if (((m1 ^ 0x03070206) & mz) == 0) {
+        temp = _mm_unpackhi_epi32(b, a);
+        if (do_zero) zeroing_pending = true; else return temp;
     }
 
 #if  INSTRSET >= 4  // SSSE3
     // special case: shift left
-    if (i0 > 0 && i0 < 4 && m2 == -1 && (m1 ^ ((i0 & 3) * 0x01010101u + 0x03020100u)) == 0) {
-        return _mm_alignr_epi8(b, a, (i0 & 3) * 4);
+    if (i0 > 0 && i0 < 4 && ((m1 ^ ((i0 & 3) * 0x01010101u + 0x03020100u)) & mz) == 0) {
+        temp = _mm_alignr_epi8(b, a, (i0 & 3) * 4);
+        if (do_zero) zeroing_pending = true; else return temp;
     }
+
     // special case: shift right
-    if (i0 > 4 && i0 < 8 && m2 == -1 && (m1 ^ 0x04040404 ^ ((i0 & 3) * 0x01010101u + 0x03020100u)) == 0) {
-        return _mm_alignr_epi8(a, b, (i0 & 3) * 4);
+    if (i0 > 4 && i0 < 8 && ((m1 ^ 0x04040404 ^ ((i0 & 3) * 0x01010101u + 0x03020100u)) & mz) == 0) {
+        temp = _mm_alignr_epi8(a, b, (i0 & 3) * 4);
+        if (do_zero) zeroing_pending = true; else return temp;
     }
 #endif // SSSE3
 
-
 #if INSTRSET >= 5   // SSE4.1 supported
-    if (((m1 & ~0x04040404) ^ 0x03020100) == 0 && m2 == -1) {
-        // selecting without shuffling or zeroing
-        return _mm_blend_epi16(a, b, (i0>>2&1)*3 | ((i1>>2&1)*3)<<2 | ((i2>>2&1)*3)<<4 | ((i3>>2&1)*3)<<6 );
+    if ((((m1 & ~0x04040404) ^ 0x03020100) & mz) == 0) {
+        // blending without permuting
+        temp = _mm_blend_epi16(a, b, (i0>>2&1)*3 | ((i1>>2&1)*3)<<2 | ((i2>>2&1)*3)<<4 | ((i3>>2&1)*3)<<6 );
+        if (do_zero) zeroing_pending = true; else return temp;
     }
 #endif // SSE4.1
 
-    // general case
+    if (zeroing_pending) {
+        // additional zeroing of temp needed
+        __m128i maskz = constant4i < (i0 < 0 ? 0 : -1), (i1 < 0 ? 0 : -1), (i2 < 0 ? 0 : -1), (i3 < 0 ? 0 : -1) > ();
+        return _mm_and_si128(temp, maskz);
+    }        
 
+    // general case
 #ifdef __XOP__     // Use AMD XOP instruction PPERM
     __m128i mask = constant4i <
         i0 < 0 ? 0x80808080 : (i0*4 & 31) + (((i0*4 & 31) + 1) << 8) + (((i0*4 & 31) + 2) << 16) + (((i0*4 & 31) + 3) << 24),
@@ -3462,6 +3904,7 @@ static inline Vec4i blend4i(Vec4i const & a, Vec4i const & b) {
         i2 < 0 ? 0x80808080 : (i2*4 & 31) + (((i2*4 & 31) + 1) << 8) + (((i2*4 & 31) + 2) << 16) + (((i2*4 & 31) + 3) << 24),
         i3 < 0 ? 0x80808080 : (i3*4 & 31) + (((i3*4 & 31) + 1) << 8) + (((i3*4 & 31) + 2) << 16) + (((i3*4 & 31) + 3) << 24) > ();
     return _mm_perm_epi8(a, b, mask);
+
 #else  // combine two permutes
     __m128i a1 = permute4i <
         (uint32_t)i0 < 4 ? i0 : -1,
@@ -3489,15 +3932,31 @@ static inline Vec2q blend2q(Vec2q const & a, Vec2q const & b) {
     const int m1 = (i0&3) | (i1&3)<<8; 
 
     // Mask to zero out negative indexes
-    const int m2 = (i0 < 0 ? 0 : 0xFF) | (i1 < 0 ? 0 : 0xFF) << 8;
+    const int mz = (i0 < 0 ? 0 : 0xFF) | (i1 < 0 ? 0 : 0xFF) << 8;
 
-    if ((m1 & 0x0202 & m2) == 0) {
-        // no elements from b
+    // no elements from b
+    if ((m1 & 0x0202 & mz) == 0) {
         return permute2q <i0, i1> (a);
     }
-    if (((m1^0x0202) & 0x0202 & m2) == 0) {
-        // no elements from a
+    // no elements from a
+    if (((m1^0x0202) & 0x0202 & mz) == 0) {
         return permute2q <i0 & ~2, i1 & ~2> (b);
+    }
+    // (all cases where one index is -1 or -256 would go to the above cases)
+
+    // special case: PUNPCKLQDQ 
+    if (i0 == 0 && i1 == 2) {
+        return _mm_unpacklo_epi64(a, b);
+    }
+    if (i0 == 2 && i1 == 0) {
+        return _mm_unpacklo_epi64(b, a);
+    }
+    // special case: PUNPCKHQDQ 
+    if (i0 == 1 && i1 == 3) {
+        return _mm_unpackhi_epi64(a, b);
+    }
+    if (i0 == 3 && i1 == 1) {
+        return _mm_unpackhi_epi64(b, a);
     }
 
 #if  INSTRSET >= 4  // SSSE3
@@ -3512,13 +3971,14 @@ static inline Vec2q blend2q(Vec2q const & a, Vec2q const & b) {
 #endif // SSSE3
 
 #if INSTRSET >= 5   // SSE4.1 supported
-    if (((m1 & ~0x0202) ^ 0x0100) == 0 && m2 == 0xFFFF) {
-        // selecting without shuffling or zeroing
+    if (((m1 & ~0x0202) ^ 0x0100) == 0 && mz == 0xFFFF) {
+        // blending without permuting
         return _mm_blend_epi16(a, b, (i0>>1 & 1) * 0xF | ((i1>>1 & 1) * 0xF) << 4 );
     }
 #endif // SSE4.1
 
-    // general case. combine two permutes
+    // general case. combine two permutes 
+    // (all cases are caught by the above special cases if SSE4.1 or higher is supported)
     __m128i a1, b1;
     a1 = permute2q <(uint32_t)i0 < 2 ? i0 : -1, (uint32_t)i1 < 2 ? i1 : -1 > (a);
     b1 = permute2q <(uint32_t)(i0^2) < 2 ? (i0^2) : -1, (uint32_t)(i1^2) < 2 ? (i1^2) : -1 > (b);
@@ -3527,7 +3987,7 @@ static inline Vec2q blend2q(Vec2q const & a, Vec2q const & b) {
 
 template <int i0, int i1>
 static inline Vec2uq blend2uq(Vec2uq const & a, Vec2uq const & b) {
-    return Vec2q (blend2q <i0, i1> ((__m128i)a, (__m128i)b));
+    return Vec2uq (blend2q <i0, i1> ((__m128i)a, (__m128i)b));
 }
 
 
@@ -3796,6 +4256,52 @@ static inline Vec2q lookup(Vec2q const & index, void const * table) {
     int64_t const * tt = (int64_t const *)table;
     return Vec2q(tt[ii[0]], tt[ii[2]]);
 }
+
+
+/*****************************************************************************
+*
+*          Other permutations with variable indexes
+*
+*****************************************************************************/
+
+// Function shift_bytes_up: shift whole vector left by b bytes.
+// You may use a permute function instead if b is a compile-time constant
+static inline Vec16c shift_bytes_up(Vec16c const & a, int b) {
+    if ((uint32_t)b > 15) return _mm_setzero_si128();
+#if INSTRSET >= 4    // SSSE3
+    static const char mask[32] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};    
+    return Vec16c(_mm_shuffle_epi8(a, Vec16c().load(mask+16-b)));
+#else
+    Vec2uq a1 = Vec2uq(a);
+    if (b < 8) {    
+        a1 = (a1 << (b*8)) | (permute2uq<-1,0>(a1) >> (64 - (b*8)));
+    }
+    else {
+        a1 = permute2uq<-1,0>(a1) << ((b-8)*8);
+    }
+    return Vec16c(a1);
+#endif
+}
+
+// Function shift_bytes_down: shift whole vector right by b bytes
+// You may use a permute function instead if b is a compile-time constant
+static inline Vec16c shift_bytes_down(Vec16c const & a, int b) {
+    if ((uint32_t)b > 15) return _mm_setzero_si128();
+#if INSTRSET >= 4    // SSSE3
+    static const char mask[32] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    return Vec16c(_mm_shuffle_epi8(a, Vec16c().load(mask+b)));
+#else
+    Vec2uq a1 = Vec2uq(a);
+    if (b < 8) {    
+        a1 = (a1 >> (b*8)) | (permute2uq<1,-1>(a1) << (64 - (b*8)));
+    }
+    else {
+        a1 = permute2uq<1,-1>(a1) >> ((b-8)*8); 
+    }
+    return Vec16c(a1);
+#endif
+}
+
 
 
 /*****************************************************************************
@@ -4356,10 +4862,11 @@ public:
 
 // vector of 4 32-bit signed integers
 static inline Vec4i operator / (Vec4i const & a, Divisor_i const & d) {
-#if defined (__XOP__) && defined (GCC_VERSION) && GCC_VERSION <= 40701 && ! defined(__INTEL_COMPILER)
+#if defined (__XOP__) && defined (GCC_VERSION) && GCC_VERSION <= /*40701*/ 99999 && ! defined(__INTEL_COMPILER)
 #define XOP_MUL_BUG                                       // GCC has bug in XOP multiply
+// Bug found in GCC version 4.7.0 and 4.7.1
 #endif
-/* todo: test this when GCC bug is fixed
+// todo: test this when GCC bug is fixed
 #if defined (__XOP__) && !defined (XOP_MUL_BUG)
     __m128i t1  = _mm_mul_epi32(a,d.getm());               // 32x32->64 bit signed multiplication of a[0] and a[2]
     __m128i t2  = _mm_srli_epi64(t1,32);                   // high dword of result 0 and 2
@@ -4367,15 +4874,13 @@ static inline Vec4i operator / (Vec4i const & a, Divisor_i const & d) {
     __m128i t5  = _mm_set_epi32(-1,0,-1,0);                // mask of dword 1 and 3
     __m128i t7  = _mm_blendv_epi8(t2,t3,t5);               // blend two results
     __m128i t8  = _mm_add_epi32(t7,a);                     // add
-    __m128i t9  = _mm_sra_epi32(t8,d.gets1());             // shift right artihmetic
+    __m128i t9  = _mm_sra_epi32(t8,d.gets1());             // shift right arithmetic
     __m128i t10 = _mm_srai_epi32(a,31);                    // sign of a
     __m128i t11 = _mm_sub_epi32(t10,d.getsign());          // sign of a - sign of d
     __m128i t12 = _mm_sub_epi32(t9,t11);                   // + 1 if a < 0, -1 if d < 0
     return        _mm_xor_si128(t12,d.getsign());          // change sign if divisor negative
-#endif
-*/
 
-#if INSTRSET >= 5 && !defined (XOP_MUL_BUG)  // SSE4.1 supported 
+#elif INSTRSET >= 5 && !defined (XOP_MUL_BUG)  // SSE4.1 supported 
     __m128i t1  = _mm_mul_epi32(a,d.getm());               // 32x32->64 bit signed multiplication of a[0] and a[2]
     __m128i t2  = _mm_srli_epi64(t1,32);                   // high dword of result 0 and 2
     __m128i t3  = _mm_srli_epi64(a,32);                    // get a[1] and a[3] into position for multiplication
@@ -4383,7 +4888,7 @@ static inline Vec4i operator / (Vec4i const & a, Divisor_i const & d) {
     __m128i t5  = _mm_set_epi32(-1,0,-1,0);                // mask of dword 1 and 3
     __m128i t7  = _mm_blendv_epi8(t2,t4,t5);               // blend two results
     __m128i t8  = _mm_add_epi32(t7,a);                     // add
-    __m128i t9  = _mm_sra_epi32(t8,d.gets1());             // shift right artihmetic
+    __m128i t9  = _mm_sra_epi32(t8,d.gets1());             // shift right arithmetic
     __m128i t10 = _mm_srai_epi32(a,31);                    // sign of a
     __m128i t11 = _mm_sub_epi32(t10,d.getsign());          // sign of a - sign of d
     __m128i t12 = _mm_sub_epi32(t9,t11);                   // + 1 if a < 0, -1 if d < 0
@@ -4404,7 +4909,7 @@ static inline Vec4i operator / (Vec4i const & a, Divisor_i const & d) {
     __m128i u5  = _mm_add_epi32 (u3,u4);                   // sum of sign corrections
     __m128i u6  = _mm_sub_epi32 (t7,u5);                   // high multiplication result converted to signed
     __m128i t8  = _mm_add_epi32(u6,a);                     // add a
-    __m128i t9  = _mm_sra_epi32(t8,d.gets1());             // shift right artihmetic
+    __m128i t9  = _mm_sra_epi32(t8,d.gets1());             // shift right arithmetic
     __m128i t10 = _mm_sub_epi32(u1,d.getsign());           // sign of a - sign of d
     __m128i t11 = _mm_sub_epi32(t9,t10);                   // + 1 if a < 0, -1 if d < 0
     return        _mm_xor_si128(t11,d.getsign());          // change sign if divisor negative
@@ -4434,7 +4939,7 @@ static inline Vec4ui operator / (Vec4ui const & a, Divisor_ui const & d) {
 static inline Vec8s operator / (Vec8s const & a, Divisor_s const & d) {
     __m128i t1  = _mm_mulhi_epi16(a, d.getm());            // multiply high signed words
     __m128i t2  = _mm_add_epi16(t1,a);                     // + a
-    __m128i t3  = _mm_sra_epi16(t2,d.gets1());             // shift right artihmetic
+    __m128i t3  = _mm_sra_epi16(t2,d.gets1());             // shift right arithmetic
     __m128i t4  = _mm_srai_epi16(a,15);                    // sign of a
     __m128i t5  = _mm_sub_epi16(t4,d.getsign());           // sign of a - sign of d
     __m128i t6  = _mm_sub_epi16(t3,t5);                    // + 1 if a < 0, -1 if d < 0
@@ -4808,6 +5313,5 @@ static inline Vec16uc & operator /= (Vec16uc & a, Const_int_t<d> b) {
     a = a / b;
     return a;
 }
-
 
 #endif // VECTORI128_H

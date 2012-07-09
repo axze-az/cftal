@@ -1,8 +1,8 @@
 /****************************  vectorclass.h   ********************************
 * Author:        Agner Fog
 * Date created:  2012-05-30
-* Last modified: 2012-05-30
-* Version:       1.00 Beta
+| Last modified: 2012-07-08
+| Version:       1.01 Beta
 * Project:       vector classes
 * Description:
 * Header file defining vector classes as interface to 
@@ -23,10 +23,10 @@
 *
 * For detailed instructions, see VectorClass.pdf
 *
-* (c) Copyright 2012 GNU General Public License http://www.gnu.org/licenses
+* (c) Copyright 2012 GNU General Public License 3.0 http://www.gnu.org/licenses
 ******************************************************************************/
 #ifndef VECTORCLASS_H
-#define VECTORCLASS_H
+#define VECTORCLASS_H  101
 
 
 #include "instrset.h"        // Select supported instruction set

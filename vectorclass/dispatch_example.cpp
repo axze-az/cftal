@@ -1,8 +1,8 @@
 /*************************  dispatch_example.cpp   ****************************
 | Author:        Agner Fog
 | Date created:  2012-05-30
-| Last modified: 2012-05-30
-| Version:       1.00 Beta
+| Last modified: 2012-07-08
+| Version:       1.01 Beta
 | Project:       vector classes
 | Description:
 | Example of CPU dispatching.
@@ -45,7 +45,7 @@ float FUNCNAME (float * f) {
 
 
 #if INSTRSET == 2
-// make dispatcher in only one of the compiled versions
+// make dispatcher in only the lowest of the compiled versions
 
 // Function pointer initially points to the dispatcher.
 // After first call it points to the selected version
@@ -62,13 +62,16 @@ float myfunc_dispatch(float * f) {
         fprintf(stderr, "\nError: Instruction set SSE2 not supported on this computer");
         return 0.f;
     }
-    return (*myfunc_pointer)(f);                           // continue in dispatched version
+    // continue in dispatched version
+    return (*myfunc_pointer)(f);
 }
+
 
 // Entry to dispatched function call
 inline float myfunc(float * f) {
     return (*myfunc_pointer)(f);                           // go to dispatched version
 }
+
 
 // Example: main calls myfunc
 int main(int argc, char* argv[]) 
@@ -80,6 +83,5 @@ int main(int argc, char* argv[])
     printf("\nsum = %8.3f \n", sum);                       // print result
     return 0;
 }
-
 
 #endif  // INSTRSET == 2

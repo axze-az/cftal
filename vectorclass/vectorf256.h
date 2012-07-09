@@ -1,8 +1,8 @@
 /****************************  vectorf256.h   *******************************
 * Author:        Agner Fog
 * Date created:  2012-05-30
-* Last modified: 2012-05-30
-* Version:       1.00 Beta
+* Last modified: 2012-07-08
+* Version:       1.01 Beta
 * Project:       vector classes
 * Description:
 * Header file defining 256-bit floating point vector classes as interface
@@ -271,6 +271,14 @@ static inline Vec8fb operator ! (Vec8fb const & a) {
 return Vec8fb( !Vec8i(a));
 }
 
+// Functions for Vec8fb
+
+// andnot: a & ~ b
+static inline Vec8fb andnot(Vec8fb const & a, Vec8fb const & b) {
+    return _mm256_andnot_ps(b, a);
+}
+
+
 
 /*****************************************************************************
 *
@@ -463,6 +471,13 @@ static inline Vec4db operator ~ (Vec4db const & a) {
 // all bits in an element are the same)
 static inline Vec4db operator ! (Vec4db const & a) {
 return Vec4db( ! Vec4q(a));
+}
+
+// Functions for Vec8fb
+
+// andnot: a & ~ b
+static inline Vec4db andnot(Vec4db const & a, Vec4db const & b) {
+    return _mm256_andnot_pd(b, a);
 }
 
 
@@ -659,7 +674,7 @@ static inline Vec8f operator ++ (Vec8f & a, int) {
 }
 
 // prefix operator ++
-static inline Vec8f operator ++ (Vec8f & a) {
+static inline Vec8f & operator ++ (Vec8f & a) {
     a = a + 1.0f;
     return a;
 }
@@ -689,7 +704,7 @@ static inline Vec8f operator -- (Vec8f & a, int) {
 }
 
 // prefix operator --
-static inline Vec8f operator -- (Vec8f & a) {
+static inline Vec8f & operator -- (Vec8f & a) {
     a = a - 1.0f;
     return a;
 }
@@ -1087,7 +1102,7 @@ static inline Vec8fb is_nan(Vec8f const & a) {
     Vec8i t3 = 0xFF000000;             // exponent mask
     Vec8i t4 = t2 & t3;                // exponent
     Vec8i t5 = _mm256_andnot_si256(t3,t2);// fraction
-    return Vec8i(t4 == t3 & t5 != 0);  // exponent = all 1s and fraction != 0
+    return Vec8i(t4 == t3 && t5 != 0); // exponent = all 1s and fraction != 0
 #else
     return Vec8fb(is_nan(a.get_low()), is_nan(a.get_high()));
 #endif
@@ -1102,7 +1117,7 @@ static inline Vec8fb is_denormal(Vec8f const & a) {
     Vec8i t3 = 0xFF000000;                // exponent mask
     Vec8i t4 = t2 & t3;                   // exponent
     Vec8i t5 = _mm256_andnot_si256(t3,t2);// fraction
-    return Vec8i(t4 == 0 & t5 != 0);      // exponent = 0 and fraction != 0
+    return Vec8i(t4 == 0 && t5 != 0);     // exponent = 0 and fraction != 0
 #else
     return Vec8fb(is_denormal(a.get_low()), is_denormal(a.get_high()));
 #endif
@@ -1279,7 +1294,7 @@ static inline Vec4d operator ++ (Vec4d & a, int) {
 }
 
 // prefix operator ++
-static inline Vec4d operator ++ (Vec4d & a) {
+static inline Vec4d & operator ++ (Vec4d & a) {
     a = a + 1.0;
     return a;
 }
@@ -1309,7 +1324,7 @@ static inline Vec4d operator -- (Vec4d & a, int) {
 }
 
 // prefix operator --
-static inline Vec4d operator -- (Vec4d & a) {
+static inline Vec4d & operator -- (Vec4d & a) {
     a = a - 1.0;
     return a;
 }
@@ -1705,7 +1720,7 @@ static inline Vec4db is_nan(Vec4d const & a) {
     Vec4q t3 = 0xFFE0000000000000;     // exponent mask
     Vec4q t4 = t2 & t3;                // exponent
     Vec4q t5 = _mm256_andnot_si256(t3,t2);// fraction
-    return Vec4q(t4 == t3 & t5 != 0);  // exponent = all 1s and fraction != 0
+    return Vec4q(t4 == t3 && t5 != 0); // exponent = all 1s and fraction != 0
 #else
     return Vec4db(is_nan(a.get_low()),is_nan(a.get_high()));
 #endif
@@ -1720,7 +1735,7 @@ static inline Vec4db is_denormal(Vec4d const & a) {
     Vec4q t3 = 0xFFE0000000000000;     // exponent mask
     Vec4q t4 = t2 & t3;                // exponent
     Vec4q t5 = _mm256_andnot_si256(t3,t2);// fraction
-    return Vec4q(t4 == 0 & t5 != 0);   // exponent = 0 and fraction != 0
+    return Vec4q(t4 == 0 && t5 != 0);  // exponent = 0 and fraction != 0
 #else
     return Vec4db(is_denormal(a.get_low()),is_denormal(a.get_high()));
 #endif
@@ -2234,9 +2249,9 @@ static inline Vec8f permute8f(Vec8f const & a) {
         // bug in MS VS 11 beta: operands in wrong order  //!!
         t1 = _mm256_permutevar8x32_ps(mask, _mm256_castps_si256(a));      //  problem in immintrin.h
 #elif defined (GCC_VERSION) && GCC_VERSION <= 40700 && ! defined(__INTEL_COMPILER)        
-        // Gcc 4.7.0 has wrong parameter type and operands in wrong order
+        // Gcc 4.7.0 has wrong parameter type and operands in wrong order. fixed in version 4.7.1
         t1 = _mm256_permutevar8x32_ps(mask, a);
-#else   // no bug.
+#else   // no bug version
         t1 = _mm256_permutevar8x32_ps(a, _mm256_castps_si256(mask));
 #endif
     }
@@ -2627,7 +2642,7 @@ static inline Vec8f lookup8(Vec8i const & index, Vec8f const & table) {
     // bug in MS VS 11 beta: operands in wrong order  //!!
     return _mm256_permutevar8x32_ps(_mm256_castsi256_ps(index), _mm256_castps_si256(table)); 
 #elif defined (GCC_VERSION) && GCC_VERSION <= 40700 && ! defined(__INTEL_COMPILER)        
-        // Gcc 4.7.0 has wrong parameter type and operands in wrong order
+        // Gcc 4.7.0 has wrong parameter type and operands in wrong order. fixed in version 4.7.1
     return _mm256_permutevar8x32_ps(_mm256_castsi256_ps(index), table);
 #else
     // no bug version
@@ -2762,6 +2777,5 @@ static inline Vec4d lookup(Vec4q const & index, double const * table) {
 #endif
 }
 #endif  // VECTORI256_H
-
 
 #endif // VECTORF256_H
