@@ -486,6 +486,14 @@ namespace x86vec {
 		template <>
 		struct vpsllw_const<0> : public select_arg_1<__m128i> {};
 
+		template <>
+		struct vpsllw_const<1> : public vpsllw {
+			static __m128i v(__m128i a) {
+				return _mm_add_epi16(a, a);
+			}
+		};
+
+
 		struct vpslld {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_sll_epi32(a, shift);
@@ -504,6 +512,13 @@ namespace x86vec {
 		template <>
 		struct vpslld_const<0> : public select_arg_1<__m128i> {};
 
+		template <>
+		struct vpslld_const<1> : public vpslld {
+			static __m128i v(__m128i a) {
+				return _mm_add_epi32(a, a);
+			}
+		};
+
 		struct vpsllq {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_sll_epi64(a, shift);
@@ -521,6 +536,13 @@ namespace x86vec {
 
 		template <>
 		struct vpsllq_const<0> : public select_arg_1<__m128i> {};
+
+		template <>
+		struct vpsllq_const<1> : public vpsllq {
+			static __m128i v(__m128i a) {
+				return _mm_add_epi64(a, a);
+			}
+		};
 
 		struct vpsrlw {
 			static __m128i v(__m128i a, __m128i shift) {

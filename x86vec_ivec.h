@@ -132,6 +132,11 @@ namespace x86vec
 		   int _P4, int _P5, int _P6, int _P7 >
         v8s16 permute(const v8s16& a, const v8s16& b);
 
+	template <unsigned _I>
+	v8s16 insert(const v8s16& a, typename v8s16::element_type v);
+	template <unsigned _I>
+	typename v8s16::element_type extract(const v8s16& a);
+
         class v8u16 : public v8s16
         {
         public:
@@ -221,11 +226,15 @@ namespace x86vec
 		   int _P4, int _P5, int _P6, int _P7 >
         v8u16 permute(const v8u16& a, const v8u16& b);
 
-
+	template <unsigned _I>
+	v8u16 insert(const v8u16& a, typename v8u16::element_type v);
+	template <unsigned _I>
+	typename v8u16::element_type extract(const v8u16& a);
+	
         class v4s32 : public v128u1
         {
         public:
-                typedef std::int16_t element_type;
+                typedef std::int32_t element_type;
                 typedef v128u1 base_type;
                 v4s32() = default;
                 v4s32(vector_type r);
@@ -315,10 +324,15 @@ namespace x86vec
         template < int _P0, int _P1, int _P2, int _P3 >
         v4s32 permute(const v4s32& a, const v4s32& b);
 
+	template <unsigned _I>
+	v4s32 insert(const v4s32& a, typename v4s32::element_type v);
+	template <unsigned _I>
+	typename v4s32::element_type extract(const v4s32& a);
+
         class v4u32 : public v4s32
         {
         public:
-                typedef uint16_t element_type;
+                typedef std::uint32_t element_type;
                 typedef v4s32 base_type;
                 v4u32();
                 v4u32(vector_type r);
@@ -399,10 +413,13 @@ namespace x86vec
         template < int _P0, int _P1, int _P2, int _P3 >
         v4u32 permute(const v4u32& a, const v4u32& b);
 
-
+	template <unsigned _I>
+	v4u32 insert(const v4u32& a, typename v4u32::element_type v);
+	template <unsigned _I>
+	typename v4u32::element_type extract(const v4u32& a);
+	
 	//std::pair<v4s32, v4s32> mul(const v8s16& x, const v8u16& y);
 	// std::pair<v4u32, v4u32> mul(const v8u16& x, const v8u16& y);
-
 }
 
 #include <cftal/x86vec_v128u1_inl.h>
@@ -411,5 +428,8 @@ namespace x86vec
 #include <cftal/x86vec_v4s32_inl.h>
 #include <cftal/x86vec_v4u32_inl.h>
 
+
+// Local variables:
+// mode: c++
+// end:
 #endif
-// kate: indent-mode cstyle; indent-width 8; replace-tabs on; ;

@@ -452,6 +452,21 @@ x86vec::v8s16 x86vec::permute(const v8s16& a, const v8s16& b)
         return perm_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>(a(), b());
 }
 
+template <unsigned _I>
+inline
+x86vec::v8s16 x86vec::insert(const v8s16& a, typename v8s16::element_type v)
+{
+	return insert_u16<_I>(a(), v);
+}
+
+template <unsigned _I>
+inline
+typename x86vec::v8s16::element_type 
+x86vec::extract(const v8s16& a)
+{
+	return extract_u16<_I>(a());
+}
+
 // Local variables:
 // mode: c++
 // end:

@@ -8,24 +8,33 @@
 
 namespace cftal {
 
-        class ptr_cache {
+	template <std::size_t _N>
+        class ptr_cache : private std::allocator<char> {
+                static_assert(_N >= sizeof(void*), "_N >= sizeof(void*)");
+		typedef std::allocator<char> base_type;
                 struct block {
                         block* _next;
                 };
-                std::mutex _mtx;
                 block* _free_list;
                 std::size_t _free_blocks;
                 std::size_t _max_blocks;
+		std::int32_t _clients;
+		void deallocate(void* p) {
+			base_type::deallocate(static_cast<char*>(p), _N);
+		}
         public:
                 ptr_cache(const ptr_cache&) = delete;
                 ptr_cache& operator=(const ptr_cache&) = delete;
                 ptr_cache(std::size_t blocks=1024)
-                        : _mtx(), _free_list(nullptr), _free_blocks(0),
-                          _max_blocks(blocks) {
+                        : _free_list(nullptr), _free_blocks(0),
+                          _max_blocks(blocks), _clients(0) {
                 }
+		~ptr_cache() {
+			while (_free_blocks) 
+				deallocate(get());
+		}
                 void* get() {
                         void* p=nullptr;
-                        std::lock_guard<std::mutex> lck(_mtx);
                         block* b= _free_list;
                         if (b != nullptr) {
                                 _free_list= b->_next;
@@ -36,7 +45,6 @@ namespace cftal {
                 }
                 void* put(void* p) {
                         void* r= p;
-                        std::lock_guard<std::mutex> lck(_mtx);
                         if (_free_blocks < _max_blocks) {
                                 block* b= static_cast<block*>(p);
                                 b->_next = _free_list;
@@ -46,28 +54,74 @@ namespace cftal {
                         return r;
                 }
                 void max_blocks(std::size_t n) {
-                        std::lock_guard<std::mutex> lck(_mtx);
                         _max_blocks = n;
+			while (_free_blocks > _max_blocks) {
+				void* p= get();
+				deallocate(p);
+			}
                 }
-                std::size_t max_blocks() {
-                        std::lock_guard<std::mutex> lck(_mtx);
+                std::size_t max_blocks() const {
                         return _max_blocks;
                 }
+		template <typename _N>
+		std::int32_t register_client(const std::allocator<_U>& a) {
+			if (a != *this) 
+				std::abort();
+			if (_clients >= 0)
+				return ++_clients;
+			return _clients;
+		}
+		template <typename _N>
+		std::int32_t deregister_client(const std::allocator<_U>& a) {
+			if (a != *this) 
+				std::abort();
+			return --_clients;
+		}
         };
 
         template <std::size_t _N>
         class global_ptr_cache {
                 static_assert(_N >= sizeof(void*), "_N >= sizeof(void*)");
-                static ptr_cache _cache;
+                static thread_local ptr_cache* _cache;
         public:
-                static void* put(void* p) { return _cache.put(p); }
-                static void* get() { return _cache.get(); }
-                static void max_blocks(std::size_t n) { _cache.max_blocks(n); }
-                static std::size_t max_blocks() { return _cache.max_blocks(); }
+		template <typename _U>
+		static void register_client(const std::allocator<_U>& a) {
+			if (_cache == nullptr)
+				_cache = new ptr_cache<_N>();
+			_cache->register_client(a);
+		}
+		template <typename _U>
+		static void deregister_client(const std::allocator<_U>& a) {
+			if (_cache != nullptr) {
+				if (_cache->deregister_client(a)<0) {
+					delete _cache;
+					_cache = nullptr;
+				}
+			}
+		}
+                static void* put(void* p) { 
+			if (_cache)
+				return _cache->put(p);
+			return p;
+		}
+                static void* get() { 
+			if (_cache)
+				return _cache->get(); 
+			return nullptr;
+		}
+                static void max_blocks(std::size_t n) { 
+			if (_cache)
+				_cache->max_blocks(n); 
+		}
+                static std::size_t max_blocks() { 
+			if (_cache)
+				return _cache->max_blocks(); 
+			return 0;
+		}
         };
 
         template <std::size_t _N>
-        ptr_cache global_ptr_cache<_N>::_cache;
+        ptr_cache<_N>* global_ptr_cache<_N>::_cache=nullptr;
 
         template <class _T, std::size_t _N>
         class cache_allocator : public std::allocator<_T> {
@@ -78,8 +132,15 @@ namespace cftal {
         public:
 		typedef typename std::allocator<_T>::size_type size_type;
 		typedef typename std::allocator<_T>::pointer pointer;
-                cache_allocator() : base_type() {}
-                cache_allocator(const cache_allocator& r) : base_type(r) {};
+                cache_allocator() : base_type() {
+
+		}
+                cache_allocator(const cache_allocator& r) : base_type(r) {
+
+		};
+                cache_allocator(cache_allocator&& r) : base_type(std::move(r)) {
+
+		};
                 ~cache_allocator() {}
                 template<typename _Tp1>
                 struct rebind { typedef cache_allocator<_Tp1, _N> other; };

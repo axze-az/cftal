@@ -443,6 +443,21 @@ x86vec::v4u32 x86vec::permute(const v4u32& a, const v4u32& b)
         return perm_u32<_P0, _P1, _P2, _P3>(a(), b());
 }
 
+template <unsigned _I>
+inline
+x86vec::v4u32 x86vec::insert(const v4u32& a, typename v4u32::element_type v)
+{
+	return insert_u32<_I>(a(), v);
+}
+
+template <unsigned _I>
+inline
+typename x86vec::v4u32::element_type 
+x86vec::extract(const v4u32& a)
+{
+	return extract_u32<_I>(a());
+}
+
 // Local variables:
 // mode: c++
 // end:

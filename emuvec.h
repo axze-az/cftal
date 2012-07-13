@@ -4,203 +4,379 @@
 #include <cftal/heap_array.h>
 #include <cftal/allocator.h>
 #include <cftal/mem_load.h>
+#include <cstring>
+#include <type_traits>
 
 namespace emuvec {
 
+	// constants consisting of 1 uint32_t
+	template <std::uint32_t _P>
+	struct const_u32 {
+		static
+		const std::uint32_t val = _P;
+	};
+	
         namespace impl {
 
+		// returns -1 if lt zero
                 template <typename _T>
                 inline
-                _T ltz(const _T& j )
+                _T lt_z(const _T& j )
                 {
-                        return j < _T(0) ? -1 : 0;
+			typedef typename std::make_signed<_T>::type _S;
+			_S s(j);
+                        return _T(s < _S(0) ? -1 : 0);
                 }
+		
+		// returns -1 if ge zero
+		template <typename _T>
+		inline
+		_T ge_z(const _T& j) {
+			return ~lt_z(j);
+		}
+		
 
-                inline
-                std::uint8_t ltz(std::uint8_t j)
-                {
-                        return std::int8_t(j) < 0 ? -1 : 0;
-                }
+	template <std::size_t _N>
+	struct mem_cpy {
+		static void* v(void* d, const void* s) {
+			return std::memcpy(d, s, _N);
+		}
+	};
 
-                inline
-                std::uint16_t ltz(std::uint16_t j)
-                {
-                        return std::int16_t(j) < 0 ? -1 : 0;
-                }
-
-                inline
-                std::uint32_t ltz(std::uint32_t j)
-                {
-                        return std::int32_t(j) < 0 ? -1 : 0;
-                }
-
-                inline
-                std::uint64_t ltz(std::uint64_t j)
-                {
-                        return std::int64_t(j) < 0 ? -1 : 0;
-                }
-        }
-
-        template <typename _T, std::size_t _N>
-        class vec {
-        public:
-                typedef
-                cftal::heap_array<_T, _N, cftal::cache_allocator<_T, _N> >
-                vec_t;
-                typedef _T element_type;
-                typedef vec_t vector_type;
-                enum { N = _N };
-                vec() : _v() {}
-                vec(const vec&) = default;
-                vec(vec&& r) : _v(r._v) {}
-                vec(element_type i) : _v(i) {}
-                vec(element_type i, bool broadcast) : _v(i) {
-                        if (!broadcast)
-                                for (std::size_t j=1; j<_N; ++j)
-                                        _v[j] =0;
-                }
-                vec(element_type i0, element_type i1) : _v() {
-                        static_assert(_N == 2, "invalid constructor called");
-                        _v[0] = i0;
-                        _v[1] = i1;
-                }
-                vec(element_type i0, element_type i1,
-                    element_type i2, element_type i3) : _v() {
-                        static_assert(_N == 4, "invalid constructor called");
-                        _v[0] = i0;
-                        _v[1] = i1;
-                        _v[2] = i2;
-                        _v[3] = i3;
-                }
-                vec(element_type i0, element_type i1,
-                    element_type i2, element_type i3,
-                    element_type i4, element_type i5,
-                    element_type i6, element_type i7) : _v() {
-                        static_assert(_N == 8, "invalid constructor called");
-                        _v[0] = i0;
-                        _v[1] = i1;
-                        _v[2] = i2;
-                        _v[3] = i3;
-                        _v[4] = i4;
-                        _v[5] = i5;
-                        _v[6] = i6;
-                        _v[7] = i7;
-                }
-                vec(const mem::addr<element_type>& r) : _v() {
-                        const element_type* p= r();
-                        for (std::size_t i; i< _N; ++i)
-                                _v[i] = p[i];
-
-                }
-                vec(const mem::addr_bcast<element_type>& r) : _v(*r()) {
-                }
-                vec& operator=(const vec& t) = default;
-                vec& operator=(vec&& t) {
-                        _v = t._v;
-                        return *this;
-                }
-                vec& operator=(element_type t) {
-                        _v = t;
-                        return *this;
-                }
+	template <>
+	struct mem_cpy<16> {
+		static void* v(void* d, const void*s) {
+			const std::uint64_t* su=
+				static_cast<const std::uint64_t*>(s);
+			std::uint64_t* du=static_cast<std::uint64_t*>(d);
+			du[0] = su[0];
+			du[1] = su[1];
+			return d;
+		}
+	};
+		
+	// vector with untyped memory, works only
+	// with stateless allocators.
+	template <std::size_t _N,  class _A = std::allocator<char> >
+	class utvec : private _A {
+		void* _v;
+		void* alloc_() {
+			_A* a= static_cast<_A*>(this);
+			return static_cast<void*>(a->allocate(_N));
+		}
+		void free_() {
+			_A* a= static_cast<_A*>(this);
+			char* p= static_cast<char*>(_v);
+			a->deallocate(p, _N);
+		}
+		void* copy_(void* dst, const void* src) {
+			return mem_cpy<_N>::v(dst, src);
+		}
+		void* alloc_copy_(const utvec& r) {
+			void* p= copy_(alloc_(), r._v);
+			return p;
+		}
 	protected:
-                const element_type& operator[](std::size_t i) const {
-                        return _v[i];
-                }
-                element_type& operator[](std::size_t i) {
-                        return _v[i];
-                }
-	private:
-                vec_t _v;
-	public:
-		// implementation 
-#define BI_OP(op, func)                                         \
-                static vec func(const vec& a, const vec& b) {   \
-                        vec r;                                  \
-                        for (std::size_t i=0; i<_N; ++i)        \
-                                r[i] = a[i] op b[i];            \
-                        return r;                               \
-                }
-                BI_OP(^, v_xor)
-                BI_OP(&, v_and)
-                BI_OP(|, v_or)
-                BI_OP(+, v_add)
-                BI_OP(-, v_sub)
-                BI_OP(*, v_mul)
-                // division
-                static vec v_div(const vec& a, const vec& b) {
-                        vec r;
-                        for (std::size_t i=0; i<_N; ++i)
-                                r[i] = b[i] ? a[i] / b[i] : _T(-1);
-                        return r;
-                }
-                static vec v_mod(const vec& a, const vec& b) {
-                        vec r;
-                        for (std::size_t i=0; i<_N; ++i)
-                                r[i] = b[i] ? a[i] % b[i] : a[i];
-                        return r;
-                }
-                static vec v_log_not(const vec& a) {
-                        vec r;
-                        for (std::size_t i=0; i<_N; ++i)
-                                r[i] = a[i] ? _T(-1) : _T(0);
-                        return r;
-                }
-                static vec v_not(const vec& a) {
-                        vec r;
-                        for (std::size_t i=0; i<_N; ++i)
-                                r[i] = ~a[i];
-                        return r;
-                }
-                static vec v_neg(const vec& a) {
-                        vec r;
-                        for (std::size_t i=0; i<_N; ++i)
-                                r[i] = -a[i];
-                        return r;
-                }
-                static const vec& v_pos(const vec& a) {
-                        return a;
-                }
+		void* begin() {
+			return _v;
+		}
+		const void* begin() const {
+			return _v;
+		}
+		void swap(utvec& r) {
+			std::swap(_v, r._v);
+		}
+		utvec() : _v(alloc_()) {
+		}
+		utvec(const utvec& r) : _v(alloc_copy_(r)) {
+		}
+		utvec(utvec&& r) : _v(alloc_()) {
+			swap(r);
+		}
+		utvec& operator=(const utvec& r) {
+			if (&r != this) 
+				copy_(_v, r._v, _N);
+			return *this;
+		}
+		utvec& operator=(utvec&& r) {
+			swap(r);
+			return *this;
+		}
+	};
+        }
+		
+	namespace impl {
+		
+		template <typename _T, std::size_t _N>
+		struct vec_size {
+			enum {
+				value = _N * sizeof(_T)
+			};
+		};
+		
+		template <typename _T, std::size_t _N, bool _INIT=true>
+		class vec : public utvec<impl::vec_size<_T,_N>::value, cftal::
+			cache_allocator<char, impl::vec_size<_T,_N>::value> > {
+		protected:
+			typedef utvec<impl::vec_size<_T,_N>::value, cftal::
+				      cache_allocator<char, impl::
+						      vec_size<_T,_N>::value> >
+				      base_type;
+			typedef _T element_type;
+			typedef base_type vector_type;
+			_T* begin() { 
+				return static_cast<_T*>(base_type::begin());
+			}
+			const _T* begin() const {
+				return static_cast<const _T*>(
+					base_type::begin());
+			}
+			_T* end() { return begin() + _N; }
+			const _T* end() const { return begin() + _N; }
+			vec() : base_type() {
+				if (_INIT)
+					std::uninitialized_fill(begin(), 
+								end(), _T());
+			}
+			vec(element_type t) : base_type() {
+				std::uninitialized_fill(begin(), end(), t);
+			}
+			vec(const vec& r) : base_type(r) {}
+			vec(vec&& r) : base_type(std::move(r)) {}
+			template <typename _U, std::size_t _M>
+			vec(const vec<_U, _M>& r) : base_type(r) {}
+			template <typename _U, std::size_t _M>
+			vec(vec<_U, _M>&& r) : base_type(std::move(r)) {}
+			vec& operator=(element_type r) {
+				element_type t(r);
+				std::fill(begin(), end(), t);
+				return *this;
+			}
+			vec& operator=(const vec& r) {
+				base_type::operator=(r);
+				return *this;
+			}
+			vec& operator=(vec&& r) {
+				base_type::operator=(std::move(r));
+				return *this;
+			}
+			template <typename _U, std::size_t _M>
+			vec& operator=(const vec<_U,_M>& r) {
+				base_type::operator=(r);
+				return *this;
+			}
+			template <typename _U, std::size_t _M>
+			vec& operator=(vec<_U,_M>&& r) {
+				base_type::operator=(std::move(r));
+				return *this;
+			}
+		public:
+			enum { N = _N };
+			_T* operator()() { return begin(); }
+			const _T* operator()() const { return begin(); }
+		}; 
 
-#define CMP_OP(op, func)                                                \
-                static vec func(const vec& a, const vec& b) {           \
-                        vec r;                                          \
-                        for (std::size_t i=0; i<_N; ++i)                \
-                                r[i] = a[i] op b[i] ? _T(-1) : _T(0);   \
-                        return r;                                       \
-                }
-                CMP_OP(<, v_lt)
-                CMP_OP(<=, v_le)
-                CMP_OP(==, v_eq)
-                CMP_OP(!=, v_ne)
-                CMP_OP(>=, v_ge)
-                CMP_OP(>, v_gt)
+		
+		template <typename _T, typename _OP>
+		inline
+		void v_op(_T* r, const _T* s0, const _T* s1, 
+			  const _OP& op, std::size_t n)
+		{
+			for (std::size_t i=0; i<n; ++i)
+				r[i] = op (s0[i] , s1[i]);
+		}
 
-#undef CMP_OP
+		template <typename _T, typename _OP>
+		inline
+		void v_op(_T* r, const _T& s0, const _T* s1,
+			  const _OP& op, std::size_t n)
+		{
+			for (std::size_t i=0; i<n; ++i)
+				r[i] = op (s0 , s1[i]);
+		}
+
+		template <typename _T, typename _OP>
+		inline
+		void v_op(_T* r, const _T* s0, const _T& s1,
+			  const _OP& op, std::size_t n)
+		{
+			for (std::size_t i=0; i<n; ++i)
+				r[i] = op (s0[i] , s1);
+		}
+		
+		template <typename _T, typename _OP>
+		inline
+		void v_op(_T* r, const _T* s0, const _OP& op, std::size_t n)
+		{
+			for (std::size_t i=0; i<n; ++i)
+				r[i] = op(s0[i]);
+		}
+
+#define UN_OP(op, v_name)					\
+		template <typename _T>				\
+		struct v_name {					\
+			_T operator()(const _T& a) const {	\
+				return op;			\
+			}					\
+		}
+		UN_OP(a!=0 ? _T(-1) : _T(0), v_log_not);
+		UN_OP(~a, v_not);
+		UN_OP(-a, v_neg);
+#undef UN_OP
+
+#define BI_OP(op, v_name)						\
+		template <typename _T>					\
+		struct v_name {						\
+			_T operator()(const _T& a, const _T& b) const {	\
+				return op;				\
+			}						\
+		};
+		BI_OP(a^b, v_xor);
+		BI_OP(a|b, v_or);
+		BI_OP(a&b, v_and);
+		BI_OP(a+b, v_add);
+		BI_OP(a-b, v_sub);
+		BI_OP(a*b, v_mul);
+		BI_OP(a/b, v_fdiv);
+		BI_OP(b != 0 ? a/b : _T(-1), v_idiv);
+		BI_OP(b != 0 ? a%b : a, v_irem);
+		BI_OP(a<b, v_lt);
+		BI_OP(a<=b, v_le);
+		BI_OP(a==b, v_eq);
+		BI_OP(a!=b, v_ne);
+		BI_OP(a>=b, v_ge);
+		BI_OP(a>b, v_gt);
+
 #undef BI_OP
-        };
+		template <typename _T>
+		struct v_div : 
+			public std::conditional<
+			std::is_floating_point<_T>::value,
+			v_fdiv<_T>, v_idiv<_T> > {
+		};
 
-#define BI_OP(type, op, func)                                           \
-        inline type operator op (const type & a, const type& b) {       \
-                return type :: func (a, b);                             \
+		template <typename _T>
+		class v_sl {
+			std::uint32_t _s;
+		public:	
+			v_sl(std::uint32_t s) : _s(s) {}
+			_T operator()(const _T& a) const {
+				return a << _s;
+			}
+		};
+
+		template <typename _T>
+		class v_sr {
+			std::uint32_t _s;
+		public:	
+			v_sr(std::uint32_t s) : _s(s) {}
+			_T operator()(const _T& a) const {
+				return a >> _s;
+			}
+		};
+	}
+			
+
+	class v8s16;
+	class v8u16;
+	class v4s32;
+	class v4u32;
+
+	class v8s16 : public impl::vec<std::int16_t, 8, false> {
+	public:
+		typedef std::int16_t element_type;
+		typedef impl::vec<element_type, 8, false> base_type;
+		typedef v8s16 my_type;
+		
+		v8s16();
+		v8s16(element_type r);
+		v8s16(element_type r, bool broad_cast);
+		v8s16(element_type i0, element_type i1, 
+		      element_type i2, element_type i3, 
+		      element_type i4, element_type i5, 
+		      element_type i6, element_type i7);
+		v8s16(const v8s16& r);
+		v8s16(v8s16&& r);
+		v8s16& operator=(element_type r);
+		v8s16& operator=(const v8s16& r);
+		v8s16& operator=(v8s16&& r);
+
+		// memory load operations
+                v8s16(const mem::addr_bcast<element_type>& r);
+                v8s16(const mem::addr<element_type>& r);
+		
+		// conversion from v8u16
+		v8s16(const v8u16& r);
+		v8s16(v8u16&& r);
+		v8s16& operator=(const v8u16& r);
+		v8s16& operator=(v8u16&& r);
+	};
+
+#define BI_OP(type, op, optype)						\
+        inline								\
+	type operator op (const type & a, const type& b)		\
+	{								\
+		type r;							\
+		impl:: optype <type ::element_type > ot;		\
+		impl::v_op(r(), a(), b(), ot, type::N);			\
+		return r;						\
+        }								\
+									\
+        inline								\
+	type operator op (const type & a, const type :: element_type& b) \
+	{								\
+		type r;							\
+		impl:: optype <type ::element_type > ot;		\
+		impl::v_op(r(), a(), b, ot, type::N);			\
+		return r;						\
+        }								\
+									\
+        inline								\
+	type operator op (const type ::element_type& a, const type& b)	\
+	{								\
+		type r;							\
+		impl:: optype <type ::element_type > ot;		\
+		impl::v_op(r(), a, b(), ot, type::N);			\
+		return r;						\
+        } 
+
+#define ASSIGN_OP(type, op, optype)					\
+        inline								\
+	type& operator op (type &a, const type& b)			\
+	{								\
+		type r;							\
+		impl:: optype <type ::element_type > ot;		\
+		impl::v_op(r(), a(), b(), ot, type::N);			\
+		return a=r;						\
+        }								\
+									\
+        inline								\
+	type operator op (type & a, const type :: element_type& b) \
+	{								\
+		type r;							\
+		impl:: optype <type ::element_type > ot;		\
+		impl::v_op(r(), a(), b, ot, type::N);			\
+		return a=r;						\
+        }		
+	
+#define UN_OP(type, op, func)					\
+        inline							\
+	type operator op (const type & a)			\
+	{							\
+		type r;						\
+		impl:: optype <type ::element_type > ot;	\
+		impl::v_op(r(), a(), ot, type::N);		\
+		return r;					\
         }
 
-#define MOD_UN_OP(type, op, func)                               \
-        inline type& operator op (type & a, const type& b) {    \
-                a = type :: func (a, b);                        \
-                return a;                                       \
-        }
-
-#define UN_OP(type, op, func)                           \
-        inline type operator op (const type & a) {      \
-                return type :: func(a);                 \
-        }
+#define POS_OP(type, op, func)						\
+	inline const type& operator+(const type& a) { return a; } 
 
 #define GEN_OPS(type)                           \
         UN_OP(type, !, v_log_not)               \
         UN_OP(type, ~, v_not)                   \
         UN_OP(type, -, v_neg)                   \
-        UN_OP(type, +, v_pos)                   \
+        POS_OP(type, +, v_pos)                   \
         BI_OP(type, <, v_lt)                    \
         BI_OP(type, <=, v_le)                   \
         BI_OP(type, ==, v_eq)                   \
@@ -208,49 +384,39 @@ namespace emuvec {
         BI_OP(type, >=, v_ge)                   \
         BI_OP(type, >, v_gt)                    \
         BI_OP(type, & , v_and)                  \
-        MOD_UN_OP(type, &=, v_and)              \
+        ASSIGN_OP(type, &=, v_and)              \
         BI_OP(type, && , v_and)                 \
         BI_OP(type, | , v_or)                   \
-        MOD_UN_OP(type, |=, v_or)               \
+        ASSIGN_OP(type, |=, v_or)               \
         BI_OP(type, || , v_or)                  \
         BI_OP(type, ^ , v_xor)                  \
-        MOD_UN_OP(type, ^=, v_xor)
+        ASSIGN_OP(type, ^=, v_xor)		\
+        BI_OP(type, + , v_add)			\
+        ASSIGN_OP(type, +=, v_add)		\
+        BI_OP(type, - , v_sub)			\
+        ASSIGN_OP(type, -=, v_sub)		\
+        BI_OP(type, * , v_mul)			\
+        ASSIGN_OP(type, *=, v_mul)		\
+        BI_OP(type, / , v_divd)			\
+        ASSIGN_OP(type, *=, v_vdiv)
 
+#define GEN_INT_OPS(type)			 \
+        BI_OP(type, % , v_rem)			 \
+        ASSIGN_OP(type, %=, v_rem)               
 
-
-// #undef GEN_OPS
-	// #define GEN_OPS(type)
-
-
-        typedef vec<std::int16_t, 8> v8s16;
-        GEN_OPS(v8s16)
-
-        typedef vec<std::uint16_t, 8> v8u16;
-        GEN_OPS(v8u16)
-
-        typedef vec<std::int32_t, 4> v4s32;
-        GEN_OPS(v4s32)
-
-        typedef vec<std::uint32_t, 4> v4u32;
-        GEN_OPS(v4u32)
 
 #if 0
-        inline
-        v8s16 operator|(const v8s16& a, const v8s16& b) {
-                return v8s16::v_or(a, b);
-        }
-        inline
-        v8s16& operator|=(v8s16& a, const v8s16& b) {
-                a = v8s16::v_or(a, b);
-                return a;
-        }
+        GEN_OPS(v8s16)
+        GEN_OPS(v8u16)
+        GEN_OPS(v4s32)
+        GEN_OPS(v4u32)
 #endif
 
+#undef GEN_INT_OPS
 #undef GEN_OPS
 #undef UN_OP
-#undef MOD_BI_OP
+#undef ASSIGN_OP
 #undef BI_OP
-
 }
 
 // Local variables:
