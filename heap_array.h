@@ -6,20 +6,20 @@
 
 namespace cftal {
 
-	namespace impl {
-		void heap_array_throw_range_error(std::size_t _N, 
-						  bool from_const)
-		__attribute__((__noreturn__));
-	}
+        namespace impl {
+                void heap_array_throw_range_error(std::size_t _N,
+                                                  bool from_const)
+                __attribute__((__noreturn__));
+        }
 
         template <class _T, std::size_t _N,
                   class _A = std::allocator<_T> >
         class heap_array : private _A {
-		static_assert(_N>0, "N>0");
+                static_assert(_N>0, "N>0");
                 _T* _v;
-		_T* alloc_(_A& a) {
-			return a.allocate(_N);
-		}
+                _T* alloc_(_A& a) {
+                        return a.allocate(_N);
+                }
                 _T* alloc_(_A& a, const _T& init) {
                         _T* p = alloc_(a);
                         std::size_t i;
@@ -49,7 +49,7 @@ namespace cftal {
                 void destroy_(_A& a) {
                         for (std::size_t j=0; j<_N; ++j)
                                 a.destroy(_v+j);
-			a.deallocate(_v, _N);
+                        a.deallocate(_v, _N);
                 }
         public:
                 // our own type
@@ -82,74 +82,75 @@ namespace cftal {
                 typedef std::size_t size_type;
                 // difference_type
                 typedef std::ptrdiff_t difference_type;
-		
-		// vector interface
-		const_iterator begin() const { return const_iterator(_v); }
-		const_iterator cbegin() const { return const_iterator(_v); }
-		iterator begin() { return iterator(_v); }
-		const_iterator end() const { return begin() + _N; }
-		const_iterator cend() const { return cbegin() + _N; }
-		iterator end() { return begin() + _N; }
-		constexpr bool empty() const { return false; }
-		constexpr size_type max_size() const {  return _N; }
-		constexpr size_type size() const { return _N; }
-		const_reference operator[](size_type n) const { 
-			return *(cbegin()+_N); 
-		}
-		reference operator[](size_type n) {
-			return *(begin()+_N);
-		}
-		const_reference at(size_type n) const {
-			if (n>=_N)
-				impl::heap_array_throw_range_error(_N, true);
-			return (*this)[n];
-		}
-		reference at(size_type n) {
-			if (n>=_N)
-				impl::heap_array_throw_range_error(_N, false);
-			return (*this)[n];
-		}
 
-		// default constructor
-                heap_array() : _v(alloc_(*this, _T())) {
+                // vector interface
+                const_iterator begin() const { return const_iterator(_v); }
+                const_iterator cbegin() const { return const_iterator(_v); }
+                iterator begin() { return iterator(_v); }
+                const_iterator end() const { return begin() + _N; }
+                const_iterator cend() const { return cbegin() + _N; }
+                iterator end() { return begin() + _N; }
+                constexpr bool empty() const { return false; }
+                constexpr size_type max_size() const {  return _N; }
+                constexpr size_type size() const { return _N; }
+                const_reference operator[](size_type n) const {
+                        return *(cbegin()+_N);
                 }
-		// assignment from _T
-                heap_array(const _T& t) : _v(alloc_(*this, t)) {
+                reference operator[](size_type n) {
+                        return *(begin()+_N);
                 }
-		// copy construction
-                heap_array(const heap_array& r) : _v(alloc_and_copy_(*this,
-                                                                     r._v)) {
+                const_reference at(size_type n) const {
+                        if (n>=_N)
+                                impl::heap_array_throw_range_error(_N, true);
+                        return (*this)[n];
                 }
-		// move construction
-                heap_array(heap_array&& r) : _v(alloc_(*this, _T())) {
-                        std::swap(_v, r._v);
+                reference at(size_type n) {
+                        if (n>=_N)
+                                impl::heap_array_throw_range_error(_N, false);
+                        return (*this)[n];
                 }
+
+                // default constructor
+                heap_array() : _A(), _v(alloc_(*this, _T())) {
+                }
+                // assignment from _T
+                heap_array(const _T& t) : _A(), _v(alloc_(*this, t)) {
+                }
+                // copy construction
+                heap_array(const heap_array& r)
+                : _A(), _v(alloc_and_copy_(*this, r._v)) {
+                }
+                // move construction
+                heap_array(heap_array&& r)
+                : _A(std::move(r)), _v(alloc_(*this, _T())) {
+			std::swap(_v, r._v);
+		}
 		// destruction
-		~heap_array() { 
-			destroy_(*this); 
+		~heap_array() {
+			destroy_(*this);
 		}
 		// assignment
-                heap_array& operator=(const heap_array& r) {
-                        if (this != &r)
-                                std::copy(r.begin(), r.end(), begin());
-                        return *this;
-                }
+		heap_array& operator=(const heap_array& r) {
+			if (this != &r)
+				std::copy(r.begin(), r.end(), begin());
+			return *this;
+		}
 		// move assignment
-                heap_array& operator=(heap_array&& r) {
-                        std::swap(_v, r._v);
-                        return *this;
-                }
+		heap_array& operator=(heap_array&& r) {
+			return swap(r);
+		}
 		// assignment of all elements.
-                heap_array& operator=(const _T& r) {
-                        _T t=r;
-                        std::fill(begin(), end(), t);
-                        return *this;
-                }
+		heap_array& operator=(const _T& r) {
+			_T t=r;
+			std::fill(begin(), end(), t);
+			return *this;
+		}
 		// swap
 		heap_array& swap(heap_array& r) {
 			std::swap(_v, r._v);
+			return *this;
 		}
-        };
+	};
 
 	template <typename _T, std::size_t _N, typename _A>
 	void swap(heap_array<_T, _N, _A>& a, heap_array<_T, _N, _A>& b) {
@@ -160,7 +161,7 @@ namespace cftal {
 namespace std {
 
 	template <typename _T, std::size_t _N, typename _A>
-	void swap(cftal::heap_array<_T, _N, _A>& a, 
+	void swap(cftal::heap_array<_T, _N, _A>& a,
 		  cftal::heap_array<_T, _N, _A>& b) {
 		return cftal::swap(a, b);
 	}

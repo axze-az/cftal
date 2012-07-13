@@ -63,7 +63,7 @@ namespace cftal {
                 std::size_t max_blocks() const {
                         return _max_blocks;
                 }
-		template <typename _N>
+		template <typename _U>
 		std::int32_t register_client(const std::allocator<_U>& a) {
 			if (a != *this) 
 				std::abort();
@@ -71,7 +71,7 @@ namespace cftal {
 				return ++_clients;
 			return _clients;
 		}
-		template <typename _N>
+		template <typename _U>
 		std::int32_t deregister_client(const std::allocator<_U>& a) {
 			if (a != *this) 
 				std::abort();
@@ -82,7 +82,7 @@ namespace cftal {
         template <std::size_t _N>
         class global_ptr_cache {
                 static_assert(_N >= sizeof(void*), "_N >= sizeof(void*)");
-                static thread_local ptr_cache* _cache;
+                static thread_local ptr_cache<_N>* _cache;
         public:
 		template <typename _U>
 		static void register_client(const std::allocator<_U>& a) {
@@ -121,7 +121,7 @@ namespace cftal {
         };
 
         template <std::size_t _N>
-        ptr_cache<_N>* global_ptr_cache<_N>::_cache=nullptr;
+        thread_local ptr_cache<_N>* global_ptr_cache<_N>::_cache=nullptr;
 
         template <class _T, std::size_t _N>
         class cache_allocator : public std::allocator<_T> {
@@ -133,15 +133,17 @@ namespace cftal {
 		typedef typename std::allocator<_T>::size_type size_type;
 		typedef typename std::allocator<_T>::pointer pointer;
                 cache_allocator() : base_type() {
-
+			global_ptr_cache<CACHE_SIZE>::register_client(*this);
 		}
                 cache_allocator(const cache_allocator& r) : base_type(r) {
-
+			global_ptr_cache<CACHE_SIZE>::register_client(*this);
 		};
                 cache_allocator(cache_allocator&& r) : base_type(std::move(r)) {
-
+			global_ptr_cache<CACHE_SIZE>::register_client(*this);
 		};
-                ~cache_allocator() {}
+                ~cache_allocator() {
+			global_ptr_cache<CACHE_SIZE>::deregister_client(*this);
+		}
                 template<typename _Tp1>
                 struct rebind { typedef cache_allocator<_Tp1, _N> other; };
                 pointer allocate(size_type __n, const void* __p= nullptr) {

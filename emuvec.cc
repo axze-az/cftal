@@ -1,4 +1,5 @@
 #include "emuvec.h"
+#include <algorithm>
 
 emuvec::v8s16::v8s16() : base_type()
 {
@@ -29,7 +30,6 @@ emuvec::v8s16::v8s16(element_type r): base_type(r)
 {
 }
 
-
 emuvec::v8s16::v8s16(emuvec::v8s16::element_type r, bool broadcast)
         : base_type(r)
 {
@@ -37,186 +37,135 @@ emuvec::v8s16::v8s16(emuvec::v8s16::element_type r, bool broadcast)
 		std::fill_n(begin()+1, N-1, 0);
 }
 
-#if 0
 emuvec::v8s16::v8s16(const mem::addr_bcast<element_type>& r)
-        : base_type(_mm_set1_epi16(* (r())))
+        : base_type()
 {
+	std::fill_n(begin(), N, *r());
 }
-
 
 emuvec::v8s16::v8s16(const mem::addr<element_type>& r)
-        : base_type(is_aligned_to<16>::ptr(r()) ?
-                    _mm_load_si128(m128i_ptr::make(r())) :
-                    _mm_loadu_si128(m128i_ptr::make(r())))
+        : base_type()
 {
-}
-
-
-emuvec::v8s16::v8s16(const mem::aligned::addr<element_type>& r)
-        : base_type(_mm_load_si128(m128i_ptr::make(r())))
-{
-}
-
-
-emuvec::v8s16::v8s16(const mem::unaligned::addr<element_type>& r)
-        : base_type(_mm_loadu_si128(m128i_ptr::make(r())))
-{
+	std::copy_n(r(), N, begin());
 }
 
 emuvec::v8s16&
 emuvec::operator|= (v8s16& a, const v8s16& b)
 {
-        a = _mm_or_si128(a(), b());
-        return a;
+	impl::v_or<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, b(), v8s16::N);
+	return a;
 }
 
 
 emuvec::v8s16&
 emuvec::operator&= (v8s16& a, const v8s16& b)
 {
-        a = _mm_and_si128(a(), b());
-        return a;
+	impl::v_and<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, b(), v8s16::N);
+	return a;
 }
-
 
 emuvec::v8s16&
 emuvec::operator^= (v8s16& a, const v8s16& b)
 {
-        a = _mm_xor_si128(a(), b());
-        return a;
+	impl::v_xor<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, b(), v8s16::N);
+	return a;
 }
 
 
 emuvec::v8s16&
 emuvec::operator+= (v8s16& a, const v8s16& b)
 {
-        a = _mm_add_epi16(a(), b());
-        return a;
+	impl::v_add<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, b(), v8s16::N);
+	return a;
 }
 
 
 emuvec::v8s16&
 emuvec::operator-= (v8s16& a, const v8s16& b)
 {
-        a = _mm_sub_epi16(a(), b());
-        return a;
+	impl::v_sub<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, b(), v8s16::N);
+	return a;
 }
-
 
 emuvec::v8s16&
 emuvec::operator*= (v8s16& a, const v8s16& b)
 {
-        a = _mm_mullo_epi16(a(), b());
-        return a;
+	impl::v_mul<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, b(), v8s16::N);
+	return a;
 }
-
 
 emuvec::v8s16&
 emuvec::operator/=(v8s16& a, const v8s16& b)
 {
-        a= impl::div_u16::v(a(), b());
-        return a;
+	impl::v_div<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, b(), v8s16::N);
+	return a;
 }
-
 
 emuvec::v8s16&
 emuvec::operator%=(v8s16& a, const v8s16& b)
 {
-        v8s16 q(a/b);
-        a = cftal::remainder(a, b, q);
-        return a;
-}
-
-template <unsigned _P>
-
-emuvec::v8s16&
-emuvec::operator<<= (v8s16& a, const const_u32< _P >& b)
-{
-        const int val = b.val;
-        a = impl::vpsllw_const<val>::v(a());
-        return a;
+	impl::v_irem<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, b(), v8s16::N);
+	return a;
 }
 
 
 emuvec::v8s16&
 emuvec::operator<<= (v8s16& a, uint32_t b)
 {
-        __m128i s = _mm_cvtsi32_si128(b);
-        a = impl::vpsllw::v(a(), s);
+	impl::v_sl<v8s16::element_type> ot(b);
+	impl::v_assign_op(a(), ot, v8s16::N);
         return a;
-}
-
-template <unsigned _P>
-
-emuvec::v8s16
-emuvec::operator<< (const v8s16& a, const const_u32< _P >& b)
-{
-        const int val = b.val;
-        return impl::vpsllw_const<val>::v(a());
 }
 
 
 emuvec::v8s16
 emuvec::operator<< (const v8s16& a, uint32_t b)
 {
-        __m128i s = _mm_cvtsi32_si128(b);
-        return impl::vpsllw::v(a(), s);
+	v8s16 r;
+	impl::v_sl<v8s16::element_type> ot(b);
+	impl::v_bi_op(r(), a(), ot, v8s16::N);
+	return r;
 }
 
-
-template <unsigned _P>
-
 emuvec::v8s16&
-emuvec::operator>>= (v8s16& a, const const_u32< _P >& b)
+emuvec::operator>>= (v8s16& a, uint32_t b)
 {
-        const int val = b.val;
-        a = impl::vpsrlw_const<val>::v(a());
+	impl::v_sr<v8s16::element_type> ot(b);
+	impl::v_assign_op(a(), ot, v8s16::N);
         return a;
 }
 
-
-emuvec::v8s16&
-emuvec::operator>>= (v8s16& a, uint32_t r)
-{
-        __m128i s = _mm_cvtsi32_si128(r);
-        a = impl::vpsrlw::v(a(), s);
-        return a;
-}
-
-template <unsigned _P>
-
 emuvec::v8s16
-emuvec::operator>> (const v8s16& a, const const_u32< _P >& b)
+emuvec::operator>> (const v8s16& a, uint32_t b)
 {
-        const int val = b.val;
-        return impl::vpsrlw_const<val>::v(a());
+	v8s16 r;
+	impl::v_sr<v8s16::element_type> ot(b);
+	impl::v_bi_op(r(), a(), ot, v8s16::N);
+	return r;
 }
-
-
-emuvec::v8s16
-emuvec::operator>> (const v8s16& a, uint32_t r)
-{
-        __m128i s = _mm_cvtsi32_si128(r);
-        return impl::vpsrlw::v(a(), s);
-}
-
-
 
 emuvec::v8s16&
 emuvec::operator++(v8s16& a)
 {
-        const __m128i one = const8_u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
-        a = _mm_add_epi16(a(), one);
-        return a;
+	impl::v_inc<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, v8s16::N);
+	return a;
 }
-
 
 emuvec::v8s16
 emuvec::operator++ (v8s16& a, int)
 {
-        v8s16 t(a);
-        const __m128i one = const8_u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
-        a = _mm_add_epi16(a(), one);
+	v8s16 t(a);
+	impl::v_inc<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, v8s16::N);
         return t;
 }
 
@@ -224,29 +173,28 @@ emuvec::operator++ (v8s16& a, int)
 emuvec::v8s16&
 emuvec::operator--(v8s16& a)
 {
-        const __m128i one = const8_u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
-        a = _mm_sub_epi16(a(), one);
-        return a;
+	impl::v_dec<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, v8s16::N);
+	return a;
 }
-
 
 emuvec::v8s16
 emuvec::operator-- (v8s16& a, int)
 {
-        v8s16 t(a);
-        const __m128i one = const8_u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
-        a = _mm_sub_epi16(a(), one);
-        return a;
+	v8s16 t(a);
+	impl::v_dec<v8s16::element_type> ot;
+	impl::v_assign_op(a(), ot, v8s16::N);
+        return t;
 }
-
 
 emuvec::v8s16
 emuvec::operator-(const v8s16& a)
 {
-        const __m128i zero = impl::make_zero_int::v();
-        return _mm_sub_epi16(zero, a());
+	v8s16 r;
+	impl::v_neg<v8s16::element_type> ot;
+	impl::v_un_op(r(), ot, a(), v8s16::N);
+	return r;
 }
-
 
 const emuvec::v8s16&
 emuvec::operator+(const v8s16& a)
@@ -258,18 +206,23 @@ emuvec::operator+(const v8s16& a)
 emuvec::v8s16
 emuvec::operator~(const v8s16& a)
 {
-        const __m128i all_set = const4_u32 < -1, -1, -1, -1 >::iv();
-        return _mm_xor_si128(a(), all_set);
+	v8s16 r;
+	impl::v_not<v8s16::element_type> ot;
+	impl::v_un_op(r(), ot, a(), v8s16::N);
+	return r;
 }
 
 
 emuvec::v8s16
 emuvec::operator!(const v8s16& a)
 {
-        const __m128i msk = impl::make_zero_int::v();
-        return _mm_cmpeq_epi16(a(), msk);
+	v8s16 r;
+	impl::v_log_not<v8s16::element_type> ot;
+	impl::v_un_op(r(), ot, a(), v8s16::N);
+	return r;
 }
 
+#if 0
 
 emuvec::v8s16 emuvec::operator| (const v8s16& a, const v8s16& b)
 {
@@ -460,3 +413,5 @@ emuvec::extract(const v8s16& a)
 }
 
 #endif
+
+void catch_print_size() {}
