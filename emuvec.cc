@@ -222,11 +222,13 @@ emuvec::operator!(const v8s16& a)
 	return r;
 }
 
-#if 0
 
 emuvec::v8s16 emuvec::operator| (const v8s16& a, const v8s16& b)
 {
-        return _mm_or_si128(a(), b());
+	v8s16 r;
+	impl::v_or<v8s16::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v8s16::N);
+	return r;
 }
 
 
@@ -238,7 +240,10 @@ emuvec::v8s16 emuvec::operator|| (const v8s16& a, const v8s16& b)
 
 emuvec::v8s16 emuvec::operator& (const v8s16& a, const v8s16& b)
 {
-        return _mm_and_si128(a(), b());
+	v8s16 r;
+	impl::v_and<v8s16::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v8s16::N);
+	return r;
 }
 
 
@@ -250,42 +255,60 @@ emuvec::v8s16 emuvec::operator&& (const v8s16& a, const v8s16& b)
 
 emuvec::v8s16 emuvec::operator^(const v8s16& a, const v8s16& b)
 {
-        return _mm_xor_si128(a(), b());
+	v8s16 r;
+	impl::v_xor<v8s16::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v8s16::N);
+	return r;
 }
 
 
 emuvec::v8s16 emuvec::operator+ (const v8s16& a, const v8s16& b)
 {
-        return _mm_add_epi16(a(), b());
+	v8s16 r;
+	impl::v_add<v8s16::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v8s16::N);
+	return r;
 }
 
 
 emuvec::v8s16 emuvec::operator- (const v8s16& a, const v8s16& b)
 {
-        return _mm_sub_epi16(a(), b());
+	v8s16 r;
+	impl::v_sub<v8s16::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v8s16::N);
+	return r;
 }
 
 
 emuvec::v8s16 emuvec::operator* (const v8s16& a, const v8s16& b)
 {
-        return _mm_mullo_epi16(a(), b());
+	v8s16 r;
+	impl::v_mul<v8s16::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v8s16::N);
+	return r;
 }
 
 
 emuvec::v8s16
 emuvec::operator/(const v8s16& a, const v8s16& b)
 {
-        return impl::div_u16::v(a(), b());
+	v8s16 r;
+	impl::v_div<v8s16::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v8s16::N);
+	return r;
 }
 
 
 emuvec::v8s16
 emuvec::operator%(const v8s16& a, const v8s16& b)
 {
-        return cftal::remainder(a, b, a/b);
+	v8s16 r;
+	impl::v_irem<v8s16::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v8s16::N);
+	return r;
 }
 
-
+#if 0
 emuvec::v8s16 emuvec::operator< (const v8s16& a, const v8s16& b)
 {
 	v8s16 ta(a ^ v_sign_s16_msk::iv());
