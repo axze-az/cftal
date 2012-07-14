@@ -34,8 +34,7 @@ namespace x86vec
         bool both(const v128u1& a);
         bool none(const v128u1& a);
 
-        class v8s16 : public v128u1
-        {
+        class v8s16 : public v128u1 {
         public:
                 typedef std::int16_t element_type;
                 typedef v128u1 base_type;
@@ -137,10 +136,9 @@ namespace x86vec
 	template <unsigned _I>
 	typename v8s16::element_type extract(const v8s16& a);
 
-        class v8u16 : public v8s16
-        {
+        class v8u16 : public v8s16 {
         public:
-                typedef uint16_t element_type;
+                typedef std::uint16_t element_type;
                 typedef v8s16 base_type;
                 v8u16();
                 v8u16(vector_type r);
@@ -231,8 +229,7 @@ namespace x86vec
 	template <unsigned _I>
 	typename v8u16::element_type extract(const v8u16& a);
 	
-        class v4s32 : public v128u1
-        {
+        class v4s32 : public v128u1 {
         public:
                 typedef std::int32_t element_type;
                 typedef v128u1 base_type;
@@ -329,8 +326,7 @@ namespace x86vec
 	template <unsigned _I>
 	typename v4s32::element_type extract(const v4s32& a);
 
-        class v4u32 : public v4s32
-        {
+        class v4u32 : public v4s32 {
         public:
                 typedef std::uint32_t element_type;
                 typedef v4s32 base_type;
