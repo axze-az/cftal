@@ -80,6 +80,11 @@ ln -sf lib$(LIBNAME).so.$(MAJOR).$(MINOR) lib$(LIBNAME).so.$(MAJOR)
 ln -sf lib$(LIBNAME).so.$(MAJOR) lib$(LIBNAME).so
 
 
+emuvec.ol: OPT+= -fno-tree-vectorize -mtune=atom
+emuvec.os: OPT+= -fno-tree-vectorize -mtune=atom
+emuvec.od: OPT+= -fno-tree-vectorize -mtune=atom
+emuvec.s: OPT+= -fno-tree-vectorize -mtune=atom
+
 tests: hackx86vec genx86vec hackx86vec_g
 
 

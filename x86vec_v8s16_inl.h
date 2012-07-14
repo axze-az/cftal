@@ -2,6 +2,7 @@
 #define __X86VEC_V8S16_INL_H__ 1
 
 #if !defined (__X86VEC_IVEC_H__)
+#include <cftal/x86vec_ivec.h>
 #error "never use this file directly"
 #endif
 
@@ -461,7 +462,7 @@ x86vec::v8s16 x86vec::insert(const v8s16& a, typename v8s16::element_type v)
 
 template <unsigned _I>
 inline
-typename x86vec::v8s16::element_type 
+typename x86vec::v8s16::element_type
 x86vec::extract(const v8s16& a)
 {
 	return extract_u16<_I>(a());
