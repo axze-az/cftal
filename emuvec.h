@@ -62,7 +62,7 @@ namespace emuvec {
                 struct mem_cpy<16> {
                         static void* v(void* d, const void*s) {
                                 const std::uint64_t* su=
-					static_cast<const std::uint64_t*>(s);
+                                        static_cast<const std::uint64_t*>(s);
                                 std::uint64_t* du=
                                         static_cast<std::uint64_t*>(d);
                                 du[0] = su[0];
@@ -125,105 +125,106 @@ namespace emuvec {
         }
 
 
-	namespace impl {
+        namespace impl {
 
-		template <class _T>
-		struct select {
-			static void v(_T* r, const _T* msk,
-				      const _T* ontrue, const _T* onfalse,
-				      std::size_t n) {
-				for (std::size_t i=0; i<n; ++i)
-					r[i] = lt_z(msk[i]) ?
-						ontrue[i] : onfalse[i];
-			}
-		};
+                template <class _T>
+                struct select {
+                        static void v(_T* r, const _T* msk,
+                                      const _T* ontrue, const _T* onfalse,
+                                      std::size_t n) {
+                                for (std::size_t i=0; i<n; ++i) {
+                                        r[i] = lt_z(msk[i]) ?
+                                                ontrue[i] : onfalse[i];
+                                }
+                        }
+                };
 
-		template <class _T, bool _P0, bool _P1, bool _P2, bool _P3>
-		struct select_4 {
-			static void v(_T* r, const _T* s0, const _T* s1) {
-				r[0] = _P0 ? s0[0] : s1[0];
-				r[1] = _P1 ? s0[1] : s1[1];
-				r[2] = _P2 ? s0[2] : s1[2];
-				r[3] = _P3 ? s0[3] : s1[3];
-			}
-		};
+                template <class _T, bool _P0, bool _P1, bool _P2, bool _P3>
+                struct select_4 {
+                        static void v(_T* r, const _T* s0, const _T* s1) {
+                                r[0] = _P0 ? s0[0] : s1[0];
+                                r[1] = _P1 ? s0[1] : s1[1];
+                                r[2] = _P2 ? s0[2] : s1[2];
+                                r[3] = _P3 ? s0[3] : s1[3];
+                        }
+                };
 
-		template <class _T, int _P0, int _P1, int _P2, int _P3>
-		struct perm1_4 {
-			static void v(_T* r, const _T* s0) {
-				r[0] = ge_z(_P0) & s0[_P0 & 3] ;
-				r[1] = ge_z(_P1) & s0[_P1 & 3];
-				r[2] = ge_z(_P2) & s0[_P2 & 3];
-				r[3] = ge_z(_P3) & s0[_P3 & 3];
-			}
-		};
+                template <class _T, int _P0, int _P1, int _P2, int _P3>
+                struct perm1_4 {
+                        static void v(_T* r, const _T* s0) {
+                                r[0] = ge_z(_P0) & s0[_P0 & 3] ;
+                                r[1] = ge_z(_P1) & s0[_P1 & 3];
+                                r[2] = ge_z(_P2) & s0[_P2 & 3];
+                                r[3] = ge_z(_P3) & s0[_P3 & 3];
+                        }
+                };
 
-		template <class _T, int _P0, int _P1, int _P2, int _P3>
-		struct perm2_4 {
-			static void v(_T* r, const _T* s0, const _T* s1) {
-				r[0] = ge_z(_P0) & 
-					(_P0>3 ? s1[_P0 & 3] : s0[_P0 & 3]); 
-				r[1] = ge_z(_P1) & 
-					(_P1>3 ? s1[_P1 & 3] : s0[_P1 & 3]); 
-				r[2] = ge_z(_P2) & 
-					(_P2>3 ? s1[_P2 & 3] : s0[_P2 & 3]); 
-				r[3] = ge_z(_P3) & 
-					(_P3>3 ? s1[_P3 & 3] : s0[_P3 & 3]); 
-			}
-		};
+                template <class _T, int _P0, int _P1, int _P2, int _P3>
+                struct perm2_4 {
+                        static void v(_T* r, const _T* s0, const _T* s1) {
+                                r[0] = ge_z(_P0) &
+                                        (_P0>3 ? s1[_P0 & 3] : s0[_P0 & 3]);
+                                r[1] = ge_z(_P1) &
+                                        (_P1>3 ? s1[_P1 & 3] : s0[_P1 & 3]);
+                                r[2] = ge_z(_P2) &
+                                        (_P2>3 ? s1[_P2 & 3] : s0[_P2 & 3]);
+                                r[3] = ge_z(_P3) &
+                                        (_P3>3 ? s1[_P3 & 3] : s0[_P3 & 3]);
+                        }
+                };
 
-		template <class _T, bool _P0, bool _P1, bool _P2, bool _P3,
-			  bool _P4, bool _P5, bool _P6, bool _P7>
-		struct select_8 {
-			static void v(_T* r, const _T* s0, const _T* s1) {
-				r[0] = _P0 ? s0[0] : s1[0];
-				r[1] = _P1 ? s0[1] : s1[1];
-				r[2] = _P2 ? s0[2] : s1[2];
-				r[3] = _P3 ? s0[3] : s1[3];
-				r[4] = _P4 ? s0[4] : s1[4];
-				r[5] = _P5 ? s0[5] : s1[5];
-				r[6] = _P6 ? s0[6] : s1[6];
-				r[7] = _P7 ? s0[7] : s1[7];
-			}
-		};
+                template <class _T, bool _P0, bool _P1, bool _P2, bool _P3,
+                          bool _P4, bool _P5, bool _P6, bool _P7>
+                struct select_8 {
+                        static void v(_T* r, const _T* s0, const _T* s1) {
+                                r[0] = _P0 ? s0[0] : s1[0];
+                                r[1] = _P1 ? s0[1] : s1[1];
+                                r[2] = _P2 ? s0[2] : s1[2];
+                                r[3] = _P3 ? s0[3] : s1[3];
+                                r[4] = _P4 ? s0[4] : s1[4];
+                                r[5] = _P5 ? s0[5] : s1[5];
+                                r[6] = _P6 ? s0[6] : s1[6];
+                                r[7] = _P7 ? s0[7] : s1[7];
+                        }
+                };
 
-		template <class _T, int _P0, int _P1, int _P2, int _P3,
-			  int _P4, int _P5, int _P6, int _P7>
-		struct perm1_8 {
-			static void v(_T* r, const _T* s0) {
-				r[0] = ge_z(_P0) & s0[_P0 & 7] ;
-				r[1] = ge_z(_P1) & s0[_P1 & 7];
-				r[2] = ge_z(_P2) & s0[_P2 & 7];
-				r[3] = ge_z(_P3) & s0[_P3 & 7];
-				r[4] = ge_z(_P4) & s0[_P4 & 7] ;
-				r[5] = ge_z(_P5) & s0[_P5 & 7];
-				r[6] = ge_z(_P6) & s0[_P6 & 7];
-				r[7] = ge_z(_P7) & s0[_P7 & 7];
-			}
-		};
+                template <class _T, int _P0, int _P1, int _P2, int _P3,
+                          int _P4, int _P5, int _P6, int _P7>
+                struct perm1_8 {
+                        static void v(_T* r, const _T* s0) {
+                                r[0] = ge_z(_P0) & s0[_P0 & 7] ;
+                                r[1] = ge_z(_P1) & s0[_P1 & 7];
+                                r[2] = ge_z(_P2) & s0[_P2 & 7];
+                                r[3] = ge_z(_P3) & s0[_P3 & 7];
+                                r[4] = ge_z(_P4) & s0[_P4 & 7] ;
+                                r[5] = ge_z(_P5) & s0[_P5 & 7];
+                                r[6] = ge_z(_P6) & s0[_P6 & 7];
+                                r[7] = ge_z(_P7) & s0[_P7 & 7];
+                        }
+                };
 
-		template <class _T, int _P0, int _P1, int _P2, int _P3,
-			  int _P4, int _P5, int _P6, int _P7>
-		struct perm2_8 {
-			static void v(_T* r, const _T* s0, const _T* s1) {
-				r[0] = ge_z(_P0) & 
-					(_P0>7 ? s1[_P0 & 7] : s0[_P0 & 7]); 
-				r[1] = ge_z(_P1) & 
-					(_P1>7 ? s1[_P1 & 7] : s0[_P1 & 7]); 
-				r[2] = ge_z(_P2) & 
-					(_P2>7 ? s1[_P2 & 7] : s0[_P2 & 7]); 
-				r[3] = ge_z(_P3) & 
-					(_P3>7 ? s1[_P3 & 7] : s0[_P3 & 7]); 
-				r[4] = ge_z(_P4) & 
-					(_P4>7 ? s1[_P4 & 7] : s0[_P4 & 7]); 
-				r[5] = ge_z(_P5) & 
-					(_P5>7 ? s1[_P5 & 7] : s0[_P5 & 7]); 
-				r[6] = ge_z(_P6) & 
-					(_P6>7 ? s1[_P6 & 7] : s0[_P6 & 7]); 
-				r[7] = ge_z(_P7) & 
-					(_P7>7 ? s1[_P7 & 7] : s0[_P7 & 7]); 
-			}
-		};
+                template <class _T, int _P0, int _P1, int _P2, int _P3,
+                          int _P4, int _P5, int _P6, int _P7>
+                struct perm2_8 {
+                        static void v(_T* r, const _T* s0, const _T* s1) {
+                                r[0] = ge_z(_P0) &
+                                        (_P0>7 ? s1[_P0 & 7] : s0[_P0 & 7]);
+                                r[1] = ge_z(_P1) &
+                                        (_P1>7 ? s1[_P1 & 7] : s0[_P1 & 7]);
+                                r[2] = ge_z(_P2) &
+                                        (_P2>7 ? s1[_P2 & 7] : s0[_P2 & 7]);
+                                r[3] = ge_z(_P3) &
+                                        (_P3>7 ? s1[_P3 & 7] : s0[_P3 & 7]);
+                                r[4] = ge_z(_P4) &
+                                        (_P4>7 ? s1[_P4 & 7] : s0[_P4 & 7]);
+                                r[5] = ge_z(_P5) &
+                                        (_P5>7 ? s1[_P5 & 7] : s0[_P5 & 7]);
+                                r[6] = ge_z(_P6) &
+                                        (_P6>7 ? s1[_P6 & 7] : s0[_P6 & 7]);
+                                r[7] = ge_z(_P7) &
+                                        (_P7>7 ? s1[_P7 & 7] : s0[_P7 & 7]);
+                        }
+                };
 
                 template <typename _T, std::size_t _N>
                 struct vec_base {
@@ -233,20 +234,20 @@ namespace emuvec {
                         typedef utvec<size,
                                       cftal::cache_allocator<char, size> > type;
                 };
-	}
+        }
 
 
-	class v8s16;
-	class v8u16;
-	class v4s32;
+        class v8s16;
+        class v8u16;
+        class v4s32;
         class v4u32;
 
         class v8s16 : public impl::vec_base<std::int16_t, 8>::type {
         public:
                 enum { N = 8 };
                 typedef std::int16_t element_type;
-                typedef typename impl::vec_base<element_type, N>::type 
-		base_type;
+                typedef typename impl::vec_base<element_type, N>::type
+                base_type;
                 element_type* operator()();
                 const element_type* operator()() const;
                 // no initialization is done here.
@@ -355,11 +356,11 @@ namespace emuvec {
 
 }
 
-	inline
-	emuvec::v8s16::element_type* emuvec::v8s16::begin()
-	{
-		return static_cast<element_type*>(base_type::begin());
-	}
+inline
+emuvec::v8s16::element_type* emuvec::v8s16::begin()
+{
+        return static_cast<element_type*>(base_type::begin());
+}
 
 inline
 const emuvec::v8s16::element_type* emuvec::v8s16::begin() const
@@ -425,30 +426,30 @@ template < bool _P0, bool _P1, bool _P2, bool _P3,
            bool _P4, bool _P5, bool _P6, bool _P7 >
 emuvec::v8s16 emuvec::select(const v8s16& a, const v8s16& b)
 {
-	v8s16 r;
-        impl::select_8<v8s16::element_type, _P0, _P1, _P2, _P3, 
-		       _P4, _P5, _P6, _P7>::v(r(), a(), b());
-	return r;
+        v8s16 r;
+        impl::select_8<v8s16::element_type, _P0, _P1, _P2, _P3,
+		_P4, _P5, _P6, _P7>::v(r(), a(), b());
+        return r;
 }
 
 template < int _P0, int _P1, int _P2, int _P3,
            int _P4, int _P5, int _P6, int _P7 >
 emuvec::v8s16 emuvec::permute(const v8s16& a)
 {
-	v8s16 r;
-	impl::perm1_8<v8s16::element_type, _P0, _P1, _P2, _P3, 
-		      _P4, _P5, _P6, _P7>::v(r(), a());
-	return r;
+        v8s16 r;
+        impl::perm1_8<v8s16::element_type, _P0, _P1, _P2, _P3,
+		_P4, _P5, _P6, _P7>::v(r(), a());
+        return r;
 }
 
 template < int _P0, int _P1, int _P2, int _P3,
            int _P4, int _P5, int _P6, int _P7 >
 emuvec::v8s16 emuvec::permute(const v8s16& a, const v8s16& b)
 {
-	v8s16 r;
-	impl::perm2_8<v8s16::element_type, _P0, _P1, _P2, _P3, 
-		      _P4, _P5, _P6, _P7>::v(r(), a(), b());
-	return r;
+        v8s16 r;
+        impl::perm2_8<v8s16::element_type, _P0, _P1, _P2, _P3,
+		_P4, _P5, _P6, _P7>::v(r(), a(), b());
+        return r;
 }
 
 // Local variables:
