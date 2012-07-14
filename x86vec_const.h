@@ -6,100 +6,100 @@
 
 namespace x86vec {
 
-	namespace impl {
+        namespace impl {
 
-		// union of all mixed types
-		template <class _V, class _E, int _EN>
-		struct vecunion {
-			union u {
-				_V _v;
-				_E _e[_EN];
-			};
-			typedef u u_t;
-		};
+                // union of all mixed types
+                template <class _V, class _E, int _EN>
+                struct vecunion {
+                        union u {
+                                _V _v;
+                                _E _e[_EN];
+                        };
+                        typedef u u_t;
+                };
 
-	}
+        }
 
-	// constants consisting of 1 uint32_t
-	template <std::uint32_t _P>
-	struct const_u32 {
-		static
-		const std::uint32_t val = _P;
-	};
+        // constants consisting of 1 uint32_t
+        template <std::uint32_t _P>
+        struct const_u32 {
+                static
+                const std::uint32_t val = _P;
+        };
 
-	namespace const_shift {
+        namespace const_shift {
 
-		static const const_u32<0> _0;
-		static const const_u32<1> _1;
-		static const const_u32<2> _2;
-		static const const_u32<3> _3;
-		static const const_u32<4> _4;
-		static const const_u32<5> _5;
-		static const const_u32<6> _6;
-		static const const_u32<7> _7;
-		static const const_u32<8> _8;
-		static const const_u32<9> _9;
+                static const const_u32<0> _0;
+                static const const_u32<1> _1;
+                static const const_u32<2> _2;
+                static const const_u32<3> _3;
+                static const const_u32<4> _4;
+                static const const_u32<5> _5;
+                static const const_u32<6> _6;
+                static const const_u32<7> _7;
+                static const const_u32<8> _8;
+                static const const_u32<9> _9;
 
-		static const const_u32<10> _10;
-		static const const_u32<11> _11;
-		static const const_u32<12> _12;
-		static const const_u32<13> _13;
-		static const const_u32<14> _14;
-		static const const_u32<15> _15;
-		static const const_u32<16> _16;
-		static const const_u32<17> _17;
-		static const const_u32<18> _18;
-		static const const_u32<19> _19;
+                static const const_u32<10> _10;
+                static const const_u32<11> _11;
+                static const const_u32<12> _12;
+                static const const_u32<13> _13;
+                static const const_u32<14> _14;
+                static const const_u32<15> _15;
+                static const const_u32<16> _16;
+                static const const_u32<17> _17;
+                static const const_u32<18> _18;
+                static const const_u32<19> _19;
 
-		static const const_u32<20> _20;
-		static const const_u32<21> _21;
-		static const const_u32<22> _22;
-		static const const_u32<23> _23;
-		static const const_u32<24> _24;
-		static const const_u32<25> _25;
-		static const const_u32<26> _26;
-		static const const_u32<27> _27;
-		static const const_u32<28> _28;
-		static const const_u32<29> _29;
+                static const const_u32<20> _20;
+                static const const_u32<21> _21;
+                static const const_u32<22> _22;
+                static const const_u32<23> _23;
+                static const const_u32<24> _24;
+                static const const_u32<25> _25;
+                static const const_u32<26> _26;
+                static const const_u32<27> _27;
+                static const const_u32<28> _28;
+                static const const_u32<29> _29;
 
-		static const const_u32<30> _30;
-		static const const_u32<31> _31;
-		static const const_u32<32> _32;
-		static const const_u32<33> _33;
-		static const const_u32<34> _34;
-		static const const_u32<35> _35;
-		static const const_u32<36> _36;
-		static const const_u32<37> _37;
-		static const const_u32<38> _38;
-		static const const_u32<39> _39;
+                static const const_u32<30> _30;
+                static const const_u32<31> _31;
+                static const const_u32<32> _32;
+                static const const_u32<33> _33;
+                static const const_u32<34> _34;
+                static const const_u32<35> _35;
+                static const const_u32<36> _36;
+                static const const_u32<37> _37;
+                static const const_u32<38> _38;
+                static const const_u32<39> _39;
 
-		static const const_u32<40> _40;
-		static const const_u32<41> _41;
-		static const const_u32<42> _42;
-		static const const_u32<43> _43;
-		static const const_u32<44> _44;
-		static const const_u32<45> _45;
-		static const const_u32<46> _46;
-		static const const_u32<47> _47;
-		static const const_u32<48> _48;
-		static const const_u32<49> _49;
+                static const const_u32<40> _40;
+                static const const_u32<41> _41;
+                static const const_u32<42> _42;
+                static const const_u32<43> _43;
+                static const const_u32<44> _44;
+                static const const_u32<45> _45;
+                static const const_u32<46> _46;
+                static const const_u32<47> _47;
+                static const const_u32<48> _48;
+                static const const_u32<49> _49;
 
-		static const const_u32<50> _50;
-		static const const_u32<51> _51;
-		static const const_u32<52> _52;
-		static const const_u32<53> _53;
-		static const const_u32<54> _54;
-		static const const_u32<55> _55;
-		static const const_u32<56> _56;
-		static const const_u32<57> _57;
-		static const const_u32<58> _58;
-		static const const_u32<59> _59;
+                static const const_u32<50> _50;
+                static const const_u32<51> _51;
+                static const const_u32<52> _52;
+                static const const_u32<53> _53;
+                static const const_u32<54> _54;
+                static const const_u32<55> _55;
+                static const const_u32<56> _56;
+                static const const_u32<57> _57;
+                static const const_u32<58> _58;
+                static const const_u32<59> _59;
 
-		static const const_u32<60> _60;
-		static const const_u32<61> _61;
-		static const const_u32<62> _62;
-		static const const_u32<63> _63;
-	}
+                static const const_u32<60> _60;
+                static const const_u32<61> _61;
+                static const const_u32<62> _62;
+                static const const_u32<63> _63;
+        }
 
         // static constants consisting of 4 uint32_t
         template <std::uint32_t _P0, std::uint32_t _P1,
@@ -148,66 +148,69 @@ namespace x86vec {
                 static constexpr __m128d dv();
         };
 
-        template <int _P0, int _P1, int _P2, int _P3>
-        struct shuffle4 {
-                enum {
-                        val =
-                        (((_P3 & 3) << 6) |
-                         ((_P2 & 3) << 4) |
-                         ((_P1 & 3) << 2) |
-                         ((_P0 & 3) << 0))
-                };
-        };
+        namespace impl {
 
-        template <int _P0, int _P1>
-        struct shuffle2 {
-                enum {
-                        val =
-                        (((_P0 & 1) << 0) |
-                         ((_P1 & 1) << 1))
-                };
-        };
+		template <int _P0, int _P1, int _P2, int _P3>
+		struct shuffle4 {
+			enum {
+				val =
+				(((_P3 & 3) << 6) |
+				 ((_P2 & 3) << 4) |
+				 ((_P1 & 3) << 2) |
+				 ((_P0 & 3) << 0))
+			};
+		};
 
-        // template for constant selects/blends with 2 elements
-        template <int _P0, int _P1>
-        struct csel2 {
-                enum {
-                        val=
-                        (((_P1 & 1) << 1) |
-                         ( _P0 & 1))
-                };
-        };
+		template <int _P0, int _P1>
+		struct shuffle2 {
+			enum {
+				val =
+				(((_P0 & 1) << 0) |
+				 ((_P1 & 1) << 1))
+			};
+		};
 
-        // template for constant selects/blends with 4 elements
-        template <int _P0, int _P1, int _P2, int _P3>
-        struct csel4 {
-                enum {
-                        val =
-                        (((_P3 & 1) << 3) |
-                         ((_P2 & 1) << 2) |
-                         ((_P1 & 1) << 1) |
-                         ( _P0 & 1))
-                };
-        };
+		// template for constant selects/blends with 2 elements
+		template <int _P0, int _P1>
+		struct csel2 {
+			enum {
+				val=
+				(((_P1 & 1) << 1) |
+				 ( _P0 & 1))
+			};
+		};
 
-        // template for constant selects/blends with 8 elements
-        template <int _P0, int _P1, int _P2, int _P3,
-                  int _P4, int _P5, int _P6, int _P7>
-        struct csel8 {
-                enum {
-                        val =
-                        (((_P7 & 1) << 7) |
-                         ((_P6 & 1) << 6) |
-                         ((_P5 & 1) << 5) |
-                         ((_P4 & 1) << 4) |
-                         ((_P3 & 1) << 3) |
-                         ((_P2 & 1) << 2) |
-                         ((_P1 & 1) << 1) |
-                         ((_P0 & 1) << 0))
-                };
-        };
+		// template for constant selects/blends with 4 elements
+		template <int _P0, int _P1, int _P2, int _P3>
+		struct csel4 {
+			enum {
+				val =
+				(((_P3 & 1) << 3) |
+				 ((_P2 & 1) << 2) |
+				 ((_P1 & 1) << 1) |
+				 ( _P0 & 1))
+			};
+		};
 
-	// definition of position of signs ..
+		// template for constant selects/blends with 8 elements
+		template <int _P0, int _P1, int _P2, int _P3,
+			  int _P4, int _P5, int _P6, int _P7>
+		struct csel8 {
+			enum {
+				val =
+				(((_P7 & 1) << 7) |
+				 ((_P6 & 1) << 6) |
+				 ((_P5 & 1) << 5) |
+				 ((_P4 & 1) << 4) |
+				 ((_P3 & 1) << 3) |
+				 ((_P2 & 1) << 2) |
+				 ((_P1 & 1) << 1) |
+				 ((_P0 & 1) << 0))
+			};
+		};
+        }
+
+        // definition of position of signs ..
         typedef const8_u16<0x8000, 0x8000,
                            0x8000, 0x8000,
                            0x8000, 0x8000,
@@ -238,7 +241,7 @@ namespace x86vec {
         typedef v_not_sign_s64_msk v_not_sign_f64_msk;
         const int sign_f64_msk = 0x03;
 
-	// definition of common used constants
+        // definition of common used constants
         typedef const4_u32<0x01010101, 0x01010101,
                            0x01010101, 0x01010101> v_uint8_0x01;
         typedef const4_u32<0x33333333, 0x33333333,

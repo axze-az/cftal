@@ -101,7 +101,7 @@ __m128i x86vec::impl::div_s32::v(__m128i x, __m128i y, __m128i* rem)
 }
 
 namespace {
-	
+
 	template <unsigned _I>
 	struct udiv32 {
 		static void div(__m128i& q, __m128i x, __m128i y);

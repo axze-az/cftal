@@ -417,7 +417,7 @@ inline __m128i x86vec::popcnt_u64(__m128i a)
 inline int x86vec::popcnt_u128(__m128i a)
 {
 	a= popcnt_u64(a);
-	const int sm=shuffle4<2,3,1,0>::val;
+	const int sm=impl::shuffle4<2,3,1,0>::val;
 	__m128i t= _mm_shuffle_epi32(a, sm);
 	t = _mm_add_epi32(t, a);
 	return _mm_cvtsi128_si32(t);
