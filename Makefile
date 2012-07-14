@@ -8,7 +8,7 @@ LIBNAME=cftal
 MAJOR=0#
 MINOR=1#
 
-SLDFLAGS:= $(SLDFLAGS) -L../sysio -lsysio++ -L../thread -lthread++
+SLDFLAGS:= $(SLDFLAGS) 
 #ARCH=#-march=bdver1 -mxop #-march=bdver1 #-mdispatch-scheduler
 ARCH+=#-mno-sse3
 CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
