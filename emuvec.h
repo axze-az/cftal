@@ -452,6 +452,21 @@ emuvec::v8s16 emuvec::permute(const v8s16& a, const v8s16& b)
         return r;
 }
 
+template <unsigned _I>
+inline
+emuvec::v8s16::element_type emuvec::extract(const v8s16& a)
+{
+	return a()[_I];
+}
+
+template <unsigned _I>
+emuvec::v8s16 emuvec::insert(const v8s16& a, v8s16::element_type v)
+{
+	v8s16 r(a);
+	r.begin()[_I] =v;
+	return r;
+}
+
 // Local variables:
 // mode: c++
 // end:

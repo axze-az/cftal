@@ -13,9 +13,7 @@ SLDFLAGS:= $(SLDFLAGS) -L../sysio -lsysio++ -L../thread -lthread++
 ARCH+=#-mno-sse3
 CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 
-#CSRCS=solver_stats.cc exception.cc ex_overflow.cc ex_div_by_zero.cc	\
-#ex_invalid_op.cc real16.cc real8.cc real4.cc fpvec.cc
-CSRCS=fpvec.cc heap_array.cc x86vec_ops_1.cc x86vec_test.cc emuvec.cc
+CSRCS=heap_array.cc x86vec_ops_1.cc x86vec_test.cc emuvec.cc
 
 all: lib tests
 
@@ -26,18 +24,11 @@ install: install-static install-shared install-debug install-header
 ###########################################################################
 # Installation of the header files
 install-header:
-	mkdir -p $(INSTALLDIR)/include
+	mkdir -p $(INSTALLDIR)/include/cftal
 	for i in *.h ; \
 	do \
 		if [ -f $$i ] ; then \
-			$(INSTALL) -c -m 0644 $$i $(INSTALLDIR)/include ; \
-		fi ; \
-	done
-	mkdir -p $(INSTALLDIR)/include/inlines
-	for i in ./inlines/* ; \
-	do \
-		if [ -f $$i ] ; then \
-			$(INSTALL) -c -m 0644 $$i  $(INSTALLDIR)/include/inlines ; \
+			$(INSTALL) -c -m 0644 $$i $(INSTALLDIR)/include/cftal	 ; \
 		fi ; \
 	done
 
@@ -122,7 +113,7 @@ check-02/testx86vec-02: all
 #################################################################
 # cleanup
 clean:
-	-$(RM) -rf *.i *.o* *.so.*  *.a *.so *.map *.s testfpvec testx86vec
+	-$(RM) -rf *.i *.o* *.so.*  *.a *.so *.map *.s testx86vec
 	-$(RM) -rf genx86vec hackx86vec
 	$(MAKE) -C check-00 $@
 	$(MAKE) -C check-01 $@
