@@ -338,7 +338,8 @@ x86vec::v4f32 x86vec::round(const v4f32& a, const rounding_mode m)
         }
 #else
         std::uint32_t mxcsr=_mm_getcsr();
-        std::uint32_t rmxcsr &= ~(3<<13);
+        std::uint32_t rmxcsr(mxcsr);
+	rmxcsr &= ~(3<<13);
         switch (m) {
         case rounding_mode::nearest: // 0
                 break;
