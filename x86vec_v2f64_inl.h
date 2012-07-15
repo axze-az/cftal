@@ -29,7 +29,7 @@ x86vec::v2f64::v2f64(element_type r)
 }
 
 inline
-x86vec::v2f64::v2f64(x86vec::v2f64::element_type r, bool broadcast)
+x86vec::v2f64::v2f64(v2f64::element_type r, bool broadcast)
         : base_type(broadcast ?
                     _mm_set1_pd(r) : _mm_set_sd(r))
 {

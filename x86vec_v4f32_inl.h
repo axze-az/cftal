@@ -30,7 +30,7 @@ x86vec::v4f32::v4f32(element_type r)
 }
 
 inline
-x86vec::v4f32::v4f32(x86vec::v4f32::element_type r, bool broadcast)
+x86vec::v4f32::v4f32(element_type r, bool broadcast)
         : base_type(broadcast ?
                     _mm_set1_ps(r) : _mm_set_ss(r))
 {

@@ -30,7 +30,7 @@ x86vec::v4s32::v4s32(element_type r)
 }
 
 inline
-x86vec::v4s32::v4s32(x86vec::v4s32::element_type r, bool broadcast)
+x86vec::v4s32::v4s32(v4s32::element_type r, bool broadcast)
         : base_type(broadcast ?
                     _mm_set1_epi32(r) : _mm_cvtsi32_si128(r))
 {

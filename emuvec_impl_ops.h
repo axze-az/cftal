@@ -123,6 +123,7 @@ namespace emuvec {
 
                 UN_OP(a!=_T(0) ? _T(-1) : _T(0), v_log_not);
                 UN_OP(~a, v_not);
+		UN_OP(a==_T(-1) ? _T(0) : _T(-1), v_f_not);
                 UN_OP(-a, v_neg);
                 UN_OP(a+_T(1), v_inc);
                 UN_OP(a-_T(1), v_dec);
@@ -134,8 +135,14 @@ namespace emuvec {
 		UN_OP(std::sqrt(a), v_sqrt);
 
                 BI_OP(a^b, v_xor);
+		BI_OP((a==_T(-1))^(b==_T(-1)) ? _T(-1) : _T(0),
+		      v_f_xor);
                 BI_OP(a|b, v_or);
+		BI_OP(((a==_T(-1)) || (b==_T(-1)) ? _T(-1) : _T(0)),
+		      v_f_or);
                 BI_OP(a&b, v_and);
+		BI_OP(((a==_T(-1)) && (b==_T(-1)) ? _T(-1) : _T(0)),
+		      v_f_and);
                 BI_OP(a+b, v_add);
                 BI_OP(a-b, v_sub);
                 BI_OP(a*b, v_mul);

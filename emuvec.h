@@ -684,6 +684,99 @@ namespace emuvec {
 	template <unsigned _I>
 	typename v4u32::element_type extract(const v4u32& a);
 
+        class v4f32 : public impl::vec_base<float,4>::type {
+        public:
+                enum { N = 4 };
+                typedef float element_type;
+                typedef typename impl::vec_base<float,4>::type
+		base_type;
+		element_type* operator()();
+		const element_type* operator()() const;
+                v4f32();
+                v4f32(element_type r);
+                v4f32(element_type r, bool broadcast);
+                v4f32(element_type p00, element_type p01,
+                      element_type p02, element_type p03);
+                v4f32(const v4f32& r);
+		v4f32(v4f32&& r);
+                v4f32& operator=(element_type r);
+                v4f32& operator=(const v4f32& r);
+                v4f32& operator=(v4f32&& r);
+                v4f32(const mem::addr_bcast<element_type>& r);
+                v4f32(const mem::addr<element_type>& r);
+	private:
+		element_type* begin();
+		const element_type* begin() const;
+        };
+
+        v4f32& operator|= (v4f32& a, const v4f32& b);
+        v4f32& operator&= (v4f32& a, const v4f32& b);
+        v4f32& operator^= (v4f32& a, const v4f32& b);
+        v4f32& operator+= (v4f32& a, const v4f32& b);
+        v4f32& operator-= (v4f32& a, const v4f32& b);
+        v4f32& operator*= (v4f32& a, const v4f32& b);
+        v4f32& operator/= (v4f32& a, const v4f32& b);
+	
+        v4f32 operator++ (v4f32& a, int);
+        v4f32& operator++(v4f32& a);
+        v4f32 operator-- (v4f32& a, int);
+        v4f32& operator--(v4f32& a);
+
+        v4f32 operator-(const v4f32& a);
+	const v4f32& operator+(const v4f32& a);
+        v4f32 operator~(const v4f32& a);
+        v4f32 operator!(const v4f32& a);
+
+        v4f32 operator| (const v4f32& a, const v4f32& b);
+        v4f32 operator|| (const v4f32& a, const v4f32& b);
+        v4f32 operator& (const v4f32& a, const v4f32& b);
+        v4f32 operator&& (const v4f32& a, const v4f32& b);
+        v4f32 operator^(const v4f32& a, const v4f32& b);
+
+        v4f32 operator+ (const v4f32& a, const v4f32& b);
+        v4f32 operator- (const v4f32& a, const v4f32& b);
+        v4f32 operator* (const v4f32& a, const v4f32& b);
+        v4f32 operator/ (const v4f32& a, const v4f32& b);
+	
+        v4f32 operator< (const v4f32& a, const v4f32& b);
+        v4f32 operator<= (const v4f32& a, const v4f32& b);
+        v4f32 operator== (const v4f32& a, const v4f32& b);
+        v4f32 operator!= (const v4f32& a, const v4f32& b);
+        v4f32 operator>= (const v4f32& a, const v4f32& b);
+        v4f32 operator> (const v4f32& a, const v4f32& b);
+
+        // checks the signs
+        bool all_signs(const v4f32& a);
+        // checks the signs
+        bool both_signs(const v4f32& a);
+        // checks the signs
+        bool no_signs(const v4f32& a);
+
+        v4f32 max(const v4f32& a, const v4f32& b);
+        v4f32 min(const v4f32& a, const v4f32& b);
+        v4f32 abs(const v4f32& a);
+	v4f32 sqrt(const v4f32& a);
+
+	v4f32 rint(const v4f32& a);
+	v4f32 floor(const v4f32& a);
+	v4f32 ceil(const v4f32& a);
+	v4f32 trunc(const v4f32& a);
+
+        template <bool _P0, bool _P1, bool _P2, bool _P3>
+        v4f32 select(const v4f32& a, const v4f32& b);
+        v4f32 select(const v4f32& msk, const v4f32& on_true,
+                     const v4f32& on_false);
+
+        template <int _P0, int _P1, int _P2, int _P3 >
+        v4f32 permute(const v4f32& a);
+        template <int _P0, int _P1, int _P2, int _P3 >
+        v4f32 permute(const v4f32& a, const v4f32& b);
+
+	template <unsigned _I>
+	v4f32 insert(const v4f32& a, typename v4f32::element_type v);
+	template <unsigned _I>
+	typename v4f32::element_type extract(const v4f32& a);
+	
 }
 
 // v8s16 implementation
@@ -1124,6 +1217,31 @@ emuvec::v4u32 emuvec::insert(const v4u32& a, v4u32::element_type v)
 	v4u32 r(a);
 	r.begin()[_I] =v;
 	return r;
+}
+
+// v4f32 implementation
+inline
+emuvec::v4f32::element_type* emuvec::v4f32::begin()
+{
+        return static_cast<element_type*>(base_type::vbegin());
+}
+
+inline
+const emuvec::v4f32::element_type* emuvec::v4f32::begin() const
+{
+        return static_cast<const element_type*>(base_type::vbegin());
+}
+
+inline
+emuvec::v4f32::element_type* emuvec::v4f32::operator()()
+{
+        return begin();
+}
+
+inline
+const emuvec::v4f32::element_type* emuvec::v4f32::operator()() const
+{
+        return begin();
 }
 
 

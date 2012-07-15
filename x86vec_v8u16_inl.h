@@ -33,7 +33,7 @@ x86vec::v8u16::v8u16(element_type r)
 }
 
 inline
-x86vec::v8u16::v8u16(x86vec::v8u16::element_type r, bool broadcast)
+x86vec::v8u16::v8u16(v8u16::element_type r, bool broadcast)
         : base_type(broadcast ?
                     _mm_set1_epi16(r) : _mm_cvtsi32_si128(r))
 {
