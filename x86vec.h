@@ -6,306 +6,117 @@
 #include <cftal/x86vec_vreg.h>
 #include <cftal/x86vec_ivec.h>
 #include <cftal/x86vec_fvec.h>
-#include <cstdint>
 
-#if 0
 namespace x86vec {
 
-	template <class _T>
-	const _T* make_ptr(const void* p);
+        template <class _V4>
+        void transpose_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3);
 
-	const __m128i*
-	make_m128i_ptr(const void* p);
+        template <class _V8>
+        void transpose_8x8(_V8& r0, _V8& r1, _V8& r2, _V8& r3,
+                           _V8& r4, _V8& r5, _V8& r6, _V8& r7);
 
-	template <class _T>
-	struct align {
-	};
-
-	class v8x16;
-	class v8s16;
-	class v8u16;
-
-	class v4x32;
-	class v4s32;
-	class v4u32;
-
-	class v8x16 : public ivec128 {
-	public:
-		v8x16() = default;
-		typedef ivec128 base_type;
-		explicit v8x16(vector_type r);
-		explicit v8x16(const base_type& r);
-		v8x16& operator+=(const v8x16& r);
-		v8x16& operator-=(const v8x16& r);
-		v8x16& operator*=(const v8x16& r);
-		v8x16 operator-() const;
-	};
-
-	bool any(const v8x16& a);
-	bool all(const v8x16& a);
-	bool none(const v8x16& a);
-	
-	class v4x32 : public ivec128 {
-	public:
-
-	};
-
-	class v8s16 : public v8x16 {
-	public:
-		typedef int16_t element_type;
-		typedef v8x16 base_type;
-		v8s16() = default;
-		v8s16(vector_type r);
-		v8s16(const base_type& r);
-		v8s16(element_type r);
-		v8s16(const v4s32& low, const v4s32& high);
-		v8s16(const mem::addr_bcast<element_type>& r);
-		v8s16(const mem::addr<element_type>& r);
-		v8s16(const mem::aligned::addr<element_type>& r);
-		v8s16(const mem::unaligned::addr<element_type>& r);
-	};
-
-	v8s16 max(const v8s16& a, const v8s16& b);
-	v8s16 min(const v8s16& a, const v8s16& b);
-	v8s16 abs(const v8s16& a);
-	
-	class v8u16 : public v8x16 {
-	public:
-		typedef uint16_t element_type;
-		v8u16();
-		v8u16(vector_type r);
-		v8u16(const v8x16& r);
-		v8u16(element_type r);
-		v8u16(const mem::addr_bcast<element_type>& r);
-		v8u16(const mem::addr<element_type*>& r);
-		v8u16(const mem::aligned::addr<element_type>& r);
-		v8u16(const mem::unaligned::addr<element_type>& r);
-	};
-
-	class v4s32 : public ivec128 {
-	public:
-		typedef int32_t element_type;
-		v4s32();
-		explicit v4s32(vector_type r);
-		explicit v4s32(const ivec128& r);
-		explicit v4s32(element_type r);
-		v4s32(const mem::addr_bcast<element_type>& r);
-		v4s32(const mem::addr<element_type>& r);
-		v4s32(const mem::aligned::addr<element_type>& r);
-		v4s32(const mem::unaligned::addr<element_type>& r);
-		v4s32& operator+=(const v4s32& r);
-		v4s32& operator-=(const v4s32& r);
-		v4s32& operator*=(const v4s32& r);
-	};
-
-	// return a*b + c
-	v8s16 mad(const v8s16& a, const v8s16& b, const v8s16& c);
-
-	template <unsigned _P7, unsigned _P6, unsigned _P5, unsigned _P4,
-		  unsigned _P3, unsigned _P2, unsigned _P1, unsigned _P0>
-	v8s16 permute(const v8s16& v);
-
-#define DECL_OP(op) \
-template <class _T> _T operator op (const _T& a, const _T& b)
-
-	DECL_OP(|);
-	DECL_OP(&);
-	DECL_OP(^);
-
-	DECL_OP(+);
-	DECL_OP(-);
-	DECL_OP(*);
-	DECL_OP(/);
-
-#undef DECL_OP	
 }
 
-#define DEF_OP(op)					\
-template <class _T>					\
-inline							\
-_T x86vec::operator op (const _T& a, const _T& b)	\
-{							\
-	_T t(a);					\
-	t op##=b;					\
-	return t;					\
-}
-
-DEF_OP(|)
-DEF_OP(&)
-DEF_OP(^)
-DEF_OP(+)
-DEF_OP(-)
-DEF_OP(*)
-DEF_OP(/)
-
-#undef DEF_OP
-
-template <class _T>
+template <class _V4>
 inline
-const _T* x86vec::make_ptr(const void* p)
+void x86vec::transpose_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3)
 {
-	return static_cast<_T*>(p);
+        // r0: 0x00, 0x01, 0x02, 0x03
+        // r1: 0x10, 0x11, 0x12, 0x13
+        // r2: 0x20, 0x21, 0x22, 0x23
+        // r3: 0x30, 0x31, 0x32, 0x33
+
+        // first pass:
+        // 0x00 0x10 0x01 0x11
+        _V4 t0(permute<0, 4+0, 1, 4+1>(r0, r1));
+        // 0x02 0x12 0x03 0x13
+        _V4 t1(permute<2, 4+2, 3, 4+3>(r0, r1));
+        // 0x20 0x30 0x21 0x31
+        _V4 t2(permute<0, 4+0, 1, 4+1>(r2, r3));
+        // 0x22 0x32 0x23 0x33
+        _V4 t3(permute<2, 4+2, 3, 4+3>(r2, r3));
+
+        // second pass:
+        // 0x00 0x10 0x20 0x30
+        r0 = permute<0, 1, 4+0, 4+1>(t0, t2);
+        // 0x01 0x11 0x21 0x31
+        r1 = permute<2, 3, 4+2, 4+3>(t0, t2);
+        // 0x02 0x12 0x22 0x32
+        r2 = permute<0, 1, 4+0, 4+1>(t1, t3);
+        // 0x03 0x13 0x23 0x33
+        r3 = permute<2, 3, 4+2, 4+3>(t1, t3);
 }
 
+template <class _V8>
 inline
-const __m128i* x86vec::make_m128i_ptr(const void* p)
+void x86vec::transpose_8x8(_V8& r0, _V8& r1, _V8& r2, _V8& r3,
+			   _V8& r4, _V8& r5, _V8& r6, _V8& r7)
 {
-	return static_cast<const __m128i*>(p);
+        // r0: 0x00 0x01 0x02 0x03 0x04 0x05 0x06 0x07
+        // r1: 0x10 0x11 0x12 0x13 0x14 0x15 0x16 0x17
+        // r2: 0x20 0x21 0x22 0x23 0x24 0x25 0x26 0x27
+        // r3: 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37
+        // r4: 0x40 0x41 0x42 0x43 0x44 0x45 0x46 0x47
+        // r5: 0x50 0x51 0x52 0x53 0x54 0x55 0x56 0x57
+        // r6: 0x60 0x61 0x62 0x63 0x64 0x65 0x66 0x67
+        // r7: 0x70 0x71 0x72 0x73 0x74 0x75 0x76 0x77
+
+        // pass 1
+        // t0: 0x00 0x10 0x01 0x11 0x02 0x12 0x03 0x13
+        _V8 t0(permute<0, 8+0, 1, 8+1, 2, 8+2, 3, 8+3>(r0, r1));
+        // t1: 0x04 0x14 0x05 0x15 0x06 0x16 0x07 0x17
+        _V8 t1(permute<4, 8+4, 5, 8+5, 6, 8+6, 7, 8+7>(r0, r1));
+        // t2: 0x20 0x30 0x21 0x31 0x22 0x32 0x23 0x33
+        _V8 t2(permute<0, 8+0, 1, 8+1, 2, 8+2, 3, 8+3>(r2, r3));
+        // t3: 0x24 0x34 0x25 0x35 0x26 0x36 0x27 x37
+        _V8 t3(permute<4, 8+4, 5, 8+5, 6, 8+6, 7, 8+7>(r2, r3));
+        // t4: 0x40 0x50 0x41 0x51 0x42 0x52 0x43 0x53
+        _V8 t4(permute<0, 8+0, 1, 8+1, 2, 8+2, 3, 8+3>(r4, r5));
+        // t5: 0x44 0x54 0x45 0x55 0x46 0x56 0x47 0x57
+        _V8 t5(permute<4, 8+4, 5, 8+5, 6, 8+6, 7, 8+7>(r4, r5));
+        // t6: 0x60 0x70 0x61 0x71 0x62 0x72 0x63 0x73
+        _V8 t6(permute<0, 8+0, 1, 8+1, 2, 8+2, 3, 8+3>(r6, r7));
+        // t7: 0x64 0x74 0x65 0x75 0x66 0x76 0x67 0x77
+        _V8 t7(permute<4, 8+4, 5, 8+5, 6, 8+6, 7, 8+7>(r6, r7));
+
+        // pass 2
+        // s0: 0x00 0x10 0x20 0x30 0x01 0x11 0x21 0x31
+        _V8 s0(permute<0, 1, 8+0, 8+1, 2, 3, 8+2, 8+3>(t0, t2));
+        // s1: 0x02 0x12 0x22 0x32 0x03 0x13 0x23 0x33
+        _V8 s1(permute<4, 5, 8+4, 8+5, 6, 7, 8+6, 8+7>(t0, t2));
+        // s2: 0x04 0x14 0x24 0x34 0x05 0x15 0x25 0x35
+        _V8 s2(permute<0, 1, 8+0, 8+1, 2, 3, 8+2, 8+3>(t1, t3));
+        // s3: 0x06 0x16 0x26 0x36 0x07 0x17 0x27 x37
+        _V8 s3(permute<4, 5, 8+4, 8+5, 6, 7, 8+6, 8+7>(t1, t3));
+        // s4: 0x40 0x50 0x60 0x70 0x41 0x51 0x61 0x71
+        _V8 s4(permute<0, 1, 8+0, 8+1, 2, 3, 8+2, 8+3>(t4, t6));
+        // s5: 0x42 0x52 0x62 0x72 0x43 0x53 0x63 0x73
+        _V8 s5(permute<4, 5, 8+4, 8+5, 6, 7, 8+6, 8+7>(t4, t6));
+        // s6: 0x44 0x54 0x64 0x74 0x45 0x55 0x65 0x75
+        _V8 s6(permute<0, 1, 8+0, 8+1, 2, 3, 8+2, 8+3>(t5, t7));
+        // s7: 0x46 0x56 0x66 0x76 0x47 0x57 0x67 0x77
+        _V8 s7(permute<4, 5, 8+4, 8+5, 6, 7, 8+6, 8+7>(t5, t7));
+
+        // pass 3
+        // r0: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70
+        r0 = permute<0, 1, 2, 3, 8+0, 8+1, 8+2, 8+3>(s0, s4);
+        // r1: 0x01 0x11 0x21 0x31 0x41 0x51 0x61 0x71
+        r1 = permute<4, 5, 6, 7, 8+4, 8+5, 8+6, 8+7>(s0, s4);
+        // r2: 0x02 0x12 0x22 0x32 0x42 0x52 0x62 0x72
+        r2 = permute<0, 1, 2, 3, 8+0, 8+1, 8+2, 8+3>(s1, s5);
+        // r3: 0x03 0x13 0x23 0x33 0x43 0x53 0x63 0x73
+        r3 = permute<4, 5, 6, 7, 8+4, 8+5, 8+6, 8+7>(s1, s5);
+        // r4: 0x04 0x14 0x24 0x34 0x44 0x54 0x64 0x74
+        r4 = permute<0, 1, 2, 3, 8+0, 8+1, 8+2, 8+3>(s2, s6);
+        // r5: 0x05 0x15 0x25 0x35 0x45 0x55 0x65 0x75
+        r5 = permute<4, 5, 6, 7, 8+4, 8+5, 8+6, 8+7>(s2, s6);
+        // r6: 0x06 0x16 0x26 0x36 0x46 0x56 0x66 0x76
+        r6 = permute<0, 1, 2, 3, 8+0, 8+1, 8+2, 8+3>(s3, s7);
+        // r7: 0x07 0x17 0x27 x37 0x47 0x57 0x67 0x77
+        r7 = permute<4, 5, 6, 7, 8+4, 8+5, 8+6, 8+7>(s3, s7);
 }
 
-inline 
-x86vec::v8x16::v8x16(vector_type r) : base_type(r) {
-}
-
-inline
-x86vec::v8x16::v8x16(const base_type& r) : base_type(r) {
-}
-
-inline
-x86vec::v8x16&
-x86vec::v8x16::operator+=(const v8x16& r)
-{
-	vector_type& m=(*this)();
-	m = _mm_add_epi16(m, r());
-	return *this;
-}
-
-inline
-x86vec::v8x16&
-x86vec::v8x16::operator-=(const v8x16& r)
-{
-	vector_type& m=(*this)();
-	m = _mm_sub_epi16(m, r());
-	return *this;
-}
-
-inline
-x86vec::v8x16&
-x86vec::v8x16::operator*=(const v8x16& r)
-{
-	vector_type& m=(*this)();
-	m = _mm_mullo_epi16(m, r());
-	return *this;
-}
-
-inline
-bool
-x86vec::any(const v8x16& a) 
-{
-	const uint32_t msk(0xAAAA);
-	uint32_t v(_mm_movemask_epi8(a()));
-	return (v & msk) != 0;
-}
-
-inline
-bool
-x86vec::all(const v8x16& a) 
-{
-	const uint32_t msk(0xAAAA);
-	uint32_t v(_mm_movemask_epi8(a()));
-	return (v & msk) == msk;
-}
-
-inline
-bool
-x86vec::none(const v8x16& a) 
-{
-	const uint32_t msk(0xAAAA);
-	uint32_t v(_mm_movemask_epi8(a()));
-	return (v & msk) == 0;
-}
-
-inline
-x86vec::v8s16::v8s16(vector_type r) : base_type(r) 
-{
-}
-
-inline
-x86vec::v8s16::v8s16(const base_type& r) : base_type(r) 
-{
-}
-
-inline
-x86vec::v8s16::v8s16(element_type r) 
-	: base_type( _mm_set1_epi16(r))
-{
-}
-
-inline
-x86vec::v8s16::v8s16(const mem::addr_bcast<element_type>& r) 
-	: base_type( _mm_set1_epi16(*r()))
-{
-}
-
-inline
-x86vec::v8s16::v8s16(const mem::addr<element_type>& r) 
-	: base_type(is_aligned_to<16>::ptr(r()) ?
-		    _mm_load_si128(make_m128i_ptr(r())) :		
-		    _mm_loadu_si128(make_m128i_ptr(r())))
-{
-}
-
-inline
-x86vec::v8s16::v8s16(const mem::aligned::addr<element_type>& r) 
-	: base_type(_mm_load_si128(make_m128i_ptr(r())))
-{
-}
-
-inline
-x86vec::v8s16::v8s16(const mem::unaligned::addr<element_type>& r) 
-	: base_type(_mm_loadu_si128(make_m128i_ptr(r())))
-{
-}
-
-inline
-x86vec::v8s16
-x86vec::max(const v8s16& a, const v8s16& b)
-{
-	return v8s16(_mm_max_epi16(a(), b()));
-}
-
-inline
-x86vec::v8s16
-x86vec::min(const v8s16& a, const v8s16& b)
-{
-	return v8s16(_mm_min_epi16(a(), b()));
-}
-
-inline
-x86vec::v8s16
-x86vec::abs(const v8s16& a)
-{
-#if defined (__SSSE3__)
-	return v8s16(_mm_abs_epi16(a()));
-#else
-	v8s16 zero(a ^ a);
-	return max(zero -a, a);
-#endif
-}
-
-inline
-x86vec::v8s16
-x86vec::mad(const v8s16& a, const v8s16& b, const v8s16& c)
-{
-#if !defined (__XOP__)
-	return a*b + c;
-#else
-	return _mm_macc_epi16(a(), b(), c());
-#endif	
-} 
-
-
-
-template <unsigned _P7, unsigned _P6, unsigned _P5, unsigned _P4,
-	  unsigned _P3, unsigned _P2, unsigned _P1, unsigned _P0>
-inline
-x86vec::v8s16 
-x86vec::permute(const v8s16& v) 
-{
-	typedef impl::perm1_u16<_P7,_P6,_P5,_P4,_P3,_P2,_P1,_P0> s_t;
-	return s_t::v(v());
-}
-#endif
 
 // Local variables:
 // mode: c++

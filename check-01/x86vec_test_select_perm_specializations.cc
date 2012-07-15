@@ -104,6 +104,9 @@ bool x86vec::test::check_select_perm_specializations()
 	r &= chk_u16< 8, 0, 9, 1,10, 2,11, 3>(a, b, id);
 	r &= chk_u16< 4,12, 5,13, 6,14, 7,15>(a, b, id);
 	r &= chk_u16<12, 4,13, 5,14, 6,15, 7>(a, b, id);
-
+	r &= chk_u16< 0, 1, 2, 3, 8, 9,10,11>(a, b, id);
+	r &= chk_u16< 8, 9,10,11, 0, 1, 2, 3>(a, b, id);
+	r &= chk_u16< 4, 5, 6, 7,12,13,14,15>(a, b, id);
+	r &= chk_u16<12,13,14,15, 4, 5, 6, 7>(a, b, id);
         return r;
 }

@@ -506,6 +506,18 @@ namespace x86vec {
 		template <>
 		struct perm2_u16<12, 4,13, 5,14, 6,15, 7>
 			: public swap_ab<__m128i, vpunpckhwd> {};
+		template <>
+		struct perm2_u16< 0, 1, 2, 3, 8, 9,10,11>
+			: public vpunpcklqdq {};
+		template <>
+		struct perm2_u16< 8, 9,10,11, 0, 1, 2, 3>
+			: public swap_ab<__m128i, vpunpcklqdq> {};
+		template <>
+		struct perm2_u16< 4, 5, 6, 7,12,13,14,15>
+			: public vpunpckhqdq {};
+		template <>
+		struct perm2_u16<12,13,14,15, 4, 5, 6, 7>
+			: public swap_ab<__m128i, vpunpckhqdq> {};
         }
 
         template <int _P0, int _P1>
