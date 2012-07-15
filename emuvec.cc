@@ -1730,52 +1730,51 @@ emuvec::operator|= (v4f32& a, const v4f32& b)
         return a;
 }
 
-#if 0
-
 emuvec::v4f32&
 emuvec::operator&= (v4f32& a, const v4f32& b)
 {
-        a = _mm_and_ps(a(), b());
+        impl::v_f_and<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, b(), v4f32::N);
         return a;
 }
-
 
 emuvec::v4f32&
 emuvec::operator^= (v4f32& a, const v4f32& b)
 {
-        a = _mm_xor_ps(a(), b());
+        impl::v_f_xor<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, b(), v4f32::N);
         return a;
 }
-
 
 emuvec::v4f32&
 emuvec::operator+= (v4f32& a, const v4f32& b)
 {
-        a = _mm_add_ps(a(), b());
+        impl::v_add<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, b(), v4f32::N);
         return a;
 }
-
 
 emuvec::v4f32&
 emuvec::operator-= (v4f32& a, const v4f32& b)
 {
-        a = _mm_sub_ps(a(), b());
+        impl::v_sub<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, b(), v4f32::N);
         return a;
 }
-
 
 emuvec::v4f32&
 emuvec::operator*= (v4f32& a, const v4f32& b)
 {
-        a = _mm_mul_ps(a(), b());
+        impl::v_sub<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, b(), v4f32::N);
         return a;
 }
-
 
 emuvec::v4f32&
 emuvec::operator/=(v4f32& a, const v4f32& b)
 {
-        a= _mm_div_ps(a(), b());
+        impl::v_div<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, b(), v4f32::N);
         return a;
 }
 
@@ -1783,9 +1782,9 @@ emuvec::operator/=(v4f32& a, const v4f32& b)
 emuvec::v4f32&
 emuvec::operator++(v4f32& a)
 {
-        const __m128 one = _mm_set1_ps(1.0f);
-        a = _mm_add_ps(a(), one);
-        return a;
+        impl::v_inc<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, v4f32::N);
+	return a;
 }
 
 
@@ -1793,8 +1792,8 @@ emuvec::v4f32
 emuvec::operator++ (v4f32& a, int)
 {
         v4f32 t(a);
-        const __m128 one = _mm_set1_ps(1.0f);
-        a = _mm_add_ps(a(), one);
+        impl::v_inc<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, v4f32::N);
         return t;
 }
 
@@ -1802,8 +1801,8 @@ emuvec::operator++ (v4f32& a, int)
 emuvec::v4f32&
 emuvec::operator--(v4f32& a)
 {
-        const __m128 one = _mm_set1_ps(1.0f);
-        a = _mm_add_ps(a(), one);
+        impl::v_dec<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, v4f32::N);
         return a;
 }
 
@@ -1812,8 +1811,8 @@ emuvec::v4f32
 emuvec::operator-- (v4f32& a, int)
 {
         v4f32 t(a);
-        const __m128 one = _mm_set1_ps(1.0f);
-        a = _mm_add_ps(a(), one);
+        impl::v_dec<v4f32::element_type> ot;
+        impl::v_assign_op(a(), ot, v4f32::N);
         return t;
 }
 
@@ -1821,8 +1820,10 @@ emuvec::operator-- (v4f32& a, int)
 emuvec::v4f32
 emuvec::operator-(const v4f32& a)
 {
-        const __m128 msk= v_sign_f32_msk::fv();
-        return _mm_xor_ps(a(), msk);
+	v4f32 t;
+        impl::v_neg<v4f32::element_type> ot;
+        impl::v_assign_op(t(), ot, v4f32::N);
+        return t;
 }
 
 
@@ -1832,7 +1833,7 @@ emuvec::operator+(const v4f32& a)
         return a;
 }
 
-
+#if 0
 emuvec::v4f32
 emuvec::operator~(const v4f32& a)
 {
