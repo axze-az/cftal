@@ -322,7 +322,7 @@ x86vec::v2f64 x86vec::sqrt(const v2f64& a)
 }
 
 inline
-x86vec::v2f64 x86vec::round(const v2f64& a, const rounding_mode m)
+x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 {
 #if defined (__SSE4_1__)
 	switch (m) {
@@ -370,25 +370,25 @@ x86vec::v2f64 x86vec::round(const v2f64& a, const rounding_mode m)
 inline
 x86vec::v2f64 x86vec::rint(const v2f64& a)
 {
-	return round(a, rounding_mode::nearest);
+	return impl::round(a, impl::rounding_mode::nearest);
 }
 
 inline
 x86vec::v2f64 x86vec::floor(const v2f64& a)
 {
-	return round(a, rounding_mode::downward);
+	return impl::round(a, impl::rounding_mode::downward);
 }
 
 inline
 x86vec::v2f64 x86vec::ceil(const v2f64& a)
 {
-	return round(a, rounding_mode::upward);
+	return impl::round(a, impl::rounding_mode::upward);
 }
 
 inline
 x86vec::v2f64 x86vec::trunc(const v2f64& a)
 {
-	return round(a, rounding_mode::towardzero);
+	return impl::round(a, impl::rounding_mode::towardzero);
 }
 
 template < bool _P0, bool _P1>

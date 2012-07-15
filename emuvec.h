@@ -139,6 +139,32 @@ namespace emuvec {
                         }
                 };
 
+                template <class _T, bool _P0, bool _P1>
+                struct select_2 {
+                        static void v(_T* r, const _T* s0, const _T* s1) {
+                                r[0] = _P0 ? s0[0] : s1[0];
+                                r[1] = _P1 ? s0[1] : s1[1];
+                        }
+                };
+
+                template <class _T, int _P0, int _P1>
+                struct perm1_2 {
+                        static void v(_T* r, const _T* s0) {
+                                r[0] = ge_z(_P0) & s0[_P0 & 1] ;
+                                r[1] = ge_z(_P1) & s0[_P1 & 1];
+                        }
+                };
+
+                template <class _T, int _P0, int _P1>
+                struct perm2_2 {
+                        static void v(_T* r, const _T* s0, const _T* s1) {
+                                r[0] = ge_z(_P0) &
+                                        (_P0>1 ? s1[_P0 & 1] : s0[_P0 & 1]);
+                                r[1] = ge_z(_P1) &
+                                        (_P1>1 ? s1[_P1 & 1] : s0[_P1 & 1]);
+                        }
+                };
+
                 template <class _T, bool _P0, bool _P1, bool _P2, bool _P3>
                 struct select_4 {
                         static void v(_T* r, const _T* s0, const _T* s1) {

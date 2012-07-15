@@ -11,12 +11,17 @@
 
 namespace x86vec {
 
-	enum class rounding_mode {
-		nearest = 0x0,
-		downward = 0x1,
-		upward = 0x2,
-		towardzero = 0x3
-	};
+	namespace impl {
+
+		struct rounding_mode {
+			enum type {
+				nearest = 0x0,
+				downward = 0x1,
+				upward = 0x2,
+				towardzero = 0x3
+			};
+		};
+	}
 
         class v4f32 : public vreg<__m128> {
         public:
@@ -83,7 +88,10 @@ namespace x86vec {
         v4f32 min(const v4f32& a, const v4f32& b);
         v4f32 abs(const v4f32& a);
 	v4f32 sqrt(const v4f32& a);
-	v4f32 round(const v4f32& a, const rounding_mode m);
+
+	namespace impl {
+		v4f32 round(const v4f32& a, const rounding_mode::type  m);
+	}
 	v4f32 rint(const v4f32& a);
 	v4f32 floor(const v4f32& a);
 	v4f32 ceil(const v4f32& a);
@@ -168,7 +176,10 @@ namespace x86vec {
         v2f64 min(const v2f64& a, const v2f64& b);
         v2f64 abs(const v2f64& a);
 	v2f64 sqrt(const v2f64& a);
-	v2f64 round(const v2f64& a, const rounding_mode m);
+
+	namespace impl {
+		v2f64 round(const v2f64& a, const rounding_mode::type m);
+	}
 	v2f64 rint(const v2f64& a);
 	v2f64 floor(const v2f64& a);
 	v2f64 ceil(const v2f64& a);

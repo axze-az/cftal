@@ -2,6 +2,7 @@
 #define __EMUVEC_IMPL_OPS_H__ 1
 
 #include <cftal/config.h>
+#include <cmath>
 
 namespace emuvec {
 
@@ -126,7 +127,11 @@ namespace emuvec {
                 UN_OP(a+_T(1), v_inc);
                 UN_OP(a-_T(1), v_dec);
                 UN_OP(a<_T(0) ? -a : a, v_abs);
-
+		UN_OP(std::rint(a), v_rint);
+		UN_OP(std::ceil(a), v_ceil);
+		UN_OP(std::floor(a), v_floor);
+		UN_OP(std::trunc(a), v_trunc);
+		UN_OP(std::sqrt(a), v_sqrt);
 
                 BI_OP(a^b, v_xor);
                 BI_OP(a|b, v_or);
