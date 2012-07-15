@@ -160,7 +160,7 @@ inline
 x86vec::v4f32
 x86vec::operator-(const v4f32& a)
 {
-	const __m128 msk= v_sign_f32_msk::fv();
+        const __m128 msk= v_sign_f32_msk::fv();
         return _mm_xor_ps(a(), msk);
 }
 
@@ -168,7 +168,7 @@ inline
 const x86vec::v4f32&
 x86vec::operator+(const v4f32& a)
 {
-	return a;
+        return a;
 }
 
 inline
@@ -246,13 +246,13 @@ x86vec::operator/(const v4f32& a, const v4f32& b)
 inline
 x86vec::v4f32 x86vec::operator< (const v4f32& a, const v4f32& b)
 {
-	return _mm_cmplt_ps(a(), b());
+        return _mm_cmplt_ps(a(), b());
 }
 
 inline
 x86vec::v4f32 x86vec::operator<= (const v4f32& a, const v4f32& b)
 {
-	return _mm_cmple_ps(a(), b());
+        return _mm_cmple_ps(a(), b());
 }
 
 inline
@@ -270,7 +270,7 @@ x86vec::v4f32 x86vec::operator!= (const v4f32& a, const v4f32& b)
 inline
 x86vec::v4f32 x86vec::operator>= (const v4f32& a, const v4f32& b)
 {
-	return _mm_cmpge_ps(a(), b());
+        return _mm_cmpge_ps(a(), b());
 }
 
 inline
@@ -300,26 +300,96 @@ bool x86vec::no_signs(const v4f32& a)
 inline
 x86vec::v4f32 x86vec::max(const v4f32& a, const v4f32& b)
 {
-	return _mm_max_ps(a(), b());
+        return _mm_max_ps(a(), b());
 }
 
 inline
 x86vec::v4f32 x86vec::min(const v4f32& a, const v4f32& b)
 {
-	return _mm_max_ps(a(), b());
+        return _mm_max_ps(a(), b());
 }
 
 inline
 x86vec::v4f32 x86vec::abs(const v4f32& a)
 {
-	const __m128 msk= v_not_sign_f32_msk::fv();
-	return _mm_and_ps(a(), msk);
+        const __m128 msk= v_not_sign_f32_msk::fv();
+        return _mm_and_ps(a(), msk);
 }
 
 inline
 x86vec::v4f32 x86vec::sqrt(const v4f32& a)
 {
-	return _mm_sqrt_ps(a());
+        return _mm_sqrt_ps(a());
+}
+
+inline
+x86vec::v4f32 x86vec::round(const v4f32& a, const rounding_mode m)
+{
+#if defined (__SSE4_1__)
+        switch (m) {
+        case rounding_mode::nearest:
+                return _mm_round_ps(a(), 0);
+        case rounding_mode::downward:
+                return _mm_round_ps(a(), 1);
+        case rounding_mode::upward:
+                return _mm_round_ps(a(), 2);
+        case rounding_mode::towardzero:
+                return _mm_round_ps(a(), 3);
+        }
+#else
+        std::uint32_t mxcsr=_mm_getcsr();
+        std::uint32_t rmxcsr &= ~(3<<13);
+        switch (m) {
+        case rounding_mode::nearest: // 0
+                break;
+        case rounding_mode::downward:
+                rmxcsr |= (1<<13);
+                break;
+        case rounding_mode::upward:
+                rmxcsr |= (2<<13);
+                break;
+        case rounding_mode::towardzero:
+                rmxcsr |= (3<<13);
+                break;
+        }
+	if (mxcsr != rmxcsr)
+		_mm_setcsr(rmxcsr);
+        const __m128 sgn_msk= v_sign_f32_msk::fv();
+	// (127+23)<< 23 = 0x4B000000 = 2^23
+        const __m128 magic= const4_u32<0x4B000000, 0x4B000000,
+                                       0x4B000000, 0x4B000000>::fv();
+        __m128 sign = _mm_and_ps(a(), sgn_msk);
+        __m128 sign_magic = _mm_or_ps(magic, sign);
+	__m128 res= _mm_add_ps(a(), sign_magic);
+	res = _mm_sub_ps(a(), sign_magic);
+	if (mxcsr != rmxcsr)
+		_mm_setcsr(mxcsr);
+	return res;
+#endif
+}
+
+inline
+x86vec::v4f32 x86vec::rint(const v4f32& a)
+{
+	return round(a, rounding_mode::nearest);
+}
+
+inline
+x86vec::v4f32 x86vec::floor(const v4f32& a)
+{
+	return round(a, rounding_mode::downward);
+}
+
+inline
+x86vec::v4f32 x86vec::ceil(const v4f32& a)
+{
+	return round(a, rounding_mode::upward);
+}
+
+inline
+x86vec::v4f32 x86vec::trunc(const v4f32& a)
+{
+	return round(a, rounding_mode::towardzero);
 }
 
 template < bool _P0, bool _P1, bool _P2, bool _P3 >
@@ -355,7 +425,7 @@ template <unsigned _I>
 inline
 x86vec::v4f32 x86vec::insert(const v4f32& a, typename v4f32::element_type v)
 {
-	return insert_f32<_I>(a(), v);
+        return insert_f32<_I>(a(), v);
 }
 
 template <unsigned _I>
@@ -363,7 +433,7 @@ inline
 typename x86vec::v4f32::element_type
 x86vec::extract(const v4f32& a)
 {
-	return extract_f32<_I>(a());
+        return extract_f32<_I>(a());
 }
 
 // Local variables:

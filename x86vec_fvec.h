@@ -7,8 +7,16 @@
 #include <cftal/x86vec_ops_1.h>
 #include <cftal/mem_load.h>
 #include <cftal/divisor.h>
+#include <cfenv>
 
 namespace x86vec {
+
+	enum class rounding_mode {
+		nearest = 0x0,
+		downward = 0x1,
+		upward = 0x2,
+		towardzero = 0x3
+	};
 
         class v4f32 : public vreg<__m128> {
         public:
@@ -75,6 +83,11 @@ namespace x86vec {
         v4f32 min(const v4f32& a, const v4f32& b);
         v4f32 abs(const v4f32& a);
 	v4f32 sqrt(const v4f32& a);
+	v4f32 round(const v4f32& a, const rounding_mode m);
+	v4f32 rint(const v4f32& a);
+	v4f32 floor(const v4f32& a);
+	v4f32 ceil(const v4f32& a);
+	v4f32 trunc(const v4f32& a);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4f32 select(const v4f32& a, const v4f32& b);
@@ -155,6 +168,11 @@ namespace x86vec {
         v2f64 min(const v2f64& a, const v2f64& b);
         v2f64 abs(const v2f64& a);
 	v2f64 sqrt(const v2f64& a);
+	v2f64 round(const v2f64& a, const rounding_mode m);
+	v2f64 rint(const v2f64& a);
+	v2f64 floor(const v2f64& a);
+	v2f64 ceil(const v2f64& a);
+	v2f64 trunc(const v2f64& a);
 
         template < bool _P0, bool _P1>
         v2f64 select(const v2f64& a, const v2f64& b);

@@ -321,6 +321,75 @@ x86vec::v2f64 x86vec::sqrt(const v2f64& a)
 	return _mm_sqrt_pd(a());
 }
 
+inline
+x86vec::v2f64 x86vec::round(const v2f64& a, const rounding_mode m)
+{
+#if defined (__SSE4_1__)
+	switch (m) {
+	case rounding_mode::nearest:
+		return _mm_round_pd(a(), 0);
+	case rounding_mode::downward:
+		return _mm_round_pd(a(), 1);
+	case rounding_mode::upward:
+		return _mm_round_pd(a(), 2);
+	case rounding_mode::towardzero:
+		return _mm_round_pd(a(), 3);
+	}
+#else
+	std::uint32_t mxcsr=_mm_getcsr();
+	std::uint32_t rmxcsr &= ~(3<<13);
+	switch (m) {
+	case rounding_mode::nearest: //0
+		break;
+	case rounding_mode::downward:
+		rmxcsr |= (1<<13);
+		break;
+	case rounding_mode::upward:
+		rmxcsr |= (2<<13);
+		break;
+	case rounding_mode::towardzero:
+		rmxcsr |= (2<<13);
+		break;
+	}
+	if (mxcsr != rmxcsr)
+		_mm_setcsr(rmxcsr);
+	const __m128d sgn_msk=v_sign_f64_msk::dv();
+	// (1023+52)<<(52-32) 0x43300000 = 2^52
+	const __m128d magic= const4_u32<0, 0x43300000, 0, 0x43300000>::dv();
+	__m128d sign = _mm_and_pd(a(), sgn_msk);                                
+	__m128d sign_magic = _mm_or_pd(magic, sign);
+	__m128d res = _mm_add_ps(a(), sign_magic);
+	res = _mm_sub_ps(a(), sign_magic);
+	if (mxcsr != rmxcsr)
+		_mm_setcsr(mxcsr);
+	return res;
+#endif
+}
+
+inline
+x86vec::v2f64 x86vec::rint(const v2f64& a)
+{
+	return round(a, rounding_mode::nearest);
+}
+
+inline
+x86vec::v2f64 x86vec::floor(const v2f64& a)
+{
+	return round(a, rounding_mode::downward);
+}
+
+inline
+x86vec::v2f64 x86vec::ceil(const v2f64& a)
+{
+	return round(a, rounding_mode::upward);
+}
+
+inline
+x86vec::v2f64 x86vec::trunc(const v2f64& a)
+{
+	return round(a, rounding_mode::towardzero);
+}
+
 template < bool _P0, bool _P1>
 inline
 x86vec::v2f64 x86vec::select(const v2f64& a, const v2f64& b)
