@@ -239,7 +239,7 @@ x86vec::operator-- (v8u16& a, int)
         v8u16 t(a);
         const __m128i one = const8_u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
         a = _mm_sub_epi16(a(), one);
-        return a;
+        return t;
 }
 
 inline

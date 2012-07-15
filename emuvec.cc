@@ -1653,4 +1653,6 @@ emuvec::v4u32 emuvec::select(const v4u32& msk,
 	return r;
 }
 
-void catch_print_size() {}
+
+void catch_print_size() {
+}

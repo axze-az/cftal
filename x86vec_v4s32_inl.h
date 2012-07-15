@@ -236,7 +236,7 @@ x86vec::operator-- (v4s32& a, int)
         v4s32 t(a);
         const __m128i one = const4_u32< 1, 1, 1, 1>::iv();
         a = _mm_sub_epi32(a(), one);
-        return a;
+        return t;
 }
 
 inline

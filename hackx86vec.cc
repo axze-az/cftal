@@ -3,6 +3,8 @@
 #include "divisor.h"
 #include "x86vec_test.h"
 
+#include "x86vec_fvec.h"
+
 #if 0
 void check_float()
 {
