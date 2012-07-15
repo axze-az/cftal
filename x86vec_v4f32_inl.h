@@ -316,6 +316,12 @@ x86vec::v4f32 x86vec::abs(const v4f32& a)
 	return _mm_and_ps(a(), msk);
 }
 
+inline
+x86vec::v4f32 x86vec::sqrt(const v4f32& a)
+{
+	return _mm_sqrt_ps(a());
+}
+
 template < bool _P0, bool _P1, bool _P2, bool _P3 >
 inline
 x86vec::v4f32 x86vec::select(const v4f32& a, const v4f32& b)
