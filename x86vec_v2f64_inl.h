@@ -359,8 +359,8 @@ x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 	const __m128d magic= const4_u32<0, 0x43300000, 0, 0x43300000>::dv();
 	__m128d sign = _mm_and_pd(a(), sgn_msk);
 	__m128d sign_magic = _mm_or_pd(magic, sign);
-	__m128d res = _mm_add_ps(a(), sign_magic);
-	res = _mm_sub_ps(a(), sign_magic);
+	__m128d res = _mm_add_pd(a(), sign_magic);
+	res = _mm_sub_pd(a(), sign_magic);
 	if (mxcsr != rmxcsr)
 		_mm_setcsr(mxcsr);
 	return res;

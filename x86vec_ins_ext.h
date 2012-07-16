@@ -100,7 +100,7 @@ float x86vec::extract_f32(__m128 v)
                 _mm_store_ss(&r, v);
                 break;
         case 1: {
-		static const int m= shuffle4<1, 1, 1, 1>::val;
+		static const int m= impl::shuffle4<1, 1, 1, 1>::val;
                 _mm_store_ss(&r, _mm_shuffle_ps(v, v, m));
                 break;
 	}
@@ -108,7 +108,7 @@ float x86vec::extract_f32(__m128 v)
                 _mm_store_ss(&r, _mm_unpackhi_ps(v, v));
                 break;
         case 3: {
-		static const int m= shuffle4<3, 3, 3, 3>::val;
+		static const int m= impl::shuffle4<3, 3, 3, 3>::val;
                 _mm_store_ss(&r, _mm_shuffle_ps(v, v, m));
 	}
                 break;

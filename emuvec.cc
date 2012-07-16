@@ -420,7 +420,7 @@ emuvec::v8s16 emuvec::select(const v8s16& msk,
                              const v8s16& on_false)
 {
 	v8s16 r;
-	impl::select<v8s16::element_type>::v(r(), 
+	impl::select<v8s16::element_type>::v(r(),
 					     msk(), on_true(), on_false(),
 					     v8s16::N);
 	return r;
@@ -824,7 +824,7 @@ emuvec::v8u16 emuvec::select(const v8u16& msk,
                              const v8u16& on_false)
 {
 	v8u16 r;
-	impl::select<v8u16::element_type>::v(r(), 
+	impl::select<v8u16::element_type>::v(r(),
 					     msk(), on_true(), on_false(),
 					     v8u16::N);
 	return r;
@@ -1246,7 +1246,7 @@ emuvec::v4s32 emuvec::select(const v4s32& msk,
                              const v4s32& on_false)
 {
 	v4s32 r;
-	impl::select<v4s32::element_type>::v(r(), 
+	impl::select<v4s32::element_type>::v(r(),
 					     msk(), on_true(), on_false(),
 					     v4s32::N);
 	return r;
@@ -1647,7 +1647,7 @@ emuvec::v4u32 emuvec::select(const v4u32& msk,
                              const v4u32& on_false)
 {
 	v4u32 r;
-	impl::select<v4u32::element_type>::v(r(), 
+	impl::select<v4u32::element_type>::v(r(),
 					     msk(), on_true(), on_false(),
 					     v4u32::N);
 	return r;
@@ -1833,26 +1833,32 @@ emuvec::operator+(const v4f32& a)
         return a;
 }
 
-#if 0
 emuvec::v4f32
 emuvec::operator~(const v4f32& a)
 {
-        const __m128 all_set = const4_u32 < -1, -1, -1, -1 >::fv();
-        return _mm_xor_ps(a(), all_set);
+	v4f32 t;
+        impl::v_f_not<v4f32::element_type> ot;
+        impl::v_assign_op(t(), ot, v4f32::N);
+        return t;
 }
 
 
 emuvec::v4f32
 emuvec::operator!(const v4f32& a)
 {
-        const __m128 msk = impl::make_zero_f32::v();
-        return _mm_cmpeq_ps(a(), msk);
+	v4f32 t;
+        impl::v_log_not<v4f32::element_type> ot;
+        impl::v_assign_op(t(), ot, v4f32::N);
+        return t;
 }
 
 
 emuvec::v4f32 emuvec::operator| (const v4f32& a, const v4f32& b)
 {
-        return _mm_or_ps(a(), b());
+	v4f32 r;
+	impl::v_f_or<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
@@ -1864,7 +1870,10 @@ emuvec::v4f32 emuvec::operator|| (const v4f32& a, const v4f32& b)
 
 emuvec::v4f32 emuvec::operator& (const v4f32& a, const v4f32& b)
 {
-        return _mm_and_ps(a(), b());
+	v4f32 r;
+	impl::v_f_and<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
@@ -1876,183 +1885,193 @@ emuvec::v4f32 emuvec::operator&& (const v4f32& a, const v4f32& b)
 
 emuvec::v4f32 emuvec::operator^(const v4f32& a, const v4f32& b)
 {
-        return _mm_xor_ps(a(), b());
+	v4f32 r;
+	impl::v_f_xor<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
-
 
 emuvec::v4f32 emuvec::operator+ (const v4f32& a, const v4f32& b)
 {
-        return _mm_add_ps(a(), b());
+	v4f32 r;
+	impl::v_add<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::operator- (const v4f32& a, const v4f32& b)
 {
-        return _mm_sub_ps(a(), b());
+	v4f32 r;
+	impl::v_sub<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::operator* (const v4f32& a, const v4f32& b)
 {
-        return _mm_mul_ps(a(), b());
+	v4f32 r;
+	impl::v_mul<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32
 emuvec::operator/(const v4f32& a, const v4f32& b)
 {
-        return _mm_div_ps(a(), b());
+	v4f32 r;
+	impl::v_div<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 
 emuvec::v4f32 emuvec::operator< (const v4f32& a, const v4f32& b)
 {
-        return _mm_cmplt_ps(a(), b());
+	v4f32 r;
+	impl::v_lt<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::operator<= (const v4f32& a, const v4f32& b)
 {
-        return _mm_cmple_ps(a(), b());
+	v4f32 r;
+	impl::v_le<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::operator== (const v4f32& a, const v4f32& b)
 {
-        return _mm_cmpeq_ps(a(), b());
+	v4f32 r;
+	impl::v_eq<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::operator!= (const v4f32& a, const v4f32& b)
 {
-        return _mm_cmpneq_ps(a(), b());
+	v4f32 r;
+	impl::v_ne<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::operator>= (const v4f32& a, const v4f32& b)
 {
-        return _mm_cmpge_ps(a(), b());
+	v4f32 r;
+	impl::v_ge<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::operator> (const v4f32& a, const v4f32& b)
 {
-        return _mm_cmpgt_ps(a(), b());
+	v4f32 r;
+	impl::v_ge<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 bool emuvec::all_signs(const v4f32& a)
 {
-        return all_signs_f32(a());
+	std::uint32_t sgn(impl::get_signs_32(a(), v4f32::N));
+	return sgn == 0x0f;
 }
 
 
 bool emuvec::both_signs(const v4f32& a)
 {
-        return both_signs_f32(a());
+	std::uint32_t sgn(impl::get_signs_32(a(), v4f32::N));
+	return sgn != 0x0f && sgn != 0;
 }
 
 
 bool emuvec::no_signs(const v4f32& a)
 {
-        return no_signs_f32(a());
+	std::uint32_t sgn(impl::get_signs_32(a(), v4f32::N));
+	return sgn == 0;
 }
 
 
 emuvec::v4f32 emuvec::max(const v4f32& a, const v4f32& b)
 {
-        return _mm_max_ps(a(), b());
+	v4f32 r;
+	impl::v_max<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::min(const v4f32& a, const v4f32& b)
 {
-        return _mm_max_ps(a(), b());
+	v4f32 r;
+	impl::v_min<v4f32::element_type> ot;
+	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::abs(const v4f32& a)
 {
-        const __m128 msk= v_not_sign_f32_msk::fv();
-        return _mm_and_ps(a(), msk);
+	v4f32 r;
+	impl::v_abs<v4f32::element_type> ot;
+	impl::v_un_op(r(), ot, a(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::sqrt(const v4f32& a)
 {
-        return _mm_sqrt_ps(a());
+	v4f32 r;
+	impl::v_abs<v4f32::element_type> ot;
+	impl::v_un_op(r(), ot, a(), v4f32::N);
+	return r;
 }
-
-
-emuvec::v4f32 emuvec::impl::round(const v4f32& a, const rounding_mode::type m)
-{
-#if defined (__SSE4_1__)
-        switch (m) {
-        case rounding_mode::nearest:
-                return _mm_round_ps(a(), 0);
-        case rounding_mode::downward:
-                return _mm_round_ps(a(), 1);
-        case rounding_mode::upward:
-                return _mm_round_ps(a(), 2);
-        case rounding_mode::towardzero:
-                return _mm_round_ps(a(), 3);
-        }
-#else
-        std::uint32_t mxcsr=_mm_getcsr();
-        std::uint32_t rmxcsr(mxcsr);
-	rmxcsr &= ~(3<<13);
-        switch (m) {
-        case rounding_mode::nearest: // 0
-                break;
-        case rounding_mode::downward:
-                rmxcsr |= (1<<13);
-                break;
-        case rounding_mode::upward:
-                rmxcsr |= (2<<13);
-                break;
-        case rounding_mode::towardzero:
-                rmxcsr |= (3<<13);
-                break;
-        }
-	if (mxcsr != rmxcsr)
-		_mm_setcsr(rmxcsr);
-        const __m128 sgn_msk= v_sign_f32_msk::fv();
-	// (127+23)<< 23 = 0x4B000000 = 2^23
-        const __m128 magic= const4_u32<0x4B000000, 0x4B000000,
-                                       0x4B000000, 0x4B000000>::fv();
-        __m128 sign = _mm_and_ps(a(), sgn_msk);
-        __m128 sign_magic = _mm_or_ps(magic, sign);
-	__m128 res= _mm_add_ps(a(), sign_magic);
-	res = _mm_sub_ps(a(), sign_magic);
-	if (mxcsr != rmxcsr)
-		_mm_setcsr(mxcsr);
-	return res;
-#endif
-}
-
 
 emuvec::v4f32 emuvec::rint(const v4f32& a)
 {
-	return impl::round(a, impl::rounding_mode::nearest);
+	v4f32 r;
+	impl::v_rint<v4f32::element_type> ot;
+	impl::v_un_op(r(), ot, a(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::floor(const v4f32& a)
 {
-	return impl::round(a, impl::rounding_mode::downward);
+	v4f32 r;
+	impl::v_floor<v4f32::element_type> ot;
+	impl::v_un_op(r(), ot, a(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::ceil(const v4f32& a)
 {
-	return impl::round(a, impl::rounding_mode::upward);
+	v4f32 r;
+	impl::v_ceil<v4f32::element_type> ot;
+	impl::v_un_op(r(), ot, a(), v4f32::N);
+	return r;
 }
 
 
 emuvec::v4f32 emuvec::trunc(const v4f32& a)
 {
-	return impl::round(a, impl::rounding_mode::towardzero);
+	v4f32 r;
+	impl::v_trunc<v4f32::element_type> ot;
+	impl::v_un_op(r(), ot, a(), v4f32::N);
+	return r;
 }
 
 #if 0
@@ -2099,7 +2118,6 @@ emuvec::extract(const v4f32& a)
 {
         return extract_f32<_I>(a());
 }
-#endif
 #endif
 
 void catch_print_size() {
