@@ -155,7 +155,7 @@ namespace emuvec {
 				free_();
 			}
 		};
-
+		
 
                 template <class _T>
                 struct select {
@@ -166,14 +166,6 @@ namespace emuvec {
                                         r[i] = lt_z(msk[i]) ?
                                                 ontrue[i] : onfalse[i];
                                 }
-                        }
-                };
-
-                template <class _T, bool _P0, bool _P1>
-                struct select_2 {
-                        static void v(_T* r, const _T* s0, const _T* s1) {
-                                r[0] = _P0 ? s0[0] : s1[0];
-                                r[1] = _P1 ? s0[1] : s1[1];
                         }
                 };
 
@@ -192,7 +184,15 @@ namespace emuvec {
 					s1[ _P & (_N-1)];
 			}
 		};
-
+		
+                template <class _T, bool _P0, bool _P1>
+                struct select_2 {
+                        static void v(_T* r, const _T* s0, const _T* s1) {
+                                r[0] = _P0 ? s0[0] : s1[0];
+                                r[1] = _P1 ? s0[1] : s1[1];
+                        }
+                };
+		
                 template <class _T, int _P0, int _P1>
                 struct perm1_2 {
                         static void v(_T* r, const _T* s0) {

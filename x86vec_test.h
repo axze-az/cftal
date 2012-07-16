@@ -263,7 +263,7 @@ inline __m128i x86vec::test::load_u16(bool second)
         if (second == true)
                 r = const8_u16<9,10,11,12,13,14,15,16>::iv();
         else
-                r = const8_u16<1,2,3,4,5,6,7,8>::iv();
+                r = const8_u16< 1, 2, 3, 4, 5, 6, 7, 8>::iv();
         return r;
 }
 

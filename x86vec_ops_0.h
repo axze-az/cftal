@@ -493,7 +493,6 @@ namespace x86vec {
 			}
 		};
 
-
 		struct vpslld {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_sll_epi32(a, shift);
