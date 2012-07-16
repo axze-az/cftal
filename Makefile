@@ -70,10 +70,10 @@ ln -sf lib$(LIBNAME).so.$(MAJOR).$(MINOR) lib$(LIBNAME).so.$(MAJOR)
 	cd $(INSTALLDIR)/lib && \
 ln -sf lib$(LIBNAME).so.$(MAJOR) lib$(LIBNAME).so
 
-emuvec.ol: OPT+=-fno-tree-vectorize -mtune=atom
-emuvec.os: OPT+=-fno-tree-vectorize -mtune=atom
-emuvec.od: OPT+=-fno-tree-vectorize -mtune=atom
-emuvec.s: OPT+=-fno-tree-vectorize -mtune=atom
+emuvec.ol: CXXFLAGS-ol +=-fno-tree-vectorize -mtune=atom
+emuvec.os: CXXFLAGS-os +=-fno-tree-vectorize -mtune=atom
+emuvec.od: CXXFLAGS-od +=-fno-tree-vectorize -mtune=atom
+emuvec.s: CXXFLAGS-os +=-fno-tree-vectorize -mtune=atom
 
 tests: hackx86vec genx86vec hackx86vec_g
 
@@ -85,10 +85,10 @@ genx86vec: genx86vec.ol x86vec_test.ol
 	$(LD) -o $@ $^ $(LDFLAGS) -lstdc++
 
 hackx86vec: hackx86vec.ol x86vec_test.ol
-	$(LD) -o $@ $^ $(LDFLAGS) -lstdc++
+	$(LD) -o $@ $^ $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
 
-hackx86vec_g: hackx86vec.od x86vec_test.od
-	$(LD) -o $@ $^ $(LDFLAGS) -g -lstdc++
+hackx86vec_g: hackx86vec.od x86vec_test.od lib$(LIBNAME)-g.a
+	$(LD) -o $@ $^ $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
 
 # Full tests
 all-tests: all \

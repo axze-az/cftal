@@ -36,10 +36,10 @@ namespace emuvec {
                 v8s16& operator=(element_type r);
                 v8s16& operator=(const v8s16& r);
                 v8s16& operator=(v8s16&& r);
-
                 // memory load operations
                 v8s16(const mem::addr_bcast<element_type>& r);
                 v8s16(const mem::addr<element_type>& r);
+		~v8s16();
         protected:
                 element_type* begin();
                 const element_type* begin() const;
@@ -151,6 +151,7 @@ namespace emuvec {
                 v8u16& operator=(base_type&& r);
                 v8u16(const mem::addr_bcast<element_type>& r);
                 v8u16(const mem::addr<element_type>& r);
+		~v8u16();
         protected:
                 element_type* begin();
                 const element_type* begin() const;
@@ -250,10 +251,10 @@ namespace emuvec {
 		v4s32& operator=(element_type r);
 		v4s32& operator=(const v4s32& r);
 		v4s32& operator=(v4s32&& r);
-
 		// memory load operations
 		v4s32(const mem::addr_bcast<element_type>& r);
 		v4s32(const mem::addr<element_type>& r);
+		~v4s32();
 	protected:
 		element_type* begin();
 		const element_type* begin() const;
@@ -360,6 +361,7 @@ namespace emuvec {
 		v4u32& operator=(base_type&& r);
 		v4u32(const mem::addr_bcast<element_type>& r);
 		v4u32(const mem::addr<element_type>& r);
+		~v4u32();
 	protected:
 		element_type* begin();
 		const element_type* begin() const;
@@ -456,6 +458,7 @@ namespace emuvec {
 		v4f32& operator=(v4f32&& r);
 		v4f32(const mem::addr_bcast<element_type>& r);
 		v4f32(const mem::addr<element_type>& r);
+		~v4f32();
 	private:
 		element_type* begin();
 		const element_type* begin() const;
@@ -528,6 +531,99 @@ namespace emuvec {
 	v4f32 insert(const v4f32& a, typename v4f32::element_type v);
 	template <unsigned _I>
 	typename v4f32::element_type extract(const v4f32& a);
+
+	class v2f64 : public impl::vec_base<double,2>::type {
+	public:
+		enum { N = 2 };
+		typedef double element_type;
+		typedef typename impl::vec_base<double, 2>::type
+		base_type;
+		element_type* operator()();
+		const element_type* operator()() const;
+		v2f64();
+		v2f64(element_type r);
+		v2f64(element_type r, bool broadcast);
+		v2f64(element_type p00, element_type p01);
+		v2f64(const v2f64& r);
+		v2f64(v2f64&& r);
+		v2f64& operator=(element_type r);
+		v2f64& operator=(const v2f64& r);
+		v2f64& operator=(v2f64&& r);
+		v2f64(const mem::addr_bcast<element_type>& r);
+		v2f64(const mem::addr<element_type>& r);
+		~v2f64();
+	private:
+		element_type* begin();
+		const element_type* begin() const;
+	};
+
+	v2f64& operator|= (v2f64& a, const v2f64& b);
+	v2f64& operator&= (v2f64& a, const v2f64& b);
+	v2f64& operator^= (v2f64& a, const v2f64& b);
+	v2f64& operator+= (v2f64& a, const v2f64& b);
+	v2f64& operator-= (v2f64& a, const v2f64& b);
+	v2f64& operator*= (v2f64& a, const v2f64& b);
+	v2f64& operator/= (v2f64& a, const v2f64& b);
+
+	v2f64 operator++ (v2f64& a, int);
+	v2f64& operator++(v2f64& a);
+	v2f64 operator-- (v2f64& a, int);
+	v2f64& operator--(v2f64& a);
+
+	v2f64 operator-(const v2f64& a);
+	const v2f64& operator+(const v2f64& a);
+	v2f64 operator~(const v2f64& a);
+	v2f64 operator!(const v2f64& a);
+
+	v2f64 operator| (const v2f64& a, const v2f64& b);
+	v2f64 operator|| (const v2f64& a, const v2f64& b);
+	v2f64 operator& (const v2f64& a, const v2f64& b);
+	v2f64 operator&& (const v2f64& a, const v2f64& b);
+	v2f64 operator^(const v2f64& a, const v2f64& b);
+
+	v2f64 operator+ (const v2f64& a, const v2f64& b);
+	v2f64 operator- (const v2f64& a, const v2f64& b);
+	v2f64 operator* (const v2f64& a, const v2f64& b);
+	v2f64 operator/ (const v2f64& a, const v2f64& b);
+
+	v2f64 operator< (const v2f64& a, const v2f64& b);
+	v2f64 operator<= (const v2f64& a, const v2f64& b);
+	v2f64 operator== (const v2f64& a, const v2f64& b);
+	v2f64 operator!= (const v2f64& a, const v2f64& b);
+	v2f64 operator>= (const v2f64& a, const v2f64& b);
+	v2f64 operator> (const v2f64& a, const v2f64& b);
+
+	// checks the signs
+	bool all_signs(const v2f64& a);
+	// checks the signs
+	bool both_signs(const v2f64& a);
+	// checks the signs
+	bool no_signs(const v2f64& a);
+
+	v2f64 max(const v2f64& a, const v2f64& b);
+	v2f64 min(const v2f64& a, const v2f64& b);
+	v2f64 abs(const v2f64& a);
+	v2f64 sqrt(const v2f64& a);
+
+	v2f64 rint(const v2f64& a);
+	v2f64 floor(const v2f64& a);
+	v2f64 ceil(const v2f64& a);
+	v2f64 trunc(const v2f64& a);
+
+	template <bool _P0, bool _P1>
+	v2f64 select(const v2f64& a, const v2f64& b);
+	v2f64 select(const v2f64& msk, const v2f64& on_true,
+		     const v2f64& on_false);
+
+	template <int _P0, int _P1 >
+	v2f64 permute(const v2f64& a);
+	template <int _P0, int _P1 >
+	v2f64 permute(const v2f64& a, const v2f64& b);
+
+	template <unsigned _I>
+	v2f64 insert(const v2f64& a, typename v2f64::element_type v);
+	template <unsigned _I>
+	typename v2f64::element_type extract(const v2f64& a);
 
 }
 
@@ -1033,6 +1129,70 @@ template <unsigned _I>
 emuvec::v4f32 emuvec::insert(const v4f32& a, v4f32::element_type v)
 {
         v4f32 r(a);
+        r()[_I] =v;
+        return r;
+}
+
+// v2f64 implementation
+inline
+emuvec::v2f64::element_type* emuvec::v2f64::begin()
+{
+        return static_cast<element_type*>(base_type::vbegin());
+}
+
+inline
+const emuvec::v2f64::element_type* emuvec::v2f64::begin() const
+{
+        return static_cast<const element_type*>(base_type::vbegin());
+}
+
+inline
+emuvec::v2f64::element_type* emuvec::v2f64::operator()()
+{
+        return begin();
+}
+
+inline
+const emuvec::v2f64::element_type* emuvec::v2f64::operator()() const
+{
+        return begin();
+}
+
+template < bool _P0, bool _P1>
+emuvec::v2f64 emuvec::select(const v2f64& a, const v2f64& b)
+{
+        v2f64 r;
+        impl::select_2<v2f64::element_type, _P0, _P1>::v(r(), a(), b());
+        return r;
+}
+
+template < int _P0, int _P1 >
+emuvec::v2f64 emuvec::permute(const v2f64& a)
+{
+        v2f64 r;
+        impl::perm1_2<v2f64::element_type, _P0, _P1>::v(r(), a());
+        return r;
+}
+
+template <int _P0, int _P1 >
+emuvec::v2f64 emuvec::permute(const v2f64& a, const v2f64& b)
+{
+        v2f64 r;
+        impl::perm2_2<v2f64::element_type, _P0, _P1>::v(r(), a(), b());
+        return r;
+}
+
+template <unsigned _I>
+inline
+emuvec::v2f64::element_type emuvec::extract(const v2f64& a)
+{
+        return a()[_I];
+}
+
+template <unsigned _I>
+emuvec::v2f64 emuvec::insert(const v2f64& a, v2f64::element_type v)
+{
+        v2f64 r(a);
         r()[_I] =v;
         return r;
 }

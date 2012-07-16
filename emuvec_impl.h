@@ -11,14 +11,32 @@ namespace emuvec {
 
         namespace impl {
 
+		template <typename _S>
+		struct __def_lt_z {
+			static _S v(const _S& t) {
+				return _S(t < _S(0) ? _S(-1) : _S(0)); 
+			}
+		};
+
+		template <typename _I>
+		struct __int_lt_z {
+			static _I v(const _I& t) {
+				typedef typename std::make_signed<_I>::type _S;
+				_S s(t);
+				return __def_lt_z<_S>::v(s);
+			}
+		};
+
                 // returns -1 if lt zero
                 template <typename _T>
                 inline
                 _T lt_z(const _T& j )
                 {
-                        typedef typename std::make_signed<_T>::type _S;
-                        _S s(j);
-                        return _T(s < _S(0) ? -1 : 0);
+                        typedef typename std::conditional<
+                                std::is_integral<_T>::value == true,
+				__int_lt_z<_T>, 
+                                __def_lt_z<_T> >::type type;
+			return type::v(j);
                 }
 
                 // returns -1 if ge zero
@@ -159,21 +177,35 @@ namespace emuvec {
                         }
                 };
 
+		template <class _T, int _N, int _P>
+		struct perm1 {
+			static _T v(const _T* s0) {
+				return (_P< 0) ? _T(0) : s0[_P & (_N-1)];
+			}
+		};
+		
+		template <class _T, int _P, int _N>
+		struct perm2 { 
+			static _T v(const _T* s0, const _T* s1) {
+				return (_P < _N) ? 
+					perm1<_T, _P, _N>::v(s0) :
+					s1[ _P & (_N-1)];
+			}
+		};
+
                 template <class _T, int _P0, int _P1>
                 struct perm1_2 {
                         static void v(_T* r, const _T* s0) {
-                                r[0] = ge_z(_P0) & s0[_P0 & 1] ;
-                                r[1] = ge_z(_P1) & s0[_P1 & 1];
+                                r[0] = perm1<_T, 2, _P0>::v(s0);
+                                r[1] = perm1<_T, 2, _P1>::v(s0);
                         }
                 };
 
                 template <class _T, int _P0, int _P1>
                 struct perm2_2 {
                         static void v(_T* r, const _T* s0, const _T* s1) {
-                                r[0] = ge_z(_P0) &
-                                        (_P0>1 ? s1[_P0 & 1] : s0[_P0 & 1]);
-                                r[1] = ge_z(_P1) &
-                                        (_P1>1 ? s1[_P1 & 1] : s0[_P1 & 1]);
+                                r[0] = perm2<_T, 2, _P0>::v(s0, s1);
+                                r[1] = perm2<_T, 2, _P1>::v(s0, s1);
                         }
                 };
 
@@ -190,25 +222,21 @@ namespace emuvec {
                 template <class _T, int _P0, int _P1, int _P2, int _P3>
                 struct perm1_4 {
                         static void v(_T* r, const _T* s0) {
-                                r[0] = ge_z(_P0) & s0[_P0 & 3] ;
-                                r[1] = ge_z(_P1) & s0[_P1 & 3];
-                                r[2] = ge_z(_P2) & s0[_P2 & 3];
-                                r[3] = ge_z(_P3) & s0[_P3 & 3];
+                                r[0] = perm1<_T, 4, _P0>::v(s0);
+                                r[1] = perm1<_T, 4, _P1>::v(s0);
+                                r[2] = perm1<_T, 4, _P2>::v(s0);
+                                r[3] = perm1<_T, 4, _P3>::v(s0);
                         }
                 };
 
                 template <class _T, int _P0, int _P1, int _P2, int _P3>
                 struct perm2_4 {
                         static void v(_T* r, const _T* s0, const _T* s1) {
-                                r[0] = ge_z(_P0) &
-                                        (_P0>3 ? s1[_P0 & 3] : s0[_P0 & 3]);
-                                r[1] = ge_z(_P1) &
-                                        (_P1>3 ? s1[_P1 & 3] : s0[_P1 & 3]);
-                                r[2] = ge_z(_P2) &
-                                        (_P2>3 ? s1[_P2 & 3] : s0[_P2 & 3]);
-                                r[3] = ge_z(_P3) &
-                                        (_P3>3 ? s1[_P3 & 3] : s0[_P3 & 3]);
-                        }
+                                r[0] = perm2<_T, 4, _P0>::v(s0, s1);
+                                r[1] = perm2<_T, 4, _P1>::v(s0, s1);
+                                r[2] = perm2<_T, 4, _P2>::v(s0, s1);
+                                r[3] = perm2<_T, 4, _P3>::v(s0, s1);
+			}
                 };
 
                 template <class _T, bool _P0, bool _P1, bool _P2, bool _P3,
@@ -230,14 +258,14 @@ namespace emuvec {
                           int _P4, int _P5, int _P6, int _P7>
                 struct perm1_8 {
                         static void v(_T* r, const _T* s0) {
-                                r[0] = ge_z(_P0) & s0[_P0 & 7] ;
-                                r[1] = ge_z(_P1) & s0[_P1 & 7];
-                                r[2] = ge_z(_P2) & s0[_P2 & 7];
-                                r[3] = ge_z(_P3) & s0[_P3 & 7];
-                                r[4] = ge_z(_P4) & s0[_P4 & 7] ;
-                                r[5] = ge_z(_P5) & s0[_P5 & 7];
-                                r[6] = ge_z(_P6) & s0[_P6 & 7];
-                                r[7] = ge_z(_P7) & s0[_P7 & 7];
+                                r[0] = perm1<_T, 8, _P0>::v(s0);
+                                r[1] = perm1<_T, 8, _P1>::v(s0);
+                                r[2] = perm1<_T, 8, _P2>::v(s0);
+                                r[3] = perm1<_T, 8, _P3>::v(s0);
+                                r[4] = perm1<_T, 8, _P4>::v(s0);
+                                r[5] = perm1<_T, 8, _P5>::v(s0);
+                                r[6] = perm1<_T, 8, _P6>::v(s0);
+                                r[7] = perm1<_T, 8, _P7>::v(s0);
                         }
                 };
 
@@ -245,22 +273,14 @@ namespace emuvec {
                           int _P4, int _P5, int _P6, int _P7>
                 struct perm2_8 {
                         static void v(_T* r, const _T* s0, const _T* s1) {
-                                r[0] = ge_z(_P0) &
-                                        (_P0>7 ? s1[_P0 & 7] : s0[_P0 & 7]);
-                                r[1] = ge_z(_P1) &
-                                        (_P1>7 ? s1[_P1 & 7] : s0[_P1 & 7]);
-                                r[2] = ge_z(_P2) &
-                                        (_P2>7 ? s1[_P2 & 7] : s0[_P2 & 7]);
-                                r[3] = ge_z(_P3) &
-                                        (_P3>7 ? s1[_P3 & 7] : s0[_P3 & 7]);
-                                r[4] = ge_z(_P4) &
-                                        (_P4>7 ? s1[_P4 & 7] : s0[_P4 & 7]);
-                                r[5] = ge_z(_P5) &
-                                        (_P5>7 ? s1[_P5 & 7] : s0[_P5 & 7]);
-                                r[6] = ge_z(_P6) &
-                                        (_P6>7 ? s1[_P6 & 7] : s0[_P6 & 7]);
-                                r[7] = ge_z(_P7) &
-                                        (_P7>7 ? s1[_P7 & 7] : s0[_P7 & 7]);
+                                r[0] = perm2<_T, 8, _P0>::v(s0, s1);
+                                r[1] = perm2<_T, 8, _P1>::v(s0, s1);
+                                r[2] = perm2<_T, 8, _P2>::v(s0, s1);
+                                r[3] = perm2<_T, 8, _P3>::v(s0, s1);
+                                r[4] = perm2<_T, 8, _P4>::v(s0, s1);
+                                r[5] = perm2<_T, 8, _P5>::v(s0, s1);
+                                r[6] = perm2<_T, 8, _P6>::v(s0, s1);
+                                r[7] = perm2<_T, 8, _P7>::v(s0, s1);
                         }
                 };
 

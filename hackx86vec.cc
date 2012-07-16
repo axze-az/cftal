@@ -3,31 +3,47 @@
 #include "divisor.h"
 #include "x86vec_test.h"
 
-using x86vec::v4u32;
-using x86vec::v4f32;
-using x86vec::v8u16;
 
-
-void t4(v4u32& r0, v4u32& r1, v4u32& r2, v4u32& r3)
+void t4(x86vec::v4u32& r0, x86vec::v4u32& r1, 
+	x86vec::v4u32& r2, x86vec::v4u32& r3)
 {
 	transpose_4x4(r0, r1, r2, r3);
 }
 
-void t4(v4f32& r0, v4f32& r1, v4f32& r2, v4f32& r3)
+void t4(emuvec::v4u32& r0, emuvec::v4u32& r1, 
+	emuvec::v4u32& r2, emuvec::v4u32& r3)
+{
+	x86vec::transpose_4x4(r0, r1, r2, r3);
+}
+
+void t4(x86vec::v4f32& r0, x86vec::v4f32& r1, 
+	x86vec::v4f32& r2, x86vec::v4f32& r3)
 {
 	transpose_4x4(r0, r1, r2, r3);
 }
 
-void t8(v8u16& r0, v8u16& r1, v8u16& r2, v8u16& r3,
-	v8u16& r4, v8u16& r5, v8u16& r6, v8u16& r7)
+void t4(emuvec::v4f32& r0, emuvec::v4f32& r1, 
+	emuvec::v4f32& r2, emuvec::v4f32& r3)
+{
+	x86vec::transpose_4x4(r0, r1, r2, r3);
+}
+
+void t8(x86vec::v8u16& r0, x86vec::v8u16& r1, 
+	x86vec::v8u16& r2, x86vec::v8u16& r3,
+	x86vec::v8u16& r4, x86vec::v8u16& r5, 
+	x86vec::v8u16& r6, x86vec::v8u16& r7)
 {
 	transpose_8x8(r0, r1, r2, r3, r4, r5, r6, r7);
 }
 
-void t1(v8u16& r0, v8u16& r1)
+void t8(emuvec::v8u16& r0, emuvec::v8u16& r1, 
+	emuvec::v8u16& r2, emuvec::v8u16& r3,
+	emuvec::v8u16& r4, emuvec::v8u16& r5, 
+	emuvec::v8u16& r6, emuvec::v8u16& r7)
 {
-	r1=x86vec::permute<4, 5, 8+4, 8+5, 6, 7, 8+6, 8+7>(r0, r1);
+	x86vec::transpose_8x8(r0, r1, r2, r3, r4, r5, r6, r7);
 }
+
 
 #if 0
 void check_float()
