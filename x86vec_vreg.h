@@ -5,7 +5,7 @@
 #include <cftal/x86vec_select.h>
 #include <cftal/x86vec_ins_ext.h>
 #include <cftal/x86vec_perm.h>
-#include <cftal/x86vec_load_store.h>
+#include <cftal/x86vec_load.h>
 
 namespace x86vec {
 

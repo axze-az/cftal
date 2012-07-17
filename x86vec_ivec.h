@@ -228,7 +228,7 @@ namespace x86vec
 	v8u16 insert(const v8u16& a, typename v8u16::element_type v);
 	template <unsigned _I>
 	typename v8u16::element_type extract(const v8u16& a);
-	
+
         class v4s32 : public v128u1 {
         public:
                 typedef std::int32_t element_type;
@@ -413,7 +413,7 @@ namespace x86vec
 	v4u32 insert(const v4u32& a, typename v4u32::element_type v);
 	template <unsigned _I>
 	typename v4u32::element_type extract(const v4u32& a);
-	
+
 	//std::pair<v4s32, v4s32> mul(const v8s16& x, const v8u16& y);
 	// std::pair<v4u32, v4u32> mul(const v8u16& x, const v8u16& y);
 }

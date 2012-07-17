@@ -1,7 +1,6 @@
 #include "x86vec.h"
 #include "emuvec.h"
 #include "divisor.h"
-#include "x86vec_divisor.h"
 #include "x86vec_test.h"
 
 
@@ -50,9 +49,12 @@ x86vec::v8u16 t9(x86vec::v8u16::element_type r)
 	return r;
 }
 
-x86vec::v8u16 t9(x86vec::v8u16 u, x86vec::v8u16::element_type r)
+x86vec::v8u16 t9(x86vec::v8u16 u, x86vec::v8u16::element_type r,
+		 x86vec::v8u16::element_type* p)
 {
-	return u+r;
+	x86vec::v8u16 t(u+r);
+	mem::store(p, t);
+	return t;
 }
 
 emuvec::v8u16 t10(emuvec::v8u16::element_type r)

@@ -2,10 +2,11 @@
 #define __X86VEC_H__ 1
 
 #include <cftal/mem_load.h>
-#include <cftal/x86vec_load_store.h>
+#include <cftal/x86vec_load.h>
 #include <cftal/x86vec_vreg.h>
 #include <cftal/x86vec_ivec.h>
 #include <cftal/x86vec_fvec.h>
+#include <cftal/x86vec_store.h>
 #include <cftal/x86vec_divisor.h>
 
 namespace x86vec {
