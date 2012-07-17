@@ -2473,6 +2473,36 @@ emuvec::v2f64 emuvec::select(const v2f64& msk,
 	return r;
 }
 
+// store.
+void emuvec::store(v8s16::element_type* p, const v8s16& v)
+{
+	impl::mem_cpy<sizeof(v8s16::element_type)*v8s16::N>::v(p, v());
+}
+
+void emuvec::store(v8u16::element_type* p, const v8u16& v)
+{
+	impl::mem_cpy<sizeof(v8u16::element_type)*v8u16::N>::v(p, v());
+}
+
+void emuvec::store(v4s32::element_type* p, const v4s32& v)
+{
+	impl::mem_cpy<sizeof(v4s32::element_type)*v4s32::N>::v(p, v());
+}
+
+void emuvec::store(v4u32::element_type* p, const v4u32& v)
+{
+	impl::mem_cpy<sizeof(v4u32::element_type)*v4u32::N>::v(p, v());
+}
+
+void emuvec::store(v4f32::element_type* p, const v4f32& v)
+{
+	impl::mem_cpy<sizeof(v4f32::element_type)*v4f32::N>::v(p, v());
+}
+
+void emuvec::store(v2f64::element_type* p, const v2f64& v)
+{
+	impl::mem_cpy<sizeof(v2f64::element_type)*v2f64::N>::v(p, v());
+}
 
 void catch_print_size() {
 }

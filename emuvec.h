@@ -625,6 +625,31 @@ namespace emuvec {
 	template <unsigned _I>
 	typename v2f64::element_type extract(const v2f64& a);
 
+
+	void store(v8u16::element_type* p, const v8u16& r);
+	void store(v8s16::element_type* p, const v8s16& r);
+	void store(v4u32::element_type* p, const v4u32& r);
+	void store(v4s32::element_type* p, const v4s32& r);
+	void store(v4f32::element_type* p, const v4f32& r);
+	void store(v2f64::element_type* p, const v2f64& r);
+	
+	namespace aligned {
+		using emuvec::store;
+	}
+	namespace unaligned {
+		using emuvec::store;
+	}
+}
+
+namespace mem {
+
+	using emuvec::store;
+	namespace aligned {
+		using emuvec::aligned::store;
+	}
+	namespace unaligned {
+		using emuvec::unaligned::store;
+	}
 }
 
 // v8s16 implementation

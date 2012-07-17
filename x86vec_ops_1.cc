@@ -182,6 +182,7 @@ double cvt_u32_double(uint32_t t)
 	return double(t);
 }
 
+#if defined (__x86_64__)
 double cvt_u64_double(uint64_t t)
 {
 	return double(t);
@@ -191,6 +192,7 @@ uint64_t cvt_double_uint64(double x)
 {
 	return uint64_t(x);
 }
+#endif
 
 uint32_t cvt_double_uint32(double x)
 {

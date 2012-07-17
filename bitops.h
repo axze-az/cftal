@@ -108,8 +108,8 @@ unsigned cftal::popcnt(std::uint64_t x)
 #if defined (__LP64__) || defined (__ILP32__)
 	return _mm_popcnt_u64(x);
 #else
-	return _mm_popcnt(std::uint32_t(x)) +
-		_mm_popcnt(std::uint32_t(x>>32));
+	return _mm_popcnt_u32(std::uint32_t(x)) +
+		_mm_popcnt_u32(std::uint32_t(x>>32));
 #endif
 #else
 #if defined (__LP64__) || defined (__ILP32__)
