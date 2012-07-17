@@ -19,11 +19,9 @@ __m128i x86vec::impl::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 	qo = vpslld_const<16>::v(qo);
 	q = _mm_and_si128(q, me);
 	q = _mm_or_si128(q, qo);
-	// it is probably better to do the select in every
-	// case instead of copying the sign bits to a gpr
+	// set quotient to -1 where divisor is zero
 	__m128i eqz= _mm_cmpeq_epi16(y, make_zero_int::v());
-	// if (!all_signs_s16(eqz))
-	q = select(eqz, eqz, q);
+	q = _mm_or_si128(q, eqz);
 	if (rem!=nullptr) {
 		// multiply back and subtract
 		xt = _mm_mullo_epi16(q, y);
@@ -61,10 +59,9 @@ __m128i x86vec::impl::div_s16::v(__m128i x, __m128i y, __m128i* rem)
 	q = _mm_and_si128(q, me);
 	// combine odd and even results
 	q = _mm_or_si128(q, qo);
-	// mark division by zero
+	// set quotient to -1 where divisor is zero
 	__m128i eqz= _mm_cmpeq_epi16(y, make_zero_int::v());
-	// if (!all_signs_s16(eqz))
-	q = select(eqz, eqz, q);
+	q = _mm_or_si128(q, eqz);
 	if (rem!=nullptr) {
 		// multiply back and subtract
 		xt = _mm_mullo_epi16(q, y);
@@ -87,10 +84,9 @@ __m128i x86vec::impl::div_s32::v(__m128i x, __m128i y, __m128i* rem)
 	qf = _mm_div_pd(xt, yt);
 	t = _mm_cvttpd_epi32(qf);
 	q = _mm_unpacklo_epi64(q, t);
-	// mark division by zero
+	// set quotient to -1 where divisor is zero
 	__m128i eqz= _mm_cmpeq_epi32(y, make_zero_int::v());
-	// if (!all_signs_s32(eqz))
-	q = select(eqz, eqz, q);
+	q = _mm_or_si128(q, eqz);
 	if (rem != nullptr) {
 		// multiply back and subtract
 		t =  vpmulld::v(q, y);
