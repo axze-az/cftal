@@ -1,6 +1,7 @@
 #include "x86vec.h"
 #include "emuvec.h"
 #include "divisor.h"
+#include "x86vec_divisor.h"
 #include "x86vec_test.h"
 
 

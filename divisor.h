@@ -82,7 +82,7 @@ namespace cftal {
 			bool _shift_only;
 		};
 
-		template <typename _D, typename _TR= udiv_setup_traits<_D> >
+		template <typename _D, typename _TR= sdiv_setup_traits<_D> >
 		class sdiv_setup {
 		public:
 			typedef typename _TR::sword sword;
@@ -99,7 +99,7 @@ namespace cftal {
 
 		template <typename _V, typename _D,
 			  typename _UDIV_TRAITS= udiv_traits<_V, _D>,
-			  typename _UDIV_SETUP_TRAITS = udiv_setup_traits<_V> >
+			  typename _UDIV_SETUP_TRAITS = udiv_setup_traits<_D> >
 		class udiv {
 			_V _m;
 			_V _s1;
@@ -115,7 +115,7 @@ namespace cftal {
 
 		template <typename _V, typename _D,
 			  typename _SDIV_TRAITS= sdiv_traits<_V, _D>,
-			  typename _SDIV_SETUP_TRAITS = sdiv_setup_traits<_V> >
+			  typename _SDIV_SETUP_TRAITS = sdiv_setup_traits<_D> >
 		class sdiv {
 			_V _m;
 			_V _s;
