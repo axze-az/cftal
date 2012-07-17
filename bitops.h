@@ -35,9 +35,17 @@ namespace cftal {
 inline
 std::int64_t cftal::rdtsc()
 {
+#if defined (__x86_64__)
 	std::uint64_t a, d;
 	__asm__ __volatile__("rdtsc" :"=a"(a), "=d"(d));
 	return d<<32 | a;
+#elif defined (__i386__)
+	std::uint64_t a;
+	__asm__ __volatile__("rdtsc" :"=A"(a));
+	return a;
+#else
+#error "please insert a read current time functionality here"
+#endif
 }
 
 inline
