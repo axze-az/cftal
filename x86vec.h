@@ -6,6 +6,7 @@
 #include <cftal/x86vec_vreg.h>
 #include <cftal/x86vec_ivec.h>
 #include <cftal/x86vec_fvec.h>
+#include <cftal/x86vec_divisor.h>
 
 namespace x86vec {
 

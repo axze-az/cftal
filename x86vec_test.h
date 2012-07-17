@@ -1,7 +1,7 @@
 #if !defined (__X86VEC_TEST_H__)
 #define __X86VEC_TEST_H__ 1
 
-#include <cftal/x86vec_ops_1.h>
+#include <cftal/x86vec.h>
 #include <string>
 #include <array>
 #include <iostream>

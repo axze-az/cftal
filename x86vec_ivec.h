@@ -140,7 +140,7 @@ namespace x86vec
         public:
                 typedef std::uint16_t element_type;
                 typedef v8s16 base_type;
-                v8u16();
+                v8u16() = default;
                 v8u16(vector_type r);
                 v8u16(const base_type& r);
                 v8u16(element_type r);
@@ -330,7 +330,7 @@ namespace x86vec
         public:
                 typedef std::uint32_t element_type;
                 typedef v4s32 base_type;
-                v4u32();
+                v4u32() = default;
                 v4u32(vector_type r);
                 v4u32(const base_type& r);
                 v4u32(element_type r);

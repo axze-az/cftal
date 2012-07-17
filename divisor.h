@@ -55,13 +55,11 @@ namespace cftal {
 
 		template <typename _V, typename _D>
 		struct udiv_traits {
-			// _V splat_for_shift(_D)
 			// _V muluh(_V, _V);
 		};
 
 		template <typename _V, typename _D>
 		struct sdiv_traits {
-			// _V splat_for_shift(_D)
 			// _V mulsh(_V, _V);
 		};
 
@@ -102,9 +100,9 @@ namespace cftal {
 			  typename _UDIV_SETUP_TRAITS = udiv_setup_traits<_D> >
 		class udiv {
 			_V _m;
-			_V _s1;
-			_V _s2;
 			_D _d;
+			std::uint32_t _s1;
+			std::uint32_t _s2;
 			bool _shift_only;
 		public:
 			udiv(const _D& d) { set(d); }
@@ -118,9 +116,9 @@ namespace cftal {
 			  typename _SDIV_SETUP_TRAITS = sdiv_setup_traits<_D> >
 		class sdiv {
 			_V _m;
-			_V _s;
 			_V _xsgn_d;
 			_D _d;
+			std::uint32_t _s;
 		public:
 			sdiv(const _D& d) { set(d); }
 			void set(const _D& d);
@@ -139,14 +137,6 @@ namespace cftal {
 			static
 			sword ceil_log2(sword t) {
 				return ceil_log2(std::uint16_t(t));
-			}
-			static
-			uword splat_for_shift(uword t) {
-				return t;
-			}
-			static
-			sword splat_for_shift(sword t) {
-				return t;
 			}
 			static
 			uword muluh(uword a, uword b) {
@@ -174,14 +164,6 @@ namespace cftal {
 			static
 			sword ceil_log2(sword t) {
 				return ceil_log2(std::uint32_t(t));
-			}
-			static
-			uword splat_for_shift(uword t) {
-				return t;
-			}
-			static
-			sword splat_for_shift(sword t) {
-				return t;
 			}
 			static
 			uword muluh(uword a, uword b) {
@@ -327,8 +309,8 @@ udiv<_V, _D, _UDIV_TRAITS, _UDIV_SETUP_TRAITS>::set(const _D& d)
 	udiv_setup<_D, _UDIV_SETUP_TRAITS> setup(d);
 	_d = d;
 	_m = _V(setup.m());
-	_s1 = _UDIV_TRAITS::splat_for_shift(setup.s1());
-	_s2 = _UDIV_TRAITS::splat_for_shift(setup.s2());
+	_s1 = setup.s1();
+	_s2 = setup.s2();
 	_shift_only = setup.shift_only();
 }
 
@@ -382,7 +364,7 @@ sdiv<_V, _D, _SDIV_TRAITS, _SDIV_SETUP_TRAITS>::set(const _D& d)
 	sdiv_setup<_D, _SDIV_SETUP_TRAITS> setup(d);
 	_d = d;
 	_m = _V(setup.m());
-	_s = _V(setup.s());
+	_s = setup.s();
 	_xsgn_d = _V(setup.xsgn_d());
 }
 

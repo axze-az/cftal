@@ -11,68 +11,95 @@ namespace x86vec
                 bool check_div_s16();
                 bool check_div_u16();
 
-                template <class _DIV, class _PR>
+                template <class _T, class _REF, class _PR>
                 bool check_div_16(const char* msg);
         }
 }
 
-template <class _DIV, class _PR>
+template <class _T, class _REF, class _PR>
 bool x86vec::test::check_div_16(const char* msg)
 {
-	std::uint64_t t_d(0), t_r(0);
-	std::uint64_t t_dc(0), t_rc(0);
+	enum {
+		REF,
+		DIV,
+		CDIV,
+		LAST
+	};
+	std::uint64_t ts[LAST];
+	std::uint64_t tcur[LAST+1];
+	ts[REF] = ts[DIV] = ts[CDIV] =0;
         for(int32_t i = 0; i < 0x10000; ++i) {
-                __m128i u = _mm_cvtsi32_si128(i);
+		typename _T::element_type ii= i;
                 if ((i & 0xff)==0xff) {
                         std::cout << '\r' << msg << ": " 
-				  << std::setw(6) << i << std::flush;
+				  << std::setw(6) << ii << std::flush;
 		}
-                u = impl::splat_u16<0>::v(u);
+		_T v(ii);
+		divisor<_T, typename _T::element_type> vd(ii);
                 for(int32_t j = 0; j < 0x10000; j += 8) {
-                        __m128i v = _mm_setr_epi16(j, j + 1, j + 2, j + 3,
-                                                   j + 4, j + 5, j + 6, j + 7);
-                        __m128i r = impl::make_zero_int::v();
-                        __m128i rr = impl::make_zero_int::v();
-			t_dc = cftal::rdtsc();
-                        __m128i q = _DIV::v(u, v, &r);
-			t_rc = cftal::rdtsc();
-                        __m128i qr = _DIV::ref(u, v, &rr);
-			t_r += cftal::rdtsc() - t_rc;
-			t_d += t_rc - t_dc;
-                        __m128i qeq = _mm_cmpeq_epi16(qr, q);
-                        __m128i req = _mm_cmpeq_epi16(rr, r);
-                        if(!all_signs_s16(qeq) || !all_signs_s16(req)) {
-                                std::cout << '\r' << msg << std::endl
-                                          << _PR(u) << std::endl
-                                          << _PR(v) << std::endl
-                                          << "/" << std::endl
-                                          << _PR(q) << std::endl
-                                          << "/ ref: " << std::endl
-                                          << _PR(qr) << std::endl
-                                          << "%" << std::endl
-                                          << _PR(r) << std::endl
-                                          << "% ref: " << std::endl
-                                          << _PR(rr) << std::endl;
+			_T u(j, j + 1, j + 2, j + 3,
+			     j + 4, j + 5, j + 6, j + 7);
+			__m128i __r_ref = impl::make_zero_int::v();
+			_T q_ref, q_div, q_cdiv;
+			_T r_ref, r_div, r_cdiv;
+			tcur[REF] = cftal::rdtsc();
+                        q_ref =_REF::ref(u(), v(), &__r_ref);
+			r_ref = __r_ref;
+			tcur[DIV] = cftal::rdtsc();
+			q_div = u / v;
+			r_div = cftal::remainder(u, v, q_div);
+			tcur[CDIV] = cftal::rdtsc();
+			q_cdiv = u / vd;
+			r_cdiv = cftal::remainder(u, v, q_cdiv);
+			tcur[LAST] = cftal::rdtsc();
+			r_div = u % v;
+			r_cdiv = u % vd;
+			_T q_cmp_div(q_ref == q_div);
+			_T r_cmp_div(r_ref == r_div);
+			_T q_cmp_cdiv(q_ref == q_cdiv);
+			_T r_cmp_cdiv(r_ref == r_cdiv);
+			if (!all_signs(q_cmp_div) || !all_signs(r_cmp_div) || 
+			    !all_signs(q_cmp_cdiv) || !all_signs(r_cmp_cdiv)) {
+				std::cout << '\r' << msg << std::endl
+                                          << _PR(u()) << " / " 
+                                          << ii << std::endl
+					  << "Q_REF: "
+                                          << _PR(q_ref()) << std::endl
+					  << "R_REF: " 
+					  << _PR(r_ref()) << std::endl
+					  << "Q_DIV: "
+					  << _PR(q_div()) << std::endl
+					  << "Q_DIV:"
+					  << _PR(r_div()) << std::endl
+					  << "Q_CDIV: "
+					  << _PR(q_cdiv()) << std::endl
+					  << "R_CDIV: "
+					  << _PR(r_cdiv()) << std::endl;
                                 return false;
-                        }
+			}
+			ts[REF] += tcur[DIV] - tcur[REF];
+			ts[DIV] += tcur[CDIV] - tcur[DIV];
+			ts[CDIV] += tcur[LAST] - tcur[CDIV];
                 }
         }
 	std::cout << '\n' << msg << std::endl
-		  << "ref: " << double(t_r)/(0x10000LL*0x10000/8)
+		  << "ref:  " << double(ts[REF])/(0x10000LL*0x10000/8)
 		  << std::endl
-		  << "std: " << double(t_d)/(0x10000LL*0x10000/8)
+		  << "div:  " << double(ts[DIV])/(0x10000LL*0x10000/8)
+		  << std::endl
+		  << "cdiv: " << double(ts[CDIV])/(0x10000LL*0x10000/8)
 		  << std::endl;
         return true;
 }
 
 bool x86vec::test::check_div_u16()
 {
-        return check_div_16<impl::div_u16, pr_v8u16>("div_u16");
+        return check_div_16<v8u16, impl::div_u16, pr_v8u16>("div_u16");
 }
 
 bool x86vec::test::check_div_s16()
 {
-        return check_div_16<impl::div_s16, pr_v8s16>("div_s16");
+        return check_div_16<v8s16, impl::div_s16, pr_v8s16>("div_s16");
 }
 
 bool x86vec::test::check_div()
