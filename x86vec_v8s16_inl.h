@@ -35,7 +35,8 @@ x86vec::v8s16::v8s16(element_type r)
 inline
 x86vec::v8s16::v8s16(v8s16::element_type r, bool broadcast)
         : base_type(broadcast ?
-                    _mm_set1_epi16(r) : _mm_cvtsi32_si128(r))
+                    _mm_set1_epi16(r) : 
+		    _mm_set_epi16(0, 0, 0, 0, 0, 0, 0, r))
 {
 }
 

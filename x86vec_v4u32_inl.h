@@ -32,13 +32,14 @@ x86vec::v4u32::v4u32(element_type r)
 inline
 x86vec::v4u32::v4u32(v4u32::element_type r, bool broadcast)
         : base_type(broadcast ?
-                    _mm_set1_epi32(r) : _mm_cvtsi32_si128(r))
+                    _mm_set1_epi32(r) :
+		    _mm_set_epi32(0, 0, 0, r))
 {
 }
 
 inline
 x86vec::v4u32::v4u32(const mem::addr_bcast<element_type>& r)
-        : base_type(_mm_set1_epi32(* (r())))
+        : base_type(_mm_set1_epi32(*r()))
 {
 }
 

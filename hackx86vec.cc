@@ -45,6 +45,26 @@ void t8(emuvec::v8u16& r0, emuvec::v8u16& r1,
 	x86vec::transpose_8x8(r0, r1, r2, r3, r4, r5, r6, r7);
 }
 
+x86vec::v8u16 t9(x86vec::v8u16::element_type r)
+{
+	return r;
+}
+
+x86vec::v8u16 t9(x86vec::v8u16 u, x86vec::v8u16::element_type r)
+{
+	return u+r;
+}
+
+emuvec::v8u16 t10(emuvec::v8u16::element_type r)
+{
+	return r;
+}
+
+emuvec::v8u16 t10(emuvec::v8u16 u, emuvec::v8u16::element_type r)
+{
+	return u+r;
+}
+
 
 #if 0
 void check_float()
