@@ -163,15 +163,15 @@ bool x86vec::test::check_div_16(const char* msg)
                                 tcur[div_type::LAST] - tcur[div_type::CDIV];
                 }
         }
-        std::cout << '\n' << msg << std::endl
+        std::cout << '\n' << msg << " clocks per division " << std::endl
                   << "ref:  "
-                  << double(ts[div_type::REF])/(0x10000LL*0x10000/8)
+                  << double(ts[div_type::REF])/(0x10000LL*0x10000)
                   << std::endl
                   << "div:  "
-                  << double(ts[div_type::DIV])/(0x10000LL*0x10000/8)
+                  << double(ts[div_type::DIV])/(0x10000LL*0x10000)
                   << std::endl
                   << "cdiv: "
-                  << double(ts[div_type::CDIV])/(0x10000LL*0x10000/8)
+                  << double(ts[div_type::CDIV])/(0x10000LL*0x10000)
                   << std::endl;
         return true;
 }
@@ -282,15 +282,15 @@ bool x86vec::test::check_div_32_rnd(const char* msg)
 								rng, msg, ts))
 			return false;
 	}
-        std::cout << '\n' << msg << std::endl
+        std::cout << '\n' << msg << " clocks per division " << std::endl
                   << "ref:  "
-                  << double(ts[div_type::REF])/(0x10000LL*0x10000/4)
+                  << double(ts[div_type::REF])/(0x10000LL*0x10000)
                   << std::endl
                   << "div:  "
-                  << double(ts[div_type::DIV])/(0x10000LL*0x10000/4)
+                  << double(ts[div_type::DIV])/(0x10000LL*0x10000)
                   << std::endl
                   << "cdiv: "
-                  << double(ts[div_type::CDIV])/(0x10000LL*0x10000/4)
+                  << double(ts[div_type::CDIV])/(0x10000LL*0x10000)
                   << std::endl;
 	return true;
 }
