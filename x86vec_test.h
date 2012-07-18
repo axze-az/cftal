@@ -130,7 +130,7 @@ namespace x86vec {
 					  const vec_pr<_V, _E, _EN>& val);
 
 		typedef vec_pr<__m128d, double, 2> pr_v2d;
-		typedef vec_pr<__m128, float, 2> pr_v4f;
+		typedef vec_pr<__m128, float, 4> pr_v4f;
 		typedef vec_pr<__m128i, std::int16_t, 8> pr_v8s16;
 		typedef vec_pr<__m128i, std::uint16_t, 8> pr_v8u16;
 		typedef vec_pr<__m128i, std::int32_t, 4> pr_v4s32;
@@ -202,10 +202,10 @@ std::ostream& x86vec::test::operator<<(std::ostream& s,
 				       const vec_pr< _V, _E, _EN >& v)
 {
 	for (int i=0; i<_EN-1; ++i) {
-		if (i)
-			s.write("; ", 2);
 		s << v._val._e[i];
+		s.write("; ", 2);
 	}
+	s << v._val._e[_EN-1];
 	return s;
 }
 

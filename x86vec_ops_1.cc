@@ -119,9 +119,9 @@ namespace {
 			qi = std::uint32_t(-1);
 			ri = xi;
 		}
-		if (_I == 1) {
-			q = _mm_cvtsi32_si128(qi);
-			r = _mm_cvtsi32_si128(ri);
+		if (_I == 0) {
+			q = _mm_set_epi32(0, 0, 0, qi);
+			r = _mm_set_epi32(0, 0, 0, ri);
 		} else {
 			q = insert_u32<_I>(q, qi);
 			r = insert_u32<_I>(r, ri);
@@ -141,8 +141,8 @@ namespace {
 		} else {
 			qi = std::uint32_t(-1);
 		}
-		if (_I == 1) {
-			q = _mm_cvtsi32_si128(qi);
+		if (_I == 0) {
+			q = _mm_set_epi32(0, 0, 0, qi);
 		} else {
 			q = insert_u32<_I>(q, qi);
 		}
@@ -152,8 +152,8 @@ namespace {
 
 __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* r)
 {
-#if 0
-	return ref(x, y, rem);
+#if 1
+	return ref(x, y, r);
 #else
 	__m128i q;
 	if (r) {

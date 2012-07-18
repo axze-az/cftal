@@ -330,7 +330,8 @@ inline
 x86vec::v4u32
 x86vec::operator%(const v4u32& a, const v4u32& b)
 {
-        return cftal::remainder(a, b, a/b);
+	v4u32 q(a / b);
+        return cftal::remainder(a, b, q);
 }
 
 inline
@@ -405,7 +406,7 @@ x86vec::v4u32 x86vec::mulh(const v4u32& a, const v4u32& b)
 	__m128i o= _mm_mul_epu32(_mm_srli_epi64(a(), 32),
 				 _mm_srli_epi64(b(), 32));
 	// 0, 2 at position 0, 2
-	e = _mm_slli_epi64(e, 32);
+	e = _mm_srli_epi64(e, 32);
 #if defined (__SSE4_1__)
 	return select_u32<1, 0, 1, 0>(e, o);
 #else
