@@ -186,7 +186,7 @@ check_div_32_one_rnd(typename _T::element_type ii,
 {
         std::uint64_t tcur[div_type::LAST+1];
         _T v(ii);
-	for(int32_t j = 0; j < 0x4; j += 4) {
+	for(int32_t j = 0; j < 0x10000; j += 4) {
 		typename _T::element_type j0= rnd.next();
 		typename _T::element_type j1= rnd.next();
 		typename _T::element_type j2= rnd.next();
@@ -270,10 +270,11 @@ bool x86vec::test::check_div_32_rnd(const char* msg)
 
         for(std::int32_t i = 4; i < 0x10000; ++i) {
                 di= rng.next();
-                if ((i & 0xff)==0xff) {
+                if ((i & 0x1ff)==0x1ff) {
                         std::cout << '\r' << msg << ": "
-                                  << std::setw(12) << di 
-				  << double(i)/0x10000 << " %"
+                                  << std::setw(18) << di << " "
+				  << std::setw(10)
+				  << 100*double(i)/0x10000 << "%"
 				  << std::flush;
                 }
 		dd.set(di);

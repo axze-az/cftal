@@ -91,7 +91,6 @@ __m128i x86vec::impl::div_ref<_E, _EN>::ref(__m128i a, __m128i b, __m128i* rem)
 	_mm_store_si128(&ca._v, a);
 	_mm_store_si128(&cb._v, b);
 	for (unsigned i=0; i<_EN; ++i) {
-		std::cout << ca._e[i] << " /  " << cb._e[i] << std::endl;
 		if (cb._e[i] != _E(0) ) {
 			cq._e[i] = ca._e[i] / cb._e[i];
 			cr._e[i] = ca._e[i] % cb._e[i];
@@ -99,7 +98,6 @@ __m128i x86vec::impl::div_ref<_E, _EN>::ref(__m128i a, __m128i b, __m128i* rem)
 			cq._e[i] = _E(-1);
 			cr._e[i] = ca._e[i];
 		}
-		std::cout << cq._e[i] << "   " << cr._e[i] << std::endl;
 	}
 	if (rem != nullptr)
 		_mm_store_si128(rem, _mm_load_si128(&cr._v));

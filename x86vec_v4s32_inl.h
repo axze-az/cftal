@@ -482,7 +482,7 @@ x86vec::v4s32 x86vec::insert(const v4s32& a, typename v4s32::element_type v)
 
 template <unsigned _I>
 inline
-typename x86vec::v4s32::element_type 
+typename x86vec::v4s32::element_type
 x86vec::extract(const v4s32& a)
 {
 	return extract_u32<_I>(a());

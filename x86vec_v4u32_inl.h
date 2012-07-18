@@ -25,7 +25,7 @@ x86vec::v4u32::v4u32(element_type p00, element_type p01,
 
 inline
 x86vec::v4u32::v4u32(element_type r)
-        : base_type(_mm_set1_epi16(r))
+        : base_type(_mm_set1_epi32(r))
 {
 }
 

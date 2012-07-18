@@ -14,7 +14,7 @@ CSRCS=$(wildcard ./x86vec_test_*.cc)
 
 all: testx86vec-01
 
-debug: testx86vec-g
+debug: testx86vec-01-g
 
 lib: lib$(LIBNAME).a 
 

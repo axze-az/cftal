@@ -1,8 +1,8 @@
 [Buildset]
-BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l\x00\x00\x00\x06\x00a\x00l\x00l)
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x02\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l\x00\x00\x00\x06\x00a\x00l\x00l\x00\x00\x00\x0b\x00\x00\x00\x00\x03\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l\x00\x00\x00\x10\x00c\x00h\x00e\x00c\x00k\x00-\x000\x001\x00\x00\x00\x1e\x00t\x00e\x00s\x00t\x00x\x008\x006\x00v\x00e\x00c\x00-\x000\x001\x00-\x00g)
 
 [Launch]
-Launch Configurations=Launch Configuration 0
+Launch Configurations=Launch Configuration 0,Launch Configuration 1
 
 [Launch][Launch Configuration 0]
 Configured Launch Modes=execute
@@ -16,6 +16,24 @@ Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 Dependency Action=Nothing
 EnvironmentGroup=default
 Executable=hackx86vec_g
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+Project Target=
+Use External Terminal=false
+Working Directory=
+isExecutable=true
+
+[Launch][Launch Configuration 1]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=New Native Application Configuration
+Type=Native Application
+
+[Launch][Launch Configuration 1][Data]
+Arguments=
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+Dependency Action=Nothing
+EnvironmentGroup=default
+Executable=file:///home/axel/projects/cpplib/cftal/check-01/testx86vec-01-g
 External Terminal=konsole --noclose --workdir %workdir -e %exe
 Project Target=
 Use External Terminal=false
