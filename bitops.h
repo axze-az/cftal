@@ -37,11 +37,13 @@ std::int64_t cftal::rdtsc()
 {
 #if defined (__x86_64__)
 	std::uint64_t a, d;
-	__asm__ __volatile__("rdtsc" :"=a"(a), "=d"(d));
+	_mm_lfence();
+	__asm__ __volatile__("rdtsc" :"=a"(a), "=d"(d)::"memory");
 	return d<<32 | a;
 #elif defined (__i386__)
 	std::uint64_t a;
-	__asm__ __volatile__("rdtsc" :"=A"(a));
+	_mm_lfence();
+	__asm__ __volatile__("rdtsc" :"=A"(a)::"memory");
 	return a;
 #else
 #error "please insert a read current time functionality here"

@@ -399,12 +399,13 @@ x86vec::v4u32 x86vec::min(const v4u32& a, const v4u32& b)
 inline
 x86vec::v4u32 x86vec::mulh(const v4u32& a, const v4u32& b)
 {
+	using impl::vpshufd;
 	// return _mm_mulhi_epu32(a(), b());
 	// 0, 2 at positions 1 3
 	__m128i e= _mm_mul_epu32(a(), b());
 	// 1, 3 at positions 1 3
-	__m128i o= _mm_mul_epu32(_mm_srli_epi64(a(), 32),
-				 _mm_srli_epi64(b(), 32));
+	__m128i o= _mm_mul_epu32(vpshufd<1, 0, 3, 2>::v(a()),
+				 vpshufd<1, 0, 3, 2>::v(b()));
 	// 0, 2 at position 0, 2
 	e = _mm_srli_epi64(e, 32);
 #if defined (__SSE4_1__)

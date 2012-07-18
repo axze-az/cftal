@@ -96,6 +96,66 @@ __m128i x86vec::impl::div_s32::v(__m128i x, __m128i y, __m128i* rem)
 	return q;
 }
 
+#if 1
+__m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* rem)
+{
+	// add 2^31
+	__m128i xs = _mm_add_epi32(x, v_sign_s32_msk::iv());
+	__m128i ys = _mm_add_epi32(y, v_sign_s32_msk::iv());
+	// generate dp fp constant: 2^31
+	const int _2_pow_31_fp_h= (1023+31)<<20;
+	__m128d _2_pow_31 =
+		const4_u32<0, _2_pow_31_fp_h, 0, _2_pow_31_fp_h>::dv();
+	// convert low halves to double
+	__m128d xt = _mm_cvtepi32_pd(xs);
+	__m128d yt = _mm_cvtepi32_pd(ys);
+	// add 2^31
+	xt = _mm_add_pd(xt, _2_pow_31);
+	yt = _mm_add_pd(yt, _2_pow_31);
+	__m128d q = _mm_div_pd(xt, yt);
+	// convert back to uint32
+	// compare against 2^31
+	__m128d hm= _mm_cmple_pd(_2_pow_31, q);
+	__m128d corr= _mm_and_pd(hm, _2_pow_31);
+	// subtract 2^31 where necessary
+	q = _mm_sub_pd(q, corr);
+	// convert
+	__m128i xm= _mm_slli_epi32(_mm_castpd_si128(hm), 31);
+	xm = vpshufd<0,2, 0,2>::v(xm);
+	// correct too large values
+	__m128i qil=_mm_xor_si128(_mm_cvttpd_epi32(q), xm);
+
+	// move high halves to low
+	xs = _mm_unpackhi_epi64(xs, xs);
+	ys = _mm_unpackhi_epi64(ys, ys);
+	// convert to double
+	xt = _mm_cvtepi32_pd(xs);
+	yt = _mm_cvtepi32_pd(ys);
+	// add 2^31
+	xt = _mm_add_pd(xt, _2_pow_31);
+	yt = _mm_add_pd(yt, _2_pow_31);
+	q = _mm_div_pd(xt, yt);
+	// convert back.
+	hm = _mm_cmple_pd(_2_pow_31, q);
+	corr =_mm_and_pd(hm, _2_pow_31);
+	q = _mm_sub_pd(q, corr);
+	xm= _mm_slli_epi32(_mm_castpd_si128(hm), 31);
+	xm = vpshufd<0,2, 0,2>::v(xm);
+	__m128i qih= _mm_xor_si128(_mm_cvttpd_epi32(q), xm);
+	__m128i qi= _mm_unpacklo_epi64(qil, qih);
+	// set quotient to -1 where y==0
+	__m128i eqz= _mm_cmpeq_epi32(y, make_zero_int::v());
+	qi = _mm_or_si128(qi, eqz);
+	if (rem != nullptr) {
+		// multiply back and subtract
+		__m128i p =  vpmulld::v(qi, y);
+		__m128i r = _mm_sub_epi32(x, p);
+		_mm_store_si128(rem, r);
+	}
+	return qi;
+}
+#else
+
 namespace {
 
 	template <unsigned _I>
@@ -152,7 +212,7 @@ namespace {
 
 __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* r)
 {
-#if 1
+#if 0
 	return ref(x, y, r);
 #else
 	__m128i q;
@@ -171,6 +231,7 @@ __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* r)
 #endif
 }
 
+#endif
 
 extern "C" double cvt_u32_double(uint32_t t);
 extern "C" double cvt_u64_double(uint64_t t);

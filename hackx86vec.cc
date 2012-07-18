@@ -181,32 +181,25 @@ x86vec::v4s32 mulsh(x86vec::v4s32 a, x86vec::v4s32 b)
         return mulh(a, b);
 }
 
-void check_div1()
+void check_div()
 {
-        cftal::divisor<std::uint32_t, std::uint32_t> dd(0x80000000);
-        std::uint32_t n = 0xFFFFEEEE;
-        std::uint32_t q = n / dd;
-        std::cout << n << " / " << dd.d() << " = " << q  << " : "
-                  << n/dd.d()
-                  << std::endl;
+	using x86vec::test::pr_v4u32;
+	__m128i u= _mm_setr_epi32(768554852, 3197531405, 
+				 4035289754, 1097461812);
+	__m128i v= _mm_set1_epi32(1);
+	__m128i r;
+	__m128i q= x86vec::impl::div_u32::v(u, v, &r);
+	std::cout << pr_v4u32(q) << std::endl;
+	std::cout << pr_v4u32(r) << std::endl;
 }
 
 void check_div2()
 {
-        cftal::divisor<std::uint16_t, std::uint16_t> dd(0x8000);
-        std::uint16_t n = 0xFFEE;
-        std::uint16_t q = n / dd;
-        std::cout << n << " / " << dd.d() << " = " << q  << " : "
-                  << n/dd.d()
-                  << std::endl;
-
-
 }
 
 
 int main(int argc, char** argv)
 {
-        check_div1();
-        check_div2();
+        check_div();
         return 0;
 }

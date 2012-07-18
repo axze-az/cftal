@@ -426,13 +426,14 @@ x86vec::v4s32 x86vec::mulh(const v4s32& x, const v4s32& y)
 {
 	// return _mm_mulhi_epi32(x(), y());
 #if defined(__SSE4_1__)
+	using impl::vpshufd;
 	// 0, 2 at positions 1 3
 	__m128i e= _mm_mul_epi32(x(), y());
 	// 1, 3 at positions 1 3
-	__m128i o= _mm_mul_epi32(_mm_srli_epi64(x(), 32),
-				 _mm_srli_epi64(y(), 32));
+	__m128i o= _mm_mul_epi32(vpshufd<1, 0, 3, 2>::v(x()),
+				 vpshufd<1, 0, 3, 2>::v(y()));
 	// 0, 2 at positions 0 2
-	e = _mm_slli_epi64(e, 32);
+	e = _mm_srli_epi64(e, 32);
 	return select_u32<1, 0, 1, 0>(e, o);
 #else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
