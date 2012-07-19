@@ -370,7 +370,7 @@ x86vec::v2s64 x86vec::operator> (const v2s64& a, const v2s64& b)
 #if defined (__SSE4_2__)
         return _mm_cmpgt_epi64(b(), a());
 #else
-	// a > b : (a>=0 && b<0) || ((sgn(a) == sgn(b) && (a-b < 0)))
+	// a > b : (a>=0 && b<0) || ((sgn(a) == sgn(b) && (b-a < 0)))
 	// c1 --------^
 	// c2 ---------------^
 	// c3 -------------------------------^ 
@@ -379,7 +379,7 @@ x86vec::v2s64 x86vec::operator> (const v2s64& a, const v2s64& b)
 	// a-b <0 == highest bit set
 	// a >=0 == highest bit empty 
 	// b < 0 == highest bit set 
-	__m128i c4= _mm_sub_epi64(a(), b());
+	__m128i c4= _mm_sub_epi64(b(), a());
 	__m128i c1_and_c2 = _mm_andnot_si128(a(), b());
 	__m128i c3 = _mm_xor_si128(a(), b());
 	__m128i c3_and_c4 = _mm_andnot_si128(c3, c4);
