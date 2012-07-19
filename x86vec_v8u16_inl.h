@@ -110,7 +110,7 @@ inline
 x86vec::v8u16&
 x86vec::operator*= (v8u16& a, const v8u16& b)
 {
-        a = _mm_mullo_epi16(a(), b());
+        a = impl::vpmullw::v(a(), b());
         return a;
 }
 
@@ -145,8 +145,7 @@ inline
 x86vec::v8u16&
 x86vec::operator<<= (v8u16& a, uint32_t b)
 {
-        __m128i s = _mm_cvtsi32_si128(b);
-        a = impl::vpsllw::v(a(), s);
+        a = impl::vpsllw::v(a(), b);
         return a;
 }
 
@@ -163,8 +162,7 @@ inline
 x86vec::v8u16
 x86vec::operator<< (const v8u16& a, uint32_t b)
 {
-        __m128i s = _mm_cvtsi32_si128(b);
-        return impl::vpsllw::v(a(), s);
+        return impl::vpsllw::v(a(), b);
 }
 
 
@@ -182,8 +180,7 @@ inline
 x86vec::v8u16&
 x86vec::operator>>= (v8u16& a, uint32_t r)
 {
-        __m128i s = _mm_cvtsi32_si128(r);
-        a = impl::vpsrlw::v(a(), s);
+        a = impl::vpsrlw::v(a(), r);
         return a;
 }
 
@@ -200,10 +197,8 @@ inline
 x86vec::v8u16
 x86vec::operator>> (const v8u16& a, uint32_t r)
 {
-        __m128i s = _mm_cvtsi32_si128(r);
-        return impl::vpsrlw::v(a(), s);
+        return impl::vpsrlw::v(a(), r);
 }
-
 
 inline
 x86vec::v8u16&
@@ -319,7 +314,7 @@ x86vec::v8u16 x86vec::operator- (const v8u16& a, const v8u16& b)
 inline
 x86vec::v8u16 x86vec::operator* (const v8u16& a, const v8u16& b)
 {
-        return _mm_mullo_epi16(a(), b());
+        return impl::vpmullw::v(a(), b());
 }
 
 inline
@@ -413,7 +408,7 @@ x86vec::v8u16 x86vec::min(const v8u16& a, const v8u16& b)
 inline
 x86vec::v8u16 x86vec::mulh(const v8u16& a, const v8u16& b)
 {
-	return _mm_mulhi_epu16(a(), b());
+	return impl::vpmulhuw::v(a(), b());
 }
 
 template < bool _P0, bool _P1, bool _P2, bool _P3,

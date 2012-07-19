@@ -36,6 +36,12 @@ namespace x86vec {
 					 __m128i* rem=nullptr);
 		};
 
+		struct div_u64 : public div_ref<std::uint64_t, 2> {
+		};
+
+		struct div_s64 : public div_ref<std::int64_t, 2> {
+		};
+
 	}
 
 	// read the sign bits of all elements into a bit mask

@@ -472,6 +472,10 @@ namespace x86vec {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_sll_epi16(a, shift);
 			}
+			static __m128i v(__m128i a, unsigned shift) {
+				__m128i sh= _mm_cvtsi32_si128(shift);
+				return v(a, sh);
+			}
 		};
 
 		template <unsigned _P>
@@ -496,6 +500,10 @@ namespace x86vec {
 		struct vpslld {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_sll_epi32(a, shift);
+			}
+			static __m128i v(__m128i a, unsigned shift) {
+				__m128i sh= _mm_cvtsi32_si128(shift);
+				return v(a, sh);
 			}
 		};
 
@@ -522,6 +530,10 @@ namespace x86vec {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_sll_epi64(a, shift);
 			}
+			static __m128i v(__m128i a, unsigned shift) {
+				__m128i sh= _mm_cvtsi32_si128(shift);
+				return v(a, sh);
+			}
 		};
 
 		template <unsigned _P>
@@ -547,6 +559,10 @@ namespace x86vec {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_srl_epi16(a, shift);
 			}
+			static __m128i v(__m128i a, unsigned shift) {
+				__m128i sh= _mm_cvtsi32_si128(shift);
+				return v(a, sh);
+			}
 		};
 
 		template <unsigned _P>
@@ -564,6 +580,10 @@ namespace x86vec {
 		struct vpsrld {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_srl_epi32(a, shift);
+			}
+			static __m128i v(__m128i a, unsigned shift) {
+				__m128i sh= _mm_cvtsi32_si128(shift);
+				return v(a, sh);
 			}
 		};
 
@@ -583,6 +603,10 @@ namespace x86vec {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_srl_epi64(a, shift);
 			}
+			static __m128i v(__m128i a, unsigned shift) {
+				__m128i sh= _mm_cvtsi32_si128(shift);
+				return v(a, sh);
+			}
 		};
 
 		template <unsigned _P>
@@ -601,6 +625,10 @@ namespace x86vec {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_sra_epi16(a, shift);
 			}
+			static __m128i v(__m128i a, unsigned shift) {
+				__m128i sh= _mm_cvtsi32_si128(shift);
+				return v(a, sh);
+			}
 		};
 
 		template <unsigned _P>
@@ -617,6 +645,10 @@ namespace x86vec {
 			static __m128i v(__m128i a, __m128i shift) {
 				return _mm_sra_epi32(a, shift);
 			}
+			static __m128i v(__m128i a, unsigned shift) {
+				__m128i sh= _mm_cvtsi32_si128(shift);
+				return v(a, sh);
+			}
 		};
 
 		template <unsigned _P>
@@ -629,7 +661,31 @@ namespace x86vec {
 		template <>
 		struct vpsrad_const<0> : public select_arg_1<__m128i> {};
 
+		struct vpsraq {
+			static __m128i v(__m128i a, unsigned shift);
 
+			static __m128i v(__m128i a, __m128i shift) {
+				unsigned sh= _mm_cvtsi128_si32(shift);
+				return v(a, sh);
+			}
+		};
+		
+		template <unsigned _P>
+		struct vpsraq_const : public vpsraq {
+			static __m128i v(__m128i a);
+		};
+
+		template <>
+		struct vpsraq_const<0> : public select_arg_1<__m128i> {};
+
+		template <>
+		struct vpsraq_const<63> {
+			static __m128i v(__m128i a) {
+				__m128i sgn= vpsrad_const<31>::v(a);
+				return vpshufd<1, 1, 3, 3>::v(sgn);
+			}
+		};
+		
 		template <unsigned _P>
 		struct vpslldq {
 			static __m128i v(__m128i a) {
@@ -652,11 +708,95 @@ namespace x86vec {
 		template <>
 		struct vpsrldq<0> : public select_arg_1<__m128i> {};
 
+		struct vpmullw {
+			static __m128i v(__m128i a, __m128i b) {
+				return _mm_mullo_epi16(a, b);
+			}
+		};
+
+		struct vpmulhw {
+			static __m128i v(__m128i a, __m128i b) {
+				return _mm_mulhi_epi16(a, b);
+			}
+		};
+
+		struct vpmulhuw {
+			static __m128i v(__m128i a, __m128i b) {
+				return _mm_mulhi_epu16(a, b);
+			}
+		};
+
 		struct vpmulld {
+			static __m128i v(__m128i a, __m128i b);
+		};
+		
+		struct vpmulhud {
+			static __m128i v(__m128i a, __m128i b);
+		};
+		
+		struct vpmulhd {
+			static __m128i v(__m128i a, __m128i b);
+		};
+
+		struct vpmullq {
+			static __m128i v(__m128i a, __m128i b);
+		};
+
+		struct vpmulhuq {
+			static __m128i v(__m128i a, __m128i b);
+		};
+
+		struct vpmulhq {
 			static __m128i v(__m128i a, __m128i b);
 		};
 
 	}
+}
+
+inline
+__m128i x86vec::impl::vpsraq::v(__m128i a, unsigned shift)
+{
+	__m128i r;
+	if (shift <= 32) {
+		// high parts of result.
+		__m128i sh = _mm_cvtsi32_si128(shift);
+		__m128i sgnbits= vpsrad::v(a, sh);
+		// low parts of result.
+		__m128i allbits= vpsrlq::v(a, sh);
+		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+	} else {
+		// future sign bits.
+		__m128i sgnbits= vpsrad_const<31>::v(a);
+		// result bits right shifted by shift - 32
+		__m128i allbits= vpsrad::v(a, shift-32);
+		// result bits correctly located.
+		allbits = vpsrlq_const<32>::v(allbits);
+		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+	}
+	return r;
+}
+
+template <unsigned _S>
+inline
+__m128i x86vec::impl::vpsraq_const<_S>::v(__m128i a)
+{
+	__m128i r;
+	if (_S <= 32) {
+		// high parts of result.
+		__m128i sgnbits= vpsrad_const<_S>::v(a);
+		// low parts of result.
+		__m128i allbits= vpsrlq_const<_S>::v(a);
+		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+	} else {
+		// future sign bits.
+		__m128i sgnbits= vpsrad_const<31>::v(a);
+		// result bits right shifted by shift - 32
+		__m128i allbits= vpsrad_const<_S-32>::v(a);
+		// result bits correctly located.
+		allbits = vpsrlq_const<32>::v(allbits);
+		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+	}
+	return r;
 }
 
 inline
@@ -668,8 +808,8 @@ __m128i x86vec::impl::vpmulld::v(__m128i a, __m128i b)
 	// 0, 2
 	__m128i e= _mm_mul_epu32(a, b);
 	// 1, 3
-	__m128i o= _mm_mul_epu32(_mm_srli_epi64(a, 32),
-				 _mm_srli_epi64(b, 32));
+	__m128i o= _mm_mul_epu32(vpsrlq_const<32>::v(a),
+				 vpsrlq_const<32>::v(b));
 	const __m128i msk = const4_u32<-1, 0, -1, 0>::iv();
 	e = _mm_and_si128(e, msk);
 	o = _mm_slli_epi64(o, 32);
@@ -678,6 +818,123 @@ __m128i x86vec::impl::vpmulld::v(__m128i a, __m128i b)
 #endif
 }
 
+inline
+__m128i x86vec::impl::vpmulhud::v(__m128i a, __m128i b)
+{
+	// return _mm_mulhi_epu32(a(), b());
+	// 0, 2 at positions 1 3
+	__m128i e= _mm_mul_epu32(a, b);
+	// 1, 3 at positions 1 3
+	__m128i o= _mm_mul_epu32(vpshufd<1, 0, 3, 2>::v(a),
+				 vpshufd<1, 0, 3, 2>::v(b));
+	// 0, 2 at position 0, 2
+	e = _mm_srli_epi64(e, 32);
+#if defined (__SSE4_1__)
+	return select_u32<1, 0, 1, 0>::v(e, o);
+#else
+	const __m128i msk = const4_u32<0, -1, 0, -1>::iv();
+	o = _mm_and_si128(o, msk);
+	return _mm_or_si128(e, o);
+#endif
+}
+
+inline
+__m128i x86vec::impl::vpmulhd::v(__m128i x, __m128i y)
+{
+#if defined(__SSE4_1__)
+	// 0, 2 at positions 1 3
+	__m128i e= _mm_mul_epi32(x, y);
+	// 1, 3 at positions 1 3
+	__m128i o= _mm_mul_epi32(vpshufd<1, 0, 3, 2>::v(x),
+				 vpshufd<1, 0, 3, 2>::v(y));
+	// 0, 2 at positions 0 2
+	e = _mm_srli_epi64(e, 32);
+	return select_u32<1, 0, 1, 0>::v(e, o);
+#else
+	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
+	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
+	__m128i m= vpmulhud::v(a, b);
+	__m128i xsgn_y= vpsrad_const<31>::v(y);
+	__m128i xsgn_x= vpsrad_const<31>::v(x);
+	xsgn_y = _mm_and_si128(x, xsgn_y);
+	xsgn_x = _mm_and_si128(y, xsgn_y);
+	m = _mm_sub_epi32(x, xsgn_y);
+	m = _mm_sub_epi32(y, xsgn_x);
+	return m;
+#endif
+}
+
+inline
+__m128i x86vec::impl::vpmullq::v(__m128i a, __m128i b)
+{
+	// a= ah *2^32 + al
+	// b= bh *2^32 + bl
+	// a*b = ah*bh*2^64 + ah* bl * 2^32 + al * bh*2^32 + al *bl
+	// a*b mod 2^64= ah* bl * 2^32 + al * bh*2^32 + al *bl
+#if defined (__SSE4_1__)
+	// swap lo and hi uint32_t parts of the 2 uint64_t in bs
+	__m128i bs = vpshufd<1, 0, 3, 2>::v(b);
+	__m128i al_bl = _mm_mul_epu32(a, b);
+	// mixed: (bh*al, ah*bl)_0, (bh*al, ah* bl)_1
+	__m128i mixed = _mm_mullo_epi32(a, bs);
+	// ah_bl: (ah*bl, ah*bl)_0, (ah*bl, ah* bl)_1
+	__m128i ah_bl = vpshufd<1, 1, 3, 3>::v(mixed);		
+	// mixed: (bh*al + ah*bl, 2*ah*bl)_0, (bh*al + ah*bl, 2*ah*bl)_1
+	mixed = _mm_add_epi32(mixed, ah_bl);
+	// mixed: (0, bh*al + ah*bl)_0, (0, bh*al + ah*bl)_1
+	mixed = vpsllq_const<32>::v(mixed);
+	__m128i p= _mm_add_epi64(al_bl, mixed); 
+	return p;
+#else
+	__m128i ah = vpshufd<1, 0, 3, 2>::v(a);
+	__m128i bh = vpshufd<1, 0, 3, 2>::v(b);
+	// mul(al * bl)
+	__m128i al_bl = _mm_mul_epu32(a, b);
+	// mul(ah * bl)
+	__m128i ah_bl = _mm_mul_epu32(ah, b);
+	// mul(al * bl)
+	__m128i al_bh = _mm_mul_epu32(b, bh);
+	// add the products with the same power of 2
+	__m128i mixed = _mm_add_epi32(ah_bl, al_bh);
+	// shift left
+	mixed = vpsllq_const<32>(mixed);
+	__m128i p = _mm_add_epi64(al_bl, mixed);
+	return p;
+#endif
+}
+
+#if 0
+inline
+__m128i x86vec::vpmulhuq::v(__m128i a, __m128i b)
+{
+	__m128i ah = vpshufd<1, 0, 3, 2>::v(a);
+	__m128i bh = vpshufd<1, 0, 3, 2>::v(b);
+	// mul(al * bl)
+	__m128i al_bl = _mm_mul_epu32(a, b);
+	// mul(ah * bl)
+	__m128i ah_bl = _mm_mul_epu32(ah, b);
+	// mul(al * bl)
+	__m128i al_bh = _mm_mul_epu32(b, bh);
+	// mul(ah * bh) * 2^64
+	__m128i ah_bh = _mm_mul_epu32(ah, bh);
+
+	
+
+}
+
+inline
+__m128i x86vec::vpmulhq::v(__m128i a, __m128i b)
+{
+	__m128i m= vpmulhuq::v(a, b);
+	__m128i xsgn_y= vpsraq_const<63>::v(y);
+	__m128i xsgn_x= vpsraq_const<63>::v(x);
+	xsgn_y = _mm_and_si128(x, xsgn_y);
+	xsgn_x = _mm_and_si128(y, xsgn_y);
+	m = _mm_sub_epi64(x, xsgn_y);
+	m = _mm_sub_epi64(y, xsgn_x);
+	return m;
+}
+#endif
 
 // Local variables:
 // mode: c++

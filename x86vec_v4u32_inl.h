@@ -142,8 +142,7 @@ inline
 x86vec::v4u32&
 x86vec::operator<<= (v4u32& a, uint32_t b)
 {
-        __m128i s = _mm_cvtsi32_si128(b);
-        a = impl::vpslld::v(a(), s);
+        a = impl::vpslld::v(a(), b);
         return a;
 }
 
@@ -160,8 +159,7 @@ inline
 x86vec::v4u32
 x86vec::operator<< (const v4u32& a, uint32_t b)
 {
-        __m128i s = _mm_cvtsi32_si128(b);
-        return impl::vpslld::v(a(), s);
+        return impl::vpslld::v(a(), b);
 }
 
 
@@ -179,8 +177,7 @@ inline
 x86vec::v4u32&
 x86vec::operator>>= (v4u32& a, uint32_t r)
 {
-        __m128i s = _mm_cvtsi32_si128(r);
-        a = impl::vpsrld::v(a(), s);
+        a = impl::vpsrld::v(a(), r);
         return a;
 }
 
@@ -197,10 +194,8 @@ inline
 x86vec::v4u32
 x86vec::operator>> (const v4u32& a, uint32_t r)
 {
-        __m128i s = _mm_cvtsi32_si128(r);
-        return impl::vpsrld::v(a(), s);
+        return impl::vpsrld::v(a(), r);
 }
-
 
 inline
 x86vec::v4u32&
@@ -399,22 +394,7 @@ x86vec::v4u32 x86vec::min(const v4u32& a, const v4u32& b)
 inline
 x86vec::v4u32 x86vec::mulh(const v4u32& a, const v4u32& b)
 {
-	using impl::vpshufd;
-	// return _mm_mulhi_epu32(a(), b());
-	// 0, 2 at positions 1 3
-	__m128i e= _mm_mul_epu32(a(), b());
-	// 1, 3 at positions 1 3
-	__m128i o= _mm_mul_epu32(vpshufd<1, 0, 3, 2>::v(a()),
-				 vpshufd<1, 0, 3, 2>::v(b()));
-	// 0, 2 at position 0, 2
-	e = _mm_srli_epi64(e, 32);
-#if defined (__SSE4_1__)
-	return select_u32<1, 0, 1, 0>(e, o);
-#else
-	const __m128i msk = const4_u32<0, -1, 0, -1>::iv();
-	o = _mm_and_si128(o, msk);
-	return _mm_or_si128(e, o);
-#endif
+	return impl::vpmulhud::v(a(), b());
 }
 
 template < bool _P0, bool _P1, bool _P2, bool _P3 >

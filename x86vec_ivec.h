@@ -13,8 +13,7 @@
 namespace x86vec
 {
 
-	class v128u1 : public vreg<__m128i>
-        {
+	class v128u1 : public vreg<__m128i> {
         public:
                 typedef vreg<__m128i> base_type;
                 v128u1() = default;
@@ -416,6 +415,189 @@ namespace x86vec
 	template <unsigned _I>
 	typename v4u32::element_type extract(const v4u32& a);
 
+        class v2s64 : public v128u1 {
+        public:
+                typedef std::int64_t element_type;
+                typedef v128u1 base_type;
+                v2s64() = default;
+                v2s64(vector_type r);
+                v2s64(const base_type& r);
+                v2s64(element_type p00, element_type p01);
+                // broadcast to all positions
+                v2s64(element_type r);
+                v2s64(element_type r, bool broadcast);
+                v2s64(const mem::addr_bcast<element_type>& r);
+                v2s64(const mem::addr<element_type>& r);
+                v2s64(const mem::aligned::addr<element_type>& r);
+                v2s64(const mem::unaligned::addr<element_type>& r);
+        };
+
+        v2s64& operator|= (v2s64& a, const v2s64& b);
+        v2s64& operator&= (v2s64& a, const v2s64& b);
+        v2s64& operator^= (v2s64& a, const v2s64& b);
+        v2s64& operator+= (v2s64& a, const v2s64& b);
+        v2s64& operator-= (v2s64& a, const v2s64& b);
+        v2s64& operator*= (v2s64& a, const v2s64& b);
+        v2s64& operator/= (v2s64& a, const v2s64& b);
+        v2s64& operator%= (v2s64& a, const v2s64& b);
+
+        template <std::uint32_t _P>
+        v2s64& operator<<= (v2s64& a, const const_u32<_P>& b);
+        v2s64& operator<<= (v2s64& a, std::uint32_t b);
+        template <std::uint32_t _P>
+        v2s64 operator <<(const v2s64& a, const const_u32<_P>& b);
+        v2s64 operator <<(const v2s64& a, std::uint32_t b);
+
+        template <std::uint32_t _P>
+        v2s64& operator>>= (v2s64& a, const_u32<_P>& b);
+        v2s64& operator>>= (v2s64& a, std::uint32_t b);
+        template <std::uint32_t _P>
+        v2s64 operator >>(const v2s64& a, const const_u32<_P>& b);
+        v2s64 operator >>(const v2s64& a, std::uint32_t b);
+
+        v2s64 operator++ (v2s64& a, int);
+        v2s64& operator++(v2s64& a);
+        v2s64 operator-- (v2s64& a, int);
+        v2s64& operator--(v2s64& a);
+
+        v2s64 operator-(const v2s64& a);
+	const v2s64& operator+(const v2s64& a);
+        v2s64 operator~(const v2s64& a);
+        v2s64 operator!(const v2s64& a);
+
+        v2s64 operator| (const v2s64& a, const v2s64& b);
+        v2s64 operator|| (const v2s64& a, const v2s64& b);
+        v2s64 operator& (const v2s64& a, const v2s64& b);
+        v2s64 operator&& (const v2s64& a, const v2s64& b);
+        v2s64 operator^(const v2s64& a, const v2s64& b);
+
+        v2s64 operator+ (const v2s64& a, const v2s64& b);
+        v2s64 operator- (const v2s64& a, const v2s64& b);
+        v2s64 operator* (const v2s64& a, const v2s64& b);
+        v2s64 operator/ (const v2s64& a, const v2s64& b);
+        v2s64 operator% (const v2s64& a, const v2s64& b);
+
+        v2s64 operator< (const v2s64& a, const v2s64& b);
+        v2s64 operator<= (const v2s64& a, const v2s64& b);
+        v2s64 operator== (const v2s64& a, const v2s64& b);
+        v2s64 operator!= (const v2s64& a, const v2s64& b);
+        v2s64 operator>= (const v2s64& a, const v2s64& b);
+        v2s64 operator> (const v2s64& a, const v2s64& b);
+
+        // checks the signs
+        bool all_signs(const v2s64& a);
+        // checks the signs
+        bool both_signs(const v2s64& a);
+        // checks the signs
+        bool no_signs(const v2s64& a);
+
+        v2s64 max(const v2s64& a, const v2s64& b);
+        v2s64 min(const v2s64& a, const v2s64& b);
+        v2s64 abs(const v2s64& a);
+	v2s64 mulh(const v2s64& a, const v2s64& b);
+
+        template < bool _P0, bool _P1>
+        v2s64 select(const v2s64& a, const v2s64& b);
+        v2s64 select(const v2s64& msk, const v2s64& on_true,
+                     const v2s64& on_false);
+
+        template <int _P0, int _P1>
+        v2s64 permute(const v2s64& a);
+        template <int _P0, int _P1>
+        v2s64 permute(const v2s64& a, const v2s64& b);
+
+	template <unsigned _I>
+	v2s64 insert(const v2s64& a, typename v2s64::element_type v);
+	template <unsigned _I>
+	typename v2s64::element_type extract(const v2s64& a);
+
+        class v2u64 : public v2s64 {
+        public:
+                typedef std::uint64_t element_type;
+                typedef v2s64 base_type;
+                v2u64() = default;
+                v2u64(vector_type r);
+                v2u64(const base_type& r);
+                v2u64(element_type r);
+                v2u64(element_type r, bool broadcast);
+                v2u64(element_type p00, element_type p01);
+                v2u64(const mem::addr_bcast<element_type>& r);
+                v2u64(const mem::addr<element_type>& r);
+                v2u64(const mem::aligned::addr<element_type>& r);
+                v2u64(const mem::unaligned::addr<element_type>& r);
+        };
+
+        v2u64& operator|= (v2u64& a, const v2u64& b);
+        v2u64& operator&= (v2u64& a, const v2u64& b);
+        v2u64& operator^= (v2u64& a, const v2u64& b);
+        v2u64& operator+= (v2u64& a, const v2u64& b);
+        v2u64& operator-= (v2u64& a, const v2u64& b);
+        v2u64& operator*= (v2u64& a, const v2u64& b);
+        v2u64& operator/= (v2u64& a, const v2u64& b);
+        v2u64& operator%= (v2u64& a, const v2u64& b);
+
+        template <std::uint32_t _P>
+        v2u64& operator<<= (v2u64& a, const const_u32<_P>& b);
+        v2u64& operator<<= (v2u64& a, std::uint32_t b);
+        template <std::uint32_t _P>
+        v2u64 operator <<(const v2u64& a, const const_u32<_P>& b);
+        v2u64 operator <<(const v2u64& a, std::uint32_t b);
+
+        template <std::uint32_t _P>
+        v2u64& operator>>= (v2u64& a, const_u32<_P>& b);
+        v2u64& operator>>= (v2u64& a, std::uint32_t b);
+        template <std::uint32_t _P>
+        v2u64 operator >>(const v2u64& a, const const_u32<_P>& b);
+        v2u64 operator >>(const v2u64& a, std::uint32_t b);
+
+        v2u64 operator++ (v2u64& a, int);
+        v2u64& operator++(v2u64& a);
+        v2u64 operator-- (v2u64& a, int);
+        v2u64& operator--(v2u64& a);
+
+        v2u64 operator-(const v2u64& a);
+	const v2u64& operator+(const v2u64& a);
+        v2u64 operator~(const v2u64& a);
+        v2u64 operator!(const v2u64& a);
+
+        v2u64 operator| (const v2u64& a, const v2u64& b);
+        v2u64 operator|| (const v2u64& a, const v2u64& b);
+        v2u64 operator& (const v2u64& a, const v2u64& b);
+        v2u64 operator&& (const v2u64& a, const v2u64& b);
+        v2u64 operator^(const v2u64& a, const v2u64& b);
+
+        v2u64 operator+ (const v2u64& a, const v2u64& b);
+        v2u64 operator- (const v2u64& a, const v2u64& b);
+        v2u64 operator* (const v2u64& a, const v2u64& b);
+        v2u64 operator/ (const v2u64& a, const v2u64& b);
+        v2u64 operator% (const v2u64& a, const v2u64& b);
+
+        v2u64 operator< (const v2u64& a, const v2u64& b);
+        v2u64 operator<= (const v2u64& a, const v2u64& b);
+        v2u64 operator== (const v2u64& a, const v2u64& b);
+        v2u64 operator!= (const v2u64& a, const v2u64& b);
+        v2u64 operator>= (const v2u64& a, const v2u64& b);
+        v2u64 operator> (const v2u64& a, const v2u64& b);
+
+        v2u64 max(const v2u64& a, const v2u64& b);
+        v2u64 min(const v2u64& a, const v2u64& b);
+	v2u64 mulh(const v2u64& a, const v2u64& b);
+
+        template < bool _P0, bool _P1>
+        v2u64 select(const v2u64& a, const v2u64& b);
+        v2u64 select(const v2u64& msk, const v2u64& on_true,
+                     const v2u64& on_false);
+
+        template < int _P0, int _P1>
+        v2u64 permute(const v2u64& a);
+        template < int _P0, int _P1>
+        v2u64 permute(const v2u64& a, const v2u64& b);
+
+	template <unsigned _I>
+	v2u64 insert(const v2u64& a, typename v2u64::element_type v);
+	template <unsigned _I>
+	typename v2u64::element_type extract(const v2u64& a);
+
 	//std::pair<v4s32, v4s32> mul(const v8s16& x, const v8u16& y);
 	// std::pair<v4u32, v4u32> mul(const v8u16& x, const v8u16& y);
 }
@@ -505,7 +687,7 @@ namespace std {
 #include <cftal/x86vec_v8u16_inl.h>
 #include <cftal/x86vec_v4s32_inl.h>
 #include <cftal/x86vec_v4u32_inl.h>
-
+#include <cftal/x86vec_v2s64_inl.h>
 
 // Local variables:
 // mode: c++
