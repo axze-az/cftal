@@ -376,7 +376,7 @@ x86vec::v2s64 x86vec::operator> (const v2s64& a, const v2s64& b)
 	// c3 -------------------------------^ 
 	// c4 -------------------------------------------------^
 	// sgn(a) == sgn(b) --> a ^ b == highest bit clear
-	// a-b <0 == highest bit set
+	// b-a <0 == highest bit set
 	// a >=0 == highest bit empty 
 	// b < 0 == highest bit set 
 	__m128i c4= _mm_sub_epi64(b(), a());
