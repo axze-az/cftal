@@ -7,6 +7,8 @@
 #include <cftal/x86vec_ops_1.h>
 #include <cftal/mem_load.h>
 #include <cftal/divisor.h>
+#include <type_traits>
+#include <limits>
 
 namespace x86vec
 {
@@ -416,6 +418,86 @@ namespace x86vec
 
 	//std::pair<v4s32, v4s32> mul(const v8s16& x, const v8u16& y);
 	// std::pair<v4u32, v4u32> mul(const v8u16& x, const v8u16& y);
+}
+
+namespace std {
+
+	// v8s16
+	template <>
+	struct is_signed<x86vec::v8s16> : public true_type {};
+	template <>
+	struct make_signed<x86vec::v8s16> {
+		typedef x86vec::v8s16 type;
+	};
+	
+	template <>
+	struct is_unsigned<x86vec::v8s16> : public false_type {};
+	template <>
+	struct make_unsigned<x86vec::v8s16> {
+		typedef x86vec::v8u16 type;
+	};
+
+	template <>
+	struct numeric_limits<x86vec::v8s16> : 
+		public numeric_limits<x86vec::v8s16::element_type> {};
+
+	// v8u16
+	template <>
+	struct is_signed<x86vec::v8u16> : public false_type {};
+	template <>
+	struct make_signed<x86vec::v8u16> {
+		typedef x86vec::v8s16 type;
+	};
+
+	template <>
+	struct is_unsigned<x86vec::v8u16> : public true_type {};
+	template <>
+	struct make_unsigned<x86vec::v8u16> {
+		typedef x86vec::v8u16 type;
+	};
+
+	template <>
+	struct numeric_limits<x86vec::v8u16> : 
+		public numeric_limits<x86vec::v8u16::element_type> {};
+
+	// v4s32
+	template <>
+	struct is_signed<x86vec::v4s32> : public true_type {};
+	template <>
+	struct make_signed<x86vec::v4s32> {
+		typedef x86vec::v4s32 type;
+	};
+	
+	template <>
+	struct is_unsigned<x86vec::v4s32> : public false_type {};
+	template <>
+	struct make_unsigned<x86vec::v4s32> {
+		typedef x86vec::v4u32 type;
+	};
+
+	template <>
+	struct numeric_limits<x86vec::v4s32> : 
+		public numeric_limits<x86vec::v4s32::element_type> {};
+
+	// v4u32
+	template <>
+	struct is_signed<x86vec::v4u32> : public false_type {};
+	template <>
+	struct make_signed<x86vec::v4u32> {
+		typedef x86vec::v4s32 type;
+	};
+
+	template <>
+	struct is_unsigned<x86vec::v4u32> : public true_type {};
+	template <>
+	struct make_unsigned<x86vec::v4u32> {
+		typedef x86vec::v4u32 type;
+	};
+
+	template <>
+	struct numeric_limits<x86vec::v4u32> : 
+		public numeric_limits<x86vec::v4u32::element_type> {};
+
 }
 
 #include <cftal/x86vec_v128u1_inl.h>
