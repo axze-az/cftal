@@ -680,6 +680,44 @@ namespace std {
 	struct numeric_limits<x86vec::v4u32> : 
 		public numeric_limits<x86vec::v4u32::element_type> {};
 
+	// v2s64
+	template <>
+	struct is_signed<x86vec::v2s64> : public true_type {};
+	template <>
+	struct make_signed<x86vec::v2s64> {
+		typedef x86vec::v2s64 type;
+	};
+	
+	template <>
+	struct is_unsigned<x86vec::v2s64> : public false_type {};
+	template <>
+	struct make_unsigned<x86vec::v2s64> {
+		typedef x86vec::v2u64 type;
+	};
+
+	template <>
+	struct numeric_limits<x86vec::v2s64> : 
+		public numeric_limits<x86vec::v2s64::element_type> {};
+
+	// v2u64
+	template <>
+	struct is_signed<x86vec::v2u64> : public false_type {};
+	template <>
+	struct make_signed<x86vec::v2u64> {
+		typedef x86vec::v2s64 type;
+	};
+
+	template <>
+	struct is_unsigned<x86vec::v2u64> : public true_type {};
+	template <>
+	struct make_unsigned<x86vec::v2u64> {
+		typedef x86vec::v2u64 type;
+	};
+
+	template <>
+	struct numeric_limits<x86vec::v2u64> : 
+		public numeric_limits<x86vec::v2u64::element_type> {};
+
 }
 
 #include <cftal/x86vec_v128u1_inl.h>
@@ -688,6 +726,7 @@ namespace std {
 #include <cftal/x86vec_v4s32_inl.h>
 #include <cftal/x86vec_v4u32_inl.h>
 #include <cftal/x86vec_v2s64_inl.h>
+#include <cftal/x86vec_v2u64_inl.h>
 
 // Local variables:
 // mode: c++

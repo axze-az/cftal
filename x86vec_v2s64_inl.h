@@ -369,7 +369,7 @@ inline
 x86vec::v2s64 x86vec::operator> (const v2s64& a, const v2s64& b)
 {
 #if defined (__SSE4_2__)
-        return _mm_cmpgt_epi64(b(), a());
+        return _mm_cmpgt_epi64(a(), b());
 #else
 	// a > b : (a>=0 && b<0) || ((sgn(a) == sgn(b) && (b-a < 0)))
 	// c1 --------^
@@ -438,8 +438,8 @@ x86vec::v2s64 x86vec::mulh(const v2s64& x, const v2s64& y)
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
 	v2u64 up(mulh(v2u64(x), v2u64(y)));
 	__m128i p= up();
-	__m128i xsgn_y= vpsraq_const<31>::v(y());
-	__m128i xsgn_x= vpsraq_const<31>::v(x());
+	__m128i xsgn_y= impl::vpsraq_const<63>::v(y());
+	__m128i xsgn_x= impl::vpsraq_const<63>::v(x());
 	__m128i x_and_xsgn_y = _mm_and_si128(x(), xsgn_y);
 	__m128i y_and_xsgn_x = _mm_and_si128(y(), xsgn_x);
 	p = _mm_sub_epi64(p, x_and_xsgn_y);
