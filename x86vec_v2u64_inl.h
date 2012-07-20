@@ -371,7 +371,7 @@ x86vec::v2u64 x86vec::operator> (const v2u64& a, const v2u64& b)
 #if defined (__SSE4_2__)
 	const __m128i msk= v_sign_s64_msk::iv();
 	__m128i ax= _mm_xor_si128(a(), msk);
-	__m128i bx= _mm_xor_si128(a(), msk);
+	__m128i bx= _mm_xor_si128(b(), msk);
         return _mm_cmpgt_epi64(ax, bx);
 #else
 	// a > b: (a_h > b_h) || ((a_h == b_h) && (a_l > b_l))
