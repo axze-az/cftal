@@ -4,91 +4,6 @@
 #include "x86vec_test.h"
 #include "bitops.h"
 
-void t4(x86vec::v4u32& r0, x86vec::v4u32& r1, 
-	x86vec::v4u32& r2, x86vec::v4u32& r3)
-{
-	transpose_4x4(r0, r1, r2, r3);
-}
-
-void t4(emuvec::v4u32& r0, emuvec::v4u32& r1, 
-	emuvec::v4u32& r2, emuvec::v4u32& r3)
-{
-	x86vec::transpose_4x4(r0, r1, r2, r3);
-}
-
-void t4(x86vec::v4f32& r0, x86vec::v4f32& r1, 
-	x86vec::v4f32& r2, x86vec::v4f32& r3)
-{
-	transpose_4x4(r0, r1, r2, r3);
-}
-
-void t4(emuvec::v4f32& r0, emuvec::v4f32& r1, 
-	emuvec::v4f32& r2, emuvec::v4f32& r3)
-{
-	x86vec::transpose_4x4(r0, r1, r2, r3);
-}
-
-void t8(x86vec::v8u16& r0, x86vec::v8u16& r1, 
-	x86vec::v8u16& r2, x86vec::v8u16& r3,
-	x86vec::v8u16& r4, x86vec::v8u16& r5, 
-	x86vec::v8u16& r6, x86vec::v8u16& r7)
-{
-	transpose_8x8(r0, r1, r2, r3, r4, r5, r6, r7);
-}
-
-void t8(emuvec::v8u16& r0, emuvec::v8u16& r1, 
-	emuvec::v8u16& r2, emuvec::v8u16& r3,
-	emuvec::v8u16& r4, emuvec::v8u16& r5, 
-	emuvec::v8u16& r6, emuvec::v8u16& r7)
-{
-	x86vec::transpose_8x8(r0, r1, r2, r3, r4, r5, r6, r7);
-}
-
-x86vec::v8u16 t9(x86vec::v8u16::element_type r)
-{
-	return r;
-}
-
-x86vec::v8u16 t9(x86vec::v8u16 u, x86vec::v8u16::element_type r,
-		 x86vec::v8u16::element_type* p)
-{
-	x86vec::v8u16 t(u+r);
-	mem::store(p, t);
-	return t;
-}
-
-emuvec::v8u16 t10(emuvec::v8u16::element_type r)
-{
-	return r;
-}
-
-emuvec::v8u16 t10(emuvec::v8u16 u, emuvec::v8u16::element_type r)
-{
-	return u+r;
-}
-
-x86vec::v2u64 tmulh( x86vec::v2u64 a, x86vec::v2u64 b)
-{
-	return mulh(a, b);
-}
-
-x86vec::v2s64 tmulh( x86vec::v2s64 a, x86vec::v2s64 b)
-{
-	return mulh(a, b);
-}
-
-std::pair<std::uint64_t, std::uint64_t>
-m64(std::uint64_t a, std::uint64_t b)
-{
-	return cftal::wide_mul(a, b);
-}
-
-std::pair<std::int64_t, std::int64_t>
-m64(std::int64_t a, std::int64_t b)
-{
-	return cftal::wide_mul(a, b);
-}
-
 
 #if 0
 void check_float()
@@ -203,16 +118,19 @@ x86vec::v4s32 mulsh(x86vec::v4s32 a, x86vec::v4s32 b)
         return mulh(a, b);
 }
 
+void check_div(std::uint64_t u, std::uint32_t v)
+{
+	cftal::impl::udiv_2by1<std::uint32_t> udiv;
+	std::uint32_t q= std::uint32_t(u/v);
+	std::uint32_t q0 = udiv(u>>32, u, v, nullptr);
+	std::cout << u << " / " << v << " = " 
+		  << q0 << " --> " << q << std::endl;
+}
+
 void check_div()
 {
-	using x86vec::test::pr_v4u32;
-	__m128i u= _mm_setr_epi32(768554852, 3197531405, 
-				 4035289754, 1097461812);
-	__m128i v= _mm_set1_epi32(1);
-	__m128i r;
-	__m128i q= x86vec::impl::div_u32::v(u, v, &r);
-	std::cout << pr_v4u32(q) << std::endl;
-	std::cout << pr_v4u32(r) << std::endl;
+	// check_div(8442693793014087680, 2329249466);
+	check_div(0x100000000, 0xffffffff);
 }
 
 void check_div2()

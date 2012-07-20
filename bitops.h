@@ -9,22 +9,65 @@
 
 namespace cftal {
 
-	template <class _U>
-	struct unsigned_mul {
-		// returns high part in first, low part in second
-		std::pair<_U, _U> operator()(const _U& a, const _U& b)
-			const;
-	};
+	namespace impl {
+		template <class _U>
+		struct wide_umul {
+			// returns high part in first, low part in second
+			std::pair<_U, _U> operator()(const _U& a, const _U& b)
+				const;
+		};
 
-	template <class _S>
-	struct signed_mul {
-		// returns high part in first, low part in second
-		std::pair<_S, _S> operator()(const _S& a, const _S& b)
-			const;
-	};
+		template <class _S>
+		struct wide_smul {
+			// returns high part in first, low part in second
+			std::pair<_S, _S> operator()(const _S& a, const _S& b)
+				const;
+		};
+
+		template <class _U>
+		class udiv_2by1 {
+			// div(uh*2^N+ul, v)
+			// v > uh
+			_U operator()(const _U& uh, const _U& ul,
+				      const _U& v, _U* r)
+				const;
+		private:
+			unsigned normalize(_U& uh, _U& ul, _U& v)
+				const;
+			_U single_digit(const _U& uh, const _U& ul,
+					const _U& v, _U* r)
+				const;
+		};
+		
+		template <>
+		struct udiv_2by1<std::uint16_t> {
+			std::uint16_t operator()(const std::uint16_t& uh, 
+						 const std::uint16_t& ul,
+						 const std::uint16_t& v, 
+						 std::uint16_t* r) 
+				const {
+				std::uint32_t u= std::uint32_t(uh) << 16 | ul;
+				return u/v;
+			}
+		};
+
+		template <>
+		struct udiv_2by1<std::uint32_t> {
+			std::uint32_t operator()(const std::uint32_t& uh, 
+						 const std::uint32_t& ul,
+						 const std::uint32_t& v, 
+						 std::uint32_t* r) 
+				const {
+				std::uint64_t u= std::uint64_t(uh) << 32 | ul;
+				return u/v;
+			}
+		};
+		
+	}
 
 	template <class _T>
 	std::pair<_T, _T> wide_mul(const _T& a, const _T& b);
+	
 	
 	// read time stamp counter
 	std::int64_t rdtsc();
@@ -51,7 +94,7 @@ namespace cftal {
 
 template <class _U>
 std::pair<_U, _U> 
-cftal::unsigned_mul<_U>::operator()(const _U& a, const _U& b)
+cftal::impl::wide_umul<_U>::operator()(const _U& a, const _U& b)
 	const
 {
 	enum {
@@ -88,7 +131,7 @@ cftal::unsigned_mul<_U>::operator()(const _U& a, const _U& b)
 
 template <class _S>
 std::pair<_S, _S> 
-cftal::signed_mul<_S>::operator()(const _S& x, const _S& y)
+cftal::impl::wide_smul<_S>::operator()(const _S& x, const _S& y)
 	const
 {
 	enum {
@@ -97,7 +140,7 @@ cftal::signed_mul<_S>::operator()(const _S& x, const _S& y)
 	typedef typename std::make_unsigned<_S>::type _U;
 	_U xu(x);
 	_U yu(y);
-	unsigned_mul<_U> m;
+	wide_umul<_U> m;
 	std::pair<_U, _U> ur(m(xu, yu));
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
@@ -108,31 +151,116 @@ cftal::signed_mul<_S>::operator()(const _S& x, const _S& y)
 	return std::make_pair(h, l);
 }
 
+template <class _U>
+_U cftal::impl::udiv_2by1<_U>::
+operator()(const _U& uh, const _U& ul, const _U& cv, _U* r)
+	const
+{
+	enum {
+		N = sizeof(_U)*8,
+		N2 = N>>1
+	};
+	// number base of the division
+	const _U b= _U(1)<<N2;
+	// mask out half of the bits of an _U
+	const _U N2MSK= b - _U(1);
+	// maximum possible u
+	const _U U_MAX= ~_U(0);
+        // Norm. divisor digits.
+        _U un1, un0, vn1, vn0;
+        // Quotient digits.
+        _U q1, q0;
+        // Dividend digit pairs.
+        _U un32, un21, un10;
+        // A remainder.
+        _U rhat;
+	// Shift amount for norm.
+        unsigned s;             
+	_U v(cv);
+
+        if (uh >= v) {
+                // If overflow, set rem. to an impossible value,
+                if (r != nullptr)
+                        *r = U_MAX;
+                // and return the largest possible quotient.
+                return U_MAX;
+        }
+
+        s = lzcnt(v);               // 0 <= s <= N-1.
+        if (s>0) {
+                // Normalize divisor.
+                v = v << s;
+        }
+        vn1 = v >> N2;       // Break divisor up into
+        vn0 = v & N2MSK;     // two half digits
+
+        if (s>0) {
+                // Shift dividend left.
+                un32 = (uh << s) | (ul >> (N - s)); // & (-_U(s) >> (N-1)));
+                un10 = ul << s;
+        } else {
+                un32 = uh;
+                un10 = ul;
+        }
+
+	// Break right half of dividend into two digits.
+        un1 = un10 >> N2;         
+        un0 = un10 & N2MSK;  
+
+        q1 = un32/vn1;            // Compute the first
+        rhat = un32 - q1*vn1;     // quotient digit, q1.
+
+        while (q1 >= b || q1*vn0 > b*rhat + un1) {
+                q1 = q1 - 1;
+                rhat = rhat + vn1;
+                if (rhat >= b)
+                        break;
+        }
+
+        un21 = un32*b + un1 - q1*v;  // Multiply and subtract.
+
+        q0 = un21/vn1;            // Compute the second
+        rhat = un21 - q0*vn1;     // quotient digit, q0.
+
+        while (q0 >= b || q0*vn0 > b*rhat + un0) {
+                q0 = q0 - 1;
+                rhat = rhat + vn1;
+                if (rhat >= b)
+                        break;
+        }
+        if (r != nullptr) {
+		// If remainder is wanted, return it.
+                *r = (un21*b + un0 - q0*v) >> s;     
+	}
+        return q1*b + q0;
+}
+
+
 template <class _T>
 inline
 std::pair<_T, _T>
 cftal::wide_mul(const _T& x, const _T& y)
 {
 	typedef typename std::conditional<std::is_signed<_T>::value,
-					  signed_mul<_T>, 
-					  unsigned_mul<_T> >::type mul_type;
+					  impl::wide_smul<_T>, 
+					  impl::wide_umul<_T> >::type 
+		mul_type;
 	mul_type m;
 	return m(x, y);
 }
-
 
 inline
 std::int64_t cftal::rdtsc()
 {
 #if defined (__x86_64__)
 	std::uint64_t a, d;
-	_mm_lfence();
-	__asm__ __volatile__("rdtsc" :"=a"(a), "=d"(d)::"memory");
+	__asm__ __volatile__("lfence;\n\t"
+			     "rdtsc" :"=a"(a), "=d"(d)::"memory");
 	return d<<32 | a;
 #elif defined (__i386__)
 	std::uint64_t a;
-	_mm_lfence();
-	__asm__ __volatile__("rdtsc" :"=A"(a)::"memory");
+	__asm__ __volatile__("lfence;\n\t"
+			     "rdtsc" :"=A"(a)::"memory");
 	return a;
 #else
 #error "please insert a read current time functionality here"

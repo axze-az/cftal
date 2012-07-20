@@ -292,8 +292,16 @@ cftal::impl::udiv_setup<_D, _TR>::udiv_setup(const uword& d)
 		_shift_only = true;
 	} else {
 		udword ms0= ((udword(1) << l) - d)<<_TR::_N;
-		udword ms= ms0/d + 1;
+#if 0
+		udword ms= ms0/d + udword(1);
 		_m = uword(ms);
+#else
+		uword ms0l(ms0);
+		uword ms0h(ms0>>(_TR::_N));
+		udiv_2by1<uword> ud;
+		uword ms = ud(ms0h, ms0l, d, nullptr) +uword(1);
+		_m = ms;
+#endif
 		_s1= std::min(l, 1);
 		_s2= std::max(l-1, 0);
 		_shift_only = false;
