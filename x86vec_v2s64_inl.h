@@ -310,7 +310,7 @@ x86vec::v2s64 x86vec::operator- (const v2s64& a, const v2s64& b)
 inline
 x86vec::v2s64 x86vec::operator* (const v2s64& a, const v2s64& b)
 {
-        return impl::vpmulld::v(a(), b());
+        return impl::vpmullq::v(a(), b());
 }
 
 inline
@@ -345,6 +345,7 @@ x86vec::v2s64 x86vec::operator== (const v2s64& a, const v2s64& b)
 #if defined (__SSE4_1__)
         return _mm_cmpeq_epi64(a(), b());
 #else
+	// a == b : a_h == b_h && a_l == b_l
 	__m128i r= _mm_cmpeq_epi32(a(), b());
 	__m128i c32s = impl::vpsllq_const<32>::v(r);
 	r = _mm_and_si128(r, c32s);
@@ -433,7 +434,17 @@ x86vec::v2s64 x86vec::abs(const v2s64& a)
 inline
 x86vec::v2s64 x86vec::mulh(const v2s64& x, const v2s64& y)
 {
-	return 0; //impl::vpmulhd::v(x(), y());
+	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
+	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
+	v2u64 up(mulh(v2u64(x), v2u64(y)));
+	__m128i p= up();
+	__m128i xsgn_y= vpsraq_const<31>::v(y());
+	__m128i xsgn_x= vpsraq_const<31>::v(x());
+	__m128i x_and_xsgn_y = _mm_and_si128(x(), xsgn_y);
+	__m128i y_and_xsgn_x = _mm_and_si128(y(), xsgn_x);
+	p = _mm_sub_epi64(p, x_and_xsgn_y);
+	p = _mm_sub_epi64(p, y_and_xsgn_x);
+	return p;
 }
 
 template < bool _P0, bool _P1>
@@ -469,7 +480,7 @@ template <unsigned _I>
 inline
 x86vec::v2s64 x86vec::insert(const v2s64& a, typename v2s64::element_type v)
 {
-	return insert_u32<_I>(a(), v);
+	return insert_u64<_I>(a(), v);
 }
 
 template <unsigned _I>
@@ -477,7 +488,7 @@ inline
 typename x86vec::v2s64::element_type
 x86vec::extract(const v2s64& a)
 {
-	return extract_u32<_I>(a());
+	return extract_u64<_I>(a());
 }
 
 // Local variables:

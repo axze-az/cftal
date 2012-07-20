@@ -805,9 +805,9 @@ __m128i x86vec::impl::vpmulld::v(__m128i a, __m128i b)
 #if defined (__SSE4_1__)
 	return _mm_mullo_epi32(a, b);
 #else
-	// 0, 2
+	// 0, 2 at positions 0 2
 	__m128i e= _mm_mul_epu32(a, b);
-	// 1, 3
+	// 1, 3 at positions 0 2
 	__m128i o= _mm_mul_epu32(vpsrlq_const<32>::v(a),
 				 vpsrlq_const<32>::v(b));
 	const __m128i msk = const4_u32<-1, 0, -1, 0>::iv();
@@ -853,14 +853,14 @@ __m128i x86vec::impl::vpmulhd::v(__m128i x, __m128i y)
 #else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
-	__m128i m= vpmulhud::v(x, y);
+	__m128i p= vpmulhud::v(x, y);
 	__m128i xsgn_y= vpsrad_const<31>::v(y);
 	__m128i xsgn_x= vpsrad_const<31>::v(x);
-	xsgn_y = _mm_and_si128(x, xsgn_y);
-	xsgn_x = _mm_and_si128(y, xsgn_y);
-	m = _mm_sub_epi32(x, xsgn_y);
-	m = _mm_sub_epi32(y, xsgn_x);
-	return m;
+	__m128i x_and_xsgn_y = _mm_and_si128(x, xsgn_y);
+	__m128i y_and_xsgn_x = _mm_and_si128(y, xsgn_x);
+	p = _mm_sub_epi32(p, x_and_xsgn_y);
+	p = _mm_sub_epi32(p, y_and_xsgn_x);
+	return p;
 #endif
 }
 
