@@ -347,7 +347,7 @@ x86vec::v2s64 x86vec::operator== (const v2s64& a, const v2s64& b)
 #else
 	__m128i r= _mm_cmpeq_epi32(a(), b());
 	__m128i c32s = impl::vpsllq_const<32>::v(r);
-	r = _mm_and_si128(c32s);
+	r = _mm_and_si128(r, c32s);
 	return impl::vpshufd<1, 1, 3, 3>::v(r);
 #endif
 }
@@ -384,8 +384,9 @@ x86vec::v2s64 x86vec::operator> (const v2s64& a, const v2s64& b)
 	__m128i c3 = _mm_xor_si128(a(), b());
 	__m128i c3_and_c4 = _mm_andnot_si128(c3, c4);
 	__m128i r = _mm_or_si128(c1_and_c2, c3_and_c4);
-	r = impl::vpsrad_const<31>::v();
-	r = impl::vpshufd< 1, 1, 3, 3>::v();
+	r = impl::vpsrad_const<31>::v(r);
+	r = impl::vpshufd< 1, 1, 3, 3>::v(r);
+	return r;
 #endif
 }
 

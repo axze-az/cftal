@@ -853,7 +853,7 @@ __m128i x86vec::impl::vpmulhd::v(__m128i x, __m128i y)
 #else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
-	__m128i m= vpmulhud::v(a, b);
+	__m128i m= vpmulhud::v(x, y);
 	__m128i xsgn_y= vpsrad_const<31>::v(y);
 	__m128i xsgn_x= vpsrad_const<31>::v(x);
 	xsgn_y = _mm_and_si128(x, xsgn_y);
@@ -897,7 +897,7 @@ __m128i x86vec::impl::vpmullq::v(__m128i a, __m128i b)
 	// add the products with the same power of 2
 	__m128i mixed = _mm_add_epi32(ah_bl, al_bh);
 	// shift left
-	mixed = vpsllq_const<32>(mixed);
+	mixed = vpsllq_const<32>::v(mixed);
 	__m128i p = _mm_add_epi64(al_bl, mixed);
 	return p;
 #endif
