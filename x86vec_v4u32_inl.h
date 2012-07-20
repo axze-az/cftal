@@ -397,6 +397,26 @@ x86vec::v4u32 x86vec::mulh(const v4u32& a, const v4u32& b)
 	return impl::vpmulhud::v(a(), b());
 }
 
+inline
+std::pair<x86vec::v4u32, x86vec::v4u32>
+x86vec::wide_mul(const v4u32& x, const v4u32& y)
+{
+	// p0l p0h p2l p2h
+	v4u32 e= _mm_mul_epu32(x(), y());
+	// p1l p1h p3l p3h
+	v4u32 o= _mm_mul_epu32(impl::vpshufd<1, 0, 3, 2>::v(x()),
+			       impl::vpshufd<1, 0, 3, 2>::v(y()));
+	// p0l p1l p0h p1h
+	v4u32 t0= permute<0, 4, 1, 5>(e, o);
+	// p2l p3l p2h p3h
+	v4u32 t1= permute<2, 6, 3, 7>(e, o);
+	// p0h p1h p2h p3h
+	v4u32 h = permute<2, 3, 6, 7>(t0, t1);
+	v4u32 l = permute<0, 1, 4, 5>(t0, t1);
+	return std::make_pair(h, l);
+}
+
+
 template < bool _P0, bool _P1, bool _P2, bool _P3 >
 inline
 x86vec::v4u32 x86vec::select(const v4u32& a, const v4u32& b)

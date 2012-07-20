@@ -5,9 +5,28 @@
 #include <cstdint>
 #include <utility>
 #include <algorithm>
+#include <type_traits>
 
 namespace cftal {
 
+	template <class _U>
+	struct unsigned_mul {
+		// returns high part in first, low part in second
+		std::pair<_U, _U> operator()(const _U& a, const _U& b)
+			const;
+	};
+
+	template <class _S>
+	struct signed_mul {
+		// returns high part in first, low part in second
+		std::pair<_S, _S> operator()(const _S& a, const _S& b)
+			const;
+	};
+
+	template <class _T>
+	std::pair<_T, _T> wide_mul(const _T& a, const _T& b);
+	
+	// read time stamp counter
 	std::int64_t rdtsc();
 
 	// returns the counted bits of every byte in every byte
@@ -28,9 +47,79 @@ namespace cftal {
 	unsigned lzcnt(std::uint16_t x);
 	unsigned lzcnt(std::uint32_t x);
 	unsigned lzcnt(std::uint64_t x);
-
-
 }
+
+template <class _U>
+std::pair<_U, _U> 
+cftal::unsigned_mul<_U>::operator()(const _U& a, const _U& b)
+	const
+{
+	enum {
+		N = sizeof(_U)* 8,
+		N2 = N>>1
+	};
+
+	const _U N2MSK= (_U(1)<<N2)-_U(1);
+	const _U MED_CARRY = _U(1) << N2;
+
+	_U al = a & N2MSK;
+	_U ah = a >> N2;
+	_U bl = b & N2MSK;
+	_U bh = b >> N2;
+
+	_U al_bl = al * bl;
+	_U al_bh = al * bh;
+	_U ah_bl = ah * bl;
+	_U ah_bh = ah * bh;
+
+	_U med_sum = al_bh + ah_bl;
+	_U l_add = med_sum << N2;
+	_U h_add = med_sum >> N2;
+
+	h_add |= (med_sum < al_bh) ? MED_CARRY : _U(0);
+
+	al_bl += l_add;
+	_U l_carry= al_bl < l_add ? _U(1) : _U(0);
+
+	ah_bh += l_carry;
+	ah_bh += h_add;
+	return std::make_pair(ah_bh, al_bl);
+}
+
+template <class _S>
+std::pair<_S, _S> 
+cftal::signed_mul<_S>::operator()(const _S& x, const _S& y)
+	const
+{
+	enum {
+		N = sizeof(_S)* 8
+	};
+	typedef typename std::make_unsigned<_S>::type _U;
+	_U xu(x);
+	_U yu(y);
+	unsigned_mul<_U> m;
+	std::pair<_U, _U> ur(m(xu, yu));
+	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
+	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
+	_S xsign_x = x >> (N-1);
+	_S xsign_y = y >> (N-1);
+	_S h = _S(ur.first) - (x & xsign_y) - (y & xsign_x);
+	_S l = _S(ur.second); 
+	return std::make_pair(h, l);
+}
+
+template <class _T>
+inline
+std::pair<_T, _T>
+cftal::wide_mul(const _T& x, const _T& y)
+{
+	typedef typename std::conditional<std::is_signed<_T>::value,
+					  signed_mul<_T>, 
+					  unsigned_mul<_T> >::type mul_type;
+	mul_type m;
+	return m(x, y);
+}
+
 
 inline
 std::int64_t cftal::rdtsc()

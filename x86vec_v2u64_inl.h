@@ -410,9 +410,40 @@ x86vec::v2u64 x86vec::min(const v2u64& a, const v2u64& b)
 inline
 x86vec::v2u64 x86vec::mulh(const v2u64& x, const v2u64& y)
 {
-	// TODO: implement me.
-	return 0;
+	return wide_mul(x, y).first;
 }
+
+inline
+std::pair<x86vec::v2u64, x86vec::v2u64>
+x86vec::wide_mul(const v2u64& x, const v2u64& y)
+{
+	v2u64 xh = x >> const_shift::_32;
+	v2u64 yh = y >> const_shift::_32;
+	// 2^ 0
+	v2u64 xl_yl= _mm_mul_epu32(x(), y());
+	// 2^ 32
+	v2u64 xl_yh= _mm_mul_epu32(x(), yh());
+	v2u64 xh_yl= _mm_mul_epu32(xh(), y());
+	// 2^ 64
+	v2u64 xh_yh= _mm_mul_epu32(xh(), yh());
+	// sum of 2^32
+	v2u64 s32_95 = xl_yh + xh_yl;
+	v2u64 carry_96 = s32_95 < xl_yh;
+	// 
+	v2u64 s64_96 = s32_95 >> const_shift::_32;
+	v2u64 s32_63 = s32_95 << const_shift::_32;
+	// low part of the multiplication:
+	xl_yl += s32_63;
+	v2u64 neg_carry_64 = xl_yl < s32_63;
+	const __m128i c97_msk= const4_u32<0, 1, 0, 1>::iv();
+
+	s64_96 |= carry_96 & c97_msk;
+	xh_yh -= neg_carry_64;
+	// high part of the multiplication:
+	xh_yh += s64_96;
+	return std::make_pair(xh_yh, xl_yl);
+}
+
 
 template < bool _P0, bool _P1>
 inline

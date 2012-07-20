@@ -434,17 +434,23 @@ x86vec::v2s64 x86vec::abs(const v2s64& a)
 inline
 x86vec::v2s64 x86vec::mulh(const v2s64& x, const v2s64& y)
 {
+	return wide_mul(x, y).first;
+}
+
+inline
+std::pair<x86vec::v2s64, x86vec::v2s64>
+x86vec::wide_mul(const v2s64& x, const v2s64& y)
+{
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
-	v2u64 up(mulh(v2u64(x), v2u64(y)));
-	__m128i p= up();
-	__m128i xsgn_y= impl::vpsraq_const<63>::v(y());
-	__m128i xsgn_x= impl::vpsraq_const<63>::v(x());
-	__m128i x_and_xsgn_y = _mm_and_si128(x(), xsgn_y);
-	__m128i y_and_xsgn_x = _mm_and_si128(y(), xsgn_x);
-	p = _mm_sub_epi64(p, x_and_xsgn_y);
-	p = _mm_sub_epi64(p, y_and_xsgn_x);
-	return p;
+	std::pair<v2u64, v2u64> ur(wide_mul(v2u64(x), v2u64(y)));
+	v2s64 xsgn_y= y >> const_shift::_63;
+	v2s64 xsgn_x= x >> const_shift::_63;
+	v2s64 x_and_xsgn_y = x & xsgn_y;
+	v2s64 y_and_xsgn_x = y & xsgn_x;
+	v2s64 ph= v2s64(ur.first) - x_and_xsgn_y - y_and_xsgn_x;
+	v2s64 pl= v2s64(ur.second);
+	return std::make_pair(ph, pl);
 }
 
 template < bool _P0, bool _P1>

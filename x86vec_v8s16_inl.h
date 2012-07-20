@@ -417,6 +417,13 @@ x86vec::v8s16 x86vec::mulh(const v8s16& a, const v8s16& b)
 	return impl::vpmulhw::v(a(), b());
 }
 
+inline
+std::pair<x86vec::v8s16, x86vec::v8s16>
+x86vec::wide_mul(const v8s16& a, const v8s16& b)
+{
+	return std::make_pair(a*b, mulh(a,b));
+}
+
 template < bool _P0, bool _P1, bool _P2, bool _P3,
 	   bool _P4, bool _P5, bool _P6, bool _P7 >
 inline

@@ -741,15 +741,6 @@ namespace x86vec {
 		struct vpmullq {
 			static __m128i v(__m128i a, __m128i b);
 		};
-
-		struct vpmulhuq {
-			static __m128i v(__m128i a, __m128i b);
-		};
-
-		struct vpmulhq {
-			static __m128i v(__m128i a, __m128i b);
-		};
-
 	}
 }
 
@@ -903,38 +894,6 @@ __m128i x86vec::impl::vpmullq::v(__m128i a, __m128i b)
 #endif
 }
 
-#if 0
-inline
-__m128i x86vec::vpmulhuq::v(__m128i a, __m128i b)
-{
-	__m128i ah = vpshufd<1, 0, 3, 2>::v(a);
-	__m128i bh = vpshufd<1, 0, 3, 2>::v(b);
-	// mul(al * bl)
-	__m128i al_bl = _mm_mul_epu32(a, b);
-	// mul(ah * bl)
-	__m128i ah_bl = _mm_mul_epu32(ah, b);
-	// mul(al * bl)
-	__m128i al_bh = _mm_mul_epu32(b, bh);
-	// mul(ah * bh) * 2^64
-	__m128i ah_bh = _mm_mul_epu32(ah, bh);
-
-	
-
-}
-
-inline
-__m128i x86vec::vpmulhq::v(__m128i a, __m128i b)
-{
-	__m128i m= vpmulhuq::v(a, b);
-	__m128i xsgn_y= vpsraq_const<63>::v(y);
-	__m128i xsgn_x= vpsraq_const<63>::v(x);
-	xsgn_y = _mm_and_si128(x, xsgn_y);
-	xsgn_x = _mm_and_si128(y, xsgn_y);
-	m = _mm_sub_epi64(x, xsgn_y);
-	m = _mm_sub_epi64(y, xsgn_x);
-	return m;
-}
-#endif
 
 // Local variables:
 // mode: c++

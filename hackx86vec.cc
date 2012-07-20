@@ -2,7 +2,7 @@
 #include "emuvec.h"
 #include "divisor.h"
 #include "x86vec_test.h"
-
+#include "bitops.h"
 
 void t4(x86vec::v4u32& r0, x86vec::v4u32& r1, 
 	x86vec::v4u32& r2, x86vec::v4u32& r3)
@@ -65,6 +65,28 @@ emuvec::v8u16 t10(emuvec::v8u16::element_type r)
 emuvec::v8u16 t10(emuvec::v8u16 u, emuvec::v8u16::element_type r)
 {
 	return u+r;
+}
+
+x86vec::v2u64 tmulh( x86vec::v2u64 a, x86vec::v2u64 b)
+{
+	return mulh(a, b);
+}
+
+x86vec::v2s64 tmulh( x86vec::v2s64 a, x86vec::v2s64 b)
+{
+	return mulh(a, b);
+}
+
+std::pair<std::uint64_t, std::uint64_t>
+m64(std::uint64_t a, std::uint64_t b)
+{
+	return cftal::wide_mul(a, b);
+}
+
+std::pair<std::int64_t, std::int64_t>
+m64(std::int64_t a, std::int64_t b)
+{
+	return cftal::wide_mul(a, b);
 }
 
 
