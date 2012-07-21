@@ -1,7 +1,8 @@
 #if !defined (__CFTAL_DIVISOR_H__)
 #define __CFTAL_DIVISOR_H__ 1
 
-#include <cftal/bitops.h>
+#include <cftal/config.h>
+#include <cftal/mul_div.h>
 
 namespace cftal {
 
@@ -16,12 +17,6 @@ namespace cftal {
 		_V divide(const _V& n) const { return n * _rec;	}
 	};
 
-	template <class _V>
-	_V remainder(const _V& n, const _V& d, const _V& q)
-	{
-		_V p(d* q);
-		return n - p;
-	}
 
 	template <class _V, class _D>
 	_V operator/(const _V& n, const divisor<_V, _D>& d)
@@ -292,7 +287,7 @@ cftal::impl::udiv_setup<_D, _TR>::udiv_setup(const uword& d)
 		_shift_only = true;
 	} else {
 		udword ms0= ((udword(1) << l) - d)<<_TR::_N;
-#if 0
+#if 1
 		udword ms= ms0/d + udword(1);
 		_m = uword(ms);
 #else
