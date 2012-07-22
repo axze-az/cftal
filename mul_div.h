@@ -8,7 +8,7 @@
 
 namespace cftal {
 
-        // calculate the remainder from ceil(n/d)=q
+        // calculate the remainder from trunc(n/d)=q
         template <class _V>
         _V remainder(const _V& n, const _V& d, const _V& q);
 
@@ -242,10 +242,58 @@ namespace cftal {
 			static 
 			std::pair<_U, _U>
 			d(const _U& u0, const _U& u1, const _U& v, _U* r);
+		private:
 			static _U
 			g(const _U& uh, const _U& ul,  const _U& v, _U* r);
                 };
 #if !defined (__NO_UDIV_2BY1_SPECIALIZATIONS__)
+
+		template <class _UHALF>
+		class udiv_2by1<uint8_t, _UHALF> {
+		public:
+			static_assert(std::is_same<uint8_t, _UHALF>::value,
+				      "test");
+			static
+			std::pair<uint8_t, uint8_t>
+			d(uint8_t u0, uint8_t u1, uint8_t v, uint8_t* r) {
+				uint16_t u((uint16_t(u1)<<8)|u0);
+				uint16_t q(u/v);
+				if (r) 
+					*r= remainder(u, uint16_t(v), q);
+				return std::make_pair(uint8_t(q),
+						      uint8_t(q>>8));
+			}
+		};
+
+		template <class _UHALF>
+		class udiv_2by1<uint16_t, _UHALF> {
+		public:
+			static
+			std::pair<uint16_t, uint16_t>
+			d(uint16_t u0, uint16_t u1, uint16_t v, uint16_t* r) {
+				uint32_t u((uint32_t(u1)<<16)|u0);
+				uint32_t q(u/v);
+				if (r) 
+					*r= remainder(u, uint32_t(v), q);
+				return std::make_pair(uint16_t(q),
+						      uint16_t(q>>16));
+			}
+		};
+
+		template <class _UHALF>
+		class udiv_2by1<uint32_t, _UHALF> {
+		public:
+			static
+			std::pair<uint32_t, uint32_t>
+			d(uint32_t u0, uint32_t u1, uint32_t v, uint32_t* r) {
+				uint64_t u((uint64_t(u1)<<32)|u0);
+				uint64_t q(u/v);
+				if (r) 
+					*r= remainder(u, uint64_t(v), q);
+				return std::make_pair(uint32_t(q),
+						      uint32_t(q>>32));
+			}
+		};
 
 #endif
         }
