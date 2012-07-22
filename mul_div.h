@@ -157,7 +157,8 @@ namespace cftal {
                                 const;
                 };
 
-		// specialisations for standard types.
+#if !defined (__NO_WIDE_MUL_SPECIALIZATIONS__)
+		// specializations for standard types.
 		template <>
 		struct wide_umul<uint8_t> {
 			std::pair<uint8_t, uint8_t>
@@ -230,7 +231,8 @@ namespace cftal {
 				return std::make_pair(l, h);
 			}
 		};
-        }
+#endif     
+	}
 	
         namespace impl {
 
@@ -243,6 +245,9 @@ namespace cftal {
 			static _U
 			g(const _U& uh, const _U& ul,  const _U& v, _U* r);
                 };
+#if !defined (__NO_UDIV_2BY1_SPECIALIZATIONS__)
+
+#endif
         }
 }
 
