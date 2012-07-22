@@ -2,9 +2,9 @@
 #define __CFTAL_ALLOCATOR_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/types.h>
 #include <memory>
-#include <cstdint>
-#include <mutex>
+#include <cstdlib> // for abort
 
 namespace cftal {
 
@@ -18,7 +18,7 @@ namespace cftal {
                 block* _free_list;
                 std::size_t _free_blocks;
                 std::size_t _max_blocks;
-		std::int32_t _clients;
+		int32_t _clients;
 		void deallocate(void* p) {
 			base_type::deallocate(static_cast<char*>(p), _N);
 		}
@@ -64,7 +64,7 @@ namespace cftal {
                         return _max_blocks;
                 }
 		template <typename _U>
-		std::int32_t register_client(const std::allocator<_U>& a) {
+		int32_t register_client(const std::allocator<_U>& a) {
 			if (a != *this) 
 				std::abort();
 			if (_clients >= 0)
@@ -72,7 +72,7 @@ namespace cftal {
 			return _clients;
 		}
 		template <typename _U>
-		std::int32_t deregister_client(const std::allocator<_U>& a) {
+		int32_t deregister_client(const std::allocator<_U>& a) {
 			if (a != *this) 
 				std::abort();
 			return --_clients;

@@ -1,18 +1,17 @@
 #if !defined (__X86VEC_SELECT_H__)
 #define __X86VEC_SELECT_H__ 1
 
-#include <cstdint>
 #include <cftal/x86vec_intrin.h>
 #include <cftal/x86vec_const.h>
 
 namespace x86vec {
 
         // select bitwise
-        std::uint32_t select(std::uint32_t msk,
-                             std::uint32_t on_one, std::uint32_t on_zero);
+        uint32_t select(uint32_t msk,
+                             uint32_t on_one, uint32_t on_zero);
         // select bitwise
-        std::uint64_t select(std::uint64_t msk,
-                             std::uint64_t on_one, std::uint64_t on_zero);
+        uint64_t select(uint64_t msk,
+                             uint64_t on_one, uint64_t on_zero);
         // select bytes
         // __SSE2__: bitwise
         // __SSE4_1__: on sign bit of int8_t
@@ -118,15 +117,15 @@ namespace x86vec {
 }
 
 inline
-std::uint32_t
-x86vec::select(std::uint32_t msk, std::uint32_t on_one, std::uint32_t on_zero)
+uint32_t
+x86vec::select(uint32_t msk, uint32_t on_one, uint32_t on_zero)
 {
         return (msk & on_one) | ((~msk) & on_zero);
 }
 
 inline
-std::uint64_t
-x86vec::select(std::uint64_t msk, std::uint64_t on_one, std::uint64_t on_zero)
+uint64_t
+x86vec::select(uint64_t msk, uint64_t on_one, uint64_t on_zero)
 {
         return (msk & on_one) | ((~msk) & on_zero);
 }

@@ -6,6 +6,16 @@
 
 namespace x86vec {
 
+	using std::uint8_t;
+	using std::uint16_t;
+	using std::uint32_t;
+	using std::uint64_t;
+
+	using std::int8_t;
+	using std::int16_t;
+	using std::int32_t;
+	using std::int64_t;
+
         namespace impl {
 
                 // union of all mixed types
@@ -21,10 +31,10 @@ namespace x86vec {
         }
 
         // constants consisting of 1 uint32_t
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         struct const_u32 {
                 static
-                const std::uint32_t val = _P;
+                const uint32_t val = _P;
         };
 
         namespace const_shift {
@@ -102,12 +112,12 @@ namespace x86vec {
         }
 
         // static constants consisting of 4 uint32_t
-        template <std::uint32_t _P0, std::uint32_t _P1,
-                  std::uint32_t _P2, std::uint32_t _P3>
+        template <uint32_t _P0, uint32_t _P1,
+                  uint32_t _P2, uint32_t _P3>
         class const4_u32 {
                 static __attribute__((__aligned__(16),
                                       __visibility__("hidden")))
-                const std::uint32_t _msk[4];
+                const uint32_t _msk[4];
         public:
                 static constexpr __m128i iv();
                 static constexpr __m128 fv();
@@ -115,14 +125,14 @@ namespace x86vec {
         };
 
         // static constants consisting of 8 uint16_t
-        template <std::uint16_t _P0, std::uint16_t _P1,
-                  std::uint16_t _P2, std::uint16_t _P3,
-                  std::uint16_t _P4, std::uint16_t _P5,
-                  std::uint16_t _P6, std::uint16_t _P7>
+        template <uint16_t _P0, uint16_t _P1,
+                  uint16_t _P2, uint16_t _P3,
+                  uint16_t _P4, uint16_t _P5,
+                  uint16_t _P6, uint16_t _P7>
         class const8_u16 {
                 static __attribute__((__aligned__(16),
                                       __visibility__("hidden")))
-                const std::uint16_t _msk[8];
+                const uint16_t _msk[8];
         public:
                 static constexpr __m128i iv();
                 static constexpr __m128 fv();
@@ -130,18 +140,18 @@ namespace x86vec {
         };
 
         // static constants consisting of 16 uint8_t
-        template <std::uint8_t _P00, std::uint8_t _P01,
-                  std::uint8_t _P02, std::uint8_t _P03,
-                  std::uint8_t _P04, std::uint8_t _P05,
-                  std::uint8_t _P06, std::uint8_t _P07,
-                  std::uint8_t _P08, std::uint8_t _P09,
-                  std::uint8_t _P10, std::uint8_t _P11,
-                  std::uint8_t _P12, std::uint8_t _P13,
-                  std::uint8_t _P14, std::uint8_t _P15>
+        template <uint8_t _P00, uint8_t _P01,
+                  uint8_t _P02, uint8_t _P03,
+                  uint8_t _P04, uint8_t _P05,
+                  uint8_t _P06, uint8_t _P07,
+                  uint8_t _P08, uint8_t _P09,
+                  uint8_t _P10, uint8_t _P11,
+                  uint8_t _P12, uint8_t _P13,
+                  uint8_t _P14, uint8_t _P15>
         class const16_u8 {
                 static __attribute__((__aligned__(16),
                                       __visibility__("hidden")))
-                const std::uint8_t _msk[16];
+                const uint8_t _msk[16];
         public:
                 static constexpr __m128i iv();
                 static constexpr __m128 fv();
@@ -258,15 +268,15 @@ namespace x86vec {
 }
 
 
-template <std::uint32_t _P0, std::uint32_t _P1,
-          std::uint32_t _P2, std::uint32_t _P3>
-const std::uint32_t
+template <uint32_t _P0, uint32_t _P1,
+          uint32_t _P2, uint32_t _P3>
+const uint32_t
 x86vec::const4_u32<_P0, _P1, _P2, _P3>::_msk[4]= {
         _P0, _P1, _P2, _P3
 };
 
-template <std::uint32_t _P0, std::uint32_t _P1,
-          std::uint32_t _P2, std::uint32_t _P3>
+template <uint32_t _P0, uint32_t _P1,
+          uint32_t _P2, uint32_t _P3>
 inline
 constexpr __m128i x86vec::const4_u32<_P0, _P1, _P2, _P3>::iv()
 {
@@ -274,8 +284,8 @@ constexpr __m128i x86vec::const4_u32<_P0, _P1, _P2, _P3>::iv()
         return v;
 }
 
-template <std::uint32_t _P0, std::uint32_t _P1,
-          std::uint32_t _P2, std::uint32_t _P3>
+template <uint32_t _P0, uint32_t _P1,
+          uint32_t _P2, uint32_t _P3>
 inline
 constexpr __m128 x86vec::const4_u32<_P0, _P1, _P2, _P3>::fv()
 {
@@ -283,8 +293,8 @@ constexpr __m128 x86vec::const4_u32<_P0, _P1, _P2, _P3>::fv()
         return v;
 }
 
-template <std::uint32_t _P0, std::uint32_t _P1,
-          std::uint32_t _P2, std::uint32_t _P3>
+template <uint32_t _P0, uint32_t _P1,
+          uint32_t _P2, uint32_t _P3>
 inline
 constexpr __m128d x86vec::const4_u32<_P0, _P1, _P2, _P3>::dv()
 {
@@ -292,19 +302,19 @@ constexpr __m128d x86vec::const4_u32<_P0, _P1, _P2, _P3>::dv()
         return v;
 }
 
-template <std::uint16_t _P0, std::uint16_t _P1,
-          std::uint16_t _P2, std::uint16_t _P3,
-          std::uint16_t _P4, std::uint16_t _P5,
-          std::uint16_t _P6, std::uint16_t _P7>
-const std::uint16_t
+template <uint16_t _P0, uint16_t _P1,
+          uint16_t _P2, uint16_t _P3,
+          uint16_t _P4, uint16_t _P5,
+          uint16_t _P6, uint16_t _P7>
+const uint16_t
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk[8]= {
         _P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7
 };
 
-template <std::uint16_t _P0, std::uint16_t _P1,
-          std::uint16_t _P2, std::uint16_t _P3,
-          std::uint16_t _P4, std::uint16_t _P5,
-          std::uint16_t _P6, std::uint16_t _P7>
+template <uint16_t _P0, uint16_t _P1,
+          uint16_t _P2, uint16_t _P3,
+          uint16_t _P4, uint16_t _P5,
+          uint16_t _P6, uint16_t _P7>
 inline
 constexpr __m128i
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
@@ -313,10 +323,10 @@ x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
         return v;
 }
 
-template <std::uint16_t _P0, std::uint16_t _P1,
-          std::uint16_t _P2, std::uint16_t _P3,
-          std::uint16_t _P4, std::uint16_t _P5,
-          std::uint16_t _P6, std::uint16_t _P7>
+template <uint16_t _P0, uint16_t _P1,
+          uint16_t _P2, uint16_t _P3,
+          uint16_t _P4, uint16_t _P5,
+          uint16_t _P6, uint16_t _P7>
 inline
 constexpr __m128
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
@@ -325,10 +335,10 @@ x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
         return v;
 }
 
-template <std::uint16_t _P0, std::uint16_t _P1,
-          std::uint16_t _P2, std::uint16_t _P3,
-          std::uint16_t _P4, std::uint16_t _P5,
-          std::uint16_t _P6, std::uint16_t _P7>
+template <uint16_t _P0, uint16_t _P1,
+          uint16_t _P2, uint16_t _P3,
+          uint16_t _P4, uint16_t _P5,
+          uint16_t _P6, uint16_t _P7>
 inline
 constexpr __m128d
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
@@ -337,15 +347,15 @@ x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
         return v;
 }
 
-template <std::uint8_t _P00, std::uint8_t _P01,
-          std::uint8_t _P02, std::uint8_t _P03,
-          std::uint8_t _P04, std::uint8_t _P05,
-          std::uint8_t _P06, std::uint8_t _P07,
-          std::uint8_t _P08, std::uint8_t _P09,
-          std::uint8_t _P10, std::uint8_t _P11,
-          std::uint8_t _P12, std::uint8_t _P13,
-          std::uint8_t _P14, std::uint8_t _P15>
-const std::uint8_t
+template <uint8_t _P00, uint8_t _P01,
+          uint8_t _P02, uint8_t _P03,
+          uint8_t _P04, uint8_t _P05,
+          uint8_t _P06, uint8_t _P07,
+          uint8_t _P08, uint8_t _P09,
+          uint8_t _P10, uint8_t _P11,
+          uint8_t _P12, uint8_t _P13,
+          uint8_t _P14, uint8_t _P15>
+const uint8_t
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 _msk[16]= {
@@ -353,14 +363,14 @@ _msk[16]= {
         _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15
 };
 
-template <std::uint8_t _P00, std::uint8_t _P01,
-          std::uint8_t _P02, std::uint8_t _P03,
-          std::uint8_t _P04, std::uint8_t _P05,
-          std::uint8_t _P06, std::uint8_t _P07,
-          std::uint8_t _P08, std::uint8_t _P09,
-          std::uint8_t _P10, std::uint8_t _P11,
-          std::uint8_t _P12, std::uint8_t _P13,
-          std::uint8_t _P14, std::uint8_t _P15>
+template <uint8_t _P00, uint8_t _P01,
+          uint8_t _P02, uint8_t _P03,
+          uint8_t _P04, uint8_t _P05,
+          uint8_t _P06, uint8_t _P07,
+          uint8_t _P08, uint8_t _P09,
+          uint8_t _P10, uint8_t _P11,
+          uint8_t _P12, uint8_t _P13,
+          uint8_t _P14, uint8_t _P15>
 inline
 constexpr __m128i
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
@@ -370,14 +380,14 @@ x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
         return v;
 }
 
-template <std::uint8_t _P00, std::uint8_t _P01,
-          std::uint8_t _P02, std::uint8_t _P03,
-          std::uint8_t _P04, std::uint8_t _P05,
-          std::uint8_t _P06, std::uint8_t _P07,
-          std::uint8_t _P08, std::uint8_t _P09,
-          std::uint8_t _P10, std::uint8_t _P11,
-          std::uint8_t _P12, std::uint8_t _P13,
-          std::uint8_t _P14, std::uint8_t _P15>
+template <uint8_t _P00, uint8_t _P01,
+          uint8_t _P02, uint8_t _P03,
+          uint8_t _P04, uint8_t _P05,
+          uint8_t _P06, uint8_t _P07,
+          uint8_t _P08, uint8_t _P09,
+          uint8_t _P10, uint8_t _P11,
+          uint8_t _P12, uint8_t _P13,
+          uint8_t _P14, uint8_t _P15>
 inline
 constexpr __m128
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
@@ -387,14 +397,14 @@ x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
         return v;
 }
 
-template <std::uint8_t _P00, std::uint8_t _P01,
-          std::uint8_t _P02, std::uint8_t _P03,
-          std::uint8_t _P04, std::uint8_t _P05,
-          std::uint8_t _P06, std::uint8_t _P07,
-          std::uint8_t _P08, std::uint8_t _P09,
-          std::uint8_t _P10, std::uint8_t _P11,
-          std::uint8_t _P12, std::uint8_t _P13,
-          std::uint8_t _P14, std::uint8_t _P15>
+template <uint8_t _P00, uint8_t _P01,
+          uint8_t _P02, uint8_t _P03,
+          uint8_t _P04, uint8_t _P05,
+          uint8_t _P06, uint8_t _P07,
+          uint8_t _P08, uint8_t _P09,
+          uint8_t _P10, uint8_t _P11,
+          uint8_t _P12, uint8_t _P13,
+          uint8_t _P14, uint8_t _P15>
 inline
 constexpr __m128d
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,

@@ -171,14 +171,14 @@ namespace {
 	void udiv32<_I>::div(__m128i& q, __m128i& r, __m128i x, __m128i y)
 	{
 		using namespace x86vec;
-		std::uint32_t xi= extract_u32<_I>(x);
-		std::uint32_t yi= extract_u32<_I>(y);
-		std::uint32_t qi, ri;
+		uint32_t xi= extract_u32<_I>(x);
+		uint32_t yi= extract_u32<_I>(y);
+		uint32_t qi, ri;
 		if (yi != 0) {
 			qi = xi / yi;
 			ri = xi % yi;
 		} else {
-			qi = std::uint32_t(-1);
+			qi = uint32_t(-1);
 			ri = xi;
 		}
 		if (_I == 0) {
@@ -195,13 +195,13 @@ namespace {
 	void udiv32<_I>::div(__m128i& q, __m128i x, __m128i y)
 	{
 		using namespace x86vec;
-		std::uint32_t xi= extract_u32<_I>(x);
-		std::uint32_t yi= extract_u32<_I>(y);
-		std::uint32_t qi;
+		uint32_t xi= extract_u32<_I>(x);
+		uint32_t yi= extract_u32<_I>(y);
+		uint32_t qi;
 		if (yi != 0) {
 			qi = xi / yi;
 		} else {
-			qi = std::uint32_t(-1);
+			qi = uint32_t(-1);
 		}
 		if (_I == 0) {
 			q = _mm_set_epi32(0, 0, 0, qi);

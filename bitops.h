@@ -2,47 +2,47 @@
 #define __CFTAL_BITOPS_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/types.h>
 #if defined (__x86_64__) || defined (__i386__)
 #include <x86intrin.h>
 #endif
-#include <cstdint>
 
 namespace cftal {
 
 	// read time stamp counter
-	std::int64_t rdtsc();
+	int64_t rdtsc();
 
 	// returns the counted bits of every byte in every byte
-	std::uint32_t __popcnt_8(std::uint32_t a);
+	uint32_t __popcnt_8(uint32_t a);
 	// returns the counted bits of every byte in every byte
-	std::uint64_t __popcnt_8(std::uint64_t a);
+	uint64_t __popcnt_8(uint64_t a);
 
-	unsigned popcnt(std::uint8_t x);
-	unsigned popcnt(std::uint16_t x);
-	unsigned popcnt(std::uint32_t x);
-	unsigned popcnt(std::uint64_t x);
+	unsigned popcnt(uint8_t x);
+	unsigned popcnt(uint16_t x);
+	unsigned popcnt(uint32_t x);
+	unsigned popcnt(uint64_t x);
 
-	std::uint8_t bitrev(std::uint8_t x);
-	std::uint16_t bitrev(std::uint16_t x);
-	std::uint32_t bitrev(std::uint32_t x);
-	std::uint64_t bitrev(std::uint64_t x);
+	uint8_t bitrev(uint8_t x);
+	uint16_t bitrev(uint16_t x);
+	uint32_t bitrev(uint32_t x);
+	uint64_t bitrev(uint64_t x);
 
-	unsigned lzcnt(std::uint8_t x);
-	unsigned lzcnt(std::uint16_t x);
-	unsigned lzcnt(std::uint32_t x);
-	unsigned lzcnt(std::uint64_t x);
+	unsigned lzcnt(uint8_t x);
+	unsigned lzcnt(uint16_t x);
+	unsigned lzcnt(uint32_t x);
+	unsigned lzcnt(uint64_t x);
 }
 
 inline
-std::int64_t cftal::rdtsc()
+int64_t cftal::rdtsc()
 {
 #if defined (__x86_64__)
-	std::uint64_t a, d;
+	uint64_t a, d;
 	__asm__ __volatile__("lfence;\n\t"
 			     "rdtsc" :"=a"(a), "=d"(d)::"memory");
 	return d<<32 | a;
 #elif defined (__i386__)
-	std::uint64_t a;
+	uint64_t a;
 	__asm__ __volatile__("lfence;\n\t"
 			     "rdtsc" :"=A"(a)::"memory");
 	return a;
@@ -52,11 +52,11 @@ std::int64_t cftal::rdtsc()
 }
 
 inline
-std::uint32_t cftal::__popcnt_8(std::uint32_t x)
+uint32_t cftal::__popcnt_8(uint32_t x)
 {
-	const std::uint32_t c55=0x55555555;
-	const std::uint32_t c33=0x33333333;
-	const std::uint32_t c0f=0x0f0f0f0f;
+	const uint32_t c55=0x55555555;
+	const uint32_t c33=0x33333333;
+	const uint32_t c0f=0x0f0f0f0f;
         x = x - ((x >> 1) & c55);
         x = (x & c33) + ((x >> 2) & c33);
         x = (x + (x >> 4)) & c0f;
@@ -64,13 +64,13 @@ std::uint32_t cftal::__popcnt_8(std::uint32_t x)
 }
 
 inline
-std::uint64_t cftal::__popcnt_8(std::uint64_t x)
+uint64_t cftal::__popcnt_8(uint64_t x)
 {
-	const std::uint64_t c55 = 0x5555555555555555ULL;
+	const uint64_t c55 = 0x5555555555555555ULL;
 	// binary: 00110011..
-	const std::uint64_t c33 = 0x3333333333333333ULL;
+	const uint64_t c33 = 0x3333333333333333ULL;
 	// binary:  4 zeros,  4 ones ...
-	const std::uint64_t c0f = 0x0f0f0f0f0f0f0f0fULL;
+	const uint64_t c0f = 0x0f0f0f0f0f0f0f0fULL;
 	// count pairs of consecutive bits
         x = x - ((x >> 1) & c55);
 	// add consecutive pairs of two bits
@@ -81,28 +81,28 @@ std::uint64_t cftal::__popcnt_8(std::uint64_t x)
 }
 
 inline
-unsigned cftal::popcnt(std::uint8_t x)
+unsigned cftal::popcnt(uint8_t x)
 {
 #if defined (__GNUC__) && defined (__POPCNT__)
 	return _mm_popcnt_u32(x);
 #else
-	return __popcnt_8(std::uint32_t(x));
+	return __popcnt_8(uint32_t(x));
 #endif
 }
 
 inline
-unsigned cftal::popcnt(std::uint16_t x)
+unsigned cftal::popcnt(uint16_t x)
 {
 #if defined (__GNUC__) && defined (__POPCNT__)
 	return _mm_popcnt_u32(x);
 #else
-	unsigned r = __popcnt_8(std::uint32_t(x));
+	unsigned r = __popcnt_8(uint32_t(x));
         return (r*0x01010101) >> 24;
 #endif
 }
 
 inline
-unsigned cftal::popcnt(std::uint32_t x)
+unsigned cftal::popcnt(uint32_t x)
 {
 #if defined (__GNUC__) && defined (__POPCNT__)
 	return _mm_popcnt_u32(x);
@@ -113,30 +113,30 @@ unsigned cftal::popcnt(std::uint32_t x)
 }
 
 inline
-unsigned cftal::popcnt(std::uint64_t x)
+unsigned cftal::popcnt(uint64_t x)
 {
 #if defined (__GNUC__) && defined (__POPCNT__)
 #if defined (__LP64__) || defined (__ILP32__)
 	return _mm_popcnt_u64(x);
 #else
-	return _mm_popcnt_u32(std::uint32_t(x)) +
-		_mm_popcnt_u32(std::uint32_t(x>>32));
+	return _mm_popcnt_u32(uint32_t(x)) +
+		_mm_popcnt_u32(uint32_t(x>>32));
 #endif
 #else
 #if defined (__LP64__) || defined (__ILP32__)
 	x = __popcnt_8(x);
-	const std::uint64_t c01 = 0x0101010101010101ULL;
+	const uint64_t c01 = 0x0101010101010101ULL;
 	return (x*c01) >> 56;
 #else
-	unsigned l = popcnt(std::uint32_t(x));
-	unsigned h = popcnt(std::uint32_t(x>>32));
+	unsigned l = popcnt(uint32_t(x));
+	unsigned h = popcnt(uint32_t(x>>32));
 	return l+h;
 #endif
 #endif
 }
 
 inline
-std::uint8_t cftal::bitrev(std::uint8_t x)
+uint8_t cftal::bitrev(uint8_t x)
 {
 	// swap odd and even bits
 	x = ((x >> 1) & 0x55555555) | ((x & 0x55555555) << 1);
@@ -148,7 +148,7 @@ std::uint8_t cftal::bitrev(std::uint8_t x)
 }
 
 inline
-std::uint16_t cftal::bitrev(std::uint16_t x)
+uint16_t cftal::bitrev(uint16_t x)
 {
 	// swap odd and even bits
 	x = ((x >> 1) & 0x55555555) | ((x & 0x55555555) << 1);
@@ -162,7 +162,7 @@ std::uint16_t cftal::bitrev(std::uint16_t x)
 }
 
 inline
-std::uint32_t cftal::bitrev(std::uint32_t x)
+uint32_t cftal::bitrev(uint32_t x)
 {
 	// swap odd and even bits
 	x = ((x >> 1) & 0x55555555) | ((x & 0x55555555) << 1);
@@ -178,13 +178,13 @@ std::uint32_t cftal::bitrev(std::uint32_t x)
 }
 
 inline
-std::uint64_t cftal::bitrev(std::uint64_t x)
+uint64_t cftal::bitrev(uint64_t x)
 {
-	const std::uint64_t c5555 = 0x5555555555555555ULL;
-	const std::uint64_t c3333 = 0x3333333333333333ULL;
-	const std::uint64_t c0f0f = 0x0f0f0f0f0f0f0f0fULL;
-	const std::uint64_t c00ff = 0x00ff00ff00ff00ffULL;
-	const std::uint64_t cffff = 0x0000ffff0000ffffULL;
+	const uint64_t c5555 = 0x5555555555555555ULL;
+	const uint64_t c3333 = 0x3333333333333333ULL;
+	const uint64_t c0f0f = 0x0f0f0f0f0f0f0f0fULL;
+	const uint64_t c00ff = 0x00ff00ff00ff00ffULL;
+	const uint64_t cffff = 0x0000ffff0000ffffULL;
 	// swap odd and even bits
 	x = ((x >> 1) & c5555) | ((x & c5555) << 1);
 	// swap consecutive pairs
@@ -201,19 +201,19 @@ std::uint64_t cftal::bitrev(std::uint64_t x)
 }
 
 inline
-unsigned cftal::lzcnt(std::uint8_t x)
+unsigned cftal::lzcnt(uint8_t x)
 {
-	return lzcnt(std::uint32_t(x))-24;
+	return lzcnt(uint32_t(x))-24;
 }
 
 inline
-unsigned cftal::lzcnt(std::uint16_t x)
+unsigned cftal::lzcnt(uint16_t x)
 {
-	return lzcnt(std::uint32_t(x))-16;
+	return lzcnt(uint32_t(x))-16;
 }
 
 inline
-unsigned cftal::lzcnt(std::uint32_t x)
+unsigned cftal::lzcnt(uint32_t x)
 {
 #if defined (__GNUC__)
 	return x ? __builtin_clz(x) : 32;
@@ -228,7 +228,7 @@ unsigned cftal::lzcnt(std::uint32_t x)
 }
 
 inline
-unsigned cftal::lzcnt(std::uint64_t x)
+unsigned cftal::lzcnt(uint64_t x)
 {
 #if defined (__GNUC__)
 	return x ? __builtin_clzl(x) : 64;

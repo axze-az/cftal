@@ -118,17 +118,17 @@ x86vec::v4s32 mulsh(x86vec::v4s32 a, x86vec::v4s32 b)
         return mulh(a, b);
 }
 
-void check_div_8(std::uint16_t ul, std::uint8_t v)
+void check_div_8(uint16_t ul, uint8_t v)
 {
 	using namespace cftal;
-	typedef impl::udiv_2by1<std::uint8_t> div_type;
+	typedef impl::udiv_2by1<uint8_t> div_type;
 
-	std::pair<std::uint8_t, std::uint8_t> pq(
+	std::pair<uint8_t, uint8_t> pq(
 		div_type::d(ul, ul>>8, v, nullptr));
-	std::uint16_t q((std::uint16_t(pq.second)<<8) |	pq.first);
-	std::uint16_t q_ref = ul/v;
+	uint16_t q((uint16_t(pq.second)<<8) |	pq.first);
+	uint16_t q_ref = ul/v;
 	if (q != q_ref) {
-		std::cout << ul << " / " << std::uint16_t(v) << " = " << q
+		std::cout << ul << " / " << uint16_t(v) << " = " << q
 			  << " != " << q_ref << std::endl;
 		std::exit(3);
 	}
@@ -146,15 +146,15 @@ void check_div_8()
 	}
 }
 
-void check_div_16(std::uint16_t u, std::uint16_t v)
+void check_div_16(uint16_t u, uint16_t v)
 {
-	typedef cftal::duint<std::uint8_t> v_t;
+	typedef cftal::duint<uint8_t> v_t;
 	v_t vu(u, u>>8), vv(v, v>>8);
 	v_t vq(vu / vv);
-	std::uint16_t q((std::uint16_t(vq.h()) <<8) | vq.l());
-	std::uint16_t q_ref = u/v;
+	uint16_t q((uint16_t(vq.h()) <<8) | vq.l());
+	uint16_t q_ref = u/v;
 	if (q != q_ref) {
-		std::cout << u << " / " << std::uint16_t(v) << " = " << q
+		std::cout << u << " / " << uint16_t(v) << " = " << q
 			  << " != " << q_ref << std::endl;
 		std::exit(3);
 	}

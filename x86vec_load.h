@@ -10,7 +10,7 @@ namespace x86vec {
 	struct is_aligned_to {
 		static const intptr_t val=_N;
 		static bool ptr(const void* p) {
-			intptr_t t(reinterpret_cast<intptr_t>(p));
+			std::intptr_t t(reinterpret_cast<intptr_t>(p));
 			return (t & (_N-1))==0;
 		}
 	};

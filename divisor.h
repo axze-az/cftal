@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/mul_div.h>
+#include <algorithm>
 
 namespace cftal {
 
@@ -96,8 +97,8 @@ namespace cftal {
 		class udiv {
 			_V _m;
 			_D _d;
-			std::uint32_t _s1;
-			std::uint32_t _s2;
+			uint32_t _s1;
+			uint32_t _s2;
 			bool _shift_only;
 		public:
 			udiv(const _D& d) { set(d); }
@@ -113,7 +114,7 @@ namespace cftal {
 			_V _m;
 			_V _xsgn_d;
 			_D _d;
-			std::uint32_t _s;
+			uint32_t _s;
 		public:
 			sdiv(const _D& d) { set(d); }
 			void set(const _D& d);
@@ -122,26 +123,26 @@ namespace cftal {
 		};
 
 		struct div16_traits {
-			typedef std::int16_t sword;
-			typedef std::uint16_t uword;
-			typedef std::uint32_t udword;
+			typedef int16_t sword;
+			typedef uint16_t uword;
+			typedef uint32_t udword;
 			static
 			uword ceil_log2(uword t) {
 				return 16 - lzcnt(uword(t-1));
 			}
 			static
 			sword ceil_log2(sword t) {
-				return ceil_log2(std::uint16_t(t));
+				return ceil_log2(uint16_t(t));
 			}
 			static
 			uword muluh(uword a, uword b) {
-				return (std::uint32_t(a) * 
-					std::uint32_t(b)) >> 16;
+				return (uint32_t(a) * 
+					uint32_t(b)) >> 16;
 			}
 			static
 			sword mulsh(sword a, sword b) {
-				return (std::int32_t(a) * 
-					std::int32_t(b))>>16;
+				return (int32_t(a) * 
+					int32_t(b))>>16;
 			}
 			enum {
 				_N = 16
@@ -149,26 +150,26 @@ namespace cftal {
 		};
 
 		struct div32_traits {
-			typedef std::int32_t sword;
-			typedef std::uint32_t uword;
-			typedef std::uint64_t udword;
+			typedef int32_t sword;
+			typedef uint32_t uword;
+			typedef uint64_t udword;
 			static
 			uword ceil_log2(uword t) {
 				return 32 - lzcnt(t-1);
 			}
 			static
 			sword ceil_log2(sword t) {
-				return ceil_log2(std::uint32_t(t));
+				return ceil_log2(uint32_t(t));
 			}
 			static
 			uword muluh(uword a, uword b) {
-				return (std::uint64_t(a) * 
-					std::uint64_t(b)) >> 32;
+				return (uint64_t(a) * 
+					uint64_t(b)) >> 32;
 			}
 			static
 			sword mulsh(sword a, sword b) {
-				return (std::int64_t(a) * 
-					std::int64_t(b))>>32;
+				return (int64_t(a) * 
+					int64_t(b))>>32;
 			}
 			enum {
 				_N =32
@@ -177,67 +178,67 @@ namespace cftal {
 
 		// unsigned div 16
 		template <>
-		struct udiv_setup_traits<std::uint16_t> 
+		struct udiv_setup_traits<uint16_t> 
 			: public div16_traits {};
 		template <>
-		struct udiv_traits<std::uint16_t, std::uint16_t> 
+		struct udiv_traits<uint16_t, uint16_t> 
 			: public div16_traits {};
 		// signed div 16
 		template <>
-		struct sdiv_setup_traits<std::int16_t> 
+		struct sdiv_setup_traits<int16_t> 
 			: public div16_traits {};
 		template <>
-		struct sdiv_traits<std::int16_t, std::int16_t> 
+		struct sdiv_traits<int16_t, int16_t> 
 			: public div16_traits {};
 
 		// unsigned div 32
 		template <>
-		struct udiv_setup_traits<std::uint32_t> 
+		struct udiv_setup_traits<uint32_t> 
 			: public div32_traits {};
 		template <>
-		struct udiv_traits<std::uint32_t, std::uint32_t> 
+		struct udiv_traits<uint32_t, uint32_t> 
 			: public div32_traits {};
 
 		// signed div 32
 		template <>
-		struct sdiv_setup_traits<std::int32_t> 
+		struct sdiv_setup_traits<int32_t> 
 			: public div32_traits {};
 		template <>
-		struct sdiv_traits<std::int32_t, std::int32_t> 
+		struct sdiv_traits<int32_t, int32_t> 
 			: public div32_traits {};
 	}
 
 	template <>
-	class divisor<std::int16_t, std::int16_t>
-		: public impl::sdiv<std::int16_t, std::int16_t> {
-	public:
-		divisor(std::int16_t d) : 
-			impl::sdiv<std::int16_t, std::int16_t>(d) {}
-	};
-	template <>
-	class divisor<std::uint16_t, std::uint16_t>
-		: public impl::udiv<std::uint16_t, std::uint16_t> {
+	class divisor<int16_t, int16_t>
+		: public impl::sdiv<int16_t, int16_t> {
 	public:
 		divisor(int16_t d) : 
-			impl::udiv<std::uint16_t, std::uint16_t>(d) {}
+			impl::sdiv<int16_t, int16_t>(d) {}
 	};
 	template <>
-	class divisor<std::int32_t, std::int32_t>
-		: public impl::sdiv<std::int32_t, std::int32_t> {
+	class divisor<uint16_t, uint16_t>
+		: public impl::udiv<uint16_t, uint16_t> {
 	public:
-		divisor(std::int32_t d) : 
-			impl::sdiv<std::int32_t, std::int32_t>(d) {}
+		divisor(int16_t d) : 
+			impl::udiv<uint16_t, uint16_t>(d) {}
 	};
 	template <>
-	class divisor<std::uint32_t, std::uint32_t>
-		: public impl::udiv<std::uint32_t, std::uint32_t> {
+	class divisor<int32_t, int32_t>
+		: public impl::sdiv<int32_t, int32_t> {
 	public:
-		divisor(std::uint32_t d) : 
-			impl::udiv<std::uint32_t, std::uint32_t>(d) {}
+		divisor(int32_t d) : 
+			impl::sdiv<int32_t, int32_t>(d) {}
+	};
+	template <>
+	class divisor<uint32_t, uint32_t>
+		: public impl::udiv<uint32_t, uint32_t> {
+	public:
+		divisor(uint32_t d) : 
+			impl::udiv<uint32_t, uint32_t>(d) {}
 	};
 
 	template <class _V>
-	_V operator%(const _V& n, const divisor<_V, std::int16_t>& d)
+	_V operator%(const _V& n, const divisor<_V, int16_t>& d)
 	{
 		_V q(d.divide(n));
 		_V dd(d.d());
@@ -245,7 +246,7 @@ namespace cftal {
 	}
 
 	template <class _V>
-	_V operator%(const _V& n, const divisor<_V, std::uint16_t>& d)
+	_V operator%(const _V& n, const divisor<_V, uint16_t>& d)
 	{
 		_V q(d.divide(n));
 		_V dd(d.d());
@@ -253,7 +254,7 @@ namespace cftal {
 	}
 
 	template <class _V>
-	_V operator%(const _V& n, const divisor<_V, std::int32_t>& d)
+	_V operator%(const _V& n, const divisor<_V, int32_t>& d)
 	{
 		_V q(d.divide(n));
 		_V dd(d.d());
@@ -261,7 +262,7 @@ namespace cftal {
 	}
 
 	template <class _V>
-	_V operator%(const _V& n, const divisor<_V, std::uint32_t>& d)
+	_V operator%(const _V& n, const divisor<_V, uint32_t>& d)
 	{
 		_V q(d.divide(n));
 		_V dd(d.d());

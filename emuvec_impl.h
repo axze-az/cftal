@@ -2,8 +2,8 @@
 #define __EMUVEC_IMPL_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/types.h>
 #include <cftal/allocator.h>
-#include <cstdint>
 #include <cstring>
 #include <type_traits>
 
@@ -48,12 +48,12 @@ namespace emuvec {
 
                 template <typename _S>
                 struct __def_get_signs_32  {
-                        static std::uint32_t v(const _S* s, std::size_t n) {
+                        static uint32_t v(const _S* s, std::size_t n) {
                                 if (n>32)
                                         std::abort();
-                                std::uint32_t r(0), m(1);
+                                uint32_t r(0), m(1);
                                 for (std::size_t i=0; i<n; ++i, m<<=1) {
-                                        std::uint32_t mi( s[i] < _S(0) ? m : 0);
+                                        uint32_t mi( s[i] < _S(0) ? m : 0);
                                         r |= mi;
                                 }
                                 return r;
@@ -62,7 +62,7 @@ namespace emuvec {
 
                 template <typename _U>
                 struct __int_get_signs_32 {
-                        static std::uint32_t v(const _U* p, std::size_t n) {
+                        static uint32_t v(const _U* p, std::size_t n) {
                                 typedef typename std::make_signed<_U>::type _S;
                                 const _S* s = static_cast<const _S*>(p);
                                 return __def_get_signs_32<_S>::v(s, n);
@@ -72,7 +72,7 @@ namespace emuvec {
 
                 template <typename _T>
 		inline
-                std::uint32_t get_signs_32(const _T* p, std::size_t n)
+                uint32_t get_signs_32(const _T* p, std::size_t n)
                 {
                         typedef typename std::conditional<
                                 std::is_integral<_T>::value == true,
@@ -91,10 +91,10 @@ namespace emuvec {
 		template <>
 		struct mem_cpy<16> {
 			static void* v(void* d, const void*s) {
-				const std::uint64_t* su=
-					static_cast<const std::uint64_t*>(s);
-				std::uint64_t* du=
-					static_cast<std::uint64_t*>(d);
+				const uint64_t* su=
+					static_cast<const uint64_t*>(s);
+				uint64_t* du=
+					static_cast<uint64_t*>(d);
 				du[0] = su[0];
 				du[1] = su[1];
 				return d;

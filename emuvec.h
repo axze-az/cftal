@@ -9,16 +9,16 @@
 namespace emuvec {
 
         // constants consisting of 1 uint32_t
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         struct const_u32 {
                 static
-                const std::uint32_t val = _P;
+                const uint32_t val = _P;
         };
 
-        class v8s16 : public impl::vec_base<std::int16_t, 8>::type {
+        class v8s16 : public impl::vec_base<int16_t, 8>::type {
         public:
                 enum { N = 8 };
-                typedef std::int16_t element_type;
+                typedef int16_t element_type;
                 typedef typename impl::vec_base<element_type, N>::type
                 base_type;
                 element_type* operator()();
@@ -54,19 +54,19 @@ namespace emuvec {
         v8s16& operator/= (v8s16& a, const v8s16& b);
         v8s16& operator%= (v8s16& a, const v8s16& b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v8s16& operator<<= (v8s16& a, const const_u32<_P>& b);
-        v8s16& operator<<= (v8s16& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v8s16& operator<<= (v8s16& a, uint32_t b);
+        template <uint32_t _P>
         v8s16 operator <<(const v8s16& a, const const_u32<_P>& b);
-        v8s16 operator <<(const v8s16& a, std::uint32_t b);
+        v8s16 operator <<(const v8s16& a, uint32_t b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v8s16& operator>>= (v8s16& a, const_u32<_P>& b);
-        v8s16& operator>>= (v8s16& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v8s16& operator>>= (v8s16& a, uint32_t b);
+        template <uint32_t _P>
         v8s16 operator >>(const v8s16& a, const const_u32<_P>& b);
-        v8s16 operator >>(const v8s16& a, std::uint32_t b);
+        v8s16 operator >>(const v8s16& a, uint32_t b);
 
         v8s16 operator++ (v8s16& a, int);
         v8s16& operator++(v8s16& a);
@@ -129,7 +129,7 @@ namespace emuvec {
 
         class v8u16 : public v8s16 {
         public:
-                typedef std::uint16_t element_type;
+                typedef uint16_t element_type;
                 typedef v8s16 base_type;
                 element_type* operator()();
                 const element_type* operator()() const;
@@ -166,19 +166,19 @@ namespace emuvec {
         v8u16& operator/= (v8u16& a, const v8u16& b);
         v8u16& operator%= (v8u16& a, const v8u16& b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v8u16& operator<<= (v8u16& a, const const_u32<_P>& b);
-        v8u16& operator<<= (v8u16& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v8u16& operator<<= (v8u16& a, uint32_t b);
+        template <uint32_t _P>
         v8u16 operator <<(const v8u16& a, const const_u32<_P>& b);
-        v8u16 operator <<(const v8u16& a, std::uint32_t b);
+        v8u16 operator <<(const v8u16& a, uint32_t b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v8u16& operator>>= (v8u16& a, const_u32<_P>& b);
-        v8u16& operator>>= (v8u16& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v8u16& operator>>= (v8u16& a, uint32_t b);
+        template <uint32_t _P>
         v8u16 operator >>(const v8u16& a, const const_u32<_P>& b);
-        v8u16 operator >>(const v8u16& a, std::uint32_t b);
+        v8u16 operator >>(const v8u16& a, uint32_t b);
 
         v8u16 operator++ (v8u16& a, int);
         v8u16& operator++(v8u16& a);
@@ -232,10 +232,10 @@ namespace emuvec {
 	typename v8u16::element_type extract(const v8u16& a);
 
 
-	class v4s32 : public impl::vec_base<std::int32_t, 4>::type {
+	class v4s32 : public impl::vec_base<int32_t, 4>::type {
 	public:
 		enum { N = 4 };
-		typedef std::int32_t element_type;
+		typedef int32_t element_type;
 		typedef typename impl::vec_base<element_type, N>::type
 		base_type;
 		element_type* operator()();
@@ -269,19 +269,19 @@ namespace emuvec {
 	v4s32& operator/= (v4s32& a, const v4s32& b);
 	v4s32& operator%= (v4s32& a, const v4s32& b);
 
-	template <std::uint32_t _P>
+	template <uint32_t _P>
 	v4s32& operator<<= (v4s32& a, const const_u32<_P>& b);
-	v4s32& operator<<= (v4s32& a, std::uint32_t b);
-	template <std::uint32_t _P>
+	v4s32& operator<<= (v4s32& a, uint32_t b);
+	template <uint32_t _P>
 	v4s32 operator <<(const v4s32& a, const const_u32<_P>& b);
-	v4s32 operator <<(const v4s32& a, std::uint32_t b);
+	v4s32 operator <<(const v4s32& a, uint32_t b);
 
-	template <std::uint32_t _P>
+	template <uint32_t _P>
 	v4s32& operator>>= (v4s32& a, const_u32<_P>& b);
-	v4s32& operator>>= (v4s32& a, std::uint32_t b);
-	template <std::uint32_t _P>
+	v4s32& operator>>= (v4s32& a, uint32_t b);
+	template <uint32_t _P>
 	v4s32 operator >>(const v4s32& a, const const_u32<_P>& b);
-	v4s32 operator >>(const v4s32& a, std::uint32_t b);
+	v4s32 operator >>(const v4s32& a, uint32_t b);
 
 	v4s32 operator++ (v4s32& a, int);
 	v4s32& operator++(v4s32& a);
@@ -341,7 +341,7 @@ namespace emuvec {
 
 	class v4u32 : public v4s32 {
 	public:
-		typedef std::uint32_t element_type;
+		typedef uint32_t element_type;
 		typedef v4s32 base_type;
 		element_type* operator()();
 		const element_type* operator()() const;
@@ -376,19 +376,19 @@ namespace emuvec {
 	v4u32& operator/= (v4u32& a, const v4u32& b);
 	v4u32& operator%= (v4u32& a, const v4u32& b);
 
-	template <std::uint32_t _P>
+	template <uint32_t _P>
 	v4u32& operator<<= (v4u32& a, const const_u32<_P>& b);
-	v4u32& operator<<= (v4u32& a, std::uint32_t b);
-	template <std::uint32_t _P>
+	v4u32& operator<<= (v4u32& a, uint32_t b);
+	template <uint32_t _P>
 	v4u32 operator <<(const v4u32& a, const const_u32<_P>& b);
-	v4u32 operator <<(const v4u32& a, std::uint32_t b);
+	v4u32 operator <<(const v4u32& a, uint32_t b);
 
-	template <std::uint32_t _P>
+	template <uint32_t _P>
 	v4u32& operator>>= (v4u32& a, const_u32<_P>& b);
-	v4u32& operator>>= (v4u32& a, std::uint32_t b);
-	template <std::uint32_t _P>
+	v4u32& operator>>= (v4u32& a, uint32_t b);
+	template <uint32_t _P>
 	v4u32 operator >>(const v4u32& a, const const_u32<_P>& b);
-	v4u32 operator >>(const v4u32& a, std::uint32_t b);
+	v4u32 operator >>(const v4u32& a, uint32_t b);
 
 	v4u32 operator++ (v4u32& a, int);
 	v4u32& operator++(v4u32& a);

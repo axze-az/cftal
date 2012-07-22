@@ -20,27 +20,27 @@ namespace x86vec {
 
         // extract/insert uint8_t
         template <unsigned _IDX>
-        std::uint8_t extract_u8(__m128i v);
+        uint8_t extract_u8(__m128i v);
         template <unsigned _IDX>
-        __m128i insert_u8(__m128i r, std::uint8_t v);
+        __m128i insert_u8(__m128i r, uint8_t v);
 
         // extract/insert uint16_t
         template <unsigned _IDX>
-        std::uint16_t extract_u16(__m128i v);
+        uint16_t extract_u16(__m128i v);
         template <unsigned _IDX>
-        __m128i insert_u16(__m128i r, std::uint16_t v);
+        __m128i insert_u16(__m128i r, uint16_t v);
 
         // extract/insert uint32_t
         template <unsigned _IDX>
-        std::uint32_t extract_u32(__m128i v);
+        uint32_t extract_u32(__m128i v);
         template <unsigned _IDX>
-        __m128i insert_u32(__m128i r, std::uint32_t v);
+        __m128i insert_u32(__m128i r, uint32_t v);
 
         // extract/insert uint64_t
         template <unsigned _IDX>
-        std::uint64_t extract_u64(__m128i v);
+        uint64_t extract_u64(__m128i v);
         template <unsigned _IDX>
-        __m128i insert_u64(__m128i r, std::uint64_t v);
+        __m128i insert_u64(__m128i r, uint64_t v);
 
 }
 template <unsigned _IDX>
@@ -144,7 +144,7 @@ __m128 x86vec::insert_f32(__m128 v, float f)
 
 template <unsigned _IDX>
 inline
-std::uint8_t x86vec::extract_u8(__m128i v) {
+uint8_t x86vec::extract_u8(__m128i v) {
         const bool cond = _IDX < 16;
         static_assert (cond, "x86vec::extract_u8 _IDX < 16");
 #if defined (__SSE4_1__)
@@ -161,7 +161,7 @@ std::uint8_t x86vec::extract_u8(__m128i v) {
 
 template <unsigned _IDX>
 inline
-__m128i x86vec::insert_u8(__m128i v, std::uint8_t i)
+__m128i x86vec::insert_u8(__m128i v, uint8_t i)
 {
         const bool cond = _IDX < 16;
         static_assert (cond, "x86vec::insert_u8 _IDX < 16");
@@ -183,7 +183,7 @@ __m128i x86vec::insert_u8(__m128i v, std::uint8_t i)
 
 template <unsigned _IDX>
 inline
-std::uint16_t x86vec::extract_u16(__m128i v) {
+uint16_t x86vec::extract_u16(__m128i v) {
         const bool cond = _IDX < 8;
         static_assert (cond, "x86vec::extract_u16 _IDX < 8");
         return _mm_extract_epi16(v, _IDX);
@@ -191,7 +191,7 @@ std::uint16_t x86vec::extract_u16(__m128i v) {
 
 template <unsigned _IDX>
 inline
-__m128i x86vec::insert_u16(__m128i v, std::uint16_t i)
+__m128i x86vec::insert_u16(__m128i v, uint16_t i)
 {
         const bool cond = _IDX < 16;
         static_assert (cond, "x86vec::insert_u16 _IDX < 16");
@@ -200,11 +200,11 @@ __m128i x86vec::insert_u16(__m128i v, std::uint16_t i)
 
 template <unsigned _IDX>
 inline
-std::uint32_t x86vec::extract_u32(__m128i v)
+uint32_t x86vec::extract_u32(__m128i v)
 {
         const bool cond = _IDX < 4;
         static_assert (cond, "x86vec::extract_u32 _IDX < 4");
-        std::uint32_t r;
+        uint32_t r;
         if (_IDX==0) {
                 r = _mm_cvtsi128_si32(v);
         } else {
@@ -220,7 +220,7 @@ std::uint32_t x86vec::extract_u32(__m128i v)
 
 template <unsigned _IDX>
 inline
-__m128i x86vec::insert_u32(__m128i v, std::uint32_t i)
+__m128i x86vec::insert_u32(__m128i v, uint32_t i)
 {
         const bool cond = _IDX < 4;
         static_assert (cond, "x86vec::insert_u32 _IDX < 4");
@@ -252,10 +252,10 @@ __m128i x86vec::insert_u32(__m128i v, std::uint32_t i)
 
 template <unsigned _IDX>
 inline
-std::uint64_t x86vec::extract_u64(__m128i v) {
+uint64_t x86vec::extract_u64(__m128i v) {
         const bool cond = _IDX < 2;
         static_assert (cond, "x86vec::extract_u64 _IDX < 2");
-        std::uint64_t r;
+        uint64_t r;
 #if defined (__x86_64__)
         // 64 bit code
         if (_IDX==0) {
@@ -270,7 +270,7 @@ std::uint64_t x86vec::extract_u64(__m128i v) {
         }
 #else
         // 32 bit code
-        std::uint32_t l, h;
+        uint32_t l, h;
         if (_IDX==0) {
                 l = _mm_cvtsi128_si32(v);
 #if defined (__SSE4_1__)
@@ -290,14 +290,14 @@ std::uint64_t x86vec::extract_u64(__m128i v) {
                 h = _mm_cvtsi128_si32(hv);
 #endif
         }
-        r = (std::uint64_t(h) << 32) | l;
+        r = (uint64_t(h) << 32) | l;
 #endif
         return r;
 }
 
 template <unsigned _IDX>
 inline
-__m128i x86vec::insert_u64(__m128i v, std::uint64_t i)
+__m128i x86vec::insert_u64(__m128i v, uint64_t i)
 {
         const bool cond = _IDX < 2;
         static_assert (cond, "x86vec::insert_u64_IDX < 2");

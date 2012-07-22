@@ -16,30 +16,30 @@ namespace x86vec {
 					 __m128i* rem=nullptr);
 		};
 
-		struct div_u16 : public div_ref<std::uint16_t, 8> {
+		struct div_u16 : public div_ref<uint16_t, 8> {
 			static __m128i v(__m128i a, __m128i b,
 					 __m128i* rem=nullptr);
 		};
 
-		struct div_s16 : public div_ref<std::int16_t, 8> {
+		struct div_s16 : public div_ref<int16_t, 8> {
 			static __m128i v(__m128i a, __m128i b,
 					 __m128i* rem=nullptr);
 		};
 
-		struct div_u32 : public div_ref<std::uint32_t, 4> {
+		struct div_u32 : public div_ref<uint32_t, 4> {
 			static __m128i v(__m128i a, __m128i b,
 					 __m128i* rem=nullptr);
 		};
 
-		struct div_s32 : public div_ref<std::int32_t, 4> {
+		struct div_s32 : public div_ref<int32_t, 4> {
 			static __m128i v(__m128i a, __m128i b,
 					 __m128i* rem=nullptr);
 		};
 
-		struct div_u64 : public div_ref<std::uint64_t, 2> {
+		struct div_u64 : public div_ref<uint64_t, 2> {
 		};
 
-		struct div_s64 : public div_ref<std::int64_t, 2> {
+		struct div_s64 : public div_ref<int64_t, 2> {
 		};
 
 	}

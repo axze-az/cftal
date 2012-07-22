@@ -49,9 +49,9 @@ namespace emuvec {
 		// operators:
 		template <typename _T>
 		class v_sl {
-			std::uint32_t _s;
+			uint32_t _s;
 		public:
-			v_sl(std::uint32_t s) : _s(s) {}
+			v_sl(uint32_t s) : _s(s) {}
 			_T operator()(const _T& a) const {
 				return a << _s;
 			}
@@ -59,9 +59,9 @@ namespace emuvec {
 
 		template <typename _T>
 		class v_sr {
-			std::uint32_t _s;
+			uint32_t _s;
 		public:
-			v_sr(std::uint32_t s) : _s(s) {}
+			v_sr(uint32_t s) : _s(s) {}
 			_T operator()(const _T& a) const {
 				return a >> _s;
 			}
@@ -71,38 +71,38 @@ namespace emuvec {
 		struct v_mulhi {};
 
 		template <>
-		struct v_mulhi<std::int16_t> {
-			std::int16_t operator()(std::int16_t a,
-						std::int16_t b) const {
-				return (std::int32_t(a) *
-					std::int32_t(b)) >> 16;
+		struct v_mulhi<int16_t> {
+			int16_t operator()(int16_t a,
+						int16_t b) const {
+				return (int32_t(a) *
+					int32_t(b)) >> 16;
 			}
 		};
 
 		template <>
-		struct v_mulhi<std::uint16_t> {
-			std::uint16_t operator()(std::uint16_t a,
-						 std::uint16_t b) const {
-				return (std::uint32_t(a) *
-					std::uint32_t(b)) >> 16;
+		struct v_mulhi<uint16_t> {
+			uint16_t operator()(uint16_t a,
+						 uint16_t b) const {
+				return (uint32_t(a) *
+					uint32_t(b)) >> 16;
 			}
 		};
 
 		template <>
-		struct v_mulhi<std::int32_t> {
-			std::int32_t operator()(std::int32_t a,
-						std::int32_t b) const {
-				return (std::int64_t(a) *
-					std::int64_t(b)) >> 32;
+		struct v_mulhi<int32_t> {
+			int32_t operator()(int32_t a,
+						int32_t b) const {
+				return (int64_t(a) *
+					int64_t(b)) >> 32;
 			}
 		};
 
 		template <>
-		struct v_mulhi<std::uint32_t> {
-			std::uint32_t operator()(std::uint32_t a,
-						 std::uint32_t b) const {
-				return (std::uint64_t(a) *
-					std::uint64_t(b)) >> 32;
+		struct v_mulhi<uint32_t> {
+			uint32_t operator()(uint32_t a,
+						 uint32_t b) const {
+				return (uint64_t(a) *
+					uint64_t(b)) >> 32;
 			}
 		};
 

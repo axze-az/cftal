@@ -110,7 +110,7 @@ bool x86vec::test::check_u16(const char* msg,
 			     __m128i v, const idx& i)
 {
 	union {
-		std::uint16_t _u[8];
+		uint16_t _u[8];
 		__m128i _v;
 	} t;
 	_mm_store_si128(&t._v, v);
@@ -129,7 +129,7 @@ bool x86vec::test::check_u32(const char* msg,
 			     __m128i v, const idx& i)
 {
 	union {
-		std::uint32_t _u[4];
+		uint32_t _u[4];
 		__m128i _v;
 	} t;
 	_mm_store_si128(&t._v, v);
@@ -147,7 +147,7 @@ bool x86vec::test::check_u64(const char* msg,
 			     __m128i v, const idx& i)
 {
 	union {
-		std::uint64_t _u[2];
+		uint64_t _u[2];
 		__m128i _v;
 	} t;
 	_mm_store_si128(&t._v, v);
@@ -639,13 +639,13 @@ void x86vec::test::generate_u16(const std::string& name_base)
 		const unsigned int n1=8+1;
 		for (int i=0;i<TEST_CASES; ++i) {
 			int i1, i2, i3, i4, i5, i6, i7;
-			i1= ((std::uint32_t(std::rand()) >> 8)% n1) -1;
-			i2= ((std::uint32_t(std::rand()) >> 8)% n1) -1;
-			i3= ((std::uint32_t(std::rand()) >> 8)% n1) -1;
-			i4= ((std::uint32_t(std::rand()) >> 8)% n1) -1;
-			i5= ((std::uint32_t(std::rand()) >> 8)% n1) -1;
-			i6= ((std::uint32_t(std::rand()) >> 8)% n1) -1;
-			i7= ((std::uint32_t(std::rand()) >> 8)% n1) -1;
+			i1= ((uint32_t(std::rand()) >> 8)% n1) -1;
+			i2= ((uint32_t(std::rand()) >> 8)% n1) -1;
+			i3= ((uint32_t(std::rand()) >> 8)% n1) -1;
+			i4= ((uint32_t(std::rand()) >> 8)% n1) -1;
+			i5= ((uint32_t(std::rand()) >> 8)% n1) -1;
+			i6= ((uint32_t(std::rand()) >> 8)% n1) -1;
+			i7= ((uint32_t(std::rand()) >> 8)% n1) -1;
 			f << space8 << "r=perm_u16<"
 			  << idx(i0, i1, i2, i3, i4, i5, i6, i7) << ">(a);\n";
 			f << space8 << "id.assign("
@@ -676,13 +676,13 @@ void x86vec::test::generate_u16(const std::string& name_base)
 		const unsigned int n2=16+1;
 		for (int i=0;i<TEST_CASES; ++i) {
 			int i1, i2, i3, i4, i5, i6, i7;
-			i1= ((std::uint32_t(std::rand()) >> 8)% n2) -1;
-			i2= ((std::uint32_t(std::rand()) >> 8)% n2) -1;
-			i3= ((std::uint32_t(std::rand()) >> 8)% n2) -1;
-			i4= ((std::uint32_t(std::rand()) >> 8)% n2) -1;
-			i5= ((std::uint32_t(std::rand()) >> 8)% n2) -1;
-			i6= ((std::uint32_t(std::rand()) >> 8)% n2) -1;
-			i7= ((std::uint32_t(std::rand()) >> 8)% n2) -1;
+			i1= ((uint32_t(std::rand()) >> 8)% n2) -1;
+			i2= ((uint32_t(std::rand()) >> 8)% n2) -1;
+			i3= ((uint32_t(std::rand()) >> 8)% n2) -1;
+			i4= ((uint32_t(std::rand()) >> 8)% n2) -1;
+			i5= ((uint32_t(std::rand()) >> 8)% n2) -1;
+			i6= ((uint32_t(std::rand()) >> 8)% n2) -1;
+			i7= ((uint32_t(std::rand()) >> 8)% n2) -1;
 			f << space8 << "r=perm_u16<"
 			  << idx(i0, i1, i2, i3, i4, i5, i6, i7)
 			  << ">(a,b);\n";

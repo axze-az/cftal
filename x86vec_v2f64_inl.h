@@ -336,8 +336,8 @@ x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 		return _mm_round_pd(a(), 3);
 	}
 #else
-	std::uint32_t mxcsr=_mm_getcsr();
-	std::uint32_t rmxcsr(mxcsr);
+	uint32_t mxcsr=_mm_getcsr();
+	uint32_t rmxcsr(mxcsr);
 	rmxcsr &= ~(3<<13);
 	switch (m) {
 	case rounding_mode::nearest: //0

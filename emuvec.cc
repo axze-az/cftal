@@ -402,20 +402,20 @@ emuvec::v8s16 emuvec::mulh(const v8s16& a, const v8s16& b)
 
 bool emuvec::no_signs(const v8s16& a)
 {
-        std::uint32_t sgns(impl::get_signs_32(a(), v8s16::N));
+        uint32_t sgns(impl::get_signs_32(a(), v8s16::N));
         return sgns == 0;
 }
 
 bool emuvec::all_signs(const v8s16& a)
 {
-        std::uint32_t sgns(impl::get_signs_32(a(), v8s16::N));
+        uint32_t sgns(impl::get_signs_32(a(), v8s16::N));
         return sgns == 0xFF;
 
 }
 
 bool emuvec::both_signs(const v8s16& a)
 {
-        std::uint32_t sgns(impl::get_signs_32(a(), v8s16::N));
+        uint32_t sgns(impl::get_signs_32(a(), v8s16::N));
         return sgns != 0xFF && sgns != 0;
 }
 
@@ -469,12 +469,12 @@ emuvec::v8u16::v8u16(v8u16::element_type r, bool broadcast)
 }
 
 emuvec::v8u16::v8u16(const mem::addr_bcast<element_type>& r)
-        : base_type(reinterpret_cast<const mem::addr_bcast<std::int16_t>&>(r))
+        : base_type(reinterpret_cast<const mem::addr_bcast<int16_t>&>(r))
 {
 }
 
 emuvec::v8u16::v8u16(const mem::addr<element_type>& r)
-        : base_type(reinterpret_cast<const mem::addr<std::int16_t>&>(r))
+        : base_type(reinterpret_cast<const mem::addr<int16_t>&>(r))
 {
 }
 
@@ -504,7 +504,7 @@ emuvec::v8u16& emuvec::v8u16::operator=(v8s16&& r)
 
 emuvec::v8u16& emuvec::v8u16::operator=(element_type r)
 {
-	base_type::operator=(std::int16_t(r));
+	base_type::operator=(int16_t(r));
         return *this;
 }
 
@@ -1235,20 +1235,20 @@ emuvec::v4s32 emuvec::mulh(const v4s32& a, const v4s32& b)
 
 bool emuvec::no_signs(const v4s32& a)
 {
-        std::uint32_t sgns(impl::get_signs_32(a(), v4s32::N));
+        uint32_t sgns(impl::get_signs_32(a(), v4s32::N));
         return sgns == 0;
 }
 
 bool emuvec::all_signs(const v4s32& a)
 {
-        std::uint32_t sgns(impl::get_signs_32(a(), v4s32::N));
+        uint32_t sgns(impl::get_signs_32(a(), v4s32::N));
         return sgns == 0x0f;
 
 }
 
 bool emuvec::both_signs(const v4s32& a)
 {
-        std::uint32_t sgns(impl::get_signs_32(a(), v4s32::N));
+        uint32_t sgns(impl::get_signs_32(a(), v4s32::N));
         return sgns != 0x0f && sgns != 0;
 }
 
@@ -1300,12 +1300,12 @@ emuvec::v4u32::v4u32(v4u32::element_type r, bool broadcast)
 }
 
 emuvec::v4u32::v4u32(const mem::addr_bcast<element_type>& r)
-        : base_type(reinterpret_cast<const mem::addr_bcast<std::int32_t>&>(r))
+        : base_type(reinterpret_cast<const mem::addr_bcast<int32_t>&>(r))
 {
 }
 
 emuvec::v4u32::v4u32(const mem::addr<element_type>& r)
-        : base_type(reinterpret_cast<const mem::addr<std::int32_t>&>(r))
+        : base_type(reinterpret_cast<const mem::addr<int32_t>&>(r))
 {
 }
 
@@ -1335,7 +1335,7 @@ emuvec::v4u32& emuvec::v4u32::operator=(v4s32&& r)
 
 emuvec::v4u32& emuvec::v4u32::operator=(element_type r)
 {
-	base_type::operator=(std::int32_t(r));
+	base_type::operator=(int32_t(r));
         return *this;
 }
 
@@ -1980,19 +1980,19 @@ emuvec::v4f32 emuvec::operator> (const v4f32& a, const v4f32& b)
 
 bool emuvec::all_signs(const v4f32& a)
 {
-	std::uint32_t sgn(impl::get_signs_32(a(), v4f32::N));
+	uint32_t sgn(impl::get_signs_32(a(), v4f32::N));
 	return sgn == 0x0f;
 }
 
 bool emuvec::both_signs(const v4f32& a)
 {
-	std::uint32_t sgn(impl::get_signs_32(a(), v4f32::N));
+	uint32_t sgn(impl::get_signs_32(a(), v4f32::N));
 	return sgn != 0x0f && sgn != 0;
 }
 
 bool emuvec::no_signs(const v4f32& a)
 {
-	std::uint32_t sgn(impl::get_signs_32(a(), v4f32::N));
+	uint32_t sgn(impl::get_signs_32(a(), v4f32::N));
 	return sgn == 0;
 }
 
@@ -2382,20 +2382,20 @@ emuvec::v2f64 emuvec::operator> (const v2f64& a, const v2f64& b)
 
 bool emuvec::all_signs(const v2f64& a)
 {
-	std::uint32_t sgn(impl::get_signs_32(a(), v2f64::N));
+	uint32_t sgn(impl::get_signs_32(a(), v2f64::N));
 	return sgn == 0x03;
 }
 
 bool emuvec::both_signs(const v2f64& a)
 {
-	std::uint32_t sgn(impl::get_signs_32(a(), v2f64::N));
+	uint32_t sgn(impl::get_signs_32(a(), v2f64::N));
 	return sgn != 0x03 && sgn != 0;
 }
 
 
 bool emuvec::no_signs(const v2f64& a)
 {
-	std::uint32_t sgn(impl::get_signs_32(a(), v2f64::N));
+	uint32_t sgn(impl::get_signs_32(a(), v2f64::N));
 	return sgn == 0;
 }
 

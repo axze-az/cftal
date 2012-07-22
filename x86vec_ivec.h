@@ -37,7 +37,7 @@ namespace x86vec
 
         class v8s16 : public v128u1 {
         public:
-                typedef std::int16_t element_type;
+                typedef int16_t element_type;
                 typedef v128u1 base_type;
                 v8s16() = default;
                 v8s16(vector_type r);
@@ -64,19 +64,19 @@ namespace x86vec
         v8s16& operator/= (v8s16& a, const v8s16& b);
         v8s16& operator%= (v8s16& a, const v8s16& b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v8s16& operator<<= (v8s16& a, const const_u32<_P>& b);
-        v8s16& operator<<= (v8s16& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v8s16& operator<<= (v8s16& a, uint32_t b);
+        template <uint32_t _P>
         v8s16 operator <<(const v8s16& a, const const_u32<_P>& b);
-        v8s16 operator <<(const v8s16& a, std::uint32_t b);
+        v8s16 operator <<(const v8s16& a, uint32_t b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v8s16& operator>>= (v8s16& a, const_u32<_P>& b);
-        v8s16& operator>>= (v8s16& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v8s16& operator>>= (v8s16& a, uint32_t b);
+        template <uint32_t _P>
         v8s16 operator >>(const v8s16& a, const const_u32<_P>& b);
-        v8s16 operator >>(const v8s16& a, std::uint32_t b);
+        v8s16 operator >>(const v8s16& a, uint32_t b);
 
         v8s16 operator++ (v8s16& a, int);
         v8s16& operator++(v8s16& a);
@@ -141,7 +141,7 @@ namespace x86vec
 
         class v8u16 : public v8s16 {
         public:
-                typedef std::uint16_t element_type;
+                typedef uint16_t element_type;
                 typedef v8s16 base_type;
                 v8u16() = default;
                 v8u16(vector_type r);
@@ -167,19 +167,19 @@ namespace x86vec
         v8u16& operator/= (v8u16& a, const v8u16& b);
         v8u16& operator%= (v8u16& a, const v8u16& b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v8u16& operator<<= (v8u16& a, const const_u32<_P>& b);
-        v8u16& operator<<= (v8u16& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v8u16& operator<<= (v8u16& a, uint32_t b);
+        template <uint32_t _P>
         v8u16 operator <<(const v8u16& a, const const_u32<_P>& b);
-        v8u16 operator <<(const v8u16& a, std::uint32_t b);
+        v8u16 operator <<(const v8u16& a, uint32_t b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v8u16& operator>>= (v8u16& a, const_u32<_P>& b);
-        v8u16& operator>>= (v8u16& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v8u16& operator>>= (v8u16& a, uint32_t b);
+        template <uint32_t _P>
         v8u16 operator >>(const v8u16& a, const const_u32<_P>& b);
-        v8u16 operator >>(const v8u16& a, std::uint32_t b);
+        v8u16 operator >>(const v8u16& a, uint32_t b);
 
         v8u16 operator++ (v8u16& a, int);
         v8u16& operator++(v8u16& a);
@@ -236,7 +236,7 @@ namespace x86vec
 
         class v4s32 : public v128u1 {
         public:
-                typedef std::int32_t element_type;
+                typedef int32_t element_type;
                 typedef v128u1 base_type;
                 v4s32() = default;
                 v4s32(vector_type r);
@@ -261,19 +261,19 @@ namespace x86vec
         v4s32& operator/= (v4s32& a, const v4s32& b);
         v4s32& operator%= (v4s32& a, const v4s32& b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v4s32& operator<<= (v4s32& a, const const_u32<_P>& b);
-        v4s32& operator<<= (v4s32& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v4s32& operator<<= (v4s32& a, uint32_t b);
+        template <uint32_t _P>
         v4s32 operator <<(const v4s32& a, const const_u32<_P>& b);
-        v4s32 operator <<(const v4s32& a, std::uint32_t b);
+        v4s32 operator <<(const v4s32& a, uint32_t b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v4s32& operator>>= (v4s32& a, const_u32<_P>& b);
-        v4s32& operator>>= (v4s32& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v4s32& operator>>= (v4s32& a, uint32_t b);
+        template <uint32_t _P>
         v4s32 operator >>(const v4s32& a, const const_u32<_P>& b);
-        v4s32 operator >>(const v4s32& a, std::uint32_t b);
+        v4s32 operator >>(const v4s32& a, uint32_t b);
 
         v4s32 operator++ (v4s32& a, int);
         v4s32& operator++(v4s32& a);
@@ -336,7 +336,7 @@ namespace x86vec
 
         class v4u32 : public v4s32 {
         public:
-                typedef std::uint32_t element_type;
+                typedef uint32_t element_type;
                 typedef v4s32 base_type;
                 v4u32() = default;
                 v4u32(vector_type r);
@@ -360,19 +360,19 @@ namespace x86vec
         v4u32& operator/= (v4u32& a, const v4u32& b);
         v4u32& operator%= (v4u32& a, const v4u32& b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v4u32& operator<<= (v4u32& a, const const_u32<_P>& b);
-        v4u32& operator<<= (v4u32& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v4u32& operator<<= (v4u32& a, uint32_t b);
+        template <uint32_t _P>
         v4u32 operator <<(const v4u32& a, const const_u32<_P>& b);
-        v4u32 operator <<(const v4u32& a, std::uint32_t b);
+        v4u32 operator <<(const v4u32& a, uint32_t b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v4u32& operator>>= (v4u32& a, const_u32<_P>& b);
-        v4u32& operator>>= (v4u32& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v4u32& operator>>= (v4u32& a, uint32_t b);
+        template <uint32_t _P>
         v4u32 operator >>(const v4u32& a, const const_u32<_P>& b);
-        v4u32 operator >>(const v4u32& a, std::uint32_t b);
+        v4u32 operator >>(const v4u32& a, uint32_t b);
 
         v4u32 operator++ (v4u32& a, int);
         v4u32& operator++(v4u32& a);
@@ -426,7 +426,7 @@ namespace x86vec
 
         class v2s64 : public v128u1 {
         public:
-                typedef std::int64_t element_type;
+                typedef int64_t element_type;
                 typedef v128u1 base_type;
                 v2s64() = default;
                 v2s64(vector_type r);
@@ -450,19 +450,19 @@ namespace x86vec
         v2s64& operator/= (v2s64& a, const v2s64& b);
         v2s64& operator%= (v2s64& a, const v2s64& b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v2s64& operator<<= (v2s64& a, const const_u32<_P>& b);
-        v2s64& operator<<= (v2s64& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v2s64& operator<<= (v2s64& a, uint32_t b);
+        template <uint32_t _P>
         v2s64 operator <<(const v2s64& a, const const_u32<_P>& b);
-        v2s64 operator <<(const v2s64& a, std::uint32_t b);
+        v2s64 operator <<(const v2s64& a, uint32_t b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v2s64& operator>>= (v2s64& a, const_u32<_P>& b);
-        v2s64& operator>>= (v2s64& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v2s64& operator>>= (v2s64& a, uint32_t b);
+        template <uint32_t _P>
         v2s64 operator >>(const v2s64& a, const const_u32<_P>& b);
-        v2s64 operator >>(const v2s64& a, std::uint32_t b);
+        v2s64 operator >>(const v2s64& a, uint32_t b);
 
         v2s64 operator++ (v2s64& a, int);
         v2s64& operator++(v2s64& a);
@@ -524,7 +524,7 @@ namespace x86vec
 
         class v2u64 : public v2s64 {
         public:
-                typedef std::uint64_t element_type;
+                typedef uint64_t element_type;
                 typedef v2s64 base_type;
                 v2u64() = default;
                 v2u64(vector_type r);
@@ -547,19 +547,19 @@ namespace x86vec
         v2u64& operator/= (v2u64& a, const v2u64& b);
         v2u64& operator%= (v2u64& a, const v2u64& b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v2u64& operator<<= (v2u64& a, const const_u32<_P>& b);
-        v2u64& operator<<= (v2u64& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v2u64& operator<<= (v2u64& a, uint32_t b);
+        template <uint32_t _P>
         v2u64 operator <<(const v2u64& a, const const_u32<_P>& b);
-        v2u64 operator <<(const v2u64& a, std::uint32_t b);
+        v2u64 operator <<(const v2u64& a, uint32_t b);
 
-        template <std::uint32_t _P>
+        template <uint32_t _P>
         v2u64& operator>>= (v2u64& a, const_u32<_P>& b);
-        v2u64& operator>>= (v2u64& a, std::uint32_t b);
-        template <std::uint32_t _P>
+        v2u64& operator>>= (v2u64& a, uint32_t b);
+        template <uint32_t _P>
         v2u64 operator >>(const v2u64& a, const const_u32<_P>& b);
-        v2u64 operator >>(const v2u64& a, std::uint32_t b);
+        v2u64 operator >>(const v2u64& a, uint32_t b);
 
         v2u64 operator++ (v2u64& a, int);
         v2u64& operator++(v2u64& a);

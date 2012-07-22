@@ -131,12 +131,12 @@ namespace x86vec {
 
 		typedef vec_pr<__m128d, double, 2> pr_v2d;
 		typedef vec_pr<__m128, float, 4> pr_v4f;
-		typedef vec_pr<__m128i, std::int16_t, 8> pr_v8s16;
-		typedef vec_pr<__m128i, std::uint16_t, 8> pr_v8u16;
-		typedef vec_pr<__m128i, std::int32_t, 4> pr_v4s32;
-		typedef vec_pr<__m128i, std::uint32_t, 4> pr_v4u32;
-		typedef vec_pr<__m128i, std::int64_t, 2> pr_v2s64;
-		typedef vec_pr<__m128i, std::uint64_t, 2> pr_v2u64;
+		typedef vec_pr<__m128i, int16_t, 8> pr_v8s16;
+		typedef vec_pr<__m128i, uint16_t, 8> pr_v8u16;
+		typedef vec_pr<__m128i, int32_t, 4> pr_v4s32;
+		typedef vec_pr<__m128i, uint32_t, 4> pr_v4u32;
+		typedef vec_pr<__m128i, int64_t, 2> pr_v2s64;
+		typedef vec_pr<__m128i, uint64_t, 2> pr_v2u64;
 
 		class idx {
 			std::array<int,8> _v;

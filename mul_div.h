@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/bitops.h>
+#include <utility>
 #include <type_traits>
 
 namespace cftal {
@@ -129,74 +130,74 @@ namespace cftal {
 
 		// specialisations for standard types.
 		template <>
-		struct wide_umul<std::uint8_t> {
-			std::pair<std::uint8_t, std::uint8_t>
-			operator()(const std::uint8_t a, const std::uint8_t b)
+		struct wide_umul<uint8_t> {
+			std::pair<uint8_t, uint8_t>
+			operator()(const uint8_t a, const uint8_t b)
 				const {
-				std::uint16_t p(std::uint16_t(a)*b);
-				std::uint8_t l(p);
-				std::uint8_t h(p>>8);
+				uint16_t p(uint16_t(a)*b);
+				uint8_t l(p);
+				uint8_t h(p>>8);
 				return std::make_pair(l, h);
 			}
 		};
 		
 		template <>
-		struct wide_umul<std::uint16_t> {
-			std::pair<std::uint16_t, std::uint16_t>
-			operator()(const std::uint16_t a, const std::uint16_t b)
+		struct wide_umul<uint16_t> {
+			std::pair<uint16_t, uint16_t>
+			operator()(const uint16_t a, const uint16_t b)
 				const {
-				std::uint32_t p(std::uint32_t(a)*b);
-				std::uint16_t l(p);
-				std::uint16_t h(p>>16);
+				uint32_t p(uint32_t(a)*b);
+				uint16_t l(p);
+				uint16_t h(p>>16);
 				return std::make_pair(l, h);
 			}
 		};
 
 		template <>
-		struct wide_umul<std::uint32_t> {
-			std::pair<std::uint32_t, std::uint32_t>
-			operator()(const std::uint32_t a, const std::uint32_t b)
+		struct wide_umul<uint32_t> {
+			std::pair<uint32_t, uint32_t>
+			operator()(const uint32_t a, const uint32_t b)
 				const {
-				std::uint64_t p(std::uint64_t(a)*b);
-				std::uint32_t l(p);
-				std::uint32_t h(p>>32);
+				uint64_t p(uint64_t(a)*b);
+				uint32_t l(p);
+				uint32_t h(p>>32);
 				return std::make_pair(l, h);
 			}
 		};
 
 		// specialisations for standard types.
 		template <>
-		struct wide_smul<std::int8_t> {
-			std::pair<std::int8_t, std::int8_t>
-			operator()(const std::int8_t a, const std::int8_t b)
+		struct wide_smul<int8_t> {
+			std::pair<int8_t, int8_t>
+			operator()(const int8_t a, const int8_t b)
 				const {
-				std::int16_t p(std::int16_t(a)*b);
-				std::int8_t l(p);
-				std::int8_t h(p>>8);
+				int16_t p(int16_t(a)*b);
+				int8_t l(p);
+				int8_t h(p>>8);
 				return std::make_pair(l, h);
 			}
 		};
 		
 		template <>
-		struct wide_smul<std::int16_t> {
-			std::pair<std::int16_t, std::int16_t>
-			operator()(const std::int16_t a, const std::int16_t b)
+		struct wide_smul<int16_t> {
+			std::pair<int16_t, int16_t>
+			operator()(const int16_t a, const int16_t b)
 				const {
-				std::int32_t p(std::int32_t(a)*b);
-				std::int16_t l(p);
-				std::int16_t h(p>>16);
+				int32_t p(int32_t(a)*b);
+				int16_t l(p);
+				int16_t h(p>>16);
 				return std::make_pair(l, h);
 			}
 		};
 
 		template <>
-		struct wide_smul<std::int32_t> {
-			std::pair<std::int32_t, std::int32_t>
-			operator()(const std::int32_t a, const std::int32_t b)
+		struct wide_smul<int32_t> {
+			std::pair<int32_t, int32_t>
+			operator()(const int32_t a, const int32_t b)
 				const {
-				std::int64_t p(std::int64_t(a)*b);
-				std::int32_t l(p);
-				std::int32_t h(p>>32);
+				int64_t p(int64_t(a)*b);
+				int32_t l(p);
+				int32_t h(p>>32);
 				return std::make_pair(l, h);
 			}
 		};

@@ -34,53 +34,53 @@ namespace cftal {
 
 		// unsigned vector div 16
 		template <>
-		struct udiv_traits<x86vec::v8u16, std::uint16_t>
+		struct udiv_traits<x86vec::v8u16, uint16_t>
 			: public x86vec::impl::vdiv16_traits {};
 		// signed vector div 16
 		template <>
-		struct sdiv_traits<x86vec::v8s16, std::int16_t>
+		struct sdiv_traits<x86vec::v8s16, int16_t>
 			: public x86vec::impl::vdiv16_traits {};
 
 		// unsigned vector div 32
 		template <>
-		struct udiv_traits<x86vec::v4u32, std::uint32_t>
+		struct udiv_traits<x86vec::v4u32, uint32_t>
 			: public x86vec::impl::vdiv32_traits {};
 
 		// signed vector div 32
 		template <>
-		struct sdiv_traits<x86vec::v4s32, std::int32_t>
+		struct sdiv_traits<x86vec::v4s32, int32_t>
 			: public x86vec::impl::vdiv32_traits {};
 	}
 
 	template <>
-	class divisor<x86vec::v8s16, std::int16_t>
-		: public impl::sdiv<x86vec::v8s16, std::int16_t> {
-	public:
-		divisor(std::int16_t d) :
-			impl::sdiv<x86vec::v8s16, std::int16_t>(d) {}
-	};
-
-	template <>
-	class divisor<x86vec::v8u16, std::uint16_t>
-		: public impl::udiv<x86vec::v8u16, std::uint16_t> {
+	class divisor<x86vec::v8s16, int16_t>
+		: public impl::sdiv<x86vec::v8s16, int16_t> {
 	public:
 		divisor(int16_t d) :
-			impl::udiv<x86vec::v8u16, std::uint16_t>(d) {}
+			impl::sdiv<x86vec::v8s16, int16_t>(d) {}
 	};
 
 	template <>
-	class divisor<x86vec::v4s32, std::int32_t>
-		: public impl::sdiv<x86vec::v4s32, std::int32_t> {
+	class divisor<x86vec::v8u16, uint16_t>
+		: public impl::udiv<x86vec::v8u16, uint16_t> {
 	public:
-		divisor(std::int32_t d) :
-			impl::sdiv<x86vec::v4s32, std::int32_t>(d) {}
+		divisor(int16_t d) :
+			impl::udiv<x86vec::v8u16, uint16_t>(d) {}
+	};
+
+	template <>
+	class divisor<x86vec::v4s32, int32_t>
+		: public impl::sdiv<x86vec::v4s32, int32_t> {
+	public:
+		divisor(int32_t d) :
+			impl::sdiv<x86vec::v4s32, int32_t>(d) {}
 	};
 	template <>
-	class divisor<x86vec::v4u32, std::uint32_t>
-		: public impl::udiv<x86vec::v4u32, std::uint32_t> {
+	class divisor<x86vec::v4u32, uint32_t>
+		: public impl::udiv<x86vec::v4u32, uint32_t> {
 	public:
-		divisor(std::uint32_t d) :
-			impl::udiv<x86vec::v4u32, std::uint32_t>(d) {}
+		divisor(uint32_t d) :
+			impl::udiv<x86vec::v4u32, uint32_t>(d) {}
 	};
 }
 
