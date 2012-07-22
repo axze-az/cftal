@@ -440,7 +440,7 @@ x86vec::wide_mul(const v4s32& x, const v4s32& y)
 	// p0h p1h p2h p3h
 	v4s32 h = permute<2, 3, 6, 7>(t0, t1);
 	v4s32 l = permute<0, 1, 4, 5>(t0, t1);
-	return std::make_pair(h, l);
+	return std::make_pair(l, h);
 #else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
@@ -449,9 +449,9 @@ x86vec::wide_mul(const v4s32& x, const v4s32& y)
 	v4s32 xsgn_x= x >> const_shift::_31;
 	v4s32 x_and_xsgn_y = x & xsgn_y;
 	v4s32 y_and_xsgn_x = y & xsgn_x;
-	v4s32 sh = v4s32(ur.first) - x_and_xsgn_y - y_and_xsgn_x;
-	v4s32 sl = v4s32(ur.second);
-	return std::make_pair(sh, sl);
+	v4s32 sh = v4s32(ur.second) - x_and_xsgn_y - y_and_xsgn_x;
+	v4s32 sl = v4s32(ur.first);
+	return std::make_pair(sl, sh);
 #endif
 }
 

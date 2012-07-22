@@ -3,7 +3,7 @@
 #include "divisor.h"
 #include "x86vec_test.h"
 #include "bitops.h"
-
+#include <iomanip>
 
 #if 0
 void check_float()
@@ -118,28 +118,67 @@ x86vec::v4s32 mulsh(x86vec::v4s32 a, x86vec::v4s32 b)
         return mulh(a, b);
 }
 
-void check_div(std::uint64_t u, std::uint32_t v)
+void check_div_8(std::uint16_t ul, std::uint8_t v)
 {
-	cftal::impl::udiv_2by1<std::uint32_t> udiv;
-	std::uint32_t q= std::uint32_t(u/v);
-	std::uint32_t q0 = udiv(u>>32, u, v, nullptr);
-	std::cout << u << " / " << v << " = " 
-		  << q0 << " --> " << q << std::endl;
+	using namespace cftal;
+	typedef impl::udiv_2by1<std::uint8_t> div_type;
+
+	std::pair<std::uint8_t, std::uint8_t> pq(
+		div_type::d(ul, ul>>8, v, nullptr));
+	std::uint16_t q((std::uint16_t(pq.second)<<8) |	pq.first);
+	std::uint16_t q_ref = ul/v;
+	if (q != q_ref) {
+		std::cout << ul << " / " << std::uint16_t(v) << " = " << q
+			  << " != " << q_ref << std::endl;
+		std::exit(3);
+	}
 }
 
-void check_div()
+void check_div_8()
 {
-	// check_div(8442693793014087680, 2329249466);
-	check_div(0x100000000, 0xffffffff);
+	for (int u=0x0; u< 0x10000; ++u) {
+		if ((u & 0xFF) == 0xFF) {
+			std::cout << u <<  '\r' << std::flush;
+		}
+		for (int v=1; v< 0x100; ++v) {
+			check_div_8(u, v);
+		}
+	}
 }
 
-void check_div2()
+void check_div_16(std::uint16_t u, std::uint16_t v)
 {
+	typedef cftal::duint<std::uint8_t> v_t;
+	v_t vu(u, u>>8), vv(v, v>>8);
+	v_t vq(vu / vv);
+	std::uint16_t q((std::uint16_t(vq.h()) <<8) | vq.l());
+	std::uint16_t q_ref = u/v;
+	if (q != q_ref) {
+		std::cout << u << " / " << std::uint16_t(v) << " = " << q
+			  << " != " << q_ref << std::endl;
+		std::exit(3);
+	}
+}
+
+void check_div_16()
+{
+#if 1
+	check_div_16(258, 257);
+#else
+	for (int u=0x0; u< 0x10000; ++u) {
+		if ((u & 0xFF) == 0xFF) {
+			std::cout << u <<  '\r' << std::flush;
+		}
+		for (int v=1; v< 0x10000; ++v) {
+			check_div_16(u, v);
+		}
+	}
+#endif
 }
 
 
 int main(int argc, char** argv)
 {
-        check_div();
+        check_div_16();
         return 0;
 }

@@ -434,7 +434,7 @@ x86vec::v2s64 x86vec::abs(const v2s64& a)
 inline
 x86vec::v2s64 x86vec::mulh(const v2s64& x, const v2s64& y)
 {
-	return wide_mul(x, y).first;
+	return wide_mul(x, y).second;
 }
 
 inline
@@ -448,9 +448,9 @@ x86vec::wide_mul(const v2s64& x, const v2s64& y)
 	v2s64 xsgn_x= x >> const_shift::_63;
 	v2s64 x_and_xsgn_y = x & xsgn_y;
 	v2s64 y_and_xsgn_x = y & xsgn_x;
-	v2s64 ph= v2s64(ur.first) - x_and_xsgn_y - y_and_xsgn_x;
-	v2s64 pl= v2s64(ur.second);
-	return std::make_pair(ph, pl);
+	v2s64 ph= v2s64(ur.second) - x_and_xsgn_y - y_and_xsgn_x;
+	v2s64 pl= v2s64(ur.first);
+	return std::make_pair(pl, ph);
 }
 
 template < bool _P0, bool _P1>

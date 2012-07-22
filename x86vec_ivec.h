@@ -118,7 +118,7 @@ namespace x86vec
         v8s16 min(const v8s16& a, const v8s16& b);
         v8s16 abs(const v8s16& a);
 	v8s16 mulh(const v8s16& a, const v8s16& b);
-	// high part in first, low part in second
+	// low part in first, high part in second
 	std::pair<v8s16, v8s16> wide_mul(const v8s16& a, const v8s16& b);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3,
@@ -213,7 +213,7 @@ namespace x86vec
         v8u16 max(const v8u16& a, const v8u16& b);
         v8u16 min(const v8u16& a, const v8u16& b);
 	v8u16 mulh(const v8u16& a, const v8u16& b);
-	// high part in first, low part in second
+	// low part in first, high part in second
 	std::pair<v8u16, v8u16> wide_mul(const v8u16& a, const v8u16& b);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3,
@@ -315,7 +315,7 @@ namespace x86vec
         v4s32 min(const v4s32& a, const v4s32& b);
         v4s32 abs(const v4s32& a);
 	v4s32 mulh(const v4s32& a, const v4s32& b);
-	// high part in first, low part in second
+	// low part in first, high part in second
 	std::pair<v4s32, v4s32> wide_mul(const v4s32& a, const v4s32& b);
 	
 
@@ -406,7 +406,7 @@ namespace x86vec
         v4u32 max(const v4u32& a, const v4u32& b);
         v4u32 min(const v4u32& a, const v4u32& b);
 	v4u32 mulh(const v4u32& a, const v4u32& b);
-	// high part in first, low part in second
+	// low part in first, high part in second
 	std::pair<v4u32, v4u32> wide_mul(const v4u32& a, const v4u32& b);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3 >
@@ -504,7 +504,7 @@ namespace x86vec
         v2s64 min(const v2s64& a, const v2s64& b);
         v2s64 abs(const v2s64& a);
 	v2s64 mulh(const v2s64& a, const v2s64& b);
-	// high part in first, low part in second
+	// low part in first, high part in second
 	std::pair<v2s64, v2s64> wide_mul(const v2s64& a, const v2s64& b);
 
         template < bool _P0, bool _P1>
@@ -593,7 +593,7 @@ namespace x86vec
         v2u64 max(const v2u64& a, const v2u64& b);
         v2u64 min(const v2u64& a, const v2u64& b);
 	v2u64 mulh(const v2u64& a, const v2u64& b);
-	// high part in first, low part in second
+	// low part in first, high part in second
 	std::pair<v2u64, v2u64> wide_mul(const v2u64& a, const v2u64& b);
 
         template < bool _P0, bool _P1>

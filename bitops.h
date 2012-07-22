@@ -27,6 +27,7 @@ namespace cftal {
 	std::uint32_t bitrev(std::uint32_t x);
 	std::uint64_t bitrev(std::uint64_t x);
 
+	unsigned lzcnt(std::uint8_t x);
 	unsigned lzcnt(std::uint16_t x);
 	unsigned lzcnt(std::uint32_t x);
 	unsigned lzcnt(std::uint64_t x);
@@ -197,6 +198,12 @@ std::uint64_t cftal::bitrev(std::uint64_t x)
 	// swap 4-byte elements
 	x = ((x >>32)        ) | ( x          <<32);
 	return x;
+}
+
+inline
+unsigned cftal::lzcnt(std::uint8_t x)
+{
+	return lzcnt(std::uint32_t(x))-24;
 }
 
 inline

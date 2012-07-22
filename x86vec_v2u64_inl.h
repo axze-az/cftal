@@ -410,7 +410,7 @@ x86vec::v2u64 x86vec::min(const v2u64& a, const v2u64& b)
 inline
 x86vec::v2u64 x86vec::mulh(const v2u64& x, const v2u64& y)
 {
-	return wide_mul(x, y).first;
+	return wide_mul(x, y).second;
 }
 
 inline
@@ -441,7 +441,7 @@ x86vec::wide_mul(const v2u64& x, const v2u64& y)
 	xh_yh -= neg_carry_64;
 	// high part of the multiplication:
 	xh_yh += s64_96;
-	return std::make_pair(xh_yh, xl_yl);
+	return std::make_pair(xl_yl, xh_yh);
 }
 
 

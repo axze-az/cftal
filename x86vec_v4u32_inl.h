@@ -413,7 +413,7 @@ x86vec::wide_mul(const v4u32& x, const v4u32& y)
 	// p0h p1h p2h p3h
 	v4u32 h = permute<2, 3, 6, 7>(t0, t1);
 	v4u32 l = permute<0, 1, 4, 5>(t0, t1);
-	return std::make_pair(h, l);
+	return std::make_pair(l, h);
 }
 
 
