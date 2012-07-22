@@ -611,8 +611,6 @@ namespace x86vec
 	template <unsigned _I>
 	typename v2u64::element_type extract(const v2u64& a);
 
-	//std::pair<v4s32, v4s32> mul(const v8s16& x, const v8u16& y);
-	// std::pair<v4u32, v4u32> mul(const v8u16& x, const v8u16& y);
 }
 
 namespace std {
