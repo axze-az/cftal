@@ -295,13 +295,12 @@ cftal::duint<_T> cftal::operator*(const duint<_T>& a, const duint<_T>& b)
 	typedef std::pair<type, type> pair_type;
 	// [2^ 0, 2^N2 )
 	pair_type al_bl(wide_mul(a.l(), b.l()));
-	// [2^(N2/2),  2^(N2*3/2) )
-	pair_type al_bh(wide_mul(a.l(), b.h()));
-	pair_type ah_bl(wide_mul(a.h(), b.l()));
-	// [2^N2, 2^N ) would be wide_mul(a.h(), b.h())
+	// [2^(N2/2),  2^(N2*2/2) )
+	type al_bh(a.l() * b.h());
+	type ah_bl(a.h() * b.l());
 	// shift al_bh and ah_bl right by 2^(N2/2)
-	duint<_T> s20(0, al_bh.first);
-	duint<_T> s21(0, ah_bl.first);
+	duint<_T> s20(0, al_bh);
+	duint<_T> s21(0, ah_bl);
 	duint<_T> s0(al_bl.first, al_bl.second);
 	duint<_T> r= s0 + s20 + s21;
 	return r;
@@ -313,6 +312,20 @@ cftal::duint<_T> cftal::operator/(const duint<_T>& a, const _T& b)
 	typedef impl::udiv_2by1<_T, _T> div_type;
 	std::pair<_T, _T> pq(div_type::d(a.l(), a.h(), b, nullptr));
 	duint<_T> q(pq.first, pq.second);
+#if 0
+	std::cout << std::hex
+		  << std::uint64_t(a.h()) 
+		  << " : " 
+		  << std::uint64_t(a.l()) 
+		  << " / "
+		  << std::uint64_t(b)
+		  << " = "
+		  << std::uint64_t(q.h())
+		  << " : "
+		  << std::uint64_t(q.l())
+		  << std::dec
+		  << std::endl;
+#endif
 	return q;
 }
 

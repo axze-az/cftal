@@ -3,6 +3,7 @@
 #include "divisor.h"
 #include "x86vec_test.h"
 #include "bitops.h"
+#include <functional>
 #include <iomanip>
 
 #if 0
@@ -146,6 +147,108 @@ void check_div_8()
 	}
 }
 
+namespace cftal {
+
+	namespace test {
+
+		template <class _RES>
+		void check_res(uint16_t u, uint16_t v, 
+			       _RES res, _RES ref_res,
+			       const char* msg) 
+		{
+			if (res != ref_res) {
+				std::cout << std::hex
+					  << u << ' ' << msg << ' ' 
+					  << v << " = "
+					  << res << " != (expected:) "
+					  << ref_res
+					  << std::dec
+					  << std::endl;
+				std::exit(3);
+			}
+		}
+
+		template <template <class _U> class _OP>
+		void check_bi_op(uint16_t u, uint16_t v, const char* msg)
+		{
+			
+			duint<uint8_t> uu(u, u>>8);
+			duint<uint8_t> vv(v, v>>8);
+			_OP<uint16_t> op1;
+			uint16_t r(op1(u, v));
+			_OP<duint<uint8_t> > op2;
+			duint<uint8_t> rr(op2(uu, vv));
+			uint16_t res((uint16_t(rr.h())<<8)|rr.l());
+			check_res(u, v, res, r, msg);
+		}
+
+		template <template <class _U> class _OP>
+		void check_bi_op(const char* msg, uint32_t v0=0) 
+		{
+			for (uint32_t u=0; u<0x10000; ++u) {
+				std::uint16_t tu= u;
+				if (0x3FF==(u & 0x3FF)) {
+					std::cout << msg << ' ' <<  u << '\r'
+						  << std::flush;
+				}
+				for (uint32_t v=v0; v<0x10000; ++v) {
+					std::uint16_t tv=v;
+					check_bi_op<_OP>(tu, tv, msg);
+				}
+			}
+			std::cout << msg << " passed\n";
+		}
+
+		template <template <class _U> class _OP>
+		void check_cmp_op(uint16_t u, uint16_t v, const char* msg)
+		{
+			duint<uint8_t> uu(u, u>>8);
+			duint<uint8_t> vv(v, v>>8);
+			_OP<uint16_t> op1;
+			bool r(op1(u, v));
+			_OP<duint<uint8_t> > op2;
+			bool res(op2(uu, vv));
+			check_res(u, v, res, r, msg);
+		}
+
+		template <template <class _U> class _OP>
+		void check_cmp_op(const char* msg, uint32_t v0=0) 
+		{
+			for (uint32_t u=0; u<0x10000; ++u) {
+				std::uint16_t tu= u;
+				if (0x3FF==(u & 0x3FF)) {
+					std::cout << msg << ' ' <<  u << '\r'
+						  << std::flush;
+				}
+				for (uint32_t v=v0; v<0x10000; ++v) {
+					std::uint16_t tv=v;
+					check_cmp_op<_OP>(tu, tv, msg);
+				}
+			}
+			std::cout << msg << " passed\n";
+		}
+
+		
+		void check_duint_ops()
+		{
+			check_bi_op<std::plus>("add");
+			check_bi_op<std::minus>("sub");
+			check_bi_op<std::multiplies>("mul");
+
+			check_cmp_op<std::less>("<");
+			check_cmp_op<std::less_equal>("<=");
+			check_cmp_op<std::equal_to>("==");
+			check_cmp_op<std::not_equal_to>("!=");
+			check_cmp_op<std::greater_equal>(">=");
+			check_cmp_op<std::greater>(">");
+
+			check_bi_op<std::divides>("div", 1);
+		}
+
+	}
+}
+
+
 void check_div_16(uint16_t u, uint16_t v)
 {
 	typedef cftal::duint<uint8_t> v_t;
@@ -179,6 +282,7 @@ void check_div_16()
 
 int main(int argc, char** argv)
 {
-        check_div_16();
+        // check_div_16();
+	cftal::test::check_duint_ops();
         return 0;
 }
