@@ -38,7 +38,7 @@ namespace cftal {
                 void h(const type& v) { 
 			_h = v; 
 		}
-		operator _T() const {
+		explicit operator _T() const {
 			return _l;
 		}
         private:
@@ -57,16 +57,45 @@ namespace cftal {
         template <typename _T>
         duint<_T> operator|(const duint<_T>& a, const duint<_T>& b);
         template <typename _T>
+        duint<_T> operator|(const duint<_T>& a, const _T& b);
+        template <typename _T>
+        duint<_T> operator|(const _T& a, const duint<_T>& b);
+
+        template <typename _T>
         duint<_T> operator&(const duint<_T>& a, const duint<_T>& b);
         template <typename _T>
+        duint<_T> operator&(const duint<_T>& a, const _T& b);
+        template <typename _T>
+        duint<_T> operator&(const _T& a, const duint<_T>& b);
+
+        template <typename _T>
         duint<_T> operator^(const duint<_T>& a, const duint<_T>& b);
+        template <typename _T>
+        duint<_T> operator^(const duint<_T>& a, const _T& b);
+        template <typename _T>
+        duint<_T> operator^(const _T& a, const duint<_T>& b);
 
         template <typename _T>
         duint<_T> operator+(const duint<_T>& a, const duint<_T>& b);
         template <typename _T>
+        duint<_T> operator+(const duint<_T>& a, const _T& b);
+        template <typename _T>
+        duint<_T> operator+(const _T& a, const duint<_T>& b);
+
+        template <typename _T>
         duint<_T> operator-(const duint<_T>& a, const duint<_T>& b);
         template <typename _T>
+        duint<_T> operator-(const duint<_T>& a, const _T& b);
+        template <typename _T>
+        duint<_T> operator-(const _T& a, const duint<_T>& b);
+
+        template <typename _T>
         duint<_T> operator*(const duint<_T>& a, const duint<_T>& b);
+        template <typename _T>
+        duint<_T> operator*(const duint<_T>& a, const _T& b);
+        template <typename _T>
+        duint<_T> operator*(const _T& a, const duint<_T>& b);
+
         template <typename _T>
         duint<_T> operator/(const duint<_T>& a, const _T& b);
         template <typename _T>
@@ -243,7 +272,7 @@ cftal::duint<_T> cftal::operator~(const duint<_T>& a)
 template <typename _T>
 cftal::duint<_T> cftal::operator-(const duint<_T>& a)
 {
-	return duint<_T>(0) - a;
+	return _T(0) - a;
 }
 
 template <typename _T>
@@ -255,11 +284,39 @@ cftal::duint<_T> cftal::operator|(const duint<_T>& a, const duint<_T>& b)
 }
 
 template <typename _T>
+cftal::duint<_T> cftal::operator|(const duint<_T>& a, const _T& b)
+{
+	typename duint<_T>::type rl= a.l() | b;
+	typename duint<_T>::type rh= a.h();
+	return duint<_T>(rl, rh);
+}
+
+template <typename _T>
+cftal::duint<_T> cftal::operator|(const _T& a, const duint<_T>& b)
+{
+	return b | a;
+}
+
+template <typename _T>
 cftal::duint<_T> cftal::operator&(const duint<_T>& a, const duint<_T>& b)
 {
 	typename duint<_T>::type rl= a.l() & b.l();
 	typename duint<_T>::type rh= a.h() & b.h();
 	return duint<_T>(rl, rh);
+}
+
+template <typename _T>
+cftal::duint<_T> cftal::operator&(const duint<_T>& a, const _T& b)
+{
+	typename duint<_T>::type rl= a.l() & b;
+	typename duint<_T>::type rh= 0;
+	return duint<_T>(rl, rh);
+}
+
+template <typename _T>
+cftal::duint<_T> cftal::operator&(const _T& a, const duint<_T>& b)
+{
+	return b & a;
 }
 
 template <typename _T>
@@ -271,6 +328,21 @@ cftal::duint<_T> cftal::operator^(const duint<_T>& a, const duint<_T>& b)
 }
 
 template <typename _T>
+cftal::duint<_T> cftal::operator^(const duint<_T>& a, const _T& b)
+{
+	typename duint<_T>::type rl= a.l() ^ b;
+	typename duint<_T>::type rh= a.h() ^ 0;
+	return duint<_T>(rl, rh);
+}
+
+template <typename _T>
+cftal::duint<_T> cftal::operator^(const _T& a, const duint<_T>& b)
+{
+	return b ^ a;
+}
+
+
+template <typename _T>
 cftal::duint<_T> cftal::operator+(const duint<_T>& a, const duint<_T>& b)
 {
 	typename duint<_T>::type rl= a.l() + b.l();
@@ -280,11 +352,44 @@ cftal::duint<_T> cftal::operator+(const duint<_T>& a, const duint<_T>& b)
 }
 
 template <typename _T>
+cftal::duint<_T> cftal::operator+(const duint<_T>& a, const _T& b)
+{
+	typename duint<_T>::type rl= a.l() + b;
+	typename duint<_T>::type rh= a.h();
+	rh += (rl < a.l() ? _T(1) : _T(0));
+	return duint<_T>(rl, rh);
+}
+
+template <typename _T>
+cftal::duint<_T> cftal::operator+(const _T& a, const duint<_T>& b)
+{
+	return b+a;
+}
+
+template <typename _T>
 cftal::duint<_T> cftal::operator-(const duint<_T>& a, const duint<_T>& b)
 {
 	typename duint<_T>::type rl= a.l() - b.l();
 	typename duint<_T>::type rh= a.h() - b.h();
 	rh -= (a.l() < b.l() ? _T(1) : _T(0));
+	return duint<_T>(rl, rh);
+}
+
+template <typename _T>
+cftal::duint<_T> cftal::operator-(const duint<_T>& a, const _T& b)
+{
+	typename duint<_T>::type rl= a.l() - b;
+	typename duint<_T>::type rh= a.h();
+	rh -= (a.l() < b ? _T(1) : _T(0));
+	return duint<_T>(rl, rh);
+}
+
+template <typename _T>
+cftal::duint<_T> cftal::operator-(const _T& a, const duint<_T>& b)
+{
+	typename duint<_T>::type rl= a - b.l();
+	typename duint<_T>::type rh= -b.h();
+	rh -= (a < b.l() ? _T(1) : _T(0));
 	return duint<_T>(rl, rh);
 }
 
@@ -304,6 +409,28 @@ cftal::duint<_T> cftal::operator*(const duint<_T>& a, const duint<_T>& b)
 	duint<_T> s0(al_bl.first, al_bl.second);
 	duint<_T> r= s0 + s20 + s21;
 	return r;
+}
+
+template <typename _T>
+cftal::duint<_T> cftal::operator*(const duint<_T>& a, const _T& b)
+{
+	typedef typename duint<_T>::type type;
+	typedef std::pair<type, type> pair_type;
+	// [2^ 0, 2^N2 )
+	pair_type al_b(wide_mul(a.l(), b));
+	// [2^(N2/2),  2^(N2*2/2) )
+	type ah_b(a.h() * b);
+	// shift al_bh and ah_bl right by 2^(N2/2)
+	duint<_T> s21(0, ah_b);
+	duint<_T> s0(al_b.first, al_b.second);
+	duint<_T> r= s0 + s21;
+	return r;
+}
+
+template <typename _T>
+cftal::duint<_T> cftal::operator*(const _T& a, const duint<_T>& b)
+{
+	return b* a;
 }
 
 template <typename _T>
@@ -583,12 +710,14 @@ g(const _U& ul, const _U& uh, const _U& cv, _U* r)
                 // Normalize divisor.
                 v = v << s;
         }
-        vn1 = v >> N2;       // Break divisor up into
-        vn0 = v & N2MSK;     // two half digits
+        vn1 = _UHALF(v >> N2);       // Break divisor up into
+	vn0 = _UHALF(v & N2MSK);     // two half digits
 
         if (s>0) {
                 // Shift dividend left.
-                un32 = (uh << s) | ((ul >> (N - s)) & (-_U(s) >> (N-1)));
+		unsigned sr= N-s;
+		_U un32_lb= ul >> sr;
+		un32 = (uh << s) | un32_lb;
                 un10 = ul << s;
         } else {
                 un32 = uh;
@@ -603,7 +732,7 @@ g(const _U& ul, const _U& uh, const _U& cv, _U* r)
         rhat = un32 - q1*vn1;     // quotient digit, q1.
 
         while (q1 >= b || q1*vn0 > b*rhat + un1) {
-                q1 = q1 - 1;
+                q1 = q1 - _UHALF(1);
                 rhat = rhat + vn1;
                 if (rhat >= b)
                         break;
@@ -615,7 +744,7 @@ g(const _U& ul, const _U& uh, const _U& cv, _U* r)
         rhat = un21 - q0*vn1;     // quotient digit, q0.
 
         while (q0 >= b || q0*vn0 > b*rhat + un0) {
-                q0 = q0 - 1;
+                q0 = q0 - _UHALF(1);
                 rhat = rhat + vn1;
                 if (rhat >= b)
                         break;

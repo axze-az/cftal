@@ -151,6 +151,35 @@ namespace cftal {
 
 	namespace test {
 
+		template <class _T>
+		struct div_half {
+		};
+
+		template <>
+		struct div_half<uint16_t> 
+			: public std::binary_function<uint16_t, 
+						      uint16_t, 
+						      uint16_t> {
+			uint16_t operator()(uint16_t a, uint16_t b) 
+				const {
+				return a / (b & 0xFF);
+			}
+		};
+		
+		template <>
+		struct div_half<duint<uint8_t> > 
+			: public std::binary_function<duint<uint8_t>,
+						      duint<uint8_t>,
+						      duint<uint8_t> > {
+			duint<uint8_t> operator()(const duint<uint8_t>& a,
+						  const duint<uint8_t>& b)
+				const {
+				const uint8_t& l= b.l();
+				return a / l;
+			}
+		};
+
+
 		template <class _RES>
 		void check_res(uint16_t u, uint16_t v, 
 			       _RES res, _RES ref_res,
@@ -183,7 +212,8 @@ namespace cftal {
 		}
 
 		template <template <class _U> class _OP>
-		void check_bi_op(const char* msg, uint32_t v0=0) 
+		void check_bi_op(const char* msg, uint32_t v0=0, 
+				 uint32_t v1= 0x10000) 
 		{
 			for (uint32_t u=0; u<0x10000; ++u) {
 				std::uint16_t tu= u;
@@ -191,7 +221,7 @@ namespace cftal {
 					std::cout << msg << ' ' <<  u << '\r'
 						  << std::flush;
 				}
-				for (uint32_t v=v0; v<0x10000; ++v) {
+				for (uint32_t v=v0; v<v1; ++v) {
 					std::uint16_t tv=v;
 					check_bi_op<_OP>(tu, tv, msg);
 				}
@@ -241,10 +271,18 @@ namespace cftal {
 			check_cmp_op<std::not_equal_to>("!=");
 			check_cmp_op<std::greater_equal>(">=");
 			check_cmp_op<std::greater>(">");
-
+			check_bi_op<div_half>("div_half", 1, 255);
 			check_bi_op<std::divides>("div", 1);
 		}
 
+
+		void check_div() 
+		{
+			duint<uint8_t> v(4) , u(1);
+			duint<uint8_t> q(v/u);
+			uint16_t res((uint16_t(q.h())<<8)|q.l());
+			std::cout << res << std::endl;
+		}
 	}
 }
 
@@ -282,7 +320,7 @@ void check_div_16()
 
 int main(int argc, char** argv)
 {
-        // check_div_16();
+	// cftal::test::check_div();
 	cftal::test::check_duint_ops();
         return 0;
 }
