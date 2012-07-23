@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/mul_div.h>
+#include <type_traits>
 
 namespace cftal {
 
@@ -26,11 +27,17 @@ namespace cftal {
                 const type& h() const { 
 			return _h; 
 		}
+		const type& uh() const {
+			return h();
+		}
                 void l(const type& v) { 
 			_l = v; 
 		}
                 void h(const type& v) { 
 			_h = v; 
+		}
+		void uh(const type& v) {
+			h(v);
 		}
 		explicit operator _T() const {
 			return _l;
@@ -216,8 +223,20 @@ namespace cftal {
 	template <typename _T>
 	bool operator>(const duint<_T>& a, const _T& b);
 
+
+
 }
 
+namespace std {
+
+	template <class _T>
+	struct is_signed<cftal::duint<_T> > 
+		: public is_signed<_T> { };
+	template <class _T>
+	struct is_unsigned<cftal::duint<_T> > 
+		: public is_unsigned<_T> { };
+	
+}
 
 template <class _T>
 unsigned cftal::lzcnt(const duint<_T>& a)
