@@ -47,6 +47,10 @@ namespace cftal {
 	duint<_T> operator~(const duint<_T>& a);
 	template <typename _T>
 	duint<_T> operator-(const duint<_T>& a);
+	template <typename _T>
+	const duint<_T> operator+(const duint<_T>& a);
+	template <typename _T>
+	bool operator!(const duint<_T>& a);
 
         template <typename _T>
         duint<_T> operator|(const duint<_T>& a, const duint<_T>& b);
@@ -68,6 +72,13 @@ namespace cftal {
         duint<_T> operator^(const duint<_T>& a, const _T& b);
         template <typename _T>
         duint<_T> operator^(const _T& a, const duint<_T>& b);
+
+        template <typename _T>
+        bool operator&&(const duint<_T>& a, const duint<_T>& b);
+        template <typename _T>
+        bool operator&&(const duint<_T>& a, const _T& b);
+        template <typename _T>
+        bool operator&&(const _T& a, const duint<_T>& b);
 
         template <typename _T>
         duint<_T> operator+(const duint<_T>& a, const duint<_T>& b);
@@ -230,6 +241,18 @@ cftal::duint<_T> cftal::operator-(const duint<_T>& a)
 }
 
 template <typename _T>
+const cftal::duint<_T>& cftal::operator+(const duint<_T>& a)
+{
+	return a;
+}
+
+template <typename _T>
+bool cftal::operator!(const duint<_T>& a)
+{
+	return a != _T(0);
+}
+
+template <typename _T>
 cftal::duint<_T> cftal::operator|(const duint<_T>& a, const duint<_T>& b)
 {
 	typename duint<_T>::type rl= a.l() | b.l();
@@ -271,6 +294,24 @@ template <typename _T>
 cftal::duint<_T> cftal::operator&(const _T& a, const duint<_T>& b)
 {
 	return b & a;
+}
+
+template <typename _T>
+bool cftal::operator&&(const duint<_T>& a, const duint<_T>& b)
+{
+	return (a != _T(0)) && (b != _T(0));
+}
+
+template <typename _T>
+bool cftal::operator&&(const duint<_T>& a, const _T& b)
+{
+	return (a != _T(0)) && (b != _T(0));
+}
+
+template <typename _T>
+bool cftal::operator&&(const _T& a, const duint<_T>& b)
+{
+	return b && a;
 }
 
 template <typename _T>
