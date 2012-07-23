@@ -408,10 +408,8 @@ void check_div_16()
 int main(int argc, char** argv)
 {
 	// cftal::test::check_div();
-#if 0
 	std::cout << "unsigned check" << std::endl;
 	cftal::test::check_duint_ops<uint16_t, cftal::duint<uint8_t> >();
-#endif
 	std::cout << "signed check" << std::endl;
 	cftal::test::check_duint_ops<int16_t, cftal::dint<int8_t> >();
         return 0;
