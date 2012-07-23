@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/mul_div.h>
+#include <cftal/types.h>
 #include <algorithm>
 
 namespace cftal {
