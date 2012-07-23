@@ -1200,21 +1200,28 @@ template <typename _T>
 cftal::dint<_T> cftal::operator*(const dint<_T>& a, const dint<_T>& b)
 {
 	typedef typename dint<_T>::base_type du_t;
-	bool flip_sgn(impl::get_sign(a) ^ impl::get_sign(b));
-	dint<_T> p(static_cast<const du_t&>(a) *
-		   static_cast<const du_t&>(b));
-	return flip_sgn ? -p : p;
+	return static_cast<const du_t&>(a) *
+		static_cast<const du_t&>(b);
 }
 
 template <typename _T>
 cftal::dint<_T> cftal::operator*(const dint<_T>& a, const _T& b)
 {
-	typedef typename std::make_unsigned<_T>::type u_t;
 	typedef typename dint<_T>::base_type du_t;
-	bool flip_sgn(impl::get_sign(a) ^ impl::get_sign(b));
-	dint<_T> p(static_cast<const du_t&>(a) *
-		   static_cast<const u_t&>(b));
-	return flip_sgn ? -p : p;
+	typedef typename du_t::type type;
+	typedef std::pair<type, type> pair_type;
+	const type& ub= static_cast<const type&>(b);
+	// [2^ 0, 2^N2 )
+	pair_type al_bl(wide_mul(a.l(), ub));
+	// [2^(N2/2),  2^(N2*2/2) )
+	type al_bh(impl::get_sign(b) ? -a.l() : type(0));
+	type ah_bl(a.uh() * ub);
+	// shift al_bh and ah_bl right by 2^(N2/2)
+	du_t s20(0, al_bh);
+	du_t s21(0, ah_bl);
+	du_t s0(al_bl.first, al_bl.second);
+	du_t r= s0 + s20 + s21;
+	return r;
 }
 
 template <typename _T>
