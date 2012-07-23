@@ -3,6 +3,7 @@
 #include "divisor.h"
 #include "x86vec_test.h"
 #include "bitops.h"
+#include "d_int.h"
 #include <functional>
 #include <iomanip>
 

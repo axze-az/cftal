@@ -1,5 +1,5 @@
-#if !defined (__CFTAL_TYPES_H__)
-#define __CFTAL_TYPES_H__
+#if !defined (__CFTAL_STD_TYPES_H__)
+#define __CFTAL_STD_TYPES_H__
 
 #include <cftal/config.h>
 #include <cstdint>
@@ -17,4 +17,7 @@ namespace cftal {
 	using std::int64_t;
 }
 
+// Local variables:
+// mode: c++
+// end:
 #endif

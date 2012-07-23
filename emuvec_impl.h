@@ -2,7 +2,7 @@
 #define __EMUVEC_IMPL_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/types.h>
+#include <cftal/std_types.h>
 #include <cftal/allocator.h>
 #include <cstring>
 #include <type_traits>

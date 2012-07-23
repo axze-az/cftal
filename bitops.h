@@ -2,7 +2,7 @@
 #define __CFTAL_BITOPS_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/types.h>
+#include <cftal/std_types.h>
 #if defined (__x86_64__) || defined (__i386__)
 #include <x86intrin.h>
 #endif

@@ -2,7 +2,7 @@
 #define __CFTAL_ALLOCATOR_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/types.h>
+#include <cftal/std_types.h>
 #include <memory>
 #include <cstdlib> // for abort
 
