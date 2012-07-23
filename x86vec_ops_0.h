@@ -754,15 +754,35 @@ __m128i x86vec::impl::vpsraq::v(__m128i a, unsigned shift)
 		__m128i sgnbits= vpsrad::v(a, sh);
 		// low parts of result.
 		__m128i allbits= vpsrlq::v(a, sh);
+#if defined (__SSE4_1__)
 		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+#else
+		// clear the low uint32_t of sgnbits
+		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
+		sgnbits = _mm_and_si128(sgnbits, msk);
+		// works because high uint32_t of sgnbits contains
+		// either the same pattern as allbits or ones 
+		r= _mm_or_si128(allbits, sgnbits);
+#endif
 	} else {
+#if defined (__SSE4_1__)
+		r= vpshufd<1, 3, 1, 3>::v(a);
+		r= vpsrad::v(t, shift-32);
+		r= _mm_cvtepi32_epi64(r);
+#else
 		// future sign bits.
 		__m128i sgnbits= vpsrad_const<31>::v(a);
 		// result bits right shifted by shift - 32
 		__m128i allbits= vpsrad::v(a, shift-32);
 		// result bits correctly located.
 		allbits = vpsrlq_const<32>::v(allbits);
-		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+		// clear the low uint32_t of sgnbits
+		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
+		sgnbits = _mm_and_si128(sgnbits, msk);
+		// works because high uint32_t of sgnbits contains
+		// either the same pattern as allbits or ones 
+		r= _mm_or_si128(allbits, sgnbits);
+#endif
 	}
 	return r;
 }
@@ -777,15 +797,35 @@ __m128i x86vec::impl::vpsraq_const<_S>::v(__m128i a)
 		__m128i sgnbits= vpsrad_const<_S>::v(a);
 		// low parts of result.
 		__m128i allbits= vpsrlq_const<_S>::v(a);
+#if defined (__SSE4_1__)
 		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+#else
+		// clear the low uint32_t of sgnbits
+		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
+		sgnbits = _mm_and_si128(sgnbits, msk);
+		// works because high uint32_t of sgnbits contains
+		// either the same pattern as allbits or ones 
+		r= _mm_or_si128(allbits, sgnbits);
+#endif
 	} else {
+#if defined (__SSE4_1__)
+		r= vpshufd<1, 3, 1, 3>::v(a);
+		r= vpsrad_const<_S-32>::v(t);
+		r= _mm_cvtepi32_epi64(r);
+#else
 		// future sign bits.
 		__m128i sgnbits= vpsrad_const<31>::v(a);
 		// result bits right shifted by shift - 32
 		__m128i allbits= vpsrad_const<_S-32>::v(a);
 		// result bits correctly located.
 		allbits = vpsrlq_const<32>::v(allbits);
-		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+		// clear the low uint32_t of sgnbits
+		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
+		sgnbits = _mm_and_si128(sgnbits, msk);
+		// works because high uint32_t of sgnbits contains
+		// either the same pattern as allbits or ones 
+		r= _mm_or_si128(allbits, sgnbits);
+#endif
 	}
 	return r;
 }
