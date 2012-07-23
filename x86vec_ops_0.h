@@ -767,7 +767,7 @@ __m128i x86vec::impl::vpsraq::v(__m128i a, unsigned shift)
 	} else {
 #if defined (__SSE4_1__)
 		r= vpshufd<1, 3, 1, 3>::v(a);
-		r= vpsrad::v(t, shift-32);
+		r= vpsrad::v(r, shift-32);
 		r= _mm_cvtepi32_epi64(r);
 #else
 		// future sign bits.
@@ -810,7 +810,7 @@ __m128i x86vec::impl::vpsraq_const<_S>::v(__m128i a)
 	} else {
 #if defined (__SSE4_1__)
 		r= vpshufd<1, 3, 1, 3>::v(a);
-		r= vpsrad_const<_S-32>::v(t);
+		r= vpsrad_const<_S-32>::v(r);
 		r= _mm_cvtepi32_epi64(r);
 #else
 		// future sign bits.

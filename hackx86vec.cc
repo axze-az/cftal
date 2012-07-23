@@ -208,7 +208,7 @@ namespace cftal {
 			uint16_t r(op1(u, v));
 			_OP<duint<uint8_t> > op2;
 			duint<uint8_t> rr(op2(uu, vv));
-			uint16_t res((uint16_t(rr.h())<<8)|rr.l());
+			uint16_t res((uint16_t(rr.uh())<<8)|rr.l());
 			check_res(u, v, res, r, msg);
 		}
 
@@ -281,8 +281,14 @@ namespace cftal {
 		{
 			duint<uint8_t> v(4) , u(1);
 			duint<uint8_t> q(v/u);
-			uint16_t res((uint16_t(q.h())<<8)|q.l());
+			uint16_t res((uint16_t(q.uh())<<8)|q.l());
 			std::cout << res << std::endl;
+
+			dint<int8_t> sv(42), su(1);
+			dint<int8_t> sq(sv/su);
+			uint16_t sres((int16_t(sq.sh())<<8)|sq.l());
+			std::cout << sres << std::endl;
+			dint<int8_t> nsv(-sv);
 		}
 	}
 }
@@ -293,7 +299,7 @@ void check_div_16(uint16_t u, uint16_t v)
 	typedef cftal::duint<uint8_t> v_t;
 	v_t vu(u, u>>8), vv(v, v>>8);
 	v_t vq(vu / vv);
-	uint16_t q((uint16_t(vq.h()) <<8) | vq.l());
+	uint16_t q((uint16_t(vq.uh()) <<8) | vq.l());
 	uint16_t q_ref = u/v;
 	if (q != q_ref) {
 		std::cout << u << " / " << uint16_t(v) << " = " << q
