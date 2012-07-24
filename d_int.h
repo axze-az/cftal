@@ -1304,10 +1304,11 @@ cftal::dint<_T> cftal::operator>>(const dint<_T>& a, unsigned s)
 	// arithmetic shift from logical shift:
 	typedef typename dint<_T>::base_type du_t;
 	typedef typename std::make_unsigned<_T>::type u_t;
-	dint<_T> t1(impl::get_sign(a) ? ~_T(0) : _T(0));
-	dint<_T> t2(a^ t1);
-	dint<_T> t3(static_cast<const du_t&>(a) >> s);
-	return t3 ^ t1;
+	const du_t& au = static_cast<const du_t&>(a);
+	du_t t(- (au >> (dint<_T>::N-1)));
+	du_t a_xor_t(a^ t);
+	du_t t1(a_xor_t >> s);
+	return t1 ^ t;
 }
 
 template <typename _T>

@@ -325,6 +325,22 @@ namespace cftal {
 		return remainder(n, dd, q);
 	}
 
+	template <class _V>
+	_V operator%(const _V& n, const divisor<_V, int64_t>& d)
+	{
+		_V q(d.divide(n));
+		_V dd(d.d());
+		return remainder(n, dd, q);
+	}
+
+	template <class _V>
+	_V operator%(const _V& n, const divisor<_V, uint64_t>& d)
+	{
+		_V q(d.divide(n));
+		_V dd(d.d());
+		return remainder(n, dd, q);
+	}
+
 	namespace test {
 		bool div_u16();
 		bool div_s16();

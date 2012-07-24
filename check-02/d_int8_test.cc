@@ -196,8 +196,45 @@ namespace cftal {
 		}
 
 		template <class _T, class _V>
+		void check_shift() 
+		{
+			enum { N = sizeof(_T)*8 };
+			for (uint32_t u=0; u<0x10000; ++u) {
+				_T tu= u;
+				if (0x3FF==(u & 0x3FF)) {
+					std::cout << ">> " << tu << '\r'
+						  << std::flush;
+				}
+				for (_T s=0; s <= N; ++s) {
+					_T r = tu >> s;
+					_V vtu(tu, tu>>8);
+					_V vr = vtu >> s;
+					_T res((_T(vr.uh())<<8)|vr.l());
+					check_res(tu, s, res, r, ">>");
+				}
+			}
+			for (uint32_t u=0; u<0x10000; ++u) {
+				_T tu= u;
+				if (0x3FF==(u & 0x3FF)) {
+					std::cout << "<< " <<  tu << '\r'
+						  << std::flush;
+				}
+				for (_T s=0; s <= N; ++s) {
+					_T r = tu << s;
+					_V vtu(tu, tu>>8);
+					_V vr = vtu << s;
+					_T res((_T(vr.uh())<<8)|vr.l());
+					check_res(tu, s, res, r, "<<");
+				}
+			}
+			std::cout << "shift passed\n";
+		}
+
+
+		template <class _T, class _V>
 		void check_duint_ops()
 		{
+			check_shift<_T,_V>();
 			check_bi_op<_T, _V, std::plus>("add");
 			check_bi_op<_T, _V, std::minus>("sub");
 			check_bi_op<_T, _V, mul_half>("mul_half", 0, 255);

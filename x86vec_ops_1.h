@@ -37,9 +37,13 @@ namespace x86vec {
 		};
 
 		struct div_u64 : public div_ref<uint64_t, 2> {
+			static __m128i v(__m128i a, __m128i b,
+					 __m128i* rem=nullptr);
 		};
 
 		struct div_s64 : public div_ref<int64_t, 2> {
+			static __m128i v(__m128i a, __m128i b,
+					 __m128i* rem=nullptr);
 		};
 
 	}

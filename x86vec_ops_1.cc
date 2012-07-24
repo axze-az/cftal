@@ -96,7 +96,6 @@ __m128i x86vec::impl::div_s32::v(__m128i x, __m128i y, __m128i* rem)
 	return q;
 }
 
-#if 1
 __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 {
 	// add 2^31
@@ -156,84 +155,39 @@ __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 	}
 	return qi;
 }
-#else
 
-namespace {
-
-	template <unsigned _I>
-	struct udiv32 {
-		static void div(__m128i& q, __m128i x, __m128i y);
-		static void div(__m128i& q, __m128i& r, __m128i x, __m128i y);
-	};
-
-	template <unsigned _I>
-	inline
-	void udiv32<_I>::div(__m128i& q, __m128i& r, __m128i x, __m128i y)
-	{
-		using namespace x86vec;
-		uint32_t xi= extract_u32<_I>(x);
-		uint32_t yi= extract_u32<_I>(y);
-		uint32_t qi, ri;
-		if (yi != 0) {
-			qi = xi / yi;
-			ri = xi % yi;
-		} else {
-			qi = uint32_t(-1);
-			ri = xi;
-		}
-		if (_I == 0) {
-			q = _mm_set_epi32(0, 0, 0, qi);
-			r = _mm_set_epi32(0, 0, 0, ri);
-		} else {
-			q = insert_u32<_I>(q, qi);
-			r = insert_u32<_I>(r, ri);
-		}
-	}
-
-	template <unsigned _I>
-	inline
-	void udiv32<_I>::div(__m128i& q, __m128i x, __m128i y)
-	{
-		using namespace x86vec;
-		uint32_t xi= extract_u32<_I>(x);
-		uint32_t yi= extract_u32<_I>(y);
-		uint32_t qi;
-		if (yi != 0) {
-			qi = xi / yi;
-		} else {
-			qi = uint32_t(-1);
-		}
-		if (_I == 0) {
-			q = _mm_set_epi32(0, 0, 0, qi);
-		} else {
-			q = insert_u32<_I>(q, qi);
-		}
-	}
-
-}
-
-__m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* r)
+__m128i x86vec::impl::div_u64::v(__m128i x, __m128i y, __m128i* rem)
 {
-#if 0
-	return ref(x, y, r);
-#else
-	__m128i q;
-	if (r) {
-		udiv32<0>::div(q, *r, x, y);
-		udiv32<1>::div(q, *r, x, y);
-		udiv32<2>::div(q, *r, x, y);
-		udiv32<3>::div(q, *r, x, y);
-	} else {
-		udiv32<0>::div(q, x, y);
-		udiv32<1>::div(q, x, y);
-		udiv32<2>::div(q, x, y);
-		udiv32<3>::div(q, x, y);
-	}
-	return q;
-#endif
+	uint64_t x0= extract_u64<0>(x);
+	uint64_t y0= extract_u64<0>(y);
+	uint64_t q0= (y0 ? x0 / y0 : uint64_t(-1));
+	uint64_t r0= (y0 && rem!= nullptr ? x0 % y0 : x0);
+	
+	uint64_t x1= extract_u64<1>(x);
+	uint64_t y1= extract_u64<1>(y);
+	uint64_t q1= (y1 ? x1 / y1 : uint64_t(-1));
+	uint64_t r1= (y1 && rem!= nullptr ? x1 % y1 : x1);
+	if (rem) 
+		_mm_store_si128(rem, _mm_set_epi64x(r1, r0));
+	return _mm_set_epi64x(q1, q0);
 }
 
-#endif
+__m128i x86vec::impl::div_s64::v(__m128i x, __m128i y, __m128i* rem)
+{
+	int64_t x0= extract_u64<0>(x);
+	int64_t y0= extract_u64<0>(y);
+	int64_t q0= (y0 ? x0 / y0 : int64_t(-1));
+	int64_t r0= (y0 && rem!= nullptr ? x0 % y0 : x0);
+	
+	int64_t x1= extract_u64<1>(x);
+	int64_t y1= extract_u64<1>(y);
+	int64_t q1= (y1 ? x1 / y1 : int64_t(-1));
+	int64_t r1= (y1 && rem!= nullptr ? x1 % y1 : x1);
+	if (rem) 
+		_mm_store_si128(rem, _mm_set_epi64x(r1, r0));
+	return _mm_set_epi64x(q1, q0);
+}
+
 
 extern "C" double cvt_u32_double(uint32_t t);
 extern "C" double cvt_u64_double(uint64_t t);
