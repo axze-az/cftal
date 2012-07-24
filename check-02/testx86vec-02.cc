@@ -1,6 +1,6 @@
-#include "x86vec.h"
-#include "x86vec_test.h"
 #include "divisor.h"
+
+extern bool check_d_int8();
 
 bool all_tests_02()
 {
@@ -9,6 +9,7 @@ bool all_tests_02()
 	r &= cftal::test::div_s16();
 	r &= cftal::test::div_u32();
 	r &= cftal::test::div_s32();
+	r &= check_d_int8();
 	return r;
 }
 
