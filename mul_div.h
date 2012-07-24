@@ -45,6 +45,18 @@ namespace cftal {
 				return std::make_pair(l, h);
 			}
 		};
+
+		template <>
+		struct wide_smul<int8_t> {
+			std::pair<int8_t, int8_t>
+			operator()(const int8_t a, const int8_t b)
+				const {
+				int16_t p(int16_t(a)*b);
+				int8_t l(p);
+				int8_t h(p>>8);
+				return std::make_pair(l, h);
+			}
+		};
 		
 		template <>
 		struct wide_umul<uint16_t> {
@@ -59,31 +71,6 @@ namespace cftal {
 		};
 
 		template <>
-		struct wide_umul<uint32_t> {
-			std::pair<uint32_t, uint32_t>
-			operator()(const uint32_t a, const uint32_t b)
-				const {
-				uint64_t p(uint64_t(a)*b);
-				uint32_t l(p);
-				uint32_t h(p>>32);
-				return std::make_pair(l, h);
-			}
-		};
-
-		// specialisations for standard types.
-		template <>
-		struct wide_smul<int8_t> {
-			std::pair<int8_t, int8_t>
-			operator()(const int8_t a, const int8_t b)
-				const {
-				int16_t p(int16_t(a)*b);
-				int8_t l(p);
-				int8_t h(p>>8);
-				return std::make_pair(l, h);
-			}
-		};
-		
-		template <>
 		struct wide_smul<int16_t> {
 			std::pair<int16_t, int16_t>
 			operator()(const int16_t a, const int16_t b)
@@ -91,6 +78,18 @@ namespace cftal {
 				int32_t p(int32_t(a)*b);
 				int16_t l(p);
 				int16_t h(p>>16);
+				return std::make_pair(l, h);
+			}
+		};
+
+		template <>
+		struct wide_umul<uint32_t> {
+			std::pair<uint32_t, uint32_t>
+			operator()(const uint32_t a, const uint32_t b)
+				const {
+				uint64_t p(uint64_t(a)*b);
+				uint32_t l(p);
+				uint32_t h(p>>32);
 				return std::make_pair(l, h);
 			}
 		};
@@ -197,6 +196,24 @@ namespace cftal {
 						      uint32_t(q>>32));
 			}
 		};
+
+#if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
+		template <class _UHALF>
+		class udiv_2by1<uint64_t, _UHALF> {
+		public:
+			static
+			std::pair<uint64_t, uint64_t>
+			d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* r) {
+				typedef unsigned __int128 u128_t;
+				u128_t u((u128_t(u1)<<64)|u0);
+				u128_t q(u/v);
+				if (r) 
+					*r= remainder(u, u128_t(v), q);
+				return std::make_pair(uint64_t(q),
+						      uint64_t(q>>64));
+			}
+		};
+#endif
 
 #endif
         }
