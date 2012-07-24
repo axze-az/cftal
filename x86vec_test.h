@@ -119,6 +119,42 @@ namespace x86vec {
                 __m128i load_u32(bool second);
                 __m128i load_u16(bool second);
 
+
+                // Complementary-multiply-with-carry random generator.
+                class cmwc_rng_base {
+                        static const uint32_t PHI=0x9e3779b9;
+                        uint32_t _c, _i;
+                        uint32_t _Q[4096];
+                public:
+                        cmwc_rng_base(uint32_t _seed);
+                        uint32_t next();
+                };
+
+                template <class _T>
+                class cmwc_rng;
+
+                template <>
+                class cmwc_rng<uint32_t> : public cmwc_rng_base {
+                public:
+                        cmwc_rng(uint32_t _seed) : cmwc_rng_base(_seed) {
+                        }
+                        uint32_t next() {
+                                return cmwc_rng_base::next();
+                        }
+                };
+
+                template <>
+                class cmwc_rng<uint64_t> : public cmwc_rng_base {
+                public:
+                        cmwc_rng(uint32_t _seed) : cmwc_rng_base(_seed) {
+                        }
+                        uint64_t next() {
+                                uint64_t h= cmwc_rng_base::next();
+                                uint32_t l= cmwc_rng_base::next();
+                                return (h<<32)|l;
+                        }
+                };
+		
 		template <class _V, class _E, int _EN>
 		struct vec_pr {
 			typename impl::vecunion<_V, _E, _EN>::u_t _val;

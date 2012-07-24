@@ -22,41 +22,6 @@ namespace x86vec
                         };
                 };
 
-                // Complementary-multiply-with-carry random generator.
-                class cmwc_rng_base {
-                        static const std::uint32_t PHI=0x9e3779b9;
-                        std::uint32_t _c, _i;
-                        std::uint32_t _Q[4096];
-                public:
-                        cmwc_rng_base(std::uint32_t _seed);
-                        std::uint32_t next();
-                };
-
-                template <class _T>
-                class cmwc_rng;
-
-                template <>
-                class cmwc_rng<std::uint32_t> : public cmwc_rng_base {
-                public:
-                        cmwc_rng(std::uint32_t _seed) : cmwc_rng_base(_seed) {
-                        }
-                        std::uint32_t next() {
-                                return cmwc_rng_base::next();
-                        }
-                };
-
-                template <>
-                class cmwc_rng<std::uint64_t> : public cmwc_rng_base {
-                public:
-                        cmwc_rng(std::uint32_t _seed) : cmwc_rng_base(_seed) {
-                        }
-                        std::uint64_t next() {
-                                std::uint64_t h= cmwc_rng_base::next();
-                                std::uint32_t l= cmwc_rng_base::next();
-                                return (h<<32)|l;
-                        }
-                };
-
                 template <class _V, class _REF, class _PR>
                 bool check_div_16(const char* msg);
 
@@ -73,31 +38,6 @@ namespace x86vec
         }
 }
 
-x86vec::test::cmwc_rng_base::
-cmwc_rng_base(std::uint32_t x) : _c(362436), _i(4095)
-{
-        _Q[0] = x;
-        _Q[1] = x + PHI;
-        _Q[2] = x + PHI + PHI;
-
-        for (int j = 3; j < 4096; ++j)
-                _Q[j] = _Q[j - 3] ^ _Q[j - 2] ^ PHI ^ j;
-}
-
-std::uint32_t x86vec::test::cmwc_rng_base::next()
-{
-        const std::uint64_t a = 18782LL;
-        std::uint32_t r = 0xfffffffe;
-        _i = (_i + 1) & 4095;
-        std::uint64_t t = a * _Q[_i] + _c;
-        _c = (t >> 32);
-        std::uint32_t x = t + _c;
-        if (x < _c) {
-                x++;
-                _c++;
-        }
-        return (_Q[_i] = r - x);
-}
 
 template <class _T, class _REF, class _PR>
 bool x86vec::test::check_div_16(const char* msg)

@@ -5,6 +5,7 @@
 #include <cftal/mul_div.h>
 #include <cftal/types.h>
 #include <algorithm>
+#include <type_traits>
 
 namespace cftal {
 
@@ -38,7 +39,7 @@ namespace cftal {
 
 		template <typename _T>
 		struct udiv_setup_traits {
-			// uword, udword types
+			// sword udword types
 			// ceil_log2 of _T
 			// _N as sizeof(uword) in bits
 		};
@@ -81,6 +82,7 @@ namespace cftal {
 		class sdiv_setup {
 		public:
 			typedef typename _TR::sword sword;
+			typedef typename std::make_unsigned<sword>::type uword;
 			typedef typename _TR::udword udword;
 			sdiv_setup(const sword& d);
 			const sword& m() const { return _m; }
@@ -137,13 +139,11 @@ namespace cftal {
 			}
 			static
 			uword muluh(uword a, uword b) {
-				return (uint32_t(a) * 
-					uint32_t(b)) >> 16;
+				return wide_mul(a, b).second;
 			}
 			static
 			sword mulsh(sword a, sword b) {
-				return (int32_t(a) * 
-					int32_t(b))>>16;
+				return wide_mul(a, b).second;
 			}
 			enum {
 				_N = 16
@@ -164,19 +164,42 @@ namespace cftal {
 			}
 			static
 			uword muluh(uword a, uword b) {
-				return (uint64_t(a) * 
-					uint64_t(b)) >> 32;
+				return wide_mul(a, b).second;
 			}
 			static
 			sword mulsh(sword a, sword b) {
-				return (int64_t(a) * 
-					int64_t(b))>>32;
+				return wide_mul(a, b).second;
 			}
 			enum {
 				_N =32
 			};
 		};
 
+		struct div64_traits {
+			typedef int64_t sword;
+			typedef uint64_t uword;
+			typedef duint<uint64_t> udword;
+			static
+			uword ceil_log2(uword t) {
+				return 32 - lzcnt(t-1);
+			}
+			static
+			sword ceil_log2(sword t) {
+				return ceil_log2(uint64_t(t));
+			}
+			static
+			uword muluh(uword a, uword b) {
+				return wide_mul(a, b).second;
+			}
+			static
+			sword mulsh(sword a, sword b) {
+				return wide_mul(a, b).second;
+			}
+			enum {
+				_N =64
+			};
+		};
+		
 		// unsigned div 16
 		template <>
 		struct udiv_setup_traits<uint16_t> 
@@ -207,6 +230,23 @@ namespace cftal {
 		template <>
 		struct sdiv_traits<int32_t, int32_t> 
 			: public div32_traits {};
+
+
+		// unsigned div 64
+		template <>
+		struct udiv_setup_traits<uint64_t> 
+			: public div64_traits {};
+		template <>
+		struct udiv_traits<uint64_t, uint64_t> 
+			: public div64_traits {};
+
+		// signed div 64
+		template <>
+		struct sdiv_setup_traits<int64_t> 
+			: public div64_traits {};
+		template <>
+		struct sdiv_traits<int64_t, int64_t> 
+			: public div64_traits {};
 	}
 
 	template <>
@@ -236,6 +276,21 @@ namespace cftal {
 	public:
 		divisor(uint32_t d) : 
 			impl::udiv<uint32_t, uint32_t>(d) {}
+	};
+
+	template <>
+	class divisor<int64_t, int64_t>
+		: public impl::sdiv<int64_t, int64_t> {
+	public:
+		divisor(int64_t d) : 
+			impl::sdiv<int64_t, int64_t>(d) {}
+	};
+	template <>
+	class divisor<uint64_t, uint64_t>
+		: public impl::udiv<uint64_t, uint64_t> {
+	public:
+		divisor(uint64_t d) : 
+			impl::udiv<uint64_t, uint64_t>(d) {}
 	};
 
 	template <class _V>
@@ -289,16 +344,8 @@ cftal::impl::udiv_setup<_D, _TR>::udiv_setup(const uword& d)
 		_shift_only = true;
 	} else {
 		udword ms0= ((udword(1) << l) - d)<<_TR::_N;
-#if 1
-		udword ms= ms0/d + udword(1);
+		udword ms= ms0/d + uword(1);
 		_m = uword(ms);
-#else
-		uword ms0l(ms0);
-		uword ms0h(ms0>>(_TR::_N));
-		udiv_2by1<uword> ud;
-		uword ms = ud(ms0h, ms0l, d, nullptr) +uword(1);
-		_m = ms;
-#endif
 		_s1= std::min(l, 1);
 		_s2= std::max(l-1, 0);
 		_shift_only = false;
@@ -352,9 +399,10 @@ cftal::impl::sdiv_setup<_D, _TR>::sdiv_setup(const sword& d)
 	} else {
 		sword ad = d < _D(0) ? -d : d;
 		int l = std::max(_TR::ceil_log2(ad), sword(1));
-		udword ms0= (udword(1) << (_TR::_N + l -1))/ad + udword(1);
+		udword ms0= (udword(1) << (_TR::_N + l -1))/uword(ad) 
+			+ uword(1);
 		udword ms = ms0 - (udword(1) << (_TR::_N));
-		_m = sword(ms);
+		_m = sword(uword(ms));
 		_s = l-1;
 	}
 	_xsgn_d = d >> (_TR::_N-1);

@@ -25,6 +25,16 @@ namespace x86vec {
 				return mulh(a, b);
 			}
 		};
+
+		struct vdiv64_traits {
+			static v2s64 mulsh(const v2s64& a, const v2s64& b)  {
+				return mulh(a, b);
+			}
+			static v2u64 muluh(const v2u64& a, const v2u64& b)  {
+				return mulh(a, b);
+			}
+		};
+		
 	}
 }
 
@@ -50,6 +60,17 @@ namespace cftal {
 		template <>
 		struct sdiv_traits<x86vec::v4s32, int32_t>
 			: public x86vec::impl::vdiv32_traits {};
+
+		// unsigned vector div 64
+		template <>
+		struct udiv_traits<x86vec::v2u64, uint64_t>
+			: public x86vec::impl::vdiv64_traits {};
+
+		// signed vector div 64
+		template <>
+		struct sdiv_traits<x86vec::v2s64, int64_t>
+			: public x86vec::impl::vdiv64_traits {};
+		
 	}
 
 	template <>
@@ -82,6 +103,22 @@ namespace cftal {
 		divisor(uint32_t d) :
 			impl::udiv<x86vec::v4u32, uint32_t>(d) {}
 	};
+
+	template <>
+	class divisor<x86vec::v2s64, int64_t>
+		: public impl::sdiv<x86vec::v2s64, int64_t> {
+	public:
+		divisor(int64_t d) :
+			impl::sdiv<x86vec::v2s64, int64_t>(d) {}
+	};
+	template <>
+	class divisor<x86vec::v2u64, uint64_t>
+		: public impl::udiv<x86vec::v2u64, uint64_t> {
+	public:
+		divisor(uint64_t d) :
+			impl::udiv<x86vec::v2u64, uint64_t>(d) {}
+	};
+
 }
 
 namespace x86vec {

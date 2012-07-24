@@ -72,6 +72,32 @@ std::ostream& x86vec::test::operator<<(std::ostream& s, const idx& i)
 	return s;
 }
 
+x86vec::test::cmwc_rng_base::
+cmwc_rng_base(std::uint32_t x) : _c(362436), _i(4095)
+{
+        _Q[0] = x;
+        _Q[1] = x + PHI;
+        _Q[2] = x + PHI + PHI;
+
+        for (int j = 3; j < 4096; ++j)
+                _Q[j] = _Q[j - 3] ^ _Q[j - 2] ^ PHI ^ j;
+}
+
+x86vec::uint32_t x86vec::test::cmwc_rng_base::next()
+{
+        const uint64_t a = 18782LL;
+        uint32_t r = 0xfffffffe;
+        _i = (_i + 1) & 4095;
+        uint64_t t = a * _Q[_i] + _c;
+        _c = (t >> 32);
+        uint32_t x = t + _c;
+        if (x < _c) {
+                x++;
+                _c++;
+        }
+        return (_Q[_i] = r - x);
+}
+
 bool x86vec::test::check_f64(const char* msg,
 				__m128d v, const idx& i)
 {
