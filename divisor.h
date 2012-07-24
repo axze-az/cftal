@@ -181,7 +181,7 @@ namespace cftal {
 			typedef duint<uint64_t> udword;
 			static
 			uword ceil_log2(uword t) {
-				return 32 - lzcnt(t-1);
+				return 64 - lzcnt(t-1);
 			}
 			static
 			sword ceil_log2(sword t) {

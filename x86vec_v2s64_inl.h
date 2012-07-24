@@ -441,7 +441,7 @@ inline
 std::pair<x86vec::v2s64, x86vec::v2s64>
 x86vec::wide_mul(const v2s64& x, const v2s64& y)
 {
-#if defined (__x86_64__)
+#if 0 //defined (__x86_64__)
 	typedef v2s64::element_type e_t;
 	typedef std::pair<e_t, e_t> p_t;
 	p_t t0(cftal::wide_mul(extract<0>(x), extract<0>(y)));

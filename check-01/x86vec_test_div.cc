@@ -256,7 +256,7 @@ check_div_64_one_rnd(typename _T::element_type ii,
 {
         std::uint64_t tcur[div_type::LAST+1];
         _T v(ii);
-	for(int32_t j = 0; j < 0x10000; j += 4) {
+	for(int32_t j = 0; j < 0x10000; j += 2) {
 		typename _T::element_type j0= rnd.next();
 		typename _T::element_type j1= rnd.next();
 		_T u(j0, j1);
