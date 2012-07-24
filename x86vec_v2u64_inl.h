@@ -1,6 +1,7 @@
 #if !defined (__X86VEC_V2U64_INL_H__)
 #define __X86VEC_V2U64_INL_H__ 1
 
+#include <cftal/mul_div.h>
 #if !defined (__X86VEC_IVEC_H__)
 #include <cftal/x86vec_ivec.h>
 #error "never use this file directly"
@@ -417,8 +418,21 @@ inline
 std::pair<x86vec::v2u64, x86vec::v2u64>
 x86vec::wide_mul(const v2u64& x, const v2u64& y)
 {
+#if 1
+	typedef v2u64::element_type e_t;
+	typedef std::pair<e_t, e_t> p_t;
+	p_t t0(cftal::wide_mul(extract<0>(x), extract<0>(y)));
+	p_t t1(cftal::wide_mul(extract<1>(x), extract<1>(y)));
+	v2u64 l(t0.first, t1.first);
+	v2u64 h(t0.second, t1.second);
+	return std::make_pair(l, h);
+#else
+	//         0         0 (xl_yl)_h  (xl_yl)_l
+	//         0 (xh_yl)_h (xh_yl)_l          0
+	//         0 (xl_yh)_h (xl_yh)_l          0
+	// (xh_yh)_h (xh_yh)_l 
 	v2u64 xh = x >> const_shift::_32;
-	v2u64 yh = y >> const_shift::_32;
+	v2u64 yh = y >> const_shift::_32;  
 	// 2^ 0
 	v2u64 xl_yl= _mm_mul_epu32(x(), y());
 	// 2^ 32
@@ -435,13 +449,14 @@ x86vec::wide_mul(const v2u64& x, const v2u64& y)
 	// low part of the multiplication:
 	xl_yl += s32_63;
 	v2u64 neg_carry_64 = xl_yl < s32_63;
-	const __m128i c97_msk= const4_u32<0, 1, 0, 1>::iv();
+	const __m128i c96_msk= const4_u32<0, 1, 0, 1>::iv();
 
-	s64_96 |= carry_96 & c97_msk;
+	s64_96 |= carry_96 & c96_msk;
 	xh_yh -= neg_carry_64;
 	// high part of the multiplication:
 	xh_yh += s64_96;
 	return std::make_pair(xl_yl, xh_yh);
+#endif
 }
 
 

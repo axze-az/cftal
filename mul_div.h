@@ -12,6 +12,7 @@ namespace cftal {
         template <class _V>
         _V remainder(const _V& n, const _V& d, const _V& q);
 
+	// return low part in first, high part in second
         template <class _T>
         std::pair<_T, _T> wide_mul(const _T& a, const _T& b);
 
@@ -105,6 +106,34 @@ namespace cftal {
 				return std::make_pair(l, h);
 			}
 		};
+
+#if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
+		template <>
+		struct wide_umul<uint64_t> {
+			std::pair<uint64_t, uint64_t>
+			operator()(const uint64_t a, const uint64_t b)
+				const {
+				typedef unsigned __int128 u128_t;
+				u128_t p(u128_t(a)*b);
+				uint64_t l(p);
+				uint64_t h(p>>64);
+				return std::make_pair(l, h);
+			}
+		};
+
+		template <>
+		struct wide_smul<int64_t> {
+			std::pair<int64_t, int64_t>
+			operator()(const int64_t a, const int64_t b)
+				const {
+				__int128 p(__int128(a)*b);
+				int64_t l(p);
+				int64_t h(p>>64);
+				return std::make_pair(l, h);
+			}
+		};
+#endif
+
 #endif     
 	}
 	

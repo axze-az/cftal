@@ -441,6 +441,15 @@ inline
 std::pair<x86vec::v2s64, x86vec::v2s64>
 x86vec::wide_mul(const v2s64& x, const v2s64& y)
 {
+#if defined (__x86_64__)
+	typedef v2s64::element_type e_t;
+	typedef std::pair<e_t, e_t> p_t;
+	p_t t0(cftal::wide_mul(extract<0>(x), extract<0>(y)));
+	p_t t1(cftal::wide_mul(extract<1>(x), extract<1>(y)));
+	v2s64 l(t0.first, t1.first);
+	v2s64 h(t0.second, t1.second);
+	return std::make_pair(l, h);
+#else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
 	std::pair<v2u64, v2u64> ur(wide_mul(v2u64(x), v2u64(y)));
@@ -451,6 +460,7 @@ x86vec::wide_mul(const v2s64& x, const v2s64& y)
 	v2s64 ph= v2s64(ur.second) - x_and_xsgn_y - y_and_xsgn_x;
 	v2s64 pl= v2s64(ur.first);
 	return std::make_pair(pl, ph);
+#endif
 }
 
 template < bool _P0, bool _P1>
