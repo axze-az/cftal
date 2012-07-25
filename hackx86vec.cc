@@ -12,8 +12,8 @@ void test_div()
 	using namespace x86vec;
 	using test::pr_v2u64;
 
-	v2u64::element_type vi(9223372036854775808UL);
-	v2u64 u(18441799355538036301UL, 3155565450790631795UL);
+	v2u64::element_type vi(0UL);
+	v2u64 u(3300917957719651597UL, 17331437524411346996UL);
 	v2u64 v(vi);
 	divisor<v2u64, uint64_t> vd(vi);
 	

@@ -924,7 +924,7 @@ __m128i x86vec::impl::vpmullq::v(__m128i a, __m128i b)
 	// mul(ah * bl)
 	__m128i ah_bl = _mm_mul_epu32(ah, b);
 	// mul(al * bh)
-	__m128i al_bh = _mm_mul_epu32(b, bh);
+	__m128i al_bh = _mm_mul_epu32(a, bh);
 	// add the products with the same power of 2
 	__m128i mixed = _mm_add_epi32(ah_bl, al_bh);
 	// shift left
