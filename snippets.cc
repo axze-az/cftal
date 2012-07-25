@@ -1,4 +1,6 @@
 #include <x86vec.h>
+#include <iostream>
+#include <iomanip>
 
 x86vec::v4u32 mul(x86vec::v4u32 a, x86vec::v4u32 b)
 {
@@ -40,6 +42,17 @@ x86vec::v2s64 mulhi(x86vec::v2s64 a, x86vec::v2s64 b)
         return mulh(a, b);
 }
 
+std::pair<x86vec::v2u64, x86vec::v2u64>
+mulwide(x86vec::v2u64 a, x86vec::v2u64 b)
+{
+	return wide_mul(a, b);
+}
+
+std::pair<x86vec::v2s64, x86vec::v2s64>
+mulwide(x86vec::v2s64 a, x86vec::v2s64 b)
+{
+	return wide_mul(a, b);
+}
 
 const unsigned d32 = (1<<24) - (1<<14) + (1<<9);
 

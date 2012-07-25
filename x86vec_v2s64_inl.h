@@ -450,6 +450,39 @@ x86vec::wide_mul(const v2s64& x, const v2s64& y)
 	v2s64 h(t0.second, t1.second);
 	return std::make_pair(l, h);
 #else
+#if defined (__SSE4_1__)
+	//         0         0 (xl_yl)_h  (xl_yl)_l
+	//         0 (xh_yl)_h (xh_yl)_l          0
+	//         0 (xl_yh)_h (xl_yh)_l          0
+	// (xh_yh)_h (xh_yh)_l 
+	v2s64 xh = impl::vpsrlq_const<32>::v(x());
+	v2s64 yh = impl::vpsrlq_const<32>::v(y());
+
+	v2u64 xl_yl = _mm_mul_epu32(x(), y());
+	v2u64 xh_yh = _mm_mul_epi32(xh(), yh());
+	v2u64 xh_yl = _mm_mul_epi32(xh(), y());
+	v2u64 xl_yh = _mm_mul_epi32(x(), yh());
+
+	// xh_yl
+	v2u64 med_l_0 = impl::vpsllq_const<32>::v(xh_yl());
+	v2u64 med_h_0 = impl::vpshufd<1,3,0,2>::v(xh_yl());
+	med_h_0 = _mm_cvtepi32_epi64(med_h_0());
+	xl_yl += med_l_0;
+	v2u64 carry_0 = med_l_0 > xl_yl;
+	xh_yh += med_h_0;
+	xh_yh += carry_0;
+	
+	// xl_yh
+	v2u64 med_l_1 = impl::vpsllq_const<32>::v(xl_yh());
+	v2u64 med_h_1 = impl::vpshufd<1,3,0,2>::v(xl_yh());
+	med_h_1 = _mm_cvtepi32_epi64(med_h_1());
+	xl_yl += med_l_1;
+	v2u64 carry_1 = med_l_1 > xl_yl;
+	xh_yh += med_h_1;
+	xh_yh += carry_1;
+	v2s64 ph(xh_yh), pl(xl_yl);
+	return std::make_pair(pl, ph);
+#else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
 	std::pair<v2u64, v2u64> ur(wide_mul(v2u64(x), v2u64(y)));
@@ -460,6 +493,7 @@ x86vec::wide_mul(const v2s64& x, const v2s64& y)
 	v2s64 ph= v2s64(ur.second) - x_and_xsgn_y - y_and_xsgn_x;
 	v2s64 pl= v2s64(ur.first);
 	return std::make_pair(pl, ph);
+#endif
 #endif
 }
 
