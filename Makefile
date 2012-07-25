@@ -75,8 +75,8 @@ emuvec.os: CXXFLAGS-os +=-fno-tree-vectorize -mtune=atom
 emuvec.od: CXXFLAGS-od +=-fno-tree-vectorize -mtune=atom
 emuvec.s: CXXFLAGS-os +=-fno-tree-vectorize -mtune=atom
 
-tests: hackx86vec genx86vec hackx86vec_g
-
+TESTPROGS=hackx86vec genx86vec hackx86vec_g rcp_div rcp_div_g
+tests: $(TESTPROGS)
 
 testfpvec: testfpvec.ol
 	$(LD) -o $@ $< $(LDFLAGS) -lstdc++
@@ -89,6 +89,13 @@ hackx86vec: hackx86vec.ol x86vec_test.ol
 
 hackx86vec_g: hackx86vec.od x86vec_test.od lib$(LIBNAME)-g.a
 	$(LD) -o $@ $^ $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
+
+rcp_div: rcp_div.ol x86vec_test.ol
+	$(LD) -o $@ $^ $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
+
+rcp_div_g: rcp_div.od x86vec_test.od lib$(LIBNAME)-g.a
+	$(LD) -o $@ $^ $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
+
 
 # Full tests
 all-tests: all \
@@ -113,7 +120,7 @@ check-02/testx86vec-02: all
 # cleanup
 clean:
 	-$(RM) -rf *.i *.o* *.so.*  *.a *.so *.map *.s testx86vec
-	-$(RM) -rf genx86vec hackx86vec
+	-$(RM) -rf $(TESTPROGS)
 	$(MAKE) -C check-00 $@
 	$(MAKE) -C check-01 $@
 	$(MAKE) -C check-02 $@
