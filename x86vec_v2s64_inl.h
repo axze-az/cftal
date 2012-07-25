@@ -450,7 +450,7 @@ x86vec::wide_mul(const v2s64& x, const v2s64& y)
 	v2s64 h(t0.second, t1.second);
 	return std::make_pair(l, h);
 #else
-#if defined (__SSE4_1__)
+#if 0 // defined (__SSE4_1__)
 	//         0         0 (xl_yl)_h  (xl_yl)_l
 	//         0 (xh_yl)_h (xh_yl)_l          0
 	//         0 (xl_yh)_h (xl_yh)_l          0
