@@ -240,8 +240,13 @@ inline
 x86vec::v4s32
 x86vec::operator-(const v4s32& a)
 {
+#if defined (__SSSE3__)
+	const __m128i sgn_bits= v_sign_s32_msk::iv();
+	return _mm_sign_epi32(a(), sgn_bits);
+#else
         const __m128i zero = impl::make_zero_int::v();
         return _mm_sub_epi32(zero, a());
+#endif
 }
 
 inline

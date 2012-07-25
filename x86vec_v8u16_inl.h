@@ -242,8 +242,13 @@ inline
 x86vec::v8u16
 x86vec::operator-(const v8u16& a)
 {
+#if defined (__SSSE3__)
+	const __m128i sgn_bits= v_sign_s16_msk::iv();
+	return _mm_sign_epi16(a(), sgn_bits);
+#else
         const __m128i zero = impl::make_zero_int::v();
         return _mm_sub_epi16(zero, a());
+#endif
 }
 
 inline
