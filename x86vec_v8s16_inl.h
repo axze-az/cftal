@@ -347,7 +347,9 @@ x86vec::v8s16 x86vec::operator< (const v8s16& a, const v8s16& b)
 inline
 x86vec::v8s16 x86vec::operator<= (const v8s16& a, const v8s16& b)
 {
-	return ~(b > a);
+	// a<= b: a == min(a, b);
+	__m128i min_ab = _mm_min_epi16(b(), a());
+	return _mm_cmpeq_epi16(a(), min_ab);
 }
 
 inline
@@ -365,7 +367,9 @@ x86vec::v8s16 x86vec::operator!= (const v8s16& a, const v8s16& b)
 inline
 x86vec::v8s16 x86vec::operator>= (const v8s16& a, const v8s16& b)
 {
-        return ~(a < b);
+	// a>= b: a == max(a, b);
+	__m128i max_ab = _mm_max_epi16(b(), a());
+	return _mm_cmpeq_epi16(a(), max_ab);
 }
 
 inline

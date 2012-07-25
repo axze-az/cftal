@@ -345,7 +345,13 @@ x86vec::v4u32 x86vec::operator< (const v4u32& a, const v4u32& b)
 inline
 x86vec::v4u32 x86vec::operator<= (const v4u32& a, const v4u32& b)
 {
+#if defined (__SSE4_1__)
+	// a<= b: a == min(a, b);
+	__m128i min_ab = _mm_min_epu32(b(), a());
+	return _mm_cmpeq_epi16(a(), min_ab);
+#else
 	return ~(b > a);
+#endif
 }
 
 inline
@@ -363,7 +369,13 @@ x86vec::v4u32 x86vec::operator!= (const v4u32& a, const v4u32& b)
 inline
 x86vec::v4u32 x86vec::operator>= (const v4u32& a, const v4u32& b)
 {
+#if defined (__SSE4_1__)
+	// a>= b: a == max(a, b);
+	__m128i max_ab = _mm_max_epu32(b(), a());
+	return _mm_cmpeq_epi32(a(), max_ab);
+#else
 	return ~(a < b);
+#endif
 }
 
 inline
