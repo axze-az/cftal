@@ -12,9 +12,12 @@ namespace cftal {
         template <class _V>
         _V remainder(const _V& n, const _V& d, const _V& q);
 
-	// return low part in first, high part in second
+	// return low part in first, high part in second of a*b
         template <class _T>
         std::pair<_T, _T> wide_mul(const _T& a, const _T& b);
+	// return high part of a*b
+	template <class _T>
+	_T mulh(const _T& a, const _T& b);
 
         namespace impl {
 
@@ -404,6 +407,13 @@ cftal::wide_mul(const _T& x, const _T& y)
                 mul_type;
         mul_type m;
         return m(x, y);
+}
+
+template <class _T>
+inline
+_T cftal::mulh(const _T& x, const _T& y)
+{
+	return wide_mul(x, y).second;
 }
 
 // Local variables:
