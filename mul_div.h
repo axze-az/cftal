@@ -109,7 +109,7 @@ namespace cftal {
 			}
 		};
 
-#if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
+#if 0 //defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
 		template <>
 		struct wide_umul<uint64_t> {
 			std::pair<uint64_t, uint64_t>
