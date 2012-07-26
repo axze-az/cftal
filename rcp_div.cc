@@ -254,7 +254,7 @@ d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* rem)
 bool
 cftal::test::udiv_64_one(std::uint64_t d)
 {
-	
+	return true;
 }
 
 bool
