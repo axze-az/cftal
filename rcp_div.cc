@@ -140,11 +140,41 @@ cftal::impl::udiv_rcp_2by1_64::_tbl[TABLE_SIZE]={
 cftal::uint64_t
 cftal::impl::udiv_rcp_2by1_64::reciprocal_word(uint64_t d)
 {
-#if 1
+#if 0
 	return udiv_2by1<uint64_t>::d(uint64_t(-1L),
 				      uint64_t(-1L)-d,
 				      d, nullptr).
 		first;
+#else
+#if 1
+	uint32_t v0 = _tbl[d>>55];
+	uint64_t d40 = (d>>24)+1;
+	uint32_t v0_v0 = v0*v0;
+	uint64_t v0_v0_d40 = d40*v0_v0;
+	uint32_t v1= (v0<<11) - uint32_t(v0_v0_d40>>40) -1;
+	uint64_t v1_d40 = v1 * d40;
+	uint64_t v1_shl_13= uint64_t(v1) << 13;
+	uint64_t two_pow_60_m_v1_d40= (1L<<60) - v1_d40;
+	// right part of v2
+	uint64_t v2r= (v1*two_pow_60_m_v1_d40)>>47;
+	uint64_t v2= v1_shl_13 + v2r;
+
+	typedef duint<uint64_t> u_t;
+	// typedef unsigned __int128 u_t;
+	u_t _2_pow_96(u_t(1)<<96);
+	uint64_t d63= d == uint64_t(-1L) ? 1L<<63 : (d+1)>>1;
+	// std::pair<uint64_t, uint64_t> p_v2_vd63(wide_mul(v2, d63));
+	// u_t v2_d63(p_v2_vd63.first, p_v2_vd63.second);
+	u_t e = _2_pow_96 - u_t(v2)*d63;
+	if (d&1)
+		e += v2>>1;
+	u_t v2_e = v2* e;
+	uint64_t v3= (v2<<31) + (v2_e.uh()>>1);
+	// uint64_t v3_d= mulh(v3+1, d);
+	u_t v3s = (v3+u_t(u_t(1)<<64) +1UL)*d;
+	// v3s = v3*d + 2^64*d +1d
+	uint64_t v4= v3- uint64_t(v3s>>64);
+	return v4;
 #else
 	uint64_t inv, t0, t1;
 	const uint16_t* tblptr= _tbl;
@@ -165,7 +195,7 @@ cftal::impl::udiv_rcp_2by1_64::reciprocal_word(uint64_t d)
 		"sub %k[rcx], %k[rax] \n\t" // %[rax] = v1
 		
 		// v2 = (v1 << 13) + (v1 * (2^60 - v1*d40) >> 47
-		"movabs $0x1000000000000000, %[rcx] \n\t"
+		"mov $0x1000000000000000, %[rcx] \n\t"
 		"imul %[rax], %[rsi] \n\t"
 		"sub %[rsi], %[rcx] \n\t"
 		"imul %[rax], %[rcx] \n\t"
@@ -199,6 +229,7 @@ cftal::impl::udiv_rcp_2by1_64::reciprocal_word(uint64_t d)
 		: [rdi] "rm" (d)
 		: "cc");
 	return inv;
+#endif
 #endif
 }
 
