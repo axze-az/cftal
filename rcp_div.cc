@@ -138,8 +138,14 @@ cftal::impl::udiv_rcp_2by1_64::_tbl[TABLE_SIZE]={
 };
 
 cftal::uint64_t
-cftal::impl::udiv_rcp_2by1_64::reciprocal_word(std::uint64_t d)
+cftal::impl::udiv_rcp_2by1_64::reciprocal_word(uint64_t d)
 {
+#if 1
+	return udiv_2by1<uint64_t>::d(uint64_t(-1L),
+				      uint64_t(-1L)-d,
+				      d, nullptr).
+		first;
+#else
 	uint64_t inv, t0, t1;
 	const uint16_t* tblptr= _tbl;
 	__asm__ __volatile__(
@@ -193,6 +199,7 @@ cftal::impl::udiv_rcp_2by1_64::reciprocal_word(std::uint64_t d)
 		: [rdi] "rm" (d)
 		: "cc");
 	return inv;
+#endif
 }
 
 cftal::uint64_t
@@ -200,11 +207,10 @@ cftal::impl::udiv_rcp_2by1_64::
 sd(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t* rem)
 {
 	std::pair<uint64_t, uint64_t> p0(wide_mul(u1, inv));
-	uint64_t q0= p0.first;
-	uint64_t q1= p0.second;
-	q1 += u1;
-	q0 += u0;
-	q1 += (q0 < u0) ? 1 : 0;
+	uint64_t q0= p0.first + u0;
+	uint64_t q1= p0.second + u1;
+	if (q0 < u0)
+		++q1;
 	++q1;
 	uint64_t r = u0 - q1*d;
 	if (r > q0) {
@@ -224,11 +230,19 @@ std::pair<cftal::uint64_t, cftal::uint64_t>
 cftal::impl::udiv_rcp_2by1_64::
 d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* rem)
 {
+	if (v==0)
+		return std::make_pair(u0, u1/v);
+#if 0
+	if (v==1) {
+		if (rem)
+			*rem = 0;
+		return std::make_pair(u0, u1);
+	}
+#endif
 	unsigned l_z=lzcnt(v);
 	// normalized values of v, u0, u1
-	uint64_t nv, s2, s1, s0, r=0;
+	uint64_t nv, s2, s1, s0;
 	unsigned neg_shift = 64 - l_z;
-		
 	if (l_z == 0) {
 		nv = v;
 		s1 = u1;
@@ -243,14 +257,13 @@ d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* rem)
 		s2 = u1 >> neg_shift;
 	}
 	uint64_t inv(reciprocal_word(nv));
-	uint64_t q1(0), q0(0);
-	if (s2 != 0) {
+	uint64_t q1(0), q0(0), r(s1);
+	if (s2 != 0 || s1>=nv) {
 		q1=sd(s1, s2, nv, inv, &r);
-		q0=sd(s0, r, nv, inv, rem);
-		
-	} else {
-		q0=sd(s0, s1, nv, inv, rem);
 	}
+	q0=sd(s0, r, nv, inv, &r);
+	if (rem)
+		*rem = l_z ? r >> l_z : r;
 	return std::make_pair(q0, q1);
 }
 
@@ -260,17 +273,16 @@ cftal::test::udiv_64_one(std::uint64_t v)
 	x86vec::test::cmwc_rng<uint64_t> rng(42);
 	for (int i=0; i<20000; ++i) {
 		uint64_t ul= rng.next();
-		uint64_t uh= 0; // rng.next();
+		uint64_t uh= rng.next();
 		
 		typedef unsigned __int128 u128_t;
 
-		u128_t u((u128_t(uh)<<64)| ul);
-		u128_t q128(u / v);
-		u128_t r128(remainder(u, u128_t(v), q128));
-
-		uint64_t q_ref_h=uint64_t(q128>>64);
-		uint64_t q_ref_l=uint64_t(q128);
-		uint64_t r_ref= uint64_t(r128);
+		uint64_t r_ref=0;
+		std::pair<uint64_t, uint64_t> pq_ref(
+			impl::udiv_2by1<uint64_t>::d(ul, uh, v, &r_ref));
+		
+		uint64_t q_ref_l=pq_ref.first;
+		uint64_t q_ref_h=pq_ref.second;
 
 		uint64_t r=0;
 		std::pair<uint64_t, uint64_t> pq(
@@ -279,7 +291,7 @@ cftal::test::udiv_64_one(std::uint64_t v)
 		uint64_t q_l = pq.first;
 		uint64_t q_h = pq.second;
 
-		if (q_l != q_ref_l || q_h != q_ref_h || r != r_ref) {
+		if (q_l != q_ref_l || q_h != q_ref_h || r != r_ref ) {
 			std::cout << '\n'
 				  << std::hex 
 				  << "0x"
@@ -294,14 +306,21 @@ cftal::test::udiv_64_one(std::uint64_t v)
 				  << q_h << ':' 
 				  << std::setw(16)
 				  << q_l
+				  << " rem: "
+				  << "0x"
+				  << r
 				  << " != (ref:)\n"
 				  << "0x"
 				  << q_ref_h << ':' 
 				  << std::setw(16)
 				  << q_ref_l
+				  << " rem: "
+				  << "0x"
+				  << r_ref
 				  << std::dec
 				  << std::setfill(' ')
 				  << "\n";
+			
 			return false;
 		}
 	}
@@ -311,10 +330,12 @@ cftal::test::udiv_64_one(std::uint64_t v)
 bool
 cftal::test::udiv_64()
 {
-#if 1
+#if 0
 	std::pair<uint64_t, uint64_t> t(
-		impl::udiv_rcp_2by1_64::d(0,0x8  ,
-					  0x8000000000000000, nullptr));
+		impl::udiv_rcp_2by1_64::d(
+			0x15dcc1ff2bcdf918UL,
+			0xffdfd58d2bbc61abUL,
+			0xfe00ec8213f1d401UL, nullptr));
 	std::cout << std::hex
 		  << t.first
 		  << ' ' 
@@ -332,14 +353,14 @@ cftal::test::udiv_64()
 	if (!rc)
 		return rc;
 	x86vec::test::cmwc_rng<uint64_t> rng(42*42);
-	const int N = 0x1000000;
+	const int N = 0x100000;
 	divisor<double> dd(N);
 	for (int i=2; (i< N) && (rc ==true) ; ++i) {
 		uint64_t v= rng.next();
 		if ((i & 0x1FF)==0x1FF) {
 			std::cout << "udiv_rcp_64: " 
 				  << std::setw(8)
-				  << double(i)*100/ dd
+				  << (double(i)*100)/ dd
 				  << '\r' << std::flush;
 		}
 		rc &= udiv_64_one(v);
