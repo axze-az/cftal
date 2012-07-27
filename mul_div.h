@@ -141,15 +141,33 @@ namespace cftal {
 
         namespace impl {
 
+                template <class _U>
+                struct udiv_result {
+                        _U _q0;
+                        _U _q1;
+                        _U _r;
+                        udiv_result(const _U& q0, const _U& q1, const _U& r)
+                                : _q0(q0), _q1(q1), _r(r) {
+                        }
+                };
+
+                template <class _U>
+                udiv_result<_U>
+                make_udiv_result(const _U& q0, const _U& q1, const _U& r)
+                {
+                        return udiv_result<_U>(q0, q1, r);
+                }
+
+
                 template <class _U, class _UHALF=_U>
                 class udiv_2by1 {
                 public:
                         static
-                        std::pair<_U, _U>
-                        d(const _U& u0, const _U& u1, const _U& v, _U* r);
+                        udiv_result<_U>
+                        d(const _U& u0, const _U& u1, const _U& v);
                 private:
                         static _U
-                        g(const _U& uh, const _U& ul,  const _U& v, _U* r);
+                        g(const _U& uh, const _U& ul,  const _U& v, _U& r);
                 };
 #if !defined (__NO_UDIV_2BY1_SPECIALIZATIONS__)
 
@@ -159,14 +177,13 @@ namespace cftal {
                         static_assert(std::is_same<uint8_t, _UHALF>::value,
                                       "test");
                         static
-                        std::pair<uint8_t, uint8_t>
-                        d(uint8_t u0, uint8_t u1, uint8_t v, uint8_t* r) {
+                        udiv_result<uint8_t>
+                        d(uint8_t u0, uint8_t u1, uint8_t v) {
                                 uint16_t u((uint16_t(u1)<<8)|u0);
                                 uint16_t q(u/v);
-                                if (r)
-                                        *r= remainder(u, uint16_t(v), q);
-                                return std::make_pair(uint8_t(q),
-                                                      uint8_t(q>>8));
+                                uint8_t r(u%v);
+                                uint8_t q0(q), q1(q>>8);
+                                return make_udiv_result(q0, q1, r);
                         }
                 };
 
@@ -174,14 +191,13 @@ namespace cftal {
                 class udiv_2by1<uint16_t, _UHALF> {
                 public:
                         static
-                        std::pair<uint16_t, uint16_t>
-                        d(uint16_t u0, uint16_t u1, uint16_t v, uint16_t* r) {
+                        udiv_result<uint16_t>
+                        d(uint16_t u0, uint16_t u1, uint16_t v) {
                                 uint32_t u((uint32_t(u1)<<16)|u0);
                                 uint32_t q(u/v);
-                                if (r)
-                                        *r= remainder(u, uint32_t(v), q);
-                                return std::make_pair(uint16_t(q),
-                                                      uint16_t(q>>16));
+                                uint16_t r(u%v);
+                                uint16_t q0(q), q1(q>>16);
+                                return make_udiv_result(q0, q1, r);
                         }
                 };
 
@@ -189,32 +205,34 @@ namespace cftal {
                 class udiv_2by1<uint32_t, _UHALF> {
                 public:
                         static
-                        std::pair<uint32_t, uint32_t>
-                        d(uint32_t u0, uint32_t u1, uint32_t v, uint32_t* r) {
+                        udiv_result<uint32_t>
+                        d(uint32_t u0, uint32_t u1, uint32_t v) {
                                 uint64_t u((uint64_t(u1)<<32)|u0);
                                 uint64_t q(u/v);
-                                if (r)
-                                        *r= remainder(u, uint64_t(v), q);
-                                return std::make_pair(uint32_t(q),
-                                                      uint32_t(q>>32));
+                                uint32_t r(u%v);
+                                uint32_t q0(q), q1(q>>32);
+                                return make_udiv_result(q0, q1, r);
                         }
                 };
 
 #if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
-                template <class _UHALF>
-                class udiv_2by1<uint64_t, _UHALF> {
+
+                class udiv_2by1_div_64 {
                 public:
                         static
-                        std::pair<uint64_t, uint64_t>
-                        d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* r) {
+                        udiv_result<uint64_t>
+                        d(uint64_t u0, uint64_t u1, uint64_t v) {
                                 typedef unsigned __int128 u128_t;
                                 u128_t u((u128_t(u1)<<64)|u0);
                                 u128_t q(u/v);
-                                if (r)
-                                        *r= remainder(u, u128_t(v), q);
-                                return std::make_pair(uint64_t(q),
-                                                      uint64_t(q>>64));
+                                uint64_t r(u%v);
+                                uint64_t q0(q), q1(q>>64);
+                                return make_udiv_result(q0, q1, r);
                         }
+                };
+
+                template <class _UHALF>
+                class udiv_2by1<uint64_t, _UHALF> : public udiv_2by1_div_64 {
                 };
 #endif
 
@@ -290,33 +308,27 @@ cftal::impl::wide_smul<_S>::operator()(const _S& x, const _S& y)
 }
 
 template <class _U, class _UHALF>
-std::pair<_U, _U>
+cftal::impl::udiv_result<_U>
 cftal::impl::udiv_2by1<_U, _UHALF>::
-d(const _U& u0, const _U& u1, const _U& v, _U* rem)
+d(const _U& u0, const _U& u1, const _U& v)
 {
         _U q1(0); _U q0(0);
+        _U r(0);
         if (u1 >= v) {
                 // j== 1
-                _U r;
-                q1= g(u1, 0, v, &r);
+                q1= g(u1, 0, v, r);
                 // j== 0
-                q0= g(u0, r, v, rem);
+                q0= g(u0, r, v, r);
         } else {
-                q0= g(u0, u1, v, rem);
+                q0= g(u0, u1, v, r);
         }
-        return std::make_pair(q0, q1);
+        return make_udiv_result(q0, q1, r);
 }
 
 template <class _U, class _UHALF>
 _U cftal::impl::udiv_2by1<_U, _UHALF>::
-g(const _U& ul, const _U& uh, const _U& cv, _U* r)
+g(const _U& ul, const _U& uh, const _U& cv, _U& r)
 {
-#if 0
-        enum {
-                N = sizeof(_U)*8,
-                N2 = N>>1
-        };
-#endif
         const unsigned N= sizeof(_U)*8;
         const unsigned N2= N>>1;
         // number base of the division
@@ -340,8 +352,7 @@ g(const _U& ul, const _U& uh, const _U& cv, _U* r)
         _U v(cv);
         if (uh >= v) {
                 // If overflow, set rem. to an impossible value,
-                if (r != nullptr)
-                        *r = U_MAX;
+		r = U_MAX;
                 // and return the largest possible quotient.
                 return U_MAX;
         }
@@ -389,10 +400,8 @@ g(const _U& ul, const _U& uh, const _U& cv, _U* r)
                 if (rhat >= b)
                         break;
         }
-        if (r != nullptr) {
-                // If remainder is wanted, return it.
-                *r = (un21*b + un0 - q0*v) >> s;
-        }
+        // If remainder is wanted, return it.
+        r = (un21*b + un0 - q0*v) >> s;
         return q1*b + q0;
 }
 
@@ -402,11 +411,11 @@ std::pair<_T, _T>
 cftal::wide_mul(const _T& x, const _T& y)
 {
         typedef typename std::conditional<std::is_signed<_T>::value,
-                impl::wide_smul<_T>,
-                impl::wide_umul<_T> >::type
-                mul_type;
-        mul_type m;
-        return m(x, y);
+					  impl::wide_smul<_T>,
+					  impl::wide_umul<_T> >::type
+		mul_type;
+	mul_type m;
+	return m(x, y);
 }
 
 template <class _T>

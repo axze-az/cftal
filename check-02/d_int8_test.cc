@@ -248,8 +248,6 @@ namespace cftal {
 			check_bi_op<_T, _V, div_half>("div_half", 1, 255);
 			check_bi_op<_T, _V, std::divides>("div", 1);
 		}
-
-
 	}
 }
 

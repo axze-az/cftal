@@ -7,11 +7,11 @@ namespace cftal {
 
 	namespace impl {
 
-		class udiv_rcp_2by1_64 {
+		class udiv_2by1_rcp_64 {
 		public:
 			static
-			std::pair<uint64_t, uint64_t>
-			d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* r);
+			udiv_result<uint64_t>
+			d(uint64_t u0, uint64_t u1, uint64_t v);
 			// we use only the high part of the table
 			enum { TABLE_SIZE = 1<<9 };
 		private:
@@ -22,7 +22,7 @@ namespace cftal {
 			static
 			std::uint64_t
 			sd(uint64_t u0, uint64_t u1, uint64_t v,
-			   uint64_t inv, uint64_t* r);
+			   uint64_t inv, uint64_t& r);
 			static const uint16_t _tbl[TABLE_SIZE];
 		};
 
@@ -38,9 +38,9 @@ namespace cftal {
 void
 cftal::impl::print_rcp_64_table(std::ostream& s)
 {
-	const unsigned N = udiv_rcp_2by1_64::TABLE_SIZE;
+	const unsigned N = udiv_2by1_rcp_64::TABLE_SIZE;
 	s << "const cftal::uint16_t\n"
-	  << "cftal::impl::udiv_rcp_2by1_64::_tbl[TABLE_SIZE]={\n";
+	  << "cftal::impl::udiv_2by1_rcp_64::_tbl[TABLE_SIZE]={\n";
 	const std::uint32_t d64 = (1<<19) - 3*(1<<8);
 	// empty lower part of table
 	s << "\t// empty lower part\n";
@@ -68,7 +68,7 @@ cftal::impl::print_rcp_64_table(std::ostream& s)
 }
 
 const cftal::uint16_t
-cftal::impl::udiv_rcp_2by1_64::_tbl[TABLE_SIZE]={
+cftal::impl::udiv_2by1_rcp_64::_tbl[TABLE_SIZE]={
 	// empty lower part
 	0x000,	0x000,	0x000,	0x000,	0x000,	0x000,	0x000,	0x000,
 	0x000,	0x000,	0x000,	0x000,	0x000,	0x000,	0x000,	0x000,
@@ -138,7 +138,7 @@ cftal::impl::udiv_rcp_2by1_64::_tbl[TABLE_SIZE]={
 };
 
 cftal::uint64_t
-cftal::impl::udiv_rcp_2by1_64::reciprocal_word(uint64_t d)
+cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 {
 #if 0
 	return udiv_2by1<uint64_t>::d(uint64_t(-1L),
@@ -234,15 +234,22 @@ cftal::impl::udiv_rcp_2by1_64::reciprocal_word(uint64_t d)
 }
 
 cftal::uint64_t
-cftal::impl::udiv_rcp_2by1_64::
-sd(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t* rem)
+cftal::impl::udiv_2by1_rcp_64::
+sd(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t& rem)
 {
 	std::pair<uint64_t, uint64_t> p0(wide_mul(u1, inv));
+#if 1
+	duint<uint64_t> q(p0.first, p0.second);
+	q += duint<uint64_t>(u0, u1+1);
+	uint64_t q0= q.l();
+	uint64_t q1= q.uh();
+#else
 	uint64_t q0= p0.first + u0;
 	uint64_t q1= p0.second + u1;
 	if (q0 < u0)
 		++q1;
 	++q1;
+#endif
 	uint64_t r = u0 - q1*d;
 	if (r > q0) {
 		--q1;
@@ -252,22 +259,21 @@ sd(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t* rem)
 		++q1;
 		r -= d;
 	}
-	if (rem)
-		*rem = r;
+	rem = r;
 	return q1;
 }
 
-std::pair<cftal::uint64_t, cftal::uint64_t>
-cftal::impl::udiv_rcp_2by1_64::
-d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* rem)
+cftal::impl::udiv_result<uint64_t>
+cftal::impl::udiv_2by1_rcp_64::
+d(uint64_t u0, uint64_t u1, uint64_t v)
 {
-	if (v==0)
-		return std::make_pair(u0, u1/v);
+	if (v==0) 
+		return make_udiv_result(u0, u1/v, u1);
 #if 0
 	if (v==1) {
 		if (rem)
 			*rem = 0;
-		return std::make_pair(u0, u1);
+		return make_udiv_result(u0, v, 0);
 	}
 #endif
 	unsigned l_z=lzcnt(v);
@@ -290,12 +296,12 @@ d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* rem)
 	uint64_t inv(reciprocal_word(nv));
 	uint64_t q1(0), q0(0), r(s1);
 	if (s2 != 0 || s1>=nv) {
-		q1=sd(s1, s2, nv, inv, &r);
+		q1=sd(s1, s2, nv, inv, r);
 	}
-	q0=sd(s0, r, nv, inv, &r);
-	if (rem)
-		*rem = l_z ? r >> l_z : r;
-	return std::make_pair(q0, q1);
+	q0=sd(s0, r, nv, inv, r);
+	if (l_z)
+		r >>= l_z;
+	return make_udiv_result(q0, q1, r);
 }
 
 bool
@@ -308,19 +314,19 @@ cftal::test::udiv_64_one(std::uint64_t v)
 		
 		typedef unsigned __int128 u128_t;
 
-		uint64_t r_ref=0;
-		std::pair<uint64_t, uint64_t> pq_ref(
-			impl::udiv_2by1<uint64_t>::d(ul, uh, v, &r_ref));
+		impl::udiv_result<uint64_t> qr_ref(
+			impl::udiv_2by1_div_64::d(ul, uh, v));
 		
-		uint64_t q_ref_l=pq_ref.first;
-		uint64_t q_ref_h=pq_ref.second;
+		uint64_t r_ref= qr_ref._r;
+		uint64_t q_ref_l=qr_ref._q0;
+		uint64_t q_ref_h=qr_ref._q1;
 
-		uint64_t r=0;
-		std::pair<uint64_t, uint64_t> pq(
-			impl::udiv_rcp_2by1_64::d(ul, uh, v, &r));
+		impl::udiv_result<uint64_t> qr(
+			impl::udiv_2by1_rcp_64::d(ul, uh, v));
 
-		uint64_t q_l = pq.first;
-		uint64_t q_h = pq.second;
+		uint64_t r=qr._r;
+		uint64_t q_l = qr._q0;
+		uint64_t q_h = qr._q1;
 
 		if (q_l != q_ref_l || q_h != q_ref_h || r != r_ref ) {
 			std::cout << '\n'
@@ -363,7 +369,7 @@ cftal::test::udiv_64()
 {
 #if 0
 	std::pair<uint64_t, uint64_t> t(
-		impl::udiv_rcp_2by1_64::d(
+		impl::udiv_2by1_rcp_64::d(
 			0x15dcc1ff2bcdf918UL,
 			0xffdfd58d2bbc61abUL,
 			0xfe00ec8213f1d401UL, nullptr));
@@ -388,11 +394,12 @@ cftal::test::udiv_64()
 	divisor<double> dd(N);
 	for (int i=2; (i< N) && (rc ==true) ; ++i) {
 		uint64_t v= rng.next();
-		if ((i & 0x1FF)==0x1FF) {
+		std::cout << std::fixed << std::setprecision(4);
+		if ((i & 0x3FF)==0x3FF) {
 			std::cout << "udiv_rcp_64: " 
-				  << std::setw(8)
+				  << std::setw(7)
 				  << (double(i)*100)/ dd
-				  << '\r' << std::flush;
+				  << " %\r" << std::flush;
 		}
 		rc &= udiv_64_one(v);
 		if (!rc)

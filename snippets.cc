@@ -4,6 +4,27 @@
 
 typedef unsigned __int128 u128_t;
 
+u128_t sll(u128_t r, unsigned s)
+{
+	return r<<s;
+}
+
+cftal::uint128_t sll(cftal::uint128_t r, unsigned s)
+{
+	return r<<s;
+}
+
+
+u128_t ssli17(u128_t r)
+{
+	return r<<17;
+}
+
+u128_t ssli96(u128_t r)
+{
+	return r<<96;
+}
+
 u128_t neg(u128_t r)
 {
 	return -r;

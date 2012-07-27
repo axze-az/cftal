@@ -719,17 +719,16 @@ template <typename _T>
 cftal::duint<_T> cftal::operator/(const duint<_T>& a, const _T& b)
 {
 	typedef impl::udiv_2by1<_T, _T> div_type;
-	std::pair<_T, _T> pq(div_type::d(a.l(), a.uh(), b, nullptr));
-	duint<_T> q(pq.first, pq.second);
-	return q;
+	impl::udiv_result<_T> qr(div_type::d(a.l(), a.uh(), b));
+	return duint<_T>(qr._q0, qr._q1);
 }
 
 template <typename _T>
 cftal::duint<_T> cftal::operator/(const duint<_T>& a, const duint<_T>& b)
 {
 	typedef impl::udiv_2by1<duint<_T>, _T> div_type;
-	std::pair<duint<_T>, duint<_T> > pq(div_type::d(a, 0, b, nullptr));
-	return pq.first;
+	impl::udiv_result<duint<_T> > qr(div_type::d(a, duint<_T>(0), b));
+	return qr._q0;
 }
 
 template <typename _T>
@@ -742,22 +741,23 @@ cftal::duint<_T> cftal::operator/(const _T& a, const duint<_T>& b)
 template <typename _T>
 cftal::duint<_T> cftal::operator%(const duint<_T>& a, const _T& b)
 {
-	duint<_T> q(a/b);
-	return remainder(a, duint<_T>(b), q);
+	typedef impl::udiv_2by1<_T, _T> div_type;
+	impl::udiv_result<_T> qr(div_type::d(a.l(), a.uh(), b));
+	return duint<_T>(qr._r);
 }
 
 template <typename _T>
 cftal::duint<_T> cftal::operator%(const duint<_T>& a, const duint<_T>& b)
 {
-	duint<_T> q(a/b);
-	return remainder(a, b, q);
+	typedef impl::udiv_2by1<duint<_T>, _T> div_type;
+	impl::udiv_result<duint<_T> > qr(div_type::d(a, duint<_T>(0), b));
+	return qr._r;
 }
 
 template <typename _T>
 cftal::duint<_T> cftal::operator%(const _T& a, const duint<_T>& b)
 {
-	duint<_T> ad(a), q(ad/b);
-	return remainder(ad, b, q);
+	return duint<_T>(a) % b;
 }
 
 template <typename _T>
@@ -1225,8 +1225,12 @@ template <typename _T>
 cftal::dint<_T> cftal::operator*(const dint<_T>& a, const _T& b)
 {
 	typedef typename dint<_T>::base_type du_t;
-	return static_cast<const du_t&>(a) *
-		static_cast<const _T&>(b);
+	typedef typename std::make_unsigned<_T>::type u_t;
+	du_t p(static_cast<const du_t&>(a) *
+	       static_cast<const u_t&>(b));
+	if (impl::get_sign(b))
+		p.uh(p.uh() -a.l());
+	return p;
 }
 
 template <typename _T>
