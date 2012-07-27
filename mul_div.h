@@ -12,12 +12,12 @@ namespace cftal {
         template <class _V>
         _V remainder(const _V& n, const _V& d, const _V& q);
 
-	// return low part in first, high part in second of a*b
+        // return low part in first, high part in second of a*b
         template <class _T>
         std::pair<_T, _T> wide_mul(const _T& a, const _T& b);
-	// return high part of a*b
-	template <class _T>
-	_T mulh(const _T& a, const _T& b);
+        // return high part of a*b
+        template <class _T>
+        _T mulh(const _T& a, const _T& b);
 
         namespace impl {
 
@@ -36,186 +36,186 @@ namespace cftal {
                 };
 
 #if !defined (__NO_WIDE_MUL_SPECIALIZATIONS__)
-		// specializations for standard types.
-		template <>
-		struct wide_umul<uint8_t> {
-			std::pair<uint8_t, uint8_t>
-			operator()(const uint8_t a, const uint8_t b)
-				const {
-				uint16_t p(uint16_t(a)*b);
-				uint8_t l(p);
-				uint8_t h(p>>8);
-				return std::make_pair(l, h);
-			}
-		};
+                // specializations for standard types.
+                template <>
+                struct wide_umul<uint8_t> {
+                        std::pair<uint8_t, uint8_t>
+                        operator()(const uint8_t a, const uint8_t b)
+                                const {
+                                uint16_t p(uint16_t(a)*b);
+                                uint8_t l(p);
+                                uint8_t h(p>>8);
+                                return std::make_pair(l, h);
+                        }
+                };
 
-		template <>
-		struct wide_smul<int8_t> {
-			std::pair<int8_t, int8_t>
-			operator()(const int8_t a, const int8_t b)
-				const {
-				int16_t p(int16_t(a)*b);
-				int8_t l(p);
-				int8_t h(p>>8);
-				return std::make_pair(l, h);
-			}
-		};
-		
-		template <>
-		struct wide_umul<uint16_t> {
-			std::pair<uint16_t, uint16_t>
-			operator()(const uint16_t a, const uint16_t b)
-				const {
-				uint32_t p(uint32_t(a)*b);
-				uint16_t l(p);
-				uint16_t h(p>>16);
-				return std::make_pair(l, h);
-			}
-		};
+                template <>
+                struct wide_smul<int8_t> {
+                        std::pair<int8_t, int8_t>
+                        operator()(const int8_t a, const int8_t b)
+                                const {
+                                int16_t p(int16_t(a)*b);
+                                int8_t l(p);
+                                int8_t h(p>>8);
+                                return std::make_pair(l, h);
+                        }
+                };
 
-		template <>
-		struct wide_smul<int16_t> {
-			std::pair<int16_t, int16_t>
-			operator()(const int16_t a, const int16_t b)
-				const {
-				int32_t p(int32_t(a)*b);
-				int16_t l(p);
-				int16_t h(p>>16);
-				return std::make_pair(l, h);
-			}
-		};
+                template <>
+                struct wide_umul<uint16_t> {
+                        std::pair<uint16_t, uint16_t>
+                        operator()(const uint16_t a, const uint16_t b)
+                                const {
+                                uint32_t p(uint32_t(a)*b);
+                                uint16_t l(p);
+                                uint16_t h(p>>16);
+                                return std::make_pair(l, h);
+                        }
+                };
 
-		template <>
-		struct wide_umul<uint32_t> {
-			std::pair<uint32_t, uint32_t>
-			operator()(const uint32_t a, const uint32_t b)
-				const {
-				uint64_t p(uint64_t(a)*b);
-				uint32_t l(p);
-				uint32_t h(p>>32);
-				return std::make_pair(l, h);
-			}
-		};
+                template <>
+                struct wide_smul<int16_t> {
+                        std::pair<int16_t, int16_t>
+                        operator()(const int16_t a, const int16_t b)
+                                const {
+                                int32_t p(int32_t(a)*b);
+                                int16_t l(p);
+                                int16_t h(p>>16);
+                                return std::make_pair(l, h);
+                        }
+                };
 
-		template <>
-		struct wide_smul<int32_t> {
-			std::pair<int32_t, int32_t>
-			operator()(const int32_t a, const int32_t b)
-				const {
-				int64_t p(int64_t(a)*b);
-				int32_t l(p);
-				int32_t h(p>>32);
-				return std::make_pair(l, h);
-			}
-		};
+                template <>
+                struct wide_umul<uint32_t> {
+                        std::pair<uint32_t, uint32_t>
+                        operator()(const uint32_t a, const uint32_t b)
+                                const {
+                                uint64_t p(uint64_t(a)*b);
+                                uint32_t l(p);
+                                uint32_t h(p>>32);
+                                return std::make_pair(l, h);
+                        }
+                };
 
-#if 0 //defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
-		template <>
-		struct wide_umul<uint64_t> {
-			std::pair<uint64_t, uint64_t>
-			operator()(const uint64_t a, const uint64_t b)
-				const {
-				typedef unsigned __int128 u128_t;
-				u128_t p(u128_t(a)*b);
-				uint64_t l(p);
-				uint64_t h(p>>64);
-				return std::make_pair(l, h);
-			}
-		};
+                template <>
+                struct wide_smul<int32_t> {
+                        std::pair<int32_t, int32_t>
+                        operator()(const int32_t a, const int32_t b)
+                                const {
+                                int64_t p(int64_t(a)*b);
+                                int32_t l(p);
+                                int32_t h(p>>32);
+                                return std::make_pair(l, h);
+                        }
+                };
 
-		template <>
-		struct wide_smul<int64_t> {
-			std::pair<int64_t, int64_t>
-			operator()(const int64_t a, const int64_t b)
-				const {
-				__int128 p(__int128(a)*b);
-				int64_t l(p);
-				int64_t h(p>>64);
-				return std::make_pair(l, h);
-			}
-		};
+#if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
+                template <>
+                struct wide_umul<uint64_t> {
+                        std::pair<uint64_t, uint64_t>
+                        operator()(const uint64_t a, const uint64_t b)
+                                const {
+                                typedef unsigned __int128 u128_t;
+                                u128_t p(u128_t(a)*b);
+                                uint64_t l(p);
+                                uint64_t h(p>>64);
+                                return std::make_pair(l, h);
+                        }
+                };
+
+                template <>
+                struct wide_smul<int64_t> {
+                        std::pair<int64_t, int64_t>
+                        operator()(const int64_t a, const int64_t b)
+                                const {
+                                __int128 p(__int128(a)*b);
+                                int64_t l(p);
+                                int64_t h(p>>64);
+                                return std::make_pair(l, h);
+                        }
+                };
 #endif
 
-#endif     
-	}
-	
+#endif
+        }
+
         namespace impl {
 
                 template <class _U, class _UHALF=_U>
                 class udiv_2by1 {
-		public:
-			static 
-			std::pair<_U, _U>
-			d(const _U& u0, const _U& u1, const _U& v, _U* r);
-		private:
-			static _U
-			g(const _U& uh, const _U& ul,  const _U& v, _U* r);
+                public:
+                        static
+                        std::pair<_U, _U>
+                        d(const _U& u0, const _U& u1, const _U& v, _U* r);
+                private:
+                        static _U
+                        g(const _U& uh, const _U& ul,  const _U& v, _U* r);
                 };
 #if !defined (__NO_UDIV_2BY1_SPECIALIZATIONS__)
 
-		template <class _UHALF>
-		class udiv_2by1<uint8_t, _UHALF> {
-		public:
-			static_assert(std::is_same<uint8_t, _UHALF>::value,
-				      "test");
-			static
-			std::pair<uint8_t, uint8_t>
-			d(uint8_t u0, uint8_t u1, uint8_t v, uint8_t* r) {
-				uint16_t u((uint16_t(u1)<<8)|u0);
-				uint16_t q(u/v);
-				if (r) 
-					*r= remainder(u, uint16_t(v), q);
-				return std::make_pair(uint8_t(q),
-						      uint8_t(q>>8));
-			}
-		};
+                template <class _UHALF>
+                class udiv_2by1<uint8_t, _UHALF> {
+                public:
+                        static_assert(std::is_same<uint8_t, _UHALF>::value,
+                                      "test");
+                        static
+                        std::pair<uint8_t, uint8_t>
+                        d(uint8_t u0, uint8_t u1, uint8_t v, uint8_t* r) {
+                                uint16_t u((uint16_t(u1)<<8)|u0);
+                                uint16_t q(u/v);
+                                if (r)
+                                        *r= remainder(u, uint16_t(v), q);
+                                return std::make_pair(uint8_t(q),
+                                                      uint8_t(q>>8));
+                        }
+                };
 
-		template <class _UHALF>
-		class udiv_2by1<uint16_t, _UHALF> {
-		public:
-			static
-			std::pair<uint16_t, uint16_t>
-			d(uint16_t u0, uint16_t u1, uint16_t v, uint16_t* r) {
-				uint32_t u((uint32_t(u1)<<16)|u0);
-				uint32_t q(u/v);
-				if (r) 
-					*r= remainder(u, uint32_t(v), q);
-				return std::make_pair(uint16_t(q),
-						      uint16_t(q>>16));
-			}
-		};
+                template <class _UHALF>
+                class udiv_2by1<uint16_t, _UHALF> {
+                public:
+                        static
+                        std::pair<uint16_t, uint16_t>
+                        d(uint16_t u0, uint16_t u1, uint16_t v, uint16_t* r) {
+                                uint32_t u((uint32_t(u1)<<16)|u0);
+                                uint32_t q(u/v);
+                                if (r)
+                                        *r= remainder(u, uint32_t(v), q);
+                                return std::make_pair(uint16_t(q),
+                                                      uint16_t(q>>16));
+                        }
+                };
 
-		template <class _UHALF>
-		class udiv_2by1<uint32_t, _UHALF> {
-		public:
-			static
-			std::pair<uint32_t, uint32_t>
-			d(uint32_t u0, uint32_t u1, uint32_t v, uint32_t* r) {
-				uint64_t u((uint64_t(u1)<<32)|u0);
-				uint64_t q(u/v);
-				if (r) 
-					*r= remainder(u, uint64_t(v), q);
-				return std::make_pair(uint32_t(q),
-						      uint32_t(q>>32));
-			}
-		};
+                template <class _UHALF>
+                class udiv_2by1<uint32_t, _UHALF> {
+                public:
+                        static
+                        std::pair<uint32_t, uint32_t>
+                        d(uint32_t u0, uint32_t u1, uint32_t v, uint32_t* r) {
+                                uint64_t u((uint64_t(u1)<<32)|u0);
+                                uint64_t q(u/v);
+                                if (r)
+                                        *r= remainder(u, uint64_t(v), q);
+                                return std::make_pair(uint32_t(q),
+                                                      uint32_t(q>>32));
+                        }
+                };
 
 #if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
-		template <class _UHALF>
-		class udiv_2by1<uint64_t, _UHALF> {
-		public:
-			static
-			std::pair<uint64_t, uint64_t>
-			d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* r) {
-				typedef unsigned __int128 u128_t;
-				u128_t u((u128_t(u1)<<64)|u0);
-				u128_t q(u/v);
-				if (r) 
-					*r= remainder(u, u128_t(v), q);
-				return std::make_pair(uint64_t(q),
-						      uint64_t(q>>64));
-			}
-		};
+                template <class _UHALF>
+                class udiv_2by1<uint64_t, _UHALF> {
+                public:
+                        static
+                        std::pair<uint64_t, uint64_t>
+                        d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* r) {
+                                typedef unsigned __int128 u128_t;
+                                u128_t u((u128_t(u1)<<64)|u0);
+                                u128_t q(u/v);
+                                if (r)
+                                        *r= remainder(u, u128_t(v), q);
+                                return std::make_pair(uint64_t(q),
+                                                      uint64_t(q>>64));
+                        }
+                };
 #endif
 
 #endif
@@ -294,17 +294,17 @@ std::pair<_U, _U>
 cftal::impl::udiv_2by1<_U, _UHALF>::
 d(const _U& u0, const _U& u1, const _U& v, _U* rem)
 {
-	_U q1(0); _U q0(0);
-	if (u1 >= v) {
-		// j== 1
-		_U r;
-		q1= g(u1, 0, v, &r);
-		// j== 0
-		q0= g(u0, r, v, rem);
-	} else {
-		q0= g(u0, u1, v, rem);
-	}
-	return std::make_pair(q0, q1);
+        _U q1(0); _U q0(0);
+        if (u1 >= v) {
+                // j== 1
+                _U r;
+                q1= g(u1, 0, v, &r);
+                // j== 0
+                q0= g(u0, r, v, rem);
+        } else {
+                q0= g(u0, u1, v, rem);
+        }
+        return std::make_pair(q0, q1);
 }
 
 template <class _U, class _UHALF>
@@ -312,13 +312,13 @@ _U cftal::impl::udiv_2by1<_U, _UHALF>::
 g(const _U& ul, const _U& uh, const _U& cv, _U* r)
 {
 #if 0
-	enum {
-		N = sizeof(_U)*8,
-		N2 = N>>1
-	};
+        enum {
+                N = sizeof(_U)*8,
+                N2 = N>>1
+        };
 #endif
-	const unsigned N= sizeof(_U)*8;
-	const unsigned N2= N>>1;
+        const unsigned N= sizeof(_U)*8;
+        const unsigned N2= N>>1;
         // number base of the division
         const _U b= _U(1)<<N2;
         // mask out half of the bits of an _U
@@ -327,8 +327,8 @@ g(const _U& ul, const _U& uh, const _U& cv, _U* r)
         const _U U_MAX= ~_U(0);
         // Norm. divisor digits.
         _U un1, un0;
-	// divisor digits.
-	_UHALF vn1, vn0;
+        // divisor digits.
+        _UHALF vn1, vn0;
         // Quotient digits.
         _U q1, q0;
         // Dividend digit pairs.
@@ -351,13 +351,13 @@ g(const _U& ul, const _U& uh, const _U& cv, _U* r)
                 v = v << s;
         }
         vn1 = _UHALF(v >> N2);       // Break divisor up into
-	vn0 = _UHALF(v & N2MSK);     // two half digits
+        vn0 = _UHALF(v & N2MSK);     // two half digits
 
         if (s>0) {
                 // Shift dividend left.
-		unsigned sr= N-s;
-		_U un32_lb= ul >> sr;
-		un32 = (uh << s) | un32_lb;
+                unsigned sr= N-s;
+                _U un32_lb= ul >> sr;
+                un32 = (uh << s) | un32_lb;
                 un10 = ul << s;
         } else {
                 un32 = uh;
@@ -402,8 +402,8 @@ std::pair<_T, _T>
 cftal::wide_mul(const _T& x, const _T& y)
 {
         typedef typename std::conditional<std::is_signed<_T>::value,
-		impl::wide_smul<_T>,
-		impl::wide_umul<_T> >::type
+                impl::wide_smul<_T>,
+                impl::wide_umul<_T> >::type
                 mul_type;
         mul_type m;
         return m(x, y);
@@ -413,7 +413,7 @@ template <class _T>
 inline
 _T cftal::mulh(const _T& x, const _T& y)
 {
-	return wide_mul(x, y).second;
+        return wide_mul(x, y).second;
 }
 
 // Local variables:

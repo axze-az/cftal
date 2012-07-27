@@ -2,6 +2,44 @@
 #include <iostream>
 #include <iomanip>
 
+typedef unsigned __int128 u128_t;
+
+u128_t neg(u128_t r)
+{
+	return -r;
+}
+
+cftal::uint128_t neg(cftal::uint128_t r)
+{
+	return -r;
+}
+
+bool lt(u128_t a, u128_t b)
+{
+	return a < b;
+}
+
+bool lt(cftal::uint128_t a, cftal::uint128_t b)
+{
+	return a < b;
+}
+
+
+cftal::uint128_t sub(cftal::uint128_t a, cftal::uint128_t b)
+{
+	return a *b;
+}
+
+cftal::uint128_t sub(cftal::uint128_t a, std::uint64_t b)
+{
+	return a *b;
+}
+
+cftal::uint128_t sub(std::uint64_t a, cftal::uint128_t b)
+{
+	return a - b;
+}
+
 x86vec::v4u32 mul(x86vec::v4u32 a, x86vec::v4u32 b)
 {
         return a*b;

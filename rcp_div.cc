@@ -12,13 +12,13 @@ namespace cftal {
 			static
 			std::pair<uint64_t, uint64_t>
 			d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t* r);
-
 			// we use only the high part of the table
 			enum { TABLE_SIZE = 1<<9 };
-			// private:
+		private:
 			static
 			std::uint64_t reciprocal_word(std::uint64_t d);
-			// 2 by division without overflow
+			// division of <u0, u1> by normalized d
+			// without overflow
 			static
 			std::uint64_t
 			sd(uint64_t u0, uint64_t u1, uint64_t v,
@@ -146,7 +146,7 @@ cftal::impl::udiv_rcp_2by1_64::reciprocal_word(uint64_t d)
 				      d, nullptr).
 		first;
 #else
-#if 0
+#if 1
 	uint32_t v0 = _tbl[d>>55];
 	uint64_t d40 = (d>>24)+1;
 	uint32_t v0_v0 = v0*v0;

@@ -417,6 +417,29 @@ namespace cftal {
 	bool operator>(const _T& a, const dint<_T>& b);
 	template <typename _T>
 	bool operator>(const dint<_T>& a, const _T& b);
+
+#if defined (__GNUC__) && defined (__x86_64__)
+        duint<uint64_t> operator+(const duint<uint64_t>& a, 
+				  const duint<uint64_t>& b);
+        duint<uint64_t> operator+(const duint<uint64_t>& a, 
+				  const uint64_t& b);
+        duint<uint64_t> operator+(const uint64_t& a, 
+				  const duint<uint64_t>& b);
+
+        duint<uint64_t> operator-(const duint<uint64_t>& a, 
+				  const duint<uint64_t>& b);
+        duint<uint64_t> operator-(const duint<uint64_t>& a, 
+				  const uint64_t& b);
+        duint<uint64_t> operator-(const uint64_t& a, 
+				  const duint<uint64_t>& b);
+
+        duint<uint64_t> operator*(const duint<uint64_t>& a, 
+				  const duint<uint64_t>& b);
+        duint<uint64_t> operator*(const duint<uint64_t>& a, 
+				  const uint64_t& b);
+        duint<uint64_t> operator*(const uint64_t& a, 
+				  const duint<uint64_t>& b);
+#endif
 }
 
 namespace std {
@@ -670,11 +693,7 @@ cftal::duint<_T> cftal::operator*(const duint<_T>& a, const duint<_T>& b)
 	type al_bh(a.l() * b.uh());
 	type ah_bl(a.uh() * b.l());
 	// shift al_bh and ah_bl right by 2^(N2/2)
-	duint<_T> s20(0, al_bh);
-	duint<_T> s21(0, ah_bl);
-	duint<_T> s0(al_bl.first, al_bl.second);
-	duint<_T> r= s0 + s20 + s21;
-	return r;
+	return duint<_T>(al_bl.first, al_bl.second+ al_bh + ah_bl);
 }
 
 template <typename _T>
@@ -687,10 +706,7 @@ cftal::duint<_T> cftal::operator*(const duint<_T>& a, const _T& b)
 	// [2^(N2/2),  2^(N2*2/2) )
 	type ah_b(a.uh() * b);
 	// shift al_bh and ah_bl right by 2^(N2/2)
-	duint<_T> s21(0, ah_b);
-	duint<_T> s0(al_b.first, al_b.second);
-	duint<_T> r= s0 + s21;
-	return r;
+	return duint<_T>(al_b.first, al_b.second + ah_b);
 }
 
 template <typename _T>
@@ -941,6 +957,7 @@ cftal::duint<_T>& cftal::operator>>=(duint<_T>& a, int s)
 template <typename _T>
 bool cftal::operator<(const duint<_T>& a, const duint<_T>& b)
 {
+	// return impl::get_sign(a -b) !=0;
 	return (a.uh()< b.uh()) || ((a.uh()==b.uh()) && (a.l() < b.l()));
 }
 
@@ -1208,20 +1225,8 @@ template <typename _T>
 cftal::dint<_T> cftal::operator*(const dint<_T>& a, const _T& b)
 {
 	typedef typename dint<_T>::base_type du_t;
-	typedef typename du_t::type type;
-	typedef std::pair<type, type> pair_type;
-	const type& ub= static_cast<const type&>(b);
-	// [2^ 0, 2^N2 )
-	pair_type al_bl(wide_mul(a.l(), ub));
-	// [2^(N2/2),  2^(N2*2/2) )
-	type al_bh(impl::get_sign(b) ? -a.l() : type(0));
-	type ah_bl(a.uh() * ub);
-	// shift al_bh and ah_bl right by 2^(N2/2)
-	du_t s20(0, al_bh);
-	du_t s21(0, ah_bl);
-	du_t s0(al_bl.first, al_bl.second);
-	du_t r= s0 + s20 + s21;
-	return r;
+	return static_cast<const du_t&>(a) *
+		static_cast<const _T&>(b);
 }
 
 template <typename _T>
@@ -1582,6 +1587,118 @@ bool cftal::operator>(const dint<_T>& a, const _T& b)
 	bool r((a.uh()>_T(0)) || (a.l() > b));
 	return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
+
+#if defined (__GNUC__) && defined (__x86_64__)
+// specialized implementations.
+inline
+cftal::duint<uint64_t> 
+cftal::operator+(const duint<uint64_t>& a, const duint<uint64_t>& b)
+{
+	uint64_t l,h;
+	__asm__ ("add %4, %0 \n\t"
+		 "adc %5, %1 \n\t"
+		 : "=r"(l), "=r"(h)
+		 : "0"(a.l()), "1"(a.uh()), "rm"(b.l()), "rm"(b.uh())
+		 : "cc");
+	return duint<uint64_t>(l, h);
+}
+
+inline
+cftal::duint<uint64_t> 
+cftal::operator+(const duint<uint64_t>& a, const uint64_t& b)
+{
+	uint64_t l,h;
+	__asm__ ("add %4, %0 \n\t"
+		 "adc $0, %1 \n\t"
+		 : "=r"(l), "=r"(h)
+		 : "0"(a.l()), "1"(a.uh()), "rm"(b)
+		 : "cc");
+	return duint<uint64_t>(l, h);
+}
+
+inline
+cftal::duint<uint64_t> 
+cftal::operator+(const uint64_t& a, const duint<uint64_t>& b)
+{
+	return b +a;
+}
+
+inline
+cftal::duint<uint64_t> 
+cftal::operator-(const duint<uint64_t>& a, const duint<uint64_t>& b)
+{
+	uint64_t l,h;
+	__asm__ ("sub %4, %0 \n\t"
+		 "sbb %5, %1 \n\t"
+		 : "=r"(l), "=r"(h)
+		 : "0"(a.l()), "1"(a.uh()), "rm"(b.l()), "rm"(b.uh())
+		 : "cc");
+	return duint<uint64_t>(l, h);
+}
+
+inline
+cftal::duint<uint64_t> 
+cftal::operator-(const duint<uint64_t>& a, const uint64_t& b)
+{
+	uint64_t l,h;
+	__asm__ ("sub %4, %0 \n\t"
+		 "sbb $0, %1 \n\t"
+		 : "=r"(l), "=r"(h)
+		 : "0"(a.l()), "1"(a.uh()), "rm"(b)
+		 : "cc");
+	return duint<uint64_t>(l, h);
+}
+
+inline
+cftal::duint<uint64_t> 
+cftal::operator-(const uint64_t& a, const duint<uint64_t>& b)
+{
+	return duint<uint64_t>(a) - b;
+}
+
+inline
+cftal::duint<uint64_t> 
+cftal::operator*(const duint<uint64_t>& a, const duint<uint64_t>& b)
+{
+	uint64_t l, h;
+	uint64_t ah = a.uh();
+	uint64_t bh= b.uh();
+	__asm__ ("imul %[bl], %[ah] \n\t"
+		 "imul %[al], %[bh] \n\t"
+		 "mul %[bl]\n\t"
+		 "add %[bh], %[ah] \n\t"
+		 "add %[ah], %[bl] \n\t"
+		 : [al] "=a"(l), [bl] "=d" (h), 
+		   [ah] "+r" (ah), [bh] "+r" (bh)
+		 : "0"(a.l()), "1"(b.l())
+		 : "cc");
+	return duint<uint64_t>(l, h);
+}
+
+inline
+cftal::duint<uint64_t> 
+cftal::operator*(const duint<uint64_t>& a, const uint64_t& b)
+{
+	uint64_t l, h;
+	uint64_t ah = a.uh();
+	__asm__ ("imul %[bl], %[ah] \n\t"
+		 "mul %[bl]\n\t"
+		 "add %[ah], %[bl] \n\t"
+		 : [al] "=a"(l), [bl] "=d" (h), 
+		   [ah] "+r" (ah)
+		 : "0"(a.l()), "1"(b)
+		 : "cc");
+	return duint<uint64_t>(l, h);
+}
+
+inline
+cftal::duint<uint64_t> 
+cftal::operator*(const uint64_t& a, const duint<uint64_t>& b)
+{
+	return b * a;
+}
+
+#endif
 
 // Local variables:
 // mode: c++
