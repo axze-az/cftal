@@ -9,9 +9,9 @@ u128_t sll(u128_t r, unsigned s)
 	return r<<s;
 }
 
-cftal::uint128_t sll(cftal::uint128_t r, unsigned s)
+cftal::uint128_t add1(const cftal::uint128_t& r)
 {
-	return r<<s;
+	return r + 1;
 }
 
 cftal::uint128_t slli17(cftal::uint128_t r)

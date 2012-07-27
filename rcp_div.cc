@@ -137,6 +137,7 @@ cftal::impl::udiv_2by1_rcp_64::_tbl[TABLE_SIZE]={
 	0x40e, 	0x40c, 	0x40a, 	0x408, 	0x406, 	0x404, 	0x402, 	0x400
 };
 
+// inline
 cftal::uint64_t
 cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 {
@@ -146,7 +147,7 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 				      d, nullptr).
 		first;
 #else
-#if 1
+#if 0
 	uint32_t v0 = _tbl[d>>55];
 	uint64_t d40 = (d>>24)+1;
 	uint32_t v0_v0 = v0*v0;
@@ -233,6 +234,7 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 #endif
 }
 
+// inline
 cftal::uint64_t
 cftal::impl::udiv_2by1_rcp_64::
 sd(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t& rem)
