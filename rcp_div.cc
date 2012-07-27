@@ -267,13 +267,14 @@ cftal::impl::udiv_result<uint64_t>
 cftal::impl::udiv_2by1_rcp_64::
 d(uint64_t u0, uint64_t u1, uint64_t v)
 {
+#if 1
 	if (v==0) 
 		return make_udiv_result(u0, u1/v, u1);
-#if 0
-	if (v==1) {
-		if (rem)
-			*rem = 0;
-		return make_udiv_result(u0, v, 0);
+#else
+	if (v<2) {
+		if (v==1)
+			return make_udiv_result(u0, u1, 0);
+		return make_udiv_result(u0, u1/v, u1);
 	}
 #endif
 	unsigned l_z=lzcnt(v);
