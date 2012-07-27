@@ -146,7 +146,7 @@ cftal::impl::udiv_rcp_2by1_64::reciprocal_word(uint64_t d)
 				      d, nullptr).
 		first;
 #else
-#if 1
+#if 0
 	uint32_t v0 = _tbl[d>>55];
 	uint64_t d40 = (d>>24)+1;
 	uint32_t v0_v0 = v0*v0;
@@ -224,7 +224,7 @@ cftal::impl::udiv_rcp_2by1_64::reciprocal_word(uint64_t d)
 		"mov %[rcx], %[rax] \n\t"
 		"adc %[rdi], %[rdx] \n\t"
 		"sub %[rdx], %[rax] \n\t"
-		: [rax] "=&r" (inv), [rdx] "=&r" (t0), 
+		: [rax] "=&a" (inv), [rdx] "=&d" (t0), 
 		  [rsi] "=&r" (t1), [rcx] "+&r" (tblptr)
 		: [rdi] "rm" (d)
 		: "cc");
