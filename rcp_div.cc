@@ -251,11 +251,18 @@ sd(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t& rem)
 	++q1;
 #endif
 	uint64_t r = u0 - q1*d;
+#if 1
+	uint64_t corr_q1= (r>q0) ? 1 : 0;
+	uint64_t corr_r= (r>q0) ? d : 0;
+	q1 -= corr_q1;
+	r += corr_r;
+#else
 	if (r > q0) {
 		--q1;
 		r += d;
 	}
-	if (r >= d) {
+#endif
+	if (unlikely(r >= d)) {
 		++q1;
 		r -= d;
 	}
