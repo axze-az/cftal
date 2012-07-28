@@ -142,13 +142,19 @@ cftal::impl::udiv_2by1_rcp_64::_tbl[TABLE_SIZE]={
 cftal::uint64_t
 cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 {
-#if 0
+#define USE_DIV 0
+#define USE_CPP 1
+#define USE_ASM 2
+#define USE_GPL 3
+#define ALG USE_CPP
+
+#if USE_DIV==ALG
 	return udiv_2by1<uint64_t>::d(uint64_t(-1L),
 				      uint64_t(-1L)-d,
 				      d, nullptr).
 		first;
-#else
-#if 1
+#endif
+#if USE_CPP==ALG
 	uint32_t v0 = _tbl[d>>55];
 	uint64_t d40 = (d>>24)+1;
 	uint32_t v0_v0 = v0*v0;
@@ -178,7 +184,15 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 	v3s += d;
 	uint64_t v4= v3- uint64_t(v3s>>64);
 	return v4;
-#else
+#endif
+#if USE_ASM==ALG
+	uint32_t v0 = _tbl[d>>55];
+	uint64_t d40 = (d>>24)+1;
+	uint32_t v0_v0 = v0*v0;
+
+#endif
+
+#if USE_GPL == ALG
 	uint64_t inv, t0, t1;
 	const uint16_t* tblptr= _tbl;
 	__asm__ __volatile__(
@@ -233,7 +247,12 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 		: "cc");
 	return inv;
 #endif
-#endif
+
+#undef USE_DIV
+#undef USE_CPP
+#undef USE_ASM
+#undef USE_GPL
+#undef ALG
 }
 
 // inline
