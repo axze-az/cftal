@@ -180,7 +180,7 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 	std::pair<uint64_t, uint64_t> p_v3_d(wide_mul(v3, d));
 	u_t v3s(p_v3_d.first, p_v3_d.second+d);
 	v3s += d;
-	uint64_t v4= v3- uint64_t(v3s);
+	uint64_t v4= v3- uint64_t(v3s>>64);
 	return v4;
 #else
 	uint64_t inv, t0, t1;
