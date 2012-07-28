@@ -151,7 +151,7 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 #define USE_ASM 2
 #define USE_GPL 3
 #if defined (__x86_64__)
-#define ALG USE_CPP
+#define ALG USE_ASM
 #else
 #define ALG USE_CPP
 #endif
@@ -407,8 +407,6 @@ cftal::test::udiv_64_one(uint64_t v, uint64_t& ops, uint64_t* timings)
 		uint64_t ul= rng.next();
 		uint64_t uh= rng.next();
 		
-		typedef unsigned __int128 u128_t;
-
 		t0 = rdtsc();
 		impl::udiv_result<uint64_t> qr_ref(
 			impl::udiv_2by1_div_64::d(ul, uh, v));

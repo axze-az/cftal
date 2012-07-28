@@ -240,19 +240,16 @@ cftal::impl::udiv_2by1_rcp_32::reciprocal_word(uint32_t d)
 	// this is e without 2^48
 	uint32_t d0_v1_half_minus_v1_d31= d0_v1_half -v1_d31;
 	
-	std::pair<uint32_t, uint32_t> pe(
-		wide_mul(d0_v1_half_minus_v1_d31, v1));
-	uint32_t v1e_h = pe.second;
+	uint32_t v1e_h = (uint64_t(d0_v1_half_minus_v1_d31)*v1)>>32;
 	uint32_t v2 = (v1<<15) + (v1e_h>>1);
-	std::pair<uint32_t, uint32_t> pv2_d(wide_mul(v2, d));
 
-	uint64_t v2d(pv2_d.first | (uint64_t(pv2_d.second)<<32));
+	uint64_t v2d= uint64_t(v2)*d;
 	uint64_t dd(d | (uint64_t(d)<<32));
 	v2d += dd;
 	uint32_t v3 = v2 - uint32_t(v2d>>32);
 	return v3;
 #endif
-#if USE_ASM==ALG
+#if USE_ASM==ALG 
 	uint32_t v0 = _tbl[d>>22];
 	uint32_t v0_v0 = v0*v0;
 	uint32_t d21 = (d>>11) +1;
@@ -271,7 +268,7 @@ cftal::impl::udiv_2by1_rcp_32::reciprocal_word(uint32_t d)
 		 : [d31] "=r"(d31), [d0] "=r"(nd0)
 		 : "0" (d)
 		 : "cc" );
-	uint64_t d0_v1_half = nd0 & (v1>>1);
+	uint32_t d0_v1_half = nd0 & (v1>>1);
 	uint32_t v1_d31 = v1*d31;
 	// this is e without 2^48
 	uint32_t d0_v1_half_minus_v1_d31= d0_v1_half -v1_d31;
@@ -286,12 +283,13 @@ cftal::impl::udiv_2by1_rcp_32::reciprocal_word(uint32_t d)
 		: "=a"(v2_d_l), "=d"(v2_d_h)
 		: [v2] "rm" (v2), "0"(d)
 		: "cc");
-	__asm__("add %[d], %[d2_d_l] \n\t"
-		"adc %[d], %[d2_d_h] \n\t"
+	__asm__("add %[d], %[v2_d_l] \n\t"
+		"adc %[d], %[v2_d_h] \n\t"
 		 : [v2_d_l] "+r" (v2_d_l), [v2_d_h] "+r" (v2_d_h)
 		: [d] "rm" (d)
 		 : "cc");
 	uint32_t v3 = v2 - v2_d_h;
+	return v3;
 #endif
 
 #undef USE_DIV
@@ -390,8 +388,6 @@ cftal::test::udiv_32_one(uint32_t v, uint64_t& ops, uint64_t* timings)
 		uint32_t ul= rng.next();
 		uint32_t uh= rng.next();
 		
-		typedef unsigned __int128 u128_t;
-
 		t0 = rdtsc();
 		impl::udiv_result<uint32_t> qr_ref(
 			impl::udiv_2by1_div_32::d(ul, uh, v));
