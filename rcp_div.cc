@@ -164,16 +164,12 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 	typedef duint<uint64_t> u_t;
 	// typedef unsigned __int128 u_t;
 	u_t _2_pow_96(u_t(1)<<96);
-	uint64_t d63_max = 1L<<63;
-	uint64_t d63= (d == uint64_t(-1L)) ? d63_max : (d+1)>>1;
+	uint64_t d63= d == uint64_t(-1L) ? 1L<<63 : (d+1)>>1;
 	std::pair<uint64_t, uint64_t> p_v2_vd63(wide_mul(v2, d63));
 	u_t v2_d63(p_v2_vd63.first, p_v2_vd63.second);
 	u_t e = _2_pow_96 - v2_d63;
-	// if (d&1)
-	//	e += v2>>1;
-	uint64_t d0 = d&1;
-	uint64_t d0_v2_div_2 = (-d0)&(v2>>1);
-	e += d0_v2_div_2;
+	if (d&1)
+		e += v2>>1;
 	u_t v2_e = v2* e;
 	uint64_t v3= (v2<<31) + (v2_e.uh()>>1);
 	// u_t v3s = (v3+u_t(u_t(1)<<64) +1UL)*d;
