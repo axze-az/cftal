@@ -215,7 +215,6 @@ cftal::impl::udiv_2by1_rcp_32::reciprocal_word(uint32_t d)
 #define USE_DIV 0
 #define USE_CPP 1
 #define USE_ASM 2
-#define USE_GPL 3
 #if defined (__x86_64__) || defined (__i386__)
 #define ALG USE_CPP
 #else
@@ -236,7 +235,7 @@ cftal::impl::udiv_2by1_rcp_32::reciprocal_word(uint32_t d)
 	uint32_t nd0 = -d0;
 	uint32_t d31 = (d>>1) + d0;
 	
-	uint64_t d0_v1_half = nd0 & (v1>>1);
+	uint32_t d0_v1_half = nd0 & (v1>>1);
 	uint32_t v1_d31 = v1*d31;
 	// this is e without 2^48
 	uint32_t d0_v1_half_minus_v1_d31= d0_v1_half -v1_d31;
@@ -254,110 +253,50 @@ cftal::impl::udiv_2by1_rcp_32::reciprocal_word(uint32_t d)
 	return v3;
 #endif
 #if USE_ASM==ALG
-	uint32_t v0 = _tbl[d>>55];
-	uint64_t d40 = (d>>24)+1;
+	uint32_t v0 = _tbl[d>>22];
 	uint32_t v0_v0 = v0*v0;
-	uint64_t v0_v0_d40 = d40*v0_v0;
-	uint32_t v1= (v0<<11) - uint32_t(v0_v0_d40>>40) -1;
-	uint64_t v1_d40 = v1 * d40;
-	uint64_t v1_shl_13= uint64_t(v1) << 13;
-	uint64_t two_pow_60_m_v1_d40= (1L<<60) - v1_d40;
-	// right part of v2
-	uint64_t v2r= (v1*two_pow_60_m_v1_d40)>>47;
-	uint64_t v2= v1_shl_13 + v2r;
-
-	// calculate d63, nd0
-	uint64_t d63, nd0;
-	__asm__ ("shr $1, %[d63] \n\t" // CF contains lowest bit
+	uint32_t d21 = (d>>11) +1;
+	uint32_t v0_v0_d21_l, v0_v0_d21_h;
+	__asm__("mull %[d21] \n\t"
+		: "=a"(v0_v0_d21_l), "=d"(v0_v0_d21_h)
+		: [d21] "rm" (d21), "0"(v0_v0)
+		: "cc");
+	uint32_t v1 = (v0<<4) - v0_v0_d21_h -1;
+	// e fits into 32 bits.
+	// calculate d31, nd0
+	uint32_t d31, nd0;
+	__asm__ ("shr $1, %[d31] \n\t" // CF contains lowest bit
 		 "sbb %[d0], %[d0] \n\t" // -1 if CF, 0 if not == -d0
-		 "sub %[d0], %[d63] \n\t" // ceil(d/2)
-		 : [d63] "=r"(d63), [d0] "=r"(nd0)
+		 "sub %[d0], %[d31] \n\t" // ceil(d/2)
+		 : [d31] "=r"(d31), [d0] "=r"(nd0)
 		 : "0" (d)
 		 : "cc" );
-	uint64_t d0_v2_half = nd0 & (v2>>1);
-	uint64_t v2_d63 = v2* d63;
-	// this is e without 2^96
-	uint64_t d0_v2_half_minus_v2_d63 = d0_v2_half - v2_d63;
-	uint64_t v2e_h, v2e_l;
-	__asm__ ("mulq %[v2] \n\t"
-		 : "=a"(v2e_l) , "=d"(v2e_h)
-		 : "0"(d0_v2_half_minus_v2_d63), [v2] "rm"(v2)
-		 : "cc" );
-	uint64_t v3= (v2<<31) + (v2e_h>>1);
-	uint64_t v3d_h, v3d_l;
-	__asm__ ("mulq %[v3] \n\t"
-		 : "=a"(v3d_l) , "=d"(v3d_h)
-		 : "0"(d), [v3] "rm" (v3)
-		 : "cc" );
-	__asm__ ("add %[d], %[v3d_l] \n\t"
-		 "adc %[d], %[v3d_h] \n\t"
-		 : [v3d_l] "+r" (v3d_l), [v3d_h] "+r" (v3d_h)
-		 : [d] "rm" (d)
-		 : "cc");
-	uint64_t v4= v3 -v3d_h;
-	return v4;
-#endif
-
-#if USE_GPL == ALG
-	uint64_t inv, t0, t1;
-	const uint16_t* tblptr= _tbl;
-	__asm__ __volatile__(
-		"mov %[rdi], %[rax] \n\t"
-		"shr $55, %[rax] \n\t"
-		"movzwl (%[rcx], %[rax], 2), %k[rcx] \n\t"
-		// v1 = (v0 << 11) - (v0*v0*d40 >> 40) - 1
-		"mov %[rdi], %[rsi] \n\t"
-		"mov %k[rcx], %k[rax] \n\t"
-		"imul %k[rcx], %k[rcx] \n\t"
-		"shr $24, %[rsi] \n\t"
-		"inc %[rsi] \n\t" // %[rsi] = d40
-		"imul %[rsi], %[rcx] \n\t"
-		"shr $40, %[rcx] \n\t"
-		"sal $11, %k[rax] \n\t"
-		"dec %k[rax] \n\t"
-		"sub %k[rcx], %k[rax] \n\t" // %[rax] = v1
-		
-		// v2 = (v1 << 13) + (v1 * (2^60 - v1*d40) >> 47
-		"mov $0x1000000000000000, %[rcx] \n\t"
-		"imul %[rax], %[rsi] \n\t"
-		"sub %[rsi], %[rcx] \n\t"
-		"imul %[rax], %[rcx] \n\t"
-		"sal $13, %[rax] \n\t"
-		"shr $47, %[rcx] \n\t"
-		"add %[rax], %[rcx]  \n\t" // %[rcx] = v2
-		
-		// v3 = (v2 << 31) + 
-		// (v2 * (2^96 - v2 * d63 + (v2>>1) & mask) >> 65
-		"mov %[rdi], %[rsi] \n\t"
-		"shr $1, %[rsi] \n\t" // d/2
-		"sbb %[rax], %[rax] \n\t" // -d0 = -(d mod 2)
-		"sub %[rax], %[rsi] \n\t" // d63 = ceil(d/2)
-		"imul %[rcx], %[rsi] \n\t" // v2 * d63
-		"and %[rcx], %[rax] \n\t" // v2 * d0
-		"shr $1, %[rax] \n\t" // (v2>>1) * d0
-		"sub %[rsi], %[rax] \n\t" // (v2>>1) * d0 - v2 * d63
-		"mul %[rcx] \n\t"
-		"sal $31, %[rcx] \n\t"
-		"shr $1, %[rdx] \n\t"
-		"add %[rdx], %[rcx] \n\t" // %[rcx] = v3
-		
-		"mov %[rdi], %[rax] \n\t"
-		"mul %[rcx] \n\t"
-		"add %[rdi], %[rax] \n\t"
-		"mov %[rcx], %[rax] \n\t"
-		"adc %[rdi], %[rdx] \n\t"
-		"sub %[rdx], %[rax] \n\t"
-		: [rax] "=&a" (inv), [rdx] "=&d" (t0), 
-		  [rsi] "=&r" (t1), [rcx] "+&r" (tblptr)
-		: [rdi] "rm" (d)
+	uint64_t d0_v1_half = nd0 & (v1>>1);
+	uint32_t v1_d31 = v1*d31;
+	// this is e without 2^48
+	uint32_t d0_v1_half_minus_v1_d31= d0_v1_half -v1_d31;
+	uint32_t v1e_h, v1e_l;
+	__asm__("mull %[v1] \n\t"
+		: "=a"(v1e_l), "=d"(v1e_h)
+		: [v1] "rm"(v1), "0"(d0_v1_half_minus_v1_d31)
 		: "cc");
-	return inv;
+	uint32_t v2 = (v1<<15) + (v1e_h>>1);
+	uint32_t v2_d_h, v2_d_l;
+	__asm__("mull %[v2] \n\t"
+		: "=a"(v2_d_l), "=d"(v2_d_h)
+		: [v2] "rm" (v2), "0"(d)
+		: "cc");
+	__asm__("add %[d], %[d2_d_l] \n\t"
+		"adc %[d], %[d2_d_h] \n\t"
+		 : [v2_d_l] "+r" (v2_d_l), [v2_d_h] "+r" (v2_d_h)
+		: [d] "rm" (d)
+		 : "cc");
+	uint32_t v3 = v2 - v2_d_h;
 #endif
 
 #undef USE_DIV
 #undef USE_CPP
 #undef USE_ASM
-#undef USE_GPL
 #undef ALG
 }
 
