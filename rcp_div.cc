@@ -165,16 +165,17 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 	// typedef unsigned __int128 u_t;
 	u_t _2_pow_96(u_t(1)<<96);
 	uint64_t d63= d == uint64_t(-1L) ? 1L<<63 : (d+1)>>1;
-	// std::pair<uint64_t, uint64_t> p_v2_vd63(wide_mul(v2, d63));
-	// u_t v2_d63(p_v2_vd63.first, p_v2_vd63.second);
-	u_t e = _2_pow_96 - u_t(v2)*d63;
+	std::pair<uint64_t, uint64_t> p_v2_vd63(wide_mul(v2, d63));
+	u_t v2_d63(p_v2_vd63.first, p_v2_vd63.second);
+	u_t e = _2_pow_96 - v2_d63;
 	if (d&1)
 		e += v2>>1;
 	u_t v2_e = v2* e;
 	uint64_t v3= (v2<<31) + (v2_e.uh()>>1);
-	// uint64_t v3_d= mulh(v3+1, d);
-	u_t v3s = (v3+u_t(u_t(1)<<64) +1UL)*d;
-	// v3s = v3*d + 2^64*d +1d
+	// u_t v3s = (v3+u_t(u_t(1)<<64) +1UL)*d;
+	std::pair<uint64_t, uint64_t> p_v3_d(wide_mul(v3, d));
+	u_t v3s(p_v3_d.first, p_v3_d.second+d);
+	v3s += d;
 	uint64_t v4= v3- uint64_t(v3s>>64);
 	return v4;
 #else
