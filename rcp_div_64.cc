@@ -355,27 +355,43 @@ d(uint64_t u0, uint64_t u1, uint64_t v)
 #endif
 	unsigned l_z=lzcnt(v);
 	// normalized values of v, u0, u1
-	uint64_t nv, s2, s1, s0;
-	unsigned neg_shift = 64 - l_z;
-	if (l_z == 0) {
-		nv = v;
-		s1 = u1;
-		s0 = u0;
-		s2 = 0;
-	} else {
-		uint64_t u01(u0 >> neg_shift);
-		nv = v  << l_z;
+	uint64_t u2(0);
+#if defined (__x86_64__)
+	__asm__ ( "shldq  %[u1], %[u2] \n\t"
+		  : [u2] "+r"(u2)
+		  : [u1] "r"(u1), "c"(l_z)
+		  : "cc");
+	v <<= l_z;
+	__asm__ ( "shldq  %[u0], %[u1] \n\t"
+		  : [u1] "+r"(u1)
+		  : [u0] "r"(u0), "c"(l_z)
+		  : "cc");
+	u0 <<= l_z;
+#else
+	if (likely(l_z!=0)) {
+		uint64_t nv, s2, s1, s0;
+		unsigned neg_shift = 64 - l_z;
 		s0 = u0 << l_z;
+		nv = v  << l_z;
+		uint64_t u01(u0 >> neg_shift);
 		s1 = u1 << l_z;
 		s1 |= u01;
 		s2 = u1 >> neg_shift;
+		// store normalized values.
+		v = nv;
+		u0 = s0;
+		u1 = s1;
+		u2 = s2;
 	}
-	uint64_t inv(reciprocal_word(nv));
-	uint64_t q1(0), q0(0), r(s1);
-	if (s2 != 0 || s1>=nv) {
-		q1=sd(s1, s2, nv, inv, r);
+#endif
+
+
+	uint64_t inv(reciprocal_word(v));
+	uint64_t q1(0), q0(0), r(u1);
+	if (likely(u2 != 0 || u1>=v)) {
+		q1=sd(u1, u2, v, inv, r);
 	}
-	q0=sd(s0, r, nv, inv, r);
+	q0=sd(u0, r, v, inv, r);
 	if (l_z)
 		r >>= l_z;
 	return make_udiv_result(q0, q1, r);
