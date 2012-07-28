@@ -146,13 +146,14 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 #define USE_CPP 1
 #define USE_ASM 2
 #define USE_GPL 3
+#if defined (__x86_64__)
+#define ALG USE_ASM
+#else
 #define ALG USE_CPP
+#endif
 
 #if USE_DIV==ALG
-	return udiv_2by1<uint64_t>::d(uint64_t(-1L),
-				      uint64_t(-1L)-d,
-				      d, nullptr).
-		first;
+	return udiv_2by1_div_64::d(uint64_t(-1L), uint64_t(-1L)-d, d)._q0;
 #endif
 #if USE_CPP==ALG
 	uint32_t v0 = _tbl[d>>55];
@@ -174,6 +175,8 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 	std::pair<uint64_t, uint64_t> p_v2_vd63(wide_mul(v2, d63));
 	u_t v2_d63(p_v2_vd63.first, p_v2_vd63.second);
 	u_t e = _2_pow_96 - v2_d63;
+	// if we remove this jump via (-(d&1)&(v2>>1)
+	// we get an internal compiler error for gcc 4.7.1 and core i7
 	if (d&1)
 		e += v2>>1;
 	u_t v2_e = v2* e;
@@ -189,7 +192,45 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 	uint32_t v0 = _tbl[d>>55];
 	uint64_t d40 = (d>>24)+1;
 	uint32_t v0_v0 = v0*v0;
+	uint64_t v0_v0_d40 = d40*v0_v0;
+	uint32_t v1= (v0<<11) - uint32_t(v0_v0_d40>>40) -1;
+	uint64_t v1_d40 = v1 * d40;
+	uint64_t v1_shl_13= uint64_t(v1) << 13;
+	uint64_t two_pow_60_m_v1_d40= (1L<<60) - v1_d40;
+	// right part of v2
+	uint64_t v2r= (v1*two_pow_60_m_v1_d40)>>47;
+	uint64_t v2= v1_shl_13 + v2r;
 
+	// calculate d63, nd0
+	uint64_t d63, nd0;
+	__asm__ ("shr $1, %[d63] \n\t" // CF contains lowest bit
+		 "sbb %[d0], %[d0] \n\t" // -1 if CF, 0 if not == -d0
+		 "sub %[d0], %[d63] \n\t" // ceil(d/2)
+		 : [d63] "=r"(d63), [d0] "=r"(nd0)
+		 : "0" (d)
+		 : "cc" );
+	uint64_t d0_v2_half = nd0 & (v2>>1);
+	uint64_t v2_d63 = v2* d63;
+	// this is e without 2^96
+	uint64_t d0_v2_half_minus_v2_d63 = d0_v2_half - v2_d63;
+	uint64_t v2e_h, v2e_l;
+	__asm__ ("mulq %[v2] \n\t"
+		 : "=a"(v2e_l) , "=d"(v2e_h)
+		 : "0"(d0_v2_half_minus_v2_d63), [v2] "rm"(v2)
+		 : "cc" );
+	uint64_t v3= (v2<<31) + (v2e_h>>1);
+	uint64_t v3d_h, v3d_l;
+	__asm__ ("mulq %[v3] \n\t"
+		 : "=a"(v3d_l) , "=d"(v3d_h)
+		 : "0"(d), [v3] "rm" (v3)
+		 : "cc" );
+	__asm__ ("add %[d], %[v3d_l] \n\t"
+		 "adc %[d], %[v3d_h] \n\t"
+		 : [v3d_l] "+r" (v3d_l), [v3d_h] "+r" (v3d_h)
+		 : [d] "rm" (d)
+		 : "cc");
+	uint64_t v4= v3 -v3d_h;
+	return v4;
 #endif
 
 #if USE_GPL == ALG
