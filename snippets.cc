@@ -116,3 +116,16 @@ mulwide(x86vec::v2s64 a, x86vec::v2s64 b)
 	return wide_mul(a, b);
 }
 
+
+std::pair<x86vec::v2u64, x86vec::v2u64>
+square(x86vec::v2u64 a)
+{
+	return wide_mul(a, a);
+}
+
+std::pair<x86vec::v2s64, x86vec::v2s64>
+square(x86vec::v2s64 a)
+{
+	return wide_mul(a, a);
+}
+

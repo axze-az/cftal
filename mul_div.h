@@ -201,8 +201,8 @@ namespace cftal {
                         }
                 };
 
-                template <class _UHALF>
-                class udiv_2by1<uint32_t, _UHALF> {
+
+                class udiv_2by1_div_32 {
                 public:
                         static
                         udiv_result<uint32_t>
@@ -213,6 +213,10 @@ namespace cftal {
                                 uint32_t q0(q), q1(q>>32);
                                 return make_udiv_result(q0, q1, r);
                         }
+                };
+
+                template <class _UHALF>
+                class udiv_2by1<uint32_t, _UHALF> : public udiv_2by1_div_32 {
                 };
 
 #if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
@@ -234,12 +238,12 @@ namespace cftal {
                                                 : "0"(u0), "1"(r), "rm"(v)
                                                 : "cc");
                                 } else {
-					q1 =0;
+                                        q1 =0;
                                         __asm__("divq %4 \n\t"
                                                 : "=a"(q0), "=d"(r)
                                                 : "0"(u0), "1"(u1), "rm"(v)
                                                 : "cc");
-				}
+                                }
 #else
                                 typedef unsigned __int128 u128_t;
                                 u128_t u((u128_t(u1)<<64)|u0);
@@ -247,7 +251,7 @@ namespace cftal {
                                 uint64_t r(u%v);
                                 uint64_t q0(q), q1(q>>64);
 #endif
-				return make_udiv_result(q0, q1, r);
+                                return make_udiv_result(q0, q1, r);
                         }
                 };
 
@@ -431,8 +435,8 @@ std::pair<_T, _T>
 cftal::wide_mul(const _T& x, const _T& y)
 {
         typedef typename std::conditional<std::is_signed<_T>::value,
-		impl::wide_smul<_T>,
-		impl::wide_umul<_T> >::type
+                impl::wide_smul<_T>,
+                impl::wide_umul<_T> >::type
                 mul_type;
         mul_type m;
         return m(x, y);
