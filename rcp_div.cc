@@ -147,7 +147,7 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 #define USE_ASM 2
 #define USE_GPL 3
 #if defined (__x86_64__)
-#define ALG USE_ASM
+#define ALG USE_CPP
 #else
 #define ALG USE_CPP
 #endif
@@ -168,24 +168,25 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 	uint64_t v2r= (v1*two_pow_60_m_v1_d40)>>47;
 	uint64_t v2= v1_shl_13 + v2r;
 
-	typedef duint<uint64_t> u_t;
-	// typedef unsigned __int128 u_t;
-	u_t _2_pow_96(u_t(1)<<96);
-	uint64_t d63= d == uint64_t(-1L) ? 1L<<63 : (d+1)>>1;
-	std::pair<uint64_t, uint64_t> p_v2_vd63(wide_mul(v2, d63));
-	u_t v2_d63(p_v2_vd63.first, p_v2_vd63.second);
-	u_t e = _2_pow_96 - v2_d63;
-	// if we remove this jump via (-(d&1)&(v2>>1)
-	// we get an internal compiler error for gcc 4.7.1 and core i7
-	if (d&1)
-		e += v2>>1;
-	u_t v2_e = v2* e;
-	uint64_t v3= (v2<<31) + (v2_e.uh()>>1);
-	// u_t v3s = (v3+u_t(u_t(1)<<64) +1UL)*d;
-	std::pair<uint64_t, uint64_t> p_v3_d(wide_mul(v3, d));
-	u_t v3s(p_v3_d.first, p_v3_d.second+d);
-	v3s += d;
-	uint64_t v4= v3- uint64_t(v3s>>64);
+	// e fits into 64 bits
+	uint64_t d0 = d & 1;
+	uint64_t nd0 = -d0;
+	uint64_t d63 = (d>>1) + d0;
+	uint64_t d0_v2_half = nd0 & (v2>>1);
+	uint64_t v2_d63 = v2* d63;
+	// this is e without 2^96
+	uint64_t d0_v2_half_minus_v2_d63 = d0_v2_half - v2_d63;
+	std::pair<uint64_t, uint64_t> pe(
+		wide_mul(d0_v2_half_minus_v2_d63, v2));
+	uint64_t v2e_h=pe.second;
+	// v3
+	uint64_t v3= (v2<<31) + (v2e_h>>1);
+	// v4= v3 - (v3*d +2^64*d +d)
+	std::pair<uint64_t, uint64_t> pv3_d(wide_mul(d, v3));
+	duint<uint64_t> v3_d(pv3_d.first, pv3_d.second);
+	duint<uint64_t> dd(d, d);
+	v3_d += dd;
+	uint64_t v4= v3- v3_d.uh();
 	return v4;
 #endif
 #if USE_ASM==ALG
