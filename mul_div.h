@@ -222,12 +222,32 @@ namespace cftal {
                         static
                         udiv_result<uint64_t>
                         d(uint64_t u0, uint64_t u1, uint64_t v) {
+#if defined (__x86_64__)
+                                uint64_t q0, q1, r;
+                                if (u1>v) {
+                                        __asm__("divq %4 \n\t"
+                                                : "=a"(q1), "=d"(r)
+                                                : "0"(u1), "1"(0), "rm"(v)
+                                                : "cc");
+                                        __asm__("divq %4 \n\t"
+                                                : "=a"(q0), "=d"(r)
+                                                : "0"(u0), "1"(r), "rm"(v)
+                                                : "cc");
+                                } else {
+					q1 =0;
+                                        __asm__("divq %4 \n\t"
+                                                : "=a"(q0), "=d"(r)
+                                                : "0"(u0), "1"(u1), "rm"(v)
+                                                : "cc");
+				}
+#else
                                 typedef unsigned __int128 u128_t;
                                 u128_t u((u128_t(u1)<<64)|u0);
                                 u128_t q(u/v);
                                 uint64_t r(u%v);
                                 uint64_t q0(q), q1(q>>64);
-                                return make_udiv_result(q0, q1, r);
+#endif
+				return make_udiv_result(q0, q1, r);
                         }
                 };
 
@@ -352,7 +372,7 @@ g(const _U& ul, const _U& uh, const _U& cv, _U& r)
         _U v(cv);
         if (uh >= v) {
                 // If overflow, set rem. to an impossible value,
-		r = U_MAX;
+                r = U_MAX;
                 // and return the largest possible quotient.
                 return U_MAX;
         }
@@ -411,11 +431,11 @@ std::pair<_T, _T>
 cftal::wide_mul(const _T& x, const _T& y)
 {
         typedef typename std::conditional<std::is_signed<_T>::value,
-					  impl::wide_smul<_T>,
-					  impl::wide_umul<_T> >::type
-		mul_type;
-	mul_type m;
-	return m(x, y);
+		impl::wide_smul<_T>,
+		impl::wide_umul<_T> >::type
+                mul_type;
+        mul_type m;
+        return m(x, y);
 }
 
 template <class _T>
