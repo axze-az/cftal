@@ -158,6 +158,45 @@ __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 	return qi;
 }
 
+#if \
+	!defined (__tune_amdfam10__) &&		\
+	!defined (__tune_k8__) &&		\
+	!defined(__tune_athlon__) 
+__m128i x86vec::impl::div_u64::v(__m128i x, __m128i y, __m128i* rem)
+{
+	uint64_t x0= extract_u64<0>(x);
+	uint64_t y0= extract_u64<0>(y);
+	uint64_t q0= (y0 ? x0 / y0 : uint64_t(-1));
+	uint64_t r0= (y0 && rem!= nullptr ? x0 % y0 : x0);
+	
+	uint64_t x1= extract_u64<1>(x);
+	uint64_t y1= extract_u64<1>(y);
+	uint64_t q1= (y1 ? x1 / y1 : uint64_t(-1));
+	uint64_t r1= (y1 && rem!= nullptr ? x1 % y1 : x1);
+	if (rem) 
+		_mm_store_si128(rem, _mm_set_epi64x(r1, r0));
+	return _mm_set_epi64x(q1, q0);
+}
+
+__m128i x86vec::impl::div_s64::v(__m128i x, __m128i y, __m128i* rem)
+{
+	int64_t x0= extract_u64<0>(x);
+	int64_t y0= extract_u64<0>(y);
+	int64_t q0= (y0 ? x0 / y0 : int64_t(-1));
+	int64_t r0= (y0 && rem!= nullptr ? x0 % y0 : x0);
+	
+	int64_t x1= extract_u64<1>(x);
+	int64_t y1= extract_u64<1>(y);
+	int64_t q1= (y1 ? x1 / y1 : int64_t(-1));
+	int64_t r1= (y1 && rem!= nullptr ? x1 % y1 : x1);
+	if (rem) 
+		_mm_store_si128(rem, _mm_set_epi64x(r1, r0));
+	return _mm_set_epi64x(q1, q0);
+}
+
+
+#else
+
 namespace {
 	void udiv64(uint64_t& q0, uint64_t& r0, uint64_t x0, uint64_t y0,
 		    uint64_t& q1, uint64_t& r1, uint64_t x1, uint64_t y1)
@@ -241,7 +280,7 @@ __m128i x86vec::impl::div_s64::v(__m128i x, __m128i y, __m128i* rem)
 	}
 	return _mm_set_epi64x(q1, q0);
 }
-
+#endif
 
 extern "C" double cvt_u32_double(uint32_t t);
 extern "C" double cvt_u64_double(uint64_t t);
