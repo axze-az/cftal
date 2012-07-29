@@ -159,7 +159,7 @@ namespace cftal {
                         return udiv_result<_U>(q0, q1, r);
                 }
 
-		
+
                 template <class _U, class _UHALF=_U>
                 class udiv_2by1_base {
                 public:
@@ -171,9 +171,9 @@ namespace cftal {
                         g(const _U& uh, const _U& ul,  const _U& v, _U& r);
                 };
 
-		template <class _U, class _UHALF=_U>
-		class udiv_2by1 : public udiv_2by1_base<_U, _UHALF> {
-		};
+                template <class _U, class _UHALF=_U>
+                class udiv_2by1 : public udiv_2by1_base<_U, _UHALF> {
+                };
 
 
 #if !defined (__NO_UDIV_2BY1_SPECIALIZATIONS__)
@@ -222,64 +222,107 @@ namespace cftal {
                         }
                 };
 
+                class udiv_2by1_rcp_32 {
+                public:
+			// divide u0 + u1 2^32 by v
+                        static
+                        udiv_result<uint32_t>
+                        d(uint32_t u0, uint32_t u1, uint32_t v);
+                        // calculate (<u0, u1> << l_z) / nv
+                        // nv is the normalized divisor (v << l_z)
+                        // inv is the result of reciprocal_word(nv)
+                        static
+                        udiv_result<uint32_t>
+                        d(uint32_t u0, uint32_t u1, uint32_t nv,
+                          uint32_t inv, unsigned l_z);
+                        // calculate the reciprocal word to d
+                        // d must be normalized.
+                        static
+                        std::uint32_t reciprocal_word(std::uint32_t d);
+                        // division of (normalized) <u0, u1> by
+                        // normalized d without overflow.
+                        static
+                        std::uint32_t
+                        sd(uint32_t u0, uint32_t u1, uint32_t v,
+                           uint32_t inv, uint32_t& r);
+                        // we use only the high part of the table
+                        enum { TABLE_SIZE = 1<<10 };
+                private:
+                        // calculate the reciprocal word to d
+                        // d must be normalized.
+                        static
+                        std::uint32_t reciprocal_word_i(std::uint32_t d);
+                        // calculate (<u0, u1> << l_z) / nv
+                        // nv is the normalized divisor (v << l_z)
+                        // inv is the result of reciprocal_word(nv)
+                        static
+                        udiv_result<uint32_t>
+                        d_i(uint32_t u0, uint32_t u1, uint32_t nv,
+			    uint32_t inv, unsigned l_z);
+                        // division of (normalized) <u0, u1> by
+                        // normalized d without overflow.
+                        static
+                        std::uint32_t
+                        sd_i(uint32_t u0, uint32_t u1, uint32_t v,
+                             uint32_t inv, uint32_t& r);
+                        static const uint16_t _tbl[TABLE_SIZE];
+                };
+
+                void print_rcp_32_table(std::ostream& s);
+
                 template <class _UHALF>
                 class udiv_2by1<uint32_t, _UHALF> : public udiv_2by1_div_32 {
                 };
 
 
-		class udiv_2by1_rcp_64 {
-		public:
-			static
-			udiv_result<uint64_t>
-			d(uint64_t u0, uint64_t u1, uint64_t v);
+                class udiv_2by1_rcp_64 {
+                public:
+                        static
+                        udiv_result<uint64_t>
+                        d(uint64_t u0, uint64_t u1, uint64_t v);
+                        // calculate (<u0, u1> << l_z) / nv
+                        // nv is the normalized divisor (v << l_z)
+                        // inv is the result of reciprocal_word(nv)
+                        static
+                        udiv_result<uint64_t>
+                        d(uint64_t u0, uint64_t u1, uint64_t nv,
+                          uint64_t inv, unsigned l_z);
+                        // calculate the reciprocal word to d
+                        // d must be normalized.
+                        static
+                        std::uint64_t reciprocal_word(std::uint64_t d);
+                        // division of (normalized) <u0, u1> by
+                        // normalized d without overflow.
+                        static
+                        std::uint64_t
+                        sd(uint64_t u0, uint64_t u1, uint64_t v,
+                           uint64_t inv, uint64_t& r);
+                        // we use only the high part of the table
+                        enum { TABLE_SIZE = 1<<9 };
+                private:
+                        // calculate the reciprocal word to d
+                        // d must be normalized.
+                        static
+                        std::uint64_t reciprocal_word_i(std::uint64_t d);
+                        // calculate (<u0, u1> << l_z) / nv
+                        // nv is the normalized divisor (v << l_z)
+                        // inv is the result of reciprocal_word(nv)
+                        static
+                        udiv_result<uint64_t>
+                        d_i(uint64_t u0, uint64_t u1, uint64_t nv,
+			    uint64_t inv, unsigned l_z);
+                        // division of (normalized) <u0, u1> by
+                        // normalized d without overflow.
+                        static
+                        std::uint64_t
+                        sd_i(uint64_t u0, uint64_t u1, uint64_t v,
+                             uint64_t inv, uint64_t& r);
+			
+                        static const uint16_t _tbl[TABLE_SIZE];
+                };
 
-			// calculate (<u0, u1> << l_z) / nv
-			// nv is the normalized divisor (v << l_z)
-			// inv is the result of reciprocal_word(nv)
-			static 
-			udiv_result<uint64_t>
-			d(uint64_t u0, uint64_t u1, uint64_t nv,
-			  uint64_t inv, unsigned l_z);
+                void print_rcp_64_table(std::ostream& s);
 
-			// calculate the reciprocal word to d
-			// d must be normalized.
-			static
-			std::uint64_t reciprocal_word(std::uint64_t d);
-			// division of (normalized) <u0, u1> by
-			// normalized d without overflow.
-			static
-			std::uint64_t
-			sd(uint64_t u0, uint64_t u1, uint64_t v,
-			   uint64_t inv, uint64_t& r);
-
-			// we use only the high part of the table
-			enum { TABLE_SIZE = 1<<9 };
-		private:			
-			// calculate the reciprocal word to d
-			// d must be normalized.
-			static
-			std::uint64_t reciprocal_word_i(std::uint64_t d);
-
-			// calculate (<u0, u1> << l_z) / nv
-			// nv is the normalized divisor (v << l_z)
-			// inv is the result of reciprocal_word(nv)
-			static 
-			udiv_result<uint64_t>
-			d_i(uint64_t u0, uint64_t u1, uint64_t nv,
-			  uint64_t inv, unsigned l_z);
-
-			// division of (normalized) <u0, u1> by
-			// normalized d without overflow.
-			static
-			std::uint64_t
-			sd_i(uint64_t u0, uint64_t u1, uint64_t v,
-			     uint64_t inv, uint64_t& r);
-
-			static const uint16_t _tbl[TABLE_SIZE];
-		};
-
-		void print_rcp_64_table(std::ostream& s);
-		
 
 #if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
 

@@ -354,7 +354,6 @@ cftal::impl::udiv_2by1_rcp_64::_tbl[TABLE_SIZE]={
 	0x40e, 0x40c, 0x40a, 0x408, 0x406, 0x404, 0x402, 0x400
 };
 
-
 void
 cftal::impl::print_rcp_64_table(std::ostream& s)
 {
