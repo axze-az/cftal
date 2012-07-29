@@ -1,5 +1,7 @@
 #include "x86vec_ops_1.h"
 #include "x86vec_ins_ext.h"
+#include "bitops.h"
+#include "mul_div.h"
 
 __m128i x86vec::impl::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 {
@@ -156,17 +158,55 @@ __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 	return qi;
 }
 
+namespace {
+	void udiv64(uint64_t& q0, uint64_t& r0, uint64_t x0, uint64_t y0,
+		    uint64_t& q1, uint64_t& r1, uint64_t x1, uint64_t y1)
+	{
+		uint64_t inv(0), nv(0);
+		unsigned l_z(0);
+		if (y0 != 0) {
+			l_z = cftal::lzcnt(y0);
+			nv = y0 << l_z;
+			inv = cftal::impl::udiv_2by1_rcp_64::
+				reciprocal_word(nv);
+			cftal::impl::udiv_result<uint64_t> qr(
+				cftal::impl::
+				udiv_2by1_rcp_64::d(x0, 0, nv, inv, l_z));
+			q0 = qr._q0;
+			r0 = qr._r;
+		} else {
+			q0 = uint64_t(-1);
+			r0 = x0;
+		}
+		if (y1 != 0) {
+			if (y1 != y0) {
+				l_z = cftal::lzcnt(y1);
+				nv = y1 << l_z;
+				inv = cftal::impl::udiv_2by1_rcp_64::
+					reciprocal_word(nv);
+			}
+			cftal::impl::udiv_result<uint64_t> qr(
+				cftal::impl::
+				udiv_2by1_rcp_64::d(x1, 0, nv, inv, l_z));
+			q1 = qr._q0;
+			r1 = qr._r;
+		} else {
+			q1 = uint64_t(-1);
+			r1 = x1;
+		}
+	}
+
+}
+
 __m128i x86vec::impl::div_u64::v(__m128i x, __m128i y, __m128i* rem)
 {
+	// cftal::impl::udiv_2by1_rcp_64
 	uint64_t x0= extract_u64<0>(x);
 	uint64_t y0= extract_u64<0>(y);
-	uint64_t q0= (y0 ? x0 / y0 : uint64_t(-1));
-	uint64_t r0= (y0 && rem!= nullptr ? x0 % y0 : x0);
-	
 	uint64_t x1= extract_u64<1>(x);
 	uint64_t y1= extract_u64<1>(y);
-	uint64_t q1= (y1 ? x1 / y1 : uint64_t(-1));
-	uint64_t r1= (y1 && rem!= nullptr ? x1 % y1 : x1);
+	uint64_t q0, r0, q1, r1;
+	udiv64(q0, r0, x0, y0, q1, r1, x1, y1);
 	if (rem) 
 		_mm_store_si128(rem, _mm_set_epi64x(r1, r0));
 	return _mm_set_epi64x(q1, q0);
@@ -176,15 +216,29 @@ __m128i x86vec::impl::div_s64::v(__m128i x, __m128i y, __m128i* rem)
 {
 	int64_t x0= extract_u64<0>(x);
 	int64_t y0= extract_u64<0>(y);
-	int64_t q0= (y0 ? x0 / y0 : int64_t(-1));
-	int64_t r0= (y0 && rem!= nullptr ? x0 % y0 : x0);
-	
 	int64_t x1= extract_u64<1>(x);
 	int64_t y1= extract_u64<1>(y);
-	int64_t q1= (y1 ? x1 / y1 : int64_t(-1));
-	int64_t r1= (y1 && rem!= nullptr ? x1 % y1 : x1);
-	if (rem) 
+
+	int sx0(x0<0), sy0(y0<0), sx1(x1<0), sy1(y1<0);
+	uint64_t ux0(sx0 ? -x0 : x0), uy0(sy0 ? -y0 : y0);
+	uint64_t ux1(sx1 ? -x1 : x1), uy1(sy1 ? -y1 : y1);
+
+	uint64_t uq0, ur0, uq1, ur1;
+	udiv64(uq0, ur0, ux0, uy0, uq1, ur1, ux1, uy1);
+
+	int64_t q0(uq0), q1(uq1);
+	if (y0 && sx0^sy0)
+		q0 = -q0;
+	if (y1 && sx1^sy1)
+		q1 = -q1;
+	if (rem) {
+		int64_t r0(ur0), r1(ur1);
+		if (y0 && sx0)
+			r0 = -r0;
+		if (y1 && sx1)
+			r1 = -r1;
 		_mm_store_si128(rem, _mm_set_epi64x(r1, r0));
+	}
 	return _mm_set_epi64x(q1, q0);
 }
 

@@ -272,7 +272,7 @@ namespace cftal {
                         d(uint64_t u0, uint64_t u1, uint64_t v) {
 #if defined (__x86_64__)
                                 uint64_t q0, q1, r;
-                                if (u1>v) {
+                                if (u1>=v) {
                                         __asm__("divq %4 \n\t"
                                                 : "=a"(q1), "=d"(r)
                                                 : "0"(u1), "1"(0), "rm"(v)
