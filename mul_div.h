@@ -255,8 +255,26 @@ namespace cftal {
 			// we use only the high part of the table
 			enum { TABLE_SIZE = 1<<9 };
 		private:			
+			// calculate the reciprocal word to d
+			// d must be normalized.
 			static
 			std::uint64_t reciprocal_word_i(std::uint64_t d);
+
+			// calculate (<u0, u1> << l_z) / nv
+			// nv is the normalized divisor (v << l_z)
+			// inv is the result of reciprocal_word(nv)
+			static 
+			udiv_result<uint64_t>
+			d_i(uint64_t u0, uint64_t u1, uint64_t nv,
+			  uint64_t inv, unsigned l_z);
+
+			// division of (normalized) <u0, u1> by
+			// normalized d without overflow.
+			static
+			std::uint64_t
+			sd_i(uint64_t u0, uint64_t u1, uint64_t v,
+			     uint64_t inv, uint64_t& r);
+
 			static const uint16_t _tbl[TABLE_SIZE];
 		};
 
@@ -464,88 +482,6 @@ g(const _U& ul, const _U& uh, const _U& cv, _U& r)
         // If remainder is wanted, return it.
         r = (un21*b + un0 - q0*v) >> s;
         return q1*b + q0;
-}
-
-inline
-cftal::uint64_t
-cftal::impl::udiv_2by1_rcp_64::
-sd(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t& rem)
-{
-	std::pair<uint64_t, uint64_t> p0(wide_mul(u1, inv));
-#if defined (__x86_64__)
-	uint64_t q0, q1;
-	__asm__ ("add %4, %0 \n\t"
-		 "adc %5, %1 \n\t"
-		 : "=r"(q0), "=r"(q1)
-		 : "0"(p0.first), "1"(p0.second),
-		   "rm"(u0), "rm"(u1+1)
-		 : "cc");
-#else
-	uint64_t q0= p0.first + u0;
-	uint64_t q1= p0.second + u1 +1;
-	if (q0 < u0)
-		++q1;
-#endif
-	uint64_t r = u0 - q1*d;
-#if 1
-	uint64_t corr_q1= (r>q0) ? 1 : 0;
-	uint64_t corr_r= (r>q0) ? d : 0;
-	q1 -= corr_q1;
-	r += corr_r;
-#else
-	if (r > q0) {
-		--q1;
-		r += d;
-	}
-#endif
-	if (unlikely(r >= d)) {
-		++q1;
-		r -= d;
-	}
-	rem = r;
-	return q1;
-}
-
-inline
-cftal::impl::udiv_result<uint64_t>
-cftal::impl::udiv_2by1_rcp_64::
-d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t inv, unsigned l_z)
-{
-	// normalized values of v, u0, u1
-	uint64_t u2(0);
-#if defined (__x86_64__)
-	__asm__ ( "shldq  %[u1], %[u2] \n\t"
-		  : [u2] "+r"(u2)
-		  : [u1] "r"(u1), "c"(l_z)
-		  : "cc");
-	__asm__ ( "shldq  %[u0], %[u1] \n\t"
-		  : [u1] "+r"(u1)
-		  : [u0] "r"(u0), "c"(l_z)
-		  : "cc");
-	u0 <<= l_z;
-#else
-	if (likely(l_z!=0)) {
-		uint64_t s2, s1, s0;
-		unsigned neg_shift = 64 - l_z;
-		s0 = u0 << l_z;
-		uint64_t u01(u0 >> neg_shift);
-		s1 = u1 << l_z;
-		s1 |= u01;
-		s2 = u1 >> neg_shift;
-		// store normalized values.
-		u0 = s0;
-		u1 = s1;
-		u2 = s2;
-	}
-#endif
-	uint64_t q1(0), q0(0), r(u1);
-	if (likely(u2 != 0 || u1>=v)) {
-		q1=sd(u1, u2, v, inv, r);
-	}
-	q0=sd(u0, r, v, inv, r);
-	if (l_z)
-		r >>= l_z;
-	return make_udiv_result(q0, q1, r);
 }
 
 
