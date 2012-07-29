@@ -231,7 +231,7 @@ inline
 unsigned cftal::lzcnt(uint64_t x)
 {
 #if defined (__GNUC__)
-	return x ? __builtin_clzl(x) : 64;
+	return x ? __builtin_clzll(x) : 64;
 #else
 	x |= (x>>1);
 	x |= (x>>2);

@@ -215,8 +215,8 @@ cftal::impl::udiv_2by1_rcp_32::reciprocal_word(uint32_t d)
 #define USE_DIV 0
 #define USE_CPP 1
 #define USE_ASM 2
-#if defined (__x86_64__) || defined (__i386__)
-#define ALG USE_CPP
+#if defined (__i386__)
+#define ALG USE_ASM
 #else
 #define ALG USE_CPP
 #endif

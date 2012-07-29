@@ -167,7 +167,7 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 	uint32_t v1= (v0<<11) - uint32_t(v0_v0_d40>>40) -1;
 	uint64_t v1_d40 = v1 * d40;
 	uint64_t v1_shl_13= uint64_t(v1) << 13;
-	uint64_t two_pow_60_m_v1_d40= (1L<<60) - v1_d40;
+	uint64_t two_pow_60_m_v1_d40= (1LL<<60) - v1_d40;
 	// right part of v2
 	uint64_t v2r= (v1*two_pow_60_m_v1_d40)>>47;
 	uint64_t v2= v1_shl_13 + v2r;
@@ -408,8 +408,13 @@ cftal::test::udiv_64_one(uint64_t v, uint64_t& ops, uint64_t* timings)
 		uint64_t uh= rng.next();
 		
 		t0 = rdtsc();
+#if defined (__LP64__) || defined (__ILP32__)
 		impl::udiv_result<uint64_t> qr_ref(
 			impl::udiv_2by1_div_64::d(ul, uh, v));
+#else
+		impl::udiv_result<uint64_t> qr_ref(
+			impl::udiv_2by1_base<uint64_t>::d(ul, uh, v));
+#endif
 		t1 = rdtsc();
 		impl::udiv_result<uint64_t> qr(
 			impl::udiv_2by1_rcp_64::d(ul, uh, v));

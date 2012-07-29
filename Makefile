@@ -13,7 +13,8 @@ SLDFLAGS:= $(SLDFLAGS)
 ARCH+=#-no-sse3
 CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 
-CSRCS=heap_array.cc x86vec_ops_1.cc x86vec_test.cc emuvec.cc
+CSRCS=heap_array.cc x86vec_ops_1.cc x86vec_test.cc emuvec.cc	\
+mul_div.cc
 
 all: lib tests
 
@@ -83,26 +84,26 @@ tests: $(TESTPROGS)
 testfpvec: testfpvec.ol
 	$(LD) -o $@ $< $(LDFLAGS) -lstdc++
 
-genx86vec: genx86vec.ol x86vec_test.ol
-	$(LD) -o $@ $^ $(LDFLAGS) -lstdc++
+genx86vec: genx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
+	 $(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
 
-hackx86vec: hackx86vec.ol x86vec_test.ol
-	$(LD) -o $@ $^ $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
+hackx86vec: hackx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
+	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
 
 hackx86vec_g: hackx86vec.od x86vec_test.od lib$(LIBNAME)-g.a
-	$(LD) -o $@ $^ $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
+	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
 
 rcp_div: rcp_div.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
-	$(LD) -o $@ $^ $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
+	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
 
 rcp_div_g: rcp_div.od lib$(LIBNAME)-g.a
-	$(LD) -o $@ $^ $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
+	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
 
 rcp_div_64: rcp_div_64.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
-	$(LD) -o $@ $^ $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
+	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
 
 rcp_div_64_g: rcp_div_64.od lib$(LIBNAME)-g.a
-	$(LD) -o $@ $^ $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
+	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
 
 
 # Full tests

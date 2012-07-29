@@ -158,9 +158,9 @@ namespace cftal {
                         return udiv_result<_U>(q0, q1, r);
                 }
 
-
+		
                 template <class _U, class _UHALF=_U>
-                class udiv_2by1 {
+                class udiv_2by1_base {
                 public:
                         static
                         udiv_result<_U>
@@ -169,6 +169,12 @@ namespace cftal {
                         static _U
                         g(const _U& uh, const _U& ul,  const _U& v, _U& r);
                 };
+
+		template <class _U, class _UHALF=_U>
+		class udiv_2by1 : public udiv_2by1_base<_U, _UHALF> {
+		};
+
+
 #if !defined (__NO_UDIV_2BY1_SPECIALIZATIONS__)
 
                 template <class _UHALF>
@@ -333,7 +339,7 @@ cftal::impl::wide_smul<_S>::operator()(const _S& x, const _S& y)
 
 template <class _U, class _UHALF>
 cftal::impl::udiv_result<_U>
-cftal::impl::udiv_2by1<_U, _UHALF>::
+cftal::impl::udiv_2by1_base<_U, _UHALF>::
 d(const _U& u0, const _U& u1, const _U& v)
 {
         _U q1(0); _U q0(0);
@@ -350,7 +356,7 @@ d(const _U& u0, const _U& u1, const _U& v)
 }
 
 template <class _U, class _UHALF>
-_U cftal::impl::udiv_2by1<_U, _UHALF>::
+_U cftal::impl::udiv_2by1_base<_U, _UHALF>::
 g(const _U& ul, const _U& uh, const _U& cv, _U& r)
 {
         const unsigned N= sizeof(_U)*8;
