@@ -255,6 +255,8 @@ namespace cftal {
 			// we use only the high part of the table
 			enum { TABLE_SIZE = 1<<9 };
 		private:			
+			static
+			std::uint64_t reciprocal_word_i(std::uint64_t d);
 			static const uint16_t _tbl[TABLE_SIZE];
 		};
 
@@ -462,6 +464,46 @@ g(const _U& ul, const _U& uh, const _U& cv, _U& r)
         // If remainder is wanted, return it.
         r = (un21*b + un0 - q0*v) >> s;
         return q1*b + q0;
+}
+
+inline
+cftal::uint64_t
+cftal::impl::udiv_2by1_rcp_64::
+sd(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t& rem)
+{
+	std::pair<uint64_t, uint64_t> p0(wide_mul(u1, inv));
+#if defined (__x86_64__)
+	uint64_t q0, q1;
+	__asm__ ("add %4, %0 \n\t"
+		 "adc %5, %1 \n\t"
+		 : "=r"(q0), "=r"(q1)
+		 : "0"(p0.first), "1"(p0.second),
+		   "rm"(u0), "rm"(u1+1)
+		 : "cc");
+#else
+	uint64_t q0= p0.first + u0;
+	uint64_t q1= p0.second + u1 +1;
+	if (q0 < u0)
+		++q1;
+#endif
+	uint64_t r = u0 - q1*d;
+#if 1
+	uint64_t corr_q1= (r>q0) ? 1 : 0;
+	uint64_t corr_r= (r>q0) ? d : 0;
+	q1 -= corr_q1;
+	r += corr_r;
+#else
+	if (r > q0) {
+		--q1;
+		r += d;
+	}
+#endif
+	if (unlikely(r >= d)) {
+		++q1;
+		r -= d;
+	}
+	rem = r;
+	return q1;
 }
 
 inline

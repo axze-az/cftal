@@ -3,8 +3,9 @@
 #include <iostream> // required by print_rcp_64_table
 #include <iomanip> // required by print_rcp_64_table
 
+inline
 cftal::uint64_t
-cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
+cftal::impl::udiv_2by1_rcp_64::reciprocal_word_i(uint64_t d)
 {
 #define USE_DIV 0
 #define USE_CPP 1
@@ -161,44 +162,11 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 #undef ALG
 }
 
-// inline
 cftal::uint64_t
-cftal::impl::udiv_2by1_rcp_64::
-sd(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t& rem)
+cftal::impl::udiv_2by1_rcp_64::reciprocal_word(uint64_t d)
 {
-	std::pair<uint64_t, uint64_t> p0(wide_mul(u1, inv));
-#if 1
-	duint<uint64_t> q(p0.first, p0.second);
-	q += duint<uint64_t>(u0, u1+1);
-	uint64_t q0= q.l();
-	uint64_t q1= q.uh();
-#else
-	uint64_t q0= p0.first + u0;
-	uint64_t q1= p0.second + u1;
-	if (q0 < u0)
-		++q1;
-	++q1;
-#endif
-	uint64_t r = u0 - q1*d;
-#if 1
-	uint64_t corr_q1= (r>q0) ? 1 : 0;
-	uint64_t corr_r= (r>q0) ? d : 0;
-	q1 -= corr_q1;
-	r += corr_r;
-#else
-	if (r > q0) {
-		--q1;
-		r += d;
-	}
-#endif
-	if (unlikely(r >= d)) {
-		++q1;
-		r -= d;
-	}
-	rem = r;
-	return q1;
+	return reciprocal_word_i(d);
 }
-
 
 cftal::impl::udiv_result<uint64_t>
 cftal::impl::udiv_2by1_rcp_64::
@@ -216,7 +184,7 @@ d(uint64_t u0, uint64_t u1, uint64_t v)
 #endif
 	unsigned l_z=lzcnt(v);
 	v <<= l_z;
-	uint64_t inv(reciprocal_word(v));
+	uint64_t inv(reciprocal_word_i(v));
 	return d(u0, u1, v, inv, l_z);
 }
 
