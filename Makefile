@@ -14,7 +14,7 @@ ARCH+=#-no-sse3
 CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 
 CSRCS=heap_array.cc x86vec_ops_1.cc x86vec_test.cc emuvec.cc	\
-mul_div.cc
+mul_div_32.cc mul_div_64.cc
 
 all: lib tests
 

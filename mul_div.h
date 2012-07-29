@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/bitops.h>
+#include <iosfwd>
 #include <utility>
 #include <type_traits>
 
@@ -225,6 +226,41 @@ namespace cftal {
                 class udiv_2by1<uint32_t, _UHALF> : public udiv_2by1_div_32 {
                 };
 
+
+		class udiv_2by1_rcp_64 {
+		public:
+			static
+			udiv_result<uint64_t>
+			d(uint64_t u0, uint64_t u1, uint64_t v);
+
+			// calculate (<u0, u1> << l_z) / nv
+			// nv is the normalized divisor (v << l_z)
+			// inv is the result of reciprocal_word(nv)
+			static 
+			udiv_result<uint64_t>
+			d(uint64_t u0, uint64_t u1, uint64_t nv,
+			  uint64_t inv, unsigned l_z);
+
+			// calculate the reciprocal word to d
+			// d must be normalized.
+			static
+			std::uint64_t reciprocal_word(std::uint64_t d);
+			// division of (normalized) <u0, u1> by
+			// normalized d without overflow.
+			static
+			std::uint64_t
+			sd(uint64_t u0, uint64_t u1, uint64_t v,
+			   uint64_t inv, uint64_t& r);
+
+			// we use only the high part of the table
+			enum { TABLE_SIZE = 1<<9 };
+		private:			
+			static const uint16_t _tbl[TABLE_SIZE];
+		};
+
+		void print_rcp_64_table(std::ostream& s);
+		
+
 #if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
 
                 class udiv_2by1_div_64 {
@@ -270,13 +306,6 @@ namespace cftal {
         }
 }
 
-template <class _V>
-inline
-_V cftal::remainder(const _V& n, const _V& d, const _V& q)
-{
-        _V p(d* q);
-        return n - p;
-}
 
 template <class _U>
 std::pair<_U, _U>
@@ -433,6 +462,57 @@ g(const _U& ul, const _U& uh, const _U& cv, _U& r)
         // If remainder is wanted, return it.
         r = (un21*b + un0 - q0*v) >> s;
         return q1*b + q0;
+}
+
+inline
+cftal::impl::udiv_result<uint64_t>
+cftal::impl::udiv_2by1_rcp_64::
+d(uint64_t u0, uint64_t u1, uint64_t v, uint64_t inv, unsigned l_z)
+{
+	// normalized values of v, u0, u1
+	uint64_t u2(0);
+#if defined (__x86_64__)
+	__asm__ ( "shldq  %[u1], %[u2] \n\t"
+		  : [u2] "+r"(u2)
+		  : [u1] "r"(u1), "c"(l_z)
+		  : "cc");
+	__asm__ ( "shldq  %[u0], %[u1] \n\t"
+		  : [u1] "+r"(u1)
+		  : [u0] "r"(u0), "c"(l_z)
+		  : "cc");
+	u0 <<= l_z;
+#else
+	if (likely(l_z!=0)) {
+		uint64_t s2, s1, s0;
+		unsigned neg_shift = 64 - l_z;
+		s0 = u0 << l_z;
+		uint64_t u01(u0 >> neg_shift);
+		s1 = u1 << l_z;
+		s1 |= u01;
+		s2 = u1 >> neg_shift;
+		// store normalized values.
+		u0 = s0;
+		u1 = s1;
+		u2 = s2;
+	}
+#endif
+	uint64_t q1(0), q0(0), r(u1);
+	if (likely(u2 != 0 || u1>=v)) {
+		q1=sd(u1, u2, v, inv, r);
+	}
+	q0=sd(u0, r, v, inv, r);
+	if (l_z)
+		r >>= l_z;
+	return make_udiv_result(q0, q1, r);
+}
+
+
+template <class _V>
+inline
+_V cftal::remainder(const _V& n, const _V& d, const _V& q)
+{
+        _V p(d* q);
+        return n - p;
 }
 
 template <class _T>
