@@ -198,6 +198,7 @@ __m128i x86vec::impl::div_s64::v(__m128i x, __m128i y, __m128i* rem)
 #else
 
 namespace {
+
 	void udiv64(uint64_t& q0, uint64_t& r0, uint64_t x0, uint64_t y0,
 		    uint64_t& q1, uint64_t& r1, uint64_t x1, uint64_t y1)
 	{
