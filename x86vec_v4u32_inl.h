@@ -409,14 +409,14 @@ x86vec::v4u32 x86vec::min(const v4u32& a, const v4u32& b)
 }
 
 inline
-x86vec::v4u32 x86vec::mulh(const v4u32& a, const v4u32& b)
+x86vec::v4u32 x86vec::mul_hi(const v4u32& a, const v4u32& b)
 {
 	return impl::vpmulhud::v(a(), b());
 }
 
 inline
 std::pair<x86vec::v4u32, x86vec::v4u32>
-x86vec::wide_mul(const v4u32& x, const v4u32& y)
+x86vec::mul_lo_hi(const v4u32& x, const v4u32& y)
 {
 	// p0l p0h p2l p2h
 	v4u32 e= _mm_mul_epu32(x(), y());

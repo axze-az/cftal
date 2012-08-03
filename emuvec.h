@@ -107,7 +107,7 @@ namespace emuvec {
         v8s16 max(const v8s16& a, const v8s16& b);
         v8s16 min(const v8s16& a, const v8s16& b);
         v8s16 abs(const v8s16& a);
-        v8s16 mulh(const v8s16& a, const v8s16& b);
+        v8s16 mul_hi(const v8s16& a, const v8s16& b);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3,
                    bool _P4, bool _P5, bool _P6, bool _P7 >
@@ -211,7 +211,7 @@ namespace emuvec {
 
 	v8u16 max(const v8u16& a, const v8u16& b);
 	v8u16 min(const v8u16& a, const v8u16& b);
-	v8u16 mulh(const v8u16& a, const v8u16& b);
+	v8u16 mul_hi(const v8u16& a, const v8u16& b);
 
 	template < bool _P0, bool _P1, bool _P2, bool _P3,
 		   bool _P4, bool _P5, bool _P6, bool _P7 >
@@ -322,7 +322,7 @@ namespace emuvec {
 	v4s32 max(const v4s32& a, const v4s32& b);
 	v4s32 min(const v4s32& a, const v4s32& b);
 	v4s32 abs(const v4s32& a);
-	v4s32 mulh(const v4s32& a, const v4s32& b);
+	v4s32 mul_hi(const v4s32& a, const v4s32& b);
 
 	template < bool _P0, bool _P1, bool _P2, bool _P3 >
 	v4s32 select(const v4s32& a, const v4s32& b);
@@ -421,7 +421,7 @@ namespace emuvec {
 
 	v4u32 max(const v4u32& a, const v4u32& b);
 	v4u32 min(const v4u32& a, const v4u32& b);
-	v4u32 mulh(const v4u32& a, const v4u32& b);
+	v4u32 mul_hi(const v4u32& a, const v4u32& b);
 
 	template < bool _P0, bool _P1, bool _P2, bool _P3 >
 	v4u32 select(const v4u32& a, const v4u32& b);
@@ -437,6 +437,211 @@ namespace emuvec {
 	v4u32 insert(const v4u32& a, typename v4u32::element_type v);
 	template <unsigned _I>
 	typename v4u32::element_type extract(const v4u32& a);
+
+	class v2s64 : public impl::vec_base<int64_t, 2>::type {
+	public:
+		enum { N = 2 };
+		typedef int64_t element_type;
+		typedef typename impl::vec_base<element_type, N>::type
+		base_type;
+		element_type* operator()();
+		const element_type* operator()() const;
+		// no initialization is done here.
+		v2s64();
+		v2s64(element_type r);
+		v2s64(element_type r, bool broad_cast);
+		v2s64(element_type i0, element_type i1);
+		v2s64(const v2s64& r);
+		v2s64(v2s64&& r);
+		v2s64& operator=(element_type r);
+		v2s64& operator=(const v2s64& r);
+		v2s64& operator=(v2s64&& r);
+		// memory load operations
+		v2s64(const mem::addr_bcast<element_type>& r);
+		v2s64(const mem::addr<element_type>& r);
+		~v2s64();
+	protected:
+		element_type* begin();
+		const element_type* begin() const;
+	};
+
+	v2s64& operator|= (v2s64& a, const v2s64& b);
+	v2s64& operator&= (v2s64& a, const v2s64& b);
+	v2s64& operator^= (v2s64& a, const v2s64& b);
+	v2s64& operator+= (v2s64& a, const v2s64& b);
+	v2s64& operator-= (v2s64& a, const v2s64& b);
+	v2s64& operator*= (v2s64& a, const v2s64& b);
+	v2s64& operator/= (v2s64& a, const v2s64& b);
+	v2s64& operator%= (v2s64& a, const v2s64& b);
+
+	template <uint32_t _P>
+	v2s64& operator<<= (v2s64& a, const const_u32<_P>& b);
+	v2s64& operator<<= (v2s64& a, uint64_t b);
+	template <uint32_t _P>
+	v2s64 operator <<(const v2s64& a, const const_u32<_P>& b);
+	v2s64 operator <<(const v2s64& a, uint64_t b);
+
+	template <uint32_t _P>
+	v2s64& operator>>= (v2s64& a, const_u32<_P>& b);
+	v2s64& operator>>= (v2s64& a, uint64_t b);
+	template <uint32_t _P>
+	v2s64 operator >>(const v2s64& a, const const_u32<_P>& b);
+	v2s64 operator >>(const v2s64& a, uint64_t b);
+
+	v2s64 operator++ (v2s64& a, int);
+	v2s64& operator++(v2s64& a);
+	v2s64 operator-- (v2s64& a, int);
+	v2s64& operator--(v2s64& a);
+
+	v2s64 operator-(const v2s64& a);
+	const v2s64& operator+(const v2s64& a);
+	v2s64 operator~(const v2s64& a);
+	v2s64 operator!(const v2s64& a);
+
+	v2s64 operator| (const v2s64& a, const v2s64& b);
+	v2s64 operator|| (const v2s64& a, const v2s64& b);
+	v2s64 operator& (const v2s64& a, const v2s64& b);
+	v2s64 operator&& (const v2s64& a, const v2s64& b);
+	v2s64 operator^(const v2s64& a, const v2s64& b);
+
+	v2s64 operator+ (const v2s64& a, const v2s64& b);
+	v2s64 operator- (const v2s64& a, const v2s64& b);
+	v2s64 operator* (const v2s64& a, const v2s64& b);
+	v2s64 operator/ (const v2s64& a, const v2s64& b);
+	v2s64 operator% (const v2s64& a, const v2s64& b);
+
+	v2s64 operator< (const v2s64& a, const v2s64& b);
+	v2s64 operator<= (const v2s64& a, const v2s64& b);
+	v2s64 operator== (const v2s64& a, const v2s64& b);
+	v2s64 operator!= (const v2s64& a, const v2s64& b);
+	v2s64 operator>= (const v2s64& a, const v2s64& b);
+	v2s64 operator> (const v2s64& a, const v2s64& b);
+
+	// checks the signs
+	bool all_signs(const v2s64& a);
+	// checks the signs
+	bool both_signs(const v2s64& a);
+	// checks the signs
+	bool no_signs(const v2s64& a);
+
+	v2s64 max(const v2s64& a, const v2s64& b);
+	v2s64 min(const v2s64& a, const v2s64& b);
+	v2s64 abs(const v2s64& a);
+	v2s64 mul_hi(const v2s64& a, const v2s64& b);
+
+	template < bool _P0, bool _P1>
+	v2s64 select(const v2s64& a, const v2s64& b);
+	v2s64 select(const v2s64& msk, const v2s64& on_true,
+		     const v2s64& on_false);
+
+	template < int _P0, int _P1 >
+	v2s64 permute(const v2s64& a);
+	template < int _P0, int _P1 >
+	v2s64 permute(const v2s64& a, const v2s64& b);
+
+	template <unsigned _I>
+	v2s64 insert(const v2s64& a, typename v2s64::element_type v);
+	template <unsigned _I>
+	typename v2s64::element_type extract(const v2s64& a);
+
+	class v2u64 : public v2s64 {
+	public:
+		typedef uint64_t element_type;
+		typedef v2s64 base_type;
+		element_type* operator()();
+		const element_type* operator()() const;
+		v2u64();
+		v2u64(const base_type& r);
+		v2u64(base_type&& r);
+		v2u64(element_type r);
+		v2u64(const v2u64& r);
+		v2u64(v2u64&& r);
+		v2u64(element_type r, bool broadcast);
+		v2u64(element_type p00, element_type p01);
+		v2u64& operator=(element_type r);
+		v2u64& operator=(const v2u64& r);
+		v2u64& operator=(v2u64&& r);
+		v2u64& operator=(const base_type& r);
+		v2u64& operator=(base_type&& r);
+		v2u64(const mem::addr_bcast<element_type>& r);
+		v2u64(const mem::addr<element_type>& r);
+		~v2u64();
+	protected:
+		element_type* begin();
+		const element_type* begin() const;
+	};
+
+	v2u64& operator|= (v2u64& a, const v2u64& b);
+	v2u64& operator&= (v2u64& a, const v2u64& b);
+	v2u64& operator^= (v2u64& a, const v2u64& b);
+	v2u64& operator+= (v2u64& a, const v2u64& b);
+	v2u64& operator-= (v2u64& a, const v2u64& b);
+	v2u64& operator*= (v2u64& a, const v2u64& b);
+	v2u64& operator/= (v2u64& a, const v2u64& b);
+	v2u64& operator%= (v2u64& a, const v2u64& b);
+
+	template <uint32_t _P>
+	v2u64& operator<<= (v2u64& a, const const_u32<_P>& b);
+	v2u64& operator<<= (v2u64& a, uint64_t b);
+	template <uint32_t _P>
+	v2u64 operator <<(const v2u64& a, const const_u32<_P>& b);
+	v2u64 operator <<(const v2u64& a, uint64_t b);
+
+	template <uint32_t _P>
+	v2u64& operator>>= (v2u64& a, const_u32<_P>& b);
+	v2u64& operator>>= (v2u64& a, uint64_t b);
+	template <uint32_t _P>
+	v2u64 operator >>(const v2u64& a, const const_u32<_P>& b);
+	v2u64 operator >>(const v2u64& a, uint64_t b);
+
+	v2u64 operator++ (v2u64& a, int);
+	v2u64& operator++(v2u64& a);
+	v2u64 operator-- (v2u64& a, int);
+	v2u64& operator--(v2u64& a);
+
+	v2u64 operator-(const v2u64& a);
+	const v2u64& operator+(const v2u64& a);
+	v2u64 operator~(const v2u64& a);
+	v2u64 operator!(const v2u64& a);
+
+	v2u64 operator| (const v2u64& a, const v2u64& b);
+	v2u64 operator|| (const v2u64& a, const v2u64& b);
+	v2u64 operator& (const v2u64& a, const v2u64& b);
+	v2u64 operator&& (const v2u64& a, const v2u64& b);
+	v2u64 operator^(const v2u64& a, const v2u64& b);
+
+	v2u64 operator+ (const v2u64& a, const v2u64& b);
+	v2u64 operator- (const v2u64& a, const v2u64& b);
+	v2u64 operator* (const v2u64& a, const v2u64& b);
+	v2u64 operator/ (const v2u64& a, const v2u64& b);
+	v2u64 operator% (const v2u64& a, const v2u64& b);
+
+	v2u64 operator< (const v2u64& a, const v2u64& b);
+	v2u64 operator<= (const v2u64& a, const v2u64& b);
+	v2u64 operator== (const v2u64& a, const v2u64& b);
+	v2u64 operator!= (const v2u64& a, const v2u64& b);
+	v2u64 operator>= (const v2u64& a, const v2u64& b);
+	v2u64 operator> (const v2u64& a, const v2u64& b);
+
+	v2u64 max(const v2u64& a, const v2u64& b);
+	v2u64 min(const v2u64& a, const v2u64& b);
+	v2u64 mul_hi(const v2u64& a, const v2u64& b);
+
+	template < bool _P0, bool _P1>
+	v2u64 select(const v2u64& a, const v2u64& b);
+	v2u64 select(const v2u64& msk, const v2u64& on_true,
+		     const v2u64& on_false);
+
+	template < int _P0, int _P1>
+	v2u64 permute(const v2u64& a);
+	template < int _P0, int _P1>
+	v2u64 permute(const v2u64& a, const v2u64& b);
+
+	template <unsigned _I>
+	v2u64 insert(const v2u64& a, typename v2u64::element_type v);
+	template <unsigned _I>
+	typename v2u64::element_type extract(const v2u64& a);
+
 
 	class v4f32 : public impl::vec_base<float,4>::type {
 	public:
@@ -630,6 +835,8 @@ namespace emuvec {
 	void store(v8s16::element_type* p, const v8s16& r);
 	void store(v4u32::element_type* p, const v4u32& r);
 	void store(v4s32::element_type* p, const v4s32& r);
+	void store(v2u64::element_type* p, const v2u64& r);
+	void store(v2s64::element_type* p, const v2s64& r);
 	void store(v4f32::element_type* p, const v4f32& r);
 	void store(v2f64::element_type* p, const v2f64& r);
 	
@@ -1088,6 +1295,222 @@ template <unsigned _I>
 emuvec::v4u32 emuvec::insert(const v4u32& a, v4u32::element_type v)
 {
         v4u32 r(a);
+        r()[_I] =v;
+        return r;
+}
+
+// v2s64 implementation
+inline
+emuvec::v2s64::element_type* emuvec::v2s64::begin()
+{
+        return static_cast<element_type*>(base_type::vbegin());
+}
+
+inline
+const emuvec::v2s64::element_type* emuvec::v2s64::begin() const
+{
+        return static_cast<const element_type*>(base_type::vbegin());
+}
+
+inline
+emuvec::v2s64::element_type* emuvec::v2s64::operator()()
+{
+        return begin();
+}
+
+inline
+const emuvec::v2s64::element_type* emuvec::v2s64::operator()() const
+{
+        return begin();
+}
+
+template <unsigned _P>
+emuvec::v2s64&
+emuvec::operator<<= (v2s64& a, const const_u32< _P >& b)
+{
+        const int val = b.val;
+        impl::v_sl<v2s64::element_type> ot(val);
+        impl::v_assign_op(a(), ot, v2s64::N);
+        return a;
+}
+
+template <unsigned _P>
+emuvec::v2s64&
+emuvec::operator>>= (v2s64& a, const const_u32< _P >& b)
+{
+        const int val = b.val;
+        impl::v_sr<v2s64::element_type> ot(val);
+        impl::v_assign_op(a(), ot, v2s64::N);
+        return a;
+}
+
+template <unsigned _P>
+emuvec::v2s64
+emuvec::operator<<(const v2s64& a, const const_u32< _P >& b)
+{
+        v2s64 r;
+        const int val = b.val;
+        impl::v_sl<v2s64::element_type> ot(val);
+        impl::v_bi_op(r(), a(), ot, v2s64::N);
+        return r;
+}
+
+template <unsigned _P>
+emuvec::v2s64
+emuvec::operator>> (const v2s64& a, const const_u32< _P >& b)
+{
+        v2s64 r;
+        const int val = b.val;
+        impl::v_sr<v2s64::element_type> ot(val);
+        impl::v_bi_op(r(), a(), ot, v2s64::N);
+        return r;
+}
+
+template < bool _P0, bool _P1 >
+emuvec::v2s64 emuvec::select(const v2s64& a, const v2s64& b)
+{
+        v2s64 r;
+        impl::select_2<v2s64::element_type, _P0, _P1>::
+                v(r(), a(), b());
+        return r;
+}
+
+template < int _P0, int _P1 >
+emuvec::v2s64 emuvec::permute(const v2s64& a)
+{
+        v2s64 r;
+        impl::perm1_2<v2s64::element_type, _P0, _P1>::v(r(), a());
+        return r;
+}
+
+template < int _P0, int _P1 >
+emuvec::v2s64 emuvec::permute(const v2s64& a, const v2s64& b)
+{
+        v2s64 r;
+        impl::perm2_2<v2s64::element_type, _P0, _P1>::
+                v(r(), a(), b());
+        return r;
+}
+
+template <unsigned _I>
+inline
+emuvec::v2s64::element_type emuvec::extract(const v2s64& a)
+{
+        return a()[_I];
+}
+
+template <unsigned _I>
+emuvec::v2s64 emuvec::insert(const v2s64& a, v2s64::element_type v)
+{
+        v2s64 r(a);
+        r()[_I] =v;
+        return r;
+}
+
+// v2u64 implementation
+inline
+emuvec::v2u64::element_type* emuvec::v2u64::begin()
+{
+        return static_cast<element_type*>(base_type::vbegin());
+}
+
+inline
+const emuvec::v2u64::element_type* emuvec::v2u64::begin() const
+{
+        return static_cast<const element_type*>(base_type::vbegin());
+}
+
+inline
+emuvec::v2u64::element_type* emuvec::v2u64::operator()()
+{
+        return begin();
+}
+
+inline
+const emuvec::v2u64::element_type* emuvec::v2u64::operator()() const
+{
+        return begin();
+}
+
+template <unsigned _P>
+emuvec::v2u64&
+emuvec::operator<<= (v2u64& a, const const_u32< _P >& b)
+{
+        const int val = b.val;
+        impl::v_sl<v2u64::element_type> ot(val);
+        impl::v_assign_op(a(), ot, v2u64::N);
+        return a;
+}
+
+template <unsigned _P>
+emuvec::v2u64&
+emuvec::operator>>= (v2u64& a, const const_u32< _P >& b)
+{
+        const int val = b.val;
+        impl::v_sr<v2u64::element_type> ot(val);
+        impl::v_assign_op(a(), ot, v2u64::N);
+        return a;
+}
+
+template <unsigned _P>
+emuvec::v2u64
+emuvec::operator<<(const v2u64& a, const const_u32< _P >& b)
+{
+        v2u64 r;
+        const int val = b.val;
+        impl::v_sl<v2u64::element_type> ot(val);
+        impl::v_bi_op(r(), a(), ot, v2u64::N);
+        return r;
+}
+
+template <unsigned _P>
+emuvec::v2u64
+emuvec::operator>> (const v2u64& a, const const_u32< _P >& b)
+{
+        v2u64 r;
+        const int val = b.val;
+        impl::v_sr<v2u64::element_type> ot(val);
+        impl::v_bi_op(r(), a(), ot, v2u64::N);
+        return r;
+}
+
+template < bool _P0, bool _P1>
+emuvec::v2u64 emuvec::select(const v2u64& a, const v2u64& b)
+{
+        v2u64 r;
+        impl::select_2<v2u64::element_type, _P0, _P1>::
+                v(r(), a(), b());
+        return r;
+}
+
+template < int _P0, int _P1>
+emuvec::v2u64 emuvec::permute(const v2u64& a)
+{
+        v2u64 r;
+        impl::perm1_2<v2u64::element_type, _P0, _P1>::v(r(), a());
+        return r;
+}
+
+template < int _P0, int _P1>
+emuvec::v2u64 emuvec::permute(const v2u64& a, const v2u64& b)
+{
+        v2u64 r;
+        impl::perm2_2<v2u64::element_type, _P0, _P1>::
+                v(r(), a(), b());
+        return r;
+}
+
+template <unsigned _I>
+inline
+emuvec::v2u64::element_type emuvec::extract(const v2u64& a)
+{
+        return a()[_I];
+}
+
+template <unsigned _I>
+emuvec::v2u64 emuvec::insert(const v2u64& a, v2u64::element_type v)
+{
+        v2u64 r(a);
         r()[_I] =v;
         return r;
 }

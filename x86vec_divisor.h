@@ -10,28 +10,28 @@ namespace x86vec {
 	namespace impl {
 		struct vdiv16_traits {
 			static v8s16 mulsh(const v8s16& a, const v8s16& b)  {
-				return mulh(a, b);
+				return mul_hi(a, b);
 			}
 			static v8u16 muluh(const v8u16& a, const v8u16& b)  {
-				return mulh(a, b);
+				return mul_hi(a, b);
 			}
 		};
 
 		struct vdiv32_traits {
 			static v4s32 mulsh(const v4s32& a, const v4s32& b)  {
-				return mulh(a, b);
+				return mul_hi(a, b);
 			}
 			static v4u32 muluh(const v4u32& a, const v4u32& b)  {
-				return mulh(a, b);
+				return mul_hi(a, b);
 			}
 		};
 
 		struct vdiv64_traits {
 			static v2s64 mulsh(const v2s64& a, const v2s64& b)  {
-				return mulh(a, b);
+				return mul_hi(a, b);
 			}
 			static v2u64 muluh(const v2u64& a, const v2u64& b)  {
-				return mulh(a, b);
+				return mul_hi(a, b);
 			}
 		};
 		

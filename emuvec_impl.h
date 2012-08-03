@@ -105,7 +105,7 @@ namespace emuvec {
 		// with stateless allocators.
 		template <std::size_t _N,  class _A = std::allocator<char> >
 		class utvec : private _A {
-			void* _v;
+			void* __restrict__ _v;
 			void* alloc_() {
 				_A* a= static_cast<_A*>(this);
 				return static_cast<void*>(a->allocate(_N));
@@ -239,7 +239,8 @@ namespace emuvec {
 			}
                 };
 
-                template <class _T, bool _P0, bool _P1, bool _P2, bool _P3,
+                template <class _T, 
+			  bool _P0, bool _P1, bool _P2, bool _P3,
                           bool _P4, bool _P5, bool _P6, bool _P7>
                 struct select_8 {
                         static void v(_T* r, const _T* s0, const _T* s1) {
@@ -254,7 +255,8 @@ namespace emuvec {
                         }
                 };
 
-                template <class _T, int _P0, int _P1, int _P2, int _P3,
+                template <class _T, 
+			  int _P0, int _P1, int _P2, int _P3,
                           int _P4, int _P5, int _P6, int _P7>
                 struct perm1_8 {
                         static void v(_T* r, const _T* s0) {
@@ -269,7 +271,8 @@ namespace emuvec {
                         }
                 };
 
-                template <class _T, int _P0, int _P1, int _P2, int _P3,
+                template <class _T, 
+			  int _P0, int _P1, int _P2, int _P3,
                           int _P4, int _P5, int _P6, int _P7>
                 struct perm2_8 {
                         static void v(_T* r, const _T* s0, const _T* s1) {

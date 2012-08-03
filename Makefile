@@ -10,7 +10,7 @@ MINOR=1#
 
 SLDFLAGS:= $(SLDFLAGS) 
 #ARCH=#-march=bdver1 -mxop #-march=bdver1 #-mdispatch-scheduler
-ARCH+=#-no-sse3
+ARCH+= -mtune=corei7-avx #-no-sse3
 CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 
 CSRCS=heap_array.cc x86vec_ops_1.cc x86vec_test.cc emuvec.cc	\
@@ -71,10 +71,10 @@ ln -sf lib$(LIBNAME).so.$(MAJOR).$(MINOR) lib$(LIBNAME).so.$(MAJOR)
 	cd $(INSTALLDIR)/lib && \
 ln -sf lib$(LIBNAME).so.$(MAJOR) lib$(LIBNAME).so
 
-emuvec.ol: CXXFLAGS-ol +=-fno-tree-vectorize -mtune=atom
-emuvec.os: CXXFLAGS-os +=-fno-tree-vectorize -mtune=atom
-emuvec.od: CXXFLAGS-od +=-fno-tree-vectorize -mtune=atom
-emuvec.s: CXXFLAGS-os +=-fno-tree-vectorize -mtune=atom
+emuvec.ol: CXXFLAGS-ol +=-fno-tree-vectorize -mtune=corei7
+emuvec.os: CXXFLAGS-os +=-fno-tree-vectorize -mtune=corei7
+emuvec.od: CXXFLAGS-od +=-fno-tree-vectorize -mtune=corei7
+emuvec.s: CXXFLAGS-os +=-fno-tree-vectorize -mtune=corei7
 
 TESTPROGS=hackx86vec genx86vec hackx86vec_g rcp_div rcp_div_g	\
 rcp_div_64 rcp_div_64_g

@@ -97,7 +97,7 @@ cftal::uint32_t
 cftal::impl::udiv_2by1_rcp_32::
 sd_i(uint32_t u0, uint32_t u1, uint32_t d, uint32_t inv, uint32_t& rem)
 {
-	std::pair<uint32_t, uint32_t> p0(wide_mul(u1, inv));
+	std::pair<uint32_t, uint32_t> p0(mul_lo_hi(u1, inv));
 #if 1
 	uint64_t q(p0.first | (uint64_t(p0.second)<<32));
 	q+= uint64_t(u0 | (uint64_t(u1+1)<<32));
@@ -130,6 +130,7 @@ sd_i(uint32_t u0, uint32_t u1, uint32_t d, uint32_t inv, uint32_t& rem)
 	return q1;
 }
 
+inline
 cftal::impl::udiv_result<uint32_t>
 cftal::impl::udiv_2by1_rcp_32::
 d_i(uint32_t u0, uint32_t u1, uint32_t nv, uint32_t inv, unsigned l_z)

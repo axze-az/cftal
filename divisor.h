@@ -139,11 +139,11 @@ namespace cftal {
 			}
 			static
 			uword muluh(uword a, uword b) {
-				return wide_mul(a, b).second;
+				return mul_lo_hi(a, b).second;
 			}
 			static
 			sword mulsh(sword a, sword b) {
-				return wide_mul(a, b).second;
+				return mul_lo_hi(a, b).second;
 			}
 			enum {
 				_N = 16
@@ -164,11 +164,11 @@ namespace cftal {
 			}
 			static
 			uword muluh(uword a, uword b) {
-				return wide_mul(a, b).second;
+				return mul_lo_hi(a, b).second;
 			}
 			static
 			sword mulsh(sword a, sword b) {
-				return wide_mul(a, b).second;
+				return mul_lo_hi(a, b).second;
 			}
 			enum {
 				_N =32
@@ -189,11 +189,11 @@ namespace cftal {
 			}
 			static
 			uword muluh(uword a, uword b) {
-				return wide_mul(a, b).second;
+				return mul_lo_hi(a, b).second;
 			}
 			static
 			sword mulsh(sword a, sword b) {
-				return wide_mul(a, b).second;
+				return mul_lo_hi(a, b).second;
 			}
 			enum {
 				_N =64

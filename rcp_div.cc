@@ -17,7 +17,11 @@ cftal::test::udiv_32_one(uint32_t v, uint64_t& ops, uint64_t* timings)
 {
 	x86vec::test::cmwc_rng<uint32_t> rng(ops);
 	uint64_t t0, t1, t2;
+#if defined (__tune_atom__)
+	const int N= 2000;
+#else
 	const int N= 20000;
+#endif
 	for (int i=0; i<N; ++i) {
 		uint32_t ul= rng.next();
 		uint32_t uh= rng.next();

@@ -423,16 +423,28 @@ x86vec::v8u16 x86vec::min(const v8u16& a, const v8u16& b)
 }
 
 inline
-x86vec::v8u16 x86vec::mulh(const v8u16& a, const v8u16& b)
+x86vec::v8u16 x86vec::add_sat(const v8u16& a, const v8u16& b)
+{
+	return _mm_adds_epu16(a(), b());
+}
+
+inline
+x86vec::v8u16 x86vec::sub_sat(const v8u16& a, const v8u16& b)
+{
+	return _mm_subs_epu16(a(), b());
+}
+
+inline
+x86vec::v8u16 x86vec::mul_hi(const v8u16& a, const v8u16& b)
 {
 	return impl::vpmulhuw::v(a(), b());
 }
 
 inline
 std::pair<x86vec::v8u16, x86vec::v8u16>
-x86vec::wide_mul(const v8u16& a, const v8u16& b)
+x86vec::mul_lo_hi(const v8u16& a, const v8u16& b)
 {
-	return std::make_pair(a*b, mulh(a,b));
+	return std::make_pair(a*b, mul_hi(a,b));
 }
 
 template < bool _P0, bool _P1, bool _P2, bool _P3,

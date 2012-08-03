@@ -375,7 +375,8 @@ void x86vec::test::generate_f32(const std::string& name_base)
 					  << ");\n";
 					f << space8
 					  << "rc &= "
-					  << "check_f32(\"select_f32\", r, id);\n";				}
+					  << "check_f32(\"select_f32\", r, id);\n";
+				}
 			}
 		}
 	}
@@ -502,7 +503,8 @@ void x86vec::test::generate_u32(const std::string& name_base)
 					  << ");\n";
 					f << space8
 					  << "rc &= "
-					  << "check_u32(\"select_u32\", r, id);\n";				}
+					  << "check_u32(\"select_u32\", r, id);\n";
+				}
 			}
 		}
 	}
@@ -623,7 +625,9 @@ void x86vec::test::generate_u16(const std::string& name_base)
 							for (int i6=0; i6<2;++i6) {
 								for (int i7=0; i7<2; ++i7) {
 									f << space8 << "r=select_u16<"
-									  << idx(i0, i1, i2, i3, i4, i5, i6, i7) << ">(a,b);\n";
+									  << idx(i0, i1, i2, i3, 
+										 i4, i5, i6, i7) 
+									  << ">(a,b);\n";
 									f << space8 << "id.assign("
 									  << idx((i0 !=0) ? 0 : 8,
 										 (i1 !=0) ? 1 : 9,

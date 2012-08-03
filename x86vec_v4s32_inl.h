@@ -435,14 +435,14 @@ x86vec::v4s32 x86vec::abs(const v4s32& a)
 }
 
 inline
-x86vec::v4s32 x86vec::mulh(const v4s32& x, const v4s32& y)
+x86vec::v4s32 x86vec::mul_hi(const v4s32& x, const v4s32& y)
 {
 	return impl::vpmulhd::v(x(), y());
 }
 
 inline
 std::pair<x86vec::v4s32, x86vec::v4s32>
-x86vec::wide_mul(const v4s32& x, const v4s32& y)
+x86vec::mul_lo_hi(const v4s32& x, const v4s32& y)
 {
 #if defined (__SSE4_1__) 
 	// p0l p0h p2l p2h
@@ -461,7 +461,7 @@ x86vec::wide_mul(const v4s32& x, const v4s32& y)
 #else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
-	std::pair<v4u32, v4u32> ur(wide_mul(v4u32(x), v4u32(y)));
+	std::pair<v4u32, v4u32> ur(mul_lo_hi(v4u32(x), v4u32(y)));
 	v4s32 xsgn_y= y >> const_shift::_31;
 	v4s32 xsgn_x= x >> const_shift::_31;
 	v4s32 x_and_xsgn_y = x & xsgn_y;

@@ -15,31 +15,31 @@ namespace cftal {
 
         // return low part in first, high part in second of a*b
         template <class _T>
-        std::pair<_T, _T> wide_mul(const _T& a, const _T& b);
+        std::pair<_T, _T> mul_lo_hi(const _T& a, const _T& b);
         // return high part of a*b
         template <class _T>
-        _T mulh(const _T& a, const _T& b);
+        _T mul_hi(const _T& a, const _T& b);
 
         namespace impl {
 
                 template <class _U>
-                struct wide_umul {
+                struct umul_lo_hi {
                         // returns low part in first, high part in second
                         std::pair<_U, _U> operator()(const _U& a, const _U& b)
                                 const;
                 };
 
                 template <class _S>
-                struct wide_smul {
+                struct smul_lo_hi {
                         // returns low part in first, high part in second
                         std::pair<_S, _S> operator()(const _S& a, const _S& b)
                                 const;
                 };
 
-#if !defined (__NO_WIDE_MUL_SPECIALIZATIONS__)
+#if !defined (__NO_MUL_LO_HI_SPECIALIZATIONS__)
                 // specializations for standard types.
                 template <>
-                struct wide_umul<uint8_t> {
+                struct umul_lo_hi<uint8_t> {
                         std::pair<uint8_t, uint8_t>
                         operator()(const uint8_t a, const uint8_t b)
                                 const {
@@ -51,7 +51,7 @@ namespace cftal {
                 };
 
                 template <>
-                struct wide_smul<int8_t> {
+                struct smul_lo_hi<int8_t> {
                         std::pair<int8_t, int8_t>
                         operator()(const int8_t a, const int8_t b)
                                 const {
@@ -63,7 +63,7 @@ namespace cftal {
                 };
 
                 template <>
-                struct wide_umul<uint16_t> {
+                struct umul_lo_hi<uint16_t> {
                         std::pair<uint16_t, uint16_t>
                         operator()(const uint16_t a, const uint16_t b)
                                 const {
@@ -75,7 +75,7 @@ namespace cftal {
                 };
 
                 template <>
-                struct wide_smul<int16_t> {
+                struct smul_lo_hi<int16_t> {
                         std::pair<int16_t, int16_t>
                         operator()(const int16_t a, const int16_t b)
                                 const {
@@ -87,7 +87,7 @@ namespace cftal {
                 };
 
                 template <>
-                struct wide_umul<uint32_t> {
+                struct umul_lo_hi<uint32_t> {
                         std::pair<uint32_t, uint32_t>
                         operator()(const uint32_t a, const uint32_t b)
                                 const {
@@ -99,7 +99,7 @@ namespace cftal {
                 };
 
                 template <>
-                struct wide_smul<int32_t> {
+                struct smul_lo_hi<int32_t> {
                         std::pair<int32_t, int32_t>
                         operator()(const int32_t a, const int32_t b)
                                 const {
@@ -112,7 +112,7 @@ namespace cftal {
 
 #if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
                 template <>
-                struct wide_umul<uint64_t> {
+                struct umul_lo_hi<uint64_t> {
                         std::pair<uint64_t, uint64_t>
                         operator()(const uint64_t a, const uint64_t b)
                                 const {
@@ -125,7 +125,7 @@ namespace cftal {
                 };
 
                 template <>
-                struct wide_smul<int64_t> {
+                struct smul_lo_hi<int64_t> {
                         std::pair<int64_t, int64_t>
                         operator()(const int64_t a, const int64_t b)
                                 const {
@@ -372,7 +372,7 @@ namespace cftal {
 
 template <class _U>
 std::pair<_U, _U>
-cftal::impl::wide_umul<_U>::operator()(const _U& a, const _U& b)
+cftal::impl::umul_lo_hi<_U>::operator()(const _U& a, const _U& b)
         const
 {
         enum {
@@ -409,7 +409,7 @@ cftal::impl::wide_umul<_U>::operator()(const _U& a, const _U& b)
 
 template <class _S>
 std::pair<_S, _S>
-cftal::impl::wide_smul<_S>::operator()(const _S& x, const _S& y)
+cftal::impl::smul_lo_hi<_S>::operator()(const _S& x, const _S& y)
         const
 {
         enum {
@@ -418,7 +418,7 @@ cftal::impl::wide_smul<_S>::operator()(const _S& x, const _S& y)
         typedef typename std::make_unsigned<_S>::type _U;
         _U xu(x);
         _U yu(y);
-        wide_umul<_U> m;
+        umul_lo_hi<_U> m;
         std::pair<_U, _U> ur(m(xu, yu));
         // muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
         // mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
@@ -539,11 +539,11 @@ _V cftal::remainder(const _V& n, const _V& d, const _V& q)
 template <class _T>
 inline
 std::pair<_T, _T>
-cftal::wide_mul(const _T& x, const _T& y)
+cftal::mul_lo_hi(const _T& x, const _T& y)
 {
         typedef typename std::conditional<std::is_signed<_T>::value,
-                impl::wide_smul<_T>,
-                impl::wide_umul<_T> >::type
+                impl::smul_lo_hi<_T>,
+                impl::umul_lo_hi<_T> >::type
                 mul_type;
         mul_type m;
         return m(x, y);
@@ -551,9 +551,9 @@ cftal::wide_mul(const _T& x, const _T& y)
 
 template <class _T>
 inline
-_T cftal::mulh(const _T& x, const _T& y)
+_T cftal::mul_hi(const _T& x, const _T& y)
 {
-        return wide_mul(x, y).second;
+        return mul_lo_hi(x, y).second;
 }
 
 // Local variables:

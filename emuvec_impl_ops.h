@@ -2,6 +2,7 @@
 #define __EMUVEC_IMPL_OPS_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/mul_div.h>
 #include <cmath>
 
 namespace emuvec {
@@ -68,41 +69,10 @@ namespace emuvec {
 		};
 
 		template <typename _T>
-		struct v_mulhi {};
-
-		template <>
-		struct v_mulhi<int16_t> {
-			int16_t operator()(int16_t a,
-						int16_t b) const {
-				return (int32_t(a) *
-					int32_t(b)) >> 16;
-			}
-		};
-
-		template <>
-		struct v_mulhi<uint16_t> {
-			uint16_t operator()(uint16_t a,
-						 uint16_t b) const {
-				return (uint32_t(a) *
-					uint32_t(b)) >> 16;
-			}
-		};
-
-		template <>
-		struct v_mulhi<int32_t> {
-			int32_t operator()(int32_t a,
-						int32_t b) const {
-				return (int64_t(a) *
-					int64_t(b)) >> 32;
-			}
-		};
-
-		template <>
-		struct v_mulhi<uint32_t> {
-			uint32_t operator()(uint32_t a,
-						 uint32_t b) const {
-				return (uint64_t(a) *
-					uint64_t(b)) >> 32;
+		struct v_mulhi {
+			_T operator()(const _T& a, const _T& b) 
+				const {
+				return cftal::mul_lo_hi(a, b).second;
 			}
 		};
 

@@ -432,27 +432,27 @@ x86vec::v2s64 x86vec::abs(const v2s64& a)
 }
 
 inline
-x86vec::v2s64 x86vec::mulh(const v2s64& x, const v2s64& y)
+x86vec::v2s64 x86vec::mul_hi(const v2s64& x, const v2s64& y)
 {
-	return wide_mul(x, y).second;
+	return mul_lo_hi(x, y).second;
 }
 
 inline
 std::pair<x86vec::v2s64, x86vec::v2s64>
-x86vec::wide_mul(const v2s64& x, const v2s64& y)
+x86vec::mul_lo_hi(const v2s64& x, const v2s64& y)
 {
 #if 0 //defined (__x86_64__)
 	typedef v2s64::element_type e_t;
 	typedef std::pair<e_t, e_t> p_t;
-	p_t t0(cftal::wide_mul(extract<0>(x), extract<0>(y)));
-	p_t t1(cftal::wide_mul(extract<1>(x), extract<1>(y)));
+	p_t t0(cftal::mul_lo_hi(extract<0>(x), extract<0>(y)));
+	p_t t1(cftal::mul_lo_hi(extract<1>(x), extract<1>(y)));
 	v2s64 l(t0.first, t1.first);
 	v2s64 h(t0.second, t1.second);
 	return std::make_pair(l, h);
 #else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
-	std::pair<v2u64, v2u64> ur(wide_mul(v2u64(x), v2u64(y)));
+	std::pair<v2u64, v2u64> ur(mul_lo_hi(v2u64(x), v2u64(y)));
 	v2s64 xsgn_y= y >> const_shift::_63;
 	v2s64 xsgn_x= x >> const_shift::_63;
 	v2s64 x_and_xsgn_y = x & xsgn_y;

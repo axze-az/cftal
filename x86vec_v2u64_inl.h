@@ -409,20 +409,20 @@ x86vec::v2u64 x86vec::min(const v2u64& a, const v2u64& b)
 }
 
 inline
-x86vec::v2u64 x86vec::mulh(const v2u64& x, const v2u64& y)
+x86vec::v2u64 x86vec::mul_hi(const v2u64& x, const v2u64& y)
 {
-	return wide_mul(x, y).second;
+	return mul_lo_hi(x, y).second;
 }
 
 inline
 std::pair<x86vec::v2u64, x86vec::v2u64>
-x86vec::wide_mul(const v2u64& x, const v2u64& y)
+x86vec::mul_lo_hi(const v2u64& x, const v2u64& y)
 {
 #if 0 // defined (__x86_64__)
 	typedef v2u64::element_type e_t;
 	typedef std::pair<e_t, e_t> p_t;
-	p_t t0(cftal::wide_mul(extract<0>(x), extract<0>(y)));
-	p_t t1(cftal::wide_mul(extract<1>(x), extract<1>(y)));
+	p_t t0(cftal::mul_lo_hi(extract<0>(x), extract<0>(y)));
+	p_t t1(cftal::mul_lo_hi(extract<1>(x), extract<1>(y)));
 	v2u64 l(t0.first, t1.first);
 	v2u64 h(t0.second, t1.second);
 	return std::make_pair(l, h);

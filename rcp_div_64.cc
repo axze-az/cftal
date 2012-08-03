@@ -22,7 +22,7 @@ cftal::test::udiv_64_one(uint64_t v, uint64_t& ops, uint64_t* timings)
 {
 	x86vec::test::cmwc_rng<uint64_t> rng(ops);
 	uint64_t t0, t1, t2;
-#if defined (__tune_atom__)
+#if defined (__atom__)
 	const int N= 2000;
 #else
 	const int N= 20000;
