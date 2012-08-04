@@ -174,12 +174,12 @@ sd_i(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t& rem)
 		:"0"(inv), [u1] "rm"(u1)
 		: "cc");
 	uint64_t q0, q1;
-	__asm__ ("add $1, %1 \n\t"
+	__asm__ (// "add $1, %1 \n\t"
 		 "add %4, %0 \n\t"
 		 "adc %5, %1 \n\t"
 		 : "=r"(q0), "=r"(q1)
 		 : "0"(p0), "1"(p1),
-		   "rm"(u0), "rm"(u1)
+		   "rm"(u0), "rm"(u1+1)
 		 : "cc");
 #else
 	std::pair<uint64_t, uint64_t> p0(mul_lo_hi(u1, inv));
@@ -189,39 +189,28 @@ sd_i(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t& rem)
 		++q1;
 #endif
 	uint64_t r = u0 - q1*d;
-#if 1
+
 #if defined (__x86_64__)
-#if 1
-	uint64_t corr_q1, corr_r;
-	__asm__ ("xor %k[corr_q1], %k[corr_q1] \n\t"
-		 "cmp %[q0], %[r] \n\t"
-		 "mov %k[corr_q1], %k[corr_r] \n\t"
-		 "seta %b[corr_q1] \n\t"
-		 "cmova %[d], %[corr_r] \n\t"
-		 : [corr_q1] "=&r"(corr_q1), [corr_r] "=&r" (corr_r)
-		 : [q0] "rme"(q0), [r]"r"(r), [d] "r"(d)
-		 : "cc");
-#else
-	uint64_t corr_q1= 1;
-	uint64_t corr_r= d;
-	__asm__("cmp %[q0], %[r] \n\t"
-		"cmovbe %[z], %[corr_q1] \n\t"
-		"cmovbe %[z], %[corr_r] \n\t"
-		: [corr_q1] "+r"(corr_q1), [corr_r] "+r" (corr_r)
-		: [q0] "rme" (q0), [r] "r"(r), [z] "r" (0L)
+	uint64_t corr_r;
+	__asm__("xor %k[corr_r], %k[corr_r] \n\t"
+		"cmp %[q0], %[r] \n\t"
+		"cmovae %[d], %[corr_r] \n\t"
+		"adc $-1, %[q1] \n\t"
+		"add %[corr_r], %[r] \n\t"
+		: [q1] "+r"(q1), [r] "+r"(r) , [corr_r]"=&r"(corr_r)
+		: [q0] "rm"(q0), [d] "r"(d)
 		: "cc");
-#endif
 #else
-	uint64_t corr_q1= (r>q0) ? 1 : 0;
-	uint64_t corr_r= (r>q0) ? d : 0;
-#endif
-	r += corr_r;
-	q1 -= corr_q1;
-#else
+#if 0
 	if (r > q0) {
 		--q1;
 		r += d;
 	}
+#endif
+	uint64_t corr_q1= (r>q0) ? 1 : 0;
+	uint64_t corr_r= (r>q0) ? d : 0;
+	r += corr_r;
+	q1 -= corr_q1;
 #endif
 	if (unlikely(r >= d)) {
 		++q1;
