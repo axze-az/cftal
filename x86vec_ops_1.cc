@@ -158,10 +158,20 @@ __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 	return qi;
 }
 
-#if \
-	!defined (__tune_amdfam10__) &&		\
-	!defined (__tune_k8__) &&		\
-	!defined(__tune_athlon__) 
+#if defined (__tune_amdfam10__)
+#define SLOW_DIV 1
+#endif
+#if defined (__tune_k8__)
+#define SLOW_DIV 1
+#endif
+#if defined (__tune_athlon__)
+#define SLOW_DIV 1
+#endif
+#if defined (__tune_atom__)
+#define SLOW_DIV 1
+#endif
+
+#if !SLOW_DIV
 __m128i x86vec::impl::div_u64::v(__m128i x, __m128i y, __m128i* rem)
 {
 	uint64_t x0= extract_u64<0>(x);
