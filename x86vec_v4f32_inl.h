@@ -393,6 +393,22 @@ x86vec::v4f32 x86vec::trunc(const v4f32& a)
 	return impl::round(a, impl::rounding_mode::towardzero);
 }
 
+inline
+x86vec::v4f32 x86vec::andnot(const v4f32& x, const v4f32& y)
+{
+	return _mm_andnot_ps(x(), y());
+}
+
+inline
+x86vec::v4f32 x86vec::copysign(const v4f32& x, const v4f32& y)
+{
+	// return abs(x) * sgn(y)
+	const v4f32 msk(v_not_sign_f32_msk::fv());
+	v4f32 abs_x(x & msk);
+	v4f32 sgn_y(andnot(msk, y));
+	return abs_x | sgn_y;
+}
+
 template < bool _P0, bool _P1, bool _P2, bool _P3 >
 inline
 x86vec::v4f32 x86vec::select(const v4f32& a, const v4f32& b)

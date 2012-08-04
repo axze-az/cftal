@@ -435,6 +435,12 @@ x86vec::v4s32 x86vec::abs(const v4s32& a)
 }
 
 inline
+x86vec::v4s32 x86vec::andnot(const v4s32& a, const v4s32& b)
+{
+	return _mm_andnot_si128(a(), b());
+}
+
+inline
 x86vec::v4s32 x86vec::mul_hi(const v4s32& x, const v4s32& y)
 {
 	return impl::vpmulhd::v(x(), y());

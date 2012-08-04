@@ -433,6 +433,12 @@ x86vec::v8s16 x86vec::sub_sat(const v8s16& a, const v8s16& b)
 }
 
 inline
+x86vec::v8s16 x86vec::andnot(const v8s16& a, const v8s16& b)
+{
+	return _mm_andnot_si128(a(), b());
+}
+
+inline
 x86vec::v8s16 x86vec::mul_hi(const v8s16& a, const v8s16& b)
 {
 	return impl::vpmulhw::v(a(), b());

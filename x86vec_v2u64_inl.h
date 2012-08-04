@@ -409,6 +409,12 @@ x86vec::v2u64 x86vec::min(const v2u64& a, const v2u64& b)
 }
 
 inline
+x86vec::v2u64 x86vec::andnot(const v2u64& a, const v2u64& b)
+{
+	return _mm_andnot_si128(a(), b());
+}
+
+inline
 x86vec::v2u64 x86vec::mul_hi(const v2u64& x, const v2u64& y)
 {
 	return mul_lo_hi(x, y).second;

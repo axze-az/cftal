@@ -13,7 +13,7 @@
 namespace x86vec
 {
 
-	class v128u1 : public vreg<__m128i> {
+        class v128u1 : public vreg<__m128i> {
         public:
                 typedef vreg<__m128i> base_type;
                 v128u1() = default;
@@ -30,6 +30,7 @@ namespace x86vec
         v128u1 operator&& (const v128u1& a, const v128u1& b);
         v128u1 operator^(const v128u1& a, const v128u1& b);
         v128u1& operator^= (v128u1& a, const v128u1& b);
+        v128u1 andnot(const v128u1& a, const v128u1& b);
 
         bool all(const v128u1& a);
         bool both(const v128u1& a);
@@ -84,7 +85,7 @@ namespace x86vec
         v8s16& operator--(v8s16& a);
 
         v8s16 operator-(const v8s16& a);
-	const v8s16& operator+(const v8s16& a);
+        const v8s16& operator+(const v8s16& a);
         v8s16 operator~(const v8s16& a);
         v8s16 operator!(const v8s16& a);
 
@@ -117,29 +118,30 @@ namespace x86vec
         v8s16 max(const v8s16& a, const v8s16& b);
         v8s16 min(const v8s16& a, const v8s16& b);
         v8s16 abs(const v8s16& a);
-	v8s16 add_sat(const v8s16& a, const v8s16& b);
-	v8s16 sub_sat(const v8s16& a, const v8s16& b);
-	v8s16 mul_hi(const v8s16& a, const v8s16& b);
-	// low part in first, high part in second
-	std::pair<v8s16, v8s16> mul_lo_hi(const v8s16& a, const v8s16& b);
+        v8s16 add_sat(const v8s16& a, const v8s16& b);
+        v8s16 sub_sat(const v8s16& a, const v8s16& b);
+        v8s16 andnot(const v8s16& a, const v8s16& b);
+        v8s16 mul_hi(const v8s16& a, const v8s16& b);
+        // low part in first, high part in second
+        std::pair<v8s16, v8s16> mul_lo_hi(const v8s16& a, const v8s16& b);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3,
-		   bool _P4, bool _P5, bool _P6, bool _P7 >
+                   bool _P4, bool _P5, bool _P6, bool _P7 >
         v8s16 select(const v8s16& a, const v8s16& b);
         v8s16 select(const v8s16& msk, const v8s16& on_true,
                      const v8s16& on_false);
 
         template < int _P0, int _P1, int _P2, int _P3,
-		   int _P4, int _P5, int _P6, int _P7 >
+                   int _P4, int _P5, int _P6, int _P7 >
         v8s16 permute(const v8s16& a);
         template < int _P0, int _P1, int _P2, int _P3,
-		   int _P4, int _P5, int _P6, int _P7 >
+                   int _P4, int _P5, int _P6, int _P7 >
         v8s16 permute(const v8s16& a, const v8s16& b);
 
-	template <unsigned _I>
-	v8s16 insert(const v8s16& a, typename v8s16::element_type v);
-	template <unsigned _I>
-	typename v8s16::element_type extract(const v8s16& a);
+        template <unsigned _I>
+        v8s16 insert(const v8s16& a, typename v8s16::element_type v);
+        template <unsigned _I>
+        typename v8s16::element_type extract(const v8s16& a);
 
         class v8u16 : public v8s16 {
         public:
@@ -189,7 +191,7 @@ namespace x86vec
         v8u16& operator--(v8u16& a);
 
         v8u16 operator-(const v8u16& a);
-	const v8u16& operator+(const v8u16& a);
+        const v8u16& operator+(const v8u16& a);
         v8u16 operator~(const v8u16& a);
         v8u16 operator!(const v8u16& a);
 
@@ -214,29 +216,30 @@ namespace x86vec
 
         v8u16 max(const v8u16& a, const v8u16& b);
         v8u16 min(const v8u16& a, const v8u16& b);
-	v8u16 add_sat(const v8u16& a, const v8u16& b);
-	v8u16 sub_sat(const v8u16& a, const v8u16& b);
-	v8u16 mul_hi(const v8u16& a, const v8u16& b);
-	// low part in first, high part in second
-	std::pair<v8u16, v8u16> mul_lo_hi(const v8u16& a, const v8u16& b);
+        v8u16 add_sat(const v8u16& a, const v8u16& b);
+        v8u16 sub_sat(const v8u16& a, const v8u16& b);
+        v8u16 andnot(const v8u16& a, const v8u16& b);
+        v8u16 mul_hi(const v8u16& a, const v8u16& b);
+        // low part in first, high part in second
+        std::pair<v8u16, v8u16> mul_lo_hi(const v8u16& a, const v8u16& b);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3,
-		   bool _P4, bool _P5, bool _P6, bool _P7 >
+                   bool _P4, bool _P5, bool _P6, bool _P7 >
         v8u16 select(const v8u16& a, const v8u16& b);
         v8u16 select(const v8u16& msk, const v8u16& on_true,
                      const v8u16& on_false);
 
         template < int _P0, int _P1, int _P2, int _P3,
-		   int _P4, int _P5, int _P6, int _P7 >
+                   int _P4, int _P5, int _P6, int _P7 >
         v8u16 permute(const v8u16& a);
         template < int _P0, int _P1, int _P2, int _P3,
-		   int _P4, int _P5, int _P6, int _P7 >
+                   int _P4, int _P5, int _P6, int _P7 >
         v8u16 permute(const v8u16& a, const v8u16& b);
 
-	template <unsigned _I>
-	v8u16 insert(const v8u16& a, typename v8u16::element_type v);
-	template <unsigned _I>
-	typename v8u16::element_type extract(const v8u16& a);
+        template <unsigned _I>
+        v8u16 insert(const v8u16& a, typename v8u16::element_type v);
+        template <unsigned _I>
+        typename v8u16::element_type extract(const v8u16& a);
 
         class v4s32 : public v128u1 {
         public:
@@ -285,7 +288,7 @@ namespace x86vec
         v4s32& operator--(v4s32& a);
 
         v4s32 operator-(const v4s32& a);
-	const v4s32& operator+(const v4s32& a);
+        const v4s32& operator+(const v4s32& a);
         v4s32 operator~(const v4s32& a);
         v4s32 operator!(const v4s32& a);
 
@@ -318,10 +321,11 @@ namespace x86vec
         v4s32 max(const v4s32& a, const v4s32& b);
         v4s32 min(const v4s32& a, const v4s32& b);
         v4s32 abs(const v4s32& a);
-	v4s32 mul_hi(const v4s32& a, const v4s32& b);
-	// low part in first, high part in second
-	std::pair<v4s32, v4s32> mul_lo_hi(const v4s32& a, const v4s32& b);
-	
+        v4s32 andnot(const v4s32& a, const v4s32& b);
+        v4s32 mul_hi(const v4s32& a, const v4s32& b);
+        // low part in first, high part in second
+        std::pair<v4s32, v4s32> mul_lo_hi(const v4s32& a, const v4s32& b);
+
 
         template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4s32 select(const v4s32& a, const v4s32& b);
@@ -333,10 +337,10 @@ namespace x86vec
         template < int _P0, int _P1, int _P2, int _P3 >
         v4s32 permute(const v4s32& a, const v4s32& b);
 
-	template <unsigned _I>
-	v4s32 insert(const v4s32& a, typename v4s32::element_type v);
-	template <unsigned _I>
-	typename v4s32::element_type extract(const v4s32& a);
+        template <unsigned _I>
+        v4s32 insert(const v4s32& a, typename v4s32::element_type v);
+        template <unsigned _I>
+        typename v4s32::element_type extract(const v4s32& a);
 
         class v4u32 : public v4s32 {
         public:
@@ -384,7 +388,7 @@ namespace x86vec
         v4u32& operator--(v4u32& a);
 
         v4u32 operator-(const v4u32& a);
-	const v4u32& operator+(const v4u32& a);
+        const v4u32& operator+(const v4u32& a);
         v4u32 operator~(const v4u32& a);
         v4u32 operator!(const v4u32& a);
 
@@ -409,9 +413,10 @@ namespace x86vec
 
         v4u32 max(const v4u32& a, const v4u32& b);
         v4u32 min(const v4u32& a, const v4u32& b);
-	v4u32 mul_hi(const v4u32& a, const v4u32& b);
-	// low part in first, high part in second
-	std::pair<v4u32, v4u32> mul_lo_hi(const v4u32& a, const v4u32& b);
+        v4u32 andnot(const v4u32& a, const v4u32& b);
+        v4u32 mul_hi(const v4u32& a, const v4u32& b);
+        // low part in first, high part in second
+        std::pair<v4u32, v4u32> mul_lo_hi(const v4u32& a, const v4u32& b);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3 >
         v4u32 select(const v4u32& a, const v4u32& b);
@@ -423,10 +428,10 @@ namespace x86vec
         template < int _P0, int _P1, int _P2, int _P3 >
         v4u32 permute(const v4u32& a, const v4u32& b);
 
-	template <unsigned _I>
-	v4u32 insert(const v4u32& a, typename v4u32::element_type v);
-	template <unsigned _I>
-	typename v4u32::element_type extract(const v4u32& a);
+        template <unsigned _I>
+        v4u32 insert(const v4u32& a, typename v4u32::element_type v);
+        template <unsigned _I>
+        typename v4u32::element_type extract(const v4u32& a);
 
         class v2s64 : public v128u1 {
         public:
@@ -474,7 +479,7 @@ namespace x86vec
         v2s64& operator--(v2s64& a);
 
         v2s64 operator-(const v2s64& a);
-	const v2s64& operator+(const v2s64& a);
+        const v2s64& operator+(const v2s64& a);
         v2s64 operator~(const v2s64& a);
         v2s64 operator!(const v2s64& a);
 
@@ -507,9 +512,10 @@ namespace x86vec
         v2s64 max(const v2s64& a, const v2s64& b);
         v2s64 min(const v2s64& a, const v2s64& b);
         v2s64 abs(const v2s64& a);
-	v2s64 mul_hi(const v2s64& a, const v2s64& b);
-	// low part in first, high part in second
-	std::pair<v2s64, v2s64> mul_lo_hi(const v2s64& a, const v2s64& b);
+        v2s64 andnot(const v2s64& a, const v2s64& b);
+        v2s64 mul_hi(const v2s64& a, const v2s64& b);
+        // low part in first, high part in second
+        std::pair<v2s64, v2s64> mul_lo_hi(const v2s64& a, const v2s64& b);
 
         template < bool _P0, bool _P1>
         v2s64 select(const v2s64& a, const v2s64& b);
@@ -521,10 +527,10 @@ namespace x86vec
         template <int _P0, int _P1>
         v2s64 permute(const v2s64& a, const v2s64& b);
 
-	template <unsigned _I>
-	v2s64 insert(const v2s64& a, typename v2s64::element_type v);
-	template <unsigned _I>
-	typename v2s64::element_type extract(const v2s64& a);
+        template <unsigned _I>
+        v2s64 insert(const v2s64& a, typename v2s64::element_type v);
+        template <unsigned _I>
+        typename v2s64::element_type extract(const v2s64& a);
 
         class v2u64 : public v2s64 {
         public:
@@ -571,7 +577,7 @@ namespace x86vec
         v2u64& operator--(v2u64& a);
 
         v2u64 operator-(const v2u64& a);
-	const v2u64& operator+(const v2u64& a);
+        const v2u64& operator+(const v2u64& a);
         v2u64 operator~(const v2u64& a);
         v2u64 operator!(const v2u64& a);
 
@@ -596,9 +602,10 @@ namespace x86vec
 
         v2u64 max(const v2u64& a, const v2u64& b);
         v2u64 min(const v2u64& a, const v2u64& b);
-	v2u64 mul_hi(const v2u64& a, const v2u64& b);
-	// low part in first, high part in second
-	std::pair<v2u64, v2u64> mul_lo_hi(const v2u64& a, const v2u64& b);
+        v2u64 andnot(const v2u64& a, const v2u64& b);
+        v2u64 mul_hi(const v2u64& a, const v2u64& b);
+        // low part in first, high part in second
+        std::pair<v2u64, v2u64> mul_lo_hi(const v2u64& a, const v2u64& b);
 
         template < bool _P0, bool _P1>
         v2u64 select(const v2u64& a, const v2u64& b);
@@ -610,128 +617,128 @@ namespace x86vec
         template < int _P0, int _P1>
         v2u64 permute(const v2u64& a, const v2u64& b);
 
-	template <unsigned _I>
-	v2u64 insert(const v2u64& a, typename v2u64::element_type v);
-	template <unsigned _I>
-	typename v2u64::element_type extract(const v2u64& a);
+        template <unsigned _I>
+        v2u64 insert(const v2u64& a, typename v2u64::element_type v);
+        template <unsigned _I>
+        typename v2u64::element_type extract(const v2u64& a);
 
 }
 
 namespace std {
 
-	// v8s16
-	template <>
-	struct is_signed<x86vec::v8s16> : public true_type {};
-	template <>
-	struct make_signed<x86vec::v8s16> {
-		typedef x86vec::v8s16 type;
-	};
-	
-	template <>
-	struct is_unsigned<x86vec::v8s16> : public false_type {};
-	template <>
-	struct make_unsigned<x86vec::v8s16> {
-		typedef x86vec::v8u16 type;
-	};
+        // v8s16
+        template <>
+        struct is_signed<x86vec::v8s16> : public true_type {};
+        template <>
+        struct make_signed<x86vec::v8s16> {
+                typedef x86vec::v8s16 type;
+        };
 
-	template <>
-	struct numeric_limits<x86vec::v8s16> : 
-		public numeric_limits<x86vec::v8s16::element_type> {};
+        template <>
+        struct is_unsigned<x86vec::v8s16> : public false_type {};
+        template <>
+        struct make_unsigned<x86vec::v8s16> {
+                typedef x86vec::v8u16 type;
+        };
 
-	// v8u16
-	template <>
-	struct is_signed<x86vec::v8u16> : public false_type {};
-	template <>
-	struct make_signed<x86vec::v8u16> {
-		typedef x86vec::v8s16 type;
-	};
+        template <>
+        struct numeric_limits<x86vec::v8s16> :
+                public numeric_limits<x86vec::v8s16::element_type> {};
 
-	template <>
-	struct is_unsigned<x86vec::v8u16> : public true_type {};
-	template <>
-	struct make_unsigned<x86vec::v8u16> {
-		typedef x86vec::v8u16 type;
-	};
+        // v8u16
+        template <>
+        struct is_signed<x86vec::v8u16> : public false_type {};
+        template <>
+        struct make_signed<x86vec::v8u16> {
+                typedef x86vec::v8s16 type;
+        };
 
-	template <>
-	struct numeric_limits<x86vec::v8u16> : 
-		public numeric_limits<x86vec::v8u16::element_type> {};
+        template <>
+        struct is_unsigned<x86vec::v8u16> : public true_type {};
+        template <>
+        struct make_unsigned<x86vec::v8u16> {
+                typedef x86vec::v8u16 type;
+        };
 
-	// v4s32
-	template <>
-	struct is_signed<x86vec::v4s32> : public true_type {};
-	template <>
-	struct make_signed<x86vec::v4s32> {
-		typedef x86vec::v4s32 type;
-	};
-	
-	template <>
-	struct is_unsigned<x86vec::v4s32> : public false_type {};
-	template <>
-	struct make_unsigned<x86vec::v4s32> {
-		typedef x86vec::v4u32 type;
-	};
+        template <>
+        struct numeric_limits<x86vec::v8u16> :
+                public numeric_limits<x86vec::v8u16::element_type> {};
 
-	template <>
-	struct numeric_limits<x86vec::v4s32> : 
-		public numeric_limits<x86vec::v4s32::element_type> {};
+        // v4s32
+        template <>
+        struct is_signed<x86vec::v4s32> : public true_type {};
+        template <>
+        struct make_signed<x86vec::v4s32> {
+                typedef x86vec::v4s32 type;
+        };
 
-	// v4u32
-	template <>
-	struct is_signed<x86vec::v4u32> : public false_type {};
-	template <>
-	struct make_signed<x86vec::v4u32> {
-		typedef x86vec::v4s32 type;
-	};
+        template <>
+        struct is_unsigned<x86vec::v4s32> : public false_type {};
+        template <>
+        struct make_unsigned<x86vec::v4s32> {
+                typedef x86vec::v4u32 type;
+        };
 
-	template <>
-	struct is_unsigned<x86vec::v4u32> : public true_type {};
-	template <>
-	struct make_unsigned<x86vec::v4u32> {
-		typedef x86vec::v4u32 type;
-	};
+        template <>
+        struct numeric_limits<x86vec::v4s32> :
+                public numeric_limits<x86vec::v4s32::element_type> {};
 
-	template <>
-	struct numeric_limits<x86vec::v4u32> : 
-		public numeric_limits<x86vec::v4u32::element_type> {};
+        // v4u32
+        template <>
+        struct is_signed<x86vec::v4u32> : public false_type {};
+        template <>
+        struct make_signed<x86vec::v4u32> {
+                typedef x86vec::v4s32 type;
+        };
 
-	// v2s64
-	template <>
-	struct is_signed<x86vec::v2s64> : public true_type {};
-	template <>
-	struct make_signed<x86vec::v2s64> {
-		typedef x86vec::v2s64 type;
-	};
-	
-	template <>
-	struct is_unsigned<x86vec::v2s64> : public false_type {};
-	template <>
-	struct make_unsigned<x86vec::v2s64> {
-		typedef x86vec::v2u64 type;
-	};
+        template <>
+        struct is_unsigned<x86vec::v4u32> : public true_type {};
+        template <>
+        struct make_unsigned<x86vec::v4u32> {
+                typedef x86vec::v4u32 type;
+        };
 
-	template <>
-	struct numeric_limits<x86vec::v2s64> : 
-		public numeric_limits<x86vec::v2s64::element_type> {};
+        template <>
+        struct numeric_limits<x86vec::v4u32> :
+                public numeric_limits<x86vec::v4u32::element_type> {};
 
-	// v2u64
-	template <>
-	struct is_signed<x86vec::v2u64> : public false_type {};
-	template <>
-	struct make_signed<x86vec::v2u64> {
-		typedef x86vec::v2s64 type;
-	};
+        // v2s64
+        template <>
+        struct is_signed<x86vec::v2s64> : public true_type {};
+        template <>
+        struct make_signed<x86vec::v2s64> {
+                typedef x86vec::v2s64 type;
+        };
 
-	template <>
-	struct is_unsigned<x86vec::v2u64> : public true_type {};
-	template <>
-	struct make_unsigned<x86vec::v2u64> {
-		typedef x86vec::v2u64 type;
-	};
+        template <>
+        struct is_unsigned<x86vec::v2s64> : public false_type {};
+        template <>
+        struct make_unsigned<x86vec::v2s64> {
+                typedef x86vec::v2u64 type;
+        };
 
-	template <>
-	struct numeric_limits<x86vec::v2u64> : 
-		public numeric_limits<x86vec::v2u64::element_type> {};
+        template <>
+        struct numeric_limits<x86vec::v2s64> :
+                public numeric_limits<x86vec::v2s64::element_type> {};
+
+        // v2u64
+        template <>
+        struct is_signed<x86vec::v2u64> : public false_type {};
+        template <>
+        struct make_signed<x86vec::v2u64> {
+                typedef x86vec::v2s64 type;
+        };
+
+        template <>
+        struct is_unsigned<x86vec::v2u64> : public true_type {};
+        template <>
+        struct make_unsigned<x86vec::v2u64> {
+                typedef x86vec::v2u64 type;
+        };
+
+        template <>
+        struct numeric_limits<x86vec::v2u64> :
+                public numeric_limits<x86vec::v2u64::element_type> {};
 
 }
 

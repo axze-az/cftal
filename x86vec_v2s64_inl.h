@@ -432,6 +432,12 @@ x86vec::v2s64 x86vec::abs(const v2s64& a)
 }
 
 inline
+x86vec::v2s64 x86vec::andnot(const v2s64& a, const v2s64& b)
+{
+	return _mm_andnot_si128(a(), b());
+}
+
+inline
 x86vec::v2s64 x86vec::mul_hi(const v2s64& x, const v2s64& y)
 {
 	return mul_lo_hi(x, y).second;

@@ -84,6 +84,13 @@ x86vec::operator^(const v128u1& a, const v128u1& b)
 }
 
 inline
+x86vec::v128u1
+x86vec::andnot(const v128u1& a, const v128u1& b)
+{
+	return _mm_andnot_si128(a(), b());
+}
+
+inline
 bool
 x86vec::all(const v128u1& a)
 {

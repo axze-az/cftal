@@ -391,6 +391,22 @@ x86vec::v2f64 x86vec::trunc(const v2f64& a)
 	return impl::round(a, impl::rounding_mode::towardzero);
 }
 
+inline
+x86vec::v2f64 x86vec::andnot(const v2f64& x, const v2f64& y)
+{
+	return _mm_andnot_pd(x(), y());
+}
+
+inline
+x86vec::v2f64 x86vec::copysign(const v2f64& x, const v2f64& y)
+{
+	// return abs(x) * sgn(y)
+	const v2f64 msk(v_not_sign_f32_msk::dv());
+	v2f64 abs_x(x & msk);
+	v2f64 sgn_y(andnot(msk, y));
+	return abs_x | sgn_y;
+}
+
 template < bool _P0, bool _P1>
 inline
 x86vec::v2f64 x86vec::select(const v2f64& a, const v2f64& b)
