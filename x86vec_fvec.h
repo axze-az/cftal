@@ -99,6 +99,9 @@ namespace x86vec {
 	// returns (~a) & (b)
 	v4f32 andnot(const v4f32& a, const v4f32& b);
 	v4f32 copysign(const v4f32& x, const v4f32& y);
+	v4f32 isinf(const v4f32& x);
+	v4f32 isnan(const v4f32& x);
+	v4f32 isfinite(const v4f32& x);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4f32 select(const v4f32& a, const v4f32& b);
@@ -190,6 +193,9 @@ namespace x86vec {
 	// returns (~a) & (b)
 	v2f64 andnot(const v2f64& a, const v2f64& b);
 	v2f64 copysign(const v2f64& x, const v2f64& y);
+	v2f64 isinf(const v2f64& x);
+	v2f64 isnan(const v2f64& x);
+	v2f64 isfinite(const v2f64& x);
 
         template < bool _P0, bool _P1>
         v2f64 select(const v2f64& a, const v2f64& b);

@@ -407,6 +407,41 @@ x86vec::v2f64 x86vec::copysign(const v2f64& x, const v2f64& y)
 	return abs_x | sgn_y;
 }
 
+inline
+x86vec::v2f64 x86vec::isinf(const v2f64& x)
+{
+	// exponent = 0x7FF and significand ==0
+	v2u64 xi= _mm_castpd_si128(x());
+	const v2u64 msk=const4_u32<0x00000000, 0xffe00000,
+				   0x00000000, 0xffe00000>::iv();
+	v2u64 r= (xi << const_shift::_1) == msk;
+	return _mm_castsi128_pd(r());
+}
+
+inline
+x86vec::v2f64 x86vec::isnan(const v2f64& x)
+{
+	// exponent = 0x7FF and significand !=0
+	// v2u64 xi(_mm_castpd_si128(x()));
+	// const v2u64 m= v_exp_f64_msk::iv();
+	// v2u64 c1= (xi & m) == m;
+	// v2u64 c2= (xi << const_shift::_12) != v2u64(0);
+	// v2u64 res= c1 & c2;
+	// x == x if x != NAN
+	v2f64 is_inf_or_finite(_mm_cmpeq_pd(x(), x()));
+	return ~is_inf_or_finite;
+}
+
+inline
+x86vec::v2f64 x86vec::isfinite(const v2f64& x)
+{
+	// exponent != 0x7FF
+	v2u64 xi(_mm_castpd_si128(x()));
+	const v2u64 msk=v_exp_f64_msk::iv();
+	v2u64 res((xi & msk) != msk);
+	return _mm_castsi128_pd(res());
+}
+
 template < bool _P0, bool _P1>
 inline
 x86vec::v2f64 x86vec::select(const v2f64& a, const v2f64& b)

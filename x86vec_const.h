@@ -239,7 +239,13 @@ namespace x86vec {
 
         typedef v_sign_s32_msk v_sign_f32_msk;
         typedef v_not_sign_s32_msk v_not_sign_f32_msk;
+	typedef const4_u32<0x7f800000, 0x7f800000,
+			   0x7f800000, 0x7f800000> v_exp_f32_msk;
+	typedef const4_u32<0x007fffff, 0x007fffff,
+			   0x007fffff, 0x007fffff> v_sig_f32_msk;
         const int sign_f32_msk = 0x0f;
+	const int exp_shift_f32 = 23;
+	const int exp_msk_f32 = 0xff;
 
         typedef const4_u32<0x00000000, 0x80000000,
                            0x00000000, 0x80000000> v_sign_s64_msk;
@@ -249,7 +255,13 @@ namespace x86vec {
 
         typedef v_sign_s64_msk v_sign_f64_msk;
         typedef v_not_sign_s64_msk v_not_sign_f64_msk;
+	typedef const4_u32<0x00000000,0x7ff00000,
+			   0x00000000,0x7ff00000> v_exp_f64_msk;
+	typedef const4_u32<0xffffffff,0x000fffff,
+			   0xffffffff,0x000fffff> v_sig_f64_msk;
         const int sign_f64_msk = 0x03;
+	const int exp_shift_f64 = 52;
+	const int exp_msk_f64 = 0x7ff;
 
         // definition of common used constants
         typedef const4_u32<0x01010101, 0x01010101,
