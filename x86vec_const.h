@@ -267,6 +267,27 @@ namespace x86vec {
         const int exp_shift_f64 = 52;
         const int exp_msk_f64 = 0x7ff;
 
+	namespace impl {
+		
+		template <int _I>
+		struct double_exp {
+			static 
+			const unsigned value = 
+				(_I + 0x3FF) & exp_msk_f64;
+			static
+			const unsigned value_shifted =
+				value << 20;
+		};
+
+		template <int _I>
+		class double_power_of_two : public 
+		const4_u32<0, double_exp<_I>::value_shifted,
+			   0, double_exp<_I>::value_shifted> {
+		};
+	
+	}
+
+
         // definition of common used constants
         typedef const4_u32<0x01010101, 0x01010101,
                            0x01010101, 0x01010101> v_uint8_0x01;

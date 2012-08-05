@@ -166,7 +166,7 @@ x86vec::operator<< (const v4u32& a, uint32_t b)
 template <unsigned _P>
 inline
 x86vec::v4u32&
-x86vec::operator>>= (v4u32& a, const const_u32< _P >& b)
+x86vec::operator>>=(v4u32& a, const const_u32< _P >& b)
 {
         const int val = b.val;
         a = impl::vpsrld_const<val>::v(a());

@@ -73,7 +73,7 @@ namespace x86vec
         v8s16 operator <<(const v8s16& a, uint32_t b);
 
         template <uint32_t _P>
-        v8s16& operator>>= (v8s16& a, const_u32<_P>& b);
+        v8s16& operator>>= (v8s16& a, const const_u32<_P>& b);
         v8s16& operator>>= (v8s16& a, uint32_t b);
         template <uint32_t _P>
         v8s16 operator >>(const v8s16& a, const const_u32<_P>& b);
@@ -179,7 +179,7 @@ namespace x86vec
         v8u16 operator <<(const v8u16& a, uint32_t b);
 
         template <uint32_t _P>
-        v8u16& operator>>= (v8u16& a, const_u32<_P>& b);
+        v8u16& operator>>= (v8u16& a, const const_u32<_P>& b);
         v8u16& operator>>= (v8u16& a, uint32_t b);
         template <uint32_t _P>
         v8u16 operator >>(const v8u16& a, const const_u32<_P>& b);
@@ -376,7 +376,7 @@ namespace x86vec
         v4u32 operator <<(const v4u32& a, uint32_t b);
 
         template <uint32_t _P>
-        v4u32& operator>>= (v4u32& a, const_u32<_P>& b);
+        v4u32& operator>>= (v4u32& a, const const_u32<_P>& b);
         v4u32& operator>>= (v4u32& a, uint32_t b);
         template <uint32_t _P>
         v4u32 operator >>(const v4u32& a, const const_u32<_P>& b);
@@ -467,7 +467,7 @@ namespace x86vec
         v2s64 operator <<(const v2s64& a, uint32_t b);
 
         template <uint32_t _P>
-        v2s64& operator>>= (v2s64& a, const_u32<_P>& b);
+        v2s64& operator>>= (v2s64& a, const const_u32<_P>& b);
         v2s64& operator>>= (v2s64& a, uint32_t b);
         template <uint32_t _P>
         v2s64 operator >>(const v2s64& a, const const_u32<_P>& b);
@@ -565,7 +565,7 @@ namespace x86vec
         v2u64 operator <<(const v2u64& a, uint32_t b);
 
         template <uint32_t _P>
-        v2u64& operator>>= (v2u64& a, const_u32<_P>& b);
+        v2u64& operator>>= (v2u64& a, const const_u32<_P>& b);
         v2u64& operator>>= (v2u64& a, uint32_t b);
         template <uint32_t _P>
         v2u64 operator >>(const v2u64& a, const const_u32<_P>& b);
