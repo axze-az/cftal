@@ -380,7 +380,7 @@ inline
 constexpr __m128d
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
-        const __m128d* p=reinterpret_cast<const __m128*>(_msk);
+        const __m128d* p=reinterpret_cast<const __m128d*>(_msk);
         return *p;
 }
 
