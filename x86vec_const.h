@@ -6,15 +6,15 @@
 
 namespace x86vec {
 
-	using std::uint8_t;
-	using std::uint16_t;
-	using std::uint32_t;
-	using std::uint64_t;
+        using std::uint8_t;
+        using std::uint16_t;
+        using std::uint32_t;
+        using std::uint64_t;
 
-	using std::int8_t;
-	using std::int16_t;
-	using std::int32_t;
-	using std::int64_t;
+        using std::int8_t;
+        using std::int16_t;
+        using std::int32_t;
+        using std::int64_t;
 
         namespace impl {
 
@@ -160,108 +160,112 @@ namespace x86vec {
 
         namespace impl {
 
-		template <int _P0, int _P1, int _P2, int _P3>
-		struct shuffle4 {
-			enum {
-				val =
-				(((_P3 & 3) << 6) |
-				 ((_P2 & 3) << 4) |
-				 ((_P1 & 3) << 2) |
-				 ((_P0 & 3) << 0))
-			};
-		};
+                template <int _P0, int _P1, int _P2, int _P3>
+                struct shuffle4 {
+                        enum {
+                                val =
+                                (((_P3 & 3) << 6) |
+                                 ((_P2 & 3) << 4) |
+                                 ((_P1 & 3) << 2) |
+                                 ((_P0 & 3) << 0))
+                        };
+                };
 
-		template <int _P0, int _P1>
-		struct shuffle2 {
-			enum {
-				val =
-				(((_P0 & 1) << 0) |
-				 ((_P1 & 1) << 1))
-			};
-		};
+                template <int _P0, int _P1>
+                struct shuffle2 {
+                        enum {
+                                val =
+                                (((_P0 & 1) << 0) |
+                                 ((_P1 & 1) << 1))
+                        };
+                };
 
-		// template for constant selects/blends with 2 elements
-		template <int _P0, int _P1>
-		struct csel2 {
-			enum {
-				val=
-				(((_P1 & 1) << 1) |
-				 ( _P0 & 1))
-			};
-		};
+                // template for constant selects/blends with 2 elements
+                template <int _P0, int _P1>
+                struct csel2 {
+                        enum {
+                                val=
+                                (((_P1 & 1) << 1) |
+                                 ( _P0 & 1))
+                        };
+                };
 
-		// template for constant selects/blends with 4 elements
-		template <int _P0, int _P1, int _P2, int _P3>
-		struct csel4 {
-			enum {
-				val =
-				(((_P3 & 1) << 3) |
-				 ((_P2 & 1) << 2) |
-				 ((_P1 & 1) << 1) |
-				 ( _P0 & 1))
-			};
-		};
+                // template for constant selects/blends with 4 elements
+                template <int _P0, int _P1, int _P2, int _P3>
+                struct csel4 {
+                        enum {
+                                val =
+                                (((_P3 & 1) << 3) |
+                                 ((_P2 & 1) << 2) |
+                                 ((_P1 & 1) << 1) |
+                                 ( _P0 & 1))
+                        };
+                };
 
-		// template for constant selects/blends with 8 elements
-		template <int _P0, int _P1, int _P2, int _P3,
-			  int _P4, int _P5, int _P6, int _P7>
-		struct csel8 {
-			enum {
-				val =
-				(((_P7 & 1) << 7) |
-				 ((_P6 & 1) << 6) |
-				 ((_P5 & 1) << 5) |
-				 ((_P4 & 1) << 4) |
-				 ((_P3 & 1) << 3) |
-				 ((_P2 & 1) << 2) |
-				 ((_P1 & 1) << 1) |
-				 ((_P0 & 1) << 0))
-			};
-		};
+                // template for constant selects/blends with 8 elements
+                template <int _P0, int _P1, int _P2, int _P3,
+                          int _P4, int _P5, int _P6, int _P7>
+                struct csel8 {
+                        enum {
+                                val =
+                                (((_P7 & 1) << 7) |
+                                 ((_P6 & 1) << 6) |
+                                 ((_P5 & 1) << 5) |
+                                 ((_P4 & 1) << 4) |
+                                 ((_P3 & 1) << 3) |
+                                 ((_P2 & 1) << 2) |
+                                 ((_P1 & 1) << 1) |
+                                 ((_P0 & 1) << 0))
+                        };
+                };
         }
 
-        // definition of position of signs ..
-        typedef const8_u16<0x8000, 0x8000,
-                           0x8000, 0x8000,
-                           0x8000, 0x8000,
-                           0x8000, 0x8000> v_sign_s16_msk;
-        typedef const8_u16<0x7fff, 0x7fff,
-                           0x7fff, 0x7fff,
-                           0x7fff, 0x7fff,
-                           0x7fff, 0x7fff> v_not_sign_s16_msk;
+        // (u)int16_t constants
+        typedef const8_u16<0x8000, 0x8000, 0x8000, 0x8000,
+                           0x8000, 0x8000, 0x8000, 0x8000> v_sign_s16_msk;
+        typedef const8_u16<0x7fff, 0x7fff, 0x7fff, 0x7fff,
+                           0x7fff, 0x7fff, 0x7fff, 0x7fff> v_not_sign_s16_msk;
         const int sign_s16_msk = 0xAAAA;
 
+        // (u)int32_t constants
         typedef const4_u32<0x80000000, 0x80000000,
                            0x80000000, 0x80000000> v_sign_s32_msk;
         typedef const4_u32<0x7fffffff, 0x7fffffff,
                            0x7fffffff, 0x7fffffff> v_not_sign_s32_msk;
         const int sign_s32_msk = 0x8888;
 
-        typedef v_sign_s32_msk v_sign_f32_msk;
-        typedef v_not_sign_s32_msk v_not_sign_f32_msk;
-	typedef const4_u32<0x7f800000, 0x7f800000,
-			   0x7f800000, 0x7f800000> v_exp_f32_msk;
-	typedef const4_u32<0x007fffff, 0x007fffff,
-			   0x007fffff, 0x007fffff> v_sig_f32_msk;
-        const int sign_f32_msk = 0x0f;
-	const int exp_shift_f32 = 23;
-	const int exp_msk_f32 = 0xff;
-
+        // (u)int64_t constants
         typedef const4_u32<0x00000000, 0x80000000,
                            0x00000000, 0x80000000> v_sign_s64_msk;
         typedef const4_u32<0xffffffff, 0x7fffffff,
                            0xffffffff, 0x7fffffff> v_not_sign_s64_msk;
         const int sign_s64_msk = 0x8080;
 
+        // f32 constants
+        typedef v_sign_s32_msk v_sign_f32_msk;
+        typedef v_not_sign_s32_msk v_not_sign_f32_msk;
+        typedef const4_u32<0x7f800000, 0x7f800000,
+                           0x7f800000, 0x7f800000> v_exp_f32_msk;
+        typedef const4_u32<0x807fffff, 0x807fffff,
+                           0x807fffff, 0x807fffff> v_not_exp_f32_msk;
+        typedef const4_u32<0x007fffff, 0x007fffff,
+                           0x007fffff, 0x007fffff> v_sig_f32_msk;
+        const int sign_f32_msk = 0x0f;
+        const int exp_shift_f32 = 23;
+        const int exp_msk_f32 = 0xff;
+
+        // f64 constants
         typedef v_sign_s64_msk v_sign_f64_msk;
         typedef v_not_sign_s64_msk v_not_sign_f64_msk;
-	typedef const4_u32<0x00000000,0x7ff00000,
-			   0x00000000,0x7ff00000> v_exp_f64_msk;
-	typedef const4_u32<0xffffffff,0x000fffff,
-			   0xffffffff,0x000fffff> v_sig_f64_msk;
+        typedef const4_u32<0x00000000,0x7ff00000,
+                           0x00000000,0x7ff00000> v_exp_f64_msk;
+        typedef const4_u32<0xffffffff,0x800fffff,
+                           0xffffffff,0x800fffff> v_not_exp_f64_msk;
+        typedef const4_u32<0xffffffff,0x000fffff,
+                           0xffffffff,0x000fffff> v_sig_f64_msk;
         const int sign_f64_msk = 0x03;
-	const int exp_shift_f64 = 52;
-	const int exp_msk_f64 = 0x7ff;
+        const int exp_shift_f64 = 52;
+        const int exp_msk_f64 = 0x7ff;
 
         // definition of common used constants
         typedef const4_u32<0x01010101, 0x01010101,
@@ -292,8 +296,8 @@ template <uint32_t _P0, uint32_t _P1,
 inline
 constexpr __m128i x86vec::const4_u32<_P0, _P1, _P2, _P3>::iv()
 {
-        __m128i v(_mm_load_si128(reinterpret_cast<const __m128i*>(_msk)));
-        return v;
+        const __m128i* p=reinterpret_cast<const __m128i*>(_msk);
+        return *p;
 }
 
 template <uint32_t _P0, uint32_t _P1,
@@ -301,8 +305,8 @@ template <uint32_t _P0, uint32_t _P1,
 inline
 constexpr __m128 x86vec::const4_u32<_P0, _P1, _P2, _P3>::fv()
 {
-        __m128 v(_mm_load_ps(reinterpret_cast<const float*>(_msk)));
-        return v;
+        const __m128* p=reinterpret_cast<const __m128*>(_msk);
+        return *p;
 }
 
 template <uint32_t _P0, uint32_t _P1,
@@ -310,8 +314,8 @@ template <uint32_t _P0, uint32_t _P1,
 inline
 constexpr __m128d x86vec::const4_u32<_P0, _P1, _P2, _P3>::dv()
 {
-        __m128d v(_mm_load_pd(reinterpret_cast<const double*>(_msk)));
-        return v;
+        const __m128d* p=reinterpret_cast<const __m128d*>(_msk);
+        return *p;
 }
 
 template <uint16_t _P0, uint16_t _P1,
@@ -331,8 +335,8 @@ inline
 constexpr __m128i
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
 {
-        __m128i v(_mm_load_si128(reinterpret_cast<const __m128i*>(_msk)));
-        return v;
+        const __m128i* p=reinterpret_cast<const __m128i*>(_msk);
+        return *p;
 }
 
 template <uint16_t _P0, uint16_t _P1,
@@ -343,8 +347,8 @@ inline
 constexpr __m128
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
 {
-        __m128 v(_mm_load_ps(reinterpret_cast<const float*>(_msk)));
-        return v;
+        const __m128* p=reinterpret_cast<const __m128*>(_msk);
+        return *p;
 }
 
 template <uint16_t _P0, uint16_t _P1,
@@ -355,8 +359,8 @@ inline
 constexpr __m128d
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
-        __m128d v(_mm_load_pd(reinterpret_cast<const double*>(_msk)));
-        return v;
+        const __m128d* p=reinterpret_cast<const __m128*>(_msk);
+        return *p;
 }
 
 template <uint8_t _P00, uint8_t _P01,
@@ -388,8 +392,8 @@ constexpr __m128i
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
 {
-        __m128i v(_mm_load_si128(reinterpret_cast<const __m128i*>(_msk)));
-        return v;
+        const __m128i* p=reinterpret_cast<const __m128i*>(_msk);
+        return *p;
 }
 
 template <uint8_t _P00, uint8_t _P01,
@@ -405,8 +409,8 @@ constexpr __m128
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
 {
-        __m128 v(_mm_load_ps(reinterpret_cast<const float*>(_msk)));
-        return v;
+        const __m128* p=reinterpret_cast<const __m128*>(_msk);
+        return *p;
 }
 
 template <uint8_t _P00, uint8_t _P01,
@@ -422,8 +426,8 @@ constexpr __m128d
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
 {
-        __m128d v(_mm_load_pd(reinterpret_cast<const double*>(_msk)));
-        return v;
+        const __m128d* p=reinterpret_cast<const __m128d*>(_msk);
+        return *p;
 }
 
 // Local variables:
