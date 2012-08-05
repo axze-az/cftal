@@ -5,6 +5,7 @@
 #include <cftal/x86vec_vreg.h>
 #include <cftal/x86vec_perm.h>
 #include <cftal/x86vec_ops_1.h>
+#include <cftal/x86vec_ivec.h>
 #include <cftal/mem_load.h>
 #include <cftal/divisor.h>
 #include <cfenv>
