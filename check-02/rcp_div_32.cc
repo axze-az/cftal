@@ -138,6 +138,12 @@ cftal::test::udiv_32()
 #endif
 }
 
+bool check_rcp_div_32()
+{
+	return cftal::test::udiv_32();
+}
+
+#if defined (MAIN)
 int main(int argc, char* argv[])
 {
 	if (argc > 1) {
@@ -150,3 +156,4 @@ int main(int argc, char* argv[])
 	cftal::test::udiv_32();
 	return 0;
 }
+#endif

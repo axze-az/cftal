@@ -76,8 +76,7 @@ emuvec.os: CXXFLAGS-os +=-fno-tree-vectorize -mtune=corei7
 emuvec.od: CXXFLAGS-od +=-fno-tree-vectorize -mtune=corei7
 emuvec.s: CXXFLAGS-os +=-fno-tree-vectorize -mtune=corei7
 
-TESTPROGS=hackx86vec genx86vec hackx86vec_g rcp_div rcp_div_g	\
-rcp_div_64 rcp_div_64_g
+TESTPROGS=hackx86vec genx86vec hackx86vec_g 
 
 tests: $(TESTPROGS)
 
@@ -92,19 +91,6 @@ hackx86vec: hackx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 
 hackx86vec_g: hackx86vec.od x86vec_test.od lib$(LIBNAME)-g.a
 	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
-
-rcp_div: rcp_div.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
-	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
-
-rcp_div_g: rcp_div.od lib$(LIBNAME)-g.a
-	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
-
-rcp_div_64: rcp_div_64.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
-	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
-
-rcp_div_64_g: rcp_div_64.od lib$(LIBNAME)-g.a
-	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
-
 
 # Full tests
 all-tests: all \
