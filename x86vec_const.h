@@ -264,6 +264,7 @@ namespace x86vec {
         typedef const4_u32<0xffffffff,0x000fffff,
                            0xffffffff,0x000fffff> v_sig_f64_msk;
         const int sign_f64_msk = 0x03;
+	const int bias_f64 = 0x3ff;
         const int exp_shift_f64 = 52;
         const int exp_msk_f64 = 0x7ff;
 
@@ -273,10 +274,10 @@ namespace x86vec {
 		struct double_exp {
 			static 
 			const unsigned value = 
-				(_I + 0x3FF) & exp_msk_f64;
+				(_I + bias_f64) & exp_msk_f64;
 			static
 			const unsigned value_shifted =
-				value << 20;
+				value << (exp_shift_f64-32);
 		};
 
 		template <int _I>
@@ -286,7 +287,6 @@ namespace x86vec {
 		};
 	
 	}
-
 
         // definition of common used constants
         typedef const4_u32<0x01010101, 0x01010101,

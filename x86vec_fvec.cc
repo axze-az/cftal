@@ -9,12 +9,20 @@ namespace x86vec {
 
 		template <> struct arg <v2f64> { typedef v2f64 type; };
 
-		v2f64 frexp(v2f64 v, v2s64& e);
+		v2f64 pow2i(const v2s64& e);
 
-		v2u64 extract_exp(const v2f64& v);
+		v2u64 extract_exp_with_bias(const v2f64& v);
 		v2f64 insert_exp(const v2f64& v, v2u64& e);
 		
+		v2f64 frexp(v2f64 v, v2s64& e);
+
+		
 	}
+}
+
+x86vec::v2f64 test_f(x86vec::v2f64 f)
+{
+	return isnan(f);
 }
 
 x86vec::v2f64 x86vec::frexp(const v2f64& v, v2s64* e)
@@ -22,10 +30,15 @@ x86vec::v2f64 x86vec::frexp(const v2f64& v, v2s64* e)
 	return impl::frexp(v, *e);
 }
 
-inline
-x86vec::v2u64 x86vec::impl::extract_exp(const v2f64& v)
+x86vec::v2f64 x86vec::impl::pow2i(const v2s64& e)
 {
-	v2u64 r(_mm_castpd_si128(v()));
+	return 0.0;
+}
+
+inline
+x86vec::v2u64 x86vec::impl::extract_exp_with_bias(const v2f64& v)
+{
+	v2u64 r(as<v2u64>(v));
 	r &= v_exp_f64_msk::iv();
 	r >>= const_u32<exp_shift_f64>();
 	return r;
@@ -39,44 +52,45 @@ x86vec::v2f64 x86vec::impl::insert_exp(const v2f64& v, v2u64& e)
 	v2f64 e_msk_f= v_exp_f64_msk::dv();
 	em &= e_msk_i;
 	v2f64 r(andnot(e_msk_f, v));
-	r |= _mm_castsi128_pd(em());
+	r |= as<v2f64>(em);
 	return r;
 }
 
-x86vec::v2f64 x86vec::impl::frexp(v2f64 v, v2s64& er)
+x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
 {
-	v2u64 iv(_mm_castpd_si128(v()));
-	v2u64 siv(iv << const_shift::_1);
-	const v2u64 msk=const4_u32<0x00000000, 0xffe00000,
-				   0x00000000, 0xffe00000>::iv();
-	// inf nan zero handling
-	v2u64 is_inf_nan((siv & msk) == msk);
-	v2u64 is_zero(siv == make_zero_int::v());
-	v2s64 is_inf_nan_zero_int(is_zero | is_inf_nan);
-	v2f64 is_inf_nan_zero(_mm_castsi128_pd(is_inf_nan_zero_int()));
-	v2s64 e_inf_nan_zero(make_zero_int::v());
-	const v2f64& r_inf_nan_zero=v;
+	v2f64 vabs(abs(v));
+	v2f64 is_zero(v == v2f64(make_zero_f64::v()));
+	v2f64 is_nan(v != v);
+	v2f64 is_inf(vabs == v_exp_f64_msk::dv());
+	v2f64 is_inf_nan_zero( is_zero | is_nan | is_inf);
 
-	// normal handling
-	v2u64 exp_bias(extract_exp(v));
-	v2s64 e_normal(exp_bias - int64_t(1022));
-	const v2f64& r_normal= v;
-		
+	v2s64 is_inf_nan_zero_int(as<v2s64>(is_inf_nan_zero));
+	const v2f64& r_inf_nan_zero=v;
+	const v2s64 e_inf_nan_zero(make_zero_int::v());
+	
 	// denormal handling
 	const v2f64 _2_54 = double_power_of_two<54>::dv();
 	v2f64 r_denom(v* _2_54);
-	v2s64 e_denom(extract_exp(r_denom) - int64_t(54 + 1022));
-	
-	// finite handling
-	v2s64 is_denom_int(exp_bias == 0);
-	v2f64 is_denom(_mm_castsi128_pd(is_denom_int()));
-	// combine normal and denormal
-	v2s64 e_finite(select(is_denom_int, e_denom, e_normal));
-	v2f64 r_finite(select(is_denom, r_denom, r_normal));
+	const v2s64 e_denom_corr= const4_u32<-54-1022, -1, -54-1022, -1>::iv();
 
+	// normal handling
+	// v2u64 exp_orig_pos = iv & v_exp_f64_msk::iv();
+	const v2s64 e_normal_corr= const4_u32<-1022, -1, -1022, -1>::iv();
+	const v2f64& r_normal= v;
+		
+	// finite handling
+	v2s64 iv(as<v2s64>(v));
+	v2s64 is_denom_int((iv & v_exp_f64_msk::iv()) ==
+			   make_zero_int::v());
+	v2f64 is_denom(as<v2f64>(is_denom_int));
+	// combine normal and denormal
+	v2s64 e_finite(select(is_denom_int, e_denom_corr, e_normal_corr));
+	v2f64 r_finite(select(is_denom, r_denom, r_normal));
+	// apply the corrections:
+	e_finite += extract_exp_with_bias(r_finite);
 	// mask out exponent
 	r_finite &= v_not_exp_f64_msk::dv();
-	// insert exponent
+	// insert exponent 2^-1
 	r_finite |= const4_u32<0, 0x3fe00000, 0, 0x3fe00000>::dv();
 
 	// combine inf nan zero and finite
@@ -86,3 +100,5 @@ x86vec::v2f64 x86vec::impl::frexp(v2f64 v, v2s64& er)
 	er = e;
 	return r;
 }
+
+

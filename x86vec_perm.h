@@ -686,8 +686,7 @@ __m128 x86vec::impl::perm1_f32<_P0, _P1, _P2, _P3>::v(__m128 a)
 		c04, c05, c06, c07,
 		c08, c09, c10, c11,
 		c12, c13, c14, c15>::iv();
-        return _mm_castsi128_ps(_mm_shuffle_epi8(_mm_castps_si128(a),
-                                                 msk));
+        return as<__m128>(_mm_shuffle_epi8(as<__m128i>(a),msk));
 #else
         // shuffle
         __m128 t= vshufps<_P0, _P1, _P2, _P3>::v(a, a);

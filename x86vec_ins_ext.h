@@ -3,6 +3,7 @@
 
 #include <cftal/x86vec_intrin.h>
 #include <cftal/x86vec_select.h>
+#include <cftal/x86vec_cast.h>
 
 namespace x86vec {
 
@@ -322,10 +323,10 @@ __m128i x86vec::insert_u64(__m128i v, uint64_t i)
 #endif
         if (_IDX==0) {
                 __m128d dt, dv, dr;
-                dt = _mm_castsi128_pd(t);
-                dv = _mm_castsi128_pd(v);
+                dt = as<__m128d>(t);
+                dv = as<__m128d>(v);
                 dr = _mm_move_sd(dv, dt);
-                r = _mm_castpd_si128(dr);
+                r = as<__m128i>(dr);
         } else {
                 r = _mm_unpacklo_epi64(v, t);
         }

@@ -1,45 +1,109 @@
 #include <cftal/d_int.h>
 #include <cftal/mul_div.h>
+#include <cmath>
 #include <x86vec.h>
 #include <x86vec_test.h>
 #include <cstdint>
 #include <iostream>
 #include <iomanip>
 
+namespace x86vec {
+	namespace test {
 
-void test_div()
-{
-	using namespace x86vec;
-	using test::pr_v2u64;
+		double make_double(unsigned sgn, unsigned exp, uint64_t sig);
+		bool check_frexp(double vp, double vn);
+		bool check_frexp();
 
-	v2u64::element_type vi(0UL);
-	v2u64 u(3300917957719651597UL, 17331437524411346996UL);
-	v2u64 v(vi);
-	divisor<v2u64, uint64_t> vd(vi);
-	
-	v2u64 q_div(u/v), r_div(u % v);
-	v2u64 q_cdiv(u/vd), r_cdiv(u % vd); 
+		bool f_eq(double a, double b);
 
-	v2u64 q_cmp_div(q_cdiv == q_div);
-	v2u64 r_cmp_div(r_div == r_cdiv);
-
-	if (!all_signs(q_cmp_div) || !all_signs(r_cmp_div)) {
-		std::cout << "div " << std::endl
-			  << pr_v2u64(u()) << " / "
-			  << vi << std::endl
-			  << "Q_DIV:  "
-			  << pr_v2u64(q_div()) << std::endl
-			  << "R_DIV:  "
-			  << pr_v2u64(r_div()) << std::endl
-			  << "Q_CDIV: "
-			  << pr_v2u64(q_cdiv()) << std::endl
-			  << "R_CDIV: "
-			  << pr_v2u64(r_cdiv()) << std::endl;
 	}
 }
 
+inline
+bool x86vec::test::f_eq(double a, double b)
+{
+	return (a == b) || (std::isnan(a) && std::isnan(b));
+}
+
+double x86vec::test::make_double(unsigned sgn, unsigned exp, uint64_t sig) 
+{
+	uint64_t _sgn= uint64_t(sgn & 1) << 63; 
+	uint64_t _exp= uint64_t(exp & 0x7FF) << 52;
+	uint64_t _sig= sig & 0x000fffffffffffffULL;
+	union {
+		uint64_t _u;
+		double _d;
+	} t;
+	t._u = _sgn | _exp | _sig;
+	return t._d;
+}
+
+bool x86vec::test::check_frexp(double vp, double vm)
+{
+	int ep, em;
+	double frp=std::frexp(vp, &ep);
+	double frm=std::frexp(vm, &em);
+	v2s64 e;
+	v2f64 v(vp, vm), fr= frexp(v, &e);
+
+	int r_ep= extract<0>(e);
+	int r_em= extract<1>(e);
+	double r_frp = extract<0>(fr);
+	double r_frm = extract<1>(fr);
+
+	bool rc(true);
+	if (!f_eq(r_frp,frp) || r_ep != ep) {
+		std::cout << "frexp(" << vp << ")=" 
+			  << r_frp << " exp= " << r_ep
+			  << std::endl
+			  << "expect: " 
+			  << frp << " exp= " << ep
+			  << std::endl;
+		rc = false;
+	}
+	if (!f_eq(r_frm, frm) || r_em != em) {
+		std::cout << "frexp(" << vm << ")=" 
+			  << r_frm << " exp= " << r_em
+			  << std::endl
+			  << "expect: " 
+			  << frm << " exp= " << em
+			  << std::endl;
+		rc = false;
+	}
+	if (!rc) 
+		std::exit(3);
+	return true;
+}
+
+bool x86vec::test::check_frexp()
+{
+	// check zero
+	double vp = make_double(0, 0, 0);
+	check_frexp(vp, -vp);
+	// check +- inf
+	check_frexp(make_double(0, 0x7FF, 0),
+		    make_double(1, 0x7FF, 0));
+	// check +-nan
+	for (int i=0; i<52; ++i) {
+		uint64_t sig= uint64_t(1) << i;
+		check_frexp(make_double(0, 0x7FF, sig),
+			    make_double(1, 0x7FF, sig));
+	}
+	return true;
+	// denormals and normals
+	for (int e=0; e<=0x7ff; ++e) {
+		for (int i=0; i<52; ++i) {
+			uint64_t sig= uint64_t(1) << i;
+			vp = make_double(0, e, sig);
+			check_frexp(vp, -vp);
+		}
+	}
+	return true;
+}
+
+
 int main(int argc, char** argv)
 {
-	test_div();
+	x86vec::test::check_frexp();
         return 0;
 }

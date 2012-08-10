@@ -4,6 +4,7 @@
 #include <cftal/x86vec_intrin.h>
 #include <cftal/x86vec_const.h>
 #include <cftal/x86vec_select.h>
+#include <cftal/x86vec_cast.h>
 
 namespace x86vec {
 
@@ -129,23 +130,23 @@ namespace x86vec {
 		struct exec_int {
 			// float: cvt to int, exec, cvt back
 			static __m128 v(__m128 a) {
-				return _mm_castsi128_ps(
-					_INT_OP::v(_mm_castps_si128(a)));
+				return as<__m128>(
+					_INT_OP::v(as<__m128i>(a)));
 			}
 			static __m128 v(__m128 a, __m128 b) {
-				return _mm_castsi128_ps(
-					_INT_OP::v(_mm_castps_si128(a),
-						   _mm_castps_si128(b)));
+				return as<__m128>(
+					_INT_OP::v(as<__m128i>(a),
+						   as<__m128i>(b)));
 			}
 			// double: cvt to int, exec, cvt back
 			static __m128d v(__m128d a) {
-				return _mm_castsi128_pd(
-					_INT_OP::v(_mm_castpd_si128(a)));
+				return as<__m128d>(
+					_INT_OP::v(as<__m128i>(a)));
 			}
 			static __m128d v(__m128d a, __m128d b) {
-				return _mm_castsi128_pd(
-					_INT_OP::v(_mm_castpd_si128(a),
-						   _mm_castpd_si128(b)));
+				return as<__m128d>(
+					_INT_OP::v(as<__m128i>(a),
+						   as<__m128i>(b)));
 			}
 		};
 
@@ -153,23 +154,23 @@ namespace x86vec {
 		struct exec_f32 {
 			// int: cvt to float, exec, cvt back
 			static __m128i v(__m128i a) {
-				return _mm_castps_si128(
-					_F32_OP::v(_mm_castsi128_ps(a)));
+				return as<__m128i>(
+					_F32_OP::v(as<__m128>(a)));
 			}
 			static __m128i v(__m128i a, __m128i b) {
-				return _mm_castps_si128(
-					_F32_OP::v(_mm_castsi128_ps(a),
-						   _mm_castsi128_ps(b)));
+				return as<__m128i>(
+					_F32_OP::v(as<__m128>(a),
+						   as<__m128>(b)));
 			}
 			// double: cvt to float, exec, cvt back
 			static __m128d v(__m128d a) {
-				return _mm_castps_pd(
-					_F32_OP::v(_mm_castpd_ps(a)));
+				return as<__m128d>(
+					_F32_OP::v(as<__m128>(a)));
 			}
 			static __m128d v(__m128d a, __m128d b) {
-				return _mm_castps_pd(
-					_F32_OP::v(_mm_castpd_ps(a),
-						   _mm_castpd_ps(b)));
+				return as<__m128d>(
+					_F32_OP::v(as<__m128>(a),
+						   as<__m128>(b)));
 			}
 		};
 
@@ -177,23 +178,23 @@ namespace x86vec {
 		struct exec_f64 {
 			// int: cvt to double, exec, cvt back
 			static __m128i v(__m128i a) {
-				return _mm_castpd_si128(
-					_F64_OP::v(_mm_castsi128_pd(a)));
+				return as<__m128i>(
+					_F64_OP::v(as<__m128d>(a)));
 			}
 			static __m128i v(__m128i a, __m128i b) {
-				return _mm_castpd_si128(
-					_F64_OP::v(_mm_castsi128_pd(a),
-						   _mm_castsi128_pd(b)));
+				return as<__m128i>(
+					_F64_OP::v(as<__m128d>(a),
+						   as<__m128d>(b)));
 			}
 			// float: cvt to double, exec, cvt back
 			static __m128 v(__m128 a) {
-				return _mm_castpd_ps(
-					_F64_OP::v(_mm_castps_pd(a)));
+				return as<__m128>(
+					_F64_OP::v(as<__m128d>(a)));
 			}
 			static __m128 v(__m128 a, __m128 b) {
-				return _mm_castpd_ps(
-					_F64_OP::v(_mm_castps_pd(a),
-						   _mm_castps_pd(b)));
+				return as<__m128>(
+					_F64_OP::v(as<__m128d>(a),
+						   as<__m128d>(b)));
 			}
 		};
 

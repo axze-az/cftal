@@ -182,7 +182,7 @@ bool x86vec::both_signs_f32(__m128 a)
 {
 #if defined (__SSE4_1__)
 	const __m128i msk= v_sign_f32_msk::iv();
-	return _mm_testnzc_si128(_mm_castps_si128(a), msk);
+	return _mm_testnzc_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f32(a);
 	return (r != 0) && (r != sign_f32_msk);
@@ -194,7 +194,7 @@ bool x86vec::all_signs_f32(__m128 a)
 {
 #if defined (__SSE4_1__)
 	const __m128i msk= v_sign_f32_msk::iv();
-	return _mm_testc_si128(_mm_castps_si128(a), msk);
+	return _mm_testc_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f32(a);
 	return r  ==  sign_f32_msk;
@@ -206,7 +206,7 @@ bool x86vec::no_signs_f32(__m128 a)
 {
 #if defined (__SSE4_1__)
 	const __m128i msk= v_sign_f32_msk::iv();
-	return _mm_testz_si128(_mm_castps_si128(a), msk);
+	return _mm_testz_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f32(a);
 	return r  == 0;
@@ -218,7 +218,7 @@ bool x86vec::both_signs_f64(__m128d a)
 {
 #if defined (__SSE4_1__)
 	const __m128i msk= v_sign_f64_msk::iv();
-	return _mm_testnzc_si128(_mm_castpd_si128(a), msk);
+	return _mm_testnzc_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f64(a);
 	return (r != 0) && (r != sign_f64_msk);
@@ -230,7 +230,7 @@ bool x86vec::all_signs_f64(__m128d a)
 {
 #if defined (__SSE4_1__)
 	const __m128i msk= v_sign_f64_msk::iv();
-	return _mm_testc_si128(_mm_castpd_si128(a), msk);
+	return _mm_testc_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f64(a);
 	return r == sign_f64_msk;
@@ -242,7 +242,7 @@ bool x86vec::no_signs_f64(__m128d a)
 {
 #if defined (__SSE4_1__)
 	const __m128i msk= v_sign_f64_msk::iv();
-	return _mm_testz_si128(_mm_castpd_si128(a), msk);
+	return _mm_testz_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f64(a);
 	return r == 0;

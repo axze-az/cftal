@@ -413,11 +413,8 @@ inline
 x86vec::v4f32 x86vec::isinf(const v4f32& x)
 {
 	// exponent = 0xFF and significand ==0
-	v4u32 xi= _mm_castps_si128(x());
-	const v4u32 msk=const4_u32<0xff000000, 0xff000000,
-				   0xff000000, 0xff000000>::iv();
-	v4u32 r= (xi << const_shift::_1) == msk;
-	return _mm_castsi128_ps(r());
+	v4f32 absx(abs(x));
+	return absx == v_exp_f32_msk::fv();
 }
 
 inline
@@ -425,17 +422,17 @@ x86vec::v4f32 x86vec::isnan(const v4f32& x)
 {
 	// exponent = 0xff and significand !=0
 	// x == x if x != NAN
-	v4f32 is_inf_or_finite(_mm_cmpeq_ps(x(), x()));
-	return ~is_inf_or_finite;
+	// x != x if x == NAN
+	return x != x;
 }
 inline
 x86vec::v4f32 x86vec::isfinite(const v4f32& x)
 {
 	// exponent != 0xFF
-	v4u32 xi(_mm_castps_si128(x()));
+	v4u32 xi(as<v4u32>(x));
 	const v4u32 msk=v_exp_f32_msk::iv();
 	v4u32 res((xi & msk) != msk);
-	return _mm_castsi128_ps(res());
+	return as<v4f32>(res);
 }
 
 

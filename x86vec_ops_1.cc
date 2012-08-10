@@ -121,7 +121,7 @@ __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 	// subtract 2^31 where necessary
 	q = _mm_sub_pd(q, corr);
 	// convert
-	__m128 xml= _mm_castpd_ps(hm);
+	__m128 xml= as<__m128>(hm);
 	// correct too large values later
 	__m128i qil=_mm_cvttpd_epi32(q);
 
@@ -139,9 +139,9 @@ __m128i x86vec::impl::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 	hm = _mm_cmple_pd(_2_pow_31, q);
 	corr =_mm_and_pd(hm, _2_pow_31);
 	q = _mm_sub_pd(q, corr);
-	__m128 xmh= _mm_castpd_ps(hm);
+	__m128 xmh= as<__m128>(hm);
 	// combine xml and xmh
-	__m128i xm= _mm_castps_si128(vshufps<0, 2, 0, 2>::v(xml, xmh));
+	__m128i xm= as<__m128i>(vshufps<0, 2, 0, 2>::v(xml, xmh));
 	xm = _mm_slli_epi32(xm, 31);
 	__m128i qih= _mm_cvttpd_epi32(q);
 	__m128i qi= _mm_unpacklo_epi64(qil, qih);
