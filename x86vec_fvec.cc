@@ -70,7 +70,7 @@ x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
 
 	v2s64 is_inf_nan_zero_int(as<v2s64>(is_inf_nan_zero));
 	const v2f64& r_inf_nan_zero=v;
-	const v2s64 e_inf_nan_zero(zero_int);
+	const v2s64& e_inf_nan_zero=zero_int;
 	
 	// denormal handling
 	const v2f64 _2_54 = double_power_of_two<54>::dv();
