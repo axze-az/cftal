@@ -12,10 +12,12 @@ namespace x86vec {
 
 		double make_double(unsigned sgn, unsigned exp, uint64_t sig);
 		bool check_frexp(double vp, double vn);
-		bool check_frexp();
+		bool check_frexp_f64();
 
+		// compare a and b, returns also true for a==NAN and b
+		// == NAN
 		bool f_eq(double a, double b);
-
+		
 	}
 }
 
@@ -75,7 +77,7 @@ bool x86vec::test::check_frexp(double vp, double vm)
 	return true;
 }
 
-bool x86vec::test::check_frexp()
+bool x86vec::test::check_frexp_f64()
 {
 	// check zero
 	double vp = make_double(0, 0, 0);
@@ -104,6 +106,6 @@ bool x86vec::test::check_frexp()
 
 int main(int argc, char** argv)
 {
-	x86vec::test::check_frexp();
+	x86vec::test::check_frexp_f64();
         return 0;
 }

@@ -198,6 +198,7 @@ namespace x86vec {
 	v2f64 isnan(const v2f64& x);
 	v2f64 isfinite(const v2f64& x);
 	v2f64 frexp(const v2f64& x, v2s64* e);
+	v2f64 ldexp(const v2f64& x, const v2s64& e);
 
         template < bool _P0, bool _P1>
         v2f64 select(const v2f64& a, const v2f64& b);

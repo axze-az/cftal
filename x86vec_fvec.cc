@@ -2,11 +2,12 @@
 
 namespace x86vec {
 
-	v2f64 frexp(const v2f64& v, v2s64* e);
+	// v2f64 frexp(const v2f64& v, v2s64* e);
 	
 	namespace impl {
-		template <class _T> struct arg;
+		template <typename _T> struct arg;
 
+		template <> struct arg <v2s64> { typedef v2s64 type; };
 		template <> struct arg <v2f64> { typedef v2f64 type; };
 
 		v2f64 pow2i(const v2s64& e);
@@ -14,8 +15,8 @@ namespace x86vec {
 		v2u64 extract_exp_with_bias(const v2f64& v);
 		v2f64 insert_exp(const v2f64& v, v2u64& e);
 		
-		v2f64 frexp(v2f64 v, v2s64& e);
-
+		v2f64 frexp(arg<v2f64>::type v, v2s64& e);
+		v2f64 ldexp(arg<v2f64>::type v, arg<v2s64>::type e);
 		
 	}
 }
@@ -105,6 +106,24 @@ x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
 		
 	er = e;
 	return r;
+}
+
+x86vec::v2f64 x86vec::impl::ldexp(arg<v2f64>::type v, arg<v2s64>::type e)
+{
+	const v2s64 v_exp_bias=const4_u32<bias_f64, 0, 
+					  bias_f64, 0>::iv();
+	v2s64 m= e >> const_shift::_63;
+	m = (((m+e) >> const_shift::_9) - m ) << const_shift::_7;
+	v2s64 q= q - (m << const_shift::_2);
+	v2f64 u= as<v2f64>((m + v_exp_bias) << const_shift::_52);
+	v2f64 x = v * u * u * u * u;
+	u = as<v2f64>((q + v_exp_bias) << const_shift::_52);
+	return x * u;
+}
+
+x86vec::v2f64 x86vec::ldexp(const v2f64& v, const v2s64& e)
+{
+	return impl::ldexp(v, e);
 }
 
 #if 0
