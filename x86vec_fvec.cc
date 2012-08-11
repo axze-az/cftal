@@ -90,8 +90,8 @@ x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
 	v2s64 e_finite(select(is_denom_int, e_denom_corr, e_normal_corr));
 	v2f64 r_finite(select(is_denom, r_denom, r_normal));
 	// apply the corrections:
-	v2s64 exponent(as<v2s64>(r_finite));
-	exponent &= exp_msk_int;
+	v2u64 exponent(as<v2u64>(r_finite));
+	exponent &= as<v2u64>(exp_msk_int);
 	exponent >>= const_u32<exp_shift_f64>();
 	e_finite += exponent;
 	// mask out exponent
