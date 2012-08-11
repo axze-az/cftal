@@ -59,14 +59,18 @@ x86vec::v2f64 x86vec::impl::insert_exp(const v2f64& v, v2u64& e)
 x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
 {
 	v2f64 vabs(abs(v));
-	v2f64 is_zero(v == v2f64(make_zero_f64::v()));
+	const v2s64 zero_int(make_zero_int::v());
+	const v2f64 zero_f64(as<v2f64>(zero_int));
+	v2f64 is_zero(v == zero_f64);
 	v2f64 is_nan(v != v);
-	v2f64 is_inf(vabs == v_exp_f64_msk::dv());
+	const v2s64 exp_msk_int(v_exp_f64_msk::iv());
+	const v2f64 exp_msk_f64(as<v2f64>(exp_msk_int));
+	v2f64 is_inf(vabs == exp_msk_f64);
 	v2f64 is_inf_nan_zero( is_zero | is_nan | is_inf);
 
 	v2s64 is_inf_nan_zero_int(as<v2s64>(is_inf_nan_zero));
 	const v2f64& r_inf_nan_zero=v;
-	const v2s64 e_inf_nan_zero(make_zero_int::v());
+	const v2s64 e_inf_nan_zero(zero_int);
 	
 	// denormal handling
 	const v2f64 _2_54 = double_power_of_two<54>::dv();
@@ -80,14 +84,16 @@ x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
 		
 	// finite handling
 	v2s64 iv(as<v2s64>(v));
-	v2s64 is_denom_int((iv & v_exp_f64_msk::iv()) ==
-			   make_zero_int::v());
+	v2s64 is_denom_int((iv & exp_msk_int) == zero_int);
 	v2f64 is_denom(as<v2f64>(is_denom_int));
 	// combine normal and denormal
 	v2s64 e_finite(select(is_denom_int, e_denom_corr, e_normal_corr));
 	v2f64 r_finite(select(is_denom, r_denom, r_normal));
 	// apply the corrections:
-	e_finite += extract_exp_with_bias(r_finite);
+	v2s64 exponent(as<v2s64>(r_finite));
+	exponent &= exp_msk_int;
+	exponent >>= const_u32<exp_shift_f64>();
+	e_finite += exponent;
 	// mask out exponent
 	r_finite &= v_not_exp_f64_msk::dv();
 	// insert exponent 2^-1
@@ -101,4 +107,28 @@ x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
 	return r;
 }
 
+#if 0
+static inline float ldexpkf(float x, int q) {
+  float u;
+  int m;
+  m = q >> 31;
+  m = (((m + q) >> 6) - m) << 4;
+  q = q - (m << 2);
+  u = intBitsToFloat(((int32_t)(m + 0x7f)) << 23);
+  x = x * u * u * u * u;
+  u = intBitsToFloat(((int32_t)(q + 0x7f)) << 23);
+  return x * u;
+}
 
+static inline double ldexpk(double x, int q) {
+  double u;
+  int m;
+  m = q >> 31;
+  m = (((m + q) >> 9) - m) << 7;
+  q = q - (m << 2);
+  u = longBitsToDouble(((int64_t)(m + 0x3ff)) << 52);
+  x = x * u * u * u * u;
+  u = longBitsToDouble(((int64_t)(q + 0x3ff)) << 52);
+  return x * u;
+}
+#endif
