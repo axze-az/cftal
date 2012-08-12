@@ -15,18 +15,9 @@ namespace x86vec {
 		v2f64 exp(arg<v2f64>::type v);
 		v2f64 log(arg<v2f64>::type v);
 
-		v2f64 muladd(const v2f64& a, const v2f64& b, const v2f64& c);
-
 		v2s64 ilogbp1(const v2f64& a);
 	
 	}
-}
-
-inline
-x86vec::v2f64
-x86vec::impl::muladd(const v2f64& a, const v2f64& b, const v2f64& c)
-{
-	return a* b + c;
 }
 
 inline

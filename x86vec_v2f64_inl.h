@@ -457,6 +457,16 @@ x86vec::v2f64 x86vec::fms(const v2f64& a, const v2f64& b, const v2f64& c)
 #endif	
 }
 
+inline
+x86vec::v2f64 x86vec::mad(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+#if defined (__FMA4__) || defined (__FMA__)
+	return fma(a, b, c);
+#else
+	return a * b + c;
+#endif
+}
+
 template < bool _P0, bool _P1>
 inline
 x86vec::v2f64 x86vec::select(const v2f64& a, const v2f64& b)
