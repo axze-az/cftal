@@ -2,13 +2,7 @@
 
 namespace x86vec {
 
-	// v2f64 frexp(const v2f64& v, v2s64* e);
-	
 	namespace impl {
-		template <typename _T> struct arg;
-
-		template <> struct arg <v2s64> { typedef v2s64 type; };
-		template <> struct arg <v2f64> { typedef v2f64 type; };
 
 		v2f64 pow2i(const v2s64& e);
 
@@ -17,9 +11,76 @@ namespace x86vec {
 		
 		v2f64 frexp(arg<v2f64>::type v, v2s64& e);
 		v2f64 ldexp(arg<v2f64>::type v, arg<v2s64>::type e);
-		
+		v2s64 ilogb(arg<v2f64>::type v);
+		v2f64 exp(arg<v2f64>::type v);
+		v2f64 log(arg<v2f64>::type v);
+
+		v2f64 muladd(const v2f64& a, const v2f64& b, const v2f64& c);
+
+		v2s64 ilogbp1(const v2f64& a);
+	
 	}
 }
+
+inline
+x86vec::v2f64
+x86vec::impl::muladd(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+	return a* b + c;
+}
+
+inline
+x86vec::v2s64
+x86vec::impl::ilogbp1(const v2f64& d)
+{
+	v2f64 m(d < 4.9090934652977266E-91);
+	v2f64 dd(2.037035976334486E90 * d);
+	dd = select(m, dd, d);
+	v2u64 q= (as<v2u64>(dd) >> const_shift::_52) & 0x7ff;
+	const v2s64 qc0(300+ 0x3fe);
+	const v2s64 qc1(     0x3fe);
+	v2s64 qc(select(as<v2s64>(m), qc0, qc1));
+	v2s64 r= as<v2s64>(q) - qc;
+	return r;
+}
+
+x86vec::v2s64
+x86vec::impl::ilogb(arg<v2f64>::type d)
+{
+	v2s64 e(ilogbp1(abs(d))- 1);
+	e = select(as<v2s64>(d == 0.0), v2s64(-INT64_MAX), e);
+	e = select(as<v2s64>(isinf(d)), v2s64(INT64_MAX), e);
+	return e;
+}
+
+x86vec::v2f64
+x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)
+{
+	const v2s64 hi_cor=const4_u32<0x4000000, 0,
+				      0x4000000, 0>::iv();
+	const v2s64 hi_msk=const4_u32<0xf8000000, 0xffffffff,
+				      0xf8000000, 0xffffffff>::iv();
+	v2s64 t;
+	t= as<v2s64>(x);
+	t += hi_cor;
+	t &= hi_msk;
+	v2f64 xh(as<v2f64>(t));
+	v2f64 xl(x- xh);
+	t = as<v2s64>(y);
+	t += hi_cor;
+	t &= hi_msk;
+	v2f64 yh(as<v2f64>(t));
+	v2f64 yl(y -yh);
+	
+	v2f64 h= x*y;
+	v2f64 l= xh * yh - h + xl * yh + xh * yl + xl * yl;
+
+	v2f64 h2 = h + z;
+	v2f64 v = h2 - h;
+	v2f64 l2 = (h - (h2 - v)) + (z - v) + l;
+	return h2 + l2;
+}
+
 
 x86vec::v2f64 test_f(x86vec::v2f64 f)
 {

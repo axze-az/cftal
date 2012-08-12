@@ -9,6 +9,11 @@
 
 namespace x86vec {
 
+	namespace impl {
+		template <typename _T>
+		struct arg { typedef _T type; };
+	}
+
         // wrapper around a vector register type
         template <class _X>
         class vreg {

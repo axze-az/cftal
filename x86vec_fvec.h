@@ -200,6 +200,16 @@ namespace x86vec {
 	v2f64 frexp(const v2f64& x, v2s64* e);
 	v2f64 ldexp(const v2f64& x, const v2s64& e);
 
+	namespace impl {
+		// fma emulation (a*b +c)
+		v2f64 fma(arg<v2f64>::type a, arg<v2f64>::type b, 
+			  arg<v2f64>::type c);
+	}
+	// a*b +c
+	v2f64 fma(const v2f64& a, const v2f64& b, const v2f64& c);
+	// a*b -c
+	v2f64 fms(const v2f64& a, const v2f64& b, const v2f64& c);
+
         template < bool _P0, bool _P1>
         v2f64 select(const v2f64& a, const v2f64& b);
         v2f64 select(const v2f64& msk, const v2f64& on_true,

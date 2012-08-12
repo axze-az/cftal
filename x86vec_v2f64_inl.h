@@ -433,6 +433,30 @@ x86vec::v2f64 x86vec::isfinite(const v2f64& x)
 	return as<v2f64>(res);
 }
 
+inline
+x86vec::v2f64 x86vec::fma(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+#if defined (__FMA4__)
+	return _mm_macc_pd(a, b, c);
+#elif defined (__FMA__)
+	return _mm_fmadd_pd(a, b, c);
+#else
+	return impl::fma(a, b, c);
+#endif	
+}
+
+inline
+x86vec::v2f64 x86vec::fms(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+#if defined (__FMA4__)
+	return _mm_msub_pd(a, b, c);
+#elif defined (__FMA__)
+	return _mm_fmsub_pd(a, b, c);
+#else
+	return impl::fma(a, b, -c);
+#endif	
+}
+
 template < bool _P0, bool _P1>
 inline
 x86vec::v2f64 x86vec::select(const v2f64& a, const v2f64& b)
