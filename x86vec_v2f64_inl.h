@@ -401,7 +401,7 @@ inline
 x86vec::v2f64 x86vec::copysign(const v2f64& x, const v2f64& y)
 {
 	// return abs(x) * sgn(y)
-	const v2f64 msk(v_not_sign_f32_msk::dv());
+	const v2f64 msk(v_not_sign_f64_msk::dv());
 	v2f64 abs_x(x & msk);
 	v2f64 sgn_y(andnot(msk, y));
 	return abs_x | sgn_y;
@@ -458,12 +458,46 @@ x86vec::v2f64 x86vec::fms(const v2f64& a, const v2f64& b, const v2f64& c)
 }
 
 inline
+x86vec::v2f64 x86vec::nfma(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+#if defined (__FMA4__)
+	return _mm_nmacc_pd(a, b, c);
+#elif defined (__FMA__)
+	return _mm_nfmadd_pd(a, b, c);
+#else
+	return impl::fma(-a, b, c);
+#endif	
+}
+
+inline
+x86vec::v2f64 x86vec::nfms(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+#if defined (__FMA4__)
+	return _mm_nmsub_pd(a, b, c);
+#elif defined (__FMA__)
+	return _mm_nfmsub_pd(a, b, c);
+#else
+	return impl::fma(-a, b, -c);
+#endif	
+}
+
+inline
 x86vec::v2f64 x86vec::mad(const v2f64& a, const v2f64& b, const v2f64& c)
 {
 #if defined (__FMA4__) || defined (__FMA__)
 	return fma(a, b, c);
 #else
 	return a * b + c;
+#endif
+}
+
+inline
+x86vec::v2f64 x86vec::nmad(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+#if defined (__FMA4__) || defined (__FMA__)
+	return nfma(a, b, c);
+#else
+	return -(a * b) + c;
 #endif
 }
 

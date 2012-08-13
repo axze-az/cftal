@@ -209,8 +209,15 @@ namespace x86vec {
 	v2f64 fma(const v2f64& a, const v2f64& b, const v2f64& c);
 	// a*b -c
 	v2f64 fms(const v2f64& a, const v2f64& b, const v2f64& c);
+	// -(a*b) + c
+	v2f64 nfma(const v2f64& a, const v2f64& b, const v2f64& c);
+	// -(a*b) - c
+	v2f64 nfms(const v2f64& a, const v2f64& b, const v2f64& c);	
+
 	// a*b +c with rounding or not
 	v2f64 mad(const v2f64& a, const v2f64& b, const v2f64& c);
+	// -(a*b) +c with rounding or not
+	v2f64 nmad(const v2f64& a, const v2f64& b, const v2f64& c);
 
         template < bool _P0, bool _P1>
         v2f64 select(const v2f64& a, const v2f64& b);
