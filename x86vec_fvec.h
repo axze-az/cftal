@@ -34,7 +34,7 @@ namespace x86vec {
                 v4f32(element_type p00, element_type p01,
                       element_type p02, element_type p03);
                 // broadcast to all positions
-                v4f32(element_type r);
+		v4f32(element_type r);
                 v4f32(element_type r, bool broadcast);
                 v4f32(const mem::addr_bcast<element_type>& r);
                 v4f32(const mem::addr<element_type>& r);
@@ -201,7 +201,8 @@ namespace x86vec {
 	v2f64 ldexp(const v2f64& x, const v2s64& e);
 
 	namespace impl {
-		// fma emulation (a*b +c)
+		// fma emulation (a*b +c), calculates correctly until
+		// no internal overflow occurs
 		v2f64 fma(arg<v2f64>::type a, arg<v2f64>::type b, 
 			  arg<v2f64>::type c);
 	}

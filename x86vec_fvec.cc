@@ -1,4 +1,83 @@
 #include "x86vec_fvec.h"
+#include "x86vec_cvt.h"
+
+namespace math {
+
+	using std::int32_t;
+	using std::uint32_t;
+	using std::uint64_t;
+
+	template <typename _F, typename _I>
+	struct func_traits;
+
+	template <typename _F, typename _I,
+		  typename _T= func_traits<_F, _I> >
+	struct func {};
+
+	template <>
+	struct func_traits<double, int32_t> {
+		typedef double vf_type;
+		typedef int32_t vi_type;
+		typedef bool vmf_type;
+		typedef bool vmi_type;
+
+		typedef union {
+			double _d;
+			uint64_t _u;
+		} ud_t;
+
+		static const int32_t bias = 0x3ff;
+		static const int32_t e_max= 0x3ff;
+		static const int32_t e_min= -1022;
+		static const int32_t bits=52;
+		
+		static
+		vmf_type vmi_to_vmf(const vmi_type& mi) {
+			return mi;
+		}
+		static
+		vmi_type vmf_to_vmi(const vmf_type& mf) {
+			return mf;
+		}
+		static 
+		vi_type select(const vmi_type& msk,
+			       const vi_type& t, const vi_type& f) {
+			return msk ? t : f;
+		}
+		static
+		vf_type select(const vmf_type& msk,
+			       const vf_type& t, const vf_type& f) {
+			return msk ? t : f;
+		}
+		static
+		vf_type insert_exp(const vi_type& e) {
+			ud_t t; 
+			t._u = uint64_t(e) << bits;
+			return t._d;
+		}
+		static
+		vi_type extract_exp(const vf_type& d) {
+			ud_t t;
+			t._d = d;
+			return (t._u >> bits) & 0x7FF;
+		}
+	};
+	
+	template <typename _T>
+	struct func<double, int32_t, _T> {
+		typedef typename _T::vf_type vf_type;
+		typedef typename _T::vi_type vi_type;
+		typedef typename _T::vmf_type vmf_type;
+		typedef typename _T::vmi_type vmi_type;
+
+		static vf_type pow2i(const vi_type& vi);
+		static vf_type ilogbp1(const vi_type& vi);
+		static vf_type ilogb(const vf_type& vf);
+	};
+
+};
+
+
 
 namespace x86vec {
 
@@ -16,9 +95,98 @@ namespace x86vec {
 		v2f64 log(arg<v2f64>::type v);
 
 		v2s64 ilogbp1(const v2f64& a);
+
+		template <typename _FV>
+		struct const_f64 {
+			typedef _FV f64;
+			static const f64 ZERO
+			__attribute__((__visibility__("hidden")));
+			static const f64 ONE
+			__attribute__((__visibility__("hidden")));
+			static const f64 TWO;
+			static const f64 HALF;
+			static const f64 PI4_A;
+			static const f64 PI4_B;
+			static const f64 PI4_C;
+			static const f64 M_4_PI;
+			static const f64 L2U;
+			static const f64 L2L;
+			static const f64 R_LN2;
+		};
+		
+		template <typename _FV, typename _SV>
+		struct frexp_f64 {
+			typedef _FV f64;
+			typedef _SV s64;
+			typedef typename std::make_unsigned<_SV>::type u64;
+			static f64 v(const f64& v, s64* e);
+		};
 	
 	}
 }
+
+template <typename _FV>
+const _FV 
+x86vec::impl::const_f64<_FV>::ZERO(0.0);
+template <typename _FV>
+const _FV 
+x86vec::impl::const_f64<_FV>::ONE(1.0);
+template <typename _FV>
+const _FV 
+x86vec::impl::const_f64<_FV>::TWO(2.0);
+template <typename _FV>
+const _FV 
+x86vec::impl::const_f64<_FV>::HALF(0.5);
+template <typename _FV>
+const _FV 
+x86vec::impl::const_f64<_FV>::PI4_A(
+	.7853981554508209228515625);
+template <typename _FV>
+const _FV 
+x86vec::impl::const_f64<_FV>::PI4_B(
+	.794662735614792836713604629039764404296875e-8);
+template <typename _FV>
+const _FV 
+x86vec::impl::const_f64<_FV>::PI4_C(
+	.306161699786838294306516483068750264552437361480769e-16);
+template <typename _FV>
+const _FV
+x86vec::impl::const_f64<_FV>::M_4_PI(
+	1.273239544735162542821171882678754627704620361328125);
+template <typename _FV>
+const _FV
+x86vec::impl::const_f64<_FV>::L2U(
+	.69314718055966295651160180568695068359375);
+template <typename _FV>
+const _FV
+x86vec::impl::const_f64<_FV>::L2L(
+	.28235290563031577122588448175013436025525412068e-12);
+template <typename _FV>
+const _FV
+x86vec::impl::const_f64<_FV>::R_LN2(
+	1.442695040888963407359924681001892137426645954152985934135449406931);
+
+// double constants
+#define PI4_A .7853981554508209228515625
+#define PI4_B .794662735614792836713604629039764404296875e-8
+#define PI4_C .306161699786838294306516483068750264552437361480769e-16
+#define M_4_PI 1.273239544735162542821171882678754627704620361328125
+
+#define L2U .69314718055966295651160180568695068359375
+#define L2L .28235290563031577122588448175013436025525412068e-12
+#define R_LN2 1.442695040888963407359924681001892137426645954152985934135449406931
+
+//
+
+#define PI4_Af 0.78515625f
+#define PI4_Bf 0.00024127960205078125f
+#define PI4_Cf 6.3329935073852539062e-07f
+#define PI4_Df 4.9604681473525147339e-10f
+
+#define L2Uf 0.693145751953125f
+#define L2Lf 1.428606765330187045e-06f
+#define R_LN2f 1.442695040888963407359924681001892137426645954152985934135449406
+
 
 inline
 x86vec::v2s64
@@ -39,10 +207,40 @@ x86vec::v2s64
 x86vec::impl::ilogb(arg<v2f64>::type d)
 {
 	v2s64 e(ilogbp1(abs(d))- 1);
-	e = select(as<v2s64>(d == 0.0), v2s64(-INT64_MAX), e);
+	e = select(as<v2s64>(d == const_f64<v2f64>::ZERO), 
+		   v2s64(-INT64_MAX), e);
 	e = select(as<v2s64>(isinf(d)), v2s64(INT64_MAX), e);
 	return e;
 }
+
+x86vec::v2f64 x86vec::impl::log(arg<v2f64>::type d) 
+{
+	v2s64 e= ilogbp1(d * 0.7071);
+	v2s64 e32= permute<0,2,1,3>(as<v4s32>(e));
+	v2f64 m = impl::ldexp(d, -e);
+
+	const v2f64 one= const_f64<v2f64>::ONE;
+
+	v2f64 x = (m - one) / (m + one);
+	v2f64 x2 = x*x;
+	v2f64 t= 0.148197055177935105296783;
+	t = mad(t, x2, 0.153108178020442575739679);
+	t = mad(t, x2, 0.181837339521549679055568);
+	t = mad(t, x2, 0.22222194152736701733275);
+	t = mad(t, x2, 0.285714288030134544449368);
+	t = mad(t, x2, 0.399999999989941956712869);
+	t = mad(t, x2, 0.666666666666685503450651);
+	t = mad(t, x2, 2.0);
+
+	x = x* t + 0.693147180559945286226764* cvt_s32_f64_lo(e32);
+
+	// x = vsel(vmask_ispinf(d), vcast_vd_d(INFINITY), x);
+	// x = vsel(vmask_gt(vcast_vd_d(0), d), vcast_vd_d(NAN), x);
+	// x = vsel(vmask_eq(d, vcast_vd_d(0)), vcast_vd_d(-INFINITY), x);
+	return x;
+}
+
+
 
 x86vec::v2f64
 x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)

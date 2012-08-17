@@ -7,6 +7,33 @@
 #include <utility>
 
 namespace x86vec {
+
+	namespace impl {
+
+		// convert according to current rounding mode
+		template <typename _D, typename _S>
+		struct cvt {
+			static 
+			_D l(const _S& s);
+			static
+			_D h(const _S& s);
+			static
+			std::pair<_D, _D> v(const  _S& s);
+		};
+
+		// convert with truncation (i.e. round to zero)
+		template <typename _D, typename _S>
+		struct cvt_rz {
+			static
+			_D v(const _S& s);
+		};
+
+
+		template <>
+		struct cvt<__m128, __m128d> {
+		};
+		
+	}
 	
 	// f32 --> f64
 	v2f64 cvt_f32_f64_lo(const v4f32& v);

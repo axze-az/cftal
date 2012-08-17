@@ -22,7 +22,7 @@ namespace x86vec {
                 typedef _X vector_type;
                 typedef void element_type;
                 vreg() = default;
-                vreg(_X x);
+		vreg(_X x);
 		vreg& operator=(const vreg& r) = default;
                 _X operator()() const;
                 _X& operator()();
