@@ -53,12 +53,12 @@ namespace math {
                 }
                 static
                 vi_type sel(const vmi_type& msk,
-			    const vi_type& t, const vi_type& f) {
+                            const vi_type& t, const vi_type& f) {
                         return msk ? t : f;
                 }
                 static
                 vf_type sel(const vmf_type& msk,
-			    const vf_type& t, const vf_type& f) {
+                            const vf_type& t, const vf_type& f) {
                         return msk ? t : f;
                 }
                 static
@@ -104,12 +104,12 @@ namespace math {
                 static vi_type ilogb(const vf_type& vf);
         private:
                 static vf_type atan2k(const vf_type& y, const vf_type& x);
-	public:
-		static vf_type atan2(const vf_type& y, const vf_type& x);
-		static vf_type asin(const vf_type& d);
-		static vf_type acos(const vf_type& d);
-		static vf_type atan(const vf_type& d);
-	};
+        public:
+                static vf_type atan2(const vf_type& y, const vf_type& x);
+                static vf_type asin(const vf_type& d);
+                static vf_type acos(const vf_type& d);
+                static vf_type atan(const vf_type& d);
+        };
 
 };
 
@@ -181,46 +181,46 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 atan2k(const vf_type& cy,  const vf_type& cx)
 {
-	vi_type q = 0;
-	vmf_type mf = cx < 0;
-	vmi_type mi = _T::vmf_to_vmi(mf);
-	q = _T::sel(mi, vi_type(-2), q);
-	vf_type x = _T::sel(mf, -cx, cx);
-	
-	mf = cy > x;
-	mi = _T::vmf_to_vmi(mf);
+        vi_type q = 0;
+        vmf_type mf = cx < 0;
+        vmi_type mi = _T::vmf_to_vmi(mf);
+        q = _T::sel(mi, vi_type(-2), q);
+        vf_type x = _T::sel(mf, -cx, cx);
 
-	q += _T::sel(mi, vi_type(1), vi_type(0));
+        mf = cy > x;
+        mi = _T::vmf_to_vmi(mf);
 
-	vf_type y = _T::sel(mf, -cx, cy);
-	x = _T::sel(mf, cy, x);
+        q += _T::sel(mi, vi_type(1), vi_type(0));
 
-	vf_type s = y / x;
-	vf_type t = s * s;
+        vf_type y = _T::sel(mf, -cx, cy);
+        x = _T::sel(mf, cy, x);
 
-	vf_type u = -1.88796008463073496563746e-05;
-	u = mad(u, t, 0.000209850076645816976906797);
-	u = mad(u, t, -0.00110611831486672482563471);
-	u = mad(u, t, 0.00370026744188713119232403);
-	u = mad(u, t, -0.00889896195887655491740809);
-	u = mad(u, t, 0.016599329773529201970117);
-	u = mad(u, t, -0.0254517624932312641616861);
-	u = mad(u, t, 0.0337852580001353069993897);
-	u = mad(u, t, -0.0407629191276836500001934);
-	u = mad(u, t, 0.0466667150077840625632675);
-	u = mad(u, t, -0.0523674852303482457616113);
-	u = mad(u, t, 0.0587666392926673580854313);
-	u = mad(u, t, -0.0666573579361080525984562);
-	u = mad(u, t, 0.0769219538311769618355029);
-	u = mad(u, t, -0.090908995008245008229153);
-	u = mad(u, t, 0.111111105648261418443745);
-	u = mad(u, t, -0.14285714266771329383765);
-	u = mad(u, t, 0.199999999996591265594148);
-	u = mad(u, t, -0.333333333333311110369124);
+        vf_type s = y / x;
+        vf_type t = s * s;
 
-	t = u * t * s + s;
-	t = mad(_T::cvt_i_to_f(q), (M_PI/2), t);
-	return t;
+        vf_type u = -1.88796008463073496563746e-05;
+        u = mad(u, t, 0.000209850076645816976906797);
+        u = mad(u, t, -0.00110611831486672482563471);
+        u = mad(u, t, 0.00370026744188713119232403);
+        u = mad(u, t, -0.00889896195887655491740809);
+        u = mad(u, t, 0.016599329773529201970117);
+        u = mad(u, t, -0.0254517624932312641616861);
+        u = mad(u, t, 0.0337852580001353069993897);
+        u = mad(u, t, -0.0407629191276836500001934);
+        u = mad(u, t, 0.0466667150077840625632675);
+        u = mad(u, t, -0.0523674852303482457616113);
+        u = mad(u, t, 0.0587666392926673580854313);
+        u = mad(u, t, -0.0666573579361080525984562);
+        u = mad(u, t, 0.0769219538311769618355029);
+        u = mad(u, t, -0.090908995008245008229153);
+        u = mad(u, t, 0.111111105648261418443745);
+        u = mad(u, t, -0.14285714266771329383765);
+        u = mad(u, t, 0.199999999996591265594148);
+        u = mad(u, t, -0.333333333333311110369124);
+
+        t = u * t * s + s;
+        t = mad(_T::cvt_i_to_f(q), (M_PI/2), t);
+        return t;
 }
 
 template <typename _T>
@@ -229,32 +229,25 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 atan2(const vf_type& y,  const vf_type& x)
 {
-	vf_type r= atan2k(abs(y), x);
-	r = mulsign(r, x);
+        vf_type r= atan2k(abs(y), x);
+        r = mulsign(r, x);
 
-	vmf_type inf_x = isinf(x);
-	vmf_type zero_or_inf_x = inf_x | (x == vf_type(0.0));
+        vmf_type inf_x = isinf(x);
+        vmf_type zero_or_inf_x = inf_x | (x == vf_type(0.0));
+        vf_type rs = vf_type(M_PI/2);
+        vf_type x_m_pi_2 = copysign(M_PI/2, x);
+        vf_type rs0= rs - _T::sel(inf_x, x_m_pi_2, vf_type(0.0));
+        r = _T::sel(zero_or_inf_x, rs0, r);
 
-	vf_type rs = vf_type(M_PI/2);
-	vf_type x_m_pi_2 = copysign(M_PI/2, x);
+        vmf_type inf_y = isinf(y);
+        vf_type x_m_pi_4= copysign(M_PI/4, x);
+        vf_type rs1= rs - _T::sel(inf_x, x_m_pi_4, vf_type(0.0));
+        r= _T::sel(inf_y, rs1, r);
 
-	vf_type rs0= rs - _T::sel(inf_x, x_m_pi_2, vf_type(0.0));
-
-	r = _T::sel(zero_or_inf_x, rs0, r);
-
-	vmf_type inf_y = isinf(y);
-
-	vf_type x_m_pi_4= copysign(M_PI/4, x);
-	vf_type rs1= rs - _T::sel(inf_x, x_m_pi_4, vf_type(0.0));
-	
-	r= _T::sel(inf_y, rs1, r);
-
-	vf_type rs2 = _T::sel(x < 0.0, vf_type(M_PI), 0);
-	r= _T::sel(y== 0.0, rs2, r);
-	
-	r= _T::sel(isnan(x) | isnan(y), 
-		   vf_type(_T::nan), mulsign(r, y));
-	return r;
+        vf_type rs2 = _T::sel(x < 0.0, vf_type(M_PI), 0);
+        r= _T::sel(y== 0.0, rs2, r);
+        r= _T::sel(isnan(x) | isnan(y), vf_type(_T::nan), mulsign(r, y));
+        return r;
 }
 
 template <typename _T>
@@ -263,7 +256,7 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 asin(const vf_type& d)
 {
-	return mulsign(atan2k(abs(d), sqrt((1.0+d)*(1.0-d))), d);
+        return mulsign(atan2k(abs(d), sqrt((1.0+d)*(1.0-d))), d);
 }
 
 template <typename _T>
@@ -272,8 +265,8 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 acos(const vf_type& d)
 {
-	vf_type m_pi= _T::sel(d < 0, vf_type(M_PI), vf_type(0));
-	return mulsign(atan2k(sqrt((1+d)*(1-d)), abs(d)), d) + m_pi;
+        vf_type m_pi= _T::sel(d < 0, vf_type(M_PI), vf_type(0));
+        return mulsign(atan2k(sqrt((1+d)*(1-d)), abs(d)), d) + m_pi;
 }
 
 template <typename _T>
@@ -282,7 +275,7 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 atan(const vf_type& d)
 {
-	return d;
+        return d;
 }
 
 namespace x86vec {
@@ -291,14 +284,16 @@ namespace x86vec {
         v2f64 ldexp(arg<v2f64>::type d, arg<v4s32>::type e);
         v4s32 ilogbp1(arg<v2f64>::type v);
         v4s32 ilogb(arg<v2f64>::type v);
-	v2f64 atan2(arg<v2f64>::type y, arg<v2f64>::type x);
-	v2f64 asin(arg<v2f64>::type d);
-	v2f64 acos(arg<v2f64>::type d);
+        v2f64 atan2(arg<v2f64>::type y, arg<v2f64>::type x);
+        v2f64 asin(arg<v2f64>::type d);
+        v2f64 acos(arg<v2f64>::type d);
 
-	v2f64 atan(arg<v2f64>::type d);
-	v2f64 sin(arg<v2f64>::type d);
-	v2f64 cos(arg<v2f64>::type d);
-	v2f64 sincos(arg<v2f64>::type d, v2f64* cos_d);
+        v2f64 atan(arg<v2f64>::type d);
+        v2f64 sin(arg<v2f64>::type d);
+        v2f64 cos(arg<v2f64>::type d);
+        v2f64 sincos(arg<v2f64>::type d, v2f64* cos_d);
+
+        v2f64 cbrt(arg<v2f64>::type d);
 
         namespace impl {
 
@@ -411,39 +406,39 @@ namespace x86vec {
 x86vec::v2f64 x86vec::pow2i(arg<v4s32>::type e)
 {
         return math::func<double, int32_t,
-                          impl::vec_func_traits<v2f64, v4s32> >::pow2i(e);
+		impl::vec_func_traits<v2f64, v4s32> >::pow2i(e);
 }
 
 x86vec::v2f64 x86vec::ldexp(arg<v2f64>::type d, arg<v4s32>::type q)
 {
         return math::func<double, int32_t,
-                          impl::vec_func_traits<v2f64, v4s32> >::ldexp(d, q);
+		impl::vec_func_traits<v2f64, v4s32> >::ldexp(d, q);
 }
 
 x86vec::v4s32 x86vec::ilogbp1(arg<v2f64>::type d)
 {
         return math::func<double, int32_t,
-                          impl::vec_func_traits<v2f64, v4s32> >::ilogbp1(d);
+		impl::vec_func_traits<v2f64, v4s32> >::ilogbp1(d);
 }
 
 x86vec::v4s32 x86vec::ilogb(arg<v2f64>::type d)
 {
         return math::func<double, int32_t,
-			  impl::vec_func_traits<v2f64, v4s32> >::ilogb(d);
+		impl::vec_func_traits<v2f64, v4s32> >::ilogb(d);
 }
 
 x86vec::v2f64 x86vec::asin(arg<v2f64>::type d)
 {
-	return math::func<double, int32_t,
-			  impl::vec_func_traits<v2f64, v4s32> >::
-		asin(d);
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                asin(d);
 }
 
 x86vec::v2f64 x86vec::acos(arg<v2f64>::type d)
 {
-	return math::func<double, int32_t,
-			  impl::vec_func_traits<v2f64, v4s32> >::
-		acos(d);
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                acos(d);
 }
 
 
@@ -560,9 +555,9 @@ x86vec::v2f64
 x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)
 {
         const v2s64 hi_cor=const4_u32<0x4000000, 0,
-		0x4000000, 0>::iv();
+                0x4000000, 0>::iv();
         const v2s64 hi_msk=const4_u32<0xf8000000, 0xffffffff,
-		0xf8000000, 0xffffffff>::iv();
+                0xf8000000, 0xffffffff>::iv();
         v2s64 t;
         t= as<v2s64>(x);
         t += hi_cor;
@@ -670,7 +665,7 @@ x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
 x86vec::v2f64 x86vec::impl::ldexp(arg<v2f64>::type v, arg<v2s64>::type e)
 {
         const v2s64 v_exp_bias=const4_u32<bias_f64, 0,
-		bias_f64, 0>::iv();
+                bias_f64, 0>::iv();
         v2s64 m= e >> const_shift::_63;
         m = (((m+e) >> const_shift::_9) - m ) << const_shift::_7;
         v2s64 q= q - (m << const_shift::_2);
@@ -687,26 +682,26 @@ x86vec::v2f64 x86vec::ldexp(const v2f64& v, const v2s64& e)
 
 #if 0
 static inline float ldexpkf(float x, int q) {
-	float u;
-	int m;
-	m = q >> 31;
-	m = (((m + q) >> 6) - m) << 4;
-	q = q - (m << 2);
-	u = intBitsToFloat(((int32_t)(m + 0x7f)) << 23);
-	x = x * u * u * u * u;
-	u = intBitsToFloat(((int32_t)(q + 0x7f)) << 23);
-	return x * u;
+        float u;
+        int m;
+        m = q >> 31;
+        m = (((m + q) >> 6) - m) << 4;
+        q = q - (m << 2);
+        u = intBitsToFloat(((int32_t)(m + 0x7f)) << 23);
+        x = x * u * u * u * u;
+        u = intBitsToFloat(((int32_t)(q + 0x7f)) << 23);
+        return x * u;
 }
 
 static inline double ldexpk(double x, int q) {
-	double u;
-	int m;
-	m = q >> 31;
-	m = (((m + q) >> 9) - m) << 7;
-	q = q - (m << 2);
-	u = longBitsToDouble(((int64_t)(m + 0x3ff)) << 52);
-	x = x * u * u * u * u;
-	u = longBitsToDouble(((int64_t)(q + 0x3ff)) << 52);
-	return x * u;
+        double u;
+        int m;
+        m = q >> 31;
+        m = (((m + q) >> 9) - m) << 7;
+        q = q - (m << 2);
+        u = longBitsToDouble(((int64_t)(m + 0x3ff)) << 52);
+        x = x * u * u * u * u;
+        u = longBitsToDouble(((int64_t)(q + 0x3ff)) << 52);
+        return x * u;
 }
 #endif
