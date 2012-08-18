@@ -108,6 +108,7 @@ namespace math {
 		static vf_type atan2(const vf_type& y, const vf_type& x);
 		static vf_type asin(const vf_type& d);
 		static vf_type acos(const vf_type& d);
+		static vf_type atan(const vf_type& d);
 	};
 
 };
@@ -275,6 +276,15 @@ acos(const vf_type& d)
 	return mulsign(atan2k(sqrt((1+d)*(1-d)), abs(d)), d) + m_pi;
 }
 
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+atan(const vf_type& d)
+{
+	return d;
+}
+
 namespace x86vec {
 
         v2f64 pow2i(arg<v4s32>::type e);
@@ -284,7 +294,11 @@ namespace x86vec {
 	v2f64 atan2(arg<v2f64>::type y, arg<v2f64>::type x);
 	v2f64 asin(arg<v2f64>::type d);
 	v2f64 acos(arg<v2f64>::type d);
-	v2f64 atan(arg<v2f64>::type s);
+
+	v2f64 atan(arg<v2f64>::type d);
+	v2f64 sin(arg<v2f64>::type d);
+	v2f64 cos(arg<v2f64>::type d);
+	v2f64 sincos(arg<v2f64>::type d, v2f64* cos_d);
 
         namespace impl {
 
