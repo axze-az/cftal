@@ -72,6 +72,20 @@ namespace math {
 			t._d = d;
 			return (t._u >> bits) & 0x7FF;
 		}
+		static
+		vf_type cvt_i_to_f(const vi_type& i) {
+			return vf_type(i);
+		}
+		// including rounding to nearest.
+		static
+		vi_type cvt_f_to_i(const vf_type& f) {
+			return f < 0 ? (vi_type)(f - 0.5) : (vi_type)(f + 0.5); 			
+		}
+		// including rounding towards zero
+		static
+		vi_type cvt_rz_f_to_i(const vf_type& f) {
+			return (vi_type)f;
+		}
 	};
 	
 	template <typename _T>
@@ -86,7 +100,7 @@ namespace math {
 		
 		static vi_type ilogbp1(const vf_type& vi);
 		static vi_type ilogb(const vf_type& vf);
-
+		
 	};
 
 };
@@ -208,6 +222,15 @@ namespace x86vec {
 				e = permute<1, 3, 0, 0>(e);
 				e &= v4s32(0x7ff, 0x7ff, 0, 0);
 				return e;
+			}
+			static
+			vi_type cvt_f_to_i(const vf_type& f) {
+				return impl::cvt<v4s32, v2f64>::l(f);
+			}
+			// including rounding towards zero
+			static
+			vi_type cvt_rz_f_to_i(const vf_type& f) {
+				return impl::cvt_rz<v4s32, v2f64>::l(f);
 			}
 		};
 	
