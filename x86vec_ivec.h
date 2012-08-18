@@ -276,7 +276,7 @@ namespace x86vec
         v4s32 operator <<(const v4s32& a, uint32_t b);
 
         template <uint32_t _P>
-        v4s32& operator>>= (v4s32& a, const_u32<_P>& b);
+        v4s32& operator>>= (v4s32& a, const const_u32<_P>& b);
         v4s32& operator>>= (v4s32& a, uint32_t b);
         template <uint32_t _P>
         v4s32 operator >>(const v4s32& a, const const_u32<_P>& b);

@@ -1,5 +1,6 @@
 #include "x86vec_fvec.h"
 #include "x86vec_cvt.h"
+#include <limits>
 
 namespace math {
 
@@ -12,7 +13,12 @@ namespace math {
 
 	template <typename _F, typename _I,
 		  typename _T= func_traits<_F, _I> >
+	struct base_func {};
+
+	template <typename _F, typename _I,
+		  typename _T= func_traits<_F, _I> >
 	struct func {};
+	
 
 	template <>
 	struct func_traits<double, int32_t> {
@@ -26,10 +32,15 @@ namespace math {
 			uint64_t _u;
 		} ud_t;
 
-		static const int32_t bias = 0x3ff;
-		static const int32_t e_max= 0x3ff;
-		static const int32_t e_min= -1022;
-		static const int32_t bits=52;
+		static constexpr int32_t bias = 0x3ff;
+		static constexpr int32_t e_max= 0x3ff;
+		static constexpr int32_t e_min= -1022;
+		static constexpr int32_t bits=52;
+
+		static constexpr double infinity= 
+			std::numeric_limits<double>::infinity();
+		static constexpr double nan=
+			std::numeric_limits<double>::quiet_NaN();
 		
 		static
 		vmf_type vmi_to_vmf(const vmi_type& mi) {
@@ -40,12 +51,12 @@ namespace math {
 			return mf;
 		}
 		static 
-		vi_type select(const vmi_type& msk,
+		vi_type sel(const vmi_type& msk,
 			       const vi_type& t, const vi_type& f) {
 			return msk ? t : f;
 		}
 		static
-		vf_type select(const vmf_type& msk,
+		vf_type sel(const vmf_type& msk,
 			       const vf_type& t, const vf_type& f) {
 			return msk ? t : f;
 		}
@@ -71,17 +82,135 @@ namespace math {
 		typedef typename _T::vmi_type vmi_type;
 
 		static vf_type pow2i(const vi_type& vi);
-		static vf_type ilogbp1(const vi_type& vi);
-		static vf_type ilogb(const vf_type& vf);
+		static vf_type ldexp(const vf_type& vf, const vi_type& vi);
+		
+		static vi_type ilogbp1(const vf_type& vi);
+		static vi_type ilogb(const vf_type& vf);
+
 	};
 
 };
 
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::pow2i(const vi_type& vi)
+{
+	vi_type e(vi + vi_type(_T::bias));
+	vf_type r(_T::insert_exp(e));
+	vmi_type mi;
+	vmf_type mf;
+	mi= (vi < vi_type(_T::e_min));
+	mf= _T::vmi_to_vmf(mi);
+	r= _T::sel(mf, vf_type(0.0), r);
+	mi= (vi > vi_type(_T::e_max));
+	mf= _T::vmi_to_vmf(mi);
+	r= _T::sel(mf, vf_type(_T::infinity), r);
+	return r;
+}
 
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::ldexp(const vf_type& vd,
+					     const vi_type& ve)
+{
+	vi_type q= ve;
+	vi_type m = q >> 31;
+	m = (((m + q) >> 9) - m) << 7;
+	q = q - (m << 2);
+	vf_type fm = _T::insert_exp(m + 0x3ff);
+	vf_type r = vd * fm * fm * fm * fm;
+	vf_type fq = _T::insert_exp(q + 0x3ff);
+	return r * fq;
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vi_type
+math::func<double, math::int32_t, _T>::ilogbp1(const vf_type& vd)
+{
+	vmf_type mf= vd < 4.9090934652977266E-91;
+	vf_type d = _T::sel(mf, 2.037035976334486E90 * vd, vd);
+	vi_type q = _T::extract_exp(d);
+	vmi_type mi= _T::vmf_to_vmi(mf);
+	vi_type qs = _T::sel(mi, vi_type(300 + 0x3fe), vi_type(0x3fe));
+	return q - qs;
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vi_type
+math::func<double, math::int32_t, _T>::ilogb(const vf_type& d)
+{
+	vi_type e(ilogbp1(abs(d) -1));
+	vmf_type mf= d == 0.0;
+	vmi_type mi= _T::vmf_to_vmi(mf);
+	e = _T::sel(mi, vi_type(-2147483648), e);
+	mf = isinf(d);
+	mi = _T::vmf_to_vmi(mf);
+	e = _T::sel(mi, vi_type(2147483647), e);
+	return e;
+}	
 
 namespace x86vec {
 
+	v2f64 pow2i(arg<v4s32>::type e);
+	v2f64 ldexp(arg<v2f64>::type d, arg<v4s32>::type e);
+	v4s32 ilogbp1(arg<v2f64>::type v);
+	v4s32 ilogb(arg<v2f64>::type v);
+	
 	namespace impl {
+
+		template <typename _VF, typename _VI>
+		struct vec_func_traits;
+
+		template <>
+		struct vec_func_traits<v2f64, v4s32> : 
+			public math::func_traits<typename v2f64::element_type,
+						 typename v4s32::element_type> {
+			typedef v2f64 vf_type;
+			typedef v2f64 vmf_type;
+			typedef v4s32 vi_type;
+			typedef v4s32 vmi_type;
+
+			static
+			vmf_type vmi_to_vmf(const vmi_type& mi) {
+				v4s32 xm= permute<0, 0, 1, 1>(mi);
+				return as<v2f64>(xm);
+			}
+			static
+			vmi_type vmf_to_vmi(const vmf_type& mf) {
+				v4s32 xm= as<v4s32>(mf);
+				xm = permute<1, 3, 0, 2>(xm);
+				return xm;
+			}
+			static 
+			vi_type sel(const vmi_type& msk,
+				    const vi_type& t, const vi_type& f) {
+				return select(msk, t, f);
+			}
+			static
+			vf_type sel(const vmf_type& msk,
+				    const vf_type& t, const vf_type& f) {
+				return select(msk, t, f);
+			}
+			static
+			vf_type insert_exp(const vi_type& e) {
+				v2u64 m= as<v2u64>(permute<0, 0, 1, 1>(e));
+				m <<= const_shift::_52;
+				return as<v2f64>(m);
+			}
+			static
+			vi_type extract_exp(const vf_type& d) {
+				v4s32 e= as<v4s32>(d);
+				e >>= const_shift::_20;
+				e = permute<1, 3, 0, 0>(e);
+				e &= v4s32(0x7ff, 0x7ff, 0, 0);
+				return e;
+			}
+		};
+	
 
 		v2f64 pow2i(const v2s64& e);
 
@@ -124,6 +253,31 @@ namespace x86vec {
 	
 	}
 }
+
+x86vec::v2f64 x86vec::pow2i(arg<v4s32>::type e)
+{
+	return math::func<double, int32_t, 
+			  impl::vec_func_traits<v2f64, v4s32> >::pow2i(e);
+}
+
+x86vec::v2f64 x86vec::ldexp(arg<v2f64>::type d, arg<v4s32>::type q)
+{
+	return math::func<double, int32_t, 
+			  impl::vec_func_traits<v2f64, v4s32> >::ldexp(d, q);
+}
+
+x86vec::v4s32 x86vec::ilogbp1(arg<v2f64>::type d)
+{
+	return math::func<double, int32_t, 
+			  impl::vec_func_traits<v2f64, v4s32> >::ilogbp1(d);
+}
+
+x86vec::v4s32 x86vec::ilogb(arg<v2f64>::type d)
+{
+	return math::func<double, int32_t, 
+			  impl::vec_func_traits<v2f64, v4s32> >::ilogb(d);
+}
+
 
 template <typename _FV>
 const _FV 
@@ -203,16 +357,8 @@ x86vec::impl::ilogbp1(const v2f64& d)
 	return r;
 }
 
-x86vec::v2s64
-x86vec::impl::ilogb(arg<v2f64>::type d)
-{
-	v2s64 e(ilogbp1(abs(d))- 1);
-	e = select(as<v2s64>(d == const_f64<v2f64>::ZERO), 
-		   v2s64(-INT64_MAX), e);
-	e = select(as<v2s64>(isinf(d)), v2s64(INT64_MAX), e);
-	return e;
-}
 
+#if 0
 x86vec::v2f64 x86vec::impl::log(arg<v2f64>::type d) 
 {
 	v2s64 e= ilogbp1(d * 0.7071);
@@ -239,7 +385,7 @@ x86vec::v2f64 x86vec::impl::log(arg<v2f64>::type d)
 	// x = vsel(vmask_eq(d, vcast_vd_d(0)), vcast_vd_d(-INFINITY), x);
 	return x;
 }
-
+#endif
 
 
 x86vec::v2f64
@@ -279,11 +425,6 @@ x86vec::v2f64 test_f(x86vec::v2f64 f)
 x86vec::v2f64 x86vec::frexp(const v2f64& v, v2s64* e)
 {
 	return impl::frexp(v, *e);
-}
-
-x86vec::v2f64 x86vec::impl::pow2i(const v2s64& e)
-{
-	return 0.0;
 }
 
 inline
