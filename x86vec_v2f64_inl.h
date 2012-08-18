@@ -408,6 +408,15 @@ x86vec::v2f64 x86vec::copysign(const v2f64& x, const v2f64& y)
 }
 
 inline
+x86vec::v2f64 x86vec::mulsign(const v2f64& x, const v2f64& y)
+{
+	const v2f64 msk= v_sign_f64_msk::dv();
+	v2f64 sgn_y = y & msk;
+	return x ^ sgn_y;
+}
+
+
+inline
 x86vec::v2f64 x86vec::isinf(const v2f64& x)
 {
 	// exponent = 0x7FF and significand ==0

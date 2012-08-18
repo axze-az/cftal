@@ -410,6 +410,14 @@ x86vec::v4f32 x86vec::copysign(const v4f32& x, const v4f32& y)
 }
 
 inline
+x86vec::v4f32 x86vec::mulsign(const v4f32& x, const v4f32& y)
+{
+	const v4f32 msk= v_sign_f32_msk::fv();
+	v4f32 sgn_y = y & msk;
+	return x ^ sgn_y;
+}
+
+inline
 x86vec::v4f32 x86vec::isinf(const v4f32& x)
 {
 	// exponent = 0xFF and significand ==0

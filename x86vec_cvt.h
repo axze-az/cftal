@@ -70,108 +70,68 @@ namespace x86vec {
 		};
 	}
 	
-	// f32 --> f64
-	v2f64 cvt_f32_f64_lo(const v4f32& v);
-	v2f64 cvt_f32_f64_hi(const v4f32& v);
-	std::pair<v2f64, v2f64> cvt_f32_f64(const v4f32& v);
-	// f64 --> f32
-	v4f32 cvt_f64_f32(const v2f64& v);
-	v4f32 cvt_f64_f32(const v2f64& l, const v2f64& h);
+	template <class _D, class _S>
+	_D cvt_lo(const _S& s);
+	template <class _D, class _S>
+	_D cvt_hi(const _S& s);
+	template <class _D, class _S>
+	std::pair<_D, _D> cvt(const _S& s);
 	
-	// s32 --> f64
-	v2f64 cvt_s32_f64_lo(const v4s32& v);
-	v2f64 cvt_s32_f64_hi(const v4s32& v);
-	std::pair<v2f64, v2f64> cvt_s32_f64(const v4s32& v);
-	// f64 --> s32 with rounding according to the actual rounding
-	// mode
-	v4s32 cvt_f64_s32(const v2f64& v);
-	v4s32 cvt_f64_s32(const v2f64& l, const v2f64& h);
-	// f64 --> s32 with truncation (round toward zero)
-	v4s32 cvt_f64_trunc_s32(const v2f64& v);
-	v4s32 cvt_f64_trunc_s32(const v2f64& l, const v2f64& h);
+	template <class _D, class _S>
+	_D cvt_rz_lo(const _S& s);
+	template <class _D, class _S>
+	_D cvt_rz_hi(const _S& s);
+	template <class _D, class _S>
+	std::pair<_D, _D> cvt_rz(const _S& s);
 
 }
 
+template <class _D, class _S>
 inline
-x86vec::v2f64 x86vec::cvt_f32_f64_lo(const v4f32& v)
+_D x86vec::cvt_lo(const _S& s)
 {
-	return impl::cvt<v2f64, v4f32>::l(v);
+	return impl::cvt<_D, _S>::l(s);
 }
 
+template <class _D, class _S>
 inline
-x86vec::v2f64 x86vec::cvt_f32_f64_hi(const v4f32& v)
+_D x86vec::cvt_hi(const _S& s)
 {
-	return impl::cvt<v2f64, v4f32>::h(v);
+	return impl::cvt<_D, _S>::h(s);
 }
 
+template <class _D, class _S>
 inline
-std::pair<x86vec::v2f64, x86vec::v2f64> x86vec::cvt_f32_f64(const v4f32& v)
+std::pair<_D, _D> x86vec::cvt(const _S& s)
 {
-	return std::make_pair(cvt_f32_f64_lo(v), cvt_f32_f64_hi(v));
-}
-
-inline
-x86vec::v4f32 x86vec::cvt_f64_f32(const v2f64& v)
-{
-	return impl::cvt<v4f32, v2f64>::l(v);
-}
-
-inline
-x86vec::v4f32 x86vec::cvt_f64_f32(const v2f64& l, const v2f64& h)
-{
-	v4f32 fl= impl::cvt<v4f32, v2f64>::l(l);
-	v4f32 fh= impl::cvt<v4f32, v2f64>::l(h);
-	return permute<0, 1, 4, 5>(fl, fh);
-}
-
-
-inline
-x86vec::v2f64 x86vec::cvt_s32_f64_lo(const v4s32& v)
-{
-	return impl::cvt<v2f64, v4s32>::l(v);
-}
-
-inline
-x86vec::v2f64 x86vec::cvt_s32_f64_hi(const v4s32& v)
-{
-	return impl::cvt<v2f64, v4s32>::h(v);
-}
-
-inline
-std::pair<x86vec::v2f64, x86vec::v2f64> x86vec::cvt_s32_f64(const v4s32& v)
-{
-	v2f64 l= impl::cvt<v2f64, v4s32>::l(v);
-	v2f64 h= impl::cvt<v2f64, v4s32>::h(v);
+	_D l=cvt_lo<_D>(s);
+	_D h=cvt_hi<_D>(s);
 	return std::make_pair(l, h);
 }
 
+template <class _D, class _S>
 inline
-x86vec::v4s32 x86vec::cvt_f64_s32(const v2f64& v)
+_D x86vec::cvt_rz_lo(const _S& s)
 {
-	return impl::cvt<v4s32, v2f64>::l(v);
+	return impl::cvt_rz<_D, _S>::l(s);
 }
 
+template <class _D, class _S>
 inline
-x86vec::v4s32 x86vec::cvt_f64_s32(const v2f64& l, const v2f64& h)
+_D x86vec::cvt_rz_hi(const _S& s)
 {
-	v4s32 fl= impl::cvt<v4s32, v2f64>::l(l);
-	v4s32 fh= impl::cvt<v4s32, v2f64>::l(h);
-	return permute<0, 1, 4, 5>(fl, fh);
+	return impl::cvt_rz<_D, _S>::h(s);
 }
 
+template <class _D, class _S>
 inline
-x86vec::v4s32 x86vec::cvt_f64_trunc_s32(const v2f64& v)
+std::pair<_D, _D> x86vec::cvt_rz(const _S& s)
 {
-	return impl::cvt_rz<v4s32, v2f64>::l(v);
+	_D l=cvt_rz_lo<_D>(s);
+	_D h=cvt_rz_hi<_D>(s);
+	return std::make_pair(l, h);
 }
 
-inline
-x86vec::v4s32 x86vec::cvt_f64_trunc_s32(const v2f64& l, const v2f64& h)
-{
-	v4s32 fl= impl::cvt_rz<v4s32, v2f64>::l(l);
-	v4s32 fh= impl::cvt_rz<v4s32, v2f64>::l(h);
-	return permute<0, 1, 4, 5>(fl, fh);
-}
 
 
 // Local variables:

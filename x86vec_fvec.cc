@@ -225,12 +225,12 @@ namespace x86vec {
 			}
 			static
 			vi_type cvt_f_to_i(const vf_type& f) {
-				return impl::cvt<v4s32, v2f64>::l(f);
+				return cvt_lo<v4s32>(f);
 			}
 			// including rounding towards zero
 			static
 			vi_type cvt_rz_f_to_i(const vf_type& f) {
-				return impl::cvt_rz<v4s32, v2f64>::l(f);
+				return cvt_rz_lo<v4s32>(f);
 			}
 		};
 	
