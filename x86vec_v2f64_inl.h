@@ -325,16 +325,22 @@ inline
 x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 {
 #if defined (__SSE4_1__)
+	v2f64 r;
 	switch (m) {
 	case rounding_mode::nearest:
-		return _mm_round_pd(a(), 0);
+		r= _mm_round_pd(a(), 0);
+		break;
 	case rounding_mode::downward:
-		return _mm_round_pd(a(), 1);
+		r= _mm_round_pd(a(), 1);
+		break;
 	case rounding_mode::upward:
-		return _mm_round_pd(a(), 2);
+		r= _mm_round_pd(a(), 2);
+		break;
 	case rounding_mode::towardzero:
-		return _mm_round_pd(a(), 3);
+		r= _mm_round_pd(a(), 3);
+		break;
 	}
+	return r;
 #else
 	uint32_t mxcsr=_mm_getcsr();
 	uint32_t rmxcsr(mxcsr);
@@ -365,6 +371,7 @@ x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 		_mm_setcsr(mxcsr);
 	return res;
 #endif
+
 }
 
 inline

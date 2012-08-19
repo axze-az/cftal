@@ -3,6 +3,15 @@
 #include <cmath>
 #include <limits>
 
+#define PI4_A .7853981554508209228515625
+#define PI4_B .794662735614792836713604629039764404296875e-8
+#define PI4_C .306161699786838294306516483068750264552437361480769e-16
+#define M_4_PI 1.273239544735162542821171882678754627704620361328125
+
+#define L2U .69314718055966295651160180568695068359375
+#define L2L .28235290563031577122588448175013436025525412068e-12
+#define R_LN2 1.442695040888963407359924681001892137426645954152985934135449406931
+
 namespace math {
 
         using std::int32_t;
@@ -109,6 +118,9 @@ namespace math {
                 static vf_type asin(const vf_type& d);
                 static vf_type acos(const vf_type& d);
                 static vf_type atan(const vf_type& d);
+		static vf_type sin(const vf_type& d);
+		static vf_type cos(const vf_type& d);
+		
         };
 
 };
@@ -310,7 +322,8 @@ atan(const vf_type& cs)
 	u = mad(u, t, 0.199999999996591265594148);
 	u = mad(u, t, -0.333333333333311110369124);
 
-	t = s + s * (t * u);
+	// t = s + s * (t * u);
+	t = mad(t*u, s, s);
 	
 	vmi_type i_q_and_1= (q & vi_type(1)) == vi_type(1);
 	vmf_type f_q_and_1= _T::vmi_to_vmf(i_q_and_1);
@@ -323,6 +336,48 @@ atan(const vf_type& cs)
 
 	t = _T::sel(f_q_and_2, -t, t);
 	return t;
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+sin(const vf_type& cd)
+{
+	vf_type qf= rint(cd * M_1_PI);
+	vi_type q = _T::cvt_f_to_i(qf);
+	vf_type d = mad(qf, -PI4_A*4, cd);
+	d = mad(qf, -PI4_B*4, d);
+	d = mad(qf, -PI4_C*4, d);
+
+	vf_type s = d * d;
+	
+	// if ((q & 1) != 0) d = -d;
+	vmi_type i_q_and_1 = (q & vi_type(1)) == vi_type(1);
+	vmf_type f_q_and_1 = _T::vmi_to_vmf(i_q_and_1);
+	d = _T::sel(f_q_and_1, -d, d);
+
+	vf_type u = -7.97255955009037868891952e-18;
+	u = mad(u, s, 2.81009972710863200091251e-15);
+	u = mad(u, s, -7.64712219118158833288484e-13);
+	u = mad(u, s, 1.60590430605664501629054e-10);
+	u = mad(u, s, -2.50521083763502045810755e-08);
+	u = mad(u, s, 2.75573192239198747630416e-06);
+	u = mad(u, s, -0.000198412698412696162806809);
+	u = mad(u, s, 0.00833333333333332974823815);
+	u = mad(u, s, -0.166666666666666657414808);
+
+	u = mad(s, u * d, d);
+	return u;
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+cos(const vf_type& cs)
+{
+	return cs;
 }
 
 namespace x86vec {
@@ -421,24 +476,6 @@ namespace x86vec {
 
                 v2s64 ilogbp1(const v2f64& a);
 
-                template <typename _FV>
-                struct const_f64 {
-                        typedef _FV f64;
-                        static const f64 ZERO
-                        __attribute__((__visibility__("hidden")));
-                        static const f64 ONE
-                        __attribute__((__visibility__("hidden")));
-                        static const f64 TWO;
-                        static const f64 HALF;
-                        static const f64 PI4_A;
-                        static const f64 PI4_B;
-                        static const f64 PI4_C;
-                        static const f64 M_4_PI;
-                        static const f64 L2U;
-                        static const f64 L2L;
-                        static const f64 R_LN2;
-                };
-
                 template <typename _FV, typename _SV>
                 struct frexp_f64 {
                         typedef _FV f64;
@@ -495,69 +532,12 @@ x86vec::v2f64 x86vec::atan(arg<v2f64>::type d)
                 atan(d);
 }
 
-
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::ZERO(0.0);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::ONE(1.0);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::TWO(2.0);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::HALF(0.5);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::PI4_A(
-        .7853981554508209228515625);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::PI4_B(
-        .794662735614792836713604629039764404296875e-8);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::PI4_C(
-        .306161699786838294306516483068750264552437361480769e-16);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::M_4_PI(
-        1.273239544735162542821171882678754627704620361328125);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::L2U(
-        .69314718055966295651160180568695068359375);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::L2L(
-        .28235290563031577122588448175013436025525412068e-12);
-template <typename _FV>
-const _FV
-x86vec::impl::const_f64<_FV>::R_LN2(
-        1.442695040888963407359924681001892137426645954152985934135449406931);
-
-// double constants
-#define PI4_A .7853981554508209228515625
-#define PI4_B .794662735614792836713604629039764404296875e-8
-#define PI4_C .306161699786838294306516483068750264552437361480769e-16
-#define M_4_PI 1.273239544735162542821171882678754627704620361328125
-
-#define L2U .69314718055966295651160180568695068359375
-#define L2L .28235290563031577122588448175013436025525412068e-12
-#define R_LN2 1.442695040888963407359924681001892137426645954152985934135449406931
-
-//
-
-#define PI4_Af 0.78515625f
-#define PI4_Bf 0.00024127960205078125f
-#define PI4_Cf 6.3329935073852539062e-07f
-#define PI4_Df 4.9604681473525147339e-10f
-
-#define L2Uf 0.693145751953125f
-#define L2Lf 1.428606765330187045e-06f
-#define R_LN2f 1.442695040888963407359924681001892137426645954152985934135449406
-
+x86vec::v2f64 x86vec::sin(arg<v2f64>::type d)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                sin(d);
+}
 
 inline
 x86vec::v2s64
