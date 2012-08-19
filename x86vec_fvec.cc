@@ -273,9 +273,56 @@ template <typename _T>
 inline
 typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
-atan(const vf_type& d)
+atan(const vf_type& cs)
 {
-        return d;
+	vmf_type f_s_lt_0=cs < 0.0;
+	vmi_type i_s_lt_0= _T::vmf_to_vmi(f_s_lt_0);
+
+	vf_type s= _T::sel(f_s_lt_0, -cs, cs);
+	vi_type q = _T::sel(i_s_lt_0, vi_type(2), vi_type(0));
+
+	vmf_type f_s_gt_1= s > 1.0;
+	vmi_type i_s_gt_1= _T::vmf_to_vmi(f_s_gt_1);
+	
+	s = _T::sel(f_s_gt_1, vf_type(1.0)/s, s);
+	vi_type q_or= _T::sel(i_s_gt_1, vi_type(1), vi_type(0));
+	q |= q_or;
+
+	vf_type t = s * s;
+
+	vf_type u = -1.88796008463073496563746e-05;
+	u = mad(u, t, 0.000209850076645816976906797);
+	u = mad(u, t, -0.00110611831486672482563471);
+	u = mad(u, t, 0.00370026744188713119232403);
+	u = mad(u, t, -0.00889896195887655491740809);
+	u = mad(u, t, 0.016599329773529201970117);
+	u = mad(u, t, -0.0254517624932312641616861);
+	u = mad(u, t, 0.0337852580001353069993897);
+	u = mad(u, t, -0.0407629191276836500001934);
+	u = mad(u, t, 0.0466667150077840625632675);
+	u = mad(u, t, -0.0523674852303482457616113);
+	u = mad(u, t, 0.0587666392926673580854313);
+	u = mad(u, t, -0.0666573579361080525984562);
+	u = mad(u, t, 0.0769219538311769618355029);
+	u = mad(u, t, -0.090908995008245008229153);
+	u = mad(u, t, 0.111111105648261418443745);
+	u = mad(u, t, -0.14285714266771329383765);
+	u = mad(u, t, 0.199999999996591265594148);
+	u = mad(u, t, -0.333333333333311110369124);
+
+	t = s + s * (t * u);
+	
+	vmi_type i_q_and_1= (q & vi_type(1)) == vi_type(1);
+	vmf_type f_q_and_1= _T::vmi_to_vmf(i_q_and_1);
+
+	t = _T::sel(f_q_and_1, 
+		    1.570796326794896557998982 - t, t);
+	
+	vmi_type i_q_and_2=(q & vi_type(2)) == vi_type(2);
+	vmf_type f_q_and_2=_T::vmi_to_vmf(i_q_and_2);
+
+	t = _T::sel(f_q_and_2, -t, t);
+	return t;
 }
 
 namespace x86vec {
@@ -439,6 +486,13 @@ x86vec::v2f64 x86vec::acos(arg<v2f64>::type d)
         return math::func<double, int32_t,
 		impl::vec_func_traits<v2f64, v4s32> >::
                 acos(d);
+}
+
+x86vec::v2f64 x86vec::atan(arg<v2f64>::type d)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                atan(d);
 }
 
 
