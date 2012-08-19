@@ -957,7 +957,6 @@ emuvec::v8s16 emuvec::permute(const v8s16& a, const v8s16& b)
 }
 
 template <unsigned _I>
-inline
 emuvec::v8s16::element_type emuvec::extract(const v8s16& a)
 {
         return a()[_I];
@@ -1069,7 +1068,6 @@ emuvec::v8u16 emuvec::permute(const v8u16& a, const v8u16& b)
 }
 
 template <unsigned _I>
-inline
 emuvec::v8u16::element_type emuvec::extract(const v8u16& a)
 {
         return a()[_I];
@@ -1177,7 +1175,6 @@ emuvec::v4s32 emuvec::permute(const v4s32& a, const v4s32& b)
 }
 
 template <unsigned _I>
-inline
 emuvec::v4s32::element_type emuvec::extract(const v4s32& a)
 {
         return a()[_I];
@@ -1285,7 +1282,6 @@ emuvec::v4u32 emuvec::permute(const v4u32& a, const v4u32& b)
 }
 
 template <unsigned _I>
-inline
 emuvec::v4u32::element_type emuvec::extract(const v4u32& a)
 {
         return a()[_I];
@@ -1393,7 +1389,6 @@ emuvec::v2s64 emuvec::permute(const v2s64& a, const v2s64& b)
 }
 
 template <unsigned _I>
-inline
 emuvec::v2s64::element_type emuvec::extract(const v2s64& a)
 {
         return a()[_I];
@@ -1501,7 +1496,6 @@ emuvec::v2u64 emuvec::permute(const v2u64& a, const v2u64& b)
 }
 
 template <unsigned _I>
-inline
 emuvec::v2u64::element_type emuvec::extract(const v2u64& a)
 {
         return a()[_I];
@@ -1567,7 +1561,6 @@ emuvec::v4f32 emuvec::permute(const v4f32& a, const v4f32& b)
 }
 
 template <unsigned _I>
-inline
 emuvec::v4f32::element_type emuvec::extract(const v4f32& a)
 {
         return a()[_I];
@@ -1631,7 +1624,6 @@ emuvec::v2f64 emuvec::permute(const v2f64& a, const v2f64& b)
 }
 
 template <unsigned _I>
-inline
 emuvec::v2f64::element_type emuvec::extract(const v2f64& a)
 {
         return a()[_I];
