@@ -47,11 +47,15 @@ namespace math {
                 static constexpr int32_t e_min= -1022;
                 static constexpr int32_t bits=52;
 
-                static constexpr double infinity=
-                        std::numeric_limits<double>::infinity();
-                static constexpr double nan=
-                        std::numeric_limits<double>::quiet_NaN();
-
+                static constexpr double pinf() {
+                        return std::numeric_limits<double>::infinity();
+		}
+                static constexpr double ninf() {
+                        return -std::numeric_limits<double>::infinity();
+		}
+                static constexpr double nan() {
+                        return std::numeric_limits<double>::quiet_NaN();
+		}
                 static
                 vmf_type vmi_to_vmf(const vmi_type& mi) {
                         return mi;
@@ -120,7 +124,11 @@ namespace math {
                 static vf_type atan(const vf_type& d);
 		static vf_type sin(const vf_type& d);
 		static vf_type cos(const vf_type& d);
-		
+		static std::pair<vf_type, vf_type>
+		sincos(const vf_type& d);
+		static vf_type tan(const vf_type& d);
+		static vf_type log(const vf_type& d);
+		static vf_type exp(const vf_type& d);
         };
 
 };
@@ -139,7 +147,8 @@ math::func<double, math::int32_t, _T>::pow2i(const vi_type& vi)
         r= _T::sel(mf, vf_type(0.0), r);
         mi= (vi > vi_type(_T::e_max));
         mf= _T::vmi_to_vmf(mi);
-        r= _T::sel(mf, vf_type(_T::infinity), r);
+	vf_type inf(_T::pinf());
+        r= _T::sel(mf, vf_type(inf), r);
         return r;
 }
 
@@ -375,9 +384,214 @@ template <typename _T>
 inline
 typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
-cos(const vf_type& cs)
+cos(const vf_type& cd)
 {
-	return cs;
+	vf_type qf= 1.0+ 2.0 * rint(cd * M_1_PI -0.5);
+	vi_type q = _T::cvt_f_to_i(qf);
+	
+	vf_type d= mad(qf, -PI4_A*2, cd);
+	d = mad(qf, -PI4_B*2, d);
+	d = mad(qf, -PI4_C*2, d);
+
+	vf_type s = d * d;
+
+	vmi_type i_not_q_and_2 = (q & vi_type(2)) == vi_type(0);
+	vmf_type f_not_q_and_2 = _T::vmi_to_vmf(i_not_q_and_2);
+	d = _T::sel(f_not_q_and_2, -d, d);
+	
+	vf_type u = -7.97255955009037868891952e-18;
+	u = mad(u, s, 2.81009972710863200091251e-15);
+	u = mad(u, s, -7.64712219118158833288484e-13);
+	u = mad(u, s, 1.60590430605664501629054e-10);
+	u = mad(u, s, -2.50521083763502045810755e-08);
+	u = mad(u, s, 2.75573192239198747630416e-06);
+	u = mad(u, s, -0.000198412698412696162806809);
+	u = mad(u, s, 0.00833333333333332974823815);
+	u = mad(u, s, -0.166666666666666657414808);
+
+	u = mad(s, u * d, d);
+	return u;
+}
+
+template <typename _T>
+inline
+std::pair<typename math::func<double, math::int32_t, _T>::vf_type,
+	  typename math::func<double, math::int32_t, _T>::vf_type>
+math::func<double, math::int32_t, _T>::
+sincos(const vf_type& cd)
+{
+	vf_type qf=rint(cd * (2 * M_1_PI));
+	vi_type q= _T::cvt_f_to_i(qf);
+
+	vf_type s = cd;
+
+	s = mad(qf, -PI4_A*2, s);
+	s = mad(qf, -PI4_B*2, s);
+	s = mad(qf, -PI4_C*2, s);
+
+	vf_type t = s;
+
+	s = s * s;
+
+	vf_type u = 1.58938307283228937328511e-10;
+	u = mad(u, s, -2.50506943502539773349318e-08);
+	u = mad(u, s, 2.75573131776846360512547e-06);
+	u = mad(u, s, -0.000198412698278911770864914);
+	u = mad(u, s, 0.0083333333333191845961746);
+	u = mad(u, s, -0.166666666666666130709393);
+	u = u * s * t;
+
+	vf_type rsin = t + u;
+
+	u = -1.13615350239097429531523e-11;
+	u = mad(u, s, 2.08757471207040055479366e-09);
+	u = mad(u, s, -2.75573144028847567498567e-07);
+	u = mad(u, s, 2.48015872890001867311915e-05);
+	u = mad(u, s, -0.00138888888888714019282329);
+	u = mad(u, s, 0.0416666666666665519592062);
+	u = mad(u, s, -0.5);
+
+	vf_type rcos = u * s + 1;
+
+	// swap rsin, rcos
+	vmi_type i_q_and_1 =(q & vi_type(1)) == vi_type(1);
+	vmf_type f_q_and_1 =_T::vmi_to_vmf(i_q_and_1);
+	vf_type saved_sin = rsin;
+	
+	rsin = _T::sel(f_q_and_1, rcos, rsin);
+	rcos = _T::sel(f_q_and_1, saved_sin, rcos);
+
+	vmi_type i_q_and_2 =(q & vi_type(2)) == vi_type(2);
+	vmf_type f_q_and_2= _T::vmi_to_vmf(i_q_and_2);
+	rsin = _T::sel(f_q_and_2, -rsin, rsin);
+
+	vmi_type i_qp1_and_2= ((q + vi_type(1)) & vi_type(2))
+		== vi_type(2);
+	vmf_type f_qp1_and_2= _T::vmi_to_vmf(i_qp1_and_2);
+	rcos = _T::sel(f_qp1_and_2, -rcos, rcos);
+
+	vmf_type is_inf(isinf(cd));
+	const vf_type n(vf_type(_T::nan()));
+	rsin = _T::sel(is_inf, n, rsin);
+	rcos = _T::sel(is_inf, n, rcos);
+
+	return std::make_pair(rsin, rcos);
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+tan(const vf_type& cd)
+{
+	vf_type qf=rint(cd * (2 * M_1_PI));
+	vi_type q= _T::cvt_f_to_i(qf);
+
+	vf_type x = mad(qf, -PI4_A*2, cd);
+	x = mad(qf, -PI4_B*2, x);
+	x = mad(qf, -PI4_C*2, x);
+
+	vf_type s = x* x;
+	// if ((q & 1) != 0) x = -x;
+	vmi_type i_q_and_1 = (q & vi_type(1)) == vi_type(1);
+	vmf_type f_q_and_1 = _T::vmi_to_vmf(i_q_and_1);
+	x = _T::sel(f_q_and_1, -x, x);
+
+	vf_type u = 1.01419718511083373224408e-05;
+	u = mad(u, s, -2.59519791585924697698614e-05);
+	u = mad(u, s, 5.23388081915899855325186e-05);
+	u = mad(u, s, -3.05033014433946488225616e-05);
+	u = mad(u, s, 7.14707504084242744267497e-05);
+	u = mad(u, s, 8.09674518280159187045078e-05);
+	u = mad(u, s, 0.000244884931879331847054404);
+	u = mad(u, s, 0.000588505168743587154904506);
+	u = mad(u, s, 0.00145612788922812427978848);
+	u = mad(u, s, 0.00359208743836906619142924);
+	u = mad(u, s, 0.00886323944362401618113356);
+	u = mad(u, s, 0.0218694882853846389592078);
+	u = mad(u, s, 0.0539682539781298417636002);
+	u = mad(u, s, 0.133333333333125941821962);
+	u = mad(u, s, 0.333333333333334980164153);
+
+	u = mad(s, u * x, x);
+	
+	// if ((q & 1) != 0) u = 1.0 / u;
+	u = _T::sel(f_q_and_1, 1.0/u, u);
+
+	// if (xisinf(d)) u = NAN;
+	vmf_type is_inf(isinf(cd));
+	const vf_type n(vf_type(_T::nan()));
+	u = _T::sel(is_inf, n, u);
+	return u;
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+log(const vf_type& d)
+{
+	vi_type e = ilogbp1(d * 0.7071);
+	vf_type ef= _T::cvt_i_to_f(e);
+	vf_type m = ldexp(d, -e);
+
+	vf_type x = (m-vf_type(1)) / (m+vf_type(1));
+	vf_type x2 = x * x;
+
+	vf_type t = 0.148197055177935105296783;
+	t = mad(t, x2, 0.153108178020442575739679);
+	t = mad(t, x2, 0.181837339521549679055568);
+	t = mad(t, x2, 0.22222194152736701733275);
+	t = mad(t, x2, 0.285714288030134544449368);
+	t = mad(t, x2, 0.399999999989941956712869);
+	t = mad(t, x2, 0.666666666666685503450651);
+	t = mad(t, x2, 2.0);
+
+	x = mad(x, t, 0.693147180559945286226764 * ef);
+	
+	// if (xisinf(d)) x = INFINITY;
+	vf_type pinf(_T::pinf());
+	vf_type ninf(_T::ninf());
+	x = _T::sel(isinf(d), pinf, x);
+	// if (d < 0) x = NAN;
+	x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
+	// if (d == 0) x = -INFINITY;
+	x = _T::sel(d == vf_type(0.0), ninf, x);
+	return x;
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+exp(const vf_type& d)
+{
+	vf_type qf = rint(d * R_LN2);
+	vi_type q = _T::cvt_f_to_i(qf);
+
+	vf_type s = mad(qf, -L2U, d);
+	s = mad(qf, -L2L, s);
+
+	vf_type u = 2.08860621107283687536341e-09;
+	u = mad(u, s, 2.51112930892876518610661e-08);
+	u = mad(u, s, 2.75573911234900471893338e-07);
+	u = mad(u, s, 2.75572362911928827629423e-06);
+	u = mad(u, s, 2.4801587159235472998791e-05);
+	u = mad(u, s, 0.000198412698960509205564975);
+	u = mad(u, s, 0.00138888888889774492207962);
+	u = mad(u, s, 0.00833333333331652721664984);
+	u = mad(u, s, 0.0416666666666665047591422);
+	u = mad(u, s, 0.166666666666666851703837);
+	u = mad(u, s, 0.5);
+
+	u = mad(s , mad(s, u, s), vf_type(1));
+	u = ldexp(u, q);
+
+	// if (xisminf(d)) u = 0;
+	u = _T::sel( d== vf_type(_T::ninf()), vf_type(0), u);
+
+	return u;
+	
 }
 
 namespace x86vec {
@@ -393,7 +607,11 @@ namespace x86vec {
         v2f64 atan(arg<v2f64>::type d);
         v2f64 sin(arg<v2f64>::type d);
         v2f64 cos(arg<v2f64>::type d);
-        v2f64 sincos(arg<v2f64>::type d, v2f64* cos_d);
+	std::pair<v2f64, v2f64>
+        sincos(arg<v2f64>::type d);
+        v2f64 tan(arg<v2f64>::type d);
+	v2f64 log(arg<v2f64>::type d);
+	v2f64 exp(arg<v2f64>::type d);
 
         v2f64 cbrt(arg<v2f64>::type d);
 
@@ -538,6 +756,44 @@ x86vec::v2f64 x86vec::sin(arg<v2f64>::type d)
 		impl::vec_func_traits<v2f64, v4s32> >::
                 sin(d);
 }
+
+x86vec::v2f64 x86vec::cos(arg<v2f64>::type d)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                cos(d);
+}
+
+std::pair<x86vec::v2f64, x86vec::v2f64>
+x86vec::sincos(arg<v2f64>::type d)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                sincos(d);
+}
+
+x86vec::v2f64 x86vec::tan(arg<v2f64>::type d)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                tan(d);
+}
+
+x86vec::v2f64 x86vec::log(arg<v2f64>::type d)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                log(d);
+}
+
+x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                exp(d);
+}
+
+
 
 inline
 x86vec::v2s64

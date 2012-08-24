@@ -1151,7 +1151,6 @@ emuvec::operator%(const v4s32& a, const v4s32& b)
         return r;
 }
 
-
 emuvec::v4s32 emuvec::operator< (const v4s32& a, const v4s32& b)
 {
         v4s32 r;
@@ -2854,7 +2853,7 @@ emuvec::v4f32 emuvec::abs(const v4f32& a)
 emuvec::v4f32 emuvec::sqrt(const v4f32& a)
 {
 	v4f32 r;
-	impl::v_abs<v4f32::element_type> ot;
+	impl::v_sqrt<v4f32::element_type> ot;
 	impl::v_un_op(r(), ot, a(), v4f32::N);
 	return r;
 }
@@ -3257,7 +3256,7 @@ emuvec::v2f64 emuvec::abs(const v2f64& a)
 emuvec::v2f64 emuvec::sqrt(const v2f64& a)
 {
 	v2f64 r;
-	impl::v_abs<v2f64::element_type> ot;
+	impl::v_sqrt<v2f64::element_type> ot;
 	impl::v_un_op(r(), ot, a(), v2f64::N);
 	return r;
 }

@@ -29,13 +29,6 @@ x86vec::v2f64::v2f64(element_type r)
 }
 
 inline
-x86vec::v2f64::v2f64(v2f64::element_type r, bool broadcast)
-        : base_type(broadcast ?
-                    _mm_set1_pd(r) : _mm_set_sd(r))
-{
-}
-
-inline
 x86vec::v2f64::v2f64(const mem::addr_bcast<element_type>& r)
         : base_type(_mm_set1_pd(* (r())))
 {
@@ -355,10 +348,10 @@ x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 		rmxcsr |= (2<<13);
 		break;
 	case rounding_mode::towardzero:
-		rmxcsr |= (2<<13);
+		rmxcsr |= (3<<13);
 		break;
 	}
-	if (mxcsr != rmxcsr)
+	if (unlikely(mxcsr != rmxcsr))
 		_mm_setcsr(rmxcsr);
 	const __m128d sgn_msk=v_sign_f64_msk::dv();
 	// (1023+52)<<(52-32) 0x43300000 = 2^52
@@ -367,7 +360,7 @@ x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 	__m128d sign_magic = _mm_or_pd(magic, sign);
 	__m128d res = _mm_add_pd(a(), sign_magic);
 	res = _mm_sub_pd(a(), sign_magic);
-	if (mxcsr != rmxcsr)
+	if (unlikely(mxcsr != rmxcsr))
 		_mm_setcsr(mxcsr);
 	return res;
 #endif

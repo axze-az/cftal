@@ -17,12 +17,18 @@ namespace x86vec {
 		// compare a and b, returns also true for a==NAN and b
 		// == NAN
 		bool f_eq(double a, double b);
-		
+		bool f_eq(float a, float b);
 	}
 }
 
 inline
 bool x86vec::test::f_eq(double a, double b)
+{
+	return (a == b) || (std::isnan(a) && std::isnan(b));
+}
+
+inline
+bool x86vec::test::f_eq(float a, float b)
 {
 	return (a == b) || (std::isnan(a) && std::isnan(b));
 }

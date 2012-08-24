@@ -130,7 +130,6 @@ namespace x86vec {
                 v2f64(element_type p00, element_type p01);
                 // broadcast to all positions
                 v2f64(element_type r);
-                v2f64(element_type r, bool broadcast);
                 v2f64(const mem::addr_bcast<element_type>& r);
                 v2f64(const mem::addr<element_type>& r);
                 v2f64(const mem::aligned::addr<element_type>& r);

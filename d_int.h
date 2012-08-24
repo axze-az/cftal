@@ -1707,8 +1707,8 @@ cftal::operator+(const duint<uint64_t>& a, const duint<uint64_t>& b)
         register uint64_t l, h;
         __asm__ ("add %4, %0 \n\t"
                  "adc %5, %1 \n\t"
-                 : "=r"(l), "=r"(h)
-                 : "0"(a.l()), "1"(a.uh()), "rme"(b.l()), "rme"(b.uh())
+                 : "=m,r"(l), "=m,r"(h)
+                 : "0"(a.l()), "1"(a.uh()), "re,g"(b.l()), "re,g"(b.uh())
                  : "cc");
         return duint<uint64_t>(l, h);
 }
@@ -1720,8 +1720,8 @@ cftal::operator+(const duint<uint64_t>& a, const uint64_t& b)
         uint64_t l,h;
         __asm__ ("add %4, %0 \n\t"
                  "adc $0, %1 \n\t"
-                 : "=r"(l), "=r"(h)
-                 : "0"(a.l()), "1"(a.uh()), "rme"(b)
+                 : "=m,r"(l), "=m,r"(h)
+                 : "0"(a.l()), "1"(a.uh()), "re,g"(b)
                  : "cc");
         return duint<uint64_t>(l, h);
 }
@@ -1740,8 +1740,8 @@ cftal::operator-(const duint<uint64_t>& a, const duint<uint64_t>& b)
         uint64_t l,h;
         __asm__ ("sub %4, %0 \n\t"
                  "sbb %5, %1 \n\t"
-                 : "=r"(l), "=r"(h)
-                 : "0"(a.l()), "1"(a.uh()), "rme"(b.l()), "rme"(b.uh())
+                 : "=m,r"(l), "=m,r"(h)
+                 : "0"(a.l()), "1"(a.uh()), "re,g"(b.l()), "re,g"(b.uh())
                  : "cc");
         return duint<uint64_t>(l, h);
 }
@@ -1753,8 +1753,8 @@ cftal::operator-(const duint<uint64_t>& a, const uint64_t& b)
         uint64_t l,h;
         __asm__ ("sub %4, %0 \n\t"
                  "sbb $0, %1 \n\t"
-                 : "=r"(l), "=r"(h)
-                 : "0"(a.l()), "1"(a.uh()), "rme"(b)
+                 : "=m,r"(l), "=m,r"(h)
+                 : "0"(a.l()), "1"(a.uh()), "re,g"(b)
                  : "cc");
         return duint<uint64_t>(l, h);
 }

@@ -30,14 +30,6 @@ x86vec::v2u64::v2u64(element_type r)
 }
 
 inline
-x86vec::v2u64::v2u64(v2u64::element_type r, bool broadcast)
-        : base_type(broadcast ?
-                    _mm_set1_epi64x(r) :
-		    _mm_set_epi64x(0, r))
-{
-}
-
-inline
 x86vec::v2u64::v2u64(const mem::addr_bcast<element_type>& r)
         : base_type(_mm_set1_epi64x(*r()))
 {

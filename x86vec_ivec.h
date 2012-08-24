@@ -443,7 +443,6 @@ namespace x86vec
                 v2s64(element_type p00, element_type p01);
                 // broadcast to all positions
                 v2s64(element_type r);
-                v2s64(element_type r, bool broadcast);
                 v2s64(const mem::addr_bcast<element_type>& r);
                 v2s64(const mem::addr<element_type>& r);
                 v2s64(const mem::aligned::addr<element_type>& r);
@@ -540,7 +539,6 @@ namespace x86vec
                 v2u64(vector_type r);
                 v2u64(const base_type& r);
                 v2u64(element_type r);
-                v2u64(element_type r, bool broadcast);
                 v2u64(element_type p00, element_type p01);
                 v2u64(const mem::addr_bcast<element_type>& r);
                 v2u64(const mem::addr<element_type>& r);
