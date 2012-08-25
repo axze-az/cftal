@@ -685,23 +685,6 @@ namespace x86vec {
 
                 v2u64 extract_exp_with_bias(const v2f64& v);
                 v2f64 insert_exp(const v2f64& v, v2u64& e);
-
-                v2f64 frexp(arg<v2f64>::type v, v2s64& e);
-                v2f64 ldexp(arg<v2f64>::type v, arg<v2s64>::type e);
-                v2s64 ilogb(arg<v2f64>::type v);
-                v2f64 exp(arg<v2f64>::type v);
-                v2f64 log(arg<v2f64>::type v);
-
-                v2s64 ilogbp1(const v2f64& a);
-
-                template <typename _FV, typename _SV>
-                struct frexp_f64 {
-                        typedef _FV f64;
-                        typedef _SV s64;
-                        typedef typename std::make_unsigned<_SV>::type u64;
-                        static f64 v(const f64& v, s64* e);
-                };
-
         }
 }
 
@@ -793,54 +776,6 @@ x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
                 exp(d);
 }
 
-
-
-inline
-x86vec::v2s64
-x86vec::impl::ilogbp1(const v2f64& d)
-{
-        v2f64 m(d < 4.9090934652977266E-91);
-        v2f64 dd(2.037035976334486E90 * d);
-        dd = select(m, dd, d);
-        v2u64 q= (as<v2u64>(dd) >> const_shift::_52) & 0x7ff;
-        const v2s64 qc0(300+ 0x3fe);
-        const v2s64 qc1(     0x3fe);
-        v2s64 qc(select(as<v2s64>(m), qc0, qc1));
-        v2s64 r= as<v2s64>(q) - qc;
-        return r;
-}
-
-
-#if 0
-x86vec::v2f64 x86vec::impl::log(arg<v2f64>::type d)
-{
-        v2s64 e= ilogbp1(d * 0.7071);
-        v2s64 e32= permute<0,2,1,3>(as<v4s32>(e));
-        v2f64 m = impl::ldexp(d, -e);
-
-        const v2f64 one= const_f64<v2f64>::ONE;
-
-        v2f64 x = (m - one) / (m + one);
-        v2f64 x2 = x*x;
-        v2f64 t= 0.148197055177935105296783;
-        t = mad(t, x2, 0.153108178020442575739679);
-        t = mad(t, x2, 0.181837339521549679055568);
-        t = mad(t, x2, 0.22222194152736701733275);
-        t = mad(t, x2, 0.285714288030134544449368);
-        t = mad(t, x2, 0.399999999989941956712869);
-        t = mad(t, x2, 0.666666666666685503450651);
-        t = mad(t, x2, 2.0);
-
-        x = x* t + 0.693147180559945286226764* cvt_s32_f64_lo(e32);
-
-        // x = vsel(vmask_ispinf(d), vcast_vd_d(INFINITY), x);
-        // x = vsel(vmask_gt(vcast_vd_d(0), d), vcast_vd_d(NAN), x);
-        // x = vsel(vmask_eq(d, vcast_vd_d(0)), vcast_vd_d(-INFINITY), x);
-        return x;
-}
-#endif
-
-
 x86vec::v2f64
 x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)
 {
@@ -875,11 +810,6 @@ x86vec::v2f64 test_f(x86vec::v2f64 f)
         return isnan(f);
 }
 
-x86vec::v2f64 x86vec::frexp(const v2f64& v, v2s64* e)
-{
-        return impl::frexp(v, *e);
-}
-
 inline
 x86vec::v2u64 x86vec::impl::extract_exp_with_bias(const v2f64& v)
 {
@@ -901,10 +831,10 @@ x86vec::v2f64 x86vec::impl::insert_exp(const v2f64& v, v2u64& e)
         return r;
 }
 
-x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
+x86vec::v2f64 x86vec::frexp(arg<v2f64>::type v, v2s64* ex)
 {
         v2f64 vabs(abs(v));
-        const v2s64 zero_int(make_zero_int::v());
+        const v2s64 zero_int(impl::make_zero_int::v());
         const v2f64 zero_f64(as<v2f64>(zero_int));
         v2f64 is_zero(v == zero_f64);
         v2f64 is_nan(v != v);
@@ -918,7 +848,7 @@ x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
         const v2s64& e_inf_nan_zero=zero_int;
 
         // denormal handling
-        const v2f64 _2_54 = double_power_of_two<54>::dv();
+        const v2f64 _2_54 = impl::double_power_of_two<54>::dv();
         v2f64 r_denom(v* _2_54);
         const v2s64 e_denom_corr= const4_u32<-54-1022, -1, -54-1022, -1>::iv();
 
@@ -948,27 +878,11 @@ x86vec::v2f64 x86vec::impl::frexp(arg<v2f64>::type v, v2s64& er)
         v2s64 e(select(is_inf_nan_zero_int, e_inf_nan_zero, e_finite));
         v2f64 r(select(is_inf_nan_zero, r_inf_nan_zero, r_finite));
 
-        er = e;
+	if (ex)
+		*ex = e;
         return r;
 }
 
-x86vec::v2f64 x86vec::impl::ldexp(arg<v2f64>::type v, arg<v2s64>::type e)
-{
-        const v2s64 v_exp_bias=const4_u32<bias_f64, 0,
-                bias_f64, 0>::iv();
-        v2s64 m= e >> const_shift::_63;
-        m = (((m+e) >> const_shift::_9) - m ) << const_shift::_7;
-        v2s64 q= q - (m << const_shift::_2);
-        v2f64 u= as<v2f64>((m + v_exp_bias) << const_shift::_52);
-        v2f64 x = v * u * u * u * u;
-        u = as<v2f64>((q + v_exp_bias) << const_shift::_52);
-        return x * u;
-}
-
-x86vec::v2f64 x86vec::ldexp(const v2f64& v, const v2s64& e)
-{
-        return impl::ldexp(v, e);
-}
 
 #if 0
 static inline float ldexpkf(float x, int q) {

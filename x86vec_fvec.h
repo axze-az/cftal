@@ -198,8 +198,24 @@ namespace x86vec {
 	v2f64 isinf(const v2f64& x);
 	v2f64 isnan(const v2f64& x);
 	v2f64 isfinite(const v2f64& x);
-	v2f64 frexp(const v2f64& x, v2s64* e);
-	v2f64 ldexp(const v2f64& x, const v2s64& e);
+
+	v2f64 frexp(arg<v2f64>::type x, v2s64* e);
+        v2f64 pow2i(arg<v4s32>::type e);
+        v2f64 ldexp(arg<v2f64>::type d, arg<v4s32>::type e);
+        v4s32 ilogbp1(arg<v2f64>::type v);
+        v4s32 ilogb(arg<v2f64>::type v);
+        v2f64 atan2(arg<v2f64>::type y, arg<v2f64>::type x);
+        v2f64 asin(arg<v2f64>::type d);
+        v2f64 acos(arg<v2f64>::type d);
+
+        v2f64 atan(arg<v2f64>::type d);
+        v2f64 sin(arg<v2f64>::type d);
+        v2f64 cos(arg<v2f64>::type d);
+	std::pair<v2f64, v2f64>
+        sincos(arg<v2f64>::type d);
+        v2f64 tan(arg<v2f64>::type d);
+	v2f64 log(arg<v2f64>::type d);
+	v2f64 exp(arg<v2f64>::type d);
 
 	namespace impl {
 		// fma emulation (a*b +c), calculates correctly until
