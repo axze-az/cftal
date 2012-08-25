@@ -129,6 +129,30 @@ square(x86vec::v2s64 a)
 	return wide_mul(a, a);
 }
 
+typedef unsigned long long u64b;
+typedef __uint128_t u128b;
+
+u64b rng_hash_128(u64b *s)
+{
+	u64b c = 7319936632422683419ULL;
+	u64b x = s[1];
+	u64b y = s[0];
+	u128b xx;
+
+	/* Increment 128bit LCG */
+	s[0] += c;
+	s[1] += (s[0] < c) + y;
+
+	/* Default threaded option of xoring seed location */
+	x ^= (u64b) s;
+
+	/* Hash result */
+	xx = (u128b)x * c;
+	x = xx ^ y ^ (xx >> 64);
+	xx = (u128b)x * c;
+	return xx + y + (xx >> 64);
+}
+
 void test_div()
 {
 	using namespace x86vec;
