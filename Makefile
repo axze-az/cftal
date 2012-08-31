@@ -96,10 +96,12 @@ hackx86vec_g: hackx86vec.od x86vec_test.od lib$(LIBNAME)-g.a
 all-tests: all \
 check-00/testx86vec-00 \
 check-01/testx86vec-01 \
-check-02/testx86vec-02
+check-02/testx86vec-02 \
+check-03/testx86vec-03
 	./check-00/testx86vec-00
 	./check-01/testx86vec-01
 	./check-02/testx86vec-02
+	./check-03/testx86vec-03
 
 check-00/testx86vec-00: all
 	$(MAKE) -C check-00
@@ -108,6 +110,9 @@ check-01/testx86vec-01: all
 	$(MAKE) -C check-01
 
 check-02/testx86vec-02: all
+	$(MAKE) -C check-02
+
+check-03/testx86vec-03: all
 	$(MAKE) -C check-02
 
 
@@ -119,12 +124,14 @@ clean:
 	$(MAKE) -C check-00 $@
 	$(MAKE) -C check-01 $@
 	$(MAKE) -C check-02 $@
+	$(MAKE) -C check-03 $@
 
 distclean: clean
 	-$(RM) -rf .depend .*.dep* *~
 	$(MAKE) -C check-00 $@
 	$(MAKE) -C check-01 $@
 	$(MAKE) -C check-02 $@
+	$(MAKE) -C check-03 $@
 
 #######################################################################
 # dependencies

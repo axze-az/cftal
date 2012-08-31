@@ -112,6 +112,8 @@ bool x86vec::test::check_frexp_f64()
 
 int main(int argc, char** argv)
 {
-	x86vec::test::check_frexp_f64();
+	// x86vec::test::check_frexp_f64();
+	x86vec::v2f64 t=sin(x86vec::v2f64(0.0));
+	static_cast<void>(t);
         return 0;
 }

@@ -359,7 +359,7 @@ x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 	__m128d sign = _mm_and_pd(a(), sgn_msk);
 	__m128d sign_magic = _mm_or_pd(magic, sign);
 	__m128d res = _mm_add_pd(a(), sign_magic);
-	res = _mm_sub_pd(a(), sign_magic);
+	res = _mm_sub_pd(res, sign_magic);
 	if (unlikely(mxcsr != rmxcsr))
 		_mm_setcsr(mxcsr);
 	return res;
