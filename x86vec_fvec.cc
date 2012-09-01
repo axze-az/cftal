@@ -584,7 +584,10 @@ exp(const vf_type& d)
 	u = mad(u, s, 0.166666666666666851703837);
 	u = mad(u, s, 0.5);
 
-	u = mad(s , mad(s, u, s), vf_type(1));
+	// u = s * s * u +s + vf_type(1));
+	// u = s^2 * u + s + 1 = s*(s*u+1.0) + 1.0
+	u = mad(u, s, 1.0);
+	u = mad(u, s, 1.0);
 	u = ldexp(u, q);
 
 	// if (xisminf(d)) u = 0;

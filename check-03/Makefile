@@ -12,7 +12,7 @@ SLDFLAGS:= $(SLDFLAGS) -L../sysio -lsysio++ -L../thread -lthread++
 CXXFLAGS+=-I. -I.. -I../.. -I../stlex -I../thread  -I../sysio -march=native
 CSRCS=$(wildcard ./x86vec_test_*.cc ./bitops_test.cc d_int8_test.cc)
 
-all: testx86vec-03
+all: testx86vec-03 tests
 
 debug: testx86vec-03-g
 
@@ -60,6 +60,8 @@ testx86vec-03-g: testx86vec-03.od lib$(LIBNAME)-g.a ../libcftal-g.a
 # rcp_div_64_g: rcp_div_64.od lib$(LIBNAME)-g.a
 # 	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
 
+tests: testx86vec-03
+	./$< <sin.testdata
 
 
 #################################################################
