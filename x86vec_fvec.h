@@ -22,6 +22,34 @@ namespace x86vec {
 				towardzero = 0x3
 			};
 		};
+
+		/* int N;
+		 * double x, y, coef[N+1], polevl[];
+		 *
+		 * y = polevl( x, coef, N );
+		 *
+		 *
+		 *
+		 * DESCRIPTION:
+		 *
+		 * Evaluates polynomial of degree N:
+		 *
+		 *                     2          N
+		 * y  =  C  + C x + C x  +...+ C x
+		 *        0    1     2          N
+		 *
+		 * Coefficients are stored in reverse order:
+		 *
+		 * coef[0] = C  , ..., coef[N] = C  .
+		 *            N                   0
+		 */
+		template <unsigned _N, typename _T>
+		_T polevl(_T x, const _T* coef);
+		
+		// same as above with C_N == 1.0
+		template <unsigned _N, typename _T>
+		_T p1evl(_T x, const _T* coef);
+		
 	}
 
         class v4f32 : public vreg<__m128> {
@@ -252,6 +280,33 @@ namespace x86vec {
 	template <unsigned _I>
 	typename v2f64::element_type extract(const v2f64& a);
 
+}
+
+template <unsigned _N, typename _T>
+_T x86vec::impl::polevl(_T x, const _T* coef)
+{
+	const _T* p= coef;
+	_T ans= *p++;
+	int i= _N;
+	do {
+		ans = ans * x + *p;
+		++p;
+	} while (--i);
+	return ans;
+}
+
+template <unsigned _N, typename _T>
+_T x86vec::impl::p1evl(_T x, const _T* coef)
+{
+	const _T* p= coef;
+	_T ans= x* *p;
+	++p;
+	int i= _N-1;
+	do {
+		ans = ans * x + *p;
+		++p;
+	} while (--i);
+	return ans;
 }
 
 #include <cftal/x86vec_v4f32_inl.h>
