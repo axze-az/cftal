@@ -86,6 +86,8 @@ bool x86vec::test::read_func(func_data& tf, std::istream& is)
 			tf._f1 = x86vec::exp;
 		} else if (f == "log") {
 			tf._f1 = x86vec::log;
+		} else if (f == "tan") {
+			tf._f1 = x86vec::tan;
 		} else {
 			std::cerr << "unknown function " << f << std::endl;
 			return false;
@@ -174,8 +176,8 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 		v2f64 ae(abs_error(expected, res));
 		v2f64 re(rel_error(expected, res));
 		v2f64 max_err(ae + re);
-		v2f64 is_err(max_err > 1.0e-16);
-
+		v2f64 is_err(max_err > 1.0e-15);
+#if 0
 		double tt=extract<0>(res);
 		std::cout << tf._fname << "( " 
 			  << c._a0;
@@ -183,6 +185,7 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 			std::cout << ", " << c._a1;
 		std::cout << ")= " << tt << " :  "
 			  << c._res << std::endl;
+#endif
 		if (no_signs(is_err))
 			continue;
 		rc= false;
@@ -194,6 +197,9 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 			std::cerr << ", " << c._a1;
 		std::cerr << ")= " << t << " != "
 			  << c._res << std::endl;
+		std::cerr << "rel_err = " << extract<0>(re)
+			  << " abs_err = " << extract<0>(ae)
+			  << std::endl;
 	}
 	return rc;
 }

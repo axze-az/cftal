@@ -69,6 +69,13 @@ test-cos: testx86vec-03
 test-exp: testx86vec-03
 	./$< <exp.testdata
 
+test-log: testx86vec-03
+	./$< <log.testdata
+
+test-tan: testx86vec-03
+	./$< <tan.testdata
+
+
 #################################################################
 # cleanup 
 clean:

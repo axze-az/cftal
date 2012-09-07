@@ -30,6 +30,65 @@ namespace math {
         struct func {};
 
 
+	template <typename _T>
+	class dd {
+		_T _x;
+		_T _y;
+	public:
+		dd(const _T& xx, const _T& yy) : _x(x), _y(y) {}
+		dd(const _T& xx) : _x(x), _y(_T(0)) {}
+		const _T& x() const { return _x; }
+		_T& x() { return _x; }
+		const _T& y() const { return _y; }
+		_T& y() { return _y; }
+	};
+
+
+	template <typename _T>
+	dd<_T> normalize(const dd<_T>& n);
+
+	template <typename _T>
+	dd<_T> scale_d(const dd<_T>& d, const _T& s);
+
+	template <typename _T>
+	dd<_T> add_ss(const _T& x, const _T& y);
+	
+	template <typename _T>
+	dd<_T> add_ds(const dd<_T>& x, const _T& y);
+
+	template <typename _T>
+	dd<_T> add2_ds(const dd<_T>& x, const _T& y);
+
+	template <typename _T>
+	dd<_T> add_sd(const _T& x, const dd<_T>& y);
+
+	template <typename _T>
+	dd<_T> add_dd(const dd<_T>& x, const dd<_T>& y);
+	
+	template <typename _T>
+	dd<_T> add2_dd(const dd<_T>& x, const dd<_T>& y);
+
+	template <typename _T>
+	dd<_T> div_dd(const dd<_T>& x, const dd<_T>& y);
+
+	template <typename _T>
+	dd<_T> mul_ss(const _T& x, const _T& y);
+
+	template <typename _T>
+	dd<_T> mul_ds(const dd<_T>& x, const _T& y);
+
+	template <typename _T>
+	dd<_T> mul_dd(const dd<_T>& x, const dd<_T>& y);
+
+	template <typename _T>
+	dd<_T> squ_d(const dd<_T>& x);
+
+	template <typename _T>
+	dd<_T> recp_s(const _T& x);
+
+	template <typename _T>
+	dd<_T> sqrt_d(const dd<_T>& x);
+
         template <>
         struct func_traits<double, int32_t> {
                 typedef double vf_type;
@@ -132,6 +191,85 @@ namespace math {
         };
 
 };
+
+template <typename _T>
+inline
+math::dd<_T> math::normalize(const dd<_T>& t)
+{
+	_T x = t.x() + t.y();
+	_T y = t.x() - x + t.y();
+	return dd<_T>(x, y);
+}
+
+template <typename _T>
+inline
+math::dd<_T> math::scale_d(const dd<_T>& t, const _T& s)
+{
+	_T x = t.x() * s;
+	_T y = t.y() * s;
+	return dd<_T>(x, y);
+}
+
+template <typename _T>
+inline
+math::dd<_T> math::add_ss(const _T& x, const _T& y)
+{
+	_T rx = x + y;
+	_T v =  rx - x;
+	_T ry = (x - (rx - v)) + (y - v);
+	return dd<_T>(rx, ry);
+}
+
+template <typename _T>
+inline
+math::dd<_T> math::add_ds(const dd<_T>& x, const _T& y)
+{
+	_T rx = x.x() + y;
+	_T ry = x.x() - rx + y + x.y();
+	return dd<_T>(rx, ry);
+}
+
+template <typename _T>
+inline
+math::dd<_T> math::add2_ds(const dd<_T>& x, const _T& y)
+{
+	_T rx  = x.x() + y;
+	_T v = rx - x.x();
+	_T ry = (x.x - (rx - v)) + (y - v);
+	ry += x.y;
+	return dd<_T>(rx, ry);
+}
+
+template <typename _T>
+inline
+math::dd<_T> math::add_sd(const _T& x, const dd<_T>& y)
+{
+	_T rx = x + y.x();
+	_T ry = x - rx + y.x() + y.y();
+	return dd<_T>(rx, ry);
+}
+
+template <typename _T>
+inline
+math::dd<_T> math::add_dd(const dd<_T>& x, const dd<_T>& y)
+{
+	_T rx = x.x() + y.x();
+	_T ry = x.x() - rx + y.x() + x.y() + y.y();
+	return dd<_T>(rx, ry);
+}
+
+
+template <typename _T>
+inline
+math::dd<_T> math::add2_dd(const dd<_T>& x, const dd<_T>& y)
+{
+	_T rx  = x.x() + y.x();
+	_T v = rx - x.x();
+	_T ry = (x.x() - (rx - v)) + (y.x() - v);
+	ry += x.y() + y.y();
+	return dd<_T>(rx, ry);
+}
+
 
 template <typename _T>
 inline
@@ -267,7 +405,7 @@ atan2(const vf_type& y,  const vf_type& x)
 
         vf_type rs2 = _T::sel(x < 0.0, vf_type(M_PI), 0);
         r= _T::sel(y== 0.0, rs2, r);
-        r= _T::sel(isnan(x) | isnan(y), vf_type(_T::nan), mulsign(r, y));
+        r= _T::sel(isnan(x) | isnan(y), vf_type(_T::nan()), mulsign(r, y));
         return r;
 }
 
@@ -550,8 +688,8 @@ log(const vf_type& d)
 	x = mad(x, t, 0.693147180559945286226764 * ef);
 	
 	// if (xisinf(d)) x = INFINITY;
-	vf_type pinf(_T::pinf());
-	vf_type ninf(_T::ninf());
+	const vf_type pinf(_T::pinf());
+	const vf_type ninf(_T::ninf());
 	x = _T::sel(isinf(d), pinf, x);
 	// if (d < 0) x = NAN;
 	x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
@@ -566,8 +704,6 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 exp(const vf_type& d)
 {
-#if 0
-#else
 	vf_type qf = rint(d * R_LN2);
 	vi_type q = _T::cvt_f_to_i(qf);
 
@@ -594,7 +730,6 @@ exp(const vf_type& d)
 	// if (xisminf(d)) u = 0;
 	u = _T::sel( d== vf_type(_T::ninf()), vf_type(0), u);
 	return u;
-#endif
 }
 
 namespace x86vec {
@@ -713,6 +848,13 @@ x86vec::v4s32 x86vec::ilogb(arg<v2f64>::type d)
 {
         return math::func<double, int32_t,
 		impl::vec_func_traits<v2f64, v4s32> >::ilogb(d);
+}
+
+x86vec::v2f64 x86vec::atan2(arg<v2f64>::type x, arg<v2f64>::type y)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                atan2(x, y);
 }
 
 x86vec::v2f64 x86vec::asin(arg<v2f64>::type d)
