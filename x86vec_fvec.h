@@ -239,8 +239,7 @@ namespace x86vec {
         v2f64 atan(arg<v2f64>::type d);
         v2f64 sin(arg<v2f64>::type d);
         v2f64 cos(arg<v2f64>::type d);
-	std::pair<v2f64, v2f64>
-        sincos(arg<v2f64>::type d);
+	std::pair<v2f64, v2f64> sincos(arg<v2f64>::type d);
         v2f64 tan(arg<v2f64>::type d);
 	v2f64 log(arg<v2f64>::type d);
 	v2f64 exp(arg<v2f64>::type d);
@@ -289,7 +288,7 @@ _T x86vec::impl::polevl(_T x, const _T* coef)
 	_T ans= *p++;
 	int i= _N;
 	do {
-		ans = ans * x + *p;
+		ans = mad(ans, x,  *p);
 		++p;
 	} while (--i);
 	return ans;
@@ -303,7 +302,7 @@ _T x86vec::impl::p1evl(_T x, const _T* coef)
 	++p;
 	int i= _N-1;
 	do {
-		ans = ans * x + *p;
+		ans = mad(ans, x, *p);
 		++p;
 	} while (--i);
 	return ans;
