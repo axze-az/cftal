@@ -84,7 +84,7 @@ namespace math {
 	dd<_T> squ_d(const dd<_T>& x);
 
 	template <typename _T>
-	dd<_T> recp_s(const _T& x);
+	dd<_T> rec_s(const _T& x);
 
 	template <typename _T>
 	dd<_T> sqrt_d(const dd<_T>& x);
@@ -270,6 +270,97 @@ math::dd<_T> math::add2_dd(const dd<_T>& x, const dd<_T>& y)
 	return dd<_T>(rx, ry);
 }
 
+template <typename _T>
+inline 
+math::dd<_T> 
+math::div_dd(const dd<_T>& n, const dd<_T>& d) 
+{
+	_T t = 1.0 / d.x();
+	_T dh  = upper(d.x()), dl  = d.x() - dh;
+	_T th  = upper(t  ), tl  = t   - th;
+	_T nhh = upper(n.x()), nhl = n.x() - nhh;
+
+
+	_T qx = n.x() * t;
+
+	_T u = -qx + nhh * th + nhh * tl + nhl * th + nhl * tl +
+		qx * (1 - dh * th - dh * tl - dl * th - dl * tl);
+	_T qy = t * (n.y() - qx * d.y()) + u;
+	return dd<_T>(qx, qy);
+}
+
+template <typename _T>
+inline 
+math::dd<_T> math::mul_ss(const _T& x, const _T& y) 
+{
+	_T xh = upper(x), xl = x - xh;
+	_T yh = upper(y), yl = y - yh;
+
+	_T rx = x * y;
+	_T ry = xh * yh - rx + xl * yh + xh * yl + xl * yl;
+
+	return dd<_T>(rx, ry);
+}
+
+template <typename _T>
+inline 
+math::dd<_T> math::mul_ds(const dd<_T>& x, const _T&  y) 
+{
+	_T xh = upper(x.x()), xl = x.x() - xh;
+	_T yh = upper(y  ), yl = y   - yh;
+	
+	_T rx = x.x() * y;
+	_T ry = xh * yh - rx + xl * yh + xh * yl + xl * yl + 
+		x.y() * y;
+
+	return dd<_T>(rx, ry);
+}
+
+template <typename _T>
+inline 
+math::dd<_T> 
+math::mul_dd(const dd<_T>& x, const dd<_T>& y) 
+{
+	_T xh = upper(x.x()), xl = x.x() - xh;
+	_T yh = upper(y.x()), yl = y.x() - yh;
+
+	_T rx = x.x() * y.x();
+	_T ry = xh * yh - rx + xl * yh + xh * yl + xl * yl + 
+		x.x() * y.y() + x.y() * y.x();
+	return dd<_T>(rx, ry);
+}
+
+template <typename _T>
+inline 
+math::dd<_T> math::squ_d(const dd<_T>& x) 
+{
+	_T xh = upper(x.x()), xl = x.x() - xh;
+
+	_T rx = x.x * x.x;
+	_T ry = xh * xh - rx + (xh + xh) * xl + xl * xl 
+		+ x.x() * (x.y() + x.y());
+	return dd<_T>(rx, ry);
+}
+
+template <typename _T>
+inline 
+math::dd<_T> math::rec_s(const _T& d) 
+{
+	_T t = 1.0 / d;
+	_T dh = upper(d), dl = d - dh;
+	_T th = upper(t), tl = t - th;
+	_T qx = t;
+	_T qy = t * (1 - dh * th - dh * tl - dl * th - dl * tl);
+	return dd<_T>(qx, qy);
+}
+
+template <typename _T>
+inline 
+math::dd<_T> math::sqrt_d(const dd<_T>& d) 
+{
+	_T t = sqrt(d.x() + d.y());
+	return scale_d(mul_dd(add2_dd(d, mul_ss(t, t)), rec_s(t)), 0.5);
+}
 
 template <typename _T>
 inline
