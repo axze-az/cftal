@@ -332,27 +332,36 @@ x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 	case rounding_mode::towardzero:
 		r= _mm_round_pd(a(), 3);
 		break;
+	case rounding_mode::current:
+		r= _mm_round_pd(a(), 4);
+		break;
 	}
 	return r;
 #else
-	uint32_t mxcsr=_mm_getcsr();
-	uint32_t rmxcsr(mxcsr);
-	rmxcsr &= ~(3<<13);
-	switch (m) {
-	case rounding_mode::nearest: //0
-		break;
-	case rounding_mode::downward:
-		rmxcsr |= (1<<13);
-		break;
-	case rounding_mode::upward:
-		rmxcsr |= (2<<13);
-		break;
-	case rounding_mode::towardzero:
-		rmxcsr |= (3<<13);
-		break;
+	uint32_t mxcsr=0;
+	uint32_t rmxcsr=0;
+	if (m != rounding_mode::current) {
+		mxcsr = _mm_getcsr();
+		rmxcsr= mxcsr;
+		rmxcsr &= ~(3<<13);
+		switch (m) {
+		case rounding_mode::nearest: //0
+			break;
+		case rounding_mode::downward:
+			rmxcsr |= (1<<13);
+			break;
+		case rounding_mode::upward:
+			rmxcsr |= (2<<13);
+			break;
+		case rounding_mode::towardzero:
+			rmxcsr |= (3<<13);
+			break;
+		default:
+			break; // keep the compiler happy
+		}
+		if (unlikely(mxcsr != rmxcsr))
+			_mm_setcsr(rmxcsr);
 	}
-	if (unlikely(mxcsr != rmxcsr))
-		_mm_setcsr(rmxcsr);
 	const __m128d sgn_msk=v_sign_f64_msk::dv();
 	// (1023+52)<<(52-32) 0x43300000 = 2^52
 	const __m128d magic= const4_u32<0, 0x43300000, 0, 0x43300000>::dv();

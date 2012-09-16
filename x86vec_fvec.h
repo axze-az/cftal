@@ -19,7 +19,8 @@ namespace x86vec {
 				nearest = 0x0,
 				downward = 0x1,
 				upward = 0x2,
-				towardzero = 0x3
+				towardzero = 0x3,
+				current = 0x4
 			};
 		};
 
