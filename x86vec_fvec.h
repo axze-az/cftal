@@ -120,7 +120,7 @@ namespace x86vec {
 	v4f32 sqrt(const v4f32& a);
 
 	namespace impl {
-		v4f32 round(const v4f32& a, const rounding_mode::type  m);
+		v4f32 round(const v4f32& a, const rounding_mode::type m);
 	}
 	v4f32 rint(const v4f32& a);
 	v4f32 floor(const v4f32& a);
