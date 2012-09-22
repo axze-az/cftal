@@ -51,7 +51,7 @@ namespace math {
 	dd<_T> scale_d(const dd<_T>& d, const _T& s);
 
 	template <typename _T>
-	dd<_T> add_ss(const _T& x, const _T& y);
+	dd<_T> add2_ss(const _T& x, const _T& y);
 	
 	template <typename _T>
 	dd<_T> add_ds(const dd<_T>& x, const _T& y);
@@ -169,6 +169,8 @@ namespace math {
                 typedef typename _T::vmf_type vmf_type;
                 typedef typename _T::vmi_type vmi_type;
 
+		typedef dd<vf_type> vdf_type;
+
                 static vf_type pow2i(const vi_type& vi);
                 static vf_type ldexp(const vf_type& vf, const vi_type& vi);
 
@@ -188,6 +190,12 @@ namespace math {
 		static vf_type tan(const vf_type& d);
 		static vf_type log(const vf_type& d);
 		static vf_type exp(const vf_type& d);
+	private:
+		static vdf_type logk(const vf_type& d);
+		static vf_type expk(const vdf_type& d);
+		static vdf_type expk2(const vdf_type& d);
+	public:
+		static vf_type pow(const vf_type& x, const vf_type& y);
         };
 
 };
@@ -212,7 +220,7 @@ math::dd<_T> math::scale_d(const dd<_T>& t, const _T& s)
 
 template <typename _T>
 inline
-math::dd<_T> math::add_ss(const _T& x, const _T& y)
+math::dd<_T> math::add2_ss(const _T& x, const _T& y)
 {
 	_T rx = x + y;
 	_T v =  rx - x;
@@ -823,6 +831,172 @@ exp(const vf_type& d)
 	return u;
 }
 
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vdf_type
+math::func<double, math::int32_t, _T>::
+logk(const vf_type& d)
+{
+	// double2 x, x2;
+	// double m, t;
+	// int e;
+
+	vi_type e = ilogbp1(d * 0.7071);
+	vf_type m = ldexp(d, -e);
+
+	vdf_type x = div_dd(add2_ss(vf_type(-1.0), m), 
+			    add2_ss(vf_type(1.0), m));
+	vdf_type x2 = squ_d(x);
+
+	vf_type t = 0.134601987501262130076155;
+	t = mad(t, x2.x(), 0.132248509032032670243288);
+	t = mad(t, x2.x(), 0.153883458318096079652524);
+	t = mad(t, x2.x(), 0.181817427573705403298686);
+	t = mad(t, x2.x(), 0.222222231326187414840781);
+	t = mad(t, x2.x(), 0.285714285651261412873718);
+	t = mad(t, x2.x(), 0.400000000000222439910458);
+	t = mad(t, x2.x(), 0.666666666666666371239645);
+
+	vdf_type c1(0.693147180559945286226764, 
+		    2.319046813846299558417771e-17);
+	vf_type ef= _T::cvt_i_to_f(e);
+	return add2_dd(mul_ds(c1, ef),
+		       add2_dd(scale_d(x, vf_type(2.0)), 
+			       mul_ds(mul_dd(x2, x), t)));
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+expk(const vdf_type& d)
+{
+	vf_type qf= rint((d.x() + d.y()) * R_LN2);
+	vi_type q= _T::cvt_f_to_i(qf);
+	// int q = (int)rint((d.x + d.y) * R_LN2);
+	// double2 s, t;
+	// double u;
+
+	vdf_type s = add2_ds(d, qf * -L2U);
+	s = add2_ds(s, qf * -L2L);
+
+	s = normalize(s);
+
+	vf_type u = 2.51069683420950419527139e-08;
+	u = mad(u, s.x(), 2.76286166770270649116855e-07);
+	u = mad(u, s.x(), 2.75572496725023574143864e-06);
+	u = mad(u, s.x(), 2.48014973989819794114153e-05);
+	u = mad(u, s.x(), 0.000198412698809069797676111);
+	u = mad(u, s.x(), 0.0013888888939977128960529);
+	u = mad(u, s.x(), 0.00833333333332371417601081);
+	u = mad(u, s.x(), 0.0416666666665409524128449);
+	u = mad(u, s.x(), 0.166666666666666740681535);
+	u = mad(u, s.x(), 0.500000000000000999200722);
+
+	vdf_type t = add_dd(s, mul_ds(squ_d(s), u));
+	t = add_sd(vf_type(1.0), t);
+	return ldexp(t.x() + t.y(), q);
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vdf_type
+math::func<double, math::int32_t, _T>::
+expk2(const vdf_type& d)
+{
+	vf_type qf=rint((d.x() + d.y()) * R_LN2);
+	vi_type q= _T::cvt_f_to_i(qf);
+	// int q = (int)rint((d.x + d.y) * R_LN2);
+	// double2 s, t;
+	// double u;
+
+	vdf_type s = add2_ds(d, qf * -L2U);
+	s = add2_ds(s, qf * -L2L);
+
+	s = normalize_d(s);
+
+	vf_type u = 2.51069683420950419527139e-08;
+	u = mad(u, s.x(), 2.76286166770270649116855e-07);
+	u = mad(u, s.x(), 2.75572496725023574143864e-06);
+	u = mad(u, s.x(), 2.48014973989819794114153e-05);
+	u = mad(u, s.x(), 0.000198412698809069797676111);
+	u = mad(u, s.x(), 0.0013888888939977128960529);
+	u = mad(u, s.x(), 0.00833333333332371417601081);
+	u = mad(u, s.x(), 0.0416666666665409524128449);
+	u = mad(u, s.x(), 0.166666666666666740681535);
+	u = mad(u, s.x(), 0.500000000000000999200722);
+
+	vdf_type t = add_dd(s, mul_ds(squ_d(s), u));
+	t = add_sd(1, t);
+	return vdf_type(ldexp(t.x(), q), ldexp(t.y(), q));
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+pow(const vf_type& x, const vf_type& y) 
+{
+	vi_type iy= _T::cvt_rz_f_to_i(y);
+	vf_type fiy= _T::cvt_i_to_f(iy);
+	vmf_type yisint= fiy == y;
+	vmi_type i_yisodd= (iy & vi_type(1)) !=0;
+	vmf_type tmsk = _T::vmi_to_vmf(i_yisodd);
+	vmf_type yisodd= tmsk && yisint;
+
+	vf_type abs_x=abs(x);
+	
+	vf_type result = expk(mul_ds(logk(abs_x), y));
+
+	const vf_type nan= _T::nan();
+	const vf_type inf= _T::pinf();
+	
+	result = _T::sel(isnan(result), inf, result);
+
+	vf_type t0 = _T::sel(yisodd, vf_type(-1), vf_type(1));
+	vf_type t1 = _T::sel(!yisint, nan, t0);
+	vf_type t2 = _T::sel(x >= vf_type(0), vf_type(1), t1);
+	result *= t2;
+
+	vf_type efx = mulsign(abs_x -1.0, y);
+	t0 = _T::sel(efx == vf_type(0), 1.0, inf);
+	t1 = _T::sel(efx < vf_type(0), vf_type(0), t0);
+	result = _T::sel(isinf(y), t1, result);
+
+	vmf_type x_eq_zero(x == vf_type(0.0));
+
+	t0 = copysign(vf_type(1.0), x);
+	t1 = _T::sel(x_eq_zero, -y , y);
+	t0 = _T::sel(yisodd, t0, vf_type(0.0));
+	t1 = _T::sel(t1 < vf_type(0.0), vf_type(0.0), inf);
+	t0 *= t1;
+
+	result = _T::sel(isinf(x) | x_eq_zero, t0, result);
+	result = _T::sel(isnan(x) | isnan(y), nan, result);
+	result = _T::sel(x_eq_zero | (x== vf_type(1.0)), 
+			 vf_type(1.0), result);
+	return result;
+#if 0
+	int yisint = (int)y == y;
+	int yisodd = (1 & (int)y) != 0 && yisint;
+
+	double result = expk(mul_ds(logk(xfabs(x)), y));
+
+	result = xisnan(result) ? INFINITY : result;
+	result *=  (x >= 0 ? 1 : (!yisint ? NAN : (yisodd ? -1 : 1)));
+
+	double efx = mulsign(xfabs(x) - 1, y);
+	if (xisinf(y)) result = efx < 0 ? 0.0 : (efx == 0 ? 1.0 : INFINITY);
+	if (xisinf(x) || x == 0) result = (yisodd ? sign(x) : 1) * ((x == 0 ? -y : y) < 0 ? 0 : INFINITY);
+	if (xisnan(x) || xisnan(y)) result = NAN;
+	if (y == 0 || x == 1) result = 1;
+
+	return result;
+#endif
+}
+
+
+
 namespace x86vec {
 
         v2f64 pow2i(arg<v4s32>::type e);
@@ -841,7 +1015,7 @@ namespace x86vec {
         v2f64 tan(arg<v2f64>::type d);
 	v2f64 log(arg<v2f64>::type d);
 	v2f64 exp(arg<v2f64>::type d);
-
+	v2f64 pow(arg<v2f64>::type y, arg<v2f64>::type x);
         v2f64 cbrt(arg<v2f64>::type d);
 
         namespace impl {
@@ -1011,6 +1185,14 @@ x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
 		impl::vec_func_traits<v2f64, v4s32> >::
                 exp(d);
 }
+
+x86vec::v2f64 x86vec::pow(arg<v2f64>::type x, arg<v2f64>::type y)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                pow(x, y);
+}
+
 
 x86vec::v2f64
 x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)

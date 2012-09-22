@@ -244,6 +244,7 @@ namespace x86vec {
         v2f64 tan(arg<v2f64>::type d);
 	v2f64 log(arg<v2f64>::type d);
 	v2f64 exp(arg<v2f64>::type d);
+	v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);
 
 	namespace impl {
 		// fma emulation (a*b +c), calculates correctly until
