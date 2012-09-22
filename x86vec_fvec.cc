@@ -1186,12 +1186,14 @@ x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
                 exp(d);
 }
 
+#if 0
 x86vec::v2f64 x86vec::pow(arg<v2f64>::type x, arg<v2f64>::type y)
 {
         return math::func<double, int32_t,
 		impl::vec_func_traits<v2f64, v4s32> >::
                 pow(x, y);
 }
+#endif
 
 
 x86vec::v2f64
