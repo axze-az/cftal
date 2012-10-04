@@ -1310,6 +1310,12 @@ x86vec::v4f32 test_mask(x86vec::v4f32 r)
 	return res;
 }
 
+x86vec::v4f32 test_add(x86vec::v4f32 a, x86vec::v4f32 b, x86vec::v4f32 m)
+{
+	x86vec::v4f32 r(a);
+	r(m) = a(m) + b(m);
+	return r;
+}
 
 #if 0
 static inline float ldexpkf(float x, int q) {

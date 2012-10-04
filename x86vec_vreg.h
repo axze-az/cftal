@@ -49,6 +49,7 @@ namespace x86vec {
 		masked_vec(_V& v, const mask<_V>& m);
 		masked_vec& operator=(const masked_vec& r) = delete;
 		_V& operator=(const _V& r);
+		operator _V() const;
 	};
 }
 
@@ -99,6 +100,13 @@ _V& x86vec::masked_vec<_V>::operator=(const _V& r)
 	_V& res= *_v;
 	res = select(_m(), r, res);
 	return res;
+}
+
+template <class _V>
+inline
+x86vec::masked_vec<_V>::operator _V () const 
+{
+	return *_v;
 }
 
 // Local variables:
