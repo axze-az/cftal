@@ -69,6 +69,8 @@ namespace x86vec {
                 v4f32(const mem::addr<element_type>& r);
                 v4f32(const mem::aligned::addr<element_type>& r);
                 v4f32(const mem::unaligned::addr<element_type>& r);
+		using base_type::operator();
+		masked_vec<v4f32> operator()(const mask<v4f32>& m);
         };
 
         v4f32& operator|= (v4f32& a, const v4f32& b);
@@ -163,13 +165,9 @@ namespace x86vec {
                 v2f64(const mem::addr<element_type>& r);
                 v2f64(const mem::aligned::addr<element_type>& r);
                 v2f64(const mem::unaligned::addr<element_type>& r);
+		using base_type::operator();
+		masked_vec<v2f64> operator()(const mask<v2f64>& m);
         };
-
-#if 0
-	template <class _T> class masked_vec;
-	template <class _T> class mask;
-	masked_vec<v2f64> operator()(v2f64& l, const mask<v2f64>& m);
-#endif
 
         v2f64& operator|= (v2f64& a, const v2f64& b);
         v2f64& operator&= (v2f64& a, const v2f64& b);

@@ -1303,6 +1303,13 @@ x86vec::v2f64 x86vec::frexp(arg<v2f64>::type v, v2s64* ex)
         return r;
 }
 
+x86vec::v4f32 test_mask(x86vec::v4f32 r)
+{
+	x86vec::v4f32 res(r);
+	res(r<0.0) = -r;
+	return res;
+}
+
 
 #if 0
 static inline float ldexpkf(float x, int q) {
