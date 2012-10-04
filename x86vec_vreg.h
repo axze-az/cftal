@@ -25,6 +25,33 @@ namespace x86vec {
                 _X operator()() const;
                 _X& operator()();
         };
+
+	// mask of a vector.
+	template <class _V>
+	class mask {
+	public:
+		typedef typename _V::vector_type vector_type;
+		mask() = default;
+		mask(const _V& x);
+		mask(vector_type x);
+		mask& operator=(const mask& r) = default;
+		vector_type operator()() const;
+	private:
+		vector_type _v;
+	};
+
+	// masked vector to allow something like v x;
+	// x(mask) = ...
+	template <class _V>
+	class masked_vec {
+		_V* _v;
+		mask<_V> _m;
+	public:
+		masked_vec() = delete;
+		masked_vec(_V& v, const mask<_V>& m);
+		masked_vec& operator=(const masked_vec& r) = delete;
+		_V& operator=(const _V& r);
+	};
 }
 
 template <class _X>
@@ -45,6 +72,25 @@ inline
 _X& x86vec::vreg<_X>::operator()()
 {
         return _v;
+}
+
+template <class _V>
+inline 
+x86vec::mask<_V>::mask(const _V& x) : _v(x()) 
+{
+}
+
+template <class _V>
+inline
+x86vec::mask<_V>::mask(vector_type v) : _v(v)
+{
+}
+
+template <class _V>
+typename x86vec::mask<_V>::vector_type
+x86vec::mask<_V>::operator()() const 
+{
+	return _v;
 }
 
 // Local variables:

@@ -165,6 +165,12 @@ namespace x86vec {
                 v2f64(const mem::unaligned::addr<element_type>& r);
         };
 
+#if 0
+	template <class _T> class masked_vec;
+	template <class _T> class mask;
+	masked_vec<v2f64> operator()(v2f64& l, const mask<v2f64>& m);
+#endif
+
         v2f64& operator|= (v2f64& a, const v2f64& b);
         v2f64& operator&= (v2f64& a, const v2f64& b);
         v2f64& operator^= (v2f64& a, const v2f64& b);
