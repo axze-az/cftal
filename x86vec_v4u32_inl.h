@@ -64,6 +64,13 @@ x86vec::v4u32::v4u32(const mem::unaligned::addr<element_type>& r)
 }
 
 inline
+x86vec::masked_vec<x86vec::v4u32>
+x86vec::v4u32::operator()(const mask<v4u32>& m) 
+{
+	return masked_vec<v4u32>(*this, m);
+}
+
+inline
 x86vec::v4u32&
 x86vec::operator|= (v4u32& a, const v4u32& b)
 {

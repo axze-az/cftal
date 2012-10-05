@@ -67,6 +67,13 @@ x86vec::v8u16::v8u16(const mem::unaligned::addr<element_type>& r)
 }
 
 inline
+x86vec::masked_vec<x86vec::v8u16>
+x86vec::v8u16::operator()(const mask<v8u16>& m) 
+{
+	return masked_vec<v8u16>(*this, m);
+}
+
+inline
 x86vec::v8u16&
 x86vec::operator|= (v8u16& a, const v8u16& b)
 {

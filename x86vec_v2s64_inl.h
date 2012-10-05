@@ -55,6 +55,13 @@ x86vec::v2s64::v2s64(const mem::unaligned::addr<element_type>& r)
 }
 
 inline
+x86vec::masked_vec<x86vec::v2s64>
+x86vec::v2s64::operator()(const mask<v2s64>& m) 
+{
+	return masked_vec<v2s64>(*this, m);
+}
+
+inline
 x86vec::v2s64&
 x86vec::operator|= (v2s64& a, const v2s64& b)
 {

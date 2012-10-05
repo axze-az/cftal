@@ -54,6 +54,8 @@ namespace x86vec
                 v8s16(const mem::addr<element_type>& r);
                 v8s16(const mem::aligned::addr<element_type>& r);
                 v8s16(const mem::unaligned::addr<element_type>& r);
+		using base_type::operator();
+		masked_vec<v8s16> operator()(const mask<v8s16>& m);
         };
 
         v8s16& operator|= (v8s16& a, const v8s16& b);
@@ -160,6 +162,8 @@ namespace x86vec
                 v8u16(const mem::addr<element_type>& r);
                 v8u16(const mem::aligned::addr<element_type>& r);
                 v8u16(const mem::unaligned::addr<element_type>& r);
+		using base_type::operator();
+		masked_vec<v8u16> operator()(const mask<v8u16>& m);
         };
 
         v8u16& operator|= (v8u16& a, const v8u16& b);
@@ -257,6 +261,8 @@ namespace x86vec
                 v4s32(const mem::addr<element_type>& r);
                 v4s32(const mem::aligned::addr<element_type>& r);
                 v4s32(const mem::unaligned::addr<element_type>& r);
+		using base_type::operator();
+		masked_vec<v4s32> operator()(const mask<v4s32>& m);
         };
 
         v4s32& operator|= (v4s32& a, const v4s32& b);
@@ -357,6 +363,8 @@ namespace x86vec
                 v4u32(const mem::addr<element_type>& r);
                 v4u32(const mem::aligned::addr<element_type>& r);
                 v4u32(const mem::unaligned::addr<element_type>& r);
+		using base_type::operator();
+		masked_vec<v4u32> operator()(const mask<v4u32>& m);
         };
 
         v4u32& operator|= (v4u32& a, const v4u32& b);
@@ -447,6 +455,8 @@ namespace x86vec
                 v2s64(const mem::addr<element_type>& r);
                 v2s64(const mem::aligned::addr<element_type>& r);
                 v2s64(const mem::unaligned::addr<element_type>& r);
+		using base_type::operator();
+		masked_vec<v2s64> operator()(const mask<v2s64>& m);
         };
 
         v2s64& operator|= (v2s64& a, const v2s64& b);
@@ -544,6 +554,8 @@ namespace x86vec
                 v2u64(const mem::addr<element_type>& r);
                 v2u64(const mem::aligned::addr<element_type>& r);
                 v2u64(const mem::unaligned::addr<element_type>& r);
+		using base_type::operator();
+		masked_vec<v2u64> operator()(const mask<v2u64>& m);
         };
 
         v2u64& operator|= (v2u64& a, const v2u64& b);
