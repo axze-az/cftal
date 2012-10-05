@@ -29,14 +29,14 @@ namespace math {
                   typename _T= func_traits<_F, _I> >
         struct func {};
 
-
 	template <typename _T>
 	class dd {
 		_T _x;
 		_T _y;
 	public:
-		dd(const _T& xx, const _T& yy) : _x(x), _y(y) {}
-		dd(const _T& xx) : _x(x), _y(_T(0)) {}
+		dd(const _T& xx, const _T& yy) : _x(xx), _y(yy) {}
+		dd(const _T& xx) : _x(xx), _y(_T(0)) {}
+		dd(const dd& dd) : _x(dd._x), _y(dd._y) {}
 		const _T& x() const { return _x; }
 		_T& x() { return _x; }
 		const _T& y() const { return _y; }
@@ -115,6 +115,14 @@ namespace math {
                 static constexpr double nan() {
                         return std::numeric_limits<double>::quiet_NaN();
 		}
+		
+		static vf_type upper(const vf_type& v) {
+			ud_t t;
+			t._d = v;
+			t._u &= 0xfffffffff8000000ULL;
+			return t._d;
+		}
+
                 static
                 vmf_type vmi_to_vmf(const vmi_type& mi) {
                         return mi;
@@ -243,8 +251,8 @@ math::dd<_T> math::add2_ds(const dd<_T>& x, const _T& y)
 {
 	_T rx  = x.x() + y;
 	_T v = rx - x.x();
-	_T ry = (x.x - (rx - v)) + (y - v);
-	ry += x.y;
+	_T ry = (x.x() - (rx - v)) + (y - v);
+	ry += x.y();
 	return dd<_T>(rx, ry);
 }
 
@@ -344,7 +352,7 @@ math::dd<_T> math::squ_d(const dd<_T>& x)
 {
 	_T xh = upper(x.x()), xl = x.x() - xh;
 
-	_T rx = x.x * x.x;
+	_T rx = x.x() * x.x();
 	_T ry = xh * xh - rx + (xh + xh) * xl + xl * xl 
 		+ x.x() * (x.y() + x.y());
 	return dd<_T>(rx, ry);
@@ -857,7 +865,7 @@ logk(const vf_type& d)
 	t = mad(t, x2.x(), 0.400000000000222439910458);
 	t = mad(t, x2.x(), 0.666666666666666371239645);
 
-	vdf_type c1(0.693147180559945286226764, 
+	vdf_type c1(0.693147180559945286226764,
 		    2.319046813846299558417771e-17);
 	vf_type ef= _T::cvt_i_to_f(e);
 	return add2_dd(mul_ds(c1, ef),
@@ -945,8 +953,10 @@ pow(const vf_type& x, const vf_type& y)
 	vmf_type yisodd= tmsk && yisint;
 
 	vf_type abs_x=abs(x);
-	
-	vf_type result = expk(mul_ds(logk(abs_x), y));
+
+	vdf_type logk_abs_x=logk(abs_x);
+	vdf_type td = mul_ds(logk_abs_x, y);
+	vf_type result = expk(td);
 
 	const vf_type nan= _T::nan();
 	const vf_type inf= _T::pinf();
@@ -1018,8 +1028,17 @@ namespace x86vec {
 	v2f64 pow(arg<v2f64>::type y, arg<v2f64>::type x);
         v2f64 cbrt(arg<v2f64>::type d);
 
+	inline
+	v2f64 upper(const v2f64& v) {
+		const v2f64 msk= 
+			const4_u32<0xf8000000U, 0xffffffff,
+				   0xf8000000U, 0xffffffff>::dv();
+		return v & msk;
+	}
+
         namespace impl {
 
+		
                 template <typename _VF, typename _VI>
                 struct vec_func_traits;
 
@@ -1186,14 +1205,12 @@ x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
                 exp(d);
 }
 
-#if 0
 x86vec::v2f64 x86vec::pow(arg<v2f64>::type x, arg<v2f64>::type y)
 {
         return math::func<double, int32_t,
 		impl::vec_func_traits<v2f64, v4s32> >::
                 pow(x, y);
 }
-#endif
 
 
 x86vec::v2f64
