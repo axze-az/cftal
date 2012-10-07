@@ -2,6 +2,55 @@
 #include <iostream>
 #include <iomanip>
 
+namespace x86vec {
+
+
+	template <class _L, class _OP, class _R>
+	struct expr_node {
+		const _L* _l;
+		const _R* _r;
+		_OP _op;
+	public:
+		auto 
+		eval() ->decltype(_OP::operator()(_L,_R)) const {
+			return _op.eval(_l->eval(), _r->eval());
+		}
+	};
+
+	template <class _L, class _R, class _OP>
+	auto eval(const expr_node& r) 
+	{
+		
+	}
+
+
+	template <class _OP>
+	class expr_node<v2f64, v2f64, _OP> {
+		const v2f64* _l;
+		const v2f64* _r;
+		_OP _op;
+	public:
+		v2f64 eval() const {
+			return _op.eval(*_l, *_r);
+		}
+	};
+
+		
+	template <class _T>
+	struct add_op {
+		
+	};
+
+	template <class _T>
+	struct mul_op {
+	};
+
+	// 
+	class expr {
+	};
+
+}
+
 typedef unsigned __int128 u128_t;
 
 u128_t sll(u128_t r, unsigned s)
