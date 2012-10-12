@@ -51,6 +51,22 @@ namespace x86vec {
 		_V& operator=(const _V& r);
 		operator _V() const;
 	};
+
+
+	template <class _OP, class _T>
+	struct bi_op {
+		const _T _a0;
+		const _T _a1;
+		constexpr bi_op(const _T& a0, const _T& a1);
+	};
+
+	template <class _OP, class _T>
+	struct tri_op {
+		const _T _a0;
+		const _T _a1;
+		const _T _a2;
+		constexpr tri_op(const _T& a0, const _T& a1, const _T& a2);
+	};
 }
 
 template <class _X>
@@ -108,6 +124,23 @@ x86vec::masked_vec<_V>::operator _V () const
 {
 	return *_v;
 }
+
+template <class _OP, class _T>
+inline
+constexpr
+x86vec::bi_op<_OP, _T>::bi_op(const _T& a0, const _T& a1)
+	: _a0(a0), _a1(a1)
+{
+}
+
+template <class _OP, class _T>
+inline
+constexpr
+x86vec::tri_op<_OP, _T>::tri_op(const _T& a0, const _T& a1, const _T& a2)
+	: _a0(a0), _a1(a1), _a2(a2)
+{
+}
+
 
 // Local variables:
 // mode: c++

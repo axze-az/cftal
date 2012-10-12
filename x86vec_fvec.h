@@ -161,6 +161,12 @@ namespace x86vec {
                 v2f64(element_type p00, element_type p01);
                 // broadcast to all positions
                 v2f64(element_type r);
+		// assignment from bi_op<_X, v2f64>
+		template <class _OP>
+		v2f64(const bi_op<_OP, v2f64>& r);
+		// assignment from tri_op<_X, v2f64>
+		template <class _OP>
+		v2f64(const tri_op<_OP, v2f64>& r);
                 v2f64(const mem::addr_bcast<element_type>& r);
                 v2f64(const mem::addr<element_type>& r);
                 v2f64(const mem::aligned::addr<element_type>& r);
@@ -169,13 +175,80 @@ namespace x86vec {
 		masked_vec<v2f64> operator()(const mask<v2f64>& m);
         };
 
-        v2f64& operator|= (v2f64& a, const v2f64& b);
-        v2f64& operator&= (v2f64& a, const v2f64& b);
-        v2f64& operator^= (v2f64& a, const v2f64& b);
+	namespace impl {
+
+		struct f64_add {
+			static v2f64 v(const v2f64& a, const v2f64& b);
+		};
+
+		struct f64_sub {
+			static v2f64 v(const v2f64& a, const v2f64& b);
+		};
+
+		struct f64_mul {
+			static v2f64 v(const v2f64& a, const v2f64& b);
+		};
+
+		struct f64_div {
+			static v2f64 v(const v2f64& a, const v2f64& b);
+		};
+
+		// a * b + c
+		struct f64_fma {
+			static v2f64 v(const v2f64& a, const v2f64& b, 
+				       const v2f64& c);
+		};
+
+		// a * b - c
+		struct f64_fms {
+			static v2f64 v(const v2f64& a, const v2f64& b, 
+				       const v2f64& c);
+		};
+
+		// -(a * b) + c = c - a * b
+		struct f64_fnma {
+			static v2f64 v(const v2f64& a, const v2f64& b, 
+				       const v2f64& c);
+		};
+	}
+
         v2f64& operator+= (v2f64& a, const v2f64& b);
         v2f64& operator-= (v2f64& a, const v2f64& b);
         v2f64& operator*= (v2f64& a, const v2f64& b);
         v2f64& operator/= (v2f64& a, const v2f64& b);
+#if 1
+	// a+= b*c
+	v2f64& operator+=(v2f64& a, const bi_op<impl::f64_mul, v2f64>& b);
+	// a-= b*c
+	v2f64& operator-=(v2f64& a, const bi_op<impl::f64_mul, v2f64>& b);
+
+	bi_op<impl::f64_add, v2f64> operator+(const v2f64& a, const v2f64& b);
+	bi_op<impl::f64_sub, v2f64> operator-(const v2f64& a, const v2f64& b);
+	bi_op<impl::f64_mul, v2f64> operator*(const v2f64& a, const v2f64& b);
+	bi_op<impl::f64_div, v2f64> operator/(const v2f64& a, const v2f64& b);
+	// a + b * c
+	tri_op<impl::f64_fma, v2f64> 
+	operator+(const v2f64& a, const bi_op<impl::f64_mul, v2f64>& b);
+	// a * b + c 
+	tri_op<impl::f64_fma, v2f64> 
+	operator+(const bi_op<impl::f64_mul, v2f64>& a, const v2f64& b);
+	// a - b * c = -(b*c) + a
+	tri_op<impl::f64_fnma, v2f64>
+	operator-(const v2f64& a, const bi_op<impl::f64_mul, v2f64>& b);
+	// a * b - c
+	tri_op<impl::f64_fms, v2f64>
+	operator-(const bi_op<impl::f64_mul, v2f64>& a, const v2f64& b);
+
+#else
+        v2f64 operator+ (const v2f64& a, const v2f64& b);
+        v2f64 operator- (const v2f64& a, const v2f64& b);
+        v2f64 operator* (const v2f64& a, const v2f64& b);
+        v2f64 operator/ (const v2f64& a, const v2f64& b);
+#endif	
+
+        v2f64& operator|= (v2f64& a, const v2f64& b);
+        v2f64& operator&= (v2f64& a, const v2f64& b);
+        v2f64& operator^= (v2f64& a, const v2f64& b);
 	
         v2f64 operator++ (v2f64& a, int);
         v2f64& operator++(v2f64& a);
@@ -193,11 +266,6 @@ namespace x86vec {
         v2f64 operator&& (const v2f64& a, const v2f64& b);
         v2f64 operator^(const v2f64& a, const v2f64& b);
 
-        v2f64 operator+ (const v2f64& a, const v2f64& b);
-        v2f64 operator- (const v2f64& a, const v2f64& b);
-        v2f64 operator* (const v2f64& a, const v2f64& b);
-        v2f64 operator/ (const v2f64& a, const v2f64& b);
-	
         v2f64 operator< (const v2f64& a, const v2f64& b);
         v2f64 operator<= (const v2f64& a, const v2f64& b);
         v2f64 operator== (const v2f64& a, const v2f64& b);

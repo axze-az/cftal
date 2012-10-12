@@ -10,7 +10,7 @@ MINOR=1#
 
 SLDFLAGS:= $(SLDFLAGS) 
 #ARCH=#-march=bdver1 -mxop #-march=bdver1 #-mdispatch-scheduler
-ARCH+=#-no-sse3
+ARCH+=#-mpopcnt -mfma
 CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 
 CSRCS=heap_array.cc x86vec_ops_1.cc x86vec_fvec.cc x86vec_test.cc	\

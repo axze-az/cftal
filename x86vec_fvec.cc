@@ -202,8 +202,15 @@ namespace math {
 		static vdf_type logk(const vf_type& d);
 		static vf_type expk(const vdf_type& d);
 		static vdf_type expk2(const vdf_type& d);
+		static vdf_type logk2(const vdf_type& d);
 	public:
 		static vf_type pow(const vf_type& x, const vf_type& y);
+		static vf_type sinh(const vf_type& x);
+		static vf_type cosh(const vf_type& x);
+		static vf_type tanh(const vf_type& x);
+		static vf_type asinh(const vf_type& x);
+		static vf_type acosh(const vf_type& x);
+		static vf_type atanh(const vf_type& x);
         };
 
 };
@@ -295,7 +302,6 @@ math::div_dd(const dd<_T>& n, const dd<_T>& d)
 	_T dh  = upper(d.x()), dl  = d.x() - dh;
 	_T th  = upper(t  ), tl  = t   - th;
 	_T nhh = upper(n.x()), nhl = n.x() - nhh;
-
 
 	_T qx = n.x() * t;
 
@@ -885,8 +891,8 @@ expk(const vdf_type& d)
 	// double2 s, t;
 	// double u;
 
-	vdf_type s = add2_ds(d, qf * -L2U);
-	s = add2_ds(s, qf * -L2L);
+	vdf_type s = add2_ds(d, vf_type(qf * -L2U));
+	s = add2_ds(s, vf_type(qf * -L2L));
 
 	s = normalize(s);
 
@@ -937,6 +943,38 @@ expk2(const vdf_type& d)
 	vdf_type t = add_dd(s, mul_ds(squ_d(s), u));
 	t = add_sd(1, t);
 	return vdf_type(ldexp(t.x(), q), ldexp(t.y(), q));
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vdf_type
+math::func<double, math::int32_t, _T>::
+logk2(const vdf_type& du)
+{
+	// double2 x, x2, m;
+	// double t;
+	// int e;
+
+	vdf_type d = normalize_d(du);
+	vi_type e = ilogbp1(d.x() * 0.7071);
+	vdf_type m = scale_d(d, ldexpk(1, -e));
+	vdf_type x = div_dd(add2_ds(m, -1.0), add2_ds(m, 1.0));
+	vdf_type x2 = squ_d(x);
+
+	vf_type t = 0.134601987501262130076155;
+	t = mad(t, x2.x(), 0.132248509032032670243288);
+	t = mad(t, x2.x(), 0.153883458318096079652524);
+	t = mad(t, x2.x(), 0.181817427573705403298686);
+	t = mad(t, x2.x(), 0.222222231326187414840781);
+	t = mad(t, x2.x(), 0.285714285651261412873718);
+	t = mad(t, x2.x(), 0.400000000000222439910458);
+	t = mad(t, x2.x(), 0.666666666666666371239645);
+	vf_type fe = _T::cvt_i_to_f(e);
+	return add2_dd(
+		mul_ds(vdf_type(0.693147180559945286226764, 
+				2.319046813846299558417771e-17), 
+		       fe),
+		add2_dd(scale_d(x, 2.0), mul_ds(mul_dd(x2, x), t)));
 }
 
 template <typename _T>
