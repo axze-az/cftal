@@ -10,8 +10,7 @@
 #include <type_traits>
 #include <limits>
 
-namespace x86vec
-{
+namespace x86vec {
 
         class v128u1 : public vreg<__m128i> {
         public:
