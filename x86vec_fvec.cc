@@ -36,7 +36,7 @@ namespace math {
 	public:
 		dd(const _T& xx, const _T& yy) : _x(xx), _y(yy) {}
 		dd(const _T& xx) : _x(xx), _y(_T(0)) {}
-		dd(const dd& dd) : _x(dd._x), _y(dd._y) {}
+		// dd(const dd& dd) : _x(dd._x), _y(dd._y) {}
 		const _T& x() const { return _x; }
 		_T& x() { return _x; }
 		const _T& y() const { return _y; }
