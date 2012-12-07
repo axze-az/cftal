@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/normal_iterator.h>
+#include <initializer_list>
 
 namespace cftal {
 
@@ -26,6 +27,23 @@ namespace cftal {
                         try {
                                 for (i=0; i<_N; ++i)
                                         a.construct(p+i, init);
+                        }
+                        catch (...) {
+                                for (std::size_t j=0; j<i; ++j)
+                                        a.destroy(p+j);
+                                throw;
+                        }
+                }
+                _T* alloc_and_copy(_A& a, const std::initializer_list<_T>& l) {
+                        _T* p= a.allocate(_N);
+                        std::size_t n(std::min(l.size(), _N));
+                        std::size_t i;
+                        auto pi= l.begin();
+                        try {
+                                for (i=0; i<n; ++i, ++pi)
+                                        a.construct(p+i, *pi);
+                                for (;i <_N; ++i)
+                                        a.construct(p+i, _T());
                         }
                         catch (...) {
                                 for (std::size_t j=0; j<i; ++j)
@@ -116,6 +134,10 @@ namespace cftal {
                 // assignment from _T
                 heap_array(const _T& t) : _A(), _v(alloc_(*this, t)) {
                 }
+                // assignment from initializer_list
+                heap_array(std::initializer_list<_T> t)
+                        : _A(), _v(alloc_and_copy_(*this, t)) {
+                }
                 // copy construction
                 heap_array(const heap_array& r)
                 : _A(), _v(alloc_and_copy_(*this, r._v)) {
@@ -123,48 +145,48 @@ namespace cftal {
                 // move construction
                 heap_array(heap_array&& r)
                 : _A(std::move(r)), _v(alloc_(*this, _T())) {
-			std::swap(_v, r._v);
-		}
-		// destruction
-		~heap_array() {
-			destroy_(*this);
-		}
-		// assignment
-		heap_array& operator=(const heap_array& r) {
-			if (this != &r)
-				std::copy(r.begin(), r.end(), begin());
-			return *this;
-		}
-		// move assignment
-		heap_array& operator=(heap_array&& r) {
-			return swap(r);
-		}
-		// assignment of all elements.
-		heap_array& operator=(const _T& r) {
-			_T t=r;
-			std::fill(begin(), end(), t);
-			return *this;
-		}
-		// swap
-		heap_array& swap(heap_array& r) {
-			std::swap(_v, r._v);
-			return *this;
-		}
-	};
+                        std::swap(_v, r._v);
+                }
+                // destruction
+                ~heap_array() {
+                        destroy_(*this);
+                }
+                // assignment
+                heap_array& operator=(const heap_array& r) {
+                        if (this != &r)
+                                std::copy(r.begin(), r.end(), begin());
+                        return *this;
+                }
+                // move assignment
+                heap_array& operator=(heap_array&& r) {
+                        return swap(r);
+                }
+                // assignment of all elements.
+                heap_array& operator=(const _T& r) {
+                        _T t=r;
+                        std::fill(begin(), end(), t);
+                        return *this;
+                }
+                // swap
+                heap_array& swap(heap_array& r) {
+                        std::swap(_v, r._v);
+                        return *this;
+                }
+        };
 
-	template <typename _T, std::size_t _N, typename _A>
-	void swap(heap_array<_T, _N, _A>& a, heap_array<_T, _N, _A>& b) {
-		a.swap(b);
-	}
+        template <typename _T, std::size_t _N, typename _A>
+        void swap(heap_array<_T, _N, _A>& a, heap_array<_T, _N, _A>& b) {
+                a.swap(b);
+        }
 }
 
 namespace std {
 
-	template <typename _T, std::size_t _N, typename _A>
-	void swap(cftal::heap_array<_T, _N, _A>& a,
-		  cftal::heap_array<_T, _N, _A>& b) {
-		return cftal::swap(a, b);
-	}
+        template <typename _T, std::size_t _N, typename _A>
+        void swap(cftal::heap_array<_T, _N, _A>& a,
+                  cftal::heap_array<_T, _N, _A>& b) {
+                return cftal::swap(a, b);
+        }
 
 }
 
