@@ -631,6 +631,9 @@ namespace x86vec {
         template <unsigned _I>
         typename v2u64::element_type extract(const v2u64& a);
 
+#if defined (__AVX2__)
+	// 256 bit integer types
+#endif
 }
 
 namespace std {

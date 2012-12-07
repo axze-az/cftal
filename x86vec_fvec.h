@@ -353,6 +353,11 @@ namespace x86vec {
 	template <unsigned _I>
 	typename v2f64::element_type extract(const v2f64& a);
 
+#if defined (__AVX__)
+	// 256 bit floating point types
+	
+#endif
+
 }
 
 template <unsigned _N, typename _T>
