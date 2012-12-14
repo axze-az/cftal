@@ -52,7 +52,84 @@ namespace x86vec {
 		operator _V() const;
 	};
 
+	namespace ops {
 
+		template <class _V> struct add {};
+		template <class _V> struct sub {};
+		template <class _V> struct mul {};
+		template <class _V> struct div {};
+
+		// fma (a*b+c) implementation
+		template <class _V> struct fma {
+			typedef _V vector_type;
+			static _V v(const _V& a, const _V& b, const _V& c) {
+				return add<_V>::v(mul<_V>::v(a,b), c);
+			}
+		};
+		// fms (a*b-c) implementation
+		template <class _V> struct fms {
+			typedef _V vector_type;
+			static _V v(const _V& a, const _V& b, const _V& c) {
+				return sub<_V>::v(mul<_V>::v(a,b), c);
+			}
+		};
+		// nfma (c-a*b)= -a*b + c implementation
+		template <class _V> struct nfma {
+			typedef _V vector_type;
+			static _V v(const _V& a, const _V& b, const _V& c) {
+				return sub<_V>::v(c, mul<_V>::v(a,b));
+			}
+		};
+	}
+
+	template <class _OP, class _L, class _R>
+	class expr {
+		const _L _l;
+		const _R _r;
+		constexpr expr(const _L& l, const _R& r) :
+			_l(l), _r(r) {}
+	};
+
+	template <class _T>
+	_T eval(const _T& t) {
+		return t;
+	}
+
+	template <class _OP, class _L, class _R>
+	typename _OP::vector_type 
+	eval(const expr<_OP, _L, _R>& e) {
+		return _OP::v(eval(e._l), eval(e._r)); 
+	}
+
+	// a+ b*c 
+	template <class _V>
+	_V eval(const expr<ops::add<_V>, 
+			   _V, 
+			   expr<ops::mul<_V>, _V, _V> >& e) {
+		return ops::fma<_V>::v(e._r._l, e._r._r, e._l);
+	}
+	// a*b +c 
+	template <class _V>
+	_V eval(const expr<ops::add<_V>, 
+			   expr<ops::mul<_V>, _V, _V>,
+			   _V>& e) {
+		return ops::fma<_V>::v(e._l._l, e._l._r, e._r);
+	}
+	// a*b -c
+	template <class _V>
+	_V eval(const expr<ops::sub<_V>,
+			   expr<ops::mul<_V>, _V, _V>,
+			   _V>& e) {
+		return ops::fms<_V>::v(e._l._l, e._l._r, e._r);
+	}
+	// -a*b +c = c- a* b;
+	template <class _V>
+	_V eval(const expr<ops::sub<_V>,
+			   _V,
+			   expr<ops::mul<_V>, _V, _V> >& e) {
+		return ops::nfma<_V>::v(e._r._l, e._r._r, e._l);
+	}
+	
 	template <class _OP, class _T>
 	struct bi_op {
 		const _T _a0;
