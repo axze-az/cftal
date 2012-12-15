@@ -80,14 +80,16 @@ namespace x86vec {
 	_V eval(const expr<ops::sub<_V>,
 			   expr<ops::mul<_V>, _L1, _R1>,
 			   _R2>& e) {
-		return ops::fms<_V>::v(e._l._l, e._l._r, e._r);
+		return ops::fms<_V>::v(eval(e._l._l), eval(e._l._r), 
+				       eval(e._r));
 	}
 	// -a*b +c = c- a* b;
 	template <class _V, class _L1, class _L2, class _R2>
 	_V eval(const expr<ops::sub<_V>,
 			   _L1,
 			   expr<ops::mul<_V>, _L2, _R2> >& e) {
-		return ops::fnma<_V>::v(e._r._l, e._r._r, e._l);
+		return ops::fnma<_V>::v(eval(e._r._l), eval(e._r._r), 
+					eval(e._l));
 	}
 
 	// a*b - c*d

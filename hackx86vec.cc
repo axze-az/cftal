@@ -116,25 +116,41 @@ x86vec::v2f64 test1a(x86vec::v2f64 a, x86vec::v2f64 b, x86vec::v2f64 c)
 
 x86vec::v2f64 test1b(x86vec::v2f64 a, x86vec::v2f64 b, x86vec::v2f64 c)
 {
-	return a*b - c;
+	return c+ a*b;
 }
 
 x86vec::v2f64 test1c(x86vec::v2f64 a, x86vec::v2f64 b, x86vec::v2f64 c)
 {
-	return c- a*b;
+	return a*b - c;
 }
 
+x86vec::v2f64 test1d(x86vec::v2f64 a, x86vec::v2f64 b, x86vec::v2f64 c)
+{
+	return c- a*b;
+}
 
 x86vec::v2f64 test2a(x86vec::v2f64 a, x86vec::v2f64 b, 
 		     x86vec::v2f64 c, x86vec::v2f64 d)
 {
-	return (a*b) + (c*d);
+	return a*b + c*d;
 }
 
 x86vec::v2f64 test2b(x86vec::v2f64 a, x86vec::v2f64 b, 
 		     x86vec::v2f64 c, x86vec::v2f64 d)
 {
-	return (a*b) - (c*d);
+	return a*b - c*d;
+}
+
+x86vec::v2f64 test2c(x86vec::v2f64 a, x86vec::v2f64 b, 
+		     x86vec::v2f64 c, x86vec::v2f64 d)
+{
+	return (a*b + c) * d;
+}
+
+x86vec::v2f64 test2d(x86vec::v2f64 a, x86vec::v2f64 b, 
+		     x86vec::v2f64 c, x86vec::v2f64 d)
+{
+	return (a*b - c) * d;
 }
 
 
