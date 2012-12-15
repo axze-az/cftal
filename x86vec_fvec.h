@@ -167,6 +167,9 @@ namespace x86vec {
 		// assignment from tri_op<_X, v2f64>
 		template <class _OP>
 		v2f64(const tri_op<_OP, v2f64>& r);
+		// assignment from expr<op<v2f64>, _L, _R>
+		template <template <class _V> class _OP, class _L, class _R>
+		v2f64(const expr<_OP<v2f64>, _L, _R>& r);
                 v2f64(const mem::addr_bcast<element_type>& r);
                 v2f64(const mem::addr<element_type>& r);
                 v2f64(const mem::aligned::addr<element_type>& r);
@@ -175,38 +178,50 @@ namespace x86vec {
 		masked_vec<v2f64> operator()(const mask<v2f64>& m);
         };
 
-	namespace impl {
+	inline
+	v2f64 eval(const v2f64& v) {
+		return v;
+	}
 
-		struct v2f64_add {
+	namespace ops {
+		
+		template <>
+		struct add<v2f64> : public def_vector_type<v2f64> {
 			static v2f64 v(const v2f64& a, const v2f64& b);
 		};
 
-		struct v2f64_sub {
+		template <>
+		struct sub<v2f64> : public def_vector_type<v2f64>{
 			static v2f64 v(const v2f64& a, const v2f64& b);
 		};
 
-		struct v2f64_mul {
+		template <>
+		struct mul<v2f64> : public def_vector_type<v2f64>{
 			static v2f64 v(const v2f64& a, const v2f64& b);
 		};
 
-		struct v2f64_div {
+		template <>
+		struct div<v2f64> : public def_vector_type<v2f64>{
 			static v2f64 v(const v2f64& a, const v2f64& b);
 		};
 
 		// a * b + c
-		struct v2f64_fma {
+		template <>
+		struct fma<v2f64> : public def_vector_type<v2f64>{
 			static v2f64 v(const v2f64& a, const v2f64& b, 
 				       const v2f64& c);
 		};
 
 		// a * b - c
-		struct v2f64_fms {
+		template <>
+		struct fms<v2f64> : public def_vector_type<v2f64>{
 			static v2f64 v(const v2f64& a, const v2f64& b, 
 				       const v2f64& c);
 		};
 
 		// -(a * b) + c = c - a * b
-		struct v2f64_fnma {
+		template <>
+		struct fnma<v2f64> : public def_vector_type<v2f64>{
 			static v2f64 v(const v2f64& a, const v2f64& b, 
 				       const v2f64& c);
 		};
@@ -216,35 +231,137 @@ namespace x86vec {
         v2f64& operator-= (v2f64& a, const v2f64& b);
         v2f64& operator*= (v2f64& a, const v2f64& b);
         v2f64& operator/= (v2f64& a, const v2f64& b);
-#if 1
-	// a+= b*c
-	v2f64& operator+=(v2f64& a, const bi_op<impl::v2f64_mul, v2f64>& b);
-	// a-= b*c
-	v2f64& operator-=(v2f64& a, const bi_op<impl::v2f64_mul, v2f64>& b);
 
-	bi_op<impl::v2f64_add, v2f64> operator+(const v2f64& a, const v2f64& b);
-	bi_op<impl::v2f64_sub, v2f64> operator-(const v2f64& a, const v2f64& b);
-	bi_op<impl::v2f64_mul, v2f64> operator*(const v2f64& a, const v2f64& b);
-	bi_op<impl::v2f64_div, v2f64> operator/(const v2f64& a, const v2f64& b);
-	// a + b * c
-	tri_op<impl::v2f64_fma, v2f64> 
-	operator+(const v2f64& a, const bi_op<impl::v2f64_mul, v2f64>& b);
-	// a * b + c 
-	tri_op<impl::v2f64_fma, v2f64> 
-	operator+(const bi_op<impl::v2f64_mul, v2f64>& a, const v2f64& b);
-	// a - b * c = -(b*c) + a
-	tri_op<impl::v2f64_fnma, v2f64>
-	operator-(const v2f64& a, const bi_op<impl::v2f64_mul, v2f64>& b);
-	// a * b - c
-	tri_op<impl::v2f64_fms, v2f64>
-	operator-(const bi_op<impl::v2f64_mul, v2f64>& a, const v2f64& b);
+	// operator +(V, V)
+	inline 
+	expr<ops::add<v2f64>, v2f64, v2f64> 
+	operator+(const v2f64& a, const v2f64& b) {
+		return expr<ops::add<v2f64>, v2f64, v2f64>(a,b);
+	}
+	// operator +(V, expr)
+	template <template <class _V> class _OP, class _L, class _R>
+	expr<ops::add<v2f64>, v2f64, expr<_OP<v2f64>, _L, _R> > 
+	operator+(const v2f64& a, const expr<_OP<v2f64>, _L, _R>& b) {
+		return expr<ops::add<v2f64>, 
+			    v2f64, expr<_OP<v2f64>, _L, _R> >(a, b);
+	}
+	// operator +(expr, V)
+	template <template <class _V> class _OP, class _L, class _R>
+	expr<ops::add<v2f64>, expr<_OP<v2f64>, _L, _R>, v2f64> 
+	operator+(const expr<_OP<v2f64>, _L, _R>& a, const v2f64& b) {
+		return expr<ops::add<v2f64>, 
+			    expr<_OP<v2f64>, _L, _R>, v2f64>(a, b);
+	}
+	// operator +(expr, expr)
+	template <template <class _V> class _OP1, class _L1, class _R1,
+		  template <class _V> class _OP2, class _L2, class _R2>
+	expr<ops::add<v2f64>, 
+	     expr<_OP1<v2f64>, _L1, _R1>, expr<_OP2<v2f64>, _L2, _R2> > 
+	operator+(const expr<_OP1<v2f64>, _L1, _R1>& a, 
+		  const expr<_OP2<v2f64>, _L2, _R2>& b) {
+		return expr<ops::add<v2f64>, 
+			    expr<_OP1<v2f64>, _L1, _R1>, 
+			    expr<_OP2<v2f64>, _L2, _R2> > (a, b);
+	}
 
-#else
-        v2f64 operator+ (const v2f64& a, const v2f64& b);
-        v2f64 operator- (const v2f64& a, const v2f64& b);
-        v2f64 operator* (const v2f64& a, const v2f64& b);
-        v2f64 operator/ (const v2f64& a, const v2f64& b);
-#endif	
+	// operator -(V, V)
+	inline 
+	expr<ops::sub<v2f64>, v2f64, v2f64> 
+	operator-(const v2f64& a, const v2f64& b) {
+		return expr<ops::sub<v2f64>, v2f64, v2f64>(a,b);
+	}
+	// operator -(V, expr)
+	template <template <class _V> class _OP, class _L, class _R>
+	expr<ops::sub<v2f64>, v2f64, expr<_OP<v2f64>, _L, _R> > 
+	operator-(const v2f64& a, const expr<_OP<v2f64>, _L, _R>& b) {
+		return expr<ops::sub<v2f64>, 
+			    v2f64, expr<_OP<v2f64>, _L, _R> >(a, b);
+	}
+	// operator -(expr, V)
+	template <template <class _V> class _OP, class _L, class _R>
+	expr<ops::sub<v2f64>, expr<_OP<v2f64>, _L, _R>, v2f64> 
+	operator-(const expr<_OP<v2f64>, _L, _R>& a, const v2f64& b) {
+		return expr<ops::sub<v2f64>, 
+			    expr<_OP<v2f64>, _L, _R>, v2f64>(a, b);
+	}
+	// operator -(expr, expr)
+	template <template <class _V> class _OP1, class _L1, class _R1,
+		  template <class _V> class _OP2, class _L2, class _R2>
+	expr<ops::sub<v2f64>, 
+	     expr<_OP1<v2f64>, _L1, _R1>, expr<_OP2<v2f64>, _L2, _R2> > 
+	operator-(const expr<_OP1<v2f64>, _L1, _R1>& a, 
+		  const expr<_OP2<v2f64>, _L2, _R2>& b) {
+		return expr<ops::sub<v2f64>, 
+			    expr<_OP1<v2f64>, _L1, _R1>, 
+			    expr<_OP2<v2f64>, _L2, _R2> > (a, b);
+	}
+
+
+	// operator *(V, V)
+	inline 
+	expr<ops::mul<v2f64>, v2f64, v2f64> 
+	operator*(const v2f64& a, const v2f64& b) {
+		return expr<ops::mul<v2f64>, v2f64, v2f64>(a,b);
+	}
+	// operator *(V, expr)
+	template <template <class _V> class _OP, class _L, class _R>
+	expr<ops::mul<v2f64>, v2f64, expr<_OP<v2f64>, _L, _R> > 
+	operator*(const v2f64& a, const expr<_OP<v2f64>, _L, _R>& b) {
+		return expr<ops::mul<v2f64>, 
+			    v2f64, expr<_OP<v2f64>, _L, _R> >(a, b);
+	}
+	// operator *(expr, V)
+	template <template <class _V> class _OP, class _L, class _R>
+	expr<ops::mul<v2f64>, expr<_OP<v2f64>, _L, _R>, v2f64> 
+	operator*(const expr<_OP<v2f64>, _L, _R>& a, const v2f64& b) {
+		return expr<ops::mul<v2f64>, 
+			    expr<_OP<v2f64>, _L, _R>, v2f64>(a, b);
+	}
+	// operator *(expr, expr)
+	template <template <class _V> class _OP1, class _L1, class _R1,
+		  template <class _V> class _OP2, class _L2, class _R2>
+	expr<ops::mul<v2f64>, 
+	     expr<_OP1<v2f64>, _L1, _R1>, expr<_OP2<v2f64>, _L2, _R2> > 
+	operator*(const expr<_OP1<v2f64>, _L1, _R1>& a, 
+		  const expr<_OP2<v2f64>, _L2, _R2>& b) {
+		return expr<ops::mul<v2f64>, 
+			    expr<_OP1<v2f64>, _L1, _R1>, 
+			    expr<_OP2<v2f64>, _L2, _R2> > (a, b);
+	}
+
+
+	// operator /(V, V)
+	inline 
+	expr<ops::div<v2f64>, v2f64, v2f64> 
+	operator/(const v2f64& a, const v2f64& b) {
+		return expr<ops::div<v2f64>, v2f64, v2f64>(a,b);
+	}
+	// operator /(V, expr)
+	template <template <class _V> class _OP, class _L, class _R>
+	expr<ops::div<v2f64>, v2f64, expr<_OP<v2f64>, _L, _R> > 
+	operator/(const v2f64& a, const expr<_OP<v2f64>, _L, _R>& b) {
+		return expr<ops::div<v2f64>, 
+			    v2f64, expr<_OP<v2f64>, _L, _R> >(a, b);
+	}
+	// operator /(expr, V)
+	template <template <class _V> class _OP, class _L, class _R>
+	expr<ops::div<v2f64>, expr<_OP<v2f64>, _L, _R>, v2f64> 
+	operator/(const expr<_OP<v2f64>, _L, _R>& a, const v2f64& b) {
+		return expr<ops::div<v2f64>, 
+			    expr<_OP<v2f64>, _L, _R>, v2f64>(a, b);
+	}
+	// operator /(expr, expr)
+	template <template <class _V> class _OP1, class _L1, class _R1,
+		  template <class _V> class _OP2, class _L2, class _R2>
+	expr<ops::div<v2f64>, 
+	     expr<_OP1<v2f64>, _L1, _R1>, expr<_OP2<v2f64>, _L2, _R2> > 
+	operator/(const expr<_OP1<v2f64>, _L1, _R1>& a, 
+		  const expr<_OP2<v2f64>, _L2, _R2>& b) {
+		return expr<ops::div<v2f64>, 
+			    expr<_OP1<v2f64>, _L1, _R1>, 
+			    expr<_OP2<v2f64>, _L2, _R2> > (a, b);
+	}
+
 
         v2f64& operator|= (v2f64& a, const v2f64& b);
         v2f64& operator&= (v2f64& a, const v2f64& b);

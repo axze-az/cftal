@@ -115,14 +115,11 @@ x86vec::v2f64 test1(x86vec::v2f64 a, x86vec::v2f64 b, x86vec::v2f64 c)
 	return a*b + c;
 }
 
-#if 0
 x86vec::v2f64 test2(x86vec::v2f64 a, x86vec::v2f64 b, 
 		    x86vec::v2f64 c, x86vec::v2f64 d)
 {
 	return (a*b) + (c*d);
 }
-#endif
-
 
 int main(int argc, char** argv)
 {

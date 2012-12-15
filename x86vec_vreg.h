@@ -49,10 +49,14 @@ namespace x86vec {
 		masked_vec(_V& v, const mask<_V>& m);
 		masked_vec& operator=(const masked_vec& r) = delete;
 		_V& operator=(const _V& r);
-		operator _V() const;
+		explicit operator _V() const;
 	};
 
 	namespace ops {
+
+		template <class _V> struct def_vector_type {
+			typedef _V vector_type;
+		};
 
 		template <class _V> struct add {};
 		template <class _V> struct sub {};
@@ -60,22 +64,19 @@ namespace x86vec {
 		template <class _V> struct div {};
 
 		// fma (a*b+c) implementation
-		template <class _V> struct fma {
-			typedef _V vector_type;
+		template <class _V> struct fma : public def_vector_type<_V> {
 			static _V v(const _V& a, const _V& b, const _V& c) {
 				return add<_V>::v(mul<_V>::v(a,b), c);
 			}
 		};
 		// fms (a*b-c) implementation
-		template <class _V> struct fms {
-			typedef _V vector_type;
+		template <class _V> struct fms : public def_vector_type<_V> {
 			static _V v(const _V& a, const _V& b, const _V& c) {
 				return sub<_V>::v(mul<_V>::v(a,b), c);
 			}
 		};
-		// nfma (c-a*b)= -a*b + c implementation
-		template <class _V> struct nfma {
-			typedef _V vector_type;
+		// fnma (c-a*b)= -a*b + c implementation
+		template <class _V> struct fnma : public def_vector_type<_V> {
 			static _V v(const _V& a, const _V& b, const _V& c) {
 				return sub<_V>::v(c, mul<_V>::v(a,b));
 			}
@@ -83,17 +84,17 @@ namespace x86vec {
 	}
 
 	template <class _OP, class _L, class _R>
-	class expr {
+	struct expr {
 		const _L _l;
 		const _R _r;
 		constexpr expr(const _L& l, const _R& r) :
 			_l(l), _r(r) {}
 	};
 
-	template <class _T>
-	_T eval(const _T& t) {
-		return t;
-	}
+	// template <class _T>
+	// _T eval(const _T& t) {
+	// 	return t;
+	// }
 
 	template <class _OP, class _L, class _R>
 	typename _OP::vector_type 
@@ -102,19 +103,30 @@ namespace x86vec {
 	}
 
 	// a+ b*c 
-	template <class _V>
+	template <class _V, class _L1, class _L2, class _R2>
 	_V eval(const expr<ops::add<_V>, 
-			   _V, 
-			   expr<ops::mul<_V>, _V, _V> >& e) {
-		return ops::fma<_V>::v(e._r._l, e._r._r, e._l);
+			   _L1, 
+			   expr<ops::mul<_V>, _L2, _R2> >& e) {
+		return ops::fma<_V>::v(eval(e._r._l), eval(e._r._r), 
+				       eval(e._l));
 	}
 	// a*b +c 
-	template <class _V>
+	template <class _V, class _L1, class _R1, class _R2>
 	_V eval(const expr<ops::add<_V>, 
-			   expr<ops::mul<_V>, _V, _V>,
-			   _V>& e) {
-		return ops::fma<_V>::v(e._l._l, e._l._r, e._r);
+			   expr<ops::mul<_V>, _L1, _R1>,
+			   _R2>& e) {
+		return ops::fma<_V>::v(eval(e._l._l), eval(e._l._r), 
+				       eval(e._r));
 	}
+	// a*b +c 
+	template <class _V, class _L1, class _R1, class _L2, class _R2>
+	_V eval(const expr<ops::add<_V>, 
+			   expr<ops::mul<_V>, _L1, _R1>,
+			   expr<ops::mul<_V>, _L2, _R2> >& e) {
+		return ops::fma<_V>::v(eval(e._l._l), eval(e._l._r), 
+				       eval(e._r));
+	}
+
 	// a*b -c
 	template <class _V>
 	_V eval(const expr<ops::sub<_V>,
@@ -127,7 +139,7 @@ namespace x86vec {
 	_V eval(const expr<ops::sub<_V>,
 			   _V,
 			   expr<ops::mul<_V>, _V, _V> >& e) {
-		return ops::nfma<_V>::v(e._r._l, e._r._r, e._l);
+		return ops::fnma<_V>::v(e._r._l, e._r._r, e._l);
 	}
 	
 	template <class _OP, class _T>

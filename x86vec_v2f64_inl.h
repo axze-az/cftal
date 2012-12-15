@@ -42,6 +42,12 @@ x86vec::v2f64::v2f64(const tri_op<_OP, v2f64>& r)
 {
 }
 
+template <template <class _V> class _OP, class _L, class _R>
+inline
+x86vec::v2f64::v2f64(const expr<_OP<v2f64>, _L, _R>& r)
+	: base_type(eval(r)())
+{
+}
 
 inline
 x86vec::v2f64::v2f64(const mem::addr_bcast<element_type>& r)
@@ -78,34 +84,34 @@ x86vec::v2f64::operator()(const mask<v2f64>& m)
 
 inline
 x86vec::v2f64
-x86vec::impl::v2f64_add::v(const v2f64& a, const v2f64& b)
+x86vec::ops::add<x86vec::v2f64>::v(const v2f64& a, const v2f64& b)
 {
 	return _mm_add_pd(a(), b());
 }
 
 inline
 x86vec::v2f64
-x86vec::impl::v2f64_sub::v(const v2f64& a, const v2f64& b)
+x86vec::ops::sub<x86vec::v2f64>::v(const v2f64& a, const v2f64& b)
 {
 	return _mm_sub_pd(a(), b());
 }
 
 inline
 x86vec::v2f64
-x86vec::impl::v2f64_mul::v(const v2f64& a, const v2f64& b)
+x86vec::ops::mul<x86vec::v2f64>::v(const v2f64& a, const v2f64& b)
 {
 	return _mm_mul_pd(a(), b());
 }
 
 inline
 x86vec::v2f64
-x86vec::impl::v2f64_div::v(const v2f64& a, const v2f64& b)
+x86vec::ops::div<x86vec::v2f64>::v(const v2f64& a, const v2f64& b)
 {
 	return _mm_div_pd(a(), b());
 }
 
 inline
-x86vec::v2f64 x86vec::impl::v2f64_fma::
+x86vec::v2f64 x86vec::ops::fma<x86vec::v2f64>::
 v(const v2f64& a, const v2f64& b, const v2f64& c)
 {
 #if defined (__FMA4__) 
@@ -118,7 +124,7 @@ v(const v2f64& a, const v2f64& b, const v2f64& c)
 }
 
 inline
-x86vec::v2f64 x86vec::impl::v2f64_fms::
+x86vec::v2f64 x86vec::ops::fms<x86vec::v2f64>::
 v(const v2f64& a, const v2f64& b, const v2f64& c)
 {
 #if defined (__FMA4__)
@@ -131,7 +137,7 @@ v(const v2f64& a, const v2f64& b, const v2f64& c)
 }
 
 inline
-x86vec::v2f64 x86vec::impl::v2f64_fnma::
+x86vec::v2f64 x86vec::ops::fnma<x86vec::v2f64>::
 v(const v2f64& a, const v2f64& b, const v2f64& c)
 {
 #if defined (__FMA4__)
@@ -174,111 +180,6 @@ x86vec::operator/=(v2f64& a, const v2f64& b)
         a= _mm_div_pd(a(), b());
         return a;
 }
-
-#if 1
-
-inline
-x86vec::v2f64&
-x86vec::operator+=(v2f64& a, const bi_op<impl::v2f64_mul, v2f64>& b)
-{
-	a= impl::v2f64_fma::v(b._a0, b._a1, a);
-	return a;
-}
-
-inline
-x86vec::v2f64&
-x86vec::operator-=(v2f64& a, const bi_op<impl::v2f64_mul, v2f64>& b)
-{
-	a= impl::v2f64_fnma::v(b._a0, b._a1, a);
-	return a;
-}
-
-inline
-x86vec::bi_op<x86vec::impl::v2f64_add, x86vec::v2f64>
-x86vec::operator+(const v2f64& a, const v2f64& b)
-{
-	return bi_op<impl::v2f64_add, v2f64>(a, b);
-}
-
-inline
-x86vec::bi_op<x86vec::impl::v2f64_sub, x86vec::v2f64>
-x86vec::operator-(const v2f64& a, const v2f64& b)
-{
-	return bi_op<impl::v2f64_sub, v2f64>(a, b);
-}
-
-inline
-x86vec::bi_op<x86vec::impl::v2f64_mul, x86vec::v2f64>
-x86vec::operator*(const v2f64& a, const v2f64& b)
-{
-	return bi_op<impl::v2f64_mul, v2f64>(a, b);
-}
-
-inline
-x86vec::bi_op<x86vec::impl::v2f64_div, x86vec::v2f64>
-x86vec::operator/(const v2f64& a, const v2f64& b)
-{
-	return bi_op<impl::v2f64_div, v2f64>(a, b);
-}
-
-inline
-x86vec::tri_op<x86vec::impl::v2f64_fma, x86vec::v2f64> 
-x86vec::operator+(const v2f64& a, const bi_op<impl::v2f64_mul, v2f64>& b)
-{
-	return tri_op<impl::v2f64_fma, v2f64>(b._a0, b._a1, a);
-}
-
-inline
-x86vec::tri_op<x86vec::impl::v2f64_fma, x86vec::v2f64> 
-x86vec::operator+(const bi_op<impl::v2f64_mul, v2f64>& a, const v2f64& b)
-{
-	return tri_op<impl::v2f64_fma, v2f64>(a._a0, a._a1, b);
-}
-
-inline
-x86vec::tri_op<x86vec::impl::v2f64_fnma, x86vec::v2f64>
-x86vec::operator-(const v2f64& a, const bi_op<impl::v2f64_mul, v2f64>& b)
-{
-	// a - b * c = -(b*c) + a
-	return tri_op<impl::v2f64_fnma, v2f64>(b._a0, b._a1, a);
-}
-
-inline
-x86vec::tri_op<x86vec::impl::v2f64_fms, x86vec::v2f64>
-x86vec::operator-(const bi_op<impl::v2f64_mul, v2f64>& a, const v2f64& b)
-{
-	// a * b - c
-	return tri_op<impl::v2f64_fms, v2f64>(a._a0, a._a1, b);
-}
-
-#else
-
-inline
-x86vec::v2f64 x86vec::operator+ (const v2f64& a, const v2f64& b)
-{
-        return _mm_add_pd(a(), b());
-}
-
-inline
-x86vec::v2f64 x86vec::operator- (const v2f64& a, const v2f64& b)
-{
-        return _mm_sub_pd(a(), b());
-}
-
-inline
-x86vec::v2f64 x86vec::operator* (const v2f64& a, const v2f64& b)
-{
-        return _mm_mul_pd(a(), b());
-}
-
-inline
-x86vec::v2f64
-x86vec::operator/(const v2f64& a, const v2f64& b)
-{
-        return _mm_div_pd(a(), b());
-}
-
-#endif
 
 inline
 x86vec::v2f64&
