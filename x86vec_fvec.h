@@ -66,6 +66,9 @@ namespace x86vec {
                 // broadcast to all positions
 		v4f32(element_type r);
                 v4f32(element_type r, bool broadcast);
+		// assignment from expr<op<v2f64>, _L, _R>
+		template <template <class _V> class _OP, class _L, class _R>
+		v4f32(const expr<_OP<v4f32>, _L, _R>& r);
                 v4f32(const mem::addr_bcast<element_type>& r);
                 v4f32(const mem::addr<element_type>& r);
                 v4f32(const mem::aligned::addr<element_type>& r);
@@ -74,13 +77,65 @@ namespace x86vec {
 		masked_vec<v4f32> operator()(const mask<v4f32>& m);
         };
 
-        v4f32& operator|= (v4f32& a, const v4f32& b);
-        v4f32& operator&= (v4f32& a, const v4f32& b);
-        v4f32& operator^= (v4f32& a, const v4f32& b);
+	inline
+	v4f32 eval(const v4f32& v) {
+		return v;
+	}
+
+	namespace ops {
+		
+		template <>
+		struct add<v4f32> : public def_vector_type<v4f32> {
+			static v4f32 v(const v4f32& a, const v4f32& b);
+		};
+
+		template <>
+		struct sub<v4f32> : public def_vector_type<v4f32>{
+			static v4f32 v(const v4f32& a, const v4f32& b);
+		};
+
+		template <>
+		struct mul<v4f32> : public def_vector_type<v4f32>{
+			static v4f32 v(const v4f32& a, const v4f32& b);
+		};
+
+		template <>
+		struct div<v4f32> : public def_vector_type<v4f32>{
+			static v4f32 v(const v4f32& a, const v4f32& b);
+		};
+
+		// a * b + c
+		template <>
+		struct fma<v4f32> : public def_vector_type<v4f32>{
+			static v4f32 v(const v4f32& a, const v4f32& b, 
+				       const v4f32& c);
+		};
+
+		// a * b - c
+		template <>
+		struct fms<v4f32> : public def_vector_type<v4f32>{
+			static v4f32 v(const v4f32& a, const v4f32& b, 
+				       const v4f32& c);
+		};
+
+		// -(a * b) + c = c - a * b
+		template <>
+		struct fnma<v4f32> : public def_vector_type<v4f32>{
+			static v4f32 v(const v4f32& a, const v4f32& b, 
+				       const v4f32& c);
+		};
+	}
+
         v4f32& operator+= (v4f32& a, const v4f32& b);
         v4f32& operator-= (v4f32& a, const v4f32& b);
         v4f32& operator*= (v4f32& a, const v4f32& b);
         v4f32& operator/= (v4f32& a, const v4f32& b);
+
+	DEFINE_X86VEC_FP_OPERATORS(v4f32);
+
+        v4f32& operator|= (v4f32& a, const v4f32& b);
+        v4f32& operator&= (v4f32& a, const v4f32& b);
+        v4f32& operator^= (v4f32& a, const v4f32& b);
 	
         v4f32 operator++ (v4f32& a, int);
         v4f32& operator++(v4f32& a);
@@ -98,10 +153,6 @@ namespace x86vec {
         v4f32 operator&& (const v4f32& a, const v4f32& b);
         v4f32 operator^(const v4f32& a, const v4f32& b);
 
-        v4f32 operator+ (const v4f32& a, const v4f32& b);
-        v4f32 operator- (const v4f32& a, const v4f32& b);
-        v4f32 operator* (const v4f32& a, const v4f32& b);
-        v4f32 operator/ (const v4f32& a, const v4f32& b);
 	
         v4f32 operator< (const v4f32& a, const v4f32& b);
         v4f32 operator<= (const v4f32& a, const v4f32& b);

@@ -36,6 +36,13 @@ x86vec::v4f32::v4f32(element_type r, bool broadcast)
 {
 }
 
+template <template <class _V> class _OP, class _L, class _R>
+inline
+x86vec::v4f32::v4f32(const expr<_OP<v4f32>, _L, _R>& r)
+	: base_type(eval(r)())
+{
+}
+
 inline
 x86vec::v4f32::v4f32(const mem::addr_bcast<element_type>& r)
         : base_type(_mm_set1_ps(* (r())))
@@ -70,6 +77,73 @@ x86vec::v4f32::operator()(const mask<v4f32>& m)
 }
 
 inline
+x86vec::v4f32
+x86vec::ops::add<x86vec::v4f32>::v(const v4f32& a, const v4f32& b)
+{
+	return _mm_add_ps(a(), b());
+}
+
+inline
+x86vec::v4f32
+x86vec::ops::sub<x86vec::v4f32>::v(const v4f32& a, const v4f32& b)
+{
+	return _mm_sub_ps(a(), b());
+}
+
+inline
+x86vec::v4f32
+x86vec::ops::mul<x86vec::v4f32>::v(const v4f32& a, const v4f32& b)
+{
+	return _mm_mul_ps(a(), b());
+}
+
+inline
+x86vec::v4f32
+x86vec::ops::div<x86vec::v4f32>::v(const v4f32& a, const v4f32& b)
+{
+	return _mm_div_ps(a(), b());
+}
+
+inline
+x86vec::v4f32 x86vec::ops::fma<x86vec::v4f32>::
+v(const v4f32& a, const v4f32& b, const v4f32& c)
+{
+#if defined (__FMA4__) 
+	return _mm_macc_ps(a(), b(), c());
+#elif defined (__FMA__)
+	return _mm_fmadd_ps(a(), b(), c());
+#else
+	return _mm_add_ps(_mm_mul_ps(a(), b()), c());
+#endif
+}
+
+inline
+x86vec::v4f32 x86vec::ops::fms<x86vec::v4f32>::
+v(const v4f32& a, const v4f32& b, const v4f32& c)
+{
+#if defined (__FMA4__)
+	return _mm_msub_ps(a(), b(), c());
+#elif defined (__FMA__)
+	return _mm_fmsub_ps(a(), b(), c());
+#else
+	return _mm_sub_ps(_mm_mul_ps(a(), b()), c());
+#endif
+}
+
+inline
+x86vec::v4f32 x86vec::ops::fnma<x86vec::v4f32>::
+v(const v4f32& a, const v4f32& b, const v4f32& c)
+{
+#if defined (__FMA4__)
+	return _mm_nmacc_ps(a(), b(), c());
+#elif defined (__FMA__)
+	return _mm_fnmadd_ps(a(), b(), c());
+#else
+	return _mm_sub_ps(c(), _mm_mul_ps(a(), b()));
+#endif
+}
+
+inline
 x86vec::v4f32&
 x86vec::operator|= (v4f32& a, const v4f32& b)
 {
@@ -97,7 +171,7 @@ inline
 x86vec::v4f32&
 x86vec::operator+= (v4f32& a, const v4f32& b)
 {
-        a = _mm_add_ps(a(), b());
+        a = a + b;
         return a;
 }
 
@@ -105,7 +179,7 @@ inline
 x86vec::v4f32&
 x86vec::operator-= (v4f32& a, const v4f32& b)
 {
-        a = _mm_sub_ps(a(), b());
+        a = a - b;
         return a;
 }
 
@@ -113,7 +187,7 @@ inline
 x86vec::v4f32&
 x86vec::operator*= (v4f32& a, const v4f32& b)
 {
-        a = _mm_mul_ps(a(), b());
+        a = a * b;
         return a;
 }
 
@@ -121,7 +195,7 @@ inline
 x86vec::v4f32&
 x86vec::operator/=(v4f32& a, const v4f32& b)
 {
-        a= _mm_div_ps(a(), b());
+        a= a / b;
         return a;
 }
 
@@ -223,32 +297,6 @@ x86vec::v4f32 x86vec::operator^(const v4f32& a, const v4f32& b)
 {
         return _mm_xor_ps(a(), b());
 }
-
-inline
-x86vec::v4f32 x86vec::operator+ (const v4f32& a, const v4f32& b)
-{
-        return _mm_add_ps(a(), b());
-}
-
-inline
-x86vec::v4f32 x86vec::operator- (const v4f32& a, const v4f32& b)
-{
-        return _mm_sub_ps(a(), b());
-}
-
-inline
-x86vec::v4f32 x86vec::operator* (const v4f32& a, const v4f32& b)
-{
-        return _mm_mul_ps(a(), b());
-}
-
-inline
-x86vec::v4f32
-x86vec::operator/(const v4f32& a, const v4f32& b)
-{
-        return _mm_div_ps(a(), b());
-}
-
 
 inline
 x86vec::v4f32 x86vec::operator< (const v4f32& a, const v4f32& b)

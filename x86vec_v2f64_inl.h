@@ -28,7 +28,6 @@ x86vec::v2f64::v2f64(element_type r)
 {
 }
 
-
 template <template <class _V> class _OP, class _L, class _R>
 inline
 x86vec::v2f64::v2f64(const expr<_OP<v2f64>, _L, _R>& r)
@@ -140,7 +139,7 @@ inline
 x86vec::v2f64&
 x86vec::operator+= (v2f64& a, const v2f64& b)
 {
-        a = _mm_add_pd(a(), b());
+        a = a + b;
         return a;
 }
 
@@ -148,7 +147,7 @@ inline
 x86vec::v2f64&
 x86vec::operator-= (v2f64& a, const v2f64& b)
 {
-        a = _mm_sub_pd(a(), b());
+        a = a - b;
         return a;
 }
 
@@ -156,7 +155,7 @@ inline
 x86vec::v2f64&
 x86vec::operator*= (v2f64& a, const v2f64& b)
 {
-        a = _mm_mul_pd(a(), b());
+        a = a * b;
         return a;
 }
 
@@ -164,7 +163,7 @@ inline
 x86vec::v2f64&
 x86vec::operator/=(v2f64& a, const v2f64& b)
 {
-        a= _mm_div_pd(a(), b());
+        a= a / b;
         return a;
 }
 
