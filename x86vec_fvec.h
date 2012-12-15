@@ -6,6 +6,7 @@
 #include <cftal/x86vec_perm.h>
 #include <cftal/x86vec_ops_1.h>
 #include <cftal/x86vec_ivec.h>
+#include <cftal/x86vec_expr.h>
 #include <cftal/mem_load.h>
 #include <cftal/divisor.h>
 #include <cfenv>
@@ -161,12 +162,6 @@ namespace x86vec {
                 v2f64(element_type p00, element_type p01);
                 // broadcast to all positions
                 v2f64(element_type r);
-		// assignment from bi_op<_X, v2f64>
-		template <class _OP>
-		v2f64(const bi_op<_OP, v2f64>& r);
-		// assignment from tri_op<_X, v2f64>
-		template <class _OP>
-		v2f64(const tri_op<_OP, v2f64>& r);
 		// assignment from expr<op<v2f64>, _L, _R>
 		template <template <class _V> class _OP, class _L, class _R>
 		v2f64(const expr<_OP<v2f64>, _L, _R>& r);

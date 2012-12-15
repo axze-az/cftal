@@ -28,19 +28,6 @@ x86vec::v2f64::v2f64(element_type r)
 {
 }
 
-template <class _OP>
-inline
-x86vec::v2f64::v2f64(const bi_op<_OP, v2f64>& r)
-	: base_type( _OP::v(r._a0, r._a1)())
-{
-}
-
-template <class _OP>
-inline
-x86vec::v2f64::v2f64(const tri_op<_OP, v2f64>& r)
-	: base_type( _OP::v(r._a0, r._a1, r._a2)())
-{
-}
 
 template <template <class _V> class _OP, class _L, class _R>
 inline

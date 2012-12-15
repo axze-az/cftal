@@ -101,4 +101,7 @@ namespace x86vec {
 
 }
 
+// Local variables:
+// mode: c++
+// end:
 #endif
