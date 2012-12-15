@@ -169,38 +169,6 @@ x86vec::operator^= (v4f32& a, const v4f32& b)
 
 inline
 x86vec::v4f32&
-x86vec::operator+= (v4f32& a, const v4f32& b)
-{
-        a = a + b;
-        return a;
-}
-
-inline
-x86vec::v4f32&
-x86vec::operator-= (v4f32& a, const v4f32& b)
-{
-        a = a - b;
-        return a;
-}
-
-inline
-x86vec::v4f32&
-x86vec::operator*= (v4f32& a, const v4f32& b)
-{
-        a = a * b;
-        return a;
-}
-
-inline
-x86vec::v4f32&
-x86vec::operator/=(v4f32& a, const v4f32& b)
-{
-        a= a / b;
-        return a;
-}
-
-inline
-x86vec::v4f32&
 x86vec::operator++(v4f32& a)
 {
         const __m128 one = _mm_set1_ps(1.0f);

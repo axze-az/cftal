@@ -137,38 +137,6 @@ v(const v2f64& a, const v2f64& b, const v2f64& c)
 
 inline
 x86vec::v2f64&
-x86vec::operator+= (v2f64& a, const v2f64& b)
-{
-        a = a + b;
-        return a;
-}
-
-inline
-x86vec::v2f64&
-x86vec::operator-= (v2f64& a, const v2f64& b)
-{
-        a = a - b;
-        return a;
-}
-
-inline
-x86vec::v2f64&
-x86vec::operator*= (v2f64& a, const v2f64& b)
-{
-        a = a * b;
-        return a;
-}
-
-inline
-x86vec::v2f64&
-x86vec::operator/=(v2f64& a, const v2f64& b)
-{
-        a= a / b;
-        return a;
-}
-
-inline
-x86vec::v2f64&
 x86vec::operator|= (v2f64& a, const v2f64& b)
 {
         a = _mm_or_pd(a(), b());

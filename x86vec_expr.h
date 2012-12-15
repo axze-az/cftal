@@ -45,6 +45,7 @@ namespace x86vec {
 	};
 
 	template <class _OP, class _L, class _R>
+	inline
 	typename _OP::vector_type 
 	eval(const expr<_OP, _L, _R>& e) {
 		return _OP::v(eval(e._l), eval(e._r)); 
@@ -52,6 +53,7 @@ namespace x86vec {
 
 	// a+ b*c 
 	template <class _V, class _L1, class _L2, class _R2>
+	inline
 	_V eval(const expr<ops::add<_V>, 
 			   _L1, 
 			   expr<ops::mul<_V>, _L2, _R2> >& e) {
@@ -60,6 +62,7 @@ namespace x86vec {
 	}
 	// a*b +c 
 	template <class _V, class _L1, class _R1, class _R2>
+	inline
 	_V eval(const expr<ops::add<_V>, 
 			   expr<ops::mul<_V>, _L1, _R1>,
 			   _R2>& e) {
@@ -68,6 +71,7 @@ namespace x86vec {
 	}
 	// a*b +c*d
 	template <class _V, class _L1, class _R1, class _L2, class _R2>
+	inline
 	_V eval(const expr<ops::add<_V>, 
 			   expr<ops::mul<_V>, _L1, _R1>,
 			   expr<ops::mul<_V>, _L2, _R2> >& e) {
@@ -77,6 +81,7 @@ namespace x86vec {
 
 	// a*b -c
 	template <class _V, class _L1, class _R1, class _R2>
+	inline
 	_V eval(const expr<ops::sub<_V>,
 			   expr<ops::mul<_V>, _L1, _R1>,
 			   _R2>& e) {
@@ -85,6 +90,7 @@ namespace x86vec {
 	}
 	// -a*b +c = c- a* b;
 	template <class _V, class _L1, class _L2, class _R2>
+	inline
 	_V eval(const expr<ops::sub<_V>,
 			   _L1,
 			   expr<ops::mul<_V>, _L2, _R2> >& e) {
@@ -94,6 +100,7 @@ namespace x86vec {
 
 	// a*b - c*d
 	template <class _V, class _L1, class _R1, class _L2, class _R2>
+	inline
 	_V eval(const expr<ops::sub<_V>, 
 			   expr<ops::mul<_V>, _L1, _R1>,
 			   expr<ops::mul<_V>, _L2, _R2> >& e) {
@@ -136,6 +143,19 @@ namespace x86vec {
 			    expr<_OP1<vx>, _L1, _R1>,			\
 			    expr<_OP2<vx>, _L2, _R2> > (a, b);		\
 	}								\
+	/* operator += V */						\
+	inline								\
+	vx& operator+=(vx& a, const vx& r) {				\
+		a = a + r;						\
+		return a;						\
+	}								\
+	/* operator += expr */						\
+	template <template <class _V> class _OP, class _L, class _R>	\
+	inline								\
+	vx& operator+=(vx& a, const expr<_OP<vx>, _L, _R>& r) {		\
+		a = a + r;						\
+		return a;						\
+	}								\
 									\
 	/* operator -(V, V) */						\
 	inline								\
@@ -170,6 +190,19 @@ namespace x86vec {
 		return expr<ops::sub<vx>,				\
 			    expr<_OP1<vx>, _L1, _R1>,			\
 			    expr<_OP2<vx>, _L2, _R2> > (a, b);		\
+	}								\
+	/* operator -= V */						\
+	inline								\
+	vx& operator-=(vx& a, const vx& r) {				\
+		a = a - r;						\
+		return a;						\
+	}								\
+	/* operator += expr */						\
+	template <template <class _V> class _OP, class _L, class _R>	\
+	inline								\
+	vx& operator-=(vx& a, const expr<_OP<vx>, _L, _R>& r) {		\
+		a = a - r;						\
+		return a;						\
 	}								\
 									\
 	/* operator *(V, V) */						\
@@ -206,6 +239,19 @@ namespace x86vec {
 			    expr<_OP1<vx>, _L1, _R1>,			\
 			    expr<_OP2<vx>, _L2, _R2> > (a, b);		\
 	}								\
+	/* operator *= V */						\
+	inline								\
+	vx& operator*=(vx& a, const vx& r) {				\
+		a = a * r;						\
+		return a;						\
+	}								\
+	/* operator *= expr */						\
+	template <template <class _V> class _OP, class _L, class _R>	\
+	inline								\
+	vx& operator*=(vx& a, const expr<_OP<vx>, _L, _R>& r) {		\
+		a = a * r;						\
+		return a;						\
+	}								\
 									\
 	/* operator /(V, V) */						\
 	inline								\
@@ -240,8 +286,20 @@ namespace x86vec {
 		return expr<ops::div<vx>,				\
 			    expr<_OP1<vx>, _L1, _R1>,			\
 			    expr<_OP2<vx>, _L2, _R2> > (a, b);		\
-	}
-
+	}								\
+	/* operator /= V */						\
+	inline								\
+	vx& operator/=(vx& a, const vx& r) {				\
+		a = a / r;						\
+		return a;						\
+	}								\
+	/* operator += expr */						\
+	template <template <class _V> class _OP, class _L, class _R>	\
+	inline								\
+	vx& operator/=(vx& a, const expr<_OP<vx>, _L, _R>& r) {		\
+		a = a / r;						\
+		return a;						\
+	}								\
 
 }
 
