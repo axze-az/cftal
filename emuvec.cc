@@ -2596,38 +2596,6 @@ emuvec::operator^= (v4f32& a, const v4f32& b)
 }
 
 emuvec::v4f32&
-emuvec::operator+= (v4f32& a, const v4f32& b)
-{
-        impl::v_add<v4f32::element_type> ot;
-        impl::v_assign_op(a(), ot, b(), v4f32::N);
-        return a;
-}
-
-emuvec::v4f32&
-emuvec::operator-= (v4f32& a, const v4f32& b)
-{
-        impl::v_sub<v4f32::element_type> ot;
-        impl::v_assign_op(a(), ot, b(), v4f32::N);
-        return a;
-}
-
-emuvec::v4f32&
-emuvec::operator*= (v4f32& a, const v4f32& b)
-{
-        impl::v_sub<v4f32::element_type> ot;
-        impl::v_assign_op(a(), ot, b(), v4f32::N);
-        return a;
-}
-
-emuvec::v4f32&
-emuvec::operator/=(v4f32& a, const v4f32& b)
-{
-        impl::v_div<v4f32::element_type> ot;
-        impl::v_assign_op(a(), ot, b(), v4f32::N);
-        return a;
-}
-
-emuvec::v4f32&
 emuvec::operator++(v4f32& a)
 {
         impl::v_inc<v4f32::element_type> ot;
@@ -2724,38 +2692,6 @@ emuvec::v4f32 emuvec::operator^(const v4f32& a, const v4f32& b)
 {
 	v4f32 r;
 	impl::v_f_xor<v4f32::element_type> ot;
-	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
-	return r;
-}
-
-emuvec::v4f32 emuvec::operator+ (const v4f32& a, const v4f32& b)
-{
-	v4f32 r;
-	impl::v_add<v4f32::element_type> ot;
-	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
-	return r;
-}
-
-emuvec::v4f32 emuvec::operator- (const v4f32& a, const v4f32& b)
-{
-	v4f32 r;
-	impl::v_sub<v4f32::element_type> ot;
-	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
-	return r;
-}
-
-emuvec::v4f32 emuvec::operator* (const v4f32& a, const v4f32& b)
-{
-	v4f32 r;
-	impl::v_mul<v4f32::element_type> ot;
-	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
-	return r;
-}
-
-emuvec::v4f32 emuvec::operator/(const v4f32& a, const v4f32& b)
-{
-	v4f32 r;
-	impl::v_div<v4f32::element_type> ot;
 	impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
 	return r;
 }

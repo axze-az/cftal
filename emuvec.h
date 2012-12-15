@@ -5,8 +5,16 @@
 #include <cftal/mem_load.h>
 #include <cftal/emuvec_impl.h>
 #include <cftal/emuvec_impl_ops.h>
+#include <cftal/expr.h>
 
 namespace emuvec {
+
+	namespace ops {
+		using namespace cftal::ops;
+	}
+	using cftal::expr_traits;
+	using cftal::expr;
+	using cftal::eval;
 
         // constants consisting of 1 uint32_t
         template <uint32_t _P>
@@ -658,6 +666,9 @@ namespace emuvec {
 		      element_type p02, element_type p03);
 		v4f32(const v4f32& r);
 		v4f32(v4f32&& r);
+		// assignment from expr<op<v2f64>, _L, _R>
+		template <template <class _V> class _OP, class _L, class _R>
+		v4f32(const expr<_OP<v4f32>, _L, _R>& r);
 		v4f32& operator=(element_type r);
 		v4f32& operator=(const v4f32& r);
 		v4f32& operator=(v4f32&& r);
@@ -668,6 +679,24 @@ namespace emuvec {
 		element_type* begin();
 		const element_type* begin() const;
 	};
+
+}
+
+namespace cftal {
+	template <>
+	struct expr_traits<emuvec::v4f32> {
+		typedef const emuvec::v4f32& type;
+	};
+}
+
+namespace emuvec {
+
+	inline
+	const v4f32::element_type& eval(const v4f32& v, size_t i) {
+		return v()[i];
+	}
+
+	DEFINE_CFTAL_VEC_FP_OPERATORS(v4f32);
 
 	v4f32& operator|= (v4f32& a, const v4f32& b);
 	v4f32& operator&= (v4f32& a, const v4f32& b);
@@ -692,11 +721,6 @@ namespace emuvec {
 	v4f32 operator& (const v4f32& a, const v4f32& b);
 	v4f32 operator&& (const v4f32& a, const v4f32& b);
 	v4f32 operator^(const v4f32& a, const v4f32& b);
-
-	v4f32 operator+ (const v4f32& a, const v4f32& b);
-	v4f32 operator- (const v4f32& a, const v4f32& b);
-	v4f32 operator* (const v4f32& a, const v4f32& b);
-	v4f32 operator/ (const v4f32& a, const v4f32& b);
 
 	v4f32 operator< (const v4f32& a, const v4f32& b);
 	v4f32 operator<= (const v4f32& a, const v4f32& b);
@@ -1532,6 +1556,16 @@ inline
 const emuvec::v4f32::element_type* emuvec::v4f32::operator()() const
 {
         return begin();
+}
+
+template <template <class _V> class _OP, class _L, class _R>
+inline
+emuvec::v4f32::v4f32(const expr<_OP<v4f32>, _L, _R>& r)
+	: base_type()
+{
+        element_type* p= begin();
+	for (size_t i=0; i<N; ++i)
+		p[i] = eval(r, i);
 }
 
 template < bool _P0, bool _P1, bool _P2, bool _P3 >
