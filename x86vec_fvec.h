@@ -78,7 +78,7 @@ namespace x86vec {
         };
 
 	inline
-	v4f32 eval(const v4f32& v) {
+	const v4f32& eval(const v4f32& v) {
 		return v;
 	}
 
@@ -225,7 +225,7 @@ namespace x86vec {
         };
 
 	inline
-	v2f64 eval(const v2f64& v) {
+	const v2f64& eval(const v2f64& v) {
 		return v;
 	}
 
