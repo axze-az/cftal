@@ -226,7 +226,9 @@ namespace x86vec {
         v2f64& operator-= (v2f64& a, const v2f64& b);
         v2f64& operator*= (v2f64& a, const v2f64& b);
         v2f64& operator/= (v2f64& a, const v2f64& b);
-
+#if 1
+	DEFINE_X86VEC_FP_OPERATORS(v2f64);
+#else
 	// operator +(V, V)
 	inline 
 	expr<ops::add<v2f64>, v2f64, v2f64> 
@@ -356,7 +358,7 @@ namespace x86vec {
 			    expr<_OP1<v2f64>, _L1, _R1>, 
 			    expr<_OP2<v2f64>, _L2, _R2> > (a, b);
 	}
-
+#endif
 
         v2f64& operator|= (v2f64& a, const v2f64& b);
         v2f64& operator&= (v2f64& a, const v2f64& b);
