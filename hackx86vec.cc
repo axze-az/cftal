@@ -110,8 +110,8 @@ bool x86vec::test::check_frexp_f64()
         return true;
 }
 
-namespace vec=x86vec;
-//namespace vec=emuvec;
+// namespace vec=x86vec;
+namespace vec=emuvec;
 
 // v2f64 compile tests
 vec::v2f64 test1a(vec::v2f64 a, vec::v2f64 b, vec::v2f64 c)

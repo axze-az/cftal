@@ -103,7 +103,7 @@ namespace cftal {
 	eval(const expr<ops::add<_V>, 
 			_L1, 
 			expr<ops::mul<_V>, _L2, _R2> >& e,
-		size_t i) {
+	     size_t i) {
 		return ops::fma<_V>::v(eval(e._r._l, i), eval(e._r._r, i), 
 				       eval(e._l, i));
 	}
@@ -113,7 +113,7 @@ namespace cftal {
 	eval(const expr<ops::add<_V>, 
 			expr<ops::mul<_V>, _L1, _R1>,
 			_R2>& e,
-		size_t i) {
+	     size_t i) {
 		return ops::fma<_V>::v(eval(e._l._l, i), eval(e._l._r, i), 
 				       eval(e._r, i));
 	}
@@ -123,7 +123,7 @@ namespace cftal {
 	eval(const expr<ops::add<_V>, 
 			expr<ops::mul<_V>, _L1, _R1>,
 			expr<ops::mul<_V>, _L2, _R2> >& e,
-		size_t i) {
+	     size_t i) {
 		return ops::fma<_V>::v(eval(e._l._l, i), eval(e._l._r, i), 
 				       eval(e._r, i));
 	}
@@ -134,17 +134,19 @@ namespace cftal {
 	eval(const expr<ops::sub<_V>,
 			expr<ops::mul<_V>, _L1, _R1>,
 			_R2>& e,
-		size_t i) {
+	     size_t i) {
 		return ops::fms<_V>::v(eval(e._l._l,i), eval(e._l._r,i), 
 				       eval(e._r, i));
 	}
 	// -a*b +c = c- a* b;
 	template <class _V, class _L1, class _L2, class _R2>
 	typename _V::element_type
-	eval(const expr<ops::sub<_V>,
-			_L1,
-			expr<ops::mul<_V>, _L2, _R2> >& e) {
-		return ops::fnma<_V>::v(e._r._l, e._r._r, e._l);
+	eval(const expr<ops::sub<_V>, 
+	     _L1, 
+	     expr< ops::mul<_V>, _L2, _R2> >&  e,
+	     size_t i) {
+		return ops::fnma<_V>::v(eval(e._r._l, i), eval(e._r._r, i), 
+					eval(e._l, i));
 	}
 
 	// a*b - c*d
@@ -152,9 +154,10 @@ namespace cftal {
 	typename _V::element_type
 	eval(const expr<ops::sub<_V>, 
 			expr<ops::mul<_V>, _L1, _R1>,
-			expr<ops::mul<_V>, _L2, _R2> >& e) {
-		return ops::fms<_V>::v(eval(e._l._l), eval(e._l._r), 
-				       eval(e._r));
+			expr<ops::mul<_V>, _L2, _R2> >& e, 
+	     size_t i) {
+		return ops::fms<_V>::v(eval(e._l._l, i), eval(e._l._r, i), 
+				       eval(e._r, i));
 	}
 
 #define DEFINE_CFTAL_VEC_FP_OPERATORS(vx)				\
