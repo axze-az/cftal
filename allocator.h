@@ -146,7 +146,9 @@ namespace cftal {
 		}
                 template<typename _Tp1>
                 struct rebind { typedef cache_allocator<_Tp1, _N> other; };
-                pointer allocate(size_type __n, const void* __p= nullptr) {
+
+		pointer 
+                allocate(size_type __n, const void* __p= nullptr) {
                         if (__n==_N) {
                                 void* r= global_ptr_cache<CACHE_SIZE>::get();
                                 if (r != nullptr)

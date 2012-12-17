@@ -12,6 +12,7 @@ SLDFLAGS:= $(SLDFLAGS)
 #ARCH=#-march=bdver1 -mxop #-march=bdver1 #-mdispatch-scheduler
 ARCH+=#-mpopcnt -mfma
 CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
+CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 
 CSRCS=heap_array.cc x86vec_ops_1.cc x86vec_fvec.cc x86vec_test.cc	\
 emuvec.cc mul_div_32.cc mul_div_64.cc
@@ -85,6 +86,8 @@ testfpvec: testfpvec.ol
 
 genx86vec: genx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 	 $(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
+
+hackx86vec.ol: CXXFLAGS-ol += -fno-tree-vectorize
 
 hackx86vec: hackx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++

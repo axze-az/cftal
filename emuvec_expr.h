@@ -4,7 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/std_types.h>
 
-namespace cftal {
+namespace emuvec {
 
 	namespace ops {
 
@@ -142,8 +142,8 @@ namespace cftal {
 	template <class _V, class _L1, class _L2, class _R2>
 	typename _V::element_type
 	eval(const expr<ops::sub<_V>, 
-	     _L1, 
-	     expr< ops::mul<_V>, _L2, _R2> >&  e,
+			_L1, 
+			expr< ops::mul<_V>, _L2, _R2> >&  e,
 	     size_t i) {
 		return ops::fnma<_V>::v(eval(e._r._l, i), eval(e._r._r, i), 
 					eval(e._l, i));
