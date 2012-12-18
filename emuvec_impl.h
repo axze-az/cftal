@@ -105,22 +105,25 @@ namespace emuvec {
 		// with stateless allocators.
 		template <std::size_t _N,  class _A = std::allocator<char> >
 		class utvec : private _A {
-			void* __restrict__ _v;
-			void* alloc_() {
+			typedef char aligned_char __attribute__((aligned(16)));
+			aligned_char* _v;
+			aligned_char* alloc_() {
 				_A* a= static_cast<_A*>(this);
-				return static_cast<void*>(a->allocate(_N));
+				return static_cast<aligned_char*>(
+					a->allocate(_N));
 			}
 			void free_() {
 				_A* a= static_cast<_A*>(this);
 				char* p= static_cast<char*>(_v);
 				a->deallocate(p, _N);
 			}
-			void* copy_(void* dst, const void* src) {
-				return mem_cpy<_N>::v(dst, src);
+			aligned_char* copy_(void* dst, const void* src) {
+				void* p=mem_cpy<_N>::v(dst, src);
+				return static_cast<aligned_char*>(p);
 			}
-			void* alloc_copy_(const utvec& r) {
+			aligned_char* alloc_copy_(const utvec& r) {
 				void* p= copy_(alloc_(), r._v);
-				return p;
+				return static_cast<aligned_char*>(p);
 			}
 		protected:
 			_A& get_allocator() {

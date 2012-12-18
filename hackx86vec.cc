@@ -8,7 +8,6 @@
 #include <iostream>
 #include <iomanip>
 
-
 namespace x86vec {
         namespace test {
 

@@ -72,10 +72,10 @@ ln -sf lib$(LIBNAME).so.$(MAJOR).$(MINOR) lib$(LIBNAME).so.$(MAJOR)
 	cd $(INSTALLDIR)/lib && \
 ln -sf lib$(LIBNAME).so.$(MAJOR) lib$(LIBNAME).so
 
-emuvec.ol: CXXFLAGS-ol +=-fno-tree-vectorize -mtune=corei7
-emuvec.os: CXXFLAGS-os +=-fno-tree-vectorize -mtune=corei7
-emuvec.od: CXXFLAGS-od +=-fno-tree-vectorize -mtune=corei7
-emuvec.s: CXXFLAGS-os +=-fno-tree-vectorize -mtune=corei7
+#emuvec.ol: CXXFLAGS-ol +=-fno-tree-vectorize -mtune=corei7
+#emuvec.os: CXXFLAGS-os +=-fno-tree-vectorize -mtune=corei7
+#emuvec.od: CXXFLAGS-od +=-fno-tree-vectorize -mtune=corei7
+#emuvec.s: CXXFLAGS-os +=-fno-tree-vectorize -mtune=corei7
 
 TESTPROGS=hackx86vec genx86vec hackx86vec_g 
 
@@ -87,7 +87,7 @@ testfpvec: testfpvec.ol
 genx86vec: genx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 	 $(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
 
-hackx86vec.ol: CXXFLAGS-ol += -fno-tree-vectorize
+#hackx86vec.ol: CXXFLAGS-ol += -fno-tree-vectorize
 
 hackx86vec: hackx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
