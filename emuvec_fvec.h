@@ -8,6 +8,7 @@
 #include <algorithm>
 
 namespace emuvec {
+
 	class v4f32 : public impl::vec_base<float,4>::type {
 	public:
 		enum { N = 4 };
@@ -23,7 +24,7 @@ namespace emuvec {
 		      element_type p02, element_type p03);
 		v4f32(const v4f32& r);
 		v4f32(v4f32&& r);
-		// assignment from expr<op<v2f64>, _L, _R>
+		// assignment from expr<op<v4f32>, _L, _R>
 		template <template <class _V> class _OP, class _L, class _R>
 		v4f32(const expr<_OP<v4f32>, _L, _R>& r);
 		v4f32& operator=(element_type r);

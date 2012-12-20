@@ -6,7 +6,6 @@
 #include <cftal/x86vec_perm.h>
 #include <cftal/x86vec_ops_1.h>
 #include <cftal/x86vec_ivec.h>
-#include <cftal/x86vec_expr.h>
 #include <cftal/mem_load.h>
 #include <cftal/divisor.h>
 #include <cfenv>
@@ -66,7 +65,7 @@ namespace x86vec {
                 // broadcast to all positions
 		v4f32(element_type r);
                 v4f32(element_type r, bool broadcast);
-		// assignment from expr<op<v2f64>, _L, _R>
+		// assignment from expr<op<v4f32>, _L, _R>
 		template <template <class _V> class _OP, class _L, class _R>
 		v4f32(const expr<_OP<v4f32>, _L, _R>& r);
                 v4f32(const mem::addr_bcast<element_type>& r);

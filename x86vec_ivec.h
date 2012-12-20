@@ -3,6 +3,7 @@
 
 #include <cftal/x86vec_const.h>
 #include <cftal/x86vec_vreg.h>
+#include <cftal/x86vec_mask.h>
 #include <cftal/x86vec_perm.h>
 #include <cftal/x86vec_ops_1.h>
 #include <cftal/mem_load.h>

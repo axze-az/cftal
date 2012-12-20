@@ -110,8 +110,8 @@ bool x86vec::test::check_frexp_f64()
         return true;
 }
 
-// namespace vec=x86vec;
-namespace vec=emuvec;
+namespace vec=x86vec;
+// namespace vec=emuvec;
 
 // v2f64 compile tests
 vec::v2f64 test1a(vec::v2f64 a, vec::v2f64 b, vec::v2f64 c)
@@ -222,6 +222,15 @@ vec::v4f32 test4a(vec::v4f32 a, vec::v4f32 b,
 			    c * d);
 }
 
+vec::v4f32 test_mask(vec::v4f32 a, vec::v4f32 b,
+		     vec::v4f32 c, vec::v4f32 d,
+		     vec::mask<vec::v4f32> m)
+{
+	vec::v4f32 r(a);
+	r(m) = (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
+			    c * d);
+	return r;
+}
 
 
 int main(int argc, char** argv)
