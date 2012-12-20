@@ -2579,6 +2579,13 @@ emuvec::v4f32& emuvec::v4f32::operator=(v4f32::element_type r)
 }
 
 // inline
+emuvec::masked_vec<emuvec::v4f32>
+emuvec::v4f32::operator()(const mask<v4f32>& m) 
+{
+	return masked_vec<v4f32>(*this, m);
+}
+
+// inline
 emuvec::v4f32::~v4f32()
 {
 }

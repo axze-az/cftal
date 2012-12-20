@@ -32,6 +32,7 @@ namespace emuvec {
 		v4f32& operator=(v4f32&& r);
 		v4f32(const mem::addr_bcast<element_type>& r);
 		v4f32(const mem::addr<element_type>& r);
+		masked_vec<v4f32> operator()(const mask<v4f32>& m);
 		~v4f32();
 	private:
 		element_type* begin();
