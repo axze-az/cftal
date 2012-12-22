@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iomanip>
 
+
 namespace x86vec {
         namespace test {
 
@@ -135,33 +136,33 @@ vec::v2f64 test1d(vec::v2f64 a, vec::v2f64 b, vec::v2f64 c)
 }
 
 vec::v2f64 test2a(vec::v2f64 a, vec::v2f64 b,
-		  vec::v2f64 c, vec::v2f64 d)
+                  vec::v2f64 c, vec::v2f64 d)
 {
         return a*b + c*d;
 }
 
 vec::v2f64 test2b(vec::v2f64 a, vec::v2f64 b,
-		  vec::v2f64 c, vec::v2f64 d)
+                  vec::v2f64 c, vec::v2f64 d)
 {
         return a*b - c*d;
 }
 
 vec::v2f64 test2c(vec::v2f64 a, vec::v2f64 b,
-		  vec::v2f64 c, vec::v2f64 d)
+                  vec::v2f64 c, vec::v2f64 d)
 {
         return (a*b + c) * d;
 }
 
 vec::v2f64 test2d(vec::v2f64 a, vec::v2f64 b,
-		  vec::v2f64 c, vec::v2f64 d)
+                  vec::v2f64 c, vec::v2f64 d)
 {
         return (a*b - c) * d;
 }
 
 vec::v2f64 test3a(vec::v2f64 a, vec::v2f64 b,
-		  vec::v2f64 c, vec::v2f64 d)
+                  vec::v2f64 c, vec::v2f64 d)
 {
-	return 1.0 + a * b + 1.0 + c * d;
+        return 1.0 + a * b + 1.0 + c * d;
 }
 
 // v4f32 compile tests
@@ -186,19 +187,19 @@ vec::v4f32 test1d(vec::v4f32 a, vec::v4f32 b, vec::v4f32 c)
 }
 
 vec::v4f32 test2a(vec::v4f32 a, vec::v4f32 b,
-		  vec::v4f32 c, vec::v4f32 d)
+                  vec::v4f32 c, vec::v4f32 d)
 {
         return a*b + c*d;
 }
 
 vec::v4f32 test2b(vec::v4f32 a, vec::v4f32 b,
-		  vec::v4f32 c, vec::v4f32 d)
+                  vec::v4f32 c, vec::v4f32 d)
 {
         return a*b - c*d;
 }
 
 vec::v4f32 test2c(vec::v4f32 a, vec::v4f32 b,
-		  vec::v4f32 c, vec::v4f32 d)
+                  vec::v4f32 c, vec::v4f32 d)
 {
         return (a*b + c) * d;
 }
@@ -210,33 +211,33 @@ vec::v4f32 test2d(vec::v4f32 a, vec::v4f32 b,
 }
 
 vec::v4f32 test3a(vec::v4f32 a, vec::v4f32 b,
-		  vec::v4f32 c, vec::v4f32 d)
+                  vec::v4f32 c, vec::v4f32 d)
 {
-	return 1.0 + a * b + 1.0 + c * d;
+        return 1.0 + a * b + 1.0 + c * d;
 }
 
 vec::v4f32 test4a(vec::v4f32 a, vec::v4f32 b,
-		  vec::v4f32 c, vec::v4f32 d)
+                  vec::v4f32 c, vec::v4f32 d)
 {
-	return (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
-			    c * d);
+        return (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
+                            c * d);
 }
 
 vec::v4f32 test_mask(vec::v4f32 a, vec::v4f32 b,
-		     vec::v4f32 c, vec::v4f32 d,
-		     vec::mask<vec::v4f32> m)
+                     vec::v4f32 c, vec::v4f32 d,
+                     vec::mask<vec::v4f32> m)
 {
-	vec::v4f32 r(a);
-	r(m) = (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
-			    c * d);
-	return r;
+        vec::v4f32 r(a);
+        r(m) = (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
+                            c * d);
+        return r;
 }
 
 
 int main(int argc, char** argv)
 {
         // x86vec::test::check_frexp_f64();
-        x86vec::v2f64 t=exp(x86vec::v2f64(0.0));
-        static_cast<void>(t);
+        // x86vec::v2f64 t=exp(x86vec::v2f64(0.0));
+        // static_cast<void>(t);
         return 0;
 }

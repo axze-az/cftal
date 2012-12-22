@@ -106,48 +106,55 @@ namespace emuvec {
 		template <std::size_t _N,  class _A = std::allocator<char> >
 		class utvec : private _A {
 			typedef char aligned_char __attribute__((aligned(16)));
+			
 			aligned_char* _v;
 			aligned_char* alloc_() {
 				_A* a= static_cast<_A*>(this);
 				return static_cast<aligned_char*>(
 					a->allocate(_N));
 			}
-			void free_() {
-				_A* a= static_cast<_A*>(this);
-				char* p= static_cast<char*>(_v);
-				a->deallocate(p, _N);
+			void free_(aligned_char* p) {
+				if (p) {
+					_A* a= static_cast<_A*>(this);
+					a->deallocate(p, _N);
+				}
 			}
-			aligned_char* copy_(void* dst, const void* src) {
-				void* p=mem_cpy<_N>::v(dst, src);
-				return static_cast<aligned_char*>(p);
-			}
-			aligned_char* alloc_copy_(const utvec& r) {
-				void* p= copy_(alloc_(), r._v);
-				return static_cast<aligned_char*>(p);
+			aligned_char* copy_(aligned_char* dst, const void* src) {
+				if (src != nullptr) {
+					if (dst==nullptr)
+						dst = alloc_();
+					mem_cpy<_N>::v(dst, src);
+				} else {
+					free_(dst);
+					dst = nullptr;
+				}
+				return dst;
 			}
 		protected:
 			_A& get_allocator() {
 				return *this;
 			}
 			void* vbegin() {
+				if (_v == nullptr)
+					_v = alloc_();
 				return _v;
 			}
 			const void* vbegin() const {
-				return _v;
+				return _v == nullptr ? _d : _v;
 			}
 			void swap(utvec& r) {
 				std::swap(_v, r._v);
 			}
-			utvec() : _A(), _v(alloc_()) {
+			utvec() : _A(), _v(nullptr) {
 			}
-			utvec(const utvec& r) : _A(r), _v(alloc_copy_(r)) {
+			utvec(const utvec& r) : _A(r), _v(copy_(nullptr, r._v)) {
 			}
-			utvec(utvec&& r) : _A(std::move(r)), _v(alloc_()) {
+			utvec(utvec&& r) : _A(std::move(r)), _v(nullptr) {
 				swap(r);
 			}
 			utvec& operator=(const utvec& r) {
 				if (&r != this)
-					copy_(_v, r._v, _N);
+					_v=copy_(_v, r._v);
 				return *this;
 			}
 			utvec& operator=(utvec&& r) {
@@ -155,10 +162,15 @@ namespace emuvec {
 				return *this;
 			}
 			~utvec() {
-				free_();
+				free_(_v);
 			}
+		private:
+			static const aligned_char _d[_N];
 		};
-		
+
+		template <std::size_t _N,  class _A>
+		const typename utvec<_N,_A>::aligned_char 
+		utvec<_N,_A>::_d[_N]={0};
 
                 template <class _T>
                 struct select {
