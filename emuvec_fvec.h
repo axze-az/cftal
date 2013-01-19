@@ -49,7 +49,7 @@ namespace emuvec {
 		return v()[i];
 	}
 
-	DEFINE_CFTAL_VEC_FP_OPERATORS(v4f32);
+	DEFINE_EMUVEC_FP_OPERATORS(v4f32);
 
 	v4f32& operator|= (v4f32& a, const v4f32& b);
 	v4f32& operator&= (v4f32& a, const v4f32& b);
@@ -155,7 +155,7 @@ namespace emuvec {
 		return v()[i];
 	}
 
-	DEFINE_CFTAL_VEC_FP_OPERATORS(v2f64);
+	DEFINE_EMUVEC_FP_OPERATORS(v2f64);
 
 	v2f64& operator|= (v2f64& a, const v2f64& b);
 	v2f64& operator&= (v2f64& a, const v2f64& b);
