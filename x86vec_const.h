@@ -317,8 +317,10 @@ template <uint32_t _P0, uint32_t _P1,
 inline
 constexpr __m128i x86vec::const4_u32<_P0, _P1, _P2, _P3>::iv()
 {
-        const __m128i* p=reinterpret_cast<const __m128i*>(_msk);
-        return *p;
+        // const __m128* p=reinterpret_cast<const __m128*>(_msk);
+	// constexpr __m128 r=*p;
+        // return r;
+        return _mm_setr_epi32(_P0, _P1, _P2, _P3);
 }
 
 template <uint32_t _P0, uint32_t _P1,
@@ -326,8 +328,10 @@ template <uint32_t _P0, uint32_t _P1,
 inline
 constexpr __m128 x86vec::const4_u32<_P0, _P1, _P2, _P3>::fv()
 {
-        const __m128* p=reinterpret_cast<const __m128*>(_msk);
-        return *p;
+        // const __m128* p=reinterpret_cast<const __m128*>(_msk);
+	// constexpr __m128 r=*p;
+        // return r;
+        return _mm_castsi128_ps(iv());
 }
 
 template <uint32_t _P0, uint32_t _P1,
@@ -335,8 +339,10 @@ template <uint32_t _P0, uint32_t _P1,
 inline
 constexpr __m128d x86vec::const4_u32<_P0, _P1, _P2, _P3>::dv()
 {
-        const __m128d* p=reinterpret_cast<const __m128d*>(_msk);
-        return *p;
+        // const __m128d* p=reinterpret_cast<const __m128d*>(_msk);
+	// constexpr __m128d r=*p;
+        // return r;
+        return _mm_castsi128_pd(iv());
 }
 
 template <uint16_t _P0, uint16_t _P1,
@@ -356,8 +362,10 @@ inline
 constexpr __m128i
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
 {
-        const __m128i* p=reinterpret_cast<const __m128i*>(_msk);
-        return *p;
+        // const __m128i* p=reinterpret_cast<const __m128i*>(_msk);
+	// constexpr __m128i r=*p;
+        // return r;
+	return _mm_setr_epi16(_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7);
 }
 
 template <uint16_t _P0, uint16_t _P1,
@@ -368,8 +376,10 @@ inline
 constexpr __m128
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
 {
-        const __m128* p=reinterpret_cast<const __m128*>(_msk);
-        return *p;
+        // const __m128* p=reinterpret_cast<const __m128*>(_msk);
+	// constexpr __m128 r=*p;
+        // return r;
+	return _mm_castsi128_ps(iv());
 }
 
 template <uint16_t _P0, uint16_t _P1,
@@ -380,8 +390,10 @@ inline
 constexpr __m128d
 x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
-        const __m128d* p=reinterpret_cast<const __m128d*>(_msk);
-        return *p;
+        // const __m128d* p=reinterpret_cast<const __m128d*>(_msk);
+	// constexpr __m128d r=*p;
+        // return r;
+	return _mm_castsi128_pd(iv());
 }
 
 template <uint8_t _P00, uint8_t _P01,
@@ -413,8 +425,11 @@ constexpr __m128i
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
 {
-        const __m128i* p=reinterpret_cast<const __m128i*>(_msk);
-        return *p;
+        // const __m128i* p=reinterpret_cast<const __m128i*>(_msk);
+	// constexpr __m128i r=*p;
+        // return r;
+	return _mm_setr_epi8(_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+			     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15);
 }
 
 template <uint8_t _P00, uint8_t _P01,
@@ -430,8 +445,10 @@ constexpr __m128
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
 {
-        const __m128* p=reinterpret_cast<const __m128*>(_msk);
-        return *p;
+        // const __m128* p=reinterpret_cast<const __m128*>(_msk);
+	// constexpr __m128 r=*p;
+        // return r;
+	return _mm_castsi128_ps(iv());
 }
 
 template <uint8_t _P00, uint8_t _P01,
@@ -447,8 +464,11 @@ constexpr __m128d
 x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
 {
-        const __m128d* p=reinterpret_cast<const __m128d*>(_msk);
-        return *p;
+        // const __m128d* p=reinterpret_cast<const __m128d*>(_msk);
+	// constexpr __m128d r=*p;
+        // return r;
+	return _mm_castsi128_pd(iv());
+
 }
 
 // Local variables:

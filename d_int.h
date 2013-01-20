@@ -1393,7 +1393,7 @@ cftal::dint<_T> cftal::operator>>(const dint<_T>& a, unsigned s)
 {
         // arithmetic shift from logical shift:
         typedef typename dint<_T>::base_type du_t;
-        typedef typename std::make_unsigned<_T>::type u_t;
+        // typedef typename std::make_unsigned<_T>::type u_t;
         const du_t& au = static_cast<const du_t&>(a);
         du_t t(- (au >> (dint<_T>::N-1)));
         du_t a_xor_t(a^ t);
@@ -1603,7 +1603,7 @@ template <typename _T>
 bool cftal::operator==(const dint<_T>& a, const dint<_T>& b)
 {
         typedef typename dint<_T>::base_type du_t;
-        typedef typename dint<_T>::utype u_t;
+        // typedef typename dint<_T>::utype u_t;
         return static_cast<const du_t&>(a) == static_cast<const du_t&>(b);
 }
 
@@ -1634,7 +1634,7 @@ template <typename _T>
 bool cftal::operator!=(const _T& a, const dint<_T>& b)
 {
         typedef typename dint<_T>::base_type du_t;
-        typedef typename dint<_T>::utype u_t;
+        // typedef typename dint<_T>::utype u_t;
         return static_cast<const du_t&>(a) != static_cast<const du_t&>(b);
 }
 
