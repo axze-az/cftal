@@ -197,6 +197,8 @@ namespace x86vec {
 	template <unsigned _I>
 	typename v4f32::element_type extract(const v4f32& a);
 
+	v4f32::element_type hadd(const v4f32& a);
+
         class v2f64 : public vreg<__m128d> {
         public:
                 typedef double element_type;
@@ -375,6 +377,8 @@ namespace x86vec {
 	v2f64 insert(const v2f64& a, typename v2f64::element_type v);
 	template <unsigned _I>
 	typename v2f64::element_type extract(const v2f64& a);
+
+	v2f64::element_type hadd(const v2f64& a);
 
 #if defined (__AVX__)
 	// 256 bit floating point types

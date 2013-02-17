@@ -520,10 +520,20 @@ x86vec::v4f32 x86vec::insert(const v4f32& a, typename v4f32::element_type v)
 
 template <unsigned _I>
 inline
-typename x86vec::v4f32::element_type
+x86vec::v4f32::element_type
 x86vec::extract(const v4f32& a)
 {
         return extract_f32<_I>(a());
+}
+
+inline
+x86vec::v4f32::element_type
+x86vec::hadd(const v4f32& a)
+{
+	v4f32 t0(a + permute<1,0,3,2>(a));
+	v4f32::element_type f0(extract<0>(t0));
+	v4f32::element_type f1(extract<2>(t0));
+	return f0 + f1;
 }
 
 // Local variables:

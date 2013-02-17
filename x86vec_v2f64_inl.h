@@ -590,10 +590,19 @@ x86vec::v2f64 x86vec::insert(const v2f64& a, typename v2f64::element_type v)
 
 template <unsigned _I>
 inline
-typename x86vec::v2f64::element_type
+x86vec::v2f64::element_type
 x86vec::extract(const v2f64& a)
 {
 	return extract_f64<_I>(a());
+}
+
+inline
+x86vec::v2f64::element_type
+x86vec::hadd(const v2f64& a)
+{
+	v2f64 t(a + permute<1,0>(a));
+	v2f64::element_type r(extract<0>(t));
+	return r;
 }
 
 // Local variables:
