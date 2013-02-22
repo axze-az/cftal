@@ -61,7 +61,7 @@ namespace x86vec {
                 v4f32(vector_type r);
                 v4f32(const base_type& r);
                 v4f32(element_type p00, element_type p01,
-                      element_type p02, element_type p03);
+                      element_type p02=0.0f, element_type p03=0.0f);
                 // broadcast to all positions
 		v4f32(element_type r);
                 v4f32(element_type r, bool broadcast);
