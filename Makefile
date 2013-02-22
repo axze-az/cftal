@@ -10,7 +10,7 @@ MINOR=1#
 
 SLDFLAGS:= $(SLDFLAGS) 
 #ARCH=#-march=bdver1 -mxop #-march=bdver1 #-mdispatch-scheduler
-ARCH+=#-mpopcnt -mfma
+ARCH+=-mpopcnt -mfma -mavx2
 CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 

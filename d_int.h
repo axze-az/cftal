@@ -1634,8 +1634,8 @@ template <typename _T>
 bool cftal::operator!=(const _T& a, const dint<_T>& b)
 {
         typedef typename dint<_T>::base_type du_t;
-        // typedef typename dint<_T>::utype u_t;
-        return static_cast<const du_t&>(a) != static_cast<const du_t&>(b);
+        typedef typename dint<_T>::utype u_t;
+        return static_cast<const u_t&>(a) != static_cast<const du_t&>(b);
 }
 
 template <typename _T>
