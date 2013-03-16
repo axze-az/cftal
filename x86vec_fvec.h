@@ -198,7 +198,13 @@ namespace x86vec {
 	typename v4f32::element_type extract(const v4f32& a);
 
 	v4f32::element_type hadd(const v4f32& a);
+	v4f32 hadd_pairs(const v4f32& a, const v4f32& b);
+	v4f32 hsub_pairs(const v4f32& a, const v4f32& b);
+	v4f32 hmul_pairs(const v4f32& a, const v4f32& b);
+	v4f32 hdiv_pairs(const v4f32& a, const v4f32& b);
 
+	v4f32::element_type dot(const v4f32& a, const v4f32& b);
+       
         class v2f64 : public vreg<__m128d> {
         public:
                 typedef double element_type;

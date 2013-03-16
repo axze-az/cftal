@@ -536,6 +536,64 @@ x86vec::hadd(const v4f32& a)
 	return f0 + f1;
 }
 
+inline
+x86vec::v4f32
+x86vec::hadd_pairs(const v4f32& a, const v4f32& b)
+{
+#if 0 // defined (__SSE3__)
+	return _mm_hadd_ps(a(), b());
+#else
+	v4f32 lh(permute<0, 2, 4, 6>(a, b));
+	v4f32 hh(permute<1, 3, 5, 7>(a, b));
+	return lh + hh;
+#endif
+}
+
+inline
+x86vec::v4f32
+x86vec::hsub_pairs(const v4f32& a, const v4f32& b)
+{
+#if 0 // defined (__SSE3__)
+	return _mm_hsub_ps(a(), b());
+#else
+	v4f32 lh(permute<0, 2, 4, 6>(a, b));
+	v4f32 hh(permute<1, 3, 5, 7>(a, b));
+	return lh - hh;
+#endif
+}
+
+inline
+x86vec::v4f32
+x86vec::hmul_pairs(const v4f32& a, const v4f32& b)
+{
+	v4f32 lh(permute<0, 2, 4, 6>(a, b));
+	v4f32 hh(permute<1, 3, 5, 7>(a, b));
+	return lh * hh;
+}
+
+inline
+x86vec::v4f32
+x86vec::hdiv_pairs(const v4f32& a, const v4f32& b)
+{
+	v4f32 lh(permute<0, 2, 4, 6>(a, b));
+	v4f32 hh(permute<1, 3, 5, 7>(a, b));
+	return lh / hh;
+}
+
+inline
+x86vec::v4f32::element_type
+x86vec::dot(const v4f32& a, const v4f32& b)
+{
+#if defined (__SSE4_1__)
+	v4f32 v(_mm_dp_ps(a(), b(), 0xf1));
+	return extract<0>(v);
+#else
+	return hadd(a*b);
+#endif
+}
+
+
+
 // Local variables:
 // mode: c++
 // end:
