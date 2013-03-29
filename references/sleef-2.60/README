@@ -1,0 +1,49 @@
+In this library, functions for evaluating some elementary functions
+are implemented. The algorithm is intentended for efficient evaluation
+utilizing SIMD instruction sets like SSE or AVX, but it is also fast
+using usual scalar operations.
+
+The package contains a few directories in which implementation in the
+corresponding languages are contained. You can run "make test" in
+order to test the functions in each directory.
+
+The software is in public domain. You can use the software without any
+obligation.
+
+
+Author : Naoki Shibata
+
+Main download page : http://shibatch.sourceforge.net/
+
+
+
+History
+
+2.60 Added the remaining single precision functions : powf, sinhf,
+coshf, tanhf, exp2f, exp10f, log10f, log1pf. Added support for FMA4
+(for AMD Bulldozer). Added more test cases. Fixed minor bugs (which
+degraded accuracy in some rare cases).
+
+2.50 Added support for AVX2. SLEEF now compiles with ICC.
+
+2.40 Fixed incorrect denormal/nonnumber handling in ldexp, ldexpf,
+sinf and cosf. Removed support for Go language.
+
+2.31 Added sincosf.
+
+2.30 Added single precision functions : sinf, cosf, tanf, asinf,
+acosf, atanf, logf, expf, atan2f and cbrtf.
+
+2.20 Added exp2, exp10, expm1, log10, log1p, and cbrt.
+
+2.10 asin() and acos() are back. Added ilogb() and ldexp(). Added
+hyperbolic functions.  Eliminated dependency on frexp, ldexp, fabs,
+isnan and isinf.
+
+2.00 All of the algorithm has been updated. Both accuracy and speed
+are improved since version 1.10. Denormal number handling is also
+improved.
+
+1.10 AVX support is added. Accuracy tester is added.
+
+1.00 Initial release
