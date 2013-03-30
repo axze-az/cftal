@@ -346,6 +346,38 @@ x86vec::v4f32 x86vec::sqrt(const v4f32& a)
 }
 
 inline
+x86vec::v4f32 
+x86vec::rcp(const v4f32& a)
+{
+	return 1.0f/a;
+}
+
+inline
+x86vec::v4f32
+x86vec::native_rcp(const v4f32& a)
+{
+	// return rcp(a);
+	v4f32 x0(_mm_rcp_ps(a()));
+	return (x0+x0) - ((x0*a) * x0);
+}
+
+inline
+x86vec::v4f32
+x86vec::rsqrt(const v4f32& a)
+{
+	return 1.0f/sqrt(a);
+}
+
+inline 
+x86vec::v4f32
+x86vec::native_rsqrt(const v4f32& a)
+{
+	// return rsqrt(a);
+	v4f32 x0(_mm_rsqrt_ps(a()));
+	return (0.5f * x0) *(3.0f - (a*x0)* x0);
+}
+
+inline
 x86vec::v4f32 x86vec::impl::round(const v4f32& a, const rounding_mode::type m)
 {
 #if defined (__SSE4_1__)
@@ -579,6 +611,7 @@ x86vec::hdiv_pairs(const v4f32& a, const v4f32& b)
 	v4f32 hh(permute<1, 3, 5, 7>(a, b));
 	return lh / hh;
 }
+
 
 inline
 x86vec::v4f32::element_type

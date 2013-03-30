@@ -167,6 +167,11 @@ namespace x86vec {
         v4f32 abs(const v4f32& a);
 	v4f32 sqrt(const v4f32& a);
 
+	v4f32 rcp(const v4f32& a);
+	v4f32 native_rcp(const v4f32& a);
+	v4f32 rsqrt(const v4f32& a);
+	v4f32 native_rsqrt(const v4f32& a);
+
 	namespace impl {
 		v4f32 round(const v4f32& a, const rounding_mode::type m);
 	}
@@ -202,6 +207,7 @@ namespace x86vec {
 	v4f32 hsub_pairs(const v4f32& a, const v4f32& b);
 	v4f32 hmul_pairs(const v4f32& a, const v4f32& b);
 	v4f32 hdiv_pairs(const v4f32& a, const v4f32& b);
+	
 
 	v4f32::element_type dot(const v4f32& a, const v4f32& b);
        
