@@ -177,7 +177,7 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 		v2f64 ae(abs_error(expected, res));
 		v2f64 re(rel_error(expected, res));
 		v2f64 max_err(ae + re);
-		v2f64 is_err(max_err > 1.0e-15);
+		v2f64 is_err(re > 1.0e-15);
 #if 0
 		double tt=extract<0>(res);
 		std::cout << tf._fname << "( " 
@@ -187,9 +187,10 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 		std::cout << ")= " << tt << " :  "
 			  << c._res << std::endl;
 #endif
-		if (no_signs(is_err))
+		if (no_signs(is_err)) {
+			std::cout << "passed\n";
 			continue;
-		rc= false;
+		}
 		// we found an error:
 		double t=extract<0>(res);
 		std::cerr << tf._fname << "( " 
@@ -201,7 +202,9 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 		std::cerr << "rel_err = " << extract<0>(re)
 			  << " abs_err = " << extract<0>(ae)
 			  << std::endl;
+		rc= false;
 	}
+	std::cout << "rc= " << rc << std::endl;
 	return rc;
 }
 
@@ -226,5 +229,5 @@ int main(int argc, char** argv)
 {
 	if (isatty(STDIN_FILENO))
 		return 0;
-	return all_tests_03() ==  true ? 0 : 3;
+	return (all_tests_03() ==  true) ? 0 : 3;
 }

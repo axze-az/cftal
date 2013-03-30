@@ -3,9 +3,11 @@
 #include <cmath>
 #include <limits>
 
-#define PI4_A .7853981554508209228515625
-#define PI4_B .794662735614792836713604629039764404296875e-8
-#define PI4_C .306161699786838294306516483068750264552437361480769e-16
+#define PI4_A 0.78539816290140151978
+#define PI4_B 4.9604678871439933374e-10
+#define PI4_C 1.1258708853173288931e-18
+#define PI4_D 1.7607799325916000908e-27
+
 #define M_4_PI 1.273239544735162542821171882678754627704620361328125
 
 #define L2U .69314718055966295651160180568695068359375
@@ -609,6 +611,7 @@ sin(const vf_type& cd)
 	vf_type d = mad(qf, -PI4_A*4, cd);
 	d = mad(qf, -PI4_B*4, d);
 	d = mad(qf, -PI4_C*4, d);
+	d = mad(qf, -PI4_D*4, d);
 
 	vf_type s = d * d;
 	
@@ -640,9 +643,10 @@ cos(const vf_type& cd)
 	vf_type qf= 1.0+ 2.0 * rint(cd * M_1_PI -0.5);
 	vi_type q = _T::cvt_f_to_i(qf);
 	
-	vf_type d= mad(qf, -PI4_A*2, cd);
-	d = mad(qf, -PI4_B*2, d);
-	d = mad(qf, -PI4_C*2, d);
+	vf_type d= mad(qf, -PI4_A*4, cd);
+	d = mad(qf, -PI4_B*4, d);
+	d = mad(qf, -PI4_C*4, d);
+	d = mad(qf, -PI4_D*4, d);
 
 	vf_type s = d * d;
 
@@ -679,6 +683,7 @@ sincos(const vf_type& cd)
 	s = mad(qf, -PI4_A*2, s);
 	s = mad(qf, -PI4_B*2, s);
 	s = mad(qf, -PI4_C*2, s);
+	s = mad(qf, -PI4_D*2, s);
 
 	vf_type t = s;
 
@@ -741,6 +746,7 @@ tan(const vf_type& cd)
 	vf_type x = mad(qf, -PI4_A*2, cd);
 	x = mad(qf, -PI4_B*2, x);
 	x = mad(qf, -PI4_C*2, x);
+	x = mad(qf, -PI4_D*2, x);
 
 	vf_type s = x* x;
 	// if ((q & 1) != 0) x = -x;
