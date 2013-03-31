@@ -16,6 +16,8 @@ namespace x86vec {
 		template <class _T>
 		_T abs_error(const _T& a, const _T& b);
 
+		int ulp(double c, double n);
+
 		struct func_data {
 			typedef v2f64::element_type fp_type;
 			typedef arg<v2f64>::type arg_type;
@@ -57,6 +59,41 @@ _T x86vec::test::rel_error(const _T& a, const _T& b)
 	_T re(ae / r);
 	re = select(r == _T(0.0), _T(0.0),  abs(re));
 	return re;
+}
+
+int x86vec::test::ulp(double c, double n)
+{
+	if (std::isinf(c) && std::isinf(n))
+		return 0;
+	if (std::isnan(c) && std::isnan(n))
+		return 0;
+	if (c==0 && n == 0)
+		return 0;
+	int ce(-1), ne(-1);
+	double cf(std::frexp(c, &ce));
+	double nf(std::frexp(n, &ne));
+	union d_i {
+		double _d;
+		std::uint64_t _u;
+	};
+	d_i ci, ni;
+	ci._d = cf;
+	ni._d = nf;
+#if 0
+	std::cout << std::hex << "ci: " << ci._u 
+		  << " ni: " << ni._u << std::endl
+		  << std::dec;
+#endif
+	int u(64);
+	for (int i=63; i>=0; --i) {
+		std::uint64_t msk(1L << i);
+		if ((ci._u & msk) == (ni._u & msk)) {
+			--u;
+			continue;
+		}
+		break;
+	}
+	return u;
 }
 
 std::string x86vec::test::delete_comment(const std::string& s)
@@ -187,7 +224,11 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 		std::cout << ")= " << tt << " :  "
 			  << c._res << std::endl;
 #endif
-		if (no_signs(is_err)) {
+		double tt=extract<0>(res);
+		double nt=c._res;
+		int ulps(ulp(tt, nt));
+		std::cout << "ulp: " << ulps << std::endl;
+		if (ulps < 3 && no_signs(is_err)) {
 			std::cout << "passed\n";
 			continue;
 		}
