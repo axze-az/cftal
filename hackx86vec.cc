@@ -1,4 +1,5 @@
 #include <cftal/d_int.h>
+#include <cftal/d_real.h>
 #include <cftal/mul_div.h>
 #include <cftal/vec.h>
 #include <cmath>
@@ -6,7 +7,6 @@
 #include <cstdint>
 #include <iostream>
 #include <iomanip>
-
 
 namespace x86vec {
         namespace test {
@@ -234,11 +234,47 @@ vec::v4f32 test_mask(vec::v4f32 a, vec::v4f32 b,
         return r;
 }
 
+void calc_pi()
+{
+	using dpf64 = cftal::d_real<double>;
+	// arctan(x) = x/1 - {x^3}/3 + x^5/5
+	// arctan(1) = PI/4
+	dpf64 pi(0);
+	double pi_d(0);
+	for (std::int64_t i=100000000; i>=0 ; --i) {
+		const std::int64_t i0=2*i+2;
+		dpf64 t0(i0);
+		dpf64 t1(t0+1.0);
+		dpf64 t2(t0+2.0);
+		dpf64 p(t0*t1*t2);
+		dpf64 rp(1.0/p);
+		if ((i&1)==0) {
+			// std::cout << i0 << std::endl;
+			pi += rp;
+		} else {
+			// std::cout << -i0 << std::endl;
+			pi -= rp;
+		}
+		// std::cout << pi.h() << ' ' << pi.l() << std::endl;
+	}
+	pi *= 4.0;
+	pi += 3.0;
+	std::cout << std::scientific 
+		  << std::setprecision(18)
+		  << pi.h()
+		  << ' '
+		  << pi.l()
+		  << std::endl
+		  << pi_d
+		  << std::endl;
+}
+
 
 int main(int argc, char** argv)
 {
         // x86vec::test::check_frexp_f64();
         // x86vec::v2f64 t=exp(x86vec::v2f64(0.0));
         // static_cast<void>(t);
-        return 0;
+	calc_pi();
+	return 0;
 }

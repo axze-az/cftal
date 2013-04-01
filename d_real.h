@@ -8,6 +8,11 @@
 
 namespace cftal {
 
+	template <class _T>
+	_T fms(const _T& a, const _T& b, const _T& c) {
+		return fma(a, b, -c);
+	}
+
 	template <typename _T>
 	struct d_real_traits;
 
@@ -39,17 +44,21 @@ namespace cftal {
 		// result of a comparison operator
 		typedef bool cmp_result_type;
 		// 2^27 + 1
-		static constexpr double split = 
-			134217729.0;
+		static constexpr double split() { 
+			return 134217729.0;
+		}
 		// 2^996 = 2^{1023-28+1}
-		static constexpr double split_threshold=
-			6.69692879491417e+299;
+		static constexpr double split_threshold() {
+			return 6.69692879491417e+299;
+		}
 		// 2^-28
-		static constexpr double split_scale_down=
-			3.7252902984619140625e-09;
+		static constexpr double split_scale_down() {
+			return 3.7252902984619140625e-09;
+		}
 		// 2^28
-		static constexpr double split_scale_up=
-			268435456.0;
+		static constexpr double split_scale_up() {
+			return 268435456.0;
+		}
 		// 
 		static bool any(const cmp_result_type& b) { 
 			return b; 
@@ -220,7 +229,7 @@ namespace cftal {
 
 	template <typename _T>
 	d_real<_T>
-	operator+(const d_real<_T>& a, const d_real<_T>& b);
+	operator-(const d_real<_T>& a, const d_real<_T>& b);
 
 	template <typename _T>
 	d_real<_T>&
@@ -327,17 +336,17 @@ cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 	_T temp;
 	_T a=a0;
 	if (d_real_traits<_T>::any(
-		    a > d_real_traits<_T>::split_threshold) || 
+		    a > d_real_traits<_T>::split_threshold()) || 
 	    d_real_traits<_T>::any(
-		    a < -d_real_traits<_T>::split_threshold)) {
-		a*=d_real_traits<_T>::split_scale_down;
-		temp=d_real_traits<_T>::split*a;
+		    a < -d_real_traits<_T>::split_threshold())) {
+		a*=d_real_traits<_T>::split_scale_down();
+		temp=d_real_traits<_T>::split()*a;
 		hi=temp-(temp-a);
 		lo=a-hi;
-		hi*=d_real_traits<_T>::split_scale_up;
-		lo*=d_real_traits<_T>::split_scale_up;
+		hi*=d_real_traits<_T>::split_scale_up();
+		lo*=d_real_traits<_T>::split_scale_up();
 	} else {
-		temp=d_real_traits<_T>::split;
+		temp=d_real_traits<_T>::split();
 		hi=temp-(temp-a);
 		lo=a-hi;
 	}
@@ -484,7 +493,7 @@ cftal::d_real<_T>
 cftal::d_real_impl::ieee_div(const d_real<_T>& a, const d_real<_T>& b)
 {
 	_T q1, q2, q3;
-	d_real<_T> r;
+	d_real<_T> r(0);
 	q1 = a.h() / b.h();  /* approximate quotient */
 	r = a - q1 * b;
 	q2 = r.h() / b.h();
