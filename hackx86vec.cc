@@ -1,8 +1,7 @@
 #include <cftal/d_int.h>
 #include <cftal/mul_div.h>
-#include <cftal/emuvec.h>
+#include <cftal/vec.h>
 #include <cmath>
-#include <x86vec.h>
 #include <x86vec_test.h>
 #include <cstdint>
 #include <iostream>
@@ -111,8 +110,10 @@ bool x86vec::test::check_frexp_f64()
         return true;
 }
 
-namespace vec=x86vec;
+//namespace vec=x86vec;
 //namespace vec=emuvec;
+
+namespace vec=cftal::vec;
 
 // v2f64 compile tests
 vec::v2f64 test1a(vec::v2f64 a, vec::v2f64 b, vec::v2f64 c)
