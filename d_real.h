@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cmath>
 #include <type_traits>
 
 namespace cftal {
@@ -10,14 +11,37 @@ namespace cftal {
 	template <typename _T>
 	struct d_real_traits;
 
+	template <typename _T>
+	struct has_fma;
+
+	// fma ?
 	template <>
-	struct d_real_traits<double> {
+	struct has_fma<double> {
+#if defined (FP_FAST_FMA) && (FP_FAST_FMA > 0)
+		static constexpr bool fma = true;
+#else
+		static constexpr bool fma = false;
+#endif
+	};
+
+	// fma ?
+	template <>
+	struct has_fma<float> {
+#if defined (FP_FAST_FMAF) && (FP_FAST_FMAF > 0)
+		static constexpr bool fma = true;
+#else
+		static constexpr bool fma = false;
+#endif
+	};
+
+	template <>
+	struct d_real_traits<double> : public has_fma<double> {
 		// result of a comparison operator
 		typedef bool cmp_result_type;
 		// 2^27 + 1
 		static constexpr double split = 
 			134217729.0;
-		// 2^996 = 2^1024-2^28
+		// 2^996 = 2^{1023-28+1}
 		static constexpr double split_threshold=
 			6.69692879491417e+299;
 		// 2^-28
@@ -26,6 +50,28 @@ namespace cftal {
 		// 2^28
 		static constexpr double split_scale_up=
 			268435456.0;
+		// 
+		static bool any(const cmp_result_type& b) { 
+			return b; 
+		}
+	};
+
+	template <>
+	struct d_real_traits<float> : public has_fma<float> {
+		// result of a comparison operator
+		typedef bool cmp_result_type;
+		// 2^13 + 1
+		static constexpr float split = 
+			8193.0;
+		// 2^115 = 2^{127-14+1}
+		static constexpr float split_threshold=
+			4.15383749e+34f;
+		// 2^-14
+		static constexpr double split_scale_down=
+			1.0f/16384.0f;
+		// 2^14
+		static constexpr float split_scale_up=
+			16384.0f;
 		// fma ?
 		static constexpr bool fma = false;
 		// 
