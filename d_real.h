@@ -304,6 +304,15 @@ namespace cftal {
 	d_real<_T> ceil(const d_real<_T>& r);
 	template <typename _T>
 	d_real<_T> trunc(const d_real<_T>& r);
+
+	template <typename _T>
+	d_real<_T> powi(const d_real<_T>& r, int e);
+
+	d_real<double> str_to_d_double(const char* p, std::size_t n);
+	d_real<float> str_to_d_float(const char* p, std::size_t n);
+
+	d_real<double> operator "" _dd(const char* dd);
+	d_real<float> operator "" _df(const char* df);
 }
 
 template <typename _T>
@@ -919,6 +928,33 @@ cftal::trunc(const d_real<_T>& a)
 	_T lo_res= d_real_traits<_T>::sel(
 		a_lt_z, a_ceil.l(), a_floor.l());
 	return d_real<_T>(hi_res, lo_res);
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::powi(const d_real<_T>& a, int e)
+{
+	d_real<_T> r = a;
+	d_real<_T> s = 1.0;
+	int np = std::abs(e);
+	if (np > 1) {
+		/* Use binary exponentiation */
+		while (np > 0) {
+			if ((np & 1) == 1) {
+				s *= r;
+			}
+			np >>= 1;
+			if (np > 0)
+				r = r * r;
+		}
+	} else {
+		s = r;
+	}
+	/* Compute the reciprocal if n is negative. */
+	if (e < 0)
+		return (1.0 / s);
+	return s;
 }
 
 

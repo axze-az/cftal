@@ -15,7 +15,7 @@ CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 
 CSRCS=heap_array.cc x86vec_ops_1.cc x86vec_fvec.cc x86vec_test.cc	\
-emuvec.cc mul_div_32.cc mul_div_64.cc
+emuvec.cc mul_div_32.cc mul_div_64.cc d_real.cc
 
 all: lib tests
 

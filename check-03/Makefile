@@ -75,6 +75,9 @@ test-log: testx86vec-03
 test-tan: testx86vec-03
 	./$< <tan.testdata
 
+test-acos: testx86vec-03
+	./$< <acos.testdata
+
 
 #################################################################
 # cleanup 

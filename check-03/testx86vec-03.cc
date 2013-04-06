@@ -133,6 +133,9 @@ bool x86vec::test::read_func(func_data& tf, std::istream& is)
 		} else if (f == "tan") {
 			tf._f1 = x86vec::tan;
 			tf._f1d = std::tan;
+		} else if (f == "acos") {
+			tf._f1 = x86vec::acos;
+			tf._f1d = std::acos;
 		} else {
 			std::cerr << "unknown function " << f << std::endl;
 			return false;

@@ -1,5 +1,6 @@
 #include "x86vec_fvec.h"
 #include "x86vec_cvt.h"
+#include "d_real.h"
 #include <cmath>
 #include <limits>
 
