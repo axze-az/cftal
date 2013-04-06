@@ -30,7 +30,9 @@ namespace x86vec {
 			
 			std::string _fname;
 			v2f64 (*_f1)(arg_type a);
+			double (*_f1d)(double a);
 			v2f64 (*_f2)(arg_type a, arg_type b);
+			double (*_f2d)(double a, double b);
 			std::vector<inp_res> _data;
 
 			func_data() : _f1(nullptr), _f2(nullptr), _data() {}
@@ -118,14 +120,19 @@ bool x86vec::test::read_func(func_data& tf, std::istream& is)
 		tf._fname = f;
 		if (f == "cos") {
 			tf._f1 = x86vec::cos;
+			tf._f1d= std::cos;
 		} else if (f == "sin") {
 			tf._f1 = x86vec::sin;
+			tf._f1d= std::sin;
 		} else if (f == "exp") {
 			tf._f1 = x86vec::exp;
+			tf._f1d = std::exp;
 		} else if (f == "log") {
 			tf._f1 = x86vec::log;
+			tf._f1d = std::log;
 		} else if (f == "tan") {
 			tf._f1 = x86vec::tan;
+			tf._f1d = std::tan;
 		} else {
 			std::cerr << "unknown function " << f << std::endl;
 			return false;
@@ -200,31 +207,35 @@ bool x86vec::test::read_data(func_data& tf, std::istream& is)
 bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 {
 	bool rc(true);
+	int errs(0);
 	for (std::size_t i=0; i< tf._data.size(); ++i) {
 		const func_data::inp_res& c= tf._data[i];
 		v2f64 expected(c._res);
 		v2f64 a0(c._a0);
 		v2f64 a1(c._a1);
 		v2f64 res;
+		double rs;
 		if (tf._f1) {
 			res = tf._f1(a0);
+			rs = tf._f1d(c._a0);
 		} else {
 			res = tf._f2(a0, a1);
+			rs = tf._f2d(c._a0, c._a1);
 		}
 		v2f64 ae(abs_error(expected, res));
 		v2f64 re(rel_error(expected, res));
 		v2f64 max_err(ae + re);
 		v2f64 is_err(re > 1.0e-15);
-#if 0
 		double tt=extract<0>(res);
+#if 1
 		std::cout << tf._fname << "( " 
 			  << c._a0;
 		if (tf._f2)
 			std::cout << ", " << c._a1;
-		std::cout << ")= " << tt << " :  "
-			  << c._res << std::endl;
+		std::cout << ")= " << tt 
+			// << " :  "  << c._res 
+			  << std::endl;
 #endif
-		double tt=extract<0>(res);
 		double nt=c._res;
 		int ulps(ulp(tt, nt));
 		std::cout << "ulp: " << ulps << std::endl;
@@ -240,12 +251,21 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 			std::cerr << ", " << c._a1;
 		std::cerr << ")= " << t << " != "
 			  << c._res << std::endl;
+		std::cerr << "math lib: " << rs << std::endl;
 		std::cerr << "rel_err = " << extract<0>(re)
 			  << " abs_err = " << extract<0>(ae)
 			  << std::endl;
+		++errs;
 		rc= false;
 	}
-	std::cout << "rc= " << rc << std::endl;
+	std::cout << "rc= " << rc 
+		  << " test cases: " << tf._data.size()
+		  << " errors: " << errs << std::endl;
+	std::cout << "error rate = ";
+	if (tf._data.size()) 
+		std::cout << double(errs)/tf._data.size() << std::endl;
+	else
+		std::cout << 0.0 << std::endl;
 	return rc;
 }
 
