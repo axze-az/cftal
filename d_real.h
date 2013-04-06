@@ -63,6 +63,11 @@ namespace cftal {
 		static bool any(const cmp_result_type& b) { 
 			return b; 
 		}
+		static double sel(const cmp_result_type& s,
+				  const double& on_true,
+				  const double& on_false) {
+			return s ? on_true : on_false;
+		}
 	};
 
 	template <>
@@ -86,6 +91,11 @@ namespace cftal {
 		// 
 		static bool any(const cmp_result_type& b) { 
 			return b; 
+		}
+		static float sel(const cmp_result_type& s,
+				 const float& on_true,
+				 const float& on_false) {
+			return s ? on_true : on_false;
 		}
 	};
 
@@ -284,6 +294,16 @@ namespace cftal {
 	template <typename _T>
 	d_real<_T> rcp(const d_real<_T>& r);
 
+	template <typename _T>
+	d_real<_T> abs(const d_real<_T>& r);
+	template <typename _T>
+	d_real<_T> rint(const d_real<_T>& r);
+	template <typename _T>
+	d_real<_T> floor(const d_real<_T>& r);
+	template <typename _T>
+	d_real<_T> ceil(const d_real<_T>& r);
+	template <typename _T>
+	d_real<_T> trunc(const d_real<_T>& r);
 }
 
 template <typename _T>
@@ -336,9 +356,8 @@ cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 	_T temp;
 	_T a=a0;
 	if (d_real_traits<_T>::any(
-		    a > d_real_traits<_T>::split_threshold()) || 
-	    d_real_traits<_T>::any(
-		    a < -d_real_traits<_T>::split_threshold())) {
+		    (a > d_real_traits<_T>::split_threshold()) || 
+		    (a < -d_real_traits<_T>::split_threshold()))) {
 		a*=d_real_traits<_T>::split_scale_down();
 		temp=d_real_traits<_T>::split()*a;
 		hi=temp-(temp-a);
@@ -802,6 +821,106 @@ cftal::rcp(const d_real<_T>& a)
 {
 	return _T(1)/a;
 }
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::abs(const d_real<_T>& a)
+{
+	typename d_real_traits<_T>::cmp_result_type a_lt_z=
+		a < d_real<_T>(0);
+	d_real<_T> an(-a);
+	_T hi_res = d_real_traits<_T>::sel( 
+		a_lt_z, an.h(), a.h());
+	_T lo_res = d_real_traits<_T>::sel(
+		a_lt_z, an.l(), a.l());
+	return d_real<_T>(hi_res, lo_res);
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::rint(const d_real<_T>& a)
+{
+	_T hi= rint(a.h());
+	_T lo;
+
+	// if hi == a.h()
+	_T lo_hi_int = rint(a.l());
+	_T hi_hi_int = quick_two_sum(hi, lo_hi_int, lo_hi_int);
+
+	// hi != a.h()
+	_T lo_hi_no_int(0);
+	_T hi_m1 = hi - 1.0;
+	_T hi_hi_no_int = d_real_traits<_T>::sel(
+		abs(hi - a.h())==_T(0.5) && a.l() < _T(0.0),
+		hi_m1, hi);
+
+	typename d_real_traits<_T>::cmp_result_type hi_eq_ah=
+		hi == a.h();
+
+	_T hi_res = d_real_traits<_T>::sel(
+		hi_eq_ah, hi_hi_int, hi_hi_no_int);
+	_T lo_res = d_real_traits<_T>::sel(
+		hi_eq_ah, lo_hi_int, lo_hi_int);
+
+	return d_real<_T>(hi_res, lo_res);
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::floor(const d_real<_T>& a)
+{
+	_T hi = floor(a.h());
+	_T lo(0);
+	typename d_real_traits<_T>::cmp_result_type r=
+		hi == a.h();
+	_T lo_hi_int = floor(a.l());
+	_T hi_hi_int = quick_two_sum(hi, lo_hi_int, lo_hi_int);
+
+	_T hi_res = d_real_traits<_T>::sel(
+		r, hi_hi_int, hi);
+	_T lo_res = d_real_traits<_T>::sel(
+		r, lo_hi_int, lo);
+	return d_real<_T>(hi_res, lo_res);
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::ceil(const d_real<_T>& a)
+{
+	_T hi = floor(a.h());
+	_T lo(0);
+	typename d_real_traits<_T>::cmp_result_type r=
+		hi == a.h();
+	_T lo_hi_int = ceil(a.l());
+	_T hi_hi_int = quick_two_sum(hi, lo_hi_int, lo_hi_int);
+
+	_T hi_res = d_real_traits<_T>::sel(
+		r, hi_hi_int, hi);
+	_T lo_res = d_real_traits<_T>::sel(
+		r, lo_hi_int, lo);
+	return d_real<_T>(hi_res, lo_res);
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::trunc(const d_real<_T>& a)
+{
+	typename d_real_traits<_T>::cmp_result_type a_lt_z=
+		a < d_real<_T>(0);
+	d_real<_T> a_floor(floor(a));
+	d_real<_T> a_ceil(ceil(a));
+	_T hi_res= d_real_traits<_T>::sel(
+		a_lt_z, a_ceil.h(), a_floor.h());
+	_T lo_res= d_real_traits<_T>::sel(
+		a_lt_z, a_ceil.l(), a_floor.l());
+	return d_real<_T>(hi_res, lo_res);
+}
+
 
 // Local variables:
 // mode: c++
