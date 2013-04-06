@@ -831,34 +831,82 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 exp(const vf_type& d)
 {
+#if 1
+	const vf_type k(512.0);
+	const vf_type inv_k(1.0/k);
+
+	vf_type m= floor(d * R_LN2 + 0.5);
+	// reduce d in two steps
+	vf_type r= mad(m, -L2U, d);
+	r = mad(m, -L2L, r);
+	r *= inv_k;
+
+	vf_type  s, t, p;
+	p = r * r;
+	s = r + p *0.5;
+	p*= r;
+	t = p * 1.0/(2.0*3.0); 
+
+	// 6 taylor expansions:
+	s += t;
+	p *= r;
+	t = p * 1.0/(2.0*3.0*4.0);
+
+	s += t;
+	p *= r;
+	t = p * 1.0/(2.0*3.0*4.0*5.0);
+
+	s += t;
+	p *= r;
+	t = p * 1.0/(2.0*3.0*4.0*5.0*6.0);
+
+	s += t;
+	p *= r;
+	t = p * 1.0/(2.0*3.0*4.0*5.0*6.0*7.0);
+
+	s += t;
+	p *= r;
+	t = p * 1.0/(2.0*3.0*4.0*5.0*6.0*7.0*8.0);
+
+	s += t;
+	p *= r;
+	t = p * 1.0/(2.0*3.0*4.0*5.0*6.0*7.0*8.0*9.0);
+
+	s += t;
+	p *= r;
+	t = p * 1.0/(2.0*3.0*4.0*5.0*6.0*7.0*8.0*9.0*10.0);
+
+	s += t;
+	// scale back
+	s = mad(s, 2.0, s*s);
+	s = mad(s, 2.0, s*s);
+	s = mad(s, 2.0, s*s);
+	s = mad(s, 2.0, s*s);
+	s = mad(s, 2.0, s*s);
+	s = mad(s, 2.0, s*s);
+	s = mad(s, 2.0, s*s);
+	s = mad(s, 2.0, s*s);
+	s = mad(s, 2.0, s*s);
+	s += 1.0;
+
+	vi_type mi= _T::cvt_rz_f_to_i(m);
+	vf_type res(ldexp(s, mi));
+
+	// res = _T::sel(d <= -709.0, 0.0, res);
+	// res = _T::sel(d >= 709.0, _T::pinf(), res);
+	res = _T::sel(d == 0.0, 1.0, res);
+	res = _T::sel(d == 1.0, M_E, res);
+	res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
+	res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
+
+	return res;
+#else
 	vf_type qf = rint(d * R_LN2);
 	vi_type q = _T::cvt_f_to_i(qf);
 
 	vf_type s = mad(qf, -L2U, d);
 	s = mad(qf, -L2L, s);
-#if 1
-#if 0
-	vf_type u= 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.*12.*13.*14.*15.*16.*17.*.18);
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.*12.*13.*14.*15.*16.*17.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.*12.*13.*14.*15.*16.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.*12.*13.*14.*15.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.*12.*13.*14.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.*12.*13.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.*12.));
-#endif
-	vf_type u = 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.*12.*13.);
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.*12.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.*11.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.*10.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.*9.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.*8.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.*7.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.*6.));
-	u = mad(u, s, 1.0/(2.*3.*4.*5.));
-	u = mad(u, s, 1.0/(2.*3.*4.));
-	u = mad(u, s, 1.0/(2.*3.));
-	u = mad(u, s, 1.0/(2.));
-#else
+
 	vf_type u = 2.08860621107283687536341e-09;
 	u = mad(u, s, 2.51112930892876518610661e-08);
 	u = mad(u, s, 2.75573911234900471893338e-07);
@@ -870,7 +918,7 @@ exp(const vf_type& d)
 	u = mad(u, s, 0.0416666666666665047591422);
 	u = mad(u, s, 0.166666666666666851703837);
 	u = mad(u, s, 0.5);
-#endif
+
 	// u = s * s * u +s + vf_type(1));
 	// u = s^2 * u + s + 1 = s*(s*u+1.0) + 1.0
 	u = mad(u, s, 1.0);
@@ -882,6 +930,7 @@ exp(const vf_type& d)
 	u = _T::sel( d== vf_type(_T::ninf()), vf_type(0), u);
 	u = _T::sel( d== vf_type(_T::pinf()), vf_type(_T::pinf()), u);
 	return u;
+#endif
 }
 
 template <typename _T>
