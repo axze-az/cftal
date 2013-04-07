@@ -105,8 +105,8 @@ namespace cftal {
 		_T _h;
 		_T _l;
 	public:
-		d_real(const _T& h, const _T& l) : _h(h), _l(l) {}
-		d_real(const _T& h) : _h(h), _l(_T(0)) {}
+		constexpr d_real(const _T& h, const _T& l) : _h(h), _l(l) {}
+		constexpr d_real(const _T& h) : _h(h), _l(_T(0)) {}
 		const _T& l() const { return _l; }
 		_T& l() { return _l; }
 		const _T& h() const { return _h; }
@@ -309,6 +309,7 @@ namespace cftal {
 	d_real<_T> powi(const d_real<_T>& r, int e);
 
 	d_real<double> str_to_d_double(const char* p, std::size_t n);
+	d_real<double> str_to_d_double(const char* p);
 	d_real<float> str_to_d_float(const char* p, std::size_t n);
 
 	d_real<double> operator "" _dd(const char* dd);
@@ -431,7 +432,6 @@ cftal::d_real_impl::sub(const _T& a, const _T& b)
 	_T err, s= two_diff(a, b, err);
 	return d_real<_T>(s, err);
 }
-
 
 template <typename _T>
 inline
@@ -953,7 +953,7 @@ cftal::powi(const d_real<_T>& a, int e)
 	}
 	/* Compute the reciprocal if n is negative. */
 	if (e < 0)
-		return (1.0 / s);
+		s= (1.0 / s);
 	return s;
 }
 

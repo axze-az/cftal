@@ -3,6 +3,12 @@
 #include <stdexcept>
 
 cftal::d_real<double>
+cftal::str_to_d_double(const char* p)
+{
+	return str_to_d_double(p, std::strlen(p));
+}
+
+cftal::d_real<double>
 cftal::str_to_d_double(const char* p, std::size_t n)
 {
 	const char* pe=p+n;
@@ -11,15 +17,17 @@ cftal::str_to_d_double(const char* p, std::size_t n)
 	int point = -1;
 	int digits =0;
 	int exponent= 0;
-	bool sign_exponent=0;
+	int sign_exponent=0;
 	int pos=0;
 	int in_exp=-1;
 	d_real<double> r(0.0);
 
 	// skip leading spaces
-	while (*p == ' ')
+	while (*p == ' ' && p < pe)
 		++p;
-
+	// skip leading zeros
+	while (*p == '0' && p < pe)
+		++p;
 	while (p < pe) {
 		ch = *p;
 		switch (ch) {
@@ -90,7 +98,9 @@ cftal::str_to_d_double(const char* p, std::size_t n)
 	}
 
 	if (exponent != 0) {
-		r *= powi(d_real<double>(10.0), exponent);
+		d_real<double> ex(10.0);
+		d_real<double> exi(powi(ex, exponent));
+		r *= exi;
 	}
 	r = (sign == -1) ? -r : r;
 	r += d_real<double>(0.0);
@@ -101,12 +111,4 @@ cftal::d_real<double>
 cftal::operator "" _dd(const char* pp)
 {
 	return str_to_d_double(pp, std::strlen(pp));
-}
-
-cftal::d_real<double>
-test1()
-{
-	using namespace cftal;
-
-	return 1.234234234_dd;
 }

@@ -315,7 +315,7 @@ void print_inv_fac()
 
 	dpf64 fac(1.0);
 
-	for (std::size_t i=0; i<20; ++i) {
+	for (std::size_t i=0; i<31; ++i) {
 		dpf64  inv_fac(1.0);
 		if (i>1) {
 			fac *= double(i);
@@ -346,22 +346,20 @@ void print_inv_fac()
 	const dpf64* e=std::end(inv_fac);
 	std::size_t i=0;
 	while (b != e) {
-		// const dpf64& c=*b;
+		const dpf64& c=*b;
 		dpf64 t(1.0);
 		for (std::size_t j=1; j<i; ++j) {
 			t /= dpf64(1.0+j);
 		}
 		++b;
 		++i;
-#if 0
-		std::cout << std::scientific 
+		std::cout // << std::scientific 
 			  << std::setprecision(22)
 			  << "constant:\n "
 			  << c.h()
 			  << ", "
 			  << c.l()
 			  << std::endl;
-#endif
 		std::cout << "calc:\n "
 			  << t.h()
 			  << ", "
@@ -370,12 +368,36 @@ void print_inv_fac()
 	};
 }
 
+void testpowi()
+{
+        using dpf64 = cftal::d_real<double>;
+	dpf64 base(1.0);
+	dpf64 t1=cftal::str_to_d_double("0.25e-1");
+	std::cout << std::scientific 
+		  << std::setprecision(22)
+		  << t1.h()
+		  << ", "
+		  << t1.l()
+		  << std::endl;
+	base+= t1;
+	for (std::size_t i=0; i<10; ++i) {
+		dpf64 t= powi(base, i);
+		std::cout << std::scientific 
+			  << std::setprecision(22)
+			  << t.h()
+			  << ", "
+			  << t.l()
+			  << std::endl;
+	}
+}
+
 int main(int argc, char** argv)
 {
         // x86cftal::vec::test::check_frexp_f64();
         // x86cftal::vec::v2f64 t=exp(x86cftal::vec::v2f64(0.0));
         // static_cast<void>(t);
         // calc_pi();
-	print_inv_fac();
+	// print_inv_fac();
+	testpowi();
         return 0;
 }
