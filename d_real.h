@@ -374,7 +374,7 @@ cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 		hi*=d_real_traits<_T>::split_scale_up();
 		lo*=d_real_traits<_T>::split_scale_up();
 	} else {
-		temp=d_real_traits<_T>::split();
+		temp=d_real_traits<_T>::split()*a;
 		hi=temp-(temp-a);
 		lo=a-hi;
 	}

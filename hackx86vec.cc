@@ -8,6 +8,46 @@
 #include <iostream>
 #include <iomanip>
 
+namespace {
+
+        using namespace cftal;
+
+        const d_real<double> inv_fac[] = {
+		1.0000000000000000000000000000000000000000000000000000000000000000_dd,
+		1.0000000000000000000000000000000000000000000000000000000000000000_dd,
+		.5000000000000000000000000000000000000000000000000000000000000000_dd,
+		.1666666666666666666666666666666666666666666666666666666666666666_dd,
+		.0416666666666666666666666666666666666666666666666666666666666666_dd,
+		.0083333333333333333333333333333333333333333333333333333333333333_dd,
+		.0013888888888888888888888888888888888888888888888888888888888888_dd,
+		.0001984126984126984126984126984126984126984126984126984126984126_dd,
+		.0000248015873015873015873015873015873015873015873015873015873015_dd,
+		.0000027557319223985890652557319223985890652557319223985890652557_dd,
+		.0000002755731922398589065255731922398589065255731922398589065255_dd,
+		.0000000250521083854417187750521083854417187750521083854417187750_dd,
+		.0000000020876756987868098979210090321201432312543423654534765645_dd,
+		.0000000001605904383682161459939237717015494793272571050348828126_dd,
+		.0000000000114707455977297247138516979786821056662326503596344866_dd,
+		.0000000000007647163731819816475901131985788070444155100239756324_dd,
+		.0000000000000477947733238738529743820749111754402759693764984770_dd,
+		.0000000000000028114572543455207631989455830103200162334927352045_dd,
+		.0000000000000001561920696858622646221636435005733342351940408446_dd,
+		.0000000000000000082206352466243297169559812368722807492207389918_dd,
+		.0000000000000000004110317623312164858477990618436140374610369495_dd,
+		.0000000000000000000195729410633912612308475743735054303552874737_dd,
+		.0000000000000000000008896791392450573286748897442502468343312488_dd,
+		.0000000000000000000000386817017063068403771691193152281232317934_dd,
+		.0000000000000000000000016117375710961183490487133048011718013247_dd,
+		.0000000000000000000000000644695028438447339619485321920468720529_dd,
+		.0000000000000000000000000024795962632247974600749435458479566174_dd,
+		.0000000000000000000000000000918368986379554614842571683647391339_dd,
+		.0000000000000000000000000000032798892370698379101520417273121119_dd,
+		.0000000000000000000000000000001130996288644771693155876457693831_dd,
+		.0000000000000000000000000000000037699876288159056438529215256461_dd,
+		.0000000000000000000000000000000001216125041553517949629974685692_dd
+        };
+}
+
 namespace x86vec {
         namespace test {
 
@@ -113,122 +153,122 @@ bool x86vec::test::check_frexp_f64()
 //namespace vec=x86vec;
 //namespace vec=emuvec;
 
-namespace vec=cftal::vec;
+
 
 // v2f64 compile tests
-vec::v2f64 test1a(vec::v2f64 a, vec::v2f64 b, vec::v2f64 c)
+cftal::vec::v2f64 test1a(cftal::vec::v2f64 a, cftal::vec::v2f64 b, cftal::vec::v2f64 c)
 {
         return a*b + c;
 }
 
-vec::v2f64 test1b(vec::v2f64 a, vec::v2f64 b, vec::v2f64 c)
+cftal::vec::v2f64 test1b(cftal::vec::v2f64 a, cftal::vec::v2f64 b, cftal::vec::v2f64 c)
 {
         return c+ a*b;
 }
 
-vec::v2f64 test1c(vec::v2f64 a, vec::v2f64 b, vec::v2f64 c)
+cftal::vec::v2f64 test1c(cftal::vec::v2f64 a, cftal::vec::v2f64 b, cftal::vec::v2f64 c)
 {
         return a*b - c;
 }
 
-vec::v2f64 test1d(vec::v2f64 a, vec::v2f64 b, vec::v2f64 c)
+cftal::vec::v2f64 test1d(cftal::vec::v2f64 a, cftal::vec::v2f64 b, cftal::vec::v2f64 c)
 {
         return c- a*b;
 }
 
-vec::v2f64 test2a(vec::v2f64 a, vec::v2f64 b,
-                  vec::v2f64 c, vec::v2f64 d)
+cftal::vec::v2f64 test2a(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
+                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
 {
         return a*b + c*d;
 }
 
-vec::v2f64 test2b(vec::v2f64 a, vec::v2f64 b,
-                  vec::v2f64 c, vec::v2f64 d)
+cftal::vec::v2f64 test2b(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
+                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
 {
         return a*b - c*d;
 }
 
-vec::v2f64 test2c(vec::v2f64 a, vec::v2f64 b,
-                  vec::v2f64 c, vec::v2f64 d)
+cftal::vec::v2f64 test2c(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
+                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
 {
         return (a*b + c) * d;
 }
 
-vec::v2f64 test2d(vec::v2f64 a, vec::v2f64 b,
-                  vec::v2f64 c, vec::v2f64 d)
+cftal::vec::v2f64 test2d(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
+                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
 {
         return (a*b - c) * d;
 }
 
-vec::v2f64 test3a(vec::v2f64 a, vec::v2f64 b,
-                  vec::v2f64 c, vec::v2f64 d)
+cftal::vec::v2f64 test3a(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
+                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
 {
         return 1.0 + a * b + 1.0 + c * d;
 }
 
 // v4f32 compile tests
-vec::v4f32 test1a(vec::v4f32 a, vec::v4f32 b, vec::v4f32 c)
+cftal::vec::v4f32 test1a(cftal::vec::v4f32 a, cftal::vec::v4f32 b, cftal::vec::v4f32 c)
 {
         return a*b + c;
 }
 
-vec::v4f32 test1b(vec::v4f32 a, vec::v4f32 b, vec::v4f32 c)
+cftal::vec::v4f32 test1b(cftal::vec::v4f32 a, cftal::vec::v4f32 b, cftal::vec::v4f32 c)
 {
         return c+ a*b;
 }
 
-vec::v4f32 test1c(vec::v4f32 a, vec::v4f32 b, vec::v4f32 c)
+cftal::vec::v4f32 test1c(cftal::vec::v4f32 a, cftal::vec::v4f32 b, cftal::vec::v4f32 c)
 {
         return a*b - c;
 }
 
-vec::v4f32 test1d(vec::v4f32 a, vec::v4f32 b, vec::v4f32 c)
+cftal::vec::v4f32 test1d(cftal::vec::v4f32 a, cftal::vec::v4f32 b, cftal::vec::v4f32 c)
 {
         return c- a*b;
 }
 
-vec::v4f32 test2a(vec::v4f32 a, vec::v4f32 b,
-                  vec::v4f32 c, vec::v4f32 d)
+cftal::vec::v4f32 test2a(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
+                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
 {
         return a*b + c*d;
 }
 
-vec::v4f32 test2b(vec::v4f32 a, vec::v4f32 b,
-                  vec::v4f32 c, vec::v4f32 d)
+cftal::vec::v4f32 test2b(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
+                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
 {
         return a*b - c*d;
 }
 
-vec::v4f32 test2c(vec::v4f32 a, vec::v4f32 b,
-                  vec::v4f32 c, vec::v4f32 d)
+cftal::vec::v4f32 test2c(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
+                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
 {
         return (a*b + c) * d;
 }
 
-vec::v4f32 test2d(vec::v4f32 a, vec::v4f32 b,
-                  vec::v4f32 c, vec::v4f32 d)
+cftal::vec::v4f32 test2d(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
+                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
 {
         return (a*b - c) * d;
 }
 
-vec::v4f32 test3a(vec::v4f32 a, vec::v4f32 b,
-                  vec::v4f32 c, vec::v4f32 d)
+cftal::vec::v4f32 test3a(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
+                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
 {
         return 1.0 + a * b + 1.0 + c * d;
 }
 
-vec::v4f32 test4a(vec::v4f32 a, vec::v4f32 b,
-                  vec::v4f32 c, vec::v4f32 d)
+cftal::vec::v4f32 test4a(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
+                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
 {
         return (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
                             c * d);
 }
 
-vec::v4f32 test_mask(vec::v4f32 a, vec::v4f32 b,
-                     vec::v4f32 c, vec::v4f32 d,
-                     vec::mask<vec::v4f32> m)
+cftal::vec::v4f32 test_mask(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
+                     cftal::vec::v4f32 c, cftal::vec::v4f32 d,
+                     cftal::vec::mask<cftal::vec::v4f32> m)
 {
-        vec::v4f32 r(a);
+        cftal::vec::v4f32 r(a);
         r(m) = (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
                             c * d);
         return r;
@@ -236,45 +276,106 @@ vec::v4f32 test_mask(vec::v4f32 a, vec::v4f32 b,
 
 void calc_pi()
 {
-	using dpf64 = cftal::d_real<double>;
-	// arctan(x) = x/1 - {x^3}/3 + x^5/5
-	// arctan(1) = PI/4
-	dpf64 pi(0);
-	double pi_d(0);
-	for (std::int64_t i=100000000; i>=0 ; --i) {
-		const std::int64_t i0=2*i+2;
-		dpf64 t0(i0);
-		dpf64 t1(t0+1.0);
-		dpf64 t2(t0+2.0);
-		dpf64 p(t0*t1*t2);
-		dpf64 rp(1.0/p);
-		if ((i&1)==0) {
-			// std::cout << i0 << std::endl;
-			pi += rp;
-		} else {
-			// std::cout << -i0 << std::endl;
-			pi -= rp;
-		}
-		// std::cout << pi.h() << ' ' << pi.l() << std::endl;
-	}
-	pi *= 4.0;
-	pi += 3.0;
-	std::cout << std::scientific 
-		  << std::setprecision(18)
-		  << pi.h()
-		  << ' '
-		  << pi.l()
-		  << std::endl
-		  << pi_d
-		  << std::endl;
+        using dpf64 = cftal::d_real<double>;
+        // arctan(x) = x/1 - {x^3}/3 + x^5/5
+        // arctan(1) = PI/4
+        dpf64 pi(0);
+        double pi_d(0);
+        for (std::int64_t i=100000000; i>=0 ; --i) {
+                const std::int64_t i0=2*i+2;
+                dpf64 t0(i0);
+                dpf64 t1(t0+1.0);
+                dpf64 t2(t0+2.0);
+                dpf64 p(t0*t1*t2);
+                dpf64 rp(1.0/p);
+                if ((i&1)==0) {
+                        // std::cout << i0 << std::endl;
+                        pi += rp;
+                } else {
+                        // std::cout << -i0 << std::endl;
+                        pi -= rp;
+                }
+                // std::cout << pi.h() << ' ' << pi.l() << std::endl;
+        }
+        pi *= 4.0;
+        pi += 3.0;
+        std::cout << std::scientific
+                  << std::setprecision(18)
+                  << pi.h()
+                  << ' '
+                  << pi.l()
+                  << std::endl
+                  << pi_d
+                  << std::endl;
 }
 
+void print_inv_fac()
+{
+        using dpf64 = cftal::d_real<double>;
+
+	dpf64 fac(1.0);
+
+	for (std::size_t i=0; i<20; ++i) {
+		dpf64  inv_fac(1.0);
+		if (i>1) {
+			fac *= double(i);
+			inv_fac /= fac;
+		}
+		std::cout << std::scientific
+			  << std::setprecision(22)
+			  << "#define INV_FAC_" 
+			  << std::setw(2) 
+			  << std::setfill('0')
+			  << i
+			  << std::setfill(' ')
+			  << "_HI "
+			  << inv_fac.h()
+			  << std::endl
+			  << "#define INV_FAC_" 
+			  << std::setw(2) 
+			  << std::setfill('0')
+			  << i
+			  << std::setfill(' ')
+			  << "_LO "
+			  << inv_fac.l()
+			  << std::endl;
+	}
+	
+
+	const dpf64* b=std::begin(inv_fac);
+	const dpf64* e=std::end(inv_fac);
+	std::size_t i=0;
+	while (b != e) {
+		// const dpf64& c=*b;
+		dpf64 t(1.0);
+		for (std::size_t j=1; j<i; ++j) {
+			t /= dpf64(1.0+j);
+		}
+		++b;
+		++i;
+#if 0
+		std::cout << std::scientific 
+			  << std::setprecision(22)
+			  << "constant:\n "
+			  << c.h()
+			  << ", "
+			  << c.l()
+			  << std::endl;
+#endif
+		std::cout << "calc:\n "
+			  << t.h()
+			  << ", "
+			  << t.l()
+			  << std::endl;
+	};
+}
 
 int main(int argc, char** argv)
 {
-        // x86vec::test::check_frexp_f64();
-        // x86vec::v2f64 t=exp(x86vec::v2f64(0.0));
+        // x86cftal::vec::test::check_frexp_f64();
+        // x86cftal::vec::v2f64 t=exp(x86cftal::vec::v2f64(0.0));
         // static_cast<void>(t);
-	calc_pi();
-	return 0;
+        // calc_pi();
+	print_inv_fac();
+        return 0;
 }

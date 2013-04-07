@@ -93,6 +93,7 @@ cftal::str_to_d_double(const char* p, std::size_t n)
 		r *= powi(d_real<double>(10.0), exponent);
 	}
 	r = (sign == -1) ? -r : r;
+	r += d_real<double>(0.0);
 	return r;
 }
 
