@@ -3,6 +3,8 @@
 i=1
 fac="1"
 
+echo "#include \"d_real.h\""
+echo "using namespace cftal;"
 echo "const cftal::d_real<double> inv_fac[] = {"
 val=`echo "scale=64;  val=1.0/($fac); print(val)" | bc`
 echo -n "\t${val}_dd"

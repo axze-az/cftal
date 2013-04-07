@@ -398,7 +398,7 @@ int main(int argc, char** argv)
         // x86cftal::vec::v2f64 t=exp(x86cftal::vec::v2f64(0.0));
         // static_cast<void>(t);
         // calc_pi();
-	// print_inv_fac();
-	testpowi();
+	print_inv_fac();
+	// testpowi();
         return 0;
 }

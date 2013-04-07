@@ -120,7 +120,6 @@ void x86vec::transpose_8x8(_V8& r0, _V8& r1, _V8& r2, _V8& r3,
         r7 = permute<4, 5, 6, 7, 8+4, 8+5, 8+6, 8+7>(s3, s7);
 }
 
-
 // Local variables:
 // mode: c++
 // end:

@@ -2,7 +2,8 @@
 #define __CFTAL_D_REAL_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/vec.h>
+#include <cftal/emuvec.h>
+#include <cftal/x86vec.h>
 #include <cmath>
 #include <type_traits>
 
