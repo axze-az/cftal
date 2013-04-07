@@ -110,7 +110,8 @@ namespace cftal {
                         }
                 };
 
-#if defined (__GNUC__) && (defined (__LP64__) || defined (__x86_64__))
+#if defined (__GNUC__) && !defined(__clang__) && \
+	(defined (__LP64__) || defined (__x86_64__))
                 template <>
                 struct umul_lo_hi<uint64_t> {
                         std::pair<uint64_t, uint64_t>

@@ -736,7 +736,7 @@ sincos(const vf_type& cd)
 	rcos = _T::sel(f_qp1_and_2, -rcos, rcos);
 
 	vmf_type is_inf(isinf(cd));
-	const vf_type n(vf_type(_T::nan()));
+	const vf_type n=vf_type(_T::nan());
 	rsin = _T::sel(is_inf, n, rsin);
 	rcos = _T::sel(is_inf, n, rcos);
 
@@ -786,7 +786,7 @@ tan(const vf_type& cd)
 
 	// if (xisinf(d)) u = NAN;
 	vmf_type is_inf(isinf(cd));
-	const vf_type n(vf_type(_T::nan()));
+	const vf_type n=vf_type(_T::nan());
 	u = _T::sel(is_inf, n, u);
 	return u;
 }

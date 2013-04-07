@@ -43,7 +43,7 @@ namespace emuvec {
                 v8s16(const mem::addr<element_type>& r);
 		masked_vec<v8s16> operator()(const mask<v8s16>& m);
 		~v8s16();
-        protected:
+
                 element_type* begin();
                 const element_type* begin() const;
         };
@@ -65,7 +65,7 @@ namespace emuvec {
         v8s16 operator <<(const v8s16& a, uint32_t b);
 
         template <uint32_t _P>
-        v8s16& operator>>= (v8s16& a, const_u32<_P>& b);
+        v8s16& operator>>= (v8s16& a, const const_u32<_P>& b);
         v8s16& operator>>= (v8s16& a, uint32_t b);
         template <uint32_t _P>
         v8s16 operator >>(const v8s16& a, const const_u32<_P>& b);
@@ -156,7 +156,7 @@ namespace emuvec {
                 v8u16(const mem::addr<element_type>& r);
 		masked_vec<v8u16> operator()(const mask<v8u16>& m);
 		~v8u16();
-        protected:
+
                 element_type* begin();
                 const element_type* begin() const;
         };
@@ -178,7 +178,7 @@ namespace emuvec {
         v8u16 operator <<(const v8u16& a, uint32_t b);
 
         template <uint32_t _P>
-        v8u16& operator>>= (v8u16& a, const_u32<_P>& b);
+        v8u16& operator>>= (v8u16& a, const const_u32<_P>& b);
         v8u16& operator>>= (v8u16& a, uint32_t b);
         template <uint32_t _P>
         v8u16 operator >>(const v8u16& a, const const_u32<_P>& b);
@@ -282,7 +282,7 @@ namespace emuvec {
 	v4s32 operator <<(const v4s32& a, uint32_t b);
 
 	template <uint32_t _P>
-	v4s32& operator>>= (v4s32& a, const_u32<_P>& b);
+	v4s32& operator>>= (v4s32& a, const const_u32<_P>& b);
 	v4s32& operator>>= (v4s32& a, uint32_t b);
 	template <uint32_t _P>
 	v4s32 operator >>(const v4s32& a, const const_u32<_P>& b);
@@ -390,7 +390,7 @@ namespace emuvec {
 	v4u32 operator <<(const v4u32& a, uint32_t b);
 
 	template <uint32_t _P>
-	v4u32& operator>>= (v4u32& a, const_u32<_P>& b);
+	v4u32& operator>>= (v4u32& a, const const_u32<_P>& b);
 	v4u32& operator>>= (v4u32& a, uint32_t b);
 	template <uint32_t _P>
 	v4u32 operator >>(const v4u32& a, const const_u32<_P>& b);
@@ -489,7 +489,7 @@ namespace emuvec {
 	v2s64 operator <<(const v2s64& a, uint64_t b);
 
 	template <uint32_t _P>
-	v2s64& operator>>= (v2s64& a, const_u32<_P>& b);
+	v2s64& operator>>= (v2s64& a, const const_u32<_P>& b);
 	v2s64& operator>>= (v2s64& a, uint64_t b);
 	template <uint32_t _P>
 	v2s64 operator >>(const v2s64& a, const const_u32<_P>& b);
@@ -596,7 +596,7 @@ namespace emuvec {
 	v2u64 operator <<(const v2u64& a, uint64_t b);
 
 	template <uint32_t _P>
-	v2u64& operator>>= (v2u64& a, const_u32<_P>& b);
+	v2u64& operator>>= (v2u64& a, const const_u32<_P>& b);
 	v2u64& operator>>= (v2u64& a, uint64_t b);
 	template <uint32_t _P>
 	v2u64 operator >>(const v2u64& a, const const_u32<_P>& b);
@@ -682,13 +682,13 @@ namespace mem {
 inline
 emuvec::v8s16::element_type* emuvec::v8s16::begin()
 {
-        return static_cast<element_type*>(base_type::vbegin());
+        return reinterpret_cast<element_type*>(base_type::vbegin());
 }
 
 inline
 const emuvec::v8s16::element_type* emuvec::v8s16::begin() const
 {
-        return static_cast<const element_type*>(base_type::vbegin());
+        return reinterpret_cast<const element_type*>(base_type::vbegin());
 }
 
 inline
@@ -715,7 +715,7 @@ emuvec::operator<<= (v8s16& a, const const_u32< _P >& b)
 
 template <unsigned _P>
 emuvec::v8s16&
-emuvec::operator>>= (v8s16& a, const const_u32< _P >& b)
+emuvec::operator>>= (v8s16& a, const const_u32<_P>& b)
 {
         const int val = b.val;
         impl::v_sr<v8s16::element_type> ot(val);
@@ -793,13 +793,13 @@ emuvec::v8s16 emuvec::insert(const v8s16& a, v8s16::element_type v)
 inline
 emuvec::v8u16::element_type* emuvec::v8u16::begin()
 {
-        return static_cast<element_type*>(base_type::vbegin());
+        return reinterpret_cast<element_type*>(base_type::vbegin());
 }
 
 inline
 const emuvec::v8u16::element_type* emuvec::v8u16::begin() const
 {
-        return static_cast<const element_type*>(base_type::vbegin());
+        return reinterpret_cast<const element_type*>(base_type::vbegin());
 }
 
 inline
@@ -904,13 +904,13 @@ emuvec::v8u16 emuvec::insert(const v8u16& a, v8u16::element_type v)
 inline
 emuvec::v4s32::element_type* emuvec::v4s32::begin()
 {
-        return static_cast<element_type*>(base_type::vbegin());
+        return reinterpret_cast<element_type*>(base_type::vbegin());
 }
 
 inline
 const emuvec::v4s32::element_type* emuvec::v4s32::begin() const
 {
-        return static_cast<const element_type*>(base_type::vbegin());
+        return reinterpret_cast<const element_type*>(base_type::vbegin());
 }
 
 inline
@@ -1011,13 +1011,13 @@ emuvec::v4s32 emuvec::insert(const v4s32& a, v4s32::element_type v)
 inline
 emuvec::v4u32::element_type* emuvec::v4u32::begin()
 {
-        return static_cast<element_type*>(base_type::vbegin());
+        return reinterpret_cast<element_type*>(base_type::vbegin());
 }
 
 inline
 const emuvec::v4u32::element_type* emuvec::v4u32::begin() const
 {
-        return static_cast<const element_type*>(base_type::vbegin());
+        return reinterpret_cast<const element_type*>(base_type::vbegin());
 }
 
 inline
@@ -1118,13 +1118,13 @@ emuvec::v4u32 emuvec::insert(const v4u32& a, v4u32::element_type v)
 inline
 emuvec::v2s64::element_type* emuvec::v2s64::begin()
 {
-        return static_cast<element_type*>(base_type::vbegin());
+        return reinterpret_cast<element_type*>(base_type::vbegin());
 }
 
 inline
 const emuvec::v2s64::element_type* emuvec::v2s64::begin() const
 {
-        return static_cast<const element_type*>(base_type::vbegin());
+        return reinterpret_cast<const element_type*>(base_type::vbegin());
 }
 
 inline
@@ -1225,13 +1225,13 @@ emuvec::v2s64 emuvec::insert(const v2s64& a, v2s64::element_type v)
 inline
 emuvec::v2u64::element_type* emuvec::v2u64::begin()
 {
-        return static_cast<element_type*>(base_type::vbegin());
+        return reinterpret_cast<element_type*>(base_type::vbegin());
 }
 
 inline
 const emuvec::v2u64::element_type* emuvec::v2u64::begin() const
 {
-        return static_cast<const element_type*>(base_type::vbegin());
+        return reinterpret_cast<const element_type*>(base_type::vbegin());
 }
 
 inline

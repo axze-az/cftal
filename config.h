@@ -9,7 +9,11 @@
 #define thread_local __thread
 #define likely(a) __builtin_expect(!!(a), 1)
 #define unlikely(a) __builtin_expect(!!(a), 0)
+#if defined (__clang__)
+#define __builtin_assume_aligned(p, x) p
 #endif
+#endif
+
 
 #if defined (_MSC_VER)
 #define thread_local __declspec(thread)

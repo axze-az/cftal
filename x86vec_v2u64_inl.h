@@ -132,7 +132,7 @@ inline
 x86vec::v2u64&
 x86vec::operator<<= (v2u64& a, const const_u32< _P >& b)
 {
-        const int val = b.val;
+        const int val = const_u32<_P>::val;
         a = impl::vpsllq_const<val>::v(a());
         return a;
 }
@@ -150,7 +150,7 @@ inline
 x86vec::v2u64
 x86vec::operator<< (const v2u64& a, const const_u32< _P >& b)
 {
-        const int val = b.val;
+        const int val = const_u32<_P>::val;
         return impl::vpsllq_const<val>::v(a());
 }
 
@@ -167,7 +167,7 @@ inline
 x86vec::v2u64&
 x86vec::operator>>= (v2u64& a, const const_u32< _P >& b)
 {
-        const int val = b.val;
+        const int val = const_u32<_P>::val;
         a = impl::vpsrlq_const<val>::v(a());
         return a;
 }
@@ -185,7 +185,7 @@ inline
 x86vec::v2u64
 x86vec::operator>> (const v2u64& a, const const_u32< _P >& b)
 {
-        const int val = b.val;
+        const int val = const_u32<_P>::val;
         return impl::vpsrlq_const<val>::v(a());
 }
 

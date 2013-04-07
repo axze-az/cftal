@@ -175,7 +175,7 @@ inline
 x86vec::v4s32&
 x86vec::operator>>= (v4s32& a, const const_u32< _P >& b)
 {
-        const int val = b.val;
+        const int val = const_u32<_P>::val;
         a = impl::vpsrad_const<val>::v(a());
         return a;
 }

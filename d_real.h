@@ -41,6 +41,7 @@ namespace cftal {
 
 	template <>
 	struct d_real_traits<double> : public has_fma<double> {
+		constexpr d_real_traits<double>() = default;
 		// result of a comparison operator
 		typedef bool cmp_result_type;
 		// 2^27 + 1
@@ -72,6 +73,7 @@ namespace cftal {
 
 	template <>
 	struct d_real_traits<float> : public has_fma<float> {
+		constexpr d_real_traits<float>() = default;
 		// result of a comparison operator
 		typedef bool cmp_result_type;
 		// 2^13 + 1
@@ -406,10 +408,9 @@ cftal::d_real_impl::two_prod(const _T& a, const _T& b, _T& err)
 template <typename _T>
 inline
 _T
-cftal::d_real_impl::two_sqr(const _T& a)
+cftal::d_real_impl::two_sqr(const _T& a, _T& err)
 {
 	_T p=a*a;
-	_T err;
 	if (d_real_traits<_T>::fma) {
 		err = fms(a, a, p);
 	} else {

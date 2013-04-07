@@ -134,12 +134,12 @@ namespace emuvec {
 			_A& get_allocator() {
 				return *this;
 			}
-			void* vbegin() {
+			char* vbegin() {
 				if (_v == nullptr)
 					_v = alloc_();
 				return _v;
 			}
-			const void* vbegin() const {
+			const char* vbegin() const {
 				return _v == nullptr ? _d : _v;
 			}
 			void swap(utvec& r) {

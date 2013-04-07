@@ -184,7 +184,7 @@ inline
 x86vec::v2s64
 x86vec::operator>> (const v2s64& a, const const_u32< _P >& b)
 {
-        const int val = b.val;
+        const int val = const_u32<_P>::val;
         return impl::vpsraq_const<val>::v(a());
 }
 

@@ -37,7 +37,7 @@ emuvec::v8s16::v8s16(v8s16::element_type r, bool broadcast)
         if (broadcast) {
                 std::uninitialized_fill_n(begin(), N, r);
         } else {
-                get_allocator().construct(begin(), r);
+                get_allocator().construct(vbegin(), r);
                 std::uninitialized_fill_n(begin()+1, N-1, 0);
         }
 }
@@ -884,7 +884,7 @@ emuvec::v4s32::v4s32(v4s32::element_type r, bool broadcast)
         if (broadcast) {
                 std::uninitialized_fill_n(begin(), N, r);
         } else {
-                get_allocator().construct(begin(), r);
+                get_allocator().construct(vbegin(), r);
                 std::uninitialized_fill_n(begin()+1, N-1, 0);
         }
 }
@@ -1726,7 +1726,7 @@ emuvec::v2s64::v2s64(v2s64::element_type r, bool broadcast)
         if (broadcast) {
                 std::uninitialized_fill_n(begin(), N, r);
         } else {
-                get_allocator().construct(begin(), r);
+                get_allocator().construct(vbegin(), r);
                 std::uninitialized_fill_n(begin()+1, N-1, 0);
         }
 }
@@ -2575,7 +2575,7 @@ emuvec::v4f32::v4f32(v4f32::element_type r, bool broadcast)
         if (broadcast) {
                 std::uninitialized_fill_n(begin(), N, r);
         } else {
-                get_allocator().construct(begin(), r);
+                get_allocator().construct(vbegin(), r);
                 std::uninitialized_fill_n(begin()+1, N-1, 0);
         }
 }
@@ -2959,7 +2959,7 @@ emuvec::v2f64::v2f64(v2f64::element_type r, bool broadcast)
         if (broadcast) {
                 std::uninitialized_fill_n(begin(), N, r);
         } else {
-                get_allocator().construct(begin(), r);
+                get_allocator().construct(vbegin(), r);
                 std::uninitialized_fill_n(begin()+1, N-1, 0);
         }
 }

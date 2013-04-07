@@ -307,13 +307,13 @@ emuvec::v4f32 emuvec::insert(const v4f32& a, v4f32::element_type v)
 inline
 emuvec::v2f64::element_type* emuvec::v2f64::begin()
 {
-        return static_cast<element_type*>(base_type::vbegin());
+        return reinterpret_cast<element_type*>(base_type::vbegin());
 }
 
 inline
 const emuvec::v2f64::element_type* emuvec::v2f64::begin() const
 {
-        return static_cast<const element_type*>(base_type::vbegin());
+        return reinterpret_cast<const element_type*>(base_type::vbegin());
 }
 
 inline

@@ -52,7 +52,7 @@ namespace cftal {
         template <typename _T>
         duint<_T> operator-(const duint<_T>& a);
         template <typename _T>
-        const duint<_T> operator+(const duint<_T>& a);
+        const duint<_T>& operator+(const duint<_T>& a);
         template <typename _T>
         bool operator!(const duint<_T>& a);
 
@@ -170,7 +170,7 @@ namespace cftal {
         template <typename _T>
         duint<_T>& operator/=(duint<_T>& a, const duint<_T>& b);
         template <typename _T>
-        duint<_T>& operator/=(duint<_T>& a, const duint<_T>& b);
+        duint<_T>& operator/=(duint<_T>& a, const _T& b);
 
         template <typename _T>
         duint<_T>& operator%=(duint<_T>& a, const duint<_T>& b);
@@ -263,18 +263,18 @@ namespace cftal {
         template <typename _T>
         dint<_T> operator-(const dint<_T>& a);
         template <typename _T>
-        const dint<_T> operator+(const dint<_T>& a);
+        const dint<_T>& operator+(const dint<_T>& a);
         template <typename _T>
         bool operator!(const dint<_T>& a);
 
         template <typename _T>
-        duint<_T> operator++ (duint<_T>& a, int);
+        dint<_T> operator++ (dint<_T>& a, int);
         template <typename _T>
-        duint<_T>& operator++(duint<_T>& a);
+        dint<_T>& operator++(dint<_T>& a);
         template <typename _T>
-        duint<_T> operator-- (duint<_T>& a, int);
+        dint<_T> operator-- (dint<_T>& a, int);
         template <typename _T>
-        duint<_T>& operator--(duint<_T>& a);
+        dint<_T>& operator--(dint<_T>& a);
 
         template <typename _T>
         dint<_T> operator|(const dint<_T>& a, const dint<_T>& b);
@@ -381,7 +381,7 @@ namespace cftal {
         template <typename _T>
         dint<_T>& operator/=(dint<_T>& a, const dint<_T>& b);
         template <typename _T>
-        dint<_T>& operator/=(dint<_T>& a, const dint<_T>& b);
+        dint<_T>& operator/=(dint<_T>& a, const _T& b);
 
         template <typename _T>
         dint<_T>& operator%=(dint<_T>& a, const dint<_T>& b);
