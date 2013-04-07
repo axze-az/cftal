@@ -19,8 +19,8 @@ namespace x86vec {
         public:
                 typedef _X vector_type;
                 typedef void element_type;
-                vreg() = default;
-		vreg(_X x);
+		vreg() = default;
+		constexpr vreg(_X x);
 		vreg& operator=(const vreg& r) = default;
                 _X operator()() const;
                 _X& operator()();
@@ -30,6 +30,7 @@ namespace x86vec {
 
 template <class _X>
 inline
+constexpr
 x86vec::vreg<_X>::vreg(_X x) : _v(x)
 {
 }

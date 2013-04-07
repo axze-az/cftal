@@ -2,8 +2,6 @@
 #define __CFTAL_D_REAL_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/emuvec.h>
-#include <cftal/x86vec.h>
 #include <cmath>
 #include <type_traits>
 
@@ -86,7 +84,7 @@ namespace cftal {
 			return 4.15383749e+34f;
 		}
 		// 2^-14
-		static constexpr double split_scale_down() {
+		static constexpr float split_scale_down() {
 			return 1.0f/16384.0f;
 		}
 		// 2^14

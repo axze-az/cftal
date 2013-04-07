@@ -8,50 +8,51 @@
 #include <cftal/x86vec_ivec.h>
 #include <cftal/mem_load.h>
 #include <cftal/divisor.h>
+#include <cftal/d_real.h>
 #include <cfenv>
 
 namespace x86vec {
 
-	namespace impl {
+        namespace impl {
 
-		struct rounding_mode {
-			enum type {
-				nearest = 0x0,
-				downward = 0x1,
-				upward = 0x2,
-				towardzero = 0x3,
-				current = 0x4
-			};
-		};
+                struct rounding_mode {
+                        enum type {
+                                nearest = 0x0,
+                                downward = 0x1,
+                                upward = 0x2,
+                                towardzero = 0x3,
+                                current = 0x4
+                        };
+                };
 
-		/* int N;
-		 * double x, y, coef[N+1], polevl[];
-		 *
-		 * y = polevl( x, coef, N );
-		 *
-		 *
-		 *
-		 * DESCRIPTION:
-		 *
-		 * Evaluates polynomial of degree N:
-		 *
-		 *                     2          N
-		 * y  =  C  + C x + C x  +...+ C x
-		 *        0    1     2          N
-		 *
-		 * Coefficients are stored in reverse order:
-		 *
-		 * coef[0] = C  , ..., coef[N] = C  .
-		 *            N                   0
-		 */
-		template <unsigned _N, typename _T>
-		_T polevl(_T x, const _T* coef);
-		
-		// same as above with C_N == 1.0
-		template <unsigned _N, typename _T>
-		_T p1evl(_T x, const _T* coef);
-		
-	}
+                /* int N;
+                 * double x, y, coef[N+1], polevl[];
+                 *
+                 * y = polevl( x, coef, N );
+                 *
+                 *
+                 *
+                 * DESCRIPTION:
+                 *
+                 * Evaluates polynomial of degree N:
+                 *
+                 *                     2          N
+                 * y  =  C  + C x + C x  +...+ C x
+                 *        0    1     2          N
+                 *
+                 * Coefficients are stored in reverse order:
+                 *
+                 * coef[0] = C  , ..., coef[N] = C  .
+                 *            N                   0
+                 */
+                template <unsigned _N, typename _T>
+                _T polevl(_T x, const _T* coef);
+
+                // same as above with C_N == 1.0
+                template <unsigned _N, typename _T>
+                _T p1evl(_T x, const _T* coef);
+
+        }
 
         class v4f32 : public vreg<__m128> {
         public:
@@ -63,81 +64,81 @@ namespace x86vec {
                 v4f32(element_type p00, element_type p01,
                       element_type p02=0.0f, element_type p03=0.0f);
                 // broadcast to all positions
-		v4f32(element_type r);
+                v4f32(element_type r);
                 v4f32(element_type r, bool broadcast);
-		// assignment from expr<op<v4f32>, _L, _R>
-		template <template <class _V> class _OP, class _L, class _R>
-		v4f32(const expr<_OP<v4f32>, _L, _R>& r);
+                // assignment from expr<op<v4f32>, _L, _R>
+                template <template <class _V> class _OP, class _L, class _R>
+                v4f32(const expr<_OP<v4f32>, _L, _R>& r);
                 v4f32(const mem::addr_bcast<element_type>& r);
                 v4f32(const mem::addr<element_type>& r);
                 v4f32(const mem::aligned::addr<element_type>& r);
                 v4f32(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
-		masked_vec<v4f32> operator()(const mask<v4f32>& m);
+                using base_type::operator();
+                masked_vec<v4f32> operator()(const mask<v4f32>& m);
         };
 
-	inline
-	const v4f32& eval(const v4f32& v) {
-		return v;
-	}
+        inline
+        const v4f32& eval(const v4f32& v) {
+                return v;
+        }
 
-	namespace ops {
-		
-		template <>
-		struct add<v4f32> : public def_vector_type<v4f32> {
-			static v4f32 v(const v4f32& a, const v4f32& b);
-		};
+        namespace ops {
 
-		template <>
-		struct sub<v4f32> : public def_vector_type<v4f32>{
-			static v4f32 v(const v4f32& a, const v4f32& b);
-		};
+                template <>
+                struct add<v4f32> : public def_vector_type<v4f32> {
+                        static v4f32 v(const v4f32& a, const v4f32& b);
+                };
 
-		template <>
-		struct mul<v4f32> : public def_vector_type<v4f32>{
-			static v4f32 v(const v4f32& a, const v4f32& b);
-		};
+                template <>
+                struct sub<v4f32> : public def_vector_type<v4f32>{
+                        static v4f32 v(const v4f32& a, const v4f32& b);
+                };
 
-		template <>
-		struct div<v4f32> : public def_vector_type<v4f32>{
-			static v4f32 v(const v4f32& a, const v4f32& b);
-		};
+                template <>
+                struct mul<v4f32> : public def_vector_type<v4f32>{
+                        static v4f32 v(const v4f32& a, const v4f32& b);
+                };
 
-		// a * b + c
-		template <>
-		struct fma<v4f32> : public def_vector_type<v4f32>{
-			static v4f32 v(const v4f32& a, const v4f32& b, 
-				       const v4f32& c);
-		};
+                template <>
+                struct div<v4f32> : public def_vector_type<v4f32>{
+                        static v4f32 v(const v4f32& a, const v4f32& b);
+                };
 
-		// a * b - c
-		template <>
-		struct fms<v4f32> : public def_vector_type<v4f32>{
-			static v4f32 v(const v4f32& a, const v4f32& b, 
-				       const v4f32& c);
-		};
+                // a * b + c
+                template <>
+                struct fma<v4f32> : public def_vector_type<v4f32>{
+                        static v4f32 v(const v4f32& a, const v4f32& b,
+                                       const v4f32& c);
+                };
 
-		// -(a * b) + c = c - a * b
-		template <>
-		struct fnma<v4f32> : public def_vector_type<v4f32>{
-			static v4f32 v(const v4f32& a, const v4f32& b, 
-				       const v4f32& c);
-		};
-	}
+                // a * b - c
+                template <>
+                struct fms<v4f32> : public def_vector_type<v4f32>{
+                        static v4f32 v(const v4f32& a, const v4f32& b,
+                                       const v4f32& c);
+                };
 
-	DEFINE_X86VEC_FP_OPERATORS(v4f32);
+                // -(a * b) + c = c - a * b
+                template <>
+                struct fnma<v4f32> : public def_vector_type<v4f32>{
+                        static v4f32 v(const v4f32& a, const v4f32& b,
+                                       const v4f32& c);
+                };
+        }
+
+        DEFINE_X86VEC_FP_OPERATORS(v4f32);
 
         v4f32& operator|= (v4f32& a, const v4f32& b);
         v4f32& operator&= (v4f32& a, const v4f32& b);
         v4f32& operator^= (v4f32& a, const v4f32& b);
-	
+
         v4f32 operator++ (v4f32& a, int);
         v4f32& operator++(v4f32& a);
         v4f32 operator-- (v4f32& a, int);
         v4f32& operator--(v4f32& a);
 
         v4f32 operator-(const v4f32& a);
-	const v4f32& operator+(const v4f32& a);
+        const v4f32& operator+(const v4f32& a);
         v4f32 operator~(const v4f32& a);
         v4f32 operator!(const v4f32& a);
 
@@ -147,7 +148,7 @@ namespace x86vec {
         v4f32 operator&& (const v4f32& a, const v4f32& b);
         v4f32 operator^(const v4f32& a, const v4f32& b);
 
-	
+
         v4f32 operator< (const v4f32& a, const v4f32& b);
         v4f32 operator<= (const v4f32& a, const v4f32& b);
         v4f32 operator== (const v4f32& a, const v4f32& b);
@@ -165,27 +166,27 @@ namespace x86vec {
         v4f32 max(const v4f32& a, const v4f32& b);
         v4f32 min(const v4f32& a, const v4f32& b);
         v4f32 abs(const v4f32& a);
-	v4f32 sqrt(const v4f32& a);
+        v4f32 sqrt(const v4f32& a);
 
-	v4f32 rcp(const v4f32& a);
-	v4f32 native_rcp(const v4f32& a);
-	v4f32 rsqrt(const v4f32& a);
-	v4f32 native_rsqrt(const v4f32& a);
+        v4f32 rcp(const v4f32& a);
+        v4f32 native_rcp(const v4f32& a);
+        v4f32 rsqrt(const v4f32& a);
+        v4f32 native_rsqrt(const v4f32& a);
 
-	namespace impl {
-		v4f32 round(const v4f32& a, const rounding_mode::type m);
-	}
-	v4f32 rint(const v4f32& a);
-	v4f32 floor(const v4f32& a);
-	v4f32 ceil(const v4f32& a);
-	v4f32 trunc(const v4f32& a);
-	// returns (~a) & (b)
-	v4f32 andnot(const v4f32& a, const v4f32& b);
-	v4f32 copysign(const v4f32& x, const v4f32& y);
-	v4f32 mulsign(const v4f32& x, const v4f32& y);
-	v4f32 isinf(const v4f32& x);
-	v4f32 isnan(const v4f32& x);
-	v4f32 isfinite(const v4f32& x);
+        namespace impl {
+                v4f32 round(const v4f32& a, const rounding_mode::type m);
+        }
+        v4f32 rint(const v4f32& a);
+        v4f32 floor(const v4f32& a);
+        v4f32 ceil(const v4f32& a);
+        v4f32 trunc(const v4f32& a);
+        // returns (~a) & (b)
+        v4f32 andnot(const v4f32& a, const v4f32& b);
+        v4f32 copysign(const v4f32& x, const v4f32& y);
+        v4f32 mulsign(const v4f32& x, const v4f32& y);
+        v4f32 isinf(const v4f32& x);
+        v4f32 isnan(const v4f32& x);
+        v4f32 isfinite(const v4f32& x);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4f32 select(const v4f32& a, const v4f32& b);
@@ -197,20 +198,20 @@ namespace x86vec {
         template < int _P0, int _P1, int _P2, int _P3 >
         v4f32 permute(const v4f32& a, const v4f32& b);
 
-	template <unsigned _I>
-	v4f32 insert(const v4f32& a, typename v4f32::element_type v);
-	template <unsigned _I>
-	typename v4f32::element_type extract(const v4f32& a);
+        template <unsigned _I>
+        v4f32 insert(const v4f32& a, typename v4f32::element_type v);
+        template <unsigned _I>
+        typename v4f32::element_type extract(const v4f32& a);
 
-	v4f32::element_type hadd(const v4f32& a);
-	v4f32 hadd_pairs(const v4f32& a, const v4f32& b);
-	v4f32 hsub_pairs(const v4f32& a, const v4f32& b);
-	v4f32 hmul_pairs(const v4f32& a, const v4f32& b);
-	v4f32 hdiv_pairs(const v4f32& a, const v4f32& b);
-	
+        v4f32::element_type hadd(const v4f32& a);
+        v4f32 hadd_pairs(const v4f32& a, const v4f32& b);
+        v4f32 hsub_pairs(const v4f32& a, const v4f32& b);
+        v4f32 hmul_pairs(const v4f32& a, const v4f32& b);
+        v4f32 hdiv_pairs(const v4f32& a, const v4f32& b);
 
-	v4f32::element_type dot(const v4f32& a, const v4f32& b);
-       
+
+        v4f32::element_type dot(const v4f32& a, const v4f32& b);
+
         class v2f64 : public vreg<__m128d> {
         public:
                 typedef double element_type;
@@ -221,79 +222,79 @@ namespace x86vec {
                 v2f64(element_type p00, element_type p01);
                 // broadcast to all positions
                 v2f64(element_type r);
-		// assignment from expr<op<v2f64>, _L, _R>
-		template <template <class _V> class _OP, class _L, class _R>
-		v2f64(const expr<_OP<v2f64>, _L, _R>& r);
+                // assignment from expr<op<v2f64>, _L, _R>
+                template <template <class _V> class _OP, class _L, class _R>
+                v2f64(const expr<_OP<v2f64>, _L, _R>& r);
                 v2f64(const mem::addr_bcast<element_type>& r);
                 v2f64(const mem::addr<element_type>& r);
                 v2f64(const mem::aligned::addr<element_type>& r);
                 v2f64(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
-		masked_vec<v2f64> operator()(const mask<v2f64>& m);
+                using base_type::operator();
+                masked_vec<v2f64> operator()(const mask<v2f64>& m);
         };
 
-	inline
-	const v2f64& eval(const v2f64& v) {
-		return v;
-	}
+        inline
+        const v2f64& eval(const v2f64& v) {
+                return v;
+        }
 
-	namespace ops {
-		
-		template <>
-		struct add<v2f64> : public def_vector_type<v2f64> {
-			static v2f64 v(const v2f64& a, const v2f64& b);
-		};
+        namespace ops {
 
-		template <>
-		struct sub<v2f64> : public def_vector_type<v2f64>{
-			static v2f64 v(const v2f64& a, const v2f64& b);
-		};
+                template <>
+                struct add<v2f64> : public def_vector_type<v2f64> {
+                        static v2f64 v(const v2f64& a, const v2f64& b);
+                };
 
-		template <>
-		struct mul<v2f64> : public def_vector_type<v2f64>{
-			static v2f64 v(const v2f64& a, const v2f64& b);
-		};
+                template <>
+                struct sub<v2f64> : public def_vector_type<v2f64>{
+                        static v2f64 v(const v2f64& a, const v2f64& b);
+                };
 
-		template <>
-		struct div<v2f64> : public def_vector_type<v2f64>{
-			static v2f64 v(const v2f64& a, const v2f64& b);
-		};
+                template <>
+                struct mul<v2f64> : public def_vector_type<v2f64>{
+                        static v2f64 v(const v2f64& a, const v2f64& b);
+                };
 
-		// a * b + c
-		template <>
-		struct fma<v2f64> : public def_vector_type<v2f64>{
-			static v2f64 v(const v2f64& a, const v2f64& b, 
-				       const v2f64& c);
-		};
+                template <>
+                struct div<v2f64> : public def_vector_type<v2f64>{
+                        static v2f64 v(const v2f64& a, const v2f64& b);
+                };
 
-		// a * b - c
-		template <>
-		struct fms<v2f64> : public def_vector_type<v2f64>{
-			static v2f64 v(const v2f64& a, const v2f64& b, 
-				       const v2f64& c);
-		};
+                // a * b + c
+                template <>
+                struct fma<v2f64> : public def_vector_type<v2f64>{
+                        static v2f64 v(const v2f64& a, const v2f64& b,
+                                       const v2f64& c);
+                };
 
-		// -(a * b) + c = c - a * b
-		template <>
-		struct fnma<v2f64> : public def_vector_type<v2f64>{
-			static v2f64 v(const v2f64& a, const v2f64& b, 
-				       const v2f64& c);
-		};
-	}
+                // a * b - c
+                template <>
+                struct fms<v2f64> : public def_vector_type<v2f64>{
+                        static v2f64 v(const v2f64& a, const v2f64& b,
+                                       const v2f64& c);
+                };
 
-	DEFINE_X86VEC_FP_OPERATORS(v2f64);
+                // -(a * b) + c = c - a * b
+                template <>
+                struct fnma<v2f64> : public def_vector_type<v2f64>{
+                        static v2f64 v(const v2f64& a, const v2f64& b,
+                                       const v2f64& c);
+                };
+        }
+
+        DEFINE_X86VEC_FP_OPERATORS(v2f64);
 
         v2f64& operator|= (v2f64& a, const v2f64& b);
         v2f64& operator&= (v2f64& a, const v2f64& b);
         v2f64& operator^= (v2f64& a, const v2f64& b);
-	
+
         v2f64 operator++ (v2f64& a, int);
         v2f64& operator++(v2f64& a);
         v2f64 operator-- (v2f64& a, int);
         v2f64& operator--(v2f64& a);
 
         v2f64 operator-(const v2f64& a);
-	const v2f64& operator+(const v2f64& a);
+        const v2f64& operator+(const v2f64& a);
         v2f64 operator~(const v2f64& a);
         v2f64 operator!(const v2f64& a);
 
@@ -320,24 +321,24 @@ namespace x86vec {
         v2f64 max(const v2f64& a, const v2f64& b);
         v2f64 min(const v2f64& a, const v2f64& b);
         v2f64 abs(const v2f64& a);
-	v2f64 sqrt(const v2f64& a);
+        v2f64 sqrt(const v2f64& a);
 
-	namespace impl {
-		v2f64 round(const v2f64& a, const rounding_mode::type m);
-	}
-	v2f64 rint(const v2f64& a);
-	v2f64 floor(const v2f64& a);
-	v2f64 ceil(const v2f64& a);
-	v2f64 trunc(const v2f64& a);
-	// returns (~a) & (b)
-	v2f64 andnot(const v2f64& a, const v2f64& b);
-	v2f64 copysign(const v2f64& x, const v2f64& y);
-	v2f64 mulsign(const v2f64& x, const v2f64& y);
-	v2f64 isinf(const v2f64& x);
-	v2f64 isnan(const v2f64& x);
-	v2f64 isfinite(const v2f64& x);
+        namespace impl {
+                v2f64 round(const v2f64& a, const rounding_mode::type m);
+        }
+        v2f64 rint(const v2f64& a);
+        v2f64 floor(const v2f64& a);
+        v2f64 ceil(const v2f64& a);
+        v2f64 trunc(const v2f64& a);
+        // returns (~a) & (b)
+        v2f64 andnot(const v2f64& a, const v2f64& b);
+        v2f64 copysign(const v2f64& x, const v2f64& y);
+        v2f64 mulsign(const v2f64& x, const v2f64& y);
+        v2f64 isinf(const v2f64& x);
+        v2f64 isnan(const v2f64& x);
+        v2f64 isfinite(const v2f64& x);
 
-	v2f64 frexp(arg<v2f64>::type x, v2s64* e);
+        v2f64 frexp(arg<v2f64>::type x, v2s64* e);
         v2f64 pow2i(arg<v4s32>::type e);
         v2f64 ldexp(arg<v2f64>::type d, arg<v4s32>::type e);
         v4s32 ilogbp1(arg<v2f64>::type v);
@@ -349,31 +350,31 @@ namespace x86vec {
         v2f64 atan(arg<v2f64>::type d);
         v2f64 sin(arg<v2f64>::type d);
         v2f64 cos(arg<v2f64>::type d);
-	std::pair<v2f64, v2f64> sincos(arg<v2f64>::type d);
+        std::pair<v2f64, v2f64> sincos(arg<v2f64>::type d);
         v2f64 tan(arg<v2f64>::type d);
-	v2f64 log(arg<v2f64>::type d);
-	v2f64 exp(arg<v2f64>::type d);
-	v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);
+        v2f64 log(arg<v2f64>::type d);
+        v2f64 exp(arg<v2f64>::type d);
+        v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);
 
-	namespace impl {
-		// fma emulation (a*b +c), calculates correctly until
-		// no internal overflow occurs
-		v2f64 fma(arg<v2f64>::type a, arg<v2f64>::type b, 
-			  arg<v2f64>::type c);
-	}
-	// a*b +c
-	v2f64 fma(const v2f64& a, const v2f64& b, const v2f64& c);
-	// a*b -c
-	v2f64 fms(const v2f64& a, const v2f64& b, const v2f64& c);
-	// -(a*b) + c
-	v2f64 nfma(const v2f64& a, const v2f64& b, const v2f64& c);
-	// -(a*b) - c
-	v2f64 nfms(const v2f64& a, const v2f64& b, const v2f64& c);	
+        namespace impl {
+                // fma emulation (a*b +c), calculates correctly until
+                // no internal overflow occurs
+                v2f64 fma(arg<v2f64>::type a, arg<v2f64>::type b,
+                          arg<v2f64>::type c);
+        }
+        // a*b +c
+        v2f64 fma(const v2f64& a, const v2f64& b, const v2f64& c);
+        // a*b -c
+        v2f64 fms(const v2f64& a, const v2f64& b, const v2f64& c);
+        // -(a*b) + c
+        v2f64 nfma(const v2f64& a, const v2f64& b, const v2f64& c);
+        // -(a*b) - c
+        v2f64 nfms(const v2f64& a, const v2f64& b, const v2f64& c);
 
-	// a*b +c with rounding or not
-	v2f64 mad(const v2f64& a, const v2f64& b, const v2f64& c);
-	// -(a*b) +c with rounding or not
-	v2f64 nmad(const v2f64& a, const v2f64& b, const v2f64& c);
+        // a*b +c with rounding or not
+        v2f64 mad(const v2f64& a, const v2f64& b, const v2f64& c);
+        // -(a*b) +c with rounding or not
+        v2f64 nmad(const v2f64& a, const v2f64& b, const v2f64& c);
 
         template < bool _P0, bool _P1>
         v2f64 select(const v2f64& a, const v2f64& b);
@@ -385,45 +386,111 @@ namespace x86vec {
         template < int _P0, int _P1>
         v2f64 permute(const v2f64& a, const v2f64& b);
 
-	template <unsigned _I>
-	v2f64 insert(const v2f64& a, typename v2f64::element_type v);
-	template <unsigned _I>
-	typename v2f64::element_type extract(const v2f64& a);
+        template <unsigned _I>
+        v2f64 insert(const v2f64& a, typename v2f64::element_type v);
+        template <unsigned _I>
+        typename v2f64::element_type extract(const v2f64& a);
 
-	v2f64::element_type hadd(const v2f64& a);
+        v2f64::element_type hadd(const v2f64& a);
 
 #if defined (__AVX__)
-	// 256 bit floating point types
-	
+        // 256 bit floating point types
 #endif
+}
+
+namespace cftal {
+
+        template <>
+        struct d_real_traits<x86vec::v2f64> : public has_fma<double> {
+                constexpr d_real_traits<x86vec::v2f64>() = default;
+                // result of a comparison operator
+                typedef x86vec::v2f64 cmp_result_type;
+                // 2^27 + 1
+                static x86vec::v2f64 split() {
+                        return 134217729.0;
+                }
+                // 2^996 = 2^{1023-28+1}
+                static x86vec::v2f64 split_threshold() {
+                        return 6.69692879491417e+299;
+                }
+                // 2^-28
+                static x86vec::v2f64 split_scale_down() {
+                        return 3.7252902984619140625e-09;
+                }
+                // 2^28
+                static x86vec::v2f64 split_scale_up() {
+                        return 268435456.0;
+                }
+                //
+                static bool any(const cmp_result_type& b) {
+                        return !no_signs(b);
+                }
+                static x86vec::v2f64 sel(const cmp_result_type& s,
+                                         const x86vec::v2f64& on_true,
+                                         const x86vec::v2f64& on_false) {
+                        return select(s, on_true, on_false);
+                }
+        };
+
+        template <>
+        struct d_real_traits<x86vec::v4f32> : public has_fma<float> {
+                constexpr d_real_traits<x86vec::v4f32>() = default;
+                // result of a comparison operator
+                typedef x86vec::v4f32 cmp_result_type;
+                // 2^13 + 1
+                static x86vec::v4f32 split() {
+                        return 8193.0f;
+                }
+                // 2^115 = 2^{127-14+1}
+                static x86vec::v4f32 split_threshold() {
+                        return 4.15383749e+34f;
+                }
+                // 2^-14
+                static x86vec::v4f32 split_scale_down() {
+                        return 1.0f/16384.0f;
+                }
+                // 2^14
+                static x86vec::v4f32 split_scale_up() {
+                        return 16384.0f;
+                }
+                //
+                static bool any(const cmp_result_type& b) {
+                        return !no_signs(b);
+                }
+                static x86vec::v4f32 sel(const cmp_result_type& s,
+					 const float& on_true,
+					 const float& on_false) {
+                        return select(s, on_true, on_false);
+                }
+        };
 
 }
 
 template <unsigned _N, typename _T>
 _T x86vec::impl::polevl(_T x, const _T* coef)
 {
-	const _T* p= coef;
-	_T ans= *p++;
-	int i= _N;
-	do {
-		ans = mad(ans, x,  *p);
-		++p;
-	} while (--i);
-	return ans;
+        const _T* p= coef;
+        _T ans= *p++;
+        int i= _N;
+        do {
+                ans = mad(ans, x,  *p);
+                ++p;
+        } while (--i);
+        return ans;
 }
 
 template <unsigned _N, typename _T>
 _T x86vec::impl::p1evl(_T x, const _T* coef)
 {
-	const _T* p= coef;
-	_T ans= x* *p;
-	++p;
-	int i= _N-1;
-	do {
-		ans = mad(ans, x, *p);
-		++p;
-	} while (--i);
-	return ans;
+        const _T* p= coef;
+        _T ans= x* *p;
+        ++p;
+        int i= _N-1;
+        do {
+                ans = mad(ans, x, *p);
+                ++p;
+        } while (--i);
+        return ans;
 }
 
 #include <cftal/x86vec_v4f32_inl.h>

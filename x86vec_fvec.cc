@@ -833,10 +833,18 @@ math::func<double, math::int32_t, _T>::
 exp(const vf_type& d)
 {
 #if 1
-	const vf_type k(512.0);
+#if 0
+	using dvf_type = cftal::d_real<vf_type>;
+
+	dv2f64 dt(d);
+	dt *= vf_type(2.0);
+	return dt.h();
+#else
+
+	const double k(512.0);
 	const vf_type inv_k(1.0/k);
 
-	vf_type m= floor(d * R_LN2 + 0.5);
+	vf_type m= rint(d * R_LN2);
 	// reduce d in two steps
 	vf_type r= mad(m, -L2U, d);
 	r = mad(m, -L2L, r);
@@ -890,7 +898,7 @@ exp(const vf_type& d)
 	s = mad(s, 2.0, s*s);
 	s += 1.0;
 
-	vi_type mi= _T::cvt_rz_f_to_i(m);
+	vi_type mi= _T::cvt_f_to_i(m);
 	vf_type res(ldexp(s, mi));
 
 	// res = _T::sel(d <= -709.0, 0.0, res);
@@ -901,6 +909,7 @@ exp(const vf_type& d)
 	res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
 
 	return res;
+#endif
 #else
 	vf_type qf = rint(d * R_LN2);
 	vi_type q = _T::cvt_f_to_i(qf);

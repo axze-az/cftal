@@ -314,8 +314,10 @@ void print_inv_fac()
         using dpf64 = cftal::d_real<double>;
 
 	dpf64 fac(1.0);
+	
+	const std::size_t MAX_FAC=30;
 
-	for (std::size_t i=0; i<31; ++i) {
+	for (std::size_t i=0; i<MAX_FAC+1; ++i) {
 		dpf64  inv_fac(1.0);
 		if (i>1) {
 			fac *= double(i);
@@ -338,6 +340,23 @@ void print_inv_fac()
 			  << std::setfill(' ')
 			  << "_LO "
 			  << inv_fac.l()
+			  << std::endl;
+	}
+
+	for (std::size_t i=0; i<MAX_FAC+1; ++i) {
+		std::cout << "#undef INV_FAC_" 
+			  << std::setw(2) 
+			  << std::setfill('0')
+			  << i
+			  << std::setfill(' ')
+			  << "_HI"
+			  << std::endl
+			  << "#undef INV_FAC_" 
+			  << std::setw(2) 
+			  << std::setfill('0')
+			  << i
+			  << std::setfill(' ')
+			  << "_LO"
 			  << std::endl;
 	}
 	
