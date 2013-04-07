@@ -75,17 +75,21 @@ namespace cftal {
 		// result of a comparison operator
 		typedef bool cmp_result_type;
 		// 2^13 + 1
-		static constexpr float split = 
-			8193.0;
+		static constexpr float split() {
+			return 8193.0f;
+		}
 		// 2^115 = 2^{127-14+1}
-		static constexpr float split_threshold=
-			4.15383749e+34f;
+		static constexpr float split_threshold() {
+			return 4.15383749e+34f;
+		}
 		// 2^-14
-		static constexpr double split_scale_down=
-			1.0f/16384.0f;
+		static constexpr double split_scale_down() {
+			return 1.0f/16384.0f;
+		}
 		// 2^14
-		static constexpr float split_scale_up=
-			16384.0f;
+		static constexpr float split_scale_up() {
+			return 16384.0f;
+		}
 		// fma ?
 		static constexpr bool fma = false;
 		// 
@@ -311,6 +315,7 @@ namespace cftal {
 	d_real<double> str_to_d_double(const char* p, std::size_t n);
 	d_real<double> str_to_d_double(const char* p);
 	d_real<float> str_to_d_float(const char* p, std::size_t n);
+	d_real<float> str_to_d_float(const char* p);
 
 	d_real<double> operator "" _dd(const char* dd);
 	d_real<float> operator "" _df(const char* df);
@@ -953,7 +958,7 @@ cftal::powi(const d_real<_T>& a, int e)
 	}
 	/* Compute the reciprocal if n is negative. */
 	if (e < 0)
-		s= (1.0 / s);
+		s= (_T(1.0) / s);
 	return s;
 }
 

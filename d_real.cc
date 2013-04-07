@@ -2,15 +2,41 @@
 #include <cstring>
 #include <stdexcept>
 
+namespace cftal {
+
+	template <typename _T>
+	d_real<_T> str_to_d_real(const char* p, std::size_t n);
+}
+
 cftal::d_real<double>
 cftal::str_to_d_double(const char* p)
 {
-	return str_to_d_double(p, std::strlen(p));
+	return str_to_d_real<double>(p, std::strlen(p));
 }
 
 cftal::d_real<double>
 cftal::str_to_d_double(const char* p, std::size_t n)
 {
+	return str_to_d_real<double>(p, n);
+}
+
+cftal::d_real<float>
+cftal::str_to_d_float(const char* p)
+{
+	return str_to_d_real<float>(p, std::strlen(p));
+}
+
+cftal::d_real<float>
+cftal::str_to_d_float(const char* p, std::size_t n)
+{
+	return str_to_d_real<float>(p, n);
+}
+
+template <typename _T>
+cftal::d_real<_T>
+cftal::str_to_d_real(const char* p, std::size_t n)
+{
+	// using cftal::d_real;
 	const char* pe=p+n;
 	char ch;
 	int sign = 0;
@@ -20,7 +46,7 @@ cftal::str_to_d_double(const char* p, std::size_t n)
 	int sign_exponent=0;
 	int pos=0;
 	int in_exp=-1;
-	d_real<double> r(0.0);
+	d_real<_T> r(0.0);
 
 	// skip leading spaces
 	while (*p == ' ' && p < pe)
@@ -45,8 +71,8 @@ cftal::str_to_d_double(const char* p, std::size_t n)
 				exponent *= 10;
 				exponent += ch - '0';
 			} else {
-				r *= 10.0;
-				r += double(ch - '0');
+				r *= _T(10.0);
+				r += _T(ch - '0');
 				++digits;
 			}
 			break;
@@ -98,12 +124,12 @@ cftal::str_to_d_double(const char* p, std::size_t n)
 	}
 
 	if (exponent != 0) {
-		d_real<double> ex(10.0);
-		d_real<double> exi(powi(ex, exponent));
+		d_real<_T> ex(10.0);
+		d_real<_T> exi(powi(ex, exponent));
 		r *= exi;
 	}
 	r = (sign == -1) ? -r : r;
-	r += d_real<double>(0.0);
+	r += d_real<_T>(0.0);
 	return r;
 }
 
@@ -111,4 +137,10 @@ cftal::d_real<double>
 cftal::operator "" _dd(const char* pp)
 {
 	return str_to_d_double(pp, std::strlen(pp));
+}
+
+cftal::d_real<float>
+cftal::operator "" _df(const char* pp)
+{
+	return str_to_d_float(pp, std::strlen(pp));
 }

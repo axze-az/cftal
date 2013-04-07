@@ -372,9 +372,11 @@ void testpowi()
 {
         using dpf64 = cftal::d_real<double>;
 	dpf64 base(1.0);
-	dpf64 t1=cftal::str_to_d_double("0.25e-1");
-	std::cout << std::scientific 
-		  << std::setprecision(22)
+	dpf64 t1=cftal::str_to_d_double("0.025e1");
+	std::cout.setf(std::ios_base::fixed | 
+		       std::ios_base::scientific, 
+		       std::ios_base::floatfield);
+	std::cout << std::setprecision(22)
 		  << t1.h()
 		  << ", "
 		  << t1.l()
@@ -382,8 +384,7 @@ void testpowi()
 	base+= t1;
 	for (std::size_t i=0; i<10; ++i) {
 		dpf64 t= powi(base, i);
-		std::cout << std::scientific 
-			  << std::setprecision(22)
+		std::cout << std::setprecision(22)
 			  << t.h()
 			  << ", "
 			  << t.l()
