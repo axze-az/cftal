@@ -1,5 +1,6 @@
 #include "x86vec_fvec.h"
 #include "x86vec_cvt.h"
+#include "math_funcs.h"
 #include "d_real.h"
 #include <cmath>
 #include <limits>
@@ -833,73 +834,84 @@ math::func<double, math::int32_t, _T>::
 exp(const vf_type& d)
 {
 #if 1
-#if 0
-	using dvf_type = cftal::d_real<vf_type>;
+	typedef cftal::d_real<vf_type> dvf_type;
 
-	dv2f64 dt(d);
-	dt *= vf_type(2.0);
-	return dt.h();
-#else
+	typedef cftal::impl::d_real_constants_dbl<dvf_type> ctbl;
 
 	const double k(512.0);
 	const vf_type inv_k(1.0/k);
 
+#if 1
+	dvf_type m2= rint(d / ctbl::m_ln2);
+	dvf_type r= mul_pwr2(d - ctbl::m_ln2*m2, inv_k);
+	vf_type m=m2.h();
+
+	dvf_type  s, t, p;
+	p = sqr(r);
+#else
 	vf_type m= rint(d * R_LN2);
 	// reduce d in two steps
 	vf_type r= mad(m, -L2U, d);
 	r = mad(m, -L2L, r);
 	r *= inv_k;
 
-	vf_type  s, t, p;
-	p = r * r;
-	s = r + p *0.5;
+	vf_type e, rsqr= cftal::d_real_impl::two_sqr(r, e);
+	dvf_type  s, t, p;
+	p = vf_type(r * r);
+	p = dvf_type(rsqr, e);
+#endif
+	s = r + p * vf_type(0.5);
 	p*= r;
-	t = p * (1.0/(2.0*3.0)); 
+	t = p * ctbl::inv_fac[3];
 
 	// 6 taylor expansions:
 	s += t;
 	p *= r;
-	t = p * (1.0/(2.0*3.0*4.0));
+	t = p * ctbl::inv_fac[4];
 
 	s += t;
 	p *= r;
-	t = p * (1.0/(2.0*3.0*4.0*5.0));
+	t = p * ctbl::inv_fac[5];
 
 	s += t;
 	p *= r;
-	t = p * (1.0/(2.0*3.0*4.0*5.0*6.0));
+	t = p * ctbl::inv_fac[6];
+
+#if 0
+	s += t;
+	p *= r;
+	t = p * ctbl::inv_fac[7];
 
 	s += t;
 	p *= r;
-	t = p * (1.0/(2.0*3.0*4.0*5.0*6.0*7.0));
+	t = p * ctbl::inv_fac[8];
 
 	s += t;
 	p *= r;
-	t = p * (1.0/(2.0*3.0*4.0*5.0*6.0*7.0*8.0));
+	t = p * ctbl::inv_fac[9];
 
 	s += t;
 	p *= r;
-	t = p * (1.0/(2.0*3.0*4.0*5.0*6.0*7.0*8.0*9.0));
-
-	s += t;
-	p *= r;
-	t = p * (1.0/(2.0*3.0*4.0*5.0*6.0*7.0*8.0*9.0*10.0));
-
+	t = p * ctbl::inv_fac[10];
+#endif
 	s += t;
 	// scale back
-	s = mad(s, 2.0, s*s);
-	s = mad(s, 2.0, s*s);
-	s = mad(s, 2.0, s*s);
-	s = mad(s, 2.0, s*s);
-	s = mad(s, 2.0, s*s);
-	s = mad(s, 2.0, s*s);
-	s = mad(s, 2.0, s*s);
-	s = mad(s, 2.0, s*s);
-	s = mad(s, 2.0, s*s);
-	s += 1.0;
+
+	const vf_type two(2.0);
+
+	s = mul_pwr2(s, two) + sqr(s);
+	s = mul_pwr2(s, two) + sqr(s);
+	s = mul_pwr2(s, two) + sqr(s);
+	s = mul_pwr2(s, two) + sqr(s);
+	s = mul_pwr2(s, two) + sqr(s);
+	s = mul_pwr2(s, two) + sqr(s);
+	s = mul_pwr2(s, two) + sqr(s);
+	s = mul_pwr2(s, two) + sqr(s);
+	s = mul_pwr2(s, two) + sqr(s);
+	s += vf_type(1.0);
 
 	vi_type mi= _T::cvt_f_to_i(m);
-	vf_type res(ldexp(s, mi));
+	vf_type res(ldexp(s.h(), mi));
 
 	// res = _T::sel(d <= -709.0, 0.0, res);
 	// res = _T::sel(d >= 709.0, _T::pinf(), res);
@@ -909,7 +921,6 @@ exp(const vf_type& d)
 	res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
 
 	return res;
-#endif
 #else
 	vf_type qf = rint(d * R_LN2);
 	vi_type q = _T::cvt_f_to_i(qf);

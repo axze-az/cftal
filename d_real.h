@@ -43,6 +43,10 @@ namespace cftal {
 		constexpr d_real_traits<double>() = default;
 		// result of a comparison operator
 		typedef bool cmp_result_type;
+		// is our data type scalar
+		static constexpr bool scalar() {
+			return true;
+		}
 		// 2^27 + 1
 		static constexpr double split() { 
 			return 134217729.0;
@@ -75,6 +79,10 @@ namespace cftal {
 		constexpr d_real_traits<float>() = default;
 		// result of a comparison operator
 		typedef bool cmp_result_type;
+		// is our data type scalar
+		static constexpr bool scalar() {
+			return true;
+		}
 		// 2^13 + 1
 		static constexpr float split() {
 			return 8193.0f;
@@ -110,6 +118,7 @@ namespace cftal {
 		_T _h;
 		_T _l;
 	public:
+		constexpr d_real() : _h(0), _l(0) {}
 		constexpr d_real(const _T& h, const _T& l) : _h(h), _l(l) {}
 		constexpr d_real(const _T& h) : _h(h), _l(_T(0)) {}
 		const _T& l() const { return _l; }
@@ -313,6 +322,11 @@ namespace cftal {
 	template <typename _T>
 	d_real<_T> powi(const d_real<_T>& r, int e);
 
+	template <typename _T>
+	d_real<_T> sqr(const d_real<_T>& r);
+	template <typename _T>
+	d_real<_T> mul_pwr2(const d_real<_T>& a, const _T& b);
+	
 	d_real<double> str_to_d_double(const char* p, std::size_t n);
 	d_real<double> str_to_d_double(const char* p);
 	d_real<float> str_to_d_float(const char* p, std::size_t n);
@@ -371,17 +385,28 @@ cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 {
 	_T temp;
 	_T a=a0;
-	if (d_real_traits<_T>::any(
-		    (a > d_real_traits<_T>::split_threshold()) || 
-		    (a < -d_real_traits<_T>::split_threshold()))) {
-		a*=d_real_traits<_T>::split_scale_down();
-		temp=d_real_traits<_T>::split()*a;
+
+	typedef d_real_traits<_T> traits_t;
+
+	typename traits_t::cmp_result_type is_big(
+		(a > traits_t::split_threshold()) ||
+		(a < -traits_t::split_threshold()));
+	if (unlikely(traits_t::any(is_big))) {
+		a*=traits_t::split_scale_down();
+		temp=traits_t::split()*a;
 		hi=temp-(temp-a);
 		lo=a-hi;
-		hi*=d_real_traits<_T>::split_scale_up();
-		lo*=d_real_traits<_T>::split_scale_up();
+		hi*=traits_t::split_scale_up();
+		lo*=traits_t::split_scale_up();
+		if (!traits_t::scalar()) {
+			_T temp_n=traits_t::split()*a;
+			_T hi_n=temp_n-(temp_n-a);
+			_T lo_n=a-hi_n;
+			hi= traits_t::sel(is_big, hi, hi_n);
+			lo= traits_t::sel(is_big, lo, lo_n);
+		}
 	} else {
-		temp=d_real_traits<_T>::split()*a;
+		temp=traits_t::split()*a;
 		hi=temp-(temp-a);
 		lo=a-hi;
 	}
@@ -861,7 +886,7 @@ cftal::rint(const d_real<_T>& a)
 
 	// if hi == a.h()
 	_T lo_hi_int = rint(a.l());
-	_T hi_hi_int = quick_two_sum(hi, lo_hi_int, lo_hi_int);
+	_T hi_hi_int = d_real_impl::quick_two_sum(hi, lo_hi_int, lo_hi_int);
 
 	// hi != a.h()
 	_T lo_hi_no_int(0);
@@ -960,6 +985,27 @@ cftal::powi(const d_real<_T>& a, int e)
 	if (e < 0)
 		s= (_T(1.0) / s);
 	return s;
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::sqr(const d_real<_T>& a)
+{
+	_T p1, p2, s1, s2;
+	p1 = d_real_impl::two_sqr(a.h(), p2);
+	p2 += 2.0 * a.h() * a.l();
+	p2 += a.l() * a.l();
+	s1 = d_real_impl::quick_two_sum(p1, p2, s2);
+	return d_real<_T>(s1, s2);
+}
+
+template <typename _T>
+inline 
+cftal::d_real<_T> 
+cftal::mul_pwr2(const d_real<_T> &a, const _T& b) 
+{
+	return d_real<_T>(a.h() * b, a.l() * b);
 }
 
 

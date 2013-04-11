@@ -405,6 +405,10 @@ namespace cftal {
                 constexpr d_real_traits<x86vec::v2f64>() = default;
                 // result of a comparison operator
                 typedef x86vec::v2f64 cmp_result_type;
+		// is our data type scalar
+		static constexpr bool scalar() {
+			return false;
+		}
                 // 2^27 + 1
                 static x86vec::v2f64 split() {
                         return 134217729.0;
@@ -437,6 +441,10 @@ namespace cftal {
                 constexpr d_real_traits<x86vec::v4f32>() = default;
                 // result of a comparison operator
                 typedef x86vec::v4f32 cmp_result_type;
+		// is our data type scalar
+		static constexpr bool scalar() {
+			return false;
+		}
                 // 2^13 + 1
                 static x86vec::v4f32 split() {
                         return 8193.0f;
