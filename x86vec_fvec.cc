@@ -210,6 +210,7 @@ namespace math {
 		static vf_type tan(const vf_type& d);
 		static vf_type log(const vf_type& d);
 		static vf_type exp(const vf_type& d);
+		static vf_type native_exp(const vf_type& d);
 	private:
 		static vdf_type logk(const vf_type& d);
 		static vf_type expk(const vdf_type& d);
@@ -833,38 +834,24 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 exp(const vf_type& d)
 {
-#if 1
 	typedef cftal::d_real<vf_type> dvf_type;
-
 	typedef cftal::impl::d_real_constants_dbl<dvf_type> ctbl;
 
 	const double k(512.0);
 	const vf_type inv_k(1.0/k);
 
-#if 1
 	dvf_type m2= rint(d / ctbl::m_ln2);
 	dvf_type r= mul_pwr2(d - ctbl::m_ln2*m2, inv_k);
 	vf_type m=m2.h();
 
 	dvf_type  s, t, p;
 	p = sqr(r);
-#else
-	vf_type m= rint(d * R_LN2);
-	// reduce d in two steps
-	vf_type r= mad(m, -L2U, d);
-	r = mad(m, -L2L, r);
-	r *= inv_k;
 
-	vf_type e, rsqr= cftal::d_real_impl::two_sqr(r, e);
-	dvf_type  s, t, p;
-	p = vf_type(r * r);
-	p = dvf_type(rsqr, e);
-#endif
 	s = r + p * vf_type(0.5);
 	p*= r;
 	t = p * ctbl::inv_fac[3];
 
-	// 6 taylor expansions:
+	// taylor expansions:
 	s += t;
 	p *= r;
 	t = p * ctbl::inv_fac[4];
@@ -921,7 +908,14 @@ exp(const vf_type& d)
 	res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
 
 	return res;
-#else
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+native_exp(const vf_type& d)
+{
 	vf_type qf = rint(d * R_LN2);
 	vi_type q = _T::cvt_f_to_i(qf);
 
@@ -951,7 +945,6 @@ exp(const vf_type& d)
 	u = _T::sel( d== vf_type(_T::ninf()), vf_type(0), u);
 	u = _T::sel( d== vf_type(_T::pinf()), vf_type(_T::pinf()), u);
 	return u;
-#endif
 }
 
 template <typename _T>
@@ -1351,6 +1344,14 @@ x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
 		impl::vec_func_traits<v2f64, v4s32> >::
                 exp(d);
 }
+
+x86vec::v2f64 x86vec::native_exp(arg<v2f64>::type d)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                native_exp(d);
+}
+
 
 x86vec::v2f64 x86vec::pow(arg<v2f64>::type x, arg<v2f64>::type y)
 {
