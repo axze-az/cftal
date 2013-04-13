@@ -391,6 +391,34 @@ cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 	typename traits_t::cmp_result_type is_big(
 		(a > traits_t::split_threshold()) ||
 		(a < -traits_t::split_threshold()));
+#if 1
+	if (traits_t::scalar()) {
+		if (unlikely(traits_t::any(is_big))) {
+			a*=traits_t::split_scale_down();
+			temp=traits_t::split()*a;
+			hi=temp-(temp-a);
+			lo=a-hi;
+			hi*=traits_t::split_scale_up();
+			lo*=traits_t::split_scale_up();
+		} else {
+			temp=traits_t::split()*a;
+			hi=temp-(temp-a);
+			lo=a-hi;
+		}
+	} else {
+		a*=traits_t::split_scale_down();
+		temp=traits_t::split()*a;
+		hi=temp-(temp-a);
+		lo=a-hi;
+		hi*=traits_t::split_scale_up();
+		lo*=traits_t::split_scale_up();
+		_T temp_n=traits_t::split()*a0;
+		_T hi_n=temp_n-(temp_n-a0);
+		_T lo_n=a0-hi_n;
+		hi= traits_t::sel(is_big, hi, hi_n);
+		lo= traits_t::sel(is_big, lo, lo_n);
+	}
+#else
 	if (unlikely(traits_t::any(is_big))) {
 		a*=traits_t::split_scale_down();
 		temp=traits_t::split()*a;
@@ -399,9 +427,9 @@ cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 		hi*=traits_t::split_scale_up();
 		lo*=traits_t::split_scale_up();
 		if (!traits_t::scalar()) {
-			_T temp_n=traits_t::split()*a;
-			_T hi_n=temp_n-(temp_n-a);
-			_T lo_n=a-hi_n;
+			_T temp_n=traits_t::split()*a0;
+			_T hi_n=temp_n-(temp_n-a0);
+			_T lo_n=a0-hi_n;
 			hi= traits_t::sel(is_big, hi, hi_n);
 			lo= traits_t::sel(is_big, lo, lo_n);
 		}
@@ -410,6 +438,7 @@ cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 		hi=temp-(temp-a);
 		lo=a-hi;
 	}
+#endif
 }
 
 template <typename _T>
