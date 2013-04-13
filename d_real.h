@@ -337,7 +337,7 @@ namespace cftal {
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 _T 
 cftal::d_real_impl::quick_two_sum(const _T& a, const _T& b, _T& err)
 {
@@ -347,7 +347,7 @@ cftal::d_real_impl::quick_two_sum(const _T& a, const _T& b, _T& err)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 _T 
 cftal::d_real_impl::quick_two_diff(const _T& a, const _T& b, _T& err)
 {
@@ -357,7 +357,7 @@ cftal::d_real_impl::quick_two_diff(const _T& a, const _T& b, _T& err)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 _T 
 cftal::d_real_impl::two_sum(const _T& a, const _T& b, _T& err)
 {
@@ -368,7 +368,7 @@ cftal::d_real_impl::two_sum(const _T& a, const _T& b, _T& err)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 _T
 cftal::d_real_impl::two_diff(const _T& a, const _T& b, _T& err)
 {
@@ -379,7 +379,7 @@ cftal::d_real_impl::two_diff(const _T& a, const _T& b, _T& err)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 void 
 cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 {
@@ -442,7 +442,7 @@ cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 _T
 cftal::d_real_impl::two_prod(const _T& a, const _T& b, _T& err)
 {
@@ -459,7 +459,7 @@ cftal::d_real_impl::two_prod(const _T& a, const _T& b, _T& err)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 _T
 cftal::d_real_impl::two_sqr(const _T& a, _T& err)
 {
@@ -475,7 +475,7 @@ cftal::d_real_impl::two_sqr(const _T& a, _T& err)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::add(const _T& a, const _T& b)
 {
@@ -484,7 +484,7 @@ cftal::d_real_impl::add(const _T& a, const _T& b)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::sub(const _T& a, const _T& b)
 {
@@ -493,7 +493,7 @@ cftal::d_real_impl::sub(const _T& a, const _T& b)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::ieee_add(const d_real<_T>& a, const d_real<_T>& b)
 {
@@ -508,7 +508,7 @@ cftal::d_real_impl::ieee_add(const d_real<_T>& a, const d_real<_T>& b)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::sloppy_add(const d_real<_T>& a, const d_real<_T>& b)
 {
@@ -520,7 +520,7 @@ cftal::d_real_impl::sloppy_add(const d_real<_T>& a, const d_real<_T>& b)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::ieee_sub(const d_real<_T>& a, const d_real<_T>& b)
 {
@@ -535,7 +535,7 @@ cftal::d_real_impl::ieee_sub(const d_real<_T>& a, const d_real<_T>& b)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::sloppy_sub(const d_real<_T>& a, const d_real<_T>& b)
 {
@@ -548,7 +548,7 @@ cftal::d_real_impl::sloppy_sub(const d_real<_T>& a, const d_real<_T>& b)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::mul(const _T& a, const _T& b)
 {
@@ -558,7 +558,7 @@ cftal::d_real_impl::mul(const _T& a, const _T& b)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::div(const _T& a, const _T& b)
 {
@@ -575,7 +575,7 @@ cftal::d_real_impl::div(const _T& a, const _T& b)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::ieee_div(const d_real<_T>& a, const d_real<_T>& b)
 {
@@ -592,7 +592,7 @@ cftal::d_real_impl::ieee_div(const d_real<_T>& a, const d_real<_T>& b)
 }
 
 template <typename _T>
-inline
+inline __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::d_real_impl::sloppy_div(const d_real<_T>& a, const d_real<_T>& b)
 {
