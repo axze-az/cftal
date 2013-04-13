@@ -340,6 +340,13 @@ x86vec::v4f32 x86vec::abs(const v4f32& a)
 }
 
 inline
+x86vec::v4f32 x86vec::fabs(const v4f32& a)
+{
+        const __m128 msk= v_not_sign_f32_msk::fv();
+        return _mm_and_ps(a(), msk);
+}
+
+inline
 x86vec::v4f32 x86vec::sqrt(const v4f32& a)
 {
         return _mm_sqrt_ps(a());

@@ -166,6 +166,7 @@ namespace x86vec {
         v4f32 max(const v4f32& a, const v4f32& b);
         v4f32 min(const v4f32& a, const v4f32& b);
         v4f32 abs(const v4f32& a);
+	v4f32 fabs(const v4f32& a);
         v4f32 sqrt(const v4f32& a);
 
         v4f32 rcp(const v4f32& a);
@@ -321,6 +322,7 @@ namespace x86vec {
         v2f64 max(const v2f64& a, const v2f64& b);
         v2f64 min(const v2f64& a, const v2f64& b);
         v2f64 abs(const v2f64& a);
+        v2f64 fabs(const v2f64& a);
         v2f64 sqrt(const v2f64& a);
 
         namespace impl {

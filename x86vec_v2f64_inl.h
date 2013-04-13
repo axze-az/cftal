@@ -334,6 +334,13 @@ x86vec::v2f64 x86vec::abs(const v2f64& a)
 }
 
 inline
+x86vec::v2f64 x86vec::fabs(const v2f64& a)
+{
+	const __m128d msk= v_not_sign_f64_msk::dv();
+	return _mm_and_pd(a(), msk);
+}
+
+inline
 x86vec::v2f64 x86vec::sqrt(const v2f64& a)
 {
 	return _mm_sqrt_pd(a());

@@ -389,8 +389,10 @@ cftal::d_real_impl::split(const _T& a0, _T& hi, _T& lo)
 	typedef d_real_traits<_T> traits_t;
 
 	typename traits_t::cmp_result_type is_big(
-		(a > traits_t::split_threshold()) ||
-		(a < -traits_t::split_threshold()));
+		fabs(a) > traits_t::split_threshold());
+	// typename traits_t::cmp_result_type is_big(
+	//	(a > traits_t::split_threshold()) ||
+	//	(a < -traits_t::split_threshold()));
 #if 1
 	if (traits_t::scalar()) {
 		if (unlikely(traits_t::any(is_big))) {
