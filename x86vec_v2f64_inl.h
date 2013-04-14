@@ -347,6 +347,24 @@ x86vec::v2f64 x86vec::sqrt(const v2f64& a)
 }
 
 inline
+x86vec::v2f64 x86vec::rsqrt(const v2f64& a)
+{
+	return 1.0/sqrt(a);
+}
+
+inline
+x86vec::v2f64 x86vec::native_rsqrt(const v2f64& a)
+{
+	v2u64 u(as<v2u64>(a));
+	const v2u64 magic(0xBFCDD6A18F6A6F55ULL);
+	u = (magic -u) >> 1;
+	v2f64 x0(as<v2f64>(u));
+	v2f64 x1(0.5 * x0 * (3.0 - (a * x0) * x0));
+	v2f64 x2(0.5 * x1 * (3.0 - (a * x1) * x1));
+	return x2;
+}
+
+inline
 x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 {
 #if defined (__SSE4_1__)

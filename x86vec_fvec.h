@@ -325,6 +325,9 @@ namespace x86vec {
         v2f64 fabs(const v2f64& a);
         v2f64 sqrt(const v2f64& a);
 
+	v2f64 rsqrt(const v2f64& a);
+	v2f64 native_rsqrt(const v2f64& a);
+
         namespace impl {
                 v2f64 round(const v2f64& a, const rounding_mode::type m);
         }

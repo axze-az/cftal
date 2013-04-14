@@ -379,9 +379,18 @@ inline
 x86vec::v4f32
 x86vec::native_rsqrt(const v4f32& a)
 {
+#if 0
+	v4u32 u(as<v4u32>(a));
+	const v4u32 magic(0xBE6EB50C);
+	u = (magic - u) >> 1;
+	v4f32 x0(as<v4f32>(u));
+	v4f32 x1(0.5f * x0 * (3.0f - (a * x0) * x0));
+	return x1;
+#else
 	// return rsqrt(a);
 	v4f32 x0(_mm_rsqrt_ps(a()));
 	return (0.5f * x0) *(3.0f - (a*x0)* x0);
+#endif
 }
 
 inline
