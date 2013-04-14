@@ -482,9 +482,11 @@ namespace cftal {
 
 	namespace d_real_impl {
 
+		template <>
 		inline
-		void split(const x86vec::v2f64& a, 
-			   x86vec::v2f64& h, x86vec::v2f64& l) {
+		void split<x86vec::v2f64>(const x86vec::v2f64& a, 
+					  x86vec::v2f64& h, 
+					  x86vec::v2f64& l) {
 			const x86vec::v2f64 msk= 
 				x86vec::const4_u32<0xf8000000U, 
 						   0xffffffffU,
