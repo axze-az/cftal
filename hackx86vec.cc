@@ -360,31 +360,6 @@ void print_inv_fac()
 			  << std::endl;
 	}
 	
-
-	const dpf64* b=std::begin(inv_fac);
-	const dpf64* e=std::end(inv_fac);
-	std::size_t i=0;
-	while (b != e) {
-		const dpf64& c=*b;
-		dpf64 t(1.0);
-		for (std::size_t j=1; j<i; ++j) {
-			t /= dpf64(1.0+j);
-		}
-		++b;
-		++i;
-		std::cout // << std::scientific 
-			  << std::setprecision(22)
-			  << "constant:\n "
-			  << c.h()
-			  << ", "
-			  << c.l()
-			  << std::endl;
-		std::cout << "calc:\n "
-			  << t.h()
-			  << ", "
-			  << t.l()
-			  << std::endl;
-	};
 }
 
 void testpowi()
