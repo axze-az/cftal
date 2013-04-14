@@ -7,7 +7,7 @@ namespace cftal {
 
 		template <class _T>
 		struct d_real_constants_dbl {
-			static const unsigned MAX_FAC=32;
+			static const unsigned MAX_FAC=30;
 			static const _T inv_fac[MAX_FAC+1];
 			static const _T m_ln2;
 		};
@@ -94,7 +94,6 @@ cftal::impl::d_real_constants_dbl<_T>::inv_fac[MAX_FAC+1]= {
 	_T(INV_FAC_07_HI, INV_FAC_07_LO),
 	_T(INV_FAC_08_HI, INV_FAC_08_LO),
 	_T(INV_FAC_09_HI, INV_FAC_09_LO),
-	_T(INV_FAC_10_HI, INV_FAC_10_LO),
 
 	_T(INV_FAC_10_HI, INV_FAC_10_LO),
 	_T(INV_FAC_11_HI, INV_FAC_11_LO),
@@ -106,7 +105,6 @@ cftal::impl::d_real_constants_dbl<_T>::inv_fac[MAX_FAC+1]= {
 	_T(INV_FAC_17_HI, INV_FAC_17_LO),
 	_T(INV_FAC_18_HI, INV_FAC_18_LO),
 	_T(INV_FAC_19_HI, INV_FAC_19_LO),
-	_T(INV_FAC_20_HI, INV_FAC_20_LO),
 
 	_T(INV_FAC_20_HI, INV_FAC_20_LO),
 	_T(INV_FAC_21_HI, INV_FAC_21_LO),
