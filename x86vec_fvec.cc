@@ -864,7 +864,6 @@ exp(const vf_type& d)
 	p *= r;
 	t = p * ctbl::inv_fac[6];
 
-#if 0
 	s += t;
 	p *= r;
 	t = p * ctbl::inv_fac[7];
@@ -873,6 +872,7 @@ exp(const vf_type& d)
 	p *= r;
 	t = p * ctbl::inv_fac[8];
 
+#if 0
 	s += t;
 	p *= r;
 	t = p * ctbl::inv_fac[9];
