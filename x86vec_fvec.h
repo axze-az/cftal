@@ -413,80 +413,20 @@ namespace cftal {
                 constexpr d_real_traits<x86vec::v2f64>() = default;
                 // result of a comparison operator
                 typedef x86vec::v2f64 cmp_result_type;
-		// is our data type scalar
-		static constexpr bool scalar() {
-			return false;
-		}
-                // 2^27 + 1
-                static x86vec::v2f64 split() {
-                        return 134217729.0;
-                }
-                // 2^996 = 2^{1023-28+1}
-                static x86vec::v2f64 split_threshold() {
-                        return 6.69692879491417e+299;
-                }
-                // 2^-28
-                static x86vec::v2f64 split_scale_down() {
-                        return 3.7252902984619140625e-09;
-                }
-                // 2^28
-                static x86vec::v2f64 split_scale_up() {
-                        return 268435456.0;
-                }
-                //
                 static bool any(const cmp_result_type& b) {
                         return !no_signs(b);
                 }
+
                 static x86vec::v2f64 sel(const cmp_result_type& s,
                                          const x86vec::v2f64& on_true,
                                          const x86vec::v2f64& on_false) {
                         return select(s, on_true, on_false);
                 }
-        };
 
-        template <>
-        struct d_real_traits<x86vec::v4f32> : public has_fma<float> {
-                constexpr d_real_traits<x86vec::v4f32>() = default;
-                // result of a comparison operator
-                typedef x86vec::v4f32 cmp_result_type;
-		// is our data type scalar
-		static constexpr bool scalar() {
-			return false;
-		}
-                // 2^13 + 1
-                static x86vec::v4f32 split() {
-                        return 8193.0f;
-                }
-                // 2^115 = 2^{127-14+1}
-                static x86vec::v4f32 split_threshold() {
-                        return 4.15383749e+34f;
-                }
-                // 2^-14
-                static x86vec::v4f32 split_scale_down() {
-                        return 1.0f/16384.0f;
-                }
-                // 2^14
-                static x86vec::v4f32 split_scale_up() {
-                        return 16384.0f;
-                }
-                //
-                static bool any(const cmp_result_type& b) {
-                        return !no_signs(b);
-                }
-                static x86vec::v4f32 sel(const cmp_result_type& s,
-					 const float& on_true,
-					 const float& on_false) {
-                        return select(s, on_true, on_false);
-                }
-        };
-
-	namespace d_real_impl {
-
-		template <>
-		inline
-		void split<x86vec::v2f64>(const x86vec::v2f64& a, 
-					  x86vec::v2f64& h, 
-					  x86vec::v2f64& l) {
+		static 
+		void split(const x86vec::v2f64& a, 
+			   x86vec::v2f64& h, 
+			   x86vec::v2f64& l) {
 			const x86vec::v2f64 msk= 
 				x86vec::const4_u32<0xf8000000U, 
 						   0xffffffffU,
@@ -495,8 +435,8 @@ namespace cftal {
 			h = a & msk;
 			l = a - h;
 		}
+        };
 
-	}
 }
 
 template <unsigned _N, typename _T>
