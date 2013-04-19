@@ -66,17 +66,26 @@ test-sin: testx86vec-03
 test-cos: testx86vec-03
 	./$< <cos.testdata
 
+test-tan: testx86vec-03
+	./$< <tan.testdata
+
 test-exp: testx86vec-03
 	./$< <exp.testdata
+
+test-cosh: testx86vec-03
+	./$< <cosh.testdata
 
 test-log: testx86vec-03
 	./$< <log.testdata
 
-test-tan: testx86vec-03
-	./$< <tan.testdata
+test-asin: testx86vec-03
+	./$< <asin.testdata
 
 test-acos: testx86vec-03
 	./$< <acos.testdata
+
+test-atan: testx86vec-03
+	./$< <atan.testdata
 
 
 #################################################################

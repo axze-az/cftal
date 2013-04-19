@@ -361,6 +361,7 @@ namespace x86vec {
 
         v2f64 exp(arg<v2f64>::type d);
 	v2f64 native_exp(arg<v2f64>::type d);
+	v2f64 cosh(arg<v2f64>::type d);
 
         v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);
 

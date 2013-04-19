@@ -124,18 +124,38 @@ bool x86vec::test::read_func(func_data& tf, std::istream& is)
 		} else if (f == "sin") {
 			tf._f1 = x86vec::sin;
 			tf._f1d= std::sin;
+		} else if (f == "tan") {
+			tf._f1 = x86vec::tan;
+			tf._f1d= std::tan;
 		} else if (f == "exp") {
 			tf._f1 = x86vec::exp;
 			tf._f1d = std::exp;
 		} else if (f == "log") {
 			tf._f1 = x86vec::log;
 			tf._f1d = std::log;
+#if 0
+		} else if (f == "sinh") {
+			tf._f1 = x86vec::sinh;
+			tf._f1d = std::sinh;
+#endif
+		} else if (f == "cosh") {
+			tf._f1 = x86vec::cosh;
+			tf._f1d = std::cosh;
 		} else if (f == "tan") {
 			tf._f1 = x86vec::tan;
 			tf._f1d = std::tan;
+		} else if (f == "asin") {
+			tf._f1 = x86vec::asin;
+			tf._f1d = std::asin;
 		} else if (f == "acos") {
 			tf._f1 = x86vec::acos;
 			tf._f1d = std::acos;
+		} else if (f == "atan") {
+			tf._f1 = x86vec::atan;
+			tf._f1d = std::atan;
+		} else if (f == "atan2") {
+			tf._f2 = x86vec::atan2;
+			tf._f2d = std::atan2;
 		} else {
 			std::cerr << "unknown function " << f << std::endl;
 			return false;

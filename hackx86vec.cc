@@ -11,7 +11,7 @@
 namespace {
 
         using namespace cftal;
-
+#if 0
         const d_real<double> inv_fac[] = {
 		1.0000000000000000000000000000000000000000000000000000000000000000_dd,
 		1.0000000000000000000000000000000000000000000000000000000000000000_dd,
@@ -46,7 +46,9 @@ namespace {
 		.0000000000000000000000000000000037699876288159056438529215256461_dd,
 		.0000000000000000000000000000000001216125041553517949629974685692_dd
         };
+#endif
 }
+
 
 namespace x86vec {
         namespace test {
@@ -317,6 +319,11 @@ void print_inv_fac()
 	
 	const std::size_t MAX_FAC=30;
 
+	std::cout << "template <class _T>\n"
+		  << "const _T\n" 
+		  << "cftal::impl::d_real_constants_dbl<_T>::\n"
+		  << "inv_fac[MAX_FAC+1]= {"
+		  << std::endl;
 	for (std::size_t i=0; i<MAX_FAC+1; ++i) {
 		dpf64  inv_fac(1.0);
 		if (i>1) {
@@ -325,42 +332,60 @@ void print_inv_fac()
 		}
 		std::cout << std::scientific
 			  << std::setprecision(22)
-			  << "#define INV_FAC_" 
-			  << std::setw(2) 
-			  << std::setfill('0')
-			  << i
-			  << std::setfill(' ')
-			  << "_HI "
+			  << "\t_T( " 
+			  << std::setw(27)
 			  << inv_fac.h()
-			  << std::endl
-			  << "#define INV_FAC_" 
-			  << std::setw(2) 
-			  << std::setfill('0')
-			  << i
-			  << std::setfill(' ')
-			  << "_LO "
+			  << std::setw(0)
+			  << ", " ;
+		if (inv_fac.l() >= 0.0)
+			std::cout << ' ';
+		std::cout << std::setw(27)
 			  << inv_fac.l()
-			  << std::endl;
+			  << std::setw(0)
+			  << ")";
+		if (i != MAX_FAC)
+			std::cout << ',';
+		std::cout << std::endl;
 	}
-
-	for (std::size_t i=0; i<MAX_FAC+1; ++i) {
-		std::cout << "#undef INV_FAC_" 
-			  << std::setw(2) 
-			  << std::setfill('0')
-			  << i
-			  << std::setfill(' ')
-			  << "_HI"
-			  << std::endl
-			  << "#undef INV_FAC_" 
-			  << std::setw(2) 
-			  << std::setfill('0')
-			  << i
-			  << std::setfill(' ')
-			  << "_LO"
-			  << std::endl;
-	}
-	
+	std::cout << "};" << std::endl;
 }
+
+void print_2_over_i()
+{
+        using dpf64 = cftal::d_real<double>;
+
+	const std::size_t MAX_2_OVER_I=30;
+
+	std::cout << "template <class _T>\n"
+		  << "const _T\n" 
+		  << "cftal::impl::d_real_constants_dbl<_T>::\n"
+		  << "_2_over_i[MAX_2_OVER_I]= {"
+		  << std::endl;
+	for (std::size_t i=0; i<MAX_2_OVER_I; ++i) {
+		dpf64 two_over_i(2.0);
+		if (i>1) {
+			two_over_i /= double(i);
+		}
+		std::cout << std::scientific
+			  << std::setprecision(22)
+			  << "\t_T( " 
+			  << std::setw(27)
+			  << two_over_i.h()
+			  << std::setw(0)
+			  << ", " ;
+		if (two_over_i.l() >= 0.0)
+			std::cout << ' ';
+		std::cout << std::setw(27)
+			  << two_over_i.l()
+			  << std::setw(0)
+			  << ")";
+		if (i != MAX_2_OVER_I)
+			std::cout << ',';
+		std::cout << std::endl;
+	}
+	std::cout << "};" << std::endl;
+}
+
 
 void testpowi()
 {
@@ -393,6 +418,7 @@ int main(int argc, char** argv)
         // static_cast<void>(t);
         // calc_pi();
 	print_inv_fac();
+	print_2_over_i();
 	// testpowi();
         return 0;
 }

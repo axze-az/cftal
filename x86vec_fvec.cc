@@ -208,9 +208,14 @@ namespace math {
 		static std::pair<vf_type, vf_type>
 		sincos(const vf_type& d);
 		static vf_type tan(const vf_type& d);
+		
 		static vf_type log(const vf_type& d);
+		static vf_type native_log(const vf_type& d);
 		static vf_type exp(const vf_type& d);
 		static vf_type native_exp(const vf_type& d);
+
+
+		static vf_type cosh(const vf_type& d);
 	private:
 		static vdf_type logk(const vf_type& d);
 		static vf_type expk(const vdf_type& d);
@@ -219,7 +224,7 @@ namespace math {
 	public:
 		static vf_type pow(const vf_type& x, const vf_type& y);
 		static vf_type sinh(const vf_type& x);
-		static vf_type cosh(const vf_type& x);
+		// static vf_type cosh(const vf_type& x);
 		static vf_type tanh(const vf_type& x);
 		static vf_type asinh(const vf_type& x);
 		static vf_type acosh(const vf_type& x);
@@ -832,6 +837,41 @@ template <typename _T>
 inline
 typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
+native_log(const vf_type& d)
+{
+	vi_type e = ilogbp1(d * 0.7071);
+	vf_type ef= _T::cvt_i_to_f(e);
+	vf_type m = ldexp(d, -e);
+
+	vf_type x = (m-vf_type(1)) / (m+vf_type(1));
+	vf_type x2 = x * x;
+
+	vf_type t = 0.148197055177935105296783;
+	t = mad(t, x2, 0.153108178020442575739679);
+	t = mad(t, x2, 0.181837339521549679055568);
+	t = mad(t, x2, 0.22222194152736701733275);
+	t = mad(t, x2, 0.285714288030134544449368);
+	t = mad(t, x2, 0.399999999989941956712869);
+	t = mad(t, x2, 0.666666666666685503450651);
+	t = mad(t, x2, 2.0);
+
+	x = mad(x, t, 0.693147180559945286226764 * ef);
+	
+	// if (xisinf(d)) x = INFINITY;
+	const vf_type pinf(_T::pinf());
+	const vf_type ninf(_T::ninf());
+	x = _T::sel(isinf(d), pinf, x);
+	// if (d < 0) x = NAN;
+	x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
+	// if (d == 0) x = -INFINITY;
+	x = _T::sel(d == vf_type(0.0), ninf, x);
+	return x;
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
 exp(const vf_type& d)
 {
 	typedef cftal::d_real<vf_type> dvf_type;
@@ -895,10 +935,11 @@ exp(const vf_type& d)
 	s = mul_pwr2(s, two) + sqr(s);
 	s = mul_pwr2(s, two) + sqr(s);
 	s = mul_pwr2(s, two) + sqr(s);
+	// s = mul_pwr2(s, two) + sqr(s);
 	s += vf_type(1.0);
 
 	vi_type mi= _T::cvt_f_to_i(m);
-	vf_type res(ldexp(s.h(), mi));
+	vf_type res(ldexp(s.h()+s.l(), mi));
 
 	// res = _T::sel(d <= -709.0, 0.0, res);
 	// res = _T::sel(d >= 709.0, _T::pinf(), res);
@@ -945,6 +986,26 @@ native_exp(const vf_type& d)
 	u = _T::sel( d== vf_type(_T::ninf()), vf_type(0), u);
 	u = _T::sel( d== vf_type(_T::pinf()), vf_type(_T::pinf()), u);
 	return u;
+}
+
+template <typename _T>
+inline
+typename math::func<double, math::int32_t, _T>::vf_type
+math::func<double, math::int32_t, _T>::
+cosh(const vf_type& d)
+{
+	// 2 cosh(x) = cosh(2x)
+	// cosh(m * 2^e) = 2^1 * cosh(m * 2^{e/2})
+	//               = 2^2 * cosh(m * 2^{e/4})
+	//               = 2^3 * cosh(m * 2^{e/8})
+	//               = 2^e * cosh(m * 2^{e/e})
+	vi_type e=ilogb(d);
+	vf_type m(ldexp(d, -e));
+	vf_type dexp(exp(m));
+	vf_type rexp(1.0/dexp);
+	vf_type cosh_v(0.5 * (dexp + rexp));
+	vf_type res(ldexp(cosh_v, e));
+	return res;
 }
 
 template <typename _T>
@@ -1352,6 +1413,12 @@ x86vec::v2f64 x86vec::native_exp(arg<v2f64>::type d)
                 native_exp(d);
 }
 
+x86vec::v2f64 x86vec::cosh(arg<v2f64>::type d)
+{
+        return math::func<double, int32_t,
+		impl::vec_func_traits<v2f64, v4s32> >::
+                exp(d);
+}
 
 x86vec::v2f64 x86vec::pow(arg<v2f64>::type x, arg<v2f64>::type y)
 {
