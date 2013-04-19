@@ -879,15 +879,26 @@ exp(const vf_type& d)
 
 	const double k(512.0);
 	const vf_type inv_k(1.0/k);
-
+#if 1
+	dvf_type m2= rint(d * ctbl::r_m_ln2);
+#else
 	dvf_type m2= rint(d / ctbl::m_ln2);
+#endif
+#if 0
+	dvf_type r= d - ctbl::m_ln2.h() * m2;
+	r = r - ctbl::m_ln2.l() * m2;
+	r = r - ctbl::m_ln2_low.h() * m2;
+	r = r - ctbl::m_ln2_low.l() * m2;
+	r = mul_pwr2(r, inv_k);
+#else
 	dvf_type r= mul_pwr2(d - ctbl::m_ln2*m2, inv_k);
-	vf_type m=m2.h();
+#endif
+	vf_type m=m2.h() + m2.l();
 
 	dvf_type  s, t, p;
 	p = sqr(r);
 
-	s = r + p * vf_type(0.5);
+	s = r + mul_pwr2(p, vf_type(0.5));
 	p*= r;
 	t = p * ctbl::inv_fac[3];
 
@@ -920,6 +931,19 @@ exp(const vf_type& d)
 	s += t;
 	p *= r;
 	t = p * ctbl::inv_fac[10];
+
+	s += t;
+	p *= r;
+	t = p * ctbl::inv_fac[11];
+
+	s += t;
+	p *= r;
+	t = p * ctbl::inv_fac[12];
+
+	s += t;
+	p *= r;
+	t = p * ctbl::inv_fac[13];
+
 #endif
 	s += t;
 	// scale back
@@ -935,7 +959,6 @@ exp(const vf_type& d)
 	s = mul_pwr2(s, two) + sqr(s);
 	s = mul_pwr2(s, two) + sqr(s);
 	s = mul_pwr2(s, two) + sqr(s);
-	// s = mul_pwr2(s, two) + sqr(s);
 	s += vf_type(1.0);
 
 	vi_type mi= _T::cvt_f_to_i(m);
