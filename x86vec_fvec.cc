@@ -961,10 +961,12 @@ exp(const vf_type& d)
 	s = mul_pwr2(s, two) + sqr(s);
 	s = mul_pwr2(s, two) + sqr(s);
 	s = mul_pwr2(s, two) + sqr(s);
+
 	s = mul_pwr2(s, two) + sqr(s);
 	s = mul_pwr2(s, two) + sqr(s);
 	s = mul_pwr2(s, two) + sqr(s);
 	s = mul_pwr2(s, two) + sqr(s);
+
 	s += vf_type(1.0);
 
 	vi_type mi= _T::cvt_f_to_i(m);

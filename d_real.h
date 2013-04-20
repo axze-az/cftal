@@ -910,7 +910,7 @@ cftal::floor(const d_real<_T>& a)
 	typename d_real_traits<_T>::cmp_result_type r=
 		hi == a.h();
 	_T lo_hi_int = floor(a.l());
-	_T hi_hi_int = quick_two_sum(hi, lo_hi_int, lo_hi_int);
+	_T hi_hi_int = d_real_impl::quick_two_sum(hi, lo_hi_int, lo_hi_int);
 
 	_T hi_res = d_real_traits<_T>::sel(
 		r, hi_hi_int, hi);
@@ -929,7 +929,7 @@ cftal::ceil(const d_real<_T>& a)
 	typename d_real_traits<_T>::cmp_result_type r=
 		hi == a.h();
 	_T lo_hi_int = ceil(a.l());
-	_T hi_hi_int = quick_two_sum(hi, lo_hi_int, lo_hi_int);
+	_T hi_hi_int = d_real_impl::quick_two_sum(hi, lo_hi_int, lo_hi_int);
 
 	_T hi_res = d_real_traits<_T>::sel(
 		r, hi_hi_int, hi);
