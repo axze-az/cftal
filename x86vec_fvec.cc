@@ -804,30 +804,38 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 log(const vf_type& d)
 {
-#if 0
-	vf_type x0 = native_log(d);   /* Initial approximation */
-	vf_type x1 = x0 + d * exp(-x0) - 1.0;
-	return x1;
-#else
-	vi_type e = ilogbp1(d * 0.7071);
+	using dvf_type = cftal::d_real<vf_type>;
+	using ctbl=cftal::impl::d_real_constants_dbl<dvf_type>;
+
+	vi_type e = ilogbp1(d*M_SQRT1_2);
 	vf_type ef= _T::cvt_i_to_f(e);
 	vf_type m = ldexp(d, -e);
 
-	vf_type x = (m-vf_type(1)) / (m+vf_type(1));
-	vf_type x2 = x * x;
+	dvf_type xm= cftal::d_real_impl::sub(m, vf_type(1.0));
+	dvf_type xp= cftal::d_real_impl::add(m, vf_type(1.0));
+	dvf_type xr= xm / xp;
+	dvf_type x2 = sqr(xr);
 
-	vf_type t = 0.148197055177935105296783;
-	t = mad(t, x2, 0.153108178020442575739679);
-	t = mad(t, x2, 0.181837339521549679055568);
-	t = mad(t, x2, 0.22222194152736701733275);
-	t = mad(t, x2, 0.285714288030134544449368);
-	t = mad(t, x2, 0.399999999989941956712869);
-	t = mad(t, x2, 0.666666666666685503450651);
-	t = mad(t, x2, 2.0);
+	dvf_type t= ctbl::_2_over_i[23];
+	// t = t * x2 + ctbl::_2_over_i[21];
+	// t = t * x2 + ctbl::_2_over_i[19];
+	// t = t * x2 + ctbl::_2_over_i[17];
+	// t = t * x2 + ctbl::_2_over_i[15];
+	// t = t * x2 + ctbl::_2_over_i[13];
+	// t = t * x2 + ctbl::_2_over_i[11];
+	// t = t * x2 + ctbl::_2_over_i[9];
+	// t = t * x2 + ctbl::_2_over_i[7];
+	// t = t * x2 + ctbl::_2_over_i[5];
+	// t = t * x2 + ctbl::_2_over_i[3];
+	for (int i=21; i>2; i-=2)
+		t = t * x2 + ctbl::_2_over_i[i];
+	t = t * x2 + vf_type(2.0);
+	t = t * xr;
 
-	x = mad(x, t, 0.693147180559945286226764 * ef);
-	
+	xr = t + ctbl::m_ln2 * ef;
+
 	// if (xisinf(d)) x = INFINITY;
+	vf_type x= xr.h() + xr.l();
 	const vf_type pinf(_T::pinf());
 	const vf_type ninf(_T::ninf());
 	x = _T::sel(isinf(d), pinf, x);
@@ -836,7 +844,6 @@ log(const vf_type& d)
 	// if (d == 0) x = -INFINITY;
 	x = _T::sel(d == vf_type(0.0), ninf, x);
 	return x;
-#endif
 }
 
 template <typename _T>
@@ -892,6 +899,7 @@ exp(const vf_type& d)
 	vf_type m=m2.h() /* + m2.l() */;
 
 	dvf_type s = ctbl::inv_fac[9];
+	// s = s * r + ctbl::inv_fac[8];
 	// s = s * r + ctbl::inv_fac[7];
 	// s = s * r + ctbl::inv_fac[6];
 	// s = s * r + ctbl::inv_fac[5];
