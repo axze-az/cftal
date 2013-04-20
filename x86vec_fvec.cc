@@ -884,91 +884,32 @@ exp(const vf_type& d)
 	typedef cftal::impl::d_real_constants_dbl<dvf_type> ctbl;
 
 	const double k(512.0);
+	const double k_i(9);
 	const vf_type inv_k(1.0/k);
-#if 1
+
 	dvf_type m2= rint(d * ctbl::r_m_ln2);
-#else
-	dvf_type m2= rint(d / ctbl::m_ln2);
-#endif
-#if 0
-	dvf_type r= d - ctbl::m_ln2.h() * m2;
-	r = r - ctbl::m_ln2.l() * m2;
-	r = r - ctbl::m_ln2_low.h() * m2;
-	r = r - ctbl::m_ln2_low.l() * m2;
-	r = mul_pwr2(r, inv_k);
-#else
 	dvf_type r= mul_pwr2(d - ctbl::m_ln2*m2, inv_k);
-#endif
 	vf_type m=m2.h() /* + m2.l() */;
 
-	dvf_type  s, t, p;
-	p = sqr(r);
+	dvf_type s = ctbl::inv_fac[9];
+	// s = s * r + ctbl::inv_fac[7];
+	// s = s * r + ctbl::inv_fac[6];
+	// s = s * r + ctbl::inv_fac[5];
+	// s = s * r + ctbl::inv_fac[4];
+	// s = s * r + ctbl::inv_fac[3];
+	for (unsigned int i=8; i!=2; --i)
+		s = s*r + ctbl::inv_fac[i];
+	s = s * r + vf_type(0.5);
+	s = s * r + vf_type(1.0);
+	s = s * r;
 
-	s = r + mul_pwr2(p, vf_type(0.5));
-	p*= r;
-	t = p * ctbl::inv_fac[3];
-
-	// taylor expansions:
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[4];
-
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[5];
-
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[6];
-
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[7];
-
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[8];
-
-#if 0
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[9];
-
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[10];
-
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[11];
-
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[12];
-
-	s += t;
-	p *= r;
-	t = p * ctbl::inv_fac[13];
-
-#endif
-	s += t;
-	// scale back
-
+	// scale back the 1/k reduced value 
 	const vf_type two(2.0);
-
-	s = mul_pwr2(s, two) + sqr(s);
-	s = mul_pwr2(s, two) + sqr(s);
-	s = mul_pwr2(s, two) + sqr(s);
-	s = mul_pwr2(s, two) + sqr(s);
-	s = mul_pwr2(s, two) + sqr(s);
-
-	s = mul_pwr2(s, two) + sqr(s);
-	s = mul_pwr2(s, two) + sqr(s);
-	s = mul_pwr2(s, two) + sqr(s);
-	s = mul_pwr2(s, two) + sqr(s);
-
+	for (int i=0; i<k_i; ++i)
+		s = mul_pwr2(s, two) + sqr(s);
 	s += vf_type(1.0);
 
+	// scale back 
 	vi_type mi= _T::cvt_f_to_i(m);
 	vf_type res(ldexp(s.h()+s.l(), mi));
 
