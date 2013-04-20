@@ -804,6 +804,11 @@ typename math::func<double, math::int32_t, _T>::vf_type
 math::func<double, math::int32_t, _T>::
 log(const vf_type& d)
 {
+#if 0
+	vf_type x0 = native_log(d);   /* Initial approximation */
+	vf_type x1 = x0 + d * exp(-x0) - 1.0;
+	return x1;
+#else
 	vi_type e = ilogbp1(d * 0.7071);
 	vf_type ef= _T::cvt_i_to_f(e);
 	vf_type m = ldexp(d, -e);
@@ -831,6 +836,7 @@ log(const vf_type& d)
 	// if (d == 0) x = -INFINITY;
 	x = _T::sel(d == vf_type(0.0), ninf, x);
 	return x;
+#endif
 }
 
 template <typename _T>
@@ -893,7 +899,7 @@ exp(const vf_type& d)
 #else
 	dvf_type r= mul_pwr2(d - ctbl::m_ln2*m2, inv_k);
 #endif
-	vf_type m=m2.h() + m2.l();
+	vf_type m=m2.h() /* + m2.l() */;
 
 	dvf_type  s, t, p;
 	p = sqr(r);
