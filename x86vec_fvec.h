@@ -407,38 +407,6 @@ namespace x86vec {
 #endif
 }
 
-namespace cftal {
-
-        template <>
-        struct d_real_traits<x86vec::v2f64> : public has_fma<double> {
-                constexpr d_real_traits<x86vec::v2f64>() = default;
-                // result of a comparison operator
-                typedef x86vec::v2f64 cmp_result_type;
-                static bool any(const cmp_result_type& b) {
-                        return !no_signs(b);
-                }
-
-                static x86vec::v2f64 sel(const cmp_result_type& s,
-                                         const x86vec::v2f64& on_true,
-                                         const x86vec::v2f64& on_false) {
-                        return select(s, on_true, on_false);
-                }
-
-		static 
-		void split(const x86vec::v2f64& a, 
-			   x86vec::v2f64& h, 
-			   x86vec::v2f64& l) {
-			const x86vec::v2f64 msk= 
-				x86vec::const4_u32<0xf8000000U, 
-						   0xffffffffU,
-						   0xf8000000U, 
-						   0xffffffffU>::dv();
-			h = a & msk;
-			l = a - h;
-		}
-        };
-
-}
 
 template <unsigned _N, typename _T>
 _T x86vec::impl::polevl(_T x, const _T* coef)

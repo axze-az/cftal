@@ -1,9 +1,78 @@
-#include "x86vec_fvec.h"
-#include "x86vec_cvt.h"
+#include "x86vec_traits.h"
 #include "math_funcs.h"
 #include "d_real.h"
 #include <cmath>
 #include <limits>
+
+x86vec::v2f64
+x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)
+{
+        const v2s64 hi_cor=const4_u32<0x4000000, 0,
+				      0x4000000, 0>::iv();
+        const v2s64 hi_msk=const4_u32<0xf8000000, 0xffffffff,
+				      0xf8000000, 0xffffffff>::iv();
+        v2s64 t;
+        t= as<v2s64>(x);
+        t += hi_cor;
+        t &= hi_msk;
+        v2f64 xh(as<v2f64>(t));
+        v2f64 xl(x- xh);
+        t = as<v2s64>(y);
+        t += hi_cor;
+        t &= hi_msk;
+        v2f64 yh(as<v2f64>(t));
+        v2f64 yl(y -yh);
+
+        v2f64 h= x*y;
+        v2f64 l= xh * yh - h + xl * yh + xh * yl + xl * yl;
+
+        v2f64 h2 = h + z;
+        v2f64 v = h2 - h;
+        v2f64 l2 = (h - (h2 - v)) + (z - v) + l;
+        return h2 + l2;
+}
+
+x86vec::v2f64 x86vec::pow2i(arg<v4s32>::type e)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::pow2i(e);
+}
+
+x86vec::v2f64 x86vec::ldexp(arg<v2f64>::type d, arg<v4s32>::type q)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::ldexp(d, q);
+}
+
+x86vec::v4s32 x86vec::ilogbp1(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::ilogb(d);
+}
+
+x86vec::v4s32 x86vec::ilogb(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::ilogb(d);
+}
+
+x86vec::v2f64 x86vec::log(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::log(d);
+}
+
+x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::exp(d);
+}
 
 #define PI4_A 0.78539816290140151978
 #define PI4_B 4.9604678871439933374e-10
@@ -209,9 +278,7 @@ namespace math {
 		sincos(const vf_type& d);
 		static vf_type tan(const vf_type& d);
 		
-		static vf_type log(const vf_type& d);
 		static vf_type native_log(const vf_type& d);
-		static vf_type exp(const vf_type& d);
 		static vf_type native_exp(const vf_type& d);
 
 
@@ -798,53 +865,6 @@ tan(const vf_type& cd)
 	return u;
 }
 
-template <typename _T>
-inline
-typename math::func<double, math::int32_t, _T>::vf_type
-math::func<double, math::int32_t, _T>::
-log(const vf_type& d)
-{
-	using dvf_type = cftal::d_real<vf_type>;
-	using ctbl=cftal::impl::d_real_constants_dbl<dvf_type>;
-
-	vi_type e = ilogbp1(d*M_SQRT1_2);
-	vf_type ef= _T::cvt_i_to_f(e);
-	vf_type m = ldexp(d, -e);
-
-	dvf_type xm= cftal::d_real_impl::sub(m, vf_type(1.0));
-	dvf_type xp= cftal::d_real_impl::add(m, vf_type(1.0));
-	dvf_type xr= xm / xp;
-	dvf_type x2 = sqr(xr);
-
-	dvf_type t= ctbl::_2_over_i[23];
-	// t = t * x2 + ctbl::_2_over_i[21];
-	// t = t * x2 + ctbl::_2_over_i[19];
-	// t = t * x2 + ctbl::_2_over_i[17];
-	// t = t * x2 + ctbl::_2_over_i[15];
-	// t = t * x2 + ctbl::_2_over_i[13];
-	// t = t * x2 + ctbl::_2_over_i[11];
-	// t = t * x2 + ctbl::_2_over_i[9];
-	// t = t * x2 + ctbl::_2_over_i[7];
-	// t = t * x2 + ctbl::_2_over_i[5];
-	// t = t * x2 + ctbl::_2_over_i[3];
-	for (int i=21; i>2; i-=2)
-		t = t * x2 + ctbl::_2_over_i[i];
-	t = t * x2 + vf_type(2.0);
-	t = t * xr;
-
-	xr = t + ctbl::m_ln2 * ef;
-
-	// if (xisinf(d)) x = INFINITY;
-	vf_type x= xr.h() + xr.l();
-	const vf_type pinf(_T::pinf());
-	const vf_type ninf(_T::ninf());
-	x = _T::sel(isinf(d), pinf, x);
-	// if (d < 0) x = NAN;
-	x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
-	// if (d == 0) x = -INFINITY;
-	x = _T::sel(d == vf_type(0.0), ninf, x);
-	return x;
-}
 
 template <typename _T>
 inline
@@ -879,56 +899,6 @@ native_log(const vf_type& d)
 	// if (d == 0) x = -INFINITY;
 	x = _T::sel(d == vf_type(0.0), ninf, x);
 	return x;
-}
-
-template <typename _T>
-inline
-typename math::func<double, math::int32_t, _T>::vf_type
-math::func<double, math::int32_t, _T>::
-exp(const vf_type& d)
-{
-	typedef cftal::d_real<vf_type> dvf_type;
-	typedef cftal::impl::d_real_constants_dbl<dvf_type> ctbl;
-
-	const double k(512.0);
-	const double k_i(9);
-	const vf_type inv_k(1.0/k);
-
-	dvf_type m2= rint(d * ctbl::r_m_ln2);
-	dvf_type r= mul_pwr2(d - ctbl::m_ln2*m2, inv_k);
-	vf_type m=m2.h() /* + m2.l() */;
-
-	dvf_type s = ctbl::inv_fac[9];
-	// s = s * r + ctbl::inv_fac[8];
-	// s = s * r + ctbl::inv_fac[7];
-	// s = s * r + ctbl::inv_fac[6];
-	// s = s * r + ctbl::inv_fac[5];
-	// s = s * r + ctbl::inv_fac[4];
-	// s = s * r + ctbl::inv_fac[3];
-	for (unsigned int i=8; i!=2; --i)
-		s = s*r + ctbl::inv_fac[i];
-	s = s * r + vf_type(0.5);
-	s = s * r + vf_type(1.0);
-	s = s * r;
-
-	// scale back the 1/k reduced value 
-	const vf_type two(2.0);
-	for (int i=0; i<k_i; ++i)
-		s = mul_pwr2(s, two) + sqr(s);
-	s += vf_type(1.0);
-
-	// scale back 
-	vi_type mi= _T::cvt_f_to_i(m);
-	vf_type res(ldexp(s.h()+s.l(), mi));
-
-	// res = _T::sel(d <= -709.0, 0.0, res);
-	// res = _T::sel(d >= 709.0, _T::pinf(), res);
-	res = _T::sel(d == 0.0, 1.0, res);
-	res = _T::sel(d == 1.0, M_E, res);
-	res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
-	res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
-
-	return res;
 }
 
 template <typename _T>
@@ -1291,29 +1261,6 @@ namespace x86vec {
         }
 }
 
-x86vec::v2f64 x86vec::pow2i(arg<v4s32>::type e)
-{
-        return math::func<double, int32_t,
-		impl::vec_func_traits<v2f64, v4s32> >::pow2i(e);
-}
-
-x86vec::v2f64 x86vec::ldexp(arg<v2f64>::type d, arg<v4s32>::type q)
-{
-        return math::func<double, int32_t,
-		impl::vec_func_traits<v2f64, v4s32> >::ldexp(d, q);
-}
-
-x86vec::v4s32 x86vec::ilogbp1(arg<v2f64>::type d)
-{
-        return math::func<double, int32_t,
-		impl::vec_func_traits<v2f64, v4s32> >::ilogbp1(d);
-}
-
-x86vec::v4s32 x86vec::ilogb(arg<v2f64>::type d)
-{
-        return math::func<double, int32_t,
-		impl::vec_func_traits<v2f64, v4s32> >::ilogb(d);
-}
 
 x86vec::v2f64 x86vec::atan2(arg<v2f64>::type x, arg<v2f64>::type y)
 {
@@ -1372,19 +1319,6 @@ x86vec::v2f64 x86vec::tan(arg<v2f64>::type d)
                 tan(d);
 }
 
-x86vec::v2f64 x86vec::log(arg<v2f64>::type d)
-{
-        return math::func<double, int32_t,
-		impl::vec_func_traits<v2f64, v4s32> >::
-                log(d);
-}
-
-x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
-{
-        return math::func<double, int32_t,
-		impl::vec_func_traits<v2f64, v4s32> >::
-                exp(d);
-}
 
 x86vec::v2f64 x86vec::native_exp(arg<v2f64>::type d)
 {
@@ -1395,9 +1329,7 @@ x86vec::v2f64 x86vec::native_exp(arg<v2f64>::type d)
 
 x86vec::v2f64 x86vec::cosh(arg<v2f64>::type d)
 {
-        return math::func<double, int32_t,
-		impl::vec_func_traits<v2f64, v4s32> >::
-                exp(d);
+	return 0.5*( exp(d) + exp(-d));
 }
 
 x86vec::v2f64 x86vec::pow(arg<v2f64>::type x, arg<v2f64>::type y)
@@ -1408,33 +1340,6 @@ x86vec::v2f64 x86vec::pow(arg<v2f64>::type x, arg<v2f64>::type y)
 }
 
 
-x86vec::v2f64
-x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)
-{
-        const v2s64 hi_cor=const4_u32<0x4000000, 0,
-                0x4000000, 0>::iv();
-        const v2s64 hi_msk=const4_u32<0xf8000000, 0xffffffff,
-                0xf8000000, 0xffffffff>::iv();
-        v2s64 t;
-        t= as<v2s64>(x);
-        t += hi_cor;
-        t &= hi_msk;
-        v2f64 xh(as<v2f64>(t));
-        v2f64 xl(x- xh);
-        t = as<v2s64>(y);
-        t += hi_cor;
-        t &= hi_msk;
-        v2f64 yh(as<v2f64>(t));
-        v2f64 yl(y -yh);
-
-        v2f64 h= x*y;
-        v2f64 l= xh * yh - h + xl * yh + xh * yl + xl * yl;
-
-        v2f64 h2 = h + z;
-        v2f64 v = h2 - h;
-        v2f64 l2 = (h - (h2 - v)) + (z - v) + l;
-        return h2 + l2;
-}
 
 
 x86vec::v2f64 test_f(x86vec::v2f64 f)
