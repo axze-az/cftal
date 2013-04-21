@@ -27,8 +27,16 @@ namespace cftal {
                                 // M_LN2 LOG_E(2)
                                 static const _T m_ln2;
                                 static const _T m_ln2_low;
-                                // R_M_LN2 1/LOG_E(2)
-                                static const _T r_m_ln2;
+                                // M_1_LN2 1/LOG_E(2)
+                                static const _T m_1_ln2;
+                                // PI
+                                static const _T m_pi;
+                                // 1/PI
+                                static const _T m_1_pi;
+                                // PI/4
+                                static const _T m_pi_4;
+                                // 4/PI
+                                static const _T m_4_pi;
                         };
 
                 }
@@ -42,106 +50,106 @@ namespace cftal {
 
                 template <>
                 struct func_traits<double, int32_t> : public d_real_traits<double> {
-			typedef double vf_type;
-			typedef int32_t vi_type;
-			typedef bool vmf_type;
-			typedef bool vmi_type;
+                        typedef double vf_type;
+                        typedef int32_t vi_type;
+                        typedef bool vmf_type;
+                        typedef bool vmi_type;
 
-			typedef union {
-				double _d;
-				uint64_t _u;
-			} ud_t;
+                        typedef union {
+                                double _d;
+                                uint64_t _u;
+                        } ud_t;
 
-			static constexpr int32_t bias = 0x3ff;
-			static constexpr int32_t e_max= 0x3ff;
-			static constexpr int32_t e_min= -1022;
-			static constexpr int32_t bits=52;
+                        static constexpr int32_t bias = 0x3ff;
+                        static constexpr int32_t e_max= 0x3ff;
+                        static constexpr int32_t e_min= -1022;
+                        static constexpr int32_t bits=52;
 
-			static constexpr double pinf() {
-				return std::numeric_limits<double>::infinity();
-			}
-			static constexpr double ninf() {
-				return -std::numeric_limits<double>::infinity();
-			}
-			static constexpr double nan() {
-				return std::numeric_limits<double>::quiet_NaN();
-			}
-			static
-			vmf_type vmi_to_vmf(const vmi_type& mi) {
-				return mi;
-			}
-			static
-			vmi_type vmf_to_vmi(const vmf_type& mf) {
-				return mf;
-			}
-			static
-			vi_type sel(const vmi_type& msk,
-				    const vi_type& t, const vi_type& f) {
-				return msk ? t : f;
-			}
-			static
-			vf_type sel(const vmf_type& msk,
-				    const vf_type& t, const vf_type& f) {
-				return msk ? t : f;
-			}
-			static
-			vf_type insert_exp(const vi_type& e) {
-				ud_t t;
-				t._u = uint64_t(e) << bits;
-				return t._d;
-			}
-			static
-			vi_type extract_exp(const vf_type& d) {
-				ud_t t;
-				t._d = d;
-				return (t._u >> bits) & 0x7FF;
-			}
-			static
-			vf_type cvt_i_to_f(const vi_type& i) {
-				return vf_type(i);
-			}
-			// including rounding to nearest.
-			static
-			vi_type cvt_f_to_i(const vf_type& f) {
-				return f < 0 ? (vi_type)(f - 0.5) : (vi_type)(f + 0.5);
-			}
-			// including rounding towards zero
-			static
-			vi_type cvt_rz_f_to_i(const vf_type& f) {
-				return (vi_type)f;
-			}
-		};
+                        static constexpr double pinf() {
+                                return std::numeric_limits<double>::infinity();
+                        }
+                        static constexpr double ninf() {
+                                return -std::numeric_limits<double>::infinity();
+                        }
+                        static constexpr double nan() {
+                                return std::numeric_limits<double>::quiet_NaN();
+                        }
+                        static
+                        vmf_type vmi_to_vmf(const vmi_type& mi) {
+                                return mi;
+                        }
+                        static
+                        vmi_type vmf_to_vmi(const vmf_type& mf) {
+                                return mf;
+                        }
+                        static
+                        vi_type sel(const vmi_type& msk,
+                                    const vi_type& t, const vi_type& f) {
+                                return msk ? t : f;
+                        }
+                        static
+                        vf_type sel(const vmf_type& msk,
+                                    const vf_type& t, const vf_type& f) {
+                                return msk ? t : f;
+                        }
+                        static
+                        vf_type insert_exp(const vi_type& e) {
+                                ud_t t;
+                                t._u = uint64_t(e) << bits;
+                                return t._d;
+                        }
+                        static
+                        vi_type extract_exp(const vf_type& d) {
+                                ud_t t;
+                                t._d = d;
+                                return (t._u >> bits) & 0x7FF;
+                        }
+                        static
+                        vf_type cvt_i_to_f(const vi_type& i) {
+                                return vf_type(i);
+                        }
+                        // including rounding to nearest.
+                        static
+                        vi_type cvt_f_to_i(const vf_type& f) {
+                                return f < 0 ? (vi_type)(f - 0.5) : (vi_type)(f + 0.5);
+                        }
+                        // including rounding towards zero
+                        static
+                        vi_type cvt_rz_f_to_i(const vf_type& f) {
+                                return (vi_type)f;
+                        }
+                };
 
-		template <typename _T>
-		class func<double, int32_t, _T> {
-			typedef typename _T::vf_type vf_type;
-			typedef typename _T::vi_type vi_type;
-			typedef typename _T::vmf_type vmf_type;
-			typedef typename _T::vmi_type vmi_type;
+                template <typename _T>
+                class func<double, int32_t, _T> {
+                        typedef typename _T::vf_type vf_type;
+                        typedef typename _T::vi_type vi_type;
+                        typedef typename _T::vmf_type vmf_type;
+                        typedef typename _T::vmi_type vmi_type;
 
-			typedef d_real<vf_type> dvf_type;
+                        typedef d_real<vf_type> dvf_type;
 
-			static dvf_type exp_k(const dvf_type& dvf);
-			static dvf_type log_k(const dvf_type& dvf);
+                        static dvf_type exp_k(const dvf_type& dvf);
+                        static dvf_type log_k(const dvf_type& dvf);
 
-		public:
-			static vf_type pow2i(const vi_type& vi);
-			static vf_type ldexp(const vf_type& vf, const vi_type& vi);
+                public:
+                        static vf_type pow2i(const vi_type& vi);
+                        static vf_type ldexp(const vf_type& vf, const vi_type& vi);
 
-			static vi_type ilogbp1(const vf_type& vi);
-			static vi_type ilogb(const vf_type& vf);
+                        static vi_type ilogbp1(const vf_type& vi);
+                        static vi_type ilogb(const vf_type& vf);
 
-			static vf_type exp(const vf_type& vf);
-			static vf_type log(const vf_type& vf);
-		
-		};
+                        static vf_type exp(const vf_type& vf);
+                        static vf_type log(const vf_type& vf);
+
+                };
 
         }
 }
 
 template <typename _T>
 inline
-typename 
+typename
 cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::pow2i(const vi_type& vi)
 {
@@ -154,7 +162,7 @@ cftal::math::func<double, cftal::int32_t, _T>::pow2i(const vi_type& vi)
         r= _T::sel(mf, vf_type(0.0), r);
         mi= (vi > vi_type(_T::e_max));
         mf= _T::vmi_to_vmf(mi);
-	vf_type inf(_T::pinf());
+        vf_type inf(_T::pinf());
         r= _T::sel(mf, vf_type(inf), r);
         return r;
 }
@@ -163,7 +171,7 @@ template <typename _T>
 inline
 typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::ldexp(const vf_type& vd,
-                                             const vi_type& ve)
+						     const vi_type& ve)
 {
         vi_type q= ve;
         vi_type m = q >> 31;
@@ -208,37 +216,37 @@ inline
 typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
 cftal::math::func<double, cftal::int32_t, _T>::log_k(const dvf_type& d)
 {
-	using ctbl=impl::d_real_constants<dvf_type, double>;
+        using ctbl=impl::d_real_constants<dvf_type, double>;
 
-	dvf_type sc(d* vf_type(M_SQRT1_2));
+        dvf_type sc(d* vf_type(M_SQRT1_2));
 
-	vi_type e = ilogbp1(sc.h() + sc.l());
-	vf_type ef= _T::cvt_i_to_f(e);
-	dvf_type m(ldexp(d.h(), -e), ldexp(d.l(), -e));
+        vi_type e = ilogbp1(sc.h() + sc.l());
+        vf_type ef= _T::cvt_i_to_f(e);
+        dvf_type m(ldexp(d.h(), -e), ldexp(d.l(), -e));
 
-	dvf_type xm= m - vf_type(1.0);
-	dvf_type xp= m + vf_type(1.0);
-	dvf_type xr= xm / xp;
-	dvf_type x2 = sqr(xr);
+        dvf_type xm= m - vf_type(1.0);
+        dvf_type xp= m + vf_type(1.0);
+        dvf_type xr= xm / xp;
+        dvf_type x2 = sqr(xr);
 
-	dvf_type t= ctbl::_2_over_i[23];
-	// t = t * x2 + ctbl::_2_over_i[21];
-	// t = t * x2 + ctbl::_2_over_i[19];
-	// t = t * x2 + ctbl::_2_over_i[17];
-	// t = t * x2 + ctbl::_2_over_i[15];
-	// t = t * x2 + ctbl::_2_over_i[13];
-	// t = t * x2 + ctbl::_2_over_i[11];
-	// t = t * x2 + ctbl::_2_over_i[9];
-	// t = t * x2 + ctbl::_2_over_i[7];
-	// t = t * x2 + ctbl::_2_over_i[5];
-	// t = t * x2 + ctbl::_2_over_i[3];
-	for (int i=21; i>2; i-=2)
-		t = t * x2 + ctbl::_2_over_i[i];
-	t = t * x2 + vf_type(2.0);
-	t = t * xr;
+        dvf_type t= ctbl::_2_over_i[23];
+        // t = t * x2 + ctbl::_2_over_i[21];
+        // t = t * x2 + ctbl::_2_over_i[19];
+        // t = t * x2 + ctbl::_2_over_i[17];
+        // t = t * x2 + ctbl::_2_over_i[15];
+        // t = t * x2 + ctbl::_2_over_i[13];
+        // t = t * x2 + ctbl::_2_over_i[11];
+        // t = t * x2 + ctbl::_2_over_i[9];
+        // t = t * x2 + ctbl::_2_over_i[7];
+        // t = t * x2 + ctbl::_2_over_i[5];
+        // t = t * x2 + ctbl::_2_over_i[3];
+        for (int i=21; i>2; i-=2)
+                t = t * x2 + ctbl::_2_over_i[i];
+        t = t * x2 + vf_type(2.0);
+        t = t * xr;
 
-	xr = t + ctbl::m_ln2 * ef;
-	return xr;
+        xr = t + ctbl::m_ln2 * ef;
+        return xr;
 }
 
 template <typename _T>
@@ -246,39 +254,39 @@ inline
 typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
 cftal::math::func<double, cftal::int32_t, _T>::exp_k(const dvf_type& d)
 {
-	using ctbl = impl::d_real_constants<dvf_type, double>;
+        using ctbl = impl::d_real_constants<dvf_type, double>;
 
-	const double k(512.0);
-	const double k_i(9);
-	const vf_type inv_k(1.0/k);
+        const double k(512.0);
+        const double k_i(9);
+        const vf_type inv_k(1.0/k);
 
-	dvf_type m2= rint(d * ctbl::r_m_ln2);
-	dvf_type r= mul_pwr2(d - ctbl::m_ln2*m2, inv_k);
-	vf_type m=m2.h() /* + m2.l() */;
+        dvf_type m2= rint(d * ctbl::m_1_ln2);
+        dvf_type r= mul_pwr2(d - ctbl::m_ln2*m2, inv_k);
+        vf_type m=m2.h() /* + m2.l() */;
 
-	dvf_type s = ctbl::inv_fac[9];
-	// s = s * r + ctbl::inv_fac[8];
-	// s = s * r + ctbl::inv_fac[7];
-	// s = s * r + ctbl::inv_fac[6];
-	// s = s * r + ctbl::inv_fac[5];
-	// s = s * r + ctbl::inv_fac[4];
-	// s = s * r + ctbl::inv_fac[3];
-	for (unsigned int i=8; i!=2; --i)
-		s = s*r + ctbl::inv_fac[i];
-	s = s * r + vf_type(0.5);
-	s = s * r + vf_type(1.0);
-	s = s * r;
+        dvf_type s = ctbl::inv_fac[9];
+        // s = s * r + ctbl::inv_fac[8];
+        // s = s * r + ctbl::inv_fac[7];
+        // s = s * r + ctbl::inv_fac[6];
+        // s = s * r + ctbl::inv_fac[5];
+        // s = s * r + ctbl::inv_fac[4];
+        // s = s * r + ctbl::inv_fac[3];
+        for (unsigned int i=8; i!=2; --i)
+                s = s*r + ctbl::inv_fac[i];
+        s = s * r + vf_type(0.5);
+        s = s * r + vf_type(1.0);
+        s = s * r;
 
-	// scale back the 1/k reduced value 
-	const vf_type two(2.0);
-	for (int i=0; i<k_i; ++i)
-		s = mul_pwr2(s, two) + sqr(s);
-	s += vf_type(1.0);
+        // scale back the 1/k reduced value
+        const vf_type two(2.0);
+        for (int i=0; i<k_i; ++i)
+                s = mul_pwr2(s, two) + sqr(s);
+        s += vf_type(1.0);
 
-	// scale back 
-	vi_type mi= _T::cvt_f_to_i(m);
-	dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
-	return res;
+        // scale back
+        vi_type mi= _T::cvt_f_to_i(m);
+        dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
+        return res;
 }
 
 
@@ -287,17 +295,17 @@ inline
 typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::log(const vf_type& d)
 {
-	dvf_type xr(log_k(d));
-	// if (xisinf(d)) x = INFINITY;
-	vf_type x= xr.h() + xr.l();
-	const vf_type pinf(_T::pinf());
-	const vf_type ninf(_T::ninf());
-	x = _T::sel(isinf(d), pinf, x);
-	// if (d < 0) x = NAN;
-	x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
-	// if (d == 0) x = -INFINITY;
-	x = _T::sel(d == vf_type(0.0), ninf, x);
-	return x;
+        dvf_type xr(log_k(d));
+        // if (xisinf(d)) x = INFINITY;
+        vf_type x= xr.h() + xr.l();
+        const vf_type pinf(_T::pinf());
+        const vf_type ninf(_T::ninf());
+        x = _T::sel(isinf(d), pinf, x);
+        // if (d < 0) x = NAN;
+        x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
+        // if (d == 0) x = -INFINITY;
+        x = _T::sel(d == vf_type(0.0), ninf, x);
+        return x;
 }
 
 template <typename _T>
@@ -305,13 +313,13 @@ inline
 typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::exp(const vf_type& d)
 {
-	dvf_type xr(exp_k(d));
-	vf_type res(xr.h() + xr.l());
-	res = _T::sel(d == 0.0, 1.0, res);
-	res = _T::sel(d == 1.0, M_E, res);
-	res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
-	res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
-	return res;
+        dvf_type xr(exp_k(d));
+        vf_type res(xr.h() + xr.l());
+        res = _T::sel(d == 0.0, 1.0, res);
+        res = _T::sel(d == 1.0, M_E, res);
+        res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
+        res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
+        return res;
 }
 
 
@@ -323,14 +331,32 @@ cftal::math::impl::d_real_constants<_T, double>::m_ln2(
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2_low(
-        5.707708438416212066e-34,
-        -3.582432210601811423e-50
-	);
+        5.707708438416212066e-34, -3.582432210601811423e-50);
 
 template <class _T>
 const _T
-cftal::math::impl::d_real_constants<_T, double>::r_m_ln2(
+cftal::math::impl::d_real_constants<_T, double>::m_1_ln2(
         _T(1.0) / _T( 6.931471805599452862e-01, 2.319046813846299558e-17));
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_pi(
+        3.141592653589793116e+00, 1.224646799147353207e-16);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_1_pi(
+        _T(1.0) / _T(3.141592653589793116e+00, 1.224646799147353207e-16));
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_pi_4(
+        7.853981633974482790e-01, 3.061616997868383018e-17);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_4_pi(
+        _T(1.0) / _T(7.853981633974482790e-01, 3.061616997868383018e-17));
 
 template <class _T>
 const _T
