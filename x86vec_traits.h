@@ -3,7 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/x86vec.h>
-#include <cftal/math_funcs.h>
+#include <cftal/math_func.h>
 
 namespace cftal {
 

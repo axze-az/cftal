@@ -1,5 +1,5 @@
 #include "x86vec_traits.h"
-#include "math_funcs.h"
+#include "math_func.h"
 #include "d_real.h"
 #include <cmath>
 #include <limits>
