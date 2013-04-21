@@ -29,6 +29,10 @@ namespace cftal {
                                 static const _T m_ln2_low;
                                 // M_1_LN2 1/LOG_E(2)
                                 static const _T m_1_ln2;
+				// 2*PI
+				static const _T m_pi2;
+				// 1/2*PI
+				static const _T m_1_pi2;
                                 // PI
                                 static const _T m_pi;
                                 // 1/PI
@@ -54,7 +58,6 @@ namespace cftal {
                         typedef int32_t vi_type;
                         typedef bool vmf_type;
                         typedef bool vmi_type;
-
                         typedef union {
                                 double _d;
                                 uint64_t _u;
@@ -131,6 +134,7 @@ namespace cftal {
 
                         static dvf_type exp_k(const dvf_type& dvf);
                         static dvf_type log_k(const dvf_type& dvf);
+			static dvf_type sin_k(const dvf_type& dvf);
 
                 public:
                         static vf_type pow2i(const vi_type& vi);
@@ -289,6 +293,14 @@ cftal::math::func<double, cftal::int32_t, _T>::exp_k(const dvf_type& d)
         return res;
 }
 
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
+cftal::math::func<double, cftal::int32_t, _T>::sin_k(const dvf_type& d)
+{
+        using ctbl = impl::d_real_constants<dvf_type, double>;
+	return dvf_type(0.0);
+}
 
 template <typename _T>
 inline
@@ -337,6 +349,18 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_1_ln2(
         _T(1.0) / _T( 6.931471805599452862e-01, 2.319046813846299558e-17));
+
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_pi2(
+	6.283185307179586232e+00, 2.449293598294706414e-16);
+
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_1_pi2(
+        _T(1.0) / _T(6.283185307179586232e+00, 2.449293598294706414e-16));
 
 template <class _T>
 const _T
