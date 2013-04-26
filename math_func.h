@@ -146,6 +146,8 @@ namespace cftal {
                         static vf_type exp(const vf_type& vf);
                         static vf_type log(const vf_type& vf);
 
+			static vf_type sin(const vf_type& vf);
+
                 };
 
         }
@@ -299,7 +301,67 @@ typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
 cftal::math::func<double, cftal::int32_t, _T>::sin_k(const dvf_type& d)
 {
         using ctbl = impl::d_real_constants<dvf_type, double>;
-	return dvf_type(0.0);
+	// reduce by 2*pi
+	dvf_type n2pif(rint(d * ctbl::m_1_pi2));
+#if 0
+	vmi_type e1(ilogbp1(n2pif.h()));
+	dvf_type n2pif_s(ldexp(n2pif.h(), -e1),
+			 ldexp(n2pif.l(), -e1));
+	dvf_type d_s(ldexp(d.h(), -e1),
+		     ldexp(d.l(), -e1));
+
+	dvf_type n2pifh(n2pif_s.h());
+	dvf_type n2pifl(n2pif_s.l());
+	dvf_type d0(d_s);
+	d0 -= n2pifh* ctbl::m_pi2.h();
+	d0 -= n2pifl* ctbl::m_pi2.h();
+	d0 -= n2pifh* ctbl::m_pi2.l();
+	d0 -= n2pifl* ctbl::m_pi2.l();
+#else
+	dvf_type d0((d - n2pif * ctbl::m_pi2.h()) -
+		    n2pif * ctbl::m_pi2.l());
+#endif
+	std::cout << "d =  " << x86vec::extract<0>(d.h()) 
+		  << ", " << x86vec::extract<0>(d.l()) 
+		  << std::endl;
+	std::cout << "n2= " << x86vec::extract<0>(n2pif.h()) 
+		  << ", " << x86vec::extract<0>(n2pif.l()) 
+		  << std::endl;
+	std::cout << "d0=  " << x86vec::extract<0>(d0.h()) 
+		  << ", " << x86vec::extract<0>(d0.l()) << std::endl;
+	// reduce by pi
+	dvf_type qf(rint(d0 * ctbl::m_1_pi));
+	vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
+	dvf_type d1(d0 - qf * ctbl::m_pi);
+
+	std::cout << "qf= " << x86vec::extract<0>(qf.h()) 
+		  << ", " << x86vec::extract<0>(qf.l()) 
+		  << std::endl;
+	std::cout << "d1=  " << x86vec::extract<0>(d1.h()) 
+		  << ", " << x86vec::extract<0>(d1.l()) << std::endl;
+
+	vmi_type q_and_1((q & vi_type(1))== vi_type(1));
+	vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
+	dvf_type d2(_T::sel(q_and_1_f, -d1.h(), d1.h()),
+		    _T::sel(q_and_1_f, -d1.l(), d1.l()));
+		
+	dvf_type x= sqr(d1);
+	dvf_type s;
+
+	s = ctbl::inv_fac[21];
+	s = s * x - ctbl::inv_fac[19];
+	s = s * x + ctbl::inv_fac[17];
+	s = s * x - ctbl::inv_fac[15];
+	s = s * x + ctbl::inv_fac[13];
+	s = s * x - ctbl::inv_fac[11];
+	s = s * x + ctbl::inv_fac[9];
+	s = s * x - ctbl::inv_fac[7];
+	s = s * x + ctbl::inv_fac[5];
+	s = s * x - ctbl::inv_fac[3];
+	s = s * x + vf_type(1);
+	s = s * d2;
+
+	return s;
 }
 
 template <typename _T>
@@ -334,6 +396,15 @@ cftal::math::func<double, cftal::int32_t, _T>::exp(const vf_type& d)
         return res;
 }
 
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::func<double, cftal::int32_t, _T>::sin(const vf_type& d)
+{
+        dvf_type xr(sin_k(d));
+        vf_type res(xr.h() + xr.l());
+	return res;
+}
 
 template <class _T>
 const _T

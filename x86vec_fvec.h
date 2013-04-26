@@ -353,14 +353,16 @@ namespace x86vec {
         v2f64 acos(arg<v2f64>::type d);
 
         v2f64 atan(arg<v2f64>::type d);
-        v2f64 sin(arg<v2f64>::type d);
         v2f64 cos(arg<v2f64>::type d);
         std::pair<v2f64, v2f64> sincos(arg<v2f64>::type d);
         v2f64 tan(arg<v2f64>::type d);
-        v2f64 log(arg<v2f64>::type d);
 
         v2f64 exp(arg<v2f64>::type d);
+        v2f64 log(arg<v2f64>::type d);
+	v2f64 sin(arg<v2f64>::type d);
+
 	v2f64 native_exp(arg<v2f64>::type d);
+	v2f64 native_sin(arg<v2f64>::type d);
 	v2f64 cosh(arg<v2f64>::type d);
 
         v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);

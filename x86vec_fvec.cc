@@ -74,6 +74,13 @@ x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
 	return func_t::exp(d);
 }
 
+x86vec::v2f64 x86vec::sin(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::sin(d);
+}
+
 #define PI4_A 0.78539816290140151978
 #define PI4_B 4.9604678871439933374e-10
 #define PI4_C 1.1258708853173288931e-18
@@ -1290,7 +1297,7 @@ x86vec::v2f64 x86vec::atan(arg<v2f64>::type d)
                 atan(d);
 }
 
-x86vec::v2f64 x86vec::sin(arg<v2f64>::type d)
+x86vec::v2f64 x86vec::native_sin(arg<v2f64>::type d)
 {
         return math::func<double, int32_t,
 		impl::vec_func_traits<v2f64, v4s32> >::
