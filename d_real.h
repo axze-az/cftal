@@ -748,9 +748,19 @@ cftal::d_real<_T>
 cftal::operator*(const d_real<_T>& a, const _T& b)
 {
 	_T p1, p2;
-	p1 = d_real_impl::two_prod(a.h(), b, p2);
-	p2+= (a.l()*b);
-	p1 = d_real_impl::quick_two_sum(p1, p2, p2);
+	if (d_real_traits<_T>::fma) {
+		_T ph = a.h() * b;
+		_T pl = fms(a.h(), b, ph);
+		// pl = fma(a.h(), b.l(), pl);
+		pl = fma(a.l(), b, pl);
+		p1 = ph + pl;
+		p2 = (ph - p1);
+		p2 += pl;
+	} else {
+		p1 = d_real_impl::two_prod(a.h(), b, p2);
+		p2+= (a.l()*b);
+		p1 = d_real_impl::quick_two_sum(p1, p2, p2);
+	}
 	return d_real<_T>(p1, p2);
 }
 
@@ -768,9 +778,19 @@ cftal::d_real<_T>
 cftal::operator*(const d_real<_T>& a, const d_real<_T>& b)
 {
 	_T p1, p2;
-	p1 = d_real_impl::two_prod(a.h(), b.h(), p2);
-	p2+= (a.h()*b.l() + a.l() * b.h());
-	p1 = d_real_impl::quick_two_sum(p1, p2, p2);
+	if (d_real_traits<_T>::fma) {
+		_T ph = a.h() * b.h();
+		_T pl = fms(a.h(), b.h(), ph);
+		pl = fma(a.h(), b.l(), pl);
+		pl = fma(a.l(), b.h(), pl);
+		p1 = ph + pl;
+		p2 = (ph - p1);
+		p2 += pl;
+	} else {
+		p1 = d_real_impl::two_prod(a.h(), b.h(), p2);
+		p2+= (a.h()*b.l() + a.l() * b.h());
+		p1 = d_real_impl::quick_two_sum(p1, p2, p2);
+	}
 	return d_real<_T>(p1, p2);
 }
 
