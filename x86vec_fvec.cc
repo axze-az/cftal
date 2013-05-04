@@ -733,10 +733,10 @@ cos(const vf_type& cd)
 	vf_type qf= 1.0+ 2.0 * rint(cd * M_1_PI -0.5);
 	vi_type q = _T::cvt_f_to_i(qf);
 	
-	vf_type d= mad(qf, -PI4_A*4, cd);
-	d = mad(qf, -PI4_B*4, d);
-	d = mad(qf, -PI4_C*4, d);
-	d = mad(qf, -PI4_D*4, d);
+	vf_type d= mad(qf, -PI4_A*2, cd);
+	d = mad(qf, -PI4_B*2, d);
+	d = mad(qf, -PI4_C*2, d);
+	d = mad(qf, -PI4_D*2, d);
 
 	vf_type s = d * d;
 
