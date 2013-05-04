@@ -6,6 +6,7 @@
 #include <cftal/std_types.h>
 #include <type_traits>
 #include <limits>
+#include <utility>
 
 namespace cftal {
 
@@ -13,6 +14,15 @@ namespace cftal {
 
                 namespace impl {
 
+			// returns (y0+y1) = x - N * pi/2
+			// the integer results contains 
+			// only the lower bits of N
+			int32_t
+			__ieee754_rem_pio2(double x, double *y);
+			int 
+			__kernel_rem_pio2(double *x, double *y, int e0, int nx, int prec, 
+					  const int32_t *ipio2);
+				
                         template <class _T, typename _E>
                         struct d_real_constants {};
 
