@@ -77,6 +77,7 @@ namespace cftal {
                         static constexpr int32_t e_max= 0x3ff;
                         static constexpr int32_t e_min= -1022;
                         static constexpr int32_t bits=52;
+			static constexpr int32_t vec_len=1;
 
                         static constexpr double pinf() {
                                 return std::numeric_limits<double>::infinity();
