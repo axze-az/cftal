@@ -8,10 +8,10 @@ namespace x86vec {
 
         // select bitwise
         uint32_t select(uint32_t msk,
-                             uint32_t on_one, uint32_t on_zero);
+			uint32_t on_one, uint32_t on_zero);
         // select bitwise
         uint64_t select(uint64_t msk,
-                             uint64_t on_one, uint64_t on_zero);
+			uint64_t on_one, uint64_t on_zero);
         // select bytes
         // __SSE2__: bitwise
         // __SSE4_1__: on sign bit of int8_t
@@ -120,14 +120,16 @@ inline
 uint32_t
 x86vec::select(uint32_t msk, uint32_t on_one, uint32_t on_zero)
 {
-        return (msk & on_one) | ((~msk) & on_zero);
+        // return (msk & on_one) | ((~msk) & on_zero);
+	return ((on_zero ^ on_one) & msk) ^ on_one;
 }
 
 inline
 uint64_t
 x86vec::select(uint64_t msk, uint64_t on_one, uint64_t on_zero)
 {
-        return (msk & on_one) | ((~msk) & on_zero);
+        // return (msk & on_one) | ((~msk) & on_zero);
+	return ((on_zero ^ on_one) & msk) ^ on_one;
 }
 
 inline

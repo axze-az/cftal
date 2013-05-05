@@ -72,11 +72,17 @@ test-tan: testx86vec-03
 test-exp: testx86vec-03
 	./$< <exp.testdata
 
+test-exp-fma: testx86vec-03
+	sde64 -mix -ast -- ./$< <exp.testdata
+
 test-cosh: testx86vec-03
 	./$< <cosh.testdata
 
 test-log: testx86vec-03
 	./$< <log.testdata
+
+test-log-fma: testx86vec-03
+	sde64 -mix -ast -- ./$< <log.testdata
 
 test-asin: testx86vec-03
 	./$< <asin.testdata
