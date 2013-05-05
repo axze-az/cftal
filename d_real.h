@@ -1007,10 +1007,19 @@ cftal::d_real<_T>
 cftal::sqr(const d_real<_T>& a)
 {
 	_T p1, p2, s1, s2;
-	p1 = d_real_impl::two_sqr(a.h(), p2);
-	p2 += 2.0 * a.h() * a.l();
-	p2 += a.l() * a.l();
-	s1 = d_real_impl::quick_two_sum(p1, p2, s2);
+	if (d_real_traits<_T>::fma) {
+		p1 = a.h() * a.h();
+		p2 = fms(a.h(), a.h(), p1);
+		p2 = fma(2*a.h(), a.l(), p2);
+		s1 = p1 + p2;
+		s2 = (p1 - s1);
+		s2 += p2;
+	} else {
+		p1 = d_real_impl::two_sqr(a.h(), p2);
+		p2 += 2.0 * a.h() * a.l();
+		p2 += a.l() * a.l();
+		s1 = d_real_impl::quick_two_sum(p1, p2, s2);
+	}
 	return d_real<_T>(s1, s2);
 }
 
