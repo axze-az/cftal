@@ -386,6 +386,33 @@ void print_2_over_i()
 	std::cout << "};" << std::endl;
 }
 
+void print_sqrtx()
+{
+        using dpf64 = cftal::d_real<double>;
+	dpf64 sqrt12(sqrt(dpf64(0.5)));
+	std::cout << "template <class _T>\n"
+		  << "const _T\n" 
+		  << "cftal::impl::d_real_constants_dbl<_T>::\n"
+		  << "m_sqrt1_2("
+		  << std::endl;
+	std::cout << std::scientific
+		  << std::setprecision(22)
+		  << "\t_T( " 
+		  << std::setw(27)
+		  << sqrt12.h()
+		  << std::setw(0)
+		  << ", " ;
+	if (sqrt12.l() >= 0.0)
+		std::cout << ' ';
+	std::cout << std::scientific
+		  << std::setprecision(22)
+		  << std::setw(27)
+		  << sqrt12.l()
+		  << std::setw(0)
+		  << ");";
+	std::cout << std::endl;
+}
+
 
 void testpowi()
 {
@@ -419,6 +446,7 @@ int main(int argc, char** argv)
         // calc_pi();
 	print_inv_fac();
 	print_2_over_i();
+	print_sqrtx();
 	// testpowi();
         return 0;
 }

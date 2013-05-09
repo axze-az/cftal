@@ -64,7 +64,8 @@ namespace cftal {
                 struct func;
 
                 template <>
-                struct func_traits<double, int32_t> : public d_real_traits<double> {
+                struct func_traits<double, int32_t> 
+			: public d_real_traits<double> {
                         typedef double vf_type;
                         typedef int32_t vi_type;
                         typedef bool vmf_type;
@@ -126,7 +127,9 @@ namespace cftal {
                         // including rounding to nearest.
                         static
                         vi_type cvt_f_to_i(const vf_type& f) {
-                                return f < 0 ? (vi_type)(f - 0.5) : (vi_type)(f + 0.5);
+                                return f < 0 ? 
+					(vi_type)(f - 0.5) : 
+					(vi_type)(f + 0.5);
                         }
                         // including rounding towards zero
                         static
@@ -156,7 +159,8 @@ namespace cftal {
 
                 public:
                         static vf_type pow2i(const vi_type& vi);
-                        static vf_type ldexp(const vf_type& vf, const vi_type& vi);
+                        static vf_type ldexp(const vf_type& vf, 
+					     const vi_type& vi);
 
                         static vi_type ilogbp1(const vf_type& vi);
                         static vi_type ilogb(const vf_type& vf);

@@ -196,6 +196,9 @@ namespace cftal {
 		d_real<_T> mul(const _T& a, const _T& b);
 
 		template <typename _T>
+		d_real<_T> sqr(const _T& a);
+
+		template <typename _T>
 		d_real<_T> div(const _T& a, const _T& b);
 
 		template <typename _T>
@@ -346,6 +349,8 @@ namespace cftal {
 	d_real<_T> sqr(const d_real<_T>& r);
 	template <typename _T>
 	d_real<_T> mul_pwr2(const d_real<_T>& a, const _T& b);
+	template <typename _T>
+	d_real<_T> sqrt(const d_real<_T>& a);
 	
 	d_real<double> str_to_d_double(const char* p, std::size_t n);
 	d_real<double> str_to_d_double(const char* p);
@@ -1031,6 +1036,22 @@ cftal::mul_pwr2(const d_real<_T> &a, const _T& b)
 	return d_real<_T>(a.h() * b, a.l() * b);
 }
 
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::sqrt(const d_real<_T>& a)
+{
+	using namespace std;
+	_T ah= a.h();
+	_T root(std::sqrt(ah));
+	_T x= _T(1.0)/root;
+	_T ax= a.h() * x;
+	_T err, ax2= d_real_impl::two_sqr(ax, err);
+	d_real<_T> a0(a - d_real<_T>(ax2, err));
+	_T a1(a0.h() * (x * _T(0.5)));
+	d_real<_T> res(d_real_impl::add(ax, a1));
+	return res;
+}
 
 // Local variables:
 // mode: c++
