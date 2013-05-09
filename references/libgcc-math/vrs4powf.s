@@ -577,9 +577,8 @@ __vrs4_powf:
 	ret
 
 
-        .data
-        .align 64
-
+.section .rodata.cst16, "M", @progbits, 16
+.align 16
 .L__mask_sign:			.quad 0x08000000080000000	# a sign bit mask
 				.quad 0x08000000080000000
 

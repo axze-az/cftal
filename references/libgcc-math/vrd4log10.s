@@ -717,9 +717,8 @@ __vrd4_log10:
 
 
 
-	.data
-	.align	16
-
+.section .rodata.cst16, "M", @progbits, 16
+.align 16
 .L__real_one:				.quad 0x03ff0000000000000	# 1.0
 						.quad 0x03ff0000000000000					# for alignment
 .L__real_two:				.quad 0x04000000000000000	# 1.0
@@ -786,6 +785,8 @@ __vrd4_log10:
 				.quad 0x0ffffffff00000000
 	.align	16
 
+.section .rodata
+.align 16
 .L__np_ln_lead_table:
 	.quad	0x0000000000000000 		# 0.00000000000000000000e+00
 	.quad	0x3f8fc0a800000000		# 1.55041813850402832031e-02

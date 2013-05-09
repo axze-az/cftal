@@ -517,8 +517,8 @@ __vrs8_expf:
         movdqa  p_m2(%rsp),%xmm7                # restore the exponent portion
         jmp             .L__check2
 
-	.data		# MUCH better performance without this on my tests
-        .align  64
+.section .rodata.cst16, "M", @progbits, 16
+.align 16
 .L__real_half:                  .long 0x03f000000       # 1/2
                                 .long 0x03f000000
                                 .long 0x03f000000
@@ -581,6 +581,8 @@ __vrs8_expf:
                                 .long 0x00000007f
                                 .long 0x00000007f
 
+.section .rodata
+.align 16
 .L__two_to_jby32_table:
         .long   0x03F800000             # 1.0000000000000000
         .long   0x03F82CD87             # 1.0218971486541166

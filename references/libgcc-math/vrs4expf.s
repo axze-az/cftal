@@ -303,9 +303,8 @@ __vrs4_expf:
         movdqa  p_m(%rsp),%xmm1         # restore the exponent portion
         jmp             .L__check1
 
-	.data
-        .align 64
-
+.section .rodata.cst16, "M", @progbits, 16
+.align 16
 .L__real_half:			.long 0x3f000000	# 1/2
 				.long 0x3f000000
 				.long 0x3f000000
@@ -373,6 +372,8 @@ __vrs4_expf:
 				.long 0x00000007f
 
 
+.section .rodata
+.align 16
 .L__two_to_jby32_table:
    .long  0x3F800000  #          1
    .long  0x3F82CD87  #  1.0218972

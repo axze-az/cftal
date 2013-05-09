@@ -267,8 +267,8 @@ __vrd2_exp:
 	shufpd	$0,%xmm2,%xmm0
 	jmp		.L__final_check
 
-	.data
-        .align 16
+.section .rodata.cst16, "M", @progbits, 16
+.align 16
 .L__real_3ff0000000000000: 	.quad 0x03ff0000000000000	# 1.0
 				.quad 0x03ff0000000000000	# for alignment
 .L__real_4040000000000000:	.quad 0x04040000000000000	# 32
@@ -301,6 +301,8 @@ __vrd2_exp:
 				.quad 0x03FC5555555548F7C
 
 
+.section .rodata
+.align 16
 .L__two_to_jby32_lead_table:
 	.quad	0x03ff0000000000000 # 1 
 	.quad	0x03ff059b0d0000000		# 1.0219

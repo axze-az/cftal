@@ -347,9 +347,8 @@ __vrs4_logf:
 	jmp		.L__f3
 
 
-        .data
-        .align 64
-
+.section .rodata.cst16, "M", @progbits, 16
+.align 16
 .L__real_zero:				.quad 0x00000000000000000	# 1.0
 					.quad 0x00000000000000000
 .L__real_one:				.quad 0x03f8000003f800000	# 1.0
@@ -408,6 +407,8 @@ __vrs4_logf:
 					.quad 0x03f0000003f000000
 
 
+.section .rodata
+.align 16
 .L__np_ln__table:
 	.quad	0x0000000000000000 		# 0.00000000000000000000e+00
 	.quad	0x3F8FC0A8B0FC03E4		# 1.55041813850402832031e-02

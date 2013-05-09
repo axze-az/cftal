@@ -44,7 +44,8 @@
 
 
 
-.data
+.section .rodata.cst16, "M", @progbits, 16
+.align 16
 .L__real_7fffffffffffffff: 	.quad 0x07fffffffffffffff	#Sign bit zero
 				.quad 0x07fffffffffffffff
 .L__real_3ff0000000000000: 	.quad 0x03ff0000000000000	# 1.0
@@ -92,6 +93,8 @@
 .L__real_ffffffffffffffff: 	.quad 0x0ffffffffffffffff	#Sign bit one
 				.quad 0x0ffffffffffffffff
 
+.section .rodata
+.align 16
 .Lcosarray:
 	.quad	0x03fa5555555555555		#  0.0416667		   	c1
 	.quad	0x03fa5555555555555
