@@ -20,7 +20,8 @@ namespace cftal {
 			int32_t
 			__ieee754_rem_pio2(double x, double *y);
 			int 
-			__kernel_rem_pio2(double *x, double *y, int e0, int nx, int prec, 
+			__kernel_rem_pio2(double *x, double *y, int e0, 
+					  int nx, int prec, 
 					  const int32_t *ipio2);
 				
                         template <class _T, typename _E>
@@ -321,7 +322,7 @@ cftal::math::
 func<double, cftal::int32_t, _T>::reduce_trig_arg_k2(const dvf_type& d)
 {
         using ctbl = impl::d_real_constants<dvf_type, double>;
-#if 1
+
 	dvf_type n2pif(rint(d * ctbl::m_1_pi2));
 	dvf_type d0((d - n2pif * ctbl::m_pi2.h()) -
 		    n2pif * ctbl::m_pi2.l());
@@ -330,19 +331,6 @@ func<double, cftal::int32_t, _T>::reduce_trig_arg_k2(const dvf_type& d)
 	vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
 	dvf_type d1(d0 - qf * ctbl::m_pi);
 	return std::make_pair(d1, q);
-#else
-	dvf_type c0(mul_pwr2(ctbl::m_pi2, vf_type(65536.0*65536.0)));
-	dvf_type n2pif(rint(d / c0));
-	dvf_type d0((d - n2pif * c0.h()) - n2pif * c0.l());
-	n2pif= rint(d0 / ctbl::m_pi2);
-	dvf_type d1((d0 - n2pif *  ctbl::m_pi2.h()) -
-		    n2pif * ctbl::m_pi2.l());
-	// reduce by pi
-	dvf_type qf(rint(d1 * ctbl::m_1_pi));
-	vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
-	dvf_type d2(d1 - qf * ctbl::m_pi);
-	return std::make_pair(d2, q);
-#endif
 }
 
 template <typename _T>
