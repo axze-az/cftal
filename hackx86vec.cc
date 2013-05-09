@@ -411,6 +411,13 @@ void print_sqrtx()
 		  << std::setw(0)
 		  << ");";
 	std::cout << std::endl;
+
+	__float128 t2= __builtin_sqrtl(__float128(0.5));
+	std::cout << std::setprecision(22)
+		  << double(t2)
+		  << ' '
+		  << double(t2 - double(t2))
+		  << std::endl;
 }
 
 
@@ -436,6 +443,7 @@ void testpowi()
 			  << t.l()
 			  << std::endl;
 	}
+
 }
 
 int main(int argc, char** argv)
