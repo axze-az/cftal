@@ -284,8 +284,9 @@ cftal::math::func<double, cftal::int32_t, _T>::exp_k2(const dvf_type& d)
         const vf_type inv_k(1.0/k);
 
         dvf_type m2= rint(d * ctbl::m_1_ln2);
-        dvf_type r= mul_pwr2(d - ctbl::m_ln2*m2, inv_k);
-        vf_type m=m2.h() /* + m2.l() */;
+        dvf_type r= mul_pwr2(
+		(d - ctbl::m_ln2*m2), inv_k);
+        vf_type m=m2.h() + m2.l();
 
         dvf_type s = ctbl::inv_fac[9];
         // s = s * r + ctbl::inv_fac[8];
