@@ -39,11 +39,12 @@ namespace x86vec {
 		};
 
 		std::string delete_comment(const std::string& s);
-		bool read_func(func_data& tf, std::istream& is);
+		bool read_func(func_data& tf, std::istream& is,
+			       bool use_native);
 		bool read_data(func_data& tf, std::istream& is);
 		bool test_data(const func_data& tf, std::ostream& os);
 
-		bool func(std::istream& is);
+		bool func(std::istream& is, bool use_native);
 	}
 }
 
@@ -105,7 +106,9 @@ std::string x86vec::test::delete_comment(const std::string& s)
 	return r;
 }
 
-bool x86vec::test::read_func(func_data& tf, std::istream& is)
+bool x86vec::test::read_func(func_data& tf, 
+			     std::istream& is,
+			     bool use_native)
 {
 	std::string line;
 	while (!getline(is, line).eof()) {
@@ -122,13 +125,19 @@ bool x86vec::test::read_func(func_data& tf, std::istream& is)
 			tf._f1 = x86vec::cos;
 			tf._f1d= std::cos;
 		} else if (f == "sin") {
-			tf._f1 = x86vec::sin;
+			if (use_native)
+				tf._f1 = x86vec::native_sin;
+			else
+				tf._f1 = x86vec::sin;
 			tf._f1d= std::sin;
 		} else if (f == "tan") {
 			tf._f1 = x86vec::tan;
 			tf._f1d= std::tan;
 		} else if (f == "exp") {
-			tf._f1 = x86vec::exp;
+			if (use_native)
+				tf._f1= x86vec::native_exp;
+			else
+				tf._f1 = x86vec::exp;
 			tf._f1d = std::exp;
 		} else if (f == "log") {
 			tf._f1 = x86vec::log;
@@ -292,26 +301,41 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 	return rc;
 }
 
-bool x86vec::test::func(std::istream& is)
+bool x86vec::test::func(std::istream& is, bool use_native)
 {
 	std::cerr << std::setprecision(18) << std::scientific;
 	std::cout << std::setprecision(18) << std::scientific;
 	func_data tf;
-	if (read_func(tf, is)==false)
+	if (read_func(tf, is, use_native)==false)
 		return false;
 	if (read_data(tf, is)==false)
 		return false;
 	return test_data(tf, std::cout);
 }
 
-bool all_tests_03()
+bool all_tests_03(bool use_native)
 {
-	return x86vec::test::func(std::cin);
+	return x86vec::test::func(std::cin, use_native);
+}
+
+void usage(const char* argv0)
+{
+	std::cerr << "usage: " << argv0 << " [--use-native]"
+		  << std::endl;
+	std::exit(3);
 }
 
 int main(int argc, char** argv)
 {
 	if (isatty(STDIN_FILENO))
 		return 0;
-	return (all_tests_03() ==  true) ? 0 : 3;
+	bool use_native(false);
+	if (argc>2)
+		usage(argv[0]);
+	if (argc==2) {
+		if (std::string("--use-native")!=argv[1])
+			usage(argv[0]);
+		use_native=true;
+	}
+	return (all_tests_03(use_native) ==  true) ? 0 : 3;
 }

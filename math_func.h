@@ -70,6 +70,7 @@ namespace cftal {
                         typedef int32_t vi_type;
                         typedef bool vmf_type;
                         typedef bool vmi_type;
+			typedef uint32_t mask_type;
                         typedef union {
                                 double _d;
                                 uint64_t _u;
@@ -153,7 +154,11 @@ namespace cftal {
 			// return dfv mod pi, and the half in second
 			static std::pair<dvf_type, vi_type>
 			reduce_trig_arg_k2(const dvf_type& dvf);
-
+			
+			static std::pair<dvf_type, vi_type>
+			reduce_trig_arg_k(const vf_type& v);
+			static vf_type sin_k(const vf_type& v);
+			
 			static dvf_type sin_k2(const dvf_type& dvf);
 			static dvf_type cos_k2(const dvf_type& dvf);
 
@@ -316,6 +321,26 @@ cftal::math::func<double, cftal::int32_t, _T>::exp_k2(const dvf_type& d)
         vi_type mi= _T::cvt_f_to_i(m);
         dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
         return res;
+}
+
+template <typename _T>
+inline
+std::pair<typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type,
+	  typename cftal::math::func<double, cftal::int32_t, _T>::vi_type>
+cftal::math::
+func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const dvf_type& d)
+{
+	vmf_type large_arg(abs(d) > vf_type(1.0e10));
+}
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::func<double, cftal::int32_t, _T>::sin_k(const vf_type& d)
+{
+	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
+
+	return rr.h();
 }
 
 template <typename _T>

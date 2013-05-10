@@ -72,8 +72,14 @@ test-tan: testx86vec-03
 test-exp: testx86vec-03
 	./$< <exp.testdata
 
+test-exp-native: testx86vec-03
+	./$< --use-native  <exp.testdata
+
 test-exp-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< <exp.testdata
+
+test-exp-native-fma: testx86vec-03
+	sde64 -mix -ast -- ./$< --use-native <exp.testdata
 
 test-cosh: testx86vec-03
 	./$< <cosh.testdata
