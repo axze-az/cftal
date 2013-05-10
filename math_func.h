@@ -335,17 +335,7 @@ func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
 	vf_type dh, dl;
 	_T::split(d, dh, dl);
 	
-	const vf_type 
-		M_PI_2_0(1.57079632679489655800e+00),
-		M_PI_2_1(1.57079632679489655800e+00),
-		
 
-        piby2_lead = 1.57079632679489655800e+00, /* 0x3ff921fb54442d18 */
-        piby2_part1 = 1.57079631090164184570e+00, /* 0x3ff921fb50000000 */
-        piby2_part2 = 1.58932547122958567343e-08, /* 0x3e5110b460000000 */
-        piby2_part3 = 6.12323399573676480327e-17; /* 0x3c91a62633145c06 */
-
-	
 	if (!all_signs(small_arg)) {
 		// reduce the large arguments
 	}
