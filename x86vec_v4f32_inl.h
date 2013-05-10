@@ -321,6 +321,12 @@ bool x86vec::no_signs(const v4f32& a)
 }
 
 inline
+unsigned x86vec::read_signs(const v4f32& a)
+{
+        return read_signs_f32(a());
+}
+
+inline
 x86vec::v4f32 x86vec::max(const v4f32& a, const v4f32& b)
 {
         return _mm_max_ps(a(), b());

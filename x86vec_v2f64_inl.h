@@ -315,6 +315,12 @@ bool x86vec::no_signs(const v2f64& a)
 }
 
 inline
+unsigned x86vec::read_signs(const v2f64& a)
+{
+        return read_signs_f64(a());
+}
+
+inline
 x86vec::v2f64 x86vec::max(const v2f64& a, const v2f64& b)
 {
 	return _mm_max_pd(a(), b());
