@@ -42,7 +42,7 @@ namespace cftal {
                                 static const _T m_1_ln2;
 				// 2*PI
 				static const _T m_pi2;
-				// 1/2*PI
+				// 1/(2*PI)
 				static const _T m_1_pi2;
                                 // PI
                                 static const _T m_pi;
@@ -332,10 +332,11 @@ func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
 {
 	vmf_type small_arg(abs(d) < vf_type(1.0e10));
 	// small argument reduction
-	vf_type dh, dl;
-	_T::split(d, dh, dl);
+	// reduce by pi half
+	dvf_type n2pif(rint(d * ctbl::m_1_pi2));
+	dvf_type d0((d - n2pif * ctbl::m_pi2.h()) -
+		    n2pif * ctbl::m_pi2.l());
 	
-
 	if (!all_signs(small_arg)) {
 		// reduce the large arguments
 	}

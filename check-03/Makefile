@@ -63,6 +63,9 @@ testx86vec-03-g: testx86vec-03.od lib$(LIBNAME)-g.a ../libcftal-g.a
 test-sin: testx86vec-03
 	./$< <sin.testdata
 
+test-sin-native: testx86vec-03
+	./$< --use-native <sin.testdata
+
 test-cos: testx86vec-03
 	./$< <cos.testdata
 
