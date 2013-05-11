@@ -214,9 +214,17 @@ cftal::math::func<double, cftal::int32_t, _T>::ldexp(const vf_type& vd,
         vi_type m = q >> 31;
         m = (((m + q) >> 9) - m) << 7;
         q = q - (m << 2);
-        vf_type fm = _T::insert_exp(m + 0x3ff);
+
+	m += 0x3ff;
+	m = max(vi_type(0), m);
+	m = min(vi_type(0x7ff), m); 
+
+	vf_type fm = _T::insert_exp(m);
         vf_type r = vd * fm * fm * fm * fm;
-        vf_type fq = _T::insert_exp(q + 0x3ff);
+	q += 0x3ff;
+	// q = max(vi_type(0), q);
+	// q = min(vi_type(0x7ff), q);
+        vf_type fq = _T::insert_exp(q);
         return r * fq;
 }
 
@@ -255,7 +263,7 @@ cftal::math::func<double, cftal::int32_t, _T>::log_k2(const dvf_type& d)
 {
         using ctbl=impl::d_real_constants<dvf_type, double>;
 
-        dvf_type sc(d* vf_type(M_SQRT1_2));
+        dvf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
 
         vi_type e = ilogbp1(sc.h() + sc.l());
         vf_type ef= _T::cvt_i_to_f(e);
@@ -558,6 +566,7 @@ cftal::math::func<double, cftal::int32_t, _T>::sin(const vf_type& d)
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2(
+	// 0.693147180559945286226764, 2.319046813846299558417771e-17
         6.931471805599452862e-01, 2.319046813846299558e-17);
 
 template <class _T>
