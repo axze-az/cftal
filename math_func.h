@@ -48,6 +48,10 @@ namespace cftal {
                                 static const _T m_pi;
                                 // 1/PI
                                 static const _T m_1_pi;
+				// PI/2
+				static const _T m_pi_2;
+				// 2/PI
+				static const _T m_2_pi;
                                 // PI/4
                                 static const _T m_pi_4;
                                 // 4/PI
@@ -330,17 +334,19 @@ std::pair<typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type,
 cftal::math::
 func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
 {
+        using ctbl = impl::d_real_constants<dvf_type, double>;
 	vmf_type small_arg(abs(d) < vf_type(1.0e10));
 	// small argument reduction
 	// reduce by pi half
-	dvf_type n2pif(rint(d * ctbl::m_1_pi2));
-	dvf_type d0((d - n2pif * ctbl::m_pi2.h()) -
-		    n2pif * ctbl::m_pi2.l());
-	
+	dvf_type qf(rint(d * ctbl::m_2_pi));
+	dvf_type d0((d - qf * ctbl::m_pi_2.h()) -
+		    qf * ctbl::m_pi_2.l());
+	vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
+
 	if (!all_signs(small_arg)) {
 		// reduce the large arguments
 	}
-	return std::make_pair(dvf_type(), vi_type());
+	return std::make_pair(d0, q);
 }
 
 template <typename _T>
@@ -348,9 +354,45 @@ inline
 typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::sin_k(const vf_type& d)
 {
-	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
+        using ctbl = impl::d_real_constants<dvf_type, double>;
 
-	return rr.h();
+	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
+	const dvf_type& d1= rr.first;
+	const vi_type& q= rr.second;
+	
+	vmi_type q_and_2((q & vi_type(2))==vi_type(2));
+	vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
+
+	vmi_type q_and_1((q & vi_type(1))==vi_type(1));
+	vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
+
+	dvf_type d2(ctbl::m_pi_2 - d1);
+
+	d2.h() = _T::sel(q_and_1_f, d2.h(), d1.h());
+	d2.l() = _T::sel(q_and_1_f, d2.l(), d1.l());
+
+	d2.h() = _T::sel(q_and_2_f, -d2.h(), d2.h());
+	d2.l() = _T::sel(q_and_2_f, -d2.l(), d2.l());
+
+	dvf_type x= sqr(d2);
+	dvf_type s;
+
+	s = ctbl::inv_fac[21];
+	s = s * x - ctbl::inv_fac[19];
+	s = s * x + ctbl::inv_fac[17];
+	s = s * x - ctbl::inv_fac[15];
+	s = s * x + ctbl::inv_fac[13];
+	s = s * x - ctbl::inv_fac[11];
+	s = s * x + ctbl::inv_fac[9];
+	s = s * x - ctbl::inv_fac[7];
+	s = s * x + ctbl::inv_fac[5];
+	s = s * x - ctbl::inv_fac[3];
+	s = s * x + vf_type(1);
+	s = s * d2;
+
+	vf_type r0(s.h() + s.l());
+	vf_type r(_T::sel(q_and_2_f, -r0, r0));
+	return r;
 }
 
 template <typename _T>
@@ -507,8 +549,9 @@ inline
 typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::sin(const vf_type& d)
 {
-        dvf_type xr(sin_k2(d));
-        vf_type res(xr.h() + xr.l());
+        // dvf_type xr(sin_k2(d));
+        // vf_type res(xr.h() + xr.l());
+	vf_type res(sin_k(d));
 	return res;
 }
 
@@ -526,7 +569,6 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_1_ln2(
         _T(1.0) / _T( 6.931471805599452862e-01, 2.319046813846299558e-17));
-
 
 template <class _T>
 const _T
@@ -548,6 +590,18 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_1_pi(
         _T(1.0) / _T(3.141592653589793116e+00, 1.224646799147353207e-16));
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_pi_2(
+        1.570796326794896558e+00, 6.123233995736766036e-17);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_2_pi(
+        _T(1.0) / _T(1.570796326794896558e+00,
+		     6.123233995736766036e-17));
+
 
 template <class _T>
 const _T
