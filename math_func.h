@@ -163,6 +163,12 @@ namespace cftal {
                         reduce_trig_arg_k(const vf_type& v);
                         static vf_type sin_px(const vf_type& v);
                         static vf_type cos_px(const vf_type& v);
+			// only valid for values between [-pi/4, pi/4]
+			static std::pair<vf_type, vf_type> 
+			reduced_sin_cos(const vf_type& v);
+			static std::pair<vf_type, vf_type>
+			sin_cos_k(const vf_type& v);
+			
                         static vf_type sin_k(const vf_type& v);
 
                         static dvf_type sin_k2(const dvf_type& dvf);
@@ -379,6 +385,18 @@ cftal::math::func<double, cftal::int32_t, _T>::cos_px(const vf_type& d)
         return 0;
 }
 
+template <typename _T>
+inline
+std::pair<typename cftal::math::func<double, cftal::int32_t, _T>::vf_type,
+	  typename cftal::math::func<double, cftal::int32_t, _T>::vf_type>
+cftal::math::func<double, cftal::int32_t, _T>::reduced_sin_cos(const vf_type& z)
+{
+	vf_type zz(z * z); 
+	std::pair<vf_type, vf_type> r_sin_cos(
+		z  +  z * zz * sin_px(zz),
+		vf_type(1.0) - zz * .5 + zz * zz * cos_px(zz));
+	return r_sin_cos;
+}
 
 template <typename _T>
 inline
