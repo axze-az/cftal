@@ -12,7 +12,40 @@ namespace cftal {
 
         namespace math {
 
+		// \sin (x \pm y) = \sin x \; \cos y \pm \sin y \; \cos x 
+		// \cos (x \pm y) = \cos x \; \cos y \mp \sin x \; \sin y 
+
+		// sin(x + y) = sin(x) * cos(y) + sin(y) * cos(x);
+		// sin(x - y) = sin(x) * cos(y) - sin(y) * cos(x);
+		// sin(2x) = 2 * sin(x) * cos(x);
+
+		// cos(x + y) = cos(x) * cos(y) - sin(x) * sin(y);
+		// cos(x - y) = cos(x) * cos(y) + sin(x) * sin(y);
+		// cos(2x) = cos(x)^2 - sin(x)^2 = 1 - 2 sin(x)^2
+		
                 namespace impl {
+
+			template <class _T>
+			_T sin2x(const _T& sinx, const _T& cosx) {
+				return _T(2.0) * sinx * cosx;
+			}
+			
+			template <class _T>
+			_T cos2x(const _T& sinx, const _T& cosx) {
+				return cosx * cosx - sinx * sinx;
+			}
+			
+			template <class _T>
+			_T sin4x(const _T& sinx, const _T& cosx) {
+				return sin2x(sin2x(sinx, cosx),
+					     cos2x(sinx, cosx));
+			}
+
+			template <class _T>
+			_T cos4x(const _T& sinx, const _T& cosx) {
+				return cos2x(sin2x(sinx, cosx),
+					     cos2x(sinx, cosx));
+			}
 
                         // returns (y0+y1) = x - N * pi/2
                         // the integer results contains
