@@ -1,12 +1,21 @@
 load(gnuplot);
 degree: 22;
-s: taylor(sin(x), x, 0, degree);
+s : taylor(sin(x), x, 0, degree);
 c: taylor(cos(x), x, 0, degree);
-ps: pade(s, (degree+2)/2, (degree+2)/2);
-pc: pade(c, (degree+2)/2, (degree+2)/2);
+ps : pade(s, (degree+2)/2, (degree+2)/2);
+pc : pade(c, (degree+2)/2, (degree+2)/2);
 ps0: pade(s, degree, 0);
 pc0: pade(c, degree, 0);
-plot2d(sin(x) - ps, [x, -%pi/2, %pi/2] );
-plot2d(cos(x) - pc, [x, -%pi/2, %pi/2] );
-plot2d(sin(x) - ps0, [x, -%pi/2, %pi/2] );
-plot2d(cos(x) - pc0, [x, -%pi/2, %pi/2] );
+
+es : sin(x) - ps;
+es0 : sin(x) - ps;
+ec: cos(x) - pc;
+ec0: cos(x) - pc0;
+
+/*
+plot2d([ sin(x) - ps, [x, -%pi/2, %pi/2],
+         cos(x) - pc, [x, -%pi/2, %pi/2],
+	 sin(x) - ps0, [x, -%pi/2, %pi/2], 
+	 cos(x) - pc0, [x, -%pi/2, %pi/2] ]
+      );
+*/
