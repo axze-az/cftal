@@ -199,9 +199,10 @@ namespace cftal {
 			// only valid for values between [-pi/4, pi/4]
 			static std::pair<vf_type, vf_type> 
 			reduced_sin_cos(const vf_type& v);
+		public:
 			static std::pair<vf_type, vf_type>
 			sin_cos_k(const vf_type& v);
-			
+		private:
                         static vf_type sin_k(const vf_type& v);
 
                         static dvf_type sin_k2(const dvf_type& dvf);
@@ -461,8 +462,9 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 {
         using ctbl = impl::d_real_constants<dvf_type, double>;
 	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
-	
-	dvf_type dh(mul_pwr2(rr.first, 0.5));
+	const vi_type& q= rr.second;
+
+	dvf_type dh(mul_pwr2(rr.first, vf_type(0.5)));
 
         vmi_type q_and_2((q & vi_type(2))==vi_type(2));
         vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
@@ -497,10 +499,10 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 	c = c * x - ctbl::inv_fac[6];
 	c = c * x + ctbl::inv_fac[4];
 	c = c * x - vf_type(0.5);
-	c = 1.0 - c * x;
+	c = vf_type(1.0) - c * x;
 
-	dvf_type co(cos2x(s, c));
-	dvf_type si(sin2x(s, c));
+	dvf_type co(impl::cos2x(s, c));
+	dvf_type si(impl::sin2x(s, c));
 
 	vf_type sinus(si.h() + si.l());
 	vf_type cosinus(co.h() + co.l());
