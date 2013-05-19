@@ -455,6 +455,61 @@ func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
 
 template <typename _T>
 inline
+std::pair<typename cftal::math::func<double, cftal::int32_t, _T>::vf_type,
+	  typename cftal::math::func<double, cftal::int32_t, _T>::vf_type>
+cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
+{
+        using ctbl = impl::d_real_constants<dvf_type, double>;
+	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
+	
+	dvf_type dh(mul_pwr2(rr.first, 0.5));
+
+        vmi_type q_and_2((q & vi_type(2))==vi_type(2));
+        vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
+
+        vmi_type q_and_1((q & vi_type(1))==vi_type(1));
+        vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
+
+	// calculate sin + cos
+        dvf_type x= sqr(dh);
+        dvf_type s, c;
+
+        s = ctbl::inv_fac[21];
+        s = s * x - ctbl::inv_fac[19];
+        s = s * x + ctbl::inv_fac[17];
+        s = s * x - ctbl::inv_fac[15];
+        s = s * x + ctbl::inv_fac[13];
+        s = s * x - ctbl::inv_fac[11];
+        s = s * x + ctbl::inv_fac[9];
+        s = s * x - ctbl::inv_fac[7];
+        s = s * x + ctbl::inv_fac[5];
+        s = s * x - ctbl::inv_fac[3];
+        s = s * x + vf_type(1);
+        s = s * dh;
+
+	c = ctbl::inv_fac[20];
+	c = c * x - ctbl::inv_fac[18];
+	c = c * x + ctbl::inv_fac[16];
+	c = c * x - ctbl::inv_fac[14];
+	c = c * x + ctbl::inv_fac[12];
+	c = c * x - ctbl::inv_fac[10];
+	c = c * x + ctbl::inv_fac[8];
+	c = c * x - ctbl::inv_fac[6];
+	c = c * x + ctbl::inv_fac[4];
+	c = c * x - vf_type(0.5);
+	c = 1.0 - c * x;
+
+	dvf_type co(cos2x(s, c));
+	dvf_type si(sin2x(s, c));
+
+	vf_type sinus(si.h() + si.l());
+	vf_type cosinus(co.h() + co.l());
+
+	return std::make_pair(sinus, cosinus);
+}
+
+template <typename _T>
+inline
 typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::sin_k(const vf_type& d)
 {
