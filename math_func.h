@@ -29,10 +29,22 @@ namespace cftal {
 			_T sin2x(const _T& sinx, const _T& cosx) {
 				return _T(2.0) * sinx * cosx;
 			}
+
+			template <class _T>
+			d_real<_T> sin2x(const d_real<_T>& sinx, 
+					 const d_real<_T>& cosy) {
+				return mul_pwr2(sinx* cosx, 2.0);
+			}
 			
 			template <class _T>
 			_T cos2x(const _T& sinx, const _T& cosx) {
 				return cosx * cosx - sinx * sinx;
+			}
+
+			template <class _T>
+			d_real<_T> cos2x(const d_real<_T>& sinx, 
+					 const d_real<_T>& cosy) {
+				return sqr(cosx) - sqr(sinx);
 			}
 			
 			template <class _T>
