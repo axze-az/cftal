@@ -43,7 +43,7 @@ namespace cftal {
 
 			template <class _T>
 			d_real<_T> cos2x(const d_real<_T>& sinx, 
-					 const d_real<_T>& cosy) {
+					 const d_real<_T>& cosx) {
 				return sqr(cosx) - sqr(sinx);
 			}
 			
