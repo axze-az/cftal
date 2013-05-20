@@ -32,8 +32,8 @@ namespace cftal {
 
 			template <class _T>
 			d_real<_T> sin2x(const d_real<_T>& sinx, 
-					 const d_real<_T>& cosy) {
-				return mul_pwr2(sinx* cosx, 2.0);
+					 const d_real<_T>& cosx) {
+				return mul_pwr2(sinx* cosx, _T(2.0));
 			}
 			
 			template <class _T>
