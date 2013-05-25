@@ -232,7 +232,7 @@ namespace cftal {
                         static vf_type log(const vf_type& vf);
 
                         static vf_type sin(const vf_type& vf);
-
+			static vf_type cos(const vf_type& vf);
                 };
 
         }
@@ -476,7 +476,8 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
 	const vi_type& q= rr.second;
 
-	dvf_type dh(mul_pwr2(rr.first, vf_type(0.5)));
+	// dvf_type dh(mul_pwr2(rr.first, vf_type(0.5)));
+	const dvf_type& dh= rr.first;
 
         vmi_type q_and_2((q & vi_type(2))==vi_type(2));
         vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
@@ -501,7 +502,8 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
         s = s * x + vf_type(1);
         s = s * dh;
 
-	c = ctbl::inv_fac[20];
+	c = -ctbl::inv_fac[22];
+	c = c * x + ctbl::inv_fac[20];
 	c = c * x - ctbl::inv_fac[18];
 	c = c * x + ctbl::inv_fac[16];
 	c = c * x - ctbl::inv_fac[14];
@@ -511,15 +513,22 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 	c = c * x - ctbl::inv_fac[6];
 	c = c * x + ctbl::inv_fac[4];
 	c = c * x - vf_type(0.5);
-	c = vf_type(1.0) - c * x;
+	c = c * x + vf_type(1.0);
 
-	dvf_type co(impl::cos2x(s, c));
-	dvf_type si(impl::sin2x(s, c));
+	//dvf_type co(impl::cos2x(s, c));
+	//dvf_type si(impl::sin2x(s, c));
 
-	vf_type sinus(si.h() + si.l());
-	vf_type cosinus(co.h() + co.l());
+	vf_type sinus(s.h() + s.l());
+	vf_type cosinus(c.h() + c.l());
 
-	return std::make_pair(sinus, cosinus);
+	// swap sin/cos if q & 1
+	vf_type rsin(_T::sel(q_and_1_f, cosinus, sinus));
+	vf_type rcos(_T::sel(q_and_1_f, sinus, cosinus));
+	// swap signs 
+	rsin = _T::sel(q_and_2_f, -rsin, rsin);
+	rcos = _T::sel(q_and_2_f ^ q_and_1_f, -rcos, rcos);
+
+	return std::make_pair(rsin, rcos);
 }
 
 template <typename _T>
@@ -724,9 +733,21 @@ cftal::math::func<double, cftal::int32_t, _T>::sin(const vf_type& d)
 {
         // dvf_type xr(sin_k2(d));
         // vf_type res(xr.h() + xr.l());
-        vf_type res(sin_k(d));
+        vf_type res(sin_cos_k(d).first);
         return res;
 }
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::func<double, cftal::int32_t, _T>::cos(const vf_type& d)
+{
+        // dvf_type xr(sin_k2(d));
+        // vf_type res(xr.h() + xr.l());
+        vf_type res(sin_cos_k(d).second);
+        return res;
+}
+
 
 template <class _T>
 const _T
