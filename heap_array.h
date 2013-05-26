@@ -33,6 +33,7 @@ namespace cftal {
                                         a.destroy(p+j);
                                 throw;
                         }
+                        return p;
                 }
                 _T* alloc_and_copy(_A& a, const std::initializer_list<_T>& l) {
                         _T* p= a.allocate(_N);
@@ -50,6 +51,7 @@ namespace cftal {
                                         a.destroy(p+j);
                                 throw;
                         }
+                        return p;
                 }
                 _T* alloc_and_copy_(_A& a, const _T* rp) {
                         _T* p = a.allocate(_N);
@@ -63,6 +65,7 @@ namespace cftal {
                                         a.destroy(p+j);
                                 throw;
                         }
+                        return p;
                 }
                 void destroy_(_A& a) {
                         for (std::size_t j=0; j<_N; ++j)

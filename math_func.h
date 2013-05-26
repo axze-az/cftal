@@ -452,7 +452,8 @@ cftal::math::
 func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
 {
         using ctbl = impl::d_real_constants<dvf_type, double>;
-        vmf_type small_arg(abs(d) < vf_type(1.0e10));
+	constexpr double small_arg(1.0e10);
+        vmf_type v_small_arg(abs(d) < vf_type(small_arg));
         // small argument reduction
         // reduce by pi half
         dvf_type qf(rint(d * ctbl::m_2_pi));
@@ -460,8 +461,26 @@ func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
                     qf * ctbl::m_pi_2.l());
         vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
 
-        if (!all_signs(small_arg)) {
+        if (!all_signs(v_small_arg)) {
                 // reduce the large arguments
+		constexpr std::size_t N=sizeof(vf_type)/sizeof(double);
+		union v_d {
+			vf_type _vec;
+			double _sc[N];
+		} tf, d0_l, d0_h;
+		union v_i {
+			vi_type _vec;
+			int32_t _sc[N];
+		} ti;
+		tf._vec = d;
+		d0_l._vec = d0.l();
+		d0_h._vec = d0.h();
+		for (std::size_t i=0; i<N; ++i) {
+			if (fabs(tf._sc[i]) >= small_arg) {
+			}
+		}
+		d0 = dvf_type(d0_h._vec, d0_l._vec);
+		q = ti._vec; 
         }
         return std::make_pair(d0, q);
 }

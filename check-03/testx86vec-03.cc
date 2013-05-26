@@ -35,7 +35,9 @@ namespace x86vec {
 			double (*_f2d)(double a, double b);
 			std::vector<inp_res> _data;
 
-			func_data() : _f1(nullptr), _f2(nullptr), _data() {}
+			func_data() : _fname(), _f1(nullptr), _f1d(nullptr),
+					      _f2(nullptr), _f2d(nullptr),_data() {
+			}
 		};
 
 		std::string delete_comment(const std::string& s);
