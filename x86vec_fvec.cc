@@ -32,14 +32,6 @@ x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)
         return h2 + l2;
 }
 
-x86vec::v2f64 test_sin_cos(x86vec::arg<x86vec::v2f64>::type f)
-{
-	using namespace x86vec;
-	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
-	using func_t=cftal::math::func<double, int32_t, traits_t>;
-	return func_t::sin_cos_k(f).first;
-}
-
 x86vec::v2f64 x86vec::pow2i(arg<v4s32>::type e)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
@@ -68,6 +60,13 @@ x86vec::v4s32 x86vec::ilogb(arg<v2f64>::type d)
 	return func_t::ilogb(d);
 }
 
+x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::exp(d);
+}
+
 x86vec::v2f64 x86vec::log(arg<v2f64>::type d)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
@@ -75,11 +74,11 @@ x86vec::v2f64 x86vec::log(arg<v2f64>::type d)
 	return func_t::log(d);
 }
 
-x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
+void x86vec::sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
-	return func_t::exp(d);
+	return func_t::sin_cos(d, psin, pcos);
 }
 
 x86vec::v2f64 x86vec::sin(arg<v2f64>::type d)
@@ -95,6 +94,21 @@ x86vec::v2f64 x86vec::cos(arg<v2f64>::type d)
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
 	return func_t::cos(d);
 }
+
+x86vec::v2f64 x86vec::tan(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::tan(d);
+}
+
+x86vec::v2f64 x86vec::cot(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::cot(d);
+}
+
 
 #define PI4_A 0.78539816290140151978
 #define PI4_B 4.9604678871439933374e-10
@@ -1333,14 +1347,6 @@ x86vec::sincos(arg<v2f64>::type d)
 		impl::vec_func_traits<v2f64, v4s32> >::
                 sincos(d);
 }
-
-x86vec::v2f64 x86vec::tan(arg<v2f64>::type d)
-{
-        return math::func<double, int32_t,
-		impl::vec_func_traits<v2f64, v4s32> >::
-                tan(d);
-}
-
 
 x86vec::v2f64 x86vec::native_exp(arg<v2f64>::type d)
 {
