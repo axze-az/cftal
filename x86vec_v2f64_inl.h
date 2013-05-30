@@ -353,6 +353,15 @@ x86vec::v2f64 x86vec::sqrt(const v2f64& a)
 }
 
 inline
+x86vec::v2f64 x86vec::hypot(const v2f64& a, const v2f64& b)
+{
+	v2f64 abs_a(fabs(a)), abs_b(fabs(b));
+	v2f64 x(max(abs_a, abs_b)), y(min(abs_a, abs_b));
+	v2f64 t(y/x);
+	return x* sqrt(1.0 * t * t);
+}
+
+inline
 x86vec::v2f64 x86vec::rsqrt(const v2f64& a)
 {
 	return 1.0/sqrt(a);
