@@ -1,4 +1,3 @@
-#if 0
 #include "x86vec_traits.h"
 #include "math_func.h"
 #include "d_real.h"
@@ -1489,5 +1488,4 @@ static inline double ldexpk(double x, int q) {
         u = longBitsToDouble(((int64_t)(q + 0x3ff)) << 52);
         return x * u;
 }
-#endif
 #endif
