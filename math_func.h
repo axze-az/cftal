@@ -197,6 +197,12 @@ namespace cftal {
 
                         typedef d_real<vf_type> dvf_type;
 
+			static const dvf_type m_exp_c_k2[];
+			static const dvf_type m_log_c_k2[];
+			static const dvf_type m_sin_c_k2[];
+			static const dvf_type m_cos_c_k2[];
+
+
                         static dvf_type exp_k2(const dvf_type& dvf);
                         static dvf_type log_k2(const dvf_type& dvf);
 
@@ -361,7 +367,7 @@ cftal::math::func<double, cftal::int32_t, _T>::exp_k2(const dvf_type& d)
         using ctbl = impl::d_real_constants<dvf_type, double>;
 
         const double k(512.0);
-        const double k_i(9);
+        const int k_i(9);
         const vf_type inv_k(1.0/k);
 
         dvf_type m2= rint(d * ctbl::m_1_ln2);
@@ -486,7 +492,7 @@ func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
 				ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
 								   y);
 				d0_l._sc[i]= y[1];
-				d0_h._sc[i]= y[0];
+ 				d0_h._sc[i]= y[0];
 			}
 		}
 		d0 = dvf_type(d0_h._vec, d0_l._vec);
@@ -494,6 +500,38 @@ func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
         }
         return std::make_pair(d0, q);
 }
+
+template <typename _T>
+const
+typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
+cftal::math::func<double, cftal::int32_t, _T>::m_sin_c_k2[]= {
+	// +1/21!
+	// -1/19!
+	// +1/17!
+	// -1/15!
+	// +1/13!
+	// -1/11!
+	// +1/9!
+	// -1/7!
+	// +1/5!
+	// -1/3!
+};
+
+template <typename _T>
+const
+typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
+cftal::math::func<double, cftal::int32_t, _T>::m_cos_c_k2[]= {
+	// -1/22!
+	// +1/20!
+	// -1/18!
+	// +1/16!
+	// -1/14!
+	// +1/12!
+	// -1/10!
+	// +1/8!
+	// -1/6!
+	// +1/4!
+};
 
 template <typename _T>
 inline
@@ -504,8 +542,6 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
         using ctbl = impl::d_real_constants<dvf_type, double>;
 	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
 	const vi_type& q= rr.second;
-
-	// dvf_type dh(mul_pwr2(rr.first, vf_type(0.5)));
 	const dvf_type& dh= rr.first;
 
         vmi_type q_and_2((q & vi_type(2))==vi_type(2));
@@ -528,7 +564,7 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
         s = s * x - ctbl::inv_fac[7];
         s = s * x + ctbl::inv_fac[5];
         s = s * x - ctbl::inv_fac[3];
-        s = s * x + vf_type(1);
+        s = s * x + vf_type(1.0);
         s = s * dh;
 
 	c = -ctbl::inv_fac[22];
@@ -543,9 +579,6 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 	c = c * x + ctbl::inv_fac[4];
 	c = c * x - vf_type(0.5);
 	c = c * x + vf_type(1.0);
-
-	//dvf_type co(impl::cos2x(s, c));
-	//dvf_type si(impl::sin2x(s, c));
 
 	// swap sin/cos if q & 1
 	dvf_type rsin(
