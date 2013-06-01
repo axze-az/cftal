@@ -502,36 +502,57 @@ func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
 }
 
 template <typename _T>
-const
+const 
 typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
 cftal::math::func<double, cftal::int32_t, _T>::m_sin_c_k2[]= {
 	// +1/21!
+	dvf_type(  1.9572941063391262595198e-20, -1.3643503830087908487197e-36),
 	// -1/19!
+	dvf_type( -8.2206352466243294955370e-18, -2.2141894119604265363725e-34),
 	// +1/17!
+	dvf_type(  2.8114572543455205981105e-15,  1.6508842730861432599403e-31),
 	// -1/15!
+	dvf_type( -7.6471637318198164055138e-13, -7.0387287773345300106125e-30),
 	// +1/13!
+	dvf_type(  1.6059043836821613340863e-10,  1.2585294588752098052117e-26),
 	// -1/11!
+	dvf_type( -2.5052108385441720223866e-08,  1.4488140709359119660293e-24),
 	// +1/9!
+	dvf_type(  2.7557319223985892510951e-06, -1.8583932740464720810392e-22),
 	// -1/7!
+	dvf_type( -1.9841269841269841252632e-04, -1.7209558293420705286779e-22),
 	// +1/5!
+	dvf_type(  8.3333333333333332176851e-03,  1.1564823173178713802252e-19),
 	// -1/3!
+	dvf_type( -1.6666666666666665741481e-01, -9.2518585385429706566156e-18)
 };
 
 template <typename _T>
-const
+const 
 typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
 cftal::math::func<double, cftal::int32_t, _T>::m_cos_c_k2[]= {
 	// -1/22!
+	dvf_type( -8.8967913924505740778892e-22,  7.9114026148723762170263e-38),
 	// +1/20!
+	dvf_type(  4.1103176233121648440650e-19,  1.4412973378659527149817e-36),
 	// -1/18!
+	dvf_type( -1.5619206968586225271148e-16, -1.1910679660273754002389e-32),
 	// +1/16!
+	dvf_type(  4.7794773323873852534462e-14,  4.3992054858340812566328e-31),
 	// -1/14!
+	dvf_type( -1.1470745597729724507297e-11, -2.0655512752830745424540e-28),
 	// +1/12!
+	dvf_type(  2.0876756987868100186555e-09, -1.2073450591132599716911e-25),
 	// -1/10!
+	dvf_type( -2.7557319223985888275786e-07, -2.3767714622250297318518e-23),
 	// +1/8!
+	dvf_type(  2.4801587301587301565790e-05,  2.1511947866775881608473e-23),
 	// -1/6!
+	dvf_type( -1.3888888888888889418943e-03,  5.3005439543735770590566e-20),
 	// +1/4!
+	dvf_type(  4.1666666666666664353702e-02,  2.3129646346357426641539e-18)
 };
+
 
 template <typename _T>
 inline
@@ -539,7 +560,7 @@ std::pair<typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type,
 	  typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type>
 cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 {
-        using ctbl = impl::d_real_constants<dvf_type, double>;
+        // using ctbl = impl::d_real_constants<dvf_type, double>;
 	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
 	const vi_type& q= rr.second;
 	const dvf_type& dh= rr.first;
@@ -554,6 +575,19 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
         dvf_type x= sqr(dh);
         dvf_type s, c;
 
+#if 1
+	s = m_sin_c_k2[0];
+	for (unsigned i=0; i<10; ++i)
+		s = s * x + m_sin_c_k2[i];
+        s = s * x + vf_type(1.0);
+        s = s * dh;
+
+	c= m_cos_c_k2[0];
+	for (unsigned i=0; i<10; ++i)
+		c = c * x + m_cos_c_k2[i];
+	c = c * x - vf_type(0.5);
+	c = c * x + vf_type(1.0);
+#else
         s = ctbl::inv_fac[21];
         s = s * x - ctbl::inv_fac[19];
         s = s * x + ctbl::inv_fac[17];
@@ -580,6 +614,7 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 	c = c * x - vf_type(0.5);
 	c = c * x + vf_type(1.0);
 
+#endif
 	// swap sin/cos if q & 1
 	dvf_type rsin(
 		_T::sel(q_and_1_f, c.h(), s.h()),

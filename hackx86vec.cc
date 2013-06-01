@@ -311,11 +311,37 @@ void calc_pi()
                   << std::endl;
 }
 
+struct print_dpf64 {
+	const cftal::d_real<double> _f;
+	print_dpf64(const cftal::d_real<double>& f) : _f(f) {}
+};
+
+std::ostream& operator<<(std::ostream& s, const print_dpf64& p)
+{
+	const cftal::d_real<double>& d=p._f;
+	s << std::scientific
+	  << std::setprecision(22);
+	if (d.h() >= 0.0)
+		std::cout << ' ';
+	s << std::setw(27) 
+	  << d.h()
+	  << std::setw(0)
+	  << ", " ;
+	if (d.l() >= 0.0)
+		std::cout << ' ';
+	std::cout << std::setw(27)
+		  << d.l()
+		  << std::setw(0);
+	return s;
+}
+
+
 void print_inv_fac()
 {
         using dpf64 = cftal::d_real<double>;
 
 	dpf64 fac(1.0);
+	std::vector<dpf64> v; 
 	
 	const std::size_t MAX_FAC=30;
 
@@ -330,24 +356,90 @@ void print_inv_fac()
 			fac *= double(i);
 			inv_fac /= fac;
 		}
+		v.push_back(inv_fac);
 		std::cout << std::scientific
 			  << std::setprecision(22)
 			  << "\t_T( " 
-			  << std::setw(27)
-			  << inv_fac.h()
-			  << std::setw(0)
-			  << ", " ;
-		if (inv_fac.l() >= 0.0)
-			std::cout << ' ';
-		std::cout << std::setw(27)
-			  << inv_fac.l()
-			  << std::setw(0)
+			  << print_dpf64(inv_fac)
 			  << ")";
 		if (i != MAX_FAC)
 			std::cout << ',';
 		std::cout << std::endl;
 	}
 	std::cout << "};" << std::endl;
+
+	// parameters for sin
+	std::cout << "template <typename _T>" << std::endl
+		  << "const " << std::endl
+ 		  << "typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type" << std::endl
+		  << "cftal::math::func<double, cftal::int32_t, _T>::m_sin_c_k2[]= {" << std::endl;
+	
+	std::cout << "\t// +1/21!\n"
+		  << "\tdvf_type( " << print_dpf64(v[21]) <<"),\n";
+
+	std::cout << "\t// -1/19!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[19]) <<"),\n";
+
+	std::cout << "\t// +1/17!\n"
+		  << "\tdvf_type( " << print_dpf64(v[17]) <<"),\n";
+
+	std::cout << "\t// -1/15!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[15]) <<"),\n";
+
+	std::cout << "\t// +1/13!\n"
+		  << "\tdvf_type( " << print_dpf64(v[13]) <<"),\n";
+
+	std::cout << "\t// -1/11!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[11]) <<"),\n";
+
+	std::cout << "\t// +1/9!\n"
+		  << "\tdvf_type( " << print_dpf64(v[9]) <<"),\n";
+
+	std::cout << "\t// -1/7!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[7]) <<"),\n";
+
+	std::cout << "\t// +1/5!\n"
+		  << "\tdvf_type( " << print_dpf64(v[5]) <<"),\n";
+
+	std::cout << "\t// -1/3!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[3]) <<")\n};\n\n";
+
+	// parameters for cos
+	std::cout << "template <typename _T>" << std::endl
+		  << "const " << std::endl
+ 		  << "typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type" << std::endl
+		  << "cftal::math::func<double, cftal::int32_t, _T>::m_cos_c_k2[]= {" << std::endl;
+	
+	std::cout << "\t// -1/22!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[22]) <<"),\n";
+
+	std::cout << "\t// +1/20!\n"
+		  << "\tdvf_type( " << print_dpf64(v[20]) <<"),\n";
+
+	std::cout << "\t// -1/18!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[18]) <<"),\n";
+
+	std::cout << "\t// +1/16!\n"
+		  << "\tdvf_type( " << print_dpf64(v[16]) <<"),\n";
+
+	std::cout << "\t// -1/14!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[14]) <<"),\n";
+
+	std::cout << "\t// +1/12!\n"
+		  << "\tdvf_type( " << print_dpf64(v[12]) <<"),\n";
+
+	std::cout << "\t// -1/10!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[10]) <<"),\n";
+
+	std::cout << "\t// +1/8!\n"
+		  << "\tdvf_type( " << print_dpf64(v[8]) <<"),\n";
+
+	std::cout << "\t// -1/6!\n"
+		  << "\tdvf_type( " << print_dpf64(-v[6]) <<"),\n";
+
+	std::cout << "\t// +1/4!\n"
+		  << "\tdvf_type( " << print_dpf64(v[4]) <<")\n};\n\n";
+	// parameters for exp
 }
 
 void print_2_over_i()
