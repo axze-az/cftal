@@ -555,7 +555,7 @@ cftal::math::func<double, cftal::int32_t, _T>::m_cos_c_k2[]= {
 
 
 template <typename _T>
-inline
+__attribute__((flatten, noinline))
 std::pair<typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type,
 	  typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type>
 cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
