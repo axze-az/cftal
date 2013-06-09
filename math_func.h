@@ -202,29 +202,24 @@ namespace cftal {
 			static const dvf_type m_sin_c_k2[];
 			static const dvf_type m_cos_c_k2[];
 
-
                         static dvf_type exp_k2(const dvf_type& dvf);
                         static dvf_type log_k2(const dvf_type& dvf);
 
-                        // return dfv mod pi, and the half in second
-                        static std::pair<dvf_type, vi_type>
-                        reduce_trig_arg_k2(const dvf_type& dvf);
-
-                        static std::pair<dvf_type, vi_type>
-                        reduce_trig_arg_k(const vf_type& v);
                         static vf_type sin_px(const vf_type& v);
                         static vf_type cos_px(const vf_type& v);
 			// only valid for values between [-pi/4, pi/4]
 			static std::pair<vf_type, vf_type> 
 			reduced_sin_cos(const vf_type& v);
-		public:
+
+			// argument reduction for all trigonometric
+			// functions, reduction by %pi/2, the
+			// low bits of multiple of %pi/2 is returned
+			// in the second part of the return type
+                        static std::pair<dvf_type, vi_type>
+                        reduce_trig_arg_k(const vf_type& v);
+			// core sine, cosine calculation
 			static std::pair<dvf_type, dvf_type>
 			sin_cos_k(const vf_type& v);
-		private:
-                        static vf_type sin_k(const vf_type& v);
-
-                        static dvf_type sin_k2(const dvf_type& dvf);
-                        static dvf_type cos_k2(const dvf_type& dvf);
 
                 public:
                         static vf_type pow2i(const vi_type& vi);
@@ -575,7 +570,6 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
         dvf_type x= sqr(dh);
         dvf_type s, c;
 
-#if 1
 	s = m_sin_c_k2[0];
 	for (unsigned i=0; i<10; ++i)
 		s = s * x + m_sin_c_k2[i];
@@ -587,34 +581,6 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 		c = c * x + m_cos_c_k2[i];
 	c = c * x - vf_type(0.5);
 	c = c * x + vf_type(1.0);
-#else
-        s = ctbl::inv_fac[21];
-        s = s * x - ctbl::inv_fac[19];
-        s = s * x + ctbl::inv_fac[17];
-        s = s * x - ctbl::inv_fac[15];
-        s = s * x + ctbl::inv_fac[13];
-        s = s * x - ctbl::inv_fac[11];
-        s = s * x + ctbl::inv_fac[9];
-        s = s * x - ctbl::inv_fac[7];
-        s = s * x + ctbl::inv_fac[5];
-        s = s * x - ctbl::inv_fac[3];
-        s = s * x + vf_type(1.0);
-        s = s * dh;
-
-	c = -ctbl::inv_fac[22];
-	c = c * x + ctbl::inv_fac[20];
-	c = c * x - ctbl::inv_fac[18];
-	c = c * x + ctbl::inv_fac[16];
-	c = c * x - ctbl::inv_fac[14];
-	c = c * x + ctbl::inv_fac[12];
-	c = c * x - ctbl::inv_fac[10];
-	c = c * x + ctbl::inv_fac[8];
-	c = c * x - ctbl::inv_fac[6];
-	c = c * x + ctbl::inv_fac[4];
-	c = c * x - vf_type(0.5);
-	c = c * x + vf_type(1.0);
-
-#endif
 	// swap sin/cos if q & 1
 	dvf_type rsin(
 		_T::sel(q_and_1_f, c.h(), s.h()),
@@ -623,181 +589,11 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 		_T::sel(q_and_1_f, s.h(), c.h()),
 		_T::sel(q_and_1_f, s.l(), c.l()));
 	// swap signs 
-#if 0
-	rsin.h() = _T::sel(q_and_2_f, -rsin.h(), rsin.h());
-	rsin.l() = _T::sel(q_and_2_f, -rsin.l(), rsin.l());
-	rcos.h() = _T::sel(q_and_2_f ^ q_and_1_f, -rcos.h(), rcos.h());
-	rcos.l() = _T::sel(q_and_2_f ^ q_and_1_f, -rcos.l(), rcos.l());
-#else
 	rsin.h() = mulsign(rsin.h(), q_and_2_f);
 	rsin.l() = mulsign(rsin.l(), q_and_2_f);
 	rcos.h() = mulsign(rcos.h(), q_and_2_f ^ q_and_1_f);
 	rcos.l() = mulsign(rcos.l(), q_and_2_f ^ q_and_1_f);
-#endif
 	return std::make_pair(rsin, rcos);
-}
-
-template <typename _T>
-inline
-typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
-cftal::math::func<double, cftal::int32_t, _T>::sin_k(const vf_type& d)
-{
-        using ctbl = impl::d_real_constants<dvf_type, double>;
-
-        std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
-        const dvf_type& d1= rr.first;
-        const vi_type& q= rr.second;
-
-        vmi_type q_and_2((q & vi_type(2))==vi_type(2));
-        vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
-
-        vmi_type q_and_1((q & vi_type(1))==vi_type(1));
-        vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
-
-        dvf_type d2(ctbl::m_pi_2 - d1);
-
-        d2.h() = _T::sel(q_and_1_f, d2.h(), d1.h());
-        d2.l() = _T::sel(q_and_1_f, d2.l(), d1.l());
-
-        d2.h() = _T::sel(q_and_2_f, -d2.h(), d2.h());
-        d2.l() = _T::sel(q_and_2_f, -d2.l(), d2.l());
-
-        dvf_type x= sqr(d2);
-        dvf_type s;
-
-        s = ctbl::inv_fac[21];
-        s = s * x - ctbl::inv_fac[19];
-        s = s * x + ctbl::inv_fac[17];
-        s = s * x - ctbl::inv_fac[15];
-        s = s * x + ctbl::inv_fac[13];
-        s = s * x - ctbl::inv_fac[11];
-        s = s * x + ctbl::inv_fac[9];
-        s = s * x - ctbl::inv_fac[7];
-        s = s * x + ctbl::inv_fac[5];
-        s = s * x - ctbl::inv_fac[3];
-        s = s * x + vf_type(1);
-        s = s * d2;
-
-        vf_type r0(s.h() + s.l());
-        vf_type r(_T::sel(q_and_2_f, -r0, r0));
-        return r;
-}
-
-template <typename _T>
-inline
-std::pair<typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type,
-          typename cftal::math::func<double, cftal::int32_t, _T>::vi_type>
-cftal::math::
-func<double, cftal::int32_t, _T>::reduce_trig_arg_k2(const dvf_type& d)
-{
-        using ctbl = impl::d_real_constants<dvf_type, double>;
-
-        dvf_type n2pif(rint(d * ctbl::m_1_pi2));
-        dvf_type d0((d - n2pif * ctbl::m_pi2.h()) -
-                    n2pif * ctbl::m_pi2.l());
-        // reduce by pi
-        dvf_type qf(rint(d0 * ctbl::m_1_pi));
-        vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
-        dvf_type d1(d0 - qf * ctbl::m_pi);
-        return std::make_pair(d1, q);
-}
-
-template <typename _T>
-inline
-typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
-cftal::math::func<double, cftal::int32_t, _T>::sin_k2(const dvf_type& d)
-{
-        using ctbl = impl::d_real_constants<dvf_type, double>;
-        // reduce argument
-        std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k2(d));
-        const dvf_type& d1= rr.first;
-        const vi_type q= rr.second;
-#if 0
-        std::cout << "d =  " << x86vec::extract<0>(d.h())
-                  << ", " << x86vec::extract<0>(d.l())
-                  << std::endl;
-        std::cout << "n2= " << x86vec::extract<0>(n2pif.h())
-                  << ", " << x86vec::extract<0>(n2pif.l())
-                  << std::endl;
-        std::cout << "d0=  " << x86vec::extract<0>(d0.h())
-                  << ", " << x86vec::extract<0>(d0.l()) << std::endl;
-        std::cout << "qf= " << x86vec::extract<0>(qf.h())
-                  << ", " << x86vec::extract<0>(qf.l())
-                  << std::endl;
-        std::cout << "d1=  " << x86vec::extract<0>(d1.h())
-                  << ", " << x86vec::extract<0>(d1.l()) << std::endl;
-#endif
-        vmi_type q_and_1((q & vi_type(1))== vi_type(1));
-        vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
-        dvf_type d2(_T::sel(q_and_1_f, -d1.h(), d1.h()),
-                    _T::sel(q_and_1_f, -d1.l(), d1.l()));
-
-        dvf_type x= sqr(d1);
-        dvf_type s;
-
-        s = ctbl::inv_fac[21];
-        s = s * x - ctbl::inv_fac[19];
-        s = s * x + ctbl::inv_fac[17];
-        s = s * x - ctbl::inv_fac[15];
-        s = s * x + ctbl::inv_fac[13];
-        s = s * x - ctbl::inv_fac[11];
-        s = s * x + ctbl::inv_fac[9];
-        s = s * x - ctbl::inv_fac[7];
-        s = s * x + ctbl::inv_fac[5];
-        s = s * x - ctbl::inv_fac[3];
-        s = s * x + vf_type(1);
-        s = s * d2;
-
-        return s;
-}
-
-template <typename _T>
-inline
-typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type
-cftal::math::func<double, cftal::int32_t, _T>::cos_k2(const dvf_type& d)
-{
-        using ctbl = impl::d_real_constants<dvf_type, double>;
-        // reduce argument
-        std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k2(d));
-        const dvf_type& d1= rr.first;
-        const vi_type q= rr.second;
-#if 0
-        std::cout << "d =  " << x86vec::extract<0>(d.h())
-                  << ", " << x86vec::extract<0>(d.l())
-                  << std::endl;
-        std::cout << "n2= " << x86vec::extract<0>(n2pif.h())
-                  << ", " << x86vec::extract<0>(n2pif.l())
-                  << std::endl;
-        std::cout << "d0=  " << x86vec::extract<0>(d0.h())
-                  << ", " << x86vec::extract<0>(d0.l()) << std::endl;
-        std::cout << "qf= " << x86vec::extract<0>(qf.h())
-                  << ", " << x86vec::extract<0>(qf.l())
-                  << std::endl;
-        std::cout << "d1=  " << x86vec::extract<0>(d1.h())
-                  << ", " << x86vec::extract<0>(d1.l()) << std::endl;
-#endif
-        vmi_type q_and_1((q & vi_type(1))== vi_type(1));
-        vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
-        dvf_type d2(_T::sel(q_and_1_f, -d1.h(), d1.h()),
-                    _T::sel(q_and_1_f, -d1.l(), d1.l()));
-
-        dvf_type x= sqr(d1);
-        dvf_type s;
-
-        s = ctbl::inv_fac[21];
-        s = s * x - ctbl::inv_fac[19];
-        s = s * x + ctbl::inv_fac[17];
-        s = s * x - ctbl::inv_fac[15];
-        s = s * x + ctbl::inv_fac[13];
-        s = s * x - ctbl::inv_fac[11];
-        s = s * x + ctbl::inv_fac[9];
-        s = s * x - ctbl::inv_fac[7];
-        s = s * x + ctbl::inv_fac[5];
-        s = s * x - ctbl::inv_fac[3];
-        s = s * x + vf_type(1);
-        s = s * d2;
-
-        return s;
 }
 
 template <typename _T>
