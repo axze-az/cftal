@@ -221,6 +221,10 @@ namespace cftal {
 			static std::pair<dvf_type, dvf_type>
 			sin_cos_k(const vf_type& v);
 
+			// core sine, cosine calculation
+			static std::pair<vf_type, vf_type>
+			native_sin_cos_k(const vf_type& v);
+
                 public:
                         static vf_type pow2i(const vi_type& vi);
                         static vf_type ldexp(const vf_type& vf,
@@ -239,6 +243,15 @@ namespace cftal {
 			static vf_type cos(const vf_type& vf);
                         static vf_type tan(const vf_type& vf);
 			static vf_type cot(const vf_type& vf);
+
+
+			static void native_sin_cos(const vf_type& vf,
+						   vf_type* psin, 
+						   vf_type* pcos);
+			static vf_type native_sin(const vf_type& vf);
+			static vf_type native_cos(const vf_type& vf);
+			static vf_type native_tan(const vf_type& vf);
+
                 };
 
         }
@@ -458,8 +471,8 @@ cftal::math::
 func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
 {
         using ctbl = impl::d_real_constants<dvf_type, double>;
-	constexpr double small_arg(1.0e8);
-        vmf_type v_small_arg(abs(d) < vf_type(small_arg));
+	constexpr double large_arg(2.0e8);
+        vmf_type v_small_arg(abs(d) < vf_type(large_arg));
         // small argument reduction
         // reduce by pi half
         dvf_type qf(rint(d * ctbl::m_2_pi));
@@ -482,7 +495,7 @@ func<double, cftal::int32_t, _T>::reduce_trig_arg_k(const vf_type& d)
 		d0_l._vec = d0.l();
 		d0_h._vec = d0.h();
 		for (std::size_t i=0; i<N; ++i) {
-			if (fabs(tf._sc[i]) >= small_arg) {
+			if (fabs(tf._sc[i]) >= large_arg) {
 				double y[2];
 				ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
 								   y);
@@ -597,6 +610,66 @@ cftal::math::func<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 }
 
 template <typename _T>
+__attribute__((flatten, noinline))
+std::pair<typename cftal::math::func<double, cftal::int32_t, _T>::vf_type,
+	  typename cftal::math::func<double, cftal::int32_t, _T>::vf_type>
+cftal::math::
+func<double, cftal::int32_t, _T>::native_sin_cos_k(const vf_type& d)
+{
+#define PI4_A 0.78539816290140151978
+#define PI4_B 4.9604678871439933374e-10
+#define PI4_C 1.1258708853173288931e-18
+#define PI4_D 1.7607799325916000908e-27
+
+	vf_type qf(rint(d * (2 * M_1_PI)));
+	vi_type q(_T::cvt_f_to_i(qf));
+	
+	vf_type x(d);
+	x = x - qf * (2*PI4_A);
+	x = x - qf * (2*PI4_B);
+	x = x - qf * (2*PI4_C);
+	x = x - qf * (2*PI4_D);
+
+	vf_type x2(x*x);
+
+	vf_type s, c;
+	s = 1.58938307283228937328511e-10;
+	s = s * x2 - 2.50506943502539773349318e-08;
+	s = s * x2 + 2.75573131776846360512547e-06;
+	s = s * x2 - 0.000198412698278911770864914;
+	s = s * x2 + 0.0083333333333191845961746;
+	s = s * x2 - 0.166666666666666130709393;
+	s = s * x2 + 1.0;
+	s = s * x;
+
+	c = -1.13615350239097429531523e-11;
+	c = c * x2 + 2.08757471207040055479366e-09;
+	c = c * x2 - 2.75573144028847567498567e-07;
+	c = c * x2 + 2.48015872890001867311915e-05;
+	c = c * x2 - 0.00138888888888714019282329;
+	c = c * x2 + 0.0416666666666665519592062;
+	c = c * x2 - 0.5;
+	c = c * x2 + 1.0; 
+
+        vmi_type q_and_2((q & vi_type(2))==vi_type(2));
+        vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
+        vmi_type q_and_1((q & vi_type(1))==vi_type(1));
+        vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
+
+	// swap sin/cos if q & 1
+	vf_type rs(_T::sel(q_and_1_f, c, s));
+	vf_type rc(_T::sel(q_and_1_f, s, c));
+	// swap signs 
+	rs = mulsign(rs, q_and_2_f);
+	rc = mulsign(rc, q_and_2_f ^ q_and_1_f);
+#undef PI4_A
+#undef PI4_B
+#undef PI4_C
+#undef PI4_C
+	return std::make_pair(rs, rc);
+}
+
+template <typename _T>
 inline
 typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::log(const vf_type& d)
@@ -683,6 +756,57 @@ cftal::math::func<double, cftal::int32_t, _T>::cot(const vf_type& d)
 	dvf_type ct(sin_cos.second / sin_cos.first);
         return ct.h() + ct.l();
 }
+
+template <typename _T>
+inline
+void
+cftal::math::
+func<double, cftal::int32_t, _T>::native_sin_cos(const vf_type& d,
+						 vf_type* psin,
+						 vf_type* pcos)
+{
+	if ((psin!=nullptr) || (pcos!=nullptr)) {
+		std::pair<vf_type, vf_type> sin_cos(native_sin_cos_k(d));
+		if (psin) {
+			*psin = sin_cos.first;
+		}
+		if (pcos) {
+			*pcos = sin_cos.second;
+		}
+	}
+}
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::
+func<double, cftal::int32_t, _T>::native_sin(const vf_type& d)
+{
+	std::pair<vf_type, vf_type> sin_cos(native_sin_cos_k(d));
+        return sin_cos.first;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::
+func<double, cftal::int32_t, _T>::native_cos(const vf_type& d)
+{
+	std::pair<vf_type, vf_type> sin_cos(native_sin_cos_k(d));
+        return sin_cos.second;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::
+func<double, cftal::int32_t, _T>::native_tan(const vf_type& d)
+{
+	std::pair<vf_type, vf_type> sin_cos(native_sin_cos_k(d));
+	vf_type tn(sin_cos.first / sin_cos.second);
+        return tn;
+}
+
 
 template <class _T>
 const _T

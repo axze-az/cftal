@@ -368,9 +368,11 @@ namespace x86vec {
         v2f64 tan(arg<v2f64>::type d);
 	v2f64 cot(arg<v2f64>::type d);
 	
+	void native_sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos);
 	v2f64 native_exp(arg<v2f64>::type d);
 	v2f64 native_sin(arg<v2f64>::type d);
 	v2f64 native_cos(arg<v2f64>::type d);
+	v2f64 native_tan(arg<v2f64>::type d);
 	v2f64 cosh(arg<v2f64>::type d);
 
         v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);

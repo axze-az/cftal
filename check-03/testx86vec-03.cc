@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <x86vec_fvec.h>
+#include <bitops.h>
 #include <unistd.h>
 
 namespace x86vec {
@@ -124,7 +125,10 @@ bool x86vec::test::read_func(func_data& tf,
 		std::cerr << "testing " << f << std::endl;
 		tf._fname = f;
 		if (f == "cos") {
-			tf._f1 = x86vec::cos;
+			if (use_native)
+				tf._f1 = x86vec::native_cos;
+			else
+				tf._f1 = x86vec::cos;
 			tf._f1d= std::cos;
 		} else if (f == "sin") {
 			if (use_native)
@@ -133,7 +137,10 @@ bool x86vec::test::read_func(func_data& tf,
 				tf._f1 = x86vec::sin;
 			tf._f1d= std::sin;
 		} else if (f == "tan") {
-			tf._f1 = x86vec::tan;
+			if (use_native)
+				tf._f1 = x86vec::native_tan;
+			else
+				tf._f1 = x86vec::tan;
 			tf._f1d= std::tan;
 		} else if (f == "exp") {
 			if (use_native)
@@ -242,6 +249,8 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 {
 	bool rc(true);
 	int errs(0);
+	std::size_t calls(0);
+	int64_t ticks(0);
 	for (std::size_t i=0; i< tf._data.size(); ++i) {
 		const func_data::inp_res& c= tf._data[i];
 		v2f64 expected(c._res);
@@ -249,13 +258,20 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 		v2f64 a1(c._a1);
 		v2f64 res;
 		double rs;
+		int64_t t0, t1;
 		if (tf._f1) {
 			res = tf._f1(a0);
+			t0= cftal::rdtsc();
 			rs = tf._f1d(c._a0);
+			t1= cftal::rdtsc();
 		} else {
 			res = tf._f2(a0, a1);
+			t0= cftal::rdtsc();
 			rs = tf._f2d(c._a0, c._a1);
+			t1= cftal::rdtsc();
 		}
+		ticks+= (t1 -t0);
+		++calls;
 		v2f64 ae(abs_error(expected, res));
 		v2f64 re(rel_error(expected, res));
 		v2f64 max_err(ae + re);
@@ -300,6 +316,12 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 		std::cout << double(errs)/tf._data.size() << std::endl;
 	else
 		std::cout << 0.0 << std::endl;
+	if (calls) {
+		std::cout << "ticks per call: " 
+			  << std::fixed << std::setprecision(2)
+			  << double(ticks)/double(calls) 
+			  << std::endl;
+	}
 	return rc;
 }
 

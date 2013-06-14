@@ -69,11 +69,20 @@ test-sin-fma: testx86vec-03
 test-sin-native: testx86vec-03
 	./$< --use-native <sin.testdata
 
+test-sin-native-fma: testx86vec-03
+	sde64 -mix -ast -- ./$< --use-native <sin.testdata
+
 test-cos: testx86vec-03
 	./$< <cos.testdata
 
+test-cos-native: testx86vec-03
+	./$< --use-native <cos.testdata
+
 test-tan: testx86vec-03
 	./$< <tan.testdata
+
+test-tan-native: testx86vec-03
+	./$< --use-native <tan.testdata
 
 test-exp: testx86vec-03
 	./$< <exp.testdata

@@ -109,6 +109,34 @@ x86vec::v2f64 x86vec::cot(arg<v2f64>::type d)
 	return func_t::cot(d);
 }
 
+void x86vec::native_sincos(arg<v2f64>::type d, 
+			   v2f64* psin, v2f64* pcos)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::native_sin_cos(d, psin, pcos);
+}
+
+x86vec::v2f64 x86vec::native_sin(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::native_sin(d);
+}
+
+x86vec::v2f64 x86vec::native_cos(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::native_cos(d);
+}
+
+x86vec::v2f64 x86vec::native_tan(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::native_tan(d);
+}
 
 #define PI4_A 0.78539816290140151978
 #define PI4_B 4.9604678871439933374e-10
@@ -1326,6 +1354,7 @@ x86vec::v2f64 x86vec::atan(arg<v2f64>::type d)
                 atan(d);
 }
 
+#if 0
 x86vec::v2f64 x86vec::native_sin(arg<v2f64>::type d)
 {
         return math::func<double, int32_t,
@@ -1347,6 +1376,7 @@ x86vec::sincos(arg<v2f64>::type d)
 		impl::vec_func_traits<v2f64, v4s32> >::
                 sincos(d);
 }
+#endif
 
 x86vec::v2f64 x86vec::native_exp(arg<v2f64>::type d)
 {

@@ -40,7 +40,7 @@ int64_t cftal::rdtsc()
 	uint64_t a, d;
 	__asm__ __volatile__("lfence;\n\t"
 			     "rdtsc" :"=a"(a), "=d"(d)::"memory");
-	return d<<32 | a;
+	return (d<<32) | a;
 #elif defined (__i386__)
 	uint64_t a;
 	__asm__ __volatile__("lfence;\n\t"
