@@ -362,6 +362,7 @@ namespace x86vec {
 
         v2f64 exp(arg<v2f64>::type d);
         v2f64 log(arg<v2f64>::type d);
+	v2f64 pow(arg<v2f64>::type b, arg<v2f64>::type e);
 	void sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos);
 	v2f64 sin(arg<v2f64>::type d);
         v2f64 cos(arg<v2f64>::type d);

@@ -174,7 +174,10 @@ bool x86vec::test::read_func(func_data& tf,
 		} else if (f == "atan2") {
 			tf._f2 = x86vec::atan2;
 			tf._f2d = std::atan2;
-		} else {
+		} else if (f == "pow") {
+			tf._f2 = x86vec::pow;
+			tf._f2d = std::pow;
+		} else{
 			std::cerr << "unknown function " << f << std::endl;
 			return false;
 		}

@@ -99,6 +99,63 @@ namespace cftal {
                         }
                 };
 
+
+                template <>
+                struct func_traits<x86vec::v4f32, x86vec::v4s32> : public 
+		func_traits<typename x86vec::v4f32::element_type,
+			    typename x86vec::v4s32::element_type> {
+                        typedef x86vec::v4f32 vf_type;
+                        typedef x86vec::v4f32 vmf_type;
+                        typedef x86vec::v4s32 vi_type;
+                        typedef x86vec::v4s32 vmi_type;
+
+                        static
+                        vmf_type vmi_to_vmf(const vmi_type& mi) {
+                                return x86vec::as<x86vec::v4f32>(mi);
+                        }
+                        static
+                        vmi_type vmf_to_vmi(const vmf_type& mf) {
+                                return x86vec::as<x86vec::v4s32>(mf);
+                        }
+                        static
+                        vi_type sel(const vmi_type& msk,
+                                    const vi_type& t, const vi_type& f) {
+                                return select(msk, t, f);
+                        }
+                        static
+                        vf_type sel(const vmf_type& msk,
+                                    const vf_type& t, const vf_type& f) {
+                                return select(msk, t, f);
+                        }
+                        static
+                        vf_type insert_exp(const vi_type& e) {
+				vi_type ep(e << x86vec::const_shift::_23);
+                                return x86vec::as<x86vec::v4f32>(ep);
+                        }
+                        static
+                        vi_type extract_exp(const vf_type& d) {
+                                x86vec::v4s32 e= x86vec::as<x86vec::v4s32>(d);
+                                e >>= x86vec::const_shift::_23;
+                                e &= x86vec::v4s32(0xff, 0xff, 0xff, 0xff);
+                                return e;
+                        }
+                        static
+                        vf_type cvt_i_to_f(const vi_type& i) {
+                                return x86vec::cvt<x86vec::v4f32>(i);
+                        }
+
+                        static
+                        vi_type cvt_f_to_i(const vf_type& f) {
+                                return x86vec::cvt<x86vec::v4s32>(f);
+                        }
+                        // including rounding towards zero
+                        static
+                        vi_type cvt_rz_f_to_i(const vf_type& f) {
+                                return x86vec::cvt_rz<x86vec::v4s32>(f);
+                        }
+                };
+
+
 	}
 
 }

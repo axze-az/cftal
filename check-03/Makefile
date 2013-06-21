@@ -96,6 +96,18 @@ test-exp-fma: testx86vec-03
 test-exp-native-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< --use-native <exp.testdata
 
+test-pow: testx86vec-03
+	./$< <pow.testdata
+
+test-pow-native: testx86vec-03
+	./$< --use-native  <pow.testdata
+
+test-pow-fma: testx86vec-03
+	sde64 -mix -ast -- ./$< <pow.testdata
+
+test-pow-native-fma: testx86vec-03
+	sde64 -mix -ast -- ./$< --use-native <pow.testdata
+
 test-cosh: testx86vec-03
 	./$< <cosh.testdata
 

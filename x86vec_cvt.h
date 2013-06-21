@@ -68,6 +68,28 @@ namespace x86vec {
 				return l(permute<2,3,0,1>(d));
 			}
 		};
+
+		template <>
+		struct cvt<v4f32, v4s32> {
+			static v4f32 l(const v4s32& s) {
+				return _mm_cvtepi32_ps(s());
+			}
+		};
+
+		template <>
+		struct cvt<v4s32, v4f32> {
+			static v4s32 l(const v4f32& s) {
+				return _mm_cvtps_epi32(s());
+			}
+		};
+
+		template <>
+		struct cvt_rz<v4s32, v4f32> {
+			static v4s32 l(const v4f32& s) {
+				return _mm_cvttps_epi32(s());
+			}
+		};
+
 	}
 	
 	template <class _D, class _S>
@@ -75,14 +97,19 @@ namespace x86vec {
 	template <class _D, class _S>
 	_D cvt_hi(const _S& s);
 	template <class _D, class _S>
-	std::pair<_D, _D> cvt(const _S& s);
+	_D cvt(const _S& s);
+
+	template <class _D, class _S>
+	std::pair<_D, _D> cvt_widen(const _S& s);
 	
 	template <class _D, class _S>
 	_D cvt_rz_lo(const _S& s);
 	template <class _D, class _S>
 	_D cvt_rz_hi(const _S& s);
 	template <class _D, class _S>
-	std::pair<_D, _D> cvt_rz(const _S& s);
+	_D cvt_rz(const _S& s);
+	template <class _D, class _S>
+	std::pair<_D, _D> cvt_rz_widen(const _S& s);
 
 }
 
@@ -102,7 +129,14 @@ _D x86vec::cvt_hi(const _S& s)
 
 template <class _D, class _S>
 inline
-std::pair<_D, _D> x86vec::cvt(const _S& s)
+_D x86vec::cvt(const _S& s)
+{
+	return impl::cvt<_D, _S>::l(s);
+}
+
+template <class _D, class _S>
+inline
+std::pair<_D, _D> x86vec::cvt_widen(const _S& s)
 {
 	_D l=cvt_lo<_D>(s);
 	_D h=cvt_hi<_D>(s);
@@ -125,7 +159,14 @@ _D x86vec::cvt_rz_hi(const _S& s)
 
 template <class _D, class _S>
 inline
-std::pair<_D, _D> x86vec::cvt_rz(const _S& s)
+_D x86vec::cvt_rz(const _S& s)
+{
+	return impl::cvt_rz<_D, _S>::l(s);
+}
+
+template <class _D, class _S>
+inline
+std::pair<_D, _D> x86vec::cvt_rz_widen(const _S& s)
 {
 	_D l=cvt_rz_lo<_D>(s);
 	_D h=cvt_rz_hi<_D>(s);

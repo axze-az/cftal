@@ -74,6 +74,14 @@ x86vec::v2f64 x86vec::log(arg<v2f64>::type d)
 	return func_t::log(d);
 }
 
+x86vec::v2f64 x86vec::pow(arg<v2f64>::type b, arg<v2f64>::type e)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::pow(b, e);
+}
+
+
 void x86vec::sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
@@ -1390,13 +1398,14 @@ x86vec::v2f64 x86vec::cosh(arg<v2f64>::type d)
 	return 0.5*( exp(d) + exp(-d));
 }
 
+#if 0
 x86vec::v2f64 x86vec::pow(arg<v2f64>::type x, arg<v2f64>::type y)
 {
         return math::func<double, int32_t,
 		impl::vec_func_traits<v2f64, v4s32> >::
                 pow(x, y);
 }
-
+#endif
 
 
 
