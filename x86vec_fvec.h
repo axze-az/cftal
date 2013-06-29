@@ -196,7 +196,7 @@ namespace x86vec {
         v4s32 ilogbp1(arg<v4f32>::type v);
         v4s32 ilogb(arg<v4f32>::type v);
 
-        void sin_cos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos));
+        void sin_cos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4f32 select(const v4f32& a, const v4f32& b);

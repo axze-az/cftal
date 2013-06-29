@@ -28,6 +28,15 @@ namespace x86vec {
         // __SSE4_1__: on sign bit of double
         __m128d select(__m128d msk, __m128d on_one, __m128d on_zero);
 
+#if defined (__AVX__)
+	// select floats
+	// on sign bit of float
+	__m256 select(__m256 msk, __m256 on_one, __m256 on_zero);
+	// select on doubles
+	// on sign bit of double
+	__m256d select(__m256d msk, __m256d on_one, __m256d on_zero);
+#endif
+
 	namespace impl {
 
 		// helper for selecting first or second arg
@@ -43,57 +52,57 @@ namespace x86vec {
 
 		// general case double
 		template <bool _P0, bool _P1>
-		struct select_f64 {
+		struct select_v2f64 {
 			static __m128d v(__m128d a, __m128d b);
 		};
 		// double specialisations
 		template <>
-		struct select_f64<0,0> : public select_arg_2<__m128d> {
+		struct select_v2f64<0,0> : public select_arg_2<__m128d> {
 		};
 		template <>
-		struct select_f64<1,1> : public select_arg_1<__m128d> {
+		struct select_v2f64<1,1> : public select_arg_1<__m128d> {
 		};
 
 		// general case float
 		template <bool _P0, bool _P1, bool _P2, bool _P3>
-		struct select_f32 {
+		struct select_v4f32 {
 			static __m128 v(__m128 a, __m128 b); 
 		};
 		// float specialisations
 		template <>
-		struct select_f32<0,0,0,0> : public select_arg_2<__m128> {
+		struct select_v4f32<0,0,0,0> : public select_arg_2<__m128> {
 		};
 		template <>
-		struct select_f32<1,1,1,1> : public select_arg_1<__m128> {
+		struct select_v4f32<1,1,1,1> : public select_arg_1<__m128> {
 		};
 		
 		// general case u16
 		template <bool _P0, bool _P1, bool _P2, bool _P3,
 			  bool _P4, bool _P5, bool _P6, bool _P7>
-		struct select_u16 {
+		struct select_v8u16 {
 			static __m128i v(__m128i a, __m128i b);
 		};
 		// u16 specialisations
 		template <>
-		struct select_u16<0,0,0,0,0,0,0,0> : 
+		struct select_v8u16<0,0,0,0,0,0,0,0> : 
 			public select_arg_2<__m128i> {
 		};
 		template <>
-		struct select_u16<1,1,1,1,1,1,1,1> : 
+		struct select_v8u16<1,1,1,1,1,1,1,1> : 
 			public select_arg_1<__m128i> {
 		};
 
 		// general case u32, implementation on top of u16
 		// therefore no additional specializations
 		template <bool _P0, bool _P1, bool _P2, bool _P3>
-		struct select_u32 {
+		struct select_v4u32 {
 			static __m128i v(__m128i a, __m128i b);
 		};
 
 		// general case u64, implementation on top of u16
 		// therefore no additional specializations
 		template <bool _P0, bool _P1>
-		struct select_u64 {
+		struct select_v2u64 {
 			static __m128i v(__m128i a, __m128i b);
 		};
 
@@ -190,7 +199,7 @@ x86vec::impl::select_arg_2<_T>::v(_T a, _T b)
 
 template <bool _P0, bool _P1>
 inline __m128d
-x86vec::impl::select_f64<_P0, _P1>::v(__m128d a, __m128d b)
+x86vec::impl::select_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
 {
 #if defined (__SSE4_1__)
 	const int sm=csel2<_P0, _P1>::val;
@@ -210,7 +219,7 @@ x86vec::impl::select_f64<_P0, _P1>::v(__m128d a, __m128d b)
 
 template <bool _P0, bool _P1, bool _P2, bool _P3>
 inline __m128
-x86vec::impl::select_f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
+x86vec::impl::select_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
 {
 #if defined (__SSE4_1__)
 	const int sm=csel4<_P0, _P1, _P2, _P3>::val;
@@ -232,7 +241,7 @@ template<bool _P0, bool _P1, bool _P2, bool _P3,
 	 bool _P4, bool _P5, bool _P6, bool _P7> 
 inline __m128i
 x86vec::impl::
-select_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
+select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
 {
 #if defined (__SSE4_1__)
 	const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
@@ -257,53 +266,53 @@ select_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
 template<bool _P0, bool _P1, bool _P2, bool _P3> 
 inline __m128i
 x86vec::impl::
-select_u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
+select_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
 {
-	return select_u16<_P0, _P0, _P1, _P1, _P2, _P2, _P3, _P3>::v(a, b);
+	return select_v8u16<_P0, _P0, _P1, _P1, _P2, _P2, _P3, _P3>::v(a, b);
 }
 
 template<bool _P0, bool _P1> 
 inline __m128i
 x86vec::impl::
-select_u64<_P0, _P1>::v(__m128i a, __m128i b)
+select_v2u64<_P0, _P1>::v(__m128i a, __m128i b)
 {
-	return select_u16<_P0, _P0, _P0, _P0, _P1, _P1, _P1, _P1>::v(a, b);
+	return select_v8u16<_P0, _P0, _P0, _P0, _P1, _P1, _P1, _P1>::v(a, b);
 }
 
 template <bool _P0, bool _P1>
 inline
 __m128d x86vec::select_f64(__m128d a, __m128d b)
 {
-	return impl::select_f64<_P0, _P1>::v(a, b);
+	return impl::select_v2f64<_P0, _P1>::v(a, b);
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3>
 inline
 __m128 x86vec::select_f32(__m128 a, __m128 b)
 {
-	return impl::select_f32<_P0, _P1, _P2, _P3>::v(a, b);
+	return impl::select_v4f32<_P0, _P1, _P2, _P3>::v(a, b);
 }
 
 template <bool _P0, bool _P1>
 inline
 __m128i x86vec::select_u64(__m128i a, __m128i b)
 {
-	return impl::select_u64<_P0, _P1>::v(a, b);
+	return impl::select_v2u64<_P0, _P1>::v(a, b);
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3>
 inline
 __m128i x86vec::select_u32(__m128i a, __m128i b)
 {
-	return impl::select_u32<_P0, _P1, _P2, _P3>::v(a, b);
+	return impl::select_v4u32<_P0, _P1, _P2, _P3>::v(a, b);
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3,
 	  bool _P4, bool _P5, bool _P6, bool _P7>
 __m128i x86vec::select_u16(__m128i a, __m128i b)
 {
-	return impl::select_u16<_P0, _P1, _P2, _P3,
-				_P4, _P5, _P6, _P7>::v(a, b);
+	return impl::select_v8u16<_P0, _P1, _P2, _P3,
+				  _P4, _P5, _P6, _P7>::v(a, b);
 }
 
 // Local variables:

@@ -725,7 +725,7 @@ __m128 x86vec::impl::perm2_f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                 const bool sm1 = _P1 < 4;
                 const bool sm2 = _P2 < 4;
                 const bool sm3 = _P3 < 4;
-                return select_f32<sm0, sm1, sm2, sm3>::v(a, b);
+                return select_v4f32<sm0, sm1, sm2, sm3>::v(a, b);
         }
         // Use AMD XOP instruction PPERM here later
         if ((((m1 & ~0x4444) ^ 0x3210) & m2) == 0) {
@@ -734,7 +734,7 @@ __m128 x86vec::impl::perm2_f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                 const bool sm1 = _P1 < 4;
                 const bool sm2 = _P2 < 4;
                 const bool sm3 = _P3 < 4;
-                __m128 t = select_f32<sm0, sm1, sm2, sm3>::v(a, b);
+                __m128 t = select_v4f32<sm0, sm1, sm2, sm3>::v(a, b);
                 // zero
                 const __m128 zm = const4_u32<
                         (_P0 < 0 ? 0 : -1),
@@ -905,7 +905,7 @@ __m128i x86vec::impl::perm2_u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                 const bool sm1 = _P1 < 4;
                 const bool sm2 = _P2 < 4;
                 const bool sm3 = _P3 < 4;
-                return select_u32<sm0, sm1, sm2, sm3>::v(a, b);
+                return select_v4u32<sm0, sm1, sm2, sm3>::v(a, b);
         }
         // Use AMD XOP instruction PPERM here later
         if ((((m1 & ~0x4444) ^ 0x3210) & m2) == 0) {
@@ -914,7 +914,7 @@ __m128i x86vec::impl::perm2_u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                 const bool sm1 = _P1 < 4;
                 const bool sm2 = _P2 < 4;
                 const bool sm3 = _P3 < 4;
-                __m128i t = select_u32<sm0, sm1, sm2, sm3>::v(a, b);
+                __m128i t = select_v4u32<sm0, sm1, sm2, sm3>::v(a, b);
                 // zero
                 const __m128i zm = const4_u32<
                         (_P0 < 0 ? 0 : -1),
@@ -1293,7 +1293,7 @@ __m128i x86vec::impl::perm2_u16<_P0, _P1, _P2, _P3,
                 const bool b5  = _P5 < 8 ? true : false;
                 const bool b6  = _P6 < 8 ? true : false;
                 const bool b7  = _P7 < 8 ? true : false;
-                return select_u16<b0, b1, b2, b3, b4, b5, b6, b7>::v(a, b);
+                return select_v8u16<b0, b1, b2, b3, b4, b5, b6, b7>::v(a, b);
         }
         // use AMD XOP pperm here later
         // combine two perm1 operations

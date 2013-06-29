@@ -756,7 +756,7 @@ __m128i x86vec::impl::vpsraq::v(__m128i a, unsigned shift)
 		// low parts of result.
 		__m128i allbits= vpsrlq::v(a, sh);
 #if defined (__SSE4_1__)
-		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+		r = select_v4u32<0, 1, 0, 1>::v(sgnbits, allbits);
 #else
 		// clear the low uint32_t of sgnbits
 		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
@@ -799,7 +799,7 @@ __m128i x86vec::impl::vpsraq_const<_S>::v(__m128i a)
 		// low parts of result.
 		__m128i allbits= vpsrlq_const<_S>::v(a);
 #if defined (__SSE4_1__)
-		r = select_u32<0, 1, 0, 1>::v(sgnbits, allbits);
+		r = select_v4u32<0, 1, 0, 1>::v(sgnbits, allbits);
 #else
 		// clear the low uint32_t of sgnbits
 		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
@@ -862,7 +862,7 @@ __m128i x86vec::impl::vpmulhud::v(__m128i a, __m128i b)
 	// 0, 2 at position 0, 2
 	e = _mm_srli_epi64(e, 32);
 #if defined (__SSE4_1__)
-	return select_u32<1, 0, 1, 0>::v(e, o);
+	return select_v4u32<1, 0, 1, 0>::v(e, o);
 #else
 	const __m128i msk = const4_u32<0, -1, 0, -1>::iv();
 	o = _mm_and_si128(o, msk);
@@ -881,7 +881,7 @@ __m128i x86vec::impl::vpmulhd::v(__m128i x, __m128i y)
 				 vpshufd<1, 0, 3, 2>::v(y));
 	// 0, 2 at positions 0 2
 	e = _mm_srli_epi64(e, 32);
-	return select_u32<1, 0, 1, 0>::v(e, o);
+	return select_v4u32<1, 0, 1, 0>::v(e, o);
 #else
 	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
 	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
