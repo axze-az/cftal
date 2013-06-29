@@ -1,0 +1,10 @@
+f(x) := a15*(x)^15+a14*(x)^14+a13*(x)^13+a12*(x)^12+a11*(x)^11+a10*(x)^10+a9*(x)^9+a8*(x)^8+a7*(x)^7+a6*(x)^6+a5*(x)^5+a4*(x)^4+a3*(x)^3+a2*(x)^2+a1*(x)^1+a0;
+/* f(x); */
+/* f(xh+xl); */
+g(x) := f(x) - a0;
+/* f(x) - g(x); */
+
+/* expand(f(xh+xl)-g(xh)*(1-xl)); */
+ratexpand(f(xh+xl)-g(xh)*(1-xl));
+echo ("");
+ratsimp(ratexpand(f(xh+xl)-g(xh)));

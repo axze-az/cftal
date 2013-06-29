@@ -191,6 +191,13 @@ namespace x86vec {
         v4f32 isnan(const v4f32& x);
         v4f32 isfinite(const v4f32& x);
 
+        v4f32 pow2if(arg<v4s32>::type e);
+        v4f32 ldexp(arg<v4f32>::type d, arg<v4s32>::type e);
+        v4s32 ilogbp1(arg<v4f32>::type v);
+        v4s32 ilogb(arg<v4f32>::type v);
+
+        void sin_cos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos));
+
         template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4f32 select(const v4f32& a, const v4f32& b);
         v4f32 select(const v4f32& msk, const v4f32& on_true,
@@ -211,7 +218,6 @@ namespace x86vec {
         v4f32 hsub_pairs(const v4f32& a, const v4f32& b);
         v4f32 hmul_pairs(const v4f32& a, const v4f32& b);
         v4f32 hdiv_pairs(const v4f32& a, const v4f32& b);
-
 
         v4f32::element_type dot(const v4f32& a, const v4f32& b);
 

@@ -27,8 +27,8 @@ namespace cftal {
                         } ud_t;
 
                         static constexpr int32_t bias = 0x7e;
-                        static constexpr int32_t e_max= 0x3ff;
-                        static constexpr int32_t e_min= -1022;
+                        static constexpr int32_t e_max= 127;
+                        static constexpr int32_t e_min= -126;
                         static constexpr int32_t bits=23;
                         static constexpr int32_t vec_len=1;
 
@@ -89,7 +89,6 @@ namespace cftal {
                         }
                 };
 
-
                 template <typename _T>
                 class func<float, int32_t, _T> {
                         typedef typename _T::vf_type vf_type;
@@ -135,16 +134,16 @@ cftal::math::func<float, cftal::int32_t, _T>::ldexp(const vf_type& vd,
 {
         vi_type q= ve;
         vi_type m = q >> 31;
-        m = (((m + q) >> 9) - m) << 7;
+        m = (((m + q) >> 6) - m) << 4;
         q = q - (m << 2);
 
-        m += 0x3ff;
+        m += 127;
         m = max(vi_type(0), m);
-        m = min(vi_type(0x7ff), m);
+        m = min(vi_type(0xff), m);
 
         vf_type fm = _T::insert_exp(m);
         vf_type r = vd * fm * fm * fm * fm;
-        q += 0x3ff;
+        q += 0x7f;
         // q = max(vi_type(0), q);
         // q = min(vi_type(0x7ff), q);
         vf_type fq = _T::insert_exp(q);
@@ -156,11 +155,11 @@ inline
 typename cftal::math::func<float, cftal::int32_t, _T>::vi_type
 cftal::math::func<float, cftal::int32_t, _T>::ilogbp1(const vf_type& vd)
 {
-        vmf_type mf= vd < 4.9090934652977266E-91;
-        vf_type d = _T::sel(mf, 2.037035976334486E90 * vd, vd);
+        vmf_type mf= vd < 5.421010862427522E-20f;
+        vf_type d = _T::sel(mf, 1.8446744073709552E19f * vd, vd);
         vi_type q = _T::extract_exp(d);
         vmi_type mi= _T::vmf_to_vmi(mf);
-        vi_type qs = _T::sel(mi, vi_type(300 + 0x3fe), vi_type(0x3fe));
+        vi_type qs = _T::sel(mi, vi_type(64 + 0x7e), vi_type(0x7e));
         return q - qs;
 }
 
@@ -178,6 +177,7 @@ cftal::math::func<float, cftal::int32_t, _T>::ilogb(const vf_type& d)
         e = _T::sel(mi, vi_type(2147483647), e);
         return e;
 }
+
 
 
 
