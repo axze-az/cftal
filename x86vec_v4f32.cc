@@ -71,11 +71,11 @@ void x86vec::sin_cos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos)
 		dpc= pcos ? &dcos[1] : nullptr;
 		func_t::native_sin_cos(dd.second, dps, dpc);
 		if (psin) {
-			v4f32 ss(cvt<v4f32>(dsin[0], dsin[1]));
+			v4f32 ss(cvt_f32(dsin[0], dsin[1]));
 			*psin = ss;
 		}
 		if (pcos) {
-			v4f32 sc(cvt<v4f32>(dcos[0], dcos[1]));
+			v4f32 sc(cvt_f32(dcos[0], dcos[1]));
 			*pcos = sc;
 		}
 	}

@@ -99,6 +99,8 @@ namespace x86vec {
 	template <class _D, class _S>
 	_D cvt(const _S& s);
 
+	v4f32 cvt_f32(const v2f64& l, const v2f64& h);
+
 	template <class _D, class _S>
 	std::pair<_D, _D> cvt_widen(const _S& s);
 	
@@ -141,6 +143,14 @@ std::pair<_D, _D> x86vec::cvt_widen(const _S& s)
 	_D l=cvt_lo<_D>(s);
 	_D h=cvt_hi<_D>(s);
 	return std::make_pair(l, h);
+}
+
+inline
+x86vec::v4f32 x86vec::cvt_f32(const v2f64& l, const v2f64& h)
+{
+	v4f32 lf(cvt<v4f32>(l));
+	v4f32 hf(cvt<v4f32>(h));
+	return permute<0, 1, 4, 5>(lf, hf);
 }
 
 template <class _D, class _S>
