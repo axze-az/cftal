@@ -55,11 +55,10 @@ x86vec::v4f32 x86vec::pow(arg<v4f32>::type b, arg<v4f32>::type e)
 }
 #endif
 
-void x86vec::sin_cos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos)
+void x86vec::sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
-	// return func_t::sin_cos(d, psin, pcos);
 
 	if (psin != nullptr || pcos != nullptr) {
 		std::pair<v2f64, v2f64> dd(cvt_widen<v2f64>(d));
@@ -82,35 +81,51 @@ void x86vec::sin_cos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos)
 
 }
 
-#if 0
 x86vec::v4f32 x86vec::sin(arg<v4f32>::type d)
 {
-	using traits_t=cftal::math::func_traits<v4f32, v4s32>;
-	using func_t=cftal::math::func<float, int32_t, traits_t>;
-	return func_t::sin(d);
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	std::pair<v2f64, v2f64> lh(cvt_lo<v2f64>(d), cvt_hi<v2f64>(d));
+	std::pair<v2f64, v2f64> reslh(func_t::native_sin(lh.first),
+				      func_t::native_sin(lh.second));
+	v4f32 res(cvt_f32(reslh.first, reslh.second));
+	return res;
 }
 
 x86vec::v4f32 x86vec::cos(arg<v4f32>::type d)
 {
-	using traits_t=cftal::math::func_traits<v4f32, v4s32>;
-	using func_t=cftal::math::func<float, int32_t, traits_t>;
-	return func_t::cos(d);
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	std::pair<v2f64, v2f64> lh(cvt_lo<v2f64>(d), cvt_hi<v2f64>(d));
+	std::pair<v2f64, v2f64> reslh(func_t::native_cos(lh.first),
+				      func_t::native_cos(lh.second));
+	v4f32 res(cvt_f32(reslh.first, reslh.second));
+	return res;
 }
 
 x86vec::v4f32 x86vec::tan(arg<v4f32>::type d)
 {
-	using traits_t=cftal::math::func_traits<v4f32, v4s32>;
-	using func_t=cftal::math::func<float, int32_t, traits_t>;
-	return func_t::tan(d);
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	std::pair<v2f64, v2f64> lh(cvt_lo<v2f64>(d), cvt_hi<v2f64>(d));
+	std::pair<v2f64, v2f64> reslh(func_t::native_tan(lh.first),
+				      func_t::native_tan(lh.second));
+	v4f32 res(cvt_f32(reslh.first, reslh.second));
+	return res;
 }
 
 x86vec::v4f32 x86vec::cot(arg<v4f32>::type d)
 {
-	using traits_t=cftal::math::func_traits<v4f32, v4s32>;
-	using func_t=cftal::math::func<float, int32_t, traits_t>;
-	return func_t::cot(d);
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	std::pair<v2f64, v2f64> lh(cvt_lo<v2f64>(d), cvt_hi<v2f64>(d));
+	std::pair<v2f64, v2f64> reslh(func_t::native_cot(lh.first),
+				      func_t::native_cot(lh.second));
+	v4f32 res(cvt_f32(reslh.first, reslh.second));
+	return res;
 }
 
+#if 0
 void x86vec::native_sincos(arg<v4f32>::type d, 
 			   v4f32* psin, v4f32* pcos)
 {

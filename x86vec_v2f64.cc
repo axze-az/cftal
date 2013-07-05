@@ -67,6 +67,13 @@ x86vec::v2f64 x86vec::exp(arg<v2f64>::type d)
 	return func_t::exp(d);
 }
 
+x86vec::v2f64 x86vec::expm1(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::expm1(d);
+}
+
 x86vec::v2f64 x86vec::log(arg<v2f64>::type d)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
@@ -81,6 +88,19 @@ x86vec::v2f64 x86vec::pow(arg<v2f64>::type b, arg<v2f64>::type e)
 	return func_t::pow(b, e);
 }
 
+x86vec::v2f64 x86vec::sinh(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::sinh(d);
+}
+
+x86vec::v2f64 x86vec::cosh(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::cosh(d);
+}
 
 void x86vec::sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos)
 {
@@ -145,6 +165,14 @@ x86vec::v2f64 x86vec::native_tan(arg<v2f64>::type d)
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
 	return func_t::native_tan(d);
 }
+
+x86vec::v2f64 x86vec::native_cot(arg<v2f64>::type d)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::native_cot(d);
+}
+
 
 #define PI4_A 0.78539816290140151978
 #define PI4_B 4.9604678871439933374e-10
@@ -1393,10 +1421,6 @@ x86vec::v2f64 x86vec::native_exp(arg<v2f64>::type d)
                 native_exp(d);
 }
 
-x86vec::v2f64 x86vec::cosh(arg<v2f64>::type d)
-{
-	return 0.5*( exp(d) + exp(-d));
-}
 
 #if 0
 x86vec::v2f64 x86vec::pow(arg<v2f64>::type x, arg<v2f64>::type y)

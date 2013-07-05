@@ -148,14 +148,18 @@ bool x86vec::test::read_func(func_data& tf,
 			else
 				tf._f1 = x86vec::exp;
 			tf._f1d = std::exp;
+		} else if (f == "expm1") {
+			if (use_native)
+				tf._f1= x86vec::expm1;
+			else
+				tf._f1 = x86vec::expm1;
+			tf._f1d = std::expm1;
 		} else if (f == "log") {
 			tf._f1 = x86vec::log;
 			tf._f1d = std::log;
-#if 0
 		} else if (f == "sinh") {
 			tf._f1 = x86vec::sinh;
 			tf._f1d = std::sinh;
-#endif
 		} else if (f == "cosh") {
 			tf._f1 = x86vec::cosh;
 			tf._f1d = std::cosh;
@@ -280,7 +284,7 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 		v2f64 max_err(ae + re);
 		v2f64 is_err(re > 1.0e-15);
 		double tt=extract<0>(res);
-#if 1
+#if 0
 		std::cout << tf._fname << "( " 
 			  << c._a0;
 		if (tf._f2)
@@ -291,9 +295,13 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 #endif
 		double nt=c._res;
 		int ulps(ulp(tt, nt));
+#if 0
 		std::cout << "ulp: " << ulps << std::endl;
+#endif
 		if (ulps < 3 && no_signs(is_err)) {
+#if 0
 			std::cout << "passed\n";
+#endif
 			continue;
 		}
 		// we found an error:

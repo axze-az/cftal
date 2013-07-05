@@ -242,9 +242,12 @@ namespace cftal {
                         static vi_type ilogb(const vf_type& vf);
 
                         static vf_type exp(const vf_type& vf);
+			static vf_type expm1(const vf_type& vf);
                         static vf_type log(const vf_type& vf);
 			static vf_type pow(const vf_type& b, 
 					   const vf_type& e);
+			static vf_type sinh(const vf_type& vf);
+			static vf_type cosh(const vf_type& vf);
 			
 			static void sin_cos(const vf_type& vf,
 					    vf_type* psin, 
@@ -261,6 +264,7 @@ namespace cftal {
 			static vf_type native_sin(const vf_type& vf);
 			static vf_type native_cos(const vf_type& vf);
 			static vf_type native_tan(const vf_type& vf);
+			static vf_type native_cot(const vf_type& vf);
                 };
 
         } // end math
@@ -771,6 +775,20 @@ cftal::math::func<double, cftal::int32_t, _T>::exp(const vf_type& d)
 template <typename _T>
 inline
 typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::func<double, cftal::int32_t, _T>::expm1(const vf_type& d)
+{
+        dvf_type xr(exp_k2(d)-vf_type(1.0));
+        vf_type res(xr.h() + xr.l());
+	// res = _T::sel(d == 0.0, 1.0, res);
+        // res = _T::sel(d == 1.0, M_E, res);
+        res = _T::sel(d== vf_type(_T::ninf()), -1.0, res);
+        res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
+        return res;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::pow(const vf_type& b,
 						   const vf_type& e)
 {
@@ -778,6 +796,37 @@ cftal::math::func<double, cftal::int32_t, _T>::pow(const vf_type& b,
 	dvf_type ln_b_e(ln_b * e);
 	dvf_type pow0(exp_k2(ln_b_e));
 	return pow0.h() + pow0.l();
+}
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::func<double, cftal::int32_t, _T>::sinh(const vf_type& d)
+{
+	dvf_type ex2(exp_k2(d));
+	dvf_type nex2(vf_type(1.0)/ex2);
+	ex2 = mul_pwr2(ex2, vf_type(0.5));
+	nex2 =mul_pwr2(nex2, vf_type(0.5));
+	dvf_type r(ex2 - nex2);
+	vf_type res(r.h() + r.l());
+	res = _T::sel(d == 0.0, 0.0, res);
+        res = _T::sel(isinf(d), d, res);
+	res = _T::sel(ex2.h()== vf_type(_T::pinf()), ex2.h(), res);
+	res = _T::sel(ex2.h()== vf_type(0), _T::ninf(), res);
+	return res;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::func<double, cftal::int32_t, _T>::cosh(const vf_type& d)
+{
+	dvf_type ex2(exp_k2(d));
+	dvf_type nex2(vf_type(1.0)/ex2);
+	ex2 = mul_pwr2(ex2, vf_type(0.5));
+	nex2 =mul_pwr2(nex2, vf_type(0.5));
+	dvf_type r(ex2 + nex2);
+	return r.h() + r.l();
 }
 
 template <typename _T>
@@ -883,6 +932,17 @@ func<double, cftal::int32_t, _T>::native_tan(const vf_type& d)
 {
 	std::pair<vf_type, vf_type> sin_cos(native_sin_cos_k(d));
 	vf_type tn(sin_cos.first / sin_cos.second);
+        return tn;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::
+func<double, cftal::int32_t, _T>::native_cot(const vf_type& d)
+{
+	std::pair<vf_type, vf_type> sin_cos(native_sin_cos_k(d));
+	vf_type tn(sin_cos.second / sin_cos.first);
         return tn;
 }
 

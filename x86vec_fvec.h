@@ -196,7 +196,11 @@ namespace x86vec {
         v4s32 ilogbp1(arg<v4f32>::type v);
         v4s32 ilogb(arg<v4f32>::type v);
 
-        void sin_cos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos);
+	void sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos);
+	v4f32 sin(arg<v4f32>::type d);
+        v4f32 cos(arg<v4f32>::type d);
+        v4f32 tan(arg<v4f32>::type d);
+	v4f32 cot(arg<v4f32>::type d);
 
         template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4f32 select(const v4f32& a, const v4f32& b);
@@ -367,6 +371,7 @@ namespace x86vec {
         std::pair<v2f64, v2f64> sincos(arg<v2f64>::type d);
 
         v2f64 exp(arg<v2f64>::type d);
+	v2f64 expm1(arg<v2f64>::type d);
         v2f64 log(arg<v2f64>::type d);
 	v2f64 pow(arg<v2f64>::type b, arg<v2f64>::type e);
 	void sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos);
@@ -380,7 +385,9 @@ namespace x86vec {
 	v2f64 native_sin(arg<v2f64>::type d);
 	v2f64 native_cos(arg<v2f64>::type d);
 	v2f64 native_tan(arg<v2f64>::type d);
+	v2f64 native_cot(arg<v2f64>::type d);
 	v2f64 cosh(arg<v2f64>::type d);
+	v2f64 sinh(arg<v2f64>::type d);
 
         v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);
 
