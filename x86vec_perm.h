@@ -1188,7 +1188,7 @@ __m128i x86vec::impl::perm1_u16<_P0, _P1, _P2, _P3,
                         t0 = vpshufhw<s0, s1, s2, s3>::v(t0);
                         // merge data from t0 and t1
                         t1 = vpshufhw<v0, v1, v2, v3>::v(t1);
-                        r = select_u16<
+                        r = select_v8u16<
                                 (_P0 & 4) != 0,
                                 (_P1 & 4) != 0,
                                 (_P2 & 4) != 0,
