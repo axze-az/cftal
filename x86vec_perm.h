@@ -535,14 +535,14 @@ namespace x86vec {
                 // generic permutation of one float vector
                 template <int _P0, int _P1, int _P2, int _P3,
                           int _P4, int _P5, int _P6, int _P7>
-                struct perm1_v8u16 {
+                struct perm1_v8f32 {
                         static __m256 v(__m256 a);
                 };
 
                 // generic permutation of two float vectors
                 template <int _P0, int _P1, int _P2, int _P3,
                           int _P4, int _P5, int _P6, int _P7>
-                struct perm2_v8u16 {
+                struct perm2_v8f32 {
                         static __m256 v(__m256 a, __m256 b);
                 };
  
