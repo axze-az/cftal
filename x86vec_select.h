@@ -106,6 +106,38 @@ namespace x86vec {
 			static __m128i v(__m128i a, __m128i b);
 		};
 
+#if defined (__AVX__)
+		// select v4f64
+		template <bool _P0, bool _P1,
+			  bool _P2, bool _P3>
+		struct select_v4f64 {
+			static __m256d v(__m256d a, __m256d b);
+		};
+		// v4f64 specialisations
+		template <>
+		struct select_v4f64<0,0,0,0> : 
+			public select_arg_2<__m256d> {
+		};
+		template <>
+		struct select_v4f64<1,1,1,1> : 
+			public select_arg_1<__m256d> {
+		};
+		// select v8f32
+		template <bool _P0, bool _P1, bool _P2, bool _P3,
+			  bool _P4, bool _P5, bool _P6, bool _P7>
+		struct select_v8f32 {
+			static __m256 v(__m256 a, __m256 b);
+		};
+		// v8f32 specialisations
+		template <>
+		struct select_v8f32<0,0,0,0,0,0,0,0> : 
+			public select_arg_2<__m256> {
+		};
+		template <>
+		struct select_v8f32<1,1,1,1,1,1,1,1> : 
+			public select_arg_1<__m256> {
+		};
+#endif
 	}
 
 	template <bool _P0, bool _P1>
@@ -123,6 +155,15 @@ namespace x86vec {
 
 	template <bool _P0, bool _P1>
 	__m128i select_u64(__m128i a, __m128i b);
+
+#if defined (__AVX__)
+	template <bool _P0, bool _P1, bool _P2, bool _P3>
+	__m256d select_f64(__m256d a, __m256d b);
+
+	template <bool _P0, bool _P1, bool _P2, bool _P3,
+		  bool _P4, bool _P5, bool _P6, bool _P7>
+	__m256 select_f32(__m256 a, __m256 b);
+#endif
 }
 
 inline
@@ -173,6 +214,20 @@ __m128d x86vec::select(__m128d msk, __m128d on_one, __m128d on_zero)
                          _mm_andnot_pd(msk, on_zero));
 #endif
 }
+
+#if defined (__AVX__)
+inline
+__m256 x86vec::select(__m256 msk, __m256 on_one, __m256 on_zero)
+{
+        return _mm256_blendv_ps (on_zero, on_one, msk);
+}
+
+inline
+__m256d x86vec::select(__m256d msk, __m256d on_one, __m256d on_zero)
+{
+        return _mm256_blendv_pd (on_zero, on_one, msk);
+}
+#endif
 
 template <typename _T>
 inline _T
@@ -263,6 +318,27 @@ select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
 #endif
 }
 
+#if defined (__AVX__)
+template <bool _P0, bool _P1, bool _P2, bool _P3>
+inline __m256d
+x86vec::impl::select_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
+{
+	const int sm=csel4<_P0, _P1, _P2, _P3>::val;
+	return _mm256_blend_pd(b, a, sm);
+}
+
+template<bool _P0, bool _P1, bool _P2, bool _P3,
+	 bool _P4, bool _P5, bool _P6, bool _P7> 
+inline __m256
+x86vec::impl::
+select_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
+{
+	const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
+	return _mm256_blend_ps(b, a, sm);
+}
+
+#endif
+
 template<bool _P0, bool _P1, bool _P2, bool _P3> 
 inline __m128i
 x86vec::impl::
@@ -314,6 +390,25 @@ __m128i x86vec::select_u16(__m128i a, __m128i b)
 	return impl::select_v8u16<_P0, _P1, _P2, _P3,
 				  _P4, _P5, _P6, _P7>::v(a, b);
 }
+
+#if defined (__AVX__)
+
+template <bool _P0, bool _P1, bool _P2, bool _P3>
+inline
+__m256d x86vec::select_f64(__m256d a, __m256d b)
+{
+	return impl::select_v4f64<_P0, _P1, _P2, _P3>::v(a, b);
+}
+
+template <bool _P0, bool _P1, bool _P2, bool _P3,
+	  bool _P4, bool _P5, bool _P6, bool _P7>
+__m256 x86vec::select_f32(__m256 a, __m256 b)
+{
+	return impl::select_v8f32<_P0, _P1, _P2, _P3,
+				  _P4, _P5, _P6, _P7>::v(a, b);
+}
+
+#endif
 
 // Local variables:
 // mode: c++
