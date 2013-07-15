@@ -1367,61 +1367,55 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
                 // zeroing, not shuffling
                 if (m2 == 0) {
                         // zero everything
-                        return make_zero_f32::v();
+                        return _mm256_setzero_pd();
                 }
                 // zero some elements
                 const int z0 = (_P0 < 0) ? 0 : -1;
                 const int z1 = (_P1 < 0) ? 0 : -1;
                 const int z2 = (_P2 < 0) ? 0 : -1;
                 const int z3 = (_P3 < 0) ? 0 : -1;
-                const __m256d zm= const8_u32<z0, z0, z1, z1, z2, z2, z3, z3>::dv();
+                const __m256d zm= const8_u32<z0, z0, z1, z1, 
+					     z2, z2, z3, z3>::dv();
                 // zero with AND mask
                 return  _mm256_and_pd(a, zm);
         }
 
-	return a;
+#if defined (__AVX2__)
+	// general case
+	const int sh4=shuffle4<_P0, _P1, _P2, _P3>::val;
+	__m256d res=__mm256_permute4x64_pd(a, sh4);
+#else
+	// general case
+	// copy high half to low half
+	__m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0);
+	// copy low half to high half
+	__m256d lo2lo_lo2hi= _mm256_insertf128_pd(a, 
+						  _mm256_castpd256_pd128(a), 
+						  1);
+	const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
+	const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
 
-#if 0
-        const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 3>::m;
-        const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
+	hi2lo_hi2hi = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
+	lo2lo_lo2hi = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
 
-        const bool do_shuffle = ((m1 ^ 0x3210) & m2) !=0;
-        const bool do_zero =  ((m2 & 0xFFFF) != 0xFFFF);
+	const bool b0= _P0 < 2 ? true : false;
+	const bool b1= _P1 < 2 ? true : false;
+	const bool b2= _P2 < 2 ? true : false;
+	const bool b3= _P3 < 2 ? true : false;
 
-        if (!do_shuffle && !do_zero) {
-                // trivial case: do nothing
-                return a;
-        }
-        if (do_zero && !do_shuffle) {
-                // zeroing, not shuffling
-                if (m2 == 0) {
-                        // zero everything
-                        return make_zero_f32::v();
-                }
-                // zero some elements
+	__m256d res= select_v4f64<b0, b1, b2, b3>::v(lo2lo_lo2hi, hi2lo_hi2hi);
+#endif
+	if (do_zero) {
                 const int z0 = (_P0 < 0) ? 0 : -1;
                 const int z1 = (_P1 < 0) ? 0 : -1;
                 const int z2 = (_P2 < 0) ? 0 : -1;
                 const int z3 = (_P3 < 0) ? 0 : -1;
-                const __m128 zm= const4_u32<z0, z1, z2, z3>::fv();
+                const __m256d zm= const8_u32<z0, z0, z1, z1, 
+					     z2, z2, z3, z3>::dv();
                 // zero with AND mask
-                return  _mm_and_ps(a,zm);
-        }
-
-        if (do_shuffle && !do_zero) {
-                // shuffling, not zeroing
-                return vshufps<_P0, _P1, _P2, _P3>::v(a, a);
-        }
-        // both shuffle and zero
-        if (m2 == 0xFF00) {
-                // zero low half, shuffle high half
-                return vshufps<0, 0, _P2, _P3>::v(_mm_setzero_ps(), a);
-        }
-        if (m2 == 0x00FF) {
-                // shuffle low half, zero high half
-                return vshufps<_P0, _P1, 0, 0>::v(a, _mm_setzero_ps());
-        }
-#endif
+                res = _mm256_and_pd(res, zm);
+	}
+	return res;
 }
 
 #endif
