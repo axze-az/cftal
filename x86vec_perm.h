@@ -1354,7 +1354,33 @@ __m128i x86vec::impl::perm2_v8u16<_P0, _P1, _P2, _P3,
 template <int _P0, int _P1, int _P2, int _P3>
 __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 {
+        const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 3>::m;
+        const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
+
+        const bool do_shuffle = ((m1 ^ 0x3210) & m2) !=0;
+        const bool do_zero =  ((m2 & 0xFFFF) != 0xFFFF);
+        if (!do_shuffle && !do_zero) {
+                // trivial case: do nothing
+                return a;
+        }
+        if (do_zero && !do_shuffle) {
+                // zeroing, not shuffling
+                if (m2 == 0) {
+                        // zero everything
+                        return make_zero_f32::v();
+                }
+                // zero some elements
+                const int z0 = (_P0 < 0) ? 0 : -1;
+                const int z1 = (_P1 < 0) ? 0 : -1;
+                const int z2 = (_P2 < 0) ? 0 : -1;
+                const int z3 = (_P3 < 0) ? 0 : -1;
+                const __m256d zm= const8_u32<z0, z0, z1, z1, z2, z2, z3, z3>::dv();
+                // zero with AND mask
+                return  _mm256_and_pd(a, zm);
+        }
+
 	return a;
+
 #if 0
         const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 3>::m;
         const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;

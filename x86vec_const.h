@@ -171,6 +171,29 @@ namespace x86vec {
                 static constexpr __m128d dv();
         };
 
+#if defined (__AVX__)
+        // static constants consisting of 8 uint32_t
+        template <uint32_t _P0, uint32_t _P1,
+                  uint32_t _P2, uint32_t _P3,
+		  uint32_t _P4, uint32_t _P5,
+                  uint32_t _P6, uint32_t _P7>
+        class const8_u32 {
+		union u_t {
+			const uint32_t _u32[8];
+			const __m256i _iv;
+			const __m256 _fv;
+			const __m256d _dv;
+		};
+                static __attribute__((__aligned__(32),
+                                      __visibility__("hidden")))
+		const u_t _msk;
+        public:
+                static constexpr __m256i iv();
+                static constexpr __m256 fv();
+                static constexpr __m256d dv();
+        };
+#endif
+
         namespace impl {
 
                 template <int _P0, int _P1, int _P2, int _P3>
@@ -460,6 +483,54 @@ x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
 {
 	return _mm_castsi128_pd(iv());
 }
+
+
+#if defined (__AVX__)
+template <uint32_t _P0, uint32_t _P1,
+          uint32_t _P2, uint32_t _P3,
+          uint32_t _P4, uint32_t _P5,
+          uint32_t _P6, uint32_t _P7>
+const typename 
+x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
+x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
+		_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7
+	}
+};
+
+template <uint32_t _P0, uint32_t _P1,
+          uint32_t _P2, uint32_t _P3,
+          uint32_t _P4, uint32_t _P5,
+          uint32_t _P6, uint32_t _P7>
+inline
+constexpr __m256i
+x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
+{
+	return _msk._iv;
+}
+
+template <uint32_t _P0, uint32_t _P1,
+          uint32_t _P2, uint32_t _P3,
+          uint32_t _P4, uint32_t _P5,
+          uint32_t _P6, uint32_t _P7>
+inline
+constexpr __m256
+x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
+{
+	return _msk._fv;
+}
+
+template <uint32_t _P0, uint32_t _P1,
+          uint32_t _P2, uint32_t _P3,
+          uint32_t _P4, uint32_t _P5,
+          uint32_t _P6, uint32_t _P7>
+inline
+constexpr __m256d
+x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
+{
+	return _msk._dv;
+}
+
+#endif // __AVX__
 
 // Local variables:
 // mode: c++
