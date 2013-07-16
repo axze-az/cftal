@@ -1418,6 +1418,24 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 	return res;
 }
 
+template <int _P0, int _P1, int _P2, int _P3>
+__m256d x86vec::impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
+{
+        // select all elements to clear or from 1st vector
+        const int ma0 = _P0 < 4 ? _P0 : -1;
+	const int ma1 = _P1 < 4 ? _P1 : -1;
+	const int ma2 = _P2 < 4 ? _P2 : -1;
+	const int ma3 = _P3 < 4 ? _P3 : -1;
+	__m256d a1 = perm1_v4f64<ma0, ma1, ma2, ma3>::v(a);
+	// select all elements from second vector
+	const int mb0 = _P0 > 3 ? (_P0-4) : -1;
+	const int mb1 = _P1 > 3 ? (_P1-4) : -1;
+	const int mb2 = _P2 > 3 ? (_P2-4) : -1;
+	const int mb3 = _P3 > 3 ? (_P3-4) : -1;
+	__m256d b1 = perm1_v4f64<mb0, mb1, mb2, mb3>::v(b);
+	return  _mm256_or_pd(a1,b1);
+}
+
 #endif
 
 template <int _P0, int _P1>
@@ -1441,6 +1459,38 @@ __m128d x86vec::perm_f64(__m128d a, __m128d b)
                       "x86vec::perm_f64(a, b) : -1 <= P1 < 4");
         return impl::perm2_v2f64<_P0, _P1>::v(a, b);
 }
+
+#if defined (__AVX__)
+template <int _P0, int _P1, int _P2, int _P3>
+inline
+__m256d x86vec::perm_f64(__m256d a)
+{
+        static_assert(_P0>-2 && _P0 < 4,
+                      "x86vec::perm_v4f64(a) : -1 <= P0 < 4");
+        static_assert(_P1>-2 && _P1 < 4,
+                      "x86vec::perm_v4f64(a) : -1 <= P1 < 4");
+        static_assert(_P2>-2 && _P2 < 4,
+                      "x86vec::perm_v4f64(a) : -1 <= P2 < 4");
+        static_assert(_P3>-2 && _P3 < 4,
+                      "x86vec::perm_v4f64(a) : -1 <= P3 < 4");
+        return impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(a);
+}
+
+template <int _P0, int _P1, int _P2, int _P3>
+inline
+__m256d x86vec::perm_f64(__m256d a, __m256d b)
+{
+        static_assert(_P0>-2 && _P0 < 8,
+                      "x86vec::perm_f64(a, b) : -1 <= P0 < 8");
+        static_assert(_P1>-2 && _P1 < 8,
+                      "x86vec::perm_f64(a, b) : -1 <= P1 < 8");
+        static_assert(_P2>-2 && _P2 < 8,
+                      "x86vec::perm_f64(a, b) : -1 <= P2 < 8");
+        static_assert(_P3>-2 && _P3 < 8,
+                      "x86vec::perm_f64(a, b) : -1 <= P3 < 8");
+        return impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(a, b);
+}
+#endif
 
 template <int _P0, int _P1, int _P2, int _P3>
 inline
