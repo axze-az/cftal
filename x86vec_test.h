@@ -22,102 +22,103 @@ namespace x86vec {
 		// check-00
 
 		// select tests, generated
-                bool check_select_f64();
-                bool check_select_f32();
-                bool check_select_u64();
-                bool check_select_u32();
-                bool check_select_u16();
+                bool check_select_v2f64();
+                bool check_select_v4f32();
+                bool check_select_v2u64();
+                bool check_select_v4u32();
+                bool check_select_v8u16();
 
 		// full perm tests, generated
-		bool check_perm1_f64();
-		bool check_perm2_f64();
-		bool check_perm1_f32();
-		bool check_perm2_f32();
-		bool check_perm1_u64();
-		bool check_perm2_u64();
-		bool check_perm1_u32();
-		bool check_perm2_u32();
+		bool check_perm1_v2f64();
+		bool check_perm2_v2f64();
+		bool check_perm1_v4f32();
+		bool check_perm2_v4f32();
+
+		bool check_perm1_v2u64();
+		bool check_perm2_v2u64();
+		bool check_perm1_v4u32();
+		bool check_perm2_v4u32();
 
 		// randomized perm tests, generated
-		bool check_perm1_u16();
-		bool check_perm2_u16();
+		bool check_perm1_v8u16();
+		bool check_perm2_v8u16();
 
 		// split generated functions
-		bool check_perm1_f32__();
-		bool check_perm1_f32_0();
-		bool check_perm1_f32_1();
-		bool check_perm1_f32_2();
-		bool check_perm1_f32_3();
+		bool check_perm1_v4f32__();
+		bool check_perm1_v4f32_0();
+		bool check_perm1_v4f32_1();
+		bool check_perm1_v4f32_2();
+		bool check_perm1_v4f32_3();
 
-		bool check_perm2_f32__();
-		bool check_perm2_f32_0();
-		bool check_perm2_f32_1();
-		bool check_perm2_f32_2();
-		bool check_perm2_f32_3();
-		bool check_perm2_f32_4();
-		bool check_perm2_f32_5();
-		bool check_perm2_f32_6();
-		bool check_perm2_f32_7();
+		bool check_perm2_v4f32__();
+		bool check_perm2_v4f32_0();
+		bool check_perm2_v4f32_1();
+		bool check_perm2_v4f32_2();
+		bool check_perm2_v4f32_3();
+		bool check_perm2_v4f32_4();
+		bool check_perm2_v4f32_5();
+		bool check_perm2_v4f32_6();
+		bool check_perm2_v4f32_7();
 
 		// split generated functions.
-		bool check_perm1_u32__();
-		bool check_perm1_u32_0();
-		bool check_perm1_u32_1();
-		bool check_perm1_u32_2();
-		bool check_perm1_u32_3();
+		bool check_perm1_v4u32__();
+		bool check_perm1_v4u32_0();
+		bool check_perm1_v4u32_1();
+		bool check_perm1_v4u32_2();
+		bool check_perm1_v4u32_3();
 
-		bool check_perm2_u32__();
-		bool check_perm2_u32_0();
-		bool check_perm2_u32_1();
-		bool check_perm2_u32_2();
-		bool check_perm2_u32_3();
-		bool check_perm2_u32_4();
-		bool check_perm2_u32_5();
-		bool check_perm2_u32_6();
-		bool check_perm2_u32_7();
+		bool check_perm2_v4u32__();
+		bool check_perm2_v4u32_0();
+		bool check_perm2_v4u32_1();
+		bool check_perm2_v4u32_2();
+		bool check_perm2_v4u32_3();
+		bool check_perm2_v4u32_4();
+		bool check_perm2_v4u32_5();
+		bool check_perm2_v4u32_6();
+		bool check_perm2_v4u32_7();
 
 		// split generated functions
-		bool check_perm1_u16__();
-		bool check_perm1_u16_0();
-		bool check_perm1_u16_1();
-		bool check_perm1_u16_2();
-		bool check_perm1_u16_3();
-		bool check_perm1_u16_4();
-		bool check_perm1_u16_5();
-		bool check_perm1_u16_6();
-		bool check_perm1_u16_7();
+		bool check_perm1_v8u16__();
+		bool check_perm1_v8u16_0();
+		bool check_perm1_v8u16_1();
+		bool check_perm1_v8u16_2();
+		bool check_perm1_v8u16_3();
+		bool check_perm1_v8u16_4();
+		bool check_perm1_v8u16_5();
+		bool check_perm1_v8u16_6();
+		bool check_perm1_v8u16_7();
 
-		bool check_perm2_u16___();
-		bool check_perm2_u16_00();
-		bool check_perm2_u16_01();
-		bool check_perm2_u16_02();
-		bool check_perm2_u16_03();
-		bool check_perm2_u16_04();
-		bool check_perm2_u16_05();
-		bool check_perm2_u16_06();
-		bool check_perm2_u16_07();
-		bool check_perm2_u16_08();
-		bool check_perm2_u16_09();
-		bool check_perm2_u16_10();
-		bool check_perm2_u16_11();
-		bool check_perm2_u16_12();
-		bool check_perm2_u16_13();
-		bool check_perm2_u16_14();
-		bool check_perm2_u16_15();
+		bool check_perm2_v8u16___();
+		bool check_perm2_v8u16_00();
+		bool check_perm2_v8u16_01();
+		bool check_perm2_v8u16_02();
+		bool check_perm2_v8u16_03();
+		bool check_perm2_v8u16_04();
+		bool check_perm2_v8u16_05();
+		bool check_perm2_v8u16_06();
+		bool check_perm2_v8u16_07();
+		bool check_perm2_v8u16_08();
+		bool check_perm2_v8u16_09();
+		bool check_perm2_v8u16_10();
+		bool check_perm2_v8u16_11();
+		bool check_perm2_v8u16_12();
+		bool check_perm2_v8u16_13();
+		bool check_perm2_v8u16_14();
+		bool check_perm2_v8u16_15();
 
 		// global test generation function
                 void generate(const std::string& fnamebase);
-		void generate_f64(const std::string& fnamebase);
-		void generate_f32(const std::string& fnamebase);
-		void generate_u64(const std::string& fnamebase);
-		void generate_u32(const std::string& fnamebase);
-		void generate_u16(const std::string& fnamebase);
+		void generate_v2f64(const std::string& fnamebase);
+		void generate_v4f32(const std::string& fnamebase);
+		void generate_v2u64(const std::string& fnamebase);
+		void generate_v4u32(const std::string& fnamebase);
+		void generate_v8u16(const std::string& fnamebase);
 
-                __m128d load_f64(bool second);
-                __m128 load_f32(bool second);
-                __m128i load_u64(bool second);
-                __m128i load_u32(bool second);
-                __m128i load_u16(bool second);
+                __m128d load_v2f64(bool second);
+                __m128 load_v4f32(bool second);
+                __m128i load_v2u64(bool second);
+                __m128i load_v4u32(bool second);
+                __m128i load_v8u16(bool second);
 
 
                 // Complementary-multiply-with-carry random generator.
@@ -220,16 +221,16 @@ namespace x86vec {
                 template <class _T>
                 bool check_val(_T t, int p);
 
-                bool check_f64(const char* msg,
+                bool check_v2f64(const char* msg,
                                   __m128d r, const idx& i);
-                bool check_f32(const char* msg,
+                bool check_v4f32(const char* msg,
                                  __m128 r, const idx& i);
-		bool check_u16(const char* msg,
-			       __m128i r, const idx& i);
-		bool check_u32(const char* msg,
-			       __m128i r, const idx& i);
-		bool check_u64(const char* msg,
-			       __m128i r, const idx& i);
+		bool check_v8u16(const char* msg,
+				 __m128i r, const idx& i);
+		bool check_v4u32(const char* msg,
+				 __m128i r, const idx& i);
+		bool check_v2u64(const char* msg,
+				 __m128i r, const idx& i);
         }
 }
 
@@ -253,7 +254,7 @@ bool x86vec::test::check_val(_T t, int p)
         return ((p<0) && (t==0)) || (_T(p+1) == t);
 }
 
-inline __m128d x86vec::test::load_f64(bool second)
+inline __m128d x86vec::test::load_v2f64(bool second)
 {
         __m128d r;
         if (second == true)
@@ -263,7 +264,7 @@ inline __m128d x86vec::test::load_f64(bool second)
         return r;
 }
 
-inline __m128 x86vec::test::load_f32(bool second)
+inline __m128 x86vec::test::load_v4f32(bool second)
 {
         __m128 r;
         if (second == true)
@@ -273,33 +274,33 @@ inline __m128 x86vec::test::load_f32(bool second)
         return r;
 }
 
-inline __m128i x86vec::test::load_u64(bool second)
+inline __m128i x86vec::test::load_v2u64(bool second)
 {
         __m128i r;
         if (second == true)
-                r = const4_u32<3,0,4,0>::iv();
+                r = const_v4u32<3,0,4,0>::iv();
         else
-                r = const4_u32<1,0,2,0>::iv();
+                r = const_v4u32<1,0,2,0>::iv();
         return r;
 }
 
-inline __m128i x86vec::test::load_u32(bool second)
+inline __m128i x86vec::test::load_v4u32(bool second)
 {
         __m128i r;
         if (second == true)
-                r = const4_u32<5,6,7,8>::iv();
+                r = const_v4u32<5,6,7,8>::iv();
         else
-                r = const4_u32<1,2,3,4>::iv();
+                r = const_v4u32<1,2,3,4>::iv();
         return r;
 }
 
-inline __m128i x86vec::test::load_u16(bool second)
+inline __m128i x86vec::test::load_v8u16(bool second)
 {
         __m128i r;
         if (second == true)
-                r = const8_u16<9,10,11,12,13,14,15,16>::iv();
+                r = const_v8u16< 9,10,11,12,13,14,15,16>::iv();
         else
-                r = const8_u16< 1, 2, 3, 4, 5, 6, 7, 8>::iv();
+                r = const_v8u16< 1, 2, 3, 4, 5, 6, 7, 8>::iv();
         return r;
 }
 

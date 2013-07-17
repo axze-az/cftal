@@ -358,7 +358,7 @@ double x86vec::extract_f64(__m256d v)
         } else {
                 vv = _mm256_extractf128_pd(v, 1);
         }
-        return extract_f64(vv);
+        return extract_f64<_IDX&1>(vv);
 #if 0
         switch (_IDX&1) {
         case 0:

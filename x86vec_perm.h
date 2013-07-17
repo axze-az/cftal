@@ -104,13 +104,13 @@ namespace x86vec {
                         : public fixed_arg_1<__m128, make_zero_f32,
                                              exec_f64<vunpckhpd> > {};
                 template <>
-                struct perm1_v4f32<0, 0, 0, 0> : public splat_f32<0> {};
+                struct perm1_v4f32<0, 0, 0, 0> : public splat_v4f32<0> {};
                 template <>
-                struct perm1_v4f32<1, 1, 1, 1> : public splat_f32<1> {};
+                struct perm1_v4f32<1, 1, 1, 1> : public splat_v4f32<1> {};
                 template <>
-                struct perm1_v4f32<2, 2, 2, 2> : public splat_f32<2> {};
+                struct perm1_v4f32<2, 2, 2, 2> : public splat_v4f32<2> {};
                 template <>
-                struct perm1_v4f32<3, 3, 3, 3> : public splat_f32<3> {};
+                struct perm1_v4f32<3, 3, 3, 3> : public splat_v4f32<3> {};
 
                 template <>
                 struct perm1_v4f32<-1, 0, 1, 2>
@@ -245,13 +245,13 @@ namespace x86vec {
                         : public fixed_arg_1<__m128i, make_zero_int,
                                              vpunpckhqdq> {};
                 template <>
-                struct perm1_v4u32< 0, 0, 0, 0> : public splat_u32<0> {};
+                struct perm1_v4u32< 0, 0, 0, 0> : public splat_v4u32<0> {};
                 template <>
-                struct perm1_v4u32< 1, 1, 1, 1> : public splat_u32<1> {};
+                struct perm1_v4u32< 1, 1, 1, 1> : public splat_v4u32<1> {};
                 template <>
-                struct perm1_v4u32< 2, 2, 2, 2> : public splat_u32<2> {};
+                struct perm1_v4u32< 2, 2, 2, 2> : public splat_v4u32<2> {};
                 template <>
-                struct perm1_v4u32< 3, 3, 3, 3> : public splat_u32<3> {};
+                struct perm1_v4u32< 3, 3, 3, 3> : public splat_v4u32<3> {};
 
                 template <>
                 struct perm1_v4u32<-1, 0, 1, 2> : public vpslldq<4> {};
@@ -401,28 +401,28 @@ namespace x86vec {
                                              vpunpckhwd> {};
                 template <>
                 struct perm1_v8u16<0, 0, 0, 0, 0, 0, 0, 0>
-                        : public splat_u16<0> {};
+                        : public splat_v8u16<0> {};
                 template <>
                 struct perm1_v8u16<1, 1, 1, 1, 1, 1, 1, 1>
-                        : public splat_u16<1> {};
+                        : public splat_v8u16<1> {};
                 template <>
                 struct perm1_v8u16<2, 2, 2, 2, 2, 2, 2, 2>
-                        : public splat_u16<2> {};
+                        : public splat_v8u16<2> {};
                 template <>
                 struct perm1_v8u16<3, 3, 3, 3, 3, 3, 3, 3>
-                        : public splat_u16<3> {};
+                        : public splat_v8u16<3> {};
                 template <>
                 struct perm1_v8u16<4, 4, 4, 4, 4, 4, 4, 4>
-                        : public splat_u16<4> {};
+                        : public splat_v8u16<4> {};
                 template <>
                 struct perm1_v8u16<5, 5, 5, 5, 5, 5, 5, 5>
-                        : public splat_u16<5> {};
+                        : public splat_v8u16<5> {};
                 template <>
                 struct perm1_v8u16<6, 6, 6, 6, 6, 6, 6, 6>
-                        : public splat_u16<6> {};
+                        : public splat_v8u16<6> {};
                 template <>
                 struct perm1_v8u16<7, 7, 7, 7, 7, 7, 7, 7>
-                        : public splat_u16<7> {};
+                        : public splat_v8u16<7> {};
                 template <>
                 struct perm1_v8u16<-1, 0, 1, 2, 3, 4, 5, 6>
                         : public vpslldq<2> {};
@@ -595,7 +595,7 @@ __m128d x86vec::impl::perm1_v2f64<_P0, _P1>::v(__m128d a)
                         return make_zero_f64::v();
                 }
                 // zero some elements
-                const __m128d msk= const4_u32<
+                const __m128d msk= const_v4u32<
                         (_P0<0 ? 0 : -1),
                         (_P0<0 ? 0 : -1),
                         (_P1<0 ? 0 : -1),
@@ -676,7 +676,7 @@ __m128 x86vec::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
                 const int z1 = (_P1 < 0) ? 0 : -1;
                 const int z2 = (_P2 < 0) ? 0 : -1;
                 const int z3 = (_P3 < 0) ? 0 : -1;
-                const __m128 zm= const4_u32<z0, z1, z2, z3>::fv();
+                const __m128 zm= const_v4u32<z0, z1, z2, z3>::fv();
                 // zero with AND mask
                 return  _mm_and_ps(a,zm);
         }
@@ -711,7 +711,7 @@ __m128 x86vec::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
         const int c13 = (_P3<0 ? -1 : 4*(_P3&3)+1);
         const int c14 = (_P3<0 ? -1 : 4*(_P3&3)+2);
         const int c15 = (_P3<0 ? -1 : 4*(_P3&3)+3);
-        const __m128i msk=const16_u8<c00, c01, c02, c03,
+        const __m128i msk=const_v16u8<c00, c01, c02, c03,
 		c04, c05, c06, c07,
 		c08, c09, c10, c11,
 		c12, c13, c14, c15>::iv();
@@ -724,7 +724,7 @@ __m128 x86vec::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
         const int z1 = (_P1 < 0) ? 0 : -1;
         const int z2 = (_P2 < 0) ? 0 : -1;
         const int z3 = (_P3 < 0) ? 0 : -1;
-        const __m128 zm= const4_u32<z0, z1, z2, z3>::fv();
+        const __m128 zm= const_v4u32<z0, z1, z2, z3>::fv();
         return  _mm_and_ps(t,zm);
 #endif
 }
@@ -765,7 +765,7 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                 const bool sm3 = _P3 < 4;
                 __m128 t = select_v4f32<sm0, sm1, sm2, sm3>::v(a, b);
                 // zero
-                const __m128 zm = const4_u32<
+                const __m128 zm = const_v4u32<
                         (_P0 < 0 ? 0 : -1),
                         (_P1 < 0 ? 0 : -1),
                         (_P2 < 0 ? 0 : -1),
@@ -777,7 +777,7 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                 __m128 t = vshufps<_P0, _P1, _P2, _P3>::v(a, b);
                 if ( m2 != 0xFFFF) {
                         // zero
-                        const __m128 zm = const4_u32<
+                        const __m128 zm = const_v4u32<
                                 (_P0 < 0 ? 0 : -1),
                                 (_P1 < 0 ? 0 : -1),
                                 (_P2 < 0 ? 0 : -1),
@@ -791,7 +791,7 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                 __m128 t=vshufps<_P0, _P1, _P2, _P3>::v(b, a);
                 if ( m2 != 0xFFFF) {
                         // zero
-                        const __m128 zm = const4_u32<
+                        const __m128 zm = const_v4u32<
                                 (_P0 < 0 ? 0 : -1),
                                 (_P1 < 0 ? 0 : -1),
                                 (_P2 < 0 ? 0 : -1),
@@ -837,7 +837,7 @@ __m128i x86vec::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
                 const int z1 = (_P1 < 0) ? 0 : -1;
                 const int z2 = (_P2 < 0) ? 0 : -1;
                 const int z3 = (_P3 < 0) ? 0 : -1;
-                const __m128i zm= const4_u32<z0, z1, z2, z3>::iv();
+                const __m128i zm= const_v4u32<z0, z1, z2, z3>::iv();
                 // zero with AND mask
                 return  _mm_and_si128(a,zm);
         }
@@ -880,7 +880,7 @@ __m128i x86vec::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
         const int c13 = (_P3<0 ? -1 : 4*(_P3&3)+1);
         const int c14 = (_P3<0 ? -1 : 4*(_P3&3)+2);
         const int c15 = (_P3<0 ? -1 : 4*(_P3&3)+3);
-        const __m128i msk=const16_u8<c00, c01, c02, c03,
+        const __m128i msk=const_v16u8<c00, c01, c02, c03,
 		c04, c05, c06, c07,
 		c08, c09, c10, c11,
 		c12, c13, c14, c15>::iv();
@@ -904,7 +904,7 @@ __m128i x86vec::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
         const int z1 = (_P1 < 0) ? 0 : -1;
         const int z2 = (_P2 < 0) ? 0 : -1;
         const int z3 = (_P3 < 0) ? 0 : -1;
-        const __m128i zm= const4_u32<z0, z1, z2, z3>::iv();
+        const __m128i zm= const_v4u32<z0, z1, z2, z3>::iv();
         // zero with AND mask
         return  _mm_and_si128(t,zm);
 #endif
@@ -945,7 +945,7 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                 const bool sm3 = _P3 < 4;
                 __m128i t = select_v4u32<sm0, sm1, sm2, sm3>::v(a, b);
                 // zero
-                const __m128i zm = const4_u32<
+                const __m128i zm = const_v4u32<
                         (_P0 < 0 ? 0 : -1),
                         (_P1 < 0 ? 0 : -1),
                         (_P2 < 0 ? 0 : -1),
@@ -957,7 +957,7 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                 __m128i t= exec_f32<vshufps<_P0, _P1, _P2, _P3> >::v(a, b);
                 if ( m2 != 0xFFFF) {
                         // zero
-                        const __m128i zm = const4_u32<
+                        const __m128i zm = const_v4u32<
                                 (_P0 < 0 ? 0 : -1),
                                 (_P1 < 0 ? 0 : -1),
                                 (_P2 < 0 ? 0 : -1),
@@ -971,7 +971,7 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                 __m128i t= exec_f32<vshufps<_P0, _P1, _P2, _P3> >::v(b, a);
                 if ( m2 != 0xFFFF) {
                         // zero
-                        const __m128i zm = const4_u32<
+                        const __m128i zm = const_v4u32<
                                 (_P0 < 0 ? 0 : -1),
                                 (_P1 < 0 ? 0 : -1),
                                 (_P2 < 0 ? 0 : -1),
@@ -1042,7 +1042,7 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
                 const int z5= (_P5<0 ? 0 : -1);
                 const int z6= (_P6<0 ? 0 : -1);
                 const int z7= (_P7<0 ? 0 : -1);
-                const __m128i zm= const8_u16<z0, z1, z2, z3,
+                const __m128i zm= const_v8u16<z0, z1, z2, z3,
 			z4, z5, z6, z7>::iv();
                 return _mm_and_si128(a, zm);
         }
@@ -1092,7 +1092,7 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
         const int c13 = (_P6<0 ? -1 : 2*(_P6&7)+1);
         const int c14 = (_P7<0 ? -1 : 2*(_P7&7)+0);
         const int c15 = (_P7<0 ? -1 : 2*(_P7&7)+1);
-        const __m128i msk=const16_u8<c00, c01, c02, c03,
+        const __m128i msk=const_v16u8<c00, c01, c02, c03,
 		c04, c05, c06, c07,
 		c08, c09, c10, c11,
 		c12, c13, c14, c15>::iv();
@@ -1217,7 +1217,7 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
                         t0 = vpshufhw<s0, s1, s2, s3>::v(t0);
                         // merge data from t0 and t1
                         t1 = vpshufhw<v0, v1, v2, v3>::v(t1);
-                        r = select_v8v8u16<
+                        r = select_v8u16<
                                 (_P0 & 4) != 0,
                                 (_P1 & 4) != 0,
                                 (_P2 & 4) != 0,
@@ -1238,7 +1238,7 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
                 const int z5= (_P5<0 ? 0 : -1);
                 const int z6= (_P6<0 ? 0 : -1);
                 const int z7= (_P7<0 ? 0 : -1);
-                const __m128i zm= const8_v8u16<z0, z1, z2, z3,
+                const __m128i zm= const_v8u16<z0, z1, z2, z3,
 			z4, z5, z6, z7>::iv();
                 r = _mm_and_si128(r, zm);
         }
@@ -1374,7 +1374,7 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
                 const int z1 = (_P1 < 0) ? 0 : -1;
                 const int z2 = (_P2 < 0) ? 0 : -1;
                 const int z3 = (_P3 < 0) ? 0 : -1;
-                const __m256d zm= const8_u32<z0, z0, z1, z1, 
+                const __m256d zm= const_v8u32<z0, z0, z1, z1, 
 					     z2, z2, z3, z3>::dv();
                 // zero with AND mask
                 return  _mm256_and_pd(a, zm);
@@ -1410,7 +1410,7 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
                 const int z1 = (_P1 < 0) ? 0 : -1;
                 const int z2 = (_P2 < 0) ? 0 : -1;
                 const int z3 = (_P3 < 0) ? 0 : -1;
-                const __m256d zm= const8_u32<z0, z0, z1, z1, 
+                const __m256d zm= const_v8u32<z0, z0, z1, z1, 
 					     z2, z2, z3, z3>::dv();
                 // zero with AND mask
                 res = _mm256_and_pd(res, zm);

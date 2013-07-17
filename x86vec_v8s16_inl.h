@@ -212,7 +212,7 @@ inline
 x86vec::v8s16&
 x86vec::operator++(v8s16& a)
 {
-        const __m128i one = const8_u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
+        const __m128i one = const_v8u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
         a = _mm_add_epi16(a(), one);
         return a;
 }
@@ -222,7 +222,7 @@ x86vec::v8s16
 x86vec::operator++ (v8s16& a, int)
 {
         v8s16 t(a);
-        const __m128i one = const8_u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
+        const __m128i one = const_v8u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
         a = _mm_add_epi16(a(), one);
         return t;
 }
@@ -231,7 +231,7 @@ inline
 x86vec::v8s16&
 x86vec::operator--(v8s16& a)
 {
-        const __m128i one = const8_u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
+        const __m128i one = const_v8u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
         a = _mm_sub_epi16(a(), one);
         return a;
 }
@@ -241,7 +241,7 @@ x86vec::v8s16
 x86vec::operator-- (v8s16& a, int)
 {
         v8s16 t(a);
-        const __m128i one = const8_u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
+        const __m128i one = const_v8u16< 1, 1, 1, 1, 1, 1, 1, 1>::iv();
         a = _mm_sub_epi16(a(), one);
         return t;
 }
@@ -271,7 +271,7 @@ inline
 x86vec::v8s16
 x86vec::operator~(const v8s16& a)
 {
-        const __m128i all_set = const4_u32 < -1, -1, -1, -1 >::iv();
+        const __m128i all_set = const_v4u32 < -1, -1, -1, -1 >::iv();
         return _mm_xor_si128(a(), all_set);
 }
 

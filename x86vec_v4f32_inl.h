@@ -224,7 +224,7 @@ inline
 x86vec::v4f32
 x86vec::operator~(const v4f32& a)
 {
-        const __m128 all_set = const4_u32 < -1, -1, -1, -1 >::fv();
+        const __m128 all_set = const_v4u32 < -1, -1, -1, -1 >::fv();
         return _mm_xor_ps(a(), all_set);
 }
 
@@ -449,7 +449,7 @@ x86vec::v4f32 x86vec::impl::round(const v4f32& a, const rounding_mode::type m)
 	}
         const __m128 sgn_msk= v_sign_f32_msk::fv();
 	// (127+23)<< 23 = 0x4B000000 = 2^23
-        const __m128 magic= const4_u32<0x4B000000, 0x4B000000,
+        const __m128 magic= const_v4u32<0x4B000000, 0x4B000000,
                                        0x4B000000, 0x4B000000>::fv();
         __m128 sign = _mm_and_ps(a(), sgn_msk);
         __m128 sign_magic = _mm_or_ps(magic, sign);

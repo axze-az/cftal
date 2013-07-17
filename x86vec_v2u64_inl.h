@@ -200,7 +200,7 @@ inline
 x86vec::v2u64&
 x86vec::operator++(v2u64& a)
 {
-        const __m128i one = const4_u32< 1, 0, 1, 0>::iv();
+        const __m128i one = const_v4u32< 1, 0, 1, 0>::iv();
         a = _mm_add_epi64(a(), one);
         return a;
 }
@@ -210,7 +210,7 @@ x86vec::v2u64
 x86vec::operator++ (v2u64& a, int)
 {
         v2u64 t(a);
-        const __m128i one = const4_u32< 1, 0, 1, 0>::iv();
+        const __m128i one = const_v4u32< 1, 0, 1, 0>::iv();
         a = _mm_add_epi64(a(), one);
         return t;
 }
@@ -219,7 +219,7 @@ inline
 x86vec::v2u64&
 x86vec::operator--(v2u64& a)
 {
-        const __m128i one = const4_u32< 1, 0, 1, 0>::iv();
+        const __m128i one = const_v4u32< 1, 0, 1, 0>::iv();
         a = _mm_sub_epi64(a(), one);
         return a;
 }
@@ -229,7 +229,7 @@ x86vec::v2u64
 x86vec::operator-- (v2u64& a, int)
 {
         v2u64 t(a);
-        const __m128i one = const4_u32< 1, 0, 1, 0>::iv();
+        const __m128i one = const_v4u32< 1, 0, 1, 0>::iv();
         a = _mm_sub_epi64(a(), one);
         return t;
 }
@@ -253,7 +253,7 @@ inline
 x86vec::v2u64
 x86vec::operator~(const v2u64& a)
 {
-        const __m128i all_set = const4_u32 < -1, -1, -1, -1 >::iv();
+        const __m128i all_set = const_v4u32 < -1, -1, -1, -1 >::iv();
         return _mm_xor_si128(a(), all_set);
 }
 
@@ -454,7 +454,7 @@ x86vec::mul_lo_hi(const v2u64& x, const v2u64& y)
 	// low part of the multiplication:
 	xl_yl += s32_63;
 	v2u64 neg_carry_64 = xl_yl < s32_63;
-	const __m128i c96_msk= const4_u32<0, 1, 0, 1>::iv();
+	const __m128i c96_msk= const_v4u32<0, 1, 0, 1>::iv();
 
 	s64_96 |= carry_96 & c96_msk;
 	xh_yh -= neg_carry_64;

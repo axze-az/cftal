@@ -308,23 +308,23 @@ namespace x86vec {
 			: public select_arg_1<__m128i> {};
 
 		template <unsigned _P>
-		struct splat_f64 : public vshufpd<_P, _P> {};
+		struct splat_v2f64 : public vshufpd<_P, _P> {};
 
 		template <unsigned _P>
-		struct splat_f32 : public vshufps<_P, _P, _P, _P> {};
+		struct splat_v4f32 : public vshufps<_P, _P, _P, _P> {};
 
 		template <unsigned _P>
 		struct splat_u64
 			: public vpshufd<2*_P,2*_P+1, 2*_P,2*_P+1> {};
 
 		template <unsigned _P>
-		struct splat_u32 : public vpshufd<_P, _P, _P, _P> {};
+		struct splat_v4u32 : public vpshufd<_P, _P, _P, _P> {};
 
 		template <unsigned _P>
-		struct splat_u16 {
+		struct splat_v8u16 {
 			static __m128i v(__m128i a) {
 #if defined (__SSSE3__)
-				const __m128i msk=const16_u8<
+				const __m128i msk=const_v16u8<
 					(_P&7)*2, (_P&7)*2+1,
 					(_P&7)*2, (_P&7)*2+1,
 					(_P&7)*2, (_P&7)*2+1,
@@ -759,7 +759,7 @@ __m128i x86vec::impl::vpsraq::v(__m128i a, unsigned shift)
 		r = select_v4u32<0, 1, 0, 1>::v(sgnbits, allbits);
 #else
 		// clear the low uint32_t of sgnbits
-		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
+		__m128i msk= const_v4u32<0, -1, 0, -1>::iv();
 		sgnbits = _mm_and_si128(sgnbits, msk);
 		// works because high uint32_t of sgnbits contains
 		// either the same pattern as allbits or ones 
@@ -778,7 +778,7 @@ __m128i x86vec::impl::vpsraq::v(__m128i a, unsigned shift)
 		// result bits correctly located.
 		allbits = vpsrlq_const<32>::v(allbits);
 		// clear the low uint32_t of sgnbits
-		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
+		__m128i msk= const_v4u32<0, -1, 0, -1>::iv();
 		sgnbits = _mm_and_si128(sgnbits, msk);
 		// works because high uint32_t of sgnbits contains
 		// either the same pattern as allbits or ones 
@@ -802,7 +802,7 @@ __m128i x86vec::impl::vpsraq_const<_S>::v(__m128i a)
 		r = select_v4u32<0, 1, 0, 1>::v(sgnbits, allbits);
 #else
 		// clear the low uint32_t of sgnbits
-		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
+		__m128i msk= const_v4u32<0, -1, 0, -1>::iv();
 		sgnbits = _mm_and_si128(sgnbits, msk);
 		// works because high uint32_t of sgnbits contains
 		// either the same pattern as allbits or ones 
@@ -821,7 +821,7 @@ __m128i x86vec::impl::vpsraq_const<_S>::v(__m128i a)
 		// result bits correctly located.
 		allbits = vpsrlq_const<32>::v(allbits);
 		// clear the low uint32_t of sgnbits
-		__m128i msk= const4_u32<0, -1, 0, -1>::iv();
+		__m128i msk= const_v4u32<0, -1, 0, -1>::iv();
 		sgnbits = _mm_and_si128(sgnbits, msk);
 		// works because high uint32_t of sgnbits contains
 		// either the same pattern as allbits or ones 
@@ -842,7 +842,7 @@ __m128i x86vec::impl::vpmulld::v(__m128i a, __m128i b)
 	// 1, 3 at positions 0 2
 	__m128i o= _mm_mul_epu32(vpsrlq_const<32>::v(a),
 				 vpsrlq_const<32>::v(b));
-	const __m128i msk = const4_u32<-1, 0, -1, 0>::iv();
+	const __m128i msk = const_v4u32<-1, 0, -1, 0>::iv();
 	e = _mm_and_si128(e, msk);
 	o = _mm_slli_epi64(o, 32);
 	e = _mm_or_si128(e, o);
@@ -864,7 +864,7 @@ __m128i x86vec::impl::vpmulhud::v(__m128i a, __m128i b)
 #if defined (__SSE4_1__)
 	return select_v4u32<1, 0, 1, 0>::v(e, o);
 #else
-	const __m128i msk = const4_u32<0, -1, 0, -1>::iv();
+	const __m128i msk = const_v4u32<0, -1, 0, -1>::iv();
 	o = _mm_and_si128(o, msk);
 	return _mm_or_si128(e, o);
 #endif

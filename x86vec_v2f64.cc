@@ -7,9 +7,9 @@
 x86vec::v2f64
 x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)
 {
-        const v2s64 hi_cor=const4_u32<0x4000000, 0,
+        const v2s64 hi_cor=const_v4u32<0x4000000, 0,
 				      0x4000000, 0>::iv();
-        const v2s64 hi_msk=const4_u32<0xf8000000, 0xffffffff,
+        const v2s64 hi_msk=const_v4u32<0xf8000000, 0xffffffff,
 				      0xf8000000, 0xffffffff>::iv();
         v2s64 t;
         t= as<v2s64>(x);
@@ -1282,7 +1282,7 @@ namespace x86vec {
 	inline
 	v2f64 upper(const v2f64& v) {
 		const v2f64 msk= 
-			const4_u32<0xf8000000U, 0xffffffff,
+			const_v4u32<0xf8000000U, 0xffffffff,
 				   0xf8000000U, 0xffffffff>::dv();
 		return v & msk;
 	}
@@ -1478,11 +1478,11 @@ x86vec::v2f64 x86vec::frexp(arg<v2f64>::type v, v2s64* ex)
         // denormal handling
         const v2f64 _2_54 = impl::double_power_of_two<54>::dv();
         v2f64 r_denom(v* _2_54);
-        const v2s64 e_denom_corr= const4_u32<-54-1022, -1, -54-1022, -1>::iv();
+        const v2s64 e_denom_corr= const_v4u32<-54-1022, -1, -54-1022, -1>::iv();
 
         // normal handling
         // v2u64 exp_orig_pos = iv & v_exp_f64_msk::iv();
-        const v2s64 e_normal_corr= const4_u32<-1022, -1, -1022, -1>::iv();
+        const v2s64 e_normal_corr= const_v4u32<-1022, -1, -1022, -1>::iv();
         const v2f64& r_normal= v;
 
         // finite handling
@@ -1500,7 +1500,7 @@ x86vec::v2f64 x86vec::frexp(arg<v2f64>::type v, v2s64* ex)
         // mask out exponent
         r_finite &= v_not_exp_f64_msk::dv();
         // insert exponent 2^-1
-        r_finite |= const4_u32<0, 0x3fe00000, 0, 0x3fe00000>::dv();
+        r_finite |= const_v4u32<0, 0x3fe00000, 0, 0x3fe00000>::dv();
 
         // combine inf nan zero and finite
         v2s64 e(select(is_inf_nan_zero_int, e_inf_nan_zero, e_finite));

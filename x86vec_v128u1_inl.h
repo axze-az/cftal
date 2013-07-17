@@ -44,7 +44,7 @@ inline
 x86vec::v128u1
 x86vec::operator~(const v128u1& r)
 {
-        const __m128i msk = const4_u32 < -1, -1, -1, -1 >::iv();
+        const __m128i msk = const_v4u32 < -1, -1, -1, -1 >::iv();
         return _mm_xor_si128(r(), msk);
 }
 

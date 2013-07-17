@@ -260,10 +260,10 @@ x86vec::impl::select_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
 	const int sm=csel2<_P0, _P1>::val;
 	return _mm_blend_pd(b, a, sm);
 #else
-	typedef const4_u32<
+	typedef const_v4u32<
 		(_P0 ? -1 : 0), (_P0 ? -1 : 0),
 		(_P1 ? -1 : 0), (_P1 ? -1 : 0)> mask_type;
-	typedef const4_u32<
+	typedef const_v4u32<
 		(_P0 ? 0 : -1), (_P0 ? 0 : -1),
 		(_P1 ? 0 : -1), (_P1 ? 0 : -1)> compl_mask_type;
 	a = _mm_and_pd(a, mask_type::dv());
@@ -280,10 +280,10 @@ x86vec::impl::select_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
 	const int sm=csel4<_P0, _P1, _P2, _P3>::val;
 	return _mm_blend_ps(b, a, sm);
 #else
-	typedef const4_u32<
+	typedef const_v4u32<
 		(_P0 ? -1 : 0), (_P1 ? -1 : 0),
 		(_P2 ? -1 : 0), (_P3 ? -1 : 0)> mask_type;
-	typedef const4_u32<
+	typedef const_v4u32<
 		(_P0 ? 0 : -1), (_P1 ? 0 : -1),
 		(_P2 ? 0 : -1), (_P3 ? 0 : -1)> compl_mask_type;
 	a = _mm_and_ps(a, mask_type::fv());
@@ -302,12 +302,12 @@ select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
 	const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
 	return _mm_blend_epi16(b, a, sm);
 #else
-	typedef const8_u16<
+	typedef const_v8u16<
 		(_P0 ? -1 : 0), (_P1 ? -1 : 0),
 		(_P2 ? -1 : 0), (_P3 ? -1 : 0),
 		(_P4 ? -1 : 0), (_P5 ? -1 : 0),
 		(_P6 ? -1 : 0), (_P7 ? -1 : 0)> mask_type;
-	typedef const8_u16<
+	typedef const_v8u16<
 		(_P0 ? 0 : -1), (_P1 ? 0 : -1),
 		(_P2 ? 0 : -1), (_P3 ? 0 : -1),
 		(_P4 ? 0 : -1), (_P5 ? 0 : -1),

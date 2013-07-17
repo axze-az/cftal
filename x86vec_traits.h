@@ -27,10 +27,10 @@ namespace cftal {
 			   x86vec::v2f64& h, 
 			   x86vec::v2f64& l) {
 			const x86vec::v2f64 msk= 
-				x86vec::const4_u32<0xf8000000U, 
-						   0xffffffffU,
-						   0xf8000000U, 
-						   0xffffffffU>::dv();
+				x86vec::const_v4u32<0xf8000000U, 
+						    0xffffffffU,
+						    0xf8000000U, 
+						    0xffffffffU>::dv();
 			h = a & msk;
 			l = a - h;
 		}

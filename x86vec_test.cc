@@ -98,7 +98,7 @@ x86vec::uint32_t x86vec::test::cmwc_rng_base::next()
         return (_Q[_i] = r - x);
 }
 
-bool x86vec::test::check_f64(const char* msg,
+bool x86vec::test::check_v2f64(const char* msg,
 				__m128d v, const idx& i)
 {
 	union {
@@ -114,7 +114,7 @@ bool x86vec::test::check_f64(const char* msg,
 	return rc;
 }
 
-bool x86vec::test::check_f32(const char* msg,
+bool x86vec::test::check_v4f32(const char* msg,
 			       __m128 v, const idx& i)
 {
 	union {
@@ -132,7 +132,7 @@ bool x86vec::test::check_f32(const char* msg,
 	return rc;
 }
 
-bool x86vec::test::check_u16(const char* msg,
+bool x86vec::test::check_v8u16(const char* msg,
 			     __m128i v, const idx& i)
 {
 	union {
@@ -151,7 +151,7 @@ bool x86vec::test::check_u16(const char* msg,
 	return rc;
 }
 
-bool x86vec::test::check_u32(const char* msg,
+bool x86vec::test::check_v4u32(const char* msg,
 			     __m128i v, const idx& i)
 {
 	union {
@@ -169,8 +169,8 @@ bool x86vec::test::check_u32(const char* msg,
 	return rc;
 }
 
-bool x86vec::test::check_u64(const char* msg,
-			     __m128i v, const idx& i)
+bool x86vec::test::check_v2u64(const char* msg,
+			       __m128i v, const idx& i)
 {
 	union {
 		uint64_t _u[2];
@@ -189,183 +189,183 @@ bool x86vec::test::check_u64(const char* msg,
 
 void x86vec::test::generate(const std::string& name_base)
 {
-	generate_f64(name_base);
-	generate_u64(name_base);
-	generate_f32(name_base);
-	generate_u32(name_base);
-	generate_u16(name_base);
+	generate_v2f64(name_base);
+	generate_v2u64(name_base);
+	generate_v4f32(name_base);
+	generate_v4u32(name_base);
+	generate_v8u16(name_base);
 }
 
-void x86vec::test::generate_f64(const std::string& name_base)
+void x86vec::test::generate_v2f64(const std::string& name_base)
 {
-	std::string fname(name_base + "_f64.cc");
+	std::string fname(name_base + "_v2f64.cc");
 	std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
 	if (!f)
 		return;
 	// select double
 	f << "#include \"x86vec_test.h\"\n"
 	  << "#include <iostream>\n"
-	  << "bool x86vec::test::check_select_f64()\n"
+	  << "bool x86vec::test::check_select_v2f64()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n"
-	  << space8 << "__m128d a = load_f64(false);\n"
-	  << space8 << "__m128d b = load_f64(true);\n"
+	  << space8 << "__m128d a = load_v2f64(false);\n"
+	  << space8 << "__m128d b = load_v2f64(true);\n"
 	  << space8 << "__m128d r;\n"
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=0; i<2; ++i) {
 		for (int j=0; j<2; ++j) {
-			f << space8 << "r=select_f64<"
+			f << space8 << "r=select_v2f64<"
 			  << idx(i,j) << ">(a,b);\n";
 			f << space8 << "id.assign("
 			  << idx(((i!=0) ? 0 : 2),
 				 ((j!=0) ? 1 : 3))
 			  << ");\n";
 			f << space8
-			  << "rc &= check_f64(\"select_f64\", r, id);\n";
+			  << "rc &= check_v2f64(\"select_v2f64\", r, id);\n";
 		}
 	}
 	f << space8 << "return rc;\n"
 	  << "}\n\n";
 
 	// perm1 double
-	f << "bool x86vec::test::check_perm1_f64()\n"
+	f << "bool x86vec::test::check_perm1_v2f64()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n"
-	  << space8 << "__m128d a = load_f64(false);\n"
+	  << space8 << "__m128d a = load_v2f64(false);\n"
 	  << space8 << "__m128d r;\n"
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=-1; i<2; ++i) {
 		for (int j=-1; j<2; ++j) {
-			f << space8 << "r=perm_f64<"
+			f << space8 << "r=perm_v2f64<"
 			  << idx(i,j) << ">(a);\n";
 			f << space8 << "id.assign("
 			  << idx(i, j)
 			  << ");\n";
 			f << space8
-			  << "rc &= check_f64(\"perm1_f64\", r, id);\n";
+			  << "rc &= check_v2f64(\"perm1_v2f64\", r, id);\n";
 		}
 	}
 	f << space8 << "return rc;\n"
 	  << "}\n\n";
 
 	// perm2 double
-	f << "bool x86vec::test::check_perm2_f64()\n"
+	f << "bool x86vec::test::check_perm2_v2f64()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n"
-	  << space8 << "__m128d a = load_f64(false);\n"
-	  << space8 << "__m128d b = load_f64(true);\n"
+	  << space8 << "__m128d a = load_v2f64(false);\n"
+	  << space8 << "__m128d b = load_v2f64(true);\n"
 	  << space8 << "__m128d r;\n"
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=-1; i<4; ++i) {
 		for (int j=-1; j<4; ++j) {
-			f << space8 << "r=perm_f64<"
+			f << space8 << "r=perm_v2f64<"
 			  << idx(i,j) << ">(a,b);\n";
 			f << space8 << "id.assign("
 			  << idx(i, j)
 			  << ");\n";
 			f << space8
-			  << "rc &= check_f64(\"perm2_f64\", r, id);\n";
+			  << "rc &= check_v2f64(\"perm2_v2f64\", r, id);\n";
 		}
 	}
 	f << space8 << "return rc;\n"
 	  << "}\n\n";
 }
 
-void x86vec::test::generate_u64(const std::string& name_base)
+void x86vec::test::generate_v2u64(const std::string& name_base)
 {
-	std::string fname(name_base + "_u64.cc");
+	std::string fname(name_base + "_v2u64.cc");
 	std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
 	if (!f)
 		return;
 	// select u64
 	f << "#include \"x86vec_test.h\"\n"
 	  << "#include <iostream>\n"
-	  << "bool x86vec::test::check_select_u64()\n"
+	  << "bool x86vec::test::check_select_v2u64()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n"
-	  << space8 << "__m128i a = load_u64(false);\n"
-	  << space8 << "__m128i b = load_u64(true);\n"
+	  << space8 << "__m128i a = load_v2u64(false);\n"
+	  << space8 << "__m128i b = load_v2u64(true);\n"
 	  << space8 << "__m128i r;\n"
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=0; i<2; ++i) {
 		for (int j=0; j<2; ++j) {
-			f << space8 << "r=select_u64<"
+			f << space8 << "r=select_v2u64<"
 			  << idx(i,j) << ">(a,b);\n";
 			f << space8 << "id.assign("
 			  << idx(((i!=0) ? 0 : 2),
 				 ((j!=0) ? 1 : 3))
 			  << ");\n";
 			f << space8
-			  << "rc &= check_u64(\"select_u64\", r, id);\n";
+			  << "rc &= check_v2u64(\"select_v2u64\", r, id);\n";
 		}
 	}
 	f << space8 << "return rc;\n"
 	  << "}\n\n";
 
 	// perm1 u64
-	f << "bool x86vec::test::check_perm1_u64()\n"
+	f << "bool x86vec::test::check_perm1_v2u64()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n"
-	  << space8 << "__m128i a = load_u64(false);\n"
+	  << space8 << "__m128i a = load_v2u64(false);\n"
 	  << space8 << "__m128i r;\n"
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=-1; i<2; ++i) {
 		for (int j=-1; j<2; ++j) {
-			f << space8 << "r=perm_u64<"
+			f << space8 << "r=perm_v2u64<"
 			  << idx(i,j) << ">(a);\n";
 			f << space8 << "id.assign("
 			  << idx(i, j)
 			  << ");\n";
 			f << space8
-			  << "rc &= check_u64(\"perm1_u64\", r, id);\n";
+			  << "rc &= check_v2u64(\"perm1_v2u64\", r, id);\n";
 		}
 	}
 	f << space8 << "return rc;\n"
 	  << "}\n\n";
 
 	// perm2 u64
-	f << "bool x86vec::test::check_perm2_u64()\n"
+	f << "bool x86vec::test::check_perm2_v2u64()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n"
-	  << space8 << "__m128i a = load_u64(false);\n"
-	  << space8 << "__m128i b = load_u64(true);\n"
+	  << space8 << "__m128i a = load_v2u64(false);\n"
+	  << space8 << "__m128i b = load_v2u64(true);\n"
 	  << space8 << "__m128i r;\n"
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=-1; i<4; ++i) {
 		for (int j=-1; j<4; ++j) {
-			f << space8 << "r=perm_u64<"
+			f << space8 << "r=perm_v2u64<"
 			  << idx(i,j) << ">(a,b);\n";
 			f << space8 << "id.assign("
 			  << idx(i, j)
 			  << ");\n";
 			f << space8
-			  << "rc &= check_u64(\"perm2_u64\", r, id);\n";
+			  << "rc &= check_v2u64(\"perm2_v2u64\", r, id);\n";
 		}
 	}
 	f << space8 << "return rc;\n"
 	  << "}\n\n";
 }
 
-void x86vec::test::generate_f32(const std::string& name_base)
+void x86vec::test::generate_v4f32(const std::string& name_base)
 {
-	std::string fname(make_file_name(name_base, "sel_f32"));
+	std::string fname(make_file_name(name_base, "sel_v4f32"));
 	std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
 	if (!f)
 		return;
 	// select float
 	f << "#include \"x86vec_test.h\"\n\n"
-	  << "bool x86vec::test::check_select_f32()\n"
+	  << "bool x86vec::test::check_select_v4f32()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n"
-	  << space8 << "__m128 a = load_f32(false);\n"
-	  << space8 << "__m128 b = load_f32(true);\n"
+	  << space8 << "__m128 a = load_v4f32(false);\n"
+	  << space8 << "__m128 b = load_v4f32(true);\n"
 	  << space8 << "__m128 r;\n"
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=0; i<2; ++i) {
 		for (int j=0; j<2; ++j) {
 			for (int k=0; k<2;++k) {
 				for (int l=0; l<2; ++l) {
-					f << space8 << "r=select_f32<"
+					f << space8 << "r=select_v4f32<"
 					  << idx(i, j, k, l) << ">(a,b);\n";
 					f << space8 << "id.assign("
 					  << idx(((i!=0) ? 0 : 4),
@@ -375,7 +375,7 @@ void x86vec::test::generate_f32(const std::string& name_base)
 					  << ");\n";
 					f << space8
 					  << "rc &= "
-					  << "check_f32(\"select_f32\", r, id);\n";
+					  << "check_v4f32(\"select_v4f32\", r, id);\n";
 				}
 			}
 		}
@@ -385,28 +385,28 @@ void x86vec::test::generate_f32(const std::string& name_base)
 	f.close();
 
 	for (int i=-1; i<4; ++i) {
-		fname = make_file_name(name_base, "perm1_f32", i, 1);
+		fname = make_file_name(name_base, "perm1_v4f32", i, 1);
 		f.open(fname.c_str(), std::ios::out | std::ios::trunc);
 		// perm1 float
 		f << "#include \"x86vec_test.h\"\n\n"
-		  << "bool x86vec::test::check_perm1_f32_" << cvt_int(i,1)
+		  << "bool x86vec::test::check_perm1_v4f32_" << cvt_int(i,1)
 		  << "()\n"
 		  << "{\n"
 		  << space8 << "bool rc(true);\n"
-		  << space8 << "__m128 a = load_f32(false);\n"
+		  << space8 << "__m128 a = load_v4f32(false);\n"
 		  << space8 << "__m128 r;\n"
 		  << space8 << "idx id(-2,-2);\n\n";
 		for (int j=-1; j<4; ++j) {
 			for (int k=-1; k<4;++k) {
 				for (int l=-1; l<4; ++l) {
-					f << space8 << "r=perm_f32<"
+					f << space8 << "r=perm_v4f32<"
 					  << idx(i, j, k, l) << ">(a);\n";
 					f << space8 << "id.assign("
 					  << idx(i, j, k, l)
 					  << ");\n";
 					f << space8
 					  << "rc &= "
-					  << "check_f32(\"perm1_f32\", r, id);\n";
+					  << "check_v4f32(\"perm1_v4f32\", r, id);\n";
 				}
 			}
 		}
@@ -417,28 +417,28 @@ void x86vec::test::generate_f32(const std::string& name_base)
 
 	// perm2 float
 	for (int i=-1; i<8; ++i) {
-		fname = make_file_name(name_base, "perm2_f32", i, 1);
+		fname = make_file_name(name_base, "perm2_v4f32", i, 1);
 		f.open(fname.c_str(), std::ios::out | std::ios::trunc);
 		f << "#include \"x86vec_test.h\"\n\n"
-		  << "bool x86vec::test::check_perm2_f32_"<< cvt_int(i, 1)
+		  << "bool x86vec::test::check_perm2_v4f32_"<< cvt_int(i, 1)
 		  << "()\n"
 		  << "{\n"
 		  << space8 << "bool rc(true);\n"
-		  << space8 << "__m128 a = load_f32(false);\n"
-		  << space8 << "__m128 b = load_f32(true);\n"
+		  << space8 << "__m128 a = load_v4f32(false);\n"
+		  << space8 << "__m128 b = load_v4f32(true);\n"
 		  << space8 << "__m128 r;\n"
 		  << space8 << "idx id(-2,-2);\n\n";
 		for (int j=-1; j<8; ++j) {
 			for (int k=-1; k<8;++k) {
 				for (int l=-1; l<8; ++l) {
-					f << space8 << "r=perm_f32<"
+					f << space8 << "r=perm_v4f32<"
 					  << idx(i, j, k, l) << ">(a,b);\n";
 					f << space8 << "id.assign("
 					  << idx(i, j, k, l)
 					  << ");\n";
 					f << space8
 					  << "rc &= "
-					  << "check_f32(\"perm1_f32\", r, id);\n";
+					  << "check_v4f32(\"perm1_v4f32\", r, id);\n";
 				}
 			}
 		}
@@ -446,26 +446,26 @@ void x86vec::test::generate_f32(const std::string& name_base)
 		  << "}\n\n";
 		f.close();
 	}
-	fname = make_file_name(name_base, "perm_f32");
+	fname = make_file_name(name_base, "perm_v4f32");
 	f.open(fname.c_str(), std::ios::out | std::ios::trunc);
 	// perm1 float
 	f << "#include \"x86vec_test.h\"\n\n"
-	  << "bool x86vec::test::check_perm1_f32()\n"
+	  << "bool x86vec::test::check_perm1_v4f32()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n";
 	for (int i=-1; i<4; ++i) {
-		f << space8 << "rc &= check_perm1_f32_"
+		f << space8 << "rc &= check_perm1_v4f32_"
 		  << cvt_int(i,1)
 		  << "();\n";
 	}
 	f << space8 << "return rc;\n"
 	  << "}\n\n";
 	f << "//#include \"x86vec_test.h\"\n\n"
-	  << "bool x86vec::test::check_perm2_f32()\n"
+	  << "bool x86vec::test::check_perm2_v4f32()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n";
 	for (int i=-1; i<8; ++i) {
-		f << space8 << "rc &= check_perm2_f32_"
+		f << space8 << "rc &= check_perm2_v4f32_"
 		  << cvt_int(i,1)
 		  << "();\n";
 	}
@@ -474,26 +474,26 @@ void x86vec::test::generate_f32(const std::string& name_base)
 }
 
 
-void x86vec::test::generate_u32(const std::string& name_base)
+void x86vec::test::generate_v4u32(const std::string& name_base)
 {
-	std::string fname(make_file_name(name_base, "sel_u32"));
+	std::string fname(make_file_name(name_base, "sel_v4u32"));
 	std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
 	if (!f)
 		return;
 	// select u32
 	f << "#include \"x86vec_test.h\"\n\n"
-	  << "bool x86vec::test::check_select_u32()\n"
+	  << "bool x86vec::test::check_select_v4u32()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n"
-	  << space8 << "__m128i a = load_u32(false);\n"
-	  << space8 << "__m128i b = load_u32(true);\n"
+	  << space8 << "__m128i a = load_v4u32(false);\n"
+	  << space8 << "__m128i b = load_v4u32(true);\n"
 	  << space8 << "__m128i r;\n"
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=0; i<2; ++i) {
 		for (int j=0; j<2; ++j) {
 			for (int k=0; k<2;++k) {
 				for (int l=0; l<2; ++l) {
-					f << space8 << "r=select_u32<"
+					f << space8 << "r=select_v4u32<"
 					  << idx(i, j, k, l) << ">(a,b);\n";
 					f << space8 << "id.assign("
 					  << idx(((i!=0) ? 0 : 4),
@@ -503,7 +503,7 @@ void x86vec::test::generate_u32(const std::string& name_base)
 					  << ");\n";
 					f << space8
 					  << "rc &= "
-					  << "check_u32(\"select_u32\", r, id);\n";
+					  << "check_v4u32(\"select_v4u32\", r, id);\n";
 				}
 			}
 		}
@@ -513,28 +513,28 @@ void x86vec::test::generate_u32(const std::string& name_base)
 	f.close();
 
 	for (int i=-1; i<4; ++i) {
-		fname = make_file_name(name_base, "perm1_u32", i, 1);
+		fname = make_file_name(name_base, "perm1_v4u32", i, 1);
 		f.open(fname.c_str(), std::ios::out | std::ios::trunc);
 		// perm1 u32
 		f << "#include \"x86vec_test.h\"\n\n"
-		  << "bool x86vec::test::check_perm1_u32_" << cvt_int(i,1)
+		  << "bool x86vec::test::check_perm1_v4u32_" << cvt_int(i,1)
 		  << "()\n"
 		  << "{\n"
 		  << space8 << "bool rc(true);\n"
-		  << space8 << "__m128i a = load_u32(false);\n"
+		  << space8 << "__m128i a = load_v4u32(false);\n"
 		  << space8 << "__m128i r;\n"
 		  << space8 << "idx id(-2,-2);\n\n";
 		for (int j=-1; j<4; ++j) {
 			for (int k=-1; k<4;++k) {
 				for (int l=-1; l<4; ++l) {
-					f << space8 << "r=perm_u32<"
+					f << space8 << "r=perm_v4u32<"
 					  << idx(i, j, k, l) << ">(a);\n";
 					f << space8 << "id.assign("
 					  << idx(i, j, k, l)
 					  << ");\n";
 					f << space8
 					  << "rc &= "
-					  << "check_u32(\"perm1_u32\", r, id);\n";
+					  << "check_v4u32(\"perm1_v4u32\", r, id);\n";
 				}
 			}
 		}
@@ -545,28 +545,28 @@ void x86vec::test::generate_u32(const std::string& name_base)
 
 	// perm2 u32
 	for (int i=-1; i<8; ++i) {
-		fname = make_file_name(name_base, "perm2_u32", i, 1);
+		fname = make_file_name(name_base, "perm2_v4u32", i, 1);
 		f.open(fname.c_str(), std::ios::out | std::ios::trunc);
 		f << "#include \"x86vec_test.h\"\n\n"
-		  << "bool x86vec::test::check_perm2_u32_" << cvt_int(i, 1)
+		  << "bool x86vec::test::check_perm2_v4u32_" << cvt_int(i, 1)
 		  << "()\n"
 		  << "{\n"
 		  << space8 << "bool rc(true);\n"
-		  << space8 << "__m128i a = load_u32(false);\n"
-		  << space8 << "__m128i b = load_u32(true);\n"
+		  << space8 << "__m128i a = load_v4u32(false);\n"
+		  << space8 << "__m128i b = load_v4u32(true);\n"
 		  << space8 << "__m128i r;\n"
 		  << space8 << "idx id(-2,-2);\n\n";
 		for (int j=-1; j<8; ++j) {
 			for (int k=-1; k<8;++k) {
 				for (int l=-1; l<8; ++l) {
-					f << space8 << "r=perm_u32<"
+					f << space8 << "r=perm_v4u32<"
 					  << idx(i, j, k, l) << ">(a,b);\n";
 					f << space8 << "id.assign("
 					  << idx(i, j, k, l)
 					  << ");\n";
 					f << space8
 					  << "rc &= "
-					  << "check_u32(\"perm1_u32\", r, id);\n";
+					  << "check_v4u32(\"perm1_v4u32\", r, id);\n";
 				}
 			}
 		}
@@ -574,26 +574,26 @@ void x86vec::test::generate_u32(const std::string& name_base)
 		  << "}\n\n";
 		f.close();
 	}
-	fname = make_file_name(name_base, "perm_u32");
+	fname = make_file_name(name_base, "perm_v4u32");
 	f.open(fname.c_str(), std::ios::out | std::ios::trunc);
 	// perm1 u32
 	f << "#include \"x86vec_test.h\"\n\n"
-	  << "bool x86vec::test::check_perm1_u32()\n"
+	  << "bool x86vec::test::check_perm1_v4u32()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n";
 	for (int i=-1; i<4; ++i) {
-		f << space8 << "rc &= check_perm1_u32_"
+		f << space8 << "rc &= check_perm1_v4u32_"
 		  << cvt_int(i,1)
 		  << "();\n";
 	}
 	f << space8 << "return rc;\n"
 	  << "}\n\n";
 	f << "//#include \"x86vec_test.h\"\n\n"
-	  << "bool x86vec::test::check_perm2_u32()\n"
+	  << "bool x86vec::test::check_perm2_v4u32()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n";
 	for (int i=-1; i<8; ++i) {
-		f << space8 << "rc &= check_perm2_u32_"
+		f << space8 << "rc &= check_perm2_v4u32_"
 		  << cvt_int(i,1)
 		  << "();\n";
 	}
@@ -601,19 +601,19 @@ void x86vec::test::generate_u32(const std::string& name_base)
 	  << "}\n\n";
 }
 
-void x86vec::test::generate_u16(const std::string& name_base)
+void x86vec::test::generate_v8u16(const std::string& name_base)
 {
-	std::string fname(make_file_name(name_base, "sel_u16"));
+	std::string fname(make_file_name(name_base, "sel_v8u16"));
 	std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
 	if (!f)
 		return;
 	// select u16
 	f << "#include \"x86vec_test.h\"\n\n"
-	  << "bool x86vec::test::check_select_u16()\n"
+	  << "bool x86vec::test::check_select_v8u16()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n"
-	  << space8 << "__m128i a = load_u16(false);\n"
-	  << space8 << "__m128i b = load_u16(true);\n"
+	  << space8 << "__m128i a = load_v8u16(false);\n"
+	  << space8 << "__m128i b = load_v8u16(true);\n"
 	  << space8 << "__m128i r;\n"
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i0=0; i0<2; ++i0) {
@@ -624,7 +624,7 @@ void x86vec::test::generate_u16(const std::string& name_base)
 						for (int i5=0; i5<2; ++i5) {
 							for (int i6=0; i6<2;++i6) {
 								for (int i7=0; i7<2; ++i7) {
-									f << space8 << "r=select_u16<"
+									f << space8 << "r=select_v8u16<"
 									  << idx(i0, i1, i2, i3, 
 										 i4, i5, i6, i7) 
 									  << ">(a,b);\n";
@@ -640,7 +640,7 @@ void x86vec::test::generate_u16(const std::string& name_base)
 									  << ");\n";
 									f << space8
 									  << "rc &= "
-									  << "check_u16(\"select_u16\", r, id);\n";
+									  << "check_v8u16(\"select_v8u16\", r, id);\n";
 								}
 							}
 						}
@@ -656,14 +656,14 @@ void x86vec::test::generate_u16(const std::string& name_base)
 	const int TEST_CASES = 768;
 	// perm1 u16
 	for (int i0=-1; i0<8; ++i0) {
-		fname = make_file_name(name_base, "perm1_u16", i0, 1);
+		fname = make_file_name(name_base, "perm1_v8u16", i0, 1);
 		f.open(fname.c_str(), std::ios::out | std::ios::trunc);
 		f << "#include \"x86vec_test.h\"\n\n"
-		  << "bool x86vec::test::check_perm1_u16_" << cvt_int(i0,1)
+		  << "bool x86vec::test::check_perm1_v8u16_" << cvt_int(i0,1)
 		  <<"()\n"
 		  << "{\n"
 		  << space8 << "bool rc(true);\n"
-		  << space8 << "__m128i a = load_u16(false);\n"
+		  << space8 << "__m128i a = load_v8u16(false);\n"
 		  << space8 << "__m128i r;\n"
 		  << space8 << "idx id(-2,-2);\n\n";
 		const unsigned int n1=8+1;
@@ -676,14 +676,14 @@ void x86vec::test::generate_u16(const std::string& name_base)
 			i5= ((uint32_t(std::rand()) >> 8)% n1) -1;
 			i6= ((uint32_t(std::rand()) >> 8)% n1) -1;
 			i7= ((uint32_t(std::rand()) >> 8)% n1) -1;
-			f << space8 << "r=perm_u16<"
+			f << space8 << "r=perm_v8u16<"
 			  << idx(i0, i1, i2, i3, i4, i5, i6, i7) << ">(a);\n";
 			f << space8 << "id.assign("
 			  << idx(i0, i1, i2, i3, i4, i5, i6, i7)
 			  << ");\n";
 			f << space8
 			  << "rc &= "
-			  << "check_u16(\"perm1_u16\", r, id);\n";
+			  << "check_v8u16(\"perm1_v8u16\", r, id);\n";
 		}
 		f << space8 << "return rc;\n"
 		  << "}\n\n";
@@ -692,15 +692,15 @@ void x86vec::test::generate_u16(const std::string& name_base)
 
 	// perm2 u16
 	for (int i0=-1; i0<16;++i0) {
-		fname = make_file_name(name_base, "perm2_u16", i0, 2);
+		fname = make_file_name(name_base, "perm2_v8u16", i0, 2);
 		f.open(fname.c_str(), std::ios::out | std::ios::trunc);
 		f << "#include \"x86vec_test.h\"\n\n"
-		  << "bool x86vec::test::check_perm2_u16_" << cvt_int(i0,2)
+		  << "bool x86vec::test::check_perm2_v8u16_" << cvt_int(i0,2)
 		  << "()\n"
 		  << "{\n"
 		  << space8 << "bool rc(true);\n"
-		  << space8 << "__m128i a = load_u16(false);\n"
-		  << space8 << "__m128i b = load_u16(true);\n"
+		  << space8 << "__m128i a = load_v8u16(false);\n"
+		  << space8 << "__m128i b = load_v8u16(true);\n"
 		  << space8 << "__m128i r;\n"
 		  << space8 << "idx id(-2,-2);\n\n";
 		const unsigned int n2=16+1;
@@ -713,7 +713,7 @@ void x86vec::test::generate_u16(const std::string& name_base)
 			i5= ((uint32_t(std::rand()) >> 8)% n2) -1;
 			i6= ((uint32_t(std::rand()) >> 8)% n2) -1;
 			i7= ((uint32_t(std::rand()) >> 8)% n2) -1;
-			f << space8 << "r=perm_u16<"
+			f << space8 << "r=perm_v8u16<"
 			  << idx(i0, i1, i2, i3, i4, i5, i6, i7)
 			  << ">(a,b);\n";
 			f << space8 << "id.assign("
@@ -721,32 +721,32 @@ void x86vec::test::generate_u16(const std::string& name_base)
 			  << ");\n";
 			f << space8
 			  << "rc &= "
-			  << "check_u16(\"perm2_u16\", r, id);\n";
+			  << "check_v8u16(\"perm2_v8u16\", r, id);\n";
 		}
 		f << space8 << "return rc;\n"
 		  << "}\n\n";
 		f.close();
 	}
-	fname = make_file_name(name_base, "perm_u16");
+	fname = make_file_name(name_base, "perm_v8u16");
 	f.open(fname.c_str(), std::ios::out | std::ios::trunc);
 	// perm1 u16
 	f << "#include \"x86vec_test.h\"\n\n"
-	  << "bool x86vec::test::check_perm1_u16()\n"
+	  << "bool x86vec::test::check_perm1_v8u16()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n";
 	for (int i=-1; i<8; ++i) {
-		f << space8 << "rc &= check_perm1_u16_"
+		f << space8 << "rc &= check_perm1_v8u16_"
 		  << cvt_int(i,1)
 		  << "();\n";
 	}
 	f << space8 << "return rc;\n"
 	  << "}\n\n";
 	f << "//#include \"x86vec_test.h\"\n\n"
-	  << "bool x86vec::test::check_perm2_u16()\n"
+	  << "bool x86vec::test::check_perm2_v8u16()\n"
 	  << "{\n"
 	  << space8 << "bool rc(true);\n";
 	for (int i=-1; i<16; ++i) {
-		f << space8 << "rc &= check_perm2_u16_"
+		f << space8 << "rc &= check_perm2_v8u16_"
 		  << cvt_int(i,2)
 		  << "();\n";
 	}

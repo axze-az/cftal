@@ -208,7 +208,7 @@ inline
 x86vec::v4u32&
 x86vec::operator++(v4u32& a)
 {
-        const __m128i one = const4_u32< 1, 1, 1, 1>::iv();
+        const __m128i one = const_v4u32< 1, 1, 1, 1>::iv();
         a = _mm_add_epi32(a(), one);
         return a;
 }
@@ -218,7 +218,7 @@ x86vec::v4u32
 x86vec::operator++ (v4u32& a, int)
 {
         v4u32 t(a);
-        const __m128i one = const4_u32< 1, 1, 1, 1>::iv();
+        const __m128i one = const_v4u32< 1, 1, 1, 1>::iv();
         a = _mm_add_epi32(a(), one);
         return t;
 }
@@ -227,7 +227,7 @@ inline
 x86vec::v4u32&
 x86vec::operator--(v4u32& a)
 {
-        const __m128i one = const4_u32< 1, 1, 1, 1>::iv();
+        const __m128i one = const_v4u32< 1, 1, 1, 1>::iv();
         a = _mm_sub_epi32(a(), one);
         return a;
 }
@@ -237,7 +237,7 @@ x86vec::v4u32
 x86vec::operator-- (v4u32& a, int)
 {
         v4u32 t(a);
-        const __m128i one = const4_u32< 1, 1, 1, 1>::iv();
+        const __m128i one = const_v4u32< 1, 1, 1, 1>::iv();
         a = _mm_sub_epi32(a(), one);
         return t;
 }
@@ -266,7 +266,7 @@ inline
 x86vec::v4u32
 x86vec::operator~(const v4u32& a)
 {
-        const __m128i all_set = const4_u32 < -1, -1, -1, -1 >::iv();
+        const __m128i all_set = const_v4u32 < -1, -1, -1, -1 >::iv();
         return _mm_xor_si128(a(), all_set);
 }
 

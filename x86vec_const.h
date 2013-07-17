@@ -33,7 +33,7 @@ namespace x86vec {
         // constants consisting of 1 uint32_t
         template <uint32_t _P>
         struct const_u32 {
-		const_u32() = default;
+                const_u32() = default;
                 static
                 const uint32_t val = _P;
         };
@@ -115,14 +115,14 @@ namespace x86vec {
         // static constants consisting of 4 uint32_t
         template <uint32_t _P0, uint32_t _P1,
                   uint32_t _P2, uint32_t _P3>
-        class const4_u32 {
-		union u_t {
-			const uint32_t _u32[4];
-			const __m128i _iv;
-		};
+        class const_v4u32 {
+                union u_t {
+                        const uint32_t _u32[4];
+                        const __m128i _iv;
+                };
                 static __attribute__((__aligned__(16),
                                       __visibility__("hidden")))
-		const u_t _msk;
+                const u_t _msk;
         public:
                 static constexpr __m128i iv();
                 static constexpr __m128 fv();
@@ -134,11 +134,11 @@ namespace x86vec {
                   uint16_t _P2, uint16_t _P3,
                   uint16_t _P4, uint16_t _P5,
                   uint16_t _P6, uint16_t _P7>
-        class const8_u16 {
-		union u_t {
-			const uint16_t _u16[8];
-			const __m128i _iv;
-		};
+        class const_v8u16 {
+                union u_t {
+                        const uint16_t _u16[8];
+                        const __m128i _iv;
+                };
                 static __attribute__((__aligned__(16),
                                       __visibility__("hidden")))
                 const u_t _msk;
@@ -157,11 +157,11 @@ namespace x86vec {
                   uint8_t _P10, uint8_t _P11,
                   uint8_t _P12, uint8_t _P13,
                   uint8_t _P14, uint8_t _P15>
-        class const16_u8 {
-		union u_t {
-			const uint8_t _u8[16];
-			const __m128i _iv;
-		};
+        class const_v16u8 {
+                union u_t {
+                        const uint8_t _u8[16];
+                        const __m128i _iv;
+                };
                 static __attribute__((__aligned__(16),
                                       __visibility__("hidden")))
                 const u_t _msk;
@@ -175,18 +175,18 @@ namespace x86vec {
         // static constants consisting of 8 uint32_t
         template <uint32_t _P0, uint32_t _P1,
                   uint32_t _P2, uint32_t _P3,
-		  uint32_t _P4, uint32_t _P5,
+                  uint32_t _P4, uint32_t _P5,
                   uint32_t _P6, uint32_t _P7>
-        class const8_u32 {
-		union u_t {
-			const uint32_t _u32[8];
-			const __m256i _iv;
-			const __m256 _fv;
-			const __m256d _dv;
-		};
+        class const_v8u32 {
+                union u_t {
+                        const uint32_t _u32[8];
+                        const __m256i _iv;
+                        const __m256 _fv;
+                        const __m256d _dv;
+                };
                 static __attribute__((__aligned__(32),
                                       __visibility__("hidden")))
-		const u_t _msk;
+                const u_t _msk;
         public:
                 static constexpr __m256i iv();
                 static constexpr __m256 fv();
@@ -257,35 +257,35 @@ namespace x86vec {
         }
 
         // (u)int16_t constants
-        typedef const8_u16<0x8000, 0x8000, 0x8000, 0x8000,
-                           0x8000, 0x8000, 0x8000, 0x8000> v_sign_s16_msk;
-        typedef const8_u16<0x7fff, 0x7fff, 0x7fff, 0x7fff,
-                           0x7fff, 0x7fff, 0x7fff, 0x7fff> v_not_sign_s16_msk;
+        typedef const_v8u16<0x8000, 0x8000, 0x8000, 0x8000,
+			    0x8000, 0x8000, 0x8000, 0x8000> v_sign_s16_msk;
+        typedef const_v8u16<0x7fff, 0x7fff, 0x7fff, 0x7fff,
+			    0x7fff, 0x7fff, 0x7fff, 0x7fff> v_not_sign_s16_msk;
         const int sign_s16_msk = 0xAAAA;
 
         // (u)int32_t constants
-        typedef const4_u32<0x80000000, 0x80000000,
-                           0x80000000, 0x80000000> v_sign_s32_msk;
-        typedef const4_u32<0x7fffffff, 0x7fffffff,
-                           0x7fffffff, 0x7fffffff> v_not_sign_s32_msk;
+        typedef const_v4u32<0x80000000, 0x80000000,
+			    0x80000000, 0x80000000> v_sign_s32_msk;
+        typedef const_v4u32<0x7fffffff, 0x7fffffff,
+			    0x7fffffff, 0x7fffffff> v_not_sign_s32_msk;
         const int sign_s32_msk = 0x8888;
 
         // (u)int64_t constants
-        typedef const4_u32<0x00000000, 0x80000000,
-                           0x00000000, 0x80000000> v_sign_s64_msk;
-        typedef const4_u32<0xffffffff, 0x7fffffff,
-                           0xffffffff, 0x7fffffff> v_not_sign_s64_msk;
+        typedef const_v4u32<0x00000000, 0x80000000,
+			    0x00000000, 0x80000000> v_sign_s64_msk;
+        typedef const_v4u32<0xffffffff, 0x7fffffff,
+			    0xffffffff, 0x7fffffff> v_not_sign_s64_msk;
         const int sign_s64_msk = 0x8080;
 
         // f32 constants
         typedef v_sign_s32_msk v_sign_f32_msk;
         typedef v_not_sign_s32_msk v_not_sign_f32_msk;
-        typedef const4_u32<0x7f800000, 0x7f800000,
-                           0x7f800000, 0x7f800000> v_exp_f32_msk;
-        typedef const4_u32<0x807fffff, 0x807fffff,
-                           0x807fffff, 0x807fffff> v_not_exp_f32_msk;
-        typedef const4_u32<0x007fffff, 0x007fffff,
-                           0x007fffff, 0x007fffff> v_sig_f32_msk;
+        typedef const_v4u32<0x7f800000, 0x7f800000,
+			    0x7f800000, 0x7f800000> v_exp_f32_msk;
+        typedef const_v4u32<0x807fffff, 0x807fffff,
+			    0x807fffff, 0x807fffff> v_not_exp_f32_msk;
+        typedef const_v4u32<0x007fffff, 0x007fffff,
+			    0x007fffff, 0x007fffff> v_sig_f32_msk;
         const int sign_f32_msk = 0x0f;
         const int exp_shift_f32 = 23;
         const int exp_msk_f32 = 0xff;
@@ -293,75 +293,75 @@ namespace x86vec {
         // f64 constants
         typedef v_sign_s64_msk v_sign_f64_msk;
         typedef v_not_sign_s64_msk v_not_sign_f64_msk;
-        typedef const4_u32<0x00000000,0x7ff00000,
-                           0x00000000,0x7ff00000> v_exp_f64_msk;
-        typedef const4_u32<0xffffffff,0x800fffff,
-                           0xffffffff,0x800fffff> v_not_exp_f64_msk;
-        typedef const4_u32<0xffffffff,0x000fffff,
-                           0xffffffff,0x000fffff> v_sig_f64_msk;
+        typedef const_v4u32<0x00000000,0x7ff00000,
+			    0x00000000,0x7ff00000> v_exp_f64_msk;
+        typedef const_v4u32<0xffffffff,0x800fffff,
+			    0xffffffff,0x800fffff> v_not_exp_f64_msk;
+        typedef const_v4u32<0xffffffff,0x000fffff,
+			    0xffffffff,0x000fffff> v_sig_f64_msk;
         const int sign_f64_msk = 0x03;
-	const int bias_f64 = 0x3ff;
+        const int bias_f64 = 0x3ff;
         const int exp_shift_f64 = 52;
         const int exp_msk_f64 = 0x7ff;
 
-	namespace impl {
-		
-		template <int _I>
-		struct double_exp {
-			static 
-			const unsigned value = 
-				(_I + bias_f64) & exp_msk_f64;
-			static
-			const unsigned value_shifted =
-				value << (exp_shift_f64-32);
-		};
+        namespace impl {
 
-		template <int _I>
-		class double_power_of_two : public 
-		const4_u32<0, double_exp<_I>::value_shifted,
-			   0, double_exp<_I>::value_shifted> {
-		};
-	
-	}
+                template <int _I>
+                struct double_exp {
+                        static
+                        const unsigned value =
+                                (_I + bias_f64) & exp_msk_f64;
+                        static
+                        const unsigned value_shifted =
+                                value << (exp_shift_f64-32);
+                };
+
+                template <int _I>
+                class double_power_of_two : public
+                const_v4u32<0, double_exp<_I>::value_shifted,
+			    0, double_exp<_I>::value_shifted> {
+                };
+
+        }
 
         // definition of common used constants
-        typedef const4_u32<0x01010101, 0x01010101,
-                           0x01010101, 0x01010101> v_uint8_0x01;
-        typedef const4_u32<0x33333333, 0x33333333,
-                           0x33333333, 0x33333333> v_uint8_0x33;
-        typedef const4_u32<0x55555555, 0x55555555,
-                           0x55555555, 0x55555555> v_uint8_0x55;
-        typedef const4_u32<0x0f0f0f0f, 0x0f0f0f0f,
-                           0x0f0f0f0f, 0x0f0f0f0f> v_uint8_0x0f;
+        typedef const_v4u32<0x01010101, 0x01010101,
+			    0x01010101, 0x01010101> v_uint8_0x01;
+        typedef const_v4u32<0x33333333, 0x33333333,
+			    0x33333333, 0x33333333> v_uint8_0x33;
+        typedef const_v4u32<0x55555555, 0x55555555,
+			    0x55555555, 0x55555555> v_uint8_0x55;
+        typedef const_v4u32<0x0f0f0f0f, 0x0f0f0f0f,
+			    0x0f0f0f0f, 0x0f0f0f0f> v_uint8_0x0f;
 
-        typedef const4_u32<0x00ff00ff, 0x00ff00ff,
-                           0x00ff00ff, 0x00ff00ff> v_uint16_0x00ff;
-        typedef const4_u32<0x00010001, 0x00010001,
-                           0x00010001, 0x00010001> v_uint16_0x0001;
+        typedef const_v4u32<0x00ff00ff, 0x00ff00ff,
+			    0x00ff00ff, 0x00ff00ff> v_uint16_0x00ff;
+        typedef const_v4u32<0x00010001, 0x00010001,
+			    0x00010001, 0x00010001> v_uint16_0x0001;
 }
 
 
 template <uint32_t _P0, uint32_t _P1,
           uint32_t _P2, uint32_t _P3>
-const 
-typename x86vec::const4_u32<_P0, _P1, _P2, _P3>::u_t
-x86vec::const4_u32<_P0, _P1, _P2, _P3>::_msk= {{
-		_P0, _P1, _P2, _P3
-	}
+const
+typename x86vec::const_v4u32<_P0, _P1, _P2, _P3>::u_t
+x86vec::const_v4u32<_P0, _P1, _P2, _P3>::_msk= {{
+                _P0, _P1, _P2, _P3
+        }
 };
 
 template <uint32_t _P0, uint32_t _P1,
           uint32_t _P2, uint32_t _P3>
 inline
-constexpr __m128i x86vec::const4_u32<_P0, _P1, _P2, _P3>::iv()
+constexpr __m128i x86vec::const_v4u32<_P0, _P1, _P2, _P3>::iv()
 {
-	return _msk._iv;
+        return _msk._iv;
 }
 
 template <uint32_t _P0, uint32_t _P1,
           uint32_t _P2, uint32_t _P3>
 inline
-constexpr __m128 x86vec::const4_u32<_P0, _P1, _P2, _P3>::fv()
+constexpr __m128 x86vec::const_v4u32<_P0, _P1, _P2, _P3>::fv()
 {
         return _mm_castsi128_ps(iv());
 }
@@ -369,7 +369,7 @@ constexpr __m128 x86vec::const4_u32<_P0, _P1, _P2, _P3>::fv()
 template <uint32_t _P0, uint32_t _P1,
           uint32_t _P2, uint32_t _P3>
 inline
-constexpr __m128d x86vec::const4_u32<_P0, _P1, _P2, _P3>::dv()
+constexpr __m128d x86vec::const_v4u32<_P0, _P1, _P2, _P3>::dv()
 {
         return _mm_castsi128_pd(iv());
 }
@@ -378,11 +378,11 @@ template <uint16_t _P0, uint16_t _P1,
           uint16_t _P2, uint16_t _P3,
           uint16_t _P4, uint16_t _P5,
           uint16_t _P6, uint16_t _P7>
-const typename 
-x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
-x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
-		_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7
-	}
+const typename
+x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
+x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
+                _P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7
+        }
 };
 
 template <uint16_t _P0, uint16_t _P1,
@@ -391,9 +391,9 @@ template <uint16_t _P0, uint16_t _P1,
           uint16_t _P6, uint16_t _P7>
 inline
 constexpr __m128i
-x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
+x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
 {
-	return _msk._iv;
+        return _msk._iv;
 }
 
 template <uint16_t _P0, uint16_t _P1,
@@ -402,9 +402,9 @@ template <uint16_t _P0, uint16_t _P1,
           uint16_t _P6, uint16_t _P7>
 inline
 constexpr __m128
-x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
+x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
 {
-	return _mm_castsi128_ps(iv());
+        return _mm_castsi128_ps(iv());
 }
 
 template <uint16_t _P0, uint16_t _P1,
@@ -413,9 +413,9 @@ template <uint16_t _P0, uint16_t _P1,
           uint16_t _P6, uint16_t _P7>
 inline
 constexpr __m128d
-x86vec::const8_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
+x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
-	return _mm_castsi128_pd(iv());
+        return _mm_castsi128_pd(iv());
 }
 
 template <uint8_t _P00, uint8_t _P01,
@@ -427,13 +427,13 @@ template <uint8_t _P00, uint8_t _P01,
           uint8_t _P12, uint8_t _P13,
           uint8_t _P14, uint8_t _P15>
 const typename
-x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                   _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::u_t 
-x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                   _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::_msk= {{
-		_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-		_P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15
-	}
+x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+		    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::u_t
+x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+		    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::_msk= {{
+                _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+                _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15
+        }
 };
 
 template <uint8_t _P00, uint8_t _P01,
@@ -446,10 +446,10 @@ template <uint8_t _P00, uint8_t _P01,
           uint8_t _P14, uint8_t _P15>
 inline
 constexpr __m128i
-x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                   _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
+x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+		    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
 {
-	return _msk._iv;
+        return _msk._iv;
 }
 
 template <uint8_t _P00, uint8_t _P01,
@@ -462,10 +462,10 @@ template <uint8_t _P00, uint8_t _P01,
           uint8_t _P14, uint8_t _P15>
 inline
 constexpr __m128
-x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                   _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
+x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+		    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
 {
-	return _mm_castsi128_ps(iv());
+        return _mm_castsi128_ps(iv());
 }
 
 template <uint8_t _P00, uint8_t _P01,
@@ -478,10 +478,10 @@ template <uint8_t _P00, uint8_t _P01,
           uint8_t _P14, uint8_t _P15>
 inline
 constexpr __m128d
-x86vec::const16_u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                   _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
+x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+		    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
 {
-	return _mm_castsi128_pd(iv());
+        return _mm_castsi128_pd(iv());
 }
 
 
@@ -490,11 +490,11 @@ template <uint32_t _P0, uint32_t _P1,
           uint32_t _P2, uint32_t _P3,
           uint32_t _P4, uint32_t _P5,
           uint32_t _P6, uint32_t _P7>
-const typename 
-x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
-x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
-		_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7
-	}
+const typename
+x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
+x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
+                _P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7
+        }
 };
 
 template <uint32_t _P0, uint32_t _P1,
@@ -503,9 +503,9 @@ template <uint32_t _P0, uint32_t _P1,
           uint32_t _P6, uint32_t _P7>
 inline
 constexpr __m256i
-x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
+x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
 {
-	return _msk._iv;
+        return _msk._iv;
 }
 
 template <uint32_t _P0, uint32_t _P1,
@@ -514,9 +514,9 @@ template <uint32_t _P0, uint32_t _P1,
           uint32_t _P6, uint32_t _P7>
 inline
 constexpr __m256
-x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
+x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
 {
-	return _msk._fv;
+        return _msk._fv;
 }
 
 template <uint32_t _P0, uint32_t _P1,
@@ -525,9 +525,9 @@ template <uint32_t _P0, uint32_t _P1,
           uint32_t _P6, uint32_t _P7>
 inline
 constexpr __m256d
-x86vec::const8_u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
+x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
-	return _msk._dv;
+        return _msk._dv;
 }
 
 #endif // __AVX__

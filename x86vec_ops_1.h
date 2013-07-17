@@ -142,7 +142,7 @@ inline
 bool x86vec::both_bits(__m128i a)
 {
 #if defined (__SSE4_1__)
-	const __m128i msk=const4_u32<-1, -1, -1, -1>::iv();
+	const __m128i msk=const_v4u32<-1, -1, -1, -1>::iv();
 	return _mm_testnzc_si128(a, msk);
 #else
 	const __m128i msk= impl::make_zero_int::v();
@@ -155,7 +155,7 @@ bool x86vec::both_bits(__m128i a)
 inline
 bool x86vec::all_bits(__m128i a)
 {
-	const __m128i msk=const4_u32<-1, -1, -1, -1>::iv();
+	const __m128i msk=const_v4u32<-1, -1, -1, -1>::iv();
 #if defined (__SSE4_1__)
 	return _mm_testc_si128(a, msk);
 #else
@@ -364,7 +364,7 @@ inline __m128i x86vec::popcnt_u8(__m128i a)
 #if defined (__SSSE3__)
 	// lookup table based approach
 	// bits set
-	const __m128i lookup= const16_u8< 0, 1, 1, 2, 1, 2, 2, 3,
+	const __m128i lookup= const_v16u8< 0, 1, 1, 2, 1, 2, 2, 3,
 					  1, 2, 2, 3, 2, 3, 3, 4>::iv();
 	__m128i h= _mm_srli_epi16(a, 4);
 	// low nibbles
@@ -473,7 +473,7 @@ inline __m128i x86vec::bitrev_u16(__m128i a)
 {
 	// AMD XOP: use pperm
 #if defined (__SSSE3__)
-	const __m128i msk = const16_u8< 1, 0, 3, 2, 5, 4, 7, 6,
+	const __m128i msk = const_v16u8< 1, 0, 3, 2, 5, 4, 7, 6,
 					9, 8,11,10,13,12,15,14>::iv();
 	a = bitrev_u8(a);
 	return _mm_shuffle_epi8(a, msk);
@@ -490,7 +490,7 @@ inline __m128i x86vec::bitrev_u32(__m128i a)
 {
 	// AMD XOP: use pperm
 #if defined (__SSSE3__)
-	const __m128i msk = const16_u8<3, 2, 1, 0, 7, 6, 5, 4,
+	const __m128i msk = const_v16u8<3, 2, 1, 0, 7, 6, 5, 4,
 				       11,10, 9, 8,15,14,13,12>::iv();
 	a = bitrev_u8(a);
 	return _mm_shuffle_epi8(a, msk);
@@ -507,7 +507,7 @@ inline __m128i x86vec::bitrev_u64(__m128i a)
 {
 	// AMD XOP: use pperm
 #if defined (__SSS3__)
-	const __m128i msk = const16_u8<7, 6, 5, 4, 3, 2, 1, 0,
+	const __m128i msk = const_v16u8<7, 6, 5, 4, 3, 2, 1, 0,
 				       15,14,13,12,11,10,9, 8>::iv();
 	a = bitrev_u8(a);
 	return _mm_shuffle_epi8(a, msk);
