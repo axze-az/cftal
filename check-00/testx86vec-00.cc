@@ -4,25 +4,25 @@
 bool all_tests_00()
 {
 	bool r(true);
-	r &= x86vec::test::check_select_f64();
-	r &= x86vec::test::check_perm1_f64();
-	r &= x86vec::test::check_perm2_f64();
+	r &= x86vec::test::check_select_v2f64();
+	r &= x86vec::test::check_perm1_v2f64();
+	r &= x86vec::test::check_perm2_v2f64();
 
-	r &= x86vec::test::check_select_f32();
-	r &= x86vec::test::check_perm1_f32();
-	r &= x86vec::test::check_perm2_f32();
+	r &= x86vec::test::check_select_v4f32();
+	r &= x86vec::test::check_perm1_v4f32();
+	r &= x86vec::test::check_perm2_v4f32();
 
-	r &= x86vec::test::check_select_u32();
-	r &= x86vec::test::check_perm1_u32();
-	r &= x86vec::test::check_perm2_u32();
+	r &= x86vec::test::check_select_v4u32();
+	r &= x86vec::test::check_perm1_v4u32();
+	r &= x86vec::test::check_perm2_v4u32();
 
-	r &= x86vec::test::check_select_u64();
-	r &= x86vec::test::check_perm1_u64();
-	r &= x86vec::test::check_perm2_u64();
+	r &= x86vec::test::check_select_v2u64();
+	r &= x86vec::test::check_perm1_v2u64();
+	r &= x86vec::test::check_perm2_v2u64();
 
-	r &= x86vec::test::check_select_u16();
-	r &= x86vec::test::check_perm1_u16();
-	r &= x86vec::test::check_perm2_u16();
+	r &= x86vec::test::check_select_v8u16();
+	r &= x86vec::test::check_perm1_v8u16();
+	r &= x86vec::test::check_perm2_v8u16();
 
 	return r;
 }

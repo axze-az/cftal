@@ -214,7 +214,7 @@ void x86vec::test::generate_v2f64(const std::string& name_base)
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=0; i<2; ++i) {
 		for (int j=0; j<2; ++j) {
-			f << space8 << "r=select_v2f64<"
+			f << space8 << "r=select_f64<"
 			  << idx(i,j) << ">(a,b);\n";
 			f << space8 << "id.assign("
 			  << idx(((i!=0) ? 0 : 2),
@@ -236,7 +236,7 @@ void x86vec::test::generate_v2f64(const std::string& name_base)
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=-1; i<2; ++i) {
 		for (int j=-1; j<2; ++j) {
-			f << space8 << "r=perm_v2f64<"
+			f << space8 << "r=perm_f64<"
 			  << idx(i,j) << ">(a);\n";
 			f << space8 << "id.assign("
 			  << idx(i, j)
@@ -258,7 +258,7 @@ void x86vec::test::generate_v2f64(const std::string& name_base)
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=-1; i<4; ++i) {
 		for (int j=-1; j<4; ++j) {
-			f << space8 << "r=perm_v2f64<"
+			f << space8 << "r=perm_f64<"
 			  << idx(i,j) << ">(a,b);\n";
 			f << space8 << "id.assign("
 			  << idx(i, j)
@@ -289,7 +289,7 @@ void x86vec::test::generate_v2u64(const std::string& name_base)
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=0; i<2; ++i) {
 		for (int j=0; j<2; ++j) {
-			f << space8 << "r=select_v2u64<"
+			f << space8 << "r=select_u64<"
 			  << idx(i,j) << ">(a,b);\n";
 			f << space8 << "id.assign("
 			  << idx(((i!=0) ? 0 : 2),
@@ -311,7 +311,7 @@ void x86vec::test::generate_v2u64(const std::string& name_base)
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=-1; i<2; ++i) {
 		for (int j=-1; j<2; ++j) {
-			f << space8 << "r=perm_v2u64<"
+			f << space8 << "r=perm_u64<"
 			  << idx(i,j) << ">(a);\n";
 			f << space8 << "id.assign("
 			  << idx(i, j)
@@ -333,7 +333,7 @@ void x86vec::test::generate_v2u64(const std::string& name_base)
 	  << space8 << "idx id(-2,-2);\n\n";
 	for (int i=-1; i<4; ++i) {
 		for (int j=-1; j<4; ++j) {
-			f << space8 << "r=perm_v2u64<"
+			f << space8 << "r=perm_u64<"
 			  << idx(i,j) << ">(a,b);\n";
 			f << space8 << "id.assign("
 			  << idx(i, j)
@@ -365,7 +365,7 @@ void x86vec::test::generate_v4f32(const std::string& name_base)
 		for (int j=0; j<2; ++j) {
 			for (int k=0; k<2;++k) {
 				for (int l=0; l<2; ++l) {
-					f << space8 << "r=select_v4f32<"
+					f << space8 << "r=select_f32<"
 					  << idx(i, j, k, l) << ">(a,b);\n";
 					f << space8 << "id.assign("
 					  << idx(((i!=0) ? 0 : 4),
@@ -399,7 +399,7 @@ void x86vec::test::generate_v4f32(const std::string& name_base)
 		for (int j=-1; j<4; ++j) {
 			for (int k=-1; k<4;++k) {
 				for (int l=-1; l<4; ++l) {
-					f << space8 << "r=perm_v4f32<"
+					f << space8 << "r=perm_f32<"
 					  << idx(i, j, k, l) << ">(a);\n";
 					f << space8 << "id.assign("
 					  << idx(i, j, k, l)
@@ -431,7 +431,7 @@ void x86vec::test::generate_v4f32(const std::string& name_base)
 		for (int j=-1; j<8; ++j) {
 			for (int k=-1; k<8;++k) {
 				for (int l=-1; l<8; ++l) {
-					f << space8 << "r=perm_v4f32<"
+					f << space8 << "r=perm_f32<"
 					  << idx(i, j, k, l) << ">(a,b);\n";
 					f << space8 << "id.assign("
 					  << idx(i, j, k, l)
@@ -493,7 +493,7 @@ void x86vec::test::generate_v4u32(const std::string& name_base)
 		for (int j=0; j<2; ++j) {
 			for (int k=0; k<2;++k) {
 				for (int l=0; l<2; ++l) {
-					f << space8 << "r=select_v4u32<"
+					f << space8 << "r=select_u32<"
 					  << idx(i, j, k, l) << ">(a,b);\n";
 					f << space8 << "id.assign("
 					  << idx(((i!=0) ? 0 : 4),
@@ -527,7 +527,7 @@ void x86vec::test::generate_v4u32(const std::string& name_base)
 		for (int j=-1; j<4; ++j) {
 			for (int k=-1; k<4;++k) {
 				for (int l=-1; l<4; ++l) {
-					f << space8 << "r=perm_v4u32<"
+					f << space8 << "r=perm_u32<"
 					  << idx(i, j, k, l) << ">(a);\n";
 					f << space8 << "id.assign("
 					  << idx(i, j, k, l)
@@ -559,7 +559,7 @@ void x86vec::test::generate_v4u32(const std::string& name_base)
 		for (int j=-1; j<8; ++j) {
 			for (int k=-1; k<8;++k) {
 				for (int l=-1; l<8; ++l) {
-					f << space8 << "r=perm_v4u32<"
+					f << space8 << "r=perm_u32<"
 					  << idx(i, j, k, l) << ">(a,b);\n";
 					f << space8 << "id.assign("
 					  << idx(i, j, k, l)
@@ -624,7 +624,7 @@ void x86vec::test::generate_v8u16(const std::string& name_base)
 						for (int i5=0; i5<2; ++i5) {
 							for (int i6=0; i6<2;++i6) {
 								for (int i7=0; i7<2; ++i7) {
-									f << space8 << "r=select_v8u16<"
+									f << space8 << "r=select_u16<"
 									  << idx(i0, i1, i2, i3, 
 										 i4, i5, i6, i7) 
 									  << ">(a,b);\n";
@@ -676,7 +676,7 @@ void x86vec::test::generate_v8u16(const std::string& name_base)
 			i5= ((uint32_t(std::rand()) >> 8)% n1) -1;
 			i6= ((uint32_t(std::rand()) >> 8)% n1) -1;
 			i7= ((uint32_t(std::rand()) >> 8)% n1) -1;
-			f << space8 << "r=perm_v8u16<"
+			f << space8 << "r=perm_u16<"
 			  << idx(i0, i1, i2, i3, i4, i5, i6, i7) << ">(a);\n";
 			f << space8 << "id.assign("
 			  << idx(i0, i1, i2, i3, i4, i5, i6, i7)
@@ -713,7 +713,7 @@ void x86vec::test::generate_v8u16(const std::string& name_base)
 			i5= ((uint32_t(std::rand()) >> 8)% n2) -1;
 			i6= ((uint32_t(std::rand()) >> 8)% n2) -1;
 			i7= ((uint32_t(std::rand()) >> 8)% n2) -1;
-			f << space8 << "r=perm_v8u16<"
+			f << space8 << "r=perm_u16<"
 			  << idx(i0, i1, i2, i3, i4, i5, i6, i7)
 			  << ">(a,b);\n";
 			f << space8 << "id.assign("
