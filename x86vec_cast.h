@@ -53,6 +53,16 @@ namespace x86vec {
 			}
 		};
 
+#if defined __AVX__
+		// cast to __m128d
+		template <>
+		struct cast<__m128d, __m256d> {
+			static __m128d v(const __m256d& r) {
+				return _mm256_castpd256_pd128(r);
+			}
+		};
+#endif
+
 		// cast to __m128i
 		template <>
 		struct cast<__m128i, __m128> {
