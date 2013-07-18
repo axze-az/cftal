@@ -187,6 +187,27 @@ bool x86vec::test::check_v2u64(const char* msg,
 	return rc;
 }
 
+#if defined (__AVX__)
+bool x86vec::test::check_v4f64(const char* msg,
+			       __m256d v, const idx& i)
+{
+	union {
+		double _f[4];
+		__m256d _v;
+	} t;
+	_mm256_store_pd(t._f, v);
+	bool rc(true);
+	for (int j=0;j<4;++j)
+		rc &= check_val(t._f[j], i[j]);
+	if (rc == false) {
+		std::cout << msg << "< " << i
+			  << "> [ " << pr_v4d(v) << " ] FAILED.\n";
+	}
+	return rc;
+}
+#endif
+
+
 void x86vec::test::generate(const std::string& name_base)
 {
 	generate_v2f64(name_base);
@@ -194,6 +215,8 @@ void x86vec::test::generate(const std::string& name_base)
 	generate_v4f32(name_base);
 	generate_v4u32(name_base);
 	generate_v8u16(name_base);
+
+	generate_v4f64(name_base);
 }
 
 void x86vec::test::generate_v2f64(const std::string& name_base)
@@ -748,6 +771,134 @@ void x86vec::test::generate_v8u16(const std::string& name_base)
 	for (int i=-1; i<16; ++i) {
 		f << space8 << "rc &= check_perm2_v8u16_"
 		  << cvt_int(i,2)
+		  << "();\n";
+	}
+	f << space8 << "return rc;\n"
+	  << "}\n\n";
+}
+
+
+void x86vec::test::generate_v4f64(const std::string& name_base)
+{
+	std::string fname(make_file_name(name_base, "sel_v4f64"));
+	std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
+	if (!f)
+		return;
+	// select float
+	f << "#include \"x86vec_test.h\"\n\n"
+	  << "bool x86vec::test::check_select_v4f64()\n"
+	  << "{\n"
+	  << space8 << "bool rc(true);\n"
+	  << space8 << "__m256d a = load_v4f64(false);\n"
+	  << space8 << "__m256d b = load_v4f64(true);\n"
+	  << space8 << "__m256d r;\n"
+	  << space8 << "idx id(-2,-2);\n\n";
+	for (int i=0; i<2; ++i) {
+		for (int j=0; j<2; ++j) {
+			for (int k=0; k<2;++k) {
+				for (int l=0; l<2; ++l) {
+					f << space8 << "r=select_f64<"
+					  << idx(i, j, k, l) << ">(a,b);\n";
+					f << space8 << "id.assign("
+					  << idx(((i!=0) ? 0 : 4),
+						 ((j!=0) ? 1 : 5),
+						 ((k!=0) ? 2 : 6),
+						 ((l!=0) ? 3 : 7))
+					  << ");\n";
+					f << space8
+					  << "rc &= "
+					  << "check_v4f64(\"select_v4f64\", r, id);\n";
+				}
+			}
+		}
+	}
+	f << space8 << "return rc;\n"
+	  << "}\n\n";
+	f.close();
+
+	for (int i=-1; i<4; ++i) {
+		fname = make_file_name(name_base, "perm1_v4f64", i, 1);
+		f.open(fname.c_str(), std::ios::out | std::ios::trunc);
+		// perm1 float
+		f << "#include \"x86vec_test.h\"\n\n"
+		  << "bool x86vec::test::check_perm1_v4f64_" << cvt_int(i,1)
+		  << "()\n"
+		  << "{\n"
+		  << space8 << "bool rc(true);\n"
+		  << space8 << "__m256d a = load_v4f64(false);\n"
+		  << space8 << "__m256d r;\n"
+		  << space8 << "idx id(-2,-2);\n\n";
+		for (int j=-1; j<4; ++j) {
+			for (int k=-1; k<4;++k) {
+				for (int l=-1; l<4; ++l) {
+					f << space8 << "r=perm_f64<"
+					  << idx(i, j, k, l) << ">(a);\n";
+					f << space8 << "id.assign("
+					  << idx(i, j, k, l)
+					  << ");\n";
+					f << space8
+					  << "rc &= "
+					  << "check_v4f64(\"perm1_v4f64\", r, id);\n";
+				}
+			}
+		}
+		f << space8 << "return rc;\n"
+		  << "}\n\n";
+		f.close();
+	}
+
+	// perm2 float
+	for (int i=-1; i<8; ++i) {
+		fname = make_file_name(name_base, "perm2_v4f64", i, 1);
+		f.open(fname.c_str(), std::ios::out | std::ios::trunc);
+		f << "#include \"x86vec_test.h\"\n\n"
+		  << "bool x86vec::test::check_perm2_v4f64_"<< cvt_int(i, 1)
+		  << "()\n"
+		  << "{\n"
+		  << space8 << "bool rc(true);\n"
+		  << space8 << "__m256d a = load_v4f64(false);\n"
+		  << space8 << "__m256d b = load_v4f64(true);\n"
+		  << space8 << "__m256d r;\n"
+		  << space8 << "idx id(-2,-2);\n\n";
+		for (int j=-1; j<8; ++j) {
+			for (int k=-1; k<8;++k) {
+				for (int l=-1; l<8; ++l) {
+					f << space8 << "r=perm_f64<"
+					  << idx(i, j, k, l) << ">(a,b);\n";
+					f << space8 << "id.assign("
+					  << idx(i, j, k, l)
+					  << ");\n";
+					f << space8
+					  << "rc &= "
+					  << "check_v4f64(\"perm1_v4f64\", r, id);\n";
+				}
+			}
+		}
+		f << space8 << "return rc;\n"
+		  << "}\n\n";
+		f.close();
+	}
+	fname = make_file_name(name_base, "perm_v4f64");
+	f.open(fname.c_str(), std::ios::out | std::ios::trunc);
+	// perm1 double
+	f << "#include \"x86vec_test.h\"\n\n"
+	  << "bool x86vec::test::check_perm1_v4f64()\n"
+	  << "{\n"
+	  << space8 << "bool rc(true);\n";
+	for (int i=-1; i<4; ++i) {
+		f << space8 << "rc &= check_perm1_v4f64_"
+		  << cvt_int(i,1)
+		  << "();\n";
+	}
+	f << space8 << "return rc;\n"
+	  << "}\n\n";
+	f << "//#include \"x86vec_test.h\"\n\n"
+	  << "bool x86vec::test::check_perm2_v4f64()\n"
+	  << "{\n"
+	  << space8 << "bool rc(true);\n";
+	for (int i=-1; i<8; ++i) {
+		f << space8 << "rc &= check_perm2_v4f64_"
+		  << cvt_int(i,1)
 		  << "();\n";
 	}
 	f << space8 << "return rc;\n"

@@ -114,11 +114,17 @@ namespace x86vec {
 		void generate_v4u32(const std::string& fnamebase);
 		void generate_v8u16(const std::string& fnamebase);
 
+		void generate_v4f64(const std::string& fnamebase);
+
                 __m128d load_v2f64(bool second);
                 __m128 load_v4f32(bool second);
                 __m128i load_v2u64(bool second);
                 __m128i load_v4u32(bool second);
                 __m128i load_v8u16(bool second);
+
+#if defined (__AVX__)
+		__m256d load_v4f64(bool second);
+#endif
 
 
                 // Complementary-multiply-with-carry random generator.
@@ -174,6 +180,9 @@ namespace x86vec {
 		typedef vec_pr<__m128i, uint32_t, 4> pr_v4u32;
 		typedef vec_pr<__m128i, int64_t, 2> pr_v2s64;
 		typedef vec_pr<__m128i, uint64_t, 2> pr_v2u64;
+#if defined (__AVX__)
+		typedef vec_pr<__m256d, double, 4> pr_v4d;
+#endif
 
 		class idx {
 			std::array<int,8> _v;
@@ -231,6 +240,11 @@ namespace x86vec {
 				 __m128i r, const idx& i);
 		bool check_v2u64(const char* msg,
 				 __m128i r, const idx& i);
+#if defined (__AVX__)
+		bool check_v4f64(const char* msg,
+				 __m256d r, const idx& i);
+#endif
+
         }
 }
 
@@ -303,6 +317,18 @@ inline __m128i x86vec::test::load_v8u16(bool second)
                 r = const_v8u16< 1, 2, 3, 4, 5, 6, 7, 8>::iv();
         return r;
 }
+
+#if defined (__AVX__)
+inline __m256d x86vec::test::load_v4f64(bool second)
+{
+        __m256d r;
+        if (second == true)
+                r= _mm256_set_pd(8.0f, 7.0f, 6.0f, 5.0f);
+        else
+                r= _mm256_set_pd(4.0f, 3.0f, 2.0f, 1.0f);
+        return r;
+}
+#endif
 
 // Local variables:
 // mode: c++
