@@ -1406,25 +1406,41 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 		const int sh4=shuffle4<_P0, _P1, _P2, _P3>::val;
 		res=__mm256_permute4x64_pd(a, sh4);
 #else
-		// general case
-		// copy high half to low half
-		__m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
-		// copy low half to high half
-		__m256d lo2lo_lo2hi= 
-			_mm256_insertf128_pd(a, 
-					     _mm256_castpd256_pd128(a), 
-					     1);
-		const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
-		const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
+		if (((m1 & 0x2222) & m2)==0) {
+			// only from low lane
+			__m256d lo2lo_lo2hi= 
+				_mm256_insertf128_pd(a, 
+						     _mm256_castpd256_pd128(a), 
+						     1);
+			const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
+			res = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
+		} else if (((m1 & 0x2222) & m2)==(0x2200 & m2)) {
+			// only from high lane
+			__m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
+			const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
+			res = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
+		} else {
+			// general case
+			// copy high half to low half
+			__m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
+			// copy low half to high half
+			__m256d lo2lo_lo2hi= 
+				_mm256_insertf128_pd(a, 
+						     _mm256_castpd256_pd128(a), 
+						     1);
+			const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
+			const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
 
-		hi2lo_hi2hi = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
-		lo2lo_lo2hi = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
+			hi2lo_hi2hi = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
+			lo2lo_lo2hi = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
 	
-		const bool b0= _P0 < 2 ? true : false;
-		const bool b1= _P1 < 2 ? true : false;
-		const bool b2= _P2 < 2 ? true : false;
-		const bool b3= _P3 < 2 ? true : false;
-		res= select_v4f64<b0, b1, b2, b3>::v(lo2lo_lo2hi, hi2lo_hi2hi);
+			const bool b0= _P0 < 2 ? true : false;
+			const bool b1= _P1 < 2 ? true : false;
+			const bool b2= _P2 < 2 ? true : false;
+			const bool b3= _P3 < 2 ? true : false;
+			res= select_v4f64<b0, b1, b2, b3>::
+				v(lo2lo_lo2hi, hi2lo_hi2hi);
+		}
 #endif
 	}
 	if (do_zero) {
