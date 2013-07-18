@@ -24,6 +24,10 @@ bool all_tests_00()
 	r &= x86vec::test::check_perm1_v8u16();
 	r &= x86vec::test::check_perm2_v8u16();
 
+	r &= x86vec::test::check_select_v4f64();
+	r &= x86vec::test::check_perm1_v4f64();
+	r &= x86vec::test::check_perm2_v4f64();
+
 	return r;
 }
 

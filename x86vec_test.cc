@@ -788,6 +788,9 @@ void x86vec::test::generate_v4f64(const std::string& name_base)
 	f << "#include \"x86vec_test.h\"\n\n"
 	  << "bool x86vec::test::check_select_v4f64()\n"
 	  << "{\n"
+	  << "#if !defined (__AVX__)\n"
+	  << space8 << "return true;\n"
+	  << "#else\n"
 	  << space8 << "bool rc(true);\n"
 	  << space8 << "__m256d a = load_v4f64(false);\n"
 	  << space8 << "__m256d b = load_v4f64(true);\n"
@@ -813,6 +816,7 @@ void x86vec::test::generate_v4f64(const std::string& name_base)
 		}
 	}
 	f << space8 << "return rc;\n"
+	  << "#endif\n"
 	  << "}\n\n";
 	f.close();
 
@@ -824,6 +828,9 @@ void x86vec::test::generate_v4f64(const std::string& name_base)
 		  << "bool x86vec::test::check_perm1_v4f64_" << cvt_int(i,1)
 		  << "()\n"
 		  << "{\n"
+		  << "#if !defined (__AVX__)\n"
+		  << space8 << "return true;\n"
+		  << "#else\n"
 		  << space8 << "bool rc(true);\n"
 		  << space8 << "__m256d a = load_v4f64(false);\n"
 		  << space8 << "__m256d r;\n"
@@ -843,6 +850,7 @@ void x86vec::test::generate_v4f64(const std::string& name_base)
 			}
 		}
 		f << space8 << "return rc;\n"
+		  << "#endif\n"
 		  << "}\n\n";
 		f.close();
 	}
@@ -855,6 +863,9 @@ void x86vec::test::generate_v4f64(const std::string& name_base)
 		  << "bool x86vec::test::check_perm2_v4f64_"<< cvt_int(i, 1)
 		  << "()\n"
 		  << "{\n"
+		  << "#if !defined (__AVX__)\n"
+		  << space8 << "return true;\n"
+		  << "#else\n"
 		  << space8 << "bool rc(true);\n"
 		  << space8 << "__m256d a = load_v4f64(false);\n"
 		  << space8 << "__m256d b = load_v4f64(true);\n"
@@ -875,6 +886,7 @@ void x86vec::test::generate_v4f64(const std::string& name_base)
 			}
 		}
 		f << space8 << "return rc;\n"
+		  << "#endif\n"
 		  << "}\n\n";
 		f.close();
 	}

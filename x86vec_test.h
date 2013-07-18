@@ -28,6 +28,8 @@ namespace x86vec {
                 bool check_select_v4u32();
                 bool check_select_v8u16();
 
+                bool check_select_v4f64();
+
 		// full perm tests, generated
 		bool check_perm1_v2f64();
 		bool check_perm2_v2f64();
@@ -38,6 +40,9 @@ namespace x86vec {
 		bool check_perm2_v2u64();
 		bool check_perm1_v4u32();
 		bool check_perm2_v4u32();
+
+		bool check_perm1_v4f64();
+		bool check_perm2_v4f64();
 
 		// randomized perm tests, generated
 		bool check_perm1_v8u16();
@@ -105,6 +110,23 @@ namespace x86vec {
 		bool check_perm2_v8u16_13();
 		bool check_perm2_v8u16_14();
 		bool check_perm2_v8u16_15();
+
+		// split generated functions
+		bool check_perm1_v4f64__();
+		bool check_perm1_v4f64_0();
+		bool check_perm1_v4f64_1();
+		bool check_perm1_v4f64_2();
+		bool check_perm1_v4f64_3();
+
+		bool check_perm2_v4f64__();
+		bool check_perm2_v4f64_0();
+		bool check_perm2_v4f64_1();
+		bool check_perm2_v4f64_2();
+		bool check_perm2_v4f64_3();
+		bool check_perm2_v4f64_4();
+		bool check_perm2_v4f64_5();
+		bool check_perm2_v4f64_6();
+		bool check_perm2_v4f64_7();
 
 		// global test generation function
                 void generate(const std::string& fnamebase);

@@ -575,6 +575,13 @@ namespace x86vec {
         __m128i perm_u64(__m128i a);
         template <int _P0, int _P1>
         __m128i perm_u64(__m128i a, __m128i b);
+
+#if defined (__AVX__)
+        template <int _P0, int _P1, int _P2, int _P3>
+        __m256d perm_f64(__m256d a);
+        template <int _P0, int _P1, int _P2, int _P3>
+        __m256d perm_f64(__m256d a, __m256d b);
+#endif
 }
 
 template <int _P0, int _P1>
