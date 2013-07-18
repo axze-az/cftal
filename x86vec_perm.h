@@ -1394,7 +1394,7 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 #else
 	// general case
 	// copy high half to low half
-	__m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0);
+	__m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
 	// copy low half to high half
 	__m256d lo2lo_lo2hi= _mm256_insertf128_pd(a, 
 						  _mm256_castpd256_pd128(a), 
@@ -1404,7 +1404,8 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 
 	hi2lo_hi2hi = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
 	lo2lo_lo2hi = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
-
+	
+	//hi2lo_hi2hi = _mm256_set_pd(-1.0, -1.0, -1.0, -1.0);
 	const bool b0= _P0 < 2 ? true : false;
 	const bool b1= _P1 < 2 ? true : false;
 	const bool b2= _P2 < 2 ? true : false;
@@ -1418,7 +1419,7 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
                 const int z2 = (_P2 < 0) ? 0 : -1;
                 const int z3 = (_P3 < 0) ? 0 : -1;
                 const __m256d zm= const_v8u32<z0, z0, z1, z1, 
-					     z2, z2, z3, z3>::dv();
+					      z2, z2, z3, z3>::dv();
                 // zero with AND mask
                 res = _mm256_and_pd(res, zm);
 	}

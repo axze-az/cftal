@@ -881,7 +881,7 @@ void x86vec::test::generate_v4f64(const std::string& name_base)
 					  << ");\n";
 					f << space8
 					  << "rc &= "
-					  << "check_v4f64(\"perm1_v4f64\", r, id);\n";
+					  << "check_v4f64(\"perm2_v4f64\", r, id);\n";
 				}
 			}
 		}

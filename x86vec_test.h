@@ -345,9 +345,9 @@ inline __m256d x86vec::test::load_v4f64(bool second)
 {
         __m256d r;
         if (second == true)
-                r= _mm256_set_pd(8.0f, 7.0f, 6.0f, 5.0f);
+                r= _mm256_set_pd(8.0, 7.0, 6.0, 5.0);
         else
-                r= _mm256_set_pd(4.0f, 3.0f, 2.0f, 1.0f);
+                r= _mm256_set_pd(4.0, 3.0, 2.0, 1.0);
         return r;
 }
 #endif

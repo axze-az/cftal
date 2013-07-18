@@ -544,9 +544,22 @@ int main(int argc, char** argv)
         // x86cftal::vec::v2f64 t=exp(x86cftal::vec::v2f64(0.0));
         // static_cast<void>(t);
         // calc_pi();
-	print_inv_fac();
-	print_2_over_i();
-	print_sqrtx();
+	// print_inv_fac();
+	// print_2_over_i();
+	// print_sqrtx();
 	// testpowi();
+
+	using namespace x86vec;
+	using namespace x86vec::test;
+
+        bool rc(true);
+        __m256d a = load_v4f64(false);
+        __m256d r;
+        idx id(-2,-2);
+
+        r=perm_f64<-1,-1,-1,2>(a);
+        id.assign(-1,-1,-1,2);
+        rc &= check_v4f64("perm1_v4f64", r, id);
+
         return 0;
 }
