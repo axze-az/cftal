@@ -1392,6 +1392,14 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 		// low from low src, high from high src
 		const int sel= csel4<_P0, _P1, _P2, _P3>::val;
 		res= _mm256_permute_pd(a, sel);
+	} else if ( ((m1 & m2) == (0x1032 & m2)) ) {
+		res= _mm256_permute2f128_pd(a, a, 0x01);
+	} else if ( ((m1 & m2) == (0x3232 & m2)) ) {
+		res= _mm256_permute2f128_pd(a, a, 0x11);
+	} else if ( ((m1 & m2) == (0x1010 & m2)) ) {
+		res= _mm256_insertf128_pd(a, 
+					  _mm256_castpd256_pd128(a), 
+					  1);
 	} else {
 #if defined (__AVX2__)
 		// general case
