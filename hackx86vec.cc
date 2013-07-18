@@ -557,8 +557,8 @@ int main(int argc, char** argv)
         __m256d r;
         idx id(-2,-2);
 
-        r=perm_f64<-1,-1,-1,2>(a);
-        id.assign(-1,-1,-1,2);
+        r=perm_f64<-1, 0, -1,2>(a);
+        id.assign(-1, 0, -1, 2);
         rc &= check_v4f64("perm1_v4f64", r, id);
 
         return 0;
