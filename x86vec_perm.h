@@ -1404,7 +1404,7 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 #if defined (__AVX2__)
 		// general case
 		const int sh4=shuffle4<_P0, _P1, _P2, _P3>::val;
-		res=__mm256_permute4x64_pd(a, sh4);
+		res=_mm256_permute4x64_pd(a, sh4);
 #else
 		if (((m1 & 0x2222) & m2)==0) {
 			// only from low lane
