@@ -1459,6 +1459,22 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 template <int _P0, int _P1, int _P2, int _P3>
 __m256d x86vec::impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
 {
+        // Combine all the indexes into a single bitfield, with 4 bits
+        // for each
+        const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 7>::m;
+        // Mask to zero out negative indexes
+        const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
+
+        if ((m1 & 0x4444 & m2) == 0) {
+                // no elements from b
+                return perm1_v4f64<_P0, _P1, _P2, _P3>::v(a);
+        }
+        if (((m1^0x4444) & 0x4444 & m2) == 0) {
+                // no elements from a
+                return perm1_v4f64< _P0 & ~4, _P1 & ~4,
+				    _P2 & ~4, _P3 & ~4>::v(b);
+        }
+
         // select all elements to clear or from 1st vector
         const int ma0 = _P0 < 4 ? _P0 : -1;
 	const int ma1 = _P1 < 4 ? _P1 : -1;
