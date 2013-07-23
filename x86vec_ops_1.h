@@ -480,6 +480,7 @@ inline __m128i x86vec::bitrev_u16(__m128i a)
 #else
 	// swap bytes
 	// v = ((v >> 8) & 0x00FF00FF) | ((v & 0x00FF00FF) << 8);
+	a = bitrev_u8(a);
 	__m128i t= impl::vpsrlw_const<8>::v(a);
 	a = impl::vpsllw_const<8>::v(a);
 	return _mm_or_si128(a, t);
@@ -495,6 +496,7 @@ inline __m128i x86vec::bitrev_u32(__m128i a)
 	a = bitrev_u8(a);
 	return _mm_shuffle_epi8(a, msk);
 #else
+	a = bitrev_u16(a);
 	// swap 2-byte long pairs
 	// v = ( v >> 16             ) | ( v               << 16);
 	__m128i t= impl::vpsrld_const<16>::v(a);
