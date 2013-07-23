@@ -199,7 +199,7 @@ namespace x86vec {
 		};
 
 
-                struct make_zero_f64 {
+                struct make_zero_v2f64 {
                         static __m128d v() {
                                 return _mm_setzero_pd();
                         }
@@ -214,7 +214,7 @@ namespace x86vec {
                         }
                 };
 
-                struct make_zero_f32 {
+                struct make_zero_v4f32 {
 			static __m128 v() {
                                 return _mm_setzero_ps();
 			}

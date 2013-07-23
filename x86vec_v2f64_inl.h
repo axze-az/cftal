@@ -225,7 +225,7 @@ inline
 x86vec::v2f64
 x86vec::operator!(const v2f64& a)
 {
-        const __m128d msk = impl::make_zero_f64::v();
+        const __m128d msk = impl::make_zero_v2f64::v();
         return _mm_cmpeq_pd(a(), msk);
 }
 

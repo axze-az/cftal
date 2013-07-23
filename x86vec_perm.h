@@ -21,7 +21,7 @@ namespace x86vec {
 
                 // specializations for perm1_v2f64
                 template <>
-                struct perm1_v2f64<-1,-1> : public make_zero_f64 {};
+                struct perm1_v2f64<-1,-1> : public make_zero_v2f64 {};
                 template <>
                 struct perm1_v2f64< 0, 1> : public select_arg_1<__m128d> {};
                 template <>
@@ -37,7 +37,7 @@ namespace x86vec {
 
                 // specializations for perm2_v2f64
                 template <>
-                struct perm2_v2f64<-1,-1> : public make_zero_f64 {};
+                struct perm2_v2f64<-1,-1> : public make_zero_v2f64 {};
                 template <>
                 struct perm2_v2f64<0,1> : public select_arg_1<__m128d> {};
                 template <>
@@ -67,7 +67,7 @@ namespace x86vec {
 
                 // specializations for perm1_v4f32
                 template <>
-                struct perm1_v4f32<-1,-1,-1,-1> : public make_zero_f32 {};
+                struct perm1_v4f32<-1,-1,-1,-1> : public make_zero_v4f32 {};
                 template <>
                 struct perm1_v4f32<0,1,2,3> : public select_arg_1<__m128> {};
                 template <>
@@ -81,27 +81,27 @@ namespace x86vec {
 
                 template <>
                 struct perm1_v4f32< 0,-1, 1,-1>
-                        : public fixed_arg_2<__m128, make_zero_f32,
+                        : public fixed_arg_2<__m128, make_zero_v4f32,
                                              vunpcklps> {};
                 template <>
                 struct perm1_v4f32< 2,-1, 3,-1>
-                        : public fixed_arg_2<__m128, make_zero_f32,
+                        : public fixed_arg_2<__m128, make_zero_v4f32,
                                              vunpckhps> {};
                 template <>
                 struct perm1_v4f32<-1, 0, -1, 1>
-                        : public fixed_arg_1<__m128, make_zero_f32,
+                        : public fixed_arg_1<__m128, make_zero_v4f32,
                                              vunpcklps> {};
                 template <>
                 struct perm1_v4f32<-1, 2, -1, 3>
-                        : public fixed_arg_1<__m128, make_zero_f32,
+                        : public fixed_arg_1<__m128, make_zero_v4f32,
                                              vunpckhps> {};
                 template <>
                 struct perm1_v4f32< 0, 1,-1,-1>
-                        : public fixed_arg_2<__m128, make_zero_f32,
+                        : public fixed_arg_2<__m128, make_zero_v4f32,
                                              exec_f64<vunpcklpd> > {};
                 template <>
                 struct perm1_v4f32<-1,-1, 2, 3>
-                        : public fixed_arg_1<__m128, make_zero_f32,
+                        : public fixed_arg_1<__m128, make_zero_v4f32,
                                              exec_f64<vunpckhpd> > {};
                 template <>
                 struct perm1_v4f32<0, 0, 0, 0> : public splat_v4f32<0> {};
@@ -139,7 +139,7 @@ namespace x86vec {
 
                 // specializations for perm2_v4f32
                 template <>
-                struct perm2_v4f32<-1,-1,-1,-1> : public make_zero_f32 {};
+                struct perm2_v4f32<-1,-1,-1,-1> : public make_zero_v4f32 {};
                 template <>
                 struct perm2_v4f32<0,1,2,3> : public select_arg_1<__m128> {};
                 template <>
@@ -599,7 +599,7 @@ __m128d x86vec::impl::perm1_v2f64<_P0, _P1>::v(__m128d a)
                 // zeroing, not shuffling
                 if ((_P0 & _P1) < 0)  {
                         // zero everything
-                        return make_zero_f64::v();
+                        return make_zero_v2f64::v();
                 }
                 // zero some elements
                 const __m128d msk= const_v4u32<
@@ -676,7 +676,7 @@ __m128 x86vec::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
                 // zeroing, not shuffling
                 if (m2 == 0) {
                         // zero everything
-                        return make_zero_f32::v();
+                        return make_zero_v4f32::v();
                 }
                 // zero some elements
                 const int z0 = (_P0 < 0) ? 0 : -1;

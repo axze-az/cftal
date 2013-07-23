@@ -232,7 +232,7 @@ inline
 x86vec::v4f32
 x86vec::operator!(const v4f32& a)
 {
-        const __m128 msk = impl::make_zero_f32::v();
+        const __m128 msk = impl::make_zero_v4f32::v();
         return _mm_cmpeq_ps(a(), msk);
 }
 
