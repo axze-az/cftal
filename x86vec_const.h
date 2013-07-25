@@ -278,8 +278,14 @@ namespace x86vec {
         const int sign_s64_msk = 0x8080;
 
         // f32 constants
-        typedef v_sign_s32_msk v_sign_f32_msk;
+        typedef v_sign_s32_msk v_sign_v4f32_msk;
         typedef v_not_sign_s32_msk v_not_sign_f32_msk;
+
+        typedef const_v8u32<0x80000000, 0x80000000,
+			    0x80000000, 0x80000000,
+			    0x80000000, 0x80000000,
+			    0x80000000, 0x80000000> v_sign_v8f32_msk;
+
         typedef const_v4u32<0x7f800000, 0x7f800000,
 			    0x7f800000, 0x7f800000> v_exp_f32_msk;
         typedef const_v4u32<0x807fffff, 0x807fffff,
@@ -291,8 +297,14 @@ namespace x86vec {
         const int exp_msk_f32 = 0xff;
 
         // f64 constants
-        typedef v_sign_s64_msk v_sign_f64_msk;
+        typedef v_sign_s64_msk v_sign_v2f64_msk;
         typedef v_not_sign_s64_msk v_not_sign_f64_msk;
+
+	typedef const_v8u32<0x00000000, 0x80000000,
+			    0x00000000, 0x80000000,
+			    0x00000000, 0x80000000,
+			    0x00000000, 0x80000000> v_sign_v4f64_msk;
+
         typedef const_v4u32<0x00000000,0x7ff00000,
 			    0x00000000,0x7ff00000> v_exp_f64_msk;
         typedef const_v4u32<0xffffffff,0x800fffff,

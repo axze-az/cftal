@@ -209,7 +209,7 @@ inline
 x86vec::v4f32
 x86vec::operator-(const v4f32& a)
 {
-        const __m128 msk= v_sign_f32_msk::fv();
+        const __m128 msk= v_sign_v4f32_msk::fv();
         return _mm_xor_ps(a(), msk);
 }
 
@@ -447,7 +447,7 @@ x86vec::v4f32 x86vec::impl::round(const v4f32& a, const rounding_mode::type m)
 		if (unlikely(mxcsr != rmxcsr))
 			_mm_setcsr(rmxcsr);
 	}
-        const __m128 sgn_msk= v_sign_f32_msk::fv();
+        const __m128 sgn_msk= v_sign_v4f32_msk::fv();
 	// (127+23)<< 23 = 0x4B000000 = 2^23
         const __m128 magic= const_v4u32<0x4B000000, 0x4B000000,
                                        0x4B000000, 0x4B000000>::fv();
@@ -504,7 +504,7 @@ x86vec::v4f32 x86vec::copysign(const v4f32& x, const v4f32& y)
 inline
 x86vec::v4f32 x86vec::mulsign(const v4f32& x, const v4f32& y)
 {
-	const v4f32 msk= v_sign_f32_msk::fv();
+	const v4f32 msk= v_sign_v4f32_msk::fv();
 	v4f32 sgn_y = y & msk;
 	return x ^ sgn_y;
 }

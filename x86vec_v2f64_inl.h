@@ -202,7 +202,7 @@ inline
 x86vec::v2f64
 x86vec::operator-(const v2f64& a)
 {
-	const __m128d msk= v_sign_f64_msk::dv();
+	const __m128d msk= v_sign_v2f64_msk::dv();
         return _mm_xor_pd(a(), msk);
 }
 
@@ -427,7 +427,7 @@ x86vec::v2f64 x86vec::impl::round(const v2f64& a, const rounding_mode::type m)
 		if (unlikely(mxcsr != rmxcsr))
 			_mm_setcsr(rmxcsr);
 	}
-	const __m128d sgn_msk=v_sign_f64_msk::dv();
+	const __m128d sgn_msk=v_sign_v2f64_msk::dv();
 	// (1023+52)<<(52-32) 0x43300000 = 2^52
 	const __m128d magic= const_v4u32<0, 0x43300000, 0, 0x43300000>::dv();
 	__m128d sign = _mm_and_pd(a(), sgn_msk);
@@ -484,7 +484,7 @@ x86vec::v2f64 x86vec::copysign(const v2f64& x, const v2f64& y)
 inline
 x86vec::v2f64 x86vec::mulsign(const v2f64& x, const v2f64& y)
 {
-	const v2f64 msk= v_sign_f64_msk::dv();
+	const v2f64 msk= v_sign_v2f64_msk::dv();
 	v2f64 sgn_y = y & msk;
 	return x ^ sgn_y;
 }

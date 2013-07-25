@@ -55,6 +55,13 @@ namespace x86vec {
 	// read the sign bits of all elements into a bit mask
 	int read_signs_s8(__m128i i);
 
+#if defined (__AVX__)
+	// read the sign bits of all elements into a bit mask
+	int read_signs_f32(__m256 i);
+	// read the sign bits of all elements into a bit mask
+	int read_signs_f64(__m256d d);
+#endif
+
 	// neither all bits set nor unset
 	bool both_bits(__m128i a);
 	// all bits set
@@ -70,6 +77,16 @@ namespace x86vec {
 	bool all_signs_f64(__m128d a);
 	bool no_signs_f64(__m128d a);
 
+#if defined (__AVX__)
+	bool both_signs_f32(__m256 a);
+	bool all_signs_f32(__m256 a);
+	bool no_signs_f32(__m256 a);
+
+	bool both_signs_f64(__m256d a);
+	bool all_signs_f64(__m256d a);
+	bool no_signs_f64(__m256d a);
+#endif
+
 	bool both_signs_s16(__m128i a);
 	bool all_signs_s16(__m128i a);
 	bool no_signs_s16(__m128i a);
@@ -81,6 +98,8 @@ namespace x86vec {
 	bool both_signs_s64(__m128i a);
 	bool all_signs_s64(__m128i a);
 	bool no_signs_s64(__m128i a);
+
+
 
 	__m128i popcnt_u8(__m128i a);
 	__m128i popcnt_u16(__m128i a);
@@ -138,6 +157,20 @@ int x86vec::read_signs_f64(__m128d a)
 	return _mm_movemask_pd(a);
 }
 
+#if defined (__AVX__)
+inline
+int x86vec::read_signs_f32(__m256 a)
+{
+	return _mm256_movemask_ps(a);
+}
+
+inline
+int x86vec::read_signs_f64(__m256d a)
+{
+	return _mm256_movemask_pd(a);
+}
+#endif
+
 inline
 bool x86vec::both_bits(__m128i a)
 {
@@ -181,7 +214,7 @@ inline
 bool x86vec::both_signs_f32(__m128 a)
 {
 #if defined (__SSE4_1__)
-	const __m128i msk= v_sign_f32_msk::iv();
+	const __m128i msk= v_sign_v4f32_msk::iv();
 	return _mm_testnzc_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f32(a);
@@ -193,7 +226,7 @@ inline
 bool x86vec::all_signs_f32(__m128 a)
 {
 #if defined (__SSE4_1__)
-	const __m128i msk= v_sign_f32_msk::iv();
+	const __m128i msk= v_sign_v4f32_msk::iv();
 	return _mm_testc_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f32(a);
@@ -205,7 +238,7 @@ inline
 bool x86vec::no_signs_f32(__m128 a)
 {
 #if defined (__SSE4_1__)
-	const __m128i msk= v_sign_f32_msk::iv();
+	const __m128i msk= v_sign_v4f32_msk::iv();
 	return _mm_testz_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f32(a);
@@ -217,7 +250,7 @@ inline
 bool x86vec::both_signs_f64(__m128d a)
 {
 #if defined (__SSE4_1__)
-	const __m128i msk= v_sign_f64_msk::iv();
+	const __m128i msk= v_sign_v2f64_msk::iv();
 	return _mm_testnzc_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f64(a);
@@ -229,7 +262,7 @@ inline
 bool x86vec::all_signs_f64(__m128d a)
 {
 #if defined (__SSE4_1__)
-	const __m128i msk= v_sign_f64_msk::iv();
+	const __m128i msk= v_sign_v2f64_msk::iv();
 	return _mm_testc_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f64(a);
@@ -241,13 +274,58 @@ inline
 bool x86vec::no_signs_f64(__m128d a)
 {
 #if defined (__SSE4_1__)
-	const __m128i msk= v_sign_f64_msk::iv();
+	const __m128i msk= v_sign_v2f64_msk::iv();
 	return _mm_testz_si128(as<__m128i>(a), msk);
 #else
 	int r=read_signs_f64(a);
 	return r == 0;
 #endif
 }
+
+#if defined (__AVX__)
+inline
+bool x86vec::both_signs_f32(__m256 a)
+{
+	const __m256i msk= v_sign_v8f32_msk::iv();
+	return _mm256_testnzc_si256(as<__m256i>(a), msk);
+}
+
+inline
+bool x86vec::all_signs_f32(__m256 a)
+{
+	const __m256i msk= v_sign_v8f32_msk::iv();
+	return _mm256_testc_si256(as<__m256i>(a), msk);
+}
+
+inline
+bool x86vec::no_signs_f32(__m256 a)
+{
+	const __m256i msk= v_sign_v8f32_msk::iv();
+	return _mm256_testz_si256(as<__m256i>(a), msk);
+}
+
+inline
+bool x86vec::both_signs_f64(__m256d a)
+{
+	const __m256i msk= v_sign_v4f64_msk::iv();
+	return _mm256_testnzc_si256(as<__m256i>(a), msk);
+}
+
+inline
+bool x86vec::all_signs_f64(__m256d a)
+{
+	const __m256i msk= v_sign_v4f64_msk::iv();
+	return _mm256_testc_si256(as<__m256i>(a), msk);
+}
+
+inline
+bool x86vec::no_signs_f64(__m256d a)
+{
+	const __m256i msk= v_sign_v4f64_msk::iv();
+	return _mm256_testz_si256(as<__m256i>(a), msk);
+}
+
+#endif
 
 inline
 bool x86vec::both_signs_s16(__m128i a)
