@@ -532,6 +532,40 @@ namespace x86vec {
                         static __m256d v(__m256d a, __m256d b);
                 };
 
+		// specialization of permutations of one double
+		// vector
+		template <>
+		struct perm1_v4f64<0, 1, 2, 3> 
+			: public select_arg_1<__m256d> {};
+		template <>
+		struct perm1_v4f64<-1,-1,-1,-1> : public make_zero_v4f64 {};
+		template <>
+		struct perm1_v4f64<0, 0, 2, 2> : public vunpcklpd {};
+		template <>
+		struct perm1_v4f64<0,-1, 2,-1> 
+			: public fixed_arg_2<__m256d, make_zero_v4f64, 
+					     vunpcklpd> {};
+		template <>
+		struct perm1_v4f64<-1, 0,-1, 2>
+			: public fixed_arg_1<__m256d, make_zero_v4f64, 
+					     vunpcklpd> {};
+		template <>
+		struct perm1_v4f64<1, 1, 3, 3> : public vunpckhpd {};
+		template <>
+		struct perm1_v4f64<1,-1, 3,-1> 
+			: public fixed_arg_2<__m256d, make_zero_v4f64, 
+					     vunpckhpd> {};
+		template <>
+		struct perm1_v4f64<-1, 1, -1, 3>
+			: public fixed_arg_1<__m256d, make_zero_v4f64, 
+					     vunpckhpd> {};
+		template <>
+		struct perm1_v4f64<0, 1, 0, 1> : public vinsertf128<1> {};
+		template <>
+		struct perm1_v4f64<2, 3, 0, 1> : public vperm2f128<1, 0> {};
+		template <>
+		struct perm1_v4f64<2, 3, 2, 3> : public vperm2f128<1, 1> {};
+		
                 // generic permutation of one float vector
                 template <int _P0, int _P1, int _P2, int _P3,
                           int _P4, int _P5, int _P6, int _P7>

@@ -356,6 +356,14 @@ namespace x86vec {
                         static __m128d v(__m128d a) {
                                 return v(a, a);
                         }
+#if defined (__AVX__)
+                        static __m256d v(__m256d a, __m256d b) {
+                                return _mm256_unpackhi_pd(a, b);
+                        }
+                        static __m256d v(__m256d a) {
+                                return v(a, a);
+                        }
+#endif
                 };
 
                 struct vunpcklpd {
@@ -365,6 +373,14 @@ namespace x86vec {
                         static __m128d v(__m128d a) {
                                 return v(a, a);
                         }
+#if defined (__AVX__)
+                        static __m256d v(__m256d a, __m256d b) {
+                                return _mm256_unpacklo_pd(a, b);
+                        }
+                        static __m256d v(__m256d a) {
+                                return v(a, a);
+                        }
+#endif
                 };
 
                 struct vunpcklps {
@@ -742,6 +758,94 @@ namespace x86vec {
 		struct vpmullq {
 			static __m128i v(__m128i a, __m128i b);
 		};
+
+#if defined (__AVX__)
+                struct make_zero_v4f64 {
+                        static __m256d v() {
+                                return _mm256_setzero_pd();
+                        }
+                        static __m256d v(__m256d a) {
+                                static_cast<void>(a);
+                                return v();
+                        }
+                        static __m256d v(__m256d a, __m256d b) {
+                                static_cast<void>(a);
+                                static_cast<void>(b);
+                                return v();
+                        }
+                };
+
+                struct make_zero_v8f32 {
+			static __m256 v() {
+                                return _mm256_setzero_ps();
+			}
+                        static __m256 v(__m256 a)  {
+                                static_cast<void>(a);
+				return v();
+                        }
+                        static __m256 v(__m256 a, __m256 b) {
+                                static_cast<void>(a);
+                                static_cast<void>(b);
+				return v();
+                        }
+                };
+
+		template <int _P>
+		struct vinsertf128 {
+			static __m256d v(__m256d a, __m128d b) {
+				return _mm256_insertf128_pd(a, b, _P);
+			}
+			static __m256d v(__m256d a, __m256d b) {
+				return v(a, _mm256_castpd256_pd128(b));
+			}
+			static __m256d v(__m256d a) {
+				return v(a, a);
+			}
+			static __m256 v(__m256 a, __m128 b) {
+				return _mm256_insertf128_ps(a, b, _P);
+			}
+			static __m256 v(__m256 a, __m256 b) {
+				return v(a, _mm256_castps256_ps128(b));
+			}
+			static __m256 v(__m256 a) {
+				return v(a, a);
+			}
+			static __m256i v(__m256i a, __m128i b) {
+				return _mm256_insertf128_si256(a, b, _P);
+			}
+			static __m256i v(__m256i a, __m256i b) {
+				return v(a, _mm256_castsi256_si128(b));
+			}
+			static __m256i v(__m256i a) {
+				return v(a, a);
+			}
+		};
+
+		template <int _P0, int _P1>
+		struct vperm2f128 {
+			static const int imm8 = (_P0 & 3) | ((_P1 & 3) << 4);
+
+			static __m256d v(__m256d a, __m256d b) {
+				return _mm256_permute2f128_pd(a, b, imm8);
+			}
+			static __m256d v(__m256d a) {
+				return v(a, a);
+			}
+			static __m256 v(__m256 a, __m256 b) {
+				return _mm256_permute2f128_ps(a, b, imm8);
+			}
+			static __m256 v(__m256 a) {
+				return v(a, a);
+			}
+			static __m256i v(__m256i a, __m256i b) {
+				return _mm256_permute2f128_si256(a, b, imm8);
+			}
+			static __m256i v(__m256i a) {
+				return v(a, a);
+			}
+		};
+
+#endif
 	}
 }
 
