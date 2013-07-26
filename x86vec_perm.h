@@ -535,12 +535,14 @@ namespace x86vec {
 		// specialization of permutations of one double
 		// vector
 		template <>
+		struct perm1_v4f64<-1,-1,-1,-1> 
+			: public make_zero_v4f64 {};
+		template <>
 		struct perm1_v4f64<0, 1, 2, 3> 
 			: public select_arg_1<__m256d> {};
 		template <>
-		struct perm1_v4f64<-1,-1,-1,-1> : public make_zero_v4f64 {};
-		template <>
-		struct perm1_v4f64<0, 0, 2, 2> : public vunpcklpd {};
+		struct perm1_v4f64<0, 0, 2, 2> 
+			: public vunpcklpd {};
 		template <>
 		struct perm1_v4f64<0,-1, 2,-1> 
 			: public fixed_arg_2<__m256d, make_zero_v4f64, 
@@ -550,7 +552,8 @@ namespace x86vec {
 			: public fixed_arg_1<__m256d, make_zero_v4f64, 
 					     vunpcklpd> {};
 		template <>
-		struct perm1_v4f64<1, 1, 3, 3> : public vunpckhpd {};
+		struct perm1_v4f64<1, 1, 3, 3> 
+			: public vunpckhpd {};
 		template <>
 		struct perm1_v4f64<1,-1, 3,-1> 
 			: public fixed_arg_2<__m256d, make_zero_v4f64, 
@@ -560,12 +563,115 @@ namespace x86vec {
 			: public fixed_arg_1<__m256d, make_zero_v4f64, 
 					     vunpckhpd> {};
 		template <>
-		struct perm1_v4f64<0, 1, 0, 1> : public vinsertf128<1> {};
+		struct perm1_v4f64<0, 1, 0, 1> 
+			: public vinsertf128<1> {};
 		template <>
-		struct perm1_v4f64<2, 3, 0, 1> : public vperm2f128<1, 0> {};
+		struct perm1_v4f64<2, 3, 0, 1> 
+			: public vperm2f128<1, 0> {};
 		template <>
-		struct perm1_v4f64<2, 3, 2, 3> : public vperm2f128<1, 1> {};
+		struct perm1_v4f64<2, 3, 2, 3> 
+			: public vperm2f128<1, 1> {};
+
+		// specialization of permutations of one double
+		// vector
+		template <>
+		struct perm2_v4f64<-1,-1,-1,-1> 
+			: public make_zero_v4f64 {};
+		template <>
+		struct perm2_v4f64< 0, 1, 2, 3> 
+			: public select_arg_1<__m256d> {};
+		template <>
+		struct perm2_v4f64< 4, 5, 6, 7> 
+			: public select_arg_2<__m256d> {};
+
+		template <>
+		struct perm2_v4f64< 0, 4, 2, 6> 
+			: public vunpcklpd {};
+		template <>
+		struct perm2_v4f64< 4, 0, 6, 2> 
+			: public swap_ab<__m256d, vunpcklpd> {};
+
+		template <>
+		struct perm2_v4f64< 1, 5, 3, 7> 
+			: public vunpckhpd {};
+		template <>
+		struct perm2_v4f64< 5, 1, 7, 3> 
+			: public swap_ab<__m256d, vunpckhpd> {};
+
+		template <>
+		struct perm2_v4f64< 0, 1, 4, 5>
+			: public vinsertf128<1> {};
+		template <>
+		struct perm2_v4f64< 0, 1, 6, 7>
+			: public vperm2f128<0, 3> {};
+		template <>
+		struct perm2_v4f64< 2, 3, 4, 5>
+			: public vperm2f128<1, 2> {};
+		template <>
+		struct perm2_v4f64< 2, 3, 6, 7>
+			: public vperm2f128<1, 3> {};
+		template <>
+		struct perm2_v4f64< 4, 5, 0, 1>
+			: public swap_ab<__m256d, vinsertf128<1> > {};
+		template <>
+		struct perm2_v4f64< 4, 5, 2, 3>
+			: public vperm2f128<2, 1> {};
+		template <>
+		struct perm2_v4f64< 6, 7, 0, 1>
+			: public vperm2f128<3, 0> {};
+		template <>
+		struct perm2_v4f64< 6, 7, 2, 3>
+			: public vperm2f128<3, 1> {};
 		
+		template <>
+		struct perm2_v4f64< 0, 4, 1, 5> {
+			static __m256d v(__m256d a, __m256d b) {
+				// 0 4 2 6
+				__m256d t0= vunpcklpd::v(a, b);
+				// 1 5 3 7
+				__m256d t1= vunpckhpd::v(a, b);
+				__m256d r= vperm2f128<0, 2>::v(t0, t1);
+				return r;
+			}
+		};
+
+		template <>
+		struct perm2_v4f64< 4, 0, 5, 1> {
+			static __m256d v(__m256d a, __m256d b) {
+				// 4 0 6 2
+				__m256d t0= vunpcklpd::v(b, a);
+				// 5 1 7 3
+				__m256d t1= vunpckhpd::v(b, a);
+				__m256d r= vperm2f128<0, 2>::v(t0, t1);
+				return r;
+			}
+		};
+
+		template <>
+		struct perm2_v4f64< 2, 6, 3, 7> {
+			static __m256d v(__m256d a, __m256d b) {
+				// 0 4 2 6
+				__m256d t0= vunpcklpd::v(a, b);
+				// 1 5 3 7
+				__m256d t1= vunpckhpd::v(a, b);
+				__m256d r= vperm2f128<1, 3>::v(t0, t1);
+				return r;
+			}
+		};
+
+		template <>
+		struct perm2_v4f64< 6, 2, 7, 3> {
+			static __m256d v(__m256d a, __m256d b) {
+				// 4 0 6 2
+				__m256d t0= vunpcklpd::v(b, a);
+				// 5 1 7 3
+				__m256d t1= vunpckhpd::v(b, a);
+				__m256d r= vperm2f128<1, 3>::v(t0, t1);
+				return r;
+			}
+		};
+		
+
                 // generic permutation of one float vector
                 template <int _P0, int _P1, int _P2, int _P3,
                           int _P4, int _P5, int _P6, int _P7>
@@ -579,7 +685,6 @@ namespace x86vec {
                 struct perm2_v8f32 {
                         static __m256 v(__m256 a, __m256 b);
                 };
- 
 #endif
         }
 
@@ -1448,7 +1553,7 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 						     1);
 			const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
 			res = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
-		} else if (((m1 & 0x2222) & m2)==(0x2200 & m2)) {
+		} else if (((m1 & 0x2222) & m2)==(0x2222 & m2)) {
 			// only from high lane
 			__m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
 			const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;

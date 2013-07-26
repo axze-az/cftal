@@ -538,6 +538,61 @@ void testpowi()
 
 }
 
+__m256d tr1(__m256d a, __m256d b)
+{
+	return x86vec::perm_f64<0, 4, 1, 5>(a, b);
+}
+
+__m256d tr2(__m256d a, __m256d b)
+{
+	return x86vec::perm_f64<2, 6, 3, 7>(a, b);
+}
+
+__m256d tr1a(__m256d a, __m256d b)
+{
+	// x86vec::perm_f64<0, 4, 1, 5>(a, b);
+#if 0
+	// 5 operations
+	__m256d a0= x86vec::perm_f64<0, 0, 1, 1>(a);
+	__m256d b0= x86vec::perm_f64<0, 0, 1, 1>(b);
+	return x86vec::select_f64<true, false, true, false>(a0, b0);
+#endif
+	using namespace x86vec;
+	using namespace x86vec::impl;
+	// 0 4 2 6
+	__m256d t0= vunpcklpd::v(a, b);
+	// 1 5 3 7
+	__m256d t1= vunpckhpd::v(a, b);
+	__m256d r= vperm2f128<0, 2>::v(t0, t1);
+	return r;
+	
+}
+
+__m256d tr2a(__m256d a, __m256d b)
+{
+	// x86vec::perm_f64<2, 6, 3, 7>(a, b);
+#if 0
+	// 5 operations
+	__m256d a0= x86vec::perm_f64<2, 2, 3, 3>(a);
+	__m256d b0= x86vec::perm_f64<2, 2, 3, 3>(b);
+	return x86vec::select_f64<true, false, true, false>(a0, b0);
+#endif
+	using namespace x86vec;
+	using namespace x86vec::impl;
+	// 0 4 2 6
+	__m256d t0= vunpcklpd::v(a, b);
+	// 1 5 3 7
+	__m256d t1= vunpckhpd::v(a, b);
+	__m256d r= vperm2f128<1, 3>::v(t0, t1);
+	return r;
+}
+
+__m256d tr2b(__m256d a)
+{
+	return x86vec::perm_f64< 2, -1, 3, -1>(a);
+}
+
+
 int main(int argc, char** argv)
 {
         // x86cftal::vec::test::check_frexp_f64();
@@ -554,12 +609,18 @@ int main(int argc, char** argv)
 
         bool rc(true);
         __m256d a = load_v4f64(false);
+	__m256d b = load_v4f64(true);
         __m256d r;
         idx id(-2,-2);
+        r=tr1a(a, b);
+        id.assign(0, 4, 1, 5);
+        rc &= check_v4f64("perm2_v4f64", r, id);
 
-        r=perm_f64<-1, 0, -1,2>(a);
-        id.assign(-1, 0, -1, 2);
-        rc &= check_v4f64("perm1_v4f64", r, id);
+	a = load_v4f64(false);
+	b = load_v4f64(true);
+	r=tr2a(a, b);
+        id.assign(2, 6, 3, 7);
+        rc &= check_v4f64("perm2_v4f64", r, id);
 
         return 0;
 }
