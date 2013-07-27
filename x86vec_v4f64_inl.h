@@ -37,21 +37,20 @@ x86vec::v4f64::v4f64(element_type r, bool broadcast)
 {
 }
 
-#if 0
 inline
 x86vec::v4f64::v4f64(const v2f64&l)
-        : base_type(broadcast ? 
-		    _mm256_set1_pd(r) : _mm256_set_sd(r))
+        : base_type(impl::vinsertf128<1>::v(as<__m256d>(l()),
+					    _mm_setzero_pd()))
 {
 }
 
 inline
 x86vec::v4f64::v4f64(const v2f64&l, const v2f64& h)
-        : base_type(broadcast ? 
-		    _mm256_set1_pd(r) : _mm256_set_sd(r))
+        : base_type(impl::vinsertf128<1>::v(as<__m256d>(l()),
+					    h()))
 {
 }
-#endif
+
 
 template <template <class _V> class _OP, class _L, class _R>
 inline
@@ -323,6 +322,18 @@ x86vec::v4f64 x86vec::operator> (const v4f64& a, const v4f64& b)
 }
 
 inline
+x86vec::v2f64 x86vec::low_half(const v4f64& v)
+{
+	return _mm256_extractf128_pd(v(), 0);
+}
+
+inline
+x86vec::v2f64 x86vec::high_half(const v4f64& v)
+{
+	return _mm256_extractf128_pd(v(), 1);
+}
+
+inline
 bool x86vec::all_signs(const v4f64& a)
 {
         return all_signs_f64(a());
@@ -492,14 +503,7 @@ x86vec::v4f64 x86vec::isnan(const v4f64& x)
 inline
 x86vec::v4f64 x86vec::isfinite(const v4f64& x)
 {
-#if 0
-	// exponent != 0x7FF
-	v2u64 xi(as<v2u64>(x));
-	const v2u64 msk=v_exp_f64_msk::iv();
-	v2u64 res((xi & msk) != msk);
-	return as<v4f64>(res);
-#endif
-	return x;
+	return ~(isinf(x) | isnan(x));
 }
 
 inline
