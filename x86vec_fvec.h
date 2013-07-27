@@ -430,6 +430,215 @@ namespace x86vec {
 
 #if defined (__AVX__)
         // 256 bit floating point types
+        class v4f64 : public vreg<__m256d> {
+        public:
+                typedef double element_type;
+                typedef vreg<__m256d> base_type;
+                v4f64() = default;
+                v4f64(vector_type r);
+                v4f64(const base_type& r);
+                v4f64(element_type p00, element_type p01,
+		      element_type p02=0.0, element_type p03=0.0);
+		v4f64(const v2f64& l);
+		v4f64(const v2f64& l, const v2f64& h);
+                // broadcast to all positions
+                v4f64(element_type r);
+		v4f64(element_type r, bool broad_cast);
+                // assignment from expr<op<v4f64>, _L, _R>
+                template <template <class _V> class _OP, class _L, class _R>
+                v4f64(const expr<_OP<v4f64>, _L, _R>& r);
+                v4f64(const mem::addr_bcast<element_type>& r);
+                v4f64(const mem::addr<element_type>& r);
+                v4f64(const mem::aligned::addr<element_type>& r);
+                v4f64(const mem::unaligned::addr<element_type>& r);
+                using base_type::operator();
+                masked_vec<v4f64> operator()(const mask<v4f64>& m);
+        };
+
+        inline
+        const v4f64& eval(const v4f64& v) {
+                return v;
+        }
+
+        namespace ops {
+
+                template <>
+                struct add<v4f64> : public def_vector_type<v4f64> {
+                        static v4f64 v(const v4f64& a, const v4f64& b);
+                };
+
+                template <>
+                struct sub<v4f64> : public def_vector_type<v4f64>{
+                        static v4f64 v(const v4f64& a, const v4f64& b);
+                };
+
+                template <>
+                struct mul<v4f64> : public def_vector_type<v4f64>{
+                        static v4f64 v(const v4f64& a, const v4f64& b);
+                };
+
+                template <>
+                struct div<v4f64> : public def_vector_type<v4f64>{
+                        static v4f64 v(const v4f64& a, const v4f64& b);
+                };
+
+                // a * b + c
+                template <>
+                struct fma<v4f64> : public def_vector_type<v4f64>{
+                        static v4f64 v(const v4f64& a, const v4f64& b,
+                                       const v4f64& c);
+                };
+
+                // a * b - c
+                template <>
+                struct fms<v4f64> : public def_vector_type<v4f64>{
+                        static v4f64 v(const v4f64& a, const v4f64& b,
+                                       const v4f64& c);
+                };
+
+                // -(a * b) + c = c - a * b
+                template <>
+                struct fnma<v4f64> : public def_vector_type<v4f64>{
+                        static v4f64 v(const v4f64& a, const v4f64& b,
+                                       const v4f64& c);
+                };
+        }
+
+        DEFINE_X86VEC_FP_OPERATORS(v4f64);
+
+        v4f64& operator|= (v4f64& a, const v4f64& b);
+        v4f64& operator&= (v4f64& a, const v4f64& b);
+        v4f64& operator^= (v4f64& a, const v4f64& b);
+
+        v4f64 operator++ (v4f64& a, int);
+        v4f64& operator++(v4f64& a);
+        v4f64 operator-- (v4f64& a, int);
+        v4f64& operator--(v4f64& a);
+
+        v4f64 operator-(const v4f64& a);
+        const v4f64& operator+(const v4f64& a);
+        v4f64 operator~(const v4f64& a);
+        v4f64 operator!(const v4f64& a);
+
+        v4f64 operator| (const v4f64& a, const v4f64& b);
+        v4f64 operator|| (const v4f64& a, const v4f64& b);
+        v4f64 operator& (const v4f64& a, const v4f64& b);
+        v4f64 operator&& (const v4f64& a, const v4f64& b);
+        v4f64 operator^(const v4f64& a, const v4f64& b);
+
+        v4f64 operator< (const v4f64& a, const v4f64& b);
+        v4f64 operator<= (const v4f64& a, const v4f64& b);
+        v4f64 operator== (const v4f64& a, const v4f64& b);
+        v4f64 operator!= (const v4f64& a, const v4f64& b);
+        v4f64 operator>= (const v4f64& a, const v4f64& b);
+        v4f64 operator> (const v4f64& a, const v4f64& b);
+
+	v2f64 low_half(const v4f64& v);
+	v2f64 high_half(const v4f64& v);
+
+        // checks the signs
+        bool all_signs(const v4f64& a);
+        // checks the signs
+        bool both_signs(const v4f64& a);
+        // checks the signs
+        bool no_signs(const v4f64& a);
+	// return a mask of signs
+	unsigned read_signs(const v4f64& a);
+
+        v4f64 max(const v4f64& a, const v4f64& b);
+        v4f64 min(const v4f64& a, const v4f64& b);
+        v4f64 abs(const v4f64& a);
+        v4f64 fabs(const v4f64& a);
+        v4f64 sqrt(const v4f64& a);
+	v4f64 hypot(const v4f64& a, const v4f64& b);
+
+	v4f64 rsqrt(const v4f64& a);
+	v4f64 native_rsqrt(const v4f64& a);
+
+        namespace impl {
+                v4f64 round(const v4f64& a, const rounding_mode::type m);
+        }
+        v4f64 rint(const v4f64& a);
+        v4f64 floor(const v4f64& a);
+        v4f64 ceil(const v4f64& a);
+        v4f64 trunc(const v4f64& a);
+        // returns (~a) & (b)
+        v4f64 andnot(const v4f64& a, const v4f64& b);
+        v4f64 copysign(const v4f64& x, const v4f64& y);
+        v4f64 mulsign(const v4f64& x, const v4f64& y);
+        v4f64 isinf(const v4f64& x);
+        v4f64 isnan(const v4f64& x);
+        v4f64 isfinite(const v4f64& x);
+
+        v4f64 frexp(arg<v4f64>::type x, v2s64* e);
+        // v4f64 pow2i(arg<v4s32>::type e);
+        v4f64 ldexp(arg<v4f64>::type d, arg<v4s32>::type e);
+        v4s32 ilogbp1(arg<v4f64>::type v);
+        v4s32 ilogb(arg<v4f64>::type v);
+        v4f64 atan2(arg<v4f64>::type y, arg<v4f64>::type x);
+        v4f64 asin(arg<v4f64>::type d);
+        v4f64 acos(arg<v4f64>::type d);
+
+        v4f64 atan(arg<v4f64>::type d);
+        std::pair<v4f64, v4f64> sincos(arg<v4f64>::type d);
+
+        v4f64 exp(arg<v4f64>::type d);
+	v4f64 expm1(arg<v4f64>::type d);
+        v4f64 log(arg<v4f64>::type d);
+	v4f64 pow(arg<v4f64>::type b, arg<v4f64>::type e);
+	void sincos(arg<v4f64>::type d, v4f64* psin, v4f64* pcos);
+	v4f64 sin(arg<v4f64>::type d);
+        v4f64 cos(arg<v4f64>::type d);
+        v4f64 tan(arg<v4f64>::type d);
+	v4f64 cot(arg<v4f64>::type d);
+	
+	void native_sincos(arg<v4f64>::type d, v4f64* psin, v4f64* pcos);
+	v4f64 native_exp(arg<v4f64>::type d);
+	v4f64 native_sin(arg<v4f64>::type d);
+	v4f64 native_cos(arg<v4f64>::type d);
+	v4f64 native_tan(arg<v4f64>::type d);
+	v4f64 native_cot(arg<v4f64>::type d);
+	v4f64 cosh(arg<v4f64>::type d);
+	v4f64 sinh(arg<v4f64>::type d);
+
+        v4f64 pow(arg<v4f64>::type x, arg<v4f64>::type y);
+
+        namespace impl {
+                // fma emulation (a*b +c), calculates correctly until
+                // no internal overflow occurs
+                v4f64 fma(arg<v4f64>::type a, arg<v4f64>::type b,
+                          arg<v4f64>::type c);
+        }
+        // a*b +c
+        v4f64 fma(const v4f64& a, const v4f64& b, const v4f64& c);
+        // a*b -c
+        v4f64 fms(const v4f64& a, const v4f64& b, const v4f64& c);
+        // -(a*b) + c
+        v4f64 nfma(const v4f64& a, const v4f64& b, const v4f64& c);
+        // -(a*b) - c
+        v4f64 nfms(const v4f64& a, const v4f64& b, const v4f64& c);
+
+        // a*b +c with rounding or not
+        v4f64 mad(const v4f64& a, const v4f64& b, const v4f64& c);
+        // -(a*b) +c with rounding or not
+        v4f64 nmad(const v4f64& a, const v4f64& b, const v4f64& c);
+
+        template < bool _P0, bool _P1>
+        v4f64 select(const v4f64& a, const v4f64& b);
+        v4f64 select(const v4f64& msk, const v4f64& on_true,
+                     const v4f64& on_false);
+
+        template < int _P0, int _P1>
+        v4f64 permute(const v4f64& a);
+        template < int _P0, int _P1>
+        v4f64 permute(const v4f64& a, const v4f64& b);
+
+        template <unsigned _I>
+        v4f64 insert(const v4f64& a, typename v4f64::element_type v);
+        template <unsigned _I>
+        typename v4f64::element_type extract(const v4f64& a);
+
+        v4f64::element_type hadd(const v4f64& a);
 #endif
 }
 
@@ -463,6 +672,10 @@ _T x86vec::impl::p1evl(_T x, const _T* coef)
 
 #include <cftal/x86vec_v4f32_inl.h>
 #include <cftal/x86vec_v2f64_inl.h>
+
+#if defined (__AVX__)
+#include <cftal/x86vec_v4f64_inl.h>
+#endif
 
 // Local variables:
 // mode: c++
