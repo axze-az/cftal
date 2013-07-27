@@ -626,16 +626,14 @@ x86vec::extract(const v4f64& a)
 	return extract_f64<_I>(a());
 }
 
-#if 0
 inline
 x86vec::v4f64::element_type
 x86vec::hadd(const v4f64& a)
 {
-	v4f64 t(a + permute<1,0>(a));
-	v4f64::element_type r(extract<0>(t));
-	return r;
+	v2f64 t(low_half(a) + high_half(a));
+	return hadd(t);
 }
-#endif
+
 
 // Local variables:
 // mode: c++

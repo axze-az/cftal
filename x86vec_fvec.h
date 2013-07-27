@@ -623,14 +623,14 @@ namespace x86vec {
         // -(a*b) +c with rounding or not
         v4f64 nmad(const v4f64& a, const v4f64& b, const v4f64& c);
 
-        template < bool _P0, bool _P1>
+        template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4f64 select(const v4f64& a, const v4f64& b);
         v4f64 select(const v4f64& msk, const v4f64& on_true,
                      const v4f64& on_false);
 
-        template < int _P0, int _P1>
+        template < int _P0, int _P1, int _P2, int _P3>
         v4f64 permute(const v4f64& a);
-        template < int _P0, int _P1>
+        template < int _P0, int _P1, int _P2, int _P3>
         v4f64 permute(const v4f64& a, const v4f64& b);
 
         template <unsigned _I>
