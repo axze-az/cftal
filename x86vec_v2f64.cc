@@ -32,12 +32,14 @@ x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)
         return h2 + l2;
 }
 
+#if 0
 x86vec::v2f64 x86vec::pow2i(arg<v4s32>::type e)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
 	return func_t::pow2i(e);
 }
+#endif
 
 x86vec::v2f64 x86vec::ldexp(arg<v2f64>::type d, arg<v4s32>::type q)
 {

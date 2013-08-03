@@ -35,12 +35,14 @@ x86vec::impl::fma(arg<v4f64>::type x, arg<v4f64>::type y, arg<v4f64>::type z)
 }
 #endif
 
+#if 0
 x86vec::v4f64 x86vec::pow2i(arg<v4s32>::type e)
 {
 	using traits_t=cftal::math::func_traits<v4f64, v4s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
 	return func_t::pow2i(e);
 }
+#endif
 
 x86vec::v4f64 x86vec::ldexp(arg<v4f64>::type d, arg<v4s32>::type q)
 {
@@ -1259,7 +1261,7 @@ pow(const vf_type& x, const vf_type& y)
 #endif
 }
 
-
+#if 0
 
 namespace x86vec {
 
@@ -1285,8 +1287,8 @@ namespace x86vec {
 	inline
 	v4f64 upper(const v4f64& v) {
 		const v4f64 msk= 
-			const_v4u32<0xf8000000U, 0xffffffff,
-				   0xf8000000U, 0xffffffff>::dv();
+			const_v8u32<0xf8000000U, 0xffffffff,
+				    0xf8000000U, 0xffffffff>::dv();
 		return v & msk;
 	}
 
@@ -1554,5 +1556,6 @@ static inline double ldexpk(double x, int q) {
         u = longBitsToDouble(((int64_t)(q + 0x3ff)) << 52);
         return x * u;
 }
+#endif
 #endif
 #endif

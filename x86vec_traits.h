@@ -205,8 +205,8 @@ namespace cftal {
 				// TODO AVX2 code
                                 x86vec::v4s32 xml= x86vec::permute<0, 0, 1, 1>(mi);
 				x86vec::v4s32 xmh= x86vec::permute<2, 2, 3, 3>(mi);
-				x86vec::v2f64 dml= x86vec::as<x86vec::v4f64>(xml);
-				x86vec::v2f64 dmh= x86vec::as<x86vec::v4f64>(xmh);
+				x86vec::v2f64 dml= x86vec::as<x86vec::v2f64>(xml);
+				x86vec::v2f64 dmh= x86vec::as<x86vec::v2f64>(xmh);
 				x86vec::v4f64 r(dml, dmh);
 				return r;
                         }
@@ -217,7 +217,7 @@ namespace cftal {
 				x86vec::v2f64 mfh= high_half(mf);
                                 x86vec::v4s32 xml= x86vec::as<x86vec::v4s32>(mfl);
                                 x86vec::v4s32 xmh= x86vec::as<x86vec::v4s32>(mfh);
-				x86vec::v3s32 xm = x86vec::permute<0, 2, 4, 6>(xml, xmh);
+				x86vec::v4s32 xm = x86vec::permute<0, 2, 4, 6>(xml, xmh);
                                 return xm;
                         }
                         static
@@ -235,8 +235,8 @@ namespace cftal {
 				// TODO AVX2 code
 				// 52 - 32
 				vi_type ep(e << x86vec::const_shift::_20);
-				vi_type hep(permute<2, 2, 3, 3>(ep));
-				vi_type lep(permute<0, 0, 1, 1>(ep));
+				vi_type hep(x86vec::permute<2, 2, 3, 3>(ep));
+				vi_type lep(x86vec::permute<0, 0, 1, 1>(ep));
 				x86vec::v2f64 fh(x86vec::as<x86vec::v2f64>(hep));
 				x86vec::v2f64 lh(x86vec::as<x86vec::v2f64>(lep));
 				vf_type r(lh, fh);
@@ -250,9 +250,9 @@ namespace cftal {
 				vf_type m(d & x86vec::v_exp_v4f64_msk::dv());
 				x86vec::v2f64 fh(high_half(d));
 				x86vec::v2f64 fl(low_half(d));
-				x86vec::v4s32 hi(x86vec::as<x86vec::v4s32>(fhh));
-				x86vec::v4s32 li(x86vec::as<x86vec::v4s32>(flh));
-				x86vec::v4s32 r(permute<1, 3, 5, 7>(li, hi));
+				x86vec::v4s32 hi(x86vec::as<x86vec::v4s32>(fh));
+				x86vec::v4s32 li(x86vec::as<x86vec::v4s32>(fl));
+				x86vec::v4s32 r(x86vec::permute<1, 3, 5, 7>(li, hi));
 				r >>= x86vec::const_shift::_20;
 				return r;
                         }
