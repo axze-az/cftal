@@ -171,7 +171,6 @@ namespace x86vec {
                 static constexpr __m128d dv();
         };
 
-#if defined (__AVX__)
         // static constants consisting of 8 uint32_t
         template <uint32_t _P0, uint32_t _P1,
                   uint32_t _P2, uint32_t _P3,
@@ -180,19 +179,25 @@ namespace x86vec {
         class const_v8u32 {
                 union u_t {
                         const uint32_t _u32[8];
+#if defined (__AVX__)
                         const __m256i _iv;
                         const __m256 _fv;
                         const __m256d _dv;
+#endif
+			const __m128i _vm128i[2];
+			const __m128d _vm128d[2];
+			const __m128 _vm128[2];
                 };
                 static __attribute__((__aligned__(32),
                                       __visibility__("hidden")))
                 const u_t _msk;
         public:
+#if defined (__AVX__)
                 static constexpr __m256i iv();
                 static constexpr __m256 fv();
                 static constexpr __m256d dv();
-        };
 #endif
+        };
 
         namespace impl {
 

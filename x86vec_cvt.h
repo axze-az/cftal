@@ -90,6 +90,29 @@ namespace x86vec {
 			}
 		};
 
+#if defined (__AVX__)
+		template <>
+		struct cvt<v4s32, v4f64> {
+			static v4s32 l(const v4f64& s) {
+				return _mm256_cvtpd_epi32(s());
+			}
+		};
+
+		template <>
+		struct cvt_rz<v4s32, v4f64> {
+			static v4s32 l(const v4f64& s) {
+				return _mm256_cvttpd_epi32(s());
+			}
+		};
+
+		template <>
+		struct cvt<v4f64, v4s32> {
+			static v4f64 l(const v4s32&s) {
+				return _mm256_cvtepi32_pd(s());
+			}
+		};
+#endif
+
 	}
 	
 	template <class _D, class _S>

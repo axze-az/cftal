@@ -538,6 +538,7 @@ void testpowi()
 
 }
 
+#if defined (__AVX__)
 __m256d tr1(__m256d a, __m256d b)
 {
 	return x86vec::perm_f64<0, 4, 1, 5>(a, b);
@@ -592,6 +593,7 @@ __m256d tr2b(__m256d a)
 	return x86vec::perm_f64< 2, -1, 3, -1>(a);
 }
 
+#endif
 
 int main(int argc, char** argv)
 {
@@ -604,6 +606,7 @@ int main(int argc, char** argv)
 	// print_sqrtx();
 	// testpowi();
 
+#if defined (__AVX__)
 	using namespace x86vec;
 	using namespace x86vec::test;
 
@@ -621,6 +624,7 @@ int main(int argc, char** argv)
 	r=tr2a(a, b);
         id.assign(2, 6, 3, 7);
         rc &= check_v4f64("perm2_v4f64", r, id);
+#endif
 
         return 0;
 }

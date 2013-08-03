@@ -10,14 +10,14 @@ MINOR=1#
 
 SLDFLAGS:= $(SLDFLAGS) 
 #ARCH=#-march=bdver1 -mxop #-march=bdver1 #-mdispatch-scheduler
-ARCH+=-mavx -mpopcnt #-mfma -march=k8 -mno-3dnow -mpopcnt -mfma -mavx2
+#ARCH+=-mavx -mpopcnt #-mfma -march=k8 -mno-3dnow -mpopcnt -mfma -mavx2
 CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 OPT+=-fno-unroll-loops
 
 CSRCS=heap_array.cc x86vec_ops_1.cc x86vec_fvec.cc x86vec_v2f64.cc	\
-x86vec_v4f32.cc x86vec_test.cc emuvec.cc mul_div_32.cc mul_div_64.cc	\
-d_real.cc math_func.cc
+x86vec_v4f64.cc x86vec_v4f32.cc x86vec_test.cc emuvec.cc		\
+mul_div_32.cc mul_div_64.cc d_real.cc math_func.cc
 
 all: lib tests
 
