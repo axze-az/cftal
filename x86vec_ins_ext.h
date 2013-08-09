@@ -350,8 +350,6 @@ double x86vec::extract_f64(__m256d v)
 {
         const bool cond = _IDX < 4;
         static_assert (cond, "x86vec::extract_f64 _IDX < 4");
-        double r;
-
         __m128d vv;
         if (_IDX<2) {
                 vv = as<__m128d>(v);

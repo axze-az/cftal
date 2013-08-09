@@ -17,11 +17,15 @@ namespace x86vec {
 		template <class _T>
 		_T abs_error(const _T& a, const _T& b);
 
+		template <class _V>
+		bool elements_equal(const _V& v);
+
 		int ulp(double c, double n);
 
+		template <class _V>
 		struct func_data {
-			typedef v2f64::element_type fp_type;
-			typedef arg<v2f64>::type arg_type;
+			typedef typename _V::element_type fp_type;
+			typedef typename arg<_V>::type arg_type;
 			struct inp_res {
 				fp_type _a0;
 				fp_type _a1;
@@ -30,23 +34,30 @@ namespace x86vec {
 			};
 			
 			std::string _fname;
-			v2f64 (*_f1)(arg_type a);
+			_V (*_f1)(arg_type a);
 			double (*_f1d)(double a);
-			v2f64 (*_f2)(arg_type a, arg_type b);
+			_V (*_f2)(arg_type a, arg_type b);
 			double (*_f2d)(double a, double b);
 			std::vector<inp_res> _data;
 
-			func_data() : _fname(), _f1(nullptr), _f1d(nullptr),
-					      _f2(nullptr), _f2d(nullptr),_data() {
+			func_data() : _fname(), 
+				      _f1(nullptr), _f1d(nullptr),
+				      _f2(nullptr), _f2d(nullptr),_data() {
 			}
 		};
 
 		std::string delete_comment(const std::string& s);
-		bool read_func(func_data& tf, std::istream& is,
-			       bool use_native);
-		bool read_data(func_data& tf, std::istream& is);
-		bool test_data(const func_data& tf, std::ostream& os);
 
+		template <class _V>
+		bool read_func(func_data<_V>& tf, std::istream& is,
+			       bool use_native);
+		template <class _V>
+		bool read_data(func_data<_V>& tf, std::istream& is);
+
+		template <class _V>
+		bool test_data(const func_data<_V>& tf, std::ostream& os);
+
+		template <class _V>
 		bool func(std::istream& is, bool use_native);
 	}
 }
@@ -66,6 +77,37 @@ _T x86vec::test::rel_error(const _T& a, const _T& b)
 	re = select(r == _T(0.0), _T(0.0),  abs(re));
 	return re;
 }
+
+template <class _V>
+bool x86vec::test::elements_equal(const _V& v)
+{
+	using element_type = typename _V::element_type;
+	const int N =sizeof(_V)/sizeof(element_type);
+	union {
+		_V _v;
+		element_type _d[N];
+	} d;
+	d._v = v;
+	bool r(true);
+	if (std::isnan(d._d[0])) {
+		for (int i=1; i<N; ++i) {
+			if (!std::isnan(d._d[i]))
+				r=false;
+		}
+	} else if(std::isinf(d._d[0])) {
+		for (int i=1; i<N; ++i) {
+			if (!std::isinf(d._d[i]))
+				r=false;
+		}
+	} else {
+		for (int i=1; i<N; ++i) {
+			if (d._d[i] != d._d[0])
+				r=false;
+		}
+	}
+	return r;
+}
+
 
 int x86vec::test::ulp(double c, double n)
 {
@@ -109,7 +151,8 @@ std::string x86vec::test::delete_comment(const std::string& s)
 	return r;
 }
 
-bool x86vec::test::read_func(func_data& tf, 
+template <class _V>
+bool x86vec::test::read_func(func_data<_V>& tf, 
 			     std::istream& is,
 			     bool use_native)
 {
@@ -143,10 +186,10 @@ bool x86vec::test::read_func(func_data& tf,
 				tf._f1 = x86vec::tan;
 			tf._f1d= std::tan;
 		} else if (f == "exp") {
-			if (use_native)
-				tf._f1= x86vec::native_exp;
-			else
-				tf._f1 = x86vec::exp;
+			// if (use_native)
+			// tf._f1= x86vec::native_exp;
+			// else
+			tf._f1 = x86vec::exp;
 			tf._f1d = std::exp;
 		} else if (f == "expm1") {
 			if (use_native)
@@ -166,6 +209,10 @@ bool x86vec::test::read_func(func_data& tf,
 		} else if (f == "tan") {
 			tf._f1 = x86vec::tan;
 			tf._f1d = std::tan;
+		} else if (f == "pow") {
+			tf._f2 = x86vec::pow;
+			tf._f2d = std::pow;
+#if 0
 		} else if (f == "asin") {
 			tf._f1 = x86vec::asin;
 			tf._f1d = std::asin;
@@ -178,9 +225,7 @@ bool x86vec::test::read_func(func_data& tf,
 		} else if (f == "atan2") {
 			tf._f2 = x86vec::atan2;
 			tf._f2d = std::atan2;
-		} else if (f == "pow") {
-			tf._f2 = x86vec::pow;
-			tf._f2d = std::pow;
+#endif
 		} else{
 			std::cerr << "unknown function " << f << std::endl;
 			return false;
@@ -190,7 +235,8 @@ bool x86vec::test::read_func(func_data& tf,
 	return false;
 }
 
-bool x86vec::test::read_data(func_data& tf, std::istream& is)
+template <class _V>
+bool x86vec::test::read_data(func_data<_V>& tf, std::istream& is)
 {
 	std::string line;
 	while (!getline(is, line).eof()) {
@@ -228,7 +274,7 @@ bool x86vec::test::read_data(func_data& tf, std::istream& is)
 		}
 		if (m != impl::rounding_mode::nearest)
 			continue;
-		func_data::inp_res c;
+		typename func_data<_V>::inp_res c;
 		union {
 			double _d;
 			uint64_t _u;
@@ -252,37 +298,41 @@ bool x86vec::test::read_data(func_data& tf, std::istream& is)
 	return true;
 }
 
-bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
+template <class _V>
+bool x86vec::test::test_data(const func_data<_V>& tf, std::ostream& os)
 {
 	bool rc(true);
 	int errs(0);
 	std::size_t calls(0);
-	int64_t ticks(0);
+	int64_t ticks(0), s_ticks(0);
 	for (std::size_t i=0; i< tf._data.size(); ++i) {
-		const func_data::inp_res& c= tf._data[i];
-		v2f64 expected(c._res);
-		v2f64 a0(c._a0);
-		v2f64 a1(c._a1);
-		v2f64 res;
+		const typename func_data<_V>::inp_res& c= tf._data[i];
+		_V expected(c._res);
+		_V a0(c._a0);
+		_V a1(c._a1);
+		_V res;
 		double rs;
-		int64_t t0, t1;
+		int64_t t0, t1, t2;
 		if (tf._f1) {
+			t0= cftal::rdtsc();
 			res = tf._f1(a0);
-			t0= cftal::rdtsc();
+			t1= cftal::rdtsc();
 			rs = tf._f1d(c._a0);
-			t1= cftal::rdtsc();
+			t2 = cftal::rdtsc();
 		} else {
-			res = tf._f2(a0, a1);
 			t0= cftal::rdtsc();
-			rs = tf._f2d(c._a0, c._a1);
+			res = tf._f2(a0, a1);
 			t1= cftal::rdtsc();
+			rs = tf._f2d(c._a0, c._a1);
+			t2 = cftal::rdtsc();
 		}
 		ticks+= (t1 -t0);
+		s_ticks += (t2 -t1);
 		++calls;
-		v2f64 ae(abs_error(expected, res));
-		v2f64 re(rel_error(expected, res));
-		v2f64 max_err(ae + re);
-		v2f64 is_err(re > 1.0e-15);
+		_V ae(abs_error(expected, res));
+		_V re(rel_error(expected, res));
+		_V max_err(ae + re);
+		_V is_err(re > 1.0e-15);
 		double tt=extract<0>(res);
 #if 0
 		std::cout << tf._fname << "( " 
@@ -298,7 +348,7 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 #if 0
 		std::cout << "ulp: " << ulps << std::endl;
 #endif
-		if (ulps < 3 && no_signs(is_err)) {
+		if (ulps < 3 && no_signs(is_err) && elements_equal(res) ) {
 #if 0
 			std::cout << "passed\n";
 #endif
@@ -332,15 +382,20 @@ bool x86vec::test::test_data(const func_data& tf, std::ostream& os)
 			  << std::fixed << std::setprecision(2)
 			  << double(ticks)/double(calls) 
 			  << std::endl;
+		std::cout << "scalar ticks per call: " 
+			  << std::fixed << std::setprecision(2)
+			  << double(s_ticks)/double(calls) 
+			  << std::endl;
 	}
 	return rc;
 }
 
+template <class _V>
 bool x86vec::test::func(std::istream& is, bool use_native)
 {
 	std::cerr << std::setprecision(18) << std::scientific;
 	std::cout << std::setprecision(18) << std::scientific;
-	func_data tf;
+	func_data<_V> tf;
 	if (read_func(tf, is, use_native)==false)
 		return false;
 	if (read_data(tf, is)==false)
@@ -348,29 +403,49 @@ bool x86vec::test::func(std::istream& is, bool use_native)
 	return test_data(tf, std::cout);
 }
 
-bool all_tests_03(bool use_native)
+bool all_tests_03(bool use_native, bool bits_256)
 {
-	return x86vec::test::func(std::cin, use_native);
+	bool r;
+	if (bits_256) {
+		r=x86vec::test::func<x86vec::v4f64>(std::cin, use_native);
+	} else {
+		r=x86vec::test::func<x86vec::v2f64>(std::cin, use_native);
+	}
+	return r;
 }
 
 void usage(const char* argv0)
 {
-	std::cerr << "usage: " << argv0 << " [--use-native]"
+	std::cerr << "usage: " << argv0 << " [--use-native] [--bits-256]"
 		  << std::endl;
 	std::exit(3);
 }
+
+
+void check_arg(const char* argv0, const char* argvi,
+	       bool& bits_256, bool& use_native)
+{
+	if (std::string("--use-native") == argvi) {
+		use_native = true;
+	} else if (std::string("--bits-256") == argvi) {
+		bits_256 = true;
+	} else {
+		usage(argv0);
+	}
+}
+
 
 int main(int argc, char** argv)
 {
 	if (isatty(STDIN_FILENO))
 		return 0;
 	bool use_native(false);
-	if (argc>2)
+	bool bits_256(false);
+	if (argc>3)
 		usage(argv[0]);
-	if (argc==2) {
-		if (std::string("--use-native")!=argv[1])
-			usage(argv[0]);
-		use_native=true;
-	}
-	return (all_tests_03(use_native) ==  true) ? 0 : 3;
+	if (argc>1) 
+		check_arg(argv[0], argv[1], bits_256, use_native);
+	if (argc>2) 
+		check_arg(argv[0], argv[1], bits_256, use_native);
+	return (all_tests_03(use_native, bits_256) ==  true) ? 0 : 3;
 }
