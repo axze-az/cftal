@@ -172,6 +172,40 @@ namespace cftal {
                                 t._d = d;
                                 return (t._u >> bits) & 0x7FF;
                         }
+
+			static
+			vi_type extract_high_word(const vf_type& d) {
+				ud_t t;
+				t._d = d;
+				return vi_type(t._u >>32);
+			}
+
+			static
+			vi_type extract_low_word(const vf_type& d) {
+				ud_t t;
+				t._d = d;
+				return vi_type(t._u);
+			}
+
+			static
+			vf_type insert_high_word(const vf_type& d, 
+						 const vi_type& w) {
+				ud_t t;
+				t._d = d;
+				uint64_t hh= w;
+				t._u = (t._u & 0xFFFFFFFF) | (hh << 32);
+				return t._d;
+			}
+
+			static
+			vf_type insert_low_word(const vf_type& d,
+						const vi_type& w) {
+				ud_t t;
+				t._d = d;
+				t._u = (t._u & 0xFFFFFFFF00000000ULL) | w;
+				return t._d;
+			}
+
                         static
                         vf_type cvt_i_to_f(const vi_type& i) {
                                 return vf_type(i);
@@ -237,6 +271,8 @@ namespace cftal {
                         static vf_type pow2i(const vi_type& vi);
                         static vf_type ldexp(const vf_type& vf,
                                              const vi_type& vi);
+			static vf_type frexp(const vf_type& vf,
+					     vi_type* vi);
 
                         static vi_type ilogbp1(const vf_type& vi);
                         static vi_type ilogb(const vf_type& vf);
