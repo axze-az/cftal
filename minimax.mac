@@ -1,3 +1,14 @@
+/*
+  load ("draw");
+  To approximate sin(x) between 0 and 1, enter
+
+  minimax(makelist(k/10,k,1,9), sin(x), [0, 1], x, 'abs, 20);
+
+  This will draw the error curve after each iteration and produce lots
+  of output.  At the end, you'll get a list.  The first element is the
+  approximate max error, the polynomial approximation, and a list of the
+  extrema points.
+*/
 minimax(x, f, low, high, var) :=
   block([deg : length(x) - 1,
          p, poly],
