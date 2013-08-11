@@ -1,13 +1,37 @@
 /*
-  load ("draw");
-  To approximate sin(x) between 0 and 1, enter
+    Sorry for taking so long.  It took me a while to find the code.
 
-  minimax(makelist(k/10,k,1,9), sin(x), [0, 1], x, 'abs, 20);
+    You can grab a copy from
 
-  This will draw the error curve after each iteration and produce lots
-  of output.  At the end, you'll get a list.  The first element is the
-  approximate max error, the polynomial approximation, and a list of the
-  extrema points.
+    http://common-lisp.net/~rtoy/maxima/minimax.mac
+
+    I'm sorry that it's totally undocumented; like it said, I never
+    finished it. :-(
+
+    I think it's mostly working and here's an example on how to use
+    it.  You need to load(draw) before running minimax.  It draws a
+    graph of the error curve after each iteration.
+
+    To approximate sin(x) between 0 and 1, enter
+
+    minimax(makelist(k/10,k,1,9), sin(x), [0, 1], x, 'abs, 20);
+
+    This will draw the error curve after each iteration and produce
+    lots of output.  At the end, you'll get a list.  The first element
+    is the approximate max error, the polynomial approximation, and a
+    list of the extrema points.
+
+    The arguments to minimax are a list of the estimated extrema
+    points, the function to be approximated, a list of the lower and
+    upper limits of the interval of approximation, the variable, 'abs
+    for absolute error, and the max number of iterations to do.
+
+    If you give something besides 'abs, then you'll get relative error
+    for the criterion.  (Buggy?)
+
+    It's pretty easy to get into a degenerate case where the number of
+    order of the approximation decreases; you need to choose the
+    initial extrema points with some care.
 */
 minimax(x, f, low, high, var) :=
   block([deg : length(x) - 1,
