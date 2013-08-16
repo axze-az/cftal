@@ -1956,7 +1956,7 @@ __m256 x86vec::perm_f32(__m256 a)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
-__m256 x86vec::perm_u16(__m256 a, __m256 b)
+__m256 x86vec::perm_f32(__m256 a, __m256 b)
 {
         static_assert(_P0>-2 && _P0 < 16,
                       "x86vec::perm_f32(a, b) : -1 <= P0 < 16");
