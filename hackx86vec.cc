@@ -625,7 +625,9 @@ int main(int argc, char** argv)
 	// print_sqrtx();
 	// testpowi();
         x86vec::test::check_frexp_f64(x86vec::v2f64());
+#if defined (__AVX__)
         x86vec::test::check_frexp_f64(x86vec::v4f64());
+#endif
 #if defined (__AVX__)
 	using namespace x86vec;
 	using namespace x86vec::test;
