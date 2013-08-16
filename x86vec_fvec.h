@@ -358,7 +358,7 @@ namespace x86vec {
         v2f64 isnan(const v2f64& x);
         v2f64 isfinite(const v2f64& x);
 
-        v2f64 frexp(arg<v2f64>::type x, v2s64* e);
+        v2f64 frexp(arg<v2f64>::type x, v4s32* e);
         // v2f64 pow2i(arg<v4s32>::type e);
         v2f64 ldexp(arg<v2f64>::type d, arg<v4s32>::type e);
         v4s32 ilogbp1(arg<v2f64>::type v);
@@ -570,7 +570,7 @@ namespace x86vec {
         v4f64 isnan(const v4f64& x);
         v4f64 isfinite(const v4f64& x);
 
-        v4f64 frexp(arg<v4f64>::type x, v2s64* e);
+        v4f64 frexp(arg<v4f64>::type x, v4s32* e);
         // v4f64 pow2i(arg<v4s32>::type e);
         v4f64 ldexp(arg<v4f64>::type d, arg<v4s32>::type e);
         v4s32 ilogbp1(arg<v4f64>::type v);

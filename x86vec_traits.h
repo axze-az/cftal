@@ -118,6 +118,30 @@ namespace cftal {
                                 e &= x86vec::v4s32(0x7ff, 0x7ff, 0, 0);
                                 return e;
                         }
+			
+			static
+			vi_type extract_high_word(const vf_type& d) {
+				x86vec::v4s32 w=x86vec::as<x86vec::v4s32>(d);
+				w= x86vec::permute<1, 3, 1, 3>(w);
+				return w;
+				
+			}
+
+			static
+			vi_type extract_low_word(const vf_type& d) {
+				x86vec::v4s32 w=x86vec::as<x86vec::v4s32>(d);
+				w= x86vec::permute<0, 2, 0, 2>(w);
+				return w;
+			}
+
+			static 
+			vf_type combine_words(const vi_type& l,
+					      const vi_type& h) {
+				x86vec::v4s32 c=x86vec::permute<0, 4, 1, 5>(l, h);
+				x86vec::v2f64 r=x86vec::as<vf_type>(c);
+				return r;
+			}
+			
                         static
                         vf_type cvt_i_to_f(const vi_type& i) {
                                 return x86vec::cvt_lo<x86vec::v2f64>(i);
@@ -203,21 +227,21 @@ namespace cftal {
                         static
                         vmf_type vmi_to_vmf(const vmi_type& mi) {
 				// TODO AVX2 code
-                                x86vec::v4s32 xml= x86vec::permute<0, 0, 1, 1>(mi);
-				x86vec::v4s32 xmh= x86vec::permute<2, 2, 3, 3>(mi);
-				x86vec::v2f64 dml= x86vec::as<x86vec::v2f64>(xml);
-				x86vec::v2f64 dmh= x86vec::as<x86vec::v2f64>(xmh);
+                                x86vec::v4s32 xml=x86vec::permute<0, 0, 1, 1>(mi);
+				x86vec::v4s32 xmh=x86vec::permute<2, 2, 3, 3>(mi);
+				x86vec::v2f64 dml=x86vec::as<x86vec::v2f64>(xml);
+				x86vec::v2f64 dmh=x86vec::as<x86vec::v2f64>(xmh);
 				x86vec::v4f64 r(dml, dmh);
 				return r;
                         }
                         static
                         vmi_type vmf_to_vmi(const vmf_type& mf) {
 				// TODO AVX2 code
-				x86vec::v2f64 mfl= low_half(mf);
-				x86vec::v2f64 mfh= high_half(mf);
-                                x86vec::v4s32 xml= x86vec::as<x86vec::v4s32>(mfl);
-                                x86vec::v4s32 xmh= x86vec::as<x86vec::v4s32>(mfh);
-				x86vec::v4s32 xm = x86vec::permute<0, 2, 4, 6>(xml, xmh);
+				x86vec::v2f64 mfl=low_half(mf);
+				x86vec::v2f64 mfh=high_half(mf);
+                                x86vec::v4s32 xml=x86vec::as<x86vec::v4s32>(mfl);
+                                x86vec::v4s32 xmh=x86vec::as<x86vec::v4s32>(mfh);
+				x86vec::v4s32 xm =x86vec::permute<0, 2, 4, 6>(xml, xmh);
                                 return xm;
                         }
                         static
@@ -256,6 +280,37 @@ namespace cftal {
 				r >>= x86vec::const_shift::_20;
 				return r;
                         }
+			static
+			vi_type extract_high_word(const vf_type& d) {
+				x86vec::v2f64 l= low_half(d);
+				x86vec::v2f64 h= high_half(d);
+				x86vec::v4s32 il=x86vec::as<x86vec::v4s32>(l);
+				x86vec::v4s32 ih=x86vec::as<x86vec::v4s32>(h);
+				x86vec::v4s32 w=x86vec::permute<1, 3, 5, 7>(il, ih);
+				return w;
+			}
+
+			static
+			vi_type extract_low_word(const vf_type& d) {
+				x86vec::v2f64 l= low_half(d);
+				x86vec::v2f64 h= high_half(d);
+				x86vec::v4s32 il=x86vec::as<x86vec::v4s32>(l);
+				x86vec::v4s32 ih=x86vec::as<x86vec::v4s32>(h);
+				x86vec::v4s32 w=x86vec::permute<0, 2, 4, 6>(il, ih);
+				return w;
+			}
+
+			static 
+			vf_type combine_words(const vi_type& l,
+					      const vi_type& h) {
+				x86vec::v4s32 il=x86vec::permute<0, 4, 1, 5>(l, h);
+				x86vec::v4s32 ih=x86vec::permute<2, 6, 3, 7>(l, h);
+				x86vec::v2f64 fl=x86vec::as<x86vec::v2f64>(il);
+				x86vec::v2f64 fh=x86vec::as<x86vec::v2f64>(ih);
+				vf_type r(fl, fh);
+				return r;
+			}
+			
                         static
                         vf_type cvt_i_to_f(const vi_type& i) {
                                 return x86vec::cvt<x86vec::v4f64>(i);

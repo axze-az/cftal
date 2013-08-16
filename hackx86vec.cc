@@ -54,8 +54,11 @@ namespace x86vec {
         namespace test {
 
                 double make_double(unsigned sgn, unsigned exp, uint64_t sig);
-                bool check_frexp(double vp, double vn);
-                bool check_frexp_f64();
+		
+		template <class _V>
+                bool check_frexp(double vp, double vn, const _V& v0);
+		template <class _V>
+                bool check_frexp_f64(const _V& v0);
 
                 // compare a and b, returns also true for a==NAN and b
                 // == NAN
@@ -89,64 +92,80 @@ double x86vec::test::make_double(unsigned sgn, unsigned exp, uint64_t sig)
         return t._d;
 }
 
-bool x86vec::test::check_frexp(double vp, double vm)
+template <class _V>
+bool x86vec::test::check_frexp(double vp, double vm, const _V& v0)
 {
-        int ep, em;
-        double frp=std::frexp(vp, &ep);
-        double frm=std::frexp(vm, &em);
-        v2s64 e;
-        v2f64 v(vp, vm), fr= frexp(v, &e);
+	const int N=sizeof(_V)/sizeof(double);
+	union v_d {
+		_V _v;
+		double _d[sizeof(_V)/sizeof(double)];
+	};
 
-        int r_ep= extract<0>(e);
-        int r_em= extract<1>(e);
-        double r_frp = extract<0>(fr);
-        double r_frm = extract<1>(fr);
+	union v_i {
+		v4s32 _v;
+		int32_t _i[4];
+	};
 
-        bool rc(true);
-        if (!f_eq(r_frp,frp) || r_ep != ep) {
-                std::cout << "frexp(" << vp << ")="
-                          << r_frp << " exp= " << r_ep
-                          << std::endl
-                          << "expect: "
-                          << frp << " exp= " << ep
-                          << std::endl;
-                rc = false;
-        }
-        if (!f_eq(r_frm, frm) || r_em != em) {
-                std::cout << "frexp(" << vm << ")="
-                          << r_frm << " exp= " << r_em
-                          << std::endl
-                          << "expect: "
-                          << frm << " exp= " << em
-                          << std::endl;
-                rc = false;
-        }
+	v_d arg;
+
+	for (int i=0; i<N; i+=2) {
+		arg._d[i]= vp;
+		arg._d[i+1] = vm;
+	}
+
+	double ref[N];
+	int e_ref[N];
+
+	for (int i=0; i<N; ++i)
+		ref[i] = std::frexp(arg._d[i], &e_ref[i]);
+
+	v_d res;
+	v_i e;
+	res._v = frexp(arg._v, &e._v);
+
+	bool rc(true);
+
+	for (int i=0; i<N; ++i) {
+		double r_i= res._d[i];
+		double ref_i = ref[i];
+		int32_t e_i= e._i[i];
+		int32_t ref_e_i= e_ref[i];
+		if (!f_eq(r_i, ref_i) || e_i != ref_e_i) {
+			std::cout << "frexp(" << arg._d[i] << ")="
+				  << r_i << " exp= " << e_i
+				  << std::endl
+				  << "expect: "
+				  << ref_i << " exp= " << ref_e_i
+				  << std::endl;
+			rc= false;
+		}
+	}
         if (!rc)
                 std::exit(3);
         return true;
 }
 
-bool x86vec::test::check_frexp_f64()
+template <class _V>
+bool x86vec::test::check_frexp_f64(const _V& v)
 {
         // check zero
         double vp = make_double(0, 0, 0);
-        check_frexp(vp, -vp);
+        check_frexp(vp, -vp, v);
         // check +- inf
         check_frexp(make_double(0, 0x7FF, 0),
-                    make_double(1, 0x7FF, 0));
+                    make_double(1, 0x7FF, 0), v);
         // check +-nan
         for (int i=0; i<52; ++i) {
                 uint64_t sig= uint64_t(1) << i;
                 check_frexp(make_double(0, 0x7FF, sig),
-                            make_double(1, 0x7FF, sig));
+                            make_double(1, 0x7FF, sig), v);
         }
-        return true;
         // denormals and normals
         for (int e=0; e<=0x7ff; ++e) {
                 for (int i=0; i<52; ++i) {
                         uint64_t sig= uint64_t(1) << i;
                         vp = make_double(0, e, sig);
-                        check_frexp(vp, -vp);
+                        check_frexp(vp, -vp, v);
                 }
         }
         return true;
@@ -597,7 +616,7 @@ __m256d tr2b(__m256d a)
 
 int main(int argc, char** argv)
 {
-        // x86cftal::vec::test::check_frexp_f64();
+
         // x86cftal::vec::v2f64 t=exp(x86cftal::vec::v2f64(0.0));
         // static_cast<void>(t);
         // calc_pi();
@@ -605,7 +624,8 @@ int main(int argc, char** argv)
 	// print_2_over_i();
 	// print_sqrtx();
 	// testpowi();
-
+        x86vec::test::check_frexp_f64(x86vec::v2f64());
+        x86vec::test::check_frexp_f64(x86vec::v4f64());
 #if defined (__AVX__)
 	using namespace x86vec;
 	using namespace x86vec::test;

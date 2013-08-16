@@ -284,7 +284,6 @@ x86vec::v4f64 x86vec::operator^(const v4f64& a, const v4f64& b)
         return _mm256_xor_pd(a(), b());
 }
 
-
 inline
 x86vec::v4f64 x86vec::operator< (const v4f64& a, const v4f64& b)
 {

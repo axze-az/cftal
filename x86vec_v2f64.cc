@@ -41,6 +41,13 @@ x86vec::v2f64 x86vec::pow2i(arg<v4s32>::type e)
 }
 #endif
 
+x86vec::v2f64 x86vec::frexp(arg<v2f64>::type d, v4s32* pe)
+{
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::frexp(d, pe);
+}
+
 x86vec::v2f64 x86vec::ldexp(arg<v2f64>::type d, arg<v4s32>::type q)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
@@ -1461,6 +1468,8 @@ x86vec::v2f64 x86vec::impl::insert_exp(const v2f64& v, v2u64& e)
         return r;
 }
 
+
+#if 0
 x86vec::v2f64 x86vec::frexp(arg<v2f64>::type v, v2s64* ex)
 {
         v2f64 vabs(abs(v));
@@ -1512,6 +1521,7 @@ x86vec::v2f64 x86vec::frexp(arg<v2f64>::type v, v2s64* ex)
 		*ex = e;
         return r;
 }
+#endif
 
 x86vec::v4f32 test_mask(x86vec::v4f32 r)
 {

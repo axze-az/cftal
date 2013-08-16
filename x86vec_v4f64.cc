@@ -44,6 +44,13 @@ x86vec::v4f64 x86vec::pow2i(arg<v4s32>::type e)
 }
 #endif
 
+x86vec::v4f64 x86vec::frexp(arg<v4f64>::type d, v4s32* pe)
+{
+	using traits_t=cftal::math::func_traits<v4f64, v4s32>;
+	using func_t=cftal::math::func<double, int32_t, traits_t>;
+	return func_t::frexp(d, pe);
+}
+
 x86vec::v4f64 x86vec::ldexp(arg<v4f64>::type d, arg<v4s32>::type q)
 {
 	using traits_t=cftal::math::func_traits<v4f64, v4s32>;

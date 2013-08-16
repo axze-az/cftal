@@ -206,6 +206,13 @@ namespace cftal {
 				return t._d;
 			}
 
+			static 
+			vf_type combine_words(const vi_type& l,
+					      const vi_type& h) {
+				vf_type t(insert_low_word(0.0, l));
+				return insert_high_word(t, h);
+			}
+
                         static
                         vf_type cvt_i_to_f(const vi_type& i) {
                                 return vf_type(i);
@@ -332,8 +339,8 @@ typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
 cftal::math::func<double, cftal::int32_t, _T>::ldexp(const vf_type& vd,
                                                      const vi_type& ve)
 {
-        vi_type q= ve;
-        vi_type m = q >> 31;
+        vi_type q(ve);
+        vi_type m(q >> 31);
         m = (((m + q) >> 9) - m) << 7;
         q = q - (m << 2);
 
@@ -341,14 +348,62 @@ cftal::math::func<double, cftal::int32_t, _T>::ldexp(const vf_type& vd,
         m = max(vi_type(0), m);
         m = min(vi_type(0x7ff), m);
 
-        vf_type fm = _T::insert_exp(m);
-        vf_type r = vd * fm * fm * fm * fm;
+        vf_type fm(_T::insert_exp(m));
+	fm = fm* fm;
+	fm = fm* fm;
+        vf_type r(vd * fm /* * fm * fm * fm*/ );
         q += 0x3ff;
         // q = max(vi_type(0), q);
         // q = min(vi_type(0x7ff), q);
-        vf_type fq = _T::insert_exp(q);
+        vf_type fq(_T::insert_exp(q));
         return r * fq;
 }
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::func<double, cftal::int32_t, _T>::frexp(const vf_type& vd,
+                                                     vi_type* ve)
+{
+	// normal numbers:
+	vi_type hi_word(_T::extract_high_word(vd));
+	vi_type lo_word(_T::extract_low_word(vd));
+
+	vi_type value_head(hi_word & vi_type(0x7fffffff));
+
+	vi_type is_inf_nan_zero((value_head >= 0x7ff00000) |
+				((value_head| lo_word)==vi_type(0)));
+	vi_type is_denom(value_head < 0x00100000);
+
+	// exponent:
+	vi_type e((value_head >> 20) - vi_type(1022));
+
+	// denormals
+	const vf_type two54=1.80143985094819840000e+16;
+	vf_type vden(two54 * vd);
+	vi_type hden(_T::extract_high_word(vden));
+	vi_type lden(_T::extract_low_word(vden));
+	vi_type value_head_den(hden & vi_type(0x7fffffff));
+	vi_type eden((value_head_den>>20) - vi_type(1022+54));
+
+	// select denom/normal
+	e = _T::sel(is_denom, eden, e);
+	hi_word = _T::sel(is_denom, hden, hi_word);
+	lo_word = _T::sel(is_denom, lden, lo_word);
+	// insert exponent
+	hi_word = (hi_word & vi_type(0x800fffff)) | vi_type(0x3fe00000);
+	// combine low and high word
+	vf_type frc(_T::combine_words(lo_word, hi_word));
+	// inf, nan, zero
+	vmf_type f_inz(_T::vmi_to_vmf(is_inf_nan_zero));
+	e= _T::sel(is_inf_nan_zero, vi_type(0), e);
+	frc = _T::sel(f_inz, vd, frc);
+
+	if (ve != nullptr)
+		*ve= e;
+	return frc;
+}
+
 
 template <typename _T>
 inline
@@ -817,8 +872,9 @@ cftal::math::func<double, cftal::int32_t, _T>::expm1(const vf_type& d)
         vf_type res(xr.h() + xr.l());
 	// res = _T::sel(d == 0.0, 1.0, res);
         // res = _T::sel(d == 1.0, M_E, res);
-        res = _T::sel(d== vf_type(_T::ninf()), -1.0, res);
-        res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
+	const vf_type inf_threshold(7.097827128933840868e+02);
+	res = _T::sel(d==vf_type(_T::ninf()), -1.0, res);
+        res = _T::sel(d>=inf_threshold, _T::pinf(), res);
         return res;
 }
 
