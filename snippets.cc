@@ -2,6 +2,162 @@
 #include <iostream>
 #include <iomanip>
 
+namespace dummy {
+
+ union d_i {
+            double _d;
+            int32_t _i[2];  
+        };
+
+        inline
+        int32_t extract_high_word(double d) {
+            d_i t;
+            t._d = d;
+            return t._i[1];
+        }
+
+        inline
+        int32_t extract_low_word(double d) {
+            d_i t;
+            t._d = d;
+            return t._i[0];
+        }
+
+        inline
+        double combine_words(int32_t l, int32_t h) {
+            d_i t;
+            t._i[0] = l;
+            t._i[1] = h;
+            return t._d;
+        }
+
+        inline
+        double insert_high_word(double d, int32_t h) {
+            d_i t;
+            t._d = d;
+            t._i[1] = h;
+            return t._d;
+        }
+
+        inline
+        double insert_low_word(double d, int32_t l) {
+            d_i t;
+            t._d = d;
+            t._i[01] = l;
+            return t._d;
+        }
+
+
+        template <class _T, unsigned _P>
+        struct ipow {
+            static _T v(const _T& x) {
+                _T r(ipow<_T, _P/2>::v(x*x));                    
+                if (_P & 1) 
+                    r *= x;
+                return r;
+            }
+        };
+
+        template <class _T>
+        struct ipow<_T, 0U> {
+            static _T v(const _T& x) {
+                return _T(1);
+            }
+        };
+
+        template <int _I, class _T>
+        _T pow(const _T& x) {
+            _T r(ipow<_T, (_I < 0 ? -_I : _I) >::v(x));
+            if (_I < 0 ) {
+                r = _T(1.0)/r;
+            }
+            return r;
+        }
+
+        template <int n>
+        inline float nth_root(float x)
+        {
+           const int ebits = 8;
+           const int fbits = 23;
+
+           int& i = (int&) x;
+           const int bias = (1 << (ebits-1))-1;
+           i = (i - (bias << fbits)) / n + (bias << fbits);
+
+           return x;
+        }
+
+        template <int n>
+        inline double nth_root(double x)
+        {
+            double g0(0.0);
+            int32_t hw= extract_high_word(x);
+            const int32_t bias = (1 << (11-1))-1;
+            hw = (hw - (bias << 20))/n +  (bias<<20);
+            g0 = insert_high_word(g0, hw);
+            return g0;
+#if 0
+           const int ebits = 11;
+           const int fbits = 52;
+           int64& i = (int64&) x;
+           const _int64 bias = (1 << (ebits-1))-1;
+           i = (i - (bias << fbits)) / n + (bias << fbits);
+           return x;
+#endif
+        }
+
+
+        template <class _T, unsigned _R>
+        struct root {
+
+            static _T iguess(const _T& x) {
+                return nth_root<_R>(x);                    
+            }
+
+            static _T nr(const _T& xi, const _T& x) {
+                const _T r(_R);
+                _T x_pow_nm1(ipow<_T, _R-1>::v(xi));                        
+                _T en( x - xi * x_pow_nm1);
+                _T den(r * x_pow_nm1);
+                _T xip1( xi + en / den);
+
+                return xip1;
+            }
+
+            static _T v(const _T& x) {
+                // xi0 should contain at least 4 bits
+                _T xi0(iguess(x));
+                _T xi1(nr(xi0, x));
+                _T xi2(nr(xi1, x));
+                _T xi3(nr(xi2, x));
+                _T xi4(nr(xi3, x));
+                _T xi5(nr(xi4, x));
+                return xi5;
+#if 0
+		int expo(0);
+                std::frexp(xi5, &expo);
+                _T xulp(std::ldexp(1.0, expo-53));
+                _T xup(ipow<_T,_R>::v(xi5+xulp));
+                _T xcur(ipow<_T,_R>::v(xi5));
+                _T xdn(ipow<_T,_R>::v(xi5-xulp));
+
+                _T res(xi5);
+                if (abs(xup -x) < abs(xcur -x)) {
+                    res = xi5+xulp;
+                    xcur = xup;
+                }
+                if (abs(xdn -x) < abs(xcur -x)) {
+                    res = xi5-xulp;
+                }
+#endif
+            }
+        };
+
+
+}
+
+
+
 
 namespace x86vec {
 
