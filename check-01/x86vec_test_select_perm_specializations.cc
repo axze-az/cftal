@@ -7,7 +7,7 @@ bool chk_u16(__m128i a, x86vec::test::idx& id)
 {
         __m128i r(x86vec::perm_u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>(a));
         id.assign(_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7);
-        bool rc(x86vec::test::check_u16("perm1_u16", r, id));
+        bool rc(x86vec::test::check_v8u16("perm1_u16", r, id));
         return rc;
 }
 
@@ -18,7 +18,7 @@ bool chk_u16(__m128i a, __m128i b, x86vec::test::idx& id)
         __m128i r(x86vec::perm_u16<_P0, _P1, _P2, _P3, 
 				   _P4, _P5, _P6, _P7>(a, b));
         id.assign(_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7);
-        bool rc(x86vec::test::check_u16("perm2_u16", r, id));
+        bool rc(x86vec::test::check_v8u16("perm2_u16", r, id));
         return rc;
 }
 
@@ -27,7 +27,7 @@ bool x86vec::test::check_select_perm_specializations()
         // we have only to check perm1_u16 specializations because
         // permutations with bigger data sizes are tested completly
         bool r(true);
-        __m128i a= load_u16(false);
+        __m128i a= load_v8u16(false);
         idx id(-2,-2);
 	r &= chk_u16<-1,-1,-1,-1,-1,-1,-1,-1>(a, id);
 	r &= chk_u16< 0, 1, 2, 3, 4, 5, 6, 7>(a, id);
@@ -99,7 +99,7 @@ bool x86vec::test::check_select_perm_specializations()
         // zero only
         r &= chk_u16< 0,-1, 2, 3, 4, 5,-1, 7>(a, id);
 
-        __m128i b= load_u16(true);
+        __m128i b= load_v8u16(true);
 	r &= chk_u16< 0, 8, 1, 9, 2,10, 3,11>(a, b, id);
 	r &= chk_u16< 8, 0, 9, 1,10, 2,11, 3>(a, b, id);
 	r &= chk_u16< 4,12, 5,13, 6,14, 7,15>(a, b, id);

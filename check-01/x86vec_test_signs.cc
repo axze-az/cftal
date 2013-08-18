@@ -21,17 +21,17 @@ namespace {
 
 bool x86vec::test::check_signs()
 {
-	const __m128 zf = impl::make_zero_f32::v();
-	const __m128d zd= impl::make_zero_f64::v();
+	const __m128 zf = impl::make_zero_v4f32::v();
+	const __m128d zd= impl::make_zero_v2f64::v();
 	const __m128i zi = impl::make_zero_int::v();
 
-	typedef const4_u32<-1,-1,-1,-1> all;
+	typedef const_v4u32<-1,-1,-1,-1> all;
 
 	const __m128 af= all::fv();
 	const __m128d ad= all::dv();
 	const __m128i ai= all::iv();
 
-	typedef const8_u16<0, 0x80, 0, -1, -1, 0x80, -1, 0> mx;
+	typedef const_v8u16<0, 0x80, 0, -1, -1, 0x80, -1, 0> mx;
 	const __m128 mf= mx::fv();
 	const __m128d md= mx::dv();
 	const __m128i mi= mx::iv();
