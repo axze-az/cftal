@@ -2,6 +2,8 @@
 #include <cftal/d_real.h>
 #include <cftal/mul_div.h>
 #include <cftal/vec.h>
+#include <cftal/math_func.h>
+#include <cftal/x86vec_traits.h>
 #include <cmath>
 #include <x86vec_test.h>
 #include <cstdint>
@@ -174,6 +176,14 @@ bool x86vec::test::check_frexp_f64(const _V& v)
 //namespace vec=x86vec;
 //namespace vec=emuvec;
 
+
+cftal::vec::v2f64 cbrt(cftal::vec::v2f64 a)
+{
+	using namespace x86vec;
+	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
+	using func_t=cftal::math::impl::nth_root<double, int32_t, traits_t, 3>;
+	return func_t::v(a);
+}
 
 
 // v2f64 compile tests
