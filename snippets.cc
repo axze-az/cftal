@@ -4,7 +4,7 @@
 
 namespace dummy {
 
- union d_i {
+	union d_i {
             double _d;
             int32_t _i[2];  
         };
