@@ -244,6 +244,7 @@ namespace cftal {
                         static vf_type tan(const vf_type& vf);
 			static vf_type cot(const vf_type& vf);
 
+			static vf_type cbrt(const vf_type& vf);
 
 			static void native_sin_cos(const vf_type& vf,
 						   vf_type* psin, 
@@ -920,6 +921,47 @@ cftal::math::func<double, cftal::int32_t, _T>::cot(const vf_type& d)
 	dvf_type ct(sin_cos.second / sin_cos.first);
         return ct.h() + ct.l();
 }
+
+template <typename _T>
+inline
+typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
+cftal::math::func<double, cftal::int32_t, _T>::cbrt(const vf_type& xx)
+{
+	/* Argument reduction */
+	/* separate into mantissa and exponent */
+	vf_type x(abs(xx));
+	vi_type ex;
+	vf_type fr = frexp(x, &ex);     
+	cftal::divisor<vi_type, int32_t> d3(3);
+
+	/* compute shx such that (ex - shx) is divisible by 3 */
+	vi_type shx(ex % d3);
+	vi_type dshx(_T::sel(shx > vi_type(0), vi_type(3), vi_type(0)));
+	shx -= dshx;
+
+	/* exponent of cube root */
+	ex = (ex - shx) / d3;    
+	/* 0.125 <= fr < 1.0 */
+	fr = ldexp(fr, shx); 
+
+	/* Compute seed with a quadratic qpproximation */
+	/* 0.5   <= fr < 1.0 */
+	fr = (-0.46946116 * fr + 1.072302) * fr + 0.3812513;     
+	/* 6 bits of precision */
+	vf_type r= ldexp(fr, ex);                                          
+	/* Newton-Raphson iterations */
+	/* 12 bits of precision */
+	r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
+	/* 24 bits of precision */
+	r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
+	/* 48 bits of precision */
+	r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
+	/* 96 bits of precision */
+	r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
+	r = copysign(r, xx);
+	return r;
+}
+
 
 template <typename _T>
 inline

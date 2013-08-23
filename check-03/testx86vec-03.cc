@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <x86vec_fvec.h>
+#include <x86vec_test.h>
 #include <bitops.h>
 #include <unistd.h>
 
@@ -16,9 +17,6 @@ namespace x86vec {
 
 		template <class _T>
 		_T abs_error(const _T& a, const _T& b);
-
-		template <class _V>
-		bool elements_equal(const _V& v);
 
 		int ulp(double c, double n);
 
@@ -77,37 +75,6 @@ _T x86vec::test::rel_error(const _T& a, const _T& b)
 	re = select(r == _T(0.0), _T(0.0),  abs(re));
 	return re;
 }
-
-template <class _V>
-bool x86vec::test::elements_equal(const _V& v)
-{
-	using element_type = typename _V::element_type;
-	const int N =sizeof(_V)/sizeof(element_type);
-	union {
-		_V _v;
-		element_type _d[N];
-	} d;
-	d._v = v;
-	bool r(true);
-	if (std::isnan(d._d[0])) {
-		for (int i=1; i<N; ++i) {
-			if (!std::isnan(d._d[i]))
-				r=false;
-		}
-	} else if(std::isinf(d._d[0])) {
-		for (int i=1; i<N; ++i) {
-			if (!std::isinf(d._d[i]))
-				r=false;
-		}
-	} else {
-		for (int i=1; i<N; ++i) {
-			if (d._d[i] != d._d[0])
-				r=false;
-		}
-	}
-	return r;
-}
-
 
 int x86vec::test::ulp(double c, double n)
 {
