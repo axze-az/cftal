@@ -44,7 +44,7 @@ x86vec::v2f64 x86vec::pow2i(arg<v4s32>::type e)
 x86vec::v2f64 x86vec::cbrt(arg<v2f64>::type a)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
-#if 1
+#if 0
 	using func_t=cftal::math::impl::nth_root<double, int32_t, traits_t, 3>;
 	return func_t::v(a);
 #else

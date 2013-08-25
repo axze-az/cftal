@@ -922,16 +922,112 @@ cftal::math::func<double, cftal::int32_t, _T>::cot(const vf_type& d)
         return ct.h() + ct.l();
 }
 
+#if 0
+#define CBRT2 1.2599210498948731648		/* 2^(1/3) */
+#define SQR_CBRT2 1.5874010519681994748		/* 2^(2/3) */
+
+static const double factor[5] =
+{
+  1.0 / SQR_CBRT2,
+  1.0 / CBRT2,
+  1.0,
+  CBRT2,
+  SQR_CBRT2
+};
+
+
+double
+__cbrt (double x)
+{
+  double xm, ym, u, t2;
+  int xe;
+
+  /* Reduce X.  XM now is an range 1.0 to 0.5.  */
+  xm = __frexp (fabs (x), &xe);
+
+  /* If X is not finite or is null return it (with raising exceptions
+     if necessary.
+     Note: *Our* version of `frexp' sets XE to zero if the argument is
+     Inf or NaN.  This is not portable but faster.  */
+  if (xe == 0 && fpclassify (x) <= FP_ZERO)
+    return x + x;
+
+ u = (0.354895765043919860
+      + ((1.50819193781584896
+	 + ((-2.11499494167371287
+	    + ((2.44693122563534430
+	       + ((-1.83469277483613086
+		  + (0.784932344976639262 - 0.145263899385486377 * xm) * xm)
+		  * xm))
+	       * xm))
+	    * xm))
+	 * xm));
+
+  t2 = u * u * u;
+
+  ym = u * (t2 + 2.0 * xm) / (2.0 * t2 + xm) * factor[2 + xe % 3];
+
+  return __ldexp (x > 0.0 ? ym : -ym, xe / 3);
+}
+#endif
+
 template <typename _T>
 inline
 typename cftal::math::func<double, cftal::int32_t, _T>::vf_type
-cftal::math::func<double, cftal::int32_t, _T>::cbrt(const vf_type& xx)
+cftal::math::func<double, cftal::int32_t, _T>::cbrt(const vf_type& x)
 {
+#if 0
+	vf_type xabs(abs(x));
+	vi_type xe;
+	vf_type xm(frexp(xabs, &xe)); 
+	const cftal::divisor<vi_type, int32_t> div3(3);
+
+	vf_type u((0.354895765043919860
+		   + ((1.50819193781584896
+		       + ((-2.11499494167371287
+			   + ((2.44693122563534430
+			       + ((-1.83469277483613086
+				   + (0.784932344976639262 - 
+				      0.145263899385486377 * xm) * xm)
+				  * xm))
+			      * xm))
+			  * xm))
+		      * xm)));
+	
+	vf_type t2(u * u * u);
+	/* 2^(1/3) */
+	/* 2^(2/3) */
+	constexpr double CBRT2(1.2599210498948731648);
+	constexpr double SQR_CBRT2(1.5874010519681994748);
+	const vf_type tab0(1.0 / SQR_CBRT2);
+	const vf_type tab1(1.0 / CBRT2);
+	const vf_type tab2(1.0);
+	const vf_type tab3(CBRT2);
+	const vf_type tab4(SQR_CBRT2);
+
+	vi_type ex(xe / div3);
+	vi_type tab_idx(2 + xe % div3);
+
+	vf_type factor(tab0);
+	factor = _T::sel(_T::vmi_to_vmf(tab_idx == vi_type(1)),
+			 tab1, factor);
+	factor = _T::sel(_T::vmi_to_vmf(tab_idx == vi_type(2)),
+			 tab2, factor);
+	factor = _T::sel(_T::vmi_to_vmf(tab_idx == vi_type(3)),
+			 tab3, factor);
+	factor = _T::sel(_T::vmi_to_vmf(tab_idx == vi_type(4)),
+			 tab4, factor);
+
+	vf_type ym(u * (t2 + 2.0 * xm) / (2.0 * t2 + xm) * factor);
+	ym=copysign(ym, x);
+	vf_type r(ldexp(ym, ex));
+	return r;
+#else
 	/* Argument reduction */
 	/* separate into mantissa and exponent */
-	vf_type x(abs(xx));
+	vf_type xabs(abs(x));
 	vi_type ex;
-	vf_type fr = frexp(x, &ex);     
+	vf_type fr = frexp(xabs, &ex);     
 	cftal::divisor<vi_type, int32_t> d3(3);
 
 	/* compute shx such that (ex - shx) is divisible by 3 */
@@ -946,20 +1042,24 @@ cftal::math::func<double, cftal::int32_t, _T>::cbrt(const vf_type& xx)
 
 	/* Compute seed with a quadratic qpproximation */
 	/* 0.5   <= fr < 1.0 */
+	//fr = (-0.46946116 * fr + 1.072302) * fr + 0.3812513;     
 	fr = (-0.46946116 * fr + 1.072302) * fr + 0.3812513;     
 	/* 6 bits of precision */
-	vf_type r= ldexp(fr, ex);                                          
+	vf_type r(ldexp(fr, ex));                                          
 	/* Newton-Raphson iterations */
 	/* 12 bits of precision */
-	r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
+	const vf_type third(1.0/3.0);
+	r = (r + r + x /(r*r)) * third;
+	// r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
 	/* 24 bits of precision */
-	r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
+	r = (r + r + x /(r*r)) * third;
 	/* 48 bits of precision */
-	r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
+	r = (r + r + x /(r*r)) * third;
 	/* 96 bits of precision */
-	r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
-	r = copysign(r, xx);
+	r = (r + r + x /(r*r)) * third;
+	r = copysign(r, x);
 	return r;
+#endif
 }
 
 
