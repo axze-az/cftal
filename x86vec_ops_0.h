@@ -5,6 +5,7 @@
 #include <cftal/x86vec_const.h>
 #include <cftal/x86vec_select.h>
 #include <cftal/x86vec_cast.h>
+#include <cftal/x86vec_ins_ext.h>
 
 namespace x86vec {
 
@@ -759,6 +760,45 @@ namespace x86vec {
 			static __m128i v(__m128i a, __m128i b);
 		};
 
+
+		template <class _T>
+		struct vgatherdpd {
+			static _T v(const double* base,
+				    __m128i idx,
+				    int scale);
+			static _T v(const _T& src,
+				    const double* base,
+				    __m128i idx,
+				    const _T& msk,
+				    int scale);
+		};
+		
+		template <>
+		struct vgatherdpd<__m128d> {
+			static __m128d v(const double* base,
+					 __m128i idx,
+					 int scale);
+			static __m128d v(__m128d src,
+					 const double* base,
+					 __m128i idx,
+					 __m128d msk,
+					 int scale);			
+		};
+
+#if defined (__AVX__)			
+		template <>
+		struct vgatherdpd<__m256d> {
+			static __m256d v(const double* base,
+					 __m128i idx,
+					 int scale);
+			static __m256d v(__m256d src,
+					 const double* base,
+					 __m128i idx,
+					 __m256d msk,
+					 int scale);			
+		};
+#endif
+
 #if defined (__AVX__)
                 struct make_zero_v4f64 {
                         static __m256d v() {
@@ -1038,6 +1078,49 @@ __m128i x86vec::impl::vpmullq::v(__m128i a, __m128i b)
 	return p;
 #endif
 }
+
+inline
+__m128d 
+x86vec::impl::vgatherdpd<__m128d>::v(const double* base,
+				     __m128i idx,
+				     int scale)
+{
+#if defined (__AVX2__)
+	return _mm_i32gather_pd(base, idx, scale);
+#else
+	const char* p= reinterpret_cast<const char*>(base);
+	const char* p0= p + extract_u32<0>(idx) * scale;
+	const char* p1= p + extract_u32<1>(idx) * scale;
+	double d0= *reinterpret_cast<const double*>(p0);
+	double d1= *reinterpret_cast<const double*>(p1);
+	return _mm_set_pd(d1, d0);
+#endif
+}
+
+#if defined (__AVX__)
+inline
+__m256d 
+x86vec::impl::vgatherdpd<__m256d>::v(const double* base,
+				     __m128i idx,
+				     int scale)
+{
+#if defined (__AVX2__)
+	return _mm256_i32gather_pd(base, idx, scale);
+#else
+	const char* p= reinterpret_cast<const char*>(base);
+	const char* p0= p + extract_u32<0>(idx) * scale;
+	const char* p1= p + extract_u32<1>(idx) * scale;
+	const char* p2= p + extract_u32<2>(idx) * scale;
+	const char* p3= p + extract_u32<3>(idx) * scale;
+	double d0= *reinterpret_cast<const double*>(p0);
+	double d1= *reinterpret_cast<const double*>(p1);
+	double d2= *reinterpret_cast<const double*>(p2);
+	double d3= *reinterpret_cast<const double*>(p3);
+	return _mm256_set_pd(d3, d2, d1, d0);
+#endif
+}
+
+#endif
 
 
 // Local variables:

@@ -104,6 +104,14 @@ namespace cftal {
                                     const vf_type& t, const vf_type& f) {
                                 return msk ? t : f;
                         }
+			static
+			vf_type gather(const double* p, vi_type idx, int sc) {
+				const char* pc= 
+					reinterpret_cast<const char*>(p);
+				const char* d = pc + idx * sc;
+				vf_type r(*reinterpret_cast<const double*>(d));
+				return r;
+			}
                         static
                         vf_type insert_exp(const vi_type& e) {
                                 ud_t t;
@@ -982,31 +990,39 @@ cftal::math::func<double, cftal::int32_t, _T>::cbrt(const vf_type& x)
 	vf_type xm(frexp(xabs, &xe)); 
 	const cftal::divisor<vi_type, int32_t> div3(3);
 
-	vf_type u((0.354895765043919860
-		   + ((1.50819193781584896
-		       + ((-2.11499494167371287
-			   + ((2.44693122563534430
-			       + ((-1.83469277483613086
-				   + (0.784932344976639262 - 
-				      0.145263899385486377 * xm) * xm)
+	vf_type u((vf_type(0.354895765043919860)
+		   + ((vf_type(1.50819193781584896)
+		       + ((vf_type(-2.11499494167371287)
+			   + ((vf_type(2.44693122563534430)
+			       + ((vf_type(-1.83469277483613086)
+				   + (vf_type(0.784932344976639262) - 
+				      vf_type(0.145263899385486377) * xm) * xm)
 				  * xm))
 			      * xm))
 			  * xm))
 		      * xm)));
-	
 	vf_type t2(u * u * u);
 	/* 2^(1/3) */
 	/* 2^(2/3) */
+	vi_type ex(xe / div3);
+	vi_type tab_idx(2 + xe % div3);
 	constexpr double CBRT2(1.2599210498948731648);
 	constexpr double SQR_CBRT2(1.5874010519681994748);
+#if 1
+	static constexpr double tab[]= {
+		1.0 / SQR_CBRT2,
+		1.0 / CBRT2,
+		1.0,
+		CBRT2,
+		SQR_CBRT2
+	};
+	vf_type factor(_T::gather(tab, tab_idx, sizeof(double)));
+#else
 	const vf_type tab0(1.0 / SQR_CBRT2);
 	const vf_type tab1(1.0 / CBRT2);
 	const vf_type tab2(1.0);
 	const vf_type tab3(CBRT2);
 	const vf_type tab4(SQR_CBRT2);
-
-	vi_type ex(xe / div3);
-	vi_type tab_idx(2 + xe % div3);
 
 	vf_type factor(tab0);
 	factor = _T::sel(_T::vmi_to_vmf(tab_idx == vi_type(1)),
@@ -1017,8 +1033,9 @@ cftal::math::func<double, cftal::int32_t, _T>::cbrt(const vf_type& x)
 			 tab3, factor);
 	factor = _T::sel(_T::vmi_to_vmf(tab_idx == vi_type(4)),
 			 tab4, factor);
-
-	vf_type ym(u * (t2 + 2.0 * xm) / (2.0 * t2 + xm) * factor);
+#endif
+	vf_type ym(u * (t2 + vf_type(2.0) * xm) / 
+		   (vf_type(2.0) * t2 + xm) * factor);
 	ym=copysign(ym, x);
 	vf_type r(ldexp(ym, ex));
 	return r;
@@ -1027,7 +1044,7 @@ cftal::math::func<double, cftal::int32_t, _T>::cbrt(const vf_type& x)
 	/* separate into mantissa and exponent */
 	vf_type xabs(abs(x));
 	vi_type ex;
-	vf_type fr = frexp(xabs, &ex);     
+	vf_type fr = frexp(xabs, &ex);    
 	cftal::divisor<vi_type, int32_t> d3(3);
 
 	/* compute shx such that (ex - shx) is divisible by 3 */
@@ -1042,21 +1059,31 @@ cftal::math::func<double, cftal::int32_t, _T>::cbrt(const vf_type& x)
 
 	/* Compute seed with a quadratic qpproximation */
 	/* 0.5   <= fr < 1.0 */
-	//fr = (-0.46946116 * fr + 1.072302) * fr + 0.3812513;     
-	fr = (-0.46946116 * fr + 1.072302) * fr + 0.3812513;     
+	fr = (vf_type(-0.46946116) * fr + vf_type(1.072302)) * fr 
+		+ vf_type(0.3812513);     
 	/* 6 bits of precision */
 	vf_type r(ldexp(fr, ex));                                          
 	/* Newton-Raphson iterations */
 	/* 12 bits of precision */
 	const vf_type third(1.0/3.0);
-	r = (r + r + x /(r*r)) * third;
+	r = (r + r + xabs /(r*r)) * third;
 	// r = vf_type(2.0/3.0) * r + vf_type(1.0/3.0) * x / (r * r);  
 	/* 24 bits of precision */
-	r = (r + r + x /(r*r)) * third;
+	r = (r + r + xabs /(r*r)) * third;
 	/* 48 bits of precision */
-	r = (r + r + x /(r*r)) * third;
+	r = (r + r + xabs /(r*r)) * third;
 	/* 96 bits of precision */
-	r = (r + r + x /(r*r)) * third;
+	r = (r + r + xabs /(r*r)) * third;
+	dvf_type rr(r);
+	const dvf_type dthird(dvf_type(vf_type(1.0))/vf_type(3.0));
+	rr = (rr + rr + xabs /(rr*rr)) * dthird;
+	rr = (rr + rr + xabs /(rr*rr)) * dthird;
+	rr = (rr + rr + xabs /(rr*rr)) * dthird;
+	rr = (rr + rr + xabs /(rr*rr)) * dthird;
+	rr = (rr + rr + xabs /(rr*rr)) * dthird;
+	rr = (rr + rr + xabs /(rr*rr)) * dthird;
+	r = rr.h() + rr.l();
+
 	r = copysign(r, x);
 	return r;
 #endif

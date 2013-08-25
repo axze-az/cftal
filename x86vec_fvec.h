@@ -54,6 +54,9 @@ namespace x86vec {
 
         }
 
+	template <class _T>
+	_T gather(const double* base, const v4s32& idx, int scale=1);
+
         class v4f32 : public vreg<__m128> {
         public:
                 typedef float element_type;
@@ -670,6 +673,15 @@ _T x86vec::impl::p1evl(_T x, const _T* coef)
                 ++p;
         } while (--i);
         return ans;
+}
+
+template <class _T>
+inline
+_T x86vec::gather(const double* base, const v4s32& idx, int scale)
+{
+	using vec_type = typename _T::vector_type;
+	_T r(impl::vgatherdpd<vec_type>::v(base, idx(), scale));
+	return r;
 }
 
 #include <cftal/x86vec_v4f32_inl.h>

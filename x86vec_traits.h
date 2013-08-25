@@ -103,6 +103,11 @@ namespace cftal {
                                     const vf_type& t, const vf_type& f) {
                                 return select(msk, t, f);
                         }
+			static
+			vf_type gather(const double* p, const vi_type& idx,
+				       int sc) {
+				return x86vec::gather<vf_type>(p, idx, sc);
+			}
                         static
                         vf_type insert_exp(const vi_type& e) {
 				vi_type ep(x86vec::permute<0, 0, 1, 1>(e));
@@ -254,6 +259,11 @@ namespace cftal {
                                     const vf_type& t, const vf_type& f) {
                                 return select(msk, t, f);
                         }
+			static
+			vf_type gather(const double* p, const vi_type& idx,
+				       int sc) {
+				return x86vec::gather<vf_type>(p, idx, sc);
+			}
                         static
                         vf_type insert_exp(const vi_type& e) {
 				// TODO AVX2 code

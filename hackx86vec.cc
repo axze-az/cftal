@@ -192,7 +192,7 @@ bool x86vec::test::check_cbrt_f64(const _V& v)
 {
 	bool rc(true);
 	static_cast<void>(v);
-	std::cerr << std::setprecision(17)
+	std::cerr << std::setprecision(19)
 		  << std::scientific;
 	for (int i=0; i<100000; ++i) {
 		double x(double(i)*0.0001);
@@ -204,7 +204,7 @@ bool x86vec::test::check_cbrt_f64(const _V& v)
 		_V rmv(cbrt(-xv));
 		_V rpv(cbrt(xv));
 		_V xmv(cftal::math::pow<3>(rmv));
-		_V xpv(cftal::math::pow<3>(rmv));
+		_V xpv(cftal::math::pow<3>(rpv));
 
 		if (!elements_equal(rmv) || !elements_equal(rpv)) {
 			std::cerr << "Invalid vector values\n";
@@ -215,14 +215,22 @@ bool x86vec::test::check_cbrt_f64(const _V& v)
 		double xmv0(extract<0>(xmv));
 		double xpv0(extract<0>(xpv));
 
-		if ((std::abs(xmv0 - x) < std::abs(xm -x)) &&
-		    (std::abs(xpv0 - x) < std::abs(xp -x)))
+		if ((std::abs(xmv0 - -x) <= std::abs(xm - -x)) &&
+		    (std::abs(xpv0 - x) <= std::abs(xp -x)))
 			continue;
 		if ( !f_eq(rmv0, rm) || !f_eq(rpv0, rp)) {
 			std::cerr << "cbrt(" << x << ")= " 
 				  << rpv0 << " != " << rp << std::endl;
 			std::cerr << "cbrt(" << -x << ")= " 
 				  << rmv0 << " != " << rm << std::endl;
+			std::cerr << xpv0 << " " << xp << std::endl
+				  << xmv0 << " " << xm << std::endl;
+			std::cerr << std::abs(xpv0 - x) << " " 
+				  << std::abs(xp -x)
+				  << std::endl
+				  << std::abs(xmv0 - -x) << " "
+				  << std::abs(xm - -x)
+				  << std::endl;
 			std::cerr << std::hex 
 				  << std::setw(16)
 				  << as_uint64(rpv0)
