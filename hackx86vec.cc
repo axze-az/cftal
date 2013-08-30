@@ -63,6 +63,9 @@ namespace x86vec {
                 bool check_frexp_f64(const _V& v0);
 
 		template <class _V>
+		int check_cbrt_f64(const _V& v0, double x);
+
+		template <class _V>
 		bool check_cbrt_f64(const _V& v0);
 
                 // compare a and b, returns also true for a==NAN and b
@@ -186,66 +189,140 @@ std::uint64_t as_uint64(double d)
 	return t._i;
 }
 
+template <class _V>
+int x86vec::test::check_cbrt_f64(const _V& v, double x)
+{
+	double r3(std::cbrt(x));
+	_V vx(x);
+	_V vr3(cbrt(vx));
+
+	double p3(cftal::math::pow<3>(r3));
+	_V vp3(cftal::math::pow<3>(vr3));
+	
+	if (!elements_equal(vr3)) {
+		std::cerr << "Invalid vector values\n";
+		std::cout << "Invalid vector values\n";
+		const int N=sizeof(_V)/sizeof(double);
+		union v_d {
+			_V _v;
+			double _d[sizeof(_V)/sizeof(double)];
+		};
+		std::cout << std::setprecision(18);
+		std::cout << x << std::endl;
+		std::cout << r3 << std::endl;
+		v_d t;
+		t._v = vx;
+		for (unsigned i=0; i<N; ++i) {
+			std::cout << t._d[i] << std::endl;
+		}
+		t._v = vr3;
+		for (unsigned i=0; i<N; ++i) {
+			std::cout << t._d[i] << std::endl;
+		}
+ 
+		t._v = vp3;
+		for (unsigned i=0; i<N; ++i) {
+			std::cout << t._d[i] << std::endl;
+		}
+
+		
+		std::exit(3);
+	}
+
+	double vr3_0(extract<0>(vr3));
+	double vp3_0(extract<0>(vp3));
+	int rc(0);
+	if (std::fabs(x - vp3_0) > std::fabs(x - p3)) {
+		std::cerr << "cbrt(" << x << ")= " 
+			  << vr3_0 << " != " << r3 << std::endl;
+		std::cerr << vp3_0 << " " << p3 << std::endl;
+
+		std::cerr << std::fabs(x - vp3_0) << " " 
+			  << std::fabs(x - p3)
+			  << std::endl;
+		std::cerr << std::hex 
+			  << std::setw(16 )
+			  << as_uint64(vr3_0)
+			  << ' '
+			  << as_uint64(r3)
+			  << std::dec
+			  << std::endl;
+		rc = -1;
+	} else if (std::fabs(x - vp3_0) < std::fabs(x - p3)) {
+		rc = 1;
+	}
+	return rc;
+}
 
 template <class _V>
 bool x86vec::test::check_cbrt_f64(const _V& v)
 {
-	bool rc(true);
+	bool res(true);
 	static_cast<void>(v);
 	std::cerr << std::setprecision(19)
 		  << std::scientific;
-	for (int i=0; i<100000; ++i) {
+	int r(0), e(0), f(0);
+	int rc;
+	for (int i=0; i<1000000; ++i) {
 		double x(double(i)*0.0001);
-		double rm(std::cbrt(-x));
-		double rp(std::cbrt(+x));
-		double xm(cftal::math::pow<3>(rm));
-		double xp(cftal::math::pow<3>(rp));
-		_V xv(x);
-		_V rmv(cbrt(-xv));
-		_V rpv(cbrt(xv));
-		_V xmv(cftal::math::pow<3>(rmv));
-		_V xpv(cftal::math::pow<3>(rpv));
-
-		if (!elements_equal(rmv) || !elements_equal(rpv)) {
-			std::cerr << "Invalid vector values\n";
-			std::exit(3);
+		
+		rc=check_cbrt_f64(v, x);
+		switch (rc) {
+		case 0:
+			++e; break;
+		case 1:
+			++r; break;
+		case -1:
+			++f; break;
 		}
-		double rmv0(extract<0>(rmv));
-		double rpv0(extract<0>(rpv));
-		double xmv0(extract<0>(xmv));
-		double xpv0(extract<0>(xpv));
-
-		if ((std::abs(xmv0 - -x) <= std::abs(xm - -x)) &&
-		    (std::abs(xpv0 - x) <= std::abs(xp -x)))
-			continue;
-		if ( !f_eq(rmv0, rm) || !f_eq(rpv0, rp)) {
-			std::cerr << "cbrt(" << x << ")= " 
-				  << rpv0 << " != " << rp << std::endl;
-			std::cerr << "cbrt(" << -x << ")= " 
-				  << rmv0 << " != " << rm << std::endl;
-			std::cerr << xpv0 << " " << xp << std::endl
-				  << xmv0 << " " << xm << std::endl;
-			std::cerr << std::abs(xpv0 - x) << " " 
-				  << std::abs(xp -x)
-				  << std::endl
-				  << std::abs(xmv0 - -x) << " "
-				  << std::abs(xm - -x)
-				  << std::endl;
-			std::cerr << std::hex 
-				  << std::setw(16)
-				  << as_uint64(rpv0)
-				  << ' '
-				  << as_uint64(rp)
-				  << std::endl
-				  << as_uint64(rmv0)
-				  << ' '
-				  << as_uint64(rm)
-				  << std::dec
-				  << std::endl;
-			rc = false;
+		rc= check_cbrt_f64(v, -x);
+		switch (rc) {
+		case 0:
+			++e; break;
+		case 1:
+			++r; break;
+		case -1:
+			++f; break;
 		}
 	}
-	return rc;
+	rc = check_cbrt_f64(v, 1.0/0.0);
+	switch (rc) {
+	case 0:
+		++e; break;
+	case 1:
+		++r; break;
+	case -1:
+			++f; break;
+	}
+	rc = check_cbrt_f64(v, -1.0/0.0);
+	switch (rc) {
+	case 0:
+		++e; break;
+	case 1:
+		++r; break;
+	case -1:
+		++f; break;
+	}
+	rc = check_cbrt_f64(v, +0.0/0.0);
+	switch (rc) {
+	case 0:
+		++e; break;
+	case 1:
+		++r; break;
+	case -1:
+		++f; break;
+	}
+	rc = check_cbrt_f64(v, -0.0/0.0);
+	switch (rc) {
+	case 0:
+		++e; break;
+	case 1:
+		++r; break;
+	case -1:
+		++f; break;
+	}
+	std::cout << "r: " << r << " e: " << e << " f: " << f << std::endl;
+	return res;
 }
 
 
@@ -702,13 +779,14 @@ int main(int argc, char** argv)
 	// print_2_over_i();
 	// print_sqrtx();
 	// testpowi();
-	x86vec::v2f64 r8(cbrt(x86vec::v2f64(-8)));
+	x86vec::v4f64 r8(cbrt(x86vec::v4f64(-8)));
 	std::cout << x86vec::extract<0>(r8) << std::endl;
 #if 1
         x86vec::test::check_frexp_f64(x86vec::v2f64());
 	x86vec::test::check_cbrt_f64(x86vec::v2f64());
 #if defined (__AVX__)
         x86vec::test::check_frexp_f64(x86vec::v4f64());
+	x86vec::test::check_cbrt_f64(x86vec::v4f64());
 #endif
 #endif
 #if defined (__AVX__)

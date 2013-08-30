@@ -47,13 +47,8 @@ x86vec::v4f64 x86vec::pow2i(arg<v4s32>::type e)
 x86vec::v4f64 x86vec::cbrt(arg<v4f64>::type a)
 {
 	using traits_t=cftal::math::func_traits<v4f64, v4s32>;
-#if 0
 	using func_t=cftal::math::impl::nth_root<double, int32_t, traits_t, 3>;
-	return func_t::v(a);
-#else
-	using func_t=cftal::math::func<double, int32_t, traits_t>;
-	return func_t::cbrt(a);
-#endif
+	return func_t::v<6>(a);
 }
 
 x86vec::v4f64 x86vec::frexp(arg<v4f64>::type d, v4s32* pe)

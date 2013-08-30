@@ -98,6 +98,8 @@ namespace cftal {
                         static vf_type pow2i(const vi_type& d);
                         static vf_type ldexp(const vf_type& vf,
                                              const vi_type& vi);
+			static vf_type frexp(const vf_type& vf,
+					     vi_type* vi);
                         static vi_type ilogbp1(const vf_type& vi);
                         static vi_type ilogb(const vf_type& vf);
                 };
@@ -146,6 +148,14 @@ cftal::math::func<float, cftal::int32_t, _T>::ldexp(const vf_type& vd,
         // q = min(vi_type(0x7ff), q);
         vf_type fq = _T::insert_exp(q);
         return r * fq;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func<float, cftal::int32_t, _T>::vf_type
+cftal::math::func<float, cftal::int32_t, _T>::frexp(const vf_type& vd,
+                                                     vi_type* ve)
+{
 }
 
 template <typename _T>

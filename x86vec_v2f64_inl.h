@@ -335,14 +335,14 @@ x86vec::v2f64 x86vec::min(const v2f64& a, const v2f64& b)
 inline
 x86vec::v2f64 x86vec::abs(const v2f64& a)
 {
-	const __m128d msk= v_not_sign_f64_msk::dv();
+	const __m128d msk= v_not_sign_v2f64_msk::dv();
 	return _mm_and_pd(a(), msk);
 }
 
 inline
 x86vec::v2f64 x86vec::fabs(const v2f64& a)
 {
-	const __m128d msk= v_not_sign_f64_msk::dv();
+	const __m128d msk= v_not_sign_v2f64_msk::dv();
 	return _mm_and_pd(a(), msk);
 }
 
@@ -475,7 +475,7 @@ inline
 x86vec::v2f64 x86vec::copysign(const v2f64& x, const v2f64& y)
 {
 	// return abs(x) * sgn(y)
-	const v2f64 msk(v_not_sign_f64_msk::dv());
+	const v2f64 msk(v_not_sign_v2f64_msk::dv());
 	v2f64 abs_x(x & msk);
 	v2f64 sgn_y(andnot(msk, y));
 	return abs_x | sgn_y;
@@ -495,7 +495,7 @@ x86vec::v2f64 x86vec::isinf(const v2f64& x)
 {
 	// exponent = 0x7FF and significand ==0
 	v2f64 absx(abs(x));
-	return absx== v_exp_f64_msk::dv();
+	return absx== v_exp_v2f64_msk::dv();
 }
 
 inline
@@ -511,7 +511,7 @@ x86vec::v2f64 x86vec::isfinite(const v2f64& x)
 {
 	// exponent != 0x7FF
 	v2u64 xi(as<v2u64>(x));
-	const v2u64 msk=v_exp_f64_msk::iv();
+	const v2u64 msk=v_exp_v2f64_msk::iv();
 	v2u64 res((xi & msk) != msk);
 	return as<v2f64>(res);
 }

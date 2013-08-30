@@ -159,6 +159,7 @@ namespace cftal {
 					const divisor<vi_type, int32_t> rr(r);
 					hw = (hw - bias_shl_20)/rr + 
 						bias_shl_20;
+
 					vf_type g0;
 					g0 = _TRAITS::combine_words(vi_type(0),
 								    hw  );
@@ -182,34 +183,8 @@ namespace cftal {
                                   typename _TRAITS, unsigned _R>
                         struct nth_root {
                                 typedef typename _TRAITS::vf_type vf_type;
+				template <unsigned _STEPS>
                                 static vf_type v(const vf_type& x);
-#if 0
-                                static _T v(const _T& x) {
-                                        // xi0 should contain at least 4 bits
-                                        _T xi0(iguess(x));
-                                        _T xi1(nr(xi0, x));
-                                        _T xi2(nr(xi1, x));
-                                        _T xi3(nr(xi2, x));
-                                        _T xi4(nr(xi3, x));
-                                        _T xi5(nr(xi4, x));
-                                        return xi5;
-                                        int expo(0);
-                                        std::frexp(xi5, &expo);
-                                        _T xulp(std::ldexp(1.0, expo-53));
-                                        _T xup(ipow<_T,_R>::v(xi5+xulp));
-                                        _T xcur(ipow<_T,_R>::v(xi5));
-                                        _T xdn(ipow<_T,_R>::v(xi5-xulp));
-
-                                        _T res(xi5);
-                                        if (abs(xup -x) < abs(xcur -x)) {
-                                                res = xi5+xulp;
-                                                xcur = xup;
-                                        }
-                                        if (abs(xdn -x) < abs(xcur -x)) {
-                                                res = xi5-xulp;
-                                        }
-                                }
-#endif
                         };
 
 			// nth root implementation for double+int32_t
@@ -227,28 +202,21 @@ namespace cftal {
 						       int32_t,
 						       _TRAITS> guess_t;
 
+				template <unsigned _NR_STEPS=6>
 				static vf_type v(const vf_type& f) {
 					vf_type x(abs(f));
-					vf_type xi0(guess_t::v(x, _R));
-#if 1
-					vf_type xi1(nr_step_t::v(xi0, x));
-					vf_type xi2(nr_step_t::v(xi1, x));
-					vf_type xi3(nr_step_t::v(xi2, x));
-					vf_type xi4(nr_step_t::v(xi3, x));
-					vf_type xi5(xi4 /* nr_step_t::v(xi4, x)*/ );
-#else
-					dvf_type xin(xi0);
-					for (int i=0; i<4; ++i)
-						xin=last_nr_step_t::v(xin, x);
-					vf_type xi5(xin.h() /* + xin.l()*/ );
-#endif
-					xi5 = copysign(xi5, f);
+					vf_type xin(guess_t::v(x, _R));
+
+					for (unsigned i=0; i< _NR_STEPS; ++i)
+						xin = nr_step_t::v(xin, x);
+
+					xin = copysign(xin, f);
 					const vf_type zero(vf_type(0.0));
 					vmf_type is_zero_or_inf_or_nan(
 						(x == zero) | isinf(x) | isnan(x));
 					vf_type r(_TRAITS::sel(is_zero_or_inf_or_nan,
 							       x,
-							       xi5));
+							       xin));
 					if ((_R & 1) == 0) {
 						vmf_type is_neg(x < zero);
 						r = _TRAITS::sel(is_neg, 

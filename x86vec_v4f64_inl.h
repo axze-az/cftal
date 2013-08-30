@@ -468,7 +468,7 @@ inline
 x86vec::v4f64 x86vec::copysign(const v4f64& x, const v4f64& y)
 {
 	// return abs(x) * sgn(y)
-	const v4f64 msk(v_not_sign_f64_msk::dv());
+	const v4f64 msk(v_not_sign_v4f64_msk::dv());
 	v4f64 abs_x(x & msk);
 	v4f64 sgn_y(andnot(msk, y));
 	return abs_x | sgn_y;
@@ -481,7 +481,6 @@ x86vec::v4f64 x86vec::mulsign(const v4f64& x, const v4f64& y)
 	v4f64 sgn_y = y & msk;
 	return x ^ sgn_y;
 }
-
 
 inline
 x86vec::v4f64 x86vec::isinf(const v4f64& x)
