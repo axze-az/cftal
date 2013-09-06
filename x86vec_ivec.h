@@ -642,7 +642,7 @@ namespace x86vec {
         public:
                 typedef int32_t element_type;
                 v8s32() = default;
-                v8s32(const v4s32&l, const v4f32&h);
+                v8s32(const v4s32&l, const v4s32&h);
                 v8s32(element_type p00, element_type p01,
                       element_type p02, element_type p03,
 		      element_type p04, element_type p05,
@@ -654,7 +654,6 @@ namespace x86vec {
                 v8s32(const mem::addr<element_type>& r);
                 v8s32(const mem::aligned::addr<element_type>& r);
                 v8s32(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
 		masked_vec<v8s32> operator()(const mask<v8s32>& m);
 
 		friend v4s32 low_half(const v8s32& v);
