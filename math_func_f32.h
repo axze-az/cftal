@@ -85,6 +85,20 @@ namespace cftal {
                         vi_type cvt_rz_f_to_i(const vf_type& f) {
                                 return (vi_type)f;
                         }
+
+			static
+			vi_type as_int(const vf_type& f) {
+                                ud_t t;
+                                t._d = f;
+                                return t._u;
+			}
+
+			static
+			vf_type as_float(const vi_type& i) {
+                                ud_t t;
+                                t._u = i;
+                                return t._d;
+			}
                 };
 
                 template <typename _T>
@@ -156,6 +170,42 @@ typename cftal::math::func<float, cftal::int32_t, _T>::vf_type
 cftal::math::func<float, cftal::int32_t, _T>::frexp(const vf_type& vd,
                                                      vi_type* ve)
 {
+	// normal numbers:
+	vi_type i(_T::as_int(vd));
+
+	vi_type value_head(i & vi_type(0x7fffffff));
+
+	vi_type is_inf_nan_zero((value_head >= 0x7f800000) |
+				(value_head==vi_type(0)));
+	vi_type is_denom(value_head < 0x008000000);
+
+	// exponent:
+	vi_type e((value_head >> 23) - vi_type(127));
+
+	// denormals
+	// const vf_type two54=1.80143985094819840000e+16f;
+	// multiply with 2^25
+	const vf_type two25(0x1.p25f);
+	vf_type vden(two25 * vd);
+	vi_type iden(_T::as_int(vden));
+	vi_type value_head_den(iden & vi_type(0x7fffffff));
+	vi_type eden((value_head_den>>23) - vi_type(127+25));
+
+	// select denom/normal
+	e = _T::sel(is_denom, eden, e);
+	i = _T::sel(is_denom, iden, i);
+	// insert exponent
+	i = (i & vi_type(0x807fffff)) | vi_type(0x7d<<23);
+	// interpret as float
+	vf_type frc(_T::as_float(i));
+	// inf, nan, zero
+	vmf_type f_inz(_T::vmi_to_vmf(is_inf_nan_zero));
+	e= _T::sel(is_inf_nan_zero, vi_type(0), e);
+	frc = _T::sel(f_inz, vd, frc);
+
+	if (ve != nullptr)
+		*ve= e;
+	return frc;
 }
 
 template <typename _T>

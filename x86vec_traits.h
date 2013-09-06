@@ -217,6 +217,16 @@ namespace cftal {
                         vi_type cvt_rz_f_to_i(const vf_type& f) {
                                 return x86vec::cvt_rz<x86vec::v4s32>(f);
                         }
+
+			static 
+			vi_type as_int(const vf_type& f) {
+				return x86vec::as<x86vec::v4s32>(f);
+			}
+
+			static 
+			vf_type as_float(const vi_type& i) {
+				return x86vec::as<x86vec::v4f32>(i);
+			}
                 };
 
 #if defined (__AVX__)

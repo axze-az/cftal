@@ -18,6 +18,14 @@ x86vec::v4f32 x86vec::ldexp(arg<v4f32>::type d, arg<v4s32>::type q)
 	return func_t::ldexp(d, q);
 }
 
+x86vec::v4f32 x86vec::frexp(arg<v4f32>::type d, v4s32* e)
+{
+	using traits_t=cftal::math::func_traits<v4f32, v4s32>;
+	using func_t=cftal::math::func<float, int32_t, traits_t>;
+	return func_t::frexp(d, e);
+}
+
+
 x86vec::v4s32 x86vec::ilogbp1(arg<v4f32>::type d)
 {
 	using traits_t=cftal::math::func_traits<v4f32, v4s32>;

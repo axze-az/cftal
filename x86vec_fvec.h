@@ -196,6 +196,7 @@ namespace x86vec {
 
         v4f32 pow2if(arg<v4s32>::type e);
         v4f32 ldexp(arg<v4f32>::type d, arg<v4s32>::type e);
+        v4f32 frexp(arg<v4f32>::type d, v4s32* e);
         v4s32 ilogbp1(arg<v4f32>::type v);
         v4s32 ilogb(arg<v4f32>::type v);
 

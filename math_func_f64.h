@@ -330,7 +330,9 @@ cftal::math::func<double, cftal::int32_t, _T>::frexp(const vf_type& vd,
 	vi_type e((value_head >> 20) - vi_type(1022));
 
 	// denormals
-	const vf_type two54=1.80143985094819840000e+16;
+	// first multiply with 2^54
+	// const vf_type two54=1.80143985094819840000e+16;
+	const vf_type two54=0x1.p54;
 	vf_type vden(two54 * vd);
 	vi_type hden(_T::extract_high_word(vden));
 	vi_type lden(_T::extract_low_word(vden));

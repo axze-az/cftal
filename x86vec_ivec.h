@@ -634,6 +634,117 @@ namespace x86vec {
 
 #if defined (__AVX2__)
 	// 256 bit integer types
+#else
+	// emulation of v8s32 for v8f32 implementations
+        class v8s32 {
+		v4s32 _l;
+		v4s32 _h;
+        public:
+                typedef int32_t element_type;
+                v8s32() = default;
+                v8s32(const v4s32&l, const v4f32&h);
+                v8s32(element_type p00, element_type p01,
+                      element_type p02, element_type p03,
+		      element_type p04, element_type p05,
+                      element_type p06, element_type p07);
+                // broadcast to all positions
+                v8s32(element_type r);
+                v8s32(element_type r, bool broadcast);
+                v8s32(const mem::addr_bcast<element_type>& r);
+                v8s32(const mem::addr<element_type>& r);
+                v8s32(const mem::aligned::addr<element_type>& r);
+                v8s32(const mem::unaligned::addr<element_type>& r);
+		using base_type::operator();
+		masked_vec<v8s32> operator()(const mask<v8s32>& m);
+
+		friend v4s32 low_half(const v8s32& v);
+		friend v4s32 high_half(const v8s32& v);
+        };
+
+        v8s32& operator|= (v8s32& a, const v8s32& b);
+        v8s32& operator&= (v8s32& a, const v8s32& b);
+        v8s32& operator^= (v8s32& a, const v8s32& b);
+        v8s32& operator+= (v8s32& a, const v8s32& b);
+        v8s32& operator-= (v8s32& a, const v8s32& b);
+        v8s32& operator*= (v8s32& a, const v8s32& b);
+        v8s32& operator/= (v8s32& a, const v8s32& b);
+        v8s32& operator%= (v8s32& a, const v8s32& b);
+
+        template <uint32_t _P>
+        v8s32& operator<<= (v8s32& a, const const_u32<_P>& b);
+        v8s32& operator<<= (v8s32& a, uint32_t b);
+        template <uint32_t _P>
+        v8s32 operator <<(const v8s32& a, const const_u32<_P>& b);
+        v8s32 operator <<(const v8s32& a, uint32_t b);
+
+        template <uint32_t _P>
+        v8s32& operator>>= (v8s32& a, const const_u32<_P>& b);
+        v8s32& operator>>= (v8s32& a, uint32_t b);
+        template <uint32_t _P>
+        v8s32 operator >>(const v8s32& a, const const_u32<_P>& b);
+        v8s32 operator >>(const v8s32& a, uint32_t b);
+
+        v8s32 operator++ (v8s32& a, int);
+        v8s32& operator++(v8s32& a);
+        v8s32 operator-- (v8s32& a, int);
+        v8s32& operator--(v8s32& a);
+
+        v8s32 operator-(const v8s32& a);
+        const v8s32& operator+(const v8s32& a);
+        v8s32 operator~(const v8s32& a);
+        v8s32 operator!(const v8s32& a);
+
+        v8s32 operator| (const v8s32& a, const v8s32& b);
+        v8s32 operator|| (const v8s32& a, const v8s32& b);
+        v8s32 operator& (const v8s32& a, const v8s32& b);
+        v8s32 operator&& (const v8s32& a, const v8s32& b);
+        v8s32 operator^(const v8s32& a, const v8s32& b);
+
+        v8s32 operator+ (const v8s32& a, const v8s32& b);
+        v8s32 operator- (const v8s32& a, const v8s32& b);
+        v8s32 operator* (const v8s32& a, const v8s32& b);
+        v8s32 operator/ (const v8s32& a, const v8s32& b);
+        v8s32 operator% (const v8s32& a, const v8s32& b);
+
+        v8s32 operator< (const v8s32& a, const v8s32& b);
+        v8s32 operator<= (const v8s32& a, const v8s32& b);
+        v8s32 operator== (const v8s32& a, const v8s32& b);
+        v8s32 operator!= (const v8s32& a, const v8s32& b);
+        v8s32 operator>= (const v8s32& a, const v8s32& b);
+        v8s32 operator> (const v8s32& a, const v8s32& b);
+
+        // checks the signs
+        bool all_signs(const v8s32& a);
+        // checks the signs
+        bool both_signs(const v8s32& a);
+        // checks the signs
+        bool no_signs(const v8s32& a);
+
+        v8s32 max(const v8s32& a, const v8s32& b);
+        v8s32 min(const v8s32& a, const v8s32& b);
+        v8s32 abs(const v8s32& a);
+        v8s32 andnot(const v8s32& a, const v8s32& b);
+        v8s32 mul_hi(const v8s32& a, const v8s32& b);
+        // low part in first, high part in second
+        std::pair<v8s32, v8s32> mul_lo_hi(const v8s32& a, const v8s32& b);
+
+        template <bool _P0, bool _P1, bool _P2, bool _P3,
+		  bool _P4, bool _P5, bool _P6, bool _P7>
+        v8s32 select(const v8s32& a, const v8s32& b);
+        v8s32 select(const v8s32& msk, const v8s32& on_true,
+                     const v8s32& on_false);
+
+        template <int _P0, int _P1, int _P2, int _P3,
+		  int _P4, int _P5, int _P6, int _P7>
+        v8s32 permute(const v8s32& a);
+        template < int _P0, int _P1, int _P2, int _P3,
+		   int _P4, int _P5, int _P6, int _P7>
+        v8s32 permute(const v8s32& a, const v8s32& b);
+
+        template <unsigned _I>
+        v8s32 insert(const v8s32& a, typename v8s32::element_type v);
+        template <unsigned _I>
+        typename v8s32::element_type extract(const v8s32& a);
 #endif
 }
 
