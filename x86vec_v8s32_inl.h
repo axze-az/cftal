@@ -303,14 +303,17 @@ inline
 x86vec::v8s32
 x86vec::operator!(const v8s32& a)
 {
-        const __m128i msk = impl::make_zero_int::v();
-        return _mm_cmpeq_epi32(a(), msk);
+	v4s32 rl(!low_half(a));
+	v4s32 rh(!high_half(a));
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator| (const v8s32& a, const v8s32& b)
 {
-        return _mm_or_si128(a(), b());
+	v4s32 rl(low_half(a) | low_half(b) );
+	v4s32 rh(high_half(a) | high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
@@ -322,7 +325,9 @@ x86vec::v8s32 x86vec::operator|| (const v8s32& a, const v8s32& b)
 inline
 x86vec::v8s32 x86vec::operator& (const v8s32& a, const v8s32& b)
 {
-        return _mm_and_si128(a(), b());
+	v4s32 rl(low_half(a) & low_half(b) );
+	v4s32 rh(high_half(a) & high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
@@ -334,190 +339,178 @@ x86vec::v8s32 x86vec::operator&& (const v8s32& a, const v8s32& b)
 inline
 x86vec::v8s32 x86vec::operator^(const v8s32& a, const v8s32& b)
 {
-        return _mm_xor_si128(a(), b());
+	v4s32 rl(low_half(a) ^ low_half(b) );
+	v4s32 rh(high_half(a) ^ high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator+ (const v8s32& a, const v8s32& b)
 {
-        return _mm_add_epi32(a(), b());
+	v4s32 rl(low_half(a) + low_half(b) );
+	v4s32 rh(high_half(a) + high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator- (const v8s32& a, const v8s32& b)
 {
-        return _mm_sub_epi32(a(), b());
+	v4s32 rl(low_half(a) - low_half(b) );
+	v4s32 rh(high_half(a) - high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator* (const v8s32& a, const v8s32& b)
 {
-        return impl::vpmulld::v(a(), b());
+	v4s32 rl(low_half(a) * low_half(b) );
+	v4s32 rh(high_half(a) * high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32
 x86vec::operator/(const v8s32& a, const v8s32& b)
 {
-        return impl::div_s32::v(a(), b());
+	v4s32 rl(low_half(a) / low_half(b) );
+	v4s32 rh(high_half(a) / high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32
 x86vec::operator%(const v8s32& a, const v8s32& b)
 {
-        return cftal::remainder(a, b, a/b);
+	v4s32 rl(low_half(a) % low_half(b) );
+	v4s32 rh(high_half(a) % high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator< (const v8s32& a, const v8s32& b)
 {
-        return _mm_cmpgt_epi32(b(), a());
+	v4s32 rl(low_half(a) < low_half(b) );
+	v4s32 rh(high_half(a) < high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator<= (const v8s32& a, const v8s32& b)
 {
-#if defined (__SSE4_1__)
-	// a <= b: a == min(a, b);
-	__m128i min_ab = _mm_min_epi32(b(), a());
-	return _mm_cmpeq_epi32(a(), min_ab);
-#else
-	return ~(b > a);
-#endif
+	v4s32 rl(low_half(a) <= low_half(b) );
+	v4s32 rh(high_half(a) <= high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator== (const v8s32& a, const v8s32& b)
 {
-        return _mm_cmpeq_epi32(a(), b());
+	v4s32 rl(low_half(a) == low_half(b) );
+	v4s32 rh(high_half(a) == high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator!= (const v8s32& a, const v8s32& b)
 {
-        return ~(a == b);
+	v4s32 rl(low_half(a) != low_half(b) );
+	v4s32 rh(high_half(a) != high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator>= (const v8s32& a, const v8s32& b)
 {
-#if defined (__SSE4_1__)
-	// a >= b: a == max(a, b);
-	__m128i max_ab = _mm_max_epi32(b(), a());
-	return _mm_cmpeq_epi32(a(), max_ab);
-#else
-        return ~(a < b);
-#endif
+	v4s32 rl(low_half(a) >= low_half(b) );
+	v4s32 rh(high_half(a) >= high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::operator> (const v8s32& a, const v8s32& b)
 {
-        return _mm_cmpgt_epi32(a(), b());
+	v4s32 rl(low_half(a) > low_half(b) );
+	v4s32 rh(high_half(a) > high_half(b) );
+	return v8s32(rl, rh);
 }
 
 inline
 bool x86vec::all_signs(const v8s32& a)
 {
-        return all_signs_s32(a());
+        return all_signs(low_half(a)) && all_signs(high_half(a));
 }
 
 inline
 bool x86vec::both_signs(const v8s32& a)
 {
-        return both_signs_s32(a());
+        return both_signs(low_half(a)) || both_signs(high_half(a));
 }
 
 inline
 bool x86vec::no_signs(const v8s32& a)
 {
-        return no_signs_s32(a());
+        return no_signs(low_half(a)) && no_signs(high_half(a));
 }
 
 inline
 x86vec::v8s32 x86vec::max(const v8s32& a, const v8s32& b)
 {
-#if defined (__SSE4_1__)
-        return _mm_max_epi32(a(), b());
-#else
-	v8s32 _gt(a > b);
-	return select(_gt, a, b);
-#endif
+	v4s32 rl(max(low_half(a), low_half(b)));
+	v4s32 rh(max(high_half(a), high_half(b)));
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::min(const v8s32& a, const v8s32& b)
 {
-#if defined (__SSE4_1__)
-        return _mm_min_epi32(a(), b());
-#else
-	v8s32 _lt(a < b);
-	return select(_lt, a, b);
-#endif
+	v4s32 rl(min(low_half(a), low_half(b)));
+	v4s32 rh(min(high_half(a), high_half(b)));
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::abs(const v8s32& a)
 {
-#if defined (__SSSE3__)
-        return _mm_abs_epi32(a());
-#else
-        v8s32 neg(impl::make_zero_int::v());
-        neg -= a;
-        return max(a, neg);
-#endif
+	v4s32 rl(abs(low_half(a)));
+	v4s32 rh(abs(high_half(a)));
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::andnot(const v8s32& a, const v8s32& b)
 {
-	return _mm_andnot_si128(a(), b());
+	v4s32 rl(andnot(low_half(a), low_half(b)));
+	v4s32 rh(andnot(high_half(a), high_half(b)));
+	return v8s32(rl, rh);
 }
 
 inline
 x86vec::v8s32 x86vec::mul_hi(const v8s32& x, const v8s32& y)
 {
-	return impl::vpmulhd::v(x(), y());
+	v4s32 rl(mul_hi(low_half(a), low_half(b)));
+	v4s32 rh(mul_hi(high_half(a), high_half(b)));
+	return v8s32(rl, rh);
 }
 
 inline
 std::pair<x86vec::v8s32, x86vec::v8s32>
 x86vec::mul_lo_hi(const v8s32& x, const v8s32& y)
 {
-#if defined (__SSE4_1__) 
-	// p0l p0h p2l p2h
-	v8s32 e= _mm_mul_epi32(x(), y());
-	// p1l p1h p3l p3h
-	v8s32 o= _mm_mul_epi32(impl::vpshufd<1, 0, 3, 2>::v(x()),
-			       impl::vpshufd<1, 0, 3, 2>::v(y()));
-	// p0l p1l p0h p1h
-	v8s32 t0= permute<0, 4, 1, 5>(e, o);
-	// p2l p3l p2h p3h
-	v8s32 t1= permute<2, 6, 3, 7>(e, o);
-	// p0h p1h p2h p3h
-	v8s32 h = permute<2, 3, 6, 7>(t0, t1);
-	v8s32 l = permute<0, 1, 4, 5>(t0, t1);
-	return std::make_pair(l, h);
-#else
-	// muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
-	// mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
-	std::pair<v4u32, v4u32> ur(mul_lo_hi(v4u32(x), v4u32(y)));
-	v8s32 xsgn_y= y >> const_shift::_31;
-	v8s32 xsgn_x= x >> const_shift::_31;
-	v8s32 x_and_xsgn_y = x & xsgn_y;
-	v8s32 y_and_xsgn_x = y & xsgn_x;
-	v8s32 sh = v8s32(ur.second) - x_and_xsgn_y - y_and_xsgn_x;
-	v8s32 sl = v8s32(ur.first);
-	return std::make_pair(sl, sh);
-#endif
+	std::pair<v4s32, v4s32> lp(mul_lo_hi(low_half(x), low_half(y)));
+	std::pair<v4s32, v4s32> hp(mul_lo_hi(high_half(x), high_half(y)));
+	v8s32 ml(lp.first, hp.first);
+	v8s32 mh(lp.second, hp.second);
+	return std::make_pair(ml, mh);
 }
 
-template < bool _P0, bool _P1, bool _P2, bool _P3 >
+template <bool _P0, bool _P1, bool _P2, bool _P3,
+	  bool _P4, bool _P5, bool _P6, bool _P7>
 inline
 x86vec::v8s32 x86vec::select(const v8s32& a, const v8s32& b)
 {
-        return select_u32 <_P0, _P1, _P2, _P3> (a(), b());
+	v4s32 rl(select<_P0, _P1, _P2, _P3>(low_half(a), low_half(b)));
+	v4s32 rh(select<_P4, _P5, _P6, _P7>(high_half(a), high_half(b)));
+	return v8s32(rl, rh);
 }
 
 inline
@@ -525,7 +518,11 @@ x86vec::v8s32 x86vec::select(const v8s32& msk,
                              const v8s32& on_true,
                              const v8s32& on_false)
 {
-        return select(msk(), on_true(), on_false());
+	v4s32 rl(select(low_half(msk), 
+			low_half(on_true), low_half(on_false)));
+	v4s32 rh(select(high_half(msk), 
+			high_half(on_true), high_half(on_false)));
+	return v8s32(rl, rh);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
