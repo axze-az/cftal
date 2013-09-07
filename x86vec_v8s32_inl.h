@@ -543,7 +543,13 @@ template <unsigned _I>
 inline
 x86vec::v8s32 x86vec::insert(const v8s32& a, typename v8s32::element_type v)
 {
-	return insert_u32<_I>(a(), v);
+	const bool low= _I < 4;
+	v4s32 rl(low_half(a)), rh(high_half(a));
+	if (_I < 4)
+		rl = insert<_I>(rl, v);
+	else
+		rh = insert<_I-4>(rh, v);
+	return v8s32(rl, rh);
 }
 
 template <unsigned _I>
@@ -551,7 +557,9 @@ inline
 typename x86vec::v8s32::element_type
 x86vec::extract(const v8s32& a)
 {
-	return extract_u32<_I>(a());
+	if (_I < 4)
+		return extract<_I>(low_half(a));
+	return extract<_I-4>(high_half(a));
 }
 
 #endif
