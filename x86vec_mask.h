@@ -11,7 +11,6 @@ namespace x86vec {
 	class mask {
 		_V _v;
 	public:
-		typedef typename _V::vector_type vector_type;
 		mask() = default;
 		mask& operator=(const mask& r) = default;
 		mask(const _V& x);

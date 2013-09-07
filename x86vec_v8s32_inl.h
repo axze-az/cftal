@@ -16,10 +16,6 @@ x86vec::v8s32::v8s32(const v4s32&l, const v4s32& h)
 {
 }
 
-inline
-x86vec::v8s32::v8s32(const base_type& r) : base_type(r)
-{
-}
 
 inline
 x86vec::v8s32::v8s32(element_type p00, element_type p01,
@@ -44,7 +40,7 @@ x86vec::v8s32::v8s32(v8s32::element_type r, bool broadcast)
 	
 inline
 x86vec::v8s32::v8s32(const mem::addr_bcast<element_type>& r)
-        : base_type(_mm_set1_epi32(*r()))
+        : _l(r), _h(r)
 {
 }
 
@@ -202,7 +198,7 @@ inline
 x86vec::v8s32&
 x86vec::operator>>= (v8s32& a, uint32_t r)
 {
-        a = a >> b;
+        a = a >> r;
         return a;
 }
 
@@ -220,8 +216,8 @@ inline
 x86vec::v8s32
 x86vec::operator>> (const v8s32& a, uint32_t r)
 {
-	v4s32 rl(low_half(a) >> b);
-	v4s32 rh(high_half(a) >> b);
+	v4s32 rl(low_half(a) >> r);
+	v4s32 rh(high_half(a) >> r);
 	return v8s32(rl, rh);
 }
 
@@ -234,7 +230,8 @@ x86vec::operator++(v8s32& a)
 	v4s32 rh(high_half(a));
 	++rl;
 	++rh;
-	return v8s32(rl, rh);
+	a = v8s32(rl, rh);
+	return a;
 }
 
 inline
@@ -258,7 +255,8 @@ x86vec::operator--(v8s32& a)
 	v4s32 rh(high_half(a));
 	--rl;
 	--rh;
-	return v8s32(rl, rh);
+	a= v8s32(rl, rh);
+	return a;
 }
 
 inline
@@ -487,8 +485,8 @@ x86vec::v8s32 x86vec::andnot(const v8s32& a, const v8s32& b)
 inline
 x86vec::v8s32 x86vec::mul_hi(const v8s32& x, const v8s32& y)
 {
-	v4s32 rl(mul_hi(low_half(a), low_half(b)));
-	v4s32 rh(mul_hi(high_half(a), high_half(b)));
+	v4s32 rl(mul_hi(low_half(x), low_half(y)));
+	v4s32 rh(mul_hi(high_half(x), high_half(y)));
 	return v8s32(rl, rh);
 }
 
@@ -525,18 +523,22 @@ x86vec::v8s32 x86vec::select(const v8s32& msk,
 	return v8s32(rl, rh);
 }
 
-template <int _P0, int _P1, int _P2, int _P3>
+template <int _P0, int _P1, int _P2, int _P3,
+	  int _P4, int _P5, int _P6, int _P7>
 inline
 x86vec::v8s32 x86vec::permute(const v8s32& a)
 {
-        return perm_u32<_P0, _P1, _P2, _P3>(a());
+	return a;
+        // return perm_u32<_P0, _P1, _P2, _P3>(a());
 }
 
-template < int _P0, int _P1, int _P2, int _P3 >
+template <int _P0, int _P1, int _P2, int _P3,
+	  int _P4, int _P5, int _P6, int _P7>
 inline
 x86vec::v8s32 x86vec::permute(const v8s32& a, const v8s32& b)
 {
-        return perm_u32<_P0, _P1, _P2, _P3>(a(), b());
+        // return perm_u32<_P0, _P1, _P2, _P3>(a(), b());
+	return a;
 }
 
 template <unsigned _I>

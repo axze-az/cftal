@@ -660,6 +660,9 @@ namespace x86vec {
 		friend v4s32 high_half(const v8s32& v);
         };
 
+	v4s32 low_half(const v8s32& v);
+	v4s32 high_half(const v8s32& v);
+
         v8s32& operator|= (v8s32& a, const v8s32& b);
         v8s32& operator&= (v8s32& a, const v8s32& b);
         v8s32& operator^= (v8s32& a, const v8s32& b);
@@ -872,6 +875,8 @@ namespace std {
 #include <cftal/x86vec_v4u32_inl.h>
 #include <cftal/x86vec_v2s64_inl.h>
 #include <cftal/x86vec_v2u64_inl.h>
+
+#include <cftal/x86vec_v8s32_inl.h>
 
 // Local variables:
 // mode: c++
