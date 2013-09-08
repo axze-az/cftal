@@ -593,7 +593,7 @@ x86vec::v8s32 x86vec::permute(const v8s32& a, const v8s32& b)
 	const int mb6 = _P6 > 8 ? (_P6-8) : -1;
 	const int mb7 = _P7 > 8 ? (_P7-8) : -1;
 	v8s32 b1 = permute<mb0, mb1, mb2, mb3,
-			    mb4, mb5, mb6, mb7>(b);
+			   mb4, mb5, mb6, mb7>(b);
 	return  a1 | b1;
 }
 
