@@ -538,8 +538,63 @@ template <int _P0, int _P1, int _P2, int _P3,
 inline
 x86vec::v8s32 x86vec::permute(const v8s32& a, const v8s32& b)
 {
-        // return perm_u32<_P0, _P1, _P2, _P3>(a(), b());
-	return a;
+	using impl::pos_msk_8;
+	using impl::zero_msk_8;
+        // Combine all the indexes into a single bitfield, with 4 bits
+        // for each
+        const int m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
+        // Mask to zero out negative indexes
+        const int m2 = zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+
+        if ((m1 & 0x88888888 & m2) == 0) {
+                // no elements from b
+                return permute<_P0, _P1, _P2, _P3, 
+			       _P4, _P5, _P6, _P7>(a);
+        }
+        if (((m1^0x88888888) & 0x88888888 & m2) == 0) {
+                // no elements from a
+                return permute<_P0 & ~8, _P1 & ~8,
+			       _P2 & ~8, _P3 & ~8,
+			       _P4 & ~8, _P5 & ~8,
+			       _P6 & ~8, _P7 & ~8>(b);
+        }
+        if (((m1 & ~0x88888888) ^ 0x76543210) == 0 && m2 == 0xFFFFFFFF) {
+                // selecting without shuffling or zeroing
+                const bool sm0 = _P0 < 8;
+                const bool sm1 = _P1 < 8;
+                const bool sm2 = _P2 < 8;
+                const bool sm3 = _P3 < 8;
+                const bool sm4 = _P4 < 8;
+                const bool sm5 = _P5 < 8;
+                const bool sm6 = _P6 < 8;
+                const bool sm7 = _P7 < 8;
+                return select<sm0, sm1, sm2, sm3,
+			      sm4, sm5, sm6, sm7>(a, b);
+        }
+
+        // select all elements to clear or from 1st vector
+        const int ma0 = _P0 < 8 ? _P0 : -1;
+	const int ma1 = _P1 < 8 ? _P1 : -1;
+	const int ma2 = _P2 < 8 ? _P2 : -1;
+	const int ma3 = _P3 < 8 ? _P3 : -1;
+        const int ma4 = _P4 < 8 ? _P4 : -1;
+	const int ma5 = _P5 < 8 ? _P5 : -1;
+	const int ma6 = _P6 < 8 ? _P6 : -1;
+	const int ma7 = _P7 < 8 ? _P7 : -1;
+	v8s32 a1 = permute<ma0, ma1, ma2, ma3,
+			   ma4, ma5, ma6, ma7>(a);
+	// select all elements from second vector
+	const int mb0 = _P0 > 8 ? (_P0-8) : -1;
+	const int mb1 = _P1 > 8 ? (_P1-8) : -1;
+	const int mb2 = _P2 > 8 ? (_P2-8) : -1;
+	const int mb3 = _P3 > 8 ? (_P3-8) : -1;
+	const int mb4 = _P4 > 8 ? (_P4-8) : -1;
+	const int mb5 = _P5 > 8 ? (_P5-8) : -1;
+	const int mb6 = _P6 > 8 ? (_P6-8) : -1;
+	const int mb7 = _P7 > 8 ? (_P7-8) : -1;
+	v8s32 b1 = permute<mb0, mb1, mb2, mb3,
+			    mb4, mb5, mb6, mb7>(b);
+	return  a1 | b1;
 }
 
 template <unsigned _I>
