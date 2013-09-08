@@ -528,8 +528,9 @@ template <int _P0, int _P1, int _P2, int _P3,
 inline
 x86vec::v8s32 x86vec::permute(const v8s32& a)
 {
-	return a;
-        // return perm_u32<_P0, _P1, _P2, _P3>(a());
+	v4s32 rl(permute<_P0, _P1, _P2, _P3>(low_half(a), high_half(a)));
+	v4s32 rh(permute<_P4, _P5, _P6, _P7>(low_half(a), high_half(a)));
+	return v8s32(rl, rh);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
