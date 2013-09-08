@@ -460,11 +460,6 @@ namespace x86vec {
                 masked_vec<v4f64> operator()(const mask<v4f64>& m);
         };
 
-        inline
-        const v4f64& eval(const v4f64& v) {
-                return v;
-        }
-
         namespace ops {
 
                 template <>
@@ -507,6 +502,11 @@ namespace x86vec {
                         static v4f64 v(const v4f64& a, const v4f64& b,
                                        const v4f64& c);
                 };
+        }
+
+        inline
+        const v4f64& eval(const v4f64& v) {
+                return v;
         }
 
         DEFINE_X86VEC_FP_OPERATORS(v4f64);
