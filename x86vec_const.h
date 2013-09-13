@@ -286,6 +286,11 @@ namespace x86vec {
         typedef v_sign_s32_msk v_sign_v4f32_msk;
         typedef v_not_sign_s32_msk v_not_sign_f32_msk;
 
+	typedef const_v8u32<0x7fffffff, 0x7fffffff,
+			    0x7fffffff, 0x7fffffff,
+			    0x7fffffff, 0x7fffffff,
+			    0x7fffffff, 0x7fffffff> v_not_sign_v8f32_msk;
+
         typedef const_v8u32<0x80000000, 0x80000000,
 			    0x80000000, 0x80000000,
 			    0x80000000, 0x80000000,
@@ -293,6 +298,12 @@ namespace x86vec {
 
         typedef const_v4u32<0x7f800000, 0x7f800000,
 			    0x7f800000, 0x7f800000> v_exp_f32_msk;
+
+        typedef const_v8u32<0x7f800000, 0x7f800000,
+			    0x7f800000, 0x7f800000,
+			    0x7f800000, 0x7f800000,
+			    0x7f800000, 0x7f800000> v_exp_v8f32_msk;
+
         typedef const_v4u32<0x807fffff, 0x807fffff,
 			    0x807fffff, 0x807fffff> v_not_exp_f32_msk;
         typedef const_v4u32<0x007fffff, 0x007fffff,

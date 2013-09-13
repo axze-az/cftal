@@ -36,6 +36,35 @@ namespace cftal {
 		}
         };
 
+        template <>
+        struct d_real_traits<x86vec::v4f32> : public has_fma<float> {
+                constexpr d_real_traits<x86vec::v4f32>() = default;
+                // result of a comparison operator
+                typedef x86vec::v4f32 cmp_result_type;
+                static bool any(const cmp_result_type& b) {
+                        return !no_signs(b);
+                }
+
+                static x86vec::v4f32 sel(const cmp_result_type& s,
+                                         const x86vec::v4f32& on_true,
+                                         const x86vec::v4f32& on_false) {
+                        return select(s, on_true, on_false);
+                }
+
+		static 
+		void split(const x86vec::v4f32& a, 
+			   x86vec::v4f32& h, 
+			   x86vec::v4f32& l) {
+			const x86vec::v4f32 msk= 
+				x86vec::const_v4u32<0xfffff000U, 
+						    0xfffff000U, 
+						    0xfffff000U, 
+						    0xfffff000U>::fv();
+			h = a & msk;
+			l = a - h;
+		}
+        };
+
 #if defined (__AVX__)
         template <>
         struct d_real_traits<x86vec::v4f64> : public has_fma<double> {
@@ -69,6 +98,41 @@ namespace cftal {
 			l = a - h;
 		}
         };
+
+
+        template <>
+        struct d_real_traits<x86vec::v8f32> : public has_fma<float> {
+                constexpr d_real_traits<x86vec::v8f32>() = default;
+                // result of a comparison operator
+                typedef x86vec::v8f32 cmp_result_type;
+                static bool any(const cmp_result_type& b) {
+                        return !no_signs(b);
+                }
+
+                static x86vec::v8f32 sel(const cmp_result_type& s,
+                                         const x86vec::v8f32& on_true,
+                                         const x86vec::v8f32& on_false) {
+                        return select(s, on_true, on_false);
+                }
+
+		static 
+		void split(const x86vec::v8f32& a, 
+			   x86vec::v8f32& h, 
+			   x86vec::v8f32& l) {
+			const x86vec::v8f32 msk= 
+				x86vec::const_v8u32<0xfffff000U, 
+						    0xfffff000U, 
+						    0xfffff000U, 
+						    0xfffff000U,
+						    0xfffff000U, 
+						    0xfffff000U, 
+						    0xfffff000U, 
+						    0xfffff000U>::fv();
+			h = a & msk;
+			l = a - h;
+		}
+        };
+
 #endif
 
 	namespace math {
@@ -84,7 +148,8 @@ namespace cftal {
 
                         static
                         vmf_type vmi_to_vmf(const vmi_type& mi) {
-                                x86vec::v4s32 xm= x86vec::permute<0, 0, 1, 1>(mi);
+                                x86vec::v4s32 xm= 
+					x86vec::permute<0, 0, 1, 1>(mi);
                                 return x86vec::as<x86vec::v2f64>(xm);
                         }
                         static
@@ -142,7 +207,8 @@ namespace cftal {
 			static 
 			vf_type combine_words(const vi_type& l,
 					      const vi_type& h) {
-				x86vec::v4s32 c=x86vec::permute<0, 4, 1, 5>(l, h);
+				x86vec::v4s32 c=
+					x86vec::permute<0, 4, 1, 5>(l, h);
 				x86vec::v2f64 r=x86vec::as<vf_type>(c);
 				return r;
 			}
@@ -191,6 +257,11 @@ namespace cftal {
                                     const vf_type& t, const vf_type& f) {
                                 return select(msk, t, f);
                         }
+			static
+			vf_type gather(const float* p, const vi_type& idx,
+				       int sc) {
+				return x86vec::gather<vf_type>(p, idx, sc);
+			}
                         static
                         vf_type insert_exp(const vi_type& e) {
 				vi_type ep(e << x86vec::const_shift::_23);
@@ -345,6 +416,77 @@ namespace cftal {
                         vi_type cvt_rz_f_to_i(const vf_type& f) {
                                 return x86vec::cvt_rz<x86vec::v4s32>(f);
                         }
+                };
+
+                template <>
+                struct func_traits<x86vec::v8f32, x86vec::v8s32> : public 
+		func_traits<typename x86vec::v8f32::element_type,
+			    typename x86vec::v8s32::element_type> {
+                        typedef x86vec::v8f32 vf_type;
+                        typedef x86vec::v8f32 vmf_type;
+                        typedef x86vec::v8s32 vi_type;
+                        typedef x86vec::v8s32 vmi_type;
+
+                        static
+                        vmf_type vmi_to_vmf(const vmi_type& mi) {
+                                return x86vec::as<x86vec::v8f32>(mi);
+                        }
+                        static
+                        vmi_type vmf_to_vmi(const vmf_type& mf) {
+                                return x86vec::as<x86vec::v8s32>(mf);
+                        }
+                        static
+                        vi_type sel(const vmi_type& msk,
+                                    const vi_type& t, const vi_type& f) {
+                                return select(msk, t, f);
+                        }
+                        static
+                        vf_type sel(const vmf_type& msk,
+                                    const vf_type& t, const vf_type& f) {
+                                return select(msk, t, f);
+                        }
+			static
+			vf_type gather(const float* p, const vi_type& idx,
+				       int sc) {
+				return x86vec::gather<vf_type>(p, idx, sc);
+			}
+                        static
+                        vf_type insert_exp(const vi_type& e) {
+				vi_type ep(e << x86vec::const_shift::_23);
+                                return x86vec::as<x86vec::v8f32>(ep);
+                        }
+                        static
+                        vi_type extract_exp(const vf_type& d) {
+                                x86vec::v8s32 e= x86vec::as<x86vec::v8s32>(d);
+                                e >>= x86vec::const_shift::_23;
+                                e &= x86vec::v8s32(0xff, 0xff, 0xff, 0xff,
+						   0xff, 0xff, 0xff, 0xff);
+                                return e;
+                        }
+                        static
+                        vf_type cvt_i_to_f(const vi_type& i) {
+                                return x86vec::cvt<x86vec::v8f32>(i);
+                        }
+
+                        static
+                        vi_type cvt_f_to_i(const vf_type& f) {
+                                return x86vec::cvt<x86vec::v8s32>(f);
+                        }
+                        // including rounding towards zero
+                        static
+                        vi_type cvt_rz_f_to_i(const vf_type& f) {
+                                return x86vec::cvt_rz<x86vec::v8s32>(f);
+                        }
+
+			static 
+			vi_type as_int(const vf_type& f) {
+				return x86vec::as<x86vec::v8s32>(f);
+			}
+
+			static 
+			vf_type as_float(const vi_type& i) {
+				return x86vec::as<x86vec::v8f32>(i);
+			}
                 };
 
 #endif

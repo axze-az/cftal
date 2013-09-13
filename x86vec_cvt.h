@@ -111,6 +111,32 @@ namespace x86vec {
 				return _mm256_cvtepi32_pd(s());
 			}
 		};
+
+		template <>
+		struct cvt<v4f32, v4f64> {
+			static v4f32 l(const v4f64& s) {
+				return _mm256_cvtpd_ps(s());
+			}
+		};
+
+		
+		template <>
+		struct cvt<v4f64, v4f32> {
+			static v4f64 l(const v4f32& s) {
+				return _mm256_cvtps_pd(s());
+			}
+		};
+
+		template <>
+		struct cvt<v4f64, v8f32> {
+			static v4f64 l(const v8f32& a) {
+				return cvt<v4f64, v4f32>::l(low_half(a));
+			}
+			static v4f64 h(const v8f32& a) {
+				return cvt<v4f64, v4f32>::l(high_half(a));
+			}
+		};
+
 #endif
 
 	}
@@ -123,6 +149,7 @@ namespace x86vec {
 	_D cvt(const _S& s);
 
 	v4f32 cvt_f32(const v2f64& l, const v2f64& h);
+	v8f32 cvt_f32(const v4f64& l, const v4f64& h);
 
 	template <class _D, class _S>
 	std::pair<_D, _D> cvt_widen(const _S& s);
@@ -175,6 +202,15 @@ x86vec::v4f32 x86vec::cvt_f32(const v2f64& l, const v2f64& h)
 	v4f32 hf(cvt<v4f32>(h));
 	return permute<0, 1, 4, 5>(lf, hf);
 }
+
+inline
+x86vec::v8f32 x86vec::cvt_f32(const v4f64& l, const v4f64& h)
+{
+	v4f32 lf(cvt<v4f32>(l));
+	v4f32 hf(cvt<v4f32>(h));
+	return v8f32(lf, hf);
+}
+
 
 template <class _D, class _S>
 inline

@@ -785,6 +785,31 @@ namespace x86vec {
 					 int scale);			
 		};
 
+		template <class _T, class _I>
+		struct vgatherdps {
+			static _T v(const float* base,
+				    const _I& idx,
+				    int scale);
+			static _T v(const _T& src,
+				    const float* base,
+				    const _I& idx,
+				    const _T& msk,
+				    int scale);			
+		};
+
+		template <>
+		struct vgatherdps<__m128, __m128i> {
+			static __m128 v(const float* base,
+					__m128i idx,
+					int scale);
+			static __m128 v(__m128 src,
+					const float* base,
+					__m128i idx,
+					__m128 msk,
+					int scale);			
+		};
+
+
 #if defined (__AVX__)			
 		template <>
 		struct vgatherdpd<__m256d> {
@@ -796,6 +821,18 @@ namespace x86vec {
 					 __m128i idx,
 					 __m256d msk,
 					 int scale);			
+		};
+
+		template <>
+		struct vgatherdps<__m256, __m256i> {
+			static __m256 v(const float* base,
+					__m256i idx,
+					int scale);
+			static __m256 v(__m256 src,
+					const float* base,
+					__m256i idx,
+					__m256 msk,
+					int scale);			
 		};
 #endif
 
@@ -1097,6 +1134,29 @@ x86vec::impl::vgatherdpd<__m128d>::v(const double* base,
 #endif
 }
 
+inline
+__m128
+x86vec::impl::vgatherdps<__m128, __m128i>::v(const float* base,
+					     __m128i idx,
+					     int scale)
+{
+#if defined (__AVX2__)
+	return _mm_i32gather_ps(base, idx, scale);
+#else
+	const char* p= reinterpret_cast<const char*>(base);
+	const char* p0= p + extract_u32<0>(idx) * scale;
+	const char* p1= p + extract_u32<1>(idx) * scale;
+	const char* p2= p + extract_u32<2>(idx) * scale;
+	const char* p3= p + extract_u32<3>(idx) * scale;
+	float f0= *reinterpret_cast<const float*>(p0);
+	float f1= *reinterpret_cast<const float*>(p1);
+	float f2= *reinterpret_cast<const float*>(p2);
+	float f3= *reinterpret_cast<const float*>(p3);
+	return _mm_setr_ps(f0, f1, f2, f3);
+#endif
+}
+
+
 #if defined (__AVX__)
 inline
 __m256d 
@@ -1117,6 +1177,36 @@ x86vec::impl::vgatherdpd<__m256d>::v(const double* base,
 	double d2= *reinterpret_cast<const double*>(p2);
 	double d3= *reinterpret_cast<const double*>(p3);
 	return _mm256_set_pd(d3, d2, d1, d0);
+#endif
+}
+
+inline
+__m256
+x86vec::impl::vgatherdps<__m256, __m256i>::v(const float* base,
+					     __m256i idx,
+					     int scale)
+{
+#if defined (__AVX2__)
+	return _mm256_i32gather_ps(base, idx, scale);
+#else
+	const char* p= reinterpret_cast<const char*>(base);
+	const char* p0= p + extract_u32<0>(idx) * scale;
+	const char* p1= p + extract_u32<1>(idx) * scale;
+	const char* p2= p + extract_u32<2>(idx) * scale;
+	const char* p3= p + extract_u32<3>(idx) * scale;
+	const char* p4= p + extract_u32<4>(idx) * scale;
+	const char* p5= p + extract_u32<5>(idx) * scale;
+	const char* p6= p + extract_u32<6>(idx) * scale;
+	const char* p7= p + extract_u32<7>(idx) * scale;
+	float d0= *reinterpret_cast<const float*>(p0);
+	float d1= *reinterpret_cast<const float*>(p1);
+	float d2= *reinterpret_cast<const float*>(p2);
+	float d3= *reinterpret_cast<const float*>(p3);
+	float d4= *reinterpret_cast<const float*>(p4);
+	float d5= *reinterpret_cast<const float*>(p5);
+	float d6= *reinterpret_cast<const float*>(p6);
+	float d7= *reinterpret_cast<const float*>(p7);
+	return _mm256_set_ps(d7, d6, d5, d4, d3, d2, d1, d0);
 #endif
 }
 

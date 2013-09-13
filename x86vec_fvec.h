@@ -56,6 +56,8 @@ namespace x86vec {
 
 	template <class _T>
 	_T gather(const double* base, const v4s32& idx, int scale=1);
+	template <class _T, class _IDX>
+	_T gather(const float* base, const _IDX& idx, int scale=1);
 
         class v4f32 : public vreg<__m128> {
         public:
@@ -435,6 +437,224 @@ namespace x86vec {
 
 #if defined (__AVX__)
         // 256 bit floating point types
+        class v8f32 : public vreg<__m256> {
+        public:
+                typedef float element_type;
+                typedef vreg<__m256> base_type;
+                v8f32() = default;
+                v8f32(vector_type r);
+                v8f32(const base_type& r);
+		v8f32(const v4f32& l, const v4f32& h);
+                v8f32(element_type p00, element_type p01,
+                      element_type p02=0.0f, element_type p03=0.0f,
+		      element_type p04=0.0f, element_type p05=0.0f,
+                      element_type p06=0.0f, element_type p07=0.0f);
+                // broadcast to all positions
+                v8f32(element_type r);
+                v8f32(element_type r, bool broadcast);
+                // assignment from expr<op<v8f32>, _L, _R>
+                template <template <class _V> class _OP, class _L, class _R>
+                v8f32(const expr<_OP<v8f32>, _L, _R>& r);
+                v8f32(const mem::addr_bcast<element_type>& r);
+                v8f32(const mem::addr<element_type>& r);
+                v8f32(const mem::aligned::addr<element_type>& r);
+                v8f32(const mem::unaligned::addr<element_type>& r);
+                using base_type::operator();
+                masked_vec<v8f32> operator()(const mask<v8f32>& m);
+        };
+
+        namespace ops {
+
+                template <>
+                struct add<v8f32> : public def_vector_type<v8f32> {
+                        static v8f32 v(const v8f32& a, const v8f32& b);
+                };
+
+                template <>
+                struct sub<v8f32> : public def_vector_type<v8f32>{
+                        static v8f32 v(const v8f32& a, const v8f32& b);
+                };
+
+                template <>
+                struct mul<v8f32> : public def_vector_type<v8f32>{
+                        static v8f32 v(const v8f32& a, const v8f32& b);
+                };
+
+                template <>
+                struct div<v8f32> : public def_vector_type<v8f32>{
+                        static v8f32 v(const v8f32& a, const v8f32& b);
+                };
+
+                // a * b + c
+                template <>
+                struct fma<v8f32> : public def_vector_type<v8f32>{
+                        static v8f32 v(const v8f32& a, const v8f32& b,
+                                       const v8f32& c);
+                };
+
+                // a * b - c
+                template <>
+                struct fms<v8f32> : public def_vector_type<v8f32>{
+                        static v8f32 v(const v8f32& a, const v8f32& b,
+                                       const v8f32& c);
+                };
+
+                // -(a * b) + c = c - a * b
+                template <>
+                struct fnma<v8f32> : public def_vector_type<v8f32>{
+                        static v8f32 v(const v8f32& a, const v8f32& b,
+                                       const v8f32& c);
+                };
+        }
+
+#if !defined (__AVX2__)
+	// conversion helpers for avx
+	namespace impl {
+		template <>
+		struct vector_traits<v8s32> {
+			typedef v8s32 vector_type;
+			static const vector_type& v(const v8s32& r) {
+				return r;
+			}
+		};
+
+		template <> 
+		struct cast<v8s32, __m256> {
+			static v8s32 v(const __m256& r) {
+				__m128 h=_mm256_extractf128_ps(r, 1);
+				__m128 l=cast<__m128, __m256>::v(r);
+				__m128i il=cast<__m128i, __m128>::v(l);
+				__m128i ih=cast<__m128i, __m128>::v(h);
+				return v8s32(il, ih);
+			}
+		};
+
+		template <> 
+		struct cast<__m256, v8s32> {
+			static __m256 v(const v8s32& r) {
+				__m128i il= low_half(r)();
+				__m128i ih= high_half(r)();
+				__m128 fl=cast<__m128, __m128i>::v(il);
+				__m128 fh=cast<__m128, __m128i>::v(ih);
+				__m256 res=cast<__m256, __m128>::v(fl);
+				res = _mm256_insertf128_ps(res, fh, 1);
+				return res;
+			}
+		};
+	}
+#endif
+
+        inline
+        const v8f32& eval(const v8f32& v) {
+                return v;
+        }
+
+        DEFINE_X86VEC_FP_OPERATORS(v8f32);
+
+        v8f32& operator|= (v8f32& a, const v8f32& b);
+        v8f32& operator&= (v8f32& a, const v8f32& b);
+        v8f32& operator^= (v8f32& a, const v8f32& b);
+
+        v8f32 operator++ (v8f32& a, int);
+        v8f32& operator++(v8f32& a);
+        v8f32 operator-- (v8f32& a, int);
+        v8f32& operator--(v8f32& a);
+
+        v8f32 operator-(const v8f32& a);
+        const v8f32& operator+(const v8f32& a);
+        v8f32 operator~(const v8f32& a);
+        v8f32 operator!(const v8f32& a);
+
+        v8f32 operator| (const v8f32& a, const v8f32& b);
+        v8f32 operator|| (const v8f32& a, const v8f32& b);
+        v8f32 operator& (const v8f32& a, const v8f32& b);
+        v8f32 operator&& (const v8f32& a, const v8f32& b);
+        v8f32 operator^(const v8f32& a, const v8f32& b);
+
+
+        v8f32 operator< (const v8f32& a, const v8f32& b);
+        v8f32 operator<= (const v8f32& a, const v8f32& b);
+        v8f32 operator== (const v8f32& a, const v8f32& b);
+        v8f32 operator!= (const v8f32& a, const v8f32& b);
+        v8f32 operator>= (const v8f32& a, const v8f32& b);
+        v8f32 operator> (const v8f32& a, const v8f32& b);
+
+	v4f32 low_half(const v8f32& v);
+	v4f32 high_half(const v8f32& v);
+
+        // checks the signs
+        bool all_signs(const v8f32& a);
+        // checks the signs
+        bool both_signs(const v8f32& a);
+        // checks the signs
+        bool no_signs(const v8f32& a);
+	// read a mask of all signs
+	unsigned read_signs(const v8f32& a);
+
+        v8f32 max(const v8f32& a, const v8f32& b);
+        v8f32 min(const v8f32& a, const v8f32& b);
+        v8f32 abs(const v8f32& a);
+	v8f32 fabs(const v8f32& a);
+        v8f32 sqrt(const v8f32& a);
+	
+        v8f32 rcp(const v8f32& a);
+        v8f32 native_rcp(const v8f32& a);
+        v8f32 rsqrt(const v8f32& a);
+        v8f32 native_rsqrt(const v8f32& a);
+
+        namespace impl {
+                v8f32 round(const v8f32& a, const rounding_mode::type m);
+        }
+        v8f32 rint(const v8f32& a);
+        v8f32 floor(const v8f32& a);
+        v8f32 ceil(const v8f32& a);
+        v8f32 trunc(const v8f32& a);
+        // returns (~a) & (b)
+        v8f32 andnot(const v8f32& a, const v8f32& b);
+        v8f32 copysign(const v8f32& x, const v8f32& y);
+        v8f32 mulsign(const v8f32& x, const v8f32& y);
+        v8f32 isinf(const v8f32& x);
+        v8f32 isnan(const v8f32& x);
+        v8f32 isfinite(const v8f32& x);
+
+        v8f32 pow2if(arg<v8s32>::type e);
+        v8f32 ldexp(arg<v8f32>::type d, arg<v8s32>::type e);
+        v8f32 frexp(arg<v8f32>::type d, v8s32* e);
+        v8s32 ilogbp1(arg<v8f32>::type v);
+        v8s32 ilogb(arg<v8f32>::type v);
+
+	void sincos(arg<v8f32>::type d, v8f32* psin, v8f32* pcos);
+	v8f32 sin(arg<v8f32>::type d);
+        v8f32 cos(arg<v8f32>::type d);
+        v8f32 tan(arg<v8f32>::type d);
+	v8f32 cot(arg<v8f32>::type d);
+
+        template <bool _P0, bool _P1, bool _P2, bool _P3,
+		  bool _P4, bool _P5, bool _P6, bool _P7>
+        v8f32 select(const v8f32& a, const v8f32& b);
+        v8f32 select(const v8f32& msk, const v8f32& on_true,
+                     const v8f32& on_false);
+
+        template <int _P0, int _P1, int _P2, int _P3,
+		  int _P4, int _P5, int _P6, int _P7>
+        v8f32 permute(const v8f32& a);
+        template <int _P0, int _P1, int _P2, int _P3,
+		  int _P4, int _P5, int _P6, int _P7>
+	v8f32 permute(const v8f32& a, const v8f32& b);
+
+        template <unsigned _I>
+        v8f32 insert(const v8f32& a, typename v8f32::element_type v);
+        template <unsigned _I>
+        typename v8f32::element_type extract(const v8f32& a);
+
+        v8f32::element_type hadd(const v8f32& a);
+        v8f32 hadd_pairs(const v8f32& a, const v8f32& b);
+        v8f32 hsub_pairs(const v8f32& a, const v8f32& b);
+        v8f32 hmul_pairs(const v8f32& a, const v8f32& b);
+        v8f32 hdiv_pairs(const v8f32& a, const v8f32& b);
+
+        v8f32::element_type dot(const v8f32& a, const v8f32& b);
+
         class v4f64 : public vreg<__m256d> {
         public:
                 typedef double element_type;
@@ -685,10 +905,21 @@ _T x86vec::gather(const double* base, const v4s32& idx, int scale)
 	return r;
 }
 
+
+template <class _T, class _IDX>
+inline
+_T x86vec::gather(const double* base, const _IDX& idx, int scale)
+{
+	using vec_type = typename _T::vector_type;
+	_T r(impl::vgatherdps<vec_type, _IDX>::v(base, idx, scale));
+	return r;
+}
+
 #include <cftal/x86vec_v4f32_inl.h>
 #include <cftal/x86vec_v2f64_inl.h>
 
 #if defined (__AVX__)
+#include <cftal/x86vec_v8f32_inl.h>
 #include <cftal/x86vec_v4f64_inl.h>
 #endif
 

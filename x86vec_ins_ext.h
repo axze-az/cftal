@@ -45,9 +45,20 @@ namespace x86vec {
 
 #if defined (__AVX__)
         template <unsigned _IDX>
+        float extract_f32(__m256 r);
+        template <unsigned _IDX>
+        __m256 insert_f32(__m256 r, double v);
+
+        template <unsigned _IDX>
         double extract_f64(__m256d r);
         template <unsigned _IDX>
         __m256d insert_f64(__m256d r, double v);
+
+        // extract/insert uint32_t
+        template <unsigned _IDX>
+        uint32_t extract_u32(__m256i v);
+        template <unsigned _IDX>
+        __m256i insert_u32(__m256i r, uint32_t v);
 #endif
 
 }
@@ -346,6 +357,74 @@ __m128i x86vec::insert_u64(__m128i v, uint64_t i)
 
 template <unsigned _IDX>
 inline
+float x86vec::extract_f32(__m256 v)
+{
+        const bool cond = _IDX < 8;
+        static_assert (cond, "x86vec::extract_f32 _IDX < 8");
+        __m128 vv;
+        if (_IDX<4) {
+                vv = as<__m128>(v);
+        } else {
+                vv = _mm256_extractf128_ps(v, 1);
+        }
+        return extract_f32<_IDX&3>(vv);
+}
+
+template <unsigned _IDX>
+inline
+__m256 x86vec::insert_f32(__m256 v, float d)
+{
+        const bool cond = _IDX < 8;
+        static_assert (cond, "x86vec::insert_f32 _IDX < 4");
+        __m256 r = v;
+        __m256 vv;
+        switch (_IDX) {
+        case 0:
+                vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f,
+				   0.0f, 0.0f, 0.0f, d);
+                r= select_f32<1, 0, 0, 0, 0, 0, 0, 0>(vv, r);
+                break;
+        case 1:
+                vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f,
+				   0.0f, 0.0f, d, 0.0f);
+                r= select_f32<0, 1, 0, 0, 0, 0, 0, 0>(vv, r);
+                break;
+        case 2:
+                vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f,
+				   0.0f, d, 0.0f, 0.0f);
+                r= select_f32<0, 0, 1, 0, 0, 0, 0, 0>(vv, r);
+                break;
+        case 3:
+                vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f,
+				   d, 0.0f, 0.0f, 0.0f);
+                r= select_f32<0, 0, 0, 1, 0, 0, 0, 0>(vv, r);
+                break;
+        case 4:
+                vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, d,
+				   0.0f, 0.0f, 0.0f, 0.0f);
+                r= select_f32<0, 0, 0, 0, 1, 0, 0, 0>(vv, r);
+                break;
+        case 5:
+                vv = _mm256_set_ps(0.0f, 0.0f, d, 0.0f,
+				   0.0f, 0.0f, 0.0f, 0.0f);
+                r= select_f32<0, 0, 0, 0, 0, 1, 0, 0>(vv, r);
+                break;
+        case 6:
+                vv = _mm256_set_ps(0.0f, d, 0.0f, 0.0f,
+				   0.0f, 0.0f, 0.0f, 0.0f);
+                r= select_f32<0, 0, 0, 0, 0, 0, 1, 0>(vv, r);
+                break;
+        case 7:
+                vv = _mm256_set_ps(d, 0.0f, 0.0f, 0.0f,
+				   0.0f, 0.0f, 0.0f, 0.0f);
+                r= select_f32<0, 0, 0, 0, 0, 0, 0, 1>(vv, r);
+                break;
+        }
+        return r;
+}
+
+template <unsigned _IDX>
+inline
 double x86vec::extract_f64(__m256d v)
 {
         const bool cond = _IDX < 4;
@@ -398,6 +477,23 @@ __m256d x86vec::insert_f64(__m256d v, double d)
         }
         return r;
 }
+
+template <unsigned _IDX>
+inline
+x86vec::uint32_t x86vec::extract_u32(__m256i v)
+{
+        const bool cond = _IDX < 8;
+        static_assert (cond, "x86vec::extract_u32 _IDX < 8");
+        __m128i vv;
+        if (_IDX<4) {
+                vv = as<__m128i>(v);
+        } else {
+                vv = _mm256_extractf128_si256(v, 1);
+        }
+        return extract_u32<_IDX&3>(vv);
+}
+
+
 #endif
 
 // Local variables:

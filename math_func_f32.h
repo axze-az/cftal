@@ -180,7 +180,7 @@ cftal::math::func<float, cftal::int32_t, _T>::frexp(const vf_type& vd,
 	vi_type is_denom(value_head < 0x008000000);
 
 	// exponent:
-	vi_type e((value_head >> 23) - vi_type(127));
+	vi_type e((value_head >> 23) - vi_type(126));
 
 	// denormals
 	// const vf_type two54=1.80143985094819840000e+16f;
@@ -189,13 +189,13 @@ cftal::math::func<float, cftal::int32_t, _T>::frexp(const vf_type& vd,
 	vf_type vden(two25 * vd);
 	vi_type iden(_T::as_int(vden));
 	vi_type value_head_den(iden & vi_type(0x7fffffff));
-	vi_type eden((value_head_den>>23) - vi_type(127+25));
+	vi_type eden((value_head_den>>23) - vi_type(126 +25));
 
 	// select denom/normal
 	e = _T::sel(is_denom, eden, e);
 	i = _T::sel(is_denom, iden, i);
 	// insert exponent
-	i = (i & vi_type(0x807fffff)) | vi_type(0x7d<<23);
+	i = (i & vi_type(0x807fffff)) | vi_type(0x7e<<23);
 	// interpret as float
 	vf_type frc(_T::as_float(i));
 	// inf, nan, zero

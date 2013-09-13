@@ -1687,7 +1687,7 @@ __m256 x86vec::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
                 return _mm256_and_ps(a, zm);
         }
 	// in lane permutation
-	__m256d res;
+	__m256 res;
 	if ( (((m1 & 0x4444) & m2) == 0) &&
 	     (((m1 & 0x4444000) & m2) == (0x44440000 & m2))) {
 		// low from low src, high from high src
@@ -1745,8 +1745,7 @@ __m256 x86vec::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
 						     _P2 & 3, _P3 & 3,
 						     _P4 & 3, _P5 & 3, 
 						     _P6 & 3, _P7 & 3>::iv();
-			const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
-			const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
+
 			hi2lo_hi2hi = _mm256_permutevar_ps(hi2lo_hi2hi, p);
 			lo2lo_lo2hi = _mm256_permutevar_ps(lo2lo_lo2hi, p);
 			const bool b0= _P0 < 4 ? true : false;
