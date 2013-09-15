@@ -149,7 +149,9 @@ namespace x86vec {
 	_D cvt(const _S& s);
 
 	v4f32 cvt_f32(const v2f64& l, const v2f64& h);
+#if defined (__AVX__)
 	v8f32 cvt_f32(const v4f64& l, const v4f64& h);
+#endif
 
 	template <class _D, class _S>
 	std::pair<_D, _D> cvt_widen(const _S& s);
@@ -203,6 +205,7 @@ x86vec::v4f32 x86vec::cvt_f32(const v2f64& l, const v2f64& h)
 	return permute<0, 1, 4, 5>(lf, hf);
 }
 
+#if defined (__AVX__)
 inline
 x86vec::v8f32 x86vec::cvt_f32(const v4f64& l, const v4f64& h)
 {
@@ -210,7 +213,7 @@ x86vec::v8f32 x86vec::cvt_f32(const v4f64& l, const v4f64& h)
 	v4f32 hf(cvt<v4f32>(h));
 	return v8f32(lf, hf);
 }
-
+#endif
 
 template <class _D, class _S>
 inline

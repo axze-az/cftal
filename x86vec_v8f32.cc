@@ -4,7 +4,7 @@
 #include <cmath>
 #include <limits>
 
-
+#if defined (__AVX__)
 x86vec::v8f32 x86vec::pow2if(arg<v8s32>::type e)
 {
 	using traits_t=cftal::math::func_traits<v8f32, v8s32>;
@@ -100,7 +100,6 @@ x86vec::v8f32 x86vec::sin(arg<v8f32>::type d)
 	return res;
 }
 
-#if 0
 x86vec::v8f32 x86vec::cos(arg<v8f32>::type d)
 {
 	using traits_t=cftal::math::func_traits<v4f64, v4s32>;
@@ -127,8 +126,8 @@ x86vec::v8f32 x86vec::cot(arg<v8f32>::type d)
 {
 	using traits_t=cftal::math::func_traits<v2f64, v8s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
-	std::pair<v2f64, v2f64> lh(cvt_lo<v2f64>(d), cvt_hi<v2f64>(d));
-	std::pair<v2f64, v2f64> reslh(func_t::native_cot(lh.first),
+	std::pair<v4f64, v4f64> lh(cvt_lo<v4f64>(d), cvt_hi<v4f64>(d));
+	std::pair<v4f64, v4f64> reslh(func_t::native_cot(lh.first),
 				      func_t::native_cot(lh.second));
 	v8f32 res(cvt_f32(reslh.first, reslh.second));
 	return res;
