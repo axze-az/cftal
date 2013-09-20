@@ -73,10 +73,10 @@ void x86vec::sincos(arg<v8f32>::type d, v8f32* psin, v8f32* pcos)
 		v4f64 dsin[2], dcos[2];
 		v4f64* dps= psin ? &dsin[0] : nullptr;
 		v4f64* dpc= pcos ? &dcos[0] : nullptr;
-		func_t::native_sin_cos(dd.first, dps, dpc);
+		func_t::native_sincos(dd.first, dps, dpc);
 		dps= psin ? &dsin[1] : nullptr;
 		dpc= pcos ? &dcos[1] : nullptr;
-		func_t::native_sin_cos(dd.second, dps, dpc);
+		func_t::native_sincos(dd.second, dps, dpc);
 		if (psin) {
 			v8f32 ss(cvt_f32(dsin[0], dsin[1]));
 			*psin = ss;
@@ -86,7 +86,6 @@ void x86vec::sincos(arg<v8f32>::type d, v8f32* psin, v8f32* pcos)
 			*pcos = sc;
 		}
 	}
-
 }
 
 x86vec::v8f32 x86vec::sin(arg<v8f32>::type d)
@@ -113,10 +112,10 @@ x86vec::v8f32 x86vec::cos(arg<v8f32>::type d)
 
 x86vec::v8f32 x86vec::tan(arg<v8f32>::type d)
 {
-	using traits_t=cftal::math::func_traits<v2f64, v8s32>;
+	using traits_t=cftal::math::func_traits<v4f64, v4s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
-	std::pair<v2f64, v2f64> lh(cvt_lo<v2f64>(d), cvt_hi<v2f64>(d));
-	std::pair<v2f64, v2f64> reslh(func_t::native_tan(lh.first),
+	std::pair<v4f64, v4f64> lh(cvt_lo<v4f64>(d), cvt_hi<v4f64>(d));
+	std::pair<v4f64, v4f64> reslh(func_t::native_tan(lh.first),
 				      func_t::native_tan(lh.second));
 	v8f32 res(cvt_f32(reslh.first, reslh.second));
 	return res;
@@ -124,7 +123,7 @@ x86vec::v8f32 x86vec::tan(arg<v8f32>::type d)
 
 x86vec::v8f32 x86vec::cot(arg<v8f32>::type d)
 {
-	using traits_t=cftal::math::func_traits<v2f64, v8s32>;
+	using traits_t=cftal::math::func_traits<v4f64, v4s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
 	std::pair<v4f64, v4f64> lh(cvt_lo<v4f64>(d), cvt_hi<v4f64>(d));
 	std::pair<v4f64, v4f64> reslh(func_t::native_cot(lh.first),

@@ -24,7 +24,7 @@ namespace cftal {
                                 uint32_t _u;
                         } ud_t;
 
-                        static constexpr int32_t bias = 0x7e;
+                        static constexpr int32_t bias = 126;
                         static constexpr int32_t e_max= 127;
                         static constexpr int32_t e_min= -126;
                         static constexpr int32_t bits=23;
@@ -116,6 +116,15 @@ namespace cftal {
 					     vi_type* vi);
                         static vi_type ilogbp1(const vf_type& vi);
                         static vi_type ilogb(const vf_type& vf);
+
+			static 
+			std::pair<vf_type, vf_type>
+			native_sin_cos_k(const vf_type& x);
+			static vf_type native_sin(const vf_type& x);
+			static vf_type native_cos(const vf_type& x);
+			static vf_type native_tan(const vf_type& x);
+			static vf_type native_cot(const vf_type& x);
+
                 };
         }
 }
@@ -234,6 +243,184 @@ cftal::math::func<float, cftal::int32_t, _T>::ilogb(const vf_type& d)
         mi = _T::vmf_to_vmi(mf);
         e = _T::sel(mi, vi_type(2147483647), e);
         return e;
+}
+
+template <typename _T>
+inline
+typename
+std::pair<typename cftal::math::func<float, cftal::int32_t, _T>::vf_type,
+	  typename cftal::math::func<float, cftal::int32_t, _T>::vf_type>
+cftal::math::func<float, cftal::int32_t, _T>::
+native_sin_cos_k(const vf_type& x)
+{
+#define PI4_Af 0.78515625f
+#define PI4_Bf 0.00024187564849853515625f
+#define PI4_Cf 3.7747668102383613586e-08f
+#define PI4_Df 1.2816720341285448015e-12f
+
+	vi_type qi(_T::cvt_i_to_f(x *(vf_type(2*M_1_PI))));
+	vi_type q(_T::cvt_f_to_i(qi));
+	vf_type s(x);
+
+	s = q* vf_type(-PI4_Af*2.0f) + s;
+	s = q* vf_type(-PI4_Bf*2.0f) + s;
+	s = q* vf_type(-PI4_Cf*2.0f) + s;
+	s = q* vf_type(-PI4_Df*2.0f) + s;
+
+	vf_type t(s);
+	s = s * s;
+
+	vf_type u(-0.000195169282960705459117889f);
+	u = u * s + vf_type(0.00833215750753879547119141f);
+	u = u * s + vf_type(-0.166666537523269653320312f);
+	u = u * s * t;
+
+	vf_type si(t + u);
+
+	u = vf_type(-2.71811842367242206819355e-07f);
+	u = u * s + vf_type(2.47990446951007470488548e-05f);
+	u = u * s + vf_type(-0.00138888787478208541870117f);
+	u = u * s + vf_type(0.0416666641831398010253906f);
+	u = u * s + vf_type(0.5f);
+
+	vf_type co(u * s + vf_type(1));
+
+	vmi_type i_q_and_1((q & vi_type(1)) != vi_type(0));
+	vmi_type i_q_and_2((q & vi_type(1)) != vi_type(0));
+
+	vmi_type i_qp1_and_2( ((vi_type(q) + vi_type(1)) &
+			       vi_type(2)) != vi_type(0));
+
+	vmf_type q_and_1(_T::vmi_to_vmf(i_q_and_1));
+	vf_type tsi(si);
+	vf_type tco(co);
+	// swap sin and cos if q_and_1 != 0
+	si = _T::sel(q_and_1, tco, tsi);
+	co = _T::sel(q_and_1, tsi, tco);
+
+	vmf_type q_and_2(_T::vmi_to_vmf(i_q_and_2));
+	si = _T::sel(q_and_2, -si, si);
+	vmf_type qp1_and_2(_T::vmi_to_vmf(i_qp1_and_2));
+	co = _T::sel(qp1_and_2, -co, co);
+	
+	vmf_type x_is_inf(isinf(x));
+	const vf_type nanf(_T::nan());
+	
+	si = _T::sel(x_is_inf, nanf, si);
+	co = _T::sel(x_is_inf, nanf, co);
+
+	return std::make_pair(si, co);
+#undef PI4_Df
+#undef PI4_Cf
+#undef PI4_Bf
+#undef PI4_Af
+}
+
+template <typename _T>
+inline
+typename
+cftal::math::func<float, cftal::int32_t, _T>::vf_type
+cftal::math::func<float, cftal::int32_t, _T>::native_sin(const vf_type& x)
+{
+#define PI4_Af 0.78515625f
+#define PI4_Bf 0.00024187564849853515625f
+#define PI4_Cf 3.7747668102383613586e-08f
+#define PI4_Df 1.2816720341285448015e-12f
+
+	vi_type q(_T::cvt_f_to_i(x * M_1_PI));
+	vf_type qf(_T::cvt_i_to_f(q));
+	
+	vf_type d(q * vf_type(-PI4_Af*4.0f) + x);
+	d = q * vf_type(-PI4_Bf*4.0f) + d;
+	d = q * vf_type(-PI4_Cf*4.0f) + d;
+	d = q * vf_type(-PI4_Df*4.0f) + d;
+
+	vf_type s(d* d);
+
+	vmi_type q_and_1_i((q & vi_type(1)) != vi_type(0));
+	vmf_type q_and_1(_T::vmi_to_vmf(q_and_1_i));
+
+	d = _T::sel(q_and_1, -d, d);
+
+	vf_type u(2.6083159809786593541503e-06f);
+	u = u * s -0.0001981069071916863322258f;
+	u = u * s +0.00833307858556509017944336f;
+	u = u * s -0.166666597127914428710938f;
+	u = s * u * d + d;
+
+	vmf_type d_s_inf(isinf(d));
+	u = _T::sel(d_s_inf, _T::nan(), u);
+	return u;
+
+#undef PI4_Df
+#undef PI4_Cf
+#undef PI4_Bf
+#undef PI4_Af
+
+}
+
+template <typename _T>
+inline
+typename
+cftal::math::func<float, cftal::int32_t, _T>::vf_type
+cftal::math::func<float, cftal::int32_t, _T>::native_cos(const vf_type& x)
+{
+#define PI4_Af 0.78515625f
+#define PI4_Bf 0.00024187564849853515625f
+#define PI4_Cf 3.7747668102383613586e-08f
+#define PI4_Df 1.2816720341285448015e-12f
+
+	vi_type q(_T::cvt_f_to_i( x * vf_type(M_1_PI) - vf_type(0.5)));
+	q <<= 1;
+	q += vf_type(1);
+
+	vf_type qf(_T::cvt_i_to_f(q));
+
+	vf_type d( q - vf_type(PI4_Af*2) + x);
+	d = q - vf_type(PI4_Bf*2) + d;
+	d = q - vf_type(PI4_Cf*2) + d;
+	d = q - vf_type(PI4_Df*2) + d;
+
+	vf_type s(d * d);
+
+	vmi_type q_and_2_zero_i((q & vi_type(2)) == vi_type(2));
+	vmf_type q_and_2_zero(_T::vmi_to_vmf(q_and_2_zero_i));
+
+	d = _T::sel(q_and_2_zero, -d, d);
+
+	vf_type u(2.6083159809786593541503e-06f);
+	u = u * s -0.0001981069071916863322258f;
+	u = u * s +0.00833307858556509017944336f;
+	u = u * s -0.166666597127914428710938f;
+	u = s * u * d +  d;
+
+	vmf_type d_is_inf(isinf(d));
+	
+	u = _T::sel(d_is_inf, _T::nan(), u);
+	return u;
+
+#undef PI4_Df
+#undef PI4_Cf
+#undef PI4_Bf
+#undef PI4_Af
+}
+
+template <typename _T>
+inline
+typename
+cftal::math::func<float, cftal::int32_t, _T>::vf_type
+cftal::math::func<float, cftal::int32_t, _T>::native_tan(const vf_type& x)
+{
+	return x;
+}
+
+template <typename _T>
+inline
+typename
+cftal::math::func<float, cftal::int32_t, _T>::vf_type
+cftal::math::func<float, cftal::int32_t, _T>::native_cot(const vf_type& x)
+{
+	return x;
 }
 
 // Local Variables:

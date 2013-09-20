@@ -125,7 +125,7 @@ void x86vec::sincos(arg<v4f64>::type d, v4f64* psin, v4f64* pcos)
 {
 	using traits_t=cftal::math::func_traits<v4f64, v4s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
-	return func_t::sin_cos(d, psin, pcos);
+	return func_t::sincos(d, psin, pcos);
 }
 
 x86vec::v4f64 x86vec::sin(arg<v4f64>::type d)
@@ -161,7 +161,7 @@ void x86vec::native_sincos(arg<v4f64>::type d,
 {
 	using traits_t=cftal::math::func_traits<v4f64, v4s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
-	return func_t::native_sin_cos(d, psin, pcos);
+	return func_t::native_sincos(d, psin, pcos);
 }
 
 x86vec::v4f64 x86vec::native_sin(arg<v4f64>::type d)

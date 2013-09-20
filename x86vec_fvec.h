@@ -71,7 +71,7 @@ namespace x86vec {
                 // broadcast to all positions
                 v4f32(element_type r);
                 v4f32(element_type r, bool broadcast);
-                // assignment from expr<op<v4f32>, _L, _R>
+                // construction from expr<op<v4f32>, _L, _R>
                 template <template <class _V> class _OP, class _L, class _R>
                 v4f32(const expr<_OP<v4f32>, _L, _R>& r);
                 v4f32(const mem::addr_bcast<element_type>& r);
@@ -208,6 +208,11 @@ namespace x86vec {
         v4f32 tan(arg<v4f32>::type d);
 	v4f32 cot(arg<v4f32>::type d);
 
+	v4f32 native_sin(arg<v4f32>::type d);
+        v4f32 native_cos(arg<v4f32>::type d);
+        v4f32 native_tan(arg<v4f32>::type d);
+	v4f32 native_cot(arg<v4f32>::type d);
+
         template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4f32 select(const v4f32& a, const v4f32& b);
         v4f32 select(const v4f32& msk, const v4f32& on_true,
@@ -241,7 +246,7 @@ namespace x86vec {
                 v2f64(element_type p00, element_type p01);
                 // broadcast to all positions
                 v2f64(element_type r);
-                // assignment from expr<op<v2f64>, _L, _R>
+                // construction from expr<op<v2f64>, _L, _R>
                 template <template <class _V> class _OP, class _L, class _R>
                 v2f64(const expr<_OP<v2f64>, _L, _R>& r);
                 v2f64(const mem::addr_bcast<element_type>& r);
@@ -452,7 +457,7 @@ namespace x86vec {
                 // broadcast to all positions
                 v8f32(element_type r);
                 v8f32(element_type r, bool broadcast);
-                // assignment from expr<op<v8f32>, _L, _R>
+                // construction from expr<op<v8f32>, _L, _R>
                 template <template <class _V> class _OP, class _L, class _R>
                 v8f32(const expr<_OP<v8f32>, _L, _R>& r);
                 v8f32(const mem::addr_bcast<element_type>& r);
@@ -629,6 +634,11 @@ namespace x86vec {
         v8f32 tan(arg<v8f32>::type d);
 	v8f32 cot(arg<v8f32>::type d);
 
+	v8f32 native_sin(arg<v8f32>::type d);
+        v8f32 native_cos(arg<v8f32>::type d);
+        v8f32 native_tan(arg<v8f32>::type d);
+	v8f32 native_cot(arg<v8f32>::type d);
+
         template <bool _P0, bool _P1, bool _P2, bool _P3,
 		  bool _P4, bool _P5, bool _P6, bool _P7>
         v8f32 select(const v8f32& a, const v8f32& b);
@@ -669,7 +679,7 @@ namespace x86vec {
                 // broadcast to all positions
                 v4f64(element_type r);
 		v4f64(element_type r, bool broad_cast);
-                // assignment from expr<op<v4f64>, _L, _R>
+                // construction from expr<op<v4f64>, _L, _R>
                 template <template <class _V> class _OP, class _L, class _R>
                 v4f64(const expr<_OP<v4f64>, _L, _R>& r);
                 v4f64(const mem::addr_bcast<element_type>& r);

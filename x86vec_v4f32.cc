@@ -73,10 +73,10 @@ void x86vec::sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos)
 		v2f64 dsin[2], dcos[2];
 		v2f64* dps= psin ? &dsin[0] : nullptr;
 		v2f64* dpc= pcos ? &dcos[0] : nullptr;
-		func_t::native_sin_cos(dd.first, dps, dpc);
+		func_t::native_sincos(dd.first, dps, dpc);
 		dps= psin ? &dsin[1] : nullptr;
 		dpc= pcos ? &dcos[1] : nullptr;
-		func_t::native_sin_cos(dd.second, dps, dpc);
+		func_t::native_sincos(dd.second, dps, dpc);
 		if (psin) {
 			v4f32 ss(cvt_f32(dsin[0], dsin[1]));
 			*psin = ss;

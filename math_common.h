@@ -16,9 +16,84 @@ namespace cftal {
                 template <typename _FLOAT_T, typename _INT_T>
                 struct func_traits;
 
+		template <typename _FLOAT_T, typename _INT_T,
+                          typename _TRAITS_T= func_traits<_FLOAT_T, _INT_T> > 
+		struct func_core {
+                        typedef typename _TRAITS_T::vf_type vf_type;
+                        typedef typename _TRAITS_T::vi_type vi_type;
+                        typedef typename _TRAITS_T::vmf_type vmf_type;
+                        typedef typename _TRAITS_T::vmi_type vmi_type;
+                        typedef d_real<vf_type> dvf_type;
+
+			// exp core
+                        static dvf_type 
+			exp_k2(const dvf_type& dvf);
+			// log core
+                        static dvf_type 
+			log_k2(const dvf_type& dvf);
+			// sin and cos core, return sin in first
+			static std::pair<dvf_type, dvf_type>
+			sin_cos_k(const vf_type& v);
+			// native sin and cos core, return sin in first
+			static std::pair<vf_type, vf_type>
+			native_sin_cos_k(const vf_type& v);
+		};
+		
                 template <typename _FLOAT_T, typename _INT_T,
                           typename _TRAITS_T= func_traits<_FLOAT_T, _INT_T> >
-                struct func;
+                struct func_common : public func_core< _FLOAT_T,
+						       _INT_T,
+						       _TRAITS_T> {
+			typedef func_core<_FLOAT_T,
+					  _INT_T,
+					  _TRAITS_T> base_type;
+
+			typedef func_common<_FLOAT_T,
+					    _INT_T,
+					    _TRAITS_T> my_type;
+
+#if 0
+                        typedef typename base_type::vf_type vf_type;
+                        typedef typename base_type::vi_type vi_type;
+                        typedef typename base_type::vmf_type vmf_type;
+                        typedef typename base_type::vmi_type vmi_type;
+			typedef typename base_type::dvf_type dvf_type;
+#else
+                        using vf_type = typename base_type::vf_type;
+                        using vi_type = typename base_type::vi_type;
+                        using vmf_type = typename base_type::vmf_type;
+                        using vmi_type = typename base_type::vmi_type;
+			using dvf_type = typename base_type::dvf_type;
+#endif
+			
+			static void sincos(const vf_type& vf,
+					   vf_type* psin, 
+					   vf_type* pcos);
+                        static vf_type sin(const vf_type& vf);
+			static vf_type cos(const vf_type& vf);
+                        static vf_type tan(const vf_type& vf);
+			static vf_type cot(const vf_type& vf);
+
+			static void native_sincos(const vf_type& vf,
+						  vf_type* psin, 
+						  vf_type* pcos);
+			static vf_type native_sin(const vf_type& vf);
+			static vf_type native_cos(const vf_type& vf);
+			static vf_type native_tan(const vf_type& vf);
+			static vf_type native_cot(const vf_type& vf);
+		};
+
+
+                template <typename _FLOAT_T, typename _INT_T,
+                          typename _TRAITS_T= func_traits<_FLOAT_T, _INT_T> >
+                struct func : public func_common< _FLOAT_T,
+						  _INT_T,
+						  _TRAITS_T> {
+                        typedef typename _TRAITS_T::vf_type vf_type;
+                        typedef typename _TRAITS_T::vi_type vi_type;
+                        typedef typename _TRAITS_T::vmf_type vmf_type;
+                        typedef typename _TRAITS_T::vmi_type vmi_type;
+		};
 
 
                 namespace approx {
@@ -335,6 +410,125 @@ inline
 _T cftal::math::impl::ipow<_T, 2U>::v(const _T& x)
 {
 	return x*x;
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+void
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+sincos(const vf_type& d, vf_type* psin, vf_type* pcos)
+{
+	if ((psin!=nullptr) || (pcos!=nullptr)) {
+		std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
+		if (psin) {
+			*psin = sin_cos.first.h() + sin_cos.first.l();
+		}
+		if (pcos) {
+			*pcos = sin_cos.second.h() + sin_cos.second.l();
+		}
+	}
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+sin(const vf_type& d)
+{
+	std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
+        return sin_cos.first.h() + sin_cos.first.l();
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+cos(const vf_type& d)
+{
+	std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
+        return sin_cos.second.h() + sin_cos.second.l();
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+tan(const vf_type& d)
+{
+	std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
+	dvf_type tn(sin_cos.first / sin_cos.second);
+        return tn.h() + tn.l();
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+cot(const vf_type& d)
+{
+	std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
+	dvf_type ct(sin_cos.second / sin_cos.first);
+        return ct.h() + ct.l();
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+void
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+native_sincos(const vf_type& d, vf_type* psin, vf_type* pcos)
+{
+	if ((psin!=nullptr) || (pcos!=nullptr)) {
+		std::pair<vf_type, vf_type> sin_cos(
+			my_type::native_sin_cos_k(d));
+		if (psin) {
+			*psin = sin_cos.first;
+		}
+		if (pcos) {
+			*pcos = sin_cos.second;
+		}
+	}
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+native_sin(const vf_type& d)
+{
+	std::pair<vf_type, vf_type> sin_cos(my_type::native_sin_cos_k(d));
+        return sin_cos.first;
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+native_cos(const vf_type& d)
+{
+	std::pair<vf_type, vf_type> sin_cos(my_type::native_sin_cos_k(d));
+        return sin_cos.second;
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+native_tan(const vf_type& d)
+{
+	std::pair<vf_type, vf_type> sin_cos(my_type::native_sin_cos_k(d));
+	vf_type tn(sin_cos.first / sin_cos.second);
+        return tn;
+}
+
+template <typename _FLOAT_T, typename _INT_T, 
+	  typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _TRAITS_T>::
+native_cot(const vf_type& d)
+{
+	std::pair<vf_type, vf_type> sin_cos(my_type::native_sin_cos_k(d));
+	vf_type tn(sin_cos.second / sin_cos.first);
+        return tn;
 }
 
 
