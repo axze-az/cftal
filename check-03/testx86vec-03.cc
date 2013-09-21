@@ -374,7 +374,11 @@ bool all_tests_03(bool use_native, bool bits_256)
 {
 	bool r;
 	if (bits_256) {
+#if defined (__AVX__)
 		r=x86vec::test::func<x86vec::v4f64>(std::cin, use_native);
+#else
+		r=true;
+#endif
 	} else {
 		r=x86vec::test::func<x86vec::v2f64>(std::cin, use_native);
 	}
