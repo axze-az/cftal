@@ -65,7 +65,6 @@ namespace cftal {
 		}
         };
 
-#if defined (__AVX__)
         template <>
         struct d_real_traits<x86vec::v4f64> : public has_fma<double> {
                 constexpr d_real_traits<x86vec::v4f64>() = default;
@@ -85,6 +84,14 @@ namespace cftal {
 		void split(const x86vec::v4f64& a, 
 			   x86vec::v4f64& h, 
 			   x86vec::v4f64& l) {
+#if !defined (__AVX__)
+			const x86vec::v2f64 msk_half= 
+				x86vec::const_v4u32<0xf8000000U, 
+						    0xffffffffU,
+						    0xf8000000U, 
+						    0xffffffffU>::dv();
+			const x86vec::v4f64 msk(msk_half, msk_half);
+#else
 			const x86vec::v4f64 msk= 
 				x86vec::const_v8u32<0xf8000000U, 
 						    0xffffffffU,
@@ -94,12 +101,13 @@ namespace cftal {
 						    0xffffffffU,
 						    0xf8000000U, 
 						    0xffffffffU>::dv();
+#endif
 			h = a & msk;
 			l = a - h;
 		}
         };
 
-
+#if defined (__AVX__)
         template <>
         struct d_real_traits<x86vec::v8f32> : public has_fma<float> {
                 constexpr d_real_traits<x86vec::v8f32>() = default;
@@ -300,7 +308,6 @@ namespace cftal {
 			}
                 };
 
-#if defined (__AVX__)
                 template <>
                 struct func_traits<x86vec::v4f64, x86vec::v4s32> : public 
 		func_traits<typename x86vec::v4f64::element_type,
@@ -354,15 +361,26 @@ namespace cftal {
 				vi_type lep(x86vec::permute<0, 0, 1, 1>(ep));
 				x86vec::v2f64 fh(x86vec::as<x86vec::v2f64>(hep));
 				x86vec::v2f64 lh(x86vec::as<x86vec::v2f64>(lep));
+#if !defined (__AVX__)
+				lh &= x86vec::v_exp_v2f64_msk::dv();
+				fh &= x86vec::v_exp_v2f64_msk::dv();
+				vf_type r(lh, fh);
+#else
 				vf_type r(lh, fh);
 				r &= x86vec::v_exp_v4f64_msk::dv();
+#endif
 				return r;
                         }
 			
                         static
                         vi_type extract_exp(const vf_type& d) {
 				// TODO AVX2 code
+#if !defined (__AVX__)
+				vf_type m(low_half(d) & x86vec::v_exp_v2f64_msk::dv(),
+					  high_half(d) & x86vec::v_exp_v2f64_msk::dv());
+#else
 				vf_type m(d & x86vec::v_exp_v4f64_msk::dv());
+#endif
 				x86vec::v2f64 fh(high_half(d));
 				x86vec::v2f64 fl(low_half(d));
 				x86vec::v4s32 hi(x86vec::as<x86vec::v4s32>(fh));
@@ -418,6 +436,7 @@ namespace cftal {
                         }
                 };
 
+#if defined (__AVX__)
                 template <>
                 struct func_traits<x86vec::v8f32, x86vec::v8s32> : public 
 		func_traits<typename x86vec::v8f32::element_type,

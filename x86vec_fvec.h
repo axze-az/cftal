@@ -665,6 +665,54 @@ namespace x86vec {
 
         v8f32::element_type dot(const v8f32& a, const v8f32& b);
 
+#endif // __AVX__
+
+#if !defined (__AVX__)
+        class v4f64 {
+		v2f64 _l;
+		v2f64 _h;
+        public:
+                typedef double element_type;
+		typedef v4f64 vector_type;
+		friend v2f64 low_half(const v4f64& v);
+		friend v2f64 high_half(const v4f64& v);
+                v4f64() = default;
+                v4f64(element_type p00, element_type p01,
+		      element_type p02=0.0, element_type p03=0.0);
+		v4f64(const v2f64& l, const v2f64& h);
+                // broadcast to all positions
+                v4f64(element_type r);
+		v4f64(element_type r, bool broad_cast);
+                // construction from expr<op<v4f64>, _L, _R>
+                template <template <class _V> class _OP, class _L, class _R>
+                v4f64(const expr<_OP<v4f64>, _L, _R>& r);
+                v4f64(const mem::addr_bcast<element_type>& r);
+                v4f64(const mem::addr<element_type>& r);
+                v4f64(const mem::aligned::addr<element_type>& r);
+                v4f64(const mem::unaligned::addr<element_type>& r);
+                masked_vec<v4f64> operator()(const mask<v4f64>& m);
+        };
+
+	namespace impl {
+		template <>
+		struct vgatherdpd<v4f64> {
+			static v4f64 v(const double* base,
+				       __m128i idx,
+				       int scale);
+			static v4f64 v(const v4f64& src,
+				       const double* base,
+				       __m128i idx,
+				       const v4f64& msk,
+				       int scale);
+		};
+	}
+
+
+	template <>
+	struct arg<v4f64> {
+		typedef const v4f64& type;
+	};
+#else
         class v4f64 : public vreg<__m256d> {
         public:
                 typedef double element_type;
@@ -674,7 +722,6 @@ namespace x86vec {
                 v4f64(const base_type& r);
                 v4f64(element_type p00, element_type p01,
 		      element_type p02=0.0, element_type p03=0.0);
-		v4f64(const v2f64& l);
 		v4f64(const v2f64& l, const v2f64& h);
                 // broadcast to all positions
                 v4f64(element_type r);
@@ -689,6 +736,7 @@ namespace x86vec {
                 using base_type::operator();
                 masked_vec<v4f64> operator()(const mask<v4f64>& m);
         };
+#endif // __AVX__
 
         namespace ops {
 
@@ -875,7 +923,7 @@ namespace x86vec {
         typename v4f64::element_type extract(const v4f64& a);
 
         v4f64::element_type hadd(const v4f64& a);
-#endif
+
 }
 
 
@@ -918,7 +966,7 @@ _T x86vec::gather(const double* base, const v4s32& idx, int scale)
 
 template <class _T, class _IDX>
 inline
-_T x86vec::gather(const double* base, const _IDX& idx, int scale)
+_T x86vec::gather(const float* base, const _IDX& idx, int scale)
 {
 	using vec_type = typename _T::vector_type;
 	_T r(impl::vgatherdps<vec_type, _IDX>::v(base, idx, scale));
@@ -930,8 +978,9 @@ _T x86vec::gather(const double* base, const _IDX& idx, int scale)
 
 #if defined (__AVX__)
 #include <cftal/x86vec_v8f32_inl.h>
-#include <cftal/x86vec_v4f64_inl.h>
 #endif
+
+#include <cftal/x86vec_v4f64_inl.h>
 
 // Local variables:
 // mode: c++
