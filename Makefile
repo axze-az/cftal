@@ -92,10 +92,10 @@ genx86vec: genx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 #hackx86vec.ol: CXXFLAGS-ol += -fno-tree-vectorize
 
 hackx86vec: hackx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
-	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
+	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++ -lm
 
 hackx86vec_g: hackx86vec.od x86vec_test.od lib$(LIBNAME)-g.a
-	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
+	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++ -lm
 
 # Full tests
 all-tests: all \
