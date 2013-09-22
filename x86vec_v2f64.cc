@@ -1,5 +1,7 @@
 #include "x86vec_traits.h"
 #include "math_func.h"
+#include "x86vec_math_funcs.h"
+
 #include "d_real.h"
 #include <cmath>
 #include <limits>
@@ -32,6 +34,9 @@ x86vec::impl::fma(arg<v2f64>::type x, arg<v2f64>::type y, arg<v2f64>::type z)
         return h2 + l2;
 }
 
+DEF_MATH_FUNCS(x86vec, v2f64, v4s32, double, 6)
+
+#if 0
 #if 0
 x86vec::v2f64 x86vec::pow2i(arg<v4s32>::type e)
 {
@@ -189,7 +194,7 @@ x86vec::v2f64 x86vec::native_cot(arg<v2f64>::type d)
 	return func_t::native_cot(d);
 }
 
-
+#if 0
 #define PI4_A 0.78539816290140151978
 #define PI4_B 4.9604678871439933374e-10
 #define PI4_C 1.1258708853173288931e-18
@@ -1515,4 +1520,6 @@ static inline double ldexpk(double x, int q) {
         u = longBitsToDouble(((int64_t)(q + 0x3ff)) << 52);
         return x * u;
 }
+#endif
+#endif
 #endif
