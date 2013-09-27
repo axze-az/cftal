@@ -162,8 +162,21 @@
         {                                                               \
                 DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \
                 return func_t::native_cot(d);                           \
-        }
-
+        }								\
+									\
+        ns::vec_float							\
+        ns::native_exp(arg<vec_float>::type d)				\
+        {                                                               \
+                DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \
+                return func_t::native_exp(d);				\
+        }                                                               \
+									\
+        ns::vec_float							\
+        ns::native_log(arg<vec_float>::type d)				\
+        {                                                               \
+                DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \
+                return func_t::native_log(d);				\
+        }                                                               
 
 // Local variables:
 // mode: c++

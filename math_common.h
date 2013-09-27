@@ -28,9 +28,15 @@ namespace cftal {
                         // exp core
                         static dvf_type
                         exp_k2(const dvf_type& dvf);
+                        // native exp core
+                        static vf_type
+                        native_exp_k(const vf_type& vf);
                         // log core
                         static dvf_type
                         log_k2(const dvf_type& dvf);
+                        // native log core
+                        static dvf_type
+                        native_log_k2(const dvf_type& dvf);
                         // sin and cos core, return sin in first
                         static std::pair<dvf_type, dvf_type>
                         sin_cos_k(const vf_type& v);
@@ -58,14 +64,37 @@ namespace cftal {
                         using vmi_type = typename base_type::vmi_type;
                         using dvf_type = typename base_type::dvf_type;
 
+                        // exp, expm1, sinh, cosh call exp_k2 if native == false
+			// or native_exp
+			template <bool _NATIVE>
+                        static vf_type _exp(const vf_type& vf);
+			template <bool _NATIVE>
+                        static vf_type _expm1(const vf_type& vf);
+			template <bool _NATIVE>
+                        static vf_type _sinh(const vf_type& vf);
+			template <bool _NATIVE>
+                        static vf_type _cosh(const vf_type& vf);
+			
+			// log _call log_k2 if native == false, or native_log
+			template <bool _NATIVE>
+			static vf_type _log(const vf_type& cf);
+
                         // exp, expm1, sinh, cosh call exp_k2
                         static vf_type exp(const vf_type& vf);
                         static vf_type expm1(const vf_type& vf);
                         static vf_type sinh(const vf_type& vf);
                         static vf_type cosh(const vf_type& vf);
 
+                        // native exp, expm1, sinh, cosh call exp_k
+                        static vf_type native_exp(const vf_type& vf);
+                        static vf_type native_expm1(const vf_type& vf);
+                        static vf_type native_sinh(const vf_type& vf);
+                        static vf_type native_cosh(const vf_type& vf);
+
                         // log calls log_k2
                         static vf_type log(const vf_type& vf);
+			// native log calls native_log_k
+			static vf_type native_log(const vf_type& vf);
 
                         // pow calls exp_k2 and log_k2
                         static vf_type pow(const vf_type& b,
@@ -421,18 +450,42 @@ _T cftal::math::impl::ipow<_T, 2U>::v(const _T& x)
 }
 
 template <typename _FLOAT_T, typename _INT_T, typename _T>
+template <bool _NATIVE>
 inline
 typename cftal::math::func_common<_FLOAT_T, _INT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _INT_T, _T>::
-exp(const vf_type& d)
+_exp(const vf_type& d)
 {
-        dvf_type xr(my_type::exp_k2(d));
-        vf_type res(xr.h() + xr.l());
+	vf_type res;
+	if (_NATIVE) {
+		res=my_type::native_exp_k(d);
+	} else {
+		dvf_type xr(my_type::exp_k2(d));
+		res=xr.h() + xr.l();
+	}
         res = _T::sel(d == 0.0, 1.0, res);
         res = _T::sel(d == 1.0, M_E, res);
         res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
         res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
         return res;
+}
+
+template <typename _FLOAT_T, typename _INT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _T>::
+exp(const vf_type& d)
+{
+	return my_type::_exp<false>(d);
+}
+
+template <typename _FLOAT_T, typename _INT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _T>::
+native_exp(const vf_type& d)
+{
+	return my_type::_exp<true>(d);
 }
 
 template <typename _FLOAT_T, typename _INT_T, typename _T>
@@ -485,14 +538,19 @@ cosh(const vf_type& d)
 }
 
 template <typename _FLOAT_T, typename _INT_T, typename _T>
+template <bool _NATIVE>
 inline
 typename cftal::math::func_common<_FLOAT_T, _INT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _INT_T, _T>::
-log(const vf_type& d)
+_log(const vf_type& d)
 {
-        dvf_type xr(my_type::log_k2(d));
-        // if (xisinf(d)) x = INFINITY;
-        vf_type x= xr.h() + xr.l();
+	vf_type x;
+	if (_NATIVE) {
+		x= my_type::native_log_k(d);
+	} else {
+		dvf_type xr(my_type::log_k2(d));
+		x= xr.h() + xr.l();
+	}
         const vf_type pinf(_T::pinf());
         const vf_type ninf(_T::ninf());
         x = _T::sel(isinf(d), pinf, x);
@@ -501,6 +559,24 @@ log(const vf_type& d)
         // if (d == 0) x = -INFINITY;
         x = _T::sel(d == vf_type(0.0), ninf, x);
         return x;
+}
+
+template <typename _FLOAT_T, typename _INT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _T>::
+log(const vf_type& d)
+{
+	return my_type::_log<false>(d);
+}
+
+template <typename _FLOAT_T, typename _INT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _INT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _INT_T, _T>::
+native_log(const vf_type& d)
+{
+	return my_type::_log<true>(d);
 }
 
 template <typename _FLOAT_T, typename _INT_T, typename _T>

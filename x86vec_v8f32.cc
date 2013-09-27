@@ -132,13 +132,12 @@ x86vec::v8f32 x86vec::cot(arg<v8f32>::type d)
 	return res;
 }
 
-#if 0
 void x86vec::native_sincos(arg<v8f32>::type d, 
 			   v8f32* psin, v8f32* pcos)
 {
 	using traits_t=cftal::math::func_traits<v8f32, v8s32>;
 	using func_t=cftal::math::func<float, int32_t, traits_t>;
-	return func_t::native_sin_cos(d, psin, pcos);
+	return func_t::native_sincos(d, psin, pcos);
 }
 
 x86vec::v8f32 x86vec::native_sin(arg<v8f32>::type d)
@@ -162,5 +161,4 @@ x86vec::v8f32 x86vec::native_tan(arg<v8f32>::type d)
 	return func_t::native_tan(d);
 }
 
-#endif
 #endif

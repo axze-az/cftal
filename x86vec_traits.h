@@ -246,6 +246,42 @@ namespace cftal {
                         typedef x86vec::v4f32 vmf_type;
                         typedef x86vec::v4s32 vi_type;
                         typedef x86vec::v4s32 vmi_type;
+			typedef d_real<vf_type> dvf_type;
+
+			typedef x86vec::v2f64 vhpf_type;
+			typedef func_traits<vhpf_type, x86vec::v4s32> 
+			hpf_traits;
+			static
+			constexpr std::size_t vhpf_per_vf() {
+				return 2;
+			}
+			
+			static 
+			void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
+				using namespace x86vec;
+				using x86vec::impl::cvt;
+				r[0] = cvt<v2f64, v4f32>::l(x);
+				r[1] = cvt<v2f64, v4f32>::h(x);
+			}
+
+			static
+			void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
+				using namespace x86vec;
+				using x86vec::impl::cvt;
+				vf_type lo(cvt<v4f32, v2f64>::l(hpf[0]));
+				vhpf_type rest(hpf[0] - cvt<v2f64, v4f32>::l(lo));
+				vf_type lo_lo(cvt<v4f32, v2f64>::l(rest));
+					
+				vf_type hi(cvt<v4f32, v2f64>::l(hpf[1]));
+				rest = hpf[1] - cvt<v2f64, v4f32>::l(hi);
+				
+				vf_type hi_lo(cvt<v4f32, v2f64>::l(rest));
+
+				vf_type msv(permute<0, 1, 4, 5>(lo, hi));
+				vf_type lsv(permute<0, 1, 4, 5>(lo_lo, hi_lo));
+				res = dvf_type(msv, lsv);
+			}
+
 
                         static
                         vmf_type vmi_to_vmf(const vmi_type& mi) {
@@ -445,6 +481,46 @@ namespace cftal {
                         typedef x86vec::v8f32 vmf_type;
                         typedef x86vec::v8s32 vi_type;
                         typedef x86vec::v8s32 vmi_type;
+
+			typedef d_real<vf_type> dvf_type;
+
+			typedef x86vec::v4f64 vhpf_type;
+			typedef func_traits<vhpf_type, x86vec::v4s32> 
+			hpf_traits;
+
+			static
+			constexpr std::size_t vhpf_per_vf() {
+				return 2;
+			}
+			
+			static 
+			void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
+				using namespace x86vec;
+				using x86vec::impl::cvt;
+				r[0] = cvt<v4f64, v8f32>::l(x);
+				r[1] = cvt<v4f64, v8f32>::h(x);
+			}
+
+			static
+			void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
+				using namespace x86vec;
+				using x86vec::impl::cvt;
+				vf_type lo(cvt<v8f32, v4f64>::l(hpf[0]));
+				vhpf_type rest(hpf[0] - cvt<v4f64, v8f32>::l(lo));
+				vf_type lo_lo(cvt<v8f32, v4f64>::l(rest));
+					
+				vf_type hi(cvt<v8f32, v4f64>::l(hpf[1]));
+				rest = hpf[1] - cvt<v4f64, v8f32>::l(hi);
+				
+				vf_type hi_lo(cvt<v8f32, v4f64>::l(rest));
+
+				vf_type msv(permute<0, 1, 2, 3, 
+						    8, 9, 10, 11>(lo, hi));
+				vf_type lsv(permute<0, 1, 2, 3, 
+						    8, 9, 10, 11>(lo_lo, 
+								  hi_lo));
+				res = dvf_type(msv, lsv);
+			}
 
                         static
                         vmf_type vmi_to_vmf(const vmi_type& mi) {

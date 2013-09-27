@@ -1,8 +1,16 @@
+#include "x86vec_fvec.h"
 #include "x86vec_traits.h"
 #include "math_func.h"
 #include "d_real.h"
 #include <cmath>
 #include <limits>
+
+#if 0
+#include "x86vec_math_funcs.h"
+
+DEF_MATH_FUNCS(x86vec, v4f32, v4s32, float, 4)
+
+#else
 
 x86vec::v4f32 x86vec::pow2if(arg<v4s32>::type e)
 {
@@ -65,6 +73,10 @@ x86vec::v4f32 x86vec::pow(arg<v4f32>::type b, arg<v4f32>::type e)
 
 void x86vec::sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos)
 {
+	using traits_t=cftal::math::func_traits<v4f32, v4s32>;
+	using func_t=cftal::math::func<float, int32_t, traits_t>;
+	return func_t::sincos(d, psin, pcos);
+#if 0
 	using traits_t=cftal::math::func_traits<v2f64, v4s32>;
 	using func_t=cftal::math::func<double, int32_t, traits_t>;
 
@@ -86,7 +98,7 @@ void x86vec::sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos)
 			*pcos = sc;
 		}
 	}
-
+#endif
 }
 
 x86vec::v4f32 x86vec::sin(arg<v4f32>::type d)
@@ -133,13 +145,12 @@ x86vec::v4f32 x86vec::cot(arg<v4f32>::type d)
 	return res;
 }
 
-#if 0
 void x86vec::native_sincos(arg<v4f32>::type d, 
 			   v4f32* psin, v4f32* pcos)
 {
 	using traits_t=cftal::math::func_traits<v4f32, v4s32>;
 	using func_t=cftal::math::func<float, int32_t, traits_t>;
-	return func_t::native_sin_cos(d, psin, pcos);
+	return func_t::native_sincos(d, psin, pcos);
 }
 
 x86vec::v4f32 x86vec::native_sin(arg<v4f32>::type d)
@@ -164,3 +175,4 @@ x86vec::v4f32 x86vec::native_tan(arg<v4f32>::type d)
 }
 
 #endif
+

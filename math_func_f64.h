@@ -191,6 +191,7 @@ namespace cftal {
                         typedef typename _T::vmi_type vmi_type;
 
                         typedef d_real<vf_type> dvf_type;
+			typedef func_core<double, int32_t, _T> my_type;
 
 			static const dvf_type m_exp_c_k2[];
 			static const dvf_type m_log_c_k2[];
@@ -199,8 +200,15 @@ namespace cftal {
 
                         static dvf_type 
 			exp_k2(const dvf_type& dvf);
+
+                        static vf_type 
+			native_exp_k(const vf_type& v);
+
                         static dvf_type 
 			log_k2(const dvf_type& dvf);
+
+			static vf_type
+			native_log_k(const vf_type& v);
 
 			// argument reduction for all trigonometric
 			// functions, reduction by %pi/2, the low bits
@@ -402,6 +410,45 @@ log_k2(const dvf_type& d)
 
 template <typename _T>
 inline
+typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type
+cftal::math::func_core<double, cftal::int32_t, _T>::
+native_log_k(const vf_type& d)
+{
+        using ctbl=impl::d_real_constants<dvf_type, double>;
+
+        vf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
+
+        vi_type e = ilogbp1(sc);
+        vf_type ef= _T::cvt_i_to_f(e);
+        vf_type m(ldexp(d, -e));
+
+        vf_type xm= m - vf_type(1.0);
+        vf_type xp= m + vf_type(1.0);
+        vf_type xr= xm / xp;
+        vf_type x2 = xr*xr;
+
+        vf_type t= ctbl::_2_over_i[23].h();
+        // t = t * x2 + ctbl::_2_over_i[21];
+        // t = t * x2 + ctbl::_2_over_i[19];
+        // t = t * x2 + ctbl::_2_over_i[17];
+        // t = t * x2 + ctbl::_2_over_i[15];
+        // t = t * x2 + ctbl::_2_over_i[13];
+        // t = t * x2 + ctbl::_2_over_i[11];
+        // t = t * x2 + ctbl::_2_over_i[9];
+        // t = t * x2 + ctbl::_2_over_i[7];
+        // t = t * x2 + ctbl::_2_over_i[5];
+        // t = t * x2 + ctbl::_2_over_i[3];
+        for (int i=21; i>2; i-=2)
+                t = t * x2 + ctbl::_2_over_i[i].h();
+        t = t * x2 + vf_type(2.0);
+        t = t * xr;
+
+        xr = t + M_LN2 * ef;
+        return xr;
+}
+
+template <typename _T>
+inline
 typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type
 cftal::math::func_core<double, cftal::int32_t, _T>::
 exp_k2(const dvf_type& d)
@@ -441,6 +488,48 @@ exp_k2(const dvf_type& d)
         dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
         return res;
 }
+
+template <typename _T>
+inline
+typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type
+cftal::math::func_core<double, cftal::int32_t, _T>::
+native_exp_k(const vf_type& d)
+{
+        using ctbl = impl::d_real_constants<dvf_type, double>;
+
+        const double k(512.0);
+        const int k_i(9);
+        const vf_type inv_k(1.0/k);
+
+        vf_type m2= rint(d * ctbl::m_1_ln2.h());
+        vf_type r= (d - ctbl::m_ln2.h()*m2) * inv_k;
+	vf_type m=m2;
+
+	vf_type s = ctbl::inv_fac[9].h();
+        // s = s * r + ctbl::inv_fac[8];
+        // s = s * r + ctbl::inv_fac[7];
+        // s = s * r + ctbl::inv_fac[6];
+        // s = s * r + ctbl::inv_fac[5];
+        // s = s * r + ctbl::inv_fac[4];
+        // s = s * r + ctbl::inv_fac[3];
+        for (unsigned int i=8; i!=2; --i)
+                s = s*r + ctbl::inv_fac[i].h();
+        s = s * r + vf_type(0.5);
+        s = s * r + vf_type(1.0);
+        s = s * r;
+
+        // scale back the 1/k reduced value
+        const vf_type two(2.0);
+        for (int i=0; i<k_i; ++i)
+                s = s * two + s * s;
+        s += vf_type(1.0);
+
+        // scale back
+        vi_type mi= _T::cvt_f_to_i(m);
+        vf_type res(my_type::ldexp(s, mi));
+        return res;
+}
+
 
 template <typename _T>
 inline
