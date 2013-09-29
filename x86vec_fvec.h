@@ -454,8 +454,42 @@ namespace x86vec {
 
         v2f64::element_type hadd(const v2f64& a);
 
-#if defined (__AVX__)
-        // 256 bit floating point types
+#if !defined (__AVX__)
+        // v8f32
+        class v8f32 {
+		v4f32 _l;
+		v4f32 _h;
+        public:
+		friend v4f32 low_half(const v8f32& v);
+		friend v4f32 high_half(const v8f32& v);
+
+                typedef float element_type;
+                v8f32() = default;
+		v8f32(const v4f32& l, const v4f32& h);
+                v8f32(element_type p00, element_type p01,
+                      element_type p02=0.0f, element_type p03=0.0f,
+		      element_type p04=0.0f, element_type p05=0.0f,
+                      element_type p06=0.0f, element_type p07=0.0f);
+                // broadcast to all positions
+                v8f32(element_type r);
+                v8f32(element_type r, bool broadcast);
+                // construction from expr<op<v8f32>, _L, _R>
+                template <template <class _V> class _OP, class _L, class _R>
+                v8f32(const expr<_OP<v8f32>, _L, _R>& r);
+                v8f32(const mem::addr_bcast<element_type>& r);
+                v8f32(const mem::addr<element_type>& r);
+                v8f32(const mem::aligned::addr<element_type>& r);
+                v8f32(const mem::unaligned::addr<element_type>& r);
+                masked_vec<v8f32> operator()(const mask<v8f32>& m);
+        };
+
+	template <>
+	struct arg<v8f32> {
+		typedef const v8f32& type;
+	};
+
+#else
+        // v8f32
         class v8f32 : public vreg<__m256> {
         public:
                 typedef float element_type;
@@ -481,7 +515,7 @@ namespace x86vec {
                 using base_type::operator();
                 masked_vec<v8f32> operator()(const mask<v8f32>& m);
         };
-
+#endif
         namespace ops {
 
                 template <>
@@ -526,7 +560,7 @@ namespace x86vec {
                 };
         }
 
-#if !defined (__AVX2__)
+#if defined (__AVX__) && !defined (__AVX2__)
 	// conversion helpers for avx
 	namespace impl {
 		template <>
@@ -692,7 +726,6 @@ namespace x86vec {
 
         v8f32::element_type dot(const v8f32& a, const v8f32& b);
 
-#endif // __AVX__
 
 #if !defined (__AVX__)
         class v4f64 {
@@ -1003,11 +1036,7 @@ _T x86vec::gather(const float* base, const _IDX& idx, int scale)
 
 #include <cftal/x86vec_v4f32_inl.h>
 #include <cftal/x86vec_v2f64_inl.h>
-
-#if defined (__AVX__)
 #include <cftal/x86vec_v8f32_inl.h>
-#endif
-
 #include <cftal/x86vec_v4f64_inl.h>
 
 // Local variables:

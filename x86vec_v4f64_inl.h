@@ -49,7 +49,7 @@ x86vec::v4f64::v4f64(const mem::addr_bcast<element_type>& r)
 
 inline
 x86vec::v4f64::v4f64(const mem::addr<element_type>& r)
-	: _l(r), _h(mem::addr<element_type>(r()+4))
+	: _l(r), _h(mem::addr<element_type>(r()+2))
 {
 }
 
@@ -601,15 +601,17 @@ x86vec::v4f64 x86vec::isinf(const v4f64& x)
 inline
 x86vec::v4f64 x86vec::isnan(const v4f64& x)
 {
-	// exponent = 0x7FF and significand !=0
-	// x != x  if x == NAN
-	return x != x;
+	v2f64 xl = low_half(x);
+	v2f64 xh = high_half(x);
+	return v4f64(isnan(xl), isnan(xh));
 }
 
 inline
 x86vec::v4f64 x86vec::isfinite(const v4f64& x)
 {
-	return ~(isinf(x) | isnan(x));
+	v2f64 xl = low_half(x);
+	v2f64 xh = high_half(x);
+	return v4f64(isfinite(xl), isfinite(xh));
 }
 
 inline
@@ -716,7 +718,11 @@ inline
 x86vec::v4f64 x86vec::permute(const v4f64& a)
 {
 	v2s64 rl(permute<_P0, _P1>(low_half(a), high_half(a)));
-	v4s32 rh(permute<_P2, _P3>(low_half(a), high_half(a)));
+	
+	const int _PP2 = _P2 > 1 ? _P2 & 1 : _P2;
+	const int _PP3 = _P3 > 1 ? _P3 & 1 : _P3;
+
+	v4s32 rh(permute<_PP2, _PP3>(low_half(a), high_half(a)));
 	return v4f64(rl, rh);
 }
 

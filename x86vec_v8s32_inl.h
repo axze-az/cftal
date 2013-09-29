@@ -528,8 +528,15 @@ template <int _P0, int _P1, int _P2, int _P3,
 inline
 x86vec::v8s32 x86vec::permute(const v8s32& a)
 {
-	v4s32 rl(permute<_P0, _P1, _P2, _P3>(low_half(a), high_half(a)));
-	v4s32 rh(permute<_P4, _P5, _P6, _P7>(low_half(a), high_half(a)));
+	v4s32 rl(permute<_P0, _P1, _P2, _P3>(low_half(a), 
+					     high_half(a)));
+	const int _PP4 = _P4 > 7 ? _P4 & 7 : _P4;
+	const int _PP5 = _P5 > 7 ? _P5 & 7 : _P5;
+	const int _PP6 = _P6 > 7 ? _P6 & 7 : _P6;
+	const int _PP7 = _P7 > 7 ? _P7 & 7 : _P7;
+
+	v4s32 rh(permute<_PP4, _PP5, _PP6, _PP7>(low_half(a), 
+						 high_half(a)));
 	return v8s32(rl, rh);
 }
 
@@ -606,7 +613,7 @@ x86vec::v8s32 x86vec::insert(const v8s32& a, typename v8s32::element_type v)
 	if (_I < 4)
 		rl = insert<_I>(rl, v);
 	else
-		rh = insert<_I-4>(rh, v);
+		rh = insert<_I&3>(rh, v);
 	return v8s32(rl, rh);
 }
 
@@ -617,7 +624,7 @@ x86vec::extract(const v8s32& a)
 {
 	if (_I < 4)
 		return extract<_I>(low_half(a));
-	return extract<_I-4>(high_half(a));
+	return extract<_I&3>(high_half(a));
 }
 
 #endif
