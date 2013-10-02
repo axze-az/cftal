@@ -134,11 +134,52 @@ namespace x86vec {
 			}
 		};
 
+
+		template <>
+		struct cvt<v8f32, v8s32> {
+			static v8f32 l(const v8s32& v) {
 #if defined (__AVX__)
+				__m256i vv=_mm256_insertf128_si256(
+					_mm256_castsi128_si256(low_half(v)()),
+					high_half(v)(), 1);
+				__m256 f(_mm256_cvtepi32_ps(vv));
+				return f;
+#else
+				v4f32 lh(cvt<v4f32, v4s32>::l(low_half(v)));
+				v4f32 hh(cvt<v4f32, v4s32>::l(high_half(v)));
+				return v8f32(lh, hh);
+#endif
+			}
+		};
+
+		template <>
+		struct cvt<v8s32, v8f32> {
+			static v8s32 l(const v8f32& v) {
+#if defined(__AVX__)
+				__m256i vi=_mm256_cvtps_epi32(v());
+				__m128i hh(_mm256_extractf128_si256(vi, 1));
+				__m128i lh(_mm256_castsi256_si128(vi));
+				return v8s32(lh, hh);
+#else
+				v4s32 lh(cvt<v4s32, v4f32>::l(low_half(v)));
+				v4s32 hh(cvt<v4s32, v4f32>::l(high_half(v)));
+				return v8s32(lh, hh);
+#endif
+			}			
+		};
+
+
 		template <>
 		struct cvt<v4f32, v4f64> {
 			static v4f32 l(const v4f64& s) {
+#if defined (__AVX__)
 				return _mm256_cvtpd_ps(s());
+#else
+				v4f32 lh(cvt<v4f32, v2f64>::l(low_half(s)));
+				v4f32 hh(cvt<v4f32, v2f64>::l(high_half(s)));
+				v4f32 r(permute<0, 1, 4, 5>(lh, hh));
+				return r;
+#endif
 			}
 		};
 
@@ -146,7 +187,13 @@ namespace x86vec {
 		template <>
 		struct cvt<v4f64, v4f32> {
 			static v4f64 l(const v4f32& s) {
+#if defined (__AVX__)
 				return _mm256_cvtps_pd(s());
+#else
+				v2f64 lh(cvt<v2f64, v4f32>::l(s));
+				v2f64 hh(cvt<v2f64, v4f32>::h(s));
+				return v4f64(lh, hh);
+#endif
 			}
 		};
 
@@ -159,9 +206,6 @@ namespace x86vec {
 				return cvt<v4f64, v4f32>::l(high_half(a));
 			}
 		};
-
-#endif
-
 	}
 	
 	template <class _D, class _S>
@@ -172,9 +216,7 @@ namespace x86vec {
 	_D cvt(const _S& s);
 
 	v4f32 cvt_f32(const v2f64& l, const v2f64& h);
-#if defined (__AVX__)
 	v8f32 cvt_f32(const v4f64& l, const v4f64& h);
-#endif
 
 	template <class _D, class _S>
 	std::pair<_D, _D> cvt_widen(const _S& s);
@@ -228,7 +270,6 @@ x86vec::v4f32 x86vec::cvt_f32(const v2f64& l, const v2f64& h)
 	return permute<0, 1, 4, 5>(lf, hf);
 }
 
-#if defined (__AVX__)
 inline
 x86vec::v8f32 x86vec::cvt_f32(const v4f64& l, const v4f64& h)
 {
@@ -236,7 +277,6 @@ x86vec::v8f32 x86vec::cvt_f32(const v4f64& l, const v4f64& h)
 	v4f32 hf(cvt<v4f32>(h));
 	return v8f32(lf, hf);
 }
-#endif
 
 template <class _D, class _S>
 inline

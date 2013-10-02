@@ -107,7 +107,6 @@ namespace cftal {
 		}
         };
 
-#if defined (__AVX__)
         template <>
         struct d_real_traits<x86vec::v8f32> : public has_fma<float> {
                 constexpr d_real_traits<x86vec::v8f32>() = default;
@@ -127,6 +126,7 @@ namespace cftal {
 		void split(const x86vec::v8f32& a, 
 			   x86vec::v8f32& h, 
 			   x86vec::v8f32& l) {
+#if defined (__AVX__)
 			const x86vec::v8f32 msk= 
 				x86vec::const_v8u32<0xfffff000U, 
 						    0xfffff000U, 
@@ -136,12 +136,19 @@ namespace cftal {
 						    0xfffff000U, 
 						    0xfffff000U, 
 						    0xfffff000U>::fv();
+#else
+			const x86vec::v4f32 lm=
+				x86vec::const_v4u32<0xfffff000U, 
+						    0xfffff000U, 
+						    0xfffff000U, 
+						    0xfffff000U>::fv();
+			const x86vec::v8f32 msk(lm, lm);
+#endif
 			h = a & msk;
 			l = a - h;
 		}
         };
 
-#endif
 
 	namespace math {
 
@@ -472,7 +479,6 @@ namespace cftal {
                         }
                 };
 
-#if defined (__AVX__)
                 template <>
                 struct func_traits<x86vec::v8f32, x86vec::v8s32> : public 
 		func_traits<typename x86vec::v8f32::element_type,
@@ -583,8 +589,6 @@ namespace cftal {
 				return x86vec::as<x86vec::v8f32>(i);
 			}
                 };
-
-#endif
 
 	}
 

@@ -660,6 +660,12 @@ namespace x86vec {
 		friend v4s32 high_half(const v8s32& v);
         };
 
+	template <>
+	struct arg<v8s32> {
+		typedef const v8s32& type;
+	};
+
+
 	v4s32 low_half(const v8s32& v);
 	v4s32 high_half(const v8s32& v);
 

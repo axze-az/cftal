@@ -4,7 +4,6 @@
 #include <cmath>
 #include <limits>
 
-#if defined (__AVX__)
 x86vec::v8f32 x86vec::pow2if(arg<v8s32>::type e)
 {
 	using traits_t=cftal::math::func_traits<v8f32, v8s32>;
@@ -161,4 +160,3 @@ x86vec::v8f32 x86vec::native_tan(arg<v8f32>::type d)
 	return func_t::native_tan(d);
 }
 
-#endif

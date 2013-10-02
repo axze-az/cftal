@@ -44,10 +44,12 @@ install-debug: lib$(LIBNAME)-g.a
 	$(INSTALL) -c -m 0644 lib$(LIBNAME)-g.a $(INSTALLDIR)/lib
 
 testx86vec-04: testx86vec-04.ol lib$(LIBNAME).a ../libcftal.a
-	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
+	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L ..	\
+-Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++ -lm
 
 testx86vec-04-g: testx86vec-04.od lib$(LIBNAME)-g.a ../libcftal-g.a
-	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++
+	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. \
+-Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++ -lm
 
 # rcp_div: rcp_div.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 # 	$(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++

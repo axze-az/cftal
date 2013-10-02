@@ -488,6 +488,38 @@ namespace x86vec {
 		typedef const v8f32& type;
 	};
 
+	namespace impl {
+
+		template <>
+		struct vector_traits<v8f32> {
+			typedef v8f32 vector_type;
+			static vector_type v(const v8f32& r) {
+				return r;
+			}
+		};
+
+		template <>
+		struct cast<v8f32, v8s32> {
+			static
+			v8f32 v(const v8s32 v) {
+				v4f32 l(as<v4f32>(low_half(v)));
+				v4f32 h(as<v4f32>(high_half(v)));
+				return v8f32(l, h);
+			}
+		};
+
+		template <>
+		struct cast<v8s32, v8f32> {
+			static
+			v8s32 v(const v8f32& v) {
+				v4s32 l(as<v4s32>(low_half(v)));
+				v4s32 h(as<v4s32>(high_half(v)));
+				return v8s32(l, h);
+			}
+		};
+
+	}
+
 #else
         // v8f32
         class v8f32 : public vreg<__m256> {
@@ -560,9 +592,9 @@ namespace x86vec {
                 };
         }
 
-#if defined (__AVX__) && !defined (__AVX2__)
 	// conversion helpers for avx
 	namespace impl {
+#if !defined (__AVX2__)
 		template <>
 		struct vector_traits<v8s32> {
 			typedef v8s32 vector_type;
@@ -570,7 +602,9 @@ namespace x86vec {
 				return r;
 			}
 		};
+#endif
 
+#if defined (__AVX__) && !defined (__AVX2__)
 		template <> 
 		struct cast<v8s32, __m256> {
 			static v8s32 v(const __m256& r) {
@@ -594,8 +628,8 @@ namespace x86vec {
 				return res;
 			}
 		};
-	}
 #endif
+	}
 
         inline
         const v8f32& eval(const v8f32& v) {
@@ -1015,6 +1049,7 @@ _T x86vec::impl::p1evl(_T x, const _T* coef)
         return ans;
 }
 
+#if 0
 template <class _T>
 inline
 _T x86vec::gather(const double* base, const v4s32& idx, int scale)
@@ -1033,6 +1068,7 @@ _T x86vec::gather(const float* base, const _IDX& idx, int scale)
 	_T r(impl::vgatherdps<vec_type, _IDX>::v(base, idx, scale));
 	return r;
 }
+#endif
 
 #include <cftal/x86vec_v4f32_inl.h>
 #include <cftal/x86vec_v2f64_inl.h>
