@@ -754,16 +754,22 @@ namespace x86vec {
         template <unsigned _I>
         typename v8s32::element_type extract(const v8s32& a);
 
+#if defined (__AVX2__)
+
+#else
         class v8u32 : public v8s32 {
         public:
                 typedef uint32_t element_type;
                 typedef v8s32 base_type;
                 v8u32() = default;
                 v8u32(const base_type& r);
+                v8u32(const v4u32&l, const v4u32&h);
+                v8u32(element_type p00, element_type p01,
+                      element_type p02, element_type p03,
+		      element_type p04, element_type p05,
+                      element_type p06, element_type p07);
                 v8u32(element_type r);
                 v8u32(element_type r, bool broadcast);
-                v8u32(element_type p00, element_type p01,
-                      element_type p02, element_type p03);
                 v8u32(const mem::addr_bcast<element_type>& r);
                 v8u32(const mem::addr<element_type>& r);
                 v8u32(const mem::aligned::addr<element_type>& r);
@@ -771,6 +777,16 @@ namespace x86vec {
 		using base_type::operator();
 		masked_vec<v8u32> operator()(const mask<v8u32>& m);
         };
+
+	template <>
+	struct arg<v8u32> {
+		typedef const v8u32& type;
+	};
+
+#endif
+
+	v4u32 low_half(const v8u32& v);
+	v4u32 high_half(const v8u32& v);
 
         v8u32& operator|= (v8u32& a, const v8u32& b);
         v8u32& operator&= (v8u32& a, const v8u32& b);
@@ -994,6 +1010,7 @@ namespace std {
 #include <cftal/x86vec_v2u64_inl.h>
 
 #include <cftal/x86vec_v8s32_inl.h>
+#include <cftal/x86vec_v8u32_inl.h>
 
 // Local variables:
 // mode: c++
