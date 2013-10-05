@@ -8,33 +8,21 @@
 namespace x86vec {
 
 	namespace impl {
-		struct vdiv16_traits {
-			static v8s16 mulsh(const v8s16& a, const v8s16& b)  {
-				return mul_hi(a, b);
-			}
-			static v8u16 muluh(const v8u16& a, const v8u16& b)  {
+
+ 		template <class _S>
+		struct signed_vec_traits {
+  			static _S mulsh(const _S& a, const _S& b)  {
 				return mul_hi(a, b);
 			}
 		};
 
-		struct vdiv32_traits {
-			static v4s32 mulsh(const v4s32& a, const v4s32& b)  {
-				return mul_hi(a, b);
-			}
-			static v4u32 muluh(const v4u32& a, const v4u32& b)  {
+ 		template <class _U>
+		struct unsigned_vec_traits {
+			static _U muluh(const _U& a, const _U& b)  {
 				return mul_hi(a, b);
 			}
 		};
 
-		struct vdiv64_traits {
-			static v2s64 mulsh(const v2s64& a, const v2s64& b)  {
-				return mul_hi(a, b);
-			}
-			static v2u64 muluh(const v2u64& a, const v2u64& b)  {
-				return mul_hi(a, b);
-			}
-		};
-		
 	}
 }
 
@@ -42,35 +30,51 @@ namespace cftal {
 
 	namespace impl {
 
-		// unsigned vector div 16
+		// v8u16
 		template <>
-		struct udiv_traits<x86vec::v8u16, uint16_t>
-			: public x86vec::impl::vdiv16_traits {};
-		// signed vector div 16
+		struct udiv_traits<x86vec::v8u16, uint16_t> : public 
+		x86vec::impl::unsigned_vec_traits<x86vec::v8u16> {
+		};
+		// v8s16
 		template <>
-		struct sdiv_traits<x86vec::v8s16, int16_t>
-			: public x86vec::impl::vdiv16_traits {};
+		struct sdiv_traits<x86vec::v8s16, int16_t> : public 
+		x86vec::impl::signed_vec_traits<x86vec::v8s16> {
+		};
 
-		// unsigned vector div 32
+		// v4u32
 		template <>
-		struct udiv_traits<x86vec::v4u32, uint32_t>
-			: public x86vec::impl::vdiv32_traits {};
+		struct udiv_traits<x86vec::v4u32, uint32_t> : public 
+		x86vec::impl::unsigned_vec_traits<x86vec::v4u32> {
+		};
+		// v4s32
+		template <>
+		struct sdiv_traits<x86vec::v4s32, int32_t> : public 
+		x86vec::impl::signed_vec_traits<x86vec::v4s32> {
+		};
 
-		// signed vector div 32
+		// v2u64
 		template <>
-		struct sdiv_traits<x86vec::v4s32, int32_t>
-			: public x86vec::impl::vdiv32_traits {};
+		struct udiv_traits<x86vec::v2u64, uint64_t> : public 
+		x86vec::impl::unsigned_vec_traits<x86vec::v2u64> {
+		};
+		// v2s64
+		template <>
+		struct sdiv_traits<x86vec::v2s64, int64_t> : public 
+		x86vec::impl::signed_vec_traits<x86vec::v2s64> {
+		};
 
-		// unsigned vector div 64
+		// v8u32
 		template <>
-		struct udiv_traits<x86vec::v2u64, uint64_t>
-			: public x86vec::impl::vdiv64_traits {};
+		struct udiv_traits<x86vec::v8u32, uint32_t> : public 
+		x86vec::impl::unsigned_vec_traits<x86vec::v8u32> {
+		};
+		// v8s32
+		template <>
+		struct sdiv_traits<x86vec::v8s32, int32_t> : public 
+		x86vec::impl::signed_vec_traits<x86vec::v8s32> {
+		};
 
-		// signed vector div 64
-		template <>
-		struct sdiv_traits<x86vec::v2s64, int64_t>
-			: public x86vec::impl::vdiv64_traits {};
-		
+
 	}
 
 	template <>
@@ -117,6 +121,21 @@ namespace cftal {
 	public:
 		divisor(uint64_t d) :
 			impl::udiv<x86vec::v2u64, uint64_t>(d) {}
+	};
+
+	template <>
+	class divisor<x86vec::v8s32, int32_t>
+		: public impl::sdiv<x86vec::v8s32, int32_t> {
+	public:
+		divisor(int32_t d) :
+			impl::sdiv<x86vec::v8s32, int32_t>(d) {}
+	};
+	template <>
+	class divisor<x86vec::v8u32, uint32_t>
+		: public impl::udiv<x86vec::v8u32, uint32_t> {
+	public:
+		divisor(uint32_t d) :
+			impl::udiv<x86vec::v8u32, uint32_t>(d) {}
 	};
 
 }
