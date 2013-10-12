@@ -1827,14 +1827,14 @@ __m256 x86vec::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
 	__m256 a1 = perm1_v8f32<ma0, ma1, ma2, ma3,
 				ma4, ma5, ma6, ma7>::v(a);
 	// select all elements from second vector
-	const int mb0 = _P0 > 8 ? (_P0-8) : -1;
-	const int mb1 = _P1 > 8 ? (_P1-8) : -1;
-	const int mb2 = _P2 > 8 ? (_P2-8) : -1;
-	const int mb3 = _P3 > 8 ? (_P3-8) : -1;
-	const int mb4 = _P4 > 8 ? (_P4-8) : -1;
-	const int mb5 = _P5 > 8 ? (_P5-8) : -1;
-	const int mb6 = _P6 > 8 ? (_P6-8) : -1;
-	const int mb7 = _P7 > 8 ? (_P7-8) : -1;
+	const int mb0 = _P0 > 7 ? (_P0-8) : -1;
+	const int mb1 = _P1 > 7 ? (_P1-8) : -1;
+	const int mb2 = _P2 > 7 ? (_P2-8) : -1;
+	const int mb3 = _P3 > 7 ? (_P3-8) : -1;
+	const int mb4 = _P4 > 7 ? (_P4-8) : -1;
+	const int mb5 = _P5 > 7 ? (_P5-8) : -1;
+	const int mb6 = _P6 > 7 ? (_P6-8) : -1;
+	const int mb7 = _P7 > 7 ? (_P7-8) : -1;
 	__m256 b1 = perm1_v8f32<mb0, mb1, mb2, mb3,
 				mb4, mb5, mb6, mb7>::v(b);
 	return  _mm256_or_ps(a1 ,b1);

@@ -1114,7 +1114,7 @@ x86vec::v4f64 x86vec::operator> (const v4f64& a, const v4f64& b)
 inline
 x86vec::v2f64 x86vec::low_half(const v4f64& v)
 {
-	return _mm256_extractf128_pd(v(), 0);
+	return _mm256_castpd256_pd128(v());
 }
 
 inline

@@ -1082,7 +1082,7 @@ x86vec::v8f32 x86vec::operator> (const v8f32& a, const v8f32& b)
 inline
 x86vec::v4f32 x86vec::low_half(const v8f32& v)
 {
-	return _mm256_extractf128_ps(v(), 0);
+	return _mm256_castps256_ps128(v());
 }
 
 inline

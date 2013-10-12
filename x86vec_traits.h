@@ -503,8 +503,8 @@ namespace cftal {
 			void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
 				using namespace x86vec;
 				using x86vec::impl::cvt;
-				r[0] = cvt<v4f64, v8f32>::l(x);
 				r[1] = cvt<v4f64, v8f32>::h(x);
+				r[0] = cvt<v4f64, v8f32>::l(x);
 			}
 
 			static

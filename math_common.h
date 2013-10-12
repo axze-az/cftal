@@ -299,18 +299,15 @@ namespace cftal {
                                 static vf_type v(const vf_type& x);
                         };
 
-                        // nth root implementation for double+int32_t
-                        template <typename _TRAITS, unsigned _R>
-                        struct nth_root<double, int32_t, _TRAITS, _R> {
-
+                        // nth root implementation for double/float, +int32_t
+                        template <typename _FLOAT_T, typename _TRAITS, unsigned _R>
+                        struct nth_root<_FLOAT_T, int32_t, _TRAITS, _R> {
+				
                                 typedef typename _TRAITS::vf_type vf_type;
-                                typedef d_real<vf_type> dvf_type;
                                 typedef typename _TRAITS::vmf_type vmf_type;
                                 typedef nth_root_nr<_R,
                                                     vf_type> nr_step_t;
-                                typedef nth_root_nr<_R,
-                                                    dvf_type> last_nr_step_t;
-                                typedef nth_root_guess<double,
+                                typedef nth_root_guess<_FLOAT_T,
                                                        int32_t,
                                                        _TRAITS> guess_t;
 

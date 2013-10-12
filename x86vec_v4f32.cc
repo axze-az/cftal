@@ -5,7 +5,7 @@
 #include <cmath>
 #include <limits>
 
-#if 0
+#if 1
 #include "x86vec_math_funcs.h"
 
 DEF_MATH_FUNCS(x86vec, v4f32, v4s32, float, 4)

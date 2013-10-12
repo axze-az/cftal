@@ -205,7 +205,18 @@ namespace x86vec {
 			static v4f64 h(const v8f32& a) {
 				return cvt<v4f64, v4f32>::l(high_half(a));
 			}
+
+
 		};
+
+		template <>
+		struct cvt<v8f32, v4f64> {
+			static v8f32 l(const v4f64& a) {
+				return v8f32(cvt<v4f32, v4f64>::l(a),
+					     v4f32(0.0f));
+			}
+		};
+
 	}
 	
 	template <class _D, class _S>

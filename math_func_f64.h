@@ -230,6 +230,14 @@ namespace cftal {
 			static std::pair<vf_type, vf_type>
 			native_sin_cos_k(const vf_type& v);
 
+			// atan2 kernel
+			static dvf_type
+			atan2_k2(const dvf_type& x, const dvf_type& y);
+
+			// native atan2 kernel
+			static vf_type
+			native_atan2_k(const vf_type& x, const vf_type& y);
+
                         static vf_type pow2i(const vi_type& vi);
                         static vf_type ldexp(const vf_type& vf,
                                              const vi_type& vi);
@@ -744,22 +752,11 @@ std::pair<typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type,
 cftal::math::func_core<double, cftal::int32_t, _T>::
 native_sin_cos_k(const vf_type& d)
 {
-
-#if 0
-	vf_type qf(rint(d * (2 * M_1_PI)));
-	vi_type q(_T::cvt_f_to_i(qf));
-	
-	vf_type x(d);
-	x = x - qf * (2*PI4_A);
-	x = x - qf * (2*PI4_B);
-	x = x - qf * (2*PI4_C);
-	x = x - qf * (2*PI4_D);
-#else
 	std::pair<vf_type, vi_type> rq(
 		native_reduce_trig_arg_k(d));
 	vf_type& x= rq.first;
 	const vi_type& q= rq.second;
-#endif
+
 	vf_type x2(x*x);
 
 	vf_type s, c;
@@ -794,6 +791,22 @@ native_sin_cos_k(const vf_type& d)
 	rc = mulsign(rc, q_and_2_f ^ q_and_1_f);
 
 	return std::make_pair(rs, rc);
+}
+
+template <typename _T>
+typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type
+cftal::math::func_core<double, cftal::int32_t, _T>::
+atan2_k2(const dvf_type& x, const dvf_type& y)
+{
+	return 0.0;
+}
+
+template <typename _T>
+typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type
+cftal::math::func_core<double, cftal::int32_t, _T>::
+native_atan2_k(const vf_type& x, const vf_type& y)
+{
+	return 0.0;
 }
 
 template <class _T>

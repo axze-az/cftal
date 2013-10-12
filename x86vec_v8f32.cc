@@ -4,6 +4,14 @@
 #include <cmath>
 #include <limits>
 
+#if 1
+
+#include "x86vec_math_funcs.h"
+
+DEF_MATH_FUNCS(x86vec, v8f32, v8s32, float, 4)
+
+#else
+
 x86vec::v8f32 x86vec::pow2if(arg<v8s32>::type e)
 {
 	using traits_t=cftal::math::func_traits<v8f32, v8s32>;
@@ -160,3 +168,4 @@ x86vec::v8f32 x86vec::native_tan(arg<v8f32>::type d)
 	return func_t::native_tan(d);
 }
 
+#endif

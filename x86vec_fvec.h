@@ -226,6 +226,21 @@ namespace x86vec {
         v4f32 native_exp(arg<v4f32>::type d);
         v4f32 native_log(arg<v4f32>::type d);
 
+        namespace impl {
+                // fma emulation (a*b +c), calculates correctly until
+                // no internal overflow occurs
+                v4f32 fma(arg<v4f32>::type a, arg<v4f32>::type b,
+                          arg<v4f32>::type c);
+        }
+        // a*b +c
+        v4f32 fma(const v4f32& a, const v4f32& b, const v4f32& c);
+        // a*b -c
+        v4f32 fms(const v4f32& a, const v4f32& b, const v4f32& c);
+        // -(a*b) + c
+        v4f32 nfma(const v4f32& a, const v4f32& b, const v4f32& c);
+        // -(a*b) - c
+        v4f32 nfms(const v4f32& a, const v4f32& b, const v4f32& c);
+
         template < bool _P0, bool _P1, bool _P2, bool _P3>
         v4f32 select(const v4f32& a, const v4f32& b);
         v4f32 select(const v4f32& msk, const v4f32& on_true,
@@ -733,6 +748,21 @@ namespace x86vec {
 
         v8f32 native_exp(arg<v8f32>::type d);
         v8f32 native_log(arg<v8f32>::type d);
+
+        namespace impl {
+                // fma emulation (a*b +c), calculates correctly until
+                // no internal overflow occurs
+                v8f32 fma(arg<v8f32>::type a, arg<v8f32>::type b,
+                          arg<v8f32>::type c);
+        }
+        // a*b +c
+        v8f32 fma(const v8f32& a, const v8f32& b, const v8f32& c);
+        // a*b -c
+        v8f32 fms(const v8f32& a, const v8f32& b, const v8f32& c);
+        // -(a*b) + c
+        v8f32 nfma(const v8f32& a, const v8f32& b, const v8f32& c);
+        // -(a*b) - c
+        v8f32 nfms(const v8f32& a, const v8f32& b, const v8f32& c);
 
         template <bool _P0, bool _P1, bool _P2, bool _P3,
 		  bool _P4, bool _P5, bool _P6, bool _P7>

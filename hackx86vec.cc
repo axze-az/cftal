@@ -595,11 +595,15 @@ int main(int argc, char** argv)
 
         // x86cftal::vec::v2f64 t=exp(x86cftal::vec::v2f64(0.0));
         // static_cast<void>(t);
-        calc_pi();
+        // calc_pi();
 	// print_inv_fac();
 	// print_2_over_i();
 	// print_sqrtx();
 	// testpowi();
+
+	using namespace x86vec;
+
+	v8f32 res(sinh(v8f32(1.0)));
 
 	std::cout << std::setprecision(18) << std::scientific << 0x1.p54 << std::endl;
 

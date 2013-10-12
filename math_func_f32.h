@@ -103,6 +103,9 @@ namespace cftal {
 
 		template <typename _T>
 		struct func_core<float, int32_t, _T> {
+
+			typedef func_core<float, int32_t, _T> my_type;
+
                         typedef typename _T::vf_type vf_type;
                         typedef typename _T::vi_type vi_type;
                         typedef typename _T::vmf_type vmf_type;
@@ -128,9 +131,14 @@ namespace cftal {
 			static dvf_type 
 			exp_k2(const dvf_type& dvf);
 
+                        static vf_type 
+			native_exp_k(const vf_type& v);
+
 			static dvf_type
 			log_k2(const dvf_type& dvf);
 
+                        static vf_type 
+			native_log_k(const vf_type& v);
 		};
 
                 template <typename _T>
@@ -398,12 +406,48 @@ exp_k2(const dvf_type& x)
 
 	vhpf_type vres[elements];
 	for (std::size_t i=0; i<elements; ++i) {
-		vres[i]= hpf_func::native_exp_k(vres);
+		vres[i]= hpf_func::native_exp_k(xh[i]);
 	}
-	std::pair<dvf_type, dvf_type> results;
-	_T::vhpf_to_dvf(results, vres);
-	return results;
+	dvf_type res;
+	_T::vhpf_to_dvf(vres, res);
+	return res;
 }
+
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, 
+				cftal::int32_t, 
+				_T>::vf_type
+cftal::math::func_core<float, cftal::int32_t, _T>::
+native_exp_k(const vf_type& v)
+{
+#define L2Uf 0.693145751953125f
+#define L2Lf 1.428606765330187045e-06f
+#define R_LN2f 1.442695040888963407359924681001892137426645954152985934135449406931f
+
+	vi_type q(_T::cvt_f_to_i(v * R_LN2f));
+	vf_type qf(_T::cvt_i_to_f(q));
+
+	vf_type s(v - qf * vf_type(L2Uf));
+	s = s - qf * vf_type(L2Lf);
+
+	vf_type u(0.00136324646882712841033936f);
+	u = u * s + 0.00836596917361021041870117f;
+	u = u * s + 0.0416710823774337768554688f;
+	u = u * s + 0.166665524244308471679688f;
+	u = u * s + 0.499999850988388061523438f;
+
+	u = s * s * u + s + vf_type(1.0f);
+	u = my_type::ldexp(u, q);
+
+	// vmf_type isminf(v == _T::ninf());
+	// u = _T::sel(isminf, vf_type(0.0f), u);
+	return u;
+#undef L2Lf
+#undef L2Uf
+}
+
 
 template <typename _T>
 inline
@@ -430,13 +474,35 @@ log_k2(const dvf_type& x)
 
 	vhpf_type vres[elements];
 	for (std::size_t i=0; i<elements; ++i) {
-		vres[i]= hpf_func::native_log_k(vres);
+		vres[i]= hpf_func::native_log_k(xh[i]);
 	}
-	std::pair<dvf_type, dvf_type> results;
-	_T::vhpf_to_dvf(results, vres);
-	return results;
+	dvf_type res;
+	_T::vhpf_to_dvf(vres, res);
+	return res;
 }
 
+template <typename _T>
+inline
+typename cftal::math::func_core<float, 
+				cftal::int32_t, 
+				_T>::vf_type
+cftal::math::func_core<float, cftal::int32_t, _T>::
+native_log_k(const vf_type& v)
+{
+	vi_type e(my_type::ilogbp1(v * 0.7071f));
+	vf_type m(my_type::ldexp(v, -e));
+	
+	vf_type x((m-vf_type(1.0f))/(m-vf_type(1.0f)));
+	vf_type x2(x * x);
+	vf_type   t = 0.2371599674224853515625f;
+	t = t * x2 + 0.285279005765914916992188f;
+	t = t * x2 + 0.400005519390106201171875f;
+	t = t * x2 + 0.666666567325592041015625f;
+	t = t * x2 + 2.0f;
+	vf_type ef(_T::cvt_i_to_f(e));
+	x = x * t + 0.693147180559945286226764f * ef;
+	return x;
+}
 
 template <typename _T>
 inline
