@@ -5,7 +5,6 @@
         using traits_t=cftal::math::func_traits<vec_float,      \
                                                 vec_int>;       \
         using func_t=cftal::math::func<real_type,               \
-                                       int32_t,                 \
                                        traits_t>
 
 
@@ -17,7 +16,6 @@
                 using traits_t=cftal::math::func_traits<vec_float,      \
                                                         vec_int>;       \
                 using func_t=cftal::math::impl::nth_root<real_type,     \
-                                                         int32_t,       \
                                                          traits_t, 3>;  \
                 return func_t::v< cbrt_iter >(a);                       \
         }                                                               \

@@ -102,9 +102,9 @@ namespace cftal {
                 };
 
 		template <typename _T>
-		struct func_core<float, int32_t, _T> {
+		struct func_core<float, _T> {
 
-			typedef func_core<float, int32_t, _T> my_type;
+			typedef func_core<float, _T> my_type;
 
                         typedef typename _T::vf_type vf_type;
                         typedef typename _T::vi_type vi_type;
@@ -142,8 +142,8 @@ namespace cftal {
 		};
 
                 template <typename _T>
-                struct func<float, int32_t, _T> 
-			: public func_common<float, int32_t, _T> {
+                struct func<float, _T> 
+			: public func_common<float, _T> {
                         typedef typename _T::vf_type vf_type;
                         typedef typename _T::vi_type vi_type;
                         typedef typename _T::vmf_type vmf_type;
@@ -158,8 +158,8 @@ namespace cftal {
 template <typename _T>
 inline
 typename
-cftal::math::func_core<float, cftal::int32_t, _T>::vf_type
-cftal::math::func_core<float, cftal::int32_t, _T>::
+cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
 pow2i(const vi_type& vi)
 {
         vi_type e(vi + vi_type(_T::bias));
@@ -178,8 +178,8 @@ pow2i(const vi_type& vi)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<float, cftal::int32_t, _T>::vf_type
-cftal::math::func_core<float, cftal::int32_t, _T>::
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
 ldexp(const vf_type& vd, const vi_type& ve)
 {
         vi_type q= ve;
@@ -202,8 +202,8 @@ ldexp(const vf_type& vd, const vi_type& ve)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<float, cftal::int32_t, _T>::vf_type
-cftal::math::func_core<float, cftal::int32_t, _T>::
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
 frexp(const vf_type& vd, vi_type* ve)
 {
 	// normal numbers:
@@ -245,8 +245,8 @@ frexp(const vf_type& vd, vi_type* ve)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<float, cftal::int32_t, _T>::vi_type
-cftal::math::func_core<float, cftal::int32_t, _T>::
+typename cftal::math::func_core<float, _T>::vi_type
+cftal::math::func_core<float, _T>::
 ilogbp1(const vf_type& vd)
 {
         vmf_type mf= vd < 5.421010862427522E-20f;
@@ -259,8 +259,8 @@ ilogbp1(const vf_type& vd)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<float, cftal::int32_t, _T>::vi_type
-cftal::math::func_core<float, cftal::int32_t, _T>::
+typename cftal::math::func_core<float, _T>::vi_type
+cftal::math::func_core<float, _T>::
 ilogb(const vf_type& d)
 {
         vi_type e(ilogbp1(abs(d) -1));
@@ -275,11 +275,9 @@ ilogb(const vf_type& d)
 
 template <typename _T>
 inline
-std::pair<typename cftal::math::func_core<float, 
-					  cftal::int32_t, _T>::dvf_type,
-	  typename cftal::math::func_core<float, 
-					  cftal::int32_t, _T>::dvf_type>
-cftal::math::func_core<float, cftal::int32_t, _T>::
+std::pair<typename cftal::math::func_core<float, _T>::dvf_type,
+	  typename cftal::math::func_core<float, _T>::dvf_type>
+cftal::math::func_core<float, _T>::
 sin_cos_k(const vf_type& x)
 {
 	using vhpf_type = typename _T::vhpf_type;
@@ -290,7 +288,7 @@ sin_cos_k(const vf_type& x)
 
 	using hpf_traits = typename _T::hpf_traits;
 	using hpf_func = 
-		func_core<double, cftal::int32_t, hpf_traits>;
+		func_core<double, hpf_traits>;
 
 	vhpf_type hpf_sin[elements];
 	vhpf_type hpf_cos[elements];
@@ -308,11 +306,9 @@ sin_cos_k(const vf_type& x)
 
 template <typename _T>
 inline
-std::pair<typename cftal::math::func_core<float, 
-					  cftal::int32_t, _T>::vf_type,
-	  typename cftal::math::func_core<float, 
-					  cftal::int32_t, _T>::vf_type>
-cftal::math::func_core<float, cftal::int32_t, _T>::
+std::pair<typename cftal::math::func_core<float, _T>::vf_type,
+	  typename cftal::math::func_core<float, _T>::vf_type>
+cftal::math::func_core<float, _T>::
 native_sin_cos_k(const vf_type& x)
 {
 #define PI4_Af 0.78515625f
@@ -383,10 +379,8 @@ native_sin_cos_k(const vf_type& x)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<float, 
-				cftal::int32_t, 
-				_T>::dvf_type
-cftal::math::func_core<float, cftal::int32_t, _T>::
+typename cftal::math::func_core<float, _T>::dvf_type
+cftal::math::func_core<float, _T>::
 exp_k2(const dvf_type& x)
 {
 	using vhpf_type = typename _T::vhpf_type;
@@ -394,7 +388,7 @@ exp_k2(const dvf_type& x)
 
 	using hpf_traits = typename _T::hpf_traits;
 	using hpf_func = 
-		func_core<double, cftal::int32_t, hpf_traits>;
+		func_core<double, hpf_traits>;
 	
 	vhpf_type xh[elements];
 	_T::vf_to_vhpf(x.h(), xh);
@@ -416,10 +410,8 @@ exp_k2(const dvf_type& x)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<float, 
-				cftal::int32_t, 
-				_T>::vf_type
-cftal::math::func_core<float, cftal::int32_t, _T>::
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
 native_exp_k(const vf_type& v)
 {
 #define L2Uf 0.693145751953125f
@@ -451,10 +443,8 @@ native_exp_k(const vf_type& v)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<float, 
-				cftal::int32_t, 
-				_T>::dvf_type
-cftal::math::func_core<float, cftal::int32_t, _T>::
+typename cftal::math::func_core<float, _T>::dvf_type
+cftal::math::func_core<float, _T>::
 log_k2(const dvf_type& x)
 {
 	using vhpf_type = typename _T::vhpf_type;
@@ -462,7 +452,7 @@ log_k2(const dvf_type& x)
 
 	using hpf_traits = typename _T::hpf_traits;
 	using hpf_func = 
-		func_core<double, cftal::int32_t, hpf_traits>;
+		func_core<double, hpf_traits>;
 	
 	vhpf_type xh[elements];
 	_T::vf_to_vhpf(x.h(), xh);
@@ -483,10 +473,8 @@ log_k2(const dvf_type& x)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<float, 
-				cftal::int32_t, 
-				_T>::vf_type
-cftal::math::func_core<float, cftal::int32_t, _T>::
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
 native_log_k(const vf_type& v)
 {
 	vi_type e(my_type::ilogbp1(v * 0.7071f));
@@ -507,8 +495,8 @@ native_log_k(const vf_type& v)
 template <typename _T>
 inline
 typename
-cftal::math::func<float, cftal::int32_t, _T>::vf_type
-cftal::math::func<float, cftal::int32_t, _T>::native_sin(const vf_type& x)
+cftal::math::func<float, _T>::vf_type
+cftal::math::func<float, _T>::native_sin(const vf_type& x)
 {
 #define PI4_Af 0.78515625f
 #define PI4_Bf 0.00024187564849853515625f
@@ -550,8 +538,8 @@ cftal::math::func<float, cftal::int32_t, _T>::native_sin(const vf_type& x)
 template <typename _T>
 inline
 typename
-cftal::math::func<float, cftal::int32_t, _T>::vf_type
-cftal::math::func<float, cftal::int32_t, _T>::native_cos(const vf_type& x)
+cftal::math::func<float, _T>::vf_type
+cftal::math::func<float, _T>::native_cos(const vf_type& x)
 {
 #define PI4_Af 0.78515625f
 #define PI4_Bf 0.00024187564849853515625f

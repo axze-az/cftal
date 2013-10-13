@@ -184,14 +184,14 @@ namespace cftal {
                 };
 
                 template <typename _T>
-                struct func_core<double, int32_t, _T> {
+                struct func_core<double, _T> {
                         typedef typename _T::vf_type vf_type;
                         typedef typename _T::vi_type vi_type;
                         typedef typename _T::vmf_type vmf_type;
                         typedef typename _T::vmi_type vmi_type;
 
                         typedef d_real<vf_type> dvf_type;
-			typedef func_core<double, int32_t, _T> my_type;
+			typedef func_core<double, _T> my_type;
 
 			static const dvf_type m_exp_c_k2[];
 			static const dvf_type m_log_c_k2[];
@@ -254,8 +254,8 @@ namespace cftal {
 template <typename _T>
 inline
 typename
-cftal::math::func_core<double, cftal::int32_t, _T>::vf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
 pow2i(const vi_type& vi)
 {
         vi_type e(vi + vi_type(_T::bias));
@@ -274,8 +274,8 @@ pow2i(const vi_type& vi)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
 ldexp(const vf_type& vd,
       const vi_type& ve)
 {
@@ -301,8 +301,8 @@ ldexp(const vf_type& vd,
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
 frexp(const vf_type& vd,
       vi_type* ve)
 {
@@ -349,8 +349,8 @@ frexp(const vf_type& vd,
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, cftal::int32_t, _T>::vi_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::vi_type
+cftal::math::func_core<double, _T>::
 ilogbp1(const vf_type& vd)
 {
         vmf_type mf= vd < 4.9090934652977266E-91;
@@ -363,8 +363,8 @@ ilogbp1(const vf_type& vd)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, cftal::int32_t, _T>::vi_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::vi_type
+cftal::math::func_core<double, _T>::
 ilogb(const vf_type& d)
 {
         vi_type e(ilogbp1(abs(d) -1));
@@ -379,8 +379,8 @@ ilogb(const vf_type& d)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::
 log_k2(const dvf_type& d)
 {
         using ctbl=impl::d_real_constants<dvf_type, double>;
@@ -418,8 +418,8 @@ log_k2(const dvf_type& d)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
 native_log_k(const vf_type& d)
 {
         using ctbl=impl::d_real_constants<dvf_type, double>;
@@ -457,8 +457,8 @@ native_log_k(const vf_type& d)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::
 exp_k2(const dvf_type& d)
 {
         using ctbl = impl::d_real_constants<dvf_type, double>;
@@ -499,8 +499,8 @@ exp_k2(const dvf_type& d)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
 native_exp_k(const vf_type& d)
 {
         using ctbl = impl::d_real_constants<dvf_type, double>;
@@ -541,10 +541,10 @@ native_exp_k(const vf_type& d)
 
 template <typename _T>
 inline
-std::pair<typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type,
-          typename cftal::math::func_core<double, cftal::int32_t, _T>::vi_type>
+std::pair<typename cftal::math::func_core<double, _T>::dvf_type,
+          typename cftal::math::func_core<double, _T>::vi_type>
 cftal::math::
-func_core<double, cftal::int32_t, _T>::
+func_core<double, _T>::
 reduce_trig_arg_k(const vf_type& d)
 {
         using ctbl = impl::d_real_constants<dvf_type, double>;
@@ -589,8 +589,8 @@ reduce_trig_arg_k(const vf_type& d)
 
 template <typename _T>
 const 
-typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::m_sin_c_k2[]= {
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::m_sin_c_k2[]= {
 	// +1/21!
 	dvf_type(  1.9572941063391262595198e-20, -1.3643503830087908487197e-36),
 	// -1/19!
@@ -615,8 +615,8 @@ cftal::math::func_core<double, cftal::int32_t, _T>::m_sin_c_k2[]= {
 
 template <typename _T>
 const 
-typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::m_cos_c_k2[]= {
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::m_cos_c_k2[]= {
 	// -1/22!
 	dvf_type( -8.8967913924505740778892e-22,  7.9114026148723762170263e-38),
 	// +1/20!
@@ -642,9 +642,9 @@ cftal::math::func_core<double, cftal::int32_t, _T>::m_cos_c_k2[]= {
 
 template <typename _T>
 __attribute__((flatten, noinline))
-std::pair<typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type,
-	  typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type>
-cftal::math::func_core<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
+std::pair<typename cftal::math::func_core<double, _T>::dvf_type,
+	  typename cftal::math::func_core<double, _T>::dvf_type>
+cftal::math::func_core<double, _T>::sin_cos_k(const vf_type& d)
 {
         // using ctbl = impl::d_real_constants<dvf_type, double>;
 	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
@@ -690,9 +690,9 @@ cftal::math::func_core<double, cftal::int32_t, _T>::sin_cos_k(const vf_type& d)
 
 template <typename _T>
 inline
-std::pair<typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type,
-          typename cftal::math::func_core<double, cftal::int32_t, _T>::vi_type>
-cftal::math::func_core<double, cftal::int32_t, _T>::
+std::pair<typename cftal::math::func_core<double, _T>::vf_type,
+          typename cftal::math::func_core<double, _T>::vi_type>
+cftal::math::func_core<double, _T>::
 native_reduce_trig_arg_k(const vf_type& d)
 {
 #define PI4_A 0.78539816290140151978
@@ -747,9 +747,9 @@ native_reduce_trig_arg_k(const vf_type& d)
 
 template <typename _T>
 __attribute__((flatten, noinline))
-std::pair<typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type,
-	  typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type>
-cftal::math::func_core<double, cftal::int32_t, _T>::
+std::pair<typename cftal::math::func_core<double, _T>::vf_type,
+	  typename cftal::math::func_core<double, _T>::vf_type>
+cftal::math::func_core<double, _T>::
 native_sin_cos_k(const vf_type& d)
 {
 	std::pair<vf_type, vi_type> rq(
@@ -794,16 +794,16 @@ native_sin_cos_k(const vf_type& d)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, cftal::int32_t, _T>::dvf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::
 atan2_k2(const dvf_type& x, const dvf_type& y)
 {
 	return 0.0;
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, cftal::int32_t, _T>::vf_type
-cftal::math::func_core<double, cftal::int32_t, _T>::
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
 native_atan2_k(const vf_type& x, const vf_type& y)
 {
 	return 0.0;
