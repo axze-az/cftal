@@ -230,6 +230,9 @@ namespace cftal {
 			static std::pair<vf_type, vf_type>
 			native_sin_cos_k(const vf_type& v);
 
+			// cofficients for atan2
+			static const dvf_type m_atan2_c_k2[];
+
 			// atan2 kernel
 			static dvf_type
 			atan2_k2(const dvf_type& x, const dvf_type& y);
@@ -794,10 +797,49 @@ native_sin_cos_k(const vf_type& d)
 }
 
 template <typename _T>
+const 
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::m_atan2_c_k2[]= {
+	dvf_type( 1.0)/_T(45.0),
+	dvf_type(-1.0)/_T(43.0),
+	dvf_type( 1.0)/_T(41.0),
+	dvf_type(-1.0)/_T(39.0),
+	dvf_type( 1.0)/_T(37.0),
+	dvf_type(-1.0)/_T(35.0),
+	dvf_type( 1.0)/_T(33.0),
+	dvf_type(-1.0)/_T(31.0),
+	dvf_type( 1.0)/_T(29.0),
+	dvf_type(-1.0)/_T(27.0),
+	dvf_type( 1.0)/_T(25.0),
+	dvf_type(-1.0)/_T(23.0),
+	dvf_type( 1.0)/_T(21.0),
+	dvf_type(-1.0)/_T(19.0),
+	dvf_type( 1.0)/_T(17.0),
+	dvf_type(-1.0)/_T(15.0),
+	dvf_type( 1.0)/_T(13.0),
+	dvf_type(-1.0)/_T(11.0),
+	dvf_type( 1.0)/_T( 9.0),
+	dvf_type(-1.0)/_T( 7.0),
+	dvf_type( 1.0)/_T( 5.0),
+	dvf_type(-1.0)/_T( 3.0),
+};
+
+template <typename _T>
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 atan2_k2(const dvf_type& x, const dvf_type& y)
 {
+	vmf_type x_lt_z(x.h() < vf_type(0));
+	vmi_type x_lt_z_i(_T::vmf_to_vmi(x_lt_z));
+
+	dvf_type absx(_T::sel(x_lt_z, -x.h(), x.h()),
+		      _T::sel(x_lt_z, -x.l(), x.l()));
+
+	vi_type qi(_T::sel(x_lt_z_i, vi_type(-2), vi_type(0)));
+
+	vmf_type y_gt_absx( y > absx);
+	// dvf_type max_xy( _T::sel(y_gt_absx), );
+
 	return 0.0;
 }
 
