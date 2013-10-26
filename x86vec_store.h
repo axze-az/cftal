@@ -14,6 +14,11 @@ namespace x86vec {
 		template <class _T>
 		void store_u(typename _T::element_type* p, const _T& a);
 
+		template <class _T>
+		void store256_a(typename _T::element_type* p, const _T& a);
+
+		template <class _T>
+		void store256_u(typename _T::element_type* p, const _T& a);
 
 	}
 
@@ -24,6 +29,9 @@ namespace x86vec {
 		void store(v4s32::element_type* p, const v4s32& r);
 		void store(v4f32::element_type* p, const v4f32& r);
 		void store(v2f64::element_type* p, const v2f64& r);
+
+		void store(v8f32::element_type* p, const v8f32& r);
+		void store(v4f64::element_type* p, const v4f64& r);
 	}
 
 	namespace unaligned {
@@ -33,6 +41,9 @@ namespace x86vec {
 		void store(v4s32::element_type* p, const v4s32& r);
 		void store(v4f32::element_type* p, const v4f32& r);
 		void store(v2f64::element_type* p, const v2f64& r);
+
+		void store(v8f32::element_type* p, const v8f32& r);
+		void store(v4f64::element_type* p, const v4f64& r);
 	}
 
 	namespace impl {
@@ -49,6 +60,9 @@ namespace x86vec {
 	void store(v4s32::element_type* p, const v4s32& r);
 	void store(v4f32::element_type* p, const v4f32& r);
 	void store(v2f64::element_type* p, const v2f64& r);
+
+	void store(v8f32::element_type* p, const v8f32& r);
+	void store(v4f64::element_type* p, const v4f64& r);
 }
 
 namespace mem {
@@ -82,6 +96,30 @@ x86vec::impl::store_u(typename _T::element_type* p, const _T& a)
 		ptr<typename _T::vector_type>::make(p);
 	_mm_storeu_si128(pv, a());
 }
+
+#if defined (__AVX__)
+// implementation helpers.
+template <class _T>
+inline 
+void
+x86vec::impl::store256_a(typename _T::element_type* p, const _T& a)
+{
+	typename _T::vector_type* pv= 
+		ptr<typename _T::vector_type>::make(p);
+	_mm256_store_si256(pv, a());
+}
+
+template <class _T>
+inline 
+void
+x86vec::impl::store256_u(typename _T::element_type* p, const _T& a)
+{
+	typename _T::vector_type* pv= 
+		ptr<typename _T::vector_type>::make(p);
+	_mm256_storeu_si256(pv, a());
+}
+
+#endif
 
 // aligned stores
 inline
@@ -124,6 +162,30 @@ void
 x86vec::aligned::store(v2f64::element_type* p, const v2f64& v)
 {
 	_mm_store_pd(p, v());
+}
+
+inline
+void
+x86vec::aligned::store(v8f32::element_type* p, const v8f32& v)
+{
+#if defined (__AVX__)
+	_mm256_store_ps(p, v());
+#else
+	store(p,  low_half(v));
+	store(p+4, high_half(v));
+#endif
+}
+
+inline
+void
+x86vec::aligned::store(v4f64::element_type* p, const v4f64& v)
+{
+#if defined (__AVX__)
+	_mm256_store_pd(p, v());
+#else
+	store(p,  low_half(v));
+	store(p+2, high_half(v));
+#endif
 }
 
 // unaligned stores
@@ -169,12 +231,37 @@ x86vec::unaligned::store(v2f64::element_type* p, const v2f64& v)
 	_mm_storeu_pd(p, v());
 }
 
+inline
+void
+x86vec::unaligned::store(v8f32::element_type* p, const v8f32& v)
+{
+#if defined (__AVX__)
+	_mm256_storeu_ps(p, v());
+#else
+	store(p,  low_half(v));
+	store(p+4, high_half(v));
+#endif
+}
+
+inline
+void
+x86vec::unaligned::store(v4f64::element_type* p, const v4f64& v)
+{
+#if defined (__AVX__)
+	_mm256_storeu_pd(p, v());
+#else
+	store(p,  low_half(v));
+	store(p+2, high_half(v));
+#endif
+}
+
 // impl store helper
 template <class _T>
 void 
 x86vec::impl::store(typename _T::element_type* p, const _T& v)
 {
-	if (is_aligned_to<16>::ptr(p)) {
+	const int A= sizeof(_T);
+	if (is_aligned_to<A>::ptr(p)) {
 		aligned::store(p, v);
 	} else {
 		unaligned::store(p, v);
@@ -219,6 +306,20 @@ x86vec::store(v4f32::element_type* p, const v4f32& v)
 inline
 void
 x86vec::store(v2f64::element_type* p, const v2f64& v)
+{
+	impl::store(p, v);
+}
+
+inline
+void
+x86vec::store(v8f32::element_type* p, const v8f32& v)
+{
+	impl::store(p, v);
+}
+
+inline
+void
+x86vec::store(v4f64::element_type* p, const v4f64& v)
 {
 	impl::store(p, v);
 }

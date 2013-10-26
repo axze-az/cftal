@@ -5,6 +5,7 @@
 #include <cftal/d_real.h>
 #include <cftal/std_types.h>
 #include <cftal/math_common.h>
+#include <cftal/mem_load.h>
 
 namespace cftal {
 
@@ -571,10 +572,10 @@ reduce_trig_arg_k(const vf_type& d)
 			vi_type _vec;
 			int32_t _sc[N];
 		} ti;
-		tf._vec = d;
-		ti._vec = q;
-		d0_l._vec = d0.l();
-		d0_h._vec = d0.h();
+		mem::aligned::store(tf._sc, d);
+		mem::aligned::store(ti._sc, q);
+		mem::aligned::store(d0_l._sc, d0.l());
+		mem::aligned::store(d0_h._sc, d0.h());
 		for (std::size_t i=0; i<N; ++i) {
 			if (fabs(tf._sc[i]) >= large_arg) {
 				double y[2];
@@ -584,8 +585,10 @@ reduce_trig_arg_k(const vf_type& d)
  				d0_h._sc[i]= y[0];
 			}
 		}
-		d0 = dvf_type(d0_h._vec, d0_l._vec);
-		q = ti._vec; 
+		vf_type rh(mem::aligned::load(d0_h._sc));
+		vf_type rl(mem::aligned::load(d0_l._sc));
+		d0 = dvf_type(rh, rl);
+		q = mem::aligned::load(ti._sc); 
         }
         return std::make_pair(d0, q);
 }
@@ -731,9 +734,11 @@ native_reduce_trig_arg_k(const vf_type& d)
 			vi_type _vec;
 			int32_t _sc[N];
 		} ti;
+		mem::aligned::store(tf._sc, d);
+		mem::aligned::store(ti._sc, q);
 		tf._vec = d;
 		ti._vec = q;
-		d0_l._vec = d0;
+		mem::aligned::store(d0_l._sc, d0);
 		for (std::size_t i=0; i<N; ++i) {
 			if (fabs(tf._sc[i]) >= large_arg) {
 				double y[2];
@@ -742,8 +747,8 @@ native_reduce_trig_arg_k(const vf_type& d)
 				d0_l._sc[i]= y[1] + y[0];
 			}
 		}
-		d0 = d0_l._vec;
-		q = ti._vec; 
+		d0 = mem::aligned::load(d0_l._sc);
+		q = mem::aligned::load(ti._sc); 
         }
         return std::make_pair(d0, q);
 }
@@ -827,20 +832,40 @@ cftal::math::func_core<double, _T>::m_atan2_c_k2[]= {
 template <typename _T>
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
-atan2_k2(const dvf_type& x, const dvf_type& y)
+atan2_k2(const dvf_type& cx, const dvf_type& cy)
 {
-	vmf_type x_lt_z(x.h() < vf_type(0));
-	vmi_type x_lt_z_i(_T::vmf_to_vmi(x_lt_z));
+        vmf_type f_x_lt_z(cx.h() < vf_type(0));
+        vmi_type i_x_lt_z(_T::vmf_to_vmi(f_x_lt_z));
+        vi_type q(_T::sel(i_x_lt_z, vi_type(-2), vi_type(0)));
+	dvf_type x(_T::sel(f_x_lt_z, -cx.h(), cx.h()),
+		   _T::sel(f_x_lt_z, -cx.l(), cx.l()));
 
-	dvf_type absx(_T::sel(x_lt_z, -x.h(), x.h()),
-		      _T::sel(x_lt_z, -x.l(), x.l()));
+	vmf_type f_y_gt_x(cy > x);
+	vmf_type i_y_gt_x(_T::vmf_to_vmi(f_y_gt_x));
+	
+        q += _T::sel(i_y_gt_x, vi_type(1), vi_type(0));
 
-	vi_type qi(_T::sel(x_lt_z_i, vi_type(-2), vi_type(0)));
+        // vf_type y = _T::sel(mf, -x, cy);
+	dvf_type y(_T::sel(f_y_gt_x, -(x.h()), cy.h()),
+		   _T::sel(f_y_gt_x, -(x.l()), cy.l()));
+        // x = _T::sel(mf, cy, x);
+	x = dvf_type(_T::sel(f_y_gt_x, cy.h(), x.h()),
+		     _T::sel(f_y_gt_x, cy.l(), x.l()));
+	
+	dvf_type s(y / x);
+	dvf_type t(sqr(s));
 
-	vmf_type y_gt_absx( y > absx);
-	// dvf_type max_xy( _T::sel(y_gt_absx), );
+	const std::size_t N= sizeof(m_atan2_c_k2)/sizeof(m_atan2_c_k2[0]);
+	dvf_type u(m_atan2_c_k2[0]);
+	for (std::size_t i=1; i<N; ++i) {
+		u = u * t + m_atan2_c_k2[i];
+	}
+	
+	t = u * t * s  + s;
 
-	return 0.0;
+        using ctbl=impl::d_real_constants<dvf_type, double>;
+	t = _T::cvt_f_to_i(q) * ctbl::m_pi_2 + t;
+	return t;
 }
 
 template <typename _T>

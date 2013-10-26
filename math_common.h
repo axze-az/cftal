@@ -42,6 +42,12 @@ namespace cftal {
                         // native sin and cos core, return sin in first
                         static std::pair<vf_type, vf_type>
                         native_sin_cos_k(const vf_type& v);
+			// atan2 core
+			static dvf_type
+			atan2_k2(const dvf_type& x, const dvf_type& y);
+			// atan2 core
+			static dvf_type
+			native_atan2_k(const dvf_type& x, const dvf_type& y);
                 };
 
                 template <typename _FLOAT_T, typename _TRAITS_T>
@@ -113,6 +119,11 @@ namespace cftal {
                         static vf_type native_cos(const vf_type& vf);
                         static vf_type native_tan(const vf_type& vf);
                         static vf_type native_cot(const vf_type& vf);
+
+			// atan2, atan, ... call atan2_k2
+			static vf_type atan2(const vf_type& x,
+					     const vf_type& y);
+			static vf_type atan(const vf_type& x);
                 };
 
 
@@ -471,6 +482,8 @@ expm1(const vf_type& d)
         const vf_type inf_threshold(7.097827128933840868e+02);
         res = _T::sel(d==vf_type(_T::ninf()), -1.0, res);
         res = _T::sel(d>=inf_threshold, _T::pinf(), res);
+	const vf_type m1_threshold(-2.417851639229258349e+24);
+	res = _T::sel(d<=m1_threshold, vf_type(-1.0),  res);
         return res;
 }
 
@@ -504,7 +517,15 @@ cosh(const vf_type& d)
         ex2 = mul_pwr2(ex2, vf_type(0.5));
         nex2 =mul_pwr2(nex2, vf_type(0.5));
         dvf_type r(ex2 + nex2);
-        return r.h() + r.l();
+	vf_type res(r.h() + r.l());
+	res = _T::sel(isinf(d), 
+		      _T::sel( d < 0, _T::ninf(), _T::pinf()),
+		      res);
+	res = _T::sel(d >= vf_type(7.104758600739438634e+02), 
+		      _T::pinf(), res);
+	res = _T::sel(d <= vf_type(-7.104758600739438634e+02), 
+		      _T::pinf(), res); 
+	return res;
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -678,6 +699,46 @@ native_cot(const vf_type& d)
         std::pair<vf_type, vf_type> sin_cos(my_type::native_sin_cos_k(d));
         vf_type tn(sin_cos.second / sin_cos.first);
         return tn;
+}
+
+template <typename _FLOAT_T,
+          typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+atan2(const vf_type& x, const vf_type& y)
+{
+        dvf_type r(base_type::atan2_k2(abs(y), x));
+	r = dvf_type(mulsign(r.h(), x),
+		     mulsign(r.l(), x));
+
+#if 0
+        vmf_type inf_x = isinf(x);
+        vmf_type zero_or_inf_x = inf_x | (x == vf_type(0.0));
+        vf_type rs = vf_type(M_PI/2);
+        vf_type x_m_pi_2 = copysign(M_PI/2, x);
+        vf_type rs0= rs - _T::sel(inf_x, x_m_pi_2, vf_type(0.0));
+        r = _T::sel(zero_or_inf_x, rs0, r);
+
+        vmf_type inf_y = isinf(y);
+        vf_type x_m_pi_4= copysign(M_PI/4, x);
+        vf_type rs1= rs - _T::sel(inf_x, x_m_pi_4, vf_type(0.0));
+        r= _T::sel(inf_y, rs1, r);
+
+        vf_type rs2 = _T::sel(x < 0.0, vf_type(M_PI), 0);
+        r= _T::sel(y== 0.0, rs2, r);
+        r= _T::sel(isnan(x) | isnan(y), vf_type(_T::nan()), mulsign(r, y));
+        return r;
+#endif
+	return x;
+}
+
+template <typename _FLOAT_T,
+          typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+atan(const vf_type& x)
+{
+        return x;
 }
 
 

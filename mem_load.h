@@ -29,6 +29,10 @@ namespace mem {
 	// load without defined alignment
 	template <class _T>
 	addr<_T> load(const _T* p);
+
+	// store without defined alignment
+	template <class _E, class _T>
+	void store(_E* p, const _T& t);
 	
 	// load and broadcast
 	template <class _T>
@@ -47,6 +51,10 @@ namespace mem {
 		// load aligned
 		template <class _T>
 		addr<_T> load(const _T* p);
+
+		// store aligned, declaration only
+		template <class _E, class _T>
+		void store(_E* p, const _T& t);
 	}
 
 	// unaligned loads and stores
@@ -62,6 +70,10 @@ namespace mem {
 		// load unaligned
 		template <class _T>
 		addr<_T> load(const _T* p);
+
+		// store aligned, declaration only
+		template <class _E, class _T>
+		void store(_E* p, const _T& t);
 	}
 
 }
