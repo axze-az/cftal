@@ -663,6 +663,8 @@ namespace emuvec {
 	namespace unaligned {
 		using emuvec::store;
 	}
+
+
 }
 
 namespace mem {
@@ -677,6 +679,14 @@ namespace mem {
 }
 
 #include <cftal/emuvec_fvec.h>
+
+
+namespace emuvec {
+
+	template <class _T>
+	constexpr std::size_t element_count(const _T& t);
+}
+
 
 // v8s16 implementation
 inline
@@ -1328,6 +1338,13 @@ emuvec::v2u64 emuvec::insert(const v2u64& a, v2u64::element_type v)
         return r;
 }
 
+template <class _T>
+inline
+constexpr std::size_t
+emuvec::element_count(const _T& v)
+{
+	return std::size_t(_T::N);
+}
 
 // Local variables:
 // mode: c++

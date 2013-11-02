@@ -1124,7 +1124,7 @@ x86vec::v8f32 x86vec::max(const v8f32& a, const v8f32& b)
 inline
 x86vec::v8f32 x86vec::min(const v8f32& a, const v8f32& b)
 {
-        return _mm256_max_ps(a(), b());
+        return _mm256_min_ps(a(), b());
 }
 
 inline

@@ -563,7 +563,7 @@ reduce_trig_arg_k(const vf_type& d)
 
         if (!all_signs(v_small_arg)) {
                 // reduce the large arguments
-		constexpr std::size_t N=sizeof(vf_type)/sizeof(double);
+		constexpr std::size_t N=element_count(d);
 		union v_d {
 			vf_type _vec;
 			double _sc[N];
@@ -725,7 +725,7 @@ native_reduce_trig_arg_k(const vf_type& d)
 
         if (!all_signs(v_small_arg)) {
                 // reduce the large arguments
-		constexpr std::size_t N=sizeof(vf_type)/sizeof(double);
+		constexpr std::size_t N=element_count(d);
 		union v_d {
 			vf_type _vec;
 			double _sc[N];

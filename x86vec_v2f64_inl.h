@@ -329,7 +329,7 @@ x86vec::v2f64 x86vec::max(const v2f64& a, const v2f64& b)
 inline
 x86vec::v2f64 x86vec::min(const v2f64& a, const v2f64& b)
 {
-	return _mm_max_pd(a(), b());
+	return _mm_min_pd(a(), b());
 }
 
 inline

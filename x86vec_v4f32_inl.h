@@ -335,7 +335,7 @@ x86vec::v4f32 x86vec::max(const v4f32& a, const v4f32& b)
 inline
 x86vec::v4f32 x86vec::min(const v4f32& a, const v4f32& b)
 {
-        return _mm_max_ps(a(), b());
+        return _mm_min_ps(a(), b());
 }
 
 inline
