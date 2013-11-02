@@ -564,13 +564,14 @@ reduce_trig_arg_k(const vf_type& d)
         if (!all_signs(v_small_arg)) {
                 // reduce the large arguments
 		constexpr std::size_t N=element_count(d);
+		constexpr std::size_t NI=element_count(q);
 		union v_d {
 			vf_type _vec;
 			double _sc[N];
 		} tf, d0_l, d0_h;
 		union v_i {
 			vi_type _vec;
-			int32_t _sc[N];
+			int32_t _sc[NI];
 		} ti;
 		mem::aligned::store(tf._sc, d);
 		mem::aligned::store(ti._sc, q);
@@ -726,13 +727,14 @@ native_reduce_trig_arg_k(const vf_type& d)
         if (!all_signs(v_small_arg)) {
                 // reduce the large arguments
 		constexpr std::size_t N=element_count(d);
+		constexpr std::size_t NI=element_count(q);
 		union v_d {
 			vf_type _vec;
 			double _sc[N];
 		} tf, d0_l;
 		union v_i {
 			vi_type _vec;
-			int32_t _sc[N];
+			int32_t _sc[NI];
 		} ti;
 		mem::aligned::store(tf._sc, d);
 		mem::aligned::store(ti._sc, q);

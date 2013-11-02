@@ -29,7 +29,7 @@ template <class _T>
 inline
 constexpr std::size_t x86vec::element_count(const _T& v)
 {
-	return sizeof(typename _T::element_type)/sizeof(_T);
+	return sizeof(_T)/sizeof(typename _T::element_type);
 }
 
 template <class _V4>

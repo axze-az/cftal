@@ -603,8 +603,12 @@ int main(int argc, char** argv)
 
 	using namespace x86vec;
 
-	v8f32 res(sinh(v8f32(1.0)));
+	v2f64 res(sin(v2f64(1.0e30)));
 
+	std::cout << std::setprecision(18) << std::scientific
+		  << extract<0>(res) << ' '
+		  << extract<1>(res) 
+		  << std::endl;
 	std::cout << std::setprecision(18) << std::scientific << 0x1.p54 << std::endl;
 
 #if 0
