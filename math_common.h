@@ -741,6 +741,7 @@ atan(const vf_type& x)
         return x;
 }
 
+#if 0
 template <class _T>
 constexpr std::size_t 
 element_count(const _T& v)
@@ -750,11 +751,11 @@ element_count(const _T& v)
 
 template <class _T>
 constexpr std::size_t
-element_count(_T[] v)
+element_count(_T v[])
 {
 	return sizeof(v)/sizeof(_T);
 }
-
+#endif
 
 
 // Local Variables:

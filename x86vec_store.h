@@ -171,8 +171,8 @@ x86vec::aligned::store(v8f32::element_type* p, const v8f32& v)
 #if defined (__AVX__)
 	_mm256_store_ps(p, v());
 #else
-	store(p,  low_half(v));
-	store(p+4, high_half(v));
+	_mm_store_ps(p, low_half(v)());
+	_mm_store_ps(p+4, high_half(v)());
 #endif
 }
 
@@ -183,8 +183,8 @@ x86vec::aligned::store(v4f64::element_type* p, const v4f64& v)
 #if defined (__AVX__)
 	_mm256_store_pd(p, v());
 #else
-	store(p,  low_half(v));
-	store(p+2, high_half(v));
+	_mm_store_pd(p, low_half(v)());
+	_mm_store_pd(p+2, high_half(v)());
 #endif
 }
 
@@ -238,8 +238,8 @@ x86vec::unaligned::store(v8f32::element_type* p, const v8f32& v)
 #if defined (__AVX__)
 	_mm256_storeu_ps(p, v());
 #else
-	store(p,  low_half(v));
-	store(p+4, high_half(v));
+	_mm_storeu_ps(p, low_half(v)());
+	_mm_storeu_ps(p+4, high_half(v)());
 #endif
 }
 
@@ -250,8 +250,8 @@ x86vec::unaligned::store(v4f64::element_type* p, const v4f64& v)
 #if defined (__AVX__)
 	_mm256_storeu_pd(p, v());
 #else
-	store(p,  low_half(v));
-	store(p+2, high_half(v));
+	_mm_storeu_pd(p, low_half(v)());
+	_mm_storeu_pd(p+2, high_half(v)());
 #endif
 }
 
