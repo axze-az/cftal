@@ -99,6 +99,12 @@ namespace emuvec {
 	v4f32 ceil(const v4f32& a);
 	v4f32 trunc(const v4f32& a);
 
+        v4f32 copysign(const v4f32& x, const v4f32& y);
+        v4f32 mulsign(const v4f32& x, const v4f32& y);
+        v4f32 isinf(const v4f32& x);
+        v4f32 isnan(const v4f32& x);
+        v4f32 isfinite(const v4f32& x);
+
 	template <bool _P0, bool _P1, bool _P2, bool _P3>
 	v4f32 select(const v4f32& a, const v4f32& b);
 	v4f32 select(const v4f32& msk, const v4f32& on_true,
@@ -194,12 +200,54 @@ namespace emuvec {
 	v2f64 max(const v2f64& a, const v2f64& b);
 	v2f64 min(const v2f64& a, const v2f64& b);
 	v2f64 abs(const v2f64& a);
+	v2f64 fabs(const v2f64& a);
 	v2f64 sqrt(const v2f64& a);
+	v2f64 cbrt(arg<v2f64>::type a);
 
 	v2f64 rint(const v2f64& a);
 	v2f64 floor(const v2f64& a);
 	v2f64 ceil(const v2f64& a);
 	v2f64 trunc(const v2f64& a);
+
+        v2f64 copysign(const v2f64& x, const v2f64& y);
+        v2f64 mulsign(const v2f64& x, const v2f64& y);
+        v2f64 isinf(const v2f64& x);
+        v2f64 isnan(const v2f64& x);
+        v2f64 isfinite(const v2f64& x);
+
+        v2f64 frexp(arg<v2f64>::type x, v4s32* e);
+        // v2f64 pow2i(arg<v4s32>::type e);
+        v2f64 ldexp(arg<v2f64>::type d, arg<v4s32>::type e);
+        v4s32 ilogbp1(arg<v2f64>::type v);
+        v4s32 ilogb(arg<v2f64>::type v);
+        v2f64 atan2(arg<v2f64>::type y, arg<v2f64>::type x);
+        v2f64 asin(arg<v2f64>::type d);
+        v2f64 acos(arg<v2f64>::type d);
+
+        v2f64 atan(arg<v2f64>::type d);
+        std::pair<v2f64, v2f64> sincos(arg<v2f64>::type d);
+
+        v2f64 exp(arg<v2f64>::type d);
+	v2f64 expm1(arg<v2f64>::type d);
+        v2f64 log(arg<v2f64>::type d);
+	v2f64 pow(arg<v2f64>::type b, arg<v2f64>::type e);
+	void sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos);
+	v2f64 sin(arg<v2f64>::type d);
+        v2f64 cos(arg<v2f64>::type d);
+        v2f64 tan(arg<v2f64>::type d);
+	v2f64 cot(arg<v2f64>::type d);
+	
+	void native_sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos);
+ 	v2f64 native_exp(arg<v2f64>::type d);
+ 	v2f64 native_log(arg<v2f64>::type d);
+	v2f64 native_sin(arg<v2f64>::type d);
+	v2f64 native_cos(arg<v2f64>::type d);
+	v2f64 native_tan(arg<v2f64>::type d);
+	v2f64 native_cot(arg<v2f64>::type d);
+	v2f64 cosh(arg<v2f64>::type d);
+	v2f64 sinh(arg<v2f64>::type d);
+
+        v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);
 
 	template <bool _P0, bool _P1>
 	v2f64 select(const v2f64& a, const v2f64& b);
@@ -217,6 +265,26 @@ namespace emuvec {
 	typename v2f64::element_type extract(const v2f64& a);
 
 	void store(v2f64::element_type* p, const v2f64& r);
+
+
+        // static constants consisting of 4 uint32_t
+        template <uint32_t _P0, uint32_t _P1,
+                  uint32_t _P2, uint32_t _P3>
+        class const_v4u32 {
+                union u_t {
+                        const uint32_t _u32[4];
+                        const double _iv[2];
+                };
+                static __attribute__((__aligned__(16),
+                                      __visibility__("hidden")))
+                const u_t _msk;
+        public:
+                // static constexpr __m128i iv();
+                static constexpr v4f32 fv();
+                static constexpr v2f64 dv();
+        };
+
+
 }
 
 inline

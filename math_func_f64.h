@@ -565,6 +565,10 @@ reduce_trig_arg_k(const vf_type& d)
                 // reduce the large arguments
 		constexpr std::size_t N=element_count(d);
 		constexpr std::size_t NI=element_count(q);
+		struct [[aligned(alignof(vf_type)]] v_d {
+				double _sc[N];
+		} tf, d0_l, d0_h;
+#if 0
 		union v_d {
 			vf_type _vec;
 			double _sc[N];
@@ -573,6 +577,7 @@ reduce_trig_arg_k(const vf_type& d)
 			vi_type _vec;
 			int32_t _sc[NI];
 		} ti;
+#endif
 		mem::aligned::store(tf._sc, d);
 		mem::aligned::store(ti._sc, q);
 		mem::aligned::store(d0_l._sc, d0.l());

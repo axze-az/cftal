@@ -10,12 +10,92 @@
 
 namespace emuvec {
 
+	template <class _T>
+	struct arg {
+		using type = const _T&;
+	};
+
         // constants consisting of 1 uint32_t
         template <uint32_t _P>
         struct const_u32 {
                 static
                 constexpr uint32_t val = _P;
         };
+
+        namespace const_shift {
+
+                static const const_u32<0> _0;
+                static const const_u32<1> _1;
+                static const const_u32<2> _2;
+                static const const_u32<3> _3;
+                static const const_u32<4> _4;
+                static const const_u32<5> _5;
+                static const const_u32<6> _6;
+                static const const_u32<7> _7;
+                static const const_u32<8> _8;
+                static const const_u32<9> _9;
+
+                static const const_u32<10> _10;
+                static const const_u32<11> _11;
+                static const const_u32<12> _12;
+                static const const_u32<13> _13;
+                static const const_u32<14> _14;
+                static const const_u32<15> _15;
+                static const const_u32<16> _16;
+                static const const_u32<17> _17;
+                static const const_u32<18> _18;
+                static const const_u32<19> _19;
+
+                static const const_u32<20> _20;
+                static const const_u32<21> _21;
+                static const const_u32<22> _22;
+                static const const_u32<23> _23;
+                static const const_u32<24> _24;
+                static const const_u32<25> _25;
+                static const const_u32<26> _26;
+                static const const_u32<27> _27;
+                static const const_u32<28> _28;
+                static const const_u32<29> _29;
+
+                static const const_u32<30> _30;
+                static const const_u32<31> _31;
+                static const const_u32<32> _32;
+                static const const_u32<33> _33;
+                static const const_u32<34> _34;
+                static const const_u32<35> _35;
+                static const const_u32<36> _36;
+                static const const_u32<37> _37;
+                static const const_u32<38> _38;
+                static const const_u32<39> _39;
+
+                static const const_u32<40> _40;
+                static const const_u32<41> _41;
+                static const const_u32<42> _42;
+                static const const_u32<43> _43;
+                static const const_u32<44> _44;
+                static const const_u32<45> _45;
+                static const const_u32<46> _46;
+                static const const_u32<47> _47;
+                static const const_u32<48> _48;
+                static const const_u32<49> _49;
+
+                static const const_u32<50> _50;
+                static const const_u32<51> _51;
+                static const const_u32<52> _52;
+                static const const_u32<53> _53;
+                static const const_u32<54> _54;
+                static const const_u32<55> _55;
+                static const const_u32<56> _56;
+                static const const_u32<57> _57;
+                static const const_u32<58> _58;
+                static const const_u32<59> _59;
+
+                static const const_u32<60> _60;
+                static const const_u32<61> _61;
+                static const const_u32<62> _62;
+                static const const_u32<63> _63;
+        }
+
 
         class v8s16 : public impl::vec_base<int16_t, 8>::type {
         public:
@@ -664,7 +744,6 @@ namespace emuvec {
 		using emuvec::store;
 	}
 
-
 }
 
 namespace mem {
@@ -685,7 +764,54 @@ namespace emuvec {
 
 	template <class _T>
 	constexpr std::size_t element_count(const _T& t);
+
+	template <typename _D, typename _S>
+	_D as(const _S& s);
+
+	namespace impl {
+		// convert according to current rounding mode
+		template <typename _D, typename _S>
+		struct cvt {
+			static 
+			_D l(const _S& s);
+			static
+			_D h(const _S& s);
+		};
+
+		// convert with truncation (i.e. round to zero)
+		template <typename _D, typename _S>
+		struct cvt_rz {
+			static
+			_D l(const _S& s);
+			static
+			_D h(const _S& s);
+		};
+	}
+
+	template <class _D, class _S>
+	_D cvt_lo(const _S& s);
+	template <class _D, class _S>
+	_D cvt_hi(const _S& s);
+	template <class _D, class _S>
+	_D cvt(const _S& s);
+
+	v4f32 cvt_f32(const v2f64& l, const v2f64& h);
+	// v8f32 cvt_f32(const v4f64& l, const v4f64& h);
+
+
+	template <class _D, class _S>
+	std::pair<_D, _D> cvt_widen(const _S& s);
+	
+	template <class _D, class _S>
+	_D cvt_rz_lo(const _S& s);
+	template <class _D, class _S>
+	_D cvt_rz_hi(const _S& s);
+	template <class _D, class _S>
+	_D cvt_rz(const _S& s);
+	template <class _D, class _S>
+	std::pair<_D, _D> cvt_rz_widen(const _S& s);
 }
+
 
 
 // v8s16 implementation
@@ -1345,6 +1471,8 @@ emuvec::element_count(const _T& v)
 {
 	return std::size_t(_T::N);
 }
+
+#include <cftal/emuvec_inl.h>
 
 // Local variables:
 // mode: c++
