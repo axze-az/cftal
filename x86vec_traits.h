@@ -160,6 +160,18 @@ namespace cftal {
                         typedef x86vec::v2f64 vmf_type;
                         typedef x86vec::v4s32 vi_type;
                         typedef x86vec::v4s32 vmi_type;
+			
+			static
+			constexpr std::size_t NVF() { 
+				return sizeof(vf_type)/
+					sizeof(vf_type::element_type);
+			}
+
+			static
+			constexpr std::size_t NVI() { 
+				return sizeof(vi_type)/
+					sizeof(vi_type::element_type);
+			}
 
                         static
                         vmf_type vmi_to_vmf(const vmi_type& mi) {
@@ -364,6 +376,18 @@ namespace cftal {
                         typedef x86vec::v4s32 vi_type;
                         typedef x86vec::v4s32 vmi_type;
 
+			static
+			constexpr std::size_t NVF() { 
+				return sizeof(vf_type)/
+					sizeof(vf_type::element_type);
+			}
+
+			static
+			constexpr std::size_t NVI() { 
+				return sizeof(vi_type)/
+					sizeof(vi_type::element_type);
+			}
+			
                         static
                         vmf_type vmi_to_vmf(const vmi_type& mi) {
 				// TODO AVX2 code

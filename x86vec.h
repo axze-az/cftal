@@ -12,10 +12,6 @@
 
 namespace x86vec {
 
-	// returns the number of elements in _T
-	template <class _T>
-	constexpr std::size_t element_count(const _T& t);
-
         template <class _V4>
         void transpose_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3);
 
@@ -23,13 +19,6 @@ namespace x86vec {
         void transpose_8x8(_V8& r0, _V8& r1, _V8& r2, _V8& r3,
                            _V8& r4, _V8& r5, _V8& r6, _V8& r7);
 
-}
-
-template <class _T>
-inline
-constexpr std::size_t x86vec::element_count(const _T& v)
-{
-	return sizeof(_T)/sizeof(typename _T::element_type);
 }
 
 template <class _V4>

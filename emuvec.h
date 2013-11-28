@@ -762,9 +762,6 @@ namespace mem {
 
 namespace emuvec {
 
-	template <class _T>
-	constexpr std::size_t element_count(const _T& t);
-
 	template <typename _D, typename _S>
 	_D as(const _S& s);
 
@@ -1462,14 +1459,6 @@ emuvec::v2u64 emuvec::insert(const v2u64& a, v2u64::element_type v)
         v2u64 r(a);
         r()[_I] =v;
         return r;
-}
-
-template <class _T>
-inline
-constexpr std::size_t
-emuvec::element_count(const _T& v)
-{
-	return std::size_t(_T::N);
 }
 
 #include <cftal/emuvec_inl.h>

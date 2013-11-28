@@ -563,21 +563,14 @@ reduce_trig_arg_k(const vf_type& d)
 
         if (!all_signs(v_small_arg)) {
                 // reduce the large arguments
-		constexpr std::size_t N=element_count(d);
-		constexpr std::size_t NI=element_count(q);
-		struct [[aligned(alignof(vf_type)]] v_d {
-				double _sc[N];
-		} tf, d0_l, d0_h;
-#if 0
-		union v_d {
-			vf_type _vec;
+		constexpr std::size_t N=_T::NVF();
+		constexpr std::size_t NI=_T::NVI();
+		struct alignas(N*sizeof(double)) v_d {
 			double _sc[N];
 		} tf, d0_l, d0_h;
-		union v_i {
-			vi_type _vec;
+		struct alignas(NI*sizeof(int)) v_i {
 			int32_t _sc[NI];
 		} ti;
-#endif
 		mem::aligned::store(tf._sc, d);
 		mem::aligned::store(ti._sc, q);
 		mem::aligned::store(d0_l._sc, d0.l());
@@ -731,20 +724,16 @@ native_reduce_trig_arg_k(const vf_type& d)
 
         if (!all_signs(v_small_arg)) {
                 // reduce the large arguments
-		constexpr std::size_t N=element_count(d);
-		constexpr std::size_t NI=element_count(q);
-		union v_d {
-			vf_type _vec;
+		constexpr std::size_t N=_T::NVF();
+		constexpr std::size_t NI=_T::NVI();
+		struct alignas(N*sizeof(double)) v_d {
 			double _sc[N];
 		} tf, d0_l;
-		union v_i {
-			vi_type _vec;
+		struct alignas(NI*sizeof(int)) v_i {
 			int32_t _sc[NI];
 		} ti;
 		mem::aligned::store(tf._sc, d);
 		mem::aligned::store(ti._sc, q);
-		tf._vec = d;
-		ti._vec = q;
 		mem::aligned::store(d0_l._sc, d0);
 		for (std::size_t i=0; i<N; ++i) {
 			if (fabs(tf._sc[i]) >= large_arg) {
