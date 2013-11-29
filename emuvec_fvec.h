@@ -32,6 +32,8 @@ namespace emuvec {
 		v4f32& operator=(v4f32&& r);
 		v4f32(const mem::addr_bcast<element_type>& r);
 		v4f32(const mem::addr<element_type>& r);
+		v4f32(const mem::aligned::addr<element_type>& r);
+		v4f32(const mem::unaligned::addr<element_type>& r);
 		masked_vec<v4f32> operator()(const mask<v4f32>& m);
 		~v4f32();
 	private:
@@ -144,6 +146,8 @@ namespace emuvec {
 		v2f64& operator=(v2f64&& r);
 		v2f64(const mem::addr_bcast<element_type>& r);
 		v2f64(const mem::addr<element_type>& r);
+		v2f64(const mem::aligned::addr<element_type>& r);
+		v2f64(const mem::unaligned::addr<element_type>& r);
 		masked_vec<v2f64> operator()(const mask<v2f64>& m);
 		~v2f64();
 	private:
@@ -273,19 +277,21 @@ namespace emuvec {
         class const_v4u32 {
                 union u_t {
                         const uint32_t _u32[4];
-                        const double _iv[2];
+                        const double _f64[2];
+			const float _f32[4];
                 };
                 static __attribute__((__aligned__(16),
                                       __visibility__("hidden")))
                 const u_t _msk;
+		const v4f32 _f32;
+		const v2f64 _f64;
         public:
                 // static constexpr __m128i iv();
-                static constexpr v4f32 fv();
-                static constexpr v2f64 dv();
+                static const v4f32& fv();
+                static const v2f64& dv();
         };
-
-
 }
+
 
 inline
 emuvec::v4f32::element_type* emuvec::v4f32::begin()

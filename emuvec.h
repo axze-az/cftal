@@ -338,6 +338,8 @@ namespace emuvec {
 		// memory load operations
 		v4s32(const mem::addr_bcast<element_type>& r);
 		v4s32(const mem::addr<element_type>& r);
+		v4s32(const mem::aligned::addr<element_type>& r);
+		v4s32(const mem::unaligned::addr<element_type>& r);
 		masked_vec<v4s32> operator()(const mask<v4s32>& m);
 		~v4s32();
 	protected:
@@ -746,6 +748,8 @@ namespace emuvec {
 
 }
 
+#include <cftal/emuvec_fvec.h>
+
 namespace mem {
 
 	using emuvec::store;
@@ -756,8 +760,6 @@ namespace mem {
 		using emuvec::unaligned::store;
 	}
 }
-
-#include <cftal/emuvec_fvec.h>
 
 
 namespace emuvec {

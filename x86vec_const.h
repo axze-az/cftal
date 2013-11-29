@@ -381,8 +381,8 @@ namespace x86vec {
 }
 
 
-template <uint32_t _P0, uint32_t _P1,
-          uint32_t _P2, uint32_t _P3>
+template <x86vec::uint32_t _P0, x86vec::uint32_t _P1,
+          x86vec::uint32_t _P2, x86vec::uint32_t _P3>
 const
 typename x86vec::const_v4u32<_P0, _P1, _P2, _P3>::u_t
 x86vec::const_v4u32<_P0, _P1, _P2, _P3>::_msk= {{
@@ -390,34 +390,34 @@ x86vec::const_v4u32<_P0, _P1, _P2, _P3>::_msk= {{
         }
 };
 
-template <uint32_t _P0, uint32_t _P1,
-          uint32_t _P2, uint32_t _P3>
+template <x86vec::uint32_t _P0, x86vec::uint32_t _P1,
+          x86vec::uint32_t _P2, x86vec::uint32_t _P3>
 inline
 constexpr __m128i x86vec::const_v4u32<_P0, _P1, _P2, _P3>::iv()
 {
         return _msk._iv;
 }
 
-template <uint32_t _P0, uint32_t _P1,
-          uint32_t _P2, uint32_t _P3>
+template <x86vec::uint32_t _P0, x86vec::uint32_t _P1,
+          x86vec::uint32_t _P2, x86vec::uint32_t _P3>
 inline
 constexpr __m128 x86vec::const_v4u32<_P0, _P1, _P2, _P3>::fv()
 {
         return _mm_castsi128_ps(iv());
 }
 
-template <uint32_t _P0, uint32_t _P1,
-          uint32_t _P2, uint32_t _P3>
+template <x86vec::uint32_t _P0, x86vec::uint32_t _P1,
+          x86vec::uint32_t _P2, x86vec::uint32_t _P3>
 inline
 constexpr __m128d x86vec::const_v4u32<_P0, _P1, _P2, _P3>::dv()
 {
         return _mm_castsi128_pd(iv());
 }
 
-template <uint16_t _P0, uint16_t _P1,
-          uint16_t _P2, uint16_t _P3,
-          uint16_t _P4, uint16_t _P5,
-          uint16_t _P6, uint16_t _P7>
+template <x86vec::uint16_t _P0, x86vec::uint16_t _P1,
+          x86vec::uint16_t _P2, x86vec::uint16_t _P3,
+          x86vec::uint16_t _P4, x86vec::uint16_t _P5,
+          x86vec::uint16_t _P6, x86vec::uint16_t _P7>
 const typename
 x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
 x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
@@ -425,10 +425,10 @@ x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
         }
 };
 
-template <uint16_t _P0, uint16_t _P1,
-          uint16_t _P2, uint16_t _P3,
-          uint16_t _P4, uint16_t _P5,
-          uint16_t _P6, uint16_t _P7>
+template <x86vec::uint16_t _P0, x86vec::uint16_t _P1,
+          x86vec::uint16_t _P2, x86vec::uint16_t _P3,
+          x86vec::uint16_t _P4, x86vec::uint16_t _P5,
+          x86vec::uint16_t _P6, x86vec::uint16_t _P7>
 inline
 constexpr __m128i
 x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
@@ -436,10 +436,10 @@ x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
         return _msk._iv;
 }
 
-template <uint16_t _P0, uint16_t _P1,
-          uint16_t _P2, uint16_t _P3,
-          uint16_t _P4, uint16_t _P5,
-          uint16_t _P6, uint16_t _P7>
+template <x86vec::uint16_t _P0, x86vec::uint16_t _P1,
+          x86vec::uint16_t _P2, x86vec::uint16_t _P3,
+          x86vec::uint16_t _P4, x86vec::uint16_t _P5,
+          x86vec::uint16_t _P6, x86vec::uint16_t _P7>
 inline
 constexpr __m128
 x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
@@ -447,10 +447,10 @@ x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
         return _mm_castsi128_ps(iv());
 }
 
-template <uint16_t _P0, uint16_t _P1,
-          uint16_t _P2, uint16_t _P3,
-          uint16_t _P4, uint16_t _P5,
-          uint16_t _P6, uint16_t _P7>
+template <x86vec::uint16_t _P0, x86vec::uint16_t _P1,
+          x86vec::uint16_t _P2, x86vec::uint16_t _P3,
+          x86vec::uint16_t _P4, x86vec::uint16_t _P5,
+          x86vec::uint16_t _P6, x86vec::uint16_t _P7>
 inline
 constexpr __m128d
 x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
@@ -458,14 +458,14 @@ x86vec::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
         return _mm_castsi128_pd(iv());
 }
 
-template <uint8_t _P00, uint8_t _P01,
-          uint8_t _P02, uint8_t _P03,
-          uint8_t _P04, uint8_t _P05,
-          uint8_t _P06, uint8_t _P07,
-          uint8_t _P08, uint8_t _P09,
-          uint8_t _P10, uint8_t _P11,
-          uint8_t _P12, uint8_t _P13,
-          uint8_t _P14, uint8_t _P15>
+template <x86vec::uint8_t _P00, x86vec::uint8_t _P01,
+          x86vec::uint8_t _P02, x86vec::uint8_t _P03,
+          x86vec::uint8_t _P04, x86vec::uint8_t _P05,
+          x86vec::uint8_t _P06, x86vec::uint8_t _P07,
+          x86vec::uint8_t _P08, x86vec::uint8_t _P09,
+          x86vec::uint8_t _P10, x86vec::uint8_t _P11,
+          x86vec::uint8_t _P12, x86vec::uint8_t _P13,
+          x86vec::uint8_t _P14, x86vec::uint8_t _P15>
 const typename
 x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
 		    _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::u_t
@@ -476,14 +476,14 @@ x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
         }
 };
 
-template <uint8_t _P00, uint8_t _P01,
-          uint8_t _P02, uint8_t _P03,
-          uint8_t _P04, uint8_t _P05,
-          uint8_t _P06, uint8_t _P07,
-          uint8_t _P08, uint8_t _P09,
-          uint8_t _P10, uint8_t _P11,
-          uint8_t _P12, uint8_t _P13,
-          uint8_t _P14, uint8_t _P15>
+template <x86vec::uint8_t _P00, x86vec::uint8_t _P01,
+          x86vec::uint8_t _P02, x86vec::uint8_t _P03,
+          x86vec::uint8_t _P04, x86vec::uint8_t _P05,
+          x86vec::uint8_t _P06, x86vec::uint8_t _P07,
+          x86vec::uint8_t _P08, x86vec::uint8_t _P09,
+          x86vec::uint8_t _P10, x86vec::uint8_t _P11,
+          x86vec::uint8_t _P12, x86vec::uint8_t _P13,
+          x86vec::uint8_t _P14, x86vec::uint8_t _P15>
 inline
 constexpr __m128i
 x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
@@ -492,14 +492,14 @@ x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
         return _msk._iv;
 }
 
-template <uint8_t _P00, uint8_t _P01,
-          uint8_t _P02, uint8_t _P03,
-          uint8_t _P04, uint8_t _P05,
-          uint8_t _P06, uint8_t _P07,
-          uint8_t _P08, uint8_t _P09,
-          uint8_t _P10, uint8_t _P11,
-          uint8_t _P12, uint8_t _P13,
-          uint8_t _P14, uint8_t _P15>
+template <x86vec::uint8_t _P00, x86vec::uint8_t _P01,
+          x86vec::uint8_t _P02, x86vec::uint8_t _P03,
+          x86vec::uint8_t _P04, x86vec::uint8_t _P05,
+          x86vec::uint8_t _P06, x86vec::uint8_t _P07,
+          x86vec::uint8_t _P08, x86vec::uint8_t _P09,
+          x86vec::uint8_t _P10, x86vec::uint8_t _P11,
+          x86vec::uint8_t _P12, x86vec::uint8_t _P13,
+          x86vec::uint8_t _P14, x86vec::uint8_t _P15>
 inline
 constexpr __m128
 x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
@@ -508,14 +508,14 @@ x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
         return _mm_castsi128_ps(iv());
 }
 
-template <uint8_t _P00, uint8_t _P01,
-          uint8_t _P02, uint8_t _P03,
-          uint8_t _P04, uint8_t _P05,
-          uint8_t _P06, uint8_t _P07,
-          uint8_t _P08, uint8_t _P09,
-          uint8_t _P10, uint8_t _P11,
-          uint8_t _P12, uint8_t _P13,
-          uint8_t _P14, uint8_t _P15>
+template <x86vec::uint8_t _P00, x86vec::uint8_t _P01,
+          x86vec::uint8_t _P02, x86vec::uint8_t _P03,
+          x86vec::uint8_t _P04, x86vec::uint8_t _P05,
+          x86vec::uint8_t _P06, x86vec::uint8_t _P07,
+          x86vec::uint8_t _P08, x86vec::uint8_t _P09,
+          x86vec::uint8_t _P10, x86vec::uint8_t _P11,
+          x86vec::uint8_t _P12, x86vec::uint8_t _P13,
+          x86vec::uint8_t _P14, x86vec::uint8_t _P15>
 inline
 constexpr __m128d
 x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
@@ -526,10 +526,10 @@ x86vec::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
 
 
 #if defined (__AVX__)
-template <uint32_t _P0, uint32_t _P1,
-          uint32_t _P2, uint32_t _P3,
-          uint32_t _P4, uint32_t _P5,
-          uint32_t _P6, uint32_t _P7>
+template <x86vec::uint32_t _P0, x86vec::uint32_t _P1,
+          x86vec::uint32_t _P2, x86vec::uint32_t _P3,
+          x86vec::uint32_t _P4, x86vec::uint32_t _P5,
+          x86vec::uint32_t _P6, x86vec::uint32_t _P7>
 const typename
 x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
 x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
@@ -537,10 +537,10 @@ x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
         }
 };
 
-template <uint32_t _P0, uint32_t _P1,
-          uint32_t _P2, uint32_t _P3,
-          uint32_t _P4, uint32_t _P5,
-          uint32_t _P6, uint32_t _P7>
+template <x86vec::uint32_t _P0, x86vec::uint32_t _P1,
+          x86vec::uint32_t _P2, x86vec::uint32_t _P3,
+          x86vec::uint32_t _P4, x86vec::uint32_t _P5,
+          x86vec::uint32_t _P6, x86vec::uint32_t _P7>
 inline
 constexpr __m256i
 x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
@@ -548,10 +548,10 @@ x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
         return _msk._iv;
 }
 
-template <uint32_t _P0, uint32_t _P1,
-          uint32_t _P2, uint32_t _P3,
-          uint32_t _P4, uint32_t _P5,
-          uint32_t _P6, uint32_t _P7>
+template <x86vec::uint32_t _P0, x86vec::uint32_t _P1,
+          x86vec::uint32_t _P2, x86vec::uint32_t _P3,
+          x86vec::uint32_t _P4, x86vec::uint32_t _P5,
+          x86vec::uint32_t _P6, x86vec::uint32_t _P7>
 inline
 constexpr __m256
 x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
@@ -559,10 +559,10 @@ x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
         return _msk._fv;
 }
 
-template <uint32_t _P0, uint32_t _P1,
-          uint32_t _P2, uint32_t _P3,
-          uint32_t _P4, uint32_t _P5,
-          uint32_t _P6, uint32_t _P7>
+template <x86vec::uint32_t _P0, x86vec::uint32_t _P1,
+          x86vec::uint32_t _P2, x86vec::uint32_t _P3,
+          x86vec::uint32_t _P4, x86vec::uint32_t _P5,
+          x86vec::uint32_t _P6, x86vec::uint32_t _P7>
 inline
 constexpr __m256d
 x86vec::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()

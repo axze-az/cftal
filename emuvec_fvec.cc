@@ -1,5 +1,5 @@
 #include "emuvec.h"
-// #include "emuvec_traits.h"
+#include "emuvec_traits.h"
 #include "math_func.h"
 #include "x86vec_math_funcs.h"
 

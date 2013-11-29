@@ -144,7 +144,17 @@ namespace cftal {
                         typedef emuvec::v2f64 vmf_type;
                         typedef emuvec::v4s32 vi_type;
                         typedef emuvec::v4s32 vmi_type;
+			
+			static
+			constexpr std::size_t NVF() {
+				return vf_type::N;
+			}
 
+			static
+			constexpr std::size_t NVI() {
+				return vi_type::N;
+			}
+			
                         static
                         vmf_type vmi_to_vmf(const vmi_type& mi) {
                                 emuvec::v4s32 xm= 
@@ -232,6 +242,18 @@ namespace cftal {
                         typedef emuvec::v4f32 vmf_type;
                         typedef emuvec::v4s32 vi_type;
                         typedef emuvec::v4s32 vmi_type;
+
+			static
+			constexpr std::size_t NVF() {
+				return vf_type::N;
+			}
+
+			static
+			constexpr std::size_t NVI() {
+				return vi_type::N;
+			}
+			
+
 			typedef d_real<vf_type> dvf_type;
 
 			typedef emuvec::v2f64 vhpf_type;
