@@ -9,7 +9,7 @@ namespace emuvec {
 
         namespace impl {
 
-		// operator functions
+                // operator functions
                 template <typename _T, typename _OP>
                 inline
                 void v_bi_op(_T* r, const _T* s0, const _OP& op, const _T* s1,
@@ -47,34 +47,34 @@ namespace emuvec {
                                 r[i] = op(s0[i]);
                 }
 
-		// operators:
-		template <typename _T>
-		class v_sl {
-			uint32_t _s;
-		public:
-			v_sl(uint32_t s) : _s(s) {}
-			_T operator()(const _T& a) const {
-				return a << _s;
-			}
-		};
+                // operators:
+                template <typename _T>
+                class v_sl {
+                        uint32_t _s;
+                public:
+                        v_sl(uint32_t s) : _s(s) {}
+                        _T operator()(const _T& a) const {
+                                return a << _s;
+                        }
+                };
 
-		template <typename _T>
-		class v_sr {
-			uint32_t _s;
-		public:
-			v_sr(uint32_t s) : _s(s) {}
-			_T operator()(const _T& a) const {
-				return a >> _s;
-			}
-		};
+                template <typename _T>
+                class v_sr {
+                        uint32_t _s;
+                public:
+                        v_sr(uint32_t s) : _s(s) {}
+                        _T operator()(const _T& a) const {
+                                return a >> _s;
+                        }
+                };
 
-		template <typename _T>
-		struct v_mulhi {
-			_T operator()(const _T& a, const _T& b) 
-				const {
-				return cftal::mul_lo_hi(a, b).second;
-			}
-		};
+                template <typename _T>
+                struct v_mulhi {
+                        _T operator()(const _T& a, const _T& b) 
+                                const {
+                                return cftal::mul_lo_hi(a, b).second;
+                        }
+                };
 
 #define UN_OP(op, v_name)                                       \
                 template <typename _T>                          \
@@ -93,26 +93,26 @@ namespace emuvec {
 
                 UN_OP(a!=_T(0) ? _T(-1) : _T(0), v_log_not);
                 UN_OP(~a, v_not);
-		UN_OP(a==_T(-1) ? _T(0) : _T(-1), v_f_not);
+                UN_OP(a==_T(-1) ? _T(0) : _T(-1), v_f_not);
                 UN_OP(-a, v_neg);
                 UN_OP(a+_T(1), v_inc);
                 UN_OP(a-_T(1), v_dec);
                 UN_OP(a<_T(0) ? -a : a, v_abs);
-		UN_OP(std::rint(a), v_rint);
-		UN_OP(std::ceil(a), v_ceil);
-		UN_OP(std::floor(a), v_floor);
-		UN_OP(std::trunc(a), v_trunc);
-		UN_OP(std::sqrt(a), v_sqrt);
+                UN_OP(std::rint(a), v_rint);
+                UN_OP(std::ceil(a), v_ceil);
+                UN_OP(std::floor(a), v_floor);
+                UN_OP(std::trunc(a), v_trunc);
+                UN_OP(std::sqrt(a), v_sqrt);
 
                 BI_OP(a^b, v_xor);
-		BI_OP((a==_T(-1))^(b==_T(-1)) ? _T(-1) : _T(0),
-		      v_f_xor);
+                BI_OP((a==_T(-1))^(b==_T(-1)) ? _T(-1) : _T(0),
+                      v_f_xor);
                 BI_OP(a|b, v_or);
-		BI_OP(((a==_T(-1)) || (b==_T(-1)) ? _T(-1) : _T(0)),
-		      v_f_or);
+                BI_OP(((a==_T(-1)) || (b==_T(-1)) ? _T(-1) : _T(0)),
+                      v_f_or);
                 BI_OP(a&b, v_and);
-		BI_OP(((a==_T(-1)) && (b==_T(-1)) ? _T(-1) : _T(0)),
-		      v_f_and);
+                BI_OP(((a==_T(-1)) && (b==_T(-1)) ? _T(-1) : _T(0)),
+                      v_f_and);
                 BI_OP(a+b, v_add);
                 BI_OP(a-b, v_sub);
                 BI_OP(a*b, v_mul);
@@ -139,7 +139,7 @@ namespace emuvec {
                         v_fdiv<_T>, v_idiv<_T> >::type {
                 };
 
-	}
+        }
 }
 
 // Local variables:

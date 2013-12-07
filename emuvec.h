@@ -10,10 +10,10 @@
 
 namespace emuvec {
 
-	template <class _T>
-	struct arg {
-		using type = const _T&;
-	};
+        template <class _T>
+        struct arg {
+                using type = const _T&;
+        };
 
         // constants consisting of 1 uint32_t
         template <uint32_t _P>
@@ -121,8 +121,8 @@ namespace emuvec {
                 // memory load operations
                 v8s16(const mem::addr_bcast<element_type>& r);
                 v8s16(const mem::addr<element_type>& r);
-		masked_vec<v8s16> operator()(const mask<v8s16>& m);
-		~v8s16();
+                masked_vec<v8s16> operator()(const mask<v8s16>& m);
+                ~v8s16();
 
                 element_type* begin();
                 const element_type* begin() const;
@@ -234,8 +234,8 @@ namespace emuvec {
                 v8u16& operator=(base_type&& r);
                 v8u16(const mem::addr_bcast<element_type>& r);
                 v8u16(const mem::addr<element_type>& r);
-		masked_vec<v8u16> operator()(const mask<v8u16>& m);
-		~v8u16();
+                masked_vec<v8u16> operator()(const mask<v8u16>& m);
+                ~v8u16();
 
                 element_type* begin();
                 const element_type* begin() const;
@@ -280,471 +280,471 @@ namespace emuvec {
         v8u16 operator&& (const v8u16& a, const v8u16& b);
         v8u16 operator^(const v8u16& a, const v8u16& b);
 
-	v8u16 operator+ (const v8u16& a, const v8u16& b);
-	v8u16 operator- (const v8u16& a, const v8u16& b);
-	v8u16 operator* (const v8u16& a, const v8u16& b);
-	v8u16 operator/ (const v8u16& a, const v8u16& b);
-	v8u16 operator% (const v8u16& a, const v8u16& b);
+        v8u16 operator+ (const v8u16& a, const v8u16& b);
+        v8u16 operator- (const v8u16& a, const v8u16& b);
+        v8u16 operator* (const v8u16& a, const v8u16& b);
+        v8u16 operator/ (const v8u16& a, const v8u16& b);
+        v8u16 operator% (const v8u16& a, const v8u16& b);
 
-	v8u16 operator< (const v8u16& a, const v8u16& b);
-	v8u16 operator<= (const v8u16& a, const v8u16& b);
-	v8u16 operator== (const v8u16& a, const v8u16& b);
-	v8u16 operator!= (const v8u16& a, const v8u16& b);
-	v8u16 operator>= (const v8u16& a, const v8u16& b);
-	v8u16 operator> (const v8u16& a, const v8u16& b);
+        v8u16 operator< (const v8u16& a, const v8u16& b);
+        v8u16 operator<= (const v8u16& a, const v8u16& b);
+        v8u16 operator== (const v8u16& a, const v8u16& b);
+        v8u16 operator!= (const v8u16& a, const v8u16& b);
+        v8u16 operator>= (const v8u16& a, const v8u16& b);
+        v8u16 operator> (const v8u16& a, const v8u16& b);
 
-	v8u16 max(const v8u16& a, const v8u16& b);
-	v8u16 min(const v8u16& a, const v8u16& b);
-	v8u16 mul_hi(const v8u16& a, const v8u16& b);
+        v8u16 max(const v8u16& a, const v8u16& b);
+        v8u16 min(const v8u16& a, const v8u16& b);
+        v8u16 mul_hi(const v8u16& a, const v8u16& b);
 
-	template < bool _P0, bool _P1, bool _P2, bool _P3,
-		   bool _P4, bool _P5, bool _P6, bool _P7 >
-	v8u16 select(const v8u16& a, const v8u16& b);
-	v8u16 select(const v8u16& msk, const v8u16& on_true,
-		     const v8u16& on_false);
+        template < bool _P0, bool _P1, bool _P2, bool _P3,
+                   bool _P4, bool _P5, bool _P6, bool _P7 >
+        v8u16 select(const v8u16& a, const v8u16& b);
+        v8u16 select(const v8u16& msk, const v8u16& on_true,
+                     const v8u16& on_false);
 
-	template < int _P0, int _P1, int _P2, int _P3,
-		   int _P4, int _P5, int _P6, int _P7 >
-	v8u16 permute(const v8u16& a);
-	template < int _P0, int _P1, int _P2, int _P3,
-		   int _P4, int _P5, int _P6, int _P7 >
-	v8u16 permute(const v8u16& a, const v8u16& b);
+        template < int _P0, int _P1, int _P2, int _P3,
+                   int _P4, int _P5, int _P6, int _P7 >
+        v8u16 permute(const v8u16& a);
+        template < int _P0, int _P1, int _P2, int _P3,
+                   int _P4, int _P5, int _P6, int _P7 >
+        v8u16 permute(const v8u16& a, const v8u16& b);
 
-	template <unsigned _I>
-	v8u16 insert(const v8u16& a, typename v8u16::element_type v);
-	template <unsigned _I>
-	typename v8u16::element_type extract(const v8u16& a);
+        template <unsigned _I>
+        v8u16 insert(const v8u16& a, typename v8u16::element_type v);
+        template <unsigned _I>
+        typename v8u16::element_type extract(const v8u16& a);
 
 
-	class v4s32 : public impl::vec_base<int32_t, 4>::type {
-	public:
-		enum { N = 4 };
-		typedef int32_t element_type;
-		typedef typename impl::vec_base<element_type, N>::type
-		base_type;
-		element_type* operator()();
-		const element_type* operator()() const;
-		// no initialization is done here.
-		v4s32();
-		v4s32(element_type r);
-		v4s32(element_type r, bool broad_cast);
-		v4s32(element_type i0, element_type i1,
-		      element_type i2, element_type i3);
-		v4s32(const v4s32& r);
-		v4s32(v4s32&& r);
-		v4s32& operator=(element_type r);
-		v4s32& operator=(const v4s32& r);
-		v4s32& operator=(v4s32&& r);
-		// memory load operations
-		v4s32(const mem::addr_bcast<element_type>& r);
-		v4s32(const mem::addr<element_type>& r);
-		v4s32(const mem::aligned::addr<element_type>& r);
-		v4s32(const mem::unaligned::addr<element_type>& r);
-		masked_vec<v4s32> operator()(const mask<v4s32>& m);
-		~v4s32();
-	protected:
-		element_type* begin();
-		const element_type* begin() const;
-	};
+        class v4s32 : public impl::vec_base<int32_t, 4>::type {
+        public:
+                enum { N = 4 };
+                typedef int32_t element_type;
+                typedef typename impl::vec_base<element_type, N>::type
+                base_type;
+                element_type* operator()();
+                const element_type* operator()() const;
+                // no initialization is done here.
+                v4s32();
+                v4s32(element_type r);
+                v4s32(element_type r, bool broad_cast);
+                v4s32(element_type i0, element_type i1,
+                      element_type i2, element_type i3);
+                v4s32(const v4s32& r);
+                v4s32(v4s32&& r);
+                v4s32& operator=(element_type r);
+                v4s32& operator=(const v4s32& r);
+                v4s32& operator=(v4s32&& r);
+                // memory load operations
+                v4s32(const mem::addr_bcast<element_type>& r);
+                v4s32(const mem::addr<element_type>& r);
+                v4s32(const mem::aligned::addr<element_type>& r);
+                v4s32(const mem::unaligned::addr<element_type>& r);
+                masked_vec<v4s32> operator()(const mask<v4s32>& m);
+                ~v4s32();
 
-	v4s32& operator|= (v4s32& a, const v4s32& b);
-	v4s32& operator&= (v4s32& a, const v4s32& b);
-	v4s32& operator^= (v4s32& a, const v4s32& b);
-	v4s32& operator+= (v4s32& a, const v4s32& b);
-	v4s32& operator-= (v4s32& a, const v4s32& b);
-	v4s32& operator*= (v4s32& a, const v4s32& b);
-	v4s32& operator/= (v4s32& a, const v4s32& b);
-	v4s32& operator%= (v4s32& a, const v4s32& b);
+                element_type* begin();
+                const element_type* begin() const;
+        };
 
-	template <uint32_t _P>
-	v4s32& operator<<= (v4s32& a, const const_u32<_P>& b);
-	v4s32& operator<<= (v4s32& a, uint32_t b);
-	template <uint32_t _P>
-	v4s32 operator <<(const v4s32& a, const const_u32<_P>& b);
-	v4s32 operator <<(const v4s32& a, uint32_t b);
+        v4s32& operator|= (v4s32& a, const v4s32& b);
+        v4s32& operator&= (v4s32& a, const v4s32& b);
+        v4s32& operator^= (v4s32& a, const v4s32& b);
+        v4s32& operator+= (v4s32& a, const v4s32& b);
+        v4s32& operator-= (v4s32& a, const v4s32& b);
+        v4s32& operator*= (v4s32& a, const v4s32& b);
+        v4s32& operator/= (v4s32& a, const v4s32& b);
+        v4s32& operator%= (v4s32& a, const v4s32& b);
 
-	template <uint32_t _P>
-	v4s32& operator>>= (v4s32& a, const const_u32<_P>& b);
-	v4s32& operator>>= (v4s32& a, uint32_t b);
-	template <uint32_t _P>
-	v4s32 operator >>(const v4s32& a, const const_u32<_P>& b);
-	v4s32 operator >>(const v4s32& a, uint32_t b);
+        template <uint32_t _P>
+        v4s32& operator<<= (v4s32& a, const const_u32<_P>& b);
+        v4s32& operator<<= (v4s32& a, uint32_t b);
+        template <uint32_t _P>
+        v4s32 operator <<(const v4s32& a, const const_u32<_P>& b);
+        v4s32 operator <<(const v4s32& a, uint32_t b);
 
-	v4s32 operator++ (v4s32& a, int);
-	v4s32& operator++(v4s32& a);
-	v4s32 operator-- (v4s32& a, int);
-	v4s32& operator--(v4s32& a);
+        template <uint32_t _P>
+        v4s32& operator>>= (v4s32& a, const const_u32<_P>& b);
+        v4s32& operator>>= (v4s32& a, uint32_t b);
+        template <uint32_t _P>
+        v4s32 operator >>(const v4s32& a, const const_u32<_P>& b);
+        v4s32 operator >>(const v4s32& a, uint32_t b);
 
-	v4s32 operator-(const v4s32& a);
-	const v4s32& operator+(const v4s32& a);
-	v4s32 operator~(const v4s32& a);
-	v4s32 operator!(const v4s32& a);
+        v4s32 operator++ (v4s32& a, int);
+        v4s32& operator++(v4s32& a);
+        v4s32 operator-- (v4s32& a, int);
+        v4s32& operator--(v4s32& a);
 
-	v4s32 operator| (const v4s32& a, const v4s32& b);
-	v4s32 operator|| (const v4s32& a, const v4s32& b);
-	v4s32 operator& (const v4s32& a, const v4s32& b);
-	v4s32 operator&& (const v4s32& a, const v4s32& b);
-	v4s32 operator^(const v4s32& a, const v4s32& b);
+        v4s32 operator-(const v4s32& a);
+        const v4s32& operator+(const v4s32& a);
+        v4s32 operator~(const v4s32& a);
+        v4s32 operator!(const v4s32& a);
 
-	v4s32 operator+ (const v4s32& a, const v4s32& b);
-	v4s32 operator- (const v4s32& a, const v4s32& b);
-	v4s32 operator* (const v4s32& a, const v4s32& b);
-	v4s32 operator/ (const v4s32& a, const v4s32& b);
-	v4s32 operator% (const v4s32& a, const v4s32& b);
+        v4s32 operator| (const v4s32& a, const v4s32& b);
+        v4s32 operator|| (const v4s32& a, const v4s32& b);
+        v4s32 operator& (const v4s32& a, const v4s32& b);
+        v4s32 operator&& (const v4s32& a, const v4s32& b);
+        v4s32 operator^(const v4s32& a, const v4s32& b);
 
-	v4s32 operator< (const v4s32& a, const v4s32& b);
-	v4s32 operator<= (const v4s32& a, const v4s32& b);
-	v4s32 operator== (const v4s32& a, const v4s32& b);
-	v4s32 operator!= (const v4s32& a, const v4s32& b);
-	v4s32 operator>= (const v4s32& a, const v4s32& b);
-	v4s32 operator> (const v4s32& a, const v4s32& b);
+        v4s32 operator+ (const v4s32& a, const v4s32& b);
+        v4s32 operator- (const v4s32& a, const v4s32& b);
+        v4s32 operator* (const v4s32& a, const v4s32& b);
+        v4s32 operator/ (const v4s32& a, const v4s32& b);
+        v4s32 operator% (const v4s32& a, const v4s32& b);
 
-	// checks the signs
-	bool all_signs(const v4s32& a);
-	// checks the signs
-	bool both_signs(const v4s32& a);
-	// checks the signs
-	bool no_signs(const v4s32& a);
+        v4s32 operator< (const v4s32& a, const v4s32& b);
+        v4s32 operator<= (const v4s32& a, const v4s32& b);
+        v4s32 operator== (const v4s32& a, const v4s32& b);
+        v4s32 operator!= (const v4s32& a, const v4s32& b);
+        v4s32 operator>= (const v4s32& a, const v4s32& b);
+        v4s32 operator> (const v4s32& a, const v4s32& b);
 
-	v4s32 max(const v4s32& a, const v4s32& b);
-	v4s32 min(const v4s32& a, const v4s32& b);
-	v4s32 abs(const v4s32& a);
-	v4s32 mul_hi(const v4s32& a, const v4s32& b);
+        // checks the signs
+        bool all_signs(const v4s32& a);
+        // checks the signs
+        bool both_signs(const v4s32& a);
+        // checks the signs
+        bool no_signs(const v4s32& a);
 
-	template < bool _P0, bool _P1, bool _P2, bool _P3 >
-	v4s32 select(const v4s32& a, const v4s32& b);
-	v4s32 select(const v4s32& msk, const v4s32& on_true,
-		     const v4s32& on_false);
+        v4s32 max(const v4s32& a, const v4s32& b);
+        v4s32 min(const v4s32& a, const v4s32& b);
+        v4s32 abs(const v4s32& a);
+        v4s32 mul_hi(const v4s32& a, const v4s32& b);
 
-	template < int _P0, int _P1, int _P2, int _P3 >
-	v4s32 permute(const v4s32& a);
-	template < int _P0, int _P1, int _P2, int _P3 >
-	v4s32 permute(const v4s32& a, const v4s32& b);
+        template < bool _P0, bool _P1, bool _P2, bool _P3 >
+        v4s32 select(const v4s32& a, const v4s32& b);
+        v4s32 select(const v4s32& msk, const v4s32& on_true,
+                     const v4s32& on_false);
 
-	template <unsigned _I>
-	v4s32 insert(const v4s32& a, typename v4s32::element_type v);
-	template <unsigned _I>
-	typename v4s32::element_type extract(const v4s32& a);
+        template < int _P0, int _P1, int _P2, int _P3 >
+        v4s32 permute(const v4s32& a);
+        template < int _P0, int _P1, int _P2, int _P3 >
+        v4s32 permute(const v4s32& a, const v4s32& b);
 
-	class v4u32 : public v4s32 {
-	public:
-		typedef uint32_t element_type;
-		typedef v4s32 base_type;
-		element_type* operator()();
-		const element_type* operator()() const;
-		v4u32();
-		v4u32(const base_type& r);
-		v4u32(base_type&& r);
-		v4u32(element_type r);
-		v4u32(const v4u32& r);
-		v4u32(v4u32&& r);
-		v4u32(element_type r, bool broadcast);
-		v4u32(element_type p00, element_type p01,
-		      element_type p02, element_type p03);
-		v4u32& operator=(element_type r);
-		v4u32& operator=(const v4u32& r);
-		v4u32& operator=(v4u32&& r);
-		v4u32& operator=(const base_type& r);
-		v4u32& operator=(base_type&& r);
-		v4u32(const mem::addr_bcast<element_type>& r);
-		v4u32(const mem::addr<element_type>& r);
-		masked_vec<v4u32> operator()(const mask<v4u32>& m);
-		~v4u32();
-	protected:
-		element_type* begin();
-		const element_type* begin() const;
-	};
+        template <unsigned _I>
+        v4s32 insert(const v4s32& a, typename v4s32::element_type v);
+        template <unsigned _I>
+        typename v4s32::element_type extract(const v4s32& a);
 
-	v4u32& operator|= (v4u32& a, const v4u32& b);
-	v4u32& operator&= (v4u32& a, const v4u32& b);
-	v4u32& operator^= (v4u32& a, const v4u32& b);
-	v4u32& operator+= (v4u32& a, const v4u32& b);
-	v4u32& operator-= (v4u32& a, const v4u32& b);
-	v4u32& operator*= (v4u32& a, const v4u32& b);
-	v4u32& operator/= (v4u32& a, const v4u32& b);
-	v4u32& operator%= (v4u32& a, const v4u32& b);
+        class v4u32 : public v4s32 {
+        public:
+                typedef uint32_t element_type;
+                typedef v4s32 base_type;
+                element_type* operator()();
+                const element_type* operator()() const;
+                v4u32();
+                v4u32(const base_type& r);
+                v4u32(base_type&& r);
+                v4u32(element_type r);
+                v4u32(const v4u32& r);
+                v4u32(v4u32&& r);
+                v4u32(element_type r, bool broadcast);
+                v4u32(element_type p00, element_type p01,
+                      element_type p02, element_type p03);
+                v4u32& operator=(element_type r);
+                v4u32& operator=(const v4u32& r);
+                v4u32& operator=(v4u32&& r);
+                v4u32& operator=(const base_type& r);
+                v4u32& operator=(base_type&& r);
+                v4u32(const mem::addr_bcast<element_type>& r);
+                v4u32(const mem::addr<element_type>& r);
+                masked_vec<v4u32> operator()(const mask<v4u32>& m);
+                ~v4u32();
 
-	template <uint32_t _P>
-	v4u32& operator<<= (v4u32& a, const const_u32<_P>& b);
-	v4u32& operator<<= (v4u32& a, uint32_t b);
-	template <uint32_t _P>
-	v4u32 operator <<(const v4u32& a, const const_u32<_P>& b);
-	v4u32 operator <<(const v4u32& a, uint32_t b);
+                element_type* begin();
+                const element_type* begin() const;
+        };
 
-	template <uint32_t _P>
-	v4u32& operator>>= (v4u32& a, const const_u32<_P>& b);
-	v4u32& operator>>= (v4u32& a, uint32_t b);
-	template <uint32_t _P>
-	v4u32 operator >>(const v4u32& a, const const_u32<_P>& b);
-	v4u32 operator >>(const v4u32& a, uint32_t b);
+        v4u32& operator|= (v4u32& a, const v4u32& b);
+        v4u32& operator&= (v4u32& a, const v4u32& b);
+        v4u32& operator^= (v4u32& a, const v4u32& b);
+        v4u32& operator+= (v4u32& a, const v4u32& b);
+        v4u32& operator-= (v4u32& a, const v4u32& b);
+        v4u32& operator*= (v4u32& a, const v4u32& b);
+        v4u32& operator/= (v4u32& a, const v4u32& b);
+        v4u32& operator%= (v4u32& a, const v4u32& b);
 
-	v4u32 operator++ (v4u32& a, int);
-	v4u32& operator++(v4u32& a);
-	v4u32 operator-- (v4u32& a, int);
-	v4u32& operator--(v4u32& a);
+        template <uint32_t _P>
+        v4u32& operator<<= (v4u32& a, const const_u32<_P>& b);
+        v4u32& operator<<= (v4u32& a, uint32_t b);
+        template <uint32_t _P>
+        v4u32 operator <<(const v4u32& a, const const_u32<_P>& b);
+        v4u32 operator <<(const v4u32& a, uint32_t b);
 
-	v4u32 operator-(const v4u32& a);
-	const v4u32& operator+(const v4u32& a);
-	v4u32 operator~(const v4u32& a);
-	v4u32 operator!(const v4u32& a);
+        template <uint32_t _P>
+        v4u32& operator>>= (v4u32& a, const const_u32<_P>& b);
+        v4u32& operator>>= (v4u32& a, uint32_t b);
+        template <uint32_t _P>
+        v4u32 operator >>(const v4u32& a, const const_u32<_P>& b);
+        v4u32 operator >>(const v4u32& a, uint32_t b);
 
-	v4u32 operator| (const v4u32& a, const v4u32& b);
-	v4u32 operator|| (const v4u32& a, const v4u32& b);
-	v4u32 operator& (const v4u32& a, const v4u32& b);
-	v4u32 operator&& (const v4u32& a, const v4u32& b);
-	v4u32 operator^(const v4u32& a, const v4u32& b);
+        v4u32 operator++ (v4u32& a, int);
+        v4u32& operator++(v4u32& a);
+        v4u32 operator-- (v4u32& a, int);
+        v4u32& operator--(v4u32& a);
 
-	v4u32 operator+ (const v4u32& a, const v4u32& b);
-	v4u32 operator- (const v4u32& a, const v4u32& b);
-	v4u32 operator* (const v4u32& a, const v4u32& b);
-	v4u32 operator/ (const v4u32& a, const v4u32& b);
-	v4u32 operator% (const v4u32& a, const v4u32& b);
+        v4u32 operator-(const v4u32& a);
+        const v4u32& operator+(const v4u32& a);
+        v4u32 operator~(const v4u32& a);
+        v4u32 operator!(const v4u32& a);
 
-	v4u32 operator< (const v4u32& a, const v4u32& b);
-	v4u32 operator<= (const v4u32& a, const v4u32& b);
-	v4u32 operator== (const v4u32& a, const v4u32& b);
-	v4u32 operator!= (const v4u32& a, const v4u32& b);
-	v4u32 operator>= (const v4u32& a, const v4u32& b);
-	v4u32 operator> (const v4u32& a, const v4u32& b);
+        v4u32 operator| (const v4u32& a, const v4u32& b);
+        v4u32 operator|| (const v4u32& a, const v4u32& b);
+        v4u32 operator& (const v4u32& a, const v4u32& b);
+        v4u32 operator&& (const v4u32& a, const v4u32& b);
+        v4u32 operator^(const v4u32& a, const v4u32& b);
 
-	v4u32 max(const v4u32& a, const v4u32& b);
-	v4u32 min(const v4u32& a, const v4u32& b);
-	v4u32 mul_hi(const v4u32& a, const v4u32& b);
+        v4u32 operator+ (const v4u32& a, const v4u32& b);
+        v4u32 operator- (const v4u32& a, const v4u32& b);
+        v4u32 operator* (const v4u32& a, const v4u32& b);
+        v4u32 operator/ (const v4u32& a, const v4u32& b);
+        v4u32 operator% (const v4u32& a, const v4u32& b);
 
-	template < bool _P0, bool _P1, bool _P2, bool _P3 >
-	v4u32 select(const v4u32& a, const v4u32& b);
-	v4u32 select(const v4u32& msk, const v4u32& on_true,
-		     const v4u32& on_false);
+        v4u32 operator< (const v4u32& a, const v4u32& b);
+        v4u32 operator<= (const v4u32& a, const v4u32& b);
+        v4u32 operator== (const v4u32& a, const v4u32& b);
+        v4u32 operator!= (const v4u32& a, const v4u32& b);
+        v4u32 operator>= (const v4u32& a, const v4u32& b);
+        v4u32 operator> (const v4u32& a, const v4u32& b);
 
-	template < int _P0, int _P1, int _P2, int _P3 >
-	v4u32 permute(const v4u32& a);
-	template < int _P0, int _P1, int _P2, int _P3 >
-	v4u32 permute(const v4u32& a, const v4u32& b);
+        v4u32 max(const v4u32& a, const v4u32& b);
+        v4u32 min(const v4u32& a, const v4u32& b);
+        v4u32 mul_hi(const v4u32& a, const v4u32& b);
 
-	template <unsigned _I>
-	v4u32 insert(const v4u32& a, typename v4u32::element_type v);
-	template <unsigned _I>
-	typename v4u32::element_type extract(const v4u32& a);
+        template < bool _P0, bool _P1, bool _P2, bool _P3 >
+        v4u32 select(const v4u32& a, const v4u32& b);
+        v4u32 select(const v4u32& msk, const v4u32& on_true,
+                     const v4u32& on_false);
 
-	class v2s64 : public impl::vec_base<int64_t, 2>::type {
-	public:
-		enum { N = 2 };
-		typedef int64_t element_type;
-		typedef typename impl::vec_base<element_type, N>::type
-		base_type;
-		element_type* operator()();
-		const element_type* operator()() const;
-		// no initialization is done here.
-		v2s64();
-		v2s64(element_type r);
-		v2s64(element_type r, bool broad_cast);
-		v2s64(element_type i0, element_type i1);
-		v2s64(const v2s64& r);
-		v2s64(v2s64&& r);
-		v2s64& operator=(element_type r);
-		v2s64& operator=(const v2s64& r);
-		v2s64& operator=(v2s64&& r);
-		// memory load operations
-		v2s64(const mem::addr_bcast<element_type>& r);
-		v2s64(const mem::addr<element_type>& r);
-		masked_vec<v2s64> operator()(const mask<v2s64>& m);
-		~v2s64();
-	protected:
-		element_type* begin();
-		const element_type* begin() const;
-	};
+        template < int _P0, int _P1, int _P2, int _P3 >
+        v4u32 permute(const v4u32& a);
+        template < int _P0, int _P1, int _P2, int _P3 >
+        v4u32 permute(const v4u32& a, const v4u32& b);
 
-	v2s64& operator|= (v2s64& a, const v2s64& b);
-	v2s64& operator&= (v2s64& a, const v2s64& b);
-	v2s64& operator^= (v2s64& a, const v2s64& b);
-	v2s64& operator+= (v2s64& a, const v2s64& b);
-	v2s64& operator-= (v2s64& a, const v2s64& b);
-	v2s64& operator*= (v2s64& a, const v2s64& b);
-	v2s64& operator/= (v2s64& a, const v2s64& b);
-	v2s64& operator%= (v2s64& a, const v2s64& b);
+        template <unsigned _I>
+        v4u32 insert(const v4u32& a, typename v4u32::element_type v);
+        template <unsigned _I>
+        typename v4u32::element_type extract(const v4u32& a);
 
-	template <uint32_t _P>
-	v2s64& operator<<= (v2s64& a, const const_u32<_P>& b);
-	v2s64& operator<<= (v2s64& a, uint64_t b);
-	template <uint32_t _P>
-	v2s64 operator <<(const v2s64& a, const const_u32<_P>& b);
-	v2s64 operator <<(const v2s64& a, uint64_t b);
+        class v2s64 : public impl::vec_base<int64_t, 2>::type {
+        public:
+                enum { N = 2 };
+                typedef int64_t element_type;
+                typedef typename impl::vec_base<element_type, N>::type
+                base_type;
+                element_type* operator()();
+                const element_type* operator()() const;
+                // no initialization is done here.
+                v2s64();
+                v2s64(element_type r);
+                v2s64(element_type r, bool broad_cast);
+                v2s64(element_type i0, element_type i1);
+                v2s64(const v2s64& r);
+                v2s64(v2s64&& r);
+                v2s64& operator=(element_type r);
+                v2s64& operator=(const v2s64& r);
+                v2s64& operator=(v2s64&& r);
+                // memory load operations
+                v2s64(const mem::addr_bcast<element_type>& r);
+                v2s64(const mem::addr<element_type>& r);
+                masked_vec<v2s64> operator()(const mask<v2s64>& m);
+                ~v2s64();
 
-	template <uint32_t _P>
-	v2s64& operator>>= (v2s64& a, const const_u32<_P>& b);
-	v2s64& operator>>= (v2s64& a, uint64_t b);
-	template <uint32_t _P>
-	v2s64 operator >>(const v2s64& a, const const_u32<_P>& b);
-	v2s64 operator >>(const v2s64& a, uint64_t b);
+                element_type* begin();
+                const element_type* begin() const;
+        };
 
-	v2s64 operator++ (v2s64& a, int);
-	v2s64& operator++(v2s64& a);
-	v2s64 operator-- (v2s64& a, int);
-	v2s64& operator--(v2s64& a);
+        v2s64& operator|= (v2s64& a, const v2s64& b);
+        v2s64& operator&= (v2s64& a, const v2s64& b);
+        v2s64& operator^= (v2s64& a, const v2s64& b);
+        v2s64& operator+= (v2s64& a, const v2s64& b);
+        v2s64& operator-= (v2s64& a, const v2s64& b);
+        v2s64& operator*= (v2s64& a, const v2s64& b);
+        v2s64& operator/= (v2s64& a, const v2s64& b);
+        v2s64& operator%= (v2s64& a, const v2s64& b);
 
-	v2s64 operator-(const v2s64& a);
-	const v2s64& operator+(const v2s64& a);
-	v2s64 operator~(const v2s64& a);
-	v2s64 operator!(const v2s64& a);
+        template <uint32_t _P>
+        v2s64& operator<<= (v2s64& a, const const_u32<_P>& b);
+        v2s64& operator<<= (v2s64& a, uint64_t b);
+        template <uint32_t _P>
+        v2s64 operator <<(const v2s64& a, const const_u32<_P>& b);
+        v2s64 operator <<(const v2s64& a, uint64_t b);
 
-	v2s64 operator| (const v2s64& a, const v2s64& b);
-	v2s64 operator|| (const v2s64& a, const v2s64& b);
-	v2s64 operator& (const v2s64& a, const v2s64& b);
-	v2s64 operator&& (const v2s64& a, const v2s64& b);
-	v2s64 operator^(const v2s64& a, const v2s64& b);
+        template <uint32_t _P>
+        v2s64& operator>>= (v2s64& a, const const_u32<_P>& b);
+        v2s64& operator>>= (v2s64& a, uint64_t b);
+        template <uint32_t _P>
+        v2s64 operator >>(const v2s64& a, const const_u32<_P>& b);
+        v2s64 operator >>(const v2s64& a, uint64_t b);
 
-	v2s64 operator+ (const v2s64& a, const v2s64& b);
-	v2s64 operator- (const v2s64& a, const v2s64& b);
-	v2s64 operator* (const v2s64& a, const v2s64& b);
-	v2s64 operator/ (const v2s64& a, const v2s64& b);
-	v2s64 operator% (const v2s64& a, const v2s64& b);
+        v2s64 operator++ (v2s64& a, int);
+        v2s64& operator++(v2s64& a);
+        v2s64 operator-- (v2s64& a, int);
+        v2s64& operator--(v2s64& a);
 
-	v2s64 operator< (const v2s64& a, const v2s64& b);
-	v2s64 operator<= (const v2s64& a, const v2s64& b);
-	v2s64 operator== (const v2s64& a, const v2s64& b);
-	v2s64 operator!= (const v2s64& a, const v2s64& b);
-	v2s64 operator>= (const v2s64& a, const v2s64& b);
-	v2s64 operator> (const v2s64& a, const v2s64& b);
+        v2s64 operator-(const v2s64& a);
+        const v2s64& operator+(const v2s64& a);
+        v2s64 operator~(const v2s64& a);
+        v2s64 operator!(const v2s64& a);
 
-	// checks the signs
-	bool all_signs(const v2s64& a);
-	// checks the signs
-	bool both_signs(const v2s64& a);
-	// checks the signs
-	bool no_signs(const v2s64& a);
+        v2s64 operator| (const v2s64& a, const v2s64& b);
+        v2s64 operator|| (const v2s64& a, const v2s64& b);
+        v2s64 operator& (const v2s64& a, const v2s64& b);
+        v2s64 operator&& (const v2s64& a, const v2s64& b);
+        v2s64 operator^(const v2s64& a, const v2s64& b);
 
-	v2s64 max(const v2s64& a, const v2s64& b);
-	v2s64 min(const v2s64& a, const v2s64& b);
-	v2s64 abs(const v2s64& a);
-	v2s64 mul_hi(const v2s64& a, const v2s64& b);
+        v2s64 operator+ (const v2s64& a, const v2s64& b);
+        v2s64 operator- (const v2s64& a, const v2s64& b);
+        v2s64 operator* (const v2s64& a, const v2s64& b);
+        v2s64 operator/ (const v2s64& a, const v2s64& b);
+        v2s64 operator% (const v2s64& a, const v2s64& b);
 
-	template < bool _P0, bool _P1>
-	v2s64 select(const v2s64& a, const v2s64& b);
-	v2s64 select(const v2s64& msk, const v2s64& on_true,
-		     const v2s64& on_false);
+        v2s64 operator< (const v2s64& a, const v2s64& b);
+        v2s64 operator<= (const v2s64& a, const v2s64& b);
+        v2s64 operator== (const v2s64& a, const v2s64& b);
+        v2s64 operator!= (const v2s64& a, const v2s64& b);
+        v2s64 operator>= (const v2s64& a, const v2s64& b);
+        v2s64 operator> (const v2s64& a, const v2s64& b);
 
-	template < int _P0, int _P1 >
-	v2s64 permute(const v2s64& a);
-	template < int _P0, int _P1 >
-	v2s64 permute(const v2s64& a, const v2s64& b);
+        // checks the signs
+        bool all_signs(const v2s64& a);
+        // checks the signs
+        bool both_signs(const v2s64& a);
+        // checks the signs
+        bool no_signs(const v2s64& a);
 
-	template <unsigned _I>
-	v2s64 insert(const v2s64& a, typename v2s64::element_type v);
-	template <unsigned _I>
-	typename v2s64::element_type extract(const v2s64& a);
+        v2s64 max(const v2s64& a, const v2s64& b);
+        v2s64 min(const v2s64& a, const v2s64& b);
+        v2s64 abs(const v2s64& a);
+        v2s64 mul_hi(const v2s64& a, const v2s64& b);
 
-	class v2u64 : public v2s64 {
-	public:
-		typedef uint64_t element_type;
-		typedef v2s64 base_type;
-		element_type* operator()();
-		const element_type* operator()() const;
-		v2u64();
-		v2u64(const base_type& r);
-		v2u64(base_type&& r);
-		v2u64(element_type r);
-		v2u64(const v2u64& r);
-		v2u64(v2u64&& r);
-		v2u64(element_type r, bool broadcast);
-		v2u64(element_type p00, element_type p01);
-		v2u64& operator=(element_type r);
-		v2u64& operator=(const v2u64& r);
-		v2u64& operator=(v2u64&& r);
-		v2u64& operator=(const base_type& r);
-		v2u64& operator=(base_type&& r);
-		v2u64(const mem::addr_bcast<element_type>& r);
-		v2u64(const mem::addr<element_type>& r);
-		masked_vec<v2u64> operator()(const mask<v2u64>& m);
-		~v2u64();
-	protected:
-		element_type* begin();
-		const element_type* begin() const;
-	};
+        template < bool _P0, bool _P1>
+        v2s64 select(const v2s64& a, const v2s64& b);
+        v2s64 select(const v2s64& msk, const v2s64& on_true,
+                     const v2s64& on_false);
 
-	v2u64& operator|= (v2u64& a, const v2u64& b);
-	v2u64& operator&= (v2u64& a, const v2u64& b);
-	v2u64& operator^= (v2u64& a, const v2u64& b);
-	v2u64& operator+= (v2u64& a, const v2u64& b);
-	v2u64& operator-= (v2u64& a, const v2u64& b);
-	v2u64& operator*= (v2u64& a, const v2u64& b);
-	v2u64& operator/= (v2u64& a, const v2u64& b);
-	v2u64& operator%= (v2u64& a, const v2u64& b);
+        template < int _P0, int _P1 >
+        v2s64 permute(const v2s64& a);
+        template < int _P0, int _P1 >
+        v2s64 permute(const v2s64& a, const v2s64& b);
 
-	template <uint32_t _P>
-	v2u64& operator<<= (v2u64& a, const const_u32<_P>& b);
-	v2u64& operator<<= (v2u64& a, uint64_t b);
-	template <uint32_t _P>
-	v2u64 operator <<(const v2u64& a, const const_u32<_P>& b);
-	v2u64 operator <<(const v2u64& a, uint64_t b);
+        template <unsigned _I>
+        v2s64 insert(const v2s64& a, typename v2s64::element_type v);
+        template <unsigned _I>
+        typename v2s64::element_type extract(const v2s64& a);
 
-	template <uint32_t _P>
-	v2u64& operator>>= (v2u64& a, const const_u32<_P>& b);
-	v2u64& operator>>= (v2u64& a, uint64_t b);
-	template <uint32_t _P>
-	v2u64 operator >>(const v2u64& a, const const_u32<_P>& b);
-	v2u64 operator >>(const v2u64& a, uint64_t b);
+        class v2u64 : public v2s64 {
+        public:
+                typedef uint64_t element_type;
+                typedef v2s64 base_type;
+                element_type* operator()();
+                const element_type* operator()() const;
+                v2u64();
+                v2u64(const base_type& r);
+                v2u64(base_type&& r);
+                v2u64(element_type r);
+                v2u64(const v2u64& r);
+                v2u64(v2u64&& r);
+                v2u64(element_type r, bool broadcast);
+                v2u64(element_type p00, element_type p01);
+                v2u64& operator=(element_type r);
+                v2u64& operator=(const v2u64& r);
+                v2u64& operator=(v2u64&& r);
+                v2u64& operator=(const base_type& r);
+                v2u64& operator=(base_type&& r);
+                v2u64(const mem::addr_bcast<element_type>& r);
+                v2u64(const mem::addr<element_type>& r);
+                masked_vec<v2u64> operator()(const mask<v2u64>& m);
+                ~v2u64();
 
-	v2u64 operator++ (v2u64& a, int);
-	v2u64& operator++(v2u64& a);
-	v2u64 operator-- (v2u64& a, int);
-	v2u64& operator--(v2u64& a);
+                element_type* begin();
+                const element_type* begin() const;
+        };
 
-	v2u64 operator-(const v2u64& a);
-	const v2u64& operator+(const v2u64& a);
-	v2u64 operator~(const v2u64& a);
-	v2u64 operator!(const v2u64& a);
+        v2u64& operator|= (v2u64& a, const v2u64& b);
+        v2u64& operator&= (v2u64& a, const v2u64& b);
+        v2u64& operator^= (v2u64& a, const v2u64& b);
+        v2u64& operator+= (v2u64& a, const v2u64& b);
+        v2u64& operator-= (v2u64& a, const v2u64& b);
+        v2u64& operator*= (v2u64& a, const v2u64& b);
+        v2u64& operator/= (v2u64& a, const v2u64& b);
+        v2u64& operator%= (v2u64& a, const v2u64& b);
 
-	v2u64 operator| (const v2u64& a, const v2u64& b);
-	v2u64 operator|| (const v2u64& a, const v2u64& b);
-	v2u64 operator& (const v2u64& a, const v2u64& b);
-	v2u64 operator&& (const v2u64& a, const v2u64& b);
-	v2u64 operator^(const v2u64& a, const v2u64& b);
+        template <uint32_t _P>
+        v2u64& operator<<= (v2u64& a, const const_u32<_P>& b);
+        v2u64& operator<<= (v2u64& a, uint64_t b);
+        template <uint32_t _P>
+        v2u64 operator <<(const v2u64& a, const const_u32<_P>& b);
+        v2u64 operator <<(const v2u64& a, uint64_t b);
 
-	v2u64 operator+ (const v2u64& a, const v2u64& b);
-	v2u64 operator- (const v2u64& a, const v2u64& b);
-	v2u64 operator* (const v2u64& a, const v2u64& b);
-	v2u64 operator/ (const v2u64& a, const v2u64& b);
-	v2u64 operator% (const v2u64& a, const v2u64& b);
+        template <uint32_t _P>
+        v2u64& operator>>= (v2u64& a, const const_u32<_P>& b);
+        v2u64& operator>>= (v2u64& a, uint64_t b);
+        template <uint32_t _P>
+        v2u64 operator >>(const v2u64& a, const const_u32<_P>& b);
+        v2u64 operator >>(const v2u64& a, uint64_t b);
 
-	v2u64 operator< (const v2u64& a, const v2u64& b);
-	v2u64 operator<= (const v2u64& a, const v2u64& b);
-	v2u64 operator== (const v2u64& a, const v2u64& b);
-	v2u64 operator!= (const v2u64& a, const v2u64& b);
-	v2u64 operator>= (const v2u64& a, const v2u64& b);
-	v2u64 operator> (const v2u64& a, const v2u64& b);
+        v2u64 operator++ (v2u64& a, int);
+        v2u64& operator++(v2u64& a);
+        v2u64 operator-- (v2u64& a, int);
+        v2u64& operator--(v2u64& a);
 
-	v2u64 max(const v2u64& a, const v2u64& b);
-	v2u64 min(const v2u64& a, const v2u64& b);
-	v2u64 mul_hi(const v2u64& a, const v2u64& b);
+        v2u64 operator-(const v2u64& a);
+        const v2u64& operator+(const v2u64& a);
+        v2u64 operator~(const v2u64& a);
+        v2u64 operator!(const v2u64& a);
 
-	template < bool _P0, bool _P1>
-	v2u64 select(const v2u64& a, const v2u64& b);
-	v2u64 select(const v2u64& msk, const v2u64& on_true,
-		     const v2u64& on_false);
+        v2u64 operator| (const v2u64& a, const v2u64& b);
+        v2u64 operator|| (const v2u64& a, const v2u64& b);
+        v2u64 operator& (const v2u64& a, const v2u64& b);
+        v2u64 operator&& (const v2u64& a, const v2u64& b);
+        v2u64 operator^(const v2u64& a, const v2u64& b);
 
-	template < int _P0, int _P1>
-	v2u64 permute(const v2u64& a);
-	template < int _P0, int _P1>
-	v2u64 permute(const v2u64& a, const v2u64& b);
+        v2u64 operator+ (const v2u64& a, const v2u64& b);
+        v2u64 operator- (const v2u64& a, const v2u64& b);
+        v2u64 operator* (const v2u64& a, const v2u64& b);
+        v2u64 operator/ (const v2u64& a, const v2u64& b);
+        v2u64 operator% (const v2u64& a, const v2u64& b);
 
-	template <unsigned _I>
-	v2u64 insert(const v2u64& a, typename v2u64::element_type v);
-	template <unsigned _I>
-	typename v2u64::element_type extract(const v2u64& a);
+        v2u64 operator< (const v2u64& a, const v2u64& b);
+        v2u64 operator<= (const v2u64& a, const v2u64& b);
+        v2u64 operator== (const v2u64& a, const v2u64& b);
+        v2u64 operator!= (const v2u64& a, const v2u64& b);
+        v2u64 operator>= (const v2u64& a, const v2u64& b);
+        v2u64 operator> (const v2u64& a, const v2u64& b);
 
-	void store(v8u16::element_type* p, const v8u16& r);
-	void store(v8s16::element_type* p, const v8s16& r);
-	void store(v4u32::element_type* p, const v4u32& r);
-	void store(v4s32::element_type* p, const v4s32& r);
-	void store(v2u64::element_type* p, const v2u64& r);
-	void store(v2s64::element_type* p, const v2s64& r);
-	
-	namespace aligned {
-		using emuvec::store;
-	}
-	namespace unaligned {
-		using emuvec::store;
-	}
+        v2u64 max(const v2u64& a, const v2u64& b);
+        v2u64 min(const v2u64& a, const v2u64& b);
+        v2u64 mul_hi(const v2u64& a, const v2u64& b);
+
+        template < bool _P0, bool _P1>
+        v2u64 select(const v2u64& a, const v2u64& b);
+        v2u64 select(const v2u64& msk, const v2u64& on_true,
+                     const v2u64& on_false);
+
+        template < int _P0, int _P1>
+        v2u64 permute(const v2u64& a);
+        template < int _P0, int _P1>
+        v2u64 permute(const v2u64& a, const v2u64& b);
+
+        template <unsigned _I>
+        v2u64 insert(const v2u64& a, typename v2u64::element_type v);
+        template <unsigned _I>
+        typename v2u64::element_type extract(const v2u64& a);
+
+        void store(v8u16::element_type* p, const v8u16& r);
+        void store(v8s16::element_type* p, const v8s16& r);
+        void store(v4u32::element_type* p, const v4u32& r);
+        void store(v4s32::element_type* p, const v4s32& r);
+        void store(v2u64::element_type* p, const v2u64& r);
+        void store(v2s64::element_type* p, const v2s64& r);
+        
+        namespace aligned {
+                using emuvec::store;
+        }
+        namespace unaligned {
+                using emuvec::store;
+        }
 
 }
 
@@ -752,65 +752,91 @@ namespace emuvec {
 
 namespace mem {
 
-	using emuvec::store;
-	namespace aligned {
-		using emuvec::aligned::store;
-	}
-	namespace unaligned {
-		using emuvec::unaligned::store;
-	}
+        using emuvec::store;
+        namespace aligned {
+                using emuvec::store;
+        }
+        namespace unaligned {
+                using emuvec::store;
+        }
 }
 
 
 namespace emuvec {
 
-	template <typename _D, typename _S>
-	_D as(const _S& s);
+        template <typename _D, typename _S>
+        _D as(const _S& s);
 
-	namespace impl {
-		// convert according to current rounding mode
-		template <typename _D, typename _S>
-		struct cvt {
-			static 
-			_D l(const _S& s);
-			static
-			_D h(const _S& s);
-		};
+        namespace impl {
+                // convert according to current rounding mode
+                template <typename _D, typename _S>
+                struct cvt {
+                        static 
+                        _D l(const _S& s);
+                        static
+                        _D h(const _S& s);
+                };
 
-		// convert with truncation (i.e. round to zero)
-		template <typename _D, typename _S>
-		struct cvt_rz {
-			static
-			_D l(const _S& s);
-			static
-			_D h(const _S& s);
-		};
-	}
+                // convert with truncation (i.e. round to zero)
+                template <typename _D, typename _S>
+                struct cvt_rz {
+                        static
+                        _D l(const _S& s);
+                        static
+                        _D h(const _S& s);
+                };
+        }
 
-	template <class _D, class _S>
-	_D cvt_lo(const _S& s);
-	template <class _D, class _S>
-	_D cvt_hi(const _S& s);
-	template <class _D, class _S>
-	_D cvt(const _S& s);
+        template <class _D, class _S>
+        _D cvt_lo(const _S& s);
+        template <class _D, class _S>
+        _D cvt_hi(const _S& s);
+        template <class _D, class _S>
+        _D cvt(const _S& s);
 
-	v4f32 cvt_f32(const v2f64& l, const v2f64& h);
-	// v8f32 cvt_f32(const v4f64& l, const v4f64& h);
+        v4f32 cvt_f32(const v2f64& l, const v2f64& h);
+        // v8f32 cvt_f32(const v4f64& l, const v4f64& h);
 
 
-	template <class _D, class _S>
-	std::pair<_D, _D> cvt_widen(const _S& s);
-	
-	template <class _D, class _S>
-	_D cvt_rz_lo(const _S& s);
-	template <class _D, class _S>
-	_D cvt_rz_hi(const _S& s);
-	template <class _D, class _S>
-	_D cvt_rz(const _S& s);
-	template <class _D, class _S>
-	std::pair<_D, _D> cvt_rz_widen(const _S& s);
+        template <class _D, class _S>
+        std::pair<_D, _D> cvt_widen(const _S& s);
+        
+        template <class _D, class _S>
+        _D cvt_rz_lo(const _S& s);
+        template <class _D, class _S>
+        _D cvt_rz_hi(const _S& s);
+        template <class _D, class _S>
+        _D cvt_rz(const _S& s);
+        template <class _D, class _S>
+        std::pair<_D, _D> cvt_rz_widen(const _S& s);
 }
 
+template <class _D, class _S>
+_D emuvec::as(const _S& s)
+{
+        constexpr std::size_t sn(sizeof(typename _S::element_type)* _S::N);
+        constexpr std::size_t dn(sizeof(typename _D::element_type)* _D::N);
+        static_assert(sn == dn, "memory size of src and dst must be equal");
+        _D d;
+        const char* sp= reinterpret_cast<const char*>(s.begin());
+        char* dp= reinterpret_cast<char*>(d.begin());
+        std::memcpy(dp, sp, sn);
+        return d;
+}
+
+template <class _D, class _S>
+_D emuvec::cvt_lo(const _S& s)
+{
+        constexpr std::size_t SN= std::size_t(_S::N);
+        constexpr std::size_t DN= std::size_t(_D::N);
+        constexpr std::size_t N=  SN > DN ? DN : SN ;
+        _D d;
+        const typename _S::element_type* sp= s.begin();
+        typename _D::element_type* dp= d.begin();
+        for (std::size_t i=0; i< N; ++i) 
+                dp[i] = sp[i];
+        return d;
+}
 
 
 // v8s16 implementation

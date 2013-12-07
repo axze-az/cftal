@@ -15,10 +15,10 @@ CXXFLAGS+=-I.. -I../stlex -I../thread  -I../sysio -march=native
 CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 OPT+=-fno-unroll-loops
 
-CSRCS=heap_array.cc emuvec.cc emuvec_fvec.cc x86vec_ops_1.cc		\
-x86vec_fvec.cc x86vec_v2f64.cc x86vec_v4f64.cc x86vec_v4f32.cc		\
-x86vec_v8f32.cc x86vec_test.cc mul_div_32.cc mul_div_64.cc d_real.cc	\
-math_func.cc
+CSRCS=heap_array.cc allocator.cc emuvec.cc emuvec_fvec.cc	\
+x86vec_ops_1.cc x86vec_fvec.cc x86vec_v2f64.cc x86vec_v4f64.cc	\
+x86vec_v4f32.cc x86vec_v8f32.cc x86vec_test.cc mul_div_32.cc	\
+mul_div_64.cc d_real.cc math_func.cc
 
 all: lib tests
 
