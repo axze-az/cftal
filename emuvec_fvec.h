@@ -17,25 +17,25 @@ namespace emuvec {
                 base_type;
                 element_type* operator()();
                 const element_type* operator()() const;
-                v4f32();
+                v4f32() = default;
                 v4f32(element_type r);
                 v4f32(element_type r, bool broadcast);
                 v4f32(element_type p00, element_type p01,
                       element_type p02, element_type p03);
-                v4f32(const v4f32& r);
-                v4f32(v4f32&& r);
+                v4f32(const v4f32& r) = default;
+                v4f32(v4f32&& r) = default;
                 // assignment from expr<op<v4f32>, _L, _R>
                 template <template <class _V> class _OP, class _L, class _R>
                 v4f32(const expr<_OP<v4f32>, _L, _R>& r);
                 v4f32& operator=(element_type r);
-                v4f32& operator=(const v4f32& r);
-                v4f32& operator=(v4f32&& r);
+                v4f32& operator=(const v4f32& r) = default;
+                v4f32& operator=(v4f32&& r) = default;
                 v4f32(const mem::addr_bcast<element_type>& r);
                 v4f32(const mem::addr<element_type>& r);
                 v4f32(const mem::aligned::addr<element_type>& r);
                 v4f32(const mem::unaligned::addr<element_type>& r);
                 masked_vec<v4f32> operator()(const mask<v4f32>& m);
-
+        private:
                 element_type* begin();
                 const element_type* begin() const;
         };
@@ -148,7 +148,7 @@ namespace emuvec {
                 v2f64(const mem::aligned::addr<element_type>& r);
                 v2f64(const mem::unaligned::addr<element_type>& r);
                 masked_vec<v2f64> operator()(const mask<v2f64>& m);
-
+        private:
                 element_type* begin();
                 const element_type* begin() const;
         };

@@ -106,23 +106,23 @@ namespace emuvec {
                 element_type* operator()();
                 const element_type* operator()() const;
                 // no initialization is done here.
-                v8s16();
+                v8s16() = default;
                 v8s16(element_type r);
                 v8s16(element_type r, bool broad_cast);
                 v8s16(element_type i0, element_type i1,
                       element_type i2, element_type i3,
                       element_type i4, element_type i5,
                       element_type i6, element_type i7);
-                v8s16(const v8s16& r);
-                v8s16(v8s16&& r);
+                v8s16(const v8s16& r) = default;
+                v8s16(v8s16&& r) = default;
                 v8s16& operator=(element_type r);
-                v8s16& operator=(const v8s16& r);
-                v8s16& operator=(v8s16&& r);
+                v8s16& operator=(const v8s16& r) = default;
+                v8s16& operator=(v8s16&& r) = default;
                 // memory load operations
                 v8s16(const mem::addr_bcast<element_type>& r);
                 v8s16(const mem::addr<element_type>& r);
                 masked_vec<v8s16> operator()(const mask<v8s16>& m);
-
+        private:
                 element_type* begin();
                 const element_type* begin() const;
         };
@@ -215,26 +215,26 @@ namespace emuvec {
                 typedef v8s16 base_type;
                 element_type* operator()();
                 const element_type* operator()() const;
-                v8u16();
+                v8u16() = default;
                 v8u16(const base_type& r);
                 v8u16(base_type&& r);
                 v8u16(element_type r);
-                v8u16(const v8u16& r);
-                v8u16(v8u16&& r);
+                v8u16(const v8u16& r) = default;
+                v8u16(v8u16&& r) = default;
                 v8u16(element_type r, bool broadcast);
                 v8u16(element_type p00, element_type p01,
                       element_type p02, element_type p03,
                       element_type p04, element_type p05,
                       element_type p06, element_type p07);
                 v8u16& operator=(element_type r);
-                v8u16& operator=(const v8u16& r);
-                v8u16& operator=(v8u16&& r);
+                v8u16& operator=(const v8u16& r) = default;
+                v8u16& operator=(v8u16&& r) = default;
                 v8u16& operator=(const base_type& r);
                 v8u16& operator=(base_type&& r);
                 v8u16(const mem::addr_bcast<element_type>& r);
                 v8u16(const mem::addr<element_type>& r);
                 masked_vec<v8u16> operator()(const mask<v8u16>& m);
-
+        private:
                 element_type* begin();
                 const element_type* begin() const;
         };
@@ -323,16 +323,16 @@ namespace emuvec {
                 element_type* operator()();
                 const element_type* operator()() const;
                 // no initialization is done here.
-                v4s32();
+                v4s32() = default;
                 v4s32(element_type r);
                 v4s32(element_type r, bool broad_cast);
                 v4s32(element_type i0, element_type i1,
                       element_type i2, element_type i3);
-                v4s32(const v4s32& r);
-                v4s32(v4s32&& r);
+                v4s32(const v4s32& r) = default;
+                v4s32(v4s32&& r) = default;
                 v4s32& operator=(element_type r);
-                v4s32& operator=(const v4s32& r);
-                v4s32& operator=(v4s32&& r);
+                v4s32& operator=(const v4s32& r) = default;
+                v4s32& operator=(v4s32&& r) = default;
                 // memory load operations
                 v4s32(const mem::addr_bcast<element_type>& r);
                 v4s32(const mem::addr<element_type>& r);
@@ -429,24 +429,24 @@ namespace emuvec {
                 typedef v4s32 base_type;
                 element_type* operator()();
                 const element_type* operator()() const;
-                v4u32();
+                v4u32() = default;
                 v4u32(const base_type& r);
                 v4u32(base_type&& r);
                 v4u32(element_type r);
-                v4u32(const v4u32& r);
-                v4u32(v4u32&& r);
+                v4u32(const v4u32& r) = default;
+                v4u32(v4u32&& r) = default;
                 v4u32(element_type r, bool broadcast);
                 v4u32(element_type p00, element_type p01,
                       element_type p02, element_type p03);
                 v4u32& operator=(element_type r);
-                v4u32& operator=(const v4u32& r);
-                v4u32& operator=(v4u32&& r);
+                v4u32& operator=(const v4u32& r) = default;
+                v4u32& operator=(v4u32&& r) = default;
                 v4u32& operator=(const base_type& r);
                 v4u32& operator=(base_type&& r);
                 v4u32(const mem::addr_bcast<element_type>& r);
                 v4u32(const mem::addr<element_type>& r);
                 masked_vec<v4u32> operator()(const mask<v4u32>& m);
-
+        private:
                 element_type* begin();
                 const element_type* begin() const;
         };
@@ -531,20 +531,20 @@ namespace emuvec {
                 element_type* operator()();
                 const element_type* operator()() const;
                 // no initialization is done here.
-                v2s64();
+                v2s64() = default;
                 v2s64(element_type r);
                 v2s64(element_type r, bool broad_cast);
                 v2s64(element_type i0, element_type i1);
-                v2s64(const v2s64& r);
-                v2s64(v2s64&& r);
+                v2s64(const v2s64& r) = default;
+                v2s64(v2s64&& r) = default;
                 v2s64& operator=(element_type r);
-                v2s64& operator=(const v2s64& r);
-                v2s64& operator=(v2s64&& r);
+                v2s64& operator=(const v2s64& r) = default;
+                v2s64& operator=(v2s64&& r) = default;
                 // memory load operations
                 v2s64(const mem::addr_bcast<element_type>& r);
                 v2s64(const mem::addr<element_type>& r);
                 masked_vec<v2s64> operator()(const mask<v2s64>& m);
-
+        private:
                 element_type* begin();
                 const element_type* begin() const;
         };
@@ -634,23 +634,23 @@ namespace emuvec {
                 typedef v2s64 base_type;
                 element_type* operator()();
                 const element_type* operator()() const;
-                v2u64();
+                v2u64() = default;
                 v2u64(const base_type& r);
                 v2u64(base_type&& r);
                 v2u64(element_type r);
-                v2u64(const v2u64& r);
-                v2u64(v2u64&& r);
+                v2u64(const v2u64& r) = default;
+                v2u64(v2u64&& r) = default;
                 v2u64(element_type r, bool broadcast);
                 v2u64(element_type p00, element_type p01);
                 v2u64& operator=(element_type r);
-                v2u64& operator=(const v2u64& r);
-                v2u64& operator=(v2u64&& r);
+                v2u64& operator=(const v2u64& r) = default;
+                v2u64& operator=(v2u64&& r) = default;
                 v2u64& operator=(const base_type& r);
                 v2u64& operator=(base_type&& r);
                 v2u64(const mem::addr_bcast<element_type>& r);
                 v2u64(const mem::addr<element_type>& r);
                 masked_vec<v2u64> operator()(const mask<v2u64>& m);
-
+        private:
                 element_type* begin();
                 const element_type* begin() const;
         };
@@ -812,8 +812,8 @@ _D emuvec::as(const _S& s)
         constexpr std::size_t dn(sizeof(typename _D::element_type)* _D::N);
         static_assert(sn == dn, "memory size of src and dst must be equal");
         _D d;
-        const char* sp= reinterpret_cast<const char*>(s.begin());
-        char* dp= reinterpret_cast<char*>(d.begin());
+        const char* sp= reinterpret_cast<const char*>(s());
+        char* dp= reinterpret_cast<char*>(d());
         std::memcpy(dp, sp, sn);
         return d;
 }
@@ -825,8 +825,8 @@ _D emuvec::cvt_lo(const _S& s)
         constexpr std::size_t DN= std::size_t(_D::N);
         constexpr std::size_t N=  SN > DN ? DN : SN ;
         _D d;
-        const typename _S::element_type* sp= s.begin();
-        typename _D::element_type* dp= d.begin();
+        const typename _S::element_type* sp= s();
+        typename _D::element_type* dp= d();
         for (std::size_t i=0; i< N; ++i) 
                 dp[i] = sp[i];
         return d;

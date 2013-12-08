@@ -6,22 +6,6 @@ template class emuvec::impl::utvec<32, cftal::cache_allocator<char, 32> >;
 
 // v8s16 implementation
 // inline
-emuvec::v8s16::v8s16() : base_type()
-{
-        std::uninitialized_fill_n(begin(), N, 0);
-}
-
-// inline
-emuvec::v8s16::v8s16(const v8s16& r) : base_type(r)
-{
-}
-
-// inline
-emuvec::v8s16::v8s16(v8s16&& r) : base_type(std::move(r))
-{
-}
-
-// inline
 emuvec::v8s16::v8s16(element_type p00, element_type p01,
                      element_type p02, element_type p03,
                      element_type p04, element_type p05,
@@ -63,21 +47,6 @@ emuvec::v8s16::v8s16(const mem::addr<element_type>& r)
         : base_type()
 {
         std::uninitialized_copy_n(r(), N, begin());
-}
-
-// inline
-emuvec::v8s16& emuvec::v8s16::operator=(const v8s16& r)
-{
-        if (&r != this)
-                std::copy_n(r.begin(), N, begin());
-        return *this;
-}
-
-// inline
-emuvec::v8s16& emuvec::v8s16::operator=(v8s16&& r)
-{
-        swap(r);
-        return *this;
 }
 
 // inline
@@ -493,24 +462,10 @@ emuvec::v8s16 emuvec::select(const v8s16& msk,
 
 // v8u16 implementation
 // inline
-emuvec::v8u16::v8u16() : base_type()
-{
-}
-
-// inline
-emuvec::v8u16::v8u16(const v8u16& r) : base_type(r)
-{
-}
-
-// inline
 emuvec::v8u16::v8u16(const v8s16& r) : base_type(r)
 {
 }
 
-// inline
-emuvec::v8u16::v8u16(v8u16&& r) : base_type(std::move(r))
-{
-}
 
 // inline
 emuvec::v8u16::v8u16(v8s16&& r) : base_type(std::move(r))
@@ -550,23 +505,9 @@ emuvec::v8u16::v8u16(const mem::addr<element_type>& r)
 }
 
 // inline
-emuvec::v8u16& emuvec::v8u16::operator=(const v8u16& r)
-{
-        base_type::operator=(r);
-        return *this;
-}
-
-// inline
 emuvec::v8u16& emuvec::v8u16::operator=(const v8s16& r)
 {
         base_type::operator=(r);
-        return *this;
-}
-
-// inline
-emuvec::v8u16& emuvec::v8u16::operator=(v8u16&& r)
-{
-        base_type::operator=(std::move(r));
         return *this;
 }
 
@@ -960,22 +901,6 @@ emuvec::v8u16 emuvec::select(const v8u16& msk,
 
 // v4s32 implementation
 // inline
-emuvec::v4s32::v4s32() : base_type()
-{
-        std::uninitialized_fill_n(begin(), N, 0);
-}
-
-// inline
-emuvec::v4s32::v4s32(const v4s32& r) : base_type(r)
-{
-}
-
-// inline
-emuvec::v4s32::v4s32(v4s32&& r) : base_type(std::move(r))
-{
-}
-
-// inline
 emuvec::v4s32::v4s32(element_type p00, element_type p01,
                      element_type p02, element_type p03)
         : base_type()
@@ -1028,21 +953,6 @@ emuvec::v4s32::v4s32(const mem::unaligned::addr<element_type>& r)
         : base_type()
 {
         std::uninitialized_copy_n(r(), N, begin());
-}
-
-// inline
-emuvec::v4s32& emuvec::v4s32::operator=(const v4s32& r)
-{
-        if (&r != this)
-                std::copy_n(r.begin(), N, begin());
-        return *this;
-}
-
-// inline
-emuvec::v4s32& emuvec::v4s32::operator=(v4s32&& r)
-{
-        swap(r);
-        return *this;
 }
 
 // inline
@@ -1456,22 +1366,7 @@ emuvec::v4s32 emuvec::select(const v4s32& msk,
 
 // v4u32 implementation
 // inline
-emuvec::v4u32::v4u32() : base_type()
-{
-}
-
-// inline
-emuvec::v4u32::v4u32(const v4u32& r) : base_type(r)
-{
-}
-
-// inline
 emuvec::v4u32::v4u32(const v4s32& r) : base_type(r)
-{
-}
-
-// inline
-emuvec::v4u32::v4u32(v4u32&& r) : base_type(std::move(r))
 {
 }
 
@@ -1511,23 +1406,9 @@ emuvec::v4u32::v4u32(const mem::addr<element_type>& r)
 }
 
 // inline
-emuvec::v4u32& emuvec::v4u32::operator=(const v4u32& r)
-{
-        base_type::operator=(r);
-        return *this;
-}
-
-// inline
 emuvec::v4u32& emuvec::v4u32::operator=(const v4s32& r)
 {
         base_type::operator=(r);
-        return *this;
-}
-
-// inline
-emuvec::v4u32& emuvec::v4u32::operator=(v4u32&& r)
-{
-        base_type::operator=(std::move(r));
         return *this;
 }
 
@@ -1920,22 +1801,6 @@ emuvec::v4u32 emuvec::select(const v4u32& msk,
 
 // v2s64 implementation
 // inline
-emuvec::v2s64::v2s64() : base_type()
-{
-        std::uninitialized_fill_n(begin(), N, 0);
-}
-
-// inline
-emuvec::v2s64::v2s64(const v2s64& r) : base_type(r)
-{
-}
-
-// inline
-emuvec::v2s64::v2s64(v2s64&& r) : base_type(std::move(r))
-{
-}
-
-// inline
 emuvec::v2s64::v2s64(element_type p00, element_type p01)
         : base_type()
 {
@@ -1973,21 +1838,6 @@ emuvec::v2s64::v2s64(const mem::addr<element_type>& r)
         : base_type()
 {
         std::uninitialized_copy_n(r(), N, begin());
-}
-
-// inline
-emuvec::v2s64& emuvec::v2s64::operator=(const v2s64& r)
-{
-        if (&r != this)
-                std::copy_n(r.begin(), N, begin());
-        return *this;
-}
-
-// inline
-emuvec::v2s64& emuvec::v2s64::operator=(v2s64&& r)
-{
-        swap(r);
-        return *this;
 }
 
 // inline
@@ -2402,22 +2252,7 @@ emuvec::v2s64 emuvec::select(const v2s64& msk,
 
 // v2u64 implementation
 // inline
-emuvec::v2u64::v2u64() : base_type()
-{
-}
-
-// inline
-emuvec::v2u64::v2u64(const v2u64& r) : base_type(r)
-{
-}
-
-// inline
 emuvec::v2u64::v2u64(const v2s64& r) : base_type(r)
-{
-}
-
-// inline
-emuvec::v2u64::v2u64(v2u64&& r) : base_type(std::move(r))
 {
 }
 
@@ -2457,23 +2292,9 @@ emuvec::v2u64::v2u64(const mem::addr<element_type>& r)
 }
 
 // inline
-emuvec::v2u64& emuvec::v2u64::operator=(const v2u64& r)
-{
-        base_type::operator=(r);
-        return *this;
-}
-
-// inline
 emuvec::v2u64& emuvec::v2u64::operator=(const v2s64& r)
 {
         base_type::operator=(r);
-        return *this;
-}
-
-// inline
-emuvec::v2u64& emuvec::v2u64::operator=(v2u64&& r)
-{
-        base_type::operator=(std::move(r));
         return *this;
 }
 
@@ -2864,22 +2685,6 @@ emuvec::v2u64 emuvec::select(const v2u64& msk,
 
 // v4f32 implementation
 // inline
-emuvec::v4f32::v4f32() : base_type()
-{
-        std::uninitialized_fill_n(begin(), N, 0);
-}
-
-// inline
-emuvec::v4f32::v4f32(const v4f32& r) : base_type(r)
-{
-}
-
-// inline
-emuvec::v4f32::v4f32(v4f32&& r) : base_type(std::move(r))
-{
-}
-
-// inline
 emuvec::v4f32::v4f32(element_type p00, element_type p01,
                      element_type p02, element_type p03)
         : base_type()
@@ -2932,21 +2737,6 @@ emuvec::v4f32::v4f32(const mem::unaligned::addr<element_type>& r)
         : base_type()
 {
         std::uninitialized_copy_n(r(), N, begin());
-}
-
-// inline
-emuvec::v4f32& emuvec::v4f32::operator=(const v4f32& r)
-{
-        if (&r != this)
-                std::copy_n(r.begin(), N, begin());
-        return *this;
-}
-
-// inline
-emuvec::v4f32& emuvec::v4f32::operator=(v4f32&& r)
-{
-        swap(r);
-        return *this;
 }
 
 // inline
