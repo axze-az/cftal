@@ -95,10 +95,6 @@ emuvec::v8s16::operator()(const mask<v8s16>& m)
         return masked_vec<v8s16>(*this, m);
 }
 
-// inline
-emuvec::v8s16::~v8s16()
-{
-}
 
 // inline
 emuvec::v8s16&
@@ -596,10 +592,6 @@ emuvec::v8u16::operator()(const mask<v8u16>& m)
         return masked_vec<v8u16>(*this, m);
 }
 
-// inline
-emuvec::v8u16::~v8u16()
-{
-}
 
 // inline
 emuvec::v8u16&
@@ -1065,11 +1057,6 @@ emuvec::masked_vec<emuvec::v4s32>
 emuvec::v4s32::operator()(const mask<v4s32>& m) 
 {
         return masked_vec<v4s32>(*this, m);
-}
-
-// inline
-emuvec::v4s32::~v4s32()
-{
 }
 
 // inline
@@ -1565,10 +1552,6 @@ emuvec::v4u32::operator()(const mask<v4u32>& m)
         return masked_vec<v4u32>(*this, m);
 }
 
-// inline
-emuvec::v4u32::~v4u32()
-{
-}
 
 // inline
 emuvec::v4u32&
@@ -2019,11 +2002,6 @@ emuvec::masked_vec<emuvec::v2s64>
 emuvec::v2s64::operator()(const mask<v2s64>& m) 
 {
         return masked_vec<v2s64>(*this, m);
-}
-
-// inline
-emuvec::v2s64::~v2s64()
-{
 }
 
 // inline
@@ -2521,11 +2499,6 @@ emuvec::v2u64::operator()(const mask<v2u64>& m)
 }
 
 // inline
-emuvec::v2u64::~v2u64()
-{
-}
-
-// inline
 emuvec::v2u64&
 emuvec::operator|= (v2u64& a, const v2u64& b)
 {
@@ -2991,11 +2964,6 @@ emuvec::v4f32::operator()(const mask<v4f32>& m)
 }
 
 // inline
-emuvec::v4f32::~v4f32()
-{
-}
-
-// inline
 emuvec::v4f32&
 emuvec::operator|= (v4f32& a, const v4f32& b)
 {
@@ -3294,410 +3262,6 @@ emuvec::v4f32 emuvec::select(const v4f32& msk,
         return r;
 }
 
-// v2f64 implementation
-// inline
-emuvec::v2f64::v2f64() : base_type()
-{
-        std::uninitialized_fill_n(begin(), N, 0);
-}
-
-// inline
-emuvec::v2f64::v2f64(const v2f64& r) : base_type(r)
-{
-}
-
-// inline
-emuvec::v2f64::v2f64(v2f64&& r) : base_type(std::move(r))
-{
-}
-
-// inline
-emuvec::v2f64::v2f64(element_type p00, element_type p01)
-        : base_type()
-{
-        element_type* p= begin();
-        p[0] = p00; p[1] = p01;
-}
-
-// inline
-emuvec::v2f64::v2f64(element_type r): base_type()
-{
-        std::uninitialized_fill_n(begin(), N, r);
-}
-
-// inline
-emuvec::v2f64::v2f64(v2f64::element_type r, bool broadcast)
-        : base_type()
-{
-        if (broadcast) {
-                std::uninitialized_fill_n(begin(), N, r);
-        } else {
-                get_allocator().construct(vbegin(), r);
-                std::uninitialized_fill_n(begin()+1, N-1, 0);
-        }
-}
-
-// inline
-emuvec::v2f64::v2f64(const mem::addr_bcast<element_type>& r)
-        : base_type()
-{
-        std::uninitialized_fill_n(begin(), N, *r());
-}
-
-// inline
-emuvec::v2f64::v2f64(const mem::addr<element_type>& r)
-        : base_type()
-{
-        std::uninitialized_copy_n(r(), N, begin());
-}
-
-// inline
-emuvec::v2f64::v2f64(const mem::aligned::addr<element_type>& r)
-        : base_type()
-{
-        std::uninitialized_copy_n(r(), N, begin());
-}
-
-// inline
-emuvec::v2f64::v2f64(const mem::unaligned::addr<element_type>& r)
-        : base_type()
-{
-        std::uninitialized_copy_n(r(), N, begin());
-}
-
-// inline
-emuvec::v2f64& emuvec::v2f64::operator=(const v2f64& r)
-{
-        if (&r != this)
-                std::copy_n(r.begin(), N, begin());
-        return *this;
-}
-
-// inline
-emuvec::v2f64& emuvec::v2f64::operator=(v2f64&& r)
-{
-        swap(r);
-        return *this;
-}
-
-// inline
-emuvec::v2f64& emuvec::v2f64::operator=(v2f64::element_type r)
-{
-        std::fill_n(begin(), N, r);
-        return *this;
-}
-
-// inline
-emuvec::masked_vec<emuvec::v2f64>
-emuvec::v2f64::operator()(const mask<v2f64>& m) 
-{
-        return masked_vec<v2f64>(*this, m);
-}
-
-// inline
-emuvec::v2f64::~v2f64()
-{
-}
-
-// inline
-emuvec::v2f64&
-emuvec::operator|= (v2f64& a, const v2f64& b)
-{
-        impl::v_f_or<v2f64::element_type> ot;
-        impl::v_assign_op(a(), ot, b(), v2f64::N);
-        return a;
-}
-
-// inline
-emuvec::v2f64&
-emuvec::operator&= (v2f64& a, const v2f64& b)
-{
-        impl::v_f_and<v2f64::element_type> ot;
-        impl::v_assign_op(a(), ot, b(), v2f64::N);
-        return a;
-}
-
-// inline
-emuvec::v2f64&
-emuvec::operator^= (v2f64& a, const v2f64& b)
-{
-        impl::v_f_xor<v2f64::element_type> ot;
-        impl::v_assign_op(a(), ot, b(), v2f64::N);
-        return a;
-}
-
-// inline
-emuvec::v2f64&
-emuvec::operator++(v2f64& a)
-{
-        impl::v_inc<v2f64::element_type> ot;
-        impl::v_assign_op(a(), ot, v2f64::N);
-        return a;
-}
-
-// inline
-emuvec::v2f64
-emuvec::operator++ (v2f64& a, int)
-{
-        v2f64 t(a);
-        impl::v_inc<v2f64::element_type> ot;
-        impl::v_assign_op(a(), ot, v2f64::N);
-        return t;
-}
-
-// inline
-emuvec::v2f64&
-emuvec::operator--(v2f64& a)
-{
-        impl::v_dec<v2f64::element_type> ot;
-        impl::v_assign_op(a(), ot, v2f64::N);
-        return a;
-}
-
-// inline
-emuvec::v2f64
-emuvec::operator-- (v2f64& a, int)
-{
-        v2f64 t(a);
-        impl::v_dec<v2f64::element_type> ot;
-        impl::v_assign_op(a(), ot, v2f64::N);
-        return t;
-}
-
-// inline
-emuvec::v2f64
-emuvec::operator-(const v2f64& a)
-{
-        v2f64 t;
-        impl::v_neg<v2f64::element_type> ot;
-        impl::v_assign_op(t(), ot, v2f64::N);
-        return t;
-}
-
-// inline
-const emuvec::v2f64&
-emuvec::operator+(const v2f64& a)
-{
-        return a;
-}
-
-// inline
-emuvec::v2f64
-emuvec::operator~(const v2f64& a)
-{
-        v2f64 t;
-        impl::v_f_not<v2f64::element_type> ot;
-        impl::v_assign_op(t(), ot, v2f64::N);
-        return t;
-}
-
-// inline
-emuvec::v2f64
-emuvec::operator!(const v2f64& a)
-{
-        v2f64 t;
-        impl::v_log_not<v2f64::element_type> ot;
-        impl::v_assign_op(t(), ot, v2f64::N);
-        return t;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator| (const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_f_or<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator|| (const v2f64& a, const v2f64& b)
-{
-        return a | b;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator& (const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_f_and<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator&& (const v2f64& a, const v2f64& b)
-{
-        return a & b;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator^(const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_f_xor<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator< (const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_lt<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator<= (const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_le<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator== (const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_eq<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator!= (const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_ne<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator>= (const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_ge<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::operator> (const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_ge<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-bool emuvec::all_signs(const v2f64& a)
-{
-        uint32_t sgn(impl::get_signs_32(a(), v2f64::N));
-        return sgn == 0x03;
-}
-
-// inline
-bool emuvec::both_signs(const v2f64& a)
-{
-        uint32_t sgn(impl::get_signs_32(a(), v2f64::N));
-        return sgn != 0x03 && sgn != 0;
-}
-
-
-// inline
-bool emuvec::no_signs(const v2f64& a)
-{
-        uint32_t sgn(impl::get_signs_32(a(), v2f64::N));
-        return sgn == 0;
-}
-
-// inline
-emuvec::v2f64 emuvec::max(const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_max<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::min(const v2f64& a, const v2f64& b)
-{
-        v2f64 r;
-        impl::v_min<v2f64::element_type> ot;
-        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::abs(const v2f64& a)
-{
-        v2f64 r;
-        impl::v_abs<v2f64::element_type> ot;
-        impl::v_un_op(r(), ot, a(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::sqrt(const v2f64& a)
-{
-        v2f64 r;
-        impl::v_sqrt<v2f64::element_type> ot;
-        impl::v_un_op(r(), ot, a(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::rint(const v2f64& a)
-{
-        v2f64 r;
-        impl::v_rint<v2f64::element_type> ot;
-        impl::v_un_op(r(), ot, a(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::floor(const v2f64& a)
-{
-        v2f64 r;
-        impl::v_floor<v2f64::element_type> ot;
-        impl::v_un_op(r(), ot, a(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::ceil(const v2f64& a)
-{
-        v2f64 r;
-        impl::v_ceil<v2f64::element_type> ot;
-        impl::v_un_op(r(), ot, a(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::trunc(const v2f64& a)
-{
-        v2f64 r;
-        impl::v_trunc<v2f64::element_type> ot;
-        impl::v_un_op(r(), ot, a(), v2f64::N);
-        return r;
-}
-
-// inline
-emuvec::v2f64 emuvec::select(const v2f64& msk,
-                             const v2f64& on_true,
-                             const v2f64& on_false)
-{
-        v2f64 r;
-        impl::select<v2f64::element_type>::v(r(), msk(), on_true(), on_false(),
-                                             v2f64::N);
-        return r;
-}
 
 // store.
 // inline

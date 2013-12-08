@@ -122,7 +122,6 @@ namespace emuvec {
                 v8s16(const mem::addr_bcast<element_type>& r);
                 v8s16(const mem::addr<element_type>& r);
                 masked_vec<v8s16> operator()(const mask<v8s16>& m);
-                ~v8s16();
 
                 element_type* begin();
                 const element_type* begin() const;
@@ -235,7 +234,6 @@ namespace emuvec {
                 v8u16(const mem::addr_bcast<element_type>& r);
                 v8u16(const mem::addr<element_type>& r);
                 masked_vec<v8u16> operator()(const mask<v8u16>& m);
-                ~v8u16();
 
                 element_type* begin();
                 const element_type* begin() const;
@@ -341,7 +339,6 @@ namespace emuvec {
                 v4s32(const mem::aligned::addr<element_type>& r);
                 v4s32(const mem::unaligned::addr<element_type>& r);
                 masked_vec<v4s32> operator()(const mask<v4s32>& m);
-                ~v4s32();
 
                 element_type* begin();
                 const element_type* begin() const;
@@ -449,7 +446,6 @@ namespace emuvec {
                 v4u32(const mem::addr_bcast<element_type>& r);
                 v4u32(const mem::addr<element_type>& r);
                 masked_vec<v4u32> operator()(const mask<v4u32>& m);
-                ~v4u32();
 
                 element_type* begin();
                 const element_type* begin() const;
@@ -548,7 +544,6 @@ namespace emuvec {
                 v2s64(const mem::addr_bcast<element_type>& r);
                 v2s64(const mem::addr<element_type>& r);
                 masked_vec<v2s64> operator()(const mask<v2s64>& m);
-                ~v2s64();
 
                 element_type* begin();
                 const element_type* begin() const;
@@ -655,7 +650,6 @@ namespace emuvec {
                 v2u64(const mem::addr_bcast<element_type>& r);
                 v2u64(const mem::addr<element_type>& r);
                 masked_vec<v2u64> operator()(const mask<v2u64>& m);
-                ~v2u64();
 
                 element_type* begin();
                 const element_type* begin() const;

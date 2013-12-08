@@ -172,6 +172,27 @@ namespace emuvec {
                 const typename utvec<_N,_A>::aligned_char 
                 utvec<_N,_A>::_d[_N]={0};
 
+                template <std::size_t _N>
+                class alignas(_N) svec {
+                protected:
+                        char* vbegin() {
+                                return &_v[0];
+                        }
+                        const char* vbegin() const {
+                                return &_v[0];
+                        }
+                        std::allocator<char> get_allocator() const {
+                                return std::allocator<char>();
+                        }
+                        void swap(svec& r) {
+                                for (std::size_t i=0; i<_N; ++i)
+                                        std::swap(_v[i], r._v[i]);
+                        }
+                private:
+                        char _v[_N];
+                };
+
+
                 template <class _T>
                 struct select {
                         static void v(_T* r, const _T* msk,
@@ -307,8 +328,12 @@ namespace emuvec {
                         enum {
                                 size = _N * sizeof(_T)
                         };
+#if 1
+                        typedef svec<size> type;
+#else
                         typedef utvec<size,
                                       cftal::cache_allocator<char, size> > type;
+#endif
                 };
 
                 extern template class utvec<16, cftal::cache_allocator<char, 16> >;
