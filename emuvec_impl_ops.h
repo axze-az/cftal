@@ -12,7 +12,7 @@ namespace emuvec {
                 // operator functions
                 template <typename _T, typename _OP>
                 inline
-                void v_bi_op(_T* r, const _T* s0, const _OP& op, const _T* s1,
+                void v_bi_op(_T* r, const _T* s0, _OP op, const _T* s1,
                              std::size_t n) {
                         for (std::size_t i=0; i<n; ++i)
                                 r[i] = op (s0[i] , s1[i]);
@@ -28,20 +28,20 @@ namespace emuvec {
 
                 template <typename _T, typename _OP>
                 void v_assign_op(_T* s0_r,
-                                 const _OP& op, const _T* s1, std::size_t n) {
+                                 _OP op, const _T* s1, std::size_t n) {
                         for (std::size_t i=0; i<n; ++i)
                                 s0_r[i] = op (s0_r[i] , s1[i]);
                 }
 
                 template <typename _T, typename _OP>
-                void v_assign_op(_T* s0_r, const _OP& op, std::size_t n) {
+                void v_assign_op(_T* s0_r, _OP op, std::size_t n) {
                         for (std::size_t i=0; i<n; ++i)
                                 s0_r[i] = op (s0_r[i]);
                 }
 
                 template <typename _T, typename _OP>
                 inline
-                void v_un_op(_T* r, const _OP& op, const _T* s0,
+                void v_un_op(_T* r, _OP op, const _T* s0,
                              std::size_t n) {
                         for (std::size_t i=0; i<n; ++i)
                                 r[i] = op(s0[i]);
@@ -103,6 +103,8 @@ namespace emuvec {
                 UN_OP(std::floor(a), v_floor);
                 UN_OP(std::trunc(a), v_trunc);
                 UN_OP(std::sqrt(a), v_sqrt);
+                UN_OP(std::isinf(a) ? _T(-1) : _T(0) , v_isinf);
+                UN_OP(std::isnan(a) ? _T(-1) : _T(0) , v_isnan);
 
                 BI_OP(a^b, v_xor);
                 BI_OP((a==_T(-1))^(b==_T(-1)) ? _T(-1) : _T(0),

@@ -6,6 +6,7 @@
 #include <cftal/emuvec_impl_ops.h>
 #include <cftal/emuvec_expr.h>
 #include <algorithm>
+#include <functional>
 
 namespace emuvec {
 
@@ -801,6 +802,24 @@ emuvec::v2f64 emuvec::trunc(const v2f64& a)
 {
         v2f64 r;
         impl::v_trunc<v2f64::element_type> ot;
+        impl::v_un_op(r(), ot, a(), v2f64::N);
+        return r;
+}
+
+inline
+emuvec::v2f64 emuvec::isinf(const v2f64& a)
+{
+        v2f64 r;
+        impl::v_isinf<v2f64::element_type> ot;
+        impl::v_un_op(r(), ot, a(), v2f64::N);
+        return r;
+}
+
+inline
+emuvec::v2f64 emuvec::isnan(const v2f64& a)
+{
+        v2f64 r;
+        impl::v_isnan<v2f64::element_type> ot;
         impl::v_un_op(r(), ot, a(), v2f64::N);
         return r;
 }
