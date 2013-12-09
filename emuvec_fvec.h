@@ -6,6 +6,7 @@
 #include <cftal/emuvec_impl.h>
 #include <cftal/emuvec_impl_ops.h>
 #include <cftal/emuvec_expr.h>
+#include <cftal/emuvec_mask.h>
 #include <algorithm>
 #include <functional>
 

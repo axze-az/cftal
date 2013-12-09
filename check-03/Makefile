@@ -12,9 +12,9 @@ SLDFLAGS:= $(SLDFLAGS) -L../sysio -lsysio++ -L../thread -lthread++
 CXXFLAGS+=-I. -I.. -I../.. -I../stlex -I../thread  -I../sysio -march=native
 CSRCS=$(wildcard ./x86vec_test_*.cc ./bitops_test.cc d_int8_test.cc)
 
-all: testx86vec-03 
+all: testx86vec-03 testemuvec-03
 
-debug: testx86vec-03-g
+debug: testx86vec-03-g testemuvec-03
 
 lib: lib$(LIBNAME).a 
 
@@ -46,6 +46,12 @@ testx86vec-03: testx86vec-03.ol lib$(LIBNAME).a ../libcftal.a
 	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++ -lm
 
 testx86vec-03-g: testx86vec-03.od lib$(LIBNAME)-g.a ../libcftal-g.a
+	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++ -lm
+
+testemuvec-03: testemuvec-03.ol lib$(LIBNAME).a ../libcftal.a
+	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++ -lm
+
+testemuvec-03-g: testemuvec-03.od lib$(LIBNAME)-g.a ../libcftal-g.a
 	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++ -lm
 
 # rcp_div: rcp_div.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
@@ -183,6 +189,7 @@ test-atan: testx86vec-03
 clean:
 	-$(RM) -rf *.i *.o* *.so.*  *.a *.so *.map *.s 
 	-$(RM) testx86vec-03 testx86vec-03-g
+	-$(RM) testemuvec-03 testemuvec-03-g
 
 distclean: clean
 	-$(RM) -rf .depend .*.dep* *~

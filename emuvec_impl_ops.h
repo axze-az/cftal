@@ -47,6 +47,25 @@ namespace emuvec {
                                 r[i] = op(s0[i]);
                 }
 
+                union uint64_f64 {
+                        double _f64;
+                        std::uint64_t _u64;
+                };
+                
+                inline
+                double as_f64(std::uint64_t v) {
+                        uint64_f64 t;
+                        t._u64 = v;
+                        return t._f64;
+                }
+                
+                inline
+                std::uint64_t as_uint64(double v) {
+                        uint64_f64 t;
+                        t._f64 = v;
+                        return t._u64;
+                }
+                
                 // operators:
                 template <typename _T>
                 class v_sl {
@@ -107,14 +126,12 @@ namespace emuvec {
                 UN_OP(std::isnan(a) ? _T(-1) : _T(0) , v_isnan);
 
                 BI_OP(a^b, v_xor);
-                BI_OP((a==_T(-1))^(b==_T(-1)) ? _T(-1) : _T(0),
-                      v_f_xor);
+                BI_OP(as_f64(as_uint64(a) ^ as_uint64(b)), v_f_xor);
                 BI_OP(a|b, v_or);
-                BI_OP(((a==_T(-1)) || (b==_T(-1)) ? _T(-1) : _T(0)),
-                      v_f_or);
+                BI_OP(as_f64(as_uint64(a) | as_uint64(b)), v_f_or);
                 BI_OP(a&b, v_and);
-                BI_OP(((a==_T(-1)) && (b==_T(-1)) ? _T(-1) : _T(0)),
-                      v_f_and);
+                BI_OP(as_f64(as_uint64(a) & as_uint64(b)), v_f_and);
+
                 BI_OP(a+b, v_add);
                 BI_OP(a-b, v_sub);
                 BI_OP(a*b, v_mul);
