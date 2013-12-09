@@ -129,6 +129,7 @@ namespace emuvec {
                 BI_OP(a>b, v_gt);
                 BI_OP(a>b ? a : b, v_max);
                 BI_OP(a<b ? a : b, v_min);
+                BI_OP(std::copysign(a, b), v_copysign);
 
 #undef UN_OP
 #undef BI_OP

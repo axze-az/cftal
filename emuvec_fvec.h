@@ -279,18 +279,58 @@ namespace emuvec {
                         const double _f64[2];
                         const float _f32[4];
                 };
-                static __attribute__((__aligned__(16),
-                                      __visibility__("hidden")))
-                const u_t _msk;
-                const v4f32 _f32;
-                const v2f64 _f64;
+                static const u_t _msk;
+                static const v4f32 _f32;
+                static const v2f64 _f64;
         public:
                 // static constexpr __m128i iv();
                 static const v4f32& fv();
                 static const v2f64& dv();
         };
+
+        typedef const_v4u32<0x00000000, 0x80000000,
+                            0x00000000, 0x80000000> v_sign_v2f64_msk;
 }
 
+template <uint32_t _P0, uint32_t _P1,
+          uint32_t _P2, uint32_t _P3>
+const typename emuvec::const_v4u32<_P0, _P1, _P2, _P3>::u_t 
+emuvec::const_v4u32<_P0, _P1, _P2, _P3>::_msk={{
+                _P0, _P1, _P2, _P3
+        }
+};
+
+template<uint32_t _P0, uint32_t _P1,
+         uint32_t _P2, uint32_t _P3>
+const emuvec::v4f32
+emuvec::const_v4u32<_P0, _P1, _P2, _P3>::_f32(_msk._f32[0],
+                                              _msk._f32[1],
+                                              _msk._f32[2],
+                                              _msk._f32[3]);
+
+template<uint32_t _P0, uint32_t _P1,
+         uint32_t _P2, uint32_t _P3>
+const emuvec::v2f64
+emuvec::const_v4u32<_P0, _P1, _P2, _P3>::_f64(_msk._f64[0],
+                                              _msk._f64[1]);
+
+template<uint32_t _P0, uint32_t _P1,
+         uint32_t _P2, uint32_t _P3>
+inline
+const emuvec::v4f32&
+emuvec::const_v4u32<_P0, _P1, _P2, _P3>::fv()
+{
+        return _f32;
+}
+
+template<uint32_t _P0, uint32_t _P1,
+         uint32_t _P2, uint32_t _P3>
+inline
+const emuvec::v2f64&
+emuvec::const_v4u32<_P0, _P1, _P2, _P3>::dv()
+{
+        return _f64;
+}
 
 inline
 emuvec::v4f32::element_type* emuvec::v4f32::begin()
@@ -822,6 +862,23 @@ emuvec::v2f64 emuvec::isnan(const v2f64& a)
         impl::v_isnan<v2f64::element_type> ot;
         impl::v_un_op(r(), ot, a(), v2f64::N);
         return r;
+}
+
+inline
+emuvec::v2f64 emuvec::copysign(const v2f64& a, const v2f64& b)
+{
+        v2f64 r;
+        impl::v_copysign<v2f64::element_type> ot;
+        impl::v_bi_op(r(), a(), ot, b(), v2f64::N);
+        return r;
+}
+
+inline
+emuvec::v2f64 emuvec::mulsign(const v2f64& x, const v2f64& y)
+{
+        const v2f64 msk= v_sign_v2f64_msk::dv();
+        v2f64 sgn_y = y & msk;
+        return x ^ sgn_y;
 }
 
 inline
