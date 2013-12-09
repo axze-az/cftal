@@ -2,6 +2,7 @@
 #define __EMUVEC_FVEC_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/mem_load.h>
 #include <cftal/emuvec_impl.h>
 #include <cftal/emuvec_impl_ops.h>
 #include <cftal/emuvec_expr.h>
