@@ -15,38 +15,38 @@ namespace {
         using namespace cftal;
 #if 0
         const d_real<double> inv_fac[] = {
-		1.0000000000000000000000000000000000000000000000000000000000000000_dd,
-		1.0000000000000000000000000000000000000000000000000000000000000000_dd,
-		.5000000000000000000000000000000000000000000000000000000000000000_dd,
-		.1666666666666666666666666666666666666666666666666666666666666666_dd,
-		.0416666666666666666666666666666666666666666666666666666666666666_dd,
-		.0083333333333333333333333333333333333333333333333333333333333333_dd,
-		.0013888888888888888888888888888888888888888888888888888888888888_dd,
-		.0001984126984126984126984126984126984126984126984126984126984126_dd,
-		.0000248015873015873015873015873015873015873015873015873015873015_dd,
-		.0000027557319223985890652557319223985890652557319223985890652557_dd,
-		.0000002755731922398589065255731922398589065255731922398589065255_dd,
-		.0000000250521083854417187750521083854417187750521083854417187750_dd,
-		.0000000020876756987868098979210090321201432312543423654534765645_dd,
-		.0000000001605904383682161459939237717015494793272571050348828126_dd,
-		.0000000000114707455977297247138516979786821056662326503596344866_dd,
-		.0000000000007647163731819816475901131985788070444155100239756324_dd,
-		.0000000000000477947733238738529743820749111754402759693764984770_dd,
-		.0000000000000028114572543455207631989455830103200162334927352045_dd,
-		.0000000000000001561920696858622646221636435005733342351940408446_dd,
-		.0000000000000000082206352466243297169559812368722807492207389918_dd,
-		.0000000000000000004110317623312164858477990618436140374610369495_dd,
-		.0000000000000000000195729410633912612308475743735054303552874737_dd,
-		.0000000000000000000008896791392450573286748897442502468343312488_dd,
-		.0000000000000000000000386817017063068403771691193152281232317934_dd,
-		.0000000000000000000000016117375710961183490487133048011718013247_dd,
-		.0000000000000000000000000644695028438447339619485321920468720529_dd,
-		.0000000000000000000000000024795962632247974600749435458479566174_dd,
-		.0000000000000000000000000000918368986379554614842571683647391339_dd,
-		.0000000000000000000000000000032798892370698379101520417273121119_dd,
-		.0000000000000000000000000000001130996288644771693155876457693831_dd,
-		.0000000000000000000000000000000037699876288159056438529215256461_dd,
-		.0000000000000000000000000000000001216125041553517949629974685692_dd
+                1.0000000000000000000000000000000000000000000000000000000000000000_dd,
+                1.0000000000000000000000000000000000000000000000000000000000000000_dd,
+                .5000000000000000000000000000000000000000000000000000000000000000_dd,
+                .1666666666666666666666666666666666666666666666666666666666666666_dd,
+                .0416666666666666666666666666666666666666666666666666666666666666_dd,
+                .0083333333333333333333333333333333333333333333333333333333333333_dd,
+                .0013888888888888888888888888888888888888888888888888888888888888_dd,
+                .0001984126984126984126984126984126984126984126984126984126984126_dd,
+                .0000248015873015873015873015873015873015873015873015873015873015_dd,
+                .0000027557319223985890652557319223985890652557319223985890652557_dd,
+                .0000002755731922398589065255731922398589065255731922398589065255_dd,
+                .0000000250521083854417187750521083854417187750521083854417187750_dd,
+                .0000000020876756987868098979210090321201432312543423654534765645_dd,
+                .0000000001605904383682161459939237717015494793272571050348828126_dd,
+                .0000000000114707455977297247138516979786821056662326503596344866_dd,
+                .0000000000007647163731819816475901131985788070444155100239756324_dd,
+                .0000000000000477947733238738529743820749111754402759693764984770_dd,
+                .0000000000000028114572543455207631989455830103200162334927352045_dd,
+                .0000000000000001561920696858622646221636435005733342351940408446_dd,
+                .0000000000000000082206352466243297169559812368722807492207389918_dd,
+                .0000000000000000004110317623312164858477990618436140374610369495_dd,
+                .0000000000000000000195729410633912612308475743735054303552874737_dd,
+                .0000000000000000000008896791392450573286748897442502468343312488_dd,
+                .0000000000000000000000386817017063068403771691193152281232317934_dd,
+                .0000000000000000000000016117375710961183490487133048011718013247_dd,
+                .0000000000000000000000000644695028438447339619485321920468720529_dd,
+                .0000000000000000000000000024795962632247974600749435458479566174_dd,
+                .0000000000000000000000000000918368986379554614842571683647391339_dd,
+                .0000000000000000000000000000032798892370698379101520417273121119_dd,
+                .0000000000000000000000000000001130996288644771693155876457693831_dd,
+                .0000000000000000000000000000000037699876288159056438529215256461_dd,
+                .0000000000000000000000000000000001216125041553517949629974685692_dd
         };
 #endif
 }
@@ -56,7 +56,7 @@ namespace x86vec {
         namespace test {
 
                 double make_double(unsigned sgn, unsigned exp, uint64_t sig);
-		
+                
         }
 }
 
@@ -200,100 +200,100 @@ cftal::vec::v4f32 test_mask(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
 #include <quadmath.h>
 
 struct print_dpf64 {
-	const cftal::d_real<double> _f;
-	print_dpf64(const cftal::d_real<double>& f) : _f(f) {}
+        const cftal::d_real<double> _f;
+        print_dpf64(const cftal::d_real<double>& f) : _f(f) {}
 };
 
 std::ostream& operator<<(std::ostream& s, const print_dpf64& p)
 {
-	const cftal::d_real<double>& d=p._f;
-	s << std::scientific
-	  << std::setprecision(22);
-	if (d.h() >= 0.0)
-		std::cout << ' ';
-	s << std::setw(27) 
-	  << d.h()
-	  << std::setw(0)
-	  << ", " ;
-	if (d.l() >= 0.0)
-		std::cout << ' ';
-	std::cout << std::setw(27)
-		  << d.l()
-		  << std::setw(0);
-	return s;
+        const cftal::d_real<double>& d=p._f;
+        s << std::scientific
+          << std::setprecision(22);
+        if (d.h() >= 0.0)
+                std::cout << ' ';
+        s << std::setw(27) 
+          << d.h()
+          << std::setw(0)
+          << ", " ;
+        if (d.l() >= 0.0)
+                std::cout << ' ';
+        std::cout << std::setw(27)
+                  << d.l()
+                  << std::setw(0);
+        return s;
 }
 
 struct out_as_dpf64 {
-	double _h, _l;
-	out_as_dpf64(const __float128& t) : _h(t), _l(t-_h) {
-	}
+        double _h, _l;
+        out_as_dpf64(const __float128& t) : _h(t), _l(t-_h) {
+        }
 };
 
 std::ostream& operator<<(std::ostream& s, const out_as_dpf64& p)
 {
-	cftal::d_real<double> t(p._h, p._l);
-	print_dpf64 o(t);
-	s << o;
-	return s;
+        cftal::d_real<double> t(p._h, p._l);
+        print_dpf64 o(t);
+        s << o;
+        return s;
 }
 
 void calc_pi()
 {
 #if 1
-	__float128 v;
+        __float128 v;
 
-	v= M_LN2q;
-	std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_ln2("
-		"\n\t"
-		  << out_as_dpf64(v)
-		  << ");"
-		  << std::endl;
+        v= M_LN2q;
+        std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_ln2("
+                "\n\t"
+                  << out_as_dpf64(v)
+                  << ");"
+                  << std::endl;
 
-	v= M_PIq;
-	std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_pi("
-		"\n\t"
-		  << out_as_dpf64(v)
-		  << ");"
-		  << std::endl;
+        v= M_PIq;
+        std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_pi("
+                "\n\t"
+                  << out_as_dpf64(v)
+                  << ");"
+                  << std::endl;
 
-	v=M_PI_2q;
-	std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_pi_2("
-		"\n\t"
-		  << out_as_dpf64(v)
-		  << ");"
-		  << std::endl;
+        v=M_PI_2q;
+        std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_pi_2("
+                "\n\t"
+                  << out_as_dpf64(v)
+                  << ");"
+                  << std::endl;
 
-	v=M_PI_4q;
-	std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_pi_4("
-		"\n\t"
-		  << out_as_dpf64(v)
-		  << ");"
-		  << std::endl;
+        v=M_PI_4q;
+        std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_pi_4("
+                "\n\t"
+                  << out_as_dpf64(v)
+                  << ");"
+                  << std::endl;
 
 
-	v = M_1_PIq;
-	std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_1_pi("
-		"\n\t"
-		  << out_as_dpf64(v)
-		  << ");"
-		  << std::endl;
+        v = M_1_PIq;
+        std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_1_pi("
+                "\n\t"
+                  << out_as_dpf64(v)
+                  << ");"
+                  << std::endl;
 
-	v = M_2_PIq;
+        v = M_2_PIq;
 
-	std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_2_pi("
-		"\n\t"
-		  << out_as_dpf64(v)
-		  << ");"
-		  << std::endl;
+        std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_2_pi("
+                "\n\t"
+                  << out_as_dpf64(v)
+                  << ");"
+                  << std::endl;
 
-	v = M_2_PIq * 0.5;
+        v = M_2_PIq * 0.5;
 
-	std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_4_pi("
-		"\n\t"
-		  << out_as_dpf64(v)
-		  << ");"
-		  << std::endl;
-	
+        std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_4_pi("
+                "\n\t"
+                  << out_as_dpf64(v)
+                  << ");"
+                  << std::endl;
+        
 #else
         using dpf64 = cftal::d_real<double>;
         // arctan(x) = x/1 - {x^3}/3 + x^5/5
@@ -335,257 +335,257 @@ void print_inv_fac()
 {
         using dpf64 = cftal::d_real<double>;
 
-	dpf64 fac(1.0);
-	std::vector<dpf64> v; 
-	
-	const std::size_t MAX_FAC=30;
+        dpf64 fac(1.0);
+        std::vector<dpf64> v; 
+        
+        const std::size_t MAX_FAC=30;
 
-	std::cout << "template <class _T>\n"
-		  << "const _T\n" 
-		  << "cftal::impl::d_real_constants_dbl<_T>::\n"
-		  << "inv_fac[MAX_FAC+1]= {"
-		  << std::endl;
-	for (std::size_t i=0; i<MAX_FAC+1; ++i) {
-		dpf64  inv_fac(1.0);
-		if (i>1) {
-			fac *= double(i);
-			inv_fac /= fac;
-		}
-		v.push_back(inv_fac);
-		std::cout << std::scientific
-			  << std::setprecision(22)
-			  << "\t_T( " 
-			  << print_dpf64(inv_fac)
-			  << ")";
-		if (i != MAX_FAC)
-			std::cout << ',';
-		std::cout << std::endl;
-	}
-	std::cout << "};" << std::endl;
+        std::cout << "template <class _T>\n"
+                  << "const _T\n" 
+                  << "cftal::impl::d_real_constants_dbl<_T>::\n"
+                  << "inv_fac[MAX_FAC+1]= {"
+                  << std::endl;
+        for (std::size_t i=0; i<MAX_FAC+1; ++i) {
+                dpf64  inv_fac(1.0);
+                if (i>1) {
+                        fac *= double(i);
+                        inv_fac /= fac;
+                }
+                v.push_back(inv_fac);
+                std::cout << std::scientific
+                          << std::setprecision(22)
+                          << "\t_T( " 
+                          << print_dpf64(inv_fac)
+                          << ")";
+                if (i != MAX_FAC)
+                        std::cout << ',';
+                std::cout << std::endl;
+        }
+        std::cout << "};" << std::endl;
 
-	// parameters for sin
-	std::cout << "template <typename _T>" << std::endl
-		  << "const " << std::endl
- 		  << "typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type" << std::endl
-		  << "cftal::math::func<double, cftal::int32_t, _T>::m_sin_c_k2[]= {" << std::endl;
-	
-	std::cout << "\t// +1/21!\n"
-		  << "\tdvf_type( " << print_dpf64(v[21]) <<"),\n";
+        // parameters for sin
+        std::cout << "template <typename _T>" << std::endl
+                  << "const " << std::endl
+                  << "typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type" << std::endl
+                  << "cftal::math::func<double, cftal::int32_t, _T>::m_sin_c_k2[]= {" << std::endl;
+        
+        std::cout << "\t// +1/21!\n"
+                  << "\tdvf_type( " << print_dpf64(v[21]) <<"),\n";
 
-	std::cout << "\t// -1/19!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[19]) <<"),\n";
+        std::cout << "\t// -1/19!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[19]) <<"),\n";
 
-	std::cout << "\t// +1/17!\n"
-		  << "\tdvf_type( " << print_dpf64(v[17]) <<"),\n";
+        std::cout << "\t// +1/17!\n"
+                  << "\tdvf_type( " << print_dpf64(v[17]) <<"),\n";
 
-	std::cout << "\t// -1/15!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[15]) <<"),\n";
+        std::cout << "\t// -1/15!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[15]) <<"),\n";
 
-	std::cout << "\t// +1/13!\n"
-		  << "\tdvf_type( " << print_dpf64(v[13]) <<"),\n";
+        std::cout << "\t// +1/13!\n"
+                  << "\tdvf_type( " << print_dpf64(v[13]) <<"),\n";
 
-	std::cout << "\t// -1/11!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[11]) <<"),\n";
+        std::cout << "\t// -1/11!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[11]) <<"),\n";
 
-	std::cout << "\t// +1/9!\n"
-		  << "\tdvf_type( " << print_dpf64(v[9]) <<"),\n";
+        std::cout << "\t// +1/9!\n"
+                  << "\tdvf_type( " << print_dpf64(v[9]) <<"),\n";
 
-	std::cout << "\t// -1/7!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[7]) <<"),\n";
+        std::cout << "\t// -1/7!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[7]) <<"),\n";
 
-	std::cout << "\t// +1/5!\n"
-		  << "\tdvf_type( " << print_dpf64(v[5]) <<"),\n";
+        std::cout << "\t// +1/5!\n"
+                  << "\tdvf_type( " << print_dpf64(v[5]) <<"),\n";
 
-	std::cout << "\t// -1/3!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[3]) <<")\n};\n\n";
+        std::cout << "\t// -1/3!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[3]) <<")\n};\n\n";
 
-	// parameters for cos
-	std::cout << "template <typename _T>" << std::endl
-		  << "const " << std::endl
- 		  << "typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type" << std::endl
-		  << "cftal::math::func<double, cftal::int32_t, _T>::m_cos_c_k2[]= {" << std::endl;
-	
-	std::cout << "\t// -1/22!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[22]) <<"),\n";
+        // parameters for cos
+        std::cout << "template <typename _T>" << std::endl
+                  << "const " << std::endl
+                  << "typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type" << std::endl
+                  << "cftal::math::func<double, cftal::int32_t, _T>::m_cos_c_k2[]= {" << std::endl;
+        
+        std::cout << "\t// -1/22!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[22]) <<"),\n";
 
-	std::cout << "\t// +1/20!\n"
-		  << "\tdvf_type( " << print_dpf64(v[20]) <<"),\n";
+        std::cout << "\t// +1/20!\n"
+                  << "\tdvf_type( " << print_dpf64(v[20]) <<"),\n";
 
-	std::cout << "\t// -1/18!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[18]) <<"),\n";
+        std::cout << "\t// -1/18!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[18]) <<"),\n";
 
-	std::cout << "\t// +1/16!\n"
-		  << "\tdvf_type( " << print_dpf64(v[16]) <<"),\n";
+        std::cout << "\t// +1/16!\n"
+                  << "\tdvf_type( " << print_dpf64(v[16]) <<"),\n";
 
-	std::cout << "\t// -1/14!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[14]) <<"),\n";
+        std::cout << "\t// -1/14!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[14]) <<"),\n";
 
-	std::cout << "\t// +1/12!\n"
-		  << "\tdvf_type( " << print_dpf64(v[12]) <<"),\n";
+        std::cout << "\t// +1/12!\n"
+                  << "\tdvf_type( " << print_dpf64(v[12]) <<"),\n";
 
-	std::cout << "\t// -1/10!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[10]) <<"),\n";
+        std::cout << "\t// -1/10!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[10]) <<"),\n";
 
-	std::cout << "\t// +1/8!\n"
-		  << "\tdvf_type( " << print_dpf64(v[8]) <<"),\n";
+        std::cout << "\t// +1/8!\n"
+                  << "\tdvf_type( " << print_dpf64(v[8]) <<"),\n";
 
-	std::cout << "\t// -1/6!\n"
-		  << "\tdvf_type( " << print_dpf64(-v[6]) <<"),\n";
+        std::cout << "\t// -1/6!\n"
+                  << "\tdvf_type( " << print_dpf64(-v[6]) <<"),\n";
 
-	std::cout << "\t// +1/4!\n"
-		  << "\tdvf_type( " << print_dpf64(v[4]) <<")\n};\n\n";
-	// parameters for exp
+        std::cout << "\t// +1/4!\n"
+                  << "\tdvf_type( " << print_dpf64(v[4]) <<")\n};\n\n";
+        // parameters for exp
 }
 
 void print_2_over_i()
 {
         using dpf64 = cftal::d_real<double>;
 
-	const std::size_t MAX_2_OVER_I=30;
+        const std::size_t MAX_2_OVER_I=30;
 
-	std::cout << "template <class _T>\n"
-		  << "const _T\n" 
-		  << "cftal::impl::d_real_constants_dbl<_T>::\n"
-		  << "_2_over_i[MAX_2_OVER_I]= {"
-		  << std::endl;
-	for (std::size_t i=0; i<MAX_2_OVER_I; ++i) {
-		dpf64 two_over_i(2.0);
-		if (i>1) {
-			two_over_i /= double(i);
-		}
-		std::cout << std::scientific
-			  << std::setprecision(22)
-			  << "\t_T( " 
-			  << std::setw(27)
-			  << two_over_i.h()
-			  << std::setw(0)
-			  << ", " ;
-		if (two_over_i.l() >= 0.0)
-			std::cout << ' ';
-		std::cout << std::setw(27)
-			  << two_over_i.l()
-			  << std::setw(0)
-			  << ")";
-		if (i != MAX_2_OVER_I)
-			std::cout << ',';
-		std::cout << std::endl;
-	}
-	std::cout << "};" << std::endl;
+        std::cout << "template <class _T>\n"
+                  << "const _T\n" 
+                  << "cftal::impl::d_real_constants_dbl<_T>::\n"
+                  << "_2_over_i[MAX_2_OVER_I]= {"
+                  << std::endl;
+        for (std::size_t i=0; i<MAX_2_OVER_I; ++i) {
+                dpf64 two_over_i(2.0);
+                if (i>1) {
+                        two_over_i /= double(i);
+                }
+                std::cout << std::scientific
+                          << std::setprecision(22)
+                          << "\t_T( " 
+                          << std::setw(27)
+                          << two_over_i.h()
+                          << std::setw(0)
+                          << ", " ;
+                if (two_over_i.l() >= 0.0)
+                        std::cout << ' ';
+                std::cout << std::setw(27)
+                          << two_over_i.l()
+                          << std::setw(0)
+                          << ")";
+                if (i != MAX_2_OVER_I)
+                        std::cout << ',';
+                std::cout << std::endl;
+        }
+        std::cout << "};" << std::endl;
 }
 
 void print_sqrtx()
 {
         using dpf64 = cftal::d_real<double>;
-	dpf64 sqrt12(sqrt(dpf64(0.5)));
-	std::cout << "template <class _T>\n"
-		  << "const _T\n" 
-		  << "cftal::impl::d_real_constants_dbl<_T>::\n"
-		  << "m_sqrt1_2("
-		  << std::endl;
-	std::cout << std::scientific
-		  << std::setprecision(22)
-		  << "\t_T( " 
-		  << std::setw(27)
-		  << sqrt12.h()
-		  << std::setw(0)
-		  << ", " ;
-	if (sqrt12.l() >= 0.0)
-		std::cout << ' ';
-	std::cout << std::scientific
-		  << std::setprecision(22)
-		  << std::setw(27)
-		  << sqrt12.l()
-		  << std::setw(0)
-		  << ");";
-	std::cout << std::endl;
+        dpf64 sqrt12(sqrt(dpf64(0.5)));
+        std::cout << "template <class _T>\n"
+                  << "const _T\n" 
+                  << "cftal::impl::d_real_constants_dbl<_T>::\n"
+                  << "m_sqrt1_2("
+                  << std::endl;
+        std::cout << std::scientific
+                  << std::setprecision(22)
+                  << "\t_T( " 
+                  << std::setw(27)
+                  << sqrt12.h()
+                  << std::setw(0)
+                  << ", " ;
+        if (sqrt12.l() >= 0.0)
+                std::cout << ' ';
+        std::cout << std::scientific
+                  << std::setprecision(22)
+                  << std::setw(27)
+                  << sqrt12.l()
+                  << std::setw(0)
+                  << ");";
+        std::cout << std::endl;
 
-	__float128 t2= __builtin_sqrtl(__float128(0.5));
-	std::cout << std::setprecision(22)
-		  << double(t2)
-		  << ' '
-		  << double(t2 - double(t2))
-		  << std::endl;
+        __float128 t2= __builtin_sqrtl(__float128(0.5));
+        std::cout << std::setprecision(22)
+                  << double(t2)
+                  << ' '
+                  << double(t2 - double(t2))
+                  << std::endl;
 }
 
 
 void testpowi()
 {
         using dpf64 = cftal::d_real<double>;
-	dpf64 base(1.0);
-	dpf64 t1=cftal::str_to_d_double("0.025e1");
-	std::cout.setf(std::ios_base::fixed | 
-		       std::ios_base::scientific, 
-		       std::ios_base::floatfield);
-	std::cout << std::setprecision(22)
-		  << t1.h()
-		  << ", "
-		  << t1.l()
-		  << std::endl;
-	base+= t1;
-	for (std::size_t i=0; i<10; ++i) {
-		dpf64 t= powi(base, i);
-		std::cout << std::setprecision(22)
-			  << t.h()
-			  << ", "
-			  << t.l()
-			  << std::endl;
-	}
+        dpf64 base(1.0);
+        dpf64 t1=cftal::str_to_d_double("0.025e1");
+        std::cout.setf(std::ios_base::fixed | 
+                       std::ios_base::scientific, 
+                       std::ios_base::floatfield);
+        std::cout << std::setprecision(22)
+                  << t1.h()
+                  << ", "
+                  << t1.l()
+                  << std::endl;
+        base+= t1;
+        for (std::size_t i=0; i<10; ++i) {
+                dpf64 t= powi(base, i);
+                std::cout << std::setprecision(22)
+                          << t.h()
+                          << ", "
+                          << t.l()
+                          << std::endl;
+        }
 
 }
 
 #if defined (__AVX__)
 __m256d tr1(__m256d a, __m256d b)
 {
-	return x86vec::perm_f64<0, 4, 1, 5>(a, b);
+        return x86vec::perm_f64<0, 4, 1, 5>(a, b);
 }
 
 __m256d tr2(__m256d a, __m256d b)
 {
-	return x86vec::perm_f64<2, 6, 3, 7>(a, b);
+        return x86vec::perm_f64<2, 6, 3, 7>(a, b);
 }
 
 __m256d tr1a(__m256d a, __m256d b)
 {
-	// x86vec::perm_f64<0, 4, 1, 5>(a, b);
+        // x86vec::perm_f64<0, 4, 1, 5>(a, b);
 #if 0
-	// 5 operations
-	__m256d a0= x86vec::perm_f64<0, 0, 1, 1>(a);
-	__m256d b0= x86vec::perm_f64<0, 0, 1, 1>(b);
-	return x86vec::select_f64<true, false, true, false>(a0, b0);
+        // 5 operations
+        __m256d a0= x86vec::perm_f64<0, 0, 1, 1>(a);
+        __m256d b0= x86vec::perm_f64<0, 0, 1, 1>(b);
+        return x86vec::select_f64<true, false, true, false>(a0, b0);
 #endif
-	using namespace x86vec;
-	using namespace x86vec::impl;
-	// 0 4 2 6
-	__m256d t0= vunpcklpd::v(a, b);
-	// 1 5 3 7
-	__m256d t1= vunpckhpd::v(a, b);
-	__m256d r= vperm2f128<0, 2>::v(t0, t1);
-	return r;
-	
+        using namespace x86vec;
+        using namespace x86vec::impl;
+        // 0 4 2 6
+        __m256d t0= vunpcklpd::v(a, b);
+        // 1 5 3 7
+        __m256d t1= vunpckhpd::v(a, b);
+        __m256d r= vperm2f128<0, 2>::v(t0, t1);
+        return r;
+        
 }
 
 __m256d tr2a(__m256d a, __m256d b)
 {
-	// x86vec::perm_f64<2, 6, 3, 7>(a, b);
+        // x86vec::perm_f64<2, 6, 3, 7>(a, b);
 #if 0
-	// 5 operations
-	__m256d a0= x86vec::perm_f64<2, 2, 3, 3>(a);
-	__m256d b0= x86vec::perm_f64<2, 2, 3, 3>(b);
-	return x86vec::select_f64<true, false, true, false>(a0, b0);
+        // 5 operations
+        __m256d a0= x86vec::perm_f64<2, 2, 3, 3>(a);
+        __m256d b0= x86vec::perm_f64<2, 2, 3, 3>(b);
+        return x86vec::select_f64<true, false, true, false>(a0, b0);
 #endif
-	using namespace x86vec;
-	using namespace x86vec::impl;
-	// 0 4 2 6
-	__m256d t0= vunpcklpd::v(a, b);
-	// 1 5 3 7
-	__m256d t1= vunpckhpd::v(a, b);
-	__m256d r= vperm2f128<1, 3>::v(t0, t1);
-	return r;
+        using namespace x86vec;
+        using namespace x86vec::impl;
+        // 0 4 2 6
+        __m256d t0= vunpcklpd::v(a, b);
+        // 1 5 3 7
+        __m256d t1= vunpckhpd::v(a, b);
+        __m256d r= vperm2f128<1, 3>::v(t0, t1);
+        return r;
 }
 
 __m256d tr2b(__m256d a)
 {
-	return x86vec::perm_f64< 2, -1, 3, -1>(a);
+        return x86vec::perm_f64< 2, -1, 3, -1>(a);
 }
 
 #endif
@@ -596,38 +596,41 @@ int main(int argc, char** argv)
         // x86cftal::vec::v2f64 t=exp(x86cftal::vec::v2f64(0.0));
         // static_cast<void>(t);
         // calc_pi();
-	// print_inv_fac();
-	// print_2_over_i();
-	// print_sqrtx();
-	// testpowi();
+        // print_inv_fac();
+        // print_2_over_i();
+        // print_sqrtx();
+        // testpowi();
 
-	using namespace x86vec;
+        using namespace emuvec;
 
-	v2f64 res(sin(v2f64(1.0e30)));
+        const double c=0.0;
 
-	std::cout << std::setprecision(18) << std::scientific
-		  << extract<0>(res) << ' '
-		  << extract<1>(res) 
-		  << std::endl;
-	std::cout << std::setprecision(18) << std::scientific << 0x1.p54 << std::endl;
+        v2f64 res(sin(v2f64(c)));
+        x86vec::v2f64 tres(sin(x86vec::v2f64(c)));
+
+        std::cout << std::setprecision(18) << std::scientific
+                  << extract<0>(res) << ' '
+                  << extract<1>(res) 
+                  << std::endl;
+        std::cout << std::setprecision(18) << std::scientific << 0x1.p54 << std::endl;
 
 #if 0
 #if defined (__AVX__)
-	using namespace x86vec;
-	using namespace x86vec::test;
+        using namespace x86vec;
+        using namespace x86vec::test;
 
         bool rc(true);
         __m256d a = load_v4f64(false);
-	__m256d b = load_v4f64(true);
+        __m256d b = load_v4f64(true);
         __m256d r;
         idx id(-2,-2);
         r=tr1a(a, b);
         id.assign(0, 4, 1, 5);
         rc &= check_v4f64("perm2_v4f64", r, id);
 
-	a = load_v4f64(false);
-	b = load_v4f64(true);
-	r=tr2a(a, b);
+        a = load_v4f64(false);
+        b = load_v4f64(true);
+        r=tr2a(a, b);
         id.assign(2, 6, 3, 7);
         rc &= check_v4f64("perm2_v4f64", r, id);
 #endif
