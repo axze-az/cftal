@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/mul_div.h>
+#include <cftal/emuvec_impl.h>
 #include <cmath>
 
 namespace emuvec {
@@ -47,25 +48,7 @@ namespace emuvec {
                                 r[i] = op(s0[i]);
                 }
 
-                union uint64_f64 {
-                        double _f64;
-                        std::uint64_t _u64;
-                };
-                
-                inline
-                double as_f64(std::uint64_t v) {
-                        uint64_f64 t;
-                        t._u64 = v;
-                        return t._f64;
-                }
-                
-                inline
-                std::uint64_t as_uint64(double v) {
-                        uint64_f64 t;
-                        t._f64 = v;
-                        return t._u64;
-                }
-                
+                                
                 // operators:
                 template <typename _T>
                 class v_sl {
@@ -122,15 +105,15 @@ namespace emuvec {
                 UN_OP(std::floor(a), v_floor);
                 UN_OP(std::trunc(a), v_trunc);
                 UN_OP(std::sqrt(a), v_sqrt);
-                UN_OP(std::isinf(a) ? _T(-1) : _T(0) , v_isinf);
-                UN_OP(std::isnan(a) ? _T(-1) : _T(0) , v_isnan);
+                UN_OP(bool_to<_T>::v(std::isinf(a)), v_isinf);
+                UN_OP(bool_to<_T>::v(std::isnan(a)), v_isnan);
 
                 BI_OP(a^b, v_xor);
-                BI_OP(as_f64(as_uint64(a) ^ as_uint64(b)), v_f_xor);
+                BI_OP(as_float(as_uint(a) ^ as_uint(b)), v_f_xor);
                 BI_OP(a|b, v_or);
-                BI_OP(as_f64(as_uint64(a) | as_uint64(b)), v_f_or);
+                BI_OP(as_float(as_uint(a) | as_uint(b)), v_f_or);
                 BI_OP(a&b, v_and);
-                BI_OP(as_f64(as_uint64(a) & as_uint64(b)), v_f_and);
+                BI_OP(as_float(as_uint(a) & as_uint(b)), v_f_and);
 
                 BI_OP(a+b, v_add);
                 BI_OP(a-b, v_sub);
@@ -138,14 +121,14 @@ namespace emuvec {
                 BI_OP(a/b, v_fdiv);
                 BI_OP(b != 0 ? a/b : _T(-1), v_idiv);
                 BI_OP(b != 0 ? a%b : a, v_irem);
-                BI_OP(a<b, v_lt);
-                BI_OP(a<=b, v_le);
-                BI_OP(a==b, v_eq);
-                BI_OP(a!=b, v_ne);
-                BI_OP(a>=b, v_ge);
-                BI_OP(a>b, v_gt);
-                BI_OP(a>b ? a : b, v_max);
-                BI_OP(a<b ? a : b, v_min);
+                BI_OP(bool_to<_T>::v(a<b), v_lt);
+                BI_OP(bool_to<_T>::v(a<=b), v_le);
+                BI_OP(bool_to<_T>::v(a==b), v_eq);
+                BI_OP(bool_to<_T>::v(a!=b), v_ne);
+                BI_OP(bool_to<_T>::v(a>=b), v_ge);
+                BI_OP(bool_to<_T>::v(a>b), v_gt);
+                BI_OP(std::max(a, b), v_max);
+                BI_OP(std::min(a, b), v_min);
                 BI_OP(std::copysign(a, b), v_copysign);
 
 #undef UN_OP

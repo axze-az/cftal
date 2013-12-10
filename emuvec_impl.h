@@ -11,6 +11,78 @@ namespace emuvec {
 
         namespace impl {
 
+                union uint64_f64 {
+                        double _f64;
+                        std::uint64_t _u64;
+                };
+                
+                inline
+                double as_float(std::uint64_t v) {
+                        uint64_f64 t;
+                        t._u64 = v;
+                        return t._f64;
+                }
+                
+                inline
+                std::uint64_t as_uint(double v) {
+                        uint64_f64 t;
+                        t._f64 = v;
+                        return t._u64;
+                }
+                
+                union uint32_f32 {
+                        float _f32;
+                        std::uint32_t _u32;
+                };
+
+                inline
+                float as_float(std::uint32_t v) {
+                        uint32_f32 t;
+                        t._u32 = v;
+                        return t._f32;
+                }
+                
+                inline
+                std::uint32_t as_uint(float v) {
+                        uint32_f32 t;
+                        t._f32 = v;
+                        return t._u32;
+                }
+                
+                
+                template <typename _T>
+                _T as_uint(_T v) {
+                        return v;
+                }
+                
+                template <typename _D>
+                struct bool_to {
+                        static 
+                        _D v(bool b) {
+                                return b == true ? _D(-1L) : _D(0);
+                        }
+                };
+                
+                template <>
+                struct bool_to<double> {
+                        static
+                        double v(bool b) {
+                                int64_t r= b == true ? -1L : 0L;
+                                return as_float(uint64_t(r));
+                        }
+                };
+                
+                template <>
+                struct bool_to<float> {
+                        static
+                        float v(bool b) {
+                                int32_t r= b == true ? -1 : 0;
+                                return as_float(uint32_t(r));
+                        }
+                };
+                
+                
+                
                 template <typename _S>
                 struct __def_lt_z {
                         static _S v(const _S& t) {
