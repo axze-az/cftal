@@ -176,20 +176,26 @@ namespace emuvec {
                 class alignas(_N) svec {
                 protected:
                         char* vbegin() {
-                                return &_v[0];
+                                return &_v._u8[0];
                         }
                         const char* vbegin() const {
-                                return &_v[0];
+                                return &_v._u8[0];
                         }
                         std::allocator<char> get_allocator() const {
                                 return std::allocator<char>();
                         }
                         void swap(svec& r) {
                                 for (std::size_t i=0; i<_N; ++i)
-                                        std::swap(_v[i], r._v[i]);
+                                        std::swap(_v._u8[i], r._v._u8[i]);
                         }
                 private:
-                        char _v[_N];
+                        union {
+                                char _u8[_N];
+                                std::uint32_t _u32[_N/4];
+                                std::uint64_t _u64[_N/8];
+                                float _f32[_N/4];
+                                double _f64[_N/8];
+                        } _v;
                 };
 
 
