@@ -11,44 +11,73 @@ namespace emuvec {
 
         namespace impl {
 
-                union uint64_f64 {
+                union suint64_f64 {
                         double _f64;
                         std::uint64_t _u64;
+                        std::int64_t _s64;
                 };
                 
                 inline
                 double as_float(std::uint64_t v) {
-                        uint64_f64 t;
+                        suint64_f64 t;
                         t._u64 = v;
                         return t._f64;
                 }
-                
+
+                inline
+                double as_float(std::int64_t v) {
+                        suint64_f64 t;
+                        t._s64 = v;
+                        return t._f64;
+                }
+
                 inline
                 std::uint64_t as_uint(double v) {
-                        uint64_f64 t;
+                        suint64_f64 t;
                         t._f64 = v;
                         return t._u64;
                 }
+
+                inline
+                std::int64_t as_int(double v) {
+                        suint64_f64 t;
+                        t._f64 = v;
+                        return t._s64;
+                }
                 
-                union uint32_f32 {
+                union suint32_f32 {
                         float _f32;
                         std::uint32_t _u32;
+                        std::int32_t _s32;
                 };
 
                 inline
                 float as_float(std::uint32_t v) {
-                        uint32_f32 t;
+                        suint32_f32 t;
                         t._u32 = v;
+                        return t._f32;
+                }
+
+                inline
+                float as_float(std::int32_t v) {
+                        suint32_f32 t;
+                        t._s32 = v;
                         return t._f32;
                 }
                 
                 inline
                 std::uint32_t as_uint(float v) {
-                        uint32_f32 t;
+                        suint32_f32 t;
                         t._f32 = v;
                         return t._u32;
                 }
-                
+
+                inline
+                std::int32_t as_int(float v) {
+                        suint32_f32 t;
+                        t._f32 = v;
+                        return t._s32;
+                }
                 
                 template <typename _T>
                 _T as_uint(_T v) {
@@ -81,36 +110,32 @@ namespace emuvec {
                         }
                 };
                 
-                
-                
-                template <typename _S>
-                struct __def_lt_z {
-                        static _S v(const _S& t) {
-                                return _S(t < _S(0) ? _S(-1) : _S(0)); 
-                        }
-                };
 
-                template <typename _I>
-                struct __int_lt_z {
-                        static _I v(const _I& t) {
-                                typedef typename std::make_signed<_I>::type _S;
-                                _S s(t);
-                                return __def_lt_z<_S>::v(s);
-                        }
-                };
-
-                // returns -1 if lt zero
                 template <typename _T>
-                inline
-                _T lt_z(const _T& j )
-                {
-                        typedef typename std::conditional<
-                                std::is_integral<_T>::value == true,
-                                __int_lt_z<_T>, 
-                                __def_lt_z<_T> >::type type;
-                        return type::v(j);
-                }
+                struct select_helper {
+                        static bool v(const _T& t) {
+                                using _S = typename std::make_signed<_T>::type;
+                                _S s(t);
+                                return s < _S(0) ? true : false;
+                        }
+                };
 
+                template <>
+                struct select_helper<float> {
+                        static bool v(const float& t) {
+                                std::int32_t s(as_int(t));
+                                return s < 0 ? true : false;
+                        }
+                };
+
+                template <>
+                struct select_helper<double> {
+                        static bool v(const double& t) {
+                                std::int64_t s(as_int(t));
+                                return s < 0 ? true : false;
+                        }
+                };
+                
                 // returns -1 if ge zero
                 template <typename _T>
                 inline
@@ -277,7 +302,7 @@ namespace emuvec {
                                       const _T* ontrue, const _T* onfalse,
                                       std::size_t n) {
                                 for (std::size_t i=0; i<n; ++i) {
-                                        r[i] = lt_z(msk[i]) ?
+                                        r[i] = select_helper<_T>::v(msk[i]) ?
                                                 ontrue[i] : onfalse[i];
                                 }
                         }
