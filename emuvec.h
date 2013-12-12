@@ -832,6 +832,17 @@ _D emuvec::cvt_lo(const _S& s)
         return d;
 }
 
+template <class _D, class _S>
+_D emuvec::cvt(const _S& s)
+{
+        constexpr std::size_t SN= std::size_t(_S::N);
+        constexpr std::size_t DN= std::size_t(_D::N);
+        // constexpr std::size_t N=  SN > DN ? DN : SN ;
+        static_assert(SN == DN, "invalid size");
+        return cvt_lo<_D>(s);
+}
+
+
 
 // v8s16 implementation
 inline

@@ -3045,6 +3045,41 @@ emuvec::v4f32 emuvec::trunc(const v4f32& a)
 }
 
 inline
+emuvec::v4f32 emuvec::isinf(const v4f32& a)
+{
+        v4f32 r;
+        impl::v_isinf<v4f32::element_type> ot;
+        impl::v_un_op(r(), ot, a(), v4f32::N);
+        return r;
+}
+
+inline
+emuvec::v4f32 emuvec::isnan(const v4f32& a)
+{
+        v4f32 r;
+        impl::v_isnan<v4f32::element_type> ot;
+        impl::v_un_op(r(), ot, a(), v4f32::N);
+        return r;
+}
+
+inline
+emuvec::v4f32 emuvec::copysign(const v4f32& a, const v4f32& b)
+{
+        v4f32 r;
+        impl::v_copysign<v4f32::element_type> ot;
+        impl::v_bi_op(r(), a(), ot, b(), v4f32::N);
+        return r;
+}
+
+inline
+emuvec::v4f32 emuvec::mulsign(const v4f32& x, const v4f32& y)
+{
+        const v4f32 msk= v_sign_v4f32_msk::fv();
+        v4f32 sgn_y = y & msk;
+        return x ^ sgn_y;
+}
+
+inline
 emuvec::v4f32 emuvec::select(const v4f32& msk,
                              const v4f32& on_true,
                              const v4f32& on_false)

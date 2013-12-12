@@ -92,22 +92,61 @@ namespace emuvec {
         bool both_signs(const v4f32& a);
         // checks the signs
         bool no_signs(const v4f32& a);
+        // read a mask of all signs
+        unsigned read_signs(const v4f32& a);
 
         v4f32 max(const v4f32& a, const v4f32& b);
         v4f32 min(const v4f32& a, const v4f32& b);
         v4f32 abs(const v4f32& a);
+        v4f32 fabs(const v4f32& a);
         v4f32 sqrt(const v4f32& a);
+        v4f32 cbrt(arg<v4f32>::type a);
+        
+        v4f32 rcp(const v4f32& a);
+        v4f32 native_rcp(const v4f32& a);
+        v4f32 rsqrt(const v4f32& a);
+        v4f32 native_rsqrt(const v4f32& a);
 
         v4f32 rint(const v4f32& a);
         v4f32 floor(const v4f32& a);
         v4f32 ceil(const v4f32& a);
         v4f32 trunc(const v4f32& a);
-
+        // returns (~a) & (b)
+        v4f32 andnot(const v4f32& a, const v4f32& b);
         v4f32 copysign(const v4f32& x, const v4f32& y);
         v4f32 mulsign(const v4f32& x, const v4f32& y);
         v4f32 isinf(const v4f32& x);
         v4f32 isnan(const v4f32& x);
         v4f32 isfinite(const v4f32& x);
+
+        v4f32 pow2if(arg<v4s32>::type e);
+        v4f32 ldexp(arg<v4f32>::type d, arg<v4s32>::type e);
+        v4f32 frexp(arg<v4f32>::type d, v4s32* e);
+        v4s32 ilogbp1(arg<v4f32>::type v);
+        v4s32 ilogb(arg<v4f32>::type v);
+
+        v4f32 exp(arg<v4f32>::type d);
+        v4f32 expm1(arg<v4f32>::type d);
+        v4f32 cosh(arg<v4f32>::type d);
+        v4f32 sinh(arg<v4f32>::type d);
+        v4f32 log(arg<v4f32>::type d);
+        v4f32 pow(arg<v4f32>::type b, arg<v4f32>::type e);
+
+        void sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos);
+        v4f32 sin(arg<v4f32>::type d);
+        v4f32 cos(arg<v4f32>::type d);
+        v4f32 tan(arg<v4f32>::type d);
+        v4f32 cot(arg<v4f32>::type d);
+
+        void native_sincos(arg<v4f32>::type d, 
+                           v4f32* psin, v4f32* pcos);
+        v4f32 native_sin(arg<v4f32>::type d);
+        v4f32 native_cos(arg<v4f32>::type d);
+        v4f32 native_tan(arg<v4f32>::type d);
+        v4f32 native_cot(arg<v4f32>::type d);
+
+        v4f32 native_exp(arg<v4f32>::type d);
+        v4f32 native_log(arg<v4f32>::type d);
 
         template <bool _P0, bool _P1, bool _P2, bool _P3>
         v4f32 select(const v4f32& a, const v4f32& b);
@@ -230,7 +269,6 @@ namespace emuvec {
         v2f64 acos(arg<v2f64>::type d);
 
         v2f64 atan(arg<v2f64>::type d);
-        std::pair<v2f64, v2f64> sincos(arg<v2f64>::type d);
 
         v2f64 exp(arg<v2f64>::type d);
         v2f64 expm1(arg<v2f64>::type d);
@@ -292,6 +330,8 @@ namespace emuvec {
 
         typedef const_v4u32<0x00000000, 0x80000000,
                             0x00000000, 0x80000000> v_sign_v2f64_msk;
+        typedef const_v4u32<0x80000000, 0x80000000,
+                            0x80000000, 0x80000000> v_sign_v4f32_msk;
 }
 
 template <uint32_t _P0, uint32_t _P1,
