@@ -833,6 +833,21 @@ _D emuvec::cvt_lo(const _S& s)
 }
 
 template <class _D, class _S>
+_D emuvec::cvt_hi(const _S& s)
+{
+        constexpr std::size_t SN= std::size_t(_S::N);
+        constexpr std::size_t DN= std::size_t(_D::N);
+        // constexpr std::size_t N=  SN > DN ? DN : SN ;
+        static_assert(SN == 2*DN, "invalid size");
+        _D d;
+        const typename _S::element_type* sp= s();
+        typename _D::element_type* dp= d();
+        for (std::size_t i=0; i< DN; ++i) 
+                dp[i] = sp[DN + i];
+        return d;
+}
+
+template <class _D, class _S>
 _D emuvec::cvt(const _S& s)
 {
         constexpr std::size_t SN= std::size_t(_S::N);
@@ -841,8 +856,6 @@ _D emuvec::cvt(const _S& s)
         static_assert(SN == DN, "invalid size");
         return cvt_lo<_D>(s);
 }
-
-
 
 // v8s16 implementation
 inline
