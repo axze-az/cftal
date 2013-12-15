@@ -314,7 +314,7 @@ namespace emuvec {
         template <uint32_t _P0, uint32_t _P1,
                   uint32_t _P2, uint32_t _P3>
         class const_v4u32 {
-                union u_t {
+                union  alignas(16) u_t {
                         const uint32_t _u32[4];
                         const double _f64[2];
                         const float _f32[4];
