@@ -125,6 +125,7 @@ namespace cftal {
 
         extern template class global_ptr_cache<16>;
         extern template class global_ptr_cache<32>;
+        extern template class global_ptr_cache<64>;
 
         template <class _T, std::size_t _N>
         class cache_allocator : public std::allocator<_T> {
@@ -169,6 +170,7 @@ namespace cftal {
 
         extern template class cache_allocator<char, 16>;
         extern template class cache_allocator<char, 32>;
+        extern template class cache_allocator<char, 64>;
 
 }
 
