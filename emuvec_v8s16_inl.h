@@ -5,6 +5,117 @@
 
 // v8s16 implementation
 inline
+emuvec::v8s16::element_type* emuvec::v8s16::begin()
+{
+        return reinterpret_cast<element_type*>(base_type::vbegin());
+}
+
+inline
+const emuvec::v8s16::element_type* emuvec::v8s16::begin() const
+{
+        return reinterpret_cast<const element_type*>(base_type::vbegin());
+}
+
+inline
+emuvec::v8s16::element_type* emuvec::v8s16::operator()()
+{
+        return begin();
+}
+
+inline
+const emuvec::v8s16::element_type* emuvec::v8s16::operator()() const
+{
+        return begin();
+}
+
+template <unsigned _P>
+emuvec::v8s16&
+emuvec::operator<<= (v8s16& a, const const_u32< _P >& b)
+{
+        const int val = b.val;
+        impl::v_sl<v8s16::element_type> ot(val);
+        impl::v_assign_op(a(), ot, v8s16::N);
+        return a;
+}
+
+template <unsigned _P>
+emuvec::v8s16&
+emuvec::operator>>= (v8s16& a, const const_u32<_P>& b)
+{
+        const int val = b.val;
+        impl::v_sr<v8s16::element_type> ot(val);
+        impl::v_assign_op(a(), ot, v8s16::N);
+        return a;
+}
+
+template <unsigned _P>
+emuvec::v8s16
+emuvec::operator<<(const v8s16& a, const const_u32< _P >& b)
+{
+        v8s16 r;
+        const int val = b.val;
+        impl::v_sl<v8s16::element_type> ot(val);
+        impl::v_bi_op(r(), a(), ot, v8s16::N);
+        return r;
+}
+
+template <unsigned _P>
+emuvec::v8s16
+emuvec::operator>> (const v8s16& a, const const_u32< _P >& b)
+{
+        v8s16 r;
+        const int val = b.val;
+        impl::v_sr<v8s16::element_type> ot(val);
+        impl::v_bi_op(r(), a(), ot, v8s16::N);
+        return r;
+}
+
+template < bool _P0, bool _P1, bool _P2, bool _P3,
+           bool _P4, bool _P5, bool _P6, bool _P7 >
+emuvec::v8s16 emuvec::select(const v8s16& a, const v8s16& b)
+{
+        v8s16 r;
+        impl::select_8<v8s16::element_type, _P0, _P1, _P2, _P3,
+                _P4, _P5, _P6, _P7>::v(r(), a(), b());
+        return r;
+}
+
+template < int _P0, int _P1, int _P2, int _P3,
+           int _P4, int _P5, int _P6, int _P7 >
+emuvec::v8s16 emuvec::permute(const v8s16& a)
+{
+        v8s16 r;
+        impl::perm1_8<v8s16::element_type, _P0, _P1, _P2, _P3,
+                _P4, _P5, _P6, _P7>::v(r(), a());
+        return r;
+}
+
+template < int _P0, int _P1, int _P2, int _P3,
+           int _P4, int _P5, int _P6, int _P7 >
+emuvec::v8s16 emuvec::permute(const v8s16& a, const v8s16& b)
+{
+        v8s16 r;
+        impl::perm2_8<v8s16::element_type, _P0, _P1, _P2, _P3,
+                _P4, _P5, _P6, _P7>::v(r(), a(), b());
+        return r;
+}
+
+template <unsigned _I>
+emuvec::v8s16::element_type emuvec::extract(const v8s16& a)
+{
+        return a()[_I];
+}
+
+template <unsigned _I>
+emuvec::v8s16 emuvec::insert(const v8s16& a, v8s16::element_type v)
+{
+        v8s16 r(a);
+        r()[_I] =v;
+        return r;
+}
+
+// v8s16 implementation
+inline
 emuvec::v8s16::v8s16(element_type p00, element_type p01,
                      element_type p02, element_type p03,
                      element_type p04, element_type p05,
