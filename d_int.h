@@ -247,7 +247,7 @@ namespace cftal {
                 }
                 dint(const base_type& b) : base_type(b) {
                 }
-                // l is inherited from h.
+                // l is inherited from base_tpye.
                 const type& sh() const {
                         const utype& _uh= base_type::uh();
                         const type* ph= reinterpret_cast<const type*>(&_uh);
