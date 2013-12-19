@@ -42,12 +42,12 @@ namespace cftal {
                         // native sin and cos core, return sin in first
                         static std::pair<vf_type, vf_type>
                         native_sin_cos_k(const vf_type& v);
-			// atan2 core
-			static dvf_type
-			atan2_k2(const dvf_type& x, const dvf_type& y);
-			// atan2 core
-			static dvf_type
-			native_atan2_k(const dvf_type& x, const dvf_type& y);
+                        // atan2 core
+                        static dvf_type
+                        atan2_k2(const dvf_type& x, const dvf_type& y);
+                        // atan2 core
+                        static dvf_type
+                        native_atan2_k(const dvf_type& x, const dvf_type& y);
                 };
 
                 template <typename _FLOAT_T, typename _TRAITS_T>
@@ -66,19 +66,19 @@ namespace cftal {
                         using dvf_type = typename base_type::dvf_type;
 
                         // exp, expm1, sinh, cosh call exp_k2 if native == false
-			// or native_exp
-			template <bool _NATIVE>
+                        // or native_exp
+                        template <bool _NATIVE>
                         static vf_type _exp(const vf_type& vf);
-			template <bool _NATIVE>
+                        template <bool _NATIVE>
                         static vf_type _expm1(const vf_type& vf);
-			template <bool _NATIVE>
+                        template <bool _NATIVE>
                         static vf_type _sinh(const vf_type& vf);
-			template <bool _NATIVE>
+                        template <bool _NATIVE>
                         static vf_type _cosh(const vf_type& vf);
-			
-			// log _call log_k2 if native == false, or native_log
-			template <bool _NATIVE>
-			static vf_type _log(const vf_type& cf);
+                        
+                        // log _call log_k2 if native == false, or native_log
+                        template <bool _NATIVE>
+                        static vf_type _log(const vf_type& cf);
 
                         // exp, expm1, sinh, cosh call exp_k2
                         static vf_type exp(const vf_type& vf);
@@ -94,8 +94,8 @@ namespace cftal {
 
                         // log calls log_k2
                         static vf_type log(const vf_type& vf);
-			// native log calls native_log_k
-			static vf_type native_log(const vf_type& vf);
+                        // native log calls native_log_k
+                        static vf_type native_log(const vf_type& vf);
 
                         // pow calls exp_k2 and log_k2
                         static vf_type pow(const vf_type& b,
@@ -120,10 +120,10 @@ namespace cftal {
                         static vf_type native_tan(const vf_type& vf);
                         static vf_type native_cot(const vf_type& vf);
 
-			// atan2, atan, ... call atan2_k2
-			static vf_type atan2(const vf_type& x,
-					     const vf_type& y);
-			static vf_type atan(const vf_type& x);
+                        // atan2, atan, ... call atan2_k2
+                        static vf_type atan2(const vf_type& x,
+                                             const vf_type& y);
+                        static vf_type atan(const vf_type& x);
                 };
 
 
@@ -197,7 +197,8 @@ namespace cftal {
 
                         template <class _T>
                         struct nth_root_vnr {
-                                static _T v(const _T& xi, const _T& x, unsigned r) {
+                                static _T v(const _T& xi, const _T& x, 
+                                            unsigned r) {
                                         const _T rr(r);
                                         _T x_pow_nm1(ivpow<_T>::v(xi, r-1));
                                         _T en( x - xi * x_pow_nm1);
@@ -287,13 +288,15 @@ namespace cftal {
 
 
                         // nth root implementation for double/float
-                        template <typename _FLOAT_T, typename _TRAITS, unsigned _R>
+                        template <typename _FLOAT_T, typename _TRAITS, 
+                                  unsigned _R>
                         struct nth_root {
-				
+                                
                                 typedef typename _TRAITS::vf_type vf_type;
                                 typedef typename _TRAITS::vmf_type vmf_type;
                                 typedef nth_root_nr<_R, vf_type> nr_step_t;
-                                typedef nth_root_guess<_FLOAT_T, _TRAITS> guess_t;
+                                typedef nth_root_guess<_FLOAT_T, _TRAITS> 
+                                guess_t;
 
                                 template <unsigned _NR_STEPS=6>
                                 static vf_type v(const vf_type& f) {
@@ -306,15 +309,19 @@ namespace cftal {
                                         xin = copysign(xin, f);
                                         const vf_type zero(vf_type(0.0));
                                         vmf_type is_zero_or_inf_or_nan(
-                                                (x == zero) | isinf(x) | isnan(x));
-                                        vf_type r(_TRAITS::sel(is_zero_or_inf_or_nan,
-                                                               x,
-                                                               xin));
+                                                (x == zero) | 
+                                                isinf(x) | 
+                                                isnan(x));
+                                        vf_type r(_TRAITS::sel(
+                                                          is_zero_or_inf_or_nan,
+                                                          x,
+                                                          xin));
                                         if ((_R & 1) == 0) {
                                                 vmf_type is_neg(x < zero);
-                                                r = _TRAITS::sel(is_neg,
-                                                                 vf_type(_TRAITS::nan()),
-                                                                 r);
+                                                r = _TRAITS::sel(
+                                                        is_neg,
+                                                        vf_type(_TRAITS::nan()),
+                                                        r);
                                         }
                                         return r;
                                 }
@@ -437,13 +444,13 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 _exp(const vf_type& d)
 {
-	vf_type res;
-	if (_NATIVE) {
-		res=my_type::native_exp_k(d);
-	} else {
-		dvf_type xr(my_type::exp_k2(d));
-		res=xr.h() + xr.l();
-	}
+        vf_type res;
+        if (_NATIVE) {
+                res=my_type::native_exp_k(d);
+        } else {
+                dvf_type xr(my_type::exp_k2(d));
+                res=xr.h() + xr.l();
+        }
         res = _T::sel(d == 0.0, 1.0, res);
         res = _T::sel(d == 1.0, M_E, res);
         res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
@@ -457,7 +464,7 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 exp(const vf_type& d)
 {
-	return my_type::_exp<false>(d);
+        return my_type::_exp<false>(d);
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -466,7 +473,7 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 native_exp(const vf_type& d)
 {
-	return my_type::_exp<true>(d);
+        return my_type::_exp<true>(d);
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -482,8 +489,8 @@ expm1(const vf_type& d)
         const vf_type inf_threshold(7.097827128933840868e+02);
         res = _T::sel(d==vf_type(_T::ninf()), -1.0, res);
         res = _T::sel(d>=inf_threshold, _T::pinf(), res);
-	const vf_type m1_threshold(-2.417851639229258349e+24);
-	res = _T::sel(d<=m1_threshold, vf_type(-1.0),  res);
+        const vf_type m1_threshold(-2.417851639229258349e+24);
+        res = _T::sel(d<=m1_threshold, vf_type(-1.0),  res);
         return res;
 }
 
@@ -517,15 +524,15 @@ cosh(const vf_type& d)
         ex2 = mul_pwr2(ex2, vf_type(0.5));
         nex2 =mul_pwr2(nex2, vf_type(0.5));
         dvf_type r(ex2 + nex2);
-	vf_type res(r.h() + r.l());
-	res = _T::sel(isinf(d), 
-		      _T::sel( d < 0, _T::ninf(), _T::pinf()),
-		      res);
-	res = _T::sel(d >= vf_type(7.104758600739438634e+02), 
-		      _T::pinf(), res);
-	res = _T::sel(d <= vf_type(-7.104758600739438634e+02), 
-		      _T::pinf(), res); 
-	return res;
+        vf_type res(r.h() + r.l());
+        res = _T::sel(isinf(d), 
+                      _T::sel( d < 0, _T::ninf(), _T::pinf()),
+                      res);
+        res = _T::sel(d >= vf_type(7.104758600739438634e+02), 
+                      _T::pinf(), res);
+        res = _T::sel(d <= vf_type(-7.104758600739438634e+02), 
+                      _T::pinf(), res); 
+        return res;
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -535,13 +542,13 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 _log(const vf_type& d)
 {
-	vf_type x;
-	if (_NATIVE) {
-		x= my_type::native_log_k(d);
-	} else {
-		dvf_type xr(my_type::log_k2(d));
-		x= xr.h() + xr.l();
-	}
+        vf_type x;
+        if (_NATIVE) {
+                x= my_type::native_log_k(d);
+        } else {
+                dvf_type xr(my_type::log_k2(d));
+                x= xr.h() + xr.l();
+        }
         const vf_type pinf(_T::pinf());
         const vf_type ninf(_T::ninf());
         x = _T::sel(isinf(d), pinf, x);
@@ -558,7 +565,7 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 log(const vf_type& d)
 {
-	return my_type::_log<false>(d);
+        return my_type::_log<false>(d);
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -567,7 +574,7 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 native_log(const vf_type& d)
 {
-	return my_type::_log<true>(d);
+        return my_type::_log<true>(d);
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -579,7 +586,11 @@ pow(const vf_type& b, const vf_type& e)
         dvf_type ln_b(my_type::log_k2(abs(b)));
         dvf_type ln_b_e(ln_b * e);
         dvf_type pow0(my_type::exp_k2(ln_b_e));
-        return pow0.h() + pow0.l();
+        vf_type res(pow0.h() + pow0.l());
+
+        vmf_type b_zero_and_e_zero(b == vf_type(0) && e == vf_type(0));
+        res = _T::sel(b_zero_and_e_zero, vf_type(1.0), res);
+        return res;
 }
 
 template <typename _FLOAT_T,
@@ -708,8 +719,8 @@ cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan2(const vf_type& x, const vf_type& y)
 {
         dvf_type r(base_type::atan2_k2(abs(y), x));
-	r = dvf_type(mulsign(r.h(), x),
-		     mulsign(r.l(), x));
+        r = dvf_type(mulsign(r.h(), x),
+                     mulsign(r.l(), x));
 
 #if 0
         vmf_type inf_x = isinf(x);
@@ -729,7 +740,7 @@ atan2(const vf_type& x, const vf_type& y)
         r= _T::sel(isnan(x) | isnan(y), vf_type(_T::nan()), mulsign(r, y));
         return r;
 #endif
-	return x;
+        return x;
 }
 
 template <typename _FLOAT_T,
