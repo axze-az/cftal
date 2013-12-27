@@ -866,6 +866,7 @@ _D emuvec::cvt(const _S& s)
 #include <cftal/emuvec_v2u64_inl.h>
 #include <cftal/emuvec_v4f32_inl.h>
 #include <cftal/emuvec_v2f64_inl.h>
+#include <cftal/emuvec_v4f64_inl.h>
 
 // Local variables:
 // mode: c++

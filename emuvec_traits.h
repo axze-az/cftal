@@ -65,7 +65,7 @@ namespace cftal {
                 }
         };
 
-#if 0
+
         template <>
         struct d_real_traits<emuvec::v4f64> : public has_fma<double> {
                 constexpr d_real_traits<emuvec::v4f64>() = default;
@@ -99,6 +99,7 @@ namespace cftal {
                 }
         };
 
+#if 0
         template <>
         struct d_real_traits<emuvec::v8f32> : public has_fma<float> {
                 constexpr d_real_traits<emuvec::v8f32>() = default;
@@ -344,7 +345,6 @@ namespace cftal {
                         }
                 };
 
-#if 0
                 template <>
                 struct func_traits<emuvec::v4f64, emuvec::v4s32> : public 
                 func_traits<typename emuvec::v4f64::element_type,
@@ -353,6 +353,16 @@ namespace cftal {
                         typedef emuvec::v4f64 vmf_type;
                         typedef emuvec::v4s32 vi_type;
                         typedef emuvec::v4s32 vmi_type;
+
+                        static
+                        constexpr std::size_t NVF() {
+                                return vf_type::N;
+                        }
+
+                        static
+                        constexpr std::size_t NVI() {
+                                return vi_type::N;
+                        }
 
                         static
                         vmf_type vmi_to_vmf(const vmi_type& mi) {
@@ -384,40 +394,26 @@ namespace cftal {
                                     const vf_type& t, const vf_type& f) {
                                 return select(msk, t, f);
                         }
-                        static
-                        vf_type gather(const double* p, const vi_type& idx,
-                                       int sc) {
-                                return emuvec::gather<vf_type>(p, idx, sc);
-                        }
+
                         static
                         vf_type insert_exp(const vi_type& e) {
-                                // TODO AVX2 code
                                 // 52 - 32
                                 vi_type ep(e << emuvec::const_shift::_20);
                                 vi_type hep(emuvec::permute<2, 2, 3, 3>(ep));
                                 vi_type lep(emuvec::permute<0, 0, 1, 1>(ep));
                                 emuvec::v2f64 fh(emuvec::as<emuvec::v2f64>(hep));
                                 emuvec::v2f64 lh(emuvec::as<emuvec::v2f64>(lep));
-#if !defined (__AVX__)
                                 lh &= emuvec::v_exp_v2f64_msk::dv();
                                 fh &= emuvec::v_exp_v2f64_msk::dv();
                                 vf_type r(lh, fh);
-#else
-                                vf_type r(lh, fh);
-                                r &= emuvec::v_exp_v4f64_msk::dv();
-#endif
                                 return r;
                         }
                         
                         static
                         vi_type extract_exp(const vf_type& d) {
                                 // TODO AVX2 code
-#if !defined (__AVX__)
                                 vf_type m(low_half(d) & emuvec::v_exp_v2f64_msk::dv(),
                                           high_half(d) & emuvec::v_exp_v2f64_msk::dv());
-#else
-                                vf_type m(d & emuvec::v_exp_v4f64_msk::dv());
-#endif
                                 emuvec::v2f64 fh(high_half(d));
                                 emuvec::v2f64 fl(low_half(d));
                                 emuvec::v4s32 hi(emuvec::as<emuvec::v4s32>(fh));
@@ -473,6 +469,7 @@ namespace cftal {
                         }
                 };
 
+#if 0
                 template <>
                 struct func_traits<emuvec::v8f32, emuvec::v8s32> : public 
                 func_traits<typename emuvec::v8f32::element_type,
