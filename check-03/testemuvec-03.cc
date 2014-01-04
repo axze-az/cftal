@@ -421,7 +421,7 @@ bool all_tests_03(bool use_native, bool bits_256)
 {
         bool r;
         if (bits_256) {
-                r=emuvec::test::func<emuvec::v2f64>(std::cin, use_native);
+                r=emuvec::test::func<emuvec::v4f64>(std::cin, use_native);
         } else {
                 r=emuvec::test::func<emuvec::v2f64>(std::cin, use_native);
         }

@@ -569,10 +569,10 @@ namespace emuvec {
         v8f32 isfinite(const v8f32& x);
 
         // v8f32 pow2if(arg<v4s32>::type e);
-        v8f32 ldexp(arg<v8f32>::type d, arg<v4s32>::type e);
-        v8f32 frexp(arg<v8f32>::type d, v4s32* e);
-        v4s32 ilogbp1(arg<v8f32>::type v);
-        v4s32 ilogb(arg<v8f32>::type v);
+        v8f32 ldexp(arg<v8f32>::type d, arg<v8s32>::type e);
+        v8f32 frexp(arg<v8f32>::type d, v8s32* e);
+        v8s32 ilogbp1(arg<v8f32>::type v);
+        v8s32 ilogb(arg<v8f32>::type v);
 
         v8f32 exp(arg<v8f32>::type d);
         v8f32 expm1(arg<v8f32>::type d);

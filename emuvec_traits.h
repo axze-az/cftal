@@ -99,7 +99,6 @@ namespace cftal {
                 }
         };
 
-#if 0
         template <>
         struct d_real_traits<emuvec::v8f32> : public has_fma<float> {
                 constexpr d_real_traits<emuvec::v8f32>() = default;
@@ -132,7 +131,6 @@ namespace cftal {
                         l = a - h;
                 }
         };
-#endif
 
 
         namespace math {
@@ -469,7 +467,6 @@ namespace cftal {
                         }
                 };
 
-#if 0
                 template <>
                 struct func_traits<emuvec::v8f32, emuvec::v8s32> : public 
                 func_traits<typename emuvec::v8f32::element_type,
@@ -493,23 +490,21 @@ namespace cftal {
                         static 
                         void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
                                 using namespace emuvec;
-                                using emuvec::impl::cvt;
-                                r[1] = cvt<v4f64, v8f32>::h(x);
-                                r[0] = cvt<v4f64, v8f32>::l(x);
+                                r[1] = cvt_hi<v4f64>(x);
+                                r[0] = cvt_lo<v4f64>(x);
                         }
 
                         static
                         void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
                                 using namespace emuvec;
-                                using emuvec::impl::cvt;
-                                vf_type lo(cvt<v8f32, v4f64>::l(hpf[0]));
-                                vhpf_type rest(hpf[0] - cvt<v4f64, v8f32>::l(lo));
-                                vf_type lo_lo(cvt<v8f32, v4f64>::l(rest));
+                                vf_type lo(cvt_lo<v8f32>(hpf[0]));
+                                vhpf_type rest(hpf[0] - cvt_lo<v4f64>(lo));
+                                vf_type lo_lo(cvt_lo<v8f32>(rest));
                                         
-                                vf_type hi(cvt<v8f32, v4f64>::l(hpf[1]));
-                                rest = hpf[1] - cvt<v4f64, v8f32>::l(hi);
+                                vf_type hi(cvt_lo<v8f32>(hpf[1]));
+                                rest = hpf[1] - cvt_lo<v4f64>(hi);
                                 
-                                vf_type hi_lo(cvt<v8f32, v4f64>::l(rest));
+                                vf_type hi_lo(cvt_lo<v8f32, v4f64>(rest));
 
                                 vf_type msv(permute<0, 1, 2, 3, 
                                                     8, 9, 10, 11>(lo, hi));
@@ -537,11 +532,7 @@ namespace cftal {
                                     const vf_type& t, const vf_type& f) {
                                 return select(msk, t, f);
                         }
-                        static
-                        vf_type gather(const float* p, const vi_type& idx,
-                                       int sc) {
-                                return emuvec::gather<vf_type>(p, idx, sc);
-                        }
+
                         static
                         vf_type insert_exp(const vi_type& e) {
                                 vi_type ep(e << emuvec::const_shift::_23);
@@ -580,7 +571,6 @@ namespace cftal {
                                 return emuvec::as<emuvec::v8f32>(i);
                         }
                 };
-#endif
         }
 }
 
