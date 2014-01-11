@@ -224,7 +224,8 @@ inline
 x86vec::v4f32
 x86vec::operator~(const v4f32& a)
 {
-        const __m128 all_set = const_v4u32 < -1, -1, -1, -1 >::fv();
+        const __m128 all_set = const_v4u32<uint32_t(-1), uint32_t(-1),
+					   uint32_t(-1), uint32_t(-1)>::fv();
         return _mm_xor_ps(a(), all_set);
 }
 

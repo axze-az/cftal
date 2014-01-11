@@ -155,7 +155,6 @@ cftal::vec::v4f32 test_mask(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
         return r;
 }
 
-#include <quadmath.h>
 
 struct print_dpf64 {
         const cftal::d_real<double> _f;
@@ -180,6 +179,9 @@ std::ostream& operator<<(std::ostream& s, const print_dpf64& p)
                   << std::setw(0);
         return s;
 }
+
+#if defined (__GNUC__) && !defined (__clang__)
+#include <quadmath.h>
 
 struct out_as_dpf64 {
         double _h, _l;
@@ -287,6 +289,7 @@ void calc_pi()
 #endif
 }
 
+#endif
 
 
 void print_inv_fac()
@@ -457,12 +460,14 @@ void print_sqrtx()
                   << ");";
         std::cout << std::endl;
 
+#if defined (__GNUC__) && !defined (__clang__)
         __float128 t2= __builtin_sqrtl(__float128(0.5));
         std::cout << std::setprecision(22)
                   << double(t2)
                   << ' '
                   << double(t2 - double(t2))
                   << std::endl;
+#endif
 }
 
 

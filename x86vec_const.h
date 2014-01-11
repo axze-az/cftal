@@ -33,9 +33,9 @@ namespace x86vec {
         // constants consisting of 1 uint32_t
         template <uint32_t _P>
         struct const_u32 {
-                const_u32() = default;
+                constexpr const_u32() {};
                 static
-                const uint32_t val = _P;
+                constexpr uint32_t val = _P;
         };
 
         namespace const_shift {

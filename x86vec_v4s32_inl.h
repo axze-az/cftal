@@ -158,7 +158,7 @@ inline
 x86vec::v4s32
 x86vec::operator<< (const v4s32& a, const const_u32< _P >& b)
 {
-        const int val = b.val;
+        constexpr unsigned val = _P;
         return impl::vpslld_const<val>::v(a());
 }
 
@@ -193,7 +193,7 @@ inline
 x86vec::v4s32
 x86vec::operator>> (const v4s32& a, const const_u32< _P >& b)
 {
-        const int val = b.val;
+        const unsigned val = _P; //b.val;
         return impl::vpsrad_const<val>::v(a());
 }
 
@@ -267,7 +267,8 @@ inline
 x86vec::v4s32
 x86vec::operator~(const v4s32& a)
 {
-        const __m128i all_set = const_v4u32 < -1, -1, -1, -1 >::iv();
+        const __m128i all_set = const_v4u32<uint32_t(-1), uint32_t(-1), 
+					    uint32_t(-1), uint32_t(-1)>::iv();
         return _mm_xor_si128(a(), all_set);
 }
 

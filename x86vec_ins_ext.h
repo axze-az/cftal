@@ -47,7 +47,7 @@ namespace x86vec {
         template <unsigned _IDX>
         float extract_f32(__m256 r);
         template <unsigned _IDX>
-        __m256 insert_f32(__m256 r, double v);
+        __m256 insert_f32(__m256 r, float v);
 
         template <unsigned _IDX>
         double extract_f64(__m256d r);

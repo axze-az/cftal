@@ -266,7 +266,8 @@ inline
 x86vec::v4u32
 x86vec::operator~(const v4u32& a)
 {
-        const __m128i all_set = const_v4u32 < -1, -1, -1, -1 >::iv();
+        const __m128i all_set = const_v4u32<uint32_t(-1), uint32_t(-1), 
+					    uint32_t(-1), uint32_t(-1)>::iv();
         return _mm_xor_si128(a(), all_set);
 }
 

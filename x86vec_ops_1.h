@@ -175,7 +175,8 @@ inline
 bool x86vec::both_bits(__m128i a)
 {
 #if defined (__SSE4_1__)
-	const __m128i msk=const_v4u32<-1, -1, -1, -1>::iv();
+	const __m128i msk=const_v4u32<uint32_t(-1), uint32_t(-1), 
+				      uint32_t(-1), uint32_t(-1)>::iv();
 	return _mm_testnzc_si128(a, msk);
 #else
 	const __m128i msk= impl::make_zero_int::v();
@@ -188,7 +189,8 @@ bool x86vec::both_bits(__m128i a)
 inline
 bool x86vec::all_bits(__m128i a)
 {
-	const __m128i msk=const_v4u32<-1, -1, -1, -1>::iv();
+	const __m128i msk=const_v4u32<uint32_t(-1), uint32_t(-1), 
+				      uint32_t(-1), uint32_t(-1)>::iv();
 #if defined (__SSE4_1__)
 	return _mm_testc_si128(a, msk);
 #else

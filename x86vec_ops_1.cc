@@ -11,7 +11,8 @@ __m128i x86vec::impl::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 	__m128 yf= _mm_cvtepi32_ps(yt);
 	__m128 qf= _mm_div_ps(xf, yf);
 	__m128i qo= _mm_cvttps_epi32(qf);
-	const __m128i me= const_v8u16<-1, 0, -1, 0, -1, 0, -1, 0>::iv();
+	const __m128i me= const_v8u16<uint16_t(-1), 0, uint16_t(-1), 0, 
+				      uint16_t(-1), 0, uint16_t(-1), 0>::iv();
 	xt = _mm_and_si128(x, me);
 	yt = _mm_and_si128(y, me);
 	xf = _mm_cvtepi32_ps(xt);
@@ -56,7 +57,8 @@ __m128i x86vec::impl::div_s16::v(__m128i x, __m128i y, __m128i* rem)
 	__m128i q = _mm_cvttps_epi32(qf);
 	// shift left odd results
 	qo = vpslld_const<16>::v(qo);
-	const __m128i me= const_v8u16<-1, 0, -1, 0, -1, 0, -1, 0>::iv();
+	const __m128i me= const_v8u16<uint16_t(-1), 0, uint16_t(-1), 0, 
+				      uint16_t(-1), 0, uint16_t(-1), 0>::iv();
 	// mask out odd positions in q
 	q = _mm_and_si128(q, me);
 	// combine odd and even results

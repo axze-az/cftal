@@ -847,14 +847,17 @@ namespace x86vec {
         // low part in first, high part in second
         std::pair<v8u32, v8u32> mul_lo_hi(const v8u32& a, const v8u32& b);
 
-        template < bool _P0, bool _P1, bool _P2, bool _P3 >
+        template <bool _P0, bool _P1, bool _P2, bool _P3,
+		  bool _P4, bool _P5, bool _P6, bool _P7>
         v8u32 select(const v8u32& a, const v8u32& b);
         v8u32 select(const v8u32& msk, const v8u32& on_true,
                      const v8u32& on_false);
 
-        template < int _P0, int _P1, int _P2, int _P3 >
+        template <int _P0, int _P1, int _P2, int _P3,
+		  int _P4, int _P5, int _P6, int _P7>
         v8u32 permute(const v8u32& a);
-        template < int _P0, int _P1, int _P2, int _P3 >
+        template <int _P0, int _P1, int _P2, int _P3,
+		  int _P4, int _P5, int _P6, int _P7>
         v8u32 permute(const v8u32& a, const v8u32& b);
 
         template <unsigned _I>

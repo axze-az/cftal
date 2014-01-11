@@ -450,7 +450,7 @@ namespace cftal {
                                 vf_type m(low_half(d) & x86vec::v_exp_v2f64_msk::dv(),
                                           high_half(d) & x86vec::v_exp_v2f64_msk::dv());
 #else
-                                vf_type m(d & x86vec::v_exp_v4f64_msk::dv());
+                                // vf_type m(d & x86vec::v_exp_v4f64_msk::dv());
 #endif
                                 x86vec::v2f64 fh(high_half(d));
                                 x86vec::v2f64 fl(low_half(d));

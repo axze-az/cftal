@@ -1189,7 +1189,7 @@ cftal::d_real<_T>
 cftal::rint(const d_real<_T>& a)
 {
 	_T hi= rint(a.h());
-	_T lo;
+	// _T lo;
 
 	using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
 

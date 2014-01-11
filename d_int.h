@@ -1704,7 +1704,7 @@ inline
 cftal::duint<uint64_t>
 cftal::operator+(const duint<uint64_t>& a, const duint<uint64_t>& b)
 {
-        register uint64_t l, h;
+        uint64_t l, h;
         __asm__ ("add %4, %0 \n\t"
                  "adc %5, %1 \n\t"
                  : "=m,r"(l), "=m,r"(h)

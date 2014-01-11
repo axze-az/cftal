@@ -110,7 +110,7 @@ template <unsigned _I>
 emuvec::v8u16 emuvec::insert(const v8u16& a, v8u16::element_type v)
 {
         v8u16 r(a);
-        r.begin()[_I] =v;
+        r()[_I] =v;
         return r;
 }
 

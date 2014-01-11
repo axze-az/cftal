@@ -593,7 +593,6 @@ template <unsigned _I>
 inline
 x86vec::v8u32 x86vec::insert(const v8u32& a, typename v8u32::element_type v)
 {
-	const bool low= _I < 4;
 	v4s32 rl(low_half(a)), rh(high_half(a));
 	if (_I < 4)
 		rl = insert<_I>(rl, v);

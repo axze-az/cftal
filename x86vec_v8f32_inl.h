@@ -1000,8 +1000,10 @@ inline
 x86vec::v8f32
 x86vec::operator~(const v8f32& a)
 {
-        const __m256 all_set = const_v8u32 < -1, -1, -1, -1, 
-					     -1, -1, -1, -1 >::fv();
+        const __m256 all_set = const_v8u32<uint32_t(-1), uint32_t(-1),
+					   uint32_t(-1), uint32_t(-1),
+					   uint32_t(-1), uint32_t(-1),
+					   uint32_t(-1), uint32_t(-1)>::fv();
         return _mm256_xor_ps(a(), all_set);
 }
 

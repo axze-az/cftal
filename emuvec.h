@@ -20,6 +20,7 @@ namespace emuvec {
         struct const_u32 {
                 static
                 constexpr uint32_t val = _P;
+		constexpr const_u32() {};
         };
 
         namespace const_shift {

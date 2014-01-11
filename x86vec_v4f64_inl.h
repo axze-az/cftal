@@ -1032,8 +1032,10 @@ inline
 x86vec::v4f64
 x86vec::operator~(const v4f64& a)
 {
-        const __m256d all_set = const_v8u32 < -1, -1, -1, -1,
-					      -1, -1, -1, -1>::dv();
+        const __m256d all_set = const_v8u32<uint32_t(-1), uint32_t(-1),
+					    uint32_t(-1), uint32_t(-1),
+					    uint32_t(-1), uint32_t(-1),
+					    uint32_t(-1), uint32_t(-1)>::dv();
         return _mm256_xor_pd(a(), all_set);
 }
 

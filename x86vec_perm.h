@@ -750,10 +750,10 @@ __m128d x86vec::impl::perm1_v2f64<_P0, _P1>::v(__m128d a)
                 }
                 // zero some elements
                 const __m128d msk= const_v4u32<
-                        (_P0<0 ? 0 : -1),
-                        (_P0<0 ? 0 : -1),
-                        (_P1<0 ? 0 : -1),
-                        (_P1<0 ? 0 : -1)>::dv();
+                        (_P0<0 ? 0 : uint32_t(-1)),
+                        (_P0<0 ? 0 : uint32_t(-1)),
+                        (_P1<0 ? 0 : uint32_t(-1)),
+                        (_P1<0 ? 0 : uint32_t(-1))>::dv();
                 return _mm_and_pd(a, msk);
 	}
 
@@ -826,10 +826,10 @@ __m128 x86vec::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
                         return make_zero_v4f32::v();
                 }
                 // zero some elements
-                const int z0 = (_P0 < 0) ? 0 : -1;
-                const int z1 = (_P1 < 0) ? 0 : -1;
-                const int z2 = (_P2 < 0) ? 0 : -1;
-                const int z3 = (_P3 < 0) ? 0 : -1;
+                const unsigned int z0 = (_P0 < 0) ? 0 : -1;
+                const unsigned int z1 = (_P1 < 0) ? 0 : -1;
+                const unsigned int z2 = (_P2 < 0) ? 0 : -1;
+                const unsigned int z3 = (_P3 < 0) ? 0 : -1;
                 const __m128 zm= const_v4u32<z0, z1, z2, z3>::fv();
                 // zero with AND mask
                 return  _mm_and_ps(a,zm);
@@ -837,34 +837,42 @@ __m128 x86vec::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
 
         if (do_shuffle && !do_zero) {
                 // shuffling, not zeroing
-                return vshufps<_P0, _P1, _P2, _P3>::v(a, a);
+                return vshufps<unsigned(_P0), 
+			       unsigned(_P1), 
+			       unsigned(_P2), 
+			       unsigned(_P3)>::v(a, a);
         }
         // both shuffle and zero
         if (m2 == 0xFF00) {
                 // zero low half, shuffle high half
-                return vshufps<0, 0, _P2, _P3>::v(_mm_setzero_ps(), a);
+                return vshufps<0, 
+			       0, 
+			       unsigned(_P2), 
+			       unsigned(_P3)>::v(_mm_setzero_ps(), a);
         }
         if (m2 == 0x00FF) {
                 // shuffle low half, zero high half
-                return vshufps<_P0, _P1, 0, 0>::v(a, _mm_setzero_ps());
+                return vshufps<unsigned(_P0), 
+			       unsigned(_P1), 
+			       0, 0>::v(a, _mm_setzero_ps());
         }
 #ifdef __SSSE3__
-        const int c00 = (_P0<0 ? -1 : 4*(_P0&3)+0);
-        const int c01 = (_P0<0 ? -1 : 4*(_P0&3)+1);
-        const int c02 = (_P0<0 ? -1 : 4*(_P0&3)+2);
-        const int c03 = (_P0<0 ? -1 : 4*(_P0&3)+3);
-        const int c04 = (_P1<0 ? -1 : 4*(_P1&3)+0);
-        const int c05 = (_P1<0 ? -1 : 4*(_P1&3)+1);
-        const int c06 = (_P1<0 ? -1 : 4*(_P1&3)+2);
-        const int c07 = (_P1<0 ? -1 : 4*(_P1&3)+3);
-        const int c08 = (_P2<0 ? -1 : 4*(_P2&3)+0);
-        const int c09 = (_P2<0 ? -1 : 4*(_P2&3)+1);
-        const int c10 = (_P2<0 ? -1 : 4*(_P2&3)+2);
-        const int c11 = (_P2<0 ? -1 : 4*(_P2&3)+3);
-        const int c12 = (_P3<0 ? -1 : 4*(_P3&3)+0);
-        const int c13 = (_P3<0 ? -1 : 4*(_P3&3)+1);
-        const int c14 = (_P3<0 ? -1 : 4*(_P3&3)+2);
-        const int c15 = (_P3<0 ? -1 : 4*(_P3&3)+3);
+        const uint8_t c00 = (_P0<0 ? -1 : 4*(_P0&3)+0);
+        const uint8_t c01 = (_P0<0 ? -1 : 4*(_P0&3)+1);
+        const uint8_t c02 = (_P0<0 ? -1 : 4*(_P0&3)+2);
+        const uint8_t c03 = (_P0<0 ? -1 : 4*(_P0&3)+3);
+        const uint8_t c04 = (_P1<0 ? -1 : 4*(_P1&3)+0);
+        const uint8_t c05 = (_P1<0 ? -1 : 4*(_P1&3)+1);
+        const uint8_t c06 = (_P1<0 ? -1 : 4*(_P1&3)+2);
+        const uint8_t c07 = (_P1<0 ? -1 : 4*(_P1&3)+3);
+        const uint8_t c08 = (_P2<0 ? -1 : 4*(_P2&3)+0);
+        const uint8_t c09 = (_P2<0 ? -1 : 4*(_P2&3)+1);
+        const uint8_t c10 = (_P2<0 ? -1 : 4*(_P2&3)+2);
+        const uint8_t c11 = (_P2<0 ? -1 : 4*(_P2&3)+3);
+        const uint8_t c12 = (_P3<0 ? -1 : 4*(_P3&3)+0);
+        const uint8_t c13 = (_P3<0 ? -1 : 4*(_P3&3)+1);
+        const uint8_t c14 = (_P3<0 ? -1 : 4*(_P3&3)+2);
+        const uint8_t c15 = (_P3<0 ? -1 : 4*(_P3&3)+3);
         const __m128i msk=const_v16u8<c00, c01, c02, c03,
 		c04, c05, c06, c07,
 		c08, c09, c10, c11,
@@ -920,10 +928,10 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                 __m128 t = select_v4f32<sm0, sm1, sm2, sm3>::v(a, b);
                 // zero
                 const __m128 zm = const_v4u32<
-                        (_P0 < 0 ? 0 : -1),
-                        (_P1 < 0 ? 0 : -1),
-                        (_P2 < 0 ? 0 : -1),
-                        (_P3 < 0 ? 0 : -1)>::fv();
+                        (_P0 < 0 ? 0 : uint32_t(-1)),
+			(_P1 < 0 ? 0 : uint32_t(-1)),
+                        (_P2 < 0 ? 0 : uint32_t(-1)),
+                        (_P3 < 0 ? 0 : uint32_t(-1))>::fv();
                 return  _mm_and_ps(t, zm);
 	}
         if (((m1 & 0x4400)==0x4400) && ((m1 & 0x0044)==0x00)) {
@@ -932,10 +940,10 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128 zm = const_v4u32<
-                                (_P0 < 0 ? 0 : -1),
-                                (_P1 < 0 ? 0 : -1),
-                                (_P2 < 0 ? 0 : -1),
-                                (_P3 < 0 ? 0 : -1)>::fv();
+                                (_P0 < 0 ? 0 : uint32_t(-1)),
+                                (_P1 < 0 ? 0 : uint32_t(-1)),
+                                (_P2 < 0 ? 0 : uint32_t(-1)),
+                                (_P3 < 0 ? 0 : uint32_t(-1))>::fv();
                         return  _mm_and_ps(t, zm);
 		}
                 return t;
@@ -946,10 +954,10 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128 zm = const_v4u32<
-                                (_P0 < 0 ? 0 : -1),
-                                (_P1 < 0 ? 0 : -1),
-                                (_P2 < 0 ? 0 : -1),
-                                (_P3 < 0 ? 0 : -1)>::fv();
+                                (_P0 < 0 ? 0 : uint32_t(-1)),
+                                (_P1 < 0 ? 0 : uint32_t(-1)),
+                                (_P2 < 0 ? 0 : uint32_t(-1)),
+                                (_P3 < 0 ? 0 : uint32_t(-1))>::fv();
                         return  _mm_and_ps(t, zm);
 		}
                 return t;
@@ -987,10 +995,10 @@ __m128i x86vec::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
                         return make_zero_int::v();
                 }
                 // zero some elements
-                const int z0 = (_P0 < 0) ? 0 : -1;
-                const int z1 = (_P1 < 0) ? 0 : -1;
-                const int z2 = (_P2 < 0) ? 0 : -1;
-                const int z3 = (_P3 < 0) ? 0 : -1;
+                const unsigned z0 = (_P0 < 0) ? 0 : -1;
+                const unsigned z1 = (_P1 < 0) ? 0 : -1;
+                const unsigned z2 = (_P2 < 0) ? 0 : -1;
+                const unsigned z3 = (_P3 < 0) ? 0 : -1;
                 const __m128i zm= const_v4u32<z0, z1, z2, z3>::iv();
                 // zero with AND mask
                 return  _mm_and_si128(a,zm);
@@ -999,41 +1007,42 @@ __m128i x86vec::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
                 // No zero, high elements kept in order, low elements
                 // only from low half.
                 if (((m1 & 0xFF00) == 0x3200) && ((m1 & 0x22)==0)) {
-                        const int l0= 2*_P0+0;
-                        const int l1= 2*_P0+1;
-                        const int l2= 2*_P1+0;
-                        const int l3= 2*_P1+1;
+                        const unsigned l0= 2*_P0+0;
+                        const unsigned l1= 2*_P0+1;
+                        const unsigned l2= 2*_P1+0;
+                        const unsigned l3= 2*_P1+1;
                         return vpshuflw<l0, l1, l2, l3>::v(a);
                 }
                 // No zero, low elements kept in order, high elements
                 // only from high half
                 if (((m1 & 0xFF) == 0x10) && ((m1 & 0x2200)==0x2200)) {
-                        const int h0= 2*(_P2-2) + 0;
-                        const int h1= 2*(_P2-2) + 1;
-                        const int h2= 2*(_P3-2) + 0;
-                        const int h3= 2*(_P3-2) + 1;
+                        const unsigned h0= 2*(_P2-2) + 0;
+                        const unsigned h1= 2*(_P2-2) + 1;
+                        const unsigned h2= 2*(_P3-2) + 0;
+                        const unsigned h3= 2*(_P3-2) + 1;
                         return vpshufhw<h0, h1, h2, h3>::v(a);
                 }
-                return vpshufd<_P0, _P1, _P2, _P3>::v(a);
+                return vpshufd<uint32_t(_P0), uint32_t(_P1), 
+			       uint32_t(_P2), uint32_t(_P3)>::v(a);
         }
 #if defined (__SSSE3__)
         //if (do_shuffle && do_zero) {
-        const int c00 = (_P0<0 ? -1 : 4*(_P0&3)+0);
-        const int c01 = (_P0<0 ? -1 : 4*(_P0&3)+1);
-        const int c02 = (_P0<0 ? -1 : 4*(_P0&3)+2);
-        const int c03 = (_P0<0 ? -1 : 4*(_P0&3)+3);
-        const int c04 = (_P1<0 ? -1 : 4*(_P1&3)+0);
-        const int c05 = (_P1<0 ? -1 : 4*(_P1&3)+1);
-        const int c06 = (_P1<0 ? -1 : 4*(_P1&3)+2);
-        const int c07 = (_P1<0 ? -1 : 4*(_P1&3)+3);
-        const int c08 = (_P2<0 ? -1 : 4*(_P2&3)+0);
-        const int c09 = (_P2<0 ? -1 : 4*(_P2&3)+1);
-        const int c10 = (_P2<0 ? -1 : 4*(_P2&3)+2);
-        const int c11 = (_P2<0 ? -1 : 4*(_P2&3)+3);
-        const int c12 = (_P3<0 ? -1 : 4*(_P3&3)+0);
-        const int c13 = (_P3<0 ? -1 : 4*(_P3&3)+1);
-        const int c14 = (_P3<0 ? -1 : 4*(_P3&3)+2);
-        const int c15 = (_P3<0 ? -1 : 4*(_P3&3)+3);
+        const uint8_t c00 = (_P0<0 ? -1 : 4*(_P0&3)+0);
+        const uint8_t c01 = (_P0<0 ? -1 : 4*(_P0&3)+1);
+        const uint8_t c02 = (_P0<0 ? -1 : 4*(_P0&3)+2);
+        const uint8_t c03 = (_P0<0 ? -1 : 4*(_P0&3)+3);
+        const uint8_t c04 = (_P1<0 ? -1 : 4*(_P1&3)+0);
+        const uint8_t c05 = (_P1<0 ? -1 : 4*(_P1&3)+1);
+        const uint8_t c06 = (_P1<0 ? -1 : 4*(_P1&3)+2);
+        const uint8_t c07 = (_P1<0 ? -1 : 4*(_P1&3)+3);
+        const uint8_t c08 = (_P2<0 ? -1 : 4*(_P2&3)+0);
+        const uint8_t c09 = (_P2<0 ? -1 : 4*(_P2&3)+1);
+        const uint8_t c10 = (_P2<0 ? -1 : 4*(_P2&3)+2);
+        const uint8_t c11 = (_P2<0 ? -1 : 4*(_P2&3)+3);
+        const uint8_t c12 = (_P3<0 ? -1 : 4*(_P3&3)+0);
+        const uint8_t c13 = (_P3<0 ? -1 : 4*(_P3&3)+1);
+        const uint8_t c14 = (_P3<0 ? -1 : 4*(_P3&3)+2);
+        const uint8_t c15 = (_P3<0 ? -1 : 4*(_P3&3)+3);
         const __m128i msk=const_v16u8<c00, c01, c02, c03,
 		c04, c05, c06, c07,
 		c08, c09, c10, c11,
@@ -1100,10 +1109,10 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                 __m128i t = select_v4u32<sm0, sm1, sm2, sm3>::v(a, b);
                 // zero
                 const __m128i zm = const_v4u32<
-                        (_P0 < 0 ? 0 : -1),
-                        (_P1 < 0 ? 0 : -1),
-                        (_P2 < 0 ? 0 : -1),
-                        (_P3 < 0 ? 0 : -1)>::iv();
+                        uint32_t(_P0 < 0 ? 0 : -1),
+                        uint32_t(_P1 < 0 ? 0 : -1),
+                        uint32_t(_P2 < 0 ? 0 : -1),
+                        uint32_t(_P3 < 0 ? 0 : -1)>::iv();
                 return  _mm_and_si128(t, zm);
 	}
         if (((m1 & 0x4400)==0x4400) && ((m1 & 0x0044)==0x00)) {
@@ -1112,10 +1121,10 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128i zm = const_v4u32<
-                                (_P0 < 0 ? 0 : -1),
-                                (_P1 < 0 ? 0 : -1),
-                                (_P2 < 0 ? 0 : -1),
-                                (_P3 < 0 ? 0 : -1)>::iv();
+                                uint32_t(_P0 < 0 ? 0 : -1),
+                                uint32_t(_P1 < 0 ? 0 : -1),
+                                uint32_t(_P2 < 0 ? 0 : -1),
+                                uint32_t(_P3 < 0 ? 0 : -1)>::iv();
                         return  _mm_and_si128(t, zm);
 		}
                 return t;
@@ -1126,10 +1135,10 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128i zm = const_v4u32<
-                                (_P0 < 0 ? 0 : -1),
-                                (_P1 < 0 ? 0 : -1),
-                                (_P2 < 0 ? 0 : -1),
-                                (_P3 < 0 ? 0 : -1)>::iv();
+                                uint32_t(_P0 < 0 ? 0 : -1),
+                                uint32_t(_P1 < 0 ? 0 : -1),
+                                uint32_t(_P2 < 0 ? 0 : -1),
+                                uint32_t(_P3 < 0 ? 0 : -1)>::iv();
                         return  _mm_and_si128(t, zm);
 		}
                 return t;
@@ -1524,10 +1533,10 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
                         return _mm256_setzero_pd();
                 }
                 // zero some elements
-                const int z0 = (_P0 < 0) ? 0 : -1;
-                const int z1 = (_P1 < 0) ? 0 : -1;
-                const int z2 = (_P2 < 0) ? 0 : -1;
-                const int z3 = (_P3 < 0) ? 0 : -1;
+                const unsigned z0 = (_P0 < 0) ? 0 : -1;
+                const unsigned z1 = (_P1 < 0) ? 0 : -1;
+                const unsigned z2 = (_P2 < 0) ? 0 : -1;
+                const unsigned z3 = (_P3 < 0) ? 0 : -1;
                 const __m256d zm= const_v8u32<z0, z0, z1, z1, 
 					     z2, z2, z3, z3>::dv();
                 // zero with AND mask
@@ -1591,10 +1600,10 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 #endif
 	}
 	if (do_zero) {
-                const int z0 = (_P0 < 0) ? 0 : -1;
-                const int z1 = (_P1 < 0) ? 0 : -1;
-                const int z2 = (_P2 < 0) ? 0 : -1;
-                const int z3 = (_P3 < 0) ? 0 : -1;
+                const unsigned z0 = (_P0 < 0) ? 0 : -1;
+                const unsigned z1 = (_P1 < 0) ? 0 : -1;
+                const unsigned z2 = (_P2 < 0) ? 0 : -1;
+                const unsigned z3 = (_P3 < 0) ? 0 : -1;
                 const __m256d zm= const_v8u32<z0, z0, z1, z1, 
 					      z2, z2, z3, z3>::dv();
                 // zero with AND mask
@@ -1674,14 +1683,14 @@ __m256 x86vec::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
 	const bool do_zero= m2 != 0xfffffff;
         if (((m1 ^ 0x76543210) & m2)==0 && m2 !=-1) {
                 // zero only
-                const int z0= (_P0<0 ? 0 : -1);
-                const int z1= (_P1<0 ? 0 : -1);
-                const int z2= (_P2<0 ? 0 : -1);
-                const int z3= (_P3<0 ? 0 : -1);
-                const int z4= (_P4<0 ? 0 : -1);
-                const int z5= (_P5<0 ? 0 : -1);
-                const int z6= (_P6<0 ? 0 : -1);
-                const int z7= (_P7<0 ? 0 : -1);
+                const unsigned z0= (_P0<0 ? 0 : -1);
+                const unsigned z1= (_P1<0 ? 0 : -1);
+                const unsigned z2= (_P2<0 ? 0 : -1);
+                const unsigned z3= (_P3<0 ? 0 : -1);
+                const unsigned z4= (_P4<0 ? 0 : -1);
+                const unsigned z5= (_P5<0 ? 0 : -1);
+                const unsigned z6= (_P6<0 ? 0 : -1);
+                const unsigned z7= (_P7<0 ? 0 : -1);
                 const __m256 zm= const_v8u32<z0, z1, z2, z3,
 					     z4, z5, z6, z7>::fv();
                 return _mm256_and_ps(a, zm);
@@ -1762,14 +1771,14 @@ __m256 x86vec::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
 #endif
 	}
 	if (do_zero) {
-                const int z0= (_P0<0 ? 0 : -1);
-                const int z1= (_P1<0 ? 0 : -1);
-                const int z2= (_P2<0 ? 0 : -1);
-                const int z3= (_P3<0 ? 0 : -1);
-                const int z4= (_P4<0 ? 0 : -1);
-                const int z5= (_P5<0 ? 0 : -1);
-                const int z6= (_P6<0 ? 0 : -1);
-                const int z7= (_P7<0 ? 0 : -1);
+                const unsigned z0= (_P0<0 ? 0 : -1);
+                const unsigned z1= (_P1<0 ? 0 : -1);
+                const unsigned z2= (_P2<0 ? 0 : -1);
+                const unsigned z3= (_P3<0 ? 0 : -1);
+                const unsigned z4= (_P4<0 ? 0 : -1);
+                const unsigned z5= (_P5<0 ? 0 : -1);
+                const unsigned z6= (_P6<0 ? 0 : -1);
+                const unsigned z7= (_P7<0 ? 0 : -1);
                 const __m256 zm= const_v8u32<z0, z1, z2, z3,
 					     z4, z5, z6, z7>::fv();
                 // zero with AND mask

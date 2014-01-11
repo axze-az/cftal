@@ -33,7 +33,7 @@ namespace cftal {
                                 static const _T inv_fac[MAX_FAC+1];
                                 // 2/i i=0,1,2,3,4...
                                 static const unsigned MAX_2_OVER_I=30;
-                                static const _T _2_over_i[MAX_FAC+1];
+                                static const _T _2_over_i[MAX_2_OVER_I+1];
                                 // M_LN2 LOG_E(2)
                                 static const _T m_ln2;
                                 static const _T m_ln2_low;

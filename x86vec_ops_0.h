@@ -261,7 +261,11 @@ namespace x86vec {
 			  unsigned _P2, unsigned _P3>
 		struct vshufps {
 			static __m128 v(__m128 a, __m128 b) {
-				const int m=shuffle4<_P0, _P1, _P2, _P3>::val;
+				const int m=shuffle4<
+					int(_P0), 
+					int(_P1), 
+					int(_P2), 
+					int(_P3)>::val;
 				return _mm_shuffle_ps(a, b, m);
 			}
 			static __m128 v(__m128 a) {
@@ -273,7 +277,11 @@ namespace x86vec {
 			  unsigned _P2, unsigned _P3>
 		struct vpshuflw {
 			static __m128i v(__m128i a) {
-				const int m=shuffle4<_P0, _P1, _P2, _P3>::val;
+				constexpr int _p0=_P0;
+				constexpr int _p1=_P1;
+				constexpr int _p2=_P2;
+				constexpr int _p3=_P3;
+				const int m=shuffle4<_p0, _p1, _p2, _p3>::val;
 				return _mm_shufflelo_epi16(a, m);
 			}
 		};
@@ -286,7 +294,11 @@ namespace x86vec {
 			  unsigned _P2, unsigned _P3>
 		struct vpshufhw {
 			static __m128i v(__m128i a) {
-				const int m=shuffle4<_P0, _P1, _P2, _P3>::val;
+				constexpr int p0=_P0;
+				constexpr int p1=_P1;
+				constexpr int p2=_P2;
+				constexpr int p3=_P3;
+				const int m=shuffle4<p0, p1, p2, p3>::val;
 				return _mm_shufflehi_epi16(a, m);
 			}
 		};
@@ -299,7 +311,11 @@ namespace x86vec {
 			  unsigned _P2, unsigned _P3>
 		struct vpshufd {
 			static __m128i v(__m128i a) {
-				const int m=shuffle4<_P0, _P1, _P2, _P3>::val;
+				constexpr int _p0 = _P0;
+				constexpr int _p1 = _P1;
+				constexpr int _p2 = _P2;
+				constexpr int _p3 = _P3;
+				const int m=shuffle4<_p0, _p1, _p2, _p3>::val;
 				return _mm_shuffle_epi32(a, m);
 			}
 		};
