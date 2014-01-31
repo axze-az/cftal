@@ -137,6 +137,7 @@ namespace emuvec {
         v4f32 cos(arg<v4f32>::type d);
         v4f32 tan(arg<v4f32>::type d);
         v4f32 cot(arg<v4f32>::type d);
+        v4f32 atan2(arg<v4f32>::type x, arg<v4f32>::type y);
 
         void native_sincos(arg<v4f32>::type d, 
                            v4f32* psin, v4f32* pcos);
@@ -279,6 +280,7 @@ namespace emuvec {
         v2f64 cos(arg<v2f64>::type d);
         v2f64 tan(arg<v2f64>::type d);
         v2f64 cot(arg<v2f64>::type d);
+        v2f64 atan2(arg<v2f64>::type x, arg<v2f64>::type y);
         
         void native_sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos);
         v2f64 native_exp(arg<v2f64>::type d);
@@ -429,6 +431,7 @@ namespace emuvec {
         v4f64 cos(arg<v4f64>::type d);
         v4f64 tan(arg<v4f64>::type d);
         v4f64 cot(arg<v4f64>::type d);
+        v4f64 atan2(arg<v4f64>::type x, arg<v4f64>::type y);
         
         void native_sincos(arg<v4f64>::type d, v4f64* psin, v4f64* pcos);
         v4f64 native_exp(arg<v4f64>::type d);
@@ -586,6 +589,7 @@ namespace emuvec {
         v8f32 cos(arg<v8f32>::type d);
         v8f32 tan(arg<v8f32>::type d);
         v8f32 cot(arg<v8f32>::type d);
+        v8f32 atan2(arg<v8f32>::type x, arg<v8f32>::type y);
 
         void native_sincos(arg<v8f32>::type d, 
                            v8f32* psin, v8f32* pcos);

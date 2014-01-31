@@ -139,6 +139,10 @@ namespace cftal {
 
                         static vf_type 
 			native_log_k(const vf_type& v);
+
+			// atan2 kernel
+			static dvf_type
+			atan2_k2(const dvf_type& x, const dvf_type& y);
 		};
 
                 template <typename _T>
@@ -579,6 +583,16 @@ cftal::math::func<float, _T>::native_cos(const vf_type& x)
 #undef PI4_Cf
 #undef PI4_Bf
 #undef PI4_Af
+}
+
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::dvf_type
+cftal::math::func_core<float, _T>::
+atan2_k2(const dvf_type& x, const dvf_type& y)
+{
+	return x + y;
 }
 
 // Local Variables:

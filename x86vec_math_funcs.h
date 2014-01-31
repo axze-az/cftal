@@ -61,6 +61,13 @@
                 DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \
                 return func_t::expm1(d);                                \
         }                                                               \
+									\
+        ns::vec_float							\
+        ns::atan2(arg<vec_float>::type x, arg<vec_float>::type y)	\
+        {                                                               \
+                DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \
+                return func_t::atan2(x, y);				\
+        }                                                               \
                                                                         \
         ns::vec_float							\
         ns::log(arg<vec_float>::type d)					\

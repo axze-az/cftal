@@ -212,7 +212,7 @@ inline
 emuvec::v2f64
 emuvec::operator-(const v2f64& a)
 {
-        v2f64 t;
+        v2f64 t(a);
         impl::v_neg<v2f64::element_type> ot;
         impl::v_assign_op(t(), ot, v2f64::N);
         return t;

@@ -721,25 +721,6 @@ atan2(const vf_type& x, const vf_type& y)
         dvf_type r(base_type::atan2_k2(abs(y), x));
         r = dvf_type(mulsign(r.h(), x),
                      mulsign(r.l(), x));
-
-#if 0
-        vmf_type inf_x = isinf(x);
-        vmf_type zero_or_inf_x = inf_x | (x == vf_type(0.0));
-        vf_type rs = vf_type(M_PI/2);
-        vf_type x_m_pi_2 = copysign(M_PI/2, x);
-        vf_type rs0= rs - _T::sel(inf_x, x_m_pi_2, vf_type(0.0));
-        r = _T::sel(zero_or_inf_x, rs0, r);
-
-        vmf_type inf_y = isinf(y);
-        vf_type x_m_pi_4= copysign(M_PI/4, x);
-        vf_type rs1= rs - _T::sel(inf_x, x_m_pi_4, vf_type(0.0));
-        r= _T::sel(inf_y, rs1, r);
-
-        vf_type rs2 = _T::sel(x < 0.0, vf_type(M_PI), 0);
-        r= _T::sel(y== 0.0, rs2, r);
-        r= _T::sel(isnan(x) | isnan(y), vf_type(_T::nan()), mulsign(r, y));
-        return r;
-#endif
         return x;
 }
 

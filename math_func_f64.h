@@ -801,28 +801,28 @@ template <typename _T>
 const 
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::m_atan2_c_k2[]= {
-	dvf_type( 1.0)/_T(45.0),
-	dvf_type(-1.0)/_T(43.0),
-	dvf_type( 1.0)/_T(41.0),
-	dvf_type(-1.0)/_T(39.0),
-	dvf_type( 1.0)/_T(37.0),
-	dvf_type(-1.0)/_T(35.0),
-	dvf_type( 1.0)/_T(33.0),
-	dvf_type(-1.0)/_T(31.0),
-	dvf_type( 1.0)/_T(29.0),
-	dvf_type(-1.0)/_T(27.0),
-	dvf_type( 1.0)/_T(25.0),
-	dvf_type(-1.0)/_T(23.0),
-	dvf_type( 1.0)/_T(21.0),
-	dvf_type(-1.0)/_T(19.0),
-	dvf_type( 1.0)/_T(17.0),
-	dvf_type(-1.0)/_T(15.0),
-	dvf_type( 1.0)/_T(13.0),
-	dvf_type(-1.0)/_T(11.0),
-	dvf_type( 1.0)/_T( 9.0),
-	dvf_type(-1.0)/_T( 7.0),
-	dvf_type( 1.0)/_T( 5.0),
-	dvf_type(-1.0)/_T( 3.0),
+	dvf_type( 1.0)/vf_type(45.0),
+	dvf_type(-1.0)/vf_type(43.0),
+	dvf_type( 1.0)/vf_type(41.0),
+	dvf_type(-1.0)/vf_type(39.0),
+	dvf_type( 1.0)/vf_type(37.0),
+	dvf_type(-1.0)/vf_type(35.0),
+	dvf_type( 1.0)/vf_type(33.0),
+	dvf_type(-1.0)/vf_type(31.0),
+	dvf_type( 1.0)/vf_type(29.0),
+	dvf_type(-1.0)/vf_type(27.0),
+	dvf_type( 1.0)/vf_type(25.0),
+	dvf_type(-1.0)/vf_type(23.0),
+	dvf_type( 1.0)/vf_type(21.0),
+	dvf_type(-1.0)/vf_type(19.0),
+	dvf_type( 1.0)/vf_type(17.0),
+	dvf_type(-1.0)/vf_type(15.0),
+	dvf_type( 1.0)/vf_type(13.0),
+	dvf_type(-1.0)/vf_type(11.0),
+	dvf_type( 1.0)/vf_type( 9.0),
+	dvf_type(-1.0)/vf_type( 7.0),
+	dvf_type( 1.0)/vf_type( 5.0),
+	dvf_type(-1.0)/vf_type( 3.0),
 };
 
 template <typename _T>
@@ -837,7 +837,7 @@ atan2_k2(const dvf_type& cx, const dvf_type& cy)
 		   _T::sel(f_x_lt_z, -cx.l(), cx.l()));
 
 	vmf_type f_y_gt_x(cy > x);
-	vmf_type i_y_gt_x(_T::vmf_to_vmi(f_y_gt_x));
+	vmi_type i_y_gt_x(_T::vmf_to_vmi(f_y_gt_x));
 	
         q += _T::sel(i_y_gt_x, vi_type(1), vi_type(0));
 
@@ -860,7 +860,7 @@ atan2_k2(const dvf_type& cx, const dvf_type& cy)
 	t = u * t * s  + s;
 
         using ctbl=impl::d_real_constants<dvf_type, double>;
-	t = _T::cvt_f_to_i(q) * ctbl::m_pi_2 + t;
+	t = _T::cvt_i_to_f(q) * ctbl::m_pi_2 + t;
 	return t;
 }
 
@@ -871,7 +871,7 @@ native_atan2_k(const vf_type& x, const vf_type& y)
 {
 	return 0.0;
 }
-
+ 
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2(
