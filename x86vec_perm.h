@@ -532,145 +532,145 @@ namespace x86vec {
                         static __m256d v(__m256d a, __m256d b);
                 };
 
-		// specialization of permutations of one double
-		// vector
-		template <>
-		struct perm1_v4f64<-1,-1,-1,-1> 
-			: public make_zero_v4f64 {};
-		template <>
-		struct perm1_v4f64<0, 1, 2, 3> 
-			: public select_arg_1<__m256d> {};
-		template <>
-		struct perm1_v4f64<0, 0, 2, 2> 
-			: public vunpcklpd {};
-		template <>
-		struct perm1_v4f64<0,-1, 2,-1> 
-			: public fixed_arg_2<__m256d, make_zero_v4f64, 
-					     vunpcklpd> {};
-		template <>
-		struct perm1_v4f64<-1, 0,-1, 2>
-			: public fixed_arg_1<__m256d, make_zero_v4f64, 
-					     vunpcklpd> {};
-		template <>
-		struct perm1_v4f64<1, 1, 3, 3> 
-			: public vunpckhpd {};
-		template <>
-		struct perm1_v4f64<1,-1, 3,-1> 
-			: public fixed_arg_2<__m256d, make_zero_v4f64, 
-					     vunpckhpd> {};
-		template <>
-		struct perm1_v4f64<-1, 1, -1, 3>
-			: public fixed_arg_1<__m256d, make_zero_v4f64, 
-					     vunpckhpd> {};
-		template <>
-		struct perm1_v4f64<0, 1, 0, 1> 
-			: public vinsertf128<1> {};
-		template <>
-		struct perm1_v4f64<2, 3, 0, 1> 
-			: public vperm2f128<1, 0> {};
-		template <>
-		struct perm1_v4f64<2, 3, 2, 3> 
-			: public vperm2f128<1, 1> {};
+                // specialization of permutations of one double
+                // vector
+                template <>
+                struct perm1_v4f64<-1,-1,-1,-1> 
+                        : public make_zero_v4f64 {};
+                template <>
+                struct perm1_v4f64<0, 1, 2, 3> 
+                        : public select_arg_1<__m256d> {};
+                template <>
+                struct perm1_v4f64<0, 0, 2, 2> 
+                        : public vunpcklpd {};
+                template <>
+                struct perm1_v4f64<0,-1, 2,-1> 
+                        : public fixed_arg_2<__m256d, make_zero_v4f64, 
+                                             vunpcklpd> {};
+                template <>
+                struct perm1_v4f64<-1, 0,-1, 2>
+                        : public fixed_arg_1<__m256d, make_zero_v4f64, 
+                                             vunpcklpd> {};
+                template <>
+                struct perm1_v4f64<1, 1, 3, 3> 
+                        : public vunpckhpd {};
+                template <>
+                struct perm1_v4f64<1,-1, 3,-1> 
+                        : public fixed_arg_2<__m256d, make_zero_v4f64, 
+                                             vunpckhpd> {};
+                template <>
+                struct perm1_v4f64<-1, 1, -1, 3>
+                        : public fixed_arg_1<__m256d, make_zero_v4f64, 
+                                             vunpckhpd> {};
+                template <>
+                struct perm1_v4f64<0, 1, 0, 1> 
+                        : public vinsertf128<1> {};
+                template <>
+                struct perm1_v4f64<2, 3, 0, 1> 
+                        : public vperm2f128<1, 0> {};
+                template <>
+                struct perm1_v4f64<2, 3, 2, 3> 
+                        : public vperm2f128<1, 1> {};
 
-		// specialization of permutations of two double
-		// vectors
-		template <>
-		struct perm2_v4f64<-1,-1,-1,-1> 
-			: public make_zero_v4f64 {};
-		template <>
-		struct perm2_v4f64< 0, 1, 2, 3> 
-			: public select_arg_1<__m256d> {};
-		template <>
-		struct perm2_v4f64< 4, 5, 6, 7> 
-			: public select_arg_2<__m256d> {};
+                // specialization of permutations of two double
+                // vectors
+                template <>
+                struct perm2_v4f64<-1,-1,-1,-1> 
+                        : public make_zero_v4f64 {};
+                template <>
+                struct perm2_v4f64< 0, 1, 2, 3> 
+                        : public select_arg_1<__m256d> {};
+                template <>
+                struct perm2_v4f64< 4, 5, 6, 7> 
+                        : public select_arg_2<__m256d> {};
 
-		template <>
-		struct perm2_v4f64< 0, 4, 2, 6> 
-			: public vunpcklpd {};
-		template <>
-		struct perm2_v4f64< 4, 0, 6, 2> 
-			: public swap_ab<__m256d, vunpcklpd> {};
+                template <>
+                struct perm2_v4f64< 0, 4, 2, 6> 
+                        : public vunpcklpd {};
+                template <>
+                struct perm2_v4f64< 4, 0, 6, 2> 
+                        : public swap_ab<__m256d, vunpcklpd> {};
 
-		template <>
-		struct perm2_v4f64< 1, 5, 3, 7> 
-			: public vunpckhpd {};
-		template <>
-		struct perm2_v4f64< 5, 1, 7, 3> 
-			: public swap_ab<__m256d, vunpckhpd> {};
+                template <>
+                struct perm2_v4f64< 1, 5, 3, 7> 
+                        : public vunpckhpd {};
+                template <>
+                struct perm2_v4f64< 5, 1, 7, 3> 
+                        : public swap_ab<__m256d, vunpckhpd> {};
 
-		template <>
-		struct perm2_v4f64< 0, 1, 4, 5>
-			: public vinsertf128<1> {};
-		template <>
-		struct perm2_v4f64< 0, 1, 6, 7>
-			: public vperm2f128<0, 3> {};
-		template <>
-		struct perm2_v4f64< 2, 3, 4, 5>
-			: public vperm2f128<1, 2> {};
-		template <>
-		struct perm2_v4f64< 2, 3, 6, 7>
-			: public vperm2f128<1, 3> {};
-		template <>
-		struct perm2_v4f64< 4, 5, 0, 1>
-			: public swap_ab<__m256d, vinsertf128<1> > {};
-		template <>
-		struct perm2_v4f64< 4, 5, 2, 3>
-			: public vperm2f128<2, 1> {};
-		template <>
-		struct perm2_v4f64< 6, 7, 0, 1>
-			: public vperm2f128<3, 0> {};
-		template <>
-		struct perm2_v4f64< 6, 7, 2, 3>
-			: public vperm2f128<3, 1> {};
-		
-		template <>
-		struct perm2_v4f64< 0, 4, 1, 5> {
-			static __m256d v(__m256d a, __m256d b) {
-				// 0 4 2 6
-				__m256d t0= vunpcklpd::v(a, b);
-				// 1 5 3 7
-				__m256d t1= vunpckhpd::v(a, b);
-				__m256d r= vperm2f128<0, 2>::v(t0, t1);
-				return r;
-			}
-		};
+                template <>
+                struct perm2_v4f64< 0, 1, 4, 5>
+                        : public vinsertf128<1> {};
+                template <>
+                struct perm2_v4f64< 0, 1, 6, 7>
+                        : public vperm2f128<0, 3> {};
+                template <>
+                struct perm2_v4f64< 2, 3, 4, 5>
+                        : public vperm2f128<1, 2> {};
+                template <>
+                struct perm2_v4f64< 2, 3, 6, 7>
+                        : public vperm2f128<1, 3> {};
+                template <>
+                struct perm2_v4f64< 4, 5, 0, 1>
+                        : public swap_ab<__m256d, vinsertf128<1> > {};
+                template <>
+                struct perm2_v4f64< 4, 5, 2, 3>
+                        : public vperm2f128<2, 1> {};
+                template <>
+                struct perm2_v4f64< 6, 7, 0, 1>
+                        : public vperm2f128<3, 0> {};
+                template <>
+                struct perm2_v4f64< 6, 7, 2, 3>
+                        : public vperm2f128<3, 1> {};
+                
+                template <>
+                struct perm2_v4f64< 0, 4, 1, 5> {
+                        static __m256d v(__m256d a, __m256d b) {
+                                // 0 4 2 6
+                                __m256d t0= vunpcklpd::v(a, b);
+                                // 1 5 3 7
+                                __m256d t1= vunpckhpd::v(a, b);
+                                __m256d r= vperm2f128<0, 2>::v(t0, t1);
+                                return r;
+                        }
+                };
 
-		template <>
-		struct perm2_v4f64< 4, 0, 5, 1> {
-			static __m256d v(__m256d a, __m256d b) {
-				// 4 0 6 2
-				__m256d t0= vunpcklpd::v(b, a);
-				// 5 1 7 3
-				__m256d t1= vunpckhpd::v(b, a);
-				__m256d r= vperm2f128<0, 2>::v(t0, t1);
-				return r;
-			}
-		};
+                template <>
+                struct perm2_v4f64< 4, 0, 5, 1> {
+                        static __m256d v(__m256d a, __m256d b) {
+                                // 4 0 6 2
+                                __m256d t0= vunpcklpd::v(b, a);
+                                // 5 1 7 3
+                                __m256d t1= vunpckhpd::v(b, a);
+                                __m256d r= vperm2f128<0, 2>::v(t0, t1);
+                                return r;
+                        }
+                };
 
-		template <>
-		struct perm2_v4f64< 2, 6, 3, 7> {
-			static __m256d v(__m256d a, __m256d b) {
-				// 0 4 2 6
-				__m256d t0= vunpcklpd::v(a, b);
-				// 1 5 3 7
-				__m256d t1= vunpckhpd::v(a, b);
-				__m256d r= vperm2f128<1, 3>::v(t0, t1);
-				return r;
-			}
-		};
+                template <>
+                struct perm2_v4f64< 2, 6, 3, 7> {
+                        static __m256d v(__m256d a, __m256d b) {
+                                // 0 4 2 6
+                                __m256d t0= vunpcklpd::v(a, b);
+                                // 1 5 3 7
+                                __m256d t1= vunpckhpd::v(a, b);
+                                __m256d r= vperm2f128<1, 3>::v(t0, t1);
+                                return r;
+                        }
+                };
 
-		template <>
-		struct perm2_v4f64< 6, 2, 7, 3> {
-			static __m256d v(__m256d a, __m256d b) {
-				// 4 0 6 2
-				__m256d t0= vunpcklpd::v(b, a);
-				// 5 1 7 3
-				__m256d t1= vunpckhpd::v(b, a);
-				__m256d r= vperm2f128<1, 3>::v(t0, t1);
-				return r;
-			}
-		};
-		
+                template <>
+                struct perm2_v4f64< 6, 2, 7, 3> {
+                        static __m256d v(__m256d a, __m256d b) {
+                                // 4 0 6 2
+                                __m256d t0= vunpcklpd::v(b, a);
+                                // 5 1 7 3
+                                __m256d t1= vunpckhpd::v(b, a);
+                                __m256d r= vperm2f128<1, 3>::v(t0, t1);
+                                return r;
+                        }
+                };
+                
 
                 // generic permutation of one float vector
                 template <int _P0, int _P1, int _P2, int _P3,
@@ -755,27 +755,27 @@ __m128d x86vec::impl::perm1_v2f64<_P0, _P1>::v(__m128d a)
                         (_P1<0 ? 0 : uint32_t(-1)),
                         (_P1<0 ? 0 : uint32_t(-1))>::dv();
                 return _mm_and_pd(a, msk);
-	}
+        }
 
         if (do_shuffle && !do_zero) {
                 // shuffling, not zeroing
-                return vshufpd<_P0, _P1>::v(a);
+                return vshufpd<uint32_t(_P0), uint32_t(_P1)>::v(a);
         }
-	if (do_shuffle && do_zero) {
-		// shuffling and zeroing
-		const __m128d zero= _mm_setzero_pd();
-		// both shuffle and zero
-		if (_P0 < 0 && _P1 >= 0) {
-			// zero low half, shuffle high half
-			return vshufpd<0, _P1>::v(zero, a);
-		}
-		if (_P0 >= 0 && _P1 < 0) {
-			// shuffle low half, zero high half
-			return vshufpd<_P1, 0>::v(a, zero);
-		}
-	}
-	// trivial case: do n
-	return a;
+        if (do_shuffle && do_zero) {
+                // shuffling and zeroing
+                const __m128d zero= _mm_setzero_pd();
+                // both shuffle and zero
+                if (_P0 < 0 && _P1 >= 0) {
+                        // zero low half, shuffle high half
+                        return vshufpd<0, uint32_t(_P1)>::v(zero, a);
+                }
+                if (_P0 >= 0 && _P1 < 0) {
+                        // shuffle low half, zero high half
+                        return vshufpd<uint32_t(_P1), 0>::v(a, zero);
+                }
+        }
+        // trivial case: do n
+        return a;
 }
 
 template <int _P0, int _P1>
@@ -800,10 +800,10 @@ __m128d x86vec::impl::perm2_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
         // selecting from both a and b without zeroing
         if ((_P0 & 2) == 0) {
                 // first element from a, second element from b
-                return vshufpd<_P0, _P1>::v(a, b);
+                return vshufpd<uint32_t(_P0), uint32_t(_P1)>::v(a, b);
         }
         // first element from b, second element from a
-        return vshufpd<_P0, _P1>::v(b, a);
+        return vshufpd<uint32_t(_P0), uint32_t(_P1)>::v(b, a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -838,23 +838,23 @@ __m128 x86vec::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
         if (do_shuffle && !do_zero) {
                 // shuffling, not zeroing
                 return vshufps<unsigned(_P0), 
-			       unsigned(_P1), 
-			       unsigned(_P2), 
-			       unsigned(_P3)>::v(a, a);
+                               unsigned(_P1), 
+                               unsigned(_P2), 
+                               unsigned(_P3)>::v(a, a);
         }
         // both shuffle and zero
         if (m2 == 0xFF00) {
                 // zero low half, shuffle high half
                 return vshufps<0, 
-			       0, 
-			       unsigned(_P2), 
-			       unsigned(_P3)>::v(_mm_setzero_ps(), a);
+                               0, 
+                               unsigned(_P2), 
+                               unsigned(_P3)>::v(_mm_setzero_ps(), a);
         }
         if (m2 == 0x00FF) {
                 // shuffle low half, zero high half
                 return vshufps<unsigned(_P0), 
-			       unsigned(_P1), 
-			       0, 0>::v(a, _mm_setzero_ps());
+                               unsigned(_P1), 
+                               0, 0>::v(a, _mm_setzero_ps());
         }
 #ifdef __SSSE3__
         const uint8_t c00 = (_P0<0 ? -1 : 4*(_P0&3)+0);
@@ -874,9 +874,9 @@ __m128 x86vec::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
         const uint8_t c14 = (_P3<0 ? -1 : 4*(_P3&3)+2);
         const uint8_t c15 = (_P3<0 ? -1 : 4*(_P3&3)+3);
         const __m128i msk=const_v16u8<c00, c01, c02, c03,
-		c04, c05, c06, c07,
-		c08, c09, c10, c11,
-		c12, c13, c14, c15>::iv();
+                c04, c05, c06, c07,
+                c08, c09, c10, c11,
+                c12, c13, c14, c15>::iv();
         return as<__m128>(_mm_shuffle_epi8(as<__m128i>(a),msk));
 #else
         // shuffle
@@ -907,7 +907,7 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
         if (((m1^0x4444) & 0x4444 & m2) == 0) {
                 // no elements from a
                 return perm1_v4f32<_P0 & ~4, _P1 & ~4,
-			_P2 & ~4, _P3 &~4>::v(b);
+                        _P2 & ~4, _P3 &~4>::v(b);
         }
 
         if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
@@ -929,14 +929,15 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                 // zero
                 const __m128 zm = const_v4u32<
                         (_P0 < 0 ? 0 : uint32_t(-1)),
-			(_P1 < 0 ? 0 : uint32_t(-1)),
+                        (_P1 < 0 ? 0 : uint32_t(-1)),
                         (_P2 < 0 ? 0 : uint32_t(-1)),
                         (_P3 < 0 ? 0 : uint32_t(-1))>::fv();
                 return  _mm_and_ps(t, zm);
-	}
+        }
         if (((m1 & 0x4400)==0x4400) && ((m1 & 0x0044)==0x00)) {
                 // lower half from a, higher half from b
-                __m128 t = vshufps<_P0, _P1, _P2, _P3>::v(a, b);
+                __m128 t = vshufps<uint32_t(_P0), uint32_t(_P1), 
+                                   uint32_t(_P2), uint32_t(_P3)>::v(a, b);
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128 zm = const_v4u32<
@@ -945,12 +946,13 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                                 (_P2 < 0 ? 0 : uint32_t(-1)),
                                 (_P3 < 0 ? 0 : uint32_t(-1))>::fv();
                         return  _mm_and_ps(t, zm);
-		}
+                }
                 return t;
-	}
+        }
         if (((m1 & 0x4400)==0x0000) && ((m1 & 0x0044)==0x44)) {
                 // lower half from b, higher half from a
-                __m128 t=vshufps<_P0, _P1, _P2, _P3>::v(b, a);
+                __m128 t=vshufps<uint32_t(_P0), uint32_t(_P1), 
+                                 uint32_t(_P2), uint32_t(_P3)>::v(b, a);
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128 zm = const_v4u32<
@@ -959,23 +961,23 @@ __m128 x86vec::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                                 (_P2 < 0 ? 0 : uint32_t(-1)),
                                 (_P3 < 0 ? 0 : uint32_t(-1))>::fv();
                         return  _mm_and_ps(t, zm);
-		}
+                }
                 return t;
-	}
+        }
         // general case
         // select all elements to clear or from 1st vector
         const int ma0 = _P0 < 4 ? _P0 : -1;
-	const int ma1 = _P1 < 4 ? _P1 : -1;
-	const int ma2 = _P2 < 4 ? _P2 : -1;
-	const int ma3 = _P3 < 4 ? _P3 : -1;
-	__m128 a1 = perm1_v4f32<ma0, ma1, ma2, ma3>::v(a);
-	// select all elements from second vector
-	const int mb0 = _P0 > 3 ? (_P0-4) : -1;
-	const int mb1 = _P1 > 3 ? (_P1-4) : -1;
-	const int mb2 = _P2 > 3 ? (_P2-4) : -1;
-	const int mb3 = _P3 > 3 ? (_P3-4) : -1;
-	__m128 b1 = perm1_v4f32<mb0, mb1, mb2, mb3>::v(b);
-	return  _mm_or_ps(a1,b1);
+        const int ma1 = _P1 < 4 ? _P1 : -1;
+        const int ma2 = _P2 < 4 ? _P2 : -1;
+        const int ma3 = _P3 < 4 ? _P3 : -1;
+        __m128 a1 = perm1_v4f32<ma0, ma1, ma2, ma3>::v(a);
+        // select all elements from second vector
+        const int mb0 = _P0 > 3 ? (_P0-4) : -1;
+        const int mb1 = _P1 > 3 ? (_P1-4) : -1;
+        const int mb2 = _P2 > 3 ? (_P2-4) : -1;
+        const int mb3 = _P3 > 3 ? (_P3-4) : -1;
+        __m128 b1 = perm1_v4f32<mb0, mb1, mb2, mb3>::v(b);
+        return  _mm_or_ps(a1,b1);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -1023,7 +1025,7 @@ __m128i x86vec::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
                         return vpshufhw<h0, h1, h2, h3>::v(a);
                 }
                 return vpshufd<uint32_t(_P0), uint32_t(_P1), 
-			       uint32_t(_P2), uint32_t(_P3)>::v(a);
+                               uint32_t(_P2), uint32_t(_P3)>::v(a);
         }
 #if defined (__SSSE3__)
         //if (do_shuffle && do_zero) {
@@ -1044,9 +1046,9 @@ __m128i x86vec::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
         const uint8_t c14 = (_P3<0 ? -1 : 4*(_P3&3)+2);
         const uint8_t c15 = (_P3<0 ? -1 : 4*(_P3&3)+3);
         const __m128i msk=const_v16u8<c00, c01, c02, c03,
-		c04, c05, c06, c07,
-		c08, c09, c10, c11,
-		c12, c13, c14, c15>::iv();
+                c04, c05, c06, c07,
+                c08, c09, c10, c11,
+                c12, c13, c14, c15>::iv();
         return _mm_shuffle_epi8(a, msk);
         // }
 #else
@@ -1089,7 +1091,7 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
         if (((m1^0x4444) & 0x4444 & m2) == 0) {
                 // no elements from a
                 return perm1_v4u32<_P0 & ~4, _P1 & ~4,
-			_P2 & ~4, _P3 &~4>::v(b);
+                        _P2 & ~4, _P3 &~4>::v(b);
         }
         if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
                 // selecting without shuffling or zeroing
@@ -1114,10 +1116,12 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                         uint32_t(_P2 < 0 ? 0 : -1),
                         uint32_t(_P3 < 0 ? 0 : -1)>::iv();
                 return  _mm_and_si128(t, zm);
-	}
+        }
         if (((m1 & 0x4400)==0x4400) && ((m1 & 0x0044)==0x00)) {
                 // lower half from a, higher half from b
-                __m128i t= exec_f32<vshufps<_P0, _P1, _P2, _P3> >::v(a, b);
+                __m128i t= exec_f32<
+                        vshufps<uint32_t(_P0), uint32_t(_P1), 
+                                uint32_t(_P2), uint32_t(_P3)> >::v(a, b);
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128i zm = const_v4u32<
@@ -1126,12 +1130,14 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                                 uint32_t(_P2 < 0 ? 0 : -1),
                                 uint32_t(_P3 < 0 ? 0 : -1)>::iv();
                         return  _mm_and_si128(t, zm);
-		}
+                }
                 return t;
-	}
+        }
         if (((m1 & 0x4400)==0x0000) && ((m1 & 0x0044)==0x44)) {
                 // lower half from b, higher half from a
-                __m128i t= exec_f32<vshufps<_P0, _P1, _P2, _P3> >::v(b, a);
+                __m128i t= exec_f32<
+                        vshufps<uint32_t(_P0), uint32_t(_P1), 
+                                uint32_t(_P2), uint32_t(_P3)> >::v(b, a);
                 if ( m2 != 0xFFFF) {
                         // zero
                         const __m128i zm = const_v4u32<
@@ -1140,23 +1146,23 @@ __m128i x86vec::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
                                 uint32_t(_P2 < 0 ? 0 : -1),
                                 uint32_t(_P3 < 0 ? 0 : -1)>::iv();
                         return  _mm_and_si128(t, zm);
-		}
+                }
                 return t;
-	}
+        }
         // general case
         // select all elements to clear or from 1st vector
         const int ma0 = _P0 < 4 ? _P0 : -1;
-	const int ma1 = _P1 < 4 ? _P1 : -1;
-	const int ma2 = _P2 < 4 ? _P2 : -1;
-	const int ma3 = _P3 < 4 ? _P3 : -1;
-	__m128i a1 = perm1_v4u32<ma0, ma1, ma2, ma3>::v(a);
-	// select all elements from second vector
-	const int mb0 = _P0 > 3 ? (_P0-4) : -1;
-	const int mb1 = _P1 > 3 ? (_P1-4) : -1;
-	const int mb2 = _P2 > 3 ? (_P2-4) : -1;
-	const int mb3 = _P3 > 3 ? (_P3-4) : -1;
-	__m128i b1 = perm1_v4u32<mb0, mb1, mb2, mb3>::v(b);
-	return _mm_or_si128(a1,b1);
+        const int ma1 = _P1 < 4 ? _P1 : -1;
+        const int ma2 = _P2 < 4 ? _P2 : -1;
+        const int ma3 = _P3 < 4 ? _P3 : -1;
+        __m128i a1 = perm1_v4u32<ma0, ma1, ma2, ma3>::v(a);
+        // select all elements from second vector
+        const int mb0 = _P0 > 3 ? (_P0-4) : -1;
+        const int mb1 = _P1 > 3 ? (_P1-4) : -1;
+        const int mb2 = _P2 > 3 ? (_P2-4) : -1;
+        const int mb3 = _P3 > 3 ? (_P3-4) : -1;
+        __m128i b1 = perm1_v4u32<mb0, mb1, mb2, mb3>::v(b);
+        return _mm_or_si128(a1,b1);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -1197,16 +1203,16 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
         const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
         if (((m1 ^ 0x76543210) & m2)==0 && m2 !=-1) {
                 // zero only
-                const int z0= (_P0<0 ? 0 : -1);
-                const int z1= (_P1<0 ? 0 : -1);
-                const int z2= (_P2<0 ? 0 : -1);
-                const int z3= (_P3<0 ? 0 : -1);
-                const int z4= (_P4<0 ? 0 : -1);
-                const int z5= (_P5<0 ? 0 : -1);
-                const int z6= (_P6<0 ? 0 : -1);
-                const int z7= (_P7<0 ? 0 : -1);
+                const unsigned short z0= (_P0<0 ? 0 : -1);
+                const unsigned short z1= (_P1<0 ? 0 : -1);
+                const unsigned short z2= (_P2<0 ? 0 : -1);
+                const unsigned short z3= (_P3<0 ? 0 : -1);
+                const unsigned short z4= (_P4<0 ? 0 : -1);
+                const unsigned short z5= (_P5<0 ? 0 : -1);
+                const unsigned short z6= (_P6<0 ? 0 : -1);
+                const unsigned short z7= (_P7<0 ? 0 : -1);
                 const __m128i zm= const_v8u16<z0, z1, z2, z3,
-			z4, z5, z6, z7>::iv();
+                        z4, z5, z6, z7>::iv();
                 return _mm_and_si128(a, zm);
         }
         // No zero, high elements kept in order, low elements
@@ -1214,10 +1220,10 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
         if ((m2 == -1) &&
             ((m1 & 0xFFFF0000) == 0x76540000) &&
             ((m1 & 0x00004444)==0) ) {
-                const int l0= _P0;
-                const int l1= _P1;
-                const int l2= _P2;
-                const int l3= _P3;
+                const unsigned int l0= _P0;
+                const unsigned int l1= _P1;
+                const unsigned int l2= _P2;
+                const unsigned int l3= _P3;
                 return vpshuflw<l0, l1, l2, l3>::v(a);
         }
         // No zero, low elements kept in order, high elements
@@ -1225,10 +1231,10 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
         if ((m2 == -1) &&
             ((m1 & 0xFFFF) == 0x3210) &&
             ((m1 & 0x44440000)==0x44440000)) {
-                const int h0= _P4&3;
-                const int h1= _P5&3;
-                const int h2= _P6&3;
-                const int h3= _P7&3;
+                const unsigned int h0= _P4&3;
+                const unsigned int h1= _P5&3;
+                const unsigned int h2= _P6&3;
+                const unsigned int h3= _P7&3;
                 return vpshufhw<h0, h1, h2, h3>::v(a);
         }
 #if defined (__SSSE3__)
@@ -1239,26 +1245,26 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
                 // rotate only.
                 return _mm_alignr_epi8(a, a, (_P0 & 7) * 2);
         }
-        const int c00 = (_P0<0 ? -1 : 2*(_P0&7)+0);
-        const int c01 = (_P0<0 ? -1 : 2*(_P0&7)+1);
-        const int c02 = (_P1<0 ? -1 : 2*(_P1&7)+0);
-        const int c03 = (_P1<0 ? -1 : 2*(_P1&7)+1);
-        const int c04 = (_P2<0 ? -1 : 2*(_P2&7)+0);
-        const int c05 = (_P2<0 ? -1 : 2*(_P2&7)+1);
-        const int c06 = (_P3<0 ? -1 : 2*(_P3&7)+0);
-        const int c07 = (_P3<0 ? -1 : 2*(_P3&7)+1);
-        const int c08 = (_P4<0 ? -1 : 2*(_P4&7)+0);
-        const int c09 = (_P4<0 ? -1 : 2*(_P4&7)+1);
-        const int c10 = (_P5<0 ? -1 : 2*(_P5&7)+0);
-        const int c11 = (_P5<0 ? -1 : 2*(_P5&7)+1);
-        const int c12 = (_P6<0 ? -1 : 2*(_P6&7)+0);
-        const int c13 = (_P6<0 ? -1 : 2*(_P6&7)+1);
-        const int c14 = (_P7<0 ? -1 : 2*(_P7&7)+0);
-        const int c15 = (_P7<0 ? -1 : 2*(_P7&7)+1);
+        const uint8_t c00 = (_P0<0 ? -1 : 2*(_P0&7)+0);
+        const uint8_t c01 = (_P0<0 ? -1 : 2*(_P0&7)+1);
+        const uint8_t c02 = (_P1<0 ? -1 : 2*(_P1&7)+0);
+        const uint8_t c03 = (_P1<0 ? -1 : 2*(_P1&7)+1);
+        const uint8_t c04 = (_P2<0 ? -1 : 2*(_P2&7)+0);
+        const uint8_t c05 = (_P2<0 ? -1 : 2*(_P2&7)+1);
+        const uint8_t c06 = (_P3<0 ? -1 : 2*(_P3&7)+0);
+        const uint8_t c07 = (_P3<0 ? -1 : 2*(_P3&7)+1);
+        const uint8_t c08 = (_P4<0 ? -1 : 2*(_P4&7)+0);
+        const uint8_t c09 = (_P4<0 ? -1 : 2*(_P4&7)+1);
+        const uint8_t c10 = (_P5<0 ? -1 : 2*(_P5&7)+0);
+        const uint8_t c11 = (_P5<0 ? -1 : 2*(_P5&7)+1);
+        const uint8_t c12 = (_P6<0 ? -1 : 2*(_P6&7)+0);
+        const uint8_t c13 = (_P6<0 ? -1 : 2*(_P6&7)+1);
+        const uint8_t c14 = (_P7<0 ? -1 : 2*(_P7&7)+0);
+        const uint8_t c15 = (_P7<0 ? -1 : 2*(_P7&7)+1);
         const __m128i msk=const_v16u8<c00, c01, c02, c03,
-		c04, c05, c06, c07,
-		c08, c09, c10, c11,
-		c12, c13, c14, c15>::iv();
+                c04, c05, c06, c07,
+                c08, c09, c10, c11,
+                c12, c13, c14, c15>::iv();
         return _mm_shuffle_epi8(a, msk);
 #else
         // sse2 only code, we are really loosers
@@ -1389,8 +1395,8 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
                                 (_P5 & 4) == 0,
                                 (_P6 & 4) == 0,
                                 (_P7 & 4) == 0>::v(t0, t1);
-		}
-	}
+                }
+        }
         // any zeros?
         if (m2 != -1) {
                 const int z0= (_P0<0 ? 0 : -1);
@@ -1402,10 +1408,10 @@ __m128i x86vec::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
                 const int z6= (_P6<0 ? 0 : -1);
                 const int z7= (_P7<0 ? 0 : -1);
                 const __m128i zm= const_v8u16<z0, z1, z2, z3,
-			z4, z5, z6, z7>::iv();
+                        z4, z5, z6, z7>::iv();
                 r = _mm_and_si128(r, zm);
         }
-	return r;
+        return r;
 #endif
 }
 
@@ -1538,78 +1544,78 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
                 const unsigned z2 = (_P2 < 0) ? 0 : -1;
                 const unsigned z3 = (_P3 < 0) ? 0 : -1;
                 const __m256d zm= const_v8u32<z0, z0, z1, z1, 
-					     z2, z2, z3, z3>::dv();
+                                             z2, z2, z3, z3>::dv();
                 // zero with AND mask
                 return  _mm256_and_pd(a, zm);
         }
-	__m256d res;
-	if ( (((m1 & 0x22) & m2) == 0) &&
-	     (((m1 & 0x2200) & m2) == (0x2200 & m2))) {
-		// low from low src, high from high src
-		const int sel= csel4<_P0, _P1, _P2, _P3>::val;
-		res= _mm256_permute_pd(a, sel);
-	} else if ( ((m1 & m2) == (0x1032 & m2)) ) {
-		res= _mm256_permute2f128_pd(a, a, 0x01);
-	} else if ( ((m1 & m2) == (0x3232 & m2)) ) {
-		res= _mm256_permute2f128_pd(a, a, 0x11);
-	} else if ( ((m1 & m2) == (0x1010 & m2)) ) {
-		res= _mm256_insertf128_pd(a, 
-					  _mm256_castpd256_pd128(a), 
-					  1);
-	} else {
+        __m256d res;
+        if ( (((m1 & 0x22) & m2) == 0) &&
+             (((m1 & 0x2200) & m2) == (0x2200 & m2))) {
+                // low from low src, high from high src
+                const int sel= csel4<_P0, _P1, _P2, _P3>::val;
+                res= _mm256_permute_pd(a, sel);
+        } else if ( ((m1 & m2) == (0x1032 & m2)) ) {
+                res= _mm256_permute2f128_pd(a, a, 0x01);
+        } else if ( ((m1 & m2) == (0x3232 & m2)) ) {
+                res= _mm256_permute2f128_pd(a, a, 0x11);
+        } else if ( ((m1 & m2) == (0x1010 & m2)) ) {
+                res= _mm256_insertf128_pd(a, 
+                                          _mm256_castpd256_pd128(a), 
+                                          1);
+        } else {
 #if defined (__AVX2__)
-		// general case
-		const int sh4=shuffle4<_P0, _P1, _P2, _P3>::val;
-		res=_mm256_permute4x64_pd(a, sh4);
+                // general case
+                const int sh4=shuffle4<_P0, _P1, _P2, _P3>::val;
+                res=_mm256_permute4x64_pd(a, sh4);
 #else
-		if (((m1 & 0x2222) & m2)==0) {
-			// only from low lane
-			__m256d lo2lo_lo2hi= 
-				_mm256_insertf128_pd(a, 
-						     _mm256_castpd256_pd128(a), 
-						     1);
-			const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
-			res = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
-		} else if (((m1 & 0x2222) & m2)==(0x2222 & m2)) {
-			// only from high lane
-			__m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
-			const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
-			res = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
-		} else {
-			// general case
-			// copy high half to low half
-			__m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
-			// copy low half to high half
-			__m256d lo2lo_lo2hi= 
-				_mm256_insertf128_pd(a, 
-						     _mm256_castpd256_pd128(a), 
-						     1);
-			const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
-			const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
+                if (((m1 & 0x2222) & m2)==0) {
+                        // only from low lane
+                        __m256d lo2lo_lo2hi= 
+                                _mm256_insertf128_pd(a, 
+                                                     _mm256_castpd256_pd128(a), 
+                                                     1);
+                        const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
+                        res = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
+                } else if (((m1 & 0x2222) & m2)==(0x2222 & m2)) {
+                        // only from high lane
+                        __m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
+                        const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
+                        res = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
+                } else {
+                        // general case
+                        // copy high half to low half
+                        __m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
+                        // copy low half to high half
+                        __m256d lo2lo_lo2hi= 
+                                _mm256_insertf128_pd(a, 
+                                                     _mm256_castpd256_pd128(a), 
+                                                     1);
+                        const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
+                        const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
 
-			hi2lo_hi2hi = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
-			lo2lo_lo2hi = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
-	
-			const bool b0= _P0 < 2 ? true : false;
-			const bool b1= _P1 < 2 ? true : false;
-			const bool b2= _P2 < 2 ? true : false;
-			const bool b3= _P3 < 2 ? true : false;
-			res= select_v4f64<b0, b1, b2, b3>::
-				v(lo2lo_lo2hi, hi2lo_hi2hi);
-		}
+                        hi2lo_hi2hi = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
+                        lo2lo_lo2hi = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
+        
+                        const bool b0= _P0 < 2 ? true : false;
+                        const bool b1= _P1 < 2 ? true : false;
+                        const bool b2= _P2 < 2 ? true : false;
+                        const bool b3= _P3 < 2 ? true : false;
+                        res= select_v4f64<b0, b1, b2, b3>::
+                                v(lo2lo_lo2hi, hi2lo_hi2hi);
+                }
 #endif
-	}
-	if (do_zero) {
+        }
+        if (do_zero) {
                 const unsigned z0 = (_P0 < 0) ? 0 : -1;
                 const unsigned z1 = (_P1 < 0) ? 0 : -1;
                 const unsigned z2 = (_P2 < 0) ? 0 : -1;
                 const unsigned z3 = (_P3 < 0) ? 0 : -1;
                 const __m256d zm= const_v8u32<z0, z0, z1, z1, 
-					      z2, z2, z3, z3>::dv();
+                                              z2, z2, z3, z3>::dv();
                 // zero with AND mask
                 res = _mm256_and_pd(res, zm);
-	}
-	return res;
+        }
+        return res;
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -1628,7 +1634,7 @@ __m256d x86vec::impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
         if (((m1^0x4444) & 0x4444 & m2) == 0) {
                 // no elements from a
                 return perm1_v4f64< _P0 & ~4, _P1 & ~4,
-				    _P2 & ~4, _P3 & ~4>::v(b);
+                                    _P2 & ~4, _P3 & ~4>::v(b);
         }
         if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
                 // selecting without shuffling or zeroing
@@ -1640,17 +1646,17 @@ __m256d x86vec::impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
         }
         // select all elements to clear or from 1st vector
         const int ma0 = _P0 < 4 ? _P0 : -1;
-	const int ma1 = _P1 < 4 ? _P1 : -1;
-	const int ma2 = _P2 < 4 ? _P2 : -1;
-	const int ma3 = _P3 < 4 ? _P3 : -1;
-	__m256d a1 = perm1_v4f64<ma0, ma1, ma2, ma3>::v(a);
-	// select all elements from second vector
-	const int mb0 = _P0 > 3 ? (_P0-4) : -1;
-	const int mb1 = _P1 > 3 ? (_P1-4) : -1;
-	const int mb2 = _P2 > 3 ? (_P2-4) : -1;
-	const int mb3 = _P3 > 3 ? (_P3-4) : -1;
-	__m256d b1 = perm1_v4f64<mb0, mb1, mb2, mb3>::v(b);
-	return  _mm256_or_pd(a1,b1);
+        const int ma1 = _P1 < 4 ? _P1 : -1;
+        const int ma2 = _P2 < 4 ? _P2 : -1;
+        const int ma3 = _P3 < 4 ? _P3 : -1;
+        __m256d a1 = perm1_v4f64<ma0, ma1, ma2, ma3>::v(a);
+        // select all elements from second vector
+        const int mb0 = _P0 > 3 ? (_P0-4) : -1;
+        const int mb1 = _P1 > 3 ? (_P1-4) : -1;
+        const int mb2 = _P2 > 3 ? (_P2-4) : -1;
+        const int mb3 = _P3 > 3 ? (_P3-4) : -1;
+        __m256d b1 = perm1_v4f64<mb0, mb1, mb2, mb3>::v(b);
+        return  _mm256_or_pd(a1,b1);
 }
 
 
@@ -1658,7 +1664,7 @@ template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
 __m256 x86vec::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
-				 _P4, _P5, _P6, _P7>::v(__m256 a)
+                                 _P4, _P5, _P6, _P7>::v(__m256 a)
 {
         const int me= pos_msk_4<_P0, _P2, _P4, _P6, 7>::m;
         const int mo= pos_msk_4<_P1, _P3, _P5, _P7, 7>::m;
@@ -1674,13 +1680,13 @@ __m256 x86vec::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
                 const int _p1 = (_P2 < 0 ? -1 : _P2>>1);
                 const int _p2 = (_P4 < 0 ? -1 : _P4>>1);
                 const int _p3 = (_P6 < 0 ? -1 : _P6>>1);
-		__m256d ad(as<__m256d>(a));
-		__m256d rd(perm1_v4f64<_p0, _p1, _p2, _p3>::v(ad));
-		return as<__m256>(rd);
+                __m256d ad(as<__m256d>(a));
+                __m256d rd(perm1_v4f64<_p0, _p1, _p2, _p3>::v(ad));
+                return as<__m256>(rd);
         }
         const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
         const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
-	const bool do_zero= m2 != 0xfffffff;
+        const bool do_zero= m2 != 0xfffffff;
         if (((m1 ^ 0x76543210) & m2)==0 && m2 !=-1) {
                 // zero only
                 const unsigned z0= (_P0<0 ? 0 : -1);
@@ -1692,85 +1698,85 @@ __m256 x86vec::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
                 const unsigned z6= (_P6<0 ? 0 : -1);
                 const unsigned z7= (_P7<0 ? 0 : -1);
                 const __m256 zm= const_v8u32<z0, z1, z2, z3,
-					     z4, z5, z6, z7>::fv();
+                                             z4, z5, z6, z7>::fv();
                 return _mm256_and_ps(a, zm);
         }
-	// in lane permutation
-	__m256 res;
-	if ( (((m1 & 0x4444) & m2) == 0) &&
-	     (((m1 & 0x4444000) & m2) == (0x44440000 & m2))) {
-		// low from low src, high from high src
-		const __m256i p= const_v8u32<_P0 & 3, _P1 & 3, 
-					     _P2 & 3, _P3 & 3,
-					     _P4 & 3, _P5 & 3, 
-					     _P6 & 3, _P7 & 3>::iv();
-		res= _mm256_permutevar_ps(a, p);
-	} else if ( ((m1 & m2) == (0x32107654 & m2)) ) {
-		res= _mm256_permute2f128_ps(a, a, 0x01);
-	} else if ( ((m1 & m2) == (0x76547654 & m2)) ) {
-		res= _mm256_permute2f128_ps(a, a, 0x11);
-	} else if ( ((m1 & m2) == (0x32103210 & m2)) ) {
-		res= _mm256_insertf128_ps(a, 
-					  _mm256_castps256_ps128(a), 
-					  1);
-	} else {
+        // in lane permutation
+        __m256 res;
+        if ( (((m1 & 0x4444) & m2) == 0) &&
+             (((m1 & 0x4444000) & m2) == (0x44440000 & m2))) {
+                // low from low src, high from high src
+                const __m256i p= const_v8u32<_P0 & 3, _P1 & 3, 
+                                             _P2 & 3, _P3 & 3,
+                                             _P4 & 3, _P5 & 3, 
+                                             _P6 & 3, _P7 & 3>::iv();
+                res= _mm256_permutevar_ps(a, p);
+        } else if ( ((m1 & m2) == (0x32107654 & m2)) ) {
+                res= _mm256_permute2f128_ps(a, a, 0x01);
+        } else if ( ((m1 & m2) == (0x76547654 & m2)) ) {
+                res= _mm256_permute2f128_ps(a, a, 0x11);
+        } else if ( ((m1 & m2) == (0x32103210 & m2)) ) {
+                res= _mm256_insertf128_ps(a, 
+                                          _mm256_castps256_ps128(a), 
+                                          1);
+        } else {
 #if defined (__AVX2__)
-		// general case
-		const __m256i p= const_v8u32<_P0 & 7, _P1 & 7, 
-					     _P2 & 7, _P3 & 7,
-					     _P4 & 7, _P5 & 7, 
-					     _P6 & 7, _P7 & 7>::iv();
-		res=_mm256_permutevar8x32_ps(a, p);
+                // general case
+                const __m256i p= const_v8u32<_P0 & 7, _P1 & 7, 
+                                             _P2 & 7, _P3 & 7,
+                                             _P4 & 7, _P5 & 7, 
+                                             _P6 & 7, _P7 & 7>::iv();
+                res=_mm256_permutevar8x32_ps(a, p);
 #else
-		if (((m1 & 0x44444444) & m2)==0) {
-			// only from low lane
-			__m256 lo2lo_lo2hi= 
-				_mm256_insertf128_ps(a, 
-						     _mm256_castps256_ps128(a), 
-						     1);
-			const __m256i p= const_v8u32<_P0 & 3, _P1 & 3, 
-						     _P2 & 3, _P3 & 3,
-						     _P4 & 3, _P5 & 3, 
-						     _P6 & 3, _P7 & 3>::iv();
-			res = _mm256_permutevar_ps(lo2lo_lo2hi, p);
-		} else if (((m1 & 0x44444444) & m2)==(0x44444444 & m2)) {
-			// only from high lane
-			__m256 hi2lo_hi2hi= _mm256_permute2f128_ps(a, a, 0x11);
-			const __m256i p= const_v8u32<_P0 & 3, _P1 & 3, 
-						     _P2 & 3, _P3 & 3,
-						     _P4 & 3, _P5 & 3, 
-						     _P6 & 3, _P7 & 3>::iv();
-			res = _mm256_permutevar_ps(hi2lo_hi2hi, p);
-		} else {
-			// general case
-			// copy high half to low half
-			__m256 hi2lo_hi2hi= _mm256_permute2f128_ps(a, a, 0x11);
-			// copy low half to high half
-			__m256 lo2lo_lo2hi= 
-				_mm256_insertf128_ps(a, 
-						     _mm256_castps256_ps128(a), 
-						     1);
-			const __m256i p= const_v8u32<_P0 & 3, _P1 & 3, 
-						     _P2 & 3, _P3 & 3,
-						     _P4 & 3, _P5 & 3, 
-						     _P6 & 3, _P7 & 3>::iv();
+                if (((m1 & 0x44444444) & m2)==0) {
+                        // only from low lane
+                        __m256 lo2lo_lo2hi= 
+                                _mm256_insertf128_ps(a, 
+                                                     _mm256_castps256_ps128(a), 
+                                                     1);
+                        const __m256i p= const_v8u32<_P0 & 3, _P1 & 3, 
+                                                     _P2 & 3, _P3 & 3,
+                                                     _P4 & 3, _P5 & 3, 
+                                                     _P6 & 3, _P7 & 3>::iv();
+                        res = _mm256_permutevar_ps(lo2lo_lo2hi, p);
+                } else if (((m1 & 0x44444444) & m2)==(0x44444444 & m2)) {
+                        // only from high lane
+                        __m256 hi2lo_hi2hi= _mm256_permute2f128_ps(a, a, 0x11);
+                        const __m256i p= const_v8u32<_P0 & 3, _P1 & 3, 
+                                                     _P2 & 3, _P3 & 3,
+                                                     _P4 & 3, _P5 & 3, 
+                                                     _P6 & 3, _P7 & 3>::iv();
+                        res = _mm256_permutevar_ps(hi2lo_hi2hi, p);
+                } else {
+                        // general case
+                        // copy high half to low half
+                        __m256 hi2lo_hi2hi= _mm256_permute2f128_ps(a, a, 0x11);
+                        // copy low half to high half
+                        __m256 lo2lo_lo2hi= 
+                                _mm256_insertf128_ps(a, 
+                                                     _mm256_castps256_ps128(a), 
+                                                     1);
+                        const __m256i p= const_v8u32<_P0 & 3, _P1 & 3, 
+                                                     _P2 & 3, _P3 & 3,
+                                                     _P4 & 3, _P5 & 3, 
+                                                     _P6 & 3, _P7 & 3>::iv();
 
-			hi2lo_hi2hi = _mm256_permutevar_ps(hi2lo_hi2hi, p);
-			lo2lo_lo2hi = _mm256_permutevar_ps(lo2lo_lo2hi, p);
-			const bool b0= _P0 < 4 ? true : false;
-			const bool b1= _P1 < 4 ? true : false;
-			const bool b2= _P2 < 4 ? true : false;
-			const bool b3= _P3 < 4 ? true : false;
-			const bool b4= _P4 < 4 ? true : false;
-			const bool b5= _P5 < 4 ? true : false;
-			const bool b6= _P6 < 4 ? true : false;
-			const bool b7= _P7 < 4 ? true : false;
-			res= select_v8f32<b0, b1, b2, b3, b4, b5, b6, b7>::
-				v(lo2lo_lo2hi, hi2lo_hi2hi);
-		}
+                        hi2lo_hi2hi = _mm256_permutevar_ps(hi2lo_hi2hi, p);
+                        lo2lo_lo2hi = _mm256_permutevar_ps(lo2lo_lo2hi, p);
+                        const bool b0= _P0 < 4 ? true : false;
+                        const bool b1= _P1 < 4 ? true : false;
+                        const bool b2= _P2 < 4 ? true : false;
+                        const bool b3= _P3 < 4 ? true : false;
+                        const bool b4= _P4 < 4 ? true : false;
+                        const bool b5= _P5 < 4 ? true : false;
+                        const bool b6= _P6 < 4 ? true : false;
+                        const bool b7= _P7 < 4 ? true : false;
+                        res= select_v8f32<b0, b1, b2, b3, b4, b5, b6, b7>::
+                                v(lo2lo_lo2hi, hi2lo_hi2hi);
+                }
 #endif
-	}
-	if (do_zero) {
+        }
+        if (do_zero) {
                 const unsigned z0= (_P0<0 ? 0 : -1);
                 const unsigned z1= (_P1<0 ? 0 : -1);
                 const unsigned z2= (_P2<0 ? 0 : -1);
@@ -1780,17 +1786,17 @@ __m256 x86vec::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
                 const unsigned z6= (_P6<0 ? 0 : -1);
                 const unsigned z7= (_P7<0 ? 0 : -1);
                 const __m256 zm= const_v8u32<z0, z1, z2, z3,
-					     z4, z5, z6, z7>::fv();
+                                             z4, z5, z6, z7>::fv();
                 // zero with AND mask
                 res = _mm256_and_ps(a, zm);
-	}
-	return res;
+        }
+        return res;
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
-	  int _P4, int _P5, int _P6, int _P7>
+          int _P4, int _P5, int _P6, int _P7>
 __m256 x86vec::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
-				 _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
+                                 _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
 {
         // Combine all the indexes into a single bitfield, with 4 bits
         // for each
@@ -1801,14 +1807,14 @@ __m256 x86vec::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
         if ((m1 & 0x88888888 & m2) == 0) {
                 // no elements from b
                 return perm1_v8f32<_P0, _P1, _P2, _P3, 
-				   _P4, _P5, _P6, _P7>::v(a);
+                                   _P4, _P5, _P6, _P7>::v(a);
         }
         if (((m1^0x88888888) & 0x88888888 & m2) == 0) {
                 // no elements from a
                 return perm1_v8f32<_P0 & ~8, _P1 & ~8,
-				   _P2 & ~8, _P3 & ~8,
-				   _P4 & ~8, _P5 & ~8,
-				   _P6 & ~8, _P7 & ~8>::v(b);
+                                   _P2 & ~8, _P3 & ~8,
+                                   _P4 & ~8, _P5 & ~8,
+                                   _P6 & ~8, _P7 & ~8>::v(b);
         }
         if (((m1 & ~0x88888888) ^ 0x76543210) == 0 && m2 == 0xFFFFFFFF) {
                 // selecting without shuffling or zeroing
@@ -1821,32 +1827,32 @@ __m256 x86vec::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
                 const bool sm6 = _P6 < 8;
                 const bool sm7 = _P7 < 8;
                 return select_v8f32<sm0, sm1, sm2, sm3,
-				    sm4, sm5, sm6, sm7>::v(a, b);
+                                    sm4, sm5, sm6, sm7>::v(a, b);
         }
 
         // select all elements to clear or from 1st vector
         const int ma0 = _P0 < 8 ? _P0 : -1;
-	const int ma1 = _P1 < 8 ? _P1 : -1;
-	const int ma2 = _P2 < 8 ? _P2 : -1;
-	const int ma3 = _P3 < 8 ? _P3 : -1;
+        const int ma1 = _P1 < 8 ? _P1 : -1;
+        const int ma2 = _P2 < 8 ? _P2 : -1;
+        const int ma3 = _P3 < 8 ? _P3 : -1;
         const int ma4 = _P4 < 8 ? _P4 : -1;
-	const int ma5 = _P5 < 8 ? _P5 : -1;
-	const int ma6 = _P6 < 8 ? _P6 : -1;
-	const int ma7 = _P7 < 8 ? _P7 : -1;
-	__m256 a1 = perm1_v8f32<ma0, ma1, ma2, ma3,
-				ma4, ma5, ma6, ma7>::v(a);
-	// select all elements from second vector
-	const int mb0 = _P0 > 7 ? (_P0-8) : -1;
-	const int mb1 = _P1 > 7 ? (_P1-8) : -1;
-	const int mb2 = _P2 > 7 ? (_P2-8) : -1;
-	const int mb3 = _P3 > 7 ? (_P3-8) : -1;
-	const int mb4 = _P4 > 7 ? (_P4-8) : -1;
-	const int mb5 = _P5 > 7 ? (_P5-8) : -1;
-	const int mb6 = _P6 > 7 ? (_P6-8) : -1;
-	const int mb7 = _P7 > 7 ? (_P7-8) : -1;
-	__m256 b1 = perm1_v8f32<mb0, mb1, mb2, mb3,
-				mb4, mb5, mb6, mb7>::v(b);
-	return  _mm256_or_ps(a1 ,b1);
+        const int ma5 = _P5 < 8 ? _P5 : -1;
+        const int ma6 = _P6 < 8 ? _P6 : -1;
+        const int ma7 = _P7 < 8 ? _P7 : -1;
+        __m256 a1 = perm1_v8f32<ma0, ma1, ma2, ma3,
+                                ma4, ma5, ma6, ma7>::v(a);
+        // select all elements from second vector
+        const int mb0 = _P0 > 7 ? (_P0-8) : -1;
+        const int mb1 = _P1 > 7 ? (_P1-8) : -1;
+        const int mb2 = _P2 > 7 ? (_P2-8) : -1;
+        const int mb3 = _P3 > 7 ? (_P3-8) : -1;
+        const int mb4 = _P4 > 7 ? (_P4-8) : -1;
+        const int mb5 = _P5 > 7 ? (_P5-8) : -1;
+        const int mb6 = _P6 > 7 ? (_P6-8) : -1;
+        const int mb7 = _P7 > 7 ? (_P7-8) : -1;
+        __m256 b1 = perm1_v8f32<mb0, mb1, mb2, mb3,
+                                mb4, mb5, mb6, mb7>::v(b);
+        return  _mm256_or_ps(a1 ,b1);
 }
 
 
@@ -1939,7 +1945,7 @@ __m128 x86vec::perm_f32(__m128 a, __m128 b)
 
 #if defined (__AVX__)
 template <int _P0, int _P1, int _P2, int _P3,
-	  int _P4, int _P5, int _P6, int _P7>
+          int _P4, int _P5, int _P6, int _P7>
 __m256 x86vec::perm_f32(__m256 a)
 {
         static_assert(_P0>-2 && _P0 < 8,

@@ -10,8 +10,8 @@ namespace cftal {
         // double unsigned integer
         template <typename _T>
         class duint {
-		static_assert(std::is_unsigned<_T>::value, 
-			      "_T must be unsigned");
+                static_assert(std::is_unsigned<_T>::value, 
+                              "_T must be unsigned");
         public:
                 typedef _T type;
                 enum {
@@ -231,8 +231,8 @@ namespace cftal {
         // double signed integer
         template <typename _T>
         class dint : public duint<typename std::make_unsigned<_T>::type> {
-		static_assert(std::is_signed<_T>::value, 
-			      "_T must be signed");
+                static_assert(std::is_signed<_T>::value, 
+                              "_T must be signed");
         public:
                 typedef _T type;
                 typedef typename std::make_unsigned<_T>::type utype;
@@ -1705,8 +1705,8 @@ cftal::duint<uint64_t>
 cftal::operator+(const duint<uint64_t>& a, const duint<uint64_t>& b)
 {
         uint64_t l, h;
-        __asm__ ("add %4, %0 \n\t"
-                 "adc %5, %1 \n\t"
+        __asm__ ("addq %4, %0 \n\t"
+                 "adcq %5, %1 \n\t"
                  : "=m,r"(l), "=m,r"(h)
                  : "0,0"(a.l()), "1,1"(a.uh()), "re,g"(b.l()), "re,g"(b.uh())
                  : "cc");
@@ -1718,8 +1718,8 @@ cftal::duint<uint64_t>
 cftal::operator+(const duint<uint64_t>& a, const uint64_t& b)
 {
         uint64_t l,h;
-        __asm__ ("add %4, %0 \n\t"
-                 "adc $0, %1 \n\t"
+        __asm__ ("addq %4, %0 \n\t"
+                 "adcq $0, %1 \n\t"
                  : "=m,r"(l), "=m,r"(h)
                  : "0,0"(a.l()), "1,1"(a.uh()), "re,g"(b)
                  : "cc");
@@ -1738,8 +1738,8 @@ cftal::duint<uint64_t>
 cftal::operator-(const duint<uint64_t>& a, const duint<uint64_t>& b)
 {
         uint64_t l,h;
-        __asm__ ("sub %4, %0 \n\t"
-                 "sbb %5, %1 \n\t"
+        __asm__ ("subq %4, %0 \n\t"
+                 "sbbq %5, %1 \n\t"
                  : "=m,r"(l), "=m,r"(h)
                  : "0,0"(a.l()), "1,1"(a.uh()), "re,g"(b.l()), "re,g"(b.uh())
                  : "cc");
@@ -1751,8 +1751,8 @@ cftal::duint<uint64_t>
 cftal::operator-(const duint<uint64_t>& a, const uint64_t& b)
 {
         uint64_t l,h;
-        __asm__ ("sub %4, %0 \n\t"
-                 "sbb $0, %1 \n\t"
+        __asm__ ("subq %4, %0 \n\t"
+                 "sbbq $0, %1 \n\t"
                  : "=m,r"(l), "=m,r"(h)
                  : "0,0"(a.l()), "1,1"(a.uh()), "re,g"(b)
                  : "cc");
@@ -1773,11 +1773,11 @@ cftal::operator*(const duint<uint64_t>& a, const duint<uint64_t>& b)
         uint64_t l, h;
         uint64_t ah = a.uh();
         uint64_t bh= b.uh();
-        __asm__ ("imul %[bl], %[ah] \n\t"
-                 "imul %[al], %[bh] \n\t"
-                 "mul %[bl]\n\t"
-                 "add %[bh], %[ah] \n\t"
-                 "add %[ah], %[bl] \n\t"
+        __asm__ ("imulq %[bl], %[ah] \n\t"
+                 "imulq %[al], %[bh] \n\t"
+                 "mulq %[bl]\n\t"
+                 "addq %[bh], %[ah] \n\t"
+                 "addq %[ah], %[bl] \n\t"
                  : [al] "=a"(l), [bl] "=d" (h),
                    [ah] "+r" (ah), [bh] "+r" (bh)
                  : "0"(a.l()), "1"(b.l())
@@ -1791,9 +1791,9 @@ cftal::operator*(const duint<uint64_t>& a, const uint64_t& b)
 {
         uint64_t l, h;
         uint64_t ah = a.uh();
-        __asm__ ("imul %[bl], %[ah] \n\t"
-                 "mul %[bl]\n\t"
-                 "add %[ah], %[bl] \n\t"
+        __asm__ ("imulq %[bl], %[ah] \n\t"
+                 "mulq %[bl]\n\t"
+                 "addq %[ah], %[bl] \n\t"
                  : [al] "=a"(l), [bl] "=d" (h),
                    [ah] "+r" (ah)
                  : "0"(a.l()), "1"(b)
