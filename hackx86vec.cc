@@ -4,6 +4,7 @@
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
 #include <cftal/x86vec_traits.h>
+#include <cftal/x86vec_store.h>
 #include <cmath>
 #include <x86vec_test.h>
 #include <cstdint>
@@ -555,7 +556,19 @@ __m256d tr2b(__m256d a)
 
 int main(int argc, char** argv)
 {
-
+        using namespace cftal;
+        using namespace x86vec;
+        uint64_t v(18446744073709551615U);
+        divisor<v2u64, uint64_t> dd(v);
+        v2u64 u(2210649152261252908U, 18446663117077536102U);
+        v2u64 q(u / dd);
+        v2u64 r(u % dd); 
+        uint64_t rr[2];
+        rr[0]= extract<0>(r);
+        rr[1]= extract<1>(r);
+        std::cout << rr[0] << ' ' << rr[1] << std::endl; 
+                
+#if 0
         // x86cftal::vec::v2f64 t=exp(x86cftal::vec::v2f64(0.0));
         // static_cast<void>(t);
         // calc_pi();
@@ -599,6 +612,7 @@ int main(int argc, char** argv)
         r=tr2a(a, b);
         id.assign(2, 6, 3, 7);
         rc &= check_v4f64("perm2_v4f64", r, id);
+#endif
 #endif
 #endif
         return 0;
