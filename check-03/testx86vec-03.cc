@@ -1,4 +1,4 @@
-#include <string>
+ #include <string>
 #include <iomanip>
 #include <fstream>
 #include <sstream>
@@ -315,7 +315,7 @@ bool x86vec::test::test_data(const func_data<_V>& tf, std::ostream& os)
 #if 0
                 std::cout << "ulp: " << ulps << std::endl;
 #endif
-                if (ulps < 3 && no_signs(is_err) && elements_equal(res) ) {
+                if (ulps < 1 && no_signs(is_err) && elements_equal(res) ) {
 #if 0
                         std::cout << "passed\n";
 #endif
@@ -333,6 +333,7 @@ bool x86vec::test::test_data(const func_data<_V>& tf, std::ostream& os)
                 std::cerr << "rel_err = " << extract<0>(re)
                           << " abs_err = " << extract<0>(ae)
                           << std::endl;
+                std::cerr << "ulp: " << ulps << std::endl;
                 ++errs;
                 rc= false;
         }
