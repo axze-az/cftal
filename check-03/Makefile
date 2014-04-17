@@ -190,6 +190,7 @@ clean:
 	-$(RM) -rf *.i *.o* *.so.*  *.a *.so *.map *.s 
 	-$(RM) testx86vec-03 testx86vec-03-g
 	-$(RM) testemuvec-03 testemuvec-03-g
+	-$(RM) sde*.txt
 
 distclean: clean
 	-$(RM) -rf .depend .*.dep* *~
