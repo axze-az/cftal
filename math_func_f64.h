@@ -17,11 +17,11 @@ namespace cftal {
                         // the integer results contains
                         // only the lower bits of N
                         int32_t
-			__attribute__((__visibility__("internal")))
-			__ieee754_rem_pio2(double x, double *y);
+                        __attribute__((__visibility__("internal")))
+                        __ieee754_rem_pio2(double x, double *y);
                         int
-			__attribute__((__visibility__("internal")))
-			__kernel_rem_pio2(double *x, double *y, int e0,
+                        __attribute__((__visibility__("internal")))
+                        __kernel_rem_pio2(double *x, double *y, int e0,
                                           int nx, int prec,
                                           const int32_t *ipio2);
 
@@ -105,14 +105,14 @@ namespace cftal {
                                     const vf_type& t, const vf_type& f) {
                                 return msk ? t : f;
                         }
-			static
-			vf_type gather(const double* p, vi_type idx, int sc) {
-				const char* pc= 
-					reinterpret_cast<const char*>(p);
-				const char* d = pc + idx * sc;
-				vf_type r(*reinterpret_cast<const double*>(d));
-				return r;
-			}
+                        static
+                        vf_type gather(const double* p, vi_type idx, int sc) {
+                                const char* pc= 
+                                        reinterpret_cast<const char*>(p);
+                                const char* d = pc + idx * sc;
+                                vf_type r(*reinterpret_cast<const double*>(d));
+                                return r;
+                        }
                         static
                         vf_type insert_exp(const vi_type& e) {
                                 ud_t t;
@@ -126,45 +126,45 @@ namespace cftal {
                                 return (t._u >> bits) & 0x7FF;
                         }
 
-			static
-			vi_type extract_high_word(const vf_type& d) {
-				ud_t t;
-				t._d = d;
-				return vi_type(t._u >>32);
-			}
+                        static
+                        vi_type extract_high_word(const vf_type& d) {
+                                ud_t t;
+                                t._d = d;
+                                return vi_type(t._u >>32);
+                        }
 
-			static
-			vi_type extract_low_word(const vf_type& d) {
-				ud_t t;
-				t._d = d;
-				return vi_type(t._u);
-			}
+                        static
+                        vi_type extract_low_word(const vf_type& d) {
+                                ud_t t;
+                                t._d = d;
+                                return vi_type(t._u);
+                        }
 
-			static
-			vf_type insert_high_word(const vf_type& d, 
-						 const vi_type& w) {
-				ud_t t;
-				t._d = d;
-				uint64_t hh= w;
-				t._u = (t._u & 0xFFFFFFFF) | (hh << 32);
-				return t._d;
-			}
+                        static
+                        vf_type insert_high_word(const vf_type& d, 
+                                                 const vi_type& w) {
+                                ud_t t;
+                                t._d = d;
+                                uint64_t hh= w;
+                                t._u = (t._u & 0xFFFFFFFF) | (hh << 32);
+                                return t._d;
+                        }
 
-			static
-			vf_type insert_low_word(const vf_type& d,
-						const vi_type& w) {
-				ud_t t;
-				t._d = d;
-				t._u = (t._u & 0xFFFFFFFF00000000ULL) | w;
-				return t._d;
-			}
+                        static
+                        vf_type insert_low_word(const vf_type& d,
+                                                const vi_type& w) {
+                                ud_t t;
+                                t._d = d;
+                                t._u = (t._u & 0xFFFFFFFF00000000ULL) | w;
+                                return t._d;
+                        }
 
-			static 
-			vf_type combine_words(const vi_type& l,
-					      const vi_type& h) {
-				vf_type t(insert_low_word(0.0, l));
-				return insert_high_word(t, h);
-			}
+                        static 
+                        vf_type combine_words(const vi_type& l,
+                                              const vi_type& h) {
+                                vf_type t(insert_low_word(0.0, l));
+                                return insert_high_word(t, h);
+                        }
 
                         static
                         vf_type cvt_i_to_f(const vi_type& i) {
@@ -192,65 +192,65 @@ namespace cftal {
                         typedef typename _T::vmi_type vmi_type;
 
                         typedef d_real<vf_type> dvf_type;
-			typedef func_core<double, _T> my_type;
+                        typedef func_core<double, _T> my_type;
 
-			static const dvf_type m_exp_c_k2[];
-			static const dvf_type m_log_c_k2[];
-			static const dvf_type m_sin_c_k2[];
-			static const dvf_type m_cos_c_k2[];
+                        static const dvf_type m_exp_c_k2[];
+                        static const dvf_type m_log_c_k2[];
+                        static const dvf_type m_sin_c_k2[];
+                        static const dvf_type m_cos_c_k2[];
 
                         static dvf_type 
-			exp_k2(const dvf_type& dvf);
+                        exp_k2(const dvf_type& dvf);
 
                         static vf_type 
-			native_exp_k(const vf_type& v);
+                        native_exp_k(const vf_type& v);
 
                         static dvf_type 
-			log_k2(const dvf_type& dvf);
+                        log_k2(const dvf_type& dvf);
 
-			static vf_type
-			native_log_k(const vf_type& v);
+                        static vf_type
+                        native_log_k(const vf_type& v);
 
-			// argument reduction for all trigonometric
-			// functions, reduction by %pi/2, the low bits
-			// of multiple of %pi/2 is returned in the
-			// second part of the return type
+                        // argument reduction for all trigonometric
+                        // functions, reduction by %pi/2, the low bits
+                        // of multiple of %pi/2 is returned in the
+                        // second part of the return type
                         static std::pair<dvf_type, vi_type>
                         reduce_trig_arg_k(const vf_type& v);
-			// core sine, cosine calculation
-			static std::pair<dvf_type, dvf_type>
-			sin_cos_k(const vf_type& v);
+                        // core sine, cosine calculation
+                        static std::pair<dvf_type, dvf_type>
+                        sin_cos_k(vf_type v);
 
-			// argument reduction for all trigonometric
-			// functions, reduction by %pi/2, the low bits
-			// of multiple of %pi/2 is returned in the
-			// second part of the return type
-			static std::pair<vf_type, vi_type>
-			native_reduce_trig_arg_k(const vf_type& v);
-			// core sine, cosine calculation
-			static std::pair<vf_type, vf_type>
-			native_sin_cos_k(const vf_type& v);
+                        // argument reduction for all trigonometric
+                        // functions, reduction by %pi/2, the low bits
+                        // of multiple of %pi/2 is returned in the
+                        // second part of the return type
+                        static std::pair<vf_type, vi_type>
+                        native_reduce_trig_arg_k(const vf_type& v);
+                        // core sine, cosine calculation
+                        static std::pair<vf_type, vf_type>
+                        native_sin_cos_k(const vf_type& v);
 
-			// cofficients for atan2
-			static const dvf_type m_atan2_c_k2[];
+                        // cofficients for atan2
+                        static const dvf_type m_atan2_c_k2[];
 
-			// atan2 kernel
-			static dvf_type
-			atan2_k2(const dvf_type& x, const dvf_type& y);
+                        // atan2 kernel
+                        static dvf_type
+                        atan2_k2(const dvf_type& x, const dvf_type& y);
 
-			// native atan2 kernel
-			static vf_type
-			native_atan2_k(const vf_type& x, const vf_type& y);
+                        // native atan2 kernel
+                        static vf_type
+                        native_atan2_k(const vf_type& x, const vf_type& y);
 
                         static vf_type pow2i(const vi_type& vi);
                         static vf_type ldexp(const vf_type& vf,
                                              const vi_type& vi);
-			static vf_type frexp(const vf_type& vf,
-					     vi_type* vi);
+                        static vf_type frexp(const vf_type& vf,
+                                             vi_type* vi);
 
                         static vi_type ilogbp1(const vf_type& vi);
                         static vi_type ilogb(const vf_type& vf);
-		};
+                };
 
         } // end math
 } // end cftal
@@ -293,8 +293,8 @@ ldexp(const vf_type& vd,
         m = min(vi_type(0x7ff), m);
 
         vf_type fm(_T::insert_exp(m));
-	fm = fm* fm;
-	fm = fm* fm;
+        fm = fm* fm;
+        fm = fm* fm;
         vf_type r(vd * fm /* * fm * fm * fm*/ );
         q += 0x3ff;
         // q = max(vi_type(0), q);
@@ -310,45 +310,45 @@ cftal::math::func_core<double, _T>::
 frexp(const vf_type& vd,
       vi_type* ve)
 {
-	// normal numbers:
-	vi_type hi_word(_T::extract_high_word(vd));
-	vi_type lo_word(_T::extract_low_word(vd));
+        // normal numbers:
+        vi_type hi_word(_T::extract_high_word(vd));
+        vi_type lo_word(_T::extract_low_word(vd));
 
-	vi_type value_head(hi_word & vi_type(0x7fffffff));
+        vi_type value_head(hi_word & vi_type(0x7fffffff));
 
-	vi_type is_inf_nan_zero((value_head >= 0x7ff00000) |
-				((value_head| lo_word)==vi_type(0)));
-	vi_type is_denom(value_head < 0x00100000);
+        vi_type is_inf_nan_zero((value_head >= 0x7ff00000) |
+                                ((value_head| lo_word)==vi_type(0)));
+        vi_type is_denom(value_head < 0x00100000);
 
-	// exponent:
-	vi_type e((value_head >> 20) - vi_type(1022));
+        // exponent:
+        vi_type e((value_head >> 20) - vi_type(1022));
 
-	// denormals
-	// first multiply with 2^54
-	// const vf_type two54=1.80143985094819840000e+16;
-	const vf_type two54=0x1.p54;
-	vf_type vden(two54 * vd);
-	vi_type hden(_T::extract_high_word(vden));
-	vi_type lden(_T::extract_low_word(vden));
-	vi_type value_head_den(hden & vi_type(0x7fffffff));
-	vi_type eden((value_head_den>>20) - vi_type(1022+54));
+        // denormals
+        // first multiply with 2^54
+        // const vf_type two54=1.80143985094819840000e+16;
+        const vf_type two54=0x1.p54;
+        vf_type vden(two54 * vd);
+        vi_type hden(_T::extract_high_word(vden));
+        vi_type lden(_T::extract_low_word(vden));
+        vi_type value_head_den(hden & vi_type(0x7fffffff));
+        vi_type eden((value_head_den>>20) - vi_type(1022+54));
 
-	// select denom/normal
-	e = _T::sel(is_denom, eden, e);
-	hi_word = _T::sel(is_denom, hden, hi_word);
-	lo_word = _T::sel(is_denom, lden, lo_word);
-	// insert exponent
-	hi_word = (hi_word & vi_type(0x800fffff)) | vi_type(0x3fe00000);
-	// combine low and high word
-	vf_type frc(_T::combine_words(lo_word, hi_word));
-	// inf, nan, zero
-	vmf_type f_inz(_T::vmi_to_vmf(is_inf_nan_zero));
-	e= _T::sel(is_inf_nan_zero, vi_type(0), e);
-	frc = _T::sel(f_inz, vd, frc);
+        // select denom/normal
+        e = _T::sel(is_denom, eden, e);
+        hi_word = _T::sel(is_denom, hden, hi_word);
+        lo_word = _T::sel(is_denom, lden, lo_word);
+        // insert exponent
+        hi_word = (hi_word & vi_type(0x800fffff)) | vi_type(0x3fe00000);
+        // combine low and high word
+        vf_type frc(_T::combine_words(lo_word, hi_word));
+        // inf, nan, zero
+        vmf_type f_inz(_T::vmi_to_vmf(is_inf_nan_zero));
+        e= _T::sel(is_inf_nan_zero, vi_type(0), e);
+        frc = _T::sel(f_inz, vd, frc);
 
-	if (ve != nullptr)
-		*ve= e;
-	return frc;
+        if (ve != nullptr)
+                *ve= e;
+        return frc;
 }
 
 template <typename _T>
@@ -515,9 +515,9 @@ native_exp_k(const vf_type& d)
 
         vf_type m2= rint(d * ctbl::m_1_ln2.h());
         vf_type r= (d - ctbl::m_ln2.h()*m2) * inv_k;
-	vf_type m=m2;
+        vf_type m=m2;
 
-	vf_type s = ctbl::inv_fac[9].h();
+        vf_type s = ctbl::inv_fac[9].h();
         // s = s * r + ctbl::inv_fac[8];
         // s = s * r + ctbl::inv_fac[7];
         // s = s * r + ctbl::inv_fac[6];
@@ -552,7 +552,7 @@ func_core<double, _T>::
 reduce_trig_arg_k(const vf_type& d)
 {
         using ctbl = impl::d_real_constants<dvf_type, double>;
-	constexpr double large_arg(2.0e8);
+        constexpr double large_arg(2.0e8);
         vmf_type v_small_arg(abs(d) < vf_type(large_arg));
         // small argument reduction
         // reduce by pi half
@@ -563,31 +563,31 @@ reduce_trig_arg_k(const vf_type& d)
 
         if (!all_signs(v_small_arg)) {
                 // reduce the large arguments
-		constexpr std::size_t N=_T::NVF();
-		constexpr std::size_t NI=_T::NVI();
-		struct alignas(N*sizeof(double)) v_d {
-			double _sc[N];
-		} tf, d0_l, d0_h;
-		struct alignas(NI*sizeof(int)) v_i {
-			int32_t _sc[NI];
-		} ti;
-		mem::aligned::store(tf._sc, d);
-		mem::aligned::store(ti._sc, q);
-		mem::aligned::store(d0_l._sc, d0.l());
-		mem::aligned::store(d0_h._sc, d0.h());
-		for (std::size_t i=0; i<N; ++i) {
-			if (fabs(tf._sc[i]) >= large_arg) {
-				double y[2];
-				ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
-								   y);
-				d0_l._sc[i]= y[1];
- 				d0_h._sc[i]= y[0];
-			}
-		}
-		vf_type rh(mem::aligned::load(d0_h._sc));
-		vf_type rl(mem::aligned::load(d0_l._sc));
-		d0 = dvf_type(rh, rl);
-		q = mem::aligned::load(ti._sc); 
+                constexpr std::size_t N=_T::NVF();
+                constexpr std::size_t NI=_T::NVI();
+                struct alignas(N*sizeof(double)) v_d {
+                        double _sc[N];
+                } tf, d0_l, d0_h;
+                struct alignas(NI*sizeof(int)) v_i {
+                        int32_t _sc[NI];
+                } ti;
+                mem::aligned::store(tf._sc, d);
+                mem::aligned::store(ti._sc, q);
+                mem::aligned::store(d0_l._sc, d0.l());
+                mem::aligned::store(d0_h._sc, d0.h());
+                for (std::size_t i=0; i<N; ++i) {
+                        if (fabs(tf._sc[i]) >= large_arg) {
+                                double y[2];
+                                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
+                                                                   y);
+                                d0_l._sc[i]= y[1];
+                                d0_h._sc[i]= y[0];
+                        }
+                }
+                vf_type rh(mem::aligned::load(d0_h._sc));
+                vf_type rl(mem::aligned::load(d0_l._sc));
+                d0 = dvf_type(rh, rl);
+                q = mem::aligned::load(ti._sc); 
         }
         return std::make_pair(d0, q);
 }
@@ -596,65 +596,65 @@ template <typename _T>
 const 
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::m_sin_c_k2[]= {
-	// +1/21!
-	dvf_type(  1.9572941063391262595198e-20, -1.3643503830087908487197e-36),
-	// -1/19!
-	dvf_type( -8.2206352466243294955370e-18, -2.2141894119604265363725e-34),
-	// +1/17!
-	dvf_type(  2.8114572543455205981105e-15,  1.6508842730861432599403e-31),
-	// -1/15!
-	dvf_type( -7.6471637318198164055138e-13, -7.0387287773345300106125e-30),
-	// +1/13!
-	dvf_type(  1.6059043836821613340863e-10,  1.2585294588752098052117e-26),
-	// -1/11!
-	dvf_type( -2.5052108385441720223866e-08,  1.4488140709359119660293e-24),
-	// +1/9!
-	dvf_type(  2.7557319223985892510951e-06, -1.8583932740464720810392e-22),
-	// -1/7!
-	dvf_type( -1.9841269841269841252632e-04, -1.7209558293420705286779e-22),
-	// +1/5!
-	dvf_type(  8.3333333333333332176851e-03,  1.1564823173178713802252e-19),
-	// -1/3!
-	dvf_type( -1.6666666666666665741481e-01, -9.2518585385429706566156e-18)
+        // +1/21!
+        dvf_type(  1.9572941063391262595198e-20, -1.3643503830087908487197e-36),
+        // -1/19!
+        dvf_type( -8.2206352466243294955370e-18, -2.2141894119604265363725e-34),
+        // +1/17!
+        dvf_type(  2.8114572543455205981105e-15,  1.6508842730861432599403e-31),
+        // -1/15!
+        dvf_type( -7.6471637318198164055138e-13, -7.0387287773345300106125e-30),
+        // +1/13!
+        dvf_type(  1.6059043836821613340863e-10,  1.2585294588752098052117e-26),
+        // -1/11!
+        dvf_type( -2.5052108385441720223866e-08,  1.4488140709359119660293e-24),
+        // +1/9!
+        dvf_type(  2.7557319223985892510951e-06, -1.8583932740464720810392e-22),
+        // -1/7!
+        dvf_type( -1.9841269841269841252632e-04, -1.7209558293420705286779e-22),
+        // +1/5!
+        dvf_type(  8.3333333333333332176851e-03,  1.1564823173178713802252e-19),
+        // -1/3!
+        dvf_type( -1.6666666666666665741481e-01, -9.2518585385429706566156e-18)
 };
 
 template <typename _T>
 const 
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::m_cos_c_k2[]= {
-	// -1/22!
-	dvf_type( -8.8967913924505740778892e-22,  7.9114026148723762170263e-38),
-	// +1/20!
-	dvf_type(  4.1103176233121648440650e-19,  1.4412973378659527149817e-36),
-	// -1/18!
-	dvf_type( -1.5619206968586225271148e-16, -1.1910679660273754002389e-32),
-	// +1/16!
-	dvf_type(  4.7794773323873852534462e-14,  4.3992054858340812566328e-31),
-	// -1/14!
-	dvf_type( -1.1470745597729724507297e-11, -2.0655512752830745424540e-28),
-	// +1/12!
-	dvf_type(  2.0876756987868100186555e-09, -1.2073450591132599716911e-25),
-	// -1/10!
-	dvf_type( -2.7557319223985888275786e-07, -2.3767714622250297318518e-23),
-	// +1/8!
-	dvf_type(  2.4801587301587301565790e-05,  2.1511947866775881608473e-23),
-	// -1/6!
-	dvf_type( -1.3888888888888889418943e-03,  5.3005439543735770590566e-20),
-	// +1/4!
-	dvf_type(  4.1666666666666664353702e-02,  2.3129646346357426641539e-18)
+        // -1/22!
+        dvf_type( -8.8967913924505740778892e-22,  7.9114026148723762170263e-38),
+        // +1/20!
+        dvf_type(  4.1103176233121648440650e-19,  1.4412973378659527149817e-36),
+        // -1/18!
+        dvf_type( -1.5619206968586225271148e-16, -1.1910679660273754002389e-32),
+        // +1/16!
+        dvf_type(  4.7794773323873852534462e-14,  4.3992054858340812566328e-31),
+        // -1/14!
+        dvf_type( -1.1470745597729724507297e-11, -2.0655512752830745424540e-28),
+        // +1/12!
+        dvf_type(  2.0876756987868100186555e-09, -1.2073450591132599716911e-25),
+        // -1/10!
+        dvf_type( -2.7557319223985888275786e-07, -2.3767714622250297318518e-23),
+        // +1/8!
+        dvf_type(  2.4801587301587301565790e-05,  2.1511947866775881608473e-23),
+        // -1/6!
+        dvf_type( -1.3888888888888889418943e-03,  5.3005439543735770590566e-20),
+        // +1/4!
+        dvf_type(  4.1666666666666664353702e-02,  2.3129646346357426641539e-18)
 };
 
 
 template <typename _T>
 __attribute__((flatten, noinline))
 std::pair<typename cftal::math::func_core<double, _T>::dvf_type,
-	  typename cftal::math::func_core<double, _T>::dvf_type>
-cftal::math::func_core<double, _T>::sin_cos_k(const vf_type& d)
+          typename cftal::math::func_core<double, _T>::dvf_type>
+cftal::math::func_core<double, _T>::sin_cos_k(vf_type d)
 {
         // using ctbl = impl::d_real_constants<dvf_type, double>;
-	std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
-	const vi_type& q= rr.second;
-	const dvf_type& dh= rr.first;
+        std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
+        const vi_type& q= rr.second;
+        const dvf_type& dh= rr.first;
 
         vmi_type q_and_2((q & vi_type(2))==vi_type(2));
         vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
@@ -662,34 +662,34 @@ cftal::math::func_core<double, _T>::sin_cos_k(const vf_type& d)
         vmi_type q_and_1((q & vi_type(1))==vi_type(1));
         vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
 
-	// calculate sin + cos
+        // calculate sin + cos
         dvf_type x= sqr(dh);
         dvf_type s, c;
 
-	s = m_sin_c_k2[0];
-	for (unsigned i=0; i<10; ++i)
-		s = s * x + m_sin_c_k2[i];
+        s = m_sin_c_k2[0];
+        for (unsigned i=0; i<10; ++i)
+                s = s * x + m_sin_c_k2[i];
         s = s * x + vf_type(1.0);
         s = s * dh;
 
-	c= m_cos_c_k2[0];
-	for (unsigned i=0; i<10; ++i)
-		c = c * x + m_cos_c_k2[i];
-	c = c * x - vf_type(0.5);
-	c = c * x + vf_type(1.0);
-	// swap sin/cos if q & 1
-	dvf_type rsin(
-		_T::sel(q_and_1_f, c.h(), s.h()),
-		_T::sel(q_and_1_f, c.l(), s.l()));
-	dvf_type rcos(
-		_T::sel(q_and_1_f, s.h(), c.h()),
-		_T::sel(q_and_1_f, s.l(), c.l()));
-	// swap signs 
-	rsin.h() = mulsign(rsin.h(), q_and_2_f);
-	rsin.l() = mulsign(rsin.l(), q_and_2_f);
-	rcos.h() = mulsign(rcos.h(), q_and_2_f ^ q_and_1_f);
-	rcos.l() = mulsign(rcos.l(), q_and_2_f ^ q_and_1_f);
-	return std::make_pair(rsin, rcos);
+        c= m_cos_c_k2[0];
+        for (unsigned i=0; i<10; ++i)
+                c = c * x + m_cos_c_k2[i];
+        c = c * x - vf_type(0.5);
+        c = c * x + vf_type(1.0);
+        // swap sin/cos if q & 1
+        dvf_type rsin(
+                _T::sel(q_and_1_f, c.h(), s.h()),
+                _T::sel(q_and_1_f, c.l(), s.l()));
+        dvf_type rcos(
+                _T::sel(q_and_1_f, s.h(), c.h()),
+                _T::sel(q_and_1_f, s.l(), c.l()));
+        // swap signs 
+        rsin.h() = mulsign(rsin.h(), q_and_2_f);
+        rsin.l() = mulsign(rsin.l(), q_and_2_f);
+        rcos.h() = mulsign(rcos.h(), q_and_2_f ^ q_and_1_f);
+        rcos.l() = mulsign(rcos.l(), q_and_2_f ^ q_and_1_f);
+        return std::make_pair(rsin, rcos);
 }
 
 
@@ -705,17 +705,17 @@ native_reduce_trig_arg_k(const vf_type& d)
 #define PI4_C 1.1258708853173288931e-18
 #define PI4_D 1.7607799325916000908e-27
 
-	constexpr double large_arg(2.0e8);
+        constexpr double large_arg(2.0e8);
         vmf_type v_small_arg(abs(d) < vf_type(large_arg));
 
-	vf_type qf(rint(d * (2 * M_1_PI)));
-	vi_type q(_T::cvt_f_to_i(qf));
-	
-	vf_type d0(d);
-	d0 = d0 - qf * (2*PI4_A);
-	d0 = d0 - qf * (2*PI4_B);
-	d0 = d0 - qf * (2*PI4_C);
-	d0 = d0 - qf * (2*PI4_D);
+        vf_type qf(rint(d * (2 * M_1_PI)));
+        vi_type q(_T::cvt_f_to_i(qf));
+        
+        vf_type d0(d);
+        d0 = d0 - qf * (2*PI4_A);
+        d0 = d0 - qf * (2*PI4_B);
+        d0 = d0 - qf * (2*PI4_C);
+        d0 = d0 - qf * (2*PI4_D);
 
 #undef PI4_A
 #undef PI4_B
@@ -724,27 +724,27 @@ native_reduce_trig_arg_k(const vf_type& d)
 
         if (!all_signs(v_small_arg)) {
                 // reduce the large arguments
-		constexpr std::size_t N=_T::NVF();
-		constexpr std::size_t NI=_T::NVI();
-		struct alignas(N*sizeof(double)) v_d {
-			double _sc[N];
-		} tf, d0_l;
-		struct alignas(NI*sizeof(int)) v_i {
-			int32_t _sc[NI];
-		} ti;
-		mem::aligned::store(tf._sc, d);
-		mem::aligned::store(ti._sc, q);
-		mem::aligned::store(d0_l._sc, d0);
-		for (std::size_t i=0; i<N; ++i) {
-			if (fabs(tf._sc[i]) >= large_arg) {
-				double y[2];
-				ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
-								   y);
-				d0_l._sc[i]= y[1] + y[0];
-			}
-		}
-		d0 = mem::aligned::load(d0_l._sc);
-		q = mem::aligned::load(ti._sc); 
+                constexpr std::size_t N=_T::NVF();
+                constexpr std::size_t NI=_T::NVI();
+                struct alignas(N*sizeof(double)) v_d {
+                        double _sc[N];
+                } tf, d0_l;
+                struct alignas(NI*sizeof(int)) v_i {
+                        int32_t _sc[NI];
+                } ti;
+                mem::aligned::store(tf._sc, d);
+                mem::aligned::store(ti._sc, q);
+                mem::aligned::store(d0_l._sc, d0);
+                for (std::size_t i=0; i<N; ++i) {
+                        if (fabs(tf._sc[i]) >= large_arg) {
+                                double y[2];
+                                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
+                                                                   y);
+                                d0_l._sc[i]= y[1] + y[0];
+                        }
+                }
+                d0 = mem::aligned::load(d0_l._sc);
+                q = mem::aligned::load(ti._sc); 
         }
         return std::make_pair(d0, q);
 }
@@ -752,77 +752,77 @@ native_reduce_trig_arg_k(const vf_type& d)
 template <typename _T>
 __attribute__((flatten, noinline))
 std::pair<typename cftal::math::func_core<double, _T>::vf_type,
-	  typename cftal::math::func_core<double, _T>::vf_type>
+          typename cftal::math::func_core<double, _T>::vf_type>
 cftal::math::func_core<double, _T>::
 native_sin_cos_k(const vf_type& d)
 {
-	std::pair<vf_type, vi_type> rq(
-		native_reduce_trig_arg_k(d));
-	vf_type& x= rq.first;
-	const vi_type& q= rq.second;
+        std::pair<vf_type, vi_type> rq(
+                native_reduce_trig_arg_k(d));
+        vf_type& x= rq.first;
+        const vi_type& q= rq.second;
 
-	vf_type x2(x*x);
+        vf_type x2(x*x);
 
-	vf_type s, c;
-	s = 1.58938307283228937328511e-10;
-	s = s * x2 - 2.50506943502539773349318e-08;
-	s = s * x2 + 2.75573131776846360512547e-06;
-	s = s * x2 - 0.000198412698278911770864914;
-	s = s * x2 + 0.0083333333333191845961746;
-	s = s * x2 - 0.166666666666666130709393;
-	s = s * x2 + 1.0;
-	s = s * x;
+        vf_type s, c;
+        s = 1.58938307283228937328511e-10;
+        s = s * x2 - 2.50506943502539773349318e-08;
+        s = s * x2 + 2.75573131776846360512547e-06;
+        s = s * x2 - 0.000198412698278911770864914;
+        s = s * x2 + 0.0083333333333191845961746;
+        s = s * x2 - 0.166666666666666130709393;
+        s = s * x2 + 1.0;
+        s = s * x;
 
-	c = -1.13615350239097429531523e-11;
-	c = c * x2 + 2.08757471207040055479366e-09;
-	c = c * x2 - 2.75573144028847567498567e-07;
-	c = c * x2 + 2.48015872890001867311915e-05;
-	c = c * x2 - 0.00138888888888714019282329;
-	c = c * x2 + 0.0416666666666665519592062;
-	c = c * x2 - 0.5;
-	c = c * x2 + 1.0; 
+        c = -1.13615350239097429531523e-11;
+        c = c * x2 + 2.08757471207040055479366e-09;
+        c = c * x2 - 2.75573144028847567498567e-07;
+        c = c * x2 + 2.48015872890001867311915e-05;
+        c = c * x2 - 0.00138888888888714019282329;
+        c = c * x2 + 0.0416666666666665519592062;
+        c = c * x2 - 0.5;
+        c = c * x2 + 1.0; 
 
         vmi_type q_and_2((q & vi_type(2))==vi_type(2));
         vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
         vmi_type q_and_1((q & vi_type(1))==vi_type(1));
         vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
 
-	// swap sin/cos if q & 1
-	vf_type rs(_T::sel(q_and_1_f, c, s));
-	vf_type rc(_T::sel(q_and_1_f, s, c));
-	// swap signs 
-	rs = mulsign(rs, q_and_2_f);
-	rc = mulsign(rc, q_and_2_f ^ q_and_1_f);
+        // swap sin/cos if q & 1
+        vf_type rs(_T::sel(q_and_1_f, c, s));
+        vf_type rc(_T::sel(q_and_1_f, s, c));
+        // swap signs 
+        rs = mulsign(rs, q_and_2_f);
+        rc = mulsign(rc, q_and_2_f ^ q_and_1_f);
 
-	return std::make_pair(rs, rc);
+        return std::make_pair(rs, rc);
 }
 
 template <typename _T>
 const 
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::m_atan2_c_k2[]= {
-	dvf_type( 1.0)/vf_type(45.0),
-	dvf_type(-1.0)/vf_type(43.0),
-	dvf_type( 1.0)/vf_type(41.0),
-	dvf_type(-1.0)/vf_type(39.0),
-	dvf_type( 1.0)/vf_type(37.0),
-	dvf_type(-1.0)/vf_type(35.0),
-	dvf_type( 1.0)/vf_type(33.0),
-	dvf_type(-1.0)/vf_type(31.0),
-	dvf_type( 1.0)/vf_type(29.0),
-	dvf_type(-1.0)/vf_type(27.0),
-	dvf_type( 1.0)/vf_type(25.0),
-	dvf_type(-1.0)/vf_type(23.0),
-	dvf_type( 1.0)/vf_type(21.0),
-	dvf_type(-1.0)/vf_type(19.0),
-	dvf_type( 1.0)/vf_type(17.0),
-	dvf_type(-1.0)/vf_type(15.0),
-	dvf_type( 1.0)/vf_type(13.0),
-	dvf_type(-1.0)/vf_type(11.0),
-	dvf_type( 1.0)/vf_type( 9.0),
-	dvf_type(-1.0)/vf_type( 7.0),
-	dvf_type( 1.0)/vf_type( 5.0),
-	dvf_type(-1.0)/vf_type( 3.0),
+        dvf_type( 1.0)/vf_type(45.0),
+        dvf_type(-1.0)/vf_type(43.0),
+        dvf_type( 1.0)/vf_type(41.0),
+        dvf_type(-1.0)/vf_type(39.0),
+        dvf_type( 1.0)/vf_type(37.0),
+        dvf_type(-1.0)/vf_type(35.0),
+        dvf_type( 1.0)/vf_type(33.0),
+        dvf_type(-1.0)/vf_type(31.0),
+        dvf_type( 1.0)/vf_type(29.0),
+        dvf_type(-1.0)/vf_type(27.0),
+        dvf_type( 1.0)/vf_type(25.0),
+        dvf_type(-1.0)/vf_type(23.0),
+        dvf_type( 1.0)/vf_type(21.0),
+        dvf_type(-1.0)/vf_type(19.0),
+        dvf_type( 1.0)/vf_type(17.0),
+        dvf_type(-1.0)/vf_type(15.0),
+        dvf_type( 1.0)/vf_type(13.0),
+        dvf_type(-1.0)/vf_type(11.0),
+        dvf_type( 1.0)/vf_type( 9.0),
+        dvf_type(-1.0)/vf_type( 7.0),
+        dvf_type( 1.0)/vf_type( 5.0),
+        dvf_type(-1.0)/vf_type( 3.0),
 };
 
 template <typename _T>
@@ -833,35 +833,35 @@ atan2_k2(const dvf_type& cx, const dvf_type& cy)
         vmf_type f_x_lt_z(cx.h() < vf_type(0));
         vmi_type i_x_lt_z(_T::vmf_to_vmi(f_x_lt_z));
         vi_type q(_T::sel(i_x_lt_z, vi_type(-2), vi_type(0)));
-	dvf_type x(_T::sel(f_x_lt_z, -cx.h(), cx.h()),
-		   _T::sel(f_x_lt_z, -cx.l(), cx.l()));
+        dvf_type x(_T::sel(f_x_lt_z, -cx.h(), cx.h()),
+                   _T::sel(f_x_lt_z, -cx.l(), cx.l()));
 
-	vmf_type f_y_gt_x(cy > x);
-	vmi_type i_y_gt_x(_T::vmf_to_vmi(f_y_gt_x));
-	
+        vmf_type f_y_gt_x(cy > x);
+        vmi_type i_y_gt_x(_T::vmf_to_vmi(f_y_gt_x));
+        
         q += _T::sel(i_y_gt_x, vi_type(1), vi_type(0));
 
         // vf_type y = _T::sel(mf, -x, cy);
-	dvf_type y(_T::sel(f_y_gt_x, -(x.h()), cy.h()),
-		   _T::sel(f_y_gt_x, -(x.l()), cy.l()));
+        dvf_type y(_T::sel(f_y_gt_x, -(x.h()), cy.h()),
+                   _T::sel(f_y_gt_x, -(x.l()), cy.l()));
         // x = _T::sel(mf, cy, x);
-	x = dvf_type(_T::sel(f_y_gt_x, cy.h(), x.h()),
-		     _T::sel(f_y_gt_x, cy.l(), x.l()));
-	
-	dvf_type s(y / x);
-	dvf_type t(sqr(s));
+        x = dvf_type(_T::sel(f_y_gt_x, cy.h(), x.h()),
+                     _T::sel(f_y_gt_x, cy.l(), x.l()));
+        
+        dvf_type s(y / x);
+        dvf_type t(sqr(s));
 
-	const std::size_t N= sizeof(m_atan2_c_k2)/sizeof(m_atan2_c_k2[0]);
-	dvf_type u(m_atan2_c_k2[0]);
-	for (std::size_t i=1; i<N; ++i) {
-		u = u * t + m_atan2_c_k2[i];
-	}
-	
-	t = u * t * s  + s;
+        const std::size_t N= sizeof(m_atan2_c_k2)/sizeof(m_atan2_c_k2[0]);
+        dvf_type u(m_atan2_c_k2[0]);
+        for (std::size_t i=1; i<N; ++i) {
+                u = u * t + m_atan2_c_k2[i];
+        }
+        
+        t = u * t * s  + s;
 
         using ctbl=impl::d_real_constants<dvf_type, double>;
-	t = _T::cvt_i_to_f(q) * ctbl::m_pi_2 + t;
-	return t;
+        t = _T::cvt_i_to_f(q) * ctbl::m_pi_2 + t;
+        return t;
 }
 
 template <typename _T>
@@ -869,7 +869,7 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 native_atan2_k(const vf_type& x, const vf_type& y)
 {
-	return 0.0;
+        return 0.0;
 }
  
 template <class _T>
