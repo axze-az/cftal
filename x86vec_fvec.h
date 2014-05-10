@@ -1053,6 +1053,54 @@ namespace x86vec {
 
         v4f64::element_type hadd(const v4f64& a);
 
+
+
+        // common functions
+
+        // return min(max(min_val, x), max_val)
+        template <typename _T>
+        _T clamp(const _T& x, const _T& min_val,  const _T& max_val);
+
+        // return x * (1.0-a) + y * a;
+        template <typename _T>
+        _T mix(const _T& x, const _T& y, const _T& a);
+
+        // return x < edge ? 0.0 : 1.0
+        template <typename _T>
+        _T step(const _T& edge, const _T& x);
+
+
+        // return 
+        template <typename _T>
+        _T smoothstep(const _T& edge0, const _T% edge1, const _T& x);
+        
+}
+
+
+template <typename _T>
+inline
+_T
+x86vec::clamp(const _T& x, const _T& min_val, const _T& max_val)
+{
+        _T low(max(x, min_val));
+        _T res(min(max_val, low));
+}
+
+template <typename _T>
+inline
+_T
+x86vec::mix(const _T& x, const _T& y, const _T& a)
+{
+        return x* (_T(1.0)-a) + y*a;
+}
+
+template <typename _T>
+inline
+_T
+x86vec::step(const _T& edge, const _T& x)
+{
+        auto msk= x < edge;
+        return select(msk, _T(0), _T(1));
 }
 
 

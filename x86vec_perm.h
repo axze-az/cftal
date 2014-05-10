@@ -1800,9 +1800,9 @@ __m256 x86vec::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
 {
         // Combine all the indexes into a single bitfield, with 4 bits
         // for each
-        const int m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
+        const unsigned m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
         // Mask to zero out negative indexes
-        const int m2 = zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+        const unsigned m2 = zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
 
         if ((m1 & 0x88888888 & m2) == 0) {
                 // no elements from b
