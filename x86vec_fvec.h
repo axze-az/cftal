@@ -1057,6 +1057,16 @@ namespace x86vec {
 
         // common functions
 
+        // maxmag: returns x if |x| > |y|, y if |y| > |x|, otherwise
+        // fmax(x, y)
+        template <typename _T>
+        _T maxmag(const _T& x, const _T& y);
+
+        // minmag: returns x if |x| < |y|, y if |y| < |x|, otherwise
+        // fmin(x, y)
+        template <typename _T>
+        _T minmag(const _T& x, const _T& y);
+
         // return min(max(min_val, x), max_val)
         template <typename _T>
         _T clamp(const _T& x, const _T& min_val,  const _T& max_val);
@@ -1069,21 +1079,55 @@ namespace x86vec {
         template <typename _T>
         _T step(const _T& edge, const _T& x);
 
-
-        // return 
+        // return 0.0 if x <= edge0 and 1.0 if x >= edge1
+        // hermite interpolation t=clamp((x-edge0)/(edge1 -edge0), 0, 1)
+        // return t * t (3 - 2 * t)
         template <typename _T>
-        _T smoothstep(const _T& edge0, const _T% edge1, const _T& x);
+        _T smoothstep(const _T& edge0, const _T& edge1, const _T& x);
         
+        // return 1.0 if x > 0.0, -0.0 if x==-0.0, +0.0 if x == +0.0,
+        // -1.0 if x < 0
+        template <typename _T>
+        _T sign(const _T& x);
+
 }
 
+template <typename _T>
+inline
+_T
+x86vec::maxmag(const _T& x, const _T& y)
+{
+        _T ax(abs(a));
+        _T ay(abs(y));
+        _T m1(ax > ay);
+        _T t0(select(m1, x, y));
+        _T m2(ax == ay);
+        _T t1(select(m2, fmax(x, y), t0));
+        return t1;
+              
+}
+
+template <typename _T>
+inline
+_T
+x86vec::minmag(const _T& x, const _T& y)
+{
+        _T ax(abs(a));
+        _T ay(abs(y));
+        _T m1(ax < ay);
+        _T t0(select(m1, x, y));
+        _T m2(ax == ay);
+        _T t1(select(m2, fmin(x, y), t0));
+        return t1;
+}
 
 template <typename _T>
 inline
 _T
 x86vec::clamp(const _T& x, const _T& min_val, const _T& max_val)
 {
-        _T low(max(x, min_val));
-        _T res(min(max_val, low));
+        _T low(fmax(x, min_val));
+        _T res(fmin(max_val, low));
 }
 
 template <typename _T>
@@ -1091,7 +1135,7 @@ inline
 _T
 x86vec::mix(const _T& x, const _T& y, const _T& a)
 {
-        return x* (_T(1.0)-a) + y*a;
+        return x + (y- x) * a;
 }
 
 template <typename _T>
@@ -1103,6 +1147,28 @@ x86vec::step(const _T& edge, const _T& x)
         return select(msk, _T(0), _T(1));
 }
 
+template <typename _T>
+inline
+_T
+x86vec::smoothstep(const _T& edge0, const _T& edge1, const _T& x)
+{
+        _T t(clamp((x-edge0)/(edge1 -edge0), 0, 1));
+        _T r(t * t * ( _T(3) - _T(2) * t));
+        return r;
+}
+
+template <typename _T>
+inline
+_T 
+x86vec::sign(const _T& x)
+{
+        _T sgn_zero(copysign(_T(0.0), x));
+        _T ltz( x < _T(0) );
+        _T gtz( x > _T(0) );
+        _T r0(select(ltz, _T(-1), sgn_zero));
+        _T r1(select(gtz, _T( 1), r0));
+        return r1;
+}
 
 template <unsigned _N, typename _T>
 _T x86vec::impl::polevl(_T x, const _T* coef)
