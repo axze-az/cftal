@@ -1097,7 +1097,7 @@ inline
 _T
 x86vec::maxmag(const _T& x, const _T& y)
 {
-        _T ax(abs(a));
+        _T ax(abs(x));
         _T ay(abs(y));
         _T m1(ax > ay);
         _T t0(select(m1, x, y));
@@ -1112,7 +1112,7 @@ inline
 _T
 x86vec::minmag(const _T& x, const _T& y)
 {
-        _T ax(abs(a));
+        _T ax(abs(x));
         _T ay(abs(y));
         _T m1(ax < ay);
         _T t0(select(m1, x, y));
