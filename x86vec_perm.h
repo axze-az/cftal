@@ -727,7 +727,6 @@ namespace x86vec {
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m256 perm_f32(__m256 a, __m256 b);
-
 #endif
 }
 
