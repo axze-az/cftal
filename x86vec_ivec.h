@@ -36,6 +36,17 @@ namespace x86vec {
         bool both(const v128u1& a);
         bool none(const v128u1& a);
 
+#if 1 // defined (__AVX2__)
+        class v256u1 : public vreg<__m256i> {
+        public:
+                typedef vreg<__m256i> base_type;
+                v256u1() = default;
+                v256u1(vector_type v);
+                v256u1(const base_type& v);
+        };
+
+#endif
+
         class v8s16 : public v128u1 {
         public:
                 typedef int16_t element_type;
