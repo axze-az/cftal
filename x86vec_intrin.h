@@ -7,6 +7,8 @@
 #define __SSE4_2__ 1
 #define __SSE4A__ 1
 #define __SSSE3__ 1
+#define __AVX2__ 1
+#define __FMA__ 1
 #endif
 
 #include <x86intrin.h>

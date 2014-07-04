@@ -65,8 +65,8 @@ namespace x86vec {
                 v8s16(const mem::addr<element_type>& r);
                 v8s16(const mem::aligned::addr<element_type>& r);
                 v8s16(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
-		masked_vec<v8s16> operator()(const mask<v8s16>& m);
+                using base_type::operator();
+                masked_vec<v8s16> operator()(const mask<v8s16>& m);
         };
 
         v8s16& operator|= (v8s16& a, const v8s16& b);
@@ -173,8 +173,8 @@ namespace x86vec {
                 v8u16(const mem::addr<element_type>& r);
                 v8u16(const mem::aligned::addr<element_type>& r);
                 v8u16(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
-		masked_vec<v8u16> operator()(const mask<v8u16>& m);
+                using base_type::operator();
+                masked_vec<v8u16> operator()(const mask<v8u16>& m);
         };
 
         v8u16& operator|= (v8u16& a, const v8u16& b);
@@ -272,8 +272,8 @@ namespace x86vec {
                 v4s32(const mem::addr<element_type>& r);
                 v4s32(const mem::aligned::addr<element_type>& r);
                 v4s32(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
-		masked_vec<v4s32> operator()(const mask<v4s32>& m);
+                using base_type::operator();
+                masked_vec<v4s32> operator()(const mask<v4s32>& m);
         };
 
         v4s32& operator|= (v4s32& a, const v4s32& b);
@@ -374,8 +374,8 @@ namespace x86vec {
                 v4u32(const mem::addr<element_type>& r);
                 v4u32(const mem::aligned::addr<element_type>& r);
                 v4u32(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
-		masked_vec<v4u32> operator()(const mask<v4u32>& m);
+                using base_type::operator();
+                masked_vec<v4u32> operator()(const mask<v4u32>& m);
         };
 
         v4u32& operator|= (v4u32& a, const v4u32& b);
@@ -466,8 +466,8 @@ namespace x86vec {
                 v2s64(const mem::addr<element_type>& r);
                 v2s64(const mem::aligned::addr<element_type>& r);
                 v2s64(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
-		masked_vec<v2s64> operator()(const mask<v2s64>& m);
+                using base_type::operator();
+                masked_vec<v2s64> operator()(const mask<v2s64>& m);
         };
 
         v2s64& operator|= (v2s64& a, const v2s64& b);
@@ -565,8 +565,8 @@ namespace x86vec {
                 v2u64(const mem::addr<element_type>& r);
                 v2u64(const mem::aligned::addr<element_type>& r);
                 v2u64(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
-		masked_vec<v2u64> operator()(const mask<v2u64>& m);
+                using base_type::operator();
+                masked_vec<v2u64> operator()(const mask<v2u64>& m);
         };
 
         v2u64& operator|= (v2u64& a, const v2u64& b);
@@ -644,19 +644,43 @@ namespace x86vec {
         typename v2u64::element_type extract(const v2u64& a);
 
 #if defined (__AVX2__)
-	// 256 bit integer types
+        // 256 bit integer types
+        class v8s32  : public v256u1 {
+        public:
+                typedef int32_t element_type;
+                typedef v256u1 base_type;
+                v8s32() = default;
+                v8s32(vector_type r);
+                v8s32(const base_type& r);
+                // broadcast to all positions
+                v8s32(element_type r);
+                //*********************************
+                v8s32(element_type r, bool broadcast);
+                v8s32(const v4s32&l, const v4s32&h);
+                v8s32(element_type p00, element_type p01,
+                      element_type p02, element_type p03,
+                      element_type p04, element_type p05,
+                      element_type p06, element_type p07);
+                v8s32(const mem::addr_bcast<element_type>& r);
+                v8s32(const mem::addr<element_type>& r);
+                v8s32(const mem::aligned::addr<element_type>& r);
+                v8s32(const mem::unaligned::addr<element_type>& r);
+                masked_vec<v8s32> operator()(const mask<v8s32>& m);
+                friend v4s32 low_half(const v8s32& v);
+                friend v4s32 high_half(const v8s32& v);
+        };
 #else
-	// emulation of v8s32 for v8f32 implementations
+        // emulation of v8s32 for v8f32 implementations
         class v8s32 {
-		v4s32 _l;
-		v4s32 _h;
+                v4s32 _l;
+                v4s32 _h;
         public:
                 typedef int32_t element_type;
                 v8s32() = default;
                 v8s32(const v4s32&l, const v4s32&h);
                 v8s32(element_type p00, element_type p01,
                       element_type p02, element_type p03,
-		      element_type p04, element_type p05,
+                      element_type p04, element_type p05,
                       element_type p06, element_type p07);
                 // broadcast to all positions
                 v8s32(element_type r);
@@ -665,20 +689,20 @@ namespace x86vec {
                 v8s32(const mem::addr<element_type>& r);
                 v8s32(const mem::aligned::addr<element_type>& r);
                 v8s32(const mem::unaligned::addr<element_type>& r);
-		masked_vec<v8s32> operator()(const mask<v8s32>& m);
+                masked_vec<v8s32> operator()(const mask<v8s32>& m);
 
-		friend v4s32 low_half(const v8s32& v);
-		friend v4s32 high_half(const v8s32& v);
+                friend v4s32 low_half(const v8s32& v);
+                friend v4s32 high_half(const v8s32& v);
         };
 
-	template <>
-	struct arg<v8s32> {
-		typedef const v8s32& type;
-	};
+        template <>
+        struct arg<v8s32> {
+                typedef const v8s32& type;
+        };
 
 #endif
-	v4s32 low_half(const v8s32& v);
-	v4s32 high_half(const v8s32& v);
+        v4s32 low_half(const v8s32& v);
+        v4s32 high_half(const v8s32& v);
 
         v8s32& operator|= (v8s32& a, const v8s32& b);
         v8s32& operator&= (v8s32& a, const v8s32& b);
@@ -748,16 +772,16 @@ namespace x86vec {
         std::pair<v8s32, v8s32> mul_lo_hi(const v8s32& a, const v8s32& b);
 
         template <bool _P0, bool _P1, bool _P2, bool _P3,
-		  bool _P4, bool _P5, bool _P6, bool _P7>
+                  bool _P4, bool _P5, bool _P6, bool _P7>
         v8s32 select(const v8s32& a, const v8s32& b);
         v8s32 select(const v8s32& msk, const v8s32& on_true,
                      const v8s32& on_false);
 
         template <int _P0, int _P1, int _P2, int _P3,
-		  int _P4, int _P5, int _P6, int _P7>
+                  int _P4, int _P5, int _P6, int _P7>
         v8s32 permute(const v8s32& a);
         template < int _P0, int _P1, int _P2, int _P3,
-		   int _P4, int _P5, int _P6, int _P7>
+                   int _P4, int _P5, int _P6, int _P7>
         v8s32 permute(const v8s32& a, const v8s32& b);
 
         template <unsigned _I>
@@ -777,7 +801,7 @@ namespace x86vec {
                 v8u32(const v4u32&l, const v4u32&h);
                 v8u32(element_type p00, element_type p01,
                       element_type p02, element_type p03,
-		      element_type p04, element_type p05,
+                      element_type p04, element_type p05,
                       element_type p06, element_type p07);
                 v8u32(element_type r);
                 v8u32(element_type r, bool broadcast);
@@ -785,19 +809,19 @@ namespace x86vec {
                 v8u32(const mem::addr<element_type>& r);
                 v8u32(const mem::aligned::addr<element_type>& r);
                 v8u32(const mem::unaligned::addr<element_type>& r);
-		using base_type::operator();
-		masked_vec<v8u32> operator()(const mask<v8u32>& m);
+                using base_type::operator();
+                masked_vec<v8u32> operator()(const mask<v8u32>& m);
         };
 
-	template <>
-	struct arg<v8u32> {
-		typedef const v8u32& type;
-	};
+        template <>
+        struct arg<v8u32> {
+                typedef const v8u32& type;
+        };
 
 #endif
 
-	v4u32 low_half(const v8u32& v);
-	v4u32 high_half(const v8u32& v);
+        v4u32 low_half(const v8u32& v);
+        v4u32 high_half(const v8u32& v);
 
         v8u32& operator|= (v8u32& a, const v8u32& b);
         v8u32& operator&= (v8u32& a, const v8u32& b);
@@ -859,16 +883,16 @@ namespace x86vec {
         std::pair<v8u32, v8u32> mul_lo_hi(const v8u32& a, const v8u32& b);
 
         template <bool _P0, bool _P1, bool _P2, bool _P3,
-		  bool _P4, bool _P5, bool _P6, bool _P7>
+                  bool _P4, bool _P5, bool _P6, bool _P7>
         v8u32 select(const v8u32& a, const v8u32& b);
         v8u32 select(const v8u32& msk, const v8u32& on_true,
                      const v8u32& on_false);
 
         template <int _P0, int _P1, int _P2, int _P3,
-		  int _P4, int _P5, int _P6, int _P7>
+                  int _P4, int _P5, int _P6, int _P7>
         v8u32 permute(const v8u32& a);
         template <int _P0, int _P1, int _P2, int _P3,
-		  int _P4, int _P5, int _P6, int _P7>
+                  int _P4, int _P5, int _P6, int _P7>
         v8u32 permute(const v8u32& a, const v8u32& b);
 
         template <unsigned _I>
