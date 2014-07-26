@@ -2,6 +2,7 @@
 #define __CFTAL_SVEC_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/std_types.h>
 
 namespace cftal {
         
@@ -66,7 +67,7 @@ namespace cftal {
                                 static
                                 full_type
                                 v(const full_type& a, const full_type& b) {
-                                        return full_type<_T, _N>(
+                                        return full_type(
                                                 lhalf(a) + lhalf(b),
                                                 hhalf(a) + hhalf(b));
                                 }
@@ -83,7 +84,7 @@ namespace cftal {
                         vec& operator=(vec&& r) = default;
                 private:
                         static_assert(0==(_N & _N-1), "_N is not a power of 2");
-                        hw_reg<_T, _N> _v;
+                        impl::hw_reg<_T, _N> _v;
                 };
                 
         }
