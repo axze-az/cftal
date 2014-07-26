@@ -74,6 +74,8 @@ namespace cftal {
                         };
 
                 }
+
+
                 
                 template <typename _T, std::size_t _N>
                 class vec {
