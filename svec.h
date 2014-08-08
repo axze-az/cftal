@@ -3,29 +3,69 @@
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
+#include <cftal/x86vec_expr.h>
+#include <initializer_list>
+
 
 namespace cftal {
         
         namespace simd {
 
-                template <typename _T, std::size_t _N>
+                template <typename _T>
+                struct expr_traits {
+                        using type = const _T&;
+                };
+
+                template <class _OP, class _L, class _R>
+                struct expr {
+                        typename expr_traits<_L>::type _l;
+                        typename expr_traits<_R>::type _r;
+                        constexpr expr(const _L& l, const _R& r) :
+                                _l(l), _r(r) {}
+                };
+
+                template <class _OP, class _L, class _R>
+                inline
+                typename _OP::vector_type 
+                eval(const expr<_OP, _L, _R>& e) {
+                        return _OP::v(eval(e._l), eval(e._r)); 
+                }
+
+                
+                template <class _M, class _T>
+                _T select(const _M& m, 
+                          const _T& on_true, const _T& on_false);
+
+                template <typename _T, std::size_t _N >
                 class vec {
                 public:
+                        // value type
+                        using value_type = _T;
+                        // vector with half the length
                         using half_type = vec<_T, _N/2>;
-                        using mask_type = vec<bool, _N>;
+                        // type of value of a mask vector 
+                        using mask_value_type = 
+                                typename half_type::mask_value_type;
+                        // vector of mask values
+                        using mask_type = vec<mask_value_type, _N>;
+
                         vec() = default;
                         vec(const vec& r) = default;
                         vec(vec&& r) = default;
                         vec& operator=(const vec& r) = default;
                         vec& operator=(vec&& r) = default;
+
                         vec(const _T& v);
                         vec(const _T& v, bool splat);
+                        vec(std::initializer_list<_T> l);
                         vec(const half_type& lh, bool splat=true);
                         vec(const half_type& lh, const half_type& hh);
                         const half_type& lh() const;
                         const half_type& hh() const;
+
                 private:
-                        static_assert(0==(_N & _N-1), "_N is not a power of 2");
+                        static_assert(0==(_N & _N-1), 
+                                      "_N is not a power of 2");
                         vec<_T, _N/2> _l;
                         vec<_T, _N/2> _h;
                 };
@@ -53,19 +93,46 @@ namespace cftal {
                           typename _T, std::size_t _N>
                 vec<_T, _N> permute(const vec<_T, _N>& s0,
                                     const vec<_T, _N>& s1);
+
                 
+#define DECL_CMP_OPS(op)                                                \
+        template <typename _T, std::size_t _N>                          \
+        typename vec<_T, _N>::mask_type                                 \
+        operator op (const vec<_T, _N>& a,                              \
+                     const vec<_T, _N>& b);                             \
+                                                                        \
+        template <typename _T, std::size_t  _N>                         \
+        typename vec<_T, _N>::mask_type                                 \
+        operator op (const vec<_T, _N>& a,                              \
+                     const typename vec<_T, _N>::value_type& b);        \
+                                                                        \
+        template <typename _T, std::size_t  _N>                         \
+        typename vec<_T, _N>::mask_type                                 \
+        operator op (const typename vec<_T, _N>::value_type& a,         \
+                     const vec<_T, _N>& b)
 
+                DECL_CMP_OPS(<);
+                DECL_CMP_OPS(<=);
+                DECL_CMP_OPS(==);
+                DECL_CMP_OPS(!=);
+                DECL_CMP_OPS(>=);
+                DECL_CMP_OPS(>);
 
-
+#undef DECL_CMP_OPS
+                
                 template <typename _T>
                 class vec<_T, 1> {
                 public:
-                        using mask_type = vec<bool, 1>;
+                        using value_type = _T;
+                        using mask_value_type = bool;
+                        using mask_type = vec<mask_value_type, 1>;
+
                         vec() = default;
                         vec(const vec& r) = default;
                         vec(vec&& r) = default;
                         vec& operator=(const vec& r) = default;
                         vec& operator=(vec&& r) = default;
+
                         vec(const _T& v);
                         vec(const _T& v, bool splat);
                         _T operator()() const;
@@ -77,22 +144,74 @@ namespace cftal {
                 vec<_T, 1> select(const typename vec<_T, 1>::mask_type& m,
                                   const vec<_T, 1>& on_true,
                                   const vec<_T, 1>& on_false);
-                
+
                 namespace ops {
-                        
-                        template <typename _T, std::size_t _N>
-                        class op_add {
+
+                        template <template <class _T, std::size_t _N> class _OP, 
+                                  typename _T, std::size_t _N,
+                                  typename _R>
+                        struct base_op {
                                 using full_type = vec<_T, _N>;
+                                using mask_type = typename vec<_T, _N>::mask_type;
+
                                 static 
-                                full_type 
+                                _R 
                                 v(const full_type& a, const full_type& b) {
-                                        return full_type( 
-                                                op_add<_T, _N/2>::v(lo_half(a), 
-                                                                    lo_half(b)),
-                                                op_add<_T, _N/2>::v(hi_half(a), 
-                                                                    hi_half(b)));
+                                        return _R(
+                                                _OP<_T, _N/2>::v(lo_half(a),
+                                                                 lo_half(b)),
+                                                _OP<_T, _N/2>::v(hi_half(a),
+                                                                 hi_half(b)));
+                                                                   
                                 }
                         };
+                        
+                        template <template <class _T, std::size_t _N> class _OP, 
+                                  typename _T, std::size_t _N>
+                        struct cmp_op : 
+                                public base_op<_OP, _T, _N, 
+                                               typename vec<_T, _N>::mask_type > {
+                        };
+
+                        template <template <class _T, std::size_t _N> class _OP,
+                                  typename _T, std::size_t _N>
+                        struct bin_op :
+                                public base_op<_OP, _T, _N, vec<_T, _N> > {
+                        };
+
+                        // common comparison operations
+                        template <typename _T, std::size_t _N>
+                        struct op_lt : public cmp_op<op_lt, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct op_le : public cmp_op<op_le, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct op_eq : public cmp_op<op_eq, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct op_ne : public cmp_op<op_ne, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct op_ge : public cmp_op<op_ge, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct op_gt : public cmp_op<op_gt, _T, _N> {};
+
+                        // arithmetic operations
+                        template <typename _T, std::size_t _N>
+                        struct op_add : public bin_op<op_add, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct op_sub : public bin_op<op_sub, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct op_mul : public bin_op<op_mul, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct op_div : public bin_op<op_div, _T, _N> {};
+                        
+                        
 
                         template <typename _T>
                         class op_add<_T, 1> {
@@ -109,6 +228,14 @@ namespace cftal {
         }
 }
 
+template <typename _M, typename _T>
+inline
+_T 
+cftal::simd::select(const _M& m, const _T& on_true, const _T& on_false)
+{
+        return m ? on_true : on_false;
+}
+
 template <class _T, std::size_t _N>
 inline
 cftal::simd::vec<_T, _N>::vec(const _T& v)
@@ -120,6 +247,15 @@ template <class _T, std::size_t _N>
 inline
 cftal::simd::vec<_T, _N>::vec(const _T& v, bool splat)
         : _l(v, splat), _h(splat ? v : _T(0))
+{
+}
+
+template <class _T, std::size_t _N>
+inline
+cftal::simd::vec<_T, _N>::vec(std::initializer_list<_T> l)
+        : _l(std::initializer_list<_T>(begin(l), l.size()/2)),
+          _h(std::initializer_list<_T>(begin(l) + l.size()/2, 
+                                       l.size()/2)) 
 {
 }
 
@@ -173,6 +309,21 @@ cftal::simd::select(const typename vec<_T, _N>::mask_type& m,
 {
         return vec<_T, _N>();
 }
+
+#if 0
+#define DEF_CMP_OPS(op) 
+template <class _T, std::size_t _N>
+inline
+typename cftal::simd::vec<_T, _N>::mask_type
+cftal::simd::operator op(const vec<_T, _N>& a,
+                         const vec<_T, _N>& b)
+{
+        using mask_type =  typename cftal::simd::vec<_T, _N>::mask_type;
+        return mask_type(lo_half(a) op lo_half(b),
+                         hi_half(a) op hi_half(b)); 
+}
+#endif
+
 
 
 // Local variables:
