@@ -263,35 +263,103 @@ namespace cftal {
                                 }
                         };
 
+
+                        template <class _T>
+                        struct bitrep {
+                                using int_type = _T;
+                                using type = _T;
+                                static 
+                                _T as_int(const _T& v) { return v; }
+                                static
+                                _T as_type(const _T& v) { return v; }
+                        };
+
+                        template <class _D, class _U>
+                        struct bitrep_helper {
+                                using int_type = _U;
+                                using type = _D;
+                                union di {
+                                        _D _d;
+                                        _U _u;
+                                };
+                                static
+                                int_type as_int(type v) {
+                                        di t;
+                                        t._d = v;
+                                        return t._u;
+                                }
+                                static
+                                type as_type(int_type v) {
+                                        di t;
+                                        t._u = v;
+                                        return t._d;
+                                }
+                        };
+
+                        template <>
+                        struct bitrep<double> :
+                                public bitrep_helper<double, std::uint64_t> {
+                        };
+
+                        template <>
+                        struct bitrep<float>  :
+                                public bitrep_helper<float, std::uint32_t> {
+                        };
+                        
                         template <typename _T>
                         struct bit_or<_T, 1> {
                                 using full_type = vec<_T, 1>;
+                                using cvt = bitrep<_T>;
+                                
                                 static
                                 full_type
                                 v(const full_type& a, const full_type& b) {
-                                        return full_type(a() | b());
+                                        typename cvt::int_type ai(
+                                                cvt::as_int(a()));
+                                        typename cvt::int_type bi(
+                                                cvt::as_int(b()));
+                                        typename cvt::type r(
+                                                cvt::as_type(ai | bi));
+                                        return full_type(r);
                                 }
                         };
 
                         template <typename _T>
                         struct bit_and<_T, 1> {
                                 using full_type = vec<_T, 1>;
+                                using cvt = bitrep<_T>;
+                                
                                 static
                                 full_type
                                 v(const full_type& a, const full_type& b) {
-                                        return full_type(a() & b());
+                                        typename cvt::int_type ai(
+                                                cvt::as_int(a()));
+                                        typename cvt::int_type bi(
+                                                cvt::as_int(a()));
+                                        typename cvt::type r(
+                                                cvt::as_type(ai & bi));
+                                        return full_type(r);
                                 }
                         };
 
                         template <typename _T>
                         struct bit_xor<_T, 1> {
                                 using full_type = vec<_T, 1>;
+                                using cvt = bitrep<_T>;
+                                
                                 static
                                 full_type
                                 v(const full_type& a, const full_type& b) {
-                                        return full_type(a() ^ b());
+                                        typename cvt::int_type ai(
+                                                cvt::as_int(a()));
+                                        typename cvt::int_type bi(
+                                                cvt::as_int(a()));
+                                        typename cvt::type r(
+                                                cvt::as_type(ai ^ bi));
+                                        return full_type(r);
                                 }
                         };
+
 
 
                 }

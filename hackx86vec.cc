@@ -566,7 +566,7 @@ cftal::simd::vec<double, 16>
 do_add(cftal::simd::vec<double, 16> a, 
        cftal::simd::vec<double, 16> b)
 {
-        return cftal::simd::op::add<double, 16>::v(a, b);
+        return cftal::simd::op::bit_or<double, 16>::v(a, b);
 }
 
 
