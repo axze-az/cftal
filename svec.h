@@ -351,6 +351,15 @@ cftal::simd::vec<_T, 1>::vec(const _T& v)
 
 template <class _T>
 inline
+cftal::simd::vec<_T, 1>::vec(const _T& v, bool splat)
+        : _v(v) 
+{
+        static_cast<void>(splat);
+}
+
+
+template <class _T>
+inline
 _T
 cftal::simd::vec<_T, 1>::operator()() const
 {
