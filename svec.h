@@ -37,7 +37,7 @@ namespace cftal {
                           const _T& on_true, const _T& on_false);
 
                 template <typename _T, std::size_t _N >
-                class vec {
+                class alignas(sizeof(_T)*_N) vec {
                 public:
                         // value type
                         using value_type = _T;
@@ -64,7 +64,7 @@ namespace cftal {
                         const half_type& hh() const;
 
                 private:
-                        static_assert(0==(_N & _N-1), 
+                        static_assert(0==(_N & (_N-1)), 
                                       "_N is not a power of 2");
                         vec<_T, _N/2> _l;
                         vec<_T, _N/2> _h;
@@ -145,15 +145,16 @@ namespace cftal {
                                   const vec<_T, 1>& on_true,
                                   const vec<_T, 1>& on_false);
 
-                namespace ops {
+                namespace op {
 
-                        template <template <class _T, std::size_t _N> class _OP, 
+                        template <template <class _T, 
+                                            std::size_t _N> class _OP, 
                                   typename _T, std::size_t _N,
                                   typename _R>
-                        struct base_op {
+                        struct base {
                                 using full_type = vec<_T, _N>;
-                                using mask_type = typename vec<_T, _N>::mask_type;
-
+                                using mask_type = 
+                                        typename vec<_T, _N>::mask_type;
                                 static 
                                 _R 
                                 v(const full_type& a, const full_type& b) {
@@ -166,55 +167,55 @@ namespace cftal {
                                 }
                         };
                         
-                        template <template <class _T, std::size_t _N> class _OP, 
+                        template <template <class _T, 
+                                            std::size_t _N> class _OP, 
                                   typename _T, std::size_t _N>
-                        struct cmp_op : 
-                                public base_op<_OP, _T, _N, 
-                                               typename vec<_T, _N>::mask_type > {
+                        struct cmp : 
+                                public base<_OP, _T, _N, 
+                                            typename vec<_T, _N>::mask_type > {
                         };
 
                         template <template <class _T, std::size_t _N> class _OP,
                                   typename _T, std::size_t _N>
-                        struct bin_op :
-                                public base_op<_OP, _T, _N, vec<_T, _N> > {
+                        struct bin :
+                                public base<_OP, _T, _N, vec<_T, _N> > {
                         };
 
                         // common comparison operations
                         template <typename _T, std::size_t _N>
-                        struct op_lt : public cmp_op<op_lt, _T, _N> {};
+                        struct lt : public cmp<lt, _T, _N> {};
 
                         template <typename _T, std::size_t _N>
-                        struct op_le : public cmp_op<op_le, _T, _N> {};
+                        struct le : public cmp<le, _T, _N> {};
 
                         template <typename _T, std::size_t _N>
-                        struct op_eq : public cmp_op<op_eq, _T, _N> {};
+                        struct eq : public cmp<eq, _T, _N> {};
 
                         template <typename _T, std::size_t _N>
-                        struct op_ne : public cmp_op<op_ne, _T, _N> {};
+                        struct ne : public cmp<ne, _T, _N> {};
 
                         template <typename _T, std::size_t _N>
-                        struct op_ge : public cmp_op<op_ge, _T, _N> {};
+                        struct ge : public cmp<ge, _T, _N> {};
 
                         template <typename _T, std::size_t _N>
-                        struct op_gt : public cmp_op<op_gt, _T, _N> {};
+                        struct gt : public cmp<gt, _T, _N> {};
 
                         // arithmetic operations
                         template <typename _T, std::size_t _N>
-                        struct op_add : public bin_op<op_add, _T, _N> {};
+                        struct add : public bin<add, _T, _N> {};
 
                         template <typename _T, std::size_t _N>
-                        struct op_sub : public bin_op<op_sub, _T, _N> {};
+                        struct sub : public bin<sub, _T, _N> {};
 
                         template <typename _T, std::size_t _N>
-                        struct op_mul : public bin_op<op_mul, _T, _N> {};
+                        struct mul : public bin<mul, _T, _N> {};
 
                         template <typename _T, std::size_t _N>
-                        struct op_div : public bin_op<op_div, _T, _N> {};
+                        struct div : public bin<div, _T, _N> {};
                         
                         
-
                         template <typename _T>
-                        class op_add<_T, 1> {
+                        struct add<_T, 1> {
                                 using full_type = vec<_T, 1>;
                                 static
                                 full_type
@@ -222,6 +223,37 @@ namespace cftal {
                                         return full_type(a() + b());
                                 }
                         };
+
+                        template <typename _T>
+                        struct sub<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b) {
+                                        return full_type(a() - b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct mul<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b) {
+                                        return full_type(a() * b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct div<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b) {
+                                        return full_type(a() / b());
+                                }
+                        };
+
 
                 }
                 
@@ -308,6 +340,21 @@ cftal::simd::select(const typename vec<_T, _N>::mask_type& m,
                     const vec<_T, _N>& on_false)
 {
         return vec<_T, _N>();
+}
+
+template <class _T>
+inline
+cftal::simd::vec<_T, 1>::vec(const _T& v)
+        : _v(v) 
+{
+}
+
+template <class _T>
+inline
+_T
+cftal::simd::vec<_T, 1>::operator()() const
+{
+        return _v;
 }
 
 #if 0

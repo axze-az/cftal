@@ -555,8 +555,27 @@ __m256d tr2b(__m256d a)
 
 #endif
 
+cftal::simd::vec<double, 4>
+do_add(cftal::simd::vec<double, 4> a, 
+       cftal::simd::vec<double, 4> b)
+{
+        return cftal::simd::op::add<double, 4>::v(a, b);
+}
+
+cftal::simd::vec<double, 16>
+do_add(cftal::simd::vec<double, 16> a, 
+       cftal::simd::vec<double, 16> b)
+{
+        return cftal::simd::op::add<double, 16>::v(a, b);
+}
+
+
 int main(int argc, char** argv)
 {
+        cftal::simd::vec<double, 4> t1(1.0), t2(2.0);
+        cftal::simd::vec<double, 4> t3(
+                cftal::simd::op::add<double, 4>::v(t1, t2));
+#if 0
         using namespace cftal;
         using namespace x86vec;
         uint64_t v(18446744073709551615U);
@@ -613,6 +632,7 @@ int main(int argc, char** argv)
         r=tr2a(a, b);
         id.assign(2, 6, 3, 7);
         rc &= check_v4f64("perm2_v4f64", r, id);
+#endif
 #endif
 #endif
 #endif
