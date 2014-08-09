@@ -212,7 +212,16 @@ namespace cftal {
 
                         template <typename _T, std::size_t _N>
                         struct div : public bin<div, _T, _N> {};
-                        
+                       
+                        // bitwise logical operations
+                        template <typename _T, std::size_t _N>
+                        struct bit_or : public bin<bit_or, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct bit_and : public bin<bit_and, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct bit_xor : public bin<bit_xor, _T, _N> {};
                         
                         template <typename _T>
                         struct add<_T, 1> {
@@ -251,6 +260,36 @@ namespace cftal {
                                 full_type
                                 v(const full_type& a, const full_type& b) {
                                         return full_type(a() / b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct bit_or<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b) {
+                                        return full_type(a() | b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct bit_and<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b) {
+                                        return full_type(a() & b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct bit_xor<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b) {
+                                        return full_type(a() ^ b());
                                 }
                         };
 
