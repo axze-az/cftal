@@ -13,9 +13,9 @@ namespace cftal {
 
                 template <typename _T>
                 struct expr_traits {
-                        using type = const _T&;
+                        using type = const _T;
                 };
-
+                
                 template <class _OP, class _L, class _R>
                 struct expr {
                         typename expr_traits<_L>::type _l;
@@ -140,6 +140,32 @@ namespace cftal {
                         _T _v;
                 };
 
+#define DECL_CMP_OPS(op)                                        \
+        template <typename _T>                                  \
+        typename vec<_T, 1>::mask_type                          \
+        operator op (const vec<_T, 1>& a,                       \
+                     const vec<_T, 1>& b);                      \
+                                                                \
+        template <typename _T>                                  \
+        typename vec<_T, 1>::mask_type                          \
+        operator op (const vec<_T, 1>& a,                       \
+                     const typename vec<_T, 1>::value_type& b); \
+                                                                \
+        template <typename _T>                                  \
+        typename vec<_T, 1>::mask_type                          \
+        operator op (const typename vec<_T, 1>::value_type& a,  \
+                     const vec<_T, 1>& b)
+
+                DECL_CMP_OPS(<);
+                DECL_CMP_OPS(<=);
+                DECL_CMP_OPS(==);
+                DECL_CMP_OPS(!=);
+                DECL_CMP_OPS(>=);
+                DECL_CMP_OPS(>);
+
+#undef DECL_CMP_OPS
+
+
                 template <typename _T>
                 vec<_T, 1> select(const typename vec<_T, 1>::mask_type& m,
                                   const vec<_T, 1>& on_true,
@@ -222,6 +248,72 @@ namespace cftal {
 
                         template <typename _T, std::size_t _N>
                         struct bit_xor : public bin<bit_xor, _T, _N> {};
+                        
+                        template <typename _T>
+                        struct lt<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                using mask_type = typename full_type::mask_type;
+                                static
+                                mask_type
+                                v(const full_type& a, const full_type& b) {
+                                        return mask_type(a() < b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct le<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                using mask_type = typename full_type::mask_type;
+                                static
+                                mask_type
+                                v(const full_type& a, const full_type& b) {
+                                        return mask_type(a() <= b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct eq<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                using mask_type = typename full_type::mask_type;
+                                static
+                                mask_type
+                                v(const full_type& a, const full_type& b) {
+                                        return mask_type(a() == b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct ne<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                using mask_type = typename full_type::mask_type;
+                                static
+                                mask_type
+                                v(const full_type& a, const full_type& b) {
+                                        return mask_type(a() != b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct ge<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                using mask_type = typename full_type::mask_type;
+                                static
+                                mask_type
+                                v(const full_type& a, const full_type& b) {
+                                        return mask_type(a() >= b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct gt<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                using mask_type = typename full_type::mask_type;
+                                static
+                                mask_type
+                                v(const full_type& a, const full_type& b) {
+                                        return mask_type(a() > b());
+                                }
+                        };
                         
                         template <typename _T>
                         struct add<_T, 1> {
@@ -473,21 +565,92 @@ cftal::simd::vec<_T, 1>::operator()() const
         return _v;
 }
 
-#if 0
-#define DEF_CMP_OPS(op) 
-template <class _T, std::size_t _N>
-inline
-typename cftal::simd::vec<_T, _N>::mask_type
-cftal::simd::operator op(const vec<_T, _N>& a,
-                         const vec<_T, _N>& b)
-{
-        using mask_type =  typename cftal::simd::vec<_T, _N>::mask_type;
-        return mask_type(lo_half(a) op lo_half(b),
-                         hi_half(a) op hi_half(b)); 
+
+#define DEF_CMP_OPS(op)                                                 \
+template <class _T, std::size_t _N>                                     \
+inline                                                                  \
+typename cftal::simd::vec<_T, _N>::mask_type                            \
+cftal::simd::operator op(const vec<_T, _N>& a,                          \
+                         const vec<_T, _N>& b)                          \
+{                                                                       \
+        using mask_type =  typename cftal::simd::vec<_T, _N>::mask_type; \
+        return mask_type(lo_half(a) op lo_half(b),                      \
+                         hi_half(a) op hi_half(b));                     \
+}                                                                       \
+                                                                        \
+template <class _T, std::size_t _N>                                     \
+inline                                                                  \
+typename cftal::simd::vec<_T, _N>::mask_type                            \
+cftal::simd::operator op(const vec<_T, _N>& a,                          \
+                         const typename vec<_T, _N>::value_type& b)    \
+{                                                                       \
+        using mask_type =  typename cftal::simd::vec<_T, _N>::mask_type; \
+        return mask_type(lo_half(a) op b,                               \
+                         hi_half(a) op b);                              \
+}                                                                       \
+                                                                        \
+template <class _T, std::size_t _N>                                     \
+inline                                                                  \
+typename cftal::simd::vec<_T, _N>::mask_type                            \
+cftal::simd::operator op(const typename vec<_T, _N>::value_type& a,     \
+                         const vec<_T, _N>& b)                          \
+{                                                                       \
+        using mask_type =  typename cftal::simd::vec<_T, _N>::mask_type; \
+        return mask_type(a op lo_half(b),                               \
+                         a op hi_half(b));                              \
 }
-#endif
 
 
+DEF_CMP_OPS(<)
+DEF_CMP_OPS(<=)
+DEF_CMP_OPS(==)
+DEF_CMP_OPS(!=)
+DEF_CMP_OPS(>=)
+DEF_CMP_OPS(>)
+
+#undef DEF_CMP_OPS
+
+
+#define DEF_CMP_OPS(op)                                                 \
+template <class _T>                                                     \
+inline                                                                  \
+typename cftal::simd::vec<_T, 1>::mask_type                             \
+cftal::simd::operator op(const vec<_T, 1>& a,                           \
+                         const vec<_T, 1>& b)                           \
+{                                                                       \
+        using mask_type =  typename cftal::simd::vec<_T, 1>::mask_type; \
+        return mask_type(a() op b());                                   \
+}                                                                       \
+                                                                        \
+template <class _T>                                                     \
+inline                                                                  \
+typename cftal::simd::vec<_T, 1>::mask_type                             \
+cftal::simd::operator op(const vec<_T, 1>& a,                           \
+                         const typename vec<_T, 1>::value_type& b)      \
+{                                                                       \
+        using mask_type =  typename cftal::simd::vec<_T, 1>::mask_type; \
+        using mask_type =  typename cftal::simd::vec<_T, 1>::mask_type; \
+        return mask_type(a() op b);                                     \
+}                                                                       \
+                                                                        \
+template <class _T>                                                     \
+inline                                                                  \
+typename cftal::simd::vec<_T, 1>::mask_type                             \
+cftal::simd::operator op(const typename vec<_T, 1>::value_type& a,      \
+                         const vec<_T, 1>& b)                           \
+{                                                                       \
+        using mask_type =  typename cftal::simd::vec<_T, 1>::mask_type; \
+        return mask_type(a op b());                                     \
+}
+
+DEF_CMP_OPS(<)
+DEF_CMP_OPS(<=)
+DEF_CMP_OPS(==)
+DEF_CMP_OPS(!=)
+DEF_CMP_OPS(>=)
+DEF_CMP_OPS(>)
+
+#undef DEC_CMP_OPS
 
 // Local variables:
 // mode: c++

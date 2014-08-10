@@ -569,6 +569,14 @@ do_add(cftal::simd::vec<double, 16> a,
         return cftal::simd::op::bit_or<double, 16>::v(a, b);
 }
 
+cftal::simd::vec<double, 8>::mask_type
+do_cmp_lt(cftal::simd::vec<double, 8> a, 
+          cftal::simd::vec<double, 8> b)
+{
+        return a < b;
+}
+
+
 
 int main(int argc, char** argv)
 {
