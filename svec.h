@@ -245,17 +245,27 @@ namespace cftal {
                         struct gt : public cmp<gt, _T, _N> {};
 
                         // arithmetic operations
+                        // a + b
                         template <typename _T, std::size_t _N>
                         struct add : public bin<add, _T, _N> {};
-
+                        // a - b
                         template <typename _T, std::size_t _N>
                         struct sub : public bin<sub, _T, _N> {};
-
+                        // a * b
                         template <typename _T, std::size_t _N>
                         struct mul : public bin<mul, _T, _N> {};
-
+                        // a / b
                         template <typename _T, std::size_t _N>
                         struct div : public bin<div, _T, _N> {};
+                        // a*b + c
+                        template <typename _T, std::size_t _N>
+                        struct fma : public ternary<fma, _T, _N> {};
+                        // a*b -c 
+                        template <typename _T, std::size_t _N>
+                        struct fms : public ternary<fms, _T, _N> {};
+                        // -a*b +c = (c-a*b)
+                        template <typename _T, std::size_t _N>
+                        struct fnma : public ternary<fnma, _T, _N> {};
 
                         // bitwise logical operations
                         template <typename _T, std::size_t _N>
@@ -373,7 +383,39 @@ namespace cftal {
                                 }
                         };
 
+                        template <typename _T>
+                        struct fma<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b,
+                                  const full_type& c) {
+                                        return full_type(a() * b() + c());
+                                }
+                        };
 
+                        template <typename _T>
+                        struct fms<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b,
+                                  const full_type& c) {
+                                        return full_type(a() * b() - c());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct fnma<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b,
+                                  const full_type& c) {
+                                        return full_type(c() - a() * b());
+                                }
+                        };
+                     
                         template <class _T>
                         struct bitrep {
                                 using int_type = _T;
@@ -391,17 +433,17 @@ namespace cftal {
                                 union di {
                                         _D _d;
                                         _U _u;
+                                        di(const _D& d) : _d(d) {}
+                                        di(const _U& u) : _u(u) {}
                                 };
                                 static
                                 int_type as_int(type v) {
-                                        di t;
-                                        t._d = v;
+                                        di t(v);
                                         return t._u;
                                 }
                                 static
-                                type as_type(int_type v) {
-                                        di t;
-                                        t._u = v;
+                                type as_type(int_type u) {
+                                        di t(u);
                                         return t._d;
                                 }
                         };
