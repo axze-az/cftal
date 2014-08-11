@@ -257,10 +257,6 @@ namespace cftal {
                         template <typename _T, std::size_t _N>
                         struct div : public bin<div, _T, _N> {};
 
-                        template <typename _T, std::size_t _N>
-                        struct fma : public bin<
-
-                       
                         // bitwise logical operations
                         template <typename _T, std::size_t _N>
                         struct bit_or : public bin<bit_or, _T, _N> {};
