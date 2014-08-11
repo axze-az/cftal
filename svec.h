@@ -189,7 +189,6 @@ namespace cftal {
                                                                  lo_half(b)),
                                                 _OP<_T, _N/2>::v(hi_half(a),
                                                                  hi_half(b)));
-                                                                   
                                 }
                         };
                         
@@ -206,6 +205,25 @@ namespace cftal {
                         struct bin :
                                 public base<_OP, _T, _N, vec<_T, _N> > {
                         };
+
+                        template <template <class _T, std::size_t _N> class _OP,
+                                  typename _T, std::size_t _N>
+                        struct ternary {
+                                using full_type = vec<_T, _N>;
+                                static 
+                                full_type
+                                v(const full_type& a, const full_type& b, 
+                                  const full_type& c) {
+                                        return _R(
+                                                _OP<_T, _N/2>::v(lo_half(a),
+                                                                 lo_half(b),
+                                                                 lo_half(c)),
+                                                _OP<_T, _N/2>::v(hi_half(a),
+                                                                 hi_half(b),
+                                                                 hi_half(c)));
+                                }
+                        };
+
 
                         // common comparison operations
                         template <typename _T, std::size_t _N>
@@ -238,6 +256,10 @@ namespace cftal {
 
                         template <typename _T, std::size_t _N>
                         struct div : public bin<div, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct fma : public bin<
+
                        
                         // bitwise logical operations
                         template <typename _T, std::size_t _N>
