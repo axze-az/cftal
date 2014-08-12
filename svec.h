@@ -62,7 +62,12 @@ namespace cftal {
                         vec(const half_type& lh, const half_type& hh);
                         const half_type& lh() const;
                         const half_type& hh() const;
-
+                        
+                        template <template <class _U, std::size_t _M> 
+                                  class _OP,
+                                  class _L, class _R>
+                                vec(const expr<_OP<_T, _N>, _L, _R>& r);
+                                    
                 private:
                         static_assert(0==(_N & (_N-1)), 
                                       "_N is not a power of 2");
@@ -93,6 +98,7 @@ namespace cftal {
                           typename _T, std::size_t _N>
                 vec<_T, _N> permute(const vec<_T, _N>& s0,
                                     const vec<_T, _N>& s1);
+
 
                 
 #define DECL_CMP_OPS(op)                                                \
@@ -511,11 +517,63 @@ namespace cftal {
                                         return full_type(r);
                                 }
                         };
-
-
-
-                }
+                } // namespace ops
                 
+                template <typename _T, std::size_t _N>
+                expr<op:: add <_T, _N>, 
+                     vec<_T, _N>, 
+                     vec<_T, _N> >
+                operator+(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+                template <typename _T, std::size_t _N>
+                expr<op:: add <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     vec<_T, _N> >
+                operator+(const typename vec<_T, _N>::value_type& a, 
+                          const vec<_T, _N>& b);
+
+                template <typename _T, std::size_t _N>
+                expr<op:: add <_T, _N>, 
+                     vec<_T, _N>,
+                     typename vec<_T, _N>::value_type>
+                operator+(const vec<_T, _N>& a, 
+                          const typename vec<_T, _N>::value_type& b);
+
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: add <_T, _N>, 
+                     vec<_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator+(const vec<_T, _N>& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: add <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     vec<_T, _N> >
+                operator+(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const vec<_T, _N>& b);
+
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: add <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator+(const typename vec<_T, _N>::value_type& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: add <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     typename vec<_T, _N>::value_type >
+                operator+(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const typename vec<_T, _N>::value_type& b);
         }
 }
 
