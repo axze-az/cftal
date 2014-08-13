@@ -9,6 +9,7 @@
 #define __SSSE3__ 1
 #define __AVX2__ 1
 #define __FMA__ 1
+#define alignas(x)
 #endif
 
 #include <x86intrin.h>

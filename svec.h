@@ -145,7 +145,7 @@ namespace cftal {
                 private:
                         _T _v;
                 };
-
+#if 0
 #define DECL_CMP_OPS(op)                                        \
         template <typename _T>                                  \
         typename vec<_T, 1>::mask_type                          \
@@ -170,7 +170,7 @@ namespace cftal {
                 DECL_CMP_OPS(>);
 
 #undef DECL_CMP_OPS
-
+#endif
 
                 template <typename _T>
                 vec<_T, 1> select(const typename vec<_T, 1>::mask_type& m,
