@@ -574,6 +574,23 @@ namespace cftal {
                      typename vec<_T, _N>::value_type >
                 operator+(const expr<_OP<_T, _N>, _L, _R>& a,
                           const typename vec<_T, _N>::value_type& b);
+
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator+=(vec<_T, _N>& a, 
+                           const vec<_T, _N>& b);
+
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator+=(vec<_T, _N>& a, 
+                           const typename vec<_T, _N>::value_type& b);
+
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                vec<_T, _N>&
+                operator+=(vec<_T, _N>& a,
+                           const expr<_OP<_T, _N>, _L, _R>& b);
         }
 }
 
