@@ -145,32 +145,6 @@ namespace cftal {
                 private:
                         _T _v;
                 };
-#if 0
-#define DECL_CMP_OPS(op)                                        \
-        template <typename _T>                                  \
-        typename vec<_T, 1>::mask_type                          \
-        operator op (const vec<_T, 1>& a,                       \
-                     const vec<_T, 1>& b);                      \
-                                                                \
-        template <typename _T>                                  \
-        typename vec<_T, 1>::mask_type                          \
-        operator op (const vec<_T, 1>& a,                       \
-                     const typename vec<_T, 1>::value_type& b); \
-                                                                \
-        template <typename _T>                                  \
-        typename vec<_T, 1>::mask_type                          \
-        operator op (const typename vec<_T, 1>::value_type& a,  \
-                     const vec<_T, 1>& b)
-
-                DECL_CMP_OPS(<);
-                DECL_CMP_OPS(<=);
-                DECL_CMP_OPS(==);
-                DECL_CMP_OPS(!=);
-                DECL_CMP_OPS(>=);
-                DECL_CMP_OPS(>);
-
-#undef DECL_CMP_OPS
-#endif
 
                 template <typename _T>
                 vec<_T, 1> select(const typename vec<_T, 1>::mask_type& m,
@@ -178,7 +152,7 @@ namespace cftal {
                                   const vec<_T, 1>& on_false);
 
                 namespace op {
-
+                        
                         template <template <class _T, 
                                             std::size_t _N> class _OP, 
                                   typename _T, std::size_t _N,
@@ -707,7 +681,7 @@ typename cftal::simd::vec<_T, _N>::mask_type                            \
 cftal::simd::operator opname(const vec<_T, _N>& a,                      \
                              const vec<_T, _N>& b)                      \
 {                                                                       \
-        return opobj <_T, _N> ::v(a, b);                               \
+        return opobj <_T, _N> ::v(a, b);                                \
 }                                                                       \
                                                                         \
 template <class _T, std::size_t _N>                                     \
