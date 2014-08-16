@@ -24,9 +24,16 @@ namespace cftal {
                                 _l(l), _r(r) {}
                 };
 
+                template <typename _T>
+                inline 
+                _T
+                eval(const _T& v) {
+                        return v;
+                }
+
                 template <class _OP, class _L, class _R>
                 inline
-                typename _OP::vector_type 
+                typename _OP::full_type 
                 eval(const expr<_OP, _L, _R>& e) {
                         return _OP::v(eval(e._l), eval(e._r)); 
                 }
@@ -67,7 +74,7 @@ namespace cftal {
                                   class _OP,
                                   class _L, class _R>
                                 vec(const expr<_OP<_T, _N>, _L, _R>& r);
-                                    
+                        
                 private:
                         static_assert(0==(_N & (_N-1)), 
                                       "_N is not a power of 2");
@@ -607,6 +614,16 @@ cftal::simd::vec<_T, _N>::vec(const half_type& l,
 {
 }
 
+template <typename _T, std::size_t _N>
+template <template <class _U, std::size_t _M> 
+          class _OP,
+          class _L, class _R>
+cftal::simd::vec<_T, _N>::vec(const expr<_OP<_T, _N>, _L, _R>& r)
+        : vec(eval(r))
+{
+}
+
+
 template <class _T, std::size_t _N>
 inline
 const typename cftal::simd::vec<_T, _N>::half_type&
@@ -711,6 +728,133 @@ DEF_CMP_OPS(>=, op::ge)
 DEF_CMP_OPS(>, op::gt)
 
 #undef DEF_CMP_OPS
+
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::add <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator+(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+        return expr<op:: add<_T, _N>, 
+                    vec<_T, _N>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::add <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator+(const typename vec<_T, _N>::value_type& a, 
+                       const vec<_T, _N>& b)
+{
+        return expr<op::add<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    vec<_T, _N> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::add <_T, _N>, 
+                  cftal::simd::vec<_T, _N>,
+                  typename cftal::simd::vec<_T, _N>::value_type>
+cftal::simd::operator+(const vec<_T, _N>& a, 
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::add<_T, _N>,
+                    vec<_T, _N>,
+                    typename vec<_T, _N>::value_type>(a, b);
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::add <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator+(const vec<_T, _N>& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::add<_T, _N>,
+                    vec<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::add <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator+(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const vec<_T, _N>& b)
+{
+        return expr<op::add<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::add <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator+(const typename vec<_T, _N>::value_type& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::add<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::add <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  typename cftal::simd::vec<_T, _N>::value_type >
+cftal::simd::operator+(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::add<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    typename vec<_T, _N>::value_type >(a, b);
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator+=(vec<_T, _N>& a, 
+           const vec<_T, _N>& b)
+{
+        a = a + b;
+        return a;
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator+=(vec<_T, _N>& a, 
+                        const typename vec<_T, _N>::value_type& b)
+{
+        a = a + b;
+        return a;
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator+=(vec<_T, _N>& a,
+                        const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        a = a + b;
+        return a;
+}
+
 
 // Local variables:
 // mode: c++
