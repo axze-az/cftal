@@ -26,7 +26,7 @@ namespace cftal {
 
                 template <typename _T>
                 inline 
-                _T
+                const _T& 
                 eval(const _T& v) {
                         return v;
                 }
@@ -498,7 +498,7 @@ namespace cftal {
                                         return full_type(r);
                                 }
                         };
-                } // namespace ops
+                } // namespace op
                 
                 template <typename _T, std::size_t _N>
                 expr<op:: add <_T, _N>, 
