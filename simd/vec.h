@@ -205,7 +205,7 @@ namespace cftal {
                                 public base<_OP, _T, _N, vec<_T, _N> > {
                         };
 
-                        template <template <class _T, std::size_t _N> class _O,
+                        template <template <class _T, std::size_t _N> class _OP,
                                   typename _T, std::size_t _N>
                         struct unary {
                                 using full_type = vec<_T, _N>;
@@ -236,7 +236,6 @@ namespace cftal {
                                 }
                         };
 
-
                         // common comparison operations
                         template <typename _T, std::size_t _N>
                         struct lt : public cmp<lt, _T, _N> {};
@@ -257,6 +256,12 @@ namespace cftal {
                         struct gt : public cmp<gt, _T, _N> {};
 
                         // arithmetic operations
+                        // +a
+                        template <typename _T, std::size_t _N>
+                        struct plus : public unary<plus, _T, _N> {};
+                        // -a
+                        template <typename _T, std::size_t _N>
+                        struct neg : public unary<neg, _T, _N> {};
                         // a + b
                         template <typename _T, std::size_t _N>
                         struct add : public bin<add, _T, _N> {};
@@ -288,6 +293,9 @@ namespace cftal {
 
                         template <typename _T, std::size_t _N>
                         struct bit_xor : public bin<bit_xor, _T, _N> {};
+
+                        template <typename _T, std::size_t _N>
+                        struct bit_not : public unary<bit_not, _T, _N> {};
                         
                         template <typename _T>
                         struct lt<_T, 1> {
@@ -352,6 +360,26 @@ namespace cftal {
                                 mask_type
                                 v(const full_type& a, const full_type& b) {
                                         return mask_type(a() > b());
+                                }
+                        };
+
+                        template <typename _T>
+                        struct plus<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a) {
+                                        return a;
+                                }
+                        };
+
+                        template <typename _T>
+                        struct neg<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a) {
+                                        return full_type(-a());
                                 }
                         };
                         
@@ -523,6 +551,22 @@ namespace cftal {
                                         return full_type(r);
                                 }
                         };
+
+                        template <typename _T>
+                        struct bit_not<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                using cvt = bitrep<_T>;
+                                static
+                                full_type
+                                v(const full_type& a) {
+                                        typename cvt::int_type ai(
+                                                cvt::as_int(a()));
+                                        typename cvt::type r(
+                                                cvt::as_type(~ai));
+                                        return full_type(r);
+                                }
+                        };
+
                 } // namespace op
                 
                 template <typename _T, std::size_t _N>
