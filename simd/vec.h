@@ -24,6 +24,12 @@ namespace cftal {
                                 _l(l), _r(r) {}
                 };
 
+                template <class _OP, class _L>
+                struct expr<_OP, _L, void> {
+                        typename expr_traits<_L>::type _l;
+                        constexpr expr(const _L& l) : _l(l) {}
+                };
+
                 template <typename _T>
                 inline 
                 const _T& 
@@ -38,6 +44,12 @@ namespace cftal {
                         return _OP::v(eval(e._l), eval(e._r)); 
                 }
 
+                template <class _OP, class _L>
+                inline
+                typename _OP::full_type
+                eval(const expr<_OP, _L, void>& e) {
+                        return _OP::v(eval(e._l));
+                }
                 
                 template <class _M, class _T>
                 _T select(const _M& m, 
@@ -191,6 +203,19 @@ namespace cftal {
                                   typename _T, std::size_t _N>
                         struct bin :
                                 public base<_OP, _T, _N, vec<_T, _N> > {
+                        };
+
+                        template <template <class _T, std::size_t _N> class _O,
+                                  typename _T, std::size_t _N>
+                        struct unary {
+                                using full_type = vec<_T, _N>;
+                                static 
+                                full_type
+                                v(const full_type& a) {
+                                        return _R(
+                                                _OP<_T, _N/2>::v(lo_half(a)),
+                                                _OP<_T, _N/2>::v(hi_half(a)));
+                                }
                         };
 
                         template <template <class _T, std::size_t _N> class _OP,
