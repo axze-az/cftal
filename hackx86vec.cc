@@ -560,7 +560,8 @@ do_add(cftal::simd::vec<double, 4> a,
        cftal::simd::vec<double, 4> b)
 {
         // return cftal::simd::op::add<double, 4>::v(a, b);
-        return 2.0 + a + b + 4.0;
+        return 2.0 * a / b - (4.0 + a *  b);
+        // return a * b  + a / b - (a+b);
 }
 
 cftal::simd::vec<double, 16>
