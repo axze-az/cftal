@@ -564,11 +564,11 @@ do_add(cftal::simd::vec<double, 4> a,
         // return a * b  + a / b - (a+b);
 }
 
-cftal::simd::vec<double, 16>
-do_add(cftal::simd::vec<double, 16> a, 
-       cftal::simd::vec<double, 16> b)
+cftal::simd::vec<double, 32>
+do_add(cftal::simd::vec<double, 32> a, 
+       cftal::simd::vec<double, 32> b)
 {
-        return cftal::simd::op::bit_or<double, 16>::v(a, b);
+        return cftal::simd::op::bit_or<double, 32>::v(a, b);
 }
 
 cftal::simd::vec<double, 8>::mask_type
@@ -578,6 +578,14 @@ do_cmp_lt(cftal::simd::vec<double, 8> a,
         return a < b;
 }
 
+cftal::simd::vec<double, 1>
+do_logical(cftal::simd::vec<double, 1> a, 
+           cftal::simd::vec<double, 1> b,
+           cftal::simd::vec<double, 1> c,
+           cftal::simd::vec<double, 1> d)
+{
+        return (a | b) & (c ^ d);
+}
 
 
 int main(int argc, char** argv)

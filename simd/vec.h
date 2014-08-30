@@ -164,6 +164,12 @@ namespace cftal {
                         vec(const _T& v);
                         vec(const _T& v, bool splat);
                         _T operator()() const;
+
+                        template <template <class _U, std::size_t _M> 
+                                  class _OP,
+                                  class _L, class _R>
+                                vec(const expr<_OP<_T, 1>, _L, _R>& r);
+                        
                 private:
                         _T _v;
                 };
@@ -216,7 +222,7 @@ namespace cftal {
                                 static 
                                 full_type
                                 v(const full_type& a) {
-                                        return _R(
+                                        return full_type(
                                                 _OP<_T, _N/2>::v(lo_half(a)),
                                                 _OP<_T, _N/2>::v(hi_half(a)));
                                 }
@@ -300,7 +306,14 @@ namespace cftal {
 
                         template <typename _T, std::size_t _N>
                         struct bit_not : public unary<bit_not, _T, _N> {};
+
+                        // shift operators
+                        template <typename _T, std::size_t _N>
+                        struct shl : public bin<shl, _T, _N> {};
                         
+                        template <typename _T, std::size_t _N>
+                        struct shr : public bin<shr, _T, _N> {};
+
                         template <typename _T>
                         struct lt<_T, 1> {
                                 using full_type = vec<_T, 1>;
@@ -694,6 +707,308 @@ namespace cftal {
                         return v;
                 }
 
+                // not v
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_not<_T, _N>,
+                     vec<_T, _N>, void>
+                operator~(const vec<_T, _N>& v);
+                          
+                // not expr
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          typename _L, typename _R>
+                expr<op:: bit_not <_T, _N>,
+                     expr<_OP<_T, _N>, _L, _R>, void>
+                operator~(const expr<_OP<_T, _N>, _L, _R>& r);
+
+                // bit_or operator: v, v
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_or <_T, _N>, 
+                     vec<_T, _N>, 
+                     vec<_T, _N> >
+                operator|(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+                // bit_or operator: value_type, v
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_or <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     vec<_T, _N> >
+                operator|(const typename vec<_T, _N>::value_type& a, 
+                          const vec<_T, _N>& b);
+
+                // bit_or operator: v, value_type
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_or <_T, _N>, 
+                     vec<_T, _N>,
+                     typename vec<_T, _N>::value_type>
+                operator|(const vec<_T, _N>& a, 
+                          const typename vec<_T, _N>::value_type& b);
+
+                // bit_or operator: v, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_or <_T, _N>, 
+                     vec<_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator|(const vec<_T, _N>& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                // bit_or operator: expr, v
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_or <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     vec<_T, _N> >
+                operator|(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const vec<_T, _N>& b);
+
+                // bit_or operator: value_type, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_or <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator|(const typename vec<_T, _N>::value_type& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                // bit_or operator: expr, value_type
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_or <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     typename vec<_T, _N>::value_type >
+                operator|(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const typename vec<_T, _N>::value_type& b);
+
+                // bit_or operator: expr, expr
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP1,
+                          class _L1, class _R1,
+                          template <typename _T2, std::size_t _N2> class _OP2,
+                          class _L2, class _R2>
+                expr<op:: bit_or <_T, _N>, 
+                     expr<_OP1<_T, _N>, _L1, _R1>, 
+                     expr<_OP2<_T, _N>, _L2, _R2> >
+                operator|(const expr<_OP1<_T, _N>, _L1, _R1>& a,
+                          const expr<_OP2<_T, _N>, _L2, _R2>& b);
+
+                // self bit_or operator: v, v
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator|=(vec<_T, _N>& a, 
+                           const vec<_T, _N>& b);
+
+                // self bit_or operator: v, value_type
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator|=(vec<_T, _N>& a, 
+                           const typename vec<_T, _N>::value_type& b);
+
+                // self bit_or operator: v, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                vec<_T, _N>&
+                operator|=(vec<_T, _N>& a,
+                           const expr<_OP<_T, _N>, _L, _R>& b);
+
+
+
+                // bit_and operator: v, v
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_and <_T, _N>, 
+                     vec<_T, _N>, 
+                     vec<_T, _N> >
+                operator&(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+                // bit_and operator: value_type, v
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_and <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     vec<_T, _N> >
+                operator&(const typename vec<_T, _N>::value_type& a, 
+                          const vec<_T, _N>& b);
+
+                // bit_and operator: v, value_type
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_and <_T, _N>, 
+                     vec<_T, _N>,
+                     typename vec<_T, _N>::value_type>
+                operator&(const vec<_T, _N>& a, 
+                          const typename vec<_T, _N>::value_type& b);
+
+                // bit_and operator: v, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_and <_T, _N>, 
+                     vec<_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator&(const vec<_T, _N>& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                // bit_and operator: expr, v
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_and <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     vec<_T, _N> >
+                operator&(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const vec<_T, _N>& b);
+
+                // bit_and operator: value_type, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_and <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator&(const typename vec<_T, _N>::value_type& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                // bit_and operator: expr, value_type
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_and <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     typename vec<_T, _N>::value_type >
+                operator&(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const typename vec<_T, _N>::value_type& b);
+
+                // bit_and operator: expr, expr
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP1,
+                          class _L1, class _R1,
+                          template <typename _T2, std::size_t _N2> class _OP2,
+                          class _L2, class _R2>
+                expr<op:: bit_and <_T, _N>, 
+                     expr<_OP1<_T, _N>, _L1, _R1>, 
+                     expr<_OP2<_T, _N>, _L2, _R2> >
+                operator&(const expr<_OP1<_T, _N>, _L1, _R1>& a,
+                          const expr<_OP2<_T, _N>, _L2, _R2>& b);
+
+                // self bit_and operator: v, v
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator&=(vec<_T, _N>& a, 
+                           const vec<_T, _N>& b);
+
+                // self bit_and operator: v, value_type
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator&=(vec<_T, _N>& a, 
+                           const typename vec<_T, _N>::value_type& b);
+
+                // self bit_and operator: v, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                vec<_T, _N>&
+                operator&=(vec<_T, _N>& a,
+                           const expr<_OP<_T, _N>, _L, _R>& b);
+
+
+                // bit_xor operator: v, v
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_xor <_T, _N>, 
+                     vec<_T, _N>, 
+                     vec<_T, _N> >
+                operator^(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+                // bit_xor operator: value_type, v
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_xor <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     vec<_T, _N> >
+                operator^(const typename vec<_T, _N>::value_type& a, 
+                          const vec<_T, _N>& b);
+
+                // bit_xor operator: v, value_type
+                template <typename _T, std::size_t _N>
+                expr<op:: bit_xor <_T, _N>, 
+                     vec<_T, _N>,
+                     typename vec<_T, _N>::value_type>
+                operator^(const vec<_T, _N>& a, 
+                          const typename vec<_T, _N>::value_type& b);
+
+                // bit_xor operator: v, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_xor <_T, _N>, 
+                     vec<_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator^(const vec<_T, _N>& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                // bit_xor operator: expr, v
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_xor <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     vec<_T, _N> >
+                operator^(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const vec<_T, _N>& b);
+
+                // bit_xor operator: value_type, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_xor <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator^(const typename vec<_T, _N>::value_type& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                // bit_xor operator: expr, value_type
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: bit_xor <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     typename vec<_T, _N>::value_type >
+                operator^(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const typename vec<_T, _N>::value_type& b);
+
+                // bit_xor operator: expr, expr
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP1,
+                          class _L1, class _R1,
+                          template <typename _T2, std::size_t _N2> class _OP2,
+                          class _L2, class _R2>
+                expr<op:: bit_xor <_T, _N>, 
+                     expr<_OP1<_T, _N>, _L1, _R1>, 
+                     expr<_OP2<_T, _N>, _L2, _R2> >
+                operator^(const expr<_OP1<_T, _N>, _L1, _R1>& a,
+                          const expr<_OP2<_T, _N>, _L2, _R2>& b);
+
+                // self bit_xor operator: v, v
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator^=(vec<_T, _N>& a, 
+                           const vec<_T, _N>& b);
+
+                // self bit_xor operator: v, value_type
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator^=(vec<_T, _N>& a, 
+                           const typename vec<_T, _N>::value_type& b);
+
+                // self bit_xor operator: v, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                vec<_T, _N>&
+                operator^=(vec<_T, _N>& a,
+                           const expr<_OP<_T, _N>, _L, _R>& b);
+                
                 // unary minus: v
                 template <typename _T, std::size_t _N>
                 expr<op:: neg<_T, _N>,
@@ -1199,6 +1514,15 @@ cftal::simd::vec<_T, 1>::vec(const _T& v, bool splat)
         static_cast<void>(splat);
 }
 
+template <typename _T>
+template <template <class _U, std::size_t _M> 
+          class _OP,
+          class _L, class _R>
+cftal::simd::vec<_T, 1>::vec(const expr<_OP<_T, 1>, _L, _R>& r)
+        : vec(eval(r))
+{
+}
+
 
 template <class _T>
 inline
@@ -1245,6 +1569,456 @@ DEF_CMP_OPS(>=, op::ge)
 DEF_CMP_OPS(>, op::gt)
 
 #undef DEF_CMP_OPS
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op:: bit_not <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, void>
+cftal::simd::operator~(const vec<_T, _N>& v)
+{
+        return expr<op:: bit_not <_T, _N>, 
+                    vec<_T, _N>, void>(v);
+}
+
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          typename _L, typename _R>
+cftal::simd::expr<cftal::simd::op:: bit_not<_T, _N>,
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  void>
+cftal::simd::operator~(const expr<_OP<_T, _N>, _L, _R>& v)
+{
+        return expr<op:: bit_not <_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>, 
+                    void>(v);
+}
+
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::bit_or <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator|(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+        return expr<op:: bit_or<_T, _N>, 
+                    vec<_T, _N>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::bit_or <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator|(const typename vec<_T, _N>::value_type& a, 
+                       const vec<_T, _N>& b)
+{
+        return expr<op::bit_or<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    vec<_T, _N> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::bit_or <_T, _N>, 
+                  cftal::simd::vec<_T, _N>,
+                  typename cftal::simd::vec<_T, _N>::value_type>
+cftal::simd::operator|(const vec<_T, _N>& a, 
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::bit_or<_T, _N>,
+                    vec<_T, _N>,
+                    typename vec<_T, _N>::value_type>(a, b);
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_or <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator|(const vec<_T, _N>& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::bit_or<_T, _N>,
+                    vec<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_or <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator|(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const vec<_T, _N>& b)
+{
+        return expr<op::bit_or<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_or <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator|(const typename vec<_T, _N>::value_type& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::bit_or<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_or <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  typename cftal::simd::vec<_T, _N>::value_type >
+cftal::simd::operator|(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::bit_or<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    typename vec<_T, _N>::value_type >(a, b);
+}
+
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP1,
+          class _L1, class _R1,
+          template <typename _T2, std::size_t _N2> class _OP2,
+          class _L2, class _R2>
+cftal::simd::expr<cftal::simd::op::bit_or <_T, _N>, 
+                  cftal::simd::expr<_OP1<_T, _N>, _L1, _R1>, 
+                  cftal::simd::expr<_OP2<_T, _N>, _L2, _R2> > 
+cftal::simd::operator|(const expr<_OP1<_T, _N>, _L1, _R1>& a,
+                       const expr<_OP2<_T, _N>, _L2, _R2>& b)
+{
+        return expr<op::bit_or<_T, _N>,
+                    expr<_OP1<_T, _N>, _L1, _R1>,
+                    expr<_OP2<_T, _N>, _L2, _R2> >(a, b);
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator|=(vec<_T, _N>& a, 
+           const vec<_T, _N>& b)
+{
+        a = a | b;
+        return a;
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator|=(vec<_T, _N>& a, 
+                        const typename vec<_T, _N>::value_type& b)
+{
+        a = a | b;
+        return a;
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator|=(vec<_T, _N>& a,
+                        const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        a = a | b;
+        return a;
+}
+
+
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::bit_and <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator&(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+        return expr<op:: bit_and<_T, _N>, 
+                    vec<_T, _N>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::bit_and <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator&(const typename vec<_T, _N>::value_type& a, 
+                       const vec<_T, _N>& b)
+{
+        return expr<op::bit_and<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    vec<_T, _N> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::bit_and <_T, _N>, 
+                  cftal::simd::vec<_T, _N>,
+                  typename cftal::simd::vec<_T, _N>::value_type>
+cftal::simd::operator&(const vec<_T, _N>& a, 
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::bit_and<_T, _N>,
+                    vec<_T, _N>,
+                    typename vec<_T, _N>::value_type>(a, b);
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_and <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator&(const vec<_T, _N>& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::bit_and<_T, _N>,
+                    vec<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_and <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator&(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const vec<_T, _N>& b)
+{
+        return expr<op::bit_and<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_and <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator&(const typename vec<_T, _N>::value_type& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::bit_and<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_and <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  typename cftal::simd::vec<_T, _N>::value_type >
+cftal::simd::operator&(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::bit_and<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    typename vec<_T, _N>::value_type >(a, b);
+}
+
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP1,
+          class _L1, class _R1,
+          template <typename _T2, std::size_t _N2> class _OP2,
+          class _L2, class _R2>
+cftal::simd::expr<cftal::simd::op::bit_and <_T, _N>, 
+                  cftal::simd::expr<_OP1<_T, _N>, _L1, _R1>, 
+                  cftal::simd::expr<_OP2<_T, _N>, _L2, _R2> > 
+cftal::simd::operator&(const expr<_OP1<_T, _N>, _L1, _R1>& a,
+                       const expr<_OP2<_T, _N>, _L2, _R2>& b)
+{
+        return expr<op::bit_and<_T, _N>,
+                    expr<_OP1<_T, _N>, _L1, _R1>,
+                    expr<_OP2<_T, _N>, _L2, _R2> >(a, b);
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator&=(vec<_T, _N>& a, 
+           const vec<_T, _N>& b)
+{
+        a = a & b;
+        return a;
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator&=(vec<_T, _N>& a, 
+                        const typename vec<_T, _N>::value_type& b)
+{
+        a = a & b;
+        return a;
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator&=(vec<_T, _N>& a,
+                        const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        a = a & b;
+        return a;
+}
+
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::bit_xor <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator^(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+        return expr<op:: bit_xor<_T, _N>, 
+                    vec<_T, _N>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::bit_xor <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator^(const typename vec<_T, _N>::value_type& a, 
+                       const vec<_T, _N>& b)
+{
+        return expr<op::bit_xor<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    vec<_T, _N> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::bit_xor <_T, _N>, 
+                  cftal::simd::vec<_T, _N>,
+                  typename cftal::simd::vec<_T, _N>::value_type>
+cftal::simd::operator^(const vec<_T, _N>& a, 
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::bit_xor<_T, _N>,
+                    vec<_T, _N>,
+                    typename vec<_T, _N>::value_type>(a, b);
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_xor <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator^(const vec<_T, _N>& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::bit_xor<_T, _N>,
+                    vec<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_xor <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator^(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const vec<_T, _N>& b)
+{
+        return expr<op::bit_xor<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_xor <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator^(const typename vec<_T, _N>::value_type& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::bit_xor<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::bit_xor <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  typename cftal::simd::vec<_T, _N>::value_type >
+cftal::simd::operator^(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::bit_xor<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    typename vec<_T, _N>::value_type >(a, b);
+}
+
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP1,
+          class _L1, class _R1,
+          template <typename _T2, std::size_t _N2> class _OP2,
+          class _L2, class _R2>
+cftal::simd::expr<cftal::simd::op::bit_xor <_T, _N>, 
+                  cftal::simd::expr<_OP1<_T, _N>, _L1, _R1>, 
+                  cftal::simd::expr<_OP2<_T, _N>, _L2, _R2> > 
+cftal::simd::operator^(const expr<_OP1<_T, _N>, _L1, _R1>& a,
+                       const expr<_OP2<_T, _N>, _L2, _R2>& b)
+{
+        return expr<op::bit_xor<_T, _N>,
+                    expr<_OP1<_T, _N>, _L1, _R1>,
+                    expr<_OP2<_T, _N>, _L2, _R2> >(a, b);
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator^=(vec<_T, _N>& a, 
+           const vec<_T, _N>& b)
+{
+        a = a ^ b;
+        return a;
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator^=(vec<_T, _N>& a, 
+                        const typename vec<_T, _N>::value_type& b)
+{
+        a = a ^ b;
+        return a;
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator^=(vec<_T, _N>& a,
+                        const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        a = a ^ b;
+        return a;
+}
+
 
 
 template <typename _T, std::size_t _N>
@@ -1844,6 +2618,46 @@ cftal::simd::operator/=(vec<_T, _N>& a,
         a = a / b;
         return a;
 }
+
+// include vector specializations
+#if defined (__SSE__)
+#if 0
+#include <cftal/simd/x86_v4f32.h>
+#endif
+#endif
+#if defined (__SSE2__)
+#if 0
+#include <cftal/simd/x86_v4s32.h>
+#include <cftal/simd/x86_v4u32.h>
+#include <cftal/simd/x86_v2s64.h>
+#include <cftal/simd/x86_v2u64.h>
+#include <cftal/simd/x86_v2f64.h>
+#endif
+#endif
+#if defined (__AVX__)
+#if 0
+#include <cftal/simd/x86_v8f32.h>
+#include <cftal/simd/x86_v4f64.h>
+#endif
+#endif
+#if defined (__AVX2__)
+#if 0
+#include <cftal/simd/x86_v8s32.h>
+#include <cftal/simd/x86_v8u32.h>
+#include <cftal/simd/x86_v4s64.h>
+#include <cftal/simd/x86_v4u64.h>
+#endif
+#endif
+#if defined (__AVX512__)
+#if 0
+#include <cftal/simd/x86_v16f32.h>
+#include <cftal/simd/x86_v8f64.h>
+#include <cftal/simd/x86_v16s32.h>
+#include <cftal/simd/x86_v16u32.h>
+#include <cftal/simd/x86_v8s64.h>
+#include <cftal/simd/x86_v8u64.h>
+#endif
+#endif
 
 // Local variables:
 // mode: c++
