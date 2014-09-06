@@ -584,7 +584,31 @@ do_logical(cftal::simd::vec<double, 1> a,
            cftal::simd::vec<double, 1> c,
            cftal::simd::vec<double, 1> d)
 {
-        return (a | b) & (c ^ d);
+        return ((a | b) & (c ^ d)) << 2;
+}
+
+cftal::simd::vec<int32_t, 4>
+check_v4s32(cftal::simd::vec<int32_t, 4> a,
+            cftal::simd::vec<int32_t, 4> b,
+            cftal::simd::vec<int32_t, 4> c)
+{
+        return (a ^ b) & c;
+}
+
+cftal::simd::vec<int32_t, 8>
+check_v8s32(cftal::simd::vec<int32_t, 8> a,
+            cftal::simd::vec<int32_t, 8> b,
+            cftal::simd::vec<int32_t, 8> c)
+{
+        return (a ^ b) & c;
+}
+
+cftal::simd::vec<int32_t, 16>
+check_v16s32(cftal::simd::vec<int32_t, 16> a,
+            cftal::simd::vec<int32_t, 16> b,
+            cftal::simd::vec<int32_t, 16> c)
+{
+        return (a ^ b) & c;
 }
 
 

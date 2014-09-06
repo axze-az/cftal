@@ -1578,7 +1578,7 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
                 } else if (((m1 & 0x2222) & m2)==(0x2222 & m2)) {
                         // only from high lane
                         __m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
-                        const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
+                        enum { sel_hi= csel4<_P0, _P1, _P2, _P3>::val };
                         res = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
                 } else {
                         // general case
@@ -1589,8 +1589,10 @@ __m256d x86vec::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
                                 _mm256_insertf128_pd(a, 
                                                      _mm256_castpd256_pd128(a), 
                                                      1);
-                        const int sel_hi= csel4<_P0, _P1, _P2, _P3>::val;
-                        const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
+                        enum {
+                                sel_hi= csel4<_P0, _P1, _P2, _P3>::val,
+                                sel_lo= csel4<_P0, _P1, _P2, _P3>::val
+                        };
 
                         hi2lo_hi2hi = _mm256_permute_pd(hi2lo_hi2hi, sel_hi);
                         lo2lo_lo2hi = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);

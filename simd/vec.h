@@ -168,7 +168,7 @@ namespace cftal {
                         template <template <class _U, std::size_t _M> 
                                   class _OP,
                                   class _L, class _R>
-                                vec(const expr<_OP<_T, 1>, _L, _R>& r);
+                        vec(const expr<_OP<_T, 1>, _L, _R>& r);
                         
                 private:
                         _T _v;
@@ -284,6 +284,10 @@ namespace cftal {
                         // a / b
                         template <typename _T, std::size_t _N>
                         struct div : public bin<div, _T, _N> {};
+                        // a % b
+                        template <typename _T, std::size_t _N>
+                        struct mod : public bin<mod, _T, _N> {};
+                        
                         // a*b + c
                         template <typename _T, std::size_t _N>
                         struct fma : public ternary<fma, _T, _N> {};
@@ -441,6 +445,16 @@ namespace cftal {
                         };
 
                         template <typename _T>
+                        struct mod<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, const full_type& b) {
+                                        return full_type(a() % b());
+                                }
+                        };
+
+                        template <typename _T>
                         struct fma<_T, 1> {
                                 using full_type = vec<_T, 1>;
                                 static
@@ -585,6 +599,37 @@ namespace cftal {
                                         return full_type(r);
                                 }
                         };
+                        
+                        template <typename _T>
+                        struct shl<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, unsigned s) {
+                                        using cvt = bitrep<_T>;
+                                        typename cvt::int_type ai(
+                                                cvt::as_int(a()));
+                                        typename cvt::type r(
+                                                cvt::as_type(ai << s));
+                                        return full_type(r);
+                                }
+                        };
+
+                        template <typename _T>
+                        struct shr<_T, 1> {
+                                using full_type = vec<_T, 1>;
+                                static
+                                full_type
+                                v(const full_type& a, unsigned s) {
+                                        using cvt = bitrep<_T>;
+                                        typename cvt::int_type ai(
+                                                cvt::as_int(a()));
+                                        typename cvt::type r(
+                                                cvt::as_type(ai << s));
+                                        return full_type(r);
+                                }
+                        };
+                        
 
                 } // namespace op
 
@@ -1009,6 +1054,44 @@ namespace cftal {
                 operator^=(vec<_T, _N>& a,
                            const expr<_OP<_T, _N>, _L, _R>& b);
                 
+                // left shift v unsigned
+                template <typename _T, std::size_t _N>
+                expr<op:: shl<_T, _N>, 
+                     vec<_T, _N>, unsigned >
+                operator <<(const vec<_T, _N>& v, unsigned s);
+                // left shift expr unsigned
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: shl<_T, _N>,
+                     expr<_OP<_T, _N>, _L, _R>, unsigned>
+                operator <<(const expr<_OP<_T, _N>, _L, _R>& v,
+                            unsigned s);
+                // self left shift
+                template <typename _T, std::size_t _N>
+                expr<op:: shl<_T, _N>, 
+                     vec<_T, _N>, unsigned >
+                operator <<=(vec<_T, _N>& v, unsigned s);
+
+                // right shift v unsigned
+                template <typename _T, std::size_t _N>
+                expr<op:: shr<_T, _N>, 
+                     vec<_T, _N>, unsigned >
+                operator >>(const vec<_T, _N>& v, unsigned s);
+                // left shift expr unsigned
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: shr<_T, _N>,
+                     expr<_OP<_T, _N>, _L, _R>, unsigned>
+                operator >>(const expr<_OP<_T, _N>, _L, _R>& v,
+                            unsigned s);
+                // self right shift
+                template <typename _T, std::size_t _N>
+                expr<op:: shl<_T, _N>, 
+                     vec<_T, _N>, unsigned >
+                operator >>=(vec<_T, _N>& v, unsigned s);
+
                 // unary minus: v
                 template <typename _T, std::size_t _N>
                 expr<op:: neg<_T, _N>,
@@ -1404,6 +1487,102 @@ namespace cftal {
                 operator/=(vec<_T, _N>& a,
                            const expr<_OP<_T, _N>, _L, _R>& b);
 
+
+                // mod operator: v, v
+                template <typename _T, std::size_t _N>
+                expr<op:: mod <_T, _N>, 
+                     vec<_T, _N>, 
+                     vec<_T, _N> >
+                operator%(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+                // mod operator: value_type, v
+                template <typename _T, std::size_t _N>
+                expr<op:: mod <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     vec<_T, _N> >
+                operator%(const typename vec<_T, _N>::value_type& a, 
+                          const vec<_T, _N>& b);
+
+                // mod operator: v, value_type
+                template <typename _T, std::size_t _N>
+                expr<op:: mod <_T, _N>, 
+                     vec<_T, _N>,
+                     typename vec<_T, _N>::value_type>
+                operator%(const vec<_T, _N>& a, 
+                          const typename vec<_T, _N>::value_type& b);
+
+                // mod operator: v, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: mod <_T, _N>, 
+                     vec<_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator%(const vec<_T, _N>& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                // mod operator: expr, v
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: mod <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     vec<_T, _N> >
+                operator%(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const vec<_T, _N>& b);
+
+                // mod operator: value_type, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: mod <_T, _N>, 
+                     typename vec<_T, _N>::value_type, 
+                     expr<_OP<_T, _N>, _L, _R> >
+                operator%(const typename vec<_T, _N>::value_type& a,
+                          const expr<_OP<_T, _N>, _L, _R>& b);
+
+                // mod operator: expr, value_type
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                expr<op:: mod <_T, _N>, 
+                     expr<_OP<_T, _N>, _L, _R>, 
+                     typename vec<_T, _N>::value_type >
+                operator%(const expr<_OP<_T, _N>, _L, _R>& a,
+                          const typename vec<_T, _N>::value_type& b);
+
+                // mod operator: expr, expr
+                template <typename _T, std::size_t _N,
+                          template <typename _T1, std::size_t _N1> class _OP1,
+                          class _L1, class _R1,
+                          template <typename _T2, std::size_t _N2> class _OP2,
+                          class _L2, class _R2>
+                expr<op:: mod <_T, _N>, 
+                     expr<_OP1<_T, _N>, _L1, _R1>, 
+                     expr<_OP2<_T, _N>, _L2, _R2> >
+                operator%(const expr<_OP1<_T, _N>, _L1, _R1>& a,
+                          const expr<_OP2<_T, _N>, _L2, _R2>& b);
+
+                // self mod operator: v, v
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator%=(vec<_T, _N>& a, 
+                           const vec<_T, _N>& b);
+
+                // self mod operator: v, value_type
+                template <typename _T, std::size_t _N>
+                vec<_T, _N>&
+                operator%=(vec<_T, _N>& a, 
+                           const typename vec<_T, _N>::value_type& b);
+
+                // self mod operator: v, expr
+                template <typename _T, std::size_t _N, 
+                          template <typename _T1, std::size_t _N1> class _OP,
+                          class _L, class _R>
+                vec<_T, _N>&
+                operator%=(vec<_T, _N>& a,
+                           const expr<_OP<_T, _N>, _L, _R>& b);
+
         }
 }
 
@@ -1496,7 +1675,10 @@ cftal::simd::select(const typename vec<_T, _N>::mask_type& m,
                     const vec<_T, _N>& on_true,
                     const vec<_T, _N>& on_false)
 {
-        return vec<_T, _N>();
+        vec<_T, _N> res(
+                select(lo_half(m), lo_half(on_true), lo_half(on_false)),
+                select(hi_half(m), hi_half(on_true), hi_half(on_false)));
+        return res;
 }
 
 template <class _T>
@@ -2019,7 +2201,67 @@ cftal::simd::operator^=(vec<_T, _N>& a,
         return a;
 }
 
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op:: shl<_T, _N>,
+                  cftal::simd::vec<_T, _N>,
+                  unsigned>
+cftal::simd::operator<<(const vec<_T, _N>& v, unsigned s)
+{
+        return expr<op:: shl<_T, _N>, 
+                    vec<_T, _N>, unsigned>(v, s);
+}
 
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op:: shl<_T, _N>,
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>,
+                  unsigned>
+cftal::simd::operator<<(const expr<_OP<_T, _N>, _L, _R>& e,
+                        unsigned s)
+{
+        return expr<op:: shl<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    unsigned>(e, s);
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator<<(const vec<_T, _N>& v, unsigned s)
+{
+        v = v << s;
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op:: shr<_T, _N>,
+                  cftal::simd::vec<_T, _N>,
+                  unsigned>
+cftal::simd::operator>>(const vec<_T, _N>& v, unsigned s)
+{
+        return expr<op:: shr<_T, _N>, 
+                    vec<_T, _N>, unsigned>(v, s);
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op:: shr<_T, _N>,
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>,
+                  unsigned>
+cftal::simd::operator>>(const expr<_OP<_T, _N>, _L, _R>& e,
+                        unsigned s)
+{
+        return expr<op:: shr<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    unsigned>(e, s);
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator>>(const vec<_T, _N>& v, unsigned s)
+{
+        v = v >> s;
+}
 
 template <typename _T, std::size_t _N>
 cftal::simd::expr<cftal::simd::op:: neg <_T, _N>, 
@@ -2619,6 +2861,147 @@ cftal::simd::operator/=(vec<_T, _N>& a,
         return a;
 }
 
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::mod <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator%(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+        return expr<op:: mod<_T, _N>, 
+                    vec<_T, _N>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::mod <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator%(const typename vec<_T, _N>::value_type& a, 
+                       const vec<_T, _N>& b)
+{
+        return expr<op::mod<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    vec<_T, _N> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N>
+cftal::simd::expr<cftal::simd::op::mod <_T, _N>, 
+                  cftal::simd::vec<_T, _N>,
+                  typename cftal::simd::vec<_T, _N>::value_type>
+cftal::simd::operator%(const vec<_T, _N>& a, 
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::mod<_T, _N>,
+                    vec<_T, _N>,
+                    typename vec<_T, _N>::value_type>(a, b);
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::mod <_T, _N>, 
+                  cftal::simd::vec<_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator%(const vec<_T, _N>& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::mod<_T, _N>,
+                    vec<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::mod <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  cftal::simd::vec<_T, _N> >
+cftal::simd::operator%(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const vec<_T, _N>& b)
+{
+        return expr<op::mod<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    vec<_T, _N> >(a, b);
+}
+
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::mod <_T, _N>, 
+                  typename cftal::simd::vec<_T, _N>::value_type, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R> >
+cftal::simd::operator%(const typename vec<_T, _N>::value_type& a,
+                       const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        return expr<op::mod<_T, _N>,
+                    typename vec<_T, _N>::value_type,
+                    expr<_OP<_T, _N>, _L, _R> >(a, b);
+}
+
+ 
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::expr<cftal::simd::op::mod <_T, _N>, 
+                  cftal::simd::expr<_OP<_T, _N>, _L, _R>, 
+                  typename cftal::simd::vec<_T, _N>::value_type >
+cftal::simd::operator%(const expr<_OP<_T, _N>, _L, _R>& a,
+                       const typename vec<_T, _N>::value_type& b)
+{
+        return expr<op::mod<_T, _N>,
+                    expr<_OP<_T, _N>, _L, _R>,
+                    typename vec<_T, _N>::value_type >(a, b);
+}
+
+template <typename _T, std::size_t _N,
+          template <typename _T1, std::size_t _N1> class _OP1,
+          class _L1, class _R1,
+          template <typename _T2, std::size_t _N2> class _OP2,
+          class _L2, class _R2>
+cftal::simd::expr<cftal::simd::op::mod <_T, _N>, 
+                  cftal::simd::expr<_OP1<_T, _N>, _L1, _R1>, 
+                  cftal::simd::expr<_OP2<_T, _N>, _L2, _R2> > 
+cftal::simd::operator%(const expr<_OP1<_T, _N>, _L1, _R1>& a,
+                       const expr<_OP2<_T, _N>, _L2, _R2>& b)
+{
+        return expr<op::mod<_T, _N>,
+                    expr<_OP1<_T, _N>, _L1, _R1>,
+                    expr<_OP2<_T, _N>, _L2, _R2> >(a, b);
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator%=(vec<_T, _N>& a, 
+           const vec<_T, _N>& b)
+{
+        a = a % b;
+        return a;
+}
+
+template <typename _T, std::size_t _N>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator%=(vec<_T, _N>& a, 
+                        const typename vec<_T, _N>::value_type& b)
+{
+        a = a % b;
+        return a;
+}
+
+template <typename _T, std::size_t _N, 
+          template <typename _T1, std::size_t _N1> class _OP,
+          class _L, class _R>
+cftal::simd::vec<_T, _N>&
+cftal::simd::operator%=(vec<_T, _N>& a,
+                        const expr<_OP<_T, _N>, _L, _R>& b)
+{
+        a = a % b;
+        return a;
+}
+
 // include vector specializations
 #if defined (__SSE__)
 #if 0
@@ -2626,8 +3009,8 @@ cftal::simd::operator/=(vec<_T, _N>& a,
 #endif
 #endif
 #if defined (__SSE2__)
-#if 0
 #include <cftal/simd/x86_v4s32.h>
+#if 0
 #include <cftal/simd/x86_v4u32.h>
 #include <cftal/simd/x86_v2s64.h>
 #include <cftal/simd/x86_v2u64.h>

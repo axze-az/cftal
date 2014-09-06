@@ -260,12 +260,15 @@ namespace x86vec {
                 template <unsigned _P0, unsigned _P1,
                           unsigned _P2, unsigned _P3>
                 struct vshufps {
+                        enum {
+                                m=shuffle4<
+                                int(_P0), 
+                                int(_P1), 
+                                int(_P2), 
+                                int(_P3)>::val
+                        };
+
                         static __m128 v(__m128 a, __m128 b) {
-                                const int m=shuffle4<
-                                        int(_P0), 
-                                        int(_P1), 
-                                        int(_P2), 
-                                        int(_P3)>::val;
                                 return _mm_shuffle_ps(a, b, m);
                         }
                         static __m128 v(__m128 a) {
@@ -310,12 +313,15 @@ namespace x86vec {
                 template <unsigned _P0, unsigned _P1,
                           unsigned _P2, unsigned _P3>
                 struct vpshufd {
+                        enum {
+                                _p0 = _P0,
+                                _p1 = _P1,
+                                _p2 = _P2,
+                                _p3 = _P3,
+                                m=shuffle4<_p0, _p1, _p2, _p3>::val
+                        };
+                        
                         static __m128i v(__m128i a) {
-                                constexpr int _p0 = _P0;
-                                constexpr int _p1 = _P1;
-                                constexpr int _p2 = _P2;
-                                constexpr int _p3 = _P3;
-                                const int m=shuffle4<_p0, _p1, _p2, _p3>::val;
                                 return _mm_shuffle_epi32(a, m);
                         }
                 };
@@ -916,7 +922,7 @@ namespace x86vec {
 
                 template <int _P0, int _P1>
                 struct vperm2f128 {
-                        static const int imm8 = (_P0 & 3) | ((_P1 & 3) << 4);
+                        enum { imm8 = (_P0 & 3) | ((_P1 & 3) << 4) };
 
                         static __m256d v(__m256d a, __m256d b) {
                                 return _mm256_permute2f128_pd(a, b, imm8);
