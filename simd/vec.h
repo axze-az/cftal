@@ -11,6 +11,11 @@ namespace cftal {
         
         namespace simd {
 
+                template <unsigned _N>
+                struct const_uint {
+                        enum { v = _N };
+                };
+
                 template <typename _T>
                 struct expr_traits {
                         using type = const _T;
@@ -313,10 +318,32 @@ namespace cftal {
 
                         // shift operators
                         template <typename _T, std::size_t _N>
-                        struct shl : public bin<shl, _T, _N> {};
+                        struct shl : public bin<shl, _T, _N> {
+                                using base_type = bin<shl, _T, _N>;
+                                using base_type::v;
+                                using full_type = typename base_type::full_type;
+
+                                template <unsigned _S> 
+                                static
+                                full_type 
+                                v(const full_type& a) {
+                                        return v(a, _S);
+                                }
+                        };
                         
                         template <typename _T, std::size_t _N>
-                        struct shr : public bin<shr, _T, _N> {};
+                        struct shr : public bin<shr, _T, _N> {
+                                using base_type = bin<shl, _T, _N>;
+                                using base_type::v;
+                                using full_type = typename base_type::full_type;
+
+                                template <unsigned _S> 
+                                static
+                                full_type 
+                                v(const full_type& a) {
+                                        return v(a, _S);
+                                }
+                        };
 
                         template <typename _T>
                         struct lt<_T, 1> {

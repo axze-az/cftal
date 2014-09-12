@@ -318,7 +318,7 @@ namespace x86vec {
                                 _p1 = _P1,
                                 _p2 = _P2,
                                 _p3 = _P3,
-                                m=shuffle4<_p0, _p1, _p2, _p3>::val
+                                m=shuffle4<int(_p0), int(_p1), int(_p2), int(_p3)>::val
                         };
                         
                         static __m128i v(__m128i a) {
