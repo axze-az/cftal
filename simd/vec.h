@@ -319,29 +319,34 @@ namespace cftal {
                         // shift operators
                         template <typename _T, std::size_t _N>
                         struct shl : public bin<shl, _T, _N> {
-                                using base_type = bin<shl, _T, _N>;
-                                using base_type::v;
-                                using full_type = typename base_type::full_type;
-
-                                template <unsigned _S> 
-                                static
-                                full_type 
-                                v(const full_type& a) {
-                                        return v(a, _S);
-                                }
                         };
                         
                         template <typename _T, std::size_t _N>
                         struct shr : public bin<shr, _T, _N> {
-                                using base_type = bin<shl, _T, _N>;
-                                using base_type::v;
-                                using full_type = typename base_type::full_type;
+                        };
 
-                                template <unsigned _S> 
-                                static
-                                full_type 
+                        // constant shift operators
+                        template <typename _T, std::size_t _N, unsigned _S>
+                        struct const_shl {
+                                using full_type = vec<_T, _N>;
+                                static 
+                                full_type
                                 v(const full_type& a) {
-                                        return v(a, _S);
+                                        return full_type(
+                                                const_shl<_T, _N/2, _S>::v(lo_half(a)),
+                                                const_shl<_T, _N/2, _S>::v(hi_half(a)));
+                                }
+                        };
+
+                        template <typename _T, std::size_t _N, unsigned _S>
+                        struct const_shr {
+                                using full_type = vec<_T, _N>;
+                                static 
+                                full_type
+                                v(const full_type& a) {
+                                        return full_type(
+                                                const_shr<_T, _N/2, _S>::v(lo_half(a)),
+                                                const_shr<_T, _N/2, _S>::v(hi_half(a)));
                                 }
                         };
 
@@ -887,9 +892,7 @@ namespace cftal {
                 vec<_T, _N>&
                 operator|=(vec<_T, _N>& a,
                            const expr<_OP<_T, _N>, _L, _R>& b);
-
-
-
+                
                 // bit_and operator: v, v
                 template <typename _T, std::size_t _N>
                 expr<op:: bit_and <_T, _N>, 
@@ -984,7 +987,6 @@ namespace cftal {
                 vec<_T, _N>&
                 operator&=(vec<_T, _N>& a,
                            const expr<_OP<_T, _N>, _L, _R>& b);
-
 
                 // bit_xor operator: v, v
                 template <typename _T, std::size_t _N>
@@ -1096,8 +1098,7 @@ namespace cftal {
                             unsigned s);
                 // self left shift
                 template <typename _T, std::size_t _N>
-                expr<op:: shl<_T, _N>, 
-                     vec<_T, _N>, unsigned >
+                vec<_T, _N>&
                 operator <<=(vec<_T, _N>& v, unsigned s);
 
                 // right shift v unsigned
@@ -1105,7 +1106,7 @@ namespace cftal {
                 expr<op:: shr<_T, _N>, 
                      vec<_T, _N>, unsigned >
                 operator >>(const vec<_T, _N>& v, unsigned s);
-                // left shift expr unsigned
+                // right shift expr unsigned
                 template <typename _T, std::size_t _N,
                           template <typename _T1, std::size_t _N1> class _OP,
                           class _L, class _R>
@@ -1115,8 +1116,7 @@ namespace cftal {
                             unsigned s);
                 // self right shift
                 template <typename _T, std::size_t _N>
-                expr<op:: shl<_T, _N>, 
-                     vec<_T, _N>, unsigned >
+                vec<_T, _N>&
                 operator >>=(vec<_T, _N>& v, unsigned s);
 
                 // unary minus: v
@@ -1638,7 +1638,8 @@ cftal::simd::vec<_T, _N>::vec(const _T& v, bool splat)
 template <class _T, std::size_t _N>
 inline
 cftal::simd::vec<_T, _N>::vec(std::initializer_list<_T> l)
-        : _l(std::initializer_list<_T>(begin(l), l.size()/2)),
+        : _l(std::initializer_list<_T>(begin(l), 
+                                       l.size()/2)),
           _h(std::initializer_list<_T>(begin(l) + l.size()/2, 
                                        l.size()/2)) 
 {
@@ -1740,6 +1741,19 @@ cftal::simd::vec<_T, 1>::operator()() const
 {
         return _v;
 }
+
+template <class _T>
+inline
+cftal::simd::vec<_T, 1>
+cftal::simd::select(const typename vec<_T, 1>::mask_type& vm,
+                    const vec<_T, 1>& on_true,
+                    const vec<_T, 1>& on_false)
+{
+        typename vec<_T, 1>::value_type r{
+                select(vm(), on_true(), on_false())};
+        return vec<_T, 1>{r};
+}
+
 
 #define DEF_CMP_OPS(opname, opobj)                                      \
 template <class _T, std::size_t _N>                                     \
@@ -2254,9 +2268,10 @@ cftal::simd::operator<<(const expr<_OP<_T, _N>, _L, _R>& e,
 
 template <typename _T, std::size_t _N>
 cftal::simd::vec<_T, _N>&
-cftal::simd::operator<<(const vec<_T, _N>& v, unsigned s)
+cftal::simd::operator<<=(vec<_T, _N>& v, unsigned s)
 {
         v = v << s;
+        return v;
 }
 
 template <typename _T, std::size_t _N>
@@ -2285,7 +2300,7 @@ cftal::simd::operator>>(const expr<_OP<_T, _N>, _L, _R>& e,
 
 template <typename _T, std::size_t _N>
 cftal::simd::vec<_T, _N>&
-cftal::simd::operator>>(const vec<_T, _N>& v, unsigned s)
+cftal::simd::operator>>=(vec<_T, _N>& v, unsigned s)
 {
         v = v >> s;
 }

@@ -21,11 +21,12 @@ namespace cftal {
                         vec(vec&& r) = default;
                         vec& operator=(const vec& r) = default;
                         vec& operator=(vec&& r) = default;
-
+                        // create vec{v,v,v,v}
                         vec(int32_t v);
-                        vec(int32_t v, bool splat);
+                        // create vec{v0, v1, v2, v3}
+                        vec(int32_t v0, int32_t v1, int32_t v2=0, int32_t v3=0);
                         vec(__m128i v);
-                        vec(const std::initializer_list<int32_t>& v);
+                        
                         __m128i operator()() const;
 
                         template <template <class _U, std::size_t _M>
@@ -293,10 +294,9 @@ cftal::simd::vec<cftal::int32_t, 4>::vec(int32_t v)
 }
 
 inline
-cftal::simd::vec<cftal::int32_t, 4>::vec(int32_t v, bool splat)
-        : _v(splat ?
-             _mm_setr_epi32(v, v, v, v) :
-             _mm_setr_epi32(v, 0, 0, 0))
+cftal::simd::vec<cftal::int32_t, 4>::
+vec(int32_t v0, int32_t v1, int32_t v2, int32_t v3)
+        : _v(_mm_setr_epi32(v0, v1, v2, v3))
 {
 }
 
@@ -304,15 +304,6 @@ inline
 cftal::simd::vec<cftal::int32_t, 4>::vec(__m128i v)
         : _v(v)
 {
-}
-
-inline
-cftal::simd::vec<cftal::int32_t, 4>::
-vec(const std::initializer_list<int32_t>& l)
-        : _v(_mm_loadu_si128(reinterpret_cast<const __m128i*>(l.begin())))
-{
-        // static_assert(l.size() ==4,
-        // "invalid initializer_list");
 }
 
 inline
