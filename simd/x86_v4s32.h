@@ -26,6 +26,8 @@ namespace cftal {
                         // create vec{v0, v1, v2, v3}
                         vec(int32_t v0, int32_t v1, int32_t v2=0, int32_t v3=0);
                         vec(__m128i v);
+                        // allow construction from vec<int32_t, 8>
+                        vec(init_list<int32_t> l);
                         
                         __m128i operator()() const;
 
@@ -36,6 +38,10 @@ namespace cftal {
                 private:
                         __m128i _v;
                 };
+
+                vec<int32_t, 4> 
+                load(const int32_t* l, std::size_t s);
+                
 
                 namespace op {
 
@@ -307,6 +313,14 @@ cftal::simd::vec<cftal::int32_t, 4>::vec(__m128i v)
 }
 
 inline
+cftal::simd::vec<cftal::int32_t, 4>::
+vec(init_list<int32_t> l)
+        : vec(load(l.begin(), l.size()))
+{
+}
+
+
+inline
 __m128i
 cftal::simd::vec<cftal::int32_t, 4>::operator()() const
 {
@@ -321,6 +335,34 @@ vec<cftal::int32_t, 4>::vec(const expr<_OP<int32_t, 4>, _L, _R>& r)
         : vec(eval(r))
 {
 }
+
+inline
+cftal::simd::vec<cftal::int32_t, 4>
+cftal::simd::load(const int32_t* p, std::size_t s)
+{
+        __m128i v;
+        switch (s) {
+        default:
+        case 4:
+                v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
+                break;
+        case 3:
+                v = _mm_setr_epi32(p[0], p[1], p[2], 0);
+                break;
+        case 2:
+                v = _mm_setr_epi32(p[0], p[1], 0, 0);
+                break;
+        case 1:
+                v = _mm_setr_epi32(p[0], 0, 0, 0);
+                break;
+        case 0:
+                v = _mm_setr_epi32(0, 0, 0, 0);
+                break;
+        }
+        return v;
+                
+}
+
 
 
 // Local variables:

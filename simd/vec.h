@@ -5,11 +5,44 @@
 #include <cftal/std_types.h>
 #include <cftal/x86vec_expr.h>
 #include <initializer_list>
+#include <type_traits>
 #include <cmath>
 
 namespace cftal {
         
         namespace simd {
+
+                template <typename _T>
+                class init_list {
+                        const _T* _begin;
+                        const _T* _end;
+                public:
+                        constexpr init_list(const _T* b, const _T* e) 
+                                : _begin(b), _end(e) {}
+                        constexpr const _T* begin() const { return _begin; }
+                        constexpr const _T* end() const { return _end; }
+                        constexpr std::size_t size() const { return end() - begin(); }
+                };
+
+                template <typename _T, std::size_t _N>
+                constexpr init_list<_T> 
+                init_lo_half(init_list<_T> l) {
+                        constexpr std::size_t s = l.size();
+                        constexpr std::size_t ns= (s < _N/2 ? s : _N/2);
+                        constexpr const _T* p= l.begin();
+                        return init_list<_T>(p, p+ ns);
+                }
+
+                template <typename _T, std::size_t _N>
+                constexpr init_list<_T> 
+                init_hi_half(init_list<_T> l) {
+                        constexpr std::size_t s = l.size();
+                        constexpr std::size_t ns= (s > _N/2 ? s - _N/2 : 0);
+                        constexpr const _T* p= l.begin() + _N/2;
+                        return init_list<_T>(p, p+ ns);
+                }
+
+
 
                 template <unsigned _N>
                 struct const_uint {
@@ -82,6 +115,7 @@ namespace cftal {
                         vec(const _T& v);
                         vec(const _T& v, bool splat);
                         vec(std::initializer_list<_T> l);
+                        vec(init_list<_T> l);
                         vec(const half_type& lh, bool splat=true);
                         vec(const half_type& lh, const half_type& hh);
                         const half_type& lh() const;
@@ -1638,12 +1672,19 @@ cftal::simd::vec<_T, _N>::vec(const _T& v, bool splat)
 template <class _T, std::size_t _N>
 inline
 cftal::simd::vec<_T, _N>::vec(std::initializer_list<_T> l)
-        : _l(std::initializer_list<_T>(begin(l), 
-                                       l.size()/2)),
-          _h(std::initializer_list<_T>(begin(l) + l.size()/2, 
-                                       l.size()/2)) 
+        : vec(init_list<_T>(l.begin(), l.end()))
 {
 }
+
+template <class _T, std::size_t _N>
+inline
+cftal::simd::vec<_T, _N>::vec(init_list<_T> l)
+        : _l(init_lo_half(l)),
+          _h(init_hi_half(l))
+{
+}
+
+
 
 template <class _T, std::size_t _N>
 inline
