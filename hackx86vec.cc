@@ -1,4 +1,4 @@
-#include <cftal/simd/vec.h>
+#include <cftal/vec.h>
 #include <cftal/d_int.h>
 #include <cftal/d_real.h>
 #include <cftal/mul_div.h>
