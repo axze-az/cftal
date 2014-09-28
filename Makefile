@@ -97,6 +97,10 @@ hackx86vec: hackx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 hackx86vec_g: hackx86vec.od x86vec_test.od lib$(LIBNAME)-g.a
 	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++ -lm
 
+x.s: hackx86vec.s
+	c++filt < $< >$@ 
+	-$(RM) $<
+
 # Full tests
 all-tests: all \
 check-00/testx86vec-00 \

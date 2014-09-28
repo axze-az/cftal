@@ -500,7 +500,7 @@ void testpowi()
 
 }
 
-#if defined (__AVX__)
+#if 0 // defined (__AVX__)
 __m256d tr1(__m256d a, __m256d b)
 {
         return x86perm_f64<0, 4, 1, 5>(a, b);
