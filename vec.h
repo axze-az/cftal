@@ -10,7 +10,6 @@
 
 namespace cftal {
 
-
         template <typename _T>
         class init_list {
                 const _T* _begin;

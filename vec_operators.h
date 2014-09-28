@@ -5,8 +5,6 @@
 #include <cftal/config.h>
 
 namespace cftal {
-        namespace simd {
-        }
 }
 
 // Local variables:
