@@ -41,6 +41,11 @@ namespace cftal {
         }
 
 
+        template <unsigned _N1, unsigned _N2>
+        struct const_min {
+                enum { v = (_N1 < _N2 ? _N1 : _N2) };
+        };
+
 
         template <unsigned _N>
         struct const_uint {
@@ -92,7 +97,7 @@ namespace cftal {
                   const _T& on_true, const _T& on_false);
 
         template <typename _T, std::size_t _N >
-        class alignas(sizeof(_T)*_N) vec {
+        class alignas(const_min<128, sizeof(_T)*_N>::v) vec {
         public:
                 // value type
                 using value_type = _T;
@@ -130,6 +135,19 @@ namespace cftal {
                 vec<_T, _N/2> _l;
                 vec<_T, _N/2> _h;
         };
+
+
+        using v2f64 = vec<double, 2>;
+        using v4f64 = vec<double, 4>;
+
+        using v4f32 = vec<float, 4>;
+        using v8f32 = vec<float, 8>;
+
+        using v4s32 = vec<int32_t, 4>;
+        using v8s32 = vec<int32_t, 8>;
+
+        using v4u32 = vec<uint32_t, 4>;
+        using v8u32 = vec<uint32_t, 8>;
 
         template <typename _T, std::size_t _N>
         const typename vec<_T, _N>::half_type&
@@ -185,31 +203,6 @@ namespace cftal {
 
 #undef DECL_CMP_OPS
 
-        template <typename _T>
-        class vec<_T, 1> {
-        public:
-                using value_type = _T;
-                using mask_value_type = bool;
-                using mask_type = vec<mask_value_type, 1>;
-
-                vec() = default;
-                vec(const vec& r) = default;
-                vec(vec&& r) = default;
-                vec& operator=(const vec& r) = default;
-                vec& operator=(vec&& r) = default;
-
-                vec(const _T& v);
-                vec(const _T& v, bool splat);
-                _T operator()() const;
-
-                template <template <class _U, std::size_t _M>
-                          class _OP,
-                          class _L, class _R>
-                vec(const expr<_OP<_T, 1>, _L, _R>& r);
-
-        private:
-                _T _v;
-        };
 
         template <typename _T>
         vec<_T, 1>
@@ -379,318 +372,6 @@ namespace cftal {
                                 return full_type(
                                         const_shr<_T, _N/2, _S>::v(lo_half(a)),
                                         const_shr<_T, _N/2, _S>::v(hi_half(a)));
-                        }
-                };
-
-                template <typename _T>
-                struct lt<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        using mask_type = typename full_type::mask_type;
-                        static
-                        mask_type
-                        v(const full_type& a, const full_type& b) {
-                                return mask_type(a() < b());
-                        }
-                };
-
-                template <typename _T>
-                struct le<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        using mask_type = typename full_type::mask_type;
-                        static
-                        mask_type
-                        v(const full_type& a, const full_type& b) {
-                                return mask_type(a() <= b());
-                        }
-                };
-
-                template <typename _T>
-                struct eq<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        using mask_type = typename full_type::mask_type;
-                        static
-                        mask_type
-                        v(const full_type& a, const full_type& b) {
-                                return mask_type(a() == b());
-                        }
-                };
-
-                template <typename _T>
-                struct ne<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        using mask_type = typename full_type::mask_type;
-                        static
-                        mask_type
-                        v(const full_type& a, const full_type& b) {
-                                return mask_type(a() != b());
-                        }
-                };
-
-                template <typename _T>
-                struct ge<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        using mask_type = typename full_type::mask_type;
-                        static
-                        mask_type
-                        v(const full_type& a, const full_type& b) {
-                                return mask_type(a() >= b());
-                        }
-                };
-
-                template <typename _T>
-                struct gt<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        using mask_type = typename full_type::mask_type;
-                        static
-                        mask_type
-                        v(const full_type& a, const full_type& b) {
-                                return mask_type(a() > b());
-                        }
-                };
-
-                template <typename _T>
-                struct plus<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        const full_type&
-                        v(const full_type& a) {
-                                return a;
-                        }
-                };
-
-                template <typename _T>
-                struct neg<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a) {
-                                return full_type(-a());
-                        }
-                };
-
-                template <typename _T>
-                struct add<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b) {
-                                return full_type(a() + b());
-                        }
-                };
-
-                template <typename _T>
-                struct sub<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b) {
-                                return full_type(a() - b());
-                        }
-                };
-
-                template <typename _T>
-                struct mul<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b) {
-                                return full_type(a() * b());
-                        }
-                };
-
-                template <typename _T>
-                struct div<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b) {
-                                return full_type(a() / b());
-                        }
-                };
-
-                template <typename _T>
-                struct mod<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b) {
-                                return full_type(a() % b());
-                        }
-                };
-
-                template <typename _T>
-                struct fma<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b,
-                          const full_type& c) {
-                                return full_type(a() * b() + c());
-                                // return full_type(std::fma(a(), b(), c()));
-                        }
-                };
-
-                template <typename _T>
-                struct fms<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b,
-                          const full_type& c) {
-                                return full_type(a() * b() - c());
-                                // return full_type(std::fma(a(), b(), -c()));
-                        }
-                };
-
-                template <typename _T>
-                struct fnma<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b,
-                          const full_type& c) {
-                                return full_type(c() - a() * b());
-                                // return full_type(std::fma(-a(), b(), c()));
-                        }
-                };
-
-                template <class _T>
-                struct bitrep {
-                        using int_type = _T;
-                        using type = _T;
-                        static
-                        _T as_int(const _T& v) { return v; }
-                        static
-                        _T as_type(const _T& v) { return v; }
-                };
-
-                template <class _D, class _U>
-                struct bitrep_helper {
-                        using int_type = _U;
-                        using type = _D;
-                        union di {
-                                _D _d;
-                                _U _u;
-                                di(const _D& d) : _d(d) {}
-                                di(const _U& u) : _u(u) {}
-                        };
-                        static
-                        int_type as_int(type v) {
-                                di t(v);
-                                return t._u;
-                        }
-                        static
-                        type as_type(int_type u) {
-                                di t(u);
-                                return t._d;
-                        }
-                };
-
-                template <>
-                struct bitrep<double> :
-                        public bitrep_helper<double, std::uint64_t> {
-                };
-
-                template <>
-                struct bitrep<float>  :
-                        public bitrep_helper<float, std::uint32_t> {
-                };
-
-                template <typename _T>
-                struct bit_or<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b) {
-                                using cvt = bitrep<_T>;
-                                typename cvt::int_type ai(
-                                        cvt::as_int(a()));
-                                typename cvt::int_type bi(
-                                        cvt::as_int(b()));
-                                typename cvt::type r(
-                                        cvt::as_type(ai | bi));
-                                return full_type(r);
-                        }
-                };
-
-                template <typename _T>
-                struct bit_and<_T, 1> {
-                        using full_type = vec<_T, 1>;
-
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b) {
-                                using cvt = bitrep<_T>;
-                                typename cvt::int_type ai(
-                                        cvt::as_int(a()));
-                                typename cvt::int_type bi(
-                                        cvt::as_int(a()));
-                                typename cvt::type r(
-                                        cvt::as_type(ai & bi));
-                                return full_type(r);
-                        }
-                };
-
-                template <typename _T>
-                struct bit_xor<_T, 1> {
-                        using full_type = vec<_T, 1>;
-
-                        static
-                        full_type
-                        v(const full_type& a, const full_type& b) {
-                                using cvt = bitrep<_T>;
-                                typename cvt::int_type ai(
-                                        cvt::as_int(a()));
-                                typename cvt::int_type bi(
-                                        cvt::as_int(a()));
-                                typename cvt::type r(
-                                        cvt::as_type(ai ^ bi));
-                                return full_type(r);
-                        }
-                };
-
-                template <typename _T>
-                struct bit_not<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a) {
-                                using cvt = bitrep<_T>;
-                                typename cvt::int_type ai(
-                                        cvt::as_int(a()));
-                                typename cvt::type r(
-                                        cvt::as_type(~ai));
-                                return full_type(r);
-                        }
-                };
-
-                template <typename _T>
-                struct shl<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, unsigned s) {
-                                using cvt = bitrep<_T>;
-                                typename cvt::int_type ai(
-                                        cvt::as_int(a()));
-                                typename cvt::type r(
-                                        cvt::as_type(ai << s));
-                                return full_type(r);
-                        }
-                };
-
-                template <typename _T>
-                struct shr<_T, 1> {
-                        using full_type = vec<_T, 1>;
-                        static
-                        full_type
-                        v(const full_type& a, unsigned s) {
-                                using cvt = bitrep<_T>;
-                                typename cvt::int_type ai(
-                                        cvt::as_int(a()));
-                                typename cvt::type r(
-                                        cvt::as_type(ai << s));
-                                return full_type(r);
                         }
                 };
 
@@ -1745,51 +1426,6 @@ cftal::select(const typename vec<_T, _N>::mask_type& m,
                 select(lo_half(m), lo_half(on_true), lo_half(on_false)),
                 select(hi_half(m), hi_half(on_true), hi_half(on_false)));
         return res;
-}
-
-template <class _T>
-inline
-cftal::vec<_T, 1>::vec(const _T& v)
-        : _v(v)
-{
-}
-
-template <class _T>
-inline
-cftal::vec<_T, 1>::vec(const _T& v, bool splat)
-        : _v(v)
-{
-        static_cast<void>(splat);
-}
-
-template <typename _T>
-template <template <class _U, std::size_t _M>
-          class _OP,
-          class _L, class _R>
-cftal::vec<_T, 1>::vec(const expr<_OP<_T, 1>, _L, _R>& r)
-        : vec(eval(r))
-{
-}
-
-
-template <class _T>
-inline
-_T
-cftal::vec<_T, 1>::operator()() const
-{
-        return _v;
-}
-
-template <class _T>
-inline
-cftal::vec<_T, 1>
-cftal::select(const typename vec<_T, 1>::mask_type& vm,
-              const vec<_T, 1>& on_true,
-              const vec<_T, 1>& on_false)
-{
-        typename vec<_T, 1>::value_type r{
-                select(vm(), on_true(), on_false())};
-        return vec<_T, 1>{r};
 }
 
 
@@ -3082,43 +2718,45 @@ cftal::operator%=(vec<_T, _N>& a,
         return a;
 }
 
+#include <cftal/vec_t_1.h>
+
 // include vector specializations
 #if defined (__SSE__)
 #if 0
-#include <cftal/simd/x86_v4f32.h>
+#include <cftal/x86_v4f32.h>
 #endif
 #endif
 #if defined (__SSE2__)
-#include <cftal/x86_v4s32.h>
 #if 0
-#include <cftal/simd/x86_v4u32.h>
-#include <cftal/simd/x86_v2s64.h>
-#include <cftal/simd/x86_v2u64.h>
-#include <cftal/simd/x86_v2f64.h>
+#include <cftal/x86_v4s32.h>
+#include <cftal/x86_v4u32.h>
+#include <cftal/x86_v2s64.h>
+#include <cftal/x86_v2u64.h>
+#include <cftal/x86_v2f64.h>
 #endif
 #endif
 #if defined (__AVX__)
 #if 0
-#include <cftal/simd/x86_v8f32.h>
-#include <cftal/simd/x86_v4f64.h>
+#include <cftal/x86_v8f32.h>
+#include <cftal/x86_v4f64.h>
 #endif
 #endif
 #if defined (__AVX2__)
 #if 0
-#include <cftal/simd/x86_v8s32.h>
-#include <cftal/simd/x86_v8u32.h>
-#include <cftal/simd/x86_v4s64.h>
-#include <cftal/simd/x86_v4u64.h>
+#include <cftal/x86_v8s32.h>
+#include <cftal/x86_v8u32.h>
+#include <cftal/x86_v4s64.h>
+#include <cftal/x86_v4u64.h>
 #endif
 #endif
 #if defined (__AVX512__)
 #if 0
-#include <cftal/simd/x86_v16f32.h>
-#include <cftal/simd/x86_v8f64.h>
-#include <cftal/simd/x86_v16s32.h>
-#include <cftal/simd/x86_v16u32.h>
-#include <cftal/simd/x86_v8s64.h>
-#include <cftal/simd/x86_v8u64.h>
+#include <cftal/x86_v16f32.h>
+#include <cftal/x86_v8f64.h>
+#include <cftal/x86_v16s32.h>
+#include <cftal/x86_v16u32.h>
+#include <cftal/x86_v8s64.h>
+#include <cftal/x86_v8u64.h>
 #endif
 #endif
 

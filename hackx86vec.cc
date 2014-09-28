@@ -4,8 +4,8 @@
 #include <cftal/mul_div.h>
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
-#include <cftal/x86vec_traits.h>
-#include <cftal/x86vec_store.h>
+// #include <cftal/x86vec_traits.h>
+// #include <cftal/x86vec_store.h>
 #include <cmath>
 #include <x86vec_test.h>
 #include <cstdint>
@@ -20,7 +20,7 @@ namespace x86vec {
         }
 }
 
-double x86vec::test::make_double(unsigned sgn, unsigned exp, uint64_t sig)
+double make_double(unsigned sgn, unsigned exp, uint64_t sig)
 {
         uint64_t _sgn= uint64_t(sgn & 1) << 63;
         uint64_t _exp= uint64_t(exp & 0x7FF) << 52;
@@ -39,123 +39,125 @@ double x86vec::test::make_double(unsigned sgn, unsigned exp, uint64_t sig)
 //namespace vec=emuvec;
 
 // v2f64 compile tests
-cftal::vec::v2f64 test1a(cftal::vec::v2f64 a, cftal::vec::v2f64 b, cftal::vec::v2f64 c)
+cftal::v2f64 test1a(cftal::v2f64 a, cftal::v2f64 b, cftal::v2f64 c)
 {
         return a*b + c;
 }
 
-cftal::vec::v2f64 test1b(cftal::vec::v2f64 a, cftal::vec::v2f64 b, cftal::vec::v2f64 c)
+cftal::v2f64 test1b(cftal::v2f64 a, cftal::v2f64 b, cftal::v2f64 c)
 {
         return c+ a*b;
 }
 
-cftal::vec::v2f64 test1c(cftal::vec::v2f64 a, cftal::vec::v2f64 b, cftal::vec::v2f64 c)
+cftal::v2f64 test1c(cftal::v2f64 a, cftal::v2f64 b, cftal::v2f64 c)
 {
         return a*b - c;
 }
 
-cftal::vec::v2f64 test1d(cftal::vec::v2f64 a, cftal::vec::v2f64 b, cftal::vec::v2f64 c)
+cftal::v2f64 test1d(cftal::v2f64 a, cftal::v2f64 b, cftal::v2f64 c)
 {
         return c- a*b;
 }
 
-cftal::vec::v2f64 test2a(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
-                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
+cftal::v2f64 test2a(cftal::v2f64 a, cftal::v2f64 b,
+                  cftal::v2f64 c, cftal::v2f64 d)
 {
         return a*b + c*d;
 }
 
-cftal::vec::v2f64 test2b(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
-                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
+cftal::v2f64 test2b(cftal::v2f64 a, cftal::v2f64 b,
+                  cftal::v2f64 c, cftal::v2f64 d)
 {
         return a*b - c*d;
 }
 
-cftal::vec::v2f64 test2c(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
-                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
+cftal::v2f64 test2c(cftal::v2f64 a, cftal::v2f64 b,
+                  cftal::v2f64 c, cftal::v2f64 d)
 {
         return (a*b + c) * d;
 }
 
-cftal::vec::v2f64 test2d(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
-                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
+cftal::v2f64 test2d(cftal::v2f64 a, cftal::v2f64 b,
+                  cftal::v2f64 c, cftal::v2f64 d)
 {
         return (a*b - c) * d;
 }
 
-cftal::vec::v2f64 test3a(cftal::vec::v2f64 a, cftal::vec::v2f64 b,
-                  cftal::vec::v2f64 c, cftal::vec::v2f64 d)
+cftal::v2f64 test3a(cftal::v2f64 a, cftal::v2f64 b,
+                  cftal::v2f64 c, cftal::v2f64 d)
 {
         return 1.0 + a * b + 1.0 + c * d;
 }
 
 // v4f32 compile tests
-cftal::vec::v4f32 test1a(cftal::vec::v4f32 a, cftal::vec::v4f32 b, cftal::vec::v4f32 c)
+cftal::v4f32 test1a(cftal::v4f32 a, cftal::v4f32 b, cftal::v4f32 c)
 {
         return a*b + c;
 }
 
-cftal::vec::v4f32 test1b(cftal::vec::v4f32 a, cftal::vec::v4f32 b, cftal::vec::v4f32 c)
+cftal::v4f32 test1b(cftal::v4f32 a, cftal::v4f32 b, cftal::v4f32 c)
 {
         return c+ a*b;
 }
 
-cftal::vec::v4f32 test1c(cftal::vec::v4f32 a, cftal::vec::v4f32 b, cftal::vec::v4f32 c)
+cftal::v4f32 test1c(cftal::v4f32 a, cftal::v4f32 b, cftal::v4f32 c)
 {
         return a*b - c;
 }
 
-cftal::vec::v4f32 test1d(cftal::vec::v4f32 a, cftal::vec::v4f32 b, cftal::vec::v4f32 c)
+cftal::v4f32 test1d(cftal::v4f32 a, cftal::v4f32 b, cftal::v4f32 c)
 {
         return c- a*b;
 }
 
-cftal::vec::v4f32 test2a(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
-                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
+cftal::v4f32 test2a(cftal::v4f32 a, cftal::v4f32 b,
+                  cftal::v4f32 c, cftal::v4f32 d)
 {
         return a*b + c*d;
 }
 
-cftal::vec::v4f32 test2b(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
-                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
+cftal::v4f32 test2b(cftal::v4f32 a, cftal::v4f32 b,
+                  cftal::v4f32 c, cftal::v4f32 d)
 {
         return a*b - c*d;
 }
 
-cftal::vec::v4f32 test2c(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
-                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
+cftal::v4f32 test2c(cftal::v4f32 a, cftal::v4f32 b,
+                  cftal::v4f32 c, cftal::v4f32 d)
 {
         return (a*b + c) * d;
 }
 
-cftal::vec::v4f32 test2d(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
-                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
+cftal::v4f32 test2d(cftal::v4f32 a, cftal::v4f32 b,
+                  cftal::v4f32 c, cftal::v4f32 d)
 {
         return (a*b - c) * d;
 }
 
-cftal::vec::v4f32 test3a(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
-                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
+cftal::v4f32 test3a(cftal::v4f32 a, cftal::v4f32 b,
+                  cftal::v4f32 c, cftal::v4f32 d)
 {
         return 1.0 + a * b + 1.0 + c * d;
 }
 
-cftal::vec::v4f32 test4a(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
-                  cftal::vec::v4f32 c, cftal::vec::v4f32 d)
+cftal::v4f32 test4a(cftal::v4f32 a, cftal::v4f32 b,
+                  cftal::v4f32 c, cftal::v4f32 d)
 {
         return (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
                             c * d);
 }
 
-cftal::vec::v4f32 test_mask(cftal::vec::v4f32 a, cftal::vec::v4f32 b,
-                     cftal::vec::v4f32 c, cftal::vec::v4f32 d,
-                     cftal::vec::mask<cftal::vec::v4f32> m)
+#if 0
+cftal::v4f32 test_mask(cftal::v4f32 a, cftal::v4f32 b,
+                     cftal::v4f32 c, cftal::v4f32 d,
+                     cftal::mask<cftal::v4f32> m)
 {
-        cftal::vec::v4f32 r(a);
+        cftal::v4f32 r(a);
         r(m) = (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
                             c * d);
         return r;
 }
+#endif
 
 
 struct print_dpf64 {
@@ -501,25 +503,25 @@ void testpowi()
 #if defined (__AVX__)
 __m256d tr1(__m256d a, __m256d b)
 {
-        return x86vec::perm_f64<0, 4, 1, 5>(a, b);
+        return x86perm_f64<0, 4, 1, 5>(a, b);
 }
 
 __m256d tr2(__m256d a, __m256d b)
 {
-        return x86vec::perm_f64<2, 6, 3, 7>(a, b);
+        return x86perm_f64<2, 6, 3, 7>(a, b);
 }
 
 __m256d tr1a(__m256d a, __m256d b)
 {
-        // x86vec::perm_f64<0, 4, 1, 5>(a, b);
+        // x86perm_f64<0, 4, 1, 5>(a, b);
 #if 0
         // 5 operations
-        __m256d a0= x86vec::perm_f64<0, 0, 1, 1>(a);
-        __m256d b0= x86vec::perm_f64<0, 0, 1, 1>(b);
-        return x86vec::select_f64<true, false, true, false>(a0, b0);
+        __m256d a0= x86perm_f64<0, 0, 1, 1>(a);
+        __m256d b0= x86perm_f64<0, 0, 1, 1>(b);
+        return x86select_f64<true, false, true, false>(a0, b0);
 #endif
         using namespace x86vec;
-        using namespace x86vec::impl;
+        using namespace x86impl;
         // 0 4 2 6
         __m256d t0= vunpcklpd::v(a, b);
         // 1 5 3 7
@@ -531,15 +533,15 @@ __m256d tr1a(__m256d a, __m256d b)
 
 __m256d tr2a(__m256d a, __m256d b)
 {
-        // x86vec::perm_f64<2, 6, 3, 7>(a, b);
+        // x86perm_f64<2, 6, 3, 7>(a, b);
 #if 0
         // 5 operations
-        __m256d a0= x86vec::perm_f64<2, 2, 3, 3>(a);
-        __m256d b0= x86vec::perm_f64<2, 2, 3, 3>(b);
-        return x86vec::select_f64<true, false, true, false>(a0, b0);
+        __m256d a0= x86perm_f64<2, 2, 3, 3>(a);
+        __m256d b0= x86perm_f64<2, 2, 3, 3>(b);
+        return x86select_f64<true, false, true, false>(a0, b0);
 #endif
         using namespace x86vec;
-        using namespace x86vec::impl;
+        using namespace x86impl;
         // 0 4 2 6
         __m256d t0= vunpcklpd::v(a, b);
         // 1 5 3 7
@@ -550,63 +552,63 @@ __m256d tr2a(__m256d a, __m256d b)
 
 __m256d tr2b(__m256d a)
 {
-        return x86vec::perm_f64< 2, -1, 3, -1>(a);
+        return x86perm_f64< 2, -1, 3, -1>(a);
 }
 
 #endif
 
-cftal::simd::vec<double, 4>
-do_add(cftal::simd::vec<double, 4> a, 
-       cftal::simd::vec<double, 4> b)
+cftal::vec<double, 4>
+do_add(cftal::vec<double, 4> a, 
+       cftal::vec<double, 4> b)
 {
-        // return cftal::simd::op::add<double, 4>::v(a, b);
+        // return cftal::op::add<double, 4>::v(a, b);
         return 2.0 * a / b - (4.0 + a *  b);
         // return a * b  + a / b - (a+b);
 }
 
-cftal::simd::vec<double, 32>
-do_add(cftal::simd::vec<double, 32> a, 
-       cftal::simd::vec<double, 32> b)
+cftal::vec<double, 32>
+do_add(cftal::vec<double, 32> a, 
+       cftal::vec<double, 32> b)
 {
-        return cftal::simd::op::bit_or<double, 32>::v(a, b);
+        return cftal::op::bit_or<double, 32>::v(a, b);
 }
 
-cftal::simd::vec<double, 8>::mask_type
-do_cmp_lt(cftal::simd::vec<double, 8> a, 
-          cftal::simd::vec<double, 8> b)
+cftal::vec<double, 8>::mask_type
+do_cmp_lt(cftal::vec<double, 8> a, 
+          cftal::vec<double, 8> b)
 {
         return a < b;
 }
 
-cftal::simd::vec<double, 1>
-do_logical(cftal::simd::vec<double, 1> a, 
-           cftal::simd::vec<double, 1> b,
-           cftal::simd::vec<double, 1> c,
-           cftal::simd::vec<double, 1> d)
+cftal::vec<double, 1>
+do_logical(cftal::vec<double, 1> a, 
+           cftal::vec<double, 1> b,
+           cftal::vec<double, 1> c,
+           cftal::vec<double, 1> d)
 {
         return ((a | b) & (c ^ d)) << 2;
 }
 
-cftal::simd::vec<int32_t, 4>
-check_v4s32(cftal::simd::vec<int32_t, 4> a,
-            cftal::simd::vec<int32_t, 4> b,
-            cftal::simd::vec<int32_t, 4> c)
+cftal::vec<int32_t, 4>
+check_v4s32(cftal::vec<int32_t, 4> a,
+            cftal::vec<int32_t, 4> b,
+            cftal::vec<int32_t, 4> c)
 {
         return (a ^ b) & c;
 }
 
-cftal::simd::vec<int32_t, 8>
-check_v8s32(cftal::simd::vec<int32_t, 8> a,
-            cftal::simd::vec<int32_t, 8> b,
-            cftal::simd::vec<int32_t, 8> c)
+cftal::vec<int32_t, 8>
+check_v8s32(cftal::vec<int32_t, 8> a,
+            cftal::vec<int32_t, 8> b,
+            cftal::vec<int32_t, 8> c)
 {
         return (a ^ b) & c;
 }
 
-cftal::simd::vec<int32_t, 16>
-check_v16s32(cftal::simd::vec<int32_t, 16> a,
-            cftal::simd::vec<int32_t, 16> b,
-            cftal::simd::vec<int32_t, 16> c)
+cftal::vec<int32_t, 16>
+check_v16s32(cftal::vec<int32_t, 16> a,
+            cftal::vec<int32_t, 16> b,
+            cftal::vec<int32_t, 16> c)
 {
         return (a ^ b) & c;
 }
@@ -614,9 +616,9 @@ check_v16s32(cftal::simd::vec<int32_t, 16> a,
 
 int main(int argc, char** argv)
 {
-        cftal::simd::vec<double, 4> t1(1.0), t2(2.0);
-        cftal::simd::vec<double, 4> t3(
-                cftal::simd::op::add<double, 4>::v(t1, t2));
+        cftal::vec<double, 4> t1(1.0), t2(2.0);
+        cftal::vec<double, 4> t3(
+                cftal::op::add<double, 4>::v(t1, t2));
 #if 0
         using namespace cftal;
         using namespace x86vec;
@@ -631,7 +633,7 @@ int main(int argc, char** argv)
         std::cout << rr[0] << ' ' << rr[1] << std::endl; 
                 
 #if 0
-        // x86cftal::vec::v2f64 t=exp(x86cftal::vec::v2f64(0.0));
+        // x86cftal::v2f64 t=exp(x86cftal::v2f64(0.0));
         // static_cast<void>(t);
         // calc_pi();
         // print_inv_fac();
@@ -644,7 +646,7 @@ int main(int argc, char** argv)
         const double c=1.0;
 
         v2f64 res(sin(v2f64(c)));
-        x86vec::v2f64 tres(sin(x86vec::v2f64(c)));
+        x86v2f64 tres(sin(x86v2f64(c)));
 
         std::cout << std::setprecision(18) << std::scientific
                   << extract<0>(res) << ' '
@@ -658,7 +660,7 @@ int main(int argc, char** argv)
 #if 0
 #if defined (__AVX__)
         using namespace x86vec;
-        using namespace x86vec::test;
+        using namespace x86test;
 
         bool rc(true);
         __m256d a = load_v4f64(false);
