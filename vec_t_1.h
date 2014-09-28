@@ -272,7 +272,7 @@ namespace cftal {
                                 typename cvt::int_type ai(
                                         cvt::as_int(a()));
                                 typename cvt::int_type bi(
-                                        cvt::as_int(a()));
+                                        cvt::as_int(b()));
                                 typename cvt::type r(
                                         cvt::as_type(ai & bi));
                                 return full_type(r);
@@ -290,7 +290,7 @@ namespace cftal {
                                 typename cvt::int_type ai(
                                         cvt::as_int(a()));
                                 typename cvt::int_type bi(
-                                        cvt::as_int(a()));
+                                        cvt::as_int(b()));
                                 typename cvt::type r(
                                         cvt::as_type(ai ^ bi));
                                 return full_type(r);
