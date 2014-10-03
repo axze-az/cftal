@@ -23,20 +23,20 @@ namespace cftal {
         };
 
         template <typename _T, std::size_t _N>
-        constexpr init_list<_T>
+        init_list<_T>
         init_lo_half(init_list<_T> l) {
-                constexpr std::size_t s = l.size();
-                constexpr std::size_t ns= (s < _N/2 ? s : _N/2);
-                constexpr const _T* p= l.begin();
+                std::size_t s = l.size();
+                std::size_t ns= (s < _N/2 ? s : _N/2);
+                const _T* p= l.begin();
                 return init_list<_T>(p, p+ ns);
         }
 
         template <typename _T, std::size_t _N>
-        constexpr init_list<_T>
+        init_list<_T>
         init_hi_half(init_list<_T> l) {
-                constexpr std::size_t s = l.size();
-                constexpr std::size_t ns= (s > _N/2 ? s - _N/2 : 0);
-                constexpr const _T* p= l.begin() + _N/2;
+                std::size_t s = l.size();
+                std::size_t ns= (s > _N/2 ? s - _N/2 : 0);
+                const _T* p= l.begin() + _N/2;
                 return init_list<_T>(p, p+ ns);
         }
 
@@ -223,11 +223,11 @@ namespace cftal {
                         static
                         _R
                         v(const full_type& a, const full_type& b) {
-                                return _R(
-                                        _OP<_T, _N/2>::v(lo_half(a),
-                                                         lo_half(b)),
-                                        _OP<_T, _N/2>::v(hi_half(a),
-                                                         hi_half(b)));
+                                _R r(_OP<_T, _N/2>::v(lo_half(a),
+                                                      lo_half(b)),
+                                     _OP<_T, _N/2>::v(hi_half(a),
+                                                      hi_half(b)));
+                                return r;
                         }
                 };
 
@@ -1357,8 +1357,8 @@ cftal::vec<_T, _N>::vec(std::initializer_list<_T> l)
 template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>::vec(init_list<_T> l)
-        : _l(init_lo_half(l)),
-          _h(init_hi_half(l))
+        : _l(init_lo_half<_T, _N>(l)),
+          _h(init_hi_half<_T, _N>(l))
 {
 }
 
@@ -2727,8 +2727,8 @@ cftal::operator%=(vec<_T, _N>& a,
 #endif
 #endif
 #if defined (__SSE2__)
-#if 0
 #include <cftal/x86_v4s32.h>
+#if 0
 #include <cftal/x86_v4u32.h>
 #include <cftal/x86_v2s64.h>
 #include <cftal/x86_v2u64.h>

@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <iostream>
 #include <iomanip>
+#include <cstddef>
 
 namespace x86vec {
         namespace test {
@@ -594,7 +595,8 @@ check_v4s32(cftal::vec<int32_t, 4> a,
             cftal::vec<int32_t, 4> b,
             cftal::vec<int32_t, 4> c)
 {
-        return (a ^ b) & c;
+        const cftal::v4s32 c0={1, 2, 3, 4};
+        return (a ^ b) & (c ^ c0);
 }
 
 cftal::vec<int32_t, 8>
@@ -602,7 +604,8 @@ check_v8s32(cftal::vec<int32_t, 8> a,
             cftal::vec<int32_t, 8> b,
             cftal::vec<int32_t, 8> c)
 {
-        return (a ^ b) & c;
+        const cftal::v8s32 c0={1, 2, 3, 4, 5, 6, 7, 8};
+        return (a ^ b) & (c ^ c0);
 }
 
 cftal::vec<int32_t, 16>
@@ -616,6 +619,10 @@ check_v16s32(cftal::vec<int32_t, 16> a,
 
 int main(int argc, char** argv)
 {
+        std::cout << "alignof(max_align_t) " 
+                  << alignof(std::max_align_t)
+                  << std::endl;
+
         cftal::vec<double, 4> t1(1.0), t2(2.0);
         cftal::vec<double, 4> t3(
                 cftal::op::add<double, 4>::v(t1, t2));
