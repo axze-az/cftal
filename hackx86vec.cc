@@ -7,7 +7,7 @@
 // #include <cftal/x86vec_traits.h>
 // #include <cftal/x86vec_store.h>
 #include <cmath>
-#include <x86vec_test.h>
+// #include <x86vec_test.h>
 #include <cstdint>
 #include <iostream>
 #include <iomanip>

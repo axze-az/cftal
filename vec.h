@@ -3,7 +3,6 @@
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
-#include <cftal/x86vec_expr.h>
 #include <initializer_list>
 #include <type_traits>
 #include <cmath>

@@ -3,7 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-#include <cftal/x86vec_intrin.h> // for now
+#include <cftal/x86_intrin.h> // for now
 
 namespace cftal {
 
