@@ -72,7 +72,7 @@ namespace cftal {
 #else
                 mask_type b_gt_a(lt<int32_t, 4>::v(b(), a()));
                 const mask_type all_set(uint32_t(-1));
-                return _mm_xor_si128(b_gt_a(), all_set);
+                return _mm_xor_si128(b_gt_a(), all_set());
 #endif
             }
         };
@@ -97,7 +97,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b) {
                 mask_type a_eq_b(eq<int32_t, 4>::v(a, b));
                 const mask_type all_set(uint32_t(-1));
-                return _mm_xor_si128(a_eq_b(), all_set);
+                return _mm_xor_si128(a_eq_b(), all_set());
             }
         };
 
@@ -115,7 +115,7 @@ namespace cftal {
 #else
                 mask_type a_lt_b( lt<int32_t, 4>::v(a(), b()));
                 const mask_type all_set(uint32_t(-1));
-                return _mm_xor_si128(a_lt_b, all_set);
+                return _mm_xor_si128(a_lt_b(), all_set());
 #endif
             }
         };
