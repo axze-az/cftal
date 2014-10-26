@@ -3,41 +3,33 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-#include <cftal/x86_perm.h> // for now
+#include <cftal/x86_perm.h> 
+#include <cftal/x86_vreg.h>
 
 namespace cftal {
 
     template <>
-    class vec<int32_t, 4> {
+    class vec<int32_t, 4> : public x86::vreg<__m128i> {
     public:
+        using base_type = x86::vreg<__m128i>;
+
         using value_type = int32_t;
         using mask_value_type = int32_t;
         using mask_type= vec<mask_value_type, 4>;
 
-        vec() = default;
-        vec(const vec& r) = default;
-        vec(vec&& r) = default;
-        vec& operator=(const vec& r) = default;
-        vec& operator=(vec&& r) = default;
+        using base_type::base_type;
         // create vec{v,v,v,v}
         vec(int32_t v);
-        // create vec{v0, v1, v2, v3}
-        // vec(int32_t v0, int32_t v1, int32_t v2=0, int32_t v3=0);
-        vec(__m128i v);
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
         vec(std::initializer_list<int32_t> l);
         // allow construction from vec<int32_t, 8>
         vec(init_list<int32_t> l);
-
-        __m128i operator()() const;
-
+        // expression template constructor
         template <template <class _U, std::size_t _M>
                   class _OP,
                   class _L, class _R>
         vec(const expr<_OP<int32_t, 4>, _L, _R>& r);
-    private:
-        __m128i _v;
     };
 
     // load from memory, fills remaining elements with the last
@@ -314,24 +306,10 @@ namespace cftal {
 
 inline
 cftal::vec<cftal::int32_t, 4>::vec(int32_t v)
-    : _v(_mm_setr_epi32(v, v, v, v))
+    : base_type(_mm_setr_epi32(v, v, v, v))
 {
 }
 
-#if 0
-inline
-cftal::vec<cftal::int32_t, 4>::
-vec(int32_t v0, int32_t v1, int32_t v2, int32_t v3)
-    : _v(_mm_setr_epi32(v0, v1, v2, v3))
-{
-}
-#endif
-
-inline
-cftal::vec<cftal::int32_t, 4>::vec(__m128i v)
-    : _v(v)
-{
-}
 
 inline
 cftal::vec<cftal::int32_t, 4>::
@@ -345,14 +323,6 @@ cftal::vec<cftal::int32_t, 4>::
 vec(init_list<int32_t> l)
     : vec(load(l.begin(), l.size()))
 {
-}
-
-
-inline
-__m128i
-cftal::vec<cftal::int32_t, 4>::operator()() const
-{
-    return _v;
 }
 
 template <template <class _U, std::size_t _M> class _OP,
