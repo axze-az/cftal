@@ -229,12 +229,14 @@ namespace cftal {
 
 
         }
-
+#if 0
         template <typename _D, typename _S>
         _D as(const _S& s);
+#endif
     }
 }
 
+#if 0
 template <typename _D, typename _S>
 inline
 _D cftal::x86::as(const _S& s)
@@ -245,6 +247,7 @@ _D cftal::x86::as(const _S& s)
     typedef typename src_traits::vector_type src_type;
     return impl::cast<dst_type, src_type>::v(src_traits::v(s));
 }
+#endif
 
 
 // Local variables:

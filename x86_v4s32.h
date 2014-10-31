@@ -32,6 +32,21 @@ namespace cftal {
         vec(const expr<_OP<int32_t, 4>, _L, _R>& r);
     };
 
+    template <bool _P0, bool _P1, 
+              bool _P2, bool _P3>
+    vec<int32_t, 4> select(const vec<int32_t, 4>::mask_type& msk,
+                           const vec<int32_t, 4>& on_true,
+                           const vec<int32_t, 4>& on_false);
+
+    template <int32_t _P0, int32_t _P1,
+              int32_t _P2, int32_t _P3>
+    vec<int32_t, 4> permute(const vec<int32_t, 4>& s);
+
+    template <int32_t _P0, int32_t _P1,
+              int32_t _P2, int32_t _P3>
+    vec<int32_t, 4> permute(const vec<int32_t, 4>& s0, 
+                            const vec<int32_t, 4>& s1);
+
     // load from memory, fills remaining elements with the last
     // one given
     vec<int32_t, 4>
@@ -39,6 +54,18 @@ namespace cftal {
 
     namespace op {
 
+        template <>
+        struct bit_not<int32_t, 4> {
+            using full_type = vec<int32_t, 4>;
+            static
+            full_type
+            v(const full_type& a) {
+                full_type all_set(0xffffffff);
+                return _mm_xor_si128(a(), all_set());
+            }
+        };
+
+        
         template <>
         struct lt<int32_t, 4> {
             using full_type = vec<int32_t, 4>;
@@ -88,8 +115,7 @@ namespace cftal {
             mask_type
             v(const full_type& a, const full_type& b) {
                 mask_type a_eq_b(eq<int32_t, 4>::v(a, b));
-                const mask_type all_set(uint32_t(-1));
-                return _mm_xor_si128(a_eq_b(), all_set());
+                return bit_not<int32_t, 4>::v(a_eq_b);
             }
         };
 
@@ -106,8 +132,7 @@ namespace cftal {
                 return _mm_cmpeq_epi32(a(), max_ab);
 #else
                 mask_type a_lt_b( lt<int32_t, 4>::v(a(), b()));
-                const mask_type all_set(uint32_t(-1));
-                return _mm_xor_si128(a_lt_b(), all_set());
+                return bit_not<int32_t, 4>::v(a_lt_b);
 #endif
             }
         };
@@ -219,8 +244,8 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                return full_type(a() * b() - c());
-                // return full_type(std::fma(a(), b(), -c()));
+                return sub<int32_t, 4>::v(
+                    mul<int32_t, 4>::v(a , b), c);
             }
         };
 
@@ -231,12 +256,14 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                return full_type(c() - a() * b());
+                // return full_type(c() - a() * b());
                 // return full_type(std::fma(-a(), b(), c()));
+                return sub<int32_t, 4>::v(
+                    c, mul<int32_t, 4>::v(a, b));
+                                          
             }
         };
-
-
+        
         template <>
         struct bit_or<int32_t, 4> {
             using full_type = vec<int32_t, 4>;
@@ -266,17 +293,6 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b) {
                 return _mm_xor_si128(a(), b());
-            }
-        };
-
-        template <>
-        struct bit_not<int32_t, 4> {
-            using full_type = vec<int32_t, 4>;
-            static
-            full_type
-            v(const full_type& a) {
-                full_type all_set(0xffffffff);
-                return _mm_xor_si128(a(), all_set());
             }
         };
 

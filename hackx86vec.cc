@@ -4,6 +4,7 @@
 #include <cftal/mul_div.h>
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
+#include <cftal/x86_traits.h>
 // #include <cftal/x86vec_traits.h>
 // #include <cftal/x86vec_store.h>
 #include <cmath>
@@ -39,53 +40,53 @@ double make_double(unsigned sgn, unsigned exp, uint64_t sig)
 //namespace vec=x86vec;
 //namespace vec=emuvec;
 
-// v2f64 compile tests
-cftal::v2f64 test1a(cftal::v2f64 a, cftal::v2f64 b, cftal::v2f64 c)
+// v4f64 compile tests
+cftal::v4f64 test1a(cftal::v4f64 a, cftal::v4f64 b, cftal::v4f64 c)
 {
         return a*b + c;
 }
 
-cftal::v2f64 test1b(cftal::v2f64 a, cftal::v2f64 b, cftal::v2f64 c)
+cftal::v4f64 test1b(cftal::v4f64 a, cftal::v4f64 b, cftal::v4f64 c)
 {
         return c+ a*b;
 }
 
-cftal::v2f64 test1c(cftal::v2f64 a, cftal::v2f64 b, cftal::v2f64 c)
+cftal::v4f64 test1c(cftal::v4f64 a, cftal::v4f64 b, cftal::v4f64 c)
 {
         return a*b - c;
 }
 
-cftal::v2f64 test1d(cftal::v2f64 a, cftal::v2f64 b, cftal::v2f64 c)
+cftal::v4f64 test1d(cftal::v4f64 a, cftal::v4f64 b, cftal::v4f64 c)
 {
         return c- a*b;
 }
 
-cftal::v2f64 test2a(cftal::v2f64 a, cftal::v2f64 b,
-                  cftal::v2f64 c, cftal::v2f64 d)
+cftal::v4f64 test2a(cftal::v4f64 a, cftal::v4f64 b,
+                  cftal::v4f64 c, cftal::v4f64 d)
 {
         return a*b + c*d;
 }
 
-cftal::v2f64 test2b(cftal::v2f64 a, cftal::v2f64 b,
-                  cftal::v2f64 c, cftal::v2f64 d)
+cftal::v4f64 test2b(cftal::v4f64 a, cftal::v4f64 b,
+                  cftal::v4f64 c, cftal::v4f64 d)
 {
         return a*b - c*d;
 }
 
-cftal::v2f64 test2c(cftal::v2f64 a, cftal::v2f64 b,
-                  cftal::v2f64 c, cftal::v2f64 d)
+cftal::v4f64 test2c(cftal::v4f64 a, cftal::v4f64 b,
+                  cftal::v4f64 c, cftal::v4f64 d)
 {
         return (a*b + c) * d;
 }
 
-cftal::v2f64 test2d(cftal::v2f64 a, cftal::v2f64 b,
-                  cftal::v2f64 c, cftal::v2f64 d)
+cftal::v4f64 test2d(cftal::v4f64 a, cftal::v4f64 b,
+                  cftal::v4f64 c, cftal::v4f64 d)
 {
         return (a*b - c) * d;
 }
 
-cftal::v2f64 test3a(cftal::v2f64 a, cftal::v2f64 b,
-                  cftal::v2f64 c, cftal::v2f64 d)
+cftal::v4f64 test3a(cftal::v4f64 a, cftal::v4f64 b,
+                    cftal::v4f64 c, cftal::v4f64 d)
 {
         return 1.0 + a * b + 1.0 + c * d;
 }
@@ -640,7 +641,7 @@ int main(int argc, char** argv)
         std::cout << rr[0] << ' ' << rr[1] << std::endl; 
                 
 #if 0
-        // x86cftal::v2f64 t=exp(x86cftal::v2f64(0.0));
+        // x86cftal::v4f64 t=exp(x86cftal::v4f64(0.0));
         // static_cast<void>(t);
         // calc_pi();
         // print_inv_fac();
@@ -652,8 +653,8 @@ int main(int argc, char** argv)
 
         const double c=1.0;
 
-        v2f64 res(sin(v2f64(c)));
-        x86v2f64 tres(sin(x86v2f64(c)));
+        v4f64 res(sin(v4f64(c)));
+        x86v4f64 tres(sin(x86v4f64(c)));
 
         std::cout << std::setprecision(18) << std::scientific
                   << extract<0>(res) << ' '
