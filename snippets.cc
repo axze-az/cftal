@@ -1,25 +1,3 @@
-#include <x86vec.h>
-#include <iostream>
-#include <iomanip>
-
-
-namespace cftal {
-        template <class _T, std::size_t _N>
-        class vec {
-        };
-
-
-        template <>
-        class vec<double, 4> {
-        };
-
-        template <class _T, int _I0, int _I1>
-        vec<_T, 2> permute(const vec<_T, 2>& s);
-        
-        
-
-}
-
 
 #if 0
 #define CBRT2 1.2599210498948731648             /* 2^(1/3) */

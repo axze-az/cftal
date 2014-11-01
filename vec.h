@@ -156,11 +156,11 @@ namespace cftal {
 
     template <typename _T, std::size_t _N>
     const typename vec<_T, _N>::half_type&
-    lo_half(const vec<_T, _N>& v);
+    low_half(const vec<_T, _N>& v);
 
     template <typename _T, std::size_t _N>
     const typename vec<_T, _N>::half_type&
-    hi_half(const vec<_T, _N>& v);
+    high_half(const vec<_T, _N>& v);
 
     template <typename _T, std::size_t _N>
     vec<_T, _N>
@@ -228,10 +228,10 @@ namespace cftal {
     static
     _R
     v(const full_type& a, const full_type& b) {
-    _R r(_OP<_T, _N/2>::v(lo_half(a),
-        lo_half(b)),
-        _OP<_T, _N/2>::v(hi_half(a),
-        hi_half(b)));
+    _R r(_OP<_T, _N/2>::v(low_half(a),
+        low_half(b)),
+        _OP<_T, _N/2>::v(high_half(a),
+        high_half(b)));
     return r;
 }
 };
@@ -258,8 +258,8 @@ namespace cftal {
     full_type
     v(const full_type& a) {
     return full_type(
-    _OP<_T, _N/2>::v(lo_half(a)),
-        _OP<_T, _N/2>::v(hi_half(a)));
+    _OP<_T, _N/2>::v(low_half(a)),
+        _OP<_T, _N/2>::v(high_half(a)));
 }
 };
 
@@ -272,12 +272,12 @@ namespace cftal {
     v(const full_type& a, const full_type& b,
         const full_type& c) {
     return full_type(
-    _OP<_T, _N/2>::v(lo_half(a),
-        lo_half(b),
-        lo_half(c)),
-        _OP<_T, _N/2>::v(hi_half(a),
-        hi_half(b),
-        hi_half(c)));
+    _OP<_T, _N/2>::v(low_half(a),
+        low_half(b),
+        low_half(c)),
+        _OP<_T, _N/2>::v(high_half(a),
+        high_half(b),
+        high_half(c)));
 }
 };
 
@@ -363,8 +363,8 @@ namespace cftal {
     full_type
     v(const full_type& a) {
     return full_type(
-    const_shl<_T, _N/2, _S>::v(lo_half(a)),
-        const_shl<_T, _N/2, _S>::v(hi_half(a)));
+    const_shl<_T, _N/2, _S>::v(low_half(a)),
+        const_shl<_T, _N/2, _S>::v(high_half(a)));
 }
 };
 
@@ -375,8 +375,8 @@ namespace cftal {
     full_type
     v(const full_type& a) {
     return full_type(
-    const_shr<_T, _N/2, _S>::v(lo_half(a)),
-        const_shr<_T, _N/2, _S>::v(hi_half(a)));
+    const_shr<_T, _N/2, _S>::v(low_half(a)),
+        const_shr<_T, _N/2, _S>::v(high_half(a)));
 }
 };
 
@@ -1406,7 +1406,7 @@ cftal::vec<_T, _N>::hh() const
 template <class _T, std::size_t _N>
 inline
 const typename cftal::vec<_T, _N>::half_type&
-cftal::lo_half(const vec<_T, _N>& v)
+cftal::low_half(const vec<_T, _N>& v)
 {
     return v.lh();
 }
@@ -1414,7 +1414,7 @@ cftal::lo_half(const vec<_T, _N>& v)
 template <class _T, std::size_t _N>
 inline
 const typename cftal::vec<_T, _N>::half_type&
-cftal::hi_half(const vec<_T, _N>& v)
+cftal::high_half(const vec<_T, _N>& v)
 {
     return v.hh();
 }
@@ -1428,8 +1428,8 @@ cftal::select(const typename vec<_T, _N>::mask_type& m,
               const vec<_T, _N>& on_false)
 {
     vec<_T, _N> res(
-        select(lo_half(m), lo_half(on_true), lo_half(on_false)),
-        select(hi_half(m), hi_half(on_true), hi_half(on_false)));
+        select(low_half(m), low_half(on_true), low_half(on_false)),
+        select(high_half(m), high_half(on_true), high_half(on_false)));
     return res;
 }
 

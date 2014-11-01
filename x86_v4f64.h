@@ -47,7 +47,6 @@ namespace cftal {
     vec<double, 2>
     high_half(const vec<double, 4>& s);
 
-
     namespace op {
 
         template <>
