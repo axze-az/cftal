@@ -9,12 +9,6 @@
 
 namespace cftal {
 
-    template <class _DST, class _SRC>
-    const _DST& as(const _SRC& s) {
-        return reinterpret_cast<const _DST&>(s);
-    } 
-
-
     template <typename _T>
     class init_list {
         const _T* _begin;
@@ -1982,6 +1976,7 @@ cftal::vec<_T, _N>&
 cftal::operator>>=(vec<_T, _N>& v, unsigned s)
 {
     v = v >> s;
+    return v;
 }
 
 template <typename _T, std::size_t _N>
@@ -2764,6 +2759,7 @@ cftal::operator%=(vec<_T, _N>& a,
 #include <cftal/x86_v8u64.h>
 #endif
 #endif
+#include <cftal/x86_cvt.h>
 
 // Local variables:
 // mode: c++

@@ -2,8 +2,9 @@
 #define __CFTAL_X86_CVT_H__ 1
 
 #include <cftal/x86_intrin.h>
-#include <cftal/x86_ivec.h>
-#include <cftal/x86_fvec.h>
+#include <cftal/x86_v4s32.h>
+#include <cftal/x86_v2f64.h>
+#include <cftal/x86_v4f64.h>
 #include <utility>
 
 namespace cftal {
@@ -28,6 +29,7 @@ namespace cftal {
             _D h(const _S& s);
         };
 
+#if 0
         template <>
         struct cvt<v4f32, v2f64> {
             static v4f32 l(const v2f64& d) {
@@ -44,7 +46,7 @@ namespace cftal {
                 return l(permute<2,3,0,1>(d));
             }
         };
-
+#endif
         template <>
         struct cvt<v4s32, v2f64> {
             static v4s32 l(const v2f64& d) {
@@ -69,6 +71,7 @@ namespace cftal {
             }
         };
 
+#if 0
         template <>
         struct cvt<v4f32, v4s32> {
             static v4f32 l(const v4s32& s) {
@@ -89,6 +92,7 @@ namespace cftal {
                 return _mm_cvttps_epi32(s());
             }
         };
+#endif
 
         template <>
         struct cvt<v4s32, v4f64> {
@@ -134,7 +138,7 @@ namespace cftal {
             }
         };
 
-
+#if 0
         template <>
         struct cvt<v8f32, v8s32> {
             static v8f32 l(const v8s32& v) {
@@ -216,6 +220,7 @@ namespace cftal {
                              v4f32(0.0f));
             }
         };
+#endif
 
     }
 
@@ -245,34 +250,35 @@ namespace cftal {
 
 template <class _D, class _S>
 inline
-_D x86::cvt_lo(const _S& s)
+_D cftal::cvt_lo(const _S& s)
 {
-    return impl::cvt<_D, _S>::l(s);
+    return x86::cvt<_D, _S>::l(s);
 }
 
 template <class _D, class _S>
 inline
-_D x86::cvt_hi(const _S& s)
+_D cftal::cvt_hi(const _S& s)
 {
-    return impl::cvt<_D, _S>::h(s);
+    return x86::cvt<_D, _S>::h(s);
 }
 
 template <class _D, class _S>
 inline
-_D x86::cvt(const _S& s)
+_D cftal::cvt(const _S& s)
 {
-    return impl::cvt<_D, _S>::l(s);
+    return x86::cvt<_D, _S>::l(s);
 }
 
 template <class _D, class _S>
 inline
-std::pair<_D, _D> x86::cvt_widen(const _S& s)
+std::pair<_D, _D> cftal::cvt_widen(const _S& s)
 {
     _D l=cvt_lo<_D>(s);
     _D h=cvt_hi<_D>(s);
     return std::make_pair(l, h);
 }
 
+#if 0
 inline
 x86::v4f32 x86::cvt_f32(const v2f64& l, const v2f64& h)
 {
@@ -288,31 +294,32 @@ x86::v8f32 x86::cvt_f32(const v4f64& l, const v4f64& h)
     v4f32 hf(cvt<v4f32>(h));
     return v8f32(lf, hf);
 }
+#endif
 
 template <class _D, class _S>
 inline
-_D x86::cvt_rz_lo(const _S& s)
+_D cftal::cvt_rz_lo(const _S& s)
 {
-    return impl::cvt_rz<_D, _S>::l(s);
+    return x86::cvt_rz<_D, _S>::l(s);
 }
 
 template <class _D, class _S>
 inline
-_D x86::cvt_rz_hi(const _S& s)
+_D cftal::cvt_rz_hi(const _S& s)
 {
-    return impl::cvt_rz<_D, _S>::h(s);
+    return x86::cvt_rz<_D, _S>::h(s);
 }
 
 template <class _D, class _S>
 inline
-_D x86::cvt_rz(const _S& s)
+_D cftal::cvt_rz(const _S& s)
 {
-    return impl::cvt_rz<_D, _S>::l(s);
+    return x86::cvt_rz<_D, _S>::l(s);
 }
 
 template <class _D, class _S>
 inline
-std::pair<_D, _D> x86::cvt_rz_widen(const _S& s)
+std::pair<_D, _D> cftal::cvt_rz_widen(const _S& s)
 {
     _D l=cvt_rz_lo<_D>(s);
     _D h=cvt_rz_hi<_D>(s);

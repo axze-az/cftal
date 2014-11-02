@@ -8,7 +8,6 @@ namespace cftal {
 
     namespace x86 {
 
-        namespace impl {
 
             template <typename _D, typename _S>
             struct cast {
@@ -226,28 +225,21 @@ namespace cftal {
                 }
             };
 #endif
-
-
-        }
-#if 0
-        template <typename _D, typename _S>
-        _D as(const _S& s);
-#endif
     }
+    template <typename _D, typename _S>
+    _D as(const _S& s);
 }
 
-#if 0
 template <typename _D, typename _S>
 inline
-_D cftal::x86::as(const _S& s)
+_D cftal::as(const _S& s)
 {
-    typedef impl::vector_traits<_D> dst_traits;
-    typedef impl::vector_traits<_S> src_traits;
+    typedef x86::vector_traits<_D> dst_traits;
+    typedef x86::vector_traits<_S> src_traits;
     typedef typename dst_traits::vector_type dst_type;
     typedef typename src_traits::vector_type src_type;
-    return impl::cast<dst_type, src_type>::v(src_traits::v(s));
+    return x86::cast<dst_type, src_type>::v(src_traits::v(s));
 }
-#endif
 
 
 // Local variables:

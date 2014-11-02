@@ -32,11 +32,16 @@ namespace cftal {
         vec(const expr<_OP<int32_t, 4>, _L, _R>& r);
     };
 
+    vec<int32_t, 4> 
+    select(const typename vec<int32_t, 4>::mask_type& msk,
+           const vec<int32_t, 4>& on_true,
+           const vec<int32_t, 4>& on_false);
+
     template <bool _P0, bool _P1, 
               bool _P2, bool _P3>
-    vec<int32_t, 4> select(const vec<int32_t, 4>::mask_type& msk,
-                           const vec<int32_t, 4>& on_true,
-                           const vec<int32_t, 4>& on_false);
+    vec<int32_t, 4> 
+    select(const vec<int32_t, 4>& on_true,
+           const vec<int32_t, 4>& on_false);
 
     template <int32_t _P0, int32_t _P1,
               int32_t _P2, int32_t _P3>

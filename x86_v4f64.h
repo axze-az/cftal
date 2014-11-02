@@ -47,6 +47,28 @@ namespace cftal {
     vec<double, 2>
     high_half(const vec<double, 4>& s);
 
+    vec<double, 4> 
+    select(const typename vec<double, 4>::mask_type& msk,
+           const vec<double, 4>& on_true,
+           const vec<double, 4>& on_false);
+
+    template <bool _P0, bool _P1, 
+              bool _P2, bool _P3>
+    vec<double, 4> 
+    select(const vec<double, 4>& on_true,
+           const vec<double, 4>& on_false);
+
+    template <int32_t _P0, int32_t _P1,
+              int32_t _P2, int32_t _P3>
+    vec<double, 4> 
+    permute(const vec<double, 4>& s);
+
+    template <int32_t _P0, int32_t _P1,
+              int32_t _P2, int32_t _P3>
+    vec<double, 4> 
+    permute(const vec<double, 4>& s0, 
+            const vec<double, 4>& s1);
+
     namespace op {
 
         template <>
