@@ -52,6 +52,12 @@ namespace cftal {
            const vec<double, 4>& on_true,
            const vec<double, 4>& on_false);
 
+    vec<double, 4>
+    sqrt(const vec<double, 4>& v);
+
+    vec<double, 4>
+    cbrt(vec<double, 4> v);
+
     template <bool _P0, bool _P1, 
               bool _P2, bool _P3>
     vec<double, 4> 

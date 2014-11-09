@@ -10,6 +10,11 @@
 namespace cftal {
 
     template <typename _T>
+    struct arg {
+        using type = _T;
+    };
+
+    template <typename _T>
     class init_list {
         const _T* _begin;
         const _T* _end;

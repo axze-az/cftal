@@ -16,7 +16,7 @@ CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 OPT+=-fno-unroll-loops
 
 CSRCS=heap_array.cc allocator.cc mul_div_32.cc mul_div_64.cc	\
-d_real.cc math_func.cc
+d_real.cc math_func.cc x86_v4f64.cc
 
 all: lib tests
 
