@@ -316,8 +316,9 @@ frexp(const vf_type& vd,
 
         vi_type value_head(hi_word & vi_type(0x7fffffff));
 
-        vi_type is_inf_nan_zero((value_head >= 0x7ff00000) |
-                                ((value_head| lo_word)==vi_type(0)));
+        vi_type is_inf_nan_zero(
+            (value_head >= vi_type(0x7ff00000)) |
+            (vi_type(value_head| lo_word)==vi_type(0)));
         vi_type is_denom(value_head < 0x00100000);
 
         // exponent:
@@ -656,7 +657,7 @@ cftal::math::func_core<double, _T>::sin_cos_k(vf_type d)
         const vi_type& q= rr.second;
         const dvf_type& dh= rr.first;
 
-        vmi_type q_and_2((q & vi_type(2))==vi_type(2));
+        vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
         vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
 
         vmi_type q_and_1((q & vi_type(1))==vi_type(1));

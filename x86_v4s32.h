@@ -18,6 +18,7 @@ namespace cftal {
         using mask_type= vec<mask_value_type, 4>;
 
         using base_type::base_type;
+        vec();
         // create vec{v,v,v,v}
         vec(int32_t v);
         // constructor from std::initializer_list, fills remaining
@@ -32,6 +33,10 @@ namespace cftal {
         vec(const expr<_OP<int32_t, 4>, _L, _R>& r);
     };
 
+    v4s32 max(const v4s32& a, const v4s32& b);
+    v4s32 min(const v4s32& a, const v4s32& b);
+
+    
     vec<int32_t, 4> 
     select(const typename vec<int32_t, 4>::mask_type& msk,
            const vec<int32_t, 4>& on_true,
@@ -380,6 +385,28 @@ cftal::load(const int32_t* p, std::size_t s)
     }
     return v;
 
+}
+
+inline
+cftal::v4s32 cftal::max(const v4s32& a, const v4s32& b)
+{
+#if defined (__SSE4_1__)
+        return _mm_max_epi32(a(), b());
+#else
+        v4s32 _gt(a > b);
+        return select(_gt, a, b);
+#endif
+}
+
+inline
+cftal::v4s32 cftal::min(const v4s32& a, const v4s32& b)
+{
+#if defined (__SSE4_1__)
+        return _mm_min_epi32(a(), b());
+#else
+        v4s32 _lt(a < b);
+        return select(_lt, a, b);
+#endif
 }
 
 

@@ -1,9 +1,10 @@
-#if !defined (__X86VEC_MATH_FUNC_H__)
-#define __X86VEC_MATH_FUNC_H__ 1
+#if !defined (__CFTAL_X86_MATH_FUNC_H__)
+#define __CFTAL_X86_MATH_FUNC_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
+#include <cftal/x86_divisor.h>
 
 namespace cftal {
 

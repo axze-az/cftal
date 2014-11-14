@@ -19,6 +19,7 @@ namespace cftal {
         using mask_type= vec<mask_value_type, 4>;
 
         using base_type::base_type;
+        vec() = default;
         // create vec{v,v,v,v}
         vec(double v);
         // constructor from std::initializer_list, fills remaining
@@ -58,6 +59,79 @@ namespace cftal {
     vec<double, 4>
     cbrt(vec<double, 4> v);
 
+
+    v4f64 max(const v4f64& a, const v4f64& b);
+    v4f64 min(const v4f64& a, const v4f64& b);
+    v4f64 abs(const v4f64& a);
+    v4f64 fabs(const v4f64& a);
+    v4f64 sqrt(const v4f64& a);
+    v4f64 cbrt(arg<v4f64>::type a);
+    v4f64 hypot(const v4f64& a, const v4f64& b);
+    
+    v4f64 rsqrt(const v4f64& a);
+    v4f64 native_rsqrt(const v4f64& a);
+
+    v4f64 rint(const v4f64& a);
+    v4f64 floor(const v4f64& a);
+    v4f64 ceil(const v4f64& a);
+    v4f64 trunc(const v4f64& a);
+    // returns (~a) & (b)
+    v4f64 andnot(const v4f64& a, const v4f64& b);
+    v4f64 copysign(const v4f64& x, const v4f64& y);
+    v4f64 mulsign(const v4f64& x, const v4f64& y);
+    v4f64 isinf(const v4f64& x);
+    v4f64 isnan(const v4f64& x);
+    v4f64 isfinite(const v4f64& x);
+
+    v4f64 frexp(arg<v4f64>::type x, v4s32* e);
+    // v4f64 pow2i(arg<v4s32>::type e);
+    v4f64 ldexp(arg<v4f64>::type d, arg<v4s32>::type e);
+    v4s32 ilogbp1(arg<v4f64>::type v);
+    v4s32 ilogb(arg<v4f64>::type v);
+    v4f64 atan2(arg<v4f64>::type y, arg<v4f64>::type x);
+    v4f64 asin(arg<v4f64>::type d);
+    v4f64 acos(arg<v4f64>::type d);
+
+    v4f64 atan(arg<v4f64>::type d);
+    std::pair<v4f64, v4f64> sincos(arg<v4f64>::type d);
+
+    v4f64 exp(arg<v4f64>::type d);
+    v4f64 expm1(arg<v4f64>::type d);
+    v4f64 log(arg<v4f64>::type d);
+    v4f64 pow(arg<v4f64>::type b, arg<v4f64>::type e);
+    void sincos(arg<v4f64>::type d, v4f64* psin, v4f64* pcos);
+    v4f64 sin(arg<v4f64>::type d);
+    v4f64 cos(arg<v4f64>::type d);
+    v4f64 tan(arg<v4f64>::type d);
+    v4f64 cot(arg<v4f64>::type d);
+    v4f64 atan2(arg<v4f64>::type x, arg<v4f64>::type y);
+        
+    void native_sincos(arg<v4f64>::type d, v4f64* psin, v4f64* pcos);
+    v4f64 native_exp(arg<v4f64>::type d);
+    v4f64 native_log(arg<v4f64>::type d);
+    v4f64 native_sin(arg<v4f64>::type d);
+    v4f64 native_cos(arg<v4f64>::type d);
+    v4f64 native_tan(arg<v4f64>::type d);
+    v4f64 native_cot(arg<v4f64>::type d);
+    v4f64 cosh(arg<v4f64>::type d);
+    v4f64 sinh(arg<v4f64>::type d);
+
+    v4f64 pow(arg<v4f64>::type x, arg<v4f64>::type y);
+
+    // a*b +c
+    v4f64 fma(const v4f64& a, const v4f64& b, const v4f64& c);
+    // a*b -c
+    v4f64 fms(const v4f64& a, const v4f64& b, const v4f64& c);
+    // -(a*b) + c
+    v4f64 nfma(const v4f64& a, const v4f64& b, const v4f64& c);
+    // -(a*b) - c
+    v4f64 nfms(const v4f64& a, const v4f64& b, const v4f64& c);
+    
+    // a*b +c with rounding or not
+    v4f64 mad(const v4f64& a, const v4f64& b, const v4f64& c);
+    // -(a*b) +c with rounding or not
+    v4f64 nmad(const v4f64& a, const v4f64& b, const v4f64& c);
+    
     template <bool _P0, bool _P1, 
               bool _P2, bool _P3>
     vec<double, 4> 

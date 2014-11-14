@@ -266,7 +266,7 @@ namespace cftal {
                                         const int32_t bias = (1 << (11-1))-1;
                                         vi_type bias_shl_20(bias << 20);
                                         const divisor<vi_type, int32_t> rr(r);
-                                        hw = (hw - bias_shl_20)/rr +
+                                        hw = vi_type(hw - bias_shl_20)/rr +
                                                 bias_shl_20;
 
                                         vf_type g0;
@@ -588,7 +588,7 @@ pow(const vf_type& b, const vf_type& e)
         dvf_type pow0(my_type::exp_k2(ln_b_e));
         vf_type res(pow0.h() + pow0.l());
 
-        vmf_type b_zero_and_e_zero(b == vf_type(0) && e == vf_type(0));
+        vmf_type b_zero_and_e_zero((b == vf_type(0)) & (e == vf_type(0)));
         res = _T::sel(b_zero_and_e_zero, vf_type(1.0), res);
         return res;
 }
