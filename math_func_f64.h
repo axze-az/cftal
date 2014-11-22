@@ -572,12 +572,12 @@ reduce_trig_arg_k(const vf_type& d)
                 struct alignas(NI*sizeof(int)) v_i {
                         int32_t _sc[NI];
                 } ti;
-                mem::aligned::store(tf._sc, d);
-                mem::aligned::store(ti._sc, q);
-                mem::aligned::store(d0_l._sc, d0.l());
-                mem::aligned::store(d0_h._sc, d0.h());
+                store(tf._sc, d);
+                store(ti._sc, q);
+                store(d0_l._sc, d0.l());
+                store(d0_h._sc, d0.h());
                 for (std::size_t i=0; i<N; ++i) {
-                        if (fabs(tf._sc[i]) >= large_arg) {
+                    if (std::fabs(tf._sc[i]) >= large_arg) {
                                 double y[2];
                                 ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
                                                                    y);
@@ -585,10 +585,10 @@ reduce_trig_arg_k(const vf_type& d)
                                 d0_h._sc[i]= y[0];
                         }
                 }
-                vf_type rh(mem::aligned::load(d0_h._sc));
-                vf_type rl(mem::aligned::load(d0_l._sc));
+                vf_type rh(load(d0_h._sc, N));
+                vf_type rl(load(d0_l._sc, N));
                 d0 = dvf_type(rh, rl);
-                q = mem::aligned::load(ti._sc); 
+                q = load(ti._sc, NI); 
         }
         return std::make_pair(d0, q);
 }
@@ -660,7 +660,7 @@ cftal::math::func_core<double, _T>::sin_cos_k(vf_type d)
         vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
         vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
 
-        vmi_type q_and_1((q & vi_type(1))==vi_type(1));
+        vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
         vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
 
         // calculate sin + cos
@@ -733,19 +733,19 @@ native_reduce_trig_arg_k(const vf_type& d)
                 struct alignas(NI*sizeof(int)) v_i {
                         int32_t _sc[NI];
                 } ti;
-                mem::aligned::store(tf._sc, d);
-                mem::aligned::store(ti._sc, q);
-                mem::aligned::store(d0_l._sc, d0);
+                store(tf._sc, d);
+                store(ti._sc, q);
+                store(d0_l._sc, d0);
                 for (std::size_t i=0; i<N; ++i) {
-                        if (fabs(tf._sc[i]) >= large_arg) {
+                    if (std::fabs(tf._sc[i]) >= large_arg) {
                                 double y[2];
                                 ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
                                                                    y);
                                 d0_l._sc[i]= y[1] + y[0];
                         }
                 }
-                d0 = mem::aligned::load(d0_l._sc);
-                q = mem::aligned::load(ti._sc); 
+                d0 = load(d0_l._sc, N);
+                q = load(ti._sc, NI); 
         }
         return std::make_pair(d0, q);
 }
@@ -783,9 +783,9 @@ native_sin_cos_k(const vf_type& d)
         c = c * x2 - 0.5;
         c = c * x2 + 1.0; 
 
-        vmi_type q_and_2((q & vi_type(2))==vi_type(2));
+        vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
         vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
-        vmi_type q_and_1((q & vi_type(1))==vi_type(1));
+        vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
         vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
 
         // swap sin/cos if q & 1

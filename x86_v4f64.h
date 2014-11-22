@@ -42,6 +42,9 @@ namespace cftal {
     vec<double, 4>
     load(const double* l, std::size_t s);
 
+    void
+    store(double* p, const vec<double, 4>& v);
+    
     vec<double, 2>
     low_half(const vec<double, 4>& s);
 
@@ -469,7 +472,13 @@ cftal::load(const double* p, std::size_t s)
         break;
     }
     return v;
+}
 
+inline
+void
+cftal::store(double* p, const vec<double, 4>& v)
+{
+    _mm256_storeu_pd(p, v());
 }
 
 

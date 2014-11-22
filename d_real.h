@@ -918,8 +918,8 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator<(const d_real<_T>& a, const d_real<_T>& b)
 {
-        return (a.h() < b.h()) ||
-                ((a.h()==b.h()) && a.l() < b.l());
+        return (a.h() < b.h()) |
+            ((a.h()==b.h()) & (a.l() < b.l()));
 }
 
 template <typename _T>
@@ -927,8 +927,8 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator<=(const d_real<_T>& a, const d_real<_T>& b)
 {
-        return (a.h() < b.h()) ||
-                ((a.h()==b.h()) && a.l() <= b.l());
+        return (a.h() < b.h()) |
+            ((a.h()==b.h()) & (a.l() <= b.l()));
 }
 
 template <typename _T>
@@ -936,7 +936,7 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator==(const d_real<_T>& a, const d_real<_T>& b)
 {
-        return ((a.h()==b.h()) && (a.l() == b.l()));
+        return ((a.h()==b.h()) & (a.l() == b.l()));
 }
 
 template <typename _T>
@@ -944,7 +944,7 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator!=(const d_real<_T>& a, const d_real<_T>& b)
 {
-        return ((a.h()!=b.h()) || (a.l() != b.l()));
+        return ((a.h()!=b.h()) | (a.l() != b.l()));
 }
 
 template <typename _T>
@@ -953,7 +953,7 @@ typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator>=(const d_real<_T>& a, const d_real<_T>& b)
 {
         return ((a.h()>b.h()) || 
-                ((a.h()==b.h()) && (a.l() >= b.l())));
+                ((a.h()==b.h()) & (a.l() >= b.l())));
 }
 
 template <typename _T>
@@ -961,8 +961,8 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator>(const d_real<_T>& a, const d_real<_T>& b)
 {
-        return ((a.h()>b.h()) || 
-                ((a.h()==b.h()) && (a.l() > b.l())));
+        return ((a.h()>b.h()) | 
+                ((a.h()==b.h()) & (a.l() > b.l())));
 }
 
 
@@ -1201,8 +1201,8 @@ cftal::rint(const d_real<_T>& a)
         _T lo_hi_no_int(0);
         _T hi_m1 = hi - 1.0;
         _T hi_hi_no_int = d_real_traits<_T>::sel(
-                abs(hi - a.h())==_T(0.5) && a.l() < _T(0.0),
-                hi_m1, hi);
+            (abs(hi - a.h())==_T(0.5)) & (a.l() < _T(0.0)),
+            hi_m1, hi);
 
         typename d_real_traits<_T>::cmp_result_type hi_eq_ah=
                 hi == a.h();

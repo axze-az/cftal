@@ -18,7 +18,7 @@ namespace cftal {
         using mask_type= vec<mask_value_type, 4>;
 
         using base_type::base_type;
-        vec();
+        vec() = default;
         // create vec{v,v,v,v}
         vec(int32_t v);
         // constructor from std::initializer_list, fills remaining
@@ -57,11 +57,17 @@ namespace cftal {
     vec<int32_t, 4> permute(const vec<int32_t, 4>& s0, 
                             const vec<int32_t, 4>& s1);
 
+    std::pair<vec<int32_t, 4>, vec<int32_t, 4> >
+    mul_lo_hi(const vec<int32_t, 4>& a, const vec<int32_t, 4>& b);
+    
     // load from memory, fills remaining elements with the last
     // one given
     vec<int32_t, 4>
     load(const int32_t* l, std::size_t s);
 
+    void
+    store(int32_t* p, const vec<int32_t, 4>& v);
+    
     namespace op {
 
         template <>
@@ -384,7 +390,13 @@ cftal::load(const int32_t* p, std::size_t s)
         break;
     }
     return v;
+}
 
+inline
+void
+cftal::store(int32_t* p, const vec<int32_t, 4>& v)
+{
+    _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
 }
 
 inline
@@ -408,6 +420,21 @@ cftal::v4s32 cftal::min(const v4s32& a, const v4s32& b)
         return select(_lt, a, b);
 #endif
 }
+
+template <int _I0, int _I1, int _I2, int _I3>
+inline
+cftal::v4s32 cftal::permute(const v4s32& a)
+{
+    return x86::perm_u32<_I0, _I1, _I2, _I3>(a());
+}
+
+template <int _I0, int _I1, int _I2, int _I3>
+inline
+cftal::v4s32 cftal::permute(const v4s32& a, const v4s32& b)
+{
+    return x86::perm_u32<_I0, _I1, _I2, _I3>(a(), b());
+}
+
 
 
 
