@@ -56,6 +56,9 @@ namespace cftal {
            const vec<double, 4>& on_true,
            const vec<double, 4>& on_false);
 
+    bool
+    all_signs(const vec<double, 4>& a);
+
     vec<double, 4>
     sqrt(const vec<double, 4>& v);
 
@@ -439,6 +442,14 @@ vec(init_list<double> l)
 {
 }
 
+inline
+cftal::vec<double, 4>::
+vec(const vec<double, 2>& lh, const vec<double, 2>& hh)
+    : base_type(x86::impl::vinsertf128<1>::v(as<__m256d>(lh()),
+                                             hh()))
+{
+}
+
 template <template <class _U, std::size_t _M> class _OP,
           class _L, class _R>
 inline
@@ -480,6 +491,105 @@ cftal::store(double* p, const vec<double, 4>& v)
 {
     _mm256_storeu_pd(p, v());
 }
+
+
+inline
+cftal::vec<double, 2>
+cftal::low_half(const cftal::vec<double, 4>& v)
+{
+    return _mm256_castpd256_pd128(v());
+}
+
+inline
+cftal::vec<double, 2>
+cftal::high_half(const cftal::vec<double, 4>& v)
+{
+    return _mm256_extractf128_pd(v(), 1);
+}
+
+inline
+cftal::v4f64 cftal::select(const v4f64::mask_type& m,
+                           const v4f64& on_true,
+                           const v4f64& on_false)
+{
+    return x86::select(m(), on_true(), on_false());
+}
+
+inline
+cftal::v4f64 cftal::abs(const v4f64& a)
+{
+    const __m256d msk= x86::v_not_sign_v4f64_msk::dv();
+    return _mm256_and_pd(a(), msk);
+}
+
+inline
+cftal::v4f64 cftal::andnot(const v4f64& a, const v4f64& b)
+{
+    return _mm256_andnot_pd(a(), b());
+
+}
+
+inline
+cftal::vec<double, 4>
+cftal::isnan(const v4f64& x)
+{
+    // exponent = 0x7FF and significand !=0
+    // x != x  if x == NAN
+    return x != x;
+}
+
+inline
+cftal::vec<double, 4>
+cftal::isinf(const v4f64& x)
+{
+    v4f64 absx(abs(x));
+    return absx == v4f64(x86::v_exp_v4f64_msk::dv());
+}
+
+
+inline
+cftal::v4f64 cftal::copysign(const v4f64& x, const v4f64& y)
+{
+    // return abs(x) * sgn(y)
+    const v4f64 msk(x86::v_not_sign_v4f64_msk::dv());
+    v4f64 abs_x(x & msk);
+    v4f64 sgn_y(andnot(msk, y));
+    return abs_x | sgn_y;
+}
+
+inline
+cftal::v4f64 cftal::mulsign(const v4f64& x, const v4f64& y)
+{
+    const v4f64 msk(x86::v_sign_v4f64_msk::dv());
+    v4f64 sgn_y = y & msk;
+    return x ^ sgn_y;
+}
+
+inline
+bool cftal::all_signs(const v4f64& a)
+{
+    return x86::all_signs_f64(a());
+}
+
+#if 0
+inline
+bool cftal::both_signs(const v4f64& a)
+{
+    return both_signs_f64(a());
+}
+
+inline
+bool cftal::no_signs(const v4f64& a)
+{
+    return no_signs_f64(a());
+}
+
+inline
+unsigned cftal::read_signs(const v4f64& a)
+{
+    return read_signs_f64(a());
+}
+#endif
 
 
 
