@@ -8,6 +8,7 @@ namespace cftal {
 
     namespace x86 {
 
+
         template <class _E, unsigned _EN>
         struct div_ref {
             static __m128i ref(__m128i a, __m128i b,
@@ -46,9 +47,7 @@ namespace cftal {
                              __m128i* rem=nullptr);
         };
 
-    }
-
-    // read the sign bits of all elements into a bit mask
+        // read the sign bits of all elements into a bit mask
     int read_signs_f32(__m128 i);
     // read the sign bits of all elements into a bit mask
     int read_signs_f64(__m128d d);
@@ -111,6 +110,9 @@ namespace cftal {
     __m128i bitrev_u16(__m128i a);
     __m128i bitrev_u32(__m128i a);
     __m128i bitrev_u64(__m128i a);
+
+    }
+
 }
 
 template <class _E, unsigned _EN>
@@ -140,46 +142,46 @@ __m128i cftal::x86::div_ref<_E, _EN>::v(__m128i a, __m128i b, __m128i* rem)
 }
 
 inline
-int cftal::read_signs_s8(__m128i a)
+int cftal::x86::read_signs_s8(__m128i a)
 {
     return _mm_movemask_epi8(a);
 }
 
 inline
-int cftal::read_signs_f32(__m128 a)
+int cftal::x86::read_signs_f32(__m128 a)
 {
     return _mm_movemask_ps(a);
 }
 
 inline
-int cftal::read_signs_f64(__m128d a)
+int cftal::x86::read_signs_f64(__m128d a)
 {
     return _mm_movemask_pd(a);
 }
 
 #if defined (__AVX__)
 inline
-int cftal::read_signs_f32(__m256 a)
+int cftal::x86::read_signs_f32(__m256 a)
 {
     return _mm256_movemask_ps(a);
 }
 
 inline
-int cftal::read_signs_f64(__m256d a)
+int cftal::x86::read_signs_f64(__m256d a)
 {
     return _mm256_movemask_pd(a);
 }
 #endif
 
 inline
-bool cftal::both_bits(__m128i a)
+bool cftal::x86::both_bits(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk=x86::const_v4u32<uint32_t(-1), uint32_t(-1),
-                                       uint32_t(-1), uint32_t(-1)>::iv();
+    const __m128i msk=const_v4u32<uint32_t(-1), uint32_t(-1),
+                                  uint32_t(-1), uint32_t(-1)>::iv();
     return _mm_testnzc_si128(a, msk);
 #else
-    const __m128i msk= x86::make_zero_int::v();
+    const __m128i msk= make_zero_int::v();
     __m128i t=_mm_cmpeq_epi8(a, msk);
     int r=read_signs_s8(t);
     return (r != 0) && (r != 0xFFFF);
@@ -187,7 +189,7 @@ bool cftal::both_bits(__m128i a)
 }
 
 inline
-bool cftal::all_bits(__m128i a)
+bool cftal::x86::all_bits(__m128i a)
 {
     const __m128i msk=x86::const_v4u32<uint32_t(-1), uint32_t(-1),
                                        uint32_t(-1), uint32_t(-1)>::iv();
@@ -201,7 +203,7 @@ bool cftal::all_bits(__m128i a)
 }
 
 inline
-bool cftal::no_bits(__m128i a)
+bool cftal::x86::no_bits(__m128i a)
 {
 #if defined (__SSE4_1__)
     return _mm_testz_si128(a, a);
@@ -213,7 +215,7 @@ bool cftal::no_bits(__m128i a)
 }
 
 inline
-bool cftal::both_signs_f32(__m128 a)
+bool cftal::x86::both_signs_f32(__m128 a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_v4f32_msk::iv();
@@ -225,7 +227,7 @@ bool cftal::both_signs_f32(__m128 a)
 }
 
 inline
-bool cftal::all_signs_f32(__m128 a)
+bool cftal::x86::all_signs_f32(__m128 a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_v4f32_msk::iv();
@@ -237,7 +239,7 @@ bool cftal::all_signs_f32(__m128 a)
 }
 
 inline
-bool cftal::no_signs_f32(__m128 a)
+bool cftal::x86::no_signs_f32(__m128 a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_v4f32_msk::iv();
@@ -249,7 +251,7 @@ bool cftal::no_signs_f32(__m128 a)
 }
 
 inline
-bool cftal::both_signs_f64(__m128d a)
+bool cftal::x86::both_signs_f64(__m128d a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_v2f64_msk::iv();
@@ -261,7 +263,7 @@ bool cftal::both_signs_f64(__m128d a)
 }
 
 inline
-bool cftal::all_signs_f64(__m128d a)
+bool cftal::x86::all_signs_f64(__m128d a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_v2f64_msk::iv();
@@ -273,7 +275,7 @@ bool cftal::all_signs_f64(__m128d a)
 }
 
 inline
-bool cftal::no_signs_f64(__m128d a)
+bool cftal::x86::no_signs_f64(__m128d a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_v2f64_msk::iv();
@@ -286,42 +288,42 @@ bool cftal::no_signs_f64(__m128d a)
 
 #if defined (__AVX__)
 inline
-bool cftal::both_signs_f32(__m256 a)
+bool cftal::x86::both_signs_f32(__m256 a)
 {
     const __m256i msk= x86::v_sign_v8f32_msk::iv();
     return _mm256_testnzc_si256(as<__m256i>(a), msk);
 }
 
 inline
-bool cftal::all_signs_f32(__m256 a)
+bool cftal::x86::all_signs_f32(__m256 a)
 {
     const __m256i msk= x86::v_sign_v8f32_msk::iv();
     return _mm256_testc_si256(as<__m256i>(a), msk);
 }
 
 inline
-bool cftal::no_signs_f32(__m256 a)
+bool cftal::x86::no_signs_f32(__m256 a)
 {
     const __m256i msk= x86::v_sign_v8f32_msk::iv();
     return _mm256_testz_si256(as<__m256i>(a), msk);
 }
 
 inline
-bool cftal::both_signs_f64(__m256d a)
+bool cftal::x86::both_signs_f64(__m256d a)
 {
     const __m256i msk= x86::v_sign_v4f64_msk::iv();
     return _mm256_testnzc_si256(as<__m256i>(a), msk);
 }
 
 inline
-bool cftal::all_signs_f64(__m256d a)
+bool cftal::x86::all_signs_f64(__m256d a)
 {
     const __m256i msk= x86::v_sign_v4f64_msk::iv();
     return _mm256_testc_si256(as<__m256i>(a), msk);
 }
 
 inline
-bool cftal::no_signs_f64(__m256d a)
+bool cftal::x86::no_signs_f64(__m256d a)
 {
     const __m256i msk= x86::v_sign_v4f64_msk::iv();
     return _mm256_testz_si256(as<__m256i>(a), msk);
@@ -330,7 +332,7 @@ bool cftal::no_signs_f64(__m256d a)
 #endif
 
 inline
-bool cftal::both_signs_s16(__m128i a)
+bool cftal::x86::both_signs_s16(__m128i a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_s16_msk::iv();
@@ -342,7 +344,7 @@ bool cftal::both_signs_s16(__m128i a)
 }
 
 inline
-bool cftal::all_signs_s16(__m128i a)
+bool cftal::x86::all_signs_s16(__m128i a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_s16_msk::iv();
@@ -354,7 +356,7 @@ bool cftal::all_signs_s16(__m128i a)
 }
 
 inline
-bool cftal::no_signs_s16(__m128i a)
+bool cftal::x86::no_signs_s16(__m128i a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_s16_msk::iv();
@@ -366,7 +368,7 @@ bool cftal::no_signs_s16(__m128i a)
 }
 
 inline
-bool cftal::both_signs_s32(__m128i a)
+bool cftal::x86::both_signs_s32(__m128i a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_s32_msk::iv();
@@ -378,7 +380,7 @@ bool cftal::both_signs_s32(__m128i a)
 }
 
 inline
-bool cftal::all_signs_s32(__m128i a)
+bool cftal::x86::all_signs_s32(__m128i a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_s32_msk::iv();
@@ -390,7 +392,7 @@ bool cftal::all_signs_s32(__m128i a)
 }
 
 inline
-bool cftal::no_signs_s32(__m128i a)
+bool cftal::x86::no_signs_s32(__m128i a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_s32_msk::iv();
@@ -402,7 +404,7 @@ bool cftal::no_signs_s32(__m128i a)
 }
 
 inline
-bool cftal::both_signs_s64(__m128i a)
+bool cftal::x86::both_signs_s64(__m128i a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_s64_msk::iv();
@@ -414,7 +416,7 @@ bool cftal::both_signs_s64(__m128i a)
 }
 
 inline
-bool cftal::all_signs_s64(__m128i a)
+bool cftal::x86::all_signs_s64(__m128i a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_s64_msk::iv();
@@ -426,7 +428,7 @@ bool cftal::all_signs_s64(__m128i a)
 }
 
 inline
-bool cftal::no_signs_s64(__m128i a)
+bool cftal::x86::no_signs_s64(__m128i a)
 {
 #if defined (__SSE4_1__)
     const __m128i msk= x86::v_sign_s64_msk::iv();
@@ -438,7 +440,7 @@ bool cftal::no_signs_s64(__m128i a)
 }
 
 
-inline __m128i cftal::popcnt_u8(__m128i a)
+inline __m128i cftal::x86::popcnt_u8(__m128i a)
 {
     const __m128i c0f=x86::v_uint8_0x0f::iv();
 #if defined (__SSSE3__)
@@ -479,7 +481,7 @@ inline __m128i cftal::popcnt_u8(__m128i a)
 #endif
 }
 
-inline __m128i cftal::popcnt_u16(__m128i a)
+inline __m128i cftal::x86::popcnt_u16(__m128i a)
 {
 #if defined (__SSSE3__)
     const __m128i msk= x86::v_uint8_0x01::iv();
@@ -493,19 +495,19 @@ inline __m128i cftal::popcnt_u16(__m128i a)
 #endif
 }
 
-inline __m128i cftal::popcnt_u32(__m128i a)
+inline __m128i cftal::x86::popcnt_u32(__m128i a)
 {
     const __m128i msk= x86::v_uint16_0x0001::iv();
     return _mm_madd_epi16(popcnt_u16(a), msk);
 }
 
-inline __m128i cftal::popcnt_u64(__m128i a)
+inline __m128i cftal::x86::popcnt_u64(__m128i a)
 {
     a= popcnt_u8(a);
     return _mm_sad_epu8(a, x86::impl::make_zero_int::v());
 }
 
-inline int cftal::popcnt_u128(__m128i a)
+inline int cftal::x86::popcnt_u128(__m128i a)
 {
     a= popcnt_u64(a);
     const int sm= x86::impl::shuffle4<2,3,1,0>::val;
@@ -514,7 +516,7 @@ inline int cftal::popcnt_u128(__m128i a)
     return _mm_cvtsi128_si32(t);
 }
 
-inline __m128i cftal::bitrev_u8(__m128i a)
+inline __m128i cftal::x86::bitrev_u8(__m128i a)
 {
     // AMD XOP: use pperm
     // bitrev algorithm
@@ -524,23 +526,23 @@ inline __m128i cftal::bitrev_u8(__m128i a)
     __m128i t= x86::impl::vpsrlw_const<1>::v(a);
     a = _mm_and_si128(a, c55);
     t = _mm_and_si128(t, c55);
-    a = x86::vpsllw_const<1>::v(a);
+    a = x86::impl::vpsllw_const<1>::v(a);
     a = _mm_or_si128(a, t);
     // swap consecutive pairs
     // v = ((v >> 2) & 0x33333333) | ((v & 0x33333333) << 2);
     const __m128i c33= x86::v_uint8_0x33::iv();
-    t = x86::vpsrlw_const<2>::v(a);
+    t = x86::impl::vpsrlw_const<2>::v(a);
     a = _mm_and_si128(a, c33);
     t = _mm_and_si128(t, c33);
-    a = x86::vpsllw_const<2>::v(a);
+    a = x86::impl::vpsllw_const<2>::v(a);
     a = _mm_or_si128(a, t);
     // swap nibbles ...
     // v = ((v >> 4) & 0x0F0F0F0F) | ((v & 0x0F0F0F0F) << 4);
     const __m128i c0f= x86::v_uint8_0x0f::iv();
-    t = x86::vpsrlw_const<4>::v(a);
+    t = x86::impl::vpsrlw_const<4>::v(a);
     a = _mm_and_si128(a, c0f);
     t = _mm_and_si128(t, c0f);
-    a = x86::vpsllw_const<4>::v(a);
+    a = x86::impl::vpsllw_const<4>::v(a);
     a = _mm_or_si128(a, t);
     return a;
     // swap bytes
@@ -549,7 +551,7 @@ inline __m128i cftal::bitrev_u8(__m128i a)
     // v = ( v >> 16             ) | ( v               << 16);
 }
 
-inline __m128i cftal::bitrev_u16(__m128i a)
+inline __m128i cftal::x86::bitrev_u16(__m128i a)
 {
     // AMD XOP: use pperm
 #if defined (__SSSE3__)
@@ -567,7 +569,7 @@ inline __m128i cftal::bitrev_u16(__m128i a)
 #endif
 }
 
-inline __m128i cftal::bitrev_u32(__m128i a)
+inline __m128i cftal::x86::bitrev_u32(__m128i a)
 {
     // AMD XOP: use pperm
 #if defined (__SSSE3__)
@@ -585,7 +587,7 @@ inline __m128i cftal::bitrev_u32(__m128i a)
 #endif
 }
 
-inline __m128i cftal::bitrev_u64(__m128i a)
+inline __m128i cftal::x86::bitrev_u64(__m128i a)
 {
     // AMD XOP: use pperm
 #if defined (__SSS3__)
@@ -597,7 +599,7 @@ inline __m128i cftal::bitrev_u64(__m128i a)
     // swap unsigned pairs
     // v = ( v >> 32             ) | ( v               << 32);
     a = bitrev_u32(a);
-    return x86::vpshufd<1, 0, 3, 2>::v(a);
+    return x86::impl::vpshufd<1, 0, 3, 2>::v(a);
 #endif
 }
 

@@ -6,6 +6,7 @@
 #include <cftal/x86_perm.h> 
 #include <cftal/x86_vreg.h>
 #include <cftal/x86_v2f64.h>
+#include <cftal/x86_ops_1.h>
 
 namespace cftal {
 
@@ -18,7 +19,7 @@ namespace cftal {
         using mask_value_type = double;
         using mask_type= vec<mask_value_type, 4>;
 
-        using base_type::base_type;
+        using x86::vreg<__m256d>::vreg;
         vec() = default;
         // create vec{v,v,v,v}
         vec(double v);
