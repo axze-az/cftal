@@ -8,7 +8,16 @@ namespace cftal {
 
     namespace x86 {
 
-
+        struct rounding_mode {
+            enum type {
+                nearest = 0x0,
+                downward = 0x1,
+                upward = 0x2,
+                towardzero = 0x3,
+                current = 0x4
+            };
+        };
+        
         template <class _E, unsigned _EN>
         struct div_ref {
             static __m128i ref(__m128i a, __m128i b,

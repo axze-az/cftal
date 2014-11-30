@@ -78,6 +78,10 @@ namespace cftal {
     v4f64 rsqrt(const v4f64& a);
     v4f64 native_rsqrt(const v4f64& a);
 
+    namespace x86 {
+        v4f64 round(const v4f64& v, rounding_mode::type m);
+    }
+    
     v4f64 rint(const v4f64& a);
     v4f64 floor(const v4f64& a);
     v4f64 ceil(const v4f64& a);
@@ -592,7 +596,53 @@ unsigned cftal::read_signs(const v4f64& a)
 }
 #endif
 
+inline
+cftal::v4f64 cftal::x86::round(const v4f64& a, const rounding_mode::type m)
+{
+    v4f64 r;
+    switch (m) {
+    case rounding_mode::nearest:
+        r= _mm256_round_pd(a(), 0);
+        break;
+    case rounding_mode::downward:
+        r= _mm256_round_pd(a(), 1);
+        break;
+    case rounding_mode::upward:
+        r= _mm256_round_pd(a(), 2);
+        break;
+    case rounding_mode::towardzero:
+        r= _mm256_round_pd(a(), 3);
+        break;
+    case rounding_mode::current:
+        r= _mm256_round_pd(a(), 4);
+        break;
+    }
+    return r;
+}
 
+inline
+cftal::v4f64 cftal::rint(const v4f64& a)
+{
+    return x86::round(a, x86::rounding_mode::nearest);
+}
+
+inline
+cftal::v4f64 cftal::floor(const v4f64& a)
+{
+    return x86::round(a, x86::rounding_mode::downward);
+}
+
+inline
+cftal::v4f64 cftal::ceil(const v4f64& a)
+{
+    return x86::round(a, x86::rounding_mode::upward);
+}
+
+inline
+cftal::v4f64 cftal::trunc(const v4f64& a)
+{
+    return x86::round(a, x86::rounding_mode::towardzero);
+}
 
 // Local variables:
 // mode: c++
