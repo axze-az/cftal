@@ -1,7 +1,8 @@
-#if !defined (__X86VEC_OPS_1_H__)
-#define __X86VEC_OPS_1_H__ 1
+#if !defined (__CFTAL_X86_OPS_1_H__)
+#define __CFTAL_X86_OPS_1_H__ 1
 
 #include <cftal/x86_perm.h>
+#include <cftal/x86_ops_0.h>
 #include <iostream>
 
 namespace cftal {
@@ -190,7 +191,7 @@ bool cftal::x86::both_bits(__m128i a)
                                   uint32_t(-1), uint32_t(-1)>::iv();
     return _mm_testnzc_si128(a, msk);
 #else
-    const __m128i msk= make_zero_int::v();
+    const __m128i msk= impl::make_zero_int::v();
     __m128i t=_mm_cmpeq_epi8(a, msk);
     int r=read_signs_s8(t);
     return (r != 0) && (r != 0xFFFF);
@@ -217,7 +218,7 @@ bool cftal::x86::no_bits(__m128i a)
 #if defined (__SSE4_1__)
     return _mm_testz_si128(a, a);
 #else
-    __m128i t=_mm_cmpeq_epi8(a, x86::make_zero_int::v());
+    __m128i t=_mm_cmpeq_epi8(a, impl::make_zero_int::v());
     int r=read_signs_s8(t);
     return r == 0xFFFF;
 #endif
@@ -572,8 +573,8 @@ inline __m128i cftal::x86::bitrev_u16(__m128i a)
     // swap bytes
     // v = ((v >> 8) & 0x00FF00FF) | ((v & 0x00FF00FF) << 8);
     a = bitrev_u8(a);
-    __m128i t= x86::vpsrlw_const<8>::v(a);
-    a = x86::vpsllw_const<8>::v(a);
+    __m128i t= impl::vpsrlw_const<8>::v(a);
+    a = impl::vpsllw_const<8>::v(a);
     return _mm_or_si128(a, t);
 #endif
 }
@@ -582,16 +583,16 @@ inline __m128i cftal::x86::bitrev_u32(__m128i a)
 {
     // AMD XOP: use pperm
 #if defined (__SSSE3__)
-    const __m128i msk = x86::const_v16u8<3, 2, 1, 0, 7, 6, 5, 4,
-                                         11,10, 9, 8,15,14,13,12>::iv();
+    const __m128i msk = const_v16u8<3, 2, 1, 0, 7, 6, 5, 4,
+                                    11,10, 9, 8,15,14,13,12>::iv();
     a = bitrev_u8(a);
     return _mm_shuffle_epi8(a, msk);
 #else
     a = bitrev_u16(a);
     // swap 2-byte long pairs
     // v = ( v >> 16             ) | ( v               << 16);
-    __m128i t= x86::vpsrld_const<16>::v(a);
-    a= x86::vpslld_const<16>::v(a);
+    __m128i t= impl::vpsrld_const<16>::v(a);
+    a= impl::vpslld_const<16>::v(a);
     return _mm_or_si128(a, t);
 #endif
 }
@@ -600,8 +601,8 @@ inline __m128i cftal::x86::bitrev_u64(__m128i a)
 {
     // AMD XOP: use pperm
 #if defined (__SSS3__)
-    const __m128i msk = x86::const_v16u8<7, 6, 5, 4, 3, 2, 1, 0,
-                                         15,14,13,12,11,10,9, 8>::iv();
+    const __m128i msk = const_v16u8<7, 6, 5, 4, 3, 2, 1, 0,
+                                    15,14,13,12,11,10,9, 8>::iv();
     a = bitrev_u8(a);
     return _mm_shuffle_epi8(a, msk);
 #else
