@@ -31,8 +31,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                v4u32 ta(a ^ full_type(x86::v_sign_s32_msk::iv()));
-                v4u32 tb(b ^ full_type(x86::v_sign_s32_msk::iv()));
+                v4u32 ta(a ^ full_type(sign_s32_msk::v._u32));
+                v4u32 tb(b ^ full_type(sign_s32_msk::v._u32));
                 return _mm_cmpgt_epi32(tb(), ta());
             }
         };
@@ -101,8 +101,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                v4u32 ta(a ^ full_type(x86::v_sign_s32_msk::iv()));
-                v4u32 tb(b ^ full_type(x86::v_sign_s32_msk::iv()));
+                v4u32 ta(a ^ full_type(sign_s32_msk::v._u32));
+                v4u32 tb(b ^ full_type(sign_s32_msk::v._u32));
                 return _mm_cmpgt_epi32(ta(), tb());
             }
         };
@@ -124,7 +124,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
 #if defined (__SSSE3__)
-                const full_type sgn(0x80000000);
+                const full_type sgn(sign_s32_msk::v._u32);
                 return _mm_sign_epi32(a(), sgn());
 #else
                 const full_type zero(0);

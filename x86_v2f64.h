@@ -173,7 +173,8 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                full_type all_set(0xffffffff);
+                const bytes8 all_ones{-1, -1};
+                full_type all_set(all_ones._f64);
                 return _mm_xor_pd(a(), all_set());
             }
         };
@@ -261,10 +262,9 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const __m128d all_set = 
-                    x86::const_v4u32<uint32_t(-1), uint32_t(-1),
-                                     uint32_t(-1), uint32_t(-1)>::dv();
-                    return _mm_xor_pd(a(), all_set);
+                const bytes8 m1{-1, 1};
+                const v2f64 all_set(m1._f64);
+                return _mm_xor_pd(a(), all_set());
             }
         };
 

@@ -7,6 +7,7 @@
 #include <cftal/x86_v4u32.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_ops_1.h>
+#include <cftal/divisor.h>
 
 namespace cftal {
 
@@ -123,7 +124,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
 #if defined (__SSSE3__)
-                const full_type sgn(0x80000000);
+                const full_type sgn(sign_s32_msk::v._s32);
                 return _mm_sign_epi32(a(), sgn());
 #else
                 const full_type zero(0);
@@ -158,7 +159,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::div_s32::v(a(), b());
+                return x86::impl::vpmulld::v(a(), b());
             }
         };
 
@@ -168,7 +169,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return full_type(a() / b());
+                return x86::div_s32::v(a(), b());
             }
         };
 
@@ -178,7 +179,9 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return full_type(a() % b());
+                v4s32 q(a/b);
+                v4s32 r(remainder(a, b, q));
+                return r;                
             }
         };
 

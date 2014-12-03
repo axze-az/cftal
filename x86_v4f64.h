@@ -181,7 +181,8 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                full_type all_set(0xffffffff);
+                constexpr bytes8 all_one{-1, -1};
+                full_type all_set(all_one._f64);
                 return _mm256_xor_pd(a(), all_set());
             }
         };
@@ -269,12 +270,9 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const __m256d all_set = 
-                    x86::const_v8u32<uint32_t(-1), uint32_t(-1),
-                                     uint32_t(-1), uint32_t(-1),
-                                     uint32_t(-1), uint32_t(-1),
-                                     uint32_t(-1), uint32_t(-1)>::dv();
-                    return _mm256_xor_pd(a(), all_set);
+                const bytes8 all_one{-1, -1};
+                const full_type all_set(all_one._f64);
+                return _mm256_xor_pd(a(), all_set());
             }
         };
 
@@ -536,8 +534,8 @@ cftal::v4f64 cftal::select(const v4f64::mask_type& m,
 inline
 cftal::v4f64 cftal::abs(const v4f64& a)
 {
-    const __m256d msk= x86::v_not_sign_v4f64_msk::dv();
-    return _mm256_and_pd(a(), msk);
+    const v4f64 msk(not_sign_f64_msk::v._f64);
+    return _mm256_and_pd(a(), msk());
 }
 
 inline
@@ -561,7 +559,7 @@ cftal::vec<double, 4>
 cftal::isinf(const v4f64& x)
 {
     v4f64 absx(abs(x));
-    return absx == v4f64(x86::v_exp_v4f64_msk::dv());
+    return absx == v4f64(exp_v4f64_msk::v._f64);
 }
 
 
@@ -569,7 +567,7 @@ inline
 cftal::v4f64 cftal::copysign(const v4f64& x, const v4f64& y)
 {
     // return abs(x) * sgn(y)
-    const v4f64 msk(x86::v_not_sign_v4f64_msk::dv());
+    const v4f64 msk(not_sign_v4f64_msk::v._f64);
     v4f64 abs_x(x & msk);
     v4f64 sgn_y(andnot(msk, y));
     return abs_x | sgn_y;
@@ -578,7 +576,7 @@ cftal::v4f64 cftal::copysign(const v4f64& x, const v4f64& y)
 inline
 cftal::v4f64 cftal::mulsign(const v4f64& x, const v4f64& y)
 {
-    const v4f64 msk(x86::v_sign_v4f64_msk::dv());
+    const v4f64 msk(sign_v4f64_msk::v._f64);
     v4f64 sgn_y = y & msk;
     return x ^ sgn_y;
 }

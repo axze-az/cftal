@@ -44,17 +44,68 @@ namespace cftal {
         return init_list<_T>(p, p+ ns);
     }
 
+    union bytes8 {
+        double _f64;
+        float _f32[2];
+        int32_t _s32[2];
+        uint32_t _u32[2];
+        int64_t _s64;
+        uint64_t _u64;
+        constexpr bytes8(double d) : _f64{d} {}
+        constexpr bytes8(float l, float h) : _f32{l, h} {}
+        constexpr bytes8(int32_t l, int32_t h) : _s32{l, h} {}
+        constexpr bytes8(uint32_t l, uint32_t h) : _u32{l, h} {}
+        constexpr bytes8(int64_t s) : _s64{s} {}
+        constexpr bytes8(uint64_t u) : _u64{u} {}
+    };
+    
+    template <uint32_t _L, uint32_t _H> 
+    struct const_u64 {
+        static
+        constexpr bytes8 v{_L, _H};
+    };    
+        
+    
+    union bytes4 {
+        float _f32;
+        uint32_t _u32;
+        int32_t _i32;
+        constexpr bytes4(float f) : _f32{f} {}
+        constexpr bytes4(int32_t u) : _i32{u} {}
+        constexpr bytes4(uint32_t u) : _u32{u} {}
+    };      
 
     template <unsigned _N1, unsigned _N2>
     struct const_min {
         enum { v = (_N1 < _N2 ? _N1 : _N2) };
-    };
-
+    };    
 
     template <uint32_t _N>
     struct const_u32 {
-        enum { v = _N };
+        static 
+        constexpr bytes4 v{_N};
     };
+    
+    using sign_s32_msk = const_u32<0x80000000>;
+    using not_sign_s32_msk = const_u32<0x7fffffff>;
+    using sign_f32_msk = sign_s32_msk;
+    using not_sign_f32_msk = not_sign_s32_msk;
+    using exp_f32_msk = const_u32<0x7f800000>;
+    using not_exp_f32_msk = const_u32<0x807fffff>;
+    using sig_f32_msk = const_u32<0x007fffff>;
+    const int exp_shift_f32 = 23;
+    const int exp_msk_f32 = 0xff;    
+    
+    using sign_s64_msk= const_u64<0x00000000, 0x80000000>;
+    using not_sign_s64_msk = const_u64<0xffffffff, 0x7fffffff>;
+    using sign_f64_msk = sign_s64_msk;
+    using not_sign_f64_msk = not_sign_s64_msk;
+    using exp_f64_msk = const_u64<0x00000000,0x7ff00000>;
+    using sig_f64_msk = const_u64<0xffffffff, 0x000fffff>;
+    const int bias_f64 = 0x3ff;
+    const int exp_shift_f64 = 52;
+    const int exp_msk_f64 = 0x7ff;
+
     
     namespace const_shift {
         static const const_u32<0> _0;
