@@ -2736,8 +2736,10 @@ cftal::operator%=(vec<_T, _N>& a,
 #endif
 #if defined (__SSE2__)
 #include <cftal/x86_v4s32.h>
-#if 0
 #include <cftal/x86_v4u32.h>
+#include <cftal/x86_v4s32_inl.h>
+#include <cftal/x86_v4u32_inl.h>
+#if 0
 #include <cftal/x86_v2s64.h>
 #include <cftal/x86_v2u64.h>
 #endif
@@ -2767,6 +2769,7 @@ cftal::operator%=(vec<_T, _N>& a,
 #include <cftal/x86_v8u64.h>
 #endif
 #endif
+
 #include <cftal/x86_cvt.h>
 
 // Local variables:

@@ -68,6 +68,7 @@ namespace cftal {
     };
 #endif
 
+#if defined (__AVX__)    
     template <>
     struct d_real_traits<v4f64> : public has_fma<double> {
         constexpr d_real_traits<v4f64>() = default;
@@ -109,6 +110,8 @@ namespace cftal {
             l = a - h;
         }
     };
+
+#endif    
 
 #if 0
     template <>
