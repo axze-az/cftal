@@ -442,8 +442,8 @@ namespace cftal {
                 v2f64 fh(as<v2f64>(hep));
                 v2f64 lh(as<v2f64>(lep));
 #if !defined (__AVX__)
-                lh &= v_exp_v2f64_msk::dv();
-                fh &= v_exp_v2f64_msk::dv();
+                lh &= v2f64(x86::v_exp_v2f64_msk::dv());
+                fh &= v2f64(x86::v_exp_v2f64_msk::dv());
                 vf_type r(lh, fh);
 #else
                 vf_type r(lh, fh);
@@ -456,8 +456,8 @@ namespace cftal {
             vi_type extract_exp(const vf_type& d) {
                 // TODO AVX2 code
 #if !defined (__AVX__)
-                vf_type m(low_half(d) & v_exp_v2f64_msk::dv(),
-                          high_half(d) & v_exp_v2f64_msk::dv());
+                vf_type m(low_half(d) & v2f64(x86::v_exp_v2f64_msk::dv()),
+                          high_half(d) & v2f64(x86::v_exp_v2f64_msk::dv()));
 #else
                 // vf_type m(d & v_exp_v4f64_msk::dv());
 #endif

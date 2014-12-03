@@ -38,6 +38,12 @@ namespace cftal {
     vec<double, 2>
     load_v2f64(const double* l, std::size_t s);
 
+    vec<double, 2> 
+    select(const typename vec<double, 2>::mask_type& msk,
+           const vec<double, 2>& on_true,
+           const vec<double, 2>& on_false);
+    
+    
     namespace op {
 
         template <>
@@ -353,6 +359,13 @@ cftal::load_v2f64(const double* p, std::size_t s)
 
 }
 
+inline
+cftal::v2f64
+cftal::select(const v2f64::mask_type& m,
+              const v2f64& on_true, const v2f64& on_false)
+{
+    return x86::select(m(), on_true(), on_false());
+}
 
 
 // Local variables:

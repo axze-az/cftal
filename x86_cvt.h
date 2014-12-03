@@ -2,9 +2,13 @@
 #define __CFTAL_X86_CVT_H__ 1
 
 #include <cftal/x86_intrin.h>
+#if defined (__SSE2__)
 #include <cftal/x86_v4s32.h>
 #include <cftal/x86_v2f64.h>
+#endif
+#if defined (__AVX__)
 #include <cftal/x86_v4f64.h>
+#endif
 #include <utility>
 
 namespace cftal {
