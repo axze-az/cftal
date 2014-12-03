@@ -3,10 +3,15 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
+#include <cftal/vec.h>
 #include <cftal/x86_perm.h> 
 #include <cftal/x86_vreg.h>
 #include <cftal/x86_v2f64.h>
 #include <cftal/x86_ops_1.h>
+
+#if !defined (__AVX__)
+#error "urgh"
+#endif
 
 namespace cftal {
 
@@ -60,12 +65,20 @@ namespace cftal {
     bool
     all_signs(const vec<double, 4>& a);
 
+    bool
+    no_signs(const vec<double, 4>& a);
+
+    bool
+    both_signs(const vec<double, 4>& a);
+
+    unsigned
+    read_signs(const vec<double, 4>& b);
+    
     vec<double, 4>
     sqrt(const vec<double, 4>& v);
 
     vec<double, 4>
     cbrt(vec<double, 4> v);
-
 
     v4f64 max(const v4f64& a, const v4f64& b);
     v4f64 min(const v4f64& a, const v4f64& b);
@@ -576,7 +589,6 @@ bool cftal::all_signs(const v4f64& a)
     return x86::all_signs_f64(a());
 }
 
-#if 0
 inline
 bool cftal::both_signs(const v4f64& a)
 {
@@ -594,7 +606,7 @@ unsigned cftal::read_signs(const v4f64& a)
 {
     return read_signs_f64(a());
 }
-#endif
+
 
 inline
 cftal::v4f64 cftal::x86::round(const v4f64& a, const rounding_mode::type m)

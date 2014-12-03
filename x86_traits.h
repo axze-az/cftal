@@ -8,7 +8,7 @@
 
 namespace cftal {
 
-#if 0
+
     template <>
     struct d_real_traits<v2f64> : public has_fma<double> {
         constexpr d_real_traits<v2f64>() = default;
@@ -29,15 +29,14 @@ namespace cftal {
                    v2f64& h,
                    v2f64& l) {
             const v2f64 msk=
-                const_v4u32<0xf8000000U,
-                            0xffffffffU,
-                            0xf8000000U,
-                            0xffffffffU>::dv();
+                x86::const_v4u32<0xf8000000U, 0xffffffffU,
+                                 0xf8000000U, 0xffffffffU>::dv();
             h = a & msk;
             l = a - h;
         }
     };
 
+#if 0
     template <>
     struct d_real_traits<v4f32> : public has_fma<float> {
         constexpr d_real_traits<v4f32>() = default;
@@ -75,7 +74,7 @@ namespace cftal {
         // result of a comparison operator
         using cmp_result_type= typename v4f64::mask_type;
         static bool any(const cmp_result_type& b) {
-            return false; // !no_signs(b);
+            return !no_signs(b);
         }
 
         static v4f64 sel(const cmp_result_type& s,
@@ -159,11 +158,10 @@ namespace cftal {
 
     namespace math {
 
-#if 0
         template <>
         struct func_traits<v2f64, v4s32> : public
-        func_traits<typename v2f64::element_type,
-                    typename v4s32::element_type> {
+        func_traits<typename v2f64::value_type,
+                    typename v4s32::value_type> {
             typedef v2f64 vf_type;
             typedef v2f64 vmf_type;
             typedef v4s32 vi_type;
@@ -172,13 +170,13 @@ namespace cftal {
             static
             constexpr std::size_t NVF() {
                 return sizeof(vf_type)/
-                    sizeof(vf_type::element_type);
+                    sizeof(vf_type::value_type);
             }
 
             static
             constexpr std::size_t NVI() {
                 return sizeof(vi_type)/
-                    sizeof(vi_type::element_type);
+                    sizeof(vi_type::value_type);
             }
 
             static
@@ -203,26 +201,25 @@ namespace cftal {
                         const vf_type& t, const vf_type& f) {
                 return select(msk, t, f);
             }
-#if 0
-            static
-            vf_type gather(const double* p, const vi_type& idx,
-                           int sc) {
-                return gather<vf_type>(p, idx, sc);
-            }
-#endif
+
             static
             vf_type insert_exp(const vi_type& e) {
-                vi_type ep(permute<0, 0, 1, 1>(e));
-                v2u64 m= as<v2u64>(ep);
-                m <<= const_shift::_52;
-                return as<v2f64>(m);
+                vi_type t(permute<0, 0, 1, 1>(e));
+                t <<= 20;
+                vf_type r(as<v2f64>(t));
+                r &= v2f64(x86::v_exp_v2f64_msk::dv());
+                return r;
+                // v2u64 m= as<v2u64>(ep);
+                // m <<= const_shift::_52;
+                // return as<v2f64>(m);
+                
             }
             static
             vi_type extract_exp(const vf_type& d) {
                 v4s32 e= as<v4s32>(d);
-                e >>= const_shift::_20;
+                e >>= 20; // const_shift::_20;
                 e = permute<1, 3, 0, 0>(e);
-                e &= v4s32(0x7ff, 0x7ff, 0, 0);
+                e &= v4s32{0x7ff, 0x7ff, 0, 0};
                 return e;
             }
 
@@ -266,6 +263,7 @@ namespace cftal {
             }
         };
 
+#if 0        
 
         template <>
         struct func_traits<v4f32, v4s32> : public
