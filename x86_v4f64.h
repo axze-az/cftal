@@ -12,6 +12,11 @@
 namespace cftal {
 
     template <>
+    struct arg< vec<double, 4> > {
+        using type = vec<double, 4>;
+    };
+    
+    template <>
     class vec<double, 4> : public x86::vreg<__m256d> {
     public:
         using base_type = x86::vreg<__m256d>;
@@ -44,7 +49,7 @@ namespace cftal {
         static
         vec<double, 4> load(const double* p, std::size_t n=1);
         static
-        void write_to(double* p, const vec<double, 4>& v);
+        void store(double* p, const vec<double, 4>& v);
     };
     
     
@@ -474,7 +479,7 @@ vec<double, 4>::vec(const expr<_OP<double, 4>, _L, _R>& r)
 
 inline
 cftal::vec<double, 4>
-cftal::mem<ctal::vec<double, 4>>::load(const double* p, std::size_t s)
+cftal::mem<cftal::vec<double, 4>>::load(const double* p, std::size_t s)
 {
     __m256d v;
     switch (s) {
@@ -555,7 +560,7 @@ cftal::vec<double, 4>::mask_type
 cftal::isinf(const v4f64& x)
 {
     v4f64 absx(abs(x));
-    return absx == v4f64(exp_v4f64_msk::v._f64);
+    return absx == v4f64(exp_f64_msk::v._f64);
 }
 
 
@@ -563,7 +568,7 @@ inline
 cftal::v4f64 cftal::copysign(const v4f64& x, const v4f64& y)
 {
     // return abs(x) * sgn(y)
-    const v4f64 msk(not_sign_v4f64_msk::v._f64);
+    const v4f64 msk(not_sign_f64_msk::v._f64);
     v4f64 abs_x(x & msk);
     v4f64 sgn_y(andnot(msk, y));
     return abs_x | sgn_y;
@@ -572,7 +577,7 @@ cftal::v4f64 cftal::copysign(const v4f64& x, const v4f64& y)
 inline
 cftal::v4f64 cftal::mulsign(const v4f64& x, const v4f64& y)
 {
-    const v4f64 msk(sign_v4f64_msk::v._f64);
+    const v4f64 msk(sign_f64_msk::v._f64);
     v4f64 sgn_y = y & msk;
     return x ^ sgn_y;
 }
@@ -586,19 +591,19 @@ bool cftal::all_signs(const v4f64& a)
 inline
 bool cftal::both_signs(const v4f64& a)
 {
-    return both_signs_f64(a());
+    return x86::both_signs_f64(a());
 }
 
 inline
 bool cftal::no_signs(const v4f64& a)
 {
-    return no_signs_f64(a());
+    return x86::no_signs_f64(a());
 }
 
 inline
 unsigned cftal::read_signs(const v4f64& a)
 {
-    return read_signs_f64(a());
+    return x86::read_signs_f64(a());
 }
 
 

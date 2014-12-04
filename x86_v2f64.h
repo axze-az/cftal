@@ -10,6 +10,11 @@
 namespace cftal {
 
     template <>
+    struct arg< vec<double, 2> > {
+        using type = vec<double, 2>;
+    };
+
+    template <>
     class vec<double, 2> : public x86::vreg<__m128d> {
     public:
         using base_type= x86::vreg<__m128d>;

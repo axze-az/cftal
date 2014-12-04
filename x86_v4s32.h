@@ -8,6 +8,11 @@
 namespace cftal {
 
     template <>
+    struct arg< vec<int32_t, 4> > {
+        using type = vec<int32_t, 4>;
+    };
+   
+    template <>
     class vec<int32_t, 4> : public x86::vreg<__m128i> {
     public:
         using base_type = x86::vreg<__m128i>;
