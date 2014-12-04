@@ -12,7 +12,7 @@ namespace cftal {
     template <>
     class vec<double, 2> : public x86::vreg<__m128d> {
     public:
-        using base_type = x86::vreg<__m128d>;
+        using base_type= x86::vreg<__m128d>;
 
         using value_type = double;
         using mask_value_type = double;
@@ -65,7 +65,6 @@ namespace cftal {
     unsigned
     read_signs(const vec<double, 2>& b);
     
-
     vec<double, 2>
     sqrt(const vec<double, 2>& v);
 
@@ -95,9 +94,9 @@ namespace cftal {
     v2f64 andnot(const v2f64& a, const v2f64& b);
     v2f64 copysign(const v2f64& x, const v2f64& y);
     v2f64 mulsign(const v2f64& x, const v2f64& y);
-    v2f64 isinf(const v2f64& x);
-    v2f64 isnan(const v2f64& x);
-    v2f64 isfinite(const v2f64& x);
+    v2f64::mask_type isinf(const v2f64& x);
+    v2f64::mask_type isnan(const v2f64& x);
+    v2f64::mask_type isfinite(const v2f64& x);
 
     v2f64 frexp(arg<v2f64>::type x, v4s32* e);
     // v2f64 pow2i(arg<v4s32>::type e);

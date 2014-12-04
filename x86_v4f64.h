@@ -9,10 +9,6 @@
 #include <cftal/x86_v2f64.h>
 #include <cftal/x86_ops_1.h>
 
-#if !defined (__AVX__)
-#error "urgh"
-#endif
-
 namespace cftal {
 
     template <>
@@ -104,9 +100,9 @@ namespace cftal {
     v4f64 andnot(const v4f64& a, const v4f64& b);
     v4f64 copysign(const v4f64& x, const v4f64& y);
     v4f64 mulsign(const v4f64& x, const v4f64& y);
-    v4f64 isinf(const v4f64& x);
-    v4f64 isnan(const v4f64& x);
-    v4f64 isfinite(const v4f64& x);
+    v4f64::mask_type isinf(const v4f64& x);
+    v4f64::mask_type isnan(const v4f64& x);
+    v4f64::mask_type isfinite(const v4f64& x);
 
     v4f64 frexp(arg<v4f64>::type x, v4s32* e);
     // v4f64 pow2i(arg<v4s32>::type e);
@@ -546,7 +542,7 @@ cftal::v4f64 cftal::andnot(const v4f64& a, const v4f64& b)
 }
 
 inline
-cftal::vec<double, 4>
+cftal::vec<double, 4>::mask_type
 cftal::isnan(const v4f64& x)
 {
     // exponent = 0x7FF and significand !=0
@@ -555,7 +551,7 @@ cftal::isnan(const v4f64& x)
 }
 
 inline
-cftal::vec<double, 4>
+cftal::vec<double, 4>::mask_type
 cftal::isinf(const v4f64& x)
 {
     v4f64 absx(abs(x));
