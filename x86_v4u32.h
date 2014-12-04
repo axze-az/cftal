@@ -33,6 +33,14 @@ namespace cftal {
         vec(const expr<_OP<uint32_t, 4>, _L, _R>& r);
     };
 
+    template <>
+    struct mem< vec<uint32_t, 4> > {
+        static
+        vec<uint32_t, 4> load(const uint32_t* p, std::size_t n=1);
+        static
+        void store(uint32_t* p, const vec<uint32_t, 4>& v);
+    };
+    
     v4u32 max(const v4u32& a, const v4u32& b);
     v4u32 min(const v4u32& a, const v4u32& b);
  

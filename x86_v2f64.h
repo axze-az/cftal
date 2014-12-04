@@ -34,13 +34,13 @@ namespace cftal {
         vec(const expr<_OP<double, 2>, _L, _R>& r);
     };
 
-    // load from memory, fills remaining elements with the last
-    // one given
-    vec<double, 2>
-    load(const double* l, std::size_t s);
-
-    void
-    store(double* p, const vec<double, 4>& v);
+    template <>
+    struct mem< vec<double, 2> > {
+        static
+        vec<double, 2> load(const double* p, std::size_t n=1);
+        static
+        void store(double* p, const vec<double, 2>& v);
+    };
     
     vec<double, 1>
     low_half(const vec<double, 2>& s);
@@ -439,14 +439,14 @@ cftal::vec<double, 2>::vec(double v)
 inline
 cftal::vec<double, 2>::
 vec(std::initializer_list<double> l)
-    : vec(load(l.begin(), l.size()))
+    : vec(mem<vec<double,2> >::load(l.begin(), l.size()))
 {
 }
 
 inline
 cftal::vec<double, 2>::
 vec(init_list<double> l)
-    : vec(load(l.begin(), l.size()))
+    : vec(mem<vec<double,2> >::load(l.begin(), l.size()))
 {
 }
 
@@ -461,7 +461,7 @@ vec<double, 2>::vec(const expr<_OP<double, 2>, _L, _R>& r)
 
 inline
 cftal::vec<double, 2>
-cftal::load(const double* p, std::size_t s)
+cftal::mem<cftal::vec<double, 2>>::load(const double* p, std::size_t s)
 {
     __m128d v;
     switch (s) {
@@ -477,7 +477,13 @@ cftal::load(const double* p, std::size_t s)
         break;
     }
     return v;
+}
 
+inline
+void
+cftal::mem<cftal::vec<double, 2>>::store(double* p, const vec<double, 2>& v)
+{
+    _mm_storeu_pd(p, v());
 }
 
 inline

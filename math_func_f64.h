@@ -5,7 +5,7 @@
 #include <cftal/d_real.h>
 #include <cftal/std_types.h>
 #include <cftal/math_common.h>
-#include <cftal/mem_load.h>
+#include <cftal/mem.h>
 
 namespace cftal {
 
@@ -572,10 +572,14 @@ reduce_trig_arg_k(const vf_type& d)
                 struct alignas(NI*sizeof(int)) v_i {
                         int32_t _sc[NI];
                 } ti;
-                store(tf._sc, d);
-                store(ti._sc, q);
-                store(d0_l._sc, d0.l());
-                store(d0_h._sc, d0.h());
+                // store(tf._sc, d);
+                // store(ti._sc, q);
+                // store(d0_l._sc, d0.l());
+                // store(d0_h._sc, d0.h());
+                mem<vf_type>::store(tf._sc, d);
+                mem<vi_type>::store(ti._sc, q);
+                mem<vf_type>::store(d0_l._sc, d0.l());
+                mem<vf_type>::store(d0_h._sc, d0.h());
                 for (std::size_t i=0; i<N; ++i) {
                     if (std::fabs(tf._sc[i]) >= large_arg) {
                                 double y[2];
@@ -585,10 +589,10 @@ reduce_trig_arg_k(const vf_type& d)
                                 d0_h._sc[i]= y[0];
                         }
                 }
-                vf_type rh(load(d0_h._sc, N));
-                vf_type rl(load(d0_l._sc, N));
+                vf_type rh(mem<vf_type>::load(d0_h._sc, N));
+                vf_type rl(mem<vf_type>::load(d0_l._sc, N));
                 d0 = dvf_type(rh, rl);
-                q = load(ti._sc, NI); 
+                q = mem<vi_type>::load(ti._sc, NI); 
         }
         return std::make_pair(d0, q);
 }
@@ -733,9 +737,9 @@ native_reduce_trig_arg_k(const vf_type& d)
                 struct alignas(NI*sizeof(int)) v_i {
                         int32_t _sc[NI];
                 } ti;
-                store(tf._sc, d);
-                store(ti._sc, q);
-                store(d0_l._sc, d0);
+                mem<vf_type>::store(tf._sc, d);
+                mem<vi_type>::store(ti._sc, q);
+                mem<vf_type>::store(d0_l._sc, d0);
                 for (std::size_t i=0; i<N; ++i) {
                     if (std::fabs(tf._sc[i]) >= large_arg) {
                                 double y[2];
@@ -744,8 +748,8 @@ native_reduce_trig_arg_k(const vf_type& d)
                                 d0_l._sc[i]= y[1] + y[0];
                         }
                 }
-                d0 = load(d0_l._sc, N);
-                q = load(ti._sc, NI); 
+                d0 = mem<vf_type>::load(d0_l._sc, N);
+                q = mem<vi_type>::load(ti._sc, NI); 
         }
         return std::make_pair(d0, q);
 }

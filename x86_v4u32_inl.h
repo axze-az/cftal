@@ -296,14 +296,14 @@ cftal::vec<cftal::uint32_t, 4>::vec(uint32_t v)
 inline
 cftal::vec<cftal::uint32_t, 4>::
 vec(std::initializer_list<uint32_t> l)
-    : vec(load(l.begin(), l.size()))
+    : vec(mem<vec<uint32_t, 4> >::load(l.begin(), l.size()))
 {
 }
 
 inline
 cftal::vec<cftal::uint32_t, 4>::
 vec(init_list<uint32_t> l)
-    : vec(load(l.begin(), l.size()))
+    : vec(mem<vec<uint32_t, 4> >::load(l.begin(), l.size()))
 {
 }
 
@@ -318,7 +318,7 @@ vec<cftal::uint32_t, 4>::vec(const expr<_OP<uint32_t, 4>, _L, _R>& r)
 
 inline
 cftal::vec<cftal::uint32_t, 4>
-cftal::load(const uint32_t* p, std::size_t s)
+cftal::mem<cftal::vec<uint32_t, 4> >::load(const uint32_t* p, std::size_t s)
 {
     __m128i v;
     switch (s) {
@@ -344,7 +344,8 @@ cftal::load(const uint32_t* p, std::size_t s)
 
 inline
 void
-cftal::store(uint32_t* p, const vec<int32_t, 4>& v)
+cftal::mem<cftal::vec<uint32_t, 4> >::store(uint32_t* p,
+                                            const vec<uint32_t, 4>& v)
 {
     _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
 }

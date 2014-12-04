@@ -1,8 +1,9 @@
-#if !defined (__CFTAL_SIMD_VEC_H__)
-#define __CFTAL_SIMD_VEC_H__ 1
+#if !defined (__CFTAL_VEC_H__)
+#define __CFTAL_VEC_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
+#include <cftal/mem.h>
 #include <initializer_list>
 #include <type_traits>
 #include <cmath>
@@ -179,8 +180,7 @@ namespace cftal {
         static const const_u32<62> _62;
         static const const_u32<63> _63;            
     }
-    
-    
+
 
     template <typename _T>
     struct expr_traits {
@@ -347,6 +347,21 @@ namespace cftal {
            const vec<_T, 1>& on_true,
            const vec<_T, 1>& on_false);
 
+
+    template <class _T, std::size_t _N>
+    struct mem< vec<_T, _N> > {
+        static
+        vec<_T, _N> load(const _T* p, std::size_t n=_N) {
+            return vec<_T,_N>(init_list<_T>(p, p+n));
+        }
+        static
+        void store(_T* p, const vec<_T, _N>& v) {
+            mem< vec<_T, _N/2> >::write_to(p, low_half(v));
+            mem< vec<_T, _N/2> >::write_to(p+_N/2, high_half(v));
+        }
+    };
+    
+    
     namespace op {
 
         template <template <class _T,

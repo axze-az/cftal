@@ -318,7 +318,7 @@ vec<cftal::int32_t, 4>::vec(const expr<_OP<int32_t, 4>, _L, _R>& r)
 
 inline
 cftal::vec<cftal::int32_t, 4>
-cftal::load(const int32_t* p, std::size_t s)
+cftal::mem<cftal::vec<int32_t, 4> >::load(const int32_t* p, std::size_t s)
 {
     __m128i v;
     switch (s) {
@@ -344,7 +344,8 @@ cftal::load(const int32_t* p, std::size_t s)
 
 inline
 void
-cftal::store(int32_t* p, const vec<int32_t, 4>& v)
+cftal::mem<cftal::vec<int32_t, 4> >::store(int32_t* p,
+                                           const vec<int32_t, 4>& v)
 {
     _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
 }
