@@ -296,14 +296,14 @@ cftal::vec<cftal::int32_t, 4>::vec(int32_t v)
 inline
 cftal::vec<cftal::int32_t, 4>::
 vec(std::initializer_list<int32_t> l)
-    : vec(load(l.begin(), l.size()))
+    : vec(mem<v4s32>::load(l.begin(), l.size()))
 {
 }
 
 inline
 cftal::vec<cftal::int32_t, 4>::
 vec(init_list<int32_t> l)
-    : vec(load(l.begin(), l.size()))
+    : vec(mem<v4s32>::load(l.begin(), l.size()))
 {
 }
 

@@ -11,7 +11,7 @@ MINOR=1#
 SLDFLAGS:= $(SLDFLAGS) 
 #ARCH=#-march=bdver1 -mxop #-march=bdver1 #-mdispatch-scheduler
 #ARCH+=-mavx -mpopcnt #-mfma -march=k8 -mno-3dnow -mpopcnt -mfma -mavx2
-CXXFLAGS+=-I.. -march=native
+CXXFLAGS+=-I.. -march=native -mfma -mavx2
 CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 OPT+=-fno-unroll-loops
 
@@ -96,7 +96,8 @@ hackx86vec: hackx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 hackx86vec_g: hackx86vec.od lib$(LIBNAME)-g.a
 	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++ -lm
 
-x.s: x86_v4f64.s
+#x.s: hackx86vec.s x86_v4f64.s x86_v2f64.s
+x.s: x86_v2f64.s
 	c++filt < $< >$@ 
 	-$(RM) $<
 

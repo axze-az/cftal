@@ -15,7 +15,7 @@ namespace cftal {
     struct arg< vec<double, 4> > {
         using type = vec<double, 4>;
     };
-    
+
     template <>
     class vec<double, 4> : public x86::vreg<__m256d> {
     public:
@@ -36,7 +36,7 @@ namespace cftal {
         vec(init_list<double> l);
         // allow construction from two halfes
         vec(const vec<double, 2>& lh, const vec<double, 2>& hh);
-        
+
         // expression template constructor
         template <template <class _U, std::size_t _M>
                   class _OP,
@@ -51,8 +51,7 @@ namespace cftal {
         static
         void store(double* p, const vec<double, 4>& v);
     };
-    
-    
+
     vec<double, 2>
     low_half(const vec<double, 4>& s);
 
@@ -105,10 +104,12 @@ namespace cftal {
     v4f64 andnot(const v4f64& a, const v4f64& b);
     v4f64 copysign(const v4f64& x, const v4f64& y);
     v4f64 mulsign(const v4f64& x, const v4f64& y);
+#if 0
     v4f64::mask_type isinf(const v4f64& x);
     v4f64::mask_type isnan(const v4f64& x);
     v4f64::mask_type isfinite(const v4f64& x);
-
+#endif
+    
     v4f64 frexp(arg<v4f64>::type x, v4s32* e);
     // v4f64 pow2i(arg<v4s32>::type e);
     v4f64 ldexp(arg<v4f64>::type d, arg<v4s32>::type e);
@@ -144,6 +145,7 @@ namespace cftal {
 
     v4f64 pow(arg<v4f64>::type x, arg<v4f64>::type y);
 
+#if 0    
     // a*b +c
     v4f64 fma(const v4f64& a, const v4f64& b, const v4f64& c);
     // a*b -c
@@ -157,6 +159,7 @@ namespace cftal {
     v4f64 mad(const v4f64& a, const v4f64& b, const v4f64& c);
     // -(a*b) +c with rounding or not
     v4f64 nmad(const v4f64& a, const v4f64& b, const v4f64& c);
+#endif
     
     template <bool _P0, bool _P1, 
               bool _P2, bool _P3>
@@ -546,6 +549,7 @@ cftal::v4f64 cftal::andnot(const v4f64& a, const v4f64& b)
 
 }
 
+#if 0
 inline
 cftal::vec<double, 4>::mask_type
 cftal::isnan(const v4f64& x)
@@ -562,7 +566,7 @@ cftal::isinf(const v4f64& x)
     v4f64 absx(abs(x));
     return absx == v4f64(exp_f64_msk::v._f64);
 }
-
+#endif
 
 inline
 cftal::v4f64 cftal::copysign(const v4f64& x, const v4f64& y)
@@ -605,7 +609,6 @@ unsigned cftal::read_signs(const v4f64& a)
 {
     return x86::read_signs_f64(a());
 }
-
 
 inline
 cftal::v4f64 cftal::x86::round(const v4f64& a, const rounding_mode::type m)

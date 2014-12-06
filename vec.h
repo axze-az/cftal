@@ -2919,6 +2919,7 @@ cftal::operator%=(vec<_T, _N>& a,
 #endif
 #endif
 
+#include <cftal/vec_double_n.h>
 #include <cftal/x86_cvt.h>
 
 // Local variables:

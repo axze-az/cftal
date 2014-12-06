@@ -72,14 +72,6 @@ namespace cftal {
     std::pair<vec<int32_t, 4>, vec<int32_t, 4> >
     mul_lo_hi(const vec<int32_t, 4>& a, const vec<int32_t, 4>& b);
     
-    // load from memory, fills remaining elements with the last
-    // one given
-    vec<int32_t, 4>
-    load(const int32_t* l, std::size_t s);
-
-    void
-    store(int32_t* p, const vec<int32_t, 4>& v);
-
 }    
 
 // Local variables:

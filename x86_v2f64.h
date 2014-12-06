@@ -99,10 +99,12 @@ namespace cftal {
     v2f64 andnot(const v2f64& a, const v2f64& b);
     v2f64 copysign(const v2f64& x, const v2f64& y);
     v2f64 mulsign(const v2f64& x, const v2f64& y);
+#if 0
     v2f64::mask_type isinf(const v2f64& x);
     v2f64::mask_type isnan(const v2f64& x);
     v2f64::mask_type isfinite(const v2f64& x);
-
+#endif
+    
     v2f64 frexp(arg<v2f64>::type x, v4s32* e);
     // v2f64 pow2i(arg<v4s32>::type e);
     v2f64 ldexp(arg<v2f64>::type d, arg<v4s32>::type e);
@@ -138,6 +140,7 @@ namespace cftal {
 
     v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);
 
+#if 0    
     // a*b +c
     v2f64 fma(const v2f64& a, const v2f64& b, const v2f64& c);
     // a*b -c
@@ -151,6 +154,7 @@ namespace cftal {
     v2f64 mad(const v2f64& a, const v2f64& b, const v2f64& c);
     // -(a*b) +c with rounding or not
     v2f64 nmad(const v2f64& a, const v2f64& b, const v2f64& c);
+#endif
     
     template <bool _P0, bool _P1, 
               bool _P2, bool _P3>
@@ -496,6 +500,166 @@ cftal::select(const v2f64::mask_type& m,
               const v2f64& on_true, const v2f64& on_false)
 {
     return x86::select(m(), on_true(), on_false());
+}
+
+inline
+cftal::v2f64 cftal::abs(const v2f64& a)
+{
+    const v2f64 msk(not_sign_f64_msk::v._f64);
+    return _mm_and_pd(a(), msk());
+}
+
+inline
+cftal::v2f64 cftal::andnot(const v2f64& a, const v2f64& b)
+{
+    return _mm_andnot_pd(a(), b());
+
+}
+
+#if 0
+inline
+cftal::vec<double, 2>::mask_type
+cftal::isnan(const v2f64& x)
+{
+    // exponent = 0x7FF and significand !=0
+    // x != x  if x == NAN
+    return x != x;
+}
+
+inline
+cftal::vec<double, 2>::mask_type
+cftal::isinf(const v2f64& x)
+{
+    v2f64 absx(abs(x));
+    return absx == v2f64(exp_f64_msk::v._f64);
+}
+#endif
+
+inline
+cftal::v2f64 cftal::copysign(const v2f64& x, const v2f64& y)
+{
+    // return abs(x) * sgn(y)
+    const v2f64 msk(not_sign_f64_msk::v._f64);
+    v2f64 abs_x(x & msk);
+    v2f64 sgn_y(andnot(msk, y));
+    return abs_x | sgn_y;
+}
+
+inline
+cftal::v2f64 cftal::mulsign(const v2f64& x, const v2f64& y)
+{
+    const v2f64 msk(sign_f64_msk::v._f64);
+    v2f64 sgn_y = y & msk;
+    return x ^ sgn_y;
+}
+
+inline
+bool cftal::all_signs(const v2f64& a)
+{
+    return x86::all_signs_f64(a());
+}
+
+inline
+bool cftal::both_signs(const v2f64& a)
+{
+    return x86::both_signs_f64(a());
+}
+
+inline
+bool cftal::no_signs(const v2f64& a)
+{
+    return x86::no_signs_f64(a());
+}
+
+inline
+unsigned cftal::read_signs(const v2f64& a)
+{
+    return x86::read_signs_f64(a());
+}
+
+inline
+cftal::v2f64 cftal::x86::round(const v2f64& a, const rounding_mode::type m)
+{
+#if defined (__SSE4_1__)    
+    v2f64 r;
+    switch (m) {
+    case rounding_mode::nearest:
+        r= _mm_round_pd(a(), 0);
+        break;
+    case rounding_mode::downward:
+        r= _mm_round_pd(a(), 1);
+        break;
+    case rounding_mode::upward:
+        r= _mm_round_pd(a(), 2);
+        break;
+    case rounding_mode::towardzero:
+        r= _mm_round_pd(a(), 3);
+        break;
+    case rounding_mode::current:
+        r= _mm_round_pd(a(), 4);
+        break;
+    }
+    return r;
+#else
+    uint32_t mxcsr=0;
+    uint32_t rmxcsr=0;
+    if (m != rounding_mode::current) {
+        mxcsr = _mm_getcsr();
+        rmxcsr= mxcsr;
+        rmxcsr &= ~(3<<13);
+        switch (m) {
+        case rounding_mode::nearest: //0
+            break;
+        case rounding_mode::downward:
+            rmxcsr |= (1<<13);
+            break;
+        case rounding_mode::upward:
+            rmxcsr |= (2<<13);
+            break;
+        case rounding_mode::towardzero:
+            rmxcsr |= (3<<13);
+            break;
+        default:
+            break; // keep the compiler happy
+        }
+        if (unlikely(mxcsr != rmxcsr))
+            _mm_setcsr(rmxcsr);
+    }
+    const v2f64 sgn_msk(sign_f64_msk::v._f64);
+    // (1023+52)<<(52-32) 0x43300000 = 2^52
+    const v2f64 magic(const_u64<0, 0x43300000>::v._f64);
+    __m128d sign = _mm_and_pd(a(), sgn_msk());
+    __m128d sign_magic = _mm_or_pd(magic(), sign);
+    __m128d res = _mm_add_pd(a(), sign_magic);
+    res = _mm_sub_pd(res, sign_magic);
+    if (unlikely(mxcsr != rmxcsr))
+        _mm_setcsr(mxcsr);
+    return res;
+#endif
+}
+
+inline
+cftal::v2f64 cftal::rint(const v2f64& a)
+{
+    return x86::round(a, x86::rounding_mode::nearest);
+}
+
+inline
+cftal::v2f64 cftal::floor(const v2f64& a)
+{
+    return x86::round(a, x86::rounding_mode::downward);
+}
+
+inline
+cftal::v2f64 cftal::ceil(const v2f64& a)
+{
+    return x86::round(a, x86::rounding_mode::upward);
+}
+
+inline
+cftal::v2f64 cftal::trunc(const v2f64& a)
+{
+    return x86::round(a, x86::rounding_mode::towardzero);
 }
 
 

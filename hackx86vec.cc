@@ -40,6 +40,31 @@ double make_double(unsigned sgn, unsigned exp, uint64_t sig)
 //namespace vec=x86vec;
 //namespace vec=emuvec;
 
+cftal::v4f64::mask_type
+test_inf(cftal::v4f64 a)
+{
+    return isinf(a);
+}
+
+cftal::v2f64::mask_type
+test_inf(cftal::v2f64 a)
+{
+    return isinf(a);
+}
+
+cftal::v4f64::mask_type
+test_nan(cftal::v4f64 a)
+{
+    return isinf(a);
+}
+
+cftal::v2f64::mask_type
+test_nan(cftal::v2f64 a)
+{
+    return isinf(a);
+}
+
+
 // v4f64 compile tests
 cftal::v4f64 test1a(cftal::v4f64 a, cftal::v4f64 b, cftal::v4f64 c)
 {
