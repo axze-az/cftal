@@ -58,6 +58,10 @@ namespace cftal {
     vec<double, 2>
     high_half(const vec<double, 4>& s);
 
+    template <std::size_t _I>
+    double
+    extract(const vec<double, 4>& s);
+    
     vec<double, 4>
     select(const typename vec<double, 4>::mask_type& msk,
            const vec<double, 4>& on_true,
@@ -75,6 +79,9 @@ namespace cftal {
     unsigned
     read_signs(const vec<double, 4>& b);
 
+    bool
+    elements_equal(const vec<double, 4>& v);
+    
     vec<double, 4>
     sqrt(const vec<double, 4>& v);
 
@@ -525,6 +532,13 @@ cftal::high_half(const cftal::vec<double, 4>& v)
     return _mm256_extractf128_pd(v(), 1);
 }
 
+template <std::size_t _I>
+double
+cftal::extract(const vec<double, 4>& v)
+{
+    return x86::extract_f64<_I>(v());
+}
+
 inline
 cftal::v4f64 cftal::select(const v4f64::mask_type& m,
                            const v4f64& on_true,
@@ -675,6 +689,15 @@ inline
 unsigned cftal::read_signs(const v4f64& a)
 {
     return x86::read_signs_f64(a());
+}
+
+inline
+bool cftal::elements_equal(const v4f64& a)
+{
+    double t0= extract<0>(a);
+    v4f64 cmp0(t0);
+    v4f64::mask_type rv(cmp0 == a);
+    return all_signs(rv);
 }
 
 inline

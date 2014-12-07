@@ -292,9 +292,8 @@ namespace cftal {
     const typename vec<_T, _N>::half_type&
     high_half(const vec<_T, _N>& v);
 
-    template <typename _T, std::size_t _N>
-    vec<_T, _N>
-    load(const _T* p, std::size_t n);
+    template <std::size_t _I, typename _T, std::size_t _N>
+    _T extract(const vec<_T, _N>& v);
     
     template <typename _T, std::size_t _N>
     vec<_T, _N>
@@ -318,7 +317,10 @@ namespace cftal {
     template<typename _T, std::size_t _N>
     bool
     all_signs(const vec<_T, _N>& v);
-    
+
+    template <typename _T, std::size_t _N>
+    bool
+    elements_equal(const vec<_T, _N>& v);
 
 #define DECL_CMP_OPS(op)                                        \
     template <typename _T, std::size_t _N>                      \
@@ -1571,6 +1573,21 @@ cftal::high_half(const vec<_T, _N>& v)
     return v.hh();
 }
 
+template <std::size_t _I, class _T, std::size_t _N>
+inline
+_T
+cftal::extract(const vec<_T, _N>& v)
+{
+    static_assert(_I < _N, "invalid offset in extract()");
+    _T r;
+    if (_I < _N/2) {
+        r = extract<_I>(low_half(v));
+    } else {
+        r = extract<_I-_N/2>(high_half(v));
+    }
+    return r;
+}
+
 template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>
@@ -1582,6 +1599,21 @@ cftal::select(const typename vec<_T, _N>::mask_type& m,
         select(low_half(m), low_half(on_true), low_half(on_false)),
         select(high_half(m), high_half(on_true), high_half(on_false)));
     return res;
+}
+
+template <class _T, std::size_t _N>
+bool
+cftal::elements_equal(const vec<_T, _N>& v)
+{
+    bool r=false;
+    if (_N > 2) {
+        bool lh= elements_equal(low_half(v));
+        bool hh= elements_equal(high_half(v));
+        r = lh && hh;
+    } else {
+        r = extract<0>(v) == extract<1>(v);
+    }
+    return r;
 }
 
 

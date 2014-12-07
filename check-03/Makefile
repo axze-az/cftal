@@ -12,9 +12,9 @@ SLDFLAGS:= $(SLDFLAGS) -L../sysio -lsysio++ -L../thread -lthread++
 CXXFLAGS+=-I. -I.. -I../.. -I../stlex -I../thread  -I../sysio -march=native
 CSRCS=$(wildcard ./x86vec_test_*.cc ./bitops_test.cc d_int8_test.cc)
 
-all: testx86vec-03 testemuvec-03
+all: testx86vec-03 #testemuvec-03
 
-debug: testx86vec-03-g testemuvec-03
+debug: testx86vec-03-g #testemuvec-03
 
 lib: lib$(LIBNAME).a 
 

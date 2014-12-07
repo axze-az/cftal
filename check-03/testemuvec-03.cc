@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <emuvec.h>
+// #include <emuvec.h>
 // #include <emuvec_test.h>
 #include <bitops.h>
 #include <unistd.h>
