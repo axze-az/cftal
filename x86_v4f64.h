@@ -4,7 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec.h>
-#include <cftal/x86_perm.h> 
+#include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
 #include <cftal/x86_v2f64.h>
 #include <cftal/x86_ops_1.h>
@@ -58,7 +58,7 @@ namespace cftal {
     vec<double, 2>
     high_half(const vec<double, 4>& s);
 
-    vec<double, 4> 
+    vec<double, 4>
     select(const typename vec<double, 4>::mask_type& msk,
            const vec<double, 4>& on_true,
            const vec<double, 4>& on_false);
@@ -74,7 +74,7 @@ namespace cftal {
 
     unsigned
     read_signs(const vec<double, 4>& b);
-    
+
     vec<double, 4>
     sqrt(const vec<double, 4>& v);
 
@@ -88,14 +88,14 @@ namespace cftal {
     v4f64 sqrt(const v4f64& a);
     v4f64 cbrt(arg<v4f64>::type a);
     v4f64 hypot(const v4f64& a, const v4f64& b);
-    
+
     v4f64 rsqrt(const v4f64& a);
     v4f64 native_rsqrt(const v4f64& a);
 
     namespace x86 {
         v4f64 round(const v4f64& v, rounding_mode::type m);
     }
-    
+
     v4f64 rint(const v4f64& a);
     v4f64 floor(const v4f64& a);
     v4f64 ceil(const v4f64& a);
@@ -109,7 +109,7 @@ namespace cftal {
     v4f64::mask_type isnan(const v4f64& x);
     v4f64::mask_type isfinite(const v4f64& x);
 #endif
-    
+
     v4f64 frexp(arg<v4f64>::type x, v4s32* e);
     // v4f64 pow2i(arg<v4s32>::type e);
     v4f64 ldexp(arg<v4f64>::type d, arg<v4s32>::type e);
@@ -132,7 +132,7 @@ namespace cftal {
     v4f64 tan(arg<v4f64>::type d);
     v4f64 cot(arg<v4f64>::type d);
     v4f64 atan2(arg<v4f64>::type x, arg<v4f64>::type y);
-        
+
     void native_sincos(arg<v4f64>::type d, v4f64* psin, v4f64* pcos);
     v4f64 native_exp(arg<v4f64>::type d);
     v4f64 native_log(arg<v4f64>::type d);
@@ -145,7 +145,6 @@ namespace cftal {
 
     v4f64 pow(arg<v4f64>::type x, arg<v4f64>::type y);
 
-#if 0    
     // a*b +c
     v4f64 fma(const v4f64& a, const v4f64& b, const v4f64& c);
     // a*b -c
@@ -154,28 +153,27 @@ namespace cftal {
     v4f64 nfma(const v4f64& a, const v4f64& b, const v4f64& c);
     // -(a*b) - c
     v4f64 nfms(const v4f64& a, const v4f64& b, const v4f64& c);
-    
+
     // a*b +c with rounding or not
     v4f64 mad(const v4f64& a, const v4f64& b, const v4f64& c);
     // -(a*b) +c with rounding or not
     v4f64 nmad(const v4f64& a, const v4f64& b, const v4f64& c);
-#endif
-    
-    template <bool _P0, bool _P1, 
+
+    template <bool _P0, bool _P1,
               bool _P2, bool _P3>
-    vec<double, 4> 
+    vec<double, 4>
     select(const vec<double, 4>& on_true,
            const vec<double, 4>& on_false);
 
     template <int32_t _P0, int32_t _P1,
               int32_t _P2, int32_t _P3>
-    vec<double, 4> 
+    vec<double, 4>
     permute(const vec<double, 4>& s);
 
     template <int32_t _P0, int32_t _P1,
               int32_t _P2, int32_t _P3>
-    vec<double, 4> 
-    permute(const vec<double, 4>& s0, 
+    vec<double, 4>
+    permute(const vec<double, 4>& s0,
             const vec<double, 4>& s1);
 
     namespace op {
@@ -186,13 +184,13 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                constexpr bytes8 all_one{-1, -1};
-                full_type all_set(all_one._f64);
+                constexpr const bytes8 all_one{-1, -1};
+                const full_type all_set(all_one._f64);
                 return _mm256_xor_pd(a(), all_set());
             }
         };
 
-        
+
         template <>
         struct lt<double, 4> {
             using full_type = vec<double, 4>;
@@ -275,7 +273,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const bytes8 all_one{-1, -1};
+                constexpr const bytes8 all_one{-1, -1};
                 const full_type all_set(all_one._f64);
                 return _mm256_xor_pd(a(), all_set());
             }
@@ -340,7 +338,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__) 
+#if defined (__FMA4__)
                 return _mm256_macc_pd(a(), b(), c());
 #elif defined (__FMA__)
                 return _mm256_fmadd_pd(a(), b(), c());
@@ -358,11 +356,11 @@ namespace cftal {
             v(const full_type& a, const full_type& b,
               const full_type& c) {
 #if defined (__FMA4__)
-        return _mm256_msub_pd(a(), b(), c());
+                return _mm256_msub_pd(a(), b(), c());
 #elif defined (__FMA__)
-        return _mm256_fmsub_pd(a(), b(), c());
+                return _mm256_fmsub_pd(a(), b(), c());
 #else
-        return _mm256_sub_pd(_mm256_mul_pd(a(), b()), c());
+                return _mm256_sub_pd(_mm256_mul_pd(a(), b()), c());
 #endif
             }
         };
@@ -383,7 +381,7 @@ namespace cftal {
 #endif
             }
         };
-        
+
         template <>
         struct bit_or<double, 4> {
             using full_type = vec<double, 4>;
@@ -482,7 +480,7 @@ vec<double, 4>::vec(const expr<_OP<double, 4>, _L, _R>& r)
 
 inline
 cftal::vec<double, 4>
-cftal::mem<cftal::vec<double, 4>>::load(const double* p, std::size_t s)
+cftal::mem<cftal::vec<double, 4> >::load(const double* p, std::size_t s)
 {
     __m256d v;
     switch (s) {
@@ -546,7 +544,76 @@ inline
 cftal::v4f64 cftal::andnot(const v4f64& a, const v4f64& b)
 {
     return _mm256_andnot_pd(a(), b());
+}
 
+inline
+cftal::v4f64
+cftal::fma(const v4f64& a, const v4f64& b, const v4f64& c)
+{
+#if defined (__FMA4__)
+    return _mm256_macc_pd(a(), b(), c());
+#elif defined (__FMA__)
+    return _mm256_fmadd_pd(a(), b(), c());
+#else
+    // return impl::fma(a, b, c);
+    return a * b + c;
+#endif
+}
+
+inline
+cftal::v4f64
+cftal::fms(const v4f64& a, const v4f64& b, const v4f64& c)
+{
+#if defined (__FMA4__)
+    return _mm256_msub_pd(a(), b(), c());
+#elif defined (__FMA__)
+    return _mm256_fmsub_pd(a(), b(), c());
+#else
+    // return impl::fma(a, b, -c);
+    return a * b - c;
+#endif
+}
+
+inline
+cftal::v4f64
+cftal::nfma(const v4f64& a, const v4f64& b, const v4f64& c)
+{
+#if defined (__FMA4__)
+    return _mm256_nmacc_pd(a(), b(), c());
+#elif defined (__FMA__)
+    return _mm256_fnmadd_pd(a(), b(), c());
+#else
+    // return impl::fma(-a, b, c);
+    return c - a*b;
+#endif
+}
+
+inline
+cftal::v4f64
+cftal::nfms(const v4f64& a, const v4f64& b, const v4f64& c)
+{
+#if defined (__FMA4__)
+    return _mm256_nmsub_pd(a(), b(), c());
+#elif defined (__FMA__)
+    return _mm256_fnmsub_pd(a(), b(), c());
+#else
+    // return impl::fma(-a, b, -c);
+    return -(a*b) - c;
+#endif
+}
+
+inline
+cftal::v4f64
+cftal::mad(const v4f64& a, const v4f64& b, const v4f64& c)
+{
+    return a * b + c;
+}
+
+inline
+cftal::v4f64
+cftal::nmad(const v4f64& a, const v4f64& b, const v4f64& c)
+{
+    return c -(a * b);
 }
 
 #if 0

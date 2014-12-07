@@ -3,7 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-#include <cftal/x86_perm.h> 
+#include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
 
 
@@ -46,14 +46,14 @@ namespace cftal {
         static
         void store(double* p, const vec<double, 2>& v);
     };
-    
+
     vec<double, 1>
     low_half(const vec<double, 2>& s);
 
     vec<double, 1>
     high_half(const vec<double, 2>& s);
 
-    vec<double, 2> 
+    vec<double, 2>
     select(const typename vec<double, 2>::mask_type& msk,
            const vec<double, 2>& on_true,
            const vec<double, 2>& on_false);
@@ -69,7 +69,7 @@ namespace cftal {
 
     unsigned
     read_signs(const vec<double, 2>& b);
-    
+
     vec<double, 2>
     sqrt(const vec<double, 2>& v);
 
@@ -83,14 +83,14 @@ namespace cftal {
     v2f64 sqrt(const v2f64& a);
     v2f64 cbrt(arg<v2f64>::type a);
     v2f64 hypot(const v2f64& a, const v2f64& b);
-    
+
     v2f64 rsqrt(const v2f64& a);
     v2f64 native_rsqrt(const v2f64& a);
 
     namespace x86 {
         v2f64 round(const v2f64& v, rounding_mode::type m);
     }
-    
+
     v2f64 rint(const v2f64& a);
     v2f64 floor(const v2f64& a);
     v2f64 ceil(const v2f64& a);
@@ -99,12 +99,7 @@ namespace cftal {
     v2f64 andnot(const v2f64& a, const v2f64& b);
     v2f64 copysign(const v2f64& x, const v2f64& y);
     v2f64 mulsign(const v2f64& x, const v2f64& y);
-#if 0
-    v2f64::mask_type isinf(const v2f64& x);
-    v2f64::mask_type isnan(const v2f64& x);
-    v2f64::mask_type isfinite(const v2f64& x);
-#endif
-    
+
     v2f64 frexp(arg<v2f64>::type x, v4s32* e);
     // v2f64 pow2i(arg<v4s32>::type e);
     v2f64 ldexp(arg<v2f64>::type d, arg<v4s32>::type e);
@@ -127,7 +122,7 @@ namespace cftal {
     v2f64 tan(arg<v2f64>::type d);
     v2f64 cot(arg<v2f64>::type d);
     v2f64 atan2(arg<v2f64>::type x, arg<v2f64>::type y);
-        
+
     void native_sincos(arg<v2f64>::type d, v2f64* psin, v2f64* pcos);
     v2f64 native_exp(arg<v2f64>::type d);
     v2f64 native_log(arg<v2f64>::type d);
@@ -140,7 +135,6 @@ namespace cftal {
 
     v2f64 pow(arg<v2f64>::type x, arg<v2f64>::type y);
 
-#if 0    
     // a*b +c
     v2f64 fma(const v2f64& a, const v2f64& b, const v2f64& c);
     // a*b -c
@@ -149,28 +143,27 @@ namespace cftal {
     v2f64 nfma(const v2f64& a, const v2f64& b, const v2f64& c);
     // -(a*b) - c
     v2f64 nfms(const v2f64& a, const v2f64& b, const v2f64& c);
-    
+
     // a*b +c with rounding or not
     v2f64 mad(const v2f64& a, const v2f64& b, const v2f64& c);
     // -(a*b) +c with rounding or not
     v2f64 nmad(const v2f64& a, const v2f64& b, const v2f64& c);
-#endif
-    
-    template <bool _P0, bool _P1, 
+
+    template <bool _P0, bool _P1,
               bool _P2, bool _P3>
-    vec<double, 2> 
+    vec<double, 2>
     select(const vec<double, 2>& on_true,
            const vec<double, 2>& on_false);
 
     template <int32_t _P0, int32_t _P1,
               int32_t _P2, int32_t _P3>
-    vec<double, 2> 
+    vec<double, 2>
     permute(const vec<double, 2>& s);
 
     template <int32_t _P0, int32_t _P1,
               int32_t _P2, int32_t _P3>
-    vec<double, 2> 
-    permute(const vec<double, 2>& s0, 
+    vec<double, 2>
+    permute(const vec<double, 2>& s0,
             const vec<double, 2>& s1);
 
     namespace op {
@@ -187,7 +180,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <>
         struct lt<double, 2> {
             using full_type = vec<double, 2>;
@@ -335,7 +328,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__) 
+#if defined (__FMA4__)
                 return _mm_macc_pd(a(), b(), c());
 #elif defined (__FMA__)
                 return _mm_fmadd_pd(a(), b(), c());
@@ -378,7 +371,7 @@ namespace cftal {
 #endif
             }
         };
-        
+
         template <>
         struct bit_or<double, 2> {
             using full_type = vec<double, 2>;
@@ -516,24 +509,75 @@ cftal::v2f64 cftal::andnot(const v2f64& a, const v2f64& b)
 
 }
 
-#if 0
 inline
-cftal::vec<double, 2>::mask_type
-cftal::isnan(const v2f64& x)
+cftal::v2f64
+cftal::fma(const v2f64& a, const v2f64& b, const v2f64& c)
 {
-    // exponent = 0x7FF and significand !=0
-    // x != x  if x == NAN
-    return x != x;
+#if defined (__FMA4__)
+    return _mm_macc_pd(a(), b(), c());
+#elif defined (__FMA__)
+    return _mm_fmadd_pd(a(), b(), c());
+#else
+    // return impl::fma(a, b, c);
+    return a * b + c;
+#endif
 }
 
 inline
-cftal::vec<double, 2>::mask_type
-cftal::isinf(const v2f64& x)
+cftal::v2f64
+cftal::fms(const v2f64& a, const v2f64& b, const v2f64& c)
 {
-    v2f64 absx(abs(x));
-    return absx == v2f64(exp_f64_msk::v._f64);
-}
+#if defined (__FMA4__)
+    return _mm_msub_pd(a(), b(), c());
+#elif defined (__FMA__)
+    return _mm_fmsub_pd(a(), b(), c());
+#else
+    // return impl::fma(a, b, -c);
+    return a * b - c;
 #endif
+}
+
+inline
+cftal::v2f64
+cftal::nfma(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+#if defined (__FMA4__)
+    return _mm_nmacc_pd(a(), b(), c());
+#elif defined (__FMA__)
+    return _mm_fnmadd_pd(a(), b(), c());
+#else
+    // return impl::fma(-a, b, c);
+    return c - a*b;
+#endif
+}
+
+inline
+cftal::v2f64
+cftal::nfms(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+#if defined (__FMA4__)
+    return _mm_nmsub_pd(a(), b(), c());
+#elif defined (__FMA__)
+    return _mm_fnmsub_pd(a(), b(), c());
+#else
+    // return impl::fma(-a, b, -c);
+    return -(a*b) - c;
+#endif
+}
+
+inline
+cftal::v2f64
+cftal::mad(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+    return a * b + c;
+}
+
+inline
+cftal::v2f64
+cftal::nmad(const v2f64& a, const v2f64& b, const v2f64& c)
+{
+    return c -(a * b);
+}
 
 inline
 cftal::v2f64 cftal::copysign(const v2f64& x, const v2f64& y)
@@ -580,7 +624,7 @@ unsigned cftal::read_signs(const v2f64& a)
 inline
 cftal::v2f64 cftal::x86::round(const v2f64& a, const rounding_mode::type m)
 {
-#if defined (__SSE4_1__)    
+#if defined (__SSE4_1__)
     v2f64 r;
     switch (m) {
     case rounding_mode::nearest:

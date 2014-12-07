@@ -2876,6 +2876,7 @@ cftal::operator%=(vec<_T, _N>& a,
 }
 
 #include <cftal/vec_t_1.h>
+#include <cftal/vec_double_n.h>
 
 // include vector specializations
 #if defined (__SSE__)
@@ -2919,7 +2920,6 @@ cftal::operator%=(vec<_T, _N>& a,
 #endif
 #endif
 
-#include <cftal/vec_double_n.h>
 #include <cftal/x86_cvt.h>
 
 // Local variables:
