@@ -38,82 +38,34 @@ namespace cftal {
         }
     };
 
-    
-#if 0
-    template <>
-    struct d_real_traits<v4f32> : public has_fma<float> {
-        constexpr d_real_traits<v4f32>() = default;
-        // result of a comparison operator
-        typedef v4f32 cmp_result_type;
-        static bool any(const cmp_result_type& b) {
+    template <std::size_t _N>
+    struct d_real_traits<vec<float, _N> > : public has_fma<float> {
+        using cmp_result_type = typename vec<float, _N>::mask_type;
+
+        static
+        bool any(const cmp_result_type& b) {
             return !no_signs(b);
         }
 
-        static v4f32 sel(const cmp_result_type& s,
-                         const v4f32& on_true,
-                         const v4f32& on_false) {
+        static
+        vec<float, _N>
+        sel (const cmp_result_type& s,
+             const vec<float, _N>& on_true,
+             const vec<float, _N>& on_false) {
             return select(s, on_true, on_false);
         }
 
         static
-        void split(const v4f32& a,
-                   v4f32& h,
-                   v4f32& l) {
-            const v4f32 msk=
-                const_v4u32<0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U>::fv();
+        void
+        split(const vec<float, _N> & a,
+              vec<float, _N>& h,
+              vec<float, _N>& l) {
+            const vec<float, _N> msk(
+                const_u32<0xfffff000U>::v._f32);
             h = a & msk;
             l = a - h;
         }
     };
-#endif
-
-
-#if 0
-    template <>
-    struct d_real_traits<v8f32> : public has_fma<float> {
-        constexpr d_real_traits<v8f32>() = default;
-        // result of a comparison operator
-        typedef v8f32 cmp_result_type;
-        static bool any(const cmp_result_type& b) {
-            return !no_signs(b);
-        }
-
-        static v8f32 sel(const cmp_result_type& s,
-                         const v8f32& on_true,
-                         const v8f32& on_false) {
-            return select(s, on_true, on_false);
-        }
-
-        static
-        void split(const v8f32& a,
-                   v8f32& h,
-                   v8f32& l) {
-#if defined (__AVX__)
-            const v8f32 msk=
-                const_v8u32<0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U>::fv();
-#else
-            const v4f32 lm=
-                const_v4u32<0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U,
-                            0xfffff000U>::fv();
-            const v8f32 msk(lm, lm);
-#endif
-            h = a & msk;
-            l = a - h;
-        }
-    };
-#endif
 
     namespace math {
 
