@@ -9,33 +9,36 @@
 namespace cftal {
 
 
-    template <>
-    struct d_real_traits<v2f64> : public has_fma<double> {
-        constexpr d_real_traits<v2f64>() = default;
-        // result of a comparison operator
-        typedef v2f64 cmp_result_type;
-        static bool any(const cmp_result_type& b) {
+    template <std::size_t _N>
+    struct d_real_traits<vec<double, _N> > : public has_fma<double> {
+        using cmp_result_type = typename vec<double, _N>::mask_type;
+
+        static
+        bool any(const cmp_result_type& b) {
             return !no_signs(b);
         }
 
-        static v2f64 sel(const cmp_result_type& s,
-                         const v2f64& on_true,
-                         const v2f64& on_false) {
+        static
+        vec<double, _N>
+        sel (const cmp_result_type& s,
+             const vec<double, _N>& on_true,
+             const vec<double, _N>& on_false) {
             return select(s, on_true, on_false);
         }
 
         static
-        void split(const v2f64& a,
-                   v2f64& h,
-                   v2f64& l) {
-            const v2f64 msk=
-                x86::const_v4u32<0xf8000000U, 0xffffffffU,
-                                 0xf8000000U, 0xffffffffU>::dv();
+        void
+        split(const vec<double, _N> & a,
+              vec<double, _N>& h,
+              vec<double, _N>& l) {
+            const vec<double, _N> msk(
+                const_u64<0xf8000000U, 0xffffffffU>::v._f64);
             h = a & msk;
             l = a - h;
         }
     };
 
+    
 #if 0
     template <>
     struct d_real_traits<v4f32> : public has_fma<float> {
@@ -67,50 +70,6 @@ namespace cftal {
     };
 #endif
 
-#if defined (__AVX__)    
-    template <>
-    struct d_real_traits<v4f64> : public has_fma<double> {
-        constexpr d_real_traits<v4f64>() = default;
-        // result of a comparison operator
-        using cmp_result_type= typename v4f64::mask_type;
-        static bool any(const cmp_result_type& b) {
-            return !no_signs(b);
-        }
-
-        static v4f64 sel(const cmp_result_type& s,
-                         const v4f64& on_true,
-                         const v4f64& on_false) {
-            return select(s, on_true, on_false);
-        }
-
-        static
-        void split(const v4f64& a,
-                   v4f64& h,
-                   v4f64& l) {
-#if !defined (__AVX__)
-            const v2f64 msk_half=
-                x86::const_v4u32<0xf8000000U,
-                                 0xffffffffU,
-                                 0xf8000000U,
-                                 0xffffffffU>::dv();
-            const v4f64 msk(msk_half, msk_half);
-#else
-            const v4f64 msk=
-                x86::const_v8u32<0xf8000000U,
-                                 0xffffffffU,
-                                 0xf8000000U,
-                                 0xffffffffU,
-                                 0xf8000000U,
-                                 0xffffffffU,
-                                 0xf8000000U,
-                                 0xffffffffU>::dv();
-#endif
-            h = a & msk;
-            l = a - h;
-        }
-    };
-
-#endif    
 
 #if 0
     template <>
