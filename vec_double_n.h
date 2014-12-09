@@ -11,7 +11,19 @@ namespace cftal {
     template <std::size_t _N>
     vec<double, _N>
     abs(const vec<double, _N>& v);
-    
+
+    // return a*b +c with or without fma
+    template <std::size_t _N>
+    vec<double, _N>
+    mad(const vec<double, _N>& a, const vec<double, _N>& b,
+        const vec<double, _N>& c);
+
+    // return -(a*b) +c = c - a * b with or without fma
+    template <std::size_t _N>
+    vec<double, _N>
+    nmad(const vec<double, _N>& a, const vec<double, _N>& b,
+         const vec<double, _N>& c);
+        
     template <std::size_t _N>
     typename vec<double, _N>::mask_type
     isinf(const vec<double, _N>& v);
@@ -30,11 +42,30 @@ namespace cftal {
 }
 
 template <std::size_t _N>
+inline
 cftal::vec<double, _N>
 cftal::abs(const vec<double, _N>& v)
 {
     const vec<double, _N> msk(not_sign_f64_msk::v._f64);
     return v & msk;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::mad(const vec<double, _N>& a, const vec<double, _N>& b,
+           const vec<double, _N>& c)
+{
+    return a * b + c;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::nmad(const vec<double, _N>& a, const vec<double, _N>& b,
+            const vec<double, _N>& c)
+{
+    return c - a * b;
 }
 
 template <std::size_t _N>

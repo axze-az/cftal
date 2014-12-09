@@ -161,11 +161,13 @@ namespace cftal {
     // -(a*b) - c
     v4f64 nfms(const v4f64& a, const v4f64& b, const v4f64& c);
 
+#if 0    
     // a*b +c with rounding or not
     v4f64 mad(const v4f64& a, const v4f64& b, const v4f64& c);
     // -(a*b) +c with rounding or not
     v4f64 nmad(const v4f64& a, const v4f64& b, const v4f64& c);
-
+#endif
+    
     template <bool _P0, bool _P1,
               bool _P2, bool _P3>
     vec<double, 4>
@@ -616,6 +618,7 @@ cftal::nfms(const v4f64& a, const v4f64& b, const v4f64& c)
 #endif
 }
 
+#if 0
 inline
 cftal::v4f64
 cftal::mad(const v4f64& a, const v4f64& b, const v4f64& c)
@@ -630,7 +633,6 @@ cftal::nmad(const v4f64& a, const v4f64& b, const v4f64& c)
     return c -(a * b);
 }
 
-#if 0
 inline
 cftal::vec<double, 4>::mask_type
 cftal::isnan(const v4f64& x)

@@ -55,13 +55,13 @@ test_inf(cftal::v2f64 a)
 cftal::v4f64::mask_type
 test_nan(cftal::v4f64 a)
 {
-    return isinf(a);
+    return isnan(a);
 }
 
 cftal::v2f64::mask_type
 test_nan(cftal::v2f64 a)
 {
-    return isinf(a);
+    return isnan(a);
 }
 
 
