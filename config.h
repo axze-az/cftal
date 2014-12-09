@@ -14,6 +14,9 @@
 #endif
 #endif
 
+#if defined (IN_KDEVELOP_PARSER)
+#define alignas(X)
+#endif
 
 #if defined (_MSC_VER)
 #define thread_local __declspec(thread)

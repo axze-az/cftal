@@ -3,16 +3,13 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
+#include <cftal/vec.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
 
 
 namespace cftal {
 
-    template <>
-    struct arg< vec<double, 2> > {
-        using type = vec<double, 2>;
-    };
 
     template <>
     class vec<double, 2> : public x86::vreg<__m128d> {
@@ -23,7 +20,7 @@ namespace cftal {
         using mask_value_type = double;
         using mask_type= vec<mask_value_type, 2>;
 
-        using base_type::base_type;
+        using x86::vreg<__m128d>::vreg;;
         vec() = default;
         // create vec{v,v,v,v}
         vec(double v);
@@ -40,9 +37,14 @@ namespace cftal {
     };
 
     template <>
+    struct arg< vec<double, 2> > {
+        using type = vec<double, 2>;
+    };
+
+    template <>
     struct mem< vec<double, 2> > {
         static
-        vec<double, 2> load(const double* p, std::size_t n=1);
+        vec<double, 2> load(const double* p, std::size_t n=2);
         static
         void store(double* p, const vec<double, 2>& v);
     };

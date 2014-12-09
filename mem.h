@@ -2,17 +2,18 @@
 #define __CFTAL_MEM_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/types.h>
 
 namespace cftal {
     
     template <class _T>
     struct mem {
         static
-        _T read_from(const _T* p) {
+        _T load(const _T* p, std::size_t s = 1) {
             return *p;
         }
         static
-        void write_to(_T* p, const _T& v) {
+        void store(_T* p, const _T& v) {
             *p = v;
         }
     };

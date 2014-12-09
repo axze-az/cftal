@@ -363,8 +363,8 @@ namespace cftal {
         }
         static
         void store(_T* p, const vec<_T, _N>& v) {
-            mem< vec<_T, _N/2> >::write_to(p, low_half(v));
-            mem< vec<_T, _N/2> >::write_to(p+_N/2, high_half(v));
+            mem< vec<_T, _N/2> >::store(p, low_half(v));
+            mem< vec<_T, _N/2> >::store(p+_N/2, high_half(v));
         }
     };
     
