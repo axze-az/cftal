@@ -9,6 +9,10 @@
 namespace cftal {
 
     template <std::size_t _N>
+    vec<double, _N>
+    abs(const vec<double, _N>& v);
+    
+    template <std::size_t _N>
     typename vec<double, _N>::mask_type
     isinf(const vec<double, _N>& v);
 
@@ -22,8 +26,15 @@ namespace cftal {
 
     namespace impl {
         // TODO: fma implementations
-    }
-  
+    }  
+}
+
+template <std::size_t _N>
+cftal::vec<double, _N>
+cftal::abs(const vec<double, _N>& v)
+{
+    const vec<double, _N> msk(not_sign_f64_msk::v._f64);
+    return v & msk;
 }
 
 template <std::size_t _N>
@@ -51,7 +62,7 @@ inline
 typename cftal::vec<double, _N>::mask_type
 cftal::isfinite(const vec<double, _N>& x)
 {
-        return ~(isinf(x) | isnan(x));
+    return ~(isinf(x) | isnan(x));
 }
 
 
