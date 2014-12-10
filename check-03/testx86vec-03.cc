@@ -62,7 +62,7 @@ namespace cftal {
 template <typename _T>
 _T cftal::test::abs_error(const _T& a, const _T& b)
 {
-    return abs(a-b);
+    return abs(_T(a-b));
 }
 
 template <class _T>

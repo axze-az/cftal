@@ -23,7 +23,72 @@ namespace cftal {
     vec<double, _N>
     nmad(const vec<double, _N>& a, const vec<double, _N>& b,
          const vec<double, _N>& c);
-        
+
+    template <std::size_t _N>
+    vec<double, _N>
+    sin(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    native_sin(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    cos(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    native_cos(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    tan(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    native_tan(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    exp(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    native_exp(const vec<double, _N>& v); 
+
+    template <std::size_t _N>
+    vec<double, _N>
+    expm1(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    native_expm1(const vec<double, _N>& v); 
+
+    template <std::size_t _N>
+    vec<double, _N>
+    log(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    native_log(const vec<double, _N>& v); 
+
+    template <std::size_t _N>
+    vec<double, _N>
+    sinh(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    cosh(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    pow(const vec<double, _N>& x, const vec<double, _N>& y);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    atan2(const vec<double, _N>& x, const vec<double, _N>& y);
+
+    
     template <std::size_t _N>
     typename vec<double, _N>::mask_type
     isinf(const vec<double, _N>& v);
@@ -67,6 +132,153 @@ cftal::nmad(const vec<double, _N>& a, const vec<double, _N>& b,
 {
     return c - a * b;
 }
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::sin(const vec<double, _N>& v)
+{
+    vec<double, _N> r(sin(low_half(v)), sin(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native_sin(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_sin(low_half(v)), native_sin(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::cos(const vec<double, _N>& v)
+{
+    vec<double, _N> r(cos(low_half(v)), cos(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native_cos(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_cos(low_half(v)), native_cos(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::tan(const vec<double, _N>& v)
+{
+    vec<double, _N> r(tan(low_half(v)), tan(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native_tan(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_tan(low_half(v)), native_tan(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::exp(const vec<double, _N>& v)
+{
+    vec<double, _N> r(exp(low_half(v)), exp(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native_exp(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_exp(low_half(v)), native_exp(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::expm1(const vec<double, _N>& v)
+{
+    vec<double, _N> r(expm1(low_half(v)), expm1(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native_expm1(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_expm1(low_half(v)), native_expm1(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::log(const vec<double, _N>& v)
+{
+    vec<double, _N> r(log(low_half(v)), log(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native_log(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_log(low_half(v)), native_log(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::sinh(const vec<double, _N>& v)
+{
+    vec<double, _N> r(sinh(low_half(v)), sinh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::cosh(const vec<double, _N>& v)
+{
+    vec<double, _N> r(cosh(low_half(v)), cosh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::pow(const vec<double, _N>& x, const vec<double, _N>& y)
+{
+    vec<double, _N> r(pow(low_half(x), low_half(y)),
+                      pow(high_half(x), high_half(y)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::atan2(const vec<double, _N>& x, const vec<double, _N>& y)
+{
+    vec<double, _N> r(atan2(low_half(x), low_half(y)),
+                      atan2(high_half(x), high_half(y)));
+    return r;
+}
+
 
 template <std::size_t _N>
 inline
