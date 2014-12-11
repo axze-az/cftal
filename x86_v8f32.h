@@ -20,7 +20,7 @@ namespace cftal {
         using mask_value_type = float;
         using mask_type= vec<mask_value_type, 8>;
 
-        using x86::vreg<__m256d>::vreg;
+        using x86::vreg<__m256>::vreg;
         vec() = default;
         // create vec{v,v,v,v,....}
         vec(float v);
@@ -47,7 +47,7 @@ namespace cftal {
     template <>
     struct mem< vec<float, 8> > {
         static
-        vec<float, 8> load(const float* p, std::size_t n=4);
+        vec<float, 8> load(const float* p, std::size_t n=8);
         static
         void store(float* p, const vec<float, 8>& v);
     };
@@ -496,7 +496,7 @@ inline
 cftal::vec<float, 8>
 cftal::mem<cftal::vec<float, 8> >::load(const float* p, std::size_t s)
 {
-    __m256d v;
+    __m256 v;
     switch (s) {
     default:
     case 8:

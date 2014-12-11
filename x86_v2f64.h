@@ -4,9 +4,9 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec.h>
+#include <cftal/x86_v4s32.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
-
 
 namespace cftal {
 

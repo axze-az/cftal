@@ -2949,9 +2949,7 @@ cftal::operator%=(vec<_T, _N>& a,
 
 // include vector specializations
 #if defined (__SSE__)
-#if 0
 #include <cftal/x86_v4f32.h>
-#endif
 #endif
 #if defined (__SSE2__)
 #include <cftal/x86_v4s32.h>
