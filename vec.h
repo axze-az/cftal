@@ -2965,9 +2965,7 @@ cftal::operator%=(vec<_T, _N>& a,
 #include <cftal/x86_v2f64.h>
 #endif
 #if defined (__AVX__)
-#if 0
 #include <cftal/x86_v8f32.h>
-#endif
 #include <cftal/x86_v4f64.h>
 #endif
 #if defined (__AVX2__)
