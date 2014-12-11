@@ -729,7 +729,7 @@ cftal::v4f64 cftal::x86::round(const v4f64& a, const rounding_mode::type m)
 inline
 cftal::v4f64 cftal::rint(const v4f64& a)
 {
-    return x86::round(a, x86::rounding_mode::nearest);
+    return x86::round(a, x86::rounding_mode::current);
 }
 
 inline
