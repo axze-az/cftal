@@ -755,7 +755,7 @@ cftal::v8f32 cftal::x86::round(const v8f32& a, const rounding_mode::type m)
 inline
 cftal::v8f32 cftal::rint(const v8f32& a)
 {
-    return x86::round(a, x86::rounding_mode::nearest);
+    return x86::round(a, x86::rounding_mode::current);
 }
 
 inline
