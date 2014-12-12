@@ -2997,14 +2997,173 @@ cftal::permute(const vec<_T, 2>& v0, const vec<_T, 2>& v1)
     const int32_t i1= _I1 < 2 ? _I1 : -1;
     vec<_T, 2> ri = permute<i0, i1>(v0);
     // select elements from v1
-    const int32_t j0= _I0 >= 2 ? _I0 : -1;
-    const int32_t j1= _I1 >= 2 ? _I1 : -1;
+    const int32_t j0= _I0 >= 2 ? _I0-2 : -1;
+    const int32_t j1= _I1 >= 2 ? _I1-2 : -1;
     vec<_T, 2> rj = permute<j0, j1>(v1);
     // combine result sets:
     vec<_T, 2> r( ri | rj);
     return r;
 }
 
+template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+          typename _T>
+inline
+cftal::vec<_T, 4>
+cftal::permute(const vec<_T, 4>& v)
+{
+    const vec<_T, 2> lv= low_half(v);
+    const vec<_T, 2> hv= high_half(v);
+    // low half of the result vector
+    vec<_T, 2> lr = permute<_I0, _I1>(lv, hv);
+    // high half of the result vector
+    vec<_T, 2> hr = permute<_I2, _I3>(lv, hv);
+    return vec<_T, 4>(lr, hr);
+}
+
+template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+          typename _T>
+inline
+cftal::vec<_T, 4>
+cftal::permute(const vec<_T, 4>& v0, const vec<_T, 4>& v1)
+{
+    // select elements from v0
+    const int32_t i0= _I0 < 4 ? _I0 : -1;
+    const int32_t i1= _I1 < 4 ? _I1 : -1;
+    const int32_t i2= _I2 < 4 ? _I2 : -1;
+    const int32_t i3= _I3 < 4 ? _I3 : -1;
+    vec<_T, 4> ri = permute<i0, i1, i2, i3>(v0);
+    // select elements from v1
+    const int32_t j0= _I0 >= 4 ? _I0-4 : -1;
+    const int32_t j1= _I1 >= 4 ? _I1-4 : -1;
+    const int32_t j2= _I2 >= 4 ? _I2-4 : -1;
+    const int32_t j3= _I3 >= 4 ? _I3-4 : -1;
+    vec<_T, 4> rj = permute<j0, j1, j2, j3>(v1);
+    // combine result sets:
+    vec<_T, 4> r( ri | rj);
+    return r;
+}
+
+template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+          int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
+          typename _T>
+inline
+cftal::vec<_T, 8>
+cftal::permute(const vec<_T, 8>& v)
+{
+    const vec<_T, 4> lv= low_half(v);
+    const vec<_T, 4> hv= high_half(v);
+    // low half of the result vector
+    vec<_T, 4> lr = permute<_I0, _I1, _I2, _I3>(lv, hv);
+    // high half of the result vector
+    vec<_T, 4> hr = permute<_I4, _I5, _I6, _I7>(lv, hv);
+    return vec<_T, 8>(lr, hr);
+}
+
+template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+          int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
+          typename _T>
+inline
+cftal::vec<_T, 8>
+cftal::permute(const vec<_T, 8>& v0, const vec<_T, 8>& v1)
+{
+    // select elements from v0
+    const int32_t i0= _I0 < 8 ? _I0 : -1;
+    const int32_t i1= _I1 < 8 ? _I1 : -1;
+    const int32_t i2= _I2 < 8 ? _I2 : -1;
+    const int32_t i3= _I3 < 8 ? _I3 : -1;
+    const int32_t i4= _I4 < 8 ? _I4 : -1;
+    const int32_t i5= _I5 < 8 ? _I5 : -1;
+    const int32_t i6= _I6 < 8 ? _I6 : -1;
+    const int32_t i7= _I7 < 8 ? _I7 : -1;
+    vec<_T, 8> ri = permute<i0, i1, i2, i3, i4, i5, i6, i7>(v0);
+    // select elements from v1
+    const int32_t j0= _I0 >= 8 ? _I0-8 : -1;
+    const int32_t j1= _I1 >= 8 ? _I1-8 : -1;
+    const int32_t j2= _I2 >= 8 ? _I2-8 : -1;
+    const int32_t j3= _I3 >= 8 ? _I3-8 : -1;
+    const int32_t j4= _I4 >= 8 ? _I4-8 : -1;
+    const int32_t j5= _I5 >= 8 ? _I5-8 : -1;
+    const int32_t j6= _I6 >= 8 ? _I6-8 : -1;
+    const int32_t j7= _I7 >= 8 ? _I7-8 : -1;
+    vec<_T, 8> rj = permute<j0, j1, j2, j3, j4, j5, j6, j7>(v1);
+    // combine result sets:
+    vec<_T, 8> r( ri | rj);
+    return r;
+}
+
+template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+          int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
+          int32_t _I8, int32_t _I9, int32_t _IA, int32_t _IB,
+          int32_t _IC, int32_t _ID, int32_t _IE, int32_t _IF,
+          typename _T>
+inline
+cftal::vec<_T, 16>
+cftal::permute(const vec<_T, 16>& v)
+{
+    const vec<_T, 8> lv= low_half(v);
+    const vec<_T, 8> hv= high_half(v);
+    // low half of the result vector
+    vec<_T, 8> lr = permute<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7>(lv, hv);
+    // high half of the result vector
+    vec<_T, 8> hr = permute<_I8, _I9, _IA, _IB, _IC, _ID, _IE, _IF>(lv, hv);
+    return vec<_T, 16>(lr, hr);
+}
+
+template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+          int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
+          int32_t _I8, int32_t _I9, int32_t _IA, int32_t _IB,
+          int32_t _IC, int32_t _ID, int32_t _IE, int32_t _IF,
+          typename _T>
+inline
+cftal::vec<_T, 16>
+cftal::permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1)
+{
+    // select elements from v0
+    const int32_t k0= _I0 < 16 ? _I0 : -1;
+    const int32_t k1= _I1 < 16 ? _I1 : -1;
+    const int32_t k2= _I2 < 16 ? _I2 : -1;
+    const int32_t k3= _I3 < 16 ? _I3 : -1;
+    const int32_t k4= _I4 < 16 ? _I4 : -1;
+    const int32_t k5= _I5 < 16 ? _I5 : -1;
+    const int32_t k6= _I6 < 16 ? _I6 : -1;
+    const int32_t k7= _I7 < 16 ? _I7 : -1;
+
+    const int32_t k8= _I8 < 16 ? _I8 : -1;
+    const int32_t k9= _I9 < 16 ? _I9 : -1;
+    const int32_t ka= _IA < 16 ? _IA : -1;
+    const int32_t kb= _IB < 16 ? _IB : -1;
+    const int32_t kc= _IC < 16 ? _IC : -1;
+    const int32_t kd= _ID < 16 ? _ID : -1;
+    const int32_t ke= _IE < 16 ? _IE : -1;
+    const int32_t kf= _IF < 16 ? _IF : -1;
+    
+    vec<_T, 16> ri = permute<k0, k1, k2, k3, k4, k5, k6, k7,
+                             k8, k9, ka, kb, kc, kd, ke, kf>(v0);
+    // select elements from v1
+    const int32_t j0= _I0 >= 16 ? _I0-16 : -1;
+    const int32_t j1= _I1 >= 16 ? _I1-16 : -1;
+    const int32_t j2= _I2 >= 16 ? _I2-16 : -1;
+    const int32_t j3= _I3 >= 16 ? _I3-16 : -1;
+    const int32_t j4= _I4 >= 16 ? _I4-16 : -1;
+    const int32_t j5= _I5 >= 16 ? _I5-16 : -1;
+    const int32_t j6= _I6 >= 16 ? _I6-16 : -1;
+    const int32_t j7= _I7 >= 16 ? _I7-16 : -1;
+
+    const int32_t j8= _I8 >= 16 ? _I8 : -1;
+    const int32_t j9= _I9 >= 16 ? _I9 : -1;
+    const int32_t ja= _IA >= 16 ? _IA : -1;
+    const int32_t jb= _IB >= 16 ? _IB : -1;
+    const int32_t jc= _IC >= 16 ? _IC : -1;
+    const int32_t jd= _ID >= 16 ? _ID : -1;
+    const int32_t je= _IE >= 16 ? _IE : -1;
+    const int32_t jf= _IF >= 16 ? _IF : -1;
+
+    vec<_T, 16> rj = permute<j0, j1, j2, j3, j4, j5, j6, j7,
+                             j8, j9, ja, jb, jc, jd, je, jf>(v1);
+    // combine result sets:
+    vec<_T, 16> r( ri | rj);
+    return r;
+}
 
 #include <cftal/vec_double_n.h>
 
