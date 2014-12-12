@@ -301,19 +301,53 @@ namespace cftal {
            const vec<_T, _N>& on_true,
            const vec<_T, _N>& on_false);
 
-    /* permute low and high halves of s */
-    template <int _LH, int _HH,
-              typename _T, std::size_t _N>
-    vec<_T, _N>
-    permute(const vec<_T, _N>& s);
 
-    /* permute low and high halves of s */
-    template <int _LH, int _HH,
-              typename _T, std::size_t _N>
-    vec<_T, _N>
-    permute(const vec<_T, _N>& s0,
-            const vec<_T, _N>& s1);
+    template <int32_t _I0, int32_t _I1, typename _T>
+    vec<_T, 2>
+    permute(const vec<_T, 2>& v);
 
+    template <int32_t _I0, int32_t _I1, typename _T>
+    vec<_T, 2>
+    permute(const vec<_T, 2>& v0, const vec<_T, 2>& v1);
+
+    template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+              typename _T>
+    vec<_T, 4>
+    permute(const vec<_T, 4>& v);
+
+    template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+              typename _T>
+    vec<_T, 4>
+    permute(const vec<_T, 4>& v0, const vec<_T, 4>& v1);
+
+    template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+              int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
+              typename _T>
+    vec<_T, 8>
+    permute(const vec<_T, 8>& v);
+
+    template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+              int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
+              typename _T>
+    vec<_T, 8>
+    permute(const vec<_T, 8>& v0, const vec<_T, 8>& v1);
+
+    template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+              int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
+              int32_t _I8, int32_t _I9, int32_t _IA, int32_t _IB,
+              int32_t _IC, int32_t _ID, int32_t _IE, int32_t _IF,
+              typename _T>
+    vec<_T, 16>
+    permute(const vec<_T, 16>& v);
+
+    template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
+              int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
+              int32_t _I8, int32_t _I9, int32_t _IA, int32_t _IB,
+              int32_t _IC, int32_t _ID, int32_t _IE, int32_t _IF,
+              typename _T>
+    vec<_T, 16>
+    permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1);
+    
     template<typename _T, std::size_t _N>
     bool
     all_signs(const vec<_T, _N>& v);
@@ -350,13 +384,6 @@ namespace cftal {
     DECL_CMP_OPS(>);
 
 #undef DECL_CMP_OPS
-
-
-    template <typename _T>
-    vec<_T, 1>
-    select(const typename vec<_T, 1>::mask_type& m,
-           const vec<_T, 1>& on_true,
-           const vec<_T, 1>& on_false);
 
 
     template <class _T, std::size_t _N>
@@ -2945,7 +2972,42 @@ cftal::operator%=(vec<_T, _N>& a,
 }
 
 #include <cftal/vec_t_1.h>
+
+template <int32_t _I0, int32_t _I1, typename _T>
+inline
+cftal::vec<_T, 2>
+cftal::permute(const vec<_T, 2>& v)
+{
+    const vec<_T, 1> lv= low_half(v);
+    const vec<_T, 1> hv= high_half(v);
+    // low half of the result vector
+    vec<_T, 1> lr = permute<_I0>(lv, hv);
+    // high half of the result vector
+    vec<_T, 1> hr = permute<_I1>(lv, hv);
+    return vec<_T, 2>(lr, hr);
+}
+
+template <int32_t _I0, int32_t _I1, typename _T>
+inline
+cftal::vec<_T, 2>
+cftal::permute(const vec<_T, 2>& v0, const vec<_T, 2>& v1)
+{
+    // select elements from v0
+    const int32_t i0= _I0 < 2 ? _I0 : -1;
+    const int32_t i1= _I1 < 2 ? _I1 : -1;
+    vec<_T, 2> ri = permute<i0, i1>(v0);
+    // select elements from v1
+    const int32_t j0= _I0 >= 2 ? _I0 : -1;
+    const int32_t j1= _I1 >= 2 ? _I1 : -1;
+    vec<_T, 2> rj = permute<j0, j1>(v1);
+    // combine result sets:
+    vec<_T, 2> r( ri | rj);
+    return r;
+}
+
+
 #include <cftal/vec_double_n.h>
+
 
 // include vector specializations
 #if defined (__SSE__)

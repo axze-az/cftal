@@ -41,7 +41,21 @@ namespace cftal {
         }
     };
 
+    template <typename _T>
+    vec<_T, 1>
+    select(const typename vec<_T, 1>::mask_type& m,
+           const vec<_T, 1>& on_true,
+           const vec<_T, 1>& on_false);
 
+    template <int32_t _I0, typename _T>
+    vec<_T, 1>
+    permute(const vec<_T, 1>& v);
+
+    template <int32_t _I0, typename _T>
+    vec<_T, 1>
+    permute(const vec<_T, 1>& v0, const vec<_T, 1>& v1);
+
+    
     namespace op {
         template <typename _T>
         struct lt<_T, 1> {
@@ -402,7 +416,25 @@ cftal::select(const typename vec<_T, 1>::mask_type& vm,
     return vec<_T, 1>{r};
 }
 
+template <int32_t _I0, class _T>
+inline
+cftal::vec<_T, 1>
+cftal::permute(const vec<_T, 1>& v)
+{
+    static_assert(_I0 <= 0, "invalid element selection");
+    return _I0 < 0 ? vec<_T, 1>(_T(0)) : v;
+}
 
+template <int32_t _I0, class _T>
+inline
+cftal::vec<_T, 1>
+cftal::permute(const vec<_T, 1>& v0, const vec<_T, 1>& v1)
+{
+    static_assert(_I0 <= 1, "invalid element selection");
+    if (_I0 < 0)
+        return vec<_T, 1>(_T(0));
+    return _I0 == 1 ? v1 : v0;
+}
 
 // Local variables:
 // mode: c++
