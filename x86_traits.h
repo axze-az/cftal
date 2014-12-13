@@ -5,6 +5,7 @@
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
 #include <cftal/x86_divisor.h>
+#include <cftal/x86_cvt.h>
 
 namespace cftal {
 
@@ -350,26 +351,16 @@ namespace cftal {
                 vi_type lep(permute<0, 0, 1, 1>(ep));
                 v2f64 fh(as<v2f64>(hep));
                 v2f64 lh(as<v2f64>(lep));
-#if !defined (__AVX__)
-                lh &= v2f64(x86::v_exp_v2f64_msk::dv());
-                fh &= v2f64(x86::v_exp_v2f64_msk::dv());
                 vf_type r(lh, fh);
-#else
-                vf_type r(lh, fh);
-                r &= vf_type(x86::v_exp_v4f64_msk::dv());
-#endif
+                r &= vf_type(exp_f64_msk::v._f64);
                 return r;
             }
 
             static
             vi_type extract_exp(const vf_type& d) {
                 // TODO AVX2 code
-#if !defined (__AVX__)
-                vf_type m(low_half(d) & v2f64(x86::v_exp_v2f64_msk::dv()),
-                          high_half(d) & v2f64(x86::v_exp_v2f64_msk::dv()));
-#else
-                // vf_type m(d & v_exp_v4f64_msk::dv());
-#endif
+                const vf_type msk(exp_f64_msk::v._f64);
+                vf_type m(d & msk);
                 v2f64 fh(high_half(d));
                 v2f64 fl(low_half(d));
                 v4s32 hi(as<v4s32>(fh));
@@ -425,17 +416,16 @@ namespace cftal {
             }
         };
 
-#if 0
         template <>
         struct func_traits<v8f32, v8s32> : public
         func_traits<typename v8f32::value_type,
                     typename v8s32::value_type> {
-            typedef v8f32 vf_type;
-            typedef v8f32 vmf_type;
-            typedef v8s32 vi_type;
-            typedef v8s32 vmi_type;
+            using vf_type = v8f32;
+            using vmf_type = vf_type::mask_type;
+            using vi_type = v8s32 ;
+            using vmi_type = vi_type::mask_type;
 
-            typedef d_real<vf_type> dvf_type;
+            using dvf_type = d_real<vf_type>;
 
             typedef v4f64 vhpf_type;
             typedef func_traits<vhpf_type, v4s32>
@@ -448,8 +438,8 @@ namespace cftal {
 
             static
             void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
-                using namespace x86vec;
-                using impl::cvt;
+                // using namespace x86vec;
+                // using impl::cvt;
                 r[1] = cvt<v4f64, v8f32>::h(x);
                 r[0] = cvt<v4f64, v8f32>::l(x);
             }
@@ -538,8 +528,6 @@ namespace cftal {
                 return as<v8f32>(i);
             }
         };
-#endif
-
     }
 
 }
