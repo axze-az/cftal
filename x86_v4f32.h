@@ -170,24 +170,18 @@ namespace cftal {
 #endif
     
     template <bool _P0, bool _P1,
-              bool _P2, bool _P3,
-              bool _P4, bool _P5,
-              bool _P6, bool _P7>
+              bool _P2, bool _P3>
     vec<float, 4>
     select(const vec<float, 4>& on_true,
            const vec<float, 4>& on_false);
 
     template <int32_t _P0, int32_t _P1,
-              int32_t _P2, int32_t _P3,
-              int32_t _P4, int32_t _P5,
-              int32_t _P6, int32_t _P7>
+              int32_t _P2, int32_t _P3>
     vec<float, 4>
     permute(const vec<float, 4>& s);
 
     template <int32_t _P0, int32_t _P1,
-              int32_t _P2, int32_t _P3,
-              int32_t _P4, int32_t _P5,
-              int32_t _P6, int32_t _P7>
+              int32_t _P2, int32_t _P3>
     vec<float, 4>
     permute(const vec<float, 4>& s0,
             const vec<float, 4>& s1);

@@ -33,7 +33,7 @@ namespace cftal {
             _D h(const _S& s);
         };
 
-#if 0
+
         template <>
         struct cvt<v4f32, v2f64> {
             static v4f32 l(const v2f64& d) {
@@ -50,7 +50,7 @@ namespace cftal {
                 return l(permute<2,3,0,1>(d));
             }
         };
-#endif
+
         template <>
         struct cvt<v4s32, v2f64> {
             static v4s32 l(const v2f64& d) {

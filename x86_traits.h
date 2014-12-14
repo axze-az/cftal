@@ -440,28 +440,23 @@ namespace cftal {
             void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
                 // using namespace x86vec;
                 // using impl::cvt;
-                r[1] = cvt<v4f64, v8f32>::h(x);
-                r[0] = cvt<v4f64, v8f32>::l(x);
+                r[1] = x86::cvt<v4f64, v8f32>::h(x);
+                r[0] = x86::cvt<v4f64, v8f32>::l(x);
             }
 
             static
             void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
-                using namespace x86vec;
-                using impl::cvt;
-                vf_type lo(cvt<v8f32, v4f64>::l(hpf[0]));
-                vhpf_type rest(hpf[0] - cvt<v4f64, v8f32>::l(lo));
-                vf_type lo_lo(cvt<v8f32, v4f64>::l(rest));
+                vf_type lo(x86::cvt<v8f32, v4f64>::l(hpf[0]));
+                vhpf_type rest(hpf[0] - x86::cvt<v4f64, v8f32>::l(lo));
+                vf_type lo_lo(x86::cvt<v8f32, v4f64>::l(rest));
 
-                vf_type hi(cvt<v8f32, v4f64>::l(hpf[1]));
-                rest = hpf[1] - cvt<v4f64, v8f32>::l(hi);
+                vf_type hi(x86::cvt<v8f32, v4f64>::l(hpf[1]));
+                rest = hpf[1] - x86::cvt<v4f64, v8f32>::l(hi);
 
-                vf_type hi_lo(cvt<v8f32, v4f64>::l(rest));
+                vf_type hi_lo(x86::cvt<v8f32, v4f64>::l(rest));
 
-                vf_type msv(permute<0, 1, 2, 3,
-                            8, 9, 10, 11>(lo, hi));
-                vf_type lsv(permute<0, 1, 2, 3,
-                            8, 9, 10, 11>(lo_lo,
-                                          hi_lo));
+                vf_type msv(permute<0, 1, 2, 3, 8, 9, 10, 11>(lo, hi));
+                vf_type lsv(permute<0, 1, 2, 3, 8, 9, 10, 11>(lo_lo, hi_lo));
                 res = dvf_type(msv, lsv);
             }
 
@@ -492,15 +487,14 @@ namespace cftal {
 #endif
             static
             vf_type insert_exp(const vi_type& e) {
-                vi_type ep(e << const_shift::_23);
+                vi_type ep(e << 23);
                 return as<v8f32>(ep);
             }
             static
             vi_type extract_exp(const vf_type& d) {
                 v8s32 e= as<v8s32>(d);
-                e >>= const_shift::_23;
-                e &= v8s32(0xff, 0xff, 0xff, 0xff,
-                           0xff, 0xff, 0xff, 0xff);
+                e >>= 23;
+                e &= v8s32{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
                 return e;
             }
             static
