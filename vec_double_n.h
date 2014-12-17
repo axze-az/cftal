@@ -2,7 +2,7 @@
 #define __CFTAL_VEC_DOUBLE_N_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/vec.h>
+#include <cftal/vec_t_1.h>
 #include <cftal/d_real.h>
 #include <cmath>
 

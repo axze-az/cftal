@@ -3,13 +3,13 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-#include <cftal/vec.h>
+#include <cftal/vec_double_n.h>
+#include <cftal/x86_ops_1.h>
 #include <cftal/x86_v4s32.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
 
 namespace cftal {
-
 
     template <>
     class vec<double, 2> : public x86::vreg<__m128d> {
@@ -651,7 +651,7 @@ bool cftal::elements_equal(const v2f64& a)
 }
 
 inline
-cftal::v2f64 cftal::x86::round(const v2f64& a, const rounding_mode::type m)
+cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
 {
 #if defined (__SSE4_1__)
     v2f64 r;

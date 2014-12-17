@@ -1,13 +1,11 @@
+#if !defined (__CFTAL_DIVISOR_H__)
+#define __CFTAL_DIVISOR_H__ 1
 
-#if !defined (__CFTAL_X86_DIVISOR_H__)
-#define __CFTAL_X86_DIVISOR_H__ 1
-
-#include <cftal/vec.h>
+#include <cftal/vec_op.h>
 #include <cftal/divisor.h>
 
 
 namespace cftal {
-
 
     namespace impl {
 

@@ -3,7 +3,6 @@
 
 #include <cftal/x86_perm.h>
 #include <cftal/x86_ops_0.h>
-#include <iostream>
 
 namespace cftal {
 

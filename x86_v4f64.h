@@ -3,7 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-#include <cftal/vec.h>
+#include <cftal/vec_double_n.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
 #include <cftal/x86_v2f64.h>
@@ -703,7 +703,7 @@ bool cftal::elements_equal(const v4f64& a)
 }
 
 inline
-cftal::v4f64 cftal::x86::round(const v4f64& a, const rounding_mode::type m)
+cftal::v4f64 cftal::x86::round(const v4f64& a, rounding_mode::type m)
 {
     v4f64 r;
     switch (m) {

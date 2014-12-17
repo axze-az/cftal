@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/x86_vreg.h>
+#include <cftal/vec_op.h>
 
 namespace cftal {
 

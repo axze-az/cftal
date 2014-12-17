@@ -1,8 +1,8 @@
-#if !defined (__CFTAL_SIMD_VEC_T_1_H__)
-#define __CFTAL_SIMD_VEC_T_1_H__ 1
+#if !defined (__CFTAL_VEC_T_1_H__)
+#define __CFTAL_VEC_T_1_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/vec.h>
+#include <cftal/vec_op.h>
 
 namespace cftal {
 
@@ -57,7 +57,6 @@ namespace cftal {
     template <int32_t _I0, typename _T>
     vec<_T, 1>
     permute(const vec<_T, 1>& v0, const vec<_T, 1>& v1);
-
     
     namespace op {
         template <typename _T>

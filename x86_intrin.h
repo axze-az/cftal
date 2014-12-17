@@ -1,7 +1,7 @@
-#if !defined (__CFTAL_X86VEC_INTRIN_H__)
-#define __CFTAL_X86VEC_INTRIN_H__ 1
+#if !defined (__CFTAL_X86_INTRIN_H__)
+#define __CFTAL_X86_INTRIN_H__ 1
 
-#if defined (IN_KDEVELOP_PARSER)
+#if IN_KDEVELOP_PARSER !=0 || IN_IDE_PARSER !=0
 #define __AVX__ 1
 #define __SSE4_1__ 1
 #define __SSE4_2__ 1
@@ -21,7 +21,6 @@
 #if defined (__SSE4A__) && !defined (__POPCNT__)
 #define __POPCNT__
 #endif
-
 
 // Local variables:
 // mode: c++

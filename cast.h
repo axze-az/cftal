@@ -1,0 +1,40 @@
+#if !defined (__CFTAL_CAST_H__)
+#define __CFTAL_CAST_H__ 1
+
+#include <cftal/config.h>
+
+namespace cftal {
+
+    namespace impl {
+
+        template <typename _D, typename _S>
+        struct cast {
+
+            union ds {
+                _D _d;
+                _S _s;
+                ds(const _S& s) : _s(s) {}
+            };
+            
+            static const _D& v(const _S& r) {
+                ds c(r);
+                return c._d;
+            }
+        };
+
+        template <typename _SD>
+        struct cast<_SD, _SD> {
+            static const _SD& v(const _SD& r) {
+                return r;
+            }
+        };
+    }
+    
+    template <typename _D, typename _S>
+    _D as(const _S& s);    
+}
+
+// Local variables:
+// mode: c++
+// end:
+#endif

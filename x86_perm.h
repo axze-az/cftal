@@ -1,6 +1,7 @@
 #if !defined (__CFTAL_X86_PERM_H__)
 #define __CFTAL_X86_PERM_H__ 1
 
+#include <cftal/config.h>
 #include <cftal/x86_ops_0.h>
 #include <cftal/x86_ops_1.h>
 

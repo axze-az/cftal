@@ -3,11 +3,10 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-#include <cftal/vec.h>
+#include <cftal/x86_ops_1.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
 #include <cftal/x86_v2f64.h>
-#include <cftal/x86_ops_1.h>
 #include <cftal/x86_v4s32.h>
 
 namespace cftal {
