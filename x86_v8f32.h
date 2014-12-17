@@ -1,5 +1,5 @@
-#if !defined (__CFTAL_X86_V8F32__)
-#define __CFTAL_X86_V8F32__ 1
+#if !defined (__CFTAL_X86_V8F32_H__)
+#define __CFTAL_X86_V8F32_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/types.h>
@@ -117,11 +117,11 @@ namespace cftal {
     v8f32::mask_type isfinite(const v8f32& x);
 #endif
 
-    v8f32 frexp(arg<v8f32>::type x, v4s32* e);
+    v8f32 frexp(arg<v8f32>::type x, v8s32* e);
     // v8f32 pow2i(arg<v4s32>::type e);
-    v8f32 ldexp(arg<v8f32>::type d, arg<v4s32>::type e);
-    v4s32 ilogbp1(arg<v8f32>::type v);
-    v4s32 ilogb(arg<v8f32>::type v);
+    v8f32 ldexp(arg<v8f32>::type d, arg<v8s32>::type e);
+    v8s32 ilogbp1(arg<v8f32>::type v);
+    v8s32 ilogb(arg<v8f32>::type v);
     v8f32 atan2(arg<v8f32>::type y, arg<v8f32>::type x);
     v8f32 asin(arg<v8f32>::type d);
     v8f32 acos(arg<v8f32>::type d);
