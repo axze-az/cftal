@@ -246,8 +246,8 @@ namespace cftal {
                                         const int bias = (1 << (8-1))-1;
                                         const int bias_shl_23(bias << 23);
                                         const divisor<vi_type, int32_t> rr(r);
-                                        i = (i - bias_shl_23) / rr +
-                                                bias_shl_23;
+                                        i = vi_type(i - bias_shl_23) / rr +
+                                            bias_shl_23;
                                         vf_type x(_TRAITS::as_float(i));
                                         return x;
                                 }

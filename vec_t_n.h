@@ -139,6 +139,14 @@ namespace cftal {
     bool
     elements_equal(const vec<_T, _N>& v);
 
+    template <typename _T, std::size_t _N>
+    vec<_T, _N>
+    max(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+    template <typename _T, std::size_t _N>
+    vec<_T, _N>
+    min(const vec<_T, _N>& a, const vec<_T, _N>& b);
+    
     template <class _T, std::size_t _N>
     struct mem< vec<_T, _N> > {
         static
@@ -306,6 +314,24 @@ cftal::elements_equal(const vec<_T, _N>& v)
         r = extract<0>(v) == extract<1>(v);
     }
     return r;
+}
+
+template <class _T, std::size_t _N>
+inline
+cftal::vec<_T, _N>
+cftal::max(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+    return vec<_T, _N>(max(low_half(a), low_half(b)),
+                       max(high_half(a), high_half(b)));
+}
+
+template <class _T, std::size_t _N>
+inline
+cftal::vec<_T, _N>
+cftal::min(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+    return vec<_T, _N>(min(low_half(a), low_half(b)),
+                       min(high_half(a), high_half(b)));
 }
 
 template <int32_t _I0, int32_t _I1, typename _T>

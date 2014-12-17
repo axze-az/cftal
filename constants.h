@@ -35,11 +35,11 @@ namespace cftal {
     template <uint32_t _L, uint32_t _H> 
     struct const_u64 {
         static
-        constexpr const bytes8 v={_L, _H};
+        const bytes8 v;
     };
 
-    // template <uint32_t _L, uint32_t _H>
-    // const bytes8 const_u64<_L, _H>::v{_L, _H};
+    template <uint32_t _L, uint32_t _H>
+    const bytes8 const_u64<_L, _H>::v{_L, _H};
     
     union __attribute__((__visibility__("hidden"))) bytes4 {
         const float _f32;
@@ -53,11 +53,11 @@ namespace cftal {
     template <uint32_t _N>
     struct const_u32 {
         static 
-        constexpr const bytes4 v={_N};
+        const bytes4 v;
     };
 
-    // template <uint32_t _N>
-    // const bytes4 const_u32<_N>::v{_N};
+    template <uint32_t _N>
+    const bytes4 const_u32<_N>::v{_N};
     
     using sign_s32_msk = const_u32<0x80000000>;
     using not_sign_s32_msk = const_u32<0x7fffffff>;

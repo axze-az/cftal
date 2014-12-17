@@ -3,7 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-#include <cftal/vec.h>
+#include <cftal/vec_float_n.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
 #include <cftal/x86_v2f64.h>

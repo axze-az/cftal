@@ -59,18 +59,20 @@ namespace cftal {
         struct sdiv_traits<x86vec::v2s64, int64_t> : public
         x86vec::impl::signed_vec_traits<x86vec::v2s64> {
         };
+#endif
 
         // v8u32
         template <>
         struct udiv_traits<x86vec::v8u32, uint32_t> : public
         x86vec::impl::unsigned_vec_traits<x86vec::v8u32> {
         };
+
         // v8s32
         template <>
         struct sdiv_traits<x86vec::v8s32, int32_t> : public
         x86vec::impl::signed_vec_traits<x86vec::v8s32> {
         };
-#endif
+        
     }
 
 #if 0
