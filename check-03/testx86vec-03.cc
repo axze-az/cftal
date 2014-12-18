@@ -5,6 +5,7 @@
 #include <vector>
 #include <cftal/vec.h>
 #include <cftal/bitops.h>
+#include <iostream>
 #include <unistd.h>
 
 namespace cftal {
