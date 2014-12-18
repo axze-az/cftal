@@ -175,21 +175,19 @@ namespace cftal {
             }
         };
 
-#if 0        
-
         template <>
         struct func_traits<v4f32, v4s32> : public
-        func_traits<typename v4f32::element_type,
-                    typename v4s32::element_type> {
-            typedef v4f32 vf_type;
-            typedef v4f32 vmf_type;
-            typedef v4s32 vi_type;
-            typedef v4s32 vmi_type;
-            typedef d_real<vf_type> dvf_type;
+        func_traits<typename v4f32::value_type,
+                    typename v4s32::value_type> {
+            using vf_type = v4f32;
+            using vmf_type = vf_type::mask_type;
+            using vi_type = v4s32;
+            using vmi_type = vi_type::mask_type;
+            using dvf_type = d_real<vf_type>;
 
-            typedef v2f64 vhpf_type;
-            typedef func_traits<vhpf_type, v4s32>
-            hpf_traits;
+            using vhpf_type = v2f64;
+            using hpf_traits = func_traits<vhpf_type, v4s32>;
+
             static
             constexpr std::size_t vhpf_per_vf() {
                 return 2;
@@ -197,14 +195,14 @@ namespace cftal {
 
             static
             void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
-                using namespace x86vec;
+                using namespace x86;
                 r[0] = cvt_lo<v2f64>(x);
                 r[1] = cvt_hi<v2f64>(x);
             }
 
             static
             void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
-                using namespace x86vec;
+                using namespace x86;
                 vf_type lo(cvt_lo<v4f32>(hpf[0]));
                 vhpf_type rest(hpf[0] - cvt_lo<v2f64>(lo));
                 vf_type lo_lo(cvt_lo<v4f32>(rest));
@@ -247,14 +245,14 @@ namespace cftal {
 #endif
             static
             vf_type insert_exp(const vi_type& e) {
-                vi_type ep(e << const_shift::_23);
+                vi_type ep(e << 23);
                 return as<v4f32>(ep);
             }
             static
             vi_type extract_exp(const vf_type& d) {
                 v4s32 e= as<v4s32>(d);
-                e >>= const_shift::_23;
-                e &= v4s32(0xff, 0xff, 0xff, 0xff);
+                e >>= 23;
+                e &= v4s32{0xff, 0xff, 0xff, 0xff};
                 return e;
             }
             static
@@ -282,7 +280,6 @@ namespace cftal {
                 return as<v4f32>(i);
             }
         };
-#endif
 
         template <>
         struct func_traits<v4f64, v4s32> : public

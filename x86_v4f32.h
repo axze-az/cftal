@@ -528,6 +528,27 @@ cftal::v4f32 cftal::select(const v4f32::mask_type& m,
     return x86::select(m(), on_true(), on_false());
 }
 
+template <bool _P0, bool _P1, bool _P2, bool _P3>
+inline
+cftal::v4f32 cftal::select(const v4f32& a, const v4f32& b)
+{
+    return x86::select_f32<_P0, _P1, _P2, _P3> (a(), b());
+}
+
+template <int _P0, int _P1, int _P2, int _P3>
+inline
+cftal::v4f32 cftal::permute(const v4f32& a)
+{
+    return x86::perm_f32<_P0, _P1, _P2, _P3>(a());
+}
+
+template <int _P0, int _P1, int _P2, int _P3>
+inline
+cftal::v4f32 cftal::permute(const v4f32& a, const v4f32& b)
+{
+    return x86::perm_f32<_P0, _P1, _P2, _P3>(a(), b());
+}
+
 inline
 cftal::v4f32 cftal::abs(const v4f32& a)
 {
