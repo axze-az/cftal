@@ -16,7 +16,7 @@ namespace cftal {
                 ds(const _S& s) : _s(s) {}
             };
             
-            static const _D& v(const _S& r) {
+            static _D v(const _S& r) {
                 ds c(r);
                 return c._d;
             }
@@ -33,6 +33,16 @@ namespace cftal {
     template <typename _D, typename _S>
     _D as(const _S& s);    
 }
+
+
+template <typename _D, typename _S>
+inline
+_D
+cftal::as(const _S& s)
+{
+    return impl::cast<_D, _S>::v(s);
+}
+
 
 // Local variables:
 // mode: c++

@@ -174,17 +174,26 @@ cftal::v4f32 test4a(cftal::v4f32 a, cftal::v4f32 b,
                         c * d);
 }
 
-#if 0
-cftal::v4f32 test_mask(cftal::v4f32 a, cftal::v4f32 b,
-                       cftal::v4f32 c, cftal::v4f32 d,
-                       cftal::mask<cftal::v4f32> m)
+cftal::v4s32 test_as(cftal::v4f32 a)
 {
-    cftal::v4f32 r(a);
-    r(m) = (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
-                        c * d);
-    return r;
+    return cftal::as<cftal::v4s32>(a);
 }
-#endif
+
+cftal::v4f32 test_as(cftal::v4s32 a)
+{
+    return cftal::as<cftal::v4f32>(a);
+}
+
+
+cftal::v8s32 test_as(cftal::v8f32 a)
+{
+    return cftal::as<cftal::v8s32>(a);
+}
+
+cftal::v8f32 test_as(cftal::v8s32 a)
+{
+    return cftal::as<cftal::v8f32>(a);
+}
 
 
 struct print_dpf64 {
