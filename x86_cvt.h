@@ -76,7 +76,6 @@ namespace cftal {
         };
 
 
-#if 0
         template <>
         struct cvt<v4f32, v4s32> {
             static v4f32 l(const v4s32& s) {
@@ -97,7 +96,6 @@ namespace cftal {
                 return _mm_cvttps_epi32(s());
             }
         };
-#endif
 
         template <>
         struct cvt<v4s32, v4f64> {
