@@ -143,10 +143,9 @@ namespace cftal {
             }
         };
 
-#if 0
         template <>
         struct cvt<v8f32, v8s32> {
-            static v8f32 l(const v8s32& v) {
+            static v8f32 l(const v8s32& v) {                
 #if defined (__AVX__)
                 __m256i vv=_mm256_insertf128_si256(
                     _mm256_castsi128_si256(low_half(v)()),
@@ -225,7 +224,6 @@ namespace cftal {
                              v4f32(0.0f));
             }
         };
-#endif
 
     }
 
