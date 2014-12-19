@@ -80,9 +80,6 @@ namespace cftal {
     elements_equal(const v2f64& a);
     
     vec<double, 2>
-    sqrt(const vec<double, 2>& v);
-
-    vec<double, 2>
     cbrt(vec<double, 2> v);
 
     v2f64 max(const v2f64& a, const v2f64& b);
@@ -514,6 +511,12 @@ cftal::select(const v2f64::mask_type& m,
 }
 
 inline
+cftal::v2f64 cftal::sqrt(const v2f64& a)
+{
+    return _mm_sqrt_pd(a());
+}
+
+inline
 cftal::v2f64 cftal::abs(const v2f64& a)
 {
     const v2f64 msk(not_sign_f64_msk::v._f64);
@@ -524,7 +527,6 @@ inline
 cftal::v2f64 cftal::andnot(const v2f64& a, const v2f64& b)
 {
     return _mm_andnot_pd(a(), b());
-
 }
 
 inline

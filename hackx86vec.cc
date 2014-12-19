@@ -602,11 +602,27 @@ do_add(cftal::vec<double, 4> a,
     // return a * b  + a / b - (a+b);
 }
 
+cftal::vec<double, 8>
+do_add(cftal::vec<double, 8> a,
+       cftal::vec<double, 8> b)
+{
+    // return cftal::op::add<double, 4>::v(a, b);
+    return 2.0 * a / b - (4.0 + a *  b);
+    // return a * b  + a / b - (a+b);
+}
+
 cftal::vec<double, 32>
 do_add(cftal::vec<double, 32> a,
        cftal::vec<double, 32> b)
 {
-    return cftal::op::bit_or<double, 32>::v(a, b);
+    return 2.0 * a / b - (4.0 + a *  b);
+}
+
+cftal::vec<double, 256>
+do_add(const cftal::vec<double, 256>& a,
+       const cftal::vec<double, 256>& b)
+{
+    return 2.0 * a / b - (4.0 + a *  b);
 }
 
 cftal::vec<double, 8>::mask_type

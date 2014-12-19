@@ -83,9 +83,6 @@ namespace cftal {
     elements_equal(const vec<float, 4>& v);
     
     vec<float, 4>
-    sqrt(const vec<float, 4>& v);
-
-    vec<float, 4>
     cbrt(vec<float, 4> v);
 
     v4f32 max(const v4f32& a, const v4f32& b);
@@ -547,6 +544,12 @@ inline
 cftal::v4f32 cftal::permute(const v4f32& a, const v4f32& b)
 {
     return x86::perm_f32<_P0, _P1, _P2, _P3>(a(), b());
+}
+
+inline
+cftal::v4f32 cftal::sqrt(const v4f32& a)
+{
+    return _mm_sqrt_ps(a());
 }
 
 inline

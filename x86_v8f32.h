@@ -83,9 +83,6 @@ namespace cftal {
     elements_equal(const vec<float, 8>& v);
     
     vec<float, 8>
-    sqrt(const vec<float, 8>& v);
-
-    vec<float, 8>
     cbrt(vec<float, 8> v);
 
     v8f32 max(const v8f32& a, const v8f32& b);
@@ -600,6 +597,12 @@ cftal::v8f32 cftal::permute(const v8f32& a, const v8f32& b)
 {
     return x86::perm_f32<_P0, _P1, _P2, _P3,
                          _P4, _P5, _P6, _P7>(a(), b());
+}
+
+inline
+cftal::v8f32 cftal::sqrt(const v8f32& a)
+{
+    return _mm256_sqrt_ps(a());
 }
 
 inline

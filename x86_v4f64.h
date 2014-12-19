@@ -11,6 +11,7 @@
 
 namespace cftal {
 
+#if defined (__AVX__)    
     template <>
     class vec<double, 4> : public x86::vreg<__m256d> {
     public:
@@ -81,10 +82,8 @@ namespace cftal {
 
     bool
     elements_equal(const vec<double, 4>& v);
+#endif
     
-    vec<double, 4>
-    sqrt(const vec<double, 4>& v);
-
     vec<double, 4>
     cbrt(vec<double, 4> v);
 
@@ -547,6 +546,12 @@ cftal::v4f64 cftal::select(const v4f64::mask_type& m,
                            const v4f64& on_false)
 {
     return x86::select(m(), on_true(), on_false());
+}
+
+inline
+cftal::v4f64 cftal::sqrt(const v4f64& a)
+{
+    return _mm256_sqrt_pd(a());
 }
 
 inline
