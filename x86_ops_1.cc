@@ -77,6 +77,13 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
 
 __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
 {
+#if defined (__AVX__)
+    __m256d xt = _mm256_cvtepi32_pd(x);
+    __m256d yt = _mm256_cvtepi32_pd(y);
+    __m256d qf = _mm256_div_pd(xt, yt);
+    __m128i q = _mm256_cvttpd_epi32(qf);
+    __m128i t;
+#else    
     __m128d xt= _mm_cvtepi32_pd(x);
     __m128d yt= _mm_cvtepi32_pd(y);
     __m128d qf= _mm_div_pd(xt, yt);
@@ -88,6 +95,7 @@ __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
     qf = _mm_div_pd(xt, yt);
     t = _mm_cvttpd_epi32(qf);
     q = _mm_unpacklo_epi64(q, t);
+#endif
     // set quotient to -1 where divisor is zero
     __m128i eqz= _mm_cmpeq_epi32(y, impl::make_zero_int::v());
     q = _mm_or_si128(q, eqz);
