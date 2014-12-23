@@ -28,8 +28,8 @@ cftal::select(const _M& m, const _T& on_true, const _T& on_false)
 }
 
 #include <cftal/vec_t_1.h>
-
 #include <cftal/vec_double_n.h>
+#include <cftal/vec_float_n.h>
 
 
 // include vector specializations
