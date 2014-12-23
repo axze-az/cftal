@@ -17,7 +17,7 @@ namespace cftal {
                 current = 0x4
             };
         };
-        
+
         template <class _E, unsigned _EN>
         struct div_ref {
             static __m128i ref(__m128i a, __m128i b,
@@ -36,14 +36,18 @@ namespace cftal {
                              __m128i* rem=nullptr);
         };
 
-        struct div_u32 : public div_ref<uint32_t, 4> {
+        struct div_u32 {
             static __m128i v(__m128i a, __m128i b,
-                             __m128i* rem=nullptr);
+                             __m128i* rem=nullptr);            
         };
 
-        struct div_s32 : public div_ref<int32_t, 4> {
+        struct div_s32 {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, __m256i b,
+                             __m256i* rem=nullptr);
+#endif
         };
 
         struct div_u64 : public div_ref<uint64_t, 2> {
@@ -57,68 +61,68 @@ namespace cftal {
         };
 
         // read the sign bits of all elements into a bit mask
-    int read_signs_f32(__m128 i);
-    // read the sign bits of all elements into a bit mask
-    int read_signs_f64(__m128d d);
-    // read the sign bits of all elements into a bit mask
-    int read_signs_s8(__m128i i);
+        int read_signs_f32(__m128 i);
+        // read the sign bits of all elements into a bit mask
+        int read_signs_f64(__m128d d);
+        // read the sign bits of all elements into a bit mask
+        int read_signs_s8(__m128i i);
 
 #if defined (__AVX__)
-    // read the sign bits of all elements into a bit mask
-    int read_signs_f32(__m256 i);
-    // read the sign bits of all elements into a bit mask
-    int read_signs_f64(__m256d d);
+        // read the sign bits of all elements into a bit mask
+        int read_signs_f32(__m256 i);
+        // read the sign bits of all elements into a bit mask
+        int read_signs_f64(__m256d d);
 #endif
 
-    // neither all bits set nor unset
-    bool both_bits(__m128i a);
-    // all bits set
-    bool all_bits(__m128i a);
-    // all bits set
-    bool no_bits(__m128i a);
+        // neither all bits set nor unset
+        bool both_bits(__m128i a);
+        // all bits set
+        bool all_bits(__m128i a);
+        // all bits set
+        bool no_bits(__m128i a);
 
-    bool both_signs_f32(__m128 a);
-    bool all_signs_f32(__m128 a);
-    bool no_signs_f32(__m128 a);
+        bool both_signs_f32(__m128 a);
+        bool all_signs_f32(__m128 a);
+        bool no_signs_f32(__m128 a);
 
-    bool both_signs_f64(__m128d a);
-    bool all_signs_f64(__m128d a);
-    bool no_signs_f64(__m128d a);
+        bool both_signs_f64(__m128d a);
+        bool all_signs_f64(__m128d a);
+        bool no_signs_f64(__m128d a);
 
 #if defined (__AVX__)
-    bool both_signs_f32(__m256 a);
-    bool all_signs_f32(__m256 a);
-    bool no_signs_f32(__m256 a);
+        bool both_signs_f32(__m256 a);
+        bool all_signs_f32(__m256 a);
+        bool no_signs_f32(__m256 a);
 
-    bool both_signs_f64(__m256d a);
-    bool all_signs_f64(__m256d a);
-    bool no_signs_f64(__m256d a);
+        bool both_signs_f64(__m256d a);
+        bool all_signs_f64(__m256d a);
+        bool no_signs_f64(__m256d a);
 #endif
 
-    bool both_signs_s16(__m128i a);
-    bool all_signs_s16(__m128i a);
-    bool no_signs_s16(__m128i a);
+        bool both_signs_s16(__m128i a);
+        bool all_signs_s16(__m128i a);
+        bool no_signs_s16(__m128i a);
 
-    bool both_signs_s32(__m128i a);
-    bool all_signs_s32(__m128i a);
-    bool no_signs_s32(__m128i a);
+        bool both_signs_s32(__m128i a);
+        bool all_signs_s32(__m128i a);
+        bool no_signs_s32(__m128i a);
 
-    bool both_signs_s64(__m128i a);
-    bool all_signs_s64(__m128i a);
-    bool no_signs_s64(__m128i a);
+        bool both_signs_s64(__m128i a);
+        bool all_signs_s64(__m128i a);
+        bool no_signs_s64(__m128i a);
 
 
 
-    __m128i popcnt_u8(__m128i a);
-    __m128i popcnt_u16(__m128i a);
-    __m128i popcnt_u32(__m128i b);
-    __m128i popcnt_u64(__m128i a);
-    int popcnt_u128(__m128i a);
+        __m128i popcnt_u8(__m128i a);
+        __m128i popcnt_u16(__m128i a);
+        __m128i popcnt_u32(__m128i b);
+        __m128i popcnt_u64(__m128i a);
+        int popcnt_u128(__m128i a);
 
-    __m128i bitrev_u8(__m128i a);
-    __m128i bitrev_u16(__m128i a);
-    __m128i bitrev_u32(__m128i a);
-    __m128i bitrev_u64(__m128i a);
+        __m128i bitrev_u8(__m128i a);
+        __m128i bitrev_u16(__m128i a);
+        __m128i bitrev_u32(__m128i a);
+        __m128i bitrev_u64(__m128i a);
 
     }
 

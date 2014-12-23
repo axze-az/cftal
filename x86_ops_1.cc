@@ -108,6 +108,36 @@ __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
     return q;
 }
 
+#if defined (__AVX2__)
+__m256i cftal::x86::div_s32::v(__m256i x, __m256i y, __m256i* rem)
+{
+    __m128i xh = _mm256_extractf128_si256(x, 1);
+    __m128i yh = _mm256_extractf128_si256(y, 1);
+
+    __m256d xf = _mm256_cvtepi32_pd(_mm256_castsi256_si128(x));
+    __m256d yf = _mm256_cvtepi32_pd(_mm256_castsi256_si128(y));
+    __m256d t = _mm256_div_pd(xf, yf);
+
+    __m128i rl = _mm256_cvttpd_epi32(t);
+    xf = _mm256_cvtepi32_pd(xh);
+    yf = _mm256_cvtepi32_pd(yh);
+    t = _mm256_div_pd(xf, yf);
+    __m128i rh = _mm256_cvttpd_epi32(t);
+
+    __m256i q= _mm256_insertf128_si256(_mm256_castsi128_si256(rl), rh, 1);
+    // set quotient to -1 where divisor is zero
+    __m256i eqz = _mm256_cmpeq_epi32(y, _mm256_setzero_si256());
+    q = _mm256_or_si256(q, eqz);
+    if (rem != nullptr) {
+        __m256i r= _mm256_mullo_epi32(q, y);
+        r= _mm256_sub_epi32(x, r);
+        _mm256_store_si256(rem, r);
+    }
+    return q;
+}
+#endif
+
+
 __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 {
     // add 2^31
