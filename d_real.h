@@ -1202,7 +1202,7 @@ cftal::rint(const d_real<_T>& a)
     _T lo_hi_no_int(0);
     _T hi_m1 = hi - 1.0;
     _T hi_hi_no_int = d_real_traits<_T>::sel(
-        (abs(hi - a.h())==_T(0.5)) & (a.l() < _T(0.0)),
+        (abs(_T(hi - a.h()))==_T(0.5)) & (a.l() < _T(0.0)),
         hi_m1, hi);
 
     typename d_real_traits<_T>::cmp_result_type hi_eq_ah=

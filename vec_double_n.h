@@ -12,6 +12,23 @@ namespace cftal {
     vec<double, _N>
     abs(const vec<double, _N>& v);
 
+    // returns (~a) & (b)
+    template <std::size_t _N>
+    vec<double, _N>
+    andnot(const vec<double, _N>& a, const vec<double, _N>& b); 
+
+    template <std::size_t _N>
+    vec<double, _N>
+    copysign(const vec<double, _N>& x, const vec<double, _N>& y);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    mulsign(const vec<double, _N>& x, const vec<double, _N>& y); 
+
+    template <std::size_t _N>
+    vec<double, _N>
+    rint(const vec<double, _N>& v);
+    
     // return a*b +c with or without fma
     template <std::size_t _N>
     vec<double, _N>
@@ -87,8 +104,7 @@ namespace cftal {
     template <std::size_t _N>
     vec<double, _N>
     atan2(const vec<double, _N>& x, const vec<double, _N>& y);
-
-    
+ 
     template <std::size_t _N>
     typename vec<double, _N>::mask_type
     isinf(const vec<double, _N>& v);
@@ -101,6 +117,7 @@ namespace cftal {
     typename vec<double, _N>::mask_type
     isfinite(const vec<double, _N>& v);
 
+    
     namespace impl {
         // TODO: fma implementations
     }  
@@ -113,6 +130,47 @@ cftal::abs(const vec<double, _N>& v)
 {
     const vec<double, _N> msk(not_sign_f64_msk::v._f64);
     return v & msk;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::andnot(const vec<double, _N>& a, const vec<double, _N>& b)
+{
+    return vec<double, _N>((~a) & b);
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::copysign(const vec<double, _N>& x, const vec<double, _N>& y)
+{
+    // return abs(x) * sgn(y)
+    using v_t = vec<double, _N>;
+    const v_t msk(not_sign_f64_msk::v._f64);
+    v_t abs_x(x & msk);
+    v_t sgn_y(andnot(msk, y));
+    return v_t(abs_x | sgn_y);
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::mulsign(const vec<double, _N>& x, const vec<double, _N>& y)
+{
+    using v_t = vec<double, _N>;
+    const v_t msk(sign_f64_msk::v._f64);
+    v_t sgn_y = y & msk;
+    return v_t(x ^ sgn_y);
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::rint(const cftal::vec<double, _N>& v)
+{
+    return vec<double, _N>(rint(low_half(v)),
+                           rint(high_half(v)));
 }
 
 template <std::size_t _N>

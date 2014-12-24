@@ -82,10 +82,6 @@ namespace cftal {
 
     bool
     elements_equal(const vec<double, 4>& v);
-#endif
-    
-    vec<double, 4>
-    cbrt(vec<double, 4> v);
 
     v4f64 max(const v4f64& a, const v4f64& b);
     v4f64 min(const v4f64& a, const v4f64& b);
@@ -110,12 +106,12 @@ namespace cftal {
     v4f64 andnot(const v4f64& a, const v4f64& b);
     v4f64 copysign(const v4f64& x, const v4f64& y);
     v4f64 mulsign(const v4f64& x, const v4f64& y);
-#if 0
-    v4f64::mask_type isinf(const v4f64& x);
-    v4f64::mask_type isnan(const v4f64& x);
-    v4f64::mask_type isfinite(const v4f64& x);
+
 #endif
 
+    vec<double, 4>
+    cbrt(arg<vec<double, 4> >::type v);
+    
     v4f64 frexp(arg<v4f64>::type x, v4s32* e);
     // v4f64 pow2i(arg<v4s32>::type e);
     v4f64 ldexp(arg<v4f64>::type d, arg<v4s32>::type e);
@@ -160,13 +156,9 @@ namespace cftal {
     // -(a*b) - c
     v4f64 nfms(const v4f64& a, const v4f64& b, const v4f64& c);
 
-#if 0    
-    // a*b +c with rounding or not
-    v4f64 mad(const v4f64& a, const v4f64& b, const v4f64& c);
-    // -(a*b) +c with rounding or not
-    v4f64 nmad(const v4f64& a, const v4f64& b, const v4f64& c);
-#endif
     
+#if defined (__AVX__)    
+
     template <bool _P0, bool _P1,
               bool _P2, bool _P3>
     vec<double, 4>
@@ -445,8 +437,10 @@ namespace cftal {
 #endif
 
     }
-
+#endif // __AVX__    
 }
+
+#if defined (__AVX__)
 
 inline
 cftal::vec<double, 4>::vec(double v)
@@ -754,6 +748,8 @@ cftal::v4f64 cftal::trunc(const v4f64& a)
 {
     return x86::round(a, x86::rounding_mode::towardzero);
 }
+
+#endif // __AVX__
 
 // Local variables:
 // mode: c++

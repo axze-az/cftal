@@ -4,6 +4,8 @@
 #include <cftal/config.h>
 #include <cftal/expr.h>
 #include <cftal/constants.h>
+#include <cftal/init_list.h>
+#include <cftal/mem.h>
 
 namespace cftal {
 
@@ -13,7 +15,7 @@ namespace cftal {
     };   
     
     template <typename _T, std::size_t _N >
-    class alignas(const_min<128, sizeof(_T)*_N>::v) vec {
+    class /* alignas(const_min<128, sizeof(_T)*_N>::v)*/ vec {
     public:
         // value type
         using value_type = _T;
