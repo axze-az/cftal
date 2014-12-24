@@ -147,6 +147,7 @@ namespace cftal {
 
     v4f64 pow(arg<v4f64>::type x, arg<v4f64>::type y);
 
+#if defined (__AVX__)        
     // a*b +c
     v4f64 fma(const v4f64& a, const v4f64& b, const v4f64& c);
     // a*b -c
@@ -157,7 +158,6 @@ namespace cftal {
     v4f64 nfms(const v4f64& a, const v4f64& b, const v4f64& c);
 
     
-#if defined (__AVX__)    
 
     template <bool _P0, bool _P1,
               bool _P2, bool _P3>
