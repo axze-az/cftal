@@ -96,7 +96,7 @@ namespace cftal {
             mask_type
             v(const full_type& a, const full_type& b) {
 #if defined (__SSE4_2__)
-                const __m128i msk= _mm_set1_epi64(sign_s64_msk::v._u64);
+                const __m128i msk= _mm_set1_epi64x(sign_s64_msk::v._u64);
                 __m128i ax= _mm_xor_si128(a(), msk);
                 __m128i bx= _mm_xor_si128(b(), msk);
                 return _mm_cmpgt_epi64(ax, bx);
