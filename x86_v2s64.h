@@ -19,8 +19,8 @@ namespace cftal {
 
         using base_type::base_type;
         vec() = default;
-        vec(const v4u32& v);
-        // create vec{v,v,v,v}
+        vec(const vec<uint64_t, 2>& v);
+        // create vec{v,v}
         vec(int64_t v);
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
@@ -42,7 +42,7 @@ namespace cftal {
     template <>
     struct mem< vec<int64_t, 2> > {
         static
-        vec<int64_t, 2> load(const int64_t* p, std::size_t n=4);
+        vec<int64_t, 2> load(const int64_t* p, std::size_t n=2);
         static
         void store(int64_t* p, const vec<int64_t, 2>& v);
     };
@@ -55,18 +55,15 @@ namespace cftal {
            const vec<int64_t, 2>& on_true,
            const vec<int64_t, 2>& on_false);
 
-    template <bool _P0, bool _P1, 
-              bool _P2, bool _P3>
+    template <bool _P0, bool _P1>
     vec<int64_t, 2> 
     select(const vec<int64_t, 2>& on_true,
            const vec<int64_t, 2>& on_false);
 
-    template <int64_t _P0, int64_t _P1,
-              int64_t _P2, int64_t _P3>
+    template <int64_t _P0, int64_t _P1>
     vec<int64_t, 2> permute(const vec<int64_t, 2>& s);
 
-    template <int64_t _P0, int64_t _P1,
-              int64_t _P2, int64_t _P3>
+    template <int64_t _P0, int64_t _P1>
     vec<int64_t, 2> permute(const vec<int64_t, 2>& s0, 
                             const vec<int64_t, 2>& s1);
 

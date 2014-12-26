@@ -39,13 +39,13 @@ cftal::select(const _M& m, const _T& on_true, const _T& on_false)
 #if defined (__SSE2__)
 #include <cftal/x86_v4s32.h>
 #include <cftal/x86_v4u32.h>
-#include <cftal/x86_v4s32_inl.h>
-#include <cftal/x86_v4u32_inl.h>
-#if 0
 #include <cftal/x86_v2s64.h>
 #include <cftal/x86_v2u64.h>
-#endif
 #include <cftal/x86_v2f64.h>
+#include <cftal/x86_v4s32_inl.h>
+#include <cftal/x86_v4u32_inl.h>
+#include <cftal/x86_v2s64_inl.h>
+#include <cftal/x86_v2u64_inl.h>
 #endif
 #if defined (__AVX__)
 #include <cftal/x86_v8f32.h>

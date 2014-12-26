@@ -25,7 +25,7 @@ namespace cftal {
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
         vec(std::initializer_list<uint64_t> l);
-        // allow construction from vec<int64_t, 8>
+        // allow construction from vec<int64_t, 4>
         vec(init_list<uint64_t> l);
         // expression template constructor
         template <template <class _U, std::size_t _M>
@@ -56,18 +56,15 @@ namespace cftal {
            const vec<uint64_t, 2>& on_true,
            const vec<uint64_t, 2>& on_false);
 
-    template <bool _P0, bool _P1, 
-              bool _P2, bool _P3>
+    template <bool _P0, bool _P1>
     vec<int64_t, 2> 
     select(const vec<uint64_t, 2>& on_true,
            const vec<uint64_t, 2>& on_false);
 
-    template <int64_t _P0, int64_t _P1,
-              int64_t _P2, int64_t _P3>
+    template <int64_t _P0, int64_t _P1>
     vec<uint64_t, 2> permute(const vec<uint64_t, 2>& s);
 
-    template <int64_t _P0, int64_t _P1,
-              int64_t _P2, int64_t _P3>
+    template <int64_t _P0, int64_t _P1>
     vec<uint64_t, 2> permute(const vec<uint64_t, 2>& s0, 
                              const vec<uint64_t, 2>& s1);
 
@@ -75,13 +72,6 @@ namespace cftal {
     mul_lo_hi(const vec<uint64_t, 2>& a,
               const vec<uint64_t, 2>& b);
     
-    // load from memory, fills remaining elements with the last
-    // one given
-    vec<uint64_t, 2>
-    load(const uint64_t* l, std::size_t s);
-
-    void
-    store(uint64_t* p, const vec<int64_t, 2>& v);
 }    
 
 

@@ -31,9 +31,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                v2u64 ta(a ^ full_type(sign_s32_msk::v._u32));
-                v2u64 tb(b ^ full_type(sign_s32_msk::v._u32));
-                return _mm_cmpgt_epi32(tb(), ta());
+                return b > a;
             }
         };
 
@@ -44,13 +42,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__SSE4_1__)
-                // a<= b: a == min(a, b);
-                __m128i min_ab = _mm_min_epu32(b(), a());
-                return _mm_cmpeq_epi16(a(), min_ab);
-#else
                 return ~(b > a);
-#endif
             }
         };
 
@@ -61,7 +53,15 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return _mm_cmpeq_epi32(a(), b());
+#if defined (__SSE4_1__)
+                return _mm_cmpeq_epi64(a(), b());
+#else
+                // a == b : a_h == b_h && a_l == b_l
+                __m128i r= _mm_cmpeq_epi32(a(), b());
+                __m128i c32s = x86::impl::vpsllq_const<32>::v(r);
+                r = _mm_and_si128(r, c32s);
+                return x86::impl::vpshufd<1, 1, 3, 3>::v(r);
+#endif
             }
         };
 
@@ -84,13 +84,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__SSE4_1__)
-                // a>= b: a == max(a, b);
-                __m128i max_ab = _mm_max_epu32(b(), a());
-                return _mm_cmpeq_epi32(a(), max_ab);
-#else
                 return ~(a < b);
-#endif
             }
         };
 
@@ -101,9 +95,31 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                v2u64 ta(a ^ full_type(sign_s32_msk::v._u32));
-                v2u64 tb(b ^ full_type(sign_s32_msk::v._u32));
-                return _mm_cmpgt_epi32(ta(), tb());
+#if defined (__SSE4_2__)
+                const __m128i msk= _mm_set1_epi64(sign_s64_msk::v._u64);
+                __m128i ax= _mm_xor_si128(a(), msk);
+                __m128i bx= _mm_xor_si128(b(), msk);
+                return _mm_cmpgt_epi64(ax, bx);
+#else
+                // a > b: (a_h > b_h) || ((a_h == b_h) && (a_l > b_l))
+                // c1 ---------^ 
+                // c2 -------------------------^
+                // c3 -----------------------------------------^
+                const __m128i msk= _mm_set1_epi32(sign_s32_msk::v._u32);
+                __m128i ax= _mm_xor_si128(a(), msk);
+                __m128i bx= _mm_xor_si128(b(), msk);
+                __m128i c2= _mm_cmpeq_epi32(a(), b());
+                __m128i c1c3= _mm_cmpgt_epi32(ax, bx);
+                // only elements 1, 3 are valid:
+                __m128i c2_and_c3 =
+                    _mm_and_si128(c2, 
+                                  x86::impl::vpshufd<0, 0, 2, 2>::v(c1c3));
+                // only elements 1, 3 are valid.
+                __m128i r = _mm_or_si128(c1c3, c2_and_c3);
+                r = x86::impl::vpshufd< 1, 1, 3, 3>::v(r);
+                return r;
+#endif
+
             }
         };
 
@@ -123,13 +139,8 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-#if defined (__SSSE3__)
-                const full_type sgn(sign_s32_msk::v._u32);
-                return _mm_sign_epi32(a(), sgn());
-#else
                 const full_type zero(0);
-                return _mm_sub_epi32(zero(), a());
-#endif
+                return _mm_sub_epi64(zero(), a());
             }
         };
 
@@ -139,7 +150,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_add_epi32(a(), b());
+                return _mm_add_epi64(a(), b());
             }
         };
 
@@ -149,7 +160,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_sub_epi32(a(), b());
+                return _mm_sub_epi64(a(), b());
             }
         };
 
@@ -159,7 +170,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::impl::vpmulld::v(a(), b());
+                return x86::impl::vpmullq::v(a(), b());
             }
         };
 
@@ -169,7 +180,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::div_u32::v(a(), b());
+                return x86::div_u64::v(a(), b());
             }
         };
 
@@ -262,7 +273,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return _mm_slli_epi32(a(), s);
+                return x86::impl::vpsllq::v(a(), s);
             }
         };
 
@@ -272,7 +283,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return _mm_srli_epi32(a(), s);
+                return x86::impl::vpsrlq::v(a(), s);
             }
         };
 
@@ -281,14 +292,14 @@ namespace cftal {
 }
 
 inline
-cftal::vec<cftal::uint64_t, 2>::vec(const vec<int64_t,4>& v)
+cftal::vec<cftal::uint64_t, 2>::vec(const vec<int64_t, 2>& v)
     : base_type(v())
 {
 }
 
 inline
 cftal::vec<cftal::uint64_t, 2>::vec(uint64_t v)
-    : base_type(_mm_setr_epi32(v, v, v, v))
+    : base_type(_mm_set_epi64x(v, v))
 {
 }
 
@@ -326,17 +337,11 @@ cftal::mem<cftal::vec<uint64_t, 2> >::load(const uint64_t* p, std::size_t s)
     case 4:
         v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
         break;
-    case 3:
-        v = _mm_setr_epi32(p[0], p[1], p[2], p[2]);
-        break;
-    case 2:
-        v = _mm_setr_epi32(p[0], p[1], p[1], p[1]);
-        break;
     case 1:
-        v = _mm_setr_epi32(p[0], p[0], p[0], p[0]);
+        v = _mm_set_epi64x(p[0], p[0]);
         break;
     case 0:
-        v = _mm_setr_epi32(0, 0, 0, 0);
+        v = _mm_set_epi64x(0, 0);
         break;
     }
     return v;
@@ -353,23 +358,15 @@ cftal::mem<cftal::vec<uint64_t, 2> >::store(uint64_t* p,
 inline
 cftal::v2u64 cftal::max(const v2u64& a, const v2u64& b)
 {
-#if defined (__SSE4_1__)
-        return _mm_max_epu32(a(), b());
-#else
-        v2u64 _gt(a > b);
-        return select(_gt, a, b);
-#endif
+    v2u64 _gt(a > b);
+    return select(_gt, a, b);
 }
 
 inline
 cftal::v2u64 cftal::min(const v2u64& a, const v2u64& b)
 {
-#if defined (__SSE4_1__)
-        return _mm_min_epu32(a(), b());
-#else
-        v2u64 _lt(a < b);
-        return select(_lt, a, b);
-#endif
+    v2u64 _lt(a < b);
+    return select(_lt, a, b);
 }
 
 inline
@@ -381,37 +378,53 @@ cftal::v2u64 cftal::select(const v2u64::mask_type& m,
 }
 
 
-template <int _I0, int _I1, int _I2, int _I3>
+template <int _I0, int _I1>
 inline
 cftal::v2u64 cftal::permute(const v2u64& a)
 {
-    return x86::perm_u32<_I0, _I1, _I2, _I3>(a());
+    return x86::perm_u64<_I0, _I1>(a());
 }
 
-template <int _I0, int _I1, int _I2, int _I3>
+template <int _I0, int _I1>
 inline
 cftal::v2u64 cftal::permute(const v2u64& a, const v2u64& b)
 {
-    return x86::perm_u32<_I0, _I1, _I2, _I3>(a(), b());
+    return x86::perm_u64<_I0, _I1>(a(), b());
 }
 
 inline
 std::pair<cftal::v2u64, cftal::v2u64>
 cftal::mul_lo_hi(const v2u64& x, const v2u64& y)
 {
-    // p0l p0h p2l p2h
-    v2u64 e= _mm_mul_epu32(x(), y());
-    // p1l p1h p3l p3h
-    v2u64 o= _mm_mul_epu32(x86::impl::vpshufd<1, 0, 3, 2>::v(x()),
-                           x86::impl::vpshufd<1, 0, 3, 2>::v(y()));
-    // p0l p1l p0h p1h
-    v2u64 t0= permute<0, 2, 1, 5>(e, o);
-    // p2l p3l p2h p3h
-    v2u64 t1= permute<2, 6, 3, 7>(e, o);
-    // p0h p1h p2h p3h
-    v2u64 h = permute<2, 3, 6, 7>(t0, t1);
-    v2u64 l = permute<0, 1, 2, 5>(t0, t1);
-    return std::make_pair(l, h);
+    //         0         0 (xl_yl)_h  (xl_yl)_l
+    //         0 (xh_yl)_h (xh_yl)_l          0
+    //         0 (xl_yh)_h (xl_yh)_l          0
+    // (xh_yh)_h (xh_yh)_l 
+    v2u64 xh = x >> 32;
+    v2u64 yh = y >> 32;  
+    // 2^ 0
+    v2u64 xl_yl= _mm_mul_epu32(x(), y());
+    // 2^ 32
+    v2u64 xl_yh= _mm_mul_epu32(x(), yh());
+    v2u64 xh_yl= _mm_mul_epu32(xh(), y());
+    // 2^ 64
+    v2u64 xh_yh= _mm_mul_epu32(xh(), yh());
+    // sum of 2^32
+    v2u64 s32_95 = xl_yh + xh_yl;
+    v2u64 carry_96 = s32_95 < xl_yh;
+    // 
+    v2u64 s64_96 = s32_95 >> 32;
+    v2u64 s32_63 = s32_95 << 32;
+    // low part of the multiplication:
+    xl_yl += s32_63;
+    v2u64 neg_carry_64 = xl_yl < s32_63;
+    v2u64 c96_msk(bytes8(0, 1)._u64);
+    
+    s64_96 |= carry_96 & c96_msk;
+    xh_yh -= neg_carry_64;
+    // high part of the multiplication:
+    xh_yh += s64_96;
+    return std::make_pair(xl_yl, xh_yh);
 }
 
 
