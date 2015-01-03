@@ -60,10 +60,13 @@ namespace cftal {
     using v4f32 = vec<float, 4>;
     using v8f32 = vec<float, 8>;
 
+    using v8s16 = vec<int16_t, 8>;
+    using v8u16 = vec<uint16_t, 8>;
+    
     using v4s32 = vec<int32_t, 4>;
-    using v8s32 = vec<int32_t, 8>;
-
     using v4u32 = vec<uint32_t, 4>;
+
+    using v8s32 = vec<int32_t, 8>;
     using v8u32 = vec<uint32_t, 8>;
 
     using v2s64 = vec<int64_t, 2>;
