@@ -414,6 +414,15 @@ namespace cftal {
                 static __m128 v(__m128 a) {
                     return v(a, a);
                 }
+#if defined (__AVX__)
+                static __m256 v(__m256 a, __m256 b) {
+                    return _mm256_unpacklo_ps(a, b);
+                }
+                static __m256 v(__m256 a) {
+                    return v(a, a);
+                }
+#endif
+
             };
 
             struct vunpckhps {
@@ -423,6 +432,14 @@ namespace cftal {
                 static __m128 v(__m128 a) {
                     return v(a, a);
                 }
+#if defined (__AVX__)
+                static __m256 v(__m256 a, __m256 b) {
+                    return _mm256_unpackhi_ps(a, b);
+                }
+                static __m256 v(__m256 a) {
+                    return v(a, a);
+                }
+#endif
             };
 
             struct vpunpcklqdq {
@@ -432,6 +449,14 @@ namespace cftal {
                 static __m128i v(__m128i a) {
                     return v(a, a);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_unpacklo_epi64(a, b);
+                }
+                static __m256i v(__m256i a) {
+                    return v(a, a);
+                }
+#endif
             };
 
             struct vpunpckhqdq {
@@ -441,6 +466,14 @@ namespace cftal {
                 static __m128i v(__m128i a) {
                     return v(a, a);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_unpackhi_epi64(a, b);
+                }
+                static __m256i v(__m256i a) {
+                    return v(a, a);
+                }
+#endif
             };
 
             struct vpunpckldq {
@@ -450,6 +483,14 @@ namespace cftal {
                 static __m128i v(__m128i a) {
                     return v(a, a);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_unpacklo_epi32(a, b);
+                }
+                static __m256i v(__m256i a) {
+                    return v(a, a);
+                }
+#endif
             };
 
             struct vpunpckhdq {
@@ -459,6 +500,14 @@ namespace cftal {
                 static __m128i v(__m128i a) {
                     return v(a, a);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_unpackhi_epi32(a, b);
+                }
+                static __m256i v(__m256i a) {
+                    return v(a, a);
+                }
+#endif
             };
 
             struct vpunpcklwd {
@@ -468,6 +517,14 @@ namespace cftal {
                 static __m128i v(__m128i a) {
                     return v(a, a);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_unpacklo_epi16(a, b);
+                }
+                static __m256i v(__m256i a) {
+                    return v(a, a);
+                }
+#endif
             };
 
             struct vpunpckhwd {
@@ -477,6 +534,14 @@ namespace cftal {
                 static __m128i v(__m128i a) {
                     return v(a, a);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_unpackhi_epi16(a, b);
+                }
+                static __m256i v(__m256i a) {
+                    return v(a, a);
+                }
+#endif
             };
 
             struct vpmovzxwd {

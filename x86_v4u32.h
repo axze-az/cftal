@@ -57,7 +57,7 @@ namespace cftal {
 
     template <bool _P0, bool _P1, 
               bool _P2, bool _P3>
-    vec<int32_t, 4> 
+    vec<uint32_t, 4> 
     select(const vec<uint32_t, 4>& on_true,
            const vec<uint32_t, 4>& on_false);
 

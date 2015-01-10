@@ -45,6 +45,10 @@ namespace cftal {
         const float _f32;
         const uint32_t _u32;
         const int32_t _s32;
+        const uint16_t _u16[2];
+        const int16_t _s16[2];
+        constexpr bytes4(int16_t l, int16_t h) : _s16{l, h} {}
+        constexpr bytes4(uint16_t l, uint16_t h) : _u16{l, h} {}
         constexpr bytes4(float f) : _f32{f} {}
         constexpr bytes4(int32_t u) : _s32{u} {}
         constexpr bytes4(uint32_t u) : _u32{u} {}
@@ -58,6 +62,9 @@ namespace cftal {
 
     template <uint32_t _N>
     const bytes4 const_u32<_N>::v{_N};
+
+    using sign_s16_msk = const_u32<0x80008000>;
+    using not_sign_s16_msk = const_u32<0x7fff7fff>;
     
     using sign_s32_msk = const_u32<0x80000000>;
     using not_sign_s32_msk = const_u32<0x7fffffff>;
