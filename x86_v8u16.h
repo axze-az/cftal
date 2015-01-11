@@ -13,9 +13,9 @@ namespace cftal {
     public:
         using base_type = x86::vreg<__m128i>;
 
-        using value_type = uint32_t;
-        using mask_value_type = uint32_t;
-        using mask_type= vec<mask_value_type, 4>;
+        using value_type = uint16_t;
+        using mask_value_type = uint16_t;
+        using mask_type= vec<mask_value_type, 8>;
 
         using base_type::base_type;
         vec() = default;

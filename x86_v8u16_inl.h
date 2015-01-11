@@ -374,7 +374,7 @@ cftal::v8u16 cftal::max(const v8u16& a, const v8u16& b)
 #if defined (__SSE4_1__)
     return _mm_max_epu16(a(), b());
 #else
-    v8u16 _gt(a > b);
+    v8u16::mask_type _gt(a > b);
     return select(_gt, a, b);
 #endif
 }
@@ -385,7 +385,7 @@ cftal::v8u16 cftal::min(const v8u16& a, const v8u16& b)
 #if defined (__SSE4_1__)
     return _mm_min_epu16(a(), b());
 #else
-    v8u16 _lt(a < b);
+    v8u16::mask_type _lt(a < b);
     return select(_lt, a, b);
 #endif
 }
