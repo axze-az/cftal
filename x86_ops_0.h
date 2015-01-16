@@ -325,6 +325,11 @@ namespace cftal {
                 static __m128i v(__m128i a) {
                     return _mm_shuffle_epi32(a, m);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a) {
+                    return _mm256_shuffle_epi32(a, m);
+                }
+#endif
             };
 
             template <>
@@ -834,6 +839,11 @@ namespace cftal {
 
             struct vpmulld {
                 static __m128i v(__m128i a, __m128i b);
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_mullo_epi32(a, b);
+                }
+#endif
             };
 
             struct vpmulhud {
