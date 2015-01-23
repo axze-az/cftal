@@ -38,7 +38,14 @@ namespace cftal {
         // on sign bit of double
         __m256d select(__m256d msk, __m256d on_one, __m256d on_zero);
 #endif
+#if defined (__AVX2__)
+        // select bytes
+        // on sign bit of int8_t
+        // r[i] = msk[i] ? one[i] : zero
+        __m256i select(__m256i msk, __m256i on_one, __m256i on_zero);
+#endif
 
+        
         namespace impl {
 
             // helper for selecting first or second arg
@@ -140,6 +147,24 @@ namespace cftal {
                 public select_arg_1<__m256> {
             };
 #endif
+#if defined (__AVX2__)
+            // generic case v8u32
+            template <bool _P0, bool _P1, bool _P2, bool _P3,
+                      bool _P4, bool _P5, bool _P6, bool _P7>
+            struct select_v8u32 {
+                static __m256i v(__m256i a, __m256i b);
+            };
+            // v8u32 specializations
+            template <>
+            struct select_v8u32<0,0,0,0,0,0,0,0> :
+                public select_arg_2<__m256i> {
+            };
+            template <>
+            struct select_v8u32<1,1,1,1,1,1,1,1> :
+                public select_arg_1<__m256i> {
+            };
+#endif
+            
         }
 
         template <bool _P0, bool _P1>
@@ -166,6 +191,12 @@ namespace cftal {
                   bool _P4, bool _P5, bool _P6, bool _P7>
         __m256 select_f32(__m256 a, __m256 b);
 #endif
+#if defined (__AVX2__)
+        template <bool _P0, bool _P1, bool _P2, bool _P3,
+                  bool _P4, bool _P5, bool _P6, bool _P7>
+        __m256i select_u32(__m256i a, __m256i b);
+#endif
+
     }
 }
 
@@ -231,6 +262,16 @@ __m256d cftal::x86::select(__m256d msk, __m256d on_one, __m256d on_zero)
     return _mm256_blendv_pd (on_zero, on_one, msk);
 }
 #endif
+
+#if defined (__AVX2__)
+inline
+__m256i cftal::x86::select(__m256i msk, __m256i on_one, __m256i on_zero)
+{
+    return _mm256_blendv_epi8 (on_zero, on_one, msk);
+}
+
+#endif
+
 
 template <typename _T>
 inline _T
@@ -339,8 +380,21 @@ select_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
     const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
     return _mm256_blend_ps(b, a, sm);
 }
-
 #endif
+
+#if defined (__AVX2__)
+template<bool _P0, bool _P1, bool _P2, bool _P3,
+         bool _P4, bool _P5, bool _P6, bool _P7>
+inline __m256i
+cftal::x86::impl::
+select_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256i a, __m256i b)
+{
+    const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
+    return _mm256_blend_epi32(b, a, sm);
+}
+#endif
+
+
 
 template<bool _P0, bool _P1, bool _P2, bool _P3>
 inline __m128i
@@ -408,6 +462,17 @@ template <bool _P0, bool _P1, bool _P2, bool _P3,
 __m256 cftal::x86::select_f32(__m256 a, __m256 b)
 {
     return impl::select_v8f32<_P0, _P1, _P2, _P3,
+                              _P4, _P5, _P6, _P7>::v(a, b);
+}
+
+#endif
+
+#if defined (__AVX2__)
+template <bool _P0, bool _P1, bool _P2, bool _P3,
+          bool _P4, bool _P5, bool _P6, bool _P7>
+__m256i cftal::x86::select_u32(__m256i a, __m256i b)
+{
+    return impl::select_v8u32<_P0, _P1, _P2, _P3,
                               _P4, _P5, _P6, _P7>::v(a, b);
 }
 
