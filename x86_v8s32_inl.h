@@ -20,7 +20,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
                 full_type all_set(0xffffffff);
-                return _mm256_xor_si128(a(), all_set());
+                return _mm256_xor_si256(a(), all_set());
             }
         };
 
@@ -230,7 +230,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm256_or_si128(a(), b());
+                return _mm256_or_si256(a(), b());
             }
         };
 
@@ -241,7 +241,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm256_and_si128(a(), b());
+                return _mm256_and_si256(a(), b());
             }
         };
 
@@ -252,7 +252,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm256_xor_si128(a(), b());
+                return _mm256_xor_si256(a(), b());
             }
         };
 
@@ -366,7 +366,7 @@ void
 cftal::mem<cftal::vec<int32_t, 8> >::store(int32_t* p,
                                            const vec<int32_t, 8>& v)
 {
-    _mm256_storeu_si128(reinterpret_cast<__m256i*>(p), v());
+    _mm256_storeu_si256(reinterpret_cast<__m256i*>(p), v());
 }
 
 inline
@@ -415,12 +415,13 @@ cftal::mul_lo_hi(const v8s32& x, const v8s32& y)
         x86::impl::vpshufd<1, 0, 3, 2>::v(x()),
         x86::impl::vpshufd<1, 0, 3, 2>::v(y()));
     // p0l p1l p0h p1h
-    v8s32 t0= permute<0, 8, 1, 5>(e, o);
+    v8s32 t0= permute<0+0, 4+0, 1+0, 5+0,
+                      0+8, 4+8, 1+8, 5+8>(e, o);
     // p2l p3l p2h p3h
-    v8s32 t1= permute<2, 6, 3, 7>(e, o);
+    v8s32 t1= permute<2+0, 6+0, 3+0, 7+0>(e, o);
     // p0h p1h p2h p3h
-    v8s32 h = permute<2, 3, 6, 7>(t0, t1);
-    v8s32 l = permute<0, 1, 8, 5>(t0, t1);
+    v8s32 h = permute<2+0, 3+0, 6+0, 7+0>(t0, t1);
+    v8s32 l = permute<0+0, 1+0, 4+0, 5+0>(t0, t1);
     return std::make_pair(l, h);
 }
 

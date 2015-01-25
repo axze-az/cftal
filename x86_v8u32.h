@@ -1,5 +1,5 @@
-#if !defined (__CFTAL_X86_V4U32__)
-#define __CFTAL_X86_V4U32__ 1
+#if !defined (__CFTAL_X86_V8U32__)
+#define __CFTAL_X86_V8U32__ 1
 
 #include <cftal/config.h>
 #include <cftal/types.h>

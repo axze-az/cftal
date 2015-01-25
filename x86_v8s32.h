@@ -5,6 +5,10 @@
 #include <cftal/types.h>
 #include <cftal/x86_vreg.h>
 #include <cftal/vec_op.h>
+#include <cftal/x86_v4s32.h>
+#include <cftal/x86_v8u32.h>
+
+#if defined (__AVX2__)
 
 namespace cftal {
 
@@ -22,10 +26,11 @@ namespace cftal {
         vec(const v8u32& v);
         // create vec{v,v,v,v}
         vec(int32_t v);
+        vec(const vec<int32_t, 4>& l, const vec<int32_t, 4>& h);
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
         vec(std::initializer_list<int32_t> l);
-        // allow construction from vec<int32_t, 8>
+        // allow construction from vec<int32_t, 16>
         vec(init_list<int32_t> l);
         // expression template constructor
         template <template <class _U, std::size_t _M>
@@ -46,6 +51,9 @@ namespace cftal {
         static
         void store(int32_t* p, const vec<int32_t, 8>& v);
     };
+
+    v4s32 low_half(const v8s32& a);
+    v4s32 high_half(const v8s32& a);
     
     v8s32 max(const v8s32& a, const v8s32& b);
     v8s32 min(const v8s32& a, const v8s32& b);
@@ -74,6 +82,8 @@ namespace cftal {
     mul_lo_hi(const vec<int32_t, 8>& a, const vec<int32_t, 8>& b);
     
 }    
+
+#endif
 
 // Local variables:
 // mode: c++
