@@ -47,8 +47,8 @@ namespace cftal {
         void store(uint32_t* p, const vec<uint32_t, 8>& v);
     };
     
-    v4u32 max(const v4u32& a, const v4u32& b);
-    v4u32 min(const v4u32& a, const v4u32& b);
+    v8u32 max(const v8u32& a, const v8u32& b);
+    v8u32 min(const v8u32& a, const v8u32& b);
  
     vec<uint32_t, 8> 
     select(const typename vec<uint32_t, 8>::mask_type& msk,

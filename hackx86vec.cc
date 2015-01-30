@@ -667,6 +667,35 @@ check_v16s32(cftal::vec<int32_t, 16> a,
     return (a ^ b) & c;
 }
 
+std::pair<cftal::vec<int32_t, 8>, cftal::vec<int32_t, 8> >
+check_mul_lo_hi(cftal::vec<int32_t, 8> a,
+                cftal::vec<int32_t, 8> b)
+{
+    return mul_lo_hi(a, b);
+}
+
+cftal::vec<int32_t, 8>
+check_perm_v8s32(cftal::vec<int32_t, 8> a,
+                 cftal::vec<int32_t, 8> b)
+{
+    return cftal::permute<0, 0+8,
+                          2, 2+8,
+                          4, 4+8,
+                          6, 6+8>(a, b);
+}
+
+cftal::vec<int32_t, 8>
+check_perm_v8s32(cftal::vec<int32_t, 8> a)
+{
+    return cftal::permute<1, -1,
+                          3, -1,
+                          4, -1,
+                          7, -1>(a);
+}
+
+
+
+
 
 int main(int argc, char** argv)
 {

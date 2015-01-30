@@ -5,7 +5,6 @@
 #include <cftal/x86_ops_0.h>
 #include <cftal/x86_ops_1.h>
 
-
 namespace cftal {
 
     namespace x86 {
@@ -692,6 +691,18 @@ namespace cftal {
             };
 #endif
 #if defined (__AVX2__)
+            // generic permutation of one u64 vector
+            template <int _P0, int _P1, int _P2, int _P3>
+            struct perm1_v4u64 {
+                static __m256i v(__m256i a);
+            };
+
+            // generic permutation of two u64 vectors
+            template <int _P0, int _P1, int _P2, int _P3>
+            struct perm2_v4u64 {
+                static __m256i v(__m256i a, __m256i b);
+            };
+
             // generic permutation of one u32 vector
             template <int _P0, int _P1, int _P2, int _P3,
                       int _P4, int _P5, int _P6, int _P7>
@@ -699,12 +710,22 @@ namespace cftal {
                 static __m256i v(__m256i a);
             };
 
-            // generic permutation of two float vectors
+            // generic permutation of two u32 vectors
             template <int _P0, int _P1, int _P2, int _P3,
                       int _P4, int _P5, int _P6, int _P7>
             struct perm2_v8u32 {
                 static __m256i v(__m256i a, __m256i b);
             };
+#if 0
+            // specializations
+            template <>
+            struct perm2_v8u32<0, 0+8, 2, 2+8,
+                               4, 4+8, 6, 6+8> {
+                static __m256i v(__m256i a, __m256i b) {
+                    return vpunpckldq::v(a, b);
+                }
+            };
+#endif
 #endif
         }
 
@@ -749,6 +770,10 @@ namespace cftal {
         __m256 perm_f32(__m256 a, __m256 b);
 #endif
 #if defined (__AVX2__)
+        template <int _P0, int _P1, int _P2, int _P3>
+        __m256i perm_u64(__m256i a);
+        template <int _P0, int _P1, int _P2, int _P3>
+        __m256i perm_u64(__m256i a, __m256i b);
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m256i perm_u32(__m256i a);
@@ -1818,7 +1843,7 @@ __m256 cftal::x86::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
         const __m256 zm= const_v8u32<z0, z1, z2, z3,
                                      z4, z5, z6, z7>::fv();
         // zero with AND mask
-        res = _mm256_and_ps(a, zm);
+        res = _mm256_and_ps(res, zm);
     }
     return res;
 }
@@ -1888,6 +1913,111 @@ __m256 cftal::x86::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
 
 #endif
 #if defined (__AVX2__)
+template <int _P0, int _P1, int _P2, int _P3>
+__m256i cftal::x86::impl::perm1_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a)
+{
+    const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 3>::m;
+    const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
+
+    const bool do_shuffle = ((m1 ^ 0x3210) & m2) !=0;
+    const bool do_zero =  ((m2 & 0xFFFF) != 0xFFFF);
+    if (!do_shuffle && !do_zero) {
+        // trivial case: do nothing
+        return a;
+    }
+    if (do_zero && !do_shuffle) {
+        // zeroing, not shuffling
+        if (m2 == 0) {
+            // zero everything
+            return _mm256_setzero_si256();
+        }
+        // zero some elements
+        const unsigned z0 = (_P0 < 0) ? 0 : -1;
+        const unsigned z1 = (_P1 < 0) ? 0 : -1;
+        const unsigned z2 = (_P2 < 0) ? 0 : -1;
+        const unsigned z3 = (_P3 < 0) ? 0 : -1;
+        const __m256i zm= const_v8u32<z0, z0, z1, z1,
+                                      z2, z2, z3, z3>::iv();
+        // zero with AND mask
+        return  _mm256_and_si256(a, zm);
+    }
+    __m256i res;
+#if 0
+    if ( (((m1 & 0x22) & m2) == 0) &&
+         (((m1 & 0x2200) & m2) == (0x2200 & m2))) {
+        // low from low src, high from high src
+        const int sel= csel4<_P0, _P1, _P2, _P3>::val;
+        res= _mm256_permute_pd(a, sel);
+    } else {}
+#endif
+    if ( ((m1 & m2) == (0x1032 & m2)) ) {
+        res= _mm256_permute2x128_si256(a, a, 0x01);
+    } else if ( ((m1 & m2) == (0x3232 & m2)) ) {
+        res= _mm256_permute2x128_si256(a, a, 0x11);
+    } else if ( ((m1 & m2) == (0x1010 & m2)) ) {
+        res= _mm256_inserti128_si256(a,
+                                     _mm256_castsi256_si128(a),
+                                     1);
+    } else {
+        // general case
+        const int sh4=shuffle4<_P0, _P1, _P2, _P3>::val;
+        res=_mm256_permute4x64_epi64(a, sh4);
+    }
+    if (do_zero) {
+        const unsigned z0 = (_P0 < 0) ? 0 : -1;
+        const unsigned z1 = (_P1 < 0) ? 0 : -1;
+        const unsigned z2 = (_P2 < 0) ? 0 : -1;
+        const unsigned z3 = (_P3 < 0) ? 0 : -1;
+        const __m256i zm= const_v8u32<z0, z0, z1, z1,
+                                      z2, z2, z3, z3>::iv();
+        // zero with AND mask
+        res = _mm256_and_si256(res, zm);
+    }
+    return res;
+}
+
+template <int _P0, int _P1, int _P2, int _P3>
+__m256i cftal::x86::impl::perm2_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i b)
+{
+    // Combine all the indexes into a single bitfield, with 4 bits
+    // for each
+    const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 7>::m;
+    // Mask to zero out negative indexes
+    const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
+
+    if ((m1 & 0x4444 & m2) == 0) {
+        // no elements from b
+        return perm1_v4u64<_P0, _P1, _P2, _P3>::v(a);
+    }
+    if (((m1^0x4444) & 0x4444 & m2) == 0) {
+        // no elements from a
+        return perm1_v4u64< _P0 & ~4, _P1 & ~4,
+                            _P2 & ~4, _P3 & ~4>::v(b);
+    }
+    if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
+        // selecting without shuffling or zeroing
+        const bool sm0 = _P0 < 4;
+        const bool sm1 = _P1 < 4;
+        const bool sm2 = _P2 < 4;
+        const bool sm3 = _P3 < 4;
+        return select_v4u64<sm0, sm1, sm2, sm3>::v(a, b);
+    }
+    // select all elements to clear or from 1st vector
+    const int ma0 = _P0 < 4 ? _P0 : -1;
+    const int ma1 = _P1 < 4 ? _P1 : -1;
+    const int ma2 = _P2 < 4 ? _P2 : -1;
+    const int ma3 = _P3 < 4 ? _P3 : -1;
+    __m256i a1 = perm1_v4u64<ma0, ma1, ma2, ma3>::v(a);
+    // select all elements from second vector
+    const int mb0 = _P0 > 3 ? (_P0-4) : -1;
+    const int mb1 = _P1 > 3 ? (_P1-4) : -1;
+    const int mb2 = _P2 > 3 ? (_P2-4) : -1;
+    const int mb3 = _P3 > 3 ? (_P3-4) : -1;
+    __m256i b1 = perm1_v4u64<mb0, mb1, mb2, mb3>::v(b);
+    return  _mm256_or_si256(a1,b1);
+}
+
+
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
@@ -1903,7 +2033,6 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
         ((me & 0x1111) & mez) ==0 &&
         ((mo - me) & mez) == (0x1111 & mez) &&
         (moz == mez);
-#if 0
     if (pairs) {
         // special cases like all -1 are done in perm1_v4u64
         const int _p0 = (_P0 < 0 ? -1 : _P0>>1);
@@ -1913,7 +2042,6 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
         __m256i rd(perm1_v4u64<_p0, _p1, _p2, _p3>::v(a));
         return rd;
     }
-#endif
     const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
     const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
     const bool do_zero= m2 != 0xfffffff;
@@ -1928,7 +2056,7 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
         const unsigned z6= (_P6<0 ? 0 : -1);
         const unsigned z7= (_P7<0 ? 0 : -1);
         const __m256i zm= const_v8u32<z0, z1, z2, z3,
-                                      z4, z5, z6, z7>::fv();
+                                      z4, z5, z6, z7>::iv();
         return _mm256_and_si256(a, zm);
     }
     // in lane permutation
@@ -1942,9 +2070,9 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
                                      _P4 & 3, _P5 & 3,
                                      _P6 & 3, _P7 & 3>::iv();
         res= _mm256_permutevar_epi32(a, p);
-    } // else
-#endif       
-        if ( ((m1 & m2) == (0x32107654 & m2)) ) {
+    } else {}
+#endif
+    if ( ((m1 & m2) == (0x32107654 & m2)) ) {
         res= _mm256_permute2f128_si256(a, a, 0x01);
     } else if ( ((m1 & m2) == (0x76547654 & m2)) ) {
         res= _mm256_permute2f128_si256(a, a, 0x11);
@@ -1970,9 +2098,9 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
         const unsigned z6= (_P6<0 ? 0 : -1);
         const unsigned z7= (_P7<0 ? 0 : -1);
         const __m256i zm= const_v8u32<z0, z1, z2, z3,
-                                      z4, z5, z6, z7>::fv();
+                                      z4, z5, z6, z7>::iv();
         // zero with AND mask
-        res = _mm256_and_si256(a, zm);
+        res = _mm256_and_si256(res, zm);
     }
     return res;
 }
@@ -2335,6 +2463,37 @@ __m128i cftal::x86::perm_u64(__m128i a, __m128i b)
     return impl::perm2_v4u32<p0, p1, p2, p3>::v(a, b);
 }
 
+#if defined (__AVX2__)
+template <int _P0, int _P1, int _P2, int _P3>
+inline
+__m256i cftal::x86::perm_u64(__m256i a)
+{
+    static_assert(_P0>-2 && _P0 < 4,
+                  "cftal::x86::perm_u64(a) : -1 <= P0 < 4");
+    static_assert(_P1>-2 && _P1 < 4,
+                  "cftal::x86::perm_u64(a) : -1 <= P1 < 4");
+    static_assert(_P2>-2 && _P2 < 4,
+                  "cftal::x86::perm_u64(a) : -1 <= P2 < 4");
+    static_assert(_P3>-2 && _P3 < 4,
+                  "cftal::x86::perm_u64(a) : -1 <= P3 < 4");
+    return impl::perm1_v4u64<_P0, _P1, _P2, _P3>::v(a);
+}
+
+template <int _P0, int _P1, int _P2, int _P3>
+inline
+__m256i cftal::x86::perm_u64(__m256i a, __m256i b)
+{
+    static_assert(_P0>-2 && _P0 < 8,
+                  "cftal::x86::perm_u64(a, b) : -1 <= P0 < 8");
+    static_assert(_P1>-2 && _P1 < 8,
+                  "cftal::x86::perm_u64(a, b) : -1 <= P1 < 8");
+    static_assert(_P2>-2 && _P2 < 8,
+                  "cftal::x86::perm_u64(a, b) : -1 <= P2 < 8");
+    static_assert(_P3>-2 && _P3 < 8,
+                  "cftal::x86::perm_u64(a, b) : -1 <= P3 < 8");
+    return impl::perm2_v4u64<_P0, _P1, _P2, _P3>::v(a, b);
+}
+#endif
 
 // Local variables:
 // mode: c++

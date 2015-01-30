@@ -39,6 +39,10 @@ namespace cftal {
         struct div_u32 {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);            
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, __m256i b,
+                             __m256i* rem=nullptr);
+#endif
         };
 
         struct div_s32 {

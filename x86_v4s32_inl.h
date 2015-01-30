@@ -24,7 +24,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <>
         struct lt<int32_t, 4> {
             using full_type = vec<int32_t, 4>;
@@ -181,7 +181,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b) {
                 v4s32 q(a/b);
                 v4s32 r(remainder(a, b, q));
-                return r;                
+                return r;
             }
         };
 
@@ -220,10 +220,10 @@ namespace cftal {
                 // return full_type(std::fma(-a(), b(), c()));
                 return sub<int32_t, 4>::v(
                     c, mul<int32_t, 4>::v(a, b));
-                                          
+
             }
         };
-        
+
         template <>
         struct bit_or<int32_t, 4> {
             using full_type = vec<int32_t, 4>;
@@ -354,10 +354,10 @@ inline
 cftal::v4s32 cftal::max(const v4s32& a, const v4s32& b)
 {
 #if defined (__SSE4_1__)
-        return _mm_max_epi32(a(), b());
+    return _mm_max_epi32(a(), b());
 #else
-        v4s32 _gt(a > b);
-        return select(_gt, a, b);
+    v4s32 _gt(a > b);
+    return select(_gt, a, b);
 #endif
 }
 
@@ -365,10 +365,10 @@ inline
 cftal::v4s32 cftal::min(const v4s32& a, const v4s32& b)
 {
 #if defined (__SSE4_1__)
-        return _mm_min_epi32(a(), b());
+    return _mm_min_epi32(a(), b());
 #else
-        v4s32 _lt(a < b);
-        return select(_lt, a, b);
+    v4s32 _lt(a < b);
+    return select(_lt, a, b);
 #endif
 }
 
@@ -400,31 +400,31 @@ inline
 std::pair<cftal::v4s32, cftal::v4s32>
 cftal::mul_lo_hi(const v4s32& x, const v4s32& y)
 {
-#if defined (__SSE4_1__) 
-        // p0l p0h p2l p2h
-        v4s32 e= _mm_mul_epi32(x(), y());
-        // p1l p1h p3l p3h
-        v4s32 o= _mm_mul_epi32(x86::impl::vpshufd<1, 0, 3, 2>::v(x()),
-                               x86::impl::vpshufd<1, 0, 3, 2>::v(y()));
-        // p0l p1l p0h p1h
-        v4s32 t0= permute<0, 4, 1, 5>(e, o);
-        // p2l p3l p2h p3h
-        v4s32 t1= permute<2, 6, 3, 7>(e, o);
-        // p0h p1h p2h p3h
-        v4s32 h = permute<2, 3, 6, 7>(t0, t1);
-        v4s32 l = permute<0, 1, 4, 5>(t0, t1);
-        return std::make_pair(l, h);
+#if defined (__SSE4_1__)
+    // p0l p0h p2l p2h
+    v4s32 e= _mm_mul_epi32(x(), y());
+    // p1l p1h p3l p3h
+    v4s32 o= _mm_mul_epi32(x86::impl::vpshufd<1, 0, 3, 2>::v(x()),
+                           x86::impl::vpshufd<1, 0, 3, 2>::v(y()));
+    // p0l p1l p0h p1h
+    v4s32 t0= permute<0, 4, 1, 5>(e, o);
+    // p2l p3l p2h p3h
+    v4s32 t1= permute<2, 6, 3, 7>(e, o);
+    // p0h p1h p2h p3h
+    v4s32 h = permute<2, 3, 6, 7>(t0, t1);
+    v4s32 l = permute<0, 1, 4, 5>(t0, t1);
+    return std::make_pair(l, h);
 #else
-        // muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
-        // mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
-        std::pair<v4u32, v4u32> ur(mul_lo_hi(v4u32(x), v4u32(y)));
-        v4s32 xsgn_y= y >> 31; // x86::const_shift::_31;
-        v4s32 xsgn_x= x >> 31; // x86::const_shift::_31;
-        v4s32 x_and_xsgn_y = x & xsgn_y;
-        v4s32 y_and_xsgn_x = y & xsgn_x;
-        v4s32 sh = v4s32(ur.second) - x_and_xsgn_y - y_and_xsgn_x;
-        v4s32 sl = v4s32(ur.first);
-        return std::make_pair(sl, sh);
+    // muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
+    // mulsh(x,y) = muluh(x,y) - and(x, xsign(y)) - and(y, xsign(x));
+    std::pair<v4u32, v4u32> ur(mul_lo_hi(v4u32(x), v4u32(y)));
+    v4s32 xsgn_y= y >> 31; // x86::const_shift::_31;
+    v4s32 xsgn_x= x >> 31; // x86::const_shift::_31;
+    v4s32 x_and_xsgn_y = x & xsgn_y;
+    v4s32 y_and_xsgn_x = y & xsgn_x;
+    v4s32 sh = v4s32(ur.second) - x_and_xsgn_y - y_and_xsgn_x;
+    v4s32 sl = v4s32(ur.first);
+    return std::make_pair(sl, sh);
 #endif
 }
 

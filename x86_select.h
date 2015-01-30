@@ -148,6 +148,21 @@ namespace cftal {
             };
 #endif
 #if defined (__AVX2__)
+            // generic case v4u64
+            template <bool _P0, bool _P1, bool _P2, bool _P3>
+            struct select_v4u64 {
+                static __m256i v(__m256i a, __m256i b);
+            };
+            // v4u64 specializations
+            template <>
+            struct select_v4u64<0,0,0,0> :
+                public select_arg_2<__m256i> {
+            };
+            template <>
+            struct select_v4u64<1,1,1,1> :
+                public select_arg_1<__m256i> {
+            };
+
             // generic case v8u32
             template <bool _P0, bool _P1, bool _P2, bool _P3,
                       bool _P4, bool _P5, bool _P6, bool _P7>
@@ -192,6 +207,8 @@ namespace cftal {
         __m256 select_f32(__m256 a, __m256 b);
 #endif
 #if defined (__AVX2__)
+        template <bool _P0, bool _P1, bool _P2, bool _P3>
+        __m256i select_u64(__m256i a, __m256i b);
         template <bool _P0, bool _P1, bool _P2, bool _P3,
                   bool _P4, bool _P5, bool _P6, bool _P7>
         __m256i select_u32(__m256i a, __m256i b);
@@ -383,6 +400,17 @@ select_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
 #endif
 
 #if defined (__AVX2__)
+
+template<bool _P0, bool _P1, bool _P2, bool _P3>
+inline __m256i
+cftal::x86::impl::
+select_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i b)
+{
+    const int sm=csel8<_P0, _P0, _P1, _P1, _P2, _P2, _P3, _P3>::val;
+    return _mm256_blend_epi32(b, a, sm);
+}
+
+
 template<bool _P0, bool _P1, bool _P2, bool _P3,
          bool _P4, bool _P5, bool _P6, bool _P7>
 inline __m256i
@@ -392,6 +420,7 @@ select_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256i a, __m256i b)
     const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
     return _mm256_blend_epi32(b, a, sm);
 }
+
 #endif
 
 
@@ -468,6 +497,12 @@ __m256 cftal::x86::select_f32(__m256 a, __m256 b)
 #endif
 
 #if defined (__AVX2__)
+template <bool _P0, bool _P1, bool _P2, bool _P3>
+__m256i cftal::x86::select_u64(__m256i a, __m256i b)
+{
+    return impl::select_v4u64<_P0, _P1, _P2, _P3>::v(a, b);
+}
+
 template <bool _P0, bool _P1, bool _P2, bool _P3,
           bool _P4, bool _P5, bool _P6, bool _P7>
 __m256i cftal::x86::select_u32(__m256i a, __m256i b)

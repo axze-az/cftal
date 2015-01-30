@@ -390,38 +390,56 @@ cftal::v8s32 cftal::select(const v8s32::mask_type& m,
 }
 
 
-template <int _I0, int _I1, int _I2, int _I3>
+template <int _I0, int _I1, int _I2, int _I3,
+          int _I4, int _I5, int _I6, int _I7>
 inline
 cftal::v8s32 cftal::permute(const v8s32& a)
 {
-    return x86::perm_u32<_I0, _I1, _I2, _I3>(a());
+    return x86::perm_u32<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7>(a());
 }
 
-template <int _I0, int _I1, int _I2, int _I3>
+template <int _I0, int _I1, int _I2, int _I3,
+          int _I4, int _I5, int _I6, int _I7>
 inline
 cftal::v8s32 cftal::permute(const v8s32& a, const v8s32& b)
 {
-    return x86::perm_u32<_I0, _I1, _I2, _I3>(a(), b());
+    return x86::perm_u32<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7>(a(), b());
 }
 
 inline
 std::pair<cftal::v8s32, cftal::v8s32>
 cftal::mul_lo_hi(const v8s32& x, const v8s32& y)
 {
+#if 0    
     // p0l p0h p2l p2h
-    v8s32 e= _mm256_mul_epi32(x(), y());
+    v4s32 e= _mm_mul_epi32(x(), y());
     // p1l p1h p3l p3h
+    v4s32 o= _mm_mul_epi32(x86::impl::vpshufd<1, 0, 3, 2>::v(x()),
+                           x86::impl::vpshufd<1, 0, 3, 2>::v(y()));
+    // p0l p1l p0h p1h
+    v4s32 t0= permute<0, 4, 1, 5>(e, o);
+    // p2l p3l p2h p3h
+    v4s32 t1= permute<2, 6, 3, 7>(e, o);
+    // p0h p1h p2h p3h
+    v4s32 h = permute<2, 3, 6, 7>(t0, t1);
+    v4s32 l = permute<0, 1, 4, 5>(t0, t1);
+    return std::make_pair(l, h);
+#endif
+    // p0l p0h p2l p2h p4l p4h p6l p6h
+    v8s32 e= _mm256_mul_epi32(x(), y());
+    // p1l p1h p3l p3h p5l p5h p7l p7h
     v8s32 o= _mm256_mul_epi32(
         x86::impl::vpshufd<1, 0, 3, 2>::v(x()),
         x86::impl::vpshufd<1, 0, 3, 2>::v(y()));
-    // p0l p1l p0h p1h
-    v8s32 t0= permute<0+0, 4+0, 1+0, 5+0,
-                      0+8, 4+8, 1+8, 5+8>(e, o);
-    // p2l p3l p2h p3h
-    v8s32 t1= permute<2+0, 6+0, 3+0, 7+0>(e, o);
-    // p0h p1h p2h p3h
-    v8s32 h = permute<2+0, 3+0, 6+0, 7+0>(t0, t1);
-    v8s32 l = permute<0+0, 1+0, 4+0, 5+0>(t0, t1);
+    // --------------------------------------
+    v8s32 l= permute<0, 0+8,
+                     2, 2+8,
+                     4, 4+8,
+                     6, 6+8>(e, o);
+    v8s32 h= permute<1, 1+8,
+                     3, 3+8,
+                     5, 5+8,
+                     7, 7+8>(e, o);
     return std::make_pair(l, h);
 }
 
