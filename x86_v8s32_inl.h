@@ -292,6 +292,14 @@ cftal::vec<cftal::int32_t, 8>::vec(int32_t v)
 {
 }
 
+inline
+cftal::vec<cftal::int32_t, 8>::vec(const vec<int32_t, 4>& l,
+                                   const vec<int32_t, 4>& h)
+    : base_type(_mm256_inserti128_si256(
+                    _mm256_castsi128_si256(l()), h(), 1))
+{
+}
+
 
 inline
 cftal::vec<cftal::int32_t, 8>::
@@ -367,6 +375,20 @@ cftal::mem<cftal::vec<int32_t, 8> >::store(int32_t* p,
                                            const vec<int32_t, 8>& v)
 {
     _mm256_storeu_si256(reinterpret_cast<__m256i*>(p), v());
+}
+
+inline
+cftal::vec<int32_t, 4>
+cftal::low_half(const cftal::vec<int32_t, 8>& v)
+{
+    return _mm256_castsi256_si128(v());
+}
+
+inline
+cftal::vec<int32_t, 4>
+cftal::high_half(const cftal::vec<int32_t, 8>& v)
+{
+    return _mm256_extracti128_si256(v(), 1);
 }
 
 inline

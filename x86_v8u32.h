@@ -20,6 +20,7 @@ namespace cftal {
         using base_type::base_type;
         vec() = default;
         vec(const vec<int32_t, 8>& v);
+        vec(const vec<uint32_t, 4>& l, const vec<uint32_t, 4>& h);
         // create vec{v,v,v,v}
         vec(uint32_t v);
         // constructor from std::initializer_list, fills remaining
@@ -46,6 +47,9 @@ namespace cftal {
         static
         void store(uint32_t* p, const vec<uint32_t, 8>& v);
     };
+
+    v4u32 low_half(const v8u32& a);
+    v4u32 high_half(const v8u32& a);
     
     v8u32 max(const v8u32& a, const v8u32& b);
     v8u32 min(const v8u32& a, const v8u32& b);
