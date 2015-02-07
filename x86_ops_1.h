@@ -57,11 +57,20 @@ namespace cftal {
         struct div_u64 : public div_ref<uint64_t, 2> {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, __m256i b,
+                             __m256i* rem=nullptr);
+#endif
         };
 
         struct div_s64 : public div_ref<int64_t, 2> {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
+            
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, __m256i b,
+                             __m256i* rem=nullptr);
+#endif
         };
 
         // read the sign bits of all elements into a bit mask
@@ -77,12 +86,16 @@ namespace cftal {
         // read the sign bits of all elements into a bit mask
         int read_signs_f64(__m256d d);
 #endif
+#if defined (__AVX2__)
+        // read the sign bits of all elements into a bit mask
+        int read_signs_s8(__m128i i);
+#endif
 
         // neither all bits set nor unset
         bool both_bits(__m128i a);
         // all bits set
         bool all_bits(__m128i a);
-        // all bits set
+        // all bits not set
         bool no_bits(__m128i a);
 
         bool both_signs_f32(__m128 a);
@@ -187,6 +200,14 @@ inline
 int cftal::x86::read_signs_f64(__m256d a)
 {
     return _mm256_movemask_pd(a);
+}
+#endif
+
+#if defined (__AVX2__)
+inline
+int cftal::x86::read_signs_s8(__m256i a)
+{
+    return _mm256_movemask_epi8(a);
 }
 #endif
 

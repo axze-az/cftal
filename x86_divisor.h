@@ -1,9 +1,8 @@
-#if !defined (__CFTAL_DIVISOR_H__)
-#define __CFTAL_DIVISOR_H__ 1
+#if !defined (__CFTAL_X86_DIVISOR_H__)
+#define __CFTAL_X86_DIVISOR_H__ 1
 
 #include <cftal/vec_op.h>
 #include <cftal/divisor.h>
-
 
 namespace cftal {
 
@@ -26,18 +25,18 @@ namespace cftal {
 #if 0
         // v8u16
         template <>
-        struct udiv_traits<x86vec::v8u16, uint16_t> : public
-        x86vec::impl::unsigned_vec_traits<x86vec::v8u16> {
+        struct udiv_traits<v8u16, uint16_t> : public
+        x86vec::impl::unsigned_vec_traits<v8u16> {
         };
         // v8s16
         template <>
-        struct sdiv_traits<x86vec::v8s16, int16_t> : public
-        x86vec::impl::signed_vec_traits<x86vec::v8s16> {
+        struct sdiv_traits<v8s16, int16_t> : public
+        x86vec::impl::signed_vec_traits<v8s16> {
         };
 
         // v4u32
         template <>
-        struct udiv_traits<x86vec::v4u32, uint32_t> : public
+        struct udiv_traits<v4u32, uint32_t> : public
         x86vec::impl::unsigned_vec_traits<x86vec::v4u32> {
         };
 #endif
@@ -51,13 +50,13 @@ namespace cftal {
 #if 0
         // v2u64
         template <>
-        struct udiv_traits<x86vec::v2u64, uint64_t> : public
-        x86vec::impl::unsigned_vec_traits<x86vec::v2u64> {
+        struct udiv_traits<v2u64, uint64_t> : public
+        x86vec::impl::unsigned_vec_traits<v2u64> {
         };
         // v2s64
         template <>
-        struct sdiv_traits<x86vec::v2s64, int64_t> : public
-        x86vec::impl::signed_vec_traits<x86vec::v2s64> {
+        struct sdiv_traits<v2s64, int64_t> : public
+        x86vec::impl::signed_vec_traits<v2s64> {
         };
 #endif
 

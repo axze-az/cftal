@@ -2,7 +2,8 @@
 #define __CFTAL_TEST_X86_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/test/x86.h>
+#include <cftal/types.h>
+#include <cmath>
 
 namespace cftal {
     namespace test {

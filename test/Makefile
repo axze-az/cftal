@@ -10,11 +10,14 @@ MINOR=1#
 
 SLDFLAGS:= $(SLDFLAGS) 
 CXXFLAGS+= -march=native -I../..
-CSRCS=div.cc #$(wildcard ./test_vec*.cc)
+CSRCS=#div.cc #$(wildcard ./test_vec*.cc)
 
-all: lib$(LIBNAME).a #testvec-01
+TESTPRGS=test-vec-01
+TESTPRGS-DEB=$(addsuffix -g, $(TESTPRGS))
 
-debug: testvec-01-g
+all: $(TESTPRGS) #lib$(LIBNAME).a #testvec-01
+
+debug: $(TESTPRGS-DEB)
 
 lib: lib$(LIBNAME).a 
 
@@ -42,10 +45,10 @@ install-debug: lib$(LIBNAME)-g.a
 	mkdir -p $(INSTALLDIR)/lib
 	$(INSTALL) -c -m 0644 lib$(LIBNAME)-g.a $(INSTALLDIR)/lib
 
-testx86vec-01: testx86vec-01.ol lib$(LIBNAME).a ../libcftal.a
+test-vec-01: test-vec-01.ol lib$(LIBNAME).a ../libcftal.a
 	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
 
-testx86vec-01-g: testx86vec-01.od lib$(LIBNAME)-g.a ../libcftal-g.a
+test-vec-01-g: test-vec-01.od lib$(LIBNAME)-g.a ../libcftal-g.a
 	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++
 
 
@@ -53,7 +56,7 @@ testx86vec-01-g: testx86vec-01.od lib$(LIBNAME)-g.a ../libcftal-g.a
 # cleanup 
 clean:
 	-$(RM) -rf *.i *.o* *.so.*  *.a *.so *.map *.s 
-	-$(RM) testfpvec testx86vec-01 testx86vec-01-g
+	-$(RM) $(TESTPRGS) $(TESTPRGS-DEB)
 
 distclean: clean
 	-$(RM) -rf .depend .*.dep* *~

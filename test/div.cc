@@ -1,6 +1,10 @@
 #include "x86.h"
+#include <iostream>
+#include <iomanip>
+#include <cftal/vec.h>
+#include <cftal/divisor.h>
 
-namespace x86vec {
+namespace cftal {
 
     namespace test {
 
@@ -47,7 +51,7 @@ namespace x86vec {
 
 
 template <class _T, class _REF, class _PR>
-bool x86vec::test::check_div_16(const char* msg)
+bool cftal::test::check_div_16(const char* msg)
 {
     std::uint64_t ts[div_type::LAST];
     std::uint64_t tcur[div_type::LAST+1];
@@ -64,7 +68,7 @@ bool x86vec::test::check_div_16(const char* msg)
         for(int32_t j = 0; j < 0x10000; j += 8) {
             _T u(j, j + 1, j + 2, j + 3,
                  j + 4, j + 5, j + 6, j + 7);
-            __m128i __r_ref = impl::make_zero_int::v();
+            __m128i __r_ref = x86::impl::make_zero_int::v();
             _T q_ref, q_div, q_cdiv;
             _T r_ref, r_div, r_cdiv;
             tcur[div_type::REF] = cftal::rdtsc();
@@ -124,7 +128,7 @@ bool x86vec::test::check_div_16(const char* msg)
 }
 
 template <class _T, class _REF, class _PR, class _RND>
-bool x86vec::test::
+bool cftal::test::
 check_div_32_one_rnd(typename _T::element_type ii,
                      const divisor<_T, typename _T::element_type>& dd,
                      _RND& rnd,
@@ -139,7 +143,7 @@ check_div_32_one_rnd(typename _T::element_type ii,
         typename _T::element_type j2= rnd.next();
         typename _T::element_type j3= rnd.next();
         _T u(j0, j1, j2, j3);
-        __m128i __r_ref = impl::make_zero_int::v();
+        __m128i __r_ref = x86::impl::make_zero_int::v();
         _T q_ref, q_div, q_cdiv;
         _T r_ref, r_div, r_cdiv;
         tcur[div_type::REF] = cftal::rdtsc();
@@ -188,7 +192,7 @@ check_div_32_one_rnd(typename _T::element_type ii,
 }
 
 template <class _T, class _REF, class _PR>
-bool x86vec::test::check_div_32_rnd(const char* msg)
+bool cftal::test::check_div_32_rnd(const char* msg)
 {
     std::uint64_t ts[div_type::LAST];
     ts[div_type::REF] = ts[div_type::DIV] = ts[div_type::CDIV] =0;
@@ -243,7 +247,7 @@ bool x86vec::test::check_div_32_rnd(const char* msg)
 }
 
 template <class _T, class _REF, class _PR, class _RND>
-bool x86vec::test::
+bool cftal::test::
 check_div_64_one_rnd(typename _T::element_type ii,
                      const divisor<_T, typename _T::element_type>& dd,
                      _RND& rnd,
@@ -305,7 +309,7 @@ check_div_64_one_rnd(typename _T::element_type ii,
 }
 
 template <class _T, class _REF, class _PR>
-bool x86vec::test::check_div_64_rnd(const char* msg)
+bool cftal::test::check_div_64_rnd(const char* msg)
 {
     std::uint64_t ts[div_type::LAST];
     ts[div_type::REF] = ts[div_type::DIV] = ts[div_type::CDIV] =0;
@@ -360,38 +364,38 @@ bool x86vec::test::check_div_64_rnd(const char* msg)
 }
 
 
-bool x86vec::test::check_div_u16()
+bool cftal::test::check_div_u16()
 {
     return check_div_16<v8u16, impl::div_u16, pr_v8u16>("div_u16");
 }
 
-bool x86vec::test::check_div_s16()
+bool cftal::test::check_div_s16()
 {
     return check_div_16<v8s16, impl::div_s16, pr_v8s16>("div_s16");
 }
 
-bool x86vec::test::check_div_u32()
+bool cftal::test::check_div_u32()
 {
     return check_div_32_rnd<v4u32, impl::div_u32, pr_v4u32>("div_u32");
 }
 
-bool x86vec::test::check_div_s32()
+bool cftal::test::check_div_s32()
 {
     return check_div_32_rnd<v4s32, impl::div_s32, pr_v4s32>("div_s32");
 }
 
-bool x86vec::test::check_div_u64()
+bool cftal::test::check_div_u64()
 {
     return check_div_64_rnd<v2u64, impl::div_u64, pr_v2u64>("div_u64");
 }
 
-bool x86vec::test::check_div_s64()
+bool cftal::test::check_div_s64()
 {
     return check_div_64_rnd<v2s64, impl::div_s64, pr_v2s64>("div_s64");
 }
 
 
-bool x86vec::test::check_div()
+bool cftal::test::check_div()
 {
     bool rc(true);
     rc &= check_div_u64();
