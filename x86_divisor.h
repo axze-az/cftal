@@ -4,6 +4,7 @@
 #include <cftal/vec_op.h>
 #include <cftal/divisor.h>
 
+#if 0
 namespace cftal {
 
     namespace impl {
@@ -22,6 +23,11 @@ namespace cftal {
             }
         };
 
+        template <typename _T, std::size_t _T>
+        struct vec_div : public
+        typename std::conditional<>::type {
+        };
+        
 #if 0
         // v8u16
         template <>
@@ -62,14 +68,14 @@ namespace cftal {
 
         // v8u32
         template <>
-        struct udiv_traits<x86vec::v8u32, uint32_t> : public
-        x86vec::impl::unsigned_vec_traits<x86vec::v8u32> {
+        struct udiv_traits<cftal::v8u32, uint32_t> : public
+        x86vec::impl::unsigned_vec_traits<cftal::v8u32> {
         };
 
         // v8s32
         template <>
-        struct sdiv_traits<x86vec::v8s32, int32_t> : public
-        x86vec::impl::signed_vec_traits<x86vec::v8s32> {
+        struct sdiv_traits<cftal::v8s32, int32_t> : public
+        x86vec::impl::signed_vec_traits<cftal::v8s32> {
         };
         
     }
@@ -145,6 +151,8 @@ namespace x86vec {
 
     using cftal::divisor;
 }
+
+#endif
 
 
 // Local variables:

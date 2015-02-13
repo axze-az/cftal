@@ -35,6 +35,17 @@ namespace cftal {
             bool perform() const;
         };
 
+        // tests of vec<_T, 2>
+        template <class _T>
+        bool check_select_v2();
+
+        template <class _T>
+        bool check_perm1_v2();
+
+        template <class _T>
+        bool check_perm2_v2();
+
+        
         template <class _T>
         struct of_vec<_T, 2> {
             bool perform()
@@ -78,7 +89,7 @@ namespace cftal {
 
 template <typename _T, std::size_t _N>
 std::ostream&
-cftal::test::operator<<(std::ostream& s, const vec_arr<_T, N>& v)
+cftal::test::operator<<(std::ostream& s, const vec_arr<_T, _N>& v)
 {
     for (std::size_t i=0; i< _N; ++i) {
         if (i)
@@ -92,10 +103,10 @@ template <typename _T, std::size_t _N>
 cftal::vec<_T, _N>
 cftal::test::load_vals(bool second)
 {
-    va<_T, _N> v;
+    vec_arr<_T, _N> v;
     std::size_t offset( second ? _N+1 : 1);
     for (std::size_t i=0; i<_N; ++i) {
-        v._va[i] = _T(i);
+        v._va[i] = _T(i + offset);
     }
     return v._vv;
 }
@@ -104,7 +115,7 @@ template <typename _T, std::size_t _N, typename _M>
 bool
 cftal::test::check_val(const vec<_T, _N>& r, const idx& i, const _M& m)
 {
-    va<_T, _N> v;
+    vec_arr<_T, _N> v;
     mem< vec<_T, _N> >::store(&v._va[0], r);
     for (std::size_t e=0; e<_N; ++e) {
         if (check_val(v._va[e], i[e])==false) {

@@ -12,7 +12,7 @@ SLDFLAGS:= $(SLDFLAGS)
 CXXFLAGS+= -march=native -I../..
 CSRCS=#div.cc #$(wildcard ./test_vec*.cc)
 
-TESTPRGS=test-vec-01
+TESTPRGS=test-vec-01 gen-test-vec
 TESTPRGS-DEB=$(addsuffix -g, $(TESTPRGS))
 
 all: $(TESTPRGS) #lib$(LIBNAME).a #testvec-01
@@ -44,6 +44,9 @@ lib$(LIBNAME)-g.a: $(DEBOBJS)
 install-debug: lib$(LIBNAME)-g.a 
 	mkdir -p $(INSTALLDIR)/lib
 	$(INSTALL) -c -m 0644 lib$(LIBNAME)-g.a $(INSTALLDIR)/lib
+
+gen-test-vec: gen-test-vec.ol lib$(LIBNAME).a ../libcftal.a
+	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
 
 test-vec-01: test-vec-01.ol lib$(LIBNAME).a ../libcftal.a
 	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++

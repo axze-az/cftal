@@ -88,7 +88,7 @@ namespace cftal {
 #endif
 #if defined (__AVX2__)
         // read the sign bits of all elements into a bit mask
-        int read_signs_s8(__m128i i);
+        int read_signs_s8(__m256i i);
 #endif
 
         // neither all bits set nor unset

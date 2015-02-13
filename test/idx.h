@@ -13,7 +13,7 @@ namespace cftal {
         class idx {
             std::vector<int> m_i;
         public:
-            idx(std::initializer_list l) : m_i{l} {}
+            idx(std::initializer_list<int> l) : m_i{l} {}
             const int& operator[](std::size_t i) const {
                 return m_i[i];
             }
@@ -31,10 +31,10 @@ namespace cftal {
 }
 
 inline
-szd::ostream&
+std::ostream&
 cftal::test::operator<<(std::ostream& s, const idx& i)
 {
-    for (std::size_i j=0; j < i.size(); ++j) {
+    for (std::size_t j=0; j < i.size(); ++j) {
         if (j)
             s << ", ";
         s << i[j];
@@ -44,7 +44,7 @@ cftal::test::operator<<(std::ostream& s, const idx& i)
 
 template <class _T>
 inline
-bool cftal::test::test::check_val(_T t, int p)
+bool cftal::test::check_val(_T t, int p)
 {
     return ((p<0) && (t==0)) || (_T(p+1) == t);
 }

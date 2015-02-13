@@ -157,19 +157,16 @@ namespace cftal {
     v2f64 nmad(const v2f64& a, const v2f64& b, const v2f64& c);
 #endif
     
-    template <bool _P0, bool _P1,
-              bool _P2, bool _P3>
+    template <bool _P0, bool _P1>
     vec<double, 2>
     select(const vec<double, 2>& on_true,
            const vec<double, 2>& on_false);
 
-    template <int32_t _P0, int32_t _P1,
-              int32_t _P2, int32_t _P3>
+    template <int32_t _P0, int32_t _P1>
     vec<double, 2>
     permute(const vec<double, 2>& s);
 
-    template <int32_t _P0, int32_t _P1,
-              int32_t _P2, int32_t _P3>
+    template <int32_t _P0, int32_t _P1>
     vec<double, 2>
     permute(const vec<double, 2>& s0,
             const vec<double, 2>& s1);
