@@ -113,17 +113,20 @@ cftal::test::load_vals(bool second)
 
 template <typename _T, std::size_t _N, typename _M>
 bool
-cftal::test::check_val(const vec<_T, _N>& r, const idx& i, const _M& m)
+cftal::test::check_val(const vec<_T, _N>& r, const idx& i, const _M m)
 {
     vec_arr<_T, _N> v;
     mem< vec<_T, _N> >::store(&v._va[0], r);
+    bool rc(true);
     for (std::size_t e=0; e<_N; ++e) {
         if (check_val(v._va[e], i[e])==false) {
             std::cerr << m << "< " << i <<  " > [ "
                       << v << " ] FAILED.\n";
+            rc=false;
+            break;
         }
     }
-    return true;
+    return rc;
 }
 
 // Local variables:
