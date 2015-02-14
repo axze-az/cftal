@@ -24,5 +24,9 @@ bool cftal::test::check_v2()
 int main()
 {
     bool rc = cftal::test::check_v2<double>();
+    if (rc == false)
+        std::cerr << "cftal::test::check_v2<double>() failed.\n";
+    else
+        std::cerr << "cftal::test::check_v2<double>() passed.\n";
     return rc == true ? 0 : 1;
 }

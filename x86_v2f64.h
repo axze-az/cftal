@@ -734,6 +734,34 @@ cftal::v2f64 cftal::trunc(const v2f64& a)
     return x86::round(a, x86::rounding_mode::towardzero);
 }
 
+template <bool _I0, bool _I1>
+inline
+cftal::vec<double, 2>
+cftal::select(const vec<double, 2>& l, const vec<double,2>& r)
+{
+    return x86::select_f64<_I0, _I1>(l(), r());
+}
+
+template <int _I0, int _I1>
+inline
+cftal::vec<double, 2>
+cftal::permute(const vec<double, 2>& v)
+{
+    return x86::perm_f64<_I0, _I1>(v());
+}
+
+
+template <int _I0, int _I1>
+inline
+cftal::vec<double, 2>
+cftal::permute(const vec<double, 2>& l, const vec<double, 2>& r)
+{
+    return x86::perm_f64<_I0, _I1>(l(), r());
+}
+
+
+
+
 
 // Local variables:
 // mode: c++
