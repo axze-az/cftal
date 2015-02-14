@@ -373,6 +373,13 @@ cftal::v2s64 cftal::select(const v2s64::mask_type& m,
     return x86::select(m(), on_true(), on_false());
 }
 
+template <bool _I0, bool _I1>
+inline
+cftal::v2s64
+cftal::select(const v2s64& a, const v2s64& b)
+{
+    return x86::select_u64<_I0, _I1>(a(), b());
+}
 
 template <int _I0, int _I1>
 inline
@@ -381,7 +388,7 @@ cftal::v2s64 cftal::permute(const v2s64& a)
     return x86::perm_u64<_I0, _I1>(a());
 }
 
-template <int _I0, int _I1, int _I2, int _I3>
+template <int _I0, int _I1>
 inline
 cftal::v2s64 cftal::permute(const v2s64& a, const v2s64& b)
 {

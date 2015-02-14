@@ -155,10 +155,108 @@ cftal::test::gen_v2(const std::string& name_base)
       << "#endif\n";
 }
 
+void
+cftal::test::gen_v4(const std::string& name_base)
+{
+    std::string fname(name_base + "_v4.h");
+    std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
+
+    f << "#if !defined __CFTAL_TEST_VEC_4_H__\n"
+      << "#define __CFTAL_TEST_VEC_4_H__ 1\n\n"
+      << "#include <cftal/test/of_vec.h>\n\n"
+      << "template <class _T>\n"
+      << "bool cftal::test::check_select_v4()\n"
+      << "{\n"
+      << indent << "bool rc(true);\n"
+      << indent << "vec<_T, 4> a = load_vals<_T, 4>(false);\n"
+      << indent << "vec<_T, 4> b = load_vals<_T, 4>(true);\n"
+      << indent << "vec<_T, 4> r;\n"
+      << indent << "idx id{-2,-2,-2,-2};\n\n";
+    for (int i0=0; i0<2; ++i0) {
+        for (int i1=0; i1<2; ++i1) {
+            for (int i2=0; i2<2; ++i2) {
+                for (int i3=0; i3<2; ++i3) {
+                    f << indent << "r=select<"
+                      << idx{i0,i1,i2,i3} << ">(a,b);\n";
+                    f << indent << "id= idx{"
+                      << idx{ ((i0!=0) ? 0 : 4),
+                              ((i1!=0) ? 1 : 5),
+                              ((i2!=0) ? 2 : 6),
+                              ((i3!=0) ? 3 : 7)
+                            }
+                    << "};\n";
+                    f << indent 
+                      << "rc &= check_val(r, id, \"select_v4\");\n";
+                }
+            }
+        }
+    }
+    f << indent << "return rc;\n"
+      << "}\n\n";
+
+    // perm1 v4
+    f << "template <class _T>\n"
+      << "bool cftal::test::check_perm1_v4()\n"
+      << "{\n"
+      << indent << "bool rc(true);\n"
+      << indent << "vec<_T, 4> a = load_vals<_T, 4>(false);\n"
+      << indent << "vec<_T, 4> r;\n"
+      << indent << "idx id{-2,-2,-2,-2};\n\n";
+    for (int i0=-1; i0<4; ++i0) {
+        for (int i1=-1; i1<4; ++i1) {
+            for (int i2=-1; i2<4; ++i2) {
+                for (int i3=-1; i3<4; ++i3) {
+                    f << indent << "r=permute<"
+                      << idx{i0, i1, i2, i3} << ">(a);\n";
+                    f << indent << "id= idx{"
+                      << idx{i0, i1, i2, i3}
+                    << "};\n";
+                    f << indent
+                      << "rc &= check_val(r, id, \"perm1_v4\");\n";
+                }
+            }
+        }
+    }
+    f << indent << "return rc;\n"
+      << "}\n\n";
+
+    // perm2 v4
+    f << "template <class _T>\n"
+      << "bool cftal::test::check_perm2_v4()\n"
+      << "{\n"
+      << indent << "bool rc(true);\n"
+      << indent << "vec<_T, 4> a = load_vals<_T, 4>(false);\n"
+      << indent << "vec<_T, 4> b = load_vals<_T, 4>(true);\n"
+      << indent << "vec<_T, 4> r;\n"
+      << indent << "idx id{-2,-2,-2,-2};\n\n";
+    for (int i0=-1; i0<8; ++i0) {
+        for (int i1=-1; i1<8; ++i1) {
+            for (int i2=-1; i2<8; ++i2) {
+                for (int i3=-1; i3<8; ++i3) {
+                    f << indent << "r=permute<"
+                      << idx{i0, i1, i2, i3} << ">(a,b);\n";
+                    f << indent << "id= idx{"
+                      << idx{i0, i1, i2, i3}
+                    << "};\n";
+                    f << indent
+                      << "rc &= check_val(r, id, \"perm2_v4\");\n";
+                }
+            }
+        }
+    }
+    f << indent << "return rc;\n"
+      << "}\n\n"
+      << "// Local variables:\n"
+      << "// mode: c++\n"
+      << "// end:\n"
+      << "#endif\n";
+}
+
 
 
 int main()
 {
     cftal::test::gen_v2("of_vec");
+    cftal::test::gen_v4("of_vec");
     return 0;
 }

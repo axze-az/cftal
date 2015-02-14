@@ -377,6 +377,12 @@ cftal::v2u64 cftal::select(const v2u64::mask_type& m,
     return x86::select(m(), on_true(), on_false());
 }
 
+template <bool _I0, bool _I1>
+inline
+cftal::v2u64 cftal::select(const v2u64& a, const v2u64& b)
+{
+    return x86::select_u64<_I0, _I1>(a(), b());
+}
 
 template <int _I0, int _I1>
 inline

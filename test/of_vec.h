@@ -45,44 +45,15 @@ namespace cftal {
         template <class _T>
         bool check_perm2_v2();
 
-        
+        // tests of vec<_T, 4>
         template <class _T>
-        struct of_vec<_T, 2> {
-            bool perform()
-                const;
-            bool check_select()
-                const;
-            bool check_perm1()
-                const;
-            bool check_perm2()
-                const;
-            void gen_select()
-                const;
-        };
+        bool check_select_v4();
 
         template <class _T>
-        struct of_vec<_T, 4> {
-            bool perform()
-                const;
-            bool check_select()
-                const;
-            bool check_perm1()
-                const;
-            bool check_perm2()
-                const;
-        };
+        bool check_perm1_v4();
 
         template <class _T>
-        struct of_vec<_T, 8> {
-            bool perform()
-                const;
-            bool check_select()
-                const;
-            bool check_perm1()
-                const;
-            bool check_perm2()
-                const;
-        };
+        bool check_perm2_v4();
 
     }
 }
