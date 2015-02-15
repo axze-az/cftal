@@ -60,6 +60,18 @@ test-v4f32: test-v4f32.ol lib$(LIBNAME).a ../libcftal.a
 test-v4f32-g: test-v4f32.od lib$(LIBNAME)-g.a ../libcftal-g.a
 	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++
 
+test-v4s32: test-v4s32.ol lib$(LIBNAME).a ../libcftal.a
+	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
+
+test-v4s32-g: test-v4s32.od lib$(LIBNAME)-g.a ../libcftal-g.a
+	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++
+
+test-v4u32: test-v4u32.ol lib$(LIBNAME).a ../libcftal.a
+	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
+
+test-v4u32-g: test-v4u32.od lib$(LIBNAME)-g.a ../libcftal-g.a
+	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++
+
 
 #################################################################
 # cleanup 
