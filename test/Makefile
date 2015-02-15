@@ -12,7 +12,7 @@ SLDFLAGS:= $(SLDFLAGS)
 CXXFLAGS+= -march=native -I../..
 CSRCS=#div.cc #$(wildcard ./test_vec*.cc)
 
-TESTPRGS=test-vec-01 gen-test-vec
+TESTPRGS=gen-test-vec test-v2 test-v4f32 test-v4s32 test-v4u32
 TESTPRGS-DEB=$(addsuffix -g, $(TESTPRGS))
 
 all: $(TESTPRGS) #lib$(LIBNAME).a #testvec-01
@@ -48,10 +48,16 @@ install-debug: lib$(LIBNAME)-g.a
 gen-test-vec: gen-test-vec.ol lib$(LIBNAME).a ../libcftal.a
 	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
 
-test-vec-01: test-vec-01.ol lib$(LIBNAME).a ../libcftal.a
+test-v2: test-v2.ol lib$(LIBNAME).a ../libcftal.a
 	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
 
-test-vec-01-g: test-vec-01.od lib$(LIBNAME)-g.a ../libcftal-g.a
+test-v2-g: test-v2.od lib$(LIBNAME)-g.a ../libcftal-g.a
+	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++
+
+test-v4f32: test-v4f32.ol lib$(LIBNAME).a ../libcftal.a
+	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
+
+test-v4f32-g: test-v4f32.od lib$(LIBNAME)-g.a ../libcftal-g.a
 	$(LD) -o $@ $< $(DEB) $(LDFLAGS) -L. -l$(LIBNAME)-g -L .. -Wl,-Bstatic -lcftal-g -Wl,-Bdynamic -lstdc++
 
 

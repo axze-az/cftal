@@ -55,6 +55,25 @@ namespace cftal {
         template <class _T>
         bool check_perm2_v4();
 
+        // tests of vec<_T, 8>
+        template <class _T>
+        bool check_select_v8();
+
+        template <class _T>
+        bool check_perm1_v8();
+
+        template <class _T>
+        bool check_perm2_v8();
+        
+        // combine the tests for v2xxx
+        template <class _T>
+        bool check_v2();
+        // combine the tests for v4xxx
+        template <class _T>
+        bool check_v4();
+        // combine the tests for v8xxx
+        template <class _T>
+        bool check_v8();
     }
 }
 
@@ -96,6 +115,48 @@ cftal::test::check_val(const vec<_T, _N>& r, const idx& i, const _M m)
             rc=false;
             break;
         }
+    }
+    return rc;
+}
+
+template <class _T>
+bool cftal::test::check_v2()
+{
+    bool rc{check_select_v2<_T>()};
+    rc &= check_perm1_v2<_T>();
+    rc &= check_perm2_v2<_T>();
+    if (rc == true) {
+        std::cerr << __PRETTY_FUNCTION__ << " passed\n";
+    } else {
+        std::cerr << __PRETTY_FUNCTION__ << " failed\n";
+    }
+    return rc;
+}
+
+template <class _T>
+bool cftal::test::check_v4()
+{
+    bool rc{check_select_v4<_T>()};
+    rc &= check_perm1_v4<_T>();
+    rc &= check_perm2_v4<_T>();
+    if (rc == true) {
+        std::cerr << __PRETTY_FUNCTION__ << " passed\n";
+    } else {
+        std::cerr << __PRETTY_FUNCTION__ << " failed\n";
+    }
+    return rc;
+}
+
+template <class _T>
+bool cftal::test::check_v8()
+{
+    bool rc{check_select_v8<_T>()};
+    rc &= check_perm1_v8<_T>();
+    rc &= check_perm2_v8<_T>();
+    if (rc == true) {
+        std::cerr << __PRETTY_FUNCTION__ << " passed\n";
+    } else {
+        std::cerr << __PRETTY_FUNCTION__ << " failed\n";
     }
     return rc;
 }
