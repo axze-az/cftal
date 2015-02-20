@@ -20,8 +20,19 @@ namespace cftal {
             std::size_t size() const {
                 return m_i.size();
             }
+            using const_iterator=std::vector<int>::const_iterator;
+            const_iterator cbegin() const { return std::begin(m_i); }
+            const_iterator begin() const { return std::begin(m_i); }
+            const_iterator cend() const { return std::end(m_i); }
+            const_iterator end() const { return std::end(m_i); }
         };
 
+        bool
+        operator==(const idx& a, const idx& b);
+        
+        bool
+        operator<(const idx& a, const idx& b);
+        
         std::ostream& operator<<(std::ostream& s, const idx& i);
         
         template <class _T>
@@ -29,6 +40,24 @@ namespace cftal {
         
     }
 }
+
+inline
+bool
+cftal::test::operator==(const idx& a, const idx& b)
+{
+    return (a.size() == b.size()) &&
+        (std::equal(a.cbegin(), a.cend(),
+                    b.cbegin(), b.cend()));
+}
+
+inline
+bool
+cftal::test::operator<(const idx& a, const idx& b)
+{
+    return std::lexicographical_compare(a.cbegin(), a.cend(),
+                                        b.cbegin(), b.cend());
+}
+
 
 inline
 std::ostream&

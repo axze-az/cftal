@@ -34,6 +34,7 @@ namespace cftal {
     
     template <uint32_t _L, uint32_t _H> 
     struct const_u64 {
+        constexpr const_u64() {} // keep clang happy
         static
         const bytes8 v;
     };
@@ -56,6 +57,7 @@ namespace cftal {
 
     template <uint32_t _N>
     struct const_u32 {
+        constexpr const_u32() {} // keep clang happy
         static 
         const bytes4 v;
     };

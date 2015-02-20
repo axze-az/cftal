@@ -1,7 +1,7 @@
 #if !defined (__CFTAL_X86_DIVISOR_H__)
 #define __CFTAL_X86_DIVISOR_H__ 1
 
-#include <cftal/vec_op.h>
+#include <cftal/vec.h>
 #include <cftal/divisor.h>
 
 #if 0

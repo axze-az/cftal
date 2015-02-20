@@ -212,8 +212,8 @@ bool cftal::test::read_data(func_data<_V>& tf, std::istream& is)
             continue;
         std::stringstream t;
         t.str(line);
-        std::uint32_t a0l, a0h, a1l, a1h, rl, rh;
-        std::uint64_t a0, a1(0), r;
+        std::uint32_t a0l{0}, a0h{0}, a1l{0}, a1h{0}, rl{0}, rh{0};
+        std::uint64_t a0{0}, a1{0}, r{0};
         std::string rm;
         t >> rm >> std::hex;
         if (tf._f1) {

@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
+#include <cftal/select.h>
 #include <cftal/init_list.h>
 #include <cftal/constants.h>
 #include <cftal/expr.h>
@@ -11,21 +12,6 @@
 #include <cftal/vec_op.h>
 #include <type_traits>
 #include <cmath>
-
-namespace cftal {
-
-    template <class _M, class _T>
-    _T select(const _M& m,
-              const _T& on_true, const _T& on_false);
-}
-
-template <typename _M, typename _T>
-inline
-_T
-cftal::select(const _M& m, const _T& on_true, const _T& on_false)
-{
-    return m ? on_true : on_false;
-}
 
 #include <cftal/vec_t_1.h>
 #include <cftal/vec_double_n.h>

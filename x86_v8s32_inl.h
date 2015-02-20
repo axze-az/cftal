@@ -411,6 +411,14 @@ cftal::v8s32 cftal::select(const v8s32::mask_type& m,
     return x86::select(m(), on_true(), on_false());
 }
 
+template <bool _P0, bool _P1, bool _P2, bool _P3,
+          bool _P4, bool _P5, bool _P6, bool _P7>
+inline
+cftal::v8s32 cftal::select(const v8s32& a, const v8s32& b)
+{
+    return x86::select_u32<_P0, _P1, _P2, _P3,
+                           _P4, _P5, _P6, _P7> (a(), b());
+}
 
 template <int _I0, int _I1, int _I2, int _I3,
           int _I4, int _I5, int _I6, int _I7>
