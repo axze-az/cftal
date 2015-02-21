@@ -315,7 +315,7 @@ cftal::test::gen_v8(const std::string& name_base)
       << indent << "vec<_T, 8> a = load_vals<_T, 8>(false);\n"
       << indent << "vec<_T, 8> r;\n"
       << indent << "idx id{-2,-2,-2,-2,-2,-2,-2,-2};\n\n";
-    const int TEST_CASES= 8192;
+    const int TEST_CASES= 4096;
     std::uniform_int_distribution<> d_m1_7(-1, 7);
     while (indices.size() < TEST_CASES) {
         idx id{ d_m1_7(rnd), d_m1_7(rnd),

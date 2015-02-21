@@ -157,8 +157,6 @@ namespace cftal {
     // -(a*b) - c
     v4f64 nfms(const v4f64& a, const v4f64& b, const v4f64& c);
 
-    
-
     template <bool _P0, bool _P1,
               bool _P2, bool _P3>
     vec<double, 4>
@@ -748,6 +746,31 @@ cftal::v4f64 cftal::trunc(const v4f64& a)
 {
     return x86::round(a, x86::rounding_mode::towardzero);
 }
+
+template <bool _I0, bool _I1, bool _I2, bool _I3>
+inline
+cftal::vec<double, 4>
+cftal::select(const vec<double, 4>& l, const vec<double, 4>& r)
+{
+    return x86::select_f64<_I0, _I1, _I2, _I3>(l(), r());
+}
+
+template <int _I0, int _I1, int _I2, int _I3>
+inline
+cftal::vec<double, 4>
+cftal::permute(const vec<double, 4>& v)
+{
+    return x86::perm_f64<_I0, _I1, _I2, _I3>(v());
+}
+
+template <int _I0, int _I1, int _I2, int _I3>>
+inline
+cftal::vec<double, 4>
+cftal::permute(const vec<double, 4>& l, const vec<double, 4>& r)
+{
+    return x86::perm_f64<_I0, _I1, _I2, _I3>(l(), r());
+}
+
 
 #endif // __AVX__
 

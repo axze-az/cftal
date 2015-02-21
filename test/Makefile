@@ -64,6 +64,17 @@ of_vec_v8.h.gch: of_vec_v8.h
 	$(CXX) $(CXXFLAGS-o) -c -o $@ $<
 
 test-v2.ol: of_vec_v2.h.gch 
+test-v4f32.ol: of_vec_v4.h.gch 
+test-v4s32.ol: of_vec_v4.h.gch 
+test-v4u32.ol: of_vec_v4.h.gch 
+
+test-v4f64.ol: of_vec_v4.h.gch 
+test-v4u64.ol: of_vec_v4.h.gch 
+test-v4s64.ol: of_vec_v4.h.gch 
+
+test-v8f32.ol: of_vec_v8.h.gch 
+test-v8s32.ol: of_vec_v8.h.gch 
+test-v8u32.ol: of_vec_v8.h.gch 
 
 test-v2: test-v2.ol lib$(LIBNAME).a ../libcftal.a
 	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++
