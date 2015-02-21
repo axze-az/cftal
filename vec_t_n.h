@@ -89,6 +89,26 @@ namespace cftal {
            const vec<_T, _N>& on_true,
            const vec<_T, _N>& on_false);
 
+    template <bool _I0, bool _I1, typename _T>
+    vec<_T, 2>
+    select(const vec<_T, 2>& a, const vec<_T, 2>& b);
+
+    template <bool _I0, bool _I1, bool _I2, bool _I3, typename _T>
+    vec<_T, 4>
+    select(const vec<_T, 4>& a, const vec<_T, 4>& b);
+
+    template <bool _I0, bool _I1, bool _I2, bool _I3,
+              bool _I4, bool _I5, bool _I6, bool _I7, typename _T>
+    vec<_T, 8>
+    select(const vec<_T, 8>& a, const vec<_T, 8>& b);
+
+    template <bool _I0, bool _I1, bool _I2, bool _I3,
+              bool _I4, bool _I5, bool _I6, bool _I7,
+              bool _I8, bool _I9, bool _IA, bool _IB,
+              bool _IC, bool _ID, bool _IE, bool _IF, typename _T>
+    vec<_T, 16>
+    select(const vec<_T, 16>& a, const vec<_T, 16>& b);
+    
     template <int32_t _I0, int32_t _I1, typename _T>
     vec<_T, 2>
     permute(const vec<_T, 2>& v);
@@ -274,6 +294,49 @@ cftal::select(const typename vec<_T, _N>::mask_type& m,
         select(low_half(m), low_half(on_true), low_half(on_false)),
         select(high_half(m), high_half(on_true), high_half(on_false)));
     return res;
+}
+
+template <bool _I0, bool _I1, class _T>
+inline
+cftal::vec<_T, 2>
+cftal::select(const vec<_T, 2>& a, const vec<_T, 2>& b)
+{
+    return vec<_T, 2>(_I0 ? low_half(a) : low_half(b),
+                      _I1 ? high_half(a) : high_half(b));
+}
+
+template <bool _I0, bool _I1, bool _I2, bool _I3, class _T>
+inline
+cftal::vec<_T, 4>
+cftal::select(const vec<_T, 4>& a, const vec<_T, 4>& b)
+{
+    return vec<_T, 4>(select<_I0, _I1>(low_half(a), low_half(b)),
+                      select<_I2, _I3>(high_half(a), high_half(b)));
+}
+
+template <bool _I0, bool _I1, bool _I2, bool _I3,
+          bool _I4, bool _I5, bool _I6, bool _I7, class _T>
+inline
+cftal::vec<_T, 8>
+cftal::select(const vec<_T, 8>& a, const vec<_T, 8>& b)
+{
+    return vec<_T, 8>(select<_I0, _I1, _I2, _I3>(low_half(a), low_half(b)),
+                      select<_I4, _I5, _I6, _I7>(high_half(a), high_half(b)));
+}
+
+template <bool _I0, bool _I1, bool _I2, bool _I3,
+          bool _I4, bool _I5, bool _I6, bool _I7,
+          bool _I8, bool _I9, bool _IA, bool _IB,
+          bool _IC, bool _ID, bool _IE, bool _IF, class _T>
+inline
+cftal::vec<_T, 16>
+cftal::select(const vec<_T, 16>& a, const vec<_T, 16>& b)
+{
+    return vec<_T, 16>(
+        select<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7>(low_half(a),
+                                                       low_half(b)),
+        select<_I8, _I9, _IA, _IB, _IC, _ID, _IE, _IF>(high_half(a),
+                                                       high_half(b)));
 }
 
 template <class _T, std::size_t _N>
