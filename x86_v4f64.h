@@ -763,7 +763,7 @@ cftal::permute(const vec<double, 4>& v)
     return x86::perm_f64<_I0, _I1, _I2, _I3>(v());
 }
 
-template <int _I0, int _I1, int _I2, int _I3>>
+template <int _I0, int _I1, int _I2, int _I3>
 inline
 cftal::vec<double, 4>
 cftal::permute(const vec<double, 4>& l, const vec<double, 4>& r)
