@@ -645,6 +645,15 @@ namespace cftal {
                     __m128i sh= _mm_cvtsi32_si128(shift);
                     return v(a, sh);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m128i shift) {
+                    return _mm256_sll_epi64(a, shift);
+                }
+                static __m256i v(__m256i a, unsigned shift) {
+                __m128i sh= _mm_cvtsi32_si128(shift);
+                return v(a, sh);
+                }
+#endif
             };
 
             template <unsigned _P>
@@ -718,6 +727,15 @@ namespace cftal {
                     __m128i sh= _mm_cvtsi32_si128(shift);
                     return v(a, sh);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m128i shift) {
+                    return _mm256_srl_epi64(a, shift);
+                }
+                static __m256i v(__m256i a, unsigned shift) {
+                __m128i sh= _mm_cvtsi32_si128(shift);
+                return v(a, sh);
+                }
+#endif
             };
 
             template <unsigned _P>
@@ -757,9 +775,16 @@ namespace cftal {
                     return _mm_sra_epi32(a, shift);
                 }
                 static __m128i v(__m128i a, unsigned shift) {
-                    __m128i sh= _mm_cvtsi32_si128(shift);
-                    return v(a, sh);
+                    return _mm_srai_epi32(a, shift);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m128i shift) {
+                    return _mm256_sra_epi32(a, shift);
+                }
+                static __m256i v(__m256i a, unsigned shift) {
+                    return _mm256_srai_epi32(a, shift);
+                }
+#endif
             };
 
             template <unsigned _P>
@@ -779,6 +804,15 @@ namespace cftal {
                     unsigned sh= _mm_cvtsi128_si32(shift);
                     return v(a, sh);
                 }
+
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, unsigned shift);
+                static __m256i v(__m256i a, __m128i shift) {
+                    unsigned sh= _mm_cvtsi128_si32(shift);
+                    return v(a, sh);
+                }
+#endif
+                
             };
 
             template <unsigned _P>
@@ -856,6 +890,9 @@ namespace cftal {
 
             struct vpmullq {
                 static __m128i v(__m128i a, __m128i b);
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b);
+#endif
             };
 
 
@@ -1067,6 +1104,31 @@ __m128i cftal::x86::impl::vpsraq::v(__m128i a, unsigned shift)
     }
     return r;
 }
+
+#if defined (__AVX2__)
+inline
+__m256i cftal::x86::impl::vpsraq::v(__m256i a, unsigned shift)
+{
+    __m256i r;
+    if (shift <= 32) {
+        // high parts of result.
+        __m128i sh = _mm_cvtsi32_si128(shift);
+        __m256i sgnbits= vpsrad::v(a, sh);
+        // low parts of result.
+        __m256i allbits= vpsrlq::v(a, sh);
+        r = select_v8u32<0, 1, 0, 1, 0, 1, 0, 1>::v(sgnbits, allbits);
+    } else {
+        // r= vpshufd<1, 3, 1, 3>::v(a);
+        const __m256i v= _mm256_setr_epi32(1, 3, 5, 7,
+                                           1, 3, 5, 7);
+        r= _mm256_permutevar8x32_epi32(a, v);
+        r= vpsrad::v(r, shift-32);
+        r= _mm256_cvtepi32_epi64(_mm256_castsi256_si128(r));
+    }
+    return r;
+}
+#endif
+
 
 template <unsigned _S>
 inline

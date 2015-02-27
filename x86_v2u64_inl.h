@@ -334,7 +334,7 @@ cftal::mem<cftal::vec<uint64_t, 2> >::load(const uint64_t* p, std::size_t s)
     __m128i v;
     switch (s) {
     default:
-    case 4:
+    case 2:
         v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
         break;
     case 1:

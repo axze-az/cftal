@@ -212,37 +212,93 @@ __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 #endif
 
 #if !SLOW_DIV
+
+namespace {
+    template <class _T>
+    inline
+    _T do_div(_T x, _T y, _T* rem)
+    {
+        bool y_zero{y != _T{0}};
+        _T q{y_zero ? x/y : _T(-1)};
+        if (rem!= nullptr) {
+            *rem = y_zero ? x : x % y;
+        }
+        return q;
+    }
+
+    template <class _R, class _T>
+    inline
+    _R* rem_ptr(_T* rem, unsigned id)
+    {
+        union {
+            _T* _t;
+            _R* _r;
+        } h;
+        h._t = rem;
+        return (h._r == nullptr) ? nullptr : h._r + id;
+    }
+
+}
+
 __m128i cftal::x86::div_u64::v(__m128i x, __m128i y, __m128i* rem)
 {
-    uint64_t x0= extract_u64<0>(x);
-    uint64_t y0= extract_u64<0>(y);
-    uint64_t q0= (y0 ? x0 / y0 : uint64_t(-1));
-    uint64_t r0= (y0 && rem!= nullptr ? x0 % y0 : x0);
-
-    uint64_t x1= extract_u64<1>(x);
-    uint64_t y1= extract_u64<1>(y);
-    uint64_t q1= (y1 ? x1 / y1 : uint64_t(-1));
-    uint64_t r1= (y1 && rem!= nullptr ? x1 % y1 : x1);
-    if (rem)
-        _mm_store_si128(rem, _mm_set_epi64x(r1, r0));
+    uint64_t q0 = do_div<uint64_t>(extract_u64<0>(x),
+                                   extract_u64<0>(y),
+                                   rem_ptr<uint64_t>(rem, 0));
+    uint64_t q1 = do_div<uint64_t>(extract_u64<1>(x),
+                                   extract_u64<1>(y),
+                                   rem_ptr<uint64_t>(rem, 1));
     return _mm_set_epi64x(q1, q0);
 }
 
 __m128i cftal::x86::div_s64::v(__m128i x, __m128i y, __m128i* rem)
 {
-    int64_t x0= extract_u64<0>(x);
-    int64_t y0= extract_u64<0>(y);
-    int64_t q0= (y0 ? x0 / y0 : int64_t(-1));
-    int64_t r0= (y0 && rem!= nullptr ? x0 % y0 : x0);
-
-    int64_t x1= extract_u64<1>(x);
-    int64_t y1= extract_u64<1>(y);
-    int64_t q1= (y1 ? x1 / y1 : int64_t(-1));
-    int64_t r1= (y1 && rem!= nullptr ? x1 % y1 : x1);
-    if (rem)
-        _mm_store_si128(rem, _mm_set_epi64x(r1, r0));
+    int64_t q0 = do_div<int64_t>(extract_u64<0>(x),
+                                 extract_u64<0>(y),
+                                 rem_ptr<int64_t>(rem, 0));
+    int64_t q1 = do_div<int64_t>(extract_u64<1>(x),
+                                 extract_u64<1>(y),
+                                 rem_ptr<int64_t>(rem, 1));
     return _mm_set_epi64x(q1, q0);
 }
+
+#if defined (__AVX2__)
+
+__m256i cftal::x86::div_u64::v(__m256i x, __m256i y, __m256i* rem)
+{
+    uint64_t q0 = do_div<uint64_t>(extract_u64<0>(x),
+                                   extract_u64<0>(y),
+                                   rem_ptr<uint64_t>(rem, 0));
+    uint64_t q1 = do_div<uint64_t>(extract_u64<1>(x),
+                                   extract_u64<1>(y),
+                                   rem_ptr<uint64_t>(rem, 1));
+    uint64_t q2 = do_div<uint64_t>(extract_u64<2>(x),
+                                   extract_u64<2>(y),
+                                   rem_ptr<uint64_t>(rem, 2));
+    uint64_t q3 = do_div<uint64_t>(extract_u64<3>(x),
+                                   extract_u64<3>(y),
+                                   rem_ptr<uint64_t>(rem, 3));
+    return _mm256_set_epi64x(q3, q2, q1, q0);
+}
+
+__m256i cftal::x86::div_s64::v(__m256i x, __m256i y, __m256i* rem)
+{
+    int64_t q0 = do_div<int64_t>(extract_u64<0>(x),
+                                 extract_u64<0>(y),
+                                 rem_ptr<int64_t>(rem, 0));
+    int64_t q1 = do_div<int64_t>(extract_u64<1>(x),
+                                 extract_u64<1>(y),
+                                 rem_ptr<int64_t>(rem, 1));
+    int64_t q2 = do_div<int64_t>(extract_u64<2>(x),
+                                 extract_u64<2>(y),
+                                 rem_ptr<int64_t>(rem, 2));
+    int64_t q3 = do_div<int64_t>(extract_u64<3>(x),
+                                 extract_u64<3>(y),
+                                 rem_ptr<int64_t>(rem, 3));
+    return _mm256_set_epi64x(q3, q2, q1, q0);
+}
+
+#endif
 
 
 #else

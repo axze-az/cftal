@@ -60,6 +60,13 @@ namespace cftal {
         uint32_t extract_u32(__m256i v);
         template <unsigned _IDX>
         __m256i insert_u32(__m256i r, uint32_t v);
+
+        // extract/insert uint64_t
+        template <unsigned _IDX>
+        uint64_t extract_u64(__m256i v);
+        template <unsigned _IDX>
+        __m256i insert_u64(__m256i r, uint64_t v);
+        
 #endif
 
     }
@@ -380,45 +387,30 @@ __m256 cftal::x86::insert_f32(__m256 v, float d)
     static_assert (cond, "cftal::x86::insert_f32 _IDX < 4");
     __m256 r = v;
     __m256 vv;
+    vv = _mm256_set1_ps(d);
     switch (_IDX) {
     case 0:
-        vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f,
-                           0.0f, 0.0f, 0.0f, d);
         r= select_f32<1, 0, 0, 0, 0, 0, 0, 0>(vv, r);
         break;
     case 1:
-        vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f,
-                           0.0f, 0.0f, d, 0.0f);
         r= select_f32<0, 1, 0, 0, 0, 0, 0, 0>(vv, r);
         break;
     case 2:
-        vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f,
-                           0.0f, d, 0.0f, 0.0f);
         r= select_f32<0, 0, 1, 0, 0, 0, 0, 0>(vv, r);
         break;
     case 3:
-        vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, 0.0f,
-                           d, 0.0f, 0.0f, 0.0f);
         r= select_f32<0, 0, 0, 1, 0, 0, 0, 0>(vv, r);
         break;
     case 4:
-        vv = _mm256_set_ps(0.0f, 0.0f, 0.0f, d,
-                           0.0f, 0.0f, 0.0f, 0.0f);
         r= select_f32<0, 0, 0, 0, 1, 0, 0, 0>(vv, r);
         break;
     case 5:
-        vv = _mm256_set_ps(0.0f, 0.0f, d, 0.0f,
-                           0.0f, 0.0f, 0.0f, 0.0f);
         r= select_f32<0, 0, 0, 0, 0, 1, 0, 0>(vv, r);
         break;
     case 6:
-        vv = _mm256_set_ps(0.0f, d, 0.0f, 0.0f,
-                           0.0f, 0.0f, 0.0f, 0.0f);
         r= select_f32<0, 0, 0, 0, 0, 0, 1, 0>(vv, r);
         break;
     case 7:
-        vv = _mm256_set_ps(d, 0.0f, 0.0f, 0.0f,
-                           0.0f, 0.0f, 0.0f, 0.0f);
         r= select_f32<0, 0, 0, 0, 0, 0, 0, 1>(vv, r);
         break;
     }
@@ -459,21 +451,18 @@ __m256d cftal::x86::insert_f64(__m256d v, double d)
     static_assert (cond, "cftal::x86::insert_f64 _IDX < 4");
     __m256d r = v;
     __m256d vv;
+    vv = _mm256_set1_pd(d);
     switch (_IDX) {
     case 0:
-        vv = _mm256_set_pd(0.0, 0.0, 0.0, d);
         r= select_f64<1, 0, 0, 0>(vv, r);
         break;
     case 1:
-        vv = _mm256_set_pd(0.0, 0.0, d, 0.0);
         r= select_f64<0, 1, 0, 0>(vv, r);
         break;
     case 2:
-        vv = _mm256_set_pd(0.0, d, 0.0, 0.0);
         r= select_f64<0, 0, 1, 0>(vv, r);
         break;
     case 3:
-        vv = _mm256_set_pd(d, 0.0, 0.0, 0.0);
         r= select_f64<0, 0, 0, 1>(vv, r);
         break;
     }
@@ -490,9 +479,89 @@ cftal::uint32_t cftal::x86::extract_u32(__m256i v)
     if (_IDX<4) {
         vv = as<__m128i>(v);
     } else {
-        vv = _mm256_extractf128_si256(v, 1);
+        vv = _mm256_extracti128_si256(v, 1);
     }
     return extract_u32<_IDX&3>(vv);
+}
+
+
+template <unsigned _IDX>
+inline
+__m256i cftal::x86::insert_u32(__m256 v, uint32_t d)
+{
+    const bool cond = _IDX < 8;
+    static_assert (cond, "cftal::x86::insert_u32 _IDX < 4");
+    __m256i r = v;
+    __m256i vv;
+    vv = _mm256_set1_epi32(d);
+    switch (_IDX) {
+    case 0:
+        r= select_u32<1, 0, 0, 0, 0, 0, 0, 0>(vv, r);
+        break;
+    case 1:
+        r= select_u32<0, 1, 0, 0, 0, 0, 0, 0>(vv, r);
+        break;
+    case 2:
+        r= select_u32<0, 0, 1, 0, 0, 0, 0, 0>(vv, r);
+        break;
+    case 3:
+        r= select_u32<0, 0, 0, 1, 0, 0, 0, 0>(vv, r);
+        break;
+    case 4:
+        r= select_u32<0, 0, 0, 0, 1, 0, 0, 0>(vv, r);
+        break;
+    case 5:
+        r= select_u32<0, 0, 0, 0, 0, 1, 0, 0>(vv, r);
+        break;
+    case 6:
+        r= select_u32<0, 0, 0, 0, 0, 0, 1, 0>(vv, r);
+        break;
+    case 7:
+        r= select_u32<0, 0, 0, 0, 0, 0, 0, 1>(vv, r);
+        break;
+    }
+    return r;
+}
+
+template <unsigned _IDX>
+inline
+uint64_t cftal::x86::extract_u64(__m256i v)
+{
+    const bool cond = _IDX < 4;
+    static_assert (cond, "cftal::x86::extract_u64 _IDX < 4");
+    __m128i vv;
+    if (_IDX<2) {
+        vv = as<__m128i>(v);
+    } else {
+        vv = _mm256_extracti128_si256(v, 1);
+    }
+    return extract_u64<_IDX&1>(vv);
+}
+
+template <unsigned _IDX>
+inline
+__m256i cftal::x86::insert_u64(__m256i v, uint64_t d)
+{
+    const bool cond = _IDX < 4;
+    static_assert (cond, "cftal::x86::insert_u64 _IDX < 4");
+    __m256i r = v;
+    __m256i vv;
+    vv = _mm256_set1_epi64x(d);
+    switch (_IDX) {
+    case 0:
+        r= select_u64<1, 0, 0, 0>(vv, r);
+        break;
+    case 1:
+        r= select_u64<0, 1, 0, 0>(vv, r);
+        break;
+    case 2:
+        r= select_u64<0, 0, 1, 0>(vv, r);
+        break;
+    case 3:
+        r= select_u64<0, 0, 0, 1>(vv, r);
+        break;
+    }
+    return r;
 }
 
 

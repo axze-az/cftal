@@ -71,6 +71,9 @@ namespace cftal {
 
     using v2s64 = vec<int64_t, 2>;
     using v2u64 = vec<uint64_t, 2>;
+
+    using v4s64 = vec<int64_t, 4>;
+    using v4u64 = vec<uint64_t, 4>;
     
     template <typename _T, std::size_t _N>
     const typename vec<_T, _N>::half_type&
