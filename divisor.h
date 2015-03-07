@@ -53,12 +53,18 @@ namespace cftal {
 
         template <typename _V, typename _D>
         struct udiv_traits {
-            // _V muluh(_V, _V);
+            static 
+            _V muluh(_V a, _V b) {
+                return mul_lo_hi(a, b).second;
+            }
         };
 
         template <typename _V, typename _D>
         struct sdiv_traits {
-            // _V mulsh(_V, _V);
+            static
+            _V mulsh(_V a, _V b) {
+                return mul_lo_hi(a, b).second;
+            }
         };
 
         template <typename _D, typename _TR= udiv_setup_traits<_D> >
@@ -247,52 +253,65 @@ namespace cftal {
         template <>
         struct sdiv_traits<int64_t, int64_t>
             : public div64_traits {};
+
+        template <typename _U, typename _V>
+        struct div_sel {
+            using type = typename
+                std::conditional<std::is_signed<_V>::value,
+                                 sdiv<_U, _V>,
+                                 udiv<_U, _V> >::type;
+        };
     }
 
-    template <>
-    class divisor<int16_t, int16_t>
-        : public impl::sdiv<int16_t, int16_t> {
+    template <typename _T>
+    class divisor<_T, int16_t>
+        : public impl::sdiv<_T, int16_t> {
     public:
         divisor(int16_t d) :
-            impl::sdiv<int16_t, int16_t>(d) {}
+            impl::sdiv<_T, int16_t>(d) {}
     };
-    template <>
-    class divisor<uint16_t, uint16_t>
-        : public impl::udiv<uint16_t, uint16_t> {
+
+    template <typename _T>
+    class divisor<_T, uint16_t>
+        : public impl::udiv<_T, uint16_t> {
     public:
         divisor(int16_t d) :
-            impl::udiv<uint16_t, uint16_t>(d) {}
+            impl::udiv<_T, uint16_t>(d) {}
     };
-    template <>
-    class divisor<int32_t, int32_t>
-        : public impl::sdiv<int32_t, int32_t> {
+
+    template <typename _T>
+    class divisor<_T, int32_t>
+        : public impl::sdiv<_T, int32_t> {
     public:
         divisor(int32_t d) :
-            impl::sdiv<int32_t, int32_t>(d) {}
+            impl::sdiv<_T, int32_t>(d) {}
     };
-    template <>
-    class divisor<uint32_t, uint32_t>
-        : public impl::udiv<uint32_t, uint32_t> {
+
+    template <typename _T>
+    class divisor<_T, uint32_t>
+        : public impl::udiv<_T, uint32_t> {
     public:
         divisor(uint32_t d) :
-            impl::udiv<uint32_t, uint32_t>(d) {}
+            impl::udiv<_T, uint32_t>(d) {}
     };
 
-    template <>
-    class divisor<int64_t, int64_t>
-        : public impl::sdiv<int64_t, int64_t> {
+    template <typename _T>
+    class divisor<_T, int64_t>
+        : public impl::sdiv<_T, int64_t> {
     public:
         divisor(int64_t d) :
-            impl::sdiv<int64_t, int64_t>(d) {}
-    };
-    template <>
-    class divisor<uint64_t, uint64_t>
-        : public impl::udiv<uint64_t, uint64_t> {
-    public:
-        divisor(uint64_t d) :
-            impl::udiv<uint64_t, uint64_t>(d) {}
+            impl::sdiv<_T, int64_t>(d) {}
     };
 
+    template <typename _T>
+    class divisor<_T, uint64_t>
+        : public impl::udiv<_T, uint64_t> {
+    public:
+        divisor(uint64_t d) :
+            impl::udiv<_T, uint64_t>(d) {}
+    };
+
+    
     template <class _V>
     _V operator%(const _V& n, const divisor<_V, int16_t>& d)
     {

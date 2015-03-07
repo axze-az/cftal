@@ -45,16 +45,19 @@ namespace cftal {
         __m128i insert_u64(__m128i r, uint64_t v);
 
 #if defined (__AVX__)
+        // extract insert f32
         template <unsigned _IDX>
         float extract_f32(__m256 r);
         template <unsigned _IDX>
         __m256 insert_f32(__m256 r, float v);
 
+        // extract insert f64
         template <unsigned _IDX>
         double extract_f64(__m256d r);
         template <unsigned _IDX>
         __m256d insert_f64(__m256d r, double v);
-
+#endif
+#if defined (__AVX2__)        
         // extract/insert uint32_t
         template <unsigned _IDX>
         uint32_t extract_u32(__m256i v);
@@ -66,7 +69,6 @@ namespace cftal {
         uint64_t extract_u64(__m256i v);
         template <unsigned _IDX>
         __m256i insert_u64(__m256i r, uint64_t v);
-        
 #endif
 
     }
@@ -430,17 +432,6 @@ double cftal::x86::extract_f64(__m256d v)
         vv = _mm256_extractf128_pd(v, 1);
     }
     return extract_f64<_IDX&1>(vv);
-#if 0
-    switch (_IDX&1) {
-    case 0:
-        r = _mm_cvtsd_f64(vv);
-        break;
-    case 1:
-        r = _mm_cvtsd_f64(_mm_unpackhi_pd(vv, vv));
-        break;
-    }
-    return r;
-#endif
 }
 
 template <unsigned _IDX>
@@ -468,7 +459,9 @@ __m256d cftal::x86::insert_f64(__m256d v, double d)
     }
     return r;
 }
+#endif
 
+#if defined (__AVX2__)
 template <unsigned _IDX>
 inline
 cftal::uint32_t cftal::x86::extract_u32(__m256i v)
@@ -487,7 +480,7 @@ cftal::uint32_t cftal::x86::extract_u32(__m256i v)
 
 template <unsigned _IDX>
 inline
-__m256i cftal::x86::insert_u32(__m256 v, uint32_t d)
+__m256i cftal::x86::insert_u32(__m256i v, uint32_t d)
 {
     const bool cond = _IDX < 8;
     static_assert (cond, "cftal::x86::insert_u32 _IDX < 4");
@@ -563,7 +556,6 @@ __m256i cftal::x86::insert_u64(__m256i v, uint64_t d)
     }
     return r;
 }
-
 
 #endif
 

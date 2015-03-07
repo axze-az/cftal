@@ -4,7 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
-#include <cftal/x86_divisor.h>
+#include <cftal/divisor.h>
 #include <cftal/x86_cvt.h>
 
 namespace cftal {

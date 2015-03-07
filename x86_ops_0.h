@@ -1340,35 +1340,16 @@ cftal::x86::impl::vgatherdpd<__m256d>::v(const double* base,
     return _mm256_set_pd(d3, d2, d1, d0);
 #endif
 }
+#endif
 
+#if defined (__AVX2__)
 inline
 __m256
 cftal::x86::impl::vgatherdps<__m256, __m256i>::v(const float* base,
                                                  __m256i idx,
                                                  int scale)
 {
-#if defined (__AVX2__)
     return _mm256_i32gather_ps(base, idx, scale);
-#else
-    const char* p= reinterpret_cast<const char*>(base);
-    const char* p0= p + extract_u32<0>(idx) * scale;
-    const char* p1= p + extract_u32<1>(idx) * scale;
-    const char* p2= p + extract_u32<2>(idx) * scale;
-    const char* p3= p + extract_u32<3>(idx) * scale;
-    const char* p4= p + extract_u32<4>(idx) * scale;
-    const char* p5= p + extract_u32<5>(idx) * scale;
-    const char* p6= p + extract_u32<6>(idx) * scale;
-    const char* p7= p + extract_u32<7>(idx) * scale;
-    float d0= *reinterpret_cast<const float*>(p0);
-    float d1= *reinterpret_cast<const float*>(p1);
-    float d2= *reinterpret_cast<const float*>(p2);
-    float d3= *reinterpret_cast<const float*>(p3);
-    float d4= *reinterpret_cast<const float*>(p4);
-    float d5= *reinterpret_cast<const float*>(p5);
-    float d6= *reinterpret_cast<const float*>(p6);
-    float d7= *reinterpret_cast<const float*>(p7);
-    return _mm256_set_ps(d7, d6, d5, d4, d3, d2, d1, d0);
-#endif
 }
 
 #endif
