@@ -734,6 +734,7 @@ inline
 cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
 {
     v4f32 r;
+#if defined (__SSE4_1__)
     switch (m) {
     case rounding_mode::nearest:
         r= _mm_round_ps(a(), 0);
@@ -751,6 +752,42 @@ cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
         r= _mm_round_ps(a(), 4);
         break;
     }
+#else    
+    uint32_t mxcsr=0;
+    uint32_t rmxcsr=0;
+    if (m != rounding_mode::current) {
+        mxcsr = _mm_getcsr();
+        rmxcsr= mxcsr;
+        rmxcsr &= ~(3<<13);
+        switch (m) {
+        case rounding_mode::nearest: //0
+            break;
+        case rounding_mode::downward:
+            rmxcsr |= (1<<13);
+            break;
+        case rounding_mode::upward:
+            rmxcsr |= (2<<13);
+            break;
+        case rounding_mode::towardzero:
+            rmxcsr |= (3<<13);
+            break;
+        default:
+            break; // keep the compiler happy
+        }
+        if (unlikely(mxcsr != rmxcsr))
+            _mm_setcsr(rmxcsr);
+    }
+    const __m128 sgn_msk= v_sign_v4f32_msk::fv();
+    // (127+23)<< 23 = 0x4B000000 = 2^23
+    const __m128 magic= const_v4u32<0x4B000000, 0x4B000000,
+                                    0x4B000000, 0x4B000000>::fv();
+    __m128 sign = _mm_and_ps(a(), sgn_msk);
+    __m128 sign_magic = _mm_or_ps(magic, sign);
+    r= _mm_add_ps(a(), sign_magic);
+    r = _mm_sub_ps(a(), sign_magic);
+    if (mxcsr != rmxcsr)
+        _mm_setcsr(mxcsr);
+#endif
     return r;
 }
 

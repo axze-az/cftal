@@ -364,15 +364,15 @@ select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
     return _mm_blend_epi16(b, a, sm);
 #else
     typedef const_v8u16<
-        (_P0 ? -1 : 0), (_P1 ? -1 : 0),
-        (_P2 ? -1 : 0), (_P3 ? -1 : 0),
-        (_P4 ? -1 : 0), (_P5 ? -1 : 0),
-        (_P6 ? -1 : 0), (_P7 ? -1 : 0)> mask_type;
+        uint16_t(_P0 ? -1 : 0), uint16_t(_P1 ? -1 : 0),
+        uint16_t(_P2 ? -1 : 0), uint16_t(_P3 ? -1 : 0),
+        uint16_t(_P4 ? -1 : 0), uint16_t(_P5 ? -1 : 0),
+        uint16_t(_P6 ? -1 : 0), uint16_t(_P7 ? -1 : 0)> mask_type;
     typedef const_v8u16<
-        (_P0 ? 0 : -1), (_P1 ? 0 : -1),
-        (_P2 ? 0 : -1), (_P3 ? 0 : -1),
-        (_P4 ? 0 : -1), (_P5 ? 0 : -1),
-        (_P6 ? 0 : -1), (_P7 ? 0 : -1)> compl_mask_type;
+        uint16_t(_P0 ? 0 : -1), uint16_t(_P1 ? 0 : -1),
+        uint16_t(_P2 ? 0 : -1), uint16_t(_P3 ? 0 : -1),
+        uint16_t(_P4 ? 0 : -1), uint16_t(_P5 ? 0 : -1),
+        uint16_t(_P6 ? 0 : -1), uint16_t(_P7 ? 0 : -1)> compl_mask_type;
     a = _mm_and_si128(a, mask_type::iv());
     b = _mm_and_si128(b, compl_mask_type::iv());
     return _mm_or_si128(a, b);

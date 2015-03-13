@@ -1076,7 +1076,7 @@ __m128i cftal::x86::impl::vpsraq::v(__m128i a, unsigned shift)
         r = select_v4u32<0, 1, 0, 1>::v(sgnbits, allbits);
 #else
         // clear the low uint32_t of sgnbits
-        __m128i msk= const_v4u32<0, -1, 0, -1>::iv();
+        __m128i msk= const_v4u32<0, uint32_t(-1), 0, uint32_t(-1)>::iv();
         sgnbits = _mm_and_si128(sgnbits, msk);
         // works because high uint32_t of sgnbits contains
         // either the same pattern as allbits or ones
@@ -1095,7 +1095,7 @@ __m128i cftal::x86::impl::vpsraq::v(__m128i a, unsigned shift)
         // result bits correctly located.
         allbits = vpsrlq_const<32>::v(allbits);
         // clear the low uint32_t of sgnbits
-        __m128i msk= const_v4u32<0, -1, 0, -1>::iv();
+        __m128i msk= const_v4u32<0, uint32_t(-1), 0, uint32_t(-1)>::iv();
         sgnbits = _mm_and_si128(sgnbits, msk);
         // works because high uint32_t of sgnbits contains
         // either the same pattern as allbits or ones
@@ -1144,7 +1144,7 @@ __m128i cftal::x86::impl::vpsraq_const<_S>::v(__m128i a)
         r = select_v4u32<0, 1, 0, 1>::v(sgnbits, allbits);
 #else
         // clear the low uint32_t of sgnbits
-        __m128i msk= const_v4u32<0, -1, 0, -1>::iv();
+        __m128i msk= const_v4u32<0, uint32_t(-1), 0, uint32_t(-1)>::iv();
         sgnbits = _mm_and_si128(sgnbits, msk);
         // works because high uint32_t of sgnbits contains
         // either the same pattern as allbits or ones
@@ -1163,7 +1163,7 @@ __m128i cftal::x86::impl::vpsraq_const<_S>::v(__m128i a)
         // result bits correctly located.
         allbits = vpsrlq_const<32>::v(allbits);
         // clear the low uint32_t of sgnbits
-        __m128i msk= const_v4u32<0, -1, 0, -1>::iv();
+        __m128i msk= const_v4u32<0, uint32_t(-1), 0, uint32_t(-1)>::iv();
         sgnbits = _mm_and_si128(sgnbits, msk);
         // works because high uint32_t of sgnbits contains
         // either the same pattern as allbits or ones
@@ -1184,7 +1184,7 @@ __m128i cftal::x86::impl::vpmulld::v(__m128i a, __m128i b)
     // 1, 3 at positions 0 2
     __m128i o= _mm_mul_epu32(vpsrlq_const<32>::v(a),
                              vpsrlq_const<32>::v(b));
-    const __m128i msk = const_v4u32<-1, 0, -1, 0>::iv();
+    const __m128i msk = const_v4u32<uint32_t(-1), 0, uint32_t(-1), 0>::iv();
     e = _mm_and_si128(e, msk);
     o = _mm_slli_epi64(o, 32);
     e = _mm_or_si128(e, o);
@@ -1206,7 +1206,7 @@ __m128i cftal::x86::impl::vpmulhud::v(__m128i a, __m128i b)
 #if defined (__SSE4_1__)
     return select_v4u32<1, 0, 1, 0>::v(e, o);
 #else
-    const __m128i msk = const_v4u32<0, -1, 0, -1>::iv();
+    const __m128i msk = const_v4u32<0, uint32_t(-1), 0, uint32_t(-1)>::iv();
     o = _mm_and_si128(o, msk);
     return _mm_or_si128(e, o);
 #endif

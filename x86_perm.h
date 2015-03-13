@@ -935,10 +935,10 @@ __m128 cftal::x86::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
     // shuffle
     __m128 t= vshufps<_P0, _P1, _P2, _P3>::v(a, a);
     // zero with AND mask
-    const int z0 = (_P0 < 0) ? 0 : -1;
-    const int z1 = (_P1 < 0) ? 0 : -1;
-    const int z2 = (_P2 < 0) ? 0 : -1;
-    const int z3 = (_P3 < 0) ? 0 : -1;
+    const unsigned z0 = (_P0 < 0) ? 0 : -1;
+    const unsigned z1 = (_P1 < 0) ? 0 : -1;
+    const unsigned z2 = (_P2 < 0) ? 0 : -1;
+    const unsigned z3 = (_P3 < 0) ? 0 : -1;
     const __m128 zm= const_v4u32<z0, z1, z2, z3>::fv();
     return  _mm_and_ps(t,zm);
 #endif
@@ -1108,20 +1108,21 @@ __m128i cftal::x86::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
     // both shuffle and zero
     if (m2 == 0xFF00) {
         // zero low half, shuffle high half
-        return exec_f32<vshufps<0, 0, _P2, _P3> >::
+        return exec_f32<vshufps<0, 0, uint32_t(_P2), uint32_t(_P3)> >::
             v(make_zero_int::v(), a);
     }
     if (m2 == 0x00FF) {
         // shuffle low half, zero high half
-        return exec_f32<vshufps<_P0, _P1, 0, 0> >::
+        return exec_f32<vshufps<uint32_t(_P0), uint32_t(_P1), 0, 0> >::
             v(a, make_zero_int::v());
     }
     // both
-    __m128i t= vpshufd<_P0, _P1, _P2, _P3>::v(a);
-    const int z0 = (_P0 < 0) ? 0 : -1;
-    const int z1 = (_P1 < 0) ? 0 : -1;
-    const int z2 = (_P2 < 0) ? 0 : -1;
-    const int z3 = (_P3 < 0) ? 0 : -1;
+    __m128i t= vpshufd<uint32_t(_P0), uint32_t(_P1),
+                       uint32_t(_P2), uint32_t(_P3)>::v(a);
+    const unsigned z0 = (_P0 < 0) ? 0 : -1;
+    const unsigned z1 = (_P1 < 0) ? 0 : -1;
+    const unsigned z2 = (_P2 < 0) ? 0 : -1;
+    const unsigned z3 = (_P3 < 0) ? 0 : -1;
     const __m128i zm= const_v4u32<z0, z1, z2, z3>::iv();
     // zero with AND mask
     return  _mm_and_si128(t,zm);
