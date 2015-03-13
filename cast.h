@@ -15,7 +15,7 @@ namespace cftal {
                 _S _s;
                 ds(const _S& s) : _s(s) {}
             };
-            
+
             static _D v(const _S& r) {
                 ds c(r);
                 return c._d;
@@ -29,9 +29,9 @@ namespace cftal {
             }
         };
     }
-    
+
     template <typename _D, typename _S>
-    _D as(const _S& s);    
+    _D as(const _S& s);
 }
 
 

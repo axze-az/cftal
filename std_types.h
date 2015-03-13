@@ -10,12 +10,12 @@ namespace cftal {
     using std::uint16_t;
     using std::uint32_t;
     using std::uint64_t;
-    
+
     using std::int8_t;
     using std::int16_t;
     using std::int32_t;
     using std::int64_t;
-    
+
     typedef float f32_t;
     typedef double f64_t;
 

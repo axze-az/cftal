@@ -22,7 +22,7 @@ namespace cftal {
     operator op (const typename vec<_T, _N>::value_type& a,     \
                  const vec<_T, _N>& b)
 
-    DECL_CMP_OPS(<);
+        DECL_CMP_OPS(<);
     DECL_CMP_OPS(<=);
     DECL_CMP_OPS(==);
     DECL_CMP_OPS(!=);
@@ -30,7 +30,7 @@ namespace cftal {
     DECL_CMP_OPS(>);
 
 #undef DECL_CMP_OPS
-    
+
     namespace op {
 
         template <template <class _T,
@@ -2421,7 +2421,7 @@ cftal::operator%=(vec<_T, _N>& a,
 {
     a = a % b;
     return a;
-}    
+}
 
 
 // Local variables:

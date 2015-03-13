@@ -54,7 +54,7 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<float, _N>
-    native_exp(const vec<float, _N>& v); 
+    native_exp(const vec<float, _N>& v);
 
     template <std::size_t _N>
     vec<float, _N>
@@ -62,7 +62,7 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<float, _N>
-    native_expm1(const vec<float, _N>& v); 
+    native_expm1(const vec<float, _N>& v);
 
     template <std::size_t _N>
     vec<float, _N>
@@ -70,7 +70,7 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<float, _N>
-    native_log(const vec<float, _N>& v); 
+    native_log(const vec<float, _N>& v);
 
     template <std::size_t _N>
     vec<float, _N>
@@ -88,7 +88,7 @@ namespace cftal {
     vec<float, _N>
     atan2(const vec<float, _N>& x, const vec<float, _N>& y);
 
-    
+
     template <std::size_t _N>
     typename vec<float, _N>::mask_type
     isinf(const vec<float, _N>& v);
@@ -103,7 +103,7 @@ namespace cftal {
 
     namespace impl {
         // TODO: fma implementations
-    }  
+    }
 }
 
 template <std::size_t _N>
@@ -265,7 +265,7 @@ cftal::vec<float, _N>
 cftal::pow(const vec<float, _N>& x, const vec<float, _N>& y)
 {
     vec<float, _N> r(pow(low_half(x), low_half(y)),
-                      pow(high_half(x), high_half(y)));
+                     pow(high_half(x), high_half(y)));
     return r;
 }
 
@@ -275,7 +275,7 @@ cftal::vec<float, _N>
 cftal::atan2(const vec<float, _N>& x, const vec<float, _N>& y)
 {
     vec<float, _N> r(atan2(low_half(x), low_half(y)),
-                      atan2(high_half(x), high_half(y)));
+                     atan2(high_half(x), high_half(y)));
     return r;
 }
 

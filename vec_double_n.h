@@ -15,7 +15,7 @@ namespace cftal {
     // returns (~a) & (b)
     template <std::size_t _N>
     vec<double, _N>
-    andnot(const vec<double, _N>& a, const vec<double, _N>& b); 
+    andnot(const vec<double, _N>& a, const vec<double, _N>& b);
 
     template <std::size_t _N>
     vec<double, _N>
@@ -23,12 +23,12 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<double, _N>
-    mulsign(const vec<double, _N>& x, const vec<double, _N>& y); 
+    mulsign(const vec<double, _N>& x, const vec<double, _N>& y);
 
     template <std::size_t _N>
     vec<double, _N>
     rint(const vec<double, _N>& v);
-    
+
     // return a*b +c with or without fma
     template <std::size_t _N>
     vec<double, _N>
@@ -71,7 +71,7 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<double, _N>
-    native_exp(const vec<double, _N>& v); 
+    native_exp(const vec<double, _N>& v);
 
     template <std::size_t _N>
     vec<double, _N>
@@ -79,7 +79,7 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<double, _N>
-    native_expm1(const vec<double, _N>& v); 
+    native_expm1(const vec<double, _N>& v);
 
     template <std::size_t _N>
     vec<double, _N>
@@ -87,7 +87,7 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<double, _N>
-    native_log(const vec<double, _N>& v); 
+    native_log(const vec<double, _N>& v);
 
     template <std::size_t _N>
     vec<double, _N>
@@ -104,7 +104,7 @@ namespace cftal {
     template <std::size_t _N>
     vec<double, _N>
     atan2(const vec<double, _N>& x, const vec<double, _N>& y);
- 
+
     template <std::size_t _N>
     typename vec<double, _N>::mask_type
     isinf(const vec<double, _N>& v);
@@ -117,10 +117,10 @@ namespace cftal {
     typename vec<double, _N>::mask_type
     isfinite(const vec<double, _N>& v);
 
-    
+
     namespace impl {
         // TODO: fma implementations
-    }  
+    }
 }
 
 template <std::size_t _N>

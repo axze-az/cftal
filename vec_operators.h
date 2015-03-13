@@ -11,4 +11,3 @@ namespace cftal {
 // mode: c++
 // end:
 #endif
-

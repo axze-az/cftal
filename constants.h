@@ -9,14 +9,14 @@ namespace cftal {
     template <unsigned _N1, unsigned _N2>
     struct const_min {
         enum { v = (_N1 < _N2 ? _N1 : _N2) };
-    };    
+    };
 
 
     template <unsigned _N1, unsigned _N2>
     struct const_max {
         enum { v = (_N1 > _N2 ? _N1 : _N2) };
     };
-    
+
     union __attribute__((__visibility__("hidden"))) bytes8  {
         const double _f64;
         const float _f32[2];
@@ -31,8 +31,8 @@ namespace cftal {
         constexpr bytes8(int64_t s) : _s64{s} {}
         constexpr bytes8(uint64_t u) : _u64{u} {}
     };
-    
-    template <uint32_t _L, uint32_t _H> 
+
+    template <uint32_t _L, uint32_t _H>
     struct const_u64 {
         constexpr const_u64() {} // keep clang happy
         static
@@ -41,7 +41,7 @@ namespace cftal {
 
     template <uint32_t _L, uint32_t _H>
     const bytes8 const_u64<_L, _H>::v{_L, _H};
-    
+
     union __attribute__((__visibility__("hidden"))) bytes4 {
         const float _f32;
         const uint32_t _u32;
@@ -53,12 +53,12 @@ namespace cftal {
         constexpr bytes4(float f) : _f32{f} {}
         constexpr bytes4(int32_t u) : _s32{u} {}
         constexpr bytes4(uint32_t u) : _u32{u} {}
-    };      
+    };
 
     template <uint32_t _N>
     struct const_u32 {
         constexpr const_u32() {} // keep clang happy
-        static 
+        static
         const bytes4 v;
     };
 
@@ -67,7 +67,7 @@ namespace cftal {
 
     using sign_s16_msk = const_u32<0x80008000>;
     using not_sign_s16_msk = const_u32<0x7fff7fff>;
-    
+
     using sign_s32_msk = const_u32<0x80000000>;
     using not_sign_s32_msk = const_u32<0x7fffffff>;
     using sign_f32_msk = sign_s32_msk;
@@ -76,8 +76,8 @@ namespace cftal {
     using not_exp_f32_msk = const_u32<0x807fffff>;
     using sig_f32_msk = const_u32<0x007fffff>;
     const int exp_shift_f32 = 23;
-    const int exp_msk_f32 = 0xff;    
-    
+    const int exp_msk_f32 = 0xff;
+
     using sign_s64_msk= const_u64<0x00000000, 0x80000000>;
     using not_sign_s64_msk = const_u64<0xffffffff, 0x7fffffff>;
     using sign_f64_msk = sign_s64_msk;
@@ -88,7 +88,7 @@ namespace cftal {
     const int exp_shift_f64 = 52;
     const int exp_msk_f64 = 0x7ff;
 
-    
+
     namespace const_shift {
         static const const_u32<0> _0;
         static const const_u32<1> _1;
@@ -159,7 +159,7 @@ namespace cftal {
         static const const_u32<60> _60;
         static const const_u32<61> _61;
         static const const_u32<62> _62;
-        static const const_u32<63> _63;            
+        static const const_u32<63> _63;
     }
 }
 

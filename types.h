@@ -7,8 +7,8 @@
 
 namespace cftal {
 
-	typedef duint<uint64_t> uint128_t ;
-	typedef dint<int64_t> int128_t;
+    typedef duint<uint64_t> uint128_t ;
+    typedef dint<int64_t> int128_t;
 }
 
 // Local variables:
