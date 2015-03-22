@@ -50,10 +50,10 @@
 #include <cftal/x86_v8f32.h>
 #include <cftal/x86_v4f64.h>
 #endif
-#if defined (__AVX512__)
+#if defined (__AVX512F__)
+#include <cftal/x86_v8f64.h>
 #if 0
 #include <cftal/x86_v16f32.h>
-#include <cftal/x86_v8f64.h>
 #include <cftal/x86_v16s32.h>
 #include <cftal/x86_v16u32.h>
 #include <cftal/x86_v8s64.h>

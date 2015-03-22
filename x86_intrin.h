@@ -12,7 +12,7 @@
 #define alignas(x)
 #endif
 
-#include <x86intrin.h>
+#include <immintrin.h>
 
 #if defined (__SSE4_1__) && !defined (__POPCNT__)
 #define __POPCNT__
