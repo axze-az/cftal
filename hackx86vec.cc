@@ -4,7 +4,7 @@
 #include <cftal/mul_div.h>
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
-#include <cftal/x86_traits.h>
+#include <cftal/vec_traits.h>
 // #include <cftal/x86vec_traits.h>
 // #include <cftal/x86vec_store.h>
 #include <cmath>

@@ -1,5 +1,5 @@
-#if !defined (__CFTAL_X86_MATH_FUNC_H__)
-#define __CFTAL_X86_MATH_FUNC_H__ 1
+#if !defined (__CFTAL_VEC_TRAITS_H__)
+#define __CFTAL_VEC_TRAITS_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
