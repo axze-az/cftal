@@ -16,6 +16,10 @@
 
 #if defined (IN_KDEVELOP_PARSER)
 #define alignas(X)
+#define __SSE41__
+#define __SSE42__
+#define __AVX__
+#define __AVX2__
 #endif
 
 #if defined (_MSC_VER)
