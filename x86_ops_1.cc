@@ -1,3 +1,5 @@
+#include <cftal/config.h>
+#if defined (__SSE2__)
 #include "x86_ops_1.h"
 #include "x86_ins_ext.h"
 #include "bitops.h"
@@ -415,3 +417,4 @@ uint32_t cvt_double_uint32(double x)
 {
     return uint32_t(x);
 }
+#endif

@@ -6,6 +6,8 @@
 #include <cftal/math_func.h>
 #include <cftal/divisor.h>
 #include <cftal/x86_cvt.h>
+#include <cftal/x86_cast.h>
+#include <cftal/d_real.h>
 
 namespace cftal {
 
@@ -437,20 +439,20 @@ namespace cftal {
             void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
                 // using namespace x86vec;
                 // using impl::cvt;
-                r[1] = x86::cvt<v4f64, v8f32>::h(x);
-                r[0] = x86::cvt<v4f64, v8f32>::l(x);
+                r[1] = cvt_hi<v4f64, v8f32>(x);
+                r[0] = cvt_lo<v4f64, v8f32>(x);
             }
 
             static
             void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
-                vf_type lo(x86::cvt<v8f32, v4f64>::l(hpf[0]));
-                vhpf_type rest(hpf[0] - x86::cvt<v4f64, v8f32>::l(lo));
-                vf_type lo_lo(x86::cvt<v8f32, v4f64>::l(rest));
+                vf_type lo(cvt_lo<v8f32, v4f64>(hpf[0]));
+                vhpf_type rest(hpf[0] - cvt_lo<v4f64, v8f32>(lo));
+                vf_type lo_lo(cvt_lo<v8f32, v4f64>(rest));
 
-                vf_type hi(x86::cvt<v8f32, v4f64>::l(hpf[1]));
-                rest = hpf[1] - x86::cvt<v4f64, v8f32>::l(hi);
+                vf_type hi(cvt_lo<v8f32, v4f64>(hpf[1]));
+                rest = hpf[1] - cvt_lo<v4f64, v8f32>(hi);
 
-                vf_type hi_lo(x86::cvt<v8f32, v4f64>::l(rest));
+                vf_type hi_lo(cvt_lo<v8f32, v4f64>(rest));
 
                 vf_type msv(permute<0, 1, 2, 3, 8, 9, 10, 11>(lo, hi));
                 vf_type lsv(permute<0, 1, 2, 3, 8, 9, 10, 11>(lo_lo, hi_lo));

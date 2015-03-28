@@ -14,10 +14,10 @@ namespace cftal {
     }
 
     template <typename _T>
-    struct d_real_traits;
+    struct d_real_traits {};
 
     template <typename _T>
-    struct has_fma;
+    struct has_fma {};
 
     // fma ?
     template <>

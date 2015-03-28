@@ -6,6 +6,7 @@
 
 namespace cftal {
 
+#if defined (__SSE2__)    
     namespace impl {
 
         // cast to __m128
@@ -214,6 +215,7 @@ namespace cftal {
 
     }
 }
+#endif
 
 #if 0
 template <typename _D, typename _S>

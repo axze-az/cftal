@@ -13,7 +13,7 @@
 
 namespace cftal {
 
-    namespace x86 {
+    namespace impl {
 
         // convert according to current rounding mode
         template <typename _D, typename _S>
@@ -33,7 +33,7 @@ namespace cftal {
             _D h(const _S& s);
         };
 
-
+#if defined (__SSE2__)        
         template <>
         struct cvt<v4f32, v2f64> {
             static v4f32 l(const v2f64& d) {
@@ -222,7 +222,7 @@ namespace cftal {
                              v4f32(0.0f));
             }
         };
-
+#endif
     }
 
     template <class _D, class _S>
@@ -253,21 +253,21 @@ template <class _D, class _S>
 inline
 _D cftal::cvt_lo(const _S& s)
 {
-    return x86::cvt<_D, _S>::l(s);
+    return impl::cvt<_D, _S>::l(s);
 }
 
 template <class _D, class _S>
 inline
 _D cftal::cvt_hi(const _S& s)
 {
-    return x86::cvt<_D, _S>::h(s);
+    return impl::cvt<_D, _S>::h(s);
 }
 
 template <class _D, class _S>
 inline
 _D cftal::cvt(const _S& s)
 {
-    return x86::cvt<_D, _S>::l(s);
+    return impl::cvt<_D, _S>::l(s);
 }
 
 template <class _D, class _S>
@@ -281,7 +281,7 @@ std::pair<_D, _D> cftal::cvt_widen(const _S& s)
 
 #if 0
 inline
-x86::v4f32 x86::cvt_f32(const v2f64& l, const v2f64& h)
+impl::v4f32 impl::cvt_f32(const v2f64& l, const v2f64& h)
 {
     v4f32 lf(cvt<v4f32>(l));
     v4f32 hf(cvt<v4f32>(h));
@@ -289,7 +289,7 @@ x86::v4f32 x86::cvt_f32(const v2f64& l, const v2f64& h)
 }
 
 inline
-x86::v8f32 x86::cvt_f32(const v4f64& l, const v4f64& h)
+impl::v8f32 impl::cvt_f32(const v4f64& l, const v4f64& h)
 {
     v4f32 lf(cvt<v4f32>(l));
     v4f32 hf(cvt<v4f32>(h));
@@ -301,21 +301,21 @@ template <class _D, class _S>
 inline
 _D cftal::cvt_rz_lo(const _S& s)
 {
-    return x86::cvt_rz<_D, _S>::l(s);
+    return impl::cvt_rz<_D, _S>::l(s);
 }
 
 template <class _D, class _S>
 inline
 _D cftal::cvt_rz_hi(const _S& s)
 {
-    return x86::cvt_rz<_D, _S>::h(s);
+    return impl::cvt_rz<_D, _S>::h(s);
 }
 
 template <class _D, class _S>
 inline
 _D cftal::cvt_rz(const _S& s)
 {
-    return x86::cvt_rz<_D, _S>::l(s);
+    return impl::cvt_rz<_D, _S>::l(s);
 }
 
 template <class _D, class _S>
