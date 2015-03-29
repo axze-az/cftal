@@ -121,7 +121,7 @@ namespace cftal {
                 vi_type t(permute<0, 0, 1, 1>(e));
                 t <<= 20;
                 vf_type r(as<v2f64>(t));
-                r &= v2f64(x86::v_exp_v2f64_msk::dv());
+                r &= v2f64(exp_f64_msk::v._f64);
                 return r;
                 // v2u64 m= as<v2u64>(ep);
                 // m <<= const_shift::_52;
@@ -197,14 +197,14 @@ namespace cftal {
 
             static
             void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
-                using namespace x86;
+                // using namespace x86;
                 r[0] = cvt_lo<v2f64>(x);
                 r[1] = cvt_hi<v2f64>(x);
             }
 
             static
             void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
-                using namespace x86;
+                // using namespace x86;
                 vf_type lo(cvt_lo<v4f32>(hpf[0]));
                 vhpf_type rest(hpf[0] - cvt_lo<v2f64>(lo));
                 vf_type lo_lo(cvt_lo<v4f32>(rest));
@@ -222,11 +222,11 @@ namespace cftal {
 
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
-                return as<v4f32>(mi);
+                return as<vmf_type>(mi);
             }
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
-                return as<v4s32>(mf);
+                return as<vmi_type>(mf);
             }
             static
             vi_type sel(const vmi_type& msk,
@@ -307,22 +307,30 @@ namespace cftal {
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
                 // TODO AVX2 code
-                v4s32 xml=permute<0, 0, 1, 1>(mi);
-                v4s32 xmh=permute<2, 2, 3, 3>(mi);
-                v2f64 dml=as<v2f64>(xml);
-                v2f64 dmh=as<v2f64>(xmh);
-                v4f64 r(dml, dmh);
-                return r;
+                if (sizeof(vmf_type) != sizeof(vmi_type)) {
+                    vmi_type xml=permute<0, 0, 1, 1>(mi);
+                    vmi_type xmh=permute<2, 2, 3, 3>(mi);
+                    vec<double, 2> dml=as<vec<double, 2> >(xml);
+                    vec<double, 2> dmh=as<vec<double, 2> >(xmh);
+                    v4f64 r(dml, dmh);
+                    return r;
+                } else {
+                    return as<vmf_type>(mi);
+                }
             }
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
                 // TODO AVX2 code
-                v2f64 mfl=low_half(mf);
-                v2f64 mfh=high_half(mf);
-                v4s32 xml=as<v4s32>(mfl);
-                v4s32 xmh=as<v4s32>(mfh);
-                v4s32 xm =permute<0, 2, 4, 6>(xml, xmh);
-                return xm;
+                if (sizeof(vmf_type) != sizeof(vmi_type)) {
+                    v2f64 mfl=low_half(mf);
+                    v2f64 mfh=high_half(mf);
+                    v4s32 xml=as<v4s32>(mfl);
+                    v4s32 xmh=as<v4s32>(mfh);
+                    v4s32 xm =permute<0, 2, 4, 6>(xml, xmh);
+                    return xm;
+                } else {
+                    return as<vmi_type>(mf);
+                }
             }
             static
             vi_type sel(const vmi_type& msk,
@@ -461,11 +469,11 @@ namespace cftal {
 
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
-                return as<v8f32>(mi);
+                return as<v8f32::mask_type>(mi);
             }
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
-                return as<v8s32>(mf);
+                return as<v8s32::mask_type>(mf);
             }
             static
             vi_type sel(const vmi_type& msk,

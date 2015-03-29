@@ -8,7 +8,6 @@ namespace cftal {
 
 #if defined (__SSE2__)    
     namespace impl {
-
         // cast to __m128
         template <>
         struct cast<__m128, __m128d> {
@@ -212,10 +211,9 @@ namespace cftal {
             }
         };
 #endif
-
-    }
-}
-#endif
+    } // namespace impl
+#endif // __SSE2__
+} // namespace cftal
 
 #if 0
 template <typename _D, typename _S>
