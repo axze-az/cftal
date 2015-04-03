@@ -72,6 +72,48 @@ namespace cftal {
 
     namespace math {
 
+        namespace impl {
+
+            template <bool _HAS_MASK_TYPE, class _VR, class _VI>
+            struct mask_helper {
+                static
+                typename _VR::mask_type
+                mi_to_mf(const typename _VI::mask_type& mi) {
+                    return as<typename _VR::mask_type>(mi);
+                }
+                static
+                typename _VI::mask_type
+                mf_to_mi(const typename _VR::mask_type& mi) {
+                    return as<typename _VI::mask_type>(mi);
+                }
+            };
+
+            template <class  _VR, class _VI>
+            struct mask_helper<false, _VR, _VI> {
+                static
+                typename _VR::mask_type
+                mi_to_mf(const typename _VI::mask_type& mi) {
+                    typename _VI::mask_type xml=permute<0, 0, 1, 1>(mi);
+                    typename _VI::mask_type xmh=permute<2, 2, 3, 3>(mi);
+                    vec<double, 2> dml=as<vec<double, 2> >(xml);
+                    vec<double, 2> dmh=as<vec<double, 2> >(xmh);
+                    _VR r(dml, dmh);
+                    return r;
+                }
+                static
+                typename _VI::mask_type
+                mf_to_mi(const typename _VR::mask_type& mf) {
+                    v2f64 mfl=low_half(mf);
+                    v2f64 mfh=high_half(mf);
+                    _VI xml=as<_VI>(mfl);
+                    _VI xmh=as<_VI>(mfh);
+                    _VI xm =permute<0, 2, 4, 6>(xml, xmh);
+                    return xm;
+                }
+            };
+        }
+
+
         template <>
         struct func_traits<v2f64, v4s32> : public
         func_traits<typename v2f64::value_type,
@@ -126,7 +168,7 @@ namespace cftal {
                 // v2u64 m= as<v2u64>(ep);
                 // m <<= const_shift::_52;
                 // return as<v2f64>(m);
-                
+
             }
             static
             vi_type extract_exp(const vf_type& d) {
@@ -288,9 +330,11 @@ namespace cftal {
         func_traits<typename v4f64::value_type,
                     typename v4s32::value_type> {
             typedef v4f64 vf_type;
-            typedef v4f64 vmf_type;
+            typedef v4f64::mask_type vmf_type;
             typedef v4s32 vi_type;
-            typedef v4s32 vmi_type;
+            typedef v4s32::mask_type vmi_type;
+
+
 
             static
             constexpr std::size_t NVF() {
@@ -306,31 +350,19 @@ namespace cftal {
 
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
-                // TODO AVX2 code
-                if (sizeof(vmf_type) != sizeof(vmi_type)) {
-                    vmi_type xml=permute<0, 0, 1, 1>(mi);
-                    vmi_type xmh=permute<2, 2, 3, 3>(mi);
-                    vec<double, 2> dml=as<vec<double, 2> >(xml);
-                    vec<double, 2> dmh=as<vec<double, 2> >(xmh);
-                    v4f64 r(dml, dmh);
-                    return r;
-                } else {
-                    return as<vmf_type>(mi);
-                }
+                const bool has_mask_type =
+                    sizeof(vmf_type) == sizeof(vmi_type);
+                return impl::mask_helper<has_mask_type,
+                                         vf_type,
+                                         vi_type>::mi_to_mf(mi);
             }
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
-                // TODO AVX2 code
-                if (sizeof(vmf_type) != sizeof(vmi_type)) {
-                    v2f64 mfl=low_half(mf);
-                    v2f64 mfh=high_half(mf);
-                    v4s32 xml=as<v4s32>(mfl);
-                    v4s32 xmh=as<v4s32>(mfh);
-                    v4s32 xm =permute<0, 2, 4, 6>(xml, xmh);
-                    return xm;
-                } else {
-                    return as<vmi_type>(mf);
-                }
+                const bool has_mask_type =
+                    sizeof(vmf_type) == sizeof(vmi_type);
+                return impl::mask_helper<has_mask_type,
+                                         vf_type,
+                                         vi_type>::mf_to_mi(mf);
             }
             static
             vi_type sel(const vmi_type& msk,
