@@ -3,7 +3,7 @@
 #include <cmath>
 #include <limits>
 #include "vec_traits.h"
-#include "vec_math_funcs.h"
+#include "vec_def_math_funcs.h"
 
 DEF_MATH_FUNCS(cftal, v4f32, v4s32, float, 4)
 

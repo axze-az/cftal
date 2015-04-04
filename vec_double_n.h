@@ -123,9 +123,9 @@ namespace cftal {
     }
 
     // specializations
-    vec<double, 2> cbrt(arg<vec<double, 2> >::type v);
-    vec<double, 2> frexp(arg<vec<double, 2> >::type v,
-                         vec<int32_t, 4>* pi);
+    // vec<double, 2> cbrt(arg<vec<double, 2> >::type v);
+    // vec<double, 2> frexp(arg<vec<double, 2> >::type v,
+    //                      vec<int32_t, 4>* pi);
 }
 
 template <std::size_t _N>
