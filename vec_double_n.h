@@ -132,12 +132,13 @@ namespace cftal {
     vec<double, 2>
     cbrt(arg<vec<double, 2> >::type v);
     vec<double, 2>
-    frexp(arg<vec<double, 2> >::type x, v4s32* e);
+    frexp(arg<vec<double, 2> >::type x,
+          vec<int32_t, 2>* e);
     vec<double, 2>
-    ldexp(arg<vec<double, 2> >::type d, arg<v4s32>::type e);
-    v4s32
+    ldexp(arg<vec<double, 2> >::type d, arg<vec<int32_t, 2> >::type e);
+    vec<int32_t, 2>
     ilogbp1(arg<vec<double, 2> >::type v);
-    v4s32
+    vec<int32_t, 2>
     ilogb(arg<vec<double, 2> >::type v);
     vec<double, 2>
     atan2(arg<vec<double, 2> >::type y, arg<vec<double, 2> >::type x);

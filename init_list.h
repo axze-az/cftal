@@ -38,6 +38,10 @@ namespace cftal {
     }    
 }
 
+namespace std {
+}
+
+
 // Local variables:
 // mode: c++
 // end:

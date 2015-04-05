@@ -21,6 +21,8 @@ namespace cftal {
 
         vec(const _T& v);
         vec(const _T& v, bool splat);
+        vec(std::initializer_list<_T> l);
+        vec(init_list<_T> l);
         _T operator()() const;
 
         template <template <class _U, std::size_t _M>
@@ -44,6 +46,12 @@ namespace cftal {
         }
     };
 
+    template <typename _T>
+    vec<_T, 1> max(const vec<_T, 1>& a, const vec<_T, 1>& b);
+    template <typename _T>
+    vec<_T, 1> min(const vec<_T, 1>& a, const vec<_T, 1>& b);
+
+    
     template <typename _T>
     vec<_T, 1>
     select(const typename vec<_T, 1>::mask_type& m,
@@ -388,6 +396,19 @@ cftal::vec<_T, 1>::vec(const _T& v, bool splat)
     static_cast<void>(splat);
 }
 
+template <class _T>
+cftal::vec<_T, 1>::vec(std::initializer_list<_T> l)
+    : vec<_T, 1>(mem<vec<_T, 1> >::load(std::begin(l))) 
+{
+}
+
+template <class _T>
+cftal::vec<_T, 1>::vec(init_list<_T> l)
+    : vec<_T, 1>(mem<vec<_T, 1> >::load(l.begin())) 
+{
+}
+
+
 template <typename _T>
 template <template <class _U, std::size_t _M>
           class _OP,
@@ -397,13 +418,28 @@ cftal::vec<_T, 1>::vec(const expr<_OP<_T, 1>, _L, _R>& r)
 {
 }
 
-
 template <class _T>
 inline
 _T
 cftal::vec<_T, 1>::operator()() const
 {
     return _v;
+}
+
+template <class _T>
+inline
+cftal::vec<_T, 1>
+cftal::max(const vec<_T, 1>& a, const vec<_T, 1>& b)
+{
+    return a() > b() ? a : b;
+}
+
+template <class _T>
+inline
+cftal::vec<_T, 1>
+cftal::min(const vec<_T, 1>& a, const vec<_T, 1>& b)
+{
+    return a() < b() ? a : b;
 }
 
 template <class _T>

@@ -52,32 +52,35 @@ namespace cftal {
         };
 
         template <>
-        struct cvt<v4s32, v2f64> {
-            static v4s32 l(const v2f64& d) {
-                return _mm_cvtpd_epi32(d());
+        struct cvt<v2s32, v2f64> {
+            static v2s32 l(const v2f64& d) {
+                v4s32 r=_mm_cvtpd_epi32(d());
+                return low_half(r);
             }
         };
 
         template <>
-        struct cvt_rz<v4s32, v2f64> {
-            static v4s32 l(const v2f64& d) {
-                return _mm_cvttpd_epi32(d());
+        struct cvt_rz<v2s32, v2f64> {
+            static v2s32 l(const v2f64& d) {
+                v4s32 r=_mm_cvttpd_epi32(d());
+                return low_half(r);
             }
         };
 
         template <>
-        struct cvt<v2f64, v4s32> {
-            static v2f64 l(const v4s32& d) {
-                return _mm_cvtepi32_pd(d());
+        struct cvt<v2f64, v2s32> {
+            static v2f64 l(const v2s32& d) {
+                v4s32 t(d, d);
+                return _mm_cvtepi32_pd(t());
             };
-            static v2f64 h(const v4s32& d) {
-                return l(permute<2,3,0,1>(d));
-            }
+            // static v2f64 h(const v2s32& d) {
+            //    return l(permute<2,3,0,1>(d));
+            // }
         };
 
 
         template <>
-        struct cvt<v4f32, v4s32> {
+        struct cvt<v4f32, v2s32> {
             static v4f32 l(const v4s32& s) {
                 return _mm_cvtepi32_ps(s());
             }

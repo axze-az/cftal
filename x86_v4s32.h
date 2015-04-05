@@ -22,6 +22,8 @@ namespace cftal {
         vec(const v4u32& v);
         // create vec{v,v,v,v}
         vec(int32_t v);
+        // create vec(l, h);
+        vec(vec<int32_t, 2> l, vec<int32_t, 2> h);
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
         vec(std::initializer_list<int32_t> l);
@@ -46,6 +48,11 @@ namespace cftal {
         static
         void store(int32_t* p, const vec<int32_t, 4>& v);
     };
+
+    vec<int32_t, 2>
+    low_half(const vec<int32_t, 4>& v);
+    vec<int32_t, 2>
+    high_half(const vec<int32_t, 4>& v);
     
     v4s32 max(const v4s32& a, const v4s32& b);
     v4s32 min(const v4s32& a, const v4s32& b);

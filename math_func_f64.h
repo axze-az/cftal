@@ -316,10 +316,10 @@ frexp(const vf_type& vd,
 
     vi_type value_head(hi_word & vi_type(0x7fffffff));
 
-    vi_type is_inf_nan_zero(
+    vmi_type is_inf_nan_zero(
         (value_head >= vi_type(0x7ff00000)) |
         (vi_type(value_head| lo_word)==vi_type(0)));
-    vi_type is_denom(value_head < 0x00100000);
+    vmi_type is_denom(value_head < 0x00100000);
 
     // exponent:
     vi_type e((value_head >> 20) - vi_type(1022));

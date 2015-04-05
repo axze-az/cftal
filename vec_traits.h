@@ -120,13 +120,13 @@ namespace cftal {
 
 
         template <>
-        struct func_traits<v2f64, v4s32> : public
+        struct func_traits<v2f64, v2s32> : public
         func_traits<typename v2f64::value_type,
                     typename v4s32::value_type> {
             typedef v2f64 vf_type;
             typedef v2f64::mask_type vmf_type;
-            typedef v4s32 vi_type;
-            typedef v4s32::mask_type vmi_type;
+            typedef v2s32 vi_type;
+            typedef v2s32::mask_type vmi_type;
 
             static
             constexpr std::size_t NVF() {
@@ -139,18 +139,70 @@ namespace cftal {
                 return sizeof(vi_type)/
                     sizeof(vi_type::value_type);
             }
-
+            
+            static const v4s32 _vmi_to_vmf_msk[4];
+            
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
+#if 1
+                int32_t l= low_half(mi)() == true ? 1 : 0;
+                int32_t h= high_half(mi)() == true ? 2 : 0;
+                unsigned m= l | h;
+                return as<vmf_type>(_vmi_to_vmf_msk[m]);
+#if 0                
+                v4s32 r;
+                switch (m) {
+                case 0:
+                    r= v4s32{ 0,  0,  0,  0}; break;
+                case 1:
+                    r= v4s32{-1, -1,  0,  0}; break;
+                case 2:
+                    r= v4s32{ 0,  0, -1, -1}; break;
+                case 3:
+                    r= v4s32{-1, -1, -1, -1}; break;
+                }
+                return as<v2f64>(r);
+#endif
+#else
                 v4s32 xm=
                     permute<0, 0, 1, 1>(mi);
                 return as<v2f64>(xm);
+#endif
             }
+
+            static const vmi_type _vmf_to_vmi_msk[4];
+#if 0
+            = {
+                {false, false},
+                {true, false},
+                {false, true},
+                {true, true}
+            };
+#endif            
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
+#if 1
+                unsigned m = read_signs(mf);
+                return _vmf_to_vmi_msk[m];
+#if 0
+                vmi_type r;
+                switch (m) {
+                case 0:
+                    r= vmi_type{false, false}; break;
+                case 1:
+                    r= vmi_type{true, false}; break;
+                case 2:
+                    r= vmi_type{false, true}; break;
+                case 3:
+                    r= vmi_type{true, true}; break;
+                };
+                return r;
+#endif
+#else
                 v4s32 xm= as<v4s32>(mf);
                 xm = permute<1, 3, 0, 2>(xm);
                 return xm;
+#endif
             }
             static
             vi_type sel(const vmi_type& msk,
@@ -165,9 +217,10 @@ namespace cftal {
 
             static
             vf_type insert_exp(const vi_type& e) {
-                vi_type t(permute<0, 0, 1, 1>(e));
-                t <<= 20;
-                vf_type r(as<v2f64>(t));
+                vi_type t= e << 20;
+                v4s32 tf(t, t);
+                tf = permute<0, 0, 3, 3>(tf);
+                vf_type r(as<v2f64>(tf));
                 r &= v2f64(exp_f64_msk::v._f64);
                 return r;
                 // v2u64 m= as<v2u64>(ep);
@@ -181,14 +234,14 @@ namespace cftal {
                 e >>= 20; // const_shift::_20;
                 e = permute<1, 3, 0, 0>(e);
                 e &= v4s32{0x7ff, 0x7ff, 0, 0};
-                return e;
+                return low_half(e);
             }
 
             static
             vi_type extract_high_word(const vf_type& d) {
                 v4s32 w=as<v4s32>(d);
                 w= permute<1, 3, 1, 3>(w);
-                return w;
+                return low_half(w);
 
             }
 
@@ -196,14 +249,15 @@ namespace cftal {
             vi_type extract_low_word(const vf_type& d) {
                 v4s32 w=as<v4s32>(d);
                 w= permute<0, 2, 0, 2>(w);
-                return w;
+                return low_half(w);
             }
 
             static
             vf_type combine_words(const vi_type& l,
                                   const vi_type& h) {
-                v4s32 c=
-                    permute<0, 4, 1, 5>(l, h);
+                v4s32 c(l, h);
+                c= permute<0, 2, 1, 3>(c);
+                // permute<0, 4, 1, 5>(l, h);
                 v2f64 r=as<vf_type>(c);
                 return r;
             }
@@ -215,12 +269,12 @@ namespace cftal {
 
             static
             vi_type cvt_f_to_i(const vf_type& f) {
-                return cvt_lo<v4s32>(f);
+                return cvt_lo<v2s32>(f);
             }
             // including rounding towards zero
             static
             vi_type cvt_rz_f_to_i(const vf_type& f) {
-                return cvt_rz_lo<v4s32>(f);
+                return cvt_rz_lo<v2s32>(f);
             }
         };
 
@@ -338,8 +392,6 @@ namespace cftal {
             typedef v4f64::mask_type vmf_type;
             typedef v4s32 vi_type;
             typedef v4s32::mask_type vmi_type;
-
-
 
             static
             constexpr std::size_t NVF() {

@@ -292,6 +292,12 @@ cftal::vec<cftal::int32_t, 4>::vec(int32_t v)
 {
 }
 
+inline
+cftal::vec<cftal::int32_t, 4>::vec(vec<int32_t, 2> l, vec<int32_t, 2> h)
+    : base_type(_mm_setr_epi32(low_half(l)(), high_half(l)(),
+                               low_half(h)(), high_half(h)()))
+{
+}
 
 inline
 cftal::vec<cftal::int32_t, 4>::
@@ -348,6 +354,21 @@ cftal::mem<cftal::vec<int32_t, 4> >::store(int32_t* p,
                                            const vec<int32_t, 4>& v)
 {
     _mm_storeu_si128(reinterpret_cast<__m128i*>(p), v());
+}
+
+inline
+cftal::vec<int32_t, 2>
+cftal::low_half(const vec<int32_t, 4>& v)
+{
+    return as<vec<int32_t,2> >(v);
+}
+
+inline
+cftal::vec<int32_t, 2>
+cftal::high_half(const vec<int32_t, 4>& v)
+{
+    vec<int32_t, 4> h= permute<2, 3, 0, 1>(v);
+    return as<vec<int32_t,2> >(h);
 }
 
 inline
