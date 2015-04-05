@@ -5,6 +5,12 @@
 #include <cftal/vec_t_1.h>
 #include <cftal/d_real.h>
 #include <cmath>
+#if defined (__SSE__)
+#include <cftal/x86_v4f32.h>
+#endif
+#if defined (__AVX__)
+#include <cftal/x86_v8f32.h>
+#endif
 
 namespace cftal {
 

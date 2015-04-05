@@ -42,20 +42,9 @@
 #include <cftal/x86_v4s64_inl.h>
 #include <cftal/x86_v4u64_inl.h>
 #endif
+
 #include <cftal/vec_double_n.h>
-#if defined (__SSE2__)
-#include <cftal/x86_v2f64.h>
-#endif
-#if defined (__AVX__)
-#include <cftal/x86_v4f64.h>
-#endif
 #include <cftal/vec_float_n.h>
-#if defined (__SSE__)
-#include <cftal/x86_v4f32.h>
-#endif
-#if defined (__AVX__)
-#include <cftal/x86_v8f32.h>
-#endif
 
 #include <cftal/x86_cvt.h>
 

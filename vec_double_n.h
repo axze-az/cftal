@@ -5,6 +5,12 @@
 #include <cftal/vec_t_1.h>
 #include <cftal/d_real.h>
 #include <cmath>
+#if defined (__SSE2__)
+#include <cftal/x86_v2f64.h>
+#endif
+#if defined (__AVX__)
+#include <cftal/x86_v4f64.h>
+#endif
 
 namespace cftal {
 
@@ -122,10 +128,141 @@ namespace cftal {
         // TODO: fma implementations
     }
 
-    // specializations
-    // vec<double, 2> cbrt(arg<vec<double, 2> >::type v);
-    // vec<double, 2> frexp(arg<vec<double, 2> >::type v,
-    //                      vec<int32_t, 4>* pi);
+    // specializations vec<double, 2>
+    vec<double, 2>
+    cbrt(arg<vec<double, 2> >::type v);
+    vec<double, 2>
+    frexp(arg<vec<double, 2> >::type x, v4s32* e);
+    vec<double, 2>
+    ldexp(arg<vec<double, 2> >::type d, arg<v4s32>::type e);
+    v4s32
+    ilogbp1(arg<vec<double, 2> >::type v);
+    v4s32
+    ilogb(arg<vec<double, 2> >::type v);
+    vec<double, 2>
+    atan2(arg<vec<double, 2> >::type y, arg<vec<double, 2> >::type x);
+    vec<double, 2>
+    asin(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    acos(arg<vec<double, 2> >::type d);
+
+    vec<double, 2>
+    atan(arg<vec<double, 2> >::type d);
+    std::pair<vec<double, 2> , vec<double, 2> >
+    sincos(arg<vec<double, 2> >::type d);
+
+    vec<double, 2>
+    exp(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    expm1(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    log(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    pow(arg<vec<double, 2> >::type b, arg<vec<double, 2> >::type e);
+    void
+    sincos(arg<vec<double, 2> >::type d, vec<double, 2> * psin, vec<double, 2> * pcos);
+    vec<double, 2>
+    sin(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    cos(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    tan(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    cot(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    atan2(arg<vec<double, 2> >::type x, arg<vec<double, 2> >::type y);
+
+    void
+    native_sincos(arg<vec<double, 2> >::type d,
+                  vec<double, 2> * psin, vec<double, 2> * pcos);
+    vec<double, 2>
+    native_exp(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    native_log(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    native_sin(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    native_cos(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    native_tan(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    native_cot(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    cosh(arg<vec<double, 2> >::type d);
+    vec<double, 2>
+    sinh(arg<vec<double, 2> >::type d);
+
+    vec<double, 2>
+    pow(arg<vec<double, 2> >::type x, arg<vec<double, 2> >::type y);
+
+    // specializations vec<double, 4>
+    vec<double, 4>
+    cbrt(arg<vec<double, 4> >::type v);
+    vec<double, 4>
+    frexp(arg<vec<double, 4> >::type x, vec<int32_t, 4>* e);
+    vec<double, 4>
+    ldexp(arg<vec<double, 4> >::type d, arg<vec<int32_t, 4> >::type e);
+    vec<int32_t, 4>
+    ilogbp1(arg<vec<double, 4> >::type v);
+    vec<int32_t, 4>
+    ilogb(arg<vec<double, 4> >::type v);
+    vec<double, 4>
+    atan2(arg<vec<double, 4> >::type y, arg<vec<double, 4> >::type x);
+    vec<double, 4>
+    asin(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    acos(arg<vec<double, 4> >::type d);
+
+    vec<double, 4>
+    atan(arg<vec<double, 4> >::type d);
+    std::pair<vec<double, 4> , vec<double, 4> >
+    sincos(arg<vec<double, 4> >::type d);
+
+    vec<double, 4>
+    exp(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    expm1(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    log(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    pow(arg<vec<double, 4> >::type b, arg<vec<double, 4> >::type e);
+    void
+    sincos(arg<vec<double, 4> >::type d, vec<double, 4> * psin, vec<double, 4> * pcos);
+    vec<double, 4>
+    sin(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    cos(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    tan(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    cot(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    atan2(arg<vec<double, 4> >::type x, arg<vec<double, 4> >::type y);
+
+    void
+    native_sincos(arg<vec<double, 4> >::type d,
+                  vec<double, 4> * psin, vec<double, 4> * pcos);
+    vec<double, 4>
+    native_exp(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    native_log(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    native_sin(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    native_cos(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    native_tan(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    native_cot(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    cosh(arg<vec<double, 4> >::type d);
+    vec<double, 4>
+    sinh(arg<vec<double, 4> >::type d);
+
+    vec<double, 4>
+    pow(arg<vec<double, 4> >::type x, arg<vec<double, 4> >::type y);
+
+    
 }
 
 template <std::size_t _N>

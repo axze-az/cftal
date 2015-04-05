@@ -88,7 +88,6 @@ namespace cftal {
     v4f64 abs(const v4f64& a);
     v4f64 fabs(const v4f64& a);
     v4f64 sqrt(const v4f64& a);
-    v4f64 cbrt(arg<v4f64>::type a);
     v4f64 hypot(const v4f64& a, const v4f64& b);
 
     v4f64 rsqrt(const v4f64& a);
@@ -108,44 +107,6 @@ namespace cftal {
     v4f64 mulsign(const v4f64& x, const v4f64& y);
 
 #endif
-
-    vec<double, 4>
-    cbrt(arg<vec<double, 4> >::type v);
-    
-    v4f64 frexp(arg<v4f64>::type x, v4s32* e);
-    // v4f64 pow2i(arg<v4s32>::type e);
-    v4f64 ldexp(arg<v4f64>::type d, arg<v4s32>::type e);
-    v4s32 ilogbp1(arg<v4f64>::type v);
-    v4s32 ilogb(arg<v4f64>::type v);
-    v4f64 atan2(arg<v4f64>::type y, arg<v4f64>::type x);
-    v4f64 asin(arg<v4f64>::type d);
-    v4f64 acos(arg<v4f64>::type d);
-
-    v4f64 atan(arg<v4f64>::type d);
-    std::pair<v4f64, v4f64> sincos(arg<v4f64>::type d);
-
-    v4f64 exp(arg<v4f64>::type d);
-    v4f64 expm1(arg<v4f64>::type d);
-    v4f64 log(arg<v4f64>::type d);
-    v4f64 pow(arg<v4f64>::type b, arg<v4f64>::type e);
-    void sincos(arg<v4f64>::type d, v4f64* psin, v4f64* pcos);
-    v4f64 sin(arg<v4f64>::type d);
-    v4f64 cos(arg<v4f64>::type d);
-    v4f64 tan(arg<v4f64>::type d);
-    v4f64 cot(arg<v4f64>::type d);
-    v4f64 atan2(arg<v4f64>::type x, arg<v4f64>::type y);
-
-    void native_sincos(arg<v4f64>::type d, v4f64* psin, v4f64* pcos);
-    v4f64 native_exp(arg<v4f64>::type d);
-    v4f64 native_log(arg<v4f64>::type d);
-    v4f64 native_sin(arg<v4f64>::type d);
-    v4f64 native_cos(arg<v4f64>::type d);
-    v4f64 native_tan(arg<v4f64>::type d);
-    v4f64 native_cot(arg<v4f64>::type d);
-    v4f64 cosh(arg<v4f64>::type d);
-    v4f64 sinh(arg<v4f64>::type d);
-
-    v4f64 pow(arg<v4f64>::type x, arg<v4f64>::type y);
 
 #if defined (__AVX__)        
     // a*b +c
