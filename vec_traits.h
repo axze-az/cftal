@@ -88,8 +88,13 @@ namespace cftal {
                 }
             };
 
+            template <bool _HAS_MASK_TYPE, class _VR, class _VI>
+            struct mask_helper_v4 :
+                public mask_helper<_HAS_MASK_TYPE, _VR, _VI> {
+            };
+
             template <class  _VR, class _VI>
-            struct mask_helper<false, _VR, _VI> {
+            struct mask_helper_v4<false, _VR, _VI> {
                 static
                 typename _VR::mask_type
                 mi_to_mf(const typename _VI::mask_type& mi) {
@@ -119,9 +124,9 @@ namespace cftal {
         func_traits<typename v2f64::value_type,
                     typename v4s32::value_type> {
             typedef v2f64 vf_type;
-            typedef v2f64 vmf_type;
+            typedef v2f64::mask_type vmf_type;
             typedef v4s32 vi_type;
-            typedef v4s32 vmi_type;
+            typedef v4s32::mask_type vmi_type;
 
             static
             constexpr std::size_t NVF() {
@@ -352,17 +357,17 @@ namespace cftal {
             vmf_type vmi_to_vmf(const vmi_type& mi) {
                 const bool has_mask_type =
                     sizeof(vmf_type) == sizeof(vmi_type);
-                return impl::mask_helper<has_mask_type,
-                                         vf_type,
-                                         vi_type>::mi_to_mf(mi);
+                return impl::mask_helper_v4<has_mask_type,
+                                            vf_type,
+                                            vi_type>::mi_to_mf(mi);
             }
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
                 const bool has_mask_type =
                     sizeof(vmf_type) == sizeof(vmi_type);
-                return impl::mask_helper<has_mask_type,
-                                         vf_type,
-                                         vi_type>::mf_to_mi(mf);
+                return impl::mask_helper_v4<has_mask_type,
+                                            vf_type,
+                                            vi_type>::mf_to_mi(mf);
             }
             static
             vi_type sel(const vmi_type& msk,
