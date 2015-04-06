@@ -526,7 +526,9 @@ cosh(const vf_type& d)
     dvf_type r(ex2 + nex2);
     vf_type res(r.h() + r.l());
     res = _T::sel(isinf(d),
-                  _T::sel( d < 0, _T::ninf(), _T::pinf()),
+                  _T::sel(d < 0,
+                          vf_type(_T::ninf()),
+                          vf_type(_T::pinf())),
                   res);
     res = _T::sel(d >= vf_type(7.104758600739438634e+02),
                   _T::pinf(), res);
