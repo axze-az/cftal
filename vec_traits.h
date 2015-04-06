@@ -116,6 +116,52 @@ namespace cftal {
                     return xm;
                 }
             };
+
+            template <bool _HAS_MASK_TYPE, class _VR, class _VI>
+            struct mask_helper_v2 :
+                public mask_helper<_HAS_MASK_TYPE, _VR, _VI> {
+            };
+
+            template <class  _VR, class _VI>
+            struct mask_helper_v2<false, _VR, _VI> {
+                static const vec<int32_t, 4> _mi_to_mf_msk[4];
+                static
+                typename _VR::mask_type
+                mi_to_mf(const typename _VI::mask_type& mi) {
+                    int32_t l= low_half(mi)() == true ? 1 : 0;
+                    int32_t h= high_half(mi)() == true ? 2 : 0;
+                    unsigned m= l | h;
+                    return as<_VR>(_mi_to_mf_msk[m]);
+                }
+
+                static const vec<bool, 2> _mf_to_mi_msk[4];
+
+                static
+                typename _VI::mask_type
+                mf_to_mi(const typename _VR::mask_type& mf) {
+                    unsigned m = read_signs(mf);
+                    return _mf_to_mi_msk[m];
+                }
+            };
+
+            template <class _VR, class _VI>
+            const vec<int32_t, 4>
+            mask_helper_v2<false, _VR, _VI>::_mi_to_mf_msk[4] = {
+                {  0,  0,  0,  0},
+                { -1, -1,  0,  0},
+                {  0,  0, -1, -1},
+                { -1, -1, -1, -1}
+            };
+            
+            template <class _VR, class _VI>
+            const vec<bool, 2>
+            mask_helper_v2<false, _VR, _VI>::_mf_to_mi_msk[4] = {
+                {false, false},
+                {true, false},
+                {false, true},
+                {true, true}
+            };
+                
         }
 
 
@@ -140,70 +186,24 @@ namespace cftal {
                     sizeof(vi_type::value_type);
             }
             
-            static const v4s32 _vmi_to_vmf_msk[4];
-            
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
-#if 1
-                int32_t l= low_half(mi)() == true ? 1 : 0;
-                int32_t h= high_half(mi)() == true ? 2 : 0;
-                unsigned m= l | h;
-                return as<vmf_type>(_vmi_to_vmf_msk[m]);
-#if 0                
-                v4s32 r;
-                switch (m) {
-                case 0:
-                    r= v4s32{ 0,  0,  0,  0}; break;
-                case 1:
-                    r= v4s32{-1, -1,  0,  0}; break;
-                case 2:
-                    r= v4s32{ 0,  0, -1, -1}; break;
-                case 3:
-                    r= v4s32{-1, -1, -1, -1}; break;
-                }
-                return as<v2f64>(r);
-#endif
-#else
-                v4s32 xm=
-                    permute<0, 0, 1, 1>(mi);
-                return as<v2f64>(xm);
-#endif
+                const bool has_mask_type =
+                    sizeof(vmf_type) == sizeof(vmi_type);
+                return impl::mask_helper_v2<has_mask_type,
+                                            vf_type,
+                                            vi_type>::mi_to_mf(mi);
             }
 
-            static const vmi_type _vmf_to_vmi_msk[4];
-#if 0
-            = {
-                {false, false},
-                {true, false},
-                {false, true},
-                {true, true}
-            };
-#endif            
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
-#if 1
-                unsigned m = read_signs(mf);
-                return _vmf_to_vmi_msk[m];
-#if 0
-                vmi_type r;
-                switch (m) {
-                case 0:
-                    r= vmi_type{false, false}; break;
-                case 1:
-                    r= vmi_type{true, false}; break;
-                case 2:
-                    r= vmi_type{false, true}; break;
-                case 3:
-                    r= vmi_type{true, true}; break;
-                };
-                return r;
-#endif
-#else
-                v4s32 xm= as<v4s32>(mf);
-                xm = permute<1, 3, 0, 2>(xm);
-                return xm;
-#endif
+                const bool has_mask_type =
+                    sizeof(vmf_type) == sizeof(vmi_type);
+                return impl::mask_helper_v2<has_mask_type,
+                                            vf_type,
+                                            vi_type>::mf_to_mi(mf);
             }
+            
             static
             vi_type sel(const vmi_type& msk,
                         const vi_type& t, const vi_type& f) {
