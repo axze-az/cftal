@@ -676,25 +676,25 @@ cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
 inline
 cftal::v2f64 cftal::rint(const v2f64& a)
 {
-    return x86::round(a, x86::rounding_mode::current);
+    return x86::round(a, rounding_mode::current);
 }
 
 inline
 cftal::v2f64 cftal::floor(const v2f64& a)
 {
-    return x86::round(a, x86::rounding_mode::downward);
+    return x86::round(a, rounding_mode::downward);
 }
 
 inline
 cftal::v2f64 cftal::ceil(const v2f64& a)
 {
-    return x86::round(a, x86::rounding_mode::upward);
+    return x86::round(a, rounding_mode::upward);
 }
 
 inline
 cftal::v2f64 cftal::trunc(const v2f64& a)
 {
-    return x86::round(a, x86::rounding_mode::towardzero);
+    return x86::round(a, rounding_mode::towardzero);
 }
 
 template <bool _I0, bool _I1>

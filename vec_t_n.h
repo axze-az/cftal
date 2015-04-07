@@ -173,6 +173,10 @@ namespace cftal {
     bool
     elements_equal(const vec<_T, _N>& v);
 
+    template <typename _T>
+    bool
+    elements_equal(const vec<_T, 2>& v);
+    
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     max(const vec<_T, _N>& a, const vec<_T, _N>& b);
@@ -284,7 +288,7 @@ cftal::extract(const vec<_T, _N>& v)
     if (_I < _N/2) {
         r = extract<_I>(low_half(v));
     } else {
-        r = extract< (_I-_N/2) & ((_N/2)-1) >(high_half(v));
+        r = extract< (_I-_N/2) & ((_I-_N/2)-1)>(high_half(v));
     }
     return r;
 }
@@ -350,14 +354,9 @@ inline
 bool
 cftal::no_signs(const vec<_T, _N>& v)
 {
-    bool r=false;
-    if (_N > 2) {
-        bool lh= no_signs(low_half(v));
-        bool hh= no_signs(high_half(v));
-        r = lh && hh;
-    } else {
-        r = extract<0>(v) >=_T(0);
-    }
+    bool lh= no_signs(low_half(v));
+    bool hh= no_signs(high_half(v));
+    bool r = lh && hh;
     return r;
 }
 
@@ -377,15 +376,18 @@ inline
 bool
 cftal::elements_equal(const vec<_T, _N>& v)
 {
-    bool r=false;
-    if (_N > 2) {
-        bool lh= elements_equal(low_half(v));
-        bool hh= elements_equal(high_half(v));
-        r = lh && hh;
-    } else {
-        r = extract<0>(v) == extract<1>(v);
-    }
+    bool lh= elements_equal(low_half(v));
+    bool hh= elements_equal(high_half(v));
+    bool r = lh && hh;
     return r;
+}
+
+template <class _T>
+inline
+bool
+cftal::elements_equal(const vec<_T, 2>& v)
+{
+    return extract<0>(v) == extract<1>(v);
 }
 
 template <class _T, std::size_t _N>

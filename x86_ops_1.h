@@ -1,22 +1,13 @@
 #if !defined (__CFTAL_X86_OPS_1_H__)
 #define __CFTAL_X86_OPS_1_H__ 1
 
+#include <cftal/fenv.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_ops_0.h>
 
 namespace cftal {
 
     namespace x86 {
-
-        struct rounding_mode {
-            enum type {
-                nearest = 0x0,
-                downward = 0x1,
-                upward = 0x2,
-                towardzero = 0x3,
-                current = 0x4
-            };
-        };
 
         template <class _E, unsigned _EN>
         struct div_ref {

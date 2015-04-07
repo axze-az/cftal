@@ -5,6 +5,7 @@
 #include <vector>
 #include <cftal/vec.h>
 #include <cftal/bitops.h>
+#include <cftal/fenv.h>
 #include <iostream>
 #include <unistd.h>
 
@@ -229,17 +230,17 @@ bool cftal::test::read_data(func_data<_V>& tf, std::istream& is)
         r =  (uint64_t(rh) << 32) | rl;
         unsigned m;
         if (rm == "N" || rm == "RN") {
-            m = x86::rounding_mode::nearest;
+            m = rounding_mode::nearest;
         } else if (rm == "P" || rm == "RU") {
-            m = x86::rounding_mode::upward;
+            m = rounding_mode::upward;
         } else if (rm == "M" || rm == "RD") {
-            m = x86::rounding_mode::downward;
+            m = rounding_mode::downward;
         } else if (rm == "Z" || rm == "RZ") {
-            m = x86::rounding_mode::towardzero;
+            m = rounding_mode::towardzero;
         } else {
             continue;
         }
-        if (m != x86::rounding_mode::nearest)
+        if (m != rounding_mode::nearest)
             continue;
         typename func_data<_V>::inp_res c;
         union {
@@ -299,7 +300,7 @@ bool cftal::test::test_data(const func_data<_V>& tf, std::ostream& os)
         _V ae(abs_error(expected, res));
         _V re(rel_error(expected, res));
         _V max_err(ae + re);
-        _V is_err(re > 1.0e-15);
+        typename _V::mask_type is_err(re > 1.0e-15);
         double tt=extract<0>(res);
 #if 0
         std::cout << tf._fname << "( "

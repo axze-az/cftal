@@ -48,12 +48,17 @@ namespace cftal {
 
     template <typename _T>
     bool all_signs(const vec<_T, 1>& v);
+
+    template <typename _T>
+    bool no_signs(const vec<_T, 1>& v);
     
     template <typename _T>
     vec<_T, 1> max(const vec<_T, 1>& a, const vec<_T, 1>& b);
     template <typename _T>
     vec<_T, 1> min(const vec<_T, 1>& a, const vec<_T, 1>& b);
 
+    template <std::size_t _I, typename _T>
+    _T extract(const vec<_T, 1>& v);
     
     template <typename _T>
     vec<_T, 1>
@@ -439,6 +444,14 @@ cftal::all_signs(const vec<_T, 1>& v)
 
 template <class _T>
 inline
+bool
+cftal::no_signs(const vec<_T, 1>& v)
+{
+    return v() >= _T(0);
+}
+
+template <class _T>
+inline
 cftal::vec<_T, 1>
 cftal::max(const vec<_T, 1>& a, const vec<_T, 1>& b)
 {
@@ -451,6 +464,15 @@ cftal::vec<_T, 1>
 cftal::min(const vec<_T, 1>& a, const vec<_T, 1>& b)
 {
     return a() < b() ? a : b;
+}
+
+template <std::size_t _I, class _T>
+inline
+_T
+cftal::extract(const vec<_T, 1>& v)
+{
+    static_assert(_I ==0, "invalid offset in extract()");
+    return v();
 }
 
 template <class _T>
