@@ -47,6 +47,9 @@ namespace cftal {
     };
 
     template <typename _T>
+    bool all_signs(const vec<_T, 1>& v);
+    
+    template <typename _T>
     vec<_T, 1> max(const vec<_T, 1>& a, const vec<_T, 1>& b);
     template <typename _T>
     vec<_T, 1> min(const vec<_T, 1>& a, const vec<_T, 1>& b);
@@ -424,6 +427,14 @@ _T
 cftal::vec<_T, 1>::operator()() const
 {
     return _v;
+}
+
+template <class _T>
+inline
+bool
+cftal::all_signs(const vec<_T, 1>& v)
+{
+    return v() < _T(0);
 }
 
 template <class _T>

@@ -128,6 +128,9 @@ namespace cftal {
         // TODO: fma implementations
     }
 
+    vec<double, 1>
+    rint(const vec<double, 1>& v);
+
     // specializations vec<double, 2>
     vec<double, 2>
     cbrt(arg<vec<double, 2> >::type v);
@@ -509,6 +512,12 @@ cftal::isfinite(const vec<double, _N>& x)
     return ~(isinf(x) | isnan(x));
 }
 
+inline
+cftal::vec<double, 1>
+cftal::rint(const vec<double, 1>& v)
+{
+    return std::rint(v());
+}
 
 // local variables:
 // mode: c++

@@ -1,5 +1,5 @@
 // #if defined (__AVX__)
-#include "x86_v4f64.h"
+#include "vec.h"
 #include "vec_traits.h"
 #include "vec_def_math_funcs.h"
 

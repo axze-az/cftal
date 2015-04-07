@@ -366,14 +366,9 @@ inline
 bool
 cftal::all_signs(const vec<_T, _N>& v)
 {
-    bool r=false;
-    if (_N > 2) {
-        bool lh= all_signs(low_half(v));
-        bool hh= all_signs(high_half(v));
-        r = lh && hh;
-    } else {
-        r = extract<0>(v) < _T(0);
-    }
+    bool lh= all_signs(low_half(v));
+    bool hh= all_signs(high_half(v));
+    bool r = lh && hh;
     return r;
 }
 
