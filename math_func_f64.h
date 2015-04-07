@@ -692,12 +692,12 @@ cftal::math::func_core<double, _T>::sin_cos_k(vf_type d)
     // swap signs
 #if 1
     vf_type fs = _T::sel(q_and_2_f, vf_type(-1.0), vf_type(1.0));
-    rsin.h() = mulsign(rsin.h(), fs);
-    rsin.l() = mulsign(rsin.l(), fs);
+    rsin.h() *= fs;
+    rsin.l() *= fs;
     vmf_type mt = q_and_2_f ^ q_and_1_f;
     vf_type fc =  _T::sel(mt, vf_type(-1.0), vf_type(1.0));
-    rcos.h() = mulsign(rcos.h(), fc);
-    rcos.l() = mulsign(rcos.l(), fc);
+    rcos.h() *= fc;
+    rcos.l() *= fc;
 #else
     rsin.h() = mulsign(rsin.h(), q_and_2_f);
     rsin.l() = mulsign(rsin.l(), q_and_2_f);
@@ -808,10 +808,10 @@ native_sin_cos_k(const vf_type& d)
     // swap signs
 #if 1
     vf_type fs = _T::sel(q_and_2_f, vf_type(-1.0), vf_type(1.0));
-    rs = mulsign(rs, fs);
+    rs *= fs;
     vmf_type mt = q_and_2_f ^ q_and_1_f;
     vf_type fc =  _T::sel(mt, vf_type(-1.0), vf_type(1.0));
-    rc = mulsign(rc, fc);
+    rc *= fc;
 #else
     rs = mulsign(rs, q_and_2_f);
     rc = mulsign(rc, vf_type(q_and_2_f ^ q_and_1_f));
