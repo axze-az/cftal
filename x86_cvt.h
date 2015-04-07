@@ -1,14 +1,7 @@
 #if !defined (__CFTAL_X86_CVT_H__)
 #define __CFTAL_X86_CVT_H__ 1
 
-#include <cftal/x86_intrin.h>
-#if defined (__SSE2__)
-#include <cftal/x86_v4s32.h>
-#include <cftal/x86_v2f64.h>
-#endif
-#if defined (__AVX__)
-#include <cftal/x86_v4f64.h>
-#endif
+#include <cftal/vec.h>
 #include <utility>
 
 namespace cftal {
@@ -33,6 +26,95 @@ namespace cftal {
             _D h(const _S& s);
         };
 
+        template <typename _D, typename _S, std::size_t _N>
+        struct cvt_rz<vec<_D, _N>, vec<_S, _N> >  {
+            static const std::size_t _NHALF = _N/2;
+            using cvt_rz_half_t =
+                cvt_rz<vec<_D, _NHALF>, vec<_S, _NHALF> >;
+            static
+            vec<_D, _N>
+            l(const vec<_S, _N>& s) {
+                vec<_D, _NHALF> v0= cvt_rz_half_t::l(low_half(s));
+                vec<_D, _NHALF> v1= cvt_rz_half_t::l(high_half(s));
+                return vec<_D, _N>(v0, v1);
+            }
+            static
+            vec<_D, _N>
+            h(const vec<_S, _N>& s) {
+                return l(s);
+            }
+        };
+
+        template <typename _D, typename _S>
+        struct cvt_rz<vec<_D, 1>, vec<_S, 1> > {
+            static
+            vec<_D, 1>
+            l(const vec<_S, 1>& s) {
+                return vec<_D, 1>(static_cast<_D>(s()));
+            }
+            static
+            vec<_D, 1>
+            h(const vec<_D, 1>& s) {
+                return l(s);
+            }
+        };
+
+        template <typename _D, typename _S, std::size_t _N>
+        struct cvt<vec<_D, _N>, vec<_S, _N> > {
+            static const std::size_t _NHALF = _N/2;
+            using cvt_half_t =
+                cvt<vec<_D, _NHALF>, vec<_S, _NHALF> >;
+            static
+            vec<_D, _N>
+            l(const vec<_S, _N>& s) {
+                vec<_D, _NHALF> v0= cvt_half_t::l(low_half(s));
+                vec<_D, _NHALF> v1= cvt_half_t::l(high_half(s));
+                return vec<_D, _N>(v0, v1);
+            }
+            static
+            vec<_D, _N>
+            h(const vec<_S, _N>& s) {
+                return l(s);
+            }
+        };
+
+        // widening conversions:
+        template <typename _D, typename _S>
+        struct cvt<vec<_D, 1>, vec<_S, 1> >
+            : public cvt_rz<vec<_D, 1>, vec<_S, 1> > {};
+
+        // narrowing specializations
+        template <>
+        struct cvt<vec<int32_t, 1>, vec<double, 1> > {
+            static
+            vec<int32_t, 1>
+            l(const vec<double, 1>& s) {
+                return vec<int32_t, 1>(
+                    static_cast<int32_t>(std::rint(s())));
+            }
+            static
+            vec<int32_t, 1>
+            h(const vec<double, 1>& s) {
+                return l(s);
+            }
+        };
+
+        template<>
+        struct cvt<vec<int32_t, 1>, vec<float, 1> > {
+            static
+            vec<int32_t, 1>
+            l(const vec<float, 1>& s) {
+                return vec<int32_t, 1>(
+                    static_cast<int32_t>(std::rintf(s())));
+            }
+            static
+            vec<int32_t, 1>
+            h(const vec<float, 1>& s) {
+                return l(s);
+            }
+        };
+
+        
 #if defined (__SSE2__)        
         template <>
         struct cvt<v4f32, v2f64> {
