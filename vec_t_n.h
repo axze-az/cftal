@@ -283,12 +283,12 @@ inline
 _T
 cftal::extract(const vec<_T, _N>& v)
 {
-    static_assert(_I < _N, "invalid offset in extract()");
+    static_assert(_I < _N, "invalid offset in extract(vec<_T, _N>)");
     _T r;
     if (_I < _N/2) {
         r = extract<_I>(low_half(v));
     } else {
-        r = extract< (_I-_N/2) & ((_I-_N/2)-1)>(high_half(v));
+        r = extract< _I ? (_I-_N/2) : 0 >(high_half(v));
     }
     return r;
 }

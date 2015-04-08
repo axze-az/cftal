@@ -471,7 +471,7 @@ inline
 _T
 cftal::extract(const vec<_T, 1>& v)
 {
-    static_assert(_I ==0, "invalid offset in extract()");
+    // static_assert(_I ==0, "invalid offset in extract()");
     return v();
 }
 
