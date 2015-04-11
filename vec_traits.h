@@ -289,7 +289,7 @@ namespace cftal {
             using dvf_type = d_real<vf_type>;
 
             using vhpf_type = v2f64;
-            using hpf_traits = func_traits<vhpf_type, v4s32>;
+            using hpf_traits = func_traits<vhpf_type, v2s32>;
 
             static
             constexpr std::size_t vhpf_per_vf() {

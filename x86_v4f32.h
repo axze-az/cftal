@@ -90,7 +90,6 @@ namespace cftal {
     v4f32 abs(const v4f32& a);
     v4f32 fabs(const v4f32& a);
     v4f32 sqrt(const v4f32& a);
-    v4f32 cbrt(arg<v4f32>::type a);
     v4f32 hypot(const v4f32& a, const v4f32& b);
 
     v4f32 rsqrt(const v4f32& a);
@@ -113,41 +112,6 @@ namespace cftal {
     v4f32::mask_type isnan(const v4f32& x);
     v4f32::mask_type isfinite(const v4f32& x);
 #endif
-
-    v4f32 frexp(arg<v4f32>::type x, v4s32* e);
-    // v4f32 pow2i(arg<v4s32>::type e);
-    v4f32 ldexp(arg<v4f32>::type d, arg<v4s32>::type e);
-    v4s32 ilogbp1(arg<v4f32>::type v);
-    v4s32 ilogb(arg<v4f32>::type v);
-    v4f32 atan2(arg<v4f32>::type y, arg<v4f32>::type x);
-    v4f32 asin(arg<v4f32>::type d);
-    v4f32 acos(arg<v4f32>::type d);
-
-    v4f32 atan(arg<v4f32>::type d);
-    std::pair<v4f32, v4f32> sincos(arg<v4f32>::type d);
-
-    v4f32 exp(arg<v4f32>::type d);
-    v4f32 expm1(arg<v4f32>::type d);
-    v4f32 log(arg<v4f32>::type d);
-    v4f32 pow(arg<v4f32>::type b, arg<v4f32>::type e);
-    void sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos);
-    v4f32 sin(arg<v4f32>::type d);
-    v4f32 cos(arg<v4f32>::type d);
-    v4f32 tan(arg<v4f32>::type d);
-    v4f32 cot(arg<v4f32>::type d);
-    v4f32 atan2(arg<v4f32>::type x, arg<v4f32>::type y);
-
-    void native_sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos);
-    v4f32 native_exp(arg<v4f32>::type d);
-    v4f32 native_log(arg<v4f32>::type d);
-    v4f32 native_sin(arg<v4f32>::type d);
-    v4f32 native_cos(arg<v4f32>::type d);
-    v4f32 native_tan(arg<v4f32>::type d);
-    v4f32 native_cot(arg<v4f32>::type d);
-    v4f32 cosh(arg<v4f32>::type d);
-    v4f32 sinh(arg<v4f32>::type d);
-
-    v4f32 pow(arg<v4f32>::type x, arg<v4f32>::type y);
 
     // a*b +c
     v4f32 fma(const v4f32& a, const v4f32& b, const v4f32& c);
