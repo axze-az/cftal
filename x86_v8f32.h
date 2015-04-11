@@ -750,25 +750,25 @@ cftal::v8f32 cftal::x86::round(const v8f32& a, const rounding_mode::type m)
 inline
 cftal::v8f32 cftal::rint(const v8f32& a)
 {
-    return x86::round(a, x86::rounding_mode::current);
+    return x86::round(a, rounding_mode::current);
 }
 
 inline
 cftal::v8f32 cftal::floor(const v8f32& a)
 {
-    return x86::round(a, x86::rounding_mode::downward);
+    return x86::round(a, rounding_mode::downward);
 }
 
 inline
 cftal::v8f32 cftal::ceil(const v8f32& a)
 {
-    return x86::round(a, x86::rounding_mode::upward);
+    return x86::round(a, rounding_mode::upward);
 }
 
 inline
 cftal::v8f32 cftal::trunc(const v8f32& a)
 {
-    return x86::round(a, x86::rounding_mode::towardzero);
+    return x86::round(a, rounding_mode::towardzero);
 }
 
 // Local variables:
