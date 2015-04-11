@@ -213,6 +213,39 @@ cftal::abs(const vec<float, _N>& v)
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>
+cftal::andnot(const vec<float, _N>& a, const vec<float, _N>& b)
+{
+    return vec<float, _N>((~a) & b);
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::copysign(const vec<float, _N>& x, const vec<float, _N>& y)
+{
+    // return abs(x) * sgn(y)
+    using v_t = vec<float, _N>;
+    const v_t msk(not_sign_f32_msk::v._f32);
+    v_t abs_x(x & msk);
+    v_t sgn_y(andnot(msk, y));
+    return v_t(abs_x | sgn_y);
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::mulsign(const vec<float, _N>& x, const vec<float, _N>& y)
+{
+    using v_t = vec<float, _N>;
+    const v_t msk(sign_f32_msk::v._f32);
+    v_t sgn_y = y & msk;
+    return v_t(x ^ sgn_y);
+}
+
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
 cftal::mad(const vec<float, _N>& a, const vec<float, _N>& b,
            const vec<float, _N>& c)
 {
