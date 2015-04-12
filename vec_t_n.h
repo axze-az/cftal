@@ -6,6 +6,7 @@
 #include <cftal/constants.h>
 #include <cftal/init_list.h>
 #include <cftal/mem.h>
+#include <cftal/mask_vec.h>
 
 namespace cftal {
 
