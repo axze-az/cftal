@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec_op.h>
+#include <cftal/vec_bit_n.h>
 
 namespace cftal {
 
