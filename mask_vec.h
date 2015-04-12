@@ -13,24 +13,25 @@ namespace cftal {
     class mask_vec {      
         using utype = typename
             std::conditional<(_N>32), uint64_t,
-            std::conditional<(_N>16), uint32_t,
-            std::conditional<(_N>8), uint16_t,
-            uint8_t> > >::type;
+            typename std::conditional<(_N>16), uint32_t,
+            typename std::conditional<(_N>8), uint16_t,
+            uint8_t>::type >::type >::type;
         utype _v;
     public:
-        static const utype mask = _N-1; 
+        static constexpr const utype mask = _N-1; 
         mask_vec() = default;
         mask_vec(const mask_vec&) = default;
         mask_vec(mask_vec&&) = default;
         mask_vec& operator=(const mask_vec&) = default;
         mask_vec& operator=(mask_vec&&) = default;
 
-        mask_vec(const mask_vec<_T, _N/2>& l, const mask_vec<_T, _N/2>& h,
-                 typename std::enable_if<(_N>1)>::type* = nullptr) 
+        template <typename _U>
+        mask_vec(const mask_vec<_U, _N/2>& l, const mask_vec<_U, _N/2>& h,
+                 typename std::enable_if<(_N>1), _U>::type* = nullptr) 
             : _v( (utype(l()) & ((_N/2)-1)) &
                   ((utype(h()) & ((_N/2)-1)) << _N/2)) {}
         template <typename _U>
-        mask_vec(const mask_vec<_U, _N/2>& v) : _v(v()) {}
+        mask_vec(const mask_vec<_U, _N>& v) : _v(v()) {}
         mask_vec(utype v) : _v( v & mask) {}
         utype operator()() const { return _v; }
     };
