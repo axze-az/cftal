@@ -455,6 +455,20 @@ cftal::mem<cftal::vec<double, 2>>::store(double* p, const vec<double, 2>& v)
     _mm_storeu_pd(p, v());
 }
 
+inline
+cftal::vec<double, 1>
+cftal::low_half(const v2f64& v)
+{
+    return vec<double, 1>(extract<0>(v));
+}
+
+inline
+cftal::vec<double, 1>
+cftal::high_half(const v2f64& v)
+{
+    return vec<double, 1>(extract<1>(v));
+}
+
 template <std::size_t _I>
 double
 cftal::extract(const vec<double, 2>& v)

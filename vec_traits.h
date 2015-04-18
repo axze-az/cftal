@@ -128,9 +128,9 @@ namespace cftal {
                 static
                 typename _VR::mask_type
                 mi_to_mf(const typename _VI::mask_type& mi) {
-                    int32_t l= low_half(mi)() == true ? 1 : 0;
-                    int32_t h= high_half(mi)() == true ? 2 : 0;
-                    unsigned m= l | h;
+                    //int32_t l= low_half(mi)() == true ? 1 : 0;
+                    // int32_t h= high_half(mi)() == true ? 2 : 0;
+                    unsigned m= mi();
                     return as<_VR>(_mi_to_mf_msk[m]);
                 }
 
@@ -140,7 +140,8 @@ namespace cftal {
                 typename _VI::mask_type
                 mf_to_mi(const typename _VR::mask_type& mf) {
                     unsigned m = read_signs(mf);
-                    return _mf_to_mi_msk[m];
+                    // return _mf_to_mi_msk[m];
+                    return typename _VI::mask_type(m);
                 }
             };
 
@@ -219,7 +220,7 @@ namespace cftal {
             vf_type insert_exp(const vi_type& e) {
                 vi_type t= e << 20;
                 v4s32 tf(t, t);
-                tf = permute<0, 0, 3, 3>(tf);
+                tf = permute<0, 0, 2, 2>(tf);
                 vf_type r(as<v2f64>(tf));
                 r &= v2f64(exp_f64_msk::v._f64);
                 return r;

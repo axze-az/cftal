@@ -334,7 +334,7 @@ bool cftal::test::check_cbrt_f64(const _V& v)
 bool all_tests_04()
 {
     cftal::test::check_frexp_f64<cftal::v2f64,
-                                 cftal::v4s32>();
+                                 cftal::v2s32>();
     cftal::test::check_frexp_f64<cftal::v4f64,
                                  cftal::v4s32>();
     cftal::test::check_frexp_f64<cftal::v4f32,

@@ -693,20 +693,29 @@ check_perm_v8s32(cftal::vec<int32_t, 8> a)
                           7, -1>(a);
 }
 
-
-
-
-
 int main(int argc, char** argv)
 {
     std::cout << "alignof(max_align_t) "
               << alignof(std::max_align_t)
               << std::endl;
+    cftal::v4f64 t4(4.94066e-324);
+    cftal::v4s32 e4;
+    cftal::v4f64 r4=frexp(t4, &e4);
+    cftal::v2f64 t(4.94066e-324);
+    cftal::v2s32 e;
+    cftal::v2f64 r=frexp(t, &e);
+    int se;
+    double st=4.94066e-324;
+    double sr=frexp(st, &se);
+    std::cout << low_half(low_half(r4))() << " "
+              << low_half(low_half(e4))() << std::endl;
+    std::cout << low_half(r)() << " " << low_half(e)() << std::endl;
+    std::cout << sr << " " << se << std::endl;
 
+#if 0
     cftal::vec<double, 4> t1(1.0), t2(2.0);
     cftal::vec<double, 4> t3(
         cftal::op::add<double, 4>::v(t1, t2));
-#if 0
     using namespace cftal;
     using namespace x86vec;
     uint64_t v(18446744073709551615U);

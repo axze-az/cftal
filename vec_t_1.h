@@ -11,7 +11,7 @@ namespace cftal {
     class vec<_T, 1> {
     public:
         using value_type = _T;
-        using mask_value_type = bool;
+        using mask_value_type = bit;
         using mask_type = vec<mask_value_type, 1>;
 
         vec() = default;
@@ -383,7 +383,7 @@ namespace cftal {
                 typename cvt::int_type ai(
                     cvt::as_int(a()));
                 typename cvt::type r(
-                    cvt::as_type(ai << s));
+                    cvt::as_type(ai >> s));
                 return full_type(r);
             }
         };
