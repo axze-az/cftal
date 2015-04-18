@@ -157,8 +157,8 @@ cftal::operator==(const vec<bit, _N>& a, const vec<bit, _N>& b)
     // 0 1 --> 0
     // 1 1 --> 1
     // 0 0 --> 1
-    // a&b | ~a & ~b
-    return (a() & b()) | (~a() & ~b());
+    // a&b | ~a & ~b == ~(a^b)
+    return ~(a() ^ b());
 }
 
 template <std::size_t _N>
@@ -166,7 +166,7 @@ inline
 cftal::vec<cftal::bit, _N>
 cftal::operator!=(const vec<bit, _N>& a, const vec<bit, _N>& b)
 {
-    return ~(a==b);
+    return a() ^ b();
 }
 
 template <std::size_t _N>
