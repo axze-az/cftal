@@ -305,6 +305,7 @@ namespace cftal {
 
     // unary plus operator
     template <class _T>
+    inline
     const _T& operator+(const _T& v) {
         return v;
     }
