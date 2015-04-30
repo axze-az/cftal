@@ -9,8 +9,7 @@ MAJOR=0#
 MINOR=1#
 
 SLDFLAGS:= $(SLDFLAGS) 
-#ARCH=#-march=bdver1 -mxop #-march=bdver1 #-mdispatch-scheduler
-ARCH+=-mavx -mpopcnt #-mavx2 -mfma #-march=k8 -mno-3dnow -mpopcnt -mfma -mavx2
+ARCH+=#-mavx -mpopcnt -mavx2 -mfma 
 CXXFLAGS+=-I.. #-march=native -mavx -mfma -mavx2 #-mavx -mfma -mavx2
 CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 OPT+=-fno-unroll-loops

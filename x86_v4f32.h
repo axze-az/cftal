@@ -50,13 +50,11 @@ namespace cftal {
         void store(float* p, const vec<float, 4>& v);
     };
 
-#if 0    
-    vec<float, 4>
+    vec<float, 2>
     low_half(const vec<float, 4>& s);
 
-    vec<float, 4>
+    vec<float, 2>
     high_half(const vec<float, 4>& s);
-#endif
     
     template <std::size_t _I>
     float
@@ -498,6 +496,19 @@ cftal::mem<cftal::vec<float, 4>>::store(float* p, const vec<float, 4>& v)
     _mm_storeu_ps(p, v());
 }
 
+inline
+cftal::vec<float, 2>
+cftal::low_half(const vec<float, 4>& v)
+{
+    return as<vec<float, 2> >(v);
+}
+
+inline
+cftal::vec<float, 2>
+cftal::high_half(const vec<float, 4>& v)
+{
+    return low_half(permute<2, 3, 0, 1>(v));
+}
 
 template <std::size_t _I>
 float
@@ -547,6 +558,19 @@ cftal::v4f32 cftal::abs(const v4f32& a)
     const v4f32 msk(not_sign_f32_msk::v._f32);
     return _mm_and_ps(a(), msk());
 }
+
+inline
+cftal::v4f32 cftal::min(const v4f32& a, const v4f32& b)
+{
+    return _mm_min_ps(a(), b());
+}
+
+inline
+cftal::v4f32 cftal::max(const v4f32& a, const v4f32& b)
+{
+    return _mm_max_ps(a(), b());
+}
+
 
 inline
 cftal::v4f32 cftal::andnot(const v4f32& a, const v4f32& b)
