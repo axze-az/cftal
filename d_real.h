@@ -116,7 +116,7 @@ namespace cftal {
             const float split_scale_down = 1.0f/16384.0f;
             // 2^14
             const float split_scale_up = 16384.0f;
-            cmp_result_type is_big(fabsf(a) > split_threshold);
+            cmp_result_type is_big(std::fabs(a) > split_threshold);
             float temp;
             if (unlikely(any(is_big))) {
                 a*=split_scale_down;
