@@ -131,8 +131,8 @@ namespace cftal {
             std::pair<int64_t, int64_t>
             operator()(const int64_t a, const int64_t b)
                 const {
-            	typedef __int128 i128_t;
-                int128_t p(__int128(a)*b);
+                typedef __int128 i128_t;
+                i128_t p(i128_t(a)*b);
                 int64_t l(p);
                 int64_t h(p>>64);
                 return std::make_pair(l, h);

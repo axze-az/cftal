@@ -55,6 +55,15 @@ namespace cftal {
     vec<double, 1>
     high_half(const vec<double, 2>& s);
 
+    bool
+    any_of(const vec<double, 2>::mask_type& s);
+
+    bool
+    all_of(const vec<double, 2>::mask_type& s);
+    
+    bool
+    none_of(const vec<double, 2>::mask_type& s);
+
     template <std::size_t _I>
     double
     extract(const vec<double, 2>& s);
@@ -591,6 +600,27 @@ cftal::v2f64 cftal::mulsign(const v2f64& x, const v2f64& y)
     const v2f64 msk(sign_f64_msk::v._f64);
     v2f64 sgn_y = y & msk;
     return x ^ sgn_y;
+}
+
+inline
+bool
+cftal::any_of(const vec<double, 2>::mask_type& s)
+{
+    return x86::read_signs_f64(s()) != 0;
+}
+
+inline
+bool
+cftal::all_of(const vec<double, 2>::mask_type& s)
+{
+    return x86::read_signs_f64(s()) == 0x3;
+}
+    
+inline
+bool
+cftal::none_of(const vec<double, 2>::mask_type& s)
+{
+    return x86::read_signs_f64(s()) == 0;
 }
 
 inline

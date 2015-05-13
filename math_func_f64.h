@@ -554,7 +554,7 @@ reduce_trig_arg_k(const vf_type& d)
 {
     using ctbl = impl::d_real_constants<dvf_type, double>;
     constexpr double large_arg(2.0e8);
-    vmf_type v_small_arg(abs(d) < vf_type(large_arg));
+    vmf_type v_large_arg(vf_type(large_arg) < abs(d));
     // small argument reduction
     // reduce by pi half
     dvf_type qf(rint(d * ctbl::m_2_pi));
@@ -562,7 +562,7 @@ reduce_trig_arg_k(const vf_type& d)
                 qf * ctbl::m_pi_2.l());
     vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
 
-    if (!all_signs(v_small_arg)) {
+    if (any_of(v_large_arg)) {
         // reduce the large arguments
         constexpr std::size_t N=_T::NVF();
         constexpr std::size_t NI=_T::NVI();
@@ -721,7 +721,7 @@ native_reduce_trig_arg_k(const vf_type& d)
 #define PI4_D 1.7607799325916000908e-27
 
     constexpr double large_arg(2.0e8);
-    vmf_type v_small_arg(abs(d) < vf_type(large_arg));
+    vmf_type v_large_arg(vf_type(large_arg) < abs(d));
 
     vf_type qf(rint(vf_type(d * (2 * M_1_PI))));
     vi_type q(_T::cvt_f_to_i(qf));
@@ -737,7 +737,7 @@ native_reduce_trig_arg_k(const vf_type& d)
 #undef PI4_C
 #undef PI4_C
 
-    if (!all_signs(v_small_arg)) {
+    if (any_of(v_large_arg)) {
         // reduce the large arguments
         constexpr std::size_t N=_T::NVF();
         constexpr std::size_t NI=_T::NVI();

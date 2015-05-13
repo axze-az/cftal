@@ -65,21 +65,32 @@ namespace cftal {
         };
 
         // read the sign bits of all elements into a bit mask
-        int read_signs_f32(__m128 i);
+        uint32_t read_signs_f32(__m128 i);
         // read the sign bits of all elements into a bit mask
-        int read_signs_f64(__m128d d);
+        uint32_t read_signs_f64(__m128d d);
         // read the sign bits of all elements into a bit mask
-        int read_signs_s8(__m128i i);
-
+        uint32_t read_signs_s8(__m128i i);
+        // read the sign bits of all elements into a bit mask
+        uint32_t read_signs_s16(__m128i i);
+        // read the sign bits of all elements into a bit mask
+        uint32_t read_signs_s32(__m128i i);
+        // read the sign bits of all elements into a bit mask
+        uint32_t read_signs_s64(__m128i i);
 #if defined (__AVX__)
         // read the sign bits of all elements into a bit mask
-        int read_signs_f32(__m256 i);
+        uint32_t read_signs_f32(__m256 i);
         // read the sign bits of all elements into a bit mask
-        int read_signs_f64(__m256d d);
+        uint32_t read_signs_f64(__m256d d);
 #endif
 #if defined (__AVX2__)
         // read the sign bits of all elements into a bit mask
-        int read_signs_s8(__m256i i);
+        uint32_t read_signs_s8(__m256i i);
+        // read the sign bits of all elements into a bit mask
+        uint32_t read_signs_s16(__m256i i);
+        // read the sign bits of all elements into a bit mask
+        uint32_t read_signs_s32(__m256i i);
+        // read the sign bits of all elements into a bit mask
+        uint32_t read_signs_s64(__m256i i);
 #endif
 
         // neither all bits set nor unset
@@ -163,32 +174,93 @@ __m128i cftal::x86::div_ref<_E, _EN>::v(__m128i a, __m128i b, __m128i* rem)
 }
 
 inline
-int cftal::x86::read_signs_s8(__m128i a)
+cftal::uint32_t cftal::x86::read_signs_s8(__m128i a)
 {
     return _mm_movemask_epi8(a);
 }
 
 inline
-int cftal::x86::read_signs_f32(__m128 a)
+cftal::uint32_t cftal::x86::read_signs_s16(__m128i a)
+{
+#if defined (__SSSE3__)
+    const __m128i msk= _mm_setr_epi8( 1,  3,  5,  7,  9, 11, 13, 15,
+                                     -1, -1, -1, -1, -1, -1, -1, -1);
+    __m128i as= _mm_shuffle_epi8(a, msk);
+    uint32_t r= read_signs_s8(as);
+    return r;
+#else
+    uint32_t t=read_signs_s8(a);
+    t= t & 0xAAAA;
+    uint32_t t0 = t >>  (1-0);
+    uint32_t t1 = t >>  (3-1);
+    uint32_t t2 = t >>  (5-2);
+    uint32_t t3 = t >>  (7-3);
+    uint32_t t4 = t >>  (9-4);
+    uint32_t t5 = t >> (11-5);
+    uint32_t t6 = t >> (13-6);
+    uint32_t t7 = t >> (15-7);
+    return t0 | t1 | t2 | t3 | t4 | t5 | t6 | t7;
+#endif
+}
+
+inline
+cftal::uint32_t cftal::x86::read_signs_s32(__m128i a)
+{
+#if defined (__SSSE3__)
+    const __m128i msk= _mm_setr_epi8( 3,  7, 11, 15, -1, -1, -1, -1,
+                                      -1, -1, -1, -1, -1, -1, -1, -1);
+    __m128i as= _mm_shuffle_epi8(a, msk);
+    uint32_t r= read_signs_s8(as);
+    return r;
+#else
+    uint32_t t=read_signs_s8(a);
+    uint32_t t0 = (t & (1<<3)) >> (3-0);
+    uint32_t t1 = (t & (1<<7)) >> (7-1);
+    uint32_t t2 = (t & (1<<11)) >> (11-2);
+    uint32_t t3 = (t & (1<<15)) >> (15-3);
+    return t0 | t1 | t2 | t3;
+#endif
+}
+
+inline
+cftal::uint32_t cftal::x86::read_signs_s64(__m128i a)
+{
+#if defined (__SSE3__)
+    const __m128i msk= _mm_setr_epi8( 7, 15, -1, -1, -1, -1, -1, -1,
+                                      -1, -1, -1, -1, -1, -1, -1, -1);
+    __m128i as= _mm_shuffle_epi8(a, msk);
+    uint32_t r= read_signs_s8(as);
+    return r;
+#else
+    uint32_t t=read_signs_s8(a);
+    uint32_t t0 = (t & (1<<7)) >> (7-0);
+    uint32_t t1 = (t & (1<<15)) >>(15-1);
+    return t0 | t1;
+#endif
+}
+
+
+inline
+cftal::uint32_t cftal::x86::read_signs_f32(__m128 a)
 {
     return _mm_movemask_ps(a);
 }
 
 inline
-int cftal::x86::read_signs_f64(__m128d a)
+cftal::uint32_t cftal::x86::read_signs_f64(__m128d a)
 {
     return _mm_movemask_pd(a);
 }
 
 #if defined (__AVX__)
 inline
-int cftal::x86::read_signs_f32(__m256 a)
+cftal::uint32_t cftal::x86::read_signs_f32(__m256 a)
 {
     return _mm256_movemask_ps(a);
 }
 
 inline
-int cftal::x86::read_signs_f64(__m256d a)
+cftal::uint32_t cftal::x86::read_signs_f64(__m256d a)
 {
     return _mm256_movemask_pd(a);
 }
@@ -196,10 +268,50 @@ int cftal::x86::read_signs_f64(__m256d a)
 
 #if defined (__AVX2__)
 inline
-int cftal::x86::read_signs_s8(__m256i a)
+cftal::uint32_t cftal::x86::read_signs_s8(__m256i a)
 {
     return _mm256_movemask_epi8(a);
 }
+
+inline
+cftal::uint32_t cftal::x86::read_signs_s16(__m256i a)
+{
+    const __m128i m0= _mm_setr_epi8( 1,  3,  5,  7,  9, 11, 13, 15,
+                                     -1, -1, -1, -1, -1, -1, -1, -1);
+    const __m256i m1= _mm256_cast_si128_si256(msk);
+    const __m256i m2= _mm256_inserti128_si256(m1, m0);
+    __m256i as= _mm256_shuffle_epi8(a, m2);
+    uint32_t r= read_signs_s8(as);
+    r = (r>>16-8) | (r & 0xFF);
+    return r;
+}
+
+inline
+cftal::uint32_t cftal::x86::read_signs_s32(__m256i a)
+{
+    const __m128i m0= _mm_setr_epi8( 3,  7, 11, 15, -1, -1, -1, -1,
+                                     -1, -1, -1, -1, -1, -1, -1, -1);
+    const __m256i m1= _mm256_cast_si128_si256(msk);
+    const __m256i m2= _mm256_inserti128_si256(m1, m0);
+    __m256i as= _mm256_shuffle_epi8(a, m2);
+    uint32_t r= read_signs_s8(as);
+    r = (r>>16-4) | (r & 0xF);
+    return r;
+}
+
+inline
+cftal::uint32_t cftal::x86::read_signs_s64(__m256i a)
+{
+    const __m128i m0= _mm_setr_epi8( 7, 15, -1, -1, -1, -1, -1, -1,
+                                     -1, -1, -1, -1, -1, -1, -1, -1);
+    const __m256i m1= _mm256_cast_si128_si256(msk);
+    const __m256i m2= _mm256_inserti128_si256(m1, m0);
+    __m256i as= _mm256_shuffle_epi8(a, m2);
+    uint32_t r= read_signs_s8(as);
+    r = (r>>16-2) | (r & 0x3);
+    return r;
+}
+
 #endif
 
 inline

@@ -88,6 +88,16 @@ namespace cftal {
 
     template <std::size_t _I, typename _T, std::size_t _N>
     _T extract(const vec<_T, _N>& v);
+
+    // test if all elements lt 0 / have their MSB set
+    template <typename _T, std::size_t _N>
+    bool all_of(const vec<_T, _N>& v);
+    // test if any element lt 0 / has its MSB set
+    template <typename _T, std::size_t _N>
+    bool any_of(const vec<_T, _N>& v);
+    // test of no element lt 0 / MSB is not set
+    template <typename _T, std::size_t _N>
+    bool none_of(const vec<_T, _N>& v);
     
     template <typename _T, std::size_t _N>
     vec<_T, _N>
@@ -291,6 +301,30 @@ cftal::extract(const vec<_T, _N>& v)
         r = extract< _I ? (_I-_N/2) : 0 >(high_half(v));
     }
     return r;
+}
+
+template <class _T, std::size_t _N>
+inline
+bool
+cftal::all_of(const vec<_T, _N>& v)
+{
+    return all_of(low_half(v)) && all_of(high_half(v));
+}
+
+template <class _T, std::size_t _N>
+inline
+bool
+cftal::any_of(const vec<_T, _N>& v)
+{
+    return any_of(low_half(v)) || any_of(high_half(v));
+}
+
+template <class _T, std::size_t _N>
+inline
+bool
+cftal::none_of(const vec<_T, _N>& v)
+{
+    return none_of(low_half(v)) || none_of(high_half(v));
 }
 
 template <class _T, std::size_t _N>

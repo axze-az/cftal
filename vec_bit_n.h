@@ -73,7 +73,6 @@ namespace cftal {
         utype _v;
     };
 
-    
     template <std::size_t _N>
     typename std::enable_if<(_N>1), vec<bit, _N/2> >::type
     low_half(const vec<bit, _N>& v);

@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/vec_op.h>
 #include <cftal/vec_bit_n.h>
+#include <cmath>
 
 namespace cftal {
 
@@ -47,11 +48,64 @@ namespace cftal {
         }
     };
 
+    namespace impl {
+
+        template <typename _T, typename _C>
+        struct xxx_of {
+            static const unsigned shift= (sizeof(_T)*8-1);
+            static const _T msk = _T(1) << shift;
+            static
+            bool
+            any(const vec<_T, 1>& v) {
+                return (v() & msk) != _T(0);
+            }
+            static
+            bool
+            all(const vec<_T, 1>& v) {
+                return (v() & msk) != _T(0);
+            }
+            static
+            bool
+            none(const vec<_T, 1>& v) {
+                return (v() & msk) == _T(0);
+            }
+        };
+
+        template <typename _T>
+        struct xxx_of<_T, std::true_type> {
+            static
+            bool
+            any(const vec<_T, 1>& v) {
+                return std::signbit(v()) != 0;
+            }
+            static
+            bool
+            all(const vec<_T, 1>& v) {
+                return std::signbit(v()) != 0;
+            }
+            static
+            bool
+            none(const vec<_T, 1>& v) {
+                return std::signbit(v()) == 0;
+            }
+        };
+    }
+    
     template <typename _T>
     bool all_signs(const vec<_T, 1>& v);
 
     template <typename _T>
     bool no_signs(const vec<_T, 1>& v);
+
+    template <typename _T>
+    bool any_of(const vec<_T, 1>& v);
+
+    template <typename _T>
+    bool all_of(const vec<_T, 1>& v);
+    
+    template <typename _T>
+    bool none_of(const vec<_T, 1>& v);
+
     
     template <typename _T>
     vec<_T, 1> max(const vec<_T, 1>& a, const vec<_T, 1>& b);
@@ -450,6 +504,37 @@ cftal::no_signs(const vec<_T, 1>& v)
 {
     return v() >= _T(0);
 }
+
+template <class _T>
+inline
+bool
+cftal::all_of(const vec<_T, 1>& v)
+{
+    using it= impl::xxx_of<_T,
+                           typename std::is_floating_point<_T>::type>;
+    return it::all(v);
+}
+
+template <class _T>
+inline
+bool
+cftal::any_of(const vec<_T, 1>& v)
+{
+    using it= impl::xxx_of<_T,
+                           typename std::is_floating_point<_T>::type>;
+    return it::any(v);
+}
+
+template <class _T>
+inline
+bool
+cftal::none_of(const vec<_T, 1>& v)
+{
+    using it= impl::xxx_of<_T,
+                           typename std::is_floating_point<_T>::type>;
+    return it::none(v);
+}
+
 
 template <class _T>
 inline

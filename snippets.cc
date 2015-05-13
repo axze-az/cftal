@@ -1,4 +1,13 @@
 
+
+template <class _T, std::size_t _N>
+bool any_of<const vec<_T, _N>& s)
+{
+    return any_of(low_half(s)) ||
+        any_of(hig_half(s));
+}
+
+
 #if 0
 #define CBRT2 1.2599210498948731648             /* 2^(1/3) */
 #define SQR_CBRT2 1.5874010519681994748         /* 2^(2/3) */
