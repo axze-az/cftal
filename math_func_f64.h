@@ -477,14 +477,15 @@ exp_k2(const dvf_type& d)
         (d - ctbl::m_ln2*m2), inv_k);
     vf_type m=m2.h() + m2.l();
 
-    dvf_type s = ctbl::inv_fac[9];
+    const int _N=10;
+    dvf_type s = ctbl::inv_fac[_N];
     // s = s * r + ctbl::inv_fac[8];
     // s = s * r + ctbl::inv_fac[7];
     // s = s * r + ctbl::inv_fac[6];
     // s = s * r + ctbl::inv_fac[5];
     // s = s * r + ctbl::inv_fac[4];
     // s = s * r + ctbl::inv_fac[3];
-    for (unsigned int i=8; i!=2; --i)
+    for (unsigned int i=_N-1; i!=2; --i)
         s = s*r + ctbl::inv_fac[i];
     s = s * r + vf_type(0.5);
     s = s * r + vf_type(1.0);
