@@ -224,7 +224,7 @@ cftal::uint32_t cftal::x86::read_signs_s32(__m128i a)
 inline
 cftal::uint32_t cftal::x86::read_signs_s64(__m128i a)
 {
-#if defined (__SSE3__)
+#if defined (__SSSE3__)
     const __m128i msk= _mm_setr_epi8( 7, 15, -1, -1, -1, -1, -1, -1,
                                       -1, -1, -1, -1, -1, -1, -1, -1);
     __m128i as= _mm_shuffle_epi8(a, msk);

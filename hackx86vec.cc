@@ -195,6 +195,24 @@ cftal::v8f32 test_as(cftal::v8s32 a)
     return cftal::as<cftal::v8f32>(a);
 }
 
+cftal::uint32_t
+test_read_signs(cftal::v8s16 a)
+{
+    return cftal::x86::read_signs_s16(a());
+}
+
+cftal::uint32_t
+test_read_signs(cftal::v4s32 a)
+{
+    return cftal::x86::read_signs_s32(a());
+}
+
+cftal::uint32_t
+test_read_signs(cftal::v2s64 a)
+{
+    return cftal::x86::read_signs_s64(a());
+}
+
 
 struct print_dpf64 {
     const cftal::d_real<double> _f;
