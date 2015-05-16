@@ -191,7 +191,7 @@ cftal::uint32_t cftal::x86::read_signs_s16(__m128i a)
 #else
     uint32_t t=read_signs_s8(a);
     uint32_t t0 = (t >>  (1-0)) & (1<<0);
-    uint32_t t1 = (t >>  (3-1)) & (1<<1);;
+    uint32_t t1 = (t >>  (3-1)) & (1<<1);
     uint32_t t2 = (t >>  (5-2)) & (1<<2);
     uint32_t t3 = (t >>  (7-3)) & (1<<3);
     uint32_t t4 = (t >>  (9-4)) & (1<<4);
@@ -214,9 +214,9 @@ cftal::uint32_t cftal::x86::read_signs_s32(__m128i a)
 #else
     uint32_t t=read_signs_s8(a);
     uint32_t t0 = (t >>  (3-0)) & (1<<0);
-    uint32_t t1 = (t >>  (7-1)) & (1<<1);;
-    uint32_t t2 = (t >> (11-2)) & (1<<3);
-    uint32_t t3 = (t >> (15-3)) /* & (1<<4) */;
+    uint32_t t1 = (t >>  (7-1)) & (1<<1);
+    uint32_t t2 = (t >> (11-2)) & (1<<2);
+    uint32_t t3 = (t >> (15-3)) /* & (1<<3) */;
     return t0 | t1 | t2 | t3;
 #endif
 }
