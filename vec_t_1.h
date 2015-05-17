@@ -92,12 +92,6 @@ namespace cftal {
     }
     
     template <typename _T>
-    bool all_signs(const vec<_T, 1>& v);
-
-    template <typename _T>
-    bool no_signs(const vec<_T, 1>& v);
-
-    template <typename _T>
     bool any_of(const vec<_T, 1>& v);
 
     template <typename _T>
@@ -487,22 +481,6 @@ _T
 cftal::vec<_T, 1>::operator()() const
 {
     return _v;
-}
-
-template <class _T>
-inline
-bool
-cftal::all_signs(const vec<_T, 1>& v)
-{
-    return v() < _T(0);
-}
-
-template <class _T>
-inline
-bool
-cftal::no_signs(const vec<_T, 1>& v)
-{
-    return v() >= _T(0);
 }
 
 template <class _T>

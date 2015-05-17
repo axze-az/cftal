@@ -171,14 +171,6 @@ namespace cftal {
     vec<_T, 16>
     permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1);
     
-    template<typename _T, std::size_t _N>
-    bool
-    all_signs(const vec<_T, _N>& v);
-
-    template<typename _T, std::size_t _N>
-    bool
-    no_signs(const vec<_T, _N>& v);
-    
     template <typename _T, std::size_t _N>
     bool
     elements_equal(const vec<_T, _N>& v);
@@ -324,7 +316,7 @@ inline
 bool
 cftal::none_of(const vec<_T, _N>& v)
 {
-    return none_of(low_half(v)) || none_of(high_half(v));
+    return none_of(low_half(v)) && none_of(high_half(v));
 }
 
 template <class _T, std::size_t _N>
@@ -381,28 +373,6 @@ cftal::select(const vec<_T, 16>& a, const vec<_T, 16>& b)
                                                        low_half(b)),
         select<_I8, _I9, _IA, _IB, _IC, _ID, _IE, _IF>(high_half(a),
                                                        high_half(b)));
-}
-
-template <class _T, std::size_t _N>
-inline
-bool
-cftal::no_signs(const vec<_T, _N>& v)
-{
-    bool lh= no_signs(low_half(v));
-    bool hh= no_signs(high_half(v));
-    bool r = lh && hh;
-    return r;
-}
-
-template <class _T, std::size_t _N>
-inline
-bool
-cftal::all_signs(const vec<_T, _N>& v)
-{
-    bool lh= all_signs(low_half(v));
-    bool hh= all_signs(high_half(v));
-    bool r = lh && hh;
-    return r;
 }
 
 template <class _T, std::size_t _N>
