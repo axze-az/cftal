@@ -77,15 +77,6 @@ namespace cftal {
            const vec<double, 4>& on_true,
            const vec<double, 4>& on_false);
 
-    bool
-    all_signs(const vec<double, 4>& a);
-
-    bool
-    no_signs(const vec<double, 4>& a);
-
-    bool
-    both_signs(const vec<double, 4>& a);
-
     unsigned
     read_signs(const vec<double, 4>& b);
 
@@ -657,24 +648,6 @@ cftal::none_of(const vec<double, 4>::mask_type& s)
 }
 
 inline
-bool cftal::all_signs(const v4f64& a)
-{
-    return x86::all_signs_f64(a());
-}
-
-inline
-bool cftal::both_signs(const v4f64& a)
-{
-    return x86::both_signs_f64(a());
-}
-
-inline
-bool cftal::no_signs(const v4f64& a)
-{
-    return x86::no_signs_f64(a());
-}
-
-inline
 unsigned cftal::read_signs(const v4f64& a)
 {
     return x86::read_signs_f64(a());
@@ -686,7 +659,7 @@ bool cftal::elements_equal(const v4f64& a)
     double t0= extract<0>(a);
     v4f64 cmp0(t0);
     v4f64::mask_type rv(cmp0 == a);
-    return all_signs(rv);
+    return all_of(rv);
 }
 
 inline

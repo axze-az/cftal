@@ -66,13 +66,13 @@ namespace cftal {
            const vec<float, 4>& on_false);
 
     bool
-    all_signs(const vec<float, 4>& a);
+    all_of(const vec<float, 4>::mask_type& a);
 
     bool
-    no_signs(const vec<float, 4>& a);
+    any_of(const vec<float, 4>::mask_type& a);
 
     bool
-    both_signs(const vec<float, 4>& a);
+    none_of(const vec<float, 4>::mask_type& a);
 
     unsigned
     read_signs(const vec<float, 4>& b);
@@ -686,21 +686,21 @@ cftal::v4f32 cftal::mulsign(const v4f32& x, const v4f32& y)
 }
 
 inline
-bool cftal::all_signs(const v4f32& a)
+bool cftal::all_of(const v4f32::mask_type& a)
 {
-    return x86::all_signs_f32(a());
+    return x86::read_signs_f32(a()) == 0xf;
 }
 
 inline
-bool cftal::both_signs(const v4f32& a)
+bool cftal::any_of(const v4f32::mask_type& a)
 {
-    return x86::both_signs_f32(a());
+    return x86::read_signs_f32(a()) != 0xf;
 }
 
 inline
-bool cftal::no_signs(const v4f32& a)
+bool cftal::none_of(const v4f32::mask_type& a)
 {
-    return x86::no_signs_f32(a());
+    return x86::read_signs_f32(a()) == 0;
 }
 
 inline
@@ -715,7 +715,7 @@ bool cftal::elements_equal(const v4f32& a)
     float t0= extract<0>(a);
     v4f32 cmp0(t0);
     v4f32::mask_type rv(cmp0 == a);
-    return all_signs(rv);
+    return all_of(rv);
 }
 
 inline
