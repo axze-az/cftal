@@ -119,33 +119,26 @@ float cftal::x86::extract_f32(__m128 v)
 {
     const bool cond = _IDX < 4;
     static_assert (cond, "cftal::x86::extract_f32 _IDX < 4");
-#if defined (__SSE4_1__)
-    union { int _i; float _f; } tmp;
-    tmp._i = _mm_extract_ps(v, _IDX);
-    float r= tmp._f;
-    return r;
-#else
     float r;
     switch (_IDX) {
     case 0:
-        _mm_store_ss(&r, v);
+        r = _mm_cvtss_f32(v);
         break;
     case 1: {
         static const int m= impl::shuffle4<1, 1, 1, 1>::val;
-        _mm_store_ss(&r, _mm_shuffle_ps(v, v, m));
+        r = _mm_cvtss_f32(_mm_shuffle_ps(v, v, m));
         break;
     }
     case 2:
-        _mm_store_ss(&r, _mm_unpackhi_ps(v, v));
+        r =_mm_cvtss_f32(_mm_unpackhi_ps(v, v));
         break;
     case 3: {
         static const int m= impl::shuffle4<3, 3, 3, 3>::val;
-        _mm_store_ss(&r, _mm_shuffle_ps(v, v, m));
+        r = _mm_cvtss_f32(_mm_shuffle_ps(v, v, m));
     }
         break;
     }
     return r;
-#endif
 }
 
 template <unsigned _IDX>

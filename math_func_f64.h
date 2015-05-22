@@ -468,16 +468,17 @@ exp_k2(const dvf_type& d)
 {
     using ctbl = impl::d_real_constants<dvf_type, double>;
 
-    const double k(512.0);
-    const int k_i(9);
+    const int k_i(9 /* 12 */);
+    const double k(1<<k_i);
     const vf_type inv_k(1.0/k);
 
-    dvf_type m2= rint(d * ctbl::m_1_ln2);
+    vf_type m2= rint(d.h() * ctbl::m_1_ln2.h());
+    // dvf_type m2= rint(d * ctbl::m_1_ln2);
     dvf_type r= mul_pwr2(
         (d - ctbl::m_ln2*m2), inv_k);
-    vf_type m=m2.h() + m2.l();
+    vf_type m=m2 /* m2.h() + m2.l() */;
 
-    const int _N=10;
+    const int _N=9 /* 7 */;
     dvf_type s = ctbl::inv_fac[_N];
     // s = s * r + ctbl::inv_fac[8];
     // s = s * r + ctbl::inv_fac[7];

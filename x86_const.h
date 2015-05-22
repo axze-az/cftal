@@ -169,29 +169,34 @@ namespace cftal {
         }
 
         // (u)int16_t constants
-        typedef const_v8u16<0x8000, 0x8000, 0x8000, 0x8000,
-                            0x8000, 0x8000, 0x8000, 0x8000> v_sign_s16_msk;
-        typedef const_v8u16<0x7fff, 0x7fff, 0x7fff, 0x7fff,
-                            0x7fff, 0x7fff, 0x7fff, 0x7fff> v_not_sign_s16_msk;
-        const int sign_s16_msk = 0xAAAA;
+        typedef const_v8u16<0x8000, 0x8000,
+                            0x8000, 0x8000,
+                            0x8000, 0x8000,
+                            0x8000, 0x8000> v_sign_v8s16_msk;
+
+        typedef const_v8u16<0x7fff, 0x7fff,
+                            0x7fff, 0x7fff,
+                            0x7fff, 0x7fff,
+                            0x7fff, 0x7fff> v_not_sign_v8s16_msk;
+        const int sign_v8s16_msk = 0xAAAA;
 
         // (u)int32_t constants
         typedef const_v4u32<0x80000000, 0x80000000,
-                            0x80000000, 0x80000000> v_sign_s32_msk;
+                            0x80000000, 0x80000000> v_sign_v4s32_msk;
         typedef const_v4u32<0x7fffffff, 0x7fffffff,
-                            0x7fffffff, 0x7fffffff> v_not_sign_s32_msk;
-        const int sign_s32_msk = 0x8888;
+                            0x7fffffff, 0x7fffffff> v_not_sign_v4s32_msk;
+        const int sign_v4s32_msk = 0x8888;
 
         // (u)int64_t constants
         typedef const_v4u32<0x00000000, 0x80000000,
-                            0x00000000, 0x80000000> v_sign_s64_msk;
+                            0x00000000, 0x80000000> v_sign_v2s64_msk;
         typedef const_v4u32<0xffffffff, 0x7fffffff,
-                            0xffffffff, 0x7fffffff> v_not_sign_s64_msk;
-        const int sign_s64_msk = 0x8080;
+                            0xffffffff, 0x7fffffff> v_not_sign_v2s64_msk;
+        const int sign_v2s64_msk = 0x8080;
 
         // f32 constants
-        typedef v_sign_s32_msk v_sign_v4f32_msk;
-        typedef v_not_sign_s32_msk v_not_sign_f32_msk;
+        typedef v_sign_v4s32_msk v_sign_v4f32_msk;
+        typedef v_not_sign_v4s32_msk v_not_sign_f32_msk;
 
         typedef const_v8u32<0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff,
@@ -220,8 +225,8 @@ namespace cftal {
         const int exp_msk_f32 = 0xff;
 
         // f64 constants
-        typedef v_sign_s64_msk v_sign_v2f64_msk;
-        typedef v_not_sign_s64_msk v_not_sign_v2f64_msk;
+        typedef v_sign_v2s64_msk v_sign_v2f64_msk;
+        typedef v_not_sign_v2s64_msk v_not_sign_v2f64_msk;
 
         typedef const_v8u32<0x00000000, 0x80000000,
                             0x00000000, 0x80000000,

@@ -93,6 +93,19 @@ namespace cftal {
         uint32_t read_signs_s64(__m256i i);
 #endif
 
+        // check the sign bits of v8s16
+        bool all_of_s16(__m128i a);
+        bool any_of_s16(__m128i a);
+        bool none_of_s16(__m128i a);
+        // check the sign bits of v4s32
+        bool all_of_s32(__m128i a);
+        bool any_of_s32(__m128i a);
+        bool none_of_s32(__m128i a);
+        // check the sign bits of v2s64
+        bool all_of_s64(__m128i a);
+        bool any_of_s64(__m128i a);
+        bool none_of_s64(__m128i a);
+        
         // neither all bits set nor unset
         bool both_bits(__m128i a);
         // all bits set
@@ -238,7 +251,6 @@ cftal::uint32_t cftal::x86::read_signs_s64(__m128i a)
 #endif
 }
 
-
 inline
 cftal::uint32_t cftal::x86::read_signs_f32(__m128 a)
 {
@@ -277,8 +289,8 @@ cftal::uint32_t cftal::x86::read_signs_s16(__m256i a)
 {
     const __m128i m0= _mm_setr_epi8( 1,  3,  5,  7,  9, 11, 13, 15,
                                      -1, -1, -1, -1, -1, -1, -1, -1);
-    const __m256i m1= _mm256_cast_si128_si256(msk);
-    const __m256i m2= _mm256_inserti128_si256(m1, m0);
+    const __m256i m1= _mm256_cast_si128_si256(m0);
+    const __m256i m2= _mm256_inserti128_si256(m1, m0, 1);
     __m256i as= _mm256_shuffle_epi8(a, m2);
     uint32_t r= read_signs_s8(as);
     r = (r>>16-8) | (r & 0xFF);
@@ -312,6 +324,125 @@ cftal::uint32_t cftal::x86::read_signs_s64(__m256i a)
 }
 
 #endif
+
+inline
+bool cftal::x86::all_of_s16(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v8s16_msk::iv();
+    // test if (~a & msk) are all zero
+    return _mm_testc_si128(a, msk);
+#else
+    int r=read_signs_s8(a) & sign_v8s16_msk;
+    return r  == sign_v8s16_msk;
+#endif
+}
+
+inline
+bool cftal::x86::none_of_s16(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v8s16_msk::iv();
+    // test if (a & msk) are all zero
+    return _mm_testz_si128(a, msk);
+#else
+    int r=read_signs_s8(a) & sign_v8s16_msk;
+    return r  == 0;
+#endif
+}
+
+inline
+bool cftal::x86::any_of_s16(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v8s16_msk::iv();
+    // test if (a & msk) are all zero
+    return !_mm_testz_si128(a, msk);
+#else
+    int r=read_signs_s8(a) & sign_v8s16_msk;
+    return r != 0;
+#endif
+}
+
+inline
+bool cftal::x86::all_of_s32(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v4s32_msk::iv();
+    // test if (~a & msk) are all zero
+    return _mm_testc_si128(a, msk);
+#else
+    int r=read_signs_s8(a) & sign_v4s32_msk;
+    return r  == sign_v4s32_msk;
+#endif
+}
+
+inline
+bool cftal::x86::none_of_s32(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v4s32_msk::iv();
+    // test if (a & msk) are all zero
+    return _mm_testz_si128(a, msk);
+#else
+    int r=read_signs_s8(a) & sign_v4s32_msk;
+    return r  == 0;
+#endif
+}
+
+inline
+bool cftal::x86::any_of_s32(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v4s32_msk::iv();
+    // test if (a & msk) are all zero
+    return !_mm_testz_si128(a, msk);
+#else
+    int r=read_signs_s8(a) & sign_v4s32_msk;
+    return r  != 0;
+#endif
+}
+
+inline
+bool cftal::x86::all_of_s64(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v2s64_msk::iv();
+    // test if (~a & msk) are all zero
+    return _mm_testc_si128(a, msk);
+#else
+    int r=read_signs_s8(a) & sign_v2s64_msk;
+    return r == sign_v2s64_msk;
+#endif
+}
+
+
+inline
+bool cftal::x86::none_of_s64(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v2s64_msk::iv();
+    // test if (a & msk) are all zero
+    return _mm_testz_si128(a, msk);
+#else
+    int r=read_signs_s8(a) & sign_v2s64_msk;
+    return r  == 0;
+#endif
+}
+
+inline
+bool cftal::x86::any_of_s64(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v2s64_msk::iv();
+    // test if (a & msk) are all zero
+    return !_mm_testz_si128(a, msk);
+#else
+    int r=read_signs_s8(a) & sign_v2s64_msk;
+    return r != 0;
+#endif
+}
+
 
 inline
 bool cftal::x86::both_bits(__m128i a)
@@ -475,11 +606,11 @@ inline
 bool cftal::x86::both_signs_s16(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk= x86::v_sign_s16_msk::iv();
+    const __m128i msk= v_sign_v8s16_msk::iv();
     return _mm_testnzc_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r != 0) && ((r & sign_s16_msk) != sign_s16_msk);
+    return (r != 0) && ((r & sign_sv816_msk) != sign_v8s16_msk);
 #endif
 }
 
@@ -487,11 +618,11 @@ inline
 bool cftal::x86::all_signs_s16(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk= x86::v_sign_s16_msk::iv();
+    const __m128i msk= v_sign_v8s16_msk::iv();
     return _mm_testc_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r & sign_s16_msk) == sign_s16_msk;
+    return (r & sign_s16_msk) == sign_v8s16_msk;
 #endif
 }
 
@@ -499,11 +630,11 @@ inline
 bool cftal::x86::no_signs_s16(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk= x86::v_sign_s16_msk::iv();
+    const __m128i msk= x86::v_sign_v8s16_msk::iv();
     return _mm_testz_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r & sign_s16_msk) ==0;
+    return (r & sign_v8s16_msk) ==0;
 #endif
 }
 
@@ -511,11 +642,11 @@ inline
 bool cftal::x86::both_signs_s32(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk= x86::v_sign_s32_msk::iv();
+    const __m128i msk= x86::v_sign_v4s32_msk::iv();
     return _mm_testnzc_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r != 0) && ((r & sign_s32_msk) != sign_s32_msk);
+    return (r != 0) && ((r & sign_v4s32_msk) != sign_v4s32_msk);
 #endif
 }
 
@@ -523,11 +654,11 @@ inline
 bool cftal::x86::all_signs_s32(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk= x86::v_sign_s32_msk::iv();
+    const __m128i msk= x86::v_sign_v4s32_msk::iv();
     return _mm_testc_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r & sign_s32_msk) == sign_s32_msk;
+    return (r & sign_v4s32_msk) == sign_v4s32_msk;
 #endif
 }
 
@@ -535,11 +666,11 @@ inline
 bool cftal::x86::no_signs_s32(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk= x86::v_sign_s32_msk::iv();
+    const __m128i msk= x86::v_sign_v4s32_msk::iv();
     return _mm_testz_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r & sign_s32_msk) == 0;
+    return (r & sign_v4s32_msk) == 0;
 #endif
 }
 
@@ -547,11 +678,11 @@ inline
 bool cftal::x86::both_signs_s64(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk= x86::v_sign_s64_msk::iv();
+    const __m128i msk= x86::v_sign_v2s64_msk::iv();
     return _mm_testnzc_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r != 0) && ((r & sign_s64_msk) != sign_s64_msk);
+    return (r != 0) && ((r & sign_v2s64_msk) != sign_v2s64_msk);
 #endif
 }
 
@@ -559,11 +690,11 @@ inline
 bool cftal::x86::all_signs_s64(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk= x86::v_sign_s64_msk::iv();
+    const __m128i msk= x86::v_sign_v2s64_msk::iv();
     return _mm_testc_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r & sign_s64_msk) == sign_s64_msk;
+    return (r & sign_v2s64_msk) == sign_v2s64_msk;
 #endif
 }
 
@@ -571,11 +702,11 @@ inline
 bool cftal::x86::no_signs_s64(__m128i a)
 {
 #if defined (__SSE4_1__)
-    const __m128i msk= x86::v_sign_s64_msk::iv();
+    const __m128i msk= x86::v_sign_v2s64_msk::iv();
     return _mm_testz_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r & sign_s64_msk) ==0;
+    return (r & sign_v2s64_msk) ==0;
 #endif
 }
 

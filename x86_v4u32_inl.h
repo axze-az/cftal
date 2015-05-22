@@ -373,6 +373,24 @@ cftal::high_half(const vec<uint32_t, 4>& v)
 
 
 inline
+bool cftal::all_of(const vec<uint32_t, 4>& v)
+{
+    return x86::all_of_s32(v());
+}
+
+inline
+bool cftal::any_of(const vec<uint32_t, 4>& v)
+{
+    return x86::any_of_s32(v());
+}
+
+inline
+bool cftal::none_of(const vec<uint32_t, 4>& v)
+{
+    return x86::any_of_s32(v());
+}
+
+inline
 cftal::v4u32 cftal::max(const v4u32& a, const v4u32& b)
 {
 #if defined (__SSE4_1__)

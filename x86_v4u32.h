@@ -53,7 +53,14 @@ namespace cftal {
     low_half(const vec<uint32_t, 4>& v);
     vec<uint32_t, 2>
     high_half(const vec<uint32_t, 4>& v);
-        
+
+    bool
+    all_of(const vec<uint32_t, 4>& v);
+    bool
+    any_of(const vec<uint32_t, 4>& v);
+    bool
+    none_of(const vec<uint32_t, 4>& v);
+    
     v4u32 max(const v4u32& a, const v4u32& b);
     v4u32 min(const v4u32& a, const v4u32& b);
  

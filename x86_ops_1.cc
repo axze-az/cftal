@@ -143,8 +143,8 @@ __m256i cftal::x86::div_s32::v(__m256i x, __m256i y, __m256i* rem)
 __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 {
     // add 2^31
-    __m128i xs = _mm_add_epi32(x, v_sign_s32_msk::iv());
-    __m128i ys = _mm_add_epi32(y, v_sign_s32_msk::iv());
+    __m128i xs = _mm_add_epi32(x, v_sign_v4s32_msk::iv());
+    __m128i ys = _mm_add_epi32(y, v_sign_v4s32_msk::iv());
     // generate dp fp constant: 2^31
     const int _2_pow_31_fp_h= (1023+31)<<20;
     __m128d _2_pow_31 =

@@ -316,7 +316,7 @@ bool cftal::test::test_data(const func_data<_V>& tf, std::ostream& os)
 #if 0
         std::cout << "ulp: " << ulps << std::endl;
 #endif
-        if (ulps < 1 && no_signs(is_err) && elements_equal(res) ) {
+        if (ulps < 1 && none_of(is_err) && elements_equal(res) ) {
 #if 0
             std::cout << "passed\n";
 #endif
