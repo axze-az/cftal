@@ -610,7 +610,7 @@ bool cftal::x86::both_signs_s16(__m128i a)
     return _mm_testnzc_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r != 0) && ((r & sign_sv816_msk) != sign_v8s16_msk);
+    return (r != 0) && ((r & sign_v8s16_msk) != sign_v8s16_msk);
 #endif
 }
 
@@ -622,7 +622,7 @@ bool cftal::x86::all_signs_s16(__m128i a)
     return _mm_testc_si128(a, msk);
 #else
     int r=read_signs_s8(a);
-    return (r & sign_s16_msk) == sign_v8s16_msk;
+    return (r & sign_v8s16_msk) == sign_v8s16_msk;
 #endif
 }
 
