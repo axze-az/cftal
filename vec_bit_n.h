@@ -2,6 +2,7 @@
 #define __CFTAL_VEC_BIT_N_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/types.h>
 #include <cftal/vec_t_n.h>
 #include <type_traits>
 

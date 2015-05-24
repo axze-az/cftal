@@ -143,8 +143,6 @@ namespace cftal {
         bool all_signs_s64(__m128i a);
         bool no_signs_s64(__m128i a);
 
-
-
         __m128i popcnt_u8(__m128i a);
         __m128i popcnt_u16(__m128i a);
         __m128i popcnt_u32(__m128i b);

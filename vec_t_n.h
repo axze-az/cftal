@@ -12,8 +12,8 @@ namespace cftal {
     template <typename _T>
     struct arg {
         using type = const _T&;
-    };   
-    
+    };
+
     template <typename _T, std::size_t _N >
     class /* alignas(const_min<128, sizeof(_T)*_N>::v)*/ vec {
     public:
@@ -53,28 +53,29 @@ namespace cftal {
         vec<_T, _N/2> _l;
         vec<_T, _N/2> _h;
     };
-    
+
     using v2f64 = vec<double, 2>;
     using v4f64 = vec<double, 4>;
+    using v8f64 = vec<double, 8>;
 
     using v4f32 = vec<float, 4>;
     using v8f32 = vec<float, 8>;
+    using v16f32= vec<float, 16>;
 
     using v8s16 = vec<int16_t, 8>;
     using v8u16 = vec<uint16_t, 8>;
-    
+    using v16s16= vec<int16_t, 16>;
+    using v16u16= vec<uint16_t, 16>;
 
     using v2s32 = vec<int32_t, 2>;
     using v2u32 = vec<uint32_t, 2>;
     using v4s32 = vec<int32_t, 4>;
     using v4u32 = vec<uint32_t, 4>;
-
     using v8s32 = vec<int32_t, 8>;
     using v8u32 = vec<uint32_t, 8>;
 
     using v2s64 = vec<int64_t, 2>;
     using v2u64 = vec<uint64_t, 2>;
-
     using v4s64 = vec<int64_t, 4>;
     using v4u64 = vec<uint64_t, 4>;
     
