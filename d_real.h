@@ -139,6 +139,8 @@ namespace cftal {
         _T _l;
     public:
         constexpr d_real() : _h(0), _l(0) {}
+        template <typename _U>
+        constexpr d_real(const d_real<_U>& r) : _h(r.h()), _l(r.l()) {}
         constexpr d_real(const _T& h, const _T& l) : _h(h), _l(l) {}
         constexpr d_real(const _T& h) : _h(h), _l(_T(0)) {}
         const _T& l() const { return _l; }

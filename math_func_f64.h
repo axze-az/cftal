@@ -472,10 +472,10 @@ exp_k2(const dvf_type& d)
     const double k(1<<k_i);
     const vf_type inv_k(1.0/k);
 
-    vf_type m2= rint(d.h() * ctbl::m_1_ln2.h());
+    vf_type m2= rint(vf_type(d.h() * ctbl::m_1_ln2.h()));
     // dvf_type m2= rint(d * ctbl::m_1_ln2);
     dvf_type r= mul_pwr2(
-        (d - ctbl::m_ln2*m2), inv_k);
+        (d - dvf_type(ctbl::m_ln2)*m2), inv_k);
     vf_type m=m2 /* m2.h() + m2.l() */;
 
     const int _N=9 /* 7 */;
@@ -487,7 +487,7 @@ exp_k2(const dvf_type& d)
     // s = s * r + ctbl::inv_fac[4];
     // s = s * r + ctbl::inv_fac[3];
     for (unsigned int i=_N-1; i!=2; --i)
-        s = s*r + ctbl::inv_fac[i];
+        s = s*r + dvf_type(ctbl::inv_fac[i]);
     s = s * r + vf_type(0.5);
     s = s * r + vf_type(1.0);
     s = s * r;
