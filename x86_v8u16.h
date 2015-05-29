@@ -46,6 +46,16 @@ namespace cftal {
         static
         void store(uint16_t* p, const vec<uint16_t, 8>& v);
     };
+
+    vec<uint16_t, 4> low_half(const vec<uint16_t, 8>& a);
+    vec<uint16_t, 4> high_half(const vec<uint16_t, 8>& a);
+    
+    bool
+    all_of(const vec<uint16_t, 8>::mask_type& v);
+    bool
+    any_of(const vec<uint16_t, 8>::mask_type& v);
+    bool
+    none_of(const vec<uint16_t, 8>::mask_type& v);
     
     v8u16 max(const v8u16& a, const v8u16& b);
     v8u16 min(const v8u16& a, const v8u16& b);

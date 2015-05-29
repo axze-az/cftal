@@ -47,6 +47,18 @@ namespace cftal {
         void store(int64_t* p, const vec<int64_t, 4>& v);
     };
     
+    vec<int64_t, 2>
+    low_half(const vec<int64_t, 4>& v);
+    vec<int64_t, 2>
+    high_half(const vec<int64_t, 4>& v);
+
+    bool
+    all_of(const vec<int64_t, 4>::mask_type& v);
+    bool
+    any_of(const vec<int64_t, 4>::mask_type& v);
+    bool
+    none_of(const vec<int64_t, 4>::mask_type& v);
+    
     v4s64 max(const v4s64& a, const v4s64& b);
     v4s64 min(const v4s64& a, const v4s64& b);
   

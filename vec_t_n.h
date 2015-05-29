@@ -49,9 +49,9 @@ namespace cftal {
 
     private:
         static_assert(0==(_N & (_N-1)),
-                      "_N is not a power of 2");
-        vec<_T, _N/2> _l;
-        vec<_T, _N/2> _h;
+                      "vec<_T, _N>: _N is not a power of 2");
+        half_type _l;
+        half_type _h;
     };
 
     using v2f64 = vec<double, 2>;
@@ -78,7 +78,7 @@ namespace cftal {
     using v2u64 = vec<uint64_t, 2>;
     using v4s64 = vec<int64_t, 4>;
     using v4u64 = vec<uint64_t, 4>;
-    
+
     template <typename _T, std::size_t _N>
     const typename vec<_T, _N>::half_type&
     low_half(const vec<_T, _N>& v);
@@ -99,7 +99,7 @@ namespace cftal {
     // test of no element lt 0 / MSB is not set
     template <typename _T, std::size_t _N>
     bool none_of(const vec<_T, _N>& v);
-    
+
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     select(const typename vec<_T, _N>::mask_type& m,
@@ -125,7 +125,7 @@ namespace cftal {
               bool _IC, bool _ID, bool _IE, bool _IF, typename _T>
     vec<_T, 16>
     select(const vec<_T, 16>& a, const vec<_T, 16>& b);
-    
+
     template <int32_t _I0, int32_t _I1, typename _T>
     vec<_T, 2>
     permute(const vec<_T, 2>& v);
@@ -171,7 +171,7 @@ namespace cftal {
               typename _T>
     vec<_T, 16>
     permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1);
-    
+
     template <typename _T, std::size_t _N>
     bool
     elements_equal(const vec<_T, _N>& v);
@@ -179,7 +179,7 @@ namespace cftal {
     template <typename _T>
     bool
     elements_equal(const vec<_T, 2>& v);
-    
+
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     max(const vec<_T, _N>& a, const vec<_T, _N>& b);
@@ -187,7 +187,7 @@ namespace cftal {
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     min(const vec<_T, _N>& a, const vec<_T, _N>& b);
-    
+
     template <class _T, std::size_t _N>
     struct mem< vec<_T, _N> > {
         static
@@ -580,7 +580,7 @@ cftal::permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1)
     const int32_t kd= _ID < 16 ? _ID : -1;
     const int32_t ke= _IE < 16 ? _IE : -1;
     const int32_t kf= _IF < 16 ? _IF : -1;
-    
+
     vec<_T, 16> ri = permute<k0, k1, k2, k3, k4, k5, k6, k7,
                              k8, k9, ka, kb, kc, kd, ke, kf>(v0);
     // select elements from v1

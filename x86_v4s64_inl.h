@@ -330,6 +330,38 @@ cftal::mem<cftal::vec<int64_t, 4> >::store(int64_t* p,
 }
 
 inline
+cftal::vec<int64_t, 2>
+cftal::low_half(const cftal::vec<int64_t, 4>& v)
+{
+    return _mm256_castsi256_si128(v());
+}
+
+inline
+cftal::vec<int64_t, 2>
+cftal::high_half(const cftal::vec<int64_t, 4>& v)
+{
+    return _mm256_extracti128_si256(v(), 1);
+}
+
+inline
+bool cftal::all_of(const vec<int64_t, 4>::mask_type& v)
+{
+    return x86::all_of_s64(v());
+}
+
+inline
+bool cftal::any_of(const vec<int64_t, 4>::mask_type& v)
+{
+    return x86::any_of_s64(v());
+}
+
+inline
+bool cftal::none_of(const vec<int64_t, 4>::mask_type& v)
+{
+    return x86::none_of_s64(v());
+}
+
+inline
 cftal::v4s64 cftal::max(const v4s64& a, const v4s64& b)
 {
     v4s64 _gt(a > b);

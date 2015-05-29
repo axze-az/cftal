@@ -369,6 +369,39 @@ cftal::mem<cftal::vec<uint16_t, 8> >::store(uint16_t* p,
 }
 
 inline
+cftal::vec<uint16_t, 4>
+cftal::low_half(const vec<uint16_t, 8>& v)
+{
+    return as<vec<uint16_t,4> >(v);
+}
+
+inline
+cftal::vec<uint16_t, 4>
+cftal::high_half(const vec<uint16_t, 8>& v)
+{
+    vec<uint16_t, 8> h= permute<4, 5, 6, 7, 0, 1, 2, 3>(v);
+    return as<vec<uint16_t, 4> >(h);
+}
+
+inline
+bool cftal::all_of(const vec<uint16_t, 8>::mask_type& v)
+{
+    return x86::all_of_s16(v());
+}
+
+inline
+bool cftal::any_of(const vec<uint16_t, 8>::mask_type& v)
+{
+    return x86::any_of_s16(v());
+}
+
+inline
+bool cftal::none_of(const vec<uint16_t, 8>::mask_type& v)
+{
+    return x86::none_of_s16(v());
+}
+
+inline
 cftal::v8u16 cftal::max(const v8u16& a, const v8u16& b)
 {
 #if defined (__SSE4_1__)

@@ -55,11 +55,11 @@ namespace cftal {
     high_half(const vec<uint32_t, 4>& v);
 
     bool
-    all_of(const vec<uint32_t, 4>& v);
+    all_of(const vec<uint32_t, 4>::mask_type& v);
     bool
-    any_of(const vec<uint32_t, 4>& v);
+    any_of(const vec<uint32_t, 4>::mask_type& v);
     bool
-    none_of(const vec<uint32_t, 4>& v);
+    none_of(const vec<uint32_t, 4>::mask_type& v);
     
     v4u32 max(const v4u32& a, const v4u32& b);
     v4u32 min(const v4u32& a, const v4u32& b);

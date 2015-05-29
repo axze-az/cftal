@@ -392,6 +392,24 @@ cftal::high_half(const cftal::vec<int32_t, 8>& v)
 }
 
 inline
+bool cftal::all_of(const vec<int32_t, 8>::mask_type& v)
+{
+    return x86::all_of_s32(v());
+}
+
+inline
+bool cftal::any_of(const vec<int32_t, 8>::mask_type& v)
+{
+    return x86::any_of_s32(v());
+}
+
+inline
+bool cftal::none_of(const vec<int32_t, 8>::mask_type& v)
+{
+    return x86::none_of_s32(v());
+}
+
+inline
 cftal::v8s32 cftal::max(const v8s32& a, const v8s32& b)
 {
     return _mm256_max_epi32(a(), b());

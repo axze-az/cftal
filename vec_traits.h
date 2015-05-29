@@ -11,14 +11,13 @@
 
 namespace cftal {
 
-
     template <std::size_t _N>
     struct d_real_traits<vec<double, _N> > : public has_fma<double> {
         using cmp_result_type = typename vec<double, _N>::mask_type;
 
         static
         bool any(const cmp_result_type& b) {
-            return !no_signs(b);
+            return any_of(b);
         }
 
         static
@@ -47,7 +46,7 @@ namespace cftal {
 
         static
         bool any(const cmp_result_type& b) {
-            return !no_signs(b);
+            return any_of(b);
         }
 
         static
