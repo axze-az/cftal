@@ -339,7 +339,7 @@ cftal::x86::impl::select_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
 {
 #if defined (__SSE4_1__)
     const int sm=csel4<_P0, _P1, _P2, _P3>::val;
-    return _mm_blend_ps(b, a, sm);
+    return _mm_blend_ps(b, a, sm & 0xf);
 #else
     typedef const_v4u32<
         (_P0 ? -1 : 0), (_P1 ? -1 : 0),

@@ -126,7 +126,7 @@ float cftal::x86::extract_f32(__m128 v)
         break;
     case 1: {
         static const int m= impl::shuffle4<1, 1, 1, 1>::val;
-        r = _mm_cvtss_f32(_mm_shuffle_ps(v, v, m));
+        r = _mm_cvtss_f32(_mm_shuffle_ps(v, v, m & 0x0f));
         break;
     }
     case 2:
@@ -134,7 +134,7 @@ float cftal::x86::extract_f32(__m128 v)
         break;
     case 3: {
         static const int m= impl::shuffle4<3, 3, 3, 3>::val;
-        r = _mm_cvtss_f32(_mm_shuffle_ps(v, v, m));
+        r = _mm_cvtss_f32(_mm_shuffle_ps(v, v, m & 0x0f));
     }
         break;
     }
