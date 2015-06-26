@@ -466,6 +466,63 @@ typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 exp_k2(const dvf_type& d)
 {
+#if 1
+    using ctbl = impl::d_real_constants<dvf_type, double>;
+
+    vmf_type cmp_res;
+    vmi_type i_cmp_res;
+    vmf_type inf_nan= isinf(d.h()) | isnan(d.h());
+    vmf_type finite= ~inf_nan;
+    vi_type k_i(0);
+
+    // remove exact powers of 2
+    vf_type m2= rint(vf_type(d.h() * ctbl::m_1_ln2.h()));
+    dvf_type r= (d - dvf_type(ctbl::m_ln2)*m2);
+    // reduce arguments further until anything is lt
+    // ln(2)/256 ~ 0.027
+    // M_LN2/512 ~ 0.0135
+    do {
+        cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
+        if (none_of(cmp_res))
+            break;
+        i_cmp_res = _T::vmf_to_vmi(cmp_res);
+        k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
+        dvf_type d1 = mul_pwr2(r, vf_type(0.5));
+        vf_type d2_h = _T::sel(cmp_res, d1.h(), r.h());
+        vf_type d2_l = _T::sel(cmp_res, d1.l(), r.l());
+        r = dvf_type(d2_h, d2_l);
+    } while (1);
+
+    const int _N=9 /* 7 */;
+    dvf_type s = ctbl::inv_fac[_N];
+    for (unsigned int i=_N-1; i!=2; --i)
+        s = s*r + dvf_type(ctbl::inv_fac[i]);
+    s = s * r + vf_type(0.5);
+    s = s * r + vf_type(1.0);
+    s = s * r;
+
+    // scale back the 1/k_i reduced value
+    do {
+        i_cmp_res = k_i > vi_type(0);
+        if (none_of(i_cmp_res))
+            break;
+        cmp_res = _T::vmi_to_vmf(i_cmp_res);
+        dvf_type d1= mul_pwr2(s, vf_type(2.0)) + sqr(s);
+        vf_type d2_h = _T::sel(cmp_res, d1.h(), s.h());
+        vf_type d2_l = _T::sel(cmp_res, d1.l(), s.l());
+        k_i -= vi_type(1);
+        s = dvf_type(d2_h, d2_l);
+    } while (1);
+    // const vf_type two(2.0);
+    // for (int i=0; i<k_i; ++i)
+    //    s = mul_pwr2(s, two) + sqr(s);
+    s += vf_type(1.0);
+
+    // scale back
+    vi_type mi= _T::cvt_f_to_i(m2);
+    dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
+    return res;    
+#else
     using ctbl = impl::d_real_constants<dvf_type, double>;
 
     const int k_i(9 /* 12 */);
@@ -502,6 +559,7 @@ exp_k2(const dvf_type& d)
     vi_type mi= _T::cvt_f_to_i(m);
     dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
     return res;
+#endif
 }
 
 template <typename _T>
@@ -510,6 +568,61 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 native_exp_k(const vf_type& d)
 {
+#if 1
+    using ctbl = impl::d_real_constants<dvf_type, double>;
+
+    vmf_type cmp_res;
+    vmi_type i_cmp_res;
+    vmf_type inf_nan= isinf(d) | isnan(d);
+    vmf_type finite= ~inf_nan;
+    vi_type k_i(0);
+
+    // remove exact powers of 2
+    vf_type m2= rint(vf_type(d * ctbl::m_1_ln2.h()));
+    vf_type r= (d - ctbl::m_ln2.h()*m2);
+    // reduce arguments further until anything is lt
+    // ln(2)/256 ~ 0.027
+    // M_LN2/512 ~ 0.0135
+    do {
+        cmp_res = (abs(r) > vf_type(M_LN2/512)) & finite;
+        if (none_of(cmp_res))
+            break;
+        i_cmp_res = _T::vmf_to_vmi(cmp_res);
+        k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
+        vf_type d1 = r * vf_type(0.5);
+        vf_type d2 = _T::sel(cmp_res, d1, r);
+        r = d2;
+    } while (1);
+
+    const int _N=9 /* 7 */;
+    vf_type s = ctbl::inv_fac[_N].h();
+    for (unsigned int i=_N-1; i!=2; --i)
+        s = s*r + ctbl::inv_fac[i].h();
+    s = s * r + vf_type(0.5);
+    s = s * r + vf_type(1.0);
+    s = s * r;
+
+    // scale back the 1/k_i reduced value
+    do {
+        i_cmp_res = k_i > vi_type(0);
+        if (none_of(i_cmp_res))
+            break;
+        cmp_res = _T::vmi_to_vmf(i_cmp_res);
+        vf_type d1= s * 2.0 + s * s;
+        vf_type d2 = _T::sel(cmp_res, d1, s);
+        k_i -= vi_type(1);
+        s = d2;
+    } while (1);
+    // const vf_type two(2.0);
+    // for (int i=0; i<k_i; ++i)
+    //    s = mul_pwr2(s, two) + sqr(s);
+    s += vf_type(1.0);
+
+    // scale back
+    vi_type mi= _T::cvt_f_to_i(m2);
+    vf_type res(ldexp(s, mi));
+    return res;  
+#else
     using ctbl = impl::d_real_constants<dvf_type, double>;
 
     const double k(512.0);
@@ -543,6 +656,7 @@ native_exp_k(const vf_type& d)
     vi_type mi= _T::cvt_f_to_i(m);
     vf_type res(my_type::ldexp(s, mi));
     return res;
+#endif
 }
 
 

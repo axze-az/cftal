@@ -108,6 +108,9 @@ test-exp-256: testx86vec-03
 test-exp-native: testx86vec-03
 	./$< --use-native  <exp.testdata
 
+test-exp-native-256: testx86vec-03
+	./$< --use-native  --bits-256 <exp.testdata
+
 test-exp-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< <exp.testdata
 
