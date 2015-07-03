@@ -618,6 +618,117 @@ namespace cftal {
                 return as<v8f32>(i);
             }
         };
+
+        // template <typename _T, std::size_t _N>
+        // vec<bit, _N>
+        // std_vec_mask(typename vec<_T, _N>::mask_type v);
+
+        // template <std::size_t _N>
+        // vec<int32_t, _N>
+        // even_elements(vec<double, _N> v);
+
+        // template <std::size_t _N>
+        // vec<int32_t, _N>
+        // odd_elements(vec<double, _N> v);
+
+        // template <typename _T, std::size_t _N>
+        // vec<_T, _N * 2>
+        // combine_even_odd(vec<_T, _N> e, vec<_T, _N> o);
+        
+        template <std::size_t _N>
+        struct func_traits<vec<double, _N>, vec<int32_t, _N> >
+            : public func_traits<double, int32_t> {
+            using vf_type = vec<double, _N>;
+            using vmf_type = typename vec<double, _N>::mask_type;
+            using vi_type = vec<int32_t, _N>;
+            using vmi_type = typename vec<int32_t, _N>::mask_type;
+            
+            static
+            constexpr std::size_t NVF() {
+                return _N;
+            }
+
+            static
+            constexpr std::size_t NVI() {
+                return _N;
+            }
+
+            static
+            vmf_type vmi_to_vmf(const vmi_type& mi) {
+                return vmf_type(std_vec_mask(mi));
+            }
+
+            static
+            vmi_type vmf_to_vmi(const vmf_type& mf) {
+                return vmi_type(std_vec_mask(mf));
+            }
+
+            static
+            vi_type sel(const vmi_type& msk,
+                        const vi_type& t, const vi_type& f) {
+                return select(msk, t, f);
+            }
+            static
+            vf_type sel(const vmf_type& msk,
+                        const vf_type& t, const vf_type& f) {
+                return select(msk, t, f);
+            }
+
+            static
+            vf_type insert_exp(const vi_type& e) {
+                vi_type ep(e << 20);
+                vec<int32_t, _N*2> ir(combine_even_odd(ep, ep));
+                vf_type r= as<vf_type>(ir);
+                r &= vf_type(exp_f64_msk::v._f64);
+                return r;
+            }
+
+            static
+            vi_type extract_exp(const vf_type& d) {
+                const vf_type msk(exp_f64_msk::v._f64);
+                vf_type m(d & msk);
+                vec<int32_t, _N*2> di= as<vec<int32_t, _N*2> >(m);
+                vi_type r= odd_elements(di);
+                r >>= 20;
+                return r;
+            }
+            
+            static
+            vi_type extract_high_word(const vf_type& d) {
+                vec<int32_t, _N*2> di=as<vec<int32_t, _N*2> >(d);
+                return odd_elements(di);
+            }
+
+            static
+            vi_type extract_low_word(const vf_type& d) {
+                vec<int32_t, _N*2> di=as<vec<int32_t, _N*2> >(d);
+                return even_elements(di);
+            }
+
+            static
+            vf_type combine_words(const vi_type& l,
+                                  const vi_type& h) {
+                vec<int32_t, _N*2> vi= combine_even_odd(l, h);
+                vf_type r= as<vf_type>(vi);
+                return r;
+            }
+
+            static
+            vf_type cvt_i_to_f(const vi_type& i) {
+                return cvt<vf_type>(i);
+            }
+
+            static
+            vi_type cvt_f_to_i(const vf_type& f) {
+                return cvt<vi_type>(f);
+            }
+            // including rounding towards zero
+            static
+            vi_type cvt_rz_f_to_i(const vf_type& f) {
+                return cvt_rz<vi_type>(f);
+            }
+        };
+
     }
 
 }

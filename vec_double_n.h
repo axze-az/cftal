@@ -266,6 +266,73 @@ namespace cftal {
     vec<double, 4>
     pow(arg<vec<double, 4> >::type x, arg<vec<double, 4> >::type y);
 
+    // specializations vec<double, 8>
+    vec<double, 8>
+    cbrt(arg<vec<double, 8> >::type v);
+    vec<double, 8>
+    frexp(arg<vec<double, 8> >::type x, vec<int32_t, 8>* e);
+    vec<double, 8>
+    ldexp(arg<vec<double, 8> >::type d, arg<vec<int32_t, 8> >::type e);
+    vec<int32_t, 8>
+    ilogbp1(arg<vec<double, 8> >::type v);
+    vec<int32_t, 8>
+    ilogb(arg<vec<double, 8> >::type v);
+    vec<double, 8>
+    atan2(arg<vec<double, 8> >::type y, arg<vec<double, 8> >::type x);
+    vec<double, 8>
+    asin(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    acos(arg<vec<double, 8> >::type d);
+
+    vec<double, 8>
+    atan(arg<vec<double, 8> >::type d);
+    std::pair<vec<double, 8> , vec<double, 8> >
+    sincos(arg<vec<double, 8> >::type d);
+
+    vec<double, 8>
+    exp(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    expm1(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    log(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    pow(arg<vec<double, 8> >::type b, arg<vec<double, 8> >::type e);
+    void
+    sincos(arg<vec<double, 8> >::type d, vec<double, 8> * psin, vec<double, 8> * pcos);
+    vec<double, 8>
+    sin(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    cos(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    tan(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    cot(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    atan2(arg<vec<double, 8> >::type x, arg<vec<double, 8> >::type y);
+
+    void
+    native_sincos(arg<vec<double, 8> >::type d,
+                  vec<double, 8> * psin, vec<double, 8> * pcos);
+    vec<double, 8>
+    native_exp(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    native_log(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    native_sin(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    native_cos(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    native_tan(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    native_cot(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    cosh(arg<vec<double, 8> >::type d);
+    vec<double, 8>
+    sinh(arg<vec<double, 8> >::type d);
+
+    vec<double, 8>
+    pow(arg<vec<double, 8> >::type x, arg<vec<double, 8> >::type y);
+    
     
 }
 

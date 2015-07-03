@@ -711,6 +711,18 @@ check_perm_v8s32(cftal::vec<int32_t, 8> a)
                           7, -1>(a);
 }
 
+cftal::vec<int32_t, 2>
+check_even_elements(cftal::vec<int32_t, 4> a)
+{
+    return even_elements(a);
+}
+
+cftal::vec<int32_t, 2>
+check_odd_elements(cftal::vec<int32_t, 4> a)
+{
+    return odd_elements(a);
+}
+
 int main(int argc, char** argv)
 {
     std::cout << "alignof(max_align_t) "

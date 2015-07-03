@@ -172,6 +172,68 @@ namespace cftal {
     vec<_T, 16>
     permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1);
 
+    // helper function for even_elements, odd_elements: returns even
+    // elements in low half, odd elements in high half
+    template <typename _T>
+    vec<_T, 4>
+    sort_even_odd(const vec<_T, 4>& v);
+
+    template <typename _T>
+    vec<_T, 8>
+    sort_even_odd(const vec<_T, 8>& v);
+
+    template <typename _T>
+    vec<_T, 16>
+    sort_even_odd(const vec<_T, 16>& v);
+    
+    template <typename _T, std::size_t _N>
+    vec<_T, _N/2>
+    even_elements(const vec<_T, _N>& v);
+
+    template <typename _T>
+    vec<_T, 8>
+    even_elements(const vec<_T, 16>& v);
+
+    template <typename _T>
+    vec<_T, 4>
+    even_elements(const vec<_T, 8>& v);
+
+    template <typename _T>
+    vec<_T, 2>
+    even_elements(const vec<_T, 4>& v);
+    
+    template <typename _T>
+    vec<_T, 1>
+    even_elements(const vec<_T, 2>& v);
+
+    template <typename _T, std::size_t _N>
+    vec<_T, _N/2>
+    odd_elements(const vec<_T, _N>& v);
+
+    template <typename _T>
+    vec<_T, 8>
+    odd_elements(const vec<_T, 16>& v);
+
+    template <typename _T>
+    vec<_T, 4>
+    odd_elements(const vec<_T, 8>& v);
+
+    template <typename _T>
+    vec<_T, 2>
+    odd_elements(const vec<_T, 4>& v);
+
+    template <typename _T>
+    vec<_T, 1>
+    odd_elements(const vec<_T, 2>& v);
+    
+    template <typename _T, std::size_t _N>
+    vec<_T, _N*2>
+    combine_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o);
+
+    template <typename _T>
+    vec<_T, 2>
+    combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o);
+    
     template <typename _T, std::size_t _N>
     bool
     elements_equal(const vec<_T, _N>& v);
@@ -608,6 +670,119 @@ cftal::permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1)
     vec<_T, 16> r( ri | rj);
     return r;
 }
+
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::sort_even_odd(const vec<_T, 4>& v)
+{
+    return permute<0, 2, 1, 3>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::sort_even_odd(const vec<_T, 8>& v)
+{
+    return permute<0, 2, 4, 6, 1, 3, 5, 7>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 16>
+cftal::sort_even_odd(const vec<_T, 16>& v)
+{
+    return permute<0, 2, 4, 6, 8, 10, 12, 14,
+                   1, 3, 5, 7, 9, 11, 13, 15>(v);
+}
+
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N/2>
+cftal::even_elements(const vec<_T, _N>& v)
+{
+    return vec<_T, _N/2>(even_elements(low_half(v)),
+                         even_elements(high_half(v)));
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::even_elements(const vec<_T, 16>& v)
+{
+    return low_half(sort_even_odd(v));
+}
+
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::even_elements(const vec<_T, 8>& v)
+{
+    return low_half(sort_even_odd(v));
+}
+
+template <typename _T>
+cftal::vec<_T, 2>
+cftal::even_elements(const vec<_T, 4>& v)
+{
+    return low_half(sort_even_odd(v));
+}
+
+template <typename _T>
+cftal::vec<_T, 1>
+cftal::even_elements(const vec<_T, 2>& v)
+{
+    return low_half(v);
+}
+
+        
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N/2>
+cftal::odd_elements(const vec<_T, _N>& v)
+{
+    return vec<_T, _N/2>(odd_elements(low_half(v)),
+                         odd_elements(high_half(v)));
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::odd_elements(const vec<_T, 16>& v)
+{
+    return high_half(sort_even_odd(v));
+}
+
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::odd_elements(const vec<_T, 8>& v)
+{
+    return high_half(sort_even_odd(v));
+}
+
+template <typename _T>
+cftal::vec<_T, 2>
+cftal::odd_elements(const vec<_T, 4>& v)
+{
+    return high_half(sort_even_odd(v));
+}
+
+template <typename _T>
+cftal::vec<_T, 1>
+cftal::odd_elements(const vec<_T, 2>& v)
+{
+    return high_half(v);
+}
+        
+
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N*2>
+cftal::combine_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o)
+{
+    return vec<_T, _N*2>(combine_even_odd(low_half(e), low_half(o)),
+                         combine_even_odd(high_half(e), high_half(o)));
+}
+
+template <typename _T>
+cftal::vec<_T, 2>
+cftal::combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o)
+{
+    return vec<_T, 2>(e, o);
+}
+
+
 
 
 // Local variables:
