@@ -231,6 +231,18 @@ namespace cftal {
     combine_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o);
 
     template <typename _T>
+    vec<_T, 16>
+    combine_even_odd(const vec<_T, 8>& e, const vec<_T, 8>& o);
+
+    template <typename _T>
+    vec<_T, 8>
+    combine_even_odd(const vec<_T, 4>& e, const vec<_T, 4>& o);
+
+    template <typename _T>
+    vec<_T, 4>
+    combine_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o);
+    
+    template <typename _T>
     vec<_T, 2>
     combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o);
     
@@ -773,6 +785,33 @@ cftal::combine_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o)
 {
     return vec<_T, _N*2>(combine_even_odd(low_half(e), low_half(o)),
                          combine_even_odd(high_half(e), high_half(o)));
+}
+
+template <typename _T>
+cftal::vec<_T, 16>
+cftal::combine_even_odd(const vec<_T, 8>& e, const vec<_T, 8>& o)
+{
+    vec<_T, 8> lh= permute<0,  8, 1,  9, 2, 10, 3, 11>(e, o);
+    vec<_T, 8> hh= permute<4, 12, 5, 13, 6, 14, 7, 15>(e, o);
+    return vec<_T, 16>(lh, hh);
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::combine_even_odd(const vec<_T, 4>& e, const vec<_T, 4>& o)
+{
+    vec<_T, 4> lh= permute<0, 4, 1, 5>(e, o);
+    vec<_T, 4> hh= permute<2, 6, 3, 7>(e, o);
+    return vec<_T, 8>(lh, hh);
+}
+
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::combine_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o)
+{
+    vec<_T, 2> lh= permute<0, 2>(e, o);
+    vec<_T, 2> hh= permute<1, 3>(e, o);
+    return vec<_T, 4>(lh, hh);
 }
 
 template <typename _T>
