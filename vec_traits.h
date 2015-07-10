@@ -655,12 +655,13 @@ namespace cftal {
 
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
-                return vmf_type(std_vec_mask(mi));
+                // return vmf_type(std_vec_mask(mi));
+                return cftal::impl::cvt_mask<double, int32_t, _N>::v(mi);
             }
 
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
-                return vmi_type(std_vec_mask(mf));
+                return cftal::impl::cvt_mask<int32_t, double_t, _N>::v(mf);
             }
 
             static

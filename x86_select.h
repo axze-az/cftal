@@ -385,7 +385,7 @@ inline __m256d
 cftal::x86::impl::select_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
 {
     const int sm=csel4<_P0, _P1, _P2, _P3>::val;
-    return _mm256_blend_pd(b, a, sm);
+    return _mm256_blend_pd(b, a, sm & 0x0f);
 }
 
 template<bool _P0, bool _P1, bool _P2, bool _P3,
@@ -395,7 +395,7 @@ cftal::x86::impl::
 select_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
 {
     const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
-    return _mm256_blend_ps(b, a, sm);
+    return _mm256_blend_ps(b, a, sm & 0xff);
 }
 #endif
 
@@ -407,7 +407,7 @@ cftal::x86::impl::
 select_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i b)
 {
     const int sm=csel8<_P0, _P0, _P1, _P1, _P2, _P2, _P3, _P3>::val;
-    return _mm256_blend_epi32(b, a, sm);
+    return _mm256_blend_epi32(b, a, sm & 0xff);
 }
 
 
@@ -418,7 +418,7 @@ cftal::x86::impl::
 select_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256i a, __m256i b)
 {
     const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
-    return _mm256_blend_epi32(b, a, sm);
+    return _mm256_blend_epi32(b, a, sm & 0xff);
 }
 
 #endif
