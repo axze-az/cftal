@@ -14,7 +14,7 @@
 #endif
 #endif
 
-#if defined (IN_KDEVELOP_PARSER)
+#if defined (IN_KDEVELOP_PARSER) || defined (IN_IDE_PARSER)
 #define alignas(X)
 #define __SSE41__
 #define __SSE42__

@@ -384,6 +384,7 @@ namespace cftal {
             }
         };
 
+#if 0        
         template <>
         struct func_traits<v4f64, v4s32> : public
         func_traits<typename v4f64::value_type,
@@ -511,7 +512,8 @@ namespace cftal {
                 return cvt_rz<v4s32>(f);
             }
         };
-
+#endif
+        
         template <>
         struct func_traits<v8f32, v8s32> : public
         func_traits<typename v8f32::value_type,
