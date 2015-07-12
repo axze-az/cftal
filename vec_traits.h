@@ -164,120 +164,6 @@ namespace cftal {
                 
         }
 
-
-        template <>
-        struct func_traits<v2f64, v2s32> : public
-        func_traits<typename v2f64::value_type,
-                    typename v4s32::value_type> {
-            typedef v2f64 vf_type;
-            typedef v2f64::mask_type vmf_type;
-            typedef v2s32 vi_type;
-            typedef v2s32::mask_type vmi_type;
-
-            static
-            constexpr std::size_t NVF() {
-                return sizeof(vf_type)/
-                    sizeof(vf_type::value_type);
-            }
-
-            static
-            constexpr std::size_t NVI() {
-                return sizeof(vi_type)/
-                    sizeof(vi_type::value_type);
-            }
-            
-            static
-            vmf_type vmi_to_vmf(const vmi_type& mi) {
-                const bool has_mask_type =
-                    sizeof(vmf_type) == sizeof(vmi_type);
-                return impl::mask_helper_v2<has_mask_type,
-                                            vf_type,
-                                            vi_type>::mi_to_mf(mi);
-            }
-
-            static
-            vmi_type vmf_to_vmi(const vmf_type& mf) {
-                const bool has_mask_type =
-                    sizeof(vmf_type) == sizeof(vmi_type);
-                return impl::mask_helper_v2<has_mask_type,
-                                            vf_type,
-                                            vi_type>::mf_to_mi(mf);
-            }
-            
-            static
-            vi_type sel(const vmi_type& msk,
-                        const vi_type& t, const vi_type& f) {
-                return select(msk, t, f);
-            }
-            static
-            vf_type sel(const vmf_type& msk,
-                        const vf_type& t, const vf_type& f) {
-                return select(msk, t, f);
-            }
-
-            static
-            vf_type insert_exp(const vi_type& e) {
-                vi_type t= e << 20;
-                v4s32 tf(t, t);
-                tf = permute<0, 0, 2, 2>(tf);
-                vf_type r(as<v2f64>(tf));
-                r &= v2f64(exp_f64_msk::v._f64);
-                return r;
-                // v2u64 m= as<v2u64>(ep);
-                // m <<= const_shift::_52;
-                // return as<v2f64>(m);
-
-            }
-            static
-            vi_type extract_exp(const vf_type& d) {
-                v4s32 e= as<v4s32>(d);
-                e >>= 20; // const_shift::_20;
-                e = permute<1, 3, 0, 0>(e);
-                e &= v4s32{0x7ff, 0x7ff, 0, 0};
-                return low_half(e);
-            }
-
-            static
-            vi_type extract_high_word(const vf_type& d) {
-                v4s32 w=as<v4s32>(d);
-                w= permute<1, 3, 1, 3>(w);
-                return low_half(w);
-
-            }
-
-            static
-            vi_type extract_low_word(const vf_type& d) {
-                v4s32 w=as<v4s32>(d);
-                w= permute<0, 2, 0, 2>(w);
-                return low_half(w);
-            }
-
-            static
-            vf_type combine_words(const vi_type& l,
-                                  const vi_type& h) {
-                v4s32 c(l, h);
-                c= permute<0, 2, 1, 3>(c);
-                // permute<0, 4, 1, 5>(l, h);
-                v2f64 r=as<vf_type>(c);
-                return r;
-            }
-
-            static
-            vf_type cvt_i_to_f(const vi_type& i) {
-                return cvt_lo<v2f64>(i);
-            }
-
-            static
-            vi_type cvt_f_to_i(const vf_type& f) {
-                return cvt_lo<v2s32>(f);
-            }
-            // including rounding towards zero
-            static
-            vi_type cvt_rz_f_to_i(const vf_type& f) {
-                return cvt_rz_lo<v2s32>(f);
-            }
-        };
-
         template <>
         struct func_traits<v4f32, v4s32> : public
         func_traits<typename v4f32::value_type,
@@ -384,136 +270,6 @@ namespace cftal {
             }
         };
 
-#if 0        
-        template <>
-        struct func_traits<v4f64, v4s32> : public
-        func_traits<typename v4f64::value_type,
-                    typename v4s32::value_type> {
-            typedef v4f64 vf_type;
-            typedef v4f64::mask_type vmf_type;
-            typedef v4s32 vi_type;
-            typedef v4s32::mask_type vmi_type;
-
-            static
-            constexpr std::size_t NVF() {
-                return sizeof(vf_type)/
-                    sizeof(vf_type::value_type);
-            }
-
-            static
-            constexpr std::size_t NVI() {
-                return sizeof(vi_type)/
-                    sizeof(vi_type::value_type);
-            }
-
-            static
-            vmf_type vmi_to_vmf(const vmi_type& mi) {
-                const bool has_mask_type =
-                    sizeof(vmf_type) == sizeof(vmi_type);
-                return impl::mask_helper_v4<has_mask_type,
-                                            vf_type,
-                                            vi_type>::mi_to_mf(mi);
-            }
-            static
-            vmi_type vmf_to_vmi(const vmf_type& mf) {
-                const bool has_mask_type =
-                    sizeof(vmf_type) == sizeof(vmi_type);
-                return impl::mask_helper_v4<has_mask_type,
-                                            vf_type,
-                                            vi_type>::mf_to_mi(mf);
-            }
-            static
-            vi_type sel(const vmi_type& msk,
-                        const vi_type& t, const vi_type& f) {
-                return select(msk, t, f);
-            }
-            static
-            vf_type sel(const vmf_type& msk,
-                        const vf_type& t, const vf_type& f) {
-                return select(msk, t, f);
-            }
-#if 0
-            static
-            vf_type gather(const double* p, const vi_type& idx,
-                           int sc) {
-                return gather<vf_type>(p, idx, sc);
-            }
-#endif
-            static
-            vf_type insert_exp(const vi_type& e) {
-                // TODO AVX2 code
-                // 52 - 32
-                vi_type ep(e << 20 /* const_shift::_20*/ );
-                vi_type hep(permute<2, 2, 3, 3>(ep));
-                vi_type lep(permute<0, 0, 1, 1>(ep));
-                v2f64 fh(as<v2f64>(hep));
-                v2f64 lh(as<v2f64>(lep));
-                vf_type r(lh, fh);
-                r &= vf_type(exp_f64_msk::v._f64);
-                return r;
-            }
-
-            static
-            vi_type extract_exp(const vf_type& d) {
-                // TODO AVX2 code
-                const vf_type msk(exp_f64_msk::v._f64);
-                vf_type m(d & msk);
-                v2f64 fh(high_half(d));
-                v2f64 fl(low_half(d));
-                v4s32 hi(as<v4s32>(fh));
-                v4s32 li(as<v4s32>(fl));
-                v4s32 r(permute<1, 3, 5, 7>(li, hi));
-                r >>= 20 /* const_shift::_20*/;
-                return r;
-            }
-            static
-            vi_type extract_high_word(const vf_type& d) {
-                v2f64 l= low_half(d);
-                v2f64 h= high_half(d);
-                v4s32 il=as<v4s32>(l);
-                v4s32 ih=as<v4s32>(h);
-                v4s32 w=permute<1, 3, 5, 7>(il, ih);
-                return w;
-            }
-
-            static
-            vi_type extract_low_word(const vf_type& d) {
-                v2f64 l= low_half(d);
-                v2f64 h= high_half(d);
-                v4s32 il=as<v4s32>(l);
-                v4s32 ih=as<v4s32>(h);
-                v4s32 w=permute<0, 2, 4, 6>(il, ih);
-                return w;
-            }
-
-            static
-            vf_type combine_words(const vi_type& l,
-                                  const vi_type& h) {
-                v4s32 il=permute<0, 4, 1, 5>(l, h);
-                v4s32 ih=permute<2, 6, 3, 7>(l, h);
-                v2f64 fl=as<v2f64>(il);
-                v2f64 fh=as<v2f64>(ih);
-                vf_type r(fl, fh);
-                return r;
-            }
-
-            static
-            vf_type cvt_i_to_f(const vi_type& i) {
-                return cvt<v4f64>(i);
-            }
-
-            static
-            vi_type cvt_f_to_i(const vf_type& f) {
-                return cvt<v4s32>(f);
-            }
-            // including rounding towards zero
-            static
-            vi_type cvt_rz_f_to_i(const vf_type& f) {
-                return cvt_rz<v4s32>(f);
-            }
-        };
-#endif
-        
         template <>
         struct func_traits<v8f32, v8s32> : public
         func_traits<typename v8f32::value_type,
@@ -621,10 +377,6 @@ namespace cftal {
             }
         };
 
-        // template <typename _T, std::size_t _N>
-        // vec<bit, _N>
-        // std_vec_mask(typename vec<_T, _N>::mask_type v);
-
         // template <std::size_t _N>
         // vec<int32_t, _N>
         // even_elements(vec<double, _N> v);
@@ -638,7 +390,7 @@ namespace cftal {
         // combine_even_odd(vec<_T, _N> e, vec<_T, _N> o);
         
         template <std::size_t _N>
-        struct func_traits<vec<double, _N>, vec<int32_t, _N> >
+        struct func_traits_f64 
             : public func_traits<double, int32_t> {
             using vf_type = vec<double, _N>;
             using vmf_type = typename vec<double, _N>::mask_type;
@@ -657,7 +409,6 @@ namespace cftal {
 
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
-                // return vmf_type(std_vec_mask(mi));
                 return cvt_mask<double, int32_t, _N>::v(mi);
             }
 
@@ -732,6 +483,34 @@ namespace cftal {
             }
         };
 
+        template <std::size_t _N>
+        struct func_traits<vec<double, _N>, vec<int32_t, _N> >
+            : public func_traits_f64<_N> {
+        };
+
+#if defined (__SSE2__)
+        template <>
+        struct func_traits<v2f64, v2s32>
+            : public func_traits_f64<2> {
+            static
+            vmf_type vmi_to_vmf(const vmi_type& mi) {
+                const bool has_mask_type =
+                    sizeof(vmf_type) == sizeof(vmi_type);
+                return impl::mask_helper_v2<has_mask_type,
+                                            vf_type,
+                                            vi_type>::mi_to_mf(mi);
+            }
+
+            static
+            vmi_type vmf_to_vmi(const vmf_type& mf) {
+                const bool has_mask_type =
+                    sizeof(vmf_type) == sizeof(vmi_type);
+                return impl::mask_helper_v2<has_mask_type,
+                                            vf_type,
+                                            vi_type>::mf_to_mi(mf);
+            }
+        };
+#endif
     }
 
 }
