@@ -164,6 +164,9 @@ namespace cftal {
                 
         }
 
+        
+
+        
         template <>
         struct func_traits<v4f32, v4s32> : public
         func_traits<typename v4f32::value_type,
@@ -270,6 +273,10 @@ namespace cftal {
             }
         };
 
+        template <std::size_t _N>
+        struct vec_func_traits_f32 : public func_traits<float, int32_t> {
+        };
+        
         template <>
         struct func_traits<v8f32, v8s32> : public
         func_traits<typename v8f32::value_type,
@@ -390,7 +397,7 @@ namespace cftal {
         // combine_even_odd(vec<_T, _N> e, vec<_T, _N> o);
         
         template <std::size_t _N>
-        struct func_traits_f64 
+        struct vec_func_traits_f64 
             : public func_traits<double, int32_t> {
             using vf_type = vec<double, _N>;
             using vmf_type = typename vec<double, _N>::mask_type;
@@ -485,13 +492,13 @@ namespace cftal {
 
         template <std::size_t _N>
         struct func_traits<vec<double, _N>, vec<int32_t, _N> >
-            : public func_traits_f64<_N> {
+            : public vec_func_traits_f64<_N> {
         };
 
 #if defined (__SSE2__)
         template <>
         struct func_traits<v2f64, v2s32>
-            : public func_traits_f64<2> {
+            : public vec_func_traits_f64<2> {
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
                 const bool has_mask_type =
