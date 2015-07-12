@@ -5,7 +5,7 @@
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
 #include <cftal/divisor.h>
-#include <cftal/x86_cvt.h>
+#include <cftal/vec_cvt.h>
 #include <cftal/x86_cast.h>
 #include <cftal/d_real.h>
 
@@ -658,12 +658,12 @@ namespace cftal {
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
                 // return vmf_type(std_vec_mask(mi));
-                return cftal::impl::cvt_mask<double, int32_t, _N>::v(mi);
+                return cvt_mask<double, int32_t, _N>::v(mi);
             }
 
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
-                return cftal::impl::cvt_mask<int32_t, double_t, _N>::v(mf);
+                return cvt_mask<int32_t, double_t, _N>::v(mf);
             }
 
             static

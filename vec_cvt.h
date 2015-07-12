@@ -1,124 +1,124 @@
-#if !defined (__CFTAL_X86_CVT_H__)
-#define __CFTAL_X86_CVT_H__ 1
+#if !defined (__CFTAL_CVT_H__)
+#define __CFTAL_CVT_H__ 1
 
 #include <cftal/vec.h>
 #include <utility>
 
 namespace cftal {
 
-    namespace impl {
 
-        // convert mask vectors - the mask vector types are the same
-        // for all types of vectors of the same size if
-        // specializations do not exist
-        template <typename _D, typename _S, std::size_t _N>
-        struct cvt_mask {
+    // convert mask vectors - the mask vector types are the same
+    // for all types of vectors of the same size if
+    // specializations do not exist
+    template <typename _D, typename _S, std::size_t _N>
+    struct cvt_mask {
 
-            struct eq_t {};
-            struct lt_t {};
-            struct gt_t {};
+        struct eq_t {};
+        struct lt_t {};
+        struct gt_t {};
 
-            template <typename _DST, typename _SRC>
-            struct type_sel {
-                using type =
-                    typename std::conditional<
-                    (sizeof(_DST) == sizeof(_SRC)),
-                    eq_t,
-                    typename std::conditional<(sizeof(_DST)>sizeof(_SRC)),
-                    gt_t,
-                    lt_t>::type >::type;
-            };
-
-            template <typename _DST, typename _SRC,
-                      std::size_t _NN, std::size_t _SRCCALE>
-            struct scale_up {};
-
-            template <typename _DST, typename _SRC, std::size_t _NN>
-            struct scale_up<_DST, _SRC, _NN, 2> {
-                static
-                vec<_DST, _NN>
-                v(const vec<_SRC, _NN>& v) {
-                    vec<_SRC, _NN*2> t= combine_even_odd(v, v);
-                    return as<vec<_DST, _NN> >(t);
-                }
-            };
-
-            template <typename _DST, typename _SRC, std::size_t _NN>
-            struct scale_up<_DST, _SRC, _NN, 4> {
-                static
-                vec<_DST, _NN>
-                v(const vec<_SRC, _NN>& v) {
-                    vec<_SRC, _NN*2> t0= combine_even_odd(v, v);
-                    vec<_SRC, _NN*4> t1= combine_even_odd(t0, t0);
-                    return as<vec<_DST, _NN> >(t1);
-                }
-            };
-
-            
-            template <typename _DST, typename _SRC,
-                      std::size_t _NN, std::size_t _SRCCALE>
-            struct scale_down {};
-
-            template <typename _DST, typename _SRC, std::size_t _NN>
-            struct scale_down<_DST, _SRC, _NN, 2> {
-                static
-                vec<_DST, _NN>
-                v(const vec<_SRC, _NN>& v) {
-                    vec<_SRC, _NN/2> t= odd_elements(v);
-                    return as<vec<_DST, _NN> >(t);
-                }
-            };
-
-            template <typename _DST, typename _SRC, std::size_t _NN>
-            struct scale_down<_DST, _SRC, _NN, 4> {
-                static
-                vec<_DST, _NN>
-                v(const vec<_SRC, _NN>& v) {
-                    vec<_SRC, _NN/2> t= odd_elements(v);
-                    vec<_SRC, _NN/4> u= odd_elements(t);
-                    return as<vec<_DST, _NN> >(u);
-                }
-            };
-            
-        public:
-            // default case
-            static
-            vec<bit, _N>
-            v(const vec<bit, _N>& s) {
-                return s;
-            }
-
-            static
-            vec<_D, _N>
-            v(const vec<_S, _N> s) {
-                typename type_sel<_D, _S>::type t;
-                return g(s, t);
-            }
-
-        private:
-            static
-            vec<_D, _N>
-            g(const vec<_S, _N> s, eq_t) {
-                return as<vec<_D, _N> >(s);
-            }
-            
-            static
-            vec<_D, _N>
-            g(const vec<_S, _N> s, lt_t) {
-                const std::size_t scale= sizeof(_S)/sizeof(_D);
-                return scale_down<_D, _S, _N, scale>::v(s);
-            }
-
-            static
-            vec<_D, _N>
-            g(const vec<_S, _N> s, gt_t) {
-                const std::size_t scale= sizeof(_D)/sizeof(_S);
-                return scale_up<_D, _S, _N, scale>::v(s);
-            }
-            
+        template <typename _DST, typename _SRC>
+        struct type_sel {
+            using type =
+                typename std::conditional<
+                (sizeof(_DST) == sizeof(_SRC)),
+                eq_t,
+                typename std::conditional<(sizeof(_DST)>sizeof(_SRC)),
+                gt_t,
+                lt_t>::type >::type;
         };
 
-        
+        template <typename _DST, typename _SRC,
+                  std::size_t _NN, std::size_t _SRCCALE>
+        struct scale_up {};
+
+        template <typename _DST, typename _SRC, std::size_t _NN>
+        struct scale_up<_DST, _SRC, _NN, 2> {
+            static
+            vec<_DST, _NN>
+            v(const vec<_SRC, _NN>& v) {
+                vec<_SRC, _NN*2> t= combine_even_odd(v, v);
+                return as<vec<_DST, _NN> >(t);
+            }
+        };
+
+        template <typename _DST, typename _SRC, std::size_t _NN>
+        struct scale_up<_DST, _SRC, _NN, 4> {
+            static
+            vec<_DST, _NN>
+            v(const vec<_SRC, _NN>& v) {
+                vec<_SRC, _NN*2> t0= combine_even_odd(v, v);
+                vec<_SRC, _NN*4> t1= combine_even_odd(t0, t0);
+                return as<vec<_DST, _NN> >(t1);
+            }
+        };
+
+
+        template <typename _DST, typename _SRC,
+                  std::size_t _NN, std::size_t _SRCCALE>
+        struct scale_down {};
+
+        template <typename _DST, typename _SRC, std::size_t _NN>
+        struct scale_down<_DST, _SRC, _NN, 2> {
+            static
+            vec<_DST, _NN>
+            v(const vec<_SRC, _NN>& v) {
+                vec<_SRC, _NN/2> t= odd_elements(v);
+                return as<vec<_DST, _NN> >(t);
+            }
+        };
+
+        template <typename _DST, typename _SRC, std::size_t _NN>
+        struct scale_down<_DST, _SRC, _NN, 4> {
+            static
+            vec<_DST, _NN>
+            v(const vec<_SRC, _NN>& v) {
+                vec<_SRC, _NN/2> t= odd_elements(v);
+                vec<_SRC, _NN/4> u= odd_elements(t);
+                return as<vec<_DST, _NN> >(u);
+            }
+        };
+
+    public:
+        // default case
+        static
+        vec<bit, _N>
+        v(const vec<bit, _N>& s) {
+            return s;
+        }
+
+        static
+        vec<_D, _N>
+        v(const vec<_S, _N> s) {
+            typename type_sel<_D, _S>::type t;
+            return g(s, t);
+        }
+
+    private:
+        static
+        vec<_D, _N>
+        g(const vec<_S, _N> s, eq_t) {
+            return as<vec<_D, _N> >(s);
+        }
+
+        static
+        vec<_D, _N>
+        g(const vec<_S, _N> s, lt_t) {
+            const std::size_t scale= sizeof(_S)/sizeof(_D);
+            return scale_down<_D, _S, _N, scale>::v(s);
+        }
+
+        static
+        vec<_D, _N>
+        g(const vec<_S, _N> s, gt_t) {
+            const std::size_t scale= sizeof(_D)/sizeof(_S);
+            return scale_up<_D, _S, _N, scale>::v(s);
+        }
+
+    };
+
+    namespace impl {
+
         // convert according to current rounding mode
         template <typename _D, typename _S>
         struct cvt {
@@ -225,8 +225,8 @@ namespace cftal {
             }
         };
 
-        
-#if defined (__SSE2__)        
+
+#if defined (__SSE2__)
         template <>
         struct cvt<v4f32, v2f64> {
             static v4f32 l(const v2f64& d) {
@@ -308,7 +308,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <>
         struct cvt<v4s32, v4f32> {
             static v4s32 l(const v4f32& s) {
@@ -369,7 +369,7 @@ namespace cftal {
 
         template <>
         struct cvt<v8f32, v8s32> {
-            static v8f32 l(const v8s32& v) {                
+            static v8f32 l(const v8s32& v) {
 #if defined (__AVX__)
                 __m256i vv=_mm256_insertf128_si256(
                     _mm256_castsi128_si256(low_half(v)()),
@@ -552,8 +552,6 @@ std::pair<_D, _D> cftal::cvt_rz_widen(const _S& s)
     _D h=cvt_rz_hi<_D>(s);
     return std::make_pair(l, h);
 }
-
-
 
 // Local variables:
 // mode: c++
