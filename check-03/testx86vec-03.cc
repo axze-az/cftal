@@ -372,32 +372,45 @@ bool cftal::test::func(std::istream& is, bool use_native)
     return test_data(tf, std::cout);
 }
 
-bool all_tests_03(bool use_native, bool bits_256)
-{
-    bool r;
-    if (bits_256) {
-        r=cftal::test::func<cftal::v4f64>(std::cin, use_native);
-    } else {
-        r=cftal::test::func<cftal::v2f64>(std::cin, use_native);
-    }
-    return r;
-}
-
 void usage(const char* argv0)
 {
-    std::cerr << "usage: " << argv0 << " [--use-native] [--bits-256]"
+    std::cerr << "usage: " << argv0
+              << " [--use-native] [--bits-256|--bits-512]"
               << std::endl;
     std::exit(3);
 }
 
+bool all_tests_03(bool use_native, std::size_t vec_len)
+{
+    bool r;
+    switch (vec_len) {
+    case 2:
+        r=cftal::test::func<cftal::v2f64>(std::cin, use_native);
+        break;
+    case 4:
+        r=cftal::test::func<cftal::v4f64>(std::cin, use_native);
+        break;
+    case 8:
+        r=cftal::test::func<cftal::v8f64>(std::cin, use_native);
+        break;
+    default:
+        std::cerr << "invalid vector length " << vec_len << std::endl;
+        std::exit(3);
+        break;
+    }
+    return r;
+}
+
 
 void check_arg(const char* argv0, const char* argvi,
-               bool& bits_256, bool& use_native)
+               std::size_t& vec_len, bool& use_native)
 {
     if (std::string("--use-native") == argvi) {
         use_native = true;
     } else if (std::string("--bits-256") == argvi) {
-        bits_256 = true;
+        vec_len = 4;
+    } else if (std::string("--bits-512") == argvi) {
+        vec_len = 8;
     } else {
         usage(argv0);
     }
@@ -408,12 +421,12 @@ int main(int argc, char** argv)
     if (isatty(STDIN_FILENO))
         return 0;
     bool use_native(false);
-    bool bits_256(false);
+    std::size_t vec_len=2;
     if (argc>3)
         usage(argv[0]);
     if (argc>1)
-        check_arg(argv[0], argv[1], bits_256, use_native);
+        check_arg(argv[0], argv[1], vec_len, use_native);
     if (argc>2)
-        check_arg(argv[0], argv[1], bits_256, use_native);
-    return (all_tests_03(use_native, bits_256) ==  true) ? 0 : 3;
+        check_arg(argv[0], argv[1], vec_len, use_native);
+    return (all_tests_03(use_native, vec_len) ==  true) ? 0 : 3;
 }
