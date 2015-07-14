@@ -30,6 +30,7 @@ namespace cftal {
         };
     }
 
+    
     template <typename _D, typename _S>
     _D as(const _S& s);
 }

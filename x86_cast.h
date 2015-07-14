@@ -57,39 +57,6 @@ namespace cftal {
             }
         };
 
-        template <class _T>
-        struct vector_traits {
-            using vector_type = typename _T::vector_type;
-            static
-            vector_type v(const _T& r) {
-                return r();
-            }
-        };
-
-        template <>
-        struct vector_traits<__m128> {
-            typedef __m128 vector_type;
-            static vector_type v(__m128 r) {
-                return r;
-            }
-        };
-
-        template <>
-        struct vector_traits<__m128d> {
-            typedef __m128d vector_type;
-            static vector_type v(__m128d r) {
-                return r;
-            }
-        };
-
-        template <>
-        struct vector_traits<__m128i> {
-            typedef __m128i vector_type;
-            static vector_type v(__m128i r) {
-                return r;
-            }
-        };
-
 #if defined __AVX__
         // cast to __m128d from __m256d
         template <>
@@ -186,47 +153,12 @@ namespace cftal {
                 return _mm256_castps_si256(r);
             }
         };
-
-        template <>
-        struct vector_traits<__m256> {
-            typedef __m256 vector_type;
-            static vector_type v(__m256 r) {
-                return r;
-            }
-        };
-
-        template <>
-        struct vector_traits<__m256d> {
-            typedef __m256d vector_type;
-            static vector_type v(__m256d r) {
-                return r;
-            }
-        };
-
-        template <>
-        struct vector_traits<__m256i> {
-            typedef __m256i vector_type;
-            static vector_type v(__m256i r) {
-                return r;
-            }
-        };
 #endif
+        
     } // namespace impl
 #endif // __SSE2__
 } // namespace cftal
 
-#if 0
-template <typename _D, typename _S>
-inline
-_D cftal::as(const _S& s)
-{
-    typedef x86::vector_traits<_D> dst_traits;
-    typedef x86::vector_traits<_S> src_traits;
-    typedef typename dst_traits::vector_type dst_type;
-    typedef typename src_traits::vector_type src_type;
-    return x86::cast<dst_type, src_type>::v(src_traits::v(s));
-}
-#endif
 
 // Local variables:
 // mode: c++
