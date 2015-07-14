@@ -47,6 +47,7 @@
 #include <cftal/vec_float_n.h>
 
 #include <cftal/vec_cvt.h>
+#include <cftal/vec_cast.h>
 #include <cftal/vec_misc.h>
 
 
