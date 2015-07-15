@@ -130,6 +130,20 @@ namespace cftal {
         bool all_signs_f64(__m256d a);
         bool no_signs_f64(__m256d a);
 #endif
+#if defined (__AVX2__)
+        // check the sign bits of v16s16
+        bool all_of_s16(__m256i a);
+        bool any_of_s16(__m256i a);
+        bool none_of_s16(__m256i a);
+        // check the sign bits of v8s32
+        bool all_of_s32(__m256i a);
+        bool any_of_s32(__m256i a);
+        bool none_of_s32(__m256i a);
+        // check the sign bits of v4s64
+        bool all_of_s64(__m256i a);
+        bool any_of_s64(__m256i a);
+        bool none_of_s64(__m256i a);
+#endif
 
         bool both_signs_s16(__m128i a);
         bool all_signs_s16(__m128i a);
