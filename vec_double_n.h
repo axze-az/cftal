@@ -35,6 +35,9 @@ namespace cftal {
     vec<double, _N>
     rint(const vec<double, _N>& v);
 
+    vec<double, 1>
+    rint(const vec<double, 1>& v);
+
     // return a*b +c with or without fma
     template <std::size_t _N>
     vec<double, _N>
@@ -123,14 +126,27 @@ namespace cftal {
     typename vec<double, _N>::mask_type
     isfinite(const vec<double, _N>& v);
 
-
-    namespace impl {
-        // TODO: fma implementations
-    }
-
-    vec<double, 1>
-    rint(const vec<double, 1>& v);
-
+    // a*b +c
+    template <std::size_t _N>
+    vec<double, _N>
+    fma(const vec<double, _N>& a, const vec<double, _N>& b,
+        const vec<double, _N>& c);
+    // a*b -c
+    template <std::size_t _N>
+    vec<double, _N>
+    fms(const vec<double, _N>& a, const vec<double, _N>& b,
+        const vec<double, _N>& c);
+    // -(a*b) + c
+    template <std::size_t _N>
+    vec<double, _N>
+    nfma(const vec<double, _N>& a, const vec<double, _N>& b,
+         const vec<double, _N>& c);
+    // -(a*b) - c
+    template <std::size_t _N>
+    vec<double, _N>
+    nfms(const vec<double, _N>& a, const vec<double, _N>& b,
+         const vec<double, _N>& c);
+    
     // specializations vec<double, 2>
     vec<double, 2>
     cbrt(arg<vec<double, 2> >::type v);
@@ -584,6 +600,47 @@ cftal::vec<double, 1>
 cftal::rint(const vec<double, 1>& v)
 {
     return std::rint(v());
+}
+
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::fma(const vec<double, _N>& a, const vec<double, _N>& b,
+           const vec<double, _N>& c)
+{
+    return vec<double, _N>(fma(low_half(a), low_half(b), low_half(c)),
+                           fma(high_half(a), high_half(b), high_half(c)));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::fms(const vec<double, _N>& a, const vec<double, _N>& b,
+           const vec<double, _N>& c)
+{
+    return vec<double, _N>(fms(low_half(a), low_half(b), low_half(c)),
+                           fms(high_half(a), high_half(b), high_half(c)));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::nfma(const vec<double, _N>& a, const vec<double, _N>& b,
+            const vec<double, _N>& c)
+{
+    return vec<double, _N>(nfma(low_half(a), low_half(b), low_half(c)),
+                           nfma(high_half(a), high_half(b), high_half(c)));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::nfms(const vec<double, _N>& a, const vec<double, _N>& b,
+            const vec<double, _N>& c)
+{
+    return vec<double, _N>(nfms(low_half(a), low_half(b), low_half(c)),
+                           nfms(high_half(a), high_half(b), high_half(c)));
 }
 
 // local variables:
