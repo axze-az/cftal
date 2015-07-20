@@ -1453,14 +1453,14 @@ __m128i cftal::x86::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
     }
     // any zeros?
     if (m2 != -1) {
-        const int z0= (_P0<0 ? 0 : -1);
-        const int z1= (_P1<0 ? 0 : -1);
-        const int z2= (_P2<0 ? 0 : -1);
-        const int z3= (_P3<0 ? 0 : -1);
-        const int z4= (_P4<0 ? 0 : -1);
-        const int z5= (_P5<0 ? 0 : -1);
-        const int z6= (_P6<0 ? 0 : -1);
-        const int z7= (_P7<0 ? 0 : -1);
+        const uint16_t z0= (_P0<0 ? 0 : -1);
+        const uint16_t z1= (_P1<0 ? 0 : -1);
+        const uint16_t z2= (_P2<0 ? 0 : -1);
+        const uint16_t z3= (_P3<0 ? 0 : -1);
+        const uint16_t z4= (_P4<0 ? 0 : -1);
+        const uint16_t z5= (_P5<0 ? 0 : -1);
+        const uint16_t z6= (_P6<0 ? 0 : -1);
+        const uint16_t z7= (_P7<0 ? 0 : -1);
         const __m128i zm= const_v8u16<z0, z1, z2, z3,
                                       z4, z5, z6, z7>::iv();
         r = _mm_and_si128(r, zm);
