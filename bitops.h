@@ -223,7 +223,7 @@ unsigned cftal::lzcnt(uint32_t x)
     x |= (x>>4);
     x |= (x>>8);
     x |= (x>>16);
-    return popcnt(x);
+    return popcnt(~x);
 #endif
 }
 
@@ -239,7 +239,7 @@ unsigned cftal::lzcnt(uint64_t x)
     x |= (x>>8);
     x |= (x>>16);
     x |= (x>>32);
-    return popcnt(x);
+    return popcnt(~x);
 #endif
 }
 
