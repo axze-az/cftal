@@ -53,7 +53,7 @@ namespace cftal {
         // allow construction from vec<double, 8>
         vec(init_list<double> l);
         // allow construction from two halfes
-        vec(const vec<double, 2>& lh, const vec<double, 2>& hh);
+        vec(const vec<double, 4>& lh, const vec<double, 4>& hh);
 
         // expression template constructor
         template <template <class _U, std::size_t _M>
@@ -62,13 +62,13 @@ namespace cftal {
         vec(const expr<_OP<double, 8>, _L, _R>& r);
     };
 
-    using v8f64 = vec<double, 8>;
-    
+#if 0
     template <>
-    struct arg< vec<double, 8> > {
+    struct arg<vec<double, 8> > {
         using type = vec<double, 8>;
     };
-
+#endif
+    
     template <>
     struct mem< vec<double, 8> > {
         static
@@ -133,14 +133,15 @@ namespace cftal {
 
 #endif
 
+#if 0
     vec<double, 8>
     cbrt(arg<vec<double, 8> >::type v);
     
     v8f64 frexp(arg<v8f64>::type x, v4s32* e);
     // v8f64 pow2i(arg<v4s32>::type e);
-    v8f64 ldexp(arg<v8f64>::type d, arg<v4s32>::type e);
-    v4s32 ilogbp1(arg<v8f64>::type v);
-    v4s32 ilogb(arg<v8f64>::type v);
+    v8f64 ldexp(arg<v8f64>::type d, arg<v8s32>::type e);
+    v8s32 ilogbp1(arg<v8f64>::type v);
+    v8s32 ilogb(arg<v8f64>::type v);
     v8f64 atan2(arg<v8f64>::type y, arg<v8f64>::type x);
     v8f64 asin(arg<v8f64>::type d);
     v8f64 acos(arg<v8f64>::type d);
@@ -170,7 +171,8 @@ namespace cftal {
     v8f64 sinh(arg<v8f64>::type d);
 
     v8f64 pow(arg<v8f64>::type x, arg<v8f64>::type y);
-
+#endif
+    
 #if defined (__AVX512F__)        
     // a*b +c
     v8f64 fma(const v8f64& a, const v8f64& b, const v8f64& c);
