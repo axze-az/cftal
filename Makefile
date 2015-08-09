@@ -9,8 +9,9 @@ MAJOR=0#
 MINOR=1#
 
 SLDFLAGS:= $(SLDFLAGS) 
-ARCH+=#-mavx -mpopcnt -mavx2 -mfma 
+ARCH+=#-mavx -mpopcnt -mavx2 -mfma
 CXXFLAGS+=-I.. -march=native #-mavx -mfma -mavx2 #-mavx -mfma -mavx2
+CXXFLAGS+=-I.. -march=native -mavx512f -mavx512pf -mavx512er -mavx512cd 
 CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 OPT+=-fno-unroll-loops
 

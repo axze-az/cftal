@@ -42,6 +42,10 @@
 #include <cftal/x86_v4s64_inl.h>
 #include <cftal/x86_v4u64_inl.h>
 #endif
+#if defined (__AVX512F__)
+// include 512 bit floating point vector specializations
+#include <cftal/x86_v8f64.h>
+#endif
 
 #include <cftal/vec_double_n.h>
 #include <cftal/vec_float_n.h>

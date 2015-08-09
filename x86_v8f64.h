@@ -6,14 +6,14 @@
 #include <cftal/vec_double_n.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
-#include <cftal/x86_v2f64.h>
+#include <cftal/x86_v4f64.h>
 #include <cftal/x86_ops_1.h>
 
 namespace cftal {
 
 #if defined (__AVX512F__)    
 
-    struct bit { enum val { _0 =0, _1 = 1 }; };
+    // struct bit { enum val { _0 =0, _1 = 1 }; };
 
     template <>
     class vec<bit, 8> : public x86::vreg<__mmask8> {
@@ -40,7 +40,7 @@ namespace cftal {
         using base_type = x86::vreg<__m512d>;
 
         using value_type = double;
-        using mask_value_type = double;
+        using mask_value_type = bit;
         using mask_type= vec<mask_value_type, 8>;
 
         using x86::vreg<__m512d>::vreg;
@@ -171,7 +171,7 @@ namespace cftal {
 
     v8f64 pow(arg<v8f64>::type x, arg<v8f64>::type y);
 
-#if defined (__AVX__)        
+#if defined (__AVX512F__)        
     // a*b +c
     v8f64 fma(const v8f64& a, const v8f64& b, const v8f64& c);
     // a*b -c

@@ -1,2 +1,6 @@
 
-new algorithm for exp
+- permutation specializations for v4f64, v8f32, v8u32, v4u64
+
+- math functions for f32
+
+- variable vector shifts for integer vectors

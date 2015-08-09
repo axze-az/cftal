@@ -11,6 +11,9 @@
 #if defined (__AVX__)
 #include <cftal/x86_v4f64.h>
 #endif
+#if defined (__AVX512F__)
+#include <cftal/x86_v8f64.h>
+#endif
 
 namespace cftal {
 
