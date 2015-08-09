@@ -62,12 +62,10 @@ namespace cftal {
         vec(const expr<_OP<double, 8>, _L, _R>& r);
     };
 
-#if 0
     template <>
     struct arg<vec<double, 8> > {
         using type = vec<double, 8>;
     };
-#endif
     
     template <>
     struct mem< vec<double, 8> > {
@@ -210,7 +208,7 @@ namespace cftal {
             v(const full_type& a) {
                 constexpr const bytes8 all_one{-1, -1};
                 const full_type all_set(all_one._f64);
-                return _mm512_xor_pd_mask(a(), all_set());
+                return _mm512_xor_pd(a(), all_set());
             }
         };
 
@@ -222,7 +220,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return _mm512_cmp_pd(a(), b(), _CMP_LT_OS);
+                return _mm512_cmp_pd_mask(a(), b(), _CMP_LT_OS);
             }
         };
 
@@ -233,7 +231,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return _mm512_cmp_pd(a(), b(), _CMP_LE_OS);
+                return _mm512_cmp_pd_mask(a(), b(), _CMP_LE_OS);
             }
         };
 
@@ -244,7 +242,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return _mm512_cmp_pd(a(), b(), _CMP_EQ_OQ);
+                return _mm512_cmp_pd_mask(a(), b(), _CMP_EQ_OQ);
             }
         };
 
@@ -255,7 +253,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return _mm512_cmp_pd(a(), b(), _CMP_UNORD_Q);
+                return _mm512_cmp_pd_mask(a(), b(), _CMP_UNORD_Q);
             }
         };
 
@@ -266,7 +264,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return _mm512_cmp_pd(a(), b(), _CMP_GE_OS);
+                return _mm512_cmp_pd_mask(a(), b(), _CMP_GE_OS);
             }
         };
 
@@ -277,7 +275,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return _mm512_cmp_pd(a(), b(), _CMP_GT_OS);
+                return _mm512_cmp_pd_mask(a(), b(), _CMP_GT_OS);
             }
         };
 
@@ -464,7 +462,7 @@ namespace cftal {
 #endif // __AVX__    
 }
 
-#if defined (__AVX__)
+#if defined (__AVX512F__)
 
 inline
 cftal::vec<double, 8>::vec(double v)
@@ -476,20 +474,20 @@ cftal::vec<double, 8>::vec(double v)
 inline
 cftal::vec<double, 8>::
 vec(std::initializer_list<double> l)
-    : vec(mem<vec<double,4>>::load(l.begin(), l.size()))
+    : vec(mem<vec<double,8>>::load(l.begin(), l.size()))
 {
 }
 
 inline
 cftal::vec<double, 8>::
 vec(init_list<double> l)
-    : vec(mem<vec<double,4>>::load(l.begin(), l.size()))
+    : vec(mem<vec<double,8>>::load(l.begin(), l.size()))
 {
 }
 
 inline
 cftal::vec<double, 8>::
-vec(const vec<double, 2>& lh, const vec<double, 2>& hh)
+vec(const vec<double, 4>& lh, const vec<double, 4>& hh)
     : base_type(x86::impl::vinsertf128<1>::v(as<__m512d>(lh()),
                                              hh()))
 {
@@ -559,17 +557,17 @@ cftal::mem<cftal::vec<double, 8>>::store(double* p, const vec<double, 8>& v)
 }
 
 inline
-cftal::vec<double, 2>
+cftal::vec<double, 4>
 cftal::low_half(const cftal::vec<double, 8>& v)
 {
-    return _mm512_castpd256_pd128(v());
+    return _mm512_castpd512_pd256(v());
 }
 
 inline
-cftal::vec<double, 2>
+cftal::vec<double, 4>
 cftal::high_half(const cftal::vec<double, 8>& v)
 {
-    return _mm512_extractf128_pd(v(), 1);
+    return _mm512_extractf256_pd(v(), 1);
 }
 
 template <std::size_t _I>
