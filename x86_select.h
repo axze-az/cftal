@@ -44,7 +44,9 @@ namespace cftal {
         // r[i] = msk[i] ? one[i] : zero
         __m256i select(__m256i msk, __m256i on_one, __m256i on_zero);
 #endif
-
+#if defined (__AVX512F__)
+        __m512d select(__mmask8 msk, __m512d on_one, __m512d on_zero);
+#endif
         
         namespace impl {
 
@@ -285,6 +287,15 @@ inline
 __m256i cftal::x86::select(__m256i msk, __m256i on_one, __m256i on_zero)
 {
     return _mm256_blendv_epi8 (on_zero, on_one, msk);
+}
+
+#endif
+
+#if defined (__AVX512F__)
+inline
+__m512d cftal::x86::select(__mmask8 msk, __m512d on_one, __m512d on_zero)
+{
+    return _mm512_mask_blend_pd (msk, on_one, on_zero);
 }
 
 #endif

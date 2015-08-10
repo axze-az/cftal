@@ -100,7 +100,7 @@ namespace cftal {
     none_of(const vec<double, 8>::mask_type& a);
 
     unsigned
-    read_signs(const vec<double, 8>& b);
+    read_signs(const vec<double, 8>::mask_type& b);
 
     bool
     elements_equal(const vec<double, 8>& v);
@@ -488,8 +488,8 @@ vec(init_list<double> l)
 inline
 cftal::vec<double, 8>::
 vec(const vec<double, 4>& lh, const vec<double, 4>& hh)
-    : base_type(x86::impl::vinsertf128<1>::v(as<__m512d>(lh()),
-                                             hh()))
+    : base_type(_mm512_insertf64x4(as<__m512d>(lh()),
+                                   hh(),1))
 {
 }
 
@@ -567,14 +567,18 @@ inline
 cftal::vec<double, 4>
 cftal::high_half(const cftal::vec<double, 8>& v)
 {
-    return _mm512_extractf256_pd(v(), 1);
+    return _mm512_extractf64x4_pd(v(), 1);
 }
 
 template <std::size_t _I>
 double
 cftal::extract(const vec<double, 8>& v)
 {
-    return x86::extract_f64<_I>(v());
+    // return x86::extract_f64<_I>(v());
+    if (_I>3) {
+        return extract<_I-4>(high_half(v));
+    }
+    return extract<_I & 3>(low_half(v));
 }
 
 inline
@@ -730,7 +734,7 @@ bool cftal::none_of(const v8f64::mask_type& a)
 }
 
 inline
-unsigned cftal::read_signs(const v8f64& a)
+unsigned cftal::read_signs(const v8f64::mask_type& a)
 {
     return x86::read_signs_f64(a());
 }
@@ -750,19 +754,19 @@ cftal::v8f64 cftal::x86::round(const v8f64& a, rounding_mode::type m)
     v8f64 r;
     switch (m) {
     case rounding_mode::nearest:
-        r= _mm512_round_pd(a(), 0);
+        r= _mm512_roundscale_round_pd(a(), 0, 0);
         break;
     case rounding_mode::downward:
-        r= _mm512_round_pd(a(), 1);
+        r= _mm512_roundscale_round_pd(a(), 0, 1);
         break;
     case rounding_mode::upward:
-        r= _mm512_round_pd(a(), 2);
+        r= _mm512_roundscale_round_pd(a(), 0, 2);
         break;
     case rounding_mode::towardzero:
-        r= _mm512_round_pd(a(), 3);
+        r= _mm512_roundscale_round_pd(a(), 0, 3);
         break;
     case rounding_mode::current:
-        r= _mm512_round_pd(a(), 8);
+        r= _mm512_roundscale_round_pd(a(), 0, 4);
         break;
     }
     return r;
@@ -771,25 +775,25 @@ cftal::v8f64 cftal::x86::round(const v8f64& a, rounding_mode::type m)
 inline
 cftal::v8f64 cftal::rint(const v8f64& a)
 {
-    return x86::round(a, x86::rounding_mode::current);
+    return x86::round(a, rounding_mode::current);
 }
 
 inline
 cftal::v8f64 cftal::floor(const v8f64& a)
 {
-    return x86::round(a, x86::rounding_mode::downward);
+    return x86::round(a, rounding_mode::downward);
 }
 
 inline
 cftal::v8f64 cftal::ceil(const v8f64& a)
 {
-    return x86::round(a, x86::rounding_mode::upward);
+    return x86::round(a, rounding_mode::upward);
 }
 
 inline
 cftal::v8f64 cftal::trunc(const v8f64& a)
 {
-    return x86::round(a, x86::rounding_mode::towardzero);
+    return x86::round(a, rounding_mode::towardzero);
 }
 
 template <bool _I0, bool _I1, bool _I2, bool _I3>
