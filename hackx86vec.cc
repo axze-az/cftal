@@ -116,59 +116,75 @@ cftal::v4f64 test3a(cftal::v4f64 a, cftal::v4f64 b,
     return 1.0 + a * b + 1.0 + c * d;
 }
 
-// v4f32 compile tests
-cftal::v4f32 test1a(cftal::v4f32 a, cftal::v4f32 b, cftal::v4f32 c)
+// v8f64 compile tests
+cftal::v8f64 test1a(cftal::v8f64 a, cftal::v8f64 b, cftal::v8f64 c)
 {
     return a*b + c;
 }
 
-cftal::v4f32 test1b(cftal::v4f32 a, cftal::v4f32 b, cftal::v4f32 c)
+cftal::v8f64 test1b(cftal::v8f64 a, cftal::v8f64 b, cftal::v8f64 c)
 {
     return c+ a*b;
 }
 
-cftal::v4f32 test1c(cftal::v4f32 a, cftal::v4f32 b, cftal::v4f32 c)
+cftal::v8f64 test1c(cftal::v8f64 a, cftal::v8f64 b, cftal::v8f64 c)
 {
     return a*b - c;
 }
 
-cftal::v4f32 test1d(cftal::v4f32 a, cftal::v4f32 b, cftal::v4f32 c)
+cftal::v8f64 test1d(cftal::v8f64 a, cftal::v8f64 b, cftal::v8f64 c)
 {
     return c- a*b;
 }
 
-cftal::v4f32 test2a(cftal::v4f32 a, cftal::v4f32 b,
-                    cftal::v4f32 c, cftal::v4f32 d)
+cftal::v8f64 test2a(cftal::v8f64 a, cftal::v8f64 b,
+                    cftal::v8f64 c, cftal::v8f64 d)
 {
     return a*b + c*d;
 }
 
-cftal::v4f32 test2b(cftal::v4f32 a, cftal::v4f32 b,
-                    cftal::v4f32 c, cftal::v4f32 d)
+cftal::v8f64 test2b(cftal::v8f64 a, cftal::v8f64 b,
+                    cftal::v8f64 c, cftal::v8f64 d)
 {
     return a*b - c*d;
 }
 
-cftal::v4f32 test2c(cftal::v4f32 a, cftal::v4f32 b,
-                    cftal::v4f32 c, cftal::v4f32 d)
+cftal::v8f64 test2c(cftal::v8f64 a, cftal::v8f64 b,
+                    cftal::v8f64 c, cftal::v8f64 d)
 {
     return (a*b + c) * d;
 }
 
-cftal::v4f32 test2d(cftal::v4f32 a, cftal::v4f32 b,
-                    cftal::v4f32 c, cftal::v4f32 d)
+cftal::v8f64 test2d(cftal::v8f64 a, cftal::v8f64 b,
+                    cftal::v8f64 c, cftal::v8f64 d)
 {
     return (a*b - c) * d;
 }
 
-cftal::v4f32 test3a(cftal::v4f32 a, cftal::v4f32 b,
-                    cftal::v4f32 c, cftal::v4f32 d)
+cftal::v8f64 test3a(cftal::v8f64 a, cftal::v8f64 b,
+                    cftal::v8f64 c, cftal::v8f64 d)
 {
     return 1.0 + a * b + 1.0 + c * d;
 }
 
-cftal::v4f32 test4a(cftal::v4f32 a, cftal::v4f32 b,
-                    cftal::v4f32 c, cftal::v4f32 d)
+cftal::v8f64 test3b(cftal::v8f64 a, cftal::v8f64 b,
+                    cftal::v8f64 c, cftal::v8f64 d)
+{
+    return (1.0 + a * b) + (1.0 + c * d);
+}
+
+cftal::v8f64::mask_type
+test_cmp(cftal::v8f64 a, cftal::v8f64 b)
+{
+    // cftal::v8f64::mask_type c1 = a == b;
+    // cftal::v8f64::mask_type c2 = a == b;
+
+    return (a == b) | (a > b);
+}
+
+
+cftal::v8f64 test4a(cftal::v8f64 a, cftal::v8f64 b,
+                    cftal::v8f64 c, cftal::v8f64 d)
 {
     return (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
                         c * d);

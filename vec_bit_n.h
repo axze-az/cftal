@@ -199,7 +199,8 @@ inline
 cftal::vec<cftal::bit, _N>
 cftal::operator|(const vec<bit, _N>& a, const vec<bit, _N>& b)
 {
-    return a() | b();
+    uint64_t r = a() | b();
+    return r;
 }
 
 template <std::size_t _N>

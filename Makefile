@@ -98,7 +98,7 @@ hackx86vec_g: hackx86vec.od lib$(LIBNAME)-g.a
 	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++ -lm
 
 #x.s: hackx86vec.s x86_v4f64.s x86_v2f64.s
-x.s: x86_v4f64.s
+x.s: hackx86vec.s
 	c++filt < $< >$@ 
 	-$(RM) $<
 
