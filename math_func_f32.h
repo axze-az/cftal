@@ -215,9 +215,9 @@ frexp(const vf_type& vd, vi_type* ve)
 
     vi_type value_head(i & vi_type(0x7fffffff));
 
-    vi_type is_inf_nan_zero((value_head >= 0x7f800000) |
-                            (value_head==vi_type(0)));
-    vi_type is_denom(value_head < 0x008000000);
+    vmi_type is_inf_nan_zero((value_head >= 0x7f800000) |
+                             (value_head==vi_type(0)));
+    vmi_type is_denom(value_head < 0x008000000);
 
     // exponent:
     vi_type e((value_head >> 23) - vi_type(126));

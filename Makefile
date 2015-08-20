@@ -11,7 +11,7 @@ MINOR=1#
 SLDFLAGS:= $(SLDFLAGS) 
 ARCH+=#-mavx -mpopcnt -mavx2 -mfma
 CXXFLAGS+=-I.. -march=native #-mavx -mfma -mavx2 #-mavx -mfma -mavx2
-CXXFLAGS+=-I.. -march=native -mavx512f -mavx512pf -mavx512er -mavx512cd 
+CXXFLAGS+=-I.. -march=native #-mavx512f -mavx512vl -mavx512pf -mavx512er -mavx512cd 
 CXXFLAGS+=-fstrict-aliasing -Wstrict-aliasing=1
 OPT+=-fno-unroll-loops
 
@@ -98,7 +98,7 @@ hackx86vec_g: hackx86vec.od lib$(LIBNAME)-g.a
 	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++ -lm
 
 #x.s: hackx86vec.s x86_v4f64.s x86_v2f64.s
-x.s: hackx86vec.s
+x.s: x86_v4f64.s
 	c++filt < $< >$@ 
 	-$(RM) $<
 

@@ -31,9 +31,13 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_epu32_mask(a(), b(), _CMP_LT_OS & 7);
+#else
                 v4u32 ta(a ^ full_type(sign_s32_msk::v._u32));
                 v4u32 tb(b ^ full_type(sign_s32_msk::v._u32));
                 return _mm_cmpgt_epi32(tb(), ta());
+#endif
             }
         };
 
@@ -44,12 +48,16 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_epu32_mask(a(), b(), _CMP_LE_OS & 7);
+#else
 #if defined (__SSE4_1__)
                 // a<= b: a == min(a, b);
                 __m128i min_ab = _mm_min_epu32(b(), a());
                 return _mm_cmpeq_epi32(a(), min_ab);
 #else
                 return ~(b > a);
+#endif
 #endif
             }
         };
@@ -61,7 +69,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_epu32_mask(a(), b(), _CMP_EQ_OQ & 7);
+#else
                 return _mm_cmpeq_epi32(a(), b());
+#endif
             }
         };
 
@@ -72,8 +84,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_epu32_mask(a(), b(), _CMP_UNORD_Q & 7);
+#else
                 mask_type a_eq_b(eq<uint32_t, 4>::v(a, b));
                 return bit_not<uint32_t, 4>::v(a_eq_b);
+#endif
             }
         };
 
@@ -84,12 +100,16 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_epu32_mask(a(), b(), _CMP_GE_OS & 7);
+#else
 #if defined (__SSE4_1__)
                 // a>= b: a == max(a, b);
                 __m128i max_ab = _mm_max_epu32(b(), a());
                 return _mm_cmpeq_epi32(a(), max_ab);
 #else
                 return ~(a < b);
+#endif
 #endif
             }
         };
@@ -101,9 +121,13 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_epu32_mask(a(), b(), _CMP_GT_OS & 7);
+#else
                 v4u32 ta(a ^ full_type(sign_s32_msk::v._u32));
                 v4u32 tb(b ^ full_type(sign_s32_msk::v._u32));
                 return _mm_cmpgt_epi32(ta(), tb());
+#endif
             }
         };
 
@@ -371,7 +395,7 @@ cftal::high_half(const vec<uint32_t, 4>& v)
     return as<vec<uint32_t,2> >(h);
 }
 
-
+#if !defined (__AVX512VL__)
 inline
 bool cftal::all_of(const vec<uint32_t, 4>::mask_type& v)
 {
@@ -389,6 +413,7 @@ bool cftal::none_of(const vec<uint32_t, 4>::mask_type& v)
 {
     return x86::none_of_s32(v());
 }
+#endif
 
 inline
 cftal::v4u32 cftal::max(const v4u32& a, const v4u32& b)
@@ -417,7 +442,11 @@ cftal::v4u32 cftal::select(const v4u32::mask_type& m,
                            const v4u32& on_true,
                            const v4u32& on_false)
 {
+#if defined (__AVX512VL__)
+    return x86::select_u32(m(), on_true(), on_false());
+#else
     return x86::select(m(), on_true(), on_false());
+#endif
 }
 
 template <bool _I0, bool _I1, bool _I2, bool _I3>

@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec_double_n.h>
+#include <cftal/x86_vec_bit.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
 #include <cftal/x86_v2f64.h>
@@ -18,7 +19,11 @@ namespace cftal {
         using base_type = x86::vreg<__m256d>;
 
         using value_type = double;
+#if defined (__AVX512VL__)
+        using mask_value_type = bit;
+#else
         using mask_value_type = double;
+#endif
         using mask_type= vec<mask_value_type, 4>;
 
         using x86::vreg<__m256d>::vreg;
@@ -59,15 +64,15 @@ namespace cftal {
     vec<double, 2>
     high_half(const vec<double, 4>& s);
 
+#if !defined (__AVX512VL__)
     bool
     any_of(const vec<double, 4>::mask_type& s);
-
     bool
     all_of(const vec<double, 4>::mask_type& s);
-    
     bool
     none_of(const vec<double, 4>::mask_type& s);
-
+#endif
+    
     template <std::size_t _I>
     double
     extract(const vec<double, 4>& s);
@@ -157,7 +162,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_pd_mask(a(), b(), _CMP_LT_OS);
+#else
                 return _mm256_cmp_pd(a(), b(), _CMP_LT_OS);
+#endif
             }
         };
 
@@ -168,7 +177,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_pd_mask(a(), b(), _CMP_LE_OS);
+#else
                 return _mm256_cmp_pd(a(), b(), _CMP_LE_OS);
+#endif
             }
         };
 
@@ -179,7 +192,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_pd_mask(a(), b(), _CMP_EQ_OQ);
+#else
                 return _mm256_cmp_pd(a(), b(), _CMP_EQ_OQ);
+#endif
             }
         };
 
@@ -190,7 +207,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_pd_mask(a(), b(), _CMP_UNORD_Q);
+#else
                 return _mm256_cmp_pd(a(), b(), _CMP_UNORD_Q);
+#endif
             }
         };
 
@@ -201,7 +222,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_pd_mask(a(), b(), _CMP_GE_OS);
+#else
                 return _mm256_cmp_pd(a(), b(), _CMP_GE_OS);
+#endif
             }
         };
 
@@ -212,7 +237,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_pd_mask(a(), b(), _CMP_GT_OS);
+#else
                 return _mm256_cmp_pd(a(), b(), _CMP_GT_OS);
+#endif
             }
         };
 
@@ -627,6 +656,7 @@ cftal::v4f64 cftal::mulsign(const v4f64& x, const v4f64& y)
     return x ^ sgn_y;
 }
 
+#if !defined (__AVX512VL__)
 inline
 bool cftal::any_of(const vec<double, 4>::mask_type& s)
 {
@@ -646,6 +676,7 @@ cftal::none_of(const vec<double, 4>::mask_type& s)
 {
     return x86::read_signs_f64(s()) == 0;
 }
+#endif
 
 inline
 unsigned cftal::read_signs(const v4f64& a)

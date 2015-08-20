@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec_double_n.h>
+#include <cftal/x86_vec_bit.h>
 #include <cftal/x86_ops_1.h>
 #include <cftal/x86_v4s32.h>
 #include <cftal/x86_perm.h>
@@ -17,9 +18,12 @@ namespace cftal {
         using base_type= x86::vreg<__m128d>;
 
         using value_type = double;
+#if defined (__AVX512VL__)
+        using mask_value_type = bit;
+#else
         using mask_value_type = double;
+#endif
         using mask_type= vec<mask_value_type, 2>;
-
         using x86::vreg<__m128d>::vreg;;
         vec() = default;
         // create vec{v,v,v,v}
@@ -156,7 +160,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_pd_mask(a(), b(), _CMP_LT_OS);
+#else                
                 return _mm_cmplt_pd(a(), b());
+#endif
             }
         };
 
@@ -167,7 +175,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_pd_mask(a(), b(), _CMP_LE_OS);
+#else
                 return _mm_cmple_pd(a(), b());
+#endif
             }
         };
 
@@ -178,7 +190,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_pd_mask(a(), b(), _CMP_EQ_OQ);
+#else
                 return _mm_cmpeq_pd(a(), b());
+#endif
             }
         };
 
@@ -189,7 +205,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_pd_mask(a(), b(), _CMP_UNORD_Q);
+#else
                 return _mm_cmpneq_pd(a(), b());
+#endif
             }
         };
 
@@ -200,7 +220,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_pd_mask(a(), b(), _CMP_GE_OS);
+#else
                 return _mm_cmpge_pd(a(), b());
+#endif
             }
         };
 
@@ -211,7 +235,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmp_pd_mask(a(), b(), _CMP_GT_OS);
+#else
                 return _mm_cmpgt_pd(a(), b());
+#endif
             }
         };
 

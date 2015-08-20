@@ -149,7 +149,7 @@ namespace cftal {
         bool any_of_s64(__m256i a);
         bool none_of_s64(__m256i a);
 #endif
-
+        
         bool both_signs_s16(__m128i a);
         bool all_signs_s16(__m128i a);
         bool no_signs_s16(__m128i a);
