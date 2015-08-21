@@ -19,7 +19,10 @@ namespace cftal {
         // __SSE4_1__: on sign bit of int8_t
         // r[i] = msk[i] ? one[i] : zero
         __m128i select(__m128i msk, __m128i on_one, __m128i on_zero);
-
+        __m128i select_u16(__m128i msk, __m128i on_one, __m128i on_zero);
+        __m128i select_u32(__m128i msk, __m128i on_one, __m128i on_zero);
+        __m128i select_u64(__m128i msk, __m128i on_one, __m128i on_zero);
+        
         // select floats
         // __SSE2__: bitwise
         // __SSE4_1__: on sign bit of float
@@ -43,6 +46,9 @@ namespace cftal {
         // on sign bit of int8_t
         // r[i] = msk[i] ? one[i] : zero
         __m256i select(__m256i msk, __m256i on_one, __m256i on_zero);
+        __m256i select_u16(__m256i msk, __m256i on_one, __m256i on_zero);
+        __m256i select_u32(__m256i msk, __m256i on_one, __m256i on_zero);
+        __m256i select_u64(__m256i msk, __m256i on_one, __m256i on_zero);
 #endif
 #if defined (__AVX512F__)
         __m512d select(__mmask8 msk, __m512d on_one, __m512d on_zero);
@@ -263,6 +269,27 @@ __m128i cftal::x86::select(__m128i msk, __m128i on_one, __m128i on_zero)
 }
 
 inline
+__m128i
+cftal::x86::select_u16(__m128i msk, __m128i on_one, __m128i on_zero)
+{
+    return select(msk, on_one, on_zero);
+}
+
+inline
+__m128i
+cftal::x86::select_u32(__m128i msk, __m128i on_one, __m128i on_zero)
+{
+    return select(msk, on_one, on_zero);
+}
+
+inline
+__m128i
+cftal::x86::select_u64(__m128i msk, __m128i on_one, __m128i on_zero)
+{
+    return select(msk, on_one, on_zero);
+}
+
+inline
 __m128 cftal::x86::select(__m128 msk, __m128 on_one, __m128 on_zero)
 {
 #if defined (__SSE4_1__)
@@ -303,6 +330,27 @@ inline
 __m256i cftal::x86::select(__m256i msk, __m256i on_one, __m256i on_zero)
 {
     return _mm256_blendv_epi8 (on_zero, on_one, msk);
+}
+
+inline
+__m256i
+cftal::x86::select_u16(__m256i msk, __m256i on_one, __m256i on_zero)
+{
+    return select(msk, on_one, on_zero);
+}
+
+inline
+__m256i
+cftal::x86::select_u32(__m256i msk, __m256i on_one, __m256i on_zero)
+{
+    return select(msk, on_one, on_zero);
+}
+
+inline
+__m256i
+cftal::x86::select_u64(__m256i msk, __m256i on_one, __m256i on_zero)
+{
+    return select(msk, on_one, on_zero);
 }
 
 #endif

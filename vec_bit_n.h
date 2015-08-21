@@ -29,7 +29,7 @@ namespace cftal {
 
     // specialization of vec for bit masks
     template <std::size_t _N>
-    class vec<bit, _N> {      
+    class vec<bit, _N> {
     public:
         using utype = typename
             std::conditional<(_N>32), uint64_t,
@@ -81,7 +81,7 @@ namespace cftal {
     template <std::size_t _N>
     typename std::enable_if<(_N>1), vec<bit, _N/2> >::type
     high_half(const vec<bit, _N>& v);
-    
+
     template <std::size_t _N>
     vec<bit, _N>
     operator==(const vec<bit, _N>& a, const vec<bit, _N>& b);
@@ -93,7 +93,7 @@ namespace cftal {
     template <std::size_t _N>
     vec<bit, _N>
     operator~(const vec<bit, _N>& a);
-    
+
     template <std::size_t _N>
     vec<bit, _N>
     operator^(const vec<bit, _N>& a, const vec<bit, _N>& b);
@@ -101,7 +101,7 @@ namespace cftal {
     template <std::size_t _N>
     vec<bit, _N>&
     operator^=(vec<bit, _N>& a, const vec<bit, _N>& b);
-    
+
     template <std::size_t _N>
     vec<bit, _N>
     operator|(const vec<bit, _N>& a, const vec<bit, _N>& b);
@@ -129,7 +129,7 @@ namespace cftal {
     template <std::size_t _N>
     bool
     none_of(const vec<bit, _N>& a);
-    
+
 }
 
 template <std::size_t _N>
@@ -147,7 +147,7 @@ cftal::high_half(const vec<bit, _N>& v)
 {
     return vec<bit, _N/2>(v() >> (_N/2));
 }
-    
+
 template <std::size_t _N>
 inline
 cftal::vec<cftal::bit, _N>
@@ -176,7 +176,7 @@ cftal::operator~(const vec<bit, _N>& a)
 {
     return ~a();
 }
-    
+
 template <std::size_t _N>
 inline
 cftal::vec<cftal::bit, _N>
@@ -193,7 +193,7 @@ cftal::operator^=(vec<bit, _N>& a, const vec<bit, _N>& b)
     a= a^b;
     return a;
 }
-    
+
 template <std::size_t _N>
 inline
 cftal::vec<cftal::bit, _N>
@@ -252,7 +252,6 @@ cftal::none_of(const vec<bit, _N>& a)
 {
     return a() == 0;
 }
-
 
 // Local variables:
 // mode: c++

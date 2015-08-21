@@ -46,7 +46,6 @@ namespace cftal {
                   class _OP,
                   class _L, class _R>
             vec(const expr<_OP<_T, _N>, _L, _R>& r);
-
     private:
         static_assert(0==(_N & (_N-1)),
                       "vec<_T, _N>: _N is not a power of 2");
@@ -185,7 +184,7 @@ namespace cftal {
     template <typename _T>
     vec<_T, 16>
     sort_even_odd(const vec<_T, 16>& v);
-    
+
     template <typename _T, std::size_t _N>
     vec<_T, _N/2>
     even_elements(const vec<_T, _N>& v);
@@ -201,7 +200,7 @@ namespace cftal {
     template <typename _T>
     vec<_T, 2>
     even_elements(const vec<_T, 4>& v);
-    
+
     template <typename _T>
     vec<_T, 1>
     even_elements(const vec<_T, 2>& v);
@@ -225,7 +224,7 @@ namespace cftal {
     template <typename _T>
     vec<_T, 1>
     odd_elements(const vec<_T, 2>& v);
-    
+
     template <typename _T, std::size_t _N>
     vec<_T, _N*2>
     combine_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o);
@@ -241,11 +240,11 @@ namespace cftal {
     template <typename _T>
     vec<_T, 4>
     combine_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o);
-    
+
     template <typename _T>
     vec<_T, 2>
     combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o);
-    
+
     template <typename _T, std::size_t _N>
     bool
     elements_equal(const vec<_T, _N>& v);
@@ -741,7 +740,7 @@ cftal::even_elements(const vec<_T, 2>& v)
     return low_half(v);
 }
 
-        
+
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N/2>
 cftal::odd_elements(const vec<_T, _N>& v)
@@ -777,7 +776,7 @@ cftal::odd_elements(const vec<_T, 2>& v)
 {
     return high_half(v);
 }
-        
+
 
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N*2>

@@ -442,11 +442,7 @@ cftal::v4u32 cftal::select(const v4u32::mask_type& m,
                            const v4u32& on_true,
                            const v4u32& on_false)
 {
-#if defined (__AVX512VL__)
     return x86::select_u32(m(), on_true(), on_false());
-#else
-    return x86::select(m(), on_true(), on_false());
-#endif
 }
 
 template <bool _I0, bool _I1, bool _I2, bool _I3>
