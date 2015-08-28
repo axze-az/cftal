@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/x86_vreg.h>
+#include <cftal/x86_vec_bit.h>
 #include <cftal/vec_op.h>
 
 namespace cftal {
@@ -14,7 +15,11 @@ namespace cftal {
         using base_type = x86::vreg<__m256i>;
 
         using value_type = int64_t;
+#if defined (__AVX512VL__)
+        using mask_value_type = bit;
+#else
         using mask_value_type = int64_t;
+#endif
         using mask_type= vec<mask_value_type, 4>;
 
         using base_type::base_type;
@@ -52,12 +57,14 @@ namespace cftal {
     vec<int64_t, 2>
     high_half(const vec<int64_t, 4>& v);
 
+#if !defined (__AVX512VL__)    
     bool
     all_of(const vec<int64_t, 4>::mask_type& v);
     bool
     any_of(const vec<int64_t, 4>::mask_type& v);
     bool
     none_of(const vec<int64_t, 4>::mask_type& v);
+#endif
     
     v4s64 max(const v4s64& a, const v4s64& b);
     v4s64 min(const v4s64& a, const v4s64& b);

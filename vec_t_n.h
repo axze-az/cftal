@@ -6,6 +6,7 @@
 #include <cftal/constants.h>
 #include <cftal/init_list.h>
 #include <cftal/mem.h>
+#include <iosfwd>
 
 namespace cftal {
 
@@ -273,6 +274,9 @@ namespace cftal {
             mem< vec<_T, _N/2> >::store(p+_N/2, high_half(v));
         }
     };
+
+    template <typename _T, std::size_t _N>
+    std::ostream& operator<<(std::ostream& s, const vec<_T, _N>& v);
 }
 
 template <class _T, std::size_t _N>
@@ -820,6 +824,14 @@ cftal::combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o)
     return vec<_T, 2>(e, o);
 }
 
+
+template <typename _T, std::size_t _N>
+std::ostream&
+cftal::operator<<(std::ostream& s, const vec<_T, _N>& v)
+{
+    s << low_half(v) << ' ' << high_half(v);
+    return s;
+}
 
 
 

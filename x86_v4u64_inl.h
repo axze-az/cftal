@@ -347,6 +347,7 @@ cftal::high_half(const cftal::vec<uint64_t, 4>& v)
     return _mm256_extracti128_si256(v(), 1);
 }
 
+#if !defined (__AVX512VL__)
 inline
 bool cftal::all_of(const vec<uint64_t, 4>::mask_type& v)
 {
@@ -364,6 +365,7 @@ bool cftal::none_of(const vec<uint64_t, 4>::mask_type& v)
 {
     return x86::none_of_s64(v());
 }
+#endif
 
 inline
 cftal::v4u64 cftal::max(const v4u64& a, const v4u64& b)

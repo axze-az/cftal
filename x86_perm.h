@@ -351,6 +351,7 @@ namespace cftal {
             };
 
 #if 0
+            // TODO: implementation missing
             // permutation of the high half of one uint16_t vector
             template <int _P4, int _P5, int _P6, int _P7>
             struct perm1_v8u16<0, 1, 2, 3, _P4, _P5, _P6, _P7> {
@@ -716,6 +717,48 @@ namespace cftal {
             struct perm2_v8u32 {
                 static __m256i v(__m256i a, __m256i b);
             };
+
+            template <>
+            struct perm1_v4u64<-1,-1,-1,-1>
+                : public make_zero_int256 {};
+
+            template <>
+            struct perm1_v4u64<0, 1, 2, 3>
+                : public select_arg_1<__m256i> {};
+
+            template <>
+            struct perm1_v4u64<0, 0, 2, 2>
+                : public vpunpcklqdq {};
+
+            template <>
+            struct perm1_v4u64<1, 1, 3, 3>
+                : public vpunpckhqdq {};
+
+            template <>
+            struct perm1_v4u64<0, -1, 2, -1>
+                : public fixed_arg_2<__m256i, make_zero_int256,
+                                     vpunpcklqdq> {};
+            template <>
+            struct perm1_vuf64<-1, 0, -1, 2>
+                : public fixed_arg_1<__m256i, make_zero_int256,
+                                     vpunpcklqdq> {};
+
+
+            template <>
+            struct perm1_v8u32<-1, -1, -1, -1, -1, -1, -1, -1>
+                : public make_zero_int256 {};
+            template <>
+            struct perm1_v8u32<0, 1, 2, 3, 4, 5, 6, 7>
+                : public select_arg_1<__m256i> {};
+
+            template <>
+            struct perm1_v8u32<0, 1, 0, 1, 4, 5, 4, 5>
+                : public vpunpcklqdq {};
+
+            template <>
+            struct perm1_v8u32<2, 3, 2, 3, 6, 7, 6, 7>
+                : public vpunpckhqdq {};
+            
 #if 0
             // specializations
             template <>

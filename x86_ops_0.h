@@ -246,6 +246,23 @@ namespace cftal {
                 }
             };
 
+#if defined (__AVX__)            
+            struct make_zero_int256 {
+                static __m256i v() {
+                    return _mm256_setzero_si256();
+                }
+                static __m256i v(__m256i a) {
+                    static_cast<void>(a);
+                    return v();
+                }
+                static __m256i v(__m256i a, __m256i b) {
+                    static_cast<void>(a);
+                    static_cast<void>(b);
+                    return v();
+                }
+            };
+#endif
+            
             template <unsigned _P0, unsigned _P1>
             struct vshufpd {
                 static __m128d v(__m128d a, __m128d b) {
@@ -303,7 +320,7 @@ namespace cftal {
                     constexpr int p2=_P2;
                     constexpr int p3=_P3;
                     const int m=shuffle4<p0, p1, p2, p3>::val;
-                    return _mm_shufflehi_epi16(a, m);
+                    return _mm_shufflehi_epi16(a, m & 0xff);
                 }
             };
 
@@ -319,7 +336,7 @@ namespace cftal {
                     _p1 = _P1,
                     _p2 = _P2,
                     _p3 = _P3,
-                    m=shuffle4<int(_p0), int(_p1), int(_p2), int(_p3)>::val
+                    m= shuffle4<int(_p0), int(_p1), int(_p2), int(_p3)>::val & 0xff
                 };
 
                 static __m128i v(__m128i a) {

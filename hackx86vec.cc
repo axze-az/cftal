@@ -758,6 +758,11 @@ int main(int argc, char** argv)
     std::cout << low_half(r)() << " " << low_half(e)() << std::endl;
     std::cout << sr << " " << se << std::endl;
 
+
+    cftal::v8u16 ut= {1, 2, 3, 4, 5, 6, 7, 8};
+    cftal::v8u16 ut1= cftal::permute<0, 1, 2, 3, 7, 6, 5, 4>(ut);
+    std::cout << ut1 << std::endl;
+    
 #if 0
     cftal::vec<double, 4> t1(1.0), t2(2.0);
     cftal::vec<double, 4> t3(

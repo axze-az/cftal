@@ -130,6 +130,7 @@ namespace cftal {
     bool
     none_of(const vec<bit, _N>& a);
 
+    std::ostream& operator<<(std::ostream& s, const vec<bit, 1>& v);
 }
 
 template <std::size_t _N>
@@ -252,6 +253,16 @@ cftal::none_of(const vec<bit, _N>& a)
 {
     return a() == 0;
 }
+
+inline
+std::ostream&
+cftal::operator<<(std::ostream& s, const vec<bit, 1>& v)
+{
+    char c= v() != 0 ? '1' : '0';
+    s << c;
+    return s;
+}
+
 
 // Local variables:
 // mode: c++

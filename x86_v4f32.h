@@ -6,6 +6,7 @@
 #include <cftal/vec_float_n.h>
 #include <cftal/x86_perm.h>
 #include <cftal/x86_vreg.h>
+#include <cftal/x86_vec_bit.h>
 #include <cftal/x86_v2f64.h>
 #include <cftal/x86_v4s32.h>
 
@@ -17,7 +18,11 @@ namespace cftal {
         using base_type = x86::vreg<__m128>;
 
         using value_type = float;
+#if defined (__AVX512VL__)
+        using mask_value_type = bit;
+#else
         using mask_value_type = float;
+#endif
         using mask_type= vec<mask_value_type, 4>;
 
         using x86::vreg<__m128>::vreg;
@@ -65,6 +70,7 @@ namespace cftal {
            const vec<float, 4>& on_true,
            const vec<float, 4>& on_false);
 
+#if !defined (__AVX512VL__)    
     bool
     all_of(const vec<float, 4>::mask_type& a);
 
@@ -73,7 +79,8 @@ namespace cftal {
 
     bool
     none_of(const vec<float, 4>::mask_type& a);
-
+#endif
+    
     unsigned
     read_signs(const vec<float, 4>& b);
 
@@ -685,6 +692,7 @@ cftal::v4f32 cftal::mulsign(const v4f32& x, const v4f32& y)
     return x ^ sgn_y;
 }
 
+#if !defined (__AVX512VL__)
 inline
 bool cftal::all_of(const v4f32::mask_type& a)
 {
@@ -702,6 +710,7 @@ bool cftal::none_of(const v4f32::mask_type& a)
 {
     return x86::read_signs_f32(a()) == 0;
 }
+#endif
 
 inline
 unsigned cftal::read_signs(const v4f32& a)

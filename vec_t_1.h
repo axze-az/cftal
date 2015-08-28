@@ -123,6 +123,9 @@ namespace cftal {
     template <int32_t _I0, typename _T>
     vec<_T, 1>
     permute(const vec<_T, 1>& v0, const vec<_T, 1>& v1);
+
+    template <typename _T>
+    std::ostream& operator<<(std::ostream& s, const vec<_T, 1>& v);
     
     namespace op {
         template <typename _T>
@@ -571,6 +574,15 @@ cftal::permute(const vec<_T, 1>& v0, const vec<_T, 1>& v1)
         return vec<_T, 1>(_T(0));
     return _I0 == 1 ? v1 : v0;
 }
+
+template <typename _T>
+std::ostream&
+cftal::operator<<(std::ostream& s, const vec<_T, 1>& v)
+{
+    s << v();
+    return s;
+}
+
 
 // Local variables:
 // mode: c++

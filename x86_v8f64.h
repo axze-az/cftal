@@ -4,9 +4,9 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec_double_n.h>
+#include <cftal/x86_vreg.h>
 #include <cftal/x86_vec_bit.h>
 #include <cftal/x86_perm.h>
-#include <cftal/x86_vreg.h>
 #include <cftal/x86_v4f64.h>
 #include <cftal/x86_ops_1.h>
 
@@ -69,15 +69,6 @@ namespace cftal {
     select(const typename vec<double, 8>::mask_type& msk,
            const vec<double, 8>& on_true,
            const vec<double, 8>& on_false);
-
-    bool
-    all_of(const vec<double, 8>::mask_type& a);
-
-    bool
-    any_of(const vec<double, 8>::mask_type& a);
-
-    bool
-    none_of(const vec<double, 8>::mask_type& a);
 
     unsigned
     read_signs(const vec<double, 8>::mask_type& b);
@@ -694,24 +685,6 @@ cftal::v8f64 cftal::mulsign(const v8f64& x, const v8f64& y)
     const v8f64 msk(sign_f64_msk::v._f64);
     v8f64 sgn_y = y & msk;
     return x ^ sgn_y;
-}
-
-inline
-bool cftal::all_of(const v8f64::mask_type& a)
-{
-    return x86::read_signs_f64(a()) == 0xff;
-}
-
-inline
-bool cftal::any_of(const v8f64::mask_type& a)
-{
-    return x86::read_signs_f64(a()) != 0;
-}
-
-inline
-bool cftal::none_of(const v8f64::mask_type& a)
-{
-    return x86::read_signs_f64(a()) == 0;
 }
 
 inline
