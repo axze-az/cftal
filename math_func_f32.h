@@ -363,10 +363,14 @@ native_sin_cos_k(const vf_type& x)
 
     vmf_type q_and_2(_T::vmi_to_vmf(i_q_and_2));
     // si = _T::sel(q_and_2, -si, si);
-    si = mulsign(si, q_and_2);
+    vf_type fs = _T::sel(q_and_2, vf_type(-1.0), vf_type(1.0));
+    si *= fs;
+    // si = mulsign(si, q_and_2);
     vmf_type qp1_and_2(_T::vmi_to_vmf(i_qp1_and_2));
     // co = _T::sel(qp1_and_2, -co, co);
-    co = mulsign(co, qp1_and_2);
+    vf_type fc= _T::sel(qp1_and_2, vf_type(-1.0), vf_type(1.0));
+    co *= fc;
+    // co = mulsign(co, qp1_and_2);
 
     vmf_type x_is_inf(isinf(x));
     const vf_type nanf(_T::nan());

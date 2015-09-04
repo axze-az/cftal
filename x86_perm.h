@@ -739,7 +739,7 @@ namespace cftal {
                 : public fixed_arg_2<__m256i, make_zero_int256,
                                      vpunpcklqdq> {};
             template <>
-            struct perm1_vuf64<-1, 0, -1, 2>
+            struct perm1_v4u64<-1, 0, -1, 2>
                 : public fixed_arg_1<__m256i, make_zero_int256,
                                      vpunpcklqdq> {};
 
@@ -770,6 +770,22 @@ namespace cftal {
             };
 #endif
 #endif
+#if defined (__AVX512F__)
+            // generic permutation of one v8f64 vector
+            template <int _P0, int _P1, int _P2, int _P3,
+                      int _P4, int _P5, int _P6, int _P7>
+            struct perm1_v8f64 {
+                static __m512d v(__m512d a);
+            };
+
+            // generic permutation of two v8f64 vectors
+            template <int _P0, int _P1, int _P2, int _P3,
+                      int _P4, int _P5, int _P6, int _P7>
+            struct perm2_v8f64 {
+                static __m512d v(__m512d a, __m512d b);
+            };
+#endif
+
         }
 
         template <int _P0, int _P1>
@@ -823,6 +839,14 @@ namespace cftal {
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m256i perm_u32(__m256i a, __m256i b);
+#endif
+#if defined (__AVX512F__)
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        __m512d perm_f64(__m512d a);
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        __m512d perm_f64(__m512d a, __m512d b);
 #endif
     }
 }
@@ -2213,6 +2237,116 @@ cftal::x86::impl::perm2_v8u32<_P0, _P1, _P2, _P3,
 }
 
 #endif
+#if defined (__AVX512F__)
+template <int _P0, int _P1, int _P2, int _P3,
+          int _P4, int _P5, int _P6, int _P7>
+inline
+__m512d
+cftal::x86::impl::
+perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
+{
+    const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
+    const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+    const bool do_zero= m2 != 0xfffffff;
+
+    if (m2 == 0xffffffff)
+        return _mm512_setzero_pd();
+
+    const __mmask8 zm=
+        ((_P0 >= 0 ? (1<<0) : 0)) |
+        ((_P1 >= 0 ? (1<<1) : 0)) |
+        ((_P2 >= 0 ? (1<<2) : 0)) |
+        ((_P3 >= 0 ? (1<<3) : 0)) |
+        ((_P4 >= 0 ? (1<<4) : 0)) |
+        ((_P5 >= 0 ? (1<<5) : 0)) |
+        ((_P6 >= 0 ? (1<<6) : 0)) |
+        ((_P7 >= 0 ? (1<<7) : 0));
+        
+    if (((m1 ^ 0x76543210) & m2) == 0) {
+        // no shuffling: 
+        return _mm512_maskz_mov_pd(zm, a);
+    }
+    // full permute:
+    const __m512i pperm=
+        _mm512_setr_epi32(_P0 & 7, 0,
+                          _P1 & 7, 0,
+                          _P2 & 7, 0,
+                          _P3 & 7, 0,
+                          _P4 & 7, 0,
+                          _P5 & 7, 0,
+                          _P6 & 7, 0,
+                          _P7 & 7, 0);
+    if (zm != 0) {
+        return _mm512_maskz_permutexvar_pd(zm, pperm, a);
+    }
+    return _mm512_permutexvar_pd(pperm, a);
+}
+
+template <int _P0, int _P1, int _P2, int _P3,
+          int _P4, int _P5, int _P6, int _P7>
+inline
+__m512d
+cftal::x86::impl::
+perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
+{
+    // Combine all the indexes into a single bitfield, with 4 bits
+    // for each
+    const unsigned m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
+    // Mask to zero out negative indexes
+    const unsigned m2 = zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+
+    if ((m1 & 0x88888888 & m2) == 0) {
+        // no elements from b
+        return perm1_v8f64<_P0, _P1, _P2, _P3,
+                           _P4, _P5, _P6, _P7>::v(a);
+    }
+    if (((m1^0x88888888) & 0x88888888 & m2) == 0) {
+        // no elements from a
+        return perm1_v8f64<_P0 & ~8, _P1 & ~8,
+                           _P2 & ~8, _P3 & ~8,
+                           _P4 & ~8, _P5 & ~8,
+                           _P6 & ~8, _P7 & ~8>::v(b);
+    }
+    if (((m1 & ~0x88888888) ^ 0x76543210) == 0 && m2 == 0xFFFFFFFF) {
+        // selecting without shuffling or zeroing
+        const bool sm0 = _P0 < 8;
+        const bool sm1 = _P1 < 8;
+        const bool sm2 = _P2 < 8;
+        const bool sm3 = _P3 < 8;
+        const bool sm4 = _P4 < 8;
+        const bool sm5 = _P5 < 8;
+        const bool sm6 = _P6 < 8;
+        const bool sm7 = _P7 < 8;
+        return select_v8f64<sm0, sm1, sm2, sm3,
+                            sm4, sm5, sm6, sm7>::v(a, b);
+    }
+    const __mmask8 zm=
+        ((_P0 >= 0 ? (1<<0) : 0)) |
+        ((_P1 >= 0 ? (1<<1) : 0)) |
+        ((_P2 >= 0 ? (1<<2) : 0)) |
+        ((_P3 >= 0 ? (1<<3) : 0)) |
+        ((_P4 >= 0 ? (1<<4) : 0)) |
+        ((_P5 >= 0 ? (1<<5) : 0)) |
+        ((_P6 >= 0 ? (1<<6) : 0)) |
+        ((_P7 >= 0 ? (1<<7) : 0));
+    // full permute:
+    const __m512i pperm=
+        _mm512_setr_epi32(_P0 & 15, 0,
+                          _P1 & 15, 0,
+                          _P2 & 15, 0,
+                          _P3 & 15, 0,
+                          _P4 & 15, 0,
+                          _P5 & 15, 0,
+                          _P6 & 15, 0,
+                          _P7 & 15, 0);
+    if (zm != 0) {
+        return _mm512_maskz_permutex2var_pd(a, zm, pperm, b);
+    }
+    return _mm512_permutex2var_pd(a, pperm, b);
+
+}
+    
+#endif
 
 
 template <int _P0, int _P1>
@@ -2225,6 +2359,7 @@ __m128d cftal::x86::perm_f64(__m128d a)
                   "cftal::x86::perm_v2f64(a) : -1 <= P1 < 2");
     return impl::perm1_v2f64<_P0, _P1>::v(a);
 }
+
 
 template <int _P0, int _P1>
 inline
@@ -2268,6 +2403,54 @@ __m256d cftal::x86::perm_f64(__m256d a, __m256d b)
     return impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(a, b);
 }
 
+#endif
+#if defined (__AVX512F__)
+template <int _P0, int _P1, int _P2, int _P3,
+          int _P4, int _P5, int _P6, int _P7>
+__m512d cftal::x86::perm_f64(__m512d a)
+{
+    static_assert(_P0>-2 && _P0 < 8,
+                  "cftal::x86::perm_f64(a) : -1 <= P0 < 8");
+    static_assert(_P1>-2 && _P1 < 8,
+                  "cftal::x86::perm_f64(a) : -1 <= P1 < 8");
+    static_assert(_P2>-2 && _P2 < 8,
+                  "cftal::x86::perm_f64(a) : -1 <= P2 < 8");
+    static_assert(_P3>-2 && _P3 < 8,
+                  "cftal::x86::perm_f64(a) : -1 <= P3 < 8");
+    static_assert(_P4>-2 && _P4 < 8,
+                  "cftal::x86::perm_f64(a) : -1 <= P4 < 8");
+    static_assert(_P5>-2 && _P5 < 8,
+                  "cftal::x86::perm_f64(a) : -1 <= P5 < 8");
+    static_assert(_P6>-2 && _P6 < 8,
+                  "cftal::x86::perm_f64(a) : -1 <= P6 < 8");
+    static_assert(_P7>-2 && _P7 < 8,
+                  "cftal::x86::perm_f64(a) : -1 <= P7 < 8");
+    return impl::perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
+}
+
+template <int _P0, int _P1, int _P2, int _P3,
+          int _P4, int _P5, int _P6, int _P7>
+inline
+__m512d cftal::x86::perm_f64(__m512d a, __m512d b)
+{
+    static_assert(_P0>-2 && _P0 < 16,
+                  "cftal::x86::perm_f64(a, b) : -1 <= P0 < 16");
+    static_assert(_P1>-2 && _P1 < 16,
+                  "cftal::x86::perm_f64(a, b) : -1 <= P1 < 16");
+    static_assert(_P2>-2 && _P2 < 16,
+                  "cftal::x86::perm_f64(a, b) : -1 <= P2 < 16");
+    static_assert(_P3>-2 && _P3 < 16,
+                  "cftal::x86::perm_f64(a, b) : -1 <= P3 < 16");
+    static_assert(_P4>-2 && _P4 < 16,
+                  "cftal::x86::perm_f64(a, b) : -1 <= P4 < 16");
+    static_assert(_P5>-2 && _P5 < 16,
+                  "cftal::x86::perm_f64(a, b) : -1 <= P5 < 16");
+    static_assert(_P6>-2 && _P6 < 16,
+                  "cftal::x86::perm_f64(a, b) : -1 <= P6 < 16");
+    static_assert(_P7>-2 && _P7 < 16,
+                  "cftal::x86::perm_f64(a, b) : -1 <= P7 < 16");
+    return impl::perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
+}
 #endif
 
 template <int _P0, int _P1, int _P2, int _P3>

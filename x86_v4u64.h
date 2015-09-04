@@ -16,7 +16,7 @@ namespace cftal {
 
         using value_type = uint64_t;
 #if defined (__AVX512VL__)
-        using mask_value_type = bit_t;
+        using mask_value_type = bit;
 #else
         using mask_value_type = uint64_t;
 #endif

@@ -59,14 +59,16 @@ namespace cftal {
 
     v4s32 low_half(const v8s32& a);
     v4s32 high_half(const v8s32& a);
-    
+
+#if !defined (__AVX512VL__)    
     bool
     all_of(const vec<int32_t, 8>::mask_type& v);
     bool
     any_of(const vec<int32_t, 8>::mask_type& v);
     bool
     none_of(const vec<int32_t, 8>::mask_type& v);
-
+#endif
+    
     v8s32 max(const v8s32& a, const v8s32& b);
     v8s32 min(const v8s32& a, const v8s32& b);
   

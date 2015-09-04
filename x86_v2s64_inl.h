@@ -32,7 +32,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmplt_epi64_mask(a(), b());
+#else
                 return b > a;
+#endif
             }
         };
 
@@ -43,7 +47,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmple_epi64_mask(a(), b());
+#else
                 return ~(b > a);
+#endif
             }
         };
 
@@ -54,6 +62,9 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmpeq_epi64_mask(a(), b());
+#else
 #if defined (__SSE4_1__)
                 return _mm_cmpeq_epi64(a(), b());
 #else
@@ -62,6 +73,7 @@ namespace cftal {
                 __m128i c32s = x86::impl::vpsllq_const<32>::v(r);
                 r = _mm_and_si128(r, c32s);
                 return x86::impl::vpshufd<1, 1, 3, 3>::v(r);
+#endif
 #endif
             }
         };
@@ -73,7 +85,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmpneq_epi64_mask(a(), b());
+#else
                 return ~(a == b);
+#endif
             }
         };
 
@@ -84,7 +100,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmpge_epi64_mask(a(), b());
+#else
                 return ~(a < b);
+#endif
             }
         };
 
@@ -95,6 +115,9 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm_cmpgt_epi64_mask(a(), b());
+#else
 #if defined (__SSE4_2__)
                 return _mm_cmpgt_epi64(a(), b());
 #else
@@ -115,6 +138,7 @@ namespace cftal {
                 r = x86::impl::vpsrad_const<31>::v(r);
                 r = x86::impl::vpshufd< 1, 1, 3, 3>::v(r);
                 return r;
+#endif
 #endif
             }
         };
@@ -354,14 +378,14 @@ cftal::mem<cftal::vec<int64_t, 2> >::store(int64_t* p,
 inline
 cftal::v2s64 cftal::max(const v2s64& a, const v2s64& b)
 {
-    v2s64 _gt(a > b);
+    v2s64::mask_type _gt(a > b);
     return select(_gt, a, b);
 }
 
 inline
 cftal::v2s64 cftal::min(const v2s64& a, const v2s64& b)
 {
-    v2s64 _lt(a < b);
+    v2s64::mask_type _lt(a < b);
     return select(_lt, a, b);
 }
 
@@ -370,7 +394,11 @@ cftal::v2s64 cftal::select(const v2s64::mask_type& m,
                            const v2s64& on_true,
                            const v2s64& on_false)
 {
+#if defined (__AVX512VL__)
+    return x86::select_u64(m(), on_true(), on_false());
+#else
     return x86::select(m(), on_true(), on_false());
+#endif
 }
 
 template <bool _I0, bool _I1>

@@ -31,7 +31,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmplt_epu64_mask(a(), b());
+#else
                 return b > a;
+#endif
             }
         };
 
@@ -42,7 +46,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmple_epu64_mask(a(), b());
+#else
                 return ~(b > a);
+#endif
             }
         };
 
@@ -53,7 +61,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmpeq_epu64_mask(a(), b());
+#else
                 return _mm256_cmpeq_epi64(a(), b());
+#endif
             }
         };
 
@@ -64,8 +76,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmpneq_epu64_mask(a(), b());
+#else
                 mask_type a_eq_b(eq<uint64_t, 4>::v(a, b));
                 return bit_not<uint64_t, 4>::v(a_eq_b);
+#endif
             }
         };
 
@@ -76,7 +92,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmpge_epu64_mask(a(), b());
+#else
                 return ~(a < b);
+#endif
             }
         };
 
@@ -87,11 +107,14 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmpgt_epu64_mask(a(), b());
+#else
                 const __m256i msk= _mm256_set1_epi64x(sign_s64_msk::v._u64);
                 __m256i ax= _mm256_xor_si256(a(), msk);
                 __m256i bx= _mm256_xor_si256(b(), msk);
                 return _mm256_cmpgt_epi64(ax, bx);
-
+#endif
             }
         };
 
@@ -370,14 +393,14 @@ bool cftal::none_of(const vec<uint64_t, 4>::mask_type& v)
 inline
 cftal::v4u64 cftal::max(const v4u64& a, const v4u64& b)
 {
-    v4u64 _gt(a > b);
+    v4u64::mask_type _gt(a > b);
     return select(_gt, a, b);
 }
 
 inline
 cftal::v4u64 cftal::min(const v4u64& a, const v4u64& b)
 {
-    v4u64 _lt(a < b);
+    v4u64::mask_type _lt(a < b);
     return select(_lt, a, b);
 }
 
@@ -386,7 +409,11 @@ cftal::v4u64 cftal::select(const v4u64::mask_type& m,
                            const v4u64& on_true,
                            const v4u64& on_false)
 {
+#if defined (__AVX512VL__)
+    return x86::select_u64(m(), on_true(), on_false());
+#else
     return x86::select(m(), on_true(), on_false());
+#endif
 }
 
 template <bool _I0, bool _I1, bool _I2, bool _I3>
@@ -429,17 +456,17 @@ cftal::mul_lo_hi(const v4u64& x, const v4u64& y)
     v4u64 xh_yh= _mm256_mul_epu32(xh(), yh());
     // sum of 2^32
     v4u64 s32_95 = xl_yh + xh_yl;
-    v4u64 carry_96 = s32_95 < xl_yh;
+    v4u64::mask_type carry_96 = s32_95 < xl_yh;
     // 
     v4u64 s64_96 = s32_95 >> 32;
     v4u64 s32_63 = s32_95 << 32;
     // low part of the multiplication:
     xl_yl += s32_63;
-    v4u64 neg_carry_64 = xl_yl < s32_63;
+    v4u64::mask_type neg_carry_64 = xl_yl < s32_63;
     v4u64 c96_msk(bytes8(0, 1)._u64);
     
-    s64_96 |= carry_96 & c96_msk;
-    xh_yh -= neg_carry_64;
+    s64_96 |= select(carry_96, c96_msk, v4u64(0));
+    xh_yh -= select(neg_carry_64, v4u64(-1LL), v4u64(0));
     // high part of the multiplication:
     xh_yh += s64_96;
     return std::make_pair(xl_yl, xh_yh);

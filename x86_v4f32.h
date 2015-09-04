@@ -173,8 +173,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX__)                
-                return _mm_cmp_ps(a(), b(), _CMP_LT_OS);
+#if defined (__AVX512VL__)                
+                return _mm_cmp_ps_mask(a(), b(), _CMP_LT_OS);
 #else
                 return _mm_cmplt_ps(a(), b());
 #endif                
@@ -188,8 +188,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX__)                
-                return _mm_cmp_ps(a(), b(), _CMP_LE_OS);
+#if defined (__AVX512VL__)                
+                return _mm_cmp_ps_mask(a(), b(), _CMP_LE_OS);
 #else
                 return _mm_cmple_ps(a(), b());
 #endif                
@@ -203,8 +203,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX__)                
-                return _mm_cmp_ps(a(), b(), _CMP_EQ_OQ);
+#if defined (__AVX512VL__)                
+                return _mm_cmp_ps_mask(a(), b(), _CMP_EQ_OQ);
 #else
                 return _mm_cmpeq_ps(a(), b());
 #endif                
@@ -218,8 +218,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX__)                
-                return _mm_cmp_ps(a(), b(), _CMP_UNORD_Q);
+#if defined (__AVX512VL__)                
+                return _mm_cmp_ps_mask(a(), b(), _CMP_UNORD_Q);
 #else
                 return _mm_cmpneq_ps(a(), b());
 #endif                
@@ -233,8 +233,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX__)                
-                return _mm_cmp_ps(a(), b(), _CMP_GE_OS);
+#if defined (__AVX512VL__)                
+                return _mm_cmp_ps_mask(a(), b(), _CMP_GE_OS);
 #else
                 return _mm_cmpge_ps(a(), b());
 #endif                
@@ -249,8 +249,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX__)                
-                return _mm_cmp_ps(a(), b(), _CMP_GT_OS);
+#if defined (__AVX512VL__)                
+                return _mm_cmp_ps_mask(a(), b(), _CMP_GT_OS);
 #else
                 return _mm_cmpgt_ps(a(), b());
 #endif                

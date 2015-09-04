@@ -182,7 +182,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_ps_mask(a(), b(), _CMP_LT_OS);
+#else
                 return _mm256_cmp_ps(a(), b(), _CMP_LT_OS);
+#endif
             }
         };
 
@@ -193,7 +197,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_ps_mask(a(), b(), _CMP_LE_OS);
+#else
                 return _mm256_cmp_ps(a(), b(), _CMP_LE_OS);
+#endif
             }
         };
 
@@ -204,7 +212,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_ps_mask(a(), b(), _CMP_EQ_OQ);
+#else
                 return _mm256_cmp_ps(a(), b(), _CMP_EQ_OQ);
+#endif
             }
         };
 
@@ -215,7 +227,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_ps_mask(a(), b(), _CMP_UNORD_Q);
+#else
                 return _mm256_cmp_ps(a(), b(), _CMP_UNORD_Q);
+#endif
             }
         };
 
@@ -226,7 +242,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_ps_mask(a(), b(), _CMP_GE_OS);
+#else
                 return _mm256_cmp_ps(a(), b(), _CMP_GE_OS);
+#endif
             }
         };
 
@@ -237,7 +257,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__)
+                return _mm256_cmp_ps_mask(a(), b(), _CMP_GT_OS);
+#else
                 return _mm256_cmp_ps(a(), b(), _CMP_GT_OS);
+#endif
             }
         };
 
