@@ -14,12 +14,14 @@
 #endif
 #endif
 
-#if defined (IN_KDEVELOP_PARSER) || defined (IN_IDE_PARSER)
+#if !defined (__GNUC__)
 #define alignas(X)
+#define __SSSE3__
 #define __SSE41__
 #define __SSE42__
 #define __AVX__
 #define __AVX2__
+#define __AVX515F__
 #endif
 
 #if defined (_MSC_VER)

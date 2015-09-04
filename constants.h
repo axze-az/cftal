@@ -88,7 +88,6 @@ namespace cftal {
     const int exp_shift_f64 = 52;
     const int exp_msk_f64 = 0x7ff;
 
-
     namespace const_shift {
         static const const_u32<0> _0;
         static const const_u32<1> _1;
