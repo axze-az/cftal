@@ -74,6 +74,18 @@ namespace cftal {
         // combine the tests for v8xxx
         template <class _T>
         bool check_v8();
+
+        // test one permutation for vec<_T, 8>
+        template <class _T,
+                  int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        bool perm1_v8();
+
+        // test one permutation for vec<_T, 8>, vec<_T, 8>
+        template <class _T,
+                  int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        bool perm2_v8();
     }
 }
 
@@ -160,6 +172,33 @@ bool cftal::test::check_v8()
     }
     return rc;
 }
+
+template <class _T,
+          int _P0, int _P1, int _P2, int _P3,
+          int _P4, int _P5, int _P6, int _P7>
+bool cftal::test::perm1_v8()
+{
+    vec<_T, 8> a = load_vals<_T, 8>(false);
+    vec<_T, 8> r= permute<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>(a);
+    idx id= idx{_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7};
+    bool rc=check_val(r, id, "perm1_v8");
+    return r;
+}
+
+template <class _T,
+          int _P0, int _P1, int _P2, int _P3,
+          int _P4, int _P5, int _P6, int _P7>
+bool cftal::test::perm2_v8()
+{
+    vec<_T, 8> a = load_vals<_T, 8>(false);
+    vec<_T, 8> b = load_vals<_T, 8>(true);
+    vec<_T, 8> r = permute<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>(a, b);
+    idx id= idx{_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7};
+    bool rc=check_val(r, id, "perm2_v8");
+    return r;
+}
+
+
 
 // Local variables:
 // mode: c++
