@@ -303,8 +303,8 @@ cftal::vec<_T, _N>::vec(std::initializer_list<_T> l)
 template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>::vec(init_list<_T> l)
-    : _l(init_lo_half<_T, _N>(l)),
-      _h(init_hi_half<_T, _N>(l))
+    : _l(low_half<_T, _N>(l)),
+      _h(high_half<_T, _N>(l))
 {
 }
 
@@ -324,7 +324,6 @@ cftal::vec<_T, _N>::vec(const expr<_OP<_T, _N>, _L, _R>& r)
     : vec(eval(r))
 {
 }
-
 
 template <class _T, std::size_t _N>
 inline

@@ -125,16 +125,20 @@ check-02/testx86vec-02: all
 check-03/testx86vec-03: all
 	$(MAKE) -C check-02
 
+unit-test: all
+	$(MAKE) -C test
+	touch $@
 
 #################################################################
 # cleanup
 clean:
 	-$(RM) -rf *.i *.o* *.so.*  *.a *.so *.map *.s testx86vec
-	-$(RM) -rf $(TESTPROGS)
+	-$(RM) -rf $(TESTPROGS) unit-test
 	$(MAKE) -C check-00 $@
 	$(MAKE) -C check-01 $@
 	$(MAKE) -C check-02 $@
 	$(MAKE) -C check-03 $@
+	$(MAKE) -C test $@
 
 distclean: clean
 	-$(RM) -rf .depend .*.dep* *~
@@ -142,6 +146,7 @@ distclean: clean
 	$(MAKE) -C check-01 $@
 	$(MAKE) -C check-02 $@
 	$(MAKE) -C check-03 $@
+	$(MAKE) -C test $@
 
 #######################################################################
 # dependencies

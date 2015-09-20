@@ -130,7 +130,7 @@ namespace cftal {
 
             template <class _INT_OP>
             struct exec_int {
-                // float: cvt to int, exec, cvt back
+                // float: cast to int, exec, cast back
                 static __m128 v(__m128 a) {
                     return as<__m128>(
                         _INT_OP::v(as<__m128i>(a)));
@@ -140,7 +140,7 @@ namespace cftal {
                         _INT_OP::v(as<__m128i>(a),
                                    as<__m128i>(b)));
                 }
-                // double: cvt to int, exec, cvt back
+                // double: cast to int, exec, cast back
                 static __m128d v(__m128d a) {
                     return as<__m128d>(
                         _INT_OP::v(as<__m128i>(a)));
@@ -150,11 +150,33 @@ namespace cftal {
                         _INT_OP::v(as<__m128i>(a),
                                    as<__m128i>(b)));
                 }
+#if defined (__AVX2__)
+                // float: cast to int, exec, cast back
+                static __m256 v(__m256 a) {
+                    return as<__m256>(
+                        _INT_OP::v(as<__m256i>(a)));
+                }
+                static __m256 v(__m256 a, __m256 b) {
+                    return as<__m256>(
+                        _INT_OP::v(as<__m256i>(a),
+                                   as<__m256i>(b)));
+                }
+                // double: cast to int, exec, cast back
+                static __m256d v(__m256d a) {
+                    return as<__m256d>(
+                        _INT_OP::v(as<__m256i>(a)));
+                }
+                static __m256d v(__m256d a, __m256d b) {
+                    return as<__m256d>(
+                        _INT_OP::v(as<__m256i>(a),
+                                   as<__m256i>(b)));
+                }
+#endif
             };
 
             template <class _F32_OP>
             struct exec_f32 {
-                // int: cvt to float, exec, cvt back
+                // int: cast to float, exec, cast back
                 static __m128i v(__m128i a) {
                     return as<__m128i>(
                         _F32_OP::v(as<__m128>(a)));
@@ -164,7 +186,7 @@ namespace cftal {
                         _F32_OP::v(as<__m128>(a),
                                    as<__m128>(b)));
                 }
-                // double: cvt to float, exec, cvt back
+                // double: cast to float, exec, cast back
                 static __m128d v(__m128d a) {
                     return as<__m128d>(
                         _F32_OP::v(as<__m128>(a)));
@@ -174,11 +196,33 @@ namespace cftal {
                         _F32_OP::v(as<__m128>(a),
                                    as<__m128>(b)));
                 }
+#if defined (__AVX__)
+                // int: cast to float, exec, cast back
+                static __m256i v(__m256i a) {
+                    return as<__m256i>(
+                        _F32_OP::v(as<__m256>(a)));
+                }
+                static __m256i v(__m256i a, __m256i b) {
+                    return as<__m256i>(
+                        _F32_OP::v(as<__m256>(a),
+                                   as<__m256>(b)));
+                }
+                // double: cast to float, exec, cast back
+                static __m256d v(__m256d a) {
+                    return as<__m256d>(
+                        _F32_OP::v(as<__m256>(a)));
+                }
+                static __m256d v(__m256d a, __m256d b) {
+                    return as<__m256d>(
+                        _F32_OP::v(as<__m256>(a),
+                                   as<__m256>(b)));
+                }
+#endif
             };
 
             template <class _F64_OP>
             struct exec_f64 {
-                // int: cvt to double, exec, cvt back
+                // int: cast to double, exec, cast back
                 static __m128i v(__m128i a) {
                     return as<__m128i>(
                         _F64_OP::v(as<__m128d>(a)));
@@ -188,7 +232,7 @@ namespace cftal {
                         _F64_OP::v(as<__m128d>(a),
                                    as<__m128d>(b)));
                 }
-                // float: cvt to double, exec, cvt back
+                // float: cast to double, exec, cast back
                 static __m128 v(__m128 a) {
                     return as<__m128>(
                         _F64_OP::v(as<__m128d>(a)));
@@ -198,6 +242,28 @@ namespace cftal {
                         _F64_OP::v(as<__m128d>(a),
                                    as<__m128d>(b)));
                 }
+#if defined (__AVX__)
+                // int: cast to double, exec, cast back
+                static __m256i v(__m256i a) {
+                    return as<__m256i>(
+                        _F64_OP::v(as<__m256d>(a)));
+                }
+                static __m256i v(__m256i a, __m256i b) {
+                    return as<__m256i>(
+                        _F64_OP::v(as<__m256d>(a),
+                                   as<__m256d>(b)));
+                }
+                // float: cast to double, exec, cast back
+                static __m256 v(__m256 a) {
+                    return as<__m256>(
+                        _F64_OP::v(as<__m256d>(a)));
+                }
+                static __m256 v(__m256 a, __m256 b) {
+                    return as<__m256>(
+                        _F64_OP::v(as<__m256d>(a),
+                                   as<__m256d>(b)));
+                }
+#endif
             };
 
 
