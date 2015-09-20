@@ -468,11 +468,11 @@ cftal::x86::impl::select_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
     return _mm_blend_pd(b, a, sm);
 #else
     typedef const_v4u32<
-        (_P0 ? -1 : 0), (_P0 ? -1 : 0),
-        (_P1 ? -1 : 0), (_P1 ? -1 : 0)> mask_type;
+        (_P0 ? uint32_t(-1) : 0), (_P0 ? uint32_t(-1) : 0),
+        (_P1 ? uint32_t(-1) : 0), (_P1 ? uint32_t(-1) : 0)> mask_type;
     typedef const_v4u32<
-        (_P0 ? 0 : -1), (_P0 ? 0 : -1),
-        (_P1 ? 0 : -1), (_P1 ? 0 : -1)> compl_mask_type;
+        (_P0 ? 0 : uint32_t(-1)), (_P0 ? 0 : uint32_t(-1)),
+        (_P1 ? 0 : uint32_t(-1)), (_P1 ? 0 : uint32_t(-1))> compl_mask_type;
     a = _mm_and_pd(a, mask_type::dv());
     b = _mm_and_pd(b, compl_mask_type::dv());
     return _mm_or_pd(a, b);
@@ -488,11 +488,11 @@ cftal::x86::impl::select_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
     return _mm_blend_ps(b, a, sm & 0xf);
 #else
     typedef const_v4u32<
-        (_P0 ? -1 : 0), (_P1 ? -1 : 0),
-        (_P2 ? -1 : 0), (_P3 ? -1 : 0)> mask_type;
+        (_P0 ? uint32_t(-1) : 0), (_P1 ? uint32_t(-1) : 0),
+        (_P2 ? uint32_t(-1) : 0), (_P3 ? uint32_t(-1) : 0)> mask_type;
     typedef const_v4u32<
-        (_P0 ? 0 : -1), (_P1 ? 0 : -1),
-        (_P2 ? 0 : -1), (_P3 ? 0 : -1)> compl_mask_type;
+        (_P0 ? 0 : uint32_t(-1)), (_P1 ? 0 : uint32_t(-1)),
+        (_P2 ? 0 : uint32_t(-1)), (_P3 ? 0 : uint32_t(-1))> compl_mask_type;
     a = _mm_and_ps(a, mask_type::fv());
     b = _mm_and_ps(b, compl_mask_type::fv());
     return _mm_or_ps(a, b);

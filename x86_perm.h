@@ -1066,7 +1066,8 @@ __m128 cftal::x86::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
     return as<__m128>(_mm_shuffle_epi8(as<__m128i>(a),msk));
 #else
     // shuffle
-    __m128 t= vshufps<_P0, _P1, _P2, _P3>::v(a, a);
+    __m128 t= vshufps<uint32_t(_P0), uint32_t(_P1),
+                      uint32_t(_P2), uint32_t(_P3)>::v(a, a);
     // zero with AND mask
     const unsigned z0 = (_P0 < 0) ? 0 : -1;
     const unsigned z1 = (_P1 < 0) ? 0 : -1;
@@ -1464,10 +1465,12 @@ __m128i cftal::x86::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
     // const bool lh_shuffle= (((m1 & 0x44444444) ^ 0x44440000) & m2)==0;
     if (l_shuffle && h_shuffle ) {
         if (l_shuffle) {
-            r = vpshuflw<_P0, _P1, _P2, _P3>::v(r);
+            r = vpshuflw<uint32_t(_P0), uint32_t(_P1),
+                         uint32_t(_P2), uint32_t(_P3)>::v(r);
         }
         if (h_shuffle) {
-            r = vpshufhw<_P4&3, _P5&3, _P6&3, _P7&3>::v(r);
+            r = vpshufhw<uint32_t(_P4&3), uint32_t(_P5&3),
+                         uint32_t(_P6&3), uint32_t(_P7&3)>::v(r);
         }
     } else {
         // general case: determine the count of uint32_t in
