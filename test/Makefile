@@ -10,11 +10,11 @@ MINOR=1#
 
 SLDFLAGS:= $(SLDFLAGS) 
 CXXFLAGS+= -march=native -I../..
-CSRCS=#div.cc #$(wildcard ./test_vec*.cc)
+CSRCS=div.cc intops.cc signs.cc #$(wildcard ./test_vec*.cc)
 
-TESTPRGS=gen-test-vec test-v2 test-v4f32 test-v4s32 test-v4u32		\
-test-v8s16 test-v8u16 test-v4f64 test-v4s64 test-v4u64 test-v8f32	\
-test-v8s32 test-v8u32
+TESTPRGS=gen-test-vec test-intops test-v2 test-v4f32 test-v4s32		\
+test-v4u32 test-v8s16 test-v8u16 test-v4f64 test-v4s64 test-v4u64	\
+test-v8f32 test-v8s32 test-v8u32
 TESTPRGS-DEB=$(addsuffix -g, $(TESTPRGS))
 
 all: $(TESTPRGS) #lib$(LIBNAME).a #testvec-01
@@ -75,6 +75,9 @@ test-v4s64.ol: of_vec_v4.h.gch
 test-v8f32.ol: of_vec_v8.h.gch 
 test-v8s32.ol: of_vec_v8.h.gch 
 test-v8u32.ol: of_vec_v8.h.gch 
+
+test-intops: test-intops.ol lib$(LIBNAME).a ../libcftal.a
+	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++ 
 
 test-v2: test-v2.ol lib$(LIBNAME).a ../libcftal.a
 	$(LD) -o $@ $< $(OPT) $(LDFLAGS) -L. -l$(LIBNAME) -L .. -Wl,-Bstatic -lcftal -Wl,-Bdynamic -lstdc++

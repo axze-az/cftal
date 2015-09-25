@@ -6,7 +6,6 @@
 
 namespace cftal {
 
-
     namespace impl {
 #if defined (__SSE2__)
 

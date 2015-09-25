@@ -6,14 +6,14 @@
 
 namespace cftal {
 
-    template <unsigned _N1, unsigned _N2>
-    struct const_min {
+    // compile time min
+    template <uint32_t _N1, uint32_t _N2>
+    struct const_min_u32 {
         enum { v = (_N1 < _N2 ? _N1 : _N2) };
     };
 
-
-    template <unsigned _N1, unsigned _N2>
-    struct const_max {
+    template <uint32_t _N1, uint32_t _N2>
+    struct const_max_u32 {
         enum { v = (_N1 > _N2 ? _N1 : _N2) };
     };
 

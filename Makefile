@@ -32,7 +32,7 @@ install-header:
 	for i in *.h ; \
 	do \
 		if [ -f $$i ] ; then \
-			$(INSTALL) -c -m 0644 $$i $(INSTALLDIR)/include/cftal	 ; \
+			$(INSTALL) -c -m 0644 $$i $(INSTALLDIR)/include/cftal ; \
 		fi ; \
 	done
 
@@ -60,11 +60,12 @@ install-debug: lib$(LIBNAME)-g.a
 lib$(LIBNAME).so.$(MAJOR).$(MINOR): $(PICOBJS)
 	$(SLD) -Wl,-hlib$(LIBNAME).so.$(MAJOR) \
 $(SHAREDLIBS) $(SLDFLAGS) \
--Wl,-Map -Wl,lib$(LIBNAME).map \
+-Wl,-Map -Wl,lib$(LIBNAME).map0 \
 -o $@ $(PICOBJS) -lm
 	-$(RM) lib$(LIBNAME).so
 	-ln -sf lib$(LIBNAME).so.$(MAJOR).$(MINOR) ./lib$(LIBNAME).so.$(MAJOR)
 	-ln -sf lib$(LIBNAME).so.$(MAJOR) lib$(LIBNAME).so
+	-c++filt <lib$(LIBNAME).map0 >lib$(LIBNAME).map
 
 install-shared: lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 	mkdir -p $(INSTALLDIR)/lib
@@ -132,7 +133,7 @@ unit-test: all
 #################################################################
 # cleanup
 clean:
-	-$(RM) -rf *.i *.o* *.so.*  *.a *.so *.map *.s testx86vec
+	-$(RM) -rf *.i *.o* *.so.*  *.a *.so *.map* *.s testx86vec
 	-$(RM) -rf $(TESTPROGS) unit-test
 	$(MAKE) -C check-00 $@
 	$(MAKE) -C check-01 $@

@@ -1,4 +1,4 @@
-#include "x86.h"
+#include <cftal/test/intops.h>
 #include <iostream>
 #include <iomanip>
 #include <cftal/vec.h>
@@ -196,6 +196,10 @@ bool cftal::test::check_div_32_rnd(const char* msg)
 {
     std::uint64_t ts[div_type::LAST];
     ts[div_type::REF] = ts[div_type::DIV] = ts[div_type::CDIV] =0;
+
+    std::uniform_int_distribution<> dx(0, _N+1);
+    std::mt19937 rnd;
+
     typedef cmwc_rng<std::uint32_t> rng_t;
     rng_t rng(42);
     typedef typename _T::element_type element_type;
