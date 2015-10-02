@@ -380,6 +380,22 @@ cftal::mem<cftal::vec<uint64_t, 2> >::store(uint64_t* p,
 }
 
 inline
+cftal::vec<uint64_t, 1>
+cftal::low_half(const vec<uint64_t, 2>& v)
+{
+    return as<vec<uint64_t,1> >(v);    
+}
+
+inline
+cftal::vec<uint64_t, 1>
+cftal::high_half(const vec<uint64_t, 2>& v)
+{
+    vec<uint64_t, 2> h= permute<1, 0>(v);
+    return as<vec<uint64_t,1> >(h);
+}
+
+
+inline
 cftal::v2u64 cftal::max(const v2u64& a, const v2u64& b)
 {
     v2u64::mask_type _gt(a > b);
@@ -461,6 +477,25 @@ cftal::mul_lo_hi(const v2u64& x, const v2u64& y)
     return std::make_pair(xl_yl, xh_yh);
 }
 
+#if !defined (__AVX512VL__)
+inline
+bool cftal::all_of(const vec<uint64_t, 2>::mask_type& v)
+{
+    return x86::all_of_s64(v());
+}
+
+inline
+bool cftal::any_of(const vec<uint64_t, 2>::mask_type& v)
+{
+    return x86::any_of_s64(v());
+}
+
+inline
+bool cftal::none_of(const vec<uint64_t, 2>::mask_type& v)
+{
+    return x86::none_of_s64(v());
+}
+#endif
 
 
 // Local variables:

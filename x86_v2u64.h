@@ -43,8 +43,7 @@ namespace cftal {
     struct arg< vec<uint64_t, 2> > {
         using type = vec<uint64_t, 2>;
     };
-   
-    
+
     template <>
     struct mem< vec<uint64_t, 2> > {
         static
@@ -52,6 +51,12 @@ namespace cftal {
         static
         void store(uint64_t* p, const vec<uint64_t, 2>& v);
     };
+    
+    vec<uint64_t, 1>
+    low_half(const vec<uint64_t, 2>& v);
+
+    vec<uint64_t, 1>
+    high_half(const vec<uint64_t, 2>& v);
     
     v2u64 max(const v2u64& a, const v2u64& b);
     v2u64 min(const v2u64& a, const v2u64& b);
@@ -77,6 +82,14 @@ namespace cftal {
     mul_lo_hi(const vec<uint64_t, 2>& a,
               const vec<uint64_t, 2>& b);
     
+#if !defined (__AVX512VL__)    
+    bool
+    all_of(const vec<uint64_t, 2>::mask_type& v);
+    bool
+    any_of(const vec<uint64_t, 2>::mask_type& v);
+    bool
+    none_of(const vec<uint64_t, 2>::mask_type& v);
+#endif
 }    
 
 

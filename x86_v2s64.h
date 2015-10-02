@@ -51,6 +51,13 @@ namespace cftal {
         static
         void store(int64_t* p, const vec<int64_t, 2>& v);
     };
+
+    vec<int64_t, 1>
+    low_half(const vec<int64_t, 2>& v);
+
+    vec<int64_t, 1>
+    high_half(const vec<int64_t, 2>& v);
+    
     
     v2s64 max(const v2s64& a, const v2s64& b);
     v2s64 min(const v2s64& a, const v2s64& b);
@@ -74,6 +81,15 @@ namespace cftal {
 
     std::pair<vec<int64_t, 2>, vec<int64_t, 2> >
     mul_lo_hi(const vec<int64_t, 2>& a, const vec<int64_t, 2>& b);
+
+#if !defined (__AVX512VL__)    
+    bool
+    all_of(const vec<int64_t, 2>::mask_type& v);
+    bool
+    any_of(const vec<int64_t, 2>::mask_type& v);
+    bool
+    none_of(const vec<int64_t, 2>::mask_type& v);
+#endif
     
 }    
 

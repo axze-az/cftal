@@ -130,6 +130,11 @@ namespace cftal {
     bool
     none_of(const vec<bit, _N>& a);
 
+    template <std::size_t _N>
+    vec<bit, _N>
+    select(const vec<bit, _N>&  m,
+           const vec<bit, _N>& on_true, const vec<bit, _N> on_false);
+    
     std::ostream& operator<<(std::ostream& s, const vec<bit, 1>& v);
 }
 
@@ -252,6 +257,16 @@ bool
 cftal::none_of(const vec<bit, _N>& a)
 {
     return a() == 0;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::bit, _N>
+cftal::
+select(const vec<bit, _N>&  m,
+       const vec<bit, _N>& on_true, const vec<bit, _N> on_false)
+{
+    return vec<bit, _N>(select(m(), on_true(), on_false()));
 }
 
 inline

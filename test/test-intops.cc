@@ -4,8 +4,9 @@
 bool all_tests_01()
 {
         bool r(true);
-        r &= cftal::test::check_signs();
+        r &= cftal::test::check_xxx_of();
         r &= cftal::test::check_popcnt();
+        r &= cftal::test::check_bitrev();
         r &= cftal::test::check_div();
         return r;
 }

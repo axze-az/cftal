@@ -1,6 +1,7 @@
 #include <cftal/test/intops.h>
 #include <iostream>
 #include <iomanip>
+#include <random>
 #include <cftal/vec.h>
 #include <cftal/divisor.h>
 
@@ -23,42 +24,42 @@ namespace cftal {
                 LAST
             };
         };
-
-        template <class _V, class _REF, class _PR>
+        
+        template <class _V, class _REF>
         bool check_div_16(const char* msg);
 
-        template <class _V, class _REF, class _PR, class _RND>
+        template <class _V, class _REF, class _RND>
         bool check_div_32_one_rnd(
-            const typename _V::element_type i,
-            const divisor<_V, typename _V::element_type>& dd,
+            const typename _V::value_type i,
+            const divisor<_V, typename _V::value_type>& dd,
             _RND& rnd,
             const char* msg,
             std::uint64_t* ts);
-        template <class _T, class _REF, class _PR>
+        template <class _T, class _REF>
         bool check_div_32_rnd(const char* msg);
 
-        template <class _V, class _REF, class _PR, class _RND>
+        template <class _V, class _REF, class _RND>
         bool check_div_64_one_rnd(
-            const typename _V::element_type i,
-            const divisor<_V, typename _V::element_type>& dd,
+            const typename _V::value_type i,
+            const divisor<_V, typename _V::value_type>& dd,
             _RND& rnd,
             const char* msg,
             std::uint64_t* ts);
-        template <class _T, class _REF, class _PR>
+        template <class _T, class _REF>
         bool check_div_64_rnd(const char* msg);
     }
 }
 
 
-template <class _T, class _REF, class _PR>
+template <class _T, class _REF>
 bool cftal::test::check_div_16(const char* msg)
 {
     std::uint64_t ts[div_type::LAST];
     std::uint64_t tcur[div_type::LAST+1];
     ts[div_type::REF] = ts[div_type::DIV] = ts[div_type::CDIV] =0;
-    divisor<_T, typename _T::element_type> vd(1);
+    divisor<_T, typename _T::value_type> vd(1);
     for(int32_t i = 0; i < 0x10000; ++i) {
-        typename _T::element_type ii= i;
+        typename _T::value_type ii= i;
         if ((i & 0xff)==0xff) {
             std::cout << '\r' << msg << ": "
                       << std::setw(6) << ii << std::flush;
@@ -66,8 +67,15 @@ bool cftal::test::check_div_16(const char* msg)
         _T v(ii);
         vd.set(ii);
         for(int32_t j = 0; j < 0x10000; j += 8) {
-            _T u(j, j + 1, j + 2, j + 3,
-                 j + 4, j + 5, j + 6, j + 7);
+            using value_type = typename _T::value_type;
+            _T u= { value_type(j),
+                    value_type(j + 1),
+                    value_type(j + 2),
+                    value_type(j + 3),
+                    value_type(j + 4),
+                    value_type(j + 5),
+                    value_type(j + 6),
+                    value_type(j + 7)};
             __m128i __r_ref = x86::impl::make_zero_int::v();
             _T q_ref, q_div, q_cdiv;
             _T r_ref, r_div, r_cdiv;
@@ -83,27 +91,27 @@ bool cftal::test::check_div_16(const char* msg)
             tcur[div_type::LAST] = cftal::rdtsc();
             r_div = u % v;
             r_cdiv = u % vd;
-            _T q_cmp_div(q_ref == q_div);
-            _T r_cmp_div(r_ref == r_div);
-            _T q_cmp_cdiv(q_ref == q_cdiv);
-            _T r_cmp_cdiv(r_ref == r_cdiv);
-            if (!all_signs(q_cmp_div) || !all_signs(r_cmp_div) ||
-                !all_signs(q_cmp_cdiv) || !all_signs(r_cmp_cdiv)) {
+            typename _T::mask_type q_cmp_div(q_ref == q_div);
+            typename _T::mask_type r_cmp_div(r_ref == r_div);
+            typename _T::mask_type q_cmp_cdiv(q_ref == q_cdiv);
+            typename _T::mask_type r_cmp_cdiv(r_ref == r_cdiv);
+            if (!all_of(q_cmp_div) || !all_of(r_cmp_div) ||
+                !all_of(q_cmp_cdiv) || !all_of(r_cmp_cdiv)) {
                 std::cout << '\r' << msg << std::endl
-                          << _PR(u()) << " / "
+                          << u << " / "
                           << ii << std::endl
                           << "Q_REF:  "
-                          << _PR(q_ref()) << std::endl
+                          << q_ref << std::endl
                           << "R_REF:  "
-                          << _PR(r_ref()) << std::endl
+                          << r_ref << std::endl
                           << "Q_DIV:  "
-                          << _PR(q_div()) << std::endl
+                          << q_div << std::endl
                           << "R_DIV:  "
-                          << _PR(r_div()) << std::endl
+                          << r_div << std::endl
                           << "Q_CDIV: "
-                          << _PR(q_cdiv()) << std::endl
+                          << q_cdiv << std::endl
                           << "R_CDIV: "
-                          << _PR(r_cdiv()) << std::endl;
+                          << r_cdiv << std::endl;
                 return false;
             }
             ts[div_type::REF] +=
@@ -127,10 +135,10 @@ bool cftal::test::check_div_16(const char* msg)
     return true;
 }
 
-template <class _T, class _REF, class _PR, class _RND>
+template <class _T, class _REF, class _RND>
 bool cftal::test::
-check_div_32_one_rnd(typename _T::element_type ii,
-                     const divisor<_T, typename _T::element_type>& dd,
+check_div_32_one_rnd(typename _T::value_type ii,
+                     const divisor<_T, typename _T::value_type>& dd,
                      _RND& rnd,
                      const char* msg,
                      std::uint64_t* ts)
@@ -138,11 +146,11 @@ check_div_32_one_rnd(typename _T::element_type ii,
     std::uint64_t tcur[div_type::LAST+1];
     _T v(ii);
     for(int32_t j = 0; j < 0x10000; j += 4) {
-        typename _T::element_type j0= rnd.next();
-        typename _T::element_type j1= rnd.next();
-        typename _T::element_type j2= rnd.next();
-        typename _T::element_type j3= rnd.next();
-        _T u(j0, j1, j2, j3);
+        typename _T::value_type j0= rnd.next();
+        typename _T::value_type j1= rnd.next();
+        typename _T::value_type j2= rnd.next();
+        typename _T::value_type j3= rnd.next();
+        _T u={j0, j1, j2, j3};
         __m128i __r_ref = x86::impl::make_zero_int::v();
         _T q_ref, q_div, q_cdiv;
         _T r_ref, r_div, r_cdiv;
@@ -158,27 +166,27 @@ check_div_32_one_rnd(typename _T::element_type ii,
         tcur[div_type::LAST] = cftal::rdtsc();
         r_div = u % v;
         r_cdiv = u % dd;
-        _T q_cmp_div(q_ref == q_div);
-        _T r_cmp_div(r_ref == r_div);
-        _T q_cmp_cdiv(q_ref == q_cdiv);
-        _T r_cmp_cdiv(r_ref == r_cdiv);
-        if (!all_signs(q_cmp_div) || !all_signs(r_cmp_div) ||
-            !all_signs(q_cmp_cdiv) || !all_signs(r_cmp_cdiv)) {
+        typename _T::mask_type q_cmp_div(q_ref == q_div);
+        typename _T::mask_type r_cmp_div(r_ref == r_div);
+        typename _T::mask_type q_cmp_cdiv(q_ref == q_cdiv);
+        typename _T::mask_type r_cmp_cdiv(r_ref == r_cdiv);
+        if (!all_of(q_cmp_div) || !all_of(r_cmp_div) ||
+            !all_of(q_cmp_cdiv) || !all_of(r_cmp_cdiv)) {
             std::cout << '\r' << msg << std::endl
-                      << _PR(u()) << " / "
+                      << u << " / "
                       << ii << std::endl
                       << "Q_REF:  "
-                      << _PR(q_ref()) << std::endl
+                      << q_ref << std::endl
                       << "R_REF:  "
-                      << _PR(r_ref()) << std::endl
+                      << r_ref << std::endl
                       << "Q_DIV:  "
-                      << _PR(q_div()) << std::endl
+                      << q_div << std::endl
                       << "R_DIV:  "
-                      << _PR(r_div()) << std::endl
+                      << r_div << std::endl
                       << "Q_CDIV: "
-                      << _PR(q_cdiv()) << std::endl
+                      << q_cdiv << std::endl
                       << "R_CDIV: "
-                      << _PR(r_cdiv()) << std::endl;
+                      << r_cdiv << std::endl;
             return false;
         }
         ts[div_type::REF] +=
@@ -191,36 +199,38 @@ check_div_32_one_rnd(typename _T::element_type ii,
     return true;
 }
 
-template <class _T, class _REF, class _PR>
+template <class _T, class _REF>
 bool cftal::test::check_div_32_rnd(const char* msg)
 {
     std::uint64_t ts[div_type::LAST];
     ts[div_type::REF] = ts[div_type::DIV] = ts[div_type::CDIV] =0;
 
-    std::uniform_int_distribution<> dx(0, _N+1);
-    std::mt19937 rnd;
-
-    typedef cmwc_rng<std::uint32_t> rng_t;
-    rng_t rng(42);
-    typedef typename _T::element_type element_type;
+    struct rng_t {
+        std::uniform_int_distribution<std::uint32_t> _distribution;
+        std::mt19937 _rnd;
+        uint32_t next() { return _distribution(_rnd); }
+    } rng;
+    
+    
+    typedef typename _T::value_type element_type;
     element_type di(0);
     divisor<_T, element_type> dd(di);
 
     di = element_type(1U<< ((sizeof(element_type)*8)-1));
     dd.set(di);
-    if (!check_div_32_one_rnd<_T, _REF, _PR, rng_t>(di, dd, rng, msg, ts))
+    if (!check_div_32_one_rnd<_T, _REF, rng_t>(di, dd, rng, msg, ts))
         return false;
     di = 0;
     dd.set(di);
-    if (!check_div_32_one_rnd<_T, _REF, _PR, rng_t>(di, dd, rng, msg, ts))
+    if (!check_div_32_one_rnd<_T, _REF, rng_t>(di, dd, rng, msg, ts))
         return false;
     di = 1;
     dd.set(di);
-    if (!check_div_32_one_rnd<_T, _REF, _PR, rng_t>(di, dd, rng, msg, ts))
+    if (!check_div_32_one_rnd<_T, _REF, rng_t>(di, dd, rng, msg, ts))
         return false;
     di = element_type(-1ULL);
     dd.set(di);
-    if (!check_div_32_one_rnd<_T, _REF, _PR, rng_t>(di, dd, rng, msg, ts))
+    if (!check_div_32_one_rnd<_T, _REF, rng_t>(di, dd, rng, msg, ts))
         return false;
 
     for(std::int32_t i = 4; i < 0x10000; ++i) {
@@ -233,8 +243,8 @@ bool cftal::test::check_div_32_rnd(const char* msg)
                       << std::flush;
         }
         dd.set(di);
-        if (!check_div_32_one_rnd<_T, _REF, _PR, rng_t>(di, dd,
-                                                        rng, msg, ts))
+        if (!check_div_32_one_rnd<_T, _REF, rng_t>(di, dd,
+                                                   rng, msg, ts))
             return false;
     }
     std::cout << '\n' << msg << " clocks per division " << std::endl
@@ -250,10 +260,10 @@ bool cftal::test::check_div_32_rnd(const char* msg)
     return true;
 }
 
-template <class _T, class _REF, class _PR, class _RND>
+template <class _T, class _REF, class _RND>
 bool cftal::test::
-check_div_64_one_rnd(typename _T::element_type ii,
-                     const divisor<_T, typename _T::element_type>& dd,
+check_div_64_one_rnd(typename _T::value_type ii,
+                     const divisor<_T, typename _T::value_type>& dd,
                      _RND& rnd,
                      const char* msg,
                      std::uint64_t* ts)
@@ -261,10 +271,10 @@ check_div_64_one_rnd(typename _T::element_type ii,
     std::uint64_t tcur[div_type::LAST+1];
     _T v(ii);
     for(int32_t j = 0; j < 0x10000; j += 2) {
-        typename _T::element_type j0= rnd.next();
-        typename _T::element_type j1= rnd.next();
-        _T u(j0, j1);
-        __m128i __r_ref = impl::make_zero_int::v();
+        typename _T::value_type j0= rnd.next();
+        typename _T::value_type j1= rnd.next();
+        _T u={j0, j1};
+        __m128i __r_ref = x86::impl::make_zero_int::v();
         _T q_ref, q_div, q_cdiv;
         _T r_ref, r_div, r_cdiv;
         tcur[div_type::REF] = cftal::rdtsc();
@@ -279,27 +289,27 @@ check_div_64_one_rnd(typename _T::element_type ii,
         tcur[div_type::LAST] = cftal::rdtsc();
         r_div = u % v;
         r_cdiv = u % dd;
-        _T q_cmp_div(q_ref == q_div);
-        _T r_cmp_div(r_ref == r_div);
-        _T q_cmp_cdiv(q_ref == q_cdiv);
-        _T r_cmp_cdiv(r_ref == r_cdiv);
-        if (!all_signs(q_cmp_div) || !all_signs(r_cmp_div) ||
-            !all_signs(q_cmp_cdiv) || !all_signs(r_cmp_cdiv)) {
+        typename _T::mask_type q_cmp_div(q_ref == q_div);
+        typename _T::mask_type r_cmp_div(r_ref == r_div);
+        typename _T::mask_type q_cmp_cdiv(q_ref == q_cdiv);
+        typename _T::mask_type r_cmp_cdiv(r_ref == r_cdiv);
+        if (!all_of(q_cmp_div) || !all_of(r_cmp_div) ||
+            !all_of(q_cmp_cdiv) || !all_of(r_cmp_cdiv)) {
             std::cout << '\r' << msg << std::endl
-                      << _PR(u()) << " / "
+                      << u << " / "
                       << ii << std::endl
                       << "Q_REF:  "
-                      << _PR(q_ref()) << std::endl
+                      << q_ref << std::endl
                       << "R_REF:  "
-                      << _PR(r_ref()) << std::endl
+                      << r_ref << std::endl
                       << "Q_DIV:  "
-                      << _PR(q_div()) << std::endl
+                      << q_div << std::endl
                       << "R_DIV:  "
-                      << _PR(r_div()) << std::endl
+                      << r_div << std::endl
                       << "Q_CDIV: "
-                      << _PR(q_cdiv()) << std::endl
+                      << q_cdiv << std::endl
                       << "R_CDIV: "
-                      << _PR(r_cdiv()) << std::endl;
+                      << r_cdiv << std::endl;
             return false;
         }
         ts[div_type::REF] +=
@@ -312,32 +322,37 @@ check_div_64_one_rnd(typename _T::element_type ii,
     return true;
 }
 
-template <class _T, class _REF, class _PR>
+template <class _T, class _REF>
 bool cftal::test::check_div_64_rnd(const char* msg)
 {
     std::uint64_t ts[div_type::LAST];
     ts[div_type::REF] = ts[div_type::DIV] = ts[div_type::CDIV] =0;
-    typedef cmwc_rng<std::uint64_t> rng_t;
-    rng_t rng(42);
-    typedef typename _T::element_type element_type;
+
+    struct rng_t {
+        std::uniform_int_distribution<std::uint64_t> _distribution;
+        std::mt19937_64 _rnd;
+        uint64_t next() { return _distribution(_rnd); }
+    } rng;
+    
+    typedef typename _T::value_type element_type;
     element_type di(0);
     divisor<_T, element_type> dd(di);
 
     di = element_type(1UL<< ((sizeof(element_type)*8)-1));
     dd.set(di);
-    if (!check_div_64_one_rnd<_T, _REF, _PR, rng_t>(di, dd, rng, msg, ts))
+    if (!check_div_64_one_rnd<_T, _REF, rng_t>(di, dd, rng, msg, ts))
         return false;
     di = 0;
     dd.set(di);
-    if (!check_div_64_one_rnd<_T, _REF, _PR, rng_t>(di, dd, rng, msg, ts))
+    if (!check_div_64_one_rnd<_T, _REF, rng_t>(di, dd, rng, msg, ts))
         return false;
     di = 1;
     dd.set(di);
-    if (!check_div_64_one_rnd<_T, _REF, _PR, rng_t>(di, dd, rng, msg, ts))
+    if (!check_div_64_one_rnd<_T, _REF, rng_t>(di, dd, rng, msg, ts))
         return false;
     di = element_type(-1ULL);
     dd.set(di);
-    if (!check_div_64_one_rnd<_T, _REF, _PR, rng_t>(di, dd, rng, msg, ts))
+    if (!check_div_64_one_rnd<_T, _REF, rng_t>(di, dd, rng, msg, ts))
         return false;
 
     for(std::int32_t i = 4; i < 0x10000; ++i) {
@@ -350,8 +365,8 @@ bool cftal::test::check_div_64_rnd(const char* msg)
                       << std::flush;
         }
         dd.set(di);
-        if (!check_div_64_one_rnd<_T, _REF, _PR, rng_t>(di, dd,
-                                                        rng, msg, ts))
+        if (!check_div_64_one_rnd<_T, _REF, rng_t>(di, dd,
+                                                   rng, msg, ts))
             return false;
     }
     std::cout << '\n' << msg << " clocks per division " << std::endl
@@ -370,32 +385,32 @@ bool cftal::test::check_div_64_rnd(const char* msg)
 
 bool cftal::test::check_div_u16()
 {
-    return check_div_16<v8u16, impl::div_u16, pr_v8u16>("div_u16");
+    return check_div_16<v8u16, x86::div_u16>("div_u16");
 }
 
 bool cftal::test::check_div_s16()
 {
-    return check_div_16<v8s16, impl::div_s16, pr_v8s16>("div_s16");
+    return check_div_16<v8s16, x86::div_s16>("div_s16");
 }
 
 bool cftal::test::check_div_u32()
 {
-    return check_div_32_rnd<v4u32, impl::div_u32, pr_v4u32>("div_u32");
+    return check_div_32_rnd<v4u32, x86::div_u32>("div_u32");
 }
 
 bool cftal::test::check_div_s32()
 {
-    return check_div_32_rnd<v4s32, impl::div_s32, pr_v4s32>("div_s32");
+    return check_div_32_rnd<v4s32, x86::div_s32>("div_s32");
 }
 
 bool cftal::test::check_div_u64()
 {
-    return check_div_64_rnd<v2u64, impl::div_u64, pr_v2u64>("div_u64");
+    return check_div_64_rnd<v2u64, x86::div_u64>("div_u64");
 }
 
 bool cftal::test::check_div_s64()
 {
-    return check_div_64_rnd<v2s64, impl::div_s64, pr_v2s64>("div_s64");
+    return check_div_64_rnd<v2s64, x86::div_s64>("div_s64");
 }
 
 

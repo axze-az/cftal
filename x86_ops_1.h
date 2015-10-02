@@ -28,7 +28,7 @@ namespace cftal {
                              __m128i* rem=nullptr);
         };
 
-        struct div_u32 {
+        struct div_u32 : public div_ref<uint32_t, 4> {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);            
 #if defined (__AVX2__)
@@ -37,7 +37,7 @@ namespace cftal {
 #endif
         };
 
-        struct div_s32 {
+        struct div_s32 : public div_ref<int32_t, 4> { 
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
 #if defined (__AVX2__)
@@ -880,7 +880,7 @@ inline int cftal::x86::popcnt_u128(__m128i a)
 {
     a= popcnt_u64(a);
     const int sm= x86::impl::shuffle4<2,3,1,0>::val;
-    __m128i t= _mm_shuffle_epi32(a, sm);
+    __m128i t= _mm_shuffle_epi32(a, sm & 0xff);
     t = _mm_add_epi32(t, a);
     return _mm_cvtsi128_si32(t);
 }

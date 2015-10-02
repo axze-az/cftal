@@ -7,7 +7,8 @@ namespace cftal {
 
     namespace test {
 
-        bool check_signs();
+        bool check_xxx_of();
+        bool check_bitrev();
         bool check_popcnt();
         bool check_div();
         

@@ -33,6 +33,8 @@ namespace cftal {
         vec(std::initializer_list<double> l);
         // allow construction from vec<double, 8>
         vec(init_list<double> l);
+        // allow construction from two halfes
+        vec(const vec<double, 1>& lh, const vec<double, 1>& hh);
         // expression template constructor
         template <template <class _U, std::size_t _M>
                   class _OP,
@@ -446,6 +448,13 @@ inline
 cftal::vec<double, 2>::
 vec(init_list<double> l)
     : vec(mem<vec<double,2> >::load(l.begin(), l.size()))
+{
+}
+
+inline
+cftal::vec<double, 2>::
+vec(const vec<double, 1>& l, const vec<double, 1>& h)
+    : base_type(_mm_setr_pd(l(), h()))
 {
 }
 
