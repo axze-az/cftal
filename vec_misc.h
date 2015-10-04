@@ -13,11 +13,20 @@ namespace cftal {
     _T hadd(const vec<_T, 1>& n);
 
     template <class _V4>
-    void transpose_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3);
+    void
+    transpose_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3);
 
     template <class _V8>
-    void transpose_8x8(_V8& r0, _V8& r1, _V8& r2, _V8& r3,
-                       _V8& r4, _V8& r5, _V8& r6, _V8& r7);
+    void
+    transpose_8x8(_V8& r0, _V8& r1, _V8& r2, _V8& r3,
+                  _V8& r4, _V8& r5, _V8& r6, _V8& r7);
+
+    // r0-r3, a0-a3, b0-b3 rows/columns of a 4x4 matrix
+    template <class _V4>
+    void
+    mat_mul_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3,
+                const _V4& a0, const _V4& a1, const _V4& a2, const _V4& a3,
+                const _V4& b0, const _V4& b1, const _V4& b2, const _V4& b3);
 }
 
 template <typename _T, std::size_t _N>
@@ -133,6 +142,66 @@ void cftal::transpose_8x8(_V8& r0, _V8& r1, _V8& r2, _V8& r3,
     r6 = permute<0, 1, 2, 3, 8+0, 8+1, 8+2, 8+3>(s3, s7);
     // r7: 0x07 0x17 0x27 x37 0x47 0x57 0x67 0x77
     r7 = permute<4, 5, 6, 7, 8+4, 8+5, 8+6, 8+7>(s3, s7);
+}
+
+template <class _V4>
+inline
+void
+cftal::
+mat_mul_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3,
+            const _V4& a0, const _V4& a1, const _V4& a2, const _V4& a3,
+            const _V4& b0, const _V4& b1, const _V4& b2, const _V4& b3)
+{
+    // layout in memory:
+    //                       b00, b01, b02, b03,
+    //                       b10, b11, b12, b13,
+    //                       b20, b21, b22, b23,
+    //                       b30, b31, b32, b33
+    //
+    // a00, a01, a02, a03,   r00, r01, r02, r03,
+    // a10, a11, a12, a13,   r10, r11, r12, r13,
+    // a20, a21, a22, a23,   r20, r21, r22, r23,
+    // a30, a31, a32, a33    r30, r31, r32, r33
+
+    // r00 = a00*b00 + a01*b10 + a02*b20 + a03*b30
+    // r01 = a00*b01 + a01*b11 + a02*b21 + a03*b31
+    // r02 = a00*b02 + a01*b12 + a03*b22 + a03*b32
+    // r03 = a00*b03 + a01*b13 + a03*b23 + a03*b33
+
+    r0= permute<0, 0, 0, 0>(a0) * b0 +
+        permute<1, 1, 1, 1>(a0) * b1 +
+        permute<2, 2, 2, 2>(a0) * b2 +
+        permute<3, 3, 3, 3>(a0) * b3;
+
+    // r10 = a10*b00 + a11*b10 + a12*b20 + a13*b30
+    // r11 = a10*b01 + a11*b11 + a12*b21 + a13*b31
+    // r12 = a10*b02 + a11*b12 + a13*b22 + a13*b32
+    // r13 = a10*b03 + a11*b13 + a13*b23 + a13*b33
+
+    r1= permute<0, 0, 0, 0>(a1) * b0 +
+        permute<1, 1, 1, 1>(a1) * b1 +
+        permute<2, 2, 2, 2>(a1) * b2 +
+        permute<3, 3, 3, 3>(a1) * b3;
+
+    // r20 = a20*b00 + a21*b10 + a22*b20 + a23*b30
+    // r21 = a20*b01 + a21*b11 + a22*b21 + a23*b31
+    // r22 = a20*b02 + a21*b12 + a23*b22 + a23*b32
+    // r23 = a20*b03 + a21*b13 + a23*b23 + a23*b33
+
+    r2= permute<0, 0, 0, 0>(a2) * b0 +
+        permute<1, 1, 1, 1>(a2) * b1 +
+        permute<2, 2, 2, 2>(a2) * b2 +
+        permute<3, 3, 3, 3>(a2) * b3;
+
+    // r30 = a30*b00 + a31*b10 + a32*b20 + a33*b30
+    // r31 = a30*b01 + a31*b11 + a32*b21 + a33*b31
+    // r32 = a30*b02 + a31*b12 + a33*b22 + a33*b32
+    // r33 = a30*b03 + a31*b13 + a33*b23 + a33*b33
+
+    r3= permute<0, 0, 0, 0>(a3) * b0 +
+        permute<1, 1, 1, 1>(a3) * b1 +
+        permute<2, 2, 2, 2>(a3) * b2 +
+        permute<3, 3, 3, 3>(a3) * b3;
 }
 
 // Local variables:
