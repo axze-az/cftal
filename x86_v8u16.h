@@ -27,6 +27,8 @@ namespace cftal {
         vec(std::initializer_list<uint16_t> l);
         // allow construction from vec<int32_t, 8>
         vec(init_list<uint16_t> l);
+        // allow construction from two halfes
+        vec(const vec<uint16_t, 4>& lh, const vec<uint16_t, 4>& hh);
         // expression template constructor
         template <template <class _U, std::size_t _M>
                   class _OP,

@@ -295,6 +295,15 @@ vec(init_list<int16_t> l)
 {
 }
 
+inline
+cftal::vec<int16_t, 8>::
+vec(const vec<int16_t, 4>& lh, const vec<int16_t, 4>& hh)
+    : vec(permute<0, 1, 2, 3, 8, 9, 10, 11>(as<vec<int16_t, 8> >(lh),
+                                            as<vec<int16_t, 8> >(hh)))
+{
+}
+
+
 template <template <class _U, std::size_t _M> class _OP,
           class _L, class _R>
 inline

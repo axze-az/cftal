@@ -5,9 +5,11 @@
 
 namespace cftal {
     namespace test {
+
+        template <class _M>
         inline
         bool
-        check_res(bool expected, bool result, const char* emsg)
+        check_res(bool expected, bool result, const _M& emsg)
         {
             bool r(expected == result);
             if (!r)
@@ -36,22 +38,35 @@ cftal::test::check_xxx_of_t()
     mask_type both_set = mask_type(low_half(all_set),
                                    low_half(none_set));
 
-    r &= check_res(true, all_of(all_set), "all_of(all_set)" );
-    r &= check_res(false, none_of(all_set), "none_of(all_set)");
-    r &= check_res(true, any_of(all_set), "any_of(all_set)");
-
-    r &= check_res(false, all_of(none_set), "all_of(none_set)" );
-    r &= check_res(true, none_of(none_set), "none_of(none_set)");
-    r &= check_res(false, any_of(none_set), "any_of(none_set)");
+#if defined (__GNUC__)
+#define __fname__ __PRETTY_FUNCTION__
+#else
+#define __fname__ __func__
+#endif
     
-    r &= check_res(false, all_of(both_set), "all_of(both_set)" );
-    r &= check_res(false, none_of(both_set), "none_of(both_set)");
-    r &= check_res(true, any_of(both_set), "any_of(both_set)");
+    r &= check_res(true, all_of(all_set),
+                   std::string(__fname__) + " all_of(all_set)" );
+    r &= check_res(false, none_of(all_set),
+                   std::string(__fname__) + " none_of(all_set)");
+    r &= check_res(true, any_of(all_set),
+                   std::string(__fname__) + " any_of(all_set)");
 
+    r &= check_res(false, all_of(none_set),
+                   std::string(__fname__) + " all_of(none_set)" );
+    r &= check_res(true, none_of(none_set),
+                   std::string(__fname__) + " none_of(none_set)");
+    r &= check_res(false, any_of(none_set),
+                   std::string(__fname__) + " any_of(none_set)");
+    
+    r &= check_res(false, all_of(both_set),
+                   std::string(__fname__) + " all_of(both_set)" );
+    r &= check_res(false, none_of(both_set),
+                   std::string(__fname__) + " none_of(both_set)");
+    r &= check_res(true, any_of(both_set),
+                   std::string(__fname__) + " any_of(both_set)");
+#undef __fname__
     return r;
 }
-
-
 
 bool cftal::test::check_xxx_of()
 {

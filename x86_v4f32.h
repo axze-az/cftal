@@ -34,6 +34,8 @@ namespace cftal {
         vec(std::initializer_list<float> l);
         // allow construction from vec<float, 16>
         vec(init_list<float> l);
+        // allow construction from two halfes
+        vec(const vec<float, 2>& lh, const vec<float, 2>& hh);
 
         // expression template constructor
         template <template <class _U, std::size_t _M>
@@ -460,6 +462,14 @@ vec(init_list<float> l)
 {
 }
 
+inline
+cftal::vec<float, 4>::
+vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
+    : vec(permute<0, 1, 4, 5>(as<vec<float, 4> >(lh),
+                              as<vec<float, 4> >(hh)))
+{
+}
+
 template <template <class _U, std::size_t _M> class _OP,
           class _L, class _R>
 inline
@@ -702,7 +712,7 @@ bool cftal::all_of(const v4f32::mask_type& a)
 inline
 bool cftal::any_of(const v4f32::mask_type& a)
 {
-    return x86::read_signs_f32(a()) != 0xf;
+    return x86::read_signs_f32(a()) != 0;
 }
 
 inline

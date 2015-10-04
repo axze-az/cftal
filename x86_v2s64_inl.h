@@ -338,6 +338,14 @@ vec(init_list<int64_t> l)
 {
 }
 
+inline
+cftal::vec<cftal::int64_t, 2>::
+vec(const vec<int64_t, 1>& lh, const vec<int64_t, 1>& hh)
+    : base_type(_mm_set_epi64x(hh(), lh()))
+{
+}
+
+
 template <template <class _U, std::size_t _M> class _OP,
           class _L, class _R>
 inline
