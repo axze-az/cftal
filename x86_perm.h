@@ -628,7 +628,6 @@ namespace cftal {
             struct perm2_v4f64< 6, 7, 2, 3>
                 : public vperm2f128<3, 1> {};
 
-#if !defined (__AVX2__)
             template <>
             struct perm2_v4f64< 0, 4, 1, 5> {
                 static __m256d v(__m256d a, __m256d b) {
@@ -676,7 +675,6 @@ namespace cftal {
                     return r;
                 }
             };
-#endif
 
             // generic permutation of one float vector
             template <int _P0, int _P1, int _P2, int _P3,
