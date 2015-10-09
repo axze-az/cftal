@@ -280,8 +280,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-ldexp(const vf_type& vd,
-      const vi_type& ve)
+ldexp(const vf_type& vd, const vi_type& ve)
 {
     vi_type q(ve);
     vi_type m(q >> 31);
@@ -293,9 +292,10 @@ ldexp(const vf_type& vd,
     m = min(vi_type(0x7ff), m);
 
     vf_type fm(_T::insert_exp(m));
-    fm = fm* fm;
-    fm = fm* fm;
-    vf_type r(vd * fm /* * fm * fm * fm*/ );
+    // calculate fm^4
+    fm *= fm;
+    fm *= fm;
+    vf_type r(vd * fm);
     q += 0x3ff;
     // q = max(vi_type(0), q);
     // q = min(vi_type(0x7ff), q);
@@ -307,8 +307,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-frexp(const vf_type& vd,
-      vi_type* ve)
+frexp(const vf_type& vd, vi_type* ve)
 {
     // normal numbers:
     vi_type hi_word(_T::extract_high_word(vd));
@@ -688,10 +687,6 @@ reduce_trig_arg_k(const vf_type& d)
         struct alignas(NI*sizeof(int)) v_i {
             int32_t _sc[NI];
         } ti;
-        // store(tf._sc, d);
-        // store(ti._sc, q);
-        // store(d0_l._sc, d0.l());
-        // store(d0_h._sc, d0.h());
         mem<vf_type>::store(tf._sc, d);
         mem<vi_type>::store(ti._sc, q);
         mem<vf_type>::store(d0_l._sc, d0.l());

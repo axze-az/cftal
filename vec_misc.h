@@ -22,6 +22,12 @@ namespace cftal {
                   _V8& r4, _V8& r5, _V8& r6, _V8& r7);
 
     // r0-r3, a0-a3, b0-b3 rows/columns of a 4x4 matrix
+    template <class _V4, class _T>
+    void
+    mat_mul_1x4(_V4& r0,
+                const _T* a0,
+                const _V4& b0, const _V4& b1, const _V4& b2, const _V4& b3);
+    // r0-r3, a0-a3, b0-b3 rows/columns of a 4x4 matrix
     template <class _V4>
     void
     mat_mul_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3,
@@ -144,6 +150,33 @@ void cftal::transpose_8x8(_V8& r0, _V8& r1, _V8& r2, _V8& r3,
     r7 = permute<4, 5, 6, 7, 8+4, 8+5, 8+6, 8+7>(s3, s7);
 }
 
+template <class _V4, class _T>
+inline
+void
+cftal::
+mat_mul_1x4(_V4& r0,
+            const _T* a0,
+            const _V4& b0, const _V4& b1, const _V4& b2, const _V4& b3)
+{
+    // layout in memory:
+    //                       b00, b01, b02, b03,
+    //                       b10, b11, b12, b13,
+    //                       b20, b21, b22, b23,
+    //                       b30, b31, b32, b33
+    //
+    // a00, a01, a02, a03,   r00, r01, r02, r03,
+
+    // r00 = a00*b00 + a01*b10 + a02*b20 + a03*b30
+    // r01 = a00*b01 + a01*b11 + a02*b21 + a03*b31
+    // r02 = a00*b02 + a01*b12 + a02*b22 + a03*b32
+    // r03 = a00*b03 + a01*b13 + a02*b23 + a03*b33
+
+    r0= _V4(a0[0]) * b0 +
+        _V4(a0[1]) * b1 +
+        _V4(a0[2]) * b2 +
+        _V4(a0[3]) * b3;
+}
+    
 template <class _V4>
 inline
 void

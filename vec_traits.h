@@ -164,51 +164,34 @@ namespace cftal {
                 
         }
 
-        
+        template <std::size_t _N>
+        struct vec_func_traits_f32 : public func_traits<float, int32_t> {
+            using vf_type = vec<float, _N>;
+            using vmf_type = typename vf_type::mask_type;
+            using vi_type = vec<int32_t, _N>;
+            using vmi_type = typename vi_type::mask_type;
 
-        
-        template <>
-        struct func_traits<v4f32, v4s32> : public
-        func_traits<typename v4f32::value_type,
-                    typename v4s32::value_type> {
-            using vf_type = v4f32;
-            using vmf_type = vf_type::mask_type;
-            using vi_type = v4s32;
-            using vmi_type = vi_type::mask_type;
+            using vhpf_type = vec<double, _N>;
+            using hpf_traits = func_traits<vhpf_type, vi_type>;
             using dvf_type = d_real<vf_type>;
-
-            using vhpf_type = v2f64;
-            using hpf_traits = func_traits<vhpf_type, v2s32>;
 
             static
             constexpr std::size_t vhpf_per_vf() {
-                return 2;
+                return 1;
             }
-
+            
             static
             void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
-                // using namespace x86;
-                r[0] = cvt_lo<v2f64>(x);
-                r[1] = cvt_hi<v2f64>(x);
+                r[1] = cvt<vhpf_type, vf_type>(x);
             }
 
             static
             void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
-                // using namespace x86;
-                vf_type lo(cvt_lo<v4f32>(hpf[0]));
-                vhpf_type rest(hpf[0] - cvt_lo<v2f64>(lo));
-                vf_type lo_lo(cvt_lo<v4f32>(rest));
-
-                vf_type hi(cvt_lo<v4f32>(hpf[1]));
-                rest = hpf[1] - cvt_lo<v2f64>(hi);
-
-                vf_type hi_lo(cvt_lo<v4f32>(rest));
-
-                vf_type msv(permute<0, 1, 4, 5>(lo, hi));
-                vf_type lsv(permute<0, 1, 4, 5>(lo_lo, hi_lo));
+                vf_type msv= cvt<vf_type>(hpf[0]);
+                vf_type lsv= cvt<vf_type>(
+                    vhpf_type(hpf[0] - cvt<vhpf_type>(msv)));
                 res = dvf_type(msv, lsv);
             }
-
 
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
@@ -228,161 +211,53 @@ namespace cftal {
                         const vf_type& t, const vf_type& f) {
                 return select(msk, t, f);
             }
-#if 0
-            static
-            vf_type gather(const float* p, const vi_type& idx,
-                           int sc) {
-                return gather<vf_type>(p, idx, sc);
-            }
-#endif
+
             static
             vf_type insert_exp(const vi_type& e) {
                 vi_type ep(e << 23);
-                return as<v4f32>(ep);
+                return as<vf_type>(ep);
             }
+
             static
             vi_type extract_exp(const vf_type& d) {
-                v4s32 e= as<v4s32>(d);
+                vi_type e= as<vi_type>(d);
                 e >>= 23;
-                e &= v4s32{0xff, 0xff, 0xff, 0xff};
+                e &= vi_type(0xff);
                 return e;
             }
+            
             static
             vf_type cvt_i_to_f(const vi_type& i) {
-                return cvt<v4f32>(i);
+                return cvt<vf_type>(i);
             }
 
             static
             vi_type cvt_f_to_i(const vf_type& f) {
-                return cvt<v4s32>(f);
+                return cvt<vi_type>(f);
             }
+
             // including rounding towards zero
             static
             vi_type cvt_rz_f_to_i(const vf_type& f) {
-                return cvt_rz<v4s32>(f);
+                return cvt_rz<vi_type>(f);
             }
 
             static
             vi_type as_int(const vf_type& f) {
-                return as<v4s32>(f);
+                return as<vi_type>(f);
             }
 
             static
             vf_type as_float(const vi_type& i) {
-                return as<v4f32>(i);
+                return as<vf_type>(i);
             }
+
         };
 
         template <std::size_t _N>
-        struct vec_func_traits_f32 : public func_traits<float, int32_t> {
-        };
-        
-        template <>
-        struct func_traits<v8f32, v8s32> : public
-        func_traits<typename v8f32::value_type,
-                    typename v8s32::value_type> {
-            using vf_type = v8f32;
-            using vmf_type = vf_type::mask_type;
-            using vi_type = v8s32 ;
-            using vmi_type = vi_type::mask_type;
+        struct func_traits<vec<float, _N>, vec<int32_t, _N> >
+            : public vec_func_traits_f32<_N> {};
 
-            using dvf_type = d_real<vf_type>;
-
-            typedef v4f64 vhpf_type;
-            typedef func_traits<vhpf_type, v4s32>
-            hpf_traits;
-
-            static
-            constexpr std::size_t vhpf_per_vf() {
-                return 2;
-            }
-
-            static
-            void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
-                // using namespace x86vec;
-                // using impl::cvt;
-                r[1] = cvt_hi<v4f64, v8f32>(x);
-                r[0] = cvt_lo<v4f64, v8f32>(x);
-            }
-
-            static
-            void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
-                vf_type lo(cvt_lo<v8f32, v4f64>(hpf[0]));
-                vhpf_type rest(hpf[0] - cvt_lo<v4f64, v8f32>(lo));
-                vf_type lo_lo(cvt_lo<v8f32, v4f64>(rest));
-
-                vf_type hi(cvt_lo<v8f32, v4f64>(hpf[1]));
-                rest = hpf[1] - cvt_lo<v4f64, v8f32>(hi);
-
-                vf_type hi_lo(cvt_lo<v8f32, v4f64>(rest));
-
-                vf_type msv(permute<0, 1, 2, 3, 8, 9, 10, 11>(lo, hi));
-                vf_type lsv(permute<0, 1, 2, 3, 8, 9, 10, 11>(lo_lo, hi_lo));
-                res = dvf_type(msv, lsv);
-            }
-
-            static
-            vmf_type vmi_to_vmf(const vmi_type& mi) {
-                return as<v8f32::mask_type>(mi);
-            }
-            static
-            vmi_type vmf_to_vmi(const vmf_type& mf) {
-                return as<v8s32::mask_type>(mf);
-            }
-            static
-            vi_type sel(const vmi_type& msk,
-                        const vi_type& t, const vi_type& f) {
-                return select(msk, t, f);
-            }
-            static
-            vf_type sel(const vmf_type& msk,
-                        const vf_type& t, const vf_type& f) {
-                return select(msk, t, f);
-            }
-#if 0
-            static
-            vf_type gather(const float* p, const vi_type& idx,
-                           int sc) {
-                return gather<vf_type>(p, idx, sc);
-            }
-#endif
-            static
-            vf_type insert_exp(const vi_type& e) {
-                vi_type ep(e << 23);
-                return as<v8f32>(ep);
-            }
-            static
-            vi_type extract_exp(const vf_type& d) {
-                v8s32 e= as<v8s32>(d);
-                e >>= 23;
-                e &= v8s32{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-                return e;
-            }
-            static
-            vf_type cvt_i_to_f(const vi_type& i) {
-                return cvt<v8f32>(i);
-            }
-
-            static
-            vi_type cvt_f_to_i(const vf_type& f) {
-                return cvt<v8s32>(f);
-            }
-            // including rounding towards zero
-            static
-            vi_type cvt_rz_f_to_i(const vf_type& f) {
-                return cvt_rz<v8s32>(f);
-            }
-
-            static
-            vi_type as_int(const vf_type& f) {
-                return as<v8s32>(f);
-            }
-
-            static
-            vf_type as_float(const vi_type& i) {
-                return as<v8f32>(i);
-            }
-        };
 
         // template <std::size_t _N>
         // vec<int32_t, _N>
