@@ -5,24 +5,154 @@
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
 #include <cftal/vec_traits.h>
-// #include <cftal/x86vec_traits.h>
-// #include <cftal/x86vec_store.h>
 #include <cmath>
-// #include <x86vec_test.h>
 #include <cstdint>
 #include <iostream>
 #include <iomanip>
 #include <cstddef>
 
-namespace x86vec {
+namespace cftal {
     namespace test {
 
         double make_double(unsigned sgn, unsigned exp, uint64_t sig);
 
     }
+
+    template <typename _T, std::size_t _N>
+    class zero_mask {
+        vec<_T, _N>* _v;
+        typename vec<_T, _N>::mask_type _m;
+    public:
+        zero_mask(vec<_T, _N>& v,
+                  const typename vec<_T, _N>::mask_type& m)
+            : _v(&v), _m(m) {};
+        vec<_T, _N>& operator=(const vec<_T, _N>& r) {
+            const vec<_T, _N> zz(_T(0));
+            *_v = select(_m, r, zz);
+            return *_v;
+        }
+        template <class _R>
+        vec<_T, _N>& operator=(const _R& r) {
+            vec<_T, _N> rr(r);
+            const vec<_T, _N> zz(_T(0));
+            *_v = select(_m, rr, zz);
+            return *_v;
+        }
+    };
+
+    template <typename _T, std::size_t _N>
+    zero_mask<_T, _N>
+    zero_or_update(vec<_T, _N>& r,
+                   const typename vec<_T, _N>::mask_type& m)
+    {
+        return zero_mask<_T, _N>(r, m);
+    }
+
+    template <typename _T, std::size_t _N>
+    class merge_mask {
+        vec<_T, _N>* _v;
+        typename vec<_T, _N>::mask_type _m;
+    public:
+        merge_mask(vec<_T, _N>& v,
+                  const typename vec<_T, _N>::mask_type& m)
+            : _v(&v), _m(m) {};
+        vec<_T, _N>& operator=(const vec<_T, _N>& r) {
+            const vec<_T, _N> zz(_T(0));
+            *_v = select(_m, r, *_v);
+            return *_v;
+        }
+        template <class _R>
+        vec<_T, _N>& operator=(const _R& r) {
+            vec<_T, _N> rr(r);
+            const vec<_T, _N> zz(_T(0));
+            *_v = select(_m, rr, *_v);
+            return *_v;
+        }
+    };
+
+    template <typename _T, std::size_t _N>
+    merge_mask<_T, _N>
+    keep_or_update(vec<_T, _N>& r,
+                   const typename vec<_T, _N>::mask_type& m)
+    {
+        return merge_mask<_T, _N>(r, m);
+    }
+
+    vec<double, 4>
+    test_merge(const vec<double, 4>& a, const vec<double, 4>& b);
+    
+    template <class _T, std::size_t _N>
+    class keep_result {
+        vec<_T, _N>* _v;
+    public:
+        keep_result(vec<_T, _N>& v) : _v(&v) {}
+        struct proxy {
+            merge_mask<_T, _N> with;
+            proxy(vec<_T, _N>& v,
+                  const typename vec<_T, _N>::mask_type& m)
+                : with(v, m) {}
+        };
+        proxy
+        update_if(const typename vec<_T, _N>::mask_type& m) const {
+            return proxy(*_v, m);
+        }
+    };
+
+    template <class _T, std::size_t _N>
+    keep_result<_T, _N>
+    keep(vec<_T, _N>& v)
+    {
+        return keep_result<_T, _N>(v);
+    }
+
+    template <class _T, std::size_t _N>
+    class zero_result {
+        vec<_T, _N>* _v;
+    public:
+        zero_result(vec<_T, _N>& v) : _v(&v) {}
+        struct proxy {
+            zero_mask<_T, _N> with;
+            proxy(vec<_T, _N>& v,
+                  const typename vec<_T, _N>::mask_type& m)
+                : with(v, m) {}
+        };
+        proxy
+        update_if(const typename vec<_T, _N>::mask_type& m) const {
+            return proxy(*_v, m);
+        }
+    };
+
+    template <class _T, std::size_t _N>
+    zero_result<_T, _N>
+    zero(vec<_T, _N>& v)
+    {
+        return zero_result<_T, _N>(v);
+    }
+    
+    
 }
 
-double make_double(unsigned sgn, unsigned exp, uint64_t sig)
+cftal::vec<double, 4>
+cftal::test_merge(const vec<double, 4>& a, const vec<double, 4>& b)
+{
+    vec<double, 4>::mask_type a_gt_b = a > b;
+    vec<double, 4> r=a;
+    // a(merge_where(a_gt_b)) = b;
+
+    // a(cp_or_mrg(a_gt_b))= b;
+    // a(cp_or_zero(a_gt_b))= b;
+    
+    // keep_or_update(r, a_gt_b)= b;
+    // keep_or_update(r, a_gt_b)= a + b * b * b + a;
+
+    zero(r).update_if(a_gt_b).with = a + b * b * b + a;
+
+    return r;
+}
+
+
+double
+cftal::test::make_double(unsigned sgn, unsigned exp, uint64_t sig)
 {
     uint64_t _sgn= uint64_t(sgn & 1) << 63;
     uint64_t _exp= uint64_t(exp & 0x7FF) << 52;
