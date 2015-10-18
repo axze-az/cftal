@@ -120,18 +120,21 @@ void lorenza(const std::array<double, 3>& x,
     dxdt[2] =dz;
 }
 
-void lorenzv(cftal::v4f64 x, cftal::v4f64& dxdt, const double t)
+cftal::v4f64 lorenzv(cftal::v4f64 x, cftal::v4f64& dxdt, const double t)
 {
+    using namespace cftal;
     double xx = low_half(low_half(x))();
     double xy = high_half(low_half(x))();
     double xz = low_half(high_half(x))();
 
     double dx = sigma * (xy - xx);
     double dy = R * xx - xy - xx * xz;
-    // double dz = -b * xz + xx * xy;
-    double dz = xx * xy - b * xz;
-    
-    dxdt = cftal::v4f64{dx, dy, dz, 0.0};
+    v2f64 dz(-b * xz + xx * xy, 0);
+    v2f64 lh(dx, dy);
+
+    v4f64 r(lh, dz);
+    dxdt = r;
+    return r;
 }
 
 
