@@ -171,6 +171,20 @@ int main()
     std::cout << xv << std::endl;
     std::cout << "steps: " << stepsv << std::endl;
 
+    cftal::v4f64 xv2{10.0, 5.0, 5.0, 0.0};
+
+    typedef runge_kutta_fehlberg78<cftal::v4f64, double,
+                                   cftal::v4f64, double,
+                                   vector_space_algebra> vec_stepper2;
+
+    int stepsv2 = integrate_adaptive(make_controlled<vec_stepper2>(1e-10, 1e-10),
+                                     lorenzv, xv2,
+                                     0.0, end_p, 0.1);
+    
+    std::cout << xv2 << std::endl;
+    std::cout << "steps: " << stepsv2 << std::endl;
+
+    
     std::array<double, 3> xa{10.0, 5.0, 5.0};
 
     typedef runge_kutta_dopri5<std::array<double, 3>, double,
