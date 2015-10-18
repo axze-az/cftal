@@ -143,13 +143,15 @@ using namespace boost::numeric::odeint;
 int main()
 {
     const double end_p = 10.0;
+    const double abs_err = 1e-16;
+    const double rel_err = 1e-16;
     
     point3D x(10.0, 5.0, 5.0);
     // point type defines it's own operators -> use vector_space_algebra !
     typedef runge_kutta_dopri5<point3D, double,
                                point3D, double,
                                vector_space_algebra> stepper;
-    int steps = integrate_adaptive(make_controlled<stepper>(1E-10, 1E-10),
+    int steps = integrate_adaptive(make_controlled<stepper>(abs_err, rel_err),
                                    lorenz, x,
                                    0.0, end_p, 0.1);
 
@@ -164,7 +166,7 @@ int main()
                                cftal::v4f64, double,
                                vector_space_algebra> vec_stepper;
 
-    int stepsv = integrate_adaptive(make_controlled<vec_stepper>(1e-10, 1e-10),
+    int stepsv = integrate_adaptive(make_controlled<vec_stepper>(abs_err, rel_err),
                                     lorenzv, xv,
                                     0.0, end_p, 0.1);
 
@@ -177,9 +179,10 @@ int main()
                                    cftal::v4f64, double,
                                    vector_space_algebra> vec_stepper2;
 
-    int stepsv2 = integrate_adaptive(make_controlled<vec_stepper2>(1e-10, 1e-10),
-                                     lorenzv, xv2,
-                                     0.0, end_p, 0.1);
+    int stepsv2 = integrate_adaptive(
+        make_controlled<vec_stepper2>(abs_err, rel_err),
+        lorenzv, xv2,
+        0.0, end_p, 0.1);
     
     std::cout << xv2 << std::endl;
     std::cout << "steps: " << stepsv2 << std::endl;
@@ -191,7 +194,7 @@ int main()
                                std::array<double, 3>, double,
                                array_algebra> a_stepper;
 
-    int stepsa = integrate_adaptive(make_controlled<a_stepper>(1e-10, 1e-10),
+    int stepsa = integrate_adaptive(make_controlled<a_stepper>(abs_err, rel_err),
                                     lorenza, xa,
                                     0.0, end_p, 0.1);
 
