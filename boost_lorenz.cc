@@ -23,11 +23,13 @@ namespace boost {
     }
 }
 
-
 //[point3D
-class point3D : boost::additive1< point3D,
-    boost::additive2< point3D, double,
-    boost::multiplicative2< point3D, double > > > {
+class point3D : boost::additive1<
+    point3D,
+    boost::additive2<
+        point3D, double,
+        boost::multiplicative2<
+            point3D, double > > > {
 public:
     double x, y, z;
     point3D(): x(0.0), y(0.0), z(0.0) { }
@@ -49,7 +51,6 @@ public:
         z *= a;
         return *this;
     }
-
 };
 //]
 
@@ -57,7 +58,7 @@ public:
 // only required for steppers with error control
 point3D operator/(const point3D& p1, const point3D& p2)
 {
-    return point3D(p1.x / p2.x, p1.y / p2.y, p1.z / p1.z);
+    return point3D(p1.x / p2.x, p1.y / p2.y, p1.z / p2.z);
 }
 
 point3D abs(const point3D& p)
@@ -103,6 +104,22 @@ void lorenz(const point3D& x, point3D& dxdt, const double t)
     dxdt.z = -b * x.z + x.x * x.y;
 }
 
+void lorenza(const std::array<double, 3>& x,
+             std::array<double, 3>& dxdt, const double t)
+{
+    double xx = x[0];
+    double xy = x[1];
+    double xz = x[2];
+
+    double dx = sigma * (xy - xx);
+    double dy = R * xx - xy - xx * xz;
+    double dz = -b * xz + xx * xy;
+    
+    dxdt[0] =dx;
+    dxdt[1] =dy;
+    dxdt[2] =dz;
+}
+
 void lorenzv(cftal::v4f64 x, cftal::v4f64& dxdt, const double t)
 {
     double xx = low_half(low_half(x))();
@@ -116,6 +133,7 @@ void lorenzv(cftal::v4f64 x, cftal::v4f64& dxdt, const double t)
     
     dxdt = cftal::v4f64{dx, dy, dz, 0.0};
 }
+
 
 using namespace boost::numeric::odeint;
 
@@ -149,5 +167,22 @@ int main()
 
     std::cout << xv << std::endl;
     std::cout << "steps: " << stepsv << std::endl;
+
+    std::array<double, 3> xa{10.0, 5.0, 5.0};
+
+    typedef runge_kutta_dopri5<std::array<double, 3>, double,
+                               std::array<double, 3>, double,
+                               array_algebra> a_stepper;
+
+    int stepsa = integrate_adaptive(make_controlled<a_stepper>(1e-10, 1e-10),
+                                    lorenza, xa,
+                                    0.0, end_p, 0.1);
+
+    for(const auto& v: xa) {
+        std::cout << v << ' ';
+    }
+    std::cout << std::endl;
+    std::cout << "steps: " << stepsa << std::endl;
+    
     return 0;
 }
