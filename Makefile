@@ -80,7 +80,7 @@ ln -sf lib$(LIBNAME).so.$(MAJOR) lib$(LIBNAME).so
 #emuvec.od: CXXFLAGS-od +=-fno-tree-vectorize -mtune=corei7
 #emuvec.s: CXXFLAGS-os +=-fno-tree-vectorize -mtune=corei7
 
-TESTPROGS=hackx86vec genx86vec hackx86vec_g 
+TESTPROGS=hackx86vec genx86vec hackx86vec_g boost_lorenz
 
 tests: $(TESTPROGS)
 
@@ -89,6 +89,9 @@ testfpvec: testfpvec.ol
 
 genx86vec: genx86vec.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
 	 $(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++
+
+boost_lorenz: boost_lorenz.ol lib$(LIBNAME).so.$(MAJOR).$(MINOR)
+	 $(LD) -o $@ $< $(LDFLAGS) -L. -Wl,-rpath=. -l$(LIBNAME) -lstdc++ -lm
 
 #hackx86vec.ol: CXXFLAGS-ol += -fno-tree-vectorize
 
@@ -99,7 +102,7 @@ hackx86vec_g: hackx86vec.od lib$(LIBNAME)-g.a
 	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++ -lm
 
 #x.s: hackx86vec.s x86_v4f64.s x86_v2f64.s x86_v8f32.s
-x.s: hackx86vec.s 
+x.s: boost_lorenz.s
 	c++filt < $< >$@ 
 	-$(RM) $<
 

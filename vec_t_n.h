@@ -7,6 +7,7 @@
 #include <cftal/init_list.h>
 #include <cftal/mem.h>
 #include <iosfwd>
+#include <algorithm>
 
 namespace cftal {
 
@@ -262,6 +263,10 @@ namespace cftal {
     vec<_T, _N>
     min(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
+    template <typename _T, std::size_t _N>
+    _T
+    max_element(const vec<_T, _N>& v);
+    
     template <class _T, std::size_t _N>
     struct mem< vec<_T, _N> > {
         static
@@ -487,6 +492,14 @@ cftal::min(const vec<_T, _N>& a, const vec<_T, _N>& b)
 {
     return vec<_T, _N>(min(low_half(a), low_half(b)),
                        min(high_half(a), high_half(b)));
+}
+
+template <class _T, std::size_t _N>
+inline
+_T
+cftal::max_element(const vec<_T, _N>& v)
+{
+    return std::max(max_element(low_half(v)), max_element(high_half(v)));
 }
 
 template <int32_t _I0, int32_t _I1, typename _T>
