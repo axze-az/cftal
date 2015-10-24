@@ -9,6 +9,7 @@
 #include <cftal/expr.h>
 #include <cftal/mem.h>
 #include <cftal/vec_t_n.h>
+#include <cftal/vec_mask.h>
 #include <cftal/vec_op.h>
 #include <type_traits>
 #include <cmath>

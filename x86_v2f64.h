@@ -90,6 +90,10 @@ namespace cftal {
 
     v2f64 max(const v2f64& a, const v2f64& b);
     v2f64 min(const v2f64& a, const v2f64& b);
+
+    double max_element(const v2f64& v);
+    double min_element(const v2f64& v);
+
     v2f64 abs(const v2f64& a);
     v2f64 fabs(const v2f64& a);
     v2f64 sqrt(const v2f64& a);
@@ -521,6 +525,39 @@ cftal::select(const v2f64::mask_type& m,
               const v2f64& on_true, const v2f64& on_false)
 {
     return x86::select(m(), on_true(), on_false());
+}
+
+
+inline
+cftal::v2f64
+cftal::max(const v2f64& a, const v2f64& b)
+{
+    return _mm_max_pd(a(), b());
+}
+
+inline
+cftal::v2f64
+cftal::min(const v2f64& a, const v2f64& b)
+{
+    return _mm_min_pd(a(), b());
+}
+
+inline
+double
+cftal::max_element(const v2f64& v)
+{
+    v2f64 vp=permute<1, 0>(v);
+    v2f64 r=max(v, vp);
+    return extract<0>(r);
+}
+
+inline
+double
+cftal::min_element(const v2f64& v)
+{
+    v2f64 vp=permute<1, 0>(v);
+    v2f64 r=min(v, vp);
+    return extract<0>(r);
 }
 
 inline

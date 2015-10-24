@@ -90,6 +90,9 @@ namespace cftal {
 
     v4f64 max(const v4f64& a, const v4f64& b);
     v4f64 min(const v4f64& a, const v4f64& b);
+    double max_element(const v4f64& v);
+    double min_element(const v4f64& v);
+
     v4f64 abs(const v4f64& a);
     v4f64 fabs(const v4f64& a);
     v4f64 sqrt(const v4f64& a);
@@ -692,6 +695,39 @@ bool cftal::elements_equal(const v4f64& a)
     v4f64::mask_type rv(cmp0 == a);
     return all_of(rv);
 }
+
+inline
+cftal::v4f64
+cftal::max(const v4f64& a, const v4f64& b)
+{
+    return _mm256_max_pd(a(), b());
+}
+
+inline
+cftal::v4f64
+cftal::min(const v4f64& a, const v4f64& b)
+{
+    return _mm256_min_pd(a(), b());
+}
+
+inline
+double
+cftal::max_element(const v4f64& v)
+{
+    v2f64 hh= high_half(v);
+    v2f64 lh= low_half(v);
+    return max_element(max(lh, hh));
+}
+
+inline
+double
+cftal::min_element(const v4f64& v)
+{
+    v2f64 hh= high_half(v);
+    v2f64 lh= low_half(v);
+    return min_element(min(lh, hh));
+}
+
 
 inline
 cftal::v4f64 cftal::x86::round(const v4f64& a, rounding_mode::type m)

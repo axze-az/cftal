@@ -266,6 +266,10 @@ namespace cftal {
     template <typename _T, std::size_t _N>
     _T
     max_element(const vec<_T, _N>& v);
+
+    template <typename _T, std::size_t _N>
+    _T
+    min_element(const vec<_T, _N>& v);
     
     template <class _T, std::size_t _N>
     struct mem< vec<_T, _N> > {
@@ -499,7 +503,15 @@ inline
 _T
 cftal::max_element(const vec<_T, _N>& v)
 {
-    return std::max(max_element(low_half(v)), max_element(high_half(v)));
+    return max_element(max(low_half(v), high_half(v)));
+}
+
+template <class _T, std::size_t _N>
+inline
+_T
+cftal::min_element(const vec<_T, _N>& v)
+{
+    return min_element(min(low_half(v), high_half(v)));
 }
 
 template <int32_t _I0, int32_t _I1, typename _T>

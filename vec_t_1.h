@@ -100,7 +100,6 @@ namespace cftal {
     
     template <typename _T>
     bool none_of(const vec<_T, 1>& v);
-
     
     template <typename _T>
     vec<_T, 1> max(const vec<_T, 1>& a, const vec<_T, 1>& b);
@@ -109,6 +108,9 @@ namespace cftal {
 
     template <typename _T>
     _T max_element(const vec<_T, 1>& v);
+
+    template <typename _T>
+    _T min_element(const vec<_T, 1>& v);
     
     template <std::size_t _I, typename _T>
     _T extract(const vec<_T, 1>& v);
@@ -541,6 +543,14 @@ template <class _T>
 inline
 _T
 cftal::max_element(const vec<_T, 1>& v)
+{
+    return v();
+}
+
+template <class _T>
+inline
+_T
+cftal::min_element(const vec<_T, 1>& v)
 {
     return v();
 }

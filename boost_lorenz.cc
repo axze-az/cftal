@@ -1,11 +1,8 @@
 #include <iostream>
 #include <cmath>
-
 #include <boost/operators.hpp>
 #include <boost/numeric/odeint.hpp>
-
 #include <cftal/vec.h>
-
 
 namespace boost {
     namespace numeric {
@@ -143,8 +140,8 @@ using namespace boost::numeric::odeint;
 int main()
 {
     const double end_p = 10.0;
-    const double abs_err = 1e-16;
-    const double rel_err = 1e-16;
+    const double abs_err = 1e-14;
+    const double rel_err = 1e-14;
     
     point3D x(10.0, 5.0, 5.0);
     // point type defines it's own operators -> use vector_space_algebra !

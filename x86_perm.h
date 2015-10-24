@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/x86_ops_0.h>
 #include <cftal/x86_ops_1.h>
+#include <cftal/x86_select.h>
 
 namespace cftal {
 
