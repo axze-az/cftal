@@ -8,11 +8,11 @@ namespace boost {
     namespace numeric {
         namespace odeint {
 
-            template <std::size_t _N>
-            struct vector_space_norm_inf<cftal::vec<double, _N> > {
+            template <typename _T, std::size_t _N>
+            struct vector_space_norm_inf<cftal::vec<_T, _N> > {
                 typedef double result_type;
-                double operator()(const cftal::vec<double, _N>& v) const {
-                    cftal::vec<double, _N> va= abs(v);
+                double operator()(const cftal::vec<_T, _N>& v) const {
+                    cftal::vec<_T, _N> va= abs(v);
                     return max_element(va);
                 }
             };
