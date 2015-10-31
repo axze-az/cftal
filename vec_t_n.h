@@ -848,7 +848,6 @@ cftal::combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o)
     return vec<_T, 2>(e, o);
 }
 
-
 template <typename _T, std::size_t _N>
 std::ostream&
 cftal::operator<<(std::ostream& s, const vec<_T, _N>& v)
@@ -856,7 +855,6 @@ cftal::operator<<(std::ostream& s, const vec<_T, _N>& v)
     s << low_half(v) << ' ' << high_half(v);
     return s;
 }
-
 
 
 // Local variables:
