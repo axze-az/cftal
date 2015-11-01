@@ -17,31 +17,31 @@
 #include <cftal/vec_t_1.h>
 #if defined (__SSE2__)
 // include 128 bit integer vector specializations 
-#include <cftal/x86_v4s32.h>
-#include <cftal/x86_v4u32.h>
-#include <cftal/x86_v2s64.h>
-#include <cftal/x86_v2u64.h>
-#include <cftal/x86_v8s16.h>
-#include <cftal/x86_v8u16.h>
+#include <cftal/x86/v4s32.h>
+#include <cftal/x86/v4u32.h>
+#include <cftal/x86/v2s64.h>
+#include <cftal/x86/v2u64.h>
+#include <cftal/x86/v8s16.h>
+#include <cftal/x86/v8u16.h>
 // include 128 bit integer vector specializations implementations
-#include <cftal/x86_v4s32_inl.h>
-#include <cftal/x86_v4u32_inl.h>
-#include <cftal/x86_v2s64_inl.h>
-#include <cftal/x86_v2u64_inl.h>
-#include <cftal/x86_v8s16_inl.h>
-#include <cftal/x86_v8u16_inl.h>
+#include <cftal/x86/v4s32_inl.h>
+#include <cftal/x86/v4u32_inl.h>
+#include <cftal/x86/v2s64_inl.h>
+#include <cftal/x86/v2u64_inl.h>
+#include <cftal/x86/v8s16_inl.h>
+#include <cftal/x86/v8u16_inl.h>
 #endif
 #if defined (__AVX2__)
 // include 256 bit integer vector specializations
-#include <cftal/x86_v8s32.h>
-#include <cftal/x86_v8u32.h>
-#include <cftal/x86_v4s64.h>
-#include <cftal/x86_v4u64.h>
+#include <cftal/x86/v8s32.h>
+#include <cftal/x86/v8u32.h>
+#include <cftal/x86/v4s64.h>
+#include <cftal/x86/v4u64.h>
 // include 256 bit integer vector specializations implementations
-#include <cftal/x86_v8s32_inl.h>
-#include <cftal/x86_v8u32_inl.h>
-#include <cftal/x86_v4s64_inl.h>
-#include <cftal/x86_v4u64_inl.h>
+#include <cftal/x86/v8s32_inl.h>
+#include <cftal/x86/v8u32_inl.h>
+#include <cftal/x86/v4s64_inl.h>
+#include <cftal/x86/v4u64_inl.h>
 #endif
 
 #include <cftal/vec_double_n.h>

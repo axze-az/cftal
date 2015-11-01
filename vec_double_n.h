@@ -6,13 +6,13 @@
 #include <cftal/d_real.h>
 #include <cmath>
 #if defined (__SSE2__)
-#include <cftal/x86_v2f64.h>
+#include <cftal/x86/v2f64.h>
 #endif
 #if defined (__AVX__)
-#include <cftal/x86_v4f64.h>
+#include <cftal/x86/v4f64.h>
 #endif
 #if defined (__AVX512F__)
-#include <cftal/x86_v8f64.h>
+#include <cftal/x86/v8f64.h>
 #endif
 
 namespace cftal {

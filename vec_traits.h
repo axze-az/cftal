@@ -6,7 +6,7 @@
 #include <cftal/math_func.h>
 #include <cftal/divisor.h>
 #include <cftal/vec_cvt.h>
-#include <cftal/x86_cast.h>
+#include <cftal/x86/cast.h>
 #include <cftal/d_real.h>
 
 namespace cftal {

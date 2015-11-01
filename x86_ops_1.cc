@@ -1,7 +1,7 @@
 #include <cftal/config.h>
 #if defined (__SSE2__)
-#include "x86_ops_1.h"
-#include "x86_ins_ext.h"
+#include "x86/ops_1.h"
+#include "x86/ins_ext.h"
 #include "bitops.h"
 #include "mul_div.h"
 
