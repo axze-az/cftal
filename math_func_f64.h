@@ -520,7 +520,7 @@ exp_k2(const dvf_type& d)
     // scale back
     vi_type mi= _T::cvt_f_to_i(m2);
     dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
-    return res;    
+    return res;
 #else
     using ctbl = impl::d_real_constants<dvf_type, double>;
 
@@ -620,7 +620,7 @@ native_exp_k(const vf_type& d)
     // scale back
     vi_type mi= _T::cvt_f_to_i(m2);
     vf_type res(ldexp(s, mi));
-    return res;  
+    return res;
 #else
     using ctbl = impl::d_real_constants<dvf_type, double>;
 

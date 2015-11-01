@@ -30,9 +30,9 @@ class point3D : boost::additive1<
 public:
     double x, y, z;
     point3D(): x(0.0), y(0.0), z(0.0) { }
-    point3D(const double val)
+    point3D(double val)
         : x(val), y(val), z(val) { }
-    point3D(const double _x, const double _y, const double _z)
+    point3D(double _x, double _y, double _z)
         : x(_x), y(_y), z(_z) {
     }
     point3D& operator+=(const point3D& p) {
@@ -111,7 +111,7 @@ void lorenza(const std::array<double, 3>& x,
     double dx = sigma * (xy - xx);
     double dy = R * xx - xy - xx * xz;
     double dz = -b * xz + xx * xy;
-    
+
     dxdt[0] =dx;
     dxdt[1] =dy;
     dxdt[2] =dz;
@@ -142,64 +142,63 @@ int main()
     const double end_p = 10.0;
     const double abs_err = 1e-14;
     const double rel_err = 1e-14;
-    
+
     point3D x(10.0, 5.0, 5.0);
     // point type defines it's own operators -> use vector_space_algebra !
-    typedef runge_kutta_dopri5<point3D, double,
-                               point3D, double,
-                               vector_space_algebra> stepper;
+    using stepper= runge_kutta_dopri5<point3D, double,
+                                      point3D, double,
+                                      vector_space_algebra>;
     int steps = integrate_adaptive(make_controlled<stepper>(abs_err, rel_err),
                                    lorenz, x,
                                    0.0, end_p, 0.1);
 
     std::cout << std::scientific << std::setprecision(12);
-    
+
     std::cout << x << std::endl;
     std::cout << "steps: " << steps << std::endl;
 
     cftal::v4f64 xv{10.0, 5.0, 5.0, 0.0};
 
-    typedef runge_kutta_dopri5<cftal::v4f64, double,
-                               cftal::v4f64, double,
-                               vector_space_algebra> vec_stepper;
+    using vec_stepper=runge_kutta_dopri5<cftal::v4f64, double,
+                                         cftal::v4f64, double,
+                                         vector_space_algebra>;
 
-    int stepsv = integrate_adaptive(make_controlled<vec_stepper>(abs_err, rel_err),
-                                    lorenzv, xv,
-                                    0.0, end_p, 0.1);
+    int stepsv = integrate_adaptive(
+        make_controlled<vec_stepper>(abs_err, rel_err),
+        lorenzv, xv, 0.0, end_p, 0.1);
 
     std::cout << xv << std::endl;
     std::cout << "steps: " << stepsv << std::endl;
 
     cftal::v4f64 xv2{10.0, 5.0, 5.0, 0.0};
 
-    typedef runge_kutta_fehlberg78<cftal::v4f64, double,
-                                   cftal::v4f64, double,
-                                   vector_space_algebra> vec_stepper2;
+    using vec_stepper2=runge_kutta_fehlberg78<cftal::v4f64, double,
+                                              cftal::v4f64, double,
+                                              vector_space_algebra>;
 
     int stepsv2 = integrate_adaptive(
         make_controlled<vec_stepper2>(abs_err, rel_err),
         lorenzv, xv2,
         0.0, end_p, 0.1);
-    
+
     std::cout << xv2 << std::endl;
     std::cout << "steps: " << stepsv2 << std::endl;
 
-    
+
     std::array<double, 3> xa{10.0, 5.0, 5.0};
 
-    typedef runge_kutta_dopri5<std::array<double, 3>, double,
-                               std::array<double, 3>, double,
-                               array_algebra> a_stepper;
+    using a_stepper=runge_kutta_dopri5<std::array<double, 3>, double,
+                                       std::array<double, 3>, double,
+                                       array_algebra>;
 
-    int stepsa = integrate_adaptive(make_controlled<a_stepper>(abs_err, rel_err),
-                                    lorenza, xa,
-                                    0.0, end_p, 0.1);
+    int stepsa = integrate_adaptive(
+        make_controlled<a_stepper>(abs_err, rel_err),
+        lorenza, xa, 0.0, end_p, 0.1);
 
     for(const auto& v: xa) {
         std::cout << v << ' ';
     }
     std::cout << std::endl;
     std::cout << "steps: " << stepsa << std::endl;
-    
     return 0;
 }

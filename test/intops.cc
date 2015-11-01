@@ -125,7 +125,6 @@ bool cftal::test::check_popcnt()
 
 bool cftal::test::check_bitrev()
 {
-    return true;
     std::uint8_t exp_u8[16];
     std::uint16_t exp_u16[8];
     std::uint32_t exp_u32[4];

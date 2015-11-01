@@ -46,7 +46,7 @@ namespace emuvec {
                                 fp_type _res;
                                 unsigned _rounding_mode;
                         };
-                        
+
                         std::string _fname;
                         _V (*_f1)(arg_type a);
                         double (*_f1d)(double a);
@@ -54,7 +54,7 @@ namespace emuvec {
                         double (*_f2d)(double a, double b);
                         std::vector<inp_res> _data;
 
-                        func_data() : _fname(), 
+                        func_data() : _fname(),
                                       _f1(nullptr), _f1d(nullptr),
                                       _f2(nullptr), _f2d(nullptr),_data() {
                         }
@@ -142,7 +142,7 @@ int emuvec::test::ulp(double c, double n)
         ci._d = cf;
         ni._d = nf;
 #if 0
-        std::cout << std::hex << "ci: " << ci._u 
+        std::cout << std::hex << "ci: " << ci._u
                   << " ni: " << ni._u << std::endl
                   << std::dec;
 #endif
@@ -166,7 +166,7 @@ std::string emuvec::test::delete_comment(const std::string& s)
 }
 
 template <class _V>
-bool emuvec::test::read_func(func_data<_V>& tf, 
+bool emuvec::test::read_func(func_data<_V>& tf,
                              std::istream& is,
                              bool use_native)
 {
@@ -220,9 +220,6 @@ bool emuvec::test::read_func(func_data<_V>& tf,
                 } else if (f == "cosh") {
                         tf._f1 = emuvec::cosh;
                         tf._f1d = std::cosh;
-                } else if (f == "tan") {
-                        tf._f1 = emuvec::tan;
-                        tf._f1d = std::tan;
                 } else if (f == "pow") {
                         tf._f2 = emuvec::pow;
                         tf._f2d = std::pow;
@@ -300,10 +297,10 @@ bool emuvec::test::read_data(func_data<_V>& tf, std::istream& is)
                 tt._u = r;
                 c._res = tt._d;
 #if 0
-                std::cerr << "inserting " 
-                          << tf._fname 
+                std::cerr << "inserting "
+                          << tf._fname
                           << "( " << c._a0;
-                if (tf._f2) 
+                if (tf._f2)
                         std::cerr << ", " << c._a1;
                 std::cerr << ") ==" << c._res << std::endl;
 #endif
@@ -349,12 +346,12 @@ bool emuvec::test::test_data(const func_data<_V>& tf, std::ostream& os)
                 _V is_err(re > 1.0e-15);
                 double tt=extract<0>(res);
 #if 0
-                std::cout << tf._fname << "( " 
+                std::cout << tf._fname << "( "
                           << c._a0;
                 if (tf._f2)
                         std::cout << ", " << c._a1;
-                std::cout << ")= " << tt 
-                        // << " :  "  << c._res 
+                std::cout << ")= " << tt
+                        // << " :  "  << c._res
                           << std::endl;
 #endif
                 double nt=c._res;
@@ -370,7 +367,7 @@ bool emuvec::test::test_data(const func_data<_V>& tf, std::ostream& os)
                 }
                 // we found an error:
                 double t=extract<0>(res);
-                std::cerr << tf._fname << "( " 
+                std::cerr << tf._fname << "( "
                           << c._a0;
                 if (tf._f2)
                         std::cerr << ", " << c._a1;
@@ -383,22 +380,22 @@ bool emuvec::test::test_data(const func_data<_V>& tf, std::ostream& os)
                 ++errs;
                 rc= false;
         }
-        std::cout << "rc= " << rc 
+        std::cout << "rc= " << rc
                   << " test cases: " << tf._data.size()
                   << " errors: " << errs << std::endl;
         std::cout << "error rate = ";
-        if (tf._data.size()) 
+        if (tf._data.size())
                 std::cout << double(errs)/tf._data.size() << std::endl;
         else
                 std::cout << 0.0 << std::endl;
         if (calls) {
-                std::cout << "ticks per call: " 
+                std::cout << "ticks per call: "
                           << std::fixed << std::setprecision(2)
-                          << double(ticks)/double(calls) 
+                          << double(ticks)/double(calls)
                           << std::endl;
-                std::cout << "scalar ticks per call: " 
+                std::cout << "scalar ticks per call: "
                           << std::fixed << std::setprecision(2)
-                          << double(s_ticks)/double(calls) 
+                          << double(s_ticks)/double(calls)
                           << std::endl;
         }
         return rc;
@@ -457,9 +454,9 @@ int main(int argc, char** argv)
         bool bits_256(false);
         if (argc>3)
                 usage(argv[0]);
-        if (argc>1) 
+        if (argc>1)
                 check_arg(argv[0], argv[1], bits_256, use_native);
-        if (argc>2) 
+        if (argc>2)
                 check_arg(argv[0], argv[1], bits_256, use_native);
         return (all_tests_03(use_native, bits_256) ==  true) ? 0 : 3;
 }
