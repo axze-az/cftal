@@ -33,16 +33,14 @@ gen_v16()
     svn copy x86_v4s32_inl.h x86_v8s16_inl.h
 }
 
-move_to_x86()
+rename_x86()
 {
-    echo mkdir x86
-    echo svn add x86
-    for i in x86_*.h
+    for i in x86_v*.cc
     do
         pp=`echo $i | sed s/x86_//g`
-        echo svn mv $i x86/$pp
+        echo svn mv $i $pp
     done
 }
 
 #remove_std_int
-#move_to_x86
+rename_x86

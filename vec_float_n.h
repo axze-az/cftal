@@ -124,9 +124,26 @@ namespace cftal {
     typename vec<float, _N>::mask_type
     isfinite(const vec<float, _N>& v);
 
-    namespace impl {
-        // TODO: fma implementations
-    }
+    // a*b +c
+    template <std::size_t _N>
+    vec<float, _N>
+    fma(const vec<float, _N>& a, const vec<float, _N>& b,
+        const vec<float, _N>& c);
+    // a*b -c
+    template <std::size_t _N>
+    vec<float, _N>
+    fms(const vec<float, _N>& a, const vec<float, _N>& b,
+        const vec<float, _N>& c);
+    // -(a*b) + c
+    template <std::size_t _N>
+    vec<float, _N>
+    nfma(const vec<float, _N>& a, const vec<float, _N>& b,
+         const vec<float, _N>& c);
+    // -(a*b) - c
+    template <std::size_t _N>
+    vec<float, _N>
+    nfms(const vec<float, _N>& a, const vec<float, _N>& b,
+         const vec<float, _N>& c);
 
     v4f32 cbrt(arg<v4f32>::type a);
     v4f32 frexp(arg<v4f32>::type x, v4s32* e);
@@ -199,6 +216,17 @@ namespace cftal {
     v8f32 sinh(arg<v8f32>::type d);
 
     v8f32 pow(arg<v8f32>::type x, arg<v8f32>::type y);
+
+    vec<float, 1>
+    fma(arg<vec<float, 1> >::type a,
+        arg<vec<float, 1> >::type b,
+        arg<vec<float, 1> >::type c);
+
+    vec<float, 1>
+    fms(arg<vec<float, 1> >::type a,
+        arg<vec<float, 1> >::type b,
+        arg<vec<float, 1> >::type c);
+
 }
 
 template <std::size_t _N>
@@ -434,6 +462,62 @@ typename cftal::vec<float, _N>::mask_type
 cftal::isfinite(const vec<float, _N>& x)
 {
     return ~(isinf(x) | isnan(x));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::fma(const vec<float, _N>& a, const vec<float, _N>& b,
+           const vec<float, _N>& c)
+{
+    return vec<float, _N>(fma(low_half(a), low_half(b), low_half(c)),
+                          fma(high_half(a), high_half(b), high_half(c)));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::fms(const vec<float, _N>& a, const vec<float, _N>& b,
+           const vec<float, _N>& c)
+{
+    return vec<float, _N>(fms(low_half(a), low_half(b), low_half(c)),
+                          fms(high_half(a), high_half(b), high_half(c)));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::nfma(const vec<float, _N>& a, const vec<float, _N>& b,
+            const vec<float, _N>& c)
+{
+    return vec<float, _N>(nfma(low_half(a), low_half(b), low_half(c)),
+                          nfma(high_half(a), high_half(b), high_half(c)));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::nfms(const vec<float, _N>& a, const vec<float, _N>& b,
+            const vec<float, _N>& c)
+{
+    return vec<float, _N>(nfms(low_half(a), low_half(b), low_half(c)),
+                          nfms(high_half(a), high_half(b), high_half(c)));
+}
+
+inline
+cftal::vec<float, 1>
+cftal::fma(const vec<float, 1>& a, const vec<float, 1>& b,
+           const vec<float, 1>& c)
+{
+    return vec<float, 1>(fmaf(a(), b(), c()));
+}
+
+inline
+cftal::vec<float, 1>
+cftal::fms(const vec<float, 1>& a, const vec<float, 1>& b,
+           const vec<float, 1>& c)
+{
+    return vec<float, 1>(fmaf(a(), b(), -c()));
 }
 
 // local variables:

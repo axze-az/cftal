@@ -1,7 +1,9 @@
 #if !defined (__CFTAL_CVT_H__)
 #define __CFTAL_CVT_H__ 1
 
+
 #include <cftal/vec.h>
+#include <cftal/cast.h>
 #include <utility>
 
 namespace cftal {

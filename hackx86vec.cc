@@ -236,6 +236,7 @@ cftal::v8f32 test_as(cftal::v8s32 a)
     return cftal::as<cftal::v8f32>(a);
 }
 
+#if defined (__x86_64__)
 cftal::uint32_t
 test_read_signs(cftal::v8s16 a)
 {
@@ -253,6 +254,7 @@ test_read_signs(cftal::v2s64 a)
 {
     return cftal::x86::read_signs_s64(a());
 }
+#endif
 
 
 struct print_dpf64 {
@@ -279,7 +281,7 @@ std::ostream& operator<<(std::ostream& s, const print_dpf64& p)
     return s;
 }
 
-#if defined (__GNUC__) && !defined (__clang__)
+#if defined (__GNUC__) && !defined (__clang__) && defined (__x86_64__)
 #include <quadmath.h>
 
 struct out_as_dpf64 {
@@ -559,7 +561,7 @@ void print_sqrtx()
               << ");";
     std::cout << std::endl;
 
-#if defined (__GNUC__) && !defined (__clang__)
+#if defined (__GNUC__) && !defined (__clang__) && defined(__x86_64__)
     __float128 t2= __builtin_sqrtl(__float128(0.5));
     std::cout << std::setprecision(22)
               << double(t2)

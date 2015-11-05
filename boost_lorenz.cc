@@ -1,24 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <boost/operators.hpp>
-#include <boost/numeric/odeint.hpp>
-#include <cftal/vec.h>
-
-namespace boost {
-    namespace numeric {
-        namespace odeint {
-
-            template <typename _T, std::size_t _N>
-            struct vector_space_norm_inf<cftal::vec<_T, _N> > {
-                typedef double result_type;
-                double operator()(const cftal::vec<_T, _N>& v) const {
-                    cftal::vec<_T, _N> va= abs(v);
-                    return max_element(va);
-                }
-            };
-        }
-    }
-}
+#include <cftal/boost_compat.h>
 
 //[point3D
 class point3D : boost::additive1<

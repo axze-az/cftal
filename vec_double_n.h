@@ -149,7 +149,7 @@ namespace cftal {
     vec<double, _N>
     nfms(const vec<double, _N>& a, const vec<double, _N>& b,
          const vec<double, _N>& c);
-    
+
     // specializations vec<double, 2>
     vec<double, 2>
     cbrt(arg<vec<double, 2> >::type v);
@@ -351,8 +351,16 @@ namespace cftal {
 
     vec<double, 8>
     pow(arg<vec<double, 8> >::type x, arg<vec<double, 8> >::type y);
-    
-    
+
+    vec<double, 1>
+    fma(arg<vec<double, 1> >::type a,
+        arg<vec<double, 1> >::type b,
+        arg<vec<double, 1> >::type c);
+
+    vec<double, 1>
+    fms(arg<vec<double, 1> >::type a,
+        arg<vec<double, 1> >::type b,
+        arg<vec<double, 1> >::type c);
 }
 
 template <std::size_t _N>
@@ -644,6 +652,22 @@ cftal::nfms(const vec<double, _N>& a, const vec<double, _N>& b,
 {
     return vec<double, _N>(nfms(low_half(a), low_half(b), low_half(c)),
                            nfms(high_half(a), high_half(b), high_half(c)));
+}
+
+inline
+cftal::vec<double, 1>
+cftal::fma(const vec<double, 1>& a, const vec<double, 1>& b,
+           const vec<double, 1>& c)
+{
+    return vec<double, 1>(::fma(a(), b(), c()));
+}
+
+inline
+cftal::vec<double, 1>
+cftal::fms(const vec<double, 1>& a, const vec<double, 1>& b,
+           const vec<double, 1>& c)
+{
+    return vec<double, 1>(::fma(a(), b(), -c()));
 }
 
 // local variables:

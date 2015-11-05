@@ -47,7 +47,8 @@ int64_t cftal::rdtsc()
                          "rdtsc" :"=A"(a)::"memory");
     return a;
 #else
-#error "please insert a read current time functionality here"
+//#error "please insert a read current time functionality here"
+    return 0;
 #endif
 }
 

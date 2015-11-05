@@ -585,6 +585,7 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 pow(const vf_type& b, const vf_type& e)
 {
+    // we have a problem if e is an integer
     dvf_type ln_b(my_type::log_k2(abs(b)));
     dvf_type ln_b_e(ln_b * e);
     dvf_type pow0(my_type::exp_k2(ln_b_e));
