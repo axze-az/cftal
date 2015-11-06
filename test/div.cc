@@ -89,8 +89,8 @@ bool cftal::test::check_div_16(const char* msg)
             q_cdiv = u / vd;
             r_cdiv = cftal::remainder(u, v, q_cdiv);
             tcur[div_type::LAST] = cftal::rdtsc();
-            r_div = u % v;
-            r_cdiv = u % vd;
+            // r_div = u % v;
+            // r_cdiv = u % vd;
             typename _T::mask_type q_cmp_div(q_ref == q_div);
             typename _T::mask_type r_cmp_div(r_ref == r_div);
             typename _T::mask_type q_cmp_cdiv(q_ref == q_cdiv);
@@ -164,8 +164,8 @@ check_div_32_one_rnd(typename _T::value_type ii,
         q_cdiv = u / dd;
         r_cdiv = cftal::remainder(u, v, q_cdiv);
         tcur[div_type::LAST] = cftal::rdtsc();
-        r_div = u % v;
-        r_cdiv = u % dd;
+        // r_div = u % v;
+        // r_cdiv = u % dd;
         typename _T::mask_type q_cmp_div(q_ref == q_div);
         typename _T::mask_type r_cmp_div(r_ref == r_div);
         typename _T::mask_type q_cmp_cdiv(q_ref == q_cdiv);
@@ -287,8 +287,8 @@ check_div_64_one_rnd(typename _T::value_type ii,
         q_cdiv = u / dd;
         r_cdiv = cftal::remainder(u, v, q_cdiv);
         tcur[div_type::LAST] = cftal::rdtsc();
-        r_div = u % v;
-        r_cdiv = u % dd;
+        // r_div = u % v;
+        // r_cdiv = u % dd;
         typename _T::mask_type q_cmp_div(q_ref == q_div);
         typename _T::mask_type r_cmp_div(r_ref == r_div);
         typename _T::mask_type q_cmp_cdiv(q_ref == q_cdiv);

@@ -1,6 +1,8 @@
 #if !defined (__CFTAL_X86_INTRIN_H__)
 #define __CFTAL_X86_INTRIN_H__ 1
 
+#include <cftal/config.h>
+
 #if IN_KDEVELOP_PARSER !=0 || IN_IDE_PARSER !=0
 #define __AVX__ 1
 #define __SSE4_1__ 1
@@ -12,7 +14,9 @@
 #define alignas(x)
 #endif
 
+#if defined (__SSE__)
 #include <immintrin.h>
+#endif
 
 #if defined (__SSE4_1__) && !defined (__POPCNT__)
 #define __POPCNT__

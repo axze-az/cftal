@@ -4,7 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/std_types.h>
 #if defined (__x86_64__) || defined (__i386__)
-#include <x86intrin.h>
+#include <x86/intrin.h>
 #endif
 
 namespace cftal {

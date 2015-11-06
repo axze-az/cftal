@@ -46,18 +46,17 @@ bool
 cftal::test::operator==(const idx& a, const idx& b)
 {
     return (a.size() == b.size()) &&
-        (std::equal(a.cbegin(), a.cend(),
-                    b.cbegin(), b.cend()));
+        (std::equal(std::cbegin(a), std::cend(a),
+                    std::cbegin(b), std::cend(b)));
 }
 
 inline
 bool
 cftal::test::operator<(const idx& a, const idx& b)
 {
-    return std::lexicographical_compare(a.cbegin(), a.cend(),
-                                        b.cbegin(), b.cend());
+    return std::lexicographical_compare(std::cbegin(a), std::cend(a),
+                                        std::cbegin(b), std::cend(b));
 }
-
 
 inline
 std::ostream&
@@ -77,8 +76,6 @@ bool cftal::test::check_val(_T t, int p)
 {
     return ((p<0) && (t==0)) || (_T(p+1) == t);
 }
-
-
 
 // Local Variables:
 // mode: c++
