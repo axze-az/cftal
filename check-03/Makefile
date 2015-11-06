@@ -8,6 +8,12 @@ LIBNAME=checkx86vec-03
 MAJOR=0#
 MINOR=1#
 
+ifeq ($(CC),aarch64-linux-gnu-gcc-5)
+ARCH=-march=armv8-a
+else
+ARCH+=-march=native #-mavx -mavx2 -mfma -mavx512f -mpopcnt -mavx2 -mfma
+endif
+
 SLDFLAGS:= $(SLDFLAGS) -L../sysio -lsysio++ -L../thread -lthread++
 CXXFLAGS+=-I. -I.. -I../.. -I../stlex -I../thread  -I../sysio #-march=native
 CSRCS=$(wildcard ./x86vec_test_*.cc ./bitops_test.cc d_int8_test.cc)

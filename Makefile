@@ -13,7 +13,6 @@ ifeq ($(CC),aarch64-linux-gnu-gcc-5)
 ARCH=-march=armv8-a
 else
 ARCH+=-march=native #-mavx -mavx2 -mfma -mavx512f -mpopcnt -mavx2 -mfma
-ARCH=
 endif
 #CXXFLAGS+=-I.. -march=native -mavx512f -mavx512vl -mavx512dq #-mavx512pf -mavx512er -mavx512cd
 CXXFLAGS+=-I.. #-mavx512f -mavx512vl -mavx512dq #-mavx512pf -mavx512er -mavx512cd 
