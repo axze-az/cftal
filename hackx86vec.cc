@@ -780,15 +780,16 @@ int main(int argc, char** argv)
     int se;
     double st=4.94066e-324;
     double sr=frexp(st, &se);
-    std::cout << low_half(low_half(r4))() << " "
-              << low_half(low_half(e4))() << std::endl;
-    std::cout << low_half(r)() << " " << low_half(e)() << std::endl;
-    std::cout << sr << " " << se << std::endl;
+    std::cout << r4 << " : " << e4 << std::endl;
+    std::cout << r << " : " << e << std::endl;
+    std::cout << sr << " : " << se << std::endl;
 
 
     cftal::v8u16 ut= {1, 2, 3, 4, 5, 6, 7, 8};
     cftal::v8u16 ut1= cftal::permute<0, 1, 2, 3, 7, 6, 5, 4>(ut);
     std::cout << ut1 << std::endl;
+    cftal::v8u16 ut2= ut1 * 2;
+    std::cout << ut2 << std::endl;
     
 #if 0
     cftal::vec<double, 4> t1(1.0), t2(2.0);
