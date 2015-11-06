@@ -259,6 +259,7 @@ test_read_signs(cftal::v2s64 a)
 
 struct print_dpf64 {
     const cftal::d_real<double> _f;
+	explicit
     print_dpf64(const cftal::d_real<double>& f) : _f(f) {}
 };
 
