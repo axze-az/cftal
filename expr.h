@@ -14,8 +14,7 @@ namespace cftal {
     struct expr {
         typename expr_traits<_L>::type _l;
         typename expr_traits<_R>::type _r;
-        constexpr expr(const _L& l, const _R& r) :
-            _l(l), _r(r) {}
+        constexpr expr(const _L& l, const _R& r) : _l(l), _r(r) {}
     };
 
     template <class _OP, class _L>
@@ -44,7 +43,7 @@ namespace cftal {
     eval(const expr<_OP, _L, void>& e) {
         return _OP::v(eval(e._l));
     }
-    
+
 }
 
 // Local variables:

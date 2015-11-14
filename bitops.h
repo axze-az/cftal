@@ -34,7 +34,7 @@ namespace cftal {
 }
 
 inline
-int64_t cftal::rdtsc()
+cftal::int64_t cftal::rdtsc()
 {
 #if defined (__x86_64__)
     uint64_t a, d;
@@ -53,7 +53,7 @@ int64_t cftal::rdtsc()
 }
 
 inline
-uint32_t cftal::__popcnt_8(uint32_t x)
+cftal::uint32_t cftal::__popcnt_8(uint32_t x)
 {
     const uint32_t c55=0x55555555;
     const uint32_t c33=0x33333333;
@@ -65,7 +65,7 @@ uint32_t cftal::__popcnt_8(uint32_t x)
 }
 
 inline
-uint64_t cftal::__popcnt_8(uint64_t x)
+cftal::uint64_t cftal::__popcnt_8(uint64_t x)
 {
     const uint64_t c55 = 0x5555555555555555ULL;
     // binary: 00110011..
@@ -137,7 +137,7 @@ unsigned cftal::popcnt(uint64_t x)
 }
 
 inline
-uint8_t cftal::bitrev(uint8_t x)
+cftal::uint8_t cftal::bitrev(uint8_t x)
 {
     // swap odd and even bits
     x = ((x >> 1) & 0x55555555) | ((x & 0x55555555) << 1);
@@ -149,7 +149,7 @@ uint8_t cftal::bitrev(uint8_t x)
 }
 
 inline
-uint16_t cftal::bitrev(uint16_t x)
+cftal::uint16_t cftal::bitrev(uint16_t x)
 {
     // swap odd and even bits
     x = ((x >> 1) & 0x55555555) | ((x & 0x55555555) << 1);
@@ -163,7 +163,7 @@ uint16_t cftal::bitrev(uint16_t x)
 }
 
 inline
-uint32_t cftal::bitrev(uint32_t x)
+cftal::uint32_t cftal::bitrev(uint32_t x)
 {
     // swap odd and even bits
     x = ((x >> 1) & 0x55555555) | ((x & 0x55555555) << 1);
@@ -179,7 +179,7 @@ uint32_t cftal::bitrev(uint32_t x)
 }
 
 inline
-uint64_t cftal::bitrev(uint64_t x)
+cftal::uint64_t cftal::bitrev(uint64_t x)
 {
     const uint64_t c5555 = 0x5555555555555555ULL;
     const uint64_t c3333 = 0x3333333333333333ULL;
@@ -243,7 +243,6 @@ unsigned cftal::lzcnt(uint64_t x)
     return popcnt(~x);
 #endif
 }
-
 
 // Local variables:
 // mode: c++
