@@ -182,7 +182,7 @@ namespace cftal {
             
             static
             void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
-                r[1] = cvt<vhpf_type, vf_type>(x);
+                r[0] = cvt<vhpf_type, vf_type>(x);
             }
 
             static

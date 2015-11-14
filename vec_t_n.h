@@ -36,10 +36,8 @@ namespace cftal {
         vec& operator=(vec&& r) = default;
 
         vec(const _T& v);
-        vec(const _T& v, bool splat);
         vec(std::initializer_list<_T> l);
         vec(init_list<_T> l);
-        vec(const half_type& lh, bool splat=true);
         vec(const half_type& lh, const half_type& hh);
         const half_type& lh() const;
         const half_type& hh() const;
@@ -292,13 +290,6 @@ template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>::vec(const _T& v)
     : _l(v), _h(v)
-{
-}
-
-template <class _T, std::size_t _N>
-inline
-cftal::vec<_T, _N>::vec(const _T& v, bool splat)
-    : _l(v, splat), _h(splat ? v : _T(0))
 {
 }
 

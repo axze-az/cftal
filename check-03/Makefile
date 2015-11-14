@@ -14,6 +14,8 @@ else
 ARCH+=-march=native #-mavx -mavx2 -mfma -mavx512f -mpopcnt -mavx2 -mfma
 endif
 
+EXEC=
+
 SLDFLAGS:= $(SLDFLAGS) -L../sysio -lsysio++ -L../thread -lthread++
 CXXFLAGS+=-I. -I.. -I../.. -I../stlex -I../thread  -I../sysio #-march=native
 CSRCS=$(wildcard ./x86vec_test_*.cc ./bitops_test.cc d_int8_test.cc)
@@ -73,49 +75,49 @@ testemuvec-03-g: testemuvec-03.od lib$(LIBNAME)-g.a ../libcftal-g.a
 # 	$(LD) -o $@ $< $(LDFLAGS) -g -L. -l$(LIBNAME)-g -lstdc++
 
 test-sin: testx86vec-03
-	./$< <sin.testdata
+	$(EXEC) ./$< <sin.testdata
 
 test-sin-256: testx86vec-03
-	./$< --bits-256 <sin.testdata
+	$(EXEC) ./$< --bits-256 <sin.testdata
 
 test-sin-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< <sin.testdata
 
 test-sin-native: testx86vec-03
-	./$< --use-native <sin.testdata
+	$(EXEC) ./$< --use-native <sin.testdata
 
 test-sin-native-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< --use-native <sin.testdata
 
 test-cos: testx86vec-03
-	./$< <cos.testdata
+	$(EXEC) ./$< <cos.testdata
 
 test-cos-256: testx86vec-03
-	./$< --bits-256 <cos.testdata
+	$(EXEC) ./$< --bits-256 <cos.testdata
 
 test-cos-native: testx86vec-03
-	./$< --use-native <cos.testdata
+	$(EXEC) ./$< --use-native <cos.testdata
 
 test-tan: testx86vec-03
-	./$< <tan.testdata
+	$(EXEC) ./$< <tan.testdata
 
 test-tan-256: testx86vec-03
-	./$< --bits-256 <tan.testdata
+	$(EXEC) ./$< --bits-256 <tan.testdata
 
 test-tan-native: testx86vec-03
-	./$< --use-native <tan.testdata
+	$(EXEC) ./$< --use-native <tan.testdata
 
 test-exp: testx86vec-03
-	./$< <exp.testdata
+	$(EXEC) ./$< <exp.testdata
 
 test-exp-256: testx86vec-03
-	./$< --bits-256 <exp.testdata
+	$(EXEC) ./$< --bits-256 <exp.testdata
 
 test-exp-native: testx86vec-03
-	./$< --use-native  <exp.testdata
+	$(EXEC) ./$< --use-native  <exp.testdata
 
 test-exp-native-256: testx86vec-03
-	./$< --use-native  --bits-256 <exp.testdata
+	$(EXEC) ./$< --use-native  --bits-256 <exp.testdata
 
 test-exp-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< <exp.testdata
@@ -124,13 +126,13 @@ test-exp-native-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< --use-native <exp.testdata
 
 test-expm1: testx86vec-03
-	./$< <expm1.testdata
+	$(EXEC) ./$< <expm1.testdata
 
 test-expm1-256: testx86vec-03
-	./$< --bits-256 <expm1.testdata
+	$(EXEC) ./$< --bits-256 <expm1.testdata
 
 test-expm1-native: testx86vec-03
-	./$< --use-native  <expm1.testdata
+	$(EXEC) ./$< --use-native  <expm1.testdata
 
 test-expm1-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< <expm1.testdata
@@ -139,13 +141,13 @@ test-expm1-native-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< --use-native <expm1.testdata
 
 test-pow: testx86vec-03
-	./$< <pow.testdata
+	$(EXEC) ./$< <pow.testdata
 
 test-pow-256: testx86vec-03
-	./$< --bits-256 <pow.testdata
+	$(EXEC) ./$< --bits-256 <pow.testdata
 
 test-pow-native: testx86vec-03
-	./$< --use-native  <pow.testdata
+	$(EXEC) ./$< --use-native  <pow.testdata
 
 test-pow-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< <pow.testdata
@@ -154,13 +156,13 @@ test-pow-native-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< --use-native <pow.testdata
 
 test-sinh: testx86vec-03
-	./$< <sinh.testdata
+	$(EXEC) ./$< <sinh.testdata
 
 test-sinh-256: testx86vec-03
-	./$< --bits-256 <sinh.testdata
+	$(EXEC) ./$< --bits-256 <sinh.testdata
 
 test-sinh-native: testx86vec-03
-	./$< --use-native  <sinh.testdata
+	$(EXEC) ./$< --use-native  <sinh.testdata
 
 test-sinh-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< <sinh.testdata
@@ -169,28 +171,28 @@ test-sinh-native-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< --use-native <sinh.testdata
 
 test-cosh: testx86vec-03
-	./$< <cosh.testdata
+	$(EXEC) ./$< <cosh.testdata
 
 test-cosh-256: testx86vec-03
-	./$< --bits-256 <cosh.testdata
+	$(EXEC) ./$< --bits-256 <cosh.testdata
 
 test-log: testx86vec-03
-	./$< <log.testdata
+	$(EXEC) ./$< <log.testdata
 
 test-log-256: testx86vec-03
-	./$< --bits-256 <log.testdata
+	$(EXEC) ./$< --bits-256 <log.testdata
 
 test-log-fma: testx86vec-03
 	sde64 -mix -ast -- ./$< <log.testdata
 
 test-asin: testx86vec-03
-	./$< <asin.testdata
+	$(EXEC) ./$< <asin.testdata
 
 test-acos: testx86vec-03
-	./$< <acos.testdata
+	$(EXEC) ./$< <acos.testdata
 
 test-atan: testx86vec-03
-	./$< <atan.testdata
+	$(EXEC) ./$< <atan.testdata
 
 
 #################################################################

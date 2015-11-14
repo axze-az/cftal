@@ -9,7 +9,7 @@ MAJOR=0#
 MINOR=1#
 
 SLDFLAGS:= $(SLDFLAGS) 
-ifeq ($(CC),aarch64-linux-gnu-gcc-5)
+ifeq ($(findstring aarch64-linux-gnu-gcc, $(CC)),aarch64-linux-gnu-gcc)
 ARCH=-march=armv8-a
 else
 ARCH+=-march=native #-mavx -mavx2 -mfma -mavx512f -mpopcnt -mavx2 -mfma
