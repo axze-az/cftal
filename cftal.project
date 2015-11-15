@@ -309,6 +309,7 @@
       <File Name="x86/vreg.h"/>
     </VirtualDirectory>
     <File Name="x86_ops_1.cc"/>
+    <File Name="impl/vreg.h"/>
   </VirtualDirectory>
   <Reconciliation>
     <Regexes/>
