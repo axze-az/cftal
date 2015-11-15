@@ -2,7 +2,7 @@
 <CodeLite_Workspace Name="cftal" Database="">
   <Project Name="cftal" Path="cftal.project" Active="Yes"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
+    <WorkspaceConfiguration Name="Debug" Selected="no">
       <Project Name="cftal" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
