@@ -333,7 +333,7 @@ namespace cftal {
             struct vshufpd {
                 static __m128d v(__m128d a, __m128d b) {
                     const int m=shuffle2<int(_P0), int(_P1)>::val;
-                    return _mm_shuffle_pd(a, b, m);
+                    return _mm_shuffle_pd(a, b, m & 3);
                 }
                 static __m128d v(__m128d a) {
                     return v(a, a);
