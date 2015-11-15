@@ -1,11 +1,4 @@
 cmake_minimum_required (VERSION 3.0.0)
-project (CFTAL)
-
-set (CFTAL_VERSION_MAJ 0)
-set (CFTAL_VERSION_MIN 1)
-set (CFTAL_VERSION_PLV 0)
-set (CFTAL_VERSION_STR "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}.${CFTAL_VERSION_PLV}")
-
 # configurations
 if(CMAKE_CONFIGURATION_TYPES)
    set(CMAKE_CONFIGURATION_TYPES debug release)
@@ -13,6 +6,12 @@ if(CMAKE_CONFIGURATION_TYPES)
    #  "Reset the configurations to what we need"
    # FORCE)
 endif()
+
+project (CFTAL)
+set (CFTAL_VERSION_MAJ 0)
+set (CFTAL_VERSION_MIN 1)
+set (CFTAL_VERSION_PLV 0)
+set (CFTAL_VERSION_STR "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}.${CFTAL_VERSION_PLV}")
 
 # compile flags for usage with cmake -DCMAKE_BUILD_TYPE=debug/release
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
@@ -33,24 +32,29 @@ endif(CFTAL_USE_CXX17)
 
 include_directories(..)
 
-find_library(LIBM m)
-if (LIBM)
-        link_libraries(${LIBM})
-endif(LIBM)
-
 set (CSRCS mul_div_32.cc mul_div_64.cc d_real.cc math_func.cc x86_ops_1.cc
 v2f64.cc v4f64.cc v4f32.cc v8f32.cc vec_traits.cc v8f64.cc)
 
 add_library (cftal STATIC ${CSRCS})
 #set_target_properties(cftal PROPERTIES OUTPUT_NAME "cftal")
-add_library (cftal.${CFTAL_VERSION_STR} SHARED ${CSRCS})
-set_target_properties(cftal.${CFTAL_VERSION_STR} PROPERTIES COMPILE_FLAGS
-  "-fPIC") 
+set (CFTAL_DLL cftal.${CFTAL_VERSION_STR})
+add_library (${CFTAL_DLL} SHARED ${CSRCS})
+set_property(TARGET ${CFTAL_DLL} PROPERTY INTERFACE_POSITION_INDEPENDENT_CODE ON)
 
+find_library(LIBM m)
+if (LIBM)
+        target_link_libraries(${CFTAL_DLL} ${LIBM})
+endif(LIBM)
+
+# hackx86vec
 set (HACKX86VEC_SRC hackx86vec.cc)
-
 add_executable(hackx86vec ${HACKX86VEC_SRC})
-target_link_libraries(hackx86vec cftal)
+target_link_libraries(hackx86vec ${CFTAL_DLL})
+
+# boost_lorenz
+set (BOOST_LORENZ_SRC boost_lorenz.cc)
+add_executable(boost_lorenz ${BOOST_LORENZ_SRC})
+target_link_libraries(boost_lorenz ${CFTAL_DLL})
 
 install(DIRECTORY . DESTINATION include/cftal
   PATTERN "*build*" EXCLUDE
