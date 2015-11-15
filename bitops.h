@@ -47,6 +47,8 @@ cftal::int64_t cftal::rdtsc()
                          "rdtsc" :"=A"(a)::"memory");
     return a;
 #elif defined (_M_AMD64) && defined (_MSC_VER)
+	__mm_lfence();
+	return __rdtsc();	
 #elif defined (__ARM_ARCH_7__)
     unsigned tsc;
     uint64_t final_tsc;
