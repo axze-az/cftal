@@ -2,13 +2,21 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
 
 [CMake]
-Build Directory Count=1
-Current Build Directory Index=0
+Build Directory Count=2
+Current Build Directory Index=1
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/build
 Build Type=release
+CMake Binary=file:///usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=file:///usr/local
+
+[CMake][CMake Build Directory 1]
+Build Directory Path=file:///home/axel/projects/cpplib/cftal/debug
+Build Type=Debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
@@ -25,7 +33,7 @@ Path=gcc
 Type=GCC
 
 [Launch]
-Launch Configurations=Launch Configuration 0
+Launch Configurations=Launch Configuration 0,Launch Configuration 1
 
 [Launch][Launch Configuration 0]
 Configured Launch Modes=execute
@@ -43,6 +51,18 @@ External Terminal=konsole --noclose --workdir %workdir -e %exe
 Project Target=cftal,hackx86vec
 Use External Terminal=false
 Working Directory=
+isExecutable=false
+
+[Launch][Launch Configuration 1]
+Configured Launch Modes=debug
+Configured Launchers=gdb
+Name=boost_lorenz
+Type=Native Application
+
+[Launch][Launch Configuration 1][Data]
+Configured from ProjectItem=cftal,boost_lorenz
+Project Target=cftal,boost_lorenz
+Working Directory=file:///home/axel/projects/cpplib/cftal/debug/
 isExecutable=false
 
 [Project]
