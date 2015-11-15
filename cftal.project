@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="cftal" InternalType="">
-  <Reconciliation>
-    <Regexes/>
-    <Excludepaths/>
-    <Ignorefiles/>
-    <Extensions>
-      <![CDATA[cpp;c;h;hpp;xrc;wxcp;fbp]]>
-    </Extensions>
-    <Topleveldir>../cftal</Topleveldir>
-  </Reconciliation>
   <Plugins>
-    <Plugin Name="CppCheck"/>
     <Plugin Name="subversion2">
       <![CDATA[true
 /home/axel/projects/cpplib/cftal
@@ -19,6 +9,7 @@
     <Plugin Name="qmake">
       <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
     </Plugin>
+    <Plugin Name="CppCheck"/>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
@@ -41,9 +32,18 @@
  }]]]>
     </Plugin>
   </Plugins>
-  <Description/>
-  <Dependencies/>
   <VirtualDirectory Name="cftal">
+    <VirtualDirectory Name=".codelite">
+      <File Name=".codelite/compilation.db"/>
+      <File Name=".codelite/refactoring.db"/>
+      <File Name=".codelite/.tern-port"/>
+      <File Name=".codelite/.tern-project"/>
+      <File Name=".codelite/cftal.workspace.axel"/>
+      <File Name=".codelite/compilation.db"/>
+      <File Name=".codelite/cppcheck.list"/>
+      <File Name=".codelite/refactoring.db"/>
+      <File Name=".codelite/valgrind.memcheck.supp"/>
+    </VirtualDirectory>
     <File Name=".cvsignore"/>
     <VirtualDirectory Name=".kdev4">
       <File Name=".kdev4/cftal.kdev4"/>
@@ -310,6 +310,17 @@
     </VirtualDirectory>
     <File Name="x86_ops_1.cc"/>
   </VirtualDirectory>
+  <Reconciliation>
+    <Regexes/>
+    <Excludepaths/>
+    <Ignorefiles/>
+    <Extensions>
+      <![CDATA[cpp;c;h;hpp;xrc;wxcp;fbp]]>
+    </Extensions>
+    <Topleveldir>../cftal</Topleveldir>
+  </Reconciliation>
+  <Description/>
+  <Dependencies/>
   <Settings Type="Dynamic Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
