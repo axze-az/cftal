@@ -36,7 +36,7 @@ namespace cftal {
 inline
 cftal::int64_t cftal::rdtsc()
 {
-#if defined (__x86_64__)
+#if defined (__x86_64__) 
     uint64_t a, d;
     __asm__ __volatile__("lfence;\n\t"
                          "rdtsc" :"=a"(a), "=d"(d)::"memory");
@@ -46,7 +46,19 @@ cftal::int64_t cftal::rdtsc()
     __asm__ __volatile__("lfence;\n\t"
                          "rdtsc" :"=A"(a)::"memory");
     return a;
-#else
+#elif defined (_M_AMD64) && defined (_MSC_VER)
+#elif defined (__ARM_ARCH_7__)
+    unsigned tsc;
+    uint64_t final_tsc;
+    /* Read PMCCNTR synchronized*/	
+    __asm__ __volatile__("isb sy\n\t" 
+                         "mrc p15, 0, %0, c9, c13, 0\n\t" 
+                         : "=r"(tsc));
+    /* 1 tick = 64 clocks */
+    final_tsc = ((uint64_t)tsc) << 6;
+    return (uint64_t)final_tsc;
+#elif defined (__aarch64__)	
+#else    
 //#error "please insert a read current time functionality here"
     return 0;
 #endif
