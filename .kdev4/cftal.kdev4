@@ -8,11 +8,11 @@ ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/build
-Build Type=Debug
+Build Type=release
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
-Install Directory=
+Install Directory=file:///usr/local
 
 [CustomDefinesAndIncludes][ProjectPath0]
 Defines=\x00\x00\x00\x00
