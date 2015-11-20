@@ -3,10 +3,13 @@
 
 #include <cftal/config.h>
 #include <cftal/cast.h>
+#if defined (__SSE2__)
+#include <cftal/x86/intrin.h>
+#endif
 
 namespace cftal {
 
-#if defined (__SSE2__)    
+#if defined (__SSE2__)
     namespace impl {
         // cast to __m128
         template <>
@@ -154,7 +157,7 @@ namespace cftal {
             }
         };
 #endif
-        
+
     } // namespace impl
 #endif // __SSE2__
 } // namespace cftal
