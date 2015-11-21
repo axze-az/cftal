@@ -1,4 +1,4 @@
-#include "vec_traits.h"
+#include "cftal/vec_traits.h"
 
 #if 0
 const cftal::v4s32

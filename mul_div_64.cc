@@ -1,5 +1,5 @@
-#include "mul_div.h"
-#include "d_int.h"
+#include "cftal/mul_div.h"
+#include "cftal/d_int.h"
 #include <iostream> // required by print_rcp_64_table
 #include <iomanip> // required by print_rcp_64_table
 

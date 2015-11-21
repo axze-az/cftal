@@ -1,9 +1,9 @@
 #include <cftal/config.h>
 #if defined (__SSE2__)
-#include "x86/ops_1.h"
-#include "x86/ins_ext.h"
-#include "bitops.h"
-#include "mul_div.h"
+#include "cftal/x86/ops_1.h"
+#include "cftal/x86/ins_ext.h"
+#include "cftal/bitops.h"
+#include "cftal/mul_div.h"
 
 __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 {

@@ -49,7 +49,7 @@ else(CFTAL_USE_CXX17)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
 endif(CFTAL_USE_CXX17)
 
-include_directories(..)
+include_directories(include)
 
 set (CSRCS mul_div_32.cc mul_div_64.cc d_real.cc math_func.cc x86_ops_1.cc
 v2f64.cc v4f64.cc v4f32.cc v8f32.cc vec_traits.cc v8f64.cc)
