@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
+#include <cftal/constants.h>
 #include <cftal/vec_double_n.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
@@ -266,9 +267,8 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                constexpr const bytes8 all_one{-1, -1};
-                const full_type all_set(all_one._f64);
-                return _mm512_xor_pd(a(), all_set());
+                const full_type neg_bits(sign_f64_msk::v._f64);
+                return _mm512_xor_pd(a(), neg_bits());
             }
         };
 

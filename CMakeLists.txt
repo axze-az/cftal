@@ -8,7 +8,7 @@ if(CMAKE_CONFIGURATION_TYPES)
 endif()
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE release CACHE STRING
-      "Choose the type of build, options are: debug release."
+      "Choose the type of build, options are: debug release profile."
       FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
@@ -32,6 +32,8 @@ set (CMAKE_CXX_FLAGS_RELEASE
   "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
 set (CMAKE_CXX_FLAGS_RELEASE
   "${CMAKE_CXX_FLAGS_RELEASE} -fexpensive-optimizations")
+set (CMAKE_CXX_FLAGS_PROFILE
+  "${CMAKE_CXX_FLAGS_PROFILE} -pg")
 endif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
 message(${CMAKE_CXX_COMPILER_ID})
@@ -42,9 +44,9 @@ message(${CMAKE_LIBRARY_ARCHITECTURE})
 
 option(CFTAL_USE_CXX17 "use C++17" ON)
 if(CFTAL_USE_CXX17)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++1z")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++1z")
 else(CFTAL_USE_CXX17)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
 endif(CFTAL_USE_CXX17)
 
 include_directories(..)

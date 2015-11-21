@@ -14,7 +14,7 @@ namespace boost {
                 typedef double result_type;
                 double operator()(const cftal::vec<_T, _N>& v) const {
                     cftal::vec<_T, _N> va= abs(v);
-                    return max_element(va);
+                    return cftal::max_element(va);
                 }
             };
         }
