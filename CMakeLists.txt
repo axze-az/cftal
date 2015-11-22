@@ -43,8 +43,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "CLAN
     # debug flags are set by cmake already        
 endif()
 
-message(${CMAKE_CXX_COMPILER_ID})
-message(${CMAKE_LIBRARY_ARCHITECTURE})
+#message(${CMAKE_CXX_COMPILER_ID})
+#message(${CMAKE_LIBRARY_ARCHITECTURE})
 if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set (CMAKE_CXX_FLAGS_RELEASE
@@ -77,6 +77,7 @@ option(CFTAL_FULL_TEST "perform a full test with long compile times" OFF)
 include_directories(include)
 
 add_subdirectory(src)
+add_subdirectory(test)
 
 # hackx86vec
 set (HACKX86VEC_SRC hackx86vec.cc)
