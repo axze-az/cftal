@@ -1,5 +1,5 @@
 #include <cftal/vec.h>
-#include <cftal/x86_ops_1.h>
+#include <cftal/x86/ops_1.h>
 #include <cftal/test/intops.h>
 #include <iostream>
 

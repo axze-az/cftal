@@ -75,7 +75,6 @@ endif(CFTAL_USE_CXX17)
 option(CFTAL_FULL_TEST "perform a full test with long compile times" OFF)
 
 include_directories(include)
-
 add_subdirectory(src)
 add_subdirectory(test)
 
@@ -92,6 +91,8 @@ target_link_libraries(boost_lorenz cftal-so)
 install (TARGETS boost_lorenz
   DESTINATION bin
   COMPONENT tools)
+
+enable_testing()
 
 set (CPACK_PACKAGE_NAME "libcftal")
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "cftal library")
