@@ -13,8 +13,12 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
 if (UNIX)
-find_program(CMAKE_C_COMPILER NAMES gcc)
-find_program(CMAKE_CXX_COMPILER NAMES g++)
+    if (NOT ENV{CC})
+        find_program(CMAKE_C_COMPILER NAMES gcc)
+    endif() 
+    if (NOT ENV{CXX})
+        find_program(CMAKE_CXX_COMPILER NAMES g++)
+    endif()
 endif(UNIX)
 
 project (CFTAL)
@@ -24,30 +28,51 @@ set (CFTAL_VERSION_PLV 0)
 set (CFTAL_VERSION_STR
     "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}.${CFTAL_VERSION_PLV}")
 
-# compile flags for usage with cmake -DCMAKE_BUILD_TYPE=debug/release
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
-# optimizations and debug
-set (CMAKE_CXX_FLAGS_RELEASE
-  "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
-set (CMAKE_CXX_FLAGS_RELEASE
-  "${CMAKE_CXX_FLAGS_RELEASE} -fexpensive-optimizations")
-set (CMAKE_CXX_FLAGS_PROFILE
-  "${CMAKE_CXX_FLAGS_PROFILE} -pg")
-endif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+# compile flags for usage with cmake -DCMAKE_BUILD_TYPE=debug/release/profile
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "CLANG")
+    # warnings for all
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+    # release
+    set (CMAKE_CXX_FLAGS_RELEASE
+        "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
+    set (CMAKE_CXX_FLAGS_RELEASE
+        "${CMAKE_CXX_FLAGS_RELEASE} -fexpensive-optimizations")
+    # profile
+    set (CMAKE_CXX_FLAGS_PROFILE
+        "${CMAKE_CXX_FLAGS_PROFILE} -pg")
+    # debug flags are set by cmake already        
+endif()
 
 message(${CMAKE_CXX_COMPILER_ID})
 message(${CMAKE_LIBRARY_ARCHITECTURE})
+if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fsched-pressure")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fschedule-insns")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fschedule-insns2")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -finline-functions")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fselective-scheduling")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fselective-scheduling2")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fsel-sched-pipelining")
+    endif()
+endif()
 
-# debug flags are set by cmake already
-#set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O1")
-
+# C++17 ?
 option(CFTAL_USE_CXX17 "use C++17" ON)
 if(CFTAL_USE_CXX17)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++1z")
 else(CFTAL_USE_CXX17)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
 endif(CFTAL_USE_CXX17)
+# Full test ?
+option(CFTAL_FULL_TEST "perform a full test with long compile times" OFF)
 
 include_directories(include)
 
