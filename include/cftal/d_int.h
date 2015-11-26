@@ -13,32 +13,19 @@ namespace cftal {
         static_assert(std::is_unsigned<_T>::value,
                       "_T must be unsigned");
     public:
-        typedef _T type;
+        using type = _T;
         enum {
             N2 = sizeof(type) * 8,
             N = N2*2
         };
-        duint() : _l(0), _h(0) {
-        }
-        duint(const type& vl) : _l(vl), _h(0) {
-        }
-        duint(const type& vl, const type& vh) : _l(vl), _h(vh) {
-        }
-        const type& l() const {
-            return _l;
-        }
-        const type& uh() const {
-            return _h;
-        }
-        void l(const type& v) {
-            _l = v;
-        }
-        void uh(const type& v) {
-            _h = v;
-        }
-        explicit operator _T() const {
-            return _l;
-        }
+        constexpr duint() : _l(0), _h(0) {}
+        constexpr duint(const type& vl) : _l(vl), _h(0) {}
+        constexpr duint(const type& vl, const type& vh) : _l(vl), _h(vh) {}
+        const type& l() const { return _l; }
+        const type& uh() const { return _h; }
+        void l(const type& v) { _l = v; }
+        void uh(const type& v) { _h = v; }
+        explicit operator _T() const { return _l; }
     private:
         type _l;
         type _h;
@@ -234,19 +221,14 @@ namespace cftal {
         static_assert(std::is_signed<_T>::value,
                       "_T must be signed");
     public:
-        typedef _T type;
-        typedef typename std::make_unsigned<_T>::type utype;
-        typedef duint<utype> base_type;
-        dint() : base_type() {
-        }
-        dint(const type& vl) : base_type(vl,
-                                         vl < _T(0) ?
-                                         ~_T(0) : _T(0)) {
-        }
-        dint(const utype& vl, const type& vh) : base_type(vl,vh) {
-        }
-        dint(const base_type& b) : base_type(b) {
-        }
+        using type = _T;
+        using utype = typename std::make_unsigned<_T>::type;
+        using base_type = duint<utype>;
+        constexpr dint() : base_type() {}
+        constexpr dint(const type& vl) : 
+            base_type(vl, vl < _T(0) ? ~_T(0) : _T(0)) { }
+        constexpr dint(const utype& vl, const type& vh) : base_type(vl,vh) {}
+        constexpr dint(const base_type& b) : base_type(b) { }
         // l is inherited from base_tpye.
         const type& sh() const {
             const utype& _uh= base_type::uh();
