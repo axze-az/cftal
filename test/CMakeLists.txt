@@ -24,6 +24,7 @@ function(test_prog arg1)
 endfunction()
 
 test_prog(test-intops)
+test_prog(test-cbrt)
 
 if (CFTAL_FULL_TEST)
   test_prog(test-v2)

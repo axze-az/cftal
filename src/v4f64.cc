@@ -1,7 +1,7 @@
 // #if defined (__AVX__)
 #include "cftal/vec.h"
 #include "cftal/vec_traits.h"
-#include "cftal/vec_def_math_funcs.h"
+#include "vec_def_math_funcs.h"
 
 DEF_MATH_FUNCS(cftal, v4f64, v4s32, double, 6)
 // #endif
@@ -40,7 +40,7 @@ calc4x4(double* res,
     v4f64 b1= mem<v4f64>::load(b+4);
     v4f64 b2= mem<v4f64>::load(b+8);
     v4f64 b3= mem<v4f64>::load(b+12);
-    
+
     v4f64 r;
     cftal::mat_mul_1x4(r, a, b0, b1, b2, b3);
     mem<v4f64>::store(res, r);

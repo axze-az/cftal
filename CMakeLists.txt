@@ -15,7 +15,7 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 if (UNIX)
     if (NOT ENV{CC})
         find_program(CMAKE_C_COMPILER NAMES gcc)
-    endif() 
+    endif()
     if (NOT ENV{CXX})
         find_program(CMAKE_CXX_COMPILER NAMES g++)
     endif()
@@ -40,7 +40,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "CLAN
     # profile
     set (CMAKE_CXX_FLAGS_PROFILE
         "${CMAKE_CXX_FLAGS_PROFILE} -pg")
-    # debug flags are set by cmake already        
+    # debug flags are set by cmake already
 endif()
 
 #message(${CMAKE_CXX_COMPILER_ID})
@@ -61,6 +61,8 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
             "${CMAKE_CXX_FLAGS_RELEASE} -fselective-scheduling2")
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -fsel-sched-pipelining")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
     endif()
 endif()
 

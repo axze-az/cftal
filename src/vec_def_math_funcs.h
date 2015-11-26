@@ -11,16 +11,6 @@
 #define DEF_MATH_FUNCS(ns, vec_float, vec_int, real_type, cbrt_iter)    \
                                                                         \
         ns::vec_float                                                   \
-        ns::cbrt(arg<vec_float>::type a)                                \
-        {                                                               \
-                using traits_t=cftal::math::func_traits<vec_float,      \
-                                                        vec_int>;       \
-                using func_t=cftal::math::impl::nth_root<real_type,     \
-                                                         traits_t, 3>;  \
-                return func_t::v< cbrt_iter >(a);                       \
-        }                                                               \
-                                                                        \
-        ns::vec_float                                                   \
         ns::frexp(arg<vec_float>::type d, vec_int* pe)                  \
         {                                                               \
                 DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \
@@ -181,7 +171,7 @@
         {                                                               \
                 DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \
                 return func_t::native_log(d);                           \
-        }                                                               
+        }
 
 // Local variables:
 // mode: c++

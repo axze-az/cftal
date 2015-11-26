@@ -63,17 +63,17 @@ namespace cftal {
 
     vec<float, 2>
     high_half(const vec<float, 4>& s);
-    
+
     template <std::size_t _I>
     float
     extract(const vec<float, 4>& s);
-    
+
     vec<float, 4>
     select(const typename vec<float, 4>::mask_type& msk,
            const vec<float, 4>& on_true,
            const vec<float, 4>& on_false);
 
-#if !defined (__AVX512VL__)    
+#if !defined (__AVX512VL__)
     bool
     all_of(const vec<float, 4>::mask_type& a);
 
@@ -83,13 +83,13 @@ namespace cftal {
     bool
     none_of(const vec<float, 4>::mask_type& a);
 #endif
-    
+
     unsigned
     read_signs(const vec<float, 4>& b);
 
     bool
     elements_equal(const vec<float, 4>& v);
-    
+
     vec<float, 4>
     cbrt(vec<float, 4> v);
 
@@ -130,13 +130,13 @@ namespace cftal {
     // -(a*b) - c
     v4f32 nfms(const v4f32& a, const v4f32& b, const v4f32& c);
 
-#if 0    
+#if 0
     // a*b +c with rounding or not
     v4f32 mad(const v4f32& a, const v4f32& b, const v4f32& c);
     // -(a*b) +c with rounding or not
     v4f32 nmad(const v4f32& a, const v4f32& b, const v4f32& c);
 #endif
-    
+
     template <bool _P0, bool _P1,
               bool _P2, bool _P3>
     vec<float, 4>
@@ -176,11 +176,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)                
+#if defined (__AVX512VL__)
                 return _mm_cmp_ps_mask(a(), b(), _CMP_LT_OS);
 #else
                 return _mm_cmplt_ps(a(), b());
-#endif                
+#endif
             }
         };
 
@@ -191,11 +191,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)                
+#if defined (__AVX512VL__)
                 return _mm_cmp_ps_mask(a(), b(), _CMP_LE_OS);
 #else
                 return _mm_cmple_ps(a(), b());
-#endif                
+#endif
             }
         };
 
@@ -206,11 +206,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)                
+#if defined (__AVX512VL__)
                 return _mm_cmp_ps_mask(a(), b(), _CMP_EQ_OQ);
 #else
                 return _mm_cmpeq_ps(a(), b());
-#endif                
+#endif
             }
         };
 
@@ -221,11 +221,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)                
+#if defined (__AVX512VL__)
                 return _mm_cmp_ps_mask(a(), b(), _CMP_UNORD_Q);
 #else
                 return _mm_cmpneq_ps(a(), b());
-#endif                
+#endif
             }
         };
 
@@ -236,11 +236,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)                
+#if defined (__AVX512VL__)
                 return _mm_cmp_ps_mask(a(), b(), _CMP_GE_OS);
 #else
                 return _mm_cmpge_ps(a(), b());
-#endif                
+#endif
 
             }
         };
@@ -252,11 +252,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)                
+#if defined (__AVX512VL__)
                 return _mm_cmp_ps_mask(a(), b(), _CMP_GT_OS);
 #else
                 return _mm_cmpgt_ps(a(), b());
-#endif                
+#endif
             }
         };
 
@@ -320,18 +320,6 @@ namespace cftal {
                 return _mm_div_ps(a(), b());
             }
         };
-
-#if 0
-        template <>
-        struct mod<float, 4> {
-            using full_type = vec<float, 4>;
-            static
-            full_type
-            v(const full_type& a, const full_type& b) {
-                return full_type(a() % b());
-            }
-        };
-#endif
 
         template <>
         struct fma<float, 4> {
@@ -416,28 +404,6 @@ namespace cftal {
             }
         };
 
-#if 0
-        template <>
-        struct shl<float, 4> {
-            using full_type = vec<float, 4>;
-            static
-            full_type
-            v(const full_type& a, unsigned s) {
-                return _mm_slli_epi32(a(), s);
-            }
-        };
-
-        template <>
-        struct shr<float, 4> {
-            using full_type = vec<float, 4>;
-            static
-            full_type
-            v(const full_type& a, unsigned s) {
-                return _mm_srli_epi32(a(), s);
-            }
-        };
-#endif
-
     }
 
 }
@@ -494,7 +460,7 @@ cftal::mem<cftal::vec<float, 4> >::load(const float* p, std::size_t s)
         break;
     case 2:
         v = _mm_setr_ps(p[0], p[1], p[1], p[1]);
-                           
+
         break;
     case 1:
         v = _mm_setr_ps(p[0], p[0], p[0], p[0]);
@@ -759,7 +725,7 @@ cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
         r= _mm_round_ps(a(), 4);
         break;
     }
-#else    
+#else
     uint32_t mxcsr=0;
     uint32_t rmxcsr=0;
     if (m != rounding_mode::current) {

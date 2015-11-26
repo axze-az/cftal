@@ -13,7 +13,7 @@
 
 namespace cftal {
 
-#if defined (__AVX__)    
+#if defined (__AVX__)
     template <>
     class vec<double, 4> : public x86::vreg<__m256d> {
     public:
@@ -73,11 +73,11 @@ namespace cftal {
     bool
     none_of(const vec<double, 4>::mask_type& s);
 #endif
-    
+
     template <std::size_t _I>
     double
     extract(const vec<double, 4>& s);
-    
+
     vec<double, 4>
     select(const typename vec<double, 4>::mask_type& msk,
            const vec<double, 4>& on_true,
@@ -117,7 +117,7 @@ namespace cftal {
 
 #endif
 
-#if defined (__AVX__)        
+#if defined (__AVX__)
     // a*b +c
     v4f64 fma(const v4f64& a, const v4f64& b, const v4f64& c);
     // a*b -c
@@ -265,7 +265,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const full_type neg_bits(sign_f64_msk._f64);                
+                const full_type neg_bits(sign_f64_msk::v._f64);
                 return _mm256_xor_pd(a(), neg_bits());
             }
         };
@@ -428,7 +428,7 @@ namespace cftal {
 #endif
 
     }
-#endif // __AVX__    
+#endif // __AVX__
 }
 
 #if defined (__AVX__)
@@ -672,7 +672,7 @@ cftal::all_of(const vec<double, 4>::mask_type& s)
 {
     return x86::read_signs_f64(s()) == 0xf;
 }
-    
+
 inline
 bool
 cftal::none_of(const vec<double, 4>::mask_type& s)

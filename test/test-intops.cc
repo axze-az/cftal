@@ -1,6 +1,5 @@
 #include <cftal/test/intops.h>
 
-
 bool all_tests_01()
 {
         bool r(true);

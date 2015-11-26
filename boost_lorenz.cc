@@ -173,7 +173,6 @@ int main()
     std::cout << xv2 << std::endl;
     std::cout << "steps: " << stepsv2 << std::endl;
 
-
     std::cout << "array version" << std::endl;
     std::array<double, 3> xa{10.0, 5.0, 5.0};
 
