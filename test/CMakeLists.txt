@@ -1,7 +1,11 @@
 # empty for now
 project(cftal-tests)
 
-set (TEST_SRCS div.cc intops.cc signs.cc)
+set (TEST_SRCS 
+     div.cc 
+     intops.cc 
+     signs.cc 
+     f32_f64.cc)
 include_directories(../..)
 include_directories(../include)
 
