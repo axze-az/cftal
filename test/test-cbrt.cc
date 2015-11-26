@@ -172,6 +172,7 @@ bool all_tests_04()
 {
     cftal::test::check_cbrt_f64(cftal::v2f64());
     cftal::test::check_cbrt_f64(cftal::v4f64());
+    cftal::test::check_cbrt_f64(cftal::v8f64());
     return true;
 }
 
