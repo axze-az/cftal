@@ -27,8 +27,9 @@ function(test_prog arg1)
   add_test(NAME ${arg1} COMMAND ${arg1})
 endfunction()
 
-test_prog(test-intops)
+test_prog(test-fp-ops)
 test_prog(test-cbrt)
+test_prog(test-intops)
 
 if (CFTAL_FULL_TEST)
   test_prog(test-v2)

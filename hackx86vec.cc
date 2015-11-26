@@ -17,34 +17,6 @@ namespace cftal {
 
         double make_double(unsigned sgn, unsigned exp, uint64_t sig);
         
-        template <class _T, std::size_t _N>
-        bool check(const _T(&a)[_N], _T expected, const char* msg);
-        
-        template <class _T, std::size_t _N>
-        bool check(vec<_T, _N> a, _T expected, const char* msg);
-               
-        template <class _T, std::size_t _N>
-        struct fp_ops {
-            static bool v();
-        };
-        
-        template <class _T, std::size_t _N>
-        struct fp_ops_up_to {
-            static bool v() {
-                bool r=fp_ops<_T, _N>::v();
-                r &= fp_ops_up_to<_T, _N/2>::v();
-                return r;
-            }
-        };
-        
-        template <class _T>
-        struct fp_ops_up_to<_T, 1> {
-            static bool v() {
-                return fp_ops<_T, 1>::v();
-            }
-        };
-        
-        
     }
 
     vec<double, 4>
@@ -54,70 +26,7 @@ namespace cftal {
     test_merge(const vec<float, 4>& a, const vec<float, 4>& b);
 }
 
-template <class _T, std::size_t _N>
-bool cftal::test::check(const _T(&a)[_N], _T expected , const char* msg)
-{
-    bool r=true;
-    std::size_t i=0;
-    for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
-        const _T& ai= *b;
-        if (ai != expected) {
-            std::cerr << msg << " element " << i 
-                      << " failed: " << ai << " expected: "
-                      << expected << std::endl;
-            r = false;
-        }
-    }
-    return r;
-}
 
-template <class _T, std::size_t _N>
-bool cftal::test::check(vec<_T, _N> vr, _T expected, const char* msg)
-{
-    _T vsr[_N];
-    mem< vec<_T, _N> >::store(vsr, vr);
-    return check(vsr, expected, msg);
-}
-
-
-template <class _T, std::size_t _N>
-bool 
-cftal::test::fp_ops<_T, _N>::v()
-{    
-    bool rc=true;
-    _T a=4, b=2, r;
-    vec<_T, _N> va(a), vb(b), vr(0);
-    r = -a;
-    vr = -va; 
-    rc &= check(vr, r, "-a");
-    
-    r = +a;     
-    vr = +va;     
-    rc &= check(vr, r, "+a");    
-    
-    r = a + b;
-    vr = va + vb;
-    rc &= check(vr, r, "a+b");    
-
-    r = a - b;
-    vr = va - vb;
-    rc &= check(vr, r, "a-b");    
-
-    r = a * b;
-    vr = va * vb;
-    rc &= check(vr, r, "a*b");    
-
-    r = a / b;
-    vr = va / vb;
-    rc &= check(vr, r, "a/b");    
-    
-    if (rc == true) {
-        std::cout << __func__ << _N << " test passed " << std::endl;
-    } else {
-        std::cerr << __func__ << _N << " test failed " << std::endl;        
-    }    
-    return rc;
-}
 
 
 cftal::vec<double, 4>
@@ -139,7 +48,6 @@ cftal::test_merge(const vec<float, 4>& a, const vec<float, 4>& b)
 
     return r;
 }
-
 
 double
 cftal::test::make_double(unsigned sgn, unsigned exp, uint64_t sig)
@@ -887,12 +795,6 @@ int main(int argc, char** argv)
     cftal::v8u16 ut2= ut1 * 2;
     std::cout << ut2 << std::endl;
     
-    std::cout << "testing vXf64" << std::endl;
-    if (cftal::test::fp_ops_up_to<double, 16>::v()==false)
-        std::cerr << "double test failed" << std::endl;
-    std::cout << "testing vXf32" << std::endl;
-    if (cftal::test::fp_ops_up_to<float, 32>::v()==false)
-        std::cerr<< "float test failed" << std::endl;
     
 #if 0
     cftal::vec<double, 4> t1(1.0), t2(2.0);
