@@ -29,6 +29,7 @@ endfunction()
 
 test_prog(test-fp-ops)
 test_prog(test-cbrt)
+test_prog(test-frexp)
 test_prog(test-intops)
 
 if (CFTAL_FULL_TEST)
