@@ -45,6 +45,11 @@ namespace cftal {
         // result of a comparison operator
         typedef bool cmp_result_type;
 
+        static constexpr double eps() { 
+            // 2^-104
+            return 4.93038065763132e-32; 
+        }
+        
         // return true if any in b is true
         static bool any(const cmp_result_type& b) {
             return b;

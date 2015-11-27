@@ -435,4 +435,4 @@ bool cftal::test::check_div()
     rc &= check_div_s16();
     return rc;
 }
-// kate: indent-mode cstyle; indent-width 8; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
