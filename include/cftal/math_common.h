@@ -194,7 +194,7 @@ namespace cftal {
                 static _T v(const _T& x);
             };
 
-
+            // n-th root calculator: newton raphson step with n variable
             template <class _T>
             struct nth_root_vnr {
                 static _T v(const _T& xi, const _T& x,
@@ -208,7 +208,7 @@ namespace cftal {
                 }
             };
 
-            // nth root newton raphson step
+            // n-th root calculatr: newton raphson step with n=_R 
             template <unsigned _R, class _T>
             struct nth_root_nr : public nth_root_vnr<_T> {
                 // one newton raphson step
@@ -328,7 +328,8 @@ namespace cftal {
             };
 
         } // impl
-
+        
+        // integer power with constant _I
         template <int _I, class _T>
         _T pow(const _T& x) {
             _T r(impl::ipow<_T, (_I < 0 ? -_I : _I) >::v(x));
