@@ -29,7 +29,8 @@ set (CFTAL_VERSION_STR
     "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}.${CFTAL_VERSION_PLV}")
 
 # compile flags for usage with cmake -DCMAKE_BUILD_TYPE=debug/release/profile
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "CLANG")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR 
+    CMAKE_CXX_COMPILER_ID STREQUAL "CLANG")
     # warnings for all
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
     # release
@@ -61,6 +62,9 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
             "${CMAKE_CXX_FLAGS_RELEASE} -fselective-scheduling2")
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -fsel-sched-pipelining")
+    endif()
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR 
+        CMAKE_CXX_COMPILER_ID STREQUAL "CLANG")    
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
     endif()
