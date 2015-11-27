@@ -1,6 +1,11 @@
 #include "cftal/vec.h"
 #include "cftal/vec_traits.h"
 
+namespace cftal {
+    v8f32 cbrt(arg<v8f32>::type v)
+        __attribute__((flatten));
+}
+
 cftal::v8f32
 cftal::cbrt(arg<v8f32>::type v)
 {
