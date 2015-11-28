@@ -13,11 +13,6 @@
 #include <iterator>
 
 namespace cftal {
-    namespace test {
-
-        double make_double(unsigned sgn, unsigned exp, uint64_t sig);
-        
-    }
 
     vec<double, 4>
     test_merge(const vec<double, 4>& a, const vec<double, 4>& b);
@@ -25,9 +20,6 @@ namespace cftal {
     vec<float, 4>
     test_merge(const vec<float, 4>& a, const vec<float, 4>& b);
 }
-
-
-
 
 cftal::vec<double, 4>
 cftal::test_merge(const vec<double, 4>& a, const vec<double, 4>& b)
@@ -48,22 +40,6 @@ cftal::test_merge(const vec<float, 4>& a, const vec<float, 4>& b)
 
     return r;
 }
-
-double
-cftal::test::make_double(unsigned sgn, unsigned exp, uint64_t sig)
-{
-    uint64_t _sgn= uint64_t(sgn & 1) << 63;
-    uint64_t _exp= uint64_t(exp & 0x7FF) << 52;
-    uint64_t _sig= sig & 0x000fffffffffffffULL;
-    union {
-        uint64_t _u;
-        double _d;
-    } t;
-    t._u = _sgn | _exp | _sig;
-    return t._d;
-}
-
-
 
 //namespace vec=x86vec;
 //namespace vec=emuvec;
