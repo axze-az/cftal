@@ -4,6 +4,8 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec.h>
+#include <cftal/mem.h>
+#include <cftal/select.h>
 #include <iostream>
 
 namespace cftal {
@@ -22,6 +24,13 @@ namespace cftal {
         
         template <class _T, std::size_t _N>
         bool check(vec<_T, _N> a, _T expected, const char* msg);        
+        
+        template <class _T>
+        _T abs_err(_T a0, _T a1);
+        
+        template <class _T>
+        _T rel_err(_T a0, _T a1);
+        
     }
 }
 
@@ -48,6 +57,21 @@ bool cftal::test::check(vec<_T, _N> vr, _T expected, const char* msg)
     _T vsr[_N];
     mem< vec<_T, _N> >::store(vsr, vr);
     return check(vsr, expected, msg);
+}
+
+template <class _T>
+_T
+cftal::test::abs_err(_T a0, _T a1)
+{    
+    _T d= a0 - a1;
+    return select(d > 0, d , -d);
+}
+
+template <class _T>
+_T
+cftal::test::rel_err(_T a0, _T a1)
+{
+    return abs_err(a0, a1)/(_T(0.5) * (a0 + a1));
 }
 
 
