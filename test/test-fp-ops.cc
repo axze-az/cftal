@@ -1,4 +1,5 @@
 #include "cftal/test/f32_f64.h"
+#include <random>
 
 namespace cftal {
     namespace test {
@@ -117,6 +118,29 @@ cftal::test::fp_ops<_T, _N>::v()
         rc &= fp_ops<_T, _N>::v(*b, *std::next(b));
         rc &= fp_ops<_T, _N>::v(*std::next(b), *b);
     }
+    
+    std::mt19937 rnd;
+    std::uniform_real_distribution<_T> 
+        distrib(0, std::numeric_limits<_T>::max());
+    const int64_t N0=0x10000ULL;
+    const int64_t N=72*N0;
+    for (int64_t i=0; i<N; ++i) {
+        if ((i & (N0-1)) == (N0-1))
+            std::cout << '.' << std::flush;
+        _T ah, bh;
+        ah = distrib(rnd);
+        bh = distrib(rnd);        
+        _T va=ah, vb=bh;        
+        rc &= fp_ops<_T, _N>::v(va, vb);
+        va = -ah; 
+        rc &= fp_ops<_T, _N>::v(va, vb);
+        va = ah; vb= -bh;
+        rc &= fp_ops<_T, _N>::v(va, vb);
+        va = -ah; 
+        rc &= fp_ops<_T, _N>::v(va, vb);
+    }     
+    std::cout << std::endl;    
+    
     if (rc == true) {
         std::cout << __func__ << _N << " test passed " << std::endl;
     } else {

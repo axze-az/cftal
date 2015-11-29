@@ -2,6 +2,7 @@
 #include <cftal/test/f32_f64.h>
 #include <functional>
 #include <iomanip>
+#include <random>
 
 namespace cftal {
     namespace test {
@@ -175,7 +176,28 @@ cftal::test::check_d_real<_T, _R>::ops()
     for (auto b=std::begin(operands), e=std::end(operands); b!=e; b+=2) {
         rc &= ops(*b, *std::next(b));
         rc &= ops(*std::next(b), *b);
-    }    
+    }
+    std::mt19937 rnd;
+    std::uniform_real_distribution<_T> 
+        distrib(0, std::numeric_limits<_T>::max());
+    const int64_t N0=0x10000ULL;
+    const int64_t N=72*N0;
+    for (int64_t i=0; i<N; ++i) {
+        if ((i & (N0-1)) == (N0-1))
+            std::cout << '.' << std::flush;
+        _T ah, bh;
+        ah = distrib(rnd);
+        bh = distrib(rnd);        
+        d_real<_T> va=ah, vb=bh;        
+        rc &= ops(va, vb);
+        va = -ah; 
+        rc &= ops(va, vb);
+        va = ah; vb= -bh;
+        rc &= ops(va, vb);
+        va = -ah; 
+        rc &= ops(va, vb);
+    }     
+    std::cout << std::endl;    
     if (rc == true) {
         std::cout << __func__ << " test passed " << std::endl;
     } else {
