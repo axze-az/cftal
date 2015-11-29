@@ -134,6 +134,8 @@ int main()
                                        cftal::v2s32>();
     rc &= cftal::test::check_frexp_f64<cftal::v4f64,
                                        cftal::v4s32>();
+    rc &= cftal::test::check_frexp_f64<cftal::v8f64,
+                                       cftal::v8s32>();
     rc &= cftal::test::check_frexp_f32<cftal::v4f32,
                                        cftal::v4s32>();
     rc &= cftal::test::check_frexp_f32<cftal::v8f32,
