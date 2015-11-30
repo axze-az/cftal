@@ -602,6 +602,19 @@ cftal::v8f32 cftal::sqrt(const v8f32& a)
 }
 
 inline
+cftal::v8f32 cftal::max(const v8f32& a, const v8f32& b)
+{
+    return _mm256_max_ps(a(), b());
+}
+
+inline
+cftal::v8f32 cftal::min(const v8f32& a, const v8f32& b)
+{
+    return _mm256_min_ps(a(), b());
+}
+
+
+inline
 cftal::v8f32 cftal::abs(const v8f32& a)
 {
     const v8f32 msk(not_sign_f32_msk::v._f32);
