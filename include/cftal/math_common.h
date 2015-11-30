@@ -286,6 +286,16 @@ namespace cftal {
                 }
             };
 
+            template <typename _FLOAT_T, typename _TRAITS,
+                      unsigned _R>
+            struct root_guess : public nth_root_guess<_FLOAT_T, _TRAITS> {
+                using vf_type = typename _TRAITS::vf_type;
+
+                static vf_type v(const vf_type& x) {
+                    return nth_root_guess<_FLOAT_T, _TRAITS>::v(x, _R);
+                }
+            };
+
 
             // nth root implementation for double/float
             template <typename _FLOAT_T, typename _TRAITS,
@@ -295,13 +305,13 @@ namespace cftal {
                 typedef typename _TRAITS::vf_type vf_type;
                 typedef typename _TRAITS::vmf_type vmf_type;
                 typedef nth_root_nr<_R, vf_type> nr_step_t;
-                typedef nth_root_guess<_FLOAT_T, _TRAITS>
-                guess_t;
+                typedef root_guess<_FLOAT_T, _TRAITS, _R>
+                    guess_t;
 
                 template <unsigned _NR_STEPS=6>
                 static vf_type v(const vf_type& f) {
                     vf_type x(abs(f));
-                    vf_type xin(guess_t::v(x, _R));
+                    vf_type xin(guess_t::v(x));
 #if 1
                     for (unsigned i=0; i< _NR_STEPS; ++i)
                         xin = nr_step_t::v(xin, x);
