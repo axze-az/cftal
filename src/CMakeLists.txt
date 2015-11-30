@@ -11,22 +11,32 @@ set (CSRCS
     v2f64.cc
     v2f64_cbrt.cc
     v2f64_frexp.cc
+    v2f64_ldexp.cc
     # vec <double, 4>
     v4f64.cc
     v4f64_cbrt.cc
     v4f64_frexp.cc
+    v4f64_ldexp.cc
     # vec <doubl,e 8>
     v8f64.cc
     v8f64_cbrt.cc
     v8f64_frexp.cc
+    v8f64_ldexp.cc
+    # vec <float, 2>
+    v2f32.cc
+    v2f32_cbrt.cc
+    v2f32_frexp.cc
+    v2f32_ldexp.cc
     # vec <float, 4>
     v4f32.cc
     v4f32_cbrt.cc
     v4f32_frexp.cc
+    v4f32_ldexp.cc
     # vec <float, 8>
     v8f32.cc
     v8f32_cbrt.cc
     v8f32_frexp.cc
+    v8f32_ldexp.cc
 )
 
 add_library (cftal STATIC ${CSRCS})

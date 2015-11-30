@@ -10,13 +10,6 @@
 
 #define DEF_MATH_FUNCS(ns, vec_float, vec_int, real_type, cbrt_iter)    \
                                                                         \
-        ns::vec_float                                                   \
-        ns::ldexp(arg<vec_float>::type d, arg<vec_int>::type q)         \
-        {                                                               \
-                DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \
-                return func_t::ldexp(d, q);                             \
-        }                                                               \
-                                                                        \
         ns::vec_int                                                     \
         ns::ilogbp1(arg<vec_float>::type d)                             \
         {                                                               \

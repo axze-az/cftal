@@ -23,15 +23,15 @@ namespace cftal {
         struct check_ldexp_up_to {
             static bool v() {
                 bool r=check_ldexp<_T, _N>::v();
-                r &= check_ldexp<_T, _N/2>::v();
+                r &= check_ldexp_up_to<_T, _N/2>::v();
                 return r;
             }
         };
         
         template <class _T>
-        struct check_ldexp_up_to<_T, 2> {
+        struct check_ldexp_up_to<_T, 1> {
             static bool v() {
-                return check_ldexp<_T, 2>::v();
+                return check_ldexp<_T, 1>::v();
             }
         };                                
     }

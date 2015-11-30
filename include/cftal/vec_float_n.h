@@ -145,10 +145,44 @@ namespace cftal {
     nfms(const vec<float, _N>& a, const vec<float, _N>& b,
          const vec<float, _N>& c);
 
+    // frexp
+    template <std::size_t _N>
+    vec<float, _N>
+    frexp(const vec<float, _N>& a, vec<int32_t, _N>* e);
+        
+    vec<float, 1>
+    frexp(const vec<float, 1>& a, vec<int32_t, 1>* e);
+
+    vec<float, 2>
+    frexp(arg<vec<float, 2> >::type& a, vec<int32_t, 2>* e);
+    
+    vec<float, 4>
+    frexp(arg<vec<float, 4> >::type x, vec<int32_t, 4>* e);
+
+    vec<float, 8>
+    frexp(arg<vec<float, 8> >::type x, vec<int32_t, 8>* e);    
+    
+    // ldexp 
+    template <std::size_t _N>
+    vec<float, _N>
+    ldexp(const vec<float, _N>& a, const vec<int32_t, _N>& e);
+    
+    vec<float, 1>
+    ldexp(const vec<float, 1>& a, const vec<int32_t, 1>& e);
+    
+    vec<float, 2>
+    ldexp(arg<vec<float, 2> >::type a, arg<vec<int32_t, 2> >::type e);
+
+    vec<float, 4>
+    ldexp(arg<vec<float, 4> >::type a, arg<vec<int32_t, 4> >::type e);
+
+    vec<float, 8>
+    ldexp(arg<vec<float, 8> >::type a, arg<vec<int32_t, 8> >::type e);
+  
+    
     v4f32 cbrt(arg<v4f32>::type a);
     v4f32 frexp(arg<v4f32>::type x, v4s32* e);
     // v4f32 pow2i(arg<v4s32>::type e);
-    v4f32 ldexp(arg<v4f32>::type d, arg<v4s32>::type e);
     v4s32 ilogbp1(arg<v4f32>::type v);
     v4s32 ilogb(arg<v4f32>::type v);
     v4f32 atan2(arg<v4f32>::type y, arg<v4f32>::type x);
@@ -184,7 +218,6 @@ namespace cftal {
     v8f32 cbrt(arg<v8f32>::type a);
     v8f32 frexp(arg<v8f32>::type x, v8s32* e);
     // v8f32 pow2i(arg<v4s32>::type e);
-    v8f32 ldexp(arg<v8f32>::type d, arg<v8s32>::type e);
     v8s32 ilogbp1(arg<v8f32>::type v);
     v8s32 ilogb(arg<v8f32>::type v);
     v8f32 atan2(arg<v8f32>::type y, arg<v8f32>::type x);
@@ -519,6 +552,50 @@ cftal::fms(const vec<float, 1>& a, const vec<float, 1>& b,
 {
     return vec<float, 1>(fmaf(a(), b(), -c()));
 }
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::frexp(const vec<double, _N>& a, vec<int32_t, _N>* e)
+{
+    vec<int32_t, _N/2> el, eh;
+    vec<float, _N> r(frexp(low_half(a), &el), 
+                     frexp(high_half(a), &eh));
+    if (e != nullptr) {
+        vec<int32_t, _N> er(el, eh);
+        *e = er;
+    }
+    return r;
+}
+
+inline
+cftal::vec<float, 1>
+cftal::frexp(const vec<float, 1>& a, vec<int32_t, 1>* e)
+{
+    int32_t es;
+    float r= std::frexp(a(), &es);
+    if (e != nullptr) {
+        *e= vec<int32_t, 1>(es);
+    }
+    return vec<float, 1>(r);
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::ldexp(const vec<float, _N>& a, const vec<int32_t, _N>& e)
+{
+    return vec<float, _N>(ldexp(low_half(a), low_half(e)),
+                          ldexp(high_half(a), high_half(e)));
+}
+
+inline
+cftal::vec<float, 1>
+cftal::ldexp(const vec<float, 1>& a, const vec<int32_t, 1>& e)
+{
+    return vec<float, 1>(std::ldexp(a(), e()));
+}
+
 
 // local variables:
 // mode: c++

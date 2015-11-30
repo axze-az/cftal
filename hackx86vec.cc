@@ -759,7 +759,7 @@ int main(int argc, char** argv)
     cftal::v2f64 r=frexp(t, &e);
     int se;
     double st=4.94066e-324;
-    double sr=frexp(st, &se);
+    double sr=std::frexp(st, &se);
     std::cout << r4 << " : " << e4 << std::endl;
     std::cout << r << " : " << e << std::endl;
     std::cout << sr << " : " << se << std::endl;

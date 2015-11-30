@@ -81,6 +81,8 @@ bool cftal::test::check_frexp_f64()
     // check zero
     double vp = make_double(0, 0, 0);
     check_frexp<_FV, _IV>(vp, -vp);
+    vp = make_float(1, 0, 0);
+    check_frexp<_FV, _IV>(vp, -vp);
     // check +- inf
     check_frexp<_FV, _IV>(make_double(0, 0x7FF, 0),
                           make_double(1, 0x7FF, 0));
@@ -106,6 +108,8 @@ bool cftal::test::check_frexp_f32()
 {
     // check zero
     float vp = make_float(0, 0, 0);
+    check_frexp<_FV, _IV>(vp, -vp);
+    vp = make_float(1, 0, 0);
     check_frexp<_FV, _IV>(vp, -vp);
     // check +- inf
     check_frexp<_FV, _IV>(make_float(0, 0xFF, 0),
@@ -135,7 +139,9 @@ int main()
     rc &= cftal::test::check_frexp_f64<cftal::v4f64,
                                        cftal::v4s32>();
     rc &= cftal::test::check_frexp_f64<cftal::v8f64,
-                                       cftal::v8s32>();
+                                       cftal::v8s32>();                                       
+    rc &= cftal::test::check_frexp_f32<cftal::v2f32,
+                                       cftal::v2s32>();
     rc &= cftal::test::check_frexp_f32<cftal::v4f32,
                                        cftal::v4s32>();
     rc &= cftal::test::check_frexp_f32<cftal::v8f32,
