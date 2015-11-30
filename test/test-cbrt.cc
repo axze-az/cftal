@@ -39,7 +39,7 @@ int cftal::test::check_cbrt_f64(const _V& v, double x)
     double p3(cftal::math::pow<3>(r3));
     _V vp3(cftal::math::pow<3>(vr3));
 
-    if (!elements_equal(vr3) && !all_of(isnan(vr3))) {
+    if (!elements_equal(vr3) && !(std::isnan(r3) && all_of(isnan(vr3)))) {
         std::cout << "Invalid vector values for cbrt(" << x << ")\n";
         const int N=sizeof(_V)/sizeof(double);
         union v_d {
@@ -167,8 +167,8 @@ bool cftal::test::check_cbrt_f64(const _V& v)
 bool all_tests_04()
 {
     cftal::test::check_cbrt_f64(cftal::v2f64());
-    // cftal::test::check_cbrt_f64(cftal::v4f64());
-    // cftal::test::check_cbrt_f64(cftal::v8f64());
+    cftal::test::check_cbrt_f64(cftal::v4f64());
+    cftal::test::check_cbrt_f64(cftal::v8f64());
     return true;
 }
 

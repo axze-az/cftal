@@ -268,7 +268,6 @@ namespace cftal {
                     const divisor<vi_type, int32_t> rr(r);
                     hw = vi_type(hw - bias_shl_20)/rr +
                         bias_shl_20;
-
                     vf_type g0;
                     g0 = _TRAITS::combine_words(vi_type(0),
                                                 hw  );
@@ -296,7 +295,17 @@ namespace cftal {
                 }
             };
 
+#if 0
+            template <typename _TRAITS>
+            struct root_guess<double, _TRAITS, 3> {
+                using vf_type = typename _TRAITS::vf_type;
+                using vi_type = typename _TRAITS::vi_type;
 
+                static vf_type(const vf_type& x) {
+
+                }
+            };
+#endif
             // nth root implementation for double/float
             template <typename _FLOAT_T, typename _TRAITS,
                       unsigned _R>
