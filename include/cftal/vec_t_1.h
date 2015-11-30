@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/vec_op.h>
 #include <cftal/vec_bit_n.h>
+#include <cftal/mul_div.h>
 #include <type_traits>
 #include <cmath>
 
@@ -22,6 +23,8 @@ namespace cftal {
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
 
+        template <class _U>
+        explicit vec(const vec<_U, 1>& r);
         vec(const _T& v);
         vec(const _T& v, bool splat);
         vec(std::initializer_list<_T> l);
@@ -100,6 +103,11 @@ namespace cftal {
     
     template <typename _T>
     bool none_of(const vec<_T, 1>& v);
+    
+    template <typename _T>
+    std::enable_if_t<std::is_integral<_T>::value,
+                     std::pair<vec<_T, 1>, vec<_T, 1> > >
+    mul_lo_hi(const vec<_T, 1>& a, const vec<_T, 1>& b);    
     
     template <typename _T>
     vec<_T, 1> max(const vec<_T, 1>& a, const vec<_T, 1>& b);
@@ -448,6 +456,15 @@ namespace cftal {
 }
 
 template <class _T>
+template <class _U>
+inline
+cftal::vec<_T, 1>::vec(const vec<_U, 1>& r)
+    : _v(r())
+{
+       
+}
+
+template <class _T>
 inline
 cftal::vec<_T, 1>::vec(const _T& v)
     : _v(v)
@@ -522,6 +539,15 @@ cftal::none_of(const vec<_T, 1>& v)
     return it::none(v);
 }
 
+template <class _T>
+inline
+std::enable_if_t<std::is_integral<_T>::value, 
+                 std::pair<cftal::vec<_T, 1>, cftal::vec<_T, 1> > >
+cftal::mul_lo_hi(const vec<_T, 1>& a, const vec<_T, 1>& b)
+{
+    std::pair<_T, _T> r= mul_lo_hi(a(), b());    
+    return std::make_pair(vec<_T, 1>(r.first), vec<_T, 1>(r.second));
+}
 
 template <class _T>
 inline

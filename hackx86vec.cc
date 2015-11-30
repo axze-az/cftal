@@ -748,6 +748,30 @@ check_odd_elements(cftal::vec<int32_t, 4> a)
 
 int main(int argc, char** argv)
 {
+    cftal::divisor<cftal::v4s32, int32_t> v4rr(3);
+    cftal::v4s32 v4t=-7046431;
+    cftal::v4s32 v4q=v4t/v4rr;
+    std::cout << v4q << std::endl;
+
+    using v1s32 = cftal::vec<int32_t, 1>;
+
+    cftal::divisor<v1s32, int32_t> v1rr(3);
+    v1s32 v1t=-7046431;
+    v1s32 v1q=v1t/v1rr;
+    std::cout << v1q << std::endl;
+    
+    
+    cftal::divisor<cftal::v2s32, int32_t> rr(3);
+    cftal::v2s32 t=-7046431;
+    cftal::v2s32 q=t/rr;
+    std::cout << q << std::endl;
+    
+    cftal::divisor<int32_t, int32_t> srr(3);
+    int32_t st=-7046431;
+    int32_t sq=st/srr;
+    std::cout << sq << std::endl;    
+    return 0;
+#if 0    
     std::cout << "alignof(max_align_t) "
               << alignof(std::max_align_t)
               << std::endl;
@@ -770,7 +794,7 @@ int main(int argc, char** argv)
     std::cout << ut1 << std::endl;
     cftal::v8u16 ut2= ut1 * 2;
     std::cout << ut2 << std::endl;
-    
+#endif    
     
 #if 0
     cftal::vec<double, 4> t1(1.0), t2(2.0);

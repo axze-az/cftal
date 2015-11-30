@@ -6,6 +6,7 @@
 #include <cftal/constants.h>
 #include <cftal/init_list.h>
 #include <cftal/mem.h>
+#include <type_traits>
 #include <iosfwd>
 #include <algorithm>
 
@@ -35,6 +36,9 @@ namespace cftal {
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
 
+        template <typename _U>
+        explicit vec(const vec<_U, _N>& r);
+        
         vec(const _T& v);
         vec(std::initializer_list<_T> l);
         vec(init_list<_T> l);
@@ -100,6 +104,11 @@ namespace cftal {
     template <typename _T, std::size_t _N>
     bool none_of(const vec<_T, _N>& v);
 
+    template <typename _T, std::size_t _N>
+    std::enable_if_t<std::is_integral<_T>::value,
+                     std::pair<vec<_T, _N>, vec<_T, _N> > >
+    mul_lo_hi(const vec<_T, _N>& a, const vec<_T, _N>& b);
+    
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     select(const typename vec<_T, _N>::mask_type& m,
@@ -287,6 +296,44 @@ namespace cftal {
     std::ostream& operator<<(std::ostream& s, const vec<_T, _N>& v);
 }
 
+namespace std {
+    
+    template <typename _T, std::size_t _N>
+    struct is_signed< cftal::vec<_T, _N> > : public 
+        is_signed<typename cftal::vec<_T, _N>::value_type> {            
+    };    
+    
+    template <typename _T, std::size_t _N>
+    struct is_unsigned<cftal::vec<_T, _N> > : public 
+        is_unsigned<typename cftal::vec<_T, _N>::value_type> {            
+    };    
+    
+    template <typename _T, std::size_t _N>
+    struct make_unsigned< cftal::vec<_T, _N> > {        
+        using type = cftal::vec<typename std::make_unsigned<
+                                    typename cftal::vec<_T, _N>::value_type
+                               >::type, _N>;                               
+    };
+
+    template <typename _T, std::size_t _N>
+    struct make_signed< cftal::vec<_T, _N> > {        
+        using type = cftal::vec<typename std::make_signed<
+                                    typename cftal::vec<_T, _N>::value_type
+                               >::type, _N>;                               
+    };
+    
+}
+
+
+template <class _T, std::size_t _N>
+template <class _U>
+inline
+cftal::vec<_T, _N>::vec(const vec<_U, _N>& r)
+    : _l(low_half(r)), _h(high_half(r))
+{
+       
+}
+
 template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>::vec(const _T& v)
@@ -396,6 +443,20 @@ cftal::none_of(const vec<_T, _N>& v)
 {
     return none_of(low_half(v)) && none_of(high_half(v));
 }
+
+template <class _T, std::size_t _N>
+inline
+std::enable_if_t<std::is_integral<_T>::value, 
+                 std::pair<cftal::vec<_T, _N>, cftal::vec<_T, _N> > >
+cftal::mul_lo_hi(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+    auto l= mul_lo_hi(low_half(a), low_half(b));
+    auto h= mul_lo_hi(high_half(a), high_half(b));    
+    vec<_T, _N> ll(l.first, h.first);
+    vec<_T, _N> hh(l.second, h.second);
+    return std::make_pair(ll, hh);    
+}
+
 
 template <class _T, std::size_t _N>
 inline

@@ -3,7 +3,7 @@ BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x
 
 [CMake]
 Build Directory Count=3
-Current Build Directory Index=0
+Current Build Directory Index=1
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -41,18 +41,18 @@ Path=gcc
 Type=GCC
 
 [Launch]
-Launch Configurations=Launch Configuration 0,Launch Configuration 1
+Launch Configurations=Launch Configuration 1,Launch Configuration 2,Launch Configuration 0
 
 [Launch][Launch Configuration 0]
 Configured Launch Modes=execute
 Configured Launchers=nativeAppLauncher
-Name=New Compiled Binary Launcher
+Name=hackx86vec
 Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
 Arguments=
-Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
-Dependency Action=Nothing
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l\x00\x00\x00\x14\x00h\x00a\x00c\x00k\x00x\x008\x006\x00v\x00e\x00c)
+Dependency Action=Build
 EnvironmentGroup=
 Executable=file:///home/axel/projects/cpplib/cftal/
 External Terminal=konsole --noclose --workdir %workdir -e %exe
@@ -71,6 +71,25 @@ Type=Native Application
 Configured from ProjectItem=cftal,boost_lorenz
 Project Target=cftal,boost_lorenz
 Working Directory=file:///home/axel/projects/cpplib/cftal/debug/
+isExecutable=false
+
+[Launch][Launch Configuration 2]
+Configured Launch Modes=debug
+Configured Launchers=gdb
+Name=test-cbrt
+Type=Native Application
+
+[Launch][Launch Configuration 2][Data]
+Arguments=
+Configured from ProjectItem=cftal,test,test-cbrt
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+Dependency Action=Nothing
+EnvironmentGroup=
+Executable=file:///home/axel/projects/cpplib/cftal/
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+Project Target=cftal,test,test-cbrt
+Use External Terminal=false
+Working Directory=file:///home/axel/projects/cpplib/cftal/debug/test/
 isExecutable=false
 
 [MakeBuilder]
