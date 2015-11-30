@@ -19,8 +19,6 @@ namespace cftal {
     }
 }
 
-
-
 std::uint64_t as_uint64(double d)
 {
     union u_d {
@@ -41,34 +39,32 @@ int cftal::test::check_cbrt_f64(const _V& v, double x)
     double p3(cftal::math::pow<3>(r3));
     _V vp3(cftal::math::pow<3>(vr3));
 
-    if (!elements_equal(vr3)) {
-        std::cerr << "Invalid vector values\n";
-        std::cout << "Invalid vector values\n";
+    if (!elements_equal(vr3) && !all_of(isnan(vr3))) {
+        std::cout << "Invalid vector values for cbrt(" << x << ")\n";
         const int N=sizeof(_V)/sizeof(double);
         union v_d {
             _V _v;
             double _d[sizeof(_V)/sizeof(double)];
         };
         std::cout << std::setprecision(18);
-        std::cout << x << std::endl;
-        std::cout << r3 << std::endl;
+        std::cout << "expected result: " << r3 << std::endl;
         v_d t;
         t._v = vx;
-        for (unsigned i=0; i<N; ++i) {
+        std::cout << "argument vector\n";
+        for (unsigned i=0; i<N; ++i) {            
             std::cout << t._d[i] << std::endl;
         }
         t._v = vr3;
+        std::cout << "result vector\n";
         for (unsigned i=0; i<N; ++i) {
             std::cout << t._d[i] << std::endl;
         }
-
+        std::cout << "back multiplication vector\n";
         t._v = vp3;
         for (unsigned i=0; i<N; ++i) {
             std::cout << t._d[i] << std::endl;
         }
-
-
-        // std::exit(3);
+        std::exit(3);
     }
 
     double vr3_0(extract<0>(vr3));
@@ -171,8 +167,8 @@ bool cftal::test::check_cbrt_f64(const _V& v)
 bool all_tests_04()
 {
     cftal::test::check_cbrt_f64(cftal::v2f64());
-    cftal::test::check_cbrt_f64(cftal::v4f64());
-    cftal::test::check_cbrt_f64(cftal::v8f64());
+    // cftal::test::check_cbrt_f64(cftal::v4f64());
+    // cftal::test::check_cbrt_f64(cftal::v8f64());
     return true;
 }
 

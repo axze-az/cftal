@@ -302,9 +302,17 @@ namespace cftal {
                 static vf_type v(const vf_type& f) {
                     vf_type x(abs(f));
                     vf_type xin(guess_t::v(x, _R));
-
+#if 1
                     for (unsigned i=0; i< _NR_STEPS; ++i)
                         xin = nr_step_t::v(xin, x);
+#else
+                    using dvf_type = typename _TRAITS::dvf_type;
+                    dvf_type xhin=xin;
+                    dvf_type xh=x;                    
+                    for (unsigned i=0; i< _NR_STEPS; ++i)
+                        xhin = nth_root_nr<_R, dvf_type>::v(xhin, xh);
+                    xin = xhin.h() + xhin.l();
+#endif                        
 
                     xin = copysign(xin, f);
                     const vf_type zero(vf_type(0.0));

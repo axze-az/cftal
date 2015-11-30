@@ -544,6 +544,9 @@ inline
 std::pair<_T, _T>
 cftal::mul_lo_hi(const _T& x, const _T& y)
 {
+    static_assert(std::is_integral<_T>::value, 
+                  "_T must be an integral type");
+    
     typedef typename std::conditional<std::is_signed<_T>::value,
                                       impl::smul_lo_hi<_T>,
                                       impl::umul_lo_hi<_T> >::type

@@ -6,6 +6,8 @@
 #include <cftal/math_func.h>
 #include <cftal/divisor.h>
 #include <cftal/vec_cvt.h>
+#include <cftal/constants.h>
+#include <cftal/d_real.h>
 #include <cftal/x86/cast.h>
 #include <cftal/d_real.h>
 
@@ -278,6 +280,8 @@ namespace cftal {
             using vmf_type = typename vec<double, _N>::mask_type;
             using vi_type = vec<int32_t, _N>;
             using vmi_type = typename vec<int32_t, _N>::mask_type;
+            
+            using dvf_type = d_real<vf_type>;
             
             static
             constexpr std::size_t NVF() {
