@@ -461,7 +461,10 @@ namespace std {
     struct make_unsigned<cftal::duint<_T> > {
         typedef cftal::duint<_T> type;
     };
-
+    template <class _T>
+    struct is_integral<cftal::duint<_T> >
+        : public is_integral<_T> {};
+    
     template <class _T>
     struct is_signed<cftal::dint<_T> >
         : public is_signed<_T> { };
@@ -475,7 +478,10 @@ namespace std {
     template <class _T>
     struct make_unsigned<cftal::dint<_T> > {
         typedef cftal::duint<_T> type;
-    };
+    };    
+    template <class _T>
+    struct is_integral<cftal::dint<_T> >
+        : public is_integral<_T> {};    
 }
 
 namespace cftal {

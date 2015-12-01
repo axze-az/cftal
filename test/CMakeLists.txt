@@ -28,6 +28,7 @@ function(test_prog arg1)
 endfunction()
 
 test_prog(test-d_real)
+test_prog(test-dint8)
 test_prog(test-fp-ops)
 test_prog(test-cbrt)
 test_prog(test-frexp)
