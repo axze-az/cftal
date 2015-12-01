@@ -133,7 +133,6 @@ ops(d_real<_T> a0, d_real<_T> b0)
     vr = va; vr *= vb;
     rc &= check(vr, r, "a/=b");        
     
-#if 0    
     r = std::max(a, b);
     vr = max(va, vb);
     rc &= check(vr, r, "max");
@@ -141,7 +140,6 @@ ops(d_real<_T> a0, d_real<_T> b0)
     r = std::min(a, b);
     vr = min(va, vb);
     rc &= check(vr, r, "min");
-#endif
     
     r = a > 0 ? a : -a;
     vr = abs(va);

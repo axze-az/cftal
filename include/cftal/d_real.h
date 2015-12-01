@@ -2,6 +2,7 @@
 #define __CFTAL_D_REAL_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/select.h>
 #include <cmath>
 #include <type_traits>
 
@@ -448,6 +449,19 @@ namespace cftal {
     d_real<_T> mul_pwr2(const d_real<_T>& a, const _T& b);
     template <typename _T>
     d_real<_T> sqrt(const d_real<_T>& a);
+    
+    template <typename _T>
+    d_real<_T> select(const typename d_real_traits<_T>::cmp_result_type& m,
+                      const d_real<_T>& on_true,
+                      const d_real<_T>& on_false);
+    
+    template <typename _T>
+    d_real<_T> min(const d_real<_T>& on_true,
+                   const d_real<_T>& on_false);
+
+    template <typename _T>
+    d_real<_T> max(const d_real<_T>& on_true,
+                   const d_real<_T>& on_false);
 
     d_real<double> str_to_d_double(const char* p, std::size_t n);
     d_real<double> str_to_d_double(const char* p);
@@ -919,8 +933,6 @@ div(const d_real<_T>&a, const d_real<_T>& b)
     return ieee_div(a, b);
 }
 
-
-
 template <typename _T>
 inline
 typename cftal::d_real_traits<_T>::cmp_result_type
@@ -1339,6 +1351,35 @@ cftal::sqrt(const d_real<_T>& a)
     _T a1(a0.h() * (x * _T(0.5)));
     d_real<_T> res(impl_t::add(ax, a1));
     return res;
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::select(const typename d_real_traits<_T>::cmp_result_type& m,
+              const d_real<_T>& a, const d_real<_T>& b)
+{
+    _T h= select(m, a.h(), b.h());
+    _T l= select(m, a.l(), b.l());
+    return d_real<_T>(h, l);
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::max(const d_real<_T>& a, const d_real<_T>& b)
+{
+    typename d_real_traits<_T>::cmp_result_type m= a > b;
+    return select(m, a, b);
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::min(const d_real<_T>& a, const d_real<_T>& b)
+{
+    typename d_real_traits<_T>::cmp_result_type m= a < b;
+    return select(m, a, b);
 }
 
 // Local variables:
