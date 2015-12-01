@@ -258,5 +258,5 @@ int main()
     cftal::test::check_duint_ops<uint16_t, cftal::duint<uint8_t> >();
     std::cout << "duint<int8_t> signed check" << std::endl;
     cftal::test::check_duint_ops<int16_t, cftal::dint<int8_t> >();
-    return true;
+    return 0;
 }
