@@ -24,7 +24,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <>
         struct lt<int64_t, 2> {
             using full_type = vec<int64_t, 2>;
@@ -212,7 +212,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b) {
                 v2s64 q(a/b);
                 v2s64 r(remainder(a, b, q));
-                return r;                
+                return r;
             }
         };
 
@@ -251,10 +251,9 @@ namespace cftal {
                 // return full_type(std::fma(-a(), b(), c()));
                 return sub<int64_t, 2>::v(
                     c, mul<int64_t, 2>::v(a, b));
-                                          
             }
         };
-        
+
         template <>
         struct bit_or<int64_t, 2> {
             using full_type = vec<int64_t, 2>;
