@@ -25,6 +25,7 @@ namespace cftal {
 
         template <class _U>
         struct umul_lo_hi {
+            static_assert(std::is_integral<_U>::value, "_U must be integral");
             // returns low part in first, high part in second
             std::pair<_U, _U> operator()(const _U& a, const _U& b)
                 const;
@@ -32,6 +33,7 @@ namespace cftal {
 
         template <class _S>
         struct smul_lo_hi {
+            static_assert(std::is_integral<_S>::value, "_S must be integral");
             // returns low part in first, high part in second
             std::pair<_S, _S> operator()(const _S& a, const _S& b)
                 const;
@@ -159,6 +161,7 @@ namespace cftal {
         udiv_result<_U>
         make_udiv_result(const _U& q0, const _U& q1, const _U& r)
         {
+            static_assert(std::is_integral<_U>::value, "_U must be integral");
             return udiv_result<_U>(q0, q1, r);
         }
 
@@ -166,6 +169,7 @@ namespace cftal {
         template <class _U, class _UHALF=_U>
         class udiv_2by1_base {
         public:
+            static_assert(std::is_integral<_U>::value, "_U must be integral");            
             static
             udiv_result<_U>
             d(const _U& u0, const _U& u1, const _U& v);
