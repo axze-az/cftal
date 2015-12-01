@@ -18,6 +18,28 @@ namespace cftal {
         // == NAN
         bool f_eq(double a, double b);
         bool f_eq(float a, float b);
+        
+        template <typename _T>
+        struct cmp_t {
+            bool operator()(const _T& a, const _T& b) const {
+                return a == b;
+            }
+        };
+        
+        template <>
+        struct cmp_t<double> {
+            bool operator()(double a, double b) const {
+                return f_eq(a, b);
+            }
+        };
+        
+        template <>
+        struct cmp_t<float> {
+            bool operator()(float a, float b) const {
+                return f_eq(a, b);
+            }
+        };
+        
      
         template <class _T, std::size_t _N>
         bool check(const _T(&a)[_N], _T expected, const char* msg);
@@ -38,10 +60,11 @@ template <class _T, std::size_t _N>
 bool cftal::test::check(const _T(&a)[_N], _T expected , const char* msg)
 {
     bool r=true;
-    std::size_t i=0;
+    std::size_t i=0; 
+    const cmp_t<_T> cmp;
     for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
         const _T& ai= *b;
-        if (f_eq(ai, expected) == false) {
+        if (cmp(ai, expected) == false) {
             std::cerr << msg << " element " << i 
                       << " failed: " << ai << " expected: "
                       << expected << std::endl;
