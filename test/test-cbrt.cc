@@ -11,10 +11,10 @@ namespace cftal {
 
 
         template <class _V>
-        int check_cbrt_f64(const _V& v0, double x);
+        int check_cbrt_f64(const _V& v0, double x, bool verbose);
 
         template <class _V>
-        bool check_cbrt_f64(const _V& v0);
+        bool check_cbrt_f64(const _V& v0, bool verbose);
 
     }
 }
@@ -30,7 +30,7 @@ std::uint64_t as_uint64(double d)
 }
 
 template <class _V>
-int cftal::test::check_cbrt_f64(const _V& v, double x)
+int cftal::test::check_cbrt_f64(const _V& v, double x, bool verbose)
 {
     double r3(std::cbrt(x));
     _V vx(x);
@@ -71,20 +71,22 @@ int cftal::test::check_cbrt_f64(const _V& v, double x)
     double vp3_0(extract<0>(vp3));
     int rc(0);
     if (std::fabs(x - vp3_0) > std::fabs(x - p3)) {
-        std::cerr << "cbrt(" << x << ")= "
-                  << vr3_0 << " != expected " << r3 << std::endl;
-        std::cerr << vp3_0 << " " << p3 << std::endl;
+        if (verbose==true) {
+            std::cerr << "cbrt(" << x << ")= "
+                    << vr3_0 << " != expected " << r3 << std::endl;
+            std::cerr << vp3_0 << " " << p3 << std::endl;
 
-        std::cerr << std::fabs(x - vp3_0) << " "
-                  << std::fabs(x - p3)
-                  << std::endl;
-        std::cerr << std::hex
-                  << std::setw(16 )
-                  << as_uint64(vr3_0)
-                  << ' '
-                  << as_uint64(r3)
-                  << std::dec
-                  << std::endl;
+            std::cerr << std::fabs(x - vp3_0) << " "
+                    << std::fabs(x - p3)
+                    << std::endl;
+            std::cerr << std::hex
+                    << std::setw(16 )
+                    << as_uint64(vr3_0)
+                    << ' '
+                    << as_uint64(r3)
+                    << std::dec
+                    << std::endl;
+        }
         rc = -1;
     } else if (std::fabs(x - vp3_0) < std::fabs(x - p3)) {
         rc = 1;
@@ -93,7 +95,7 @@ int cftal::test::check_cbrt_f64(const _V& v, double x)
 }
 
 template <class _V>
-bool cftal::test::check_cbrt_f64(const _V& v)
+bool cftal::test::check_cbrt_f64(const _V& v, bool verbose)
 {
     bool res(true);
     static_cast<void>(v);
@@ -104,7 +106,7 @@ bool cftal::test::check_cbrt_f64(const _V& v)
     for (int i=0; i<1000000; ++i) {
         double x(double(i)*0.01);
 
-        rc=check_cbrt_f64(v, x);
+        rc=check_cbrt_f64(v, x, verbose);
         switch (rc) {
         case 0:
             ++e; break;
@@ -113,7 +115,7 @@ bool cftal::test::check_cbrt_f64(const _V& v)
         case -1:
             ++f; break;
         }
-        rc= check_cbrt_f64(v, -x);
+        rc= check_cbrt_f64(v, -x, verbose);
         switch (rc) {
         case 0:
             ++e; break;
@@ -123,7 +125,7 @@ bool cftal::test::check_cbrt_f64(const _V& v)
             ++f; break;
         }
     }
-    rc = check_cbrt_f64(v, 1.0/0.0);
+    rc = check_cbrt_f64(v, 1.0/0.0, verbose);
     switch (rc) {
     case 0:
         ++e; break;
@@ -132,7 +134,7 @@ bool cftal::test::check_cbrt_f64(const _V& v)
     case -1:
         ++f; break;
     }
-    rc = check_cbrt_f64(v, -1.0/0.0);
+    rc = check_cbrt_f64(v, -1.0/0.0, verbose);
     switch (rc) {
     case 0:
         ++e; break;
@@ -141,7 +143,7 @@ bool cftal::test::check_cbrt_f64(const _V& v)
     case -1:
         ++f; break;
     }
-    rc = check_cbrt_f64(v, +0.0/0.0);
+    rc = check_cbrt_f64(v, +0.0/0.0, verbose);
     switch (rc) {
     case 0:
         ++e; break;
@@ -150,7 +152,7 @@ bool cftal::test::check_cbrt_f64(const _V& v)
     case -1:
         ++f; break;
     }
-    rc = check_cbrt_f64(v, -0.0/0.0);
+    rc = check_cbrt_f64(v, -0.0/0.0, verbose);
     switch (rc) {
     case 0:
         ++e; break;
@@ -160,19 +162,15 @@ bool cftal::test::check_cbrt_f64(const _V& v)
         ++f; break;
     }
     std::cout << "r: " << r << " e: " << e << " f: " << f << std::endl;
+    res = (r + e) > 10*f;
     return res;
-}
-
-
-bool all_tests_04()
-{
-    cftal::test::check_cbrt_f64(cftal::v2f64());
-    cftal::test::check_cbrt_f64(cftal::v4f64());
-    cftal::test::check_cbrt_f64(cftal::v8f64());
-    return true;
 }
 
 int main(int argc, char** argv)
 {
-    return all_tests_04()==true ? 0 : 3;
+    bool rc=true;
+    rc &= cftal::test::check_cbrt_f64(cftal::v2f64(), false);
+    rc &= cftal::test::check_cbrt_f64(cftal::v4f64(), false);
+    rc &= cftal::test::check_cbrt_f64(cftal::v8f64(), false);
+    return rc==true ? 0 : 1;
 }
