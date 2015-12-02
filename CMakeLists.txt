@@ -60,12 +60,12 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
             "${CMAKE_CXX_FLAGS_RELEASE} -fschedule-insns2")
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -finline-functions")
-        set (CMAKE_CXX_FLAGS_RELEASE
-            "${CMAKE_CXX_FLAGS_RELEASE} -fselective-scheduling")
-        set (CMAKE_CXX_FLAGS_RELEASE
-            "${CMAKE_CXX_FLAGS_RELEASE} -fselective-scheduling2")
-        set (CMAKE_CXX_FLAGS_RELEASE
-            "${CMAKE_CXX_FLAGS_RELEASE} -fsel-sched-pipelining")
+        #set (CMAKE_CXX_FLAGS_RELEASE
+        #    "${CMAKE_CXX_FLAGS_RELEASE} -fselective-scheduling")
+        #set (CMAKE_CXX_FLAGS_RELEASE
+        #    "${CMAKE_CXX_FLAGS_RELEASE} -fselective-scheduling2")
+        #set (CMAKE_CXX_FLAGS_RELEASE
+        #    "${CMAKE_CXX_FLAGS_RELEASE} -fsel-sched-pipelining")
     endif()
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR 
         CMAKE_CXX_COMPILER_ID STREQUAL "CLANG")    

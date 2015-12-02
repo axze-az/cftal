@@ -1,6 +1,8 @@
 #include <cftal/test/intops.h>
 #include <cftal/bitops.h>
+#if defined (__SSE2__)
 #include <cftal/x86/ops_1.h>
+#endif
 #include <iostream>
 
 namespace {
@@ -23,6 +25,9 @@ namespace {
 
 bool cftal::test::check_popcnt()
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     std::uint8_t exp_u8[16];
     std::uint16_t exp_u16[8];
     std::uint32_t exp_u32[4];
@@ -121,10 +126,14 @@ bool cftal::test::check_popcnt()
         r &= chk(ru128, exp_u128, -1, "popcnt_u128");
     }
     return r;
+#endif
 }
 
 bool cftal::test::check_bitrev()
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     std::uint8_t exp_u8[16];
     std::uint16_t exp_u16[8];
     std::uint32_t exp_u32[4];
@@ -218,4 +227,5 @@ bool cftal::test::check_bitrev()
                  "bitrev_u64");
     }
     return r;
+#endif
 }

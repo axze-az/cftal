@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <random>
 
+#if defined (__x86_64__)
+
 namespace cftal {
     namespace test {
         template <class _T, class _R>
@@ -221,3 +223,10 @@ int main()
     bool r = rd == true && rf == true;
     return r == true ? 0 : 1;
 }
+
+#else
+int main()
+{
+    return true;
+}
+#endif

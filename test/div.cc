@@ -50,10 +50,12 @@ namespace cftal {
     }
 }
 
-
 template <class _T, class _REF>
 bool cftal::test::check_div_16(const char* msg)
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     std::uint64_t ts[div_type::LAST];
     std::uint64_t tcur[div_type::LAST+1];
     ts[div_type::REF] = ts[div_type::DIV] = ts[div_type::CDIV] =0;
@@ -133,6 +135,7 @@ bool cftal::test::check_div_16(const char* msg)
               << double(ts[div_type::CDIV])/(0x10000LL*0x10000)
               << std::endl;
     return true;
+#endif
 }
 
 template <class _T, class _REF, class _RND>
@@ -143,6 +146,9 @@ check_div_32_one_rnd(typename _T::value_type ii,
                      const char* msg,
                      std::uint64_t* ts)
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     std::uint64_t tcur[div_type::LAST+1];
     _T v(ii);
     for(int32_t j = 0; j < 0x10000; j += 4) {
@@ -197,6 +203,7 @@ check_div_32_one_rnd(typename _T::value_type ii,
             tcur[div_type::LAST] - tcur[div_type::CDIV];
     }
     return true;
+#endif
 }
 
 template <class _T, class _REF>
@@ -268,6 +275,9 @@ check_div_64_one_rnd(typename _T::value_type ii,
                      const char* msg,
                      std::uint64_t* ts)
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     std::uint64_t tcur[div_type::LAST+1];
     _T v(ii);
     for(int32_t j = 0; j < 0x10000; j += 2) {
@@ -320,6 +330,7 @@ check_div_64_one_rnd(typename _T::value_type ii,
             tcur[div_type::LAST] - tcur[div_type::CDIV];
     }
     return true;
+#endif
 }
 
 template <class _T, class _REF>
@@ -382,35 +393,58 @@ bool cftal::test::check_div_64_rnd(const char* msg)
     return true;
 }
 
-
 bool cftal::test::check_div_u16()
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     return check_div_16<v8u16, x86::div_u16>("div_u16");
+#endif
 }
 
 bool cftal::test::check_div_s16()
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     return check_div_16<v8s16, x86::div_s16>("div_s16");
+#endif
 }
 
 bool cftal::test::check_div_u32()
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     return check_div_32_rnd<v4u32, x86::div_u32>("div_u32");
+#endif
 }
 
 bool cftal::test::check_div_s32()
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     return check_div_32_rnd<v4s32, x86::div_s32>("div_s32");
+#endif
 }
 
 bool cftal::test::check_div_u64()
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     return check_div_64_rnd<v2u64, x86::div_u64>("div_u64");
+#endif
 }
 
 bool cftal::test::check_div_s64()
 {
+#if !defined (__SSE2__)
+    return true;
+#else
     return check_div_64_rnd<v2s64, x86::div_s64>("div_s64");
+#endif
 }
 
 
