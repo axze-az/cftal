@@ -26,7 +26,7 @@ bool cftal::test::spec_v8f32()
     r &= perm2_v8<float,  2, 10, 3, 11, 6, 14, 7, 15>();
     r &= perm2_v8<float,  0, 1, 8, 9, 4, 5, 12, 13>();
     r &= perm2_v8<float,  2, 3, 10, 11, 6, 7, 14, 15>();
-    
+
     return r;
 }
 
