@@ -1744,7 +1744,7 @@ __m256d cftal::x86::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
          (((m1 & 0x2200) & m2) == (0x2200 & m2))) {
         // low from low src, high from high src
         const int sel= csel4<_P0, _P1, _P2, _P3>::val;
-        res= _mm256_permute_pd(a, sel);
+        res= _mm256_permute_pd(a, sel & 0xf);
     } else if ( ((m1 & m2) == (0x1032 & m2)) ) {
         res= _mm256_permute2f128_pd(a, a, 0x01);
     } else if ( ((m1 & m2) == (0x3232 & m2)) ) {
@@ -1766,7 +1766,7 @@ __m256d cftal::x86::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
                                      _mm256_castpd256_pd128(a),
                                      1);
             const int sel_lo= csel4<_P0, _P1, _P2, _P3>::val;
-            res = _mm256_permute_pd(lo2lo_lo2hi, sel_lo);
+            res = _mm256_permute_pd(lo2lo_lo2hi, sel_lo & 0xF);
         } else if (((m1 & 0x2222) & m2)==(0x2222 & m2)) {
             // only from high lane
             __m256d hi2lo_hi2hi= _mm256_permute2f128_pd(a, a, 0x11);
@@ -1877,10 +1877,10 @@ __m256 cftal::x86::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
         __m256d rd(perm1_v4f64<_p0, _p1, _p2, _p3>::v(ad));
         return as<__m256>(rd);
     }
-    const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
-    const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
-    const bool do_zero= m2 != 0xfffffff;
-    if (((m1 ^ 0x76543210) & m2)==0 && m2 !=-1) {
+    const uint32_t m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
+    const uint32_t m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+    const bool do_zero= m2 != 0xFFFFFFFF;
+    if (((m1 ^ 0x76543210) & m2)==0 && m2 !=0xFFFFFFFF) {
         // zero only
         const unsigned z0= (_P0<0 ? 0 : -1);
         const unsigned z1= (_P1<0 ? 0 : -1);
@@ -2182,7 +2182,7 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
     }
     const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
     const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
-    const bool do_zero= m2 != 0xfffffff;
+    const bool do_zero= m2 != 0xFFFFFFFF;
     if (((m1 ^ 0x76543210) & m2)==0 && m2 !=-1) {
         // zero only
         const unsigned z0= (_P0<0 ? 0 : -1);
@@ -2317,9 +2317,9 @@ perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
 {
     const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
     const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
-    const bool do_zero= m2 != 0xfffffff;
+    const bool do_zero= m2 != 0xFFFFFFFF;
 
-    if (m2 == 0xffffffff)
+    if (m2 == 0xFFFFFFFF)
         return _mm512_setzero_pd();
 
     const __mmask8 zm=
