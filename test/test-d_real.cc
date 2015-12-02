@@ -227,6 +227,6 @@ int main()
 #else
 int main()
 {
-    return true;
+    return 0;
 }
 #endif
