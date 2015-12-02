@@ -369,7 +369,7 @@ namespace cftal {
                     constexpr int _p2=_P2;
                     constexpr int _p3=_P3;
                     const int m=shuffle4<_p0, _p1, _p2, _p3>::val;
-                    return _mm_shufflelo_epi16(a, m);
+                    return _mm_shufflelo_epi16(a, m & 0xff);
                 }
             };
 
