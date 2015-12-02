@@ -1,0 +1,4 @@
+#! /bin/sh
+set -x
+OPT="-L /usr/arm-linux-gnueabihf" 
+qemu-arm -cpu cortex-a9 $OPT $*
