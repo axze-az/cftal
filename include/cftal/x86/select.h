@@ -466,7 +466,7 @@ cftal::x86::impl::select_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
 {
 #if defined (__SSE4_1__)
     const int sm=csel2<_P0, _P1>::val;
-    return _mm_blend_pd(b, a, sm);
+    return _mm_blend_pd(b, a, sm & 3);
 #else
     typedef const_v4u32<
         (_P0 ? uint32_t(-1) : 0), (_P0 ? uint32_t(-1) : 0),
