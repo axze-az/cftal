@@ -14,7 +14,7 @@
 #endif
 #endif
 
-#if !defined (__GNUC__)
+#if !defined (__GNUC__) || (IN_KDEVELOP_PARSER>0)
 #define alignas(X)
 #define __SSSE3__
 #define __SSE41__
