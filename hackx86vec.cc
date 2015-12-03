@@ -666,6 +666,18 @@ do_add(const cftal::vec<double, 256>& a,
     return 2.0 * a / b - (4.0 + a *  b);
 }
 
+cftal::vec<float, 2>
+do_add(cftal::vec<float, 2> a, cftal::vec<float, 2> b)
+{
+    return a + b;
+}
+
+cftal::vec<int32_t, 2>
+do_add(cftal::vec<int32_t, 2> a, cftal::vec<int32_t, 2> b)
+{
+    return a + b;
+}
+
 cftal::vec<double, 8>::mask_type
 do_cmp_lt(cftal::vec<double, 8> a,
           cftal::vec<double, 8> b)

@@ -23,7 +23,7 @@ namespace cftal {
         __m128i select_u16(__m128i msk, __m128i on_one, __m128i on_zero);
         __m128i select_u32(__m128i msk, __m128i on_one, __m128i on_zero);
         __m128i select_u64(__m128i msk, __m128i on_one, __m128i on_zero);
-        
+
         // select floats
         // __SSE2__: bitwise
         // __SSE4_1__: on sign bit of float
@@ -70,7 +70,7 @@ namespace cftal {
         __m128i select_u32(__mmask8 msk, __m128i on_one, __m128i on_zero);
         __m256i select_u32(__mmask8 msk, __m256i on_one, __m256i on_zero);
 #endif
-        
+
         namespace impl {
 
             // helper for selecting first or second arg
@@ -204,7 +204,7 @@ namespace cftal {
                 public select_arg_1<__m256i> {
             };
 #endif
-            
+
         }
 
         template <bool _P0, bool _P1>
