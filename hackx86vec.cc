@@ -659,17 +659,86 @@ do_add(cftal::vec<double, 32> a,
     return 2.0 * a / b - (4.0 + a *  b);
 }
 
-cftal::vec<double, 256>
-do_add(const cftal::vec<double, 256>& a,
-       const cftal::vec<double, 256>& b)
+cftal::vec<double, 64>
+do_add(const cftal::vec<double, 64>& a,
+       const cftal::vec<double, 64>& b)
 {
     return 2.0 * a / b - (4.0 + a *  b);
 }
 
-cftal::vec<float, 2>
-do_add(cftal::vec<float, 2> a, cftal::vec<float, 2> b)
+namespace cftal {
+    
+    template <typename _T, typename _REP>
+    union packed_type {
+        enum { _N = sizeof(_REP)/sizeof(_T) };
+        _T _v[_N];
+        _REP _r;        
+        packed_type(_REP r) : _r(r) {}
+        packed_type(std::initializer_list<_T> l) {            
+            std::size_t i=0;
+            _T t=_T(0);
+            for (auto b=std::begin(l), e=std::end(l); b!=e && i <_N; 
+                 ++b, ++i) {
+                t = *b;
+                _v[i] = t;
+            }
+            for (; i<_N; ++i)
+                _v[i] = t;
+        }
+    };
+        
+    
+    packed_type<float, uint64_t>
+    operator+(packed_type<float, uint64_t> a, packed_type<float, uint64_t> b)
+    {
+#if 1
+        __m128 av = _mm_castsi128_ps(_mm_cvtsi64_si128(a._r));
+        __m128 bv = _mm_castsi128_ps(_mm_cvtsi64_si128(b._r));
+        __m128 rv = _mm_add_ps(av, bv);
+        packed_type<float, uint64_t> r= 
+            _mm_cvtsi128_si64(_mm_castps_si128(rv));
+        return r;
+#else        
+        packed_type<float, uint64_t> r(a);
+        for (size_t i=0; i<r._N; ++i)
+            r._v[i] += b._v[i];
+        return r;
+#endif        
+    }
+
+    packed_type<float, uint64_t>
+    operator*(packed_type<float, uint64_t> a, packed_type<float, uint64_t> b)
+    {
+#if 1
+        __m128 av = _mm_castsi128_ps(_mm_cvtsi64_si128(a._r));
+        __m128 bv = _mm_castsi128_ps(_mm_cvtsi64_si128(b._r));
+        __m128 rv = _mm_mul_ps(av, bv);
+        packed_type<float, uint64_t> r= 
+            _mm_cvtsi128_si64(_mm_castps_si128(rv));
+        return r;
+#else        
+        packed_type<float, uint64_t> r(a);
+        for (size_t i=0; i<r._N; ++i)
+            r._v[i] += b._v[i];
+        return r;
+#endif        
+    }
+    
+}
+
+cftal::packed_type<float, cftal::uint64_t>
+do_mul_add(cftal::packed_type<float, cftal::uint64_t> a, 
+           cftal::packed_type<float, cftal::uint64_t> b,
+           cftal::packed_type<float, cftal::uint64_t> c)
 {
-    return a + b;
+    return (a * b + c) + (a + b * c);
+}
+
+cftal::vec<float, 2>
+do_mul_add(cftal::vec<float, 2> a, 
+           cftal::vec<float, 2> b, cftal::vec<float, 2> c)
+{
+    return (a * b + c) + (a + b * c);
 }
 
 cftal::vec<int32_t, 2>
