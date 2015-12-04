@@ -21,6 +21,7 @@ namespace cftal {
         
         template <typename _T>
         struct cmp_t {
+            cmp_t() {}
             bool operator()(const _T& a, const _T& b) const {
                 return a == b;
             }
@@ -28,6 +29,7 @@ namespace cftal {
         
         template <>
         struct cmp_t<double> {
+            cmp_t() {}
             bool operator()(double a, double b) const {
                 return f_eq(a, b);
             }
@@ -35,6 +37,7 @@ namespace cftal {
         
         template <>
         struct cmp_t<float> {
+            cmp_t() {}
             bool operator()(float a, float b) const {
                 return f_eq(a, b);
             }

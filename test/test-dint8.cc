@@ -187,7 +187,7 @@ namespace cftal {
                     std::cout << msg << ' ' <<  tu << '\r'
                               << std::flush;
                 }
-                for (uint32_t v=v0; v<0x0000; ++v) {
+                for (uint32_t v=v0; v<0x10000; ++v) {
                     _T tv=v;
                     check_cmp_op<_T, _V, _OP>(tu, tv, msg);
                 }

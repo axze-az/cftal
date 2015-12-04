@@ -556,7 +556,7 @@ cftal::fms(const vec<float, 1>& a, const vec<float, 1>& b,
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>
-cftal::frexp(const vec<double, _N>& a, vec<int32_t, _N>* e)
+cftal::frexp(const vec<float, _N>& a, vec<int32_t, _N>* e)
 {
     vec<int32_t, _N/2> el, eh;
     vec<float, _N> r(frexp(low_half(a), &el), 

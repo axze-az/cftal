@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <random>
 
-#if defined (__x86_64__)
+#if defined (__x86_64__) && defined (__GNUC__) && !defined(__clang__)
 
 namespace cftal {
     namespace test {
