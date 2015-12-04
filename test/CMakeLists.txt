@@ -5,7 +5,8 @@ set (TEST_SRCS
      div.cc 
      intops.cc 
      signs.cc 
-     f32_f64.cc)
+     f32_f64.cc
+     snippets.cc)
 include_directories(../..)
 include_directories(../include)
 

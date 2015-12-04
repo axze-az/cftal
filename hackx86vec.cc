@@ -13,806 +13,57 @@
 #include <cstddef>
 #include <iterator>
 
-namespace cftal {
-
-    vec<double, 4>
-    test_merge(const vec<double, 4>& a, const vec<double, 4>& b);
-
-    vec<float, 4>
-    test_merge(const vec<float, 4>& a, const vec<float, 4>& b);
-}
-
-cftal::vec<double, 4>
-cftal::test_merge(const vec<double, 4>& a, const vec<double, 4>& b)
-{
-    vec<double, 4>::mask_type a_gt_b = a > b;
-    vec<double, 4> r=a;
-    zero(r).update_if(a_gt_b).with = a + b * b * b + a;
-
-    return r;
-}
-
-cftal::vec<float, 4>
-cftal::test_merge(const vec<float, 4>& a, const vec<float, 4>& b)
-{
-    vec<float, 4>::mask_type a_gt_b = a > b;
-    vec<float, 4> r=a;
-    zero(r).update_if(a_gt_b).with = a + b * b * b + a;
-
-    return r;
-}
-
-//namespace vec=x86vec;
-//namespace vec=emuvec;
-
-cftal::v4f64::mask_type
-test_inf(cftal::v4f64 a)
-{
-    return isinf(a);
-}
-
-cftal::v2f64::mask_type
-test_inf(cftal::v2f64 a)
-{
-    return isinf(a);
-}
-
-cftal::v4f64::mask_type
-test_nan(cftal::v4f64 a)
-{
-    return isnan(a);
-}
-
-cftal::v2f64::mask_type
-test_nan(cftal::v2f64 a)
-{
-    return isnan(a);
-}
-
-
-// v4f64 compile tests
-cftal::v4f64 test1a(cftal::v4f64 a, cftal::v4f64 b, cftal::v4f64 c)
-{
-    return a*b + c;
-}
-
-cftal::v4f64 test1b(cftal::v4f64 a, cftal::v4f64 b, cftal::v4f64 c)
-{
-    return c+ a*b;
-}
-
-cftal::v4f64 test1c(cftal::v4f64 a, cftal::v4f64 b, cftal::v4f64 c)
-{
-    return a*b - c;
-}
-
-cftal::v4f64 test1d(cftal::v4f64 a, cftal::v4f64 b, cftal::v4f64 c)
-{
-    return c- a*b;
-}
-
-cftal::v4f64 test2a(cftal::v4f64 a, cftal::v4f64 b,
-                    cftal::v4f64 c, cftal::v4f64 d)
-{
-    return a*b + c*d;
-}
-
-cftal::v4f64 test2b(cftal::v4f64 a, cftal::v4f64 b,
-                    cftal::v4f64 c, cftal::v4f64 d)
-{
-    return a*b - c*d;
-}
-
-cftal::v4f64 test2c(cftal::v4f64 a, cftal::v4f64 b,
-                    cftal::v4f64 c, cftal::v4f64 d)
-{
-    return (a*b + c) * d;
-}
-
-cftal::v4f64 test2d(cftal::v4f64 a, cftal::v4f64 b,
-                    cftal::v4f64 c, cftal::v4f64 d)
-{
-    return (a*b - c) * d;
-}
-
-cftal::v4f64 test3a(cftal::v4f64 a, cftal::v4f64 b,
-                    cftal::v4f64 c, cftal::v4f64 d)
-{
-    return 1.0 + a * b + 1.0 + c * d;
-}
-
-// v8f64 compile tests
-cftal::v8f64 test1a(cftal::v8f64 a, cftal::v8f64 b, cftal::v8f64 c)
-{
-    return a*b + c;
-}
-
-cftal::v8f64 test1b(cftal::v8f64 a, cftal::v8f64 b, cftal::v8f64 c)
-{
-    return c+ a*b;
-}
-
-cftal::v8f64 test1c(cftal::v8f64 a, cftal::v8f64 b, cftal::v8f64 c)
-{
-    return a*b - c;
-}
-
-cftal::v8f64 test1d(cftal::v8f64 a, cftal::v8f64 b, cftal::v8f64 c)
-{
-    return c- a*b;
-}
-
-cftal::v8f64 test2a(cftal::v8f64 a, cftal::v8f64 b,
-                    cftal::v8f64 c, cftal::v8f64 d)
-{
-    return a*b + c*d;
-}
-
-cftal::v8f64 test2b(cftal::v8f64 a, cftal::v8f64 b,
-                    cftal::v8f64 c, cftal::v8f64 d)
-{
-    return a*b - c*d;
-}
-
-cftal::v8f64 test2c(cftal::v8f64 a, cftal::v8f64 b,
-                    cftal::v8f64 c, cftal::v8f64 d)
-{
-    return (a*b + c) * d;
-}
-
-cftal::v8f64 test2d(cftal::v8f64 a, cftal::v8f64 b,
-                    cftal::v8f64 c, cftal::v8f64 d)
-{
-    return (a*b - c) * d;
-}
-
-cftal::v8f64 test3a(cftal::v8f64 a, cftal::v8f64 b,
-                    cftal::v8f64 c, cftal::v8f64 d)
-{
-    return 1.0 + a * b + 1.0 + c * d;
-}
-
-cftal::v8f64 test3b(cftal::v8f64 a, cftal::v8f64 b,
-                    cftal::v8f64 c, cftal::v8f64 d)
-{
-    return (1.0 + a * b) + (1.0 + c * d);
-}
-
-cftal::v8f64::mask_type
-test_cmp(cftal::v8f64 a, cftal::v8f64 b)
-{
-    // cftal::v8f64::mask_type c1 = a == b;
-    // cftal::v8f64::mask_type c2 = a == b;
-
-    return (a == b) | (a > b);
-}
-
-
-cftal::v8f64 test4a(cftal::v8f64 a, cftal::v8f64 b,
-                    cftal::v8f64 c, cftal::v8f64 d)
-{
-    return (1.0+a*b) * (a*b + a*c + a*d + b* c + b* d +
-                        c * d);
-}
-
-cftal::v4s32 test_as(cftal::v4f32 a)
-{
-    return cftal::as<cftal::v4s32>(a);
-}
-
-cftal::v4f32 test_as(cftal::v4s32 a)
-{
-    return cftal::as<cftal::v4f32>(a);
-}
-
-
-cftal::v8s32 test_as(cftal::v8f32 a)
-{
-    return cftal::as<cftal::v8s32>(a);
-}
-
-cftal::v8f32 test_as(cftal::v8s32 a)
-{
-    return cftal::as<cftal::v8f32>(a);
-}
-
-#if defined (__x86_64__)
-cftal::uint32_t
-test_read_signs(cftal::v8s16 a)
-{
-    return cftal::x86::read_signs_s16(a());
-}
-
-cftal::uint32_t
-test_read_signs(cftal::v4s32 a)
-{
-    return cftal::x86::read_signs_s32(a());
-}
-
-cftal::uint32_t
-test_read_signs(cftal::v2s64 a)
-{
-    return cftal::x86::read_signs_s64(a());
-}
-#endif
-
-
-struct print_dpf64 {
-    const cftal::d_real<double> _f;
-	explicit
-    print_dpf64(const cftal::d_real<double>& f) : _f(f) {}
-};
-
-std::ostream& operator<<(std::ostream& s, const print_dpf64& p)
-{
-    const cftal::d_real<double>& d=p._f;
-    s << std::scientific
-      << std::setprecision(22);
-    if (d.h() >= 0.0)
-        std::cout << ' ';
-    s << std::setw(27)
-      << d.h()
-      << std::setw(0)
-      << ", " ;
-    if (d.l() >= 0.0)
-        std::cout << ' ';
-    std::cout << std::setw(27)
-              << d.l()
-              << std::setw(0);
-    return s;
-}
-
-#if defined (__GNUC__) && !defined (__clang__) && defined (__x86_64__)
-#include <quadmath.h>
-
-struct out_as_dpf64 {
-    double _h, _l;
-    out_as_dpf64(const __float128& t) : _h(t), _l(t-_h) {
-    }
-};
-
-std::ostream& operator<<(std::ostream& s, const out_as_dpf64& p)
-{
-    cftal::d_real<double> t(p._h, p._l);
-    print_dpf64 o(t);
-    s << o;
-    return s;
-}
-
-void calc_pi()
-{
-#if 1
-    __float128 v;
-
-    v= M_LN2q;
-    std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_ln2("
-        "\n\t"
-              << out_as_dpf64(v)
-              << ");"
-              << std::endl;
-
-    v= M_PIq;
-    std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_pi("
-        "\n\t"
-              << out_as_dpf64(v)
-              << ");"
-              << std::endl;
-
-    v=M_PI_2q;
-    std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_pi_2("
-        "\n\t"
-              << out_as_dpf64(v)
-              << ");"
-              << std::endl;
-
-    v=M_PI_4q;
-    std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_pi_4("
-        "\n\t"
-              << out_as_dpf64(v)
-              << ");"
-              << std::endl;
-
-
-    v = M_1_PIq;
-    std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_1_pi("
-        "\n\t"
-              << out_as_dpf64(v)
-              << ");"
-              << std::endl;
-
-    v = M_2_PIq;
-
-    std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_2_pi("
-        "\n\t"
-              << out_as_dpf64(v)
-              << ");"
-              << std::endl;
-
-    v = M_2_PIq * 0.5;
-
-    std::cout << "cftal::math::impl::d_real_constants<_T, double>::m_4_pi("
-        "\n\t"
-              << out_as_dpf64(v)
-              << ");"
-              << std::endl;
-
-#else
-    using dpf64 = cftal::d_real<double>;
-    // arctan(x) = x/1 - {x^3}/3 + x^5/5
-    // arctan(1) = PI/4
-    dpf64 pi(0);
-    double pi_d(0);
-    for (std::int64_t i=100000000; i>=0 ; --i) {
-        const std::int64_t i0=2*i+2;
-        dpf64 t0(i0);
-        dpf64 t1(t0+1.0);
-        dpf64 t2(t0+2.0);
-        dpf64 p(t0*t1*t2);
-        dpf64 rp(1.0/p);
-        if ((i&1)==0) {
-            // std::cout << i0 << std::endl;
-            pi += rp;
-        } else {
-            // std::cout << -i0 << std::endl;
-            pi -= rp;
-        }
-        // std::cout << pi.h() << ' ' << pi.l() << std::endl;
-    }
-    pi *= 4.0;
-    pi += 3.0;
-    std::cout << std::scientific
-              << std::setprecision(18)
-              << pi.h()
-              << ' '
-              << pi.l()
-              << std::endl
-              << pi_d
-              << std::endl;
-#endif
-}
-
-#endif
-
-
-void print_inv_fac()
-{
-    using dpf64 = cftal::d_real<double>;
-
-    dpf64 fac(1.0);
-    std::vector<dpf64> v;
-
-    const std::size_t MAX_FAC=30;
-
-    std::cout << "template <class _T>\n"
-              << "const _T\n"
-              << "cftal::impl::d_real_constants_dbl<_T>::\n"
-              << "inv_fac[MAX_FAC+1]= {"
-              << std::endl;
-    for (std::size_t i=0; i<MAX_FAC+1; ++i) {
-        dpf64  inv_fac(1.0);
-        if (i>1) {
-            fac *= double(i);
-            inv_fac /= fac;
-        }
-        v.push_back(inv_fac);
-        std::cout << std::scientific
-                  << std::setprecision(22)
-                  << "\t_T( "
-                  << print_dpf64(inv_fac)
-                  << ")";
-        if (i != MAX_FAC)
-            std::cout << ',';
-        std::cout << std::endl;
-    }
-    std::cout << "};" << std::endl;
-
-    // parameters for sin
-    std::cout << "template <typename _T>" << std::endl
-              << "const " << std::endl
-              << "typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type" << std::endl
-              << "cftal::math::func<double, cftal::int32_t, _T>::m_sin_c_k2[]= {" << std::endl;
-
-    std::cout << "\t// +1/21!\n"
-              << "\tdvf_type( " << print_dpf64(v[21]) <<"),\n";
-
-    std::cout << "\t// -1/19!\n"
-              << "\tdvf_type( " << print_dpf64(-v[19]) <<"),\n";
-
-    std::cout << "\t// +1/17!\n"
-              << "\tdvf_type( " << print_dpf64(v[17]) <<"),\n";
-
-    std::cout << "\t// -1/15!\n"
-              << "\tdvf_type( " << print_dpf64(-v[15]) <<"),\n";
-
-    std::cout << "\t// +1/13!\n"
-              << "\tdvf_type( " << print_dpf64(v[13]) <<"),\n";
-
-    std::cout << "\t// -1/11!\n"
-              << "\tdvf_type( " << print_dpf64(-v[11]) <<"),\n";
-
-    std::cout << "\t// +1/9!\n"
-              << "\tdvf_type( " << print_dpf64(v[9]) <<"),\n";
-
-    std::cout << "\t// -1/7!\n"
-              << "\tdvf_type( " << print_dpf64(-v[7]) <<"),\n";
-
-    std::cout << "\t// +1/5!\n"
-              << "\tdvf_type( " << print_dpf64(v[5]) <<"),\n";
-
-    std::cout << "\t// -1/3!\n"
-              << "\tdvf_type( " << print_dpf64(-v[3]) <<")\n};\n\n";
-
-    // parameters for cos
-    std::cout << "template <typename _T>" << std::endl
-              << "const " << std::endl
-              << "typename cftal::math::func<double, cftal::int32_t, _T>::dvf_type" << std::endl
-              << "cftal::math::func<double, cftal::int32_t, _T>::m_cos_c_k2[]= {" << std::endl;
-
-    std::cout << "\t// -1/22!\n"
-              << "\tdvf_type( " << print_dpf64(-v[22]) <<"),\n";
-
-    std::cout << "\t// +1/20!\n"
-              << "\tdvf_type( " << print_dpf64(v[20]) <<"),\n";
-
-    std::cout << "\t// -1/18!\n"
-              << "\tdvf_type( " << print_dpf64(-v[18]) <<"),\n";
-
-    std::cout << "\t// +1/16!\n"
-              << "\tdvf_type( " << print_dpf64(v[16]) <<"),\n";
-
-    std::cout << "\t// -1/14!\n"
-              << "\tdvf_type( " << print_dpf64(-v[14]) <<"),\n";
-
-    std::cout << "\t// +1/12!\n"
-              << "\tdvf_type( " << print_dpf64(v[12]) <<"),\n";
-
-    std::cout << "\t// -1/10!\n"
-              << "\tdvf_type( " << print_dpf64(-v[10]) <<"),\n";
-
-    std::cout << "\t// +1/8!\n"
-              << "\tdvf_type( " << print_dpf64(v[8]) <<"),\n";
-
-    std::cout << "\t// -1/6!\n"
-              << "\tdvf_type( " << print_dpf64(-v[6]) <<"),\n";
-
-    std::cout << "\t// +1/4!\n"
-              << "\tdvf_type( " << print_dpf64(v[4]) <<")\n};\n\n";
-    // parameters for exp
-}
-
-void print_2_over_i()
-{
-    using dpf64 = cftal::d_real<double>;
-
-    const std::size_t MAX_2_OVER_I=30;
-
-    std::cout << "template <class _T>\n"
-              << "const _T\n"
-              << "cftal::impl::d_real_constants_dbl<_T>::\n"
-              << "_2_over_i[MAX_2_OVER_I]= {"
-              << std::endl;
-    for (std::size_t i=0; i<MAX_2_OVER_I; ++i) {
-        dpf64 two_over_i(2.0);
-        if (i>1) {
-            two_over_i /= double(i);
-        }
-        std::cout << std::scientific
-                  << std::setprecision(22)
-                  << "\t_T( "
-                  << std::setw(27)
-                  << two_over_i.h()
-                  << std::setw(0)
-                  << ", " ;
-        if (two_over_i.l() >= 0.0)
-            std::cout << ' ';
-        std::cout << std::setw(27)
-                  << two_over_i.l()
-                  << std::setw(0)
-                  << ")";
-        if (i != MAX_2_OVER_I)
-            std::cout << ',';
-        std::cout << std::endl;
-    }
-    std::cout << "};" << std::endl;
-}
-
-void print_sqrtx()
-{
-    using dpf64 = cftal::d_real<double>;
-    dpf64 sqrt12(sqrt(dpf64(0.5)));
-    std::cout << "template <class _T>\n"
-              << "const _T\n"
-              << "cftal::impl::d_real_constants_dbl<_T>::\n"
-              << "m_sqrt1_2("
-              << std::endl;
-    std::cout << std::scientific
-              << std::setprecision(22)
-              << "\t_T( "
-              << std::setw(27)
-              << sqrt12.h()
-              << std::setw(0)
-              << ", " ;
-    if (sqrt12.l() >= 0.0)
-        std::cout << ' ';
-    std::cout << std::scientific
-              << std::setprecision(22)
-              << std::setw(27)
-              << sqrt12.l()
-              << std::setw(0)
-              << ");";
-    std::cout << std::endl;
-
-#if defined (__GNUC__) && !defined (__clang__) && defined(__x86_64__)
-    __float128 t2= __builtin_sqrtl(__float128(0.5));
-    std::cout << std::setprecision(22)
-              << double(t2)
-              << ' '
-              << double(t2 - double(t2))
-              << std::endl;
-#endif
-}
-
-
-void testpowi()
-{
-    using dpf64 = cftal::d_real<double>;
-    dpf64 base(1.0);
-    dpf64 t1=cftal::str_to_d_double("0.025e1");
-    std::cout.setf(std::ios_base::fixed |
-                   std::ios_base::scientific,
-                   std::ios_base::floatfield);
-    std::cout << std::setprecision(22)
-              << t1.h()
-              << ", "
-              << t1.l()
-              << std::endl;
-    base+= t1;
-    for (std::size_t i=0; i<10; ++i) {
-        dpf64 t= powi(base, i);
-        std::cout << std::setprecision(22)
-                  << t.h()
-                  << ", "
-                  << t.l()
-                  << std::endl;
-    }
-
-}
-
-#if 0 // defined (__AVX__)
-__m256d tr1(__m256d a, __m256d b)
-{
-    return x86perm_f64<0, 4, 1, 5>(a, b);
-}
-
-__m256d tr2(__m256d a, __m256d b)
-{
-    return x86perm_f64<2, 6, 3, 7>(a, b);
-}
-
-__m256d tr1a(__m256d a, __m256d b)
-{
-    // x86perm_f64<0, 4, 1, 5>(a, b);
-#if 0
-    // 5 operations
-    __m256d a0= x86perm_f64<0, 0, 1, 1>(a);
-    __m256d b0= x86perm_f64<0, 0, 1, 1>(b);
-    return x86select_f64<true, false, true, false>(a0, b0);
-#endif
-    using namespace x86vec;
-    using namespace x86impl;
-    // 0 4 2 6
-    __m256d t0= vunpcklpd::v(a, b);
-    // 1 5 3 7
-    __m256d t1= vunpckhpd::v(a, b);
-    __m256d r= vperm2f128<0, 2>::v(t0, t1);
-    return r;
-
-}
-
-__m256d tr2a(__m256d a, __m256d b)
-{
-    // x86perm_f64<2, 6, 3, 7>(a, b);
-#if 0
-    // 5 operations
-    __m256d a0= x86perm_f64<2, 2, 3, 3>(a);
-    __m256d b0= x86perm_f64<2, 2, 3, 3>(b);
-    return x86select_f64<true, false, true, false>(a0, b0);
-#endif
-    using namespace x86vec;
-    using namespace x86impl;
-    // 0 4 2 6
-    __m256d t0= vunpcklpd::v(a, b);
-    // 1 5 3 7
-    __m256d t1= vunpckhpd::v(a, b);
-    __m256d r= vperm2f128<1, 3>::v(t0, t1);
-    return r;
-}
-
-__m256d tr2b(__m256d a)
-{
-    return x86perm_f64< 2, -1, 3, -1>(a);
-}
-
-#endif
-
-cftal::vec<double, 4>
-do_add(cftal::vec<double, 4> a,
-       cftal::vec<double, 4> b)
-{
-    // return cftal::op::add<double, 4>::v(a, b);
-    return 2.0 * a / b - (4.0 + a *  b);
-    // return a * b  + a / b - (a+b);
-}
-
-cftal::vec<double, 8>
-do_add(cftal::vec<double, 8> a,
-       cftal::vec<double, 8> b)
-{
-    // return cftal::op::add<double, 4>::v(a, b);
-    return 2.0 * a / b - (4.0 + a *  b);
-    // return a * b  + a / b - (a+b);
-}
-
-cftal::vec<double, 32>
-do_add(cftal::vec<double, 32> a,
-       cftal::vec<double, 32> b)
-{
-    return 2.0 * a / b - (4.0 + a *  b);
-}
-
-cftal::vec<double, 64>
-do_add(const cftal::vec<double, 64>& a,
-       const cftal::vec<double, 64>& b)
-{
-    return 2.0 * a / b - (4.0 + a *  b);
-}
 
 namespace cftal {
 
-#if 0
-    namespace impl {
-        
-        template <typename _T, std::size_t _N, typename _R>
-        struct packed_type {
-            static_assert(sizeof(_T)*_N = sizeof(_R),
-                          "invalid sizes in packed_type");
-            _T _a[_N];
-            _R _v;
-            packed_type() = default;
-            packed_type(const packed_type& r) = default;
-            packed_type(packed_type&& r) = default;
-            packed_type& operator=(const packed_type& r) = default;
-            packed_type& operator=(packed_type&& r) = default;
-        };        
-    }
-    
-    __m128 load_pair(std::pair<float, float> a)
-    {
-        return _mm_setr_ps(a.first, a.second, 0.0f, 0.0f);
-    }
-  
-    std::pair<float, float>
-    operator+(std::pair<float, float> a, std::pair<float, float> b)
-    {
-#if 1        
-        __m128 av = load_pair(a);
-        __m128 bv = load_pair(b);
-        __m128 rv = _mm_add_ps(av, bv);
-        std::pair<float, float> r=
-            _mm_cvtsi128_si64(_mm_castps_si128(rv));
-        return r;
-#else        
-        std::pair<float, float> r(a);
-        for (size_t i=0; i<r._N; ++i)
-            r._v[i] += b._v[i];
-        return r;
-#endif        
-    }
-
-    std::pair<float, float>
-    operator*(std::pair<float, float> a, std::pair<float, float> b)
-    {
-#if 1
-        __m128 av = _mm_castsi128_ps(_mm_cvtsi64_si128(a._r));
-        __m128 bv = _mm_castsi128_ps(_mm_cvtsi64_si128(b._r));
-        __m128 rv = _mm_mul_ps(av, bv);
-        std::pair<float, float> r= 
-            _mm_cvtsi128_si64(_mm_castps_si128(rv));
-        return r;
-#else        
-        std::pair<float, float> r(a);
-        for (size_t i=0; i<r._N; ++i)
-            r._v[i] += b._v[i];
-        return r;
-#endif        
-    }
-#endif
-#if 0    
-    template <>
-    class vec<float, 2> : public impl::vreg<std::pair<float, float> > {
-    public:
-        using base_type = x86::vreg<__m128i>;
-
-        using value_type = float;
-#if defined (__AVX512VL__)
-        using mask_value_type = bit;
-#else
-        using mask_value_type = float;
-#endif
-        using mask_type= vec<mask_value_type, 2>;
-
-        using base_type::base_type;
-        vec() = default;
-        vec(const vec<ufloat, 2>& v);
-        // create vec{v,v}
-        vec(float v);
-        // constructor from std::initializer_list, fills remaining
-        // elements with the last one given
-        vec(std::initializer_list<float> l);
-        // allow construction from vec<float, 8>
-        vec(init_list<float> l);
-        // allow construction from two halfes
-        vec(const vec<float, 1>& lh, const vec<float, 1>& hh);
-        // expression template constructor
-        template <template <class _U, std::size_t _M>
-                  class _OP,
-                  class _L, class _R>
-        vec(const expr<_OP<float, 2>, _L, _R>& r);
-    };
-
-    template <>
-    struct arg< vec<float, 2> > {
-        using type = vec<float, 2>;
-    };
-    
-    
     namespace op {
-        
+
         namespace x86 {
-            
-            __m128 unpack(const vec<float, 2>& v) {                
-#if 1
-                union v_d {
-                    __m128 _r;
-                    vec<float, 2> _v;
-                    v_d() : _r(_mm_setzero_ps()) {}
-                } u;
-                u._v = v;
-                return u._r;
-#else
-                __m128 r= _mm_setr_ps(low_half(v)(), 
-                                      high_half(v)(),
-                                      0.f, 0.f);
+
+            __m128 unpack(vec<float, 2> v) {
+                // const auto& d=v();
+                double h= as<double>(v());
+                __m128 r= _mm_castpd_ps(_mm_set_sd(h));
                 return r;
-#endif                
             }
-            
+
             vec<float, 2>
             pack(__m128 v) {
-#if 1                
+#if 1
+                union v_t {
+                    float _f32[2];
+                    __m128 _m;
+                };
+                v_t h;
+                h._m = v;
+                return  vec<float, 2>{h._f32[0], h._f32[1]};
+                // vec<float, 2> r;
+                // __asm__ ("# vmovdqa %1, %0\n\t" : "=x"(r) : "0"(v));
+                // return r;
+#else
                 return *reinterpret_cast<const vec<float,2>*>(&v);
-#else                
+
                 float l = _mm_cvtss_f32(v);
                 float h= _mm_cvtss_f32(
                     cftal::x86::impl::vshufps<1, 0, 1, 0>::v(v, v));
                 // vec<float, 1> vl=l;
                 // vec<float, 1> vh=h;
                 return vec<float, 2>{l, h};
-#endif                
+#endif
             }
-            
+
         }
-        
+
         template <>
         struct add<float, 2> {
             using full_type = vec<float, 2>;
             static
             vec<float, 2>
-            v(const vec<float, 2>& a, const vec<float, 2>& b) {
+            v(const vec<float, 2> a, const vec<float, 2> b) {
                 __m128 av= x86::unpack(a), bv=x86::unpack(b);
                 __m128 r= _mm_add_ps(av, bv);
                 return x86::pack(r);
-            }                        
+            }
         };
 
         template <>
@@ -820,11 +71,11 @@ namespace cftal {
             using full_type = vec<float, 2>;
             static
             vec<float, 2>
-            v(const vec<float, 2>& a, const vec<float, 2>& b) {
+            v(const vec<float, 2> a, const vec<float, 2> b) {
                 __m128 av= x86::unpack(a), bv=x86::unpack(b);
                 __m128 r= _mm_sub_ps(av, bv);
                 return x86::pack(r);
-            }                        
+            }
         };
 
         template <>
@@ -832,13 +83,13 @@ namespace cftal {
             using full_type = vec<float, 2>;
             static
             vec<float, 2>
-            v(const vec<float, 2>& a, const vec<float, 2>& b) {
+            v(const vec<float, 2> a, const vec<float, 2> b) {
                 __m128 av= x86::unpack(a), bv=x86::unpack(b);
                 __m128 r= _mm_mul_ps(av, bv);
                 return x86::pack(r);
-            }                        
+            }
         };
-     
+
         template <>
         struct fma<float, 2> {
             using full_type = vec<float, 2>;
@@ -846,7 +97,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                return add<float, 2>::v(mul<float, 2>::v(a, b), c);                  
+                return add<float, 2>::v(mul<float, 2>::v(a, b), c);
             }
         };
 
@@ -857,7 +108,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                return sub<float, 2>::v(mul<float, 2>::v(a, b), c);                  
+                return sub<float, 2>::v(mul<float, 2>::v(a, b), c);
             }
         };
 
@@ -868,93 +119,17 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                return sub<float, 2>::v(c, mul<float, 2>::v(a, b));                                  
+                return sub<float, 2>::v(c, mul<float, 2>::v(a, b));
             }
-        };        
-        
+        };
+
     }
-#endif
+
 }
 
-#if 0
-inline
-cftal::vec<float, 2>::vec(const vec<uint64_t, 2>& v)
-    : base_type(v())
-{
-}
-
-inline
-cftal::vec<float, 2>::vec(int64_t v)
-    : base_type(_mm_set_epi64x(v, v))
-{
-}
-
-
-inline
-cftal::vec<float, 2>::
-vec(std::initializer_list<int64_t> l)
-    : vec(mem<v2s64>::load(l.begin(), l.size()))
-{
-}
-
-inline
-cftal::vec<float, 2>::
-vec(init_list<int64_t> l)
-    : vec(mem<v2s64>::load(l.begin(), l.size()))
-{
-}
-
-inline
-cftal::vec<float, 2>::
-vec(const vec<int64_t, 1>& lh, const vec<int64_t, 1>& hh)
-    : base_type(_mm_set_epi64x(hh(), lh()))
-{
-}
-
-
-template <template <class _U, std::size_t _M> class _OP,
-          class _L, class _R>
-inline
-cftal::
-vec<float, 2>::vec(const expr<_OP<int64_t, 2>, _L, _R>& r)
-    : vec(eval(r))
-{
-}
-
-inline
-cftal::vec<float, 2>
-cftal::mem<cftal::vec<int64_t, 2> >::load(const int64_t* p, std::size_t s)
-{
-    __m128i v;
-    switch (s) {
-    default:
-    case 2:
-        v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
-        break;
-    case 1:
-        v = _mm_set_epi64x(p[0], p[0]);
-        break;
-    case 0:
-        v = _mm_set_epi64x(0, 0);
-        break;
-    }
-    return v;
-}
-#endif
-
-#if 0
-
-cftal::packed_type<float, cftal::uint64_t>
-do_mul_add(cftal::packed_type<float, cftal::uint64_t> a, 
-           cftal::packed_type<float, cftal::uint64_t> b,
-           cftal::packed_type<float, cftal::uint64_t> c)
-{
-    return (a * b + c) + (a + b * c);
-}
-#endif
 
 cftal::vec<float, 2>
-do_mul_add(cftal::vec<float, 2> a, 
+do_mul_add(cftal::vec<float, 2> a,
            cftal::vec<float, 2> b, cftal::vec<float, 2> c)
 {
     return (a * b + c) + (a + b * c);
@@ -964,86 +139,6 @@ cftal::vec<int32_t, 2>
 do_add(cftal::vec<int32_t, 2> a, cftal::vec<int32_t, 2> b)
 {
     return a + b;
-}
-
-cftal::vec<double, 8>::mask_type
-do_cmp_lt(cftal::vec<double, 8> a,
-          cftal::vec<double, 8> b)
-{
-    return a < b;
-}
-
-cftal::vec<double, 1>
-do_logical(cftal::vec<double, 1> a,
-           cftal::vec<double, 1> b,
-           cftal::vec<double, 1> c,
-           cftal::vec<double, 1> d)
-{
-    return ((a | b) & (c ^ d)) << 2;
-}
-
-cftal::vec<int32_t, 4>
-check_v4s32(cftal::vec<int32_t, 4> a,
-            cftal::vec<int32_t, 4> b,
-            cftal::vec<int32_t, 4> c)
-{
-    const cftal::v4s32 c0={1, 2, 3, 4};
-    return (a ^ b) & (c ^ c0);
-}
-
-cftal::vec<int32_t, 8>
-check_v8s32(cftal::vec<int32_t, 8> a,
-            cftal::vec<int32_t, 8> b,
-            cftal::vec<int32_t, 8> c)
-{
-    const cftal::v8s32 c0={1, 2, 3, 4, 5, 6, 7, 8};
-    return (a ^ b) & (c ^ c0);
-}
-
-cftal::vec<int32_t, 16>
-check_v16s32(cftal::vec<int32_t, 16> a,
-             cftal::vec<int32_t, 16> b,
-             cftal::vec<int32_t, 16> c)
-{
-    return (a ^ b) & c;
-}
-
-std::pair<cftal::vec<int32_t, 8>, cftal::vec<int32_t, 8> >
-check_mul_lo_hi(cftal::vec<int32_t, 8> a,
-                cftal::vec<int32_t, 8> b)
-{
-    return mul_lo_hi(a, b);
-}
-
-cftal::vec<int32_t, 8>
-check_perm_v8s32(cftal::vec<int32_t, 8> a,
-                 cftal::vec<int32_t, 8> b)
-{
-    return cftal::permute<0, 0+8,
-                          2, 2+8,
-                          4, 4+8,
-                          6, 6+8>(a, b);
-}
-
-cftal::vec<int32_t, 8>
-check_perm_v8s32(cftal::vec<int32_t, 8> a)
-{
-    return cftal::permute<1, -1,
-                          3, -1,
-                          4, -1,
-                          7, -1>(a);
-}
-
-cftal::vec<int32_t, 2>
-check_even_elements(cftal::vec<int32_t, 4> a)
-{
-    return even_elements(a);
-}
-
-cftal::vec<int32_t, 2>
-check_odd_elements(cftal::vec<int32_t, 4> a)
-{
-    return odd_elements(a);
 }
 
 int main(int argc, char** argv)
@@ -1059,106 +154,16 @@ int main(int argc, char** argv)
     v1s32 v1t=-7046431;
     v1s32 v1q=v1t/v1rr;
     std::cout << v1q << std::endl;
-    
-    
+
+
     cftal::divisor<cftal::v2s32, int32_t> rr(3);
     cftal::v2s32 t=-7046431;
     cftal::v2s32 q=t/rr;
     std::cout << q << std::endl;
-    
+
     cftal::divisor<int32_t, int32_t> srr(3);
     int32_t st=-7046431;
     int32_t sq=st/srr;
-    std::cout << sq << std::endl;    
-    return 0;
-#if 0    
-    std::cout << "alignof(max_align_t) "
-              << alignof(std::max_align_t)
-              << std::endl;
-    cftal::v4f64 t4(4.94066e-324);
-    cftal::v4s32 e4;
-    cftal::v4f64 r4=frexp(t4, &e4);
-    cftal::v2f64 t(4.94066e-324);
-    cftal::v2s32 e;
-    cftal::v2f64 r=frexp(t, &e);
-    int se;
-    double st=4.94066e-324;
-    double sr=std::frexp(st, &se);
-    std::cout << r4 << " : " << e4 << std::endl;
-    std::cout << r << " : " << e << std::endl;
-    std::cout << sr << " : " << se << std::endl;
-
-
-    cftal::v8u16 ut= {1, 2, 3, 4, 5, 6, 7, 8};
-    cftal::v8u16 ut1= cftal::permute<0, 1, 2, 3, 7, 6, 5, 4>(ut);
-    std::cout << ut1 << std::endl;
-    cftal::v8u16 ut2= ut1 * 2;
-    std::cout << ut2 << std::endl;
-#endif    
-    
-#if 0
-    cftal::vec<double, 4> t1(1.0), t2(2.0);
-    cftal::vec<double, 4> t3(
-        cftal::op::add<double, 4>::v(t1, t2));
-    using namespace cftal;
-    using namespace x86vec;
-    uint64_t v(18446744073709551615U);
-    divisor<v2u64, uint64_t> dd(v);
-    v2u64 u(2210649152261252908U, 18446663117077536102U);
-    v2u64 q(u / dd);
-    v2u64 r(u % dd);
-    uint64_t rr[2];
-    rr[0]= extract<0>(r);
-    rr[1]= extract<1>(r);
-    std::cout << rr[0] << ' ' << rr[1] << std::endl;
-
-#if 0
-    // x86cftal::v4f64 t=exp(x86cftal::v4f64(0.0));
-    // static_cast<void>(t);
-    // calc_pi();
-    // print_inv_fac();
-    // print_2_over_i();
-    // print_sqrtx();
-    // testpowi();
-
-    using namespace emuvec;
-
-    const double c=1.0;
-
-    v4f64 res(sin(v4f64(c)));
-    x86v4f64 tres(sin(x86v4f64(c)));
-
-    std::cout << std::setprecision(18) << std::scientific
-              << extract<0>(res) << ' '
-              << extract<1>(res)
-              << std::endl
-              << extract<0>(tres) << ' '
-              << extract<1>(tres)
-              << std::endl;
-    std::cout << std::setprecision(18) << std::scientific << 0x1.p54 << std::endl;
-
-#if 0
-#if defined (__AVX__)
-    using namespace x86vec;
-    using namespace x86test;
-
-    bool rc(true);
-    __m256d a = load_v4f64(false);
-    __m256d b = load_v4f64(true);
-    __m256d r;
-    idx id(-2,-2);
-    r=tr1a(a, b);
-    id.assign(0, 4, 1, 5);
-    rc &= check_v4f64("perm2_v4f64", r, id);
-
-    a = load_v4f64(false);
-    b = load_v4f64(true);
-    r=tr2a(a, b);
-    id.assign(2, 6, 3, 7);
-    rc &= check_v4f64("perm2_v4f64", r, id);
-#endif
-#endif
-#endif
-#endif
+    std::cout << sq << std::endl;
     return 0;
 }
