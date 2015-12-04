@@ -929,7 +929,9 @@ template <typename _T, std::size_t _N>
 std::ostream&
 cftal::operator<<(std::ostream& s, const vec<_T, _N>& v)
 {
-    s << low_half(v) << ' ' << high_half(v);
+    const vec<_T, _N/2> lh = low_half(v);
+    const vec<_T, _N/2> hh = high_half(v);
+    s << lh << ' ' << hh ;
     return s;
 }
 

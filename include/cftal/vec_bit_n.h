@@ -5,6 +5,7 @@
 #include <cftal/types.h>
 #include <cftal/vec_t_n.h>
 #include <type_traits>
+#include <iosfwd>
 
 namespace cftal {
 
@@ -135,7 +136,7 @@ namespace cftal {
     vec<bit, _N>
     select(const vec<bit, _N>&  m,
            const vec<bit, _N>& on_true, const vec<bit, _N> on_false);
-    
+
     std::ostream& operator<<(std::ostream& s, const vec<bit, 1>& v);
 }
 

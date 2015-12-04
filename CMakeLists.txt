@@ -33,15 +33,13 @@ set (CFTAL_VERSION_STR
     "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}.${CFTAL_VERSION_PLV}")
 
 # compile flags for usage with cmake -DCMAKE_BUILD_TYPE=debug/release/profile
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR 
-    CMAKE_CXX_COMPILER_ID STREQUAL "CLANG")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+    CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # warnings for all
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
     # release
     set (CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
-    set (CMAKE_CXX_FLAGS_RELEASE
-        "${CMAKE_CXX_FLAGS_RELEASE} -fexpensive-optimizations")
     set (CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE} -ftree-vectorize")
     # profile
@@ -50,10 +48,12 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     # debug flags are set by cmake already
 endif()
 
-#message(${CMAKE_CXX_COMPILER_ID})
+message(${CMAKE_CXX_COMPILER_ID})
 #message(${CMAKE_LIBRARY_ARCHITECTURE})
 if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fexpensive-optimizations")
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -fsched-pressure")
         set (CMAKE_CXX_FLAGS_RELEASE
@@ -69,8 +69,8 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
         #set (CMAKE_CXX_FLAGS_RELEASE
         #    "${CMAKE_CXX_FLAGS_RELEASE} -fsel-sched-pipelining")
     endif()
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR 
-        CMAKE_CXX_COMPILER_ID STREQUAL "CLANG")    
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+        CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
         #set (CMAKE_CXX_FLAGS_RELEASE

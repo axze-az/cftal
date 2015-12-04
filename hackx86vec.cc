@@ -15,15 +15,16 @@
 
 
 namespace cftal {
-
+#if 0
     namespace op {
 
         namespace x86 {
 
+            // using f32_2 = float __attribute__((vector_size(8), may_alias));
+
             __m128 unpack(vec<float, 2> v) {
-                // const auto& d=v();
-                double h= as<double>(v());
-                __m128 r= _mm_castpd_ps(_mm_set_sd(h));
+                const auto& d=v();
+                __m128 r={d.first(), d.second()};
                 return r;
             }
 
@@ -60,9 +61,11 @@ namespace cftal {
             static
             vec<float, 2>
             v(const vec<float, 2> a, const vec<float, 2> b) {
-                __m128 av= x86::unpack(a), bv=x86::unpack(b);
-                __m128 r= _mm_add_ps(av, bv);
-                return x86::pack(r);
+                // __m128 av= x86::unpack(a), bv=x86::unpack(b);
+                // __m128 r= _mm_add_ps(av, bv);
+                // return x86::pack(r);
+                vec<float, 4> aa(a, a), bb(b, b);
+                return low_half(vec<float, 4>(aa + bb));
             }
         };
 
@@ -124,7 +127,7 @@ namespace cftal {
         };
 
     }
-
+#endif
 }
 
 
