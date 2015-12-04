@@ -31,6 +31,7 @@ namespace cftal {
     template <std::size_t _N>
     class vec<bit, _N> {
     public:
+        static_assert(_N > 0 && _N <= 64, "_N must be element of [1, 64]]");
         using utype = typename
             std::conditional<(_N>32), uint64_t,
             typename std::conditional<(_N>16), uint32_t,
