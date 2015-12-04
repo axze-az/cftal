@@ -1,4 +1,4 @@
 #! /bin/sh
 set -x
 OPT="-L /usr/aarch64-linux-gnu" 
-qemu-aarch64 $OPT $*
+exec qemu-aarch64 -cpu cortex-a57 $OPT $*
