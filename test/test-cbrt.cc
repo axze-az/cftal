@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <iostream>
 #include <iomanip>
+#include <cstring>
 
 namespace cftal {
     namespace test {
@@ -45,6 +46,7 @@ int cftal::test::check_cbrt_f64(const _V& v, double x, bool verbose)
         union v_d {
             _V _v;
             double _d[sizeof(_V)/sizeof(double)];
+            v_d() { std::memset(_d, 0, sizeof(_d)); }
         };
         std::cout << std::setprecision(18);
         std::cout << "expected result: " << r3 << std::endl;

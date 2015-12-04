@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <iosfwd>
 #include <algorithm>
+#include <utility>
 
 namespace cftal {
 
@@ -45,6 +46,7 @@ namespace cftal {
         vec(std::initializer_list<_T> l);
         vec(init_list<_T> l);
         vec(const half_type& lh, const half_type& hh);
+        const std::pair<half_type, half_type>& operator()() const;
         const half_type& lh() const;
         const half_type& hh() const;
 
@@ -57,8 +59,7 @@ namespace cftal {
                       "vec<_T, _N>: _N is not a power of 2");
         static_assert(_N > 0 && _N <= 64,
                       "_N must be element of [1, 64]");
-        half_type _l;
-        half_type _h;
+        std::pair<half_type, half_type> _v;
     };
 
     using v2f64 = vec<double, 2>;
@@ -342,7 +343,7 @@ cftal::vec<_T, _N>::vec(const vec<_U, _N>& r)
 template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>::vec(const _T& v)
-    : _l(v), _h(v)
+    : _v(half_type(v), half_type(v))
 {
 }
 
@@ -356,8 +357,8 @@ cftal::vec<_T, _N>::vec(std::initializer_list<_T> l)
 template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>::vec(init_list<_T> l)
-    : _l(low_half<_T, _N>(l)),
-      _h(high_half<_T, _N>(l))
+    :_v(half_type(low_half<_T, _N>(l)),
+        half_type(high_half<_T, _N>(l)))
 {
 }
 
@@ -365,7 +366,7 @@ template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>::vec(const half_type& l,
                         const half_type& h)
-    : _l(l), _h(h)
+    : _v(l, h)
 {
 }
 
@@ -380,10 +381,19 @@ cftal::vec<_T, _N>::vec(const expr<_OP<_T, _N>, _L, _R>& r)
 
 template <class _T, std::size_t _N>
 inline
+const std::pair<typename cftal::vec<_T, _N>::half_type,
+                typename cftal::vec<_T, _N>::half_type>&
+cftal::vec<_T, _N>::operator()() const
+{
+    return _v;
+}
+
+template <class _T, std::size_t _N>
+inline
 const typename cftal::vec<_T, _N>::half_type&
 cftal::vec<_T, _N>::lh() const
 {
-    return _l;
+    return _v.first;
 }
 
 template <class _T, std::size_t _N>
@@ -391,7 +401,7 @@ inline
 const typename cftal::vec<_T, _N>::half_type&
 cftal::vec<_T, _N>::hh() const
 {
-    return _h;
+    return _v.second;
 }
 
 template <class _T, std::size_t _N>

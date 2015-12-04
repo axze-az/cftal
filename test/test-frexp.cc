@@ -1,5 +1,6 @@
 #include <cftal/vec.h>
 #include <cftal/test/f32_f64.h>
+#include <cstring>
 
 namespace cftal {
 
@@ -27,6 +28,7 @@ bool cftal::test::check_frexp(typename _FV::value_type vp,
     union v_d {
         _FV _v;
         real_type _d[FN];
+        v_d() { std::memset(_d, 0, sizeof(_d)); }
     };
 
     using int_type = typename _IV::value_type;
@@ -34,6 +36,7 @@ bool cftal::test::check_frexp(typename _FV::value_type vp,
     union v_i {
         _IV _v;
         int_type _i[IN];
+        v_i() { std::memset(_i, 0, sizeof(_i)); }
     };
 
     v_d arg;
