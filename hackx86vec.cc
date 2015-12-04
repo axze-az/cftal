@@ -724,6 +724,111 @@ namespace cftal {
 #endif        
     }
     
+    namespace op {
+        
+        namespace x86 {
+            
+            __m128 unpack(const vec<float, 2>& v) {                
+#if 1
+                __m128 r = _mm_setr_ps(v().first(), v().second(), 0.0f, 0.0f);
+                return r;
+#else
+                __m128 r= _mm_setr_ps(low_half(v)(), 
+                                      high_half(v)(),
+                                      0.f, 0.f);
+                return r;
+#endif                
+            }
+            
+            vec<float, 2>
+            pack(__m128 v) {
+#if 1                
+                packed_type<float, uint64_t> t= _mm_cvtsi128_si64(
+                    _mm_castps_si128(v));
+                return vec<float, 2>{t._v[0], t._v[1]};
+#else                
+                float l = _mm_cvtss_f32(v);
+                float h= _mm_cvtss_f32(
+                    cftal::x86::impl::vshufps<1, 0, 1, 0>::v(v, v));
+                // vec<float, 1> vl=l;
+                // vec<float, 1> vh=h;
+                return vec<float, 2>{l, h};
+#endif                
+            }
+            
+        }
+        
+        template <>
+        struct add<float, 2> {
+            using full_type = vec<float, 2>;
+            static
+            vec<float, 2>
+            v(const vec<float, 2>& a, const vec<float, 2>& b) {
+                __m128 av= x86::unpack(a), bv=x86::unpack(b);
+                __m128 r= _mm_add_ps(av, bv);
+                return x86::pack(r);
+            }                        
+        };
+
+        template <>
+        struct sub<float, 2> {
+            using full_type = vec<float, 2>;
+            static
+            vec<float, 2>
+            v(const vec<float, 2>& a, const vec<float, 2>& b) {
+                __m128 av= x86::unpack(a), bv=x86::unpack(b);
+                __m128 r= _mm_sub_ps(av, bv);
+                return x86::pack(r);
+            }                        
+        };
+
+        template <>
+        struct mul<float, 2> {
+            using full_type = vec<float, 2>;
+            static
+            vec<float, 2>
+            v(const vec<float, 2>& a, const vec<float, 2>& b) {
+                __m128 av= x86::unpack(a), bv=x86::unpack(b);
+                __m128 r= _mm_mul_ps(av, bv);
+                return x86::pack(r);
+            }                        
+        };
+     
+        template <>
+        struct fma<float, 2> {
+            using full_type = vec<float, 2>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+                return add<float, 2>::v(mul<float, 2>::v(a, b), c);                  
+            }
+        };
+
+        template <>
+        struct fms<float, 2> {
+            using full_type = vec<float, 2>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+                return sub<float, 2>::v(mul<float, 2>::v(a, b), c);                  
+            }
+        };
+
+        template <>
+        struct fnma<float, 2> {
+            using full_type = vec<float, 2>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+                return sub<float, 2>::v(c, mul<float, 2>::v(a, b));                                  
+            }
+        };        
+        
+    }
+    
 }
 
 cftal::packed_type<float, cftal::uint64_t>

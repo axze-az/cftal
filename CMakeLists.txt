@@ -73,6 +73,8 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
         CMAKE_CXX_COMPILER_ID STREQUAL "CLANG")    
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
+        #set (CMAKE_CXX_FLAGS_RELEASE
+        #    "${CMAKE_CXX_FLAGS_RELEASE} -mtune=corei7-avx")
         set (CMAKE_CXX_FLAGS_DEBUG
             "${CMAKE_CXX_FLAGS_DEBUG} -march=native")
         set (CMAKE_CXX_FLAGS_PROFILE

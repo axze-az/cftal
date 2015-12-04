@@ -3,7 +3,7 @@ BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x
 
 [CMake]
 Build Directory Count=4
-Current Build Directory Index=1
+Current Build Directory Index=0
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -44,9 +44,9 @@ Includes=\x00\x00\x00\x01\x00\x00\x00R\x00/\x00h\x00o\x00m\x00e\x00/\x00a\x00x\x
 Path=.
 
 [Defines And Includes][Compiler]
-Name=GCC
-Path=gcc
-Type=GCC
+Name=Clang
+Path=clang
+Type=Clang
 
 [Launch]
 Launch Configurations=Launch Configuration 1,Launch Configuration 2,Launch Configuration 0,Launch Configuration 3
