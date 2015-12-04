@@ -22,9 +22,10 @@ namespace cftal {
         vec(vec&& r) = default;
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
-
+#if 0
         template <class _U>
         explicit vec(const vec<_U, 1>& r);
+#endif        
         vec(const _T& v);
         vec(const _T& v, bool splat);
         vec(std::initializer_list<_T> l);
@@ -455,6 +456,7 @@ namespace cftal {
     }
 }
 
+#if 0
 template <class _T>
 template <class _U>
 inline
@@ -463,6 +465,7 @@ cftal::vec<_T, 1>::vec(const vec<_U, 1>& r)
 {
        
 }
+#endif
 
 template <class _T>
 inline
