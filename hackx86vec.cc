@@ -5,6 +5,7 @@
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
 #include <cftal/vec_traits.h>
+#include <cftal/impl/vreg.h>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
@@ -667,62 +668,103 @@ do_add(const cftal::vec<double, 64>& a,
 }
 
 namespace cftal {
-    
-    template <typename _T, typename _REP>
-    union packed_type {
-        enum { _N = sizeof(_REP)/sizeof(_T) };
-        _T _v[_N];
-        _REP _r;        
-        packed_type(_REP r) : _r(r) {}
-        packed_type(std::initializer_list<_T> l) {            
-            std::size_t i=0;
-            _T t=_T(0);
-            for (auto b=std::begin(l), e=std::end(l); b!=e && i <_N; 
-                 ++b, ++i) {
-                t = *b;
-                _v[i] = t;
-            }
-            for (; i<_N; ++i)
-                _v[i] = t;
-        }
-    };
+
+#if 0
+    namespace impl {
         
+        template <typename _T, std::size_t _N, typename _R>
+        struct packed_type {
+            static_assert(sizeof(_T)*_N = sizeof(_R),
+                          "invalid sizes in packed_type");
+            _T _a[_N];
+            _R _v;
+            packed_type() = default;
+            packed_type(const packed_type& r) = default;
+            packed_type(packed_type&& r) = default;
+            packed_type& operator=(const packed_type& r) = default;
+            packed_type& operator=(packed_type&& r) = default;
+        };        
+    }
     
-    packed_type<float, uint64_t>
-    operator+(packed_type<float, uint64_t> a, packed_type<float, uint64_t> b)
+    __m128 load_pair(std::pair<float, float> a)
     {
-#if 1
-        __m128 av = _mm_castsi128_ps(_mm_cvtsi64_si128(a._r));
-        __m128 bv = _mm_castsi128_ps(_mm_cvtsi64_si128(b._r));
+        return _mm_setr_ps(a.first, a.second, 0.0f, 0.0f);
+    }
+  
+    std::pair<float, float>
+    operator+(std::pair<float, float> a, std::pair<float, float> b)
+    {
+#if 1        
+        __m128 av = load_pair(a);
+        __m128 bv = load_pair(b);
         __m128 rv = _mm_add_ps(av, bv);
-        packed_type<float, uint64_t> r= 
+        std::pair<float, float> r=
             _mm_cvtsi128_si64(_mm_castps_si128(rv));
         return r;
 #else        
-        packed_type<float, uint64_t> r(a);
+        std::pair<float, float> r(a);
         for (size_t i=0; i<r._N; ++i)
             r._v[i] += b._v[i];
         return r;
 #endif        
     }
 
-    packed_type<float, uint64_t>
-    operator*(packed_type<float, uint64_t> a, packed_type<float, uint64_t> b)
+    std::pair<float, float>
+    operator*(std::pair<float, float> a, std::pair<float, float> b)
     {
 #if 1
         __m128 av = _mm_castsi128_ps(_mm_cvtsi64_si128(a._r));
         __m128 bv = _mm_castsi128_ps(_mm_cvtsi64_si128(b._r));
         __m128 rv = _mm_mul_ps(av, bv);
-        packed_type<float, uint64_t> r= 
+        std::pair<float, float> r= 
             _mm_cvtsi128_si64(_mm_castps_si128(rv));
         return r;
 #else        
-        packed_type<float, uint64_t> r(a);
+        std::pair<float, float> r(a);
         for (size_t i=0; i<r._N; ++i)
             r._v[i] += b._v[i];
         return r;
 #endif        
     }
+#endif
+#if 0    
+    template <>
+    class vec<float, 2> : public impl::vreg<std::pair<float, float> > {
+    public:
+        using base_type = x86::vreg<__m128i>;
+
+        using value_type = float;
+#if defined (__AVX512VL__)
+        using mask_value_type = bit;
+#else
+        using mask_value_type = float;
+#endif
+        using mask_type= vec<mask_value_type, 2>;
+
+        using base_type::base_type;
+        vec() = default;
+        vec(const vec<ufloat, 2>& v);
+        // create vec{v,v}
+        vec(float v);
+        // constructor from std::initializer_list, fills remaining
+        // elements with the last one given
+        vec(std::initializer_list<float> l);
+        // allow construction from vec<float, 8>
+        vec(init_list<float> l);
+        // allow construction from two halfes
+        vec(const vec<float, 1>& lh, const vec<float, 1>& hh);
+        // expression template constructor
+        template <template <class _U, std::size_t _M>
+                  class _OP,
+                  class _L, class _R>
+        vec(const expr<_OP<float, 2>, _L, _R>& r);
+    };
+
+    template <>
+    struct arg< vec<float, 2> > {
+        using type = vec<float, 2>;
+    };
+    
     
     namespace op {
         
@@ -730,8 +772,13 @@ namespace cftal {
             
             __m128 unpack(const vec<float, 2>& v) {                
 #if 1
-                __m128 r = _mm_setr_ps(v().first(), v().second(), 0.0f, 0.0f);
-                return r;
+                union v_d {
+                    __m128 _r;
+                    vec<float, 2> _v;
+                    v_d() : _r(_mm_setzero_ps()) {}
+                } u;
+                u._v = v;
+                return u._r;
 #else
                 __m128 r= _mm_setr_ps(low_half(v)(), 
                                       high_half(v)(),
@@ -743,9 +790,7 @@ namespace cftal {
             vec<float, 2>
             pack(__m128 v) {
 #if 1                
-                packed_type<float, uint64_t> t= _mm_cvtsi128_si64(
-                    _mm_castps_si128(v));
-                return vec<float, 2>{t._v[0], t._v[1]};
+                return *reinterpret_cast<const vec<float,2>*>(&v);
 #else                
                 float l = _mm_cvtss_f32(v);
                 float h= _mm_cvtss_f32(
@@ -828,8 +873,76 @@ namespace cftal {
         };        
         
     }
-    
+#endif
 }
+
+#if 0
+inline
+cftal::vec<float, 2>::vec(const vec<uint64_t, 2>& v)
+    : base_type(v())
+{
+}
+
+inline
+cftal::vec<float, 2>::vec(int64_t v)
+    : base_type(_mm_set_epi64x(v, v))
+{
+}
+
+
+inline
+cftal::vec<float, 2>::
+vec(std::initializer_list<int64_t> l)
+    : vec(mem<v2s64>::load(l.begin(), l.size()))
+{
+}
+
+inline
+cftal::vec<float, 2>::
+vec(init_list<int64_t> l)
+    : vec(mem<v2s64>::load(l.begin(), l.size()))
+{
+}
+
+inline
+cftal::vec<float, 2>::
+vec(const vec<int64_t, 1>& lh, const vec<int64_t, 1>& hh)
+    : base_type(_mm_set_epi64x(hh(), lh()))
+{
+}
+
+
+template <template <class _U, std::size_t _M> class _OP,
+          class _L, class _R>
+inline
+cftal::
+vec<float, 2>::vec(const expr<_OP<int64_t, 2>, _L, _R>& r)
+    : vec(eval(r))
+{
+}
+
+inline
+cftal::vec<float, 2>
+cftal::mem<cftal::vec<int64_t, 2> >::load(const int64_t* p, std::size_t s)
+{
+    __m128i v;
+    switch (s) {
+    default:
+    case 2:
+        v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
+        break;
+    case 1:
+        v = _mm_set_epi64x(p[0], p[0]);
+        break;
+    case 0:
+        v = _mm_set_epi64x(0, 0);
+        break;
+    }
+    return v;
+}
+#endif
+
+#if 0
 
 cftal::packed_type<float, cftal::uint64_t>
 do_mul_add(cftal::packed_type<float, cftal::uint64_t> a, 
@@ -838,6 +951,7 @@ do_mul_add(cftal::packed_type<float, cftal::uint64_t> a,
 {
     return (a * b + c) + (a + b * c);
 }
+#endif
 
 cftal::vec<float, 2>
 do_mul_add(cftal::vec<float, 2> a, 
