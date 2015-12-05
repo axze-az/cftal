@@ -14,10 +14,6 @@
 #define alignas(x)
 #endif
 
-#if defined (__SSE__)
-#include <immintrin.h>
-#endif
-
 #if defined (__SSE4_1__) && !defined (__POPCNT__)
 #define __POPCNT__
 #endif
@@ -25,6 +21,8 @@
 #if defined (__SSE4A__) && !defined (__POPCNT__)
 #define __POPCNT__
 #endif
+
+#include <x86intrin.h>
 
 // Local variables:
 // mode: c++

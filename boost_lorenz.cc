@@ -174,7 +174,7 @@ int main()
     std::cout << "steps: " << stepsv2 << std::endl;
 
     std::cout << "array version" << std::endl;
-    std::array<double, 3> xa{10.0, 5.0, 5.0};
+    std::array<double, 3> xa{{10.0, 5.0, 5.0}};
 
     using a_stepper=runge_kutta_dopri5<std::array<double, 3>, double,
                                        std::array<double, 3>, double,

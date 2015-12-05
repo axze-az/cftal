@@ -37,6 +37,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # warnings for all
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        # disable some warnings
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-infinite-recursion")
+    endif()
     # release
     set (CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")

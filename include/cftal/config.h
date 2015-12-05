@@ -5,7 +5,7 @@
 #define __CFTAL_MINOR__ 1
 #define __CFTAL_PATCHLEVEL__ 0
 
-#if defined (__GNUC__)
+#if defined (__GNUC__) || defined (__clang__)
 #define thread_local __thread
 #define likely(a) __builtin_expect(!!(a), 1)
 #define unlikely(a) __builtin_expect(!!(a), 0)
@@ -14,7 +14,7 @@
 #endif
 #endif
 
-#if !defined (__GNUC__) || (IN_KDEVELOP_PARSER>0)
+#if !defined (__GNUC__) && !defined(__clang__) || (IN_KDEVELOP_PARSER>0)
 #define alignas(X)
 #define __SSSE3__
 #define __SSE41__
