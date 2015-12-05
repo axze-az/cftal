@@ -486,8 +486,8 @@ cftal::mul_lo_hi(const v2s32& x, const v2s32& y)
     __m128i eo= _mm_mul_epi32(tx, ty);
     __m128i l= x86::impl::vpshufd<0, 2, 1, 3>::v(eo);
     __m128i h= x86::impl::vpshufd<1, 3, 0, 2>::v(eo);
-    v2s32 rh = l;
-    v2s32 rl = h;
+    v2s32 rh = h;
+    v2s32 rl = l;
     return std::make_pair(rl, rh);
 #else
     // muluh(x,y) = mulsh(x,y) + and(x, xsign(y)) + and(y, xsign(x));
