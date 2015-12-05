@@ -13,7 +13,7 @@
 #include <cftal/x86/vreg.h>
 
 namespace cftal {
-    
+
     template <>
     class vec<float, 2> : public x86::vreg<uint64_t> {
     public:
@@ -78,7 +78,7 @@ namespace cftal {
     template <std::size_t _I>
     float
     extract(const vec<float, 2>& s);
-    
+
     vec<float, 2>
     select(const typename vec<float, 2>::mask_type& msk,
            const vec<float, 2>& on_true,
@@ -89,7 +89,7 @@ namespace cftal {
 
     bool
     elements_equal(const v2f32& a);
-    
+
 
     v2f32 max(const v2f32& a, const v2f32& b);
     v2f32 min(const v2f32& a, const v2f32& b);
@@ -128,13 +128,13 @@ namespace cftal {
     // -(a*b) - c
     v2f32 nfms(const v2f32& a, const v2f32& b, const v2f32& c);
 
-#if 0    
+#if 0
     // a*b +c with rounding or not
     v2f32 mad(const v2f32& a, const v2f32& b, const v2f32& c);
     // -(a*b) +c with rounding or not
     v2f32 nmad(const v2f32& a, const v2f32& b, const v2f32& c);
 #endif
-    
+
     template <bool _P0, bool _P1>
     vec<float, 2>
     select(const vec<float, 2>& on_true,
@@ -173,7 +173,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b) {
 #if defined (__AVX512VL__)
                 return _mm_cmp_ps_mask(a(), b(), _CMP_LT_OS);
-#else                
+#else
                 return _mm_cmplt_ps(a(), b());
 #endif
             }
@@ -445,14 +445,14 @@ cftal::vec<float, 2>::vec(float v)
 inline
 cftal::vec<float, 2>::vec(__m128 v)
     : base_type(_mm_cvtsi128_si64(_mm_castps_si128(v)))
-{       
+{
 }
 
 inline
 __m128
-cftal::vec<float, 2>::operator()() const 
+cftal::vec<float, 2>::operator()() const
 {
-    uint64_t r=base_type::operator()();    
+    uint64_t r=base_type::operator()();
     return _mm_castsi128_ps(_mm_cvtsi64_si128(r));
 }
 
@@ -698,7 +698,7 @@ cftal::all_of(const vec<float, 2>::mask_type& s)
 {
     return x86::read_signs_f32(s()) == 0x3;
 }
-    
+
 inline
 bool
 cftal::none_of(const vec<float, 2>::mask_type& s)

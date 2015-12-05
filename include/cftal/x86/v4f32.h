@@ -9,6 +9,7 @@
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
 #include <cftal/x86/v2f64.h>
+#include <cftal/x86/v2f32.h>
 #include <cftal/x86/v4s32.h>
 
 namespace cftal {
@@ -431,8 +432,7 @@ vec(init_list<float> l)
 inline
 cftal::vec<float, 4>::
 vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
-    : vec(permute<0, 1, 4, 5>(as<vec<float, 4> >(lh),
-                              as<vec<float, 4> >(hh)))
+    : vec(permute<0, 1, 4, 5>(lh(), hh())
 {
 }
 
@@ -483,14 +483,14 @@ inline
 cftal::vec<float, 2>
 cftal::low_half(const vec<float, 4>& v)
 {
-    return as<vec<float, 2> >(v);
+    return v();
 }
 
 inline
 cftal::vec<float, 2>
 cftal::high_half(const vec<float, 4>& v)
 {
-    return low_half(permute<2, 3, 0, 1>(v));
+    return permute<2, 3, 0, 1>(v)();
 }
 
 template <std::size_t _I>
