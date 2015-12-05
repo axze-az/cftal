@@ -856,64 +856,64 @@ namespace cftal {
         }
 
         template <int _P0, int _P1>
-        __m128d perm_f64(__m128d a);
+        __m128d perm_v2f64(__m128d a);
         template <int _P0, int _P1>
-        __m128d perm_f64(__m128d a, __m128d b);
+        __m128d perm_v2f64(__m128d a, __m128d b);
 
         template <int _P0, int _P1, int _P2, int _P3>
-        __m128 perm_f32(__m128 a);
+        __m128 perm_v4f32(__m128 a);
         template <int _P0, int _P1, int _P2, int _P3>
-        __m128 perm_f32(__m128 a, __m128 b);
+        __m128 perm_v4f32(__m128 a, __m128 b);
 
         template <int _P0, int _P1, int _P2, int _P3>
-        __m128i perm_u32(__m128i a);
+        __m128i perm_v4u32(__m128i a);
         template <int _P0, int _P1, int _P2, int _P3>
-        __m128i perm_u32(__m128i a, __m128i b);
+        __m128i perm_v4u32(__m128i a, __m128i b);
 
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
-        __m128i perm_u16(__m128i a);
+        __m128i perm_v8u16(__m128i a);
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
-        __m128i perm_u16(__m128i a, __m128i b);
+        __m128i perm_v8u16(__m128i a, __m128i b);
 
         template <int _P0, int _P1>
-        __m128i perm_u64(__m128i a);
+        __m128i perm_v2u64(__m128i a);
         template <int _P0, int _P1>
-        __m128i perm_u64(__m128i a, __m128i b);
+        __m128i perm_v2u64(__m128i a, __m128i b);
 
 #if defined (__AVX__)
         template <int _P0, int _P1, int _P2, int _P3>
-        __m256d perm_f64(__m256d a);
+        __m256d perm_v4f64(__m256d a);
         template <int _P0, int _P1, int _P2, int _P3>
-        __m256d perm_f64(__m256d a, __m256d b);
+        __m256d perm_v4f64(__m256d a, __m256d b);
 
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
-        __m256 perm_f32(__m256 a);
+        __m256 perm_v8f32(__m256 a);
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
-        __m256 perm_f32(__m256 a, __m256 b);
+        __m256 perm_v8f32(__m256 a, __m256 b);
 #endif
 #if defined (__AVX2__)
         template <int _P0, int _P1, int _P2, int _P3>
-        __m256i perm_u64(__m256i a);
+        __m256i perm_v4u64(__m256i a);
         template <int _P0, int _P1, int _P2, int _P3>
-        __m256i perm_u64(__m256i a, __m256i b);
+        __m256i perm_v4u64(__m256i a, __m256i b);
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
-        __m256i perm_u32(__m256i a);
+        __m256i perm_v8u32(__m256i a);
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
-        __m256i perm_u32(__m256i a, __m256i b);
+        __m256i perm_v8u32(__m256i a, __m256i b);
 #endif
 #if defined (__AVX512F__)
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
-        __m512d perm_f64(__m512d a);
+        __m512d perm_v8f64(__m512d a);
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
-        __m512d perm_f64(__m512d a, __m512d b);
+        __m512d perm_v8f64(__m512d a, __m512d b);
 #endif
     }
 }
@@ -2415,13 +2415,11 @@ perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
     return _mm512_permutex2var_pd(a, pperm, b);
 
 }
-    
 #endif
-
 
 template <int _P0, int _P1>
 inline
-__m128d cftal::x86::perm_f64(__m128d a)
+__m128d cftal::x86::perm_v2f64(__m128d a)
 {
     static_assert(_P0>-2 && _P0 < 2,
                   "cftal::x86::perm_v2f64(a) : -1 <= P0 < 2");
@@ -2433,7 +2431,7 @@ __m128d cftal::x86::perm_f64(__m128d a)
 
 template <int _P0, int _P1>
 inline
-__m128d cftal::x86::perm_f64(__m128d a, __m128d b)
+__m128d cftal::x86::perm_v2f64(__m128d a, __m128d b)
 {
     static_assert(_P0>-2 && _P0 < 4,
                   "cftal::x86::perm_f64(a, b) : -1 <= P0 < 4");
@@ -2445,7 +2443,7 @@ __m128d cftal::x86::perm_f64(__m128d a, __m128d b)
 #if defined (__AVX__)
 template <int _P0, int _P1, int _P2, int _P3>
 inline
-__m256d cftal::x86::perm_f64(__m256d a)
+__m256d cftal::x86::perm_v4f64(__m256d a)
 {
     static_assert(_P0>-2 && _P0 < 4,
                   "cftal::x86::perm_v4f64(a) : -1 <= P0 < 4");
@@ -2460,7 +2458,7 @@ __m256d cftal::x86::perm_f64(__m256d a)
 
 template <int _P0, int _P1, int _P2, int _P3>
 inline
-__m256d cftal::x86::perm_f64(__m256d a, __m256d b)
+__m256d cftal::x86::perm_v4f64(__m256d a, __m256d b)
 {
     static_assert(_P0>-2 && _P0 < 8,
                   "cftal::x86::perm_f64(a, b) : -1 <= P0 < 8");
@@ -2477,7 +2475,7 @@ __m256d cftal::x86::perm_f64(__m256d a, __m256d b)
 #if defined (__AVX512F__)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
-__m512d cftal::x86::perm_f64(__m512d a)
+__m512d cftal::x86::perm_v8f64(__m512d a)
 {
     static_assert(_P0>-2 && _P0 < 8,
                   "cftal::x86::perm_f64(a) : -1 <= P0 < 8");
@@ -2501,7 +2499,7 @@ __m512d cftal::x86::perm_f64(__m512d a)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
-__m512d cftal::x86::perm_f64(__m512d a, __m512d b)
+__m512d cftal::x86::perm_v8f64(__m512d a, __m512d b)
 {
     static_assert(_P0>-2 && _P0 < 16,
                   "cftal::x86::perm_f64(a, b) : -1 <= P0 < 16");
@@ -2525,7 +2523,7 @@ __m512d cftal::x86::perm_f64(__m512d a, __m512d b)
 
 template <int _P0, int _P1, int _P2, int _P3>
 inline
-__m128 cftal::x86::perm_f32(__m128 a)
+__m128 cftal::x86::perm_v4f32(__m128 a)
 {
     static_assert(_P0>-2 && _P0 < 4,
                   "cftal::x86::perm_v4f32(a) : -1 <= P0 < 4");
@@ -2540,7 +2538,7 @@ __m128 cftal::x86::perm_f32(__m128 a)
 
 template <int _P0, int _P1, int _P2, int _P3>
 inline
-__m128 cftal::x86::perm_f32(__m128 a, __m128 b)
+__m128 cftal::x86::perm_v4f32(__m128 a, __m128 b)
 {
     static_assert(_P0>-2 && _P0 < 8,
                   "cftal::x86::perm_f32(a, b) : -1 <= P0 < 8");
@@ -2556,7 +2554,7 @@ __m128 cftal::x86::perm_f32(__m128 a, __m128 b)
 #if defined (__AVX__)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
-__m256 cftal::x86::perm_f32(__m256 a)
+__m256 cftal::x86::perm_v8f32(__m256 a)
 {
     static_assert(_P0>-2 && _P0 < 8,
                   "cftal::x86::perm_f32(a) : -1 <= P0 < 8");
@@ -2580,7 +2578,7 @@ __m256 cftal::x86::perm_f32(__m256 a)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
-__m256 cftal::x86::perm_f32(__m256 a, __m256 b)
+__m256 cftal::x86::perm_v8f32(__m256 a, __m256 b)
 {
     static_assert(_P0>-2 && _P0 < 16,
                   "cftal::x86::perm_f32(a, b) : -1 <= P0 < 16");
@@ -2606,7 +2604,7 @@ __m256 cftal::x86::perm_f32(__m256 a, __m256 b)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
-__m128i cftal::x86::perm_u16(__m128i a)
+__m128i cftal::x86::perm_v8u16(__m128i a)
 {
     static_assert(_P0>-2 && _P0 < 8,
                   "cftal::x86::perm_u16(a) : -1 <= P0 < 8");
@@ -2630,7 +2628,7 @@ __m128i cftal::x86::perm_u16(__m128i a)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
-__m128i cftal::x86::perm_u16(__m128i a, __m128i b)
+__m128i cftal::x86::perm_v8u16(__m128i a, __m128i b)
 {
     static_assert(_P0>-2 && _P0 < 16,
                   "cftal::x86::perm_u16(a, b) : -1 <= P0 < 16");
@@ -2653,7 +2651,7 @@ __m128i cftal::x86::perm_u16(__m128i a, __m128i b)
 
 template <int _P0, int _P1, int _P2, int _P3>
 inline
-__m128i cftal::x86::perm_u32(__m128i a)
+__m128i cftal::x86::perm_v4u32(__m128i a)
 {
     static_assert(_P0>-2 && _P0 < 4,
                   "cftal::x86::perm_u32(a) : -1 <= P0 < 4");
@@ -2668,7 +2666,7 @@ __m128i cftal::x86::perm_u32(__m128i a)
 
 template <int _P0, int _P1, int _P2, int _P3>
 inline
-__m128i cftal::x86::perm_u32(__m128i a, __m128i b)
+__m128i cftal::x86::perm_v4u32(__m128i a, __m128i b)
 {
     static_assert(_P0>-2 && _P0 < 8,
                   "cftal::x86::perm_u32(a, b) : -1 <= P0 < 8");
@@ -2684,7 +2682,7 @@ __m128i cftal::x86::perm_u32(__m128i a, __m128i b)
 #if defined (__AVX2__)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
-__m256i cftal::x86::perm_u32(__m256i a)
+__m256i cftal::x86::perm_v8u32(__m256i a)
 {
     static_assert(_P0>-2 && _P0 < 8,
                   "cftal::x86::perm_u32(a) : -1 <= P0 < 8");
@@ -2708,7 +2706,7 @@ __m256i cftal::x86::perm_u32(__m256i a)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
-__m256i cftal::x86::perm_u32(__m256i a, __m256i b)
+__m256i cftal::x86::perm_v8u32(__m256i a, __m256i b)
 {
     static_assert(_P0>-2 && _P0 < 16,
                   "cftal::x86::perm_u32(a, b) : -1 <= P0 < 16");
@@ -2732,7 +2730,7 @@ __m256i cftal::x86::perm_u32(__m256i a, __m256i b)
 
 template <int _P0, int _P1>
 inline
-__m128i cftal::x86::perm_u64(__m128i a)
+__m128i cftal::x86::perm_v2u64(__m128i a)
 {
     static_assert(_P0>-2 && _P0 < 2,
                   "cftal::x86::perm_u64(a) : -1 <= P0 < 2");
@@ -2747,7 +2745,7 @@ __m128i cftal::x86::perm_u64(__m128i a)
 
 template <int _P0, int _P1>
 inline
-__m128i cftal::x86::perm_u64(__m128i a, __m128i b)
+__m128i cftal::x86::perm_v2u64(__m128i a, __m128i b)
 {
     static_assert(_P0>-2 && _P0 < 4,
                   "cftal::x86::perm_u64(a, b) : -1 <= P0 < 4");
@@ -2763,7 +2761,7 @@ __m128i cftal::x86::perm_u64(__m128i a, __m128i b)
 #if defined (__AVX2__)
 template <int _P0, int _P1, int _P2, int _P3>
 inline
-__m256i cftal::x86::perm_u64(__m256i a)
+__m256i cftal::x86::perm_v4u64(__m256i a)
 {
     static_assert(_P0>-2 && _P0 < 4,
                   "cftal::x86::perm_u64(a) : -1 <= P0 < 4");
@@ -2778,7 +2776,7 @@ __m256i cftal::x86::perm_u64(__m256i a)
 
 template <int _P0, int _P1, int _P2, int _P3>
 inline
-__m256i cftal::x86::perm_u64(__m256i a, __m256i b)
+__m256i cftal::x86::perm_v4u64(__m256i a, __m256i b)
 {
     static_assert(_P0>-2 && _P0 < 8,
                   "cftal::x86::perm_u64(a, b) : -1 <= P0 < 8");

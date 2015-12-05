@@ -6,6 +6,7 @@
 #include <cftal/d_real.h>
 #include <cmath>
 #if defined (__SSE__)
+#include <cftal/x86/v2f32.h>
 #include <cftal/x86/v4f32.h>
 #endif
 #if defined (__AVX__)
@@ -154,7 +155,7 @@ namespace cftal {
     frexp(const vec<float, 1>& a, vec<int32_t, 1>* e);
 
     vec<float, 2>
-    frexp(arg<vec<float, 2> >::type& a, vec<int32_t, 2>* e);
+    frexp(arg<vec<float, 2> >::type a, vec<int32_t, 2>* e);
     
     vec<float, 4>
     frexp(arg<vec<float, 4> >::type x, vec<int32_t, 4>* e);

@@ -456,14 +456,14 @@ template <int _I0, int _I1, int _I2, int _I3>
 inline
 cftal::v4u32 cftal::permute(const v4u32& a)
 {
-    return x86::perm_u32<_I0, _I1, _I2, _I3>(a());
+    return x86::perm_v4u32<_I0, _I1, _I2, _I3>(a());
 }
 
 template <int _I0, int _I1, int _I2, int _I3>
 inline
 cftal::v4u32 cftal::permute(const v4u32& a, const v4u32& b)
 {
-    return x86::perm_u32<_I0, _I1, _I2, _I3>(a(), b());
+    return x86::perm_v4u32<_I0, _I1, _I2, _I3>(a(), b());
 }
 
 inline

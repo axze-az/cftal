@@ -435,14 +435,14 @@ template <int _I0, int _I1>
 inline
 cftal::v2s64 cftal::permute(const v2s64& a)
 {
-    return x86::perm_u64<_I0, _I1>(a());
+    return x86::perm_v2u64<_I0, _I1>(a());
 }
 
 template <int _I0, int _I1>
 inline
 cftal::v2s64 cftal::permute(const v2s64& a, const v2s64& b)
 {
-    return x86::perm_u64<_I0, _I1>(a(), b());
+    return x86::perm_v2u64<_I0, _I1>(a(), b());
 }
 
 inline

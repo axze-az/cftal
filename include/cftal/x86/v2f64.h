@@ -805,7 +805,7 @@ inline
 cftal::vec<double, 2>
 cftal::permute(const vec<double, 2>& v)
 {
-    return x86::perm_f64<_I0, _I1>(v());
+    return x86::perm_v2f64<_I0, _I1>(v());
 }
 
 
@@ -814,7 +814,7 @@ inline
 cftal::vec<double, 2>
 cftal::permute(const vec<double, 2>& l, const vec<double, 2>& r)
 {
-    return x86::perm_f64<_I0, _I1>(l(), r());
+    return x86::perm_v2f64<_I0, _I1>(l(), r());
 }
 
 

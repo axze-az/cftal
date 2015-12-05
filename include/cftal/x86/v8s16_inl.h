@@ -444,7 +444,7 @@ template <int _I0, int _I1, int _I2, int _I3,
 inline
 cftal::v8s16 cftal::permute(const v8s16& a)
 {
-    return x86::perm_u16<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7>(a());
+    return x86::perm_v8u16<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7>(a());
 }
 
 template <int _I0, int _I1, int _I2, int _I3,
@@ -452,7 +452,7 @@ template <int _I0, int _I1, int _I2, int _I3,
 inline
 cftal::v8s16 cftal::permute(const v8s16& a, const v8s16& b)
 {
-    return x86::perm_u16<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7>(a(), b());
+    return x86::perm_v8u16<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7>(a(), b());
 }
 
 inline
