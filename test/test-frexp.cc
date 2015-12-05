@@ -1,6 +1,7 @@
 #include <cftal/vec.h>
 #include <cftal/test/f32_f64.h>
 #include <cstring>
+#include <iomanip>
 
 namespace cftal {
 
@@ -8,7 +9,7 @@ namespace cftal {
         template <class _FV, class _IV>
         bool check_frexp(typename _FV::value_type vp,
                          typename _FV::value_type vn);
-    
+
         template <class _FV, class _IV>
         bool check_frexp_f64();
 
@@ -73,80 +74,91 @@ bool cftal::test::check_frexp(typename _FV::value_type vp,
             rc= false;
         }
     }
+#if 0
     if (!rc)
         std::exit(3);
+#endif
     return rc;
 }
 
 template <class _FV, class _IV>
 bool cftal::test::check_frexp_f64()
 {
+    bool rc=true;
     // check zero
     double vp = make_double(0, 0, 0);
-    check_frexp<_FV, _IV>(vp, -vp);
-    vp = make_float(1, 0, 0);
-    check_frexp<_FV, _IV>(vp, -vp);
+    rc &= check_frexp<_FV, _IV>(vp, -vp);
+    vp = make_double(1, 0, 0);
+    rc &= check_frexp<_FV, _IV>(vp, -vp);
     // check +- inf
-    check_frexp<_FV, _IV>(make_double(0, 0x7FF, 0),
-                          make_double(1, 0x7FF, 0));
+    rc &= check_frexp<_FV, _IV>(make_double(0, 0x7FF, 0),
+                                make_double(1, 0x7FF, 0));
     // check +-nan
     for (int i=0; i<53; ++i) {
         uint64_t sig= uint64_t(1) << i;
-        check_frexp<_FV, _IV>(make_double(0, 0x7FF, sig),
-                              make_double(1, 0x7FF, sig));
+        rc &= check_frexp<_FV, _IV>(make_double(0, 0x7FF, sig),
+                                    make_double(1, 0x7FF, sig));
     }
     // denormals and normals
     for (int e=0; e<=0x7ff; ++e) {
         for (int i=0; i<52; ++i) {
             uint64_t sig= uint64_t(1) << i;
             vp = make_double(0, e, sig);
-            check_frexp<_FV, _IV>(vp, -vp);
+            rc &= check_frexp<_FV, _IV>(vp, -vp);
         }
     }
-    return true;
+    return rc;
 }
 
 template <class _FV, class _IV>
 bool cftal::test::check_frexp_f32()
 {
+    bool rc= true;
     // check zero
     float vp = make_float(0, 0, 0);
-    check_frexp<_FV, _IV>(vp, -vp);
+    rc &= check_frexp<_FV, _IV>(vp, -vp);
     vp = make_float(1, 0, 0);
-    check_frexp<_FV, _IV>(vp, -vp);
+    rc &= check_frexp<_FV, _IV>(vp, -vp);
     // check +- inf
-    check_frexp<_FV, _IV>(make_float(0, 0xFF, 0),
-                          make_float(1, 0xFF, 0));
+    rc &= check_frexp<_FV, _IV>(make_float(0, 0xFF, 0),
+                                make_float(1, 0xFF, 0));
     // check +-nan
     for (int i=0; i<23; ++i) {
         uint64_t sig= uint64_t(1) << i;
-        check_frexp<_FV, _IV>(make_float(0, 0x7FF, sig),
-                              make_float(1, 0x7FF, sig));
+        rc &= check_frexp<_FV, _IV>(make_float(0, 0x7FF, sig),
+                                    make_float(1, 0x7FF, sig));
     }
     // denormals and normals
     for (int e=0; e<=0x7ff; ++e) {
         for (int i=0; i<23; ++i) {
             uint32_t sig= uint32_t(1) << i;
             vp = make_float(0, e, sig);
-            check_frexp<_FV, _IV>(vp, -vp);
+            rc &=  check_frexp<_FV, _IV>(vp, -vp);
         }
     }
-    return true;
+    return rc;
 }
 
 int main()
 {
     int rc=true;
+    std::cout << std::setprecision(20);
+    std::cout << "testing frexp v2f64" << std::endl;
     rc &= cftal::test::check_frexp_f64<cftal::v2f64,
                                        cftal::v2s32>();
+    std::cout << "testing frexp v4f64" << std::endl;
     rc &= cftal::test::check_frexp_f64<cftal::v4f64,
                                        cftal::v4s32>();
+    std::cout << "testing frexp v8f64" << std::endl;
     rc &= cftal::test::check_frexp_f64<cftal::v8f64,
-                                       cftal::v8s32>();                                       
+                                       cftal::v8s32>();
+    std::cout << "testing frexp v2f32" << std::endl;
     rc &= cftal::test::check_frexp_f32<cftal::v2f32,
                                        cftal::v2s32>();
+    std::cout << "testing frexp v4f32" << std::endl;
     rc &= cftal::test::check_frexp_f32<cftal::v4f32,
                                        cftal::v4s32>();
+    std::cout << "testing frexp v8f32" << std::endl;
     rc &= cftal::test::check_frexp_f32<cftal::v8f32,
                                        cftal::v8s32>();
     return rc=true ? 0 : 1;

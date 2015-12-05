@@ -7,7 +7,7 @@
 #include <cftal/x86/v4s64.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_1.h>
- 
+
 namespace cftal {
 
     namespace op {
@@ -23,7 +23,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <>
         struct lt<uint64_t, 4> {
             using full_type = vec<uint64_t, 4>;
@@ -226,10 +226,10 @@ namespace cftal {
                 // return full_type(std::fma(-a(), b(), c()));
                 return sub<uint64_t, 4>::v(
                     c, mul<uint64_t, 4>::v(a, b));
-                                          
+
             }
         };
-        
+
         template <>
         struct bit_or<uint64_t, 4> {
             using full_type = vec<uint64_t, 4>;
@@ -427,14 +427,14 @@ template <int _I0, int _I1, int _I2, int _I3>
 inline
 cftal::v4u64 cftal::permute(const v4u64& a)
 {
-    return x86::perm_u64<_I0, _I1, _I2, _I3>(a());
+    return x86::perm_v4u64<_I0, _I1, _I2, _I3>(a());
 }
 
 template <int _I0, int _I1, int _I2, int _I3>
 inline
 cftal::v4u64 cftal::permute(const v4u64& a, const v4u64& b)
 {
-    return x86::perm_u64<_I0, _I1, _I2, _I3>(a(), b());
+    return x86::perm_v4u64<_I0, _I1, _I2, _I3>(a(), b());
 }
 
 inline
@@ -444,9 +444,9 @@ cftal::mul_lo_hi(const v4u64& x, const v4u64& y)
     //         0         0 (xl_yl)_h  (xl_yl)_l
     //         0 (xh_yl)_h (xh_yl)_l          0
     //         0 (xl_yh)_h (xl_yh)_l          0
-    // (xh_yh)_h (xh_yh)_l 
+    // (xh_yh)_h (xh_yh)_l
     v4u64 xh = x >> 32;
-    v4u64 yh = y >> 32;  
+    v4u64 yh = y >> 32;
     // 2^ 0
     v4u64 xl_yl= _mm256_mul_epu32(x(), y());
     // 2^ 32
@@ -457,14 +457,14 @@ cftal::mul_lo_hi(const v4u64& x, const v4u64& y)
     // sum of 2^32
     v4u64 s32_95 = xl_yh + xh_yl;
     v4u64::mask_type carry_96 = s32_95 < xl_yh;
-    // 
+    //
     v4u64 s64_96 = s32_95 >> 32;
     v4u64 s32_63 = s32_95 << 32;
     // low part of the multiplication:
     xl_yl += s32_63;
     v4u64::mask_type neg_carry_64 = xl_yl < s32_63;
     v4u64 c96_msk(bytes8(0, 1)._u64);
-    
+
     s64_96 |= select(carry_96, c96_msk, v4u64(0));
     xh_yh -= select(neg_carry_64, v4u64(-1LL), v4u64(0));
     // high part of the multiplication:

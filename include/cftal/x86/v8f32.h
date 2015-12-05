@@ -67,13 +67,13 @@ namespace cftal {
     template <std::size_t _I>
     float
     extract(const vec<float, 8>& s);
-    
+
     vec<float, 8>
     select(const typename vec<float, 8>::mask_type& msk,
            const vec<float, 8>& on_true,
            const vec<float, 8>& on_false);
 
-#if !defined (__AVX512VL__)    
+#if !defined (__AVX512VL__)
     bool
     all_of(const vec<float, 8>::mask_type& a);
 
@@ -83,13 +83,13 @@ namespace cftal {
     bool
     none_of(const vec<float, 8>::mask_type& a);
 #endif
-    
+
     unsigned
     read_signs(const vec<float, 8>& b);
 
     bool
     elements_equal(const vec<float, 8>& v);
-    
+
     vec<float, 8>
     cbrt(vec<float, 8> v);
 
@@ -131,13 +131,13 @@ namespace cftal {
     // -(a*b) - c
     v8f32 nfms(const v8f32& a, const v8f32& b, const v8f32& c);
 
-#if 0    
+#if 0
     // a*b +c with rounding or not
     v8f32 mad(const v8f32& a, const v8f32& b, const v8f32& c);
     // -(a*b) +c with rounding or not
     v8f32 nmad(const v8f32& a, const v8f32& b, const v8f32& c);
 #endif
-    
+
     template <bool _P0, bool _P1,
               bool _P2, bool _P3,
               bool _P4, bool _P5,
@@ -518,7 +518,7 @@ cftal::mem<cftal::vec<float, 8> >::load(const float* p, std::size_t s)
     case 2:
         v = _mm256_setr_ps(p[0], p[1], p[1], p[1],
                            p[1], p[1], p[1], p[1]);
-                           
+
         break;
     case 1:
         v = _mm256_setr_ps(p[0], p[0], p[0], p[0],
@@ -582,8 +582,8 @@ template <int _P0, int _P1, int _P2, int _P3,
 inline
 cftal::v8f32 cftal::permute(const v8f32& a)
 {
-    return x86::perm_f32<_P0, _P1, _P2, _P3,
-                         _P4, _P5, _P6, _P7>(a());
+    return x86::perm_v8f32<_P0, _P1, _P2, _P3,
+                           _P4, _P5, _P6, _P7>(a());
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -591,8 +591,8 @@ template <int _P0, int _P1, int _P2, int _P3,
 inline
 cftal::v8f32 cftal::permute(const v8f32& a, const v8f32& b)
 {
-    return x86::perm_f32<_P0, _P1, _P2, _P3,
-                         _P4, _P5, _P6, _P7>(a(), b());
+    return x86::perm_v8f32<_P0, _P1, _P2, _P3,
+                           _P4, _P5, _P6, _P7>(a(), b());
 }
 
 inline

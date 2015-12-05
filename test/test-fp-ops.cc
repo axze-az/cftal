@@ -4,13 +4,13 @@
 namespace cftal {
     namespace test {
 
-               
+
         template <class _T, std::size_t _N>
         struct fp_ops {
             static bool v();
             static bool v(_T ai, _T bi);
         };
-        
+
         template <class _T, std::size_t _N>
         struct fp_ops_up_to {
             static bool v() {
@@ -19,63 +19,63 @@ namespace cftal {
                 return r;
             }
         };
-        
+
         template <class _T>
         struct fp_ops_up_to<_T, 1> {
             static bool v() {
                 return fp_ops<_T, 1>::v();
             }
-        };                
+        };
     }
 }
 
 template <class _T, std::size_t _N>
-bool 
+bool
 cftal::test::fp_ops<_T, _N>::v(_T ai, _T bi)
-{    
+{
     bool rc=true;
     _T a=ai, b=bi, r;
     vec<_T, _N> va(a), vb(b), vr(0);
     r = -a;
-    vr = -va; 
+    vr = -va;
     rc &= check(vr, r, "-a");
-    
-    r = +a;     
-    vr = +va;     
-    rc &= check(vr, r, "+a");    
-    
+
+    r = +a;
+    vr = +va;
+    rc &= check(vr, r, "+a");
+
     r = a + b;
     vr = va + vb;
-    rc &= check(vr, r, "a+b");    
-    
+    rc &= check(vr, r, "a+b");
+
     r = a; r += b;
     vr = va; vr += vb;
-    rc &= check(vr, r, "a+=b");        
+    rc &= check(vr, r, "a+=b");
 
     r = a - b;
     vr = va - vb;
-    rc &= check(vr, r, "a-b");    
+    rc &= check(vr, r, "a-b");
 
     r = a; r -= b;
     vr = va; vr -= vb;
-    rc &= check(vr, r, "a-=b");        
-    
+    rc &= check(vr, r, "a-=b");
+
     r = a * b;
     vr = va * vb;
-    rc &= check(vr, r, "a*b");    
+    rc &= check(vr, r, "a*b");
 
     r = a; r *= b;
     vr = va; vr *= vb;
-    rc &= check(vr, r, "a*=b");        
-    
+    rc &= check(vr, r, "a*=b");
+
     r = a / b;
     vr = va / vb;
-    rc &= check(vr, r, "a/b");    
+    rc &= check(vr, r, "a/b");
 
     r = a; r *= b;
     vr = va; vr *= vb;
-    rc &= check(vr, r, "a/=b");        
-    
+    rc &= check(vr, r, "a/=b");
+
     r = std::max(a, b);
     vr = max(va, vb);
     rc &= check(vr, r, "max");
@@ -87,16 +87,16 @@ cftal::test::fp_ops<_T, _N>::v(_T ai, _T bi)
     r = std::abs(a);
     vr = abs(va);
     rc &= check(vr, r, "abs");
-    
+
     return rc;
 }
 
 template <class _T, std::size_t _N>
-bool 
+bool
 cftal::test::fp_ops<_T, _N>::v()
-{    
+{
     bool rc=true;
-    
+
     static const _T operands[] = {
          _T(4), _T(2),
          _T(-4), _T(-2),
@@ -118,9 +118,9 @@ cftal::test::fp_ops<_T, _N>::v()
         rc &= fp_ops<_T, _N>::v(*b, *std::next(b));
         rc &= fp_ops<_T, _N>::v(*std::next(b), *b);
     }
-    
+
     std::mt19937 rnd;
-    std::uniform_real_distribution<_T> 
+    std::uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
     const int64_t N0=0x10000ULL;
     const int64_t N=72*N0;
@@ -129,30 +129,30 @@ cftal::test::fp_ops<_T, _N>::v()
             std::cout << '.' << std::flush;
         _T ah, bh;
         ah = distrib(rnd);
-        bh = distrib(rnd);        
-        _T va=ah, vb=bh;        
+        bh = distrib(rnd);
+        _T va=ah, vb=bh;
         rc &= fp_ops<_T, _N>::v(va, vb);
-        va = -ah; 
+        va = -ah;
         rc &= fp_ops<_T, _N>::v(va, vb);
         va = ah; vb= -bh;
         rc &= fp_ops<_T, _N>::v(va, vb);
-        va = -ah; 
+        va = -ah;
         rc &= fp_ops<_T, _N>::v(va, vb);
-    }     
-    std::cout << std::endl;    
-    
+    }
+    std::cout << std::endl;
+
     if (rc == true) {
         std::cout << __func__ << _N << " test passed " << std::endl;
     } else {
-        std::cerr << __func__ << _N << " test failed " << std::endl;        
-    }        
+        std::cerr << __func__ << _N << " test failed " << std::endl;
+    }
     return rc;
 }
 
 int main()
 {
     bool rc=true;
-    
+
     std::cout << "testing vXf64" << std::endl;
     bool rd=cftal::test::fp_ops_up_to<double, 32>::v();
     if (rd==false)
@@ -164,4 +164,4 @@ int main()
     rc = rd && rf;
     return rc==true ? 0 : 1;
 }
-    
+

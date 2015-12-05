@@ -16,13 +16,19 @@
 
 #include <cftal/vec_t_1.h>
 #if defined (__SSE2__)
-// include 128 bit integer vector specializations 
+// include 64 bit integer vector specializations
+#include <cftal/x86/v2s32.h>
+#include <cftal/x86/v2u32.h>
+// include 128 bit integer vector specializations
 #include <cftal/x86/v4s32.h>
 #include <cftal/x86/v4u32.h>
 #include <cftal/x86/v2s64.h>
 #include <cftal/x86/v2u64.h>
 #include <cftal/x86/v8s16.h>
 #include <cftal/x86/v8u16.h>
+// include 64 bit integer vector specializations implementions
+#include <cftal/x86/v2s32_inl.h>
+#include <cftal/x86/v2u32_inl.h>
 // include 128 bit integer vector specializations implementations
 #include <cftal/x86/v4s32_inl.h>
 #include <cftal/x86/v4u32_inl.h>

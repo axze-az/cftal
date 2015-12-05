@@ -24,7 +24,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <>
         struct lt<int64_t, 4> {
             using full_type = vec<int64_t, 4>;
@@ -184,7 +184,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b) {
                 v4s64 q(a/b);
                 v4s64 r(remainder(a, b, q));
-                return r;                
+                return r;
             }
         };
 
@@ -223,10 +223,10 @@ namespace cftal {
                 // return full_type(std::fma(-a(), b(), c()));
                 return sub<int64_t, 4>::v(
                     c, mul<int64_t, 4>::v(a, b));
-                                          
+
             }
         };
-        
+
         template <>
         struct bit_or<int64_t, 4> {
             using full_type = vec<int64_t, 4>;
@@ -425,14 +425,14 @@ template <int _I0, int _I1, int _I2, int _I3>
 inline
 cftal::v4s64 cftal::permute(const v4s64& a)
 {
-    return x86::perm_u64<_I0, _I1, _I2, _I3>(a());
+    return x86::perm_v4u64<_I0, _I1, _I2, _I3>(a());
 }
 
 template <int _I0, int _I1, int _I2, int _I3>
 inline
 cftal::v4s64 cftal::permute(const v4s64& a, const v4s64& b)
 {
-    return x86::perm_u64<_I0, _I1, _I2, _I3>(a(), b());
+    return x86::perm_v4u64<_I0, _I1, _I2, _I3>(a(), b());
 }
 
 inline
