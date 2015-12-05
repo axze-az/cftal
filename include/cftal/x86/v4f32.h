@@ -432,7 +432,7 @@ vec(init_list<float> l)
 inline
 cftal::vec<float, 4>::
 vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
-    : vec(permute<0, 1, 4, 5>(lh(), hh())
+    : vec(permute<0, 1, 4, 5>(lh(), hh()))
 {
 }
 
