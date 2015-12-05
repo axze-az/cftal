@@ -5,6 +5,7 @@
 #include <cftal/types.h>
 #include <cftal/x86/v4s32.h>
 #include <cftal/x86/v4u32.h>
+#include <cftal/x86/v2s32.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_1.h>
 #include <cftal/divisor.h>
@@ -318,8 +319,7 @@ cftal::vec<cftal::int32_t, 4>::vec(int32_t v)
 
 inline
 cftal::vec<cftal::int32_t, 4>::vec(vec<int32_t, 2> l, vec<int32_t, 2> h)
-    : base_type(_mm_setr_epi32(low_half(l)(), high_half(l)(),
-                               low_half(h)(), high_half(h)()))
+    : base_type(x86::impl::vpunpcklqdq::v(l(), h()))
 {
 }
 
@@ -384,7 +384,7 @@ inline
 cftal::vec<int32_t, 2>
 cftal::low_half(const vec<int32_t, 4>& v)
 {
-    return as<vec<int32_t,2> >(v);
+    return v();
 }
 
 inline
@@ -392,7 +392,7 @@ cftal::vec<int32_t, 2>
 cftal::high_half(const vec<int32_t, 4>& v)
 {
     vec<int32_t, 4> h= permute<2, 3, 0, 1>(v);
-    return as<vec<int32_t,2> >(h);
+    return h();
 }
 
 #if !defined (__AVX512VL__)

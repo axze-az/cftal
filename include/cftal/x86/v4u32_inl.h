@@ -5,9 +5,10 @@
 #include <cftal/types.h>
 #include <cftal/x86/v4u32.h>
 #include <cftal/x86/v4s32.h>
+#include <cftal/x86/v2u32.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_1.h>
- 
+
 namespace cftal {
 
     namespace op {
@@ -23,7 +24,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <>
         struct lt<uint32_t, 4> {
             using full_type = vec<uint32_t, 4>;
@@ -244,10 +245,10 @@ namespace cftal {
                 // return full_type(std::fma(-a(), b(), c()));
                 return sub<uint32_t, 4>::v(
                     c, mul<uint32_t, 4>::v(a, b));
-                                          
+
             }
         };
-        
+
         template <>
         struct bit_or<uint32_t, 4> {
             using full_type = vec<uint32_t, 4>;
@@ -318,8 +319,7 @@ cftal::vec<cftal::uint32_t, 4>::vec(uint32_t v)
 
 inline
 cftal::vec<cftal::uint32_t, 4>::vec(vec<uint32_t, 2> l, vec<uint32_t, 2> h)
-    : base_type(_mm_setr_epi32(low_half(l)(), high_half(l)(),
-                               low_half(h)(), high_half(h)()))
+    : base_type(x86::impl::vpunpcklqdq::v(l(), h()))
 {
 }
 
@@ -384,7 +384,7 @@ inline
 cftal::vec<uint32_t, 2>
 cftal::low_half(const vec<uint32_t, 4>& v)
 {
-    return as<vec<uint32_t,2> >(v);
+    return v();
 }
 
 inline
@@ -392,7 +392,7 @@ cftal::vec<uint32_t, 2>
 cftal::high_half(const vec<uint32_t, 4>& v)
 {
     vec<uint32_t, 4> h= permute<2, 3, 0, 1>(v);
-    return as<vec<uint32_t,2> >(h);
+    return h();
 }
 
 #if !defined (__AVX512VL__)
