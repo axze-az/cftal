@@ -7,6 +7,13 @@ namespace cftal {
 
     namespace test {
 
+        bool check_div_s16();
+        bool check_div_u16();
+        bool check_div_s32();
+        bool check_div_u32();
+        bool check_div_s64();
+        bool check_div_u64();
+        
         bool check_xxx_of();
         bool check_bitrev();
         bool check_popcnt();

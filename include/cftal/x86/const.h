@@ -182,6 +182,12 @@ namespace cftal {
 
         // (u)int32_t constants
         typedef const_v4u32<0x80000000, 0x80000000,
+                            0x00000000, 0x00000000> v_sign_v2s32_msk;
+        typedef const_v4u32<0x7fffffff, 0x7fffffff,
+                            0xffffffff, 0xffffffff> v_not_sign_v2s32_msk;
+        const int sign_v2s32_msk = 0x88;
+
+        typedef const_v4u32<0x80000000, 0x80000000,
                             0x80000000, 0x80000000> v_sign_v4s32_msk;
         typedef const_v4u32<0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff> v_not_sign_v4s32_msk;

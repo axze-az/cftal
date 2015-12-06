@@ -727,21 +727,21 @@ inline
 bool
 cftal::any_of(const vec<float, 2>::mask_type& s)
 {
-    return x86::read_signs_f32(s()) != 0;
+    return (x86::read_signs_f32(s()) & 0x3) != 0;
 }
 
 inline
 bool
 cftal::all_of(const vec<float, 2>::mask_type& s)
 {
-    return x86::read_signs_f32(s()) == 0x3;
+    return (x86::read_signs_f32(s()) & 0x3) == 0x3;
 }
 
 inline
 bool
 cftal::none_of(const vec<float, 2>::mask_type& s)
 {
-    return x86::read_signs_f32(s()) == 0;
+    return (x86::read_signs_f32(s()) & 0x3) == 0;
 }
 #endif
 

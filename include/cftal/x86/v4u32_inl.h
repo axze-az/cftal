@@ -399,19 +399,19 @@ cftal::high_half(const vec<uint32_t, 4>& v)
 inline
 bool cftal::all_of(const vec<uint32_t, 4>::mask_type& v)
 {
-    return x86::all_of_s32(v());
+    return x86::all_of_v4s32(v());
 }
 
 inline
 bool cftal::any_of(const vec<uint32_t, 4>::mask_type& v)
 {
-    return x86::any_of_s32(v());
+    return x86::any_of_v4s32(v());
 }
 
 inline
 bool cftal::none_of(const vec<uint32_t, 4>::mask_type& v)
 {
-    return x86::none_of_s32(v());
+    return x86::none_of_v4s32(v());
 }
 #endif
 
