@@ -282,10 +282,10 @@ namespace {
     inline
     _T do_div(_T x, _T y, _T* rem)
     {
-        bool y_zero{y != _T{0}};
-        _T q{y_zero ? x/y : _T(-1)};
+        bool y_not_zero{y != _T{0}};
+        _T q{y_not_zero ? x/y : _T(-1)};
         if (rem!= nullptr) {
-            *rem = y_zero ? x : x % y;
+            *rem = y_not_zero ? x % y : x;
         }
         return q;
     }

@@ -249,24 +249,23 @@ namespace cftal {
         template <>
         struct cvt<v2s32, v2f64> {
             static v2s32 l(const v2f64& d) {
-                v4s32 r=_mm_cvtpd_epi32(d());
-                return low_half(r);
+                v2s32 r=_mm_cvtpd_epi32(d());
+                return r;
             }
         };
 
         template <>
         struct cvt_rz<v2s32, v2f64> {
             static v2s32 l(const v2f64& d) {
-                v4s32 r=_mm_cvttpd_epi32(d());
-                return low_half(r);
+                v2s32 r=_mm_cvttpd_epi32(d());
+                return r;
             }
         };
 
         template <>
         struct cvt<v2f64, v2s32> {
             static v2f64 l(const v2s32& d) {
-                v4s32 t(d, d);
-                return _mm_cvtepi32_pd(t());
+                return _mm_cvtepi32_pd(d());
             };
         };
 
