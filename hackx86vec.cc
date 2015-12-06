@@ -39,6 +39,16 @@ do_add(cftal::vec<int32_t, 2> a, cftal::vec<int32_t, 2> b)
 
 int main(int argc, char** argv)
 {
+    uint64_t d=3661514468055604540ULL;
+    cftal::divisor<cftal::v2u64, uint64_t> dd(d);
+    cftal::v2u64 u={1503475172844850297ULL, 13461143575756973763ULL};
+    cftal::v2u64 q= u/dd;
+    cftal::v2u64 r= cftal::remainder(u, cftal::v2u64(d), q);
+
+    std::cout << u << " / " << dd.d() << std::endl;
+    std::cout << q << std::endl
+              << r << std::endl;
+#if 0
     cftal::divisor<cftal::v4s32, int32_t> v4rr(3);
     cftal::v4s32 v4t=-7046431;
     cftal::v4s32 v4q=v4t/v4rr;
@@ -52,14 +62,15 @@ int main(int argc, char** argv)
     std::cout << v1q << std::endl;
 
 
-    cftal::divisor<cftal::v2s32, int32_t> rr(3);
-    cftal::v2s32 t=-7046431;
-    cftal::v2s32 q=t/rr;
-    std::cout << q << std::endl;
+    cftal::divisor<cftal::v2s32, int32_t> v2rr(3);
+    cftal::v2s32 v2t=-7046431;
+    cftal::v2s32 v2q=v2t/v2rr;
+    std::cout << v2q << std::endl;
 
     cftal::divisor<int32_t, int32_t> srr(3);
     int32_t st=-7046431;
     int32_t sq=st/srr;
     std::cout << sq << std::endl;
+#endif
     return 0;
 }
