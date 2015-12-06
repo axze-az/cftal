@@ -225,7 +225,7 @@ namespace cftal {
         using utype = typename std::make_unsigned<_T>::type;
         using base_type = duint<utype>;
         constexpr dint() : base_type() {}
-        constexpr dint(const type& vl) : 
+        constexpr dint(const type& vl) :
             base_type(vl, vl < _T(0) ? ~_T(0) : _T(0)) { }
         constexpr dint(const utype& vl, const type& vh) : base_type(vl,vh) {}
         constexpr dint(const base_type& b) : base_type(b) { }
@@ -421,7 +421,7 @@ namespace cftal {
     template <typename _T>
     bool operator>(const dint<_T>& a, const _T& b);
 
-#if defined (__GNUC__) && defined (__x86_64__)
+#if defined (__GNUC__) && defined (__x86_64__) && !defined (__clang__)
     duint<uint64_t> operator+(const duint<uint64_t>& a,
                               const duint<uint64_t>& b);
     duint<uint64_t> operator+(const duint<uint64_t>& a,
@@ -464,7 +464,7 @@ namespace std {
     template <class _T>
     struct is_integral<cftal::duint<_T> >
         : public is_integral<_T> {};
-    
+
     template <class _T>
     struct is_signed<cftal::dint<_T> >
         : public is_signed<_T> { };
@@ -478,10 +478,10 @@ namespace std {
     template <class _T>
     struct make_unsigned<cftal::dint<_T> > {
         typedef cftal::duint<_T> type;
-    };    
+    };
     template <class _T>
     struct is_integral<cftal::dint<_T> >
-        : public is_integral<_T> {};    
+        : public is_integral<_T> {};
 }
 
 namespace cftal {
@@ -1686,8 +1686,8 @@ bool cftal::operator>(const dint<_T>& a, const _T& b)
     return impl::get_sign(a) ^ impl::get_sign(b) ^ r;
 }
 
-#if defined (__GNUC__) && defined (__x86_64__)
-// specialized implementations.
+#if defined (__GNUC__) && defined (__x86_64__) && !defined (__clang__)
+// specialized implementations, but clang 3.7 miscompiles it
 inline
 cftal::duint<uint64_t>
 cftal::operator+(const duint<uint64_t>& a, const duint<uint64_t>& b)
@@ -1707,9 +1707,9 @@ cftal::operator+(const duint<uint64_t>& a, const uint64_t& b)
 {
     uint64_t l,h;
     __asm__ ("addq %4, %0 \n\t"
-             "adcq $0, %1 \n\t"
+             "adcq %5, %1 \n\t"
              : "=m,r"(l), "=m,r"(h)
-             : "0,0"(a.l()), "1,1"(a.uh()), "re,g"(b)
+             : "0,0"(a.l()), "1,1"(a.uh()), "re,g"(b), "K,K"(0)
              : "cc");
     return duint<uint64_t>(l, h);
 }
@@ -1740,9 +1740,9 @@ cftal::operator-(const duint<uint64_t>& a, const uint64_t& b)
 {
     uint64_t l,h;
     __asm__ ("subq %4, %0 \n\t"
-             "sbbq $0, %1 \n\t"
+             "sbbq %5, %1 \n\t"
              : "=m,r"(l), "=m,r"(h)
-             : "0,0"(a.l()), "1,1"(a.uh()), "re,g"(b)
+             : "0,0"(a.l()), "1,1"(a.uh()), "re,g"(b), "K,K"(0)
              : "cc");
     return duint<uint64_t>(l, h);
 }
