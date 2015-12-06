@@ -77,6 +77,7 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     return q;
 }
 
+
 __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
 {
 #if defined (__AVX__)
@@ -85,7 +86,7 @@ __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
     __m256d qf = _mm256_div_pd(xt, yt);
     __m128i q = _mm256_cvttpd_epi32(qf);
     __m128i t;
-#else    
+#else
     __m128d xt= _mm_cvtepi32_pd(x);
     __m128d yt= _mm_cvtepi32_pd(y);
     __m128d qf= _mm_div_pd(xt, yt);
@@ -104,6 +105,24 @@ __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
     if (rem != nullptr) {
         // multiply back and subtract
         t =  impl::vpmulld::v(q, y);
+        __m128i r = _mm_sub_epi32(x, t);
+        _mm_store_si128(rem, r);
+    }
+    return q;
+}
+
+__m128i cftal::x86::div_s32::lh(__m128i x, __m128i y, __m128i* rem)
+{
+    __m128d xt= _mm_cvtepi32_pd(x);
+    __m128d yt= _mm_cvtepi32_pd(y);
+    __m128d qf= _mm_div_pd(xt, yt);
+    __m128i q= _mm_cvttpd_epi32(qf);
+    // set quotient to -1 where divisor is zero
+    __m128i eqz= _mm_cmpeq_epi32(y, impl::make_zero_int::v());
+    q = _mm_or_si128(q, eqz);
+    if (rem != nullptr) {
+        // multiply back and subtract
+        __m128i t =  impl::vpmulld::lh(q, y);
         __m128i r = _mm_sub_epi32(x, t);
         _mm_store_si128(rem, r);
     }
@@ -194,6 +213,49 @@ __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
     if (rem != nullptr) {
         // multiply back and subtract
         __m128i p =  impl::vpmulld::v(qi, y);
+        __m128i r = _mm_sub_epi32(x, p);
+        _mm_store_si128(rem, r);
+    }
+    return qi;
+}
+
+__m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
+{
+    // add 2^31
+    __m128i xs = _mm_add_epi32(x, v_sign_v4s32_msk::iv());
+    __m128i ys = _mm_add_epi32(y, v_sign_v4s32_msk::iv());
+    // generate dp fp constant: 2^31
+    const int _2_pow_31_fp_h= (1023+31)<<20;
+    __m128d _2_pow_31 =
+        const_v4u32<0, _2_pow_31_fp_h, 0, _2_pow_31_fp_h>::dv();
+    // convert low halves to double
+    __m128d xt = _mm_cvtepi32_pd(xs);
+    __m128d yt = _mm_cvtepi32_pd(ys);
+    // add 2^31
+    xt = _mm_add_pd(xt, _2_pow_31);
+    yt = _mm_add_pd(yt, _2_pow_31);
+    __m128d q = _mm_div_pd(xt, yt);
+    // convert back to uint32
+    // compare against 2^31
+    __m128d hm= _mm_cmple_pd(_2_pow_31, q);
+    __m128d corr= _mm_and_pd(hm, _2_pow_31);
+    // subtract 2^31 where necessary
+    q = _mm_sub_pd(q, corr);
+    // convert
+    __m128 xml= as<__m128>(hm);
+    // correct too large values later
+    __m128i qil=_mm_cvttpd_epi32(q);
+    // combine xml and xmh
+    __m128i xm= as<__m128i>(impl::vshufps<0, 2, 0, 2>::v(xml, xml));
+    xm = _mm_slli_epi32(xm, 31);
+    __m128i qi= qil;
+    qi = _mm_xor_si128(qi, xm);
+    // set quotient to -1 where y==0
+    __m128i eqz= _mm_cmpeq_epi32(y, impl::make_zero_int::v());
+    qi = _mm_or_si128(qi, eqz);
+    if (rem != nullptr) {
+        // multiply back and subtract
+        __m128i p =  impl::vpmulld::lh(qi, y);
         __m128i r = _mm_sub_epi32(x, p);
         _mm_store_si128(rem, r);
     }

@@ -183,7 +183,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::impl::vpmulld::v(a(), b());
+                return x86::impl::vpmulld::lh(a(), b());
             }
         };
 
@@ -193,7 +193,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::div_u32::v(a(), b());
+                return x86::div_u32::lh(a(), b());
             }
         };
 

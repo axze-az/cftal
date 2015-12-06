@@ -14,10 +14,48 @@
 
 namespace cftal {
 
+    namespace x86 {
+        namespace impl {
+
+            // store float[2] into one integer register
+            // gcc 5.2 produces terrible code otherwise
+            using f32_pair_type = uint64_t;
+
+            inline
+            __m128 unpack(f32_pair_type s) {
+                return _mm_castsi128_ps(_mm_cvtsi64_si128(s));
+            }
+
+            inline
+            f32_pair_type pack(__m128 s) {
+                return _mm_cvtsi128_si64(_mm_castps_si128(s));
+            }
+
+            inline
+            f32_pair_type set(float l, float h) {
+                union t {
+                    float _f32;
+                    uint32_t _u32;
+                } u;
+                u._f32 = l;
+                uint32_t li= u._u32;
+                u._f32 = h;
+                uint32_t hi= u._u32;
+                f32_pair_type r= uint64_t(hi) << 32 | li;
+                return r;
+            }
+
+            inline
+            f32_pair_type set1(float lh) {
+                return set(lh, lh);
+            }
+        }
+    }
+
     template <>
-    class vec<float, 2> : public x86::vreg<uint64_t> {
+    class vec<float, 2> : public x86::vreg<x86::impl::f32_pair_type> {
     public:
-        using base_type= x86::vreg<uint64_t>;
+        using base_type= x86::vreg<x86::impl::f32_pair_type>;
 
         using value_type = float;
 #if defined (__AVX512VL__)
@@ -438,13 +476,13 @@ namespace cftal {
 
 inline
 cftal::vec<float, 2>::vec(float v)
-    : vec(_mm_set1_ps(v))
+    : base_type(x86::impl::set1(v))
 {
 }
 
 inline
 cftal::vec<float, 2>::vec(__m128 v)
-    : base_type(_mm_cvtsi128_si64(_mm_castps_si128(v)))
+    : base_type(x86::impl::pack(v))
 {
 }
 
@@ -452,8 +490,8 @@ inline
 __m128
 cftal::vec<float, 2>::operator()() const
 {
-    uint64_t r=base_type::operator()();
-    return _mm_castsi128_ps(_mm_cvtsi64_si128(r));
+    x86::impl::f32_pair_type r=base_type::operator()();
+    return x86::impl::unpack(r);
 }
 
 inline
@@ -473,7 +511,7 @@ vec(init_list<float> l)
 inline
 cftal::vec<float, 2>::
 vec(const vec<float, 1>& l, const vec<float, 1>& h)
-    : vec(_mm_setr_ps(l(), h(), 0.0f, 0.0f))
+    : base_type(x86::impl::set(l(), h()))
 {
 }
 

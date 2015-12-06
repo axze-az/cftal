@@ -30,16 +30,22 @@ namespace cftal {
 
         struct div_u32 : public div_ref<uint32_t, 4> {
             static __m128i v(__m128i a, __m128i b,
-                             __m128i* rem=nullptr);            
+                             __m128i* rem=nullptr);
+            // same as above but divides only the low halfes of a/b
+            static __m128i lh(__m128i a, __m128i b,
+                              __m128i* rem=nullptr);
 #if defined (__AVX2__)
             static __m256i v(__m256i a, __m256i b,
                              __m256i* rem=nullptr);
 #endif
         };
 
-        struct div_s32 : public div_ref<int32_t, 4> { 
+        struct div_s32 : public div_ref<int32_t, 4> {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
+            // same as above but divides only the low halfes of a/b
+            static __m128i lh(__m128i a, __m128i b,
+                              __m128i* rem=nullptr);
 #if defined (__AVX2__)
             static __m256i v(__m256i a, __m256i b,
                              __m256i* rem=nullptr);
@@ -58,7 +64,7 @@ namespace cftal {
         struct div_s64 : public div_ref<int64_t, 2> {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
-            
+
 #if defined (__AVX2__)
             static __m256i v(__m256i a, __m256i b,
                              __m256i* rem=nullptr);
@@ -110,7 +116,7 @@ namespace cftal {
         bool all_of_s64(__m128i a);
         bool any_of_s64(__m128i a);
         bool none_of_s64(__m128i a);
-        
+
         // neither all bits set nor unset
         bool both_bits(__m128i a);
         // all bits set
@@ -149,7 +155,7 @@ namespace cftal {
         bool any_of_s64(__m256i a);
         bool none_of_s64(__m256i a);
 #endif
-        
+
         bool both_signs_s16(__m128i a);
         bool all_signs_s16(__m128i a);
         bool no_signs_s16(__m128i a);

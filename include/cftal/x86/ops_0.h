@@ -312,7 +312,7 @@ namespace cftal {
                 }
             };
 
-#if defined (__AVX__)            
+#if defined (__AVX__)
             struct make_zero_int256 {
                 static __m256i v() {
                     return _mm256_setzero_si256();
@@ -328,7 +328,7 @@ namespace cftal {
                 }
             };
 #endif
-            
+
             template <unsigned _P0, unsigned _P1>
             struct vshufpd {
                 static __m128d v(__m128d a, __m128d b) {
@@ -895,7 +895,7 @@ namespace cftal {
                     return v(a, sh);
                 }
 #endif
-                
+
             };
 
             template <unsigned _P>
@@ -956,6 +956,8 @@ namespace cftal {
 
             struct vpmulld {
                 static __m128i v(__m128i a, __m128i b);
+                // same as v but multiplies only the low halfes of a/b
+                static __m128i lh(__m128i a, __m128i b);
 #if defined (__AVX2__)
                 static __m256i v(__m256i a, __m256i b) {
                     return _mm256_mullo_epi32(a, b);
@@ -1254,6 +1256,20 @@ __m128i cftal::x86::impl::vpsraq_const<_S>::v(__m128i a)
 #endif
     }
     return r;
+}
+
+inline
+__m128i cftal::x86::impl::vpmulld::lh(__m128i a, __m128i b)
+{
+#if defined (__SSE4_1__)
+    return v(a, b);
+#else
+    __m128i as= vpshufd<0, 0, 1, 1>::v(a);
+    __m128i bs= vpshufd<0, 0, 1, 1>::v(a);
+    __m128i rs=_mm_mul_epu32(as, bs);
+    __m128i r= vpshufd<0, 2, 0, 2>::v(rs);
+    return r;
+#endif
 }
 
 inline
