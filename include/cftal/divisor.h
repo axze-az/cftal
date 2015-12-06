@@ -54,7 +54,7 @@ namespace cftal {
 
         template <typename _V, typename _D>
         struct udiv_traits {
-            static 
+            static
             _V muluh(_V a, _V b) {
                 return mul_lo_hi(a, b).second;
             }
@@ -316,7 +316,7 @@ namespace cftal {
             impl::udiv<_T, uint64_t>(d) {}
     };
 
-    
+
     template <class _V>
     _V operator%(const _V& n, const divisor<_V, int16_t>& d)
     {

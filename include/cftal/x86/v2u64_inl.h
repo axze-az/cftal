@@ -7,7 +7,7 @@
 #include <cftal/x86/v2s64.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_1.h>
- 
+
 namespace cftal {
 
     namespace op {
@@ -23,7 +23,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <>
         struct lt<uint64_t, 2> {
             using full_type = vec<uint64_t, 2>;
@@ -125,7 +125,7 @@ namespace cftal {
                 return _mm_cmpgt_epi64(ax, bx);
 #else
                 // a > b: (a_h > b_h) || ((a_h == b_h) && (a_l > b_l))
-                // c1 ---------^ 
+                // c1 ---------^
                 // c2 -------------------------^
                 // c3 -----------------------------------------^
                 const __m128i msk= _mm_set1_epi32(sign_s32_msk::v._u32);
@@ -135,7 +135,7 @@ namespace cftal {
                 __m128i c1c3= _mm_cmpgt_epi32(ax, bx);
                 // only elements 1, 3 are valid:
                 __m128i c2_and_c3 =
-                    _mm_and_si128(c2, 
+                    _mm_and_si128(c2,
                                   x86::impl::vpshufd<0, 0, 2, 2>::v(c1c3));
                 // only elements 1, 3 are valid.
                 __m128i r = _mm_or_si128(c1c3, c2_and_c3);
@@ -143,7 +143,7 @@ namespace cftal {
                 return r;
 #endif
 #endif
-                
+
             }
         };
 
@@ -255,10 +255,10 @@ namespace cftal {
                 // return full_type(std::fma(-a(), b(), c()));
                 return sub<uint64_t, 2>::v(
                     c, mul<uint64_t, 2>::v(a, b));
-                                          
+
             }
         };
-        
+
         template <>
         struct bit_or<uint64_t, 2> {
             using full_type = vec<uint64_t, 2>;
@@ -390,7 +390,7 @@ inline
 cftal::vec<uint64_t, 1>
 cftal::low_half(const vec<uint64_t, 2>& v)
 {
-    return as<vec<uint64_t,1> >(v);    
+    return as<vec<uint64_t,1> >(v);
 }
 
 inline
@@ -456,9 +456,9 @@ cftal::mul_lo_hi(const v2u64& x, const v2u64& y)
     //         0         0 (xl_yl)_h  (xl_yl)_l
     //         0 (xh_yl)_h (xh_yl)_l          0
     //         0 (xl_yh)_h (xl_yh)_l          0
-    // (xh_yh)_h (xh_yh)_l 
+    // (xh_yh)_h (xh_yh)_l
     v2u64 xh = x >> 32;
-    v2u64 yh = y >> 32;  
+    v2u64 yh = y >> 32;
     // 2^ 0
     v2u64 xl_yl= _mm_mul_epu32(x(), y());
     // 2^ 32
@@ -469,14 +469,14 @@ cftal::mul_lo_hi(const v2u64& x, const v2u64& y)
     // sum of 2^32
     v2u64 s32_95 = xl_yh + xh_yl;
     v2u64::mask_type carry_96 = s32_95 < xl_yh;
-    // 
+    //
     v2u64 s64_96 = s32_95 >> 32;
     v2u64 s32_63 = s32_95 << 32;
     // low part of the multiplication:
     xl_yl += s32_63;
     v2u64::mask_type neg_carry_64 = xl_yl < s32_63;
     v2u64 c96_msk(bytes8(0, 1)._u64);
-    
+
     s64_96 |= select(carry_96, c96_msk, v2u64(0));
     xh_yh -= select(neg_carry_64, v2u64(-1LL), v2u64(0));
     // high part of the multiplication:
