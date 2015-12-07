@@ -17,6 +17,47 @@ namespace cftal {
     namespace x86 {
         namespace impl {
 
+#if 1
+            using f32_pair_type = double;
+
+            union v2_cvt {
+                double _f64;
+                float _f32[2];
+                int32_t _s32[2];
+                uint32_t _u32[2];
+                uint64_t _u64;
+                __m128 _v_ps;
+                __m128i _v_si128;
+                __m128d _v_pd;
+                constexpr v2_cvt(double v) : _f64(v) {}
+                constexpr v2_cvt(float l, float h) : _f32{l, h} {}
+                constexpr v2_cvt(__m128 v) : _v_ps(v) {}
+            };
+
+            inline
+            __m128 unpack(f32_pair_type s) {
+                // make a copy of the low half to the high half
+                // to avoid spurious divisions by 0 and other
+                // exceptions
+                return _mm_castpd_ps(_mm_setr_pd(s, s));
+            }
+
+            inline
+            f32_pair_type pack(__m128 s) {
+                return _mm_cvtsd_f64(_mm_castps_pd(s));
+            }
+
+            inline
+            f32_pair_type set(float l, float h) {
+                v2_cvt t(l, h);
+                return t._f64;
+            }
+
+            inline
+            f32_pair_type set1(float lh) {
+                return set(lh, lh);
+            }
+#else
             // store float[2] into one integer register
             // gcc 5.2 produces terrible code otherwise
             using f32_pair_type = uint64_t;
@@ -49,6 +90,7 @@ namespace cftal {
             f32_pair_type set1(float lh) {
                 return set(lh, lh);
             }
+#endif
         }
     }
 
