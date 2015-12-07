@@ -7,6 +7,7 @@
 #include <cftal/vec_float_n.h>
 #include <cftal/x86/const.h>
 #include <cftal/x86/vec_bit.h>
+#include <cftal/x86/v2x32.h>
 #include <cftal/x86/ops_1.h>
 #include <cftal/x86/v4s32.h>
 #include <cftal/x86/perm.h>
@@ -14,85 +15,6 @@
 
 namespace cftal {
 
-    namespace x86 {
-        namespace impl {
-
-#if 1
-            using f32_pair_type = double;
-
-            union v2_cvt {
-                double _f64;
-                float _f32[2];
-                int32_t _s32[2];
-                uint32_t _u32[2];
-                uint64_t _u64;
-                __m128 _v_ps;
-                __m128i _v_si128;
-                __m128d _v_pd;
-                constexpr v2_cvt(double v) : _f64(v) {}
-                constexpr v2_cvt(float l, float h) : _f32{l, h} {}
-                constexpr v2_cvt(__m128 v) : _v_ps(v) {}
-            };
-
-            inline
-            __m128 unpack(f32_pair_type s) {
-                // make a copy of the low half to the high half
-                // to avoid spurious divisions by 0 and other
-                // exceptions
-                return _mm_castpd_ps(_mm_setr_pd(s, s));
-            }
-
-            inline
-            f32_pair_type pack(__m128 s) {
-                return _mm_cvtsd_f64(_mm_castps_pd(s));
-            }
-
-            inline
-            f32_pair_type set(float l, float h) {
-                v2_cvt t(l, h);
-                return t._f64;
-            }
-
-            inline
-            f32_pair_type set1(float lh) {
-                return set(lh, lh);
-            }
-#else
-            // store float[2] into one integer register
-            // gcc 5.2 produces terrible code otherwise
-            using f32_pair_type = uint64_t;
-
-            inline
-            __m128 unpack(f32_pair_type s) {
-                return _mm_castsi128_ps(_mm_cvtsi64_si128(s));
-            }
-
-            inline
-            f32_pair_type pack(__m128 s) {
-                return _mm_cvtsi128_si64(_mm_castps_si128(s));
-            }
-
-            inline
-            f32_pair_type set(float l, float h) {
-                union t {
-                    float _f32;
-                    uint32_t _u32;
-                } u;
-                u._f32 = l;
-                uint32_t li= u._u32;
-                u._f32 = h;
-                uint32_t hi= u._u32;
-                f32_pair_type r= uint64_t(hi) << 32 | li;
-                return r;
-            }
-
-            inline
-            f32_pair_type set1(float lh) {
-                return set(lh, lh);
-            }
-#endif
-        }
-    }
 
     template <>
     class vec<float, 2> : public x86::vreg<x86::impl::f32_pair_type> {
@@ -391,7 +313,9 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_div_ps(a(), b());
+                __m128 bt= b();
+                bt = _mm_loadh_pi(bt, &x86::impl::v2f32_div_hh._m64);
+                return _mm_div_ps(a(), bt);
             }
         };
 

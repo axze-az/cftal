@@ -24,7 +24,7 @@ namespace cftal {
 
         using base_type::base_type;
         vec() = default;
-        vec(const v4u32& v);
+        vec(const vec<uint32_t, 4>& v);
         // create vec{v,v,v,v}
         vec(int32_t v);
         // create vec(l, h);
@@ -45,7 +45,7 @@ namespace cftal {
     struct arg< vec<int32_t, 4> > {
         using type = vec<int32_t, 4>;
     };
-   
+
     template <>
     struct mem< vec<int32_t, 4> > {
         static
@@ -59,7 +59,7 @@ namespace cftal {
     vec<int32_t, 2>
     high_half(const vec<int32_t, 4>& v);
 
-#if !defined (__AVX512VL__)    
+#if !defined (__AVX512VL__)
     bool
     all_of(const vec<int32_t, 4>::mask_type& v);
     bool
@@ -67,18 +67,18 @@ namespace cftal {
     bool
     none_of(const vec<int32_t, 4>::mask_type& v);
 #endif
-    
+
     v4s32 max(const v4s32& a, const v4s32& b);
     v4s32 min(const v4s32& a, const v4s32& b);
-  
-    vec<int32_t, 4> 
+
+    vec<int32_t, 4>
     select(const typename vec<int32_t, 4>::mask_type& msk,
            const vec<int32_t, 4>& on_true,
            const vec<int32_t, 4>& on_false);
 
-    template <bool _P0, bool _P1, 
+    template <bool _P0, bool _P1,
               bool _P2, bool _P3>
-    vec<int32_t, 4> 
+    vec<int32_t, 4>
     select(const vec<int32_t, 4>& on_true,
            const vec<int32_t, 4>& on_false);
 
@@ -88,13 +88,13 @@ namespace cftal {
 
     template <int32_t _P0, int32_t _P1,
               int32_t _P2, int32_t _P3>
-    vec<int32_t, 4> permute(const vec<int32_t, 4>& s0, 
+    vec<int32_t, 4> permute(const vec<int32_t, 4>& s0,
                             const vec<int32_t, 4>& s1);
 
     std::pair<vec<int32_t, 4>, vec<int32_t, 4> >
     mul_lo_hi(const vec<int32_t, 4>& a, const vec<int32_t, 4>& b);
-    
-}    
+
+}
 
 // Local variables:
 // mode: c++

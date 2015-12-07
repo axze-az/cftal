@@ -5,14 +5,15 @@
 #include <cftal/types.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
+#include <cftal/x86/v2x32.h>
 #include <cftal/vec_op.h>
 
 namespace cftal {
 
     template <>
-    class vec<int32_t, 2> : public x86::vreg<uint64_t> {
+    class vec<int32_t, 2> : public x86::vreg<x86::impl::s32_pair_type> {
     public:
-        using base_type = x86::vreg<uint64_t>;
+        using base_type = x86::vreg<x86::impl::s32_pair_type>;
 
         using value_type = int32_t;
 #if defined (__AVX512VL__)
@@ -24,7 +25,7 @@ namespace cftal {
 
         // using base_type::base_type;
         vec() = default;
-        vec(const v2u32& v);
+        vec(const vec<uint32_t,2>& v);
         // create vec{v,v}
         vec(int32_t v);
         vec(__m128i v);

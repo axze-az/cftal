@@ -306,7 +306,7 @@ namespace cftal {
 
 inline
 cftal::vec<cftal::uint32_t, 2>::vec(__m128i v)
-    : base_type(_mm_cvtsi128_si64(v))
+    : base_type(x86::impl::pack(v))
 {
 }
 
@@ -320,19 +320,19 @@ inline
 __m128i
 cftal::vec<cftal::uint32_t, 2>::operator()() const
 {
-    uint64_t v=base_type::operator()();
-    return _mm_cvtsi64_si128(v);
+    x86::impl::u32_pair_type v=base_type::operator()();
+    return x86::impl::unpack_v2u32(v);
 }
 
 inline
 cftal::vec<cftal::uint32_t, 2>::vec(uint32_t v)
-    : base_type((uint64_t(v)<<32) | v)
+    : base_type(x86::impl::set(v))
 {
 }
 
 inline
 cftal::vec<cftal::uint32_t, 2>::vec(vec<uint32_t, 1> l, vec<uint32_t, 1> h)
-    : base_type((uint64_t(h())<<32) | l())
+    : base_type(x86::impl::set(l(), h()))
 {
 }
 

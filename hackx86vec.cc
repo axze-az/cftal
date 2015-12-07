@@ -18,17 +18,17 @@ namespace cftal {
 }
 
 cftal::vec<float, 2>
-do_mul_add(cftal::vec<float, 2> a,
+do_mul_add_div(cftal::vec<float, 2> a,
            cftal::vec<float, 2> b, cftal::vec<float, 2> c)
 {
-    return (a * b + c) + (a + b * c);
+    return (a * b + c) / (a + b * c);
 }
 
 cftal::vec<int32_t, 2>
-do_mul_add(cftal::vec<int32_t, 2> a,
+do_mul_add_div(cftal::vec<int32_t, 2> a,
            cftal::vec<int32_t, 2> b, cftal::vec<int32_t, 2> c)
 {
-    return (a * b + c) + (a + b * c);
+    return (a * b + c) / (a + b * c);
 }
 
 cftal::vec<int32_t, 2>
