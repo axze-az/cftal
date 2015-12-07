@@ -3,7 +3,7 @@ BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x
 
 [CMake]
 Build Directory Count=5
-Current Build Directory Index=4
+Current Build Directory Index=3
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -16,7 +16,7 @@ Install Directory=file:///usr/local
 
 [CMake][CMake Build Directory 1]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/debug
-Build Type=Debug
+Build Type=debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
@@ -40,7 +40,7 @@ Install Directory=file:///usr/local
 
 [CMake][CMake Build Directory 4]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/build-clang
-Build Type=debug
+Build Type=release
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
@@ -52,8 +52,8 @@ Includes=\x00\x00\x00\x01\x00\x00\x00R\x00/\x00h\x00o\x00m\x00e\x00/\x00a\x00x\x
 Path=.
 
 [Defines And Includes][Compiler]
-Name=GCC
-Path=gcc
+Name=ARM-GCC
+Path=arm-linux-gnueabihf-gcc
 Type=GCC
 
 [Launch]

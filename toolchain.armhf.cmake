@@ -16,9 +16,9 @@ SET(CMAKE_CXX_COMPILER "/usr/bin/arm-linux-gnueabihf-g++")
 #set(CMAKE_INSTALL_SO_NO_EXE 0)
 
 set (CMAKE_C_FLAGS
-  "-march=armv7-a -mfpu=neon" CACHE STRING "build root CFLAGS")
+  "-march=armv7-a -mfpu=neon-vfpv4" CACHE STRING "build root CFLAGS")
 set (CMAKE_CXX_FLAGS
-  "-march=armv7-a -mfpu=neon" CACHE STRING "build root CXX_FLAGS")
+  "-march=armv7-a -mfpu=neon-vfpv4" CACHE STRING "build root CXX_FLAGS")
 
 #set(CMAKE_PROGRAM_PATH "/usr/bin")
 #set(CMAKE_FIND_ROOT_PATH "/usr/lib/arm-linux-gnueabihf/cmake")

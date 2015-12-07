@@ -4,7 +4,11 @@
 #include <cftal/config.h>
 #include <cftal/vec_t_1.h>
 #include <cftal/d_real.h>
+#include <cftal/fenv.h>
 #include <cmath>
+#if defined (__ARM_NEON__)
+#include <cftal/arm/v2f32.h>
+#endif
 #if defined (__SSE2__)
 // not sse because we use integer vectors in various functions
 #include <cftal/x86/v2f32.h>
