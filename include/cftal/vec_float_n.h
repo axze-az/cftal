@@ -5,7 +5,8 @@
 #include <cftal/vec_t_1.h>
 #include <cftal/d_real.h>
 #include <cmath>
-#if defined (__SSE__)
+#if defined (__SSE2__)
+// not sse because we use integer vectors in various functions
 #include <cftal/x86/v2f32.h>
 #include <cftal/x86/v4f32.h>
 #endif
@@ -150,27 +151,27 @@ namespace cftal {
     template <std::size_t _N>
     vec<float, _N>
     frexp(const vec<float, _N>& a, vec<int32_t, _N>* e);
-        
+
     vec<float, 1>
     frexp(const vec<float, 1>& a, vec<int32_t, 1>* e);
 
     vec<float, 2>
     frexp(arg<vec<float, 2> >::type a, vec<int32_t, 2>* e);
-    
+
     vec<float, 4>
     frexp(arg<vec<float, 4> >::type x, vec<int32_t, 4>* e);
 
     vec<float, 8>
-    frexp(arg<vec<float, 8> >::type x, vec<int32_t, 8>* e);    
-    
-    // ldexp 
+    frexp(arg<vec<float, 8> >::type x, vec<int32_t, 8>* e);
+
+    // ldexp
     template <std::size_t _N>
     vec<float, _N>
     ldexp(const vec<float, _N>& a, const vec<int32_t, _N>& e);
-    
+
     vec<float, 1>
     ldexp(const vec<float, 1>& a, const vec<int32_t, 1>& e);
-    
+
     vec<float, 2>
     ldexp(arg<vec<float, 2> >::type a, arg<vec<int32_t, 2> >::type e);
 
@@ -179,8 +180,8 @@ namespace cftal {
 
     vec<float, 8>
     ldexp(arg<vec<float, 8> >::type a, arg<vec<int32_t, 8> >::type e);
-  
-    
+
+
     v4f32 cbrt(arg<v4f32>::type a);
     v4f32 frexp(arg<v4f32>::type x, v4s32* e);
     // v4f32 pow2i(arg<v4s32>::type e);
@@ -560,7 +561,7 @@ cftal::vec<float, _N>
 cftal::frexp(const vec<float, _N>& a, vec<int32_t, _N>* e)
 {
     vec<int32_t, _N/2> el, eh;
-    vec<float, _N> r(frexp(low_half(a), &el), 
+    vec<float, _N> r(frexp(low_half(a), &el),
                      frexp(high_half(a), &eh));
     if (e != nullptr) {
         vec<int32_t, _N> er(el, eh);

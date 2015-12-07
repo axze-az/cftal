@@ -15,7 +15,6 @@ namespace cftal {
                 uint64_t _u64;
                 int32_t _s32[2];
                 uint32_t _u32[2];
-                __m64 _m64;
                 constexpr v2x32(double d0) : _f64{d0} {}
                 constexpr v2x32(float f0, float f1) : _f32{f0, f1} {}
                 constexpr v2x32(uint64_t u0) : _u64{u0} {}

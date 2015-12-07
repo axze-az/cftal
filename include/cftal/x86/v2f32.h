@@ -314,7 +314,9 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b) {
                 __m128 bt= b();
-                bt = _mm_loadh_pi(bt, &x86::impl::v2f32_div_hh._m64);
+                const float* p=&x86::impl::v2f32_div_hh._f32[0];
+                const __m64* pm=reinterpret_cast<const __m64*>(p);
+                bt = _mm_loadh_pi(bt, pm);
                 return _mm_div_ps(a(), bt);
             }
         };
