@@ -185,7 +185,7 @@ cftal::arm::perm_v2u32(uint32x2_t a, uint32x2_t b)
 template <int _P0, int _P1>
 inline
 int32x2_t
-cftal::arm::perm_v2u32(int32x2_t a)
+cftal::arm::perm_v2s32(int32x2_t a)
 {
     uint32x2_t ai=vreinterpret_u32_s32(a);
     uint32x2_t ri=impl::perm1_v2u32<_P0, _P1>::v(ai);
@@ -195,7 +195,7 @@ cftal::arm::perm_v2u32(int32x2_t a)
 template <int _P0, int _P1>
 inline
 int32x2_t
-cftal::arm::perm_v2u32(int32x2_t a, int32x2_t b)
+cftal::arm::perm_v2s32(int32x2_t a, int32x2_t b)
 {
     uint32x2_t ai=vreinterpret_u32_s32(a);
     uint32x2_t bi=vreinterpret_u32_s32(b);
@@ -206,7 +206,7 @@ cftal::arm::perm_v2u32(int32x2_t a, int32x2_t b)
 template <int _P0, int _P1>
 inline
 float32x2_t
-cftal::arm::perm_v2u32(float32x2_t a)
+cftal::arm::perm_v2f32(float32x2_t a)
 {
     uint32x2_t ai=vreinterpret_u32_f32(a);
     uint32x2_t ri=impl::perm1_v2u32<_P0, _P1>::v(ai);
@@ -216,7 +216,7 @@ cftal::arm::perm_v2u32(float32x2_t a)
 template <int _P0, int _P1>
 inline
 float32x2_t
-cftal::arm::perm_v2u32(float32x2_t a, float32x2_t b)
+cftal::arm::perm_v2f32(float32x2_t a, float32x2_t b)
 {
     uint32x2_t ai=vreinterpret_u32_f32(a);
     uint32x2_t bi=vreinterpret_u32_f32(b);

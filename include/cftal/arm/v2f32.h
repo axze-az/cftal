@@ -524,6 +524,9 @@ cftal::min_element(const v2f32& v)
 inline
 cftal::v2f32 cftal::sqrt(const v2f32& a)
 {
+#if defined (__aarch64__)
+    return vsqrt_f32(a());
+#else
     // return _mm_sqrt_ps(a());
     // approximative quadword float inverse square root
     // static inline float32x4_t invsqrtv(float32x4_t x) {
@@ -547,6 +550,7 @@ cftal::v2f32 cftal::sqrt(const v2f32& a)
     }
     float32x2_t r = vmul_f32(af, rsqrt1);
     return r;
+#endif
 }
 
 inline
@@ -677,25 +681,27 @@ inline
 cftal::v2f32 cftal::arm::round(const v2f32& a, const rounding_mode::type m)
 {
     v2f32 r;
-#if defined (__SSE4_1__)
+#if defined (__aarch64__)
     switch (m) {
     case rounding_mode::nearest:
-        r= _mm_round_ps(a(), 0);
+        r= vrndn_f32(a());
         break;
     case rounding_mode::downward:
-        r= _mm_round_ps(a(), 1);
+        r= vrndm_f32(a());
         break;
     case rounding_mode::upward:
-        r= _mm_round_ps(a(), 2);
+        r= vrndp_f32(a());
         break;
     case rounding_mode::towardzero:
-        r= _mm_round_ps(a(), 3);
+        r= vrnd_f32(a());
         break;
     case rounding_mode::current:
-        r= _mm_round_ps(a(), 4);
+        r= vrndi_f32(a());
         break;
     }
 #else
+#pragma message("implement me")
+#if 0
     uint32_t mxcsr=0;
     uint32_t rmxcsr=0;
     if (m != rounding_mode::current) {
@@ -730,6 +736,8 @@ cftal::v2f32 cftal::arm::round(const v2f32& a, const rounding_mode::type m)
     r = _mm_sub_ps(a(), sign_magic);
     if (mxcsr != rmxcsr)
         _mm_setcsr(mxcsr);
+#endif
+    //
 #endif
     return r;
 }
