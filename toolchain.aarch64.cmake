@@ -1,9 +1,9 @@
 set(CMAKE_SYSTEM_NAME Linux)
-set(CMAKE_SYSTEM_PROCESSOR armv7l)
+set(CMAKE_SYSTEM_PROCESSOR armv8l)
 
 # specify the cross compiler
-SET(CMAKE_C_COMPILER   "/usr/bin/arm-linux-gnueabihf-gcc")
-SET(CMAKE_CXX_COMPILER "/usr/bin/arm-linux-gnueabihf-g++")
+SET(CMAKE_C_COMPILER   "/usr/bin/aarch64-linux-gnu-gcc")
+SET(CMAKE_CXX_COMPILER "/usr/bin/aarch64-linux-gnu-g++")
 
 #set(CMAKE_C_FLAGS "-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 #-D_FILE_OFFSET_BITS=64 -Os ${CMAKE_C_FLAGS}" CACHE STRING "Buildroot
@@ -16,17 +16,17 @@ SET(CMAKE_CXX_COMPILER "/usr/bin/arm-linux-gnueabihf-g++")
 #set(CMAKE_INSTALL_SO_NO_EXE 0)
 
 set (CMAKE_C_FLAGS
-  "-march=armv7-a -mfpu=neon-vfpv4" CACHE STRING "build root CFLAGS")
+  "-march=armv8-a+simd" CACHE STRING "build root CFLAGS")
 set (CMAKE_CXX_FLAGS
-  "-march=armv7-a -mfpu=neon-vfpv4" CACHE STRING "build root CXX_FLAGS")
+  "-march=armv8-a+simd" CACHE STRING "build root CXX_FLAGS")
 
 #set(CMAKE_PROGRAM_PATH "/usr/bin")
-#set(CMAKE_FIND_ROOT_PATH "/usr/arm-linux-gnueabihf/lib/cmake")
-#set(CMAKE_PREFIX_PATH "/usr/arm-linux-gnueabihf/lib/cmake")
+#set(CMAKE_FIND_ROOT_PATH "/usr/aarch64-linux-gnu/lib/cmake")
+#set(CMAKE_PREFIX_PATH "/usr/aarch64-linux-gnu/lib/cmake")
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-set(ENV{PKG_CONFIG_SYSROOT_DIR} "/usr/arm-linux-gnueabihf/")
+set(ENV{PKG_CONFIG_SYSROOT_DIR} "/usr/aarch64-linux-gnu/")
 
-set(CMAKE_CROSSCOMPILING_EMULATOR "${CMAKE_CURRENT_SOURCE_DIR}/exec-armhf")
+set(CMAKE_CROSSCOMPILING_EMULATOR "${CMAKE_CURRENT_SOURCE_DIR}/exec-aarch64")
