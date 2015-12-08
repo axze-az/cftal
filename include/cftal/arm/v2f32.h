@@ -636,28 +636,28 @@ inline
 bool
 cftal::any_of(const vec<float, 2>::mask_type& s)
 {
-    return (arm::read_signs_f32(s()) & 0x3) != 0;
+    return arm::compress_mask_u32(s()) != 0;
 }
 
 inline
 bool
 cftal::all_of(const vec<float, 2>::mask_type& s)
 {
-    return (arm::read_signs_f32(s()) & 0x3) == 0x3;
+    return arm::compress_mask_u32(s()) == 0x3;
 }
 
 inline
 bool
 cftal::none_of(const vec<float, 2>::mask_type& s)
 {
-    return (arm::read_signs_f32(s()) & 0x3) == 0;
+    return arm::compress_mask_u32(s()) == 0;
 }
 #endif
 
 inline
 unsigned cftal::read_signs(const v2f32& a)
 {
-    return arm::read_signs_f32(a());
+    return arm::read_signs_s32(vreinterpret_s32_f32(a()));
 }
 
 inline

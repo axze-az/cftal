@@ -60,6 +60,18 @@ namespace cftal {
         template <int _P0, int _P1>
         float32x2_t perm_v2f32(float32x2_t a, float32x2_t b);
 
+        inline
+        int compress_mask_u32(uint32x2_t x);
+
+        inline
+        int compress_mask_u32(uint32x4_t x);
+
+        inline
+        int read_signs_s32(int32x2_t x);
+
+        inline
+        int read_signs_s32(int32x4_t x);
+
     }
 }
 
@@ -212,6 +224,48 @@ cftal::arm::perm_v2u32(float32x2_t a, float32x2_t b)
     return vreinterpret_f32_u32(ri);
 }
 
+inline
+int
+cftal::arm::compress_mask_u32(uint32x2_t x)
+{
+    uint32x2_t xs=x;
+    const uint32x2_t msk{1, 2};
+    uint32x2_t xm= vand_u32(xs, msk);
+    uint32x2_t r= vpadd_u32(xm, xm);
+    return vget_lane_u32(r, 0);
+}
+
+inline
+int
+cftal::arm::compress_mask_u32(uint32x4_t x)
+{
+    uint32x4_t xs=x;
+    const uint32x4_t msk{1, 2, 3, 4};
+    uint32x4_t xm= vandq_u32(xs, msk);
+    // combine bits from low and high lane
+    uint32x2_t xml= vget_low_u32(xm);
+    uint32x2_t xmh= vget_high_u32(xm);
+    uint32x2_t xlh= vorr_u32(xml, xmh);
+    // horizontal add
+    uint32x2_t r= vpadd_u32(xlh, xlh);
+    return vget_lane_u32(r, 0);
+}
+
+inline
+int
+cftal::arm::read_signs_s32(int32x2_t x)
+{
+    int32x2_t xs=vshr_n_s32(x, 31);
+    return compress_mask_u32(vreinterpret_u32_s32(xs));
+}
+
+inline
+int
+cftal::arm::read_signs_s32(int32x4_t x)
+{
+    int32x4_t xs=vshrq_n_s32(x, 31);
+    return compress_mask_u32(vreinterpretq_u32_s32(xs));
+}
 
 // Local variables:
 // mode: c++
