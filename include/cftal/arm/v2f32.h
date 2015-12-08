@@ -522,7 +522,26 @@ inline
 cftal::v2f32 cftal::sqrt(const v2f32& a)
 {
     // return _mm_sqrt_ps(a());
-    return a; // for now
+    // approximative quadword float inverse square root
+    // static inline float32x4_t invsqrtv(float32x4_t x) {
+    //    float32x4_t sqrt_reciprocal = vrsqrteq_f32(x);
+    //
+    //    return vrsqrtsq_f32(x * sqrt_reciprocal, sqrt_reciprocal) * sqrt_reciprocal;
+    // }
+    // approximative quadword float square root
+    // static inline float32x4_t sqrtv(float32x4_t x) {
+    //    return x * invsqrtv(x);
+    // }
+    float32x2_t af=a();
+    float32x2_t rsqrt0 = vrsqrte_f32(af);
+    float32x2_t rsqrt1 = rsqrt0;
+    // newton raphson steps
+    for (int i=0; i< 2; ++i) {
+        float32x2_t a_rsqrt1 = vmul_f32(af, rsqrt1);
+        rsqrt1 = vmul_f32(vrsqrts_f32(a_rsqrt1, rsqrt1), rsqrt1);
+    }
+    float32x2_t r = vmul_f32(af, rsqrt1);
+    return r;
 }
 
 inline
