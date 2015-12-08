@@ -14,11 +14,8 @@ namespace cftal {
         using base_type = arm::vreg<arm::impl::s32_pair_type>;
 
         using value_type = int32_t;
-#if defined (__AVX512VL__)
-        using mask_value_type = bit;
-#else
-        using mask_value_type = int32_t;
-#endif
+        using mask_value_type = uint32_t;
+
         using mask_type= vec<mask_value_type, 2>;
 
         // using base_type::base_type;

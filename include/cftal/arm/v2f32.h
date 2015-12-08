@@ -12,7 +12,6 @@
 
 namespace cftal {
 
-
     template <>
     class vec<float, 2> : public impl::vreg<float32x2_t> {
     public:
@@ -532,13 +531,15 @@ cftal::v2f32 cftal::sqrt(const v2f32& a)
     // static inline float32x4_t sqrtv(float32x4_t x) {
     //    return x * invsqrtv(x);
     // }
+    // calculate inverse square root
     float32x2_t af=a();
     float32x2_t rsqrt0 = vrsqrte_f32(af);
     float32x2_t rsqrt1 = rsqrt0;
     // newton raphson steps
     for (int i=0; i< 2; ++i) {
         float32x2_t a_rsqrt1 = vmul_f32(af, rsqrt1);
-        rsqrt1 = vmul_f32(vrsqrts_f32(a_rsqrt1, rsqrt1), rsqrt1);
+        float32x2_t rsqrti= vrsqrts_f32(a_rsqrt1, rsqrt1);
+        rsqrt1 = vmul_f32(rsqrti, rsqrt1);
     }
     float32x2_t r = vmul_f32(af, rsqrt1);
     return r;
