@@ -6,6 +6,7 @@
 #include <cftal/constants.h>
 #include <cftal/impl/vreg.h>
 #include <cftal/arm/intrin.h>
+#include <cftal/arm/perm.h>
 #include <cftal/arm/v2u32.h>
 #include <cftal/vec_float_n.h>
 
@@ -520,7 +521,8 @@ cftal::min_element(const v2f32& v)
 inline
 cftal::v2f32 cftal::sqrt(const v2f32& a)
 {
-    return _mm_sqrt_ps(a());
+    // return _mm_sqrt_ps(a());
+    return a; // for now
 }
 
 inline
@@ -529,7 +531,7 @@ cftal::v2f32 cftal::abs(const v2f32& a)
     const v2f32 msk(not_sign_f32_msk::v._f32);
     uint32x2_t ai= vreinterpret_u32_f32(a());
     uint32x2_t mski= vreinterpret_u32_f32(msk());
-    uint32x2_t ri= vand_u32(ai(), mski());
+    uint32x2_t ri= vand_u32(ai, mski);
     return vreinterpret_f32_u32(ri);
 }
 
@@ -539,7 +541,7 @@ cftal::v2f32 cftal::andnot(const v2f32& a, const v2f32& b)
     // return _mm_andnot_ps(a(), b());
     uint32x2_t ai= vreinterpret_u32_f32(a());
     uint32x2_t bi= vreinterpret_u32_f32(b());
-    uint32x2_t ri= vbic_u32(b(), a();
+    uint32x2_t ri= vbic_u32(bi, ai);
     return vreinterpret_f32_u32(ri);
 }
 
@@ -737,7 +739,10 @@ inline
 cftal::vec<float, 2>
 cftal::select(const vec<float, 2>& l, const vec<float,2>& r)
 {
-    return arm::select_f32<_I0, _I1>(l(), r());
+    const uint32x2_t h{_I0 ? uint32_t(-1) : uint32_t(0),
+                       _I1 ? uint32_t(-1) : uint32_t(0)};
+    return vbsl_f32(h, l(), r());
+    // return arm::select_f32<_I0, _I1>(l(), r());
 }
 
 template <int _I0, int _I1>
@@ -745,7 +750,7 @@ inline
 cftal::vec<float, 2>
 cftal::permute(const vec<float, 2>& v)
 {
-    return arm::perm_v4f32<_I0, _I1, 2, 3>(v());
+    return arm::perm_v2f32<_I0, _I1>(v());
 }
 
 template <int _I0, int _I1>
@@ -753,7 +758,7 @@ inline
 cftal::vec<float, 2>
 cftal::permute(const vec<float, 2>& l, const vec<float, 2>& r)
 {
-    return arm::perm_v4f32<_I0, _I1, 2, 3>(l(), r());
+    return arm::perm_v2f32<_I0, _I1>(l(), r());
 }
 
 // Local variables:
