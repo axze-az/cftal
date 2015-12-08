@@ -288,6 +288,9 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
+#if defined (__aarch64__)
+                return vdiv_f32(a(), b());
+#else
                 // get an initial estimate of 1/b.
                 float32x2_t rcp0 = vrecpe_f32(b());
                 float32x2_t rcp1 = rcp0;
@@ -296,6 +299,7 @@ namespace cftal {
                     rcp1 = vmul_f32(vrecps_f32(b(), rcp1), rcp1);
                 float32x2_t q = vmul_f32(a(), rcp1);
                 return q;
+#endif
             }
         };
 

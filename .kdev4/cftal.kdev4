@@ -2,8 +2,8 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
 
 [CMake]
-Build Directory Count=5
-Current Build Directory Index=3
+Build Directory Count=6
+Current Build Directory Index=5
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -46,14 +46,22 @@ Environment Profile=
 Extra Arguments=
 Install Directory=file:///usr/local
 
+[CMake][CMake Build Directory 5]
+Build Directory Path=file:///home/axel/projects/cpplib/cftal/aarch64-build
+Build Type=release
+CMake Binary=file:///usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=file:///usr/local
+
 [CustomDefinesAndIncludes][ProjectPath0]
 Defines=\x00\x00\x00\x01\x00\x00\x00$\x00I\x00N\x00_\x00K\x00D\x00E\x00V\x00E\x00L\x00O\x00P\x00_\x00P\x00A\x00R\x00S\x00E\x00R\x00\x00\x00\n\x00\x00\x00\x00\x02\x001
 Includes=\x00\x00\x00\x01\x00\x00\x00R\x00/\x00h\x00o\x00m\x00e\x00/\x00a\x00x\x00e\x00l\x00/\x00p\x00r\x00o\x00j\x00e\x00c\x00t\x00s\x00/\x00c\x00p\x00p\x00l\x00i\x00b\x00/\x00c\x00f\x00t\x00a\x00l\x00/\x00i\x00n\x00c\x00l\x00u\x00d\x00e\x00/
 Path=.
 
 [Defines And Includes][Compiler]
-Name=ARM-GCC
-Path=arm-linux-gnueabihf-gcc
+Name=AARCH64-GCC
+Path=aarch64-linux-gnu-gcc
 Type=GCC
 
 [Launch]

@@ -6,7 +6,7 @@
 #include <cftal/d_real.h>
 #include <cftal/fenv.h>
 #include <cmath>
-#if defined (__ARM_NEON__)
+#if defined (__ARM_NEON__) || defined (__ARM_NEON)
 #include <cftal/arm/v2f32.h>
 #endif
 #if defined (__SSE2__)
