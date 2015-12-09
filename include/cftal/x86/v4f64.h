@@ -212,9 +212,9 @@ namespace cftal {
             mask_type
             v(const full_type& a, const full_type& b) {
 #if defined (__AVX512VL__)
-                return _mm256_cmp_pd_mask(a(), b(), _CMP_UNORD_Q);
+                return _mm256_cmp_pd_mask(a(), b(), _CMP_NEQ_UQ);
 #else
-                return _mm256_cmp_pd(a(), b(), _CMP_UNORD_Q);
+                return _mm256_cmp_pd(a(), b(), _CMP_NEQ_UQ);
 #endif
             }
         };

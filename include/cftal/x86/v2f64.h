@@ -76,7 +76,7 @@ namespace cftal {
     template <std::size_t _I>
     double
     extract(const vec<double, 2>& s);
-    
+
     vec<double, 2>
     select(const typename vec<double, 2>::mask_type& msk,
            const vec<double, 2>& on_true,
@@ -87,7 +87,7 @@ namespace cftal {
 
     bool
     elements_equal(const v2f64& a);
-    
+
 
     v2f64 max(const v2f64& a, const v2f64& b);
     v2f64 min(const v2f64& a, const v2f64& b);
@@ -126,13 +126,13 @@ namespace cftal {
     // -(a*b) - c
     v2f64 nfms(const v2f64& a, const v2f64& b, const v2f64& c);
 
-#if 0    
+#if 0
     // a*b +c with rounding or not
     v2f64 mad(const v2f64& a, const v2f64& b, const v2f64& c);
     // -(a*b) +c with rounding or not
     v2f64 nmad(const v2f64& a, const v2f64& b, const v2f64& c);
 #endif
-    
+
     template <bool _P0, bool _P1>
     vec<double, 2>
     select(const vec<double, 2>& on_true,
@@ -171,7 +171,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b) {
 #if defined (__AVX512VL__)
                 return _mm_cmp_pd_mask(a(), b(), _CMP_LT_OS);
-#else                
+#else
                 return _mm_cmplt_pd(a(), b());
 #endif
             }
@@ -215,7 +215,7 @@ namespace cftal {
             mask_type
             v(const full_type& a, const full_type& b) {
 #if defined (__AVX512VL__)
-                return _mm_cmp_pd_mask(a(), b(), _CMP_UNORD_Q);
+                return _mm_cmp_pd_mask(a(), b(), _CMP_NEQ_UQ);
 #else
                 return _mm_cmpneq_pd(a(), b());
 #endif
@@ -683,7 +683,7 @@ cftal::all_of(const vec<double, 2>::mask_type& s)
 {
     return x86::read_signs_f64(s()) == 0x3;
 }
-    
+
 inline
 bool
 cftal::none_of(const vec<double, 2>::mask_type& s)
