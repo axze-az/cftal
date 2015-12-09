@@ -556,11 +556,15 @@ cftal::v2f32 cftal::sqrt(const v2f32& a)
 inline
 cftal::v2f32 cftal::abs(const v2f32& a)
 {
+#if defined (__aarch64__)
+    return vabs_f32(a());
+#else
     const v2f32 msk(not_sign_f32_msk::v._f32);
     uint32x2_t ai= vreinterpret_u32_f32(a());
     uint32x2_t mski= vreinterpret_u32_f32(msk());
     uint32x2_t ri= vand_u32(ai, mski);
     return vreinterpret_f32_u32(ri);
+#endif
 }
 
 inline
