@@ -88,6 +88,37 @@ cftal::test::fp_ops<_T, _N>::v(_T ai, _T bi)
     vr = abs(va);
     rc &= check(vr, r, "abs");
 
+    bool br;
+    typename vec<_T, _N>::mask_type vcr;
+
+    br = a < b;
+    vcr = va < vb;
+    rc &= check_cmp(vcr, br, "==");
+
+    br = a < b;
+    vcr = va < vb;
+    rc &= check_cmp(vcr, br, "<");
+
+    br = a <= b;
+    vcr = va <= vb;
+    rc &= check_cmp(vcr, br, "<=");
+
+    br = a == b;
+    vcr = va == vb;
+    rc &= check_cmp(vcr, br, "==");
+
+    br = a != b;
+    vcr = va != vb;
+    rc &= check_cmp(vcr, br, "!=");
+
+    br = a >= b;
+    vcr = va >= vb;
+    rc &= check_cmp(vcr, br, ">=");
+
+    br = a > b;
+    vcr = va > vb;
+    rc &= check_cmp(vcr, br, ">");
+
     return rc;
 }
 
