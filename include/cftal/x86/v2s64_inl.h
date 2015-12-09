@@ -19,7 +19,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                full_type all_set(0xffffffff);
+                full_type all_set(0xffffffffffffffffULL);
                 return _mm_xor_si128(a(), all_set());
             }
         };
@@ -124,12 +124,12 @@ namespace cftal {
                 // a > b : (a>=0 && b<0) || ((sgn(a) == sgn(b) && (b-a < 0)))
                 // c1 --------^
                 // c2 ---------------^
-                // c3 -------------------------------^ 
+                // c3 -------------------------------^
                 // c4 -------------------------------------------------^
                 // sgn(a) == sgn(b) --> a ^ b == highest bit clear
                 // b-a <0 == highest bit set
-                // a >=0 == highest bit empty 
-                // b < 0 == highest bit set 
+                // a >=0 == highest bit empty
+                // b < 0 == highest bit set
                 __m128i c4= _mm_sub_epi64(b(), a());
                 __m128i c1_and_c2 = _mm_andnot_si128(a(), b());
                 __m128i c3 = _mm_xor_si128(a(), b());
@@ -386,7 +386,7 @@ inline
 cftal::vec<int64_t, 1>
 cftal::low_half(const vec<int64_t, 2>& v)
 {
-    return as<vec<int64_t,1> >(v);    
+    return as<vec<int64_t,1> >(v);
 }
 
 inline

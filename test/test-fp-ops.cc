@@ -213,9 +213,10 @@ cftal::test::fp_ops<_T, _N>::v()
 int main()
 {
     bool rc=true;
-
+    bool rt;
+#if 0
     std::cout << "testing vXf64" << std::endl;
-    bool rt=cftal::test::fp_ops_up_to<double, 8>::v();
+    rt=cftal::test::fp_ops_up_to<double, 8>::v();
     if (rt==false)
         std::cerr << "double test failed" << std::endl;
     rc &= rt;
@@ -226,15 +227,15 @@ int main()
         std::cerr<< "float test failed" << std::endl;
     rc &= rt;
 
-#if 0
+#else
     std::cout << "testing vXu64" << std::endl;
-    rt=cftal::test::fp_ops_up_to<uint64_t, 4>::v();
+    rt=cftal::test::fp_ops_up_to<uint64_t, 2>::v();
     if (rt==false)
         std::cerr<< "uint64_t test failed" << std::endl;
     rc &= rt;
 
     std::cout << "testing vXs64" << std::endl;
-    rt=cftal::test::fp_ops_up_to<int64_t, 4>::v();
+    rt=cftal::test::fp_ops_up_to<int64_t, 2>::v();
     if (rt==false)
         std::cerr<< "int64_t test failed" << std::endl;
     rc &= rt;

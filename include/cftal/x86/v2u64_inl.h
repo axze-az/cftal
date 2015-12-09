@@ -18,7 +18,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                full_type all_set(0xffffffff);
+                full_type all_set(0xffffffffffffffffULL);
                 return _mm_xor_si128(a(), all_set());
             }
         };
@@ -122,7 +122,8 @@ namespace cftal {
                 const __m128i msk= _mm_set1_epi64x(sign_s64_msk::v._u64);
                 __m128i ax= _mm_xor_si128(a(), msk);
                 __m128i bx= _mm_xor_si128(b(), msk);
-                return _mm_cmpgt_epi64(ax, bx);
+                __m128i r=_mm_cmpgt_epi64(ax, bx);
+                return r;
 #else
                 // a > b: (a_h > b_h) || ((a_h == b_h) && (a_l > b_l))
                 // c1 ---------^

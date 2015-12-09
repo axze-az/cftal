@@ -66,6 +66,9 @@ namespace cftal {
         template <std::size_t _N>
         bool check_cmp(const float(&a)[_N], bool expected, const char* msg);
 
+        template <std::size_t _N>
+        bool check_cmp(const bit(&a)[_N], bool expected, const char* msg);
+
         template <class _T, std::size_t _N>
         bool check_cmp(vec<_T, _N> a, bool expected, const char* msg);
 
@@ -111,7 +114,7 @@ cftal::test::check_cmp(const _T(&a)[_N], bool expected , const char* msg)
     bool r=true;
     std::size_t i=0;
     const cmp_t<_T> cmp;
-    _T expect= expected ? _T(-1) : _T(0);
+    _T expect= expected ? ~_T(0) : _T(0);
     for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
         const _T& ai= *b;
         if (cmp(ai, expect) == false) {
@@ -156,6 +159,27 @@ cftal::test::check_cmp(const float(&a)[_N], bool expected , const char* msg)
     for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
         const float& ai= *b;
         uint32_t aii=as<uint32_t>(ai);
+        if (cmp(aii, expect) == false) {
+            std::cerr << msg << " element " << i
+                      << " failed: " << ai << " expected: "
+                      << expected << std::endl;
+            r = false;
+        }
+    }
+    return r;
+}
+
+template <std::size_t _N>
+bool
+cftal::test::check_cmp(const bit(&a)[_N], bool expected , const char* msg)
+{
+    bool r=true;
+    std::size_t i=0;
+    const cmp_t<uint32_t> cmp;
+    uint32_t expect= expected ? uint32_t(1) : uint32_t(0);
+    for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
+        const bit& ai= *b;
+        uint32_t aii=ai();
         if (cmp(aii, expect) == false) {
             std::cerr << msg << " element " << i
                       << " failed: " << ai << " expected: "
