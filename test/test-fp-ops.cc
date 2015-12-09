@@ -126,6 +126,7 @@ template <class _T, std::size_t _N>
 bool
 cftal::test::fp_ops<_T, _N>::v()
 {
+    std::cout << __func__ << _N << ' ' << std::flush;
     bool rc=true;
 
     static const _T operands[] = {
@@ -154,7 +155,7 @@ cftal::test::fp_ops<_T, _N>::v()
     std::uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
     const int64_t N0=0x10000ULL;
-    const int64_t N=72*N0;
+    const int64_t N=64*N0;
     for (int64_t i=0; i<N; ++i) {
         if ((i & (N0-1)) == (N0-1))
             std::cout << '.' << std::flush;
@@ -162,6 +163,7 @@ cftal::test::fp_ops<_T, _N>::v()
         ah = distrib(rnd);
         bh = distrib(rnd);
         _T va=ah, vb=bh;
+        rc &= fp_ops<_T, _N>::v(va, va);
         rc &= fp_ops<_T, _N>::v(va, vb);
         va = -ah;
         rc &= fp_ops<_T, _N>::v(va, vb);
