@@ -5,7 +5,7 @@
 #include <cftal/types.h>
 #include <cftal/vec_t_n.h>
 #include <type_traits>
-#include <iosfwd>
+#include <iostream>
 
 namespace cftal {
 
@@ -21,12 +21,15 @@ namespace cftal {
         bit(bit&&) = default;
         bit& operator=(const bit&) = default;
         bit& operator=(bit&&) = default;
+        bit(_b b) : _v(b != _0 ? _1 : _0) {}
         bit(bool b) : _v(b ? _1 : _0) {}
-        bit(uint32_t v) : _v (v ? _1: _0) {}
+        // bit(uint32_t v) : _v (v ? _1: _0) {}
         uint32_t operator()() const { return uint32_t(_v); }
     private:
         _b _v;
     };
+
+    std::ostream& operator<<(std::ostream& s, const bit& b);
 
     // specialization of vec for bit masks
     template <std::size_t _N>
@@ -74,6 +77,22 @@ namespace cftal {
         utype operator()() const { return _v; }
     private:
         utype _v;
+    };
+
+    template <>
+    struct mem< vec<bit, 1> > {
+        static
+        vec<bit, 1> load(const bit* p, std::size_t n=1) {
+            uint32_t ui=(*p)();
+            return vec<bit, 1>(ui& 1);
+        }
+        static
+        void store(bit* p, const vec<bit, 1>& v) {
+            if (v())
+                *p = bit::_1;
+            else
+                *p = bit::_0;
+        }
     };
 
     template <std::size_t _N>
@@ -138,6 +157,16 @@ namespace cftal {
            const vec<bit, _N>& on_true, const vec<bit, _N> on_false);
 
     std::ostream& operator<<(std::ostream& s, const vec<bit, 1>& v);
+}
+
+inline
+std::ostream&
+cftal::operator<<(std::ostream& s, const bit& b)
+{
+    uint32_t v=b();
+    char c= v!=0 ? '1' : 0;
+    s.put(c);
+    return s;
 }
 
 template <std::size_t _N>
@@ -276,7 +305,7 @@ std::ostream&
 cftal::operator<<(std::ostream& s, const vec<bit, 1>& v)
 {
     char c= v() != 0 ? '1' : '0';
-    s << c;
+    s.put(c);
     return s;
 }
 

@@ -25,7 +25,7 @@ namespace cftal {
 #if 0
         template <class _U>
         explicit vec(const vec<_U, 1>& r);
-#endif        
+#endif
         vec(const _T& v);
         vec(const _T& v, bool splat);
         vec(std::initializer_list<_T> l);
@@ -95,21 +95,21 @@ namespace cftal {
             }
         };
     }
-    
+
     template <typename _T>
     bool any_of(const vec<_T, 1>& v);
 
     template <typename _T>
     bool all_of(const vec<_T, 1>& v);
-    
+
     template <typename _T>
     bool none_of(const vec<_T, 1>& v);
-    
+
     template <typename _T>
     std::enable_if_t<std::is_integral<_T>::value,
                      std::pair<vec<_T, 1>, vec<_T, 1> > >
-    mul_lo_hi(const vec<_T, 1>& a, const vec<_T, 1>& b);    
-    
+    mul_lo_hi(const vec<_T, 1>& a, const vec<_T, 1>& b);
+
     template <typename _T>
     vec<_T, 1> max(const vec<_T, 1>& a, const vec<_T, 1>& b);
     template <typename _T>
@@ -120,10 +120,10 @@ namespace cftal {
 
     template <typename _T>
     _T min_element(const vec<_T, 1>& v);
-    
+
     template <std::size_t _I, typename _T>
     _T extract(const vec<_T, 1>& v);
-    
+
     template <typename _T>
     vec<_T, 1>
     select(const typename vec<_T, 1>::mask_type& m,
@@ -140,7 +140,7 @@ namespace cftal {
 
     template <typename _T>
     std::ostream& operator<<(std::ostream& s, const vec<_T, 1>& v);
-    
+
     namespace op {
         template <typename _T>
         struct lt<_T, 1> {
@@ -463,7 +463,7 @@ inline
 cftal::vec<_T, 1>::vec(const vec<_U, 1>& r)
     : _v(r())
 {
-       
+
 }
 #endif
 
@@ -484,13 +484,13 @@ cftal::vec<_T, 1>::vec(const _T& v, bool splat)
 
 template <class _T>
 cftal::vec<_T, 1>::vec(std::initializer_list<_T> l)
-    : vec<_T, 1>(mem<vec<_T, 1> >::load(std::begin(l))) 
+    : vec<_T, 1>(mem<vec<_T, 1> >::load(std::begin(l)))
 {
 }
 
 template <class _T>
 cftal::vec<_T, 1>::vec(init_list<_T> l)
-    : vec<_T, 1>(mem<vec<_T, 1> >::load(l.begin())) 
+    : vec<_T, 1>(mem<vec<_T, 1> >::load(l.begin()))
 {
 }
 
@@ -544,11 +544,11 @@ cftal::none_of(const vec<_T, 1>& v)
 
 template <class _T>
 inline
-std::enable_if_t<std::is_integral<_T>::value, 
+std::enable_if_t<std::is_integral<_T>::value,
                  std::pair<cftal::vec<_T, 1>, cftal::vec<_T, 1> > >
 cftal::mul_lo_hi(const vec<_T, 1>& a, const vec<_T, 1>& b)
 {
-    std::pair<_T, _T> r= mul_lo_hi(a(), b());    
+    std::pair<_T, _T> r= mul_lo_hi(a(), b());
     return std::make_pair(vec<_T, 1>(r.first), vec<_T, 1>(r.second));
 }
 
