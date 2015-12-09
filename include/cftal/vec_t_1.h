@@ -111,6 +111,11 @@ namespace cftal {
     mul_lo_hi(const vec<_T, 1>& a, const vec<_T, 1>& b);
 
     template <typename _T>
+    std::enable_if_t<std::is_integral<_T>::value,
+                     vec<_T, 1> >
+    abs(const vec<_T, 1>& a);
+
+    template <typename _T>
     vec<_T, 1> max(const vec<_T, 1>& a, const vec<_T, 1>& b);
     template <typename _T>
     vec<_T, 1> min(const vec<_T, 1>& a, const vec<_T, 1>& b);
@@ -550,6 +555,14 @@ cftal::mul_lo_hi(const vec<_T, 1>& a, const vec<_T, 1>& b)
 {
     std::pair<_T, _T> r= mul_lo_hi(a(), b());
     return std::make_pair(vec<_T, 1>(r.first), vec<_T, 1>(r.second));
+}
+
+template <class _T>
+inline
+std::enable_if_t< std::is_integral<_T>::value, cftal::vec<_T, 1> >
+cftal::abs(const vec<_T, 1>& a)
+{
+    return a() < _T(0) ? _T(-a()) : _T(a());
 }
 
 template <class _T>

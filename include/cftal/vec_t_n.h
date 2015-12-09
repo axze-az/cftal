@@ -279,6 +279,10 @@ namespace cftal {
     elements_equal(const vec<_T, 2>& v);
 
     template <typename _T, std::size_t _N>
+    std::enable_if_t< std::is_integral<_T>::value, vec<_T, _N> >
+    abs(const vec<_T, _N>& v);
+
+    template <typename _T, std::size_t _N>
     vec<_T, _N>
     max(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
@@ -555,6 +559,14 @@ bool
 cftal::elements_equal(const vec<_T, 2>& v)
 {
     return extract<0>(v) == extract<1>(v);
+}
+
+template <typename _T, std::size_t _N>
+inline
+std::enable_if_t< std::is_integral<_T>::value, cftal::vec<_T, _N> >
+cftal::abs(const vec<_T, _N>& v)
+{
+    return vec<_T, _N>(abs(low_half(v)), abs(high_half(v)));
 }
 
 template <class _T, std::size_t _N>
@@ -934,7 +946,6 @@ cftal::operator<<(std::ostream& s, const vec<_T, _N>& v)
     s << lh << ' ' << hh ;
     return s;
 }
-
 
 // Local variables:
 // mode: c++

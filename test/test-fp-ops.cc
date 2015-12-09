@@ -1,5 +1,6 @@
 #include "cftal/test/f32_f64.h"
 #include <random>
+#include <limits>
 
 namespace cftal {
     namespace test {
@@ -26,6 +27,27 @@ namespace cftal {
                 return fp_ops<_T, 1>::v();
             }
         };
+
+        template <class _T>
+        _T do_div(_T u, _T v) {
+            if (v==0)
+                return ~_T(0);
+            return u/v;
+        }
+
+        inline
+        double do_div(double u, double v)
+        {
+            return u/v;
+        }
+
+        inline
+        float do_div(float u, float v)
+        {
+            return u/v;
+        }
+
+
     }
 }
 
@@ -68,12 +90,12 @@ cftal::test::fp_ops<_T, _N>::v(_T ai, _T bi)
     vr = va; vr *= vb;
     rc &= check(vr, r, "a*=b");
 
-    r = a / b;
+    r = do_div(a, b);
     vr = va / vb;
     rc &= check(vr, r, "a/b");
 
-    r = a; r *= b;
-    vr = va; vr *= vb;
+    // r = r /= b;
+    vr = va; vr /= vb;
     rc &= check(vr, r, "a/=b");
 
     r = std::max(a, b);
@@ -152,8 +174,14 @@ cftal::test::fp_ops<_T, _N>::v()
     }
 
     std::mt19937 rnd;
-    std::uniform_real_distribution<_T>
-        distrib(0, std::numeric_limits<_T>::max());
+
+    using distrib_type= typename std::conditional<
+        std::is_floating_point<_T>::value,
+        std::uniform_real_distribution<_T>,
+        std::uniform_int_distribution<_T> >::type;
+    distrib_type
+    distrib(std::numeric_limits<_T>::lowest(),
+            std::numeric_limits<_T>::max());
     const int64_t N0=0x10000ULL;
     const int64_t N=64*N0;
     for (int64_t i=0; i<N; ++i) {
@@ -187,14 +215,30 @@ int main()
     bool rc=true;
 
     std::cout << "testing vXf64" << std::endl;
-    bool rd=cftal::test::fp_ops_up_to<double, 32>::v();
-    if (rd==false)
+    bool rt=cftal::test::fp_ops_up_to<double, 8>::v();
+    if (rt==false)
         std::cerr << "double test failed" << std::endl;
+    rc &= rt;
+
     std::cout << "testing vXf32" << std::endl;
-    bool rf=cftal::test::fp_ops_up_to<float, 64>::v();
-    if (rf==false)
+    rt=cftal::test::fp_ops_up_to<float, 16>::v();
+    if (rt==false)
         std::cerr<< "float test failed" << std::endl;
-    rc = rd && rf;
+    rc &= rt;
+
+#if 0
+    std::cout << "testing vXu64" << std::endl;
+    rt=cftal::test::fp_ops_up_to<uint64_t, 4>::v();
+    if (rt==false)
+        std::cerr<< "uint64_t test failed" << std::endl;
+    rc &= rt;
+
+    std::cout << "testing vXs64" << std::endl;
+    rt=cftal::test::fp_ops_up_to<int64_t, 4>::v();
+    if (rt==false)
+        std::cerr<< "int64_t test failed" << std::endl;
+    rc &= rt;
+#endif
     return rc==true ? 0 : 1;
 }
 
