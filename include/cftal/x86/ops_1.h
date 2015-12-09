@@ -302,7 +302,7 @@ cftal::x86::compress_mask_f32(__m256 m)
 
 inline
 cftal::uint32_t
-cftal::x86::compress_mask_f64(__m256 m)
+cftal::x86::compress_mask_f64(__m256d m)
 {
     return _mm256_movemask_pd(m);
 }
