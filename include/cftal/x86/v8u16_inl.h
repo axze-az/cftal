@@ -49,7 +49,7 @@ namespace cftal {
                 __m128i min_ab = _mm_min_epu16(b(), a());
                 return _mm_cmpeq_epi16(a(), min_ab);
 #else
-                return ~(b > a);
+                return ~(a > b);
 #endif
             }
         };
