@@ -2,6 +2,7 @@
 #define __CFTAL_TEST_OF_OPS_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/select.h>
 #include <cftal/test/f32_f64.h>
 #include <iostream>
 #include <type_traits>
@@ -11,6 +12,16 @@
 namespace cftal {
     namespace test {
 
+
+        template <class _T, std::size_t _N, bool _IS_SIGNED>
+        struct of_signed_ops {
+            static bool v(_T ai, _T bi) { return true; }
+        };
+
+        template <class _T, std::size_t _N>
+        struct of_signed_ops<_T, _N, true> {
+            static bool v(_T ai, _T bi);
+        };
 
         template <class _T, std::size_t _N>
         struct of_ops {
@@ -56,6 +67,20 @@ namespace cftal {
 
     }
 }
+
+template <class _T, std::size_t _N>
+bool
+cftal::test::of_signed_ops<_T, _N, true>::v(_T ai, _T bi)
+{
+    bool rc=true;
+    _T a=ai, b=bi, r;
+    vec<_T, _N> va(a), vb(b), vr(0);
+    r = std::abs(a);
+    vr = abs(va);
+    rc &= check(vr, r, "abs");
+    return rc;
+}
+
 
 template <class _T, std::size_t _N>
 bool
@@ -112,11 +137,10 @@ cftal::test::of_ops<_T, _N>::v(_T ai, _T bi)
     vr = min(va, vb);
     rc &= check(vr, r, "min");
 
-    if (std::is_signed<_T>::value || std::is_floating_point<_T>::value) {
-        r = std::abs(a);
-        vr = abs(va);
-        rc &= check(vr, r, "abs");
-    }
+    const bool is_signed =
+        std::is_signed<_T>::value || std::is_floating_point<_T>::value;
+    rc &= of_signed_ops< _T, _N, is_signed>::v(a, b);
+
     bool br;
     typename vec<_T, _N>::mask_type vcr;
 
@@ -124,29 +148,57 @@ cftal::test::of_ops<_T, _N>::v(_T ai, _T bi)
     vcr = va < vb;
     rc &= check_cmp(vcr, br, "==");
 
+    r = cftal::select(br, a, b);
+    vr = cftal::select(vcr, va, vb);
+    rc &= check(vr, r, "select after ==");
+
     br = a < b;
     vcr = va < vb;
     rc &= check_cmp(vcr, br, "<");
+
+    r = cftal::select(br, a, b);
+    vr = cftal::select(vcr, va, vb);
+    rc &= check(vr, r, "select after <");
 
     br = a <= b;
     vcr = va <= vb;
     rc &= check_cmp(vcr, br, "<=");
 
+    r = cftal::select(br, a, b);
+    vr = cftal::select(vcr, va, vb);
+    rc &= check(vr, r, "select after <=");
+
     br = a == b;
     vcr = va == vb;
     rc &= check_cmp(vcr, br, "==");
+
+    r = cftal::select(br, a, b);
+    vr = cftal::select(vcr, va, vb);
+    rc &= check(vr, r, "select after ==");
 
     br = a != b;
     vcr = va != vb;
     rc &= check_cmp(vcr, br, "!=");
 
+    r = cftal::select(br, a, b);
+    vr = cftal::select(vcr, va, vb);
+    rc &= check(vr, r, "select after !=");
+
     br = a >= b;
     vcr = va >= vb;
     rc &= check_cmp(vcr, br, ">=");
 
+    r = cftal::select(br, a, b);
+    vr = cftal::select(vcr, va, vb);
+    rc &= check(vr, r, "select after >=");
+
     br = a > b;
     vcr = va > vb;
     rc &= check_cmp(vcr, br, ">");
+
+    r = cftal::select(br, a, b);
+    vr = cftal::select(vcr, va, vb);
+    rc &= check(vr, r, "select after >");
 
     return rc;
 }
