@@ -57,7 +57,7 @@ namespace cftal {
                 __m128i min_ab = _mm_min_epu32(b(), a());
                 return _mm_cmpeq_epi32(a(), min_ab);
 #else
-                return ~(b > a);
+                return ~(a > b);
 #endif
 #endif
             }
@@ -88,8 +88,7 @@ namespace cftal {
 #if defined (__AVX512VL__)
                 return _mm_cmp_epu32_mask(a(), b(), _CMP_UNORD_Q & 7);
 #else
-                mask_type a_eq_b(eq<uint32_t, 4>::v(a, b));
-                return bit_not<uint32_t, 4>::v(a_eq_b);
+                return ~(a==b);
 #endif
             }
         };
