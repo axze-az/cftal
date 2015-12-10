@@ -49,7 +49,7 @@ namespace cftal {
 #if defined (__AVX512VL__)
                 return _mm256_cmple_epu64_mask(a(), b());
 #else
-                return ~(b > a);
+                return ~(a > b);
 #endif
             }
         };
@@ -79,8 +79,7 @@ namespace cftal {
 #if defined (__AVX512VL__)
                 return _mm256_cmpneq_epu64_mask(a(), b());
 #else
-                mask_type a_eq_b(eq<uint64_t, 4>::v(a, b));
-                return bit_not<uint64_t, 4>::v(a_eq_b);
+                return ~(a==b);
 #endif
             }
         };
