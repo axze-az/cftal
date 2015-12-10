@@ -1265,7 +1265,7 @@ __m128i cftal::x86::impl::vpmulld::lh(__m128i a, __m128i b)
     return v(a, b);
 #else
     __m128i as= vpshufd<0, 0, 1, 1>::v(a);
-    __m128i bs= vpshufd<0, 0, 1, 1>::v(a);
+    __m128i bs= vpshufd<0, 0, 1, 1>::v(b);
     __m128i rs=_mm_mul_epu32(as, bs);
     __m128i r= vpshufd<0, 2, 0, 2>::v(rs);
     return r;
