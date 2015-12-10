@@ -50,7 +50,7 @@ namespace cftal {
 #if defined (__AVX512VL__)
                 return _mm256_cmple_epi64_mask(a(), b());
 #else
-                return ~(b > a);
+                return ~(a > b);
 #endif
             }
         };
