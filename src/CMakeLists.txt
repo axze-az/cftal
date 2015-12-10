@@ -7,21 +7,6 @@ set (CSRCS
     math_func.cc
     x86_ops_1.cc
     vec_traits.cc
-    # vec <double, 2>
-    v2f64.cc
-    v2f64_cbrt.cc
-    v2f64_frexp.cc
-    v2f64_ldexp.cc
-    # vec <double, 4>
-    v4f64.cc
-    v4f64_cbrt.cc
-    v4f64_frexp.cc
-    v4f64_ldexp.cc
-    # vec <doubl,e 8>
-    v8f64.cc
-    v8f64_cbrt.cc
-    v8f64_frexp.cc
-    v8f64_ldexp.cc
     # vec <float, 2>
     v2f32.cc
     v2f32_cbrt.cc
@@ -38,6 +23,28 @@ set (CSRCS
     v8f32_frexp.cc
     v8f32_ldexp.cc
 )
+
+if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
+    set (X86_SRCS
+        # vec <double, 2>
+        v2f64.cc
+        v2f64_cbrt.cc
+        v2f64_frexp.cc
+        v2f64_ldexp.cc
+        # vec <double, 4>
+        v4f64.cc
+        v4f64_cbrt.cc
+        v4f64_frexp.cc
+        v4f64_ldexp.cc
+        # vec <double, 8>
+        v8f64.cc
+        v8f64_cbrt.cc
+        v8f64_frexp.cc
+        v8f64_ldexp.cc
+    )
+    set (CSRCS ${CSRCS} ${X86_SRCS})
+endif()
+
 
 add_library (cftal STATIC ${CSRCS})
 install(TARGETS cftal
