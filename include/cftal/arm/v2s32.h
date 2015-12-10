@@ -5,26 +5,25 @@
 #include <cftal/types.h>
 #include <cftal/impl/vreg.h>
 #include <cftal/vec_op.h>
+#include <cftal/arm/intrin.h>
 
 namespace cftal {
 
     template <>
-    class vec<int32_t, 2> : public impl::vreg<> {
+    class vec<int32_t, 2> : public impl::vreg<int32x2_t> {
     public:
-        using base_type = arm::vreg<arm::impl::s32_pair_type>;
+        using base_type = impl::vreg<int32x2_t>;
 
         using value_type = int32_t;
         using mask_value_type = uint32_t;
 
         using mask_type= vec<mask_value_type, 2>;
 
-        // using base_type::base_type;
+        using base_type::base_type;
         vec() = default;
         vec(const vec<uint32_t,2>& v);
         // create vec{v,v}
         vec(int32_t v);
-        vec(__m128i v);
-        __m128i operator()() const;
         // create vec(l, h);
         vec(vec<int32_t, 1> l, vec<int32_t, 1> h);
         // constructor from std::initializer_list, fills remaining
@@ -56,15 +55,6 @@ namespace cftal {
     low_half(const vec<int32_t, 2>& v);
     vec<int32_t, 1>
     high_half(const vec<int32_t, 2>& v);
-
-#if !defined (__AVX512VL__)
-    bool
-    all_of(const vec<int32_t, 2>::mask_type& v);
-    bool
-    any_of(const vec<int32_t, 2>::mask_type& v);
-    bool
-    none_of(const vec<int32_t, 2>::mask_type& v);
-#endif
 
     v2s32 max(const v2s32& a, const v2s32& b);
     v2s32 min(const v2s32& a, const v2s32& b);

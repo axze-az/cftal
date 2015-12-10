@@ -11,10 +11,15 @@
 #include <cftal/vec_t_n.h>
 #include <cftal/vec_mask.h>
 #include <cftal/vec_op.h>
-#include <type_traits>
-#include <cmath>
-
 #include <cftal/vec_t_1.h>
+
+#if defined (__ARM_NEON) || defined (__ARM_NEON__)
+#include <cftal/arm/v2s32.h>
+#include <cftal/arm/v2u32.h>
+
+#include <cftal/arm/v2u32_inl.h>
+#endif
+
 #if defined (__SSE2__)
 // include 64 bit integer vector specializations
 #include <cftal/x86/v2s32.h>

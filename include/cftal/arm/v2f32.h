@@ -57,17 +57,6 @@ namespace cftal {
     vec<float, 1>
     high_half(const vec<float, 2>& s);
 
-#if !defined (__AVX512VL__)
-    bool
-    any_of(const vec<float, 2>::mask_type& s);
-
-    bool
-    all_of(const vec<float, 2>::mask_type& s);
-
-    bool
-    none_of(const vec<float, 2>::mask_type& s);
-#endif
-
     template <std::size_t _I>
     float
     extract(const vec<float, 2>& s);
@@ -643,28 +632,6 @@ cftal::v2f32 cftal::mulsign(const v2f32& x, const v2f32& y)
     return x ^ sgn_y;
 }
 
-#if !defined (__AVX512VL__)
-inline
-bool
-cftal::any_of(const vec<float, 2>::mask_type& s)
-{
-    return arm::compress_mask_u32(s()) != 0;
-}
-
-inline
-bool
-cftal::all_of(const vec<float, 2>::mask_type& s)
-{
-    return arm::compress_mask_u32(s()) == 0x3;
-}
-
-inline
-bool
-cftal::none_of(const vec<float, 2>::mask_type& s)
-{
-    return arm::compress_mask_u32(s()) == 0;
-}
-#endif
 
 inline
 unsigned cftal::read_signs(const v2f32& a)

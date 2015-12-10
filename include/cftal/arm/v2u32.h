@@ -5,6 +5,7 @@
 #include <cftal/types.h>
 #include <cftal/impl/vreg.h>
 #include <cftal/vec_op.h>
+#include <cftal/arm/intrin.h>
 
 namespace cftal {
 
