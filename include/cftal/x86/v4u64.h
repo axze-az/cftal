@@ -43,8 +43,8 @@ namespace cftal {
     struct arg< vec<uint64_t, 4> > {
         using type = vec<uint64_t, 4>;
     };
-   
-    
+
+
     template <>
     struct mem< vec<uint64_t, 4> > {
         static
@@ -66,17 +66,17 @@ namespace cftal {
     bool
     none_of(const vec<uint64_t, 4>::mask_type& v);
 #endif
-    
+
     v4u64 max(const v4u64& a, const v4u64& b);
     v4u64 min(const v4u64& a, const v4u64& b);
- 
-    vec<uint64_t, 4> 
+
+    vec<uint64_t, 4>
     select(const typename vec<uint64_t, 4>::mask_type& msk,
            const vec<uint64_t, 4>& on_true,
            const vec<uint64_t, 4>& on_false);
 
     template <bool _P0, bool _P1, bool _P2, bool _P3>
-    vec<uint64_t, 4> 
+    vec<uint64_t, 4>
     select(const vec<uint64_t, 4>& on_true,
            const vec<uint64_t, 4>& on_false);
 
@@ -84,14 +84,14 @@ namespace cftal {
     vec<uint64_t, 4> permute(const vec<uint64_t, 4>& s);
 
     template <int _P0, int _P1, int _P2, int _P3>
-    vec<uint64_t, 4> permute(const vec<uint64_t, 4>& s0, 
+    vec<uint64_t, 4> permute(const vec<uint64_t, 4>& s0,
                              const vec<uint64_t, 4>& s1);
 
     std::pair<vec<uint64_t, 4>, vec<uint64_t, 4> >
     mul_lo_hi(const vec<uint64_t, 4>& a,
               const vec<uint64_t, 4>& b);
-    
-}    
+
+}
 
 
 // Local variables:

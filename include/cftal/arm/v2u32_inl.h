@@ -239,7 +239,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return _mm_slli_epi32(a(), s);
+                return vshl_n_u32(a(), s);
             }
         };
 
@@ -249,7 +249,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return _mm_srli_epi32(a(), s);
+                return vshr_n_u32(a(), s);
             }
         };
 
@@ -258,34 +258,20 @@ namespace cftal {
 }
 
 inline
-cftal::vec<cftal::uint32_t, 2>::vec(__m128i v)
-    : base_type(x86::impl::pack(v))
-{
-}
-
-inline
 cftal::vec<cftal::uint32_t, 2>::vec(const vec<int32_t,2>& v)
-    : base_type(v)
+    : base_type(vreinterpret_u32_s32(v()))
 {
-}
-
-inline
-__m128i
-cftal::vec<cftal::uint32_t, 2>::operator()() const
-{
-    x86::impl::u32_pair_type v=base_type::operator()();
-    return x86::impl::unpack_v2u32(v);
 }
 
 inline
 cftal::vec<cftal::uint32_t, 2>::vec(uint32_t v)
-    : base_type(x86::impl::set(v))
+    : base_type(vmov_n_u32(v))
 {
 }
 
 inline
 cftal::vec<cftal::uint32_t, 2>::vec(vec<uint32_t, 1> l, vec<uint32_t, 1> h)
-    : base_type(x86::impl::set(l(), h()))
+    : base_type(uint32x2_t{l(), h()})
 {
 }
 
@@ -316,17 +302,17 @@ inline
 cftal::vec<cftal::uint32_t, 2>
 cftal::mem<cftal::vec<uint32_t, 2> >::load(const uint32_t* p, std::size_t s)
 {
-    __m128i v;
+    uint32x2_t v;
     switch (s) {
     default:
     case 2:
-        v = _mm_setr_epi32(p[0], p[1], 0, 0);
+        v = vld1_u32(p);
         break;
     case 1:
-        v = _mm_setr_epi32(p[0], p[0], 0, 0);
+        v = vld1_dup_u32(p);
         break;
     case 0:
-        v = _mm_setr_epi32(0, 0, 0, 0);
+        v =uint32x2_t{0u, 0u};
         break;
     }
     return v;
@@ -337,70 +323,55 @@ void
 cftal::mem<cftal::vec<uint32_t, 2> >::store(uint32_t* p,
                                             const vec<uint32_t, 2>& v)
 {
-    uint64_t r= v.base_type::operator()();
-    uint64_t* d=reinterpret_cast<uint64_t*>(p);
-    *d = r;
+    vst1_u32(p, v());
 }
 
 inline
 cftal::vec<uint32_t, 1>
 cftal::low_half(const vec<uint32_t, 2>& v)
 {
-    return as<vec<uint32_t, 1> >(v);
+    return vec<uint32_t, 1>(vget_lane_u32(v(), 0));
 }
 
 inline
 cftal::vec<uint32_t, 1>
 cftal::high_half(const vec<uint32_t, 2>& v)
 {
-    vec<uint32_t, 2> h= permute<1, 0>(v);
-    return as<vec<uint32_t, 1> >(h);
+    return vec<uint32_t, 1>(vget_lane_u32(v(), 1));
 }
 
-#if !defined (__AVX512VL__)
 inline
 bool
-cftal::any_of(const vec<float, 2>::mask_type& s)
+cftal::any_of(const vec<uint32_t, 2>::mask_type& s)
 {
     return arm::compress_mask_u32(s()) != 0;
 }
 
 inline
 bool
-cftal::all_of(const vec<float, 2>::mask_type& s)
+cftal::all_of(const vec<uint32_t, 2>::mask_type& s)
 {
     return arm::compress_mask_u32(s()) == 0x3;
 }
 
 inline
 bool
-cftal::none_of(const vec<float, 2>::mask_type& s)
+cftal::none_of(const vec<uint32_t, 2>::mask_type& s)
 {
     return arm::compress_mask_u32(s()) == 0;
 }
-#endif
-
 
 inline
 cftal::v2u32 cftal::max(const v2u32& a, const v2u32& b)
 {
-#if defined (__SSE4_1__)
-        return _mm_max_epu32(a(), b());
-#else
-        v2u32 _gt(a > b);
-        return select(_gt, a, b);
-#endif
+    return vmax_u32(a(), b());
+
 }
 
 inline
 cftal::v2u32 cftal::min(const v2u32& a, const v2u32& b)
 {
-#if defined (__SSE4_1__)
-        return _mm_min_epu32(a(), b());
-#else
-        v2u32 _lt(a < b);
-        return select(_lt, a, b);
-#endif
+    return vmin_u32(a(), b());
 }
 
 inline
@@ -408,44 +379,37 @@ cftal::v2u32 cftal::select(const v2u32::mask_type& m,
                            const v2u32& on_true,
                            const v2u32& on_false)
 {
-    return x86::select_u32(m(), on_true(), on_false());
+    return vbsl_u32(m(), on_true(), on_false());
 }
 
 template <bool _I0, bool _I1>
 inline
 cftal::v2u32 cftal::select(const v2u32& a, const v2u32& b)
 {
-    return x86::select_u32<_I0, _I1, true, true>(a(), b());
+    const uint32x2_t m{_I0 ? uint32_t(-1) : uint32_t(0),
+                       _I1 ? uint32_t(-1) : uint32_t(0)};
+    return vbsl_u32(m, a(), b());
 }
 
 template <int _I0, int _I1>
 inline
 cftal::v2u32 cftal::permute(const v2u32& a)
 {
-    return x86::perm_v4u32<_I0, _I1, 2, 3>(a());
+    return arm::perm_v2u32<_I0, _I1>(a());
 }
 
 template <int _I0, int _I1>
 inline
 cftal::v2u32 cftal::permute(const v2u32& a, const v2u32& b)
 {
-    __m128i lh= x86::impl::vpunpcklqdq::v(a(), b());
-    return x86::perm_v4u32<_I0, _I1, 2, 3>(lh);
+    return arm::perm_v2u32<_I0, _I1>(a(), b());
 }
 
 inline
 std::pair<cftal::v2u32, cftal::v2u32>
 cftal::mul_lo_hi(const v2u32& x, const v2u32& y)
 {
-    __m128i tx= x86::impl::vpshufd<0, 0, 1, 1>::v(x());
-    __m128i ty= x86::impl::vpshufd<0, 0, 1, 1>::v(y());
-    // p0l p0h p1l p1h
-    __m128i eo= _mm_mul_epu32(tx, ty);
-    __m128i l= x86::impl::vpshufd<0, 2, 1, 3>::v(eo);
-    __m128i h= x86::impl::vpshufd<1, 3, 0, 2>::v(eo);
-    v2u32 rl = l;
-    v2u32 rh = h;
-    return std::make_pair(rl, rh);
+    return std::make_pair(x, y);
 }
 
 // Local variables:
