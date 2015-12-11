@@ -1,39 +1,34 @@
-#if !defined (__CFTAL_X86_V2F64__)
-#define __CFTAL_X86_V2F64__ 1
+#if !defined (__CFTAL_ARM_V2F64__)
+#define __CFTAL_ARM_V2F64__ 1
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-
-#include <cftal/vec_double_n.h>
-#include <cftal/x86/vec_bit.h>
-#include <cftal/x86/ops_1.h>
-#include <cftal/x86/v4s32.h>
-#include <cftal/x86/perm.h>
-#include <cftal/x86/vreg.h>
+#include <cftal/constants.h>
+#include <cftal/impl/vreg.h>
+#include <cftal/arm/intrin.h>
+#include <cftal/arm/perm.h>
+#include <cftal/arm/v2u32.h>
+#include <cftal/vec_float_n.h>
 
 namespace cftal {
 
     template <>
-    class vec<double, 2> : public x86::vreg<__m128d> {
+    class vec<double, 2> : public impl::vreg<float64x2_t> {
     public:
-        using base_type= x86::vreg<__m128d>;
+        using base_type= impl::vreg<float64x2_t>;
 
         using value_type = double;
-#if defined (__AVX512VL__)
-        using mask_value_type = bit;
-#else
-        using mask_value_type = double;
-#endif
+        using mask_value_type = uint64_t;
         using mask_type= vec<mask_value_type, 2>;
-        using x86::vreg<__m128d>::vreg;;
+        using impl::vreg<float64x2_t>::vreg;
         vec() = default;
-        // create vec{v,v,v,v}
-        vec(double v);
+        // create vec{v,v}
+        vec(float v);
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
-        vec(std::initializer_list<double> l);
+        vec(std::initializer_list<float> l);
         // allow construction from vec<double, 8>
-        vec(init_list<double> l);
+        vec(init_list<float> l);
         // allow construction from two halfes
         vec(const vec<double, 1>& lh, const vec<double, 1>& hh);
         // expression template constructor
@@ -77,11 +72,12 @@ namespace cftal {
     bool
     elements_equal(const v2f64& a);
 
+
     v2f64 max(const v2f64& a, const v2f64& b);
     v2f64 min(const v2f64& a, const v2f64& b);
 
-    double max_element(const v2f64& v);
-    double min_element(const v2f64& v);
+    float max_element(const v2f64& v);
+    float min_element(const v2f64& v);
 
     v2f64 abs(const v2f64& a);
     v2f64 fabs(const v2f64& a);
@@ -92,7 +88,7 @@ namespace cftal {
     v2f64 rsqrt(const v2f64& a);
     v2f64 native_rsqrt(const v2f64& a);
 
-    namespace x86 {
+    namespace arm {
         v2f64 round(const v2f64& v, rounding_mode::type m);
     }
 
@@ -143,9 +139,9 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const bytes8 all_ones{-1, -1};
-                full_type all_set(all_ones._f64);
-                return _mm_xor_pd(a(), all_set());
+                uint32x4_t ai= vreinterpretq_u32_f64(a());
+                uint32x4_t ri= vmvnq_u32(ai);
+                return vreinterpretq_f64_u32(ri);
             }
         };
 
@@ -157,11 +153,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
-                return _mm_cmp_pd_mask(a(), b(), _CMP_LT_OS);
-#else
-                return _mm_cmplt_pd(a(), b());
-#endif
+                return vcltq_f64(a(), b());
             }
         };
 
@@ -172,11 +164,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
-                return _mm_cmp_pd_mask(a(), b(), _CMP_LE_OS);
-#else
-                return _mm_cmple_pd(a(), b());
-#endif
+                return vcleq_f64(a(), b());
             }
         };
 
@@ -187,11 +175,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
-                return _mm_cmp_pd_mask(a(), b(), _CMP_EQ_OQ);
-#else
-                return _mm_cmpeq_pd(a(), b());
-#endif
+                return vceq_f64(a(), b());
             }
         };
 
@@ -202,11 +186,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
-                return _mm_cmp_pd_mask(a(), b(), _CMP_NEQ_UQ);
-#else
-                return _mm_cmpneq_pd(a(), b());
-#endif
+                v2u32 m=eq<double, 2>::v(a, b);
+                return ~m;
             }
         };
 
@@ -217,11 +198,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
-                return _mm_cmp_pd_mask(a(), b(), _CMP_GE_OS);
-#else
-                return _mm_cmpge_pd(a(), b());
-#endif
+                return vcgeq_f64(a(), b());
             }
         };
 
@@ -232,11 +209,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
-                return _mm_cmp_pd_mask(a(), b(), _CMP_GT_OS);
-#else
-                return _mm_cmpgt_pd(a(), b());
-#endif
+                return vcgtq_f64(a(), b());
             }
         };
 
@@ -256,8 +229,15 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
+#if 1
+                return vnegq_f64(a());
+#else
                 const full_type neg_bits(sign_f64_msk::v._f64);
-                return _mm_xor_pd(a(), neg_bits());
+                uint32x2_t ai= vreinterpret_u32_f64(a());
+                uint32x2_t i = vreinterpret_u32_f64(neg_bits());
+                uint32x2_t ri= veor_u32(ai, i);
+                return vreinterpret_f64_u32(ri);
+#endif
             }
         };
 
@@ -267,7 +247,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_add_pd(a(), b());
+                return vaddq_f64(a(), b());
             }
         };
 
@@ -277,7 +257,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_sub_pd(a(), b());
+                return vsubq_f64(a(), b());
             }
         };
 
@@ -287,7 +267,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_mul_pd(a(), b());
+                return vmulq_f64(a(), b());
             }
         };
 
@@ -297,7 +277,18 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_div_pd(a(), b());
+#if defined (__aarch64__)
+                return vdivq_f64(a(), b());
+#else
+                // get an initial estimate of 1/b.
+                float64x2_t rcp0 = vrecpeq_f64(b());
+                float64x2_t rcp1 = rcp0;
+                // newton raphson steps
+                for (int i=0; i< 2; ++i)
+                    rcp1 = vmulq_f64(vrecpsq_f64(b(), rcp1), rcp1);
+                float64x2_t q = vmulq_f64(a(), rcp1);
+                return q;
+#endif
             }
         };
 
@@ -320,13 +311,8 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__)
-                return _mm_macc_pd(a(), b(), c());
-#elif defined (__FMA__)
-                return _mm_fmadd_pd(a(), b(), c());
-#else
-                return _mm_add_pd(_mm_mul_pd(a(), b()), c());
-#endif
+                // return vadd_f64(vmul_f64(a(), b()), c());
+                return vmlaq_f64(a(), b(), c());
             }
         };
 
@@ -337,13 +323,8 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__)
-                return _mm_msub_pd(a(), b(), c());
-#elif defined (__FMA__)
-                return _mm_fmsub_pd(a(), b(), c());
-#else
-                return _mm_sub_pd(_mm_mul_pd(a(), b()), c());
-#endif
+                // return vsub_f64(vmul_f64(a(), b()), c());
+                return vmlsq_f64(a(), b(), c());
             }
         };
 
@@ -354,13 +335,8 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-#if defined (__FMA4__)
-                return _mm_nmacc_pd(a(), b(), c());
-#elif defined (__FMA__)
-                return _mm_fnmadd_pd(a(), b(), c());
-#else
-                return _mm_sub_pd(c(), _mm_mul_pd(a(), b()));
-#endif
+                // return vsub_f64(c(), vmul_f64(a(), b()));
+                return vmlaq_f64(vneg_f64(a()), b(), c());
             }
         };
 
@@ -370,7 +346,10 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_or_pd(a(), b());
+                uint32x2_t ai= vreinterpret_u32_f64(a());
+                uint32x2_t bi = vreinterpret_u32_f64(b());
+                uint32x2_t ri= vorr_u32(ai, bi);
+                return vreinterpret_f64_u32(ri);
             }
         };
 
@@ -381,7 +360,10 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_and_pd(a(), b());
+                uint32x2_t ai= vreinterpret_u32_f64(a());
+                uint32x2_t bi = vreinterpret_u32_f64(b());
+                uint32x2_t ri= vand_u32(ai, bi);
+                return vreinterpret_f64_u32(ri);
             }
         };
 
@@ -392,53 +374,31 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return _mm_xor_pd(a(), b());
+                uint32x2_t ai= vreinterpret_u32_f64(a());
+                uint32x2_t bi = vreinterpret_u32_f64(b());
+                uint32x2_t ri= veor_u32(ai, bi);
+                return vreinterpret_f64_u32(ri);
             }
         };
-
-#if 0
-        template <>
-        struct shl<double, 2> {
-            using full_type = vec<double, 2>;
-            static
-            full_type
-            v(const full_type& a, unsigned s) {
-                return _mm_slli_epi32(a(), s);
-            }
-        };
-
-        template <>
-        struct shr<double, 2> {
-            using full_type = vec<double, 2>;
-            static
-            full_type
-            v(const full_type& a, unsigned s) {
-                return _mm_srli_epi32(a(), s);
-            }
-        };
-#endif
-
     }
-
 }
 
 inline
-cftal::vec<double, 2>::vec(double v)
-    : base_type(_mm_set1_pd(v))
+cftal::vec<double, 2>::vec(float v)
+    : base_type(vmov_n_f64(v))
 {
 }
 
-
 inline
 cftal::vec<double, 2>::
-vec(std::initializer_list<double> l)
+vec(std::initializer_list<float> l)
     : vec(mem<vec<double,2> >::load(l.begin(), l.size()))
 {
 }
 
 inline
 cftal::vec<double, 2>::
-vec(init_list<double> l)
+vec(init_list<float> l)
     : vec(mem<vec<double,2> >::load(l.begin(), l.size()))
 {
 }
@@ -446,7 +406,7 @@ vec(init_list<double> l)
 inline
 cftal::vec<double, 2>::
 vec(const vec<double, 1>& l, const vec<double, 1>& h)
-    : base_type(_mm_setr_pd(l(), h()))
+    : base_type(float64x2_t{l(), h()})
 {
 }
 
@@ -461,19 +421,19 @@ vec<double, 2>::vec(const expr<_OP<double, 2>, _L, _R>& r)
 
 inline
 cftal::vec<double, 2>
-cftal::mem<cftal::vec<double, 2>>::load(const double* p, std::size_t s)
+cftal::mem<cftal::vec<double, 2>>::load(const float* p, std::size_t s)
 {
-    __m128d v;
+    float64x2_t v;
     switch (s) {
     default:
     case 2:
-        v = _mm_loadu_pd(p);
+        v = vld1_f64(p);
         break;
     case 1:
-        v = _mm_setr_pd(p[0], p[0]);
+        v = vld1_dup_f64(p);
         break;
     case 0:
-        v = _mm_setr_pd(0, 0);
+        v = float64x2_t{0.0f, 0.0f};
         break;
     }
     return v;
@@ -481,9 +441,9 @@ cftal::mem<cftal::vec<double, 2>>::load(const double* p, std::size_t s)
 
 inline
 void
-cftal::mem<cftal::vec<double, 2>>::store(double* p, const vec<double, 2>& v)
+cftal::mem<cftal::vec<double, 2>>::store(float* p, const vec<double, 2>& v)
 {
-    _mm_storeu_pd(p, v());
+    vst1_f64(p, v());
 }
 
 inline
@@ -504,7 +464,7 @@ template <std::size_t _I>
 double
 cftal::extract(const vec<double, 2>& v)
 {
-    return x86::extract_f64<_I>(v());
+    return vget_lane_f64(v(), _I);
 }
 
 inline
@@ -512,7 +472,9 @@ cftal::v2f64
 cftal::select(const v2f64::mask_type& m,
               const v2f64& on_true, const v2f64& on_false)
 {
-    return x86::select(m(), on_true(), on_false());
+    // float64x2_t vbsl_f64(uint32x2_t a, float64x2_t b, float64x2_t c);
+    return vbsl_f64(m(), on_true(), on_false());
+    // return arm::select(m(), on_true(), on_false());
 }
 
 
@@ -520,18 +482,18 @@ inline
 cftal::v2f64
 cftal::max(const v2f64& a, const v2f64& b)
 {
-    return _mm_max_pd(a(), b());
+    return vmax_f64(a(), b());
 }
 
 inline
 cftal::v2f64
 cftal::min(const v2f64& a, const v2f64& b)
 {
-    return _mm_min_pd(a(), b());
+    return vmin_f64(a(), b());
 }
 
 inline
-double
+float
 cftal::max_element(const v2f64& v)
 {
     v2f64 vp=permute<1, 0>(v);
@@ -540,7 +502,7 @@ cftal::max_element(const v2f64& v)
 }
 
 inline
-double
+float
 cftal::min_element(const v2f64& v)
 {
     v2f64 vp=permute<1, 0>(v);
@@ -551,76 +513,89 @@ cftal::min_element(const v2f64& v)
 inline
 cftal::v2f64 cftal::sqrt(const v2f64& a)
 {
-    return _mm_sqrt_pd(a());
+#if defined (__aarch64__)
+    return vsqrt_f64(a());
+#else
+    // return _mm_sqrt_ps(a());
+    // approximative quadword float inverse square root
+    // static inline float64x4_t invsqrtv(float64x4_t x) {
+    //    float64x4_t sqrt_reciprocal = vrsqrteq_f64(x);
+    //
+    //    return vrsqrtsq_f64(x * sqrt_reciprocal, sqrt_reciprocal) * sqrt_reciprocal;
+    // }
+    // approximative quadword float square root
+    // static inline float64x4_t sqrtv(float64x4_t x) {
+    //    return x * invsqrtv(x);
+    // }
+    // calculate inverse square root
+    float64x2_t af=a();
+    float64x2_t rsqrt0 = vrsqrte_f64(af);
+    float64x2_t rsqrt1 = rsqrt0;
+    // newton raphson steps
+    for (int i=0; i< 2; ++i) {
+        float64x2_t a_rsqrt1 = vmul_f64(af, rsqrt1);
+        float64x2_t rsqrti= vrsqrts_f64(a_rsqrt1, rsqrt1);
+        rsqrt1 = vmul_f64(rsqrti, rsqrt1);
+    }
+    float64x2_t r = vmul_f64(af, rsqrt1);
+    return r;
+#endif
 }
 
 inline
 cftal::v2f64 cftal::abs(const v2f64& a)
 {
+#if defined (__aarch64__)
+    return vabs_f64(a());
+#else
     const v2f64 msk(not_sign_f64_msk::v._f64);
-    return _mm_and_pd(a(), msk());
+    uint32x2_t ai= vreinterpret_u32_f64(a());
+    uint32x2_t mski= vreinterpret_u32_f64(msk());
+    uint32x2_t ri= vand_u32(ai, mski);
+    return vreinterpret_f64_u32(ri);
+#endif
 }
 
 inline
 cftal::v2f64 cftal::andnot(const v2f64& a, const v2f64& b)
 {
-    return _mm_andnot_pd(a(), b());
+    // return _mm_andnot_ps(a(), b());
+    uint32x2_t ai= vreinterpret_u32_f64(a());
+    uint32x2_t bi= vreinterpret_u32_f64(b());
+    uint32x2_t ri= vbic_u32(bi, ai);
+    return vreinterpret_f64_u32(ri);
 }
 
 inline
 cftal::v2f64
 cftal::fma(const v2f64& a, const v2f64& b, const v2f64& c)
 {
-#if defined (__FMA4__)
-    return _mm_macc_pd(a(), b(), c());
-#elif defined (__FMA__)
-    return _mm_fmadd_pd(a(), b(), c());
-#else
     // return impl::fma(a, b, c);
     return a * b + c;
-#endif
 }
 
 inline
 cftal::v2f64
 cftal::fms(const v2f64& a, const v2f64& b, const v2f64& c)
 {
-#if defined (__FMA4__)
-    return _mm_msub_pd(a(), b(), c());
-#elif defined (__FMA__)
-    return _mm_fmsub_pd(a(), b(), c());
-#else
     // return impl::fma(a, b, -c);
     return a * b - c;
-#endif
 }
 
 inline
 cftal::v2f64
 cftal::nfma(const v2f64& a, const v2f64& b, const v2f64& c)
 {
-#if defined (__FMA4__)
-    return _mm_nmacc_pd(a(), b(), c());
-#elif defined (__FMA__)
-    return _mm_fnmadd_pd(a(), b(), c());
-#else
     // return impl::fma(-a, b, c);
     return c - a*b;
-#endif
 }
 
 inline
 cftal::v2f64
 cftal::nfms(const v2f64& a, const v2f64& b, const v2f64& c)
 {
-#if defined (__FMA4__)
-    return _mm_nmsub_pd(a(), b(), c());
-#elif defined (__FMA__)
-    return _mm_fnmsub_pd(a(), b(), c());
-#else
     // return impl::fma(-a, b, -c);
     return -(a*b) - c;
-#endif
 }
 
 #if 0
@@ -657,68 +632,47 @@ cftal::v2f64 cftal::mulsign(const v2f64& x, const v2f64& y)
     return x ^ sgn_y;
 }
 
-#if !defined (__AVX512VL__)
-inline
-bool
-cftal::any_of(const vec<double, 2>::mask_type& s)
-{
-    return x86::read_signs_f64(s()) != 0;
-}
-
-inline
-bool
-cftal::all_of(const vec<double, 2>::mask_type& s)
-{
-    return x86::read_signs_f64(s()) == 0x3;
-}
-
-inline
-bool
-cftal::none_of(const vec<double, 2>::mask_type& s)
-{
-    return x86::read_signs_f64(s()) == 0;
-}
-#endif
 
 inline
 unsigned cftal::read_signs(const v2f64& a)
 {
-    return x86::read_signs_f64(a());
+    return arm::read_signs_s32(vreinterpret_s32_f64(a()));
 }
 
 inline
 bool cftal::elements_equal(const v2f64& a)
 {
-    double t0= extract<0>(a);
+    float t0= extract<0>(a);
     v2f64 cmp0(t0);
     v2f64::mask_type rv(cmp0 == a);
     return all_of(rv);
 }
 
 inline
-cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
+cftal::v2f64 cftal::arm::round(const v2f64& a, const rounding_mode::type m)
 {
-#if defined (__SSE4_1__)
     v2f64 r;
+#if defined (__aarch64__)
     switch (m) {
     case rounding_mode::nearest:
-        r= _mm_round_pd(a(), 0);
+        r= vrndn_f64(a());
         break;
     case rounding_mode::downward:
-        r= _mm_round_pd(a(), 1);
+        r= vrndm_f64(a());
         break;
     case rounding_mode::upward:
-        r= _mm_round_pd(a(), 2);
+        r= vrndp_f64(a());
         break;
     case rounding_mode::towardzero:
-        r= _mm_round_pd(a(), 3);
+        r= vrnd_f64(a());
         break;
     case rounding_mode::current:
-        r= _mm_round_pd(a(), 4);
+        r= vrndi_f64(a());
         break;
     }
-    return r;
 #else
+#pragma message("implement me")
+#if 0
     uint32_t mxcsr=0;
     uint32_t rmxcsr=0;
     if (m != rounding_mode::current) {
@@ -743,41 +697,44 @@ cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
         if (unlikely(mxcsr != rmxcsr))
             _mm_setcsr(rmxcsr);
     }
-    const v2f64 sgn_msk(sign_f64_msk::v._f64);
-    // (1023+52)<<(52-32) 0x43300000 = 2^52
-    const v2f64 magic(const_u64<0, 0x43300000>::v._f64);
-    __m128d sign = _mm_and_pd(a(), sgn_msk());
-    __m128d sign_magic = _mm_or_pd(magic(), sign);
-    __m128d res = _mm_add_pd(a(), sign_magic);
-    res = _mm_sub_pd(res, sign_magic);
-    if (unlikely(mxcsr != rmxcsr))
+    const __m128 sgn_msk= v_sign_v4f64_msk::fv();
+    // (127+23)<< 23 = 0x4B000000 = 2^23
+    const __m128 magic= const_v4u32<0x4B000000, 0x4B000000,
+                                    0x4B000000, 0x4B000000>::fv();
+    __m128 sign = _mm_and_ps(a(), sgn_msk);
+    __m128 sign_magic = _mm_or_ps(magic, sign);
+    r= _mm_add_ps(a(), sign_magic);
+    r = _mm_sub_ps(a(), sign_magic);
+    if (mxcsr != rmxcsr)
         _mm_setcsr(mxcsr);
-    return res;
 #endif
+    //
+#endif
+    return r;
 }
 
 inline
 cftal::v2f64 cftal::rint(const v2f64& a)
 {
-    return x86::round(a, rounding_mode::current);
+    return arm::round(a, rounding_mode::current);
 }
 
 inline
 cftal::v2f64 cftal::floor(const v2f64& a)
 {
-    return x86::round(a, rounding_mode::downward);
+    return arm::round(a, rounding_mode::downward);
 }
 
 inline
 cftal::v2f64 cftal::ceil(const v2f64& a)
 {
-    return x86::round(a, rounding_mode::upward);
+    return arm::round(a, rounding_mode::upward);
 }
 
 inline
 cftal::v2f64 cftal::trunc(const v2f64& a)
 {
-    return x86::round(a, rounding_mode::towardzero);
+    return arm::round(a, rounding_mode::towardzero);
 }
 
 template <bool _I0, bool _I1>
@@ -785,7 +742,10 @@ inline
 cftal::vec<double, 2>
 cftal::select(const vec<double, 2>& l, const vec<double,2>& r)
 {
-    return x86::select_f64<_I0, _I1>(l(), r());
+    const uint32x2_t h{_I0 ? uint32_t(-1) : uint32_t(0),
+                       _I1 ? uint32_t(-1) : uint32_t(0)};
+    return vbsl_f64(h, l(), r());
+    // return arm::select_f64<_I0, _I1>(l(), r());
 }
 
 template <int _I0, int _I1>
@@ -793,23 +753,18 @@ inline
 cftal::vec<double, 2>
 cftal::permute(const vec<double, 2>& v)
 {
-    return x86::perm_v2f64<_I0, _I1>(v());
+    return arm::perm_v2f64<_I0, _I1>(v());
 }
-
 
 template <int _I0, int _I1>
 inline
 cftal::vec<double, 2>
 cftal::permute(const vec<double, 2>& l, const vec<double, 2>& r)
 {
-    return x86::perm_v2f64<_I0, _I1>(l(), r());
+    return arm::perm_v2f64<_I0, _I1>(l(), r());
 }
-
-
-
-
 
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_X86_V2F64__
+#endif // __CFTAL_ARM_V2F64__

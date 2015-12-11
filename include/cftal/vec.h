@@ -18,6 +18,7 @@
 #include <cftal/arm/v2u32.h>
 
 #include <cftal/arm/v2u32_inl.h>
+#include <cftal/arm/v2s32_inl.h>
 #endif
 
 #if defined (__SSE2__)
