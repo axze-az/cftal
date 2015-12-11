@@ -1,21 +1,24 @@
 # empty for now
 project(cftal-tests)
 
-set (TEST_SRCS 
-     div.cc 
-     intops.cc 
-     signs.cc 
-     f32_f64.cc
-     snippets.cc)
+set (TEST_SRCS
+  div.cc
+  rcp_div_32.cc
+  rcp_div_64.cc
+  intops.cc
+  signs.cc
+  f32_f64.cc
+  snippets.cc
+)
 include_directories(../..)
 include_directories(../include)
 
 add_library(cftal-test SHARED ${TEST_SRCS})
-set_property(TARGET cftal-test 
+set_property(TARGET cftal-test
   PROPERTY INTERFACE_POSITION_INDEPENDENT_CODE ON)
 set_target_properties(cftal-test PROPERTIES
-  SOVERSION "${CFTAL_VERSION_MAJ}" 
-  VERSION "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}") 
+  SOVERSION "${CFTAL_VERSION_MAJ}"
+  VERSION "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}")
 target_link_libraries(cftal-test cftal-so)
 enable_testing()
 
@@ -43,6 +46,8 @@ test_prog(test-ops-vXu64)
 test_prog(test-cbrt)
 test_prog(test-frexp)
 test_prog(test-ldexp)
+test_prog(test-rcp-div-u32)
+test_prog(test-rcp-div-u64)
 test_prog(test-div-u16)
 test_prog(test-div-s16)
 test_prog(test-div-u32)
