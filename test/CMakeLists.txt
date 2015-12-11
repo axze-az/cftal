@@ -30,6 +30,7 @@ endfunction()
 
 test_prog(test-d_real)
 test_prog(test-dint8)
+test_prog(test-duint8)
 #test_prog(test-fp-ops)
 test_prog(test-ops-vXf32)
 test_prog(test-ops-vXf64)
