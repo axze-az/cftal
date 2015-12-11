@@ -3,7 +3,7 @@ BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x
 
 [CMake]
 Build Directory Count=6
-Current Build Directory Index=5
+Current Build Directory Index=4
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -16,7 +16,7 @@ Install Directory=file:///usr/local
 
 [CMake][CMake Build Directory 1]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/debug
-Build Type=debug
+Build Type=Debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
@@ -60,9 +60,9 @@ Includes=\x00\x00\x00\x01\x00\x00\x00R\x00/\x00h\x00o\x00m\x00e\x00/\x00a\x00x\x
 Path=.
 
 [Defines And Includes][Compiler]
-Name=None
-Path=
-Type=
+Name=Clang
+Path=clang
+Type=Clang
 
 [Launch]
 Launch Configurations=Launch Configuration 1,Launch Configuration 2,Launch Configuration 0,Launch Configuration 3,Launch Configuration 4,Launch Configuration 5,Launch Configuration 6,Launch Configuration 7

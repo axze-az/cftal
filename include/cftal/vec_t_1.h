@@ -5,6 +5,7 @@
 #include <cftal/vec_op.h>
 #include <cftal/vec_bit_n.h>
 #include <cftal/mul_div.h>
+#include <cftal/impl/divide.h>
 #include <type_traits>
 #include <cmath>
 
@@ -262,25 +263,6 @@ namespace cftal {
                 return full_type(a() * b());
             }
         };
-
-        namespace impl {
-
-            template <class _T>
-            std::enable_if_t<std::is_integral<_T>::value, _T>
-            divide(const _T& a, const _T& b) {
-                if (b == _T(0))
-                    return ~_T(0);
-                return a/b;
-            }
-
-            template <class _T>
-            std::enable_if_t<std::is_floating_point<_T>::value, _T>
-            divide(const _T& a, const _T& b) {
-                return a/b;
-            }
-
-
-        }
 
         template <typename _T>
         struct div<_T, 1> {

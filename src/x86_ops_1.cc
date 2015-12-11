@@ -1,4 +1,5 @@
-#include <cftal/config.h>
+#include "cftal/config.h"
+#include "cftal/impl/divide.h"
 #if defined (__SSE2__)
 #include "cftal/x86/ops_1.h"
 #include "cftal/x86/ins_ext.h"
@@ -282,8 +283,8 @@ namespace {
     inline
     _T do_div(_T x, _T y, _T* rem)
     {
+        _T q = cftal::impl::divide(x, y);
         bool y_not_zero{y != _T{0}};
-        _T q{y_not_zero ? x/y : _T(-1)};
         if (rem!= nullptr) {
             *rem = y_not_zero ? x % y : x;
         }

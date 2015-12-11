@@ -16,10 +16,12 @@ namespace cftal {
 
     // return low part in first, high part in second of a*b
     template <class _T>
-    std::pair<_T, _T> mul_lo_hi(const _T& a, const _T& b);
+    std::enable_if_t<std::is_integral<_T>::value, std::pair<_T, _T> >
+    mul_lo_hi(const _T& a, const _T& b);
     // return high part of a*b
     template <class _T>
-    _T mul_hi(const _T& a, const _T& b);
+    std::enable_if_t<std::is_integral<_T>::value, _T>
+    mul_hi(const _T& a, const _T& b);
 
     namespace impl {
 
@@ -113,7 +115,7 @@ namespace cftal {
             }
         };
 
-#if defined (__GNUC__) && !defined(__clang__) &&        \
+#if defined (__GNUC__) && /* !defined(__clang__) && */       \
     (defined (__LP64__) || defined (__x86_64__))
         template <>
         struct umul_lo_hi<uint64_t> {
@@ -169,7 +171,7 @@ namespace cftal {
         template <class _U, class _UHALF=_U>
         class udiv_2by1_base {
         public:
-            static_assert(std::is_integral<_U>::value, "_U must be integral");            
+            static_assert(std::is_integral<_U>::value, "_U must be integral");
             static
             udiv_result<_U>
             d(const _U& u0, const _U& u1, const _U& v);
@@ -545,12 +547,11 @@ _V cftal::remainder(const _V& n, const _V& d, const _V& q)
 
 template <class _T>
 inline
-std::pair<_T, _T>
+std::enable_if_t<std::is_integral<_T>::value, std::pair<_T, _T> >
 cftal::mul_lo_hi(const _T& x, const _T& y)
 {
-    static_assert(std::is_integral<_T>::value, 
+    static_assert(std::is_integral<_T>::value,
                   "_T must be an integral type");
-    
     typedef typename std::conditional<std::is_signed<_T>::value,
                                       impl::smul_lo_hi<_T>,
                                       impl::umul_lo_hi<_T> >::type
@@ -561,7 +562,8 @@ cftal::mul_lo_hi(const _T& x, const _T& y)
 
 template <class _T>
 inline
-_T cftal::mul_hi(const _T& x, const _T& y)
+std::enable_if_t<std::is_integral<_T>::value, _T>
+cftal::mul_hi(const _T& x, const _T& y)
 {
     return mul_lo_hi(x, y).second;
 }
