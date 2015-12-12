@@ -421,7 +421,7 @@ cftal::arm::read_signs_s32(int32x4_t x)
 
 inline
 int
-cftal::arm::read_signs_s32(int64x2_t x)
+cftal::arm::read_signs_s64(int64x2_t x)
 {
     int64x2_t xs=vshrq_n_s64(x, 63);
     return compress_mask_u64(vreinterpretq_u64_s64(xs));

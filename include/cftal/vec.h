@@ -16,9 +16,13 @@
 #if defined (__ARM_NEON) || defined (__ARM_NEON__)
 #include <cftal/arm/v2s32.h>
 #include <cftal/arm/v2u32.h>
+#include <cftal/arm/v2s64.h>
+#include <cftal/arm/v2u64.h>
 
-#include <cftal/arm/v2u32_inl.h>
 #include <cftal/arm/v2s32_inl.h>
+#include <cftal/arm/v2u32_inl.h>
+#include <cftal/arm/v2s64_inl.h>
+#include <cftal/arm/v2u64_inl.h>
 #endif
 
 #if defined (__SSE2__)
