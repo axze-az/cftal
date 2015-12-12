@@ -97,10 +97,16 @@ namespace cftal {
         int compress_mask_u32(uint32x4_t x);
 
         inline
+        int compress_mask_u64(uint64x2_t x);
+
+        inline
         int read_signs_s32(int32x2_t x);
 
         inline
         int read_signs_s32(int32x4_t x);
+
+        inline
+        int read_signs_s64(int64x2_t x);
 
     }
 }
@@ -386,6 +392,19 @@ cftal::arm::compress_mask_u32(uint32x4_t x)
 
 inline
 int
+cftal::arm::compress_mask_u64(uint64x2_t x)
+{
+    const uint64x2_t msk{1, 2};
+    uint64x2_t xm= vandq_u64(x, msk);
+    uint64x1_t xml= vget_low_u64(xm);
+    uint64x1_t xmh= vget_high_u64(xm);
+    uint64x1_t r = vorr_u64(xml, xmh);
+    return vget_lane_u64(r, 0);
+}
+
+
+inline
+int
 cftal::arm::read_signs_s32(int32x2_t x)
 {
     int32x2_t xs=vshr_n_s32(x, 31);
@@ -398,6 +417,14 @@ cftal::arm::read_signs_s32(int32x4_t x)
 {
     int32x4_t xs=vshrq_n_s32(x, 31);
     return compress_mask_u32(vreinterpretq_u32_s32(xs));
+}
+
+inline
+int
+cftal::arm::read_signs_s32(int64x2_t x)
+{
+    int64x2_t xs=vshrq_n_s64(x, 63);
+    return compress_mask_u64(vreinterpretq_u64_s64(xs));
 }
 
 // Local variables:

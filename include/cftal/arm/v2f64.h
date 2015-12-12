@@ -23,7 +23,7 @@ namespace cftal {
         using impl::vreg<float64x2_t>::vreg;
         vec() = default;
         // create vec{v,v}
-        vec(float v);
+        vec(double v);
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
         vec(std::initializer_list<float> l);
@@ -464,7 +464,7 @@ template <std::size_t _I>
 double
 cftal::extract(const vec<double, 2>& v)
 {
-    return vget_lane_f64(v(), _I);
+    return vgetq_lane_f64(v(), _I);
 }
 
 inline
