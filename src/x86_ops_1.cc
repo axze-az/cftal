@@ -6,6 +6,19 @@
 #include "cftal/bitops.h"
 #include "cftal/mul_div.h"
 
+#if 0
+#include "cftal/vec.h"
+__m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
+{
+    v8u16 xs=x, ys=y;
+    std::pair<v8u16, v8u16> qr=
+        cftal::impl::udiv_double_shift<v8u16, v8u16, 16>(xs, ys);
+    if (rem != nullptr)
+        *rem = qr.second();
+    return qr.first();
+}
+
+#else
 __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 {
     __m128i xt = impl::vpsrld_const<16>::v(x);
@@ -36,6 +49,7 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
     }
     return q;
 }
+#endif
 
 __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
 {

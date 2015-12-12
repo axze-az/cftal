@@ -50,8 +50,8 @@ cftal::impl::udiv_double_shift(const _T& a, const _T& b)
 {
     _T r(0);
     _T q(a);
-    int i;
-    for (int i=0; i<_N; ++i) {
+
+    for (std::size_t i=0; i<_N; ++i) {
         // double word left shift (r,q)
         _T hibit_q = q >> (_N-1);
         r += r + hibit_q;
