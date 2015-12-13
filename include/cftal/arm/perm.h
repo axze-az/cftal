@@ -65,6 +65,18 @@ namespace cftal {
                 uint32x4_t v(uint32x4_t a, uint32x4_t b);
             };
 
+            template <int _P0, int _P1>
+            struct perm1_v2u64 {
+                static
+                uint64x2_t v(uint64x2_t a);
+            };
+
+            template <int _P0, int _P1>
+            struct perm2_v2u64 {
+                static
+                uint64x2_t v(uint64x2_t a, uint64x2_t b);
+            };
+
         }
 
         template <int _P0, int _P1, int _P2, int _P3,
@@ -89,6 +101,22 @@ namespace cftal {
         float32x2_t perm_v2f32(float32x2_t a);
         template <int _P0, int _P1>
         float32x2_t perm_v2f32(float32x2_t a, float32x2_t b);
+
+
+        template <int _P0, int _P1>
+        uint64x2_t perm_v2u64(uint64x2_t a);
+        template <int _P0, int _P1>
+        uint64x2_t perm_v2u64(uint64x2_t a, uint64x2_t b);
+
+        template <int _P0, int _P1>
+        int64x2_t perm_v2s64(int64x2_t a);
+        template <int _P0, int _P1>
+        int64x2_t perm_v2s64(int64x2_t a, int64x2_t b);
+
+        template <int _P0, int _P1>
+        float64x2_t perm_v2f64(float64x2_t a);
+        template <int _P0, int _P1>
+        float64x2_t perm_v2f64(float64x2_t a, float64x2_t b);
 
         inline
         int compress_mask_u32(uint32x2_t x);
@@ -361,6 +389,65 @@ cftal::arm::perm_v2f32(float32x2_t a, float32x2_t b)
     uint32x2_t bi=vreinterpret_u32_f32(b);
     uint32x2_t ri=impl::perm2_v2u32<_P0, _P1>::v(ai, bi);
     return vreinterpret_f32_u32(ri);
+}
+
+
+template <int _P0, int _P1>
+inline
+uint64x2_t
+cftal::arm::perm_v2u64(uint64x2_t a)
+{
+    return impl::perm1_v2u64<_P0, _P1>::v(a);
+}
+
+template <int _P0, int _P1>
+inline
+uint64x2_t
+cftal::arm::perm_v2u64(uint64x2_t a, uint64x2_t b)
+{
+    return impl::perm2_v2u64<_P0, _P1>::v(a, b);
+}
+
+template <int _P0, int _P1>
+inline
+int64x2_t
+cftal::arm::perm_v2s64(int64x2_t a)
+{
+    uint64x2_t ai=vreinterpretq_u64_s64(a);
+    uint64x2_t ri=impl::perm1_v2u64<_P0, _P1>::v(ai);
+    return vreinterpretq_s64_u64(ri);
+}
+
+template <int _P0, int _P1>
+inline
+int64x2_t
+cftal::arm::perm_v2s64(int64x2_t a, int64x2_t b)
+{
+    uint64x2_t ai=vreinterpretq_u64_s64(a);
+    uint64x2_t bi=vreinterpretq_u64_s64(b);
+    uint64x2_t ri=impl::perm2_v2u64<_P0, _P1>::v(ai, bi);
+    return vreinterpretq_s64_u64(ri);
+}
+
+template <int _P0, int _P1>
+inline
+float64x2_t
+cftal::arm::perm_v2f64(float64x2_t a)
+{
+    uint64x2_t ai=vreinterpretq_u64_f64(a);
+    uint64x2_t ri=impl::perm1_v2u64<_P0, _P1>::v(ai);
+    return vreinterpretq_f64_u64(ri);
+}
+
+template <int _P0, int _P1>
+inline
+float64x2_t
+cftal::arm::perm_v2f64(float64x2_t a, float64x2_t b)
+{
+    uint64x2_t ai=vreinterpretq_u64_f64(a);
+    uint64x2_t bi=vreinterpretq_u64_f64(b);
+    uint64x2_t ri=impl::perm2_v2u64<_P0, _P1>::v(ai, bi);
+    return vreinterpretq_f64_u64(ri);
 }
 
 inline

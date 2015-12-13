@@ -203,12 +203,14 @@ namespace cftal {
 
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
-                return cvt_mask<double, int32_t, _N>::v(mi);
+                return cvt_mask<typename vmf_type::value_type,
+                                typename vmi_type::value_type, _N>::v(mi);
             }
 
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
-                return cvt_mask<int32_t, double_t, _N>::v(mf);
+                return cvt_mask<typename vmi_type::value_type,
+                                typename vmf_type::value_type, _N>::v(mf);
             }
 
             static

@@ -17,7 +17,9 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                return vmvn_u64(a());
+                // TODO
+                // return vmvnq_u64(a());
+                return a;
             }
         };
 
@@ -29,7 +31,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return vclt_u64(a(), b());
+                return vcltq_u64(a(), b());
             }
         };
 
@@ -40,7 +42,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return vcle_u64(a(), b());
+                return vcleq_u64(a(), b());
             }
         };
 
@@ -51,7 +53,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return vceq_u64(a(), b());
+                return vceqq_u64(a(), b());
             }
         };
 
@@ -73,7 +75,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return vcge_u64(a(), b());
+                return vcgeq_u64(a(), b());
             }
         };
 
@@ -84,7 +86,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return vcgt_u64(a(), b());
+                return vcgtq_u64(a(), b());
             }
         };
 
@@ -105,7 +107,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
                 static const full_type z{0, 0};
-                return vsub_u64(z(), a());
+                return vsubq_u64(z(), a());
             }
         };
 
@@ -115,7 +117,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return vadd_u64(a(), b());
+                return vaddq_u64(a(), b());
             }
         };
 
@@ -125,7 +127,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return vsub_u64(a(), b());
+                return vsubq_u64(a(), b());
             }
         };
 
@@ -135,7 +137,9 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return vmul_u64(a(), b());
+                // return vmulq_u64(a(), b());
+                // TODO
+                return a;
             }
         };
 
@@ -146,6 +150,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b) {
                 // return x86::div_u64::lh(a(), b());
+                // TODO:
                 return a;
             }
         };
@@ -207,7 +212,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return vorr_u64(a(), b());
+                return vorrq_u64(a(), b());
             }
         };
 
@@ -218,7 +223,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return vand_u64(a(), b());
+                return vandq_u64(a(), b());
             }
         };
 
@@ -229,7 +234,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return veor_u64(a(), b());
+                return veorq_u64(a(), b());
             }
         };
 
@@ -239,7 +244,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return vshl_n_u64(a(), s);
+                return vshlq_n_u64(a(), s);
             }
         };
 
@@ -249,7 +254,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return vshr_n_u64(a(), s);
+                return vshrq_n_u64(a(), s);
             }
         };
 
@@ -259,13 +264,13 @@ namespace cftal {
 
 inline
 cftal::vec<cftal::uint64_t, 2>::vec(const vec<int64_t,2>& v)
-    : base_type(vreinterpret_u64_s32(v()))
+    : base_type(vreinterpretq_u64_s64(v()))
 {
 }
 
 inline
 cftal::vec<cftal::uint64_t, 2>::vec(uint64_t v)
-    : base_type(vmov_n_u64(v))
+    : base_type(vmovq_n_u64(v))
 {
 }
 
@@ -306,10 +311,10 @@ cftal::mem<cftal::vec<uint64_t, 2> >::load(const uint64_t* p, std::size_t s)
     switch (s) {
     default:
     case 2:
-        v = vld1_u64(p);
+        v = vld1q_u64(p);
         break;
     case 1:
-        v = vld1_dup_u64(p);
+        v = vld1q_dup_u64(p);
         break;
     case 0:
         v =uint64x2_t{0u, 0u};
@@ -323,21 +328,21 @@ void
 cftal::mem<cftal::vec<uint64_t, 2> >::store(uint64_t* p,
                                             const vec<uint64_t, 2>& v)
 {
-    vst1_u64(p, v());
+    vst1q_u64(p, v());
 }
 
 inline
 cftal::vec<uint64_t, 1>
 cftal::low_half(const vec<uint64_t, 2>& v)
 {
-    return vec<uint64_t, 1>(vget_lane_u64(v(), 0));
+    return vec<uint64_t, 1>(vgetq_lane_u64(v(), 0));
 }
 
 inline
 cftal::vec<uint64_t, 1>
 cftal::high_half(const vec<uint64_t, 2>& v)
 {
-    return vec<uint64_t, 1>(vget_lane_u64(v(), 1));
+    return vec<uint64_t, 1>(vgetq_lane_u64(v(), 1));
 }
 
 inline
@@ -364,14 +369,15 @@ cftal::none_of(const vec<uint64_t, 2>::mask_type& s)
 inline
 cftal::v2u64 cftal::max(const v2u64& a, const v2u64& b)
 {
-    return vmax_u64(a(), b());
-
+    // return vmax u64(a(), b());
+    return select(a > b, a, b);
 }
 
 inline
 cftal::v2u64 cftal::min(const v2u64& a, const v2u64& b)
 {
-    return vmin_u64(a(), b());
+    // return vminq_u64(a(), b());
+    return select(a < b, a, b);
 }
 
 inline
@@ -379,7 +385,7 @@ cftal::v2u64 cftal::select(const v2u64::mask_type& m,
                            const v2u64& on_true,
                            const v2u64& on_false)
 {
-    return vbsl_u64(m(), on_true(), on_false());
+    return vbslq_u64(m(), on_true(), on_false());
 }
 
 template <bool _I0, bool _I1>
@@ -388,7 +394,7 @@ cftal::v2u64 cftal::select(const v2u64& a, const v2u64& b)
 {
     const uint64x2_t m{_I0 ? uint64_t(-1) : uint64_t(0),
                        _I1 ? uint64_t(-1) : uint64_t(0)};
-    return vbsl_u64(m, a(), b());
+    return vbslq_u64(m, a(), b());
 }
 
 template <int _I0, int _I1>

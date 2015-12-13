@@ -26,9 +26,9 @@ namespace cftal {
         vec(double v);
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
-        vec(std::initializer_list<float> l);
+        vec(std::initializer_list<double> l);
         // allow construction from vec<double, 8>
-        vec(init_list<float> l);
+        vec(init_list<double> l);
         // allow construction from two halfes
         vec(const vec<double, 1>& lh, const vec<double, 1>& hh);
         // expression template constructor
@@ -175,7 +175,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return vceq_f64(a(), b());
+                return vceqq_f64(a(), b());
             }
         };
 
@@ -186,8 +186,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                v2u32 m=eq<double, 2>::v(a, b);
-                return ~m;
+                return ~(a==b);
             }
         };
 
@@ -336,7 +335,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b,
               const full_type& c) {
                 // return vsub_f64(c(), vmul_f64(a(), b()));
-                return vmlaq_f64(vneg_f64(a()), b(), c());
+                return vmlaq_f64(vnegq_f64(a()), b(), c());
             }
         };
 
@@ -346,10 +345,10 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                uint32x2_t ai= vreinterpret_u32_f64(a());
-                uint32x2_t bi = vreinterpret_u32_f64(b());
-                uint32x2_t ri= vorr_u32(ai, bi);
-                return vreinterpret_f64_u32(ri);
+                uint32x4_t ai= vreinterpretq_u32_f64(a());
+                uint32x4_t bi = vreinterpretq_u32_f64(b());
+                uint32x4_t ri= vorrq_u32(ai, bi);
+                return vreinterpretq_f64_u32(ri);
             }
         };
 
@@ -360,10 +359,10 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                uint32x2_t ai= vreinterpret_u32_f64(a());
-                uint32x2_t bi = vreinterpret_u32_f64(b());
-                uint32x2_t ri= vand_u32(ai, bi);
-                return vreinterpret_f64_u32(ri);
+                uint32x4_t ai= vreinterpretq_u32_f64(a());
+                uint32x4_t bi = vreinterpretq_u32_f64(b());
+                uint32x4_t ri= vandq_u32(ai, bi);
+                return vreinterpretq_f64_u32(ri);
             }
         };
 
@@ -374,31 +373,31 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                uint32x2_t ai= vreinterpret_u32_f64(a());
-                uint32x2_t bi = vreinterpret_u32_f64(b());
-                uint32x2_t ri= veor_u32(ai, bi);
-                return vreinterpret_f64_u32(ri);
+                uint32x4_t ai= vreinterpretq_u32_f64(a());
+                uint32x4_t bi = vreinterpretq_u32_f64(b());
+                uint32x4_t ri= veorq_u32(ai, bi);
+                return vreinterpretq_f64_u32(ri);
             }
         };
     }
 }
 
 inline
-cftal::vec<double, 2>::vec(float v)
-    : base_type(vmov_n_f64(v))
+cftal::vec<double, 2>::vec(double v)
+    : base_type(vmovq_n_f64(v))
 {
 }
 
 inline
 cftal::vec<double, 2>::
-vec(std::initializer_list<float> l)
+vec(std::initializer_list<double> l)
     : vec(mem<vec<double,2> >::load(l.begin(), l.size()))
 {
 }
 
 inline
 cftal::vec<double, 2>::
-vec(init_list<float> l)
+vec(init_list<double> l)
     : vec(mem<vec<double,2> >::load(l.begin(), l.size()))
 {
 }
@@ -421,16 +420,16 @@ vec<double, 2>::vec(const expr<_OP<double, 2>, _L, _R>& r)
 
 inline
 cftal::vec<double, 2>
-cftal::mem<cftal::vec<double, 2>>::load(const float* p, std::size_t s)
+cftal::mem<cftal::vec<double, 2>>::load(const double* p, std::size_t s)
 {
     float64x2_t v;
     switch (s) {
     default:
     case 2:
-        v = vld1_f64(p);
+        v = vld1q_f64(p);
         break;
     case 1:
-        v = vld1_dup_f64(p);
+        v = vld1q_dup_f64(p);
         break;
     case 0:
         v = float64x2_t{0.0f, 0.0f};
@@ -441,9 +440,9 @@ cftal::mem<cftal::vec<double, 2>>::load(const float* p, std::size_t s)
 
 inline
 void
-cftal::mem<cftal::vec<double, 2>>::store(float* p, const vec<double, 2>& v)
+cftal::mem<cftal::vec<double, 2>>::store(double* p, const vec<double, 2>& v)
 {
-    vst1_f64(p, v());
+    vst1q_f64(p, v());
 }
 
 inline
@@ -473,7 +472,7 @@ cftal::select(const v2f64::mask_type& m,
               const v2f64& on_true, const v2f64& on_false)
 {
     // float64x2_t vbsl_f64(uint32x2_t a, float64x2_t b, float64x2_t c);
-    return vbsl_f64(m(), on_true(), on_false());
+    return vbslq_f64(m(), on_true(), on_false());
     // return arm::select(m(), on_true(), on_false());
 }
 
@@ -482,14 +481,14 @@ inline
 cftal::v2f64
 cftal::max(const v2f64& a, const v2f64& b)
 {
-    return vmax_f64(a(), b());
+    return vmaxq_f64(a(), b());
 }
 
 inline
 cftal::v2f64
 cftal::min(const v2f64& a, const v2f64& b)
 {
-    return vmin_f64(a(), b());
+    return vminq_f64(a(), b());
 }
 
 inline
@@ -514,7 +513,7 @@ inline
 cftal::v2f64 cftal::sqrt(const v2f64& a)
 {
 #if defined (__aarch64__)
-    return vsqrt_f64(a());
+    return vsqrtq_f64(a());
 #else
     // return _mm_sqrt_ps(a());
     // approximative quadword float inverse square root
@@ -546,7 +545,7 @@ inline
 cftal::v2f64 cftal::abs(const v2f64& a)
 {
 #if defined (__aarch64__)
-    return vabs_f64(a());
+    return vabsq_f64(a());
 #else
     const v2f64 msk(not_sign_f64_msk::v._f64);
     uint32x2_t ai= vreinterpret_u32_f64(a());
@@ -560,10 +559,10 @@ inline
 cftal::v2f64 cftal::andnot(const v2f64& a, const v2f64& b)
 {
     // return _mm_andnot_ps(a(), b());
-    uint32x2_t ai= vreinterpret_u32_f64(a());
-    uint32x2_t bi= vreinterpret_u32_f64(b());
-    uint32x2_t ri= vbic_u32(bi, ai);
-    return vreinterpret_f64_u32(ri);
+    uint32x4_t ai= vreinterpretq_u32_f64(a());
+    uint32x4_t bi= vreinterpretq_u32_f64(b());
+    uint32x4_t ri= vbicq_u32(bi, ai);
+    return vreinterpretq_f64_u32(ri);
 }
 
 inline
@@ -636,7 +635,7 @@ cftal::v2f64 cftal::mulsign(const v2f64& x, const v2f64& y)
 inline
 unsigned cftal::read_signs(const v2f64& a)
 {
-    return arm::read_signs_s32(vreinterpret_s32_f64(a()));
+    return arm::read_signs_s64(vreinterpretq_s64_f64(a()));
 }
 
 inline
@@ -655,19 +654,19 @@ cftal::v2f64 cftal::arm::round(const v2f64& a, const rounding_mode::type m)
 #if defined (__aarch64__)
     switch (m) {
     case rounding_mode::nearest:
-        r= vrndn_f64(a());
+        r= vrndnq_f64(a());
         break;
     case rounding_mode::downward:
-        r= vrndm_f64(a());
+        r= vrndmq_f64(a());
         break;
     case rounding_mode::upward:
-        r= vrndp_f64(a());
+        r= vrndpq_f64(a());
         break;
     case rounding_mode::towardzero:
-        r= vrnd_f64(a());
+        r= vrndq_f64(a());
         break;
     case rounding_mode::current:
-        r= vrndi_f64(a());
+        r= vrndiq_f64(a());
         break;
     }
 #else
@@ -742,9 +741,9 @@ inline
 cftal::vec<double, 2>
 cftal::select(const vec<double, 2>& l, const vec<double,2>& r)
 {
-    const uint32x2_t h{_I0 ? uint32_t(-1) : uint32_t(0),
-                       _I1 ? uint32_t(-1) : uint32_t(0)};
-    return vbsl_f64(h, l(), r());
+    const uint64x2_t h{_I0 ? uint64_t(-1LL) : uint64_t(0),
+                       _I1 ? uint64_t(-1LL) : uint64_t(0)};
+    return vbslq_f64(h, l(), r());
     // return arm::select_f64<_I0, _I1>(l(), r());
 }
 
