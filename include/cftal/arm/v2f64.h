@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
+#include <cftal/fenv.h>
 #include <cftal/constants.h>
 #include <cftal/impl/vreg.h>
 #include <cftal/arm/intrin.h>

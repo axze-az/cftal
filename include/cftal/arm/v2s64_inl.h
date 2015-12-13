@@ -138,6 +138,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b) {
                 // return vmulq_s64(a(), b());
+                // TODO mul_s64
                 return a;
             }
         };
@@ -149,6 +150,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b) {
                 // return x86::div_s64::lh(a(), b());
+                // TODO: div_s64
                 return a;
             }
         };
@@ -392,6 +394,7 @@ inline
 std::pair<cftal::v2s64, cftal::v2s64>
 cftal::mul_lo_hi(const v2s64& x, const v2s64& y)
 {
+    // TODO: mul_lo_hi s64
     return std::make_pair(x, y);
 }
 

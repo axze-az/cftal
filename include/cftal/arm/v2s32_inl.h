@@ -6,6 +6,7 @@
 #include <cftal/arm/v2s32.h>
 #include <cftal/arm/v2s32.h>
 #include <cftal/arm/perm.h>
+#include <cftal/impl/divide.h>
 
 namespace cftal {
 
@@ -145,8 +146,8 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                // return x86::div_s32::lh(a(), b());
-                return a;
+                auto r=impl::sdiv_double_shift<v2s32, v2u32, v2u32, 32>(a, b);
+                return r.first;
             }
         };
 
@@ -388,7 +389,15 @@ inline
 std::pair<cftal::v2s32, cftal::v2s32>
 cftal::mul_lo_hi(const v2s32& x, const v2s32& y)
 {
-    return std::make_pair(x, y);
+    // TODO: mul_lo_hi s32
+    int64x2_t r0=vmull_s32(x(), y());
+    // p0l p0h p1l p1h
+    uint32x4_t r1=vreinterpretq_u32_s64(r0);
+    uint32x4_t rs=arm::impl::perm1_v4u32<0, 2, 1, 3>::v(r1);
+    int32x4_t rsi=vreinterpretq_s32_u32(rs);
+    int32x2_t l= vget_low_s32(rsi);
+    int32x2_t h= vget_high_s32(rsi);
+    return std::make_pair(l, h);
 }
 
 // Local variables:

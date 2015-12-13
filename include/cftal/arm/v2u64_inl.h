@@ -17,9 +17,8 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                // TODO
-                // return vmvnq_u64(a());
-                return a;
+                uint32x4_t t=vreinterpretq_u32_u64(a());
+                return vreinterpretq_u64_u32(vmvnq_u32(t));
             }
         };
 
@@ -138,7 +137,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b) {
                 // return vmulq_u64(a(), b());
-                // TODO
+                // TODO mul_u64
                 return a;
             }
         };
@@ -150,7 +149,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b) {
                 // return x86::div_u64::lh(a(), b());
-                // TODO:
+                // TODO: div_u64
                 return a;
             }
         };
@@ -415,6 +414,7 @@ inline
 std::pair<cftal::v2u64, cftal::v2u64>
 cftal::mul_lo_hi(const v2u64& x, const v2u64& y)
 {
+    // TODO: mul_lo_hi u64
     return std::make_pair(x, y);
 }
 
