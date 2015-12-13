@@ -97,7 +97,9 @@ cftal::impl::sdiv_double_shift(const _S& a, const _S& b)
     std::pair<_U, _U> qr=udiv_double_shift<_U, _M, _N>(ua, ub);
     _S sgn= (a^b) >> (_N-1);
     _S q0=as<_S>(qr.first);
-    _S q= (q^sgn) -sgn;
+    _S q= (q0^sgn) -sgn;
+    // a/0 == ~_S(0)
+    q = select(b == _S(0), ~_S(0), q);
     _S r= a - q*b;
     return std::make_pair(q, r);
 }
