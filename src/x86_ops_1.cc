@@ -6,7 +6,7 @@
 #include "cftal/bitops.h"
 #include "cftal/mul_div.h"
 
-#if 1
+#if 0
 #include "cftal/vec.h"
 __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 {
@@ -26,6 +26,35 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     if (rem != nullptr)
         *rem = qr.second();
     return qr.first();
+}
+
+__m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
+{
+    v4s32 xs=x, ys=y;
+    std::pair<v4s32, v4s32> qr=
+        cftal::impl::sdiv_double_shift<v4s32, v4u32, v4u32, 32>(xs, ys);
+    if (rem != nullptr)
+        *rem = qr.second();
+    return qr.first();
+}
+__m128i cftal::x86::div_s32::lh(__m128i x, __m128i y, __m128i* rem)
+{
+    return div_s32::v(x, y, rem);
+}
+
+__m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
+{
+    v4u32 xs=x, ys=y;
+    std::pair<v4u32, v4u32> qr=
+        cftal::impl::udiv_double_shift<v4u32, v4u32, 32>(xs, ys);
+    if (rem != nullptr)
+        *rem = qr.second();
+    return qr.first();
+}
+
+__m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
+{
+    return div_u32::v(x, y, rem);
 }
 
 #else
@@ -100,7 +129,6 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     }
     return q;
 }
-#endif
 
 __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
 {
@@ -285,6 +313,7 @@ __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
     }
     return qi;
 }
+#endif
 
 #if defined (__tune_amdfam10__)
 #define SLOW_DIV 1
