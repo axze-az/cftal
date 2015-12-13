@@ -24,7 +24,7 @@ set (CSRCS
     v8f32_ldexp.cc
 )
 
-if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
+#if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     set (X86_SRCS
         # vec <double, 2>
         v2f64.cc
@@ -43,7 +43,7 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
         v8f64_ldexp.cc
     )
     set (CSRCS ${CSRCS} ${X86_SRCS})
-endif()
+#endif()
 
 
 add_library (cftal STATIC ${CSRCS})
