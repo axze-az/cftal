@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/select.h>
+#include <cftal/cast.h>
 #include <type_traits>
 #include <utility>
 
@@ -21,10 +22,17 @@ namespace cftal {
         // _T unsigned integer type or vector of unsigned integer
         // _M bool, something convertible to bool or a vector mask type
         // _N element size
-        template <class _T, class _M = bool, std::size_t _N=sizeof(_T)>
-        std::pair<_T, _T>
-        udiv_double_shift(const _T& a, const _T& b);
+        template <class _U, class _M = bool, std::size_t _N=sizeof(_U)>
+        std::pair<_U, _U>
+        udiv_double_shift(const _U& a, const _U& b);
 
+        template <class _S, std::size_t _N=sizeof(_S)>
+        _S sabs(const _S& v);
+
+        template <class _S, class _U, class _M = bool,
+                  std::size_t _N=sizeof(_S)>
+        std::pair<_S, _S>
+        sdiv_double_shift(const _S& a, const _S& b);
     }
 }
 
@@ -44,16 +52,16 @@ cftal::impl::divide(const _T& a, const _T& b)
     return a/b;
 }
 
-template <class _T, class _M, std::size_t _N>
-std::pair<_T, _T>
-cftal::impl::udiv_double_shift(const _T& a, const _T& b)
+template <class _U, class _M, std::size_t _N>
+std::pair<_U, _U>
+cftal::impl::udiv_double_shift(const _U& a, const _U& b)
 {
-    _T r(0);
-    _T q(a);
+    _U r(0);
+    _U q(a);
 
     for (std::size_t i=0; i<_N; ++i) {
         // double word left shift (r,q)
-        _T hibit_q = q >> (_N-1);
+        _U hibit_q = q >> (_N-1);
         r += r + hibit_q;
         q += q;
         // if (r >= b) {
@@ -61,13 +69,40 @@ cftal::impl::udiv_double_shift(const _T& a, const _T& b)
         //    ++q;
         // }
         _M r_ge_b = r >= b;
-        _T r_sub = r - b;
-        _T q_inc = q + _T(1);
+        _U r_sub = r - b;
+        _U q_inc = q + _U(1);
         r = select(r_ge_b, r_sub, r);
         q = select(r_ge_b, q_inc, q);
     }
     return std::make_pair(q, r);
 }
+
+template <class _S, std::size_t _N>
+inline
+_S
+cftal::impl::sabs(const _S& a)
+{
+    _S t = a >> (_N-1);
+    return  (a^t) -t;
+}
+
+template <class _S, class _U, class _M, std::size_t _N>
+std::pair< _S, _S >
+cftal::impl::sdiv_double_shift(const _S& a, const _S& b)
+{
+    _S abs_a= sabs<_S, _N>(a);
+    _S abs_b= sabs<_S, _N>(b);
+    _U ua= as<_U>(abs_a);
+    _U ub= as<_U>(abs_b);
+    std::pair<_U, _U> qr=udiv_double_shift<_U, _M, _N>(ua, ub);
+    _S sgn= (a^b) >> (_N-1);
+    _S q0=as<_S>(qr.first);
+    _S q= (q^sgn) -sgn;
+    _S r= a - q*b;
+    return std::make_pair(q, r);
+}
+
+
 
 
 // local variables:
