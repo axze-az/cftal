@@ -1,5 +1,5 @@
-#if !defined (__CFTAL_ARM_V2S64__)
-#define __CFTAL_ARM_V2S64__ 1
+#if !defined (__CFTAL_ARM_V2S64_H__)
+#define __CFTAL_ARM_V2S64_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/types.h>
@@ -69,10 +69,10 @@ namespace cftal {
     select(const vec<int64_t, 2>& on_true,
            const vec<int64_t, 2>& on_false);
 
-    template <int64_t _P0, int64_t _P1>
+    template <int32_t _P0, int32_t _P1>
     vec<int64_t, 2> permute(const vec<int64_t, 2>& s);
 
-    template <int64_t _P0, int64_t _P1>
+    template <int32_t _P0, int32_t _P1>
     vec<int64_t, 2> permute(const vec<int64_t, 2>& s0,
                             const vec<int64_t, 2>& s1);
 

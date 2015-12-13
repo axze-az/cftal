@@ -1,10 +1,10 @@
-#if !defined (__CFTAL_ARM_V2U64_INL__)
-#define __CFTAL_ARM_V2U64_INL__ 1
+#if !defined (__CFTAL_ARM_V2U64_INL_H__)
+#define __CFTAL_ARM_V2U64_INL_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/arm/v2u64.h>
-#include <cftal/arm/v2s32.h>
+#include <cftal/arm/v2s64.h>
 #include <cftal/arm/perm.h>
 
 namespace cftal {

@@ -1,5 +1,5 @@
-#if !defined (__CFTAL_ARM_V2F32__)
-#define __CFTAL_ARM_V2F32__ 1
+#if !defined (__CFTAL_ARM_V2F32_H__)
+#define __CFTAL_ARM_V2F32_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/types.h>

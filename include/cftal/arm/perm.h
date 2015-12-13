@@ -244,7 +244,7 @@ perm2_v16u8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7,
                    uint8_t(_P8), uint8_t(_P9), uint8_t(_PA), uint8_t(_PB),
                    uint8_t(_PC), uint8_t(_PD), uint8_t(_PE), uint8_t(_PF)};
     uint8x16x2_t ab{a, b};
-    uint8x8_t ri=vqtbl2q_u8(ab, dst);
+    uint8x16_t ri=vqtbl2q_u8(ab, dst);
     return ri;
 }
 
@@ -311,6 +311,67 @@ perm2_v4u32<_P0, _P1, _P2, _P3>::v(uint32x4_t a, uint32x4_t b)
                               u8, u9, ua, ub, uc, ud, ue, uf>::v(ai, bi);
     return vreinterpretq_u32_u8(ri);
 }
+
+template <int _P0, int _P1>
+inline
+uint64x2_t
+cftal::arm::impl::perm1_v2u64<_P0, _P1>::v(uint64x2_t a)
+{
+    const bool p0n = _P0 < 0;
+    const bool p1n = _P1 < 0;
+    const int u0= p0n ? -1 : (8*_P0) + 0;
+    const int u1= p0n ? -1 : (8*_P0) + 1;
+    const int u2= p0n ? -1 : (8*_P0) + 2;
+    const int u3= p0n ? -1 : (8*_P0) + 3;
+    const int u4= p0n ? -1 : (8*_P0) + 4;
+    const int u5= p0n ? -1 : (8*_P0) + 5;
+    const int u6= p0n ? -1 : (8*_P0) + 6;
+    const int u7= p0n ? -1 : (8*_P0) + 7;
+    const int u8= p1n ? -1 : (8*_P1) + 0;
+    const int u9= p1n ? -1 : (8*_P1) + 1;
+    const int ua= p1n ? -1 : (8*_P1) + 2;
+    const int ub= p1n ? -1 : (8*_P1) + 3;
+    const int uc= p1n ? -1 : (8*_P1) + 4;
+    const int ud= p1n ? -1 : (8*_P1) + 5;
+    const int ue= p1n ? -1 : (8*_P1) + 6;
+    const int uf= p1n ? -1 : (8*_P1) + 7;
+    uint8x16_t ai = vreinterpretq_u8_u64(a);
+    uint8x16_t ri=perm1_v16u8<u0, u1, u2, u3, u4, u5, u6, u7,
+                              u8, u9, ua, ub, uc, ud, ue, uf>::v(ai);
+    return vreinterpretq_u64_u8(ri);
+}
+
+template <int _P0, int _P1>
+inline
+uint64x2_t
+cftal::arm::impl::
+perm2_v2u64<_P0, _P1>::v(uint64x2_t a, uint64x2_t b)
+{
+    const bool p0n = _P0 < 0;
+    const bool p1n = _P1 < 0;
+    const int u0= p0n ? -1 : (8*_P0) + 0;
+    const int u1= p0n ? -1 : (8*_P0) + 1;
+    const int u2= p0n ? -1 : (8*_P0) + 2;
+    const int u3= p0n ? -1 : (8*_P0) + 3;
+    const int u4= p0n ? -1 : (8*_P0) + 4;
+    const int u5= p0n ? -1 : (8*_P0) + 5;
+    const int u6= p0n ? -1 : (8*_P0) + 6;
+    const int u7= p0n ? -1 : (8*_P0) + 7;
+    const int u8= p1n ? -1 : (8*_P1) + 0;
+    const int u9= p1n ? -1 : (8*_P1) + 1;
+    const int ua= p1n ? -1 : (8*_P1) + 2;
+    const int ub= p1n ? -1 : (8*_P1) + 3;
+    const int uc= p1n ? -1 : (8*_P1) + 4;
+    const int ud= p1n ? -1 : (8*_P1) + 5;
+    const int ue= p1n ? -1 : (8*_P1) + 6;
+    const int uf= p1n ? -1 : (8*_P1) + 7;
+    uint8x16_t ai = vreinterpretq_u8_u64(a);
+    uint8x16_t bi = vreinterpretq_u8_u64(b);
+    uint8x16_t ri=perm2_v16u8<u0, u1, u2, u3, u4, u5, u6, u7,
+                              u8, u9, ua, ub, uc, ud, ue, uf>::v(ai, bi);
+    return vreinterpretq_u64_u8(ri);
+}
+
 
 
 template <int _P0, int _P1, int _P2, int _P3,
