@@ -366,8 +366,8 @@ template <bool _I0, bool _I1>
 inline
 cftal::v2s32 cftal::select(const v2s32& a, const v2s32& b)
 {
-    const uint32x2_t m{_I0 ? int32_t(-1) : int32_t(0),
-                       _I1 ? int32_t(-1) : int32_t(0)};
+    const uint32x2_t m{_I0 ? uint32_t(-1) : uint32_t(0),
+                       _I1 ? uint32_t(-1) : uint32_t(0)};
     return vbsl_s32(m, a(), b());
 }
 

@@ -371,8 +371,8 @@ template <bool _I0, bool _I1>
 inline
 cftal::v2s64 cftal::select(const v2s64& a, const v2s64& b)
 {
-    const uint64x2_t m{_I0 ? int64_t(-1) : int64_t(0),
-                       _I1 ? int64_t(-1) : int64_t(0)};
+    const uint64x2_t m{_I0 ? uint64_t(-1ll) : uint64_t(0),
+                       _I1 ? uint64_t(-1ll) : uint64_t(0)};
     return vbslq_s64(m, a(), b());
 }
 

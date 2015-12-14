@@ -205,7 +205,7 @@ cftal::arm::impl::perm2_v2u32<_P0, _P1>::v(uint32x2_t a, uint32x2_t b)
     const int u6= p1n ? -1 : (4*_P1) + 2;
     const int u7= p1n ? -1 : (4*_P1) + 3;
     uint8x8_t ai = vreinterpret_u8_u32(a);
-    uint8x8_t bi = vreinterpret_u8_u32(a);
+    uint8x8_t bi = vreinterpret_u8_u32(b);
     uint8x8_t ri=perm2_v8u8<u0, u1, u2, u3, u4, u5, u6, u7>::v(ai, bi);
     return vreinterpret_u32_u8(ri);
 }

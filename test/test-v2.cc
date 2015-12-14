@@ -6,6 +6,7 @@ int main()
 {
     bool rc(true);
     rc &= cftal::test::check_v2<double>();
+    rc &= cftal::test::check_v2<float>();
     rc &= cftal::test::check_v2<int32_t>();
     rc &= cftal::test::check_v2<uint32_t>();
     rc &= cftal::test::check_v2<int64_t>();
