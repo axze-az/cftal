@@ -64,6 +64,7 @@ namespace cftal {
                 static
                 uint32x4_t v(uint32x4_t a, uint32x4_t b);
             };
+            // TODO add specializations
 
             template <int _P0, int _P1>
             struct perm1_v2u64 {
@@ -76,6 +77,8 @@ namespace cftal {
                 static
                 uint64x2_t v(uint64x2_t a, uint64x2_t b);
             };
+
+            // TODO add specializations
 
         }
 
