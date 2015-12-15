@@ -27,20 +27,20 @@ namespace cftal {
         // select floats
         // __SSE2__: bitwise
         // __SSE4_1__: on sign bit of float
-        __m128 select(__m128 msk, __m128 on_one, __m128 on_zero);
+        __m128 select_f32(__m128 msk, __m128 on_one, __m128 on_zero);
 
         // select doubles
         // __SSE2__: bitwise
         // __SSE4_1__: on sign bit of double
-        __m128d select(__m128d msk, __m128d on_one, __m128d on_zero);
+        __m128d select_f64(__m128d msk, __m128d on_one, __m128d on_zero);
 
 #if defined (__AVX__)
         // select floats
         // on sign bit of float
-        __m256 select(__m256 msk, __m256 on_one, __m256 on_zero);
+        __m256 select_f32(__m256 msk, __m256 on_one, __m256 on_zero);
         // select on doubles
         // on sign bit of double
-        __m256d select(__m256d msk, __m256d on_one, __m256d on_zero);
+        __m256d select_f64(__m256d msk, __m256d on_one, __m256d on_zero);
 #endif
 #if defined (__AVX2__)
         // select bytes
@@ -52,17 +52,17 @@ namespace cftal {
         __m256i select_u64(__m256i msk, __m256i on_one, __m256i on_zero);
 #endif
 #if defined (__AVX512F__)
-        __m512d select(__mmask8 msk, __m512d on_one, __m512d on_zero);
-        __m512 select(__mmask16 msk, __m512 on_one, __m512 on_zero);
+        __m512d select_f64(__mmask8 msk, __m512d on_one, __m512d on_zero);
+        __m512 select_f32(__mmask16 msk, __m512 on_one, __m512 on_zero);
         __m512i select_u64(__mmask8 msk, __m512i on_one, __m512i on_zero);
         __m512i select_u32(__mmask16 msk, __m512i on_one, __m512i on_zero);
 #endif
 #if defined (__AVX512VL__)
-        __m128d select(__mmask8 msk, __m128d on_one, __m128d on_zero);
-        __m256d select(__mmask8 msk, __m256d on_one, __m256d on_zero);
+        __m128d select_f64(__mmask8 msk, __m128d on_one, __m128d on_zero);
+        __m256d select_f64(__mmask8 msk, __m256d on_one, __m256d on_zero);
 
-        __m128 select(__mmask8 msk, __m128 on_one, __m128 on_zero);
-        __m256 select(__mmask8 msk, __m256 on_one, __m256 on_zero);
+        __m128 select_f32(__mmask8 msk, __m128 on_one, __m128 on_zero);
+        __m256 select_f32(__mmask8 msk, __m256 on_one, __m256 on_zero);
 
         __m128i select_u64(__mmask8 msk, __m128i on_one, __m128i on_zero);
         __m256i select_u64(__mmask8 msk, __m256i on_one, __m256i on_zero);
@@ -259,7 +259,8 @@ cftal::x86::select(uint64_t msk, uint64_t on_one, uint64_t on_zero)
 }
 
 inline
-__m128i cftal::x86::select(__m128i msk, __m128i on_one, __m128i on_zero)
+__m128i
+cftal::x86::select(__m128i msk, __m128i on_one, __m128i on_zero)
 {
 #if defined (__SSE4_1__)
     return _mm_blendv_epi8 (on_zero, on_one, msk);
@@ -291,7 +292,8 @@ cftal::x86::select_u64(__m128i msk, __m128i on_one, __m128i on_zero)
 }
 
 inline
-__m128 cftal::x86::select(__m128 msk, __m128 on_one, __m128 on_zero)
+__m128
+cftal::x86::select_f32(__m128 msk, __m128 on_one, __m128 on_zero)
 {
 #if defined (__SSE4_1__)
     return _mm_blendv_ps (on_zero, on_one, msk);
@@ -302,7 +304,8 @@ __m128 cftal::x86::select(__m128 msk, __m128 on_one, __m128 on_zero)
 }
 
 inline
-__m128d cftal::x86::select(__m128d msk, __m128d on_one, __m128d on_zero)
+__m128d
+cftal::x86::select_f64(__m128d msk, __m128d on_one, __m128d on_zero)
 {
 #if defined (__SSE4_1__)
     return _mm_blendv_pd (on_zero, on_one, msk);
@@ -314,13 +317,15 @@ __m128d cftal::x86::select(__m128d msk, __m128d on_one, __m128d on_zero)
 
 #if defined (__AVX__)
 inline
-__m256 cftal::x86::select(__m256 msk, __m256 on_one, __m256 on_zero)
+__m256
+cftal::x86::select_f32(__m256 msk, __m256 on_one, __m256 on_zero)
 {
     return _mm256_blendv_ps (on_zero, on_one, msk);
 }
 
 inline
-__m256d cftal::x86::select(__m256d msk, __m256d on_one, __m256d on_zero)
+__m256d
+cftal::x86::select_f64(__m256d msk, __m256d on_one, __m256d on_zero)
 {
     return _mm256_blendv_pd (on_zero, on_one, msk);
 }
@@ -328,7 +333,8 @@ __m256d cftal::x86::select(__m256d msk, __m256d on_one, __m256d on_zero)
 
 #if defined (__AVX2__)
 inline
-__m256i cftal::x86::select(__m256i msk, __m256i on_one, __m256i on_zero)
+__m256i
+cftal::x86::select(__m256i msk, __m256i on_one, __m256i on_zero)
 {
     return _mm256_blendv_epi8 (on_zero, on_one, msk);
 }
@@ -358,25 +364,29 @@ cftal::x86::select_u64(__m256i msk, __m256i on_one, __m256i on_zero)
 
 #if defined (__AVX512F__)
 inline
-__m512d cftal::x86::select(__mmask8 msk, __m512d on_one, __m512d on_zero)
+__m512d
+cftal::x86::select_f64(__mmask8 msk, __m512d on_one, __m512d on_zero)
 {
     return _mm512_mask_blend_pd (msk, on_one, on_zero);
 }
 
 inline
-__m512 cftal::x86::select(__mmask16 msk, __m512 on_one, __m512 on_zero)
+__m512
+cftal::x86::select_f32(__mmask16 msk, __m512 on_one, __m512 on_zero)
 {
     return _mm512_mask_blend_ps (msk, on_one, on_zero);
 }
 
 inline
-__m512i cftal::x86::select_u64(__mmask8 msk, __m512i on_one, __m512i on_zero)
+__m512i
+cftal::x86::select_u64(__mmask8 msk, __m512i on_one, __m512i on_zero)
 {
     return _mm512_mask_blend_epi64 (msk, on_one, on_zero);
 }
 
 inline
-__m512i cftal::x86::select_u32(__mmask16 msk, __m512i on_one, __m512i on_zero)
+__m512i
+cftal::x86::select_u32(__mmask16 msk, __m512i on_one, __m512i on_zero)
 {
     return _mm512_mask_blend_epi32 (msk, on_one, on_zero);
 }
@@ -386,54 +396,61 @@ __m512i cftal::x86::select_u32(__mmask16 msk, __m512i on_one, __m512i on_zero)
 
 #if defined (__AVX512VL__)
 inline
-__m128d cftal::x86::select(__mmask8 msk, __m128d on_one, __m128d on_zero)
+__m128d
+cftal::x86::select_f64(__mmask8 msk, __m128d on_one, __m128d on_zero)
 {
     return _mm_mask_blend_pd (msk, on_one, on_zero);
 }
 
 inline
-__m256d cftal::x86::select(__mmask8 msk, __m256d on_one, __m256d on_zero)
+__m256d
+cftal::x86::select_f64(__mmask8 msk, __m256d on_one, __m256d on_zero)
 {
     return _mm256_mask_blend_pd (msk, on_one, on_zero);
 }
 
 inline
-__m128 cftal::x86::select(__mmask8 msk, __m128 on_one, __m128 on_zero)
+__m128
+cftal::x86::select_f32(__mmask8 msk, __m128 on_one, __m128 on_zero)
 {
     return _mm_mask_blend_ps (msk, on_one, on_zero);
 }
 
 inline
-__m256 cftal::x86::select(__mmask8 msk, __m256 on_one, __m256 on_zero)
+__m256
+cftal::x86::select_f32(__mmask8 msk, __m256 on_one, __m256 on_zero)
 {
     return _mm256_mask_blend_ps (msk, on_one, on_zero);
 }
 
 inline
-__m128i cftal::x86::select_u64(__mmask8 msk, __m128i on_one, __m128i on_zero)
+__m128i
+cftal::x86::select_u64(__mmask8 msk, __m128i on_one, __m128i on_zero)
 {
     return _mm_mask_blend_epi64 (msk, on_one, on_zero);
 }
-    
+
 inline
-__m256i cftal::x86::select_u64(__mmask8 msk, __m256i on_one, __m256i on_zero)
+__m256i
+cftal::x86::select_u64(__mmask8 msk, __m256i on_one, __m256i on_zero)
 {
     return _mm256_mask_blend_epi64 (msk, on_one, on_zero);
 }
 
 inline
-__m128i cftal::x86::select_u32(__mmask8 msk, __m128i on_one, __m128i on_zero)
+__m128i
+cftal::x86::select_u32(__mmask8 msk, __m128i on_one, __m128i on_zero)
 {
     return _mm_mask_blend_epi32 (msk, on_one, on_zero);
 }
 
 inline
-__m256i cftal::x86::select_u32(__mmask8 msk, __m256i on_one, __m256i on_zero)
+__m256i
+cftal::x86::select_u32(__mmask8 msk, __m256i on_one, __m256i on_zero)
 {
     return _mm256_mask_blend_epi32 (msk, on_one, on_zero);
 }
 
-    
 #endif
 
 

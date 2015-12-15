@@ -505,7 +505,7 @@ cftal::v4f32 cftal::select(const v4f32::mask_type& m,
                            const v4f32& on_true,
                            const v4f32& on_false)
 {
-    return x86::select(m(), on_true(), on_false());
+    return x86::select_f32(m(), on_true(), on_false());
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3>

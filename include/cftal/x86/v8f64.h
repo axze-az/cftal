@@ -13,7 +13,7 @@
 
 namespace cftal {
 
-#if defined (__AVX512F__)    
+#if defined (__AVX512F__)
 
     template <>
     class vec<double, 8> : public x86::vreg<__m512d> {
@@ -47,7 +47,7 @@ namespace cftal {
     struct arg<vec<double, 8> > {
         using type = vec<double, 8>;
     };
-    
+
     template <>
     struct mem< vec<double, 8> > {
         static
@@ -65,7 +65,7 @@ namespace cftal {
     template <std::size_t _I>
     double
     extract(const vec<double, 8>& s);
-    
+
     vec<double, 8>
     select(const typename vec<double, 8>::mask_type& msk,
            const vec<double, 8>& on_true,
@@ -106,7 +106,7 @@ namespace cftal {
 #if 0
     vec<double, 8>
     cbrt(arg<vec<double, 8> >::type v);
-    
+
     v8f64 frexp(arg<v8f64>::type x, v4s32* e);
     // v8f64 pow2i(arg<v4s32>::type e);
     v8f64 ldexp(arg<v8f64>::type d, arg<v8s32>::type e);
@@ -142,8 +142,8 @@ namespace cftal {
 
     v8f64 pow(arg<v8f64>::type x, arg<v8f64>::type y);
 #endif
-    
-#if defined (__AVX512F__)        
+
+#if defined (__AVX512F__)
     // a*b +c
     v8f64 fma(const v8f64& a, const v8f64& b, const v8f64& c);
     // a*b -c
@@ -430,7 +430,7 @@ namespace cftal {
 #endif
 
     }
-#endif // __AVX__    
+#endif // __AVX__
 }
 
 #if defined (__AVX512F__)
@@ -506,7 +506,6 @@ cftal::mem<cftal::vec<double, 8> >::load(const double* p, std::size_t s)
     case 2:
         v = _mm512_setr_pd(p[0], p[1], p[1], p[1],
                            p[1], p[1], p[1], p[1]);
-                           
         break;
     case 1:
         v = _mm512_setr_pd(p[0], p[0], p[0], p[0],
@@ -554,11 +553,11 @@ cftal::extract(const vec<double, 8>& v)
 }
 
 inline
-cftal::v8f64 cftal::select(const v8f64::mask_type& m,
-                           const v8f64& on_true,
-                           const v8f64& on_false)
+cftal::v8f64
+cftal::select(const v8f64::mask_type& m,
+              const v8f64& on_true, const v8f64& on_false)
 {
-    return x86::select(m(), on_true(), on_false());
+    return x86::select_f64(m(), on_true(), on_false());
 }
 
 inline

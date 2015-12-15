@@ -524,9 +524,8 @@ cftal::v2f64
 cftal::select(const v2f64::mask_type& m,
               const v2f64& on_true, const v2f64& on_false)
 {
-    return x86::select(m(), on_true(), on_false());
+    return x86::select_f64(m(), on_true(), on_false());
 }
-
 
 inline
 cftal::v2f64

@@ -526,11 +526,11 @@ cftal::extract(const vec<double, 4>& v)
 }
 
 inline
-cftal::v4f64 cftal::select(const v4f64::mask_type& m,
-                           const v4f64& on_true,
-                           const v4f64& on_false)
+cftal::v4f64
+cftal::select(const v4f64::mask_type& m,
+              const v4f64& on_true, const v4f64& on_false)
 {
-    return x86::select(m(), on_true(), on_false());
+    return x86::select_f64(m(), on_true(), on_false());
 }
 
 inline

@@ -561,11 +561,11 @@ cftal::extract(const vec<float, 8>& v)
 }
 
 inline
-cftal::v8f32 cftal::select(const v8f32::mask_type& m,
-                           const v8f32& on_true,
-                           const v8f32& on_false)
+cftal::v8f32
+cftal::select(const v8f32::mask_type& m,
+              const v8f32& on_true, const v8f32& on_false)
 {
-    return x86::select(m(), on_true(), on_false());
+    return x86::select_f32(m(), on_true(), on_false());
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3,

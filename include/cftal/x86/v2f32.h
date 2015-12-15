@@ -545,7 +545,7 @@ cftal::v2f32
 cftal::select(const v2f32::mask_type& m,
               const v2f32& on_true, const v2f32& on_false)
 {
-    return x86::select(m(), on_true(), on_false());
+    return x86::select_f32(m(), on_true(), on_false());
 }
 
 
@@ -818,7 +818,7 @@ inline
 cftal::vec<float, 2>
 cftal::select(const vec<float, 2>& l, const vec<float,2>& r)
 {
-    return x86::select_f32<_I0, _I1>(l(), r());
+    return x86::select_f32<_I0, _I1, true, true>(l(), r());
 }
 
 template <int _I0, int _I1>
