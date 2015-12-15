@@ -23,6 +23,16 @@ namespace cftal {
             static bool v(_T ai, _T bi);
         };
 
+        template <class _T, std::size_t _N, bool _IS_INTEGRAL>
+        struct of_integral_ops {
+            static bool v(_T ai, _T bi) { return true; }
+        };
+
+        template <class _T, std::size_t _N>
+        struct of_integral_ops<_T, _N, true> {
+            static bool v(_T ai, _T bi);
+        };
+
         template <class _T, std::size_t _N>
         struct of_ops {
             static bool v();
@@ -74,10 +84,26 @@ cftal::test::of_signed_ops<_T, _N, true>::v(_T ai, _T bi)
 {
     bool rc=true;
     _T a=ai, b=bi, r;
-    vec<_T, _N> va(a), vb(b), vr(0);
+    vec<_T, _N> va(a), vb(b), vr;
     r = std::abs(a);
     vr = abs(va);
     rc &= check(vr, r, "abs");
+    return rc;
+}
+
+template <class _T, std::size_t _N>
+bool
+cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
+{
+    bool rc=true;
+    _T a=ai, b=bi;
+    vec<_T, _N> va(a), vb(b);
+
+    std::pair<_T, _T> rp=mul_lo_hi(a, b);
+    std::pair<vec<_T, _N>, vec<_T, _N> > vrp=mul_lo_hi(a, b);
+    rc &= check(vrp.first, rp.first, "mul_lo_hi.first");
+    rc &= check(vrp.second, rp.second, "mul_lo_hi.second");
+
     return rc;
 }
 
@@ -140,6 +166,10 @@ cftal::test::of_ops<_T, _N>::v(_T ai, _T bi)
     const bool is_signed =
         std::is_signed<_T>::value || std::is_floating_point<_T>::value;
     rc &= of_signed_ops< _T, _N, is_signed>::v(a, b);
+
+    const bool is_integral =
+        std::is_integral<_T>::value;
+    rc &= of_integral_ops<_T, _N, is_integral>::v(a, b);
 
     bool br;
     typename vec<_T, _N>::mask_type vcr;
