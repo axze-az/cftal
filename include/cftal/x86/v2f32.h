@@ -834,7 +834,10 @@ inline
 cftal::vec<float, 2>
 cftal::permute(const vec<float, 2>& l, const vec<float, 2>& r)
 {
-    return x86::perm_v4f32<_I0, _I1, 2, 3>(l(), r());
+    __m128 lh=l();
+    __m128 hh=r();
+    __m128 t=x86::impl::vshufps<0, 1, 0, 1>::v(lh, hh);
+    return x86::perm_v4f32<_I0, _I1, 2, 3>(t);
 }
 
 // Local variables:
