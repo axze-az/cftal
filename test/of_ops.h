@@ -5,6 +5,7 @@
 #include <cftal/select.h>
 #include <cftal/test/f32_f64.h>
 #include <iostream>
+#include <sstream>
 #include <type_traits>
 #include <random>
 #include <limits>
@@ -96,13 +97,47 @@ bool
 cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
 {
     bool rc=true;
-    _T a=ai, b=bi;
-    vec<_T, _N> va(a), vb(b);
+    _T a=ai, b=bi, r;
+    vec<_T, _N> va(a), vb(b), vr;
 
+    // mul_lo_hi
     std::pair<_T, _T> rp=mul_lo_hi(a, b);
     std::pair<vec<_T, _N>, vec<_T, _N> > vrp=mul_lo_hi(a, b);
     rc &= check(vrp.first, rp.first, "mul_lo_hi.first");
     rc &= check(vrp.second, rp.second, "mul_lo_hi.second");
+
+    // left and right shifts by integer
+    std::ostringstream s;
+    for (std::size_t i=0; i<sizeof(_T); ++i) {
+
+        r = ai << i;
+        vr = va << i;
+        s << "<< " << i;
+        rc &= check(vr, r, s.str());
+        s.str("");
+
+        r = ai;
+        r <<= i;
+        vr = va;
+        vr <<= i;
+        s << "<<= " << i;
+        rc &= check(vr, r, s.str());
+        s.str("");
+
+        r = ai >> i;
+        vr = va >> i;
+        s << ">> " << i;
+        rc &= check(vr, r, s.str());
+        s.str("");
+
+        r = ai;
+        r >>= i;
+        vr = va;
+        vr >>= i;
+        s << ">>= " << i;
+        rc &= check(vr, r, s.str());
+        s.str("");
+    }
 
     return rc;
 }

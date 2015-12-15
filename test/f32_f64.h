@@ -51,11 +51,11 @@ namespace cftal {
             }
         };
 
-        template <class _T, std::size_t _N>
-        bool check(const _T(&a)[_N], _T expected, const char* msg);
+        template <class _T, std::size_t _N, typename _MSG>
+        bool check(const _T(&a)[_N], _T expected, _MSG msg);
 
-        template <class _T, std::size_t _N>
-        bool check(vec<_T, _N> a, _T expected, const char* msg);
+        template <class _T, std::size_t _N, typename _MSG>
+        bool check(vec<_T, _N> a, _T expected, _MSG msg);
 
         template <class _T, std::size_t _N>
         bool check_cmp(const _T(&a)[_N], bool expected, const char* msg);
@@ -81,8 +81,8 @@ namespace cftal {
     }
 }
 
-template <class _T, std::size_t _N>
-bool cftal::test::check(const _T(&a)[_N], _T expected , const char* msg)
+template <class _T, std::size_t _N, typename _MSG>
+bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg)
 {
     bool r=true;
     std::size_t i=0;
@@ -99,8 +99,8 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , const char* msg)
     return r;
 }
 
-template <class _T, std::size_t _N>
-bool cftal::test::check(vec<_T, _N> vr, _T expected, const char* msg)
+template <class _T, std::size_t _N, typename _MSG>
+bool cftal::test::check(vec<_T, _N> vr, _T expected, _MSG msg)
 {
     _T vsr[_N];
     mem< vec<_T, _N> >::store(vsr, vr);
