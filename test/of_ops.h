@@ -102,7 +102,7 @@ cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
 
     // mul_lo_hi
     std::pair<_T, _T> rp=mul_lo_hi(a, b);
-    std::pair<vec<_T, _N>, vec<_T, _N> > vrp=mul_lo_hi(a, b);
+    std::pair<vec<_T, _N>, vec<_T, _N> > vrp=mul_lo_hi(va, vb);
     rc &= check(vrp.first, rp.first, "mul_lo_hi.first");
     rc &= check(vrp.second, rp.second, "mul_lo_hi.second");
 
@@ -334,4 +334,7 @@ cftal::test::of_ops<_T, _N>::v()
     return rc;
 }
 
+// local variables:
+// mode: c++
+// end:
 #endif
