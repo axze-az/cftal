@@ -13,6 +13,19 @@
 namespace cftal {
     namespace test {
 
+        class err_msg {
+            bool _id_valid;
+            int _id;
+            const char* _m;
+        public:
+            err_msg(const char* pm) : _id_valid(false), _id(0), _m(pm) {}
+            err_msg(const char* pm, int vv)
+                : _id_valid(true), _id(vv), _m(pm) {}
+            const char* m() const { return _m; }
+            bool id_valid() const { return _id_valid; }
+            int id() const { return _id; }
+        };
+        std::ostream& operator<<(std::ostream& s, const err_msg& m);
 
         template <class _T, std::size_t _N, bool _IS_SIGNED>
         struct of_signed_ops {
@@ -74,12 +87,23 @@ namespace cftal {
         {
             return u/v;
         }
-
-
     }
 }
 
+inline
+std::ostream&
+cftal::test::operator<<(std::ostream& s, const err_msg& m)
+{
+    s << m.m();
+    if (m.id_valid()) {
+        s << ' ' << m.id();
+    }
+    return s;
+}
+
+
 template <class _T, std::size_t _N>
+inline
 bool
 cftal::test::of_signed_ops<_T, _N, true>::v(_T ai, _T bi)
 {
@@ -93,6 +117,7 @@ cftal::test::of_signed_ops<_T, _N, true>::v(_T ai, _T bi)
 }
 
 template <class _T, std::size_t _N>
+inline
 bool
 cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
 {
@@ -107,41 +132,31 @@ cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
     rc &= check(vrp.second, rp.second, "mul_lo_hi.second");
 
     // left and right shifts by integer
-    std::ostringstream s;
     for (std::size_t i=0; i<sizeof(_T); ++i) {
-
+        // <<
         r = ai << i;
         vr = va << i;
-        s << "<< " << i;
-        rc &= check(vr, r, s.str());
-        s.str("");
-
+        rc &= check(vr, r, err_msg("<<", i));
+        // <<=
         r = ai;
         r <<= i;
         vr = va;
         vr <<= i;
-        s << "<<= " << i;
-        rc &= check(vr, r, s.str());
-        s.str("");
-
+        rc &= check(vr, r, err_msg("<<=", i));
+        // >>
         r = ai >> i;
         vr = va >> i;
-        s << ">> " << i;
-        rc &= check(vr, r, s.str());
-        s.str("");
-
+        rc &= check(vr, r, err_msg(">>", i));
+        // >>=
         r = ai;
         r >>= i;
         vr = va;
         vr >>= i;
-        s << ">>= " << i;
-        rc &= check(vr, r, s.str());
-        s.str("");
+        rc &= check(vr, r, err_msg(">>=", i));
     }
 
     return rc;
 }
-
 
 template <class _T, std::size_t _N>
 bool
@@ -289,7 +304,10 @@ cftal::test::of_ops<_T, _N>::v()
          _T(12), _T(-21),
          _T(-12), _T(21),
          _T(12), _T(21),
-         _T(-12), _T(-21)
+         _T(-12), _T(-21),
+         _T(1), _T(0),
+         _T(0), _T(0),
+         _T(-1), _T(0)
     };
 
     for (auto b=std::begin(operands), e=std::end(operands); b!=e; b+=2) {
