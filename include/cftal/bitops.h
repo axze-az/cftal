@@ -60,7 +60,11 @@ cftal::int64_t cftal::rdtsc()
     final_tsc = ((uint64_t)tsc) << 6;
     return (uint64_t)final_tsc;
 #elif defined (__aarch64__)
-    return 0;
+    unsigned int val;
+    /* Read Performance Monitors Control Register */
+    asm volatile("mrs %0, pmcr_el0" : "=r" (val));
+    return val;
+    /* return 0 */;
 #else
 //#error "please insert a read current time functionality here"
     return 0;
