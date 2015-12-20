@@ -187,6 +187,23 @@ namespace cftal {
     vec<double, 8>
     ldexp(arg<vec<double, 8> >::type a, arg<vec<int32_t, 8> >::type e);
 
+    // ilogb
+    template <std::size_t _N>
+    vec<int32_t, _N>
+    ilogb(const vec<double, _N>& a);
+
+    vec<int32_t, 1>
+    ilogb(const vec<double, 1>& a);
+
+    vec<int32_t, 2>
+    ilogb(arg<vec<double, 2> >::type a);
+
+    vec<int32_t, 4>
+    ilogb(arg<vec<double, 4> >::type a);
+
+    vec<int32_t, 8>
+    ilogb(arg<vec<double, 8> >::type a);
+
     // specializations vec<double, 2>
     vec<double, 2>
     cbrt(arg<vec<double, 2> >::type v);
@@ -743,6 +760,20 @@ cftal::ldexp(const vec<double, 1>& a, const vec<int32_t, 1>& e)
     return vec<double, 1>(std::ldexp(a(), e()));
 }
 
+template <std::size_t _N>
+inline
+cftal::vec<int32_t, _N>
+cftal::ilogb(const vec<double, _N>& a)
+{
+    return vec<double, _N>(ilogb(low_half(a)), ilogb(high_half(a)));
+}
+
+inline
+cftal::vec<int32_t, 1>
+cftal::ilogb(const vec<double, 1>& a)
+{
+    return vec<int32_t, 1>(std::ilogb(a()));
+}
 
 // local variables:
 // mode: c++
