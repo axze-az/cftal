@@ -6,6 +6,7 @@
 #include <cftal/std_types.h>
 #include <cftal/math_common.h>
 #include <cftal/mem.h>
+#include <cmath>
 
 namespace cftal {
 
@@ -371,13 +372,16 @@ typename cftal::math::func_core<double, _T>::vi_type
 cftal::math::func_core<double, _T>::
 ilogb(const vf_type& d)
 {
-    vi_type e(ilogbp1(abs(d) -1));
+    vi_type e(ilogbp1(abs(d)) - vi_type(1));
     vmf_type mf= d == 0.0;
     vmi_type mi= _T::vmf_to_vmi(mf);
-    e = _T::sel(mi, vi_type(-2147483648), e);
+    e = _T::sel(mi, vi_type(FP_ILOGB0), e);
     mf = isinf(d);
     mi = _T::vmf_to_vmi(mf);
-    e = _T::sel(mi, vi_type(2147483647), e);
+    e = _T::sel(mi, vi_type(0x7fffffff), e);
+    mf = isnan(d);
+    mi = _T::vmf_to_vmi(mf);
+    e = _T::sel(mi, vi_type(FP_ILOGBNAN), e);
     return e;
 }
 
