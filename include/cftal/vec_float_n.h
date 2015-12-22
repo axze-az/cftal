@@ -215,13 +215,21 @@ namespace cftal {
     vec<float, 1>
     floor(const vec<float, 1>& v);
 
-    // floor
+    // ceil
     template <std::size_t _N>
     vec<float, _N>
     ceil(const vec<float, _N>& v);
 
     vec<float, 1>
     ceil(const vec<float, 1>& v);
+
+    // trunc
+    template <std::size_t _N>
+    vec<float, _N>
+    trunc(const vec<float, _N>& v);
+
+    vec<float, 1>
+    trunc(const vec<float, 1>& v);
 
     v4f32 cbrt(arg<v4f32>::type a);
     v4f32 frexp(arg<v4f32>::type x, v4s32* e);
@@ -693,7 +701,7 @@ cftal::vec<float, _N>
 cftal::ceil(const cftal::vec<float, _N>& v)
 {
     return vec<float, _N>(ceil(low_half(v)),
-                           ceil(high_half(v)));
+                          ceil(high_half(v)));
 }
 
 inline
@@ -701,6 +709,22 @@ cftal::vec<float, 1>
 cftal::ceil(const vec<float, 1>& v)
 {
     return std::ceil(v());
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::trunc(const cftal::vec<float, _N>& v)
+{
+    return vec<float, _N>(trunc(low_half(v)),
+                          trunc(high_half(v)));
+}
+
+inline
+cftal::vec<float, 1>
+cftal::trunc(const vec<float, 1>& v)
+{
+    return std::trunc(v());
 }
 
 

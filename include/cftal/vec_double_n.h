@@ -222,6 +222,14 @@ namespace cftal {
     vec<double, 1>
     ceil(const vec<double, 1>& v);
 
+    // trunc, specializations are inline
+    template <std::size_t _N>
+    vec<double, _N>
+    trunc(const vec<double, _N>& v);
+
+    vec<double, 1>
+    trunc(const vec<double, 1>& v);
+
     // specializations vec<double, 2>
     vec<double, 2>
     cbrt(arg<vec<double, 2> >::type v);
@@ -824,6 +832,22 @@ cftal::vec<double, 1>
 cftal::ceil(const vec<double, 1>& v)
 {
     return std::ceil(v());
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::trunc(const cftal::vec<double, _N>& v)
+{
+    return vec<double, _N>(trunc(low_half(v)),
+                           trunc(high_half(v)));
+}
+
+inline
+cftal::vec<double, 1>
+cftal::trunc(const vec<double, 1>& v)
+{
+    return std::trunc(v());
 }
 
 // local variables:

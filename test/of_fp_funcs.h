@@ -89,6 +89,23 @@ namespace cftal {
             const char* fname() { return "ceil"; }
         };
 
+        template <typename _T>
+        struct check_trunc {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& v) {
+                return trunc(v);
+            }
+            static
+            _T
+            v(const _T& v) {
+                return std::trunc(v);
+            }
+            static
+            const char* fname() { return "trunc"; }
+        };
+
     }
 }
 
