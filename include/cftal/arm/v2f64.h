@@ -311,8 +311,8 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                // return vadd_f64(vmul_f64(a(), b()), c());
-                return vmlaq_f64(a(), b(), c());
+                // return vaddq_f64(vmulq_f64(a(), b()), c());
+                return vmlaq_f64(c(), a(), b());
             }
         };
 
@@ -323,8 +323,8 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                // return vsub_f64(vmul_f64(a(), b()), c());
-                return vmlsq_f64(a(), b(), c());
+                // return vsubq_f64(vmulq_f64(a(), b()), c());
+                return vmlaq_f64(vnegq_f64(c()), a(), b());
             }
         };
 
@@ -335,8 +335,8 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                // return vsub_f64(c(), vmul_f64(a(), b()));
-                return vmlaq_f64(vnegq_f64(a()), b(), c());
+                // return vsubq_f64(c(), vmulq_f64(a(), b()));
+                return vmlsq_f64(c(), a(), b());
             }
         };
 

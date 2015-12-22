@@ -176,34 +176,38 @@ cftal::test::of_ops<_T, _N>::v(_T ai, _T bi)
     r = a + b;
     vr = va + vb;
     rc &= check(vr, r, "a+b");
-
-    r = a; r += b;
     vr = va; vr += vb;
     rc &= check(vr, r, "a+=b");
 
     r = a - b;
     vr = va - vb;
     rc &= check(vr, r, "a-b");
-
-    r = a; r -= b;
     vr = va; vr -= vb;
     rc &= check(vr, r, "a-=b");
 
     r = a * b;
     vr = va * vb;
     rc &= check(vr, r, "a*b");
-
-    r = a; r *= b;
     vr = va; vr *= vb;
     rc &= check(vr, r, "a*=b");
 
     r = do_div(a, b);
     vr = va / vb;
     rc &= check(vr, r, "a/b");
-
-    // r = r /= b;
     vr = va; vr /= vb;
     rc &= check(vr, r, "a/=b");
+
+    r = a * a  + b;
+    vr = va * va + b;
+    rc &= check(vr, r, "a*a +b");
+
+    r=  a* a - b;
+    vr = va * va  -b;
+    rc &= check(vr, r, "a*a -b");
+
+    r= b -a*a;
+    vr = b - va * va;
+    rc &= check(vr, r, "b - a * a");
 
     r = std::max(a, b);
     vr = max(va, vb);
