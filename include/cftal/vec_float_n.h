@@ -37,9 +37,6 @@ namespace cftal {
     vec<float, _N>
     mulsign(const vec<float, _N>& x, const vec<float, _N>& y);
 
-    template <std::size_t _N>
-    vec<float, _N>
-    rint(const vec<float, _N>& v);
 
     // return a*b +c with or without fma
     template <std::size_t _N>
@@ -185,6 +182,46 @@ namespace cftal {
     vec<float, 8>
     ldexp(arg<vec<float, 8> >::type a, arg<vec<int32_t, 8> >::type e);
 
+    // ilogb
+    template <std::size_t _N>
+    vec<int32_t, _N>
+    ilogb(const vec<float, _N>& a);
+
+    vec<int32_t, 1>
+    ilogb(const vec<float, 1>& a);
+
+    vec<int32_t, 2>
+    ilogb(arg<vec<float, 2> >::type a);
+
+    vec<int32_t, 4>
+    ilogb(arg<vec<float, 4> >::type a);
+
+    vec<int32_t, 8>
+    ilogb(arg<vec<float, 8> >::type a);
+
+    // rint
+    template <std::size_t _N>
+    vec<float, _N>
+    rint(const vec<float, _N>& v);
+
+    vec<float, 1>
+    rint(const vec<float, 1>& v);
+
+    // floor
+    template <std::size_t _N>
+    vec<float, _N>
+    floor(const vec<float, _N>& v);
+
+    vec<float, 1>
+    floor(const vec<float, 1>& v);
+
+    // floor
+    template <std::size_t _N>
+    vec<float, _N>
+    ceil(const vec<float, _N>& v);
+
+    vec<float, 1>
+    ceil(const vec<float, 1>& v);
 
     v4f32 cbrt(arg<v4f32>::type a);
     v4f32 frexp(arg<v4f32>::type x, v4s32* e);
@@ -600,6 +637,70 @@ cftal::vec<float, 1>
 cftal::ldexp(const vec<float, 1>& a, const vec<int32_t, 1>& e)
 {
     return vec<float, 1>(std::ldexp(a(), e()));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<int32_t, _N>
+cftal::ilogb(const vec<float, _N>& a)
+{
+    return vec<float, _N>(ilogb(low_half(a)), ilogb(high_half(a)));
+}
+
+inline
+cftal::vec<int32_t, 1>
+cftal::ilogb(const vec<float, 1>& a)
+{
+    return vec<int32_t, 1>(std::ilogb(a()));
+}
+
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::rint(const cftal::vec<float, _N>& v)
+{
+    return vec<float, _N>(rint(low_half(v)),
+                           rint(high_half(v)));
+}
+
+inline
+cftal::vec<float, 1>
+cftal::rint(const vec<float, 1>& v)
+{
+    return std::rint(v());
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::floor(const cftal::vec<float, _N>& v)
+{
+    return vec<float, _N>(floor(low_half(v)),
+                           floor(high_half(v)));
+}
+
+inline
+cftal::vec<float, 1>
+cftal::floor(const vec<float, 1>& v)
+{
+    return std::floor(v());
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::ceil(const cftal::vec<float, _N>& v)
+{
+    return vec<float, _N>(ceil(low_half(v)),
+                           ceil(high_half(v)));
+}
+
+inline
+cftal::vec<float, 1>
+cftal::ceil(const vec<float, 1>& v)
+{
+    return std::ceil(v());
 }
 
 

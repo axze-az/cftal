@@ -49,7 +49,7 @@ namespace cftal {
             static
             _T
             v(const _T& v) {
-                return rint(v);
+                return std::rint(v);
             }
             static
             const char* fname() { return "rint"; }
@@ -70,6 +70,23 @@ namespace cftal {
             }
             static
             const char* fname() { return "floor"; }
+        };
+
+        template <typename _T>
+        struct check_ceil {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& v) {
+                return ceil(v);
+            }
+            static
+            _T
+            v(const _T& v) {
+                return std::ceil(v);
+            }
+            static
+            const char* fname() { return "ceil"; }
         };
 
     }
@@ -105,7 +122,6 @@ cftal::test::of_fp_func<_T, _N, _F>::v()
     std::uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
 
-    bool rc=true;
     const int64_t N0=0x1000ULL;
     const int64_t N=72*N0;
     for (int64_t i=0; i<N; ++i) {
@@ -116,7 +132,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v()
         r &= v(-ah);
     }
     std::cout << std::endl;
-    if (rc == true) {
+    if (r == true) {
         std::cout << __func__ << _N << " test passed " << std::endl;
     } else {
         std::cerr << __func__ << _N << " test failed " << std::endl;
