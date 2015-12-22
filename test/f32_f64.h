@@ -215,5 +215,7 @@ cftal::test::rel_err(_T a0, _T a1)
     return abs_err(a0, a1)/(_T(0.5) * (a0 + a1));
 }
 
-
+// Local variables:
+// mode: c++
+// endif
 #endif

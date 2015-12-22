@@ -68,6 +68,7 @@ cftal::test::check_ldexp<_T, _N>::v()
         _T ah=distrib(rnd);
         for (int32_t i= min_exp-2; i < max_exp+2; ++i) {
             rc &= v(ah, i);
+            rc &= v(-ah, i);
         }
     }
     std::cout << std::endl;
