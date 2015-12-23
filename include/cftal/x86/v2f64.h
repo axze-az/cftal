@@ -763,7 +763,9 @@ cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
     res = _mm_sub_pd(res, sign_magic);
     if (unlikely(mxcsr != rmxcsr))
         _mm_setcsr(mxcsr);
-    return res;
+    v2f64 r= res;
+    r = select(abs(a) > magic, a, r);
+    return r;
 #endif
 }
 

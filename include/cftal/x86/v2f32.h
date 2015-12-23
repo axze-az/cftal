@@ -775,16 +775,18 @@ cftal::v2f32 cftal::x86::round(const v2f32& a, const rounding_mode::type m)
         if (unlikely(mxcsr != rmxcsr))
             _mm_setcsr(rmxcsr);
     }
-    const __m128 sgn_msk= v_sign_v4f32_msk::fv();
+    // const __m128 sgn_msk= v_sign_v4f32_msk::fv();
+    const v2f32 sgn_msk(sign_f32_msk::v._f32);
     // (127+23)<< 23 = 0x4B000000 = 2^23
     const __m128 magic= const_v4u32<0x4B000000, 0x4B000000,
                                     0x4B000000, 0x4B000000>::fv();
-    __m128 sign = _mm_and_ps(a(), sgn_msk);
+    __m128 sign = _mm_and_ps(a(), sgn_msk());
     __m128 sign_magic = _mm_or_ps(magic, sign);
     r= _mm_add_ps(a(), sign_magic);
-    r = _mm_sub_ps(a(), sign_magic);
+    r = _mm_sub_ps(r(), sign_magic);
     if (mxcsr != rmxcsr)
         _mm_setcsr(mxcsr);
+    r = select(abs(a) > v2f32(magic), a, r);
 #endif
     return r;
 }

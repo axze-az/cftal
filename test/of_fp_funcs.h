@@ -116,7 +116,11 @@ cftal::test::of_fp_func<_T, _N, _F>::v(_T a)
     vec<_T, _N> va=a;
     vec<_T, _N> vr=_F::v(va);
     _T r= _F::v(a);
-    return check(vr, r, _F::fname());
+    bool c= check(vr, r, _F::fname());
+    if (c == false) {
+        std::cerr << _F::fname() << "("<< a << ") failed.\n";
+    }
+    return c;
 }
 
 template <typename _T, std::size_t _N, typename _F>
