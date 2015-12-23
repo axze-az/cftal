@@ -313,7 +313,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b,
               const full_type& c) {
                 // return vadd_f32(vmul_f32(a(), b()), c());
-                return vmla_f32(a(), b(), c());
+                return vmla_f32(c(), a(), b());
             }
         };
 
@@ -325,7 +325,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b,
               const full_type& c) {
                 // return vsub_f32(vmul_f32(a(), b()), c());
-                return vmls_f32(a(), b(), c());
+                return vmla_f32(vneg_f32(c()), a(), b());
             }
         };
 
@@ -337,7 +337,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b,
               const full_type& c) {
                 // return vsub_f32(c(), vmul_f32(a(), b()));
-                return vmla_f32(vneg_f32(a()), b(), c());
+                return vmls_f32(c(), a(), b());
             }
         };
 
