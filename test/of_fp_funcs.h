@@ -138,12 +138,18 @@ cftal::test::of_fp_func<_T, _N, _F>::v()
     a = 0;
     r &= v(a);
     r &= v(-a);
+    a = _T(uint64_t(1ULL<<23));
+    r &= v(a);
+    r &= v(-a);
+    a = _T(uint64_t(1ULL<<52));
+    r &= v(a);
+    r &= v(-a);
 
     std::mt19937 rnd;
     std::uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
 
-    const int64_t N0=0x1000ULL;
+    const int64_t N0=0x10000ULL;
     const int64_t N=72*N0;
     for (int64_t i=0; i<N; ++i) {
         if ((i & (N0-1)) == (N0-1))
