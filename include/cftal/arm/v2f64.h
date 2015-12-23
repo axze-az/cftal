@@ -642,7 +642,7 @@ unsigned cftal::read_signs(const v2f64& a)
 inline
 bool cftal::elements_equal(const v2f64& a)
 {
-    float t0= extract<0>(a);
+    double t0= extract<0>(a);
     v2f64 cmp0(t0);
     v2f64::mask_type rv(cmp0 == a);
     return all_of(rv);
