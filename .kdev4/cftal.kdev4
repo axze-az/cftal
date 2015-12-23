@@ -2,7 +2,7 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
 
 [CMake]
-Build Directory Count=6
+Build Directory Count=7
 Current Build Directory Index=0
 ProjectRootRelative=./
 
@@ -16,7 +16,7 @@ Install Directory=file:///usr/local
 
 [CMake][CMake Build Directory 1]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/debug
-Build Type=debug
+Build Type=Debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
@@ -49,6 +49,14 @@ Install Directory=file:///usr/local
 [CMake][CMake Build Directory 5]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/aarch64-build
 Build Type=release
+CMake Binary=file:///usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=file:///usr/local
+
+[CMake][CMake Build Directory 6]
+Build Directory Path=file:///home/axel/projects/cpplib/cftal/aarch64-debug
+Build Type=debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=

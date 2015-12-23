@@ -279,7 +279,9 @@ namespace cftal {
     elements_equal(const vec<_T, 2>& v);
 
     template <typename _T, std::size_t _N>
-    std::enable_if_t< std::is_integral<_T>::value, vec<_T, _N> >
+    std::enable_if_t< std::is_signed<_T>::value &&
+                      !std::is_floating_point<_T>::value,
+                      vec<_T, _N> >
     abs(const vec<_T, _N>& v);
 
     template <typename _T, std::size_t _N>
@@ -563,7 +565,9 @@ cftal::elements_equal(const vec<_T, 2>& v)
 
 template <typename _T, std::size_t _N>
 inline
-std::enable_if_t< std::is_integral<_T>::value, cftal::vec<_T, _N> >
+std::enable_if_t<std::is_signed<_T>::value &&
+                 !std::is_floating_point<_T>::value,
+                 cftal::vec<_T, _N> >
 cftal::abs(const vec<_T, _N>& v)
 {
     return vec<_T, _N>(abs(low_half(v)), abs(high_half(v)));
