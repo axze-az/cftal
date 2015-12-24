@@ -6,11 +6,11 @@ if(CMAKE_CONFIGURATION_TYPES)
    #  "Reset the configurations to what we need"
    # FORCE)
 endif()
-IF(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE release CACHE STRING
       "Choose the type of build, options are: debug release profile."
       FORCE)
-ENDIF(NOT CMAKE_BUILD_TYPE)
+endif()
 
 if (UNIX)
   #message("cross compile ${CMAKE_CROSSCOMPILING}")
@@ -23,7 +23,7 @@ if (UNIX)
       find_program(CMAKE_CXX_COMPILER NAMES g++)
     endif()
   endif()
-endif(UNIX)
+endif()
 
 project (CFTAL)
 set (CFTAL_VERSION_MAJ 0)
@@ -90,9 +90,9 @@ endif()
 option(CFTAL_USE_CXX17 "use C++17" ON)
 if(CFTAL_USE_CXX17)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++1z")
-else(CFTAL_USE_CXX17)
+else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
-endif(CFTAL_USE_CXX17)
+endif()
 # Full test ?
 option(CFTAL_FULL_TEST "perform a full test with long compile times" OFF)
 
