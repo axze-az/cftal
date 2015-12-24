@@ -208,7 +208,7 @@ namespace cftal {
                 }
             };
 
-            // n-th root calculatr: newton raphson step with n=_R 
+            // n-th root calculatr: newton raphson step with n=_R
             template <unsigned _R, class _T>
             struct nth_root_nr : public nth_root_vnr<_T> {
                 // one newton raphson step
@@ -327,35 +327,28 @@ namespace cftal {
 #else
                     using dvf_type = typename _TRAITS::dvf_type;
                     dvf_type xhin=xin;
-                    dvf_type xh=x;                    
+                    dvf_type xh=x;
                     for (unsigned i=0; i< _NR_STEPS; ++i)
                         xhin = nth_root_nr<_R, dvf_type>::v(xhin, xh);
                     xin = xhin.h() + xhin.l();
-#endif                        
-
+#endif
                     xin = copysign(xin, f);
                     const vf_type zero(vf_type(0.0));
                     vmf_type is_zero_or_inf_or_nan(
-                        (x == zero) |
-                        isinf(x) |
-                        isnan(x));
-                    vf_type r(_TRAITS::sel(
-                                  is_zero_or_inf_or_nan,
-                                  x,
-                                  xin));
+                        (x == zero) | isinf(x) | isnan(x));
+                    vf_type r(_TRAITS::sel(is_zero_or_inf_or_nan,
+                                           x, xin));
                     if ((_R & 1) == 0) {
                         vmf_type is_neg(x < zero);
-                        r = _TRAITS::sel(
-                            is_neg,
-                            vf_type(_TRAITS::nan()),
-                            r);
+                        r = _TRAITS::sel(is_neg,
+                                         vf_type(_TRAITS::nan()), r);
                     }
                     return r;
                 }
             };
 
         } // impl
-        
+
         // integer power with constant _I
         template <int _I, class _T>
         _T pow(const _T& x) {
