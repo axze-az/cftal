@@ -1,6 +1,7 @@
 # empty for now
 project(cftal-tests)
 
+
 set (TEST_SRCS
   div.cc
   rcp_div_32.cc
@@ -12,6 +13,16 @@ set (TEST_SRCS
 )
 include_directories(../..)
 include_directories(../include)
+
+find_package(Boost)
+if(${Boost_FOUND})
+    #message ("${Boost_FOUND}")
+    #message ("${Boost_INCLUDE_DIRS}")
+    include_directories(${Boost_INCLUDE_DIRS})
+else()
+    message("missing boost headers")
+endif()
+
 
 add_library(cftal-test SHARED ${TEST_SRCS})
 set_property(TARGET cftal-test
