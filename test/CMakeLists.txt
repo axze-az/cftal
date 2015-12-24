@@ -14,13 +14,11 @@ set (TEST_SRCS
 include_directories(../..)
 include_directories(../include)
 
-find_package(Boost)
+find_package(Boost REQUIRED)
 if(${Boost_FOUND})
     #message ("${Boost_FOUND}")
     #message ("${Boost_INCLUDE_DIRS}")
     include_directories(${Boost_INCLUDE_DIRS})
-else()
-    message("missing boost headers")
 endif()
 
 
