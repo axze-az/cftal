@@ -60,7 +60,7 @@ cftal::test::check_ldexp<_T, _N>::v()
     const int32_t max_exp = std::numeric_limits<_T>::max_exponent;
 
     bool rc=true;
-    const int64_t N0=0x1000ULL;
+    const int64_t N0=0x100ULL;
     const int64_t N=72*N0;
     for (int64_t i=0; i<N; ++i) {
         if ((i & (N0-1)) == (N0-1))
@@ -88,7 +88,7 @@ int main()
     if (rd==false)
         std::cerr << "double test failed" << std::endl;
     std::cout << "testing ldexp vXf32" << std::endl;
-    bool rf=cftal::test::check_ldexp_up_to<float, 8>::v();
+    bool rf=cftal::test::check_ldexp_up_to<float, 16>::v();
     if (rf==false)
         std::cerr<< "float test failed" << std::endl;
     bool rc = rd && rf;
