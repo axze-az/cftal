@@ -16,7 +16,7 @@ Install Directory=file:///usr/local
 
 [CMake][CMake Build Directory 1]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/debug
-Build Type=Debug
+Build Type=debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
