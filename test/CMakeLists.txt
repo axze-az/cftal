@@ -10,6 +10,7 @@ set (TEST_SRCS
   signs.cc
   f32_f64.cc
   snippets.cc
+  of_math_funcs.cc
 )
 include_directories(../..)
 include_directories(../include)
@@ -29,6 +30,7 @@ set_target_properties(cftal-test PROPERTIES
   SOVERSION "${CFTAL_VERSION_MAJ}"
   VERSION "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}")
 target_link_libraries(cftal-test cftal-so)
+target_link_libraries(cftal-test stdc++fs)
 enable_testing()
 
 add_executable(gen-test-vec gen-test-vec.cc)
