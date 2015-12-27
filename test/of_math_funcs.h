@@ -33,7 +33,8 @@ namespace cftal {
         std::string
         delete_comment(const std::string& s);
         // read file with hexadecimal 32 bit numbers for one and two arg
-        // functions a0high a0low [a1high a1low] reshigh reslow
+        // functions.
+        // the lines contain a0high a0low [a1high a1low] reshigh reslow
         std::vector<func_arg_result<double> >
         read_double_file(const std::string& fn, bool two_args);
 
