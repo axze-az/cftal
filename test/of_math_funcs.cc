@@ -2,6 +2,7 @@
 #include <cftal/fenv.h>
 #include <cftal/constants.h>
 #include <experimental/filesystem>
+// #include <iostream>
 #include <fstream>
 #include <sstream>
 
@@ -55,12 +56,11 @@ cftal::test::read_double_file(const std::string& fn, bool two_args)
     std::vector<func_arg_result<double> > vr;
 
     std::string line;
-    std::istringstream t;
     while (!std::getline(f, line).eof()) {
         line = delete_comment(line);
         if (line.empty())
             continue;
-        t.str(line);
+        std::istringstream t(line);
         std::uint32_t a0l{0}, a0h{0}, a1l{0}, a1h{0}, rl{0}, rh{0};
         std::uint64_t a0{0}, a1{0}, r{0};
         std::string rm;
@@ -94,12 +94,11 @@ cftal::test::read_double_file(const std::string& fn, bool two_args)
         func_arg_result<double> c(ua0._f64, ua1._f64, ur._f64);
         vr.push_back(c);
 #if 0
-        std::cerr << "inserting "
-                  << tf._fname
-                  << "( " << c._a0;
-        if (tf._f2)
-            std::cerr << ", " << c._a1;
-        std::cerr << ") ==" << c._res << std::endl;
+        std::cerr << "inserted "
+                  << c.arg0();
+        if (two_args)
+             std::cerr << ' ' << c.arg1();
+        std::cerr << ' '  << c.res() << std::endl;
 #endif
     }
     return vr;
