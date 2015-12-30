@@ -39,7 +39,7 @@ cftal::int64_t cftal::rdtsc()
 #if defined (__x86_64__)
     uint64_t a, d;
     __asm__ __volatile__("lfence;\n\t"
-                         "rdtsc" :"=a"(a), "=d"(d)::"memory");
+                         "rdtsc" :"=a"(a), "=d"(d) ::"memory");
     return (d<<32) | a;
 #elif defined (__i386__)
     uint64_t a;

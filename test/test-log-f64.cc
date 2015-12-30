@@ -18,8 +18,10 @@ int main(int argc, char** argv)
 
     std::cout << std::setprecision(18);
     std::cerr << std::setprecision(18);
-    std::cerr << std::hexfloat;
-    bool rc= check_func_1<double, 2, check_log<double> >(v, 1);
+    // std::cerr << std::hexfloat;
+    bool rc= check_func_1<double, 2, check_log<double> >(v, 1, 1);
+    rc&= check_func_1<double, 4, check_log<double> >(v, 1, 1);
+    rc&= check_func_1<double, 8, check_log<double> >(v, 1, 1);
 
     return (rc == true) ? 0 : 1;
 }

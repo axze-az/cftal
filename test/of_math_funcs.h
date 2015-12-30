@@ -44,11 +44,11 @@ namespace cftal {
 
         template <typename _T, std::size_t _N, class _F>
         bool check_func_1(const std::vector<func_arg_result<_T> >& v,
-                          uint32_t max_ulp);
+                          uint32_t max_ulp, uint32_t max_err);
 
         template <typename _T, std::size_t _N, class _F>
         bool check_func_2(const std::vector<func_arg_result<_T> >& v,
-                          uint32_t max_ulp);
+                          uint32_t max_ulp, uint32_t max_err);
 
         template <typename _T>
         struct check_exp {
@@ -90,20 +90,20 @@ namespace cftal {
 template <typename _T, std::size_t _N, class _F>
 bool
 cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
-                          uint32_t max_ulp)
+                          uint32_t max_ulp, uint32_t max_err)
 {
     using vec_type = vec<_T, _N>;
 
     bool rc(true);
-    int errs(0);
-    std::size_t calls(0);
+    uint32_t errs(0);
+    std::size_t calls=v.size();
     int64_t ticks(0), s_ticks(0);
-    for (std::size_t i=0; i< v.size(); ++i) {
+    cmp_t<_T> cmp;
+    for (std::size_t i=0; i< calls; ++i) {
         const func_arg_result<_T>& vi= v[i];
         _T a0 = vi.arg0();
         _T expected = vi.res();
         vec_type va0=a0;
-        // vec_type vexpected=expected;
         int64_t t0, t1, t2;
         t0= cftal::rdtsc();
         _T res = _F::v(a0);
@@ -112,63 +112,52 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         t2 = cftal::rdtsc();
         s_ticks+= (t1 -t0);
         ticks += (t2 -t1);
-        ++calls;
 
+        if (cmp(expected, res) == false) {
+            std::cerr << "libc error: " << res << std::endl;
+        }
         bool c= check(vres, expected, _F::fname());
         if (c == true)
             continue;
-        int32_t ulp=0;
         _T vres0 = extract<0>(vres);
+        int32_t ulp=0;
         try {
             ulp=boost::math::float_distance<_T>(vres0, expected);
-            std::cout << "ulp: " << ulp << std::endl;
         }
         catch (...) {
             ulp = sizeof(_T);
         }
         if (max_ulp > 0) {
-            if (std::abs(ulp) <= int32_t(max_ulp))
+            std::cerr << "ulp: " << ulp << '\n';
+            if (std::abs(ulp) <= int32_t(max_ulp)) {
                 continue;
+            }
         }
         static_cast<void>(res);
         std::cerr << _F::fname() << "("<< a0 << ") failed.\n";
-        std::cerr << "ulp: " << ulp << '\n';
         rc = false;
         ++errs;
-#if 0
-        // we found an error:
-        double t=extract<0>(res);
-        std::cerr << tf._fname << "( "
-                  << c._a0;
-        if (tf._f2)
-            std::cerr << ", " << c._a1;
-        std::cerr << ")= " << t << " != "
-                  << c._res << std::endl;
-        std::cerr << "math lib: " << rs << std::endl;
-        std::cerr << "rel_err = " << extract<0>(re)
-                  << " abs_err = " << extract<0>(ae)
-                  << std::endl;
-        std::cerr << "ulp: " << ulps << std::endl;
-#endif
     }
     std::cout << "rc= " << rc
-              << " test cases: " << v.size()
+              << " test cases: " << calls
               << " errors: " << errs << std::endl;
     std::cout << "error rate = ";
-    if (v.size())
-        std::cout << double(errs)/v.size() << std::endl;
-    else
-        std::cout << 0.0 << std::endl;
     if (calls) {
+        std::cout << std::setprecision(6)
+                  << double(errs)/calls << std::endl;
         std::cout << "ticks per call: "
                   << std::fixed << std::setprecision(2)
-                  << double(ticks)/double(calls)
+                  << double(ticks)/calls
                   << std::endl;
         std::cout << "scalar ticks per call: "
                   << std::fixed << std::setprecision(2)
-                  << double(s_ticks)/double(calls)
+                  << double(s_ticks)/calls
                   << std::endl;
+    } else {
+        std::cout << 0.0 << std::endl;
     }
+    if (errs <= max_err)
+        rc=true;
     return rc;
 }
 
