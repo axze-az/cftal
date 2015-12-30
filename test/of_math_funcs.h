@@ -2,8 +2,12 @@
 #define __CFTAL_TEST_OF_MATH_FUNCS_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/test/of_fp_funcs.h>
+#include <boost/math/special_functions.hpp>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <iomanip>
 
 namespace cftal {
     namespace test {
@@ -38,7 +42,134 @@ namespace cftal {
         std::vector<func_arg_result<double> >
         read_double_file(const std::string& fn, bool two_args);
 
+        template <typename _T, std::size_t _N, class _F>
+        bool check_func_1(const std::vector<func_arg_result<_T> >& v,
+                          uint32_t max_ulp);
+
+        template <typename _T, std::size_t _N, class _F>
+        bool check_func_2(const std::vector<func_arg_result<_T> >& v,
+                          uint32_t max_ulp);
+
+        template <typename _T>
+        struct check_exp {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return exp(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::exp(a);
+            }
+            static
+            const char* fname() { return "exp"; }
+        };
+
+        template <typename _T>
+        struct check_log {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return log(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::log(a);
+            }
+            static
+            const char* fname() { return "log"; }
+        };
+
     }
+}
+
+template <typename _T, std::size_t _N, class _F>
+bool
+cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
+                          uint32_t max_ulp)
+{
+    using vec_type = vec<_T, _N>;
+
+    bool rc(true);
+    int errs(0);
+    std::size_t calls(0);
+    int64_t ticks(0), s_ticks(0);
+    for (std::size_t i=0; i< v.size(); ++i) {
+        const func_arg_result<_T>& vi= v[i];
+        _T a0 = vi.arg0();
+        _T expected = vi.res();
+        vec_type va0=a0;
+        // vec_type vexpected=expected;
+        int64_t t0, t1, t2;
+        t0= cftal::rdtsc();
+        _T res = _F::v(a0);
+        t1= cftal::rdtsc();
+        vec_type vres = _F::v(va0);
+        t2 = cftal::rdtsc();
+        s_ticks+= (t1 -t0);
+        ticks += (t2 -t1);
+        ++calls;
+
+        bool c= check(vres, expected, _F::fname());
+        if (c == true)
+            continue;
+        int32_t ulp=0;
+        _T vres0 = extract<0>(vres);
+        try {
+            ulp=boost::math::float_distance<_T>(vres0, expected);
+            std::cout << "ulp: " << ulp << std::endl;
+        }
+        catch (...) {
+            ulp = sizeof(_T);
+        }
+        if (max_ulp > 0) {
+            if (std::abs(ulp) <= int32_t(max_ulp))
+                continue;
+        }
+        static_cast<void>(res);
+        std::cerr << _F::fname() << "("<< a0 << ") failed.\n";
+        std::cerr << "ulp: " << ulp << '\n';
+        rc = false;
+        ++errs;
+#if 0
+        // we found an error:
+        double t=extract<0>(res);
+        std::cerr << tf._fname << "( "
+                  << c._a0;
+        if (tf._f2)
+            std::cerr << ", " << c._a1;
+        std::cerr << ")= " << t << " != "
+                  << c._res << std::endl;
+        std::cerr << "math lib: " << rs << std::endl;
+        std::cerr << "rel_err = " << extract<0>(re)
+                  << " abs_err = " << extract<0>(ae)
+                  << std::endl;
+        std::cerr << "ulp: " << ulps << std::endl;
+#endif
+    }
+    std::cout << "rc= " << rc
+              << " test cases: " << v.size()
+              << " errors: " << errs << std::endl;
+    std::cout << "error rate = ";
+    if (v.size())
+        std::cout << double(errs)/v.size() << std::endl;
+    else
+        std::cout << 0.0 << std::endl;
+    if (calls) {
+        std::cout << "ticks per call: "
+                  << std::fixed << std::setprecision(2)
+                  << double(ticks)/double(calls)
+                  << std::endl;
+        std::cout << "scalar ticks per call: "
+                  << std::fixed << std::setprecision(2)
+                  << double(s_ticks)/double(calls)
+                  << std::endl;
+    }
+    return rc;
 }
 
 // Local variables:
