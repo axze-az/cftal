@@ -466,16 +466,22 @@ cftal::math::func_common<_FLOAT_T, _T>::
 _exp(const vf_type& d)
 {
     vf_type res;
+    vmf_type d_large= d > 709.0;
     if (_NATIVE) {
         res=my_type::native_exp_k(d);
     } else {
+        vf_type dn(_T::sel(d_large, -d, d));
         dvf_type xr(my_type::exp_k2(d));
-        res=xr.h() + xr.l();
+        dvf_type xrr(dvf_type(1.0)/xr);
+        // res=xr.h() + xr.l();
+        res=_T::sel(d_large, xrr.h()+ xrr.l(), xr.h() + xr.l());
     }
+    res = _T::sel(d < -746.0, 0.0, res);
+    res = _T::sel(d >= 709.78271289338409, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, M_E, res);
-    res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
-    res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
+    // res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
+    // res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
     return res;
 }
 

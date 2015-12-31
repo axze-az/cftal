@@ -45,7 +45,7 @@ namespace {
     {
         bool r;
         if ((r=cftal::test::f_eq(a, b)) == false) {
-            int32_t u=64;
+            int32_t u=sizeof(_T)*8;
             try {
                 u=boost::math::float_distance<_T>(a, b);
             }
@@ -56,7 +56,6 @@ namespace {
         }
         return r;
     }
-
 }
 
 bool cftal::test::f_eq_ulp(double a, double b, uint32_t ulp)

@@ -21,5 +21,11 @@ int main(int argc, char** argv)
     bool rc= check_func_1<double, 2, check_exp<double> >(v, 1, 1);
     rc &= check_func_1<double, 4, check_exp<double> >(v, 1, 1);
     rc &= check_func_1<double, 8, check_exp<double> >(v, 1, 1);
+
+    // our exponent calculates the wrong values above 709.0
+    func_domain<double> d=std::make_pair(-800.0, 710.0);
+    rc &= of_fp_func_up_to<
+        double, 8, cftal::test::check_exp<double> >::v(d, cmp_ulp<double>(2));
+
     return (rc == true) ? 0 : 1;
 }

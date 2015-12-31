@@ -78,6 +78,9 @@ namespace cftal {
     vec<double, _N>
     exp(const vec<double, _N>& v);
 
+    vec<double, 1>
+    exp(const vec<double, 1>& v);
+
     template <std::size_t _N>
     vec<double, _N>
     native_exp(const vec<double, _N>& v);
@@ -557,6 +560,13 @@ cftal::exp(const vec<double, _N>& v)
 {
     vec<double, _N> r(exp(low_half(v)), exp(high_half(v)));
     return r;
+}
+
+inline
+cftal::vec<double, 1>
+cftal::exp(const vec<double, 1>& v)
+{
+    return vec<double, 1>(std::exp(v()));
 }
 
 template <std::size_t _N>

@@ -51,6 +51,15 @@ namespace cftal {
                           uint32_t max_ulp, uint32_t max_err);
 
         template <typename _T>
+        struct cmp_ulp {
+            uint32_t _ulp;
+            cmp_ulp(uint32_t u) : _ulp(u) {}
+            bool operator()(const _T& a, const _T& b) const {
+                return f_eq_ulp(a, b, _ulp);
+            }
+        };
+
+        template <typename _T>
         struct check_exp {
             template <std::size_t _N>
             static
@@ -129,6 +138,7 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         }
         if (max_ulp > 0) {
             std::cerr << "ulp: " << ulp << '\n';
+            std::cerr << _F::fname() << "("<< a0 << ")\n";
             if (std::abs(ulp) <= int32_t(max_ulp)) {
                 continue;
             }
