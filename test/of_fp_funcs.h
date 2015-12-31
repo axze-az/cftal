@@ -14,17 +14,17 @@ namespace cftal {
     namespace test {
 
         template <typename _T>
-        using func_arg_range = std::pair<_T, _T>;
+        using func_domain = std::pair<_T, _T>;
 
         template <typename _T>
-        struct default_range {
+        struct default_domain {
             static
-            const func_arg_range<_T> value;
+            const func_domain<_T> value;
         };
 
         template <typename _T>
-        const func_arg_range<_T>
-        default_range<_T>::value =
+        const func_domain<_T>
+        default_domain<_T>::value =
             std::make_pair(std::numeric_limits<_T>::lowest(),
                            std::numeric_limits<_T>::max());
 
@@ -32,7 +32,7 @@ namespace cftal {
         struct of_fp_func {
             static
             bool
-            v(func_arg_range<_T> arg_range = default_range<_T>::value);
+            v(func_domain<_T> domain = default_domain<_T>::value);
             static
             bool v(_T ai);
         };
@@ -41,9 +41,9 @@ namespace cftal {
         struct of_fp_func_up_to {
             static
             bool
-            v(func_arg_range<_T> arg_range = default_range<_T>::value) {
-                bool r=of_fp_func<_T, _N, _F>::v(arg_range);
-                r &= of_fp_func_up_to<_T, _N/2, _F>::v(arg_range);
+            v(func_domain<_T> domain = default_domain<_T>::value) {
+                bool r=of_fp_func<_T, _N, _F>::v(domain);
+                r &= of_fp_func_up_to<_T, _N/2, _F>::v(domain);
                 return r;
             }
         };
@@ -52,8 +52,8 @@ namespace cftal {
         struct of_fp_func_up_to<_T, 1, _F> {
             static
             bool
-            v(func_arg_range<_T> arg_range = default_range<_T>::value) {
-                return of_fp_func<_T, 1, _F>::v(arg_range);
+            v(func_domain<_T> domain = default_domain<_T>::value) {
+                return of_fp_func<_T, 1, _F>::v(domain);
             }
         };
 
@@ -144,7 +144,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(_T a)
 
 template <typename _T, std::size_t _N, typename _F>
 bool
-cftal::test::of_fp_func<_T, _N, _F>::v(func_arg_range<_T> arg_range)
+cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain)
 {
     bool r = true;
     _T a;
@@ -166,9 +166,9 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_arg_range<_T> arg_range)
 
     std::mt19937 rnd;
     std::uniform_real_distribution<_T>
-        distrib(arg_range.first, arg_range.second);
+        distrib(domain.first, domain.second);
 
-    std::cout << "[" << arg_range.first << ", " << arg_range.second << ")\n";
+    std::cout << "[" << domain.first << ", " << domain.second << ")\n";
     const int64_t N0=0x20000ULL;
     const int64_t N=72*N0;
     for (int64_t i=0; i<N; ++i) {
@@ -177,8 +177,8 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_arg_range<_T> arg_range)
         _T ah=distrib(rnd);
         r &= v(ah);
     }
-    _T minus1= std::max(_T(-1), arg_range.first);
-    _T plus1= std::min(_T(1), arg_range.second);
+    _T minus1= std::max(_T(-1), domain.first);
+    _T plus1= std::min(_T(1), domain.second);
     if (minus1 < plus1) {
         std::cout << std::endl;
         _T nplus1=std::nextafter(plus1, _T(2)*plus1);
