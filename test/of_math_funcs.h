@@ -125,7 +125,7 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
             ulp=boost::math::float_distance<_T>(vres0, expected);
         }
         catch (...) {
-            ulp = sizeof(_T);
+            ulp = sizeof(_T) * 8;
         }
         if (max_ulp > 0) {
             std::cerr << "ulp: " << ulp << '\n';

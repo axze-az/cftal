@@ -18,6 +18,9 @@ namespace cftal {
         // == NAN
         bool f_eq(double a, double b);
         bool f_eq(float a, float b);
+        // same a above, but allows also deviations up to and including +-ulp
+        bool f_eq_ulp(double a, double b, uint32_t ulp);
+        bool f_eq_ulp(float a, float b, uint32_t ulp);
 
         template <typename _T>
         struct cmp_t {
