@@ -30,30 +30,39 @@ namespace cftal {
 
         template <typename _T, std::size_t _N, typename _F>
         struct of_fp_func {
+
+            template <typename _CMP=cmp_t<_T>>
             static
             bool
-            v(func_domain<_T> domain = default_domain<_T>::value);
+            v(func_domain<_T> domain = default_domain<_T>::value,
+              _CMP cmp=_CMP());
+
+            template <typename _CMP=cmp_t<_T> >
             static
-            bool v(_T ai);
+            bool v(_T ai, _CMP cmp=_CMP());
         };
 
         template <typename _T, std::size_t _N, typename _F>
         struct of_fp_func_up_to {
+            template <typename _CMP=cmp_t<_T> >
             static
             bool
-            v(func_domain<_T> domain = default_domain<_T>::value) {
-                bool r=of_fp_func<_T, _N, _F>::v(domain);
-                r &= of_fp_func_up_to<_T, _N/2, _F>::v(domain);
+            v(func_domain<_T> domain = default_domain<_T>::value,
+              _CMP cmp= _CMP()) {
+                bool r=of_fp_func<_T, _N, _F>::v(domain, cmp);
+                r &= of_fp_func_up_to<_T, _N/2, _F>::v(domain, cmp);
                 return r;
             }
         };
 
         template <typename _T, typename _F>
         struct of_fp_func_up_to<_T, 1, _F> {
+            template <typename _CMP=cmp_t<_T> >
             static
             bool
-            v(func_domain<_T> domain = default_domain<_T>::value) {
-                return of_fp_func<_T, 1, _F>::v(domain);
+            v(func_domain<_T> domain = default_domain<_T>::value,
+              _CMP cmp= _CMP())  {
+                return of_fp_func<_T, 1, _F>::v(domain, cmp);
             }
         };
 
@@ -129,13 +138,14 @@ namespace cftal {
 }
 
 template <typename _T, std::size_t _N, typename _F>
+template <typename _CMP>
 bool
-cftal::test::of_fp_func<_T, _N, _F>::v(_T a)
+cftal::test::of_fp_func<_T, _N, _F>::v(_T a, _CMP cmp)
 {
     vec<_T, _N> va=a;
     vec<_T, _N> vr=_F::v(va);
     _T r= _F::v(a);
-    bool c= check(vr, r, _F::fname());
+    bool c= check(vr, r, _F::fname(), cmp);
     if (c == false) {
         std::cerr << _F::fname() << "("<< a << ") failed.\n";
     }
@@ -143,8 +153,10 @@ cftal::test::of_fp_func<_T, _N, _F>::v(_T a)
 }
 
 template <typename _T, std::size_t _N, typename _F>
+template <typename _CMP>
 bool
-cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain)
+cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
+                                       _CMP cmp)
 {
     bool r = true;
     _T a;
@@ -175,7 +187,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain)
         if ((i & (N0-1)) == (N0-1))
             std::cout << '.' << std::flush;
         _T ah=distrib(rnd);
-        r &= v(ah);
+        r &= v(ah, cmp);
     }
     _T minus1= std::max(_T(-1), domain.first);
     _T plus1= std::min(_T(1), domain.second);
@@ -189,7 +201,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain)
             if ((i & (N0-1)) == (N0-1))
                 std::cout << '.' << std::flush;
             _T ah=distrib1(rnd);
-            r &= v(ah);
+            r &= v(ah, cmp);
         }
     }
     std::cout << std::endl;
