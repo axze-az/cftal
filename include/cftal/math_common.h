@@ -5,6 +5,7 @@
 #include <cftal/d_real.h>
 #include <cftal/std_types.h>
 #include <cftal/divisor.h>
+#include <cftal/constants.h>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -509,15 +510,29 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 expm1(const vf_type& d)
 {
-    dvf_type xr(my_type::exp_k2(d)-vf_type(1.0));
-    vf_type res(xr.h() + xr.l());
-    // res = _T::sel(d == 0.0, 1.0, res);
-    // res = _T::sel(d == 1.0, M_E, res);
-    const vf_type inf_threshold(7.097827128933840868e+02);
-    res = _T::sel(d==vf_type(_T::ninf()), -1.0, res);
-    res = _T::sel(d>=inf_threshold, _T::pinf(), res);
-    const vf_type m1_threshold(-2.417851639229258349e+24);
-    res = _T::sel(d<=m1_threshold, vf_type(-1.0),  res);
+    vmf_type d_large= d > 709.0;
+    vf_type dn(_T::sel(d_large, 0.5*d, d));
+    dvf_type xr(my_type::exp_k2(dn));
+    dvf_type xrr(xr*xr);
+    dvf_type r(
+        _T::sel(d_large, xrr.h(), xr.h()),
+        _T::sel(d_large, xrr.l(), xr.l()));
+    // res=xr.h() + xr.l();
+    // 2^54 (not 2^53 to be on the right side because r.l() may be != 0.0)
+    const bytes8 magic(0, 0x43500000);
+    const vf_type p2_54= magic._f64;
+    vmf_type expm1_lt_exp = r.h() < p2_54;
+    dvf_type rm1= r - vf_type(1);
+
+    vf_type res= _T::sel(expm1_lt_exp,
+                         rm1.h() + rm1.l(),
+                         r.h() + r.l());
+    res = _T::sel(d < -746.0, -1.0, res);
+    res = _T::sel(d >= 709.78271289338409, _T::pinf(), res);
+    res = _T::sel(d == 0.0, 0.0, res);
+    res = _T::sel(d == 1.0, M_E-1.0, res);
+    // res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
+    // res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
     return res;
 }
 

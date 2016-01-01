@@ -77,6 +77,23 @@ namespace cftal {
         };
 
         template <typename _T>
+        struct check_expm1 {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return expm1(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::expm1(a);
+            }
+            static
+            const char* fname() { return "expm1"; }
+        };
+
+        template <typename _T>
         struct check_log {
             template <std::size_t _N>
             static
@@ -122,9 +139,6 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         s_ticks+= (t1 -t0);
         ticks += (t2 -t1);
 
-        if (cmp(expected, res) == false) {
-            std::cerr << "libc error: " << res << std::endl;
-        }
         bool c= check(vres, expected, _F::fname());
         if (c == true)
             continue;
@@ -135,6 +149,9 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         }
         catch (...) {
             ulp = sizeof(_T) * 8;
+        }
+        if (cmp(expected, res) == false) {
+            std::cerr << "libc error: " << res << '\n';
         }
         if (max_ulp > 0) {
             std::cerr << "ulp: " << ulp << '\n';

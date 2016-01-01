@@ -46,11 +46,11 @@ namespace cftal {
         // result of a comparison operator
         typedef bool cmp_result_type;
 
-        static constexpr double eps() { 
+        static constexpr double eps() {
             // 2^-104
-            return 4.93038065763132e-32; 
+            return 4.93038065763132e-32;
         }
-        
+
         // return true if any in b is true
         static bool any(const cmp_result_type& b) {
             return b;
@@ -449,12 +449,12 @@ namespace cftal {
     d_real<_T> mul_pwr2(const d_real<_T>& a, const _T& b);
     template <typename _T>
     d_real<_T> sqrt(const d_real<_T>& a);
-    
+
     template <typename _T>
     d_real<_T> select(const typename d_real_traits<_T>::cmp_result_type& m,
                       const d_real<_T>& on_true,
                       const d_real<_T>& on_false);
-    
+
     template <typename _T>
     d_real<_T> min(const d_real<_T>& on_true,
                    const d_real<_T>& on_false);

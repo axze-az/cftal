@@ -23,10 +23,10 @@ int main(int argc, char** argv)
     rc&= check_func_1<double, 4, check_log<double> >(v, 1, 1);
     rc&= check_func_1<double, 8, check_log<double> >(v, 1, 1);
 
-    func_domain<double> d=std::make_pair(-0.1,
+    func_domain<double> d=std::make_pair(-0.0001,
                                          std::numeric_limits< double >::max());
     rc &= of_fp_func_up_to<
-        double, 8, cftal::test::check_log<double> >::v(d, cmp_ulp<double>(1));
+        double, 8, check_log<double> >::v(d, cmp_ulp<double>(1));
 
     return (rc == true) ? 0 : 1;
 }

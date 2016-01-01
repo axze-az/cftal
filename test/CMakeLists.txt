@@ -72,6 +72,7 @@ test_prog(test-div-u64)
 test_prog(test-div-s64)
 test_prog(test-intops)
 test_prog(test-exp-f64)
+test_prog(test-expm1-f64)
 test_prog(test-log-f64)
 test_prog(test-v2)
 
