@@ -16,8 +16,8 @@ int main(int argc, char** argv)
     std::vector<func_arg_result<double> > v=
         read_double_file(test_data_file, false);
 
-    std::cout << std::setprecision(18);
-    std::cerr << std::setprecision(18);
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
     bool rc= check_func_1<double, 2, check_exp<double> >(v, 1, 1);
     rc &= check_func_1<double, 4, check_exp<double> >(v, 1, 1);
     rc &= check_func_1<double, 8, check_exp<double> >(v, 1, 1);
