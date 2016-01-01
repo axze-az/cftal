@@ -103,3 +103,8 @@ if (CFTAL_FULL_TEST)
   test_prog(test-v8s32)
   test_prog(test-v8u32)
 endif()
+
+add_executable(gen-func-data gen-func-data.cc)
+#target_link_libraries(gen-func-data cftal-test)
+target_link_libraries(gen-func-data ${LIBMPFR})
+target_link_libraries(gen-func-data ${LIBGMP})
