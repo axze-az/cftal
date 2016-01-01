@@ -473,7 +473,7 @@ _exp(const vf_type& d)
     } else {
         vf_type dn(_T::sel(d_large, 0.5*d, d));
         dvf_type xr(my_type::exp_k2(dn));
-        dvf_type xrr(xr*xr /*dvf_type(1.0)/xr*/);
+        dvf_type xrr(xr*xr);
         // res=xr.h() + xr.l();
         res=_T::sel(d_large, xrr.h()+ xrr.l(), xr.h() + xr.l());
     }

@@ -74,6 +74,7 @@ test_prog(test-intops)
 test_prog(test-exp-f64)
 test_prog(test-expm1-f64)
 test_prog(test-log-f64)
+test_prog(test-pow-f64)
 test_prog(test-v2)
 
 if (CFTAL_FULL_TEST)

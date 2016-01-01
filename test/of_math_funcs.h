@@ -110,6 +110,23 @@ namespace cftal {
             const char* fname() { return "log"; }
         };
 
+        template <typename _T>
+        struct check_pow {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a, const vec<_T, _N>& b) {
+                return pow(a, b);
+            }
+            static
+            _T
+            v(const _T& a, const _T& b) {
+                return std::pow(a, b);
+            }
+            static
+            const char* fname() { return "pow"; }
+        };
+        
     }
 }
 
@@ -188,6 +205,86 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         rc=true;
     return rc;
 }
+
+
+template <typename _T, std::size_t _N, class _F>
+bool
+cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
+                          uint32_t max_ulp, uint32_t max_err)
+{
+    using vec_type = vec<_T, _N>;
+
+    bool rc(true);
+    uint32_t errs(0);
+    std::size_t calls=v.size();
+    int64_t ticks(0), s_ticks(0);
+    cmp_t<_T> cmp;
+    for (std::size_t i=0; i< calls; ++i) {
+        const func_arg_result<_T>& vi= v[i];
+        _T a0 = vi.arg0();
+        _T a1 = vi.arg1();
+        _T expected = vi.res();
+        vec_type va0=a0;
+        vec_type va1=a1;
+        int64_t t0, t1, t2;
+        t0= cftal::rdtsc();
+        _T res = _F::v(a0, a1);
+        t1= cftal::rdtsc();
+        vec_type vres = _F::v(va0, va1);
+        t2 = cftal::rdtsc();
+        s_ticks+= (t1 -t0);
+        ticks += (t2 -t1);
+
+        bool c= check(vres, expected, _F::fname());
+        if (c == true)
+            continue;
+        _T vres0 = extract<0>(vres);
+        int32_t ulp=0;
+        try {
+            ulp=boost::math::float_distance<_T>(vres0, expected);
+        }
+        catch (...) {
+            ulp = sizeof(_T) * 8;
+        }
+        if (cmp(expected, res) == false) {
+            std::cerr << "libc error: " << res << '\n';
+        }
+        if (max_ulp > 0) {
+            std::cerr << "ulp: " << ulp << '\n';
+            std::cerr << _F::fname() << "("<< a0 << ", " << a1 << ")\n";
+            if (std::abs(ulp) <= int32_t(max_ulp)) {
+                continue;
+            }
+        }
+        static_cast<void>(res);
+        std::cerr << _F::fname() << "("<< a0 << ", " << a1 << ") failed.\n";
+        rc = false;
+        ++errs;
+    }
+    std::cout << "rc= " << rc
+              << " test cases: " << calls
+              << " errors: " << errs << std::endl;
+    std::cout << "error rate = ";
+    if (calls) {
+        std::cout << std::setprecision(6)
+                  << double(errs)/calls << std::endl;
+        std::cout << "ticks per call: "
+                  << std::fixed << std::setprecision(2)
+                  << double(ticks)/calls
+                  << std::endl;
+        std::cout << "scalar ticks per call: "
+                  << std::fixed << std::setprecision(2)
+                  << double(s_ticks)/calls
+                  << std::endl;
+        std::cout << std::scientific;
+    } else {
+        std::cout << 0.0 << std::endl;
+    }
+    if (errs <= max_err)
+        rc=true;
+    return rc;
+}
+
 
 // Local variables:
 // mode: c++

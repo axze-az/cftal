@@ -97,9 +97,6 @@ namespace cftal {
     vec<double, _N>
     cosh(const vec<double, _N>& v);
 
-    template <std::size_t _N>
-    vec<double, _N>
-    pow(const vec<double, _N>& x, const vec<double, _N>& y);
 
     template <std::size_t _N>
     vec<double, _N>
@@ -275,6 +272,23 @@ namespace cftal {
     vec<double, 8>
     log(arg<vec<double, 8> >::type d);
 
+    // pow and specializations
+    template <std::size_t _N>
+    vec<double, _N>
+    pow(const vec<double, _N>& x, const vec<double, _N>& y);
+
+    vec<double, 1>
+    pow(const vec<double, 1>& x, const vec<double, 1>& y);
+
+    vec<double, 2>
+    pow(arg<vec<double, 2> >::type b, arg<vec<double, 2> >::type e);
+
+    vec<double, 4>
+    pow(arg<vec<double, 4> >::type b, arg<vec<double, 4> >::type e);
+
+    vec<double, 8>
+    pow(arg<vec<double, 8> >::type b, arg<vec<double, 8> >::type e);
+
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
     // specializations vec<double, 2>
@@ -298,8 +312,6 @@ namespace cftal {
     std::pair<vec<double, 2> , vec<double, 2> >
     sincos(arg<vec<double, 2> >::type d);
 
-    vec<double, 2>
-    pow(arg<vec<double, 2> >::type b, arg<vec<double, 2> >::type e);
     void
     sincos(arg<vec<double, 2> >::type d, vec<double, 2> * psin, vec<double, 2> * pcos);
     vec<double, 2>
@@ -333,8 +345,6 @@ namespace cftal {
     vec<double, 2>
     sinh(arg<vec<double, 2> >::type d);
 
-    vec<double, 2>
-    pow(arg<vec<double, 2> >::type x, arg<vec<double, 2> >::type y);
 
     // specializations vec<double, 4>
     vec<double, 4>
@@ -357,8 +367,6 @@ namespace cftal {
     std::pair<vec<double, 4> , vec<double, 4> >
     sincos(arg<vec<double, 4> >::type d);
 
-    vec<double, 4>
-    pow(arg<vec<double, 4> >::type b, arg<vec<double, 4> >::type e);
     void
     sincos(arg<vec<double, 4> >::type d, vec<double, 4> * psin, vec<double, 4> * pcos);
     vec<double, 4>
@@ -392,9 +400,6 @@ namespace cftal {
     vec<double, 4>
     sinh(arg<vec<double, 4> >::type d);
 
-    vec<double, 4>
-    pow(arg<vec<double, 4> >::type x, arg<vec<double, 4> >::type y);
-
     // specializations vec<double, 8>
     vec<double, 8>
     cbrt(arg<vec<double, 8> >::type v);
@@ -416,8 +421,6 @@ namespace cftal {
     std::pair<vec<double, 8> , vec<double, 8> >
     sincos(arg<vec<double, 8> >::type d);
 
-    vec<double, 8>
-    pow(arg<vec<double, 8> >::type b, arg<vec<double, 8> >::type e);
     void
     sincos(arg<vec<double, 8> >::type d, vec<double, 8> * psin, vec<double, 8> * pcos);
     vec<double, 8>
@@ -450,9 +453,6 @@ namespace cftal {
     cosh(arg<vec<double, 8> >::type d);
     vec<double, 8>
     sinh(arg<vec<double, 8> >::type d);
-
-    vec<double, 8>
-    pow(arg<vec<double, 8> >::type x, arg<vec<double, 8> >::type y);
 
     vec<double, 1>
     fma(arg<vec<double, 1> >::type a,
@@ -681,6 +681,14 @@ cftal::pow(const vec<double, _N>& x, const vec<double, _N>& y)
                       pow(high_half(x), high_half(y)));
     return r;
 }
+
+inline
+cftal::vec<double, 1>
+cftal::pow(const vec<double, 1>& x, const vec<double, 1>& y)
+{
+    return vec<double, 1>(std::pow(x(), y()));
+}
+
 
 template <std::size_t _N>
 inline
