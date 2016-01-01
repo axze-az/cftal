@@ -163,6 +163,7 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
                   << std::fixed << std::setprecision(2)
                   << double(s_ticks)/calls
                   << std::endl;
+        std::cout << std::scientific;
     } else {
         std::cout << 0.0 << std::endl;
     }
