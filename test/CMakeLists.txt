@@ -22,6 +22,15 @@ if(${Boost_FOUND})
     include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
+#include(FindPkgConfig)
+find_library(LIBMPFR mpfr)
+if (LIBMPFR)
+    message(${LIBMPFR})
+endif()
+find_file(HDRMPFR mpfr.h)
+if (HDRMPFR)
+    message(${HDRMPFR})
+endif()
 
 add_library(cftal-test SHARED ${TEST_SRCS})
 set_property(TARGET cftal-test
