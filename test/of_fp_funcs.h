@@ -145,7 +145,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(_T a, _CMP cmp)
     vec<_T, _N> va=a;
     vec<_T, _N> vr=_F::v(va);
     _T r= _F::v(a);
-    bool c= check(vr, r, _F::fname(), cmp);
+    bool c= check(vr, r, _F::fname(), true, cmp);
     if (c == false) {
         std::cerr << _F::fname() << "("<< a << ") failed.\n";
     }

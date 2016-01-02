@@ -18,9 +18,9 @@ int main(int argc, char** argv)
 
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    bool rc= check_func_1<double, 2, check_exp<double> >(v, 1, 0);
-    rc &= check_func_1<double, 4, check_exp<double> >(v, 1, 0);
-    rc &= check_func_1<double, 8, check_exp<double> >(v, 1, 0);
+    bool rc= check_func_1<double, 2, check_exp<double> >(v, 1, 0, false);
+    rc &= check_func_1<double, 4, check_exp<double> >(v, 1, 0, false);
+    rc &= check_func_1<double, 8, check_exp<double> >(v, 1, 0, false);
 
     func_domain<double> d=std::make_pair(-800.0, 710.0);
     rc &= of_fp_func_up_to<

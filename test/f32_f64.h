@@ -57,11 +57,13 @@ namespace cftal {
         template <class _T, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
         bool check(const _T(&a)[_N], _T expected, _MSG msg,
+                   bool verbose=true,
                    _CMP cmp = _CMP());
 
         template <class _T, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
         bool check(vec<_T, _N> a, _T expected, _MSG msg,
+                   bool verbose=true,
                    _CMP cmp= _CMP());
 
         template <class _T, std::size_t _N>
@@ -90,16 +92,18 @@ namespace cftal {
 
 template <class _T, std::size_t _N, typename _MSG, typename _CMP>
 bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
-                        _CMP cmp)
+                        bool verbose, _CMP cmp)
 {
     bool r=true;
     std::size_t i=0;
     for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
         const _T& ai= *b;
         if (cmp(ai, expected) == false) {
-            std::cerr << msg << " element " << i
-                      << " failed: " << ai << " expected: "
-                      << expected << std::endl;
+            if (verbose) {
+                std::cerr << msg << " element " << i
+                        << " failed: " << ai << " expected: "
+                        << expected << std::endl;
+            }
             r = false;
         }
     }
@@ -107,11 +111,12 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
 }
 
 template <class _T, std::size_t _N, typename _MSG, typename _CMP>
-bool cftal::test::check(vec<_T, _N> vr, _T expected, _MSG msg, _CMP cmp)
+bool cftal::test::check(vec<_T, _N> vr, _T expected, _MSG msg,
+                        bool verbose, _CMP cmp)
 {
     _T vsr[_N];
     mem< vec<_T, _N> >::store(vsr, vr);
-    return check(vsr, expected, msg, cmp);
+    return check(vsr, expected, msg, verbose, cmp);
 }
 
 template <class _T, std::size_t _N>

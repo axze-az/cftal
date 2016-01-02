@@ -44,11 +44,13 @@ namespace cftal {
 
         template <typename _T, std::size_t _N, class _F>
         bool check_func_1(const std::vector<func_arg_result<_T> >& v,
-                          uint32_t max_ulp, uint32_t max_err);
+                          uint32_t max_ulp, uint32_t max_err,
+                          bool verbose);
 
         template <typename _T, std::size_t _N, class _F>
         bool check_func_2(const std::vector<func_arg_result<_T> >& v,
-                          uint32_t max_ulp, uint32_t max_err);
+                          uint32_t max_ulp, uint32_t max_err,
+                          bool verbose);
 
         template <typename _T>
         struct cmp_ulp {
@@ -126,8 +128,8 @@ namespace cftal {
             static
             const char* fname() { return "cosh"; }
         };
-        
-        
+
+
         template <typename _T>
         struct check_log {
             template <std::size_t _N>
@@ -161,14 +163,15 @@ namespace cftal {
             static
             const char* fname() { return "pow"; }
         };
-        
+
     }
 }
 
 template <typename _T, std::size_t _N, class _F>
 bool
 cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
-                          uint32_t max_ulp, uint32_t max_err)
+                          uint32_t max_ulp, uint32_t max_err,
+                          bool verbose)
 {
     using vec_type = vec<_T, _N>;
 
@@ -191,7 +194,7 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         s_ticks+= (t1 -t0);
         ticks += (t2 -t1);
 
-        bool c= check(vres, expected, _F::fname());
+        bool c= check(vres, expected, _F::fname(), verbose);
         if (c == true)
             continue;
         _T vres0 = extract<0>(vres);
@@ -203,22 +206,26 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
             ulp = sizeof(_T) * 8;
         }
         if (cmp(expected, res) == false) {
-            std::cerr << "libc error: " << res << '\n';
+            if (verbose)
+                std::cerr << "libc error: " << res << '\n';
         }
         if (max_ulp > 0) {
-            std::cerr << "ulp: " << ulp << '\n';
-            std::cerr << _F::fname() << "("<< a0 << ")\n";
+            if (verbose) {
+                std::cerr << "ulp: " << ulp << '\n';
+                std::cerr << _F::fname() << "("<< a0 << ")\n";
+            }
             if (std::abs(ulp) <= int32_t(max_ulp)) {
                 continue;
             }
         }
+        if (verbose==false)
+            check(vres, expected, _F::fname(), true);
         static_cast<void>(res);
         std::cerr << _F::fname() << "("<< a0 << ") failed.\n";
         rc = false;
         ++errs;
     }
-    std::cout << "rc= " << rc
-              << " test cases: " << calls
+    std::cout << "test cases: " << calls
               << " errors: " << errs << std::endl;
     std::cout << "error rate = ";
     if (calls) {
@@ -238,6 +245,11 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
     }
     if (errs <= max_err)
         rc=true;
+    if (rc == true) {
+        std::cout << _F::fname() << " v" << _N << " test passed " << std::endl;
+    } else {
+        std::cerr << _F::fname() << " v" << _N << " test failed " << std::endl;
+    }
     return rc;
 }
 
@@ -245,7 +257,8 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
 template <typename _T, std::size_t _N, class _F>
 bool
 cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
-                          uint32_t max_ulp, uint32_t max_err)
+                          uint32_t max_ulp, uint32_t max_err,
+                          bool verbose)
 {
     using vec_type = vec<_T, _N>;
 
@@ -270,7 +283,7 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
         s_ticks+= (t1 -t0);
         ticks += (t2 -t1);
 
-        bool c= check(vres, expected, _F::fname());
+        bool c= check(vres, expected, _F::fname(), verbose);
         if (c == true)
             continue;
         _T vres0 = extract<0>(vres);
@@ -282,22 +295,26 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
             ulp = sizeof(_T) * 8;
         }
         if (cmp(expected, res) == false) {
-            std::cerr << "libc error: " << res << '\n';
+            if (verbose)
+                std::cerr << "libc error: " << res << '\n';
         }
         if (max_ulp > 0) {
-            std::cerr << "ulp: " << ulp << '\n';
-            std::cerr << _F::fname() << "("<< a0 << ", " << a1 << ")\n";
+            if (verbose) {
+                std::cerr << "ulp: " << ulp << '\n';
+                std::cerr << _F::fname() << "("<< a0 << ", " << a1 << ")\n";
+            }
             if (std::abs(ulp) <= int32_t(max_ulp)) {
                 continue;
             }
         }
+        if (verbose==false)
+            check(vres, expected, _F::fname(), true);
         static_cast<void>(res);
         std::cerr << _F::fname() << "("<< a0 << ", " << a1 << ") failed.\n";
         rc = false;
         ++errs;
     }
-    std::cout << "rc= " << rc
-              << " test cases: " << calls
+    std::cout << "test cases: " << calls
               << " errors: " << errs << std::endl;
     std::cout << "error rate = ";
     if (calls) {
@@ -317,6 +334,11 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
     }
     if (errs <= max_err)
         rc=true;
+    if (rc == true) {
+        std::cout << _F::fname() << " v" << _N << " test passed " << std::endl;
+    } else {
+        std::cerr << _F::fname() << " v" << _N << " test failed " << std::endl;
+    }
     return rc;
 }
 
