@@ -86,6 +86,7 @@ int main()
     gen_constant<double, check_sinh<double> >(dm, "const double sinh_lo");
 
     gen_constant<double, check_exp<double> >(dp, "const double exp_hi");
+    gen_constant<double, check_expm1<double> >(dp, "const double expm1_hi");
 
     gen_constant<double, check_sinh<double> >(dp, "const double cosh_hi");
     gen_constant<double, check_sinh<double> >(dm, "const double cosh_lo");
