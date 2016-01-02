@@ -542,17 +542,43 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 sinh(const vf_type& d)
 {
+#if 1
+    dvf_type d2=vf_type(0.5*d);
+    dvf_type exp2=my_type::exp_k2(d2);
+    dvf_type rexp2=(vf_type(1.0)/exp2);
+    dvf_type ex2=mul_pwr2(exp2, vf_type(0.5)) * exp2;
+    dvf_type rex2=mul_pwr2(rexp2, vf_type(0.5)) * rexp2;
+    dvf_type ex= ex2 - rex2;
+
+    // 1.3407807929942596e+154
+    const vf_type max_exp2 = vf_type(
+        std::sqrt(std::numeric_limits<_FLOAT_T>::max()));
+    vf_type res(ex.h() + ex.l());
+    // res = _T::sel(exp2.h() > max_exp2, _T::pinf(), res);
+    res = _T::sel(d > 7.105e+02, _T::pinf(), res);
+    // res = _T::sel(exp2.h() == 0.0, _T::ninf(), res);
+    res = _T::sel(d <= -7.105e+02, _T::ninf(), res);
+    // res = _T::sel(rexp2.h() > max_exp2, _T::ninf(), res);
+    res = _T::sel(d == 0.0, 0.0, res);
+    res = _T::sel(isinf(d), d, res);
+    res = _T::sel(isnan(d), d, res);
+    return res;
+    // res = _T::sel(ex2.h()== vf_type(_T::pinf()), ex2.h(), res);
+    // res = _T::sel(ex2.h()== vf_type(0), _T::ninf(), res);
+#else
     dvf_type ex2(my_type::exp_k2(d));
     dvf_type nex2(vf_type(1.0)/ex2);
     ex2 = mul_pwr2(ex2, vf_type(0.5));
     nex2 =mul_pwr2(nex2, vf_type(0.5));
     dvf_type r(ex2 - nex2);
     vf_type res(r.h() + r.l());
+    res = _T::sel(d < -746.0, _T::ninf(), res);
     res = _T::sel(d == 0.0, 0.0, res);
     res = _T::sel(isinf(d), d, res);
     res = _T::sel(ex2.h()== vf_type(_T::pinf()), ex2.h(), res);
     res = _T::sel(ex2.h()== vf_type(0), _T::ninf(), res);
     return res;
+#endif
 }
 
 template <typename _FLOAT_T, typename _T>

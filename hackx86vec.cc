@@ -39,6 +39,9 @@ do_add(cftal::vec<int32_t, 2> a, cftal::vec<int32_t, 2> b)
 
 int main(int argc, char** argv)
 {
+    cftal::v2f64 t= sinh(cftal::v2f64(-1.436107437487306697e+03));
+    std::cout << t << std::endl;
+#if 0
     uint64_t d=3661514468055604540ULL;
     cftal::divisor<cftal::v2u64, uint64_t> dd(d);
     cftal::v2u64 u={1503475172844850297ULL, 13461143575756973763ULL};
@@ -48,7 +51,7 @@ int main(int argc, char** argv)
     std::cout << u << " / " << dd.d() << std::endl;
     std::cout << q << std::endl
               << r << std::endl;
-#if 0
+
     cftal::divisor<cftal::v4s32, int32_t> v4rr(3);
     cftal::v4s32 v4t=-7046431;
     cftal::v4s32 v4q=v4t/v4rr;
