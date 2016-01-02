@@ -320,12 +320,9 @@ namespace cftal {
     // specializations vec<double, 2>
     vec<double, 2>
     cbrt(arg<vec<double, 2> >::type v);
-    vec<double, 2>
-    ldexp(arg<vec<double, 2> >::type d, arg<vec<int32_t, 2> >::type e);
+
     vec<int32_t, 2>
     ilogbp1(arg<vec<double, 2> >::type v);
-    vec<int32_t, 2>
-    ilogb(arg<vec<double, 2> >::type v);
     vec<double, 2>
     atan2(arg<vec<double, 2> >::type y, arg<vec<double, 2> >::type x);
     vec<double, 2>
@@ -371,12 +368,8 @@ namespace cftal {
     // specializations vec<double, 4>
     vec<double, 4>
     cbrt(arg<vec<double, 4> >::type v);
-    vec<double, 4>
-    ldexp(arg<vec<double, 4> >::type d, arg<vec<int32_t, 4> >::type e);
     vec<int32_t, 4>
     ilogbp1(arg<vec<double, 4> >::type v);
-    vec<int32_t, 4>
-    ilogb(arg<vec<double, 4> >::type v);
     vec<double, 4>
     atan2(arg<vec<double, 4> >::type y, arg<vec<double, 4> >::type x);
     vec<double, 4>
@@ -421,12 +414,8 @@ namespace cftal {
     // specializations vec<double, 8>
     vec<double, 8>
     cbrt(arg<vec<double, 8> >::type v);
-    vec<double, 8>
-    ldexp(arg<vec<double, 8> >::type d, arg<vec<int32_t, 8> >::type e);
     vec<int32_t, 8>
     ilogbp1(arg<vec<double, 8> >::type v);
-    vec<int32_t, 8>
-    ilogb(arg<vec<double, 8> >::type v);
     vec<double, 8>
     atan2(arg<vec<double, 8> >::type y, arg<vec<double, 8> >::type x);
     vec<double, 8>
