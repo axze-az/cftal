@@ -94,6 +94,41 @@ namespace cftal {
         };
 
         template <typename _T>
+        struct check_sinh {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return sinh(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::sinh(a);
+            }
+            static
+            const char* fname() { return "sinh"; }
+        };
+
+        template <typename _T>
+        struct check_cosh {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return cosh(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::cosh(a);
+            }
+            static
+            const char* fname() { return "cosh"; }
+        };
+        
+        
+        template <typename _T>
         struct check_log {
             template <std::size_t _N>
             static

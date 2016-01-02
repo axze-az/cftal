@@ -89,14 +89,6 @@ namespace cftal {
     vec<double, _N>
     native_log(const vec<double, _N>& v);
 
-    template <std::size_t _N>
-    vec<double, _N>
-    sinh(const vec<double, _N>& v);
-
-    template <std::size_t _N>
-    vec<double, _N>
-    cosh(const vec<double, _N>& v);
-
 
     template <std::size_t _N>
     vec<double, _N>
@@ -255,6 +247,40 @@ namespace cftal {
     vec<double, 8>
     expm1(arg<vec<double, 8> >::type d);
 
+    // sinh
+    template <std::size_t _N>
+    vec<double, _N>
+    sinh(const vec<double, _N>& v);
+
+    vec<double, 1>
+    sinh(const vec<double, 1>& d);
+
+    vec<double, 2>
+    sinh(arg<vec<double, 2> >::type d);
+
+    vec<double, 4>
+    sinh(arg<vec<double, 4> >::type d);
+
+    vec<double, 8>
+    sinh(arg<vec<double, 8> >::type d);
+    
+    // cosh
+    template <std::size_t _N>
+    vec<double, _N>
+    cosh(const vec<double, _N>& v);
+
+    vec<double, 1>
+    cosh(const vec<double, 1>& d);
+
+    vec<double, 2>
+    cosh(arg<vec<double, 2> >::type d);
+
+    vec<double, 4>
+    cosh(arg<vec<double, 4> >::type d);
+
+    vec<double, 8>
+    cosh(arg<vec<double, 8> >::type d);
+
     // log
     template <std::size_t _N>
     vec<double, _N>
@@ -340,10 +366,6 @@ namespace cftal {
     native_tan(arg<vec<double, 2> >::type d);
     vec<double, 2>
     native_cot(arg<vec<double, 2> >::type d);
-    vec<double, 2>
-    cosh(arg<vec<double, 2> >::type d);
-    vec<double, 2>
-    sinh(arg<vec<double, 2> >::type d);
 
 
     // specializations vec<double, 4>
@@ -395,10 +417,6 @@ namespace cftal {
     native_tan(arg<vec<double, 4> >::type d);
     vec<double, 4>
     native_cot(arg<vec<double, 4> >::type d);
-    vec<double, 4>
-    cosh(arg<vec<double, 4> >::type d);
-    vec<double, 4>
-    sinh(arg<vec<double, 4> >::type d);
 
     // specializations vec<double, 8>
     vec<double, 8>
@@ -449,10 +467,6 @@ namespace cftal {
     native_tan(arg<vec<double, 8> >::type d);
     vec<double, 8>
     native_cot(arg<vec<double, 8> >::type d);
-    vec<double, 8>
-    cosh(arg<vec<double, 8> >::type d);
-    vec<double, 8>
-    sinh(arg<vec<double, 8> >::type d);
 
     vec<double, 1>
     fma(arg<vec<double, 1> >::type a,
@@ -663,6 +677,13 @@ cftal::sinh(const vec<double, _N>& v)
     return r;
 }
 
+inline
+cftal::vec<double, 1>
+cftal::sinh(const vec<double, 1>& v)
+{
+    return vec<double, 1>(std::sinh(v()));
+}
+
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
@@ -671,6 +692,14 @@ cftal::cosh(const vec<double, _N>& v)
     vec<double, _N> r(cosh(low_half(v)), cosh(high_half(v)));
     return r;
 }
+
+inline
+cftal::vec<double, 1>
+cftal::cosh(const vec<double, 1>& v)
+{
+    return vec<double, 1>(std::cosh(v()));
+}
+
 
 template <std::size_t _N>
 inline
