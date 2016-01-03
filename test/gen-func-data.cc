@@ -84,6 +84,10 @@ generate_func_1(std::ostream& s, mpfr_func_1 f,
           << std::endl;
         --cnt;
     }
+    mpfr_clear(mp_res);
+    mpfr_clear(mp_res53);
+    mpfr_clear(mp_res54);
+    mpfr_clear(mp_input);
 }
 
 void
@@ -155,6 +159,11 @@ generate_func_2(std::ostream& s, mpfr_func_2 f,
           << std::endl;
         --cnt;
     }
+    mpfr_clear(mp_res);
+    mpfr_clear(mp_res53);
+    mpfr_clear(mp_res54);
+    mpfr_clear(mp_input0);
+    mpfr_clear(mp_input1);
 }
 
 
