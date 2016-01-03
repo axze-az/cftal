@@ -213,7 +213,7 @@ namespace cftal {
     vec<double, 1>
     trunc(const vec<double, 1>& v);
 
-    // exp
+    // exp, these functions are exact to 1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     exp(const vec<double, _N>& v);
@@ -230,7 +230,7 @@ namespace cftal {
     vec<double, 8>
     exp(arg<vec<double, 8> >::type d);
 
-    // expm1
+    // expm1, these functions are exact to 1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     expm1(const vec<double, _N>& v);
@@ -247,7 +247,8 @@ namespace cftal {
     vec<double, 8>
     expm1(arg<vec<double, 8> >::type d);
 
-    // sinh
+    // sinh, these functions are exact to 1 ulp with exception of _N=1
+    // in interval [-709, +709)
     template <std::size_t _N>
     vec<double, _N>
     sinh(const vec<double, _N>& v);
@@ -263,7 +264,7 @@ namespace cftal {
 
     vec<double, 8>
     sinh(arg<vec<double, 8> >::type d);
-    
+
     // cosh
     template <std::size_t _N>
     vec<double, _N>
@@ -281,7 +282,7 @@ namespace cftal {
     vec<double, 8>
     cosh(arg<vec<double, 8> >::type d);
 
-    // log
+    // log, these functions are exact to 1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     log(const vec<double, _N>& v);
@@ -298,7 +299,7 @@ namespace cftal {
     vec<double, 8>
     log(arg<vec<double, 8> >::type d);
 
-    // pow and specializations
+    // pow, these functions are exact to 1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     pow(const vec<double, _N>& x, const vec<double, _N>& y);

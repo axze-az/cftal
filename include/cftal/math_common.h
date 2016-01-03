@@ -540,9 +540,6 @@ sinh(const vf_type& d)
     dvf_type rex2=mul_pwr2(rexp2, vf_type(0.5)) * rexp2;
     dvf_type ex= ex2 - rex2;
 
-    // 1.3407807929942596e+154
-    const vf_type max_exp2 = vf_type(
-        std::sqrt(std::numeric_limits<_FLOAT_T>::max()));
     vf_type res(ex.h() + ex.l());
     // res = _T::sel(exp2.h() > max_exp2, _T::pinf(), res);
     res = _T::sel(d > 7.105e+02, _T::pinf(), res);
