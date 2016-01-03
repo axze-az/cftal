@@ -207,6 +207,12 @@ namespace cftal {
             native_exp_k(const vf_type& v);
 
             static dvf_type
+            exp2_k2(const dvf_type& dvf);
+
+            static vf_type
+            native_exp2_k(const vf_type& v);
+
+            static dvf_type
             log_k2(const dvf_type& dvf);
 
             static vf_type
@@ -657,6 +663,27 @@ native_exp_k(const vf_type& d)
 #endif
 }
 
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::
+exp2_k2(const dvf_type& d)
+{
+    using ctbl = impl::d_real_constants<dvf_type, double>;
+    dvf_type d2=ctbl::m_ln2 * d;
+    return exp_k2(d2);
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+native_exp2_k(const vf_type& d)
+{
+    using ctbl = impl::d_real_constants<dvf_type, double>;
+    vf_type d2=ctbl::m_ln2.h() * d;
+    return native_exp_k(d2);
+}
 
 template <typename _T>
 inline

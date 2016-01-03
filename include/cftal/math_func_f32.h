@@ -131,8 +131,14 @@ namespace cftal {
             static dvf_type
             exp_k2(const dvf_type& dvf);
 
+            static dvf_type
+            exp2_k2(const dvf_type& dvf);
+
             static vf_type
             native_exp_k(const vf_type& v);
+
+            static vf_type
+            native_exp2_k(const vf_type& v);
 
             static dvf_type
             log_k2(const dvf_type& dvf);
@@ -412,6 +418,36 @@ exp_k2(const dvf_type& x)
     vhpf_type vres[elements];
     for (std::size_t i=0; i<elements; ++i) {
         vres[i]= hpf_func::native_exp_k(xh[i]);
+    }
+    dvf_type res;
+    _T::vhpf_to_dvf(vres, res);
+    return res;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::dvf_type
+cftal::math::func_core<float, _T>::
+exp2_k2(const dvf_type& x)
+{
+    using vhpf_type = typename _T::vhpf_type;
+    const std::size_t elements = _T::vhpf_per_vf();
+
+    using hpf_traits = typename _T::hpf_traits;
+    using hpf_func =
+        func_core<double, hpf_traits>;
+
+    vhpf_type xh[elements];
+    _T::vf_to_vhpf(x.h(), xh);
+    vhpf_type xl[elements];
+    _T::vf_to_vhpf(x.l(), xl);
+    // evaluate unevaluated sum
+    for (std::size_t i=0; i<elements; ++i)
+        xh[i] += xl[i];
+
+    vhpf_type vres[elements];
+    for (std::size_t i=0; i<elements; ++i) {
+        vres[i]= hpf_func::native_exp2_k(xh[i]);
     }
     dvf_type res;
     _T::vhpf_to_dvf(vres, res);

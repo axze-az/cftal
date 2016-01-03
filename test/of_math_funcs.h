@@ -183,6 +183,22 @@ namespace cftal {
             const char* fname() { return "cosh"; }
         };
 
+        template <typename _T>
+        struct check_exp2 {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return exp2(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::exp2(a);
+            }
+            static
+            const char* fname() { return "exp2"; }
+        };
 
         template <typename _T>
         struct check_log {

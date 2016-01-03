@@ -188,6 +188,7 @@ int main(int argc, char** argv)
         { "log",        mpfr_log,       nullptr },
         { "sinh",       mpfr_sinh,      nullptr },
         { "cosh",       mpfr_cosh,      nullptr },
+        { "exp2",       mpfr_exp2,      nullptr },
         { "cbrt",       mpfr_cbrt,      nullptr },
         { "sqrt",       mpfr_sqrt,      nullptr },
         { "pow",        nullptr,        mpfr_pow }

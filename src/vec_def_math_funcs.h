@@ -39,6 +39,13 @@
         }                                                               \
                                                                         \
         ns::vec_float                                                   \
+        ns::exp2(arg<vec_float>::type d)                                \
+        {                                                               \
+                DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \
+                return func_t::exp2(d);                                 \
+        }                                                               \
+                                                                        \
+        ns::vec_float                                                   \
         ns::atan2(arg<vec_float>::type x, arg<vec_float>::type y)       \
         {                                                               \
                 DEF_TRAITS_FUNC(vec_float, vec_int, real_type);         \

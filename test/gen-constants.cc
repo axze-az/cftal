@@ -111,5 +111,10 @@ int main()
     gen_constant(std::make_pair(.0, 0.001), "const double log_lo",
                  mpfr_log, check_inf, "inf");
 
+    dp=std::make_pair(0.0, 1100.0);
+    dm=std::make_pair(-1100.0, 0.0);
+    gen_constant(dp, "const double exp2_hi", mpfr_exp2,  check_inf, "inf");
+    gen_constant(dm, "const double exp2_lo", mpfr_exp2,  check_zero, "m_0");
+
     return 0;
 }
