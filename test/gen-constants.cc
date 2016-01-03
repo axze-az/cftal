@@ -116,5 +116,8 @@ int main()
     gen_constant(dp, "const double exp2_hi", mpfr_exp2,  check_inf, "inf");
     gen_constant(dm, "const double exp2_lo", mpfr_exp2,  check_zero, "m_0");
 
+    gen_constant(dp, "const double exp10_hi", mpfr_exp10,  check_inf, "inf");
+    gen_constant(dm, "const double exp10_lo", mpfr_exp10,  check_zero, "m_0");
+
     return 0;
 }

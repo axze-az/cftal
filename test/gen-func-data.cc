@@ -212,7 +212,7 @@ int main(int argc, char** argv)
             -1026.0,    1026.0
         }, {
             "exp10",      mpfr_exp10,     nullptr,
-            -712.0,     712.0
+            -330.0,     310.0
         }, {
             "cbrt",       mpfr_cbrt,      nullptr,
             -std::numeric_limits<double>::max(),
