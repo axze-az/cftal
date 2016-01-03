@@ -18,13 +18,13 @@ int main(int argc, char** argv)
 
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    bool rc= check_func_1<double, 2, check_cosh<double> >(v, 1, 0, true);
-    rc &= check_func_1<double, 4, check_cosh<double> >(v, 1, 0, true);
-    rc &= check_func_1<double, 8, check_cosh<double> >(v, 1, 0, true);
+    bool rc= check_func_1<double, 2, check_cosh<double> >(v, 1, 0, false);
+    rc &= check_func_1<double, 4, check_cosh<double> >(v, 1, 0, false);
+    rc &= check_func_1<double, 8, check_cosh<double> >(v, 1, 0, false);
 
-    func_domain<double> d=std::make_pair(-1600.0, 1600.0);
+    func_domain<double> d=std::make_pair(-711.0, 711.0);
     rc &= of_fp_func_up_to<
-        double, 8, check_cosh<double> >::v(d, cmp_ulp<double>(1));
+        double, 8, check_cosh<double> >::v(d, cmp_ulp<double>(1), 0x8000ULL);
 
     return (rc == true) ? 0 : 1;
 }

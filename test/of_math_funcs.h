@@ -160,7 +160,11 @@ namespace cftal {
             static
             _T
             v(const _T& a) {
+#if 1
+                return call_mpfr_func(a, mpfr_cosh);
+#else
                 return std::cosh(a);
+#endif
             }
             static
             const char* fname() { return "cosh"; }

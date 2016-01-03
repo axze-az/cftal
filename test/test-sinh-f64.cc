@@ -22,9 +22,9 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_sinh<double> >(v, 1, 0, false);
     rc &= check_func_1<double, 8, check_sinh<double> >(v, 1, 0, false);
 
-    func_domain<double> d=std::make_pair(-709.0, 709.0);
+    func_domain<double> d=std::make_pair(-711.0, 711.0);
     rc &= of_fp_func_up_to<
-        double, 8, check_sinh<double> >::v(d, cmp_ulp<double>(1));
+        double, 8, check_sinh<double> >::v(d, cmp_ulp<double>(1), 0x8000ULL);
 
     return (rc == true) ? 0 : 1;
 }

@@ -529,40 +529,28 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 sinh(const vf_type& d)
 {
-#if 1
-    dvf_type d2=vf_type(0.5*d);
-    dvf_type exp2=my_type::exp_k2(d2);
-    dvf_type rexp2=(vf_type(1.0)/exp2);
-    dvf_type ex2=mul_pwr2(exp2, vf_type(0.5)) * exp2;
-    dvf_type rex2=mul_pwr2(rexp2, vf_type(0.5)) * rexp2;
-    dvf_type ex= ex2 - rex2;
-
-    vf_type res(ex.h() + ex.l());
-    // res = _T::sel(exp2.h() > max_exp2, _T::pinf(), res);
-    res = _T::sel(d > 7.105e+02, _T::pinf(), res);
-    // res = _T::sel(exp2.h() == 0.0, _T::ninf(), res);
-    res = _T::sel(d <= -7.105e+02, _T::ninf(), res);
-    // res = _T::sel(rexp2.h() > max_exp2, _T::ninf(), res);
+    // sinh (x) = 1/2 (exp(x) - exp(-x))
+    // cosh (x) = 1/2 (exp(x) + exp(-x));
+    // sinh (x+y) = sinh(x)*cosh(y) + cosh(x)*sinh(y)
+    // sinh (x-y) = sinh(x)*cosh(y) - cosh(x)*sinh(y)
+    // cosh (x+y) = cosh(x)*cosh(y) + sinh(x)*sinh(y)
+    // cosh (x-y) = cosh(x)*cosh(y) - sinh(x)*sinh(y)
+    // -->
+    // sinh (x+x) = sinh(x)*cosh(x) + cosh(x)*sinh(x)
+    // sinh (2x) = 2 * sinh(x) * cosh(x)
+    dvf_type dh=vf_type(0.5*d);
+    dvf_type exph=my_type::exp_k2(dh);
+    dvf_type rexph=(vf_type(1.0)/exph);
+    dvf_type two_sinh_xh= exph - rexph;
+    dvf_type two_cosh_xh= exph + rexph;
+    dvf_type sinh_x= two_sinh_xh + two_cosh_xh;
+    vf_type res = sinh_x.h() + sinh_x.l();
+    const vf_type sinh_hi_inf= 7.104758600739439771132311e+02;
+    const vf_type sinh_lo_inf= -7.104758600739439771132311e+02;
+    res = _T::sel(d >= sinh_hi_inf, _T::pinf(), res);
+    res = _T::sel(d <= sinh_lo_inf, _T::ninf(), res);
     res = _T::sel(d == 0.0, 0.0, res);
-    res = _T::sel(isinf(d), d, res);
-    res = _T::sel(isnan(d), d, res);
     return res;
-    // res = _T::sel(ex2.h()== vf_type(_T::pinf()), ex2.h(), res);
-    // res = _T::sel(ex2.h()== vf_type(0), _T::ninf(), res);
-#else
-    dvf_type ex2(my_type::exp_k2(d));
-    dvf_type nex2(vf_type(1.0)/ex2);
-    ex2 = mul_pwr2(ex2, vf_type(0.5));
-    nex2 =mul_pwr2(nex2, vf_type(0.5));
-    dvf_type r(ex2 - nex2);
-    vf_type res(r.h() + r.l());
-    res = _T::sel(d < -746.0, _T::ninf(), res);
-    res = _T::sel(d == 0.0, 0.0, res);
-    res = _T::sel(isinf(d), d, res);
-    res = _T::sel(ex2.h()== vf_type(_T::pinf()), ex2.h(), res);
-    res = _T::sel(ex2.h()== vf_type(0), _T::ninf(), res);
-    return res;
-#endif
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -571,21 +559,27 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 cosh(const vf_type& d)
 {
-    dvf_type ex2(my_type::exp_k2(d));
-    dvf_type nex2(vf_type(1.0)/ex2);
-    ex2 = mul_pwr2(ex2, vf_type(0.5));
-    nex2 =mul_pwr2(nex2, vf_type(0.5));
-    dvf_type r(ex2 + nex2);
-    vf_type res(r.h() + r.l());
-    res = _T::sel(isinf(d),
-                  _T::sel(d < 0,
-                          vf_type(_T::ninf()),
-                          vf_type(_T::pinf())),
-                  res);
-    res = _T::sel(d >= vf_type(7.104758600739438634e+02),
-                  _T::pinf(), res);
-    res = _T::sel(d <= vf_type(-7.104758600739438634e+02),
-                  _T::pinf(), res);
+    // sinh (x) = 1/2 (exp(x) - exp(-x))
+    // cosh (x) = 1/2 (exp(x) + exp(-x));
+    // sinh (x+y) = sinh(x)*cosh(y) + cosh(x)*sinh(y)
+    // sinh (x-y) = sinh(x)*cosh(y) - cosh(x)*sinh(y)
+    // cosh (x+y) = cosh(x)*cosh(y) + sinh(x)*sinh(y)
+    // cosh (x-y) = cosh(x)*cosh(y) - sinh(x)*sinh(y)
+    // -->
+    // cosh (x+x) = cosh(x)*cosh(x) + sinh(x)*sinh(x)
+    // cosh (2x) = 2 * sinh(x)*sinh(x) + 1
+
+    dvf_type dh=vf_type(0.5*d);
+    dvf_type exph=my_type::exp_k2(dh);
+    dvf_type rexph=(vf_type(1.0)/exph);
+    dvf_type two_sinh_xh= exph - rexph;
+    dvf_type sinh_xh = mul_pwr2(two_sinh_xh, vf_type(0.5));
+    dvf_type cosh_x = mul_pwr2(sqr(sinh_xh), vf_type(2.0)) + vf_type(1.0);
+    vf_type res = cosh_x.h() + cosh_x.l();
+    const vf_type cosh_hi_inf= 7.104758600739439771132311e+02;
+    // const vf_type cosh_lo_inf= -7.104758600739439771132311e+02;
+    res = _T::sel(abs(d) >= cosh_hi_inf, _T::pinf(), res);
+    res = _T::sel(d == 0.0, 1.0, res);
     return res;
 }
 
@@ -610,6 +604,9 @@ _log(const vf_type& d)
     x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
+    const vf_type log_lo_fin= 4.940656458412465441765688e-324;
+    const vf_type log_lo_val= -7.444400719213812180896639e+02;
+    x = _T::sel(d == log_lo_fin, log_lo_val, x);
     return x;
 }
 
