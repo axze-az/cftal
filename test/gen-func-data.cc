@@ -1,5 +1,6 @@
 #include <cftal/constants.h>
 #include <cftal/types.h>
+#include <cftal/test/of_fp_funcs.h>
 #include <iostream>
 #include <random>
 #include <iomanip>
@@ -14,7 +15,8 @@ namespace cftal {
 
         void generate_func_1(std::ostream& s,
                              mpfr_func_1 f,
-                             int rep_bits, std::size_t cnt);
+                             int rep_bits, std::size_t cnt,
+                             func_domain<double> dom);
 
         using mpfr_func_2 =
             int(*)(mpfr_t, const mpfr_t, const mpfr_t, mpfr_rnd_t);
@@ -28,7 +30,8 @@ namespace cftal {
 void
 cftal::test::
 generate_func_1(std::ostream& s, mpfr_func_1 f,
-                int rep_bits, std::size_t cnt)
+                int rep_bits, std::size_t cnt,
+                func_domain<double> dom)
 {
     mpfr_t mp_res, mp_res53, mp_res54, mp_input;
 
@@ -43,6 +46,10 @@ generate_func_1(std::ostream& s, mpfr_func_1 f,
     while (cnt != 0) {
         bytes8 input(distribution(rnd));
         double d=input._f64;
+        if (d < dom.first)
+            continue;
+        if (d >= dom.second)
+            continue;
         mpfr_set_d(mp_input, d, GMP_RNDN);
         f(mp_res, mp_input, GMP_RNDN);
         f(mp_res54, mp_input, GMP_RNDN);
@@ -180,18 +187,44 @@ int main(int argc, char** argv)
         const char* fname;
         cftal::test::mpfr_func_1 _f1;
         cftal::test::mpfr_func_2 _f2;
+        double _l;
+        double _h;
     };
 
     static const struct fninfo g_func_info[] = {
-        { "exp",        mpfr_exp,       nullptr },
-        { "expm1",      mpfr_expm1,     nullptr },
-        { "log",        mpfr_log,       nullptr },
-        { "sinh",       mpfr_sinh,      nullptr },
-        { "cosh",       mpfr_cosh,      nullptr },
-        { "exp2",       mpfr_exp2,      nullptr },
-        { "cbrt",       mpfr_cbrt,      nullptr },
-        { "sqrt",       mpfr_sqrt,      nullptr },
-        { "pow",        nullptr,        mpfr_pow }
+        {
+            "exp",        mpfr_exp,       nullptr,
+            -712.0,     712.0
+        }, {
+            "expm1",      mpfr_expm1,     nullptr,
+            -712.0,     712.0
+        }, {
+            "log",        mpfr_log,       nullptr,
+            0.0,  std::numeric_limits<double>::max()
+        }, {
+            "sinh",       mpfr_sinh,      nullptr,
+            -712.0,     712.0
+        }, {
+            "cosh",       mpfr_cosh,      nullptr,
+            -712.0,     712.0
+        }, {
+            "exp2",       mpfr_exp2,      nullptr,
+            -1026.0,    1026.0
+        }, {
+            "exp10",      mpfr_exp10,     nullptr,
+            -712.0,     712.0
+        }, {
+            "cbrt",       mpfr_cbrt,      nullptr,
+            -std::numeric_limits<double>::max(),
+            std::numeric_limits<double>::max()
+        }, {
+            "sqrt",       mpfr_sqrt,      nullptr,
+            0.0,  std::numeric_limits<double>::max()
+        }, {
+            "pow",        nullptr,        mpfr_pow,
+            -std::numeric_limits<double>::max(),
+            std::numeric_limits<double>::max()
+        }
     };
 
     if (argc < 2 || argc > 4) {
@@ -200,10 +233,14 @@ int main(int argc, char** argv)
     }
 
     std::string fname=argv[1];
+    cftal::test::func_domain<double> dom=
+        std::make_pair(-std::numeric_limits< double >::max(),
+                        std::numeric_limits<double>::max());
     for (const auto& fi : g_func_info) {
         if (fname == fi.fname) {
             if (fi._f1 != nullptr) {
                 mpfr_func1 = fi._f1;
+                dom = std::make_pair(fi._l, fi._h);
             } else if (fi._f2 != nullptr) {
                 mpfr_func2 = fi._f2;
             }
@@ -248,7 +285,7 @@ int main(int argc, char** argv)
                                      rep_bits, cnt);
     } else if (mpfr_func1 != nullptr) {
         cftal::test::generate_func_1(std::cout, mpfr_func1,
-                                    rep_bits, cnt);
+                                    rep_bits, cnt, dom);
     }
     return 0;
 }
