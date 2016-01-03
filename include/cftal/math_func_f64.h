@@ -405,16 +405,6 @@ log_k2(const dvf_type& d)
     dvf_type x2 = sqr(xr);
 
     dvf_type t= ctbl::_2_over_i[23];
-    // t = t * x2 + ctbl::_2_over_i[21];
-    // t = t * x2 + ctbl::_2_over_i[19];
-    // t = t * x2 + ctbl::_2_over_i[17];
-    // t = t * x2 + ctbl::_2_over_i[15];
-    // t = t * x2 + ctbl::_2_over_i[13];
-    // t = t * x2 + ctbl::_2_over_i[11];
-    // t = t * x2 + ctbl::_2_over_i[9];
-    // t = t * x2 + ctbl::_2_over_i[7];
-    // t = t * x2 + ctbl::_2_over_i[5];
-    // t = t * x2 + ctbl::_2_over_i[3];
     for (int i=21; i>2; i-=2)
         t = t * x2 + ctbl::_2_over_i[i];
     t = t * x2 + vf_type(2.0);

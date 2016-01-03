@@ -62,20 +62,36 @@ namespace cftal {
             }
         };
 
-        struct mpfr_func {
-            template <typename _F>
-            static double v(double d, _F f) {
-                mpfr_t di, r;
-                mpfr_init2(di, 128);
-                mpfr_init2(r, 128);
-                mpfr_set_d(di, d, GMP_RNDN);
-                f(r, di, GMP_RNDN);
-                double dr=mpfr_get_d(r, GMP_RNDN);
-                mpfr_clear(di);
-                mpfr_clear(r);
-                return dr;
-            }
-        };
+        template <typename _F>
+        double
+        call_mpfr_func(double d, _F f) {
+            mpfr_t di, r;
+            mpfr_init2(di, 128);
+            mpfr_init2(r, 128);
+            mpfr_set_d(di, d, GMP_RNDN);
+            f(r, di, GMP_RNDN);
+            double dr=mpfr_get_d(r, GMP_RNDN);
+            mpfr_clear(di);
+            mpfr_clear(r);
+            return dr;
+        }
+
+        template <typename _F>
+        double
+        call_mpfr_func(double a, double b, _F f) {
+            mpfr_t ai, bi, r;
+            mpfr_init2(ai, 128);
+            mpfr_init2(bi, 128);
+            mpfr_init2(r, 128);
+            mpfr_set_d(ai, a, GMP_RNDN);
+            mpfr_set_d(bi, b, GMP_RNDN);
+            f(r, ai, bi, GMP_RNDN);
+            double dr=mpfr_get_d(r, GMP_RNDN);
+            mpfr_clear(ai);
+            mpfr_clear(bi);
+            mpfr_clear(r);
+            return dr;
+        }
 
 
         template <typename _T>
@@ -124,7 +140,7 @@ namespace cftal {
             _T
             v(const _T& a) {
 #if 1
-                return mpfr_func::v(a, mpfr_sinh);
+                return call_mpfr_func(a, mpfr_sinh);
 #else
                 return std::sinh(a);
 #endif

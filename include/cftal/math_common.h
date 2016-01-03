@@ -473,8 +473,11 @@ _exp(const vf_type& d)
         dvf_type xr(my_type::exp_k2(d));
         res=xr.h() + xr.l();
     }
-    res = _T::sel(d < -746.0, 0.0, res);
-    res = _T::sel(d >= 709.78271289338409, _T::pinf(), res);
+
+    const vf_type exp_hi_inf= 7.097827128933840867830440e+02;
+    const vf_type exp_lo_zero= -7.451332191019412221066887e+02;
+    res = _T::sel(d <= exp_lo_zero, 0.0, res);
+    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, M_E, res);
     // res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
@@ -508,17 +511,25 @@ expm1(const vf_type& d)
 {
     dvf_type r(my_type::exp_k2(d));
     // res=xr.h() + xr.l();
+    dvf_type rm1= r - vf_type(1.0);
+#if 1
+    // select is not required
+    vf_type res = rm1.h() + rm1.l();
+#else
     // 2^54 (not 2^53 to be on the right side because r.l() may be != 0.0)
     const bytes8 magic(0, 0x43500000);
     const vf_type p2_54= magic._f64;
     vmf_type expm1_lt_exp = r.h() < p2_54;
-    dvf_type rm1= r - vf_type(1.0);
 
     vf_type res= _T::sel(expm1_lt_exp,
                          rm1.h() + rm1.l(),
                          r.h() + r.l());
-    res = _T::sel(d < -746.0, -1.0, res);
-    res = _T::sel(d >= 709.78271289338409, _T::pinf(), res);
+#endif
+    const vf_type expm1_hi_inf= 7.097827128933840867830440e+02;
+    const vf_type expm1_lo_minus_one= -3.742994775023704789873591e+01;
+
+    res = _T::sel(d <= expm1_lo_minus_one, -1.0, res);
+    res = _T::sel(d >= expm1_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 0.0, res);
     res = _T::sel(d == 1.0, M_E-1.0, res);
     // res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
