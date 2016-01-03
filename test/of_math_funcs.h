@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
+#include <mpfr.h>
 
 namespace cftal {
     namespace test {
@@ -61,6 +62,22 @@ namespace cftal {
             }
         };
 
+        template <typename _F>
+        struct mpfr_func_1 {
+            static double v(double d) {
+                mpfr_t di, r;
+                mpfr_init2(di, 120);
+                mpfr_init2(r, 120);
+                mpfr_set_d(di, d, GMP_RNDN);
+                _F(r, di, GMP_RNDN);
+                double dr=mpfr_get_d(r, GMP_RNDN);
+                mpfr_clear(di);
+                mpfr_clear(r);
+                return dr;
+            }
+        };
+
+
         template <typename _T>
         struct check_exp {
             template <std::size_t _N>
@@ -106,7 +123,16 @@ namespace cftal {
             static
             _T
             v(const _T& a) {
+#if 1
+                struct h_t {
+                    h_t(mpfr_t r, const mpfr_t a, mpfr_rnd_t rr) {
+                        mpfr_sinh(r, a, rr);
+                    }
+                };
+                return mpfr_func_1<h_t>::v(a);
+#else
                 return std::sinh(a);
+#endif
             }
             static
             const char* fname() { return "sinh"; }
