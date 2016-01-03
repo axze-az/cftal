@@ -195,6 +195,12 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         ticks += (t2 -t1);
 
         bool c= check(vres, expected, _F::fname(), verbose);
+        bool libc_err= (cmp(expected, res) == false);
+        if (libc_err) {
+            std::cerr << "libc error: " << res <<  " != "
+                      << _F::fname()
+                      << '(' << a0 << ")\n";
+        }
         if (c == true)
             continue;
         _T vres0 = extract<0>(vres);
@@ -204,10 +210,6 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         }
         catch (...) {
             ulp = sizeof(_T) * 8;
-        }
-        if (cmp(expected, res) == false) {
-            if (verbose)
-                std::cerr << "libc error: " << res << '\n';
         }
         if (max_ulp > 0) {
             if (verbose) {
@@ -284,6 +286,12 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
         ticks += (t2 -t1);
 
         bool c= check(vres, expected, _F::fname(), verbose);
+        bool libc_err= (cmp(expected, res) == false);
+        if (libc_err) {
+            std::cerr << "libc error: " << res <<  " != "
+                      << _F::fname()
+                      << '(' << a0 << ", " << a1 << ")\n";
+        }
         if (c == true)
             continue;
         _T vres0 = extract<0>(vres);
@@ -293,10 +301,6 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
         }
         catch (...) {
             ulp = sizeof(_T) * 8;
-        }
-        if (cmp(expected, res) == false) {
-            if (verbose)
-                std::cerr << "libc error: " << res << '\n';
         }
         if (max_ulp > 0) {
             if (verbose) {
