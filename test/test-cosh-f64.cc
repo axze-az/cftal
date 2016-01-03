@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
     func_domain<double> d=std::make_pair(-711.0, 711.0);
     rc &= of_fp_func_up_to<
-        double, 8, check_cosh<double> >::v(d, cmp_ulp<double>(1), 0x8000ULL);
+        double, 8, check_cosh<double> >::v(d, cmp_ulp<double>(1), 0x4000ULL);
 
     return (rc == true) ? 0 : 1;
 }

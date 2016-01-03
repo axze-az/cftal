@@ -136,6 +136,13 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return sinh(a);
             }
+
+            static
+            vec<_T, 1>
+            v(const vec<_T, 1>& a) {
+                return v(a());
+            }
+
             static
             _T
             v(const _T& a) {
@@ -157,6 +164,12 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return cosh(a);
             }
+            static
+            vec<_T, 1>
+            v(const vec<_T, 1>& a) {
+                return v(a());
+            }
+
             static
             _T
             v(const _T& a) {
