@@ -444,16 +444,6 @@ native_log_k(const vf_type& d)
     vf_type x2 = xr*xr;
 
     vf_type t= ctbl::_2_over_i[23].h();
-    // t = t * x2 + ctbl::_2_over_i[21];
-    // t = t * x2 + ctbl::_2_over_i[19];
-    // t = t * x2 + ctbl::_2_over_i[17];
-    // t = t * x2 + ctbl::_2_over_i[15];
-    // t = t * x2 + ctbl::_2_over_i[13];
-    // t = t * x2 + ctbl::_2_over_i[11];
-    // t = t * x2 + ctbl::_2_over_i[9];
-    // t = t * x2 + ctbl::_2_over_i[7];
-    // t = t * x2 + ctbl::_2_over_i[5];
-    // t = t * x2 + ctbl::_2_over_i[3];
     for (int i=21; i>2; i-=2)
         t = t * x2 + ctbl::_2_over_i[i].h();
     t = t * x2 + vf_type(2.0);
@@ -478,9 +468,18 @@ exp_k2(const dvf_type& d)
     vmf_type finite= ~inf_nan;
     vi_type k_i(0);
 
+    vmf_type d_large = d.h() > 709.0;
+    dvf_type d2=d;
+    bool any_of_d_large = any_of(d_large);
+    if (any_of_d_large) {
+        dvf_type dhalf(mul_pwr2(d, vf_type(0.5)));
+        dvf_type dt(_T::sel(d_large, dhalf.h(), d.h()),
+                    _T::sel(d_large, dhalf.l(), d.l()));
+        d2=dt;
+    }
     // remove exact powers of 2
-    vf_type m2= rint(vf_type(d.h() * ctbl::m_1_ln2.h()));
-    dvf_type r= (d - dvf_type(ctbl::m_ln2)*m2);
+    vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
+    dvf_type r= (d2 - dvf_type(ctbl::m_ln2)*m2);
     // reduce arguments further until anything is lt
     // ln(2)/256 ~ 0.027
     // M_LN2/512 ~ 0.0135
@@ -524,6 +523,12 @@ exp_k2(const dvf_type& d)
     // scale back
     vi_type mi= _T::cvt_f_to_i(m2);
     dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
+    if (any_of_d_large) {
+        dvf_type xres= sqr(res);
+        dvf_type tres(_T::sel(d_large, xres.h(), res.h()),
+                      _T::sel(d_large, xres.l(), res.l()));
+        res=tres;
+    }
     return res;
 #else
     using ctbl = impl::d_real_constants<dvf_type, double>;

@@ -467,15 +467,11 @@ cftal::math::func_common<_FLOAT_T, _T>::
 _exp(const vf_type& d)
 {
     vf_type res;
-    vmf_type d_large= d > 709.0;
     if (_NATIVE) {
         res=my_type::native_exp_k(d);
     } else {
-        vf_type dn(_T::sel(d_large, 0.5*d, d));
-        dvf_type xr(my_type::exp_k2(dn));
-        dvf_type xrr(xr*xr);
-        // res=xr.h() + xr.l();
-        res=_T::sel(d_large, xrr.h()+ xrr.l(), xr.h() + xr.l());
+        dvf_type xr(my_type::exp_k2(d));
+        res=xr.h() + xr.l();
     }
     res = _T::sel(d < -746.0, 0.0, res);
     res = _T::sel(d >= 709.78271289338409, _T::pinf(), res);
@@ -510,19 +506,13 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 expm1(const vf_type& d)
 {
-    vmf_type d_large= d > 709.0;
-    vf_type dn(_T::sel(d_large, 0.5*d, d));
-    dvf_type xr(my_type::exp_k2(dn));
-    dvf_type xrr(xr*xr);
-    dvf_type r(
-        _T::sel(d_large, xrr.h(), xr.h()),
-        _T::sel(d_large, xrr.l(), xr.l()));
+    dvf_type r(my_type::exp_k2(d));
     // res=xr.h() + xr.l();
     // 2^54 (not 2^53 to be on the right side because r.l() may be != 0.0)
     const bytes8 magic(0, 0x43500000);
     const vf_type p2_54= magic._f64;
     vmf_type expm1_lt_exp = r.h() < p2_54;
-    dvf_type rm1= r - vf_type(1);
+    dvf_type rm1= r - vf_type(1.0);
 
     vf_type res= _T::sel(expm1_lt_exp,
                          rm1.h() + rm1.l(),
