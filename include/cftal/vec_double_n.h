@@ -75,9 +75,6 @@ namespace cftal {
     native_tan(const vec<double, _N>& v);
 
 
-    template <std::size_t _N>
-    vec<double, _N>
-    native_exp(const vec<double, _N>& v);
 
 
     template <std::size_t _N>
@@ -264,6 +261,23 @@ namespace cftal {
     vec<double, 8>
     exp2(arg<vec<double, 8> >::type d);
 
+    // exp10
+    template <std::size_t _N>
+    vec<double, _N>
+    exp10(const vec<double, _N>& v);
+
+    vec<double, 1>
+    exp10(const vec<double, 1>& v);
+
+    vec<double, 2>
+    exp10(arg<vec<double, 2> >::type d);
+
+    vec<double, 4>
+    exp10(arg<vec<double, 4> >::type d);
+
+    vec<double, 8>
+    exp10(arg<vec<double, 8> >::type d);
+
     // sinh, these functions are exact to 1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
@@ -332,6 +346,24 @@ namespace cftal {
     vec<double, 8>
     pow(arg<vec<double, 8> >::type b, arg<vec<double, 8> >::type e);
 
+    // native_exp
+    template <std::size_t _N>
+    vec<double, _N>
+    native_exp(const vec<double, _N>& v);
+
+    vec<double, 1>
+    native_exp(const vec<double, 1>& d);
+    
+    vec<double, 2>
+    native_exp(arg<vec<double, 2> >::type d);
+
+    vec<double, 4>
+    native_exp(arg<vec<double, 4> >::type d);
+
+    vec<double, 8>
+    native_exp(arg<vec<double, 8> >::type d);
+    
+
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
     // specializations vec<double, 2>
@@ -368,8 +400,6 @@ namespace cftal {
     void
     native_sincos(arg<vec<double, 2> >::type d,
                   vec<double, 2> * psin, vec<double, 2> * pcos);
-    vec<double, 2>
-    native_exp(arg<vec<double, 2> >::type d);
     vec<double, 2>
     native_log(arg<vec<double, 2> >::type d);
     vec<double, 2>
@@ -416,8 +446,6 @@ namespace cftal {
     native_sincos(arg<vec<double, 4> >::type d,
                   vec<double, 4> * psin, vec<double, 4> * pcos);
     vec<double, 4>
-    native_exp(arg<vec<double, 4> >::type d);
-    vec<double, 4>
     native_log(arg<vec<double, 4> >::type d);
     vec<double, 4>
     native_sin(arg<vec<double, 4> >::type d);
@@ -461,8 +489,6 @@ namespace cftal {
     void
     native_sincos(arg<vec<double, 8> >::type d,
                   vec<double, 8> * psin, vec<double, 8> * pcos);
-    vec<double, 8>
-    native_exp(arg<vec<double, 8> >::type d);
     vec<double, 8>
     native_log(arg<vec<double, 8> >::type d);
     vec<double, 8>
@@ -624,6 +650,14 @@ cftal::native_exp(const vec<double, _N>& v)
     return r;
 }
 
+inline
+cftal::vec<double, 1>
+cftal::native_exp(const vec<double, 1>& v)
+{
+    vec<double, 1> r(std::exp(v()));
+    return r;
+}
+
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
@@ -654,6 +688,22 @@ cftal::vec<double, 1>
 cftal::exp2(const vec<double, 1>& v)
 {
     return vec<double, 1> (std::exp2(v()));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::exp10(const vec<double, _N>& v)
+{
+    vec<double, _N> r(exp10(low_half(v)), exp10(high_half(v)));
+    return r;
+}
+
+inline
+cftal::vec<double, 1>
+cftal::exp10(const vec<double, 1>& v)
+{
+    return vec<double, 1> (::exp10(v()));
 }
 
 template <std::size_t _N>

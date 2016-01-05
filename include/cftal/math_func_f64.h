@@ -37,6 +37,9 @@ namespace cftal {
                 static const _T _2_over_i[MAX_2_OVER_I+1];
                 // M_LN2 LOG_E(2)
                 static const _T m_ln2;
+                // M_LN10 LOG_E(10)
+                static const _T m_ln10;
+                // low half of m_ln2
                 static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
@@ -211,6 +214,12 @@ namespace cftal {
 
             static vf_type
             native_exp2_k(const vf_type& v);
+
+            static dvf_type
+            exp10_k2(const dvf_type& dvf);
+
+            static vf_type
+            native_exp10_k(const vf_type& v);
 
             static dvf_type
             log_k2(const dvf_type& dvf);
@@ -687,6 +696,29 @@ native_exp2_k(const vf_type& d)
 
 template <typename _T>
 inline
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::
+exp10_k2(const dvf_type& d)
+{
+    using ctbl = impl::d_real_constants<dvf_type, double>;
+    dvf_type d10=ctbl::m_ln10 * d;
+    return exp_k2(d10);
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+native_exp10_k(const vf_type& d)
+{
+    using ctbl = impl::d_real_constants<dvf_type, double>;
+    vf_type d10=ctbl::m_ln10.h() * d;
+    return native_exp_k(d10);
+}
+
+
+template <typename _T>
+inline
 std::pair<typename cftal::math::func_core<double, _T>::dvf_type,
           typename cftal::math::func_core<double, _T>::vi_type>
 cftal::math::
@@ -1031,11 +1063,23 @@ native_atan2_k(const vf_type& x, const vf_type& y)
     return 0.0;
 }
 
+#if 0
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2(
     // 0.693147180559945286226764, 2.319046813846299558417771e-17
     6.931471805599452862e-01, 2.319046813846299558e-17);
+#endif
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_ln2(
+    6.9314718055994528622676e-01, 2.3190468138462995584178e-17);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_ln10(
+    2.3025850929940459010936e+00, -2.1707562233822493507613e-16);
 
 template <class _T>
 const _T

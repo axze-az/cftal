@@ -89,13 +89,18 @@ test_prog(test-ceil)
 test_prog(test-trunc)
 test_prog(test-rint)
 test_prog(test-intops)
+
 test_prog(test-exp-f64)
 test_prog(test-expm1-f64)
 test_prog(test-sinh-f64)
 test_prog(test-cosh-f64)
 test_prog(test-exp2-f64)
+test_prog(test-exp10-f64)
 test_prog(test-log-f64)
 test_prog(test-pow-f64)
+
+test_prog(test-native_exp-f64)
+
 test_prog(test-v2)
 
 if (CFTAL_FULL_TEST)

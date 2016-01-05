@@ -40,16 +40,13 @@ generate_func_1(std::ostream& s, mpfr_func_1 f,
     mpfr_init2(mp_res54, 54);
     mpfr_init2(mp_input, 53);
 
-    std::uniform_int_distribution<uint64_t> distribution;
+    // std::uniform_int_distribution<uint64_t> distribution;
+    std::uniform_real_distribution<double> distribution(dom.first, dom.second);
     std::mt19937_64 rnd;
 
     while (cnt != 0) {
         bytes8 input(distribution(rnd));
         double d=input._f64;
-        if (d < dom.first)
-            continue;
-        if (d >= dom.second)
-            continue;
         mpfr_set_d(mp_input, d, GMP_RNDN);
         f(mp_res, mp_input, GMP_RNDN);
         f(mp_res54, mp_input, GMP_RNDN);

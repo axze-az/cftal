@@ -8,7 +8,7 @@ ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/build
-Build Type=release
+Build Type=relase
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=

@@ -267,8 +267,23 @@ std::ostream& operator<<(std::ostream& s, const print_dpf64& p)
 
 struct out_as_dpf64 {
     double _h, _l;
-    out_as_dpf64(const __float128& t) : _h(t), _l(t-_h) {}
-    out_as_dpf64(const cftal::d_real<double>& t) : _h(t.h()), _l(t.l()) {}
+    out_as_dpf64(const __float128& t) : _h(t), _l(t-_h) {
+        while (_l < 0.0) {
+            std::cout << _h << std::endl;
+            _h = std::nextafter(_h, std::numeric_limits<double>::max());
+            _l = t-_h;
+        }
+#if 0
+        using cftal::d_real;
+        d_real<double> h=double(t);
+        d_real<double> l=double(t-h.h());
+        d_real<double> c=h+l;
+        _h= c.h();
+        _l= c.l();
+#endif
+    }
+    out_as_dpf64(const cftal::d_real<double>& t) : _h(t.h()), _l(t.l()) {
+    }
 };
 
 std::ostream& operator<<(std::ostream& s, const out_as_dpf64& p)
@@ -279,9 +294,8 @@ std::ostream& operator<<(std::ostream& s, const out_as_dpf64& p)
     return s;
 }
 
-void calc_pi()
+void print_constants()
 {
-#if 1
     __float128 v;
 
     v= M_LN2q;
@@ -343,42 +357,9 @@ void calc_pi()
               << ");"
               << std::endl;
 
-#else
-    using dpf64 = cftal::d_real<double>;
-    // arctan(x) = x/1 - {x^3}/3 + x^5/5
-    // arctan(1) = PI/4
-    dpf64 pi(0);
-    double pi_d(0);
-    for (std::int64_t i=100000000; i>=0 ; --i) {
-        const std::int64_t i0=2*i+2;
-        dpf64 t0(i0);
-        dpf64 t1(t0+1.0);
-        dpf64 t2(t0+2.0);
-        dpf64 p(t0*t1*t2);
-        dpf64 rp(1.0/p);
-        if ((i&1)==0) {
-            // std::cout << i0 << std::endl;
-            pi += rp;
-        } else {
-            // std::cout << -i0 << std::endl;
-            pi -= rp;
-        }
-        // std::cout << pi.h() << ' ' << pi.l() << std::endl;
-    }
-    pi *= 4.0;
-    pi += 3.0;
-    std::cout << std::scientific
-              << std::setprecision(18)
-              << pi.h()
-              << ' '
-              << pi.l()
-              << std::endl
-              << pi_d
-              << std::endl;
-#endif
 }
 
-#endif
+
 
 
 void print_inv_fac()
@@ -515,6 +496,8 @@ void print_2_over_i()
     std::cout << "};" << std::endl;
 }
 
+#endif
+
 void print_sqrtx()
 {
     using dpf64 = cftal::d_real<double>;
@@ -552,6 +535,7 @@ void print_sqrtx()
 }
 
 
+#if 0
 void testpowi()
 {
     using dpf64 = cftal::d_real<double>;
@@ -576,6 +560,7 @@ void testpowi()
     }
 
 }
+#endif
 
 #if 0 // defined (__AVX__)
 __m256d tr1(__m256d a, __m256d b)
@@ -760,8 +745,12 @@ check_odd_elements(cftal::vec<int32_t, 4> a)
     return odd_elements(a);
 }
 
-int main1(int argc, char** argv)
+int main(int argc, char** argv)
 {
+#if defined (__GNUC__) && defined (__x86_64__) && !defined (__clang__)
+    print_constants();
+#endif
+#if 0
     cftal::divisor<cftal::v4s32, int32_t> v4rr(3);
     cftal::v4s32 v4t=-7046431;
     cftal::v4s32 v4q=v4t/v4rr;
@@ -784,8 +773,8 @@ int main1(int argc, char** argv)
     int32_t st=-7046431;
     int32_t sq=st/srr;
     std::cout << sq << std::endl;
-    return 0;
-#if 0
+
+
     std::cout << "alignof(max_align_t) "
               << alignof(std::max_align_t)
               << std::endl;

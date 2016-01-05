@@ -84,6 +84,10 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<float, _N>
+    exp10(const vec<float, _N>& v);
+
+    template <std::size_t _N>
+    vec<float, _N>
     native_exp(const vec<float, _N>& v);
 
     template <std::size_t _N>
@@ -250,6 +254,7 @@ namespace cftal {
     v4f32 exp(arg<v4f32>::type d);
     v4f32 expm1(arg<v4f32>::type d);
     v4f32 exp2(arg<v4f32>::type d);
+    v4f32 exp10(arg<v4f32>::type d);
     v4f32 log(arg<v4f32>::type d);
     v4f32 pow(arg<v4f32>::type b, arg<v4f32>::type e);
     void sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos);
@@ -286,6 +291,7 @@ namespace cftal {
     v8f32 exp(arg<v8f32>::type d);
     v8f32 expm1(arg<v8f32>::type d);
     v8f32 exp2(arg<v8f32>::type d);
+    v8f32 exp10(arg<v8f32>::type d);
     v8f32 log(arg<v8f32>::type d);
     v8f32 pow(arg<v8f32>::type b, arg<v8f32>::type e);
     void sincos(arg<v8f32>::type d, v8f32* psin, v8f32* pcos);
@@ -474,7 +480,16 @@ inline
 cftal::vec<float, _N>
 cftal::exp2(const vec<float, _N>& v)
 {
-    vec<float, _N> r(exp2(low_half(v)), exp(high_half(v)));
+    vec<float, _N> r(exp2(low_half(v)), exp2(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::exp10(const vec<float, _N>& v)
+{
+    vec<float, _N> r(exp10(low_half(v)), exp10(high_half(v)));
     return r;
 }
 

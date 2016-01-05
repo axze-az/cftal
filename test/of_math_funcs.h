@@ -201,6 +201,27 @@ namespace cftal {
         };
 
         template <typename _T>
+        struct check_exp10 {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return exp10(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+#if 1
+                return call_mpfr_func(a, mpfr_exp10);
+#else
+                return ::exp10(a);
+#endif
+            }
+            static
+            const char* fname() { return "exp10"; }
+        };
+
+        template <typename _T>
         struct check_log {
             template <std::size_t _N>
             static
@@ -232,6 +253,23 @@ namespace cftal {
             }
             static
             const char* fname() { return "pow"; }
+        };
+
+        template <typename _T>
+        struct check_native_exp {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return native_exp(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::exp(a);
+            }
+            static
+            const char* fname() { return "native_exp"; }
         };
 
     }
@@ -290,8 +328,10 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
                 continue;
             }
         }
-        if (verbose==false)
+        if (verbose==false) {
+            std::cerr << "ulp: " << ulp << '\n';
             check(vres, expected, _F::fname(), true);
+        }
         static_cast<void>(res);
         std::cerr << _F::fname() << "("<< a0 << ") failed.\n";
         rc = false;
@@ -381,8 +421,10 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
                 continue;
             }
         }
-        if (verbose==false)
+        if (verbose==false) {
+            std::cerr << "ulp: " << ulp << '\n';
             check(vres, expected, _F::fname(), true);
+        }
         static_cast<void>(res);
         std::cerr << _F::fname() << "("<< a0 << ", " << a1 << ") failed.\n";
         rc = false;
