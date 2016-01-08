@@ -268,10 +268,17 @@ std::ostream& operator<<(std::ostream& s, const print_dpf64& p)
 struct out_as_dpf64 {
     double _h, _l;
     out_as_dpf64(const __float128& t) : _h(t), _l(t-_h) {
-        while (_l < 0.0) {
-            std::cout << _h << std::endl;
-            _h = std::nextafter(_h, std::numeric_limits<double>::max());
-            _l = t-_h;
+        if (_h > 0) {
+            while (_l < 0.0) {
+                std::cout << _h << std::endl;
+                _h = std::nextafter(_h, -std::numeric_limits<double>::max());
+                _l = t-_h;
+            }
+        } else if (_h < 0) {
+            while (_l > 0.0) {
+                _h = std::nextafter(_h, std::numeric_limits<double>::max());
+                _l = t-_h;
+            }
         }
 #if 0
         using cftal::d_real;

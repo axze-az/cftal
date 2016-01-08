@@ -484,10 +484,12 @@ exp_k2(const dvf_type& d)
     }
     // remove exact powers of 2
     vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
-    dvf_type r= (d2 - dvf_type(ctbl::m_ln2)*m2);
-    // reduce arguments further until anything is lt
-    // ln(2)/256 ~ 0.027
-    // M_LN2/512 ~ 0.0135
+    // dvf_type r= (d2 - dvf_type(ctbl::m_ln2)*m2);
+    dvf_type m2d= dvf_type(m2);
+    dvf_type r = d2 - ctbl::m_ln2.h()* m2d;
+    r -= m2d * ctbl::m_ln2.l();
+
+    // reduce arguments further until anything is lt M_LN2/512 ~0.0135
     do {
         cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
         if (none_of(cmp_res))
@@ -590,12 +592,23 @@ native_exp_k(const vf_type& d)
     vmf_type finite= ~inf_nan;
     vi_type k_i(0);
 
+    vmf_type d_large = d > 709.0;
+    vf_type d2=d;
+    bool any_of_d_large = any_of(d_large);
+    if (any_of_d_large) {
+        vf_type dt(_T::sel(d_large, d*vf_type(0.5), d));
+        d2=dt;
+    }
     // remove exact powers of 2
-    vf_type m2= rint(vf_type(d * ctbl::m_1_ln2.h()));
-    vf_type r= (d - ctbl::m_ln2.h()*m2);
-    // reduce arguments further until anything is lt
-    // ln(2)/256 ~ 0.027
-    // M_LN2/512 ~ 0.0135
+    vf_type m2= rint(vf_type(d2 * ctbl::m_1_ln2.h()));
+    // vf_type r= (d2 - ctbl::m_ln2.h()*m2);
+    // subtraction in two steps for higher precision
+    const vf_type ln2d_hi = 0.693145751953125;
+    const vf_type ln2d_lo = 1.42860682030941723212E-6;
+    vf_type r = d2 - m2* ln2d_hi;
+    r -= m2 * ln2d_lo;
+
+     // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
     do {
         cmp_res = (abs(r) > vf_type(M_LN2/512)) & finite;
         if (none_of(cmp_res))
@@ -634,6 +647,10 @@ native_exp_k(const vf_type& d)
     // scale back
     vi_type mi= _T::cvt_f_to_i(m2);
     vf_type res(ldexp(s, mi));
+    if (any_of_d_large) {
+        vf_type tres(_T::sel(d_large, res*res, res));
+        res=tres;
+    }
     return res;
 #else
     using ctbl = impl::d_real_constants<dvf_type, double>;
@@ -1079,8 +1096,9 @@ cftal::math::impl::d_real_constants<_T, double>::m_ln2(
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln10(
-    2.3025850929940459010936e+00, -2.1707562233822493507613e-16);
-
+    // 2.3025850929940459010936e+00, -2.1707562233822493507613e-16);
+    2.3025850929940454570044e+00,  2.2701358751183765644142e-16);
+ 
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2_low(

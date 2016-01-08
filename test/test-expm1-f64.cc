@@ -23,7 +23,10 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 8, check_expm1<double> >(v, 1, 0, false);
 
     func_domain<double> d=std::make_pair(-800.0, 710.0);
+    auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, 8, check_expm1<double> >::v(d, cmp_ulp<double>(1));
+        double, 8, check_expm1<double> >::v(d, cmp_ulp<double>(1, us));
+    std::cout << "ulps: "
+              << std::fixed << std::setprecision(4) << *us << std::endl;
     return (rc == true) ? 0 : 1;
 }

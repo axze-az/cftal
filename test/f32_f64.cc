@@ -28,6 +28,18 @@ float cftal::test::make_float(unsigned sgn, unsigned exp, uint32_t sig)
     return t._d;
 }
 
+std::ostream&
+cftal::test::operator<<(std::ostream& s, const ulp_stats& us)
+{
+    s << "cases: " << us._cnt << " with  delta: " << us._ulps
+      << " rate: " << double(us._ulps)/double(us._cnt) << '\n';
+    for (const auto& t : us._devs) {
+        s << std::setw(12) << t.first << " "
+          << std::setw(8) << t.second << '\n';
+    }
+    return s;
+}
+
 bool cftal::test::f_eq(double a, double b)
 {
     return (a == b) || (std::isnan(a) && std::isnan(b));
@@ -41,11 +53,12 @@ bool cftal::test::f_eq(float a, float b)
 namespace {
 
     template <typename _T>
-    bool cmp_ulp(_T a, _T b, uint32_t ulp)
+    bool cmp_ulp(_T a, _T b, uint32_t ulp, cftal::test::ulp_stats* us)
     {
         bool r;
+        int32_t u=0;
         if ((r=cftal::test::f_eq(a, b)) == false) {
-            int32_t u=sizeof(_T)*8;
+            u=sizeof(_T)*8;
             try {
                 u=boost::math::float_distance<_T>(a, b);
             }
@@ -54,18 +67,20 @@ namespace {
             if (std::abs(u) <= int32_t(ulp))
                 r=true;
         }
+        if (us != nullptr)
+            us->inc(u);
         return r;
     }
 }
 
-bool cftal::test::f_eq_ulp(double a, double b, uint32_t ulp)
+bool cftal::test::f_eq_ulp(double a, double b, uint32_t ulp, ulp_stats* us)
 {
-    return cmp_ulp(a, b, ulp);
+    return cmp_ulp(a, b, ulp, us);
 }
 
-bool cftal::test::f_eq_ulp(float a, float b, uint32_t ulp)
+bool cftal::test::f_eq_ulp(float a, float b, uint32_t ulp, ulp_stats* us)
 {
-    return cmp_ulp(a, b, ulp);
+    return cmp_ulp(a, b, ulp, us);
 }
 
 

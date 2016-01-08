@@ -74,13 +74,9 @@ namespace cftal {
     vec<double, _N>
     native_tan(const vec<double, _N>& v);
 
-
-
-
     template <std::size_t _N>
     vec<double, _N>
     native_expm1(const vec<double, _N>& v);
-
 
     template <std::size_t _N>
     vec<double, _N>
@@ -244,7 +240,7 @@ namespace cftal {
     vec<double, 8>
     expm1(arg<vec<double, 8> >::type d);
 
-    // exp2
+    // exp2, these functions are exact to 1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     exp2(const vec<double, _N>& v);
@@ -261,7 +257,7 @@ namespace cftal {
     vec<double, 8>
     exp2(arg<vec<double, 8> >::type d);
 
-    // exp10
+    // exp10, these functions are exact to 1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     exp10(const vec<double, _N>& v);

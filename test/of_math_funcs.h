@@ -56,9 +56,12 @@ namespace cftal {
         template <typename _T>
         struct cmp_ulp {
             uint32_t _ulp;
-            cmp_ulp(uint32_t u) : _ulp(u) {}
-            bool operator()(const _T& a, const _T& b) const {
-                return f_eq_ulp(a, b, _ulp);
+            std::shared_ptr<ulp_stats> _stats;
+            cmp_ulp(uint32_t u, const std::shared_ptr<ulp_stats>& us )
+                : _ulp(u), _stats(us) {}
+            bool operator()(const _T& a, const _T& b) {
+                ulp_stats* p= &*_stats;
+                return f_eq_ulp(a, b, _ulp, p);
             }
         };
 
@@ -92,7 +95,6 @@ namespace cftal {
             mpfr_clear(r);
             return dr;
         }
-
 
         template <typename _T>
         struct check_exp {
@@ -207,6 +209,11 @@ namespace cftal {
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
                 return exp10(a);
+            }
+            static
+            vec<_T, 1>
+            v(const vec<_T, 1>& a) {
+                return v(a());
             }
             static
             _T
