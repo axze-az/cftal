@@ -632,9 +632,9 @@ sinh(const vf_type& d)
     dvf_type dh=vf_type(0.5*d);
     dvf_type exph=my_type::exp_k2(dh);
     dvf_type rexph=(vf_type(1.0)/exph);
-    dvf_type two_sinh_xh= exph - rexph;
-    dvf_type two_cosh_xh= exph + rexph;
-    dvf_type sinh_x= two_sinh_xh + two_cosh_xh;
+    dvf_type sinh_xh= mul_pwr2(exph - rexph, vf_type(0.5));
+    dvf_type cosh_xh= mul_pwr2(exph + rexph, vf_type(0.5));
+    dvf_type sinh_x= mul_pwr2(sinh_xh * cosh_xh, vf_type(2.0));
     vf_type res = sinh_x.h() + sinh_x.l();
     const vf_type sinh_hi_inf= 7.104758600739439771132311e+02;
     const vf_type sinh_lo_inf= -7.104758600739439771132311e+02;
