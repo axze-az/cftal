@@ -331,7 +331,7 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
                 std::cerr << "ulp: " << ulp << '\n';
                 std::cerr << _F::fname() << "("<< a0 << ")\n";
             }
-            if (std::abs(ulp) <= int32_t(max_ulp)) {
+            if ((ulp >= -int32_t(max_ulp)) && (ulp <= int32_t(max_ulp))) {
                 continue;
             }
         }
@@ -424,7 +424,7 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
                 std::cerr << "ulp: " << ulp << '\n';
                 std::cerr << _F::fname() << "("<< a0 << ", " << a1 << ")\n";
             }
-            if (std::abs(ulp) <= int32_t(max_ulp)) {
+            if ((ulp >= -int32_t(max_ulp)) && (ulp <= int32_t(max_ulp))) {
                 continue;
             }
         }

@@ -34,8 +34,8 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats& us)
     s << "cases: " << us._cnt << " with  delta: " << us._ulps
       << " rate: " << double(us._ulps)/double(us._cnt) << '\n';
     for (const auto& t : us._devs) {
-        s << std::setw(12) << t.first << " "
-          << std::setw(8) << t.second << '\n';
+        s << std::setw(4) << t.first << " "
+          << std::setw(16) << t.second << '\n';
     }
     return s;
 }
@@ -64,7 +64,7 @@ namespace {
             }
             catch (...) {
             }
-            if (std::abs(u) <= int32_t(ulp))
+            if ((u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
                 r=true;
         }
         if (us != nullptr)
