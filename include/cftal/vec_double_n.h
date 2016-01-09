@@ -206,7 +206,24 @@ namespace cftal {
     vec<double, 1>
     trunc(const vec<double, 1>& v);
 
-    // exp, these functions are exact to 1 ulp with exception of _N=1
+    // cbrt
+    template <std::size_t _N>
+    vec<double, _N>
+    cbrt(const vec<double, _N>& v);
+
+    vec<double, 1>
+    cbrt(const vec<double, 1>& v);
+
+    vec<double, 2>
+    cbrt(arg<vec<double, 2> >::type v);
+
+    vec<double, 4>
+    cbrt(arg<vec<double, 4> >::type v);
+
+    vec<double, 8>
+    cbrt(arg<vec<double, 8> >::type v);
+
+    // exp, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     exp(const vec<double, _N>& v);
@@ -223,7 +240,7 @@ namespace cftal {
     vec<double, 8>
     exp(arg<vec<double, 8> >::type d);
 
-    // expm1, these functions are exact to 1 ulp with exception of _N=1
+    // expm1, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     expm1(const vec<double, _N>& v);
@@ -240,7 +257,7 @@ namespace cftal {
     vec<double, 8>
     expm1(arg<vec<double, 8> >::type d);
 
-    // exp2, these functions are exact to 1 ulp with exception of _N=1
+    // exp2, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     exp2(const vec<double, _N>& v);
@@ -257,7 +274,7 @@ namespace cftal {
     vec<double, 8>
     exp2(arg<vec<double, 8> >::type d);
 
-    // exp10, these functions are exact to 1 ulp with exception of _N=1
+    // exp10, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     exp10(const vec<double, _N>& v);
@@ -274,7 +291,7 @@ namespace cftal {
     vec<double, 8>
     exp10(arg<vec<double, 8> >::type d);
 
-    // sinh, these functions are exact to 1 ulp with exception of _N=1
+    // sinh, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     sinh(const vec<double, _N>& v);
@@ -291,7 +308,7 @@ namespace cftal {
     vec<double, 8>
     sinh(arg<vec<double, 8> >::type d);
 
-    // cosh, these functions are exact to 1 ulp with exception of _N=1
+    // cosh, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     cosh(const vec<double, _N>& v);
@@ -308,7 +325,7 @@ namespace cftal {
     vec<double, 8>
     cosh(arg<vec<double, 8> >::type d);
 
-    // log, these functions are exact to 1 ulp with exception of _N=1
+    // log, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     log(const vec<double, _N>& v);
@@ -325,7 +342,7 @@ namespace cftal {
     vec<double, 8>
     log(arg<vec<double, 8> >::type d);
 
-    // pow, these functions are exact to 1 ulp with exception of _N=1
+    // pow, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     pow(const vec<double, _N>& x, const vec<double, _N>& y);
@@ -349,7 +366,7 @@ namespace cftal {
 
     vec<double, 1>
     native_exp(const vec<double, 1>& d);
-    
+
     vec<double, 2>
     native_exp(arg<vec<double, 2> >::type d);
 
@@ -358,13 +375,11 @@ namespace cftal {
 
     vec<double, 8>
     native_exp(arg<vec<double, 8> >::type d);
-    
+
 
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
     // specializations vec<double, 2>
-    vec<double, 2>
-    cbrt(arg<vec<double, 2> >::type v);
 
     vec<int32_t, 2>
     ilogbp1(arg<vec<double, 2> >::type v);
@@ -409,8 +424,6 @@ namespace cftal {
 
 
     // specializations vec<double, 4>
-    vec<double, 4>
-    cbrt(arg<vec<double, 4> >::type v);
     vec<int32_t, 4>
     ilogbp1(arg<vec<double, 4> >::type v);
     vec<double, 4>
@@ -453,8 +466,6 @@ namespace cftal {
     native_cot(arg<vec<double, 4> >::type d);
 
     // specializations vec<double, 8>
-    vec<double, 8>
-    cbrt(arg<vec<double, 8> >::type v);
     vec<int32_t, 8>
     ilogbp1(arg<vec<double, 8> >::type v);
     vec<double, 8>
@@ -619,6 +630,22 @@ cftal::native_tan(const vec<double, _N>& v)
 {
     vec<double, _N> r(native_tan(low_half(v)), native_tan(high_half(v)));
     return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::cbrt(const vec<double, _N>& v)
+{
+    vec<double, _N> r(cbrt(low_half(v)), cbrt(high_half(v)));
+    return r;
+}
+
+inline
+cftal::vec<double, 1>
+cftal::cbrt(const vec<double, 1>& v)
+{
+    return vec<double, 1>(std::cbrt(v()));
 }
 
 template <std::size_t _N>

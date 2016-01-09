@@ -2,6 +2,8 @@
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
 #include <cftal/test/f32_f64.h>
+#include <cftal/test/of_math_funcs.h>
+#include <limits>
 #include <cstdint>
 #include <iostream>
 #include <iomanip>
@@ -53,7 +55,7 @@ int cftal::test::check_cbrt_f64(const _V& v, double x, bool verbose)
         v_d t;
         t._v = vx;
         std::cout << "argument vector\n";
-        for (unsigned i=0; i<N; ++i) {            
+        for (unsigned i=0; i<N; ++i) {
             std::cout << t._d[i] << std::endl;
         }
         t._v = vr3;
@@ -171,8 +173,17 @@ bool cftal::test::check_cbrt_f64(const _V& v, bool verbose)
 int main(int argc, char** argv)
 {
     bool rc=true;
-    rc &= cftal::test::check_cbrt_f64(cftal::v2f64(), false);
-    rc &= cftal::test::check_cbrt_f64(cftal::v4f64(), false);
-    rc &= cftal::test::check_cbrt_f64(cftal::v8f64(), false);
+    using namespace cftal::test;
+    rc &= check_cbrt_f64(cftal::v2f64(), false);
+    rc &= check_cbrt_f64(cftal::v4f64(), false);
+    rc &= check_cbrt_f64(cftal::v8f64(), false);
+
+    func_domain<double> d=std::make_pair(-std::numeric_limits<double>::max(),
+                                         std::numeric_limits<double>::max());
+    auto us=std::make_shared<ulp_stats>();
+    rc &= of_fp_func_up_to<
+        double, 8, check_cbrt<double> >::v(d, cmp_ulp<double>(1, us));
+    std::cout << "ulps: "
+              << std::fixed << std::setprecision(4) << *us << std::endl;
     return rc==true ? 0 : 1;
 }

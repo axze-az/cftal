@@ -35,7 +35,7 @@ namespace cftal {
             static
             bool
             v(func_domain<_T> domain = default_domain<_T>::value,
-              _CMP cmp=_CMP(), std::size_t cnt=0x20000ULL);
+              _CMP cmp=_CMP(), std::size_t cnt=0x40000ULL);
 
             template <typename _CMP=cmp_t<_T> >
             static
@@ -48,7 +48,7 @@ namespace cftal {
             static
             bool
             v(func_domain<_T> domain = default_domain<_T>::value,
-              _CMP cmp= _CMP(), std::size_t cnt=0x20000ULL) {
+              _CMP cmp= _CMP(), std::size_t cnt=0x40000ULL) {
                 bool r=of_fp_func<_T, _N, _F>::v(domain, cmp, cnt);
                 r &= of_fp_func_up_to<_T, _N/2, _F>::v(domain, cmp, cnt);
                 return r;
@@ -61,7 +61,7 @@ namespace cftal {
             static
             bool
             v(func_domain<_T> domain = default_domain<_T>::value,
-              _CMP cmp= _CMP(), std::size_t cnt=0x20000ULL)  {
+              _CMP cmp= _CMP(), std::size_t cnt=0x40000ULL)  {
                 return of_fp_func<_T, 1, _F>::v(domain, cmp, cnt);
             }
         };
@@ -176,7 +176,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
     r &= v(a);
     r &= v(-a);
 
-    std::mt19937 rnd;
+    std::mt19937_64 rnd;
     std::uniform_real_distribution<_T>
         distrib(domain.first, domain.second);
 

@@ -330,23 +330,25 @@ namespace cftal {
                 static vf_type v(const vf_type& f) {
                     vf_type x(abs(f));
                     vf_type xin(guess_t::v(x));
-#if 1
-                    for (unsigned i=0; i< _NR_STEPS; ++i)
+#if 0
+                    for (unsigned i=0; i< _NR_STEPS-1; ++i)
                         xin = nr_step_t::v(xin, x);
 #else
                     using dvf_type = typename _TRAITS::dvf_type;
+                    for (unsigned i=0; i< _NR_STEPS-1; ++i)
+                        xin = nr_step_t::v(xin, x);
                     dvf_type xhin=xin;
                     dvf_type xh=x;
-                    for (unsigned i=0; i< _NR_STEPS; ++i)
+                    for (unsigned i=_NR_STEPS-1; i< _NR_STEPS; ++i)
                         xhin = nth_root_nr<_R, dvf_type>::v(xhin, xh);
                     xin = xhin.h() + xhin.l();
 #endif
                     xin = copysign(xin, f);
                     const vf_type zero(vf_type(0.0));
                     vmf_type is_zero_or_inf_or_nan(
-                        (x == zero) | isinf(x) | isnan(x));
+                        (f == zero) | isinf(f) | isnan(f));
                     vf_type r(_TRAITS::sel(is_zero_or_inf_or_nan,
-                                           x, xin));
+                                           f, xin));
                     if ((_R & 1) == 0) {
                         vmf_type is_neg(x < zero);
                         r = _TRAITS::sel(is_neg,

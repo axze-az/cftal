@@ -31,7 +31,7 @@ float cftal::test::make_float(unsigned sgn, unsigned exp, uint32_t sig)
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const ulp_stats& us)
 {
-    s << "cases: " << us._cnt << " with  delta: " << us._ulps
+    s << us._cnt << " cases, with delta: " << us._ulps
       << " rate: " << double(us._ulps)/double(us._cnt) << '\n';
     for (const auto& t : us._devs) {
         s << std::setw(4) << t.first << " "

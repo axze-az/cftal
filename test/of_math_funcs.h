@@ -69,8 +69,8 @@ namespace cftal {
         double
         call_mpfr_func(double d, _F f) {
             mpfr_t di, r;
-            mpfr_init2(di, 128);
-            mpfr_init2(r, 128);
+            mpfr_init2(di, 53);
+            mpfr_init2(r, 53);
             mpfr_set_d(di, d, GMP_RNDN);
             f(r, di, GMP_RNDN);
             double dr=mpfr_get_d(r, GMP_RNDN);
@@ -83,9 +83,9 @@ namespace cftal {
         double
         call_mpfr_func(double a, double b, _F f) {
             mpfr_t ai, bi, r;
-            mpfr_init2(ai, 128);
-            mpfr_init2(bi, 128);
-            mpfr_init2(r, 128);
+            mpfr_init2(ai, 53);
+            mpfr_init2(bi, 53);
+            mpfr_init2(r, 53);
             mpfr_set_d(ai, a, GMP_RNDN);
             mpfr_set_d(bi, b, GMP_RNDN);
             f(r, ai, bi, GMP_RNDN);
@@ -95,6 +95,51 @@ namespace cftal {
             mpfr_clear(r);
             return dr;
         }
+
+        template <typename _T>
+        struct check_sqrt {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return sqrt(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::sqrt(a);
+            }
+            static
+            const char* fname() { return "sqrt"; }
+        };
+
+        template <typename _T>
+        struct check_cbrt {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return cbrt(a);
+            }
+            static
+            vec<_T, 1>
+            v(const vec<_T, 1>& a) {
+                return v(a());
+            }
+
+            static
+            _T
+            v(const _T& a) {
+#if 1
+                return call_mpfr_func(a, mpfr_cbrt);
+#else
+                return std::cbrt(a);
+#endif
+            }
+            static
+            const char* fname() { return "cbrt"; }
+        };
+
 
         template <typename _T>
         struct check_exp {
