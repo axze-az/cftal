@@ -484,10 +484,10 @@ exp_k2(const dvf_type& d)
     }
     // remove exact powers of 2
     vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
-    // dvf_type r= (d2 - dvf_type(ctbl::m_ln2)*m2);
-    dvf_type m2d= dvf_type(m2);
-    dvf_type r = d2 - ctbl::m_ln2.h()* m2d;
-    r -= m2d * ctbl::m_ln2.l();
+    dvf_type r= (d2 - dvf_type(ctbl::m_ln2)*m2);
+    // dvf_type m2d= dvf_type(m2);
+    // dvf_type r = d2 - ctbl::m_ln2.h()* m2d;
+    // r -= m2d * ctbl::m_ln2.l();
 
     // reduce arguments further until anything is lt M_LN2/512 ~0.0135
     do {
@@ -1098,7 +1098,7 @@ const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln10(
     // 2.3025850929940459010936e+00, -2.1707562233822493507613e-16);
     2.3025850929940454570044e+00,  2.2701358751183765644142e-16);
- 
+
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2_low(
