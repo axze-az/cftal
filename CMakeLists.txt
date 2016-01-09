@@ -93,6 +93,8 @@ if(CFTAL_USE_CXX17)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
 endif()
+# create static cftal add_library(
+option(CFTAL_STATIC_LIB "create static libcftal.a" OFF)
 # Full test ?
 option(CFTAL_FULL_TEST "perform a full test with long compile times" OFF)
 

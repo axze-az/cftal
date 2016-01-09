@@ -21,10 +21,13 @@ set (CSRCS
     v8f32.cc
 )
 
-add_library (cftal STATIC ${CSRCS})
-install(TARGETS cftal
-  DESTINATION lib LIBRARY
-  COMPONENT devel)
+if (CFTAL_STATIC_LIB)
+    add_library (cftal STATIC ${CSRCS})
+    install(TARGETS cftal
+        DESTINATION lib LIBRARY
+        COMPONENT devel)
+endif()
+
 #set_target_properties(cftal PROPERTIES OUTPUT_NAME "cftal")
 add_library (cftal-so SHARED ${CSRCS})
 set_property(TARGET cftal-so

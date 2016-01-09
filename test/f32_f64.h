@@ -111,17 +111,27 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
                         bool verbose, _CMP cmp)
 {
     bool r=true;
-    std::size_t i=0;
-    for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
+    std::size_t i=1;
+    auto e0= std::begin(a);
+    const _T& a0= *e0;
+    const cmp_t<_T> cmp_elems;
+    for (auto b=std::next(e0), e= std::end(a); b!=e; ++b, ++i) {
         const _T& ai= *b;
-        if (cmp(ai, expected) == false) {
+        if (cmp_elems(a0, ai)==false) {
             if (verbose) {
                 std::cerr << msg << " element " << i
-                        << " failed: " << ai << " expected: "
-                        << expected << std::endl;
+                          << " not equal to element 0 " << ai << " expected: "
+                          << a0 << std::endl;
             }
             r = false;
         }
+    }
+    if (cmp(a0, expected) == false) {
+        if (verbose) {
+            std::cerr << msg << " failed: " << a0 << " expected: "
+                      << expected << std::endl;
+        }
+        r = false;
     }
     return r;
 }

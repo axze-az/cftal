@@ -22,6 +22,8 @@ namespace cftal {
             const func_domain<_T> value;
         };
 
+        const std::size_t default_cnt=0x40000ULL;
+
         template <typename _T>
         const func_domain<_T>
         default_domain<_T>::value =
@@ -35,7 +37,7 @@ namespace cftal {
             static
             bool
             v(func_domain<_T> domain = default_domain<_T>::value,
-              _CMP cmp=_CMP(), std::size_t cnt=0x40000ULL);
+              _CMP cmp=_CMP(), std::size_t cnt=default_cnt);
 
             template <typename _CMP=cmp_t<_T> >
             static
@@ -48,7 +50,7 @@ namespace cftal {
             static
             bool
             v(func_domain<_T> domain = default_domain<_T>::value,
-              _CMP cmp= _CMP(), std::size_t cnt=0x40000ULL) {
+              _CMP cmp= _CMP(), std::size_t cnt=default_cnt) {
                 bool r=of_fp_func<_T, _N, _F>::v(domain, cmp, cnt);
                 r &= of_fp_func_up_to<_T, _N/2, _F>::v(domain, cmp, cnt);
                 return r;
@@ -61,8 +63,52 @@ namespace cftal {
             static
             bool
             v(func_domain<_T> domain = default_domain<_T>::value,
-              _CMP cmp= _CMP(), std::size_t cnt=0x40000ULL)  {
+              _CMP cmp= _CMP(), std::size_t cnt=default_cnt)  {
                 return of_fp_func<_T, 1, _F>::v(domain, cmp, cnt);
+            }
+        };
+
+        template <typename _T, std::size_t _N, typename _F>
+        struct of_fp_func_2 {
+
+            template <typename _CMP=cmp_t<_T>>
+            static
+            bool
+            v(func_domain<_T> domain_1 = default_domain<_T>::value,
+              func_domain<_T> domain_2 = default_domain<_T>::value,
+              _CMP cmp=_CMP(), std::size_t cnt=default_cnt);
+
+            template <typename _CMP=cmp_t<_T> >
+            static
+            bool v(_T ai, _T bi, _CMP cmp=_CMP());
+        };
+
+        template <typename _T, std::size_t _N, typename _F>
+        struct of_fp_func_2_up_to {
+            template <typename _CMP=cmp_t<_T> >
+            static
+            bool
+            v(func_domain<_T> domain_1 = default_domain<_T>::value,
+              func_domain<_T> domain_2 = default_domain<_T>::value,
+              _CMP cmp= _CMP(), std::size_t cnt=default_cnt) {
+                bool r=of_fp_func_2<_T, _N, _F>::v(domain_1, domain_2,
+                                                   cmp, cnt);
+                r &= of_fp_func_2_up_to<_T, _N/2, _F>::v(domain_1, domain_2,
+                                                         cmp, cnt);
+                return r;
+            }
+        };
+
+        template <typename _T, typename _F>
+        struct of_fp_func_2_up_to<_T, 1, _F> {
+            template <typename _CMP=cmp_t<_T> >
+            static
+            bool
+            v(func_domain<_T> domain_1 = default_domain<_T>::value,
+              func_domain<_T> domain_2 = default_domain<_T>::value,
+              _CMP cmp= _CMP(), std::size_t cnt=default_cnt)  {
+                return of_fp_func_2<_T, 1, _F>::v(domain_1, domain_2,
+                                                  cmp, cnt);
             }
         };
 
@@ -202,6 +248,103 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
                 std::cout << '.' << std::flush;
             _T ah=distrib1(rnd);
             r &= v(ah, cmp);
+        }
+    }
+    std::cout << std::endl;
+    if (r == true) {
+        std::cout << __func__ << _N << " test passed " << std::endl;
+    } else {
+        std::cerr << __func__ << _N << " test failed " << std::endl;
+    }
+    return r;
+
+}
+
+template <typename _T, std::size_t _N, typename _F>
+template <typename _CMP>
+bool
+cftal::test::of_fp_func_2<_T, _N, _F>::v(_T a, _T b, _CMP cmp)
+{
+    vec<_T, _N> va=a;
+    vec<_T, _N> vb=b;
+    vec<_T, _N> vr=_F::v(va, vb);
+    _T r= _F::v(a, b);
+    bool c= check(vr, r, _F::fname(), true, cmp);
+    if (c == false) {
+        std::cerr << _F::fname() << "("<< a << ", " <<  b << ") failed.\n";
+    }
+    return c;
+}
+
+template <typename _T, std::size_t _N, typename _F>
+template <typename _CMP>
+bool
+cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
+                                         func_domain<_T> domain_2,
+                                         _CMP cmp, std::size_t cnt)
+{
+    bool r = true;
+
+    const _T inf_nan_args []= {
+        _T(0),
+        _T(1),
+        _T(uint64_t(1ULL<<23)),
+        std::numeric_limits<_T>::infinity(),
+        std::numeric_limits<_T>::quiet_NaN(),
+    };
+
+    for (auto ab=std::begin(inf_nan_args), ae=std::end(inf_nan_args);
+         ab != ae; ++ab) {
+        _T ai=*ab;
+        for (auto bb=std::begin(inf_nan_args), be=std::end(inf_nan_args);
+             bb !=be; ++bb) {
+            _T bi= *bb;
+            r &= v(ai, bi);
+            r &= v(ai, -bi);
+            r &= v(-ai, bi);
+            r &= v(-ai,-bi);
+        }
+    }
+
+    std::mt19937_64 rnd;
+    std::uniform_real_distribution<_T>
+        distrib1(domain_1.first, domain_1.second);
+    std::uniform_real_distribution<_T>
+        distrib2(domain_2.first, domain_2.second);
+
+    std::cout << "[" << domain_1.first << ", " << domain_2.second
+              << ") x [" << domain_2.first << ", " << domain_2.second
+              << ")\n";
+    const int64_t N0=cnt;
+    const int64_t N=72*N0;
+    for (int64_t i=0; i<N; ++i) {
+        if ((i & (N0-1)) == (N0-1))
+            std::cout << '.' << std::flush;
+        _T ah=distrib1(rnd);
+        _T bh=distrib2(rnd);
+        r &= v(ah, bh, cmp);
+    }
+    _T a_minus1= std::max(_T(-1), domain_1.first);
+    _T a_plus1= std::min(_T(1), domain_1.second);
+    _T b_minus1= std::max(_T(-1), domain_2.first);
+    _T b_plus1= std::min(_T(1), domain_2.second);
+    if (a_minus1 < a_plus1 && b_minus1 < b_plus1) {
+        std::cout << std::endl;
+        _T a_nplus1=std::nextafter(a_plus1, _T(2)*a_plus1);
+        _T b_nplus1=std::nextafter(b_plus1, _T(2)*b_plus1);
+        std::uniform_real_distribution<_T>
+            distrib_1_1(a_minus1, a_nplus1);
+        std::uniform_real_distribution<_T>
+            distrib_1_2(b_minus1, b_nplus1);
+        std::cout << "[" << a_minus1 << ", " << a_nplus1
+                  << ") x [" << b_minus1 << ", " << b_nplus1
+                  << ")\n";
+        for (int64_t i=0; i<N; ++i) {
+            if ((i & (N0-1)) == (N0-1))
+                std::cout << '.' << std::flush;
+            _T ah=distrib_1_1(rnd);
+            _T bh=distrib_1_2(rnd);
+            r &= v(ah, bh, cmp);
         }
     }
     std::cout << std::endl;

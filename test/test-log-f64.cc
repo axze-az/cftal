@@ -19,9 +19,9 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     // std::cerr << std::hexfloat;
-    bool rc= check_func_1<double, 2, check_log<double> >(v, 1, 1, false);
-    rc&= check_func_1<double, 4, check_log<double> >(v, 1, 1, false);
-    rc&= check_func_1<double, 8, check_log<double> >(v, 1, 1, false);
+    bool rc= check_func_1<double, 2, check_log<double> >(v, 1, 0, false);
+    rc&= check_func_1<double, 4, check_log<double> >(v, 1, 0, false);
+    rc&= check_func_1<double, 8, check_log<double> >(v, 1, 0, false);
 
     func_domain<double> d=std::make_pair(-0.0001,
                                          std::numeric_limits< double >::max());

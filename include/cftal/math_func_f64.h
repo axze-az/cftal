@@ -419,8 +419,9 @@ log_k2(const dvf_type& d)
     dvf_type xr= xm / xp;
     dvf_type x2 = sqr(xr);
 
-    dvf_type t= ctbl::_2_over_i[23];
-    for (int i=21; i>2; i-=2)
+    const int _N=25;
+    dvf_type t= ctbl::_2_over_i[_N];
+    for (int i=_N-2; i>2; i-=2)
         t = t * x2 + ctbl::_2_over_i[i];
     t = t * x2 + vf_type(2.0);
     t = t * xr;
@@ -448,12 +449,12 @@ native_log_k(const vf_type& d)
     vf_type xr= xm / xp;
     vf_type x2 = xr*xr;
 
-    vf_type t= ctbl::_2_over_i[23].h();
-    for (int i=21; i>2; i-=2)
+    const int _N=25;
+    vf_type t= ctbl::_2_over_i[_N].h();
+    for (int i=_N-2; i>2; i-=2)
         t = t * x2 + ctbl::_2_over_i[i].h();
     t = t * x2 + vf_type(2.0);
     t = t * xr;
-
     xr = t + M_LN2 * ef;
     return xr;
 }
@@ -484,7 +485,7 @@ exp_k2(const dvf_type& d)
     }
     // remove exact powers of 2
     vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
-    dvf_type r= (d2 - dvf_type(ctbl::m_ln2)*m2);
+    dvf_type r= d2 - dvf_type(ctbl::m_ln2)*m2;
     // dvf_type m2d= dvf_type(m2);
     // dvf_type r = d2 - ctbl::m_ln2.h()* m2d;
     // r -= m2d * ctbl::m_ln2.l();

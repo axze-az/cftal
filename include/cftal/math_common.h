@@ -725,16 +725,64 @@ template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-pow(const vf_type& b, const vf_type& e)
+pow(const vf_type& x, const vf_type& y)
 {
     // we have a problem if e is an integer
-    dvf_type ln_b(my_type::log_k2(abs(b)));
-    dvf_type ln_b_e(ln_b * e);
-    dvf_type pow0(my_type::exp_k2(ln_b_e));
+    dvf_type ln_x(my_type::log_k2(abs(x)));
+    dvf_type ln_x_y(ln_x * y);
+    dvf_type pow0(my_type::exp_k2(ln_x_y));
     vf_type res(pow0.h() + pow0.l());
 
-    vmf_type b_zero_and_e_zero((b == vf_type(0)) & (e == vf_type(0)));
-    res = _T::sel(b_zero_and_e_zero, vf_type(1.0), res);
+    // vmf_type b_zero_and_e_zero((b == vf_type(0)) & (e == vf_type(0)));
+    // res = _T::sel(b_zero_and_e_zero, vf_type(1.0), res);
+
+    vmf_type x_lt_z = x < 0.0;
+    vf_type yhalf=y*0.5;
+    vmf_type y_odd_int= (rint(y) == y) & (rint(yhalf) != yhalf);
+    res = _T::sel(x_lt_z & ~y_odd_int, _T::nan(), res);
+
+    vmf_type x_nan = isnan(x);
+    res = _T::sel(x_nan, x, res);
+    vmf_type y_nan = isnan(y);
+    res = _T::sel(y_nan, y, res);
+    vmf_type x_one_y_zero= (x == 1.0) | (y == 0.0);
+    res = _T::sel(x_one_y_zero, vf_type(1.0), res);
+
+
+    vmf_type x_zero = x == 0;
+    vmf_type y_odd_int_gt_0 = (y > 0.0) & y_odd_int;
+    res = _T::sel(x_zero & y_odd_int_gt_0, x, res);
+    res = _T::sel(x_zero & (y > 0.0) & ~y_odd_int, vf_type(0.0), res);
+
+    vmf_type x_minus_1 = x == -1.0;
+    vmf_type y_inf= isinf(y);
+    res = _T::sel(x_minus_1 | y_inf, vf_type(1.0), res);
+
+
+    res = _T::sel((abs(x) < 1.0) & y_inf & (y < 0.0), _T::pinf(), res);
+    res = _T::sel((abs(x) > 1.0) & y_inf & (y < 0.0), vf_type(0.0), res);
+    res = _T::sel((abs(x) < 1.0) & y_inf & (y > 0.0), vf_type(0.0), res);
+    res = _T::sel((abs(x) > 1.0) & y_inf & (y > 0.0), _T::pinf(), res);
+
+    vmf_type x_inf = isinf(x);
+    vmf_type x_n_inf= (x < 0) | x_inf;
+
+    res = _T::sel(x_n_inf & (y < 0.0) & y_odd_int, vf_type(-0.0), res);
+    res = _T::sel(x_n_inf & (y < 0.0) & ~y_odd_int, vf_type(+0.0), res);
+
+    res = _T::sel(x_n_inf & y_odd_int_gt_0, _T::ninf(), res);
+    res = _T::sel(x_n_inf & (y > 0.0) & ~y_odd_int, _T::pinf(), res);
+
+    res = _T::sel(x_inf & (x > 0) & (y < 0), vf_type(0.0), res);
+    res = _T::sel(x_inf & (x > 0) & (y > 0), _T::pinf(), res);
+
+    res = _T::sel(x_zero & (y < 0) & y_odd_int,
+                  copysign(vf_type(_T::pinf()), x), res);
+    res = _T::sel(x_zero & (y < 0) & ~y_odd_int, _T::pinf(), res);
+
+    res = _T::sel(y==1.0, x, res);
+
+
     return res;
 }
 

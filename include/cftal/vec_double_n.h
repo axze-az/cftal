@@ -78,10 +78,6 @@ namespace cftal {
     vec<double, _N>
     native_expm1(const vec<double, _N>& v);
 
-    template <std::size_t _N>
-    vec<double, _N>
-    native_log(const vec<double, _N>& v);
-
 
     template <std::size_t _N>
     vec<double, _N>
@@ -368,7 +364,7 @@ namespace cftal {
     vec<double, 8>
     pow(arg<vec<double, 8> >::type b, arg<vec<double, 8> >::type e);
 
-    // native_exp
+    // native_exp, these functions are exact to +-4 ulp with exception of _N1
     template <std::size_t _N>
     vec<double, _N>
     native_exp(const vec<double, _N>& v);
@@ -385,6 +381,22 @@ namespace cftal {
     vec<double, 8>
     native_exp(arg<vec<double, 8> >::type d);
 
+    // native_log, these functions are exact to +-3 ulp with exception of _N1
+    template <std::size_t _N>
+    vec<double, _N>
+    native_log(const vec<double, _N>& v);
+
+    vec<double, 1>
+    native_log(const vec<double, 1>& d);
+
+    vec<double, 2>
+    native_log(arg<vec<double, 2> >::type d);
+
+    vec<double, 4>
+    native_log(arg<vec<double, 4> >::type d);
+
+    vec<double, 8>
+    native_log(arg<vec<double, 8> >::type d);
 
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
@@ -420,8 +432,6 @@ namespace cftal {
     void
     native_sincos(arg<vec<double, 2> >::type d,
                   vec<double, 2> * psin, vec<double, 2> * pcos);
-    vec<double, 2>
-    native_log(arg<vec<double, 2> >::type d);
     vec<double, 2>
     native_sin(arg<vec<double, 2> >::type d);
     vec<double, 2>
@@ -464,8 +474,6 @@ namespace cftal {
     native_sincos(arg<vec<double, 4> >::type d,
                   vec<double, 4> * psin, vec<double, 4> * pcos);
     vec<double, 4>
-    native_log(arg<vec<double, 4> >::type d);
-    vec<double, 4>
     native_sin(arg<vec<double, 4> >::type d);
     vec<double, 4>
     native_cos(arg<vec<double, 4> >::type d);
@@ -505,8 +513,6 @@ namespace cftal {
     void
     native_sincos(arg<vec<double, 8> >::type d,
                   vec<double, 8> * psin, vec<double, 8> * pcos);
-    vec<double, 8>
-    native_log(arg<vec<double, 8> >::type d);
     vec<double, 8>
     native_sin(arg<vec<double, 8> >::type d);
     vec<double, 8>
@@ -785,6 +791,14 @@ cftal::vec<double, _N>
 cftal::native_log(const vec<double, _N>& v)
 {
     vec<double, _N> r(native_log(low_half(v)), native_log(high_half(v)));
+    return r;
+}
+
+inline
+cftal::vec<double, 1>
+cftal::native_log(const vec<double, 1>& v)
+{
+    vec<double, 1> r(std::log(v()));
     return r;
 }
 
