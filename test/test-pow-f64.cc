@@ -23,11 +23,13 @@ int main(int argc, char** argv)
     rc&= check_func_2<double, 4, check_pow<double> >(v, 1, 0, false);
     rc&= check_func_2<double, 8, check_pow<double> >(v, 1, 0, false);
 
-#if 0
-    func_domain<double> d=std::make_pair(-0.0001,
+
+    func_domain<double> d=std::make_pair(-std::numeric_limits< double >::max(),
                                          std::numeric_limits< double >::max());
+    auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, 8, check_log<double> >::v(d, cmp_ulp<double>(1));
-#endif
+        double, 8, check_log<double> >::v(d, cmp_ulp<double>(1, us));
+    std::cout << "ulps: "
+              << std::fixed << std::setprecision(4) << *us << std::endl;
     return (rc == true) ? 0 : 1;
 }

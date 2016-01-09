@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         double, 8, check_sinh<double> >::v(d, cmp_ulp<double>(1, us),
-                                           0x800ULL);
+                                           0x2000ULL);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     return (rc == true) ? 0 : 1;
