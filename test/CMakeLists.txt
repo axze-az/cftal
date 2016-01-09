@@ -90,6 +90,7 @@ test_prog(test-trunc)
 test_prog(test-rint)
 test_prog(test-intops)
 
+test_prog(test-sqrt-f64)
 test_prog(test-exp-f64)
 test_prog(test-expm1-f64)
 test_prog(test-sinh-f64)

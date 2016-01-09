@@ -206,7 +206,16 @@ namespace cftal {
     vec<double, 1>
     trunc(const vec<double, 1>& v);
 
-    // cbrt
+    // sqrt
+    // specializations are inline
+    template <std::size_t _N>
+    vec<double, _N>
+    sqrt(const vec<double, _N>& v);
+
+    vec<double, 1>
+    sqrt(const vec<double, 1>& v);
+
+    // cbrt, these functions are exact to +-0 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     cbrt(const vec<double, _N>& v);
@@ -630,6 +639,22 @@ cftal::native_tan(const vec<double, _N>& v)
 {
     vec<double, _N> r(native_tan(low_half(v)), native_tan(high_half(v)));
     return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::sqrt(const vec<double, _N>& v)
+{
+    vec<double, _N> r(sqrt(low_half(v)), sqrt(high_half(v)));
+    return r;
+}
+
+inline
+cftal::vec<double, 1>
+cftal::sqrt(const vec<double, 1>& v)
+{
+    return vec<double, 1>(std::sqrt(v()));
 }
 
 template <std::size_t _N>
