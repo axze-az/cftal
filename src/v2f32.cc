@@ -5,6 +5,4 @@
 #include <cmath>
 #include <limits>
 
-#if 0
 DEF_MATH_FUNCS(cftal, v2f32, v2s32, float, 4)
-#endif

@@ -239,6 +239,42 @@ namespace cftal {
     vec<float, 1>
     trunc(const vec<float, 1>& v);
 
+    v2f32 cbrt(arg<v2f32>::type a);
+    v2f32 frexp(arg<v2f32>::type x, v2s32* e);
+    // v2f32 pow2i(arg<v2s32>::type e);
+    v2s32 ilogbp1(arg<v2f32>::type v);
+    v2s32 ilogb(arg<v2f32>::type v);
+    v2f32 atan2(arg<v2f32>::type y, arg<v2f32>::type x);
+    v2f32 asin(arg<v2f32>::type d);
+    v2f32 acos(arg<v2f32>::type d);
+
+    v2f32 atan(arg<v2f32>::type d);
+    std::pair<v2f32, v2f32> sincos(arg<v2f32>::type d);
+
+    v2f32 exp(arg<v2f32>::type d);
+    v2f32 expm1(arg<v2f32>::type d);
+    v2f32 exp2(arg<v2f32>::type d);
+    v2f32 exp10(arg<v2f32>::type d);
+    v2f32 log(arg<v2f32>::type d);
+    v2f32 pow(arg<v2f32>::type b, arg<v2f32>::type e);
+    void sincos(arg<v2f32>::type d, v2f32* psin, v2f32* pcos);
+    v2f32 sin(arg<v2f32>::type d);
+    v2f32 cos(arg<v2f32>::type d);
+    v2f32 tan(arg<v2f32>::type d);
+    v2f32 cot(arg<v2f32>::type d);
+    v2f32 atan2(arg<v2f32>::type x, arg<v2f32>::type y);
+
+    void native_sincos(arg<v2f32>::type d, v2f32* psin, v2f32* pcos);
+    v2f32 native_exp(arg<v2f32>::type d);
+    v2f32 native_log(arg<v2f32>::type d);
+    v2f32 native_sin(arg<v2f32>::type d);
+    v2f32 native_cos(arg<v2f32>::type d);
+    v2f32 native_tan(arg<v2f32>::type d);
+    v2f32 native_cot(arg<v2f32>::type d);
+    v2f32 cosh(arg<v2f32>::type d);
+    v2f32 sinh(arg<v2f32>::type d);
+
+    
     v4f32 cbrt(arg<v4f32>::type a);
     v4f32 frexp(arg<v4f32>::type x, v4s32* e);
     // v4f32 pow2i(arg<v4s32>::type e);
