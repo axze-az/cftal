@@ -220,8 +220,8 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
     for (auto b=std::begin(inf_nan_args), e=std::end(inf_nan_args);
          b!=e; ++b) {
         const auto& ai= *b;
-        r &=v(ai);
-        r &=-v(ai);
+        r &=v(ai, cmp);
+        r &=-v(ai, cmp);
     }
 
     std::mt19937_64 rnd;
@@ -305,10 +305,10 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
         for (auto bb=std::begin(inf_nan_args), be=std::end(inf_nan_args);
              bb !=be; ++bb) {
             _T bi= *bb;
-            r &= v(ai, bi);
-            r &= v(ai, -bi);
-            r &= v(-ai, bi);
-            r &= v(-ai,-bi);
+            r &= v(ai, bi, cmp);
+            r &= v(ai, -bi, cmp);
+            r &= v(-ai, bi, cmp);
+            r &= v(-ai,-bi, cmp);
         }
     }
 

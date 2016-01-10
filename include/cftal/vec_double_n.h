@@ -381,7 +381,7 @@ namespace cftal {
     vec<double, 8>
     native_exp(arg<vec<double, 8> >::type d);
 
-    // native_log, these functions are exact to +-3 ulp with exception of _N1
+    // native_log, these functions are exact to +-4 ulp with exception of _N1
     template <std::size_t _N>
     vec<double, _N>
     native_log(const vec<double, _N>& v);
