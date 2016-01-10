@@ -46,6 +46,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
     set (CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE} -fno-tree-vectorize")
+    # strip release builds
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE
+        "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -s")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE
+        "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} -s")
     # profile
     set (CMAKE_CXX_FLAGS_PROFILE
         "${CMAKE_CXX_FLAGS_PROFILE} -pg")
