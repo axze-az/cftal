@@ -4,7 +4,6 @@
 #include <cftal/config.h>
 #include <cftal/std_types.h>
 #include <cftal/d_real.h>
-#include <mpreal.h>
 #include <mpfr.h>
 
 namespace cftal {
