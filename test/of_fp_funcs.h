@@ -205,22 +205,24 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
                                        _CMP cmp, std::size_t cnt)
 {
     bool r = true;
-    _T a;
-    a = std::numeric_limits<_T>::quiet_NaN();
-    r &= v(a);
-    r &= v(-a);
-    a = std::numeric_limits<_T>::infinity();
-    r &= v(a);
-    r &= v(-a);
-    a = 0;
-    r &= v(a);
-    r &= v(-a);
-    a = _T(uint64_t(1ULL<<23));
-    r &= v(a);
-    r &= v(-a);
-    a = _T(uint64_t(1ULL<<52));
-    r &= v(a);
-    r &= v(-a);
+    const _T inf_nan_args []= {
+        _T(0),
+        _T(1),
+        _T(2),
+        _T(7),
+        _T(8),
+        _T(uint64_t(1ULL<<23)),
+        _T(uint64_t(1ULL<<52)),
+        std::numeric_limits<_T>::infinity(),
+        std::numeric_limits<_T>::quiet_NaN(),
+    };
+
+    for (auto b=std::begin(inf_nan_args), e=std::end(inf_nan_args);
+         b!=e; ++b) {
+        const auto& ai= *b;
+        r &=v(ai);
+        r &=-v(ai);
+    }
 
     std::mt19937_64 rnd;
     std::uniform_real_distribution<_T>
@@ -288,7 +290,11 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
     const _T inf_nan_args []= {
         _T(0),
         _T(1),
+        _T(2),
+        _T(7),
+        _T(8),
         _T(uint64_t(1ULL<<23)),
+        _T(uint64_t(1ULL<<52)),
         std::numeric_limits<_T>::infinity(),
         std::numeric_limits<_T>::quiet_NaN(),
     };
@@ -312,7 +318,7 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
     std::uniform_real_distribution<_T>
         distrib2(domain_2.first, domain_2.second);
 
-    std::cout << "[" << domain_1.first << ", " << domain_2.second
+    std::cout << "[" << domain_1.first << ", " << domain_1.second
               << ") x [" << domain_2.first << ", " << domain_2.second
               << ")\n";
     const int64_t N0=cnt;

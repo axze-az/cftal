@@ -17,19 +17,21 @@ namespace cftal {
 
         struct ulp_stats {
             uint64_t _ulps;
+            uint64_t _nans;
             uint64_t _cnt;
             std::map<int32_t, uint32_t> _devs;
-            ulp_stats() : _ulps(0), _cnt(0) {};
-            void inc(int32_t ulp) {
+            ulp_stats() : _ulps(0), _nans(0), _cnt(0) {};
+            void inc(int32_t ulp, int32_t is_nan) {
                 ++_cnt;
                 uint32_t au= ulp != 0 ? 1 : 0;
                 _ulps +=  au;
                 _devs[ulp] += 1;
+                _nans += is_nan != 0 ? 1 : 0;
             }
         };
 
         std::ostream& operator<<(std::ostream& s, const ulp_stats& us);
-        
+
         // compare a and b, returns also true for a==NAN and b
         // == NAN
         bool f_eq(double a, double b);

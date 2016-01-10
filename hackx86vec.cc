@@ -40,7 +40,7 @@ do_add(cftal::vec<int32_t, 2> a, cftal::vec<int32_t, 2> b)
 int main(int argc, char** argv)
 {
     using namespace cftal;
-    auto t=pow(v2f64(-1.000000000000000000e+00), v2f64(8.388608000000000000e+06));
+    auto t= pow(v2f64(2.000000000000000000e+00), v2f64(-4.503599627370496000e+15));
     std::cout << t << std::endl;
 #if 0
     uint64_t d=3661514468055604540ULL;

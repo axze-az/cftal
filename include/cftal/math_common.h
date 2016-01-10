@@ -733,6 +733,14 @@ pow(const vf_type& x, const vf_type& y)
     dvf_type pow0(my_type::exp_k2(ln_x_y));
     vf_type res(pow0.h() + pow0.l());
 
+    const vf_type& d= ln_x_y.h();
+    const vf_type exp_hi_inf= 7.097827128933840867830440e+02;
+    const vf_type exp_lo_zero= -7.451332191019412221066887e+02;
+    res = _T::sel(d <= exp_lo_zero, 0.0, res);
+    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    res = _T::sel(d == 0.0, 1.0, res);
+    res = _T::sel(d == 1.0, M_E, res);
+
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=0.5 *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
@@ -755,7 +763,7 @@ pow(const vf_type& x, const vf_type& y)
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     t= _T::sel(x_zero, -y, y);
     t= _T::sel(t < 0.0, vf_type(0), _T::pinf());
-    vf_type sgn_x= copysign(vf_type(1),x);
+    vf_type sgn_x= copysign(vf_type(1), x);
     vf_type t1=_T::sel(y_is_odd, sgn_x, vf_type(1));
     t1 *= t;
     res = _T::sel(x_inf_or_zero, t1, res);

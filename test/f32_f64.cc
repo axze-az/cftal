@@ -31,8 +31,8 @@ float cftal::test::make_float(unsigned sgn, unsigned exp, uint32_t sig)
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const ulp_stats& us)
 {
-    s << us._cnt << " cases, with delta: " << us._ulps
-      << " rate: " << double(us._ulps)/double(us._cnt) << '\n';
+    s << us._cnt << " cases (with " << us._nans << " NAN results), with delta: "
+      << us._ulps << " rate: " << double(us._ulps)/double(us._cnt) << '\n';
     for (const auto& t : us._devs) {
         s << std::setw(4) << t.first << " "
           << std::setw(16) << t.second << '\n';
@@ -67,8 +67,10 @@ namespace {
             if ((u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
                 r=true;
         }
-        if (us != nullptr)
-            us->inc(u);
+        if (us != nullptr) {
+            int32_t isn= (std::isnan(a) || std::isnan(b)) ? 1 : 0;
+            us->inc(u, isn);
+        }
         return r;
     }
 }
