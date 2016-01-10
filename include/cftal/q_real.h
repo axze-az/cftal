@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
+#include <cstdlib>
 
 namespace cftal {
 
@@ -47,7 +48,7 @@ namespace cftal {
             case 2: return v2();
             case 3: return v3();
             default:
-                static_assert(i == i, "unreachable");
+                std::abort();
                 break;
             }
         }
