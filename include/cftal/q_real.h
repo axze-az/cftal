@@ -25,7 +25,7 @@ namespace cftal {
         constexpr
         q_real(_T v0, _T v1, _T v2, _T v3)
             : _v0(v0), _v1(v1), _v2(v2), _v3(v3) {}
-        template <typename U>
+        template <typename _U>
         constexpr
         q_real(const q_real<_U>& r)
             : _v0(r.v0()), _v1(r.v1()), _v2(r.v2()), _v3(r.v3()) {}
