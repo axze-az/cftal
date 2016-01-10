@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/std_types.h>
 #include <cftal/d_real.h>
+#include <mpreal.h>
 #include <mpfr.h>
 
 namespace cftal {
@@ -34,6 +35,7 @@ namespace cftal {
 
         class fpn_handle {
             mpfr_t _v;
+            void cleanup();
         public:
             fpn_handle(std::size_t prec);
             fpn_handle(const fpn_handle& r);
@@ -46,6 +48,39 @@ namespace cftal {
     }
 }
 
+inline
+cftal::test::fpn_handle::fpn_handle(std::size_t prec)
+    : _v()
+{
+    mpfr_init2(_v, prec);
+    mpfr_integer_p()
+}
+
+inline
+cftal::test::fpn_handle::fpn_handle(const fpn_handle& r)
+    : _v()
+{
+    mpfr_init2(_v, mpfr_get_prec(r._v));
+}
+
+#if 0
+inline
+cftal::test::fpn_handle(fpn_handle&& r)
+    : _v()
+{
+    mpfr_in
+}
+#endif
+
+inline
+cftal::test::fpn_handle&
+cftal::test::fpn_handle::operator=(const fpn_handle& r)
+{
+    if (&r != this) {
+
+    }
+    return *this;
+}
 
 
 
