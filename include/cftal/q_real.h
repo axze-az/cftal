@@ -40,12 +40,26 @@ namespace cftal {
         const _T& v1() const { return _v1; }
         const _T& v2() const { return _v2; }
         const _T& v3() const { return _v3; }
+        const _T& operator[](std::size_t i) {
+            switch (i) {
+            case 0: return v0();
+            case 1: return v1();
+            case 2: return v2();
+            case 3: return v3();
+            default:
+                static_assert(i == i, "unreachable");
+                break;
+            }
+        }
     };
 
     namespace impl {
         template <typename _T>
         struct q_real_ops
             : public d_real_ops<_T, d_real_traits<_T>::fma > {
+
+            using traits_t = d_real_traits<_T>;
+
             static
             void
             renormalize(_T& r0, _T& r1, _T& r2, _T& r3,
