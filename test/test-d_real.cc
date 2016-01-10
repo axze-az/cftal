@@ -10,56 +10,56 @@ namespace cftal {
     namespace test {
         template <class _T, class _R>
         class check_d_real {
-            
-            static 
+
+            static
             _R make_ref(d_real<_T> a);
 
-            static 
+            static
             bool
             check(d_real<_T> res, _R expected, const char* msg);
-                        
-            static 
-            bool 
+
+            static
+            bool
             ops(d_real<_T> a0, d_real<_T> a1);
-            
+
             static bool ops();
-            
+
         public:
             static bool v();
         };
-        
+
         template <class _T>
         struct check_d_real_traits;
-        
+
         template <>
         struct check_d_real_traits<double> {
             static
-            constexpr __float128 eps() { 
+            constexpr __float128 eps() {
                 return std::pow(2, -106);
             }
         };
-        
+
         template <>
         struct check_d_real_traits<float> {
             static
-            constexpr double eps() { 
+            constexpr double eps() {
                 return std::pow(2, -48);
             }
         };
-        
+
     }
 }
 
-   
+
 inline
 __float128 abs(__float128 x) {
     return x<0 ? -x : x;
 }
-    
+
 
 
 template <class _T, class _R>
-_R 
+_R
 cftal::test::check_d_real<_T, _R>::make_ref(d_real<_T> a)
 {
     _R r = a.h();
@@ -75,7 +75,7 @@ check(d_real<_T> res, _R expected, const char* msg)
     _R rs=make_ref(res);
     bool r=true;
     if (rel_err(rs, expected) > check_d_real_traits<_T>::eps() ) {
-        std::cerr << double(rs) << ' '  << double(expected) << ' ' 
+        std::cerr << double(rs) << ' '  << double(expected) << ' '
                   << msg << std::endl;
         std::cerr << "rel_err: " << double(rel_err(rs, expected)) << std::endl;
         std::cerr << "abs_err:" << double(abs_err(rs, expected)) << std::endl;
@@ -96,45 +96,45 @@ ops(d_real<_T> a0, d_real<_T> b0)
     bool rc=true;
 
     r = -a;
-    vr = -va; 
+    vr = -va;
     rc &= check(vr, r, "-a");
-    
-    r = +a;     
-    vr = +va;     
-    rc &= check(vr, r, "+a");    
-    
+
+    r = +a;
+    vr = +va;
+    rc &= check(vr, r, "+a");
+
     r = a + b;
     vr = va + vb;
-    rc &= check(vr, r, "a+b");    
-    
+    rc &= check(vr, r, "a+b");
+
     r = a; r += b;
     vr = va; vr += vb;
-    rc &= check(vr, r, "a+=b");        
+    rc &= check(vr, r, "a+=b");
 
     r = a - b;
     vr = va - vb;
-    rc &= check(vr, r, "a-b");    
+    rc &= check(vr, r, "a-b");
 
     r = a; r -= b;
     vr = va; vr -= vb;
-    rc &= check(vr, r, "a-=b");        
-    
+    rc &= check(vr, r, "a-=b");
+
     r = a * b;
     vr = va * vb;
-    rc &= check(vr, r, "a*b");    
+    rc &= check(vr, r, "a*b");
 
     r = a; r *= b;
     vr = va; vr *= vb;
-    rc &= check(vr, r, "a*=b");        
-    
+    rc &= check(vr, r, "a*=b");
+
     r = a / b;
     vr = va / vb;
-    rc &= check(vr, r, "a/b");    
+    rc &= check(vr, r, "a/b");
 
     r = a; r *= b;
     vr = va; vr *= vb;
-    rc &= check(vr, r, "a/=b");        
-    
+    rc &= check(vr, r, "a/=b");
+
     r = std::max(a, b);
     vr = max(va, vb);
     rc &= check(vr, r, "max");
@@ -142,12 +142,12 @@ ops(d_real<_T> a0, d_real<_T> b0)
     r = std::min(a, b);
     vr = min(va, vb);
     rc &= check(vr, r, "min");
-    
+
     r = a > 0 ? a : -a;
     vr = abs(va);
     rc &= check(vr, r, "abs");
-    
-    return rc;    
+
+    return rc;
 }
 
 
@@ -172,13 +172,13 @@ cftal::test::check_d_real<_T, _R>::ops()
          _T(-12), _T(-21)
     };
 
-    bool rc =true;    
+    bool rc =true;
     for (auto b=std::begin(operands), e=std::end(operands); b!=e; b+=2) {
         rc &= ops(*b, *std::next(b));
         rc &= ops(*std::next(b), *b);
     }
     std::mt19937 rnd;
-    std::uniform_real_distribution<_T> 
+    std::uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
     const int64_t N0=0x10000ULL;
     const int64_t N=72*N0;
@@ -187,22 +187,22 @@ cftal::test::check_d_real<_T, _R>::ops()
             std::cout << '.' << std::flush;
         _T ah, bh;
         ah = distrib(rnd);
-        bh = distrib(rnd);        
-        d_real<_T> va=ah, vb=bh;        
+        bh = distrib(rnd);
+        d_real<_T> va=ah, vb=bh;
         rc &= ops(va, vb);
-        va = -ah; 
+        va = -ah;
         rc &= ops(va, vb);
         va = ah; vb= -bh;
         rc &= ops(va, vb);
-        va = -ah; 
+        va = -ah;
         rc &= ops(va, vb);
-    }     
-    std::cout << std::endl;    
+    }
+    std::cout << std::endl;
     if (rc == true) {
         std::cout << __func__ << " test passed " << std::endl;
     } else {
-        std::cerr << __func__ << " test failed " << std::endl;        
-    }            
+        std::cerr << __func__ << " test failed " << std::endl;
+    }
     return rc;
 }
 
