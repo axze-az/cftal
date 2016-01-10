@@ -31,8 +31,23 @@ namespace cftal {
             func(float a, float b, _F f);
 
         }
+
+        class fpn_handle {
+            mpfr_t _v;
+        public:
+            fpn_handle(std::size_t prec);
+            fpn_handle(const fpn_handle& r);
+            fpn_handle(fpn_handle&& r);
+            fpn_handle& operator=(const fpn_handle& r);
+            fpn_handle& operator=(fpn_handle&& r);
+            ~fpn_handle();
+            // explict mpft_t;
+        };
     }
 }
+
+
+
 
 
 
