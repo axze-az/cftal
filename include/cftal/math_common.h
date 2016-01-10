@@ -733,58 +733,48 @@ pow(const vf_type& x, const vf_type& y)
     dvf_type pow0(my_type::exp_k2(ln_x_y));
     vf_type res(pow0.h() + pow0.l());
 
+    vmf_type y_is_int = rint(y) == y;
+    vf_type y_half=0.5 *y;
+    vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
+    vmf_type res_is_nan= isnan(res);
+    res = _T::sel(res_is_nan, _T::pinf(), res);
 
-    // vmf_type b_zero_and_e_zero((b == vf_type(0)) & (e == vf_type(0)));
-    // res = _T::sel(b_zero_and_e_zero, vf_type(1.0), res);
-    vmf_type x_lt_z = x < 0.0;
-    res =_T::sel(x_lt_z, -res, res);
+    vf_type res_fac= _T::sel(y_is_odd, vf_type(-1), vf_type(1));
+    res_fac = _T::sel(~y_is_int, _T::nan(), res_fac);
+    res_fac = _T::sel(x >= 0, vf_type(1), res_fac);
+    res *= res_fac;
 
-    vmf_type y_nan = isnan(y);
-    vf_type yhalf=y*0.5;
-    vmf_type y_odd_int= (rint(y) == y) & (rint(yhalf) != yhalf) & ~y_nan;
-    res = _T::sel(x_lt_z & ~y_odd_int, _T::nan(), res);
+    vf_type efx= (abs(x) -1) * _T::sel(y<0, vf_type(-1), vf_type(1));
 
-    vmf_type x_nan = isnan(x);
-    res = _T::sel(x_nan, x, res);
-    res = _T::sel(y_nan, y, res);
-    vmf_type x_one_y_zero= (x == 1.0) | (y == 0.0);
-    res = _T::sel(x_one_y_zero, vf_type(1.0), res);
-
-
-    vmf_type x_zero = x == 0;
-    vmf_type y_odd_int_gt_0 = (y > 0.0) & y_odd_int;
-    res = _T::sel(x_zero & y_odd_int_gt_0, x, res);
-    res = _T::sel(x_zero & (y > 0.0) & ~y_odd_int, vf_type(0.0), res);
-
-    vmf_type x_minus_1 = x == -1.0;
     vmf_type y_inf= isinf(y);
-    res = _T::sel(x_minus_1 & y_inf, vf_type(1.0), res);
+    vf_type t= _T::sel(efx==0.0, vf_type(1), _T::pinf());
+    t = _T::sel(efx < 0.0, vf_type(0.0), t);
+    res = _T::sel(y_inf, t, res);
 
+    vmf_type x_zero = x == 0.0;
+    vmf_type x_inf_or_zero= isinf(x) | x_zero;
+    t= _T::sel(x_zero, -y, y);
+    t= _T::sel(t < 0.0, vf_type(0), _T::pinf());
+    vf_type sgn_x= copysign(vf_type(1),x);
+    vf_type t1=_T::sel(y_is_odd, sgn_x, vf_type(1));
+    t1 *= t;
+    res = _T::sel(x_inf_or_zero, t1, res);
 
-    res = _T::sel((abs(x) < 1.0) & y_inf & (y < 0.0), _T::pinf(), res);
-    res = _T::sel((abs(x) > 1.0) & y_inf & (y < 0.0), vf_type(0.0), res);
-    res = _T::sel((abs(x) < 1.0) & y_inf & (y > 0.0), vf_type(0.0), res);
-    res = _T::sel((abs(x) > 1.0) & y_inf & (y > 0.0), _T::pinf(), res);
+    res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
+    res = _T::sel((y==0.0) | (x==1.0), vf_type(1), res);
 
-    vmf_type x_inf = isinf(x);
-    vmf_type x_n_inf= (x < 0) & x_inf;
+#if 0
+    res = xisnan(result) ? INFINITY : res;
+    res *=  (x >= 0 ? 1 : (!yisint ? NAN : (yisodd ? -1 : 1)));
 
-    res = _T::sel(x_n_inf & (y < 0.0) & y_odd_int, vf_type(-0.0), res);
-    res = _T::sel(x_n_inf & (y < 0.0) & ~y_odd_int, vf_type(+0.0), res);
+    double efx = mulsign(xfabs(x) - 1, y);
+    if (xisinf(y)) res = efx < 0 ? 0.0 : (efx == 0 ? 1.0 : INFINITY);
+    if (xisinf(x) || x == 0) res = (yisodd ? sign(x) : 1) * ((x == 0 ? -y : y) < 0 ? 0 : INFINITY);
+    if (xisnan(x) || xisnan(y)) res = NAN;
+    if (y == 0 || x == 1) res = 1;
 
-    res = _T::sel(x_n_inf & y_odd_int_gt_0, _T::ninf(), res);
-    res = _T::sel(x_n_inf & (y > 0.0) & ~y_odd_int, _T::pinf(), res);
-
-    res = _T::sel(x_inf & (x > 0) & (y < 0), vf_type(0.0), res);
-    res = _T::sel(x_inf & (x > 0) & (y > 0), _T::pinf(), res);
-
-    res = _T::sel(x_zero & (y < 0) & y_odd_int,
-                  copysign(vf_type(_T::pinf()), x), res);
-    res = _T::sel(x_zero & (y < 0) & ~y_odd_int, _T::pinf(), res);
-
-    res = _T::sel(y==1.0, x, res);
-
-
+    return res;
+#endif
     return res;
 }
 
