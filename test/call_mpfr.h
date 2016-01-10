@@ -52,7 +52,6 @@ cftal::test::fpn_handle::fpn_handle(std::size_t prec)
     : _v()
 {
     mpfr_init2(_v, prec);
-    mpfr_integer_p()
 }
 
 inline
