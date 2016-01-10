@@ -11,6 +11,7 @@ set (TEST_SRCS
   f32_f64.cc
   snippets.cc
   of_math_funcs.cc
+  call_mpfr.cc
 )
 include_directories(../..)
 include_directories(../include)
@@ -36,6 +37,12 @@ if (HDRMPFR)
     message(${HDRMPFR})
 endif()
 
+function(target_add_mpfr_libs arg1)
+    target_link_libraries(${arg1} ${LIBMPFR})
+    target_link_libraries(${arg1} ${LIBGMP})
+endfunction()
+
+
 add_library(cftal-test SHARED ${TEST_SRCS})
 set_property(TARGET cftal-test
   PROPERTY INTERFACE_POSITION_INDEPENDENT_CODE ON)
@@ -44,19 +51,21 @@ set_target_properties(cftal-test PROPERTIES
   VERSION "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}")
 target_link_libraries(cftal-test cftal-so)
 target_link_libraries(cftal-test stdc++fs)
+target_add_mpfr_libs(cftal-test)
 enable_testing()
 
-add_executable(gen-test-vec gen-test-vec.cc)
 
-function(target_add_mpfr_libs arg1)
-    target_link_libraries(${arg1} ${LIBMPFR})
-    target_link_libraries(${arg1} ${LIBGMP})
+function(target_add_test_libs arg1)
+    target_link_libraries(${arg1} cftal-test)
+    target_add_mpfr_libs(${arg1})
 endfunction()
+
+add_executable(gen-test-vec gen-test-vec.cc)
 
 function(test_prog arg1)
     add_executable(${arg1} ${arg1}.cc)
     target_link_libraries(${arg1} cftal-test)
-    target_add_mpfr_libs(${arg1})
+    target_add_test_libs(${arg1})
     add_test(NAME ${arg1} COMMAND ${arg1})
 endfunction()
 
@@ -120,6 +129,6 @@ if (CFTAL_FULL_TEST)
 endif()
 
 add_executable(gen-func-data gen-func-data.cc)
-target_add_mpfr_libs(gen-func-data)
+target_add_test_libs(gen-func-data)
 add_executable(gen-constants gen-constants.cc)
-target_add_mpfr_libs(gen-constants)
+target_add_test_libs(gen-constants)

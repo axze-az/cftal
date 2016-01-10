@@ -1,8 +1,9 @@
-#include <cftal/test/of_math_funcs.h>
+#include <cftal/test/call_mpfr.h>
+#include <cftal/test/of_fp_funcs.h>
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 #include <limits>
-
 
 namespace cftal {
     namespace test {
@@ -32,8 +33,8 @@ cftal::test::gen_constant(func_domain<_T> d, const std::string& pfx,
     _T l = d.first;
     _T r = d.second;
     // _T dir = std::numeric_limits<_T>::max();
-    _T fl= call_mpfr_func(l, f);
-    _T fr= call_mpfr_func(r, f);
+    _T fl= call_mpfr::func(l, f);
+    _T fr= call_mpfr::func(r, f);
     _T fn;
 
     bool l_is_inf= chk(fl);
@@ -48,7 +49,7 @@ cftal::test::gen_constant(func_domain<_T> d, const std::string& pfx,
         _T ln= (l+r)*0.5;
         if (ln == l || ln == r)
             break;
-        fn= call_mpfr_func(ln, f);
+        fn= call_mpfr::func(ln, f);
         bool is_inf = chk(fn);
         std::cout << std::setw(30) << ln << '\r' << std::flush;
         if (l_is_inf) {
@@ -75,7 +76,7 @@ cftal::test::gen_constant(func_domain<_T> d, const std::string& pfx,
                     << r
                     << ";\n"
                     << pfx << "_val= "
-                    << call_mpfr_func(r, f)
+                    << call_mpfr::func(r, f)
                     << ";\n\n";
     } else {
         std::cout << std::scientific << std::setprecision(24)
@@ -83,7 +84,7 @@ cftal::test::gen_constant(func_domain<_T> d, const std::string& pfx,
                     << l
                     << ";\n"
                     << pfx << "_val= "
-                    << call_mpfr_func(l, f)
+                    << call_mpfr::func(l, f)
                     << ";\n"
                     << pfx << '_' << check_name<< "= "
                     << r

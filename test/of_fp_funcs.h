@@ -22,7 +22,7 @@ namespace cftal {
             const func_domain<_T> value;
         };
 
-        const std::size_t default_cnt=0x40000ULL;
+        const std::size_t default_cnt=0x80000ULL;
 
         template <typename _T>
         const func_domain<_T>

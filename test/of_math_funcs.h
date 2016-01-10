@@ -3,12 +3,12 @@
 
 #include <cftal/config.h>
 #include <cftal/test/of_fp_funcs.h>
+#include <cftal/test/call_mpfr.h>
 #include <boost/math/special_functions.hpp>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <iomanip>
-#include <mpfr.h>
 
 namespace cftal {
     namespace test {
@@ -65,36 +65,6 @@ namespace cftal {
             }
         };
 
-        template <typename _F>
-        double
-        call_mpfr_func(double d, _F f) {
-            mpfr_t di, r;
-            mpfr_init2(di, 53);
-            mpfr_init2(r, 53);
-            mpfr_set_d(di, d, GMP_RNDN);
-            f(r, di, GMP_RNDN);
-            double dr=mpfr_get_d(r, GMP_RNDN);
-            mpfr_clear(di);
-            mpfr_clear(r);
-            return dr;
-        }
-
-        template <typename _F>
-        double
-        call_mpfr_func(double a, double b, _F f) {
-            mpfr_t ai, bi, r;
-            mpfr_init2(ai, 53);
-            mpfr_init2(bi, 53);
-            mpfr_init2(r, 53);
-            mpfr_set_d(ai, a, GMP_RNDN);
-            mpfr_set_d(bi, b, GMP_RNDN);
-            f(r, ai, bi, GMP_RNDN);
-            double dr=mpfr_get_d(r, GMP_RNDN);
-            mpfr_clear(ai);
-            mpfr_clear(bi);
-            mpfr_clear(r);
-            return dr;
-        }
 
         template <typename _T>
         struct check_sqrt {
@@ -131,7 +101,7 @@ namespace cftal {
             _T
             v(const _T& a) {
 #if 1
-                return call_mpfr_func(a, mpfr_cbrt);
+                return call_mpfr::func(a, mpfr_cbrt);
 #else
                 return std::cbrt(a);
 #endif
@@ -194,7 +164,7 @@ namespace cftal {
             _T
             v(const _T& a) {
 #if 1
-                return call_mpfr_func(a, mpfr_sinh);
+                return call_mpfr::func(a, mpfr_sinh);
 #else
                 return std::sinh(a);
 #endif
@@ -221,7 +191,7 @@ namespace cftal {
             _T
             v(const _T& a) {
 #if 1
-                return call_mpfr_func(a, mpfr_cosh);
+                return call_mpfr::func(a, mpfr_cosh);
 #else
                 return std::cosh(a);
 #endif
@@ -264,7 +234,7 @@ namespace cftal {
             _T
             v(const _T& a) {
 #if 1
-                return call_mpfr_func(a, mpfr_exp10);
+                return call_mpfr::func(a, mpfr_exp10);
 #else
                 return ::exp10(a);
 #endif
@@ -340,7 +310,7 @@ namespace cftal {
             static
             const char* fname() { return "native_log"; }
         };
-        
+
     }
 }
 

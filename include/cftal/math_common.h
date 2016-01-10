@@ -733,17 +733,19 @@ pow(const vf_type& x, const vf_type& y)
     dvf_type pow0(my_type::exp_k2(ln_x_y));
     vf_type res(pow0.h() + pow0.l());
 
+
     // vmf_type b_zero_and_e_zero((b == vf_type(0)) & (e == vf_type(0)));
     // res = _T::sel(b_zero_and_e_zero, vf_type(1.0), res);
-
     vmf_type x_lt_z = x < 0.0;
+    res =_T::sel(x_lt_z, -res, res);
+
+    vmf_type y_nan = isnan(y);
     vf_type yhalf=y*0.5;
-    vmf_type y_odd_int= (rint(y) == y) & (rint(yhalf) != yhalf);
+    vmf_type y_odd_int= (rint(y) == y) & (rint(yhalf) != yhalf) & ~y_nan;
     res = _T::sel(x_lt_z & ~y_odd_int, _T::nan(), res);
 
     vmf_type x_nan = isnan(x);
     res = _T::sel(x_nan, x, res);
-    vmf_type y_nan = isnan(y);
     res = _T::sel(y_nan, y, res);
     vmf_type x_one_y_zero= (x == 1.0) | (y == 0.0);
     res = _T::sel(x_one_y_zero, vf_type(1.0), res);
@@ -756,7 +758,7 @@ pow(const vf_type& x, const vf_type& y)
 
     vmf_type x_minus_1 = x == -1.0;
     vmf_type y_inf= isinf(y);
-    res = _T::sel(x_minus_1 | y_inf, vf_type(1.0), res);
+    res = _T::sel(x_minus_1 & y_inf, vf_type(1.0), res);
 
 
     res = _T::sel((abs(x) < 1.0) & y_inf & (y < 0.0), _T::pinf(), res);
@@ -765,7 +767,7 @@ pow(const vf_type& x, const vf_type& y)
     res = _T::sel((abs(x) > 1.0) & y_inf & (y > 0.0), _T::pinf(), res);
 
     vmf_type x_inf = isinf(x);
-    vmf_type x_n_inf= (x < 0) | x_inf;
+    vmf_type x_n_inf= (x < 0) & x_inf;
 
     res = _T::sel(x_n_inf & (y < 0.0) & y_odd_int, vf_type(-0.0), res);
     res = _T::sel(x_n_inf & (y < 0.0) & ~y_odd_int, vf_type(+0.0), res);
