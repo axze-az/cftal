@@ -98,6 +98,9 @@ namespace cftal {
     vec<float, _N>
     native_expm1(const vec<float, _N>& v);
 
+    vec<float, 1>
+    native_expm1(const vec<float, 1>& v);
+
     template <std::size_t _N>
     vec<float, _N>
     log(const vec<float, _N>& v);
@@ -266,6 +269,7 @@ namespace cftal {
 
     void native_sincos(arg<v2f32>::type d, v2f32* psin, v2f32* pcos);
     v2f32 native_exp(arg<v2f32>::type d);
+    v2f32 native_expm1(arg<v2f32>::type d);
     v2f32 native_log(arg<v2f32>::type d);
     v2f32 native_sin(arg<v2f32>::type d);
     v2f32 native_cos(arg<v2f32>::type d);
@@ -302,6 +306,7 @@ namespace cftal {
 
     void native_sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos);
     v4f32 native_exp(arg<v4f32>::type d);
+    v4f32 native_expm1(arg<v4f32>::type d);
     v4f32 native_log(arg<v4f32>::type d);
     v4f32 native_sin(arg<v4f32>::type d);
     v4f32 native_cos(arg<v4f32>::type d);
@@ -339,6 +344,7 @@ namespace cftal {
 
     void native_sincos(arg<v8f32>::type d, v8f32* psin, v8f32* pcos);
     v8f32 native_exp(arg<v8f32>::type d);
+    v8f32 native_expm1(arg<v8f32>::type d);
     v8f32 native_log(arg<v8f32>::type d);
     v8f32 native_sin(arg<v8f32>::type d);
     v8f32 native_cos(arg<v8f32>::type d);
@@ -508,6 +514,14 @@ cftal::vec<float, _N>
 cftal::native_expm1(const vec<float, _N>& v)
 {
     vec<float, _N> r(native_expm1(low_half(v)), native_expm1(high_half(v)));
+    return r;
+}
+
+inline
+cftal::vec<float, 1>
+cftal::native_expm1(const vec<float, 1>& v)
+{
+    vec<float, 1> r(std::expm1(v()));
     return r;
 }
 

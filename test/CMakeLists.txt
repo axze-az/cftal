@@ -110,9 +110,10 @@ test_prog(test-log-f64)
 test_prog(test-pow-f64)
 
 test_prog(test-native_exp-f64)
+test_prog(test-native_expm1-f64)
 test_prog(test-native_log-f64)
 
-test_prog(test-q_real)
+test_prog(test-t_real)
 test_prog(test-v2)
 
 if (CFTAL_FULL_TEST)

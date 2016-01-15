@@ -191,6 +191,13 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
+    ns::native_expm1(arg<vec_float>::type d)                            \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::native_expm1(d);                                 \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::native_log(arg<vec_float>::type d)                              \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \

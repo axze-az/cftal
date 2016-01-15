@@ -159,6 +159,24 @@ namespace cftal {
 
         template <class _T>
         struct d_real_ops_common {
+
+            // return s + r = a + b
+            // with |a| > |b|
+            static
+            void
+            add12(_T& s, _T& r, const _T& a, const _T& b);
+
+            // return s + r = a + b
+            static
+            void
+            add12cond(_T& s, _T& r, const _T& a, const _T& b);
+
+            static
+            void
+            add22cond(_T& zh, _T& zl,
+                      const _T& xh, const _T& xl,
+                      const _T& yh, const _T& al);
+            
             static
             _T quick_two_sum(const _T& a, const _T& b, _T& e);
             static
@@ -253,6 +271,16 @@ namespace cftal {
 
             static
             d_real<_T> sqr(const d_real<_T>& a);
+
+            static
+            void
+            mul12(_T& rh, _T& rl, const _T& u, const _T& v);
+
+            static
+            void
+            mul22(_T& rh, _T& rl,
+                  const _T& xh, const _T& xl,
+                  const _T& yh, const _T& yl);
         };
 
         // specialization using fma
@@ -278,6 +306,16 @@ namespace cftal {
 
             static
             d_real<_T> sqr(const d_real<_T>& a);
+
+            static
+            void
+            mul12(_T& rh, _T& rl, const _T& u, const _T& v);
+
+            static
+            void
+            mul22(_T& rh, _T& rl,
+                  const _T& xh, const _T& xl,
+                  const _T& yh, const _T& yl);
         };
 
 
@@ -286,6 +324,18 @@ namespace cftal {
             using base_type=d_real_ops_fma<_T, _FMA>;
             using my_type=d_real_ops<_T, _FMA>;
 
+            static
+            void
+            mul122(_T& rh, _T& rl,
+                   const _T& a,
+                   const _T& bh, const _T& bl);
+            // a*b + c 
+            static
+            void
+            div22(_T& rh, _T& rl,
+                  const _T& ah, const _T& al,
+                  const _T& bh, const _T& bl);
+            
             static
             d_real<_T> div(const _T& a, const _T& b);
 
@@ -472,15 +522,66 @@ namespace cftal {
     d_real<float> operator "" _df(const char* df);
 }
 
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_common<_T>::
+add12(_T& s, _T& r, const _T& a, const _T& b)
+{
+    _T _a = a;
+    _T _b = b;
+    s = _a + _b;
+    _T _z = s - _a;
+    r = _b - _z;
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_common<_T>::
+add12cond(_T& s, _T& r, const _T& a, const _T& b)
+{
+    _T _a= a;
+    _T _b= b;
+    s = _a + _b;
+    _T _u1 = s - _a;
+    _T _u2 = s - _u1;
+    _T _u3 = _b - _u1;
+    _T _u4 = _a - _u2;
+    r = _u4 + _u3;
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_common<_T>::
+add22cond(_T& zh, _T& zl,
+          const _T& xh, const _T& xl,
+          const _T& yh, const _T& al)
+{
+    _T _v1, _v2;
+    add12cond(_v1, v2, xh, xh);
+    _T v3 = xl + yl;
+    _T v4 = _v2 + _v3;
+    add12(zh, zl, _v1, _v4);
+}
+
 template <typename _T>
 inline
 _T
 cftal::impl::d_real_ops_common<_T>::
 quick_two_sum(const _T& a, const _T& b, _T& err)
 {
+#if 1
+    _T s;
+    add12(s, err, a, b);
+    return s;
+#else    
     _T s=a+b;
     err=b-(s-a);
     return s;
+#endif
 }
 
 template <typename _T>
@@ -489,9 +590,14 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 quick_two_diff(const _T& a, const _T& b, _T& err)
 {
+#if 1
+    _T s;
+    add12(s, err, a, -b);
+#else
     _T s=a-b;
     err=(a-s)-b;
     return s;
+#endif
 }
 
 template <typename _T>
@@ -500,10 +606,16 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 two_sum(const _T& a, const _T& b, _T& err)
 {
+#if 1
+    _T s;
+    add12cond(s, err, a, b);
+    return s;
+#else
     _T s=a+b;
     _T bb=s-a;
     err=(a-(s-bb)) + (b -bb);
     return s;
+#endif
 }
 
 template <typename _T>
@@ -512,10 +624,16 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 two_diff(const _T& a, const _T& b, _T& err)
 {
+#if 1
+    _T s;
+    add12cond(s, err, a, -b);
+    return s;
+#else
     _T s=a-b;
     _T bb=s-a;
     err=(a-(s-bb))-(b+bb);
     return s;
+#endif
 }
 
 
@@ -541,7 +659,6 @@ add(const d_real<_T>& a, const _T& b)
     s1 = quick_two_sum(s1, s2, s2);
     return d_real<_T>(s1, s2);
 }
-
 
 template <typename _T>
 inline
@@ -659,6 +776,61 @@ sub(const d_real<_T>& a, const d_real<_T>& b)
 
 template <typename _T>
 inline
+void
+cftal::impl::d_real_ops_fma<_T, true>::
+mul12(_T& rh, _T& rl, const _T& u, const _T& v)
+{
+    rh = u * v;
+    rl = fms(u, v, rh);
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_fma<_T, true>::
+mul22(_T& pzh, _T& pzl,
+      const _T& xh, const _T& xl,
+      const _T& yh, const _T& yl)
+{
+    _T ph = xh * yh;
+    _T pl = fms(xh, yh, ph);
+    pl = fma(xh, yl, pl);
+    pl = fma(xl, yh, pl);
+    pzh = ph + pl;
+    pzl = ph - pzh;
+    pzl+= pl;
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_fma<_T, false>::
+mul12(_T& rh, _T& rl, const _T& u, const _T& v)
+{
+    _T a_h, a_l, b_h, b_l;
+    using traits=d_real_traits<_T>;
+    traits::split(a, a_h, a_l);
+    traits::split(b, b_h, b_l);
+    rh=a*b;
+    rl=((a_h*b_h-rh)+a_h*b_l+a_l*b_h)+a_l*b_l;
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_fma<_T, false>::
+mul22(_T& pzh, _T& pzl,
+      const _T& xh, const _T& xl,
+      const _T& yh, const _T& yl)
+{
+    _T p1, p2;
+    mul12(p1, p2, xh, yh);
+    p2+= (xh*yl + xl * yh);
+    add12(pzh, pzl, p1, p2)
+}
+
+template <typename _T>
+inline
 _T
 cftal::impl::d_real_ops_fma<_T, true>::
 two_prod(const _T& a, const _T& b, _T& err)
@@ -667,7 +839,6 @@ two_prod(const _T& a, const _T& b, _T& err)
     err = fms(a, b, p);
     return p;
 }
-
 
 template <typename _T>
 inline
@@ -843,6 +1014,42 @@ sqr(const d_real<_T>& a)
     s1 = base_type::quick_two_sum(p1, p2, s2);
     return d_real<_T>(s1, s2);
 }
+
+template <typename _T, bool _FMA>
+inline
+void
+cftal::impl::d_real_ops<_T, _FMA>
+mul122(_T& rh, _T& rl,
+       const _T& a,
+       const _T& bh, const _T& bl)
+{
+    _T _t1, _t2, _t3, _t4;
+    mul12(_t1, _t2, a, bh);
+    _t3 = a * bl;
+    _t4 = _t2 + _t3;
+    add12(rh, rl, _t1, _t4);
+}
+
+template <typename _T, bool _FMA>
+inline
+void
+cftal::impl::d_real_ops<_T, _FMA>
+div22(_T& rh, _T& rl,
+      const _T& xh, const _T& xl,
+      const _T& yh, const _T& yl)
+{
+    _T _ch = xh / yh;
+    _T _uh, _ul;
+    mul12(_uh, _ul, _ch, yh);
+    _cl = xh - _uh;
+    _cl-= _ul;
+    _cl+= xl;
+    _cl-= _ch * yl;
+    _cl/= yh;
+    rh = _ch + _cl;
+    rl = (_ch - rh) + _cl;
+}
+
 
 template <typename _T, bool _FMA>
 inline

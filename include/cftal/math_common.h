@@ -597,16 +597,21 @@ native_exp10(const vf_type& d)
 }
 
 template <typename _FLOAT_T, typename _T>
+template <bool _NATIVE>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-expm1(const vf_type& d)
+_expm1(const vf_type& d)
 {
-    dvf_type r(my_type::exp_k2(d));
-    // res=xr.h() + xr.l();
-    dvf_type rm1= r - vf_type(1.0);
-    // select is not required
-    vf_type res = rm1.h() + rm1.l();
+    vf_type res;
+    if (_NATIVE) {
+        vf_type r=my_type::native_exp_k(d);
+        res= r - 1.0;
+    } else {
+        dvf_type r(my_type::exp_k2(d));
+        dvf_type rm1= r - vf_type(1.0);
+        res = rm1.h() + rm1.l();
+    }
     const vf_type expm1_hi_inf= 7.097827128933840867830440e+02;
     const vf_type expm1_lo_minus_one= -3.742994775023704789873591e+01;
     res = _T::sel(d <= expm1_lo_minus_one, -1.0, res);
@@ -614,6 +619,24 @@ expm1(const vf_type& d)
     res = _T::sel(d == 0.0, 0.0, res);
     res = _T::sel(d == 1.0, M_E-1.0, res);
     return res;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+expm1(const vf_type& d)
+{
+    return _expm1<false>(d);
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+native_expm1(const vf_type& d)
+{
+    return _expm1<true>(d);
 }
 
 template <typename _FLOAT_T, typename _T>

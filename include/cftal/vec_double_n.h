@@ -52,35 +52,6 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<double, _N>
-    sin(const vec<double, _N>& v);
-
-    template <std::size_t _N>
-    vec<double, _N>
-    native_sin(const vec<double, _N>& v);
-
-    template <std::size_t _N>
-    vec<double, _N>
-    cos(const vec<double, _N>& v);
-
-    template <std::size_t _N>
-    vec<double, _N>
-    native_cos(const vec<double, _N>& v);
-
-    template <std::size_t _N>
-    vec<double, _N>
-    tan(const vec<double, _N>& v);
-
-    template <std::size_t _N>
-    vec<double, _N>
-    native_tan(const vec<double, _N>& v);
-
-    template <std::size_t _N>
-    vec<double, _N>
-    native_expm1(const vec<double, _N>& v);
-
-
-    template <std::size_t _N>
-    vec<double, _N>
     atan2(const vec<double, _N>& x, const vec<double, _N>& y);
 
     template <std::size_t _N>
@@ -381,6 +352,23 @@ namespace cftal {
     vec<double, 8>
     native_exp(arg<vec<double, 8> >::type d);
 
+    // native_expm1, these functions are exact to +-4 ulp with exception of _N1
+    template <std::size_t _N>
+    vec<double, _N>
+    native_expm1(const vec<double, _N>& v);
+
+    vec<double, 1>
+    native_expm1(const vec<double, 1>& d);
+
+    vec<double, 2>
+    native_expm1(arg<vec<double, 2> >::type d);
+
+    vec<double, 4>
+    native_expm1(arg<vec<double, 4> >::type d);
+
+    vec<double, 8>
+    native_expm1(arg<vec<double, 8> >::type d);
+
     // native_log, these functions are exact to +-4 ulp with exception of _N1
     template <std::size_t _N>
     vec<double, _N>
@@ -401,6 +389,29 @@ namespace cftal {
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
     // specializations vec<double, 2>
+    template <std::size_t _N>
+    vec<double, _N>
+    sin(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    native_sin(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    cos(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    native_cos(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    tan(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    vec<double, _N>
+    native_tan(const vec<double, _N>& v);
 
     vec<int32_t, 2>
     ilogbp1(arg<vec<double, 2> >::type v);
@@ -767,6 +778,13 @@ cftal::native_expm1(const vec<double, _N>& v)
 {
     vec<double, _N> r(native_expm1(low_half(v)), native_expm1(high_half(v)));
     return r;
+}
+
+inline
+cftal::vec<double, 1>
+cftal::native_expm1(const vec<double, 1>& v)
+{
+    return vec<double, 1> (std::expm1(v()));
 }
 
 template <std::size_t _N>

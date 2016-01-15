@@ -198,8 +198,6 @@ namespace cftal {
             typedef d_real<vf_type> dvf_type;
             typedef func_core<double, _T> my_type;
 
-            static const dvf_type m_exp_c_k2[];
-            static const dvf_type m_log_c_k2[];
             static const dvf_type m_sin_c_k2[];
             static const dvf_type m_cos_c_k2[];
 

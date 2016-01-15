@@ -295,6 +295,23 @@ namespace cftal {
         };
 
         template <typename _T>
+        struct check_native_expm1 {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return native_expm1(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::expm1(a);
+            }
+            static
+            const char* fname() { return "native_expm1"; }
+        };
+
+        template <typename _T>
         struct check_native_log {
             template <std::size_t _N>
             static
