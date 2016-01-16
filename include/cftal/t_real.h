@@ -29,8 +29,9 @@ namespace cftal {
         constexpr
         t_real(const t_real<_U>& r)
             : _h(r.h()), _m(r.m()), _l(r.l()) {}
+        template<typename _U>
         constexpr
-        t_real(const d_real<_T>& h, const _T& l=_T(0))
+        t_real(const d_real<_U>& h, const _T& l=_U(0))
             : _h(h.h()), _m(h.l()), _l(l) {}
 
         const _T& h() const { return _h; }

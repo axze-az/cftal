@@ -61,50 +61,46 @@ namespace cftal {
             mpfr_real(const d_real<_F>& d);
             template <class _F>
             mpfr_real(const t_real<_F>& t);
-            explicit operator double() const {
-                double r=mpfr_get_d((*this)(), MPFR_RNDN);
-                return r;
-            }
-            explicit operator float() const {
-                float r=mpfr_get_flt((*this)(), MPFR_RNDN);
-                return r;
-            }
+            explicit operator double() const;
+            explicit operator float() const;
+            explicit operator d_real<double>() const;
+            explicit operator t_real<double>() const;
         };
 
         template <std::size_t _B>
         bool
         operator<(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return b > a;
+            return mpfr_cmp(a(), b()) <0;
         }
 
         template <std::size_t _B>
         bool
         operator<=(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return !(a > b);
+            return mpfr_cmp(a(), b()) <=0;
         }
 
         template <std::size_t _B>
         bool
         operator==(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return mpfr_equal_p(a(), b());
+            return mpfr_cmp(a(), b()) ==0;
         }
 
         template <std::size_t _B>
         bool
         operator!=(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return !(a==b);
+            return mpfr_cmp(a(), b()) !=0;
         }
 
         template <std::size_t _B>
         bool
         operator>=(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return mpfr_greaterequal_p(a(), b());
+            return mpfr_cmp(a(), b()) >=0;
         }
 
         template <std::size_t _B>
         bool
         operator>(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return mpfr_greater_p(a(), b());
+            return mpfr_cmp(a(), b()) >0;
         }
 
         template <std::size_t _B>
@@ -132,7 +128,8 @@ namespace cftal {
         template <std::size_t _B>
         mpfr_real<_B>&
         operator+=(mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            a = a + b;
+            auto t= a +b;
+            a = t;
             return a;
         }
 
@@ -147,7 +144,8 @@ namespace cftal {
         template <std::size_t _B>
         mpfr_real<_B>&
         operator-=(mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            a = a - b;
+            auto t= a - b;
+            a = t;
             return a;
         }
 
@@ -162,7 +160,8 @@ namespace cftal {
         template <std::size_t _B>
         mpfr_real<_B>&
         operator*=(mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            a = a * b;
+            auto t= a * b;
+            a = t;
             return a;
         }
 
@@ -177,14 +176,15 @@ namespace cftal {
         template <std::size_t _B>
         mpfr_real<_B>&
         operator/=(mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            a = a / b;
+            auto t = a/b;
+            a = t;
             return a;
         }
 
         template <std::size_t _B>
         mpfr_real<_B>
         max(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            if (mpfr_greater_p(a, b)) {
+            if (a > b) {
                 return a;
             }
             return b;
@@ -193,10 +193,10 @@ namespace cftal {
         template <std::size_t _B>
         mpfr_real<_B>
         min(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            if (mpfr_greater_p(b, a)) {
-                return b;
+            if (a< b) {
+                return a;
             }
-            return a;
+            return b;
         }
 
         template <std::size_t _B>
@@ -237,7 +237,7 @@ inline
 cftal::test::fpn_handle::fpn_handle(const fpn_handle& r)
     : _v()
 {
-    mpfr_init2(_v, mpfr_get_prec(r._v));
+    mpfr_init_set(_v, r._v, MPFR_RNDN);
 }
 
 inline
@@ -293,6 +293,41 @@ cftal::test::mpfr_real<_B>::mpfr_real(const t_real<_F>& d)
     mpfr_add((*this)(), (*this)(), l(), MPFR_RNDN);
 }
 
+template <std::size_t _B>
+cftal::test::mpfr_real<_B>::operator double() const
+{
+    double r=mpfr_get_d((*this)(), MPFR_RNDN);
+    return r;
+}
+
+template <std::size_t _B>
+cftal::test::mpfr_real<_B>::operator d_real<double>() const
+{
+    mpfr_real<_B> t(*this);
+    double h= double(t);
+    t -= mpfr_real<_B>(h);
+    double l= double(t);
+    return d_real<double>(h, l);
+}
+
+template <std::size_t _B>
+cftal::test::mpfr_real<_B>::operator t_real<double>() const
+{
+    mpfr_real<_B> t(*this);
+    double h= double(t);
+    t -= mpfr_real<_B>(h);
+    double m= double(t);
+    t -= mpfr_real<_B>(m);
+    double l= double(t);
+    return t_real<double>(h, m, l);
+}
+
+template <std::size_t _B>
+cftal::test::mpfr_real<_B>::operator float() const
+{
+    float r=mpfr_get_flt((*this)(), MPFR_RNDN);
+    return r;
+}
 
 // Local variables:
 // mode: c++

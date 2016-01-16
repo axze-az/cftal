@@ -547,8 +547,8 @@ add12(_T& s, _T& r, const _T& a, const _T& b)
     _T _a = a;
     _T _b = b;
     s = _a + _b;
-    _T _z = s - _a;
-    r = _b - _z;
+    _T t0 = s - _a;
+    r = _b - t0;
 }
 
 template <typename _T>
@@ -576,7 +576,7 @@ add22cond(_T& zh, _T& zl,
           const _T& yh, const _T& yl)
 {
     _T v1, v2;
-    add12cond(v1, v2, xh, xh);
+    add12cond(v1, v2, xh, yh);
     _T v3 = xl + yl;
     _T v4 = v2 + v3;
     add12(zh, zl, v1, v4);
@@ -681,6 +681,11 @@ cftal::d_real<_T>
 cftal::impl::d_real_ops_common<_T>::
 ieee_add(const d_real<_T>& a, const d_real<_T>& b)
 {
+#if 0
+    _T rh, rl;
+    add22cond(rh, rl, a.h(), a.l(), b.h(), b.l());
+    return d_real<_T>(rh, rl);
+#else
     _T s1, s2, t1, t2;
     s1 = two_sum(a.h(), b.h(), s2);
     t1 = two_sum(a.l(), b.l(), t2);
@@ -689,6 +694,7 @@ ieee_add(const d_real<_T>& a, const d_real<_T>& b)
     s2+= t2;
     s1 = quick_two_sum(s1, s2, s2);
     return d_real<_T>(s1, s2);
+#endif
 }
 
 template <typename _T>
@@ -1115,13 +1121,13 @@ sloppy_div(const d_real<_T>&a, const d_real<_T>& b)
     q1 = a.h() / b.h();
     /* compute  this - q1 * dd */
     r = b * q1;
-    s1 = two_diff(a.h(), r.h(), s2);
+    s1 = base_type::two_diff(a.h(), r.h(), s2);
     s2 -= r.l();
     s2 += a.l();
     /* get next approximation */
     q2 = (s1 + s2) / b.h();
     /* renormalize */
-    r.h() = quick_two_sum(q1, q2, r.l());
+    r.h() = base_type::quick_two_sum(q1, q2, r.l());
     return r;
 }
 
