@@ -588,7 +588,7 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 quick_two_sum(const _T& a, const _T& b, _T& err)
 {
-#if 1
+#if 0
     _T s;
     add12(s, err, a, b);
     return s;
@@ -605,7 +605,7 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 quick_two_diff(const _T& a, const _T& b, _T& err)
 {
-#if 1
+#if 0
     _T s;
     add12(s, err, a, -b);
 #else
@@ -621,7 +621,7 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 two_sum(const _T& a, const _T& b, _T& err)
 {
-#if 1
+#if 0
     _T s;
     add12cond(s, err, a, b);
     return s;
@@ -639,7 +639,7 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 two_diff(const _T& a, const _T& b, _T& err)
 {
-#if 1
+#if 0
     _T s;
     add12cond(s, err, a, -b);
     return s;

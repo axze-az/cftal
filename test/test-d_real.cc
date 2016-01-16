@@ -9,8 +9,12 @@ int main()
 
     using namespace cftal::test;
     std::cerr << "d_real<double>:\n";
+#if 1
     bool rd= cftal::test::check_x_real<cftal::d_real, double,
                                        mpfr_real<128> >::v();
+#else
+    bool rd = true;
+#endif
     std::cerr << "d_real<float>:\n";
     bool rf= cftal::test::check_x_real<cftal::d_real, float,
                                        mpfr_real<64> >::v();
