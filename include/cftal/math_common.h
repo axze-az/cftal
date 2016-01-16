@@ -150,6 +150,9 @@ namespace cftal {
             template <class _VEC, typename _FLOAT_T>
             struct d_real_constants {};
 
+            template <class _VEC, typename _FLOAT_T>
+            struct t_real_constants {};
+
             // sin(x + y) = sin(x) * cos(y) + sin(y) * cos(x);
             // sin(x - y) = sin(x) * cos(y) - sin(y) * cos(x);
             // sin(2x) = 2 * sin(x) * cos(x);
