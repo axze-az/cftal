@@ -254,6 +254,10 @@ namespace cftal {
             using base_type=d_real_ops_common<_T>;
             using my_type=d_real_ops_fma<_T, false>;
 
+            using base_type::add12;
+            using base_type::add12cond;
+            using base_type::add22cond;
+
             static
             _T two_prod(const _T& a, const _T& b, _T& e);
             static
@@ -288,6 +292,10 @@ namespace cftal {
         struct d_real_ops_fma<_T, true> : public d_real_ops_common<_T> {
             using base_type=d_real_ops_common<_T>;
             using my_type=d_real_ops_fma<_T, true>;
+
+            using base_type::add12;
+            using base_type::add12cond;
+            using base_type::add22cond;
 
             static
             _T two_prod(const _T& a, const _T& b, _T& e);
@@ -324,11 +332,18 @@ namespace cftal {
             using base_type=d_real_ops_fma<_T, _FMA>;
             using my_type=d_real_ops<_T, _FMA>;
 
+            using base_type::add12;
+            using base_type::add12cond;
+            using base_type::add22cond;
+            using base_type::mul12;
+            using base_type::mul22;
+
             static
             void
             mul122(_T& rh, _T& rl,
                    const _T& a,
                    const _T& bh, const _T& bl);
+
             // a*b + c
             static
             void
@@ -1015,6 +1030,7 @@ sqr(const d_real<_T>& a)
     return d_real<_T>(s1, s2);
 }
 
+
 template <typename _T, bool _FMA>
 inline
 void
@@ -1023,11 +1039,11 @@ mul122(_T& rh, _T& rl,
        const _T& a,
        const _T& bh, const _T& bl)
 {
-    _T _t1, _t2, _t3, _t4;
-    mul12(_t1, _t2, a, bh);
-    _t3 = a * bl;
-    _t4 = _t2 + _t3;
-    add12(rh, rl, _t1, _t4);
+    _T t1, t2, t3, t4;
+    mul12(t1,t2, a, bh);
+    t3 = a * bl;
+    t4 = t2 + t3;
+    add12(rh, rl, t1, t4);
 }
 
 template <typename _T, bool _FMA>

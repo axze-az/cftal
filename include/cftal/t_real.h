@@ -42,7 +42,9 @@ namespace cftal {
     };
 
     template <typename _T>
-    struct t_real_traits : public d_real_traits<_T> {};
+    struct t_real_traits : public d_real_traits<_T> {
+
+    };
 
 
     namespace impl {
@@ -51,6 +53,16 @@ namespace cftal {
             : public d_real_ops<_T, d_real_traits<_T>::fma > {
 
             using traits_t = d_real_traits<_T>;
+
+            using base_type = d_real_ops<_T, d_real_traits<_T>::fma>;
+
+            using base_type::add12;
+            using base_type::add12cond;
+            using base_type::add22cond;
+            using base_type::mul12;
+            using base_type::mul22;
+            using base_type::mul122;
+            using base_type::div22;
 
             static
             void
@@ -435,7 +447,7 @@ mul33(_T& rh, _T& rm, _T& rl,
     t11 = al * bm ;
     t12 = t8 + t9;
     t13 = t10 + t11;
-    add12ond(t14,t15,t1,t6);
+    add12cond(t14,t15,t1,t6);
     t16 = t7 + t15;
     t17 = t12 + t13;
     t18 = t16 + t17;
@@ -530,9 +542,9 @@ add(const _T& a,
     const _T& bh, const _T& bm, const _T& bl)
 {
     _T rh, rm, rl;
-    add133(rh, rm, rl,
-           a,
-           bh, bm, bl);
+    add133cond(rh, rm, rl,
+               a,
+               bh, bm, bl);
     return t_real<_T>(rh, rm, rl);
 }
 
@@ -543,9 +555,9 @@ add(const _T& ah, const _T& al,
     const _T& bh, const _T& bm, const _T& bl)
 {
     _T rh, rm, rl;
-    add233(rh, rm, rl,
-           ah, al,
-           bh, bm, bl);
+    add233cond(rh, rm, rl,
+               ah, al,
+               bh, bm, bl);
     return t_real<_T>(rh, rm, rl);
 }
 
@@ -556,9 +568,9 @@ add(const _T& ah, const _T& am, const _T& al,
     const _T& bh, const _T& bm, const _T& bl)
 {
     _T rh, rm, rl;
-    add33(rh, rm, rl,
-          ah, am, al,
-          bh, bm, bl);
+    add33cond(rh, rm, rl,
+              ah, am, al,
+              bh, bm, bl);
     return t_real<_T>(rh, rm, rl);
 }
 
@@ -966,7 +978,42 @@ cftal::operator/=(t_real<_T>& a, const t_real<_T>& b)
     return a;
 }
 
+template <typename _T>
+inline
+cftal::t_real<_T>
+cftal::select(const typename t_real_traits<_T>::cmp_result_type& m,
+              const t_real<_T>& on_true,
+              const t_real<_T>& on_false)
+{
+    using traits= t_real_traits<_T>;
+    return t_real<_T>(traits::sel(m, on_true.h(), on_false.h()),
+                      traits::sel(m, on_true.m(), on_false.m()),
+                      traits::sel(m, on_true.l(), on_false.l()));
+}
 
+template <typename _T>
+inline
+cftal::t_real<_T>
+cftal::max(const t_real<_T>& a, const t_real<_T>& b)
+{
+    return select(a>b, a, b);
+}
+
+template <typename _T>
+inline
+cftal::t_real<_T>
+cftal::min(const t_real<_T>& a, const t_real<_T>& b)
+{
+    return select(a<b, a, b);
+}
+
+template <typename _T>
+inline
+cftal::t_real<_T>
+cftal::abs(const t_real<_T>& a)
+{
+    return select(a < t_real<_T>(0), -a, a);
+}
 
 // Local variables:
 // mode: c++
