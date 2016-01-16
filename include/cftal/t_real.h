@@ -43,10 +43,7 @@ namespace cftal {
     };
 
     template <typename _T>
-    struct t_real_traits : public d_real_traits<_T> {
-
-    };
-
+    struct t_real_traits : public d_real_traits<_T> {};
 
     namespace impl {
         template <typename _T>
@@ -1014,6 +1011,22 @@ cftal::t_real<_T>
 cftal::abs(const t_real<_T>& a)
 {
     return select(a < t_real<_T>(0), -a, a);
+}
+
+template <typename _T>
+inline
+cftal::t_real<_T>
+cftal::sqr(const t_real<_T>& a)
+{
+    return a*a;
+}
+
+template <typename _T>
+inline
+cftal::t_real<_T>
+cftal::mul_pwr2(const t_real<_T>& a, const _T& p)
+{
+    return t_real<_T>( a.h() * p, a.m() * p, a.l()*p);
 }
 
 // Local variables:

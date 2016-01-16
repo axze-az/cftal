@@ -65,6 +65,7 @@ namespace cftal {
             using vmf_type = typename base_type::vmf_type;
             using vmi_type = typename base_type::vmi_type;
             using dvf_type = typename base_type::dvf_type;
+            using tvf_type = typename base_type::tvf_type;
 
             // exp, expm1, sinh, cosh call exp_k2 if native == false
             // or native_exp
@@ -483,8 +484,13 @@ _exp(const vf_type& d)
     if (_NATIVE) {
         res=my_type::native_exp_k(d);
     } else {
+#if 1
+        tvf_type xr(my_type::exp_k3(d));
+        res=xr.h() + xr.m()+ xr.l();
+#else
         dvf_type xr(my_type::exp_k2(d));
         res=xr.h() + xr.l();
+#endif
     }
 
     const vf_type exp_hi_inf= 7.097827128933840867830440e+02;

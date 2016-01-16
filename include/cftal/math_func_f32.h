@@ -111,6 +111,7 @@ namespace cftal {
             typedef typename _T::vmf_type vmf_type;
             typedef typename _T::vmi_type vmi_type;
             typedef d_real<vf_type> dvf_type;
+            using tvf_type = t_real<vf_type>;
 
             static vf_type pow2i(const vi_type& d);
             static vf_type ldexp(const vf_type& vf,
@@ -127,6 +128,9 @@ namespace cftal {
             static
             std::pair<vf_type, vf_type>
             native_sin_cos_k(const vf_type& x);
+
+            static tvf_type
+            exp_k3(const tvf_type& tvf);
 
             static dvf_type
             exp_k2(const dvf_type& dvf);
@@ -398,6 +402,17 @@ native_sin_cos_k(const vf_type& x)
 #undef PI4_Cf
 #undef PI4_Bf
 #undef PI4_Af
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::tvf_type
+cftal::math::func_core<float, _T>::
+exp_k3(const tvf_type& x)
+{
+    dvf_type xt(x.h(), x.m());
+    dvf_type r(exp_k2(xt));
+    return tvf_type(r);
 }
 
 template <typename _T>

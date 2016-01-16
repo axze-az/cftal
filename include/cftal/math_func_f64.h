@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
+#include <cftal/t_real.h>
 #include <cftal/std_types.h>
 #include <cftal/math_common.h>
 #include <cftal/mem.h>
@@ -228,10 +229,14 @@ namespace cftal {
             typedef typename _T::vmi_type vmi_type;
 
             typedef d_real<vf_type> dvf_type;
+            typedef t_real<vf_type> tvf_type;
             typedef func_core<double, _T> my_type;
 
             static const dvf_type m_sin_c_k2[];
             static const dvf_type m_cos_c_k2[];
+
+            static tvf_type
+            exp_k3(const tvf_type& tvf);
 
             static dvf_type
             exp_k2(const dvf_type& dvf);
@@ -487,6 +492,90 @@ native_log_k(const vf_type& d)
     t = t * xr;
     xr = t + M_LN2 * ef;
     return xr;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::tvf_type
+cftal::math::func_core<double, _T>::
+exp_k3(const tvf_type& d)
+{
+    using ctbl = impl::t_real_constants<tvf_type, double>;
+
+    vmf_type cmp_res;
+    vmi_type i_cmp_res;
+    vmf_type inf_nan= isinf(d.h()) | isnan(d.h());
+    vmf_type finite= ~inf_nan;
+    vi_type k_i(0);
+
+    vmf_type d_large = d.h() > 709.0;
+    tvf_type d2=d;
+    bool any_of_d_large = any_of(d_large);
+    if (any_of_d_large) {
+        tvf_type dhalf(mul_pwr2(d, vf_type(0.5)));
+        tvf_type dt(_T::sel(d_large, dhalf.h(), d.h()),
+                    _T::sel(d_large, dhalf.m(), d.m()),
+                    _T::sel(d_large, dhalf.l(), d.l()));
+        d2=dt;
+    }
+    // remove exact powers of 2
+    vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
+    tvf_type r= d2 - tvf_type(ctbl::m_ln2)*m2;
+    // dvf_type m2d= dvf_type(m2);
+    // dvf_type r = d2 - ctbl::m_ln2.h()* m2d;
+    // r -= m2d * ctbl::m_ln2.l();
+
+    // reduce arguments further until anything is lt M_LN2/512 ~0.0135
+    do {
+        cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
+        if (none_of(cmp_res))
+            break;
+        i_cmp_res = _T::vmf_to_vmi(cmp_res);
+        k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
+        tvf_type d1 = mul_pwr2(r, vf_type(0.5));
+        vf_type d2_h = _T::sel(cmp_res, d1.h(), r.h());
+        vf_type d2_m = _T::sel(cmp_res, d1.m(), r.m());
+        vf_type d2_l = _T::sel(cmp_res, d1.l(), r.l());
+        r = tvf_type(d2_h, d2_m, d2_l);
+    } while (1);
+
+    const int _N=9 /* 7 */;
+    tvf_type s = ctbl::inv_fac[_N];
+    for (unsigned int i=_N-1; i!=2; --i)
+        s = s*r + tvf_type(ctbl::inv_fac[i]);
+    s = s * r + vf_type(0.5);
+    s = s * r + vf_type(1.0);
+    s = s * r;
+
+    // scale back the 1/k_i reduced value
+    do {
+        i_cmp_res = k_i > vi_type(0);
+        if (none_of(i_cmp_res))
+            break;
+        cmp_res = _T::vmi_to_vmf(i_cmp_res);
+        tvf_type d1= mul_pwr2(s, vf_type(2.0)) + sqr(s);
+        vf_type d2_h = _T::sel(cmp_res, d1.h(), s.h());
+        vf_type d2_m = _T::sel(cmp_res, d1.m(), s.m());
+        vf_type d2_l = _T::sel(cmp_res, d1.l(), s.l());
+        k_i -= vi_type(1);
+        s = tvf_type(d2_h, d2_m, d2_l);
+    } while (1);
+    // const vf_type two(2.0);
+    // for (int i=0; i<k_i; ++i)
+    //    s = mul_pwr2(s, two) + sqr(s);
+    s += vf_type(1.0);
+
+    // scale back
+    vi_type mi= _T::cvt_f_to_i(m2);
+    tvf_type res(ldexp(s.h(), mi), ldexp(s.m(), mi), ldexp(s.l(), mi));
+    if (any_of_d_large) {
+        tvf_type xres= sqr(res);
+        tvf_type tres(_T::sel(d_large, xres.h(), res.h()),
+                      _T::sel(d_large, xres.m(), res.m()),
+                      _T::sel(d_large, xres.l(), res.l()));
+        res=tres;
+    }
+    return res;
 }
 
 template <typename _T>
