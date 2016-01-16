@@ -22,6 +22,34 @@ namespace cftal {
         double check_minus_one(double a ) {
             return a == -1.0;
         }
+
+
+        struct out_df64 {
+            d_real<double> _v;
+            out_df64(const d_real<double>& v) : _v(v) {}
+        };
+
+        std::ostream& operator<<(std::ostream& s, const out_df64& v);
+
+        struct out_tf64 {
+            t_real<double> _v;
+            out_tf64(const t_real<double>& v) : _v(v) {}
+        };
+        std::ostream& operator<<(std::ostream& s, const out_tf64& v);
+
+        template <std::size_t _B>
+        out_df64
+        to_stream(d_real<double>& d, const mpfr_real<_B>& v,
+                  bool normalize=false);
+
+        template <std::size_t _B>
+        out_tf64
+        to_stream(t_real<double>& d, const mpfr_real<_B>& v,
+                  bool normalize=false);
+
+        template <std::size_t _B, typename _X>
+        void
+        gen_math_constants(std::ostream& s, const std::string& pfx);
     }
 }
 
@@ -51,7 +79,7 @@ cftal::test::gen_constant(func_domain<_T> d, const std::string& pfx,
             break;
         fn= call_mpfr::func(ln, f);
         bool is_inf = chk(fn);
-        std::cout << std::setw(30) << ln << '\r' << std::flush;
+        // std::cout << std::setw(30) << ln << '\r' << std::flush;
         if (l_is_inf) {
             if (is_inf == true) {
                 l = ln;
@@ -92,8 +120,216 @@ cftal::test::gen_constant(func_domain<_T> d, const std::string& pfx,
     }
 }
 
+std::ostream&
+cftal::test::operator<<(std::ostream& s, const out_df64& p)
+{
+    const cftal::d_real<double>& d=p._v;
+    s << std::scientific
+      << std::setprecision(22);
+    if (d.h() >= 0.0)
+        std::cout << ' ';
+    s << std::setw(27)
+      << d.h()
+      << std::setw(0)
+      << ", " ;
+    if (d.l() >= 0.0)
+        s << ' ';
+    s << std::setw(27)
+      << d.l()
+      << std::setw(0);
+    return s;
+}
+
+std::ostream&
+cftal::test::operator<<(std::ostream& s, const out_tf64& p)
+{
+    const cftal::t_real<double>& d=p._v;
+    s << std::scientific
+      << std::setprecision(22);
+    if (d.h() >= 0.0)
+        std::cout << ' ';
+    s << std::setw(27)
+      << d.h()
+      << std::setw(0)
+      << ", " ;
+    if (d.m() >= 0.0)
+        std::cout << ' ';
+    s << std::setw(27)
+      << d.m()
+      << std::setw(0)
+      << ", ";
+    if (d.l() >= 0.0)
+        std::cout << ' ';
+    s << std::setw(27)
+      << d.l()
+      << std::setw(0);
+    return s;
+}
+
+template <std::size_t _B>
+cftal::test::out_df64
+cftal::test::to_stream(d_real<double>& d, const mpfr_real<_B>& v,
+                       bool normalize)
+{
+    d = d_real<double>(v);
+    if (normalize) {
+        double h=d.h(), l=d.l();
+        if (h > 0) {
+            while (l < 0.0) {
+                std::cout << h << std::endl;
+                h = std::nextafter(h, -std::numeric_limits<double>::max());
+                mpfr_real<_B> s(v);
+                s -= mpfr_real<_B>(h);
+                l = double(s);
+            }
+        } else if (h < 0) {
+            while (l > 0.0) {
+                h = std::nextafter(h, std::numeric_limits<double>::max());
+                mpfr_real<_B> s(v);
+                s -= mpfr_real<_B>(h);
+                l = double(s);
+            }
+        }
+        d=d_real<double>(h, l);
+    }
+    return out_df64(d);
+}
+
+template <std::size_t _B>
+cftal::test::out_tf64
+cftal::test::to_stream(t_real<double>& d, const mpfr_real<_B>& v,
+                       bool normalize)
+{
+    d = t_real<double>(v);
+    return out_tf64(d);
+}
+
+template <std::size_t _B, typename _X>
+void
+cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
+{
+    using f_t = mpfr_real<_B>;
+    _X d;
+
+    // mpfr_set_default_prec(_B);
+
+    f_t x=2.0;
+    f_t v=log(x);
+    // mpfr_printf("%.128Rf\n", v);
+    std::cout << "cftal::math::impl::" << pfx << "::m_ln2("
+        "\n\t"
+              << to_stream(d, v)
+              << ");"
+              << std::endl;
+    v= f_t(1.0)/v;
+    std::cout << "cftal::math::impl::" << pfx << "::m_1_ln2("
+        "\n\t"
+              << to_stream(d, v)
+              << ");"
+              << std::endl;
+    x = 10.0;
+    v= log(x);
+    std::cout << "cftal::math::impl::" << pfx << "::m_ln10("
+        "\n\t"
+              << to_stream(d, v, true)
+              << ");"
+              << std::endl;
+
+    load_pi(x);
+    v = x;
+    std::cout << "cftal::math::impl::" << pfx << "::m_pi("
+        "\n\t"
+              << to_stream(d, v)
+              << ");"
+              << std::endl;
+    load_pi(x);
+    v= x*f_t(0.5);
+    std::cout << "cftal::math::impl::"<< pfx << "::m_pi_2("
+        "\n\t"
+              << to_stream(d, v)
+              << ");"
+              << std::endl;
+
+    v=x*f_t(0.25);
+    std::cout << "cftal::math::impl::" << pfx << "::m_pi_4("
+        "\n\t"
+              << to_stream(d, v)
+              << ");"
+              << std::endl;
+
+    load_pi(x);
+    v = f_t(1.0)/x;
+    std::cout << "cftal::math::impl::" << pfx << "::m_1_pi("
+        "\n\t"
+              << to_stream(d, v)
+              << ");"
+              << std::endl;
+
+    v = f_t(2.0)/x;
+    std::cout << "cftal::math::impl::" << pfx << "::m_2_pi("
+        "\n\t"
+              << to_stream(d, v)
+              << ");"
+              << std::endl;
+
+    v = f_t(4.0)/x;
+    std::cout << "cftal::math::impl::" << pfx << "::m_4_pi("
+        "\n\t"
+              << to_stream(d, v)
+              << ");"
+              << std::endl;
+
+    const std::size_t MAX_FAC=30;
+    std::cout << "template <class _T>\n"
+              << "const _T\n"
+              << "cftal::impl::" << pfx << "::\n"
+              << "inv_fac[MAX_FAC+1]= {"
+              << std::endl;
+
+    f_t fac(1.0);
+    for (std::size_t i=0; i<MAX_FAC+1; ++i) {
+        f_t  inv_fac(1.0);
+        if (i>1) {
+            fac *= f_t(i);
+            inv_fac /= fac;
+        }
+        std::cout << std::setprecision(22)
+                  << "\t_T( "
+                  << to_stream(d, inv_fac)
+                  << ")";
+        if (i != MAX_FAC)
+            std::cout << ',';
+        std::cout << std::endl;
+    }
+    std::cout << "};" << std::endl;
+
+    const std::size_t MAX_2_OVER_I=30;
+    std::cout << "template <class _T>\n"
+              << "const _T\n"
+              << "cftal::impl::" << pfx << "::\n"
+              << "_2_over_i[MAX_2_OVER_I]= {"
+              << std::endl;
+    for (std::size_t i=0; i<MAX_2_OVER_I+1; ++i) {
+        f_t two_over_i(2.0);
+        if (i>1) {
+            two_over_i /= f_t(i);
+        }
+        std::cout << std::scientific
+                  << std::setprecision(22)
+                  << "\t_T( "
+                  << to_stream(d, two_over_i)
+                  << ")";
+        if (i != MAX_2_OVER_I)
+            std::cout << ',';
+        std::cout << std::endl;
+    }
+    std::cout << "};" << std::endl;
+}
+
+
 int main()
 {
+    using namespace cftal;
     using namespace cftal::test;
     auto dp=std::make_pair(0.0, 800.0);
     gen_constant(dp, "const double sinh_hi", mpfr_sinh, check_inf, "inf");
@@ -120,5 +356,9 @@ int main()
     gen_constant(dp, "const double exp10_hi", mpfr_exp10,  check_inf, "inf");
     gen_constant(dm, "const double exp10_lo", mpfr_exp10,  check_zero, "m_0");
 
+    gen_math_constants<128, d_real<double> >(std::cout,
+                                             "d_real_constants<_T, double>");
+    gen_math_constants<192, t_real<double> >(std::cout,
+                                             "t_real_constants<_T, double>");
     return 0;
 }

@@ -207,6 +207,28 @@ namespace cftal {
             return r;
         }
 
+        template <std::size_t _B>
+        mpfr_real<_B>
+        exp(const mpfr_real<_B>& a) {
+            mpfr_real<_B> r;
+            mpfr_exp(r(), a(), MPFR_RNDN);
+            return r;
+        }
+
+        template <std::size_t _B>
+        mpfr_real<_B>
+        log(const mpfr_real<_B>& a) {
+            mpfr_real<_B> r;
+            mpfr_log(r(), a(), MPFR_RNDN);
+            return r;
+        }
+
+        template <std::size_t _B>
+        void
+        load_pi(mpfr_real<_B>& r) {
+            mpfr_const_pi(r(), MPFR_RNDN);
+        }
+
     }
 }
 
@@ -237,14 +259,15 @@ inline
 cftal::test::fpn_handle::fpn_handle(const fpn_handle& r)
     : _v()
 {
-    mpfr_init_set(_v, r._v, MPFR_RNDN);
+    mpfr_init2(_v, mpfr_get_prec(r._v));
+    mpfr_set(_v, r._v, MPFR_RNDN);
 }
 
 inline
 cftal::test::fpn_handle::fpn_handle(fpn_handle&& r)
     : _v()
 {
-    mpfr_init2(_v, 10);
+    mpfr_init2(_v, mpfr_get_prec(r._v));
     mpfr_swap(_v, r._v);
 }
 
@@ -254,7 +277,8 @@ cftal::test::fpn_handle::operator=(const fpn_handle& r)
 {
     if (&r != this) {
         mpfr_clear(_v);
-        mpfr_init_set(_v, r._v, MPFR_RNDN);
+        mpfr_init2(_v, mpfr_get_prec(r._v));
+        mpfr_set(_v, r._v, MPFR_RNDN);
     }
     return *this;
 }
@@ -279,7 +303,7 @@ cftal::test::mpfr_real<_B>::mpfr_real(const d_real<_F>& d)
     : fpn_handle(d.h(), _B)
 {
     mpfr_real<_B> l(d.l());
-    mpfr_add((*this)(), (*this)(), l(), MPFR_RNDN);
+    *this += l;
 }
 
 template <std::size_t _B>
@@ -288,15 +312,16 @@ cftal::test::mpfr_real<_B>::mpfr_real(const t_real<_F>& d)
     : fpn_handle(d.h(), _B)
 {
     mpfr_real<_B> m(d.m());
-    mpfr_add((*this)(), (*this)(), m(), MPFR_RNDN);
     mpfr_real<_B> l(d.l());
-    mpfr_add((*this)(), (*this)(), l(), MPFR_RNDN);
+    *this += m;
+    *this += l;
 }
 
 template <std::size_t _B>
 cftal::test::mpfr_real<_B>::operator double() const
 {
-    double r=mpfr_get_d((*this)(), MPFR_RNDN);
+    mpfr_real<_B> t(*this);
+    double r=mpfr_get_d(t(), MPFR_RNDN);
     return r;
 }
 

@@ -15,7 +15,6 @@ cftal::test::call_mpfr::func(double a, f1_t f)
     // mpfr_clear(r);
     return dr;
 }
-
 double
 cftal::test::call_mpfr::func(double a, double b, f2_t f)
 {
