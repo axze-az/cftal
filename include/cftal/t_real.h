@@ -43,15 +43,15 @@ namespace cftal {
 
     template <typename _T>
     struct t_real_traits : public d_real_traits<_T> {};
-    
+
 
     namespace impl {
         template <typename _T>
         struct t_real_ops
             : public d_real_ops<_T, d_real_traits<_T>::fma > {
-            
+
             using traits_t = d_real_traits<_T>;
-            
+
             static
             void
             renormalize3(_T& rh, _T& rm, _T& rl,
@@ -59,21 +59,50 @@ namespace cftal {
 
             static
             void
-            mul23(_T& rh, _T& rm, _T& rl
+            mul23(_T& rh, _T& rm, _T& rl,
                   const _T& ah, const _T& al,
                   const _T& bh, const _T& bl);
 
+            static
+            void
+            mul233(_T& rh, _T& rm, _T& rl,
+                   const _T& ah, const _T& al,
+                   const _T& bh, const _T& bm, const _T& bl);
+
+            static
+            void
+            mul33(_T& rh, _T& rm, _T& rl,
+                  const _T& ah, const _T& am, const _T& al,
+                  const _T& bh, const _T& bm, const _T& bl);
+
+            static
+            void
+            add33cond(_T& rh, _T& rm, _T& rl,
+                      const _T& ah, const _T& am, const _T& al,
+                      const _T& bh, const _T& bm, const _T& bl);
+
+            static
+            void
+            add133cond(_T& rh, _T& rm, _T& rl,
+                       const _T& a,
+                       const _T& bh, const _T& bm, const _T& bl);
+
+            static
+            void
+            add233cond(_T& rh, _T& rm, _T& rl,
+                       const _T& ah, const _T& al,
+                       const _T& bh, const _T& bm, const _T& bl);
 
             static
             t_real<_T>
             add(_T ah, _T am, _T al,
                 _T b);
-            
+
             static
             t_real<_T>
             add(_T ah, _T am, _T al,
                 _T bh, _T bl);
-            
+
             static
             t_real<_T>
             add(_T ah, _T am, _T al,
@@ -84,17 +113,17 @@ namespace cftal {
             t_real<_T>
             mul(_T ah, _T am, _T al,
                 _T b);
-            
+
             static
             t_real<_T>
             mul(_T ah, _T am, _T al,
                 _T bh, _T bl);
-            
+
             static
             t_real<_T>
             mul(_T ah, _T am, _T al,
                 _T bh, _T bm, _T bl);
-            
+
             static
             t_real<_T>
             div(_T ah, _T am, _T al,
@@ -238,7 +267,7 @@ namespace cftal {
     template <typename _T>
     t_real<_T>&
     operator*=(t_real<_T>& a, const t_real<_T>& b);
-    
+
     // division
     template <typename _T>
     t_real<_T>
@@ -271,7 +300,7 @@ namespace cftal {
     template <typename _T>
     t_real<_T>&
     operator/=(t_real<_T>& a, const t_real<_T>& b);
-    
+
     template <typename _T>
     t_real<_T> rcp(const t_real<_T>& r);
 
@@ -348,17 +377,17 @@ mul233(_T& rh, _T& rm, _T& rl,
 {
     _T t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
     _T t11, t12, t13, t14, t15, t16, t17, t18;
-    mul12(rh, t1, ah, bh);                               
-    mul12(t2, t3, ah, bm);                                 
-    mul12(t4, t5, ah, bl);                                 
-    mul12(t6, t7, al, bh);                                 
-    mul12(t8, t9, al, bm);                                 
-    t10 = al * bl;                                         
-    add22cond(t11, t12, t2, t3, t4, t5);                     
-    add22cond(t13, t14, t6, t7, t8, t9);                     
-    add22cond(t15, t16, t11, t12, t13, t14);                 
-    add12cond(t17, t18, t1, t10);                              
-    add22cond(rm, rl, t17, t18, t15, t16);               
+    mul12(rh, t1, ah, bh);
+    mul12(t2, t3, ah, bm);
+    mul12(t4, t5, ah, bl);
+    mul12(t6, t7, al, bh);
+    mul12(t8, t9, al, bm);
+    t10 = al * bl;
+    add22cond(t11, t12, t2, t3, t4, t5);
+    add22cond(t13, t14, t6, t7, t8, t9);
+    add22cond(t15, t16, t11, t12, t13, t14);
+    add12cond(t17, t18, t1, t10);
+    add22cond(rm, rl, t17, t18, t15, t16);
 }
 
 template <typename _T>
@@ -370,24 +399,24 @@ mul33(_T& rh, _T& rm, _T& rl,
 {
     _T t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
     _T t11, t12, t13, t14, t15, t16, t17, t18;
-    _T t19, t20, t12, t22;
-    mul12(rh,t1, ah , bh); 
-    mul12(t2,t3, ah , bm); 
-    mul12(t4,t5, am , bh); 
-    mul12(t6,t7, am , bm); 
-    t8 = ah * bl ; 
-    t9 = al * bh ; 
-    t10 = am * bl ; 
-    t11 = al * bm ; 
-    t12 = t8 + t9; 
-    t13 = t10 + t11; 
-    add12ond(t14,t15,t1,t6); 
-    t16 = t7 + t15; 
-    t17 = t12 + t13; 
-    t18 = t16 + t17; 
-    add12cond(t19,t20,t14,t18) ; 
-    add22cond(t21,t22,t2,t3,t4,t5) ; 
-    add22cond(rm ,rl ,t21,t22,t19,t20) ; 
+    _T t19, t20, t21, t22;
+    mul12(rh,t1, ah , bh);
+    mul12(t2,t3, ah , bm);
+    mul12(t4,t5, am , bh);
+    mul12(t6,t7, am , bm);
+    t8 = ah * bl ;
+    t9 = al * bh ;
+    t10 = am * bl ;
+    t11 = al * bm ;
+    t12 = t8 + t9;
+    t13 = t10 + t11;
+    add12ond(t14,t15,t1,t6);
+    t16 = t7 + t15;
+    t17 = t12 + t13;
+    t18 = t16 + t17;
+    add12cond(t19,t20,t14,t18) ;
+    add22cond(t21,t22,t2,t3,t4,t5) ;
+    add22cond(rm ,rl ,t21,t22,t19,t20) ;
 }
 
 
@@ -410,13 +439,14 @@ add33(_T& rh, _T& rm, _T& rl,
 #endif
 
 template <typename _T>
+void
 cftal::impl::t_real_ops<_T>::
 add33cond(_T& rh, _T& rm, _T& rl,
           const _T& ah, const _T& am, const _T& al,
           const _T& bh, const _T& bm, const _T& bl)
 {
     _T t1, t2, t3, t4, t5, t6, t7, t8;
-    add12cond(rh, _t1, ah, bh);
+    add12cond(rh, t1, ah, bh);
     add12cond(t2, t3, am, bm);
     t6 = al + bl;
     add12cond(t7, t4, t1, t2);
@@ -426,6 +456,7 @@ add33cond(_T& rh, _T& rm, _T& rl,
 }
 
 template <typename _T>
+void
 cftal::impl::t_real_ops<_T>::
 add133cond(_T& rh, _T& rm, _T& rl,
            const _T& a,
@@ -439,20 +470,20 @@ add133cond(_T& rh, _T& rm, _T& rl,
 }
 
 template <typename _T>
+void
 cftal::impl::t_real_ops<_T>::
 add233cond(_T& rh, _T& rm, _T& rl,
            const _T& ah, const _T& al,
            const _T& bh, const _T& bm, const _T& bl)
 {
     _T t1, t2, t3, t4, t5, t6, t7;
-    add12cond(rh, _t1, ah, bh);
+    add12cond(rh, t1, ah, bh);
     add12cond(t2, t3, al, bm);
     add12cond(t4, t5, t1, t2);
     t6 = t3 + bl;
     t7 = t6 + t5;
     add12cond(rm, rl, t4, t7);
 }
-
 
 #if 0
 template <typename _T>
@@ -470,12 +501,6 @@ cftal::impl::add22cond(_T& zh, _T& zl,
 }
 #endif
 
-template <typename _T>
-cftal::t_real<_T>
-cftal::impl::t_real_ops<_T>::normalize(_T ah, _T am, _T al)
-{
-    return cftal::t_real<_T>();
-}
 
 template <typename _T>
 cftal::t_real<_T>
