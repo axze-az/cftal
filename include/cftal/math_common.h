@@ -484,7 +484,7 @@ _exp(const vf_type& d)
     if (_NATIVE) {
         res=my_type::native_exp_k(d);
     } else {
-#if 1
+#if 0
         tvf_type xr(my_type::exp_k3(d));
         res=xr.h() + xr.m()+ xr.l();
 #else
