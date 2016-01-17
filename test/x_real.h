@@ -61,7 +61,7 @@ namespace cftal {
         struct check_x_real_traits<t_real, double> {
             static
             constexpr double eps() {
-                return std::ldexp(1.0, -152);
+                return std::ldexp(1.0, -151);
             }
 
             template <typename _D, typename _RND>
@@ -111,7 +111,7 @@ namespace cftal {
             static
             constexpr double eps() {
                 // return std::pow(2, -64);
-                return std::ldexp(1.0, -72);
+                return std::ldexp(1.0, -71);
             }
             template <typename _D, typename _RND>
             static
