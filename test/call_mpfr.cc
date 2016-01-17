@@ -34,3 +34,4 @@ cftal::test::call_mpfr::func(double a, double b, f2_t f)
     // mpfr_clear(r);
     return dr;
 }
+

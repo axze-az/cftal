@@ -38,8 +38,7 @@ namespace cftal {
         struct check_x_real_traits<d_real, double> {
             static
             constexpr double eps() {
-                // return std::pow(2, -104);
-                return std::ldexp(1.0, -105);
+                return std::ldexp(1.0, -104);
             }
 
             template <typename _D, typename _RND>
@@ -62,7 +61,6 @@ namespace cftal {
         struct check_x_real_traits<t_real, double> {
             static
             constexpr double eps() {
-                // return std::pow(2, -152);
                 return std::ldexp(1.0, -152);
             }
 
@@ -90,8 +88,7 @@ namespace cftal {
         struct check_x_real_traits<d_real, float> {
             static
             constexpr double eps() {
-                // return std::pow(2, -44);
-                return std::ldexp(2, -48);
+                return std::ldexp(1.0, -47);
             }
             template <typename _D, typename _RND>
             static
@@ -114,7 +111,7 @@ namespace cftal {
             static
             constexpr double eps() {
                 // return std::pow(2, -64);
-                return std::ldexp(2, -72);
+                return std::ldexp(1.0, -72);
             }
             template <typename _D, typename _RND>
             static
@@ -264,7 +261,7 @@ cftal::test::check_x_real<_X, _T, _R>::ops()
     std::mt19937 rnd;
     std::uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
-    const int64_t N0=0x1000ULL;
+    const int64_t N0=0x2000ULL;
     const int64_t N=72*N0;
     for (int64_t i=0; i<N; ++i) {
         if ((i & (N0-1)) == (N0-1))
