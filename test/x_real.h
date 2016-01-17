@@ -261,23 +261,21 @@ cftal::test::check_x_real<_X, _T, _R>::ops()
     std::mt19937 rnd;
     std::uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
-    const int64_t N0=0x2000ULL;
-    const int64_t N=72*N0;
-    for (int64_t i=0; i<N; ++i) {
-        if ((i & (N0-1)) == (N0-1))
-            std::cout << '.' << std::flush;
-        _T ah, bh;
-        ah = distrib(rnd);
-        bh = distrib(rnd);
-        _X<_T> va=check_x_real_traits<_X, _T>::make_rnd(distrib, rnd);
-        _X<_T> vb=check_x_real_traits<_X, _T>::make_rnd(distrib, rnd);
-        rc &= ops(va, vb);
-        va = -ah;
-        rc &= ops(va, vb);
-        va = ah; vb= -bh;
-        rc &= ops(va, vb);
-        va = -ah;
-        rc &= ops(va, vb);
+    const std::size_t N0=0x2000ULL;
+    for (uint32_t j=0; j<72; ++j) {
+        for (std::size_t i=0; i<N0; ++i) {
+            _X<_T> va0=check_x_real_traits<_X, _T>::make_rnd(distrib, rnd);
+            _X<_T> vb0=check_x_real_traits<_X, _T>::make_rnd(distrib, rnd);
+            _X<_T> va=va0, vb=vb0;
+            rc &= ops(va, vb);
+            va = -va0;
+            rc &= ops(va, vb);
+            va = va0; vb= -vb0;
+            rc &= ops(va, vb);
+            va = -va0;
+            rc &= ops(va, vb);
+        }
+        std::cout << '.' << std::flush;
     }
     std::cout << std::endl;
     if (rc == true) {

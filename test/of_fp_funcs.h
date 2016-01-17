@@ -229,13 +229,13 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
         distrib(domain.first, domain.second);
 
     std::cout << "[" << domain.first << ", " << domain.second << ")\n";
-    const int64_t N0=cnt;
-    const int64_t N=72*N0;
-    for (int64_t i=0; i<N; ++i) {
-        if ((i & (N0-1)) == (N0-1))
-            std::cout << '.' << std::flush;
-        _T ah=distrib(rnd);
-        r &= v(ah, cmp);
+    const uint32_t N0=72;
+    for (uint32_t j=0; j<N0; ++j) {
+        for (std::size_t i=0; i<cnt; ++i) {
+            _T ah=distrib(rnd);
+            r &= v(ah, cmp);
+        }
+        std::cout << '.' << std::flush;
     }
     _T minus1= std::max(_T(-1), domain.first);
     _T plus1= std::min(_T(1), domain.second);
@@ -245,11 +245,12 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
         std::uniform_real_distribution<_T>
             distrib1(minus1, nplus1);
         std::cout << "[" << minus1 << ", " << nplus1 << ")\n";
-        for (int64_t i=0; i<N; ++i) {
-            if ((i & (N0-1)) == (N0-1))
-                std::cout << '.' << std::flush;
-            _T ah=distrib1(rnd);
-            r &= v(ah, cmp);
+        for (uint32_t j=0; j<N0; ++j) {
+            for (std::size_t i=0; i<cnt; ++i) {
+                _T ah=distrib1(rnd);
+                r &= v(ah, cmp);
+            }
+            std::cout << '.' << std::flush;
         }
     }
     std::cout << std::endl;
@@ -321,14 +322,14 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
     std::cout << "[" << domain_1.first << ", " << domain_1.second
               << ") x [" << domain_2.first << ", " << domain_2.second
               << ")\n";
-    const int64_t N0=cnt;
-    const int64_t N=72*N0;
-    for (int64_t i=0; i<N; ++i) {
-        if ((i & (N0-1)) == (N0-1))
-            std::cout << '.' << std::flush;
-        _T ah=distrib1(rnd);
-        _T bh=distrib2(rnd);
-        r &= v(ah, bh, cmp);
+    const uint32_t N0=72;
+    for (uint32_t j=0; j< N0; ++j) {
+        for (std::size_t i=0; i<cnt; ++i) {
+            _T ah=distrib1(rnd);
+            _T bh=distrib2(rnd);
+            r &= v(ah, bh, cmp);
+        }
+        std::cout << '.' << std::flush;
     }
     _T a_minus1= std::max(_T(-1), domain_1.first);
     _T a_plus1= std::min(_T(1), domain_1.second);
@@ -345,12 +346,13 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
         std::cout << "[" << a_minus1 << ", " << a_nplus1
                   << ") x [" << b_minus1 << ", " << b_nplus1
                   << ")\n";
-        for (int64_t i=0; i<N; ++i) {
-            if ((i & (N0-1)) == (N0-1))
-                std::cout << '.' << std::flush;
-            _T ah=distrib_1_1(rnd);
-            _T bh=distrib_1_2(rnd);
-            r &= v(ah, bh, cmp);
+        for (uint32_t j=0; j<N0; ++j) {
+            for (std::size_t i=0; i<cnt; ++i) {
+                _T ah=distrib_1_1(rnd);
+                _T bh=distrib_1_2(rnd);
+                r &= v(ah, bh, cmp);
+            }
+            std::cout << '.' << std::flush;
         }
     }
     std::cout << std::endl;

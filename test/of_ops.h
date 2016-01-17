@@ -329,25 +329,24 @@ cftal::test::of_ops<_T, _N>::v()
     distrib(std::numeric_limits<_T>::lowest(),
             std::numeric_limits<_T>::max());
     const int64_t N0=0x10000ULL;
-    const int64_t N=64*N0;
-    for (int64_t i=0; i<N; ++i) {
-        if ((i & (N0-1)) == (N0-1))
-            std::cout << '.' << std::flush;
-        _T ah, bh;
-        ah = distrib(rnd);
-        bh = distrib(rnd);
-        _T va=ah, vb=bh;
-        rc &= of_ops<_T, _N>::v(va, va);
-        rc &= of_ops<_T, _N>::v(va, vb);
-        va = -ah;
-        rc &= of_ops<_T, _N>::v(va, vb);
-        va = ah; vb= -bh;
-        rc &= of_ops<_T, _N>::v(va, vb);
-        va = -ah;
-        rc &= of_ops<_T, _N>::v(va, vb);
+    for (uint32_t j=0; j<72; ++j) {
+        for (std::size_t i=0; i<N0; ++i) {
+            _T ah, bh;
+            ah = distrib(rnd);
+            bh = distrib(rnd);
+            _T va=ah, vb=bh;
+            rc &= of_ops<_T, _N>::v(va, va);
+            rc &= of_ops<_T, _N>::v(va, vb);
+            va = -ah;
+            rc &= of_ops<_T, _N>::v(va, vb);
+            va = ah; vb= -bh;
+            rc &= of_ops<_T, _N>::v(va, vb);
+            va = -ah;
+            rc &= of_ops<_T, _N>::v(va, vb);
+        }
+        std::cout << '.' << std::flush;
     }
     std::cout << std::endl;
-
     if (rc == true) {
         std::cout << __func__ << _N << " test passed " << std::endl;
     } else {
