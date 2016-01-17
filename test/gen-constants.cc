@@ -11,18 +11,22 @@ namespace cftal {
         void gen_constant(func_domain<_T> d, const std::string& pfx,
                           _F f, _C chk, const std::string& check_name);
 
-        double check_inf(double a) {
+        bool check_inf(double a) {
             return std::isinf(a);
         }
 
-        double check_zero(double a) {
+        bool check_zero(double a) {
             return a == 0.0;
         }
 
-        double check_minus_one(double a ) {
+        bool check_minus_one(double a ) {
             return a == -1.0;
         }
 
+        bool check_max_denormal(double a) {
+            const double dbl_max_denormal= 2.225073858507200889024587e-308;
+            return std::fabs(a) <= dbl_max_denormal;
+        }
 
         struct out_df64 {
             d_real<double> _v;
@@ -341,7 +345,6 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     s << "};\n" << std::endl;
 }
 
-
 int main()
 {
     using namespace cftal;
@@ -354,8 +357,12 @@ int main()
     gen_constant(dp, "const double exp_hi", mpfr_exp,  check_inf, "inf");
     gen_constant(dm, "const double exp_lo", mpfr_exp,  check_zero, "m_0");
 
+    gen_constant(dm, "const double exp_lo_den", mpfr_exp,  check_max_denormal,
+                 "nom");
+
     gen_constant(dp, "const double expm1_hi", mpfr_expm1, check_inf, "inf");
-    gen_constant(dm, "const double expm1_lo", mpfr_expm1, check_minus_one, "m_1");
+    gen_constant(dm, "const double expm1_lo", mpfr_expm1,
+                 check_minus_one, "m_1");
 
     gen_constant(dp, "const double cosh_hi", mpfr_cosh, check_inf, "inf");
     gen_constant(dm, "const double cosh_lo", mpfr_cosh, check_inf, "inf");
@@ -371,6 +378,9 @@ int main()
     gen_constant(dp, "const double exp10_hi", mpfr_exp10,  check_inf, "inf");
     gen_constant(dm, "const double exp10_lo", mpfr_exp10,  check_zero, "m_0");
 
+    std::cout << "const double dbl_max_denormal= "
+              <<  sig_f64_msk::v._f64 << ";\n\n";
+    
     gen_math_constants<128, d_real<double> >(std::cout,
                                              "d_real_constants<_T, double>");
     gen_math_constants<192, t_real<double> >(std::cout,
