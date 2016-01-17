@@ -117,6 +117,10 @@ namespace cftal {
 
             static
             t_real<_T>
+            renormalize(const _T& rh, const _T& rm, const _T& rl);
+            
+            static
+            t_real<_T>
             add(const _T& a,
                 const _T& bh, const _T& bm, const _T& bl);
 
@@ -536,6 +540,17 @@ add133cond(_T& rh, _T& rm, _T& rl,
 template <typename _T>
 cftal::t_real<_T>
 cftal::impl::t_real_ops<_T>::
+renormalize(const _T& ah, const _T& am, const _T& al)
+{
+    _T rh, rm, rl;
+    renormalize3(rh, rm, rl,
+                 ah, am, al);
+    return t_real<_T>(rh, rm, rl);
+}
+
+template <typename _T>
+cftal::t_real<_T>
+cftal::impl::t_real_ops<_T>::
 add(const _T& a,
     const _T& bh, const _T& bm, const _T& bl)
 {
@@ -543,7 +558,7 @@ add(const _T& a,
     add133cond(rh, rm, rl,
                a,
                bh, bm, bl);
-    return t_real<_T>(rh, rm, rl);
+    return renormalize(rh, rm, rl);
 }
 
 template <typename _T>
@@ -556,7 +571,7 @@ add(const _T& ah, const _T& al,
     add233cond(rh, rm, rl,
                ah, al,
                bh, bm, bl);
-    return t_real<_T>(rh, rm, rl);
+    return renormalize(rh, rm, rl);
 }
 
 template <typename _T>
@@ -569,7 +584,7 @@ add(const _T& ah, const _T& am, const _T& al,
     add33cond(rh, rm, rl,
               ah, am, al,
               bh, bm, bl);
-    return t_real<_T>(rh, rm, rl);
+    return renormalize(rh, rm, rl);
 }
 
 template <typename _T>
@@ -582,7 +597,7 @@ mul(const _T& a,
     mul133(rh, rm, rl,
            a,
            bh, bm, bl);
-    return t_real<_T>(rh, rm, rl);
+    return renormalize(rh, rm, rl);
 }
 
 template <typename _T>
@@ -595,7 +610,7 @@ mul(const _T& ah, const _T& al,
     mul233(rh, rm, rl,
            ah, al,
            bh, bm, bl);
-    return t_real<_T>(rh, rm, rl);
+    return renormalize(rh, rm, rl);
 }
 
 template <typename _T>
@@ -608,7 +623,7 @@ mul(const _T& ah, const _T& am, const _T& al,
     mul33(rh, rm, rl,
           ah, am, al,
           bh, bm, bl);
-    return t_real<_T>(rh, rm, rl);
+    return renormalize(rh, rm, rl);
 }
 
 template <typename _T>

@@ -486,7 +486,7 @@ _exp(const vf_type& d)
     } else {
 #if 0
         tvf_type xr(my_type::exp_k3(d));
-        res=xr.h() + xr.m()+ xr.l();
+        res=xr.h() + xr.m() + xr.l();
 #else
         dvf_type xr(my_type::exp_k2(d));
         res=xr.h() + xr.l();

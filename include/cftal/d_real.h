@@ -178,11 +178,20 @@ namespace cftal {
                       const _T& yh, const _T& al);
 
             static
-            _T quick_two_sum(const _T& a, const _T& b, _T& e);
+            _T
+            quick_two_sum(const _T& a, const _T& b, _T& e);
+
             static
-            _T quick_two_diff(const _T& a, const _T& b, _T& e);
+            _T
+            quick_two_diff(const _T& a, const _T& b, _T& e);
+
             static
-            _T two_sum(const _T& a, const _T& b, _T& e);
+            _T
+            two_sum(const _T& a, const _T& b, _T& e);
+
+            static
+            _T
+            two_diff(const _T& a, const _T& b, _T& e);
 
             static
             d_real<_T> add(const _T& a, const _T& b);
@@ -201,8 +210,6 @@ namespace cftal {
             d_real<_T> sloppy_add(const d_real<_T>& a,
                                   const d_real<_T>& b);
 
-            static
-            _T two_diff(const _T& a, const _T& b, _T& e);
             static
             d_real<_T> sub(const _T& a, const _T& b);
             static
@@ -588,15 +595,9 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 quick_two_sum(const _T& a, const _T& b, _T& err)
 {
-#if 0
-    _T s;
-    add12(s, err, a, b);
-    return s;
-#else
     _T s=a+b;
     err=b-(s-a);
     return s;
-#endif
 }
 
 template <typename _T>
@@ -605,14 +606,9 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 quick_two_diff(const _T& a, const _T& b, _T& err)
 {
-#if 0
-    _T s;
-    add12(s, err, a, -b);
-#else
     _T s=a-b;
     err=(a-s)-b;
     return s;
-#endif
 }
 
 template <typename _T>
@@ -621,16 +617,10 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 two_sum(const _T& a, const _T& b, _T& err)
 {
-#if 0
-    _T s;
-    add12cond(s, err, a, b);
-    return s;
-#else
     _T s=a+b;
     _T bb=s-a;
     err=(a-(s-bb)) + (b -bb);
     return s;
-#endif
 }
 
 template <typename _T>
@@ -639,18 +629,11 @@ _T
 cftal::impl::d_real_ops_common<_T>::
 two_diff(const _T& a, const _T& b, _T& err)
 {
-#if 0
-    _T s;
-    add12cond(s, err, a, -b);
-    return s;
-#else
     _T s=a-b;
     _T bb=s-a;
     err=(a-(s-bb))-(b+bb);
     return s;
-#endif
 }
-
 
 template <typename _T>
 inline
@@ -681,11 +664,6 @@ cftal::d_real<_T>
 cftal::impl::d_real_ops_common<_T>::
 ieee_add(const d_real<_T>& a, const d_real<_T>& b)
 {
-#if 0
-    _T rh, rl;
-    add22cond(rh, rl, a.h(), a.l(), b.h(), b.l());
-    return d_real<_T>(rh, rl);
-#else
     _T s1, s2, t1, t2;
     s1 = two_sum(a.h(), b.h(), s2);
     t1 = two_sum(a.l(), b.l(), t2);
@@ -694,7 +672,6 @@ ieee_add(const d_real<_T>& a, const d_real<_T>& b)
     s2+= t2;
     s1 = quick_two_sum(s1, s2, s2);
     return d_real<_T>(s1, s2);
-#endif
 }
 
 template <typename _T>
@@ -718,7 +695,6 @@ add(const d_real<_T>& a, const d_real<_T>& b)
 {
     return ieee_add(a, b);
 }
-
 
 template <typename _T>
 inline
@@ -875,7 +851,6 @@ two_prod(const _T& a, const _T& b, _T& err)
     err=((a_h*b_h-p)+a_h*b_l+a_l*b_h)+a_l*b_l;
     return p;
 }
-
 
 template <typename _T>
 inline
@@ -1036,7 +1011,6 @@ sqr(const d_real<_T>& a)
     return d_real<_T>(s1, s2);
 }
 
-
 template <typename _T, bool _FMA>
 inline
 void
@@ -1082,8 +1056,8 @@ div(const _T& a, const _T& b)
     _T q1, q2, p1, p2, s, e;
     q1 = a/b;
     /* a - q1 * b */
-    p1 = two_prod(q1, b, p2);
-    s = two_diff(a, p1, e);
+    p1 = base_type::two_prod(q1, b, p2);
+    s = base_type::two_diff(a, p1, e);
     e-= p2;
     /* next approximation */
     q2= (s+e)/b;
