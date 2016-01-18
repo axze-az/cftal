@@ -50,6 +50,7 @@ namespace cftal {
     nmad(const vec<float, _N>& a, const vec<float, _N>& b,
          const vec<float, _N>& c);
 
+    
     template <std::size_t _N>
     vec<float, _N>
     sin(const vec<float, _N>& v);
@@ -73,10 +74,6 @@ namespace cftal {
     template <std::size_t _N>
     vec<float, _N>
     native_tan(const vec<float, _N>& v);
-
-    template <std::size_t _N>
-    vec<float, _N>
-    exp(const vec<float, _N>& v);
 
     template <std::size_t _N>
     vec<float, _N>
@@ -159,7 +156,7 @@ namespace cftal {
     nfms(const vec<float, _N>& a, const vec<float, _N>& b,
          const vec<float, _N>& c);
 
-    // frexp
+    // TODO: tests for the functions above
     template <std::size_t _N>
     vec<float, _N>
     frexp(const vec<float, _N>& a, vec<int32_t, _N>* e);
@@ -242,6 +239,25 @@ namespace cftal {
     vec<float, 1>
     trunc(const vec<float, 1>& v);
 
+    // exp:
+    template <std::size_t _N>
+    vec<float, _N>
+    exp(const vec<float, _N>& v);
+
+    vec<float, 1>
+    exp(const vec<float, 1>& v);
+
+    v2f32
+    exp(arg<v2f32>::type d);
+
+    v4f32
+    exp(arg<v4f32>::type d);
+
+    v8f32
+    exp(arg<v8f32>::type d);
+
+// TODO: tests for the functions below
+    
     v2f32 cbrt(arg<v2f32>::type a);
     v2f32 frexp(arg<v2f32>::type x, v2s32* e);
     // v2f32 pow2i(arg<v2s32>::type e);
@@ -254,7 +270,6 @@ namespace cftal {
     v2f32 atan(arg<v2f32>::type d);
     std::pair<v2f32, v2f32> sincos(arg<v2f32>::type d);
 
-    v2f32 exp(arg<v2f32>::type d);
     v2f32 expm1(arg<v2f32>::type d);
     v2f32 exp2(arg<v2f32>::type d);
     v2f32 exp10(arg<v2f32>::type d);
@@ -291,7 +306,6 @@ namespace cftal {
     v4f32 atan(arg<v4f32>::type d);
     std::pair<v4f32, v4f32> sincos(arg<v4f32>::type d);
 
-    v4f32 exp(arg<v4f32>::type d);
     v4f32 expm1(arg<v4f32>::type d);
     v4f32 exp2(arg<v4f32>::type d);
     v4f32 exp10(arg<v4f32>::type d);
@@ -329,7 +343,6 @@ namespace cftal {
     v8f32 atan(arg<v8f32>::type d);
     std::pair<v8f32, v8f32> sincos(arg<v8f32>::type d);
 
-    v8f32 exp(arg<v8f32>::type d);
     v8f32 expm1(arg<v8f32>::type d);
     v8f32 exp2(arg<v8f32>::type d);
     v8f32 exp10(arg<v8f32>::type d);
@@ -487,6 +500,14 @@ cftal::vec<float, _N>
 cftal::exp(const vec<float, _N>& v)
 {
     vec<float, _N> r(exp(low_half(v)), exp(high_half(v)));
+    return r;
+}
+
+inline
+cftal::vec<float, 1>
+cftal::exp(const vec<float, 1>& v)
+{
+    vec<float, 1> r(std::exp(v()));
     return r;
 }
 

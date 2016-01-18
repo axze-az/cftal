@@ -11,22 +11,43 @@ namespace cftal {
         void gen_constant(func_domain<_T> d, const std::string& pfx,
                           _F f, _C chk, const std::string& check_name);
 
-        bool check_inf(double a) {
-            return std::isinf(a);
-        }
+        template <typename _T>
+        struct check_inf {
+            bool operator()(_T a) const {
+                return std::isinf(a);
+            }
+        };
 
-        bool check_zero(double a) {
-            return a == 0.0;
-        }
+        template <typename _T>
+        struct check_zero {
+            bool operator()(_T a) const {
+                return a == 0.0;
+            }
+        };
 
-        bool check_minus_one(double a ) {
-            return a == -1.0;
-        }
+        template <typename _T>
+        struct check_minus_one {
+            bool operator()(_T a) const {
+                return a == -1.0;
+            }
+        };
 
-        bool check_max_denormal(double a) {
-            const double dbl_max_denormal= 2.225073858507200889024587e-308;
-            return std::fabs(a) <= dbl_max_denormal;
-        }
+        template <typename _T>
+        struct check_max_denormal {
+            bool operator() (_T a) const  {
+                return false;
+                // const double dbl_max_denormal= 2.225073858507200889024587e-308;
+                // return std::fabs(a) <= dbl_max_denormal;
+            }
+        };
+
+        template <>
+        struct check_max_denormal<double> {
+            bool operator() (double a) const  {
+                const double dbl_max_denormal= 2.225073858507200889024587e-308;
+                return std::fabs(a) <= dbl_max_denormal;
+            }
+        };
 
         struct out_df64 {
             d_real<double> _v;
@@ -101,26 +122,26 @@ cftal::test::gen_constant(func_domain<_T> d, const std::string& pfx,
 
     if (l_is_inf) {
         std::cout << std::scientific << std::setprecision(24)
-                    << pfx << '_' << check_name<< "= "
-                    << l
-                    << ";\n"
-                    << pfx << "_fin= "
-                    << r
-                    << ";\n"
-                    << pfx << "_val= "
-                    << call_mpfr::func(r, f)
-                    << ";\n\n";
+                  << pfx << '_' << check_name<< "= "
+                  << l
+                  << ";\n"
+                  << pfx << "_fin= "
+                  << r
+                  << ";\n"
+                  << pfx << "_val= "
+                  << call_mpfr::func(r, f)
+                  << ";\n\n";
     } else {
         std::cout << std::scientific << std::setprecision(24)
-                    << pfx << "_fin= "
-                    << l
-                    << ";\n"
-                    << pfx << "_val= "
-                    << call_mpfr::func(l, f)
-                    << ";\n"
-                    << pfx << '_' << check_name<< "= "
-                    << r
-                    << ";\n\n";
+                  << pfx << "_fin= "
+                  << l
+                  << ";\n"
+                  << pfx << "_val= "
+                  << call_mpfr::func(l, f)
+                  << ";\n"
+                  << pfx << '_' << check_name<< "= "
+                  << r
+                  << ";\n\n";
     }
 }
 
@@ -221,89 +242,89 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     f_t v=log(x);
     // mpfr_printf("%.128Rf\n", v);
     s << "template <class _T>\nconst _T\n"
-        << "cftal::math::impl::" << pfx << "::m_ln2("
+      << "cftal::math::impl::" << pfx << "::m_ln2("
         "\n\t"
-              << to_stream(d, v)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
     v= f_t(1.0)/v;
     s << "template <class _T>\nconst _T\n"
-     << "cftal::math::impl::" << pfx << "::m_1_ln2("
+      << "cftal::math::impl::" << pfx << "::m_1_ln2("
         "\n\t"
-              << to_stream(d, v)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
     x = 10.0;
     v= log(x);
     s << "template <class _T>\nconst _T\n"
-     << "cftal::math::impl::" << pfx << "::m_ln10("
+      << "cftal::math::impl::" << pfx << "::m_ln10("
         "\n\t"
-              << to_stream(d, v, true)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v, true)
+      << ");\n"
+      << std::endl;
 
     load_pi(x);
     v = x;
     s << "template <class _T>\nconst _T\n"
-     << "cftal::math::impl::" << pfx << "::m_pi("
+      << "cftal::math::impl::" << pfx << "::m_pi("
         "\n\t"
-              << to_stream(d, v)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
     v= f_t(2.0) *x;
     s << "template <class _T>\nconst _T\n"
-     << "cftal::math::impl::" << pfx << "::m_pi2("
+      << "cftal::math::impl::" << pfx << "::m_pi2("
         "\n\t"
-              << to_stream(d, v)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
     v= x*f_t(0.5);
     s << "template <class _T>\nconst _T\n"
-     << "cftal::math::impl::"<< pfx << "::m_pi_2("
+      << "cftal::math::impl::"<< pfx << "::m_pi_2("
         "\n\t"
-              << to_stream(d, v)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
 
     v=x*f_t(0.25);
     s << "template <class _T>\nconst _T\n"
-     << "cftal::math::impl::" << pfx << "::m_pi_4("
+      << "cftal::math::impl::" << pfx << "::m_pi_4("
         "\n\t"
-              << to_stream(d, v)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
 
     load_pi(x);
     v = f_t(1.0)/x;
     s << "template <class _T>\nconst _T\n"
-     << "cftal::math::impl::" << pfx << "::m_1_pi("
+      << "cftal::math::impl::" << pfx << "::m_1_pi("
         "\n\t"
-              << to_stream(d, v)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
 
     v = f_t(2.0)/x;
     s << "template <class _T>\nconst _T\n"
-    << "cftal::math::impl::" << pfx << "::m_2_pi("
+      << "cftal::math::impl::" << pfx << "::m_2_pi("
         "\n\t"
-              << to_stream(d, v)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
 
     v = f_t(4.0)/x;
     s << "template <class _T>\nconst _T\n"
-        << "cftal::math::impl::" << pfx << "::m_4_pi("
+      << "cftal::math::impl::" << pfx << "::m_4_pi("
         "\n\t"
-              << to_stream(d, v)
-              << ");\n"
-              << std::endl;
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
 
     const std::size_t MAX_FAC=30;
     s << "template <class _T>\n"
-              << "const _T\n"
-              << "cftal::math::impl::" << pfx << "::\n"
-              << "inv_fac[MAX_FAC+1]= {"
-              << std::endl;
+      << "const _T\n"
+      << "cftal::math::impl::" << pfx << "::\n"
+      << "inv_fac[MAX_FAC+1]= {"
+      << std::endl;
 
     f_t fac(1.0);
     for (std::size_t i=0; i<MAX_FAC+1; ++i) {
@@ -313,9 +334,9 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
             inv_fac /= fac;
         }
         s << std::setprecision(22)
-                  << "\t_T( "
-                  << to_stream(d, inv_fac)
-                  << ")";
+          << "\t_T( "
+          << to_stream(d, inv_fac)
+          << ")";
         if (i != MAX_FAC)
             s << ',';
         s << std::endl;
@@ -324,20 +345,20 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
 
     const std::size_t MAX_2_OVER_I=30;
     s << "template <class _T>\n"
-              << "const _T\n"
-              << "cftal::math::impl::" << pfx << "::\n"
-              << "_2_over_i[MAX_2_OVER_I+1]= {"
-              << std::endl;
+      << "const _T\n"
+      << "cftal::math::impl::" << pfx << "::\n"
+      << "_2_over_i[MAX_2_OVER_I+1]= {"
+      << std::endl;
     for (std::size_t i=0; i<MAX_2_OVER_I+1; ++i) {
         f_t two_over_i(2.0);
         if (i>1) {
             two_over_i /= f_t(i);
         }
         s << std::scientific
-                  << std::setprecision(22)
-                  << "\t_T( "
-                  << to_stream(d, two_over_i)
-                  << ")";
+          << std::setprecision(22)
+          << "\t_T( "
+          << to_stream(d, two_over_i)
+          << ")";
         if (i != MAX_2_OVER_I)
             s << ',';
         s << std::endl;
@@ -345,45 +366,112 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     s << "};\n" << std::endl;
 }
 
-int main()
+int main(int argc, char** argv)
 {
+    bool gen_double=true;
+    bool gen_float=true;
+    if (argc > 1) {
+        const std::string argv1=argv[1];
+        if (argv1 == "--float") {
+            gen_double =false;
+        }
+        if (argv1 == "--double") {
+            gen_float= false;
+        }
+    }
+
     using namespace cftal;
     using namespace cftal::test;
-    auto dp=std::make_pair(0.0, 800.0);
-    gen_constant(dp, "const double sinh_hi", mpfr_sinh, check_inf, "inf");
-    auto dm=std::make_pair(-800.0, 0.0);
-    gen_constant(dm, "const double sinh_lo", mpfr_sinh, check_inf, "inf");
+    if (gen_double) {
+        auto dp=std::make_pair(0.0, 800.0);
+        gen_constant(dp, "const double sinh_hi", mpfr_sinh,
+                     check_inf<double>(), "inf");
+        auto dm=std::make_pair(-800.0, 0.0);
+        gen_constant(dm, "const double sinh_lo", mpfr_sinh,
+                     check_inf<double>(), "inf");
+        // exp constants
+        gen_constant(dp, "const double exp_hi", mpfr_exp,
+                     check_inf<double>(), "inf");
+        gen_constant(dm, "const double exp_lo", mpfr_exp,
+                     check_zero<double>(), "m_0");
+        gen_constant(dm, "const double exp_lo_den", mpfr_exp,
+                     check_max_denormal<double>(), "nom");
+        // exp1
+        gen_constant(dp, "const double expm1_hi", mpfr_expm1,
+                     check_inf<double>(), "inf");
+        gen_constant(dm, "const double expm1_lo", mpfr_expm1,
+                     check_minus_one<double>(), "m_1");
 
-    gen_constant(dp, "const double exp_hi", mpfr_exp,  check_inf, "inf");
-    gen_constant(dm, "const double exp_lo", mpfr_exp,  check_zero, "m_0");
+        gen_constant(dp, "const double cosh_hi", mpfr_cosh,
+                     check_inf<double>(), "inf");
+        gen_constant(dm, "const double cosh_lo", mpfr_cosh,
+                     check_inf<double>(), "inf");
 
-    gen_constant(dm, "const double exp_lo_den", mpfr_exp,  check_max_denormal,
-                 "nom");
+        gen_constant(std::make_pair(.0, 0.001), "const double log_lo",
+                     mpfr_log, check_inf<double>(), "inf");
 
-    gen_constant(dp, "const double expm1_hi", mpfr_expm1, check_inf, "inf");
-    gen_constant(dm, "const double expm1_lo", mpfr_expm1,
-                 check_minus_one, "m_1");
+        dp=std::make_pair(0.0, 1100.0);
+        dm=std::make_pair(-1100.0, 0.0);
+        gen_constant(dp, "const double exp2_hi", mpfr_exp2,
+                     check_inf<double>(), "inf");
+        gen_constant(dm, "const double exp2_lo", mpfr_exp2,
+                     check_zero<double>(), "m_0");
 
-    gen_constant(dp, "const double cosh_hi", mpfr_cosh, check_inf, "inf");
-    gen_constant(dm, "const double cosh_lo", mpfr_cosh, check_inf, "inf");
+        gen_constant(dp, "const double exp10_hi", mpfr_exp10,
+                     check_inf<double>(), "inf");
+        gen_constant(dm, "const double exp10_lo", mpfr_exp10,
+                     check_zero<double>(), "m_0");
 
-    gen_constant(std::make_pair(.0, 0.001), "const double log_lo",
-                 mpfr_log, check_inf, "inf");
+        std::cout << "const double dbl_max_denormal= "
+                  <<  sig_f64_msk::v._f64 << ";\n\n";
 
-    dp=std::make_pair(0.0, 1100.0);
-    dm=std::make_pair(-1100.0, 0.0);
-    gen_constant(dp, "const double exp2_hi", mpfr_exp2,  check_inf, "inf");
-    gen_constant(dm, "const double exp2_lo", mpfr_exp2,  check_zero, "m_0");
+        gen_math_constants<128, d_real<double> >(
+            std::cout,
+            "d_real_constants<_T, double>");
+        gen_math_constants<192, t_real<double> >(
+            std::cout,
+            "t_real_constants<_T, double>");
+    }
+    if (gen_float) {
+        auto dp=std::make_pair(0.0f, 800.0f);
+        gen_constant(dp, "const float sinh_hi", mpfr_sinh,
+                     check_inf<float>(), "inf");
+        auto dm=std::make_pair(-800.0f, 0.0f);
+        gen_constant(dm, "const float sinh_lo", mpfr_sinh,
+                     check_inf<float>(), "inf");
+        // exp constants
+        gen_constant(dp, "const float exp_hi", mpfr_exp,
+                     check_inf<float>(), "inf");
+        gen_constant(dm, "const float exp_lo", mpfr_exp,
+                     check_zero<float>(), "m_0");
+        gen_constant(dm, "const float exp_lo_den", mpfr_exp,
+                     check_max_denormal<float>(), "nom");
+        // exp1
+        gen_constant(dp, "const float expm1_hi", mpfr_expm1,
+                     check_inf<float>(), "inf");
+        gen_constant(dm, "const float expm1_lo", mpfr_expm1,
+                     check_minus_one<float>(), "m_1");
 
-    gen_constant(dp, "const double exp10_hi", mpfr_exp10,  check_inf, "inf");
-    gen_constant(dm, "const double exp10_lo", mpfr_exp10,  check_zero, "m_0");
+        gen_constant(dp, "const float cosh_hi", mpfr_cosh,
+                     check_inf<float>(), "inf");
+        gen_constant(dm, "const float cosh_lo", mpfr_cosh,
+                     check_inf<float>(), "inf");
 
-    std::cout << "const double dbl_max_denormal= "
-              <<  sig_f64_msk::v._f64 << ";\n\n";
-    
-    gen_math_constants<128, d_real<double> >(std::cout,
-                                             "d_real_constants<_T, double>");
-    gen_math_constants<192, t_real<double> >(std::cout,
-                                             "t_real_constants<_T, double>");
+        gen_constant(std::make_pair(.0f, 0.001f), "const float log_lo",
+                     mpfr_log, check_inf<float>(), "inf");
+
+        dp=std::make_pair(0.0f, 1100.0f);
+        dm=std::make_pair(-1100.0f, 0.0f);
+        gen_constant(dp, "const float exp2_hi", mpfr_exp2,
+                     check_inf<float>(), "inf");
+        gen_constant(dm, "const float exp2_lo", mpfr_exp2,
+                     check_zero<float>(), "m_0");
+
+        gen_constant(dp, "const float exp10_hi", mpfr_exp10,
+                     check_inf<float>(), "inf");
+        gen_constant(dm, "const float exp10_lo", mpfr_exp10,
+                     check_zero<float>(), "m_0");
+
+    }
     return 0;
 }

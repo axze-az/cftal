@@ -23,13 +23,11 @@ namespace cftal {
             double
             func(double a, double b, f2_t f);
 
-            template <typename _F>
             float
-            func(float a, _F f);
+            func(float a, f1_t f);
 
-            template <typename _F>
             float
-            func(float a, float b, _F f);
+            func(float a, float b, f2_t f);
 
         }
 

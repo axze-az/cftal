@@ -14,6 +14,27 @@ namespace cftal {
 
     namespace math {
 
+        template <typename _T>
+        struct func_constants {};
+
+        template <>
+        struct func_constants<double> {
+            constexpr static const double
+            exp_hi_inf= 7.097827128933840867830440e+02;
+
+            constexpr static const double
+            exp_lo_zero= -7.451332191019412221066887e+02;
+        };
+
+        template <>
+        struct func_constants<float> {
+            constexpr static const float
+            exp_hi_inf= 8.872283935546875000000000e+01f;
+
+            constexpr static const float
+            exp_lo_zero= -1.039720840454101562500000e+02f;
+        };
+
         template <typename _FLOAT_T, typename _INT_T>
         struct func_traits;
 
@@ -492,9 +513,14 @@ _exp(const vf_type& d)
         res=xr.h() + xr.l();
 #endif
     }
-
+#if 1
+    using fc= func_constants<_FLOAT_T>;
+    const vf_type exp_hi_inf= fc::exp_hi_inf;
+    const vf_type exp_lo_zero= fc::exp_lo_zero;
+#else
     const vf_type exp_hi_inf= 7.097827128933840867830440e+02;
     const vf_type exp_lo_zero= -7.451332191019412221066887e+02;
+#endif
     res = _T::sel(d <= exp_lo_zero, 0.0, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);

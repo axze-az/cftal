@@ -35,3 +35,26 @@ cftal::test::call_mpfr::func(double a, double b, f2_t f)
     return dr;
 }
 
+float
+cftal::test::call_mpfr::func(float a, f1_t f)
+{
+    MPFR_DECL_INIT(ai, 24);
+    MPFR_DECL_INIT(r, 24);
+    mpfr_set_flt(ai, a, GMP_RNDN);
+    f(r, ai, GMP_RNDN);
+    float dr=mpfr_get_flt(r, GMP_RNDN);
+    return dr;
+}
+float
+cftal::test::call_mpfr::func(float a, float b, f2_t f)
+{
+    MPFR_DECL_INIT(ai, 24);
+    MPFR_DECL_INIT(bi, 24);
+    MPFR_DECL_INIT(r, 24);
+    mpfr_set_flt(ai, a, GMP_RNDN);
+    mpfr_set_flt(bi, b, GMP_RNDN);
+    f(r, ai, bi, GMP_RNDN);
+    float dr=mpfr_get_flt(r, GMP_RNDN);
+    return dr;
+}
+
