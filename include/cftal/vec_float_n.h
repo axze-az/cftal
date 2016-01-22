@@ -53,10 +53,6 @@ namespace cftal {
     
     template <std::size_t _N>
     vec<float, _N>
-    sin(const vec<float, _N>& v);
-
-    template <std::size_t _N>
-    vec<float, _N>
     native_sin(const vec<float, _N>& v);
 
     template <std::size_t _N>
@@ -97,10 +93,6 @@ namespace cftal {
 
     vec<float, 1>
     native_expm1(const vec<float, 1>& v);
-
-    template <std::size_t _N>
-    vec<float, _N>
-    log(const vec<float, _N>& v);
 
     template <std::size_t _N>
     vec<float, _N>
@@ -256,8 +248,27 @@ namespace cftal {
     v8f32
     exp(arg<v8f32>::type d);
 
-// TODO: tests for the functions below
+    template <std::size_t _N>
+    vec<float, _N>
+    log(const vec<float, _N>& v);
+
+    vec<float, 1>
+    log(const vec<float, 1>& v);
+
+    v2f32
+    log(arg<v2f32>::type d);
+
+    v4f32
+    log(arg<v4f32>::type d);
+
+    v8f32
+    log(arg<v8f32>::type d);
     
+// TODO: tests for the functions below
+    template <std::size_t _N>
+    vec<float, _N>
+    sin(const vec<float, _N>& v);
+
     v2f32 cbrt(arg<v2f32>::type a);
     v2f32 frexp(arg<v2f32>::type x, v2s32* e);
     // v2f32 pow2i(arg<v2s32>::type e);
@@ -273,7 +284,6 @@ namespace cftal {
     v2f32 expm1(arg<v2f32>::type d);
     v2f32 exp2(arg<v2f32>::type d);
     v2f32 exp10(arg<v2f32>::type d);
-    v2f32 log(arg<v2f32>::type d);
     v2f32 pow(arg<v2f32>::type b, arg<v2f32>::type e);
     void sincos(arg<v2f32>::type d, v2f32* psin, v2f32* pcos);
     v2f32 sin(arg<v2f32>::type d);
@@ -309,7 +319,6 @@ namespace cftal {
     v4f32 expm1(arg<v4f32>::type d);
     v4f32 exp2(arg<v4f32>::type d);
     v4f32 exp10(arg<v4f32>::type d);
-    v4f32 log(arg<v4f32>::type d);
     v4f32 pow(arg<v4f32>::type b, arg<v4f32>::type e);
     void sincos(arg<v4f32>::type d, v4f32* psin, v4f32* pcos);
     v4f32 sin(arg<v4f32>::type d);
@@ -346,7 +355,6 @@ namespace cftal {
     v8f32 expm1(arg<v8f32>::type d);
     v8f32 exp2(arg<v8f32>::type d);
     v8f32 exp10(arg<v8f32>::type d);
-    v8f32 log(arg<v8f32>::type d);
     v8f32 pow(arg<v8f32>::type b, arg<v8f32>::type e);
     void sincos(arg<v8f32>::type d, v8f32* psin, v8f32* pcos);
     v8f32 sin(arg<v8f32>::type d);
@@ -570,6 +578,14 @@ cftal::vec<float, _N>
 cftal::log(const vec<float, _N>& v)
 {
     vec<float, _N> r(log(low_half(v)), log(high_half(v)));
+    return r;
+}
+
+inline
+cftal::vec<float, 1>
+cftal::log(const vec<float, 1>& v)
+{
+    vec<float, 1> r(std::log(v()));
     return r;
 }
 

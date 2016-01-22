@@ -110,11 +110,16 @@ test_prog(test-exp10-f64)
 test_prog(test-log-f64)
 test_prog(test-pow-f64)
 
+test_prog(test-sin-f64)
+test_prog(test-cos-f64)
+test_prog(test-sincos-f64)
+
 test_prog(test-native_exp-f64)
 test_prog(test-native_expm1-f64)
 test_prog(test-native_log-f64)
 
 test_prog(test-exp-f32)
+test_prog(test-log-f32)
 
 test_prog(test-v2)
 

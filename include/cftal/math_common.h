@@ -19,11 +19,20 @@ namespace cftal {
 
         template <>
         struct func_constants<double> {
+            // exp(x) == +inf for x >= 
             constexpr static const double
             exp_hi_inf= 7.097827128933840867830440e+02;
-
+            // exp(x) == 0 for x <=
             constexpr static const double
             exp_lo_zero= -7.451332191019412221066887e+02;
+
+            // nextafter(log(x), -1) == +inf
+            constexpr static const double
+            log_lo_fin= 4.940656458412465441765688e-324;
+            // log(log_lo_fin)
+            constexpr static const double
+            log_lo_val= -7.444400719213812180896639e+02;
+
         };
 
         template <>
@@ -33,6 +42,11 @@ namespace cftal {
 
             constexpr static const float
             exp_lo_zero= -1.039720840454101562500000e+02f;
+
+            constexpr static const float
+            log_lo_fin= 1.401298464324817070923730e-45f;
+            constexpr static const float
+            log_lo_val= -1.032789306640625000000000e+02;
         };
 
         template <typename _FLOAT_T, typename _INT_T>
@@ -513,14 +527,9 @@ _exp(const vf_type& d)
         res=xr.h() + xr.l();
 #endif
     }
-#if 1
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp_hi_inf= fc::exp_hi_inf;
     const vf_type exp_lo_zero= fc::exp_lo_zero;
-#else
-    const vf_type exp_hi_inf= 7.097827128933840867830440e+02;
-    const vf_type exp_lo_zero= -7.451332191019412221066887e+02;
-#endif
     res = _T::sel(d <= exp_lo_zero, 0.0, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
@@ -755,8 +764,10 @@ _log(const vf_type& d)
     x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
-    const vf_type log_lo_fin= 4.940656458412465441765688e-324;
-    const vf_type log_lo_val= -7.444400719213812180896639e+02;
+
+    using fc= func_constants<_FLOAT_T>;
+    const vf_type log_lo_fin= fc::log_lo_fin;
+    const vf_type log_lo_val= fc::log_lo_val;
     x = _T::sel(d == log_lo_fin, log_lo_val, x);
     return x;
 }

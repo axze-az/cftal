@@ -369,7 +369,7 @@ namespace cftal {
     vec<double, 8>
     native_expm1(arg<vec<double, 8> >::type d);
 
-    // native_log, these functions are exact to +-4 ulp with exception of _N1
+    // native_log, these functions are exact to +-4 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     native_log(const vec<double, _N>& v);
@@ -386,20 +386,69 @@ namespace cftal {
     vec<double, 8>
     native_log(arg<vec<double, 8> >::type d);
 
-// TODO: --------------------------------------------------------------------
-// TODO: test for the functions below
-    // specializations vec<double, 2>
+    // sin, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<double, _N>
     sin(const vec<double, _N>& v);
+    
+    vec<double, 1>
+    sin(const vec<double, 1>& v);
+
+    vec<double, 2>
+    sin(arg<vec<double, 2> >::type d);
+
+    vec<double, 4>
+    sin(arg<vec<double, 4> >::type d);
+
+    vec<double, 8>
+    sin(arg<vec<double, 8> >::type d);
+
+    // cos, these functions are exact to +-1 ulp with exception of _N=1
+    template <std::size_t _N>
+    vec<double, _N>
+    cos(const vec<double, _N>& v);
+
+    vec<double, 1>
+    cos(const vec<double, 1>& v);
+
+    vec<double, 2>
+    cos(arg<vec<double, 2> >::type d);
+
+    vec<double, 4>
+    cos(arg<vec<double, 4> >::type d);
+    
+    vec<double, 8>
+    cos(arg<vec<double, 8> >::type d);
+
+    // sincos, these functions are exact to +-1 ulp with exception of _N=1
+    template<std::size_t _N>
+    void
+    sincos(const vec<double, _N>& x,
+           vec<double, _N>* s, vec<double, _N>* c);
+    
+    void
+    sincos(const vec<double, 1>& x,
+           vec<double, 1>* s, vec<double, 1>* c);
+
+    void
+    sincos(arg<vec<double, 2> >::type d,
+           vec<double, 2> * psin, vec<double, 2> * pcos);
+    
+    void
+    sincos(arg<vec<double, 4> >::type d,
+           vec<double, 4> * psin, vec<double, 4> * pcos);
+
+    void
+    sincos(arg<vec<double, 8> >::type d,
+           vec<double, 8> * psin, vec<double, 8> * pcos);
+
+// TODO: --------------------------------------------------------------------
+// TODO: test for the functions below
+    // specializations vec<double, 2>
 
     template <std::size_t _N>
     vec<double, _N>
     native_sin(const vec<double, _N>& v);
-
-    template <std::size_t _N>
-    vec<double, _N>
-    cos(const vec<double, _N>& v);
 
     template <std::size_t _N>
     vec<double, _N>
@@ -424,15 +473,7 @@ namespace cftal {
 
     vec<double, 2>
     atan(arg<vec<double, 2> >::type d);
-    std::pair<vec<double, 2> , vec<double, 2> >
-    sincos(arg<vec<double, 2> >::type d);
 
-    void
-    sincos(arg<vec<double, 2> >::type d, vec<double, 2> * psin, vec<double, 2> * pcos);
-    vec<double, 2>
-    sin(arg<vec<double, 2> >::type d);
-    vec<double, 2>
-    cos(arg<vec<double, 2> >::type d);
     vec<double, 2>
     tan(arg<vec<double, 2> >::type d);
     vec<double, 2>
@@ -465,15 +506,6 @@ namespace cftal {
 
     vec<double, 4>
     atan(arg<vec<double, 4> >::type d);
-    std::pair<vec<double, 4> , vec<double, 4> >
-    sincos(arg<vec<double, 4> >::type d);
-
-    void
-    sincos(arg<vec<double, 4> >::type d, vec<double, 4> * psin, vec<double, 4> * pcos);
-    vec<double, 4>
-    sin(arg<vec<double, 4> >::type d);
-    vec<double, 4>
-    cos(arg<vec<double, 4> >::type d);
     vec<double, 4>
     tan(arg<vec<double, 4> >::type d);
     vec<double, 4>
@@ -505,15 +537,7 @@ namespace cftal {
 
     vec<double, 8>
     atan(arg<vec<double, 8> >::type d);
-    std::pair<vec<double, 8> , vec<double, 8> >
-    sincos(arg<vec<double, 8> >::type d);
 
-    void
-    sincos(arg<vec<double, 8> >::type d, vec<double, 8> * psin, vec<double, 8> * pcos);
-    vec<double, 8>
-    sin(arg<vec<double, 8> >::type d);
-    vec<double, 8>
-    cos(arg<vec<double, 8> >::type d);
     vec<double, 8>
     tan(arg<vec<double, 8> >::type d);
     vec<double, 8>
@@ -613,6 +637,14 @@ cftal::sin(const vec<double, _N>& v)
     return r;
 }
 
+inline
+cftal::vec<double, 1>
+cftal::sin(const vec<double, 1>& v)
+{
+    vec<double, 1> r(std::sin(v()));
+    return r;
+}
+
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
@@ -629,6 +661,46 @@ cftal::cos(const vec<double, _N>& v)
 {
     vec<double, _N> r(cos(low_half(v)), cos(high_half(v)));
     return r;
+}
+
+inline
+cftal::vec<double, 1>
+cftal::cos(const vec<double, 1>& v)
+{
+    vec<double, 1> r(std::cos(v()));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+void
+cftal::sincos(const vec<double, _N>& v,
+              vec<double, _N>* s, vec<double, _N>* c)
+{
+    if (s != nullptr && c != nullptr) {
+        vec<double, _N/2> sl, sh, cl, ch;
+        sincos(low_half(v), &sl, &cl);
+        sincos(high_half(v), &sh, &ch);
+        *s= vec<double, _N>(sl, sh);
+        *c= vec<double, _N>(cl, ch);
+    } else if (s != nullptr) {
+        *s = sin(v);
+    } else if (c != nullptr) {
+        *c = cos(v);
+    }
+}
+
+inline
+void
+cftal::sincos(const vec<double, 1>& v,
+              vec<double, 1>* s, vec<double, 1>* c)
+{
+    if (s != nullptr) {
+        *s = sin(v);
+    }
+    if (c != nullptr) {
+        *c = cos(v);
+    }
 }
 
 template <std::size_t _N>

@@ -120,9 +120,19 @@ namespace cftal {
                 return exp(a);
             }
             static
+            vec<_T, 1>
+            v(const vec<_T, 1>& a) {
+                return v(a());
+            }
+
+            static
             _T
             v(const _T& a) {
+#if 0
+                return call_mpfr::func(a, mpfr_exp);
+#else
                 return std::exp(a);
+#endif
             }
             static
             const char* fname() { return "exp"; }
@@ -277,6 +287,81 @@ namespace cftal {
             const char* fname() { return "pow"; }
         };
 
+        template <typename _T>
+        struct check_sin {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return sin(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::sin(a);
+            }
+            static
+            const char* fname() { return "sin"; }
+        };
+
+        template <typename _T>
+        struct check_cos {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return cos(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::cos(a);
+            }
+            static
+            const char* fname() { return "cos"; }
+        };
+
+        template <typename _T>
+        struct check_sincos {
+            struct sin {
+                template <std::size_t _N>
+                static
+                vec<_T, _N>
+                v(const vec<_T, _N>& a) {
+                    vec<_T, _N> s, c;
+                    sincos(a, &s, nullptr);
+                    return s;
+                }
+                static
+                _T
+                v(const _T& a) {
+                    return std::sin(a);
+                }
+                static
+                const char* fname() { return "sincos: sin"; }
+            };
+
+            struct cos {
+                template <std::size_t _N>
+                static
+                vec<_T, _N>
+                v(const vec<_T, _N>& a) {
+                    vec<_T, _N> c;
+                    sincos(a, nullptr, &c);
+                    return c;
+                }
+                static
+                _T
+                v(const _T& a) {
+                    return std::cos(a);
+                }
+                static
+                const char* fname() { return "sincos: cos"; }
+            };
+            
+        };
+        
+        
         template <typename _T>
         struct check_native_exp {
             template <std::size_t _N>
