@@ -98,6 +98,21 @@ if(CFTAL_USE_CXX17)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
 endif()
+
+option(CFTAL_USE_LTO "use link time optimizations" ON)
+if (CFTAL_USE_LTO)
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set (CMAKE_CXX_FLAGS_RELEASE
+      "${CMAKE_CXX_FLAGS_RELEASE} -flto")
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE
+      "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto -fwhole-program")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE
+      "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} -flto")
+    set(CMAKE_MODULE_LINKER_FLAGS_RELEASE
+      "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} -flto")
+  endif()
+endif()
+
 # create static cftal library
 option(CFTAL_STATIC_LIB "create static libcftal.a" OFF)
 # Full test ?
