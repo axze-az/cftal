@@ -649,8 +649,13 @@ _expm1(const vf_type& d)
 {
     vf_type res;
     if (_NATIVE) {
-        vf_type r=my_type::native_exp_k(d);
+#if 1
+        vf_type r=my_type::native_exp_k(d, true);
+        res = r;
+#else
+        vf_type r=my_type::native_exp_k(d, false);
         res= r - 1.0;
+#endif
     } else {
 #if 1
         dvf_type r(my_type::exp_k2(d, true));

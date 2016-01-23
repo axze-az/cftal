@@ -242,7 +242,7 @@ namespace cftal {
             exp_k2(const dvf_type& dvf, bool exp_m1=false);
 
             static vf_type
-            native_exp_k(const vf_type& v);
+            native_exp_k(const vf_type& v, bool exp_m1=false);
 
             static dvf_type
             exp2_k2(const dvf_type& dvf);
@@ -610,7 +610,7 @@ exp_k2(const dvf_type& d, bool exp_m1)
 
     // reduce arguments further until anything is lt M_LN2/512 ~0.0135
     do {
-        cmp_res = (abs(r.h()) > vf_type(M_LN2/1024)) & finite;
+        cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
         if (none_of(cmp_res))
             break;
         i_cmp_res = _T::vmf_to_vmi(cmp_res);
@@ -669,7 +669,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-native_exp_k(const vf_type& d)
+native_exp_k(const vf_type& d, bool exp_m1)
 {
 #if 1
     using ctbl = impl::d_real_constants<dvf_type, double>;
@@ -730,11 +730,16 @@ native_exp_k(const vf_type& d)
     // const vf_type two(2.0);
     // for (int i=0; i<k_i; ++i)
     //    s = mul_pwr2(s, two) + sqr(s);
-    s += vf_type(1.0);
-
-    // scale back
+    if (exp_m1 == false) {
+        s += vf_type(1.0);
+    }
     vi_type mi= _T::cvt_f_to_i(m2);
-    vf_type res(ldexp(s, mi));
+    // scale back
+    vf_type res= ldexp(s, mi);
+    if (exp_m1 == true) {
+        vf_type scale=ldexp(vf_type(1.0), mi);
+        res += (scale - vf_type(1.0));
+    }
     if (any_of_d_large) {
         vf_type tres(_T::sel(d_large, res*res, res));
         res=tres;

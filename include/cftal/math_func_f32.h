@@ -136,7 +136,7 @@ namespace cftal {
             exp_k2(const dvf_type& dvf, bool exp_m1=false);
 
             static vf_type
-            native_exp_k(const vf_type& v);
+            native_exp_k(const vf_type& v, bool exp_m1=false);
 
             static dvf_type
             exp2_k2(const dvf_type& dvf);
@@ -438,7 +438,7 @@ exp_k2(const dvf_type& x, bool exp_m1)
 
     vhpf_type vres[elements];
     for (std::size_t i=0; i<elements; ++i) {
-        vres[i]= hpf_func::native_exp_k(xh[i]);
+        vres[i]= hpf_func::native_exp_k(xh[i], exp_m1);
     }
     dvf_type res;
     _T::vhpf_to_dvf(vres, res);
@@ -509,7 +509,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-native_exp_k(const vf_type& v)
+native_exp_k(const vf_type& v, bool exp_m1)
 {
 #define L2Uf 0.693145751953125f
 #define L2Lf 1.428606765330187045e-06f

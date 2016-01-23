@@ -352,7 +352,7 @@ namespace cftal {
     vec<double, 8>
     native_exp(arg<vec<double, 8> >::type d);
 
-    // native_expm1, these functions are exact to +-4 ulp with exception of _N1
+    // native_expm1, these functions are exact to +-6 ulp with exception of _N1
     template <std::size_t _N>
     vec<double, _N>
     native_expm1(const vec<double, _N>& v);
@@ -390,7 +390,7 @@ namespace cftal {
     template <std::size_t _N>
     vec<double, _N>
     sin(const vec<double, _N>& v);
-    
+
     vec<double, 1>
     sin(const vec<double, 1>& v);
 
@@ -416,7 +416,7 @@ namespace cftal {
 
     vec<double, 4>
     cos(arg<vec<double, 4> >::type d);
-    
+
     vec<double, 8>
     cos(arg<vec<double, 8> >::type d);
 
@@ -425,7 +425,7 @@ namespace cftal {
     void
     sincos(const vec<double, _N>& x,
            vec<double, _N>* s, vec<double, _N>* c);
-    
+
     void
     sincos(const vec<double, 1>& x,
            vec<double, 1>* s, vec<double, 1>* c);
@@ -433,7 +433,7 @@ namespace cftal {
     void
     sincos(arg<vec<double, 2> >::type d,
            vec<double, 2> * psin, vec<double, 2> * pcos);
-    
+
     void
     sincos(arg<vec<double, 4> >::type d,
            vec<double, 4> * psin, vec<double, 4> * pcos);
