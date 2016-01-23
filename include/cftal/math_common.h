@@ -872,13 +872,7 @@ cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 sincos(const vf_type& d, vf_type* psin, vf_type* pcos)
 {
     if ((psin!=nullptr) || (pcos!=nullptr)) {
-        std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
-        if (psin) {
-            *psin = sin_cos.first.h() + sin_cos.first.l();
-        }
-        if (pcos) {
-            *pcos = sin_cos.second.h() + sin_cos.second.l();
-        }
+        my_type::sin_cos_k(d, 1, psin, pcos);
     }
 }
 
@@ -888,8 +882,9 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 sin(const vf_type& d)
 {
-    std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
-    return sin_cos.first.h() + sin_cos.first.l();
+    vf_type s;
+    my_type::sin_cos_k(d, 1, &s, nullptr);
+    return s;
 }
 
 template <typename _FLOAT_T,
@@ -898,8 +893,9 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 cos(const vf_type& d)
 {
-    std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
-    return sin_cos.second.h() + sin_cos.second.l();
+    vf_type c;
+    my_type::sin_cos_k(d, 1, nullptr, &c);
+    return c;
 }
 
 template <typename _FLOAT_T,
@@ -908,8 +904,10 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 tan(const vf_type& d)
 {
-    std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
-    dvf_type tn(sin_cos.first / sin_cos.second);
+    vf_type s[2], c[2];
+    my_type::sin_cos_k(d, 2, s, c);
+    dvf_type ds(s[0], s[1]), dc(c[0], c[1]);
+    dvf_type tn=ds /dc;
     return tn.h() + tn.l();
 }
 
@@ -919,8 +917,10 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 cot(const vf_type& d)
 {
-    std::pair<dvf_type, dvf_type> sin_cos(my_type::sin_cos_k(d));
-    dvf_type ct(sin_cos.second / sin_cos.first);
+    vf_type s[2], c[2];
+    my_type::sin_cos_k(d, 2, s, c);
+    dvf_type ds(s[0], s[1]), dc(c[0], c[1]);
+    dvf_type ct=dc /ds;
     return ct.h() + ct.l();
 }
 
@@ -931,14 +931,7 @@ cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 native_sincos(const vf_type& d, vf_type* psin, vf_type* pcos)
 {
     if ((psin!=nullptr) || (pcos!=nullptr)) {
-        std::pair<vf_type, vf_type> sin_cos(
-            my_type::native_sin_cos_k(d));
-        if (psin) {
-            *psin = sin_cos.first;
-        }
-        if (pcos) {
-            *pcos = sin_cos.second;
-        }
+        my_type::native_sin_cos_k(d, psin, pcos);
     }
 }
 
@@ -948,8 +941,9 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 native_sin(const vf_type& d)
 {
-    std::pair<vf_type, vf_type> sin_cos(my_type::native_sin_cos_k(d));
-    return sin_cos.first;
+    vf_type s;
+    my_type::native_sin_cos_k(d, &s, nullptr);
+    return s;
 }
 
 template <typename _FLOAT_T,
@@ -958,8 +952,9 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 native_cos(const vf_type& d)
 {
-    std::pair<vf_type, vf_type> sin_cos(my_type::native_sin_cos_k(d));
-    return sin_cos.second;
+    vf_type c;
+    my_type::native_sin_cos_k(d, nullptr, &c);
+    return c;
 }
 
 template <typename _FLOAT_T,
@@ -968,8 +963,9 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 native_tan(const vf_type& d)
 {
-    std::pair<vf_type, vf_type> sin_cos(my_type::native_sin_cos_k(d));
-    vf_type tn(sin_cos.first / sin_cos.second);
+    vf_type s, c;
+    my_type::native_sin_cos_k(d, &s, &c);
+    vf_type tn(s / c);
     return tn;
 }
 
@@ -979,9 +975,10 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 native_cot(const vf_type& d)
 {
-    std::pair<vf_type, vf_type> sin_cos(my_type::native_sin_cos_k(d));
-    vf_type tn(sin_cos.second / sin_cos.first);
-    return tn;
+    vf_type s, c;
+    my_type::native_sin_cos_k(d, &s, &c);
+    vf_type ct(c / s);
+    return ct;
 }
 
 template <typename _FLOAT_T,

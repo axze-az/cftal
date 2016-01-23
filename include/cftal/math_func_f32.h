@@ -121,13 +121,13 @@ namespace cftal {
             static vi_type ilogbp1(const vf_type& vi);
             static vi_type ilogb(const vf_type& vf);
 
-            static
-            std::pair<dvf_type, dvf_type>
-            sin_cos_k(const vf_type& v);
+            static void
+            sin_cos_k(const vf_type& v, std::size_t n,
+                      vf_type* s, vf_type* c);
 
-            static
-            std::pair<vf_type, vf_type>
-            native_sin_cos_k(const vf_type& x);
+            static void
+            native_sin_cos_k(const vf_type& x,
+                             vf_type* s, vf_type* c);
 
             static tvf_type
             exp_k3(const tvf_type& tvf);
@@ -298,10 +298,10 @@ ilogb(const vf_type& d)
 
 template <typename _T>
 inline
-std::pair<typename cftal::math::func_core<float, _T>::dvf_type,
-          typename cftal::math::func_core<float, _T>::dvf_type>
+void
 cftal::math::func_core<float, _T>::
-sin_cos_k(const vf_type& x)
+sin_cos_k(const vf_type& x, std::size_t n,
+          vf_type* ps, vf_type* pc)
 {
     using vhpf_type = typename _T::vhpf_type;
     const std::size_t elements = _T::vhpf_per_vf();
@@ -316,23 +316,31 @@ sin_cos_k(const vf_type& x)
     vhpf_type hpf_sin[elements];
     vhpf_type hpf_cos[elements];
     for (std::size_t i=0; i < elements; ++i) {
-        std::pair<vhpf_type, vhpf_type> ri(
-            hpf_func::native_sin_cos_k(xi[i]));
-        hpf_sin[i] = ri.first;
-        hpf_cos[i] = ri.second;
+        vhpf_type* hps= ps != nullptr ? hpf_sin + i : nullptr;
+        vhpf_type* hpc= pc != nullptr ? hpf_cos + i : nullptr;
+        hpf_func::native_sin_cos_k(xi[i], hps, hpc);
     }
-    std::pair<dvf_type, dvf_type> results;
-    _T::vhpf_to_dvf(hpf_sin, results.first);
-    _T::vhpf_to_dvf(hpf_cos, results.second);
-    return results;
+    if (ps != nullptr) {
+        dvf_type sr;
+        _T::vhpf_to_dvf(hpf_sin, sr);
+        ps[0] = sr.h();
+        if (n > 1)
+            ps[1] = sr.l();
+    }
+    if (pc != nullptr) {
+        dvf_type cr;
+        _T::vhpf_to_dvf(hpf_cos, cr);
+        pc[0] = cr.h();
+        if (n > 1)
+            pc[1] = cr.l();
+    }
 }
 
 template <typename _T>
 inline
-std::pair<typename cftal::math::func_core<float, _T>::vf_type,
-          typename cftal::math::func_core<float, _T>::vf_type>
+void
 cftal::math::func_core<float, _T>::
-native_sin_cos_k(const vf_type& x)
+native_sin_cos_k(const vf_type& x, vf_type* ps, vf_type* pc)
 {
 #define PI4_Af 0.78515625f
 #define PI4_Bf 0.00024187564849853515625f
@@ -397,7 +405,11 @@ native_sin_cos_k(const vf_type& x)
     si = _T::sel(x_is_inf, nanf, si);
     co = _T::sel(x_is_inf, nanf, co);
 
-    return std::make_pair(si, co);
+    if (ps != nullptr)
+        *ps = si;
+    if (pc != nullptr)
+        *pc = co;
+    // return std::make_pair(si, co);
 #undef PI4_Df
 #undef PI4_Cf
 #undef PI4_Bf

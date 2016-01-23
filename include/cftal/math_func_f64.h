@@ -268,10 +268,12 @@ namespace cftal {
             // second part of the return type
             static std::pair<dvf_type, vi_type>
             reduce_trig_arg_k(const vf_type& v);
-            // core sine, cosine calculation
-            static std::pair<dvf_type, dvf_type>
-            sin_cos_k(vf_type v);
-
+            // core sine, cosine calculation, n determines the
+            // the number of result components to store into s[0..n1)
+            // and c[0..n)
+            static void
+            sin_cos_k(vf_type v, std::size_t n,
+                      vf_type* s, vf_type* c);
             // argument reduction for all trigonometric
             // functions, reduction by %pi/2, the low bits
             // of multiple of %pi/2 is returned in the
@@ -279,8 +281,9 @@ namespace cftal {
             static std::pair<vf_type, vi_type>
             native_reduce_trig_arg_k(const vf_type& v);
             // core sine, cosine calculation
-            static std::pair<vf_type, vf_type>
-            native_sin_cos_k(const vf_type& v);
+            static void
+            native_sin_cos_k(const vf_type& v,
+                             vf_type* s, vf_type* c);
 
             // cofficients for atan2
             static const dvf_type m_atan2_c_k2[];
@@ -931,9 +934,10 @@ cftal::math::func_core<double, _T>::m_cos_c_k2[]= {
 
 template <typename _T>
 __attribute__((flatten, noinline))
-std::pair<typename cftal::math::func_core<double, _T>::dvf_type,
-          typename cftal::math::func_core<double, _T>::dvf_type>
-cftal::math::func_core<double, _T>::sin_cos_k(vf_type d)
+void
+cftal::math::func_core<double, _T>::
+sin_cos_k(vf_type d, std::size_t n,
+          vf_type* ps, vf_type* pc)
 {
     // using ctbl = impl::d_real_constants<dvf_type, double>;
     std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
@@ -969,21 +973,19 @@ cftal::math::func_core<double, _T>::sin_cos_k(vf_type d)
         _T::sel(q_and_1_f, s.h(), c.h()),
         _T::sel(q_and_1_f, s.l(), c.l()));
     // swap signs
-#if 1
-    vf_type fs = _T::sel(q_and_2_f, vf_type(-1.0), vf_type(1.0));
-    rsin.h() *= fs;
-    rsin.l() *= fs;
-    vmf_type mt = q_and_2_f ^ q_and_1_f;
-    vf_type fc =  _T::sel(mt, vf_type(-1.0), vf_type(1.0));
-    rcos.h() *= fc;
-    rcos.l() *= fc;
-#else
-    rsin.h() = mulsign(rsin.h(), q_and_2_f);
-    rsin.l() = mulsign(rsin.l(), q_and_2_f);
-    rcos.h() = mulsign(rcos.h(), vf_type(q_and_2_f ^ q_and_1_f));
-    rcos.l() = mulsign(rcos.l(), vf_type(q_and_2_f ^ q_and_1_f));
-#endif
-    return std::make_pair(rsin, rcos);
+    if (ps != nullptr) {
+        vf_type fs = _T::sel(q_and_2_f, vf_type(-1.0), vf_type(1.0));
+        ps[0] = rsin.h() * fs;
+        if (n > 1)
+            ps[1] = rsin.l() * fs;
+    }
+    if (pc != nullptr) {
+        vmf_type mt = q_and_2_f ^ q_and_1_f;
+        vf_type fc =  _T::sel(mt, vf_type(-1.0), vf_type(1.0));
+        pc[0] = rcos.h() * fc;
+        if (n > 1)
+            pc[1] = rcos.l() * fc;
+    }
 }
 
 
@@ -1045,10 +1047,9 @@ native_reduce_trig_arg_k(const vf_type& d)
 
 template <typename _T>
 __attribute__((flatten, noinline))
-std::pair<typename cftal::math::func_core<double, _T>::vf_type,
-          typename cftal::math::func_core<double, _T>::vf_type>
+void
 cftal::math::func_core<double, _T>::
-native_sin_cos_k(const vf_type& d)
+native_sin_cos_k(const vf_type& d, vf_type* ps, vf_type* pc)
 {
     std::pair<vf_type, vi_type> rq(
         native_reduce_trig_arg_k(d));
@@ -1085,17 +1086,17 @@ native_sin_cos_k(const vf_type& d)
     vf_type rs(_T::sel(q_and_1_f, c, s));
     vf_type rc(_T::sel(q_and_1_f, s, c));
     // swap signs
-#if 1
-    vf_type fs = _T::sel(q_and_2_f, vf_type(-1.0), vf_type(1.0));
-    rs *= fs;
-    vmf_type mt = q_and_2_f ^ q_and_1_f;
-    vf_type fc =  _T::sel(mt, vf_type(-1.0), vf_type(1.0));
-    rc *= fc;
-#else
-    rs = mulsign(rs, q_and_2_f);
-    rc = mulsign(rc, vf_type(q_and_2_f ^ q_and_1_f));
-#endif
-    return std::make_pair(rs, rc);
+    if (ps != nullptr) {
+        vf_type fs = _T::sel(q_and_2_f, vf_type(-1.0), vf_type(1.0));
+        rs *= fs;
+        *ps = rs;
+    }
+    if (pc != nullptr) {
+        vmf_type mt = q_and_2_f ^ q_and_1_f;
+        vf_type fc =  _T::sel(mt, vf_type(-1.0), vf_type(1.0));
+        rc *= fc;
+        *pc= rc;
+    }
 }
 
 template <typename _T>
