@@ -211,6 +211,10 @@ int main(int argc, char** argv)
             "exp10",      mpfr_exp10,     nullptr,
             -330.0,     310.0
         }, {
+            "cot",       mpfr_cot,      nullptr,
+            -std::numeric_limits<double>::max(),
+            std::numeric_limits<double>::max()
+        }, {
             "cbrt",       mpfr_cbrt,      nullptr,
             -std::numeric_limits<double>::max(),
             std::numeric_limits<double>::max()

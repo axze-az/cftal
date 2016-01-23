@@ -360,6 +360,23 @@ namespace cftal {
             };
             
         };
+
+        template <typename _T>
+        struct check_tan {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return tan(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::tan(a);
+            }
+            static
+            const char* fname() { return "tan"; }
+        };
         
         
         template <typename _T>

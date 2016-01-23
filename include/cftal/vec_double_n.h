@@ -442,6 +442,23 @@ namespace cftal {
     sincos(arg<vec<double, 8> >::type d,
            vec<double, 8> * psin, vec<double, 8> * pcos);
 
+    // tan, these functions are exact to +-1 ulp with exception of _N=1
+    template <std::size_t _N>
+    vec<double, _N>
+    tan(const vec<double, _N>& v);
+
+    vec<double, 1>
+    tan(const vec<double, 1>& v);
+
+    vec<double, 2>
+    tan(arg<vec<double, 2> >::type d);
+
+    vec<double, 4>
+    tan(arg<vec<double, 4> >::type d);
+
+    vec<double, 8>
+    tan(arg<vec<double, 8> >::type d);
+    
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
     // specializations vec<double, 2>
@@ -453,10 +470,6 @@ namespace cftal {
     template <std::size_t _N>
     vec<double, _N>
     native_cos(const vec<double, _N>& v);
-
-    template <std::size_t _N>
-    vec<double, _N>
-    tan(const vec<double, _N>& v);
 
     template <std::size_t _N>
     vec<double, _N>
@@ -474,8 +487,6 @@ namespace cftal {
     vec<double, 2>
     atan(arg<vec<double, 2> >::type d);
 
-    vec<double, 2>
-    tan(arg<vec<double, 2> >::type d);
     vec<double, 2>
     cot(arg<vec<double, 2> >::type d);
     vec<double, 2>
@@ -507,8 +518,6 @@ namespace cftal {
     vec<double, 4>
     atan(arg<vec<double, 4> >::type d);
     vec<double, 4>
-    tan(arg<vec<double, 4> >::type d);
-    vec<double, 4>
     cot(arg<vec<double, 4> >::type d);
     vec<double, 4>
     atan2(arg<vec<double, 4> >::type x, arg<vec<double, 4> >::type y);
@@ -538,8 +547,6 @@ namespace cftal {
     vec<double, 8>
     atan(arg<vec<double, 8> >::type d);
 
-    vec<double, 8>
-    tan(arg<vec<double, 8> >::type d);
     vec<double, 8>
     cot(arg<vec<double, 8> >::type d);
     vec<double, 8>
@@ -718,6 +725,14 @@ cftal::vec<double, _N>
 cftal::tan(const vec<double, _N>& v)
 {
     vec<double, _N> r(tan(low_half(v)), tan(high_half(v)));
+    return r;
+}
+
+inline
+cftal::vec<double, 1>
+cftal::tan(const vec<double, 1>& v)
+{
+    vec<double, 1> r(std::tan(v()));
     return r;
 }
 
