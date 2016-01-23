@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     rc&= check_func_1<double, 4, check_sqrt<double> >(v, 1, 1, false);
     rc&= check_func_1<double, 8, check_sqrt<double> >(v, 1, 1, false);
 
-    func_domain<double> d=std::make_pair(-0.0001,
+    func_domain<double> d=std::make_pair(-1.0e-307,
                                          std::numeric_limits< double >::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<

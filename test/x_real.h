@@ -2,6 +2,7 @@
 #define __CFTAL_TEST_X_REAL_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/test/uniform_distribution.h>
 #include <cftal/test/f32_f64.h>
 #include <cftal/test/call_mpfr.h>
 #include <random>
@@ -259,7 +260,7 @@ cftal::test::check_x_real<_X, _T, _R>::ops()
         rc &= ops(*std::next(b), *b);
     }
     std::mt19937 rnd;
-    std::uniform_real_distribution<_T>
+    uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
     const std::size_t N0=0x2000ULL;
     for (uint32_t j=0; j<72; ++j) {

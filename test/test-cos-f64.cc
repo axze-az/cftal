@@ -24,14 +24,11 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_cos<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_cos<double> >(v, ulp, 0, false);
 
-    auto dp=std::make_pair(0.0, std::numeric_limits<double>::max());
+    auto dp=std::make_pair(-std::numeric_limits<double>::max(),
+                           std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         double, 8, check_cos<double> >::v(dp, cmp_ulp<double>(ulp, us),
-                                          0x80000);
-    auto dm=std::make_pair(-std::numeric_limits<double>::max(), 0.0);
-    rc &= of_fp_func_up_to<
-        double, 8, check_cos<double> >::v(dm, cmp_ulp<double>(ulp, us),
                                           0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;

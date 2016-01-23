@@ -1,5 +1,6 @@
 #include <cftal/constants.h>
 #include <cftal/types.h>
+#include <cftal/test/uniform_distribution.h>
 #include <cftal/test/of_fp_funcs.h>
 #include <iostream>
 #include <random>
@@ -41,7 +42,7 @@ generate_func_1(std::ostream& s, mpfr_func_1 f,
     mpfr_init2(mp_input, 53);
 
     // std::uniform_int_distribution<uint64_t> distribution;
-    std::uniform_real_distribution<double> distribution(dom.first, dom.second);
+    uniform_real_distribution<double> distribution(dom.first, dom.second);
     std::mt19937_64 rnd;
 
     while (cnt != 0) {

@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/select.h>
+#include <cftal/test/uniform_distribution.h>
 #include <cftal/test/f32_f64.h>
 #include <iostream>
 #include <sstream>
@@ -323,7 +324,7 @@ cftal::test::of_ops<_T, _N>::v()
 
     using distrib_type= typename std::conditional<
         std::is_floating_point<_T>::value,
-        std::uniform_real_distribution<_T>,
+        uniform_real_distribution<_T>,
         std::uniform_int_distribution<_T> >::type;
     distrib_type
     distrib(std::numeric_limits<_T>::lowest(),

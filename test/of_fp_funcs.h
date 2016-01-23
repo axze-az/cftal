@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec.h>
+#include <cftal/test/uniform_distribution.h>
 #include <cftal/test/f32_f64.h>
 #include <random>
 #include <iostream>
@@ -225,7 +226,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
     }
 
     std::mt19937_64 rnd;
-    std::uniform_real_distribution<_T>
+    uniform_real_distribution<_T>
         distrib(domain.first, domain.second);
 
     std::cout << "[" << domain.first << ", " << domain.second << ")\n";
@@ -242,7 +243,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
     if (minus1 < plus1 && (minus1 != domain.first || plus1 != domain.second)) {
         std::cout << std::endl;
         _T nplus1=std::nextafter(plus1, _T(2)*plus1);
-        std::uniform_real_distribution<_T>
+        uniform_real_distribution<_T>
             distrib1(minus1, nplus1);
         std::cout << "[" << minus1 << ", " << nplus1 << ")\n";
         for (uint32_t j=0; j<N0; ++j) {
@@ -314,9 +315,9 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
     }
 
     std::mt19937_64 rnd;
-    std::uniform_real_distribution<_T>
+    uniform_real_distribution<_T>
         distrib1(domain_1.first, domain_1.second);
-    std::uniform_real_distribution<_T>
+    uniform_real_distribution<_T>
         distrib2(domain_2.first, domain_2.second);
 
     std::cout << "[" << domain_1.first << ", " << domain_1.second
@@ -339,9 +340,9 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
         std::cout << std::endl;
         _T a_nplus1=std::nextafter(a_plus1, _T(2)*a_plus1);
         _T b_nplus1=std::nextafter(b_plus1, _T(2)*b_plus1);
-        std::uniform_real_distribution<_T>
+        uniform_real_distribution<_T>
             distrib_1_1(a_minus1, a_nplus1);
-        std::uniform_real_distribution<_T>
+        uniform_real_distribution<_T>
             distrib_1_2(b_minus1, b_nplus1);
         std::cout << "[" << a_minus1 << ", " << a_nplus1
                   << ") x [" << b_minus1 << ", " << b_nplus1
