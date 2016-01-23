@@ -584,7 +584,7 @@ typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 exp_k2(const dvf_type& d, bool exp_m1)
 {
-    using ctbl = impl::d_real_constants<dvf_type, double>;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
 
     vmf_type cmp_res;
     vmi_type i_cmp_res;
