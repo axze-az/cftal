@@ -22,9 +22,9 @@ namespace cftal {
                 std::conditional<std::is_same<_T, double>::value,
                                  bytes8,
                                  bytes4>::type;
-            constexpr static const _T _max_val=
+            const _T _max_val=
                 std::sqrt(std::numeric_limits<_T>::max());
-            constexpr static const _T _min_val=
+            const _T _min_val=
                 -_max_val;
 
             std::uniform_int_distribution<int_type> _i_dist;
@@ -32,12 +32,10 @@ namespace cftal {
             _T _max;
             bool _use_int;
 
-            static
             _T trunc_max_val(_T m) {
                 return std::min(m, _max_val);
             }
 
-            static
             _T trunc_min_val(_T m) {
                 return std::max(m, _min_val);
             }

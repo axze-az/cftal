@@ -5,6 +5,7 @@ set (CSRCS
     mul_div_64.cc
     d_real.cc
     math_func.cc
+    math_common.cc
     x86_ops_1.cc
     vec_traits.cc
     # vec <double, 2>

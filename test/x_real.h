@@ -55,7 +55,7 @@ namespace cftal {
                 return d_real<double>(hn, ln);
             }
 
-            constexpr static const bool check_div = true;
+            constexpr static const bool check_div = false;
         };
 
         template <>
@@ -104,7 +104,7 @@ namespace cftal {
                 return d_real<float>(hn, ln);
             }
 
-            constexpr static const bool check_div = true;
+            constexpr static const bool check_div = false;
         };
 
         template <>
@@ -261,7 +261,8 @@ cftal::test::check_x_real<_X, _T, _R>::ops()
     }
     std::mt19937 rnd;
     uniform_real_distribution<_T>
-        distrib(0, std::numeric_limits<_T>::max());
+        distrib(1.0,
+                std::numeric_limits<_T>::max());
     const std::size_t N0=0x2000ULL;
     for (uint32_t j=0; j<72; ++j) {
         for (std::size_t i=0; i<N0; ++i) {
