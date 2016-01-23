@@ -99,7 +99,7 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
 endif()
 
-option(CFTAL_USE_LTO "use link time optimizations" ON)
+option(CFTAL_USE_LTO "use link time optimizations" OFF)
 if (CFTAL_USE_LTO)
   if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set (CMAKE_CXX_FLAGS_RELEASE
