@@ -239,7 +239,7 @@ namespace cftal {
             exp_k3(const tvf_type& tvf);
 
             static dvf_type
-            exp_k2(const dvf_type& dvf);
+            exp_k2(const dvf_type& dvf, bool exp_m1=false);
 
             static vf_type
             native_exp_k(const vf_type& v);
@@ -582,9 +582,8 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
-exp_k2(const dvf_type& d)
+exp_k2(const dvf_type& d, bool exp_m1)
 {
-#if 1
     using ctbl = impl::d_real_constants<dvf_type, double>;
 
     vmf_type cmp_res;
@@ -611,7 +610,7 @@ exp_k2(const dvf_type& d)
 
     // reduce arguments further until anything is lt M_LN2/512 ~0.0135
     do {
-        cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
+        cmp_res = (abs(r.h()) > vf_type(M_LN2/1024)) & finite;
         if (none_of(cmp_res))
             break;
         i_cmp_res = _T::vmf_to_vmi(cmp_res);
@@ -645,56 +644,25 @@ exp_k2(const dvf_type& d)
     // const vf_type two(2.0);
     // for (int i=0; i<k_i; ++i)
     //    s = mul_pwr2(s, two) + sqr(s);
-    s += vf_type(1.0);
-
-    // scale back
+    if (exp_m1 == false) {
+        s += vf_type(1.0);
+    }
     vi_type mi= _T::cvt_f_to_i(m2);
-    dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
+    // scale back
+    dvf_type res= dvf_type(ldexp(s.h(), mi), ldexp(s.l(), mi));
+    if (exp_m1 == true) {
+        vf_type scale=ldexp(vf_type(1.0), mi);
+        res += (dvf_type(scale) - vf_type(1.0));
+    }
     if (any_of_d_large) {
+        // works because for these d at double precision
+        // exp(d) == expm1(d)
         dvf_type xres= sqr(res);
         dvf_type tres(_T::sel(d_large, xres.h(), res.h()),
                       _T::sel(d_large, xres.l(), res.l()));
         res=tres;
     }
     return res;
-#else
-    using ctbl = impl::d_real_constants<dvf_type, double>;
-
-    const int k_i(9 /* 12 */);
-    const double k(1<<k_i);
-    const vf_type inv_k(1.0/k);
-
-    vf_type m2= rint(vf_type(d.h() * ctbl::m_1_ln2.h()));
-    // dvf_type m2= rint(d * ctbl::m_1_ln2);
-    dvf_type r= mul_pwr2(
-        (d - dvf_type(ctbl::m_ln2)*m2), inv_k);
-    vf_type m=m2 /* m2.h() + m2.l() */;
-
-    const int _N=9 /* 7 */;
-    dvf_type s = ctbl::inv_fac[_N];
-    // s = s * r + ctbl::inv_fac[8];
-    // s = s * r + ctbl::inv_fac[7];
-    // s = s * r + ctbl::inv_fac[6];
-    // s = s * r + ctbl::inv_fac[5];
-    // s = s * r + ctbl::inv_fac[4];
-    // s = s * r + ctbl::inv_fac[3];
-    for (unsigned int i=_N-1; i!=2; --i)
-        s = s*r + dvf_type(ctbl::inv_fac[i]);
-    s = s * r + vf_type(0.5);
-    s = s * r + vf_type(1.0);
-    s = s * r;
-
-    // scale back the 1/k reduced value
-    const vf_type two(2.0);
-    for (int i=0; i<k_i; ++i)
-        s = mul_pwr2(s, two) + sqr(s);
-    s += vf_type(1.0);
-
-    // scale back
-    vi_type mi= _T::cvt_f_to_i(m);
-    dvf_type res(ldexp(s.h(), mi), ldexp(s.l(), mi));
-    return res;
-#endif
 }
 
 template <typename _T>

@@ -19,7 +19,7 @@ namespace cftal {
 
         template <>
         struct func_constants<double> {
-            // exp(x) == +inf for x >= 
+            // exp(x) == +inf for x >=
             constexpr static const double
             exp_hi_inf= 7.097827128933840867830440e+02;
             // exp(x) == 0 for x <=
@@ -652,9 +652,14 @@ _expm1(const vf_type& d)
         vf_type r=my_type::native_exp_k(d);
         res= r - 1.0;
     } else {
-        dvf_type r(my_type::exp_k2(d));
+#if 1
+        dvf_type r(my_type::exp_k2(d, true));
+        res =r.h() + r.l();
+#else
+        dvf_type r(my_type::exp_k2(d, false));
         dvf_type rm1= r - vf_type(1.0);
         res = rm1.h() + rm1.l();
+#endif
     }
     const vf_type expm1_hi_inf= 7.097827128933840867830440e+02;
     const vf_type expm1_lo_minus_one= -3.742994775023704789873591e+01;

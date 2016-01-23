@@ -133,7 +133,7 @@ namespace cftal {
             exp_k3(const tvf_type& tvf);
 
             static dvf_type
-            exp_k2(const dvf_type& dvf);
+            exp_k2(const dvf_type& dvf, bool exp_m1=false);
 
             static vf_type
             native_exp_k(const vf_type& v);
@@ -419,7 +419,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::dvf_type
 cftal::math::func_core<float, _T>::
-exp_k2(const dvf_type& x)
+exp_k2(const dvf_type& x, bool exp_m1)
 {
     using vhpf_type = typename _T::vhpf_type;
     const std::size_t elements = _T::vhpf_per_vf();
