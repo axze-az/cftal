@@ -24,7 +24,6 @@ int main(int argc, char** argv)
                        check_native_expm1<double> >(v, 3, 0, false);
     rc &= check_func_1<double, 8,
                        check_native_expm1<double> >(v, 3, 0, false);
-
     func_domain<double> d=std::make_pair(-800.0, 710.0);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<

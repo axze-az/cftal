@@ -239,7 +239,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
     }
     _T minus1= std::max(_T(-1), domain.first);
     _T plus1= std::min(_T(1), domain.second);
-    if (minus1 < plus1) {
+    if (minus1 < plus1 && (minus1 != domain.first || plus1 != domain.second)) {
         std::cout << std::endl;
         _T nplus1=std::nextafter(plus1, _T(2)*plus1);
         std::uniform_real_distribution<_T>
