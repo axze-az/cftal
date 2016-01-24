@@ -820,11 +820,19 @@ pow(const vf_type& x, const vf_type& y)
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, M_E, res);
 
+#if 1
+    vmf_type res_nan = isnan(res);
+    vmf_type abs_x_lt_1 = abs(x) < 1.0;
+    vmf_type y_gt_1 = y > 1.0;
+    res = _T::sel(res_nan, _T::pinf(), res);
+    res = _T::sel(res_nan & abs_x_lt_1 & y_gt_1, 0.0, res);
+    res = _T::sel(res_nan & (~abs_x_lt_1) & (~y_gt_1), 0.0, res);
+#endif
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=0.5 *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
-    vmf_type res_is_nan= isnan(res);
-    res = _T::sel(res_is_nan, _T::pinf(), res);
+    // vmf_type res_is_nan= isnan(res);
+    // res = _T::sel(res_is_nan, _T::pinf(), res);
 
     vf_type res_fac= _T::sel(y_is_odd, vf_type(-1), vf_type(1));
     res_fac = _T::sel(~y_is_int, _T::nan(), res_fac);
