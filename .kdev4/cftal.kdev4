@@ -3,7 +3,7 @@ BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x
 
 [CMake]
 Build Directory Count=7
-Current Build Directory Index=0
+Current Build Directory Index=1
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -73,7 +73,7 @@ Path=gcc
 Type=GCC
 
 [Launch]
-Launch Configurations=Launch Configuration 1,Launch Configuration 2,Launch Configuration 0,Launch Configuration 3,Launch Configuration 4,Launch Configuration 5,Launch Configuration 6,Launch Configuration 7,Launch Configuration 8,Launch Configuration 9,Launch Configuration 10,Launch Configuration 11,Launch Configuration 12,Launch Configuration 13,Launch Configuration 14
+Launch Configurations=Launch Configuration 1,Launch Configuration 2,Launch Configuration 0,Launch Configuration 3,Launch Configuration 4,Launch Configuration 5,Launch Configuration 6,Launch Configuration 7,Launch Configuration 8,Launch Configuration 9,Launch Configuration 10,Launch Configuration 11,Launch Configuration 12,Launch Configuration 13,Launch Configuration 14,Launch Configuration 15
 
 [Launch][Launch Configuration 0]
 Configured Launch Modes=execute
@@ -191,6 +191,24 @@ EnvironmentGroup=
 Executable=file:///home/axel/projects/cpplib/cftal/
 External Terminal=konsole --noclose --workdir %workdir -e %exe
 Project Target=cftal,test,test-exp-f64
+Use External Terminal=false
+Working Directory=
+isExecutable=false
+
+[Launch][Launch Configuration 15]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=hackx86vec
+Type=Native Application
+
+[Launch][Launch Configuration 15][Data]
+Arguments=
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l\x00\x00\x00\x14\x00h\x00a\x00c\x00k\x00x\x008\x006\x00v\x00e\x00c)
+Dependency Action=Build
+EnvironmentGroup=
+Executable=file:///home/axel/projects/cpplib/cftal/
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+Project Target=cftal,hackx86vec
 Use External Terminal=false
 Working Directory=
 isExecutable=false
