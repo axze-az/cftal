@@ -675,7 +675,7 @@ cftal::math::func_core<double, _T>::
 native_exp_k(const vf_type& d, bool exp_m1)
 {
 #if 1
-    using ctbl = impl::d_real_constants<dvf_type, double>;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
 
     vmf_type cmp_res;
     vmi_type i_cmp_res;
@@ -791,8 +791,8 @@ typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 exp2_k2(const dvf_type& d)
 {
-    using ctbl = impl::d_real_constants<dvf_type, double>;
-    dvf_type d2=ctbl::m_ln2 * d;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    dvf_type d2=dvf_type(ctbl::m_ln2) * d;
     return exp_k2(d2);
 }
 
@@ -802,7 +802,7 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 native_exp2_k(const vf_type& d)
 {
-    using ctbl = impl::d_real_constants<dvf_type, double>;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type d2=ctbl::m_ln2.h() * d;
     return native_exp_k(d2);
 }
@@ -813,8 +813,8 @@ typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 exp10_k2(const dvf_type& d)
 {
-    using ctbl = impl::d_real_constants<dvf_type, double>;
-    dvf_type d10=ctbl::m_ln10 * d;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    dvf_type d10=dvf_type(ctbl::m_ln10) * d;
     return exp_k2(d10);
 }
 
@@ -824,7 +824,7 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 native_exp10_k(const vf_type& d)
 {
-    using ctbl = impl::d_real_constants<dvf_type, double>;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type d10=ctbl::m_ln10.h() * d;
     return native_exp_k(d10);
 }
@@ -838,14 +838,15 @@ cftal::math::
 func_core<double, _T>::
 reduce_trig_arg_k(const vf_type& d)
 {
-    using ctbl = impl::d_real_constants<dvf_type, double>;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
     constexpr double large_arg(2.0e8);
     vmf_type v_large_arg(vf_type(large_arg) < abs(d));
     // small argument reduction
     // reduce by pi half
-    dvf_type qf(rint(d * ctbl::m_2_pi));
-    dvf_type d0((d - qf * ctbl::m_pi_2.h()) -
-                qf * ctbl::m_pi_2.l());
+    dvf_type qf(rint(d * dvf_type(ctbl::m_2_pi)));
+    dvf_type d0(d -
+                qf * vf_type(ctbl::m_pi_2.h()) -
+                qf * vf_type(ctbl::m_pi_2.l()));
     vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
 
     if (any_of(v_large_arg)) {
