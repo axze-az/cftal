@@ -40,6 +40,8 @@ namespace cftal {
                 static const _T m_ln2;
                 // M_LN10 LOG_E(10)
                 static const _T m_ln10;
+                // M_LN_2POW106
+                static const _T m_ln2pow106;
                 // low half of m_ln2
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
@@ -74,6 +76,8 @@ namespace cftal {
                 static const _T m_ln2;
                 // M_LN10 LOG_E(10)
                 static const _T m_ln10;
+                // M_LN_2POW106
+                static const _T m_ln2pow106;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
                 // 2*PI
@@ -442,9 +446,20 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
-log_k2(const dvf_type& d)
+log_k2(const dvf_type& d0)
 {
-    using ctbl=impl::d_real_constants<dvf_type, double>;
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+
+    // avoid the range of denormals:
+    // -1022+53 = -969
+    vmf_type d_small= d0.h() < vf_type(0x1p-969);
+    dvf_type d=d0;
+    if (any_of(d_small)) {
+        const vf_type two_pow_106(0x1p106);
+        dvf_type t= d0 * two_pow_106;
+        d = dvf_type(_T::sel(d_small, t.h(), d.h()),
+                     _T::sel(d_small, t.l(), d.l()));
+    }
 
     dvf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
 
@@ -458,13 +473,19 @@ log_k2(const dvf_type& d)
     dvf_type x2 = sqr(xr);
 
     const int _N=25;
-    dvf_type t= ctbl::_2_over_i[_N];
+    dvf_type t= dvf_type(ctbl::_2_over_i[_N]);
     for (int i=_N-2; i>2; i-=2)
-        t = t * x2 + ctbl::_2_over_i[i];
+        t = t * x2 + dvf_type(ctbl::_2_over_i[i]);
     t = t * x2 + vf_type(2.0);
     t = t * xr;
 
-    xr = t + ctbl::m_ln2 * ef;
+    xr = t + dvf_type(ctbl::m_ln2) * ef;
+
+    if (any_of(d_small)) {
+        dvf_type t= xr - dvf_type(ctbl::m_ln2pow106);
+        xr = dvf_type(_T::sel(d_small, t.h(), xr.h()),
+                      _T::sel(d_small, t.l(), xr.l()));
+    }
     return xr;
 }
 
@@ -472,9 +493,18 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-native_log_k(const vf_type& d)
+native_log_k(const vf_type& d0)
 {
-    using ctbl=impl::d_real_constants<dvf_type, double>;
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+
+    // -1022+53 = -969
+    vmf_type d_small= d0 < vf_type(0x1p-969);
+    vf_type d=d0;
+    if (any_of(d_small)) {
+        const vf_type two_pow_106(0x1p106);
+        vf_type t= d0 * two_pow_106;
+        d = _T::sel(d_small, t, d);
+    }
 
     vf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
 
@@ -488,12 +518,17 @@ native_log_k(const vf_type& d)
     vf_type x2 = xr*xr;
 
     const int _N=25;
-    vf_type t= ctbl::_2_over_i[_N].h();
+    vf_type t= vf_type(ctbl::_2_over_i[_N].h());
     for (int i=_N-2; i>2; i-=2)
-        t = t * x2 + ctbl::_2_over_i[i].h();
+        t = t * x2 + vf_type(ctbl::_2_over_i[i].h());
     t = t * x2 + vf_type(2.0);
     t = t * xr;
     xr = t + M_LN2 * ef;
+
+    if (any_of(d_small)) {
+        vf_type t= xr - vf_type(ctbl::m_ln2pow106.h());
+        xr = _T::sel(d_small, t, xr);
+    }
     return xr;
 }
 
@@ -1340,6 +1375,11 @@ cftal::math::impl::d_real_constants<_T, double>::m_ln10(
 
 template <class _T>
 const _T
+cftal::math::impl::d_real_constants<_T, double>::m_ln2pow106(
+         7.3473601139354201450260e+01,  1.3479665980519211209217e-15);
+
+template <class _T>
+const _T
 cftal::math::impl::d_real_constants<_T, double>::m_pi(
          3.1415926535897931159980e+00,  1.2246467991473532071738e-16);
 
@@ -1461,6 +1501,11 @@ template <class _T>
 const _T
 cftal::math::impl::t_real_constants<_T, double>::m_ln10(
          2.3025850929940459010936e+00, -2.1707562233822493507613e-16, -9.9842624544657765701194e-33);
+
+template <class _T>
+const _T
+cftal::math::impl::t_real_constants<_T, double>::m_ln2pow106(
+         7.3473601139354201450260e+01,  1.3479665980519211209217e-15, -6.8920782815610402112353e-32);
 
 template <class _T>
 const _T

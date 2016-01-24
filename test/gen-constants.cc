@@ -263,6 +263,15 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << ");\n"
       << std::endl;
 
+    x = 0x1p106;
+    v = log(x);
+    s << "template <class _T>\nconst _T\n"
+      << "cftal::math::impl::" << pfx << "::m_ln2pow106("
+        "\n\t"
+      << to_stream(d, v, true)
+      << ");\n"
+      << std::endl;
+
     load_pi(x);
     v = x;
     s << "template <class _T>\nconst _T\n"
@@ -424,6 +433,13 @@ int main(int argc, char** argv)
 
         std::cout << "const double dbl_max_denormal= "
                   <<  sig_f64_msk::v._f64 << ";\n\n";
+        std::cout << "const double _2pow106="
+                  << 0x1p106 << ";\n\n";
+
+        std::cout << "const double _2pow106="
+                  << std::hexfloat
+                  << std::ldexp(1.0, 106) << ";\n\n"
+                  << std::scientific;
 
         gen_math_constants<128, d_real<double> >(
             std::cout,

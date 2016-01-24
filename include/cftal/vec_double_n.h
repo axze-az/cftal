@@ -458,7 +458,7 @@ namespace cftal {
 
     vec<double, 8>
     tan(arg<vec<double, 8> >::type d);
-    
+
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
     // specializations vec<double, 2>

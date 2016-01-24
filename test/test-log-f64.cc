@@ -19,15 +19,16 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     // std::cerr << std::hexfloat;
-    bool rc= check_func_1<double, 2, check_log<double> >(v, 1, 0, false);
-    rc&= check_func_1<double, 4, check_log<double> >(v, 1, 0, false);
-    rc&= check_func_1<double, 8, check_log<double> >(v, 1, 0, false);
+    const int ulp=1;
+    bool rc= check_func_1<double, 2, check_log<double> >(v, ulp, 0, false);
+    rc&= check_func_1<double, 4, check_log<double> >(v, ulp, 0, false);
+    rc&= check_func_1<double, 8, check_log<double> >(v, ulp, 0, false);
 
-    func_domain<double> d=std::make_pair(-0.0001,
+    func_domain<double> d=std::make_pair(0.0,
                                          std::numeric_limits< double >::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, 8, check_log<double> >::v(d, cmp_ulp<double>(1, us));
+        double, 8, check_log<double> >::v(d, cmp_ulp<double>(ulp, us));
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     return (rc == true) ? 0 : 1;

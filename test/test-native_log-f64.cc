@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     rc&= check_func_1<double, 8,
                       check_native_log<double> >(v, 2, 0, false);
 
-    func_domain<double> d=std::make_pair(-0.0001,
+    func_domain<double> d=std::make_pair(0.0,
                                          std::numeric_limits< double >::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
