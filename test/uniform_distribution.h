@@ -22,10 +22,6 @@ namespace cftal {
                 std::conditional<std::is_same<_T, double>::value,
                                  bytes8,
                                  bytes4>::type;
-            const _T _max_val=
-                std::sqrt(std::numeric_limits<_T>::max());
-            const _T _min_val=
-                -_max_val;
 
             std::uniform_int_distribution<int_type> _i_dist;
             _T _min;
@@ -33,10 +29,12 @@ namespace cftal {
             bool _use_int;
 
             _T trunc_max_val(_T m) {
+                const _T _max_val= std::sqrt(std::numeric_limits<_T>::max());
                 return std::min(m, _max_val);
             }
 
             _T trunc_min_val(_T m) {
+                const _T _min_val= -std::sqrt(std::numeric_limits<_T>::max());
                 return std::max(m, _min_val);
             }
 
@@ -47,16 +45,15 @@ namespace cftal {
             static
             float
             make_fp(const bytes4& b) { return b._f32; }
-            
+
         public:
             using result_type = typename base_type::result_type;
-            uniform_real_distribution(_T min, _T max)
-                : base_type(trunc_min_val(min), trunc_max_val(max)),
-                  _i_dist(std::numeric_limits<int_type>::lowest(),
-                          std::numeric_limits<int_type>::max()),
-                  _min(min), _max(max),
-                  _use_int((trunc_min_val(min) != min) ||
-                           (trunc_max_val(max) != max)) {
+            uniform_real_distribution(_T amin, _T amax)
+                : base_type(trunc_min_val(amin), trunc_max_val(amax)),
+                  _i_dist(),
+                  _min(amin), _max(amax),
+                  _use_int((trunc_min_val(amin) != amin) ||
+                           (trunc_max_val(amax) != amax)) {
             }
 
             template <class _G>
@@ -65,7 +62,8 @@ namespace cftal {
                 _T r;
                 if (_use_int) {
                     while (1) {
-                        bytesx t(_i_dist(g));
+                        int_type i=_i_dist(g);
+                        bytesx t(i);
                         r = make_fp(t);
                         if (std::isnan(r))
                             continue;

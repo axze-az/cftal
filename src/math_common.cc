@@ -11,3 +11,15 @@ const double cftal::math::func_constants<double>::log_lo_fin;
 
 constexpr
 const double cftal::math::func_constants<double>::log_lo_val;
+
+constexpr
+const float cftal::math::func_constants<float>::exp_hi_inf;
+
+constexpr
+const float cftal::math::func_constants<float>::exp_lo_zero;
+
+constexpr
+const float cftal::math::func_constants<float>::log_lo_fin;
+
+constexpr
+const float cftal::math::func_constants<float>::log_lo_val;

@@ -358,7 +358,7 @@ namespace cftal {
                 static
                 const char* fname() { return "sincos: cos"; }
             };
-            
+
         };
 
         template <typename _T>
@@ -377,8 +377,8 @@ namespace cftal {
             static
             const char* fname() { return "tan"; }
         };
-        
-        
+
+
         template <typename _T>
         struct check_native_exp {
             template <std::size_t _N>

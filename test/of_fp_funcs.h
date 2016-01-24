@@ -8,6 +8,7 @@
 #include <cftal/test/f32_f64.h>
 #include <random>
 #include <iostream>
+#include <iomanip>
 #include <cmath>
 #include <utility>
 
@@ -192,6 +193,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(_T a, _CMP cmp)
     vec<_T, _N> va=a;
     vec<_T, _N> vr=_F::v(va);
     _T r= _F::v(a);
+    // std::cout << std::setprecision(18) << a << std::endl;
     bool c= check(vr, r, _F::fname(), true, cmp);
     if (c == false) {
         std::cerr << _F::fname() << "("<< a << ") failed.\n";

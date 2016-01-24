@@ -622,6 +622,7 @@ typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 exp_k2(const dvf_type& d, bool exp_m1)
 {
+#if 1
     using ctbl = impl::d_real_constants<d_real<double>, double>;
 
     vmf_type cmp_res;
@@ -701,6 +702,12 @@ exp_k2(const dvf_type& d, bool exp_m1)
         res=tres;
     }
     return res;
+#else
+    if (exp_m1)
+        return dvf_type(d);
+    else
+        return dvf_type(-d);
+#endif
 }
 
 template <typename _T>
