@@ -29,7 +29,7 @@ namespace cftal {
             // expm1(x) == +inf for x >= 0
             constexpr static const double
             expm1_hi_inf= 7.097827128933840867830440e+02;
-            // expm1(x) == 1 for x <= 
+            // expm1(x) == 1 for x <=
             constexpr static const double
             expm1_lo_minus_one= -3.742994775023704789873591e+01;
 
@@ -40,11 +40,11 @@ namespace cftal {
             // sinh(x) == +inf for x >=
             constexpr static const double
             sinh_hi_inf= 7.104758600739439771132311e+02;
-            
+
             // sinh(x) == -inf for x <=
             constexpr static const double
             sinh_lo_inf= -7.104758600739439771132311e+02;
-            
+
             // nextafter(log(x), -1) == +inf
             constexpr static const double
             log_lo_fin= 4.940656458412465441765688e-324;
@@ -65,18 +65,18 @@ namespace cftal {
             // expm1(x) == +inf for x >= 0
             constexpr static const float
             expm1_hi_inf= 8.872283935546875000000000e+01f;
-            // expm1(x) == 1 for x <= 
+            // expm1(x) == 1 for x <=
             constexpr static const float
             expm1_lo_minus_one= -1.732868003845214843750000e+01f;
 
             // cosh(x) == +inf for abs(x) >=
             constexpr static const float
             cosh_hi_inf= 8.941599273681640625000000e+01f;
-            
+
             // sinh(x) == +inf for x >=
             constexpr static const float
             sinh_hi_inf= 8.941599273681640625000000e+01f;
-            
+
             // sinh(x) == -inf for x <=
             constexpr static const float
             sinh_lo_inf= -8.941599273681640625000000e+01f;
@@ -384,7 +384,7 @@ namespace cftal {
             // nth root implementation for double/float
             template <typename _FLOAT_T, typename _TRAITS,
                       unsigned _R>
-            struct nth_root {
+            struct nth_root : public func<_FLOAT_T, _TRAITS> {
 
                 typedef typename _TRAITS::vf_type vf_type;
                 typedef typename _TRAITS::vmf_type vmf_type;
@@ -426,13 +426,19 @@ namespace cftal {
 
             // specialization for cubic root
             template <typename _FLOAT_T, typename _TRAITS>
-            struct nth_root<_FLOAT_T, _TRAITS, 3> {
+            struct nth_root<_FLOAT_T, _TRAITS, 3>
+                : public func<_FLOAT_T, _TRAITS> {
 
                 using vf_type = typename _TRAITS::vf_type;
                 using vi_type = typename _TRAITS::vi_type;
                 using vmf_type= typename _TRAITS::vmf_type;
                 using dvf_type = typename _TRAITS::dvf_type;
-                
+
+                using base_type = func<_FLOAT_T, _TRAITS>;
+                using base_type::frexp;
+                using base_type::ldexp;
+
+
                 template <unsigned _NR_STEPS=6>
                 static
                 vf_type
@@ -485,7 +491,7 @@ namespace cftal {
 
                 }
             };
-            
+
         } // impl
 
         // integer power with constant _I
