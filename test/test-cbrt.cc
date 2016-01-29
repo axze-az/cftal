@@ -236,20 +236,31 @@ int main(int argc, char** argv)
         double z = std::cbrt(x);
         std::cout <<x << ' ' << y << ' ' << z << std::endl;
     }
-#else    
+#else
     bool rc=true;
+    std::cout << "f64 test\n"<<std::scientific;
     using namespace cftal::test;
     rc &= check_cbrt_f64(cftal::v2f64(), false);
     rc &= check_cbrt_f64(cftal::v4f64(), false);
     rc &= check_cbrt_f64(cftal::v8f64(), false);
 
-    func_domain<double> d=std::make_pair(-std::numeric_limits<double>::max(),
-                                         std::numeric_limits<double>::max());
+    func_domain<double> dd=std::make_pair(-std::numeric_limits<double>::max(),
+                                          std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, 2, check_cbrt<double> >::v(d, cmp_ulp<double>(1, us));
+        double, 8, check_cbrt<double> >::v(dd, cmp_ulp<double>(1, us));
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+
+    std::cout << "f32 test\n"<<std::scientific;
+    func_domain<float> df=std::make_pair(-std::numeric_limits<float>::max(),
+                                          std::numeric_limits<float>::max());
+    us=std::make_shared<ulp_stats>();
+    rc &= of_fp_func_up_to<
+        float, 8, check_cbrt<float> >::v(df, cmp_ulp<float>(1, us));
+    std::cout << "ulps: "
+              << std::fixed << std::setprecision(4) << *us << std::endl;
+
     return rc==true ? 0 : 1;
 #endif
 }
