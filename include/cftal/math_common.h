@@ -26,6 +26,25 @@ namespace cftal {
             constexpr static const double
             exp_lo_zero= -7.451332191019412221066887e+02;
 
+            // expm1(x) == +inf for x >= 0
+            constexpr static const double
+            expm1_hi_inf= 7.097827128933840867830440e+02;
+            // expm1(x) == 1 for x <= 
+            constexpr static const double
+            expm1_lo_minus_one= -3.742994775023704789873591e+01;
+
+            // cosh(x) == +inf for abs(x) >=
+            constexpr static const double
+            cosh_hi_inf= 7.104758600739439771132311e+02;
+
+            // sinh(x) == +inf for x >=
+            constexpr static const double
+            sinh_hi_inf= 7.104758600739439771132311e+02;
+            
+            // sinh(x) == -inf for x <=
+            constexpr static const double
+            sinh_lo_inf= -7.104758600739439771132311e+02;
+            
             // nextafter(log(x), -1) == +inf
             constexpr static const double
             log_lo_fin= 4.940656458412465441765688e-324;
@@ -42,6 +61,25 @@ namespace cftal {
 
             constexpr static const float
             exp_lo_zero= -1.039720840454101562500000e+02f;
+
+            // expm1(x) == +inf for x >= 0
+            constexpr static const float
+            expm1_hi_inf= 8.872283935546875000000000e+01f;
+            // expm1(x) == 1 for x <= 
+            constexpr static const float
+            expm1_lo_minus_one= -1.732868003845214843750000e+01f;
+
+            // cosh(x) == +inf for abs(x) >=
+            constexpr static const float
+            cosh_hi_inf= 8.941599273681640625000000e+01f;
+            
+            // sinh(x) == +inf for x >=
+            constexpr static const float
+            sinh_hi_inf= 8.941599273681640625000000e+01f;
+            
+            // sinh(x) == -inf for x <=
+            constexpr static const float
+            sinh_lo_inf= -8.941599273681640625000000e+01f;
 
             constexpr static const float
             log_lo_fin= 1.401298464324817070923730e-45f;
@@ -62,10 +100,10 @@ namespace cftal {
 
             // exp core
             static dvf_type
-            exp_k2(const dvf_type& dvf);
+            exp_k2(const dvf_type& dvf, bool exp_m1);
             // native exp core
             static vf_type
-            native_exp_k(const vf_type& vf);
+            native_exp_k(const vf_type& vf, bool exp_m1);
             // log core
             static dvf_type
             log_k2(const dvf_type& dvf);
@@ -343,17 +381,6 @@ namespace cftal {
                 }
             };
 
-#if 0
-            template <typename _TRAITS>
-            struct root_guess<double, _TRAITS, 3> {
-                using vf_type = typename _TRAITS::vf_type;
-                using vi_type = typename _TRAITS::vi_type;
-
-                static vf_type(const vf_type& x) {
-
-                }
-            };
-#endif
             // nth root implementation for double/float
             template <typename _FLOAT_T, typename _TRAITS,
                       unsigned _R>
@@ -397,6 +424,68 @@ namespace cftal {
                 }
             };
 
+            // specialization for cubic root
+            template <typename _FLOAT_T, typename _TRAITS>
+            struct nth_root<_FLOAT_T, _TRAITS, 3> {
+
+                using vf_type = typename _TRAITS::vf_type;
+                using vi_type = typename _TRAITS::vi_type;
+                using vmf_type= typename _TRAITS::vmf_type;
+                using dvf_type = typename _TRAITS::dvf_type;
+                
+                template <unsigned _NR_STEPS=6>
+                static
+                vf_type
+                v(const vf_type& x) {
+                    vf_type xp=abs(x);
+                    vi_type e;
+                    // m in [0.5, 1)
+                    vf_type m=frexp(xp, &e);
+                    divisor<vi_type, int32_t> idiv3(3);
+                    vi_type e3= e / idiv3;
+                    vi_type r3= remainder(e, vi_type(3), e3);
+                    // select r3c so that r3c [-2,-1,0]
+                    vi_type r3c= _TRAITS::sel(r3 > 0, r3-3, r3);
+                    vi_type e3c= _TRAITS::sel(r3 > 0, e3+1, e3);
+                    // mm in [0.125, 1) => m * 2 ^[-2,-1.0]
+                    vf_type mm=ldexp(m, r3c);
+                    vf_type mm0= mm;
+                    // intial guess:
+                    // a * 1 + b = 1
+                    // a * 0.125 + b = 0.5
+                    // a = 1 - b
+                    // (1-b)*0.125 + b = 0.5
+                    // 0.125 - b * 0.125 + b = 0.5
+                    // b (1-0.125) = 0.5 - 0.125
+                    // b= (0.5-0.125)/(1-0.125)
+                    // const vf_type a= 0.571428571428571;
+                    // const vf_type b= 0.428571428571429;
+                    const vf_type b= (0.5-0.125)/(1-0.125);
+                    const vf_type a= 1.0 -b;
+                    mm= a * mm + b;
+                    // newton raphson steps
+                    for (uint32_t i=0; i<_NR_STEPS-1; ++i) {
+                        mm = nth_root_nr<3, vf_type>::v(mm, mm0);
+                    }
+                    dvf_type dmm=mm;
+                    dvf_type dmm0=mm0;
+                    for (uint32_t i=_NR_STEPS-1; i< _NR_STEPS; ++i)
+                        dmm = nth_root_nr<3, dvf_type>::v(dmm, dmm0);
+                    mm = dmm.h();
+                    // scale back
+                    vf_type res=ldexp(mm, e3c);
+                    // restore sign
+                    res=copysign(res, x);
+
+                    vmf_type is_zero_or_inf_or_nan=
+                        (x == vf_type(0)) | isinf(x) | isnan(x);
+                    res=_TRAITS::sel(is_zero_or_inf_or_nan,
+                                     x, res);
+                    return res;
+
+                }
+            };
+            
         } // impl
 
         // integer power with constant _I
@@ -649,25 +738,15 @@ _expm1(const vf_type& d)
 {
     vf_type res;
     if (_NATIVE) {
-#if 1
         vf_type r=my_type::native_exp_k(d, true);
         res = r;
-#else
-        vf_type r=my_type::native_exp_k(d, false);
-        res= r - 1.0;
-#endif
     } else {
-#if 1
         dvf_type r(my_type::exp_k2(d, true));
         res =r.h() + r.l();
-#else
-        dvf_type r(my_type::exp_k2(d, false));
-        dvf_type rm1= r - vf_type(1.0);
-        res = rm1.h() + rm1.l();
-#endif
     }
-    const vf_type expm1_hi_inf= 7.097827128933840867830440e+02;
-    const vf_type expm1_lo_minus_one= -3.742994775023704789873591e+01;
+    using fc= func_constants<_FLOAT_T>;
+    const vf_type expm1_hi_inf= fc::expm1_hi_inf;
+    const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one;
     res = _T::sel(d <= expm1_lo_minus_one, -1.0, res);
     res = _T::sel(d >= expm1_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 0.0, res);
@@ -715,8 +794,9 @@ sinh(const vf_type& d)
     dvf_type cosh_xh= mul_pwr2(exph + rexph, vf_type(0.5));
     dvf_type sinh_x= mul_pwr2(sinh_xh * cosh_xh, vf_type(2.0));
     vf_type res = sinh_x.h() + sinh_x.l();
-    const vf_type sinh_hi_inf= 7.104758600739439771132311e+02;
-    const vf_type sinh_lo_inf= -7.104758600739439771132311e+02;
+    using fc=func_constants<_FLOAT_T>;
+    const vf_type sinh_hi_inf= fc::sinh_hi_inf;
+    const vf_type sinh_lo_inf= fc::sinh_lo_inf;
     res = _T::sel(d >= sinh_hi_inf, _T::pinf(), res);
     res = _T::sel(d <= sinh_lo_inf, _T::ninf(), res);
     res = _T::sel(d == 0.0, 0.0, res);
@@ -746,8 +826,8 @@ cosh(const vf_type& d)
     dvf_type sinh_xh = mul_pwr2(two_sinh_xh, vf_type(0.5));
     dvf_type cosh_x = mul_pwr2(sqr(sinh_xh), vf_type(2.0)) + vf_type(1.0);
     vf_type res = cosh_x.h() + cosh_x.l();
-    const vf_type cosh_hi_inf= 7.104758600739439771132311e+02;
-    // const vf_type cosh_lo_inf= -7.104758600739439771132311e+02;
+    using fc=func_constants<_FLOAT_T>;
+    const vf_type cosh_hi_inf= fc::cosh_hi_inf;
     res = _T::sel(abs(d) >= cosh_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
     return res;

@@ -85,10 +85,6 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<float, _N>
-    expm1(const vec<float, _N>& v);
-
-    template <std::size_t _N>
-    vec<float, _N>
     native_expm1(const vec<float, _N>& v);
 
     vec<float, 1>
@@ -231,7 +227,7 @@ namespace cftal {
     vec<float, 1>
     trunc(const vec<float, 1>& v);
 
-    // exp:
+    // exp: exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
     exp(const vec<float, _N>& v);
@@ -248,6 +244,58 @@ namespace cftal {
     v8f32
     exp(arg<v8f32>::type d);
 
+    // expm1: exact to
+    template <std::size_t _N>
+    vec<float, _N>
+    expm1(const vec<float, _N>& v);
+
+    vec<float, 1>
+    expm1(const vec<float, 1>& v);
+
+    v2f32
+    expm1(arg<v2f32>::type d);
+
+    v4f32
+    expm1(arg<v4f32>::type d);
+
+    v8f32
+    expm1(arg<v8f32>::type d);
+
+    // sinh, these functions are exact to +-1 ulp with exception of _N=1
+    template <std::size_t _N>
+    vec<float, _N>
+    sinh(const vec<float, _N>& v);
+
+    vec<float, 1>
+    sinh(const vec<float, 1>& d);
+
+    vec<float, 2>
+    sinh(arg<vec<float, 2> >::type d);
+
+    vec<float, 4>
+    sinh(arg<vec<float, 4> >::type d);
+
+    vec<float, 8>
+    sinh(arg<vec<float, 8> >::type d);
+
+    // cosh, these functions are exact to +-1 ulp with exception of _N=1
+    template <std::size_t _N>
+    vec<float, _N>
+    cosh(const vec<float, _N>& v);
+
+    vec<float, 1>
+    cosh(const vec<float, 1>& d);
+
+    vec<float, 2>
+    cosh(arg<vec<float, 2> >::type d);
+
+    vec<float, 4>
+    cosh(arg<vec<float, 4> >::type d);
+
+    vec<float, 8>
+    cosh(arg<vec<float, 8> >::type d);
+
+    // log: exact to +- ulp
     template <std::size_t _N>
     vec<float, _N>
     log(const vec<float, _N>& v);
@@ -281,7 +329,6 @@ namespace cftal {
     v2f32 atan(arg<v2f32>::type d);
     std::pair<v2f32, v2f32> sincos(arg<v2f32>::type d);
 
-    v2f32 expm1(arg<v2f32>::type d);
     v2f32 exp2(arg<v2f32>::type d);
     v2f32 exp10(arg<v2f32>::type d);
     v2f32 pow(arg<v2f32>::type b, arg<v2f32>::type e);
@@ -300,8 +347,6 @@ namespace cftal {
     v2f32 native_cos(arg<v2f32>::type d);
     v2f32 native_tan(arg<v2f32>::type d);
     v2f32 native_cot(arg<v2f32>::type d);
-    v2f32 cosh(arg<v2f32>::type d);
-    v2f32 sinh(arg<v2f32>::type d);
 
     
     v4f32 cbrt(arg<v4f32>::type a);
@@ -316,7 +361,6 @@ namespace cftal {
     v4f32 atan(arg<v4f32>::type d);
     std::pair<v4f32, v4f32> sincos(arg<v4f32>::type d);
 
-    v4f32 expm1(arg<v4f32>::type d);
     v4f32 exp2(arg<v4f32>::type d);
     v4f32 exp10(arg<v4f32>::type d);
     v4f32 pow(arg<v4f32>::type b, arg<v4f32>::type e);
@@ -335,8 +379,6 @@ namespace cftal {
     v4f32 native_cos(arg<v4f32>::type d);
     v4f32 native_tan(arg<v4f32>::type d);
     v4f32 native_cot(arg<v4f32>::type d);
-    v4f32 cosh(arg<v4f32>::type d);
-    v4f32 sinh(arg<v4f32>::type d);
 
     v4f32 pow(arg<v4f32>::type x, arg<v4f32>::type y);
 
@@ -352,7 +394,6 @@ namespace cftal {
     v8f32 atan(arg<v8f32>::type d);
     std::pair<v8f32, v8f32> sincos(arg<v8f32>::type d);
 
-    v8f32 expm1(arg<v8f32>::type d);
     v8f32 exp2(arg<v8f32>::type d);
     v8f32 exp10(arg<v8f32>::type d);
     v8f32 pow(arg<v8f32>::type b, arg<v8f32>::type e);
@@ -371,8 +412,6 @@ namespace cftal {
     v8f32 native_cos(arg<v8f32>::type d);
     v8f32 native_tan(arg<v8f32>::type d);
     v8f32 native_cot(arg<v8f32>::type d);
-    v8f32 cosh(arg<v8f32>::type d);
-    v8f32 sinh(arg<v8f32>::type d);
 
     v8f32 pow(arg<v8f32>::type x, arg<v8f32>::type y);
 
@@ -537,6 +576,14 @@ cftal::expm1(const vec<float, _N>& v)
     return r;
 }
 
+inline
+cftal::vec<float, 1>
+cftal::expm1(const vec<float, 1>& v)
+{
+    vec<float, 1> r(std::expm1(v()));
+    return r;
+}
+
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>
@@ -607,6 +654,14 @@ cftal::sinh(const vec<float, _N>& v)
     return r;
 }
 
+inline
+cftal::vec<float, 1>
+cftal::sinh(const vec<float, 1>& v)
+{
+    vec<float, 1> r(std::sinh(v()));
+    return r;
+}
+
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>
@@ -615,6 +670,15 @@ cftal::cosh(const vec<float, _N>& v)
     vec<float, _N> r(cosh(low_half(v)), cosh(high_half(v)));
     return r;
 }
+
+inline
+cftal::vec<float, 1>
+cftal::cosh(const vec<float, 1>& v)
+{
+    vec<float, 1> r(std::cosh(v()));
+    return r;
+}
+
 
 template <std::size_t _N>
 inline

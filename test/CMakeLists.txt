@@ -120,6 +120,9 @@ test_prog(test-native_expm1-f64)
 test_prog(test-native_log-f64)
 
 test_prog(test-exp-f32)
+test_prog(test-expm1-f32)
+test_prog(test-sinh-f32)
+test_prog(test-cosh-f32)
 test_prog(test-log-f32)
 
 test_prog(test-v2)

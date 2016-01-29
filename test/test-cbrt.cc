@@ -170,8 +170,73 @@ bool cftal::test::check_cbrt_f64(const _V& v, bool verbose)
     return res;
 }
 
+namespace cftal {
+    double xcbrt(double x);
+}
+
+double
+cftal::xcbrt(double x)
+{
+    double xp=std::abs(x);
+    int32_t e;
+    // m in [0.5, 1)
+    double m=std::frexp(xp, &e);
+    divisor<int32_t, int32_t> idiv3(3);
+    int32_t e3= e / idiv3;
+    int32_t r3= remainder(e, 3, e3);
+    // select r3c so that r3c [-2,-1,0]
+    int32_t r3c= select(r3 > 0, r3-3, r3);
+    int32_t e3c= select(r3 > 0, e3+1, e3);
+    // mm in [0.125, 1) => m * 2 ^[-2,-1.0]
+    double mm=std::ldexp(m, r3c);
+    double mm0= mm;
+    // intial guess:
+    // a * 1 + b = 1
+    // a * 0.125 + b = 0.5
+    // a = 1 - b
+    // (1-b)*0.125 + b = 0.5
+    // 0.125 - b * 0.125 + b = 0.5
+    // b (1-0.125) = 0.5 - 0.125
+    // b= (0.5-0.125)/(1-0.125)
+    // const double a= 0.571428571428571;
+    // const double b= 0.428571428571429;
+    const double b= (0.5-0.125)/(1-0.125);
+    const double a= 1.0 -b;
+    mm= a * mm + b;
+    // newton raphson steps
+    const uint32_t _N = 4;
+    for (uint32_t i=0; i<_N; ++i) {
+#if 1
+        double ipow2= mm * mm;
+        double en= mm0 - mm * ipow2;
+        double den= 3* ipow2;
+        mm = mm + en/den;
+#else
+        mm = (2.0/3.0) * mm + (1.0/3.0) * mm0 / (mm*mm);
+#endif
+    }
+    // scale back
+    double res=std::ldexp(mm, e3c);
+    // restore sign
+    res=std::copysign(res, x);
+    return res;
+}
+
 int main(int argc, char** argv)
 {
+#if 0
+    using namespace cftal::test;
+    std::
+    uniform_real_distribution<double> d(-100, 100);
+    std::mt19937_64 rnd;
+    std::cout << std::scientific << std::setprecision(22);
+    for (int i=0; i<40; ++i) {
+        double x = d(rnd);
+        double y = cftal::xcbrt(x);
+        double z = std::cbrt(x);
+        std::cout <<x << ' ' << y << ' ' << z << std::endl;
+    }
+#else    
     bool rc=true;
     using namespace cftal::test;
     rc &= check_cbrt_f64(cftal::v2f64(), false);
@@ -186,4 +251,5 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     return rc==true ? 0 : 1;
+#endif
 }
