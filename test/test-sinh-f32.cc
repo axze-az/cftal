@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 8, check_sinh<double> >(v, 1, 0, false);
 #endif
     bool rc=true;
-    func_domain<float> d=std::make_pair(-105.0f, 90.0f);
+    func_domain<float> d=std::make_pair(-90.0f, 90.0f);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         float, 8, check_sinh<float> >::v(d, cmp_ulp<float>(1, us),
