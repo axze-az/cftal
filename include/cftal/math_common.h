@@ -227,6 +227,31 @@ namespace cftal {
             template <class _VEC, typename _FLOAT_T>
             struct t_real_constants {};
 
+
+            template <typename _X, typename _C1, typename _C0>
+            _X
+            poly(_X x, _C0 c1, _C1 c0) {
+                return x*c1 + c0;
+            }
+
+            // template <typename _X, typename _C2, typename _C1, typename _C0>
+            // _X
+            // poly(_X x, _C2 c2, _C1 c1, _C0 c0) {
+            //    // _X t = (((x*c2) + c1) * x) + c0;
+            //    _X t = poly(x, c2, c1);
+            //    _X r = poly(x, t, c0);
+            //    return r;
+            // }
+
+            template <typename _X,
+                      typename _CN, typename _CNM1, typename ... _CS>
+            _X
+            poly(_X x, _CN cn, _CNM1 cnm1, _CS... cs) {
+                 _X t = poly(x, cn, cnm1);
+                 _X r = poly(x, t, cs...);
+                return r;
+            }
+
             // sin(x + y) = sin(x) * cos(y) + sin(y) * cos(x);
             // sin(x - y) = sin(x) * cos(y) - sin(y) * cos(x);
             // sin(2x) = 2 * sin(x) * cos(x);
@@ -468,7 +493,8 @@ namespace cftal {
                     // const vf_type b= 0.428571428571429;
                     const vf_type b= (0.5-0.125)/(1-0.125);
                     const vf_type a= 1.0 -b;
-                    mm= a * mm + b;
+                    // mm= a * mm + b;
+                    mm = poly(mm, a, b);
                     // newton raphson steps
                     for (uint32_t i=0; i<_NR_STEPS-1; ++i) {
                         mm = nth_root_nr<3, vf_type>::v(mm, mm0);
