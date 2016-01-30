@@ -1,6 +1,9 @@
 #include <cftal/math_common.h>
 
 constexpr
+const double cftal::math::func_constants<double>::max_denormal;
+
+constexpr
 const double cftal::math::func_constants<double>::exp_hi_inf;
 
 constexpr
@@ -28,6 +31,8 @@ constexpr
 const double cftal::math::func_constants<double>::log_lo_val;
 
 // float
+constexpr
+const float cftal::math::func_constants<float>::max_denormal;
 
 constexpr
 const float cftal::math::func_constants<float>::exp_hi_inf;

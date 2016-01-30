@@ -431,7 +431,7 @@ int main(int argc, char** argv)
         gen_constant(dm, "const double exp10_lo", mpfr_exp10,
                      check_zero<double>(), "m_0");
 
-        std::cout << "const double dbl_max_denormal= "
+        std::cout << "const double max_denormal= "
                   <<  sig_f64_msk::v._f64 << ";\n\n";
         std::cout << "const double _2pow106="
                   << 0x1p106 << ";\n\n";
@@ -488,6 +488,8 @@ int main(int argc, char** argv)
         gen_constant(dm, "const float exp10_lo", mpfr_exp10,
                      check_zero<float>(), "m_0");
 
+        std::cout << "const float max_denormal= "
+                  <<  sig_f32_msk::v._f32 << ";\n\n";
     }
     return 0;
 }

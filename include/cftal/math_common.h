@@ -19,6 +19,8 @@ namespace cftal {
 
         template <>
         struct func_constants<double> {
+            constexpr static const double
+            max_denormal= 2.225073858507200889024587e-308;
             // exp(x) == +inf for x >=
             constexpr static const double
             exp_hi_inf= 7.097827128933840867830440e+02;
@@ -56,6 +58,9 @@ namespace cftal {
 
         template <>
         struct func_constants<float> {
+            constexpr static const float
+            max_denormal= 1.175494210692441075487029e-38f;
+
             constexpr static const float
             exp_hi_inf= 8.872283935546875000000000e+01f;
 
@@ -319,7 +324,7 @@ namespace cftal {
                 }
             };
 
-            // n-th root calculatr: newton raphson step with n=_R
+            // n-th root calculator: newton raphson step with n=_R
             template <unsigned _R, class _T>
             struct nth_root_nr : public nth_root_vnr<_T> {
                 // one newton raphson step
@@ -330,6 +335,21 @@ namespace cftal {
                     _T den(r * x_pow_nm1);
                     _T xip1( xi + en / den);
 
+                    return xip1;
+                }
+            };
+
+            // n-th root calculator: halley step with n=_R
+            template <unsigned _R, class _T>
+            struct nth_root_halley : public nth_root_vnr<_T> {
+                // one halley step
+                static _T v(const _T& xi, const _T& x) {
+                    const _T r(_R);
+                    const _T two(2.0);
+                    _T x_pow(ipow<_T, _R>::v(xi));
+                    _T en(two* xi * (x - x_pow));
+                    _T den(r * (x+x_pow) - x + x_pow);
+                    _T xip1(xi + en /den);
                     return xip1;
                 }
             };
@@ -457,65 +477,18 @@ namespace cftal {
                 using vf_type = typename _TRAITS::vf_type;
                 using vi_type = typename _TRAITS::vi_type;
                 using vmf_type= typename _TRAITS::vmf_type;
+                using vmi_type = typename _TRAITS::vmi_type;
                 using dvf_type = typename _TRAITS::dvf_type;
 
                 using base_type = func<_FLOAT_T, _TRAITS>;
                 using base_type::frexp;
                 using base_type::ldexp;
-
+                using base_type::ilogbp1;
 
                 template <unsigned _NR_STEPS=6>
                 static
                 vf_type
-                v(const vf_type& x) {
-                    vf_type xp=abs(x);
-                    vi_type e;
-                    // m in [0.5, 1)
-                    vf_type m=frexp(xp, &e);
-                    divisor<vi_type, int32_t> idiv3(3);
-                    vi_type e3= e / idiv3;
-                    vi_type r3= remainder(e, vi_type(3), e3);
-                    // select r3c so that r3c [-2,-1,0]
-                    vi_type r3c= _TRAITS::sel(r3 > 0, r3-3, r3);
-                    vi_type e3c= _TRAITS::sel(r3 > 0, e3+1, e3);
-                    // mm in [0.125, 1) => m * 2 ^[-2,-1.0]
-                    vf_type mm=ldexp(m, r3c);
-                    vf_type mm0= mm;
-                    // intial guess:
-                    // a * 1 + b = 1
-                    // a * 0.125 + b = 0.5
-                    // a = 1 - b
-                    // (1-b)*0.125 + b = 0.5
-                    // 0.125 - b * 0.125 + b = 0.5
-                    // b (1-0.125) = 0.5 - 0.125
-                    // b= (0.5-0.125)/(1-0.125)
-                    // const vf_type a= 0.571428571428571;
-                    // const vf_type b= 0.428571428571429;
-                    const vf_type b= (0.5-0.125)/(1-0.125);
-                    const vf_type a= 1.0 -b;
-                    // mm= a * mm + b;
-                    mm = poly(mm, a, b);
-                    // newton raphson steps
-                    for (uint32_t i=0; i<_NR_STEPS-1; ++i) {
-                        mm = nth_root_nr<3, vf_type>::v(mm, mm0);
-                    }
-                    dvf_type dmm=mm;
-                    dvf_type dmm0=mm0;
-                    for (uint32_t i=_NR_STEPS-1; i< _NR_STEPS; ++i)
-                        dmm = nth_root_nr<3, dvf_type>::v(dmm, dmm0);
-                    mm = dmm.h();
-                    // scale back
-                    vf_type res=ldexp(mm, e3c);
-                    // restore sign
-                    res=copysign(res, x);
-
-                    vmf_type is_zero_or_inf_or_nan=
-                        (x == vf_type(0)) | isinf(x) | isnan(x);
-                    res=_TRAITS::sel(is_zero_or_inf_or_nan,
-                                     x, res);
-                    return res;
-
-                }
+                v(const vf_type& x);
             };
 
         } // impl
@@ -1120,6 +1093,111 @@ cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan(const vf_type& x)
 {
     return x;
+}
+
+template <typename _FLOAT_T, typename _TRAITS>
+template <unsigned _NR_STEPS>
+typename cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::vf_type
+cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
+{
+    vf_type xp=abs(x);
+    vi_type e3c;
+    vf_type mm, mm0;
+    // m in [0.5, 1)
+    using fc=func_constants<_FLOAT_T>;
+    vmf_type is_denormal=xp <= fc::max_denormal;
+    const divisor<vi_type, int32_t> idiv3(3);
+    if (any_of(is_denormal)) {
+        vi_type e;
+        vf_type m=frexp(xp, &e);
+        vi_type e3= e / idiv3;
+        vi_type r3= remainder(e, vi_type(3), e3);
+        // select r3c so that r3c [-2,-1,0]
+        vmi_type r3gt0 = r3 > 0;
+        vi_type r3c= _TRAITS::sel(r3gt0, r3-3, r3);
+        e3c= _TRAITS::sel(r3gt0, e3+1, e3);
+        // mm in [0.125, 1) => m * 2 ^[-2,-1.0]
+        mm= ldexp(m, r3c);
+        mm0= mm;
+    } else {
+        // this code does not work for denormals:
+        vi_type e = ilogbp1(xp);
+        vi_type e3= e / idiv3;
+        vi_type r3= remainder(e, vi_type(3), e3);
+        // select r3c so that r3c [-2,-1,0]
+        vmi_type r3gt0 = r3 > 0;
+        vi_type r3c= _TRAITS::sel(r3gt0, r3-3, r3);
+        e3c= _TRAITS::sel(r3gt0, e3+1, e3);
+        vi_type sc= r3c - e;
+        mm= ldexp(xp, sc);
+        mm0 = mm;
+    }
+    // intial guess:
+    // a * 1 + b = 1
+    // a * 0.125 + b = 0.5
+    // a = 1 - b
+    // (1-b)*0.125 + b = 0.5
+    // 0.125 - b * 0.125 + b = 0.5
+    // b (1-0.125) = 0.5 - 0.125
+    // b= (0.5-0.125)/(1-0.125)
+    // const vf_type a= 0.571428571428571;
+    // const vf_type b= 0.428571428571429;
+#if 0
+    const vf_type b= (0.5-0.125)/(1-0.125);
+    const vf_type a= 1.0 -b;
+    // mm= a * mm + b;
+    mm = poly(mm, a, b);
+#else
+#if 0
+    vf_type p = poly(mm,
+                     45.2548339756803022511987494,
+                     192.2798368355061050458134625,
+                     119.1654824285581628956914143,
+                     13.43250139086239872172837314,
+                     0.1636161226585754240958355063);
+    vf_type q= poly(mm,
+                    14.80884093219134573786480845,
+                    151.9714051044435648658557668,
+                    168.5254414101568283957668343,
+                    33.9905941350215598754191872,
+                    1.0);
+#else
+    vf_type p= poly(mm,
+                    3.069403898445115,
+                    13.20893864226553,
+                    8.282266152621692,
+                    0.9430255620543896,
+                    0.01158124376051726);
+    vf_type q= poly(mm,
+                    1.0,
+                    10.39652944539895,
+                    11.66929160362717,
+                    2.378789885003596,
+                    0.07060456511752827);
+#endif
+    mm = p / q;
+#endif
+
+    // halley steps
+    for (uint32_t i=0; i<_NR_STEPS-1; ++i) {
+        mm = nth_root_halley<3, vf_type>::v(mm, mm0);
+    }
+    // one newton raphson step
+    dvf_type dmm=mm;
+    dvf_type dmm0=mm0;
+    for (uint32_t i=_NR_STEPS-1; i< _NR_STEPS; ++i)
+        dmm = nth_root_nr<3, dvf_type>::v(dmm, dmm0);
+    mm = dmm.h();
+    // scale back
+    vf_type res=ldexp(mm, e3c);
+    // restore sign
+    res=copysign(res, x);
+
+    vmf_type is_zero_or_inf_or_nan=
+        (x == vf_type(0)) | isinf(x) | isnan(x);
+    res=_TRAITS::sel(is_zero_or_inf_or_nan,
+                     x, res);
+    return res;
 }
 
 
