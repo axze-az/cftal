@@ -248,7 +248,7 @@ int main(int argc, char** argv)
                                           std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, 8, check_cbrt<double> >::v(dd, cmp_ulp<double>(1, us));
+        double, 8, check_cbrt<double> >::v(dd, cmp_ulp<double>(0, us));
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
 
@@ -257,7 +257,7 @@ int main(int argc, char** argv)
                                           std::numeric_limits<float>::max());
     us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_cbrt<float> >::v(df, cmp_ulp<float>(1, us));
+        float, 8, check_cbrt<float> >::v(df, cmp_ulp<float>(0, us));
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
 
