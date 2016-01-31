@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <limits>
 #include <utility>
+#include <stdexcept>
 
 namespace cftal {
 
@@ -235,7 +236,7 @@ namespace cftal {
 
             template <typename _X, typename _C1, typename _C0>
             _X
-            poly(_X x, _C0 c1, _C1 c0) {
+            poly(_X x, _C1 c1, _C0 c0) {
                 return x*c1 + c0;
             }
 
@@ -254,6 +255,36 @@ namespace cftal {
             poly(_X x, _CN cn, _CNM1 cnm1, _CS... cs) {
                  _X t = poly(x, cn, cnm1);
                  _X r = poly(x, t, cs...);
+                return r;
+            }
+
+            template <typename _X, typename _C>
+            _X
+            poly(_X x, const _C& c) {
+                auto b=std::cbegin(c);
+                auto e=std::cend(c);
+                auto bn=std::next(b);
+                if (bn==e) {
+                    throw std::invalid_argument("cftal::math::poly(x, C)");
+                }
+                _X r= (*b) * x + (*bn);
+                ++b;
+                ++b;
+                while (b != e) {
+                    r = poly(x, r, *b);
+                    ++b;
+                }
+                return r;
+            }
+
+            template <typename _X, typename _C, std::size_t _N>
+            _X
+            poly(_X x, const _C (&a)[_N]) {
+                static_assert(_N > 1, "invalid call to poly(x, array)");
+                _X r= a[0] * x + a[1];
+                for (std::size_t i=2; i<_N; ++i) {
+                    r= poly(x, r, a[i]);
+                }
                 return r;
             }
 
