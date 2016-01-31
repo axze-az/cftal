@@ -224,22 +224,10 @@ cftal::xcbrt(double x)
 
 int main(int argc, char** argv)
 {
-#if 0
-    using namespace cftal::test;
-    std::
-    uniform_real_distribution<double> d(-100, 100);
-    std::mt19937_64 rnd;
-    std::cout << std::scientific << std::setprecision(22);
-    for (int i=0; i<40; ++i) {
-        double x = d(rnd);
-        double y = cftal::xcbrt(x);
-        double z = std::cbrt(x);
-        std::cout <<x << ' ' << y << ' ' << z << std::endl;
-    }
-#else
     bool rc=true;
-    std::cout << "f64 test\n"<<std::scientific;
     using namespace cftal::test;
+
+    std::cout << "f64 test\n"<<std::scientific;
     rc &= check_cbrt_f64(cftal::v2f64(), false);
     rc &= check_cbrt_f64(cftal::v4f64(), false);
     rc &= check_cbrt_f64(cftal::v8f64(), false);
@@ -255,12 +243,11 @@ int main(int argc, char** argv)
     std::cout << "f32 test\n"<<std::scientific;
     func_domain<float> df=std::make_pair(-std::numeric_limits<float>::max(),
                                           std::numeric_limits<float>::max());
-    us=std::make_shared<ulp_stats>();
+    auto usf=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_cbrt<float> >::v(df, cmp_ulp<float>(1, us));
+        float, 8, check_cbrt<float> >::v(df, cmp_ulp<float>(1, usf));
     std::cout << "ulps: "
-              << std::fixed << std::setprecision(4) << *us << std::endl;
+              << std::fixed << std::setprecision(4) << *usf << std::endl;
 
     return rc==true ? 0 : 1;
-#endif
 }

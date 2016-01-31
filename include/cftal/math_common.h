@@ -240,21 +240,12 @@ namespace cftal {
                 return x*c1 + c0;
             }
 
-            // template <typename _X, typename _C2, typename _C1, typename _C0>
-            // _X
-            // poly(_X x, _C2 c2, _C1 c1, _C0 c0) {
-            //    // _X t = (((x*c2) + c1) * x) + c0;
-            //    _X t = poly(x, c2, c1);
-            //    _X r = poly(x, t, c0);
-            //    return r;
-            // }
-
             template <typename _X,
                       typename _CN, typename _CNM1, typename ... _CS>
             _X
             poly(_X x, _CN cn, _CNM1 cnm1, _CS... cs) {
-                 _X t = poly(x, cn, cnm1);
-                 _X r = poly(x, t, cs...);
+                _X t = poly(x, cn, cnm1);
+                _X r = poly(x, t, cs...);
                 return r;
             }
 
@@ -287,6 +278,24 @@ namespace cftal {
                 }
                 return r;
             }
+
+            // polynomial with c1 = 1.0
+            template <typename _X, typename _C0>
+            _X
+            poly1(_X x, _C0 c0) {
+                return x + c0;
+            }
+
+            // polynomial with cn = 1.0
+            template <typename _X,
+                      typename _CNM1, typename ... _CS>
+            _X
+            poly1(_X x, _CNM1 cnm1, _CS... cs) {
+                _X t = poly1(x, cnm1);
+                _X r = poly(x, t, cs...);
+                return r;
+            }
+            
 
             // sin(x + y) = sin(x) * cos(y) + sin(y) * cos(x);
             // sin(x - y) = sin(x) * cos(y) - sin(y) * cos(x);
@@ -1136,7 +1145,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
     vf_type mm, mm0;
     // m in [0.5, 1)
     using fc=func_constants<_FLOAT_T>;
-    vmf_type is_denormal=xp <= fc::max_denormal;
+    vmf_type is_denormal=(xp <= fc::max_denormal * _FLOAT_T(128)) & (xp != 0.0);
     const divisor<vi_type, int32_t> idiv3(3);
     if (any_of(is_denormal)) {
         vi_type e;
@@ -1194,31 +1203,35 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
                     1.0);
 #else
     vf_type p= poly(mm,
-                    3.069403898445115,
-                    13.20893864226553,
-                    8.282266152621692,
-                    0.9430255620543896,
-                    0.01158124376051726);
-    vf_type q= poly(mm,
-                    1.0,
-                    10.39652944539895,
-                    11.66929160362717,
-                    2.378789885003596,
-                    0.07060456511752827);
+                    -7.308706393741763e1,
+                    -1.721636984665577e2,
+                    -7.323697036976193e1,
+                    -6.302098359305703e0,
+                    -6.266400401881764e-2);
+    vf_type q= poly1(mm,
+                     -3.227570146533743e1,
+                     -1.601856796624575e2,
+                     -1.156874605199702e2,
+                     -1.729631153813661e1,
+                     -4.073419511600214e-1);                               
 #endif
     mm = p / q;
 #endif
 
     // halley steps
-    for (uint32_t i=0; i<_NR_STEPS-1; ++i) {
-        mm = nth_root_halley<3, vf_type>::v(mm, mm0);
+    if (_NR_STEPS>1) {
+        for (uint32_t i=0; i<_NR_STEPS-1; ++i) {
+            mm = nth_root_halley<3, vf_type>::v(mm, mm0);
+        }
     }
     // one newton raphson step
-    dvf_type dmm=mm;
-    dvf_type dmm0=mm0;
-    for (uint32_t i=_NR_STEPS-1; i< _NR_STEPS; ++i)
-        dmm = nth_root_nr<3, dvf_type>::v(dmm, dmm0);
-    mm = dmm.h();
+    if (_NR_STEPS>0) {
+        dvf_type dmm=mm;
+        dvf_type dmm0=mm0;
+        for (uint32_t i=_NR_STEPS-1; i< _NR_STEPS; ++i)
+            dmm = nth_root_nr<3, dvf_type>::v(dmm, dmm0);
+        mm = dmm.h();
+    }
     // scale back
     vf_type res=ldexp(mm, e3c);
     // restore sign
