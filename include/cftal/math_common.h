@@ -1201,18 +1201,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
     // we should calculate x^(-1/3) first because
     // the newton raphson steps do not require a
     // division:
-    // initial guesses:
-    // a * 1 + b = 1;
-    // a * 0.125 + b = 2
-    // a = 1-b;
-    // (1-b) * 0.125 + b = 2
-    // 0.125 - 0.125 b + b = 2;
-    // 0.125 - 2 = -b + 0.125 b
-    // 0.125 - 2 = b (0.125 -1)
-    // b= (0.125 -2)/(0.125-1)
-    // const vf_type b= (0.125 -2)/(0.125-1);
-    // const vf_type a= 1.0 - b;
-#if 1
+
     // calculate 1/cbrt(mm0);
     mm = poly(mm0,
               -2.595873403893505e0,
@@ -1225,46 +1214,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
     }
     // convert to cbrt(mm0)
     mm= mm*mm*mm0;
-#else
-    // intial guess:
-    // a * 1 + b = 1
-    // a * 0.125 + b = 0.5
-    // a = 1 - b
-    // (1-b)*0.125 + b = 0.5
-    // 0.125 - b * 0.125 + b = 0.5
-    // b (1-0.125) = 0.5 - 0.125
-    // b= (0.5-0.125)/(1-0.125)
-    // const vf_type a= 0.571428571428571;
-    // const vf_type b= 0.428571428571429;
-#if 0
-    const vf_type b= (0.5-0.125)/(1-0.125);
-    const vf_type a= 1.0 -b;
-    // mm= a * mm + b;
-    mm = poly(mm, a, b);
-#else
-    vf_type p= poly(mm,
-                    7.239033720084834e-2,
-                    2.015460119672723e0,
-                    4.169091692618903e0,
-                    1.694430809051339e0,
-                    1.42564474153948e-1,
-                    1.39927618378855e-3);
-
-    vf_type q= poly1(mm,
-                     3.985282616241717e0,
-                     2.707272785565408e0,
-                     3.93652238178502e-1,
-                     9.12911507369266e-3);
-    mm = p / q;
-#endif
-    // halley steps
-    if (_NR_STEPS>1) {
-        for (uint32_t i=0; i<_NR_STEPS-1; ++i) {
-            mm = nth_root_halley<3, vf_type>::v(mm, mm0);
-        }
-    }
-#endif
-    // one newton raphson step
+    // one newton raphson step with double precision
     if (_NR_STEPS>0) {
         dvf_type dmm=mm;
         dvf_type dmm0=mm0;
