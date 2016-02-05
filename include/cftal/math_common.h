@@ -1199,7 +1199,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
         mm0 = mm;
     }
     // we should calculate x^(-1/3) first because
-    // the newton raphson steps does not require a
+    // the newton raphson steps do not require a
     // division:
     // initial guesses:
     // a * 1 + b = 1;
@@ -1221,7 +1221,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
               2.474536628160067e0);
     if (_NR_STEPS > 1) {
         for (uint32_t i =0; i< _NR_STEPS-1; ++i)
-            mm= mm + 1.0/3.0 * mm * (1.0 - mm*mm*mm*mm0);
+            mm= mm + 1.0/3.0 * (mm - mm*mm*mm*mm*mm0);
     }
     // convert to cbrt(mm0)
     mm= mm*mm*mm0;
