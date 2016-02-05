@@ -81,17 +81,19 @@ namespace cftal {
             }
         };
 
+
     public:
+#if 0        
         // default case
         static
         vec<bit, _N>
         v(const vec<bit, _N>& s) {
             return s;
         }
-
+#endif
         static
         vec<_D, _N>
-        v(const vec<_S, _N> s) {
+        v(const vec<_S, _N>& s) {
             typename type_sel<_D, _S>::type t;
             return g(s, t);
         }

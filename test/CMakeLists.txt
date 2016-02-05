@@ -123,7 +123,10 @@ test_prog(test-exp-f32)
 test_prog(test-expm1-f32)
 test_prog(test-sinh-f32)
 test_prog(test-cosh-f32)
+test_prog(test-exp2-f32)
+test_prog(test-exp10-f32)
 test_prog(test-log-f32)
+test_prog(test-pow-f32)
 
 test_prog(test-v2)
 

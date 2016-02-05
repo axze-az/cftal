@@ -91,11 +91,6 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return cbrt(a);
             }
-            static
-            vec<_T, 1>
-            v(const vec<_T, 1>& a) {
-                return v(a());
-            }
 
             static
             _T
@@ -119,12 +114,6 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return exp(a);
             }
-            static
-            vec<_T, 1>
-            v(const vec<_T, 1>& a) {
-                return v(a());
-            }
-
             static
             _T
             v(const _T& a) {
@@ -165,12 +154,6 @@ namespace cftal {
             }
 
             static
-            vec<_T, 1>
-            v(const vec<_T, 1>& a) {
-                return v(a());
-            }
-
-            static
             _T
             v(const _T& a) {
 #if 1
@@ -190,11 +173,6 @@ namespace cftal {
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
                 return cosh(a);
-            }
-            static
-            vec<_T, 1>
-            v(const vec<_T, 1>& a) {
-                return v(a());
             }
 
             static
@@ -235,11 +213,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return exp10(a);
             }
-            static
-            vec<_T, 1>
-            v(const vec<_T, 1>& a) {
-                return v(a());
-            }
+
             static
             _T
             v(const _T& a) {
@@ -281,12 +255,35 @@ namespace cftal {
             static
             _T
             v(const _T& a, const _T& b) {
+#if 1
+                return call_mpfr::func(a, b, mpfr_pow);
+#else
                 return std::pow(a, b);
+#endif
+
             }
             static
             const char* fname() { return "pow"; }
         };
 
+        template <>
+        struct check_pow<double> {
+            template <std::size_t _N>
+            static
+            vec<double, _N>
+            v(const vec<double, _N>& a, const vec<double, _N>& b) {
+                return pow(a, b);
+            }
+            static
+            double
+            v(const double& a, const double& b) {
+                return std::pow(a, b);
+            }
+            static
+            const char* fname() { return "pow"; }
+        };
+        
+        
         template <typename _T>
         struct check_sin {
             template <std::size_t _N>

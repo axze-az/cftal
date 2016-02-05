@@ -18,8 +18,10 @@ int main(int argc, char** argv)
 
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    bool rc= check_func_1<double, 2,
+    bool rc= check_func_1<double, 1,
                           check_native_expm1<double> >(v, 3, 0, false);
+    rc &= check_func_1<double, 2,
+                       check_native_expm1<double> >(v, 3, 0, false);
     rc &= check_func_1<double, 4,
                        check_native_expm1<double> >(v, 3, 0, false);
     rc &= check_func_1<double, 8,

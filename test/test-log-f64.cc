@@ -20,7 +20,8 @@ int main(int argc, char** argv)
     std::cerr << std::setprecision(18) << std::scientific;
     // std::cerr << std::hexfloat;
     const int ulp=1;
-    bool rc= check_func_1<double, 2, check_log<double> >(v, ulp, 0, false);
+    bool rc= check_func_1<double, 1, check_log<double> >(v, ulp, 0, false);
+    rc&= check_func_1<double, 2, check_log<double> >(v, ulp, 0, false);
     rc&= check_func_1<double, 4, check_log<double> >(v, ulp, 0, false);
     rc&= check_func_1<double, 8, check_log<double> >(v, ulp, 0, false);
 

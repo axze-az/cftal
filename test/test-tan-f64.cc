@@ -20,7 +20,8 @@ int main(int argc, char** argv)
 
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    bool rc= check_func_1<double, 2, check_tan<double> >(v, ulp, 0, false);
+    bool rc= check_func_1<double, 1, check_tan<double> >(v, ulp, 0, false);
+    rc &= check_func_1<double, 2, check_tan<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 4, check_tan<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_tan<double> >(v, ulp, 0, false);
 

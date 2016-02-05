@@ -36,6 +36,20 @@ namespace cftal {
             constexpr static const double
             expm1_lo_minus_one= -3.742994775023704789873591e+01;
 
+            // exp2(x) == +inf for x >=
+            constexpr static const double
+            exp2_hi_inf= 1.024000000000000000000000e+03;
+            // exp2(x) == 0 for x <=
+            constexpr static const double
+            exp2_lo_zero= -1.075000000000000000000000e+03;
+
+            // exp10(x) == +inf for x >=
+            constexpr static const double
+            exp10_hi_inf= 3.082547155599167467698862e+02;
+            // exp10(x) == 0 for x <=
+            constexpr static const double
+            exp10_lo_zero= -3.236072453387798191215552e+02;
+            
             // cosh(x) == +inf for abs(x) >=
             constexpr static const double
             cosh_hi_inf= 7.104758600739439771132311e+02;
@@ -43,7 +57,6 @@ namespace cftal {
             // sinh(x) == +inf for x >=
             constexpr static const double
             sinh_hi_inf= 7.104758600739439771132311e+02;
-
             // sinh(x) == -inf for x <=
             constexpr static const double
             sinh_lo_inf= -7.104758600739439771132311e+02;
@@ -64,7 +77,6 @@ namespace cftal {
 
             constexpr static const float
             exp_hi_inf= 8.872283935546875000000000e+01f;
-
             constexpr static const float
             exp_lo_zero= -1.039720840454101562500000e+02f;
 
@@ -75,6 +87,20 @@ namespace cftal {
             constexpr static const float
             expm1_lo_minus_one= -1.732868003845214843750000e+01f;
 
+            // exp2(x) == +inf for x >=
+            constexpr static const float
+            exp2_hi_inf= 1.280000000000000000000000e+02f;
+            // exp2(x) == 0 for x <=
+            constexpr static const float
+            exp2_lo_zero= -1.500000000000000000000000e+02f;
+
+            // exp10(x) == +inf for x >=
+            constexpr static const float
+            exp10_hi_inf= 3.853184127807617187500000e+01f;
+            // exp10(x) == 0 for x <=
+            constexpr static const float
+            exp10_lo_zero= -4.515450286865234375000000e+01f;
+            
             // cosh(x) == +inf for abs(x) >=
             constexpr static const float
             cosh_hi_inf= 8.941599273681640625000000e+01f;
@@ -82,7 +108,6 @@ namespace cftal {
             // sinh(x) == +inf for x >=
             constexpr static const float
             sinh_hi_inf= 8.941599273681640625000000e+01f;
-
             // sinh(x) == -inf for x <=
             constexpr static const float
             sinh_lo_inf= -8.941599273681640625000000e+01f;
@@ -705,8 +730,9 @@ _exp2(const vf_type& d)
         dvf_type xr(my_type::exp2_k2(d));
         res=xr.h() + xr.l();
     }
-    const vf_type exp2_hi_inf= 1.024000000000000000000000e+03;
-    const vf_type exp2_lo_zero= -1.075000000000000000000000e+03;
+    using fc= func_constants<_FLOAT_T>;
+    const vf_type exp2_hi_inf= fc::exp2_hi_inf;
+    const vf_type exp2_lo_zero= fc::exp2_lo_zero;
     res = _T::sel(d <= exp2_lo_zero, 0.0, res);
     res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
@@ -747,8 +773,9 @@ _exp10(const vf_type& d)
         dvf_type xr(my_type::exp10_k2(d));
         res=xr.h() + xr.l();
     }
-    const vf_type exp10_hi_inf=3.082547155599167467698862e+02;
-    const vf_type exp10_lo_zero=-3.236072453387798191215552e+02;
+    using fc= func_constants<_FLOAT_T>;
+    const vf_type exp10_hi_inf=fc::exp10_hi_inf;
+    const vf_type exp10_lo_zero=fc::exp10_lo_zero;
     res = _T::sel(d <= exp10_lo_zero, 0.0, res);
     res = _T::sel(d >= exp10_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
@@ -937,27 +964,26 @@ pow(const vf_type& x, const vf_type& y)
     dvf_type pow0(my_type::exp_k2(ln_x_y));
     vf_type res(pow0.h() + pow0.l());
 
+    using fc=func_constants<_FLOAT_T>;
     const vf_type& d= ln_x_y.h();
-    const vf_type exp_hi_inf= 7.097827128933840867830440e+02;
-    const vf_type exp_lo_zero= -7.451332191019412221066887e+02;
+    const vf_type exp_hi_inf= fc::exp_hi_inf;
+    const vf_type exp_lo_zero= fc::exp_lo_zero;
     res = _T::sel(d <= exp_lo_zero, 0.0, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, M_E, res);
 
-#if 1
+    // guess the result if the calculation failed
     vmf_type res_nan = isnan(res);
     vmf_type abs_x_lt_1 = abs(x) < 1.0;
     vmf_type y_gt_1 = y > 1.0;
     res = _T::sel(res_nan, _T::pinf(), res);
     res = _T::sel(res_nan & abs_x_lt_1 & y_gt_1, 0.0, res);
     res = _T::sel(res_nan & (~abs_x_lt_1) & (~y_gt_1), 0.0, res);
-#endif
+
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=0.5 *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
-    // vmf_type res_is_nan= isnan(res);
-    // res = _T::sel(res_is_nan, _T::pinf(), res);
 
     vf_type res_fac= _T::sel(y_is_odd, vf_type(-1), vf_type(1));
     res_fac = _T::sel(~y_is_int, _T::nan(), res_fac);
@@ -1172,6 +1198,21 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
         mm= ldexp(xp, sc);
         mm0 = mm;
     }
+    // we should calculate x^(-1/3) first because
+    // the newton raphson steps does not require a
+    // division:
+    // initial guesses:
+    // a * 1 + b = 1;
+    // a * 0.125 + b = 2
+    // a = 1-b;
+    // (1-b) * 0.125 + b = 2
+    // 0.125 - 0.125 b + b = 2;
+    // 0.125 - 2 = -b + 0.125 b
+    // 0.125 - 2 = b (0.125 -1)
+    // b= (0.125 -2)/(0.125-1)
+    // const vf_type b= (0.125 -2)/(0.125-1);
+    // const vf_type a= 1.0 - b;
+    
     // intial guess:
     // a * 1 + b = 1
     // a * 0.125 + b = 0.5
@@ -1188,20 +1229,6 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
     // mm= a * mm + b;
     mm = poly(mm, a, b);
 #else
-#if 0
-    vf_type p = poly(mm,
-                     45.2548339756803022511987494,
-                     192.2798368355061050458134625,
-                     119.1654824285581628956914143,
-                     13.43250139086239872172837314,
-                     0.1636161226585754240958355063);
-    vf_type q= poly(mm,
-                    14.80884093219134573786480845,
-                    151.9714051044435648658557668,
-                    168.5254414101568283957668343,
-                    33.9905941350215598754191872,
-                    1.0);
-#else
     vf_type p= poly(mm,
                     7.239033720084834e-2,
                     2.015460119672723e0,
@@ -1215,7 +1242,6 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
                      2.707272785565408e0,
                      3.93652238178502e-1,
                      9.12911507369266e-3);
-#endif
     mm = p / q;
 #endif
 

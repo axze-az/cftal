@@ -228,6 +228,7 @@ int main(int argc, char** argv)
     using namespace cftal::test;
 
     std::cout << "f64 test\n"<<std::scientific;
+    rc &= check_cbrt_f64(cftal::v1f64(), false);
     rc &= check_cbrt_f64(cftal::v2f64(), false);
     rc &= check_cbrt_f64(cftal::v4f64(), false);
     rc &= check_cbrt_f64(cftal::v8f64(), false);

@@ -16,6 +16,18 @@ constexpr
 const double cftal::math::func_constants<double>::expm1_lo_minus_one;
 
 constexpr
+const double cftal::math::func_constants<double>::exp2_hi_inf;
+
+constexpr
+const double cftal::math::func_constants<double>::exp2_lo_zero;
+
+constexpr
+const double cftal::math::func_constants<double>::exp10_hi_inf;
+
+constexpr
+const double cftal::math::func_constants<double>::exp10_lo_zero;
+
+constexpr
 const double cftal::math::func_constants<double>::cosh_hi_inf;
 
 constexpr
@@ -45,6 +57,18 @@ const float cftal::math::func_constants<float>::expm1_hi_inf;
 
 constexpr
 const float cftal::math::func_constants<float>::expm1_lo_minus_one;
+
+constexpr
+const float cftal::math::func_constants<float>::exp2_hi_inf;
+
+constexpr
+const float cftal::math::func_constants<float>::exp2_lo_zero;
+
+constexpr
+const float cftal::math::func_constants<float>::exp10_hi_inf;
+
+constexpr
+const float cftal::math::func_constants<float>::exp10_lo_zero;
 
 constexpr
 const float cftal::math::func_constants<float>::cosh_hi_inf;

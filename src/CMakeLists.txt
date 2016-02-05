@@ -8,12 +8,16 @@ set (CSRCS
     math_common.cc
     x86_ops_1.cc
     vec_traits.cc
+    # vec <double, 1>
+    v1f64.cc
     # vec <double, 2>
     v2f64.cc
     # vec <double, 4>
     v4f64.cc
     # vec <double, 8>
     v8f64.cc
+    # vec <float, 1>
+    v1f32.cc
     # vec <float, 2>
     v2f32.cc
     # vec <float, 4>

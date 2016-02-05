@@ -72,10 +72,12 @@ namespace cftal {
         pair_type _v;
     };
 
+    using v1f64 = vec<double, 1>;
     using v2f64 = vec<double, 2>;
     using v4f64 = vec<double, 4>;
     using v8f64 = vec<double, 8>;
 
+    using v1f32 = vec<float, 1>;
     using v2f32 = vec<float, 2>;
     using v4f32 = vec<float, 4>;
     using v8f32 = vec<float, 8>;
@@ -86,6 +88,8 @@ namespace cftal {
     using v16s16= vec<int16_t, 16>;
     using v16u16= vec<uint16_t, 16>;
 
+    using v1s32 = vec<int32_t, 1>;
+    using v1u32 = vec<uint32_t, 1>;
     using v2s32 = vec<int32_t, 2>;
     using v2u32 = vec<uint32_t, 2>;
     using v4s32 = vec<int32_t, 4>;
@@ -93,6 +97,8 @@ namespace cftal {
     using v8s32 = vec<int32_t, 8>;
     using v8u32 = vec<uint32_t, 8>;
 
+    using v1s64 = vec<int64_t, 1>;
+    using v1u64 = vec<uint64_t, 1>;
     using v2s64 = vec<int64_t, 2>;
     using v2u64 = vec<uint64_t, 2>;
     using v4s64 = vec<int64_t, 4>;
@@ -277,6 +283,10 @@ namespace cftal {
     template <typename _T>
     bool
     elements_equal(const vec<_T, 2>& v);
+
+    template <typename _T>
+    bool
+    elements_equal(const vec<_T, 1>& v);
 
     template <typename _T, std::size_t _N>
     std::enable_if_t< std::is_signed<_T>::value &&
@@ -561,6 +571,14 @@ bool
 cftal::elements_equal(const vec<_T, 2>& v)
 {
     return extract<0>(v) == extract<1>(v);
+}
+
+template <class _T>
+inline
+bool
+cftal::elements_equal(const vec<_T, 1>& v)
+{
+    return true;
 }
 
 template <typename _T, std::size_t _N>

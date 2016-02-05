@@ -42,6 +42,13 @@ namespace cftal {
         _T _v;
     };
 
+    // call by value for vectors of length 1
+    template <typename _T>
+    struct arg<vec<_T, 1> > {
+        using type = vec<_T, 1>;
+    };
+
+    
     template <class _T>
     struct mem< vec<_T, 1> > {
         static
