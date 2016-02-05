@@ -37,7 +37,8 @@ int main(int argc, char** argv)
     func_domain<double> d2=std::make_pair(0.0, 100.0);
     us= std::make_shared<ulp_stats>();
     rc &= of_fp_func_2_up_to<
-        double, 8, check_pow<double> >::v(d1, d2, cmp_ulp<double>(1, us));
+        double, 8, check_pow<double> >::v(d1, d2, cmp_ulp<double>(1, us),
+                                          0x10000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     return (rc == true) ? 0 : 1;

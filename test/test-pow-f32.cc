@@ -7,7 +7,7 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-#if 0    
+#if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
         append_filename(test_data_dir, "../../test/data/pow.testdata");
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_2_up_to<
         float, 8, check_pow<float> >::v(d, d, cmp_ulp<float>(1, us),
-                                          0x8000);
+                                        0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
 
@@ -37,7 +37,8 @@ int main(int argc, char** argv)
     func_domain<float> d2=std::make_pair(0.0, 100.0);
     us= std::make_shared<ulp_stats>();
     rc &= of_fp_func_2_up_to<
-        float, 8, check_pow<float> >::v(d1, d2, cmp_ulp<float>(1, us));
+        float, 8, check_pow<float> >::v(d1, d2, cmp_ulp<float>(1, us),
+                                        0x10000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     return (rc == true) ? 0 : 1;

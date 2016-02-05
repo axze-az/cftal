@@ -49,7 +49,7 @@ namespace cftal {
             // exp10(x) == 0 for x <=
             constexpr static const double
             exp10_lo_zero= -3.236072453387798191215552e+02;
-            
+
             // cosh(x) == +inf for abs(x) >=
             constexpr static const double
             cosh_hi_inf= 7.104758600739439771132311e+02;
@@ -100,7 +100,7 @@ namespace cftal {
             // exp10(x) == 0 for x <=
             constexpr static const float
             exp10_lo_zero= -4.515450286865234375000000e+01f;
-            
+
             // cosh(x) == +inf for abs(x) >=
             constexpr static const float
             cosh_hi_inf= 8.941599273681640625000000e+01f;
@@ -1212,7 +1212,20 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
     // b= (0.125 -2)/(0.125-1)
     // const vf_type b= (0.125 -2)/(0.125-1);
     // const vf_type a= 1.0 - b;
-    
+#if 1
+    // calculate 1/cbrt(mm0);
+    mm = poly(mm0,
+              -2.595873403893505e0,
+              5.852550974497818e0,
+              -4.747475053671543e0,
+              2.474536628160067e0);
+    if (_NR_STEPS > 1) {
+        for (uint32_t i =0; i< _NR_STEPS-1; ++i)
+            mm= mm + 1.0/3.0 * mm * (1.0 - mm*mm*mm*mm0);
+    }
+    // convert to cbrt(mm0)
+    mm= mm*mm*mm0;
+#else
     // intial guess:
     // a * 1 + b = 1
     // a * 0.125 + b = 0.5
@@ -1244,13 +1257,13 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(const vf_type& x)
                      9.12911507369266e-3);
     mm = p / q;
 #endif
-
     // halley steps
     if (_NR_STEPS>1) {
         for (uint32_t i=0; i<_NR_STEPS-1; ++i) {
             mm = nth_root_halley<3, vf_type>::v(mm, mm0);
         }
     }
+#endif
     // one newton raphson step
     if (_NR_STEPS>0) {
         dvf_type dmm=mm;
