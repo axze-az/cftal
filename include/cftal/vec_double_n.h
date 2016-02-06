@@ -105,16 +105,16 @@ namespace cftal {
     frexp(const vec<double, _N>& a, vec<int32_t, _N>* e);
 
     vec<double, 1>
-    frexp(arg<vec<double, 1> >::type a, vec<int32_t, 1>* e);
+    frexp(arg_t<vec<double, 1> > a, vec<int32_t, 1>* e);
 
     vec<double, 2>
-    frexp(arg<vec<double, 2> >::type x, vec<int32_t, 2>* e);
+    frexp(arg_t<vec<double, 2> > x, vec<int32_t, 2>* e);
 
     vec<double, 4>
-    frexp(arg<vec<double, 4> >::type x, vec<int32_t, 4>* e);
+    frexp(arg_t<vec<double, 4> > x, vec<int32_t, 4>* e);
 
     vec<double, 8>
-    frexp(arg<vec<double, 8> >::type x, vec<int32_t, 8>* e);
+    frexp(arg_t<vec<double, 8> > x, vec<int32_t, 8>* e);
 
     // ldexp
     template <std::size_t _N>
@@ -122,16 +122,16 @@ namespace cftal {
     ldexp(const vec<double, _N>& a, const vec<int32_t, _N>& e);
 
     vec<double, 1>
-    ldexp(arg<vec<double, 1> >::type a, arg<vec<int32_t, 1> >::type e);
+    ldexp(arg_t<vec<double, 1> > a, arg_t<vec<int32_t, 1> > e);
 
     vec<double, 2>
-    ldexp(arg<vec<double, 2> >::type a, arg<vec<int32_t, 2> >::type e);
+    ldexp(arg_t<vec<double, 2> > a, arg_t<vec<int32_t, 2> > e);
 
     vec<double, 4>
-    ldexp(arg<vec<double, 4> >::type a, arg<vec<int32_t, 4> >::type e);
+    ldexp(arg_t<vec<double, 4> > a, arg_t<vec<int32_t, 4> > e);
 
     vec<double, 8>
-    ldexp(arg<vec<double, 8> >::type a, arg<vec<int32_t, 8> >::type e);
+    ldexp(arg_t<vec<double, 8> > a, arg_t<vec<int32_t, 8> > e);
 
     // ilogb
     template <std::size_t _N>
@@ -139,16 +139,16 @@ namespace cftal {
     ilogb(const vec<double, _N>& a);
 
     vec<int32_t, 1>
-    ilogb(arg<vec<double, 1> >::type a);
+    ilogb(arg_t<vec<double, 1> > a);
 
     vec<int32_t, 2>
-    ilogb(arg<vec<double, 2> >::type a);
+    ilogb(arg_t<vec<double, 2> > a);
 
     vec<int32_t, 4>
-    ilogb(arg<vec<double, 4> >::type a);
+    ilogb(arg_t<vec<double, 4> > a);
 
     vec<int32_t, 8>
-    ilogb(arg<vec<double, 8> >::type a);
+    ilogb(arg_t<vec<double, 8> > a);
 
     // rint, specializations are inline
     template <std::size_t _N>
@@ -191,291 +191,291 @@ namespace cftal {
     vec<double, 1>
     sqrt(const vec<double, 1>& v);
 
-    // cbrt, these functions are exact to +-0 ulp with exception of _N=1
+    // cbrt, these functions are exact to +-0 ulp
     template <std::size_t _N>
     vec<double, _N>
     cbrt(const vec<double, _N>& v);
 
     vec<double, 1>
-    cbrt(arg<vec<double, 1> >::type v);
+    cbrt(arg_t<vec<double, 1> > v);
 
     vec<double, 2>
-    cbrt(arg<vec<double, 2> >::type v);
+    cbrt(arg_t<vec<double, 2> > v);
 
     vec<double, 4>
-    cbrt(arg<vec<double, 4> >::type v);
+    cbrt(arg_t<vec<double, 4> > v);
 
     vec<double, 8>
-    cbrt(arg<vec<double, 8> >::type v);
+    cbrt(arg_t<vec<double, 8> > v);
 
-    // exp, these functions are exact to +-1 ulp with exception of _N=1
+    // exp, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     exp(const vec<double, _N>& v);
 
     vec<double, 1>
-    exp(arg<vec<double, 1> >::type v);
+    exp(arg_t<vec<double, 1> > v);
 
     vec<double, 2>
-    exp(arg<vec<double, 2> >::type d);
+    exp(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    exp(arg<vec<double, 4> >::type d);
+    exp(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    exp(arg<vec<double, 8> >::type d);
+    exp(arg_t<vec<double, 8> > d);
 
-    // expm1, these functions are exact to +-1 ulp with exception of _N=1
+    // expm1, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     expm1(const vec<double, _N>& v);
 
     vec<double, 1>
-    expm1(arg<vec<double, 1> >::type v);
+    expm1(arg_t<vec<double, 1> > v);
 
     vec<double, 2>
-    expm1(arg<vec<double, 2> >::type d);
+    expm1(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    expm1(arg<vec<double, 4> >::type d);
+    expm1(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    expm1(arg<vec<double, 8> >::type d);
+    expm1(arg_t<vec<double, 8> > d);
 
-    // exp2, these functions are exact to +-1 ulp with exception of _N=1
+    // exp2, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     exp2(const vec<double, _N>& v);
 
     vec<double, 1>
-    exp2(arg<vec<double, 1> >::type v);
+    exp2(arg_t<vec<double, 1> > v);
 
     vec<double, 2>
-    exp2(arg<vec<double, 2> >::type d);
+    exp2(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    exp2(arg<vec<double, 4> >::type d);
+    exp2(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    exp2(arg<vec<double, 8> >::type d);
+    exp2(arg_t<vec<double, 8> > d);
 
-    // exp10, these functions are exact to +-1 ulp with exception of _N=1
+    // exp10, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     exp10(const vec<double, _N>& v);
 
     vec<double, 1>
-    exp10(arg<vec<double, 1> >::type v);
+    exp10(arg_t<vec<double, 1> > v);
 
     vec<double, 2>
-    exp10(arg<vec<double, 2> >::type d);
+    exp10(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    exp10(arg<vec<double, 4> >::type d);
+    exp10(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    exp10(arg<vec<double, 8> >::type d);
+    exp10(arg_t<vec<double, 8> > d);
 
-    // sinh, these functions are exact to +-1 ulp with exception of _N=1
+    // sinh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     sinh(const vec<double, _N>& v);
 
     vec<double, 1>
-    sinh(arg<vec<double, 1> >::type d);
+    sinh(arg_t<vec<double, 1> > d);
 
     vec<double, 2>
-    sinh(arg<vec<double, 2> >::type d);
+    sinh(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    sinh(arg<vec<double, 4> >::type d);
+    sinh(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    sinh(arg<vec<double, 8> >::type d);
+    sinh(arg_t<vec<double, 8> > d);
 
-    // cosh, these functions are exact to +-1 ulp with exception of _N=1
+    // cosh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     cosh(const vec<double, _N>& v);
 
     vec<double, 1>
-    cosh(arg<vec<double, 1> >::type d);
+    cosh(arg_t<vec<double, 1> > d);
 
     vec<double, 2>
-    cosh(arg<vec<double, 2> >::type d);
+    cosh(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    cosh(arg<vec<double, 4> >::type d);
+    cosh(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    cosh(arg<vec<double, 8> >::type d);
+    cosh(arg_t<vec<double, 8> > d);
 
-    // log, these functions are exact to +-1 ulp with exception of _N=1
+    // log, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     log(const vec<double, _N>& v);
 
     vec<double, 1>
-    log(arg<vec<double, 1> >::type v);
+    log(arg_t<vec<double, 1> > v);
 
     vec<double, 2>
-    log(arg<vec<double, 2> >::type d);
+    log(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    log(arg<vec<double, 4> >::type d);
+    log(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    log(arg<vec<double, 8> >::type d);
+    log(arg_t<vec<double, 8> > d);
 
-    // pow, these functions are exact to +-1 ulp with exception of _N=1
+    // pow, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     pow(const vec<double, _N>& x, const vec<double, _N>& y);
 
     vec<double, 1>
-    pow(arg<vec<double, 1> >::type x, arg<vec<double, 1> >::type y);
+    pow(arg_t<vec<double, 1> > x, arg_t<vec<double, 1> > y);
 
     vec<double, 2>
-    pow(arg<vec<double, 2> >::type b, arg<vec<double, 2> >::type e);
+    pow(arg_t<vec<double, 2> > b, arg_t<vec<double, 2> > e);
 
     vec<double, 4>
-    pow(arg<vec<double, 4> >::type b, arg<vec<double, 4> >::type e);
+    pow(arg_t<vec<double, 4> > b, arg_t<vec<double, 4> > e);
 
     vec<double, 8>
-    pow(arg<vec<double, 8> >::type b, arg<vec<double, 8> >::type e);
+    pow(arg_t<vec<double, 8> > b, arg_t<vec<double, 8> > e);
 
-    // native_exp, these functions are exact to +-4 ulp with exception of _N1
+    // native_exp, these functions are exact to +-4 ulp
     template <std::size_t _N>
     vec<double, _N>
     native_exp(const vec<double, _N>& v);
 
     vec<double, 1>
-    native_exp(arg<vec<double, 1> >::type d);
+    native_exp(arg_t<vec<double, 1> > d);
 
     vec<double, 2>
-    native_exp(arg<vec<double, 2> >::type d);
+    native_exp(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    native_exp(arg<vec<double, 4> >::type d);
+    native_exp(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    native_exp(arg<vec<double, 8> >::type d);
+    native_exp(arg_t<vec<double, 8> > d);
 
-    // native_expm1, these functions are exact to +-6 ulp with exception of _N1
+    // native_expm1, these functions are exact to +-6 ulp
     template <std::size_t _N>
     vec<double, _N>
     native_expm1(const vec<double, _N>& v);
 
     vec<double, 1>
-    native_expm1(arg<vec<double, 1> >::type d);
+    native_expm1(arg_t<vec<double, 1> > d);
 
     vec<double, 2>
-    native_expm1(arg<vec<double, 2> >::type d);
+    native_expm1(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    native_expm1(arg<vec<double, 4> >::type d);
+    native_expm1(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    native_expm1(arg<vec<double, 8> >::type d);
+    native_expm1(arg_t<vec<double, 8> > d);
 
-    // native_log, these functions are exact to +-4 ulp with exception of _N=1
+    // native_log, these functions are exact to +-4 ulp
     template <std::size_t _N>
     vec<double, _N>
     native_log(const vec<double, _N>& v);
 
     vec<double, 1>
-    native_log(arg<vec<double, 1> >::type d);
+    native_log(arg_t<vec<double, 1> > d);
 
     vec<double, 2>
-    native_log(arg<vec<double, 2> >::type d);
+    native_log(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    native_log(arg<vec<double, 4> >::type d);
+    native_log(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    native_log(arg<vec<double, 8> >::type d);
+    native_log(arg_t<vec<double, 8> > d);
 
-    // sin, these functions are exact to +-1 ulp with exception of _N=1
+    // sin, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     sin(const vec<double, _N>& v);
 
     vec<double, 1>
-    sin(arg<vec<double, 1> >::type v);
+    sin(arg_t<vec<double, 1> > v);
 
     vec<double, 2>
-    sin(arg<vec<double, 2> >::type d);
+    sin(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    sin(arg<vec<double, 4> >::type d);
+    sin(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    sin(arg<vec<double, 8> >::type d);
+    sin(arg_t<vec<double, 8> > d);
 
-    // cos, these functions are exact to +-1 ulp with exception of _N=1
+    // cos, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     cos(const vec<double, _N>& v);
 
     vec<double, 1>
-    cos(arg<vec<double, 1> >::type v);
+    cos(arg_t<vec<double, 1> > v);
 
     vec<double, 2>
-    cos(arg<vec<double, 2> >::type d);
+    cos(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    cos(arg<vec<double, 4> >::type d);
+    cos(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    cos(arg<vec<double, 8> >::type d);
+    cos(arg_t<vec<double, 8> > d);
 
-    // sincos, these functions are exact to +-1 ulp with exception of _N=1
+    // sincos, these functions are exact to +-1 ulp
     template<std::size_t _N>
     void
     sincos(const vec<double, _N>& x,
            vec<double, _N>* s, vec<double, _N>* c);
 
     void
-    sincos(arg<vec<double, 1> >::type x,
+    sincos(arg_t<vec<double, 1> > x,
            vec<double, 1>* s, vec<double, 1>* c);
 
     void
-    sincos(arg<vec<double, 2> >::type d,
+    sincos(arg_t<vec<double, 2> > d,
            vec<double, 2> * psin, vec<double, 2> * pcos);
 
     void
-    sincos(arg<vec<double, 4> >::type d,
+    sincos(arg_t<vec<double, 4> > d,
            vec<double, 4> * psin, vec<double, 4> * pcos);
 
     void
-    sincos(arg<vec<double, 8> >::type d,
+    sincos(arg_t<vec<double, 8> > d,
            vec<double, 8> * psin, vec<double, 8> * pcos);
 
-    // tan, these functions are exact to +-1 ulp with exception of _N=1
+    // tan, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     tan(const vec<double, _N>& v);
 
     vec<double, 1>
-    tan(arg<vec<double, 1> >::type v);
+    tan(arg_t<vec<double, 1> > v);
 
     vec<double, 2>
-    tan(arg<vec<double, 2> >::type d);
+    tan(arg_t<vec<double, 2> > d);
 
     vec<double, 4>
-    tan(arg<vec<double, 4> >::type d);
+    tan(arg_t<vec<double, 4> > d);
 
     vec<double, 8>
-    tan(arg<vec<double, 8> >::type d);
+    tan(arg_t<vec<double, 8> > d);
 
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
     // specializations vec<double, 2>
     vec<int32_t, 1>
-    ilogbp1(arg<vec<double, 1> >::type v);
+    ilogbp1(arg_t<vec<double, 1> > v);
 
     vec<int32_t, 2>
-    ilogbp1(arg<vec<double, 2> >::type v);
+    ilogbp1(arg_t<vec<double, 2> > v);
 
     template <std::size_t _N>
     vec<double, _N>
@@ -490,122 +490,122 @@ namespace cftal {
     native_tan(const vec<double, _N>& v);
 
     vec<double, 1>
-    atan2(arg<vec<double, 1> >::type y, arg<vec<double, 1> >::type x);
+    atan2(arg_t<vec<double, 1> > y, arg_t<vec<double, 1> > x);
     vec<double, 2>
-    atan2(arg<vec<double, 2> >::type y, arg<vec<double, 2> >::type x);
+    atan2(arg_t<vec<double, 2> > y, arg_t<vec<double, 2> > x);
 
     vec<double, 2>
-    asin(arg<vec<double, 2> >::type d);
+    asin(arg_t<vec<double, 2> > d);
     vec<double, 2>
-    acos(arg<vec<double, 2> >::type d);
-
-    vec<double, 1>
-    atan(arg<vec<double, 1> >::type d);
-    vec<double, 2>
-    atan(arg<vec<double, 2> >::type d);
-
+    acos(arg_t<vec<double, 2> > d);
 
     vec<double, 1>
-    cot(arg<vec<double, 1> >::type d);
+    atan(arg_t<vec<double, 1> > d);
     vec<double, 2>
-    cot(arg<vec<double, 2> >::type d);
+    atan(arg_t<vec<double, 2> > d);
+
+
+    vec<double, 1>
+    cot(arg_t<vec<double, 1> > d);
+    vec<double, 2>
+    cot(arg_t<vec<double, 2> > d);
 
     void
-    native_sincos(arg<vec<double, 1> >::type d,
+    native_sincos(arg_t<vec<double, 1> > d,
                   vec<double, 1> * psin, vec<double, 1> * pcos);
     void
-    native_sincos(arg<vec<double, 2> >::type d,
+    native_sincos(arg_t<vec<double, 2> > d,
                   vec<double, 2> * psin, vec<double, 2> * pcos);
 
     vec<double, 1>
-    native_sin(arg<vec<double, 1> >::type d);
+    native_sin(arg_t<vec<double, 1> > d);
     vec<double, 2>
-    native_sin(arg<vec<double, 2> >::type d);
+    native_sin(arg_t<vec<double, 2> > d);
 
     vec<double, 1>
-    native_cos(arg<vec<double, 1> >::type d);
+    native_cos(arg_t<vec<double, 1> > d);
     vec<double, 2>
-    native_cos(arg<vec<double, 2> >::type d);
+    native_cos(arg_t<vec<double, 2> > d);
 
     vec<double, 1>
-    native_tan(arg<vec<double, 1> >::type d);
+    native_tan(arg_t<vec<double, 1> > d);
     vec<double, 2>
-    native_tan(arg<vec<double, 2> >::type d);
+    native_tan(arg_t<vec<double, 2> > d);
 
     vec<double, 1>
-    native_cot(arg<vec<double, 1> >::type d);
+    native_cot(arg_t<vec<double, 1> > d);
     vec<double, 2>
-    native_cot(arg<vec<double, 2> >::type d);
+    native_cot(arg_t<vec<double, 2> > d);
 
 
     // specializations vec<double, 4>
     vec<int32_t, 4>
-    ilogbp1(arg<vec<double, 4> >::type v);
+    ilogbp1(arg_t<vec<double, 4> > v);
     vec<double, 4>
-    atan2(arg<vec<double, 4> >::type y, arg<vec<double, 4> >::type x);
+    atan2(arg_t<vec<double, 4> > y, arg_t<vec<double, 4> > x);
     vec<double, 4>
-    asin(arg<vec<double, 4> >::type d);
+    asin(arg_t<vec<double, 4> > d);
     vec<double, 4>
-    acos(arg<vec<double, 4> >::type d);
+    acos(arg_t<vec<double, 4> > d);
 
     vec<double, 4>
-    atan(arg<vec<double, 4> >::type d);
+    atan(arg_t<vec<double, 4> > d);
     vec<double, 4>
-    cot(arg<vec<double, 4> >::type d);
+    cot(arg_t<vec<double, 4> > d);
     vec<double, 4>
-    atan2(arg<vec<double, 4> >::type x, arg<vec<double, 4> >::type y);
+    atan2(arg_t<vec<double, 4> > x, arg_t<vec<double, 4> > y);
 
     void
-    native_sincos(arg<vec<double, 4> >::type d,
+    native_sincos(arg_t<vec<double, 4> > d,
                   vec<double, 4> * psin, vec<double, 4> * pcos);
     vec<double, 4>
-    native_sin(arg<vec<double, 4> >::type d);
+    native_sin(arg_t<vec<double, 4> > d);
     vec<double, 4>
-    native_cos(arg<vec<double, 4> >::type d);
+    native_cos(arg_t<vec<double, 4> > d);
     vec<double, 4>
-    native_tan(arg<vec<double, 4> >::type d);
+    native_tan(arg_t<vec<double, 4> > d);
     vec<double, 4>
-    native_cot(arg<vec<double, 4> >::type d);
+    native_cot(arg_t<vec<double, 4> > d);
 
     // specializations vec<double, 8>
     vec<int32_t, 8>
-    ilogbp1(arg<vec<double, 8> >::type v);
+    ilogbp1(arg_t<vec<double, 8> > v);
     vec<double, 8>
-    atan2(arg<vec<double, 8> >::type y, arg<vec<double, 8> >::type x);
+    atan2(arg_t<vec<double, 8> > y, arg_t<vec<double, 8> > x);
     vec<double, 8>
-    asin(arg<vec<double, 8> >::type d);
+    asin(arg_t<vec<double, 8> > d);
     vec<double, 8>
-    acos(arg<vec<double, 8> >::type d);
+    acos(arg_t<vec<double, 8> > d);
 
     vec<double, 8>
-    atan(arg<vec<double, 8> >::type d);
+    atan(arg_t<vec<double, 8> > d);
 
     vec<double, 8>
-    cot(arg<vec<double, 8> >::type d);
+    cot(arg_t<vec<double, 8> > d);
     vec<double, 8>
-    atan2(arg<vec<double, 8> >::type x, arg<vec<double, 8> >::type y);
+    atan2(arg_t<vec<double, 8> > x, arg_t<vec<double, 8> > y);
 
     void
-    native_sincos(arg<vec<double, 8> >::type d,
+    native_sincos(arg_t<vec<double, 8> > d,
                   vec<double, 8> * psin, vec<double, 8> * pcos);
     vec<double, 8>
-    native_sin(arg<vec<double, 8> >::type d);
+    native_sin(arg_t<vec<double, 8> > d);
     vec<double, 8>
-    native_cos(arg<vec<double, 8> >::type d);
+    native_cos(arg_t<vec<double, 8> > d);
     vec<double, 8>
-    native_tan(arg<vec<double, 8> >::type d);
+    native_tan(arg_t<vec<double, 8> > d);
     vec<double, 8>
-    native_cot(arg<vec<double, 8> >::type d);
+    native_cot(arg_t<vec<double, 8> > d);
 
     vec<double, 1>
-    fma(arg<vec<double, 1> >::type a,
-        arg<vec<double, 1> >::type b,
-        arg<vec<double, 1> >::type c);
+    fma(arg_t<vec<double, 1> > a,
+        arg_t<vec<double, 1> > b,
+        arg_t<vec<double, 1> > c);
 
     vec<double, 1>
-    fms(arg<vec<double, 1> >::type a,
-        arg<vec<double, 1> >::type b,
-        arg<vec<double, 1> >::type c);
+    fms(arg_t<vec<double, 1> > a,
+        arg_t<vec<double, 1> > b,
+        arg_t<vec<double, 1> > c);
 }
 
 template <std::size_t _N>
