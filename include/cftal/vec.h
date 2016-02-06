@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
+#include <cftal/arg.h>
 #include <cftal/select.h>
 #include <cftal/init_list.h>
 #include <cftal/constants.h>

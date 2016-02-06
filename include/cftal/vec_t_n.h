@@ -5,6 +5,7 @@
 #include <cftal/expr.h>
 #include <cftal/constants.h>
 #include <cftal/init_list.h>
+#include <cftal/arg.h>
 #include <cftal/mem.h>
 #include <type_traits>
 #include <iosfwd>
@@ -12,11 +13,6 @@
 
 
 namespace cftal {
-
-    template <typename _T>
-    struct arg {
-        using type = const _T&;
-    };
 
     template <typename _T, std::size_t _N >
     class /* alignas(const_min<128, sizeof(_T)*_N>::v)*/ vec {

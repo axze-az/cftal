@@ -2,6 +2,7 @@
 #define __CFTAL_MATH_COMMON_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/arg.h>
 #include <cftal/d_real.h>
 #include <cftal/std_types.h>
 #include <cftal/divisor.h>
@@ -131,28 +132,32 @@ namespace cftal {
 
             // exp core
             static dvf_type
-            exp_k2(const dvf_type& dvf, bool exp_m1);
+            exp_k2(arg_t<vf_type> xh,
+                   arg_t<vf_type> xl,
+                   bool exp_m1);
             // native exp core
             static vf_type
-            native_exp_k(const vf_type& vf, bool exp_m1);
+            native_exp_k(arg_t<vf_type> x, bool exp_m1);
             // log core
             static dvf_type
-            log_k2(const dvf_type& dvf);
+            log_k2(arg_t<vf_type> xh,
+                   arg_t<vf_type> xl);
             // native log core
             static dvf_type
-            native_log_k2(const dvf_type& dvf);
+            native_log_k2(arg_t<vf_type> x);
             // sin and cos core, return sin in first
             static std::pair<dvf_type, dvf_type>
-            sin_cos_k(const vf_type& v);
+            sin_cos_k(arg_t<vf_type> x);
             // native sin and cos core, return sin in first
             static std::pair<vf_type, vf_type>
-            native_sin_cos_k(const vf_type& v);
+            native_sin_cos_k(arg_t<vf_type> v);
             // atan2 core
             static dvf_type
-            atan2_k2(const dvf_type& x, const dvf_type& y);
+            atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
+                     arg_t<vf_type> yh, arg_t<vf_type> yl);
             // atan2 core
             static dvf_type
-            native_atan2_k(const dvf_type& x, const dvf_type& y);
+            native_atan2_k(arg_t<vf_type> x, arg_t<vf_type> y);
         };
 
         template <typename _FLOAT_T, typename _TRAITS_T>
@@ -678,13 +683,8 @@ _exp(const vf_type& d)
     if (_NATIVE) {
         res=my_type::native_exp_k(d);
     } else {
-#if 0
-        tvf_type xr(my_type::exp_k3(d));
-        res=xr.h() + xr.m() + xr.l();
-#else
-        dvf_type xr(my_type::exp_k2(d));
+        dvf_type xr(my_type::exp_k2(d, vf_type(0)));
         res=xr.h() + xr.l();
-#endif
     }
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp_hi_inf= fc::exp_hi_inf;
@@ -727,7 +727,7 @@ _exp2(const vf_type& d)
     if (_NATIVE) {
         res=my_type::native_exp2_k(d);
     } else {
-        dvf_type xr(my_type::exp2_k2(d));
+        dvf_type xr(my_type::exp2_k2(d, vf_type(0)));
         res=xr.h() + xr.l();
     }
     using fc= func_constants<_FLOAT_T>;
@@ -770,7 +770,7 @@ _exp10(const vf_type& d)
     if (_NATIVE) {
         res=my_type::native_exp10_k(d);
     } else {
-        dvf_type xr(my_type::exp10_k2(d));
+        dvf_type xr(my_type::exp10_k2(d, vf_type(0)));
         res=xr.h() + xr.l();
     }
     using fc= func_constants<_FLOAT_T>;
@@ -813,7 +813,7 @@ _expm1(const vf_type& d)
         vf_type r=my_type::native_exp_k(d, true);
         res = r;
     } else {
-        dvf_type r(my_type::exp_k2(d, true));
+        dvf_type r(my_type::exp_k2(d, vf_type(0), true));
         res =r.h() + r.l();
     }
     using fc= func_constants<_FLOAT_T>;
@@ -860,7 +860,7 @@ sinh(const vf_type& d)
     // sinh (x+x) = sinh(x)*cosh(x) + cosh(x)*sinh(x)
     // sinh (2x) = 2 * sinh(x) * cosh(x)
     dvf_type dh=vf_type(0.5*d);
-    dvf_type exph=my_type::exp_k2(dh);
+    dvf_type exph=my_type::exp_k2(dh.h(), dh.l());
     dvf_type rexph=(vf_type(1.0)/exph);
     dvf_type sinh_xh= mul_pwr2(exph - rexph, vf_type(0.5));
     dvf_type cosh_xh= mul_pwr2(exph + rexph, vf_type(0.5));
@@ -892,7 +892,7 @@ cosh(const vf_type& d)
     // cosh (2x) = 2 * sinh(x)*sinh(x) + 1
 
     dvf_type dh=vf_type(0.5*d);
-    dvf_type exph=my_type::exp_k2(dh);
+    dvf_type exph=my_type::exp_k2(dh.h(), dh.l());
     dvf_type rexph=(vf_type(1.0)/exph);
     dvf_type two_sinh_xh= exph - rexph;
     dvf_type sinh_xh = mul_pwr2(two_sinh_xh, vf_type(0.5));
@@ -916,7 +916,7 @@ _log(const vf_type& d)
     if (_NATIVE) {
         x= my_type::native_log_k(d);
     } else {
-        dvf_type xr(my_type::log_k2(d));
+        dvf_type xr(my_type::log_k2(d, vf_type(0)));
         x= xr.h() + xr.l();
     }
     const vf_type pinf(_T::pinf());
@@ -959,9 +959,9 @@ cftal::math::func_common<_FLOAT_T, _T>::
 pow(const vf_type& x, const vf_type& y)
 {
     // we have a problem if e is an integer
-    dvf_type ln_x(my_type::log_k2(abs(x)));
+    dvf_type ln_x(my_type::log_k2(abs(x), vf_type(0)));
     dvf_type ln_x_y(ln_x * y);
-    dvf_type pow0(my_type::exp_k2(ln_x_y));
+    dvf_type pow0(my_type::exp_k2(ln_x_y.h(), ln_x_y.l()));
     vf_type res(pow0.h() + pow0.l());
 
     using fc=func_constants<_FLOAT_T>;
@@ -1146,7 +1146,7 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan2(const vf_type& x, const vf_type& y)
 {
-    dvf_type r(base_type::atan2_k2(abs(y), x));
+    dvf_type r(base_type::atan2_k2(abs(y), vf_type(0), x, vf_type(0)));
     r = dvf_type(mulsign(r.h(), x),
                  mulsign(r.l(), x));
     return x;

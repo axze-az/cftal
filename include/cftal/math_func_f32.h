@@ -113,52 +113,61 @@ namespace cftal {
             typedef d_real<vf_type> dvf_type;
             using tvf_type = t_real<vf_type>;
 
-            static vf_type pow2i(const vi_type& d);
-            static vf_type ldexp(const vf_type& vf,
-                                 const vi_type& vi);
-            static vf_type frexp(const vf_type& vf,
+            static vf_type pow2i(arg_t<vi_type> d);
+            static vf_type ldexp(arg_t<vf_type> vf,
+                                 arg_t<vi_type> vi);
+            static vf_type frexp(arg_t<vf_type> vf,
                                  vi_type* vi);
-            static vi_type ilogbp1(const vf_type& vi);
-            static vi_type ilogb(const vf_type& vf);
+            static vi_type ilogbp1(arg_t<vf_type> x);
+            static vi_type ilogb(arg_t<vf_type> vf);
 
             static void
-            sin_cos_k(const vf_type& v, std::size_t n,
+            sin_cos_k(arg_t<vf_type> v,
+                      std::size_t n,
                       vf_type* s, vf_type* c);
 
             static void
-            native_sin_cos_k(const vf_type& x,
+            native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
 
             static tvf_type
             exp_k3(const tvf_type& tvf);
 
             static dvf_type
-            exp_k2(const dvf_type& dvf, bool exp_m1=false);
+            exp_k2(arg_t<vf_type> xh,
+                   arg_t<vf_type> xl,
+                   bool exp_m1=false);
 
             static vf_type
-            native_exp_k(const vf_type& v, bool exp_m1=false);
+            native_exp_k(arg_t<vf_type> v, bool exp_m1=false);
 
             static dvf_type
-            exp2_k2(const dvf_type& dvf);
+            exp2_k2(arg_t<vf_type> xh,
+                    arg_t<vf_type> xl);
 
             static vf_type
-            native_exp2_k(const vf_type& v);
+            native_exp2_k(arg_t<vf_type> v);
 
             static dvf_type
-            exp10_k2(const dvf_type& dvf);
+            exp10_k2(arg_t<vf_type> xh,
+                     arg_t<vf_type> xl);
 
             static vf_type
-            native_exp10_k(const vf_type& v);
+            native_exp10_k(arg_t<vf_type> v);
 
             static dvf_type
-            log_k2(const dvf_type& dvf);
-
+            log_k2(arg_t<vf_type> xh,
+                   arg_t<vf_type> xl);
+            
             static vf_type
-            native_log_k(const vf_type& v);
+            native_log_k(arg_t<vf_type> v);
 
             // atan2 kernel
             static dvf_type
-            atan2_k2(const dvf_type& x, const dvf_type& y);
+            atan2_k2(arg_t<vf_type> xh,
+                     arg_t<vf_type> xl,
+                     arg_t<vf_type> yh,
+                     arg_t<vf_type> yl);
         };
 
         template <typename _T>
@@ -169,8 +178,8 @@ namespace cftal {
             typedef typename _T::vmf_type vmf_type;
             typedef typename _T::vmi_type vmi_type;
 
-            static vf_type native_sin(const vf_type& x);
-            static vf_type native_cos(const vf_type& x);
+            static vf_type native_sin(arg_t<vf_type> x);
+            static vf_type native_cos(arg_t<vf_type> x);
         };
     }
 }
@@ -180,7 +189,7 @@ inline
 typename
 cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-pow2i(const vi_type& vi)
+pow2i(arg_t<vi_type> vi)
 {
     vi_type e(vi + vi_type(_T::bias));
     vf_type r(_T::insert_exp(e));
@@ -200,7 +209,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-ldexp(const vf_type& vd, const vi_type& ve)
+ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
 {
     vi_type q= ve;
     vi_type m = q >> 31;
@@ -224,7 +233,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-frexp(const vf_type& vd, vi_type* ve)
+frexp(arg_t<vf_type> vd, vi_type* ve)
 {
     // normal numbers:
     vi_type i(_T::as_int(vd));
@@ -267,7 +276,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vi_type
 cftal::math::func_core<float, _T>::
-ilogbp1(const vf_type& vd)
+ilogbp1(arg_t<vf_type> vd)
 {
     vmf_type mf= vd < 5.421010862427522E-20f;
     vf_type d = _T::sel(mf, 1.8446744073709552E19f * vd, vd);
@@ -281,7 +290,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vi_type
 cftal::math::func_core<float, _T>::
-ilogb(const vf_type& d)
+ilogb(arg_t<vf_type> d)
 {
     vi_type e(ilogbp1(abs(d)) -1);
     vmf_type mf= d == 0.0f;
@@ -300,7 +309,8 @@ template <typename _T>
 inline
 void
 cftal::math::func_core<float, _T>::
-sin_cos_k(const vf_type& x, std::size_t n,
+sin_cos_k(arg_t<vf_type> x,
+          std::size_t n,
           vf_type* ps, vf_type* pc)
 {
     using vhpf_type = typename _T::vhpf_type;
@@ -340,7 +350,7 @@ template <typename _T>
 inline
 void
 cftal::math::func_core<float, _T>::
-native_sin_cos_k(const vf_type& x, vf_type* ps, vf_type* pc)
+native_sin_cos_k(arg_t<vf_type> x, vf_type* ps, vf_type* pc)
 {
 #define PI4_Af 0.78515625f
 #define PI4_Bf 0.00024187564849853515625f
@@ -431,8 +441,9 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::dvf_type
 cftal::math::func_core<float, _T>::
-exp_k2(const dvf_type& x, bool exp_m1)
+exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl, bool exp_m1)
 {
+    dvf_type x(xh, xl);
     using vhpf_type = typename _T::vhpf_type;
     const std::size_t elements = _T::vhpf_per_vf();
 
@@ -440,17 +451,17 @@ exp_k2(const dvf_type& x, bool exp_m1)
     using hpf_func =
         func_core<double, hpf_traits>;
 
-    vhpf_type xh[elements];
-    _T::vf_to_vhpf(x.h(), xh);
-    vhpf_type xl[elements];
-    _T::vf_to_vhpf(x.l(), xl);
+    vhpf_type vxh[elements];
+    _T::vf_to_vhpf(x.h(), vxh);
+    vhpf_type vxl[elements];
+    _T::vf_to_vhpf(x.l(), vxl);
     // evaluate unevaluated sum
     for (std::size_t i=0; i<elements; ++i)
-        xh[i] += xl[i];
+        vxh[i] += vxl[i];
 
     vhpf_type vres[elements];
     for (std::size_t i=0; i<elements; ++i) {
-        vres[i]= hpf_func::native_exp_k(xh[i], exp_m1);
+        vres[i]= hpf_func::native_exp_k(vxh[i], exp_m1);
     }
     dvf_type res;
     _T::vhpf_to_dvf(vres, res);
@@ -461,7 +472,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::dvf_type
 cftal::math::func_core<float, _T>::
-exp2_k2(const dvf_type& x)
+exp2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
     using vhpf_type = typename _T::vhpf_type;
     const std::size_t elements = _T::vhpf_per_vf();
@@ -470,17 +481,17 @@ exp2_k2(const dvf_type& x)
     using hpf_func =
         func_core<double, hpf_traits>;
 
-    vhpf_type xh[elements];
-    _T::vf_to_vhpf(x.h(), xh);
-    vhpf_type xl[elements];
-    _T::vf_to_vhpf(x.l(), xl);
+    vhpf_type vxh[elements];
+    _T::vf_to_vhpf(xh, vxh);
+    vhpf_type vxl[elements];
+    _T::vf_to_vhpf(xl, vxl);
     // evaluate unevaluated sum
     for (std::size_t i=0; i<elements; ++i)
-        xh[i] += xl[i];
+        vxh[i] += vxl[i];
 
     vhpf_type vres[elements];
     for (std::size_t i=0; i<elements; ++i) {
-        vres[i]= hpf_func::native_exp2_k(xh[i]);
+        vres[i]= hpf_func::native_exp2_k(vxh[i]);
     }
     dvf_type res;
     _T::vhpf_to_dvf(vres, res);
@@ -491,7 +502,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::dvf_type
 cftal::math::func_core<float, _T>::
-exp10_k2(const dvf_type& x)
+exp10_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
     using vhpf_type = typename _T::vhpf_type;
     const std::size_t elements = _T::vhpf_per_vf();
@@ -500,17 +511,17 @@ exp10_k2(const dvf_type& x)
     using hpf_func =
         func_core<double, hpf_traits>;
 
-    vhpf_type xh[elements];
-    _T::vf_to_vhpf(x.h(), xh);
-    vhpf_type xl[elements];
-    _T::vf_to_vhpf(x.l(), xl);
+    vhpf_type vxh[elements];
+    _T::vf_to_vhpf(xh, vxh);
+    vhpf_type vxl[elements];
+    _T::vf_to_vhpf(xl, vxl);
     // evaluate unevaluated sum
     for (std::size_t i=0; i<elements; ++i)
-        xh[i] += xl[i];
+        vxh[i] += vxl[i];
 
     vhpf_type vres[elements];
     for (std::size_t i=0; i<elements; ++i) {
-        vres[i]= hpf_func::native_exp10_k(xh[i]);
+        vres[i]= hpf_func::native_exp10_k(vxh[i]);
     }
     dvf_type res;
     _T::vhpf_to_dvf(vres, res);
@@ -521,7 +532,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-native_exp_k(const vf_type& v, bool exp_m1)
+native_exp_k(arg_t<vf_type> v, bool exp_m1)
 {
 #define L2Uf 0.693145751953125f
 #define L2Lf 1.428606765330187045e-06f
@@ -554,7 +565,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::dvf_type
 cftal::math::func_core<float, _T>::
-log_k2(const dvf_type& x)
+log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
     using vhpf_type = typename _T::vhpf_type;
     const std::size_t elements = _T::vhpf_per_vf();
@@ -563,17 +574,17 @@ log_k2(const dvf_type& x)
     using hpf_func =
         func_core<double, hpf_traits>;
 
-    vhpf_type xh[elements];
-    _T::vf_to_vhpf(x.h(), xh);
-    vhpf_type xl[elements];
-    _T::vf_to_vhpf(x.l(), xl);
+    vhpf_type vxh[elements];
+    _T::vf_to_vhpf(xh, vxh);
+    vhpf_type vxl[elements];
+    _T::vf_to_vhpf(xl, vxl);
     // evaluate unevaluated sum
     for (std::size_t i=0; i<elements; ++i)
-        xh[i] += xl[i];
+        vxh[i] += vxl[i];
 
     vhpf_type vres[elements];
     for (std::size_t i=0; i<elements; ++i) {
-        vres[i]= hpf_func::native_log_k(xh[i]);
+        vres[i]= hpf_func::native_log_k(vxh[i]);
     }
     dvf_type res;
     _T::vhpf_to_dvf(vres, res);
@@ -584,7 +595,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-native_log_k(const vf_type& v)
+native_log_k(arg_t<vf_type> v)
 {
     vi_type e(my_type::ilogbp1(v * 0.7071f));
     vf_type m(my_type::ldexp(v, -e));
@@ -605,7 +616,7 @@ template <typename _T>
 inline
 typename
 cftal::math::func<float, _T>::vf_type
-cftal::math::func<float, _T>::native_sin(const vf_type& x)
+cftal::math::func<float, _T>::native_sin(arg_t<vf_type> x)
 {
 #define PI4_Af 0.78515625f
 #define PI4_Bf 0.00024187564849853515625f
@@ -648,7 +659,7 @@ template <typename _T>
 inline
 typename
 cftal::math::func<float, _T>::vf_type
-cftal::math::func<float, _T>::native_cos(const vf_type& x)
+cftal::math::func<float, _T>::native_cos(arg_t<vf_type> x)
 {
 #define PI4_Af 0.78515625f
 #define PI4_Bf 0.00024187564849853515625f
@@ -695,9 +706,10 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::dvf_type
 cftal::math::func_core<float, _T>::
-atan2_k2(const dvf_type& x, const dvf_type& y)
+atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
+         arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
-    return x + y;
+    return dvf_type(xh + yh);
 }
 
 // Local Variables:
