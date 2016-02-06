@@ -451,7 +451,7 @@ namespace cftal {
                              v4f32(0.0f));
             }
         };
-#endif
+#endif // __SSE2__
     }
 
     template <class _D, class _S>
