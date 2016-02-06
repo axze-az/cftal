@@ -344,7 +344,7 @@ namespace cftal {
     vec<double, 8>
     pow(arg_t<vec<double, 8> > b, arg_t<vec<double, 8> > e);
 
-    // native_exp, these functions are exact to +-4 ulp
+    // native_exp, these functions are exact to +-5 ulp
     template <std::size_t _N>
     vec<double, _N>
     native_exp(const vec<double, _N>& v);
@@ -361,7 +361,7 @@ namespace cftal {
     vec<double, 8>
     native_exp(arg_t<vec<double, 8> > d);
 
-    // native_expm1, these functions are exact to +-6 ulp
+    // native_expm1, these functions are exact to +-7 ulp
     template <std::size_t _N>
     vec<double, _N>
     native_expm1(const vec<double, _N>& v);
