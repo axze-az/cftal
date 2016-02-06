@@ -1079,8 +1079,23 @@ cot(const vf_type& d)
     vf_type s[2], c[2];
     my_type::sin_cos_k(d, 2, s, c);
     dvf_type ds(s[0], s[1]), dc(c[0], c[1]);
-    dvf_type ct=dc /ds;
-    return ct.h() + ct.l();
+    dvf_type ct= dc /ds;
+    using fc=func_constants<_FLOAT_T>;
+    vf_type r=ct.h() + ct.l();
+    vmf_type is_nan=isnan(r);
+    if (any_of(is_nan)) {
+        vmf_type is_small = (abs(d) <= fc::max_denormal) & is_nan;
+        if (any_of(is_small)) {
+            // vmf_type den_plus= may_be_denom & (d > 0.0);
+            // vmf_type den_minus= may_be_denom & (d < 0.0);
+            // r = _TRAITS_T::sel(den_plus, _TRAITS_T::pinf(), r);
+            // r = _TRAITS_T::sel(den_minus, _TRAITS_T::ninf(), r);
+            vf_type zinf= _TRAITS_T::pinf();
+            zinf=copysign(zinf, d);
+            r = _TRAITS_T::sel(is_small, zinf, r);
+        }
+    }
+    return r;
 }
 
 template <typename _FLOAT_T,
