@@ -64,9 +64,10 @@ namespace cftal {
         struct scale_down<_DST, _SRC, _NN, 2> {
             static
             vec<_DST, _NN>
-            v(const vec<_SRC, _NN>& v) {
-                vec<_SRC, _NN/2> t= odd_elements(v);
-                return as<vec<_DST, _NN> >(t);
+            v(const vec<_SRC, _NN>& a) {
+                vec<_DST, 2*_NN> vt= as<vec<_DST, 2*_NN> >(a);
+                vec<_DST, _NN> r= odd_elements(vt);
+                return r;
             }
         };
 
@@ -74,16 +75,17 @@ namespace cftal {
         struct scale_down<_DST, _SRC, _NN, 4> {
             static
             vec<_DST, _NN>
-            v(const vec<_SRC, _NN>& v) {
-                vec<_SRC, _NN/2> t= odd_elements(v);
-                vec<_SRC, _NN/4> u= odd_elements(t);
-                return as<vec<_DST, _NN> >(u);
+            v(const vec<_SRC, _NN>& a) {
+                vec<_DST, 4*_NN> vt= as<vec<_DST, 2*_NN> >(a);
+                vec<_SRC, 2*_NN> r0= odd_elements(vt);
+                vec<_SRC, _NN> r= odd_elements(r0);
+                return r;
             }
         };
 
 
     public:
-#if 0        
+#if 0
         // default case
         static
         vec<bit, _N>
