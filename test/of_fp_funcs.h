@@ -44,6 +44,10 @@ namespace cftal {
             template <typename _CMP=cmp_t<_T> >
             static
             bool v(_T ai, _CMP cmp=_CMP());
+
+            template <typename _CMP=cmp_t<_T> >
+            static
+            bool v(const _T(&ai)[_N], _CMP cmp=_CMP());
         };
 
         template <typename _T, std::size_t _N, typename _F>
@@ -83,6 +87,10 @@ namespace cftal {
             template <typename _CMP=cmp_t<_T> >
             static
             bool v(_T ai, _T bi, _CMP cmp=_CMP());
+
+            template <typename _CMP=cmp_t<_T> >
+            static
+            bool v(const _T(&ai)[_N], const _T(&bi)[_N], _CMP cmp=_CMP());
         };
 
         template <typename _T, std::size_t _N, typename _F>
@@ -204,12 +212,37 @@ cftal::test::of_fp_func<_T, _N, _F>::v(_T a, _CMP cmp)
 template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP>
 bool
+cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N], _CMP cmp)
+{
+    vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
+    vec<_T, _N> vr=_F::v(va);
+    _T r[_N];
+    for (std::size_t i=0; i<_N; ++i)
+        r[i] = _F::v(a[i]);
+    // std::cout << std::setprecision(18) << a << std::endl;
+    bool c= check(vr, r, _F::fname(), true, cmp);
+    if (c == false) {
+        for (std::size_t i=0; i < _N; ++i) {
+            std::cerr << _F::fname() << "("<< a[i] << ") failed ?\n";
+            std::cerr << _F::fname() << "= "<< r[i] << "\n";
+        }
+        std::cerr << "va: " << va << std::endl;
+        std::cerr << "vr: " << vr << std::endl;
+        std::cerr << std::endl;
+    }
+    return c;
+}
+
+template <typename _T, std::size_t _N, typename _F>
+template <typename _CMP>
+bool
 cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
                                        _CMP cmp, std::size_t cnt)
 {
     bool r = true;
     const _T inf_nan_args []= {
-        _T(0),
+        _T(0.0),
+        _T(-0.0),
         _T(1),
         _T(2),
         _T(7),
@@ -231,12 +264,21 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
     uniform_real_distribution<_T>
         distrib(domain.first, domain.second);
 
+    _T va[_N];
+    
     std::cout << "[" << domain.first << ", " << domain.second << ")\n";
     const uint32_t N0=72;
     for (uint32_t j=0; j<N0; ++j) {
         for (std::size_t i=0; i<cnt; ++i) {
+#if 1
+            for (std::size_t k=0; k<_N; ++k) {
+                va[k] = distrib(rnd);
+            }
+            r &= v(va, cmp);
+#else
             _T ah=distrib(rnd);
             r &= v(ah, cmp);
+#endif
         }
         std::cout << '.' << std::flush;
     }
@@ -250,8 +292,15 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
         std::cout << "[" << minus1 << ", " << nplus1 << ")\n";
         for (uint32_t j=0; j<N0; ++j) {
             for (std::size_t i=0; i<cnt; ++i) {
+#if 1
+                for (std::size_t k=0; k<_N; ++k) {
+                    va[k] = distrib1(rnd);
+                }
+                r &= v(va, cmp);
+#else
                 _T ah=distrib1(rnd);
                 r &= v(ah, cmp);
+#endif
             }
             std::cout << '.' << std::flush;
         }
@@ -285,6 +334,28 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(_T a, _T b, _CMP cmp)
 template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP>
 bool
+cftal::test::of_fp_func_2<_T, _N, _F>::
+v(const _T(&a)[_N], const _T(&b)[_N], _CMP cmp)
+{
+    vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
+    vec<_T, _N> vb=mem<vec<_T, _N> >::load(b);
+    vec<_T, _N> vr=_F::v(va, vb);
+    _T r[_N];
+    for (std::size_t i=0; i<_N; ++i)
+        r[i] = _F::v(a[i], b[i]);
+    bool c= check(vr, r, _F::fname(), true, cmp);
+    if (c == false) {
+        for (std::size_t i=0; i < _N; ++i) {
+            std::cerr << _F::fname() << "("
+                      << a[i] << ", " <<  b[i] << ") failed?.\n";
+        }
+    }
+    return c;
+}
+
+template <typename _T, std::size_t _N, typename _F>
+template <typename _CMP>
+bool
 cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
                                          func_domain<_T> domain_2,
                                          _CMP cmp, std::size_t cnt)
@@ -292,7 +363,8 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
     bool r = true;
 
     const _T inf_nan_args []= {
-        _T(0),
+        _T(0.0),
+        _T(-0.0),
         _T(1),
         _T(2),
         _T(7),
@@ -316,6 +388,8 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
         }
     }
 
+    _T va[_N], vb[_N];
+    
     std::mt19937_64 rnd;
     uniform_real_distribution<_T>
         distrib1(domain_1.first, domain_1.second);
@@ -328,9 +402,17 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
     const uint32_t N0=72;
     for (uint32_t j=0; j< N0; ++j) {
         for (std::size_t i=0; i<cnt; ++i) {
+#if 1
+            for (std::size_t k=0; k<_N; ++k) {
+                va[k] = distrib1(rnd);
+                vb[k] = distrib2(rnd);
+            }
+            r &= v(va, vb, cmp);
+#else
             _T ah=distrib1(rnd);
             _T bh=distrib2(rnd);
             r &= v(ah, bh, cmp);
+#endif
         }
         std::cout << '.' << std::flush;
     }
@@ -351,9 +433,17 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
                   << ")\n";
         for (uint32_t j=0; j<N0; ++j) {
             for (std::size_t i=0; i<cnt; ++i) {
+#if 1
+                for (std::size_t k=0; k<_N; ++k) {
+                    va[k] = distrib_1_1(rnd);
+                    vb[k] = distrib_1_2(rnd);
+                }
+                r &= v(va, vb, cmp);
+#else
                 _T ah=distrib_1_1(rnd);
                 _T bh=distrib_1_2(rnd);
                 r &= v(ah, bh, cmp);
+#endif
             }
             std::cout << '.' << std::flush;
         }

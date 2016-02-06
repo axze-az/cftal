@@ -84,6 +84,18 @@ namespace cftal {
                    bool verbose=true,
                    _CMP cmp= _CMP());
 
+        template <class _T, std::size_t _N, typename _MSG,
+                  typename _CMP = cmp_t<_T> >
+        bool check(const _T(&a)[_N], const _T(&expected)[_N], _MSG msg,
+                   bool verbose=true,
+                   _CMP cmp = _CMP());
+
+        template <class _T, std::size_t _N, typename _MSG,
+                  typename _CMP = cmp_t<_T> >
+        bool check(vec<_T, _N> a, const _T(&expected)[_N] , _MSG msg,
+                   bool verbose=true,
+                   _CMP cmp= _CMP());
+        
         template <class _T, std::size_t _N>
         bool check_cmp(const _T(&a)[_N], bool expected, const char* msg);
 
@@ -146,6 +158,36 @@ bool cftal::test::check(vec<_T, _N> vr, _T expected, _MSG msg,
     mem< vec<_T, _N> >::store(vsr, vr);
     return check(vsr, expected, msg, verbose, cmp);
 }
+
+template <class _T, std::size_t _N, typename _MSG, typename _CMP>
+bool cftal::test::check(const _T(&a)[_N], const _T(&expected)[_N] , _MSG msg,
+                        bool verbose, _CMP cmp)
+{
+    bool r=true;
+    for (auto b=std::cbegin(a), ex=std::cbegin(expected), e=std::cend(a);
+         b != e; ++b, ++ex) {
+        _T ei= *ex;
+        _T ai=*b;
+        if (cmp(ai, ei) == false) {
+            if (verbose) {
+                std::cerr << msg << " failed: " << ai << " expected: "
+                          << ei << std::endl;
+            }
+            r = false;
+        }
+    }
+    return r;
+}
+
+template <class _T, std::size_t _N, typename _MSG, typename _CMP>
+bool cftal::test::check(vec<_T, _N> vr, const _T(&expected)[_N], _MSG msg,
+                        bool verbose, _CMP cmp)
+{
+    _T vsr[_N];
+    mem< vec<_T, _N> >::store(vsr, vr);
+    return check(vsr, expected, msg, verbose, cmp);
+}
+
 
 template <class _T, std::size_t _N>
 bool
