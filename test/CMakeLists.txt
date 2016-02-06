@@ -114,6 +114,7 @@ test_prog(test-sin-f64)
 test_prog(test-cos-f64)
 test_prog(test-sincos-f64)
 test_prog(test-tan-f64)
+test_prog(test-cot-f64)
 
 test_prog(test-native_exp-f64)
 test_prog(test-native_expm1-f64)
