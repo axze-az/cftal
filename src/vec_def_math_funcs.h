@@ -84,6 +84,13 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
+    ns::atan(arg<vec_float>::type d)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::atan(d);                                         \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::log(arg<vec_float>::type d)                                     \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -202,7 +209,7 @@
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::native_log(d);                                   \
-    }                                                               
+    }
 
 // Local variables:
 // mode: c++

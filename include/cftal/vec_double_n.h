@@ -51,10 +51,6 @@ namespace cftal {
          const vec<double, _N>& c);
 
     template <std::size_t _N>
-    vec<double, _N>
-    atan2(const vec<double, _N>& x, const vec<double, _N>& y);
-
-    template <std::size_t _N>
     typename vec<double, _N>::mask_type
     isinf(const vec<double, _N>& v);
 
@@ -470,7 +466,36 @@ namespace cftal {
 
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
-    // specializations vec<double, 2>
+
+    template <std::size_t _N>
+    vec<double, _N>
+    atan(const vec<double, _N>& x);
+    vec<double, 1>
+    atan(arg_t<vec<double, 1> > d);
+    vec<double, 2>
+    atan(arg_t<vec<double, 2> > d);
+    vec<double, 4>
+    atan(arg_t<vec<double, 4> > d);
+    vec<double, 8>
+    atan(arg_t<vec<double, 8> > d);
+
+    
+    template <std::size_t _N>
+    vec<double, _N>
+    atan2(const vec<double, _N>& x, const vec<double, _N>& y);
+    vec<double, 1>
+    atan2(arg_t<vec<double, 1> > y, arg_t<vec<double, 1> > x);
+    vec<double, 2>
+    atan2(arg_t<vec<double, 2> > y, arg_t<vec<double, 2> > x);
+    vec<double, 4>
+    atan2(arg_t<vec<double, 4> > y, arg_t<vec<double, 4> > x);
+    vec<double, 4>
+    atan2(arg_t<vec<double, 4> > x, arg_t<vec<double, 4> > y);
+    vec<double, 8>
+    atan2(arg_t<vec<double, 8> > y, arg_t<vec<double, 8> > x);
+
+
+// specializations vec<double, 2>
     vec<int32_t, 1>
     ilogbp1(arg_t<vec<double, 1> > v);
 
@@ -489,20 +514,11 @@ namespace cftal {
     vec<double, _N>
     native_tan(const vec<double, _N>& v);
 
-    vec<double, 1>
-    atan2(arg_t<vec<double, 1> > y, arg_t<vec<double, 1> > x);
-    vec<double, 2>
-    atan2(arg_t<vec<double, 2> > y, arg_t<vec<double, 2> > x);
 
     vec<double, 2>
     asin(arg_t<vec<double, 2> > d);
     vec<double, 2>
     acos(arg_t<vec<double, 2> > d);
-
-    vec<double, 1>
-    atan(arg_t<vec<double, 1> > d);
-    vec<double, 2>
-    atan(arg_t<vec<double, 2> > d);
 
 
     vec<double, 1>
@@ -542,18 +558,12 @@ namespace cftal {
     vec<int32_t, 4>
     ilogbp1(arg_t<vec<double, 4> > v);
     vec<double, 4>
-    atan2(arg_t<vec<double, 4> > y, arg_t<vec<double, 4> > x);
-    vec<double, 4>
     asin(arg_t<vec<double, 4> > d);
     vec<double, 4>
     acos(arg_t<vec<double, 4> > d);
 
     vec<double, 4>
-    atan(arg_t<vec<double, 4> > d);
-    vec<double, 4>
     cot(arg_t<vec<double, 4> > d);
-    vec<double, 4>
-    atan2(arg_t<vec<double, 4> > x, arg_t<vec<double, 4> > y);
 
     void
     native_sincos(arg_t<vec<double, 4> > d,
@@ -571,14 +581,10 @@ namespace cftal {
     vec<int32_t, 8>
     ilogbp1(arg_t<vec<double, 8> > v);
     vec<double, 8>
-    atan2(arg_t<vec<double, 8> > y, arg_t<vec<double, 8> > x);
-    vec<double, 8>
     asin(arg_t<vec<double, 8> > d);
     vec<double, 8>
     acos(arg_t<vec<double, 8> > d);
 
-    vec<double, 8>
-    atan(arg_t<vec<double, 8> > d);
 
     vec<double, 8>
     cot(arg_t<vec<double, 8> > d);
@@ -874,6 +880,15 @@ cftal::atan2(const vec<double, _N>& x, const vec<double, _N>& y)
 {
     vec<double, _N> r(atan2(low_half(x), low_half(y)),
                       atan2(high_half(x), high_half(y)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::atan(const vec<double, _N>& x)
+{
+    vec<double, _N> r(atan(low_half(x)), atan(high_half(x)));
     return r;
 }
 

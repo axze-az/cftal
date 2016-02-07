@@ -395,6 +395,48 @@ namespace cftal {
             static
             const char* fname() { return "cot"; }
         };
+
+        template <typename _T>
+        struct check_atan {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return atan(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+#if 1
+                return call_mpfr::func(a, mpfr_atan);
+#else
+                return std::atan(a);
+#endif
+            }
+            static
+            const char* fname() { return "atan"; }
+        };
+
+        template <typename _T>
+        struct check_atan2 {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a, const vec<_T, _N>& b) {
+                return atan2(a, b);
+            }
+            static
+            _T
+            v(const _T& a, const _T& b) {
+#if 1
+                return call_mpfr::func(a, b, mpfr_atan2);
+#else
+                return atan2(a);
+#endif
+            }
+            static
+            const char* fname() { return "atan2"; }
+        };
         
 
         template <typename _T>
