@@ -582,6 +582,7 @@ void print_2_over_i()
 
 #endif
 
+
 void print_sqrtx()
 {
     using dpf64 = cftal::d_real<double>;

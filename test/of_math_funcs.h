@@ -282,8 +282,8 @@ namespace cftal {
             static
             const char* fname() { return "pow"; }
         };
-        
-        
+
+
         template <typename _T>
         struct check_sin {
             template <std::size_t _N>
@@ -431,13 +431,13 @@ namespace cftal {
 #if 1
                 return call_mpfr::func(a, b, mpfr_atan2);
 #else
-                return atan2(a);
+                return atan2(a, b);
 #endif
             }
             static
             const char* fname() { return "atan2"; }
         };
-        
+
 
         template <typename _T>
         struct check_native_exp {

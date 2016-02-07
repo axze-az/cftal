@@ -1165,9 +1165,8 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     // r = dvf_type(mulsign(r.h(), x),
     //             mulsign(r.l(), x));
     // r = mulsign(r, x);
-    vf_type r = copysign(rd.h(), x);
-
     vf_type sgn_x = copysign(vf_type(1.0), x);
+    vf_type r = rd.h() * sgn_x;
 
     vmf_type x_is_inf = isinf(x);
     vmf_type y_is_inf = isinf(y);
@@ -1181,10 +1180,10 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     vf_type t2= _TRAITS_T::sel(x_is_inf, sgn_x * M_PI/4, 0);
     r = _TRAITS_T::sel(y_is_inf, M_PI/2 - t2, r);
     // if (             y == 0) r = (sign(x) == -1 ? M_PI : 0);
-    vf_type t3= _TRAITS_T::sel(sgn_x < 0.0, vf_type(M_PI), vf_type(0));
+    vf_type t3= _TRAITS_T::sel(sgn_x == -1.0, vf_type(M_PI), vf_type(0));
     r = _TRAITS_T::sel(y==0, t3, r);
     // return xisnan(x) || xisnan(y) ? NAN : mulsign(r, y);
-    vf_type sgn_y = copysign(vf_type(1.0), x);
+    vf_type sgn_y = copysign(vf_type(1.0), y);
     vf_type rs= r*sgn_y;
     rs = _TRAITS_T::sel(isnan(x) | isnan(y), _TRAITS_T::nan(), rs);
     return rs;

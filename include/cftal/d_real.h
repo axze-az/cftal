@@ -1544,9 +1544,9 @@ cftal::d_real<_T>
 cftal::sqrt(const d_real<_T>& a)
 {
     using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
-    using namespace std;
+    using std::sqrt;
     _T ah= a.h();
-    _T root(std::sqrt(ah));
+    _T root(sqrt(ah));
     _T x= _T(1.0)/root;
     _T ax= a.h() * x;
     _T err, ax2= impl_t::two_sqr(ax, err);

@@ -1145,16 +1145,17 @@ cftal::math::func_core<double, _T>::m_atan2_c_k2[]= {
 template <typename _T>
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
-atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
-         arg_t<vf_type> yh, arg_t<vf_type> yl)
+atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
+         arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
     dvf_type cy(yh, yl);
+    dvf_type cx(xh, xl);
 
-    vmf_type f_x_lt_z(xh < vf_type(0));
+    vmf_type f_x_lt_z(cx < dvf_type(0));
     vmi_type i_x_lt_z(_T::vmf_to_vmi(f_x_lt_z));
     vi_type q(_T::sel(i_x_lt_z, vi_type(-2), vi_type(0)));
-    dvf_type x(_T::sel(f_x_lt_z, -xh, xh),
-               _T::sel(f_x_lt_z, -xl, xl));
+    dvf_type x(_T::sel(f_x_lt_z, -cx.h(), cx.h()),
+               _T::sel(f_x_lt_z, -cx.l(), cx.l()));
 
     vmf_type f_y_gt_x(cy > x);
     vmi_type i_y_gt_x(_T::vmf_to_vmi(f_y_gt_x));
@@ -1162,13 +1163,28 @@ atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     q += _T::sel(i_y_gt_x, vi_type(1), vi_type(0));
 
     // vf_type y = _T::sel(mf, -x, cy);
-    dvf_type y(_T::sel(f_y_gt_x, -xh, yh),
-               _T::sel(f_y_gt_x, -xl, yl));
+    dvf_type y(_T::sel(f_y_gt_x, -x.h(), cy.h()),
+               _T::sel(f_y_gt_x, -x.l(), cy.l()));
     // x = _T::sel(mf, cy, x);
     x = dvf_type(_T::sel(f_y_gt_x, cy.h(), x.h()),
                  _T::sel(f_y_gt_x, cy.l(), x.l()));
 
     dvf_type s(y / x);
+    // argument reduction:
+    // arctan(x) = 2 * arctan(x/(1+sqrt(1+x^2)))
+    vi_type k(0);
+    do {
+        vmf_type s_gt = s.h() > vf_type(0.5);
+        if (none_of(s_gt))
+            break;
+        vmi_type ki= _T::vmf_to_vmi(s_gt);
+        dvf_type den= sqrt(vf_type(1.0)+sqr(s)) + vf_type(1);
+        dvf_type ss = s/den;
+        s= dvf_type(_T::sel(s_gt, ss.h(), s.h()),
+                    _T::sel(s_gt, ss.l(), s.l()));
+        k += _T::sel(ki, vi_type(1), vi_type(0));
+    } while (1);
+
     dvf_type t(sqr(s));
 
     const std::size_t N= sizeof(m_atan2_c_k2)/sizeof(m_atan2_c_k2[0]);
@@ -1179,6 +1195,16 @@ atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
 
     t = u * t * s  + s;
 
+    do {
+        vmi_type k_gt = k > vi_type(0);
+        if (none_of(k_gt))
+            break;
+        vmf_type s_gt = _T::vmi_to_vmf(k_gt);
+        dvf_type tt = mul_pwr2(t, vf_type(2.0));
+        t = dvf_type(_T::sel(s_gt, tt.h(), t.h()),
+                     _T::sel(s_gt, tt.l(), t.l()));
+        k -= _T::sel(k_gt, vi_type(1), vi_type(0));
+    } while (1);
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     t = _T::cvt_i_to_f(q) * dvf_type(ctbl::m_pi_2) + t;
     return t;
