@@ -49,11 +49,11 @@ namespace cftal {
             }
         };
 
+
         struct out_df64 {
             d_real<double> _v;
             out_df64(const d_real<double>& v) : _v(v) {}
         };
-
         std::ostream& operator<<(std::ostream& s, const out_df64& v);
 
         struct out_tf64 {

@@ -1216,7 +1216,6 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
     // we should calculate x^(-1/3) first because
     // the newton raphson steps do not require a
     // division:
-
     // calculate 1/cbrt(mm0);
     mm = poly(mm0,
               -2.595873403893505e0,
