@@ -36,6 +36,15 @@ namespace cftal {
                 // 2/i i=0,1,2,3,4...
                 static const unsigned MAX_2_OVER_I=30;
                 static const _T _2_over_i[MAX_2_OVER_I+1];
+
+                // coefficents for exp(x)
+                static const unsigned MAX_EXP_COEFF=9;
+                static const _T exp_coeff[MAX_EXP_COEFF];
+                
+                // coefficents for exp2(x)
+                static const unsigned MAX_EXP2_COEFF=9;
+                static const _T exp2_coeff[MAX_EXP_COEFF];
+
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=10;
                 static const _T sin_coeff[MAX_SIN_COEFF];
@@ -646,7 +655,6 @@ typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
 {
-#if 1
     using ctbl = impl::d_real_constants<d_real<double>, double>;
 
     vmf_type cmp_res;
@@ -655,6 +663,7 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
     vmf_type finite= ~inf_nan;
     vi_type k_i(0);
 
+    // first reduction required because we want to use rint below
     vmf_type d_large = dh > 709.0;
     dvf_type d2=dvf_type(dh, dl);
     bool any_of_d_large = any_of(d_large);
@@ -667,9 +676,6 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
     // remove exact powers of 2
     vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
     dvf_type r= d2 - dvf_type(ctbl::m_ln2)*m2;
-    // dvf_type m2d= dvf_type(m2);
-    // dvf_type r = d2 - ctbl::m_ln2.h()* m2d;
-    // r -= m2d * ctbl::m_ln2.l();
 
     // reduce arguments further until anything is lt M_LN2/512 ~0.0135
     do {
@@ -684,6 +690,12 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
         r = dvf_type(d2_h, d2_l);
     } while (1);
 
+#if 1
+    // calculate 1! + x^1/2!+x^2/3! .. +x^8/9!
+    dvf_type s=impl::poly(r, ctbl::exp_coeff);
+    // convert to x^1/1! + x^2/2!+x^3/3! .. +x^9/9!
+    s = s*r;
+#else
     const int _N=9 /* 7 */;
     dvf_type s = ctbl::inv_fac[_N];
     for (unsigned int i=_N-1; i!=2; --i)
@@ -691,7 +703,8 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
     s = s * r + vf_type(0.5);
     s = s * r + vf_type(1.0);
     s = s * r;
-
+#endif
+    
     // scale back the 1/k_i reduced value
     do {
         i_cmp_res = k_i > vi_type(0);
@@ -726,12 +739,6 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
         res=tres;
     }
     return res;
-#else
-    if (exp_m1)
-        return dvf_type(d);
-    else
-        return dvf_type(-d);
-#endif
 }
 
 template <typename _T>
@@ -1118,6 +1125,7 @@ template <typename _T>
 const
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::m_atan2_c_k2[]= {
+    dvf_type(-1.0)/vf_type(47.0),
     dvf_type( 1.0)/vf_type(45.0),
     dvf_type(-1.0)/vf_type(43.0),
     dvf_type( 1.0)/vf_type(41.0),
@@ -1173,8 +1181,9 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
     // argument reduction:
     // arctan(x) = 2 * arctan(x/(1+sqrt(1+x^2)))
     vi_type k(0);
+
     do {
-        vmf_type s_gt = s.h() > vf_type(0.5);
+        vmf_type s_gt = s.h() > vf_type(1.0/1024.0);
         if (none_of(s_gt))
             break;
         vmi_type ki= _T::vmf_to_vmi(s_gt);
@@ -1193,8 +1202,9 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
         u = u * t + m_atan2_c_k2[i];
     }
 
-    t = u * t * s  + s;
-
+    t = u * t * s;
+    t = s -t ;
+    
     do {
         vmi_type k_gt = k > vi_type(0);
         if (none_of(k_gt))
@@ -1346,6 +1356,55 @@ _2_over_i[MAX_2_OVER_I+1]= {
     _T(  6.8965517241379309387739e-02,  9.5708881433203148708292e-19),
     _T(  6.6666666666666665741481e-02,  9.2518585385429710418016e-19)
 };
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::
+exp_coeff[MAX_EXP_COEFF] =  {
+    // + 1/9!
+    _T(  2.7557319223985892510951e-06, -1.8583932740464720810392e-22),
+    // + 1/8!
+    _T(  2.4801587301587301565790e-05,  2.1511947866775881608473e-23),
+    // + 1/7!
+    _T(  1.9841269841269841252632e-04,  1.7209558293420705286779e-22),
+    // + 1/6!
+    _T(  1.3888888888888889418943e-03, -5.3005439543735770590566e-20),
+    // + 1/5!
+    _T(  8.3333333333333332176851e-03,  1.1564823173178713802252e-19),
+    // + 1/4!
+    _T(  4.1666666666666664353702e-02,  2.3129646346357426641539e-18),
+    // + 1/3!
+    _T(  1.6666666666666665741481e-01,  9.2518585385429706566156e-18),
+    // + 1/2!
+    _T(  5.0000000000000000000000e-01,  0.0000000000000000000000e+00),
+    // + 1/1!
+    _T(  1.0000000000000000000000e+00,  0.0000000000000000000000e+00),
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::
+exp2_coeff[MAX_EXP2_COEFF] =  {
+    // + ln(2)^9/9!
+    _T(  1.0178086009239699922442e-07, -1.9495207137567228193743e-24),
+    // + ln(2)^8/8!
+    _T(  1.3215486790144309508566e-06, -2.0162732323629023358365e-24),
+    // + ln(2)^7/7!
+    _T(  1.5252733804059841082770e-05, -8.0274467550558752135419e-22),
+    // + ln(2)^6/6!
+    _T(  1.5403530393381608776075e-04,  1.1783618439907562168275e-20),
+    // + ln(2)^5/5!
+    _T(  1.3333558146428443284132e-03,  1.3928059563172586483266e-20),
+    // + ln(2)^4/4!
+    _T(  9.6181291076284768787330e-03,  2.8324606784380998642133e-19),
+    // + ln(2)^3/3!
+    _T(  5.5504108664821583118965e-02, -3.1658222903912803924049e-18),
+    // + ln(2)^2/2!
+    _T(  2.4022650695910072182748e-01, -9.4939312531828755586202e-18),
+    // + ln(2)^1/1!
+    _T(  6.9314718055994528622676e-01,  2.3190468138462995584178e-17),
+};
+
 
 template <class _T>
 const _T

@@ -240,6 +240,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
 
     f_t x=2.0;
     f_t v=log(x);
+    f_t ln2=v;
     // mpfr_printf("%.128Rf\n", v);
     s << "template <class _T>\nconst _T\n"
       << "cftal::math::impl::" << pfx << "::m_ln2("
@@ -336,14 +337,18 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << std::endl;
 
     f_t fac(1.0);
+    f_t pot_ln2(1.0);
     std::vector<f_t> v_inv_fac;
+    std::vector<f_t> v_pot_ln2;
     for (std::size_t i=0; i<MAX_FAC+1; ++i) {
-        f_t  inv_fac(1.0);
+        f_t inv_fac(1.0);
         if (i>1) {
             fac *= f_t(i);
             inv_fac /= fac;
+            pot_ln2 *= ln2;
         }
         v_inv_fac.push_back(inv_fac);
+        v_pot_ln2.push_back(pot_ln2);
         s << std::setprecision(22)
           << "    _T( "
           << to_stream(d, inv_fac)
@@ -376,6 +381,48 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
+    // const std::size_t MAX_EXP_COEFF=10;
+    s << "template <class _T>\n"
+      << "const _T\n"
+      << "cftal::math::impl::" << pfx << "::\n"
+      << "exp_coeff[MAX_EXP_COEFF] =  {"
+      << std::endl;
+    for (std::size_t i=9; i!=0; --i) {
+        f_t val= v_inv_fac[i];
+        s << std::scientific
+          << std::setprecision(22)
+          << "    // + 1/" << i << "!\n"
+          << "    _T( "
+          << to_stream(d, val)
+          << ")";
+        if (i != 0)
+            s << ',';
+        s << '\n';
+    }
+    s << "};\n" << std::endl;
+
+    // const std::size_t MAX_EXP2_COEFF=10;
+    s << "template <class _T>\n"
+      << "const _T\n"
+      << "cftal::math::impl::" << pfx << "::\n"
+      << "exp2_coeff[MAX_EXP2_COEFF] =  {"
+      << std::endl;
+    for (std::size_t i=9; i!=0; --i) {
+        f_t eval= v_inv_fac[i];
+        f_t f=v_pot_ln2[i+1];
+        f_t val= eval*f;
+        s << std::scientific
+          << std::setprecision(22)
+          << "    // + ln(2)^" <<i << "/"<< i << "!\n"
+          << "    _T( "
+          << to_stream(d, val)
+          << ")";
+        if (i != 0)
+            s << ',';
+        s << '\n';
+    }
+    s << "};\n" << std::endl;
+    
     // const std::size_t MAX_COS_COEFF=10;
     // const std::size_t MAX_SIN_COEFF=10;
 
@@ -425,6 +472,30 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
+#if 0    
+    s << "template <class _T>\n"
+      << "const _T\n"
+      << "cftal::math::impl::" << pfx << "::\n"
+      << "atan2_coeff[MAX_COS_COEFF] =  {"
+      << std::endl;
+    sign=-1;
+    for (std::size_t i=22; i>3; i-=2) {
+        f_t val= v_inv_fac[i];
+        if (sign < 0)
+            val = -val;
+        s << std::scientific
+          << std::setprecision(22)
+          << "    // " << (sign > 0? '+' : '-') << "1/" << i << "!\n"
+          << "    _T( "
+          << to_stream(d, val)
+          << ")";
+        if (i != 4)
+            s << ',';
+        s << '\n';
+        sign = -sign;
+    }
+    s << "};\n" << std::endl;
+#endif
 }
 
 int main(int argc, char** argv)
