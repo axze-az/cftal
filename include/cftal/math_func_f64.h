@@ -260,9 +260,21 @@ namespace cftal {
             static tvf_type
             exp_k3(const tvf_type& tvf);
 
-            static dvf_type
-            exp_k2(arg_t<vf_type> xh,
-                   arg_t<vf_type> xl,
+            // multiply (xh, xl) with f and call exp_k2
+            static
+            dvf_type
+            exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
+                   arg_t<vf_type> f);
+
+            // multiply (xh, xl) with (fh, fl) and call exp_k2
+            static
+            dvf_type
+            exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
+                   arg_t<vf_type> fh, arg_t<vf_type> fl);
+
+            static
+            dvf_type
+            exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
                    bool exp_m1=false);
 
             static vf_type
@@ -650,7 +662,32 @@ exp_k3(const tvf_type& d)
 }
 
 template <typename _T>
-inline
+typename cftal::math::func_core<double, _T>::dvf_type
+__attribute__((__noinline__))
+cftal::math::func_core<double, _T>::
+exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
+       arg_t<vf_type> f)
+{
+    dvf_type xs(xh, xl);
+    xs *= f;
+    return exp_k2(xs.h(), xs. l());
+}
+
+template <typename _T>
+__attribute__((__noinline__))
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::
+exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
+       arg_t<vf_type> fh, arg_t<vf_type> fl)
+{
+    dvf_type xs(xh, xl);
+    dvf_type f(fh, fl);
+    xs *= f;
+    return exp_k2(xs.h(), xs. l());
+}
+
+template <typename _T>
+__attribute__((__flatten__, __noinline__))
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
@@ -690,22 +727,12 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
         r = dvf_type(d2_h, d2_l);
     } while (1);
 
-#if 1
     // calculate 1! + x^1/2!+x^2/3! .. +x^8/9!
     dvf_type s=impl::poly(r, ctbl::exp_coeff);
-    // convert to x^1/1! + x^2/2!+x^3/3! .. +x^9/9!
+    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^9/9! == expm1(r)
     s = s*r;
-#else
-    const int _N=9 /* 7 */;
-    dvf_type s = ctbl::inv_fac[_N];
-    for (unsigned int i=_N-1; i!=2; --i)
-        s = s*r + dvf_type(ctbl::inv_fac[i]);
-    s = s * r + vf_type(0.5);
-    s = s * r + vf_type(1.0);
-    s = s * r;
-#endif
     
-    // scale back the 1/k_i reduced value
+    // scale back the 1/k_i reduced value for expm1
     do {
         i_cmp_res = k_i > vi_type(0);
         if (none_of(i_cmp_res))
@@ -717,9 +744,6 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
         k_i -= vi_type(1);
         s = dvf_type(d2_h, d2_l);
     } while (1);
-    // const vf_type two(2.0);
-    // for (int i=0; i<k_i; ++i)
-    //    s = mul_pwr2(s, two) + sqr(s);
     if (exp_m1 == false) {
         s += vf_type(1.0);
     }
@@ -865,9 +889,10 @@ cftal::math::func_core<double, _T>::
 exp2_k2(arg_t<vf_type> dh, arg_t<vf_type> dl)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    dvf_type d(dh, dl);
-    dvf_type d2=dvf_type(ctbl::m_ln2) * d;
-    return exp_k2(d2.h(), d2.l());
+    // dvf_type d(dh, dl);
+    //dvf_type d2=dvf_type(ctbl::m_ln2) * d;
+    return exp_k2(dh, dl,
+                  vf_type(ctbl::m_ln2.h()), vf_type(ctbl::m_ln2.l()));
 }
 
 template <typename _T>
@@ -888,9 +913,10 @@ cftal::math::func_core<double, _T>::
 exp10_k2(arg_t<vf_type> dh, arg_t<vf_type> dl)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    dvf_type d(dh, dl);
-    dvf_type d10=dvf_type(ctbl::m_ln10) * d;
-    return exp_k2(d10.h(), d10.l());
+    // dvf_type d(dh, dl);
+    // dvf_type d10=dvf_type(ctbl::m_ln10) * d;
+    return exp_k2(dh, dl,
+                  vf_type(ctbl::m_ln10.h()), vf_type(ctbl::m_ln10.l()));
 }
 
 template <typename _T>
