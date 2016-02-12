@@ -350,78 +350,62 @@ namespace cftal {
             template <class _T>
             _T cos4x(const _T& sinx, const _T& cosx);
 
+            // unsigned integer power
+            template <class _T>
+            struct powvu {
+                static _T v(const _T& xx, unsigned p);
+            };
+
             // integer power
             template <class _T>
-            struct ivpow {
+            struct powvi {
                 static _T v(const _T& xx, int p);
             };
 
             // unsigned integer pow
             template <class _T, unsigned _P>
-            struct ipow {
+            struct powu {
                 static _T v(const _T& x);
             };
 
             // unsigned integer pow, specialized for _P==0
             template <class _T>
-            struct ipow<_T, 0U> {
+            struct powu<_T, 0U> {
                 static _T v(const _T& x);
             };
 
             // unsigned integer pow, specialized for _P==1
             template <class _T>
-            struct ipow<_T, 1U> {
+            struct powu<_T, 1U> {
                 static _T v(const _T& x);
             };
 
             // unsigned integer pow, specialized for _P==2
             template <class _T>
-            struct ipow<_T, 2U> {
+            struct powu<_T, 2U> {
                 static _T v(const _T& x);
             };
 
             // n-th root calculator: newton raphson step with n variable
-            template <class _T>
+            template <class _RT, class _T=_RT>
             struct nth_root_vnr {
-                static _T v(const _T& xi, const _T& x,
-                            unsigned r) {
-                    const _T rr(r);
-                    _T x_pow_nm1(ivpow<_T>::v(xi, r-1));
-                    _T en( x - xi * x_pow_nm1);
-                    _T den(rr * x_pow_nm1);
-                    _T xip1( xi + en / den);
-                    return xip1;
-                }
+                static
+                _RT v(const _T& xi, const _T& x, unsigned r);
             };
 
             // n-th root calculator: newton raphson step with n=_R
-            template <unsigned _R, class _T>
+            template <unsigned _R, class _RT, class _T = _RT>
             struct nth_root_nr : public nth_root_vnr<_T> {
                 // one newton raphson step
-                static _T v(const _T& xi, const _T& x) {
-                    const _T r(_R);
-                    _T x_pow_nm1(ipow<_T, _R-1>::v(xi));
-                    _T en( x - xi * x_pow_nm1);
-                    _T den(r * x_pow_nm1);
-                    _T xip1( xi + en / den);
-
-                    return xip1;
-                }
+                static
+                _RT v(const _T& xi, const _T& x);
             };
 
             // n-th root calculator: halley step with n=_R
-            template <unsigned _R, class _T>
+            template <unsigned _R, class _RT, class _T = _RT>
             struct nth_root_halley : public nth_root_vnr<_T> {
                 // one halley step
-                static _T v(const _T& xi, const _T& x) {
-                    const _T r(_R);
-                    const _T two(2.0);
-                    _T x_pow(ipow<_T, _R>::v(xi));
-                    _T en(two* xi * (x - x_pow));
-                    _T den(r * (x+x_pow) - x + x_pow);
-                    _T xip1(xi + en /den);
-                    return xip1;
-                }
+                static _RT v(const _T& xi, const _T& x);
             };
 
             // the initial guess for a vector of _SCALAR_FLOAT
@@ -507,8 +491,8 @@ namespace cftal {
                 typedef root_guess<_FLOAT_T, _TRAITS, _R>
                     guess_t;
 
-                template <unsigned _NR_STEPS=6>
-                static vf_type v(const vf_type& f) {
+                template <unsigned _STEPS=6>
+                static vf_type v(arg_t<vf_type> f) {
                     vf_type x(abs(f));
                     vf_type xin(guess_t::v(x));
 #if 0
@@ -516,11 +500,11 @@ namespace cftal {
                         xin = nr_step_t::v(xin, x);
 #else
                     using dvf_type = typename _TRAITS::dvf_type;
-                    for (unsigned i=0; i< _NR_STEPS-1; ++i)
+                    for (unsigned i=0; i< _STEPS-1; ++i)
                         xin = nr_step_t::v(xin, x);
                     dvf_type xhin=xin;
                     dvf_type xh=x;
-                    for (unsigned i=_NR_STEPS-1; i< _NR_STEPS; ++i)
+                    for (unsigned i=_STEPS-1; i< _STEPS; ++i)
                         xhin = nth_root_nr<_R, dvf_type>::v(xhin, xh);
                     xin = xhin.h() + xhin.l();
 #endif
@@ -566,15 +550,14 @@ namespace cftal {
         // integer power with constant _I
         template <int _I, class _T>
         _T pow(const _T& x) {
-            _T r(impl::ipow<_T, (_I < 0 ? -_I : _I) >::v(x));
-            if (_I < 0 ) {
-                r = _T(1)/r;
-            }
+            const unsigned _N= _I < 0 ? -_I : _I;
+            _T r=impl::powu<_T, _N>::v(x);
+            if (_I<0)
+                r=_T(1)/r;
             return r;
         }
     }
 }
-
 
 template <class _T>
 _T
@@ -623,11 +606,11 @@ cftal::math::impl::cos4x(const _T& sinx, const _T& cosx)
 }
 
 template <class _T>
-_T cftal::math::impl::ivpow<_T>::v(const _T& xx, int p)
+_T
+cftal::math::impl::powvu<_T>::v(const _T& xx, unsigned n)
 {
     _T x(xx);
     _T r(1);
-    int n(p < 0 ? -p : p);
     while (1) {
         if (n & 1)
             r*= x;
@@ -636,16 +619,27 @@ _T cftal::math::impl::ivpow<_T>::v(const _T& xx, int p)
             break;
         x *= x;
     }
-    if (p < 0)
+    return r;
+}
+
+template <class _T>
+_T
+cftal::math::impl::powvi<_T>::v(const _T& xx, int i)
+{
+    unsigned n= i < 0 ? -i : i;
+    _T r=powvu<_T>::v(xx);
+    if (i<0)
         r= _T(1)/r;
     return r;
 }
 
+
 template <class _T, unsigned _P>
 inline
-_T cftal::math::impl::ipow<_T, _P>::v(const _T& x)
+_T
+cftal::math::impl::powu<_T, _P>::v(const _T& x)
 {
-    _T r(ipow<_T, _P/2>::v(x*x));
+    _T r(powu<_T, _P/2>::v(x*x));
     if (_P & 1)
         r *= x;
     return r;
@@ -653,23 +647,65 @@ _T cftal::math::impl::ipow<_T, _P>::v(const _T& x)
 
 template <class _T>
 inline
-_T cftal::math::impl::ipow<_T, 0U>::v(const _T& x)
+_T
+cftal::math::impl::powu<_T, 0U>::v(const _T& x)
 {
     return _T(1);
 }
 
 template <class _T>
 inline
-_T cftal::math::impl::ipow<_T, 1U>::v(const _T& x)
+_T
+cftal::math::impl::powu<_T, 1U>::v(const _T& x)
 {
     return x;
 }
 
 template <class _T>
 inline
-_T cftal::math::impl::ipow<_T, 2U>::v(const _T& x)
+_T
+cftal::math::impl::powu<_T, 2U>::v(const _T& x)
 {
     return x*x;
+}
+
+template <class _RT, class _T>
+_RT
+cftal::math::impl::nth_root_vnr<_RT, _T>::
+v(const _T& xi, const _T& x, unsigned r)
+{
+    const _T rr(r);
+    _T x_pow_nm1(powvu<_T>::v(xi, r-1));
+    _T en( x - xi * x_pow_nm1);
+    _T den(rr * x_pow_nm1);
+    _T xip1( xi + en / den);
+    return xip1;
+};
+
+
+template <unsigned _R, class _RT, class _T>
+_RT
+cftal::math::impl::nth_root_nr<_R, _RT, _T>::v(const _T& xi, const _T& x)
+{
+    const _T r(_R);
+    _RT x_pow_nm1(powu<_RT, _R-1>::v(xi));
+    _RT en( x - xi * x_pow_nm1);
+    _RT den(r * x_pow_nm1);
+    _RT xip1( xi + en / den);
+    return xip1;
+};
+
+template <unsigned _R, class _RT, class _T>
+_RT
+cftal::math::impl::nth_root_halley<_R, _RT, _T>::v(const _T& xi, const _T& x)
+{
+    const _T r(_R);
+    const _T two(2.0);
+    _RT x_pow(powu<_RT, _R>::v(xi));
+    _RT en(two* xi * (x - x_pow));
+    _RT den(r * (x+x_pow) - x + x_pow);
+    _RT xip1(xi + en /den);
+    return xip1;
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -1252,10 +1288,9 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
     mm= mm*mm*mm0;
     // one newton raphson step with double precision
     if (_NR_STEPS>0) {
-        dvf_type dmm=mm;
-        dvf_type dmm0=mm0;
+        dvf_type dmm;
         for (uint32_t i=_NR_STEPS-1; i< _NR_STEPS; ++i)
-            dmm = nth_root_nr<3, dvf_type>::v(dmm, dmm0);
+            dmm = nth_root_nr<3, dvf_type, vf_type>::v(mm, mm0);
         mm = dmm.h();
     }
     // scale back
