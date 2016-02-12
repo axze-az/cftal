@@ -408,6 +408,18 @@ namespace cftal {
                 static _RT v(const _T& xi, const _T& x);
             };
 
+            template <unsigned _R, typename _T>
+            struct nth_root_approx {
+                // return a guess for root _R in [2^-R, 1)
+                static _T v(_T x) { return _T(0.75); }
+            };
+
+            template <typename _T>
+            struct nth_root_approx<3, _T> {
+                static _T v(_T x);
+            };
+
+
             // the initial guess for a vector of _SCALAR_FLOAT
             // using traits for root r
             template <typename _SCALAR_FLOAT,
@@ -485,42 +497,19 @@ namespace cftal {
                       unsigned _R>
             struct nth_root : public func<_FLOAT_T, _TRAITS> {
 
-                typedef typename _TRAITS::vf_type vf_type;
-                typedef typename _TRAITS::vmf_type vmf_type;
-                typedef nth_root_nr<_R, vf_type> nr_step_t;
-                typedef root_guess<_FLOAT_T, _TRAITS, _R>
-                    guess_t;
+                using vf_type = typename _TRAITS::vf_type;
+                using vi_type = typename _TRAITS::vi_type;
+                using vmf_type= typename _TRAITS::vmf_type;
+                using vmi_type = typename _TRAITS::vmi_type;
+                using dvf_type = typename _TRAITS::dvf_type;
+
+                using base_type = func<_FLOAT_T, _TRAITS>;
+                using base_type::frexp;
+                using base_type::ldexp;
+                using base_type::ilogbp1;
 
                 template <unsigned _STEPS=6>
-                static vf_type v(arg_t<vf_type> f) {
-                    vf_type x(abs(f));
-                    vf_type xin(guess_t::v(x));
-#if 0
-                    for (unsigned i=0; i< _NR_STEPS-1; ++i)
-                        xin = nr_step_t::v(xin, x);
-#else
-                    using dvf_type = typename _TRAITS::dvf_type;
-                    for (unsigned i=0; i< _STEPS-1; ++i)
-                        xin = nr_step_t::v(xin, x);
-                    dvf_type xhin=xin;
-                    dvf_type xh=x;
-                    for (unsigned i=_STEPS-1; i< _STEPS; ++i)
-                        xhin = nth_root_nr<_R, dvf_type>::v(xhin, xh);
-                    xin = xhin.h() + xhin.l();
-#endif
-                    xin = copysign(xin, f);
-                    const vf_type zero(vf_type(0.0));
-                    vmf_type is_zero_or_inf_or_nan(
-                        (f == zero) | isinf(f) | isnan(f));
-                    vf_type r(_TRAITS::sel(is_zero_or_inf_or_nan,
-                                           f, xin));
-                    if ((_R & 1) == 0) {
-                        vmf_type is_neg(x < zero);
-                        r = _TRAITS::sel(is_neg,
-                                         vf_type(_TRAITS::nan()), r);
-                    }
-                    return r;
-                }
+                static vf_type v(arg_t<vf_type> f);
             };
 
             // specialization for cubic root
@@ -1232,6 +1221,74 @@ cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
 {
     return atan2(x, vf_type(1.0));
+}
+
+template <typename _FLOAT_T, typename _TRAITS, unsigned _R>
+template <unsigned _STEPS>
+typename cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, _R>::vf_type
+cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, _R>::v(arg_t<vf_type> x)
+{
+    using std::abs;
+    vf_type xp=abs(x);
+    vi_type enc;
+    vf_type mm, mm0;
+    // m in [0.5, 1)
+    using fc=func_constants<_FLOAT_T>;
+    vmf_type is_denormal=(xp <= fc::max_denormal * _FLOAT_T(128)) & (xp != 0.0);
+    const divisor<vi_type, int32_t> idivr(_R);
+    if (any_of(is_denormal)) {
+        vi_type e;
+        vf_type m=frexp(xp, &e);
+        vi_type en= e / idivr;
+        vi_type rn= remainder(e, vi_type(_R), en);
+        // select rnc so that rnc [-R, -_R+1, -R+2, -2,-1,0]
+        vmi_type rngt0 = rn > 0;
+        vi_type rnc= _TRAITS::sel(rngt0, rn-vi_type(_R), rn);
+        enc= _TRAITS::sel(rngt0, en+1, en);
+        // mm in [2^_R, 1) => m * 2 ^[-2,-1.0]
+        mm= ldexp(m, rnc);
+        mm0= mm;
+    } else {
+        // this code does not work for denormals:
+        vi_type e = ilogbp1(xp);
+        vi_type en= e / idivr;
+        vi_type rn= remainder(e, vi_type(_R), en);
+        // select rnc so that rnc [-R, -R+1, -R2,-1,0]
+        vmi_type rngt0 = rn > 0;
+        vi_type rnc= _TRAITS::sel(rngt0, rn-vi_type(_R), rn);
+        enc= _TRAITS::sel(rngt0, en+1, en);
+        vi_type sc= rnc - e;
+        mm= ldexp(xp, sc);
+        mm0 = mm;
+    }
+    mm = nth_root_approx<_R, vf_type>::v(mm0);
+    if (_STEPS>0) {
+        using step_t= nth_root_halley<_R, vf_type, vf_type>;
+        for (uint32_t i=0; i<_STEPS-1; ++i) {
+            mm= step_t::v(mm, mm0);
+        }
+    }
+    if (_STEPS>1) {
+        using step_t=nth_root_nr<_R, dvf_type, vf_type>;
+        dvf_type dmm;
+        for (uint32_t i=_STEPS-1; i< _STEPS; ++i)
+            dmm = step_t::v(mm, mm0);
+        mm = dmm.h() + dmm.l();
+    }
+    // scale back
+    vf_type res=ldexp(mm, enc);
+    if ((_R&1) != 0) {
+        // restore sign
+        res=copysign(res, x);
+    }
+    vmf_type is_zero_or_inf_or_nan=
+        (x == vf_type(0)) | isinf(x) | isnan(x);
+    res=_TRAITS::sel(is_zero_or_inf_or_nan,
+                     x, res);
+    if ((_R&1) == 0) {
+        res = _TRAITS::sel(x<0, _TRAITS::nan(), res);
+    }
+    return res;
 }
 
 template <typename _FLOAT_T, typename _TRAITS>
