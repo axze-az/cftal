@@ -167,7 +167,8 @@ namespace cftal {
             atan2_k2(arg_t<vf_type> xh,
                      arg_t<vf_type> xl,
                      arg_t<vf_type> yh,
-                     arg_t<vf_type> yl);
+                     arg_t<vf_type> yl,
+                     bool calc_atan2);
         };
 
         template <typename _T>
@@ -707,7 +708,8 @@ inline
 typename cftal::math::func_core<float, _T>::dvf_type
 cftal::math::func_core<float, _T>::
 atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
-         arg_t<vf_type> yh, arg_t<vf_type> yl)
+         arg_t<vf_type> yh, arg_t<vf_type> yl,
+         bool calc_atan2)
 {
     return dvf_type(xh + yh);
 }

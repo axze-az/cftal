@@ -339,7 +339,8 @@ namespace cftal {
             atan2_k2(arg_t<vf_type> xh,
                      arg_t<vf_type> xl,
                      arg_t<vf_type> yh,
-                     arg_t<vf_type> yl);
+                     arg_t<vf_type> yl,
+                     bool calc_atan2);
 
             // native atan2 kernel
             static vf_type
@@ -1185,9 +1186,10 @@ template <typename _T>
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
-         arg_t<vf_type> xh, arg_t<vf_type> xl)
+         arg_t<vf_type> xh, arg_t<vf_type> xl,
+         bool calc_atan2)
 {
-#if 1
+
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     dvf_type y(yh, yl);
     dvf_type x(xh, xl);
@@ -1201,7 +1203,7 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
     // reduce argument via arctan(x) = 2 * arctan(x/(1+sqrt(1-x^2)))
     vi_type k(0);
     do {
-        vmf_type r_gt = r.h() > vf_type(1.0/8.0);
+        vmf_type r_gt = r.h() > vf_type(1.0/16.0);
         if (none_of(r_gt))
             break;
         vmi_type ki= _T::vmf_to_vmi(r_gt);
@@ -1225,77 +1227,50 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
     vf_type scale=ldexp(vf_type(1.0), k);
     at *= scale;
 
-    vmf_type y_gt_x = (xp.h() > yp.h());
+    // sqrt(DBL_MIN): 1.4916681462400413486582e-154
+    vmf_type r_small = r.h() < 1.4916681462400413486582e-154;
+    at = dvf_type(_T::sel(r_small, r.h(), at.h()),
+                  _T::sel(r_small, r.l(), at.l()));
+
+    vmf_type invert = (yp.h() > xp.h());
     // arctan (1/r) = M_PI/2 -  arctan(r) if r > 0
     // arctan (1/r) = -M_PI/2 - arctan(r) if r < 0
     dvf_type inv_at= dvf_type(ctbl::m_pi_2) - at;
-    at= dvf_type(_T::sel(y_gt_x, inv_at.h(), at.h()),
-                 _T::sel(y_gt_x, inv_at.l(), at.l()));
-    return at;
-#else
-    dvf_type cy(yh, yl);
-    dvf_type cx(xh, xl);
+    at= dvf_type(_T::sel(invert, inv_at.h(), at.h()),
+                 _T::sel(invert, inv_at.l(), at.l()));
+    at=mul_pwr2(at, copysign(vf_type(1.0), y.h()));
+    if (calc_atan2) {
+        // atan2(y, x) = atan(x) x>0
+        // atan2(y, x) = atan(x) + pi x<0 & y>=0
+        // atan2(y, x) = atan(x) - pi x<0 & y <0
+        vf_type x_sgn = copysign(vf_type(1), xh);
+        vmf_type x_p= x_sgn == vf_type(1.0);
+        vmf_type x_n= x_sgn == vf_type(-1.0);
+        vmf_type x_zero = xh==vf_type(0);
+        vmf_type x_p_zero = x_p & x_zero;
+        vmf_type x_n_zero = x_n & x_zero;
+        vmf_type x_lt_z = (xh < vf_type(0)) | x_n_zero;
 
-    vmf_type f_x_lt_z(cx < dvf_type(0));
-    vmi_type i_x_lt_z(_T::vmf_to_vmi(f_x_lt_z));
-    vi_type q(_T::sel(i_x_lt_z, vi_type(-2), vi_type(0)));
-    dvf_type x(_T::sel(f_x_lt_z, -cx.h(), cx.h()),
-               _T::sel(f_x_lt_z, -cx.l(), cx.l()));
+        vf_type y_sgn = copysign(vf_type(1), yh);
+        vmf_type y_p= y_sgn == vf_type(1.0);
+        vmf_type y_n= y_sgn == vf_type(-1.0);
+        vmf_type y_zero = yh==vf_type(0);
+        vmf_type y_p_zero = y_p & y_zero;
+        vmf_type y_n_zero = y_n & y_zero;
 
-    vmf_type f_y_gt_x(cy > x);
-    vmi_type i_y_gt_x(_T::vmf_to_vmi(f_y_gt_x));
-
-    q += _T::sel(i_y_gt_x, vi_type(1), vi_type(0));
-
-    // vf_type y = _T::sel(mf, -x, cy);
-    dvf_type y(_T::sel(f_y_gt_x, -x.h(), cy.h()),
-               _T::sel(f_y_gt_x, -x.l(), cy.l()));
-    // x = _T::sel(mf, cy, x);
-    x = dvf_type(_T::sel(f_y_gt_x, cy.h(), x.h()),
-                 _T::sel(f_y_gt_x, cy.l(), x.l()));
-
-    dvf_type s(y / x);
-    // argument reduction:
-    // arctan(x) = 2 * arctan(x/(1+sqrt(1+x^2)))
-    vi_type k(0);
-
-    do {
-        vmf_type s_gt = s.h() > vf_type(1.0/1024.0);
-        if (none_of(s_gt))
-            break;
-        vmi_type ki= _T::vmf_to_vmi(s_gt);
-        dvf_type den= sqrt(vf_type(1.0)+sqr(s)) + vf_type(1);
-        dvf_type ss = s/den;
-        s= dvf_type(_T::sel(s_gt, ss.h(), s.h()),
-                    _T::sel(s_gt, ss.l(), s.l()));
-        k += _T::sel(ki, vi_type(1), vi_type(0));
-    } while (1);
-
-    dvf_type t(sqr(s));
-
-    const std::size_t N= sizeof(m_atan2_c_k2)/sizeof(m_atan2_c_k2[0]);
-    dvf_type u(m_atan2_c_k2[0]);
-    for (std::size_t i=1; i<N; ++i) {
-        u = u * t + m_atan2_c_k2[i];
+        vmf_type y_ge_z = (yh > vf_type(0)) | y_p_zero;
+        vmf_type y_lt_z = (yh < vf_type(0)) | y_n_zero;
+        
+        vmf_type add_pi= x_lt_z & y_ge_z;
+        vmf_type sub_pi= x_lt_z & y_lt_z;
+        dvf_type w;
+        w = dvf_type(_T::sel(add_pi, vf_type(ctbl::m_pi.h()), vf_type(0)),
+                     _T::sel(add_pi, vf_type(ctbl::m_pi.l()), vf_type(0)));
+        w = dvf_type(_T::sel(sub_pi, vf_type(-ctbl::m_pi.h()), w.h()),
+                     _T::sel(sub_pi, vf_type(-ctbl::m_pi.l()), w.l()));
+        at+= w;
     }
-
-    t = u * t * s;
-    t = s -t ;
-
-    do {
-        vmi_type k_gt = k > vi_type(0);
-        if (none_of(k_gt))
-            break;
-        vmf_type s_gt = _T::vmi_to_vmf(k_gt);
-        dvf_type tt = mul_pwr2(t, vf_type(2.0));
-        t = dvf_type(_T::sel(s_gt, tt.h(), t.h()),
-                     _T::sel(s_gt, tt.l(), t.l()));
-        k -= _T::sel(k_gt, vi_type(1), vi_type(0));
-    } while (1);
-    using ctbl=impl::d_real_constants<d_real<double>, double>;
-    t = _T::cvt_i_to_f(q) * dvf_type(ctbl::m_pi_2) + t;
-    return t;
-#endif
+    return at;
 }
 
 template <typename _T>

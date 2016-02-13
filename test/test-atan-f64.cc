@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         double, 8, check_atan<double> >::v(d, cmp_ulp<double>(ulp, us),
-                                          0x80000);
+                                          0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     return (rc == true) ? 0 : 1;

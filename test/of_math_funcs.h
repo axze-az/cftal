@@ -431,7 +431,7 @@ namespace cftal {
 #if 1
                 return call_mpfr::func(a, b, mpfr_atan2);
 #else
-                return atan2(a, b);
+                return std::atan2(a, b);
 #endif
             }
             static

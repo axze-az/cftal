@@ -154,7 +154,8 @@ namespace cftal {
             // atan2 core
             static dvf_type
             atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
-                     arg_t<vf_type> yh, arg_t<vf_type> yl);
+                     arg_t<vf_type> yh, arg_t<vf_type> yl,
+                     bool calc_atan2);
             // atan2 core
             static dvf_type
             native_atan2_k(arg_t<vf_type> x, arg_t<vf_type> y);
@@ -1186,12 +1187,57 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 {
-    dvf_type rd(base_type::atan2_k2(abs(y), vf_type(0), x, vf_type(0)));
+    dvf_type rd(base_type::atan2_k2(y, vf_type(0), x, vf_type(0), true));
+#if 1
+    vf_type r= rd.h() + rd.l();
+
+    using _T = _TRAITS_T;
+
+    // The following special values are defined in the C
+    // standard: 
+    // y        x       atan2(y, x)
+    // +/- 0    +0      +/- 0
+    // +/- 0    -0      +/- pi
+    // > 0      +/-inf  +0 / +pi
+    // < 0      +/-inf  -0 / -pi
+    // +/-inf   +inf    +/- (pi/4)
+    // +/-inf   -inf    +/- (3*pi/4)
+    // Note that +0 and -0 are distinct floating point numbers, as are +inf and -inf.    
+
+    vf_type x_sgn = copysign(vf_type(1), x);
+    vmf_type x_p= x_sgn == vf_type(1.0);
+    vmf_type x_n= x_sgn == vf_type(-1.0);
+    vmf_type x_zero = x==vf_type(0);
+    vmf_type x_p_zero = x_p & x_zero;
+    vmf_type x_n_zero = x_n & x_zero;
+    vmf_type x_inf = isinf(x);
+    vmf_type x_p_inf = x_p & x_inf;
+    vmf_type x_n_inf = x_n & x_inf;
+    
+    vf_type y_sgn = copysign(vf_type(1), y);
+    vmf_type y_zero = y==vf_type(0);
+    vmf_type y_gt_z = y>vf_type(0);
+    vmf_type y_lt_z = y<vf_type(0);
+    vmf_type y_inf = isinf(y);
+    
+    r= _T::sel(y_zero & x_p_zero, y, r);
+    r= _T::sel(y_zero & x_n_zero, copysign(vf_type(M_PI), y), r);
+    r= _T::sel(y_gt_z & x_inf,
+               _T::sel(x_p_inf, vf_type(+0.0), vf_type(M_PI)), r);
+    r= _T::sel(y_lt_z & x_inf,
+               _T::sel(x_p_inf, vf_type(-0.0), vf_type(M_PI)), r);
+    r= _T::sel(y_inf & x_p_inf, copysign(vf_type(M_PI), y), r);
+    r= _T::sel(y_inf & x_n_inf, copysign(vf_type(3*M_PI/4), y), r);
+    r= _T::sel(isnan(y) | isnan(x), _T::nan(), r);
+    
+    return r;
+#else
     // r = dvf_type(mulsign(r.h(), x),
     //             mulsign(r.l(), x));
     // r = mulsign(r, x);
     vf_type sgn_x = copysign(vf_type(1.0), x);
-    vf_type r = rd.h() * sgn_x;
+    vf_type r = rd.h();
+    r *= sgn_x;
 
     vmf_type x_is_inf = isinf(x);
     vmf_type y_is_inf = isinf(y);
@@ -1204,14 +1250,15 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     //    r = M_PI/2 - (xisinf(x) ? (sign(x) * (M_PI*1/4)) : 0);
     vf_type t2= _TRAITS_T::sel(x_is_inf, sgn_x * M_PI/4, 0);
     r = _TRAITS_T::sel(y_is_inf, M_PI/2 - t2, r);
-    // if (             y == 0) r = (sign(x) == -1 ? M_PI : 0);
-    vf_type t3= _TRAITS_T::sel(sgn_x == -1.0, vf_type(M_PI), vf_type(0));
+    // if (             y == 0) r = (sign(x) == -1 ? -M_PI : 0);
+    vf_type t3= _TRAITS_T::sel(sgn_x == -1.0, -vf_type(M_PI), vf_type(0));
     r = _TRAITS_T::sel(y==0, t3, r);
     // return xisnan(x) || xisnan(y) ? NAN : mulsign(r, y);
-    vf_type sgn_y = copysign(vf_type(1.0), y);
-    vf_type rs= r*sgn_y;
-    rs = _TRAITS_T::sel(isnan(x) | isnan(y), _TRAITS_T::nan(), rs);
-    return rs;
+    vf_type sgn_y= copysign(vf_type(1.0), y);
+    r *= sgn_y;
+    r = _TRAITS_T::sel(isnan(x) | isnan(y), _TRAITS_T::nan(), r);
+    return r;
+#endif
 }
 
 template <typename _FLOAT_T,
@@ -1221,9 +1268,9 @@ cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
 {
     dvf_type rd=
-        base_type::atan2_k2(vf_type(1.0), vf_type(0.0), x , vf_type(0));
+        base_type::atan2_k2(x, vf_type(0.0), vf_type(1.0) , vf_type(0.0), false);
     vf_type r=rd.h();
-    r=copysign(r, x);
+    // r=copysign(r, x);
     r=_TRAITS_T::sel(x==vf_type(0), x, r);
     r=_TRAITS_T::sel(isinf(x), copysign(vf_type(M_PI/2), x) , r);
     r=_TRAITS_T::sel(isnan(x), x, r);
