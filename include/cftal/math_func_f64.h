@@ -1243,32 +1243,18 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
         // atan2(y, x) = atan(x) x>0
         // atan2(y, x) = atan(x) + pi x<0 & y>=0
         // atan2(y, x) = atan(x) - pi x<0 & y <0
-        vf_type x_sgn = copysign(vf_type(1), xh);
-        vmf_type x_p= x_sgn == vf_type(1.0);
-        vmf_type x_n= x_sgn == vf_type(-1.0);
-        vmf_type x_zero = xh==vf_type(0);
-        vmf_type x_p_zero = x_p & x_zero;
-        vmf_type x_n_zero = x_n & x_zero;
-        vmf_type x_lt_z = (xh < vf_type(0)) | x_n_zero;
-
-        vf_type y_sgn = copysign(vf_type(1), yh);
-        vmf_type y_p= y_sgn == vf_type(1.0);
-        vmf_type y_n= y_sgn == vf_type(-1.0);
-        vmf_type y_zero = yh==vf_type(0);
-        vmf_type y_p_zero = y_p & y_zero;
-        vmf_type y_n_zero = y_n & y_zero;
-
-        vmf_type y_ge_z = (yh > vf_type(0)) | y_p_zero;
-        vmf_type y_lt_z = (yh < vf_type(0)) | y_n_zero;
-        
-        vmf_type add_pi= x_lt_z & y_ge_z;
-        vmf_type sub_pi= x_lt_z & y_lt_z;
-        dvf_type w;
-        w = dvf_type(_T::sel(add_pi, vf_type(ctbl::m_pi.h()), vf_type(0)),
-                     _T::sel(add_pi, vf_type(ctbl::m_pi.l()), vf_type(0)));
-        w = dvf_type(_T::sel(sub_pi, vf_type(-ctbl::m_pi.h()), w.h()),
-                     _T::sel(sub_pi, vf_type(-ctbl::m_pi.l()), w.l()));
+        vmf_type x_lt_z = xh < vf_type(0);
+        vmf_type at_le_z = at.h() <= vf_type(0);
+        vmf_type add_pi = at_le_z;
+        dvf_type pi(
+            _T::sel(add_pi, vf_type(ctbl::m_pi.h()), vf_type(-ctbl::m_pi.h())),
+            _T::sel(add_pi, vf_type(ctbl::m_pi.l()), vf_type(-ctbl::m_pi.l())));
+        dvf_type w(
+            _T::sel(x_lt_z, pi.h(), vf_type(0)),
+            _T::sel(x_lt_z, pi.l(), vf_type(0)));
         at+= w;
+        at=dvf_type(_T::sel(x_lt_z, -at.h(), at.h()),
+                    _T::sel(x_lt_z, -at.l(), at.l()));
     }
     return at;
 }

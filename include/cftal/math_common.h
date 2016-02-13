@@ -1192,18 +1192,18 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     vf_type r= rd.h() + rd.l();
 
     using _T = _TRAITS_T;
-
-    // The following special values are defined in the C
-    // standard: 
-    // y        x       atan2(y, x)
-    // +/- 0    +0      +/- 0
-    // +/- 0    -0      +/- pi
-    // > 0      +/-inf  +0 / +pi
-    // < 0      +/-inf  -0 / -pi
-    // +/-inf   +inf    +/- (pi/4)
-    // +/-inf   -inf    +/- (3*pi/4)
-    // Note that +0 and -0 are distinct floating point numbers, as are +inf and -inf.    
-
+    vf_type y_sgn = copysign(vf_type(1), y);
+    vmf_type y_p= y_sgn == vf_type(1.0);
+    vmf_type y_n= y_sgn == vf_type(-1.0);
+    vmf_type y_zero = y==vf_type(0);
+    vmf_type y_p_zero = y_p & y_zero;
+    vmf_type y_n_zero = y_n & y_zero;
+    vmf_type y_gt_z = y>vf_type(0);
+    vmf_type y_lt_z = y<vf_type(0);
+    vmf_type y_inf = isinf(y);
+    vmf_type y_p_inf = y_inf & y_p;
+    vmf_type y_n_inf = y_inf & y_n;
+    
     vf_type x_sgn = copysign(vf_type(1), x);
     vmf_type x_p= x_sgn == vf_type(1.0);
     vmf_type x_n= x_sgn == vf_type(-1.0);
@@ -1213,13 +1213,46 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     vmf_type x_inf = isinf(x);
     vmf_type x_p_inf = x_p & x_inf;
     vmf_type x_n_inf = x_n & x_inf;
-    
-    vf_type y_sgn = copysign(vf_type(1), y);
-    vmf_type y_zero = y==vf_type(0);
-    vmf_type y_gt_z = y>vf_type(0);
-    vmf_type y_lt_z = y<vf_type(0);
-    vmf_type y_inf = isinf(y);
-    
+    vmf_type x_gt_z = x>vf_type(0);
+    vmf_type x_lt_z = x<vf_type(0);
+    vmf_type x_ge_p_z = x_p_zero | x_gt_z;
+    vmf_type x_le_n_z = x_n_zero | x_lt_z;
+
+    //  atan2(+0, x>=0) = +0
+    r = _T::sel(y_p_zero & x_ge_p_z, y, r);
+    //  atan2(-0, x>=0) = -0
+    r = _T::sel(y_n_zero & x_ge_p_z, y, r);
+    //  atan2(+0, x<=-0) = +Pi
+    r = _T::sel(y_p_zero & x_le_n_z, +M_PI, r);
+    //  atan2(-0, x<=-0) = -Pi
+    r = _T::sel(y_n_zero & x_le_n_z, -M_PI, r);
+    //  atan2(y>0, 0) = +Pi/2
+    r = _T::sel(y_gt_z & x_zero, +M_PI/2, r);
+    //  atan2(y<0, 0) = -Pi/2
+    r = _T::sel(y_lt_z & x_zero, -M_PI/2, r);
+    //  atan2(y, +Inf) = 0
+    r = _T::sel(x_p_inf, 0, r);
+    //  atan2(y>0, -Inf) = +Pi
+    r = _T::sel(y_gt_z & x_n_inf, M_PI, r);
+    //  atan2(y<0, -Inf) = -Pi
+    r = _T::sel(y_lt_z & x_n_inf, -M_PI, r);
+    //  atan2(+Inf, x) = +Pi/2
+    r = _T::sel(y_p_inf, M_PI/2, r);
+    //  atan2(-Inf, x) = -Pi/2
+    r= _T::sel(y_n_inf, -M_PI/2, r);
+    //  atan2(+Inf, +Inf) = +Pi/4
+    r = _T::sel(y_p_inf & x_p_inf, +M_PI/4, r);
+    //  atan2(-Inf, +Inf) = -Pi/4
+    r = _T::sel(y_n_inf & x_p_inf, -M_PI/4, r);
+    //  atan2(+Inf, -Inf) = 3Pi/4
+    r = _T::sel(y_p_inf & x_n_inf, (3*M_PI)/4, r);
+    //  atan2(-Inf, -Inf) = -3Pi/4
+    r = _T::sel(y_n_inf & x_n_inf, -(3*M_PI)/4, r);
+    //  atan2(y, NaN) = NaN
+    //  atan2(NaN, x) = NaN
+    r = _T::sel(isnan(x) | isnan(y), _T::nan(), r);
+   
+#if 0    
     r= _T::sel(y_zero & x_p_zero, y, r);
     r= _T::sel(y_zero & x_n_zero, copysign(vf_type(M_PI), y), r);
     r= _T::sel(y_gt_z & x_inf,
@@ -1229,7 +1262,7 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     r= _T::sel(y_inf & x_p_inf, copysign(vf_type(M_PI), y), r);
     r= _T::sel(y_inf & x_n_inf, copysign(vf_type(3*M_PI/4), y), r);
     r= _T::sel(isnan(y) | isnan(x), _T::nan(), r);
-    
+#endif
     return r;
 #else
     // r = dvf_type(mulsign(r.h(), x),
