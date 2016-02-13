@@ -21,7 +21,7 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     rc &= check_func_1<double, 1, check_atan<double> >(v, ulp, 0, false);
-#if 0
+
     rc &= check_func_1<double, 2, check_atan<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 4, check_atan<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_atan<double> >(v, ulp, 0, false);
@@ -34,6 +34,5 @@ int main(int argc, char** argv)
                                           0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
-#endif    
     return (rc == true) ? 0 : 1;
 }

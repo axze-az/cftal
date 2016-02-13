@@ -229,6 +229,21 @@ cftal::test::to_stream(t_real<double>& d, const mpfr_real<_B>& v,
     return out_tf64(d);
 }
 
+std::pair<std::uint64_t, std::uint64_t>
+atan_coeff(int n)
+{
+    std::pair<std::uint64_t, std::uint64_t> r(1U, 1U);
+    for (int i=1; i<=n; ++i) {
+        // std::cout << 2*i << std::endl;
+        r.first *= (2*i);
+    }
+    for (int i=1; i<=n; ++i) {
+        // std::cout << 2*i+1 << std::endl;
+        r.second *= (2*i+1);
+    }
+    return r;
+}
+
 template <std::size_t _B, typename _X>
 void
 cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
@@ -472,30 +487,40 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
-#if 0    
+    std::vector<f_t> v_atan_coeff;
+    for (int i=0; i<20; ++i) {
+        f_t e=1;
+        f_t d=1;
+        for (int j=1; j<=i; ++j) {
+            e *= f_t(2*j);
+        }
+        for (int j=1; j<=i; ++j) {
+            d *= f_t(2*j+1);
+        }
+        f_t q= e/d;
+        v_atan_coeff.push_back(q);
+    }
+    
     s << "template <class _T>\n"
       << "const _T\n"
       << "cftal::math::impl::" << pfx << "::\n"
-      << "atan2_coeff[MAX_COS_COEFF] =  {"
+      << "atan2_coeff[MAX_ATAN2_COEFF] =  {"
       << std::endl;
-    sign=-1;
-    for (std::size_t i=22; i>3; i-=2) {
-        f_t val= v_inv_fac[i];
-        if (sign < 0)
-            val = -val;
+    for (std::size_t i=0, j=v_atan_coeff.size()-1;
+         i<v_atan_coeff.size(); ++i, --j) {
+        f_t val= v_atan_coeff[j];
         s << std::scientific
           << std::setprecision(22)
-          << "    // " << (sign > 0? '+' : '-') << "1/" << i << "!\n"
+          << "    // prod(even numbers to " << 2*j
+          << ")/product(odd numbers to " << (2*j) +1 << ")\n"
           << "    _T( "
           << to_stream(d, val)
           << ")";
-        if (i != 4)
+        if (i != v_atan_coeff.size()-1)
             s << ',';
         s << '\n';
-        sign = -sign;
     }
     s << "};\n" << std::endl;
-#endif
 }
 
 int main(int argc, char** argv)
@@ -567,7 +592,7 @@ int main(int argc, char** argv)
         gen_math_constants<128, d_real<double> >(
             std::cout,
             "d_real_constants<_T, double>");
-        gen_math_constants<192, t_real<double> >(
+        gen_math_constants<256, t_real<double> >(
             std::cout,
             "t_real_constants<_T, double>");
     }

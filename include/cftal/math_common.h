@@ -1220,7 +1220,14 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
 {
-    return atan2(x, vf_type(1.0));
+    dvf_type rd=
+        base_type::atan2_k2(vf_type(1.0), vf_type(0.0), x , vf_type(0));
+    vf_type r=rd.h();
+    r=copysign(r, x);
+    r=_TRAITS_T::sel(x==vf_type(0), x, r);
+    r=_TRAITS_T::sel(isinf(x), copysign(vf_type(M_PI/2), x) , r);
+    r=_TRAITS_T::sel(isnan(x), x, r);
+    return r;
 }
 
 template <typename _FLOAT_T, typename _TRAITS, unsigned _R>

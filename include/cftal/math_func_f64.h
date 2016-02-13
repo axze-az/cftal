@@ -40,7 +40,7 @@ namespace cftal {
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=9;
                 static const _T exp_coeff[MAX_EXP_COEFF];
-                
+
                 // coefficents for exp2(x)
                 static const unsigned MAX_EXP2_COEFF=9;
                 static const _T exp2_coeff[MAX_EXP_COEFF];
@@ -51,6 +51,11 @@ namespace cftal {
                 // table for cos -1/22! +1/20! .. +1/4! with alternating signs
                 static const unsigned MAX_COS_COEFF=10;
                 static const _T cos_coeff[MAX_COS_COEFF];
+
+                // table for atan2
+                static const unsigned MAX_ATAN2_COEFF=20;
+                static const _T atan2_coeff[MAX_ATAN2_COEFF];
+
                 // M_LN2 LOG_E(2)
                 static const _T m_ln2;
                 // M_LN10 LOG_E(10)
@@ -731,7 +736,7 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
     dvf_type s=impl::poly(r, ctbl::exp_coeff);
     // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^9/9! == expm1(r)
     s = s*r;
-    
+
     // scale back the 1/k_i reduced value for expm1
     do {
         i_cmp_res = k_i > vi_type(0);
@@ -1182,6 +1187,52 @@ cftal::math::func_core<double, _T>::
 atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
          arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
+#if 1
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    dvf_type y(yh, yl);
+    dvf_type x(xh, xl);
+    dvf_type yp(abs(y));
+    dvf_type xp(abs(x));
+
+    dvf_type d=max(yp, xp);
+    dvf_type e=min(yp, xp);
+    dvf_type r=e/d;
+
+    // reduce argument via arctan(x) = 2 * arctan(x/(1+sqrt(1-x^2)))
+    vi_type k(0);
+    do {
+        vmf_type r_gt = r.h() > vf_type(1.0/8.0);
+        if (none_of(r_gt))
+            break;
+        vmi_type ki= _T::vmf_to_vmi(r_gt);
+        dvf_type den= sqrt(vf_type(1.0)+sqr(r)) + vf_type(1);
+        dvf_type rs = r/den;
+        r= dvf_type(_T::sel(r_gt, rs.h(), r.h()),
+                    _T::sel(r_gt, rs.l(), r.l()));
+        k += _T::sel(ki, vi_type(1), vi_type(0));
+    } while (1);
+
+
+    dvf_type rs=sqr(r);
+    dvf_type t=rs/(vf_type(1)+rs);
+
+    dvf_type p= impl::poly(t, ctbl::atan2_coeff);
+    dvf_type at=t/r*p;
+
+    // scale back
+    vmi_type k_gt= k > vi_type(0);
+    vmf_type f_k_gt = _T::vmi_to_vmf(k_gt);
+    vf_type scale=ldexp(vf_type(1.0), k);
+    at *= scale;
+
+    vmf_type y_gt_x = (xp.h() > yp.h());
+    // arctan (1/r) = M_PI/2 -  arctan(r) if r > 0
+    // arctan (1/r) = -M_PI/2 - arctan(r) if r < 0
+    dvf_type inv_at= dvf_type(ctbl::m_pi_2) - at;
+    at= dvf_type(_T::sel(y_gt_x, inv_at.h(), at.h()),
+                 _T::sel(y_gt_x, inv_at.l(), at.l()));
+    return at;
+#else
     dvf_type cy(yh, yl);
     dvf_type cx(xh, xl);
 
@@ -1230,7 +1281,7 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
 
     t = u * t * s;
     t = s -t ;
-    
+
     do {
         vmi_type k_gt = k > vi_type(0);
         if (none_of(k_gt))
@@ -1244,6 +1295,7 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     t = _T::cvt_i_to_f(q) * dvf_type(ctbl::m_pi_2) + t;
     return t;
+#endif
 }
 
 template <typename _T>
@@ -1482,6 +1534,52 @@ cos_coeff[MAX_COS_COEFF] =  {
     _T( -1.3888888888888889418943e-03,  5.3005439543735770590566e-20),
     // +1/4!
     _T(  4.1666666666666664353702e-02,  2.3129646346357426641539e-18)
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::
+atan2_coeff[MAX_ATAN2_COEFF] =  {
+    // prod(even numbers to 38)/product(odd numbers to 39)
+    _T(  1.9940865344744049258985e-01,  1.2934518515220058347504e-17),
+    // prod(even numbers to 36)/product(odd numbers to 37)
+    _T(  2.0465624959079420364105e-01, -6.0288722640439653275903e-19),
+    // prod(even numbers to 34)/product(odd numbers to 35)
+    _T(  2.1034114541276072163356e-01, -1.2955445478528480125310e-17),
+    // prod(even numbers to 32)/product(odd numbers to 33)
+    _T(  2.1652764968960661051689e-01,  1.3576402744948126907721e-18),
+    // prod(even numbers to 30)/product(odd numbers to 31)
+    _T(  2.2329413874240680581984e-01,  1.2675769126922021695018e-17),
+    // prod(even numbers to 28)/product(odd numbers to 29)
+    _T(  2.3073727670048704840866e-01, -2.6298647510369619301622e-18),
+    // prod(even numbers to 26)/product(odd numbers to 27)
+    _T(  2.3897789372550443109944e-01,  9.1714582002669668546491e-18),
+    // prod(even numbers to 24)/product(odd numbers to 25)
+    _T(  2.4816935117648539210755e-01, -1.1826236188668083689288e-17),
+    // prod(even numbers to 22)/product(odd numbers to 23)
+    _T(  2.5850974080883892813887e-01,  9.6541679991769692886780e-18),
+    // prod(even numbers to 20)/product(odd numbers to 21)
+    _T(  2.7026018357287706628256e-01,  5.0465255235706661365759e-18),
+    // prod(even numbers to 18)/product(odd numbers to 19)
+    _T(  2.8377319275152090849446e-01,  1.6401082046000763576527e-17),
+    // prod(even numbers to 16)/product(odd numbers to 17)
+    _T(  2.9953837012660544658615e-01, -2.5863086575755280658533e-17),
+    // prod(even numbers to 14)/product(odd numbers to 15)
+    _T(  3.1825951825951825924221e-01,  2.7604612888892781089931e-19),
+    // prod(even numbers to 12)/product(odd numbers to 13)
+    _T(  3.4099234099234099204523e-01,  2.9576370952385122596355e-19),
+    // prod(even numbers to 10)/product(odd numbers to 11)
+    _T(  3.6940836940836940804900e-01,  3.2041068531750549479384e-19),
+    // prod(even numbers to 8)/product(odd numbers to 9)
+    _T(  4.0634920634920634885390e-01,  3.5245175384925604427323e-19),
+    // prod(even numbers to 6)/product(odd numbers to 7)
+    _T(  4.5714285714285712858285e-01,  1.4274296030894868396767e-17),
+    // prod(even numbers to 4)/product(odd numbers to 5)
+    _T(  5.3333333333333332593185e-01,  7.4014868308343768334413e-18),
+    // prod(even numbers to 2)/product(odd numbers to 3)
+    _T(  6.6666666666666662965923e-01,  3.7007434154171882626462e-17),
+    // prod(even numbers to 0)/product(odd numbers to 1)
+    _T(  1.0000000000000000000000e+00,  0.0000000000000000000000e+00)
 };
 
 template <class _T>
