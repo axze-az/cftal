@@ -617,7 +617,7 @@ _T
 cftal::math::impl::powvi<_T>::v(const _T& xx, int i)
 {
     unsigned n= i < 0 ? -i : i;
-    _T r=powvu<_T>::v(xx);
+    _T r=powvu<_T>::v(xx, n);
     if (i<0)
         r= _T(1)/r;
     return r;

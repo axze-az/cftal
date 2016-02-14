@@ -325,7 +325,7 @@ namespace cftal {
                 static
                 vec<_T, _N>
                 v(const vec<_T, _N>& a) {
-                    vec<_T, _N> s, c;
+                    vec<_T, _N> s;
                     sincos(a, &s, nullptr);
                     return s;
                 }

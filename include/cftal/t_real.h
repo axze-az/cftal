@@ -661,7 +661,7 @@ inline
 typename cftal::t_real_traits<_T>::cmp_result_type
 cftal::operator==(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return (a.h() == b.h()) & (a.m() == b.m()) | (a.l() == b.l());
+    return (a.h() == b.h()) & ((a.m() == b.m()) | (a.l() == b.l()));
 }
 
 template <typename _T>
@@ -669,7 +669,7 @@ inline
 typename cftal::t_real_traits<_T>::cmp_result_type
 cftal::operator!=(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return (a.h() != b.h()) | (a.m() != b.m()) | (a.l() != b.l());
+    return (a.h() != b.h()) | ((a.m() != b.m()) | (a.l() != b.l()));
 }
 
 template <typename _T>

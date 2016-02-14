@@ -1184,9 +1184,10 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
 
     // scale back
     vmi_type k_gt= k > vi_type(0);
-    vmf_type f_k_gt = _T::vmi_to_vmf(k_gt);
-    vf_type scale=ldexp(vf_type(1.0), k);
-    at *= scale;
+    if (any_of(k_gt)) {
+        vf_type scale=ldexp(vf_type(1.0), k);
+        at *= scale;
+    }
 
     // sqrt(DBL_MIN): 1.4916681462400413486582e-154
     // vmf_type r_small = r.h() < 1.4916681462400413486582e-154;
