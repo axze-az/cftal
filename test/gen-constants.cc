@@ -49,6 +49,13 @@ namespace cftal {
             }
         };
 
+        template <typename _T>
+        struct check_atan_eq_x  {
+            bool operator() (_T a) const {
+                _T at=call_mpfr::func(a, mpfr_tan);
+                return at == a;
+            }
+        };
 
         struct out_df64 {
             d_real<double> _v;
@@ -588,6 +595,10 @@ int main(int argc, char** argv)
                   << std::hexfloat
                   << std::ldexp(1.0, 106) << ";\n\n"
                   << std::scientific;
+
+        dp = std::make_pair(0.0, 0.1);
+        gen_constant(dm, "const double atan_eq_x", mpfr_atan,
+                     check_atan_eq_x<double>(), "m_0");
 
         gen_math_constants<128, d_real<double> >(
             std::cout,

@@ -263,6 +263,11 @@ namespace cftal {
 
             static
             dvf_type
+            scaled_divide(arg_t<vf_type> ah, arg_t<vf_type> al,
+                          arg_t<vf_type> bh, arg_t<vf_type> bl);
+            
+            static
+            dvf_type
             exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
                    bool exp_m1=false);
 
@@ -651,6 +656,23 @@ exp_k3(const tvf_type& d)
         res=tres;
     }
     return res;
+}
+
+template <typename _T>
+typename cftal::math::func_core<double, _T>::dvf_type
+cftal::math::func_core<double, _T>::
+scaled_divide(arg_t<vf_type> ah, arg_t<vf_type> al,
+              arg_t<vf_type> bh, arg_t<vf_type> bl)
+{
+    vi_type ea, eb;
+    vf_type sah=frexp(ah, &ea);
+    vf_type sbh=frexp(bh, &eb);
+    vf_type sal=ldexp(al, -ea);
+    vf_type sbl=ldexp(bl, -eb);
+    dvf_type q0=dvf_type(sah, sal)/dvf_type(sbh, sbl);
+    vi_type eq= ea - eb;
+    dvf_type q(ldexp(q0.h(), eq), ldexp(q0.l(), eq));
+    return q;
 }
 
 template <typename _T>
@@ -1156,7 +1178,7 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
 
     dvf_type d=max(yp, xp);
     dvf_type e=min(yp, xp);
-    dvf_type r=e/d;
+    dvf_type r=e/d; // scaled_divide(e.h(), e.l(), d.h(), d.l());
 
     // reduce argument via arctan(x) = 2 * arctan(x/(1+sqrt(1-x^2)))
     vi_type k(0);
@@ -1186,9 +1208,11 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
     at *= scale;
 
     // sqrt(DBL_MIN): 1.4916681462400413486582e-154
-    vmf_type r_small = r.h() < 1.4916681462400413486582e-154;
-    at = dvf_type(_T::sel(r_small, r.h(), at.h()),
-                  _T::sel(r_small, r.l(), at.l()));
+    // vmf_type r_small = r.h() < 1.4916681462400413486582e-154;
+    vmf_type r_small = r.h() < 1e-16;
+    dvf_type at_small = r;
+    at = dvf_type(_T::sel(r_small, at_small.h(), at.h()),
+                  _T::sel(r_small, at_small.l(), at.l()));
 
     vmf_type invert = (yp.h() > xp.h());
     // arctan (1/r) = M_PI/2 -  arctan(r) if r > 0
