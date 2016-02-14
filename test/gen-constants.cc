@@ -488,7 +488,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     s << "};\n" << std::endl;
 
     std::vector<f_t> v_atan_coeff;
-    for (int i=0; i<20; ++i) {
+    for (int i=0; i<25; ++i) {
         f_t e=1;
         f_t d=1;
         for (int j=1; j<=i; ++j) {

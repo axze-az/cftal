@@ -49,7 +49,7 @@ namespace cftal {
                 static const _T cos_coeff[MAX_COS_COEFF];
 
                 // table for atan2
-                static const unsigned MAX_ATAN2_COEFF=20;
+                static const unsigned MAX_ATAN2_COEFF=25;
                 static const _T atan2_coeff[MAX_ATAN2_COEFF];
 
                 // M_LN2 LOG_E(2)
@@ -1161,7 +1161,7 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
     // reduce argument via arctan(x) = 2 * arctan(x/(1+sqrt(1-x^2)))
     vi_type k(0);
     do {
-        vmf_type r_gt = r.h() > vf_type(1.0/16.0);
+        vmf_type r_gt = r.h() > vf_type(1.0/2.0);
         if (none_of(r_gt))
             break;
         vmi_type ki= _T::vmf_to_vmi(r_gt);
@@ -1196,25 +1196,21 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
     dvf_type inv_at= dvf_type(ctbl::m_pi_2) - at;
     at= dvf_type(_T::sel(invert, inv_at.h(), at.h()),
                  _T::sel(invert, inv_at.l(), at.l()));
-    vf_type at_sgn=copysign(vf_type(1.0), y.h()) *
-        copysign(vf_type(1.0), x.h());
-    at=mul_pwr2(at, copysign(at_sgn, y.h()));
+    vf_type sgn_y=copysign(vf_type(1.0), y.h());
+    vf_type at_sgn=sgn_y * copysign(vf_type(1.0), x.h());
+    at=mul_pwr2(at, copysign(vf_type(1.0), at_sgn));
+    // at = atan(y/x);
     if (calc_atan2) {
         // atan2(y, x) = atan(x) x>0
         // atan2(y, x) = atan(x) + pi x<0 & y>=0
         // atan2(y, x) = atan(x) - pi x<0 & y <0
+        // from mpfr:
+        // atan2(y, x) with x<0 --> sgn_y * (PI-atan(|y/x|));
+        dvf_type pi_at = dvf_type(ctbl::m_pi) - abs(at);
+        pi_at = mul_pwr2(pi_at, sgn_y);
         vmf_type x_lt_z = xh < vf_type(0);
-        vmf_type at_le_z = at.h() <= vf_type(0);
-        vmf_type add_pi = at_le_z;
-        dvf_type pi(
-            _T::sel(add_pi, vf_type(ctbl::m_pi.h()), vf_type(-ctbl::m_pi.h())),
-            _T::sel(add_pi, vf_type(ctbl::m_pi.l()), vf_type(-ctbl::m_pi.l())));
-        dvf_type w(
-            _T::sel(x_lt_z, pi.h(), vf_type(0)),
-            _T::sel(x_lt_z, pi.l(), vf_type(0)));
-        at+= w;
-        at=dvf_type(_T::sel(x_lt_z, -at.h(), at.h()),
-                    _T::sel(x_lt_z, -at.l(), at.l()));
+        at=dvf_type(_T::sel(x_lt_z, pi_at.h(), at.h()),
+                    _T::sel(x_lt_z, pi_at.l(), at.l()));
     }
     return at;
 }
@@ -1436,6 +1432,16 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::
 atan2_coeff[MAX_ATAN2_COEFF] =  {
+    // prod(even numbers to 48)/product(odd numbers to 49)
+    _T(  1.7813377193108356766338e-01,  8.2639790981134668507681e-18),
+    // prod(even numbers to 46)/product(odd numbers to 47)
+    _T(  1.8184489217964780460868e-01,  1.2483833439936714220578e-17),
+    // prod(even numbers to 44)/product(odd numbers to 45)
+    _T(  1.8579804200964017413256e-01, -1.3190208256413428702000e-17),
+    // prod(even numbers to 42)/product(odd numbers to 43)
+    _T(  1.9002072478258652532546e-01,  2.9110362379033512864522e-18),
+    // prod(even numbers to 40)/product(odd numbers to 41)
+    _T(  1.9454502775360049682263e-01, -3.6281237601534529159507e-18),
     // prod(even numbers to 38)/product(odd numbers to 39)
     _T(  1.9940865344744049258985e-01,  1.2934518515220058347504e-17),
     // prod(even numbers to 36)/product(odd numbers to 37)
