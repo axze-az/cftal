@@ -41,10 +41,6 @@ namespace cftal {
                 static const unsigned MAX_EXP_COEFF=9;
                 static const _T exp_coeff[MAX_EXP_COEFF];
 
-                // coefficents for exp2(x)
-                static const unsigned MAX_EXP2_COEFF=9;
-                static const _T exp2_coeff[MAX_EXP_COEFF];
-
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=10;
                 static const _T sin_coeff[MAX_SIN_COEFF];
@@ -908,7 +904,7 @@ func_core<double, _T>::
 reduce_trig_arg_k(arg_t<vf_type> d)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    constexpr double large_arg(2.0e8);
+    constexpr static const double large_arg(2.0e8);
     vmf_type v_large_arg(vf_type(large_arg) < abs(d));
     // small argument reduction
     // reduce by pi half
@@ -1200,7 +1196,9 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
     dvf_type inv_at= dvf_type(ctbl::m_pi_2) - at;
     at= dvf_type(_T::sel(invert, inv_at.h(), at.h()),
                  _T::sel(invert, inv_at.l(), at.l()));
-    at=mul_pwr2(at, copysign(vf_type(1.0), y.h()));
+    vf_type at_sgn=copysign(vf_type(1.0), y.h()) *
+        copysign(vf_type(1.0), x.h());
+    at=mul_pwr2(at, copysign(at_sgn, y.h()));
     if (calc_atan2) {
         // atan2(y, x) = atan(x) x>0
         // atan2(y, x) = atan(x) + pi x<0 & y>=0
@@ -1381,31 +1379,6 @@ exp_coeff[MAX_EXP_COEFF] =  {
     // + 1/1!
     _T(  1.0000000000000000000000e+00,  0.0000000000000000000000e+00),
 };
-
-template <class _T>
-const _T
-cftal::math::impl::d_real_constants<_T, double>::
-exp2_coeff[MAX_EXP2_COEFF] =  {
-    // + ln(2)^9/9!
-    _T(  1.0178086009239699922442e-07, -1.9495207137567228193743e-24),
-    // + ln(2)^8/8!
-    _T(  1.3215486790144309508566e-06, -2.0162732323629023358365e-24),
-    // + ln(2)^7/7!
-    _T(  1.5252733804059841082770e-05, -8.0274467550558752135419e-22),
-    // + ln(2)^6/6!
-    _T(  1.5403530393381608776075e-04,  1.1783618439907562168275e-20),
-    // + ln(2)^5/5!
-    _T(  1.3333558146428443284132e-03,  1.3928059563172586483266e-20),
-    // + ln(2)^4/4!
-    _T(  9.6181291076284768787330e-03,  2.8324606784380998642133e-19),
-    // + ln(2)^3/3!
-    _T(  5.5504108664821583118965e-02, -3.1658222903912803924049e-18),
-    // + ln(2)^2/2!
-    _T(  2.4022650695910072182748e-01, -9.4939312531828755586202e-18),
-    // + ln(2)^1/1!
-    _T(  6.9314718055994528622676e-01,  2.3190468138462995584178e-17),
-};
-
 
 template <class _T>
 const _T

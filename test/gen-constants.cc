@@ -415,7 +415,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
         s << '\n';
     }
     s << "};\n" << std::endl;
-
+#if 0
     // const std::size_t MAX_EXP2_COEFF=10;
     s << "template <class _T>\n"
       << "const _T\n"
@@ -437,7 +437,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
         s << '\n';
     }
     s << "};\n" << std::endl;
-    
+#endif
     // const std::size_t MAX_COS_COEFF=10;
     // const std::size_t MAX_SIN_COEFF=10;
 
@@ -500,7 +500,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
         f_t q= e/d;
         v_atan_coeff.push_back(q);
     }
-    
+
     s << "template <class _T>\n"
       << "const _T\n"
       << "cftal::math::impl::" << pfx << "::\n"

@@ -37,7 +37,6 @@ namespace cftal {
     vec<double, _N>
     mulsign(const vec<double, _N>& x, const vec<double, _N>& y);
 
-
     // return a*b +c with or without fma
     template <std::size_t _N>
     vec<double, _N>
