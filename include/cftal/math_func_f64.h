@@ -265,7 +265,7 @@ namespace cftal {
             dvf_type
             scaled_divide(arg_t<vf_type> ah, arg_t<vf_type> al,
                           arg_t<vf_type> bh, arg_t<vf_type> bl);
-            
+
             static
             dvf_type
             exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
@@ -398,7 +398,9 @@ ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
     // q = max(vi_type(0), q);
     // q = min(vi_type(0x7ff), q);
     vf_type fq(_T::insert_exp(q));
-    return r * fq;
+    r *= fq;
+    r = _T::sel(vd == vf_type(0.0), vd, r);
+    return r;
 }
 
 template <typename _T>
@@ -416,7 +418,8 @@ frexp(arg_t<vf_type> vd, vi_type* ve)
     vmi_type is_inf_nan_zero(
         (value_head >= vi_type(0x7ff00000)) |
         (vi_type(value_head| lo_word)==vi_type(0)));
-    vmi_type is_denom(value_head < 0x00100000);
+    vmi_type is_denom((value_head < 0x00100000) &
+                      ~is_inf_nan_zero);
 
     // exponent:
     vi_type e((value_head >> 20) - vi_type(1022));
@@ -667,6 +670,7 @@ scaled_divide(arg_t<vf_type> ah, arg_t<vf_type> al,
     vi_type ea, eb;
     vf_type sah=frexp(ah, &ea);
     vf_type sbh=frexp(bh, &eb);
+    // TODO ldexp is shit - produces nans instead of zeros
     vf_type sal=ldexp(al, -ea);
     vf_type sbl=ldexp(bl, -eb);
     dvf_type q0=dvf_type(sah, sal)/dvf_type(sbh, sbl);
@@ -1178,7 +1182,7 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
 
     dvf_type d=max(yp, xp);
     dvf_type e=min(yp, xp);
-    dvf_type r=e/d; // scaled_divide(e.h(), e.l(), d.h(), d.l());
+    dvf_type r=scaled_divide(e.h(), e.l(), d.h(), d.l());
 
     // reduce argument via arctan(x) = 2 * arctan(x/(1+sqrt(1-x^2)))
     vi_type k(0);

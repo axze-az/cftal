@@ -227,7 +227,9 @@ ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
     // q = max(vi_type(0), q);
     // q = min(vi_type(0x7ff), q);
     vf_type fq = _T::insert_exp(q);
-    return r * fq;
+    r *= fq;
+    r = _T::sel(vd == vf_type(0), vd, r);
+    return r;
 }
 
 template <typename _T>
