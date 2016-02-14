@@ -263,11 +263,6 @@ namespace cftal {
 
             static
             dvf_type
-            scaled_divide(arg_t<vf_type> ah, arg_t<vf_type> al,
-                          arg_t<vf_type> bh, arg_t<vf_type> bl);
-
-            static
-            dvf_type
             exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
                    bool exp_m1=false);
 
@@ -670,7 +665,6 @@ scaled_divide(arg_t<vf_type> ah, arg_t<vf_type> al,
     vi_type ea, eb;
     vf_type sah=frexp(ah, &ea);
     vf_type sbh=frexp(bh, &eb);
-    // TODO ldexp is shit - produces nans instead of zeros
     vf_type sal=ldexp(al, -ea);
     vf_type sbl=ldexp(bl, -eb);
     dvf_type q0=dvf_type(sah, sal)/dvf_type(sbh, sbl);
@@ -1182,7 +1176,7 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
 
     dvf_type d=max(yp, xp);
     dvf_type e=min(yp, xp);
-    dvf_type r=scaled_divide(e.h(), e.l(), d.h(), d.l());
+    dvf_type r=e/d;
 
     // reduce argument via arctan(x) = 2 * arctan(x/(1+sqrt(1-x^2)))
     vi_type k(0);

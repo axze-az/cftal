@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/select.h>
+#include <cftal/std_types.h>
 #include <cmath>
 #include <type_traits>
 
@@ -45,6 +46,8 @@ namespace cftal {
         constexpr d_real_traits<double>() = default;
         // result of a comparison operator
         typedef bool cmp_result_type;
+        // corresponding integer type for ldexp, frexp
+        using int_type = int32_t;
 
         static constexpr double eps() {
             // 2^-104
@@ -98,11 +101,9 @@ namespace cftal {
         constexpr d_real_traits<float>() = default;
         // result of a comparison operator
         typedef bool cmp_result_type;
-        // is our data type scalar
-        static constexpr bool scalar() {
-            return true;
-        }
-        //
+        // corresponding integer type for ldexp, frexp
+        using int_type = int32_t;
+
         static bool any(const cmp_result_type& b) {
             return b;
         }
@@ -370,8 +371,16 @@ namespace cftal {
                            const d_real<_T>& b);
 
             static
-            d_real<_T> ieee_div(const d_real<_T>& a,
-                                const d_real<_T>& b);
+            d_real<_T>
+            raw_ieee_div(const d_real<_T>& a, const d_real<_T>& b);
+
+            static
+            d_real<_T>
+            scaled_div(const d_real<_T>& a, const d_real<_T>& b);
+
+            static
+            d_real<_T>
+            ieee_div(const d_real<_T>& a, const d_real<_T>& b);
 
             static
             d_real<_T> sloppy_div(const d_real<_T>& a,
@@ -1069,7 +1078,7 @@ template <typename _T, bool _FMA>
 inline
 cftal::d_real<_T>
 cftal::impl::d_real_ops<_T, _FMA>::
-ieee_div(const d_real<_T>&a, const d_real<_T>& b)
+raw_ieee_div(const d_real<_T>&a, const d_real<_T>& b)
 {
     _T q1, q2, q3;
     d_real<_T> r(0);
@@ -1081,6 +1090,48 @@ ieee_div(const d_real<_T>&a, const d_real<_T>& b)
     q1 = base_type::quick_two_sum(q1, q2, q2);
     r = d_real<_T>(q1, q2) + q3;
     return r;
+}
+
+template <typename _T, bool _FMA>
+inline
+cftal::d_real<_T>
+cftal::impl::d_real_ops<_T, _FMA>::
+scaled_div(const d_real<_T>&a, const d_real<_T>& b)
+{
+    using traits_t=d_real_traits<_T>;
+    using std::frexp;
+    using std::ldexp;
+    using int_type = typename traits_t::int_type;
+    int_type ea, eb;
+    _T sah=frexp(a.h(), &ea);
+    _T sbh=frexp(b.h(), &eb);
+    _T sal=ldexp(a.l(), -ea);
+    _T sbl=ldexp(b.l(), -eb);
+    d_real<_T> as(sah, sal);
+    d_real<_T> bs(sbh, sbl);
+    d_real<_T> q0=raw_ieee_div(as, bs);
+    int_type eq= ea - eb;
+    d_real<_T> q(ldexp(q0.h(), eq), ldexp(q0.l(), eq));
+    return q;
+}
+
+template <typename _T, bool _FMA>
+inline
+cftal::d_real<_T>
+cftal::impl::d_real_ops<_T, _FMA>::
+ieee_div(const d_real<_T>&a, const d_real<_T>& b)
+{
+    using std::abs;
+    using traits_t=d_real_traits<_T>;
+    auto a_small = abs(a.h()) < _T(0x1p-969);
+    auto b_small = abs(b.h()) < _T(0x1p-969);
+    d_real<_T> q;
+    if (traits_t::any(a_small | b_small)) {
+        q= scaled_div(a, b);
+    } else {
+        q= raw_ieee_div(a, b);
+    }
+    return q;
 }
 
 template <typename _T, bool _FMA>
