@@ -265,18 +265,6 @@ namespace cftal {
             static tvf_type
             exp_k3(const tvf_type& tvf);
 
-            // multiply (xh, xl) with f and call exp_k2
-            static
-            dvf_type
-            exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
-                   arg_t<vf_type> f);
-
-            // multiply (xh, xl) with (fh, fl) and call exp_k2
-            static
-            dvf_type
-            exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
-                   arg_t<vf_type> fh, arg_t<vf_type> fl);
-
             static
             dvf_type
             exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
@@ -433,19 +421,21 @@ frexp(arg_t<vf_type> vd, vi_type* ve)
     vi_type e((value_head >> 20) - vi_type(1022));
 
     // denormals
-    // first multiply with 2^54
-    // const vf_type two54=1.80143985094819840000e+16;
-    const vf_type two54=0x1.p54;
-    vf_type vden(two54 * vd);
-    vi_type hden(_T::extract_high_word(vden));
-    vi_type lden(_T::extract_low_word(vden));
-    vi_type value_head_den(hden & vi_type(0x7fffffff));
-    vi_type eden((value_head_den>>20) - vi_type(1022+54));
+    if (any_of(is_denom)) {
+        // first multiply with 2^54
+        // const vf_type two54=1.80143985094819840000e+16;
+        const vf_type two54=0x1.p54;
+        vf_type vden(two54 * vd);
+        vi_type hden(_T::extract_high_word(vden));
+        vi_type lden(_T::extract_low_word(vden));
+        vi_type value_head_den(hden & vi_type(0x7fffffff));
+        vi_type eden((value_head_den>>20) - vi_type(1022+54));
 
-    // select denom/normal
-    e = _T::sel(is_denom, eden, e);
-    hi_word = _T::sel(is_denom, hden, hi_word);
-    lo_word = _T::sel(is_denom, lden, lo_word);
+        // select denom/normal
+        e = _T::sel(is_denom, eden, e);
+        hi_word = _T::sel(is_denom, hden, hi_word);
+        lo_word = _T::sel(is_denom, lden, lo_word);
+    }
     // insert exponent
     hi_word = (hi_word & vi_type(0x800fffff)) | vi_type(0x3fe00000);
     // combine low and high word
@@ -668,31 +658,6 @@ exp_k3(const tvf_type& d)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::dvf_type
-__attribute__((__noinline__))
-cftal::math::func_core<double, _T>::
-exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
-       arg_t<vf_type> f)
-{
-    dvf_type xs(xh, xl);
-    xs *= f;
-    return exp_k2(xs.h(), xs. l());
-}
-
-template <typename _T>
-__attribute__((__noinline__))
-typename cftal::math::func_core<double, _T>::dvf_type
-cftal::math::func_core<double, _T>::
-exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
-       arg_t<vf_type> fh, arg_t<vf_type> fl)
-{
-    dvf_type xs(xh, xl);
-    dvf_type f(fh, fl);
-    xs *= f;
-    return exp_k2(xs.h(), xs. l());
-}
-
-template <typename _T>
 __attribute__((__flatten__, __noinline__))
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
@@ -895,10 +860,9 @@ cftal::math::func_core<double, _T>::
 exp2_k2(arg_t<vf_type> dh, arg_t<vf_type> dl)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    // dvf_type d(dh, dl);
-    //dvf_type d2=dvf_type(ctbl::m_ln2) * d;
-    return exp_k2(dh, dl,
-                  vf_type(ctbl::m_ln2.h()), vf_type(ctbl::m_ln2.l()));
+    dvf_type d(dh, dl);
+    dvf_type d2=dvf_type(ctbl::m_ln2) * d;
+    return exp_k2(d2.h(), d2.l());
 }
 
 template <typename _T>
@@ -919,10 +883,9 @@ cftal::math::func_core<double, _T>::
 exp10_k2(arg_t<vf_type> dh, arg_t<vf_type> dl)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    // dvf_type d(dh, dl);
-    // dvf_type d10=dvf_type(ctbl::m_ln10) * d;
-    return exp_k2(dh, dl,
-                  vf_type(ctbl::m_ln10.h()), vf_type(ctbl::m_ln10.l()));
+    dvf_type d(dh, dl);
+    dvf_type d10=dvf_type(ctbl::m_ln10) * d;
+    return exp_k2(d10.h(), d10.l());
 }
 
 template <typename _T>
@@ -935,7 +898,6 @@ native_exp10_k(arg_t<vf_type> d)
     vf_type d10=ctbl::m_ln10.h() * d;
     return native_exp_k(d10);
 }
-
 
 template <typename _T>
 inline

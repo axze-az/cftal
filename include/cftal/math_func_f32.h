@@ -249,16 +249,18 @@ frexp(arg_t<vf_type> vd, vi_type* ve)
     vi_type e((value_head >> 23) - vi_type(126));
 
     // denormals
-    // multiply with 2^25
-    const vf_type two25(0x1.p25f);
-    vf_type vden(two25 * vd);
-    vi_type iden(_T::as_int(vden));
-    vi_type value_head_den(iden & vi_type(0x7fffffff));
-    vi_type eden((value_head_den>>23) - vi_type(126 +25));
+    if (any_of(is_denom)) {
+        // multiply with 2^25
+        const vf_type two25(0x1.p25f);
+        vf_type vden(two25 * vd);
+        vi_type iden(_T::as_int(vden));
+        vi_type value_head_den(iden & vi_type(0x7fffffff));
+        vi_type eden((value_head_den>>23) - vi_type(126 +25));
 
-    // select denom/normal
-    e = _T::sel(is_denom, eden, e);
-    i = _T::sel(is_denom, iden, i);
+        // select denom/normal
+        e = _T::sel(is_denom, eden, e);
+        i = _T::sel(is_denom, iden, i);
+    }
     // insert exponent
     i = (i & vi_type(0x807fffff)) | vi_type(0x7e<<23);
     // interpret as float
