@@ -6,6 +6,7 @@
 #include <cftal/std_types.h>
 #include <cmath>
 #include <type_traits>
+#include <limits>
 
 namespace cftal {
 
@@ -94,6 +95,13 @@ namespace cftal {
                 lo=a-hi;
             }
         }
+
+        static
+        double
+        scale_div_threshold() {
+            return 0x1.p-969;
+        }
+
     };
 
     template <>
@@ -138,6 +146,14 @@ namespace cftal {
                 lo=a-hi;
             }
         }
+
+        static
+        float
+        scale_div_threshold() {
+            // -126 + 24
+            return 0x1.p-102f;
+        }
+
     };
 
     template <typename _T>
@@ -1123,8 +1139,8 @@ ieee_div(const d_real<_T>&a, const d_real<_T>& b)
 {
     using std::abs;
     using traits_t=d_real_traits<_T>;
-    auto a_small = abs(a.h()) < _T(0x1p-969);
-    auto b_small = abs(b.h()) < _T(0x1p-969);
+    auto a_small = abs(a.h()) < traits_t::scale_div_threshold();
+    auto b_small = abs(b.h()) < traits_t::scale_div_threshold();
     d_real<_T> q;
     if (traits_t::any(a_small | b_small)) {
         q= scaled_div(a, b);

@@ -260,8 +260,10 @@ cftal::test::check_x_real<_X, _T, _R>::ops()
         rc &= ops(*std::next(b), *b);
     }
     std::mt19937 rnd;
+    _T l0= std::ldexp(1.0,
+                      std::numeric_limits<_T>::min_exponent/3);
     uniform_real_distribution<_T>
-        distrib(1.0,
+        distrib(l0,
                 std::numeric_limits<_T>::max());
     const std::size_t N0=0x2000ULL;
     for (uint32_t j=0; j<72; ++j) {

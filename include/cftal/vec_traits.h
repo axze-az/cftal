@@ -40,6 +40,15 @@ namespace cftal {
             h = a & msk;
             l = a - h;
         }
+
+        constexpr
+        static
+        vec<double, _N>
+        scale_div_threshold() {
+            // -1022 + 53
+            return 0x1.p-969;
+        }
+
     };
 
     template <std::size_t _N>
@@ -70,6 +79,15 @@ namespace cftal {
             h = a & msk;
             l = a - h;
         }
+
+        constexpr
+        static
+        vec<float, _N>
+        scale_div_threshold() {
+            // -126 + 24
+            return 0x1.p-102f;
+        }
+
     };
 
     namespace math {
