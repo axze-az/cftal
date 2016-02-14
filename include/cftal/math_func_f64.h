@@ -657,23 +657,6 @@ exp_k3(const tvf_type& d)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::dvf_type
-cftal::math::func_core<double, _T>::
-scaled_divide(arg_t<vf_type> ah, arg_t<vf_type> al,
-              arg_t<vf_type> bh, arg_t<vf_type> bl)
-{
-    vi_type ea, eb;
-    vf_type sah=frexp(ah, &ea);
-    vf_type sbh=frexp(bh, &eb);
-    vf_type sal=ldexp(al, -ea);
-    vf_type sbl=ldexp(bl, -eb);
-    dvf_type q0=dvf_type(sah, sal)/dvf_type(sbh, sbl);
-    vi_type eq= ea - eb;
-    dvf_type q(ldexp(q0.h(), eq), ldexp(q0.l(), eq));
-    return q;
-}
-
-template <typename _T>
 __attribute__((__flatten__, __noinline__))
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::

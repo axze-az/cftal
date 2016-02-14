@@ -7,7 +7,7 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     const int ulp=1;
     bool rc=true;
-    
+
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
         append_filename(test_data_dir, "../../test/data/atan.testdata");
@@ -21,7 +21,6 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     rc &= check_func_1<double, 1, check_atan<double> >(v, ulp, 0, false);
-
     rc &= check_func_1<double, 2, check_atan<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 4, check_atan<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_atan<double> >(v, ulp, 0, false);
