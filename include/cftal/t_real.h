@@ -13,6 +13,7 @@ namespace cftal {
         _T _m;
         _T _l;
     public:
+        using value_type = _T;
         constexpr
         t_real()
             : _h(0), _m(0), _l(0) {}

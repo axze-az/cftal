@@ -40,6 +40,9 @@ namespace cftal {
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=9;
                 static const _T exp_coeff[MAX_EXP_COEFF];
+                // exp(x) may be to large 
+                constexpr static const double
+                exp_arg_large= 7.0900000000000000000000e+02;
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=10;
@@ -82,18 +85,26 @@ namespace cftal {
 
             template <class _T>
             struct t_real_constants<_T, double> {
-                // 1/(i!)
                 static const unsigned MAX_FAC=30;
                 static const _T inv_fac[MAX_FAC+1];
                 // 2/i i=0,1,2,3,4...
                 static const unsigned MAX_2_OVER_I=30;
                 static const _T _2_over_i[MAX_2_OVER_I+1];
+
+                // coefficents for exp(x)
+                static const unsigned MAX_EXP_COEFF=9;
+                static const _T exp_coeff[MAX_EXP_COEFF];
+
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=10;
                 static const _T sin_coeff[MAX_SIN_COEFF];
                 // table for cos -1/22! +1/20! .. +1/4! with alternating signs
                 static const unsigned MAX_COS_COEFF=10;
                 static const _T cos_coeff[MAX_COS_COEFF];
+
+                // table for atan2
+                static const unsigned MAX_ATAN2_COEFF=25;
+                static const _T atan2_coeff[MAX_ATAN2_COEFF];
                 // M_LN2 LOG_E(2)
                 static const _T m_ln2;
                 // M_LN10 LOG_E(10)
@@ -663,7 +674,7 @@ cftal::math::func_core<double, _T>::
 exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-
+    
     vmf_type cmp_res;
     vmi_type i_cmp_res;
     vmf_type inf_nan= isinf(dh) | isnan(dh);
@@ -671,7 +682,7 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
     vi_type k_i(0);
 
     // first reduction required because we want to use rint below
-    vmf_type d_large = dh > 709.0;
+    vmf_type d_large = dh > ctbl::exp_arg_large;
     dvf_type d2=dvf_type(dh, dl);
     bool any_of_d_large = any_of(d_large);
     if (any_of_d_large) {
@@ -1622,6 +1633,30 @@ _2_over_i[MAX_2_OVER_I+1]= {
 template <class _T>
 const _T
 cftal::math::impl::t_real_constants<_T, double>::
+exp_coeff[MAX_EXP_COEFF] =  {
+    // + 1/9!
+    _T(  2.7557319223985892510951e-06, -1.8583932740464720810392e-22,  8.4917546048819928700866e-39),
+    // + 1/8!
+    _T(  2.4801587301587301565790e-05,  2.1511947866775881608473e-23,  1.8658640489242658840463e-41),
+    // + 1/7!
+    _T(  1.9841269841269841252632e-04,  1.7209558293420705286779e-22,  1.4926912391394127072370e-40),
+    // + 1/6!
+    _T(  1.3888888888888889418943e-03, -5.3005439543735770590566e-20, -1.7386867553495877595621e-36),
+    // + 1/5!
+    _T(  8.3333333333333332176851e-03,  1.1564823173178713802252e-19,  1.6049416203226965219403e-36),
+    // + 1/4!
+    _T(  4.1666666666666664353702e-02,  2.3129646346357426641539e-18,  1.2839532962581571640969e-34),
+    // + 1/3!
+    _T(  1.6666666666666665741481e-01,  9.2518585385429706566156e-18,  5.1358131850326286563877e-34),
+    // + 1/2!
+    _T(  5.0000000000000000000000e-01,  0.0000000000000000000000e+00,  0.0000000000000000000000e+00),
+    // + 1/1!
+    _T(  1.0000000000000000000000e+00,  0.0000000000000000000000e+00,  0.0000000000000000000000e+00),
+};
+
+template <class _T>
+const _T
+cftal::math::impl::t_real_constants<_T, double>::
 sin_coeff[MAX_SIN_COEFF] =  {
     // +1/21!
     _T(  1.9572941063391262595198e-20, -1.3643503830087908487197e-36,  1.3392348251125064230801e-53),
@@ -1669,6 +1704,62 @@ cos_coeff[MAX_COS_COEFF] =  {
     _T( -1.3888888888888889418943e-03,  5.3005439543735770590566e-20,  1.7386867553495877595621e-36),
     // +1/4!
     _T(  4.1666666666666664353702e-02,  2.3129646346357426641539e-18,  1.2839532962581571640969e-34)
+};
+
+template <class _T>
+const _T
+cftal::math::impl::t_real_constants<_T, double>::
+atan2_coeff[MAX_ATAN2_COEFF] =  {
+    // prod(even numbers to 48)/product(odd numbers to 49)
+    _T(  1.7813377193108356766338e-01,  8.2639790981134668507681e-18, -2.0002791499409156226710e-35),
+    // prod(even numbers to 46)/product(odd numbers to 47)
+    _T(  1.8184489217964780460868e-01,  1.2483833439936714220578e-17, -2.7721017557394495682445e-34),
+    // prod(even numbers to 44)/product(odd numbers to 45)
+    _T(  1.8579804200964017413256e-01, -1.3190208256413428702000e-17, -1.1576431466144500062895e-34),
+    // prod(even numbers to 42)/product(odd numbers to 43)
+    _T(  1.9002072478258652532546e-01,  2.9110362379033512864522e-18, -4.8361505653305626284151e-35),
+    // prod(even numbers to 40)/product(odd numbers to 41)
+    _T(  1.9454502775360049682263e-01, -3.6281237601534529159507e-18, -2.2376377456580089790752e-34),
+    // prod(even numbers to 38)/product(odd numbers to 39)
+    _T(  1.9940865344744049258985e-01,  1.2934518515220058347504e-17,  2.9064321605460776959186e-34),
+    // prod(even numbers to 36)/product(odd numbers to 37)
+    _T(  2.0465624959079420364105e-01, -6.0288722640439653275903e-19, -4.1280136875388892008190e-35),
+    // prod(even numbers to 34)/product(odd numbers to 35)
+    _T(  2.1034114541276072163356e-01, -1.2955445478528480125310e-17, -1.3604840186297365266420e-34),
+    // prod(even numbers to 32)/product(odd numbers to 33)
+    _T(  2.1652764968960661051689e-01,  1.3576402744948126907721e-18,  7.5201168337277009201098e-35),
+    // prod(even numbers to 30)/product(odd numbers to 31)
+    _T(  2.2329413874240680581984e-01,  1.2675769126922021695018e-17,  8.3569735924027023436189e-35),
+    // prod(even numbers to 28)/product(odd numbers to 29)
+    _T(  2.3073727670048704840866e-01, -2.6298647510369619301622e-18,  1.1203445971332439762535e-34),
+    // prod(even numbers to 26)/product(odd numbers to 27)
+    _T(  2.3897789372550443109944e-01,  9.1714582002669668546491e-18, -9.0313946481260707650415e-35),
+    // prod(even numbers to 24)/product(odd numbers to 25)
+    _T(  2.4816935117648539210755e-01, -1.1826236188668083689288e-17,  3.2102812052209545051217e-34),
+    // prod(even numbers to 22)/product(odd numbers to 23)
+    _T(  2.5850974080883892813887e-01,  9.6541679991769692886780e-18,  3.9860195702342391506965e-34),
+    // prod(even numbers to 20)/product(odd numbers to 21)
+    _T(  2.7026018357287706628256e-01,  5.0465255235706661365759e-18, -2.8361793379814253027162e-34),
+    // prod(even numbers to 18)/product(odd numbers to 19)
+    _T(  2.8377319275152090849446e-01,  1.6401082046000763576527e-17,  9.7331493280752599554069e-34),
+    // prod(even numbers to 16)/product(odd numbers to 17)
+    _T(  2.9953837012660544658615e-01, -2.5863086575755280658533e-17,  2.2534762364053769411435e-37),
+    // prod(even numbers to 14)/product(odd numbers to 15)
+    _T(  3.1825951825951825924221e-01,  2.7604612888892781089931e-19,  2.3943185011807127911552e-37),
+    // prod(even numbers to 12)/product(odd numbers to 13)
+    _T(  3.4099234099234099204523e-01,  2.9576370952385122596355e-19,  2.5653412512650494190949e-37),
+    // prod(even numbers to 10)/product(odd numbers to 11)
+    _T(  3.6940836940836940804900e-01,  3.2041068531750549479384e-19,  2.7791196888704702040195e-37),
+    // prod(even numbers to 8)/product(odd numbers to 9)
+    _T(  4.0634920634920634885390e-01,  3.5245175384925604427323e-19,  3.0570316577575172244214e-37),
+    // prod(even numbers to 6)/product(odd numbers to 7)
+    _T(  4.5714285714285712858285e-01,  1.4274296030894868396767e-17,  1.4086801878946638942492e-33),
+    // prod(even numbers to 4)/product(odd numbers to 5)
+    _T(  5.3333333333333332593185e-01,  7.4014868308343768334413e-18,  1.0271626370065257740418e-34),
+    // prod(even numbers to 2)/product(odd numbers to 3)
+    _T(  6.6666666666666662965923e-01,  3.7007434154171882626462e-17,  2.0543252740130514625551e-33),
+    // prod(even numbers to 0)/product(odd numbers to 1)
+    _T(  1.0000000000000000000000e+00,  0.0000000000000000000000e+00,  0.0000000000000000000000e+00)
 };
 
 // Local Variables:

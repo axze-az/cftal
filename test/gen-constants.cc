@@ -1,5 +1,7 @@
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/of_fp_funcs.h>
+#include <cftal/math_func_f64.h>
+#include <cftal/math_func_f32.h>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -11,6 +13,9 @@ namespace cftal {
         void gen_constant(func_domain<_T> d, const std::string& pfx,
                           _F f, _C chk, const std::string& check_name);
 
+        template <typename _T>
+        void write_constant(const char* name_type, _T val);
+        
         template <typename _T>
         struct check_inf {
             bool operator()(_T a) const {
@@ -57,29 +62,53 @@ namespace cftal {
             }
         };
 
-        struct out_df64 {
-            d_real<double> _v;
-            out_df64(const d_real<double>& v) : _v(v) {}
-        };
-        std::ostream& operator<<(std::ostream& s, const out_df64& v);
+        template <typename _T>
+        struct out_prec { };
 
-        struct out_tf64 {
-            t_real<double> _v;
-            out_tf64(const t_real<double>& v) : _v(v) {}
+        template <>
+        struct out_prec<double> {
+            constexpr static const int val= 22;
+            constexpr static const int width = 27;
+            constexpr static const char* suffix() { return ""; }
         };
-        std::ostream& operator<<(std::ostream& s, const out_tf64& v);
 
-        template <std::size_t _B>
-        out_df64
-        to_stream(d_real<double>& d, const mpfr_real<_B>& v,
+        template <>
+        struct out_prec<float> {
+            constexpr static const int val= 13;
+            constexpr static const int width= 18;
+            constexpr static const char* suffix() { return "f"; }
+        };
+        
+        template <typename _T>
+        struct out_df {
+            d_real<_T> _v;
+            out_df(const d_real<_T>& v) : _v(v) {}
+        };
+        template <typename _T>
+        std::ostream&
+        operator<<(std::ostream& s, const out_df<_T>& v);
+        
+        template <typename _T>
+        struct out_tf {
+            t_real<_T> _v;
+            out_tf(const t_real<_T>& v) : _v(v) {}
+        };
+        template <typename _T>
+        std::ostream& operator<<(std::ostream& s,
+                                 const out_tf<_T>& v);
+
+        template <typename _T, std::size_t _B>
+        out_df<_T>
+        to_stream(d_real<_T>& d, const mpfr_real<_B>& v,
                   bool normalize=false);
 
-        template <std::size_t _B>
-        out_tf64
-        to_stream(t_real<double>& d, const mpfr_real<_B>& v,
+        template <typename _T, std::size_t _B>
+        out_tf<_T>
+        to_stream(t_real<_T>& d, const mpfr_real<_B>& v,
                   bool normalize=false);
 
-        template <std::size_t _B, typename _X>
+        template <std::size_t _B, typename _X,
+                  template <typename _Y, typename _T> class _C>
         void
         gen_math_constants(std::ostream& s, const std::string& pfx);
     }
@@ -152,88 +181,103 @@ cftal::test::gen_constant(func_domain<_T> d, const std::string& pfx,
     }
 }
 
-std::ostream&
-cftal::test::operator<<(std::ostream& s, const out_df64& p)
+template <typename _T>
+void
+cftal::test::write_constant(const char* name_type, _T val)
 {
-    const cftal::d_real<double>& d=p._v;
+    std::cout << name_type << "= "
+              << std::scientific
+              << std::setprecision(out_prec<_T>::val)
+              << val
+              << out_prec<_T>::suffix()
+              << ";\n";
+}
+
+
+template <typename _T>
+std::ostream&
+cftal::test::operator<<(std::ostream& s, const out_df<_T>& p)
+{
+    const cftal::d_real<_T>& d=p._v;
     s << std::scientific
-      << std::setprecision(22);
+      << std::setprecision(out_prec<_T>::val);
     if (d.h() >= 0.0)
         std::cout << ' ';
-    s << std::setw(27)
-      << d.h()
+    s << std::setw(out_prec<_T>::width)
+      << d.h() << out_prec<_T>::suffix()
       << std::setw(0)
       << ", " ;
     if (d.l() >= 0.0)
         s << ' ';
-    s << std::setw(27)
-      << d.l()
+    s << std::setw(out_prec<_T>::width)
+      << d.l() << out_prec<_T>::suffix()
       << std::setw(0);
     return s;
 }
 
+template <typename _T>
 std::ostream&
-cftal::test::operator<<(std::ostream& s, const out_tf64& p)
+cftal::test::operator<<(std::ostream& s, const out_tf<_T>& p)
 {
-    const cftal::t_real<double>& d=p._v;
+    const cftal::t_real<_T>& d=p._v;
     s << std::scientific
-      << std::setprecision(22);
+      << std::setprecision(out_prec<_T>::val);
     if (d.h() >= 0.0)
         std::cout << ' ';
-    s << std::setw(27)
-      << d.h()
+    s << std::setw(out_prec<_T>::width)
+      << d.h() << out_prec<_T>::suffix()
       << std::setw(0)
       << ", " ;
     if (d.m() >= 0.0)
         std::cout << ' ';
-    s << std::setw(27)
-      << d.m()
+    s << std::setw(out_prec<_T>::width)
+      << d.m() << out_prec<_T>::suffix()
       << std::setw(0)
       << ", ";
     if (d.l() >= 0.0)
         std::cout << ' ';
-    s << std::setw(27)
-      << d.l()
+    s << std::setw(out_prec<_T>::width)
+      << d.l() << out_prec<_T>::suffix()
       << std::setw(0);
     return s;
 }
 
-template <std::size_t _B>
-cftal::test::out_df64
-cftal::test::to_stream(d_real<double>& d, const mpfr_real<_B>& v,
+template <typename _T, std::size_t _B>
+cftal::test::out_df<_T>
+cftal::test::to_stream(d_real<_T>& d, const mpfr_real<_B>& v,
                        bool normalize)
 {
-    d = d_real<double>(v);
-    if (normalize) {
-        double h=d.h(), l=d.l();
+    d = d_real<_T>(v);
+    _T h=d.h(), l=d.l();
+    if (normalize && ((h*l)<0.0)) {
         if (h > 0) {
             while (l < 0.0) {
                 // std::cout << h << std::endl;
-                h = std::nextafter(h, -std::numeric_limits<double>::max());
+                h = std::nextafter(h, -std::numeric_limits<_T>::max());
                 mpfr_real<_B> s(v);
                 s -= mpfr_real<_B>(h);
-                l = double(s);
+                l = _T(s);
             }
         } else if (h < 0) {
             while (l > 0.0) {
-                h = std::nextafter(h, std::numeric_limits<double>::max());
+                h = std::nextafter(h, std::numeric_limits<_T>::max());
                 mpfr_real<_B> s(v);
                 s -= mpfr_real<_B>(h);
-                l = double(s);
+                l = _T(s);
             }
         }
-        d=d_real<double>(h, l);
+        d=d_real<_T>(h, l);
     }
-    return out_df64(d);
+    return out_df<_T>(d);
 }
 
-template <std::size_t _B>
-cftal::test::out_tf64
-cftal::test::to_stream(t_real<double>& d, const mpfr_real<_B>& v,
+template <typename _T, std::size_t _B>
+cftal::test::out_tf<_T>
+cftal::test::to_stream(t_real<_T>& d, const mpfr_real<_B>& v,
                        bool normalize)
 {
-    d = t_real<double>(v);
-    return out_tf64(d);
+    d = t_real<_T>(v);
+    return out_tf<_T>(d);
 }
 
 std::pair<std::uint64_t, std::uint64_t>
@@ -251,7 +295,8 @@ atan_coeff(int n)
     return r;
 }
 
-template <std::size_t _B, typename _X>
+template <std::size_t _B, typename _X,
+          template <typename _Y, typename _T> class _C>
 void
 cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
 {
@@ -351,7 +396,10 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << ");\n"
       << std::endl;
 
-    const std::size_t MAX_FAC=30;
+    using value_type = typename _X::value_type;
+    using tbl_type = _C<_X, value_type>;
+    
+    const std::size_t MAX_FAC=tbl_type::MAX_FAC;
     s << "template <class _T>\n"
       << "const _T\n"
       << "cftal::math::impl::" << pfx << "::\n"
@@ -381,7 +429,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
-    const std::size_t MAX_2_OVER_I=30;
+    const std::size_t MAX_2_OVER_I=tbl_type::MAX_2_OVER_I;
     s << "template <class _T>\n"
       << "const _T\n"
       << "cftal::math::impl::" << pfx << "::\n"
@@ -403,13 +451,13 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
-    // const std::size_t MAX_EXP_COEFF=10;
+    const std::size_t MAX_EXP_COEFF=tbl_type::MAX_EXP_COEFF;
     s << "template <class _T>\n"
       << "const _T\n"
       << "cftal::math::impl::" << pfx << "::\n"
       << "exp_coeff[MAX_EXP_COEFF] =  {"
       << std::endl;
-    for (std::size_t i=9; i!=0; --i) {
+    for (std::size_t i=MAX_EXP_COEFF; i!=0; --i) {
         f_t val= v_inv_fac[i];
         s << std::scientific
           << std::setprecision(22)
@@ -445,8 +493,8 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 #endif
-    // const std::size_t MAX_COS_COEFF=10;
-    // const std::size_t MAX_SIN_COEFF=10;
+    const std::size_t MAX_COS_COEFF=tbl_type::MAX_COS_COEFF;
+    const std::size_t MAX_SIN_COEFF=tbl_type::MAX_SIN_COEFF;
 
     s << "template <class _T>\n"
       << "const _T\n"
@@ -454,7 +502,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << "sin_coeff[MAX_SIN_COEFF] =  {"
       << std::endl;
     int sign=1;
-    for (std::size_t i=21; i>2; i-=2) {
+    for (std::size_t i=MAX_SIN_COEFF*2+1; i>2; i-=2) {
         f_t val= v_inv_fac[i];
         if (sign < 0)
             val = -val;
@@ -477,7 +525,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << "cos_coeff[MAX_COS_COEFF] =  {"
       << std::endl;
     sign=-1;
-    for (std::size_t i=22; i>3; i-=2) {
+    for (std::size_t i=MAX_COS_COEFF*2+2; i>3; i-=2) {
         f_t val= v_inv_fac[i];
         if (sign < 0)
             val = -val;
@@ -494,14 +542,16 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
+    const std::size_t MAX_ATAN2_COEFF=tbl_type::MAX_ATAN2_COEFF;
     std::vector<f_t> v_atan_coeff;
-    for (int i=0; i<25; ++i) {
+    for (std::size_t i=0; i<MAX_ATAN2_COEFF; ++i) {
         f_t e=1;
         f_t d=1;
-        for (int j=1; j<=i; ++j) {
+        int ii=i;
+        for (int j=1; j<=ii; ++j) {
             e *= f_t(2*j);
         }
-        for (int j=1; j<=i; ++j) {
+        for (int j=1; j<=ii; ++j) {
             d *= f_t(2*j+1);
         }
         f_t q= e/d;
@@ -513,7 +563,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << "cftal::math::impl::" << pfx << "::\n"
       << "atan2_coeff[MAX_ATAN2_COEFF] =  {"
       << std::endl;
-    for (std::size_t i=0, j=v_atan_coeff.size()-1;
+    for (std::size_t i=0, j=MAX_ATAN2_COEFF-1;
          i<v_atan_coeff.size(); ++i, --j) {
         f_t val= v_atan_coeff[j];
         s << std::scientific
@@ -538,14 +588,18 @@ int main(int argc, char** argv)
         const std::string argv1=argv[1];
         if (argv1 == "--float") {
             gen_double =false;
-        }
-        if (argv1 == "--double") {
+        } else if (argv1 == "--no-float") {
+            gen_float = false;
+        } else if (argv1 == "--no-double") {
+            gen_double = false;
+        } else if (argv1 == "--double") {
             gen_float= false;
         }
     }
 
     using namespace cftal;
     using namespace cftal::test;
+    using namespace cftal::math;
     if (gen_double) {
         auto dp=std::make_pair(0.0, 800.0);
         gen_constant(dp, "const double sinh_hi", mpfr_sinh,
@@ -560,6 +614,9 @@ int main(int argc, char** argv)
                      check_zero<double>(), "m_0");
         gen_constant(dm, "const double exp_lo_den", mpfr_exp,
                      check_max_denormal<double>(), "nom");
+        write_constant(
+            "const double exp_arg_large",
+            std::floor(func_constants<double>::exp_hi_inf));
         // exp1
         gen_constant(dp, "const double expm1_hi", mpfr_expm1,
                      check_inf<double>(), "inf");
@@ -600,12 +657,15 @@ int main(int argc, char** argv)
         gen_constant(dm, "const double atan_eq_x", mpfr_atan,
                      check_atan_eq_x<double>(), "m_0");
 
-        gen_math_constants<128, d_real<double> >(
-            std::cout,
-            "d_real_constants<_T, double>");
-        gen_math_constants<256, t_real<double> >(
-            std::cout,
-            "t_real_constants<_T, double>");
+        gen_math_constants<128,
+                           d_real<double>,
+                           math::impl::d_real_constants >(
+                               std::cout,
+                               "d_real_constants<_T, double>");
+        gen_math_constants<256, t_real<double>,
+                           math::impl::t_real_constants>(
+                               std::cout,
+                               "t_real_constants<_T, double>");
     }
     if (gen_float) {
         auto dp=std::make_pair(0.0f, 800.0f);
@@ -621,6 +681,9 @@ int main(int argc, char** argv)
                      check_zero<float>(), "m_0");
         gen_constant(dm, "const float exp_lo_den", mpfr_exp,
                      check_max_denormal<float>(), "nom");
+        write_constant(
+            "const float exp_arg_large",
+            std::floor(func_constants<float>::exp_hi_inf));
         // exp1
         gen_constant(dp, "const float expm1_hi", mpfr_expm1,
                      check_inf<float>(), "inf");
@@ -649,6 +712,13 @@ int main(int argc, char** argv)
 
         std::cout << "const float max_denormal= "
                   <<  sig_f32_msk::v._f32 << ";\n\n";
+
+        gen_math_constants<64,
+                           d_real<float>,
+                           math::impl::d_real_constants >(
+                               std::cout,
+                               "d_real_constants<_T, float>");
+
     }
     return 0;
 }

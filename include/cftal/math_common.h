@@ -87,7 +87,6 @@ namespace cftal {
             // expm1(x) == 1 for x <=
             constexpr static const float
             expm1_lo_minus_one= -1.732868003845214843750000e+01f;
-
             // exp2(x) == +inf for x >=
             constexpr static const float
             exp2_hi_inf= 1.280000000000000000000000e+02f;

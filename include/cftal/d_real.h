@@ -161,6 +161,7 @@ namespace cftal {
         _T _h;
         _T _l;
     public:
+        using value_type = _T;
         constexpr d_real() : _h(0), _l(0) {}
         template <typename _U>
         constexpr d_real(const d_real<_U>& r) : _h(r.h()), _l(r.l()) {}

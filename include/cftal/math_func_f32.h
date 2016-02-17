@@ -11,6 +11,65 @@
 namespace cftal {
     namespace math {
 
+        namespace impl {
+
+            template <class _T>
+            struct d_real_constants<_T, float> {
+                // 1/(i!)
+                static const unsigned MAX_FAC=20;
+                static const _T inv_fac[MAX_FAC+1];
+                // 2/i i=0,1,2,3,4...
+                static const unsigned MAX_2_OVER_I=20;
+                static const _T _2_over_i[MAX_2_OVER_I+1];
+
+                // coefficents for exp(x)
+                static const unsigned MAX_EXP_COEFF=5;
+                static const _T exp_coeff[MAX_EXP_COEFF];
+                // large exp argument
+                constexpr static const float
+                exp_arg_large= 8.8000000000000e+01f;
+
+                // table for sin -1/21! +1/19! .. -1/3! with alternating signs
+                static const unsigned MAX_SIN_COEFF=5;
+                static const _T sin_coeff[MAX_SIN_COEFF];
+                // table for cos -1/22! +1/20! .. +1/4! with alternating signs
+                static const unsigned MAX_COS_COEFF=5;
+                static const _T cos_coeff[MAX_COS_COEFF];
+
+                // table for atan2
+                static const unsigned MAX_ATAN2_COEFF=13;
+                static const _T atan2_coeff[MAX_ATAN2_COEFF];
+
+                // M_LN2 LOG_E(2)
+                static const _T m_ln2;
+                // M_LN10 LOG_E(10)
+                static const _T m_ln10;
+                // M_LN_2POW106
+                static const _T m_ln2pow106;
+                // low half of m_ln2
+                // static const _T m_ln2_low;
+                // M_1_LN2 1/LOG_E(2)
+                static const _T m_1_ln2;
+                // 2*PI
+                static const _T m_pi2;
+                // 1/(2*PI)
+                static const _T m_1_pi2;
+                // PI
+                static const _T m_pi;
+                // 1/PI
+                static const _T m_1_pi;
+                // PI/2
+                static const _T m_pi_2;
+                // 2/PI
+                static const _T m_2_pi;
+                // PI/4
+                static const _T m_pi_4;
+                // 4/PI
+                static const _T m_4_pi;
+            };
+
+        }
+        
         template <>
         struct func_traits<float, int32_t>
             : public d_real_traits<float> {
@@ -443,11 +502,84 @@ exp_k3(const tvf_type& x)
 }
 
 template <typename _T>
-inline
+__attribute__((__flatten__, __noinline__))
 typename cftal::math::func_core<float, _T>::dvf_type
 cftal::math::func_core<float, _T>::
-exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl, bool exp_m1)
+exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
 {
+#if 1
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+
+    vmf_type cmp_res;
+    vmi_type i_cmp_res=vmi_type();
+    vmf_type inf_nan= isinf(dh) | isnan(dh);
+    vmf_type finite= ~inf_nan;
+    vi_type k_i(0);
+
+    // first reduction required because we want to use rint below
+    vmf_type d_large = dh > ctbl::exp_arg_large;
+    dvf_type d2=dvf_type(dh, dl);
+    bool any_of_d_large = any_of(d_large);
+    if (any_of_d_large) {
+        dvf_type dhalf(mul_pwr2(d2, vf_type(0.5)));
+        dvf_type dt(_T::sel(d_large, dhalf.h(), dh),
+                    _T::sel(d_large, dhalf.l(), dl));
+        d2=dt;
+    }
+    // remove exact powers of 2
+    vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
+    dvf_type r= d2 - dvf_type(ctbl::m_ln2)*m2;
+
+    // reduce arguments further until anything is lt M_LN2/512 ~0.0135
+    do {
+        cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
+        if (none_of(cmp_res))
+            break;
+        i_cmp_res = _T::vmf_to_vmi(cmp_res);
+        k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
+        dvf_type d1 = mul_pwr2(r, vf_type(0.5));
+        vf_type d2_h = _T::sel(cmp_res, d1.h(), r.h());
+        vf_type d2_l = _T::sel(cmp_res, d1.l(), r.l());
+        r = dvf_type(d2_h, d2_l);
+    } while (1);
+
+    // calculate 1! + x^1/2!+x^2/3! .. +x^8/9!
+    dvf_type s=impl::poly(r, ctbl::exp_coeff);
+    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^9/9! == expm1(r)
+    s = s*r;
+
+    // scale back the 1/k_i reduced value for expm1
+    do {
+        i_cmp_res = k_i > vi_type(0);
+        if (none_of(i_cmp_res))
+            break;
+        cmp_res = _T::vmi_to_vmf(i_cmp_res);
+        dvf_type d1= mul_pwr2(s, vf_type(2.0)) + sqr(s);
+        vf_type d2_h = _T::sel(cmp_res, d1.h(), s.h());
+        vf_type d2_l = _T::sel(cmp_res, d1.l(), s.l());
+        k_i -= vi_type(1);
+        s = dvf_type(d2_h, d2_l);
+    } while (1);
+    if (exp_m1 == false) {
+        s += vf_type(1.0);
+    }
+    vi_type mi= _T::cvt_f_to_i(m2);
+    // scale back
+    dvf_type res= dvf_type(ldexp(s.h(), mi), ldexp(s.l(), mi));
+    if (exp_m1 == true) {
+        vf_type scale=ldexp(vf_type(1.0), mi);
+        res += (dvf_type(scale) - vf_type(1.0));
+    }
+    if (any_of_d_large) {
+        // works because for these d at double precision
+        // exp(d) == expm1(d)
+        dvf_type xres= sqr(res);
+        dvf_type tres(_T::sel(d_large, xres.h(), res.h()),
+                      _T::sel(d_large, xres.l(), res.l()));
+        res=tres;
+    }
+    return res;
+#else
     dvf_type x(xh, xl);
     using vhpf_type = typename _T::vhpf_type;
     const std::size_t elements = _T::vhpf_per_vf();
@@ -471,6 +603,7 @@ exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl, bool exp_m1)
     dvf_type res;
     _T::vhpf_to_dvf(vres, res);
     return res;
+#endif
 }
 
 template <typename _T>
@@ -717,6 +850,216 @@ atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
 {
     return dvf_type(xh + yh);
 }
+
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_ln2(
+     6.9314718246460e-01f, -1.9046542121259e-09f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_1_ln2(
+     1.4426950216293e+00f,  1.9259630335000e-08f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_ln10(
+     2.3025848865509e+00f,  2.0644314702167e-07f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_ln2pow106(
+     7.3473594665527e+01f,  6.4738269429654e-06f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_pi(
+     3.1415927410126e+00f, -8.7422776573476e-08f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_pi2(
+     6.2831854820251e+00f, -1.7484555314695e-07f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_pi_2(
+     1.5707963705063e+00f, -4.3711388286738e-08f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_pi_4(
+     7.8539818525314e-01f, -2.1855694143369e-08f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_1_pi(
+     3.1830987334251e-01f,  1.2841276486597e-08f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_2_pi(
+     6.3661974668503e-01f,  2.5682552973194e-08f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_4_pi(
+     1.2732394933701e+00f,  5.1365105946388e-08f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::
+inv_fac[MAX_FAC+1]= {
+    _T(  1.0000000000000e+00f,  0.0000000000000e+00f),
+    _T(  1.0000000000000e+00f,  0.0000000000000e+00f),
+    _T(  5.0000000000000e-01f,  0.0000000000000e+00f),
+    _T(  1.6666667163372e-01f, -4.9670538793123e-09f),
+    _T(  4.1666667908430e-02f, -1.2417634698281e-09f),
+    _T(  8.3333337679505e-03f, -4.3461720333760e-10f),
+    _T(  1.3888889225200e-03f, -3.3631094437103e-11f),
+    _T(  1.9841270113830e-04f, -2.7255968749335e-12f),
+    _T(  2.4801587642287e-05f, -3.4069960936668e-13f),
+    _T(  2.7557318844629e-06f,  3.7935712242972e-14f),
+    _T(  2.7557319981497e-07f, -7.5751122090512e-15f),
+    _T(  2.5052107943679e-08f,  4.4176230446484e-16f),
+    _T(  2.0876755879584e-09f,  1.1082839147460e-16f),
+    _T(  1.6059044372074e-10f, -5.3525265115627e-18f),
+    _T(  1.1470745360509e-11f,  2.3722076892312e-19f),
+    _T(  7.6471636098127e-13f,  1.2200710471178e-20f),
+    _T(  4.7794772561329e-14f,  7.6254440444864e-22f),
+    _T(  2.8114573589664e-15f, -1.0462084739764e-22f),
+    _T(  1.5619206814542e-16f,  1.5404471465942e-24f),
+    _T(  8.2206350784765e-18f,  1.6814780968559e-25f),
+    _T(  4.1103175909370e-19f,  3.2375117328603e-27f),
+    _T(  1.9572941524686e-20f, -4.6129455138200e-28f),
+    _T(  8.8967909595668e-22f,  4.3288372034342e-29f),
+    _T(  3.8681702979647e-23f, -1.2733404317147e-30f),
+    _T(  1.6117375912828e-24f, -2.0186648406604e-32f),
+    _T(  6.4469503404792e-26f, -5.6094691440285e-34f),
+    _T(  2.4795962847997e-27f, -2.1574881543945e-35f),
+    _T(  9.1836898099574e-29f,  5.3838169501130e-37f),
+    _T(  3.2798891641050e-30f,  7.2964803889478e-38f),
+    _T(  1.1309962472708e-31f,  4.1373995769468e-39f),
+    _T(  3.7699878092657e-33f, -1.8044940714650e-40f)
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::
+_2_over_i[MAX_2_OVER_I+1]= {
+    _T(  2.0000000000000e+00f,  0.0000000000000e+00f),
+    _T(  2.0000000000000e+00f,  0.0000000000000e+00f),
+    _T(  1.0000000000000e+00f,  0.0000000000000e+00f),
+    _T(  6.6666668653488e-01f, -1.9868215517249e-08f),
+    _T(  5.0000000000000e-01f,  0.0000000000000e+00f),
+    _T(  4.0000000596046e-01f, -5.9604645663569e-09f),
+    _T(  3.3333334326744e-01f, -9.9341077586246e-09f),
+    _T(  2.8571429848671e-01f, -1.2772424007323e-08f),
+    _T(  2.5000000000000e-01f,  0.0000000000000e+00f),
+    _T(  2.2222222387791e-01f, -1.6556845894300e-09f),
+    _T(  2.0000000298023e-01f, -2.9802322831785e-09f),
+    _T(  1.8181818723679e-01f, -5.4186042319770e-09f),
+    _T(  1.6666667163372e-01f, -4.9670538793123e-09f),
+    _T(  1.5384615957737e-01f, -5.7312159462697e-09f),
+    _T(  1.4285714924335e-01f, -6.3862120036617e-09f),
+    _T(  1.3333334028721e-01f, -6.9538752534015e-09f),
+    _T(  1.2500000000000e-01f,  0.0000000000000e+00f),
+    _T(  1.1764705926180e-01f, -4.3826944851055e-10f),
+    _T(  1.1111111193895e-01f, -8.2784229471500e-10f),
+    _T(  1.0526315867901e-01f, -7.8427164762473e-10f),
+    _T(  1.0000000149012e-01f, -1.4901161415892e-09f),
+    _T(  9.5238097012043e-02f, -1.7739477664591e-09f),
+    _T(  9.0909093618393e-02f, -2.7093021159885e-09f),
+    _T(  8.6956523358822e-02f, -1.6196913810163e-09f),
+    _T(  8.3333335816860e-02f, -2.4835269396561e-09f),
+    _T(  7.9999998211861e-02f,  1.7881393032937e-09f),
+    _T(  7.6923079788685e-02f, -2.8656079731348e-09f),
+    _T(  7.4074074625969e-02f, -5.5189486314333e-10f),
+    _T(  7.1428574621677e-02f, -3.1931060018309e-09f),
+    _T(  6.8965516984463e-02f,  2.5691657135063e-10f),
+    _T(  6.6666670143604e-02f, -3.4769376267008e-09f)
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::
+exp_coeff[MAX_EXP_COEFF] =  {
+    // + 1/5!
+    _T(  8.3333337679505e-03f, -4.3461720333760e-10f),
+    // + 1/4!
+    _T(  4.1666667908430e-02f, -1.2417634698281e-09f),
+    // + 1/3!
+    _T(  1.6666667163372e-01f, -4.9670538793123e-09f),
+    // + 1/2!
+    _T(  5.0000000000000e-01f,  0.0000000000000e+00f),
+    // + 1/1!
+    _T(  1.0000000000000e+00f,  0.0000000000000e+00f),
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::
+sin_coeff[MAX_SIN_COEFF] =  {
+    // +1/11!
+    _T(  2.5052107943679e-08f,  4.4176230446484e-16f),
+    // -1/9!
+    _T( -2.7557318844629e-06f, -3.7935712242972e-14f),
+    // +1/7!
+    _T(  1.9841270113830e-04f, -2.7255968749335e-12f),
+    // -1/5!
+    _T( -8.3333337679505e-03f,  4.3461720333760e-10f),
+    // +1/3!
+    _T(  1.6666667163372e-01f, -4.9670538793123e-09f)
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::
+cos_coeff[MAX_COS_COEFF] =  {
+    // +1/12!
+    _T(  2.0876755879584e-09f,  1.1082839147460e-16f),
+    // -1/10!
+    _T( -2.7557319981497e-07f,  7.5751122090512e-15f),
+    // +1/8!
+    _T(  2.4801587642287e-05f, -3.4069960936668e-13f),
+    // -1/6!
+    _T( -1.3888889225200e-03f,  3.3631094437103e-11f),
+    // +1/4!
+    _T(  4.1666667908430e-02f, -1.2417634698281e-09f)
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::
+atan2_coeff[MAX_ATAN2_COEFF] =  {
+    // prod(even numbers to 24)/product(odd numbers to 25)
+    _T(  2.4816934764385e-01f,  3.5326330749541e-09f),
+    // prod(even numbers to 22)/product(odd numbers to 23)
+    _T(  2.5850975513458e-01f, -1.4325743258325e-08f),
+    // prod(even numbers to 20)/product(odd numbers to 21)
+    _T(  2.7026018500328e-01f, -1.4304035733659e-09f),
+    // prod(even numbers to 18)/product(odd numbers to 19)
+    _T(  2.8377318382263e-01f,  8.9288887394900e-09f),
+    // prod(even numbers to 16)/product(odd numbers to 17)
+    _T(  2.9953837394714e-01f, -3.8205381081013e-09f),
+    // prod(even numbers to 14)/product(odd numbers to 15)
+    _T(  3.1825950741768e-01f,  1.0841839426234e-08f),
+    // prod(even numbers to 12)/product(odd numbers to 13)
+    _T(  3.4099233150482e-01f,  9.4875192147015e-09f),
+    // prod(even numbers to 10)/product(odd numbers to 11)
+    _T(  3.6940836906433e-01f,  3.4403835336150e-10f),
+    // prod(even numbers to 8)/product(odd numbers to 9)
+    _T(  4.0634921193123e-01f, -5.5820223998637e-09f),
+    // prod(even numbers to 6)/product(odd numbers to 7)
+    _T(  4.5714285969734e-01f, -2.5544848458736e-09f),
+    // prod(even numbers to 4)/product(odd numbers to 5)
+    _T(  5.3333336114883e-01f, -2.7815501013606e-08f),
+    // prod(even numbers to 2)/product(odd numbers to 3)
+    _T(  6.6666668653488e-01f, -1.9868215517249e-08f),
+    // prod(even numbers to 0)/product(odd numbers to 1)
+    _T(  1.0000000000000e+00f,  0.0000000000000e+00f)
+};
 
 // Local Variables:
 // mode: c++

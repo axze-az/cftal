@@ -7,6 +7,7 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+    int ulp=1;
 #if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -34,7 +35,7 @@ int main(int argc, char** argv)
     func_domain<float> d=std::make_pair(-105.0f, 90.0f);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_exp<float> >::v(d, cmp_ulp<float>(1, us));
+        float, 8, check_exp<float> >::v(d, cmp_ulp<float>(ulp, us));
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     return (rc == true) ? 0 : 1;

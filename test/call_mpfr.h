@@ -63,6 +63,8 @@ namespace cftal {
             explicit operator float() const;
             explicit operator d_real<double>() const;
             explicit operator t_real<double>() const;
+            explicit operator d_real<float>() const;
+            explicit operator t_real<float>() const;
         };
 
         template <std::size_t _B>
@@ -351,6 +353,30 @@ cftal::test::mpfr_real<_B>::operator float() const
     float r=mpfr_get_flt((*this)(), MPFR_RNDN);
     return r;
 }
+
+template <std::size_t _B>
+cftal::test::mpfr_real<_B>::operator d_real<float>() const
+{
+    mpfr_real<_B> t(*this);
+    float h= float(t);
+    t -= mpfr_real<_B>(h);
+    float l= float(t);
+    return d_real<float>(h, l);
+}
+
+template <std::size_t _B>
+cftal::test::mpfr_real<_B>::operator t_real<float>() const
+{
+    mpfr_real<_B> t(*this);
+    float h= float(t);
+    t -= mpfr_real<_B>(h);
+    float m= float(t);
+    t -= mpfr_real<_B>(m);
+    float l= float(t);
+    return t_real<float>(h, m, l);
+}
+
+
 
 // Local variables:
 // mode: c++
