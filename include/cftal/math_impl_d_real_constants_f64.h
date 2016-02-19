@@ -54,6 +54,8 @@ namespace cftal {
                 static const _T m_ln2pow106;
                 // M_LN_2POW48
                 static const _T m_ln2pow48;
+                // M_LN_2_SMALL_ARG
+                static const _T m_ln_small_arg;
                 // low half of m_ln2
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
@@ -106,6 +108,8 @@ namespace cftal {
                 static const _T m_ln2pow106;
                 // M_LN_2POW48
                 static const _T m_ln2pow48;
+                // M_LN_2_SMALL_ARG
+                static const _T m_ln_small_arg;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
                 // 2*PI
@@ -145,6 +149,8 @@ const double
 cftal::math::impl::d_real_constants<_T, double>::
 log_arg_small_factor= 8.1129638414606681695789e+31;
 
+/* ----------------------------------------------------------------*/
+
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2(
@@ -169,6 +175,11 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2pow48(
      3.3271064666877371962528e+01,  2.8894993100464744006298e-15);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_ln_small_arg(
+     7.3473601139354201450260e+01,  1.3479665980519211209217e-15);
 
 template <class _T>
 const _T
@@ -438,6 +449,11 @@ cftal::math::impl::t_real_constants<_T, double>::m_ln2pow48(
 
 template <class _T>
 const _T
+cftal::math::impl::t_real_constants<_T, double>::m_ln_small_arg(
+     7.3473601139354201450260e+01,  1.3479665980519211209217e-15, -6.8920782815610402112353e-32);
+
+template <class _T>
+const _T
 cftal::math::impl::t_real_constants<_T, double>::m_pi(
      3.1415926535897931159980e+00,  1.2246467991473532071738e-16, -2.9947698097183396658870e-33);
 
@@ -676,6 +692,7 @@ atan2_coeff[MAX_ATAN2_COEFF] =  {
     // prod(even numbers to 0)/product(odd numbers to 1)
     _T(  1.0000000000000000000000e+00,  0.0000000000000000000000e+00,  0.0000000000000000000000e+00)
 };
+
 
 // Local Variables:
 // mode: c++

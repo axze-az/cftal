@@ -50,6 +50,8 @@ namespace cftal {
                 static const _T m_ln2pow106;
                 // M_LN_2POW48
                 static const _T m_ln2pow48;
+                // M_LN_2_SMALL_ARG
+                static const _T m_ln_small_arg;
                 // low half of m_ln2
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
@@ -91,6 +93,7 @@ const float
 cftal::math::impl::d_real_constants<_T, float>::
 log_arg_small_factor= 2.8147497671066e+14f;
 
+/* ---------------------------------------------------------------- */
 
 template <class _T>
 const _T
@@ -115,6 +118,11 @@ cftal::math::impl::d_real_constants<_T, float>::m_ln2pow106(
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::m_ln2pow48(
+     3.3271060943604e+01f,  3.7232739487081e-06f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_ln_small_arg(
      3.3271060943604e+01f,  3.7232739487081e-06f);
 
 template <class _T>
@@ -226,32 +234,32 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::
 sin_coeff[MAX_SIN_COEFF] =  {
-    // +1/11!
-    _T(  2.5052107943679e-08f,  4.4176230446484e-16f),
-    // -1/9!
-    _T( -2.7557318844629e-06f, -3.7935712242972e-14f),
-    // +1/7!
-    _T(  1.9841270113830e-04f, -2.7255968749335e-12f),
-    // -1/5!
-    _T( -8.3333337679505e-03f,  4.3461720333760e-10f),
-    // +1/3!
-    _T(  1.6666667163372e-01f, -4.9670538793123e-09f)
+    // -1/11!
+    _T( -2.5052107943679e-08f, -4.4176230446484e-16f),
+    // +1/9!
+    _T(  2.7557318844629e-06f,  3.7935712242972e-14f),
+    // -1/7!
+    _T( -1.9841270113830e-04f,  2.7255968749335e-12f),
+    // +1/5!
+    _T(  8.3333337679505e-03f, -4.3461720333760e-10f),
+    // -1/3!
+    _T( -1.6666667163372e-01f,  4.9670538793123e-09f)
 };
 
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::
 cos_coeff[MAX_COS_COEFF] =  {
-    // -1/12!
-    _T( -2.0876755879584e-09f, -1.1082839147460e-16f),
-    // +1/10!
-    _T(  2.7557319981497e-07f, -7.5751122090512e-15f),
-    // -1/8!
-    _T( -2.4801587642287e-05f,  3.4069960936668e-13f),
-    // +1/6!
-    _T(  1.3888889225200e-03f, -3.3631094437103e-11f),
-    // -1/4!
-    _T( -4.1666667908430e-02f,  1.2417634698281e-09f)
+    // +1/12!
+    _T(  2.0876755879584e-09f,  1.1082839147460e-16f),
+    // -1/10!
+    _T( -2.7557319981497e-07f,  7.5751122090512e-15f),
+    // +1/8!
+    _T(  2.4801587642287e-05f, -3.4069960936668e-13f),
+    // -1/6!
+    _T( -1.3888889225200e-03f,  3.3631094437103e-11f),
+    // +1/4!
+    _T(  4.1666667908430e-02f, -1.2417634698281e-09f)
 };
 
 template <class _T>
@@ -285,6 +293,7 @@ atan2_coeff[MAX_ATAN2_COEFF] =  {
     // prod(even numbers to 0)/product(odd numbers to 1)
     _T(  1.0000000000000e+00f,  0.0000000000000e+00f)
 };
+
 
 // Local Variables:
 // mode: c++

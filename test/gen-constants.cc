@@ -15,7 +15,7 @@ namespace cftal {
 
         template <typename _T>
         void write_constant(const char* name_type, _T val);
-        
+
         template <typename _T>
         struct check_inf {
             bool operator()(_T a) const {
@@ -78,7 +78,7 @@ namespace cftal {
             constexpr static const int width= 18;
             constexpr static const char* suffix() { return "f"; }
         };
-        
+
         template <typename _T>
         struct out_df {
             d_real<_T> _v;
@@ -87,7 +87,7 @@ namespace cftal {
         template <typename _T>
         std::ostream&
         operator<<(std::ostream& s, const out_df<_T>& v);
-        
+
         template <typename _T>
         struct out_tf {
             t_real<_T> _v;
@@ -357,12 +357,12 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
         0x1p106 : 0x1p48;
     v = log(x);
     s << "template <class _T>\nconst _T\n"
-      << "cftal::math::impl::" << pfx << "::m_ln2offset("
+      << "cftal::math::impl::" << pfx << "::m_ln_small_arg("
         "\n    "
       << to_stream(d, v, true)
       << ");\n"
       << std::endl;
-    
+
     load_pi(x);
     v = x;
     s << "template <class _T>\nconst _T\n"
@@ -419,7 +419,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << ");\n"
       << std::endl;
 
-    
+
     const std::size_t MAX_FAC=tbl_type::MAX_FAC;
     s << "template <class _T>\n"
       << "const _T\n"

@@ -429,7 +429,7 @@ log_k2(arg_t<vf_type> d0h, arg_t<vf_type> d0l)
     xr = t + dvf_type(ctbl::m_ln2) * ef;
 
     if (any_of(d_small)) {
-        dvf_type t= xr - dvf_type(ctbl::m_ln2pow106);
+        dvf_type t= xr - dvf_type(ctbl::m_ln_small_arg);
         xr = dvf_type(_T::sel(d_small, t.h(), xr.h()),
                       _T::sel(d_small, t.l(), xr.l()));
     }
@@ -472,7 +472,7 @@ native_log_k(arg_t<vf_type> d0)
     xr = t + M_LN2 * ef;
 
     if (any_of(d_small)) {
-        vf_type t= xr - vf_type(ctbl::m_ln2pow106.h());
+        vf_type t= xr - vf_type(ctbl::m_ln_small_arg.h());
         xr = _T::sel(d_small, t, xr);
     }
     return xr;
