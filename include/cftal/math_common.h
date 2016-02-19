@@ -7,6 +7,7 @@
 #include <cftal/std_types.h>
 #include <cftal/divisor.h>
 #include <cftal/constants.h>
+#include <cftal/math_func_constants.h>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -15,108 +16,6 @@
 namespace cftal {
 
     namespace math {
-
-        template <typename _T>
-        struct func_constants {};
-
-        template <>
-        struct func_constants<double> {
-            constexpr static const double
-            max_denormal= 2.225073858507200889024587e-308;
-            // exp(x) == +inf for x >=
-            constexpr static const double
-            exp_hi_inf= 7.097827128933840867830440e+02;
-            // exp(x) == 0 for x <=
-            constexpr static const double
-            exp_lo_zero= -7.451332191019412221066887e+02;
-
-            // expm1(x) == +inf for x >= 0
-            constexpr static const double
-            expm1_hi_inf= 7.097827128933840867830440e+02;
-            // expm1(x) == 1 for x <=
-            constexpr static const double
-            expm1_lo_minus_one= -3.742994775023704789873591e+01;
-
-            // exp2(x) == +inf for x >=
-            constexpr static const double
-            exp2_hi_inf= 1.024000000000000000000000e+03;
-            // exp2(x) == 0 for x <=
-            constexpr static const double
-            exp2_lo_zero= -1.075000000000000000000000e+03;
-
-            // exp10(x) == +inf for x >=
-            constexpr static const double
-            exp10_hi_inf= 3.082547155599167467698862e+02;
-            // exp10(x) == 0 for x <=
-            constexpr static const double
-            exp10_lo_zero= -3.236072453387798191215552e+02;
-
-            // cosh(x) == +inf for abs(x) >=
-            constexpr static const double
-            cosh_hi_inf= 7.104758600739439771132311e+02;
-
-            // sinh(x) == +inf for x >=
-            constexpr static const double
-            sinh_hi_inf= 7.104758600739439771132311e+02;
-            // sinh(x) == -inf for x <=
-            constexpr static const double
-            sinh_lo_inf= -7.104758600739439771132311e+02;
-
-            // nextafter(log(x), -1) == +inf
-            constexpr static const double
-            log_lo_fin= 4.940656458412465441765688e-324;
-            // log(log_lo_fin)
-            constexpr static const double
-            log_lo_val= -7.444400719213812180896639e+02;
-
-        };
-
-        template <>
-        struct func_constants<float> {
-            constexpr static const float
-            max_denormal= 1.175494210692441075487029e-38f;
-
-            constexpr static const float
-            exp_hi_inf= 8.872283935546875000000000e+01f;
-            constexpr static const float
-            exp_lo_zero= -1.039720840454101562500000e+02f;
-
-            // expm1(x) == +inf for x >= 0
-            constexpr static const float
-            expm1_hi_inf= 8.872283935546875000000000e+01f;
-            // expm1(x) == 1 for x <=
-            constexpr static const float
-            expm1_lo_minus_one= -1.732868003845214843750000e+01f;
-            // exp2(x) == +inf for x >=
-            constexpr static const float
-            exp2_hi_inf= 1.280000000000000000000000e+02f;
-            // exp2(x) == 0 for x <=
-            constexpr static const float
-            exp2_lo_zero= -1.500000000000000000000000e+02f;
-
-            // exp10(x) == +inf for x >=
-            constexpr static const float
-            exp10_hi_inf= 3.853184127807617187500000e+01f;
-            // exp10(x) == 0 for x <=
-            constexpr static const float
-            exp10_lo_zero= -4.515450286865234375000000e+01f;
-
-            // cosh(x) == +inf for abs(x) >=
-            constexpr static const float
-            cosh_hi_inf= 8.941599273681640625000000e+01f;
-
-            // sinh(x) == +inf for x >=
-            constexpr static const float
-            sinh_hi_inf= 8.941599273681640625000000e+01f;
-            // sinh(x) == -inf for x <=
-            constexpr static const float
-            sinh_lo_inf= -8.941599273681640625000000e+01f;
-
-            constexpr static const float
-            log_lo_fin= 1.401298464324817070923730e-45f;
-            constexpr static const float
-            log_lo_val= -1.032789306640625000000000e+02;
-        };
 
         template <typename _FLOAT_T, typename _INT_T>
         struct func_traits;
@@ -225,7 +124,7 @@ namespace cftal {
             static
             vf_type
             pow(arg_t<vf_type> b, arg_t<vi_type> e);
-            
+
             // sincos, sin, cos, tan and cot call
             // sin_cos_k
             static void sincos(arg_t<vf_type> vf,
@@ -262,13 +161,6 @@ namespace cftal {
 
 
         namespace impl {
-
-            template <class _VEC, typename _FLOAT_T>
-            struct d_real_constants {};
-
-            template <class _VEC, typename _FLOAT_T>
-            struct t_real_constants {};
-
 
             template <typename _X, typename _C1, typename _C0>
             _X
@@ -1235,7 +1127,7 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     vmf_type y_inf = isinf(y);
     vmf_type y_p_inf = y_inf & y_p;
     vmf_type y_n_inf = y_inf & y_n;
-    
+
     vf_type x_sgn = copysign(vf_type(1), x);
     vmf_type x_p= x_sgn == vf_type(1.0);
     vmf_type x_n= x_sgn == vf_type(-1.0);
@@ -1283,8 +1175,8 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     //  atan2(y, NaN) = NaN
     //  atan2(NaN, x) = NaN
     r = _T::sel(isnan(x) | isnan(y), _T::nan(), r);
-   
-#if 0    
+
+#if 0
     r= _T::sel(y_zero & x_p_zero, y, r);
     r= _T::sel(y_zero & x_n_zero, copysign(vf_type(M_PI), y), r);
     r= _T::sel(y_gt_z & x_inf,
