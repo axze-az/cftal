@@ -217,9 +217,15 @@ namespace cftal {
             static vf_type native_log(arg_t<vf_type> vf);
 
             // pow calls exp_k2 and log_k2
-            static vf_type pow(arg_t<vf_type> b,
-                               arg_t<vf_type> e);
+            static
+            vf_type
+            pow(arg_t<vf_type> b, arg_t<vf_type> e);
 
+            // done by squaring
+            static
+            vf_type
+            pow(arg_t<vf_type> b, arg_t<vi_type> e);
+            
             // sincos, sin, cos, tan and cot call
             // sin_cos_k
             static void sincos(arg_t<vf_type> vf,
@@ -1048,6 +1054,33 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 #endif
     return res;
 }
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+pow(arg_t<vf_type> b, arg_t<vi_type> e)
+{
+    using _T = _TRAITS_T;
+    vmi_type e_lt_z = e < vi_type(0);
+    vmf_type f_e_lt_z = _T::vmi_to_vmf(e_lt_z);
+    vi_type n= _T::sel(e_lt_z, -e, e);
+    vf_type x= _T::sel(f_e_lt_z, vf_type(1.0)/b, b);
+    vf_type r= vf_type(1.0);
+
+    vmi_type n_ne_0 = n != vi_type(0);
+    while (any_of(n_ne_0)) {
+        vmi_type n_and_1 = (n & vi_type(1)) != vi_type(0);
+        vmf_type f_n_and_1 = _T::vmi_to_vmf(n_and_1);
+        r = _T::sel(f_n_and_1, r*x, r);
+        n >>= 1;
+        n_ne_0 = n != vi_type(0);
+        vmf_type f_n_ne_0 = _T::vmi_to_vmf(n_ne_0);
+        // clear vector entries not required any more
+        x = _T::sel(f_n_ne_0, x*x, 0);
+    }
+    return r;
+}
+
 
 template <typename _FLOAT_T,
           typename _TRAITS_T>

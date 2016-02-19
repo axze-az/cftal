@@ -15,6 +15,17 @@ namespace cftal {
 
             template <class _T>
             struct d_real_constants<_T, float> {
+                // large exp argument
+                constexpr static const float
+                exp_arg_large= 8.8000000000000e+01f;
+
+                // log(x): avoid denormals
+                constexpr static const float
+                log_arg_small= 1.9721522630525e-31f;
+                // if above factor to multiply with
+                constexpr static const float
+                log_arg_small_factor= 2.8147497671066e+14f;
+
                 // 1/(i!)
                 static const unsigned MAX_FAC=20;
                 static const _T inv_fac[MAX_FAC+1];
@@ -25,9 +36,6 @@ namespace cftal {
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=5;
                 static const _T exp_coeff[MAX_EXP_COEFF];
-                // large exp argument
-                constexpr static const float
-                exp_arg_large= 8.8000000000000e+01f;
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=5;
@@ -46,6 +54,8 @@ namespace cftal {
                 static const _T m_ln10;
                 // M_LN_2POW106
                 static const _T m_ln2pow106;
+                // M_LN_2POW48
+                static const _T m_ln2pow48;
                 // low half of m_ln2
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
@@ -851,7 +861,6 @@ atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     return dvf_type(xh + yh);
 }
 
-
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::m_ln2(
@@ -871,6 +880,11 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::m_ln2pow106(
      7.3473594665527e+01f,  6.4738269429654e-06f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_ln2pow48(
+     3.3271060943604e+01f,  3.7232739487081e-06f);
 
 template <class _T>
 const _T
@@ -931,17 +945,7 @@ inv_fac[MAX_FAC+1]= {
     _T(  2.8114573589664e-15f, -1.0462084739764e-22f),
     _T(  1.5619206814542e-16f,  1.5404471465942e-24f),
     _T(  8.2206350784765e-18f,  1.6814780968559e-25f),
-    _T(  4.1103175909370e-19f,  3.2375117328603e-27f),
-    _T(  1.9572941524686e-20f, -4.6129455138200e-28f),
-    _T(  8.8967909595668e-22f,  4.3288372034342e-29f),
-    _T(  3.8681702979647e-23f, -1.2733404317147e-30f),
-    _T(  1.6117375912828e-24f, -2.0186648406604e-32f),
-    _T(  6.4469503404792e-26f, -5.6094691440285e-34f),
-    _T(  2.4795962847997e-27f, -2.1574881543945e-35f),
-    _T(  9.1836898099574e-29f,  5.3838169501130e-37f),
-    _T(  3.2798891641050e-30f,  7.2964803889478e-38f),
-    _T(  1.1309962472708e-31f,  4.1373995769468e-39f),
-    _T(  3.7699878092657e-33f, -1.8044940714650e-40f)
+    _T(  4.1103175909370e-19f,  3.2375117328603e-27f)
 };
 
 template <class _T>
@@ -968,17 +972,7 @@ _2_over_i[MAX_2_OVER_I+1]= {
     _T(  1.1764705926180e-01f, -4.3826944851055e-10f),
     _T(  1.1111111193895e-01f, -8.2784229471500e-10f),
     _T(  1.0526315867901e-01f, -7.8427164762473e-10f),
-    _T(  1.0000000149012e-01f, -1.4901161415892e-09f),
-    _T(  9.5238097012043e-02f, -1.7739477664591e-09f),
-    _T(  9.0909093618393e-02f, -2.7093021159885e-09f),
-    _T(  8.6956523358822e-02f, -1.6196913810163e-09f),
-    _T(  8.3333335816860e-02f, -2.4835269396561e-09f),
-    _T(  7.9999998211861e-02f,  1.7881393032937e-09f),
-    _T(  7.6923079788685e-02f, -2.8656079731348e-09f),
-    _T(  7.4074074625969e-02f, -5.5189486314333e-10f),
-    _T(  7.1428574621677e-02f, -3.1931060018309e-09f),
-    _T(  6.8965516984463e-02f,  2.5691657135063e-10f),
-    _T(  6.6666670143604e-02f, -3.4769376267008e-09f)
+    _T(  1.0000000149012e-01f, -1.4901161415892e-09f)
 };
 
 template <class _T>
@@ -1017,16 +1011,16 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::
 cos_coeff[MAX_COS_COEFF] =  {
-    // +1/12!
-    _T(  2.0876755879584e-09f,  1.1082839147460e-16f),
-    // -1/10!
-    _T( -2.7557319981497e-07f,  7.5751122090512e-15f),
-    // +1/8!
-    _T(  2.4801587642287e-05f, -3.4069960936668e-13f),
-    // -1/6!
-    _T( -1.3888889225200e-03f,  3.3631094437103e-11f),
-    // +1/4!
-    _T(  4.1666667908430e-02f, -1.2417634698281e-09f)
+    // -1/12!
+    _T( -2.0876755879584e-09f, -1.1082839147460e-16f),
+    // +1/10!
+    _T(  2.7557319981497e-07f, -7.5751122090512e-15f),
+    // -1/8!
+    _T( -2.4801587642287e-05f,  3.4069960936668e-13f),
+    // +1/6!
+    _T(  1.3888889225200e-03f, -3.3631094437103e-11f),
+    // -1/4!
+    _T( -4.1666667908430e-02f,  1.2417634698281e-09f)
 };
 
 template <class _T>

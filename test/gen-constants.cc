@@ -301,6 +301,9 @@ void
 cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
 {
     using f_t = mpfr_real<_B>;
+    using value_type = typename _X::value_type;
+    using tbl_type = _C<_X, value_type>;
+
     _X d;
 
     // mpfr_set_default_prec(_B);
@@ -340,6 +343,26 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << ");\n"
       << std::endl;
 
+    x = 0x1p48;
+    v = log(x);
+    s << "template <class _T>\nconst _T\n"
+      << "cftal::math::impl::" << pfx << "::m_ln2pow48("
+        "\n    "
+      << to_stream(d, v, true)
+      << ");\n"
+      << std::endl;
+
+    x = std::numeric_limits<double>::max() ==
+        std::numeric_limits<value_type>::max() ?
+        0x1p106 : 0x1p48;
+    v = log(x);
+    s << "template <class _T>\nconst _T\n"
+      << "cftal::math::impl::" << pfx << "::m_ln2offset("
+        "\n    "
+      << to_stream(d, v, true)
+      << ");\n"
+      << std::endl;
+    
     load_pi(x);
     v = x;
     s << "template <class _T>\nconst _T\n"
@@ -396,8 +419,6 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << ");\n"
       << std::endl;
 
-    using value_type = typename _X::value_type;
-    using tbl_type = _C<_X, value_type>;
     
     const std::size_t MAX_FAC=tbl_type::MAX_FAC;
     s << "template <class _T>\n"
@@ -470,29 +491,6 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
         s << '\n';
     }
     s << "};\n" << std::endl;
-#if 0
-    // const std::size_t MAX_EXP2_COEFF=10;
-    s << "template <class _T>\n"
-      << "const _T\n"
-      << "cftal::math::impl::" << pfx << "::\n"
-      << "exp2_coeff[MAX_EXP2_COEFF] =  {"
-      << std::endl;
-    for (std::size_t i=9; i!=0; --i) {
-        f_t eval= v_inv_fac[i];
-        f_t f=v_pot_ln2[i+1];
-        f_t val= eval*f;
-        s << std::scientific
-          << std::setprecision(22)
-          << "    // + ln(2)^" <<i << "/"<< i << "!\n"
-          << "    _T( "
-          << to_stream(d, val)
-          << ")";
-        if (i != 0)
-            s << ',';
-        s << '\n';
-    }
-    s << "};\n" << std::endl;
-#endif
     const std::size_t MAX_COS_COEFF=tbl_type::MAX_COS_COEFF;
     const std::size_t MAX_SIN_COEFF=tbl_type::MAX_SIN_COEFF;
 
@@ -501,7 +499,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << "cftal::math::impl::" << pfx << "::\n"
       << "sin_coeff[MAX_SIN_COEFF] =  {"
       << std::endl;
-    int sign=1;
+    int sign= (MAX_SIN_COEFF & 2) ? 1 : -1;
     for (std::size_t i=MAX_SIN_COEFF*2+1; i>2; i-=2) {
         f_t val= v_inv_fac[i];
         if (sign < 0)
@@ -524,7 +522,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << "cftal::math::impl::" << pfx << "::\n"
       << "cos_coeff[MAX_COS_COEFF] =  {"
       << std::endl;
-    sign=-1;
+    sign= (MAX_COS_COEFF & 2) ? -1 : 1;
     for (std::size_t i=MAX_COS_COEFF*2+2; i>3; i-=2) {
         f_t val= v_inv_fac[i];
         if (sign < 0)
@@ -643,6 +641,13 @@ int main(int argc, char** argv)
         gen_constant(dm, "const double exp10_lo", mpfr_exp10,
                      check_zero<double>(), "m_0");
 
+        // -1022 - 53
+        write_constant(
+            "const double log_arg_small", 0x1p-969);
+        write_constant(
+            "const double log_arg_small_factor",
+            0x1p106);
+
         std::cout << "const double max_denormal= "
                   <<  sig_f64_msk::v._f64 << ";\n\n";
         std::cout << "const double _2pow106="
@@ -709,6 +714,13 @@ int main(int argc, char** argv)
                      check_inf<float>(), "inf");
         gen_constant(dm, "const float exp10_lo", mpfr_exp10,
                      check_zero<float>(), "m_0");
+
+        // -126 + 24
+        write_constant(
+            "const double log_arg_small", 0x1p-102f);
+        write_constant(
+            "const double log_arg_small_factor",
+            0x1p48f);
 
         std::cout << "const float max_denormal= "
                   <<  sig_f32_msk::v._f32 << ";\n\n";

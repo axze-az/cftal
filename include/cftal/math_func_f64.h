@@ -30,6 +30,17 @@ namespace cftal {
 
             template <class _T>
             struct d_real_constants<_T, double> {
+                // exp(x) may be to large 
+                constexpr static const double
+                exp_arg_large= 7.0900000000000000000000e+02;
+
+                // log(x): avoid denormals
+                constexpr static const double
+                log_arg_small= 2.0041683600089727779961e-292;
+                // if above factor to multiply with
+                constexpr static const double
+                log_arg_small_factor= 8.1129638414606681695789e+31;
+                
                 // 1/(i!)
                 static const unsigned MAX_FAC=30;
                 static const _T inv_fac[MAX_FAC+1];
@@ -40,9 +51,6 @@ namespace cftal {
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=9;
                 static const _T exp_coeff[MAX_EXP_COEFF];
-                // exp(x) may be to large 
-                constexpr static const double
-                exp_arg_large= 7.0900000000000000000000e+02;
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=10;
@@ -61,6 +69,8 @@ namespace cftal {
                 static const _T m_ln10;
                 // M_LN_2POW106
                 static const _T m_ln2pow106;
+                // M_LN_2POW48
+                static const _T m_ln2pow48;
                 // low half of m_ln2
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
@@ -111,6 +121,8 @@ namespace cftal {
                 static const _T m_ln10;
                 // M_LN_2POW106
                 static const _T m_ln2pow106;
+                // M_LN_2POW48
+                static const _T m_ln2pow48;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
                 // 2*PI
@@ -503,11 +515,10 @@ log_k2(arg_t<vf_type> d0h, arg_t<vf_type> d0l)
 
     // avoid the range of denormals:
     // -1022+53 = -969
-    vmf_type d_small= d0h < vf_type(0x1p-969);
+    vmf_type d_small= d0h < ctbl::log_arg_small;
     dvf_type d=dvf_type(d0h, d0l);
     if (any_of(d_small)) {
-        const vf_type two_pow_106(0x1p106);
-        dvf_type t= d * two_pow_106;
+        dvf_type t= d * vf_type(ctbl::log_arg_small_factor);
         d = dvf_type(_T::sel(d_small, t.h(), d.h()),
                      _T::sel(d_small, t.l(), d.l()));
     }
@@ -549,11 +560,10 @@ native_log_k(arg_t<vf_type> d0)
     using ctbl=impl::d_real_constants<d_real<double>, double>;
 
     // -1022+53 = -969
-    vmf_type d_small= d0 < vf_type(0x1p-969);
+    vmf_type d_small= d0 < ctbl::log_arg_small;
     vf_type d=d0;
     if (any_of(d_small)) {
-        const vf_type two_pow_106(0x1p106);
-        vf_type t= d0 * two_pow_106;
+        vf_type t= d0 * vf_type(ctbl::log_arg_small_factor);
         d = _T::sel(d_small, t, d);
     }
 
@@ -1240,6 +1250,7 @@ native_atan2_k(arg_t<vf_type> x, arg_t<vf_type> y)
     return 0.0;
 }
 
+
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2(
@@ -1259,6 +1270,11 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2pow106(
      7.3473601139354201450260e+01,  1.3479665980519211209217e-15);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_ln2pow48(
+     3.3271064666877371962528e+01,  2.8894993100464744006298e-15);
 
 template <class _T>
 const _T
@@ -1520,6 +1536,11 @@ template <class _T>
 const _T
 cftal::math::impl::t_real_constants<_T, double>::m_ln2pow106(
      7.3473601139354201450260e+01,  1.3479665980519211209217e-15, -6.8920782815610402112353e-32);
+
+template <class _T>
+const _T
+cftal::math::impl::t_real_constants<_T, double>::m_ln2pow48(
+     3.3271064666877371962528e+01,  2.8894993100464744006298e-15, -1.2051441922454189012515e-31);
 
 template <class _T>
 const _T
