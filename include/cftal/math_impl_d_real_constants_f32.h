@@ -27,6 +27,10 @@ namespace cftal {
                 static const unsigned MAX_2_OVER_I=20;
                 static const _T _2_over_i[MAX_2_OVER_I+1];
 
+                // coefficents for log(x)
+                static const unsigned MAX_LOG_COEFF=6;
+                static const _T log_coeff[MAX_LOG_COEFF];
+                
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=5;
                 static const _T exp_coeff[MAX_EXP_COEFF];
@@ -94,7 +98,6 @@ cftal::math::impl::d_real_constants<_T, float>::
 log_arg_small_factor= 2.8147497671066e+14f;
 
 /* ---------------------------------------------------------------- */
-
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::m_ln2(
@@ -217,6 +220,24 @@ _2_over_i[MAX_2_OVER_I+1]= {
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::
+log_coeff[MAX_LOG_COEFF]= {
+    // + 2/13
+    _T(  1.5384615957737e-01f, -5.7312159462697e-09f),
+    // + 2/11
+    _T(  1.8181818723679e-01f, -5.4186042319770e-09f),
+    // + 2/9
+    _T(  2.2222222387791e-01f, -1.6556845894300e-09f),
+    // + 2/7
+    _T(  2.8571429848671e-01f, -1.2772424007323e-08f),
+    // + 2/5
+    _T(  4.0000000596046e-01f, -5.9604645663569e-09f),
+    // + 2/3
+    _T(  6.6666668653488e-01f, -1.9868215517249e-08f)
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::
 exp_coeff[MAX_EXP_COEFF] =  {
     // + 1/5!
     _T(  8.3333337679505e-03f, -4.3461720333760e-10f),
@@ -293,7 +314,6 @@ atan2_coeff[MAX_ATAN2_COEFF] =  {
     // prod(even numbers to 0)/product(odd numbers to 1)
     _T(  1.0000000000000e+00f,  0.0000000000000e+00f)
 };
-
 
 // Local Variables:
 // mode: c++

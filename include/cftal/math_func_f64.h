@@ -419,10 +419,14 @@ log_k2(arg_t<vf_type> d0h, arg_t<vf_type> d0l)
     dvf_type xr= xm / xp;
     dvf_type x2 = sqr(xr);
 
+#if 0    
     const int _N=25;
     dvf_type t= dvf_type(ctbl::_2_over_i[_N]);
     for (int i=_N-2; i>2; i-=2)
         t = t * x2 + dvf_type(ctbl::_2_over_i[i]);
+#else
+    dvf_type t=impl::poly(x2, ctbl::log_coeff);
+#endif
     t = t * x2 + vf_type(2.0);
     t = t * xr;
 

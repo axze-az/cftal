@@ -472,13 +472,13 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
-    const std::size_t MAX_LOG_COEFF=12;
+    const std::size_t MAX_LOG_COEFF=tbl_type::MAX_LOG_COEFF;
     s << "template <class _T>\n"
       << "const _T\n"
       << "cftal::math::impl::" << pfx << "::\n"
       << "log_coeff[MAX_LOG_COEFF]= {"
       << std::endl;
-    for (std::size_t i=(MAX_LOG_COEFF)*2+1; i>2; i-=2) {
+    for (std::size_t i=MAX_LOG_COEFF*2+1; i>2; i-=2) {
         f_t val(2.0);
         if (i!=1) {
             val /= f_t(i);
