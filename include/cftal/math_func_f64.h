@@ -419,14 +419,7 @@ log_k2(arg_t<vf_type> d0h, arg_t<vf_type> d0l)
     dvf_type xr= xm / xp;
     dvf_type x2 = sqr(xr);
 
-#if 0
-    const int _N=25;
-    dvf_type t= dvf_type(ctbl::_2_over_i[_N]);
-    for (int i=_N-2; i>2; i-=2)
-        t = t * x2 + dvf_type(ctbl::_2_over_i[i]);
-#else
     dvf_type t=impl::poly(x2, ctbl::log_coeff);
-#endif
     t = t * x2 + vf_type(2.0);
     t = t * xr;
 
@@ -467,12 +460,10 @@ native_log_k(arg_t<vf_type> d0)
     vf_type xr= xm / xp;
     vf_type x2 = xr*xr;
 
-    const int _N=25;
-    vf_type t= vf_type(ctbl::_2_over_i[_N].h());
-    for (int i=_N-2; i>2; i-=2)
-        t = t * x2 + vf_type(ctbl::_2_over_i[i].h());
+    vf_type t= impl::poly(x2, ctbl::log_coeff);
     t = t * x2 + vf_type(2.0);
     t = t * xr;
+
     xr = t + M_LN2 * ef;
 
     if (any_of(d_small)) {
@@ -651,7 +642,6 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 native_exp_k(arg_t<vf_type> d, bool exp_m1)
 {
-#if 1
     using ctbl = impl::d_real_constants<d_real<double>, double>;
 
     vmf_type cmp_res;
@@ -671,11 +661,8 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
     vf_type m2= rint(vf_type(d2 * ctbl::m_1_ln2.h()));
     // vf_type r= (d2 - ctbl::m_ln2.h()*m2);
     // subtraction in two steps for higher precision
-    const vf_type ln2d_hi = 0.693145751953125;
-    const vf_type ln2d_lo = 1.42860682030941723212E-6;
-    vf_type r = d2 - m2* ln2d_hi;
-    r -= m2 * ln2d_lo;
-
+    vf_type r= d2 - m2* ctbl::m_ln2_0;
+    r -= m2* ctbl::m_ln2_1;
      // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
     do {
         cmp_res = (abs(r) > vf_type(M_LN2/512)) & finite;
@@ -688,13 +675,10 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
         r = d2;
     } while (1);
 
-    const int _N=9 /* 7 */;
-    vf_type s = ctbl::inv_fac[_N].h();
-    for (unsigned int i=_N-1; i!=2; --i)
-        s = s*r + ctbl::inv_fac[i].h();
-    s = s * r + vf_type(0.5);
-    s = s * r + vf_type(1.0);
-    s = s * r;
+    // calculate 1! + x^1/2!+x^2/3! .. +x^7/7!
+    vf_type s=impl::poly(r, ctbl::exp_coeff);
+    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^7/7! == expm1(r)
+    s = s*r;
 
     // scale back the 1/k_i reduced value
     do {
@@ -725,41 +709,6 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
         res=tres;
     }
     return res;
-#else
-    using ctbl = impl::d_real_constants<dvf_type, double>;
-
-    const double k(512.0);
-    const int k_i(9);
-    const vf_type inv_k(1.0/k);
-
-    vf_type m2= rint(vf_type(d * ctbl::m_1_ln2.h()));
-    vf_type r= (d - ctbl::m_ln2.h()*m2) * inv_k;
-    vf_type m=m2;
-
-    vf_type s = ctbl::inv_fac[9].h();
-    // s = s * r + ctbl::inv_fac[8];
-    // s = s * r + ctbl::inv_fac[7];
-    // s = s * r + ctbl::inv_fac[6];
-    // s = s * r + ctbl::inv_fac[5];
-    // s = s * r + ctbl::inv_fac[4];
-    // s = s * r + ctbl::inv_fac[3];
-    for (unsigned int i=8; i!=2; --i)
-        s = s*r + ctbl::inv_fac[i].h();
-    s = s * r + vf_type(0.5);
-    s = s * r + vf_type(1.0);
-    s = s * r;
-
-    // scale back the 1/k reduced value
-    const vf_type two(2.0);
-    for (int i=0; i<k_i; ++i)
-        s = s * two + s * s;
-    s += vf_type(1.0);
-
-    // scale back
-    vi_type mi= _T::cvt_f_to_i(m);
-    vf_type res(my_type::ldexp(s, mi));
-    return res;
-#endif
 }
 
 template <typename _T>

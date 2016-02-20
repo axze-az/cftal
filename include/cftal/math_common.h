@@ -62,12 +62,8 @@ namespace cftal {
         template <typename _FLOAT_T, typename _TRAITS_T>
         struct func_common : public func_core< _FLOAT_T,
                                                _TRAITS_T> {
-            typedef func_core<_FLOAT_T,
-                              _TRAITS_T> base_type;
-
-            typedef func_common<_FLOAT_T,
-                                _TRAITS_T> my_type;
-
+            using base_type = func_core<_FLOAT_T, _TRAITS_T>;
+            using my_type = func_common<_FLOAT_T, _TRAITS_T>;
             using vf_type = typename base_type::vf_type;
             using vi_type = typename base_type::vi_type;
             using vmf_type = typename base_type::vmf_type;
@@ -165,7 +161,7 @@ namespace cftal {
             template <typename _X, typename _C1, typename _C0>
             _X
             poly(_X x, _C1 c1, _C0 c0) {
-                return x*_X(c1) + _X(c0);
+                return x*c1 + c0;
             }
 
             template <typename _X,
@@ -205,6 +201,27 @@ namespace cftal {
                 return r;
             }
 
+            template <typename _F, typename _C, std::size_t _N>
+            d_real<_F>
+            poly(d_real<_F> x, const d_real<_C> (&a)[_N]) {
+                static_assert(_N > 0, "invalid call to poly(d_real<_F>, d_real<_C>(&a)[])");
+                d_real<_F> r=d_real<_F>(a[0]);
+                for (std::size_t i=1; i<_N; ++i) {
+                    r=poly(x, r, d_real<_F>(a[i] ));
+                }
+                return r;
+            }
+
+            template <typename _F, typename _C, std::size_t _N>
+            _F
+            poly(_F x, const d_real<_C> (&a)[_N]) {
+                static_assert(_N > 0, "invalid call to poly(_F, d_real<_C>(&a)[])");
+                _F r= a[0].h();
+                for (std::size_t i=1; i<_N; ++i) {
+                    r= poly(x, r, _F(a[i].h()));
+                }
+                return r;
+            }
 
             // polynomial with c1 = 1.0
             template <typename _X, typename _C0>

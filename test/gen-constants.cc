@@ -111,6 +111,13 @@ namespace cftal {
                   template <typename _Y, typename _T> class _C>
         void
         gen_math_constants(std::ostream& s, const std::string& pfx);
+
+        template <std::size_t _N, std::size_t _B>
+        void csplit(double (&r)[_N], const mpfr_real<_B>& v);
+
+        template <std::size_t _N, std::size_t _B>
+        void csplit(float (&r)[_N], const mpfr_real<_B>& v);
+        
     }
 }
 
@@ -279,6 +286,41 @@ cftal::test::to_stream(t_real<_T>& d, const mpfr_real<_B>& v,
     d = t_real<_T>(v);
     return out_tf<_T>(d);
 }
+
+template <std::size_t _N, std::size_t _B>
+void
+cftal::test::csplit(double (&r)[_N], const mpfr_real<_B>& v)
+{
+    uint64_t msk=const_u64<0x00000000U, 0xfffffff0U>::v._u64;
+    mpfr_real<_B> vv(v);
+    for (std::size_t i=0; i<_N-1; ++i) {
+        double t= vv;
+        uint64_t u=as<uint64_t>(t);
+        u &= msk;
+        double tt=as<double>(u);
+        r[i] = tt;
+        vv -= mpfr_real<_B>(tt);
+    }
+    r[_N-1]= double(vv);
+}
+
+template <std::size_t _N, std::size_t _B>
+void
+cftal::test::csplit(float (&r)[_N], const mpfr_real<_B>& v)
+{
+    uint32_t msk=const_u32<0xffffc000U>::v._u32;
+    mpfr_real<_B> vv(v);
+    for (std::size_t i=0; i<_N-1; ++i) {
+        float t= vv;
+        uint32_t u=as<uint32_t>(t);
+        u &= msk;
+        float tt=as<float>(u);
+        r[i] = tt;
+        vv -= mpfr_real<_B>(tt);
+    }
+    r[_N-1]= float(vv);
+}
+
 
 std::pair<std::uint64_t, std::uint64_t>
 atan_coeff(int n)
@@ -692,6 +734,20 @@ int main(int argc, char** argv)
         gen_constant(dm, "const double atan_eq_x", mpfr_atan,
                      check_atan_eq_x<double>(), "m_0");
 
+
+        double a[2];
+        mpfr_real<512> ln2=2.0;
+        ln2=log(ln2);
+        csplit(a, ln2);
+        // std::cout << std::hexfloat;
+        for (std::size_t i=0; i<2; ++i) {
+            std::cout << "const double m_ln2_" << i << "= "
+                      << a[i]
+                      << ";\n";
+        }
+
+        std::cout << std::scientific<<'\n';
+        
         gen_math_constants<128,
                            d_real<double>,
                            math::impl::d_real_constants >(
@@ -754,6 +810,17 @@ int main(int argc, char** argv)
 
         std::cout << "const float max_denormal= "
                   <<  sig_f32_msk::v._f32 << ";\n\n";
+
+        float a[2];
+        mpfr_real<512> ln2=2.0;
+        ln2=log(ln2);
+        csplit(a, ln2);
+        // std::cout << std::hexfloat;
+        for (std::size_t i=0; i<2; ++i) {
+            std::cout << "const float m_ln2_" << i << "= "
+                      << a[i]
+                      << "f;\n";
+        }
 
         gen_math_constants<64,
                            d_real<float>,

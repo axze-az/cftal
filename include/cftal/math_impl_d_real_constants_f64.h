@@ -23,6 +23,9 @@ namespace cftal {
                 static const double log_arg_small;
                 // if above factor to multiply with
                 static const double log_arg_small_factor;
+                // M_LN2 LOG_E(2) 
+                static const double m_ln2_0;
+                static const double m_ln2_1;
 
                 // 1/(i!)
                 static const unsigned MAX_FAC=30;
@@ -160,6 +163,15 @@ template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
 log_arg_small_factor= 8.1129638414606681695789e+31;
+
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+m_ln2_0= 6.931457519531250000000000e-01;
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+m_ln2_1= 1.428606820309417255529397e-06;
 
 /* ----------------------------------------------------------------*/
 
