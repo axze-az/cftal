@@ -199,9 +199,9 @@ namespace cftal {
             template <typename _X, typename _C, std::size_t _N>
             _X
             poly(_X x, const _C (&a)[_N]) {
-                static_assert(_N > 1, "invalid call to poly(x, array)");
-                _X r= _X(a[0]) * x + _X(a[1]);
-                for (std::size_t i=2; i<_N; ++i) {
+                static_assert(_N > 0, "invalid call to poly(x, array)");
+                _X r= _X(a[0]);
+                for (std::size_t i=1; i<_N; ++i) {
                     r= poly(x, r, a[i]);
                 }
                 return r;
