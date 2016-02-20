@@ -28,21 +28,6 @@ namespace cftal {
             typedef typename _TRAITS_T::vmi_type vmi_type;
             typedef d_real<vf_type> dvf_type;
 
-            // exp core
-            static dvf_type
-            exp_k2(arg_t<vf_type> xh,
-                   arg_t<vf_type> xl,
-                   bool exp_m1);
-            // native exp core
-            static vf_type
-            native_exp_k(arg_t<vf_type> x, bool exp_m1);
-            // log core
-            static dvf_type
-            log_k2(arg_t<vf_type> xh,
-                   arg_t<vf_type> xl);
-            // native log core
-            static dvf_type
-            native_log_k2(arg_t<vf_type> x);
             // sin and cos core, return sin in first
             static std::pair<dvf_type, dvf_type>
             sin_cos_k(arg_t<vf_type> x);
@@ -71,6 +56,46 @@ namespace cftal {
             using dvf_type = typename base_type::dvf_type;
             using tvf_type = typename base_type::tvf_type;
 
+            using base_type::frexp;
+            using base_type::ldexp;
+            using base_type::ilogbp1;
+            
+            static
+            dvf_type
+            exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
+                   bool exp_m1);
+
+            static
+            vf_type
+            native_exp_k(arg_t<vf_type> x, bool exp_m1);
+
+            static
+            dvf_type
+            exp2_k2(arg_t<vf_type> xh,
+                    arg_t<vf_type> xl);
+
+            static
+            vf_type
+            native_exp2_k(arg_t<vf_type> x);
+
+            static
+            dvf_type
+            exp10_k2(arg_t<vf_type> xh,
+                     arg_t<vf_type> xl);
+
+            static
+            vf_type
+            native_exp10_k(arg_t<vf_type> x);
+
+            static
+            dvf_type
+            log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl);
+
+            static
+            vf_type
+            native_log_k(arg_t<vf_type> x);
+
+            
             // exp, expm1, sinh, cosh call exp_k2 if native == false
             // or native_exp
             template <bool _NATIVE>
@@ -611,6 +636,291 @@ cftal::math::impl::nth_root_halley<_R, _RT, _T>::v(const _T& xi, const _T& x)
     return xip1;
 }
 
+
+template <typename _FLOAT_T, typename _T>
+__attribute__((__flatten__, __noinline__))
+typename cftal::math::func_common<_FLOAT_T, _T>::dvf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
+{
+    using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+
+    vmf_type cmp_res;
+    vmi_type i_cmp_res;
+    vmf_type inf_nan= isinf(dh) | isnan(dh);
+    vmf_type finite= ~inf_nan;
+    vi_type k_i(0);
+
+    // first reduction required because we want to use rint below
+    vmf_type d_large = dh > ctbl::exp_arg_large;
+    dvf_type d2=dvf_type(dh, dl);
+    bool any_of_d_large = any_of(d_large);
+    if (any_of_d_large) {
+        dvf_type dhalf(mul_pwr2(d2, vf_type(0.5)));
+        dvf_type dt(_T::sel(d_large, dhalf.h(), dh),
+                    _T::sel(d_large, dhalf.l(), dl));
+        d2=dt;
+    }
+    // remove exact powers of 2
+    vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
+    dvf_type r= d2 - dvf_type(ctbl::m_ln2)*m2;
+
+    // reduce arguments further until anything is lt M_LN2/512 ~0.0135
+    do {
+        cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
+        if (none_of(cmp_res))
+            break;
+        i_cmp_res = _T::vmf_to_vmi(cmp_res);
+        k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
+        dvf_type d1 = mul_pwr2(r, vf_type(0.5));
+        vf_type d2_h = _T::sel(cmp_res, d1.h(), r.h());
+        vf_type d2_l = _T::sel(cmp_res, d1.l(), r.l());
+        r = dvf_type(d2_h, d2_l);
+    } while (1);
+
+    // calculate 1! + x^1/2!+x^2/3! .. +x^7/7!
+    dvf_type s=impl::poly(r, ctbl::exp_coeff);
+    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^7/7! == expm1(r)
+    s = s*r;
+
+    // scale back the 1/k_i reduced value for expm1
+    do {
+        i_cmp_res = k_i > vi_type(0);
+        if (none_of(i_cmp_res))
+            break;
+        cmp_res = _T::vmi_to_vmf(i_cmp_res);
+        dvf_type d1= mul_pwr2(s, vf_type(2.0)) + sqr(s);
+        vf_type d2_h = _T::sel(cmp_res, d1.h(), s.h());
+        vf_type d2_l = _T::sel(cmp_res, d1.l(), s.l());
+        k_i -= vi_type(1);
+        s = dvf_type(d2_h, d2_l);
+    } while (1);
+    if (exp_m1 == false) {
+        s += vf_type(1.0);
+    }
+    vi_type mi= _T::cvt_f_to_i(m2);
+    // scale back
+    dvf_type res= dvf_type(ldexp(s.h(), mi), ldexp(s.l(), mi));
+    if (exp_m1 == true) {
+        vf_type scale=ldexp(vf_type(1.0), mi);
+        res += (dvf_type(scale) - vf_type(1.0));
+    }
+    if (any_of_d_large) {
+        // works because for these d at _FLOAT_T precision
+        // exp(d) == expm1(d)
+        dvf_type xres= sqr(res);
+        dvf_type tres(_T::sel(d_large, xres.h(), res.h()),
+                      _T::sel(d_large, xres.l(), res.l()));
+        res=tres;
+    }
+    return res;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+native_exp_k(arg_t<vf_type> d, bool exp_m1)
+{
+    using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+
+    vmf_type cmp_res;
+    vmi_type i_cmp_res;
+    vmf_type inf_nan= isinf(d) | isnan(d);
+    vmf_type finite= ~inf_nan;
+    vi_type k_i(0);
+
+    vmf_type d_large = d > 709.0;
+    vf_type d2=d;
+    bool any_of_d_large = any_of(d_large);
+    if (any_of_d_large) {
+        vf_type dt(_T::sel(d_large, d*vf_type(0.5), d));
+        d2=dt;
+    }
+    // remove exact powers of 2
+    vf_type m2= rint(vf_type(d2 * ctbl::m_1_ln2.h()));
+    // vf_type r= (d2 - ctbl::m_ln2.h()*m2);
+    // subtraction in two steps for higher precision
+    vf_type r= d2 - m2* ctbl::m_ln2_0;
+    r -= m2* ctbl::m_ln2_1;
+     // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
+    do {
+        cmp_res = (abs(r) > vf_type(M_LN2/512)) & finite;
+        if (none_of(cmp_res))
+            break;
+        i_cmp_res = _T::vmf_to_vmi(cmp_res);
+        k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
+        vf_type d1 = r * vf_type(0.5);
+        vf_type d2 = _T::sel(cmp_res, d1, r);
+        r = d2;
+    } while (1);
+
+    // calculate 1! + x^1/2!+x^2/3! .. +x^7/7!
+    vf_type s=impl::poly(r, ctbl::exp_coeff);
+    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^7/7! == expm1(r)
+    s = s*r;
+
+    // scale back the 1/k_i reduced value
+    do {
+        i_cmp_res = k_i > vi_type(0);
+        if (none_of(i_cmp_res))
+            break;
+        cmp_res = _T::vmi_to_vmf(i_cmp_res);
+        vf_type d1= s * 2.0 + s * s;
+        vf_type d2 = _T::sel(cmp_res, d1, s);
+        k_i -= vi_type(1);
+        s = d2;
+    } while (1);
+    // const vf_type two(2.0);
+    // for (int i=0; i<k_i; ++i)
+    //    s = mul_pwr2(s, two) + sqr(s);
+    if (exp_m1 == false) {
+        s += vf_type(1.0);
+    }
+    vi_type mi= _T::cvt_f_to_i(m2);
+    // scale back
+    vf_type res= ldexp(s, mi);
+    if (exp_m1 == true) {
+        vf_type scale=ldexp(vf_type(1.0), mi);
+        res += (scale - vf_type(1.0));
+    }
+    if (any_of_d_large) {
+        vf_type tres(_T::sel(d_large, res*res, res));
+        res=tres;
+    }
+    return res;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::dvf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+exp2_k2(arg_t<vf_type> dh, arg_t<vf_type> dl)
+{
+    using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+    dvf_type d(dh, dl);
+    dvf_type d2=dvf_type(ctbl::m_ln2) * d;
+    return exp_k2(d2.h(), d2.l(), false);
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+native_exp2_k(arg_t<vf_type> d)
+{
+    using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+    vf_type d2=ctbl::m_ln2.h() * d;
+    return native_exp_k(d2, false);
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::dvf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+exp10_k2(arg_t<vf_type> dh, arg_t<vf_type> dl)
+{
+    using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+    dvf_type d(dh, dl);
+    dvf_type d10=dvf_type(ctbl::m_ln10) * d;
+    return exp_k2(d10.h(), d10.l(), false);
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+native_exp10_k(arg_t<vf_type> d)
+{
+    using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+    vf_type d10=ctbl::m_ln10.h() * d;
+    return native_exp_k(d10, false);
+}
+
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::dvf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+log_k2(arg_t<vf_type> d0h, arg_t<vf_type> d0l)
+{
+    using ctbl=impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+
+    // avoid the range of denormals:
+    // -1022+53 = -969
+    vmf_type d_small= d0h < ctbl::log_arg_small;
+    dvf_type d=dvf_type(d0h, d0l);
+    if (any_of(d_small)) {
+        dvf_type t= d * vf_type(ctbl::log_arg_small_factor);
+        d = dvf_type(_T::sel(d_small, t.h(), d.h()),
+                     _T::sel(d_small, t.l(), d.l()));
+    }
+
+    dvf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
+
+    vi_type e = ilogbp1(sc.h() + sc.l());
+    vf_type ef= _T::cvt_i_to_f(e);
+    dvf_type m(ldexp(d.h(), -e), ldexp(d.l(), -e));
+
+    dvf_type xm= m - vf_type(1.0);
+    dvf_type xp= m + vf_type(1.0);
+    dvf_type xr= xm / xp;
+    dvf_type x2 = sqr(xr);
+
+    dvf_type t=impl::poly(x2, ctbl::log_coeff);
+    t = t * x2 + vf_type(2.0);
+    t = t * xr;
+
+    xr = t + dvf_type(ctbl::m_ln2) * ef;
+
+    if (any_of(d_small)) {
+        dvf_type t= xr - dvf_type(ctbl::m_ln_small_arg);
+        xr = dvf_type(_T::sel(d_small, t.h(), xr.h()),
+                      _T::sel(d_small, t.l(), xr.l()));
+    }
+    return xr;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+native_log_k(arg_t<vf_type> d0)
+{
+    using ctbl=impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+
+    // -1022+53 = -969
+    vmf_type d_small= d0 < ctbl::log_arg_small;
+    vf_type d=d0;
+    if (any_of(d_small)) {
+        vf_type t= d0 * vf_type(ctbl::log_arg_small_factor);
+        d = _T::sel(d_small, t, d);
+    }
+
+    vf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
+
+    vi_type e = ilogbp1(sc);
+    vf_type ef= _T::cvt_i_to_f(e);
+    vf_type m(ldexp(d, -e));
+
+    vf_type xm= m - vf_type(1.0);
+    vf_type xp= m + vf_type(1.0);
+    vf_type xr= xm / xp;
+    vf_type x2 = xr*xr;
+
+    vf_type t= impl::poly(x2, ctbl::log_coeff);
+    t = t * x2 + vf_type(2.0);
+    t = t * xr;
+
+    xr = t + M_LN2 * ef;
+
+    if (any_of(d_small)) {
+        vf_type t= xr - vf_type(ctbl::m_ln_small_arg.h());
+        xr = _T::sel(d_small, t, xr);
+    }
+    return xr;
+}
+
 template <typename _FLOAT_T, typename _T>
 template <bool _NATIVE>
 inline
@@ -620,9 +930,9 @@ _exp(arg_t<vf_type> d)
 {
     vf_type res;
     if (_NATIVE) {
-        res=my_type::native_exp_k(d);
+        res=my_type::native_exp_k(d, false);
     } else {
-        dvf_type xr(my_type::exp_k2(d, vf_type(0)));
+        dvf_type xr(my_type::exp_k2(d, vf_type(0), false));
         res=xr.h() + xr.l();
     }
     using fc= func_constants<_FLOAT_T>;
@@ -799,7 +1109,7 @@ sinh(arg_t<vf_type> d)
     // sinh (x+x) = sinh(x)*cosh(x) + cosh(x)*sinh(x)
     // sinh (2x) = 2 * sinh(x) * cosh(x)
     dvf_type dh=vf_type(0.5*d);
-    dvf_type exph=my_type::exp_k2(dh.h(), dh.l());
+    dvf_type exph=my_type::exp_k2(dh.h(), dh.l(), false);
     dvf_type rexph=(vf_type(1.0)/exph);
     dvf_type sinh_xh= mul_pwr2(exph - rexph, vf_type(0.5));
     dvf_type cosh_xh= mul_pwr2(exph + rexph, vf_type(0.5));
@@ -831,7 +1141,7 @@ cosh(arg_t<vf_type> d)
     // cosh (2x) = 2 * sinh(x)*sinh(x) + 1
 
     dvf_type dh=vf_type(0.5*d);
-    dvf_type exph=my_type::exp_k2(dh.h(), dh.l());
+    dvf_type exph=my_type::exp_k2(dh.h(), dh.l(), false);
     dvf_type rexph=(vf_type(1.0)/exph);
     dvf_type two_sinh_xh= exph - rexph;
     dvf_type sinh_xh = mul_pwr2(two_sinh_xh, vf_type(0.5));
@@ -900,7 +1210,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     // we have a problem if e is an integer
     dvf_type ln_x(my_type::log_k2(abs(x), vf_type(0)));
     dvf_type ln_x_y(ln_x * y);
-    dvf_type pow0(my_type::exp_k2(ln_x_y.h(), ln_x_y.l()));
+    dvf_type pow0(my_type::exp_k2(ln_x_y.h(), ln_x_y.l(), false));
     vf_type res(pow0.h() + pow0.l());
 
     using fc=func_constants<_FLOAT_T>;

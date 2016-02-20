@@ -132,38 +132,6 @@ namespace cftal {
             native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
 
-            static tvf_type
-            exp_k3(const tvf_type& tvf);
-
-            static dvf_type
-            exp_k2(arg_t<vf_type> xh,
-                   arg_t<vf_type> xl,
-                   bool exp_m1=false);
-
-            static vf_type
-            native_exp_k(arg_t<vf_type> v, bool exp_m1=false);
-
-            static dvf_type
-            exp2_k2(arg_t<vf_type> xh,
-                    arg_t<vf_type> xl);
-
-            static vf_type
-            native_exp2_k(arg_t<vf_type> v);
-
-            static dvf_type
-            exp10_k2(arg_t<vf_type> xh,
-                     arg_t<vf_type> xl);
-
-            static vf_type
-            native_exp10_k(arg_t<vf_type> v);
-
-            static dvf_type
-            log_k2(arg_t<vf_type> xh,
-                   arg_t<vf_type> xl);
-
-            static vf_type
-            native_log_k(arg_t<vf_type> v);
-
             // atan2 kernel
             static dvf_type
             atan2_k2(arg_t<vf_type> xh,
@@ -433,182 +401,8 @@ native_sin_cos_k(arg_t<vf_type> x, vf_type* ps, vf_type* pc)
 #undef PI4_Af
 }
 
-template <typename _T>
-inline
-typename cftal::math::func_core<float, _T>::tvf_type
-cftal::math::func_core<float, _T>::
-exp_k3(const tvf_type& x)
-{
-    dvf_type xt(x.h(), x.m());
-    dvf_type r(exp_k2(xt));
-    return tvf_type(r);
-}
 
-template <typename _T>
-__attribute__((__flatten__, __noinline__))
-typename cftal::math::func_core<float, _T>::dvf_type
-cftal::math::func_core<float, _T>::
-exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
-{
-#if 1
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-
-    vmf_type cmp_res;
-    vmi_type i_cmp_res=vmi_type();
-    vmf_type inf_nan= isinf(dh) | isnan(dh);
-    vmf_type finite= ~inf_nan;
-    vi_type k_i(0);
-
-    // first reduction required because we want to use rint below
-    vmf_type d_large = dh > ctbl::exp_arg_large;
-    dvf_type d2=dvf_type(dh, dl);
-    bool any_of_d_large = any_of(d_large);
-    if (any_of_d_large) {
-        dvf_type dhalf(mul_pwr2(d2, vf_type(0.5)));
-        dvf_type dt(_T::sel(d_large, dhalf.h(), dh),
-                    _T::sel(d_large, dhalf.l(), dl));
-        d2=dt;
-    }
-    // remove exact powers of 2
-    vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
-    dvf_type r= d2 - dvf_type(ctbl::m_ln2)*m2;
-
-    // reduce arguments further until anything is lt M_LN2/512 ~0.0135
-    do {
-        cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
-        if (none_of(cmp_res))
-            break;
-        i_cmp_res = _T::vmf_to_vmi(cmp_res);
-        k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
-        dvf_type d1 = mul_pwr2(r, vf_type(0.5));
-        vf_type d2_h = _T::sel(cmp_res, d1.h(), r.h());
-        vf_type d2_l = _T::sel(cmp_res, d1.l(), r.l());
-        r = dvf_type(d2_h, d2_l);
-    } while (1);
-
-    // calculate 1! + x^1/2!+x^2/3! .. +x^8/9!
-    dvf_type s=impl::poly(r, ctbl::exp_coeff);
-    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^9/9! == expm1(r)
-    s = s*r;
-
-    // scale back the 1/k_i reduced value for expm1
-    do {
-        i_cmp_res = k_i > vi_type(0);
-        if (none_of(i_cmp_res))
-            break;
-        cmp_res = _T::vmi_to_vmf(i_cmp_res);
-        dvf_type d1= mul_pwr2(s, vf_type(2.0)) + sqr(s);
-        vf_type d2_h = _T::sel(cmp_res, d1.h(), s.h());
-        vf_type d2_l = _T::sel(cmp_res, d1.l(), s.l());
-        k_i -= vi_type(1);
-        s = dvf_type(d2_h, d2_l);
-    } while (1);
-    if (exp_m1 == false) {
-        s += vf_type(1.0);
-    }
-    vi_type mi= _T::cvt_f_to_i(m2);
-    // scale back
-    dvf_type res= dvf_type(ldexp(s.h(), mi), ldexp(s.l(), mi));
-    if (exp_m1 == true) {
-        vf_type scale=ldexp(vf_type(1.0), mi);
-        res += (dvf_type(scale) - vf_type(1.0));
-    }
-    if (any_of_d_large) {
-        // works because for these d at double precision
-        // exp(d) == expm1(d)
-        dvf_type xres= sqr(res);
-        dvf_type tres(_T::sel(d_large, xres.h(), res.h()),
-                      _T::sel(d_large, xres.l(), res.l()));
-        res=tres;
-    }
-    return res;
-#else
-    dvf_type x(xh, xl);
-    using vhpf_type = typename _T::vhpf_type;
-    const std::size_t elements = _T::vhpf_per_vf();
-
-    using hpf_traits = typename _T::hpf_traits;
-    using hpf_func =
-        func_core<double, hpf_traits>;
-
-    vhpf_type vxh[elements];
-    _T::vf_to_vhpf(x.h(), vxh);
-    vhpf_type vxl[elements];
-    _T::vf_to_vhpf(x.l(), vxl);
-    // evaluate unevaluated sum
-    for (std::size_t i=0; i<elements; ++i)
-        vxh[i] += vxl[i];
-
-    vhpf_type vres[elements];
-    for (std::size_t i=0; i<elements; ++i) {
-        vres[i]= hpf_func::native_exp_k(vxh[i], exp_m1);
-    }
-    dvf_type res;
-    _T::vhpf_to_dvf(vres, res);
-    return res;
-#endif
-}
-
-template <typename _T>
-inline
-typename cftal::math::func_core<float, _T>::dvf_type
-cftal::math::func_core<float, _T>::
-exp2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
-{
-    using vhpf_type = typename _T::vhpf_type;
-    const std::size_t elements = _T::vhpf_per_vf();
-
-    using hpf_traits = typename _T::hpf_traits;
-    using hpf_func =
-        func_core<double, hpf_traits>;
-
-    vhpf_type vxh[elements];
-    _T::vf_to_vhpf(xh, vxh);
-    vhpf_type vxl[elements];
-    _T::vf_to_vhpf(xl, vxl);
-    // evaluate unevaluated sum
-    for (std::size_t i=0; i<elements; ++i)
-        vxh[i] += vxl[i];
-
-    vhpf_type vres[elements];
-    for (std::size_t i=0; i<elements; ++i) {
-        vres[i]= hpf_func::native_exp2_k(vxh[i]);
-    }
-    dvf_type res;
-    _T::vhpf_to_dvf(vres, res);
-    return res;
-}
-
-template <typename _T>
-inline
-typename cftal::math::func_core<float, _T>::dvf_type
-cftal::math::func_core<float, _T>::
-exp10_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
-{
-    using vhpf_type = typename _T::vhpf_type;
-    const std::size_t elements = _T::vhpf_per_vf();
-
-    using hpf_traits = typename _T::hpf_traits;
-    using hpf_func =
-        func_core<double, hpf_traits>;
-
-    vhpf_type vxh[elements];
-    _T::vf_to_vhpf(xh, vxh);
-    vhpf_type vxl[elements];
-    _T::vf_to_vhpf(xl, vxl);
-    // evaluate unevaluated sum
-    for (std::size_t i=0; i<elements; ++i)
-        vxh[i] += vxl[i];
-
-    vhpf_type vres[elements];
-    for (std::size_t i=0; i<elements; ++i) {
-        vres[i]= hpf_func::native_exp10_k(vxh[i]);
-    }
-    dvf_type res;
-    _T::vhpf_to_dvf(vres, res);
-    return res;
-}
-
+#if 0
 template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
@@ -640,38 +434,10 @@ native_exp_k(arg_t<vf_type> v, bool exp_m1)
 #undef L2Lf
 #undef L2Uf
 }
+#endif
 
 
-template <typename _T>
-inline
-typename cftal::math::func_core<float, _T>::dvf_type
-cftal::math::func_core<float, _T>::
-log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
-{
-    using vhpf_type = typename _T::vhpf_type;
-    const std::size_t elements = _T::vhpf_per_vf();
-
-    using hpf_traits = typename _T::hpf_traits;
-    using hpf_func =
-        func_core<double, hpf_traits>;
-
-    vhpf_type vxh[elements];
-    _T::vf_to_vhpf(xh, vxh);
-    vhpf_type vxl[elements];
-    _T::vf_to_vhpf(xl, vxl);
-    // evaluate unevaluated sum
-    for (std::size_t i=0; i<elements; ++i)
-        vxh[i] += vxl[i];
-
-    vhpf_type vres[elements];
-    for (std::size_t i=0; i<elements; ++i) {
-        vres[i]= hpf_func::native_log_k(vxh[i]);
-    }
-    dvf_type res;
-    _T::vhpf_to_dvf(vres, res);
-    return res;
-}
-
+#if 0
 template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
@@ -692,6 +458,7 @@ native_log_k(arg_t<vf_type> v)
     x = x * t + 0.693147180559945286226764f * ef;
     return x;
 }
+#endif
 
 template <typename _T>
 inline
