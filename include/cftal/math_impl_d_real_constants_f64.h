@@ -31,12 +31,12 @@ namespace cftal {
                 static const unsigned MAX_2_OVER_I=30;
                 static const _T _2_over_i[MAX_2_OVER_I+1];
 
-                // coefficents for log(x)
+                // coefficents for log(x) 2/i in reverse order
                 static const unsigned MAX_LOG_COEFF=12;
                 static const _T log_coeff[MAX_LOG_COEFF];
 
                 // coefficents for exp(x)
-                static const unsigned MAX_EXP_COEFF=9;
+                static const unsigned MAX_EXP_COEFF=7;
                 static const _T exp_coeff[MAX_EXP_COEFF];
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
@@ -64,6 +64,8 @@ namespace cftal {
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
+                // M_1_LN10 1/LOG_E(10)
+                static const _T m_1_ln10;
                 // 2*PI
                 static const _T m_pi2;
                 // 1/(2*PI)
@@ -120,6 +122,8 @@ namespace cftal {
                 static const _T m_ln_small_arg;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
+                // M_1_LN10 1/LOG_E(10)
+                static const _T m_1_ln10;
                 // 2*PI
                 static const _T m_pi2;
                 // 1/(2*PI)
@@ -332,10 +336,6 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::
 exp_coeff[MAX_EXP_COEFF] =  {
-    // + 1/9!
-    _T(  2.7557319223985892510951e-06, -1.8583932740464720810392e-22),
-    // + 1/8!
-    _T(  2.4801587301587301565790e-05,  2.1511947866775881608473e-23),
     // + 1/7!
     _T(  1.9841269841269841252632e-04,  1.7209558293420705286779e-22),
     // + 1/6!

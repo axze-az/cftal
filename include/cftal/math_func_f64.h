@@ -419,7 +419,7 @@ log_k2(arg_t<vf_type> d0h, arg_t<vf_type> d0l)
     dvf_type xr= xm / xp;
     dvf_type x2 = sqr(xr);
 
-#if 0    
+#if 0
     const int _N=25;
     dvf_type t= dvf_type(ctbl::_2_over_i[_N]);
     for (int i=_N-2; i>2; i-=2)
@@ -607,9 +607,9 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
         r = dvf_type(d2_h, d2_l);
     } while (1);
 
-    // calculate 1! + x^1/2!+x^2/3! .. +x^8/9!
+    // calculate 1! + x^1/2!+x^2/3! .. +x^7/7!
     dvf_type s=impl::poly(r, ctbl::exp_coeff);
-    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^9/9! == expm1(r)
+    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^7/7! == expm1(r)
     s = s*r;
 
     // scale back the 1/k_i reduced value for expm1

@@ -333,6 +333,13 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << to_stream(d, v, true)
       << ");\n"
       << std::endl;
+    v= f_t(1.0)/v;
+    s << "template <class _T>\nconst _T\n"
+      << "cftal::math::impl::" << pfx << "::m_1_ln10("
+        "\n    "
+      << to_stream(d, v, true)
+      << ");\n"
+      << std::endl;
 
     x = 0x1p106;
     v = log(x);

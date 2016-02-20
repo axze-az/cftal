@@ -182,12 +182,10 @@ namespace cftal {
             poly(_X x, const _C& c) {
                 auto b=std::cbegin(c);
                 auto e=std::cend(c);
-                auto bn=std::next(b);
-                if (bn==e) {
+                if (b==e) {
                     throw std::invalid_argument("cftal::math::poly(x, C)");
                 }
-                _X r= (*b) * x + (*bn);
-                ++b;
+                _X r= (*b);
                 ++b;
                 while (b != e) {
                     r = poly(x, r, *b);
@@ -206,6 +204,7 @@ namespace cftal {
                 }
                 return r;
             }
+
 
             // polynomial with c1 = 1.0
             template <typename _X, typename _C0>

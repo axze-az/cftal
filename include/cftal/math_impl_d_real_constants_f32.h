@@ -30,9 +30,9 @@ namespace cftal {
                 // coefficents for log(x)
                 static const unsigned MAX_LOG_COEFF=6;
                 static const _T log_coeff[MAX_LOG_COEFF];
-                
+
                 // coefficents for exp(x)
-                static const unsigned MAX_EXP_COEFF=5;
+                static const unsigned MAX_EXP_COEFF=4;
                 static const _T exp_coeff[MAX_EXP_COEFF];
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
@@ -60,6 +60,8 @@ namespace cftal {
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
+                // M_1_LN10 1/LOG_E(10)
+                static const _T m_1_ln10;
                 // 2*PI
                 static const _T m_pi2;
                 // 1/(2*PI)
@@ -240,7 +242,7 @@ const _T
 cftal::math::impl::d_real_constants<_T, float>::
 exp_coeff[MAX_EXP_COEFF] =  {
     // + 1/5!
-    _T(  8.3333337679505e-03f, -4.3461720333760e-10f),
+    // _T(  8.3333337679505e-03f, -4.3461720333760e-10f),
     // + 1/4!
     _T(  4.1666667908430e-02f, -1.2417634698281e-09f),
     // + 1/3!
