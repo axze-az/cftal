@@ -1,6 +1,8 @@
 #include <cftal/vec.h>
 #include <cftal/test/f32_f64.h>
 #include <cftal/test/uniform_distribution.h>
+#include <cftal/test/of_math_funcs.h>
+#include <cftal/math_func_constants.h>
 #include <cmath>
 #include <random>
 #include <iostream>
@@ -47,11 +49,23 @@ cftal::test::check_ldexp<_T, _N>::v(_T a, int32_t e)
     _T r= std::ldexp(a, e);
     vec<int32_t, _N> ve=e;
     vec<_T, _N> vr= ldexp(va, ve);
-    bool rc=check(vr, r, "ldexp");
+    bool rc=true;
+    using fc_t= cftal::math::func_constants<_T>;
+    using std::abs;
+    if ((abs(r) <= fc_t::max_denormal) && r != 0) {
+        rc= check(vr, r, "ldexp", true, cmp_ulp<_T>(1, nullptr));
+    } else {
+        rc= check(vr, r, "ldexp");
+    }
     if (rc==false) {
-        std::cout << "ldexp("
+        std::cerr << "ldexp("
                   << std::setprecision(22) << std::hexfloat
-                  << a << ", " << e << ") failed\n" << std::scientific;
+                  << a << ", " << e << ") failed\n"
+                  << extract<0>(vr)
+                  << " expected "
+                  << r
+                  << '\n'
+                  << std::scientific;
     }
     return rc;
 }
@@ -93,6 +107,7 @@ cftal::test::check_ldexp<_T, _N>::v()
 int main()
 {
     std::cout << "testing ldexp vXf64" << std::endl;
+    std::cerr << std::setprecision(22);
     bool rd=cftal::test::check_ldexp_up_to<double, 8>::v();
     if (rd==false)
         std::cerr << "double test failed" << std::endl;

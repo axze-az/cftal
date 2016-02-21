@@ -251,29 +251,90 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
+ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
 {
-    vi_type q(ve);
-    vi_type m(q >> 31);
-    m = (((m + q) >> 9) - m) << 7;
-    q = q - (m << 2);
+    vf_type x=xc;
+#if 0
+    vi_type l=_T::extract_high_word(x);
+    vi_type h=_T::extract_low_word(x);
+    vi_type e=((h>>20) & 0x7ff);
+    // subnormal handling
+    vf_type sx=x*vf_type(0x1.0p+53);
+    vi_type sl=_T::extract_high_word(sx);
+    vi_type sh=_T::extract_low_word(sx);
+    vi_type se=((sh>>20) & 0x7ff) - vi_type(53);
+
+    vmi_type is_denom= e == vi_type(0);
+
+    vi_type rl=l, rh=h;
+    e = _T::sel(is_denom, se, e);
+    rl= _T::sel(is_denom, sl, l);
+    rh= _T::sel(is_denom, sh, h);
+
+    vi_type v= e + n;
+    vi_type vt = max(vi_type(0x7ff), v);
+    vt = max(vi_type(0x7ff), vt);
+    // clear exponent bits
+    rh &= vi_type(~0x7ff00000);
+
+    // create the upper half
+    vi_type rhe= rh | (vi_type(vt+53) << 20);
+    vf_type r= _T::combine_words(rl, rhe);
+    r *= 0x1.0p-53;
+
+    r = _T::sel(_T::vmi_to_vmf(v ==0x7ff),
+                _T::combine_words(vi_type(0),
+                                  (rh & 0x80000000) | 0x7FF00000),
+                r);
+    r = _T::sel(_T::vmi_to_vmf(v < -53),
+                _T::combine_words(vi_type(0),
+                                  rh & 0x80000000),
+                r);
+    r = _T::sel(_T::vmi_to_vmf(n==0) | isinf(x) | (x == 0.0),
+                x, r);
+    return r;
+#else
+    vi_type sgn = n>>31;
+    // division by 2^k: shift right rounds down, correct it for
+    // negative numbers, we divde ve by 4
+    vi_type m= (n + (3 & sgn)) >>2;
+    vi_type q = n - (m<<2);
 
     m += 0x3ff;
     m = max(vi_type(0), m);
     m = min(vi_type(0x7ff), m);
+#if 1
+    using fct_t = func_constants<double>;
+    vmf_type is_zero= x == vf_type(0);
+    vmf_type is_denom= (abs(x) <= fct_t::max_denormal) & (~is_zero);
 
-    vf_type fm(_T::insert_exp(m));
-    // calculate fm^4
-    fm *= fm;
-    fm *= fm;
-    vf_type r(vd * fm);
+    if (any_of(is_denom)) {
+        vf_type rs= x* vf_type(0x1.0p53);
+        x = _T::sel(is_denom, rs, x);
+    }
+#endif
     q += 0x3ff;
-    // q = max(vi_type(0), q);
-    // q = min(vi_type(0x7ff), q);
     vf_type fq(_T::insert_exp(q));
-    r *= fq;
-    r = _T::sel(vd == vf_type(0.0), vd, r);
+    // multiply with the remainder first to retain precision of
+    // subnormal results
+    vf_type r = fq * x;
+    // multiply with ve/4
+    vf_type fm(_T::insert_exp(m));
+    r *= fm;
+    r *= fm;
+    r *= fm;
+    r *= fm;
+#if 1
+    if (any_of(is_denom)) {
+        vf_type rs= r* vf_type(0x1.0p-53);
+        r = _T::sel(is_denom, rs, r);
+    }
+#else
+    vmf_type is_zero= x == vf_type(0);
+#endif
+    r = _T::sel(is_zero, x, r);
     return r;
+#endif
 }
 
 template <typename _T>

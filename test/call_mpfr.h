@@ -217,6 +217,14 @@ namespace cftal {
 
         template <std::size_t _B>
         mpfr_real<_B>
+        pow(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
+            mpfr_real<_B> r;
+            mpfr_pow(r(), a(), b(), MPFR_RNDN);
+            return r;
+        }
+        
+        template <std::size_t _B>
+        mpfr_real<_B>
         log(const mpfr_real<_B>& a) {
             mpfr_real<_B> r;
             mpfr_log(r(), a(), MPFR_RNDN);

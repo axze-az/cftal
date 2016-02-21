@@ -111,7 +111,7 @@ namespace cftal {
     vec<double, 8>
     frexp(arg_t<vec<double, 8> > x, vec<int32_t, 8>* e);
 
-    // ldexp
+    // ldexp, +-1 ulp if the result is a denormal number, 0 otherwise
     template <std::size_t _N>
     vec<double, _N>
     ldexp(const vec<double, _N>& a, const vec<int32_t, _N>& e);
