@@ -50,8 +50,8 @@ cftal::test::check_ldexp<_T, _N>::v(_T a, int32_t e)
     bool rc=check(vr, r, "ldexp");
     if (rc==false) {
         std::cout << "ldexp("
-                  << std::setprecision(22)
-                  << a << ", " << e << ") failed\n";
+                  << std::setprecision(22) << std::hexfloat
+                  << a << ", " << e << ") failed\n" << std::scientific;
     }
     return rc;
 }
@@ -64,7 +64,8 @@ cftal::test::check_ldexp<_T, _N>::v()
     uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
 
-    const int32_t min_exp = std::numeric_limits<_T>::min_exponent;
+    const int32_t min_exp = std::numeric_limits<_T>::min_exponent -
+        std::numeric_limits<_T>::digits;
     const int32_t max_exp = std::numeric_limits<_T>::max_exponent;
 
     bool rc=true;
