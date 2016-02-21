@@ -147,35 +147,6 @@
         return func_t::tan(d);                                          \
     }                                                                   \
                                                                         \
-    void                                                                \
-    ns::native_sincos(arg<vec_float>::type d,                           \
-                      vec_float* psin, vec_float* pcos)                 \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_sincos(d, psin, pcos);                    \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::native_sin(arg<vec_float>::type d)                              \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_sin(d);                                   \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::native_cos(arg<vec_float>::type d)                              \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_cos(d);                                   \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::native_tan(arg<vec_float>::type d)                              \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_tan(d);                                   \
-    }                                                                   \
-                                                                        \
     ns::vec_float                                                       \
     ns::native_exp(arg<vec_float>::type d)                              \
     {                                                                   \
