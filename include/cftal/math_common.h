@@ -655,8 +655,6 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
 {
     using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
 
-    vmf_type cmp_res;
-    vmi_type i_cmp_res;
     vmf_type inf_nan= isinf(dh) | isnan(dh);
     vmf_type finite= ~inf_nan;
     vi_type k_i(0);
@@ -677,10 +675,10 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
 
     // reduce arguments further until anything is lt M_LN2/512 ~0.0135
     do {
-        cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
+        vmf_type cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
         if (none_of(cmp_res))
             break;
-        i_cmp_res = _T::vmf_to_vmi(cmp_res);
+        vmi_type i_cmp_res = _T::vmf_to_vmi(cmp_res);
         k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
         dvf_type d1 = mul_pwr2(r, vf_type(0.5));
         vf_type d2_h = _T::sel(cmp_res, d1.h(), r.h());
@@ -695,10 +693,10 @@ exp_k2(arg_t<vf_type> dh, arg_t<vf_type> dl, bool exp_m1)
 
     // scale back the 1/k_i reduced value for expm1
     do {
-        i_cmp_res = k_i > vi_type(0);
+        vmi_type i_cmp_res = k_i > vi_type(0);
         if (none_of(i_cmp_res))
             break;
-        cmp_res = _T::vmi_to_vmf(i_cmp_res);
+        vmf_type cmp_res = _T::vmi_to_vmf(i_cmp_res);
         dvf_type d1= mul_pwr2(s, vf_type(2.0)) + sqr(s);
         vf_type d2_h = _T::sel(cmp_res, d1.h(), s.h());
         vf_type d2_l = _T::sel(cmp_res, d1.l(), s.l());
@@ -734,8 +732,6 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
 {
     using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
 
-    vmf_type cmp_res;
-    vmi_type i_cmp_res;
     vmf_type inf_nan= isinf(d) | isnan(d);
     vmf_type finite= ~inf_nan;
     vi_type k_i(0);
@@ -755,10 +751,10 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
     r -= m2* ctbl::m_ln2_1;
      // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
     do {
-        cmp_res = (abs(r) > vf_type(M_LN2/512)) & finite;
+        vmf_type cmp_res = (abs(r) > vf_type(M_LN2/512)) & finite;
         if (none_of(cmp_res))
             break;
-        i_cmp_res = _T::vmf_to_vmi(cmp_res);
+        vmi_type i_cmp_res = _T::vmf_to_vmi(cmp_res);
         k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
         vf_type d1 = r * vf_type(0.5);
         vf_type d2 = _T::sel(cmp_res, d1, r);
@@ -772,10 +768,10 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
 
     // scale back the 1/k_i reduced value
     do {
-        i_cmp_res = k_i > vi_type(0);
+        vmi_type i_cmp_res = k_i > vi_type(0);
         if (none_of(i_cmp_res))
             break;
-        cmp_res = _T::vmi_to_vmf(i_cmp_res);
+        vmf_type cmp_res = _T::vmi_to_vmf(i_cmp_res);
         vf_type d1= s * 2.0 + s * s;
         vf_type d2 = _T::sel(cmp_res, d1, s);
         k_i -= vi_type(1);
