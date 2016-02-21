@@ -98,6 +98,13 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
+    ns::log1p(arg<vec_float>::type d)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::log1p(d);                                        \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::pow(arg<vec_float>::type b, arg<vec_float>::type e)             \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \

@@ -322,6 +322,24 @@ namespace cftal {
     vec<double, 8>
     log(arg_t<vec<double, 8> > d);
 
+
+    template <std::size_t _N>
+    vec<double, _N>
+    log1p(const vec<double, _N>& v);
+
+    vec<double, 1>
+    log1p(arg_t<vec<double, 1> > v);
+
+    vec<double, 2>
+    log1p(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    log1p(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    log1p(arg_t<vec<double, 8> > d);
+
+
     // pow, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -448,7 +466,7 @@ namespace cftal {
 
     vec<double, 8>
     tan(arg_t<vec<double, 8> > d);
-    
+
     // native_exp, these functions are exact to +-5 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -750,6 +768,26 @@ cftal::native_log(const vec<double, _N>& v)
     vec<double, _N> r(native_log(low_half(v)), native_log(high_half(v)));
     return r;
 }
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::log1p(const vec<double, _N>& v)
+{
+    vec<double, _N> r(log1p(low_half(v)), log1p(high_half(v)));
+    return r;
+}
+
+#if 0
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native_log1p(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_log1p(low_half(v)), native_log1p(high_half(v)));
+    return r;
+}
+#endif
 
 template <std::size_t _N>
 inline

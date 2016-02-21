@@ -347,6 +347,23 @@ namespace cftal {
     v8f32
     log(arg<v8f32>::type d);
 
+
+    template <std::size_t _N>
+    vec<float, _N>
+    log1p(const vec<float, _N>& v);
+
+    vec<float, 1>
+    log1p(arg_t<vec<float, 1> > v);
+
+    vec<float, 2>
+    log1p(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    log1p(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    log1p(arg_t<vec<float, 8> > d);
+
     // pow, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<float, _N>
@@ -633,6 +650,15 @@ cftal::vec<float, _N>
 cftal::native_log(const vec<float, _N>& v)
 {
     vec<float, _N> r(native_log(low_half(v)), native_log(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::log1p(const vec<float, _N>& v)
+{
+    vec<float, _N> r(log1p(low_half(v)), log(high_half(v)));
     return r;
 }
 

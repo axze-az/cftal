@@ -95,7 +95,6 @@ namespace cftal {
             vf_type
             native_log_k(arg_t<vf_type> x);
 
-
             // exp, expm1, sinh, cosh call exp_k2 if native == false
             // or native_exp
             template <bool _NATIVE>
@@ -114,6 +113,8 @@ namespace cftal {
             // log _call log_k2 if native == false, or native_log
             template <bool _NATIVE>
             static vf_type _log(arg_t<vf_type> cf);
+            template <bool _NATIVE>
+            static vf_type _log1p(arg_t<vf_type> cf);
 
             // exp, expm1, sinh, cosh call exp_k2
             static vf_type exp(arg_t<vf_type> vf);
@@ -135,6 +136,11 @@ namespace cftal {
             static vf_type log(arg_t<vf_type> vf);
             // native log calls native_log_k
             static vf_type native_log(arg_t<vf_type> vf);
+
+            // log calls log_k2
+            static vf_type log1p(arg_t<vf_type> vf);
+            // native log calls native_log_k
+            static vf_type native_log1p(arg_t<vf_type> vf);
 
             // pow calls exp_k2 and log_k2
             static
@@ -229,7 +235,9 @@ namespace cftal {
             template <typename _F, typename _C, std::size_t _N>
             d_real<_F>
             poly(d_real<_F> x, const d_real<_C> (&a)[_N]) {
-                static_assert(_N > 0, "invalid call to poly(d_real<_F>, d_real<_C>(&a)[])");
+                static_assert(
+                    _N > 0,
+                    "invalid call to poly(d_real<_F>, d_real<_C>(&a)[])");
                 d_real<_F> r=d_real<_F>(a[0]);
                 for (std::size_t i=1; i<_N; ++i) {
                     r=poly(x, r, d_real<_F>(a[i] ));
@@ -240,7 +248,9 @@ namespace cftal {
             template <typename _F, typename _C, std::size_t _N>
             _F
             poly(_F x, const d_real<_C> (&a)[_N]) {
-                static_assert(_N > 0, "invalid call to poly(_F, d_real<_C>(&a)[])");
+                static_assert(
+                    _N > 0,
+                    "invalid call to poly(_F, d_real<_C>(&a)[])");
                 _F r= a[0].h();
                 for (std::size_t i=1; i<_N; ++i) {
                     r= poly(x, r, _F(a[i].h()));
@@ -730,7 +740,7 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
     vmf_type finite= ~inf_nan;
     vi_type k_i(0);
 
-    vmf_type d_large = d > 709.0;
+    vmf_type d_large = d > ctbl::exp_arg_large;
     vf_type d2=d;
     bool any_of_d_large = any_of(d_large);
     if (any_of_d_large) {
@@ -836,7 +846,6 @@ native_exp10_k(arg_t<vf_type> d)
     vf_type d10=ctbl::m_ln10.h() * d;
     return native_exp_k(d10, false);
 }
-
 
 template <typename _FLOAT_T, typename _T>
 inline
@@ -1183,6 +1192,7 @@ _log(arg_t<vf_type> d)
     return x;
 }
 
+
 template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
@@ -1199,6 +1209,63 @@ cftal::math::func_common<_FLOAT_T, _T>::
 native_log(arg_t<vf_type> d)
 {
     return my_type::_log<true>(d);
+}
+
+template <typename _FLOAT_T, typename _T>
+template <bool _NATIVE>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+_log1p(arg_t<vf_type> d)
+{
+    vf_type x;
+    // double log1p(double x)
+    // {
+    //    double u = 1.+x;
+    //    if (u == 1.)
+    //        return x;
+    //    else
+    //        return log(u)*x/(u-1.);
+    // }    
+    if (_NATIVE) {
+        x=native_log_k(d+vf_type(1.0));
+    } else {
+        dvf_type dd=d;
+        dd += vf_type(1);
+        dvf_type xd=log_k2(dd.h(), dd.l());
+        x = xd.h();
+    }
+    const vf_type pinf(_T::pinf());
+    const vf_type ninf(_T::ninf());
+    x = _T::sel(isinf(d), pinf, x);
+    // if (d < -1.0) x = NAN;
+    x = _T::sel(d < vf_type(-1.0), vf_type(_T::nan()), x);
+    // if (d == -1.0) x = -INFINITY;
+    x = _T::sel(d == vf_type(-1.0), ninf, x);
+
+    // using fc= func_constants<_FLOAT_T>;
+    // const vf_type log_lo_fin= fc::log_lo_fin;
+    // const vf_type log_lo_val= fc::log_lo_val;
+    // x = _T::sel(d == log_lo_fin, log_lo_val, x);
+    return x;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+log1p(arg_t<vf_type> d)
+{
+    return my_type::_log1p<false>(d);
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+native_log1p(arg_t<vf_type> d)
+{
+    return my_type::_log1p<true>(d);
 }
 
 template <typename _FLOAT_T, typename _T>

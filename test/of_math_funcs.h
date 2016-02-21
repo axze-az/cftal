@@ -245,6 +245,27 @@ namespace cftal {
         };
 
         template <typename _T>
+        struct check_log1p {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return log1p(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+#if 1
+                return call_mpfr::func(a, mpfr_log1p);
+#else
+                return std::log1p(a);
+#endif
+            }
+            static
+            const char* fname() { return "log1p"; }
+        };
+        
+        template <typename _T>
         struct check_pow {
             template <std::size_t _N>
             static
