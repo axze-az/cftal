@@ -1,8 +1,10 @@
 #include <cftal/vec.h>
 #include <cftal/test/f32_f64.h>
+#include <cftal/test/uniform_distribution.h>
 #include <cmath>
 #include <random>
 #include <iostream>
+#include <iomanip>
 #include <limits>
 
 namespace cftal {
@@ -45,7 +47,13 @@ cftal::test::check_ldexp<_T, _N>::v(_T a, int32_t e)
     _T r= std::ldexp(a, e);
     vec<int32_t, _N> ve=e;
     vec<_T, _N> vr= ldexp(va, ve);
-    return check(vr, r, "ldexp");
+    bool rc=check(vr, r, "ldexp");
+    if (rc==false) {
+        std::cout << "ldexp("
+                  << std::setprecision(22)
+                  << a << ", " << e << ") failed\n";
+    }
+    return rc;
 }
 
 template <typename _T, std::size_t _N>
@@ -53,7 +61,7 @@ bool
 cftal::test::check_ldexp<_T, _N>::v()
 {
     std::mt19937 rnd;
-    std::uniform_real_distribution<_T>
+    uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
 
     const int32_t min_exp = std::numeric_limits<_T>::min_exponent;
