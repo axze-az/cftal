@@ -376,27 +376,6 @@ namespace cftal {
         };
 
         template <typename _T>
-        struct check_cot {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                return cot(a);
-            }
-            static
-            _T
-            v(const _T& a) {
-#if 1
-                return call_mpfr::func(a, mpfr_cot);
-#else
-                return _T(1)/std::tan(a);
-#endif
-            }
-            static
-            const char* fname() { return "cot"; }
-        };
-
-        template <typename _T>
         struct check_atan {
             template <std::size_t _N>
             static

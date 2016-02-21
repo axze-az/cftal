@@ -59,7 +59,7 @@ namespace cftal {
             using base_type::frexp;
             using base_type::ldexp;
             using base_type::ilogbp1;
-            
+
             static
             dvf_type
             exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
@@ -95,7 +95,7 @@ namespace cftal {
             vf_type
             native_log_k(arg_t<vf_type> x);
 
-            
+
             // exp, expm1, sinh, cosh call exp_k2 if native == false
             // or native_exp
             template <bool _NATIVE>
@@ -1346,33 +1346,6 @@ tan(arg_t<vf_type> d)
     return tn.h() + tn.l();
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
-typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
-cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
-cot(arg_t<vf_type> d)
-{
-    vf_type s[2], c[2];
-    my_type::sin_cos_k(d, 2, s, c);
-    dvf_type ds(s[0], s[1]), dc(c[0], c[1]);
-    dvf_type ct= dc /ds;
-    using fc=func_constants<_FLOAT_T>;
-    vf_type r=ct.h() + ct.l();
-    vmf_type is_nan=isnan(r);
-    if (any_of(is_nan)) {
-        vmf_type is_small = (abs(d) <= fc::max_denormal) & is_nan;
-        if (any_of(is_small)) {
-            // vmf_type den_plus= may_be_denom & (d > 0.0);
-            // vmf_type den_minus= may_be_denom & (d < 0.0);
-            // r = _TRAITS_T::sel(den_plus, _TRAITS_T::pinf(), r);
-            // r = _TRAITS_T::sel(den_minus, _TRAITS_T::ninf(), r);
-            vf_type zinf= _TRAITS_T::pinf();
-            zinf=copysign(zinf, d);
-            r = _TRAITS_T::sel(is_small, zinf, r);
-        }
-    }
-    return r;
-}
 
 template <typename _FLOAT_T,
           typename _TRAITS_T>
@@ -1417,18 +1390,6 @@ native_tan(arg_t<vf_type> d)
     my_type::native_sin_cos_k(d, &s, &c);
     vf_type tn(s / c);
     return tn;
-}
-
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
-typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
-cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
-native_cot(arg_t<vf_type> d)
-{
-    vf_type s, c;
-    my_type::native_sin_cos_k(d, &s, &c);
-    vf_type ct(c / s);
-    return ct;
 }
 
 template <typename _FLOAT_T,

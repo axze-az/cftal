@@ -478,7 +478,7 @@ namespace cftal {
     vec<double, 8>
     atan(arg_t<vec<double, 8> > d);
 
-    
+
     template <std::size_t _N>
     vec<double, _N>
     atan2(const vec<double, _N>& x, const vec<double, _N>& y);
@@ -520,11 +520,6 @@ namespace cftal {
     acos(arg_t<vec<double, 2> > d);
 
 
-    vec<double, 1>
-    cot(arg_t<vec<double, 1> > d);
-    vec<double, 2>
-    cot(arg_t<vec<double, 2> > d);
-
     void
     native_sincos(arg_t<vec<double, 1> > d,
                   vec<double, 1> * psin, vec<double, 1> * pcos);
@@ -547,10 +542,6 @@ namespace cftal {
     vec<double, 2>
     native_tan(arg_t<vec<double, 2> > d);
 
-    vec<double, 1>
-    native_cot(arg_t<vec<double, 1> > d);
-    vec<double, 2>
-    native_cot(arg_t<vec<double, 2> > d);
 
 
     // specializations vec<double, 4>
@@ -561,8 +552,6 @@ namespace cftal {
     vec<double, 4>
     acos(arg_t<vec<double, 4> > d);
 
-    vec<double, 4>
-    cot(arg_t<vec<double, 4> > d);
 
     void
     native_sincos(arg_t<vec<double, 4> > d,
@@ -586,8 +575,6 @@ namespace cftal {
 
 
     vec<double, 8>
-    cot(arg_t<vec<double, 8> > d);
-    vec<double, 8>
     atan2(arg_t<vec<double, 8> > x, arg_t<vec<double, 8> > y);
 
     void
@@ -599,8 +586,6 @@ namespace cftal {
     native_cos(arg_t<vec<double, 8> > d);
     vec<double, 8>
     native_tan(arg_t<vec<double, 8> > d);
-    vec<double, 8>
-    native_cot(arg_t<vec<double, 8> > d);
 
     vec<double, 1>
     fma(arg_t<vec<double, 1> > a,
