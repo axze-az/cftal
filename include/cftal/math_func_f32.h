@@ -9,8 +9,6 @@
 #include <type_traits>
 #include <limits>
 #include <utility>
-#include <iostream>
-#include <iomanip>
 
 namespace cftal {
     namespace math {
@@ -206,7 +204,7 @@ ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
     // clamp nn to [-4096, 4096]
     vi_type nn= min(vi_type(4096), max(n, vi_type(-4096)));
     vi_type re= xe + nn;
-    
+
     // 3 cases exist:
     // 0 < re < 0xff normal result
     //     re >= 0xff inf result (overflow)
@@ -231,12 +229,9 @@ ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
         // create m*0x1.0p-126
         vi_type mu= m | vi_type(1<<23);
         vf_type r_u= _T::as_float(mu);
-        // std::cout << std::hexfloat << r_u << std::endl;
         // create a scaling factor
         vi_type ue= max(vi_type(re + (_T::bias-1)), vi_type(1));
-        // avoid overflows
         vf_type s_u= _T::as_float(vi_type(ue << 23));
-        // std::cout << s_u << std::endl;
         r_u *= s_u;
         vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
         r = _T::sel(f_is_near_z, r_u, r);
@@ -246,6 +241,8 @@ ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
                 x, r);
     return r;
 #else
+    // this code may produce wrong results for underflows because
+    // of double rounding
     vi_type q= ve;
     vi_type m = q >> 31;
     m = (((m + q) >> 6) - m) << 4;

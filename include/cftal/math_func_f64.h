@@ -262,7 +262,7 @@ ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
 
     vmi_type is_not_zero=vi_type((mh << 1) | ml) != vi_type(0);
     vmi_type is_denom= (xe == vi_type(0)) & is_not_zero;
-        
+
     if (any_of(is_denom)) {
         // subnormal handling
         vf_type sx=x*vf_type(0x1.0p+53);
@@ -274,12 +274,12 @@ ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
         ml= _T::sel(is_denom, sl, ml);
         mh= _T::sel(is_denom, sh, mh);
     }
-        
+
     // determine the exponent of the result
     // clamp nn to [-4096, 4096]
     vi_type nn= min(vi_type(4096), max(n, vi_type(-4096)));
     vi_type re= xe + nn;
-    
+
     // 3 cases exist:
     // 0 < re < 0x7ff normal result
     //     re >= 0x7ff inf result (overflow)
@@ -317,6 +317,8 @@ ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
                 x, r);
     return r;
 #else
+    // this code may produce wrong results for underflows because
+    // of double rounding
     vi_type sgn = n>>31;
     // division by 2^k: shift right rounds down, correct it for
     // negative numbers, we divde ve by 4
@@ -326,16 +328,7 @@ ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
     m += 0x3ff;
     m = max(vi_type(0), m);
     m = min(vi_type(0x7ff), m);
-#if 1
-    using fct_t = func_constants<double>;
-    vmf_type is_zero= x == vf_type(0);
-    vmf_type is_denom= (abs(x) <= fct_t::max_denormal) & (~is_zero);
 
-    if (any_of(is_denom)) {
-        vf_type rs= x* vf_type(0x1.0p53);
-        x = _T::sel(is_denom, rs, x);
-    }
-#endif
     q += 0x3ff;
     vf_type fq(_T::insert_exp(q));
     // multiply with the remainder first to retain precision of
@@ -347,14 +340,7 @@ ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
     r *= fm;
     r *= fm;
     r *= fm;
-#if 1
-    if (any_of(is_denom)) {
-        vf_type rs= r* vf_type(0x1.0p-53);
-        r = _T::sel(is_denom, rs, r);
-    }
-#else
     vmf_type is_zero= x == vf_type(0);
-#endif
     r = _T::sel(is_zero, x, r);
     return r;
 #endif
