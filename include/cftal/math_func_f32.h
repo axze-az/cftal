@@ -9,6 +9,8 @@
 #include <type_traits>
 #include <limits>
 #include <utility>
+#include <iostream>
+#include <iomanip>
 
 namespace cftal {
     namespace math {
@@ -26,7 +28,7 @@ namespace cftal {
                 uint32_t _u;
             } ud_t;
 
-            static constexpr int32_t bias = 126;
+            static constexpr int32_t bias = 127;
             static constexpr int32_t e_max= 127;
             static constexpr int32_t e_min= -126;
             static constexpr int32_t bits=23;
@@ -182,6 +184,68 @@ typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
 ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
 {
+#if 1
+    vf_type x=vd;
+    vi_type n=ve;
+    vi_type m=_T::as_int(x);
+    vi_type xe= ((m>>23) & 0xff);
+
+    vmi_type is_not_zero = vi_type(m<<1) != vi_type(0);
+    vmi_type is_denom= (xe == vi_type(0)) & is_not_zero;
+
+    // subnormal handling
+    if (any_of(is_denom)) {
+        vf_type sx= x * vf_type(0x1.0p+24f);
+        vi_type sm= _T::as_int(sx);
+        vi_type se= ((sm >> 23) & 0xff) - vi_type(24);
+        xe = _T::sel(is_denom, se, xe);
+        m = _T::sel(is_denom, sm, m);
+    }
+
+    // determine the exponent of the result
+    // clamp nn to [-4096, 4096]
+    vi_type nn= min(vi_type(4096), max(n, vi_type(-4096)));
+    vi_type re= xe + nn;
+    
+    // 3 cases exist:
+    // 0 < re < 0xff normal result
+    //     re >= 0xff inf result (overflow)
+    //     re <= 0 subnormal or 0 (underflow)
+
+    // clear exponent bits from m
+    m &= vi_type(~0x7f800000);
+
+    // high part of mantissa for normal results:
+    vi_type mn= m | ((re & vi_type(0xff)) << 23);
+    vf_type r= _T::as_float(mn);
+
+    // overflow handling
+    vmi_type i_is_inf = re > vi_type(0xfe);
+    vmf_type f_is_inf = _T::vmi_to_vmf(i_is_inf);
+    vf_type r_inf = copysign(vf_type(_T::pinf()), x);
+    r = _T::sel(f_is_inf, r_inf, r);
+
+    // underflow handling
+    vmi_type i_is_near_z = re < vi_type (1);
+    if (any_of(i_is_near_z)) {
+        // create m*0x1.0p-126
+        vi_type mu= m | vi_type(1<<23);
+        vf_type r_u= _T::as_float(mu);
+        // std::cout << std::hexfloat << r_u << std::endl;
+        // create a scaling factor
+        vi_type ue= max(vi_type(re + (_T::bias-1)), vi_type(1));
+        // avoid overflows
+        vf_type s_u= _T::as_float(vi_type(ue << 23));
+        // std::cout << s_u << std::endl;
+        r_u *= s_u;
+        vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
+        r = _T::sel(f_is_near_z, r_u, r);
+    }
+    // handle special cases:
+    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)),
+                x, r);
+    return r;
+#else
     vi_type q= ve;
     vi_type m = q >> 31;
     m = (((m + q) >> 6) - m) << 4;
@@ -200,6 +264,7 @@ ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
     r *= fq;
     r = _T::sel(vd == vf_type(0), vd, r);
     return r;
+#endif
 }
 
 template <typename _T>

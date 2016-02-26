@@ -9,6 +9,7 @@
 #include <cftal/math_impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
 #include <cmath>
+#include <iostream>
 
 namespace cftal {
 
@@ -254,43 +255,65 @@ cftal::math::func_core<double, _T>::
 ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
 {
     vf_type x=xc;
-#if 0
-    vi_type l=_T::extract_high_word(x);
-    vi_type h=_T::extract_low_word(x);
-    vi_type e=((h>>20) & 0x7ff);
-    // subnormal handling
-    vf_type sx=x*vf_type(0x1.0p+53);
-    vi_type sl=_T::extract_high_word(sx);
-    vi_type sh=_T::extract_low_word(sx);
-    vi_type se=((sh>>20) & 0x7ff) - vi_type(53);
+#if 1
+    vi_type mh=_T::extract_high_word(x);
+    vi_type ml=_T::extract_low_word(x);
+    vi_type xe=((mh>>20) & 0x7ff);
 
-    vmi_type is_denom= e == vi_type(0);
+    vmi_type is_not_zero=vi_type((mh << 1) | ml) != vi_type(0);
+    vmi_type is_denom= (xe == vi_type(0)) & is_not_zero;
+        
+    if (any_of(is_denom)) {
+        // subnormal handling
+        vf_type sx=x*vf_type(0x1.0p+53);
+        vi_type sh=_T::extract_high_word(sx);
+        vi_type sl=_T::extract_low_word(sx);
+        vi_type se=((sh>>20) & 0x7ff) - vi_type(53);
+        // vi_type rl=ml, rh=mh;
+        xe = _T::sel(is_denom, se, xe);
+        ml= _T::sel(is_denom, sl, ml);
+        mh= _T::sel(is_denom, sh, mh);
+    }
+        
+    // determine the exponent of the result
+    // clamp nn to [-4096, 4096]
+    vi_type nn= min(vi_type(4096), max(n, vi_type(-4096)));
+    vi_type re= xe + nn;
+    
+    // 3 cases exist:
+    // 0 < re < 0x7ff normal result
+    //     re >= 0x7ff inf result (overflow)
+    //     re <= 0 subnormal or 0 (undeflow)
 
-    vi_type rl=l, rh=h;
-    e = _T::sel(is_denom, se, e);
-    rl= _T::sel(is_denom, sl, l);
-    rh= _T::sel(is_denom, sh, h);
+    // clear exponent bits from mh
+    mh &= vi_type(~0x7ff00000);
 
-    vi_type v= e + n;
-    vi_type vt = max(vi_type(0x7ff), v);
-    vt = max(vi_type(0x7ff), vt);
-    // clear exponent bits
-    rh &= vi_type(~0x7ff00000);
+    // high part of mantissa for normal results:
+    vi_type mhn= mh | ((re & vi_type(0x7ff)) << 20);
+    vf_type r= _T::combine_words(ml, mhn);
 
-    // create the upper half
-    vi_type rhe= rh | (vi_type(vt+53) << 20);
-    vf_type r= _T::combine_words(rl, rhe);
-    r *= 0x1.0p-53;
+    // overflow handling
+    vmi_type i_is_inf = re > vi_type(0x7fe);
+    vmf_type f_is_inf = _T::vmi_to_vmf(i_is_inf);
+    vf_type r_inf = copysign(vf_type(_T::pinf()), x);
+    r = _T::sel(f_is_inf, r_inf, r);
 
-    r = _T::sel(_T::vmi_to_vmf(v ==0x7ff),
-                _T::combine_words(vi_type(0),
-                                  (rh & 0x80000000) | 0x7FF00000),
-                r);
-    r = _T::sel(_T::vmi_to_vmf(v < -53),
-                _T::combine_words(vi_type(0),
-                                  rh & 0x80000000),
-                r);
-    r = _T::sel(_T::vmi_to_vmf(n==0) | isinf(x) | (x == 0.0),
+    // underflow handling
+    vmi_type i_is_near_z = re < vi_type (1);
+    if (any_of(i_is_near_z)) {
+        // create m*0x1.0p-1022
+        vi_type mhu= mh | vi_type(1<<20);
+        vf_type r_u= _T::combine_words(ml, mhu);
+        // create a scaling factor
+        vi_type ue= max(vi_type(re + (_T::bias-1)), vi_type(1));
+        // avoid overflows
+        vf_type s_u= _T::insert_exp(ue);
+        r_u *= s_u;
+        vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
+        r = _T::sel(f_is_near_z, r_u, r);
+    }
+    // handle special cases:
+    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)),
                 x, r);
     return r;
 #else
@@ -356,24 +379,24 @@ frexp(arg_t<vf_type> vd, vi_type* ve)
                       ~is_inf_nan_zero);
 
     // exponent:
-    vi_type e((value_head >> 20) - vi_type(1022));
+    vi_type e=(value_head >> 20);
 
     // denormals
     if (any_of(is_denom)) {
-        // first multiply with 2^54
-        // const vf_type two54=1.80143985094819840000e+16;
-        const vf_type two54=0x1.p54;
-        vf_type vden(two54 * vd);
+        // first multiply with 2^53
+        const vf_type two53=0x1.p53;
+        vf_type vden(two53 * vd);
         vi_type hden(_T::extract_high_word(vden));
         vi_type lden(_T::extract_low_word(vden));
         vi_type value_head_den(hden & vi_type(0x7fffffff));
-        vi_type eden((value_head_den>>20) - vi_type(1022+54));
+        vi_type eden((value_head_den>>20) - vi_type(53));
 
         // select denom/normal
         e = _T::sel(is_denom, eden, e);
         hi_word = _T::sel(is_denom, hden, hi_word);
         lo_word = _T::sel(is_denom, lden, lo_word);
     }
+    e -= vi_type(1022); //remove bias
     // insert exponent
     hi_word = (hi_word & vi_type(0x800fffff)) | vi_type(0x3fe00000);
     // combine low and high word

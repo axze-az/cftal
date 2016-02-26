@@ -1661,9 +1661,10 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
     vi_type e3c;
     vf_type mm, mm0;
     // m in [0.5, 1)
+    const divisor<vi_type, int32_t> idiv3(3);
+#if 0
     using fc=func_constants<_FLOAT_T>;
     vmf_type is_denormal=(xp <= fc::max_denormal * _FLOAT_T(128)) & (xp != 0.0);
-    const divisor<vi_type, int32_t> idiv3(3);
     if (any_of(is_denormal)) {
         vi_type e;
         vf_type m=frexp(xp, &e);
@@ -1677,6 +1678,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
         mm= ldexp(m, r3c);
         mm0= mm;
     } else {
+#endif
         // this code does not work for denormals:
         vi_type e = ilogbp1(xp);
         vi_type e3= e / idiv3;
@@ -1688,7 +1690,9 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
         vi_type sc= r3c - e;
         mm= ldexp(xp, sc);
         mm0 = mm;
+#if 0
     }
+#endif
     // we should calculate x^(-1/3) first because
     // the newton raphson steps do not require a
     // division:

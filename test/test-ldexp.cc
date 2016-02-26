@@ -50,6 +50,7 @@ cftal::test::check_ldexp<_T, _N>::v(_T a, int32_t e)
     vec<int32_t, _N> ve=e;
     vec<_T, _N> vr= ldexp(va, ve);
     bool rc=true;
+#if 0
     using fc_t= cftal::math::func_constants<_T>;
     using std::abs;
     if ((abs(r) <= fc_t::max_denormal) && r != 0) {
@@ -57,6 +58,8 @@ cftal::test::check_ldexp<_T, _N>::v(_T a, int32_t e)
     } else {
         rc= check(vr, r, "ldexp");
     }
+#endif
+    rc= check(vr, r, "ldexp");
     if (rc==false) {
         std::cerr << "ldexp("
                   << std::setprecision(22) << std::hexfloat
@@ -78,18 +81,39 @@ cftal::test::check_ldexp<_T, _N>::v()
     uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
 
-    const int32_t min_exp = std::numeric_limits<_T>::min_exponent -
-        std::numeric_limits<_T>::digits;
-    const int32_t max_exp = std::numeric_limits<_T>::max_exponent;
+    const int32_t min_exp = 3* std::numeric_limits<_T>::min_exponent;
+    const int32_t max_exp = 3*std::numeric_limits<_T>::max_exponent;
 
     bool rc=true;
+
+    const _T inf_nan_args []= {
+        _T(0.0),
+        _T(-0.0),
+        _T(1),
+        _T(2),
+        _T(7),
+        _T(8),
+        _T(uint64_t(1ULL<<23)),
+        _T(uint64_t(1ULL<<52)),
+        std::numeric_limits<_T>::infinity(),
+        std::numeric_limits<_T>::quiet_NaN(),
+    };
+
+    for (auto b=std::begin(inf_nan_args), e=std::end(inf_nan_args);
+         b!=e; ++b) {
+        const auto& ah= *b;
+        for (int32_t i= min_exp; i < max_exp; ++i) {
+            rc &= v(ah, i);
+            rc &= v(-ah, i);
+        }
+    }
     const int64_t N0=0x100ULL;
     const int64_t N=72*N0;
     for (int64_t i=0; i<N; ++i) {
         if ((i & (N0-1)) == (N0-1))
             std::cout << '.' << std::flush;
         _T ah=distrib(rnd);
-        for (int32_t i= min_exp-2; i < max_exp+2; ++i) {
+        for (int32_t i= min_exp; i < max_exp; ++i) {
             rc &= v(ah, i);
             rc &= v(-ah, i);
         }
@@ -106,9 +130,10 @@ cftal::test::check_ldexp<_T, _N>::v()
 
 int main()
 {
+    std::cerr << std::setprecision(22) << std::hexfloat;
+    bool rd=true;
     std::cout << "testing ldexp vXf64" << std::endl;
-    std::cerr << std::setprecision(22);
-    bool rd=cftal::test::check_ldexp_up_to<double, 8>::v();
+    rd=cftal::test::check_ldexp_up_to<double, 8>::v();
     if (rd==false)
         std::cerr << "double test failed" << std::endl;
     std::cout << "testing ldexp vXf32" << std::endl;
