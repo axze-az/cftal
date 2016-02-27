@@ -283,7 +283,7 @@ ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
     // 3 cases exist:
     // 0 < re < 0x7ff normal result
     //     re >= 0x7ff inf result (overflow)
-    //     re <= 0 subnormal or 0 (undeflow)
+    //     re <= 0 subnormal or 0 (underflow)
 
     // clear exponent bits from mh
     mh &= vi_type(~0x7ff00000);
@@ -382,18 +382,19 @@ frexp(arg_t<vf_type> vd, vi_type* ve)
         hi_word = _T::sel(is_denom, hden, hi_word);
         lo_word = _T::sel(is_denom, lden, lo_word);
     }
-    e -= vi_type(1022); //remove bias
     // insert exponent
     hi_word = (hi_word & vi_type(0x800fffff)) | vi_type(0x3fe00000);
     // combine low and high word
     vf_type frc(_T::combine_words(lo_word, hi_word));
     // inf, nan, zero
     vmf_type f_inz(_T::vmi_to_vmf(is_inf_nan_zero));
-    e= _T::sel(is_inf_nan_zero, vi_type(0), e);
     frc = _T::sel(f_inz, vd, frc);
 
-    if (ve != nullptr)
+    if (ve != nullptr) {
+        e -= vi_type(1022); // remove bias from e
+        e= _T::sel(is_inf_nan_zero, vi_type(0), e);
         *ve= e;
+    }
     return frc;
 }
 
