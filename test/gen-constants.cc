@@ -294,7 +294,7 @@ cftal::test::csplit(double (&r)[_N], const mpfr_real<_B>& v)
     uint64_t msk=const_u64<0x00000000U, 0xfffffff0U>::v._u64;
     mpfr_real<_B> vv(v);
     for (std::size_t i=0; i<_N-1; ++i) {
-        double t= vv;
+        double t= double(vv);
         uint64_t u=as<uint64_t>(t);
         u &= msk;
         double tt=as<double>(u);
@@ -311,7 +311,7 @@ cftal::test::csplit(float (&r)[_N], const mpfr_real<_B>& v)
     uint32_t msk=const_u32<0xffffc000U>::v._u32;
     mpfr_real<_B> vv(v);
     for (std::size_t i=0; i<_N-1; ++i) {
-        float t= vv;
+        float t= float(vv);
         uint32_t u=as<uint32_t>(t);
         u &= msk;
         float tt=as<float>(u);

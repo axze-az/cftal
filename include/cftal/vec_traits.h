@@ -275,6 +275,14 @@ namespace cftal {
             }
 
             static
+            void extract_words(vi_type& low_word, vi_type& high_word,
+                               const vf_type& d) {
+                vec<int32_t, _N*2> di=as<vec<int32_t, _N*2> >(d);
+                low_word=even_elements(di);
+                high_word=odd_elements(di);
+            }
+
+            static
             vf_type combine_words(const vi_type& l,
                                   const vi_type& h) {
                 vec<int32_t, _N*2> vi= combine_even_odd(l, h);

@@ -113,6 +113,15 @@ namespace cftal {
             }
 
             static
+            void extract_words(vi_type& low_word, vi_type& high_word,
+                               const vf_type& d) {
+                ud_t t;
+                t._d = d;
+                low_word= vi_type(t._u);
+                high_word= vi_type(t._u >>32);
+            }
+
+            static
             vf_type insert_high_word(const vf_type& d,
                                      const vi_type& w) {
                 ud_t t;
@@ -194,9 +203,6 @@ namespace cftal {
             native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
 
-            // cofficients for atan2
-            static const dvf_type m_atan2_c_k2[];
-
             // atan2 kernel
             static dvf_type
             atan2_k2(arg_t<vf_type> xh,
@@ -263,8 +269,8 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
     eo= _T::sel(i_is_denom, vi_type(-53), eo);
     // split mantissa
-    vi_type mh=_T::extract_high_word(xs);
-    vi_type ml=_T::extract_low_word(xs);
+    vi_type ml, mh;
+    _T::extract_words(ml, mh, xs);
     vi_type xe=((mh>>20) & 0x7ff) + eo;
 
     // determine the exponent of the result
@@ -325,8 +331,8 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
     eo= _T::sel(i_is_denom, vi_type(-53), eo);
     // extract mantissa
-    vi_type hi_word=_T::extract_high_word(xs);
-    vi_type lo_word=_T::extract_low_word(xs);
+    vi_type lo_word, hi_word;
+    _T::extract_words(lo_word, hi_word, xs);
     // exponent:
     vi_type e=((hi_word >> 20) & 0x7ff) + eo;
     // insert exponent
@@ -541,19 +547,15 @@ sin_cos_k(arg_t<vf_type> d, std::size_t n,
 
     // calculate sin + cos
     dvf_type x= sqr(dh);
-    dvf_type s, c;
 
-    s = ctbl::sin_coeff[0];
-    for (unsigned i=0; i<10; ++i)
-        s = s * x + dvf_type(ctbl::sin_coeff[i]);
+    dvf_type s = impl::poly(x, ctbl::sin_coeff);
     s = s * x + vf_type(1.0);
     s = s * dh;
 
-    c= ctbl::cos_coeff[0];
-    for (unsigned i=0; i<10; ++i)
-        c = c * x + dvf_type(ctbl::cos_coeff[i]);
+    dvf_type c= impl::poly(x, ctbl::cos_coeff);
     c = c * x - vf_type(0.5);
     c = c * x + vf_type(1.0);
+
     // swap sin/cos if q & 1
     dvf_type rsin(
         _T::sel(q_and_1_f, c.h(), s.h()),
@@ -688,35 +690,6 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
 }
 
 template <typename _T>
-const
-typename cftal::math::func_core<double, _T>::dvf_type
-cftal::math::func_core<double, _T>::m_atan2_c_k2[]= {
-    dvf_type(-1.0)/vf_type(47.0),
-    dvf_type( 1.0)/vf_type(45.0),
-    dvf_type(-1.0)/vf_type(43.0),
-    dvf_type( 1.0)/vf_type(41.0),
-    dvf_type(-1.0)/vf_type(39.0),
-    dvf_type( 1.0)/vf_type(37.0),
-    dvf_type(-1.0)/vf_type(35.0),
-    dvf_type( 1.0)/vf_type(33.0),
-    dvf_type(-1.0)/vf_type(31.0),
-    dvf_type( 1.0)/vf_type(29.0),
-    dvf_type(-1.0)/vf_type(27.0),
-    dvf_type( 1.0)/vf_type(25.0),
-    dvf_type(-1.0)/vf_type(23.0),
-    dvf_type( 1.0)/vf_type(21.0),
-    dvf_type(-1.0)/vf_type(19.0),
-    dvf_type( 1.0)/vf_type(17.0),
-    dvf_type(-1.0)/vf_type(15.0),
-    dvf_type( 1.0)/vf_type(13.0),
-    dvf_type(-1.0)/vf_type(11.0),
-    dvf_type( 1.0)/vf_type( 9.0),
-    dvf_type(-1.0)/vf_type( 7.0),
-    dvf_type( 1.0)/vf_type( 5.0),
-    dvf_type(-1.0)/vf_type( 3.0),
-};
-
-template <typename _T>
 typename cftal::math::func_core<double, _T>::dvf_type
 cftal::math::func_core<double, _T>::
 atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
@@ -748,7 +721,6 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
         k += _T::sel(ki, vi_type(1), vi_type(0));
     } while (1);
 
-
     dvf_type rs=sqr(r);
     dvf_type t=rs/(vf_type(1)+rs);
 
@@ -762,8 +734,7 @@ atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
         at *= scale;
     }
 
-    // sqrt(DBL_MIN): 1.4916681462400413486582e-154
-    // vmf_type r_small = r.h() < 1.4916681462400413486582e-154;
+    // atan(r) \approx r for r small
     vmf_type r_small = r.h() < 1e-16;
     dvf_type at_small = r;
     at = dvf_type(_T::sel(r_small, at_small.h(), at.h()),
