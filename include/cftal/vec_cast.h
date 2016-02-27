@@ -14,7 +14,7 @@ namespace cftal {
         struct cast<v2f64, v4s32> {
             static
             v2f64 v(const v4s32& s) {
-                return v2f64(as<__m128d>(s()));
+                return v2f64(cast<__m128d, __m128i>::v(s()));
             }
         };
 
@@ -22,7 +22,7 @@ namespace cftal {
         struct cast<v2f64, v4u32> {
             static
             v2f64 v(const v4s32& s) {
-                return v2f64(as<__m128d>(s()));
+                return v2f64(cast<__m128d, __m128i>::v(s()));
             }
         };
 #endif
@@ -32,8 +32,8 @@ namespace cftal {
         struct cast<v4f64, v8s32> {
             static
             v4f64 v(const v8s32& s) {
-                return v4f64(as<v2f64>(low_half(s)),
-                             as<v2f64>(high_half(s)));
+                return v4f64(cast<v2f64, v4s32>::v(low_half(s)),
+                             cast<v2f64, v4s32>::v(high_half(s)));
             }
         };
 
@@ -41,8 +41,8 @@ namespace cftal {
         struct cast<v4f64, v8u32> {
             static
             v4f64 v(const v4u32& s) {
-                return v4f64(as<v2f64>(low_half(s)),
-                             as<v2f64>(high_half(s)));
+                return v4f64(cast<v2f64, v4u32>::v(low_half(s)),
+                             cast<v2f64, v4u32>::v(high_half(s)));
             }
         };
 #else
@@ -50,7 +50,7 @@ namespace cftal {
         struct cast<v4f64, v8s32> {
             static
             v4f64 v(const v8s32& s) {
-                return v4f64(as<__m256d>(s()));
+                return v4f64(cast<__m256d>, __m256i>::v(s()));
             }
         };
 
@@ -58,7 +58,7 @@ namespace cftal {
         struct cast<v4f64, v8u32> {
             static
             v4f64 v(const v8s32& s) {
-                return v4f64(as<__m256d>(s()));
+                return v4f64(cast<__m256d, __m256i>::v(s()));
             }
         };
 
