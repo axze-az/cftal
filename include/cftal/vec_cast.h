@@ -40,7 +40,7 @@ namespace cftal {
         template <>
         struct cast<v4f64, v8u32> {
             static
-            v4f64 v(const v4u32& s) {
+            v4f64 v(const v8u32& s) {
                 return v4f64(cast<v2f64, v4u32>::v(low_half(s)),
                              cast<v2f64, v4u32>::v(high_half(s)));
             }
