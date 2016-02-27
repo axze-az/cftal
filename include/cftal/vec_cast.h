@@ -3,6 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cftal/x86/cast.h>
 
 namespace cftal {
 
@@ -60,7 +61,7 @@ namespace cftal {
                 return v4f64(as<__m256d>(s()));
             }
         };
-        
+
 #endif
 #endif
     }
