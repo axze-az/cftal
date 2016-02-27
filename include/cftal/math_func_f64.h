@@ -252,28 +252,20 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
+ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
 {
-    vf_type x=xc;
-#if 1
-    vi_type mh=_T::extract_high_word(x);
-    vi_type ml=_T::extract_low_word(x);
-    vi_type xe=((mh>>20) & 0x7ff);
-
-    vmi_type is_not_zero=vi_type((mh << 1) | ml) != vi_type(0);
-    vmi_type is_denom= (xe == vi_type(0)) & is_not_zero;
-
-    if (any_of(is_denom)) {
-        // subnormal handling
-        vf_type sx=x*vf_type(0x1.0p+53);
-        vi_type sh=_T::extract_high_word(sx);
-        vi_type sl=_T::extract_low_word(sx);
-        vi_type se=((sh>>20) & 0x7ff) - vi_type(53);
-        // vi_type rl=ml, rh=mh;
-        xe = _T::sel(is_denom, se, xe);
-        ml= _T::sel(is_denom, sl, ml);
-        mh= _T::sel(is_denom, sh, mh);
-    }
+    vf_type xs=x;
+    using fc=func_constants<double>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal;
+    vi_type eo=vi_type(0);
+    // input denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p53), xs);
+    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
+    eo= _T::sel(i_is_denom, vi_type(-53), eo);
+    // split mantissa
+    vi_type mh=_T::extract_high_word(xs);
+    vi_type ml=_T::extract_low_word(xs);
+    vi_type xe=((mh>>20) & 0x7ff) + eo;
 
     // determine the exponent of the result
     // clamp nn to [-4096, 4096]
@@ -304,9 +296,8 @@ ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
         // create m*0x1.0p-1022
         vi_type mhu= mh | vi_type(1<<20);
         vf_type r_u= _T::combine_words(ml, mhu);
-        // create a scaling factor
+        // create a scaling factor, but avoid overflows
         vi_type ue= max(vi_type(re + (_T::bias-1)), vi_type(1));
-        // avoid overflows
         vf_type s_u= _T::insert_exp(ue);
         r_u *= s_u;
         vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
@@ -316,83 +307,40 @@ ldexp(arg_t<vf_type> xc, arg_t<vi_type> n)
     r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)),
                 x, r);
     return r;
-#else
-    // this code may produce wrong results for underflows because
-    // of double rounding
-    vi_type sgn = n>>31;
-    // division by 2^k: shift right rounds down, correct it for
-    // negative numbers, we divde ve by 4
-    vi_type m= (n + (3 & sgn)) >>2;
-    vi_type q = n - (m<<2);
-
-    m += 0x3ff;
-    m = max(vi_type(0), m);
-    m = min(vi_type(0x7ff), m);
-
-    q += 0x3ff;
-    vf_type fq(_T::insert_exp(q));
-    // multiply with the remainder first to retain precision of
-    // subnormal results
-    vf_type r = fq * x;
-    // multiply with ve/4
-    vf_type fm(_T::insert_exp(m));
-    r *= fm;
-    r *= fm;
-    r *= fm;
-    r *= fm;
-    vmf_type is_zero= x == vf_type(0);
-    r = _T::sel(is_zero, x, r);
-    return r;
-#endif
 }
 
 template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-frexp(arg_t<vf_type> vd, vi_type* ve)
+frexp(arg_t<vf_type> x, vi_type* ve)
 {
-    // normal numbers:
-    vi_type hi_word(_T::extract_high_word(vd));
-    vi_type lo_word(_T::extract_low_word(vd));
+    vf_type xs=x;
+    using fc=func_constants<double>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal;
 
-    vi_type value_head(hi_word & vi_type(0x7fffffff));
-
-    vmi_type is_inf_nan_zero(
-        (value_head >= vi_type(0x7ff00000)) |
-        (vi_type(value_head| lo_word)==vi_type(0)));
-    vmi_type is_denom((value_head < 0x00100000) &
-                      ~is_inf_nan_zero);
-
+    vi_type eo=vi_type(0);
+    // denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p53), xs);
+    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
+    eo= _T::sel(i_is_denom, vi_type(-53), eo);
+    // extract mantissa
+    vi_type hi_word=_T::extract_high_word(xs);
+    vi_type lo_word=_T::extract_low_word(xs);
     // exponent:
-    vi_type e=(value_head >> 20);
-
-    // denormals
-    if (any_of(is_denom)) {
-        // first multiply with 2^53
-        const vf_type two53=0x1.p53;
-        vf_type vden(two53 * vd);
-        vi_type hden(_T::extract_high_word(vden));
-        vi_type lden(_T::extract_low_word(vden));
-        vi_type value_head_den(hden & vi_type(0x7fffffff));
-        vi_type eden((value_head_den>>20) - vi_type(53));
-
-        // select denom/normal
-        e = _T::sel(is_denom, eden, e);
-        hi_word = _T::sel(is_denom, hden, hi_word);
-        lo_word = _T::sel(is_denom, lden, lo_word);
-    }
+    vi_type e=((hi_word >> 20) & 0x7ff) + eo;
     // insert exponent
     hi_word = (hi_word & vi_type(0x800fffff)) | vi_type(0x3fe00000);
     // combine low and high word
     vf_type frc(_T::combine_words(lo_word, hi_word));
     // inf, nan, zero
-    vmf_type f_inz(_T::vmi_to_vmf(is_inf_nan_zero));
-    frc = _T::sel(f_inz, vd, frc);
-
+    vmf_type f_inz=isinf(x) | isnan(x) | (x==vf_type(0.0));
+    frc = _T::sel(f_inz, x, frc);
     if (ve != nullptr) {
-        e -= vi_type(1022); // remove bias from e
-        e= _T::sel(is_inf_nan_zero, vi_type(0), e);
+        // remove bias from e
+        vmi_type i_inz=_T::vmf_to_vmi(f_inz);
+        e -= vi_type(_T::bias-1);
+        e= _T::sel(i_inz, vi_type(0), e);
         *ve= e;
     }
     return frc;
@@ -402,14 +350,21 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vi_type
 cftal::math::func_core<double, _T>::
-ilogbp1(arg_t<vf_type> vd)
+ilogbp1(arg_t<vf_type> x)
 {
-    vmf_type mf= vd < 4.9090934652977266E-91;
-    vf_type d = _T::sel(mf, 2.037035976334486E90 * vd, vd);
-    vi_type q = _T::extract_exp(d);
-    vmi_type mi= _T::vmf_to_vmi(mf);
-    vi_type qs = _T::sel(mi, vi_type(300 + 0x3fe), vi_type(0x3fe));
-    return q - qs;
+    vf_type xs=x;
+    using fc=func_constants<double>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal;
+    vi_type eo=vi_type(0);
+    // denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p53), xs);
+    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
+    eo= _T::sel(i_is_denom, vi_type(-53), eo);
+    // reinterpret as integer
+    vi_type hi_word(_T::extract_high_word(xs));
+    // exponent:
+    vi_type e=((hi_word >> 20) & 0x7ff) + eo - vi_type(_T::bias-1);
+    return e;
 }
 
 template <typename _T>
@@ -418,7 +373,7 @@ typename cftal::math::func_core<double, _T>::vi_type
 cftal::math::func_core<double, _T>::
 ilogb(arg_t<vf_type> d)
 {
-    vi_type e(ilogbp1(abs(d)) - vi_type(1));
+    vi_type e(ilogbp1(d) - vi_type(1));
     vmf_type mf= d == 0.0;
     vmi_type mi= _T::vmf_to_vmi(mf);
     e = _T::sel(mi, vi_type(FP_ILOGB0), e);

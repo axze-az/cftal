@@ -180,26 +180,21 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
+ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
 {
-#if 1
-    vf_type x=vd;
-    vi_type n=ve;
-    vi_type m=_T::as_int(x);
-    vi_type xe= ((m>>23) & 0xff);
+    vf_type xs=x;
+    using fc=func_constants<float>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal;
 
-    vmi_type is_not_zero = vi_type(m<<1) != vi_type(0);
-    vmi_type is_denom= (xe == vi_type(0)) & is_not_zero;
-
-    // subnormal handling
-    if (any_of(is_denom)) {
-        vf_type sx= x * vf_type(0x1.0p+24f);
-        vi_type sm= _T::as_int(sx);
-        vi_type se= ((sm >> 23) & 0xff) - vi_type(24);
-        xe = _T::sel(is_denom, se, xe);
-        m = _T::sel(is_denom, sm, m);
-    }
-
+    vi_type eo=vi_type(0);
+    // input denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
+    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
+    eo= _T::sel(i_is_denom, vi_type(-24), eo);
+    // mantissa
+    vi_type m=_T::as_int(xs);
+    vi_type xe=((m>>23) & 0xff) + eo;
+    
     // determine the exponent of the result
     // clamp nn to [-4096, 4096]
     vi_type nn= min(vi_type(4096), max(n, vi_type(-4096)));
@@ -213,7 +208,7 @@ ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
     // clear exponent bits from m
     m &= vi_type(~0x7f800000);
 
-    // high part of mantissa for normal results:
+    // mantissa for normal results:
     vi_type mn= m | ((re & vi_type(0xff)) << 23);
     vf_type r= _T::as_float(mn);
 
@@ -240,72 +235,43 @@ ldexp(arg_t<vf_type> vd, arg_t<vi_type> ve)
     r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)),
                 x, r);
     return r;
-#else
-    // this code may produce wrong results for underflows because
-    // of double rounding
-    vi_type q= ve;
-    vi_type m = q >> 31;
-    m = (((m + q) >> 6) - m) << 4;
-    q = q - (m << 2);
-
-    m += 127;
-    m = max(vi_type(0), m);
-    m = min(vi_type(0xff), m);
-
-    vf_type fm = _T::insert_exp(m);
-    vf_type r = vd * fm * fm * fm * fm;
-    q += 0x7f;
-    // q = max(vi_type(0), q);
-    // q = min(vi_type(0x7ff), q);
-    vf_type fq = _T::insert_exp(q);
-    r *= fq;
-    r = _T::sel(vd == vf_type(0), vd, r);
-    return r;
-#endif
 }
 
 template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-frexp(arg_t<vf_type> vd, vi_type* ve)
+frexp(arg_t<vf_type> x, vi_type* ve)
 {
-    // normal numbers:
-    vi_type i(_T::as_int(vd));
+    vf_type xs=x;
 
-    vi_type value_head(i & vi_type(0x7fffffff));
+    using fc=func_constants<float>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal;
 
-    vmi_type is_inf_nan_zero((value_head >= 0x7f800000) |
-                             (value_head==vi_type(0)));
-    vmi_type is_denom(value_head < 0x008000000);
+    vi_type eo=vi_type(0);
+    // denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
+    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
+    eo= _T::sel(i_is_denom, vi_type(-24), eo);
 
+    // reinterpret a integer
+    vi_type i=_T::as_int(xs);
     // exponent:
-    vi_type e((value_head >> 23) - vi_type(126));
+    vi_type e=((i >> 23) & 0xff) + eo;
 
-    // denormals
-    if (any_of(is_denom)) {
-        // multiply with 2^25
-        const vf_type two25(0x1.p25f);
-        vf_type vden(two25 * vd);
-        vi_type iden(_T::as_int(vden));
-        vi_type value_head_den(iden & vi_type(0x7fffffff));
-        vi_type eden((value_head_den>>23) - vi_type(126 +25));
-
-        // select denom/normal
-        e = _T::sel(is_denom, eden, e);
-        i = _T::sel(is_denom, iden, i);
-    }
     // insert exponent
     i = (i & vi_type(0x807fffff)) | vi_type(0x7e<<23);
     // interpret as float
     vf_type frc(_T::as_float(i));
     // inf, nan, zero
-    vmf_type f_inz(_T::vmi_to_vmf(is_inf_nan_zero));
-    e= _T::sel(is_inf_nan_zero, vi_type(0), e);
-    frc = _T::sel(f_inz, vd, frc);
-
-    if (ve != nullptr)
+    vmf_type f_inz=isinf(x) | isnan(x) | (x==vf_type(0.0));
+    frc = _T::sel(f_inz, x, frc);
+    if (ve != nullptr) {
+        vmi_type i_inz=_T::vmf_to_vmi(f_inz);
+        e -= vi_type(_T::bias-1);
+        e= _T::sel(i_inz, vi_type(0), e);
         *ve= e;
+    }
     return frc;
 }
 
@@ -313,14 +279,30 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vi_type
 cftal::math::func_core<float, _T>::
-ilogbp1(arg_t<vf_type> vd)
+ilogbp1(arg_t<vf_type> x)
 {
+#if 1
+    vf_type xs=x;
+    using fc=func_constants<float>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal;
+    vi_type eo=vi_type(0);
+    // denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
+    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
+    eo= _T::sel(i_is_denom, vi_type(-24), eo);
+    // reinterpret as integer
+    vi_type i=_T::as_int(xs);
+    // exponent:
+    vi_type e=((i >> 23) & 0xff) + eo - vi_type(_T::bias-1);
+    return e;
+#else
     vmf_type mf= vd < 5.421010862427522E-20f;
-    vf_type d = _T::sel(mf, 1.8446744073709552E19f * vd, vd);
+    vf_type d = _T::sel(mf, 1.8446744073709552E19f * x, x);
     vi_type q = _T::extract_exp(d);
     vmi_type mi= _T::vmf_to_vmi(mf);
     vi_type qs = _T::sel(mi, vi_type(64 + 0x7e), vi_type(0x7e));
     return q - qs;
+#endif
 }
 
 template <typename _T>
