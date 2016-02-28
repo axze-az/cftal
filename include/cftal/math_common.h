@@ -368,7 +368,6 @@ namespace cftal {
                 static _T v(_T x);
             };
 
-
             // the initial guess for a vector of _SCALAR_FLOAT
             // using traits for root r
             template <typename _SCALAR_FLOAT,
@@ -460,7 +459,7 @@ namespace cftal {
                 template <unsigned _STEPS=6>
                 static vf_type v(arg_t<vf_type> f);
             };
-
+#if 0
             // specialization for cubic root
             template <typename _FLOAT_T, typename _TRAITS>
             struct nth_root<_FLOAT_T, _TRAITS, 3>
@@ -482,7 +481,7 @@ namespace cftal {
                 vf_type
                 v(arg_t<vf_type> x);
             };
-
+#endif
         } // impl
 
         // integer power with constant _I
@@ -625,12 +624,20 @@ template <unsigned _R, class _RT, class _T>
 _RT
 cftal::math::impl::nth_root_nr<_R, _RT, _T>::v(const _T& xi, const _T& x)
 {
+#if 1
+    const _T rcp_r(1.0/_R);
+    _RT x_pow_nm1=powu<_RT, _R-1>::v(_RT(xi));
+    _RT corr = rcp_r*(xi-x/x_pow_nm1);
+    _RT xip1 = xi - corr;
+    return xip1;
+#else
     const _T r(_R);
     _RT x_pow_nm1(powu<_RT, _R-1>::v(xi));
     _RT en( x - xi * x_pow_nm1);
     _RT den(r * x_pow_nm1);
     _RT xip1( xi + en / den);
     return xip1;
+#endif    
 };
 
 template <unsigned _R, class _RT, class _T>
@@ -1573,6 +1580,99 @@ atan(arg_t<vf_type> x)
     return r;
 }
 
+template <typename _T>
+_T
+cftal::math::impl::nth_root_approx<3, _T>::v(_T x)
+{
+#if 0
+    // maximum error 6.774866715814284b-4 in [2^-3, 2^0)
+    static const _T a[]= {
+        +1.431375762469744e0 /* x^5 */,
+        -4.691579063121689e0 /* x^4 */,
+        +6.15346734720791e0  /* x^3 */,
+        -4.287580954173022e0 /* x^2 */,
+        +2.101233104609554e0 /* x^1 */
+        +2.937612896790845e-1 /* x^0 */
+    };
+    // maximum error 2.651222503616686b-4 in [2^-3, 2^0)
+    static const _T a[]={
+        -2.462358311592589e0 /* x^6 */,
+        +9.368149930890834e0 /* x^5 */,
+        -1.463283356717269e1 /* x^4 */,
+        +1.226301448576061e1 /* x^3 */,
+        -6.200836296768183e0 /* x^2 */,
+        +2.38655227371457e0  /* x^1 */,
+        +2.780463629170873e-1 /* x^0 */
+    };
+    // maximum error 1.070325426252539b-4 in [2^-3, 2^0)
+    static const _T a[]={
+        +4.407940728992934e0, // x^7
+        -1.914086520846586e1, // x^6
+        +3.491722222528436e1, // x^5
+        -3.498415183424161e1, // x^4
+        +2.127308275625481e1, // x^3
+        -8.394369046537729e0, // x^2
+        +2.656039417162971e0, // x
+        +2.652079940927634e-1        
+    };
+    // maximum error 4.395396547265176b-5 in [2^-3, 2^0)
+    static const _T a[]= {
+        -8.082321821879138e0  /* x^8*/ ,
+        +3.951186826818802e1  /* x^7*/ ,
+        -8.271122758768972e1  /* x^6*/ ,
+        +9.719626611621892e1  /* x^5*/ ,
+        -7.082056933547489e1  /* x^4*/ ,
+        +3.357862597275239e1  /* x^3*/ ,
+        -1.083848841889517e1  /* x^2*/ ,
+        +2.911304691900277e0  /* x^1 */ ,
+        +2.544981609138214e-1 /* x^0 */
+    };
+    // maximum error 7.794566660340572b-6 in [2^-3, 2^0)
+    static const _T a[] = {
+        -2.893793723365649e1, // x^10
+        +1.733287884346741e2, // x^9
+        -4.574701604941978e2, // x^8
+        +7.010147297308644e2, // x^7
+        -6.921659085115613e2, // x^6
+        +4.62560031574252e2, // x^5
+        -2.14374717173087e2, // x^4
+        +6.988046400220901e1, // x^3
+        -1.646473046613031e1, // x^2
+        +3.392112926339188e0, // x^1
+        2.373194157275016e-1
+    };
+    // maximum error 1.429853296572885b-6 in [2^-3, 2^0)
+    static const _T a[]= {
+        -1.086223987436328e2, // x^12
+        +7.713403390094619e2, // x^11
+        -2.462544006306743e3, // x^10
+        +4.672629599539334e3, // x^9
+        -5.870886414752144e3, // x^8
+        +5.152410559174283e3, // x^7
+        -3.248621593913108e3, // x^6
+        +1.492090997687755e3, // x^5
+        -5.01902172146935e2, // x^4
+        +1.240088668410992e2, // x^3
+        -2.296653315520015e1, // x^2
+        +3.838691064614486e0, // x
+        +2.240642713619926e-1
+    };
+#endif
+    // maximum error 1.070325426252539b-4 in [2^-3, 2^0)
+    static const _T a[]={
+        +4.407940728992934e0, // x^7
+        -1.914086520846586e1, // x^6
+        +3.491722222528436e1, // x^5
+        -3.498415183424161e1, // x^4
+        +2.127308275625481e1, // x^3
+        -8.394369046537729e0, // x^2
+        +2.656039417162971e0, // x
+        +2.652079940927634e-1        
+    };
+    _T g=poly(x, a);
+    return g;
+};
+
 template <typename _FLOAT_T, typename _TRAITS, unsigned _R>
 template <unsigned _STEPS>
 typename cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, _R>::vf_type
@@ -1580,45 +1680,26 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, _R>::v(arg_t<vf_type> x)
 {
     using std::abs;
     vf_type xp=abs(x);
-    vi_type enc;
-    vf_type mm, mm0;
     // m in [0.5, 1)
-    using fc=func_constants<_FLOAT_T>;
-    vmf_type is_denormal=(xp <= fc::max_denormal * _FLOAT_T(128)) & (xp != 0.0);
     const divisor<vi_type, int32_t> idivr(_R);
-    if (any_of(is_denormal)) {
-        vi_type e;
-        vf_type m=frexp(xp, &e);
-        vi_type en= e / idivr;
-        vi_type rn= remainder(e, vi_type(_R), en);
-        // select rnc so that rnc [-R, -_R+1, -R+2, -2,-1,0]
-        vmi_type rngt0 = rn > 0;
-        vi_type rnc= _TRAITS::sel(rngt0, rn-vi_type(_R), rn);
-        enc= _TRAITS::sel(rngt0, en+1, en);
-        // mm in [2^_R, 1) => m * 2 ^[-2,-1.0]
-        mm= ldexp(m, rnc);
-        mm0= mm;
-    } else {
-        // this code does not work for denormals:
-        vi_type e = ilogbp1(xp);
-        vi_type en= e / idivr;
-        vi_type rn= remainder(e, vi_type(_R), en);
-        // select rnc so that rnc [-R, -R+1, -R2,-1,0]
-        vmi_type rngt0 = rn > 0;
-        vi_type rnc= _TRAITS::sel(rngt0, rn-vi_type(_R), rn);
-        enc= _TRAITS::sel(rngt0, en+1, en);
-        vi_type sc= rnc - e;
-        mm= ldexp(xp, sc);
-        mm0 = mm;
-    }
-    mm = nth_root_approx<_R, vf_type>::v(mm0);
-    if (_STEPS>0) {
+    vi_type e = ilogbp1(xp);
+    vi_type en= e / idivr;
+    vi_type rn= remainder(e, vi_type(_R), en);
+    // select rnc so that rnc [-R, -R+1, -R2,-1,0]
+    vmi_type rngt0 = rn > 0;
+    vi_type rnc= _TRAITS::sel(rngt0, rn-vi_type(_R), rn);
+    vi_type re= _TRAITS::sel(rngt0, en+1, en);
+    vi_type sc= rnc - e;
+    // mm0 in [2^-R, 2^0)
+    vf_type mm0 = ldexp(xp, sc);
+    vf_type mm = nth_root_approx<_R, vf_type>::v(mm0);
+    if (_STEPS>1) {
         using step_t= nth_root_halley<_R, vf_type, vf_type>;
         for (uint32_t i=0; i<_STEPS-1; ++i) {
             mm= step_t::v(mm, mm0);
         }
     }
-    if (_STEPS>1) {
+    if (_STEPS>0) {
         using step_t=nth_root_nr<_R, dvf_type, vf_type>;
         dvf_type dmm;
         for (uint32_t i=_STEPS-1; i< _STEPS; ++i)
@@ -1626,7 +1707,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, _R>::v(arg_t<vf_type> x)
         mm = dmm.h() + dmm.l();
     }
     // scale back
-    vf_type res=ldexp(mm, enc);
+    vf_type res=ldexp(mm, re);
     if ((_R&1) != 0) {
         // restore sign
         res=copysign(res, x);
@@ -1641,6 +1722,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, _R>::v(arg_t<vf_type> x)
     return res;
 }
 
+#if 0
 template <typename _FLOAT_T, typename _TRAITS>
 template <unsigned _NR_STEPS>
 typename cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::vf_type
@@ -1698,6 +1780,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
                      x, res);
     return res;
 }
+#endif
 
 
 
