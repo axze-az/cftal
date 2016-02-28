@@ -101,7 +101,7 @@ bool cftal::test::check_frexp_f64()
     }
     // denormals and normals
     for (int e=0; e<=0x7ff; ++e) {
-        for (int i=0; i<52; ++i) {
+        for (int i=0; i<53; ++i) {
             uint64_t sig= uint64_t(1) << i;
             vp = make_double(0, e, sig);
             rc &= check_frexp<_FV, _IV>(vp, -vp);
@@ -130,7 +130,7 @@ bool cftal::test::check_frexp_f32()
     }
     // denormals and normals
     for (int e=0; e<=0x7ff; ++e) {
-        for (int i=0; i<23; ++i) {
+        for (int i=0; i<24; ++i) {
             uint32_t sig= uint32_t(1) << i;
             vp = make_float(0, e, sig);
             rc &=  check_frexp<_FV, _IV>(vp, -vp);

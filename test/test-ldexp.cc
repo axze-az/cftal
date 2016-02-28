@@ -50,15 +50,6 @@ cftal::test::check_ldexp<_T, _N>::v(_T a, int32_t e)
     vec<int32_t, _N> ve=e;
     vec<_T, _N> vr= ldexp(va, ve);
     bool rc=true;
-#if 0
-    using fc_t= cftal::math::func_constants<_T>;
-    using std::abs;
-    if ((abs(r) <= fc_t::max_denormal) && r != 0) {
-        rc= check(vr, r, "ldexp", true, cmp_ulp<_T>(1, nullptr));
-    } else {
-        rc= check(vr, r, "ldexp");
-    }
-#endif
     rc= check(vr, r, "ldexp");
     if (rc==false) {
         std::cerr << "ldexp("
@@ -137,7 +128,7 @@ int main()
     if (rd==false)
         std::cerr << "double test failed" << std::endl;
     std::cout << "testing ldexp vXf32" << std::endl;
-    bool rf=cftal::test::check_ldexp_up_to<float, 16>::v();
+    bool rf=cftal::test::check_ldexp_up_to<float, 8>::v();
     if (rf==false)
         std::cerr<< "float test failed" << std::endl;
     bool rc = rd && rf;
