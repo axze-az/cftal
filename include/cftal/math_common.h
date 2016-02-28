@@ -1222,7 +1222,7 @@ _log1p(arg_t<vf_type> d)
     //        return x;
     //    else
     //        return log(u)*x/(u-1.);
-    // }    
+    // }
     if (_NATIVE) {
         x=native_log_k(d+vf_type(1.0));
     } else {
@@ -1526,17 +1526,6 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     //  atan2(NaN, x) = NaN
     r = _T::sel(isnan(x) | isnan(y), _T::nan(), r);
 
-#if 0
-    r= _T::sel(y_zero & x_p_zero, y, r);
-    r= _T::sel(y_zero & x_n_zero, copysign(vf_type(M_PI), y), r);
-    r= _T::sel(y_gt_z & x_inf,
-               _T::sel(x_p_inf, vf_type(+0.0), vf_type(M_PI)), r);
-    r= _T::sel(y_lt_z & x_inf,
-               _T::sel(x_p_inf, vf_type(-0.0), vf_type(M_PI)), r);
-    r= _T::sel(y_inf & x_p_inf, copysign(vf_type(M_PI), y), r);
-    r= _T::sel(y_inf & x_n_inf, copysign(vf_type(3*M_PI/4), y), r);
-    r= _T::sel(isnan(y) | isnan(x), _T::nan(), r);
-#endif
     return r;
 #else
     // r = dvf_type(mulsign(r.h(), x),
@@ -1662,49 +1651,32 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
     vf_type mm, mm0;
     // m in [0.5, 1)
     const divisor<vi_type, int32_t> idiv3(3);
-#if 0
-    using fc=func_constants<_FLOAT_T>;
-    vmf_type is_denormal=(xp <= fc::max_denormal * _FLOAT_T(128)) & (xp != 0.0);
-    if (any_of(is_denormal)) {
-        vi_type e;
-        vf_type m=frexp(xp, &e);
-        vi_type e3= e / idiv3;
-        vi_type r3= remainder(e, vi_type(3), e3);
-        // select r3c so that r3c [-2,-1,0]
-        vmi_type r3gt0 = r3 > 0;
-        vi_type r3c= _TRAITS::sel(r3gt0, r3-3, r3);
-        e3c= _TRAITS::sel(r3gt0, e3+1, e3);
-        // mm in [0.125, 1) => m * 2 ^[-2,-1.0]
-        mm= ldexp(m, r3c);
-        mm0= mm;
-    } else {
-#endif
-        // this code does not work for denormals:
-        vi_type e = ilogbp1(xp);
-        vi_type e3= e / idiv3;
-        vi_type r3= remainder(e, vi_type(3), e3);
-        // select r3c so that r3c [-2,-1,0]
-        vmi_type r3gt0 = r3 > 0;
-        vi_type r3c= _TRAITS::sel(r3gt0, r3-3, r3);
-        e3c= _TRAITS::sel(r3gt0, e3+1, e3);
-        vi_type sc= r3c - e;
-        mm= ldexp(xp, sc);
-        mm0 = mm;
-#if 0
-    }
-#endif
+    vi_type e = ilogbp1(xp);
+    vi_type e3= e / idiv3;
+    vi_type r3= remainder(e, vi_type(3), e3);
+    // select r3c so that r3c [-2,-1,0]
+    vmi_type r3gt0 = r3 > 0;
+    vi_type r3c= _TRAITS::sel(r3gt0, r3-3, r3);
+    e3c= _TRAITS::sel(r3gt0, e3+1, e3);
+    vi_type sc= r3c - e;
+    mm= ldexp(xp, sc);
+    mm0 = mm;
     // we should calculate x^(-1/3) first because
     // the newton raphson steps do not require a
     // division:
     // calculate 1/cbrt(mm0);
+    // the polynom saves 4 nr steps for double precision
     mm = poly(mm0,
-              -2.595873403893505e0,
-              5.852550974497818e0,
-              -4.747475053671543e0,
-              2.474536628160067e0);
+              -2.59136977404110569e0,
+              +5.84535188713358966e0,
+              -4.74457227053327468e0,
+              +2.47438113521145864e0);
+    // mm = vf_type(1.0 + 1.0/3.0);
     if (_NR_STEPS > 1) {
-        for (uint32_t i =0; i< _NR_STEPS-1; ++i)
-            mm= mm + 1.0/3.0 * (mm - mm*mm*mm*mm*mm0);
+        for (uint32_t i =0; i< _NR_STEPS-1; ++i) {
+            vf_type t=1.0/3.0 * (vf_type(1.0) - mm*mm*mm*mm0);
+            mm= mm + mm * t;
+        }
     }
     // convert to cbrt(mm0)
     mm= mm*mm*mm0;
