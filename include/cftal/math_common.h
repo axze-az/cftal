@@ -637,7 +637,7 @@ cftal::math::impl::nth_root_nr<_R, _RT, _T>::v(const _T& xi, const _T& x)
     _RT den(r * x_pow_nm1);
     _RT xip1( xi + en / den);
     return xip1;
-#endif    
+#endif
 };
 
 template <unsigned _R, class _RT, class _T>
@@ -1188,10 +1188,10 @@ _log(arg_t<vf_type> d)
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
 
-    using fc= func_constants<_FLOAT_T>;
-    const vf_type log_lo_fin= fc::log_lo_fin;
-    const vf_type log_lo_val= fc::log_lo_val;
-    x = _T::sel(d == log_lo_fin, log_lo_val, x);
+    // using fc= func_constants<_FLOAT_T>;
+    // const vf_type log_lo_fin= fc::log_lo_fin;
+    // const vf_type log_lo_val= fc::log_lo_val;
+    // x = _T::sel(d == log_lo_fin, log_lo_val, x);
     return x;
 }
 
@@ -1613,7 +1613,7 @@ cftal::math::impl::nth_root_approx<3, _T>::v(_T x)
         +2.127308275625481e1, // x^3
         -8.394369046537729e0, // x^2
         +2.656039417162971e0, // x
-        +2.652079940927634e-1        
+        +2.652079940927634e-1
     };
     // maximum error 4.395396547265176b-5 in [2^-3, 2^0)
     static const _T a[]= {
@@ -1667,7 +1667,7 @@ cftal::math::impl::nth_root_approx<3, _T>::v(_T x)
         +2.127308275625481e1, // x^3
         -8.394369046537729e0, // x^2
         +2.656039417162971e0, // x
-        +2.652079940927634e-1        
+        +2.652079940927634e-1
     };
     _T g=poly(x, a);
     return g;
