@@ -95,6 +95,14 @@ namespace cftal {
             vf_type
             native_log_k(arg_t<vf_type> x);
 
+            // atan2 kernel
+            static dvf_type
+            atan2_k2(arg_t<vf_type> xh,
+                     arg_t<vf_type> xl,
+                     arg_t<vf_type> yh,
+                     arg_t<vf_type> yl,
+                     bool calc_atan2);
+            
             // exp, expm1, sinh, cosh call exp_k2 if native == false
             // or native_exp
             template <bool _NATIVE>
@@ -115,6 +123,10 @@ namespace cftal {
             static vf_type _log(arg_t<vf_type> cf);
             template <bool _NATIVE>
             static vf_type _log1p(arg_t<vf_type> cf);
+            template <bool _NATIVE>
+            static vf_type _log10(arg_t<vf_type> cf);
+            template <bool _NATIVE>
+            static vf_type _log2(arg_t<vf_type> cf);
 
             // exp, expm1, sinh, cosh call exp_k2
             static vf_type exp(arg_t<vf_type> vf);
@@ -142,6 +154,11 @@ namespace cftal {
             // native log calls native_log_k
             static vf_type native_log1p(arg_t<vf_type> vf);
 
+            static vf_type log10(arg_t<vf_type> vf);
+            static vf_type native_log10(arg_t<vf_type> vf);
+            static vf_type log2(arg_t<vf_type> vf);
+            static vf_type native_log2(arg_t<vf_type> vf);
+            
             // pow calls exp_k2 and log_k2
             static
             vf_type
@@ -647,7 +664,7 @@ cftal::math::impl::nth_root_halley<_R, _RT, _T>::v(const _T& xi, const _T& x)
     const _T r(_R);
     const _T two(2.0);
     _RT x_pow(powu<_RT, _R>::v(xi));
-    _RT en(two* xi * (x - x_pow));
+    _RT en(_T(two* xi) * (x - x_pow));
     _RT den(r * (x+x_pow) - x + x_pow);
     _RT xip1(xi + en /den);
     return xip1;
@@ -932,6 +949,83 @@ native_log_k(arg_t<vf_type> d0)
     }
     return xr;
 }
+
+template <typename _FLOAT_T, typename _T>
+typename cftal::math::func_common<_FLOAT_T, _T>::dvf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
+         arg_t<vf_type> xh, arg_t<vf_type> xl,
+         bool calc_atan2)
+{
+
+    using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+    dvf_type y(yh, yl);
+    dvf_type x(xh, xl);
+    dvf_type yp(abs(y));
+    dvf_type xp(abs(x));
+
+    dvf_type d=max(yp, xp);
+    dvf_type e=min(yp, xp);
+    dvf_type r=e/d;
+
+    // reduce argument via arctan(x) = 2 * arctan(x/(1+sqrt(1-x^2)))
+    vi_type k(0);
+    do {
+        vmf_type r_gt = r.h() > vf_type(1.0/2.0);
+        if (none_of(r_gt))
+            break;
+        vmi_type ki= _T::vmf_to_vmi(r_gt);
+        dvf_type den= sqrt(vf_type(1.0)+sqr(r)) + vf_type(1);
+        dvf_type rs = r/den;
+        r= dvf_type(_T::sel(r_gt, rs.h(), r.h()),
+                    _T::sel(r_gt, rs.l(), r.l()));
+        k += _T::sel(ki, vi_type(1), vi_type(0));
+    } while (1);
+
+    dvf_type rs=sqr(r);
+    dvf_type t=rs/(vf_type(1)+rs);
+
+    dvf_type p= impl::poly(t, ctbl::atan2_coeff);
+    dvf_type at=t/r*p;
+
+    // scale back
+    vmi_type k_gt= k > vi_type(0);
+    if (any_of(k_gt)) {
+        vf_type scale=ldexp(vf_type(1.0), k);
+        at *= scale;
+    }
+
+    // atan(r) \approx r for r small
+    vmf_type r_small = r.h() < 1e-16;
+    dvf_type at_small = r;
+    at = dvf_type(_T::sel(r_small, at_small.h(), at.h()),
+                  _T::sel(r_small, at_small.l(), at.l()));
+
+    vmf_type invert = (yp.h() > xp.h());
+    // arctan (1/r) = M_PI/2 -  arctan(r) if r > 0
+    // arctan (1/r) = -M_PI/2 - arctan(r) if r < 0
+    dvf_type inv_at= dvf_type(ctbl::m_pi_2) - at;
+    at= dvf_type(_T::sel(invert, inv_at.h(), at.h()),
+                 _T::sel(invert, inv_at.l(), at.l()));
+    vf_type sgn_y=copysign(vf_type(1.0), y.h());
+    vf_type at_sgn=sgn_y * copysign(vf_type(1.0), x.h());
+    at=mul_pwr2(at, copysign(vf_type(1.0), at_sgn));
+    // at = atan(y/x);
+    if (calc_atan2) {
+        // atan2(y, x) = atan(x) x>0
+        // atan2(y, x) = atan(x) + pi x<0 & y>=0
+        // atan2(y, x) = atan(x) - pi x<0 & y <0
+        // from mpfr:
+        // atan2(y, x) with x<0 --> sgn_y * (PI-atan(|y/x|));
+        dvf_type pi_at = dvf_type(ctbl::m_pi) - abs(at);
+        pi_at = mul_pwr2(pi_at, sgn_y);
+        vmf_type x_lt_z = xh < vf_type(0);
+        at=dvf_type(_T::sel(x_lt_z, pi_at.h(), at.h()),
+                    _T::sel(x_lt_z, pi_at.l(), at.l()));
+    }
+    return at;
+}
+
 
 template <typename _FLOAT_T, typename _T>
 template <bool _NATIVE>
@@ -1272,6 +1366,98 @@ native_log1p(arg_t<vf_type> d)
 }
 
 template <typename _FLOAT_T, typename _T>
+template <bool _NATIVE>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+_log10(arg_t<vf_type> d)
+{
+    vf_type x;
+    using ctbl=impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+    if (_NATIVE) {
+        x=native_log_k(d);
+        x*= ctbl::m_1_ln10.h();
+    } else {
+        dvf_type dd=d;
+        dvf_type xd=log_k2(dd.h(), dd.l());
+        xd*= dvf_type(ctbl::m_1_ln10);
+        x = xd.h();
+    }
+    const vf_type pinf(_T::pinf());
+    const vf_type ninf(_T::ninf());
+    x = _T::sel(isinf(d), pinf, x);
+    // if (d < 0) x = NAN;
+    x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
+    // if (d == 0) x = -INFINITY;
+    x = _T::sel(d == vf_type(0.0), ninf, x);
+    return x;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+log10(arg_t<vf_type> d)
+{
+    return my_type::_log10<false>(d);
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+native_log10(arg_t<vf_type> d)
+{
+    return my_type::_log10<true>(d);
+}
+
+template <typename _FLOAT_T, typename _T>
+template <bool _NATIVE>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+_log2(arg_t<vf_type> d)
+{
+    vf_type x;
+    using ctbl=impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+    if (_NATIVE) {
+        x=native_log_k(d);
+        x*= ctbl::m_1_ln2.h();
+    } else {
+        dvf_type dd=d;
+        dvf_type xd=log_k2(dd.h(), dd.l());
+        xd*= dvf_type(ctbl::m_1_ln2);
+        x = xd.h();
+    }
+    const vf_type pinf(_T::pinf());
+    const vf_type ninf(_T::ninf());
+    x = _T::sel(isinf(d), pinf, x);
+    // if (d < 0) x = NAN;
+    x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
+    // if (d == 0) x = -INFINITY;
+    x = _T::sel(d == vf_type(0.0), ninf, x);
+    return x;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+log2(arg_t<vf_type> d)
+{
+    return my_type::_log2<false>(d);
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+native_log2(arg_t<vf_type> d)
+{
+    return my_type::_log2<true>(d);
+}
+
+template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
@@ -1468,7 +1654,7 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 {
-    dvf_type rd(base_type::atan2_k2(y, vf_type(0), x, vf_type(0), true));
+    dvf_type rd=atan2_k2(y, vf_type(0), x, vf_type(0), true);
 #if 1
     vf_type r= rd.h() + rd.l();
 
@@ -1570,8 +1756,7 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
 {
-    dvf_type rd=
-        base_type::atan2_k2(x, vf_type(0.0), vf_type(1.0) , vf_type(0.0), false);
+    dvf_type rd=atan2_k2(x, vf_type(0.0), vf_type(1.0) , vf_type(0.0), false);
     vf_type r=rd.h();
     // r=copysign(r, x);
     r=_TRAITS_T::sel(x==vf_type(0), x, r);

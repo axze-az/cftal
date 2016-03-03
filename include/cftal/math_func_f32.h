@@ -13,6 +13,17 @@
 namespace cftal {
     namespace math {
 
+        namespace impl {
+
+            // returns (y0+y1) = x - N * pi/2
+            // the integer results contains
+            // only the lower bits of N
+            int32_t
+            __attribute__((__visibility__("internal")))
+            __ieee754_rem_pio2(float x, float *y);
+
+        }
+        
         template <>
         struct func_traits<float, int32_t>
             : public d_real_traits<float> {
@@ -132,13 +143,6 @@ namespace cftal {
             native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
 
-            // atan2 kernel
-            static dvf_type
-            atan2_k2(arg_t<vf_type> xh,
-                     arg_t<vf_type> xl,
-                     arg_t<vf_type> yh,
-                     arg_t<vf_type> yl,
-                     bool calc_atan2);
         };
 
         template <typename _T>
@@ -591,18 +595,6 @@ cftal::math::func<float, _T>::native_cos(arg_t<vf_type> x)
 #undef PI4_Cf
 #undef PI4_Bf
 #undef PI4_Af
-}
-
-
-template <typename _T>
-inline
-typename cftal::math::func_core<float, _T>::dvf_type
-cftal::math::func_core<float, _T>::
-atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
-         arg_t<vf_type> yh, arg_t<vf_type> yl,
-         bool calc_atan2)
-{
-    return dvf_type(xh + yh);
 }
 
 

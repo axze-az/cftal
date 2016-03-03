@@ -266,6 +266,48 @@ namespace cftal {
         };
         
         template <typename _T>
+        struct check_log10 {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return log10(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+#if 1
+                return call_mpfr::func(a, mpfr_log10);
+#else
+                return std::log10(a);
+#endif
+            }
+            static
+            const char* fname() { return "log10"; }
+        };
+
+        template <typename _T>
+        struct check_log2 {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return log2(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+#if 1
+                return call_mpfr::func(a, mpfr_log2);
+#else
+                return std::log2(a);
+#endif
+            }
+            static
+            const char* fname() { return "log2"; }
+        };
+        
+        template <typename _T>
         struct check_pow {
             template <std::size_t _N>
             static
@@ -488,6 +530,23 @@ namespace cftal {
             }
             static
             const char* fname() { return "native_log"; }
+        };
+
+        template <typename _T>
+        struct check_native_sin {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return native_sin(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+                return std::sin(a);
+            }
+            static
+            const char* fname() { return "native_sin"; }
         };
 
     }

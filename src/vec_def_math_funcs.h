@@ -105,6 +105,20 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
+    ns::log10(arg<vec_float>::type d)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::log10(d);                                        \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::log2(arg<vec_float>::type d)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::log2(d);                                         \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::pow(arg<vec_float>::type b, arg<vec_float>::type e)             \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -173,7 +187,15 @@
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::native_log(d);                                   \
-    }
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::native_sin(arg<vec_float>::type d)                              \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::native_sin(d);                                   \
+    }                                                                   \
+
 
 // Local variables:
 // mode: c++

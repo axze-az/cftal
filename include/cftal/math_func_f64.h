@@ -203,14 +203,6 @@ namespace cftal {
             native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
 
-            // atan2 kernel
-            static dvf_type
-            atan2_k2(arg_t<vf_type> xh,
-                     arg_t<vf_type> xl,
-                     arg_t<vf_type> yh,
-                     arg_t<vf_type> yl,
-                     bool calc_atan2);
-
             // native atan2 kernel
             static vf_type
             native_atan2_k(arg_t<vf_type> x,
@@ -591,7 +583,7 @@ native_reduce_trig_arg_k(arg_t<vf_type> d)
 #define PI4_C 1.1258708853173288931e-18
 #define PI4_D 1.7607799325916000908e-27
 
-    constexpr double large_arg(2.0e8);
+    constexpr double large_arg(2.0e7);
     vmf_type v_large_arg(vf_type(large_arg) < abs(d));
 
     vf_type qf(rint(vf_type(d * (2 * M_1_PI))));
@@ -648,6 +640,16 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
 
     vf_type x2(x*x);
 
+#if 1
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type s = impl::poly(x2, ctbl::sin_coeff);
+    s = s * x2 + vf_type(1.0);
+    s = s * x;
+
+    vf_type c= impl::poly(x2, ctbl::cos_coeff);
+    c = c * x2 - vf_type(0.5);
+    c = c * x2 + vf_type(1.0);
+#else    
     vf_type s, c;
     s = 1.58938307283228937328511e-10;
     s = s * x2 - 2.50506943502539773349318e-08;
@@ -666,7 +668,7 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
     c = c * x2 + 0.0416666666666665519592062;
     c = c * x2 - 0.5;
     c = c * x2 + 1.0;
-
+#endif
     vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
     vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
     vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
@@ -687,82 +689,6 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
         rc *= fc;
         *pc= rc;
     }
-}
-
-template <typename _T>
-typename cftal::math::func_core<double, _T>::dvf_type
-cftal::math::func_core<double, _T>::
-atan2_k2(arg_t<vf_type> yh, arg_t<vf_type> yl,
-         arg_t<vf_type> xh, arg_t<vf_type> xl,
-         bool calc_atan2)
-{
-
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    dvf_type y(yh, yl);
-    dvf_type x(xh, xl);
-    dvf_type yp(abs(y));
-    dvf_type xp(abs(x));
-
-    dvf_type d=max(yp, xp);
-    dvf_type e=min(yp, xp);
-    dvf_type r=e/d;
-
-    // reduce argument via arctan(x) = 2 * arctan(x/(1+sqrt(1-x^2)))
-    vi_type k(0);
-    do {
-        vmf_type r_gt = r.h() > vf_type(1.0/2.0);
-        if (none_of(r_gt))
-            break;
-        vmi_type ki= _T::vmf_to_vmi(r_gt);
-        dvf_type den= sqrt(vf_type(1.0)+sqr(r)) + vf_type(1);
-        dvf_type rs = r/den;
-        r= dvf_type(_T::sel(r_gt, rs.h(), r.h()),
-                    _T::sel(r_gt, rs.l(), r.l()));
-        k += _T::sel(ki, vi_type(1), vi_type(0));
-    } while (1);
-
-    dvf_type rs=sqr(r);
-    dvf_type t=rs/(vf_type(1)+rs);
-
-    dvf_type p= impl::poly(t, ctbl::atan2_coeff);
-    dvf_type at=t/r*p;
-
-    // scale back
-    vmi_type k_gt= k > vi_type(0);
-    if (any_of(k_gt)) {
-        vf_type scale=ldexp(vf_type(1.0), k);
-        at *= scale;
-    }
-
-    // atan(r) \approx r for r small
-    vmf_type r_small = r.h() < 1e-16;
-    dvf_type at_small = r;
-    at = dvf_type(_T::sel(r_small, at_small.h(), at.h()),
-                  _T::sel(r_small, at_small.l(), at.l()));
-
-    vmf_type invert = (yp.h() > xp.h());
-    // arctan (1/r) = M_PI/2 -  arctan(r) if r > 0
-    // arctan (1/r) = -M_PI/2 - arctan(r) if r < 0
-    dvf_type inv_at= dvf_type(ctbl::m_pi_2) - at;
-    at= dvf_type(_T::sel(invert, inv_at.h(), at.h()),
-                 _T::sel(invert, inv_at.l(), at.l()));
-    vf_type sgn_y=copysign(vf_type(1.0), y.h());
-    vf_type at_sgn=sgn_y * copysign(vf_type(1.0), x.h());
-    at=mul_pwr2(at, copysign(vf_type(1.0), at_sgn));
-    // at = atan(y/x);
-    if (calc_atan2) {
-        // atan2(y, x) = atan(x) x>0
-        // atan2(y, x) = atan(x) + pi x<0 & y>=0
-        // atan2(y, x) = atan(x) - pi x<0 & y <0
-        // from mpfr:
-        // atan2(y, x) with x<0 --> sgn_y * (PI-atan(|y/x|));
-        dvf_type pi_at = dvf_type(ctbl::m_pi) - abs(at);
-        pi_at = mul_pwr2(pi_at, sgn_y);
-        vmf_type x_lt_z = xh < vf_type(0);
-        at=dvf_type(_T::sel(x_lt_z, pi_at.h(), at.h()),
-                    _T::sel(x_lt_z, pi_at.l(), at.l()));
-    }
-    return at;
 }
 
 template <typename _T>

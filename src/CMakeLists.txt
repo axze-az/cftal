@@ -4,7 +4,8 @@ set (CSRCS
     mul_div_32.cc
     mul_div_64.cc
     d_real.cc
-    math_func.cc
+    math_func_f64.cc
+    math_func_f32.cc
     math_common.cc
     x86_ops_1.cc
     vec_traits.cc

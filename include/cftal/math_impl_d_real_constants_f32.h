@@ -130,6 +130,11 @@ cftal::math::impl::d_real_constants<_T, float>::m_ln10(
 
 template <class _T>
 const _T
+cftal::math::impl::d_real_constants<_T, float>::m_1_ln10(
+     4.3429446220398e-01f,  1.9699271547324e-08f);
+
+template <class _T>
+const _T
 cftal::math::impl::d_real_constants<_T, float>::m_ln2pow106(
      7.3473594665527e+01f,  6.4738269429654e-06f);
 
@@ -254,8 +259,6 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::
 exp_coeff[MAX_EXP_COEFF] =  {
-    // + 1/5!
-    // _T(  8.3333337679505e-03f, -4.3461720333760e-10f),
     // + 1/4!
     _T(  4.1666667908430e-02f, -1.2417634698281e-09f),
     // + 1/3!

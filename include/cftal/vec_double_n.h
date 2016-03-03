@@ -322,7 +322,7 @@ namespace cftal {
     vec<double, 8>
     log(arg_t<vec<double, 8> > d);
 
-
+    // log1p, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     log1p(const vec<double, _N>& v);
@@ -339,6 +339,39 @@ namespace cftal {
     vec<double, 8>
     log1p(arg_t<vec<double, 8> > d);
 
+    // log10, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    log10(const vec<double, _N>& v);
+
+    vec<double, 1>
+    log10(arg_t<vec<double, 1> > v);
+
+    vec<double, 2>
+    log10(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    log10(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    log10(arg_t<vec<double, 8> > d);
+
+    // log2, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    log2(const vec<double, _N>& v);
+
+    vec<double, 1>
+    log2(arg_t<vec<double, 1> > v);
+
+    vec<double, 2>
+    log2(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    log2(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    log2(arg_t<vec<double, 8> > d);
 
     // pow, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -518,6 +551,23 @@ namespace cftal {
     vec<double, 8>
     native_log(arg_t<vec<double, 8> > d);
 
+    // native_sin, these functions are exact to +-4 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    native_sin(const vec<double, _N>& v);
+
+    vec<double, 1>
+    native_sin(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    native_sin(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    native_sin(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    native_sin(arg_t<vec<double, 8> > d);
+    
 
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
@@ -632,6 +682,15 @@ cftal::vec<double, _N>
 cftal::sin(const vec<double, _N>& v)
 {
     vec<double, _N> r(sin(low_half(v)), sin(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native_sin(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_sin(low_half(v)), native_sin(high_half(v)));
     return r;
 }
 
@@ -775,6 +834,24 @@ cftal::vec<double, _N>
 cftal::log1p(const vec<double, _N>& v)
 {
     vec<double, _N> r(log1p(low_half(v)), log1p(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::log10(const vec<double, _N>& v)
+{
+    vec<double, _N> r(log10(low_half(v)), log10(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::log2(const vec<double, _N>& v)
+{
+    vec<double, _N> r(log2(low_half(v)), log2(high_half(v)));
     return r;
 }
 

@@ -172,7 +172,30 @@ bool cftal::test::check_cbrt_f64(const _V& v, bool verbose)
 
 namespace cftal {
     double xcbrt(double x);
+
+    template <typename _T, unsigned _N>
+    _T nth_root_guess(_T x);
+
 }
+
+template <typename _T, unsigned _N>
+_T
+cftal::nth_root_guess(_T x)
+{
+    // a * 1 + b = 1
+    // a * 2^(-_N) + b = 0.5
+    // a = 1 - b
+    // (1-b)*2^(-_N) + b = 0.5
+    // 2^(-_N) - b * 2^(-_N) + b = 0.5
+    // b (1-2^(-_N)) = 0.5 - 2^(-_N)
+    // b= (0.5-2^(-_N))/(1-2^(-_N))
+    const _T two_pow_n= _T(1 << _N);
+    const _T two_pow_minus_n = _T(1.0)/two_pow_n;
+    const _T b= (0.5-two_pow_minus_n)/(1-two_pow_minus_n);
+    const _T a= 1.0 -b;
+    return a * x + b;
+}
+
 
 double
 cftal::xcbrt(double x)
@@ -226,7 +249,8 @@ int main(int argc, char** argv)
 {
     bool rc=true;
     using namespace cftal::test;
-
+    const int ulp=0;
+    
     std::cout << "f64 test\n"<<std::scientific;
     rc &= check_cbrt_f64(cftal::v1f64(), false);
     rc &= check_cbrt_f64(cftal::v2f64(), false);
@@ -237,7 +261,7 @@ int main(int argc, char** argv)
                                           std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, 8, check_cbrt<double> >::v(dd, cmp_ulp<double>(0, us),
+        double, 8, check_cbrt<double> >::v(dd, cmp_ulp<double>(ulp, us),
                                            0x10000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
@@ -247,7 +271,7 @@ int main(int argc, char** argv)
                                           std::numeric_limits<float>::max());
     auto usf=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_cbrt<float> >::v(df, cmp_ulp<float>(0, usf),
+        float, 8, check_cbrt<float> >::v(df, cmp_ulp<float>(ulp, usf),
                                          0x10000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *usf << std::endl;

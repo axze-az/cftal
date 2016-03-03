@@ -192,6 +192,11 @@ cftal::math::impl::d_real_constants<_T, double>::m_ln10(
 
 template <class _T>
 const _T
+cftal::math::impl::d_real_constants<_T, double>::m_1_ln10(
+     4.3429448190325181666793e-01,  1.0983196502167650727389e-17);
+
+template <class _T>
+const _T
 cftal::math::impl::d_real_constants<_T, double>::m_ln2pow106(
      7.3473601139354201450260e+01,  1.3479665980519211209217e-15);
 
@@ -489,6 +494,11 @@ cftal::math::impl::t_real_constants<_T, double>::m_ln10(
 
 template <class _T>
 const _T
+cftal::math::impl::t_real_constants<_T, double>::m_1_ln10(
+     4.3429448190325181666793e-01,  1.0983196502167650727389e-17,  3.7171812331109589666998e-34);
+
+template <class _T>
+const _T
 cftal::math::impl::t_real_constants<_T, double>::m_ln2pow106(
      7.3473601139354201450260e+01,  1.3479665980519211209217e-15, -6.8920782815610402112353e-32);
 
@@ -772,7 +782,6 @@ atan2_coeff[MAX_ATAN2_COEFF] =  {
     // prod(even numbers to 0)/product(odd numbers to 1)
     _T(  1.0000000000000000000000e+00,  0.0000000000000000000000e+00,  0.0000000000000000000000e+00)
 };
-
 
 // Local Variables:
 // mode: c++
