@@ -19,15 +19,13 @@ namespace cftal {
                 static const float log_arg_small;
                 // if above factor to multiply with
                 static const float log_arg_small_factor;
-                static const float m_ln2_0;
-                static const float m_ln2_1;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const float m_ln2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
                 static const float m_pi_2_cw[4];
 
                 // expansion of pi/2
-                static const unsigned PI_2_BITS_MAX=4;
+                static const unsigned PI_2_BITS_MAX=3;
                 static const float m_pi_2_bits[PI_2_BITS_MAX];
                 // 1/(i!)
                 static const unsigned MAX_FAC=20;
@@ -108,16 +106,6 @@ const float
 cftal::math::impl::d_real_constants<_T, float>::
 log_arg_small_factor= 2.8147497671066e+14f;
 
-template <class _T>
-const float
-cftal::math::impl::d_real_constants<_T, float>::
-m_ln2_0= 6.9238281250000e-01f;
-
-template <class _T>
-const float
-cftal::math::impl::d_real_constants<_T, float>::
-m_ln2_1= 7.6436804374680e-04f;
-
 /* ---------------------------------------------------------------- */
 template <class _T>
 const float
@@ -143,8 +131,7 @@ cftal::math::impl::d_real_constants<_T, float>::
 m_pi_2_bits[PI_2_BITS_MAX]={
    +1.5707963705063e+00f,
    -4.3711388286738e-08f,
-   -1.7151245100059e-15f,
-   +1.0562998982203e-23f
+   -1.7151245100059e-15f
 };
 
 template <class _T>

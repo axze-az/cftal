@@ -23,15 +23,13 @@ namespace cftal {
                 static const double log_arg_small;
                 // if above factor to multiply with
                 static const double log_arg_small_factor;
-                static const double m_ln2_0;
-                static const double m_ln2_1;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const double m_ln2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
                 static const double m_pi_2_cw[4];
 
                 // expansion of pi/2
-                static const unsigned PI_2_BITS_MAX=4;
+                static const unsigned PI_2_BITS_MAX=3;
                 static const double m_pi_2_bits[PI_2_BITS_MAX];
 
                 // 1/(i!)
@@ -113,16 +111,6 @@ const double
 cftal::math::impl::d_real_constants<_T, double>::
 log_arg_small_factor= 8.1129638414606681695789e+31;
 
-
-template <class _T>
-const double
-cftal::math::impl::d_real_constants<_T, double>::
-m_ln2_0= 6.931457519531250000000000e-01;
-template <class _T>
-const double
-cftal::math::impl::d_real_constants<_T, double>::
-m_ln2_1= 1.428606820309417255529397e-06;
-
 /* ----------------------------------------------------------------*/
 template <class _T>
 const double
@@ -148,8 +136,7 @@ cftal::math::impl::d_real_constants<_T, double>::
 m_pi_2_bits[PI_2_BITS_MAX]={
    +1.5707963267948965579990e+00,
    +6.1232339957367660358688e-17,
-   -1.4973849048591698329435e-33,
-   +5.5622711043168264077250e-50
+   -1.4973849048591698329435e-33
 };
 
 template <class _T>
