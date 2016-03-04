@@ -102,7 +102,7 @@ namespace cftal {
                      arg_t<vf_type> yh,
                      arg_t<vf_type> yl,
                      bool calc_atan2);
-            
+
             // exp, expm1, sinh, cosh call exp_k2 if native == false
             // or native_exp
             template <bool _NATIVE>
@@ -158,7 +158,7 @@ namespace cftal {
             static vf_type native_log10(arg_t<vf_type> vf);
             static vf_type log2(arg_t<vf_type> vf);
             static vf_type native_log2(arg_t<vf_type> vf);
-            
+
             // pow calls exp_k2 and log_k2
             static
             vf_type
@@ -771,8 +771,9 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
     vf_type m2= rint(vf_type(d2 * ctbl::m_1_ln2.h()));
     // vf_type r= (d2 - ctbl::m_ln2.h()*m2);
     // subtraction in two steps for higher precision
-    vf_type r= d2 - m2* ctbl::m_ln2_0;
-    r -= m2* ctbl::m_ln2_1;
+    vf_type r=d2;
+    r = r - m2* ctbl::m_ln2_cw[0];
+    r = r - m2* ctbl::m_ln2_cw[1];
      // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
     do {
         vmf_type cmp_res = (abs(r) > vf_type(M_LN2/512)) & finite;

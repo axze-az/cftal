@@ -9,6 +9,7 @@
 #include <cftal/math_impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
 #include <cmath>
+#include <iterator>
 #include <iostream>
 
 namespace cftal {
@@ -175,9 +176,6 @@ namespace cftal {
             typedef d_real<vf_type> dvf_type;
             typedef t_real<vf_type> tvf_type;
             typedef func_core<double, _T> my_type;
-
-            static tvf_type
-            exp_k3(const tvf_type& tvf);
 
             // argument reduction for all trigonometric
             // functions, reduction by %pi/2, the low bits
@@ -386,91 +384,6 @@ ilogb(arg_t<vf_type> d)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::tvf_type
-cftal::math::func_core<double, _T>::
-exp_k3(const tvf_type& d)
-{
-    using ctbl = impl::t_real_constants<tvf_type, double>;
-
-    vmf_type cmp_res;
-    vmi_type i_cmp_res;
-    vmf_type inf_nan= isinf(d.h()) | isnan(d.h());
-    vmf_type finite= ~inf_nan;
-    vi_type k_i(0);
-
-    vmf_type d_large = d.h() > 709.0;
-    tvf_type d2=d;
-    bool any_of_d_large = any_of(d_large);
-    if (any_of_d_large) {
-        tvf_type dhalf(mul_pwr2(d, vf_type(0.5)));
-        tvf_type dt(_T::sel(d_large, dhalf.h(), d.h()),
-                    _T::sel(d_large, dhalf.m(), d.m()),
-                    _T::sel(d_large, dhalf.l(), d.l()));
-        d2=dt;
-    }
-    // remove exact powers of 2
-    vf_type m2 = rint(vf_type(d2.h() * ctbl::m_1_ln2.h()));
-    tvf_type r= d2 - tvf_type(ctbl::m_ln2)*m2;
-    // dvf_type m2d= dvf_type(m2);
-    // dvf_type r = d2 - ctbl::m_ln2.h()* m2d;
-    // r -= m2d * ctbl::m_ln2.l();
-
-    // reduce arguments further until anything is lt M_LN2/512 ~0.0135
-    do {
-        cmp_res = (abs(r.h()) > vf_type(M_LN2/512)) & finite;
-        if (none_of(cmp_res))
-            break;
-        i_cmp_res = _T::vmf_to_vmi(cmp_res);
-        k_i += _T::sel(i_cmp_res, vi_type(1), vi_type(0));
-        tvf_type d1 = mul_pwr2(r, vf_type(0.5));
-        vf_type d2_h = _T::sel(cmp_res, d1.h(), r.h());
-        vf_type d2_m = _T::sel(cmp_res, d1.m(), r.m());
-        vf_type d2_l = _T::sel(cmp_res, d1.l(), r.l());
-        r = tvf_type(d2_h, d2_m, d2_l);
-    } while (1);
-
-    const int _N=9 /* 7 */;
-    tvf_type s = ctbl::inv_fac[_N];
-    for (unsigned int i=_N-1; i!=2; --i)
-        s = s*r + tvf_type(ctbl::inv_fac[i]);
-    s = s * r + vf_type(0.5);
-    s = s * r + vf_type(1.0);
-    s = s * r;
-
-    // scale back the 1/k_i reduced value
-    do {
-        i_cmp_res = k_i > vi_type(0);
-        if (none_of(i_cmp_res))
-            break;
-        cmp_res = _T::vmi_to_vmf(i_cmp_res);
-        tvf_type d1= mul_pwr2(s, vf_type(2.0)) + sqr(s);
-        vf_type d2_h = _T::sel(cmp_res, d1.h(), s.h());
-        vf_type d2_m = _T::sel(cmp_res, d1.m(), s.m());
-        vf_type d2_l = _T::sel(cmp_res, d1.l(), s.l());
-        k_i -= vi_type(1);
-        s = tvf_type(d2_h, d2_m, d2_l);
-    } while (1);
-    // const vf_type two(2.0);
-    // for (int i=0; i<k_i; ++i)
-    //    s = mul_pwr2(s, two) + sqr(s);
-    s += vf_type(1.0);
-
-    // scale back
-    vi_type mi= _T::cvt_f_to_i(m2);
-    tvf_type res(ldexp(s.h(), mi), ldexp(s.m(), mi), ldexp(s.l(), mi));
-    if (any_of_d_large) {
-        tvf_type xres= sqr(res);
-        tvf_type tres(_T::sel(d_large, xres.h(), res.h()),
-                      _T::sel(d_large, xres.m(), res.m()),
-                      _T::sel(d_large, xres.l(), res.l()));
-        res=tres;
-    }
-    return res;
-}
-
-
-template <typename _T>
-inline
 std::pair<typename cftal::math::func_core<double, _T>::dvf_type,
           typename cftal::math::func_core<double, _T>::vi_type>
 cftal::math::
@@ -483,11 +396,12 @@ reduce_trig_arg_k(arg_t<vf_type> d)
     // small argument reduction
     // reduce by pi half
     dvf_type qf(rint(d * dvf_type(ctbl::m_2_pi)));
-    using ctbl2 = impl::t_real_constants<t_real<double>, double>;
-    dvf_type d0(d -
-                qf * vf_type(ctbl2::m_pi_2.h()) -
-                qf * vf_type(ctbl2::m_pi_2.m()) -
-                qf * vf_type(ctbl2::m_pi_2.l()));
+    dvf_type d0=d;
+    for (auto b=std::cbegin(ctbl::m_pi_2_bits), e=std::cend(ctbl::m_pi_2_bits);
+         b!=e; ++b) {
+        vf_type t=*b;
+        d0 = d0 -qf * t;
+    }
     vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
 
     if (any_of(v_large_arg)) {
@@ -580,27 +494,19 @@ std::pair<typename cftal::math::func_core<double, _T>::vf_type,
 cftal::math::func_core<double, _T>::
 native_reduce_trig_arg_k(arg_t<vf_type> d)
 {
-#define PI4_A 0.78539816290140151978
-#define PI4_B 4.9604678871439933374e-10
-#define PI4_C 1.1258708853173288931e-18
-#define PI4_D 1.7607799325916000908e-27
-
-    constexpr double large_arg(0x1.0p26);
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    constexpr double large_arg(0x1.0p31);
     vmf_type v_large_arg(vf_type(large_arg) < abs(d));
 
     vf_type qf(rint(vf_type(d * (2 * M_1_PI))));
     vi_type q(_T::cvt_f_to_i(qf));
 
     vf_type d0(d);
-    d0 = d0 - qf * (2*PI4_A);
-    d0 = d0 - qf * (2*PI4_B);
-    d0 = d0 - qf * (2*PI4_C);
-    d0 = d0 - qf * (2*PI4_D);
-
-#undef PI4_A
-#undef PI4_B
-#undef PI4_C
-#undef PI4_C
+    for (auto b=std::cbegin(ctbl::m_pi_2_cw), e=std::cend(ctbl::m_pi_2_cw);
+         b != e; ++b) {
+        vf_type t=*b;
+        d0 = d0 - qf * t;
+    }
 
     if (any_of(v_large_arg)) {
         // reduce the large arguments

@@ -79,6 +79,16 @@ namespace cftal {
             constexpr static const char* suffix() { return "f"; }
         };
 
+
+        template <typename _T>
+        struct pr_fp {
+            _T _v;
+            pr_fp(const _T& t) : _v(t) {}
+        };
+
+        template <typename _T>
+        std::ostream& operator<<(std::ostream& s, const pr_fp<_T>& v);
+
         template <typename _T>
         struct out_df {
             d_real<_T> _v;
@@ -117,7 +127,12 @@ namespace cftal {
 
         template <std::size_t _N, std::size_t _B>
         void csplit(float (&r)[_N], const mpfr_real<_B>& v);
-        
+
+
+        template <typename _T, std::size_t _N, std::size_t _B>
+        void
+        create_expansion(_T (&r)[_N], const mpfr_real<_B>& v);
+
     }
 }
 
@@ -200,24 +215,30 @@ cftal::test::write_constant(const char* name_type, _T val)
               << ";\n";
 }
 
+template <typename _T>
+std::ostream&
+cftal::test::operator<<(std::ostream& s, const pr_fp<_T>& v)
+{
+    s << std::scientific
+      << std::setprecision(out_prec<_T>::val)
+      << std::showpos
+      << std::setw(out_prec<_T>::width)
+      << v._v
+      << out_prec<_T>::suffix()
+      << std::noshowpos;
+      return s;
+}
+
 
 template <typename _T>
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const out_df<_T>& p)
 {
     const cftal::d_real<_T>& d=p._v;
-    s << std::scientific
-      << std::setprecision(out_prec<_T>::val);
-    if (d.h() >= 0.0)
-        std::cout << ' ';
-    s << std::setw(out_prec<_T>::width)
-      << d.h() << out_prec<_T>::suffix()
+    s << pr_fp<_T>(d.h())
       << std::setw(0)
       << ", " ;
-    if (d.l() >= 0.0)
-        s << ' ';
-    s << std::setw(out_prec<_T>::width)
-      << d.l() << out_prec<_T>::suffix()
+    s << pr_fp<_T>(d.l())
       << std::setw(0);
     return s;
 }
@@ -227,24 +248,13 @@ std::ostream&
 cftal::test::operator<<(std::ostream& s, const out_tf<_T>& p)
 {
     const cftal::t_real<_T>& d=p._v;
-    s << std::scientific
-      << std::setprecision(out_prec<_T>::val);
-    if (d.h() >= 0.0)
-        std::cout << ' ';
-    s << std::setw(out_prec<_T>::width)
-      << d.h() << out_prec<_T>::suffix()
+    s << pr_fp<_T>(d.h())
       << std::setw(0)
       << ", " ;
-    if (d.m() >= 0.0)
-        std::cout << ' ';
-    s << std::setw(out_prec<_T>::width)
-      << d.m() << out_prec<_T>::suffix()
+    s << pr_fp<_T>(d.m())
       << std::setw(0)
       << ", ";
-    if (d.l() >= 0.0)
-        std::cout << ' ';
-    s << std::setw(out_prec<_T>::width)
-      << d.l() << out_prec<_T>::suffix()
+    s << pr_fp<_T>(d.l())
       << std::setw(0);
     return s;
 }
@@ -321,6 +331,18 @@ cftal::test::csplit(float (&r)[_N], const mpfr_real<_B>& v)
     r[_N-1]= float(vv);
 }
 
+template <typename _T, std::size_t _N, std::size_t _B>
+void
+cftal::test::create_expansion(_T (&r)[_N], const mpfr_real<_B>& v)
+{
+    mpfr_real<_B> vv(v);
+    for (std::size_t i=0; i<_N-1; ++i) {
+        _T t= _T(vv);
+        r[i]= t;
+        vv -= mpfr_real<_B>(t);
+    }
+    r[_N-1]= _T(vv);
+}
 
 std::pair<std::uint64_t, std::uint64_t>
 atan_coeff(int n)
@@ -348,10 +370,62 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
 
     _X d;
 
-    // mpfr_set_default_prec(_B);
+    bool is_double = std::numeric_limits<double>::max() ==
+        std::numeric_limits<value_type>::max();
 
-    f_t x=2.0;
-    f_t v=log(x);
+    // mpfr_set_default_prec(_B);
+    f_t v, x;
+
+    value_type ln2_cw[2];
+    x=2.0;
+    v=log(x);
+    csplit(ln2_cw, v);
+    s << "template <class _T>\nconst " << (is_double ? "double" : "float")
+      << "\n"
+      << "cftal::math::impl::" << pfx << "::\nm_ln2_cw[2]={\n";
+    for (std::size_t i=0; i< 2; ++i) {
+        s << "   " << pr_fp<value_type>(ln2_cw[i]);
+        if (i != 2-1)
+            s << ',';
+        s << "\n";
+    }
+    s << "};\n\n";
+
+    x=0.5;
+    load_pi(v);
+    v *= x;
+    value_type pi_2_cw[4];
+    csplit(pi_2_cw, v);
+    s << "template <class _T>\nconst " << (is_double ? "double" : "float")
+      << "\n"
+      << "cftal::math::impl::" << pfx << "::\nm_pi_2_cw[4]={\n";
+    for (std::size_t i=0; i< 4; ++i) {
+        s << "   " << pr_fp<value_type>(pi_2_cw[i]);
+        if (i != 4-1)
+            s << ',';
+        s << "\n";
+    }
+    s << "};\n\n";
+
+
+    x=0.5;
+    load_pi(v);
+    v *= x;
+    value_type pi_bits[tbl_type::PI_2_BITS_MAX];
+    create_expansion<value_type>(pi_bits, v);
+    s << "template <class _T>\nconst " << (is_double ? "double" : "float")
+      << "\n"
+      << "cftal::math::impl::" << pfx << "::\nm_pi_2_bits[PI_2_BITS_MAX]={\n";
+    for (std::size_t i=0; i< tbl_type::PI_2_BITS_MAX; ++i) {
+        s << "   " << pr_fp<value_type>(pi_bits[i]);
+        if (i != tbl_type::PI_2_BITS_MAX-1)
+            s << ',';
+        s << "\n";
+    }
+    s << "};\n\n";
+
+    x=2.0;
+    v=log(x);
     f_t ln2=v;
     // mpfr_printf("%.128Rf\n", v);
     s << "template <class _T>\nconst _T\n"
@@ -401,9 +475,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << ");\n"
       << std::endl;
 
-    x = std::numeric_limits<double>::max() ==
-        std::numeric_limits<value_type>::max() ?
-        0x1p106 : 0x1p48;
+    x = is_double ? 0x1p106 : 0x1p48;
     v = log(x);
     s << "template <class _T>\nconst _T\n"
       << "cftal::math::impl::" << pfx << "::m_ln_small_arg("
@@ -747,16 +819,18 @@ int main(int argc, char** argv)
         }
 
         std::cout << std::scientific<<'\n';
-        
-        gen_math_constants<128,
+
+        gen_math_constants<256,
                            d_real<double>,
                            math::impl::d_real_constants >(
                                std::cout,
                                "d_real_constants<_T, double>");
+#if 0
         gen_math_constants<256, t_real<double>,
                            math::impl::t_real_constants>(
                                std::cout,
                                "t_real_constants<_T, double>");
+#endif
     }
     if (gen_float) {
         auto dp=std::make_pair(0.0f, 800.0f);
@@ -822,7 +896,7 @@ int main(int argc, char** argv)
                       << "f;\n";
         }
 
-        gen_math_constants<64,
+        gen_math_constants<128,
                            d_real<float>,
                            math::impl::d_real_constants >(
                                std::cout,
