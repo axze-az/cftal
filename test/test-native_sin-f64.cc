@@ -6,7 +6,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     bool rc=true;
-    const int ulp=5;
+    const int ulp=3;
 
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=

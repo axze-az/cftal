@@ -478,14 +478,16 @@ func_core<double, _T>::
 reduce_trig_arg_k(arg_t<vf_type> d)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    constexpr static const double large_arg(2.0e8);
+    constexpr static const double large_arg(0x1.0p31);
     vmf_type v_large_arg(vf_type(large_arg) < abs(d));
     // small argument reduction
     // reduce by pi half
     dvf_type qf(rint(d * dvf_type(ctbl::m_2_pi)));
+    using ctbl2 = impl::t_real_constants<t_real<double>, double>;
     dvf_type d0(d -
-                qf * vf_type(ctbl::m_pi_2.h()) -
-                qf * vf_type(ctbl::m_pi_2.l()));
+                qf * vf_type(ctbl2::m_pi_2.h()) -
+                qf * vf_type(ctbl2::m_pi_2.m()) -
+                qf * vf_type(ctbl2::m_pi_2.l()));
     vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
 
     if (any_of(v_large_arg)) {
@@ -583,7 +585,7 @@ native_reduce_trig_arg_k(arg_t<vf_type> d)
 #define PI4_C 1.1258708853173288931e-18
 #define PI4_D 1.7607799325916000908e-27
 
-    constexpr double large_arg(2.0e7);
+    constexpr double large_arg(0x1.0p26);
     vmf_type v_large_arg(vf_type(large_arg) < abs(d));
 
     vf_type qf(rint(vf_type(d * (2 * M_1_PI))));
@@ -616,8 +618,7 @@ native_reduce_trig_arg_k(arg_t<vf_type> d)
         for (std::size_t i=0; i<N; ++i) {
             if (std::fabs(tf._sc[i]) >= large_arg) {
                 double y[2];
-                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
-                                                   y);
+                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
                 d0_l._sc[i]= y[1] + y[0];
             }
         }
@@ -635,12 +636,11 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
 {
     std::pair<vf_type, vi_type> rq(
         native_reduce_trig_arg_k(d));
-    vf_type& x= rq.first;
+    vf_type x= rq.first;
     const vi_type& q= rq.second;
 
     vf_type x2(x*x);
 
-#if 1
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type s = impl::poly(x2, ctbl::sin_coeff);
     s = s * x2 + vf_type(1.0);
@@ -649,26 +649,7 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
     vf_type c= impl::poly(x2, ctbl::cos_coeff);
     c = c * x2 - vf_type(0.5);
     c = c * x2 + vf_type(1.0);
-#else    
-    vf_type s, c;
-    s = 1.58938307283228937328511e-10;
-    s = s * x2 - 2.50506943502539773349318e-08;
-    s = s * x2 + 2.75573131776846360512547e-06;
-    s = s * x2 - 0.000198412698278911770864914;
-    s = s * x2 + 0.0083333333333191845961746;
-    s = s * x2 - 0.166666666666666130709393;
-    s = s * x2 + 1.0;
-    s = s * x;
 
-    c = -1.13615350239097429531523e-11;
-    c = c * x2 + 2.08757471207040055479366e-09;
-    c = c * x2 - 2.75573144028847567498567e-07;
-    c = c * x2 + 2.48015872890001867311915e-05;
-    c = c * x2 - 0.00138888888888714019282329;
-    c = c * x2 + 0.0416666666666665519592062;
-    c = c * x2 - 0.5;
-    c = c * x2 + 1.0;
-#endif
     vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
     vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
     vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
