@@ -54,7 +54,6 @@ target_link_libraries(cftal-test stdc++fs)
 target_add_mpfr_libs(cftal-test)
 enable_testing()
 
-
 function(target_add_test_libs arg1)
     target_link_libraries(${arg1} cftal-test)
     target_add_mpfr_libs(${arg1})
@@ -160,3 +159,5 @@ add_executable(gen-func-data gen-func-data.cc)
 target_add_test_libs(gen-func-data)
 add_executable(gen-constants gen-constants.cc)
 target_add_test_libs(gen-constants)
+add_executable(gen-approx gen-approx.cc)
+target_add_test_libs(gen-approx)
