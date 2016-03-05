@@ -139,7 +139,6 @@ template <class _T>
 cftal::test::chebyshev::poly_coefficents<_T>
 cftal::test::chebyshev::shift_to_interval(const poly_coefficents<_T>& c)
 {
-{
     std::size_t n= c.size();
     _T a= c._dom.first;
     _T b= c._dom.second;
