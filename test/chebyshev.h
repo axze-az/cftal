@@ -16,6 +16,18 @@ namespace cftal {
         namespace chebyshev {
 
             template <class _T>
+            _T
+            t(std::size_t i, _T x);
+
+            template <class _T>
+            _T
+            domain_to_default(const func_domain<_T>& d, _T x);
+
+            template <class _T>
+            _T
+            default_domain_to(const func_domain<_T>& d, _T x);
+
+            template <class _T>
             struct coefficients : public std::vector<_T> {
                 using base_type=std::vector<_T>;
                 using base_type::base_type;
@@ -85,6 +97,49 @@ namespace cftal {
     }
 }
 
+template <class _T>
+_T
+cftal::test::chebyshev::t(std::size_t n, _T x)
+{
+    _T y;
+    switch (n) {
+    case 0:
+        y= _T(1);
+        break;
+    case 1:
+        y= x;
+        break;
+    default:
+        y= 2* x * poly(n-1, x) + poly(n-2, x);
+        break;
+    }
+    return y;
+}
+
+template <class _T>
+_T
+cftal::test::chebyshev::
+domain_to_default(const func_domain<_T>& d, _T t)
+{
+    // map from [d.first, d.second] to [-1, 1]
+    _T bma= _T(0.5) * (d.second - d.first);
+    _T bpa= _T(0.5) * (d.second + d.first);
+    _T x= (t - bpa)/bma;
+    return x;
+}
+
+template <class _T>
+_T
+cftal::test::chebyshev::
+default_domain_to(const func_domain<_T>& d, _T t)
+{
+    // map from [-1, -1] to d
+    _T bma= _T(0.5) * (d.second - d.first);
+    _T bpa= _T(0.5) * (d.second + d.first);
+    _T x= t*bma + bpa;
+    return x;
+}
+
 template <class _T, class _F>
 cftal::test::chebyshev::coefficients<_T>
 cftal::test::chebyshev::interpolate(const func_domain<_T>& d,
@@ -92,8 +147,8 @@ cftal::test::chebyshev::interpolate(const func_domain<_T>& d,
 {
     coefficients<_T> r(d, n);
 
-    _T bma = 0.5 * (d.second - d.first);
-    _T bpa = 0.5 * (d.second + d.first);
+    // _T bma = 0.5 * (d.second - d.first);
+    // _T bpa = 0.5 * (d.second + d.first);
 
     std::vector<_T> fx(n, _T(0));
     using std::cos;
@@ -101,7 +156,7 @@ cftal::test::chebyshev::interpolate(const func_domain<_T>& d,
     for (std::size_t k=0; k<n ; ++k) {
         // We evaluate the function at the n points required
         _T xs=cos(M_PI*(k+0.5)/n);
-        fx[k]=f(xs*bma+bpa);
+        fx[k]=f(default_domain_to(d, xs));
     }
     _T fac=2.0/n;
     for (std::size_t j=0; j<n; ++j) {

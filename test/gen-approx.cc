@@ -32,8 +32,8 @@ struct calc_f {
 int main()
 {
     using namespace cftal::test;
-    auto pi=interpolate(std::make_pair(std::ldexp(1, -3), std::ldexp(1, 0)),
-                        std::size_t(29+1), calc_f<double>());
+    auto pi=interpolate(std::make_pair(std::ldexp(1, -4), std::ldexp(1, 0)),
+                        std::size_t(16), calc_f<double>());
     std::cout << chebyshev::poly_to_table(pi) << "\n";
 
     std::cout << chebyshev::poly_to_maxima(pi) << "\n";
