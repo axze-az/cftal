@@ -568,7 +568,46 @@ namespace cftal {
     vec<double, 8>
     native_sin(arg_t<vec<double, 8> > d);
     
+    // native_cos, these functions are exact to +-4 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    native_cos(const vec<double, _N>& v);
 
+    vec<double, 1>
+    native_cos(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    native_cos(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    native_cos(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    native_cos(arg_t<vec<double, 8> > d);
+
+    // native_cos, these functions are exact to +-4 ulp
+    template<std::size_t _N>
+    void
+    native_sincos(const vec<double, _N>& x,
+                  vec<double, _N>* s, vec<double, _N>* c);
+
+    void
+    native_sincos(arg_t<vec<double, 1> > x,
+                  vec<double, 1>* s, vec<double, 1>* c);
+
+    void
+    native_sincos(arg_t<vec<double, 2> > d,
+                  vec<double, 2> * psin, vec<double, 2> * pcos);
+
+    void
+    native_sincos(arg_t<vec<double, 4> > d,
+                  vec<double, 4> * psin, vec<double, 4> * pcos);
+
+    void
+    native_sincos(arg_t<vec<double, 8> > d,
+                  vec<double, 8> * psin, vec<double, 8> * pcos);
+    
+    
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
 
@@ -705,6 +744,15 @@ cftal::cos(const vec<double, _N>& v)
 
 template <std::size_t _N>
 inline
+cftal::vec<double, _N>
+cftal::native_cos(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_cos(low_half(v)), native_cos(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
 void
 cftal::sincos(const vec<double, _N>& v,
               vec<double, _N>* s, vec<double, _N>* c)
@@ -719,6 +767,25 @@ cftal::sincos(const vec<double, _N>& v,
         *s = sin(v);
     } else if (c != nullptr) {
         *c = cos(v);
+    }
+}
+
+template <std::size_t _N>
+inline
+void
+cftal::native_sincos(const vec<double, _N>& v,
+                     vec<double, _N>* s, vec<double, _N>* c)
+{
+    if (s != nullptr && c != nullptr) {
+        vec<double, _N/2> sl, sh, cl, ch;
+        native_sincos(low_half(v), &sl, &cl);
+        native_sincos(high_half(v), &sh, &ch);
+        *s= vec<double, _N>(sl, sh);
+        *c= vec<double, _N>(cl, ch);
+    } else if (s != nullptr) {
+        *s = native_sin(v);
+    } else if (c != nullptr) {
+        *c = native_cos(v);
     }
 }
 

@@ -25,15 +25,15 @@ template <class _T>
 struct calc_f {
     _T operator()(_T x) const {
         // return 1*x*x*x*x + 2*x*x*x + 3*x*x + 4*x +5;
-        return std::cbrt(x);
+        return std::expm1(x);
     }
 };
 
 int main()
 {
     using namespace cftal::test;
-    auto pi=interpolate(std::make_pair(std::ldexp(1, -4), std::ldexp(1, 0)),
-                        std::size_t(16), calc_f<double>());
+    auto pi=interpolate(std::make_pair(0.0, M_LN2/512),
+                        std::size_t(10), calc_f<double>());
     std::cout << chebyshev::poly_to_table(pi) << "\n";
 
     std::cout << chebyshev::poly_to_maxima(pi) << "\n";

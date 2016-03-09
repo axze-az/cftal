@@ -12,6 +12,17 @@
 int main(int argc, char** argv)
 {
     using namespace cftal;
+    std::cout << std::hex;
+    double t=0x1p51-1.0;
+    std::cout << bytes8(t)._u64 << std::endl;
+    double t1=t+0x1p52+0x1p51;
+    std::cout << bytes8(t1)._u64 << std::endl;
+    std::cout << bytes8(t1)._u32[0] << std::endl;
+    double t2=-t+0x1p52+0x1p51;
+    std::cout << bytes8(t2)._u64 << std::endl;
+    std::cout << bytes8(t2)._u32[0] << std::endl;
+    
+    
     // v1f32 r=ldexp(v1f32(0x1.2352cf807b7dfp-503), v1s32(-1076));
     // double rd=std::ldexp(0x1.2352cf807b7dfp-503, -1076);
     // v1f32 r=ldexp(v1f32(0x1.a2e184p-127f), v1s32(-22));

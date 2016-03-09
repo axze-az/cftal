@@ -28,17 +28,18 @@ namespace cftal {
             typedef typename _TRAITS_T::vmi_type vmi_type;
             typedef d_real<vf_type> dvf_type;
 
-            // sin and cos core, return sin in first
-            static std::pair<dvf_type, dvf_type>
-            sin_cos_k(arg_t<vf_type> x);
-            // native sin and cos core, return sin in first
-            static std::pair<vf_type, vf_type>
-            native_sin_cos_k(arg_t<vf_type> v);
-            // atan2 core
-            static dvf_type
-            atan2_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
-                     arg_t<vf_type> yh, arg_t<vf_type> yl,
-                     bool calc_atan2);
+            // core sine, cosine calculation
+            static
+            void
+            sin_cos_k(arg_t<vf_type> v,
+                      std::size_t n,
+                      vf_type* s, vf_type* c);
+
+            // native core sine, cosine calculation
+            static
+            void
+            native_sin_cos_k(arg_t<vf_type> x,
+                             vf_type* s, vf_type* c);
             // atan2 core
             static dvf_type
             native_atan2_k(arg_t<vf_type> x, arg_t<vf_type> y);

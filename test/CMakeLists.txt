@@ -123,6 +123,8 @@ test_prog(test-native_exp-f64)
 test_prog(test-native_expm1-f64)
 test_prog(test-native_log-f64)
 test_prog(test-native_sin-f64)
+test_prog(test-native_cos-f64)
+test_prog(test-native_sincos-f64)
 
 test_prog(test-sqrt-f32)
 test_prog(test-exp-f32)

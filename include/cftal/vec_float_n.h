@@ -443,6 +443,44 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<float, _N>
+    native_cos(const vec<float, _N>& v);
+
+    vec<float, 1>
+    native_cos(arg<vec<float, 1> >::type d);
+
+    vec<float, 2>
+    native_cos(arg<vec<float, 2> >::type d);
+
+    vec<float, 4>
+    native_cos(arg<vec<float, 4> >::type d);
+
+    vec<float, 8>
+    native_cos(arg<vec<float, 8> >::type d);
+
+
+    template<std::size_t _N>
+    void
+    native_sincos(const vec<float, _N>& x,
+                  vec<float, _N>* s, vec<float, _N>* c);
+
+    void
+    native_sincos(arg_t<vec<float, 1> > x,
+                  vec<float, 1>* s, vec<float, 1>* c);
+
+    void
+    native_sincos(arg_t<vec<float, 2> > d,
+                  vec<float, 2> * psin, vec<float, 2> * pcos);
+
+    void
+    native_sincos(arg_t<vec<float, 4> > d,
+                  vec<float, 4> * psin, vec<float, 4> * pcos);
+
+    void
+    native_sincos(arg_t<vec<float, 8> > d,
+                  vec<float, 8> * psin, vec<float, 8> * pcos);
+    
+    template <std::size_t _N>
+    vec<float, _N>
     sin(const vec<float, _N>& v);
 
     v1f32 cbrt(arg<v1f32>::type a);
@@ -651,6 +689,14 @@ cftal::cos(const vec<float, _N>& v)
     return r;
 }
 
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::native_cos(const vec<float, _N>& v)
+{
+    vec<float, _N> r(native_cos(low_half(v)), native_cos(high_half(v)));
+    return r;
+}
 
 template <std::size_t _N>
 inline

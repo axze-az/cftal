@@ -153,7 +153,7 @@ cftal::test::chebyshev::interpolate(const func_domain<_T>& d,
     std::vector<_T> fx(n, _T(0));
     using std::cos;
 
-    for (std::size_t k=0; k<n ; ++k) {
+    for (std::size_t k=0; k<n; ++k) {
         // We evaluate the function at the n points required
         _T xs=cos(M_PI*(k+0.5)/n);
         fx[k]=f(default_domain_to(d, xs));
@@ -214,7 +214,7 @@ cftal::test::chebyshev::to_polynomial(const coefficients<_T>& c)
         d[0] = -dd[0]+c[j];
         dd[0]=sv;
     }
-    for (std::size_t j=n-1;j>0;--j) {
+    for (std::size_t j=n-1;j>0; --j) {
         d[j]=d[j-1]-dd[j];
     }
     d[0] = -dd[0]+0.5*c[0];
