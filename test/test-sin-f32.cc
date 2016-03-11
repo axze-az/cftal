@@ -30,7 +30,7 @@ int main(int argc, char** argv)
                            std::numeric_limits<float>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 1, check_sin<float> >::v(dp, cmp_ulp<float>(ulp, us),
+        float, 8, check_sin<float> >::v(dp, cmp_ulp<float>(ulp, us),
                                         0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
