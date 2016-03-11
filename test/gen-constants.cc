@@ -603,7 +603,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << "cftal::math::impl::" << pfx << "::\n"
       << "sin_coeff[MAX_SIN_COEFF] =  {"
       << std::endl;
-    int sign= (MAX_SIN_COEFF & 2) ? 1 : -1;
+    int sign= (MAX_SIN_COEFF & 1) ? -1 : 1;
     for (std::size_t i=MAX_SIN_COEFF*2+1; i>2; i-=2) {
         f_t val= v_inv_fac[i];
         if (sign < 0)
@@ -626,7 +626,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << "cftal::math::impl::" << pfx << "::\n"
       << "cos_coeff[MAX_COS_COEFF] =  {"
       << std::endl;
-    sign= (MAX_COS_COEFF & 2) ? -1 : 1;
+    sign= (MAX_COS_COEFF & 1) ? 1 : -1;
     for (std::size_t i=MAX_COS_COEFF*2+2; i>3; i-=2) {
         f_t val= v_inv_fac[i];
         if (sign < 0)
