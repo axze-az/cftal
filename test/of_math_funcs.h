@@ -358,7 +358,11 @@ namespace cftal {
             static
             _T
             v(const _T& a) {
+#if 0
+                return call_mpfr::func(a, mpfr_sin);
+#else
                 return std::sin(a);
+#endif
             }
             static
             const char* fname() { return "sin"; }

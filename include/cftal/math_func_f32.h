@@ -132,13 +132,23 @@ namespace cftal {
             static vf_type frexp(arg_t<vf_type> vf,
                                  vi_type* vi);
             static vi_type ilogbp1(arg_t<vf_type> x);
+
             static vi_type ilogb(arg_t<vf_type> vf);
 
+            // argument reduction for all trigonometric
+            // functions, reduction by %pi/2, the low bits
+            // of multiple of %pi/2 is returned in the
+            // second part of the return type
+            static std::pair<dvf_type, vi_type>
+            reduce_trig_arg_k(arg_t<vf_type> x);
+            // core sine, cosine calculation, n determines the
+            // the number of result components to store into s[0..n1)
+            // and c[0..n)
             static void
             sin_cos_k(arg_t<vf_type> v,
                       std::size_t n,
                       vf_type* s, vf_type* c);
-
+            
             static void
             native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
@@ -328,6 +338,115 @@ ilogb(arg_t<vf_type> d)
     return e;
 }
 
+#if 1
+
+template <typename _T>
+inline
+std::pair<typename cftal::math::func_core<float, _T>::dvf_type,
+          typename cftal::math::func_core<float, _T>::vi_type>
+cftal::math::
+func_core<float, _T>::
+reduce_trig_arg_k(arg_t<vf_type> d)
+{
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    constexpr static const float large_arg(0x1.0p21);
+    vmf_type v_large_arg(vf_type(large_arg) < abs(d));
+    // small argument reduction
+    // reduce by pi half
+    dvf_type qf(rint(d * dvf_type(ctbl::m_2_pi)));
+    dvf_type d0=d;
+    for (auto b=std::cbegin(ctbl::m_pi_2_bits), e=std::cend(ctbl::m_pi_2_bits);
+         b!=e; ++b) {
+        vf_type t=*b;
+        d0 = d0 -qf * t;
+    }
+    vi_type q(_T::cvt_f_to_i(qf.h()+qf.l()));
+
+    if (any_of(v_large_arg)) {
+        // reduce the large arguments
+        constexpr std::size_t N=_T::NVF();
+        constexpr std::size_t NI=_T::NVI();
+        struct alignas(N*sizeof(float)) v_d {
+            float _sc[N];
+        } tf, d0_l, d0_h;
+        struct alignas(NI*sizeof(int)) v_i {
+            int32_t _sc[NI];
+        } ti;
+        mem<vf_type>::store(tf._sc, d);
+        mem<vi_type>::store(ti._sc, q);
+        mem<vf_type>::store(d0_l._sc, d0.l());
+        mem<vf_type>::store(d0_h._sc, d0.h());
+        for (std::size_t i=0; i<N; ++i) {
+            if (std::fabs(tf._sc[i]) >= large_arg) {
+                float y[2];
+                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
+                                                   y);
+                d0_l._sc[i]= y[1];
+                d0_h._sc[i]= y[0];
+            }
+        }
+        vf_type rh(mem<vf_type>::load(d0_h._sc, N));
+        vf_type rl(mem<vf_type>::load(d0_l._sc, N));
+        d0 = dvf_type(rh, rl);
+        q = mem<vi_type>::load(ti._sc, NI);
+    }
+    return std::make_pair(d0, q);
+}
+
+template <typename _T>
+__attribute__((flatten, noinline))
+void
+cftal::math::func_core<float, _T>::
+sin_cos_k(arg_t<vf_type> d, std::size_t n,
+          vf_type* ps, vf_type* pc)
+{
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    std::pair<dvf_type, vi_type> rr(reduce_trig_arg_k(d));
+    const vi_type& q= rr.second;
+    const dvf_type& dh= rr.first;
+
+    vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
+    vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
+
+    vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
+    vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
+
+    // calculate sin + cos
+    dvf_type x= sqr(dh);
+
+    dvf_type s = impl::poly(x, ctbl::sin_coeff);
+    s = s * x + vf_type(1.0);
+    s = s * dh;
+
+    dvf_type c= impl::poly(x, ctbl::cos_coeff);
+    c = c * x - vf_type(0.5);
+    c = c * x + vf_type(1.0);
+
+    // swap sin/cos if q & 1
+    dvf_type rsin(
+        _T::sel(q_and_1_f, c.h(), s.h()),
+        _T::sel(q_and_1_f, c.l(), s.l()));
+    dvf_type rcos(
+        _T::sel(q_and_1_f, s.h(), c.h()),
+        _T::sel(q_and_1_f, s.l(), c.l()));
+    // swap signs
+    if (ps != nullptr) {
+        vf_type fs = _T::sel(q_and_2_f, vf_type(-1.0), vf_type(1.0));
+        ps[0] = rsin.h() * fs;
+        if (n > 1)
+            ps[1] = rsin.l() * fs;
+    }
+    if (pc != nullptr) {
+        vmf_type mt = q_and_2_f ^ q_and_1_f;
+        vf_type fc =  _T::sel(mt, vf_type(-1.0), vf_type(1.0));
+        pc[0] = rcos.h() * fc;
+        if (n > 1)
+            pc[1] = rcos.l() * fc;
+    }
+}
+
+#else
+
 template <typename _T>
 inline
 void
@@ -368,6 +487,7 @@ sin_cos_k(arg_t<vf_type> x,
             pc[1] = cr.l();
     }
 }
+#endif
 
 template <typename _T>
 inline

@@ -141,6 +141,10 @@ test_prog(test-pow-f32)
 test_prog(test-atan-f32)
 test_prog(test-atan2-f32)
 
+test_prog(test-sin-f32)
+test_prog(test-cos-f32)
+test_prog(test-sincos-f32)
+
 test_prog(test-v2)
 
 if (CFTAL_FULL_TEST)

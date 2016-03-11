@@ -105,6 +105,16 @@ namespace cftal {
             using dvf_type = d_real<vf_type>;
 
             static
+            constexpr std::size_t NVF() {
+                return _N;
+            }
+
+            static
+            constexpr std::size_t NVI() {
+                return _N;
+            }
+
+            static
             constexpr std::size_t vhpf_per_vf() {
                 return 1;
             }
