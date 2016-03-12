@@ -12,6 +12,35 @@ namespace cftal {
     template <typename _T>
     _T hadd(const vec<_T, 1>& n);
 
+
+    namespace impl {
+
+        template <typename _T, std::size_t _N, typename _X, std::size_t _L>
+        struct lookup {
+            // lookup with default value
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
+              const _X* p);
+        };
+        
+        template <typename _T, std::size_t _N, typename _X>
+        struct lookup<_T, _N, _X, 0> {
+            // lookup with default value
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
+              const _X* p);
+        };
+
+    }
+
+    // lookup with default value
+    template <typename _T, std::size_t _N, typename _X, std::size_t _L>
+    vec<_T, _N>
+    lookup(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
+           const _X (&r)[_L]);
+
     template <class _V4>
     void
     transpose_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3);
@@ -49,6 +78,47 @@ _T
 cftal::hadd(const vec<_T, 1>& v)
 {
     return v();
+}
+
+template <typename _T, std::size_t _N, typename _X>
+cftal::vec<_T, _N>
+cftal::impl::lookup<_T, _N, _X, 0>::
+v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx, const _X* p)
+{
+    typename vec<int32_t, _N>::mask_type idx_eq_0= idx == vec<int32_t, _N>(0);
+    typename vec<_T, _N>::mask_type f_idx_eq_0=
+        cvt_mask<typename vec<_T, _N>::mask_type::value_type,
+                 typename vec<int32_t, _N>::mask_type::value_type, _N>::v(
+                     idx_eq_0);
+    vec<_T, _N> r_idx_eq_0(p[0]);
+    vec<_T, _N> r = select(f_idx_eq_0, r_idx_eq_0, def);
+    return r;
+}
+
+template <typename _T, std::size_t _N, typename _X, std::size_t _L>
+cftal::vec<_T, _N>
+cftal::impl::lookup<_T, _N, _X, _L>::
+v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx, const _X* p)
+{
+    const std::size_t _LM1= _L -1;
+    // lookup all lower values to zero:
+    vec<_T, _N> rl= lookup<_T, _N, _X, _LM1>::v(def, idx, p);
+    typename vec<int32_t, _N>::mask_type idx_eq_l= idx == vec<int32_t, _N>(_L);
+    typename vec<_T, _N>::mask_type f_idx_eq_l=
+        cvt_mask<typename vec<_T, _N>::mask_type::value_type,
+                 typename vec<int32_t, _N>::mask_type::value_type, _N>::v(
+                     idx_eq_l);
+    vec<_T, _N> r_idx_eq_l(p[_L]);
+    vec<_T, _N> r= select(f_idx_eq_l, r_idx_eq_l, rl);
+    return r;
+}
+
+template <typename _T, std::size_t _N, typename _X, std::size_t _L>
+cftal::vec<_T, _N>
+cftal::lookup(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
+              const _X (&p)[_L])
+{
+    return impl::lookup<_T, _N, _X, _L-1>::v(def, idx, p);
 }
 
 template <class _V4>
