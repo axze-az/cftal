@@ -18,11 +18,12 @@ namespace cftal {
             struct d_real_constants<_T, double> {
                 // exp(x) may be to large
                 static const double exp_arg_large;
-
                 // log(x): avoid denormals
                 static const double log_arg_small;
                 // if above factor to multiply with
                 static const double log_arg_small_factor;
+                // large sin cos argument
+                static const double sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const double m_ln2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
@@ -110,6 +111,11 @@ template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
 log_arg_small_factor= 8.1129638414606681695789e+31;
+
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+sin_cos_arg_large= 0x1.0p31;
 
 /* ----------------------------------------------------------------*/
 template <class _T>

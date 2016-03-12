@@ -23,7 +23,7 @@ namespace cftal {
             __ieee754_rem_pio2(float x, float *y);
 
         }
-        
+
         template <>
         struct func_traits<float, int32_t>
             : public d_real_traits<float> {
@@ -148,7 +148,7 @@ namespace cftal {
             sin_cos_k(arg_t<vf_type> v,
                       std::size_t n,
                       vf_type* s, vf_type* c);
-            
+
             static void
             native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
@@ -208,7 +208,7 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     // mantissa
     vi_type m=_T::as_int(xs);
     vi_type xe=((m>>23) & 0xff) + eo;
-    
+
     // determine the exponent of the result
     // clamp nn to [-4096, 4096]
     vi_type nn= min(vi_type(4096), max(n, vi_type(-4096)));
@@ -349,8 +349,7 @@ func_core<float, _T>::
 reduce_trig_arg_k(arg_t<vf_type> d)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
-    constexpr static const float large_arg(0x1.0p21);
-    vmf_type v_large_arg(vf_type(large_arg) < abs(d));
+    vmf_type v_large_arg(vf_type(ctbl::sin_cos_arg_large) < abs(d));
     // small argument reduction
     // reduce by pi half
     dvf_type qf(rint(d * dvf_type(ctbl::m_2_pi)));
@@ -377,7 +376,7 @@ reduce_trig_arg_k(arg_t<vf_type> d)
         mem<vf_type>::store(d0_l._sc, d0.l());
         mem<vf_type>::store(d0_h._sc, d0.h());
         for (std::size_t i=0; i<N; ++i) {
-            if (std::fabs(tf._sc[i]) >= large_arg) {
+            if (ctbl::sin_cos_arg_large < std::fabs(tf._sc[i])) {
                 float y[2];
                 ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
                                                    y);

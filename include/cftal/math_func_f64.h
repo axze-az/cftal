@@ -391,8 +391,7 @@ func_core<double, _T>::
 reduce_trig_arg_k(arg_t<vf_type> d)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    constexpr static const double large_arg(0x1.0p31);
-    vmf_type v_large_arg(vf_type(large_arg) < abs(d));
+    vmf_type v_large_arg(vf_type(ctbl::sin_cos_arg_large) < abs(d));
     // small argument reduction
     // reduce by pi half
     dvf_type qf(rint(d * dvf_type(ctbl::m_2_pi)));
@@ -419,10 +418,9 @@ reduce_trig_arg_k(arg_t<vf_type> d)
         mem<vf_type>::store(d0_l._sc, d0.l());
         mem<vf_type>::store(d0_h._sc, d0.h());
         for (std::size_t i=0; i<N; ++i) {
-            if (std::fabs(tf._sc[i]) >= large_arg) {
+            if (ctbl::sin_cos_arg_large < std::fabs(tf._sc[i])) {
                 double y[2];
-                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i],
-                                                   y);
+                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
                 d0_l._sc[i]= y[1];
                 d0_h._sc[i]= y[0];
             }

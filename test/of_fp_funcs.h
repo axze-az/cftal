@@ -249,6 +249,12 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
         _T(8),
         _T(uint64_t(1ULL<<23)),
         _T(uint64_t(1ULL<<52)),
+        _T(0x1.0p31),
+        _T(0x1.0p21),
+        _T(0x1.0p23),
+        _T(0x1.0p24),
+        _T(0x1.0p51),
+        _T(0x1.0p52),
         std::numeric_limits<_T>::infinity(),
         std::numeric_limits<_T>::quiet_NaN(),
     };
@@ -265,7 +271,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(func_domain<_T> domain,
         distrib(domain.first, domain.second);
 
     _T va[_N];
-    
+
     std::cout << "[" << domain.first << ", " << domain.second << ")\n";
     const uint32_t N0=72;
     for (uint32_t j=0; j<N0; ++j) {
@@ -389,7 +395,7 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(func_domain<_T> domain_1,
     }
 
     _T va[_N], vb[_N];
-    
+
     std::mt19937_64 rnd;
     uniform_real_distribution<_T>
         distrib1(domain_1.first, domain_1.second);

@@ -19,6 +19,8 @@ namespace cftal {
                 static const float log_arg_small;
                 // if above factor to multiply with
                 static const float log_arg_small_factor;
+                // large sin cos argument
+                static const float sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const float m_ln2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
@@ -105,6 +107,11 @@ template <class _T>
 const float
 cftal::math::impl::d_real_constants<_T, float>::
 log_arg_small_factor= 2.8147497671066e+14f;
+
+template <class _T>
+const float
+cftal::math::impl::d_real_constants<_T, float>::
+sin_cos_arg_large= 0x1.0p21f;
 
 /* ---------------------------------------------------------------- */
 template <class _T>
