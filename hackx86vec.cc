@@ -83,8 +83,8 @@ test_lookup(cftal::vec<int32_t, 1> idx)
 {
     using namespace cftal;
     const double values[]= {0.0, 1.0, 2.0, 3.0};
-    v4f64 t(-1.0);
-    v4f64 l=lookup(t, idx, values);
+    v1f64 t(-1.0);
+    v1f64 l=lookup(t, idx, values);
     return l;
 }
 
