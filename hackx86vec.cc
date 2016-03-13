@@ -9,40 +9,52 @@
 #include <cftal/vec_traits.h>
    
 
-cftal::vec<double, 4>
-test_lookup(cftal::vec<int32_t, 4> idx)
-{
-    using namespace cftal;
-    const double values[]= {0.0, 1.0, 2.0, 3.0};
-    v4f64 t(-1.0);
-    v4f64 l=lookup(t, idx, values);
-    return l;
-}
+namespace cftal {
+    namespace impl {
+        template <typename _T>
+        std::pair<_T, _T>
+        agm_step(std::pair<_T, _T> p) {
+            using std::sqrt;
+            using std::make_pair;
+            auto t=make_pair((p.first + p.second)* 0.5,
+                             sqrt(p.first * p.second));
+            std::cout << t.first << " " << t.second << std::endl;
+            return t;
+        }
 
-cftal::vec<double, 1>
-test_lookup(cftal::vec<int32_t, 1> idx)
-{
-    using namespace cftal;
-    const double values[]= {0.0, 1.0, 2.0, 3.0};
-    v1f64 t(-1.0);
-    v1f64 l=lookup(t, idx, values);
-    return l;
-}
+        template <std::size_t _N, typename _T>
+        std::pair<_T, _T>
+        agm(std::pair<_T, _T> p) {
+            for (std::size_t i=0; i<_N; ++i)
+                p=agm_step(p);
+            return p;
+        }
 
+        template <typename _T>
+        _T
+        xlog(_T v) {
+            using ctbl = math::impl::d_real_constants<d_real<_T>, _T>;
+            _T s= v*0x1p200;
+            _T inv_s= 4.0 / s;
+            _T a=agm<10>(std::make_pair(1.0, inv_s)).first;
+            a*=2.0;
+            d_real<_T> t= ctbl::m_pi.h()/a - ctbl::m_ln2.h()* _T(200);
+            return t.h();
+        }
+        
+    }
+}
 
 int main(int argc, char** argv)
 {   
     using namespace cftal;
 #if 1
-    const double values[]= {0.0, 1.0, 2.0, 3.0};
-    v4f64 t(-1.0);
-    v4s32 idx{3, 2, 1, 0};
-    v4f64 l=lookup(t, idx, values);
-    std::cout << std::hexfloat << std::endl;
-    std::cout << t << std::endl;
-    std::cout << idx << std::endl;
-    std::cout << l << std::endl;
-
+    std::cout << std::hexfloat;
+    std::cout << std::log(1000.0) << std::endl;
+    std::cout << impl::xlog(1000.0) << std::endl;
+    std::cout << std::log(1e-20) << std::endl;
+    std::cout << impl::xlog(1e-20) << std::endl;
+    std::cout << log(v1f64(1e-20)) << std::endl;
 #else
     std::cout << std::hex;
     double t=0x1p51-1.0;
