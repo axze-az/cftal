@@ -419,13 +419,10 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
     vf_type x2(x*x);
 
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type s = impl::poly(x2, ctbl::sin_coeff);
-    s = s * x2 + vf_type(1.0);
+    vf_type s = impl::poly(x2, ctbl::native_sin_coeff);
     s = s * x;
-
-    vf_type c= impl::poly(x2, ctbl::cos_coeff);
-    c = c * x2 - vf_type(0.5);
-    c = c * x2 + vf_type(1.0);
+    
+    vf_type c= impl::poly(x2, ctbl::native_cos_coeff);
 
     vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
     vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));

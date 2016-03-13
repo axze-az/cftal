@@ -576,6 +576,8 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
+    ////////
+    s << "#if 0\n";
     const std::size_t MAX_EXP_COEFF=tbl_type::MAX_EXP_COEFF;
     s << "template <class _T>\n"
       << "const _T\n"
@@ -590,21 +592,41 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
           << "    _T( "
           << to_stream(d, val)
           << ")";
-        if (i != 0)
+        if (i != 1)
             s << ',';
         s << '\n';
     }
     s << "};\n" << std::endl;
-    const std::size_t MAX_COS_COEFF=tbl_type::MAX_COS_COEFF;
-    const std::size_t MAX_SIN_COEFF=tbl_type::MAX_SIN_COEFF;
+
+    s << "template <class _T>\n"
+      << "const " << (is_double ? "double" : "float") << "\n"
+      << "cftal::math::impl::" << pfx << "::\n"
+      << "native_exp_coeff[MAX_EXP_COEFF] =  {"
+      << std::endl;
+    for (std::size_t i=MAX_EXP_COEFF; i!=0; --i) {
+        f_t val= v_inv_fac[i];
+        value_type vv=val;
+        s << std::scientific
+          << std::setprecision(22)
+          << "    // + 1/" << i << "!\n"
+          << "    "
+          << pr_fp<value_type>(vv);
+        if (i != 1)
+            s << ',';
+        s << '\n';
+    }
+    s << "};\n" << std::endl;
+    
+    const int MAX_COS_COEFF=tbl_type::MAX_COS_COEFF;
+    const int MAX_SIN_COEFF=tbl_type::MAX_SIN_COEFF;
 
     s << "template <class _T>\n"
       << "const _T\n"
       << "cftal::math::impl::" << pfx << "::\n"
       << "sin_coeff[MAX_SIN_COEFF] =  {"
       << std::endl;
-    int sign= (MAX_SIN_COEFF & 1) ? -1 : 1;
-    for (std::size_t i=MAX_SIN_COEFF*2+1; i>2; i-=2) {
+    int sign= (MAX_SIN_COEFF & 1) ? 1 : -1;
+    for (int i=MAX_SIN_COEFF*2-1; i>=0; i-=2) {
         f_t val= v_inv_fac[i];
         if (sign < 0)
             val = -val;
@@ -614,7 +636,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
           << "    _T( "
           << to_stream(d, val)
           << ")";
-        if (i != 3)
+        if (i != 1)
             s << ',';
         s << '\n';
         sign = -sign;
@@ -622,12 +644,35 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     s << "};\n" << std::endl;
 
     s << "template <class _T>\n"
+      << "const " << (is_double ? "double" : "float") << "\n"
+      << "cftal::math::impl::" << pfx << "::\n"
+      << "native_sin_coeff[MAX_SIN_COEFF] =  {"
+      << std::endl;
+    sign= (MAX_SIN_COEFF & 1) ? 1 : -1;
+    for (int i=MAX_SIN_COEFF*2-1; i>=0; i-=2) {
+        f_t val= v_inv_fac[i];
+        if (sign < 0)
+            val = -val;
+        value_type vv=val;
+        s << std::scientific
+          << std::setprecision(22)
+          << "    // " << (sign > 0? '+' : '-') << "1/" << i << "!\n"
+          << "    "
+          << pr_fp<value_type>(vv);
+        if (i != 1)
+            s << ',';
+        s << '\n';
+        sign = -sign;
+    }
+    s << "};\n" << std::endl;
+    
+    s << "template <class _T>\n"
       << "const _T\n"
       << "cftal::math::impl::" << pfx << "::\n"
       << "cos_coeff[MAX_COS_COEFF] =  {"
       << std::endl;
     sign= (MAX_COS_COEFF & 1) ? 1 : -1;
-    for (std::size_t i=MAX_COS_COEFF*2+2; i>3; i-=2) {
+    for (int i=MAX_COS_COEFF*2-2; i>=0; i-=2) {
         f_t val= v_inv_fac[i];
         if (sign < 0)
             val = -val;
@@ -637,12 +682,38 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
           << "    _T( "
           << to_stream(d, val)
           << ")";
-        if (i != 4)
+        if (i != 0)
             s << ',';
         s << '\n';
         sign = -sign;
     }
     s << "};\n" << std::endl;
+
+    s << "template <class _T>\n"
+      << "const " << (is_double ? "double" : "float") << "\n"
+      << "cftal::math::impl::" << pfx << "::\n"
+      << "native_cos_coeff[MAX_COS_COEFF] =  {"
+      << std::endl;
+    sign= (MAX_COS_COEFF & 1) ? 1 : -1;
+    for (int i=MAX_COS_COEFF*2-2; i>=0; i-=2) {
+        f_t val= v_inv_fac[i];
+        if (sign < 0)
+            val = -val;
+        value_type vv=val;
+        s << std::scientific
+          << std::setprecision(22)
+          << "    // " << (sign > 0? '+' : '-') << "1/" << i << "!\n"
+          << "    "
+          << pr_fp<value_type>(vv);
+        if (i != 0)
+            s << ',';
+        s << '\n';
+        sign = -sign;
+    }
+    s << "};\n" << std::endl;
+
+    // 
+    s << "#endif\n";
 
     const std::size_t MAX_ATAN2_COEFF=tbl_type::MAX_ATAN2_COEFF;
     std::vector<f_t> v_atan_coeff;

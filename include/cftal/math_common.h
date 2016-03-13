@@ -39,9 +39,9 @@ namespace cftal {
             __kernel_rem_pio2(double *x, double *y, int e0,
                               int nx, int prec,
                               const int32_t *ipio2);
-            
+
         }
-        
+
         template <typename _FLOAT_T, typename _INT_T>
         struct func_traits;
 
@@ -829,7 +829,7 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
     } while (1);
 
     // calculate 1! + x^1/2!+x^2/3! .. +x^7/7!
-    vf_type s=impl::poly(r, ctbl::exp_coeff);
+    vf_type s=impl::poly(r, ctbl::native_exp_coeff);
     // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^7/7! == expm1(r)
     s = s*r;
 
@@ -928,8 +928,8 @@ log_k2(arg_t<vf_type> d0h, arg_t<vf_type> d0l)
                      _T::sel(d_small, t.l(), d.l()));
     }
 
+    // reduce d to [2/3), 4/3]
     dvf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
-
     vi_type e = ilogbp1(sc.h() + sc.l());
     vf_type ef= _T::cvt_i_to_f(e);
     dvf_type m(ldexp(d.h(), -e), ldexp(d.l(), -e));
@@ -1142,12 +1142,9 @@ sin_cos_k(arg_t<vf_type> d, std::size_t n,
     dvf_type x= sqr(dh);
 
     dvf_type s = impl::poly(x, ctbl::sin_coeff);
-    s = s * x + vf_type(1.0);
     s = s * dh;
 
     dvf_type c= impl::poly(x, ctbl::cos_coeff);
-    c = c * x - vf_type(0.5);
-    c = c * x + vf_type(1.0);
 
     // swap sin/cos if q & 1
     dvf_type rsin(
@@ -1815,7 +1812,7 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 
     vmf_type special = y_zero | x_inf | y_inf | x_zero | x_nan | y_nan;
 
-    if (any_of(special)) {   
+    if (any_of(special)) {
         vf_type y_sgn = copysign(vf_type(1), y);
         vmf_type y_p= y_sgn == vf_type(1.0);
         vmf_type y_n= y_sgn == vf_type(-1.0);

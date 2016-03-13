@@ -47,13 +47,16 @@ namespace cftal {
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=7;
                 static const _T exp_coeff[MAX_EXP_COEFF];
+                static const double native_exp_coeff[MAX_EXP_COEFF];
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
-                static const unsigned MAX_SIN_COEFF=10;
+                static const unsigned MAX_SIN_COEFF=11;
                 static const _T sin_coeff[MAX_SIN_COEFF];
+                static const double native_sin_coeff[MAX_SIN_COEFF];
                 // table for cos -1/22! +1/20! .. +1/4! with alternating signs
-                static const unsigned MAX_COS_COEFF=10;
+                static const unsigned MAX_COS_COEFF=12;
                 static const _T cos_coeff[MAX_COS_COEFF];
+                static const double native_cos_coeff[MAX_COS_COEFF];
 
                 // table for atan2
                 static const unsigned MAX_ATAN2_COEFF=25;
@@ -116,6 +119,102 @@ template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
 sin_cos_arg_large= 0x1.0p31;
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::
+exp_coeff[MAX_EXP_COEFF] = {
+    _T( 0x1.a01a01a012ab5p-13, 0x1.5545df55d7f7ap-68),
+    _T( 0x1.6c16c2c9f1b04p-10, -0x1.0d2e5aca0f1e8p-65),
+    _T( 0x1.111111111111ap-7, 0x1.a02f43a10ebdfp-61),
+    _T( 0x1.555555555554bp-5, -0x1.60b91b55a6b9ep-60),
+    _T( 0x1.5555555555555p-3, 0x1.5555316f5760fp-57),
+    _T( 0x1p-1, 0x1.430910a8p-76),
+    _T( 0x1p0, 0x1.14p-99)
+};
+
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+native_exp_coeff[MAX_EXP_COEFF] = {
+    0x1.95197552e8845p-13,
+    0x1.6c16c298850e6p-10,
+    0x1.11111118fee5ap-7,
+    0x1.555555555554fp-5,
+    0x1.5555555555555p-3,
+    0x1p-1,
+    0x1p0
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::
+sin_coeff[MAX_SIN_COEFF] = {
+    _T( 0x1.6f3ef169b4d8ap-66, -0x1.01a196fca602ep-120),
+    _T( -0x1.2f47e359c178fp-57, 0x1.a8090edc90a98p-111),
+    _T( 0x1.952c75812fdc1p-49, 0x1.546ee683984c6p-104),
+    _T( -0x1.ae7f3e72749ffp-41, -0x1.e8bb2b3c6c4cp-95),
+    _T( 0x1.6124613a868ebp-33, 0x1.cd5aafac881c1p-87),
+    _T( -0x1.ae64567f544e2p-26, 0x1.859f3c61002c8p-81),
+    _T( 0x1.71de3a556c734p-19, -0x1.c331459b119afp-73),
+    _T( -0x1.a01a01a01a01ap-13, -0x1.9ff51de2061cp-73),
+    _T( 0x1.1111111111111p-7, 0x1.111110b346bfp-63),
+    _T( -0x1.5555555555555p-3, -0x1.555555554f86ep-57),
+    _T( 0x1p0, -0x1.ep-104)
+};
+
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+native_sin_coeff[MAX_SIN_COEFF] = {
+    -0x1.1f474cb6a997cp-40,
+    0x1.cba8d485f5443p-39,
+    -0x1.3a0cca367111bp-38,
+    0x1.73438414bfa03p-39,
+    0x1.5dab24cc9bd41p-33,
+    -0x1.ae6252465eb69p-26,
+    0x1.71de399ca3559p-19,
+    -0x1.a01a019fccdbfp-13,
+    0x1.1111111111008p-7,
+    -0x1.5555555555555p-3,
+    0x1p0
+};
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::
+cos_coeff[MAX_COS_COEFF] = {
+    _T( -0x1.0b15f05e30be4p-70, 0x1.3fd2f1eca0b2p-124),
+    _T( 0x1.e53fccfb58355p-62, -0x1.4f00c20b9118cp-116),
+    _T( -0x1.682784de2f127p-53, 0x1.b177c10493be2p-108),
+    _T( 0x1.ae7f3e726ce4fp-45, -0x1.2acf80004c549p-99),
+    _T( -0x1.93974a8c07793p-37, 0x1.8202b191e963p-94),
+    _T( 0x1.1eed8eff8d896p-29, 0x1.978ad1714ea61p-83),
+    _T( -0x1.27e4fb7789f5cp-22, -0x1.c9f238e33c1a7p-76),
+    _T( 0x1.a01a01a01a01ap-16, 0x1.9fe8c4b5b71p-76),
+    _T( -0x1.6c16c16c16c17p-10, 0x1.f49f4a5768164p-65),
+    _T( 0x1.5555555555555p-5, 0x1.5555555548eb4p-59),
+    _T( -0x1p-1, 0x1.18p-102),
+    _T( 0x1p0, 0)
+};
+
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+native_cos_coeff[MAX_COS_COEFF] = {
+    0x1.27a715a1df632p-44,
+    -0x1.fb6bdd6971ee9p-43,
+    0x1.778d9d00a1951p-42,
+    -0x1.0400cb06b26eap-42,
+    -0x1.8e867b27a7ce5p-37,
+    0x1.1eebe401ddfccp-29,
+    -0x1.27e4fac5b41adp-22,
+    0x1.a01a019fc0953p-16,
+    -0x1.6c16c16c16a92p-10,
+    0x1.5555555555555p-5,
+    -0x1p-1,
+    0x1p0
+};
 
 /* ----------------------------------------------------------------*/
 template <class _T>
@@ -319,6 +418,7 @@ log_coeff[MAX_LOG_COEFF]= {
     _T( +6.6666666666666662965923e-01, +3.7007434154171882626462e-17)
 };
 
+#if 0
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::
@@ -336,7 +436,27 @@ exp_coeff[MAX_EXP_COEFF] =  {
     // + 1/2!
     _T( +5.0000000000000000000000e-01, +0.0000000000000000000000e+00),
     // + 1/1!
-    _T( +1.0000000000000000000000e+00, +0.0000000000000000000000e+00),
+    _T( +1.0000000000000000000000e+00, +0.0000000000000000000000e+00)
+};
+
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+native_exp_coeff[MAX_EXP_COEFF] =  {
+    // + 1/7!
+    +1.9841269841269841252632e-04,
+    // + 1/6!
+    +1.3888888888888889418943e-03,
+    // + 1/5!
+    +8.3333333333333332176851e-03,
+    // + 1/4!
+    +4.1666666666666664353702e-02,
+    // + 1/3!
+    +1.6666666666666665741481e-01,
+    // + 1/2!
+    +5.0000000000000000000000e-01,
+    // + 1/1!
+    +1.0000000000000000000000e+00
 };
 
 template <class _T>
@@ -362,7 +482,37 @@ sin_coeff[MAX_SIN_COEFF] =  {
     // +1/5!
     _T( +8.3333333333333332176851e-03, +1.1564823173178713802252e-19),
     // -1/3!
-    _T( -1.6666666666666665741481e-01, -9.2518585385429706566156e-18)
+    _T( -1.6666666666666665741481e-01, -9.2518585385429706566156e-18),
+    // +1/1!
+    _T( +1.0000000000000000000000e+00, +0.0000000000000000000000e+00)
+};
+
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+native_sin_coeff[MAX_SIN_COEFF] =  {
+    // +1/21!
+    +1.9572941063391262595198e-20,
+    // -1/19!
+    -8.2206352466243294955370e-18,
+    // +1/17!
+    +2.8114572543455205981105e-15,
+    // -1/15!
+    -7.6471637318198164055138e-13,
+    // +1/13!
+    +1.6059043836821613340863e-10,
+    // -1/11!
+    -2.5052108385441720223866e-08,
+    // +1/9!
+    +2.7557319223985892510951e-06,
+    // -1/7!
+    -1.9841269841269841252632e-04,
+    // +1/5!
+    +8.3333333333333332176851e-03,
+    // -1/3!
+    -1.6666666666666665741481e-01,
+    // +1/1!
+    +1.0000000000000000000000e+00
 };
 
 template <class _T>
@@ -388,9 +538,44 @@ cos_coeff[MAX_COS_COEFF] =  {
     // -1/6!
     _T( -1.3888888888888889418943e-03, +5.3005439543735770590566e-20),
     // +1/4!
-    _T( +4.1666666666666664353702e-02, +2.3129646346357426641539e-18)
+    _T( +4.1666666666666664353702e-02, +2.3129646346357426641539e-18),
+    // -1/2!
+    _T( -5.0000000000000000000000e-01, +0.0000000000000000000000e+00),
+    // +1/0!
+    _T( +1.0000000000000000000000e+00, +0.0000000000000000000000e+00)
 };
 
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+native_cos_coeff[MAX_COS_COEFF] =  {
+    // -1/22!
+    -8.8967913924505740778892e-22,
+    // +1/20!
+    +4.1103176233121648440650e-19,
+    // -1/18!
+    -1.5619206968586225271148e-16,
+    // +1/16!
+    +4.7794773323873852534462e-14,
+    // -1/14!
+    -1.1470745597729724507297e-11,
+    // +1/12!
+    +2.0876756987868100186555e-09,
+    // -1/10!
+    -2.7557319223985888275786e-07,
+    // +1/8!
+    +2.4801587301587301565790e-05,
+    // -1/6!
+    -1.3888888888888889418943e-03,
+    // +1/4!
+    +4.1666666666666664353702e-02,
+    // -1/2!
+    -5.0000000000000000000000e-01,
+    // +1/0!
+    +1.0000000000000000000000e+00
+};
+
+#endif
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::
@@ -446,7 +631,6 @@ atan2_coeff[MAX_ATAN2_COEFF] =  {
     // prod(even numbers to 0)/product(odd numbers to 1)
     _T( +1.0000000000000000000000e+00, +0.0000000000000000000000e+00)
 };
-
 
 // Local Variables:
 // mode: c++
