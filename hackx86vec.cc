@@ -18,7 +18,7 @@ namespace cftal {
             using std::make_pair;
             auto t=make_pair((p.first + p.second)* 0.5,
                              sqrt(p.first * p.second));
-            std::cout << t.first << " " << t.second << std::endl;
+            // std::cout << t.first << " " << t.second << std::endl;
             return t;
         }
 
@@ -34,11 +34,16 @@ namespace cftal {
         _T
         xlog(_T v) {
             using ctbl = math::impl::d_real_constants<d_real<_T>, _T>;
-            _T s= v*0x1p200;
+            _T p=0.0;
+            _T s= v;
+            while (s < 0x1p64) {
+                s *= 0x1p64;
+                p += 64;
+            }
             _T inv_s= 4.0 / s;
             _T a=agm<10>(std::make_pair(1.0, inv_s)).first;
             a*=2.0;
-            d_real<_T> t= ctbl::m_pi.h()/a - ctbl::m_ln2.h()* _T(200);
+            d_real<_T> t= ctbl::m_pi.h()/a - ctbl::m_ln2.h()* p;
             return t.h();
         }
         
