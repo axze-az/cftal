@@ -1,7 +1,7 @@
+- math functions: check if minimax polynomials can reduce the degree of
+  the polynomials
 
 - permutation specializations for v4f64, v8f32, v8u32, v4u64
-
-- math functions for f32
 
 - variable vector shifts for integer vectors
 
@@ -13,10 +13,10 @@ fmod(double x, double y)
         errno = EDOM;
         return 0.0;
     }
-        
+
     /* return f such that x = i*y + f for some integer i
        such that |f| < |y| and f has the same sign as x */
-    
+
     i = floor(x/y);
     f = x - i*y;
     if ((x < 0.0) != (y < 0.0))
