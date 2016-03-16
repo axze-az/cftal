@@ -234,6 +234,8 @@ namespace cftal {
             static vf_type atan2(arg_t<vf_type> x,
                                  arg_t<vf_type> y);
             static vf_type atan(arg_t<vf_type> x);
+            static vf_type asin(arg_t<vf_type> x);
+            static vf_type acos(arg_t<vf_type> x);
         };
 
 
@@ -1914,6 +1916,41 @@ atan(arg_t<vf_type> x)
     r=_TRAITS_T::sel(isnan(x), x, r);
     return r;
 }
+
+template <typename _FLOAT_T,
+          typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+asin(arg_t<vf_type> x)
+{
+    dvf_type xd= dvf_type(x);
+    dvf_type xt= (vf_type(1) - xd)*(vf_type(1) + xd);
+    using std::sqrt;
+    dvf_type sqrt_xt= sqrt(xt);
+    dvf_type asin_x= x/sqrt_xt;
+    dvf_type rd=atan2_k2(asin_x.h(), asin_x.l(), vf_type(1.0) , vf_type(0.0),
+                         false);
+    vf_type r=rd.h();
+    return r;
+}
+
+template <typename _FLOAT_T,
+          typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+acos(arg_t<vf_type> x)
+{
+    dvf_type xd= dvf_type(x);
+    dvf_type xt= (vf_type(1) - xd)*(vf_type(1) + xd);
+    using std::sqrt;
+    dvf_type sqrt_xt= sqrt(xt);
+    dvf_type acos_x= sqrt_xt/x;
+    dvf_type rd=atan2_k2(acos_x.h(), acos_x.l(), vf_type(1.0) , vf_type(0.0),
+                         false);
+    vf_type r=rd.h();
+    return r;
+}
+
 
 template <typename _T>
 _T

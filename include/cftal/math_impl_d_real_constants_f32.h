@@ -21,6 +21,8 @@ namespace cftal {
                 static const float log_arg_small_factor;
                 // large sin cos argument
                 static const float sin_cos_arg_large;
+                // large native sin cos argument
+                static const float native_sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const float m_ln2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
@@ -114,8 +116,14 @@ log_arg_small_factor= 2.8147497671066e+14f;
 template <class _T>
 const float
 cftal::math::impl::d_real_constants<_T, float>::
-sin_cos_arg_large= 0x1.0p21f;
+sin_cos_arg_large= 0x1.0p24f;
 
+template <class _T>
+const float
+cftal::math::impl::d_real_constants<_T, float>::
+native_sin_cos_arg_large= 0x1.0p20f;
+
+#if 0
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::
@@ -193,6 +201,7 @@ native_cos_coeff[MAX_COS_COEFF] = {
     -0x1p-1f,
     0x1p0f
 };
+#endif
 
 /* ---------------------------------------------------------------- */
 template <class _T>
@@ -364,7 +373,7 @@ log_coeff[MAX_LOG_COEFF]= {
     _T( +6.6666668653488e-01f, -1.9868215517249e-08f)
 };
 
-#if 0
+#if 1
 template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::

@@ -128,10 +128,12 @@ namespace cftal {
 
             static vi_type ilogb(arg_t<vf_type> vf);
 
+            static std::pair<vf_type, vi_type>
+            native_reduce_trig_arg_k(arg_t<vf_type> x);
+            // core sine, cosine calculation
             static void
             native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
-
         };
 
         template <typename _T>
@@ -141,9 +143,10 @@ namespace cftal {
             typedef typename _T::vi_type vi_type;
             typedef typename _T::vmf_type vmf_type;
             typedef typename _T::vmi_type vmi_type;
-
+#if 0
             static vf_type native_sin(arg_t<vf_type> x);
             static vf_type native_cos(arg_t<vf_type> x);
+#endif
         };
     }
 }
@@ -361,6 +364,111 @@ sin_cos_k(arg_t<vf_type> x,
 }
 #endif
 
+
+
+template <typename _T>
+inline
+std::pair<typename cftal::math::func_core<float, _T>::vf_type,
+          typename cftal::math::func_core<float, _T>::vi_type>
+cftal::math::func_core<float, _T>::
+native_reduce_trig_arg_k(arg_t<vf_type> d)
+{
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vmf_type v_large_arg(
+        vf_type(ctbl::native_sin_cos_arg_large) < abs(d));
+
+    vf_type qf(rint(vf_type(d * (2 * M_1_PI))));
+    vi_type q(_T::cvt_f_to_i(qf));
+
+#if 1
+    using d_real_traits_t= d_real_traits<vf_type>;
+    vf_type qfl, qfh;
+    d_real_traits_t::split(qf, qfh, qfl);
+    vf_type d0(d);
+    for (auto b=std::cbegin(ctbl::m_pi_2_cw), e=std::cend(ctbl::m_pi_2_cw);
+         b != e; ++b) {
+        vf_type t=*b;
+        d0 = d0 - qfh * t;
+        d0 = d0 - qfl * t;
+    }
+#else
+    vf_type d0(d);
+    for (auto b=std::cbegin(ctbl::m_pi_2_cw), e=std::cend(ctbl::m_pi_2_cw);
+         b != e; ++b) {
+        vf_type t=*b;
+        d0 = d0 - qf * t;
+    }
+#endif
+
+    if (any_of(v_large_arg)) {
+        // reduce the large arguments
+        constexpr std::size_t N=_T::NVF();
+        constexpr std::size_t NI=_T::NVI();
+        struct alignas(N*sizeof(float)) v_d {
+            float _sc[N];
+        } tf, d0_l;
+        struct alignas(NI*sizeof(int)) v_i {
+            int32_t _sc[NI];
+        } ti;
+        mem<vf_type>::store(tf._sc, d);
+        mem<vi_type>::store(ti._sc, q);
+        mem<vf_type>::store(d0_l._sc, d0);
+        for (std::size_t i=0; i<N; ++i) {
+            if (ctbl::native_sin_cos_arg_large < std::fabs(tf._sc[i])) {
+                float y[2];
+                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
+                d0_l._sc[i]= y[1] + y[0];
+            }
+        }
+        d0 = mem<vf_type>::load(d0_l._sc, N);
+        q = mem<vi_type>::load(ti._sc, NI);
+    }
+    return std::make_pair(d0, q);
+}
+
+template <typename _T>
+__attribute__((flatten, noinline))
+void
+cftal::math::func_core<float, _T>::
+native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
+{
+    std::pair<vf_type, vi_type> rq(
+        native_reduce_trig_arg_k(d));
+    vf_type x= rq.first;
+    const vi_type& q= rq.second;
+
+    vf_type x2(x*x);
+
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type s = impl::poly(x2, ctbl::native_sin_coeff);
+    s = s * x;
+    
+    vf_type c= impl::poly(x2, ctbl::native_cos_coeff);
+
+    vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
+    vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
+    vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
+    vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
+
+    // swap sin/cos if q & 1
+    vf_type rs(_T::sel(q_and_1_f, c, s));
+    vf_type rc(_T::sel(q_and_1_f, s, c));
+    // swap signs
+    if (ps != nullptr) {
+        vf_type fs = _T::sel(q_and_2_f, vf_type(-1.0), vf_type(1.0));
+        rs *= fs;
+        *ps = rs;
+    }
+    if (pc != nullptr) {
+        vmf_type mt = q_and_2_f ^ q_and_1_f;
+        vf_type fc =  _T::sel(mt, vf_type(-1.0), vf_type(1.0));
+        rc *= fc;
+        *pc= rc;
+    }
+}
+
+
+#if 0
 template <typename _T>
 inline
 void
@@ -439,8 +547,9 @@ native_sin_cos_k(arg_t<vf_type> x, vf_type* ps, vf_type* pc)
 #undef PI4_Cf
 #undef PI4_Bf
 #undef PI4_Af
-}
 
+}
+#endif
 
 #if 0
 template <typename _T>
@@ -500,6 +609,7 @@ native_log_k(arg_t<vf_type> v)
 }
 #endif
 
+#if 0
 template <typename _T>
 inline
 typename
@@ -588,7 +698,7 @@ cftal::math::func<float, _T>::native_cos(arg_t<vf_type> x)
 #undef PI4_Bf
 #undef PI4_Af
 }
-
+#endif
 
 // Local Variables:
 // mode: c++

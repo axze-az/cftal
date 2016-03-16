@@ -138,12 +138,16 @@ test_prog(test-log1p-f32)
 test_prog(test-log10-f32)
 test_prog(test-log2-f32)
 test_prog(test-pow-f32)
-test_prog(test-atan-f32)
-test_prog(test-atan2-f32)
 
 test_prog(test-sin-f32)
 test_prog(test-cos-f32)
 test_prog(test-sincos-f32)
+test_prog(test-tan-f32)
+test_prog(test-atan-f32)
+test_prog(test-atan2-f32)
+
+test_prog(test-native_sin-f32)
+test_prog(test-native_cos-f32)
 
 test_prog(test-v2)
 

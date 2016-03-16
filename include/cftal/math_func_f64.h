@@ -265,7 +265,7 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     // underflow handling
     vmi_type i_is_near_z = re < vi_type (1);
     if (any_of(i_is_near_z)) {
-        // create m*0x1.0p-1022
+        // create m*0x1.0p-1021
         vi_type mhu= mh | vi_type(1<<20);
         vf_type r_u= _T::combine_words(ml, mhu);
         // create a scaling factor, but avoid overflows
@@ -366,8 +366,8 @@ cftal::math::func_core<double, _T>::
 native_reduce_trig_arg_k(arg_t<vf_type> d)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    constexpr double large_arg(0x1.0p31);
-    vmf_type v_large_arg(vf_type(large_arg) < abs(d));
+    vmf_type v_large_arg(
+        vf_type(ctbl::native_sin_cos_arg_large) < abs(d));
 
     vf_type qf(rint(vf_type(d * (2 * M_1_PI))));
     vi_type q(_T::cvt_f_to_i(qf));
@@ -393,7 +393,7 @@ native_reduce_trig_arg_k(arg_t<vf_type> d)
         mem<vi_type>::store(ti._sc, q);
         mem<vf_type>::store(d0_l._sc, d0);
         for (std::size_t i=0; i<N; ++i) {
-            if (std::fabs(tf._sc[i]) >= large_arg) {
+            if (ctbl::native_sin_cos_arg_large < std::fabs(tf._sc[i])) {
                 double y[2];
                 ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
                 d0_l._sc[i]= y[1] + y[0];

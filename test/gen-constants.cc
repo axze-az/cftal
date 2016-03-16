@@ -577,7 +577,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     s << "};\n" << std::endl;
 
     ////////
-    s << "#if 0\n";
+    s << "#if 1\n";
     const std::size_t MAX_EXP_COEFF=tbl_type::MAX_EXP_COEFF;
     s << "template <class _T>\n"
       << "const _T\n"
@@ -712,7 +712,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
-    // 
+    ///// 
     s << "#endif\n";
 
     const std::size_t MAX_ATAN2_COEFF=tbl_type::MAX_ATAN2_COEFF;

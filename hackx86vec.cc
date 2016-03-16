@@ -6,6 +6,7 @@
 #include <cftal/vec.h>
 #include <cftal/math_func.h>
 #include <cftal/d_real.h>
+#include <cftal/t_real.h>
 #include <cftal/vec_traits.h>
    
 
@@ -53,7 +54,7 @@ namespace cftal {
 int main(int argc, char** argv)
 {   
     using namespace cftal;
-#if 1
+#if 0
     std::cout << std::hexfloat;
     std::cout << std::log(1000.0) << std::endl;
     std::cout << impl::xlog(1000.0) << std::endl;
@@ -71,6 +72,11 @@ int main(int argc, char** argv)
     std::cout << bytes8(t2)._u64 << std::endl;
     std::cout << bytes8(t2)._u32[0] << std::endl;
     
+    std::cout << std::hexfloat << std::endl;
+    std::cout << bytes8(0x1ul)._f64 << std::endl;
+    std::cout << 0x1p-1074 << std::endl;
+    std::cout << bytes8(0x1ul)._f64 * bytes8(0x1p53)._f64 << std::endl;
+    std::cout << bytes8(0x1ul<<53)._f64 << std::endl;
     
     // v1f32 r=ldexp(v1f32(0x1.2352cf807b7dfp-503), v1s32(-1076));
     // double rd=std::ldexp(0x1.2352cf807b7dfp-503, -1076);

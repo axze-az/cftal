@@ -553,6 +553,27 @@ namespace cftal {
             const char* fname() { return "native_sin"; }
         };
 
+        template <>
+        struct check_native_sin<float> {
+            template <std::size_t _N>
+            static
+            vec<float, _N>
+            v(const vec<float, _N>& a) {
+                return native_sin(a);
+            }
+            static
+            float
+            v(const float& a) {
+#if 0
+                return call_mpfr::func(a, mpfr_sin);
+#else
+                return std::sin(a);
+#endif
+            }
+            static
+            const char* fname() { return "native_sin"; }
+        };
+        
         template <typename _T>
         struct check_native_cos {
             template <std::size_t _N>
