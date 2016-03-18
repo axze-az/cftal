@@ -497,7 +497,9 @@ namespace cftal {
     v1f32 atan2(arg<v1f32>::type y, arg<v1f32>::type x);
     v2f32 atan2(arg<v2f32>::type y, arg<v2f32>::type x);
 
+    v1f32 asin(arg<v1f32>::type d);
     v2f32 asin(arg<v2f32>::type d);
+    v1f32 acos(arg<v1f32>::type d);
     v2f32 acos(arg<v2f32>::type d);
 
     v1f32 atan(arg<v1f32>::type d);

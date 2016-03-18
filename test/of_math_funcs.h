@@ -462,7 +462,7 @@ namespace cftal {
             static
             const char* fname() { return "atan"; }
         };
-
+        
         template <typename _T>
         struct check_atan2 {
             template <std::size_t _N>
@@ -484,7 +484,48 @@ namespace cftal {
             const char* fname() { return "atan2"; }
         };
 
+        template <typename _T>
+        struct check_asin {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return asin(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+#if 1
+                return call_mpfr::func(a, mpfr_asin);
+#else
+                return std::asin(a);
+#endif
+            }
+            static
+            const char* fname() { return "asin"; }
+        };
 
+        template <typename _T>
+        struct check_acos {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                return acos(a);
+            }
+            static
+            _T
+            v(const _T& a) {
+#if 1
+                return call_mpfr::func(a, mpfr_acos);
+#else
+                return std::acos(a);
+#endif
+            }
+            static
+            const char* fname() { return "acos"; }
+        };
+        
         template <typename _T>
         struct check_native_exp {
             template <std::size_t _N>

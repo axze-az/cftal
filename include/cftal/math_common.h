@@ -1927,10 +1927,15 @@ asin(arg_t<vf_type> x)
     dvf_type xt= (vf_type(1) - xd)*(vf_type(1) + xd);
     using std::sqrt;
     dvf_type sqrt_xt= sqrt(xt);
-    dvf_type asin_x= x/sqrt_xt;
-    dvf_type rd=atan2_k2(asin_x.h(), asin_x.l(), vf_type(1.0) , vf_type(0.0),
+    // dvf_type asin_x= x/sqrt_xt;
+    dvf_type rd=atan2_k2(xd.h(), xd.l(), sqrt_xt.h() , sqrt_xt.l(),
                          false);
     vf_type r=rd.h();
+    r = _TRAITS_T::sel(x == vf_type(-1), -M_PI/2, r);
+    r = _TRAITS_T::sel(x == vf_type(1), M_PI/2, r);
+    r = _TRAITS_T::sel(x < vf_type(-1), -_TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x > vf_type(1), _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
 }
 
@@ -1944,10 +1949,18 @@ acos(arg_t<vf_type> x)
     dvf_type xt= (vf_type(1) - xd)*(vf_type(1) + xd);
     using std::sqrt;
     dvf_type sqrt_xt= sqrt(xt);
-    dvf_type acos_x= sqrt_xt/x;
-    dvf_type rd=atan2_k2(acos_x.h(), acos_x.l(), vf_type(1.0) , vf_type(0.0),
+    // dvf_type acos_x= sqrt_xt/x;
+    dvf_type rd=atan2_k2(sqrt_xt.h(), sqrt_xt.l(), xd.h(), xd.l(),
                          false);
-    vf_type r=rd.h();
+    using ctbl=impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
+    dvf_type rdn=rd + dvf_type(ctbl::m_pi);
+    vf_type r=_TRAITS_T::sel(x<0, rdn.h(), rd.h());
+    r = _TRAITS_T::sel(x == vf_type(-1), M_PI, r);
+    r = _TRAITS_T::sel(x == vf_type(1), 0, r);
+    r = _TRAITS_T::sel(x == vf_type(0), M_PI/2, r);
+    r = _TRAITS_T::sel(x < vf_type(-1), -_TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x > vf_type(1), _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
 }
 

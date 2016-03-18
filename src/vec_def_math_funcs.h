@@ -91,6 +91,20 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
+    ns::asin(arg<vec_float>::type d)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::asin(d);                                         \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::acos(arg<vec_float>::type d)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::acos(d);                                         \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::log(arg<vec_float>::type d)                                     \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \

@@ -390,7 +390,7 @@ namespace cftal {
     vec<double, 8>
     pow(arg_t<vec<double, 8> > b, arg_t<vec<double, 8> > e);
 
-    // atan2, these functions are exact to +-1 ulp
+    // atan, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     atan(const vec<double, _N>& x);
@@ -407,6 +407,40 @@ namespace cftal {
     vec<double, 8>
     atan(arg_t<vec<double, 8> > d);
 
+    // asin, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    asin(const vec<double, _N>& x);
+
+    vec<double, 1>
+    asin(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    asin(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    asin(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    asin(arg_t<vec<double, 8> > d);
+
+    // acos, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    acos(const vec<double, _N>& x);
+
+    vec<double, 1>
+    acos(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    acos(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    acos(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    acos(arg_t<vec<double, 8> > d);
+    
     // atan2, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -980,6 +1014,23 @@ cftal::atan(const vec<double, _N>& x)
     return r;
 }
 
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::asin(const vec<double, _N>& x)
+{
+    vec<double, _N> r(asin(low_half(x)), asin(high_half(x)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::acos(const vec<double, _N>& x)
+{
+    vec<double, _N> r(acos(low_half(x)), acos(high_half(x)));
+    return r;
+}
 
 template <std::size_t _N>
 inline
