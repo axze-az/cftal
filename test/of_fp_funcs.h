@@ -39,6 +39,8 @@ namespace cftal {
                         unsigned n);
             exec_stats(unsigned n)
                 : _tics(n+1, uint64_t(0)), _evals(n+1, uint64_t(0)) {}
+            static
+            uint64_t hr_timer();
         };
         std::ostream& operator<<(std::ostream& s, const exec_stats& st);
 
@@ -213,11 +215,11 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
     const int _N2=_N/2;
     vec<_T, _N2> xl=low_half(x);
     vec<_T, _N2> xh=high_half(x);
-    uint64_t t0= rdtsc();
+    uint64_t t0= exec_stats::hr_timer();
     vec<_T, _N2> fxl=_F::v(xl);
-    uint64_t t1= rdtsc();
+    uint64_t t1= exec_stats::hr_timer();
     vec<_T, _N2> fxh=_F::v(xh);
-    uint64_t t2 = rdtsc();
+    uint64_t t2 = exec_stats::hr_timer();
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
@@ -240,11 +242,11 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& y,
     vec<_T, _N2> xh=high_half(x);
     vec<_T, _N2> yl=low_half(y);
     vec<_T, _N2> yh=high_half(y);
-    uint64_t t0= rdtsc();
+    uint64_t t0= exec_stats::hr_timer();
     vec<_T, _N2> fxl=_F::v(xl, yl);
-    uint64_t t1= rdtsc();
+    uint64_t t1= exec_stats::hr_timer();
     vec<_T, _N2> fxh=_F::v(xh, yh);
-    uint64_t t2 = rdtsc();
+    uint64_t t2 = exec_stats::hr_timer();
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, yl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, yh, fxh, st);
@@ -266,15 +268,15 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
                                        _CMP cmp)
 {
     vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
-    uint64_t t0 = rdtsc();
+    uint64_t t0 = exec_stats::hr_timer();
     vec<_T, _N> vr=_F::v(va);
-    uint64_t t1 = rdtsc();
+    uint64_t t1 = exec_stats::hr_timer();
     _T r[_N];
     uint64_t t0i[_N], t1i[_N];
     for (std::size_t i=0; i<_N; ++i) {
-        t0i[i] = rdtsc();
+        t0i[i] = exec_stats::hr_timer();
         r[i] = _F::v(a[i]);
-        t1i[i]= rdtsc();
+        t1i[i]= exec_stats::hr_timer();
     }
     for (std::size_t i=0; i<_N; ++i) {
         st.insert(t0i[i], t1i[i], 0);
@@ -388,15 +390,15 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, _CMP cmp)
 {
     vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
     vec<_T, _N> vb=mem<vec<_T, _N> >::load(b);
-    uint64_t t0=rdtsc();
+    uint64_t t0=exec_stats::hr_timer();
     vec<_T, _N> vr=_F::v(va, vb);
-    uint64_t t1=rdtsc();
+    uint64_t t1=exec_stats::hr_timer();
     _T r[_N];
     uint64_t t0i[_N], t1i[_N];
     for (std::size_t i=0; i<_N; ++i) {
-        t0i[i]=rdtsc();
+        t0i[i]=exec_stats::hr_timer();
         r[i] = _F::v(a[i], b[i]);
-        t1i[i]=rdtsc();
+        t1i[i]=exec_stats::hr_timer();
     }
     for (std::size_t i=0; i<_N; ++i) {
         st.insert(t0i[i], t1i[i], 0);

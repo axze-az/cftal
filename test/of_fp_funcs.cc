@@ -15,6 +15,12 @@ insert(uint64_t tics_before, uint64_t tics_after, unsigned n)
     _evals[n] += 1;
 }
 
+cftal::uint64_t
+cftal::test::exec_stats::hr_timer()
+{
+    return rdtsc();
+}
+
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const exec_stats& st)
 {
