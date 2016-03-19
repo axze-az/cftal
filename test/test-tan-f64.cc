@@ -17,6 +17,7 @@ int main(int argc, char** argv)
         read_double_file(test_data_file, false);
 
     const int ulp=1;
+    const int _N=8;
 
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -28,10 +29,12 @@ int main(int argc, char** argv)
     auto dp=std::make_pair(-std::numeric_limits<double>::max(),
                            std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
+    exec_stats st(_N);
     rc &= of_fp_func_up_to<
-        double, 8, check_tan<double> >::v(dp, cmp_ulp<double>(ulp, us),
-                                          0x80000);
+        double, _N, check_tan<double> >::v(st, dp, cmp_ulp<double>(ulp, us),
+                                           0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
 }

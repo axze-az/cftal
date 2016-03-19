@@ -33,13 +33,13 @@ int main()
 {
     using namespace cftal::test;
     auto pi=interpolate(std::make_pair(-M_PI, M_PI),
-                        std::size_t(10), calc_f<double>());
+                        std::size_t(30), calc_f<double>());
     std::cout << chebyshev::poly_to_table(pi) << "\n";
 
     std::cout << chebyshev::poly_to_maxima(pi) << "\n";
     chebyshev::coefficients<double> c=
         chebyshev::interpolate(std::make_pair(-M_PI, M_PI),
-                               std::size_t(10), calc_f<double>());
+                               std::size_t(30), calc_f<double>());
     for (const auto& a : c) {
         std::cout << pr_fp<double>(a) << std::endl;
     }

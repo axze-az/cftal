@@ -7,6 +7,7 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     bool rc=true;
     const int ulp=3;
+    const int _N=8;
 
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -26,13 +27,15 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_native_sin<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_native_sin<double> >(v, ulp, 0, false);
 
+    exec_stats st(_N);
     auto dp=std::make_pair(-std::numeric_limits<double>::max(),
                            std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, 8, check_native_sin<double> >::v(dp, cmp_ulp<double>(ulp, us),
-                                          0x80000);
+        double, _N, check_native_sin<double> >::v(st, dp, cmp_ulp<double>(ulp, us),
+                                                  0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
 }

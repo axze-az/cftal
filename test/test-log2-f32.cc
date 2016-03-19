@@ -5,6 +5,8 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+    const int _N=8;
+    const int ulp=1;
 #if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -25,13 +27,15 @@ int main(int argc, char** argv)
 #else
     bool rc=true;
 #endif
+    exec_stats st(_N);
     func_domain<float> d=std::make_pair(-0.0001,
                                          std::numeric_limits< float >::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_log2<float> >::v(d, cmp_ulp<float>(1, us),
+        float, 8, check_log2<float> >::v(st, d, cmp_ulp<float>(ulp, us),
                                          0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout <<  st << std::endl;
     return (rc == true) ? 0 : 1;
 }

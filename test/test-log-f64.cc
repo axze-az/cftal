@@ -20,6 +20,7 @@ int main(int argc, char** argv)
     std::cerr << std::setprecision(18) << std::scientific;
     // std::cerr << std::hexfloat;
     const int ulp=1;
+    const int _N=8;
     bool rc= check_func_1<double, 1, check_log<double> >(v, ulp, 0, false);
     rc&= check_func_1<double, 2, check_log<double> >(v, ulp, 0, false);
     rc&= check_func_1<double, 4, check_log<double> >(v, ulp, 0, false);
@@ -28,9 +29,11 @@ int main(int argc, char** argv)
     func_domain<double> d=std::make_pair(0.0,
                                          std::numeric_limits< double >::max());
     auto us=std::make_shared<ulp_stats>();
+    exec_stats st(_N);
     rc &= of_fp_func_up_to<
-        double, 8, check_log<double> >::v(d, cmp_ulp<double>(ulp, us));
+        double, _N, check_log<double> >::v(st, d, cmp_ulp<double>(ulp, us));
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
 }

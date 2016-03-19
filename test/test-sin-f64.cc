@@ -28,10 +28,12 @@ int main(int argc, char** argv)
     auto dp=std::make_pair(-std::numeric_limits<double>::max(),
                            std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
+    exec_stats st(8);
     rc &= of_fp_func_up_to<
-        double, 8, check_sin<double> >::v(dp, cmp_ulp<double>(ulp, us),
+        double, 8, check_sin<double> >::v(st, dp, cmp_ulp<double>(ulp, us),
                                           0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
 }

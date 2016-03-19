@@ -6,6 +6,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     const int ulp=1;
+    const int _N = 8;
     int rc= true;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -42,17 +43,18 @@ int main(int argc, char** argv)
     rc &= check_func_1<float, 8, check_sincos<float>::cos >(v, ulp, 0, false);
 
 #endif
-
+    exec_stats st(_N);
     auto dp=std::make_pair(-std::numeric_limits<float>::max(),
                            std::numeric_limits<float>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_sincos<float>::sin >::v(dp, cmp_ulp<float>(ulp, us),
+        float, 8, check_sincos<float>::sin >::v(st, dp, cmp_ulp<float>(ulp, us),
                                                 0x80000);
     rc &= of_fp_func_up_to<
-        float, 8, check_sincos<float>::cos >::v(dp, cmp_ulp<float>(ulp, us),
+        float, 8, check_sincos<float>::cos >::v(st, dp, cmp_ulp<float>(ulp, us),
                                                 0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
 }

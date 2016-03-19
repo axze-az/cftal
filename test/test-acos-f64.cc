@@ -6,6 +6,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     const int ulp=1;
+    const int _N=8;
     bool rc=true;
 
     std::string test_data_dir = dirname(argv[0]);
@@ -27,10 +28,12 @@ int main(int argc, char** argv)
     func_domain<double> d=std::make_pair(-1.0000000001,
                                          +1.0000000001); 
     auto us=std::make_shared<ulp_stats>();
+    exec_stats st(_N);
     rc &= of_fp_func_up_to<
-        double, 8, check_acos<double> >::v(d, cmp_ulp<double>(ulp, us),
-                                          0x8000);
+        double, _N, check_acos<double> >::v(st, d, cmp_ulp<double>(ulp, us),
+                                            0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
 }

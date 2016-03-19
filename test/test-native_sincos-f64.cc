@@ -6,6 +6,10 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
 
+    const int _N=8;
+    exec_stats st(_N);
+    const int ulp=3;
+
     // sin part
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -17,7 +21,6 @@ int main(int argc, char** argv)
     std::vector<func_arg_result<double> > v=
         read_double_file(test_data_file, false);
 
-    const int ulp=3;
     bool rc = true;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -50,14 +53,15 @@ int main(int argc, char** argv)
                            std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, 8,
-        check_native_sincos<double>::sin >::v(dp, cmp_ulp<double>(ulp, us),
+        double, _N,
+        check_native_sincos<double>::sin >::v(st, dp, cmp_ulp<double>(ulp, us),
                                               0x80000);
     rc &= of_fp_func_up_to<
-        double, 8,
-        check_native_sincos<double>::cos >::v(dp, cmp_ulp<double>(ulp, us),
+        double, _N,
+        check_native_sincos<double>::cos >::v(st, dp, cmp_ulp<double>(ulp, us),
                                               0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
 }

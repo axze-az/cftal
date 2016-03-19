@@ -6,6 +6,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     const int ulp=1;
+    const int _N=8;
     bool rc=true;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -25,13 +26,16 @@ int main(int argc, char** argv)
     rc &= check_func_1<float, 4, check_asin<float> >(v, ulp, 0, false);
     rc &= check_func_1<float, 8, check_asin<float> >(v, ulp, 0, false);
 #endif
+    exec_stats st(_N);
     func_domain<float> d=std::make_pair(-1.000001f,
                                         +1.000001f);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_asin<float> >::v(d, cmp_ulp<float>(ulp, us),
-                                         0x8000);
+        float, _N, check_asin<float> >::v(st, d, cmp_ulp<float>(ulp, us),
+                                          0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << "stats: \n"
+              << st;
     return (rc == true) ? 0 : 1;
 }

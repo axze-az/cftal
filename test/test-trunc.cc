@@ -3,18 +3,28 @@
 
 int main()
 {
+    using namespace cftal::test;
     std::cout << std::setprecision(18);
     std::cerr << std::setprecision(18);
     std::cout << "testing trunc vXf64" << std::endl;
-    bool rd=cftal::test::of_fp_func_up_to<
-        double, 8, cftal::test::check_trunc<double> >::v();
+
+    const int _DN=8;
+    const int _FN=16;
+    exec_stats d_st(_DN);
+
+    bool rd=of_fp_func_up_to<
+        double, _DN, cftal::test::check_trunc<double> >::v(d_st);
     if (rd==false)
         std::cerr << "double test failed" << std::endl;
+    std::cout << d_st << std::endl;
     std::cout << "testing trunc vXf32" << std::endl;
+
+    exec_stats f_st(_FN);
     bool rf=cftal::test::of_fp_func_up_to<
-        float, 16, cftal::test::check_trunc<float> >::v();
+        float, _FN, cftal::test::check_trunc<float> >::v(f_st);
     if (rf==false)
         std::cerr<< "float test failed" << std::endl;
+    std::cout << f_st << std::endl;
     bool rc = rd && rf;
     return rc==true ? 0 : 1;
 }
