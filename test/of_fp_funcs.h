@@ -312,11 +312,14 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
     vec<_T, _N> vr=_F::v(va);
     uint64_t t1 = rdtsc();
     _T r[_N];
+    uint64_t t0i[_N], t1i[_N];
     for (std::size_t i=0; i<_N; ++i) {
-        uint64_t t2 = rdtsc();
+        t0i[i] = rdtsc();
         r[i] = _F::v(a[i]);
-        uint64_t t3 = rdtsc();
-        st.insert(t2, t3, 0);
+        t1i[i]= rdtsc();
+    }
+    for (std::size_t i=0; i<_N; ++i) {
+        st.insert(t0i[i], t1i[i], 0);
     }
     st.insert(t0, t1, _N);
     // std::cout << std::setprecision(18) << a << std::endl;
