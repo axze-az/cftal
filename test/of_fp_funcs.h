@@ -236,10 +236,10 @@ cftal::test::operator<<(std::ostream& s, const exec_stats& st)
           << std::setw(16) << ei << " tics/call: "
           << std::setprecision(1)
           << std::fixed
-          << std::setw(7)
+          << std::setw(9)
           << tc
           << " tics/elem: "
-          << std::setw(6)
+          << std::setw(7)
           << te
           << std::scientific
           << std::setprecision(22)
@@ -256,20 +256,19 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
     const int _N2=_N/2;
     vec<_T, _N2> xl=low_half(x);
     vec<_T, _N2> xh=high_half(x);
-    volatile uint64_t t0= rdtsc();
+    uint64_t t0= rdtsc();
     vec<_T, _N2> fxl=_F::v(xl);
-    volatile uint64_t t1= rdtsc();
-    st.insert(t0, t1, _N2);
-    volatile uint64_t t2 = rdtsc();
+    uint64_t t1= rdtsc();
     vec<_T, _N2> fxh=_F::v(xh);
-    volatile uint64_t t3 = rdtsc();
-    st.insert(t2, t3, _N2);
+    uint64_t t2 = rdtsc();
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
     vec<_T, _N> fxlh(fxl, fxh);
     typename vec<_T, _N>::mask_type vr= (fx == fxlh) | (isnan(fx) & isnan(fxlh));
     r &= all_of(vr);
+    st.insert(t0, t1, _N2);
+    st.insert(t1, t2, _N2);
     return r;
 }
 
@@ -284,20 +283,19 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& y,
     vec<_T, _N2> xh=high_half(x);
     vec<_T, _N2> yl=low_half(y);
     vec<_T, _N2> yh=high_half(y);
-    volatile uint64_t t0= rdtsc();
+    uint64_t t0= rdtsc();
     vec<_T, _N2> fxl=_F::v(xl, yl);
-    volatile uint64_t t1= rdtsc();
-    st.insert(t0, t1, _N2);
-    volatile uint64_t t2 = rdtsc();
+    uint64_t t1= rdtsc();
     vec<_T, _N2> fxh=_F::v(xh, yh);
-    volatile uint64_t t3 = rdtsc();
-    st.insert(t2, t3, _N2);
+    uint64_t t2 = rdtsc();
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, yl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, yh, fxh, st);
     vec<_T, _N> fxlh(fxl, fxh);
     typename vec<_T, _N>::mask_type vr= (fx == fxlh) | (isnan(fx) & isnan(fxlh));
     r &= all_of(vr);
+    st.insert(t0, t1, _N2);
+    st.insert(t1, t2, _N2);
     return r;
 }
 
@@ -310,17 +308,17 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
                                        _CMP cmp)
 {
     vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
-    volatile uint64_t t0 = rdtsc();
+    uint64_t t0 = rdtsc();
     vec<_T, _N> vr=_F::v(va);
-    volatile uint64_t t1 = rdtsc();
-    st.insert(t0, t1, _N);
+    uint64_t t1 = rdtsc();
     _T r[_N];
     for (std::size_t i=0; i<_N; ++i) {
-        volatile uint64_t t2 = rdtsc();
+        uint64_t t2 = rdtsc();
         r[i] = _F::v(a[i]);
-        volatile uint64_t t3 = rdtsc();
+        uint64_t t3 = rdtsc();
         st.insert(t2, t3, 0);
     }
+    st.insert(t0, t1, _N);
     // std::cout << std::setprecision(18) << a << std::endl;
     bool c= check(vr, r, _F::fname(), true, cmp);
     bool cs= vec_parts<_T, _N, _F>::v(va, vr, st);
