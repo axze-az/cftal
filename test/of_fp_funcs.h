@@ -231,15 +231,15 @@ cftal::test::operator<<(std::ostream& s, const exec_stats& st)
         double t=st._tics[i];
         uint64_t ei=st._evals[i];
         double tc=t/double(ei);
-        double te=i ? tc : tc/i;
+        double te=i ? tc/i : tc;
         s << "vec-len: " << std::setw(2) << i << " calls: "
           << std::setw(16) << ei << " tics/call: "
           << std::setprecision(1)
           << std::fixed
-          << std::setw(12)
+          << std::setw(7)
           << tc
           << " tics/elem: "
-          << std::setw(12)
+          << std::setw(6)
           << te
           << std::scientific
           << std::setprecision(22)
@@ -256,14 +256,14 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
     const int _N2=_N/2;
     vec<_T, _N2> xl=low_half(x);
     vec<_T, _N2> xh=high_half(x);
-    uint64_t t0= rdtsc();
+    volatile uint64_t t0= rdtsc();
     vec<_T, _N2> fxl=_F::v(xl);
-    uint64_t t1= rdtsc();
+    volatile uint64_t t1= rdtsc();
     st.insert(t0, t1, _N2);
-    t0 = rdtsc();
+    volatile uint64_t t2 = rdtsc();
     vec<_T, _N2> fxh=_F::v(xh);
-    t1 = rdtsc();
-    st.insert(t0, t1, _N2);
+    volatile uint64_t t3 = rdtsc();
+    st.insert(t2, t3, _N2);
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
@@ -284,14 +284,14 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& y,
     vec<_T, _N2> xh=high_half(x);
     vec<_T, _N2> yl=low_half(y);
     vec<_T, _N2> yh=high_half(y);
-    uint64_t t0= rdtsc();
+    volatile uint64_t t0= rdtsc();
     vec<_T, _N2> fxl=_F::v(xl, yl);
-    uint64_t t1= rdtsc();
+    volatile uint64_t t1= rdtsc();
     st.insert(t0, t1, _N2);
-    t0 = rdtsc();
+    volatile uint64_t t2 = rdtsc();
     vec<_T, _N2> fxh=_F::v(xh, yh);
-    t1 = rdtsc();
-    st.insert(t0, t1, _N2);
+    volatile uint64_t t3 = rdtsc();
+    st.insert(t2, t3, _N2);
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, yl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, yh, fxh, st);
