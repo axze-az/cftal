@@ -261,7 +261,7 @@ template <std::size_t _N, std::size_t _B>
 void
 cftal::test::csplit(double (&r)[_N], const mpfr_real<_B>& v)
 {
-    uint64_t msk=const_u64<0x00000000U, 0xfffffff0U>::v._u64;
+    uint64_t msk=const_u64<0x00000000U, 0xffffff00U>::v._u64;
     mpfr_real<_B> vv(v);
     for (std::size_t i=0; i<_N-1; ++i) {
         double t= double(vv);
@@ -336,16 +336,18 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     // mpfr_set_default_prec(_B);
     f_t v, x;
 
-    value_type ln2_cw[2];
+    const int ln2_bits=4;
+    value_type ln2_cw[ln2_bits];
     x=2.0;
     v=log(x);
     csplit(ln2_cw, v);
     s << "template <class _T>\nconst " << (is_double ? "double" : "float")
       << "\n"
-      << "cftal::math::impl::" << pfx << "::\nm_ln2_cw[2]={\n";
-    for (std::size_t i=0; i< 2; ++i) {
+      << "cftal::math::impl::" << pfx << "::\nm_ln2_cw["
+      << ln2_bits << "]={\n";
+    for (std::size_t i=0; i< ln2_bits; ++i) {
         s << "   " << pr_fp<value_type>(ln2_cw[i]);
-        if (i != 2-1)
+        if (i != ln2_bits-1)
             s << ',';
         s << "\n";
     }

@@ -134,6 +134,9 @@ namespace cftal {
             static void
             native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
+            static
+            vf_type
+            native_exp_k(arg_t<vf_type> x, bool exp_m1);
         };
 
         template <typename _T>
@@ -320,6 +323,78 @@ ilogb(arg_t<vf_type> d)
     return e;
 }
 
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+native_exp_k(arg_t<vf_type> d, bool exp_m1)
+{
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+
+    vmf_type inf_nan= isinf(d) | isnan(d);
+    vmf_type finite= ~inf_nan;
+    vf_type k_i(0);
+
+    vmf_type d_large = d > ctbl::exp_arg_large;
+    vf_type d2=d;
+    bool any_of_d_large = any_of(d_large);
+    if (any_of_d_large) {
+        vf_type dt(_T::sel(d_large, d*vf_type(0.5), d));
+        d2=dt;
+    }
+    // remove exact powers of 2
+    vf_type m2= rint(vf_type(d2 * ctbl::m_1_ln2.h()));
+    // vf_type r= (d2 - ctbl::m_ln2.h()*m2);
+    // subtraction in two steps for higher precision
+    vf_type r=d2;
+    r = r - m2* ctbl::m_ln2_cw[0];
+    r = r - m2* ctbl::m_ln2_cw[1];
+    r = r - m2* ctbl::m_ln2_cw[2];
+    // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
+    do {
+        vmf_type cmp_res = (abs(r) > vf_type(1./64)) & finite;
+        if (none_of(cmp_res))
+            break;
+        k_i += _T::sel(cmp_res, vf_type(1), vf_type(0));
+        vf_type d1 = r * vf_type(0.5);
+        vf_type d2 = _T::sel(cmp_res, d1, r);
+        r = d2;
+    } while (1);
+
+    // calculate 1! + x^1/2!+x^2/3! .. +x^7/7!
+    vf_type s=impl::poly(r, ctbl::native_exp_coeff);
+    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^7/7! == expm1(r)
+    s = s*r;
+
+    // scale back the 1/k_i reduced value
+    do {
+        vmf_type cmp_res = k_i > vf_type(0);
+        if (none_of(cmp_res))
+            break;
+        vf_type d1= s * 2.0 + s * s;
+        vf_type d2 = _T::sel(cmp_res, d1, s);
+        k_i -= vf_type(1);
+        s = d2;
+    } while (1);
+    // const vf_type two(2.0);
+    // for (int i=0; i<k_i; ++i)
+    //    s = mul_pwr2(s, two) + sqr(s);
+    if (exp_m1 == false) {
+        s += vf_type(1.0);
+    }
+    vi_type mi= _T::cvt_f_to_i(m2);
+    // scale back
+    vf_type res= ldexp(s, mi);
+    if (exp_m1 == true) {
+        vf_type scale=ldexp(vf_type(1.0), mi);
+        res += (scale - vf_type(1.0));
+    }
+    if (any_of_d_large) {
+        vf_type tres(_T::sel(d_large, res*res, res));
+        res=tres;
+    }
+    return res;
+}
 
 #if 0
 template <typename _T>

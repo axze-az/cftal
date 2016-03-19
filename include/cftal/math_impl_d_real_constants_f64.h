@@ -27,7 +27,7 @@ namespace cftal {
                 // large native sin cos argument
                 static const double native_sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
-                static const double m_ln2_cw[2];
+                static const double m_ln2_cw[4];
                 // M_PI/2 for cody and waite argument reduction
                 static const double m_pi_2_cw[4];
 
@@ -132,9 +132,11 @@ native_sin_cos_arg_large= 0x1.0p31;
 template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
-m_ln2_cw[2]={
-   +6.9314575195312500000000e-01,
-   +1.4286068203094172555294e-06
+m_ln2_cw[4]={
+   +6.9311523437500000000000e-01,
+   +3.1940639019012451171875e-05,
+   +5.5451891967095434665680e-09,
+   +7.3710025651677988998870e-13
 };
 
 template <class _T>
