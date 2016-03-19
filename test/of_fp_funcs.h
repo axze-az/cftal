@@ -433,14 +433,17 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, _CMP cmp)
     uint64_t t0=rdtsc();
     vec<_T, _N> vr=_F::v(va, vb);
     uint64_t t1=rdtsc();
-    st.insert(t0, t1, _N);
     _T r[_N];
+    uint64_t t0i[_N], t1i[_N];
     for (std::size_t i=0; i<_N; ++i) {
-        t0=rdtsc();
+        t0i[i]=rdtsc();
         r[i] = _F::v(a[i], b[i]);
-        t1=rdtsc();
-        st.insert(t0, t1, _N);
+        t1i[i]=rdtsc();
     }
+    for (std::size_t i=0; i<_N; ++i) {
+        st.insert(t0i[i], t1i[i], _N);
+    }
+    st.insert(t0, t1, _N);
     bool c= check(vr, r, _F::fname(), true, cmp);
     bool cs= vec_parts<_T, _N, _F>::v(va, vb, vr, st);
     c &= cs;
