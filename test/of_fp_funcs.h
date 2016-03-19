@@ -205,49 +205,6 @@ namespace cftal {
     }
 }
 
-inline
-void
-cftal::test::exec_stats::
-insert(uint64_t tics_before, uint64_t tics_after, unsigned n)
-{
-    if (_tics.size() <= n) {
-        _tics.resize(n+1, uint64_t(0));
-        _evals.resize(n+1, uint64_t(0));
-    }
-    uint64_t ta=std::max(tics_before, tics_after);
-    uint64_t tb=std::min(tics_before, tics_after);
-    uint64_t d=ta - tb;
-    _tics[n] += d;
-    _evals[n] += 1;
-}
-
-inline
-std::ostream&
-cftal::test::operator<<(std::ostream& s, const exec_stats& st)
-{
-    std::size_t n= st._tics.size();
-    s << "execution statistics\n";
-    for (std::size_t i=0; i<n; i=((i==0) ? 1: i*2)) {
-        double t=st._tics[i];
-        uint64_t ei=st._evals[i];
-        double tc=t/double(ei);
-        double te=i ? tc/i : tc;
-        s << "vec-len: " << std::setw(2) << i << " calls: "
-          << std::setw(16) << ei << " tics/call: "
-          << std::setprecision(1)
-          << std::fixed
-          << std::setw(9)
-          << tc
-          << " tics/elem: "
-          << std::setw(7)
-          << te
-          << std::scientific
-          << std::setprecision(22)
-          << "\n";
-    }
-    return s;
-}
-
 template <typename _T, std::size_t _N, typename _F>
 bool
 cftal::test::vec_parts<_T, _N, _F>::
@@ -292,7 +249,8 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& y,
     r &= vec_parts<_T, _N2, _F>::v(xl, yl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, yh, fxh, st);
     vec<_T, _N> fxlh(fxl, fxh);
-    typename vec<_T, _N>::mask_type vr= (fx == fxlh) | (isnan(fx) & isnan(fxlh));
+    typename vec<_T, _N>::mask_type vr=
+        (fx == fxlh) | (isnan(fx) & isnan(fxlh));
     r &= all_of(vr);
     st.insert(t0, t1, _N2);
     st.insert(t1, t2, _N2);
@@ -441,7 +399,7 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, _CMP cmp)
         t1i[i]=rdtsc();
     }
     for (std::size_t i=0; i<_N; ++i) {
-        st.insert(t0i[i], t1i[i], _N);
+        st.insert(t0i[i], t1i[i], 0);
     }
     st.insert(t0, t1, _N);
     bool c= check(vr, r, _F::fname(), true, cmp);
