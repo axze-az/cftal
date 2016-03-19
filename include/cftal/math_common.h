@@ -815,10 +815,15 @@ native_exp_k(arg_t<vf_type> d, bool exp_m1)
     vf_type m2= rint(vf_type(d2 * ctbl::m_1_ln2.h()));
     // vf_type r= (d2 - ctbl::m_ln2.h()*m2);
     // subtraction in two steps for higher precision
+#if 1
     vf_type r=d2;
     r = r - m2* ctbl::m_ln2_cw[0];
     r = r - m2* ctbl::m_ln2_cw[1];
-     // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
+#else
+    // remove exact powers of 2
+    vf_type r= (d2 - dvf_type(ctbl::m_ln2)*m2).h();
+#endif
+    // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
     do {
         vmf_type cmp_res = (abs(r) > vf_type(M_LN2/512)) & finite;
         if (none_of(cmp_res))
