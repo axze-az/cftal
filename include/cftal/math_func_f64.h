@@ -401,26 +401,16 @@ native_exp_k(arg_t<vf_type> x, bool exp_m1)
 
     vf_type xx = xr*xr;
     vf_type c = xr - xx*(P1+xx*(P2+xx*(P3+xx*(P4+xx*P5))));
-    vf_type y = (xr*c/(2-c) - lo + hi);
-    if (exp_m1 == false)
-        y += vf_type(1);
+    vf_type y = 1.0 + (xr*c/(2-c) - lo + hi);
     
-    i_cmp = k == vi_type(0);
-    f_cmp = _T::vmi_to_vmf(i_cmp);
+    // i_cmp = k == vi_type(0);
+    // f_cmp = _T::vmi_to_vmf(i_cmp);
     // y = _T::sel(f_cmp, y, ldexp(y, k));
     y = ldexp(y, k);
 
-    if (exp_m1 == true) {
-        vf_type scale=ldexp(vf_type(1.0), k);
-        y += (scale - vf_type(1.0));
-    }
-    i_cmp = hx <= 0x3e300000;
-    f_cmp = _T::vmi_to_vmf(i_cmp);
-    if (exp_m1 == true) {
-        y = _T::sel(f_cmp, x, y);
-    } else {
-        y = _T::sel(f_cmp, vf_type(1) + x, y);
-    }
+    // i_cmp = hx <= 0x3e300000;
+    // f_cmp = _T::vmi_to_vmf(i_cmp);
+    // y = _T::sel(f_cmp, vf_type(1) + x, y);
     return y;
 #else
     using ctbl = impl::d_real_constants<d_real<double>, double>;
