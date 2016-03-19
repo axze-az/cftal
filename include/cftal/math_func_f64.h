@@ -405,7 +405,8 @@ native_exp_k(arg_t<vf_type> x, bool exp_m1)
 
     i_cmp = k == vi_type(0);
     f_cmp = _T::vmi_to_vmf(i_cmp);
-    y = _T::sel(f_cmp, y, ldexp(y, k));
+    // y = _T::sel(f_cmp, y, ldexp(y, k));
+    y = ldexp(y, k);
 
     i_cmp = hx <= 0x3e300000;
     f_cmp = _T::vmi_to_vmf(i_cmp);
