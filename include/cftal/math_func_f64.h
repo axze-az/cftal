@@ -369,7 +369,6 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 native_exp_k(arg_t<vf_type> xc, bool exp_m1)
 {
-#if 1
 /* origin: FreeBSD /usr/src/lib/msun/src/e_exp.c */
 /*
  * ====================================================
@@ -436,15 +435,6 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
  *          if x >  709.782712893383973096 then exp(x) overflows
  *          if x < -745.133219101941108420 then exp(x) underflows
  */
-    // const vf_type half[2] = {0.5,-0.5};
-    const vf_type ln2hi = 6.93147180369123816490e-01; /* 0x3fe62e42, 0xfee00000 */
-    const vf_type ln2lo = 1.90821492927058770002e-10; /* 0x3dea39ef, 0x35793c76 */
-    const vf_type invln2 = 1.44269504088896338700e+00; /* 0x3ff71547, 0x652b82fe */
-    const vf_type P1   =  1.66666666666666019037e-01; /* 0x3FC55555, 0x5555553E */
-    const vf_type P2   = -2.77777777770155933842e-03; /* 0xBF66C16C, 0x16BEBD93 */
-    const vf_type P3   =  6.61375632143793436117e-05; /* 0x3F11566A, 0xAF25DE2C */
-    const vf_type P4   = -1.65339022054652515390e-06; /* 0xBEBBBD41, 0xC5D26BF1 */
-    const vf_type P5   =  4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
     /* expm1(r+c) = expm1(r) + c + expm1(r)*c
                     ~ expm1(r) + c + r*c    */
 #if 1
@@ -477,6 +467,16 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     y = ldexp(y, k);
     return y;
 #else
+    // here is the original sun code
+    // const vf_type half[2] = {0.5,-0.5};
+    const vf_type ln2hi = 6.93147180369123816490e-01; /* 0x3fe62e42, 0xfee00000 */
+    const vf_type ln2lo = 1.90821492927058770002e-10; /* 0x3dea39ef, 0x35793c76 */
+    const vf_type invln2 = 1.44269504088896338700e+00; /* 0x3ff71547, 0x652b82fe */
+    const vf_type P1   =  1.66666666666666019037e-01; /* 0x3FC55555, 0x5555553E */
+    const vf_type P2   = -2.77777777770155933842e-03; /* 0xBF66C16C, 0x16BEBD93 */
+    const vf_type P3   =  6.61375632143793436117e-05; /* 0x3F11566A, 0xAF25DE2C */
+    const vf_type P4   = -1.65339022054652515390e-06; /* 0xBEBBBD41, 0xC5D26BF1 */
+    const vf_type P5   =  4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
     vi_type hx= _T::extract_high_word(x);
     vi_type sign= (hx >> 31);
     hx &= 0x7fffffff;
@@ -509,73 +509,6 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     // f_cmp = _T::vmi_to_vmf(i_cmp);
     // y = _T::sel(f_cmp, vf_type(1) + x, y);
     return y;
-#endif
-#else
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-
-    vmf_type inf_nan= isinf(d) | isnan(d);
-    vmf_type finite= ~inf_nan;
-    vf_type k_i(0);
-
-    vmf_type d_large = d > ctbl::exp_arg_large;
-    vf_type d2=d;
-    bool any_of_d_large = any_of(d_large);
-    if (any_of_d_large) {
-        vf_type dt(_T::sel(d_large, d*vf_type(0.5), d));
-        d2=dt;
-    }
-    // remove exact powers of 2
-    vf_type m2= rint(vf_type(d2 * ctbl::m_1_ln2.h()));
-    // vf_type r= (d2 - ctbl::m_ln2.h()*m2);
-    // subtraction in two steps for higher precision
-    vf_type r=d2;
-    r = r - m2* ctbl::m_ln2_cw[0];
-    r = r - m2* ctbl::m_ln2_cw[1];
-    r = r - m2* ctbl::m_ln2_cw[2];
-    // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
-    do {
-        vmf_type cmp_res = (abs(r) > vf_type(1./64)) & finite;
-        if (none_of(cmp_res))
-            break;
-        k_i += _T::sel(cmp_res, vf_type(1), vf_type(0));
-        vf_type d1 = r * vf_type(0.5);
-        vf_type d2 = _T::sel(cmp_res, d1, r);
-        r = d2;
-    } while (1);
-
-    // calculate 1! + x^1/2!+x^2/3! .. +x^7/7!
-    vf_type s=impl::poly(r, ctbl::native_exp_coeff);
-    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^7/7! == expm1(r)
-    s = s*r;
-
-    // scale back the 1/k_i reduced value
-    do {
-        vmf_type cmp_res = k_i > vf_type(0);
-        if (none_of(cmp_res))
-            break;
-        vf_type d1= s * 2.0 + s * s;
-        vf_type d2 = _T::sel(cmp_res, d1, s);
-        k_i -= vf_type(1);
-        s = d2;
-    } while (1);
-    // const vf_type two(2.0);
-    // for (int i=0; i<k_i; ++i)
-    //    s = mul_pwr2(s, two) + sqr(s);
-    if (exp_m1 == false) {
-        s += vf_type(1.0);
-    }
-    vi_type mi= _T::cvt_f_to_i(m2);
-    // scale back
-    vf_type res= ldexp(s, mi);
-    if (exp_m1 == true) {
-        vf_type scale=ldexp(vf_type(1.0), mi);
-        res += (scale - vf_type(1.0));
-    }
-    if (any_of_d_large) {
-        vf_type tres(_T::sel(d_large, res*res, res));
-        res=tres;
-    }
-    return res;
 #endif
 }
 
