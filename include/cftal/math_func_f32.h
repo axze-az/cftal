@@ -33,6 +33,7 @@ namespace cftal {
             static constexpr int32_t bias = 127;
             static constexpr int32_t e_max= 127;
             static constexpr int32_t e_min= -126;
+            static constexpr int32_t e_mask= 0xff;
             static constexpr int32_t bits=23;
             static constexpr int32_t vec_len=1;
 
@@ -66,14 +67,14 @@ namespace cftal {
             static
             vf_type insert_exp(const vi_type& e) {
                 ud_t t;
-                t._u = uint64_t(e) << bits;
+                t._u = uint32_t(e) << bits;
                 return t._d;
             }
             static
             vi_type extract_exp(const vf_type& d) {
                 ud_t t;
                 t._d = d;
-                return (t._u >> bits) & 0x7FF;
+                return (t._u >> bits) & e_mask;
             }
             static
             vf_type cvt_i_to_f(const vi_type& i) {
@@ -517,7 +518,7 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type s = impl::poly(x2, ctbl::native_sin_coeff);
     s = s * x;
-    
+
     vf_type c= impl::poly(x2, ctbl::native_cos_coeff);
 
     vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));

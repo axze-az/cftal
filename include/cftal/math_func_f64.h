@@ -37,6 +37,7 @@ namespace cftal {
             static constexpr int32_t bias = 0x3ff;
             static constexpr int32_t e_max= 0x3ff;
             static constexpr int32_t e_min= -1022;
+            static constexpr int32_t e_mask= 0x7ff;
             static constexpr int32_t bits=52;
             static constexpr int32_t vec_len=1;
 
@@ -85,7 +86,7 @@ namespace cftal {
             vi_type extract_exp(const vf_type& d) {
                 ud_t t;
                 t._d = d;
-                return (t._u >> bits) & 0x7FF;
+                return (t._u >> bits) & e_mask;
             }
 
             static
@@ -241,7 +242,7 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     // split mantissa
     vi_type ml, mh;
     _T::extract_words(ml, mh, xs);
-    vi_type xe=((mh>>20) & 0x7ff) + eo;
+    vi_type xe=((mh>>20) & _T::e_mask) + eo;
 
     // determine the exponent of the result
     // clamp nn to [-4096, 4096]
@@ -257,7 +258,7 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     mh &= vi_type(~0x7ff00000);
 
     // high part of mantissa for normal results:
-    vi_type mhn= mh | ((re & vi_type(0x7ff)) << 20);
+    vi_type mhn= mh | ((re & vi_type(_T::e_mask)) << 20);
     vf_type r= _T::combine_words(ml, mhn);
 
     // overflow handling
@@ -304,7 +305,7 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     vi_type lo_word, hi_word;
     _T::extract_words(lo_word, hi_word, xs);
     // exponent:
-    vi_type e=((hi_word >> 20) & 0x7ff) + eo;
+    vi_type e=((hi_word >> 20) & _T::e_mask) + eo;
     // insert exponent
     hi_word = (hi_word & vi_type(0x800fffff)) | vi_type(0x3fe00000);
     // combine low and high word
@@ -339,7 +340,7 @@ ilogbp1(arg_t<vf_type> x)
     // reinterpret as integer
     vi_type hi_word(_T::extract_high_word(xs));
     // exponent:
-    vi_type e=((hi_word >> 20) & 0x7ff) + eo - vi_type(_T::bias-1);
+    vi_type e=((hi_word >> 20) & _T::e_mask) + eo - vi_type(_T::bias-1);
     return e;
 }
 
@@ -447,15 +448,16 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     /* expm1(r+c) = expm1(r) + c + expm1(r)*c
                     ~ expm1(r) + c + r*c    */
 #if 1
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+
     vf_type x=xc;
-    vf_type kf= rint(vf_type(invln2 * x));
-    vf_type hi = x - kf * ln2hi;
-    vf_type lo = kf * ln2lo;
+    vf_type kf= rint(vf_type(ctbl::m_1_ln2.h() * x));
+    vf_type hi = x - kf * ctbl::m_ln2_cw[0];
+    vf_type lo = kf * ctbl::m_ln2_cw[1];
     vf_type xr = hi - lo;
     vf_type cr = (hi-xr)-lo;
     vi_type k= _T::cvt_f_to_i(kf);
 
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type y=impl::poly(xr, ctbl::native_exp_coeff);
     y *=xr;
     // e^(x,y) ~ e^x + e^x * y + (e^x*y^2)*0.5
@@ -465,7 +467,11 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     if (exp_m1 == false) {
         y += 1.0;
     } else {
-        vf_type scale=ldexp(vf_type(1.0), -k);
+        // vf_type scale=ldexp(vf_type(1.0), -k);
+        vi_type ke= _T::bias - k;
+        ke = max(ke, vi_type(1));
+        ke = min(ke, vi_type(_T::e_mask));
+        vf_type scale=_T::insert_exp(ke);
         y += (vf_type(1.0)-scale);
     }
     y = ldexp(y, k);

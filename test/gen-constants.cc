@@ -261,7 +261,7 @@ template <std::size_t _N, std::size_t _B>
 void
 cftal::test::csplit(double (&r)[_N], const mpfr_real<_B>& v)
 {
-    uint64_t msk=const_u64<0x00000000U, 0xffffff00U>::v._u64;
+    uint64_t msk=const_u64<0xffe00000U, 0xffffffffU>::v._u64;
     mpfr_real<_B> vv(v);
     for (std::size_t i=0; i<_N-1; ++i) {
         double t= double(vv);
@@ -336,7 +336,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     // mpfr_set_default_prec(_B);
     f_t v, x;
 
-    const int ln2_bits=4;
+    const int ln2_bits=2;
     value_type ln2_cw[ln2_bits];
     x=2.0;
     v=log(x);
@@ -618,7 +618,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
         s << '\n';
     }
     s << "};\n" << std::endl;
-    
+
     const int MAX_COS_COEFF=tbl_type::MAX_COS_COEFF;
     const int MAX_SIN_COEFF=tbl_type::MAX_SIN_COEFF;
 
@@ -667,7 +667,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
         sign = -sign;
     }
     s << "};\n" << std::endl;
-    
+
     s << "template <class _T>\n"
       << "const _T\n"
       << "cftal::math::impl::" << pfx << "::\n"
@@ -714,7 +714,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n" << std::endl;
 
-    ///// 
+    /////
     s << "#endif\n";
 
     const std::size_t MAX_ATAN2_COEFF=tbl_type::MAX_ATAN2_COEFF;

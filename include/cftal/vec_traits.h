@@ -161,7 +161,7 @@ namespace cftal {
             vi_type extract_exp(const vf_type& d) {
                 vi_type e= as<vi_type>(d);
                 e >>= 23;
-                e &= vi_type(0xff);
+                e &= vi_type(e_mask);
                 return e;
             }
 

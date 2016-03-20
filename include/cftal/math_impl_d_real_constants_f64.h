@@ -27,7 +27,7 @@ namespace cftal {
                 // large native sin cos argument
                 static const double native_sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
-                static const double m_ln2_cw[4];
+                static const double m_ln2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
                 static const double m_pi_2_cw[4];
 
@@ -49,7 +49,7 @@ namespace cftal {
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=7;
                 static const _T exp_coeff[MAX_EXP_COEFF];
-                // polynomial of degree 12
+                // polynomial of degree 11
                 static const unsigned MAX_NATIVE_EXP_COEFF=13;
                 static const double native_exp_coeff[MAX_NATIVE_EXP_COEFF];
 
@@ -153,11 +153,9 @@ native_exp_coeff[MAX_NATIVE_EXP_COEFF] = {
 template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
-m_ln2_cw[4]={
-   +6.9311523437500000000000e-01,
-   +3.1940639019012451171875e-05,
-   +5.5451891967095434665680e-09,
-   +7.3710025651677988998870e-13
+m_ln2_cw[2]={
+   +6.9314718036912381649017e-01,
+   +1.9082149292705877000220e-10
 };
 
 template <class _T>
