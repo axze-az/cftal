@@ -49,7 +49,9 @@ namespace cftal {
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=7;
                 static const _T exp_coeff[MAX_EXP_COEFF];
-                static const double native_exp_coeff[MAX_EXP_COEFF];
+                // polynomial of degree 12
+                static const unsigned MAX_NATIVE_EXP_COEFF=13;
+                static const double native_exp_coeff[MAX_NATIVE_EXP_COEFF];
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=11;
@@ -127,6 +129,25 @@ const double
 cftal::math::impl::d_real_constants<_T, double>::
 native_sin_cos_arg_large= 0x1.0p31;
 
+// thanks to sollya
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+native_exp_coeff[MAX_NATIVE_EXP_COEFF] = {
+    0x1.737b1fe6b3b6fp-33,
+    0x1.1f83c84c05714p-29,
+    0x1.ae56cea1e4edep-26,
+    0x1.27e4d151b43adp-22,
+    0x1.71de3e2af255fp-19,
+    0x1.a01a01ab0f2bdp-16,
+    0x1.a01a019f15e03p-13,
+    0x1.6c16c16c15785p-10,
+    0x1.1111111111308p-7,
+    0x1.5555555555557p-5,
+    0x1.5555555555555p-3,
+    0x1p-1,
+    0x1p0
+};
 
 /* ----------------------------------------------------------------*/
 template <class _T>
@@ -353,6 +374,7 @@ exp_coeff[MAX_EXP_COEFF] =  {
     _T( +1.0000000000000000000000e+00, +0.0000000000000000000000e+00)
 };
 
+#if 0
 template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
@@ -372,6 +394,7 @@ native_exp_coeff[MAX_EXP_COEFF] =  {
     // + 1/1!
     +1.0000000000000000000000e+00
 };
+#endif
 
 
 template <class _T>

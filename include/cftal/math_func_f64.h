@@ -366,7 +366,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-native_exp_k(arg_t<vf_type> x, bool exp_m1)
+native_exp_k(arg_t<vf_type> xc, bool exp_m1)
 {
 #if 1
 /* origin: FreeBSD /usr/src/lib/msun/src/e_exp.c */
@@ -444,12 +444,32 @@ native_exp_k(arg_t<vf_type> x, bool exp_m1)
     const vf_type P3   =  6.61375632143793436117e-05; /* 0x3F11566A, 0xAF25DE2C */
     const vf_type P4   = -1.65339022054652515390e-06; /* 0xBEBBBD41, 0xC5D26BF1 */
     const vf_type P5   =  4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
+    /* expm1(r+c) = expm1(r) + c + expm1(r)*c
+                    ~ expm1(r) + c + r*c    */
 #if 1
+    vf_type x=xc;
     vf_type kf= rint(vf_type(invln2 * x));
     vf_type hi = x - kf * ln2hi;
     vf_type lo = kf * ln2lo;
     vf_type xr = hi - lo;
+    vf_type cr = (hi-xr)-lo;
     vi_type k= _T::cvt_f_to_i(kf);
+
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type y=impl::poly(xr, ctbl::native_exp_coeff);
+    y *=xr;
+    // e^(x,y) ~ e^x + e^x * y + (e^x*y^2)*0.5
+    // y=e^x, cr=e^y  -> y + y*cr + 0.5*y*cr^2
+    //                   y + cr * (y + 0.5*y *cr)
+    y += cr + (xr * cr);
+    if (exp_m1 == false) {
+        y += 1.0;
+    } else {
+        vf_type scale=ldexp(vf_type(1.0), -k);
+        y += (vf_type(1.0)-scale);
+    }
+    y = ldexp(y, k);
+    return y;
 #else
     vi_type hx= _T::extract_high_word(x);
     vi_type sign= (hx >> 31);
@@ -470,7 +490,6 @@ native_exp_k(arg_t<vf_type> x, bool exp_m1)
     hi = _T::sel(f_cmp, x, hi);
     lo = _T::sel(f_cmp, vf_type(0), lo);
     xr = _T::sel(f_cmp, x, xr);
-#endif
     vf_type xx = xr*xr;
     vf_type c = xr - xx*(P1+xx*(P2+xx*(P3+xx*(P4+xx*P5))));
     vf_type y = 1.0 + (xr*c/(2-c) - lo + hi);
@@ -484,6 +503,7 @@ native_exp_k(arg_t<vf_type> x, bool exp_m1)
     // f_cmp = _T::vmi_to_vmf(i_cmp);
     // y = _T::sel(f_cmp, vf_type(1) + x, y);
     return y;
+#endif
 #else
     using ctbl = impl::d_real_constants<d_real<double>, double>;
 
