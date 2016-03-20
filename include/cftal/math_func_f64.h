@@ -369,6 +369,72 @@ cftal::math::func_core<double, _T>::
 native_exp_k(arg_t<vf_type> x, bool exp_m1)
 {
 #if 1
+/* origin: FreeBSD /usr/src/lib/msun/src/e_exp.c */
+/*
+ * ====================================================
+ * Copyright (C) 2004 by Sun Microsystems, Inc. All rights reserved.
+ *
+ * Permission to use, copy, modify, and distribute this
+ * software is freely granted, provided that this notice
+ * is preserved.
+ * ====================================================
+ */
+/* exp(x)
+ * Returns the exponential of x.
+ *
+ * Method
+ *   1. Argument reduction:
+ *      Reduce x to an r so that |r| <= 0.5*ln2 ~ 0.34658.
+ *      Given x, find r and integer k such that
+ *
+ *               x = k*ln2 + r,  |r| <= 0.5*ln2.
+ *
+ *      Here r will be represented as r = hi-lo for better
+ *      accuracy.
+ *
+ *   2. Approximation of exp(r) by a special rational function on
+ *      the interval [0,0.34658]:
+ *      Write
+ *          R(r**2) = r*(exp(r)+1)/(exp(r)-1) = 2 + r*r/6 - r**4/360 + ...
+ *      We use a special Remez algorithm on [0,0.34658] to generate
+ *      a polynomial of degree 5 to approximate R. The maximum error
+ *      of this polynomial approximation is bounded by 2**-59. In
+ *      other words,
+ *          R(z) ~ 2.0 + P1*z + P2*z**2 + P3*z**3 + P4*z**4 + P5*z**5
+ *      (where z=r*r, and the values of P1 to P5 are listed below)
+ *      and
+ *          |                  5          |     -59
+ *          | 2.0+P1*z+...+P5*z   -  R(z) | <= 2
+ *          |                             |
+ *      The computation of exp(r) thus becomes
+ *                              2*r
+ *              exp(r) = 1 + ----------
+ *                            R(r) - r
+ *                                 r*c(r)
+ *                     = 1 + r + ----------- (for better accuracy)
+ *                                2 - c(r)
+ *      where
+ *                              2       4             10
+ *              c(r) = r - (P1*r  + P2*r  + ... + P5*r   ).
+ *
+ *   3. Scale back to obtain exp(x):
+ *      From step 1, we have
+ *         exp(x) = 2^k * exp(r)
+ *
+ * Special cases:
+ *      exp(INF) is INF, exp(NaN) is NaN;
+ *      exp(-INF) is 0, and
+ *      for finite argument, only exp(0)=1 is exact.
+ *
+ * Accuracy:
+ *      according to an error analysis, the error is always less than
+ *      1 ulp (unit in the last place).
+ *
+ * Misc. info.
+ *      For IEEE double
+ *          if x >  709.782712893383973096 then exp(x) overflows
+ *          if x < -745.133219101941108420 then exp(x) underflows
+ */
     // const vf_type half[2] = {0.5,-0.5};
     const vf_type ln2hi = 6.93147180369123816490e-01; /* 0x3fe62e42, 0xfee00000 */
     const vf_type ln2lo = 1.90821492927058770002e-10; /* 0x3dea39ef, 0x35793c76 */
@@ -386,12 +452,12 @@ native_exp_k(arg_t<vf_type> x, bool exp_m1)
     vi_type k= _T::cvt_f_to_i(kf);
 #else
     vi_type hx= _T::extract_high_word(x);
-    vi_type sign= (hx >> 31) & 1;
+    vi_type sign= (hx >> 31);
     hx &= 0x7fffffff;
 
-    vf_type half_sign = copysign(vf_type(0.5), x);
-    vi_type k= _T::cvt_rz_f_to_i(invln2*x + half_sign);
-    k = _T::sel(hx >= 0x3ff0a2b2, k, vi_type(1 - sign - sign));
+    // vf_type half_sign = copysign(vf_type(0.5), x);
+    vi_type k= _T::cvt_f_to_i(invln2*x);
+    k = _T::sel(hx >= 0x3ff0a2b2, k, vi_type(1 + sign + sign));
     vf_type kf=_T::cvt_i_to_f(k);
     vf_type hi = x - kf * ln2hi;
     vf_type lo = kf * ln2lo;
