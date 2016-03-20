@@ -46,7 +46,7 @@ namespace cftal {
         vec<double, _N>
         scale_div_threshold() {
             // -1022 + 53
-            return 0x1.p-969;
+            return vec<double, _N>(0x1.p-969);
         }
 
     };

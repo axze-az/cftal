@@ -1138,17 +1138,22 @@ cftal::d_real<_T>
 cftal::impl::d_real_ops<_T, _FMA>::
 ieee_div(const d_real<_T>&a, const d_real<_T>& b)
 {
+#if 1
+    return scaled_div(a, b);
+#else
     using std::abs;
     using traits_t=d_real_traits<_T>;
     auto a_small = abs(a.h()) < traits_t::scale_div_threshold();
     auto b_small = abs(b.h()) < traits_t::scale_div_threshold();
     d_real<_T> q;
-    if (traits_t::any(a_small | b_small)) {
+    auto one_small = a_small | b_small;
+    if (traits_t::any(one_small)) {
         q= scaled_div(a, b);
     } else {
         q= raw_ieee_div(a, b);
     }
     return q;
+#endif
 }
 
 template <typename _T, bool _FMA>
