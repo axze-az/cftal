@@ -328,73 +328,76 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-native_exp_k(arg_t<vf_type> d, bool exp_m1)
+native_exp_k(arg_t<vf_type> xc, bool exp_m1)
 {
+#if 0
     using ctbl = impl::d_real_constants<d_real<float>, float>;
 
-    vmf_type inf_nan= isinf(d) | isnan(d);
-    vmf_type finite= ~inf_nan;
-    vf_type k_i(0);
+    vf_type x=xc;
+    vf_type kf= rint(vf_type(ctbl::m_1_ln2.h() * x));
+    vf_type hi = x - kf * ctbl::m_ln2_cw[0];
+    vf_type lo = kf * ctbl::m_ln2_cw[1];
+    vf_type xr = hi - lo;
+    vf_type cr = (hi-xr)-lo;
+    vi_type k= _T::cvt_f_to_i(kf);
 
-    vmf_type d_large = d > ctbl::exp_arg_large;
-    vf_type d2=d;
-    bool any_of_d_large = any_of(d_large);
-    if (any_of_d_large) {
-        vf_type dt(_T::sel(d_large, d*vf_type(0.5), d));
-        d2=dt;
-    }
-    // remove exact powers of 2
-    vf_type m2= rint(vf_type(d2 * ctbl::m_1_ln2.h()));
-    // vf_type r= (d2 - ctbl::m_ln2.h()*m2);
-    // subtraction in two steps for higher precision
-    vf_type r=d2;
-    r = r - m2* ctbl::m_ln2_cw[0];
-    r = r - m2* ctbl::m_ln2_cw[1];
-    r = r - m2* ctbl::m_ln2_cw[2];
-    // reduce arguments further until anything is lt M_LN2/512 ~ 0.0135
-    do {
-        vmf_type cmp_res = (abs(r) > vf_type(1./64)) & finite;
-        if (none_of(cmp_res))
-            break;
-        k_i += _T::sel(cmp_res, vf_type(1), vf_type(0));
-        vf_type d1 = r * vf_type(0.5);
-        vf_type d2 = _T::sel(cmp_res, d1, r);
-        r = d2;
-    } while (1);
-
-    // calculate 1! + x^1/2!+x^2/3! .. +x^7/7!
-    vf_type s=impl::poly(r, ctbl::native_exp_coeff);
-    // convert to s=x^1/1! + x^2/2!+x^3/3! .. +x^7/7! == expm1(r)
-    s = s*r;
-
-    // scale back the 1/k_i reduced value
-    do {
-        vmf_type cmp_res = k_i > vf_type(0);
-        if (none_of(cmp_res))
-            break;
-        vf_type d1= s * 2.0 + s * s;
-        vf_type d2 = _T::sel(cmp_res, d1, s);
-        k_i -= vf_type(1);
-        s = d2;
-    } while (1);
-    // const vf_type two(2.0);
-    // for (int i=0; i<k_i; ++i)
-    //    s = mul_pwr2(s, two) + sqr(s);
+    vf_type y=impl::poly(xr, ctbl::native_exp_coeff);
+    y *=xr;
+    // e^(x,y) ~ e^x + e^x * y + (e^x*y^2)*0.5
+    // y=e^x, cr=e^y  -> y + y*cr + 0.5*y*cr^2
+    //                   y + cr * (y + 0.5*y *cr)
+    y += cr + (xr * cr);
     if (exp_m1 == false) {
-        s += vf_type(1.0);
+        y += 1.0;
+    } else {
+        // vf_type scale=ldexp(vf_type(1.0), -k);
+        vi_type ke= _T::bias - k;
+        ke = max(ke, vi_type(1));
+        ke = min(ke, vi_type(_T::e_mask));
+        vf_type scale=_T::insert_exp(ke);
+        y += (vf_type(1.0)-scale);
     }
-    vi_type mi= _T::cvt_f_to_i(m2);
-    // scale back
-    vf_type res= ldexp(s, mi);
-    if (exp_m1 == true) {
-        vf_type scale=ldexp(vf_type(1.0), mi);
-        res += (scale - vf_type(1.0));
+    y = ldexp(y, k);
+    return y;
+#else
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type x=xc;
+    vf_type kf= rint(vf_type(ctbl::m_1_ln2.h() * x));
+    vf_type hi = x - kf * ctbl::m_ln2_cw[0];
+    vf_type lo = kf * ctbl::m_ln2_cw[1];
+    vf_type xr = hi - lo;
+    // vf_type cr = (hi-xr)-lo;
+    vi_type k= _T::cvt_f_to_i(kf);
+/*
+ * ====================================================
+ * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+ *
+ * Developed at SunPro, a Sun Microsystems, Inc. business.
+ * Permission to use, copy, modify, and distribute this
+ * software is freely granted, provided that this notice
+ * is preserved.
+ * ====================================================
+ */
+    const vf_type P1 =  1.6666625440e-1f; /*  0xaaaa8f.0p-26 */
+    const vf_type P2 = -2.7667332906e-3f; /* -0xb55215.0p-32 */
+
+    vf_type xx = xr*xr;
+    vf_type c = xr - xx*(P1+xx*P2);
+    vf_type y = (xr*c/(2-c) - lo + hi);
+
+    if (exp_m1 == false) {
+        y += 1.0;
+    } else {
+        // vf_type scale=ldexp(vf_type(1.0), -k);
+        vi_type ke= _T::bias - k;
+        ke = max(ke, vi_type(1));
+        ke = min(ke, vi_type(_T::e_mask));
+        vf_type scale=_T::insert_exp(ke);
+        y += (vf_type(1.0)-scale);
     }
-    if (any_of_d_large) {
-        vf_type tres(_T::sel(d_large, res*res, res));
-        res=tres;
-    }
-    return res;
+    y = ldexp(y, k);
+    return y;
+#endif
 }
 
 #if 0

@@ -80,9 +80,6 @@ namespace cftal {
     vec<float, _N>
     native_expm1(const vec<float, _N>& v);
 
-    vec<float, 1>
-    native_expm1(const vec<float, 1>& v);
-
     template <std::size_t _N>
     vec<float, _N>
     native_log(const vec<float, _N>& v);
@@ -388,7 +385,7 @@ namespace cftal {
 
     vec<float, 8>
     log10(arg_t<vec<float, 8> > d);
-    
+
     template <std::size_t _N>
     vec<float, _N>
     log2(const vec<float, _N>& v);
@@ -422,6 +419,40 @@ namespace cftal {
     vec<float, 8>
     pow(arg<vec<float, 8> >::type b, arg<vec<float, 8> >::type e);
 
+
+    // exp: exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    native_exp(const vec<float, _N>& v);
+
+    vec<float, 1>
+    native_exp(arg<vec<float, 1> >::type v);
+
+    v2f32
+    native_exp(arg<v2f32>::type d);
+
+    v4f32
+    native_exp(arg<v4f32>::type d);
+
+    v8f32
+    native_exp(arg<v8f32>::type d);
+
+    // expm1: exact to
+    template <std::size_t _N>
+    vec<float, _N>
+    native_expm1(const vec<float, _N>& v);
+
+    vec<float, 1>
+    native_expm1(arg<vec<float, 1> >::type v);
+
+    v2f32
+    native_expm1(arg<v2f32>::type d);
+
+    v4f32
+    native_expm1(arg<v4f32>::type d);
+
+    v8f32
+    native_expm1(arg<v8f32>::type d);
 
 // TODO: tests for the functions below
     // native_sin
@@ -478,7 +509,7 @@ namespace cftal {
     void
     native_sincos(arg_t<vec<float, 8> > d,
                   vec<float, 8> * psin, vec<float, 8> * pcos);
-    
+
     template <std::size_t _N>
     vec<float, _N>
     sin(const vec<float, _N>& v);
@@ -521,11 +552,6 @@ namespace cftal {
 
 
 
-    v1f32 native_exp(arg<v1f32>::type d);
-    v2f32 native_exp(arg<v2f32>::type d);
-
-    v1f32 native_expm1(arg<v1f32>::type d);
-    v2f32 native_expm1(arg<v2f32>::type d);
 
     v1f32 native_log(arg<v1f32>::type d);
     v2f32 native_log(arg<v2f32>::type d);
@@ -550,8 +576,6 @@ namespace cftal {
     v4f32 tan(arg<v4f32>::type d);
     v4f32 atan2(arg<v4f32>::type x, arg<v4f32>::type y);
 
-    v4f32 native_exp(arg<v4f32>::type d);
-    v4f32 native_expm1(arg<v4f32>::type d);
     v4f32 native_log(arg<v4f32>::type d);
 
     v8f32 cbrt(arg<v8f32>::type a);
@@ -572,8 +596,6 @@ namespace cftal {
     v8f32 tan(arg<v8f32>::type d);
     v8f32 atan2(arg<v8f32>::type x, arg<v8f32>::type y);
 
-    v8f32 native_exp(arg<v8f32>::type d);
-    v8f32 native_expm1(arg<v8f32>::type d);
     v8f32 native_log(arg<v8f32>::type d);
 
     vec<float, 1>

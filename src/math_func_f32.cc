@@ -1,6 +1,11 @@
 #include <cftal/math_func.h>
 
-int32_t
+const cftal::int32_t cftal::math::func_traits<float, int32_t >::bias;
+const cftal::int32_t cftal::math::func_traits<float, int32_t >::e_mask;
+
+
+
+cftal::int32_t
 cftal::math::impl::__ieee754_rem_pio2(float x, float *y)
 {
     double xd=static_cast<double>(x);

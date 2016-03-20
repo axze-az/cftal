@@ -278,7 +278,7 @@ template <std::size_t _N, std::size_t _B>
 void
 cftal::test::csplit(float (&r)[_N], const mpfr_real<_B>& v)
 {
-    uint32_t msk=const_u32<0xffffc000U>::v._u32;
+    uint32_t msk=const_u32<0xfffffE00U>::v._u32;
     mpfr_real<_B> vv(v);
     for (std::size_t i=0; i<_N-1; ++i) {
         float t= float(vv);
@@ -607,7 +607,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << std::endl;
     for (std::size_t i=MAX_EXP_COEFF; i!=0; --i) {
         f_t val= v_inv_fac[i];
-        value_type vv=val;
+        value_type vv(val);
         s << std::scientific
           << std::setprecision(22)
           << "    // + 1/" << i << "!\n"
@@ -655,7 +655,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
         f_t val= v_inv_fac[i];
         if (sign < 0)
             val = -val;
-        value_type vv=val;
+        value_type vv(val);
         s << std::scientific
           << std::setprecision(22)
           << "    // " << (sign > 0? '+' : '-') << "1/" << i << "!\n"
@@ -701,7 +701,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
         f_t val= v_inv_fac[i];
         if (sign < 0)
             val = -val;
-        value_type vv=val;
+        value_type vv(val);
         s << std::scientific
           << std::setprecision(22)
           << "    // " << (sign > 0? '+' : '-') << "1/" << i << "!\n"

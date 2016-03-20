@@ -150,6 +150,8 @@ test_prog(test-atan2-f32)
 test_prog(test-asin-f32)
 test_prog(test-acos-f32)
 
+test_prog(test-native_exp-f32)
+test_prog(test-native_expm1-f32)
 test_prog(test-native_sin-f32)
 test_prog(test-native_cos-f32)
 
