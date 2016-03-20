@@ -185,7 +185,7 @@ namespace cftal {
             static
             vf_type
             native_exp_k(arg_t<vf_type> x, bool exp_m1);
-            
+
             static vf_type
             pow2i(arg_t<vi_type> vi);
             static vf_type
@@ -378,7 +378,13 @@ native_exp_k(arg_t<vf_type> x, bool exp_m1)
     const vf_type P3   =  6.61375632143793436117e-05; /* 0x3F11566A, 0xAF25DE2C */
     const vf_type P4   = -1.65339022054652515390e-06; /* 0xBEBBBD41, 0xC5D26BF1 */
     const vf_type P5   =  4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
-    
+#if 1
+    vf_type kf= rint(vf_type(invln2 * x));
+    vf_type hi = x - kf * ln2hi;
+    vf_type lo = kf * ln2lo;
+    vf_type xr = hi - lo;
+    vi_type k= _T::cvt_f_to_i(kf);
+#else
     vi_type hx= _T::extract_high_word(x);
     vi_type sign= (hx >> 31) & 1;
     hx &= 0x7fffffff;
@@ -398,11 +404,11 @@ native_exp_k(arg_t<vf_type> x, bool exp_m1)
     hi = _T::sel(f_cmp, x, hi);
     lo = _T::sel(f_cmp, vf_type(0), lo);
     xr = _T::sel(f_cmp, x, xr);
-
+#endif
     vf_type xx = xr*xr;
     vf_type c = xr - xx*(P1+xx*(P2+xx*(P3+xx*(P4+xx*P5))));
     vf_type y = 1.0 + (xr*c/(2-c) - lo + hi);
-    
+
     // i_cmp = k == vi_type(0);
     // f_cmp = _T::vmi_to_vmf(i_cmp);
     // y = _T::sel(f_cmp, y, ldexp(y, k));
@@ -544,7 +550,7 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type s = impl::poly(x2, ctbl::native_sin_coeff);
     s = s * x;
-    
+
     vf_type c= impl::poly(x2, ctbl::native_cos_coeff);
 
     vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
