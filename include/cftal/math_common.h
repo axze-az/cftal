@@ -100,10 +100,6 @@ namespace cftal {
                     arg_t<vf_type> xl);
 
             static
-            vf_type
-            native_exp2_k(arg_t<vf_type> x);
-
-            static
             dvf_type
             exp10_k2(arg_t<vf_type> xh,
                      arg_t<vf_type> xl);
@@ -711,17 +707,6 @@ exp2_k2(arg_t<vf_type> dh, arg_t<vf_type> dl)
     dvf_type d(dh, dl);
     dvf_type d2=dvf_type(ctbl::m_ln2) * d;
     return exp_k2(d2.h(), d2.l(), false);
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_exp2_k(arg_t<vf_type> d)
-{
-    using ctbl = impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
-    vf_type d2=ctbl::m_ln2.h() * d;
-    return native_exp_k(d2, false);
 }
 
 template <typename _FLOAT_T, typename _T>

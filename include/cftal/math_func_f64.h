@@ -185,6 +185,10 @@ namespace cftal {
 
             static
             vf_type
+            native_exp2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
             native_log_k(arg_t<vf_type> x);
 
             static vf_type
@@ -369,6 +373,30 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 native_exp_k(arg_t<vf_type> xc, bool exp_m1)
 {
+#if 1
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type x=xc;
+    vf_type kf= rint(vf_type(ctbl::m_1_ln2.h() * x));
+    vf_type hi = x - kf * ctbl::m_ln2_cw[0];
+    vf_type lo = kf * ctbl::m_ln2_cw[1];
+    vf_type xr = hi - lo;
+    vf_type cr = (hi-xr)-lo;
+    vi_type k= _T::cvt_f_to_i(kf);
+    vf_type y=impl::poly(xr, ctbl::native_exp_coeff);
+    y *= xr;
+    y += cr + (xr * cr);
+    if (exp_m1 == false) {
+        y += 1.0;
+    } else {
+        vi_type ke= _T::bias - k;
+        ke = max(ke, vi_type(1));
+        ke = min(ke, vi_type(_T::e_mask));
+        vf_type scale=_T::insert_exp(ke);
+        y += (vf_type(1.0)-scale);
+    }
+    y = ldexp(y, k);
+    return y;
+#else
 /* origin: FreeBSD /usr/src/lib/msun/src/e_exp.c */
 /*
  * ====================================================
@@ -437,36 +465,6 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
  */
     /* expm1(r+c) = expm1(r) + c + expm1(r)*c
                     ~ expm1(r) + c + r*c    */
-#if 0
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-
-    vf_type x=xc;
-    vf_type kf= rint(vf_type(ctbl::m_1_ln2.h() * x));
-    vf_type hi = x - kf * ctbl::m_ln2_cw[0];
-    vf_type lo = kf * ctbl::m_ln2_cw[1];
-    vf_type xr = hi - lo;
-    vf_type cr = (hi-xr)-lo;
-    vi_type k= _T::cvt_f_to_i(kf);
-
-    vf_type y=impl::poly(xr, ctbl::native_exp_coeff);
-    y *=xr;
-    // e^(x,y) ~ e^x + e^x * y + (e^x*y^2)*0.5
-    // y=e^x, cr=e^y  -> y + y*cr + 0.5*y*cr^2
-    //                   y + cr * (y + 0.5*y *cr)
-    y += cr + (xr * cr);
-    if (exp_m1 == false) {
-        y += 1.0;
-    } else {
-        // vf_type scale=ldexp(vf_type(1.0), -k);
-        vi_type ke= _T::bias - k;
-        ke = max(ke, vi_type(1));
-        ke = min(ke, vi_type(_T::e_mask));
-        vf_type scale=_T::insert_exp(ke);
-        y += (vf_type(1.0)-scale);
-    }
-    y = ldexp(y, k);
-    return y;
-#else
     // here is the original sun code
     // const vf_type half[2] = {0.5,-0.5};
     // const vf_type ln2hi = 6.93147180369123816490e-01; /* 0x3fe62e42, 0xfee00000 */
@@ -477,7 +475,7 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     const vf_type P3   =  6.61375632143793436117e-05; /* 0x3F11566A, 0xAF25DE2C */
     const vf_type P4   = -1.65339022054652515390e-06; /* 0xBEBBBD41, 0xC5D26BF1 */
     const vf_type P5   =  4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
-#if 1
+
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type x=xc;
     vf_type kf= rint(vf_type(ctbl::m_1_ln2.h() * x));
@@ -486,27 +484,7 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     vf_type xr = hi - lo;
     // vf_type cr = (hi-xr)-lo;
     vi_type k= _T::cvt_f_to_i(kf);
-#else
-    vi_type hx= _T::extract_high_word(x);
-    vi_type sign= (hx >> 31);
-    hx &= 0x7fffffff;
 
-    // vf_type half_sign = copysign(vf_type(0.5), x);
-    vi_type k= _T::cvt_f_to_i(invln2*x);
-    k = _T::sel(hx >= 0x3ff0a2b2, k, vi_type(1 + sign + sign));
-    vf_type kf=_T::cvt_i_to_f(k);
-    vf_type hi = x - kf * ln2hi;
-    vf_type lo = kf * ln2lo;
-    vf_type xr = hi - lo;
-
-    vmi_type i_cmp = hx <= 0x3fd62e42;
-    vmf_type f_cmp = _T::vmi_to_vmf(i_cmp);
-
-    k  = _T::sel(i_cmp, vi_type(0), k);
-    hi = _T::sel(f_cmp, x, hi);
-    lo = _T::sel(f_cmp, vf_type(0), lo);
-    xr = _T::sel(f_cmp, x, xr);
-#endif
     vf_type xx = xr*xr;
     vf_type c = xr - xx*(P1+xx*(P2+xx*(P3+xx*(P4+xx*P5))));
     vf_type y = (xr*c/(2-c) - lo + hi);
@@ -537,42 +515,25 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
+native_exp2_k(arg_t<vf_type> x)
+{
+    vf_type kf= rint(vf_type(x));
+    vf_type xr = x - kf;
+    vi_type k = _T::cvt_f_to_i(kf);
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type y=impl::poly(xr, ctbl::native_exp2_coeff);
+    y *= xr;
+    y += 1.0;
+    y=ldexp(y, k);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
 native_log_k(arg_t<vf_type> xc)
 {
-#if 0
-    using ctbl=impl::d_real_constants<d_real<double>, double>;
-
-    // -1022+53 = -969
-    vmf_type d_small= xc < ctbl::log_arg_small;
-    vf_type d=xc;
-    if (any_of(d_small)) {
-        vf_type t= d0 * vf_type(ctbl::log_arg_small_factor);
-        d = _T::sel(d_small, t, d);
-    }
-
-    vf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
-
-    vi_type e = ilogbp1(sc);
-    vf_type ef= _T::cvt_i_to_f(e);
-    vf_type m(ldexp(d, -e));
-
-    vf_type xm= m - vf_type(1.0);
-    vf_type xp= m + vf_type(1.0);
-    vf_type xr= xm / xp;
-    vf_type x2 = xr*xr;
-
-    vf_type t= impl::poly(x2, ctbl::log_coeff);
-    t = t * x2 + vf_type(2.0);
-    t = t * xr;
-
-    xr = t + M_LN2 * ef;
-
-    if (any_of(d_small)) {
-        vf_type t= xr - vf_type(ctbl::m_ln_small_arg.h());
-        xr = _T::sel(d_small, t, xr);
-    }
-    return xr;
-#else
 /* origin: FreeBSD /usr/src/lib/msun/src/e_log.c */
 /*
  * ====================================================
@@ -643,7 +604,7 @@ native_log_k(arg_t<vf_type> xc)
     const vf_type Lg5 = 1.818357216161805012e-01;  /* 3FC74664 96CB03DE */
     const vf_type Lg6 = 1.531383769920937332e-01;  /* 3FC39A09 D078C69F */
     const vf_type Lg7 = 1.479819860511658591e-01;  /* 3FC2F112 DF3E5244 */
-#if 1
+
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal;
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
@@ -668,47 +629,6 @@ native_log_k(arg_t<vf_type> xc)
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     vf_type log_x=s*(hfsq+R) + dk*ctbl::m_ln2_cw[1] - hfsq + f + dk*ctbl::m_ln2_cw[0];
     return log_x;
-#else
-    union {double f; uint64_t i;} u = {x};
-    double_t hfsq,f,s,z,R,w,t1,t2,dk;
-    uint32_t hx;
-    int k;
-
-    hx = u.i>>32;
-    k = 0;
-    if (hx < 0x00100000 || hx>>31) {
-        if (u.i<<1 == 0)
-            return -1/(x*x);  /* log(+-0)=-inf */
-        if (hx>>31)
-            return (x-x)/0.0; /* log(-#) = NaN */
-        /* subnormal number, scale x up */
-        k -= 54;
-        x *= 0x1p54;
-        u.f = x;
-        hx = u.i>>32;
-    } else if (hx >= 0x7ff00000) {
-        return x;
-    } else if (hx == 0x3ff00000 && u.i<<32 == 0)
-        return 0;
-    
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    hx += 0x3ff00000 - 0x3fe6a09e;
-    k += (int)(hx>>20) - 0x3ff;
-    hx = (hx&0x000fffff) + 0x3fe6a09e;
-    u.i = (uint64_t)hx<<32 | (u.i&0xffffffff);
-    x = u.f;
-    f = x - 1.0;
-    hfsq = 0.5*f*f;
-    s = f/(2.0+f);
-    z = s*s;
-    w = z*z;
-    t1 = w*(Lg2+w*(Lg4+w*Lg6));
-    t2 = z*(Lg1+w*(Lg3+w*(Lg5+w*Lg7)));
-    R = t2 + t1;
-    dk = k;
-    return s*(hfsq+R) + dk*ln2_lo - hfsq + f + dk*ln2_hi;
-#endif
-#endif
 }
 
 

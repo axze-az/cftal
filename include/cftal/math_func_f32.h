@@ -142,6 +142,10 @@ namespace cftal {
 
             static
             vf_type
+            native_exp2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
             native_log_k(arg_t<vf_type> x);
         };
 
@@ -335,7 +339,7 @@ typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
 native_exp_k(arg_t<vf_type> xc, bool exp_m1)
 {
-#if 0
+#if 1
     using ctbl = impl::d_real_constants<d_real<float>, float>;
 
     vf_type x=xc;
@@ -403,6 +407,23 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     y = ldexp(y, k);
     return y;
 #endif
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+native_exp2_k(arg_t<vf_type> x)
+{
+    vf_type kf= rint(vf_type(x));
+    vf_type xr = x - kf;
+    vi_type k = _T::cvt_f_to_i(kf);
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type y=impl::poly(xr, ctbl::native_exp2_coeff);
+    y *= xr;
+    y += 1.0;
+    y=ldexp(y, k);
+    return y;
 }
 
 template <typename _T>

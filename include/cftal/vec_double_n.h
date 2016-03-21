@@ -568,6 +568,23 @@ namespace cftal {
     vec<double, 8>
     native_expm1(arg_t<vec<double, 8> > d);
 
+    // native_exp2, these functions are exact to ? ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    native_exp2(const vec<double, _N>& v);
+
+    vec<double, 1>
+    native_exp2(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    native_exp2(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    native_exp2(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    native_exp2(arg_t<vec<double, 8> > d);
+
     // native_log, these functions are exact to +-4 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -872,6 +889,15 @@ cftal::vec<double, _N>
 cftal::native_exp(const vec<double, _N>& v)
 {
     vec<double, _N> r(native_exp(low_half(v)), native_exp(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native_exp2(const vec<double, _N>& v)
+{
+    vec<double, _N> r(native_exp2(low_half(v)), native_exp2(high_half(v)));
     return r;
 }
 

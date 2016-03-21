@@ -47,6 +47,8 @@ namespace cftal {
                 static const _T exp_coeff[MAX_EXP_COEFF];
                 static const unsigned MAX_NATIVE_EXP_COEFF=6;
                 static const float native_exp_coeff[MAX_NATIVE_EXP_COEFF];
+                static const unsigned MAX_NATIVE_EXP2_COEFF=6;
+                static const float native_exp2_coeff[MAX_NATIVE_EXP2_COEFF];
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=8;
@@ -134,6 +136,18 @@ native_exp_coeff[MAX_NATIVE_EXP_COEFF] = {
     0x1.5554aep-3f,
     0x1.fffffep-2f,
     0x1p0f
+};
+
+template <class _T>
+const float
+cftal::math::impl::d_real_constants<_T, float>::
+native_exp2_coeff[MAX_NATIVE_EXP2_COEFF] = {
+    0x1.427918p-13f,
+    0x1.5ef4a2p-10f,
+    0x1.3b2c58p-7f,
+    0x1.c6af9ep-5f,
+    0x1.ebfbdep-3f,
+    0x1.62e43p-1f
 };
 
 /* ---------------------------------------------------------------- */

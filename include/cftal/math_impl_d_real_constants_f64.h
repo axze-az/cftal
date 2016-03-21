@@ -49,9 +49,12 @@ namespace cftal {
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=7;
                 static const _T exp_coeff[MAX_EXP_COEFF];
-                // polynomial of degree 11
+                // polynomial of degree 12
                 static const unsigned MAX_NATIVE_EXP_COEFF=13;
                 static const double native_exp_coeff[MAX_NATIVE_EXP_COEFF];
+                // polynomial of degree 12
+                static const unsigned MAX_NATIVE_EXP2_COEFF=13;
+                static const double native_exp2_coeff[MAX_NATIVE_EXP2_COEFF];
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=11;
@@ -147,6 +150,26 @@ native_exp_coeff[MAX_NATIVE_EXP_COEFF] = {
     0x1.5555555555555p-3,
     0x1p-1,
     0x1p0
+};
+
+// thanks to sollya
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+native_exp2_coeff[MAX_NATIVE_EXP2_COEFF] = {
+    -0x1.f6550e3b3d6a1p-36,
+    0x1.bdfbcf4480aa2p-36,
+    0x1.01c3a8bb3749dp-31,
+    0x1.e4d3fcb9c72e2p-28,
+    0x1.b51ce204af927p-24,
+    0x1.62c020e78ccfcp-20,
+    0x1.ffcbfeda63217p-17,
+    0x1.430912f8c280bp-13,
+    0x1.5d87fe7848d65p-10,
+    0x1.3b2ab6fba4d47p-7,
+    0x1.c6b08d704a236p-5,
+    0x1.ebfbdff82c58fp-3,
+    0x1.62e42fefa39efp-1
 };
 
 /* ----------------------------------------------------------------*/

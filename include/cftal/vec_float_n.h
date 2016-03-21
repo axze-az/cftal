@@ -72,9 +72,6 @@ namespace cftal {
     vec<float, _N>
     exp10(const vec<float, _N>& v);
 
-    template <std::size_t _N>
-    vec<float, _N>
-    native_exp(const vec<float, _N>& v);
 
     template <std::size_t _N>
     vec<float, _N>
@@ -437,6 +434,22 @@ namespace cftal {
     v8f32
     native_exp(arg<v8f32>::type d);
 
+    template <std::size_t _N>
+    vec<float, _N>
+    native_exp2(const vec<float, _N>& v);
+
+    vec<float, 1>
+    native_exp2(arg<vec<float, 1> >::type v);
+
+    v2f32
+    native_exp2(arg<v2f32>::type d);
+
+    v4f32
+    native_exp2(arg<v4f32>::type d);
+
+    v8f32
+    native_exp2(arg<v8f32>::type d);
+    
     // expm1: exact to
     template <std::size_t _N>
     vec<float, _N>
@@ -748,6 +761,15 @@ cftal::vec<float, _N>
 cftal::native_exp(const vec<float, _N>& v)
 {
     vec<float, _N> r(native_exp(low_half(v)), native_exp(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::native_exp2(const vec<float, _N>& v)
+{
+    vec<float, _N> r(native_exp2(low_half(v)), native_exp2(high_half(v)));
     return r;
 }
 
