@@ -6,6 +6,7 @@
 #include <cftal/t_real.h>
 #include <cftal/std_types.h>
 #include <cftal/math_common.h>
+#include <cftal/math_impl_poly.h>
 #include <cftal/math_impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
 #include <cmath>
@@ -15,11 +16,6 @@
 namespace cftal {
 
     namespace math {
-
-        namespace impl {
-
-
-        }
 
         template <>
         struct func_traits<double, int32_t>
@@ -240,9 +236,9 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     vmf_type is_denom= abs(x) <= fc::max_denormal;
     vi_type eo=vi_type(0);
     // input denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p53), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel(i_is_denom, vi_type(-53), eo);
+    eo= _T::sel(i_is_denom, vi_type(-54), eo);
     // split mantissa
     vi_type ml, mh;
     _T::extract_words(ml, mh, xs);
@@ -274,7 +270,7 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     // underflow handling
     vmi_type i_is_near_z = re < vi_type (1);
     if (any_of(i_is_near_z)) {
-        // create m*0x1.0p-1021
+        // create m*0x1.0p-1022
         vi_type mhu= mh | vi_type(1<<20);
         vf_type r_u= _T::combine_words(ml, mhu);
         // create a scaling factor, but avoid overflows
@@ -302,9 +298,9 @@ frexp(arg_t<vf_type> x, vi_type* ve)
 
     vi_type eo=vi_type(0);
     // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p53), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel(i_is_denom, vi_type(-53), eo);
+    eo= _T::sel(i_is_denom, vi_type(-54), eo);
     // extract mantissa
     vi_type lo_word, hi_word;
     _T::extract_words(lo_word, hi_word, xs);
@@ -338,9 +334,9 @@ ilogbp1(arg_t<vf_type> x)
     vmf_type is_denom= abs(x) <= fc::max_denormal;
     vi_type eo=vi_type(0);
     // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p53), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel(i_is_denom, vi_type(-53), eo);
+    eo= _T::sel(i_is_denom, vi_type(-54), eo);
     // reinterpret as integer
     vi_type hi_word(_T::extract_high_word(xs));
     // exponent:
@@ -539,15 +535,16 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
 
 template <typename _T>
 inline
-typename cftal::math::func_common<double, _T>::vf_type
+typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-native_log_k(arg_t<vf_type> d0)
+native_log_k(arg_t<vf_type> xc)
 {
+#if 0
     using ctbl=impl::d_real_constants<d_real<double>, double>;
 
     // -1022+53 = -969
-    vmf_type d_small= d0 < ctbl::log_arg_small;
-    vf_type d=d0;
+    vmf_type d_small= xc < ctbl::log_arg_small;
+    vf_type d=xc;
     if (any_of(d_small)) {
         vf_type t= d0 * vf_type(ctbl::log_arg_small_factor);
         d = _T::sel(d_small, t, d);
@@ -575,6 +572,143 @@ native_log_k(arg_t<vf_type> d0)
         xr = _T::sel(d_small, t, xr);
     }
     return xr;
+#else
+/* origin: FreeBSD /usr/src/lib/msun/src/e_log.c */
+/*
+ * ====================================================
+ * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+ *
+ * Developed at SunSoft, a Sun Microsystems, Inc. business.
+ * Permission to use, copy, modify, and distribute this
+ * software is freely granted, provided that this notice
+ * is preserved.
+ * ====================================================
+ */
+/* log(x)
+ * Return the logarithm of x
+ *
+ * Method :
+ *   1. Argument Reduction: find k and f such that
+ *                      x = 2^k * (1+f),
+ *         where  sqrt(2)/2 < 1+f < sqrt(2) .
+ *
+ *   2. Approximation of log(1+f).
+ *      Let s = f/(2+f) ; based on log(1+f) = log(1+s) - log(1-s)
+ *               = 2s + 2/3 s**3 + 2/5 s**5 + .....,
+ *               = 2s + s*R
+ *      We use a special Remez algorithm on [0,0.1716] to generate
+ *      a polynomial of degree 14 to approximate R The maximum error
+ *      of this polynomial approximation is bounded by 2**-58.45. In
+ *      other words,
+ *                      2      4      6      8      10      12      14
+ *          R(z) ~ Lg1*s +Lg2*s +Lg3*s +Lg4*s +Lg5*s  +Lg6*s  +Lg7*s
+ *      (the values of Lg1 to Lg7 are listed in the program)
+ *      and
+ *          |      2          14          |     -58.45
+ *          | Lg1*s +...+Lg7*s    -  R(z) | <= 2
+ *          |                             |
+ *      Note that 2s = f - s*f = f - hfsq + s*hfsq, where hfsq = f*f/2.
+ *      In order to guarantee error in log below 1ulp, we compute log
+ *      by
+ *              log(1+f) = f - s*(f - R)        (if f is not too large)
+ *              log(1+f) = f - (hfsq - s*(hfsq+R)).     (better accuracy)
+ *
+ *      3. Finally,  log(x) = k*ln2 + log(1+f).
+ *                          = k*ln2_hi+(f-(hfsq-(s*(hfsq+R)+k*ln2_lo)))
+ *         Here ln2 is split into two floating point number:
+ *                      ln2_hi + ln2_lo,
+ *         where n*ln2_hi is always exact for |n| < 2000.
+ *
+ * Special cases:
+ *      log(x) is NaN with signal if x < 0 (including -INF) ;
+ *      log(+INF) is +INF; log(0) is -INF with signal;
+ *      log(NaN) is that NaN with no signal.
+ *
+ * Accuracy:
+ *      according to an error analysis, the error is always less than
+ *      1 ulp (unit in the last place).
+ *
+ * Constants:
+ * The hexadecimal values are the intended ones for the following
+ * constants. The decimal values may be used, provided that the
+ * compiler will convert from decimal to binary accurately enough
+ * to produce the hexadecimal values shown.
+ */
+    // const vf_type ln2_hi = 6.93147180369123816490e-01;  /* 3fe62e42 fee00000 */
+    // const vf_type ln2_lo = 1.90821492927058770002e-10;  /* 3dea39ef 35793c76 */
+    const vf_type Lg1 = 6.666666666666735130e-01;  /* 3FE55555 55555593 */
+    const vf_type Lg2 = 3.999999999940941908e-01;  /* 3FD99999 9997FA04 */
+    const vf_type Lg3 = 2.857142874366239149e-01;  /* 3FD24924 94229359 */
+    const vf_type Lg4 = 2.222219843214978396e-01;  /* 3FCC71C5 1D8E78AF */
+    const vf_type Lg5 = 1.818357216161805012e-01;  /* 3FC74664 96CB03DE */
+    const vf_type Lg6 = 1.531383769920937332e-01;  /* 3FC39A09 D078C69F */
+    const vf_type Lg7 = 1.479819860511658591e-01;  /* 3FC2F112 DF3E5244 */
+#if 1
+    using fc = func_constants<double>;
+    vmf_type is_denom=xc <= fc::max_denormal;
+    vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
+    vi_type k=_T::sel(_T::vmf_to_vmi(is_denom), vi_type(-54), vi_type(0));
+    vi_type lx, hx;
+    _T::extract_words(lx, hx, x);
+    /* reduce x into [sqrt(2)/2, sqrt(2)] */
+    hx += 0x3ff00000 - 0x3fe6a09e;
+    k += (hx>>20) - 0x3ff;
+    hx = (hx&0x000fffff) + 0x3fe6a09e;
+    vf_type xr = _T::combine_words(lx, hx);
+
+    vf_type f = xr - 1.0;
+    vf_type hfsq = 0.5*f*f;
+    vf_type s = f/(2.0+f);
+    vf_type z = s*s;
+    vf_type w = z*z;
+    vf_type t1 = w*(Lg2+w*(Lg4+w*Lg6));
+    vf_type t2 = z*(Lg1+w*(Lg3+w*(Lg5+w*Lg7)));
+    vf_type R = t2 + t1;
+    vf_type dk = _T::cvt_i_to_f(k);
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+    vf_type log_x=s*(hfsq+R) + dk*ctbl::m_ln2_cw[1] - hfsq + f + dk*ctbl::m_ln2_cw[0];
+    return log_x;
+#else
+    union {double f; uint64_t i;} u = {x};
+    double_t hfsq,f,s,z,R,w,t1,t2,dk;
+    uint32_t hx;
+    int k;
+
+    hx = u.i>>32;
+    k = 0;
+    if (hx < 0x00100000 || hx>>31) {
+        if (u.i<<1 == 0)
+            return -1/(x*x);  /* log(+-0)=-inf */
+        if (hx>>31)
+            return (x-x)/0.0; /* log(-#) = NaN */
+        /* subnormal number, scale x up */
+        k -= 54;
+        x *= 0x1p54;
+        u.f = x;
+        hx = u.i>>32;
+    } else if (hx >= 0x7ff00000) {
+        return x;
+    } else if (hx == 0x3ff00000 && u.i<<32 == 0)
+        return 0;
+    
+    /* reduce x into [sqrt(2)/2, sqrt(2)] */
+    hx += 0x3ff00000 - 0x3fe6a09e;
+    k += (int)(hx>>20) - 0x3ff;
+    hx = (hx&0x000fffff) + 0x3fe6a09e;
+    u.i = (uint64_t)hx<<32 | (u.i&0xffffffff);
+    x = u.f;
+    f = x - 1.0;
+    hfsq = 0.5*f*f;
+    s = f/(2.0+f);
+    z = s*s;
+    w = z*z;
+    t1 = w*(Lg2+w*(Lg4+w*Lg6));
+    t2 = z*(Lg1+w*(Lg3+w*(Lg5+w*Lg7)));
+    R = t2 + t1;
+    dk = k;
+    return s*(hfsq+R) + dk*ln2_lo - hfsq + f + dk*ln2_hi;
+#endif
+#endif
 }
 
 

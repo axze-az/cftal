@@ -407,7 +407,7 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
 
 template <typename _T>
 inline
-typename cftal::math::func_common<float, _T>::vf_type
+typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
 native_log_k(arg_t<vf_type> d0)
 {

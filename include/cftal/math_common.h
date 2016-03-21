@@ -1221,7 +1221,8 @@ _log(arg_t<vf_type> d)
     x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
-
+    // NAN --> n_and_1
+    x = _T::sel(isnan(d), d, x);
     // using fc= func_constants<_FLOAT_T>;
     // const vf_type log_lo_fin= fc::log_lo_fin;
     // const vf_type log_lo_val= fc::log_lo_val;
