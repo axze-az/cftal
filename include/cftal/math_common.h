@@ -9,6 +9,7 @@
 #include <cftal/constants.h>
 #include <cftal/mem.h>
 #include <cftal/math_func_constants.h>
+#include <cftal/math_impl_poly.h>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -86,6 +87,7 @@ namespace cftal {
             using base_type::ldexp;
             using base_type::ilogbp1;
             using base_type::native_exp_k;
+            using base_type::native_log_k;
 
             static
             dvf_type
@@ -113,10 +115,6 @@ namespace cftal {
             static
             dvf_type
             log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl);
-
-            static
-            vf_type
-            native_log_k(arg_t<vf_type> x);
 
             // atan2 kernel
             static dvf_type
@@ -247,91 +245,6 @@ namespace cftal {
 
         namespace impl {
 
-            template <typename _X, typename _C1, typename _C0>
-            _X
-            poly(_X x, _C1 c1, _C0 c0) {
-                return x*c1 + c0;
-            }
-
-            template <typename _X,
-                      typename _CN, typename _CNM1, typename ... _CS>
-            _X
-            poly(_X x, _CN cn, _CNM1 cnm1, _CS... cs) {
-                _X t = poly(x, cn, cnm1);
-                _X r = poly(x, t, cs...);
-                return r;
-            }
-
-            template <typename _X, typename _C>
-            _X
-            poly(_X x, const _C& c) {
-                auto b=std::cbegin(c);
-                auto e=std::cend(c);
-                if (b==e) {
-                    throw std::invalid_argument("cftal::math::poly(x, C)");
-                }
-                _X r= (*b);
-                ++b;
-                while (b != e) {
-                    r = poly(x, r, *b);
-                    ++b;
-                }
-                return r;
-            }
-
-            template <typename _X, typename _C, std::size_t _N>
-            _X
-            poly(_X x, const _C (&a)[_N]) {
-                static_assert(_N > 0, "invalid call to poly(x, array)");
-                _X r= _X(a[0]);
-                for (std::size_t i=1; i<_N; ++i) {
-                    r= poly(x, r, a[i]);
-                }
-                return r;
-            }
-
-            template <typename _F, typename _C, std::size_t _N>
-            d_real<_F>
-            poly(d_real<_F> x, const d_real<_C> (&a)[_N]) {
-                static_assert(
-                    _N > 0,
-                    "invalid call to poly(d_real<_F>, d_real<_C>(&a)[])");
-                d_real<_F> r=d_real<_F>(a[0]);
-                for (std::size_t i=1; i<_N; ++i) {
-                    r=poly(x, r, d_real<_F>(a[i] ));
-                }
-                return r;
-            }
-
-            template <typename _F, typename _C, std::size_t _N>
-            _F
-            poly(_F x, const d_real<_C> (&a)[_N]) {
-                static_assert(
-                    _N > 0,
-                    "invalid call to poly(_F, d_real<_C>(&a)[])");
-                _F r= a[0].h();
-                for (std::size_t i=1; i<_N; ++i) {
-                    r= poly(x, r, _F(a[i].h()));
-                }
-                return r;
-            }
-
-            // polynomial with c1 = 1.0
-            template <typename _X, typename _C0>
-            _X
-            poly1(_X x, _C0 c0) {
-                return x + c0;
-            }
-
-            // polynomial with cn = 1.0
-            template <typename _X,
-                      typename _CNM1, typename ... _CS>
-            _X
-            poly1(_X x, _CNM1 cnm1, _CS... cs) {
-                _X t = poly1(x, cnm1);
-                _X r = poly(x, t, cs...);
-                return r;
-            }
 
 
             // sin(x + y) = sin(x) * cos(y) + sin(y) * cos(x);
@@ -873,46 +786,6 @@ log_k2(arg_t<vf_type> d0h, arg_t<vf_type> d0l)
         dvf_type t= xr - dvf_type(ctbl::m_ln_small_arg);
         xr = dvf_type(_T::sel(d_small, t.h(), xr.h()),
                       _T::sel(d_small, t.l(), xr.l()));
-    }
-    return xr;
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_log_k(arg_t<vf_type> d0)
-{
-    using ctbl=impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
-
-    // -1022+53 = -969
-    vmf_type d_small= d0 < ctbl::log_arg_small;
-    vf_type d=d0;
-    if (any_of(d_small)) {
-        vf_type t= d0 * vf_type(ctbl::log_arg_small_factor);
-        d = _T::sel(d_small, t, d);
-    }
-
-    vf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
-
-    vi_type e = ilogbp1(sc);
-    vf_type ef= _T::cvt_i_to_f(e);
-    vf_type m(ldexp(d, -e));
-
-    vf_type xm= m - vf_type(1.0);
-    vf_type xp= m + vf_type(1.0);
-    vf_type xr= xm / xp;
-    vf_type x2 = xr*xr;
-
-    vf_type t= impl::poly(x2, ctbl::log_coeff);
-    t = t * x2 + vf_type(2.0);
-    t = t * xr;
-
-    xr = t + M_LN2 * ef;
-
-    if (any_of(d_small)) {
-        vf_type t= xr - vf_type(ctbl::m_ln_small_arg.h());
-        xr = _T::sel(d_small, t, xr);
     }
     return xr;
 }

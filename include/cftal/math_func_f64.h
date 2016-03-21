@@ -187,6 +187,10 @@ namespace cftal {
             vf_type
             native_exp_k(arg_t<vf_type> x, bool exp_m1);
 
+            static
+            vf_type
+            native_log_k(arg_t<vf_type> x);
+
             static vf_type
             pow2i(arg_t<vi_type> vi);
             static vf_type
@@ -532,6 +536,47 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     return y;
 #endif
 }
+
+template <typename _T>
+inline
+typename cftal::math::func_common<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+native_log_k(arg_t<vf_type> d0)
+{
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+
+    // -1022+53 = -969
+    vmf_type d_small= d0 < ctbl::log_arg_small;
+    vf_type d=d0;
+    if (any_of(d_small)) {
+        vf_type t= d0 * vf_type(ctbl::log_arg_small_factor);
+        d = _T::sel(d_small, t, d);
+    }
+
+    vf_type sc(d* vf_type(0.7071) /*vf_type(M_SQRT1_2)*/);
+
+    vi_type e = ilogbp1(sc);
+    vf_type ef= _T::cvt_i_to_f(e);
+    vf_type m(ldexp(d, -e));
+
+    vf_type xm= m - vf_type(1.0);
+    vf_type xp= m + vf_type(1.0);
+    vf_type xr= xm / xp;
+    vf_type x2 = xr*xr;
+
+    vf_type t= impl::poly(x2, ctbl::log_coeff);
+    t = t * x2 + vf_type(2.0);
+    t = t * xr;
+
+    xr = t + M_LN2 * ef;
+
+    if (any_of(d_small)) {
+        vf_type t= xr - vf_type(ctbl::m_ln_small_arg.h());
+        xr = _T::sel(d_small, t, xr);
+    }
+    return xr;
+}
+
 
 template <typename _T>
 inline
