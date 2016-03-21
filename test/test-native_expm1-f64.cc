@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
-        double, 8, check_native_expm1<double> >::v(st, d, cmp_ulp<double>(ulp, us));
+        double, _N, check_native_expm1<double> >::v(st, d, cmp_ulp<double>(ulp, us));
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

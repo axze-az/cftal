@@ -12,6 +12,7 @@
 #include <cmath>
 #include <iterator>
 #include <iostream>
+#include <iomanip>
 
 namespace cftal {
 
@@ -380,21 +381,61 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     vf_type hi = x - kf * ctbl::m_ln2_cw[0];
     vf_type lo = kf * ctbl::m_ln2_cw[1];
     vf_type xr = hi - lo;
-    vf_type cr = (hi-xr)-lo;
     vi_type k= _T::cvt_f_to_i(kf);
+
+#if 1
+    const vf_type P5 = 0x1.6373fdc720dadp-25,
+        P4= -0x1.bbd415c0fa28bp-20,
+        P3= 0x1.1566aaef64906p-14,
+        P2= -0x1.6c16c16beabf5p-9,
+        P1= 0x1.555555555553dp-3;
+    vf_type xx = xr*xr;
+    vf_type c = xr - xx*(P1+xx*(P2+xx*(P3+xx*(P4+xx*P5))));
+    vf_type y = (xr*c/(2-c) - lo + hi);
+    
+#else
+    vf_type cr = (hi-xr)-lo;
     vf_type y=impl::poly(xr, ctbl::native_exp_coeff);
     y *= xr;
     y += cr + (xr * cr);
+#endif    
     if (exp_m1 == false) {
         y += 1.0;
+        y = ldexp(y, k);
     } else {
-        vi_type ke= _T::bias - k;
-        ke = max(ke, vi_type(1));
-        ke = min(ke, vi_type(_T::e_mask));
-        vf_type scale=_T::insert_exp(ke);
-        y += (vf_type(1.0)-scale);
+        // std::cout << std::setprecision(22) << xc << std::endl;
+        // std::cout << k << std::endl;
+        vi_type t= _T::bias - k;
+        // t = max(t, vi_type(1));
+        // t = min(t, vi_type(_T::e_mask));
+        vf_type two_pow_minus_k=_T::insert_exp(t);
+        // xr - e = y --> xr -y = e
+        vf_type e= xr - y;
+        t = _T::bias + k;
+        // t = max(t, vi_type(1));
+        // t = min(t, vi_type(_T::e_mask));
+        vf_type two_pow_k=_T::insert_exp(t);
+        // default cases:
+        vf_type ym = _T::sel(kf < vf_type(20),
+                             (xr - e + (1.0 - two_pow_minus_k))*two_pow_k,
+                             (xr - (e+two_pow_minus_k)+1.0)*two_pow_k);
+        // k < 0 || k > 56
+        vf_type yt= xr - e  + 1.0;
+        yt= _T::sel(kf == vf_type(1024),
+                    yt * 2.0 *0x1p1023,
+                    yt * two_pow_k);
+        yt -= 1.0;
+        ym = _T::sel((kf < vf_type(0)) | (kf>vf_type(56)), yt, ym);
+        // k == 1
+        yt = _T::sel(xr < -0.25, -2.0*(e-(xr+0.5)),1.0+2.0*(xr-e));
+        ym = _T::sel(kf == vf_type(1.0), yt, ym);
+        // k == -1
+        yt = 0.5 *(xr-e) - 0.5;
+        ym = _T::sel(kf == vf_type(-1.0), yt, ym);
+        // k == 0
+        ym = _T::sel(kf == vf_type(0.0), y, ym);
+        y = ym;
     }
-    y = ldexp(y, k);
     return y;
 #else
 /* origin: FreeBSD /usr/src/lib/msun/src/e_exp.c */
@@ -475,7 +516,7 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     const vf_type P3   =  6.61375632143793436117e-05; /* 0x3F11566A, 0xAF25DE2C */
     const vf_type P4   = -1.65339022054652515390e-06; /* 0xBEBBBD41, 0xC5D26BF1 */
     const vf_type P5   =  4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
-
+    
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type x=xc;
     vf_type kf= rint(vf_type(ctbl::m_1_ln2.h() * x));
