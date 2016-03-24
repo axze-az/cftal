@@ -402,10 +402,10 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
 #endif
         y += 1.0;
         // y = ldexp(y, k);
-        vf_type two_pow_k= _T::sel(
-            kf >= vf_type(-1021),
-            _T::insert_exp(_T::bias + k),
-            _T::insert_exp((_T::bias+1000)+k));
+        vi_type e_two_pow_k=_T::sel(k < vi_type(-1021),
+                                    vi_type((_T::bias+1000)+k),
+                                    vi_type(_T::bias+k));
+        vf_type two_pow_k= _T::insert_exp(e_two_pow_k);
         // kf == 1024 or kf>=-1021
         vf_type yt= _T::sel(kf == vf_type(1024),
                             y * 2.0 * 0x1p1023,
