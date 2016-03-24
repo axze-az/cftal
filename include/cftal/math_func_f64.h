@@ -383,26 +383,44 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     vf_type xr = hi - lo;
     vi_type k= _T::cvt_f_to_i(kf);
 
-#if 1
-    const vf_type P5 = 0x1.6373fdc720dadp-25,
-        P4= -0x1.bbd415c0fa28bp-20,
-        P3= 0x1.1566aaef64906p-14,
-        P2= -0x1.6c16c16beabf5p-9,
-        P1= 0x1.555555555553dp-3;
-    vf_type xx = xr*xr;
-    vf_type c = xr - xx*(P1+xx*(P2+xx*(P3+xx*(P4+xx*P5))));
-    vf_type y = (xr*c/(2-c) - lo + hi);
-    
-#else
-    vf_type cr = (hi-xr)-lo;
-    vf_type y=impl::poly(xr, ctbl::native_exp_coeff);
-    y *= xr;
-    y += cr + (xr * cr);
-#endif    
+    vf_type y;
     if (exp_m1 == false) {
+#if 1
+        const vf_type P5 = 0x1.6373fdc720dadp-25,
+            P4= -0x1.bbd415c0fa28bp-20,
+            P3= 0x1.1566aaef64906p-14,
+            P2= -0x1.6c16c16beabf5p-9,
+            P1= 0x1.555555555553dp-3;
+        vf_type xx = xr*xr;
+        vf_type c = xr - xx*(P1+xx*(P2+xx*(P3+xx*(P4+xx*P5))));
+        y = (xr*c/(2-c) - lo + hi);
+#else
+        vf_type cr = (hi-xr)-lo;
+        y=impl::poly(xr, ctbl::native_exp_coeff);
+        y *= xr;
+        y += cr + (xr * cr);
+#endif    
         y += 1.0;
         y = ldexp(y, k);
     } else {
+        // vf_type e= xr - y;
+        vf_type cr = (hi-xr)-lo;
+        const vf_type Q1 = -3.33333333333331316428e-02, /* BFA11111 111110F4 */
+            Q2 =  1.58730158725481460165e-03, /* 3F5A01A0 19FE5585 */
+            Q3 = -7.93650757867487942473e-05, /* BF14CE19 9EAADBB7 */
+            Q4 =  4.00821782732936239552e-06, /* 3ED0CFCA 86E65239 */
+            Q5 = -2.01099218183624371326e-07; /* BE8AFDB7 6E09C32D */
+
+        /* x is now in primary range */
+        vf_type hfx = 0.5*xr;
+        vf_type hxs = xr*hfx;
+        vf_type r1 = 1.0+hxs*(Q1+hxs*(Q2+hxs*(Q3+hxs*(Q4+hxs*Q5))));
+        vf_type tt  = 3.0-r1*hfx;
+        vf_type e  = hxs*((r1-tt)/(6.0 - xr*tt));
+        // if (k == 0)   /* c is 0 */
+        //      return x - (x*e-hxs);
+        e  = xr*(e-cr) - cr;
+        e -= hxs;
         // std::cout << std::setprecision(22) << xc << std::endl;
         // std::cout << k << std::endl;
         vi_type t= _T::bias - k;
@@ -410,7 +428,6 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
         // t = min(t, vi_type(_T::e_mask));
         vf_type two_pow_minus_k=_T::insert_exp(t);
         // xr - e = y --> xr -y = e
-        vf_type e= xr - y;
         t = _T::bias + k;
         // t = max(t, vi_type(1));
         // t = min(t, vi_type(_T::e_mask));
@@ -433,7 +450,9 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
         yt = 0.5 *(xr-e) - 0.5;
         ym = _T::sel(kf == vf_type(-1.0), yt, ym);
         // k == 0
-        ym = _T::sel(kf == vf_type(0.0), y, ym);
+        ym = _T::sel(kf == vf_type(0.0), xr-e, ym);
+        // x small
+        ym = _T::sel(abs(x) < 0x1p-54, x, ym);
         y = ym;
     }
     return y;
