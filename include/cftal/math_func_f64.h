@@ -386,11 +386,11 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     vf_type y;
     if (exp_m1 == false) {
 #if 1
-        const vf_type P5 = 0x1.6373fdc720dadp-25,
-            P4= -0x1.bbd415c0fa28bp-20,
-            P3= 0x1.1566aaef64906p-14,
-            P2= -0x1.6c16c16beabf5p-9,
-            P1= 0x1.555555555553dp-3;
+    const vf_type P5=0x1.6373fdc720fc8p-25,
+        P4=-0x1.bbd415c0fa28dp-20,
+        P3=0x1.1566aaef64906p-14,
+        P2=-0x1.6c16c16beabf5p-9,
+        P1=0x1.555555555553dp-3;
         vf_type xx = xr*xr;
         vf_type c = xr - xx*(P1+xx*(P2+xx*(P3+xx*(P4+xx*P5))));
         y = (xr*c/(2-c) - lo + hi);
@@ -399,9 +399,19 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
         y=impl::poly(xr, ctbl::native_exp_coeff);
         y *= xr;
         y += cr + (xr * cr);
-#endif    
+#endif
         y += 1.0;
-        y = ldexp(y, k);
+        // y = ldexp(y, k);
+        vf_type two_pow_k= _T::sel(
+            kf >= vf_type(-1021),
+            _T::insert_exp(_T::bias + k),
+            _T::insert_exp((_T::bias+1000)+k));
+        // kf == 1024 or kf>=-1021
+        vf_type yt= _T::sel(kf == vf_type(1024),
+                            y * 2.0 * 0x1p1023,
+                            y*two_pow_k);
+        y = _T::sel(kf < vf_type(-1021),
+                    y*two_pow_k*0x1p-1000, yt);
     } else {
         // vf_type e= xr - y;
         vf_type cr = (hi-xr)-lo;
@@ -535,7 +545,7 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     const vf_type P3   =  6.61375632143793436117e-05; /* 0x3F11566A, 0xAF25DE2C */
     const vf_type P4   = -1.65339022054652515390e-06; /* 0xBEBBBD41, 0xC5D26BF1 */
     const vf_type P5   =  4.13813679705723846039e-08; /* 0x3E663769, 0x72BEA4D0 */
-    
+
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type x=xc;
     vf_type kf= rint(vf_type(ctbl::m_1_ln2.h() * x));
