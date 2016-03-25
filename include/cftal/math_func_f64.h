@@ -747,8 +747,8 @@ native_reduce_trig_arg_k(arg_t<vf_type> x)
     dvf_type d0(y0, y1);
     vi_type q(_T::cvt_f_to_i(fn));
 
-    const double large_arg=1.0*0x1p20;
-    vmf_type v_large_arg= vf_type(1.0*0x1p20) < abs(x);
+    const double large_arg=1.5*0x1p19;
+    vmf_type v_large_arg= vf_type(1.5*0x1p19) < abs(x);
     if (any_of(v_large_arg)) {
         // reduce the large arguments
         constexpr std::size_t N=_T::NVF();
