@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     std::cout << st << std::endl;
 
     exec_stats st2(_N);
-    auto dp2=std::make_pair(-1.199999*0x1p20, 1.199999*0x1p20);
+    auto dp2=std::make_pair(-1.0*0x1p20, 1.0*0x1p20);
     auto us2=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         double, _N, check_native_sin<double> >::v(st2, dp2, cmp_ulp<double>(ulp, us2),
