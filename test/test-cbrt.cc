@@ -249,7 +249,7 @@ int main(int argc, char** argv)
 {
     bool rc=true;
     using namespace cftal::test;
-    const int ulp=0;
+    const int ulp=9;
     const int _DN=8;
     const int _FN=8;
     

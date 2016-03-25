@@ -95,7 +95,7 @@ namespace cftal {
             static
             _T
             v(const _T& a) {
-#if 1
+#if 0
                 return call_mpfr::func(a, mpfr_cbrt);
 #else
                 return std::cbrt(a);
@@ -268,7 +268,7 @@ namespace cftal {
             static
             const char* fname() { return "log1p"; }
         };
-        
+
         template <typename _T>
         struct check_log10 {
             template <std::size_t _N>
@@ -310,7 +310,7 @@ namespace cftal {
             static
             const char* fname() { return "log2"; }
         };
-        
+
         template <typename _T>
         struct check_pow {
             template <std::size_t _N>
@@ -466,7 +466,7 @@ namespace cftal {
             static
             const char* fname() { return "atan"; }
         };
-        
+
         template <typename _T>
         struct check_atan2 {
             template <std::size_t _N>
@@ -529,7 +529,7 @@ namespace cftal {
             static
             const char* fname() { return "acos"; }
         };
-        
+
         template <typename _T>
         struct check_native_exp {
             template <std::size_t _N>
@@ -568,7 +568,7 @@ namespace cftal {
             const char* fname() { return "exp2"; }
         };
 
-        
+
         template <typename _T>
         struct check_native_expm1 {
             template <std::size_t _N>
@@ -640,7 +640,7 @@ namespace cftal {
             static
             const char* fname() { return "native_sin"; }
         };
-        
+
         template <typename _T>
         struct check_native_cos {
             template <std::size_t _N>
@@ -657,7 +657,7 @@ namespace cftal {
             static
             const char* fname() { return "native_cos"; }
         };
-        
+
         template <typename _T>
         struct check_native_sincos {
             struct sin {
