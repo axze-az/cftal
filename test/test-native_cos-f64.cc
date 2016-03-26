@@ -5,6 +5,8 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+    const int ulp = 1;
+    const int _N=8;
 
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -16,8 +18,6 @@ int main(int argc, char** argv)
     std::vector<func_arg_result<double> > v=
         read_double_file(test_data_file, false);
 
-    const int ulp = 3;
-    const int _N=8;
 
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;

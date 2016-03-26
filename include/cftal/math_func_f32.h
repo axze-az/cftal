@@ -129,13 +129,17 @@ namespace cftal {
 
             static vi_type ilogb(arg_t<vf_type> vf);
 
-
+            
             static std::pair<vf_type, vi_type>
             native_reduce_trig_arg_k(arg_t<vf_type> x);
             // core sine, cosine calculation
             static void
             native_sin_cos_k(arg_t<vf_type> x,
                              vf_type* s, vf_type* c);
+            static
+            vf_type
+            native_tan_k(arg_t<vf_type> x);
+            
             static
             vf_type
             native_exp_k(arg_t<vf_type> x, bool exp_m1);
@@ -613,6 +617,14 @@ native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
     }
 }
 
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+native_tan_k(arg_t<vf_type> x)
+{
+    return x;
+}
 
 #if 0
 template <typename _T>

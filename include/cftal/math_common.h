@@ -1521,11 +1521,19 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 tan(arg_t<vf_type> d)
 {
+#if 0
     vf_type s[2], c[2];
     my_type::sin_cos_k(d, 2, s, c);
     dvf_type ds(s[0], s[1]), dc(c[0], c[1]);
-    dvf_type tn=ds /dc;
+    dvf_type tn=ds /dc;    
     return tn.h() + tn.l();
+#else
+    vf_type t=base_type::native_tan_k(d);
+    t = _TRAITS_T::sel(isinf(d) | isnan(d),
+                       copysign(vf_type(_TRAITS_T::nan()), d),
+                       t);
+    return t;
+#endif
 }
 
 
