@@ -228,11 +228,13 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
     bool rc= all_of(vr);
     r &= rc;
     if (rc == false) {
+        std::cerr << std::hexfloat;
         std::cerr << "sub vector test " << _N << " failed.\n";
         std::cerr << "x:    " << x << "\n";
         std::cerr << "fx:   " << fx << "\n";
         std::cerr << "fxlh: " << fxlh << "\n";
         std::cerr << "vr: " << vr << "\n";
+        std::cerr << std::scientific;
     }
     st.insert(t0, t1, _N2);
     st.insert(t1, t2, _N2);

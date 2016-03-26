@@ -8,7 +8,7 @@
 #include <cftal/d_real.h>
 #include <cftal/t_real.h>
 #include <cftal/vec_traits.h>
-   
+
 
 namespace cftal {
     namespace impl {
@@ -47,20 +47,19 @@ namespace cftal {
             d_real<_T> t= ctbl::m_pi.h()/a - ctbl::m_ln2.h()* p;
             return t.h();
         }
-        
+
     }
 }
 
 int main(int argc, char** argv)
-{   
+{
     using namespace cftal;
-#if 0
-    std::cout << std::hexfloat;
-    std::cout << std::log(1000.0) << std::endl;
-    std::cout << impl::xlog(1000.0) << std::endl;
-    std::cout << std::log(1e-20) << std::endl;
-    std::cout << impl::xlog(1e-20) << std::endl;
-    std::cout << log(v1f64(1e-20)) << std::endl;
+#if 1
+    std::cout << std::hexfloat << std::endl;
+    v2f64 t2(0x1.023ed6964c134p+32, -0x1.8e5a98bdf8p+18);
+    v1f64 t1=-4.079143865947723389e+05;
+    std::cout << native_sin(t2) << std::endl;
+    std::cout << native_sin(t1) << std::endl;
 #else
     std::cout << std::hex;
     double t=0x1p51-1.0;
@@ -71,7 +70,7 @@ int main(int argc, char** argv)
     double t2=-t+0x1p52+0x1p51;
     std::cout << bytes8(t2)._u64 << std::endl;
     std::cout << bytes8(t2)._u32[0] << std::endl;
-    
+
     std::cout << std::hexfloat << std::endl;
     std::cout << bytes8(0x1ul)._f64 << std::endl;
     std::cout << 0x1p-1074 << std::endl;
@@ -92,7 +91,7 @@ int main(int argc, char** argv)
     std::cout << bytes8(+1.9082149292705877000220e-10)._u64 << std::endl;
     std::cout << bytes8(+1.9082149292705877000220e-10)._f64 << std::endl;
 
-    std::cout << bytes8(1.57079632673412561417e+00)._u64 << std::endl;    
+    std::cout << bytes8(1.57079632673412561417e+00)._u64 << std::endl;
     // v1f32 r=ldexp(v1f32(0x1.2352cf807b7dfp-503), v1s32(-1076));
     // double rd=std::ldexp(0x1.2352cf807b7dfp-503, -1076);
     // v1f32 r=ldexp(v1f32(0x1.a2e184p-127f), v1s32(-22));
@@ -106,6 +105,6 @@ int main(int argc, char** argv)
     // std::cout << std::hexfloat << rd << std::endl;
     // std::cout << std::numeric_limits<double>::min() << std::endl;
     // std::cout << std::sqrt(std::numeric_limits<double>::min()) << std::endl;
-#endif    
+#endif
     return 0;
 }

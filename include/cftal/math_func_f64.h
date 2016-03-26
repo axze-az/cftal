@@ -714,51 +714,26 @@ std::pair<typename cftal::math::func_core<double, _T>::dvf_type,
 cftal::math::func_core<double, _T>::
 native_reduce_trig_arg_k(arg_t<vf_type> x)
 {
-#if 1
-    const vf_type invpio2 = 6.36619772367581382433e-01, /* 0x3FE45F30, 0x6DC9C883 */
-        pio2_1  = 1.57079632673412561417e+00, /* 0x3FF921FB, 0x54400000 */
-        pio2_1t = 6.07710050650619224932e-11, /* 0x3DD0B461, 0x1A626331 */
-        pio2_2  = 6.07710050630396597660e-11, /* 0x3DD0B461, 0x1A600000 */
-        pio2_2t = 2.02226624879595063154e-21, /* 0x3BA3198A, 0x2E037073 */
-        pio2_3  = 2.02226624871116645580e-21, /* 0x3BA3198A, 0x2E000000 */
-        pio2_3t = 8.47842766036889956997e-32; /* 0x397B839A, 0x252049C1 */
-
-    vf_type y0, y1;
-    vf_type fn= rint(vf_type(x* invpio2));
-
-#if 1
-    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
     using ctbl=impl::d_real_constants<d_real<double>, double>;
+    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+    vf_type y0, y1;
+    vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
+#if 0
     y0= d_ops::two_diff((x - fn* ctbl::m_pi_2_cw[0]) - fn*ctbl::m_pi_2_cw[1],
                         fn*ctbl::m_pi_2_cw[2],
                         y1);
     dvf_type d0(y0, y1);
 #else
-    // first reduction:
-    vf_type r, w, t;
-    r = x- fn * pio2_1;
-    w = fn*pio2_1t;
-    y0 = r-w;
-    // second reduction
-    t = r;
-    w = fn*pio2_2;
-    r = t-w;
-    w = fn*pio2_2t - ((t-r)-w);
-    y0 = r-w;
-    // third reduction
-    t = r;
-    w = fn*pio2_3;
-    r = t-w;
-    w = fn*pio2_3t - ((t-r)-w);
-    y0 = r-w;
-    y1 = (r-y0);
-    y1 -= w;
+    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+    y0= d_ops::two_diff(x, fn* ctbl::m_pi_2_cw[0], y1);
     dvf_type d0(y0, y1);
+    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[1]);
+    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[2]);
 #endif
     vi_type q(_T::cvt_f_to_i(fn));
 
-    const double large_arg=0x1p16;
-    vmf_type v_large_arg= vf_type(large_arg) < abs(fn);
+    const double large_arg=0x1p20;
+    vmf_type v_large_arg= vf_type(large_arg) < abs(x);
     if (any_of(v_large_arg)) {
         // reduce the large arguments
         constexpr std::size_t N=_T::NVF();
@@ -787,46 +762,6 @@ native_reduce_trig_arg_k(arg_t<vf_type> x)
         q = mem<vi_type>::load(ti._sc, NI);
     }
     return std::make_pair(d0, q);
-#else
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vmf_type v_large_arg(
-        vf_type(ctbl::native_sin_cos_arg_large) < abs(d));
-
-    vf_type qf(rint(vf_type(d * (2 * M_1_PI))));
-    vi_type q(_T::cvt_f_to_i(qf));
-
-    vf_type d0(d);
-    for (auto b=std::cbegin(ctbl::m_pi_2_cw), e=std::cend(ctbl::m_pi_2_cw);
-         b != e; ++b) {
-        vf_type t=*b;
-        d0 = d0 - qf * t;
-    }
-
-    if (any_of(v_large_arg)) {
-        // reduce the large arguments
-        constexpr std::size_t N=_T::NVF();
-        constexpr std::size_t NI=_T::NVI();
-        struct alignas(N*sizeof(double)) v_d {
-            double _sc[N];
-        } tf, d0_l;
-        struct alignas(NI*sizeof(int)) v_i {
-            int32_t _sc[NI];
-        } ti;
-        mem<vf_type>::store(tf._sc, d);
-        mem<vi_type>::store(ti._sc, q);
-        mem<vf_type>::store(d0_l._sc, d0);
-        for (std::size_t i=0; i<N; ++i) {
-            if (ctbl::native_sin_cos_arg_large < std::fabs(tf._sc[i])) {
-                double y[2];
-                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
-                d0_l._sc[i]= y[1] + y[0];
-            }
-        }
-        d0 = mem<vf_type>::load(d0_l._sc, N);
-        q = mem<vi_type>::load(ti._sc, NI);
-    }
-    return std::make_pair(d0, q);
-#endif
 }
 
 template <typename _T>
