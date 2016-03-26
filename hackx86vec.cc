@@ -76,19 +76,34 @@ int main(int argc, char** argv)
     std::cout << bytes8(0x1ul)._f64 << std::endl;
     std::cout << 0x1p-1074 << std::endl;
     std::cout << bytes8(0x1ul)._f64 * bytes8(0x1p53)._f64 << std::endl;
+
+
     std::cout << bytes8(0x1ul<<53)._f64 << std::endl;
-    
+
+    double Log2h= 0xb.17217f8p-16 ;
+    double Log2l= -0x2.e308654361c4cp-48 ;
+
+
+    std::cout << bytes8(Log2h)._u64 << std::endl;
+    std::cout << bytes8(Log2l)._u64 << std::endl;
+
+    std::cout << bytes8(+6.9314718036912381649017e-01)._u64 << std::endl;
+    std::cout << bytes8(+6.9314718036912381649017e-01)._f64 << std::endl;
+    std::cout << bytes8(+1.9082149292705877000220e-10)._u64 << std::endl;
+    std::cout << bytes8(+1.9082149292705877000220e-10)._f64 << std::endl;
+
+    std::cout << bytes8(1.57079632673412561417e+00)._u64 << std::endl;    
     // v1f32 r=ldexp(v1f32(0x1.2352cf807b7dfp-503), v1s32(-1076));
     // double rd=std::ldexp(0x1.2352cf807b7dfp-503, -1076);
     // v1f32 r=ldexp(v1f32(0x1.a2e184p-127f), v1s32(-22));
     // float rd=std::ldexp(0x1.a2e184p-127f, -22);
-    v1f32 r=ldexp(v1f32(0x1.0p-127f), v1s32(-1));
-    float rd=std::ldexp(0x1.0p-127f, -1);
+    // v1f32 r=ldexp(v1f32(0x1.0p-127f), v1s32(-1));
+    // float rd=std::ldexp(0x1.0p-127f, -1);
     // v1f64 r=ldexp(v1f64(0x1.a2e184p-1023), v1s32(+1023-1075));
     // double rd=std::ldexp(0x1.a2e184p-1023, +1023-1075);
-    std::cout << std::setprecision(22);
-    std::cout << std::hexfloat << r << std::endl;
-    std::cout << std::hexfloat << rd << std::endl;
+    // std::cout << std::setprecision(22);
+    // std::cout << std::hexfloat << r << std::endl;
+    // std::cout << std::hexfloat << rd << std::endl;
     // std::cout << std::numeric_limits<double>::min() << std::endl;
     // std::cout << std::sqrt(std::numeric_limits<double>::min()) << std::endl;
 #endif    

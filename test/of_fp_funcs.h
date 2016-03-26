@@ -225,7 +225,15 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
     r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
     vec<_T, _N> fxlh(fxl, fxh);
     typename vec<_T, _N>::mask_type vr= (fx == fxlh) | (isnan(fx) & isnan(fxlh));
-    r &= all_of(vr);
+    bool rc= all_of(vr);
+    r &= rc;
+    if (rc == false) {
+        std::cerr << "sub vector test " << _N << " failed.\n";
+        std::cerr << "x:    " << x << "\n";
+        std::cerr << "fx:   " << fx << "\n";
+        std::cerr << "fxlh: " << fxlh << "\n";
+        std::cerr << "vr: " << vr << "\n";
+    }
     st.insert(t0, t1, _N2);
     st.insert(t1, t2, _N2);
     return r;

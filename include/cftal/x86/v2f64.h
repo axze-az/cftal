@@ -754,17 +754,23 @@ cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
         if (unlikely(mxcsr != rmxcsr))
             _mm_setcsr(rmxcsr);
     }
-    const v2f64 sgn_msk(sign_f64_msk::v._f64);
-    // (1023+52)<<(52-32) 0x43300000 = 2^52
+    // (1023+52)<<(52-32) 0x43300000 = 2^52    
     const v2f64 magic(const_u64<0, 0x43300000>::v._f64);
-    __m128d sign = _mm_and_pd(a(), sgn_msk());
-    __m128d sign_magic = _mm_or_pd(magic(), sign);
-    __m128d res = _mm_add_pd(a(), sign_magic);
-    res = _mm_sub_pd(res, sign_magic);
+    const v2f64 not_sgn_mask(not_sign_f64_msk::v._f64);
+    const v2f64 sgn_mask(sign_f64_msk::v._f64);
+    // copy the sign from a
+    __m128d sa=_mm_and_pd(a(), sgn_mask());
+    // into magic
+    __m128d smagic=_mm_or_pd(magic(), sa); 
+    __m128d res = _mm_add_pd(a(), smagic);
+    res = _mm_sub_pd(res, smagic);
+    // into res
+    res = _mm_or_pd(res, sa);
     if (unlikely(mxcsr != rmxcsr))
         _mm_setcsr(mxcsr);
     v2f64 r= res;
-    r = select(abs(a) > magic, a, r);
+    v2f64 aa(_mm_and_pd(a(), not_sgn_mask()));
+    r = select(aa > magic, a, r);
     return r;
 #endif
 }

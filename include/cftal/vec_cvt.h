@@ -206,8 +206,11 @@ namespace cftal {
             static
             vec<int32_t, 1>
             l(const vec<double, 1>& s) {
-                return vec<int32_t, 1>(
-                    static_cast<int32_t>(std::rint(s())));
+                vec<int32_t, 1> r(
+                    static_cast<int32_t>(s() < 0 ? s() - 0.5 : s() + 0.5));
+                return r;
+                // return vec<int32_t, 1>(
+                //    static_cast<int32_t>(std::rint(s())));
             }
             static
             vec<int32_t, 1>

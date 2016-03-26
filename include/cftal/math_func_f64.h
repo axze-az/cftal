@@ -726,6 +726,15 @@ native_reduce_trig_arg_k(arg_t<vf_type> x)
     vf_type y0, y1;
     vf_type fn= rint(vf_type(x* invpio2));
 
+#if 1
+    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+    y0= d_ops::two_diff(x, fn* ctbl::m_pi_2_cw[0], y1);
+    dvf_type d0(y0, y1);
+    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[1]);
+    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[2]);
+    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[3]);
+#else
     // first reduction:
     vf_type r, w, t;
     r = x- fn * pio2_1;
@@ -743,12 +752,14 @@ native_reduce_trig_arg_k(arg_t<vf_type> x)
     r = t-w;
     w = fn*pio2_3t - ((t-r)-w);
     y0 = r-w;
-    y1= (r-y0) -w;
+    y1 = (r-y0);
+    y1 -= w;
     dvf_type d0(y0, y1);
+#endif
     vi_type q(_T::cvt_f_to_i(fn));
 
-    const double large_arg=1.5*0x1p19;
-    vmf_type v_large_arg= vf_type(1.5*0x1p19) < abs(x);
+    const double large_arg=0x1p29;
+    vmf_type v_large_arg= vf_type(large_arg) < abs(fn);
     if (any_of(v_large_arg)) {
         // reduce the large arguments
         constexpr std::size_t N=_T::NVF();
