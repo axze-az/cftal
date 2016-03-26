@@ -356,14 +356,16 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     x=0.5;
     load_pi(v);
     v *= x;
-    value_type pi_2_cw[4];
+    const int pi_2_bits=3;
+    value_type pi_2_cw[pi_2_bits];
     csplit(pi_2_cw, v);
     s << "template <class _T>\nconst " << (is_double ? "double" : "float")
       << "\n"
-      << "cftal::math::impl::" << pfx << "::\nm_pi_2_cw[4]={\n";
-    for (std::size_t i=0; i< 4; ++i) {
+      << "cftal::math::impl::" << pfx << "::\nm_pi_2_cw["
+      << pi_2_bits << "]={\n";
+    for (std::size_t i=0; i< pi_2_bits; ++i) {
         s << "   " << pr_fp<value_type>(pi_2_cw[i]);
-        if (i != 4-1)
+        if (i != pi_2_bits-1)
             s << ',';
         s << "\n";
     }

@@ -162,6 +162,13 @@ namespace cftal {
             vi_type cvt_rz_f_to_i(const vf_type& f) {
                 return (vi_type)f;
             }
+
+            // including rounding to nearest
+            static
+            vi_type
+            cvt_f_to_low_int_bits(const vf_type& f) {
+            }
+            
         };
 
         template <typename _T>
@@ -729,11 +736,10 @@ native_reduce_trig_arg_k(arg_t<vf_type> x)
 #if 1
     using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
     using ctbl=impl::d_real_constants<d_real<double>, double>;
-    y0= d_ops::two_diff(x, fn* ctbl::m_pi_2_cw[0], y1);
+    y0= d_ops::two_diff((x - fn* ctbl::m_pi_2_cw[0]) - fn*ctbl::m_pi_2_cw[1],
+                        fn*ctbl::m_pi_2_cw[2],
+                        y1);
     dvf_type d0(y0, y1);
-    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[1]);
-    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[2]);
-    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[3]);
 #else
     // first reduction:
     vf_type r, w, t;
@@ -758,7 +764,7 @@ native_reduce_trig_arg_k(arg_t<vf_type> x)
 #endif
     vi_type q(_T::cvt_f_to_i(fn));
 
-    const double large_arg=0x1p29;
+    const double large_arg=0x1p16;
     vmf_type v_large_arg= vf_type(large_arg) < abs(fn);
     if (any_of(v_large_arg)) {
         // reduce the large arguments

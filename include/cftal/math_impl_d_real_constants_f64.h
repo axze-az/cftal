@@ -29,7 +29,7 @@ namespace cftal {
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const double m_ln2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
-                static const double m_pi_2_cw[4];
+                static const double m_pi_2_cw[];
 
                 // expansion of pi/2
                 static const unsigned PI_2_BITS_MAX=3;
@@ -185,10 +185,9 @@ template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
 m_pi_2_cw[4]={
-   +1.5707855224609375000000e+00,
-   +1.0804273188114166259766e-05,
-   +6.0770943832721968647093e-11,
-   +6.1232339957367660358688e-17
+   +1.5707963267341256141663e+00,
+   +6.0771005063039659765955e-11,
+   +2.0222662487959506315411e-21
 };
 
 template <class _T>
