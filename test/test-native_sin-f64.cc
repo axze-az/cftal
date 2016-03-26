@@ -32,7 +32,8 @@ int main(int argc, char** argv)
                            std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_native_sin<double> >::v(st, dp, cmp_ulp<double>(ulp, us),
+        double, _N, check_native_sin<double> >::v(st, dp,
+                                                  cmp_ulp<double>(ulp, us),
                                                   0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
@@ -42,7 +43,8 @@ int main(int argc, char** argv)
     auto dp2=std::make_pair(-0x1p20, 0x1p20);
     auto us2=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_native_sin<double> >::v(st2, dp2, cmp_ulp<double>(ulp, us2),
+        double, _N, check_native_sin<double> >::v(st2, dp2,
+                                                  cmp_ulp<double>(ulp, us2),
                                                   0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us2 << std::endl;
