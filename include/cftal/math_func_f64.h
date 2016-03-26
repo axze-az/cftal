@@ -162,13 +162,6 @@ namespace cftal {
             vi_type cvt_rz_f_to_i(const vf_type& f) {
                 return (vi_type)f;
             }
-
-            // including rounding to nearest
-            static
-            vi_type
-            cvt_f_to_low_int_bits(const vf_type& f) {
-            }
-            
         };
 
         template <typename _T>
