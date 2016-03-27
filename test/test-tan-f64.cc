@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     std::vector<func_arg_result<double> > v=
         read_double_file(test_data_file, false);
 
-    const int ulp=2;
+    const int ulp=1;
     const int _N=8;
     bool rc = true;
 

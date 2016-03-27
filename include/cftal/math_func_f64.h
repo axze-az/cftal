@@ -192,10 +192,12 @@ namespace cftal {
             vf_type
             __cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
 
-            // calculates tan(xh, xl) in [+0, pi/4]
+            // calculates tan(xh, xl) in [+0, pi/4] and
+            // returns tan or -1/tan if q & 1
             static
             vf_type
-            __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
+            __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl,
+                    arg_t<vi_type> q);
 
             // core sine, cosine calculation
             static
@@ -901,7 +903,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-__tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
+__tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl, arg_t<vi_type> q)
 {
 /*
  * ====================================================
@@ -1007,7 +1009,7 @@ __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     const vf_type tan_c2=0x1.5555555555553p-2;  // 0x3fd5555555555553
 
     // make xrh positive
-    vf_type sgn_x = copysign(vf_type(0.5), xh);
+    vf_type sgn_x = copysign(vf_type(1.0), xh);
     vmf_type x_is_neg = sgn_x < 0.0;
     vf_type xrh = _T::sel(x_is_neg, -xh, xh);
     vf_type xrl = _T::sel(x_is_neg, -xl, xl);
@@ -1044,13 +1046,31 @@ __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     // because xr = pi/4-x --> tan(pi/4) = 1
     // tan(pi/4-x) = (1- tan(x))/(1 + tan(x))
     //             = 1 - 2*(tan(x) - (tan(x)^2)/(1+tan(x)))
-    // using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
-    vf_type txyl = 1.0 - 2*(xrh + (r - (txy*txy)/(1.0 +txy)));
-    txy = _T::sel(x_large, txyl, txy);
+    vi_type q1= q & 1;
+    vmi_type qm1= q1 == vi_type(1);
+    vmf_type fqm1= _T::vmi_to_vmf(qm1);
+
+    // calculate the values for x large including the sign
+    s = _T::sel(fqm1, vf_type(-1.0), vf_type(1.0));
+    vf_type txyl = s - 2*(xrh + (r - (txy*txy)/(s +txy)));
+    txyl *= sgn_x;
+
+    // calculate -1/tan: -1/(xrh +r) has an error to up to 2 ulp
+    vi_type hw = _T::extract_high_word(txy);
+    vf_type w0 = _T::combine_words(vi_type(0), hw);
+    vf_type w1 = r - (w0 -xrh);
+    vf_type a = -1.0/txy;
+    hw = _T::extract_high_word(a);
+    vf_type a0 = _T::combine_words(vi_type(0), hw);
+    vf_type inv_txy= a0 + a *(1.0 + a0*w0 + a0*w1);
+    inv_txy= _T::sel(x_is_neg, -inv_txy, inv_txy);
+
     // restore the sign
     txy = copysign(txy, sgn_x);
-    txy = _T::sel(abs(xh) < 0x1p-26, xh, txy);
-    return txy;
+
+    vf_type tt= _T::sel(fqm1, inv_txy, txy);
+    tt = _T::sel(x_large, txyl, tt);
+    return tt;
 #else
     /*
      * Break x^5*(T[1]+x^2*T[2]+...) into
@@ -1135,14 +1155,7 @@ native_tan_k(arg_t<vf_type> xc)
         native_reduce_trig_arg_k(xc));
     const dvf_type& x= rq.first;
     const vi_type& q= rq.second;
-
-    // using ctbl=impl::d_real_constants<d_real<double>, double>;
-    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
-    vf_type t = __tan_k(x.h(), x.l());
-    vf_type m_inv_t= d_ops::div(vf_type(-1.0), t).h();
-    vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
-    vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
-    t = _T::sel(q_and_1_f, m_inv_t, t);
+    vf_type t = __tan_k(x.h(), x.l(), q);
     return t;
 }
 
