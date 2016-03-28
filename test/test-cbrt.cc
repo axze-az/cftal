@@ -249,10 +249,10 @@ int main(int argc, char** argv)
 {
     bool rc=true;
     using namespace cftal::test;
-    const int ulp=9;
+    const int ulp=1;
     const int _DN=8;
     const int _FN=8;
-    
+
     std::cout << "f64 test\n"<<std::scientific;
     rc &= check_cbrt_f64(cftal::v1f64(), false);
     rc &= check_cbrt_f64(cftal::v2f64(), false);
@@ -281,5 +281,6 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *usf << std::endl;
     std::cout << f_st << std::endl;
+
     return rc==true ? 0 : 1;
 }

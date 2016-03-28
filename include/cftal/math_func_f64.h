@@ -222,6 +222,12 @@ namespace cftal {
             static vf_type
             atan2_k(arg_t<vf_type> x, arg_t<vf_type> y);
 
+
+            static
+            vf_type
+            scale_exp_k(arg_t<vf_type> y, arg_t<vf_type> kf,
+                        arg_t<vi_type> k);
+
             static
             vf_type
             exp_k(arg_t<vf_type> x, bool exp_m1);
@@ -442,6 +448,25 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
+scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi_type> k)
+{
+    vi_type e_two_pow_k=_T::sel(k < vi_type(-1021),
+                                vi_type((_T::bias+1000)+k),
+                                vi_type(_T::bias+k));
+    vf_type two_pow_k= _T::insert_exp(e_two_pow_k);
+    // kf == 1024 or kf>=-1021
+    vf_type yt= _T::sel(kf == vf_type(1024),
+                        ym * 2.0 * 0x1p1023,
+                        ym*two_pow_k);
+    vf_type y = _T::sel(kf < vf_type(-1021),
+                        ym*two_pow_k*0x1p-1000, yt);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
 exp_k(arg_t<vf_type> xc, bool exp_m1)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
@@ -559,16 +584,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         y = (xr*c/(2-c) - lo + hi);
         y += 1.0;
         // y = ldexp(y, k);
-        vi_type e_two_pow_k=_T::sel(k < vi_type(-1021),
-                                    vi_type((_T::bias+1000)+k),
-                                    vi_type(_T::bias+k));
-        vf_type two_pow_k= _T::insert_exp(e_two_pow_k);
-        // kf == 1024 or kf>=-1021
-        vf_type yt= _T::sel(kf == vf_type(1024),
-                            y * 2.0 * 0x1p1023,
-                            y*two_pow_k);
-        y = _T::sel(kf < vf_type(-1021),
-                    y*two_pow_k*0x1p-1000, yt);
+        y= scale_exp_k(y, kf, k);
     } else {
 /* expm1(x)
  * Returns exp(x)-1, the exponential of x minus 1.
@@ -804,16 +820,7 @@ exp2_k(arg_t<vf_type> x)
     y += 1.0;
 #endif
     // y=ldexp(y, k);
-    vi_type e_two_pow_k=_T::sel(k < vi_type(-1021),
-                                vi_type((_T::bias+1000)+k),
-                                vi_type(_T::bias+k));
-    vf_type two_pow_k= _T::insert_exp(e_two_pow_k);
-    // kf == 1024 or kf>=-1021
-    vf_type yt= _T::sel(kf == vf_type(1024),
-                        y * 2.0 * 0x1p1023,
-                        y*two_pow_k);
-    y = _T::sel(kf < vf_type(-1021),
-                y*two_pow_k*0x1p-1000, yt);
+    y= scale_exp_k(y, kf, k);
     return y;
 }
 
@@ -874,17 +881,7 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c0);
     y *= xr;
     y += 1.0;
-    vi_type e_two_pow_k=_T::sel(k < vi_type(-1021),
-                                vi_type((_T::bias+1000)+k),
-                                vi_type(_T::bias+k));
-    vf_type two_pow_k= _T::insert_exp(e_two_pow_k);
-    // kf == 1024 or kf>=-1021
-    vf_type yt= _T::sel(kf == vf_type(1024),
-                        y * 2.0 * 0x1p1023,
-                        y*two_pow_k);
-    y = _T::sel(kf < vf_type(-1021),
-                y*two_pow_k*0x1p-1000, yt);
-
+    y= scale_exp_k(y, kf, k);
     return y;
 }
 
