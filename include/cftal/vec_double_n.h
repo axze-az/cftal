@@ -271,7 +271,7 @@ namespace cftal {
     vec<double, 8>
     exp10(arg_t<vec<double, 8> > d);
 
-    // sinh, these functions are exact to +-1 ulp
+    // sinh, these functions are exact to +-2 ulp
     template <std::size_t _N>
     vec<double, _N>
     sinh(const vec<double, _N>& v);
@@ -288,7 +288,7 @@ namespace cftal {
     vec<double, 8>
     sinh(arg_t<vec<double, 8> > d);
 
-    // cosh, these functions are exact to +-1 ulp
+    // cosh, these functions are exact to +-2 ulp
     template <std::size_t _N>
     vec<double, _N>
     cosh(const vec<double, _N>& v);

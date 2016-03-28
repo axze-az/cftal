@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
     const int _N=8;
-    
+
     bool rc= check_func_1<double, 1, check_exp2<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 2, check_exp2<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 4, check_exp2<double> >(v, ulp, 0, false);
@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
         double, _N, check_exp2<double> >::v(st, d, cmp_ulp<double>(ulp, us),
-                                            0x800);
+                                            0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

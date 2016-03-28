@@ -5,9 +5,9 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const int ulp=1;
+    const int ulp=2;
     const int _N=8;
-    
+
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
         append_filename(test_data_dir, "../../test/data/cosh.testdata");

@@ -19,9 +19,9 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
-    const int ulp=1;
+    const int ulp=2;
     const int _N=8;
-    
+
     bool rc= check_func_1<double, 1, check_sinh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 2, check_sinh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 4, check_sinh<double> >(v, ulp, 0, false);

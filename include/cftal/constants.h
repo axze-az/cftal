@@ -26,7 +26,9 @@ namespace cftal {
         const uint64_t _u64;
         constexpr bytes8(double d) : _f64{d} {}
         constexpr bytes8(float l, float h) : _f32{l, h} {}
+        // FIXME endianess
         constexpr bytes8(int32_t l, int32_t h) : _s32{l, h} {}
+        // FIXME endianess
         constexpr bytes8(uint32_t l, uint32_t h) : _u32{l, h} {}
         constexpr bytes8(int64_t s) : _s64{s} {}
         constexpr bytes8(uint64_t u) : _u64{u} {}

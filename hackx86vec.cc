@@ -56,10 +56,9 @@ int main(int argc, char** argv)
     using namespace cftal;
 #if 1
     std::cout << std::hexfloat << std::endl;
-    v2f64 t2(0x1.023ed6964c134p+32, -0x1.8e5a98bdf8p+18);
-    v1f64 t1=-4.079143865947723389e+05;
-    std::cout << native_sin(t2) << std::endl;
-    std::cout << native_sin(t1) << std::endl;
+    std::cout << bytes8(0x0, 0x40862e42)._f64 << std::endl;
+    std::cout << bytes8(0x0, 0x3ff00000)._f64 << std::endl;
+    std::cout << bytes8(0x0, (0x3ff+2043/2)<<20)._f64 << std::endl;
 #else
     std::cout << std::hex;
     double t=0x1p51-1.0;
