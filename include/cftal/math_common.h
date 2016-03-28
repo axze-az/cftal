@@ -829,7 +829,7 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 _log1p(arg_t<vf_type> d)
 {
-    vf_type x;
+    vf_type x=base_type::log1p_k(d);
     // double log1p(double x)
     // {
     //    double u = 1.+x;
@@ -838,11 +838,6 @@ _log1p(arg_t<vf_type> d)
     //    else
     //        return log(u)*x/(u-1.);
     // }
-    if (_NATIVE) {
-        x=d;
-    } else {
-        x=d;
-    }
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
     x = _T::sel(isinf(d), pinf, x);
