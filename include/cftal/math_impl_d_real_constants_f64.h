@@ -28,6 +28,8 @@ namespace cftal {
                 static const double native_sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const double m_ln2_cw[2];
+                // M_LD2 LOG_10(2) for cody and waite argument reduction
+                static const double m_ld2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
                 static const double m_pi_2_cw[];
 
@@ -50,11 +52,8 @@ namespace cftal {
                 static const unsigned MAX_EXP_COEFF=7;
                 static const _T exp_coeff[MAX_EXP_COEFF];
                 // polynomial of degree 12
-                static const unsigned MAX_NATIVE_EXP_COEFF=13;
+                static const unsigned MAX_NATIVE_EXP_COEFF=7;
                 static const double native_exp_coeff[MAX_NATIVE_EXP_COEFF];
-                // polynomial of degree 12
-                static const unsigned MAX_NATIVE_EXP2_COEFF=13;
-                static const double native_exp2_coeff[MAX_NATIVE_EXP2_COEFF];
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=11;
@@ -71,6 +70,8 @@ namespace cftal {
 
                 // M_LN2 LOG_E(2)
                 static const _T m_ln2;
+                // M_LD2 LOG_10(2)
+                static const _T m_ld2;
                 // M_LN10 LOG_E(10)
                 static const _T m_ln10;
                 // M_LN_2POW106
@@ -83,6 +84,8 @@ namespace cftal {
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
+                // M_1_LD2 1/LOG_10(2)
+                static const _T m_1_ld2;
                 // M_1_LN10 1/LOG_E(10)
                 static const _T m_1_ln10;
                 // 2*PI
@@ -132,46 +135,6 @@ const double
 cftal::math::impl::d_real_constants<_T, double>::
 native_sin_cos_arg_large= 0x1.0p31;
 
-// thanks to sollya
-template <class _T>
-const double
-cftal::math::impl::d_real_constants<_T, double>::
-native_exp_coeff[MAX_NATIVE_EXP_COEFF] = {
-    0x1.737b1fe6b3b6fp-33,
-    0x1.1f83c84c05714p-29,
-    0x1.ae56cea1e4edep-26,
-    0x1.27e4d151b43adp-22,
-    0x1.71de3e2af255fp-19,
-    0x1.a01a01ab0f2bdp-16,
-    0x1.a01a019f15e03p-13,
-    0x1.6c16c16c15785p-10,
-    0x1.1111111111308p-7,
-    0x1.5555555555557p-5,
-    0x1.5555555555555p-3,
-    0x1p-1,
-    0x1p0
-};
-
-// thanks to sollya
-template <class _T>
-const double
-cftal::math::impl::d_real_constants<_T, double>::
-native_exp2_coeff[MAX_NATIVE_EXP2_COEFF] = {
-    -0x1.f6550e3b3d6a1p-36,
-    0x1.bdfbcf4480aa2p-36,
-    0x1.01c3a8bb3749dp-31,
-    0x1.e4d3fcb9c72e2p-28,
-    0x1.b51ce204af927p-24,
-    0x1.62c020e78ccfcp-20,
-    0x1.ffcbfeda63217p-17,
-    0x1.430912f8c280bp-13,
-    0x1.5d87fe7848d65p-10,
-    0x1.3b2ab6fba4d47p-7,
-    0x1.c6b08d704a236p-5,
-    0x1.ebfbdff82c58fp-3,
-    0x1.62e42fefa39efp-1
-};
-
 /* ----------------------------------------------------------------*/
 template <class _T>
 const double
@@ -184,7 +147,15 @@ m_ln2_cw[2]={
 template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
-m_pi_2_cw[4]={
+m_ld2_cw[2]={
+   +3.0102999554947018623352e-01,
+   +1.1451100898021838421065e-10
+};
+
+template <class _T>
+const double
+cftal::math::impl::d_real_constants<_T, double>::
+m_pi_2_cw[3]={
    +1.5707963267341256141663e+00,
    +6.0771005063039659765955e-11,
    +2.0222662487959506315411e-21
@@ -208,6 +179,16 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_1_ln2(
     +1.4426950408889633870047e+00, +2.0355273740931033111021e-17);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_ld2(
+    +3.0102999566398119801747e-01, -2.8037281277851703937326e-18);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_1_ld2(
+    +3.3219280948873621817086e+00, +1.6616175169735920064130e-16);
 
 template <class _T>
 const _T
@@ -394,7 +375,6 @@ exp_coeff[MAX_EXP_COEFF] =  {
     _T( +1.0000000000000000000000e+00, +0.0000000000000000000000e+00)
 };
 
-#if 0
 template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
@@ -414,8 +394,6 @@ native_exp_coeff[MAX_EXP_COEFF] =  {
     // + 1/1!
     +1.0000000000000000000000e+00
 };
-#endif
-
 
 template <class _T>
 const _T

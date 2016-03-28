@@ -25,8 +25,10 @@ namespace cftal {
                 static const float native_sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const float m_ln2_cw[2];
+                // M_LD2 LOG_10(2) for cody and waite argument reduction
+                static const float m_ld2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
-                static const float m_pi_2_cw[4];
+                static const float m_pi_2_cw[3];
 
                 // expansion of pi/2
                 static const unsigned PI_2_BITS_MAX=3;
@@ -45,10 +47,8 @@ namespace cftal {
                 // coefficents for exp(x)
                 static const unsigned MAX_EXP_COEFF=4;
                 static const _T exp_coeff[MAX_EXP_COEFF];
-                static const unsigned MAX_NATIVE_EXP_COEFF=6;
+                static const unsigned MAX_NATIVE_EXP_COEFF=4;
                 static const float native_exp_coeff[MAX_NATIVE_EXP_COEFF];
-                static const unsigned MAX_NATIVE_EXP2_COEFF=6;
-                static const float native_exp2_coeff[MAX_NATIVE_EXP2_COEFF];
 
                 // table for sin -1/21! +1/19! .. -1/3! with alternating signs
                 static const unsigned MAX_SIN_COEFF=8;
@@ -67,6 +67,8 @@ namespace cftal {
                 static const _T m_ln2;
                 // M_LN10 LOG_E(10)
                 static const _T m_ln10;
+                // M_LD(2) LOG_10(2)
+                static const _T m_ld2;
                 // M_LN_2POW106
                 static const _T m_ln2pow106;
                 // M_LN_2POW48
@@ -77,6 +79,8 @@ namespace cftal {
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
+                // M_1_LD2 1/LOG_10(2)
+                static const _T m_1_ld2;
                 // M_1_LN10 1/LOG_E(10)
                 static const _T m_1_ln10;
                 // 2*PI
@@ -126,30 +130,6 @@ const float
 cftal::math::impl::d_real_constants<_T, float>::
 native_sin_cos_arg_large= 0x1.0p20f;
 
-template <class _T>
-const float
-cftal::math::impl::d_real_constants<_T, float>::
-native_exp_coeff[MAX_NATIVE_EXP_COEFF] = {
-    0x1.6b70dep-10f,
-    0x1.1228bep-7f,
-    0x1.555718p-5f,
-    0x1.5554aep-3f,
-    0x1.fffffep-2f,
-    0x1p0f
-};
-
-template <class _T>
-const float
-cftal::math::impl::d_real_constants<_T, float>::
-native_exp2_coeff[MAX_NATIVE_EXP2_COEFF] = {
-    0x1.427918p-13f,
-    0x1.5ef4a2p-10f,
-    0x1.3b2c58p-7f,
-    0x1.c6af9ep-5f,
-    0x1.ebfbdep-3f,
-    0x1.62e43p-1f
-};
-
 /* ---------------------------------------------------------------- */
 template <class _T>
 const float
@@ -162,11 +142,18 @@ m_ln2_cw[2]={
 template <class _T>
 const float
 cftal::math::impl::d_real_constants<_T, float>::
-m_pi_2_cw[4]={
-   +1.5703125000000e+00f,
-   +4.8351287841797e-04f,
-   +3.1385570764542e-07f,
-   +6.0771006282767e-11f
+m_ld2_cw[2]={
+   +3.0102539062500e-01f,
+   +4.6050390665187e-06f
+};
+
+template <class _T>
+const float
+cftal::math::impl::d_real_constants<_T, float>::
+m_pi_2_cw[3]={
+   +1.5707397460938e+00f,
+   +5.6579709053040e-05f,
+   +9.9209362947050e-10f
 };
 
 template <class _T>
@@ -187,6 +174,16 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, float>::m_1_ln2(
     +1.4426950216293e+00f, +1.9259630335000e-08f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_ld2(
+    +3.0103000998497e-01f, -1.4320988839245e-08f);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, float>::m_1_ld2(
+    +3.3219280242920e+00f, +7.0595369550119e-08f);
 
 template <class _T>
 const _T
@@ -335,7 +332,6 @@ exp_coeff[MAX_EXP_COEFF] =  {
     _T( +1.0000000000000e+00f, +0.0000000000000e+00f)
 };
 
-#if 0
 template <class _T>
 const float
 cftal::math::impl::d_real_constants<_T, float>::
@@ -349,7 +345,6 @@ native_exp_coeff[MAX_EXP_COEFF] =  {
     // + 1/1!
     +1.0000000000000e+00f
 };
-#endif
 
 template <class _T>
 const _T

@@ -440,7 +440,7 @@ namespace cftal {
 
     vec<double, 8>
     acos(arg_t<vec<double, 8> > d);
-    
+
     // atan2, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -551,7 +551,7 @@ namespace cftal {
     vec<double, 8>
     native_exp(arg_t<vec<double, 8> > d);
 
-    // native_expm1, these functions are exact to +-2 ulp
+    // native_expm1, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     native_expm1(const vec<double, _N>& v);
@@ -568,7 +568,7 @@ namespace cftal {
     vec<double, 8>
     native_expm1(arg_t<vec<double, 8> > d);
 
-    // native_exp2, these functions are exact to ? ulp
+    // native_exp2, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     native_exp2(const vec<double, _N>& v);
@@ -618,7 +618,7 @@ namespace cftal {
 
     vec<double, 8>
     native_sin(arg_t<vec<double, 8> > d);
-    
+
     // native_cos, these functions are exact to +-4 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -657,8 +657,8 @@ namespace cftal {
     void
     native_sincos(arg_t<vec<double, 8> > d,
                   vec<double, 8> * psin, vec<double, 8> * pcos);
-    
-    
+
+
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
 

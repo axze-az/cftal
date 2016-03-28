@@ -129,28 +129,33 @@ namespace cftal {
 
             static vi_type ilogb(arg_t<vf_type> vf);
 
-            
+
             static std::pair<vf_type, vi_type>
-            native_reduce_trig_arg_k(arg_t<vf_type> x);
+            reduce_trig_arg_k(arg_t<vf_type> x);
             // core sine, cosine calculation
-            static void
-            native_sin_cos_k(arg_t<vf_type> x,
-                             vf_type* s, vf_type* c);
             static
-            vf_type
-            native_tan_k(arg_t<vf_type> x);
-            
-            static
-            vf_type
-            native_exp_k(arg_t<vf_type> x, bool exp_m1);
+            void
+            sin_cos_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
 
             static
             vf_type
-            native_exp2_k(arg_t<vf_type> x);
+            tan_k(arg_t<vf_type> x);
 
             static
             vf_type
-            native_log_k(arg_t<vf_type> x);
+            exp_k(arg_t<vf_type> x, bool exp_m1);
+
+            static
+            vf_type
+            exp2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp10_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            log_k(arg_t<vf_type> x);
         };
 
         template <typename _T>
@@ -341,7 +346,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-native_exp_k(arg_t<vf_type> xc, bool exp_m1)
+exp_k(arg_t<vf_type> xc, bool exp_m1)
 {
 #if 1
     using ctbl = impl::d_real_constants<d_real<float>, float>;
@@ -417,13 +422,13 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-native_exp2_k(arg_t<vf_type> x)
+exp2_k(arg_t<vf_type> x)
 {
     vf_type kf= rint(vf_type(x));
     vf_type xr = x - kf;
     vi_type k = _T::cvt_f_to_i(kf);
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type y=impl::poly(xr, ctbl::native_exp2_coeff);
+    // using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type y=xr; // impl::poly(xr, ctbl::native_exp2_coeff);
     y *= xr;
     y += 1.0;
     y=ldexp(y, k);
@@ -434,7 +439,24 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-native_log_k(arg_t<vf_type> d0)
+exp10_k(arg_t<vf_type> x)
+{
+    vf_type kf= rint(vf_type(x));
+    vf_type xr = x - kf;
+    vi_type k = _T::cvt_f_to_i(kf);
+    // using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type y=xr; // impl::poly(xr, ctbl::native_exp2_coeff);
+    y *= xr;
+    y += 1.0;
+    y=ldexp(y, k);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+log_k(arg_t<vf_type> d0)
 {
     using ctbl=impl::d_real_constants<d_real<float>, float>;
 
@@ -521,7 +543,7 @@ inline
 std::pair<typename cftal::math::func_core<float, _T>::vf_type,
           typename cftal::math::func_core<float, _T>::vi_type>
 cftal::math::func_core<float, _T>::
-native_reduce_trig_arg_k(arg_t<vf_type> d)
+reduce_trig_arg_k(arg_t<vf_type> d)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vmf_type v_large_arg(
@@ -580,10 +602,9 @@ template <typename _T>
 __attribute__((flatten, noinline))
 void
 cftal::math::func_core<float, _T>::
-native_sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
+sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
 {
-    std::pair<vf_type, vi_type> rq(
-        native_reduce_trig_arg_k(d));
+    std::pair<vf_type, vi_type> rq=reduce_trig_arg_k(d);
     vf_type x= rq.first;
     const vi_type& q= rq.second;
 
@@ -621,7 +642,7 @@ template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-native_tan_k(arg_t<vf_type> x)
+tan_k(arg_t<vf_type> x)
 {
     return x;
 }

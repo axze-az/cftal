@@ -353,6 +353,23 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n\n";
 
+    const int ld2_bits=2;
+    value_type ld2_cw[ld2_bits];
+    x=2.0;
+    v=log10(x);
+    csplit(ld2_cw, v);
+    s << "template <class _T>\nconst " << (is_double ? "double" : "float")
+      << "\n"
+      << "cftal::math::impl::" << pfx << "::\nm_ld2_cw["
+      << ld2_bits << "]={\n";
+    for (std::size_t i=0; i< ld2_bits; ++i) {
+        s << "   " << pr_fp<value_type>(ld2_cw[i]);
+        if (i != ld2_bits-1)
+            s << ',';
+        s << "\n";
+    }
+    s << "};\n\n";
+
     x=0.5;
     load_pi(v);
     v *= x;
@@ -388,6 +405,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n\n";
 
+    // ln(2) and reciprocal
     x=2.0;
     v=log(x);
     f_t ln2=v;
@@ -405,6 +423,25 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << to_stream(d, v)
       << ");\n"
       << std::endl;
+    // ld(2) and reciprocal
+    x=2.0;
+    v=log10(x);
+    f_t ld2=v;
+    // mpfr_printf("%.128Rf\n", v);
+    s << "template <class _T>\nconst _T\n"
+      << "cftal::math::impl::" << pfx << "::m_ld2("
+        "\n    "
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
+    v= f_t(1.0)/v;
+    s << "template <class _T>\nconst _T\n"
+      << "cftal::math::impl::" << pfx << "::m_1_ld2("
+        "\n    "
+      << to_stream(d, v)
+      << ");\n"
+      << std::endl;
+    // ln(10) and reciprocal
     x = 10.0;
     v= log(x);
     s << "template <class _T>\nconst _T\n"
@@ -447,6 +484,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << to_stream(d, v, true)
       << ");\n"
       << std::endl;
+
 
     load_pi(x);
     v = x;
