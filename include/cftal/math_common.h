@@ -873,13 +873,7 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 _log10(arg_t<vf_type> d)
 {
-    vf_type x;
-    // using ctbl=impl::d_real_constants<d_real<_FLOAT_T>, _FLOAT_T>;
-    if (_NATIVE) {
-        x=d;
-    } else {
-        x=d;
-    }
+    vf_type x=base_type::log10_k(d);
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
     x = _T::sel(isinf(d), pinf, x);
@@ -915,12 +909,7 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 _log2(arg_t<vf_type> d)
 {
-    vf_type x;
-    if (_NATIVE) {
-        x=d;
-    } else {
-        x=d;
-    }
+    vf_type x=base_type::log2_k(d);
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
     x = _T::sel(isinf(d), pinf, x);

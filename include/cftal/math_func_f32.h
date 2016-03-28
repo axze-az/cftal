@@ -160,6 +160,15 @@ namespace cftal {
             static
             vf_type
             log1p_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            log2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            log10_k(arg_t<vf_type> x);
+
         };
 
         template <typename _T>
@@ -501,6 +510,24 @@ inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
 log1p_k(arg_t<vf_type> d0)
+{
+    return d0;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+log2_k(arg_t<vf_type> d0)
+{
+    return d0;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+log10_k(arg_t<vf_type> d0)
 {
     return d0;
 }

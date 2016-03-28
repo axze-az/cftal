@@ -147,6 +147,14 @@ namespace cftal {
             }
 
             static
+            vf_type clear_low_word(const vf_type& d) {
+                ud_t t;
+                t._d = d;
+                t._u = (t._u & 0xFFFFFFFF00000000ULL);
+                return t._d;
+            }
+
+            static
             vf_type cvt_i_to_f(const vi_type& i) {
                 return vf_type(i);
             }
@@ -226,13 +234,33 @@ namespace cftal {
             vf_type
             exp10_k(arg_t<vf_type> x);
 
+            // polynomial approximation of log(1+f) with
+            // s = f/(2.0+f) and z = s*s;
             static
             vf_type
-            log_k(arg_t<vf_type> x);
+            log_k_poly(arg_t<vf_type> z);
+
+            enum log_func {
+                c_log_e,
+                c_log_2,
+                c_log_10
+            };
+
+            static
+            vf_type
+            log_k(arg_t<vf_type> x, log_func f=log_func::c_log_e);
 
             static
             vf_type
             log1p_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            log2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            log10_k(arg_t<vf_type> x);
 
             static vf_type
             pow2i(arg_t<vi_type> vi);
@@ -861,10 +889,48 @@ exp10_k(arg_t<vf_type> x)
 }
 
 template <typename _T>
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+log_k_poly(arg_t<vf_type> z)
+{
+    // const vf_type Lg1 = 6.666666666666735130e-01;  /* 3FE55555 55555593 */
+    // const vf_type Lg2 = 3.999999999940941908e-01;  /* 3FD99999 9997FA04 */
+    // const vf_type Lg3 = 2.857142874366239149e-01;  /* 3FD24924 94229359 */
+    // const vf_type Lg4 = 2.222219843214978396e-01;  /* 3FCC71C5 1D8E78AF */
+    // const vf_type Lg5 = 1.818357216161805012e-01;  /* 3FC74664 96CB03DE */
+    // const vf_type Lg6 = 1.531383769920937332e-01;  /* 3FC39A09 D078C69F */
+    // const vf_type Lg7 = 1.479819860511658591e-01;  /* 3FC2F112 DF3E5244 */
+    // coefficients for native_log
+    // x^14
+    const vf_type log_c14=0x1.2f023f03311eep-3;  // 0x3fc2f023f03311ee
+    // x^12
+    const vf_type log_c12=0x1.39a20d7de709dp-3;  // 0x3fc39a20d7de709d
+    // x^10
+    const vf_type log_c10=0x1.74663b910e2ddp-3;  // 0x3fc74663b910e2dd
+    // x^8
+    const vf_type log_c8=0x1.c71c521a6f8abp-3;  // 0x3fcc71c521a6f8ab
+    // x^6
+    const vf_type log_c6=0x1.24924941dae8ap-2;  // 0x3fd24924941dae8a
+    // x^4
+    const vf_type log_c4=0x1.999999997ff68p-2;  // 0x3fd999999997ff68
+    // x^2
+    const vf_type log_c2=0x1.5555555555592p-1;  // 0x3fe5555555555592
+    vf_type y = z*impl::poly(z,
+                             log_c14,
+                             log_c12,
+                             log_c10,
+                             log_c8,
+                             log_c6,
+                             log_c4,
+                             log_c2);
+    return y;
+}
+
+template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-log_k(arg_t<vf_type> xc)
+log_k(arg_t<vf_type> xc, log_func func)
 {
 /* origin: FreeBSD /usr/src/lib/msun/src/e_log.c */
 /*
@@ -929,29 +995,6 @@ log_k(arg_t<vf_type> xc)
  */
     // const vf_type ln2_hi = 6.93147180369123816490e-01;  /* 3fe62e42 fee00000 */
     // const vf_type ln2_lo = 1.90821492927058770002e-10;  /* 3dea39ef 35793c76 */
-    // const vf_type Lg1 = 6.666666666666735130e-01;  /* 3FE55555 55555593 */
-    // const vf_type Lg2 = 3.999999999940941908e-01;  /* 3FD99999 9997FA04 */
-    // const vf_type Lg3 = 2.857142874366239149e-01;  /* 3FD24924 94229359 */
-    // const vf_type Lg4 = 2.222219843214978396e-01;  /* 3FCC71C5 1D8E78AF */
-    // const vf_type Lg5 = 1.818357216161805012e-01;  /* 3FC74664 96CB03DE */
-    // const vf_type Lg6 = 1.531383769920937332e-01;  /* 3FC39A09 D078C69F */
-    // const vf_type Lg7 = 1.479819860511658591e-01;  /* 3FC2F112 DF3E5244 */
-
-    // coefficients for native_log
-    // x^14
-    const vf_type log_c14=0x1.2f023f03311eep-3;  // 0x3fc2f023f03311ee
-    // x^12
-    const vf_type log_c12=0x1.39a20d7de709dp-3;  // 0x3fc39a20d7de709d
-    // x^10
-    const vf_type log_c10=0x1.74663b910e2ddp-3;  // 0x3fc74663b910e2dd
-    // x^8
-    const vf_type log_c8=0x1.c71c521a6f8abp-3;  // 0x3fcc71c521a6f8ab
-    // x^6
-    const vf_type log_c6=0x1.24924941dae8ap-2;  // 0x3fd24924941dae8a
-    // x^4
-    const vf_type log_c4=0x1.999999997ff68p-2;  // 0x3fd999999997ff68
-    // x^2
-    const vf_type log_c2=0x1.5555555555592p-1;  // 0x3fe5555555555592
 
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal;
@@ -969,37 +1012,62 @@ log_k(arg_t<vf_type> xc)
     vf_type hfsq = 0.5*f*f;
     vf_type s = f/(2.0+f);
     vf_type z = s*s;
-#if 1
+
     // split of the polynomial reduces precision
-    vf_type R = z*impl::poly(z,
-                             log_c14,
-                             log_c12,
-                             log_c10,
-                             log_c8,
-                             log_c6,
-                             log_c4,
-                             log_c2);
-#else
-    // vf_type t1 = w*(Lg2+w*(Lg4+w*Lg6));
-    // vf_type t2 = z*(Lg1+w*(Lg3+w*(Lg5+w*Lg7)));
-    vf_type w = z*z;
-    vf_type t1 = w*impl::poly(w,
-                              log_c12,
-                              log_c8,
-                              log_c4);
-    vf_type t2 = z*impl::poly(w,
-                              log_c14,
-                              log_c10,
-                              log_c6,
-                              log_c2);
-    vf_type R = t2 + t1;
-#endif
+    vf_type R = log_k_poly(z);
+    vf_type res;
     vf_type kf = _T::cvt_i_to_f(k);
-    using ctbl=impl::d_real_constants<d_real<double>, double>;
-    vf_type log_x=s*(hfsq+R) +
-                  kf*ctbl::m_ln2_cw[1] - hfsq +
-                  f + kf*ctbl::m_ln2_cw[0];
-    return log_x;
+    if (func == log_func::c_log_e) {
+        using ctbl=impl::d_real_constants<d_real<double>, double>;
+        vf_type log_x=s*(hfsq+R) +
+                    kf*ctbl::m_ln2_cw[1] - hfsq +
+                    f + kf*ctbl::m_ln2_cw[0];
+        res = log_x;
+    } else if (func == log_func::c_log_10) {
+        const vf_type
+        ivln10hi  = 4.34294481878168880939e-01; /* 0x3fdbcb7b, 0x15200000 */
+        const vf_type
+        ivln10lo  = 2.50829467116452752298e-11; /* 0x3dbb9438, 0xca9aadd5 */
+        const vf_type
+        log10_2hi = 3.01029995663611771306e-01; /* 0x3FD34413, 0x509F6000 */
+        const vf_type
+        log10_2lo = 3.69423907715893078616e-13; /* 0x3D59FEF3, 0x11F12B36 */
+
+        vf_type t = f - hfsq;
+        vf_type hi= _T::clear_low_word(t);
+        vf_type lo= f - hi -hfsq + s * (hfsq + R);
+
+        vf_type val_hi = hi * ivln10hi;
+        vf_type y = kf* log10_2hi;
+        vf_type val_lo = kf * log10_2lo + (lo+hi)*ivln10lo + lo*ivln10hi;
+
+        vf_type w= y + val_hi;
+        val_lo += (y - w) + val_hi;
+        val_hi = w;
+
+        vf_type log10_x = val_lo + val_hi;
+        res =log10_x;
+    } else if (func == log_func::c_log_2) {
+        const vf_type
+        ivln2hi = 1.44269504072144627571e+00; /* 0x3ff71547, 0x65200000 */
+        const vf_type
+        ivln2lo = 1.67517131648865118353e-10; /* 0x3de705fc, 0x2eefa200 */
+
+        vf_type t= f - hfsq;
+        vf_type hi= _T::clear_low_word(t);
+        vf_type lo= f - hi - hfsq + s * (hfsq + R);
+        vf_type val_hi = hi* ivln2hi;
+        vf_type val_lo = (lo+hi)*ivln2lo + lo*ivln2hi;
+
+        vf_type y= kf;
+        vf_type w= y+ val_hi;
+        val_lo += (y-w) + val_hi;
+        val_hi = w;
+
+        vf_type log2_x= val_lo + val_hi;
+        res = log2_x;
+    }
+    return res;
 }
 
 template <typename _T>
@@ -1051,22 +1119,6 @@ log1p_k(arg_t<vf_type> xc)
  *
  *       See HP-15C Advanced Functions Handbook, p.193.
  */
-    // coefficients for native_log
-    // x^14
-    const vf_type log_c14=0x1.2f023f03311eep-3;  // 0x3fc2f023f03311ee
-    // x^12
-    const vf_type log_c12=0x1.39a20d7de709dp-3;  // 0x3fc39a20d7de709d
-    // x^10
-    const vf_type log_c10=0x1.74663b910e2ddp-3;  // 0x3fc74663b910e2dd
-    // x^8
-    const vf_type log_c8=0x1.c71c521a6f8abp-3;  // 0x3fcc71c521a6f8ab
-    // x^6
-    const vf_type log_c6=0x1.24924941dae8ap-2;  // 0x3fd24924941dae8a
-    // x^4
-    const vf_type log_c4=0x1.999999997ff68p-2;  // 0x3fd999999997ff68
-    // x^2
-    const vf_type log_c2=0x1.5555555555592p-1;  // 0x3fe5555555555592
-
     vf_type x=xc;
     vf_type u= 1+xc;
     vi_type lu, hu;
@@ -1083,33 +1135,49 @@ log1p_k(arg_t<vf_type> xc)
     vf_type nu = _T::combine_words(lu, hu);
     vf_type f= nu -1.0;
 
-#if 0
-    // correction for 1+x < sqrt2
-    vmf_type x_small= u < M_SQRT2;
-    f = _T::sel(x_small, x, f);
-    c = _T::sel(x_small, 0, c);
-    kf= _T::sel(x_small, 0, kf);
-    k = _T::sel(_T::vmf_to_vmi(x_small), 0, k);
-#endif
-
     vf_type hfsq = 0.5*f*f;
     vf_type s = f/(2.0+f);
     vf_type z = s*s;
-    // split of the polynomial reduces precision
-    vf_type R = z*impl::poly(z,
-                             log_c14,
-                             log_c12,
-                             log_c10,
-                             log_c8,
-                             log_c6,
-                             log_c4,
-                             log_c2);
+    vf_type R = log_k_poly(z);
+
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     vf_type log1p_x=s*(hfsq+R) +
                     (kf*ctbl::m_ln2_cw[1]+c) - hfsq +
                     f + kf*ctbl::m_ln2_cw[0];
     log1p_x= _T::sel(abs(x) < 0x1p-53, x, log1p_x);
     return log1p_x;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+log2_k(arg_t<vf_type> xc)
+{
+/*
+ * Return the base 2 logarithm of x.  See log.c for most comments.
+ *
+ * Reduce x to 2^k (1+f) and calculate r = log(1+f) - f + f*f/2
+ * as in log.c, then combine and scale in extra precision:
+ *    log2(x) = (f - f*f/2 + r)/log(2) + k
+ */
+    return log_k(xc, log_func::c_log_2);
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+log10_k(arg_t<vf_type> xc)
+{
+/*
+ * Return the base 10 logarithm of x.  See log.c for most comments.
+ *
+ * Reduce x to 2^k (1+f) and calculate r = log(1+f) - f + f*f/2
+ * as in log.c, then combine and scale in extra precision:
+ *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
+ */
+    return log_k(xc, log_func::c_log_10);
 }
 
 template <typename _T>
@@ -1445,12 +1513,10 @@ __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl, arg_t<vi_type> q)
 
     // calculate -1/tan: -1/(xrh +r) has an error to up to 2 ulp
     // use multiprecision arithmetic and one newton raphson step
-    vi_type hw = _T::extract_high_word(txy);
-    vf_type w0 = _T::combine_words(vi_type(0), hw);
+    vf_type w0 = _T::clear_low_word(txy);
     vf_type w1 = r - (w0 -xrh);
     vf_type a = -1.0/txy;
-    hw = _T::extract_high_word(a);
-    vf_type a0 = _T::combine_words(vi_type(0), hw);
+    vf_type a0 = _T::clear_low_word(a);
     vf_type inv_txy= a0 + a *(1.0 + a0*w0 + a0*w1);
     inv_txy= _T::sel(x_is_neg, -inv_txy, inv_txy);
 

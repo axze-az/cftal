@@ -301,6 +301,14 @@ namespace cftal {
             }
 
             static
+            vf_type clear_low_word(const vf_type& d) {
+                const uint64_t mu=0xffffffff00000000ULL;
+                const bytes8 mf(mu);
+                const vf_type m(mf._f64);
+                return d & m;
+            }
+
+            static
             vf_type cvt_i_to_f(const vi_type& i) {
                 return cvt<vf_type>(i);
             }
