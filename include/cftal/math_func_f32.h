@@ -169,6 +169,9 @@ namespace cftal {
             vf_type
             log10_k(arg_t<vf_type> x);
 
+            static
+            vf_type
+            atan_k(arg_t<vf_type> x);
         };
 
         template <typename _T>
@@ -682,6 +685,15 @@ inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
 tan_k(arg_t<vf_type> x)
+{
+    return x;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+atan_k(arg_t<vf_type> x)
 {
     return x;
 }
