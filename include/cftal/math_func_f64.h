@@ -1773,9 +1773,7 @@ cbrt_k(arg_t<vf_type> xc)
     mm = mm -(s - mm0) * mm/(2*s+mm0);
     // round mm nearest to 17 bits (including the hidden one)
     vi_type hw=_T::extract_high_word(mm);
-    vi_type cw = _T::sel(vi_type(hw & 0x00000008) != vi_type(0),
-                         vi_type(1), vi_type(0));
-    hw +=cw;
+    hw += hw & 0x00000008;
     hw &= 0xfffffff0;
     mm=_T::combine_words(vi_type(0), hw);
     s= (mm*mm*mm-mm0)/mm0;

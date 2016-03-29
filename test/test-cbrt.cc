@@ -265,7 +265,7 @@ int main(int argc, char** argv)
     exec_stats d_st(_DN);
     rc &= of_fp_func_up_to<
         double, _DN, check_cbrt<double> >::v(d_st, dd, cmp_ulp<double>(ulp, us),
-                                             0x20000);
+                                             0x10000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << d_st << std::endl;
