@@ -880,6 +880,7 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c1,
                          exp10_c0);
     y *= xr;
+    // y += xrl + xr *xrl;
     y += 1.0;
     y= scale_exp_k(y, kf, k);
     return y;
