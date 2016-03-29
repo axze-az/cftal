@@ -217,6 +217,7 @@ namespace cftal {
             using vmf_type = typename vec<double, _N>::mask_type;
             using vi_type = vec<int32_t, _N>;
             using vmi_type = typename vec<int32_t, _N>::mask_type;
+            using vli_type = vec<int64_t, _N>;
 
             using dvf_type = d_real<vf_type>;
 
@@ -306,6 +307,18 @@ namespace cftal {
                 const bytes8 mf(mu);
                 const vf_type m(mf._f64);
                 return d & m;
+            }
+
+            static
+            vli_type as_vli(const vf_type& d) {
+                vli_type r=as<vli_type>(d);
+                return r;
+            }
+
+            static
+            vf_type as_vf(const vli_type& l) {
+                vf_type r=as<vf_type>(l);
+                return r;
             }
 
             static

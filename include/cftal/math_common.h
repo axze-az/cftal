@@ -1498,6 +1498,13 @@ template <unsigned _STEPS>
 typename cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::vf_type
 cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
 {
+#if 1
+    vf_type r=base_type::cbrt_k(x);
+    vmf_type is_zero_or_inf_or_nan=
+        (x == vf_type(0)) | isinf(x) | isnan(x);
+    r=_TRAITS::sel(is_zero_or_inf_or_nan, x, r);
+    return r;
+#else
     vf_type xp=abs(x);
     vi_type e3c;
     // m in [0.5, 1)
@@ -1533,6 +1540,7 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
     res=_TRAITS::sel(is_zero_or_inf_or_nan,
                      x, res);
     return res;
+#endif
 }
 #endif
 

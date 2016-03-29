@@ -177,6 +177,10 @@ namespace cftal {
             static
             vf_type
             atan_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            cbrt_k(arg_t<vf_type> x);
         };
 
         template <typename _T>
@@ -712,6 +716,13 @@ atan_k(arg_t<vf_type> x)
     return x;
 }
 
+template <typename _T>
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+cbrt_k(arg_t<vf_type> xc)
+{
+    return xc;
+}
 #if 0
 template <typename _T>
 inline
