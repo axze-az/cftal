@@ -143,6 +143,11 @@ namespace cftal {
 
             static
             vf_type
+            scale_exp_k(arg_t<vf_type> y, arg_t<vf_type> kf,
+                        arg_t<vi_type> k);
+
+            static
+            vf_type
             exp_k(arg_t<vf_type> x, bool exp_m1);
 
             static
@@ -356,6 +361,15 @@ ilogb(arg_t<vf_type> d)
     mi = _T::vmf_to_vmi(mf);
     e = _T::sel(mi, vi_type(FP_ILOGBNAN), e);
     return e;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi_type> k)
+{
+    return ldexp(ym, k);
 }
 
 template <typename _T>

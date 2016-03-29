@@ -373,11 +373,12 @@ namespace cftal {
                 using base_type::frexp;
                 using base_type::ldexp;
                 using base_type::ilogbp1;
+                using base_type::scale_exp_k;
 
                 template <unsigned _STEPS=6>
                 static vf_type v(arg_t<vf_type> f);
             };
-#if 0
+#if 1
             // specialization for cubic root
             template <typename _FLOAT_T, typename _TRAITS>
             struct nth_root<_FLOAT_T, _TRAITS, 3>
@@ -393,6 +394,7 @@ namespace cftal {
                 using base_type::frexp;
                 using base_type::ldexp;
                 using base_type::ilogbp1;
+                using base_type::scale_exp_k;
 
                 template <unsigned _NR_STEPS=6>
                 static
@@ -1490,15 +1492,14 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, _R>::v(arg_t<vf_type> x)
     return res;
 }
 
-#if 0
+#if 1
 template <typename _FLOAT_T, typename _TRAITS>
-template <unsigned _NR_STEPS>
+template <unsigned _STEPS>
 typename cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::vf_type
 cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
 {
     vf_type xp=abs(x);
     vi_type e3c;
-    vf_type mm, mm0;
     // m in [0.5, 1)
     const divisor<vi_type, int32_t> idiv3(3);
     vi_type e = ilogbp1(xp);
@@ -1509,36 +1510,21 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
     vi_type r3c= _TRAITS::sel(r3gt0, r3-3, r3);
     e3c= _TRAITS::sel(r3gt0, e3+1, e3);
     vi_type sc= r3c - e;
-    mm= ldexp(xp, sc);
-    mm0 = mm;
-    // we should calculate x^(-1/3) first because
-    // the newton raphson steps do not require a
-    // division:
-    // calculate 1/cbrt(mm0);
-    // the polynom saves 4 nr steps for double precision
-    mm = poly(mm0,
-              -2.59136977404110569e0,
-              +5.84535188713358966e0,
-              -4.74457227053327468e0,
-              +2.47438113521145864e0);
-    // mm = vf_type(1.0 + 1.0/3.0);
-    if (_NR_STEPS > 1) {
-        for (uint32_t i =0; i< _NR_STEPS-1; ++i) {
-            vf_type t=1.0/3.0 * (vf_type(1.0) - mm*mm*mm*mm0);
-            mm= mm + mm * t;
+    vf_type mm0 = ldexp(xp, sc);
+    vf_type mm = nth_root_approx<3, vf_type>::v(mm0);
+    if (_STEPS>1) {
+        using step_t= nth_root_halley<3, vf_type, vf_type>;
+        for (uint32_t i=0; i<_STEPS-1; ++i) {
+            mm= step_t::v(mm, mm0);
         }
     }
-    // convert to cbrt(mm0)
-    mm= mm*mm*mm0;
-    // one newton raphson step with double precision
-    if (_NR_STEPS>0) {
-        dvf_type dmm;
-        for (uint32_t i=_NR_STEPS-1; i< _NR_STEPS; ++i)
-            dmm = nth_root_nr<3, dvf_type, vf_type>::v(mm, mm0);
-        mm = dmm.h();
+    if (_STEPS>0) {
+        using step_t= nth_root_nr<3, vf_type, vf_type>;
+        mm= step_t::v(mm, mm0);
     }
     // scale back
-    vf_type res=ldexp(mm, e3c);
+    vf_type res=scale_exp_k(mm, _TRAITS::cvt_i_to_f(e3c), e3c);
+    //vf_type res=ldexp(mm, e3c);
     // restore sign
     res=copysign(res, x);
 
