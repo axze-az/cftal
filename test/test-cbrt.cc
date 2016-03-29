@@ -251,7 +251,7 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     const int ulp=1;
     const int _DN=8;
-    const int _FN=8;
+    // const int _FN=1;
 
     std::cout << "f64 test\n"<<std::scientific;
     rc &= check_cbrt_f64(cftal::v1f64(), false);
@@ -265,11 +265,11 @@ int main(int argc, char** argv)
     exec_stats d_st(_DN);
     rc &= of_fp_func_up_to<
         double, _DN, check_cbrt<double> >::v(d_st, dd, cmp_ulp<double>(ulp, us),
-                                             0x10000);
+                                             0x20000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << d_st << std::endl;
-
+#if 0
     std::cout << "f32 test\n"<<std::scientific;
     func_domain<float> df=std::make_pair(-std::numeric_limits<float>::max(),
                                           std::numeric_limits<float>::max());
@@ -277,10 +277,10 @@ int main(int argc, char** argv)
     exec_stats f_st(_DN);
     rc &= of_fp_func_up_to<
         float, _FN, check_cbrt<float> >::v(f_st, df, cmp_ulp<float>(ulp, usf),
-                                           0x10000);
+                                           0x20000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *usf << std::endl;
     std::cout << f_st << std::endl;
-
+#endif
     return rc==true ? 0 : 1;
 }
