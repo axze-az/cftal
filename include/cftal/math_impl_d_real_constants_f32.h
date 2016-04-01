@@ -335,7 +335,7 @@ exp_coeff[MAX_EXP_COEFF] =  {
 template <class _T>
 const float
 cftal::math::impl::d_real_constants<_T, float>::
-native_exp_coeff[MAX_EXP_COEFF] =  {
+native_exp_coeff[MAX_NATIVE_EXP_COEFF] =  {
     // + 1/4!
     +4.1666667908430e-02f,
     // + 1/3!

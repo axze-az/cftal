@@ -217,6 +217,10 @@ namespace cftal {
             using vmf_type = typename vec<double, _N>::mask_type;
             using vi_type = vec<int32_t, _N>;
             using vmi_type = typename vec<int32_t, _N>::mask_type;
+            // integer vector with the same length as vf_type
+            using vi2_type = vec<int32_t, 2*_N >;
+            using vmi2_type = vec<int32_t, 2* _N>;
+            
             using vli_type = vec<int64_t, _N>;
 
             using dvf_type = d_real<vf_type>;
@@ -232,28 +236,81 @@ namespace cftal {
             }
 
             static
-            vmf_type vmi_to_vmf(const vmi_type& mi) {
-                return cvt_mask<typename vmf_type::value_type,
-                                typename vmi_type::value_type, _N>::v(mi);
+            vmf_type
+            vmi_to_vmf(const vmi_type& mi) {
+                return
+                    cvt_mask<typename vmf_type::value_type,
+                             typename vmi_type::value_type, _N>::v(mi);
             }
 
             static
-            vmi_type vmf_to_vmi(const vmf_type& mf) {
-                return cvt_mask<typename vmi_type::value_type,
-                                typename vmf_type::value_type, _N>::v(mf);
+            vmi_type
+            vmf_to_vmi(const vmf_type& mf) {
+                return
+                    cvt_mask<typename vmi_type::value_type,
+                             typename vmf_type::value_type, _N>::v(mf);
             }
 
+            static
+            vmi2_type
+            vmf_to_vmi2(const vmf_type& mf) {
+                return 
+                    cvt_mask<typename vmi2_type::value_type,
+                             typename vmf_type::value_type, 2*_N>::v(mf);
+            };
+
+            static
+            vmf_type
+            vmi2_to_vmf(const vmi2_type& mf) {
+                return
+                    cvt_mask<typename vmf_type::value_type,
+                             typename vmi2_type::value_type, _N>::v(mf);
+            };
+            
             static
             vi_type sel(const vmi_type& msk,
                         const vi_type& t, const vi_type& f) {
                 return select(msk, t, f);
             }
+
             static
             vf_type sel(const vmf_type& msk,
                         const vf_type& t, const vf_type& f) {
                 return select(msk, t, f);
             }
 
+            static
+            vi2_type sel(const vmi2_type& msk,
+                         const vi2_type& t, const vi2_type& f) {
+                return select(msk, t, f);
+            }
+
+            static
+            vf_type insert_exp(const vi2_type& e) {
+                vi2_type ep(e << 20);
+                vf_type r= as<vf_type>(ep);
+                r &= vf_type(exp_f64_msk::v._f64);
+                return r;
+            }
+
+            static
+            vi2_type vi_to_vi2(const vi_type& r) {
+                vi2_type t=combine_even_odd(r, r);
+                return r;
+            }
+
+            static
+            vi_type vi2_odd_to_vi(const vi2_type& r) {
+                vi_type t=odd_elements(r);
+                return t;
+            }
+
+            static
+            vi_type vi2_even_to_vi(const vi2_type& r) {
+                vi_type t=odd_elements(r);
+                return t;
+            }
+            
             static
             vf_type insert_exp(const vi_type& e) {
                 vi_type ep(e << 20);
@@ -262,7 +319,7 @@ namespace cftal {
                 r &= vf_type(exp_f64_msk::v._f64);
                 return r;
             }
-
+            
             static
             vi_type extract_exp(const vf_type& d) {
                 const vf_type msk(exp_f64_msk::v._f64);
@@ -286,18 +343,36 @@ namespace cftal {
             }
 
             static
-            void extract_words(vi_type& low_word, vi_type& high_word,
-                               const vf_type& d) {
+            void
+            extract_words(vi_type& low_word, vi_type& high_word,
+                          const vf_type& d) {
                 vec<int32_t, _N*2> di=as<vec<int32_t, _N*2> >(d);
                 low_word=even_elements(di);
                 high_word=odd_elements(di);
             }
 
             static
-            vf_type combine_words(const vi_type& l,
-                                  const vi_type& h) {
+            void
+            extract_words(vi2_type& low_word, vi2_type& high_word,
+                          const vf_type& x) {
+                vi2_type di=as<vi2_type>(x);
+                low_word = di;
+                high_word = di;
+            }
+
+            static
+            vf_type
+            combine_words(const vi_type& l, const vi_type& h) {
                 vec<int32_t, _N*2> vi= combine_even_odd(l, h);
                 vf_type r= as<vf_type>(vi);
+                return r;
+            }
+
+            static
+            vf_type
+            combine_words(const vi2_type& l, const vi2_type& h) {
+                vi2_type t= select_even_odd(l, h);
+                vf_type r=as<vf_type>(t);
                 return r;
             }
 

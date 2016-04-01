@@ -192,8 +192,10 @@ namespace cftal {
             typedef typename _T::vf_type vf_type;
             typedef typename _T::vi_type vi_type;
             using vli_type = typename _T::vli_type;
+            using vi2_type = typename _T::vi2_type;
             typedef typename _T::vmf_type vmf_type;
             typedef typename _T::vmi_type vmi_type;
+            using vmi2_type = typename _T::vmi2_type;
 
             typedef d_real<vf_type> dvf_type;
             typedef t_real<vf_type> tvf_type;
@@ -297,9 +299,16 @@ namespace cftal {
             static vf_type
             ldexp(arg_t<vf_type> x,
                   arg_t<vi_type> e);
+
+            // the exponents are returned in the odd numbered
+            // elements of e
+            static
+            vf_type
+            frexp_k(arg_t<vf_type> x, vi2_type* e);
+                
             static vf_type
             frexp(arg_t<vf_type> x, vi_type* e);
-
+            
             static vi_type
             ilogbp1(arg_t<vf_type> x);
             static vi_type
@@ -395,8 +404,52 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
+frexp_k(arg_t<vf_type> x, vi2_type* ve)
+{
+    vf_type xs=x;
+    using fc=func_constants<double>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal;
+    // denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
+    vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
+    vi2_type eo= _T::sel(i_is_denom, vi2_type(-54), vi2_type(0));
+    // extract mantissa
+    vi2_type lo_word, hi_word;
+    _T::extract_words(lo_word, hi_word, xs);
+    // exponent:
+    vi2_type e=((hi_word >> 20) & _T::e_mask) + eo;
+    // insert exponent
+    hi_word = (hi_word & vi2_type(0x800fffff)) | vi2_type(0x3fe00000);
+    // combine low and high word
+    vf_type frc(_T::combine_words(lo_word, hi_word));
+    // inf, nan, zero
+    vmf_type f_inz=isinf(x) | isnan(x) | (x==vf_type(0.0));
+    frc = _T::sel(f_inz, x, frc);
+    if (ve != nullptr) {
+        // remove bias from e
+        vmi2_type i_inz=_T::vmf_to_vmi2(f_inz);
+        e -= vi2_type(_T::bias-1);
+        e= _T::sel(i_inz, vi2_type(0), e);
+        *ve= e;
+    }
+    return frc;
+}
+
+
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
 frexp(arg_t<vf_type> x, vi_type* ve)
 {
+#if 1
+    vi2_type e;
+    vf_type r=frexp_k(x, &e);
+    if (ve) {
+        *ve=_T::vi2_odd_to_vi(e);
+    }
+    return r;
+#else
     vf_type xs=x;
     using fc=func_constants<double>;
     vmf_type is_denom= abs(x) <= fc::max_denormal;
@@ -426,6 +479,7 @@ frexp(arg_t<vf_type> x, vi_type* ve)
         *ve= e;
     }
     return frc;
+#endif
 }
 
 template <typename _T>
@@ -1652,7 +1706,6 @@ atan_k(arg_t<vf_type> xc)
 
     vf_type x=abs(xc);
     // range reduction
-    vmf_type r0= x <= 7.0/16;
     vmf_type r=x > 7.0/16;
     vf_type atan_hi= _T::sel(r, atan_0_5_hi, vf_type(0.0));
     vf_type atan_lo= _T::sel(r, atan_0_5_lo, vf_type(0.0));

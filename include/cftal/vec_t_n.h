@@ -273,6 +273,26 @@ namespace cftal {
     combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o);
 
     template <typename _T, std::size_t _N>
+    vec<_T, _N>
+    select_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o); 
+
+    template <typename _T>
+    vec<_T, 16>
+    select_even_odd(const vec<_T, 16>& e, const vec<_T, 16>& o); 
+
+    template <typename _T>
+    vec<_T, 8>
+    select_even_odd(const vec<_T, 8>& e, const vec<_T, 8>& o); 
+
+    template <typename _T>
+    vec<_T, 4>
+    select_even_odd(const vec<_T, 4>& e, const vec<_T, 4>& o); 
+
+    template <typename _T>
+    vec<_T, 2>
+    select_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o); 
+    
+    template <typename _T, std::size_t _N>
     bool
     elements_equal(const vec<_T, _N>& v);
 
@@ -954,6 +974,48 @@ cftal::combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o)
 {
     return vec<_T, 2>(e, o);
 }
+
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N>
+cftal::select_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o)
+{
+    vec<_T, _N/2> lh=select_even_odd(low_half(e), low_half(o));
+    vec<_T, _N/2> hh=select_even_odd(high_half(e), high_half(o));
+    return vec<_T, _N>(lh, hh);
+}
+
+template <typename _T>
+cftal::vec<_T, 16>
+cftal::select_even_odd(const vec<_T, 16>& e, const vec<_T, 16>& o)
+{
+    return select<true, false, true, false,
+                  true, false, true, false,
+                  true, false, true, false,
+                  true, false, true, false>(e, o);
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::select_even_odd(const vec<_T, 8>& e, const vec<_T, 8>& o)
+{
+    return select<true, false, true, false,
+                  true, false, true, false>(e, o);
+}
+
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::select_even_odd(const vec<_T, 4>& e, const vec<_T, 4>& o)
+{
+    return select<true, false, true, false>(e, o);
+}
+
+template <typename _T>
+cftal::vec<_T, 2>
+cftal::select_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o)
+{
+    return select<true, false>(e, o);
+}
+
 
 template <typename _T, std::size_t _N>
 std::ostream&

@@ -48,8 +48,38 @@ namespace cftal {
             return t.h();
         }
 
+        struct v2 {
+            union {
+                float _l[2];
+                double _d;
+            } _u;
+        };
     }
 }
+
+__m128
+cvt_v2(double v)
+{
+    __m128 r;
+    __asm__ __volatile__(""
+                         : "=x"(r) : "0"(v));
+    return r;
+}
+
+cftal::impl::v2
+test(cftal::impl::v2 a, cftal::impl::v2 b)
+{
+    __m128 pa=cvt_v2(a._u._d);
+    __m128 pb=cvt_v2(b._u._d);
+    __m128 ps=_mm_add_ps(pa, pb);
+    __m128d pds=_mm_castps_pd(ps);
+    double ds=_mm_cvtsd_f64(pds);
+    cftal::impl::v2 t;
+    t._u._d = ds;
+    return t;
+}
+
+
 
 int main(int argc, char** argv)
 {
