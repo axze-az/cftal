@@ -220,7 +220,7 @@ namespace cftal {
             // integer vector with the same length as vf_type
             using vi2_type = vec<int32_t, 2*_N >;
             using vmi2_type = vec<int32_t, 2* _N>;
-            
+
             using vli_type = vec<int64_t, _N>;
 
             using dvf_type = d_real<vf_type>;
@@ -239,7 +239,7 @@ namespace cftal {
             vmf_type
             vmi_to_vmf(const vmi_type& mi) {
                 return
-                    cvt_mask<typename vmf_type::value_type,
+                    cvt_mask<typename vmf_type::value_type, _N,
                              typename vmi_type::value_type, _N>::v(mi);
             }
 
@@ -247,26 +247,26 @@ namespace cftal {
             vmi_type
             vmf_to_vmi(const vmf_type& mf) {
                 return
-                    cvt_mask<typename vmi_type::value_type,
+                    cvt_mask<typename vmi_type::value_type, _N,
                              typename vmf_type::value_type, _N>::v(mf);
             }
 
             static
             vmi2_type
             vmf_to_vmi2(const vmf_type& mf) {
-                return 
-                    cvt_mask<typename vmi2_type::value_type,
-                             typename vmf_type::value_type, 2*_N>::v(mf);
+                return
+                    cvt_mask<typename vmi2_type::value_type, 2 * _N,
+                             typename vmf_type::value_type, _N>::v(mf);
             };
 
             static
             vmf_type
             vmi2_to_vmf(const vmi2_type& mf) {
                 return
-                    cvt_mask<typename vmf_type::value_type,
-                             typename vmi2_type::value_type, _N>::v(mf);
+                    cvt_mask<typename vmf_type::value_type, _N,
+                             typename vmi2_type::value_type, 2*_N>::v(mf);
             };
-            
+
             static
             vi_type sel(const vmi_type& msk,
                         const vi_type& t, const vi_type& f) {
@@ -310,7 +310,7 @@ namespace cftal {
                 vi_type t=odd_elements(r);
                 return t;
             }
-            
+
             static
             vf_type insert_exp(const vi_type& e) {
                 vi_type ep(e << 20);
@@ -319,7 +319,7 @@ namespace cftal {
                 r &= vf_type(exp_f64_msk::v._f64);
                 return r;
             }
-            
+
             static
             vi_type extract_exp(const vf_type& d) {
                 const vf_type msk(exp_f64_msk::v._f64);

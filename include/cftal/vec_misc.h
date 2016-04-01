@@ -23,7 +23,7 @@ namespace cftal {
             v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
               const _X* p);
         };
-        
+
         template <typename _T, std::size_t _N, typename _X>
         struct lookup<_T, _N, _X, 0> {
             // lookup with default value
@@ -87,7 +87,7 @@ v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx, const _X* p)
 {
     typename vec<int32_t, _N>::mask_type idx_eq_0= idx == vec<int32_t, _N>(0);
     typename vec<_T, _N>::mask_type f_idx_eq_0=
-        cvt_mask<typename vec<_T, _N>::mask_type::value_type,
+        cvt_mask<typename vec<_T, _N>::mask_type::value_type, _N,
                  typename vec<int32_t, _N>::mask_type::value_type, _N>::v(
                      idx_eq_0);
     vec<_T, _N> r_idx_eq_0(p[0]);
@@ -105,7 +105,7 @@ v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx, const _X* p)
     vec<_T, _N> rl= lookup<_T, _N, _X, _LM1>::v(def, idx, p);
     typename vec<int32_t, _N>::mask_type idx_eq_l= idx == vec<int32_t, _N>(_L);
     typename vec<_T, _N>::mask_type f_idx_eq_l=
-        cvt_mask<typename vec<_T, _N>::mask_type::value_type,
+        cvt_mask<typename vec<_T, _N>::mask_type::value_type, _N,
                  typename vec<int32_t, _N>::mask_type::value_type, _N>::v(
                      idx_eq_l);
     vec<_T, _N> r_idx_eq_l(p[_L]);
@@ -246,7 +246,7 @@ mat_mul_1x4(_V4& r0,
         _V4(a0[2]) * b2 +
         _V4(a0[3]) * b3;
 }
-    
+
 template <class _V4>
 inline
 void
@@ -310,4 +310,4 @@ mat_mul_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3,
 // Local variables:
 // mode: c++
 // end:
-#endif 
+#endif

@@ -8,7 +8,131 @@
 
 namespace cftal {
 
+    namespace impl {
 
+    }
+
+
+    template <typename _D, std::size_t _DN,
+              typename _S, std::size_t _SN>
+    struct cvt_mask {
+        static
+        vec<_D, _DN>
+        v(const vec<_S, _SN>& v);
+    };
+
+    template <typename _T, std::size_t _N>
+    struct cvt_mask<_T, _N, _T, _N> {
+        static
+        vec<_T, _N>
+        v(const vec<_T, _N>& v) {
+            return v;
+        }
+    };
+
+    template <>
+    struct cvt_mask<int32_t, 2, bit, 1> {
+        static
+        vec<int32_t, 2>
+        v(const vec<bit, 1>& v) {
+            int32_t m= v() == true ? -1 : 0;
+            return vec<int32_t, 2>(m);
+        }
+    };
+
+    template <>
+    struct cvt_mask<bit, 1, int32_t, 2> {
+        static
+        vec<bit, 1>
+        v(const vec<int32_t, 2>& m) {
+            int32_t r= low_half(m)() & high_half(m)();
+            int32_t rs= r !=0;
+            return vec<bit, 1>(bool(rs));
+        }
+    };
+
+    template <>
+    struct cvt_mask<int32_t, 1, bit, 1> {
+        static
+        vec<int32_t, 1>
+        v(const vec<bit, 1>& v) {
+            int32_t m= v() == true ? -1 : 0;
+            return vec<int32_t, 1>(m);
+        }
+    };
+
+    template <>
+    struct cvt_mask<bit, 1, int32_t, 1> {
+        static
+        vec<bit, 1>
+        v(const vec<int32_t, 1>& m) {
+            int32_t rs= m() !=0;
+            return vec<bit, 1>(bool(rs));
+        }
+    };
+
+
+    template <std::size_t _N>
+    struct cvt_mask<int32_t, _N, float, _N> {
+        static
+        vec<int32_t, _N>
+        v(const vec<float, _N>& m) {
+            return as<vec<int32_t, _N> >(m);
+        }
+    };
+
+    template <std::size_t _N>
+    struct cvt_mask<float, _N, int32_t, _N> {
+        static
+        vec<float, _N>
+        v(const vec<int32_t, _N>& m) {
+            return as<vec<float, _N> >(m);
+        }
+    };
+
+    template <std::size_t _N>
+    struct cvt_mask<int32_t, _N, double, _N> {
+        static
+        vec<int32_t, _N>
+        v(const vec<double, _N>& m) {
+            vec<int32_t, 2*_N> t=as<vec<int32_t, 2*_N> >(m);
+            return odd_elements(t);
+        }
+    };
+
+    template <std::size_t _N>
+    struct cvt_mask<double, _N, int32_t, _N> {
+        static
+        vec<double, _N>
+        v(const vec<int32_t, _N>& m) {
+            vec<int32_t, 2*_N> t= combine_even_odd(m, m);
+            return as<vec<double, _N> >(t);
+        }
+    };
+
+
+    template <std::size_t _N2, std::size_t _N>
+    struct cvt_mask<int32_t, _N2, double, _N> {
+        static_assert(_N2 == 2*_N, "invalid parameter pair");
+        static
+        vec<int32_t, _N2>
+        v(const vec<double, _N>& m) {
+            vec<int32_t, _N2> t=as<vec<int32_t, _N2> >(m);
+            return t;
+        }
+    };
+
+    template <std::size_t _N, std::size_t _N2>
+    struct cvt_mask<double, _N, int32_t, _N2> {
+        static_assert(_N2 == 2*_N, "invalid parameter pair");
+        static
+        vec<double, _N>
+        v(const vec<int32_t, _N2>& m) {
+            return as<vec<double, _N> >(m);
+        }
+    };
+
+#if 0
     // convert mask vectors - the mask vector types are the same
     // for all types of vectors of the same size if
     // specializations do not exist
@@ -122,6 +246,7 @@ namespace cftal {
         }
 
     };
+#endif
 
     namespace impl {
 

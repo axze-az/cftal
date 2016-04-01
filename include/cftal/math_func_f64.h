@@ -296,6 +296,11 @@ namespace cftal {
 
             static vf_type
             pow2i(arg_t<vi_type> vi);
+
+            static
+            vf_type
+            ldexp_k(arg_t<vf_type> x, arg_t<vi_type> e);
+
             static vf_type
             ldexp(arg_t<vf_type> x,
                   arg_t<vi_type> e);
@@ -305,10 +310,10 @@ namespace cftal {
             static
             vf_type
             frexp_k(arg_t<vf_type> x, vi2_type* e);
-                
+
             static vf_type
             frexp(arg_t<vf_type> x, vi_type* e);
-            
+
             static vi_type
             ilogbp1(arg_t<vf_type> x);
             static vi_type
@@ -338,6 +343,68 @@ pow2i(arg_t<vi_type> vi)
     r= _T::sel(mf, vf_type(inf), r);
     return r;
 }
+
+#if 0
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
+{
+    vf_type xs=x;
+    using fc=func_constants<double>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal;
+    // input denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
+    vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
+    vi2_type eo= _T::sel(i_is_denom, vi2_type(-54), vi2_type(0));
+    // split mantissa
+    vi2_type ml, mh;
+    _T::extract_words(ml, mh, xs);
+    vi2_type xe=((mh>>20) & _T::e_mask) + eo;
+
+    // determine the exponent of the result
+    // clamp nn to [-4096, 4096]
+    vi_type nn= min(vi2_type(4096), max(n, vi2_type(-4096)));
+    vi_type re= xe + nn;
+
+    // 3 cases exist:
+    // 0 < re < 0x7ff normal result
+    //     re >= 0x7ff inf result (overflow)
+    //     re <= 0 subnormal or 0 (underflow)
+
+    // clear exponent bits from mh
+    mh &= vi2_type(~0x7ff00000);
+
+    // high part of mantissa for normal results:
+    vi2_type mhn= mh | ((re & vi_type(_T::e_mask)) << 20);
+    vf_type r= _T::combine_words(ml, mhn);
+
+    // overflow handling
+    vmi2_type i_is_inf = re > vi_type(0x7fe);
+    vmf_type f_is_inf = _T::vmi2_to_vmf(i_is_inf);
+    vf_type r_inf = copysign(vf_type(_T::pinf()), x);
+    r = _T::sel(f_is_inf, r_inf, r);
+
+    // underflow handling
+    vmi_type i_is_near_z = re < vi_type (1);
+    if (any_of(i_is_near_z)) {
+        // create m*0x1.0p-1022
+        vi_type mhu= mh | vi_type(1<<20);
+        vf_type r_u= _T::combine_words(ml, mhu);
+        // create a scaling factor, but avoid overflows
+        vi_type ue= max(vi_type(re + (_T::bias-1)), vi_type(1));
+        vf_type s_u= _T::insert_exp(ue);
+        r_u *= s_u;
+        vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
+        r = _T::sel(f_is_near_z, r_u, r);
+    }
+    // handle special cases:
+    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)),
+                x, r);
+    return r;
+}
+#endif
 
 template <typename _T>
 inline
