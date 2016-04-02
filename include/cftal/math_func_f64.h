@@ -2129,9 +2129,10 @@ cbrt_k(arg_t<vf_type> xc)
     // }
     vf_type s=mm*mm*mm;
     mm = mm -(s - mm0) * mm/(2*s+mm0);
-    // round mm nearest to 17 bits (including the hidden one)
     vi2_type hw, lw;
     _T::extract_words(lw, hw, mm);
+    // round mm to 17 bits (including the hidden one)
+    // round up if the first bit truncated is set
     hw += hw & 0x00000008;
     hw &= 0xfffffff0;
     mm=_T::combine_words(vi2_type(0), hw);
