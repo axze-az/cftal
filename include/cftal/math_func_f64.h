@@ -611,17 +611,17 @@ typename cftal::math::func_core<double, _T>::vi_type
 cftal::math::func_core<double, _T>::
 ilogb(arg_t<vf_type> d)
 {
-    vi_type e(ilogbp1(d) - vi_type(1));
+    vi2_type e(ilogbp1_k(d) - vi2_type(1));
     vmf_type mf= d == 0.0;
-    vmi_type mi= _T::vmf_to_vmi(mf);
-    e = _T::sel(mi, vi_type(FP_ILOGB0), e);
+    vmi2_type mi= _T::vmf_to_vmi2(mf);
+    e = _T::sel(mi, vi2_type(FP_ILOGB0), e);
     mf = isinf(d);
-    mi = _T::vmf_to_vmi(mf);
-    e = _T::sel(mi, vi_type(0x7fffffff), e);
+    mi = _T::vmf_to_vmi2(mf);
+    e = _T::sel(mi, vi2_type(0x7fffffff), e);
     mf = isnan(d);
-    mi = _T::vmf_to_vmi(mf);
-    e = _T::sel(mi, vi_type(FP_ILOGBNAN), e);
-    return e;
+    mi = _T::vmf_to_vmi2(mf);
+    e = _T::sel(mi, vi2_type(FP_ILOGBNAN), e);
+    return _T::vi2_odd_to_vi(e);
 }
 
 template <typename _T>
@@ -1683,9 +1683,10 @@ __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl, arg_t<vi_type> q)
     // because xr = pi/4-x --> tan(pi/4) = 1
     // tan(pi/4-x) = (1- tan(x))/(1 + tan(x))
     //             = 1 - 2*(tan(x) - (tan(x)^2)/(1+tan(x)))
-    vi_type q1= q & 1;
-    vmi_type qm1= q1 == vi_type(1);
-    vmf_type fqm1= _T::vmi_to_vmf(qm1);
+    vi2_type t=_T::vi_to_vi2(q);
+    vi2_type q1= t & 1;
+    vmi2_type qm1= q1 == vi2_type(1);
+    vmf_type fqm1= _T::vmi2_to_vmf(qm1);
 
     // calculate the values for x large including the sign
     s = _T::sel(fqm1, vf_type(-1.0), vf_type(1.0));
@@ -1717,15 +1718,16 @@ sin_cos_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 {
     std::pair<dvf_type, vi_type> rq=reduce_trig_arg_k(xc);
     const dvf_type& x= rq.first;
-    const vi_type& q= rq.second;
+    const vi_type& qh= rq.second;
+    vi2_type q=_T::vi_to_vi2(qh);
 
     vf_type s = __sin_k(x.h(), x.l());
     vf_type c = __cos_k(x.h(), x.l());
 
-    vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
-    vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
-    vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
-    vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
+    vmi2_type q_and_2(vi2_type(q & vi2_type(2))==vi2_type(2));
+    vmf_type q_and_2_f(_T::vmi2_to_vmf(q_and_2));
+    vmi2_type q_and_1(vi2_type(q & vi2_type(1))==vi2_type(1));
+    vmf_type q_and_1_f(_T::vmi2_to_vmf(q_and_1));
 
     // swap sin/cos if q & 1
     vf_type rs(_T::sel(q_and_1_f, c, s));
