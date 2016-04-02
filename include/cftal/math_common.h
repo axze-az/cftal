@@ -1153,11 +1153,7 @@ cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 {
 #if 1
-    return x+y;
-#else
-    dvf_type rd=atan2_k2(y, vf_type(0), x, vf_type(0), true);
-#if 1
-    vf_type r= rd.h() + rd.l();
+    vf_type r=base_type::atan2_k(y, x);
 
     using _T = _TRAITS_T;
 
@@ -1255,7 +1251,6 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
     r *= sgn_y;
     r = _TRAITS_T::sel(isnan(x) | isnan(y), _TRAITS_T::nan(), r);
     return r;
-#endif
 #endif
 }
 

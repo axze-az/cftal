@@ -180,6 +180,10 @@ namespace cftal {
 
             static
             vf_type
+            atan2_k(arg_t<vf_type> y, arg_t<vf_type> x);
+
+            static
+            vf_type
             cbrt_k(arg_t<vf_type> x);
         };
 
@@ -712,6 +716,15 @@ inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
 atan_k(arg_t<vf_type> x)
+{
+    return x;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
 {
     return x;
 }
