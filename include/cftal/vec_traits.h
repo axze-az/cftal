@@ -296,7 +296,7 @@ namespace cftal {
             static
             vi2_type vi_to_vi2(const vi_type& r) {
                 vi2_type t=combine_even_odd(r, r);
-                return r;
+                return t;
             }
 
             static

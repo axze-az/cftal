@@ -244,7 +244,7 @@ namespace cftal {
             static
             vf_type
             scale_exp_k(arg_t<vf_type> y, arg_t<vf_type> kf,
-                        arg_t<vi_type> k);
+                        arg_t<vi2_type> k);
 
             static
             vf_type
@@ -299,7 +299,7 @@ namespace cftal {
 
             static
             vf_type
-            ldexp_k(arg_t<vf_type> x, arg_t<vi_type> e);
+            ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> e);
 
             static vf_type
             ldexp(arg_t<vf_type> x,
@@ -311,11 +311,19 @@ namespace cftal {
             vf_type
             frexp_k(arg_t<vf_type> x, vi2_type* e);
 
-            static vf_type
+            static
+            vf_type
             frexp(arg_t<vf_type> x, vi_type* e);
 
-            static vi_type
+            static
+            vi2_type
+            ilogbp1_k(arg_t<vf_type> x);
+
+            static
+            vi_type
             ilogbp1(arg_t<vf_type> x);
+
+
             static vi_type
             ilogb(arg_t<vf_type> vf);
         };
@@ -344,7 +352,6 @@ pow2i(arg_t<vi_type> vi)
     return r;
 }
 
-#if 0
 template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
@@ -365,8 +372,8 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
 
     // determine the exponent of the result
     // clamp nn to [-4096, 4096]
-    vi_type nn= min(vi2_type(4096), max(n, vi2_type(-4096)));
-    vi_type re= xe + nn;
+    vi2_type nn= min(vi2_type(4096), max(n, vi2_type(-4096)));
+    vi2_type re= xe + nn;
 
     // 3 cases exist:
     // 0 < re < 0x7ff normal result
@@ -377,26 +384,26 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
     mh &= vi2_type(~0x7ff00000);
 
     // high part of mantissa for normal results:
-    vi2_type mhn= mh | ((re & vi_type(_T::e_mask)) << 20);
+    vi2_type mhn= mh | ((re & vi2_type(_T::e_mask)) << 20);
     vf_type r= _T::combine_words(ml, mhn);
 
     // overflow handling
-    vmi2_type i_is_inf = re > vi_type(0x7fe);
-    vmf_type f_is_inf = _T::vmi2_to_vmf(i_is_inf);
+    vmi2_type i_is_inf = re > vi2_type(0x7fe);
+    vmf_type f_is_inf = _T::vmi2_to_vmf(copy_odd_to_even(i_is_inf));
     vf_type r_inf = copysign(vf_type(_T::pinf()), x);
     r = _T::sel(f_is_inf, r_inf, r);
 
     // underflow handling
-    vmi_type i_is_near_z = re < vi_type (1);
+    vmi2_type i_is_near_z = copy_odd_to_even(vi2_type(re < vi2_type (1)));
     if (any_of(i_is_near_z)) {
         // create m*0x1.0p-1022
-        vi_type mhu= mh | vi_type(1<<20);
+        vi2_type mhu= mh | vi2_type(1<<20);
         vf_type r_u= _T::combine_words(ml, mhu);
         // create a scaling factor, but avoid overflows
-        vi_type ue= max(vi_type(re + (_T::bias-1)), vi_type(1));
+        vi2_type ue= max(vi2_type(re + (_T::bias-1)), vi2_type(1));
         vf_type s_u= _T::insert_exp(ue);
         r_u *= s_u;
-        vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
+        vmf_type f_is_near_z = _T::vmi2_to_vmf(i_is_near_z);
         r = _T::sel(f_is_near_z, r_u, r);
     }
     // handle special cases:
@@ -404,7 +411,6 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
                 x, r);
     return r;
 }
-#endif
 
 template <typename _T>
 inline
@@ -412,6 +418,9 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
 {
+#if 1
+    return ldexp_k(x, _T::vi_to_vi2(n));
+#else
     vf_type xs=x;
     using fc=func_constants<double>;
     vmf_type is_denom= abs(x) <= fc::max_denormal;
@@ -465,6 +474,7 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)),
                 x, r);
     return r;
+#endif
 }
 
 template <typename _T>
@@ -551,10 +561,34 @@ frexp(arg_t<vf_type> x, vi_type* ve)
 
 template <typename _T>
 inline
+typename cftal::math::func_core<double, _T>::vi2_type
+cftal::math::func_core<double, _T>::
+ilogbp1_k(arg_t<vf_type> x)
+{
+    vf_type xs=x;
+    using fc=func_constants<double>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal;
+    // denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
+    vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
+    vi2_type eo= _T::sel(i_is_denom, vi2_type(-54), vi2_type(0));
+    // reinterpret as integer
+    vi2_type hi_word, lo_word;
+    _T::extract_words(lo_word, hi_word, xs);
+    // exponent:
+    vi2_type e=((hi_word >> 20) & _T::e_mask) + eo - vi2_type(_T::bias-1);
+    return e;
+}
+
+template <typename _T>
+inline
 typename cftal::math::func_core<double, _T>::vi_type
 cftal::math::func_core<double, _T>::
 ilogbp1(arg_t<vf_type> x)
 {
+#if 1
+    return _T::vi2_odd_to_vi(ilogbp1_k(x));
+#else
     vf_type xs=x;
     using fc=func_constants<double>;
     vmf_type is_denom= abs(x) <= fc::max_denormal;
@@ -568,6 +602,7 @@ ilogbp1(arg_t<vf_type> x)
     // exponent:
     vi_type e=((hi_word >> 20) & _T::e_mask) + eo - vi_type(_T::bias-1);
     return e;
+#endif
 }
 
 template <typename _T>
@@ -593,11 +628,11 @@ template <typename _T>
 inline
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
-scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi_type> k)
+scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi2_type> k)
 {
-    vi_type e_two_pow_k=_T::sel(k < vi_type(-1021),
-                                vi_type((_T::bias+1000)+k),
-                                vi_type(_T::bias+k));
+    vi2_type e_two_pow_k=_T::sel(k < vi2_type(-1021),
+                                 vi2_type((_T::bias+1000)+k),
+                                 vi2_type(_T::bias+k));
     vf_type two_pow_k= _T::insert_exp(e_two_pow_k);
     // kf == 1024 or kf>=-1021
     vf_type yt= _T::sel(kf == vf_type(1024),
@@ -621,6 +656,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
     vf_type lo = kf * ctbl::m_ln2_cw[1];
     vf_type xr = hi - lo;
     vi_type k= _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
 
 
     vf_type y;
@@ -729,7 +765,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         y = (xr*c/(2-c) - lo + hi);
         y += 1.0;
         // y = ldexp(y, k);
-        y= scale_exp_k(y, kf, k);
+        y= scale_exp_k(y, kf, k2);
     } else {
 /* expm1(x)
  * Returns exp(x)-1, the exponential of x minus 1.
@@ -853,10 +889,10 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         //      return x - (x*e-hxs);
         e  = xr*(e-cr) - cr;
         e -= hxs;
-        vi_type t= _T::bias - k;
+        vi2_type t= _T::bias - k2;
         vf_type two_pow_minus_k=_T::insert_exp(t);
         // xr - e = y --> xr -y = e
-        t = _T::bias + k;
+        t = _T::bias + k2;
         vf_type two_pow_k=_T::insert_exp(t);
         // default cases:
         vf_type ym = _T::sel(kf < vf_type(20),
@@ -893,6 +929,7 @@ exp2_k(arg_t<vf_type> x)
     vf_type kf= rint(vf_type(x));
     vf_type xr = x - kf;
     vi_type k = _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
 #if 0
     // coefficients for native_exp2_n generated by sollya
     // x^10
@@ -965,7 +1002,7 @@ exp2_k(arg_t<vf_type> x)
     y += 1.0;
 #endif
     // y=ldexp(y, k);
-    y= scale_exp_k(y, kf, k);
+    y= scale_exp_k(y, kf, k2);
     return y;
 }
 
@@ -981,6 +1018,7 @@ exp10_k(arg_t<vf_type> x)
     vf_type lo = kf * ctbl::m_ld2_cw[1];
     vf_type xr = hi - lo;
     vi_type k= _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
 
     // coefficients for native_exp10 generated by sollya
     // x^12
@@ -1027,7 +1065,7 @@ exp10_k(arg_t<vf_type> x)
     y *= xr;
     // y += xrl + xr *xrl;
     y += 1.0;
-    y= scale_exp_k(y, kf, k);
+    y= scale_exp_k(y, kf, k2);
     return y;
 }
 

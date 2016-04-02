@@ -274,24 +274,64 @@ namespace cftal {
 
     template <typename _T, std::size_t _N>
     vec<_T, _N>
-    select_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o); 
+    select_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o);
 
     template <typename _T>
     vec<_T, 16>
-    select_even_odd(const vec<_T, 16>& e, const vec<_T, 16>& o); 
+    select_even_odd(const vec<_T, 16>& e, const vec<_T, 16>& o);
 
     template <typename _T>
     vec<_T, 8>
-    select_even_odd(const vec<_T, 8>& e, const vec<_T, 8>& o); 
+    select_even_odd(const vec<_T, 8>& e, const vec<_T, 8>& o);
 
     template <typename _T>
     vec<_T, 4>
-    select_even_odd(const vec<_T, 4>& e, const vec<_T, 4>& o); 
+    select_even_odd(const vec<_T, 4>& e, const vec<_T, 4>& o);
 
     template <typename _T>
     vec<_T, 2>
-    select_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o); 
-    
+    select_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o);
+
+    template <typename _T, std::size_t _N>
+    vec<_T, _N>
+    copy_odd_to_even(const vec<_T, _N>& v);
+
+    template <typename _T, std::size_t _N>
+    vec<_T, _N>
+    copy_even_to_odd(const vec<_T, _N>& v);
+
+    template <typename _T>
+    vec<_T, 16>
+    copy_odd_to_even(const vec<_T, 16>& v);
+
+    template <typename _T>
+    vec<_T, 16>
+    copy_even_to_odd(const vec<_T, 16>& v);
+
+    template <typename _T>
+    vec<_T, 8>
+    copy_odd_to_even(const vec<_T, 8>& v);
+
+    template <typename _T>
+    vec<_T, 8>
+    copy_even_to_odd(const vec<_T, 8>& v);
+
+    template <typename _T>
+    vec<_T, 4>
+    copy_odd_to_even(const vec<_T, 4>& v);
+
+    template <typename _T>
+    vec<_T, 4>
+    copy_even_to_odd(const vec<_T, 4>& v);
+
+    template <typename _T>
+    vec<_T, 2>
+    copy_odd_to_even(const vec<_T, 2>& v);
+
+    template <typename _T>
+    vec<_T, 2>
+    copy_even_to_odd(const vec<_T, 2>& v);
+
     template <typename _T, std::size_t _N>
     bool
     elements_equal(const vec<_T, _N>& v);
@@ -1014,6 +1054,82 @@ cftal::vec<_T, 2>
 cftal::select_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o)
 {
     return select<true, false>(e, o);
+}
+
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N>
+cftal::copy_even_to_odd(const vec<_T, _N>& v)
+{
+    vec<_T, _N/2> l=copy_even_to_odd(low_half(v));
+    vec<_T, _N/2> h=copy_even_to_odd(high_half(v));
+    return vec<_T, _N>(l, h);
+}
+
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N>
+cftal::copy_odd_to_even(const vec<_T, _N>& v)
+{
+    vec<_T, _N/2> l=copy_odd_to_even(low_half(v));
+    vec<_T, _N/2> h=copy_odd_to_even(high_half(v));
+    return vec<_T, _N>(l, h);
+}
+
+template <typename _T>
+cftal::vec<_T, 16>
+cftal::copy_even_to_odd(const vec<_T, 16>& v)
+{
+    return permute< 0,  0,  2,  2,  4,  4,  6,  6,
+                    8,  8, 10, 10, 12, 12, 14, 14>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 16>
+cftal::copy_odd_to_even(const vec<_T, 16>& v)
+{
+    return permute< 1,  1,  3,  3,  5,  5,  7,  7,
+                    9,  9, 11, 11, 13, 13, 15, 15>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::copy_even_to_odd(const vec<_T, 8>& v)
+{
+    return permute< 0,  0,  2,  2,  4,  4,  6,  6>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::copy_odd_to_even(const vec<_T, 8>& v)
+{
+    return permute< 1,  1,  3,  3,  5,  5,  7,  7>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::copy_even_to_odd(const vec<_T, 4>& v)
+{
+    return permute< 0,  0,  2,  2>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::copy_odd_to_even(const vec<_T, 4>& v)
+{
+    return permute< 1,  1,  3,  3>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 2>
+cftal::copy_even_to_odd(const vec<_T, 2>& v)
+{
+    return permute< 0,  0>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 2>
+cftal::copy_odd_to_even(const vec<_T, 2>& v)
+{
+    return permute< 1,  1>(v);
 }
 
 
