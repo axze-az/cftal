@@ -9,6 +9,9 @@ int main(int argc, char** argv)
     const int _N=8;
     bool rc=true;
 
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
+
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
         append_filename(test_data_dir, "../../test/data/acos.testdata");
@@ -19,14 +22,13 @@ int main(int argc, char** argv)
     std::vector<func_arg_result<double> > v=
         read_double_file(test_data_file, false);
 
-    std::cout << std::setprecision(18) << std::scientific;
-    std::cerr << std::setprecision(18) << std::scientific;
     rc &= check_func_1<double, 1, check_acos<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 2, check_acos<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 4, check_acos<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_acos<double> >(v, ulp, 0, false);
-    func_domain<double> d=std::make_pair(-1.0000000001,
-                                         +1.0000000001); 
+
+    // func_domain<double> d=std::make_pair(0.5, 0.5);
+    func_domain<double> d=std::make_pair(-1.000000001, 1.000000001);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<

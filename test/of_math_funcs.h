@@ -499,7 +499,7 @@ namespace cftal {
             static
             _T
             v(const _T& a) {
-#if 1
+#if 0
                 return call_mpfr::func(a, mpfr_asin);
 #else
                 return std::asin(a);
