@@ -1180,8 +1180,8 @@ log_k(arg_t<vf_type> xc, log_func func)
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal;
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi_type k=_T::sel(_T::vmf_to_vmi(is_denom), vi_type(-54), vi_type(0));
-    vi_type lx, hx;
+    vi2_type k=_T::sel(_T::vmf_to_vmi2(is_denom), vi2_type(-54), vi2_type(0));
+    vi2_type lx, hx;
     _T::extract_words(lx, hx, x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     hx += 0x3ff00000 - 0x3fe6a09e;
@@ -1197,7 +1197,7 @@ log_k(arg_t<vf_type> xc, log_func func)
     // split of the polynomial reduces precision
     vf_type R = log_k_poly(z);
     vf_type res;
-    vf_type kf = _T::cvt_i_to_f(k);
+    vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
     if (func == log_func::c_log_e) {
         using ctbl=impl::d_real_constants<d_real<double>, double>;
         vf_type log_x=s*(hfsq+R) +
@@ -1302,11 +1302,11 @@ log1p_k(arg_t<vf_type> xc)
  */
     vf_type x=xc;
     vf_type u= 1+xc;
-    vi_type lu, hu;
+    vi2_type lu, hu;
     _T::extract_words(lu, hu, u);
     hu += (0x3ff00000 - 0x3fe6a09e);
-    vi_type k=(hu >> 20) - _T::bias;
-    vf_type kf= _T::cvt_i_to_f(k);
+    vi2_type k=(hu >> 20) - _T::bias;
+    vf_type kf= _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-x), x-(u-1.0));
     c_k_2 /= u;
