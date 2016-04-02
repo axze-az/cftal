@@ -478,7 +478,7 @@ namespace cftal {
             static
             _T
             v(const _T& a, const _T& b) {
-#if 1
+#if 0
                 return call_mpfr::func(a, b, mpfr_atan2);
 #else
                 return std::atan2(a, b);
