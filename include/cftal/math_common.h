@@ -860,6 +860,8 @@ _log1p(arg_t<vf_type> d)
     x = _T::sel(d < vf_type(-1.0), vf_type(_T::nan()), x);
     // if (d == -1.0) x = -INFINITY;
     x = _T::sel(d == vf_type(-1.0), ninf, x);
+    // NAN --> n_and_1
+    x = _T::sel(isnan(d), d, x);
     return x;
 }
 
@@ -896,6 +898,8 @@ _log10(arg_t<vf_type> d)
     x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
+    // NAN --> n_and_1
+    x = _T::sel(isnan(d), d, x);
     return x;
 }
 
@@ -932,6 +936,8 @@ _log2(arg_t<vf_type> d)
     x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
+    // NAN --> n_and_1
+    x = _T::sel(isnan(d), d, x);
     return x;
 }
 

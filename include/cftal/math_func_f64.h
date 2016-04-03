@@ -1197,7 +1197,7 @@ log_k(arg_t<vf_type> xc, log_func func)
     _T::extract_words(lx, hx, x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     hx += 0x3ff00000 - 0x3fe6a09e;
-    k += (hx>>20) - 0x3ff;
+    k += (hx>>20) - _T::bias;
     hx = (hx&0x000fffff) + 0x3fe6a09e;
     vf_type xr = _T::combine_words(lx, hx);
 
