@@ -20,6 +20,17 @@ int main(int argc, char** argv)
                                         0x80000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
-    std::cout << _N << std::endl;
+    std::cout << st << std::endl;
+
+    exec_stats st2(_N);
+    auto dp2=std::make_pair(-0x1p7f, 0x1p7f);
+    auto us2=std::make_shared<ulp_stats>();
+    rc &= of_fp_func_up_to<
+        float, _N, check_sin<float> >::v(st2, dp2,
+                                         cmp_ulp<float>(ulp, us2),
+                                         0x80000);
+    std::cout << "ulps: "
+              << std::fixed << std::setprecision(4) << *us2 << std::endl;
+    std::cout << st2 << std::endl;
     return (rc == true) ? 0 : 1;
 }

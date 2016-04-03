@@ -372,6 +372,27 @@ namespace cftal {
             const char* fname() { return "sin"; }
         };
 
+        template <>
+        struct check_sin<float> {
+            template <std::size_t _N>
+            static
+            vec<float, _N>
+            v(const vec<float, _N>& a) {
+                return sin(a);
+            }
+            static
+            float
+            v(const float& a) {
+#if 0
+                return call_mpfr::func(a, mpfr_sin);
+#else
+                return std::sin(a);
+#endif
+            }
+            static
+            const char* fname() { return "sin"; }
+        };
+
         template <typename _T>
         struct check_cos {
             template <std::size_t _N>
@@ -383,7 +404,32 @@ namespace cftal {
             static
             _T
             v(const _T& a) {
+#if 0
+                return call_mpfr::func(a, mpfr_cos);
+#else
                 return std::cos(a);
+#endif
+            }
+            static
+            const char* fname() { return "cos"; }
+        };
+
+        template <>
+        struct check_cos<float> {
+            template <std::size_t _N>
+            static
+            vec<float, _N>
+            v(const vec<float, _N>& a) {
+                return cos(a);
+            }
+            static
+            float
+            v(const float& a) {
+#if 0
+                return call_mpfr::func(a, mpfr_cos);
+#else
+                return std::cos(a);
+#endif
             }
             static
             const char* fname() { return "cos"; }
@@ -441,6 +487,27 @@ namespace cftal {
             _T
             v(const _T& a) {
                 return std::tan(a);
+            }
+            static
+            const char* fname() { return "tan"; }
+        };
+
+        template <>
+        struct check_tan<float> {
+            template <std::size_t _N>
+            static
+            vec<float, _N>
+            v(const vec<float, _N>& a) {
+                return tan(a);
+            }
+            static
+            float
+            v(const float& a) {
+#if 0
+                return call_mpfr::func(a, mpfr_tan);
+#else
+                return std::tan(double(a));
+#endif
             }
             static
             const char* fname() { return "tan"; }

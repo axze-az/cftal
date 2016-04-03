@@ -130,26 +130,25 @@ namespace cftal {
             typedef d_real<vf_type> dvf_type;
             using tvf_type = t_real<vf_type>;
 
-            static vf_type pow2i(arg_t<vi_type> d);
-            static vf_type ldexp(arg_t<vf_type> vf,
-                                 arg_t<vi_type> vi);
-            static vf_type frexp(arg_t<vf_type> vf,
-                                 vi_type* vi);
-            static vi_type ilogbp1(arg_t<vf_type> x);
-
-            static vi_type ilogb(arg_t<vf_type> vf);
-
-
-            static std::pair<vf_type, vi_type>
-            reduce_trig_arg_k(arg_t<vf_type> x);
-            // core sine, cosine calculation
             static
-            void
-            sin_cos_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
+            vf_type
+            pow2i(arg_t<vi_type> d);
 
             static
             vf_type
-            tan_k(arg_t<vf_type> x);
+            frexp(arg_t<vf_type> vf, vi_type* vi);
+
+            static
+            vf_type
+            ldexp(arg_t<vf_type> vf, arg_t<vi_type> vi);
+
+            static
+            vi_type
+            ilogbp1(arg_t<vf_type> x);
+
+            static
+            vi_type
+            ilogb(arg_t<vf_type> vf);
 
             static
             vf_type
@@ -195,6 +194,41 @@ namespace cftal {
             static
             vf_type
             log10_k(arg_t<vf_type> x);
+
+            // argument reduction for all trigonometric
+            // functions, reduction by %pi/2, the low bits
+            // of multiple of %pi/2 is returned in the
+            // second part of the return type
+            static
+            std::pair<dvf_type, vi_type>
+            reduce_trig_arg_k(arg_t<vf_type> x);
+
+            // calculates sin(xh, xl) in [+0, pi/4]
+            static
+            vf_type
+            __sin_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
+
+            // calculates cos(xh, xl) in [+0, pi/4]
+            static
+            vf_type
+            __cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
+
+            // calculates tan(xh, xl) in [+0, pi/4] and
+            // returns tan or -1/tan if q & 1
+            static
+            vf_type
+            __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl,
+                    arg_t<vi_type> q);
+
+            // core sine, cosine calculation
+            static
+            void
+            sin_cos_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
+
+            // core tan calculation
+            static
+            vf_type
+            tan_k(arg_t<vf_type> x);
 
             static
             vf_type
@@ -784,128 +818,352 @@ log10_k(arg_t<vf_type> xc)
     return log_k(xc, log_func::c_log_10);
 }
 
-#if 0
 template <typename _T>
 inline
-void
-cftal::math::func_core<float, _T>::
-sin_cos_k(arg_t<vf_type> x,
-          std::size_t n,
-          vf_type* ps, vf_type* pc)
-{
-    using vhpf_type = typename _T::vhpf_type;
-    const std::size_t elements = _T::vhpf_per_vf();
-
-    vhpf_type xi[elements];
-    _T::vf_to_vhpf(x, xi);
-
-    using hpf_traits = typename _T::hpf_traits;
-    using hpf_func =
-        func_core<float, hpf_traits>;
-
-    vhpf_type hpf_sin[elements];
-    vhpf_type hpf_cos[elements];
-    for (std::size_t i=0; i < elements; ++i) {
-        vhpf_type* hps= ps != nullptr ? hpf_sin + i : nullptr;
-        vhpf_type* hpc= pc != nullptr ? hpf_cos + i : nullptr;
-        hpf_func::native_sin_cos_k(xi[i], hps, hpc);
-    }
-    if (ps != nullptr) {
-        dvf_type sr;
-        _T::vhpf_to_dvf(hpf_sin, sr);
-        ps[0] = sr.h();
-        if (n > 1)
-            ps[1] = sr.l();
-    }
-    if (pc != nullptr) {
-        dvf_type cr;
-        _T::vhpf_to_dvf(hpf_cos, cr);
-        pc[0] = cr.h();
-        if (n > 1)
-            pc[1] = cr.l();
-    }
-}
-#endif
-
-
-
-template <typename _T>
-inline
-std::pair<typename cftal::math::func_core<float, _T>::vf_type,
+std::pair<typename cftal::math::func_core<float, _T>::dvf_type,
           typename cftal::math::func_core<float, _T>::vi_type>
 cftal::math::func_core<float, _T>::
-reduce_trig_arg_k(arg_t<vf_type> d)
+reduce_trig_arg_k(arg_t<vf_type> x)
 {
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vmf_type v_large_arg(
-        vf_type(ctbl::native_sin_cos_arg_large) < abs(d));
-
-    vf_type qf(rint(vf_type(d * (2 * M_1_PI))));
-    vi_type q(_T::cvt_f_to_i(qf));
-
-#if 1
-    using d_real_traits_t= d_real_traits<vf_type>;
-    vf_type qfl, qfh;
-    d_real_traits_t::split(qf, qfh, qfl);
-    vf_type d0(d);
-    for (auto b=std::cbegin(ctbl::m_pi_2_cw), e=std::cend(ctbl::m_pi_2_cw);
-         b != e; ++b) {
-        vf_type t=*b;
-        d0 = d0 - qfh * t;
-        d0 = d0 - qfl * t;
-    }
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+    vf_type y0, y1;
+    vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
+#if 0
+    y0= d_ops::two_diff((x - fn* ctbl::m_pi_2_cw[0]) - fn*ctbl::m_pi_2_cw[1],
+                        fn*ctbl::m_pi_2_cw[2],
+                        y1);
+    dvf_type d0(y0, y1);
 #else
-    vf_type d0(d);
-    for (auto b=std::cbegin(ctbl::m_pi_2_cw), e=std::cend(ctbl::m_pi_2_cw);
-         b != e; ++b) {
-        vf_type t=*b;
-        d0 = d0 - qf * t;
-    }
+    y0= d_ops::two_diff(x, fn* ctbl::m_pi_2_cw[0], y1);
+    dvf_type d0(y0, y1);
+    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[1]);
+    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[2]);
 #endif
+    vi_type q(_T::cvt_f_to_i(fn));
 
+    const float large_arg=0x1p6f;
+    vmf_type v_large_arg= vf_type(large_arg) < abs(x);
     if (any_of(v_large_arg)) {
         // reduce the large arguments
         constexpr std::size_t N=_T::NVF();
         constexpr std::size_t NI=_T::NVI();
         struct alignas(N*sizeof(float)) v_d {
             float _sc[N];
-        } tf, d0_l;
+        } tf, d0_l, d0_h;
         struct alignas(NI*sizeof(int)) v_i {
             int32_t _sc[NI];
         } ti;
-        mem<vf_type>::store(tf._sc, d);
+        mem<vf_type>::store(tf._sc, x);
         mem<vi_type>::store(ti._sc, q);
-        mem<vf_type>::store(d0_l._sc, d0);
+        mem<vf_type>::store(d0_l._sc, d0.l());
+        mem<vf_type>::store(d0_h._sc, d0.h());
         for (std::size_t i=0; i<N; ++i) {
-            if (ctbl::native_sin_cos_arg_large < std::fabs(tf._sc[i])) {
+            if (large_arg < std::fabs(tf._sc[i])) {
                 float y[2];
                 ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
-                d0_l._sc[i]= y[1] + y[0];
+                d0_l._sc[i]= y[1];
+                d0_h._sc[i]= y[0];
             }
         }
-        d0 = mem<vf_type>::load(d0_l._sc, N);
+        vf_type rh(mem<vf_type>::load(d0_h._sc, N));
+        vf_type rl(mem<vf_type>::load(d0_l._sc, N));
+        d0 = dvf_type(rh, rl);
         q = mem<vi_type>::load(ti._sc, NI);
     }
     return std::make_pair(d0, q);
 }
 
 template <typename _T>
-__attribute__((flatten, noinline))
-void
+inline
+typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
+__sin_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
-    std::pair<vf_type, vi_type> rq=reduce_trig_arg_k(d);
-    vf_type x= rq.first;
-    const vi_type& q= rq.second;
+/* __sin( x, y, iy)
+ * kernel sin function on ~[-pi/4, pi/4] (except on -0), pi/4 ~ 0.7854
+ * Input x is assumed to be bounded by ~pi/4 in magnitude.
+ * Input y is the tail of x.
+ *
+ * Algorithm
+ *      1. Since sin(-x) = -sin(x), we need only to consider positive x.
+ *      2. Callers must return sin(-0) = -0 without calling here since our
+ *         odd polynomial is not evaluated in a way that preserves -0.
+ *         Callers may do the optimization sin(x) ~ x for tiny x.
+ *      3. sin(x) is approximated by a polynomial of degree 13 on
+ *         [0,pi/4]
+ *                               3            13
+ *              sin(x) ~ x + S1*x + ... + S6*x
+ *         where
+ *
+ *      |sin(x)         2     4     6     8     10     12  |     -58
+ *      |----- - (1+S1*x +S2*x +S3*x +S4*x +S5*x  +S6*x   )| <= 2
+ *      |  x                                               |
+ *
+ *      4. sin(x+y) = sin(x) + sin'(x')*y
+ *                  ~ sin(x) + (1-x*x/2)*y
+ *         For better accuracy, let
+ *                   3      2      2      2      2
+ *              r = x *(S2+x *(S3+x *(S4+x *(S5+x *S6))))
+ *         then                   3    2
+ *              sin(x) = x + (S1*x + (x *(r-y/2)+y))
+ */
+    // coefficients for sin generated by sollya
+    // x^8
+    const vf_type sin_c8=0x1.77e21p-19f;  // 0x363bf108
+    // x^6
+    const vf_type sin_c6=-0x1.a04866p-13f;  // 0xb9502433
+    // x^4
+    const vf_type sin_c4=0x1.111164p-7f;  // 0x3c0888b2
+    // x^2
+    const vf_type sin_c2=-0x1.555556p-3f;  // 0xbe2aaaab
+    vf_type z = xh*xh;
+    // vf_type w = z*z;
+    vf_type r = sin_c4 + z*(sin_c6 + z*sin_c8);
+    vf_type v = z*xh;
+    return xh - ((z*(0.5f*xl - v*r) - xl) - v*sin_c2);
+}
 
-    vf_type x2(x*x);
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+__cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
+{
+/*
+ * __cos( x,  y )
+ * kernel cos function on [-pi/4, pi/4], pi/4 ~ 0.785398164
+ * Input x is assumed to be bounded by ~pi/4 in magnitude.
+ * Input y is the tail of x.
+ *
+ * Algorithm
+ *      1. Since cos(-x) = cos(x), we need only to consider positive x.
+ *      2. if x < 2^-27 (hx<0x3e400000 0), return 1 with inexact if x!=0.
+ *      3. cos(x) is approximated by a polynomial of degree 14 on
+ *         [0,pi/4]
+ *                                       4            14
+ *              cos(x) ~ 1 - x*x/2 + C1*x + ... + C6*x
+ *         where the remez error is
+ *
+ *      |              2     4     6     8     10    12     14 |     -58
+ *      |cos(x)-(1-.5*x +C1*x +C2*x +C3*x +C4*x +C5*x  +C6*x  )| <= 2
+ *      |                                                      |
+ *
+ *                     4     6     8     10    12     14
+ *      4. let r = C1*x +C2*x +C3*x +C4*x +C5*x  +C6*x  , then
+ *             cos(x) ~ 1 - x*x/2 + r
+ *         since cos(x+y) ~ cos(x) - sin(x)*y
+ *                        ~ cos(x) - x*y,
+ *         a correction term is necessary in cos(x) and hence
+ *              cos(x+y) = 1 - (x*x/2 - (r - x*y))
+ *         For better accuracy, rearrange to
+ *              cos(x+y) ~ w + (tmp + (r-x*y))
+ *         where w = 1 - x*x/2 and tmp is a tiny correction term
+ *         (1 - x*x/2 == w + tmp exactly in infinite precision).
+ *         The exactness of w + tmp in infinite precision depends on w
+ *         and tmp having the same precision as x.  If they have extra
+ *         precision due to compiler bugs, then the extra precision is
+ *         only good provided it is retained in all terms of the final
+ *         expression for cos().  Retention happens in all cases tested
+ *         under FreeBSD, so don't pessimize things by forcibly clipping
+ *         any extra precision in w.
+ */
+    // coefficients for cos generated by sollya
+    // x^10
+    const vf_type cos_c10=-0x1.58f13p-22f;  // 0xb4ac7898
+    // x^8
+    const vf_type cos_c8=0x1.a0f5bp-16f;  // 0x37d07ad8
+    // x^6
+    const vf_type cos_c6=-0x1.6c17d4p-10f;  // 0xbab60bea
+    // x^4
+    const vf_type cos_c4=0x1.555556p-5f;  // 0x3d2aaaab
+    vf_type z  = xh*xh;
+    // vf_type w  = z*z;
+    vf_type r  = z*(cos_c4+z*(cos_c6+z*(cos_c8+z*cos_c10)));
+    vf_type hz = 0.5f*z;
+    vf_type w  = 1.0f-hz;
+    return w + (((1.0f-w)-hz) + (z*r-xh*xl));
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+__tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl, arg_t<vi_type> q)
+{
+/*
+ * ====================================================
+ * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+ *
+ * Developed at SunPro, a Sun Microsystems, Inc. business.
+ * Permission to use, copy, modify, and distribute this
+ * software is freely granted, provided that this notice
+ * is preserved.
+ * ====================================================
+ */
+/* tan(x)
+ * Return tangent function of x.
+ *
+ * kernel function:
+ *      __tan           ... tangent function on [-pi/4,pi/4]
+ *      __rem_pio2      ... argument reduction routine
+ *
+ * Method.
+ *      Let S,C and T denote the sin, cos and tan respectively on
+ *      [-PI/4, +PI/4]. Reduce the argument x to y1+y2 = x-k*pi/2
+ *      in [-pi/4 , +pi/4], and let n = k mod 4.
+ *      We have
+ *
+ *          n        sin(x)      cos(x)        tan(x)
+ *     ----------------------------------------------------------
+ *          0          S           C             T
+ *          1          C          -S            -1/T
+ *          2         -S          -C             T
+ *          3         -C           S            -1/T
+ *     ----------------------------------------------------------
+ *
+ * Special cases:
+ *      Let trig be any of sin, cos, or tan.
+ *      trig(+-INF)  is NaN, with signals;
+ *      trig(NaN)    is that NaN;
+ *
+ * Accuracy:
+ *      TRIG(x) returns trig(x) nearly rounded
+ */
+/* __tan( x, y, k )
+ * kernel tan function on ~[-pi/4, pi/4] (except on -0), pi/4 ~ 0.7854
+ * Input x is assumed to be bounded by ~pi/4 in magnitude.
+ * Input y is the tail of x.
+ * Input odd indicates whether tan (if odd = 0) or -1/tan (if odd = 1) is returned.
+ *
+ * Algorithm
+ *      1. Since tan(-x) = -tan(x), we need only to consider positive x.
+ *      2. Callers must return tan(-0) = -0 without calling here since our
+ *         odd polynomial is not evaluated in a way that preserves -0.
+ *         Callers may do the optimization tan(x) ~ x for tiny x.
+ *      3. tan(x) is approximated by a odd polynomial of degree 27 on
+ *         [0,0.67434]
+ *                               3             27
+ *              tan(x) ~ x + T1*x + ... + T13*x
+ *         where
+ *
+ *              |tan(x)         2     4            26   |     -59.2
+ *              |----- - (1+T1*x +T2*x +.... +T13*x    )| <= 2
+ *              |  x                                    |
+ *
+ *         Note: tan(x+y) = tan(x) + tan'(x)*y
+ *                        ~ tan(x) + (1+x*x)*y
+ *         Therefore, for better accuracy in computing tan(x+y), let
+ *                   3      2      2       2       2
+ *              r = x *(T2+x *(T3+x *(...+x *(T12+x *T13))))
+ *         then
+ *                                  3    2
+ *              tan(x+y) = x + (T1*x + (x *(r+y)+y))
+ *
+ *      4. For x in [0.67434,pi/4],  let y = pi/4 - x, then
+ *              tan(x) = tan(pi/4-y) = (1-tan(y))/(1+tan(y))
+ *                     = 1 - 2*(tan(y) - (tan(y)^2)/(1+tan(y)))
+ */
+    // coefficients for tan generated by sollya
+    // x^18
+    const vf_type tan_c18=0x1.cfadf8p-9f;  // 0x3b67d6fc
+    // x^16
+    const vf_type tan_c16=-0x1.86fb12p-8f;  // 0xbbc37d89
+    // x^14
+    const vf_type tan_c14=0x1.d13dap-8f;  // 0x3be89ed0
+    // x^12
+    const vf_type tan_c12=0x1.e62de8p-11f;  // 0x3a7316f4
+    // x^10
+    const vf_type tan_c10=0x1.3ac8ecp-7f;  // 0x3c1d6476
+    // x^8
+    const vf_type tan_c8=0x1.6449aep-6f;  // 0x3cb224d7
+    // x^6
+    const vf_type tan_c6=0x1.ba341ep-5f;  // 0x3d5d1a0f
+    // x^4
+    const vf_type tan_c4=0x1.1110c6p-3f;  // 0x3e088863
+    // x^2
+    const vf_type tan_c2=0x1.555556p-2f;  // 0x3eaaaaab
+    // make xrh positive
+    vf_type sgn_x = copysign(vf_type(1.0f), xh);
+    vmf_type x_is_neg = sgn_x < 0.0f;
+    vf_type xrh = _T::sel(x_is_neg, -xh, xh);
+    vf_type xrl = _T::sel(x_is_neg, -xl, xl);
 
     using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type s = impl::poly(x2, ctbl::native_sin_coeff);
-    s = s * x;
+    const vf_type large_arg=0.6731984257692414;
+    vmf_type x_large= xrh > large_arg;
+    // for xh in [6/7*pi/4, pi/4] we replace xh with pi/4 - xh
+#if 1
+    dvf_type dxrl= dvf_type(ctbl::m_pi_4) - dvf_type(xrh, xrl);
+    xrh = _T::sel(x_large, dxrl.h(), xrh);
+    xrl = _T::sel(x_large, dxrl.l(), xrl);
+#else
+    xrh = _T::sel(x_large,
+                  (ctbl::m_pi_4.h() - xrh) + (ctbl::m_pi_4.l() - xrl) , xrh);
+    xrl = _T::sel(x_large, 0, xrl);
+#endif
+    vf_type z = xrh*xrh;
 
-    vf_type c= impl::poly(x2, ctbl::native_cos_coeff);
+    vf_type s= z * xrh;
+    vf_type r = s* impl::poly(z,
+                              tan_c18,
+                              tan_c16,
+                              tan_c14,
+                              tan_c12,
+                              tan_c10,
+                              tan_c8,
+                              tan_c6,
+                              tan_c4);
+    r = tan_c2*s + (z *(r+xrl)+ xrl);
+    vf_type txy= xrh + r;
+
+    // tan(x+y) = (tan x + tan y)/(1 - tan(x) * tan(y))
+    // tan(x-y) = (tan x - tan y)/(1 + tan(x) * tan(y))
+    // because xr = pi/4-x --> tan(pi/4) = 1
+    // tan(pi/4-x) = (1- tan(x))/(1 + tan(x))
+    //             = 1 - 2*(tan(x) - (tan(x)^2)/(1+tan(x)))
+    vi_type q1= q & 1;
+    vmi_type qm1= q1 == vi_type(1);
+    vmf_type fqm1= _T::vmi_to_vmf(qm1);
+
+    // calculate the values for x large including the sign
+    s = _T::sel(fqm1, vf_type(-1.0f), vf_type(1.0f));
+    vf_type txyl = s - 2.0f*(xrh + (r - (txy*txy)/(s +txy)));
+    txyl *= sgn_x;
+
+    // calculate -1/tan: -1/(xrh +r) has an error to up to 2 ulp
+    // use multiprecision arithmetic and one newton raphson step
+    vi_type ti=_T::as_int(txy);
+    ti &= 0xfffff000;
+    vf_type w0 = _T::as_float(ti);
+    vf_type w1 = r - (w0 -xrh);
+    vf_type a = -1.0f/txy;
+    ti= _T::as_int(a);
+    ti &= 0xfffff000;
+    vf_type a0 = _T::as_float(ti);
+    vf_type inv_txy= a0 + a *(1.0f + a0*w0 + a0*w1);
+    inv_txy= _T::sel(x_is_neg, -inv_txy, inv_txy);
+
+    // restore the sign
+    txy = copysign(txy, sgn_x);
+
+    vf_type tt= _T::sel(fqm1, inv_txy, txy);
+    tt = _T::sel(x_large, txyl, tt);
+    return tt;
+}
+
+template <typename _T>
+__attribute__((flatten))
+void
+cftal::math::func_core<float, _T>::
+sin_cos_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
+{
+    std::pair<dvf_type, vi_type> rq=reduce_trig_arg_k(xc);
+    const dvf_type& x= rq.first;
+    const vi_type& q= rq.second;
+
+    vf_type s = __sin_k(x.h(), x.l());
+    vf_type c = __cos_k(x.h(), x.l());
 
     vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
     vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
@@ -930,12 +1188,16 @@ sin_cos_k(arg_t<vf_type> d, vf_type* ps, vf_type* pc)
 }
 
 template <typename _T>
-inline
+__attribute__((flatten))
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
-tan_k(arg_t<vf_type> x)
+tan_k(arg_t<vf_type> xc)
 {
-    return x;
+    std::pair<dvf_type, vi_type> rq=reduce_trig_arg_k(xc);
+    const dvf_type& x= rq.first;
+    const vi_type& q= rq.second;
+    vf_type t = __tan_k(x.h(), x.l(), q);
+    return t;
 }
 
 template <typename _T>

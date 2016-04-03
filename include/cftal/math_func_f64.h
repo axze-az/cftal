@@ -201,41 +201,30 @@ namespace cftal {
             typedef t_real<vf_type> tvf_type;
             typedef func_core<double, _T> my_type;
 
-            // argument reduction for all trigonometric
-            // functions, reduction by %pi/2, the low bits
-            // of multiple of %pi/2 is returned in the
-            // second part of the return type
-            static
-            std::pair<dvf_type, vi_type>
-            reduce_trig_arg_k(arg_t<vf_type> x);
-
-            // calculates sin(xh, xl) in [+0, pi/4]
+            // the exponents are returned in the odd numbered
+            // elements of e
             static
             vf_type
-            __sin_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
+            frexp_k(arg_t<vf_type> x, vi2_type* e);
 
-            // calculates cos(xh, xl) in [+0, pi/4]
             static
             vf_type
-            __cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
+            frexp(arg_t<vf_type> x, vi_type* e);
 
-            // calculates tan(xh, xl) in [+0, pi/4] and
-            // returns tan or -1/tan if q & 1
+            // the exponents are returned in the odd numbered
+            // elements of e
             static
-            vf_type
-            __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl,
-                    arg_t<vi_type> q);
+            vi2_type
+            ilogbp1_k(arg_t<vf_type> x);
 
-            // core sine, cosine calculation
             static
-            void
-            sin_cos_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
+            vi_type
+            ilogbp1(arg_t<vf_type> x);
 
-            // core tan calculation
+
             static
-            vf_type
-            tan_k(arg_t<vf_type> x);
-
+            vi_type
+            ilogb(arg_t<vf_type> vf);
 
             static
             vf_type
@@ -282,6 +271,42 @@ namespace cftal {
             vf_type
             log10_k(arg_t<vf_type> x);
 
+            // argument reduction for all trigonometric
+            // functions, reduction by %pi/2, the low bits
+            // of multiple of %pi/2 is returned in the
+            // second part of the return type
+            static
+            std::pair<dvf_type, vi_type>
+            reduce_trig_arg_k(arg_t<vf_type> x);
+
+            // calculates sin(xh, xl) in [+0, pi/4]
+            static
+            vf_type
+            __sin_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
+
+            // calculates cos(xh, xl) in [+0, pi/4]
+            static
+            vf_type
+            __cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
+
+            // calculates tan(xh, xl) in [+0, pi/4] and
+            // returns tan or -1/tan if q & 1
+            static
+            vf_type
+            __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl,
+                    arg_t<vi_type> q);
+
+
+            // core sine, cosine calculation
+            static
+            void
+            sin_cos_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
+
+            // core tan calculation
+            static
+            vf_type
+            tan_k(arg_t<vf_type> x);
+
             static
             vf_type
             atan_k(arg_t<vf_type> x);
@@ -317,27 +342,6 @@ namespace cftal {
             ldexp(arg_t<vf_type> x,
                   arg_t<vi_type> e);
 
-            // the exponents are returned in the odd numbered
-            // elements of e
-            static
-            vf_type
-            frexp_k(arg_t<vf_type> x, vi2_type* e);
-
-            static
-            vf_type
-            frexp(arg_t<vf_type> x, vi_type* e);
-
-            static
-            vi2_type
-            ilogbp1_k(arg_t<vf_type> x);
-
-            static
-            vi_type
-            ilogbp1(arg_t<vf_type> x);
-
-
-            static vi_type
-            ilogb(arg_t<vf_type> vf);
         };
 
     } // end math
@@ -430,63 +434,7 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
 {
-#if 1
     return ldexp_k(x, _T::vi_to_vi2(n));
-#else
-    vf_type xs=x;
-    using fc=func_constants<double>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal;
-    vi_type eo=vi_type(0);
-    // input denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
-    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel(i_is_denom, vi_type(-54), eo);
-    // split mantissa
-    vi_type ml, mh;
-    _T::extract_words(ml, mh, xs);
-    vi_type xe=((mh>>20) & _T::e_mask) + eo;
-
-    // determine the exponent of the result
-    // clamp nn to [-4096, 4096]
-    vi_type nn= min(vi_type(4096), max(n, vi_type(-4096)));
-    vi_type re= xe + nn;
-
-    // 3 cases exist:
-    // 0 < re < 0x7ff normal result
-    //     re >= 0x7ff inf result (overflow)
-    //     re <= 0 subnormal or 0 (underflow)
-
-    // clear exponent bits from mh
-    mh &= vi_type(~0x7ff00000);
-
-    // high part of mantissa for normal results:
-    vi_type mhn= mh | ((re & vi_type(_T::e_mask)) << 20);
-    vf_type r= _T::combine_words(ml, mhn);
-
-    // overflow handling
-    vmi_type i_is_inf = re > vi_type(0x7fe);
-    vmf_type f_is_inf = _T::vmi_to_vmf(i_is_inf);
-    vf_type r_inf = copysign(vf_type(_T::pinf()), x);
-    r = _T::sel(f_is_inf, r_inf, r);
-
-    // underflow handling
-    vmi_type i_is_near_z = re < vi_type (1);
-    if (any_of(i_is_near_z)) {
-        // create m*0x1.0p-1022
-        vi_type mhu= mh | vi_type(1<<20);
-        vf_type r_u= _T::combine_words(ml, mhu);
-        // create a scaling factor, but avoid overflows
-        vi_type ue= max(vi_type(re + (_T::bias-1)), vi_type(1));
-        vf_type s_u= _T::insert_exp(ue);
-        r_u *= s_u;
-        vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
-        r = _T::sel(f_is_near_z, r_u, r);
-    }
-    // handle special cases:
-    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)),
-                x, r);
-    return r;
-#endif
 }
 
 template <typename _T>
@@ -531,44 +479,12 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 frexp(arg_t<vf_type> x, vi_type* ve)
 {
-#if 1
     vi2_type e;
     vf_type r=frexp_k(x, &e);
     if (ve) {
         *ve=_T::vi2_odd_to_vi(e);
     }
     return r;
-#else
-    vf_type xs=x;
-    using fc=func_constants<double>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal;
-
-    vi_type eo=vi_type(0);
-    // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
-    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel(i_is_denom, vi_type(-54), eo);
-    // extract mantissa
-    vi_type lo_word, hi_word;
-    _T::extract_words(lo_word, hi_word, xs);
-    // exponent:
-    vi_type e=((hi_word >> 20) & _T::e_mask) + eo;
-    // insert exponent
-    hi_word = (hi_word & vi_type(0x800fffff)) | vi_type(0x3fe00000);
-    // combine low and high word
-    vf_type frc(_T::combine_words(lo_word, hi_word));
-    // inf, nan, zero
-    vmf_type f_inz=isinf(x) | isnan(x) | (x==vf_type(0.0));
-    frc = _T::sel(f_inz, x, frc);
-    if (ve != nullptr) {
-        // remove bias from e
-        vmi_type i_inz=_T::vmf_to_vmi(f_inz);
-        e -= vi_type(_T::bias-1);
-        e= _T::sel(i_inz, vi_type(0), e);
-        *ve= e;
-    }
-    return frc;
-#endif
 }
 
 template <typename _T>
@@ -598,23 +514,7 @@ typename cftal::math::func_core<double, _T>::vi_type
 cftal::math::func_core<double, _T>::
 ilogbp1(arg_t<vf_type> x)
 {
-#if 1
     return _T::vi2_odd_to_vi(ilogbp1_k(x));
-#else
-    vf_type xs=x;
-    using fc=func_constants<double>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal;
-    vi_type eo=vi_type(0);
-    // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
-    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel(i_is_denom, vi_type(-54), eo);
-    // reinterpret as integer
-    vi_type hi_word(_T::extract_high_word(xs));
-    // exponent:
-    vi_type e=((hi_word >> 20) & _T::e_mask) + eo - vi_type(_T::bias-1);
-    return e;
-#endif
 }
 
 template <typename _T>
