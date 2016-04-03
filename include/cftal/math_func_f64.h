@@ -1568,9 +1568,16 @@ __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl, arg_t<vi_type> q)
     const vf_type large_arg=0.6731984257692414;
     vmf_type x_large= xrh > large_arg;
     // for xh in [6/7*pi/4, pi/4] we replace xh with pi/4 - xh
+#if 0
+    // not required for double precision
+    dvf_type dxrl= dvf_type(ctbl::m_pi_4) - dvf_type(xrh, xrl);
+    xrh = _T::sel(x_large, dxrl.h(), xrh);
+    xrl = _T::sel(x_large, dxrl.l(), xrl);
+#else
     xrh = _T::sel(x_large,
                   (ctbl::m_pi_4.h() - xrh) + (ctbl::m_pi_4.l() - xrl) , xrh);
     xrl = _T::sel(x_large, 0, xrl);
+#endif
     vf_type z = xrh*xrh;
 
     vf_type s= z * xrh;
