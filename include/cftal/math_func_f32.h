@@ -528,7 +528,7 @@ typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
 exp10_k(arg_t<vf_type> x)
 {
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf = rint(vf_type(x * ctbl::m_1_ld2.h()));
     vf_type hi = x - kf * ctbl::m_ld2_cw[0];
     vf_type lo = kf * ctbl::m_ld2_cw[1];
