@@ -269,18 +269,5 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << d_st << std::endl;
-#if 0
-    std::cout << "f32 test\n"<<std::scientific;
-    func_domain<float> df=std::make_pair(-std::numeric_limits<float>::max(),
-                                          std::numeric_limits<float>::max());
-    auto usf=std::make_shared<ulp_stats>();
-    exec_stats f_st(_DN);
-    rc &= of_fp_func_up_to<
-        float, _FN, check_cbrt<float> >::v(f_st, df, cmp_ulp<float>(ulp, usf),
-                                           0x20000);
-    std::cout << "ulps: "
-              << std::fixed << std::setprecision(4) << *usf << std::endl;
-    std::cout << f_st << std::endl;
-#endif
     return rc==true ? 0 : 1;
 }
