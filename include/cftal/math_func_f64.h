@@ -2008,12 +2008,28 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type ya=abx(y);
     vf_type ma=max(xa, ya);
     vf_type mi=min(xa, ya);
-    vf_type r=ma * sqrt(1.0 + mi/ma);
-    r = _T::sel((xa==0) & (ya==0), x+y, r);
+
+    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+
+    vf_type scale=1.0;
+    vf_type factor=1.0;
+    // avoid underflows
+    vmf_type mi_small= mi < 0x1p-450;
+    scale = _T::sel(mi_small, 0x1p-450, scale);
+    factor= _T::sel(mi_small, 0x1p450, factor);
+    // avoid overflows
+    vmf_type ma_large= ma > 0x1p510;
+    scale = _T::sel(ma_large, 0x1p700, scale);
+    factor= _T::sel(ma_large, 0x1p-700, factor);
+    ma *= factor;
+    mi *= factor;
+
+    dvf_type sqr_ma=d_ops::sqr(ma);
+    dvf_type sqr_mi=d_ops::sqr(mi);
+    vf_type r= scale*sqrt(vf_type(sqr_ma.h() + sqr_ma.l() +
+                                  sqr_mi.h() + sqr_mi.l()));
     return r;
 }
-
-
 
 template <typename _T>
 typename cftal::math::func_core<double, _T>::vf_type
