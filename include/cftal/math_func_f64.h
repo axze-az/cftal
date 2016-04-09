@@ -329,6 +329,14 @@ namespace cftal {
 
             static
             vf_type
+            asinh_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            hypot_k(arg_t<vf_type> x, arg_t<vf_type> y);
+
+            static
+            vf_type
             cbrt_k(arg_t<vf_type> x);
 
             static vf_type
@@ -1927,7 +1935,6 @@ asin_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-__attribute__((flatten))
 typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 acos_k(arg_t<vf_type> xc)
@@ -1982,6 +1989,31 @@ acos_k(arg_t<vf_type> xc)
     ac = _T::sel(x_gt_1_2, ac2, ac);
     return ac;
 }
+
+template <typename _T>
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+asinh_k(arg_t<vf_type> xc)
+{
+    vf_type x=xc;
+    return x;
+}
+
+template <typename _T>
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    vf_type xa=abs(x);
+    vf_type ya=abx(y);
+    vf_type ma=max(xa, ya);
+    vf_type mi=min(xa, ya);
+    vf_type r=ma * sqrt(1.0 + mi/ma);
+    r = _T::sel((xa==0) & (ya==0), x+y, r);
+    return r;
+}
+
+
 
 template <typename _T>
 typename cftal::math::func_core<double, _T>::vf_type

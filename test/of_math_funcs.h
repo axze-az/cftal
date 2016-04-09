@@ -95,7 +95,7 @@ namespace cftal {
             static
             _T
             v(const _T& a) {
-#if 0
+#if 1
                 return call_mpfr::func(a, mpfr_cbrt);
 #else
                 return std::cbrt(a);
