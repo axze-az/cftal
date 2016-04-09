@@ -1,0 +1,168 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[bookmarks=true,hidelinks]{hyperref}
+\numberwithin{equation}{subsection}
+
+\lstset{
+  % change this to 11 later
+  language={C++},
+  basicstyle=\footnotesize
+}
+
+\begin{document}
+\title{cftal - a short vector library}
+\author{axel zeuner}
+\maketitle
+
+\tableofcontents
+
+\section{introduction}
+\label{sec:introduction}
+
+\section{base components}
+\label{sec:base}
+
+\section{vector math library}
+\label{sec:vec_math_lib}
+
+This section contains the description of the algorithms used in the
+vector math library. The implemented algorithms are the same or heavily
+based on the algorithms used in the sun math library. Therefore the
+copyright of the sun libm source codes
+\begin{verbatim}
+/*
+ * ====================================================
+ * Copyright (C) 2004 by Sun Microsystems, Inc. All rights reserved.
+ *
+ * Permission to use, copy, modify, and distribute this
+ * software is freely granted, provided that this notice
+ * is preserved.
+ * ====================================================
+ */
+\end{verbatim}
+applies.
+
+Functions for vector length from 1 to 8 are implemented as direct
+instantiations of the template code in \texttt{include/cftal/math\_common.h}
+using the macros in \texttt{src/vec\_def\_math\_functions.h}.
+Functions for greater vector lengths are constructed like
+\begin{lstlisting}
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N>
+cftal::func(const vec<_T, _N>& x)
+{
+    vec<_T, _N> r= vec<_T, _N>(func(low_half(r)),
+                               func(high_half(x)));
+    return r;
+}
+\end{lstlisting}
+recursively.
+
+\subsection{basic functions: ldexp, frexp, ilogb}
+\label{sub_sec:base_math}
+\subsubsection{precision}
+The functions have an error of $ \pm 0\, ulp$ compared against their glibc
+counterparts
+
+\subsection{exp}
+\label{sub_sec:exp}
+The function exp(x) calculates $ e^x $.
+
+\subsubsection{precision}
+The functions have an error of $ \pm 1\, ulp$.
+
+\subsubsection{implementation}
+\begin{enumerate}
+\item Argument reduction
+
+      reduce $x$ to $r$ so that $ |r| \le \frac{1}{2} log(2) $
+      \begin{equation}
+        x = k \times log(2) + r, \, |r| \le \frac{1}{2} log(2)
+      \end{equation}
+
+\item Approximation of $e^r$ by a special rational function on the interval
+    [0,\,log(2)/2]:
+
+    Define $ R(r^2) $ as
+    \begin{equation}
+        R(r^2) = r \, \frac{e^r+1}{e^r-1}
+               = r + \frac{1}{6}r^2 + \frac{4}{360}r^4 + ..
+    \end{equation}
+    $ R(z) = P_0 + P_1\, z + P_2\,z^2 + P_3\,z^3 + P_4\,z^4+ P_5\, z^5$
+    where $z = r^2$ is approximated as minimax polynomal of degree 5 for double
+    using precision using the sollya command
+
+    \begin{verbatim}
+/* exp(x) f64 */
+f= x*(exp(x)+1)/(exp(x)-1);
+p = fpminimax(f, [|0, 2, 4, 6, 8, 10|], [|D...|], [0, log(2)/2],
+                 relative, floating);
+    \end{verbatim}
+    and as polynomial of degree 2:
+    \begin{verbatim}
+/* exp(x) f32 */
+f= x*(exp(x)+1)/(exp(x)-1);
+p = fpminimax(f, [|0, 2, 4|], [|SG...|], [0, log(2)/2],
+                 relative, floating);
+    \end{verbatim}
+    for single precision.
+    Forcing the coefficient $P_O$ of $R$ to $2$ is not necessary.
+
+    The computation of $e^r=y$ thus becomes
+    \[
+        \begin{aligned}
+            R &= r \frac{y+1}{y-1} \\
+            y &= \frac{R+r}{R-r} \\
+              &= \frac{R+r+(-r+r)}{R-r} \\
+              &= \frac{R-r+2\,r}{R-r}\\
+              &= 1 + \frac{2 r}{R-r}
+        \end{aligned}
+    \]
+
+    and using
+    \begin{equation}
+        c = r - (R-P_0) = r - R + P_0 \\
+    \end{equation}
+    the calculation of $e^r=y$ can be written as
+    \[
+        \begin{aligned}
+            y &= 1 + \frac{2\,r}{P_0+r-c-r} \\
+              &= 1 + \frac{1}{P_0-c} \\
+              &= 1 + \frac{r\,P_0 - c\,r -2\,r}{P_0-c} \\
+              &= 1 + r + \frac{c\,r+2\,r-P_0\,r}{P_0-c} \\
+              &= 1 + r + \frac{c\,r+(2-P_0)\,r}{P_0-c}.
+         \end{aligned}
+    \]
+    With $P_0 = 2$ the last equation simplifies to
+    \begin{equation}
+        y= e^r= 1 + r + \frac{r\,c}{2-c}
+    \end{equation}
+
+\item The reduced function value is scaled back
+    \begin{equation}
+        e^x = 2^k \times e^r
+    \end{equation}
+    to obtain the result.
+
+\end{enumerate}
+
+
+\subsection{expm1}
+\label{sub_sec:expm1}
+The function exp(x) calculates $ e^x-1 $.
+
+\subsubsection{precision}
+The functions have an error of $ \pm 1\, ulp$.
+
+\subsubsection{method}
+
+
+\subsection{exp2}
+The function exp2(x) calculates $ 2^x $.
+
+\subsection{cbrt}
+
+\end{document}

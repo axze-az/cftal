@@ -468,7 +468,7 @@ typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
 exp_k(arg_t<vf_type> xc, bool exp_m1)
 {
-    // see math_func_f64 for comments about the code
+    // see math_func_f64.h for comments about the code
     using ctbl = impl::d_real_constants<d_real<float>, float>;
 
     vf_type x=xc;
@@ -1439,7 +1439,7 @@ cbrt_k(arg_t<vf_type> xc)
     // round mm to 8 bits (including the hidden one)
     // round up if the first bit truncated is set
     // hw += hw & 0x0008000;
-    vi_type corr= hw & 0x00008000;
+    vi_type corr= hw & 0x000008000;
     // vi_type corr= hw & 0x0000e000;
     // vmi_type m=(vi_type(hw & 0x0001e000) != vi_type(0x00008000)) &
     //    (corr != vi_type(0));

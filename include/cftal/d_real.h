@@ -1138,7 +1138,7 @@ cftal::d_real<_T>
 cftal::impl::d_real_ops<_T, _FMA>::
 ieee_div(const d_real<_T>&a, const d_real<_T>& b)
 {
-#if 1
+#if 0
     return scaled_div(a, b);
 #else
     using std::abs;

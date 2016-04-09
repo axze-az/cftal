@@ -120,6 +120,7 @@ option(CFTAL_FULL_TEST "perform a full test with long compile times" OFF)
 
 include_directories(include)
 add_subdirectory(src)
+add_subdirectory(doc)
 add_subdirectory(test)
 
 # hackx86vec
