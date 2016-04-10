@@ -977,6 +977,8 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c1,
                          exp10_c0);
     y *= xr;
+    // vf_type cr = (hi-xr)-lo;
+    // y += cr + cr *xr;
     y += 1.0;
     y= scale_exp_k(y, kf, k2);
     return y;
@@ -1988,8 +1990,23 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 asinh_k(arg_t<vf_type> xc)
 {
-    vf_type x=xc;
-    return x;
+    vf_type x=abs(xc);
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+
+    vmf_type x_gt_0x1p28 = x > 0x1p28;
+    vf_type add_2_log=_T::sel(x_gt_0x1p28, ctbl::m_ln2.h(), vf_type(0));
+    vf_type t= x*x;
+    vf_type log_arg=_T::sel(x_gt_0x1p28,
+                            x,
+                            2.0 * x+ 1.0/(sqrt(t+1.0)+x));
+    vf_type yl= log_k(log_arg, log_func::c_log_e);
+    yl += add_2_log;
+    // |x| < 2.0
+    vf_type log1p_arg= x+t/(1.0+sqrt(1.0+t));
+    vf_type ys= log1p_k(log1p_arg);
+    vf_type ash=_T::sel(x <= 2.0, ys, yl);
+    ash = copysign(ash, xc);
+    return ash;
 }
 
 template <typename _T>

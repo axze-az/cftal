@@ -365,14 +365,18 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
 
     std::cout << "[" << domain.first << ", " << domain.second << ")\n";
     const uint32_t N0=72;
-    for (uint32_t j=0; j<N0; ++j) {
-        for (std::size_t i=0; i<cnt; ++i) {
-            for (std::size_t k=0; k<_N; ++k) {
-                va[k] = distrib(rnd);
+    const uint32_t N1=4;
+    for (uint32_t l=0; l< N1; ++l) {
+        for (uint32_t j=0; j<N0; ++j) {
+            for (std::size_t i=0; i<cnt; ++i) {
+                for (std::size_t k=0; k<_N; ++k) {
+                    va[k] = distrib(rnd);
+                }
+                r &= v(va, st, cmp);
             }
-            r &= v(va, st, cmp);
+            std::cout << '.' << std::flush;
         }
-        std::cout << '.' << std::flush;
+        std::cout << std::endl;
     }
     _T minus1= std::max(_T(-1), domain.first);
     _T plus1= std::min(_T(1), domain.second);
@@ -382,14 +386,17 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
         uniform_real_distribution<_T>
             distrib1(minus1, nplus1);
         std::cout << "[" << minus1 << ", " << nplus1 << ")\n";
-        for (uint32_t j=0; j<N0; ++j) {
-            for (std::size_t i=0; i<cnt; ++i) {
-                for (std::size_t k=0; k<_N; ++k) {
-                    va[k] = distrib1(rnd);
+        for (uint32_t l=0; l< N1; ++l) {
+            for (uint32_t j=0; j<N0; ++j) {
+                for (std::size_t i=0; i<cnt; ++i) {
+                    for (std::size_t k=0; k<_N; ++k) {
+                        va[k] = distrib1(rnd);
+                    }
+                    r &= v(va, st, cmp);
                 }
-                r &= v(va, st, cmp);
+                std::cout << '.' << std::flush;
             }
-            std::cout << '.' << std::flush;
+            std::cout << std::endl;
         }
     }
     std::cout << std::endl;
@@ -493,15 +500,19 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
               << ") x [" << domain_2.first << ", " << domain_2.second
               << ")\n";
     const uint32_t N0=72;
-    for (uint32_t j=0; j< N0; ++j) {
-        for (std::size_t i=0; i<cnt; ++i) {
-            for (std::size_t k=0; k<_N; ++k) {
-                va[k] = distrib1(rnd);
-                vb[k] = distrib2(rnd);
+    const uint32_t N1=4;
+    for (uint32_t l=0; l< N1; ++l) {
+        for (uint32_t j=0; j< N0; ++j) {
+            for (std::size_t i=0; i<cnt; ++i) {
+                for (std::size_t k=0; k<_N; ++k) {
+                    va[k] = distrib1(rnd);
+                    vb[k] = distrib2(rnd);
+                }
+                r &= v(va, vb, st, cmp);
             }
-            r &= v(va, vb, st, cmp);
+            std::cout << '.' << std::flush;
         }
-        std::cout << '.' << std::flush;
+        std::cout << std::endl;
     }
     _T a_minus1= std::max(_T(-1), domain_1.first);
     _T a_plus1= std::min(_T(1), domain_1.second);
@@ -518,15 +529,18 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
         std::cout << "[" << a_minus1 << ", " << a_nplus1
                   << ") x [" << b_minus1 << ", " << b_nplus1
                   << ")\n";
-        for (uint32_t j=0; j<N0; ++j) {
-            for (std::size_t i=0; i<cnt; ++i) {
-                for (std::size_t k=0; k<_N; ++k) {
-                    va[k] = distrib_1_1(rnd);
-                    vb[k] = distrib_1_2(rnd);
+        for (uint32_t l=0; l<N1; ++l) {
+            for (uint32_t j=0; j<N0; ++j) {
+                for (std::size_t i=0; i<cnt; ++i) {
+                    for (std::size_t k=0; k<_N; ++k) {
+                        va[k] = distrib_1_1(rnd);
+                        vb[k] = distrib_1_2(rnd);
+                    }
+                    r &= v(va, vb, st, cmp);
                 }
-                r &= v(va, vb, st, cmp);
+                std::cout << '.' << std::flush;
             }
-            std::cout << '.' << std::flush;
+            std::cout << std::endl;
         }
     }
     std::cout << std::endl;
