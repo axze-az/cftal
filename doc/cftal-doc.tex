@@ -1,19 +1,21 @@
-\documentclass[12pt]{article}
+\documentclass[10pt,a4paper]{article}
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
-\usepackage{listings}
 \usepackage{color}
+\usepackage{listings}
 \usepackage[bookmarks=true,hidelinks]{hyperref}
 \numberwithin{equation}{subsection}
 
 \lstset{
   % change this to 11 later
   language={C++},
-  basicstyle=\footnotesize
+  basicstyle=\footnotesize,
+  keywordstyle=\bfseries\color{black},
+  identifierstyle=\color{black}
 }
 
 \begin{document}
-\title{cftal - a short vector library}
+\title{cftal - yet another short vector library}
 \author{axel zeuner}
 \maketitle
 
@@ -86,16 +88,25 @@ The function exp(x) calculates $ e^x $.
 The functions have an error of $ \pm 1\, ulp$.
 
 \subsubsection{implementation}
-\begin{enumerate}
+\begin{itemize}
 \item Argument reduction
 
-      reduce $x$ to $r$ so that $ |r| \le \frac{1}{2} log(2) $
-      \begin{equation}
-        x = k \times log(2) + r, \, |r| \le \frac{1}{2} log(2)
-      \end{equation}
+    Reduce $x$ to $r$ so that $ |r| \le \frac{1}{2} log(2) $
+    \begin{equation}
+        x = k \times log(2) + r, \; |r| \le \frac{1}{2} log(2)
+    \end{equation}
+    $r$ is split into two values for calculation purposes
+    \[
+       \begin{aligned}
+       r_h &= x - k \times LN2_{HI} \\
+       r_l &= k \times LN2_{LO} \\
+       r &= r_h - r_l
+       \end{aligned}
+    \]
+    where $LN2_{HI}$ and $LN2_{LO}$ are Cody and Waite constants for $log(2)$.
 
 \item Approximation of $e^r$ by a special rational function on the interval
-    [0,\,log(2)/2]:
+    $[0,\,\frac{1}{2}log(2)]$:
 
     Define $ R(r^2) $ as
     \begin{equation}
@@ -137,13 +148,20 @@ The functions have an error of $ \pm 1\, ulp$.
         y= e^r= 1 + r + \frac{r\,c}{2-c}
     \end{equation}
 
-\item The reduced function value is scaled back
+    The last equation is implemented as
+    \[
+        y= e^r= 1 + \frac{r\,c}{2-c} - r_l + r_h
+    \]
+    to compensate the error during the argument reduction.
+
+
+\item The function value of the reduced argument is scaled back
     \begin{equation}
         e^x = 2^k \times e^r
     \end{equation}
     to obtain the result.
 
-\end{enumerate}
+\end{itemize}
 
 
 \subsection{expm1}
@@ -154,7 +172,36 @@ The function expm1(x) calculates $ e^x-1 $.
 The functions have an error of $ \pm 1\, ulp$.
 
 \subsubsection{implementation}
+\begin{itemize}
+\item Argument reduction
 
+    Reduce $x$ to $r$ so that $ |r| \le \frac{1}{2} log(2) $
+    \begin{equation}
+        x = k \times log(2) + r, \; |r| \le \frac{1}{2} log(2)
+    \end{equation}
+    $r$ is split into two values for calculation purposes
+    \[
+       \begin{aligned}
+       r_h &= x - k \times LN2_{HI} \\
+       r_l &= k \times LN2_{LO} \\
+       r &= r_h - r_l
+       \end{aligned}
+    \]
+    where $LN2_{HI}$ and $LN2_{LO}$ are Cody and Waite constants for $log(2)$.
+    Furthermore a correction term
+    \[
+        c = (r_h - r) - r_l
+    \]
+    is calculated.
+
+\item Approximation of $e^r-1$ by a special rational function on the interval
+    $[0,\,\frac{1}{2}log(2)]$:
+    \[
+        r \frac{e^{r}+1}{e^{r}-1} =
+        2+{{r^2}\over{6}}-{{r^4}\over{360}}+\cdots
+    \]
+
+\end{itemize}
 
 \subsection{exp2}
 The function exp2(x) calculates $ 2^x $.
