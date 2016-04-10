@@ -61,6 +61,17 @@ cftal::func(const vec<_T, _N>& x)
 \end{lstlisting}
 recursively.
 
+double argument identity for exponential functions:
+\[
+    \begin{aligned}
+        (b^x-1)^2 &= b^{2x} - 2b^x + 1 \\
+        b^{2x}    &= (b^x-1)^2 + 2b^x - 1 \\
+        b^{2x} -1 &= (b^x-1)^2 + 2b^x -2 \\
+                  &= (b^x-1)^2 + 2(b^x-1)
+    \end{aligned}
+\]
+
+
 \subsection{basic functions: ldexp, frexp, ilogb}
 \label{sub_sec:base_math}
 \subsubsection{precision}
@@ -92,24 +103,9 @@ The functions have an error of $ \pm 1\, ulp$.
                = r + \frac{1}{6}r^2 + \frac{4}{360}r^4 + ..
     \end{equation}
     $ R(z) = P_0 + P_1\, z + P_2\,z^2 + P_3\,z^3 + P_4\,z^4+ P_5\, z^5$
-    where $z = r^2$ is approximated as minimax polynomal of degree 5 for double
-    using precision using the sollya command
-
-    \begin{verbatim}
-/* exp(x) f64 */
-f= x*(exp(x)+1)/(exp(x)-1);
-p = fpminimax(f, [|0, 2, 4, 6, 8, 10|], [|D...|], [0, log(2)/2],
-                 relative, floating);
-    \end{verbatim}
-    and as polynomial of degree 2:
-    \begin{verbatim}
-/* exp(x) f32 */
-f= x*(exp(x)+1)/(exp(x)-1);
-p = fpminimax(f, [|0, 2, 4|], [|SG...|], [0, log(2)/2],
-                 relative, floating);
-    \end{verbatim}
-    for single precision.
-    Forcing the coefficient $P_O$ of $R$ to $2$ is not necessary.
+    with $z = r^2$ is approximated as minimax polynomal of degree 5 for double
+    and as polynomial of degree 2 for single precision.
+    Forcing the coefficient $P_0$ of $R$ to $2$ is not necessary.
 
     The computation of $e^r=y$ thus becomes
     \[
@@ -152,12 +148,12 @@ p = fpminimax(f, [|0, 2, 4|], [|SG...|], [0, log(2)/2],
 
 \subsection{expm1}
 \label{sub_sec:expm1}
-The function exp(x) calculates $ e^x-1 $.
+The function expm1(x) calculates $ e^x-1 $.
 
 \subsubsection{precision}
 The functions have an error of $ \pm 1\, ulp$.
 
-\subsubsection{method}
+\subsubsection{implementation}
 
 
 \subsection{exp2}
