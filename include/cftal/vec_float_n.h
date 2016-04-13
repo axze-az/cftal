@@ -399,6 +399,23 @@ namespace cftal {
     vec<float, 8>
     log2(arg_t<vec<float, 8> > d);
 
+    // asing, these functions are exact to +XXX ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    asinh(const vec<float, _N>& v);
+
+    vec<float, 1>
+    asinh(arg<vec<float, 1> >::type d);
+
+    vec<float, 2>
+    asinh(arg<vec<float, 2> >::type d);
+
+    vec<float, 4>
+    asinh(arg<vec<float, 4> >::type d);
+
+    vec<float, 8>
+    asinh(arg<vec<float, 8> >::type d);
+    
     // pow, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<float, _N>
@@ -861,6 +878,15 @@ cftal::vec<float, _N>
 cftal::sinh(const vec<float, _N>& v)
 {
     vec<float, _N> r(sinh(low_half(v)), sinh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::asinh(const vec<float, _N>& v)
+{
+    vec<float, _N> r(asinh(low_half(v)), asinh(high_half(v)));
     return r;
 }
 

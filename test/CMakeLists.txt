@@ -16,6 +16,7 @@ set (TEST_SRCS
 )
 include_directories(../..)
 include_directories(../include)
+include_directories(./include)
 
 find_package(Boost REQUIRED)
 if(${Boost_FOUND})
@@ -111,6 +112,7 @@ test_prog(test-log1p-f64)
 test_prog(test-log10-f64)
 test_prog(test-log2-f64)
 test_prog(test-pow-f64)
+test_prog(test-asinh-f64)
 
 test_prog(test-sin-f64)
 test_prog(test-cos-f64)

@@ -1,4 +1,5 @@
 #include "cftal/test/of_math_funcs.h"
+#include "cftal/test/check_exp2.h"
 #include <iostream>
 #include <iomanip>
 
@@ -31,7 +32,7 @@ int main(int argc, char** argv)
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
         double, _N, check_exp2<double> >::v(st, d, cmp_ulp<double>(ulp, us),
-                                            0x80000);
+                                            0x800);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

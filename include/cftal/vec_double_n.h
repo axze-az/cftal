@@ -534,6 +534,23 @@ namespace cftal {
     vec<double, 8>
     tan(arg_t<vec<double, 8> > d);
 
+    // asinh, these functions are exact to XXX ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    asinh(const vec<double, _N>& x);
+
+    vec<double, 1>
+    asinh(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    asinh(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    asinh(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    asinh(arg_t<vec<double, 8> > d);
+
     // native_exp, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -846,6 +863,15 @@ cftal::vec<double, _N>
 cftal::tan(const vec<double, _N>& v)
 {
     vec<double, _N> r(tan(low_half(v)), tan(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::asinh(const vec<double, _N>& v)
+{
+    vec<double, _N> r(asinh(low_half(v)), asinh(high_half(v)));
     return r;
 }
 

@@ -1,4 +1,5 @@
 #include "cftal/test/of_math_funcs.h"
+#include "cftal/test/check_native_sincos.h"
 #include <iostream>
 #include <iomanip>
 

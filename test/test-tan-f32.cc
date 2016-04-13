@@ -1,4 +1,5 @@
 #include "cftal/test/of_math_funcs.h"
+#include "cftal/test/check_tan.h"
 #include <iostream>
 #include <iomanip>
 

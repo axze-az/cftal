@@ -54,21 +54,6 @@ namespace cftal {
             typedef typename _TRAITS_T::vmi_type vmi_type;
             typedef d_real<vf_type> dvf_type;
 
-            // core sine, cosine calculation
-            static
-            void
-            sin_cos_k(arg_t<vf_type> v,
-                      std::size_t n,
-                      vf_type* s, vf_type* c);
-
-            // native core sine, cosine calculation
-            static
-            void
-            native_sin_cos_k(arg_t<vf_type> x,
-                             vf_type* s, vf_type* c);
-            // atan2 core
-            static dvf_type
-            native_atan2_k(arg_t<vf_type> x, arg_t<vf_type> y);
         };
 
         template <typename _FLOAT_T, typename _TRAITS_T>
@@ -178,6 +163,7 @@ namespace cftal {
             static vf_type atan(arg_t<vf_type> x);
             static vf_type asin(arg_t<vf_type> x);
             static vf_type acos(arg_t<vf_type> x);
+            static vf_type asinh(arg_t<vf_type> x);
         };
 
 
@@ -1309,6 +1295,17 @@ acos(arg_t<vf_type> x)
     return r;
 }
 
+template <typename _FLOAT_T,
+          typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+asinh(arg_t<vf_type> x)
+{
+    vf_type r=base_type::asinh_k(x);
+    r = _TRAITS_T::sel(isinf(x), x, r);
+    r = _TRAITS_T::sel(isnan(x), x, r);
+    return r;
+}
 
 template <typename _T>
 _T

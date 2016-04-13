@@ -1,4 +1,5 @@
 #include "cftal/test/of_math_funcs.h"
+#include "cftal/test/check_expm1.h"
 #include <iostream>
 #include <iomanip>
 
