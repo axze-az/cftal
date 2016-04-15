@@ -6,9 +6,11 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const int ulp=8;
-    const int _N=8;
+    const int ulp=1;
+    const int _N=1;
     bool rc=true;
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
 #if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -20,21 +22,19 @@ int main(int argc, char** argv)
     std::vector<func_arg_result<double> > v=
         read_double_file(test_data_file, false);
 
-    std::cout << std::setprecision(18) << std::scientific;
-    std::cerr << std::setprecision(18) << std::scientific;
     rc &= check_func_1<double, 1, check_asinh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 2, check_asinh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 4, check_asinh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_asinh<double> >(v, ulp, 0, false);
 #endif
-#if 1
+#if 0
     func_domain<double> d=std::make_pair(
         -std::numeric_limits<double>::max(),
         std::numeric_limits<double>::max());
 #else
     func_domain<double> d=std::make_pair(
-        2.0,
-        std::numeric_limits<double>::max());
+        -2.0,
+        2.0);
 #endif
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);

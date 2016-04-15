@@ -27,7 +27,7 @@ namespace cftal {
 #endif
             }
             static
-            const char* fname() { return "asin"; }
+            const char* fname() { return "asinh"; }
         };
     }
 }

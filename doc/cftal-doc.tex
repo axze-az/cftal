@@ -31,9 +31,10 @@
 \label{sec:vec_math_lib}
 
 This section contains the description of the algorithms used in the
-vector math library. The implemented algorithms are the same or heavily
-based on the algorithms used in the sun math library. Therefore the
-copyright of the sun libm source codes
+vector math library. The implemented algorithms are the same or
+heavily based on the algorithms used in the sun math
+library. Therefore the copyright of the sun libm source codes
+
 \begin{verbatim}
 /*
  * ====================================================
@@ -198,7 +199,7 @@ The functions have an error of $ \pm 1\, ulp$.
     $[0,\,\frac{1}{2}log(2)]$:
     \[
         r \frac{e^{r}+1}{e^{r}-1} =
-        2+{{r^2}\over{6}}-{{r^4}\over{360}}+\cdots
+        2+\frac{r^2}{6}-\frac{r^4}{360}+\cdots
     \]
 
 \end{itemize}
@@ -208,4 +209,23 @@ The function exp2(x) calculates $ 2^x $.
 
 \subsection{cbrt}
 
+\subsection{asinh}
+\label{sub_sec:asin}
+The function asin(x) calculates $ asinh(x) $.
+
+\subsubsection{precision}
+The functions have an error of $ \pm 2\, ulp$.
+
+\subsubsection{implementation}
+\begin{itemize}
+\item Argument reduction
+    \[
+        \begin{aligned}
+          asinh(x) &= log(x+\sqrt{1+x^2}) \\
+                   &= log(x+\sqrt{1-x}\sqrt{1+x}) \\
+          x &= 2^k\times r 
+        \end{aligned}
+    \]
+\end{itemize}
+  
 \end{document}
