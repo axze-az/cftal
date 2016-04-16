@@ -10,6 +10,7 @@ int main(int argc, char** argv)
     std::cerr << std::setprecision(18) << std::scientific;
     const int _N=8;
     const int ulp=1;
+    return 0;
 #if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=

@@ -207,6 +207,25 @@ The functions have an error of $ \pm 1\, ulp$.
 \subsection{exp2}
 The function exp2(x) calculates $ 2^x $.
 
+\subsection{pow}
+The function pow(x,y) calculates $ x^y $.
+
+\subsubsection{precision}
+The functions have an error of $ \pm x\, ulp$.
+
+\subsubsection{implementation}
+\begin{itemize}
+\item argument reduction
+    \begin{equation}
+        \begin{aligned}
+        x^y &= (2^{k_x} \times m_x) ^ {2^{k_y} \times m_y} \\
+        log(x^y) &= y*log(x) \\
+                 &= (2^{k_y} log(m_x) + log(2) k_x 2^{k_y}) m_y \\
+                 &= (log(m_x) + log(2) k_x) 2^{k_y} m_y \\
+        \end{aligned}
+    \end{equation}
+\end{itemize}
+
 \subsection{cbrt}
 
 \subsection{asinh}
@@ -226,9 +245,9 @@ The functions have an error of $ \pm 2\, ulp$.
           asinh(u) + asinh(v) &= asinh(u\sqrt{1+v^2} + v\sqrt{1+u^2}) \\
           asinh(x) + asinh(x) &= asinh(x\sqrt{1+x^2} + x\sqrt{1+x^2}) \\
                               &= asinh(2\,x\sqrt{1+x^2}) \\
-          x &= 2^k\times r 
+          x &= 2^k\times r
         \end{aligned}
     \]
 \end{itemize}
-  
+
 \end{document}
