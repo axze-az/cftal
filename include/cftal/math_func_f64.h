@@ -2270,8 +2270,15 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 atanh_k(arg_t<vf_type> xc)
 {
-    vf_type x=xc;
-    return x;
+    vf_type x=abs(xc);
+    vf_type s=copysign(vf_type(1.0), xc);
+
+    vf_type log1p_arg= _T::sel(x < 0.5,
+                               2*x + 2*x*x/(1-x),
+                               2*(x/(1-x)));
+    vf_type r=0.5*log1p_k(log1p_arg);
+    r *= s;
+    return r;
 }
 
 template <typename _T>

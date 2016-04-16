@@ -1329,7 +1329,9 @@ cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atanh(arg_t<vf_type> x)
 {
     vf_type r=base_type::atanh_k(x);
+    r = _TRAITS_T::sel(x == -1.0, _TRAITS_T::ninf(), r);
     r = _TRAITS_T::sel(x < -1.0, -_TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x == 1.0, _TRAITS_T::pinf(), r);
     r = _TRAITS_T::sel(x >  1.0, _TRAITS_T::nan(), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
