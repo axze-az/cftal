@@ -6,6 +6,8 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+    const int ulp=2;
+    const int _N=1;
 
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -20,8 +22,6 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
-    const int ulp=2;
-    const int _N=8;
 
     bool rc= check_func_1<double, 1, check_sinh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 2, check_sinh<double> >(v, ulp, 0, false);
