@@ -256,6 +256,14 @@ namespace cftal {
 
             static
             vf_type
+            acosh_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            atanh_k(arg_t<vf_type> x);
+
+            static
+            vf_type
             cbrt_k(arg_t<vf_type> x);
         };
 
@@ -1395,6 +1403,26 @@ inline
 typename cftal::math::func_core<float, _T>::vf_type
 cftal::math::func_core<float, _T>::
 asinh_k(arg_t<vf_type> xc)
+{
+    vf_type x= xc;
+    return x;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+acosh_k(arg_t<vf_type> xc)
+{
+    vf_type x= xc;
+    return x;
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+atanh_k(arg_t<vf_type> xc)
 {
     vf_type x= xc;
     return x;

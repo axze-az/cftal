@@ -113,6 +113,8 @@ test_prog(test-log10-f64)
 test_prog(test-log2-f64)
 test_prog(test-pow-f64)
 test_prog(test-asinh-f64)
+test_prog(test-acosh-f64)
+test_prog(test-atanh-f64)
 
 test_prog(test-sin-f64)
 test_prog(test-cos-f64)

@@ -415,7 +415,41 @@ namespace cftal {
 
     vec<float, 8>
     asinh(arg<vec<float, 8> >::type d);
-    
+
+    // acosh, these functions are exact to +-2 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    acosh(const vec<float, _N>& x);
+
+    vec<float, 1>
+    acosh(arg_t<vec<float, 1> > d);
+
+    vec<float, 2>
+    acosh(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    acosh(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    acosh(arg_t<vec<float, 8> > d);
+
+    // atanh, these functions are exact to +-2 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    atanh(const vec<float, _N>& x);
+
+    vec<float, 1>
+    atanh(arg_t<vec<float, 1> > d);
+
+    vec<float, 2>
+    atanh(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    atanh(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    atanh(arg_t<vec<float, 8> > d);
+
     // pow, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<float, _N>
@@ -466,7 +500,7 @@ namespace cftal {
 
     v8f32
     native_exp2(arg<v8f32>::type d);
-    
+
     // expm1: exact to
     template <std::size_t _N>
     vec<float, _N>
@@ -887,6 +921,24 @@ cftal::vec<float, _N>
 cftal::asinh(const vec<float, _N>& v)
 {
     vec<float, _N> r(asinh(low_half(v)), asinh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::acosh(const vec<float, _N>& v)
+{
+    vec<float, _N> r(acosh(low_half(v)), acosh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::atanh(const vec<float, _N>& v)
+{
+    vec<float, _N> r(atanh(low_half(v)), atanh(high_half(v)));
     return r;
 }
 

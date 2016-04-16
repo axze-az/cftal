@@ -223,6 +223,9 @@ The functions have an error of $ \pm 2\, ulp$.
         \begin{aligned}
           asinh(x) &= log(x+\sqrt{1+x^2}) \\
                    &= log(x+\sqrt{1-x}\sqrt{1+x}) \\
+          asinh(u) + asinh(v) &= asinh(u\sqrt{1+v^2} + v\sqrt{1+u^2}) \\
+          asinh(x) + asinh(x) &= asinh(x\sqrt{1+x^2} + x\sqrt{1+x^2}) \\
+                              &= asinh(2\,x\sqrt{1+x^2}) \\
           x &= 2^k\times r 
         \end{aligned}
     \]

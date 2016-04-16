@@ -164,6 +164,8 @@ namespace cftal {
             static vf_type asin(arg_t<vf_type> x);
             static vf_type acos(arg_t<vf_type> x);
             static vf_type asinh(arg_t<vf_type> x);
+            static vf_type acosh(arg_t<vf_type> x);
+            static vf_type atanh(arg_t<vf_type> x);
         };
 
 
@@ -1303,6 +1305,32 @@ asinh(arg_t<vf_type> x)
 {
     vf_type r=base_type::asinh_k(x);
     r = _TRAITS_T::sel(isinf(x), x, r);
+    r = _TRAITS_T::sel(isnan(x), x, r);
+    return r;
+}
+
+template <typename _FLOAT_T,
+          typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+acosh(arg_t<vf_type> x)
+{
+    vf_type r=base_type::acosh_k(x);
+    r = _TRAITS_T::sel(x < 1.0, _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x== _TRAITS_T::pinf(), x, r);
+    r = _TRAITS_T::sel(isnan(x), x, r);
+    return r;
+}
+
+template <typename _FLOAT_T,
+          typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+atanh(arg_t<vf_type> x)
+{
+    vf_type r=base_type::atanh_k(x);
+    r = _TRAITS_T::sel(x < -1.0, -_TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x >  1.0, _TRAITS_T::nan(), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
 }

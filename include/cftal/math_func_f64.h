@@ -337,6 +337,10 @@ namespace cftal {
 
             static
             vf_type
+            atanh_k(arg_t<vf_type> x);
+
+            static
+            vf_type
             hypot_k(arg_t<vf_type> x, arg_t<vf_type> y);
 
             static
@@ -2208,7 +2212,7 @@ asinh_k(arg_t<vf_type> xc)
                                 asinh_i1_c2,
                                 asinh_i1_c1,
                                 asinh_i1_c0);
-    
+
     vf_type ysi2= x* impl::poly(x,
                                 asinh_i2_c17,
                                 asinh_i2_c16,
@@ -2252,13 +2256,22 @@ acosh_k(arg_t<vf_type> xc)
     vf_type t= x*x;
     vf_type log_arg=_T::sel(x_gt_0x1p26,
                             x,
-                            2.0*x - 1.0/(x+sqrt(x*x-1)));
+                            2.0*x - 1.0/(x+sqrt(vf_type(x*x-1))));
     vf_type yl= log_k(log_arg, log_func::c_log_e);
     yl += add_2_log;
-    vf_type log1p_arg=x-1 + sqrt((x-1)*(x-1)+2*(x-1));
+    vf_type log1p_arg=x-1 + sqrt(vf_type((x-1)*(x-1)+2*(x-1)));
     vf_type ys=log1p_k(log1p_arg);
     vf_type y= _T::sel(x < 2.0, ys, yl);
     return y;
+}
+
+template <typename _T>
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+atanh_k(arg_t<vf_type> xc)
+{
+    vf_type x=xc;
+    return x;
 }
 
 template <typename _T>

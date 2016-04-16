@@ -190,6 +190,20 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
+    ns::acosh(arg<vec_float>::type d)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::acosh(d);                                        \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::atanh(arg<vec_float>::type d)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::atanh(d);                                        \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::native_exp(arg<vec_float>::type d)                              \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
