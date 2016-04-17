@@ -991,23 +991,6 @@ log_k_poly(arg_t<vf_type> z)
     // const vf_type Lg5 = 1.818357216161805012e-01;  /* 3FC74664 96CB03DE */
     // const vf_type Lg6 = 1.531383769920937332e-01;  /* 3FC39A09 D078C69F */
     // const vf_type Lg7 = 1.479819860511658591e-01;  /* 3FC2F112 DF3E5244 */
-#if 0
-    // coefficients for native_log
-    // x^14
-    const vf_type log_c14=0x1.2f023f03311eep-3;  // 0x3fc2f023f03311ee
-    // x^12
-    const vf_type log_c12=0x1.39a20d7de709dp-3;  // 0x3fc39a20d7de709d
-    // x^10
-    const vf_type log_c10=0x1.74663b910e2ddp-3;  // 0x3fc74663b910e2dd
-    // x^8
-    const vf_type log_c8=0x1.c71c521a6f8abp-3;  // 0x3fcc71c521a6f8ab
-    // x^6
-    const vf_type log_c6=0x1.24924941dae8ap-2;  // 0x3fd24924941dae8a
-    // x^4
-    const vf_type log_c4=0x1.999999997ff68p-2;  // 0x3fd999999997ff68
-    // x^2
-    const vf_type log_c2=0x1.5555555555592p-1;  // 0x3fe5555555555592
-#endif
     vf_type y = z*impl::poly(z,
                              log_c14,
                              log_c12,
