@@ -712,8 +712,11 @@ template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-sinh(arg_t<vf_type> x)
+sinh(arg_t<vf_type> xc)
 {
+    using fc=func_constants<_FLOAT_T>;
+    vf_type x=xc;
+#if 0
     // sinh (x) = 1/2 (exp(x) - exp(-x))
     //          = (expm1(x) + (expm1(x)/(expm1(x)+1))/2;
     // cosh (x) = 1/2 (exp(x) + exp(-x));
@@ -726,20 +729,22 @@ sinh(arg_t<vf_type> x)
     // sinh (2x) = 2 * sinh(x) * cosh(x)
     vf_type h= copysign(vf_type(0.5), x);
     vf_type absx = abs(x);
-    using fc=func_constants<_FLOAT_T>;
     vmf_type x_large = absx >= fc::exp_hi_inf;
     vf_type xx= _T::sel(x_large, 0.5*absx, absx);
     vf_type t= base_type::exp_k(xx, true);
     vf_type t1= t+1;
+    // here we produce most of the 2 ulp deviations:
     vf_type sinh_lt_1 = h * (2*t - t*t/(t1));
     vf_type sinh_ge_1 = h * (t + t/(t1));
     // vf_type sinh_l_h= (t1 - 1/t1)*0.5; // --> t1*0.5
     // vf_type cosh_l_h= (t1 + 1/t1)*0.5; // --> t1*0.5
-    // here we produce most of the 2 ulp deviations:
     vf_type sinh_l= copysign(vf_type(t1 * (t1*0.5)), x);
     vf_type sinh_x = _T::sel(absx<1.0, sinh_lt_1, sinh_ge_1);
     sinh_x = _T::sel(x_large, sinh_l, sinh_x);
     vf_type res = sinh_x;
+#else
+    vf_type res=base_type::sinh_k(xc);
+#endif
     const vf_type sinh_hi_inf= fc::sinh_hi_inf;
     const vf_type sinh_lo_inf= fc::sinh_lo_inf;
     res = _T::sel(x >= sinh_hi_inf, _T::pinf(), res);
@@ -747,6 +752,7 @@ sinh(arg_t<vf_type> x)
     res = _T::sel(x == 0.0, 0.0, res);
     return res;
 }
+
 
 template <typename _FLOAT_T, typename _T>
 inline

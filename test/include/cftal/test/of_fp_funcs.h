@@ -401,9 +401,11 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
     }
     std::cout << std::endl;
     if (r == true) {
-        std::cout << __func__ << _N << " to v1 test passed " << std::endl;
+        std::cout << _F::fname() << ' '
+                  << __func__ << _N << " to v1 test passed " << std::endl;
     } else {
-        std::cerr << __func__ << _N << " to v1 test failed " << std::endl;
+        std::cerr << _F::fname() << ' '
+                  << __func__ << _N << " to v1 test failed " << std::endl;
     }
     return r;
 
@@ -545,9 +547,11 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
     }
     std::cout << std::endl;
     if (r == true) {
-        std::cout << __func__ << _N << " to v1 test passed " << std::endl;
+        std::cout << _F::fname() << ' '
+                  << __func__ << _N << " to v1 test passed " << std::endl;
     } else {
-        std::cerr << __func__ << _N << " to v1 test failed " << std::endl;
+        std::cerr << _F::fname() << ' '
+                  << __func__ << _N << " to v1 test failed " << std::endl;
     }
     return r;
 }
