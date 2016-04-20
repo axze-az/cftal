@@ -28,11 +28,7 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_sinh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_sinh<double> >(v, ulp, 0, false);
 
-    // +- 710.05
-    // func_domain<double> d=std::make_pair(-7.097827128933840867830440e+02,
-    //                                      7.097827128933840867830440e+02);
-    func_domain<double> d=std::make_pair(-710.05,
-                                          710.05);
+    func_domain<double> d=std::make_pair(-710.5, 710.5);
 
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);

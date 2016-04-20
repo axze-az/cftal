@@ -1,5 +1,5 @@
 #include "cftal/test/of_math_funcs.h"
-#include "cftal/test/check_cosh.h"
+#include "cftal/test/check_tanh.h"
 #include <iostream>
 #include <iomanip>
 
@@ -7,32 +7,33 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     const int ulp=1;
-    const int _N=8;
+    const int _N=1;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     bool rc= true;
-
+#if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
-        append_filename(test_data_dir, "../../test/data/cosh.testdata");
+        append_filename(test_data_dir, "../../test/data/tanh.testdata");
     if (argc > 1) {
         test_data_dir = argv[1];
-        test_data_file = append_filename(test_data_dir, "cosh.testdata");
+        test_data_file = append_filename(test_data_dir, "tanh.testdata");
     }
     std::vector<func_arg_result<double> > v=
         read_double_file(test_data_file, false);
 
-    rc &= check_func_1<double, 1, check_cosh<double> >(v, ulp, 0, false);
-    rc &= check_func_1<double, 2, check_cosh<double> >(v, ulp, 0, false);
-    rc &= check_func_1<double, 4, check_cosh<double> >(v, ulp, 0, false);
-    rc &= check_func_1<double, 8, check_cosh<double> >(v, ulp, 0, false);
+    rc &= check_func_1<double, 1, check_tanh<double> >(v, ulp, 0, false);
+    rc &= check_func_1<double, 2, check_tanh<double> >(v, ulp, 0, false);
+    rc &= check_func_1<double, 4, check_tanh<double> >(v, ulp, 0, false);
+    rc &= check_func_1<double, 8, check_tanh<double> >(v, ulp, 0, false);
+#endif
     
     func_domain<double> d=std::make_pair(-710.5, 710.5);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
-        double, _N, check_cosh<double> >::v(st, d, cmp_ulp<double>(ulp, us),
-                                            0x4000ULL);
+        double, _N, check_tanh<double> >::v(st, d, cmp_ulp<double>(ulp, us),
+                                            0x400ULL);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

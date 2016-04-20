@@ -1,5 +1,5 @@
 #include "cftal/test/of_math_funcs.h"
-#include "cftal/test/check_cosh.h"
+#include "cftal/test/check_tanh.h"
 #include <iostream>
 #include <iomanip>
 
@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
-        float, _N, check_cosh<float> >::v(st, d, cmp_ulp<float>(ulp, us),
+        float, _N, check_tanh<float> >::v(st, d, cmp_ulp<float>(ulp, us),
                                           0x4000ULL);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;

@@ -153,6 +153,13 @@
         return func_t::cosh(d);                                         \
     }                                                                   \
                                                                         \
+    ns::vec_float                                                       \
+    ns::tanh(arg<vec_float>::type d)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::tanh(d);                                         \
+    }                                                                   \
+                                                                        \
     void                                                                \
     ns::sincos(arg<vec_float>::type d,                                  \
                vec_float* psin, vec_float* pcos)                        \
