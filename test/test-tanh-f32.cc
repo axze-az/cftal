@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     const int _N=8;
     const int ulp=1;
     
-    func_domain<float> d=std::make_pair(-90.0f, 90.0f);
+    func_domain<float> d=std::make_pair(-25.0f, 25.0f);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
