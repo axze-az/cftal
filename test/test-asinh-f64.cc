@@ -6,7 +6,7 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const int ulp=2;
+    const int ulp=1;
     const int _N=8;
     bool rc=true;
     std::cout << std::setprecision(18) << std::scientific;
@@ -33,14 +33,14 @@ int main(int argc, char** argv)
         std::numeric_limits<double>::max());
 #else
     func_domain<double> d=std::make_pair(
-        -2.0,
-        2.0);
+        -M_SQRT2/2,
+        M_SQRT2/2);
 #endif
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
         double, _N, check_asinh<double> >::v(st, d, cmp_ulp<double>(ulp, us),
-                                             0x1000);
+                                             0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
