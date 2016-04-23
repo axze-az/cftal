@@ -6,7 +6,7 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const int ulp=2;
+    const int ulp=1;
     const int _N=8;
     bool rc=true;
     std::cout << std::setprecision(18) << std::scientific;
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
         double, _N, check_atanh<double> >::v(st, d, cmp_ulp<double>(ulp, us),
-                                             0x1000);
+                                             0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
