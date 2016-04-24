@@ -50,7 +50,7 @@ namespace cftal {
         struct cast<v4f64, v8s32> {
             static
             v4f64 v(const v8s32& s) {
-                return v4f64(cast<__m256d>, __m256i>::v(s()));
+                return v4f64(cast<__m256d, __m256i>::v(s()));
             }
         };
 

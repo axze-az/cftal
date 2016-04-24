@@ -347,13 +347,13 @@ inline
 cftal::uint32_t
 cftal::x86::compress_mask_u32(__m256i m)
 {
-    return compress_mask_f32(_mm256_castsi256_ps256(m));
+    return compress_mask_f32(_mm256_castsi256_ps(m));
 }
 
 inline
 uint32_t cftal::x86::compress_mask_u64(__m256i m)
 {
-    return compress_mask_f64(_mm256_castsi256_pd256(m));
+    return compress_mask_f64(_mm256_castsi256_pd(m));
 }
 
 inline

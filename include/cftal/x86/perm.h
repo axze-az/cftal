@@ -2180,10 +2180,10 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
         __m256i rd(perm1_v4u64<_p0, _p1, _p2, _p3>::v(a));
         return rd;
     }
-    const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
-    const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+    const uint32_t m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
+    const uint32_t m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
     const bool do_zero= m2 != 0xFFFFFFFF;
-    if (((m1 ^ 0x76543210) & m2)==0 && m2 !=-1) {
+    if (((m1 ^ 0x76543210) & m2)==0 && m2 !=uint32_t(-1)) {
         // zero only
         const unsigned z0= (_P0<0 ? 0 : -1);
         const unsigned z1= (_P1<0 ? 0 : -1);
