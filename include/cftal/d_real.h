@@ -391,6 +391,13 @@ namespace cftal {
                       const _T& a,
                       const _T& bh, const _T& bl);
 
+            static
+            void
+            muladd22(_T& rh, _T&rl,
+                      const _T& ch, const _T& cl,
+                      const _T& ah, const _T& al,
+                      const _T& bh, const _T& bl);
+
             // a/b
             static
             void
@@ -1117,6 +1124,28 @@ muladd212(_T& rh, _T& rl,
     _t7 = _t5 + _t6;
     _t8 = _t7 + _t4;
     add12(rh, rl, _t3, _t8);
+}
+
+template <typename _T, bool _FMA>
+inline
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+muladd22(_T& rh, _T& rl,
+         const _T& ch, const _T& cl,
+         const _T& ah, const _T& al,
+         const _T& bh, const _T& bl)
+{
+    double _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8;
+    double _t9, _t10;
+    mul12(_t1, _t2, ah, bh);
+    add12(_t3, _t4, ch, _t1);
+    _t5 = ah * bl;
+    _t6 = al * bh;
+    _t7 = _t2 + cl;
+    _t8 = _t4 + _t7;
+    _t9 = _t5 + _t6;
+    _t10 = _t8 + _t9;
+    add12(rh, rl, _t3, _t10);
 }
 
 template <typename _T, bool _FMA>
