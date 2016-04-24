@@ -909,13 +909,13 @@ exp2_k(arg_t<vf_type> x)
                               exp2_coeff_4h,
                               exp2_coeff_3h,
                               exp2_coeff_2h);
-    vf_type h0, l0, h1, l1, h2, l2, h3, l3;
+    vf_type h0, l0, h1, l1, h2, l2;
     d_ops::add212(h0, l0, exp2_coeff_1h, exp2_coeff_1m, t);
     // d_ops::muladd212(h1, l1, exp2_coeff_1h, exp2_coeff_1m, xr, h0, l0);
     d_ops::mul122(h1, l1, xr, h0, l0);
     d_ops::add122(h2, l2, exp2_coeff_0h, h1, l1);
     // *exp2_resh = exp2_t_25_0h; *exp2_resm = exp2_t_25_0m;
-    vf_type y= h2 + l2;
+    vf_type y= h2 /*+ l2 */;
     y= scale_exp_k(y, kf, k2);
     return y;
 }
