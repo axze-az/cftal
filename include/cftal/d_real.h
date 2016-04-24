@@ -196,6 +196,16 @@ namespace cftal {
                       const _T& yh, const _T& al);
 
             static
+            void
+            add122(_T& zh, _T& zl,
+                   const _T& a, const _T& bh, const _T& bl);
+
+            static
+            void
+            add212(_T& zh, _T& zl,
+                   const _T& ah, const _T& al, const _T& b);
+
+            static
             _T
             quick_two_sum(const _T& a, const _T& b, _T& e);
 
@@ -282,6 +292,7 @@ namespace cftal {
             using base_type::add12;
             using base_type::add12cond;
             using base_type::add22cond;
+            using base_type::add122;
 
             static
             _T two_prod(const _T& a, const _T& b, _T& e);
@@ -321,6 +332,7 @@ namespace cftal {
             using base_type::add12;
             using base_type::add12cond;
             using base_type::add22cond;
+            using base_type::add122;
 
             static
             _T two_prod(const _T& a, const _T& b, _T& e);
@@ -362,6 +374,8 @@ namespace cftal {
             using base_type::add22cond;
             using base_type::mul12;
             using base_type::mul22;
+            using base_type::add122;
+            using base_type::add212;
 
             static
             void
@@ -369,7 +383,15 @@ namespace cftal {
                    const _T& a,
                    const _T& bh, const _T& bl);
 
-            // a*b + c
+            // a*b +c
+            static
+            void
+            muladd212(_T& rh, _T&rl,
+                      const _T& ch, const _T& cl,
+                      const _T& a,
+                      const _T& bh, const _T& bl);
+
+            // a/b
             static
             void
             div22(_T& rh, _T& rl,
@@ -613,6 +635,32 @@ add22cond(_T& zh, _T& zl,
     _T v3 = xl + yl;
     _T v4 = v2 + v3;
     add12(zh, zl, v1, v4);
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_common<_T>::
+add122(_T& zh, _T& zl,
+       const _T& a, const _T& bh, const _T& bl)
+{
+    _T _t1, _t2, _t3;
+    add12(_t1,_t2, a, bh);
+    _t3 = _t2 + (bl);
+    add12(zh, zl,_t1,_t3);
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_common<_T>::
+add212(_T& zh, _T& zl,
+       const _T& ah, const _T& al, const _T& b)
+{
+    _T _t1, _t2, _t3;
+    add12(_t1, _t2, ah, b);
+    _t3 = _t2 + al;
+    add12(zh, zl, _t1, _t3);
 }
 
 template <typename _T>
@@ -1050,6 +1098,25 @@ mul122(_T& rh, _T& rl,
     t3 = a * bl;
     t4 = t2 + t3;
     add12(rh, rl, t1, t4);
+}
+
+template <typename _T, bool _FMA>
+inline
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+muladd212(_T& rh, _T& rl,
+          const _T& ch, const _T& cl,
+          const _T& a,
+          const _T& bh, const _T& bl)
+{
+    _T _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8;
+    mul12(_t1, _t2, a, bh);
+    add12(_t3,_t4,ch,_t1);
+    _t5 = bl * a;
+    _t6 = cl + _t2;
+    _t7 = _t5 + _t6;
+    _t8 = _t7 + _t4;
+    add12(rh, rl, _t3, _t8);
 }
 
 template <typename _T, bool _FMA>
