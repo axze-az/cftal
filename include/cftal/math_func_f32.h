@@ -165,10 +165,6 @@ namespace cftal {
 
             static
             vf_type
-            native_exp2_k(arg_t<vf_type> x);
-
-            static
-            vf_type
             exp10_k(arg_t<vf_type> x);
 
             static
@@ -637,15 +633,6 @@ exp10_k(arg_t<vf_type> x)
     y += 1.0;
     y= scale_exp_k(y, kf, k);
     return y;
-}
-
-template <typename _T>
-inline
-typename cftal::math::func_core<float, _T>::vf_type
-cftal::math::func_core<float, _T>::
-native_exp2_k(arg_t<vf_type> x)
-{
-    return exp2_k(x);
 }
 
 template <typename _T>

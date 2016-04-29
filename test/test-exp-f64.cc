@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
         double, _N, check_exp<double> >::v(st, d, cmp_ulp<double>(ulp, us),
-                                           0x80000);
+                                           0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
