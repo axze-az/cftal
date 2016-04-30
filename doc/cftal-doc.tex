@@ -109,6 +109,17 @@ The functions have an error of $ \pm 1\, ulp$.
 \item Approximation of $e^r$ by a special rational function on the interval
     $[0,\,\frac{1}{2}log(2)]$:
 
+    as
+
+    \begin{equation}
+        \begin{aligned}
+            e^{r} &\approx  1 + \frac {2r} {2 -r + r^2 P(r^2)} \\
+                  &\approx  1 + r + \frac{r [r -r^2 P(r^2)]} {2-[r-r^2P(r^2)]}
+        \end{aligned}
+    \end{equation}
+
+
+
     Define $ R(r^2) $ as
     \begin{equation}
         R(r^2) = r \, \frac{e^r+1}{e^r-1}
