@@ -333,6 +333,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
     const _T inf_nan_args []= {
         _T(0.0),
         _T(-0.0),
+        _T(0.5),
         _T(1),
         _T(2),
         _T(7),

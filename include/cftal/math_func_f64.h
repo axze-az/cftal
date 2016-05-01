@@ -2199,12 +2199,12 @@ acos_k(arg_t<vf_type> xc)
 
     vmf_type x_lt_m_1_2 = x < -0.5;
     vmf_type x_gt_1_2 = x>0.5;
-    vmf_type abs_x_lt_1_2 = abs(x) < 0.5;
+    vmf_type abs_x_le_1_2 = abs(x) <= 0.5;
 
     vf_type z= _T::sel(x_lt_m_1_2, (1.0+x)*0.5, (1.0-x)*0.5);
     vf_type s= sqrt(z);
     vf_type x2=x*x;
-    vf_type xr= _T::sel(abs_x_lt_1_2, x2, z);
+    vf_type xr= _T::sel(abs_x_le_1_2, x2, z);
     vf_type r= asin_k_poly(xr);
 
     // x in [-0.5, 0.5]
