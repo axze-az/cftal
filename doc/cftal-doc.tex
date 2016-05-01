@@ -106,68 +106,55 @@ The functions have an error of $ \pm 1\, ulp$.
     \]
     where $LN2_{HI}$ and $LN2_{LO}$ are Cody and Waite constants for $log(2)$.
 
-\item Approximation of $e^r$ by a special rational function on the interval
+\item Approximation of $e^r$ by a rational function on the interval
     $[0,\,\frac{1}{2}log(2)]$:
 
     as
 
     \begin{equation}
         \begin{aligned}
-            e^{r} &\approx  1 + \frac {2r} {2 -r + r^2 P(r^2)} \\
-                  &\approx  1 + r + \frac{r [r -r^2 P(r^2)]} {2-[r-r^2P(r^2)]}
+            e^{r} &= 1 + r + \frac{r^2}{2} + \frac{r^3}{6} + \dots \\
+                  &\approx  1 + \frac {2r} {2 -r + r^2 P(r^2)} \\
         \end{aligned}
     \end{equation}
 
-
-
-    Define $ R(r^2) $ as
+    To obtain higher precision the last equation is rewritten as
     \begin{equation}
-        R(r^2) = r \, \frac{e^r+1}{e^r-1}
-               = 2 + \frac{1}{6}r^2 + \frac{1}{360}r^4 + ..
+        e^{r} \approx  1 + r + \frac{r [r -r^2 P(r^2)]} {2-[r-r^2P(r^2)]}
     \end{equation}
-    $ R(z) = P_0 + P_1\, z + P_2\,z^2 + P_3\,z^3 + P_4\,z^4+ P_5\, z^5$
-    with $z = r^2$ is approximated as minimax polynomal of degree 5 for double
-    and as polynomial of degree 2 for single precision.
-    Forcing the coefficient $P_0$ of $R$ to $2$ is not necessary.
 
-    The computation of $e^r=y$ thus becomes
+    Furthermore a correction term
     \[
+        c = (r_h - r) - r_l
+    \]
+    is calculated.
+
+    Using the taylor series of $e^{r+c}-1$ for $c \ll r$ and and truncating
+    higher order terms
+    \begin{equation}
+        \label{equ:expm1-taylor}
         \begin{aligned}
-            R &= r \frac{y+1}{y-1} \\
-            y &= \frac{R+r}{R-r} \\
-              &= \frac{R+r+(-r+r)}{R-r} \\
-              &= \frac{R-r+2\,r}{R-r}\\
-              &= 1 + \frac{2 r}{R-r}
+            e^{r+c}-1 &= (e^r-1) + e^r\,c  + \frac{e^r c^2}{2} + \dots \\
+                      &= (e^r-1) + e^r\,c  + \dots \\
+                      &= (e^r-1) + (1+r+\frac{r^2}{2}+\dots)\,c + \dots \\
+                      &= (e^r-1) + (c + r\,c + \dots) + \dots \\
+                      &\approx (e^r-1) + c + r\,c
         \end{aligned}
-    \]
-
-    and using
-    \begin{equation}
-        c = r - (R-P_0) = r - R + P_0 \\
     \end{equation}
-    the calculation of $e^r=y$ can be written as
-    \[
+    $e^{r+c}$ is calculated as
+    \begin{equation}
         \begin{aligned}
-            y &= 1 + \frac{2\,r}{P_0+r-c-r} \\
-              &= 1 + \frac{1}{P_0-c} \\
-              &= 1 + \frac{r\,P_0 - c\,r -2\,r}{P_0-c} \\
-              &= 1 + r + \frac{c\,r+2\,r-P_0\,r}{P_0-c} \\
-              &= 1 + r + \frac{c\,r+(2-P_0)\,r}{P_0-c}.
-         \end{aligned}
-    \]
-    With $P_0 = 2$ the last equation simplifies to
-    \begin{equation}
-        y= e^r= 1 + r + \frac{r\,c}{2-c}
+            s &= \frac{r [r -r^2 P(r^2)]} {2-[r-r^2P(r^2)]} \\
+            s &= s + r*c \\
+            s &= s + c \\
+            s &= s + r \\
+            e^{r+c} &= s + 1
+        \end{aligned}
     \end{equation}
 
-    The last equation is implemented as
-    \[
-        y= e^r= 1 + \frac{r\,c}{2-c} - r_l + r_h
-    \]
-    to compensate the error during the argument reduction.
+    The order of the minimax polynomial $P(r^2)$ is 10 for double precision.
 
-
-\item The function value of the reduced argument is scaled back
+\item The function value of the reduced argument is scaled back using
     \begin{equation}
         e^x = 2^k \times e^r
     \end{equation}
