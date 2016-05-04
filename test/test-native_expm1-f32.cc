@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     bool rc = true;
 
     const int _N=8;
-    const int ulp=3;
+    const int ulp=1;
     exec_stats st(_N);
     func_domain<float> d=std::make_pair(-20.0f, 90.0f);
     auto us=std::make_shared<ulp_stats>();

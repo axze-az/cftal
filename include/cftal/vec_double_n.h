@@ -551,7 +551,7 @@ namespace cftal {
     vec<double, 8>
     tan(arg_t<vec<double, 8> > d);
 
-    // asinh, these functions are exact to +-2 ulp
+    // asinh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     asinh(const vec<double, _N>& x);
@@ -585,7 +585,7 @@ namespace cftal {
     vec<double, 8>
     acosh(arg_t<vec<double, 8> > d);
 
-    // atanh, these functions are exact to +-2 ulp
+    // atanh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     atanh(const vec<double, _N>& x);

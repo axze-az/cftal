@@ -6,11 +6,13 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const int ulp=2;
-    const int _N=8;
+    const int ulp=1;
+    const int _N=1;
     bool rc=true;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+    // std::cerr << std::hexfloat;
+    // std::cout << std::hexfloat;
 #if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -27,20 +29,20 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_acosh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_acosh<double> >(v, ulp, 0, false);
 #endif
-#if 1
+#if 0
     func_domain<double> d=std::make_pair(
         1.0,
         std::numeric_limits<double>::max());
 #else
     func_domain<double> d=std::make_pair(
-        -2.0,
-        2.0);
+        1.54,
+        std::numeric_limits<double>::max());
 #endif
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
         double, _N, check_acosh<double> >::v(st, d, cmp_ulp<double>(ulp, us),
-                                             0x1000);
+                                             0x10000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

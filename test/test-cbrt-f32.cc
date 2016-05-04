@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 {
     bool rc=true;
     using namespace cftal::test;
-    const int ulp=6;
+    const int ulp=1;
     const int _N=8;
 
     std::cout << "f32 test\n"<<std::scientific;

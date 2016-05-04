@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 
     const int _N=8;
     exec_stats st(_N);
-    const int ulp=3;
+    const int ulp=1;
 
     // sin part
     std::string test_data_dir = dirname(argv[0]);
