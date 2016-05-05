@@ -1722,6 +1722,7 @@ cftal::sqrt(const d_real<_T>& a)
     d_real<_T> a0(a - d_real<_T>(ax2, err));
     _T a1(a0.h() * (x * _T(0.5)));
     d_real<_T> res(impl_t::add(ax, a1));
+    res = select(a.h() == _T(0), a, res);
     return res;
 }
 
