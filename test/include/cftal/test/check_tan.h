@@ -19,7 +19,11 @@ namespace cftal {
             static
             _T
             v(const _T& a) {
+#if 1
+                return call_mpfr::func(a, mpfr_tan);
+#else
                 return std::tan(a);
+#endif
             }
             static
             const char* fname() { return "tan"; }

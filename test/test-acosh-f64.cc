@@ -6,8 +6,8 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const int ulp=1;
-    const int _N=1;
+    const int ulp=2;
+    const int _N=8;
     bool rc=true;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -29,14 +29,14 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_acosh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_acosh<double> >(v, ulp, 0, false);
 #endif
-#if 0
+#if 1
     func_domain<double> d=std::make_pair(
         1.0,
         std::numeric_limits<double>::max());
 #else
     func_domain<double> d=std::make_pair(
-        1.54,
-        std::numeric_limits<double>::max());
+        1, 2);
+        // 1.54, std::numeric_limits<double>::max());
 #endif
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
