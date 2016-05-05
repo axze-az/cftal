@@ -681,7 +681,6 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         // x^10
         const vf_type expn_c10=-0x1.1671ed4fab26bp-30;
         vf_type xx= xr*xr;
-        vf_type cr = (hi-xr)-lo;
         vf_type P= impl::poly(xx,
                               expn_c10,
                               expn_c8,
@@ -690,9 +689,10 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
                               expn_c2,
                               expn_c0);
         vf_type br= xr- xx*P;
-        y=  (xr*br)/(2.0-br);
-        y += cr*xr;
+        vf_type cr = (hi-xr)-lo;
+        y = cr*xr;
         y += cr;
+        y += (xr*br)/(2.0-br);
         y += xr;
         y += 1;
         y = scale_exp_k(y, kf, k2);
