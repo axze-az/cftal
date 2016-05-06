@@ -20,7 +20,7 @@ namespace cftal {
             static
             _T
             r(const _T& a) {
-                return call_mpfr(a, mpfr_expm1);
+                return call_mpfr::func(a, mpfr_expm1);
             }
             static
             _T

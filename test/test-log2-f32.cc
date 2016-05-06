@@ -6,34 +6,22 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const int _N=8;
-    const int ulp=1;
-#if 0
-    std::string test_data_dir = dirname(argv[0]);
-    std::string test_data_file=
-        append_filename(test_data_dir, "../../test/data/log2.testdata");
-    if (argc > 1) {
-        test_data_dir = argv[1];
-        test_data_file = append_filename(test_data_dir, "log2.testdata");
-    }
-    std::vector<func_arg_result<float> > v=
-        read_float_file(test_data_file, false);
-
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    // std::cerr << std::hexfloat;
-    bool rc= check_func_1<float, 2, check_log2<float> >(v, 1, 0, false);
-    rc&= check_func_1<float, 4, check_log2<float> >(v, 1, 0, false);
-    rc&= check_func_1<float, 8, check_log2<float> >(v, 1, 0, false);
-#else
+    const int ulp=1;
+    const int _N=8;
     bool rc=true;
-#endif
+    bool speed_only=false;
+    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
+        speed_only=true;
+    }
     exec_stats st(_N);
     func_domain<float> d=std::make_pair(-0.0001,
                                          std::numeric_limits< float >::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_log2<float> >::v(st, d, cmp_ulp<float>(ulp, us),
+        float, 8, check_log2<float> >::v(st, d, speed_only,
+                                         cmp_ulp<float>(ulp, us),
                                          0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;

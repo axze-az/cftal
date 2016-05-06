@@ -13,19 +13,24 @@
 
 int main(int argc, char** argv)
 {
-    bool rc=true;
     using namespace cftal::test;
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
     const int _N=8;
-
-    std::cout << "f32 test\n"<<std::scientific;
+    bool rc=true;
+    bool speed_only=false;
+    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
+        speed_only=true;
+    }
     func_domain<float> df=std::make_pair(-std::numeric_limits<float>::max(),
                                           std::numeric_limits<float>::max());
     auto usf=std::make_shared<ulp_stats>();
     exec_stats f_st(_N);
     rc &= of_fp_func_up_to<
-        float, _N, check_cbrt<float> >::v(f_st, df, cmp_ulp<float>(ulp, usf),
-                                           0x20000);
+        float, _N, check_cbrt<float> >::v(f_st, df, speed_only,
+                                          cmp_ulp<float>(ulp, usf),
+                                          0x20000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *usf << std::endl;
     std::cout << f_st << std::endl;

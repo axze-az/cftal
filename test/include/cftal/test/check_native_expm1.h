@@ -19,13 +19,18 @@ namespace cftal {
             }
             static
             _T
-            v(const _T& a) {
+            r(const _T& a) {
+                return call_mpfr::func(a, mpfr_expm1);
+            }
+            static
+            _T
+            s(const _T& a) {
                 return std::expm1(a);
             }
             static
             const char* fname() { return "native_expm1"; }
         };
-        
+
     }
 }
 

@@ -22,7 +22,12 @@ namespace cftal {
                 }
                 static
                 _T
-                v(const _T& a) {
+                r(const _T& a) {
+                    return call_mpfr::func(a, mpfr_sin);
+                }
+                static
+                _T
+                s(const _T& a) {
                     return std::sin(a);
                 }
                 static
@@ -40,7 +45,12 @@ namespace cftal {
                 }
                 static
                 _T
-                v(const _T& a) {
+                r(const _T& a) {
+                    return call_mpfr::func(a, mpfr_cos);
+                }
+                static
+                _T
+                s(const _T& a) {
                     return std::cos(a);
                 }
                 static

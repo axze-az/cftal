@@ -88,7 +88,7 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         vec_type va0=a0;
         int64_t t0, t1, t2;
         t0= cftal::rdtsc();
-        _T res = _F::v(a0);
+        _T res = _F::s(a0);
         t1= cftal::rdtsc();
         vec_type vres = _F::v(va0);
         t2 = cftal::rdtsc();
@@ -181,7 +181,7 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
         vec_type va1=a1;
         int64_t t0, t1, t2;
         t0= cftal::rdtsc();
-        _T res = _F::v(a0, a1);
+        _T res = _F::s(a0, a1);
         t1= cftal::rdtsc();
         vec_type vres = _F::v(va0, va1);
         t2 = cftal::rdtsc();

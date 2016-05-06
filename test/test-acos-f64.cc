@@ -9,31 +9,34 @@ int main(int argc, char** argv)
     const int ulp=1;
     const int _N=8;
     bool rc=true;
-
+    bool speed_only=false;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
+        speed_only=true;
+    } else {
+        std::string test_data_dir = dirname(argv[0]);
+        std::string test_data_file=
+            append_filename(test_data_dir, "../../test/data/acos.testdata");
+        if (argc > 1) {
+            test_data_dir = argv[1];
+            test_data_file = append_filename(test_data_dir, "acos.testdata");
+        }
+        std::vector<func_arg_result<double> > v=
+            read_double_file(test_data_file, false);
 
-    std::string test_data_dir = dirname(argv[0]);
-    std::string test_data_file=
-        append_filename(test_data_dir, "../../test/data/acos.testdata");
-    if (argc > 1) {
-        test_data_dir = argv[1];
-        test_data_file = append_filename(test_data_dir, "acos.testdata");
+        rc &= check_func_1<double, 1, check_acos<double> >(v, ulp, 0, false);
+        rc &= check_func_1<double, 2, check_acos<double> >(v, ulp, 0, false);
+        rc &= check_func_1<double, 4, check_acos<double> >(v, ulp, 0, false);
+        rc &= check_func_1<double, 8, check_acos<double> >(v, ulp, 0, false);
     }
-    std::vector<func_arg_result<double> > v=
-        read_double_file(test_data_file, false);
-
-    rc &= check_func_1<double, 1, check_acos<double> >(v, ulp, 0, false);
-    rc &= check_func_1<double, 2, check_acos<double> >(v, ulp, 0, false);
-    rc &= check_func_1<double, 4, check_acos<double> >(v, ulp, 0, false);
-    rc &= check_func_1<double, 8, check_acos<double> >(v, ulp, 0, false);
-
     // func_domain<double> d=std::make_pair(0.5, 0.5);
     func_domain<double> d=std::make_pair(-1.000000001, 1.000000001);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
-        double, _N, check_acos<double> >::v(st, d, cmp_ulp<double>(ulp, us),
+        double, _N, check_acos<double> >::v(st, d, speed_only,
+                                            cmp_ulp<double>(ulp, us),
                                             0x8000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;

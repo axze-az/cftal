@@ -156,8 +156,13 @@ namespace cftal {
             }
             static
             _T
-            v(const _T& v) {
+            r(const _T& v) {
                 return std::rint(v);
+            }
+            static
+            _T
+            s(const _T& v) {
+                return r(v);
             }
             static
             const char* fname() { return "rint"; }
@@ -173,8 +178,13 @@ namespace cftal {
             }
             static
             _T
-            v(const _T& v) {
+            r(const _T& v) {
                 return std::floor(v);
+            }
+            static
+            _T
+            s(const _T& v) {
+                return r(v);
             }
             static
             const char* fname() { return "floor"; }
@@ -190,8 +200,13 @@ namespace cftal {
             }
             static
             _T
-            v(const _T& v) {
+            r(const _T& v) {
                 return std::ceil(v);
+            }
+                        static
+            _T
+            s(const _T& v) {
+                return r(v);
             }
             static
             const char* fname() { return "ceil"; }
@@ -207,8 +222,13 @@ namespace cftal {
             }
             static
             _T
-            v(const _T& v) {
+            r(const _T& v) {
                 return std::trunc(v);
+            }
+            static
+            _T
+            s(const _T& v) {
+                return r(v);
             }
             static
             const char* fname() { return "trunc"; }
@@ -322,7 +342,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
     }
     st.insert(t0, t1, _N);
     // std::cout << std::setprecision(18) << a << std::endl;
-    bool c= check(vr, r, _F::fname(), true, cmp);
+    bool c= check(vr, r, _F::fname(), !speed_only, cmp);
     bool cs= vec_parts<_T, _N, _F>::v(va, vr, st);
     // do only a subvector test if speed_only
     if (speed_only)
@@ -510,7 +530,7 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, bool speed_only, _CMP cmp)
         st.insert(t0i[i], t1i[i], 0);
     }
     st.insert(t0, t1, _N);
-    bool c= check(vr, r, _F::fname(), true, cmp);
+    bool c= check(vr, r, _F::fname(), !speed_only, cmp);
     bool cs= vec_parts<_T, _N, _F>::v(va, vb, vr, st);
     if (speed_only)
         c= cs;

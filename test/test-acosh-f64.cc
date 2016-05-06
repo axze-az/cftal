@@ -10,12 +10,12 @@ int main(int argc, char** argv)
     const int _N=8;
     bool rc=true;
     bool speed_only=false;
+    if ((argc > 1) && (std::string(argv[1]) == "--speed"))
+        speed_only=true;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     // std::cerr << std::hexfloat;
     // std::cout << std::hexfloat;
-    if ((argc > 1) && (std::string(argv[1]) == "--speed"))
-        speed_only=true;
 #if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=

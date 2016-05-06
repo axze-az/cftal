@@ -248,25 +248,30 @@ cftal::xcbrt(double x)
 
 int main(int argc, char** argv)
 {
-    bool rc=true;
     using namespace cftal::test;
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _DN=8;
-    // const int _FN=1;
-
-    std::cout << "f64 test\n"<<std::scientific;
-    rc &= check_cbrt_f64(cftal::v1f64(), false);
-    rc &= check_cbrt_f64(cftal::v2f64(), false);
-    rc &= check_cbrt_f64(cftal::v4f64(), false);
-    rc &= check_cbrt_f64(cftal::v8f64(), false);
-
+    const int _N=8;
+    bool rc=true;
+    bool speed_only=false;
+    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
+        speed_only=true;
+    } else {
+        std::cout << "f64 test\n"<<std::scientific;
+        rc &= check_cbrt_f64(cftal::v1f64(), false);
+        rc &= check_cbrt_f64(cftal::v2f64(), false);
+        rc &= check_cbrt_f64(cftal::v4f64(), false);
+        rc &= check_cbrt_f64(cftal::v8f64(), false);
+    }
     func_domain<double> dd=std::make_pair(-std::numeric_limits<double>::max(),
                                           std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
-    exec_stats d_st(_DN);
+    exec_stats d_st(_N);
     rc &= of_fp_func_up_to<
-        double, _DN, check_cbrt<double> >::v(d_st, dd, cmp_ulp<double>(ulp, us),
-                                             0x10000);
+        double, _N, check_cbrt<double> >::v(d_st, dd, speed_only,
+                                            cmp_ulp<double>(ulp, us),
+                                            0x10000);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << d_st << std::endl;

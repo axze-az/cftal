@@ -19,38 +19,17 @@ namespace cftal {
             }
             static
             _T
-            v(const _T& a, const _T& b) {
-#if 1
+            r(const _T& a, const _T& b) {
                 return call_mpfr::func(a, b, mpfr_pow);
-#else
-                return std::pow(a, b);
-#endif
-
             }
             static
-            const char* fname() { return "pow"; }
-        };
-
-        template <>
-        struct check_pow<double> {
-            template <std::size_t _N>
-            static
-            vec<double, _N>
-            v(const vec<double, _N>& a, const vec<double, _N>& b) {
-                return pow(a, b);
-            }
-            static
-            double
-            v(const double& a, const double& b) {
+            _T
+            s(const _T& a, const _T& b) {
                 return std::pow(a, b);
             }
             static
             const char* fname() { return "pow"; }
         };
-
-
-
-        
     }
 }
 
