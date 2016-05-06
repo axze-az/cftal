@@ -18,12 +18,13 @@ namespace cftal {
             }
             static
             _T
-            v(const _T& a) {
-#if 0
+            r(const _T& a) {
                 return call_mpfr::func(a, mpfr_cos);
-#else
+            }
+            static
+            _T
+            s(const _T& a) {
                 return std::cos(a);
-#endif
             }
             static
             const char* fname() { return "cos"; }

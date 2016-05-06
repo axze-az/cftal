@@ -17,15 +17,15 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return exp10(a);
             }
-
             static
             _T
-            v(const _T& a) {
-#if 1
+            r(const _T& a) {
                 return call_mpfr::func(a, mpfr_exp10);
-#else
+            }
+            static
+            _T
+            s(const _T& a) {
                 return ::exp10(a);
-#endif
             }
             static
             const char* fname() { return "exp10"; }

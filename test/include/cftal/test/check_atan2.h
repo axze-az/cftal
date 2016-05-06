@@ -19,12 +19,13 @@ namespace cftal {
             }
             static
             _T
-            v(const _T& a, const _T& b) {
-#if 0
+            r(const _T& a, const _T& b) {
                 return call_mpfr::func(a, b, mpfr_atan2);
-#else
+            }
+            static
+            _T
+            s(const _T& a, const _T& b) {
                 return std::atan2(a, b);
-#endif
             }
             static
             const char* fname() { return "atan2"; }

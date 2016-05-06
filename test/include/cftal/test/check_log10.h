@@ -19,12 +19,13 @@ namespace cftal {
             }
             static
             _T
-            v(const _T& a) {
-#if 1
+            r(const _T& a) {
                 return call_mpfr::func(a, mpfr_log10);
-#else
+            }
+            static
+            _T
+            s(const _T& a) {
                 return std::log10(a);
-#endif
             }
             static
             const char* fname() { return "log10"; }

@@ -84,11 +84,14 @@ namespace cftal {
             bool
             v(exec_stats& st,
               func_domain<_T> domain = default_domain<_T>::value,
-              _CMP cmp=_CMP(), std::size_t cnt=default_cnt);
+              bool speed_only = false,
+              _CMP cmp=_CMP(),
+              std::size_t cnt=default_cnt);
 
             template <typename _CMP=cmp_t<_T> >
             static
-            bool v(const _T(&ai)[_N], exec_stats& st, _CMP cmp=_CMP());
+            bool v(const _T(&ai)[_N],
+                   exec_stats& st, bool speed_only, _CMP cmp=_CMP());
         };
 
         template <typename _T, std::size_t _N, typename _F>
@@ -96,10 +99,13 @@ namespace cftal {
             template <typename _CMP=cmp_t<_T> >
             static
             bool
-            v(exec_stats& st, func_domain<_T> domain = default_domain<_T>::value,
+            v(exec_stats& st,
+              func_domain<_T> domain = default_domain<_T>::value,
+              bool speed_only = false,
               _CMP cmp= _CMP(),
               std::size_t cnt=default_cnt) {
-                bool r=of_fp_func<_T, _N, _F>::v(st, domain, cmp, cnt);
+                bool r=of_fp_func<_T, _N, _F>::v(st, domain,
+                                                 speed_only, cmp, cnt);
                 return r;
             }
         };
@@ -113,12 +119,14 @@ namespace cftal {
             v(exec_stats& st,
               func_domain<_T> domain_1 = default_domain<_T>::value,
               func_domain<_T> domain_2 = default_domain<_T>::value,
-              _CMP cmp=_CMP(), std::size_t cnt=default_cnt);
+              bool speed_only = false,
+              _CMP cmp=_CMP(),
+              std::size_t cnt=default_cnt);
 
             template <typename _CMP=cmp_t<_T> >
             static
             bool v(const _T(&ai)[_N], const _T(&bi)[_N],
-                   exec_stats& st, _CMP cmp=_CMP());
+                   exec_stats& st, bool speed_only, _CMP cmp=_CMP());
         };
 
         template <typename _T, std::size_t _N, typename _F>
@@ -129,9 +137,11 @@ namespace cftal {
             v(exec_stats& st,
               func_domain<_T> domain_1 = default_domain<_T>::value,
               func_domain<_T> domain_2 = default_domain<_T>::value,
-              _CMP cmp= _CMP(), std::size_t cnt=default_cnt) {
+              bool speed_only = false,
+              _CMP cmp= _CMP(),
+              std::size_t cnt=default_cnt) {
                 bool r=of_fp_func_2<_T, _N, _F>::v(st, domain_1, domain_2,
-                                                   cmp, cnt);
+                                                   speed_only, cmp, cnt);
                 return r;
             }
         };
@@ -224,7 +234,8 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
     r &= vec_parts<_T, _N2, _F>::v(xl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
     vec<_T, _N> fxlh(fxl, fxh);
-    typename vec<_T, _N>::mask_type vr= (fx == fxlh) | (isnan(fx) & isnan(fxlh));
+    typename vec<_T, _N>::mask_type vr=
+        (fx == fxlh) | (isnan(fx) & isnan(fxlh));
     bool rc= all_of(vr);
     r &= rc;
     if (rc == false) {
@@ -284,6 +295,7 @@ template <typename _CMP>
 bool
 cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
                                        exec_stats& st,
+                                       bool speed_only,
                                        _CMP cmp)
 {
     vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
@@ -292,10 +304,18 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
     uint64_t t1 = exec_stats::hr_timer();
     _T r[_N];
     uint64_t t0i[_N], t1i[_N];
-    for (std::size_t i=0; i<_N; ++i) {
-        t0i[i] = exec_stats::hr_timer();
-        r[i] = _F::v(a[i]);
-        t1i[i]= exec_stats::hr_timer();
+    if (speed_only) {
+        for (std::size_t i=0; i<_N; ++i) {
+            t0i[i] = exec_stats::hr_timer();
+            r[i] = _F::s(a[i]);
+            t1i[i]= exec_stats::hr_timer();
+        }
+    } else {
+        for (std::size_t i=0; i<_N; ++i) {
+            t0i[i] = exec_stats::hr_timer();
+            r[i] = _F::r(a[i]);
+            t1i[i]= exec_stats::hr_timer();
+        }
     }
     for (std::size_t i=0; i<_N; ++i) {
         st.insert(t0i[i], t1i[i], 0);
@@ -304,7 +324,11 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
     // std::cout << std::setprecision(18) << a << std::endl;
     bool c= check(vr, r, _F::fname(), true, cmp);
     bool cs= vec_parts<_T, _N, _F>::v(va, vr, st);
-    c &= cs;
+    // do only a subvector test if speed_only
+    if (speed_only)
+        c = cs;
+    else
+        c &= cs;
     if (c == false) {
         for (std::size_t i=0; i < _N; ++i) {
             std::cerr << _F::fname() << "("<< a[i] << ") failed ?\n";
@@ -325,6 +349,7 @@ template <typename _CMP>
 bool
 cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
                                        func_domain<_T> domain,
+                                       bool speed_only,
                                        _CMP cmp, std::size_t cnt)
 {
     bool r = true;
@@ -397,9 +422,9 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
          b!=e; ++b) {
         const auto& ai= *b;
         std::fill(std::begin(va), std::end(va), ai);
-        r &=v(va, st, cmp);
+        r &=v(va, st, speed_only, cmp);
         std::fill(std::begin(va), std::end(va), -ai);
-        r &=v(va, st, cmp);
+        r &=v(va, st, speed_only, cmp);
     }
 #endif
     std::mt19937_64 rnd;
@@ -416,7 +441,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
                 for (std::size_t k=0; k<_N; ++k) {
                     va[k] = distrib(rnd);
                 }
-                r &= v(va, st, cmp);
+                r &= v(va, st, speed_only, cmp);
             }
             std::cout << '.' << std::flush;
         }
@@ -436,7 +461,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
                     for (std::size_t k=0; k<_N; ++k) {
                         va[k] = distrib1(rnd);
                     }
-                    r &= v(va, st, cmp);
+                    r &= v(va, st, speed_only, cmp);
                 }
                 std::cout << '.' << std::flush;
             }
@@ -459,7 +484,7 @@ template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP>
 bool
 cftal::test::of_fp_func_2<_T, _N, _F>::
-v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, _CMP cmp)
+v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, bool speed_only, _CMP cmp)
 {
     vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
     vec<_T, _N> vb=mem<vec<_T, _N> >::load(b);
@@ -468,10 +493,18 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, _CMP cmp)
     uint64_t t1=exec_stats::hr_timer();
     _T r[_N];
     uint64_t t0i[_N], t1i[_N];
-    for (std::size_t i=0; i<_N; ++i) {
-        t0i[i]=exec_stats::hr_timer();
-        r[i] = _F::v(a[i], b[i]);
-        t1i[i]=exec_stats::hr_timer();
+    if (speed_only) {
+        for (std::size_t i=0; i<_N; ++i) {
+            t0i[i]=exec_stats::hr_timer();
+            r[i] = _F::s(a[i], b[i]);
+            t1i[i]=exec_stats::hr_timer();
+        }
+    } else {
+        for (std::size_t i=0; i<_N; ++i) {
+            t0i[i]=exec_stats::hr_timer();
+            r[i] = _F::r(a[i], b[i]);
+            t1i[i]=exec_stats::hr_timer();
+        }
     }
     for (std::size_t i=0; i<_N; ++i) {
         st.insert(t0i[i], t1i[i], 0);
@@ -479,7 +512,10 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, _CMP cmp)
     st.insert(t0, t1, _N);
     bool c= check(vr, r, _F::fname(), true, cmp);
     bool cs= vec_parts<_T, _N, _F>::v(va, vb, vr, st);
-    c &= cs;
+    if (speed_only)
+        c= cs;
+    else
+        c &= cs;
     if (c == false) {
         for (std::size_t i=0; i < _N; ++i) {
             std::cerr << _F::fname() << "("
@@ -498,6 +534,7 @@ bool
 cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
                                          func_domain<_T> domain_1,
                                          func_domain<_T> domain_2,
+                                         bool speed_only,
                                          _CMP cmp, std::size_t cnt)
 {
     bool r = true;
@@ -525,13 +562,13 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
             _T bi= *bb;
             std::fill(std::begin(va), std::end(va), ai);
             std::fill(std::begin(vb), std::end(vb), bi);
-            r &= v(va, vb, st, cmp);
+            r &= v(va, vb, st, speed_only, cmp);
             std::fill(std::begin(vb), std::end(vb), -bi);
-            r &= v(va, vb, st, cmp);
+            r &= v(va, vb, st, speed_only, cmp);
             std::fill(std::begin(va), std::end(va), -ai);
-            r &= v(va, vb, st, cmp);
+            r &= v(va, vb, st, speed_only, cmp);
             std::fill(std::begin(vb), std::end(vb), bi);
-            r &= v(va, vb, st, cmp);
+            r &= v(va, vb, st, speed_only, cmp);
         }
     }
 
@@ -554,7 +591,7 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
                     va[k] = distrib1(rnd);
                     vb[k] = distrib2(rnd);
                 }
-                r &= v(va, vb, st, cmp);
+                r &= v(va, vb, st, speed_only, cmp);
             }
             std::cout << '.' << std::flush;
         }
@@ -582,7 +619,7 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
                         va[k] = distrib_1_1(rnd);
                         vb[k] = distrib_1_2(rnd);
                     }
-                    r &= v(va, vb, st, cmp);
+                    r &= v(va, vb, st, speed_only, cmp);
                 }
                 std::cout << '.' << std::flush;
             }

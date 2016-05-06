@@ -8,9 +8,12 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     const int ulp=1;
     const int _N=8;
+    bool speed_only=false;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     bool rc= true;
+    if ((argc > 1) && (std::string(argv[1]) == "--speed"))
+        speed_only=true;
 #if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -33,7 +36,9 @@ int main(int argc, char** argv)
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
-        double, _N, check_tanh<double> >::v(st, d, cmp_ulp<double>(ulp, us),
+        double, _N, check_tanh<double> >::v(st, d,
+                                            speed_only,
+                                            cmp_ulp<double>(ulp, us),
                                             0x4000ULL);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
