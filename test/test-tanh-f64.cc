@@ -12,8 +12,11 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     bool rc= true;
-    if ((argc > 1) && (std::string(argv[1]) == "--speed"))
+    std::size_t cnt=0x8000;
+    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
+        cnt *= 8;
+    }
 #if 0
     std::string test_data_dir = dirname(argv[0]);
     std::string test_data_file=
@@ -30,8 +33,6 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_tanh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_tanh<double> >(v, ulp, 0, false);
 #endif
-    
-    // func_domain<double> d=std::make_pair(-710.5, 710.5);
     func_domain<double> d=std::make_pair(-25, 25);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
@@ -39,7 +40,7 @@ int main(int argc, char** argv)
         double, _N, check_tanh<double> >::v(st, d,
                                             speed_only,
                                             cmp_ulp<double>(ulp, us),
-                                            0x4000ULL);
+                                            cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

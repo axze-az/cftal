@@ -12,8 +12,10 @@ int main(int argc, char** argv)
     const int _N=8;
     bool rc=true;
     bool speed_only=false;
+    std::size_t cnt=0x8000;
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
+        cnt *=8;
     }
     func_domain<float> d=std::make_pair(-90.0f, 90.0f);
     auto us=std::make_shared<ulp_stats>();
@@ -21,7 +23,7 @@ int main(int argc, char** argv)
     rc &= of_fp_func_up_to<
         float, _N, check_cosh<float> >::v(st, d, speed_only,
                                           cmp_ulp<float>(ulp, us),
-                                          0x4000ULL);
+                                          cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

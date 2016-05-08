@@ -20,8 +20,10 @@ int main(int argc, char** argv)
     const int _N=8;
     bool rc=true;
     bool speed_only=false;
+    std::size_t cnt=0x8000;
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
+        cnt *=8;
     }
     func_domain<float> df=std::make_pair(-std::numeric_limits<float>::max(),
                                           std::numeric_limits<float>::max());
@@ -30,7 +32,7 @@ int main(int argc, char** argv)
     rc &= of_fp_func_up_to<
         float, _N, check_cbrt<float> >::v(f_st, df, speed_only,
                                           cmp_ulp<float>(ulp, usf),
-                                          0x20000);
+                                          cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *usf << std::endl;
     std::cout << f_st << std::endl;

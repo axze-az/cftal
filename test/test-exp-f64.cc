@@ -11,9 +11,11 @@ int main(int argc, char** argv)
     const int ulp=1;
     const int _N=8;
     bool rc=true;
+    std::size_t cnt=0x8000;
     bool speed_only=false;
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
+        cnt *=8;
     } else {
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
     rc &= of_fp_func_up_to<
         double, _N, check_exp<double> >::v(st, d, speed_only,
                                            cmp_ulp<double>(ulp, us),
-                                           0x8000);
+                                           cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

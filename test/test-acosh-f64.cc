@@ -10,8 +10,11 @@ int main(int argc, char** argv)
     const int _N=8;
     bool rc=true;
     bool speed_only=false;
-    if ((argc > 1) && (std::string(argv[1]) == "--speed"))
+    std::size_t cnt=0x8000;
+    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
+        cnt *=8;
+    }
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     // std::cerr << std::hexfloat;
@@ -47,7 +50,7 @@ int main(int argc, char** argv)
         double, _N, check_acosh<double> >::v(st, d,
                                              speed_only,
                                              cmp_ulp<double>(ulp, us),
-                                             0x10000);
+                                             cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

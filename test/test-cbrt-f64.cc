@@ -255,8 +255,10 @@ int main(int argc, char** argv)
     const int _N=8;
     bool rc=true;
     bool speed_only=false;
+    std::size_t cnt=0x8000;
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
+        cnt *=8;
     } else {
         std::cout << "f64 test\n"<<std::scientific;
         rc &= check_cbrt_f64(cftal::v1f64(), false);
@@ -271,7 +273,7 @@ int main(int argc, char** argv)
     rc &= of_fp_func_up_to<
         double, _N, check_cbrt<double> >::v(d_st, dd, speed_only,
                                             cmp_ulp<double>(ulp, us),
-                                            0x10000);
+                                            cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << d_st << std::endl;
