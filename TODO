@@ -1,6 +1,4 @@
-- math functions: check if minimax polynomials can reduce the degree of
-  the polynomials
-
+- f32: asinh, acosh, atanh 
 - permutation specializations for v4f64, v8f32, v8u32, v4u64
 
 - variable vector shifts for integer vectors
