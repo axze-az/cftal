@@ -39,6 +39,13 @@ namespace cftal {
         };
 
         template <typename _T>
+        struct check_one {
+            bool operator()(_T a) const {
+                return a == 1.0;
+            }
+        };
+
+        template <typename _T>
         struct check_max_denormal {
             bool operator() (_T a) const  {
                 return false;
@@ -872,6 +879,8 @@ int main(int argc, char** argv)
         gen_constant(dm, "const double exp10_lo", mpfr_exp10,
                      check_zero<double>(), "m_0");
 
+        gen_constant(dp, "const double erf_lt_one", mpfr_erf,
+                     check_one<double>(), "1");
         // -1022 - 53
         write_constant(
             "const double log_arg_small", 0x1p-969);
@@ -962,6 +971,8 @@ int main(int argc, char** argv)
         gen_constant(dm, "const float exp10_lo", mpfr_exp10,
                      check_zero<float>(), "m_0");
 
+        gen_constant(dp, "const float erf_lt_one", mpfr_erf,
+                     check_one<float>(), "1");
         // -126 + 24
         write_constant(
             "const double log_arg_small", 0x1p-102f);
