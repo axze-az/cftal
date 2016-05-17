@@ -57,8 +57,7 @@ namespace cftal {
         };
 
         template <typename _FLOAT_T, typename _TRAITS_T>
-        struct func_common : public func_core< _FLOAT_T,
-                                               _TRAITS_T> {
+        struct func_common : public func_core< _FLOAT_T, _TRAITS_T> {
             using base_type = func_core<_FLOAT_T, _TRAITS_T>;
             using my_type = func_common<_FLOAT_T, _TRAITS_T>;
             using vf_type = typename base_type::vf_type;
@@ -167,6 +166,9 @@ namespace cftal {
             static vf_type asinh(arg_t<vf_type> x);
             static vf_type acosh(arg_t<vf_type> x);
             static vf_type atanh(arg_t<vf_type> x);
+
+            // calls erf_k
+            static vf_type erf(arg_t<vf_type> x);
         };
 
 
@@ -1307,6 +1309,21 @@ atanh(arg_t<vf_type> x)
     r = _TRAITS_T::sel(x < -1.0, -_TRAITS_T::nan(), r);
     r = _TRAITS_T::sel(x == 1.0, _TRAITS_T::pinf(), r);
     r = _TRAITS_T::sel(x >  1.0, _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(isnan(x), x, r);
+    return r;
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+erf(arg_t<vf_type> x)
+{
+    vf_type r=base_type::erf_k(x);
+    // using fc=func_constants<_FLOAT_T>;
+    const double erf_lt_one_fin= 5.921587195794506541801638e+00;
+    r = _TRAITS_T::sel(x < -erf_lt_one_fin, -1.0, r);
+    r = _TRAITS_T::sel(x > erf_lt_one_fin, 1.0, r);
+    r = _TRAITS_T::sel(x == 0, x, r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
 }

@@ -374,7 +374,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
 {
     bool r = true;
     _T va[_N];
-#if 1
+#if 0
     const _T inf_nan_args []= {
         _T(0.0),
         _T(-0.0),

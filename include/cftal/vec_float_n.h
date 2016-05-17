@@ -451,7 +451,7 @@ namespace cftal {
     vec<float, 8>
     acosh(arg_t<vec<float, 8> > d);
 
-    // atanh, these functions are exact to +-2 ulp
+    // atanh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
     atanh(const vec<float, _N>& x);
@@ -467,6 +467,23 @@ namespace cftal {
 
     vec<float, 8>
     atanh(arg_t<vec<float, 8> > d);
+
+    // atanh, these functions are exact to XXX ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    erf(const vec<float, _N>& x);
+
+    vec<float, 1>
+    erf(arg_t<vec<float, 1> > d);
+
+    vec<float, 2>
+    erf(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    erf(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    erf(arg_t<vec<float, 8> > d);
 
 #if 0
     // pow, these functions are exact to +-1 ulp with exception of _N=1
@@ -957,6 +974,15 @@ cftal::vec<float, _N>
 cftal::atanh(const vec<float, _N>& v)
 {
     vec<float, _N> r(atanh(low_half(v)), atanh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::erf(const vec<float, _N>& v)
+{
+    vec<float, _N> r(erf(low_half(v)), erf(high_half(v)));
     return r;
 }
 

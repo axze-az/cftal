@@ -276,6 +276,10 @@ namespace cftal {
 
             static
             vf_type
+            erf_k(arg_t<vf_type> x);
+
+            static
+            vf_type
             cbrt_k(arg_t<vf_type> x);
         };
 
@@ -1752,6 +1756,15 @@ atanh_k(arg_t<vf_type> xc)
     r=copysign(r, xc);
     return r;
 #endif
+}
+
+template <typename _T>
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+erf_k(arg_t<vf_type> xc)
+{
+    vf_type x=abs(xc);
+    return x;
 }
 
 template <typename _T>
