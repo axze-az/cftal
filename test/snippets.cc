@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <cstddef>
 #include <iterator>
+#include <vector>
 
 namespace cftal {
 
