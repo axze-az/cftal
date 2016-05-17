@@ -89,10 +89,11 @@ namespace cftal {
     vec<float, _N>
     cosh(const vec<float, _N>& v);
 
+#if 0
     template <std::size_t _N>
     vec<float, _N>
     pow(const vec<float, _N>& x, const vec<float, _N>& y);
-
+#endif
     template <std::size_t _N>
     vec<float, _N>
     atan2(const vec<float, _N>& x, const vec<float, _N>& y);
@@ -265,7 +266,7 @@ namespace cftal {
     v8f32
     expm1(arg<v8f32>::type d);
 
-    // exp2, these functions are exact to +-1 ulp 
+    // exp2, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
     exp2(const vec<float, _N>& v);
@@ -282,7 +283,7 @@ namespace cftal {
     vec<float, 8>
     exp2(arg<vec<float, 8> >::type d);
 
-    // exp10, these functions are exact to +-1 ulp 
+    // exp10, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
     exp10(const vec<float, _N>& v);
@@ -467,6 +468,7 @@ namespace cftal {
     vec<float, 8>
     atanh(arg_t<vec<float, 8> > d);
 
+#if 0
     // pow, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<float, _N>
@@ -483,8 +485,7 @@ namespace cftal {
 
     vec<float, 8>
     pow(arg<vec<float, 8> >::type b, arg<vec<float, 8> >::type e);
-
-
+#endif
     // exp: exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -977,6 +978,7 @@ cftal::tanh(const vec<float, _N>& v)
     return r;
 }
 
+#if 0
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>
@@ -986,6 +988,7 @@ cftal::pow(const vec<float, _N>& x, const vec<float, _N>& y)
                      pow(high_half(x), high_half(y)));
     return r;
 }
+#endif
 
 template <std::size_t _N>
 inline

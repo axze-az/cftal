@@ -133,13 +133,6 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
-    ns::pow(arg<vec_float>::type b, arg<vec_float>::type e)             \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::pow(b, e);                                       \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
     ns::sinh(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -258,6 +251,14 @@
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::native_cos(d);                                   \
+    }                                                                   \
+
+
+#define DEF_MATH_POW(ns, vec_float, vec_int, real_type)                 \
+    ns::pow(arg<vec_float>::type b, arg<vec_float>::type e)             \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::pow(b, e);                                       \
     }                                                                   \
 
 

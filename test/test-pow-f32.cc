@@ -7,6 +7,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     return 0;
+#if 0
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
@@ -40,4 +41,5 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
+#endif
 }
