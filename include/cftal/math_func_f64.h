@@ -932,6 +932,67 @@ exp2_k(arg_t<vf_type> x)
     const vf_type exp2_c12=0x1.c10af93bacd13p-36;
     // x^13
     const vf_type exp2_c13=-0x1.4ffad4bac9b4bp-37;
+#if 0
+    // this is terrible slow without fma
+    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+    vf_type y = exp2_c13;
+    vf_type ye;
+    vf_type p_i;
+    vf_type o_i;
+    y = exp2_c13;
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c12, o_i);
+    ye= (p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c11, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c10, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c9, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c8, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c7, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c6, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c5, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c4, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c3, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c2, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c1, o_i);
+    ye= ye* xr +(p_i + o_i);
+
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp2_c0, o_i);
+    ye= ye* xr +(p_i + o_i);
+    y += ye;
+#else
     vf_type y=impl::poly(xr,
                          exp2_c13,
                          exp2_c12,
@@ -947,6 +1008,7 @@ exp2_k(arg_t<vf_type> x)
                          exp2_c2,
                          exp2_c1,
                          exp2_c0);
+#endif
     y= scale_exp_k(y, kf, k2);
     return y;
 }
@@ -2486,7 +2548,7 @@ erf_k(arg_t<vf_type> xc)
 
     vf_type x2= x*x;
     vf_type y_i0= x*impl::poly(x2,
-#if 0                               
+#if 0
                                erf_i0_c26,
                                erf_i0_c24,
                                erf_i0_c22,
