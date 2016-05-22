@@ -110,7 +110,7 @@ cftal::test::chebyshev::t(std::size_t n, _T x)
         y= x;
         break;
     default:
-        y= 2* x * poly(n-1, x) + poly(n-2, x);
+        y= 2* x * t(n-1, x) + t(n-2, x);
         break;
     }
     return y;
