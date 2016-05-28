@@ -247,6 +247,11 @@ namespace cftal {
             vf_type
             exp10_k(arg_t<vf_type> x);
 
+            // calculates exp(x*x*sign(s))
+            static
+            vf_type
+            expxx_k(arg_t<vf_type> x, arg_t<vf_type> s);
+            
             static
             vf_type
             sinh_k(arg_t<vf_type> x);
@@ -1074,6 +1079,24 @@ exp10_k(arg_t<vf_type> x)
     return y;
 }
 
+template <typename _T>
+inline
+typename cftal::math::func_core<double, _T>::vf_type
+cftal::math::func_core<double, _T>::
+expxx_k(arg_t<vf_type> xc, arg_t<vf_type> s)
+{
+    // using d_ops=
+    // cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+    vf_type xh = _T::clear_low_word(xc);
+    vf_type xl = (xh -xc) * (xh + xc);
+    vf_type s0 = copysign(1.0, s);
+    xh *= s0;
+    xl *= s0;
+    vf_type eh= exp_k(xh, false);
+    vf_type el= exp_k(xl, false);
+    return eh * el;
+}
+    
 #if 0
 template <typename _T>
 inline
