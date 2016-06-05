@@ -7,12 +7,12 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     const int ulp=1;
-    const int _N=2;
+    const int _N=8;
     bool speed_only=false;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     bool rc= true;
-    std::size_t cnt=0x800;
+    std::size_t cnt=0x8000*4;
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *= 8;
