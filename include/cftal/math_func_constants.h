@@ -60,6 +60,10 @@ namespace cftal {
             constexpr static const double
             log_lo_val= -7.444400719213812180896639e+02;
 
+            // erf(x) != 1.0, x>x0 -->erf(x) == 1.0
+            constexpr static const double
+            erf_lt_one_fin= 5.921587195794506541801638e+00;
+
         };
 
         template <>
@@ -106,7 +110,11 @@ namespace cftal {
             constexpr static const float
             log_lo_fin= 1.401298464324817070923730e-45f;
             constexpr static const float
-            log_lo_val= -1.032789306640625000000000e+02;
+            log_lo_val= -1.032789306640625000000000e+02f;
+
+            constexpr static const float
+            erf_lt_one_fin= 3.919205665588378906250000e+00f;
+
         };
 
         namespace impl {
