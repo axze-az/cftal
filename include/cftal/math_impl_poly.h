@@ -48,6 +48,22 @@ namespace cftal {
             _X
             poly1(_X x, _CNM1 cnm1, _CS... cs);
 
+
+            template <typename _X, typename _C1, typename _C0>
+            void
+            poly_n4(_X& y0, _X& y1, _X& y2, _X& y3,
+                    _X x0, _X x1, _X x2, _X x3,
+                    _C1 c1_0, _C1 c1_1, _C1 c1_2, _C1 c1_3, 
+                    _C0 c0_0, _C0 c0_1, _C0 c0_2, _C0 c0_3);
+            
+            template <typename _X,
+                      typename _CN, typename _CNM1, typename ... _CS>
+            void
+            poly_n4(_X& y0, _X& y1, _X& y2, _X& y3,
+                    _X x0, _X x1, _X x2, _X x3,
+                    _CN cn_0, _CN cn_1, _CN cn_2, _CN cn_3, 
+                    _CNM1 cnm1_0, _CNM1 cnm1_1, _CNM1 cnm1_2, _CNM1 cnm1_3,
+                    _CS... cs);
         }
     }
 }
@@ -143,6 +159,35 @@ cftal::math::impl::poly1(_X x, _CNM1 cnm1, _CS... cs)
     return r;
 }
 
+template <typename _X, typename _C1, typename _C0>
+void
+cftal::math::impl::poly_n4(_X& y0, _X& y1, _X& y2, _X& y3,
+                           _X x0, _X x1, _X x2, _X x3,
+                           _C1 c1_0, _C1 c1_1, _C1 c1_2, _C1 c1_3, 
+                           _C0 c0_0, _C0 c0_1, _C0 c0_2, _C0 c0_3)
+{
+    y0 = poly(x0, c1_0, c0_0);
+    y1 = poly(x1, c1_1, c0_1);
+    y2 = poly(x2, c1_2, c0_2);
+    y3 = poly(x3, c1_3, c0_3);
+}
+
+template <typename _X,
+          typename _CN, typename _CNM1, typename ... _CS>
+void
+cftal::math::impl::
+poly_n4(_X& y0, _X& y1, _X& y2, _X& y3,
+        _X x0, _X x1, _X x2, _X x3,
+        _CN cn_0, _CN cn_1, _CN cn_2, _CN cn_3, 
+        _CNM1 cnm1_0, _CNM1 cnm1_1, _CNM1 cnm1_2, _CNM1 cnm1_3,
+        _CS... cs)
+{
+    poly_n4(y0, y1, y2, y3, x0, x1, x2, x3,
+            cn_0, cn_1, cn_2, cn_3,
+            cnm1_0, cnm1_1, cnm1_2, cnm1_3);
+    poly_n4(y0, y1, y2, y3, x0, x1, x2, x3,
+            y0, y1, y2, y3, cs...);
+}
 
 // local variables:
 // mode: c++

@@ -2790,7 +2790,49 @@ erf_k(arg_t<vf_type> xc)
     const vf_type erf_i4_left=+4.5000000000000000000000e+00;
     // x^ : +0xap-1
     const vf_type erf_i4_x0=+5.0000000000000000000000e+00;
+
+#if 1
+    vf_type x_i1 = x - erf_i1_x0;
+    vf_type x_i2 = x - erf_i2_x0;
+    vf_type x_i3 = x - erf_i3_x0;
+    vf_type x_i4 = x - erf_i4_x0;
+    vf_type y_i1, y_i2, y_i3, y_i4;
+    impl::poly_n4(y_i1, y_i2, y_i3, y_i4, 
+                  x_i1, x_i2, x_i3, x_i4, 
+                  erf_i1_c18, erf_i2_c18, erf_i3_c18, erf_i4_c18, 
+                  erf_i1_c17, erf_i2_c17, erf_i3_c17, erf_i4_c17, 
+                  erf_i1_c16, erf_i2_c16, erf_i3_c16, erf_i4_c16, 
+                  erf_i1_c15, erf_i2_c15, erf_i3_c15, erf_i4_c15, 
+                  erf_i1_c14, erf_i2_c14, erf_i3_c14, erf_i4_c14, 
+                  erf_i1_c13, erf_i2_c13, erf_i3_c13, erf_i4_c13, 
+                  erf_i1_c12, erf_i2_c12, erf_i3_c12, erf_i4_c12, 
+                  erf_i1_c11, erf_i2_c11, erf_i3_c11, erf_i4_c11, 
+                  erf_i1_c10, erf_i2_c10, erf_i3_c10, erf_i4_c10, 
+                  erf_i1_c9, erf_i2_c9, erf_i3_c9, erf_i4_c9, 
+                  erf_i1_c8, erf_i2_c8, erf_i3_c8, erf_i4_c8, 
+                  erf_i1_c7, erf_i2_c7, erf_i3_c7, erf_i4_c7, 
+                  erf_i1_c6, erf_i2_c6, erf_i3_c6, erf_i4_c6, 
+                  erf_i1_c5, erf_i2_c5, erf_i3_c5, erf_i4_c5, 
+                  erf_i1_c4, erf_i2_c4, erf_i3_c4, erf_i4_c4, 
+                  erf_i1_c3, erf_i2_c3, erf_i3_c3, erf_i4_c3, 
+                  erf_i1_c2, erf_i2_c2, erf_i3_c2, erf_i4_c2, 
+                  erf_i1_c1, erf_i2_c1, erf_i3_c1, erf_i4_c1);
+
+    y_i1*= x_i1;
+    y_i2*= x_i2;
+    y_i3*= x_i3;
+    y_i4*= x_i4;
     
+    y_i1 += erf_i1l;
+    y_i1 += erf_i1h;
+    y_i2 += erf_i2l;
+    y_i2 += erf_i2h;
+    y_i3 += erf_i3l;
+    y_i3 += erf_i3h;
+    y_i4 += erf_i4l;
+    y_i4 += erf_i4h;
+
+#else    
     vf_type x_i1 = x - erf_i1_x0;
     vf_type y_i1= impl::poly(x_i1,
                              erf_i1_c18,
@@ -2882,7 +2924,7 @@ erf_k(arg_t<vf_type> xc)
                              erf_i4_c1)*x_i4;
     y_i4 += erf_i4l;
     y_i4 += erf_i4h;
-
+#endif
     vf_type y = _T::sel(x > erf_i1_left, y_i1, y_i0);
     y = _T::sel(x > erf_i2_left, y_i2, y);
     y = _T::sel(x > erf_i3_left, y_i3, y);
