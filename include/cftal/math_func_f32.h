@@ -1823,34 +1823,38 @@ erf_k(arg_t<vf_type> xc)
     const vf_type erf_i0_c0=+3.0000000000e+00f;
     // x^2 : +0xe.66666p-4f
     const vf_type erf_i0_c2=+8.9999997616e-01f;
-    // x^4 : +0xe.4352bp-8f
-    const vf_type erf_i0_c4=+5.5714767426e-02f;
-    // x^6 : -0xc.19945p-11f
-    const vf_type erf_i0_c6=-5.9081637301e-03f;
-    // x^8 : -0xf.4a869p-18f
-    const vf_type erf_i0_c8=-5.8330977481e-05f;
-    // x^10 : +0x9.d2c52p-17f
-    const vf_type erf_i0_c10=+7.4945986853e-05f;
-    // x^12 : +0xa.ee5fcp-23f
-    const vf_type erf_i0_c12=+1.3030944501e-06f;
+    // x^4 : +0xe.436b4p-8f
+    const vf_type erf_i0_c4=+5.5716231465e-02f;
+    // x^6 : -0xc.34e84p-11f
+    const vf_type erf_i0_c6=-5.9602875262e-03f;
+    // x^8 : +0xa.a8aa3p-14f
+    const vf_type erf_i0_c8=+6.5056438325e-04f;
+    // x^10 : -0x8.b3c65p-11f
+    const vf_type erf_i0_c10=-4.2491429485e-03f;
+    // x^12 : +0xa.1f9aap-10f
+    const vf_type erf_i0_c12=+9.8861847073e-03f;
     // x^ h: +0x9.06ebbp-3f
     const vf_type two_o_sqrt_pih=+1.1283792257e+00f;
     // x^ l: -0xf.bd649p-28f
     const vf_type two_o_sqrt_pil=-5.8635382771e-08f;
+    // x^ : +0x9.06ebap-3f
+    const vf_type two_o_sqrt_pi_h=+1.1283791065e+00f;
+    // x^ : +0xcp-27f
+    const vf_type two_o_sqrt_pi_l=+8.9406967163e-08f;
     vf_type xx= xc*xc;
     vf_type P= impl::poly(xx,
                           // erf_i0_c18,
                           // erf_i0_c16,
                           // erf_i0_c14,
-                          // erf_i0_c12,
-                          // erf_i0_c10,
+                          erf_i0_c12,
+                          erf_i0_c10,
                           erf_i0_c8,
                           erf_i0_c6,
                           erf_i0_c4,
                           erf_i0_c2,
                           erf_i0_c0);
     vf_type y_i0= x - x * xx/P;
-    y_i0 = y_i0*two_o_sqrt_pih /*+ y_i0 * two_o_sqrt_pil*/;
+    y_i0 = y_i0*two_o_sqrt_pi_h + y_i0 * two_o_sqrt_pi_l;
 #endif
     vf_type y = y_i0;
 #if 0
