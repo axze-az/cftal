@@ -63,6 +63,10 @@ namespace cftal {
                 ulp_stats* p= &*_stats;
                 return f_eq_ulp(a, b, _ulp, p);
             }
+            bool operator()(const _T& a, const std::tuple<_T, _T, _T>& b) {
+                ulp_stats* p=&*_stats;
+                return f_eq_ulp(a, b, _ulp, p);
+            }
         };
 
     }

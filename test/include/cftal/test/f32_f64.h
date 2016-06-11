@@ -19,14 +19,21 @@ namespace cftal {
             uint64_t _ulps;
             uint64_t _nans;
             uint64_t _cnt;
+            std::pair<bool, bool> _faithful;
             std::map<int32_t, uint32_t> _devs;
-            ulp_stats() : _ulps(0), _nans(0), _cnt(0) {};
+            ulp_stats()
+                : _ulps(0), _nans(0), _cnt(0), _faithful(false, true) {};
             void inc(int32_t ulp, int32_t is_nan) {
                 ++_cnt;
                 uint32_t au= ulp != 0 ? 1 : 0;
                 _ulps +=  au;
                 _devs[ulp] += 1;
                 _nans += is_nan != 0 ? 1 : 0;
+            }
+            void faithful(bool v) {
+                _faithful.first = true;
+                if (_faithful.second == true)
+                    _faithful.second =v;
             }
         };
 
@@ -39,6 +46,16 @@ namespace cftal {
         // same a above, but allows also deviations up to and including +-ulp
         bool f_eq_ulp(double a, double b, uint32_t ulp, ulp_stats* us);
         bool f_eq_ulp(float a, float b, uint32_t ulp, ulp_stats* us);
+
+        // b contains value, interval low, interval high
+        bool f_eq_ulp(double a, const std::tuple<double, double, double>& b,
+                      uint32_t ulp, ulp_stats* us);
+        bool f_eq_ulp(float a, const std::tuple<float, float, float>& b,
+                      uint32_t ulp, ulp_stats* us);
+
+        template <typename _T>
+        std::ostream&
+        operator<<(std::ostream& s, const std::tuple<_T, _T, _T>& );
 
         template <typename _T>
         struct cmp_t {
@@ -84,18 +101,19 @@ namespace cftal {
                    bool verbose=true,
                    _CMP cmp= _CMP());
 
-        template <class _T, std::size_t _N, typename _MSG,
+        template <class _T, class _R, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
-        bool check(const _T(&a)[_N], const _T(&expected)[_N], _MSG msg,
+        bool check(const _T(&a)[_N], const _R(&expected)[_N], _MSG msg,
                    bool verbose=true,
                    _CMP cmp = _CMP());
 
-        template <class _T, std::size_t _N, typename _MSG,
+        template <class _T, class _R, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
-        bool check(vec<_T, _N> a, const _T(&expected)[_N] , _MSG msg,
+        bool check(vec<_T, _N> a,
+                   const _R(&expected)[_N] , _MSG msg,
                    bool verbose=true,
-                   _CMP cmp= _CMP());
-        
+                   _CMP cmp = _CMP());
+
         template <class _T, std::size_t _N>
         bool check_cmp(const _T(&a)[_N], bool expected, const char* msg);
 
@@ -119,6 +137,17 @@ namespace cftal {
 
     }
 }
+
+template <typename _T>
+std::ostream&
+cftal::test::
+operator<<(std::ostream& s, const std::tuple<_T, _T, _T>& t)
+{
+    s << std::get<0>(t)
+      << " [ "  << std::get<1>(t) << ", "  << std::get<2>(t) << " ]";
+    return s;
+}
+
 
 template <class _T, std::size_t _N, typename _MSG, typename _CMP>
 bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
@@ -159,14 +188,15 @@ bool cftal::test::check(vec<_T, _N> vr, _T expected, _MSG msg,
     return check(vsr, expected, msg, verbose, cmp);
 }
 
-template <class _T, std::size_t _N, typename _MSG, typename _CMP>
-bool cftal::test::check(const _T(&a)[_N], const _T(&expected)[_N] , _MSG msg,
+template <class _T, class _R, std::size_t _N, typename _MSG, typename _CMP>
+bool cftal::test::check(const _T(&a)[_N],
+                        const _R(&expected)[_N] , _MSG msg,
                         bool verbose, _CMP cmp)
 {
     bool r=true;
     for (auto b=std::cbegin(a), ex=std::cbegin(expected), e=std::cend(a);
          b != e; ++b, ++ex) {
-        _T ei= *ex;
+        auto ei= *ex;
         _T ai=*b;
         if (cmp(ai, ei) == false) {
             if (verbose) {
@@ -179,8 +209,9 @@ bool cftal::test::check(const _T(&a)[_N], const _T(&expected)[_N] , _MSG msg,
     return r;
 }
 
-template <class _T, std::size_t _N, typename _MSG, typename _CMP>
-bool cftal::test::check(vec<_T, _N> vr, const _T(&expected)[_N], _MSG msg,
+template <class _T, class _R, std::size_t _N, typename _MSG, typename _CMP>
+bool cftal::test::check(vec<_T, _N> vr,
+                        const _R(&expected)[_N], _MSG msg,
                         bool verbose, _CMP cmp)
 {
     _T vsr[_N];

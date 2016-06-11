@@ -951,7 +951,7 @@ exp2_k(arg_t<vf_type> x)
     const vf_type exp2_c12=+2.5525131689811799440090e-11;
     // x^13 : -0xa.7fd6a5d64da58p-40
     const vf_type exp2_c13=-9.5491204915762316409487e-12;
-#if 0
+#if 1
     // this is terrible slow without fma
     using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
     vf_type y = exp2_c13;

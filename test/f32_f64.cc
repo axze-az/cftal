@@ -37,6 +37,9 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats& us)
         s << std::setw(4) << t.first << " "
           << std::setw(16) << t.second << '\n';
     }
+    if (us._faithful.first) {
+        s << "faithful:" << us._faithful.second << '\n';
+    }
     return s;
 }
 
@@ -83,6 +86,30 @@ bool cftal::test::f_eq_ulp(double a, double b, uint32_t ulp, ulp_stats* us)
 bool cftal::test::f_eq_ulp(float a, float b, uint32_t ulp, ulp_stats* us)
 {
     return cmp_ulp(a, b, ulp, us);
+}
+
+bool cftal::test::f_eq_ulp(double a,
+                           const std::tuple<double, double, double>& b,
+                           uint32_t ulp, ulp_stats* us)
+{
+    bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
+    if (us != nullptr) {
+        bool f= f_eq(a, std::get<1>(b)) || f_eq(a, std::get<2>(b));
+        us->faithful(f);
+    }
+    return r;
+}
+
+bool cftal::test::f_eq_ulp(float a,
+                           const std::tuple<float, float, float>& b,
+                           uint32_t ulp, ulp_stats* us)
+{
+    bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
+    if (us != nullptr) {
+        bool f= f_eq(a, std::get<1>(b)) || f_eq(a, std::get<2>(b));
+        us->faithful(f);
+    }
+    return r;
 }
 
 

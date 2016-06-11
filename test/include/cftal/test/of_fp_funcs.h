@@ -322,28 +322,31 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
     uint64_t t0 = exec_stats::hr_timer();
     vec<_T, _N> vr=_F::v(va);
     uint64_t t1 = exec_stats::hr_timer();
-    _T r[_N];
     uint64_t t0i[_N], t1i[_N];
     // std::result_of<decltype(&F::r)(_T)>::type ri[_N];
+    bool c;
     if (speed_only) {
+        typename std::result_of<decltype(&_F::s)(_T)>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i] = exec_stats::hr_timer();
             r[i] = _F::s(a[i]);
             t1i[i]= exec_stats::hr_timer();
         }
+        c= check(vr, r, _F::fname(), !speed_only, cmp);
     } else {
+        typename std::result_of<decltype(&_F::r)(_T)>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i] = exec_stats::hr_timer();
             r[i] = _F::r(a[i]);
             t1i[i]= exec_stats::hr_timer();
         }
+        c= check(vr, r, _F::fname(), !speed_only, cmp);
     }
     for (std::size_t i=0; i<_N; ++i) {
         st.insert(t0i[i], t1i[i], 0);
     }
     st.insert(t0, t1, _N);
     // std::cout << std::setprecision(18) << a << std::endl;
-    bool c= check(vr, r, _F::fname(), !speed_only, cmp);
     bool cs= vec_parts<_T, _N, _F>::v(va, vr, st);
     // do only a subvector test if speed_only
     if (speed_only)
@@ -351,10 +354,6 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
     else
         c &= cs;
     if (c == false) {
-        for (std::size_t i=0; i < _N; ++i) {
-            std::cerr << _F::fname() << "("<< a[i] << ") failed ?\n";
-            std::cerr << _F::fname() << "= "<< r[i] << "\n";
-        }
         std::cerr << "va: " << va << std::endl;
         std::cerr << "vr: " << vr << std::endl;
         std::cerr << std::endl;

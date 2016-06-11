@@ -5,6 +5,7 @@
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
 #include <cmath>
+#include <tuple>
 
 namespace cftal {
     namespace test {
@@ -18,9 +19,11 @@ namespace cftal {
                 return exp2(a);
             }
             static
-            _T
+            std::tuple<_T, _T, _T>
             r(const _T& a) {
-                return call_mpfr::func(a, mpfr_exp2);
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_exp2, &i);
+                return std::make_tuple(v, i.first, i.second);
             }
             static
             _T
