@@ -324,6 +324,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
     uint64_t t1 = exec_stats::hr_timer();
     _T r[_N];
     uint64_t t0i[_N], t1i[_N];
+    // std::result_of<decltype(&F::r)(_T)>::type ri[_N];
     if (speed_only) {
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i] = exec_stats::hr_timer();
