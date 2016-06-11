@@ -5,6 +5,9 @@
 #include <cftal/std_types.h>
 #include <cftal/d_real.h>
 #include <cftal/t_real.h>
+#include <utility>
+#include <cmath>
+#include <climits>
 #include <mpfr.h>
 
 namespace cftal {
@@ -18,16 +21,24 @@ namespace cftal {
                                  const mpfr_t, mpfr_rnd_t);
 
             double
-            func(double a, f1_t f);
+            func(double a, f1_t f,
+                 std::pair<double, double>* ulp1i= nullptr);
 
             double
-            func(double a, double b, f2_t f);
+            func(double a, double b, f2_t f,
+                 std::pair<double, double>* ulp1i= nullptr);
 
             float
-            func(float a, f1_t f);
+            func(float a, f1_t f,
+                 std::pair<float, float>* ulp1i= nullptr);
 
             float
-            func(float a, float b, f2_t f);
+            func(float a, float b, f2_t f,
+                 std::pair<float, float>* ulp1i= nullptr);
+
+            template <class _T>
+            std::pair<_T, _T>
+            ulp1_interval(_T res, int mpfr_res);
 
         }
 
@@ -246,6 +257,31 @@ namespace cftal {
         }
 
     }
+}
+
+template <class _T>
+std::pair<_T, _T>
+cftal::test::call_mpfr::ulp1_interval(_T res, int mpres)
+{
+    std::pair<_T, _T> pr(res, res);
+    const _T up=std::numeric_limits<_T>::max();
+    const _T down=-std::numeric_limits<_T>::max();
+    switch (mpres) {
+    case 0:
+        // res is exact:
+        pr.first = std::nextafter(res, down);
+        pr.second = std::nextafter(res, up);
+        break;
+    case 1:
+        // res is greater than the real value
+        pr.first = std::nextafter(res, down);
+        break;
+    case -1:
+        // res is smaller than the real value
+        pr.second = std::nextafter(res, up);
+        break;
+    }
+    return pr;
 }
 
 inline
