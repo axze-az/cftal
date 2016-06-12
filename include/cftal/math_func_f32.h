@@ -628,7 +628,7 @@ exp2_k(arg_t<vf_type> x)
     vf_type p_i;
     vf_type o_i;
     y = d_ops::two_prod(y, xr, p_i);
-    y = d_ops::two_sum(y, 1.0, o_i);
+    y = d_ops::two_sum(y, 1.0f, o_i);
     ye= (p_i + o_i);
     y += ye;
 #else
@@ -671,9 +671,21 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c2,
                          exp10_c1,
                          exp10_c0);
+#if 1
+    // EFT of the last multiplication and addition
+    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+    vf_type ye;
+    vf_type p_i;
+    vf_type o_i;
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, 1.0f, o_i);
+    ye= (p_i + o_i);
+    y += ye;
+#else
     y *= xr;
     // y += xrl + xr *xrl;
     y += 1.0;
+#endif
     y= scale_exp_k(y, kf, k);
     return y;
 }
