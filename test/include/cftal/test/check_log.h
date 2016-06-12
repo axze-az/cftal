@@ -20,7 +20,10 @@ namespace cftal {
             static
             _T
             r(const _T& a) {
-                return call_mpfr::func(a, mpfr_log);
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_log, &i);
+                return std::make_tuple(v, i.first, i.second);
+                // return call_mpfr::func(a, mpfr_log);
             }
             static
             _T
