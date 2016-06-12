@@ -1082,6 +1082,31 @@ exp10_k(arg_t<vf_type> x)
     const vf_type exp10_c12=0x1.7e3ab5adee13dp-15;
     // x^13
     const vf_type exp10_c13=0x1.828fb96427a4ap-13;
+#if 1
+    // enough to reach faithful rounding:
+    using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+    vf_type y=impl::poly(xr,
+                         exp10_c13,
+                         exp10_c12,
+                         exp10_c11,
+                         exp10_c10,
+                         exp10_c9,
+                         exp10_c8,
+                         exp10_c7,
+                         exp10_c6,
+                         exp10_c5,
+                         exp10_c4,
+                         exp10_c3,
+                         exp10_c2,
+                         exp10_c1);
+    vf_type ye;
+    vf_type p_i;
+    vf_type o_i;
+    y = d_ops::two_prod(y, xr, p_i);
+    y = d_ops::two_sum(y, exp10_c0, o_i);
+    ye= (p_i + o_i);
+    y += ye;
+#else
     vf_type y=impl::poly(xr,
                          exp10_c13,
                          exp10_c12,
@@ -1097,6 +1122,7 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c2,
                          exp10_c1,
                          exp10_c0);
+#endif
     y= scale_exp_k(y, kf, k2);
     return y;
 }
