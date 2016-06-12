@@ -31,14 +31,16 @@ float cftal::test::make_float(unsigned sgn, unsigned exp, uint32_t sig)
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const ulp_stats& us)
 {
-    s << us._cnt << " cases (with " << us._nans << " NAN results), with delta: "
+    s << us._cnt << " cases (with " << us._nans
+      << " NAN results), with delta: "
       << us._ulps << " rate: " << double(us._ulps)/double(us._cnt) << '\n';
     for (const auto& t : us._devs) {
         s << std::setw(4) << t.first << " "
           << std::setw(16) << t.second << '\n';
     }
     if (us._faithful.first) {
-        s << "faithful:" << us._faithful.second << '\n';
+        s << "faithful: "
+          << (us._faithful.second ? "yes" : "no") << '\n';
     }
     return s;
 }
@@ -76,6 +78,17 @@ namespace {
         }
         return r;
     }
+
+    template <typename _T>
+    bool is_faitful(_T a, const std::tuple<_T, _T, _T>& b)
+    {
+        _T b0, b1, b2;
+        std::tie(b0, b1, b2) = b;
+        if (std::isnan(a) && std::isnan(b0))
+            return true;
+        return a == b0 || a == b1 || a == b2;
+    }
+    
 }
 
 bool cftal::test::f_eq_ulp(double a, double b, uint32_t ulp, ulp_stats* us)
@@ -94,7 +107,7 @@ bool cftal::test::f_eq_ulp(double a,
 {
     bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
     if (us != nullptr) {
-        bool f= f_eq(a, std::get<1>(b)) || f_eq(a, std::get<2>(b));
+        bool f= is_faitful(a, b);
         us->faithful(f);
     }
     return r;
@@ -106,7 +119,7 @@ bool cftal::test::f_eq_ulp(float a,
 {
     bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
     if (us != nullptr) {
-        bool f= f_eq(a, std::get<1>(b)) || f_eq(a, std::get<2>(b));
+        bool f= is_faitful(a, b);
         us->faithful(f);
     }
     return r;
