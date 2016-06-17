@@ -204,9 +204,9 @@ namespace cftal {
         struct mask_to_bool<float> {
             static
             bool
-            v(double t) {
+            v(float t) {
                 int32_t ti=as<int32_t>(t);
-                return mask_to_bool<int64_t>::v(ti);
+                return mask_to_bool<int32_t>::v(ti);
             }
         };
         

@@ -194,8 +194,8 @@ bool cftal::test::check(const _T(&a)[_N],
                         bool verbose, _CMP cmp)
 {
     bool r=true;
-    for (auto b=std::cbegin(a), ex=std::cbegin(expected), e=std::cend(a);
-         b != e; ++b, ++ex) {
+    auto ex=std::cbegin(expected);
+    for (auto b=std::cbegin(a), e=std::cend(a); b != e; ++b, ++ex) {
         auto ei= *ex;
         _T ai=*b;
         if (cmp(ai, ei) == false) {

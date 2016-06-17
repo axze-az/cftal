@@ -1852,7 +1852,7 @@ erf_k(arg_t<vf_type> xc)
     vf_type yh, yl;
     yh = d_ops::two_prod(y_i0, x, yl);
     // vf_type ye;
-    vf_type p_i;
+    // vf_type p_i;
     // vf_type o_i;
     dvf_type yhl(yh, yl);
     dvf_type tos(two_o_sqrt_pih, two_o_sqrt_pil);

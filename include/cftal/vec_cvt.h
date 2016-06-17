@@ -71,6 +71,47 @@ namespace cftal {
         }
     };
 
+    template <>
+    struct cvt_mask<int32_t, 2, bool, 1> {
+        static
+        vec<int32_t, 2>
+        v(const vec<bool, 1>& v) {
+            int32_t m= v() == true ? -1 : 0;
+            return vec<int32_t, 2>(m);
+        }
+    };
+
+    template <>
+    struct cvt_mask<bool, 1, int32_t, 2> {
+        static
+        vec<bool, 1>
+        v(const vec<int32_t, 2>& m) {
+            int32_t r= low_half(m)() & high_half(m)();
+            bool rs= r !=0;
+            return vec<bool, 1>(bool(rs));
+        }
+    };
+
+    template <>
+    struct cvt_mask<int32_t, 1, bool, 1> {
+        static
+        vec<int32_t, 1>
+        v(const vec<bool, 1>& v) {
+            int32_t m= v() == true ? -1 : 0;
+            return vec<int32_t, 1>(m);
+        }
+    };
+
+    template <>
+    struct cvt_mask<bool, 1, int32_t, 1> {
+        static
+        vec<bool, 1>
+        v(const vec<int32_t, 1>& m) {
+            bool rs= m() !=0;
+            return vec<bool, 1>(bool(rs));
+        }
+    };
+    
 
     template <std::size_t _N>
     struct cvt_mask<int32_t, _N, float, _N> {
