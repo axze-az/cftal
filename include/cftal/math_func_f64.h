@@ -661,7 +661,8 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
                       expn_c3,
                       expn_c2,
                       expn_c1);
-        using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+        using d_ops=cftal::impl::d_real_ops<vf_type,
+                                            d_real_traits<vf_type>::fma>;
         vf_type ye;
         vf_type p_i;
         vf_type o_i;

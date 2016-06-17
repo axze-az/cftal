@@ -18,9 +18,12 @@ namespace cftal {
                 return cosh(a);
             }
             static
-            _T
+            std::tuple<_T, _T, _T>
             r(const _T& a) {
-                return call_mpfr::func(a, mpfr_cosh);
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_cosh, &i);
+                return std::make_tuple(v, i.first, i.second);
+                // return call_mpfr::func(a, mpfr_cosh);
             }
             static
             _T

@@ -9,15 +9,25 @@
 #include <type_traits>
 #include <cmath>
 
-namespace cftal {
+#define USE_TYPE_AS_MASK 0
+#define USE_BOOL_AS_MASK 0
 
+namespace cftal {
+   
+    
     template <typename _T>
     class vec<_T, 1> {
     public:
         using value_type = _T;
+#if USE_TYPE_AS_MASK>0
+        using mask_value_type = _T;
+#elif USE_BOOL_AS_MASK>0
+        using mask_value_type = bool;
+#else
         using mask_value_type = bit;
+#endif
         using mask_type = vec<mask_value_type, 1>;
-
+    
         vec() = default;
         vec(const vec& r) = default;
         vec(vec&& r) = default;
@@ -102,6 +112,105 @@ namespace cftal {
                 return std::signbit(v()) == 0;
             }
         };
+
+        template <typename _T>
+        struct bool_to_mask {
+            static
+            _T
+            v(bool t) {
+                using utype = typename std::make_unsigned<_T>::type;
+                return t ? ~utype(0) : utype(0);
+            }
+        };
+
+        template <>
+        struct bool_to_mask<bool> {
+            static
+            bool
+            v(bool t) {
+                return t;
+            }
+        };
+
+        template <>
+        struct bool_to_mask<bit> {
+            static
+            uint32_t
+            v(bool t) {
+                return t ? 1 : 0;
+            }
+        };
+        
+
+        template <>
+        struct bool_to_mask<float> {
+            static
+            float
+            v(bool t) {
+                uint32_t r= t ? ~0u : 0;
+                return as<float>(r);
+            }
+        };
+
+        template <>
+        struct bool_to_mask<double> {
+            static
+            double
+            v(bool t) {
+                uint64_t r= t ? ~0ull : 0ull;
+                return as<double>(r);
+            }
+        };
+
+        template <class _T>
+        struct mask_to_bool {
+            static
+            bool
+            v(const _T& t) {
+                using stype = typename std::make_signed<_T>::type;
+                return stype(t) == stype(-1);
+            }
+        };
+
+        template <>
+        struct mask_to_bool<bool> {
+            static
+            bool
+            v(const bool& t) {
+                return t;
+            }
+        };
+
+        template <>
+        struct mask_to_bool<bit> {
+            static
+            bool
+            v(const bit& t) {
+                return t() == 0 ? false : true;
+            }
+        };
+
+        template <>
+        struct mask_to_bool<double> {
+            static
+            bool
+            v(double t) {
+                int64_t ti=as<int64_t>(t);
+                return mask_to_bool<int64_t>::v(ti);
+            }
+        };
+
+        template <>
+        struct mask_to_bool<float> {
+            static
+            bool
+            v(double t) {
+                int32_t ti=as<int32_t>(t);
+                return mask_to_bool<int64_t>::v(ti);
+            }
+        };
+        
+        
     }
 
     template <typename _T>
@@ -162,7 +271,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return mask_type(a() < b());
+                using mvt = typename full_type::mask_value_type;
+                return mask_type(impl::bool_to_mask<mvt>::v(a() < b()));
             }
         };
 
@@ -173,7 +283,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return mask_type(a() <= b());
+                using mvt = typename full_type::mask_value_type;
+                return mask_type(impl::bool_to_mask<mvt>::v(a() <= b()));
             }
         };
 
@@ -184,7 +295,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return mask_type(a() == b());
+                using mvt = typename full_type::mask_value_type;
+                return mask_type(impl::bool_to_mask<mvt>::v(a() == b()));
             }
         };
 
@@ -195,7 +307,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return mask_type(a() != b());
+                using mvt = typename full_type::mask_value_type;
+                return mask_type(impl::bool_to_mask<mvt>::v(a() != b()));
             }
         };
 
@@ -206,7 +319,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return mask_type(a() >= b());
+                using mvt = typename full_type::mask_value_type;
+                return mask_type(impl::bool_to_mask<mvt>::v(a() >= b()));
             }
         };
 
@@ -217,7 +331,8 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return mask_type(a() > b());
+                using mvt = typename full_type::mask_value_type;
+                return mask_type(impl::bool_to_mask<mvt>::v(a() > b()));
             }
         };
 
@@ -622,8 +737,9 @@ cftal::select(const typename vec<_T, 1>::mask_type& vm,
               const vec<_T, 1>& on_true,
               const vec<_T, 1>& on_false)
 {
+    using mvt= typename vec<_T, 1>::mask_type::value_type;
     typename vec<_T, 1>::value_type r{
-        select(vm(), on_true(), on_false())};
+        select(impl::mask_to_bool<mvt>::v(vm()), on_true(), on_false())};
     return vec<_T, 1>{r};
 }
 
