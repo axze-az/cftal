@@ -13,8 +13,8 @@
 #define USE_BOOL_AS_MASK 0
 
 namespace cftal {
-   
-    
+
+
     template <typename _T>
     class vec<_T, 1> {
     public:
@@ -27,7 +27,7 @@ namespace cftal {
         using mask_value_type = bit;
 #endif
         using mask_type = vec<mask_value_type, 1>;
-    
+
         vec() = default;
         vec(const vec& r) = default;
         vec(vec&& r) = default;
@@ -58,7 +58,7 @@ namespace cftal {
         using type = vec<_T, 1>;
     };
 
-    
+
     template <class _T>
     struct mem< vec<_T, 1> > {
         static
@@ -140,7 +140,7 @@ namespace cftal {
                 return t ? 1 : 0;
             }
         };
-        
+
 
         template <>
         struct bool_to_mask<float> {
@@ -209,8 +209,8 @@ namespace cftal {
                 return mask_to_bool<int32_t>::v(ti);
             }
         };
-        
-        
+
+
     }
 
     template <typename _T>
@@ -245,6 +245,11 @@ namespace cftal {
 
     template <std::size_t _I, typename _T>
     _T extract(const vec<_T, 1>& v);
+
+    template <typename _T, typename _ON_TRUE, typename _ON_FALSE>
+    vec<_T, 1>
+    select(const typename vec<_T, 1>::mask_type& m,
+           _ON_TRUE on_true, _ON_FALSE on_false);
 
     template <typename _T>
     vec<_T, 1>
@@ -728,6 +733,17 @@ cftal::extract(const vec<_T, 1>& v)
 {
     // static_assert(_I ==0, "invalid offset in extract()");
     return v();
+}
+
+template <typename _T, typename _ON_TRUE, typename _ON_FALSE>
+cftal::vec<_T, 1 >
+cftal::select(const typename vec<_T, 1>::mask_type& m,
+              _ON_TRUE on_true, _ON_FALSE on_false)
+{
+    using mvt= typename vec<_T, 1>::mask_type::value_type;
+    if (impl::mask_to_bool<mvt>::v(m()))
+        return on_true();
+    return on_false();
 }
 
 template <class _T>

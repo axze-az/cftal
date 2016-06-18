@@ -126,6 +126,12 @@ namespace cftal {
                      std::pair<vec<_T, _N>, vec<_T, _N> > >
     mul_lo_hi(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
+    template <typename _T, std::size_t _N,
+              typename _ON_TRUE, typename _ON_FALSE>
+    vec<_T, _N>
+    select(const typename vec<_T, _N>::mask_type& m,
+           _ON_TRUE on_true, _ON_FALSE on_false);
+
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     select(const typename vec<_T, _N>::mask_type& m,
@@ -553,6 +559,15 @@ cftal::mul_lo_hi(const vec<_T, _N>& a, const vec<_T, _N>& b)
     return std::make_pair(ll, hh);
 }
 
+template <typename _T, std::size_t _N, typename _ON_TRUE, typename _ON_FALSE>
+cftal::vec<_T, _N>
+cftal::select(const typename vec<_T, _N>::mask_type& m,
+              _ON_TRUE on_true, _ON_FALSE on_false)
+{
+    vec<_T, _N> t=on_true();
+    vec<_T, _N> f=on_false();
+    vec<_T, _N> r=select(m, t, f);
+}
 
 template <class _T, std::size_t _N>
 inline
