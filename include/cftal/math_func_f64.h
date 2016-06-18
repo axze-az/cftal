@@ -21,12 +21,8 @@
 #include <cftal/math_impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
 #include <cmath>
-#include <iterator>
-#include <iostream>
-#include <iomanip>
-#include <type_traits>
 
-namespace cftal {    
+namespace cftal {
     namespace math {
 
 
