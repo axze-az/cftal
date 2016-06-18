@@ -156,7 +156,7 @@ cftal::math::impl::__ieee754_rem_pio2(double x, double *y)
         }
     }
     if(ix<=0x413921fb) { /* |x| ~<= 2^19*(pi/2), medium size */
-        t  = fabs(x);
+        t  = std::fabs(x);
         n  = (int32_t) (t*invpio2+half);
         fn = (double)n;
         r  = t-fn*pio2_1;

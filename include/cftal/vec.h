@@ -69,6 +69,62 @@
 #include <cftal/vec_misc.h>
 
 
+namespace cftal {
+
+    template <typename _T, std::size_t _N,
+              typename _ON_TRUE, typename _ON_FALSE>
+    auto
+    select_branch(const vec<_T, _N>& m,
+                  _ON_TRUE on_true, _ON_FALSE on_false)
+        -> typename std::result_of<_ON_TRUE()>::type;
+
+    template <typename _T, typename _ON_TRUE, typename _ON_FALSE>
+    auto
+    select_branch(const vec<_T, 1>& m,
+                  _ON_TRUE on_true, _ON_FALSE on_false)
+        -> typename std::result_of<_ON_TRUE()>::type;
+
+}
+
+template <typename _T, std::size_t _N, typename _ON_TRUE, typename _ON_FALSE>
+auto
+cftal::select_branch(const vec<_T, _N>& m,
+                     _ON_TRUE on_true, _ON_FALSE on_false)
+    -> typename std::result_of<_ON_TRUE()>::type
+{
+    using v_t = typename std::result_of<_ON_TRUE()>::type;
+    v_t r;
+#if 1
+    v_t t=on_true();
+    v_t f=on_false();
+    r=select(m, t, f);
+#else
+    if (all_of(m)) {
+        r=on_true();
+    } else if (none_of(m)) {
+        r=on_false();
+    } else {
+        v_t t=on_true();
+        v_t f=on_false();
+        r=select(m, t, f);
+    }
+#endif
+    return r;
+}
+
+template <typename _T, typename _ON_TRUE, typename _ON_FALSE>
+auto
+cftal::select_branch(const vec<_T, 1>& m,
+                     _ON_TRUE on_true, _ON_FALSE on_false)
+    -> typename std::result_of<_ON_TRUE()>::type
+{
+    using mvt= typename vec<_T, 1>::value_type;
+    if (impl::mask_to_bool<mvt>::v(m()))
+        return on_true();
+    return on_false();
+}
+
+
 // Local variables:
 // mode: c++
 // end:
