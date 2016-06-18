@@ -18,9 +18,12 @@ namespace cftal {
                 return erf(a);
             }
             static
-            _T
+            auto
             r(const _T& a) {
-                return call_mpfr::func(a, mpfr_erf);
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_erf, &i);
+                return std::make_tuple(v, i.first, i.second);
+                // return call_mpfr::func(a, mpfr_erf);
             }
             static
             _T
