@@ -45,6 +45,9 @@ const double cftal::math::func_constants<double>::log_lo_val;
 constexpr
 const double cftal::math::func_constants<double>::erf_lt_one_fin;
 
+constexpr
+const double cftal::math::func_constants<double>::erfc_gt_zero_fin;
+
 // float
 constexpr
 const float cftal::math::func_constants<float>::max_denormal;
@@ -90,3 +93,6 @@ const float cftal::math::func_constants<float>::log_lo_val;
 
 constexpr
 const float cftal::math::func_constants<float>::erf_lt_one_fin;
+
+constexpr
+const float cftal::math::func_constants<float>::erfc_gt_zero_fin;

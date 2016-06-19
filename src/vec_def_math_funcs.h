@@ -211,6 +211,13 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
+    ns::erfc(arg<vec_float>::type d)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::erfc(d);                                         \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::native_exp(arg<vec_float>::type d)                              \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \

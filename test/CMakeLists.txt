@@ -127,6 +127,7 @@ test_prog(test-asin-f64)
 test_prog(test-acos-f64)
 
 test_prog(test-erf-f64)
+test_prog(test-erfc-f64)
 
 test_prog(test-native_exp-f64)
 test_prog(test-native_exp2-f64)
@@ -164,6 +165,7 @@ test_prog(test-asin-f32)
 test_prog(test-acos-f32)
 
 test_prog(test-erf-f32)
+test_prog(test-erfc-f32)
 
 test_prog(test-native_exp-f32)
 test_prog(test-native_exp2-f32)

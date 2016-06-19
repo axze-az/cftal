@@ -169,6 +169,7 @@ namespace cftal {
 
             // calls erf_k
             static vf_type erf(arg_t<vf_type> x);
+            static vf_type erfc(arg_t<vf_type> x);
         };
 
 
@@ -1323,6 +1324,20 @@ erf(arg_t<vf_type> x)
     r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin, -1.0, r);
     r = _TRAITS_T::sel(x > fc::erf_lt_one_fin, 1.0, r);
     r = _TRAITS_T::sel(x == 0, x, r);
+    r = _TRAITS_T::sel(isnan(x), x, r);
+    return r;
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+erfc(arg_t<vf_type> x)
+{
+    vf_type r=base_type::erfc_k(x);
+    // using fc=func_constants<_FLOAT_T>;
+    // r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin, -1.0, r);
+    // r = _TRAITS_T::sel(x > fc::erf_lt_one_fin, 1.0, r);
+    r = _TRAITS_T::sel(x == 0, 1.0, r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
 }

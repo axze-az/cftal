@@ -64,6 +64,10 @@ namespace cftal {
             constexpr static const double
             erf_lt_one_fin= 5.921587195794506541801638e+00;
 
+            // erfc(x) >0, x < x0
+            constexpr static const double
+            erfc_gt_zero_fin= 2.722601711110836220086640e+01;
+
         };
 
         template <>
@@ -115,6 +119,8 @@ namespace cftal {
             constexpr static const float
             erf_lt_one_fin= 3.919205665588378906250000e+00f;
 
+            constexpr static const float
+            erfc_gt_zero_fin= 1.005419445037841796875000e+01f;
         };
 
         namespace impl {

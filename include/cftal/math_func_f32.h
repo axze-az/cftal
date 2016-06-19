@@ -276,6 +276,10 @@ namespace cftal {
 
             static
             vf_type
+            erfc_k(arg_t<vf_type> x);
+
+            static
+            vf_type
             cbrt_k(arg_t<vf_type> x);
         };
 
@@ -531,7 +535,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         y = d_ops::two_prod(y, xr, p_i);
         y = d_ops::two_sum(y, expn_c0, o_i);
         ye= (p_i + o_i);
-        y += ye;  
+        y += ye;
         y = scale_exp_k(y, kf, k);
 #else
         // exp(x) = 1 + 2x/(2-x+x^2*P(x^2)
@@ -1907,6 +1911,14 @@ erf_k(arg_t<vf_type> xc)
 #endif
     y = copysign(y, xc);
     return y;
+}
+
+template <typename _T>
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+erfc_k(arg_t<vf_type> xc)
+{
+    return 1-erf_k(xc);
 }
 
 template <typename _T>

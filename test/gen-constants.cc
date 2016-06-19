@@ -881,6 +881,8 @@ int main(int argc, char** argv)
 
         gen_constant(dp, "const double erf_lt_one", mpfr_erf,
                      check_one<double>(), "1");
+        gen_constant(dp, "const double erfc_gt_zero", mpfr_erfc,
+                     check_zero<double>(), "zzz");
         // -1022 - 53
         write_constant(
             "const double log_arg_small", 0x1p-969);
@@ -973,6 +975,8 @@ int main(int argc, char** argv)
 
         gen_constant(dp, "const float erf_lt_one", mpfr_erf,
                      check_one<float>(), "1");
+        gen_constant(dp, "const double erfc_gt_zero", mpfr_erfc,
+                     check_zero<float>(), "zzz");
         // -126 + 24
         write_constant(
             "const double log_arg_small", 0x1p-102f);

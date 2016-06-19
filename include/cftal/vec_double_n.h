@@ -604,7 +604,7 @@ namespace cftal {
     vec<double, 8>
     atanh(arg_t<vec<double, 8> > d);
 
-    // erf, these functions are exact to XX ulp
+    // erf, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     erf(const vec<double, _N>& x);
@@ -621,6 +621,23 @@ namespace cftal {
     vec<double, 8>
     erf(arg_t<vec<double, 8> > d);
 
+    // erfc, these functions are exact to XX ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    erfc(const vec<double, _N>& x);
+
+    vec<double, 1>
+    erfc(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    erfc(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    erfc(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    erfc(arg_t<vec<double, 8> > d);
+    
 
     // native_exp, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -970,6 +987,15 @@ cftal::vec<double, _N>
 cftal::erf(const vec<double, _N>& v)
 {
     vec<double, _N> r(erf(low_half(v)), erf(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::erfc(const vec<double, _N>& v)
+{
+    vec<double, _N> r(erfc(low_half(v)), erfc(high_half(v)));
     return r;
 }
 
