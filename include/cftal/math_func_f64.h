@@ -22,6 +22,9 @@
 #include <cftal/mem.h>
 #include <cmath>
 
+
+#include <boost/math/special_functions/erf.hpp>
+
 namespace cftal {
     namespace math {
 
@@ -3039,6 +3042,19 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 erfc_k(arg_t<vf_type> xc)
 {
+#if 1
+    const int _N=sizeof(vf_type)/sizeof(double);
+    union t {
+        double _d[_N];
+        vf_type _v;
+    } x, y;
+    x._v= xc;
+    for (int i=0; i<_N; ++i) {
+        y._d[i]=boost::math::erfc(x._d[i]);
+    }
+    vf_type r=y._v;
+    return r;
+#else
     vf_type x=abs(xc);
     auto expmxx=std::make_pair(false, vf_type(0));
 
@@ -3321,6 +3337,7 @@ erfc_k(arg_t<vf_type> xc)
 
     vf_type y=s34();
     return y;
+#endif
 }
 
 template <typename _T>
