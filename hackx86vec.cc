@@ -8,7 +8,7 @@
 #include <cftal/d_real.h>
 #include <cftal/t_real.h>
 #include <cftal/vec_traits.h>
-
+#include <cftal/test/call_mpfr.h>
 
 namespace cftal {
     namespace impl {
@@ -54,63 +54,125 @@ namespace cftal {
                 double _d;
             } _u;
         };
+
+        // exp(-x*x)
+        // exp(-x*x) = exp(-z*z) * exp(-2*z*m) * exp(-m*m)
+        // where z 
+        double expmxx(double x);
+
+        double ref_expmxx(double x);
+        
     }
+    
 }
 
+double
+cftal::impl::expmxx(double xc)
+{
+#if 1
+    using vf_type=vec<double, 1>;
+    vf_type s=-1.0;
+    vf_type x=abs(vf_type(xc));
+    const vf_type ML=128.0;
+    const vf_type ML_INV=1.0/ML;
+
+    const vf_type MS=512.0;
+    const vf_type MS_INV=1.0/MS;
+
+    vf_type M = select(x > 13, ML, MS);
+    vf_type MINV = select(x > 13, ML_INV, MS_INV);
+    
+    vf_type m=MINV*rint(vf_type(M*x));
+    vf_type f=x-m;
+    vf_type uh=m*m;
+    vf_type ul= 2*m*f + f*f;
+    vf_type sgn=copysign(vf_type(1.0), s);
+    uh *= sgn;
+    ul *= sgn;
+    vf_type eh=exp(uh);
+    vf_type el=exp(ul);
+    vf_type r=eh*el;
+    vf_type xx=xc*xc*sgn;
+    using fc_t = math::func_constants<double>;
+    r= select(xx <= fc_t::exp_lo_zero, vf_type(0), r);
+    return r();
+#else
+    using namespace std;
+    double x = std::abs(xc);
+    double z = std::rint(x);
+    double m = x - z;
+    if (m > 0.5) {
+        z += 1.0;
+        m -= 1.0;
+    }
+    using vf_type = cftal::vec<double, 1>;
+    double exp_zz= ref_expmxx(z);
+    double exp_2zm= exp(vf_type(-2*z*m))();
+    double exp_mm= exp(vf_type(-m*m))();
+    double r=exp_zz * exp_2zm * exp_mm;
+    return r;
+#endif
+}
+
+double
+cftal::impl::ref_expmxx(double xa)
+{
+    using mp_t=cftal::test::mpfr_real<1024>;
+    mp_t x=xa;
+    x *= x;
+    x = -x;
+    mp_t r= exp(x);
+    double dr(r);
+    return dr;
+}
 
 int main(int argc, char** argv)
 {
     using namespace cftal;
-#if 1
-    std::cout << std::hexfloat << std::endl;
-    std::cout << bytes8(0x0, 0x40862e42)._f64 << std::endl;
-    std::cout << bytes8(0x0, 0x3ff00000)._f64 << std::endl;
-    std::cout << bytes8(0x0, (0x3ff+2043/2)<<20)._f64 << std::endl;
-#else
-    std::cout << std::hex;
-    double t=0x1p51-1.0;
-    std::cout << bytes8(t)._u64 << std::endl;
-    double t1=t+0x1p52+0x1p51;
-    std::cout << bytes8(t1)._u64 << std::endl;
-    std::cout << bytes8(t1)._u32[0] << std::endl;
-    double t2=-t+0x1p52+0x1p51;
-    std::cout << bytes8(t2)._u64 << std::endl;
-    std::cout << bytes8(t2)._u32[0] << std::endl;
 
-    std::cout << std::hexfloat << std::endl;
-    std::cout << bytes8(0x1ul)._f64 << std::endl;
-    std::cout << 0x1p-1074 << std::endl;
-    std::cout << bytes8(0x1ul)._f64 * bytes8(0x1p53)._f64 << std::endl;
-
-
-    std::cout << bytes8(0x1ul<<53)._f64 << std::endl;
-
-    double Log2h= 0xb.17217f8p-16 ;
-    double Log2l= -0x2.e308654361c4cp-48 ;
-
-
-    std::cout << bytes8(Log2h)._u64 << std::endl;
-    std::cout << bytes8(Log2l)._u64 << std::endl;
-
-    std::cout << bytes8(+6.9314718036912381649017e-01)._u64 << std::endl;
-    std::cout << bytes8(+6.9314718036912381649017e-01)._f64 << std::endl;
-    std::cout << bytes8(+1.9082149292705877000220e-10)._u64 << std::endl;
-    std::cout << bytes8(+1.9082149292705877000220e-10)._f64 << std::endl;
-
-    std::cout << bytes8(1.57079632673412561417e+00)._u64 << std::endl;
-    // v1f32 r=ldexp(v1f32(0x1.2352cf807b7dfp-503), v1s32(-1076));
-    // double rd=std::ldexp(0x1.2352cf807b7dfp-503, -1076);
-    // v1f32 r=ldexp(v1f32(0x1.a2e184p-127f), v1s32(-22));
-    // float rd=std::ldexp(0x1.a2e184p-127f, -22);
-    // v1f32 r=ldexp(v1f32(0x1.0p-127f), v1s32(-1));
-    // float rd=std::ldexp(0x1.0p-127f, -1);
-    // v1f64 r=ldexp(v1f64(0x1.a2e184p-1023), v1s32(+1023-1075));
-    // double rd=std::ldexp(0x1.a2e184p-1023, +1023-1075);
-    // std::cout << std::setprecision(22);
-    // std::cout << std::hexfloat << r << std::endl;
-    // std::cout << std::hexfloat << rd << std::endl;
-    // std::cout << std::numeric_limits<double>::min() << std::endl;
-    // std::cout << std::sqrt(std::numeric_limits<double>::min()) << std::endl;
-#endif
+    std::cout << std::setprecision(18) << std::scientific;
+    const int64_t stp=10000;
+    const int64_t cnt=27*stp;
+    int errs=0;
+    double max_err=0;
+    for (int i=0; i<cnt; ++i) {
+        double x=double(i)/stp;
+        double z1, z2;
+        if ((i & 0xffff)==0xffff)
+            std::cout << '.' << std::flush;
+        z1 = impl::ref_expmxx(x);
+        z2 = impl::expmxx(x);
+        double err=fabs(z2-z1)/((z1+z2)*0.5);
+        bool e=!isnan(err) && err!=0;
+        if (e && x <= 26.615717) {
+            ++errs;
+            max_err = std::max(fabs(err), max_err);
+            #if 0
+            double e2=z2/z1-1;
+            std::cout // << std::hexfloat
+                      << -x*x
+                      << std::scientific 
+                      << "\n";
+            std::cout << x << " " << z1 << " "
+                      << std::hexfloat
+                      << e2
+                      << "\n"
+                      << std::scientific 
+                      << x << " " << z2 << " "
+                      << std::hexfloat
+                      << err
+                      << std::scientific
+                      << std::endl;
+            #endif
+        }
+    }
+    std::cout << "\nerrors: " << errs << std::endl;
+    std::cout << "max rel_err: "
+              << std::hexfloat
+              << max_err
+              << std::scientific
+              << " "
+              << max_err
+              << std::endl;
     return 0;
 }

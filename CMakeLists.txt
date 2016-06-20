@@ -120,14 +120,18 @@ option(CFTAL_STATIC_LIB "create static libcftal.a" OFF)
 option(CFTAL_FULL_TEST "perform a full test with long compile times" OFF)
 
 include_directories(include)
+
 add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(test)
+
+include_directories(test/include)
 
 # hackx86vec
 set (HACKX86VEC_SRC hackx86vec.cc)
 add_executable(hackx86vec ${HACKX86VEC_SRC})
 target_link_libraries(hackx86vec cftal-so)
+target_link_libraries(hackx86vec cftal-test)
 
 # boost_lorenz
 set (BOOST_LORENZ_SRC boost_lorenz.cc)
