@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     bool rc= true;
-    std::size_t cnt=0x8000;
+    std::size_t cnt=0x800;
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *= 8;
@@ -33,8 +33,9 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_erf<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_erf<double> >(v, ulp, 0, false);
 #endif
-    // func_domain<double> d=std::make_pair(1.0, 2.5);
-    func_domain<double> d=std::make_pair(-6.0, 27.7);
+    // mnewton(erfc(x)-erf(x), x, 0.46);
+    func_domain<double> d=std::make_pair(0.0, 0.47693627620447);
+    // func_domain<double> d=std::make_pair(-6.0, 27.7);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
