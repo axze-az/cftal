@@ -415,7 +415,6 @@ namespace cftal {
             v(const full_type& a, const full_type& b,
               const full_type& c) {
                 return full_type(a() * b() + c());
-                // return full_type(std::fma(a(), b(), c()));
             }
         };
 
@@ -443,6 +442,97 @@ namespace cftal {
             }
         };
 
+        template <>
+        struct fma<double, 1> {
+            using full_type = vec<double, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+#if defined (FP_FAST_FMA) && (FP_FAST_FMA>0)
+                return full_type(std::fma(a(), b(), c()));
+#else
+                return full_type(a() * b() + c());
+#endif
+            }
+        };
+
+        template <>
+        struct fms<double, 1> {
+            using full_type = vec<double, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+#if defined (FP_FAST_FMA) && (FP_FAST_FMA>0)
+                return full_type(std::fma(a(), b(), -c()));
+#else
+                return full_type(a() * b() - c());
+#endif
+            }
+        };
+
+        template <>
+        struct fnma<double, 1> {
+            using full_type = vec<double, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+#if defined (FP_FAST_FMA) && (FP_FAST_FMA>0)
+                return full_type(std::fma(-a(), b(), c()));
+#else
+                return full_type(c() - a() * b());
+#endif
+            }
+        };
+
+        template <>
+        struct fma<float, 1> {
+            using full_type = vec<float, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+#if defined (FP_FAST_FMAF) && (FP_FAST_FMAF>0)
+                return full_type(std::fmaf(a(), b(), c()));
+#else
+                return full_type(a() * b() + c());
+#endif
+            }
+        };
+
+        template <>
+        struct fms<float, 1> {
+            using full_type = vec<float, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+#if defined (FP_FAST_FMAF) && (FP_FAST_FMAF>0)
+                return full_type(std::fmaf(a(), b(), -c()));
+#else
+                return full_type(a() * b() - c());
+#endif
+            }
+        };
+
+        template <>
+        struct fnma<float, 1> {
+            using full_type = vec<float, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+#if defined (FP_FAST_FMAF) && (FP_FAST_FMAF>0)
+                return full_type(std::fmaf(-a(), b(), c()));
+#else
+                return full_type(c() - a() * b());
+#endif
+            }
+        };
+
+        
         template <class _T>
         struct bitrep {
             using int_type = _T;

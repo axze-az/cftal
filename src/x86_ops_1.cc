@@ -210,7 +210,6 @@ __m256i cftal::x86::div_s32::v(__m256i x, __m256i y, __m256i* rem)
 }
 #endif
 
-
 __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 {
     // add 2^31
