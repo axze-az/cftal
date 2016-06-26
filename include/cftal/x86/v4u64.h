@@ -27,6 +27,8 @@ namespace cftal {
         vec(const vec<int64_t, 4>& v);
         // create vec{v,v}
         vec(uint64_t v);
+        // create vec(l, h);
+        vec(const vec<uint64_t, 2>& l, const vec<uint64_t, 2>& h);
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
         vec(std::initializer_list<uint64_t> l);

@@ -798,17 +798,6 @@ namespace cftal {
     vec<double, 8>
     acos(arg_t<vec<double, 8> > d);
 
-
-
-    vec<double, 1>
-    fma(arg_t<vec<double, 1> > a,
-        arg_t<vec<double, 1> > b,
-        arg_t<vec<double, 1> > c);
-
-    vec<double, 1>
-    fms(arg_t<vec<double, 1> > a,
-        arg_t<vec<double, 1> > b,
-        arg_t<vec<double, 1> > c);
 }
 
 template <std::size_t _N>

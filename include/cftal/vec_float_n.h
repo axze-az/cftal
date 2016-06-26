@@ -714,16 +714,6 @@ namespace cftal {
 
     v8f32 native_log(arg<v8f32>::type d);
 
-    vec<float, 1>
-    fma(arg<vec<float, 1> >::type a,
-        arg<vec<float, 1> >::type b,
-        arg<vec<float, 1> >::type c);
-
-    vec<float, 1>
-    fms(arg<vec<float, 1> >::type a,
-        arg<vec<float, 1> >::type b,
-        arg<vec<float, 1> >::type c);
-
 }
 
 template <std::size_t _N>

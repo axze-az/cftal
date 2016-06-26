@@ -295,6 +295,13 @@ cftal::vec<cftal::int64_t, 4>::vec(int64_t v)
 {
 }
 
+inline
+cftal::vec<int64_t, 4>::
+vec(const vec<int64_t, 2>& lh, const vec<int64_t, 2>& hh)
+    : base_type(_mm256_inserti128_si256(as<__m256i>(lh()),hh(), 1))
+{
+}
+
 
 inline
 cftal::vec<cftal::int64_t, 4>::
