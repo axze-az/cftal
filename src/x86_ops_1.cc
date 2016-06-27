@@ -349,7 +349,7 @@ __m256i cftal::x86::div_u32::v(__m256i x, __m256i y, __m256i* rem)
     // move high halves to low
     xs = _mm256_castsi128_si256(_mm256_extracti128_si256(xs, 1));
     // xs = _mm256_unpackhi_epi64(xs, xs);
-    ys = _mm256_castsi128_si256(_mm256_extracti128_si256(xs, 1));
+    ys = _mm256_castsi128_si256(_mm256_extracti128_si256(ys, 1));
     // ys = _mm256_unpackhi_epi64(ys, ys);
     // convert to double
     xt = _mm256_cvtepi32_pd(_mm256_castsi256_si128(xs));

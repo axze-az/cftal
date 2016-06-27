@@ -180,9 +180,9 @@ int main1(int argc, char** argv)
 int main(int argc, char** argv)
 {
     using namespace cftal;
-    const auto u={1u, 2u<<1, 4u<<2, 8u<<3, 16u<<4,
+    auto u={1u, 2u<<1, 4u<<2, 8u<<3, 16u<<4,
                   32u<<5, 64u<<6, 128u<<7, 256u<<8};
-    const auto v={1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u, 256u};
+    auto v={1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u, 256u};
 
     for (auto b=std::cbegin(u), e=std::cend(u), bu=std::cbegin(v);
          b!=e; ++b, ++bu) {
