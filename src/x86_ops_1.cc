@@ -270,6 +270,7 @@ __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
     return qi;
 }
 
+
 __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
 {
     // add 2^31
@@ -312,6 +313,77 @@ __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
     }
     return qi;
 }
+
+#if defined (__AVX2__)
+__m256i cftal::x86::div_u32::v(__m256i x, __m256i y, __m256i* rem)
+{
+    // add 2^31
+    __m256i xs = _mm256_add_epi32(x, v_sign_v8s32_msk::iv());
+    __m256i ys = _mm256_add_epi32(y, v_sign_v8s32_msk::iv());
+    // generate dp fp constant: 2^31
+    const int _2_pow_31_fp_h= (1023+31)<<20;
+    __m256d _2_pow_31 = const_v8u32<0, _2_pow_31_fp_h,
+                                    0, _2_pow_31_fp_h,
+                                    0, _2_pow_31_fp_h,
+                                    0, _2_pow_31_fp_h>::dv();
+    // convert low halves to double
+    __m256d xt = _mm256_cvtepi32_pd(_mm256_castsi256_si128(xs));
+    __m256d yt = _mm256_cvtepi32_pd(_mm256_castsi256_si128(ys));
+    // add 2^31
+    xt = _mm256_add_pd(xt, _2_pow_31);
+    yt = _mm256_add_pd(yt, _2_pow_31);
+    __m256d q = _mm256_div_pd(xt, yt);
+    // convert back to uint32
+    // compare against 2^31
+    __m256d hm= _mm256_cmp_pd(_2_pow_31, q, _CMP_LE_OS);
+    __m256d corr= _mm256_and_pd(hm, _2_pow_31);
+    // subtract 2^31 where necessary
+    q = _mm256_sub_pd(q, corr);
+    // convert
+    __m256i xml= as<__m256i>(hm);
+    const __m256i xm_perm= const_v8u32<1, 3, 5, 7, 0, 2, 4, 6>::iv();
+    xml=_mm256_permutevar8x32_epi32(xml, xm_perm);
+    // correct too large values later
+    __m128i qil=_mm256_cvttpd_epi32(q);
+
+    // move high halves to low
+    xs = _mm256_castsi128_si256(_mm256_extracti128_si256(xs, 1));
+    // xs = _mm256_unpackhi_epi64(xs, xs);
+    ys = _mm256_castsi128_si256(_mm256_extracti128_si256(xs, 1));
+    // ys = _mm256_unpackhi_epi64(ys, ys);
+    // convert to double
+    xt = _mm256_cvtepi32_pd(_mm256_castsi256_si128(xs));
+    yt = _mm256_cvtepi32_pd(_mm256_castsi256_si128(ys));
+    // add 2^31
+    xt = _mm256_add_pd(xt, _2_pow_31);
+    yt = _mm256_add_pd(yt, _2_pow_31);
+    q = _mm256_div_pd(xt, yt);
+    // convert back.
+    hm = _mm256_cmp_pd(_2_pow_31, q, _CMP_LE_OS);
+    corr =_mm256_and_pd(hm, _2_pow_31);
+    q = _mm256_sub_pd(q, corr);
+    __m256i xmh= as<__m256i>(hm);
+    xmh=_mm256_permutevar8x32_epi32(xmh, xm_perm);
+    // combine xml and xmh
+    __m256i xm= _mm256_inserti128_si256(xml, _mm256_castsi256_si128(xmh), 1);
+    xm = _mm256_slli_epi32(xm, 31);
+    __m128i qih= _mm256_cvttpd_epi32(q);
+    __m256i qi= _mm256_inserti128_si256(_mm256_castsi128_si256(qil), qih, 1);
+    qi = _mm256_xor_si256(qi, xm);
+    // set quotient to -1 where y==0
+    __m256i eqz= _mm256_cmpeq_epi32(y, _mm256_setzero_si256());
+    qi = _mm256_or_si256(qi, eqz);
+    if (rem != nullptr) {
+        // multiply back and subtract
+        __m256i p =  impl::vpmulld::v(qi, y);
+        __m256i r = _mm256_sub_epi32(x, p);
+        _mm256_store_si256(rem, r);
+    }
+    return qi;
+}
+
+#endif
+
 #endif
 
 #if defined (__tune_amdfam10__)

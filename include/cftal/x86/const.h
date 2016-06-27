@@ -208,11 +208,12 @@ namespace cftal {
                             0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff> v_not_sign_v8f32_msk;
-
+        
         typedef const_v8u32<0x80000000, 0x80000000,
                             0x80000000, 0x80000000,
                             0x80000000, 0x80000000,
                             0x80000000, 0x80000000> v_sign_v8f32_msk;
+        using v_sign_v8s32_msk = v_sign_v8f32_msk;
 
         typedef const_v4u32<0x7f800000, 0x7f800000,
                             0x7f800000, 0x7f800000> v_exp_f32_msk;

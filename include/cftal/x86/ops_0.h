@@ -746,6 +746,13 @@ namespace cftal {
                         return make_zero_int::v();
                     return _mm_slli_epi64(a, _P);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a) {
+                    if (_P>63)
+                        return _mm256_setzero_si256();
+                    return _mm256_slli_epi64(a, _P);
+                }
+#endif
             };
 
             template <>
@@ -1375,6 +1382,31 @@ __m128i cftal::x86::impl::vpmullq::v(__m128i a, __m128i b)
     return p;
 #endif
 }
+
+#if defined (__AVX2__)
+inline
+__m256i cftal::x86::impl::vpmullq::v(__m256i a, __m256i b)
+{
+    // a= ah *2^32 + al
+    // b= bh *2^32 + bl
+    // a*b = ah*bh*2^64 + ah* bl * 2^32 + al * bh*2^32 + al *bl
+    // a*b mod 2^64= ah* bl * 2^32 + al * bh*2^32 + al *bl
+    // fortunately we have not to cross any lanes:
+    // swap lo and hi uint32_t parts of the 2 uint64_t in bs
+    __m256i bs = vpshufd<1, 0, 3, 2>::v(b);
+    __m256i al_bl = _mm256_mul_epu32(a, b);
+    // mixed: (bh*al, ah*bl)_0, (bh*al, ah* bl)_1
+    __m256i mixed = _mm256_mullo_epi32(a, bs);
+    // ah_bl: (ah*bl, ah*bl)_0, (ah*bl, ah* bl)_1
+    __m256i ah_bl = vpshufd<1, 1, 3, 3>::v(mixed);
+    // mixed: (bh*al + ah*bl, 2*ah*bl)_0, (bh*al + ah*bl, 2*ah*bl)_1
+    mixed = _mm256_add_epi32(mixed, ah_bl);
+    // mixed: (0, bh*al + ah*bl)_0, (0, bh*al + ah*bl)_1
+    mixed = vpsllq_const<32>::v(mixed);
+    __m256i p= _mm256_add_epi64(al_bl, mixed);
+    return p;
+}
+#endif
 
 inline
 __m128d
