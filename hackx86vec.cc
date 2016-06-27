@@ -126,7 +126,7 @@ cftal::impl::ref_expmxx(double xa)
     return dr;
 }
 
-int main(int argc, char** argv)
+int main1(int argc, char** argv)
 {
     using namespace cftal;
 
@@ -174,5 +174,26 @@ int main(int argc, char** argv)
               << " "
               << max_err
               << std::endl;
+    return 0;
+}
+
+int main(int argc, char** argv)
+{
+    using namespace cftal;
+    const auto u={1u, 2u<<1, 4u<<2, 8u<<3, 16u<<4,
+                  32u<<5, 64u<<6, 128u<<7, 256u<<8};
+    const auto v={1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u, 256u};
+
+    for (auto b=std::cbegin(u), e=std::cend(u), bu=std::cbegin(v);
+         b!=e; ++b, ++bu) {
+        std::cout << (*b)/(*bu) << " ";
+    }
+    std::cout << std::endl;
+    v8u32 vu{u};
+    v8u32 vv{v};
+    v8u32 vq=vu/vv;
+    std::cout << vu << std::endl;
+    std::cout << vv << std::endl;
+    std::cout << vq << std::endl;
     return 0;
 }

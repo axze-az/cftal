@@ -360,6 +360,12 @@ namespace cftal {
             vf_type
             atanh_k(arg_t<vf_type> x);
 
+
+            // error function for [0, 0.75]
+            static
+            vf_type
+            __erf_k_0_75(arg_t<vf_type> x);
+
             static
             vf_type
             erf_k(arg_t<vf_type> x);
@@ -3209,7 +3215,7 @@ erfc_k(arg_t<vf_type> xc)
             expmxx.second =expxx_k(x, -1.0);
         }
         y_i1 *= (expmxx.second/x);
-#else      
+#else
         using d_ops= cftal::impl::d_real_ops<vf_type,
         d_real_traits<vf_type>::fma>;
         vf_type yh, yl;
@@ -3309,7 +3315,7 @@ erfc_k(arg_t<vf_type> xc)
             expmxx.second =expxx_k(x, -1.0);
         }
         y_i1 *= expmxx.second;
-#else      
+#else
         using d_ops=
         cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
         vf_type yh, yl;
