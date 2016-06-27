@@ -1430,12 +1430,12 @@ log_k_poly(arg_t<vf_type> z)
                              log_c10,
                              log_c6,
                              log_c2);
-    vf_type t2= w*impl::poly(w,
-                             log_c16,
-                             log_c12,
-                             log_c8,
-                             log_c4);
-    vf_type y = t1+t2;
+    vf_type t2= impl::poly(w,
+                           log_c16,
+                           log_c12,
+                           log_c8,
+                           log_c4);
+    vf_type y = t2*w + t1;
 #else
     vf_type y = z*impl::poly(z,
                              log_c16,
@@ -1546,7 +1546,7 @@ log_k(arg_t<vf_type> xc, log_func func)
     vf_type xr = _T::combine_words(lx, hx);
 
     vf_type f = xr - 1.0;
-    vf_type hfsq = 0.5*f*f;
+    vf_type hfsq = (0.5*f)*f;
     vf_type s = f/(2.0+f);
     vf_type z = s*s;
 
@@ -1556,9 +1556,11 @@ log_k(arg_t<vf_type> xc, log_func func)
     vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
     if (func == log_func::c_log_e) {
         using ctbl=impl::d_real_constants<d_real<double>, double>;
-        vf_type log_x=s*(hfsq+R) +
-                    kf*ctbl::m_ln2_cw[1] - hfsq +
-                    f + kf*ctbl::m_ln2_cw[0];
+        vf_type log_x=s*(hfsq+R);
+        log_x += kf*ctbl::m_ln2_cw[1];
+        log_x -= hfsq;
+        log_x += f;
+        log_x += kf*ctbl::m_ln2_cw[0];
         res = log_x;
     } else if (func == log_func::c_log_10) {
         const vf_type
@@ -1672,15 +1674,17 @@ log1p_k(arg_t<vf_type> xc)
     vf_type nu = _T::combine_words(lu, hu);
     vf_type f= nu -1.0;
 
-    vf_type hfsq = 0.5*f*f;
+    vf_type hfsq = (0.5*f)*f;
     vf_type s = f/(2.0+f);
     vf_type z = s*s;
     vf_type R = log_k_poly(z);
 
     using ctbl=impl::d_real_constants<d_real<double>, double>;
-    vf_type log1p_x=s*(hfsq+R) +
-                    (kf*ctbl::m_ln2_cw[1]+c) - hfsq +
-                    f + kf*ctbl::m_ln2_cw[0];
+    vf_type log1p_x= s*(hfsq+R);
+    log1p_x += kf*ctbl::m_ln2_cw[1] +c;
+    log1p_x -= hfsq;
+    log1p_x += f;
+    log1p_x += kf*ctbl::m_ln2_cw[0];
     log1p_x= _T::sel(abs(x) < 0x1p-53, x, log1p_x);
     return log1p_x;
 }

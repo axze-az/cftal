@@ -266,6 +266,7 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
         std::cerr << "fxlh: " << fxlh << "\n";
         std::cerr << "vr: " << vr << "\n";
         std::cerr << std::scientific;
+        std::exit(3);
     }
     st.insert(t0, t1, _N2);
     st.insert(t1, t2, _N2);
@@ -303,6 +304,7 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& y,
         std::cerr << "fx:   " << fx << "\n";
         std::cerr << "fxlh: " << fxlh << "\n";
         std::cerr << "vr: " << vr << "\n";
+        std::exit(3);
     }
     st.insert(t0, t1, _N2);
     st.insert(t1, t2, _N2);
