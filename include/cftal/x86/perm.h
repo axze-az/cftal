@@ -2676,7 +2676,13 @@ __m128i cftal::x86::perm_v4u32(__m128i a, __m128i b)
                   "cftal::x86::perm_u32(a, b) : -1 <= P2 < 8");
     static_assert(_P3>-2 && _P3 < 8,
                   "cftal::x86::perm_u32(a, b) : -1 <= P3 < 8");
+#if defined (__AVX2__)
+    __m256i t=_mm256_inserti128_si256(_mm256_castsi128_si256(a), b, 1);
+    __m256i r=impl::perm1_v8u32<_P0, _P1, _P2, _P3, 4, 5, 6, 7>::v(t);
+    return _mm256_castsi256_si128(r);
+#else
     return impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(a, b);
+#endif
 }
 
 #if defined (__AVX2__)
@@ -2755,7 +2761,13 @@ __m128i cftal::x86::perm_v2u64(__m128i a, __m128i b)
     const int p1 = _P0 < 0 ? -1 : _P0 * 2 +1;
     const int p2 = _P1 < 0 ? -1 : _P1 * 2;
     const int p3 = _P1 < 0 ? -1 : _P1 * 2 +1;
+#if defined (__AVX2__)
+    __m256i t=_mm256_inserti128_si256(_mm256_castsi128_si256(a), b, 1);
+    __m256i r=impl::perm1_v8u32<p0, p1, p2, p3, 4, 5, 6, 7>::v(t);
+    return _mm256_castsi256_si128(r);
+#else
     return impl::perm2_v4u32<p0, p1, p2, p3>::v(a, b);
+#endif
 }
 
 #if defined (__AVX2__)
