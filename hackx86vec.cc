@@ -69,7 +69,12 @@ namespace cftal {
 double
 cftal::impl::expmxx(double xc)
 {
-#if 1
+    // exp(-x*x):
+    // log(exp(-x*x)) = -x*x
+    // x = h + l;
+    // x*x = (h+l)*(h+l) = h^2 + 2*h*l + l^ 2
+    // 
+#if 0
     using vf_type=vec<double, 1>;
     vf_type s=-1.0;
     vf_type x=abs(vf_type(xc));
@@ -97,20 +102,27 @@ cftal::impl::expmxx(double xc)
     r= select(xx <= fc_t::exp_lo_zero, vf_type(0), r);
     return r();
 #else
-    using namespace std;
-    double x = std::abs(xc);
-    double z = std::rint(x);
-    double m = x - z;
-    if (m > 0.5) {
-        z += 1.0;
-        m -= 1.0;
-    }
-    using vf_type = cftal::vec<double, 1>;
-    double exp_zz= ref_expmxx(z);
-    double exp_2zm= exp(vf_type(-2*z*m))();
-    double exp_mm= exp(vf_type(-m*m))();
-    double r=exp_zz * exp_2zm * exp_mm;
-    return r;
+    using vf_type = vec<double, 1>;
+    using vli_type = vec<uint64_t, 1>;
+    vf_type s=-1.0;
+    vf_type x=abs(vf_type(xc));
+    vli_type xi=as<vli_type>(x);
+    xi = xi & vli_type(0xFFFFFFFFF8000000ULL);
+    vf_type h= as<vf_type>(xi);
+    vf_type l= x-h;
+
+    vf_type uh= h*h;
+    vf_type ul= 2*h*l + l*l;
+    vf_type sgn=copysign(vf_type(1.0), s);
+    uh *= sgn;
+    ul *= sgn;
+    vf_type eh=exp(uh);
+    vf_type el=exp(ul);
+    vf_type r=eh*el;
+    vf_type xx=xc*xc*sgn;
+    using fc_t = math::func_constants<double>;
+    r= select(xx <= fc_t::exp_lo_zero, vf_type(0), r);
+    return r();
 #endif
 }
 
@@ -131,7 +143,7 @@ int main1(int argc, char** argv)
     using namespace cftal;
 
     std::cout << std::setprecision(18) << std::scientific;
-    const int64_t stp=10000;
+    const int64_t stp=160000;
     const int64_t cnt=27*stp;
     int errs=0;
     double max_err=0;
@@ -147,7 +159,7 @@ int main1(int argc, char** argv)
         if (e && x <= 26.615717) {
             ++errs;
             max_err = std::max(fabs(err), max_err);
-            #if 0
+#if 0
             double e2=z2/z1-1;
             std::cout // << std::hexfloat
                       << -x*x
@@ -163,7 +175,7 @@ int main1(int argc, char** argv)
                       << err
                       << std::scientific
                       << std::endl;
-            #endif
+#endif
         }
     }
     std::cout << "\nerrors: " << errs << std::endl;
@@ -177,7 +189,7 @@ int main1(int argc, char** argv)
     return 0;
 }
 
-int main(int argc, char** argv)
+int main2(int argc, char** argv)
 {
     using namespace cftal;
     auto u={1u, 2u<<1, 4u<<2, 8u<<3, 16u<<4,
@@ -196,4 +208,10 @@ int main(int argc, char** argv)
     std::cout << vv << std::endl;
     std::cout << vq << std::endl;
     return 0;
+}
+
+
+int main(int argc, char** argv)
+{
+    return main1(argc, argv);
 }
