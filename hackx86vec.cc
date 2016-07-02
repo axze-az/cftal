@@ -3,10 +3,8 @@
 #include <cstddef>
 #include <iterator>
 #include <cmath>
-#include <cftal/vec.h>
 #include <cftal/math_func.h>
 #include <cftal/d_real.h>
-#include <cftal/t_real.h>
 #include <cftal/vec_traits.h>
 #include <cftal/test/call_mpfr.h>
 
@@ -57,23 +55,32 @@ namespace cftal {
 
         // exp(-x*x)
         // exp(-x*x) = exp(-z*z) * exp(-2*z*m) * exp(-m*m)
-        // where z 
+        // where z
         double expmxx(double x);
 
         double ref_expmxx(double x);
-        
+
     }
-    
+
 }
 
 double
 cftal::impl::expmxx(double xc)
 {
+#if 1
+    using vf_type = vec<double, 1>;
+    using vi_type = vec<int32_t, 1>;
+    using vf_traits = cftal::math::func_traits<vf_type, vi_type>;
+    vf_type r= cftal::math::func<double, vf_traits>::expxx_k(xc, vf_type(-1));
+    // using fc_t = math::func_constants<double>;
+    // r= select(xx <= fc_t::exp_lo_zero, vf_type(0), r);
+    return r();
+#else
     // exp(-x*x):
     // log(exp(-x*x)) = -x*x
     // x = h + l;
     // x*x = (h+l)*(h+l) = h^2 + 2*h*l + l^ 2
-    // 
+    //
 #if 0
     using vf_type=vec<double, 1>;
     vf_type s=-1.0;
@@ -86,7 +93,7 @@ cftal::impl::expmxx(double xc)
 
     vf_type M = select(x > 13, ML, MS);
     vf_type MINV = select(x > 13, ML_INV, MS_INV);
-    
+
     vf_type m=MINV*rint(vf_type(M*x));
     vf_type f=x-m;
     vf_type uh=m*m;
@@ -124,6 +131,7 @@ cftal::impl::expmxx(double xc)
     r= select(xx <= fc_t::exp_lo_zero, vf_type(0), r);
     return r();
 #endif
+#endif
 }
 
 double
@@ -143,7 +151,7 @@ int main1(int argc, char** argv)
     using namespace cftal;
 
     std::cout << std::setprecision(18) << std::scientific;
-    const int64_t stp=160000;
+    const int64_t stp=1600000;
     const int64_t cnt=27*stp;
     int errs=0;
     double max_err=0;
@@ -163,13 +171,13 @@ int main1(int argc, char** argv)
             double e2=z2/z1-1;
             std::cout // << std::hexfloat
                       << -x*x
-                      << std::scientific 
+                      << std::scientific
                       << "\n";
             std::cout << x << " " << z1 << " "
                       << std::hexfloat
                       << e2
                       << "\n"
-                      << std::scientific 
+                      << std::scientific
                       << x << " " << z2 << " "
                       << std::hexfloat
                       << err

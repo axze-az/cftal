@@ -1187,7 +1187,7 @@ typename cftal::math::func_core<double, _T>::vf_type
 cftal::math::func_core<double, _T>::
 expxx_k(arg_t<vf_type> xc, arg_t<vf_type> s)
 {
-#if 1
+#if 0
     const vf_type M=128.0;
     const vf_type MINV=1.0/128.0;
     vf_type x=abs(xc);
@@ -1202,18 +1202,26 @@ expxx_k(arg_t<vf_type> xc, arg_t<vf_type> s)
     vf_type el=exp_k(ul, false);
     return eh*el;
 #else
-    // using d_ops=
-    // cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
-    vf_type xh = _T::clear_low_word(xc);
-    vf_type f= xc -xh;
-    xh *= xh;
-    vf_type xl= 2*xh*f + f*f;
-    vf_type s0 = copysign(vf_type(1.0), s);
-    xh *= s0;
-    xl *= s0;
-    vf_type eh= exp_k(xh, false);
-    vf_type el= exp_k(xl, false);
-    return eh * el;
+    // exp(-x*x):
+    // log(exp(-x*x)) = -x*x
+    // x = h + l;
+    // x*x = (h+l)*(h+l) = h^2 + 2*h*l + l^ 2
+    vf_type x=abs(vf_type(xc));
+    vf_type h, l;
+    using d_ops=d_real_traits<vf_type>;
+    d_ops::split(x, h, l);
+    vf_type uh= h*h;
+    vf_type ul= 2*h*l + l*l;
+    vf_type sgn=copysign(vf_type(1.0), s);
+    uh *= sgn;
+    ul *= sgn;
+    vf_type eh=exp(uh);
+    vf_type el=exp(ul);
+    vf_type r=eh*el;
+    // vf_type xx=xc*xc*sgn;
+    // using fc_t = math::func_constants<double>;
+    // r= select(xx <= fc_t::exp_lo_zero, vf_type(0), r);
+    return r;
 #endif
 }
 

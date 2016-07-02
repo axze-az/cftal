@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/arg.h>
 #include <cftal/d_real.h>
+#include <cftal/t_real.h>
 #include <cftal/std_types.h>
 #include <cftal/divisor.h>
 #include <cftal/constants.h>
@@ -65,7 +66,6 @@ namespace cftal {
             using vmf_type = typename base_type::vmf_type;
             using vmi_type = typename base_type::vmi_type;
             using dvf_type = typename base_type::dvf_type;
-            using tvf_type = typename base_type::tvf_type;
 
             using base_type::frexp;
             using base_type::ldexp;
