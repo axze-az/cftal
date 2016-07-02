@@ -21,9 +21,12 @@ namespace cftal {
                     return s;
                 }
                 static
-                _T
+                auto
                 r(const _T& a) {
-                    return call_mpfr::func(a, mpfr_sin);
+                    std::pair<_T, _T> i;
+                    _T v=call_mpfr::func(a, mpfr_sin, &i);
+                    return std::make_tuple(v, i.first, i.second);
+                    // return call_mpfr::func(a, mpfr_log2);
                 }
                 static
                 _T
@@ -44,9 +47,12 @@ namespace cftal {
                     return c;
                 }
                 static
-                _T
+                auto
                 r(const _T& a) {
-                    return call_mpfr::func(a, mpfr_cos);
+                    std::pair<_T, _T> i;
+                    _T v=call_mpfr::func(a, mpfr_cos, &i);
+                    return std::make_tuple(v, i.first, i.second);
+                    // return call_mpfr::func(a, mpfr_log2);
                 }
                 static
                 _T
