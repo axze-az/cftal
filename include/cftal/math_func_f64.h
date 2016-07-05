@@ -669,16 +669,13 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
                       expn_c5,
                       expn_c4,
                       expn_c3,
-                      expn_c2,
-                      expn_c1);
-        using d_ops=cftal::impl::d_real_ops<vf_type,
-                                            d_real_traits<vf_type>::fma>;
+                      expn_c2);
         vf_type ye;
-        vf_type p_i;
-        vf_type o_i;
-        y = d_ops::two_prod(y, xr, p_i);
-        y = d_ops::two_sum(y, expn_c0, o_i);
-        ye= (p_i + o_i);
+        impl::eft_poly_s0(y, ye, xr, y, expn_c1);
+        impl::eft_poly_si(y, ye, xr, y, ye, expn_c0);
+        vf_type cr = (hi-xr)-lo;
+        ye += cr*xr;
+        ye += cr;
         y += ye;
         // y += cr+cr*xr;
         y = scale_exp_k(y, kf, k2);
