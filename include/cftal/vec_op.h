@@ -265,7 +265,7 @@ namespace cftal {
 #if 1
         return op::nfma<_T, _N>::v(eval(e._r._l),
                                    eval(e._r._r),
-                                   eval(e._l))
+                                   eval(e._l));
 #else
         return op::fms<_T, _N>::v(eval(e._l._l),
                                   eval(e._l._r),
