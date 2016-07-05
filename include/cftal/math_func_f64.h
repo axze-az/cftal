@@ -929,7 +929,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
                                         expm1_c4,
                                         expm1_c2);
         vf_type tt  = 3.0-r1*hfx;
-        vf_type e  = hxs*((r1-tt)/(6.0 - xr*tt));
+        vf_type e  = (hxs*(r1-tt))/(6.0 - xr*tt);
         // if (k == 0)   /* c is 0 */
         //      return x - (x*e-hxs);
         e  = xr*(e-cr) - cr;
@@ -946,7 +946,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         // k < 0 || k > 56
         vf_type yt= xr - e  + 1.0;
         yt= _T::sel(kf == vf_type(1024),
-                    yt * 2.0 *0x1p1023,
+                    yt * 2.0 * 0x1p1023,
                     yt * two_pow_k);
         yt -= 1.0;
         ym = _T::sel((kf < vf_type(0)) | (kf>vf_type(56)), yt, ym);

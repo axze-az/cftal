@@ -200,26 +200,25 @@ int main1(int argc, char** argv)
 int main2(int argc, char** argv)
 {
     using namespace cftal;
-    auto u={1u, 2u<<1, 4u<<2, 8u<<3, 16u<<4,
-                  32u<<5, 64u<<6, 128u<<7, 256u<<8};
-    auto v={1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u, 256u};
+    v2f64 t2={0x1.4c31d59534535p+9};
+    v1f64 t1={0x1.4c31d59534535p+9};
 
-    for (auto b=std::cbegin(u), e=std::cend(u), bu=std::cbegin(v);
-         b!=e; ++b, ++bu) {
-        std::cout << (*b)/(*bu) << " ";
-    }
-    std::cout << std::endl;
-    v8u32 vu{u};
-    v8u32 vv{v};
-    v8u32 vq=vu/vv;
-    std::cout << vu << std::endl;
-    std::cout << vv << std::endl;
-    std::cout << vq << std::endl;
+    std::pair<double, double> ti;
+    double tr=test::call_mpfr::func(t1(), mpfr_expm1, &ti);
+    
+    v2f64 e2=expm1(t2);
+    v1f64 e1=expm1(t1);
+    std::cout << std::hexfloat;
+    std::cout << e2 << std::endl;
+    std::cout << e1 << std::endl;
+    std::cout << tr << std::endl;
+    std::cout << ti.first << ' ' << ti.second << std::endl;
+    
     return 0;
 }
 
 
 int main(int argc, char** argv)
 {
-    return main1(argc, argv);
+    return main2(argc, argv);
 }
