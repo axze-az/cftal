@@ -263,7 +263,7 @@ namespace cftal {
          expr<op::mul<_T, _N>, _L1, _R1>,
          expr<op::mul<_T, _N>, _L2, _R2> >& e) {
 #if 1
-        return op::nfma<_T, _N>::v(eval(e._r._l),
+        return op::fnma<_T, _N>::v(eval(e._r._l),
                                    eval(e._r._r),
                                    eval(e._l));
 #else
