@@ -262,9 +262,15 @@ namespace cftal {
     eval(const expr<op::sub<_T, _N>,
          expr<op::mul<_T, _N>, _L1, _R1>,
          expr<op::mul<_T, _N>, _L2, _R2> >& e) {
+#if 1
+        return op::nfma<_T, _N>::v(eval(e._r._l),
+                                   eval(e._r._r),
+                                   eval(e._l))
+#else
         return op::fms<_T, _N>::v(eval(e._l._l),
                                   eval(e._l._r),
                                   eval(e._r));
+#endif
     }
 
     // a + -b = a - b
