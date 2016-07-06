@@ -617,7 +617,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
     vf_type x=xc;
     vf_type kf = rint(vf_type(x * ctbl::m_1_ln2.h()));
     vf_type hi = x - kf * ctbl::m_ln2_cw[0];
-    vf_type lo = kf * ctbl::m_ln2_cw[1];
+    // vf_type lo = kf * ctbl::m_ln2_cw[1];
     vf_type xr = hi - kf * ctbl::m_ln2_cw[1];
     vi_type k= _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);
@@ -668,7 +668,8 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
     impl::eft_poly(y, ye, xr, y,
                    exp_c1,
                    exp_c0);
-    vf_type cr = (hi-xr)-lo;
+    vf_type dx = hi-xr;
+    vf_type cr = dx - kf * ctbl::m_ln2_cw[1];
     vf_type yee= cr + cr*xr;
     ye += yee;
     if (exp_m1 == false) {
@@ -1037,7 +1038,7 @@ exp10_k(arg_t<vf_type> x)
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type kf = rint(vf_type(x * ctbl::m_1_ld2.h()));
     vf_type hi = x - kf * ctbl::m_ld2_cw[0];
-    vf_type lo = kf * ctbl::m_ld2_cw[1];
+    //vf_type lo = kf * ctbl::m_ld2_cw[1];
     vf_type xr = hi - kf * ctbl::m_ld2_cw[1];
     vi_type k= _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);
@@ -1093,7 +1094,8 @@ exp10_k(arg_t<vf_type> x)
                    exp10_c1,
                    exp10_c0);
     // correction for argument reduction
-    vf_type cr = (hi-xr)-lo;
+    vf_type dx= (hi-xr);
+    vf_type cr = dx-kf * ctbl::m_ld2_cw[1];
     // f(x) := 10^(r+c);
     // f(x) ~ 10^r + log(10) 10^r c + ..
     // 10^r ~ 1 + log(10) r
