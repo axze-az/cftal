@@ -72,6 +72,18 @@ namespace cftal {
             void
             eft_poly_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
 
+            template <typename _X, typename _CN, typename _CNM1,
+                      typename ... _CS>
+            void
+            eft_poly_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1,
+                        _CS... cs);
+
+            template <typename _X, typename _CN, typename _CNM1,
+                      typename ... _CS>
+            void
+            eft_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
+                     _CS... cs);
+
         }
     }
 }
@@ -218,6 +230,31 @@ cftal::math::impl::eft_poly_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
     y = d_ops::two_sum(y, c0, o_i);
     ye= c1l*x + (p_i + o_i);
 }
+
+template <typename _X,
+          typename _CN, typename _CNM1, typename ... _CS>
+void
+cftal::math::impl::
+eft_poly_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1, _CS ... cs)
+{
+    eft_poly_si(y, ye, x, cnh, cnl, cnm1);
+    const _X _y=y;
+    const _X _ye=ye;
+    eft_poly_si(y, ye, x, _y, _ye, cs...);
+}
+
+template <typename _X,
+          typename _CN, typename _CNM1, typename ... _CS>
+void
+cftal::math::impl::
+eft_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
+{
+    eft_poly_s0(y, ye, x, cn, cnm1);
+    const _X _y=y;
+    const _X _ye=ye;
+    eft_poly_si(y, ye, x, _y, _ye, cs...);
+}
+
 
 // local variables:
 // mode: c++

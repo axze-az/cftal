@@ -266,20 +266,16 @@ cftal::test::call_mpfr::ulp1_interval(_T res, int mpres)
     std::pair<_T, _T> pr(res, res);
     const _T up=std::numeric_limits<_T>::max();
     const _T down=-std::numeric_limits<_T>::max();
-    switch (mpres) {
-    case 0:
+    if (mpres > 0) {
+        // res is greater than the real value
+        pr.first = std::nextafter(res, down);
+    } else if (mpres < 0) {
+        // res is smaller than the real value
+        pr.second = std::nextafter(res, up);
+    } else if (mpres == 0) {
         // res is exact:
         pr.first = std::nextafter(res, down);
         pr.second = std::nextafter(res, up);
-        break;
-    case 1:
-        // res is greater than the real value
-        pr.first = std::nextafter(res, down);
-        break;
-    case -1:
-        // res is smaller than the real value
-        pr.second = std::nextafter(res, up);
-        break;
     }
     return pr;
 }
