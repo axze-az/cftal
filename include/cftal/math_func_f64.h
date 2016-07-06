@@ -669,7 +669,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
                    exp_c1,
                    exp_c0);
     vf_type cr = (hi-xr)-lo;
-    vf_type yee= cr*xr + cr;
+    vf_type yee= cr + cr*xr;
     ye += yee;
     if (exp_m1 == false) {
         y += ye;
@@ -679,8 +679,8 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         // e^x-1 = 2*(y * 2^s - 0.5 * 2^s)
         vf_type scale = scale_exp_k(vf_type(0.5), kf, k2);
         impl::eft_poly_si(y, ye, scale, y, ye, vf_type(-0.5));
-        y += ye;
-        y *=2;
+        y *= 2;
+        y  = y + 2*ye;
     }
     return y;
 #if 0
