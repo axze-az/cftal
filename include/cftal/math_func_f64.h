@@ -617,7 +617,6 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
     vf_type x=xc;
     vf_type kf = rint(vf_type(x * ctbl::m_1_ln2.h()));
     vf_type hi = x - kf * ctbl::m_ln2_cw[0];
-    // vf_type lo = kf * ctbl::m_ln2_cw[1];
     vf_type xr = hi - kf * ctbl::m_ln2_cw[1];
     vi_type k= _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);

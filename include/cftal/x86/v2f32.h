@@ -13,6 +13,7 @@
 #include <cftal/x86/perm.h>
 #include <cftal/x86/vreg.h>
 
+#if 0
 namespace cftal {
 
 
@@ -841,6 +842,7 @@ cftal::permute(const vec<float, 2>& l, const vec<float, 2>& r)
     __m128 t=x86::impl::vshufps<0, 1, 0, 1>::v(lh, hh);
     return x86::perm_v4f32<_I0, _I1, 2, 3>(t);
 }
+#endif
 
 // Local variables:
 // mode: c++

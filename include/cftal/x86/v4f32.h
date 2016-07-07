@@ -432,7 +432,8 @@ vec(init_list<float> l)
 inline
 cftal::vec<float, 4>::
 vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
-    : vec(permute<0, 1, 4, 5>(v4f32(lh()), v4f32(hh())))
+    : vec{low_half(lh)(), high_half(lh)(),
+        low_half(hh)(), high_half(hh)()}
 {
 }
 
@@ -483,14 +484,14 @@ inline
 cftal::vec<float, 2>
 cftal::low_half(const vec<float, 4>& v)
 {
-    return v();
+    return vec<float, 2>{extract<0>(v), extract<1>(v)};
 }
 
 inline
 cftal::vec<float, 2>
 cftal::high_half(const vec<float, 4>& v)
 {
-    return permute<2, 3, 0, 1>(v)();
+    return vec<float, 2>{extract<2>(v), extract<3>(v)};
 }
 
 template <std::size_t _I>

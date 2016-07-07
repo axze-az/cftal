@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <cmath>
 
-#define USE_TYPE_AS_MASK 0
+#define USE_TYPE_AS_MASK 1
 #define USE_BOOL_AS_MASK 0
 
 namespace cftal {
