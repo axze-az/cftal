@@ -677,10 +677,18 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         y += ye;
         y = scale_exp_k(y, kf, k2);
     } else {
+        using d_ops=cftal::impl::d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
         vf_type ye;
-        impl::eft_poly(y, ye, xr, y,
-                       exp_c1,
-                       exp_c0);
+        if (d_real_traits<vf_type>::fma == false) {
+            y = y*xr;
+            y = d_ops::two_sum(y, exp_c1, ye);
+            impl::eft_poly_si(y, ye, xr, y, ye, exp_c0);
+        } else {
+            // 1/3 error reduction for one fma more compared to the code above
+            impl::eft_poly(y, ye, xr, y,
+                           exp_c1,
+                           exp_c0);
+        }
         vf_type dx = hi-xr;
         vf_type cr = dx - kf * ctbl::m_ln2_cw[1];
         vf_type yee= cr + cr*xr;
