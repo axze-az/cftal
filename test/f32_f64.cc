@@ -40,7 +40,7 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats& us)
     }
     if (us._faithful.first) {
         s << "faithful: "
-          << (us._faithful.second ? "yes" : "no") << '\n';
+          << (us._faithful.second ? "perhaps yes" : "no") << '\n';
     }
     return s;
 }
@@ -88,7 +88,7 @@ namespace {
             return true;
         return a == b0 || a == b1 || a == b2;
     }
-    
+
 }
 
 bool cftal::test::f_eq_ulp(double a, double b, uint32_t ulp, ulp_stats* us)
