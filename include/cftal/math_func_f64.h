@@ -2755,6 +2755,34 @@ erf_k(arg_t<vf_type> xc)
         // x^ : +0x8.2cbdf22b0bbb8p-3
         const vf_type erf_i1_x0=+1.0218466681849045496477e+00;
         vf_type x_i1 = x - erf_i1_x0;
+#if 1
+        vf_type xx= x_i1*x_i1;
+        vf_type i= impl::poly(xx,
+                              erf_i1_c21,
+                              erf_i1_c19,
+                              erf_i1_c17,
+                              erf_i1_c15,
+                              erf_i1_c13,
+                              erf_i1_c11,
+                              erf_i1_c9,
+                              erf_i1_c7,
+                              erf_i1_c5);
+        vf_type j= impl::poly(xx,
+                              erf_i1_c20,
+                              erf_i1_c18,
+                              erf_i1_c16,
+                              erf_i1_c14,
+                              erf_i1_c12,
+                              erf_i1_c10,
+                              erf_i1_c8,
+                              erf_i1_c6,
+                              erf_i1_c4);
+        vf_type y_i1= i*x_i1 + j;
+        y_i1 = impl::poly(x_i1, y_i1,
+                          erf_i1_c3,
+                          erf_i1_c2,
+                          erf_i1_c1);
+#else
         vf_type y_i1= impl::poly(x_i1,
                                  erf_i1_c21,
                                  erf_i1_c20,
@@ -2777,6 +2805,7 @@ erf_k(arg_t<vf_type> xc)
                                  erf_i1_c3,
                                  erf_i1_c2,
                                  erf_i1_c1);
+#endif
         vf_type ye;
         impl::eft_poly(y_i1, ye, x_i1, y_i1,
                        erf_i1_c0h);
@@ -2837,8 +2866,36 @@ erf_k(arg_t<vf_type> xc)
         const vf_type erf_i2_left=+1.8750000000000000000000e+00;
         // x^ : +0x8.23b4f19e7a2b8p-2
         const vf_type erf_i2_x0=+2.0348699334122488657783e+00;
-        
+
         vf_type x_i2 = x - erf_i2_x0;
+#if 1
+        vf_type xx= x_i2*x_i2;
+        vf_type i= impl::poly(xx,
+                              erf_i2_c21,
+                              erf_i2_c19,
+                              erf_i2_c17,
+                              erf_i2_c15,
+                              erf_i2_c13,
+                              erf_i2_c11,
+                              erf_i2_c9,
+                              erf_i2_c7,
+                              erf_i2_c5);
+        vf_type j= impl::poly(xx,
+                              erf_i2_c20,
+                              erf_i2_c18,
+                              erf_i2_c16,
+                              erf_i2_c14,
+                              erf_i2_c12,
+                              erf_i2_c10,
+                              erf_i2_c8,
+                              erf_i2_c6,
+                              erf_i2_c4);
+        vf_type y_i2= i*x_i2 + j;
+        y_i2 = impl::poly(x_i2, y_i2,
+                          erf_i2_c3,
+                          erf_i2_c2,
+                          erf_i2_c1);
+#else
         vf_type y_i2= impl::poly(x_i2,
                                  erf_i2_c21,
                                  erf_i2_c20,
@@ -2861,6 +2918,7 @@ erf_k(arg_t<vf_type> xc)
                                  erf_i2_c3,
                                  erf_i2_c2,
                                  erf_i2_c1);
+#endif
         vf_type ye;
         impl::eft_poly(y_i2, ye, x_i2, y_i2,
                        erf_i2_c0h);
@@ -2921,8 +2979,36 @@ erf_k(arg_t<vf_type> xc)
         const vf_type erf_i3_left=+3.5000000000000000000000e+00;
         // x^ : +0xe.607967130eddp-2
         const vf_type erf_i3_x0=+3.5942131142980686675514e+00;
-        
+
         vf_type x_i3 = x - erf_i3_x0;
+#if 1
+        vf_type xx= x_i3*x_i3;
+        vf_type i= impl::poly(xx,
+                              erf_i3_c21,
+                              erf_i3_c19,
+                              erf_i3_c17,
+                              erf_i3_c15,
+                              erf_i3_c13,
+                              erf_i3_c11,
+                              erf_i3_c9,
+                              erf_i3_c7,
+                              erf_i3_c5);
+        vf_type j= impl::poly(xx,
+                              erf_i3_c20,
+                              erf_i3_c18,
+                              erf_i3_c16,
+                              erf_i3_c14,
+                              erf_i3_c12,
+                              erf_i3_c10,
+                              erf_i3_c8,
+                              erf_i3_c6,
+                              erf_i3_c4);
+        vf_type y_i3= i*x_i3 + j;
+        y_i3 = impl::poly(x_i3, y_i3,
+                          erf_i3_c3,
+                          erf_i3_c2,
+                          erf_i3_c1);
+#else
         vf_type y_i3= impl::poly(x_i3,
                                  erf_i3_c21,
                                  erf_i3_c20,
@@ -2945,6 +3031,7 @@ erf_k(arg_t<vf_type> xc)
                                  erf_i3_c3,
                                  erf_i3_c2,
                                  erf_i3_c1);
+#endif
         vf_type ye;
         impl::eft_poly(y_i3, ye, x_i3, y_i3,
                        erf_i3_c0h);
