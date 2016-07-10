@@ -200,20 +200,17 @@ int main1(int argc, char** argv)
 int main2(int argc, char** argv)
 {
     using namespace cftal;
-    v2f32 t2(0x1.57b1bp-129);
-    v1f32 t1={0x1.57b1bp-129};
+    v1f64 t1={1.0};
 
-    std::pair<float, float> ti;
-    double tr=test::call_mpfr::func(t1(), mpfr_log, &ti);
-    
-    v2f32 e2=log(t2);
-    v1f32 e1=log(t1);
+    std::pair<double, double> ti;
+    double tr=test::call_mpfr::func(t1(), mpfr_erfc, &ti);
+
+    v1f64 e1=erfc(t1);
     std::cout << std::hexfloat;
-    std::cout << e2 << std::endl;
     std::cout << e1 << std::endl;
     std::cout << tr << std::endl;
     std::cout << ti.first << ' ' << ti.second << std::endl;
-    
+
     return 0;
 }
 

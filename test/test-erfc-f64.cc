@@ -35,8 +35,8 @@ int main(int argc, char** argv)
 #endif
     // mnewton(erfc(x)-erf(x), x, 0.46);
     // func_domain<double> d=std::make_pair(0.0, 0.47693627620447);
-    // func_domain<double> d=std::make_pair(0.476, 1.5);
-    func_domain<double> d=std::make_pair(-6.0, 27.7);
+    func_domain<double> d=std::make_pair(0.5, 1.5);
+    // func_domain<double> d=std::make_pair(-6.0, 27.7);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
