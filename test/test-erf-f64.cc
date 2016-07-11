@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_erf<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_erf<double> >(v, ulp, 0, false);
 #endif
-    // func_domain<double> d=std::make_pair(0.75, 1.875);
+    // func_domain<double> d=std::make_pair(0, 0.75);
     func_domain<double> d=std::make_pair(-6.0, 6.0);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
