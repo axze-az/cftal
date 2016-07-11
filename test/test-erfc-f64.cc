@@ -6,7 +6,7 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const int ulp=32;
+    const int ulp=128;
     const int _N=1;
     bool speed_only=false;
     std::cout << std::setprecision(18) << std::scientific;
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 8, check_erf<double> >(v, ulp, 0, false);
 #endif
     // mnewton(erfc(x)-erf(x), x, 0.46);
-    func_domain<double> d=std::make_pair(0.0, 0.75);
+    func_domain<double> d=std::make_pair(1.875, 3.5);
     // func_domain<double> d=std::make_pair(0, 0.75);
     // func_domain<double> d=std::make_pair(-6.0, 27.7);
     auto us=std::make_shared<ulp_stats>();
