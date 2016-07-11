@@ -651,6 +651,25 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
     const vf_type exp_c12=+2.0921639307947645130620e-09;
     // x^13 : +0xb.675e3ad02de48p-36
     const vf_type exp_c13=+1.6594686285988114700473e-10;
+#if 1
+    vf_type xx=xr*xr;
+    vf_type i=impl::poly(xx,
+                         exp_c13,
+                         exp_c11,
+                         exp_c9,
+                         exp_c7,
+                         exp_c5);
+    vf_type j=impl::poly(xx,
+                         exp_c12,
+                         exp_c10,
+                         exp_c8,
+                         exp_c6,
+                         exp_c4);
+    vf_type y=i*xr + j;
+    y = impl::poly(xr, y, 
+                   exp_c3,
+                   exp_c2);
+#else
     vf_type y=impl::poly(xr,
                          exp_c13,
                          exp_c12,
@@ -664,6 +683,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
                          exp_c4,
                          exp_c3,
                          exp_c2);
+#endif
     // correction for errors in argument reduction
     vf_type dx = hi-xr;
     vf_type cr = dx - kf * ctbl::m_ln2_cw[1];
@@ -1021,6 +1041,26 @@ exp2_k(arg_t<vf_type> x)
     y += ye;
 #endif
 #else
+#if 1
+    vf_type xx=xr*xr;
+    vf_type i=impl::poly(xx,
+                         exp2_c13,
+                         exp2_c11,
+                         exp2_c9,
+                         exp2_c7,
+                         exp2_c5);
+    vf_type j=impl::poly(xx,
+                         exp2_c12,
+                         exp2_c10,
+                         exp2_c8,
+                         exp2_c6,
+                         exp2_c4);
+    vf_type y=i*xr + j;
+    y = impl::poly(xr, y, 
+                   exp2_c3,
+                   exp2_c2,
+                   exp2_c1);
+#else
     vf_type y=impl::poly(xr,
                          exp2_c13,
                          exp2_c12,
@@ -1035,6 +1075,7 @@ exp2_k(arg_t<vf_type> x)
                          exp2_c3,
                          exp2_c2,
                          exp2_c1);
+#endif
     vf_type ye;
     impl::eft_poly(y, ye, xr, y,
                    exp2_c0);
@@ -1091,6 +1132,26 @@ exp10_k(arg_t<vf_type> x)
     const vf_type log10=+2.3025850929940459010936e+00;
 #if 1
     const vf_type log10sqr=log10*log10;
+#if 1
+    vf_type xx=xr*xr;
+    vf_type i=impl::poly(xx,
+                         exp10_c13,
+                         exp10_c11,
+                         exp10_c9,
+                         exp10_c7,
+                         exp10_c5);
+    vf_type j=impl::poly(xx,
+                         exp10_c12,
+                         exp10_c10,
+                         exp10_c8,
+                         exp10_c6,
+                         exp10_c4);
+    vf_type y=i*xr + j;
+    y = impl::poly(xr, y, 
+                   exp10_c3,
+                   exp10_c2,
+                   exp10_c1);
+#else
     vf_type y=impl::poly(xr,
                          exp10_c13,
                          exp10_c12,
@@ -1105,6 +1166,7 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c3,
                          exp10_c2,
                          exp10_c1);
+#endif
     vf_type ye;
     impl::eft_poly(y, ye, xr, y,
                    exp10_c0);
