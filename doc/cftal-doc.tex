@@ -6,6 +6,7 @@
 \usepackage[bookmarks=true,hidelinks]{hyperref}
 \numberwithin{equation}{subsection}
 
+
 \lstset{
   % change this to 11 later
   language={C++},
@@ -62,7 +63,10 @@ cftal::func(const vec<_T, _N>& x)
     return r;
 }
 \end{lstlisting}
-recursively.
+recursively.\\
+%
+All polynomial approximations are produced using sollya
+(\cite{ChevillardJoldesLauter2010}).
 
 double argument identity for exponential functions:
 \[
@@ -74,6 +78,24 @@ double argument identity for exponential functions:
     \end{aligned}
 \]
 
+\subsection{List of functions and precisions}
+\label{sub_sec:func_list}
+
+\begin{tabular}{ | l | c | c | c | }
+    \hline
+    function & width & precision/[ulp] & faithfully rounded \\
+    \hline
+    exp & 64 & $\pm$ 1 & y \\
+        & 32 & $\pm$ 1 & y \\
+    \hline
+    exp2 & 64 & $\pm$ 1 & y \\
+         & 32 & $\pm$ 1 & y \\
+    \hline
+    exp10 & 64 & $\pm$ 1 & y \\
+          & 32 & $\pm$ 1 & y \\
+    \hline
+    
+\end{tabular}
 
 \subsection{basic functions: ldexp, frexp, ilogb}
 \label{sub_sec:base_math}
@@ -248,4 +270,8 @@ The functions have an error of $ \pm 2\, ulp$.
     \]
 \end{itemize}
 
+\bibliographystyle{plain}
+\bibliography{cftal-doc}
+
 \end{document}
+
