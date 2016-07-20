@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     const int _N=8;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=0x8000;
+    std::size_t cnt=update_cnt(0x8000);
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {

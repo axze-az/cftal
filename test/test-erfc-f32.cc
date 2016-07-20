@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     const int _N=1;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=0x800;
+    std::size_t cnt=update_cnt(0x8000);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;

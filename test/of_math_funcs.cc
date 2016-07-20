@@ -3,8 +3,18 @@
 #include <cftal/constants.h>
 #include <experimental/filesystem>
 // #include <iostream>
+#include <cstdlib>
 #include <fstream>
 #include <sstream>
+
+std::size_t
+cftal::test::update_cnt(std::size_t cnt)
+{
+    const char* p= std::getenv("CFTAL_DEV");
+    if (p!=nullptr)
+        return cnt >> 4;
+    return cnt;
+}
 
 std::string
 cftal::test::dirname(const std::string& fn)

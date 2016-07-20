@@ -13,6 +13,11 @@
 namespace cftal {
     namespace test {
 
+        // divides cnt by 16 if CFTAL_DEV is set in the
+        // environment
+        std::size_t
+        update_cnt(std::size_t cnt);
+
         std::string
         dirname(const std::string& fn);
         std::string
@@ -20,6 +25,7 @@ namespace cftal {
         std::string
         filename_from_argv(const char* argv0, const std::string& fn);
 
+        
         template <class _T>
         class func_arg_result {
             _T _a0;
