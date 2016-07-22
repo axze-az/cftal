@@ -184,8 +184,6 @@ namespace cftal {
 
         namespace impl {
 
-
-
             // sin(x + y) = sin(x) * cos(y) + sin(y) * cos(x);
             // sin(x - y) = sin(x) * cos(y) - sin(y) * cos(x);
             // sin(2x) = 2 * sin(x) * cos(x);
