@@ -89,7 +89,7 @@ namespace cftal {
     vec<float, _N>
     cosh(const vec<float, _N>& v);
 
-#if 0
+#if 1
     template <std::size_t _N>
     vec<float, _N>
     pow(const vec<float, _N>& x, const vec<float, _N>& y);
@@ -502,7 +502,7 @@ namespace cftal {
     vec<float, 8>
     erfc(arg_t<vec<float, 8> > d);
     
-#if 0
+#if 1
     // pow, these functions are exact to +-1 ulp with exception of _N=1
     template <std::size_t _N>
     vec<float, _N>

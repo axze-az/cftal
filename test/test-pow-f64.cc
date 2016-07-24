@@ -6,9 +6,10 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    return 0;
 #if 0
-    const int ulp=1;
+    return 0;
+#else
+    const int ulp=16384;
     const int _N=8;
     bool rc=true;
     bool speed_only=false;

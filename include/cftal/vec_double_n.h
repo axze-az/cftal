@@ -390,7 +390,7 @@ namespace cftal {
     vec<double, 8>
     log2(arg_t<vec<double, 8> > d);
 
-#if 0
+#if 1
     // pow, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>

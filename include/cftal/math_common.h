@@ -928,17 +928,21 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 pow(arg_t<vf_type> x, arg_t<vf_type> y)
 {
-#if 1
+#if 0
     return x+y;
 #else
     // we have a problem if e is an integer
-    dvf_type ln_x(my_type::log_k2(abs(x), vf_type(0)));
-    dvf_type ln_x_y(ln_x * y);
-    dvf_type pow0(my_type::exp_k2(ln_x_y.h(), ln_x_y.l(), false));
-    vf_type res(pow0.h() + pow0.l());
-
+    // dvf_type ln_x(my_type::log_k2(abs(x), vf_type(0)));
+    // dvf_type ln_x_y(ln_x * y);
+    // dvf_type pow0(my_type::exp_k2(ln_x_y.h(), ln_x_y.l(), false));
+    // vf_type res(pow0.h() + pow0.l());
+    vf_type ln_x= my_type::log_k(abs(x));
+    vf_type ln_x_y = ln_x * y;
+    vf_type pow0= my_type::exp_k(ln_x_y, false);
+    vf_type res=pow0;
+    
     using fc=func_constants<_FLOAT_T>;
-    const vf_type& d= ln_x_y.h();
+    const vf_type& d= ln_x_y;
     const vf_type exp_hi_inf= fc::exp_hi_inf;
     const vf_type exp_lo_zero= fc::exp_lo_zero;
     res = _T::sel(d <= exp_lo_zero, 0.0, res);
