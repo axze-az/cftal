@@ -936,11 +936,12 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     // dvf_type ln_x_y(ln_x * y);
     // dvf_type pow0(my_type::exp_k2(ln_x_y.h(), ln_x_y.l(), false));
     // vf_type res(pow0.h() + pow0.l());
-    vf_type ln_x= my_type::log_k(abs(x));
-    vf_type ln_x_y = ln_x * y;
-    vf_type pow0= my_type::exp_k(ln_x_y, false);
-    vf_type res=pow0;
-    
+    // vf_type ln_x= my_type::log_k(abs(x));
+    // vf_type ln_x_y = ln_x * y;
+    // vf_type pow0= my_type::exp_k(ln_x_y, false);
+    vf_type res=my_type::pow_k(x, y);
+
+#if 0
     using fc=func_constants<_FLOAT_T>;
     const vf_type& d= ln_x_y;
     const vf_type exp_hi_inf= fc::exp_hi_inf;
@@ -949,7 +950,8 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, M_E, res);
-
+#endif
+    
     // guess the result if the calculation failed
     vmf_type res_nan = isnan(res);
     vmf_type abs_x_lt_1 = abs(x) < 1.0;

@@ -206,6 +206,10 @@ namespace cftal {
             vf_type
             log10_k(arg_t<vf_type> x);
 
+            static
+            vf_type
+            pow_k(arg_t<vf_type> x, arg_t<vf_type> y);
+            
             // argument reduction for all trigonometric
             // functions, reduction by %pi/2, the low bits
             // of multiple of %pi/2 is returned in the
@@ -1172,6 +1176,15 @@ log10_k(arg_t<vf_type> xc)
  *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
  */
     return log_k(xc, log_func::c_log_10);
+}
+
+template <typename _T>
+inline
+typename cftal::math::func_core<float, _T>::vf_type
+cftal::math::func_core<float, _T>::
+pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    return 0.0;
 }
 
 template <typename _T>
