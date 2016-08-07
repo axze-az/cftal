@@ -377,7 +377,7 @@ Working Directory=
 isExecutable=false
 
 [MakeBuilder]
-Number Of Jobs=8
+Number Of Jobs=16
 
 [Project]
 VersionControlSupport=kdevsubversion
