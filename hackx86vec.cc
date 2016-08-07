@@ -214,8 +214,17 @@ int main2(int argc, char** argv)
     return 0;
 }
 
+int main3(int argc, char** argv)
+{
+    using namespace cftal;
+    v1f64 t=1.0;
+    v1f64 l=log2(t);
+    std::cout << l << std::endl;
+    return 0;
+}
+
 
 int main(int argc, char** argv)
 {
-    return main2(argc, argv);
+    return main3(argc, argv);
 }
