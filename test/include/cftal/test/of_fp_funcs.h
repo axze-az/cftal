@@ -376,7 +376,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
 {
     bool r = true;
     _T va[_N];
-#if 0
+
     const _T inf_nan_args []= {
         _T(0.0),
         _T(-0.0),
@@ -448,7 +448,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
         std::fill(std::begin(va), std::end(va), -ai);
         r &=v(va, st, speed_only, cmp);
     }
-#endif
+
     std::mt19937_64 rnd;
     uniform_real_distribution<_T>
         distrib(domain.first, domain.second);
