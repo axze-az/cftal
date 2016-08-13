@@ -35,7 +35,7 @@ int main(int argc, char** argv)
         rc &= check_func_1<double, 8, check_expm1<double> >(v, ulp,
                                                             0, false);
     }
-    // func_domain<double> d=std::make_pair(-800.0, 710.0);
+    // func_domain<double> d=std::make_pair(-0.25, 0.25);
     func_domain<double> d=std::make_pair(-800.0, 710.0);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
