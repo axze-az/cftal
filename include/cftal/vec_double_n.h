@@ -111,7 +111,7 @@ namespace cftal {
     vec<double, 8>
     frexp(arg_t<vec<double, 8> > x, vec<int32_t, 8>* e);
 
-    // ldexp, +-1 ulp if the result is a denormal number, 0 otherwise
+    // ldexp, 0 ulps
     template <std::size_t _N>
     vec<double, _N>
     ldexp(const vec<double, _N>& a, const vec<int32_t, _N>& e);
@@ -186,7 +186,7 @@ namespace cftal {
     vec<double, 1>
     sqrt(const vec<double, 1>& v);
 
-    // cbrt, these functions are exact to +-0 ulp
+    // cbrt, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     cbrt(const vec<double, _N>& v);
@@ -391,7 +391,7 @@ namespace cftal {
     log2(arg_t<vec<double, 8> > d);
 
 #if 1
-    // pow, these functions are exact to +-1 ulp
+    // pow, these functions are exact to +-X ulp
     template <std::size_t _N>
     vec<double, _N>
     pow(const vec<double, _N>& x, const vec<double, _N>& y);
@@ -637,7 +637,7 @@ namespace cftal {
 
     vec<double, 8>
     erfc(arg_t<vec<double, 8> > d);
-    
+
 
     // native_exp, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -763,40 +763,23 @@ namespace cftal {
     native_sincos(arg_t<vec<double, 8> > d,
                   vec<double, 8> * psin, vec<double, 8> * pcos);
 
-
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
 
-
-// specializations vec<double, 2>
+    // specializations vec<double, 2>
     vec<int32_t, 1>
     ilogbp1(arg_t<vec<double, 1> > v);
 
     vec<int32_t, 2>
     ilogbp1(arg_t<vec<double, 2> > v);
 
-
-    vec<double, 2>
-    asin(arg_t<vec<double, 2> > d);
-    vec<double, 2>
-    acos(arg_t<vec<double, 2> > d);
-
     // specializations vec<double, 4>
     vec<int32_t, 4>
     ilogbp1(arg_t<vec<double, 4> > v);
-    vec<double, 4>
-    asin(arg_t<vec<double, 4> > d);
-    vec<double, 4>
-    acos(arg_t<vec<double, 4> > d);
-
 
     // specializations vec<double, 8>
     vec<int32_t, 8>
     ilogbp1(arg_t<vec<double, 8> > v);
-    vec<double, 8>
-    asin(arg_t<vec<double, 8> > d);
-    vec<double, 8>
-    acos(arg_t<vec<double, 8> > d);
 
 }
 
