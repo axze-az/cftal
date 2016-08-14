@@ -68,6 +68,52 @@ recursively.\\
 All polynomial approximations are produced using sollya
 (\cite{ChevillardJoldesLauter2010}).
 
+
+\subsection{List of functions and precisions}
+\label{sub_sec:func_list}
+The following table contains the list of functions and their measured maximium
+deviations against the corresponding functions from the mpfr library. The
+column about faithfully rounding describes if faithfully rounding was observed
+using the test data set.\\[1cm]
+\begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
+    \hline
+     &
+    \multicolumn{2}{| p{4.0cm} |} {\center{double precision}} &
+    \multicolumn{2}{| p{4.0cm} |} {\center{single precision}} \\
+    \hline
+    function & $\Delta$ ulp & (prob.) faithfully &
+          $\Delta$ ulp & (prob.) faithfully \\
+    \hline
+    ldexp & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    frexp & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    ilogb & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    cbrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    exp & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    expm1 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    exp2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    exp10 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    sinh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    \hline
+    cosh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    \hline
+    tanh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    \hline
+    log & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    log2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    log10 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+\end{tabular}
+
 double argument identity for exponential functions:
 \[
     \begin{aligned}
@@ -78,24 +124,6 @@ double argument identity for exponential functions:
     \end{aligned}
 \]
 
-\subsection{List of functions and precisions}
-\label{sub_sec:func_list}
-
-\begin{tabular}{ | l | c | c | c | }
-    \hline
-    function & width & precision/[ulp] & faithfully rounded \\
-    \hline
-    exp & 64 & $\pm$ 1 & y \\
-        & 32 & $\pm$ 1 & y \\
-    \hline
-    exp2 & 64 & $\pm$ 1 & y \\
-         & 32 & $\pm$ 1 & y \\
-    \hline
-    exp10 & 64 & $\pm$ 1 & y \\
-          & 32 & $\pm$ 1 & y \\
-    \hline
-    
-\end{tabular}
 
 \subsection{basic functions: ldexp, frexp, ilogb}
 \label{sub_sec:base_math}
