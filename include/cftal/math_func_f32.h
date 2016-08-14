@@ -128,7 +128,7 @@ namespace cftal {
 
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;
-            
+
             static
             vf_type
             pow2i(arg_t<vi_type> d);
@@ -209,7 +209,7 @@ namespace cftal {
             static
             vf_type
             pow_k(arg_t<vf_type> x, arg_t<vf_type> y);
-            
+
             // argument reduction for all trigonometric
             // functions, reduction by %pi/2, the low bits
             // of multiple of %pi/2 is returned in the
@@ -556,6 +556,8 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         impl::eft_poly_si(y, ye, scale, y, ye, vf_type(-0.5f));
         y *= 2;
         y  = y + 2*ye;
+        // x small
+        y = _T::sel(abs(x) < 0x1p-25f, x, y);
     }
 #else
     if (exp_m1 == false) {
