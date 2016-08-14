@@ -8,7 +8,7 @@
 
 namespace cftal {
     namespace test {
-        
+
         template <typename _T>
         struct check_acos {
             template <std::size_t _N>
@@ -19,9 +19,12 @@ namespace cftal {
             }
             // reference
             static
-            _T
+            std::tuple<_T, _T, _T>
             r(const _T& a) {
-                return call_mpfr::func(a, mpfr_acos);
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_acos, &i);
+                return std::make_tuple(v, i.first, i.second);
+                // return call_mpfr::func(a, mpfr_cosh);
             }
             // speed test
             static
