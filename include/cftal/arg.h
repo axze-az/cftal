@@ -50,7 +50,7 @@ namespace cftal {
 
     template <>
     struct arg<double> { using type= double; };
-    
+
 }
 
 // local variables:

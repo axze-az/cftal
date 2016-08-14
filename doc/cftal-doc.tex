@@ -76,22 +76,22 @@ deviations against the corresponding functions from the mpfr library. The
 column about faithfully rounding describes if faithfully rounding was observed
 using the test data set.\\[1cm]
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
-    \hline
+    \hline \hline
      &
     \multicolumn{2}{| p{4.0cm} |} {\center{double precision}} &
     \multicolumn{2}{| p{4.0cm} |} {\center{single precision}} \\
     \hline
     function & $\Delta$ ulp & (prob.) faithfully &
           $\Delta$ ulp & (prob.) faithfully \\
-    \hline
+    \hline \hline
     ldexp & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
     \hline
     frexp & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
     \hline
     ilogb & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
-    \hline
+    \hline \hline
     cbrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
-    \hline
+    \hline \hline
     exp & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
     expm1 & $\pm$ 1 & y  & $\pm$ 1 & y \\
@@ -105,13 +105,36 @@ using the test data set.\\[1cm]
     cosh & $\pm$ 1 & n  & $\pm$ 1 & n \\
     \hline
     tanh & $\pm$ 1 & n  & $\pm$ 1 & n \\
-    \hline
+    \hline \hline
     log & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    log1p & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
     log2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
     log10 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline \hline
+    sin & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
+    cos & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    tan & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline \hline
+    asin & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    acos & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    atan & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    atan2 & $\pm$ 1 & ?  & $\pm$ 1 & ? \\
+    \hline \hline
+    asinh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    \hline
+    acosh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    \hline
+    atanh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    \hline
+
 \end{tabular}
 
 double argument identity for exponential functions:
