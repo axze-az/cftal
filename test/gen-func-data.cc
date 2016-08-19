@@ -47,7 +47,7 @@ generate_func_1(std::ostream& s, mpfr_func_1 f,
 
     while (cnt != 0) {
         bytes8 input(distribution(rnd));
-        double d=input._f64;
+        double d=input.f64();
         mpfr_set_d(mp_input, d, GMP_RNDN);
         f(mp_res, mp_input, GMP_RNDN);
         f(mp_res54, mp_input, GMP_RNDN);
@@ -56,11 +56,11 @@ generate_func_1(std::ostream& s, mpfr_func_1 f,
         // This is a difficult to round case.
         // first filter results equal to zero, infty, nan , 1.0
         bytes8 res(mpfr_get_d(mp_res, GMP_RNDN));
-        if ((uint32_t(res._u64>>32) & 0x7ff00000u) == 0x7ff00000u)
+        if ((res.u32h() & 0x7ff00000u) == 0x7ff00000u)
             continue;
-        if (res._f64 == 1.0)
+        if (res.f64() == 1.0)
             continue;
-        if (res._f64 ==0.0)
+        if (res.f64() ==0.0)
             continue;
         f(mp_res53, mp_input, GMP_RNDN);
         if(mpfr_cmp (mp_res54, mp_res53)==0)
@@ -70,20 +70,20 @@ generate_func_1(std::ostream& s, mpfr_func_1 f,
           << std::hex
           << std::setfill('0')
           << std::setw(8)
-          << uint32_t(input._u64>>32)
+          << input.u32h()
           << ' '
           << std::setw(8)
-          << uint32_t(input._u64)
+          << input.u32l()
           << ' '
           << std::setw(8)
-          << uint32_t(r53._u64>>32)
+          << r53.u32h()
           << ' '
           << std::setw(8)
-          << uint32_t(r53._u64)
+          << r53.u32l()
           << " # "
           << std::setprecision(18)
           << std::scientific
-          << input._f64
+          << input.f64()
           // << " r: "
           // << r53._f64
           << std::endl;
@@ -113,10 +113,10 @@ generate_func_2(std::ostream& s, mpfr_func_2 f,
 
     while (cnt != 0) {
         bytes8 input0(distribution(rnd));
-        double d0=input0._f64;
+        double d0=input0.f64();
         mpfr_set_d(mp_input0, d0, GMP_RNDN);
         bytes8 input1(distribution(rnd));
-        double d1=input1._f64;
+        double d1=input1.f64();
         mpfr_set_d(mp_input1, d1, GMP_RNDN);
 
         f(mp_res, mp_input0, mp_input1, GMP_RNDN);
@@ -126,11 +126,11 @@ generate_func_2(std::ostream& s, mpfr_func_2 f,
         // This is a difficult to round case.
         // first filter results equal to zero, infty, nan , 1.0
         bytes8 res(mpfr_get_d(mp_res, GMP_RNDN));
-        if ((uint32_t(res._u64>>32) & 0x7ff00000u) == 0x7ff00000u)
+        if ((res.u32h() & 0x7ff00000u) == 0x7ff00000u)
             continue;
-        if (res._f64 == 1.0)
+        if (res.f64() == 1.0)
             continue;
-        if (res._f64 ==0.0)
+        if (res.f64() ==0.0)
             continue;
         f(mp_res53, mp_input0, mp_input1, GMP_RNDN);
         if(mpfr_cmp (mp_res54, mp_res53)==0)
@@ -140,27 +140,27 @@ generate_func_2(std::ostream& s, mpfr_func_2 f,
           << std::hex
           << std::setfill('0')
           << std::setw(8)
-          << uint32_t(input0._u64>>32)
+          << input0.u32h()
           << ' '
           << std::setw(8)
-          << uint32_t(input0._u64)
+          << input0.u32l()
           << ' '
-          << uint32_t(input1._u64>>32)
-          << ' '
-          << std::setw(8)
-          << uint32_t(input1._u64)
+          << input1.u32h()
           << ' '
           << std::setw(8)
-          << uint32_t(r53._u64>>32)
+          << input1.u32l()
           << ' '
           << std::setw(8)
-          << uint32_t(r53._u64)
+          << r53.u32h()
+          << ' '
+          << std::setw(8)
+          << r53.u32l()
           << " # "
           << std::setprecision(18)
           << std::scientific
-          << input0._f64
+          << input0.f64()
           << ' '
-          << input1._f64
+          << input1.f64()
           << std::endl;
         --cnt;
     }
