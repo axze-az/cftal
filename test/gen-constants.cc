@@ -268,7 +268,7 @@ template <std::size_t _N, std::size_t _B>
 void
 cftal::test::csplit(double (&r)[_N], const mpfr_real<_B>& v)
 {
-    uint64_t msk=const_u64<0xffe00000U, 0xffffffffU>::v._u64;
+    uint64_t msk=const_u64<0xffe00000U, 0xffffffffU>::v.u64();
     mpfr_real<_B> vv(v);
     for (std::size_t i=0; i<_N-1; ++i) {
         double t= double(vv);
@@ -891,7 +891,7 @@ int main(int argc, char** argv)
             0x1p106);
 
         std::cout << "const double max_denormal= "
-                  <<  sig_f64_msk::v._f64 << ";\n\n";
+                  <<  sig_f64_msk::v.f64() << ";\n\n";
         std::cout << "const double _2pow106="
                   << 0x1p106 << ";\n\n";
 

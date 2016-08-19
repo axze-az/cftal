@@ -156,7 +156,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
                 const bytes8 all_ones{-1, -1};
-                full_type all_set(all_ones._f64);
+                full_type all_set(all_ones.f64());
                 return _mm_xor_pd(a(), all_set());
             }
         };
@@ -268,7 +268,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const full_type neg_bits(sign_f64_msk::v._f64);
+                const full_type neg_bits(sign_f64_msk::v.f64());
                 return _mm_xor_pd(a(), neg_bits());
             }
         };
@@ -568,7 +568,7 @@ cftal::v2f64 cftal::sqrt(const v2f64& a)
 inline
 cftal::v2f64 cftal::abs(const v2f64& a)
 {
-    const v2f64 msk(not_sign_f64_msk::v._f64);
+    const v2f64 msk(not_sign_f64_msk::v.f64());
     return _mm_and_pd(a(), msk());
 }
 
@@ -654,7 +654,7 @@ inline
 cftal::v2f64 cftal::copysign(const v2f64& x, const v2f64& y)
 {
     // return abs(x) * sgn(y)
-    const v2f64 msk(not_sign_f64_msk::v._f64);
+    const v2f64 msk(not_sign_f64_msk::v.f64());
     v2f64 abs_x(x & msk);
     v2f64 sgn_y(andnot(msk, y));
     return abs_x | sgn_y;
@@ -663,7 +663,7 @@ cftal::v2f64 cftal::copysign(const v2f64& x, const v2f64& y)
 inline
 cftal::v2f64 cftal::mulsign(const v2f64& x, const v2f64& y)
 {
-    const v2f64 msk(sign_f64_msk::v._f64);
+    const v2f64 msk(sign_f64_msk::v.f64());
     v2f64 sgn_y = y & msk;
     return x ^ sgn_y;
 }
@@ -755,9 +755,9 @@ cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
             _mm_setcsr(rmxcsr);
     }
     // (1023+52)<<(52-32) 0x43300000 = 2^52    
-    const v2f64 magic(const_u64<0, 0x43300000>::v._f64);
-    const v2f64 not_sgn_mask(not_sign_f64_msk::v._f64);
-    const v2f64 sgn_mask(sign_f64_msk::v._f64);
+    const v2f64 magic(const_u64<0, 0x43300000>::v.f64());
+    const v2f64 not_sgn_mask(not_sign_f64_msk::v.f64());
+    const v2f64 sgn_mask(sign_f64_msk::v.f64());
     // copy the sign from a
     __m128d sa=_mm_and_pd(a(), sgn_mask());
     // into magic

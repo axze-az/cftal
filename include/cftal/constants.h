@@ -18,20 +18,24 @@ namespace cftal {
     };
 
     union __attribute__((__visibility__("hidden"))) bytes8  {
+    private:
         const double _f64;
-        const float _f32[2];
-        const int32_t _s32[2];
-        const uint32_t _u32[2];
-        const int64_t _s64;
         const uint64_t _u64;
+    public:
         constexpr bytes8(double d) : _f64{d} {}
-        constexpr bytes8(float l, float h) : _f32{l, h} {}
-        // FIXME endianess
-        constexpr bytes8(int32_t l, int32_t h) : _s32{l, h} {}
-        // FIXME endianess
-        constexpr bytes8(uint32_t l, uint32_t h) : _u32{l, h} {}
-        constexpr bytes8(int64_t s) : _s64{s} {}
+        constexpr bytes8(int32_t l, int32_t h)
+            : _u64((uint64_t(h) << 32) | uint32_t(l)) {}
+        constexpr bytes8(uint32_t l, uint32_t h)
+            : _u64((uint64_t(h) << 32) | uint32_t(l)) {}
+        constexpr bytes8(int64_t s) : _u64(s) {}
         constexpr bytes8(uint64_t u) : _u64{u} {}
+        constexpr uint64_t u64() const { return _u64; }
+        constexpr int64_t s64() const { return _u64; }
+        constexpr double f64() const { return _f64; }
+        constexpr uint32_t u32l() const { return uint32_t(_u64); }
+        constexpr uint32_t u32h() const { return uint32_t(_u64>>32); }
+        constexpr int32_t s32l() const { return int32_t(_u64); }
+        constexpr int32_t s32h() const { return int32_t(_u64>>32); }
     };
 
     template <uint32_t _L, uint32_t _H>

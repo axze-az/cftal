@@ -101,7 +101,7 @@ cftal::test::read_double_file(const std::string& fn, bool two_args)
         bytes8 ua1(a1);
         bytes8 ur(r);
 
-        func_arg_result<double> c(ua0._f64, ua1._f64, ur._f64);
+        func_arg_result<double> c(ua0.f64(), ua1.f64(), ur.f64());
         vr.push_back(c);
 #if 0
         std::cerr << "inserted "

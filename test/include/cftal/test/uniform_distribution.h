@@ -40,7 +40,7 @@ namespace cftal {
 
             static
             double
-            make_fp(const bytes8& b) { return b._f64; }
+            make_fp(const bytes8& b) { return b.f64(); }
 
             static
             float

@@ -36,7 +36,7 @@ namespace cftal {
               vec<double, _N>& h,
               vec<double, _N>& l) {
             const vec<double, _N> msk(
-                const_u64<0xf8000000U, 0xffffffffU>::v._f64);
+                const_u64<0xf8000000U, 0xffffffffU>::v.f64());
             h = a & msk;
             l = a - h;
         }
@@ -289,7 +289,7 @@ namespace cftal {
             vf_type insert_exp(const vi2_type& e) {
                 vi2_type ep(e << 20);
                 vf_type r= as<vf_type>(ep);
-                r &= vf_type(exp_f64_msk::v._f64);
+                r &= vf_type(exp_f64_msk::v.f64());
                 return r;
             }
 
@@ -316,13 +316,13 @@ namespace cftal {
                 vi_type ep(e << 20);
                 vec<int32_t, _N*2> ir(combine_even_odd(ep, ep));
                 vf_type r= as<vf_type>(ir);
-                r &= vf_type(exp_f64_msk::v._f64);
+                r &= vf_type(exp_f64_msk::v.f64());
                 return r;
             }
 
             static
             vi_type extract_exp(const vf_type& d) {
-                const vf_type msk(exp_f64_msk::v._f64);
+                const vf_type msk(exp_f64_msk::v.f64());
                 vf_type m(d & msk);
                 vec<int32_t, _N*2> di= as<vec<int32_t, _N*2> >(m);
                 vi_type r= odd_elements(di);
@@ -380,7 +380,7 @@ namespace cftal {
             vf_type clear_low_word(const vf_type& d) {
                 const uint64_t mu=0xffffffff00000000ULL;
                 const bytes8 mf(mu);
-                const vf_type m(mf._f64);
+                const vf_type m(mf.f64());
                 return d & m;
             }
 

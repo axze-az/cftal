@@ -118,7 +118,7 @@ namespace cftal {
                 return _mm_cmpgt_epu64_mask(a(), b());
 #else
 #if defined (__SSE4_2__)
-                const __m128i msk= _mm_set1_epi64x(sign_s64_msk::v._u64);
+                const __m128i msk= _mm_set1_epi64x(sign_s64_msk::v.u64());
                 __m128i ax= _mm_xor_si128(a(), msk);
                 __m128i bx= _mm_xor_si128(b(), msk);
                 __m128i r=_mm_cmpgt_epi64(ax, bx);
@@ -475,7 +475,7 @@ cftal::mul_lo_hi(const v2u64& x, const v2u64& y)
     // low part of the multiplication:
     xl_yl += s32_63;
     v2u64::mask_type neg_carry_64 = xl_yl < s32_63;
-    v2u64 c96_msk(bytes8(0, 1)._u64);
+    v2u64 c96_msk(bytes8(0, 1).u64());
 
     s64_96 |= select(carry_96, c96_msk, v2u64(0));
     xh_yh -= select(neg_carry_64, v2u64(-1LL), v2u64(0));

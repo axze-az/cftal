@@ -788,7 +788,7 @@ inline
 cftal::vec<double, _N>
 cftal::abs(const vec<double, _N>& v)
 {
-    const vec<double, _N> msk(not_sign_f64_msk::v._f64);
+    const vec<double, _N> msk(not_sign_f64_msk::v.f64());
     return v & msk;
 }
 
@@ -807,7 +807,7 @@ cftal::copysign(const vec<double, _N>& x, const vec<double, _N>& y)
 {
     // return abs(x) * sgn(y)
     using v_t = vec<double, _N>;
-    const v_t msk(not_sign_f64_msk::v._f64);
+    const v_t msk(not_sign_f64_msk::v.f64());
     v_t abs_x(x & msk);
     v_t sgn_y(andnot(msk, y));
     return v_t(abs_x | sgn_y);
@@ -819,7 +819,7 @@ cftal::vec<double, _N>
 cftal::mulsign(const vec<double, _N>& x, const vec<double, _N>& y)
 {
     using v_t = vec<double, _N>;
-    const v_t msk(sign_f64_msk::v._f64);
+    const v_t msk(sign_f64_msk::v.f64());
     v_t sgn_y = y & msk;
     return v_t(x ^ sgn_y);
 }
@@ -1207,7 +1207,7 @@ typename cftal::vec<double, _N>::mask_type
 cftal::isinf(const vec<double, _N>& x)
 {
     vec<double, _N> absx(abs(x));
-    const vec<double, _N> vm(exp_f64_msk::v._f64);
+    const vec<double, _N> vm(exp_f64_msk::v.f64());
     return absx == vm;
 }
 
