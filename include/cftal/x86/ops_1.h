@@ -588,7 +588,7 @@ bool cftal::x86::any_of_s32(__m256i a)
 inline
 bool cftal::x86::all_of_s64(__m256i a)
 {
-    const __m256i msk= _mm256_set1_epi64x(sign_s64_msk::v._u64);
+    const __m256i msk= _mm256_set1_epi64x(sign_s64_msk::v.u64());
     // test if (~a & msk) are all zero
     return _mm256_testc_si256(a, msk);
 }
@@ -596,7 +596,7 @@ bool cftal::x86::all_of_s64(__m256i a)
 inline
 bool cftal::x86::none_of_s64(__m256i a)
 {
-    const __m256i msk= _mm256_set1_epi64x(sign_s64_msk::v._u64);
+    const __m256i msk= _mm256_set1_epi64x(sign_s64_msk::v.u64());
     // test if (a & msk) are all zero
     return _mm256_testz_si256(a, msk);
 }
@@ -604,7 +604,7 @@ bool cftal::x86::none_of_s64(__m256i a)
 inline
 bool cftal::x86::any_of_s64(__m256i a)
 {
-    const __m256i msk= _mm256_set1_epi64x(sign_s64_msk::v._u64);
+    const __m256i msk= _mm256_set1_epi64x(sign_s64_msk::v.u64());
     // test if (a & msk) are all zero
     return !_mm256_testz_si256(a, msk);
 }

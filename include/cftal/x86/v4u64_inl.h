@@ -109,7 +109,7 @@ namespace cftal {
 #if defined (__AVX512VL__)
                 return _mm256_cmpgt_epu64_mask(a(), b());
 #else
-                const __m256i msk= _mm256_set1_epi64x(sign_s64_msk::v._u64);
+                const __m256i msk= _mm256_set1_epi64x(sign_s64_msk::v.u64());
                 __m256i ax= _mm256_xor_si256(a(), msk);
                 __m256i bx= _mm256_xor_si256(b(), msk);
                 return _mm256_cmpgt_epi64(ax, bx);
@@ -469,7 +469,7 @@ cftal::mul_lo_hi(const v4u64& x, const v4u64& y)
     // low part of the multiplication:
     xl_yl += s32_63;
     v4u64::mask_type neg_carry_64 = xl_yl < s32_63;
-    v4u64 c96_msk(bytes8(0, 1)._u64);
+    v4u64 c96_msk(bytes8(0, 1).u64());
 
     s64_96 |= select(carry_96, c96_msk, v4u64(0));
     xh_yh -= select(neg_carry_64, v4u64(-1LL), v4u64(0));
