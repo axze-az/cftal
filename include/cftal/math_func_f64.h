@@ -235,10 +235,6 @@ namespace cftal {
 
             static
             vf_type
-            exp_k_poly(arg_t<vf_type> x);
-
-            static
-            vf_type
             exp_k(arg_t<vf_type> x, bool exp_m1);
 
             static
