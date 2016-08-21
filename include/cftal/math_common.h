@@ -609,7 +609,10 @@ cftal::math::func_common<_FLOAT_T, _T>::
 _exp2(arg_t<vf_type> d)
 {
     vf_type res;
-    res=base_type::exp2_k(d);
+    if (_NATIVE==false)
+        res=base_type::exp2_k(d);
+    else
+        res=base_type::native_exp2_k(d);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp2_hi_inf= fc::exp2_hi_inf;
     const vf_type exp2_lo_zero= fc::exp2_lo_zero;
@@ -951,7 +954,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, M_E, res);
 #endif
-    
+
     // guess the result if the calculation failed
     vmf_type res_nan = isnan(res);
     vmf_type abs_x_lt_1 = abs(x) < 1.0;
