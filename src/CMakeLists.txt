@@ -25,6 +25,8 @@ set (CSRCS
     v4f32.cc
     # vec <float, 8>
     v8f32.cc
+    # vec <float, 16>
+    v16f32.cc
 )
 
 if (CFTAL_STATIC_LIB)

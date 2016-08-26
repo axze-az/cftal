@@ -92,6 +92,8 @@ namespace cftal {
     using v4u32 = vec<uint32_t, 4>;
     using v8s32 = vec<int32_t, 8>;
     using v8u32 = vec<uint32_t, 8>;
+    using v16s32 = vec<int32_t, 16>;
+    using v16u32 = vec<uint32_t, 16>;
 
     using v1s64 = vec<int64_t, 1>;
     using v1u64 = vec<uint64_t, 1>;
@@ -99,6 +101,8 @@ namespace cftal {
     using v2u64 = vec<uint64_t, 2>;
     using v4s64 = vec<int64_t, 4>;
     using v4u64 = vec<uint64_t, 4>;
+    using v8s64 = vec<int64_t, 8>;
+    using v8u64 = vec<uint64_t, 8>;
 
     template <typename _T, std::size_t _N>
     const typename vec<_T, _N>::half_type&

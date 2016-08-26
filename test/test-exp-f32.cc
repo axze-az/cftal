@@ -9,7 +9,7 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     std::size_t cnt=update_cnt(0x8000);
     bool speed_only=false;

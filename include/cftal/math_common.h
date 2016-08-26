@@ -570,7 +570,11 @@ typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
 _exp(arg_t<vf_type> d)
 {
-    vf_type res=base_type::exp_k(d, false);
+    vf_type res;
+    if (_NATIVE == false)
+        res=base_type::exp_k(d, false);
+    else
+        res=base_type::native_exp_k(d, false);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp_hi_inf= fc::exp_hi_inf;
     const vf_type exp_lo_zero= fc::exp_lo_zero;
