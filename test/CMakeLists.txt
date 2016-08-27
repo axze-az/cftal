@@ -129,14 +129,6 @@ test_prog(test-acos-f64)
 test_prog(test-erf-f64)
 test_prog(test-erfc-f64)
 
-test_prog(test-native_exp-f64)
-test_prog(test-native_exp2-f64)
-test_prog(test-native_expm1-f64)
-test_prog(test-native_log-f64)
-test_prog(test-native_sin-f64)
-test_prog(test-native_cos-f64)
-test_prog(test-native_sincos-f64)
-
 test_prog(test-sqrt-f32)
 test_prog(test-cbrt-f32)
 test_prog(test-exp-f32)
@@ -166,12 +158,6 @@ test_prog(test-acos-f32)
 
 test_prog(test-erf-f32)
 test_prog(test-erfc-f32)
-
-test_prog(test-native_exp-f32)
-test_prog(test-native_exp2-f32)
-test_prog(test-native_expm1-f32)
-test_prog(test-native_sin-f32)
-test_prog(test-native_cos-f32)
 
 test_prog(test-v2)
 

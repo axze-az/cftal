@@ -639,130 +639,6 @@ namespace cftal {
     erfc(arg_t<vec<double, 8> > d);
 
 
-    // native_exp, these functions are exact to +-1 ulp
-    template <std::size_t _N>
-    vec<double, _N>
-    native_exp(const vec<double, _N>& v);
-
-    vec<double, 1>
-    native_exp(arg_t<vec<double, 1> > d);
-
-    vec<double, 2>
-    native_exp(arg_t<vec<double, 2> > d);
-
-    vec<double, 4>
-    native_exp(arg_t<vec<double, 4> > d);
-
-    vec<double, 8>
-    native_exp(arg_t<vec<double, 8> > d);
-
-    // native_expm1, these functions are exact to +-1 ulp
-    template <std::size_t _N>
-    vec<double, _N>
-    native_expm1(const vec<double, _N>& v);
-
-    vec<double, 1>
-    native_expm1(arg_t<vec<double, 1> > d);
-
-    vec<double, 2>
-    native_expm1(arg_t<vec<double, 2> > d);
-
-    vec<double, 4>
-    native_expm1(arg_t<vec<double, 4> > d);
-
-    vec<double, 8>
-    native_expm1(arg_t<vec<double, 8> > d);
-
-    // native_exp2, these functions are exact to +-1 ulp
-    template <std::size_t _N>
-    vec<double, _N>
-    native_exp2(const vec<double, _N>& v);
-
-    vec<double, 1>
-    native_exp2(arg_t<vec<double, 1> > d);
-
-    vec<double, 2>
-    native_exp2(arg_t<vec<double, 2> > d);
-
-    vec<double, 4>
-    native_exp2(arg_t<vec<double, 4> > d);
-
-    vec<double, 8>
-    native_exp2(arg_t<vec<double, 8> > d);
-
-    // native_log, these functions are exact to +-4 ulp
-    template <std::size_t _N>
-    vec<double, _N>
-    native_log(const vec<double, _N>& v);
-
-    vec<double, 1>
-    native_log(arg_t<vec<double, 1> > d);
-
-    vec<double, 2>
-    native_log(arg_t<vec<double, 2> > d);
-
-    vec<double, 4>
-    native_log(arg_t<vec<double, 4> > d);
-
-    vec<double, 8>
-    native_log(arg_t<vec<double, 8> > d);
-
-    // native_sin, these functions are exact to +-4 ulp
-    template <std::size_t _N>
-    vec<double, _N>
-    native_sin(const vec<double, _N>& v);
-
-    vec<double, 1>
-    native_sin(arg_t<vec<double, 1> > d);
-
-    vec<double, 2>
-    native_sin(arg_t<vec<double, 2> > d);
-
-    vec<double, 4>
-    native_sin(arg_t<vec<double, 4> > d);
-
-    vec<double, 8>
-    native_sin(arg_t<vec<double, 8> > d);
-
-    // native_cos, these functions are exact to +-4 ulp
-    template <std::size_t _N>
-    vec<double, _N>
-    native_cos(const vec<double, _N>& v);
-
-    vec<double, 1>
-    native_cos(arg_t<vec<double, 1> > d);
-
-    vec<double, 2>
-    native_cos(arg_t<vec<double, 2> > d);
-
-    vec<double, 4>
-    native_cos(arg_t<vec<double, 4> > d);
-
-    vec<double, 8>
-    native_cos(arg_t<vec<double, 8> > d);
-
-    // native_cos, these functions are exact to +-4 ulp
-    template<std::size_t _N>
-    void
-    native_sincos(const vec<double, _N>& x,
-                  vec<double, _N>* s, vec<double, _N>* c);
-
-    void
-    native_sincos(arg_t<vec<double, 1> > x,
-                  vec<double, 1>* s, vec<double, 1>* c);
-
-    void
-    native_sincos(arg_t<vec<double, 2> > d,
-                  vec<double, 2> * psin, vec<double, 2> * pcos);
-
-    void
-    native_sincos(arg_t<vec<double, 4> > d,
-                  vec<double, 4> * psin, vec<double, 4> * pcos);
-
-    void
-    native_sincos(arg_t<vec<double, 8> > d,
-                  vec<double, 8> * psin, vec<double, 8> * pcos);
-
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
 
@@ -855,27 +731,9 @@ cftal::sin(const vec<double, _N>& v)
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
-cftal::native_sin(const vec<double, _N>& v)
-{
-    vec<double, _N> r(native_sin(low_half(v)), native_sin(high_half(v)));
-    return r;
-}
-
-template <std::size_t _N>
-inline
-cftal::vec<double, _N>
 cftal::cos(const vec<double, _N>& v)
 {
     vec<double, _N> r(cos(low_half(v)), cos(high_half(v)));
-    return r;
-}
-
-template <std::size_t _N>
-inline
-cftal::vec<double, _N>
-cftal::native_cos(const vec<double, _N>& v)
-{
-    vec<double, _N> r(native_cos(low_half(v)), native_cos(high_half(v)));
     return r;
 }
 
@@ -895,25 +753,6 @@ cftal::sincos(const vec<double, _N>& v,
         *s = sin(v);
     } else if (c != nullptr) {
         *c = cos(v);
-    }
-}
-
-template <std::size_t _N>
-inline
-void
-cftal::native_sincos(const vec<double, _N>& v,
-                     vec<double, _N>* s, vec<double, _N>* c)
-{
-    if (s != nullptr && c != nullptr) {
-        vec<double, _N/2> sl, sh, cl, ch;
-        native_sincos(low_half(v), &sl, &cl);
-        native_sincos(high_half(v), &sh, &ch);
-        *s= vec<double, _N>(sl, sh);
-        *c= vec<double, _N>(cl, ch);
-    } else if (s != nullptr) {
-        *s = native_sin(v);
-    } else if (c != nullptr) {
-        *c = native_cos(v);
     }
 }
 
@@ -1008,24 +847,6 @@ cftal::exp(const vec<double, _N>& v)
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
-cftal::native_exp(const vec<double, _N>& v)
-{
-    vec<double, _N> r(native_exp(low_half(v)), native_exp(high_half(v)));
-    return r;
-}
-
-template <std::size_t _N>
-inline
-cftal::vec<double, _N>
-cftal::native_exp2(const vec<double, _N>& v)
-{
-    vec<double, _N> r(native_exp2(low_half(v)), native_exp2(high_half(v)));
-    return r;
-}
-
-template <std::size_t _N>
-inline
-cftal::vec<double, _N>
 cftal::expm1(const vec<double, _N>& v)
 {
     vec<double, _N> r(expm1(low_half(v)), expm1(high_half(v)));
@@ -1053,27 +874,9 @@ cftal::exp10(const vec<double, _N>& v)
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
-cftal::native_expm1(const vec<double, _N>& v)
-{
-    vec<double, _N> r(native_expm1(low_half(v)), native_expm1(high_half(v)));
-    return r;
-}
-
-template <std::size_t _N>
-inline
-cftal::vec<double, _N>
 cftal::log(const vec<double, _N>& v)
 {
     vec<double, _N> r(log(low_half(v)), log(high_half(v)));
-    return r;
-}
-
-template <std::size_t _N>
-inline
-cftal::vec<double, _N>
-cftal::native_log(const vec<double, _N>& v)
-{
-    vec<double, _N> r(native_log(low_half(v)), native_log(high_half(v)));
     return r;
 }
 
@@ -1103,17 +906,6 @@ cftal::log2(const vec<double, _N>& v)
     vec<double, _N> r(log2(low_half(v)), log2(high_half(v)));
     return r;
 }
-
-#if 0
-template <std::size_t _N>
-inline
-cftal::vec<double, _N>
-cftal::native_log1p(const vec<double, _N>& v)
-{
-    vec<double, _N> r(native_log1p(low_half(v)), native_log1p(high_half(v)));
-    return r;
-}
-#endif
 
 template <std::size_t _N>
 inline

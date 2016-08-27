@@ -218,56 +218,6 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
-    ns::native_exp(arg<vec_float>::type d)                              \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_exp(d);                                   \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::native_exp2(arg<vec_float>::type d)                             \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_exp2(d);                                  \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::native_expm1(arg<vec_float>::type d)                            \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_expm1(d);                                 \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::native_log(arg<vec_float>::type d)                              \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_log(d);                                   \
-    }                                                                   \
-                                                                        \
-    void                                                                \
-    ns::native_sincos(arg<vec_float>::type d,                           \
-                      vec_float* psin, vec_float* pcos)                 \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_sincos(d, psin, pcos);                    \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::native_sin(arg<vec_float>::type d)                              \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_sin(d);                                   \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::native_cos(arg<vec_float>::type d)                              \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::native_cos(d);                                   \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
     ns::pow(arg<vec_float>::type b, arg<vec_float>::type e)             \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
