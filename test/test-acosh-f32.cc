@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     const int ulp=2;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);

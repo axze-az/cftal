@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     const int ulp=1;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
