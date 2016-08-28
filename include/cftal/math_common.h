@@ -71,31 +71,6 @@ namespace cftal {
             using base_type::ldexp;
             using base_type::ilogbp1;
 
-            // exp, expm1, sinh, cosh call exp_k2 if native == false
-            // or native_exp
-            template <bool _NATIVE>
-            static vf_type _exp(arg_t<vf_type> vf);
-            template <bool _NATIVE>
-            static vf_type _exp2(arg_t<vf_type> vf);
-            template <bool _NATIVE>
-            static vf_type _exp10(arg_t<vf_type> vf);
-            template <bool _NATIVE>
-            static vf_type _expm1(arg_t<vf_type> vf);
-            template <bool _NATIVE>
-            static vf_type _sinh(arg_t<vf_type> vf);
-            template <bool _NATIVE>
-            static vf_type _cosh(arg_t<vf_type> vf);
-
-            // log _call log_k2 if native == false, or native_log
-            template <bool _NATIVE>
-            static vf_type _log(arg_t<vf_type> cf);
-            template <bool _NATIVE>
-            static vf_type _log1p(arg_t<vf_type> cf);
-            template <bool _NATIVE>
-            static vf_type _log10(arg_t<vf_type> cf);
-            template <bool _NATIVE>
-            static vf_type _log2(arg_t<vf_type> cf);
-
             // exp, expm1, sinh, cosh call exp_k2
             static vf_type exp(arg_t<vf_type> vf);
             static vf_type exp2(arg_t<vf_type> vf);
@@ -104,29 +79,14 @@ namespace cftal {
             static vf_type sinh(arg_t<vf_type> vf);
             static vf_type cosh(arg_t<vf_type> vf);
             static vf_type tanh(arg_t<vf_type> vf);
-
-            // native exp, expm1, sinh, cosh call exp_k
-            static vf_type native_exp(arg_t<vf_type> vf);
-            static vf_type native_exp2(arg_t<vf_type> vf);
-            static vf_type native_exp10(arg_t<vf_type> vf);
-            static vf_type native_expm1(arg_t<vf_type> vf);
-            static vf_type native_sinh(arg_t<vf_type> vf);
-            static vf_type native_cosh(arg_t<vf_type> vf);
-
             // log calls log_k2
             static vf_type log(arg_t<vf_type> vf);
-            // native log calls native_log_k
-            static vf_type native_log(arg_t<vf_type> vf);
 
             // log calls log_k2
             static vf_type log1p(arg_t<vf_type> vf);
-            // native log calls native_log_k
-            static vf_type native_log1p(arg_t<vf_type> vf);
 
             static vf_type log10(arg_t<vf_type> vf);
-            static vf_type native_log10(arg_t<vf_type> vf);
             static vf_type log2(arg_t<vf_type> vf);
-            static vf_type native_log2(arg_t<vf_type> vf);
 
             // pow calls exp_k2 and log_k2
             static
@@ -147,15 +107,6 @@ namespace cftal {
             static vf_type cos(arg_t<vf_type> vf);
             static vf_type tan(arg_t<vf_type> vf);
             static vf_type cot(arg_t<vf_type> vf);
-            // sincos, sin, cos, tan and cot call
-            // native_sin_cos_k
-            static void native_sincos(arg_t<vf_type> vf,
-                                      vf_type* psin,
-                                      vf_type* pcos);
-            static vf_type native_sin(arg_t<vf_type> vf);
-            static vf_type native_cos(arg_t<vf_type> vf);
-            static vf_type native_tan(arg_t<vf_type> vf);
-            static vf_type native_cot(arg_t<vf_type> vf);
 
             // atan2, atan, ... call atan2_k2
             static vf_type atan2(arg_t<vf_type> x,
@@ -564,17 +515,12 @@ cftal::math::impl::nth_root_halley<_R, _RT, _T>::v(const _T& xi, const _T& x)
 }
 
 template <typename _FLOAT_T, typename _T>
-template <bool _NATIVE>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-_exp(arg_t<vf_type> d)
+exp(arg_t<vf_type> d)
 {
-    vf_type res;
-    if (_NATIVE == false)
-        res=base_type::exp_k(d, false);
-    else
-        res=base_type::native_exp_k(d, false);
+    vf_type res=base_type::exp_k(d, false);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp_hi_inf= fc::exp_hi_inf;
     const vf_type exp_lo_zero= fc::exp_lo_zero;
@@ -591,32 +537,9 @@ template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-exp(arg_t<vf_type> d)
+exp2(arg_t<vf_type> d)
 {
-    return my_type::_exp<false>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_exp(arg_t<vf_type> d)
-{
-    return my_type::_exp<true>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-template <bool _NATIVE>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-_exp2(arg_t<vf_type> d)
-{
-    vf_type res;
-    if (_NATIVE==false)
-        res=base_type::exp2_k(d);
-    else
-        res=base_type::native_exp2_k(d);
+    vf_type res=base_type::exp2_k(d);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp2_hi_inf= fc::exp2_hi_inf;
     const vf_type exp2_lo_zero= fc::exp2_lo_zero;
@@ -627,31 +550,11 @@ _exp2(arg_t<vf_type> d)
     return res;
 }
 
-
 template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-exp2(arg_t<vf_type> d)
-{
-    return my_type::_exp2<false>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_exp2(arg_t<vf_type> d)
-{
-    return my_type::_exp2<true>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-template <bool _NATIVE>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-_exp10(arg_t<vf_type> d)
+exp10(arg_t<vf_type> d)
 {
     vf_type res=base_type::exp10_k(d);
     using fc= func_constants<_FLOAT_T>;
@@ -668,26 +571,7 @@ template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-exp10(arg_t<vf_type> d)
-{
-    return my_type::_exp10<false>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_exp10(arg_t<vf_type> d)
-{
-    return my_type::_exp10<true>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-template <bool _NATIVE>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-_expm1(arg_t<vf_type> d)
+expm1(arg_t<vf_type> d)
 {
     vf_type res = base_type::exp_k(d, true);
     using fc= func_constants<_FLOAT_T>;
@@ -698,24 +582,6 @@ _expm1(arg_t<vf_type> d)
     res = _T::sel(d == 0.0, 0.0, res);
     res = _T::sel(d == 1.0, M_E-1.0, res);
     return res;
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-expm1(arg_t<vf_type> d)
-{
-    return _expm1<false>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_expm1(arg_t<vf_type> d)
-{
-    return _expm1<true>(d);
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -733,7 +599,6 @@ sinh(arg_t<vf_type> x)
     res = _T::sel(x == 0.0, 0.0, res);
     return res;
 }
-
 
 template <typename _FLOAT_T, typename _T>
 inline
@@ -765,11 +630,10 @@ tanh(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _T>
-template <bool _NATIVE>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-_log(arg_t<vf_type> d)
+log(arg_t<vf_type> d)
 {
     vf_type x = base_type::log_k(d);
     const vf_type pinf(_T::pinf());
@@ -788,31 +652,11 @@ _log(arg_t<vf_type> d)
     return x;
 }
 
-
 template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-log(arg_t<vf_type> d)
-{
-    return my_type::_log<false>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_log(arg_t<vf_type> d)
-{
-    return my_type::_log<true>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-template <bool _NATIVE>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-_log1p(arg_t<vf_type> d)
+log1p(arg_t<vf_type> d)
 {
     vf_type x=base_type::log1p_k(d);
     // double log1p(double x)
@@ -839,26 +683,7 @@ template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-log1p(arg_t<vf_type> d)
-{
-    return my_type::_log1p<false>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_log1p(arg_t<vf_type> d)
-{
-    return my_type::_log1p<true>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-template <bool _NATIVE>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-_log10(arg_t<vf_type> d)
+log10(arg_t<vf_type> d)
 {
     vf_type x=base_type::log10_k(d);
     const vf_type pinf(_T::pinf());
@@ -877,26 +702,7 @@ template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
 cftal::math::func_common<_FLOAT_T, _T>::
-log10(arg_t<vf_type> d)
-{
-    return my_type::_log10<false>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_log10(arg_t<vf_type> d)
-{
-    return my_type::_log10<true>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-template <bool _NATIVE>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-_log2(arg_t<vf_type> d)
+log2(arg_t<vf_type> d)
 {
     vf_type x=base_type::log2_k(d);
     const vf_type pinf(_T::pinf());
@@ -909,24 +715,6 @@ _log2(arg_t<vf_type> d)
     // NAN --> n_and_1
     x = _T::sel(isnan(d), d, x);
     return x;
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-log2(arg_t<vf_type> d)
-{
-    return my_type::_log2<false>(d);
-}
-
-template <typename _FLOAT_T, typename _T>
-inline
-typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
-cftal::math::func_common<_FLOAT_T, _T>::
-native_log2(arg_t<vf_type> d)
-{
-    return my_type::_log2<true>(d);
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -1038,8 +826,7 @@ pow(arg_t<vf_type> b, arg_t<vi_type> e)
 }
 
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 void
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 sincos(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
@@ -1049,8 +836,7 @@ sincos(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
     }
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 sin(arg_t<vf_type> d)
@@ -1060,8 +846,7 @@ sin(arg_t<vf_type> d)
     return s;
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 cos(arg_t<vf_type> d)
@@ -1071,8 +856,7 @@ cos(arg_t<vf_type> d)
     return c;
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 tan(arg_t<vf_type> d)
@@ -1084,52 +868,7 @@ tan(arg_t<vf_type> d)
     return t;
 }
 
-
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
-void
-cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
-native_sincos(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
-{
-    if ((psin!=nullptr) || (pcos!=nullptr)) {
-        base_type::sin_cos_k(d, psin, pcos);
-    }
-}
-
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
-typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
-cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
-native_sin(arg_t<vf_type> d)
-{
-    vf_type s;
-    base_type::sin_cos_k(d, &s, nullptr);
-    return s;
-}
-
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
-typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
-cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
-native_cos(arg_t<vf_type> d)
-{
-    vf_type c;
-    base_type::sin_cos_k(d, nullptr, &c);
-    return c;
-}
-
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
-typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
-cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
-native_tan(arg_t<vf_type> d)
-{
-    vf_type tn=base_type::tan_k(d);
-    return tn;
-}
-
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan2(arg_t<vf_type> y, arg_t<vf_type> x)
@@ -1236,8 +975,7 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 #endif
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
@@ -1250,8 +988,7 @@ atan(arg_t<vf_type> x)
     return r;
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 asin(arg_t<vf_type> x)
@@ -1269,8 +1006,7 @@ asin(arg_t<vf_type> x)
     return r;
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 acos(arg_t<vf_type> x)
@@ -1285,8 +1021,7 @@ acos(arg_t<vf_type> x)
     return r;
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 asinh(arg_t<vf_type> x)
@@ -1297,8 +1032,7 @@ asinh(arg_t<vf_type> x)
     return r;
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 acosh(arg_t<vf_type> x)
@@ -1310,8 +1044,7 @@ acosh(arg_t<vf_type> x)
     return r;
 }
 
-template <typename _FLOAT_T,
-          typename _TRAITS_T>
+template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 atanh(arg_t<vf_type> x)
