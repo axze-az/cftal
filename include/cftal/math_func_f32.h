@@ -305,10 +305,6 @@ namespace cftal {
             typedef typename _T::vi_type vi_type;
             typedef typename _T::vmf_type vmf_type;
             typedef typename _T::vmi_type vmi_type;
-#if 0
-            static vf_type native_sin(arg_t<vf_type> x);
-            static vf_type native_cos(arg_t<vf_type> x);
-#endif
         };
     }
 }
@@ -754,7 +750,7 @@ native_exp_k(arg_t<vf_type> xc, bool exp_m1)
     return y;
 #endif
 }
-    
+
 template <typename _T>
 inline
 typename cftal::math::func_core<float, _T>::vf_type
