@@ -69,6 +69,9 @@ function(test_prog arg1)
     add_test(NAME ${arg1} COMMAND ${arg1})
 endfunction()
 
+add_executable(test-func test-func.cc)
+target_add_test_libs(test-func)
+
 test_prog(test-dint8)
 test_prog(test-duint8)
 test_prog(test-d_real)
