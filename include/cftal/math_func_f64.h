@@ -663,8 +663,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
                          exp_c4);
     vf_type y=i*xr + j;
     y = impl::poly(xr, y,
-                   exp_c3,
-                   exp_c2);
+                   exp_c3);
 #else
     vf_type y=impl::poly(xr,
                          exp_c13,
@@ -684,21 +683,17 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
     vf_type dx = hi-xr;
     vf_type cr = dx - kf * ctbl::m_ln2_cw[1];
     vf_type yee= cr + cr*xr;
+    vf_type ye;
+    y = y*xr;
+    y = d_ops::two_sum(y, exp_c2, ye);
+    impl::eft_poly_si(y, ye, xr, y, ye,
+                        exp_c1,
+                        exp_c0);
+    ye += yee;
     if (exp_m1 == false) {
-        y = impl::poly(xr, y,
-                       exp_c1);
-        vf_type ye;
-        impl::eft_poly(y, ye, xr, y,
-                       exp_c0);
-        ye += yee;
         y += ye;
         y = scale_exp_k(y, kf, k2);
     } else {
-        vf_type ye;
-        y = y*xr;
-        y = d_ops::two_sum(y, exp_c1, ye);
-        impl::eft_poly_si(y, ye, xr, y, ye, exp_c0);
-        ye += yee;
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = scale_exp_k(vf_type(0.5), kf, k2);
         // e^x-1 = 2*(y * 2^s - 0.5 * 2^s)

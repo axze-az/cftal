@@ -34,7 +34,7 @@ namespace cftal {
             typedef typename _T::vmf_type vmf_type;
             typedef typename _T::vmi_type vmi_type;
             using vmi2_type = typename _T::vmi2_type;
-            
+
             typedef d_real<vf_type> dvf_type;
             typedef t_real<vf_type> tvf_type;
             typedef func_core<double, _T> my_type;
@@ -52,7 +52,7 @@ namespace cftal {
             exp_px2(arg_t<vf_type> x);
         };
     }
-    
+
     namespace test {
 
         template <typename _T>
@@ -62,7 +62,7 @@ namespace cftal {
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;   
+                                                 vec<int32_t, _N> >;
                 using func_t=math::test_func<double, traits_t>;
                 return func_t::func(a);
             }
@@ -95,7 +95,7 @@ namespace cftal {
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;   
+                                                 vec<int32_t, _N> >;
                 using func_t=math::test_func<double, traits_t>;
                 return func_t::exp_px2(a);
             }
@@ -127,7 +127,7 @@ namespace cftal {
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;   
+                                                 vec<int32_t, _N> >;
                 using func_t=math::test_func<double, traits_t>;
                 return func_t::exp_mx2(a);
             }
@@ -152,7 +152,7 @@ namespace cftal {
             static
             const char* fname() { return "exp_mx2"; }
         };
-        
+
     }
 }
 
@@ -164,7 +164,7 @@ func(arg_t<vf_type> xc)
 {
     return exp_px2(xc);
 }
-    
+
 template <typename _T>
 inline
 typename cftal::math::test_func<double, _T>::vf_type
@@ -172,7 +172,7 @@ cftal::math::test_func<double, _T>::
 exp_mx2(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
-    // faithfully rounded    
+    // faithfully rounded
     vf_type x2l, x2h=base_type::d_ops::two_prod(xc, xc, x2l);
     vf_type sx2h=-x2h;
     vf_type r= base_type::exp_k(sx2h, false);
@@ -206,7 +206,7 @@ cftal::math::test_func<double, _T>::
 exp_px2(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
-    // faithfully rounded    
+    // faithfully rounded
     vf_type x2l, x2h=base_type::d_ops::two_prod(xc, xc, x2l);
     vf_type r= base_type::exp_k(x2h, false);
     // f(x) := e^(x+y);
@@ -233,7 +233,7 @@ int exp_px2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<double> d=std::make_pair(0.0, 26.65);
+    func_domain<double> d=std::make_pair(0, 26.7);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
@@ -275,7 +275,7 @@ int exp_mx2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<double> d=std::make_pair(0.0, 27.4);
+    func_domain<double> d=std::make_pair(26.0, 27.3);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<

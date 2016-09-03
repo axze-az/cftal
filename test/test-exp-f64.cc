@@ -31,13 +31,19 @@ int main(int argc, char** argv)
         rc &= check_func_1<double, 4, check_exp<double> >(v, ulp, 0, false);
         rc &= check_func_1<double, 8, check_exp<double> >(v, ulp, 0, false);
     }
-    func_domain<double> d=std::make_pair(-800.0, 710.0);
+    func_domain<double> d=std::make_pair(-750.0, 710.0);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
         double, _N, check_exp<double> >::v(st, d, speed_only,
                                            cmp_ulp<double>(ulp, us),
                                            cnt);
+    // check the denormal result range
+    d= std::make_pair(-750, -7.083964185322641924358322e+02);
+    rc &= of_fp_func_up_to<
+        double, _N, check_exp<double> >::v(st, d, speed_only,
+                                           cmp_ulp<double>(ulp, us),
+                                           cnt>>3);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

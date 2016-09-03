@@ -38,6 +38,13 @@ int main(int argc, char** argv)
         double, _N, check_exp10<double> >::v(st, d, speed_only,
                                              cmp_ulp<double>(ulp, us),
                                              cnt);
+    // check the denormal result range
+    const double exp10_lo_den_nom= -3.076526555685887842628290e+02;
+    d= std::make_pair(-330, exp10_lo_den_nom);
+    rc &= of_fp_func_up_to<
+        double, _N, check_exp10<double> >::v(st, d, speed_only,
+                                             cmp_ulp<double>(ulp, us),
+                                             cnt>>3);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

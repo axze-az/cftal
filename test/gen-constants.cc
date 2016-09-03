@@ -873,11 +873,15 @@ int main(int argc, char** argv)
                      check_inf<double>(), "inf");
         gen_constant(dm, "const double exp2_lo", mpfr_exp2,
                      check_zero<double>(), "m_0");
+        gen_constant(dm, "const double exp2_lo_den", mpfr_exp2,
+                     check_max_denormal<double>(), "nom");
 
         gen_constant(dp, "const double exp10_hi", mpfr_exp10,
                      check_inf<double>(), "inf");
         gen_constant(dm, "const double exp10_lo", mpfr_exp10,
                      check_zero<double>(), "m_0");
+        gen_constant(dm, "const double exp10_lo_den", mpfr_exp10,
+                     check_max_denormal<double>(), "nom");
 
         gen_constant(dp, "const double erf_lt_one", mpfr_erf,
                      check_one<double>(), "1");
