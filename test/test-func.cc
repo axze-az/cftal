@@ -84,7 +84,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
                                                  vec<int32_t, _N> >;
-                using func_t=math::test_func<double, traits_t>;
+                using func_t=math::test_func<_T, traits_t>;
                 return func_t::func(a);
             }
             static
@@ -117,7 +117,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
                                                  vec<int32_t, _N> >;
-                using func_t=math::test_func<double, traits_t>;
+                using func_t=math::test_func<_T, traits_t>;
                 return func_t::exp10_mx2(a);
             }
             static
@@ -150,7 +150,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
                                                  vec<int32_t, _N> >;
-                using func_t=math::test_func<double, traits_t>;
+                using func_t=math::test_func<_T, traits_t>;
                 return func_t::exp10_px2(a);
             }
             static
@@ -183,7 +183,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
                                                  vec<int32_t, _N> >;
-                using func_t=math::test_func<double, traits_t>;
+                using func_t=math::test_func<_T, traits_t>;
                 return func_t::exp2_mx2(a);
             }
             static
@@ -216,7 +216,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
                                                  vec<int32_t, _N> >;
-                using func_t=math::test_func<double, traits_t>;
+                using func_t=math::test_func<_T, traits_t>;
                 return func_t::exp2_px2(a);
             }
             static
@@ -250,7 +250,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
                                                  vec<int32_t, _N> >;
-                using func_t=math::test_func<double, traits_t>;
+                using func_t=math::test_func<_T, traits_t>;
                 return func_t::exp_px2(a);
             }
             static
@@ -282,7 +282,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 using traits_t=math::func_traits<vec<_T, _N>,
                                                  vec<int32_t, _N> >;
-                using func_t=math::test_func<double, traits_t>;
+                using func_t=math::test_func<_T, traits_t>;
                 return func_t::exp_mx2(a);
             }
             static
@@ -609,7 +609,7 @@ int exp10_px2_main(int argc, char** argv)
 int main(int argc, char** argv)
 {
 #if 1
-    return exp10_px2_main(argc, argv) & exp10_mx2_main(argc, argv);
+    return /* exp10_px2_main(argc, argv) & */ exp2_mx2_main(argc, argv);
 #else
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
