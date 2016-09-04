@@ -1161,9 +1161,7 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c4);
     vf_type y=i*xr + j;
     y = impl::poly(xr, y,
-                   exp10_c3,
-                   exp10_c2,
-                   exp10_c1);
+                   exp10_c3);
 #else
     vf_type y=impl::poly(xr,
                          exp10_c13,
@@ -1176,13 +1174,18 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c6,
                          exp10_c5,
                          exp10_c4,
-                         exp10_c3,
-                         exp10_c2,
-                         exp10_c1);
+                         exp10_c3);
 #endif
     vf_type ye;
-    impl::eft_poly(y, ye, xr, y,
-                   exp10_c0);
+    y = y*xr;
+    y = d_ops::two_sum(y, exp10_c2, ye);
+    impl::eft_poly_si(y, ye, xr, y, ye,
+                      exp10_c1,
+                      exp10_c0);
+    // y = y*xr;
+    // y = d_ops::two_sum(y, exp10_c1, ye);
+    // impl::eft_poly_si(y, ye, xr, y, ye,
+    //                   exp10_c0);
     // correction for argument reduction
     vf_type dx= (hi-xr);
     vf_type cr = dx-kf * ctbl::m_ld2_cw[1];
