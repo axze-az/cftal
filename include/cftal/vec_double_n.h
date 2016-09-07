@@ -657,6 +657,109 @@ namespace cftal {
     vec<int32_t, 8>
     ilogbp1(arg_t<vec<double, 8> > v);
 
+
+    // exp_mx2, calculates $ e^{-x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    exp_mx2(const vec<double, _N>& x);
+
+    vec<double, 1>
+    exp_mx2(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    exp_mx2(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    exp_mx2(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    exp_mx2(arg_t<vec<double, 8> > d);
+
+    // exp_px2, calculates $ e^{+x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    exp_px2(const vec<double, _N>& x);
+
+    vec<double, 1>
+    exp_px2(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    exp_px2(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    exp_px2(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    exp_px2(arg_t<vec<double, 8> > d);
+
+    // exp2_mx2, calculates $ 2^{-x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    exp2_mx2(const vec<double, _N>& x);
+
+    vec<double, 1>
+    exp2_mx2(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    exp2_mx2(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    exp2_mx2(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    exp2_mx2(arg_t<vec<double, 8> > d);
+
+    // exp2_px2, calculates $ 2^{+x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    exp2_px2(const vec<double, _N>& x);
+
+    vec<double, 1>
+    exp2_px2(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    exp2_px2(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    exp2_px2(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    exp2_px2(arg_t<vec<double, 8> > d);
+
+    // exp10_mx2, calculates $ 10^{-x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    exp10_mx2(const vec<double, _N>& x);
+
+    vec<double, 1>
+    exp10_mx2(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    exp10_mx2(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    exp10_mx2(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    exp10_mx2(arg_t<vec<double, 8> > d);
+
+    // exp10_px2, calculates $ 10^{+x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    exp10_px2(const vec<double, _N>& x);
+
+    vec<double, 1>
+    exp10_px2(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    exp10_px2(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    exp10_px2(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    exp10_px2(arg_t<vec<double, 8> > d);
+    
 }
 
 template <std::size_t _N>
@@ -1163,6 +1266,55 @@ cftal::trunc(const vec<double, 1>& v)
 {
     return std::trunc(v());
 }
+
+template <std::size_t _N>
+cftal::vec<double, _N>
+cftal::exp_mx2(const vec<double, _N>& x)
+{
+    return vec<double, _N>(exp_mx2(low_half(x)),
+                           exp_mx2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<double, _N>
+cftal::exp_px2(const vec<double, _N>& x)
+{
+    return vec<double, _N>(exp_px2(low_half(x)),
+                           exp_px2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<double, _N>
+cftal::exp2_mx2(const vec<double, _N>& x)
+{
+    return vec<double, _N>(exp2_mx2(low_half(x)),
+                           exp2_mx2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<double, _N>
+cftal::exp2_px2(const vec<double, _N>& x)
+{
+    return vec<double, _N>(exp2_px2(low_half(x)),
+                           exp2_px2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<double, _N>
+cftal::exp10_mx2(const vec<double, _N>& x)
+{
+    return vec<double, _N>(exp10_mx2(low_half(x)),
+                           exp10_mx2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<double, _N>
+cftal::exp10_px2(const vec<double, _N>& x)
+{
+    return vec<double, _N>(exp10_px2(low_half(x)),
+                           exp10_px2(high_half(x)));
+}
+
 
 // local variables:
 // mode: c++

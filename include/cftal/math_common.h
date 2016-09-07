@@ -121,6 +121,30 @@ namespace cftal {
             // calls erf_k
             static vf_type erf(arg_t<vf_type> x);
             static vf_type erfc(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp_mx2(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp_px2(arg_t<vf_type> x);
+            
+            static
+            vf_type
+            exp2_mx2(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp2_px2(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp10_mx2(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp10_px2(arg_t<vf_type> x);
         };
 
 
@@ -1085,6 +1109,55 @@ erfc(arg_t<vf_type> x)
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
 }
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+exp_mx2(arg_t<vf_type> x)
+{
+    return base_type::exp_mx2_k(x);
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+exp_px2(arg_t<vf_type> x)
+{
+    return base_type::exp_px2_k(x);
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+exp2_mx2(arg_t<vf_type> x)
+{
+    return base_type::exp2_mx2_k(x);
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+exp2_px2(arg_t<vf_type> x)
+{
+    return base_type::exp2_px2_k(x);
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+exp10_mx2(arg_t<vf_type> x)
+{
+    return base_type::exp10_mx2_k(x);    
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
+exp10_px2(arg_t<vf_type> x)
+{
+    return base_type::exp10_px2_k(x);
+}
+
 
 template <typename _T>
 _T

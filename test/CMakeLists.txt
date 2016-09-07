@@ -129,6 +129,13 @@ test_prog(test-atan2-f64)
 test_prog(test-asin-f64)
 test_prog(test-acos-f64)
 
+test_prog(test-exp_mx2-f64)
+test_prog(test-exp_px2-f64)
+test_prog(test-exp2_mx2-f64)
+test_prog(test-exp2_px2-f64)
+test_prog(test-exp10_mx2-f64)
+test_prog(test-exp10_px2-f64)
+
 test_prog(test-erf-f64)
 test_prog(test-erfc-f64)
 
@@ -158,6 +165,13 @@ test_prog(test-atan-f32)
 test_prog(test-atan2-f32)
 test_prog(test-asin-f32)
 test_prog(test-acos-f32)
+
+test_prog(test-exp_mx2-f32)
+test_prog(test-exp_px2-f32)
+test_prog(test-exp2_mx2-f32)
+test_prog(test-exp2_px2-f32)
+test_prog(test-exp10_mx2-f32)
+test_prog(test-exp10_px2-f32)
 
 test_prog(test-erf-f32)
 test_prog(test-erfc-f32)

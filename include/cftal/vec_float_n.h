@@ -661,6 +661,126 @@ namespace cftal {
     v16f32 tan(arg<v16f32>::type d);
     v8f32 atan2(arg<v8f32>::type x, arg<v8f32>::type y);
 
+
+    // exp_mx2, calculates $ e^{-x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    exp_mx2(const vec<float, _N>& x);
+
+    vec<float, 1>
+    exp_mx2(arg_t<vec<float, 1> > d);
+
+    vec<float, 2>
+    exp_mx2(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    exp_mx2(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    exp_mx2(arg_t<vec<float, 8> > d);
+
+    vec<float, 16>
+    exp_mx2(arg_t<vec<float, 16> > d);
+    
+    // exp_px2, calculates $ e^{+x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    exp_px2(const vec<float, _N>& x);
+
+    vec<float, 1>
+    exp_px2(arg_t<vec<float, 1> > d);
+
+    vec<float, 2>
+    exp_px2(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    exp_px2(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    exp_px2(arg_t<vec<float, 8> > d);
+
+    vec<float, 16>
+    exp_px2(arg_t<vec<float, 16> > d);
+
+    // exp2_mx2, calculates $ 2^{-x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    exp2_mx2(const vec<float, _N>& x);
+
+    vec<float, 1>
+    exp2_mx2(arg_t<vec<float, 1> > d);
+
+    vec<float, 2>
+    exp2_mx2(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    exp2_mx2(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    exp2_mx2(arg_t<vec<float, 8> > d);
+
+    vec<float, 16>
+    exp2_mx2(arg_t<vec<float, 16> > d);
+
+    // exp2_px2, calculates $ 2^{+x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    exp2_px2(const vec<float, _N>& x);
+
+    vec<float, 1>
+    exp2_px2(arg_t<vec<float, 1> > d);
+
+    vec<float, 2>
+    exp2_px2(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    exp2_px2(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    exp2_px2(arg_t<vec<float, 8> > d);
+
+    vec<float, 16>
+    exp2_px2(arg_t<vec<float, 16> > d);
+
+    // exp10_mx2, calculates $ 10^{-x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    exp10_mx2(const vec<float, _N>& x);
+
+    vec<float, 1>
+    exp10_mx2(arg_t<vec<float, 1> > d);
+
+    vec<float, 2>
+    exp10_mx2(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    exp10_mx2(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    exp10_mx2(arg_t<vec<float, 8> > d);
+
+    vec<float, 16>
+    exp10_mx2(arg_t<vec<float, 16> > d);
+
+    // exp10_px2, calculates $ 10^{+x^2} $ these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    exp10_px2(const vec<float, _N>& x);
+
+    vec<float, 1>
+    exp10_px2(arg_t<vec<float, 1> > d);
+
+    vec<float, 2>
+    exp10_px2(arg_t<vec<float, 2> > d);
+
+    vec<float, 4>
+    exp10_px2(arg_t<vec<float, 4> > d);
+
+    vec<float, 8>
+    exp10_px2(arg_t<vec<float, 8> > d);
+    
+    vec<float, 16>
+    exp10_px2(arg_t<vec<float, 16> > d);
 }
 
 template <std::size_t _N>
@@ -1113,6 +1233,54 @@ cftal::vec<float, 1>
 cftal::trunc(const vec<float, 1>& v)
 {
     return std::trunc(v());
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::exp_mx2(const vec<float, _N>& x)
+{
+    return vec<float, _N>(exp_mx2(low_half(x)),
+                          exp_mx2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::exp_px2(const vec<float, _N>& x)
+{
+    return vec<float, _N>(exp_px2(low_half(x)),
+                          exp_px2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::exp2_mx2(const vec<float, _N>& x)
+{
+    return vec<float, _N>(exp2_mx2(low_half(x)),
+                          exp2_mx2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::exp2_px2(const vec<float, _N>& x)
+{
+    return vec<float, _N>(exp2_px2(low_half(x)),
+                          exp2_px2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::exp10_mx2(const vec<float, _N>& x)
+{
+    return vec<float, _N>(exp10_mx2(low_half(x)),
+                          exp10_mx2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::exp10_px2(const vec<float, _N>& x)
+{
+    return vec<float, _N>(exp10_px2(low_half(x)),
+                          exp10_px2(high_half(x)));
 }
 
 

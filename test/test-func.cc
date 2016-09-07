@@ -25,19 +25,19 @@ namespace cftal {
         };
 
         template <typename _T>
-        struct test_func<double, _T> : public func_core<double, _T> {
-            using base_type = func_core<double, _T>;
+        struct test_func<float, _T> : public func_core<float, _T> {
+            using base_type = func_core<float, _T>;
             typedef typename _T::vf_type vf_type;
             typedef typename _T::vi_type vi_type;
-            using vli_type = typename _T::vli_type;
-            using vi2_type = typename _T::vi2_type;
+            // using vli_type = typename _T::vli_type;
+            // using vi2_type = typename _T::vi2_type;
             typedef typename _T::vmf_type vmf_type;
             typedef typename _T::vmi_type vmi_type;
-            using vmi2_type = typename _T::vmi2_type;
+            // using vmi2_type = typename _T::vmi2_type;
 
             typedef d_real<vf_type> dvf_type;
             typedef t_real<vf_type> tvf_type;
-            typedef func_core<double, _T> my_type;
+            typedef func_core<float, _T> my_type;
 
             static vf_type func(arg_t<vf_type> vf);
 
@@ -312,8 +312,8 @@ namespace cftal {
 
 template <typename _T>
 inline
-typename cftal::math::test_func<double, _T>::vf_type
-cftal::math::test_func<double, _T>::
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::
 exp2_mx2(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -323,21 +323,21 @@ exp2_mx2(arg_t<vf_type> xc)
     vf_type r= base_type::exp2_k(sx2h);
     // f(x) := 2^(x+y);
     // f(x) ~ 2^x + 2^x log(2) y
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type rt=r*0x1p256;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type rt=r*0x1p48f;
     x2l *= rt;
     x2l *= ctbl::m_ln2.h();
     rt -= x2l;
-    r = rt*0x1p-256;
-    using fc_t = math::func_constants<double>;
+    r = rt*0x1p-48f;
+    using fc_t = math::func_constants<float>;
     r= _T::sel(sx2h <= fc_t::exp2_lo_zero, vf_type(0), r);
     return r;
 }
 
 template <typename _T>
 inline
-typename cftal::math::test_func<double, _T>::vf_type
-cftal::math::test_func<double, _T>::
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::
 exp2_px2(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -346,19 +346,19 @@ exp2_px2(arg_t<vf_type> xc)
     vf_type r= base_type::exp2_k(x2h);
     // f(x) := 2^(x+y);
     // f(x) ~ 2^x + 2^x log(2) y
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
     x2l *= r;
     x2l *= ctbl::m_ln2.h();
     r += x2l;
-    using fc_t = math::func_constants<double>;
+    using fc_t = math::func_constants<float>;
     r= _T::sel(x2h >= fc_t::exp2_hi_inf, _T::pinf(), r);
     return r;
 }
 
 template <typename _T>
 inline
-typename cftal::math::test_func<double, _T>::vf_type
-cftal::math::test_func<double, _T>::
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::
 exp10_mx2(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -368,21 +368,21 @@ exp10_mx2(arg_t<vf_type> xc)
     vf_type r= base_type::exp10_k(sx2h);
     // f(x) := 10^(x+y);
     // f(x) ~ 10^x + 2^x log(10) y
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type rt=r*0x1p256;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type rt=r*0x1p48f;
     x2l *= rt;
     x2l *= ctbl::m_ln10.h();
     rt -= x2l;
-    r = rt*0x1p-256;
-    using fc_t = math::func_constants<double>;
+    r = rt*0x1p-48f;
+    using fc_t = math::func_constants<float>;
     r= _T::sel(sx2h <= fc_t::exp10_lo_zero, vf_type(0), r);
     return r;
 }
 
 template <typename _T>
 inline
-typename cftal::math::test_func<double, _T>::vf_type
-cftal::math::test_func<double, _T>::
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::
 exp10_px2(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -391,11 +391,11 @@ exp10_px2(arg_t<vf_type> xc)
     vf_type r= base_type::exp10_k(x2h);
     // f(x) := 2^(x+y);
     // f(x) ~ 2^x + 2^x log(2) y
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
     x2l *= r;
     x2l *= ctbl::m_ln10.h();
     r += x2l;
-    using fc_t = math::func_constants<double>;
+    using fc_t = math::func_constants<float>;
     r= _T::sel(x2h >= fc_t::exp10_hi_inf, _T::pinf(), r);
     return r;
 }
@@ -403,8 +403,8 @@ exp10_px2(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::test_func<double, _T>::vf_type
-cftal::math::test_func<double, _T>::
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::
 exp_mx2(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -414,19 +414,19 @@ exp_mx2(arg_t<vf_type> xc)
     vf_type r= base_type::exp_k(sx2h, false);
     // f(x) := e^(x+y);
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
-    vf_type rt=r*0x1p256;
+    vf_type rt=r*0x1p48f;
     x2l *= rt;
     rt -= x2l;
-    r = rt*0x1p-256;
-    using fc_t = math::func_constants<double>;
+    r = rt*0x1p-48f;
+    using fc_t = math::func_constants<float>;
     r= _T::sel(sx2h <= fc_t::exp_lo_zero, vf_type(0), r);
     return r;
 }
 
 template <typename _T>
 inline
-typename cftal::math::test_func<double, _T>::vf_type
-cftal::math::test_func<double, _T>::
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::
 exp_px2(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -437,7 +437,7 @@ exp_px2(arg_t<vf_type> xc)
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
     x2l *= r;
     r += x2l;
-    using fc_t = math::func_constants<double>;
+    using fc_t = math::func_constants<float>;
     r= _T::sel(x2h >= fc_t::exp_hi_inf, _T::pinf(), r);
     return r;
 }
@@ -448,7 +448,7 @@ int exp_px2_main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);
@@ -456,13 +456,13 @@ int exp_px2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<double> d=std::make_pair(0, 26.7);
+    func_domain<float> d=std::make_pair(0, 9.5);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_exp_px2<double> >::v(st, d, speed_only,
-                                               cmp_ulp<double>(ulp, us),
-                                               cnt);
+        float, _N, check_exp_px2<float> >::v(st, d, speed_only,
+                                             cmp_ulp<float>(ulp, us),
+                                             cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
@@ -475,7 +475,7 @@ int exp_mx2_main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);
@@ -483,12 +483,12 @@ int exp_mx2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<double> d=std::make_pair(0.0, 27.3);
+    func_domain<float> d=std::make_pair(0.0, 10.2);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_exp_mx2<double> >::v(st, d, speed_only,
-                                               cmp_ulp<double>(ulp, us),
+        float, _N, check_exp_mx2<float> >::v(st, d, speed_only,
+                                               cmp_ulp<float>(ulp, us),
                                                cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
@@ -502,7 +502,7 @@ int exp2_mx2_main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);
@@ -510,12 +510,12 @@ int exp2_mx2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<double> d=std::make_pair(0.0, 33.0);
+    func_domain<float> d=std::make_pair(0.0, 12.3);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_exp2_mx2<double> >::v(st, d, speed_only,
-                                                cmp_ulp<double>(ulp, us),
+        float, _N, check_exp2_mx2<float> >::v(st, d, speed_only,
+                                                cmp_ulp<float>(ulp, us),
                                                 cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
@@ -529,7 +529,7 @@ int exp2_px2_main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);
@@ -537,12 +537,12 @@ int exp2_px2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<double> d=std::make_pair(0.0, 32.0);
+    func_domain<float> d=std::make_pair(0.0, 11.4);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_exp2_px2<double> >::v(st, d, speed_only,
-                                                cmp_ulp<double>(ulp, us),
+        float, _N, check_exp2_px2<float> >::v(st, d, speed_only,
+                                                cmp_ulp<float>(ulp, us),
                                                 cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
@@ -556,7 +556,7 @@ int exp10_mx2_main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);
@@ -564,12 +564,12 @@ int exp10_mx2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<double> d=std::make_pair(0.0, 18.0);
+    func_domain<float> d=std::make_pair(0.0, 6.8);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_exp10_mx2<double> >::v(st, d, speed_only,
-                                                 cmp_ulp<double>(ulp, us),
+        float, _N, check_exp10_mx2<float> >::v(st, d, speed_only,
+                                                 cmp_ulp<float>(ulp, us),
                                                  cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
@@ -583,7 +583,7 @@ int exp10_px2_main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);
@@ -591,12 +591,12 @@ int exp10_px2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<double> d=std::make_pair(0.0, 17.6);
+    func_domain<float> d=std::make_pair(0.0, 6.3);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_exp10_px2<double> >::v(st, d, speed_only,
-                                                cmp_ulp<double>(ulp, us),
+        float, _N, check_exp10_px2<float> >::v(st, d, speed_only,
+                                                cmp_ulp<float>(ulp, us),
                                                 cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
@@ -609,7 +609,7 @@ int exp10_px2_main(int argc, char** argv)
 int main(int argc, char** argv)
 {
 #if 1
-    return /* exp10_px2_main(argc, argv) & */ exp2_mx2_main(argc, argv);
+    return /* exp10_px2_main(argc, argv) & */ exp10_mx2_main(argc, argv);
 #else
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
@@ -623,14 +623,14 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<double> d=std::make_pair(32.5, 33.0);
-    // func_domain<double> d=std::make_pair(1.0, 27);
-    // func_domain<double> d=std::make_pair(0.0, 1.0);
+    func_domain<float> d=std::make_pair(32.5, 33.0);
+    // func_domain<float> d=std::make_pair(1.0, 27);
+    // func_domain<float> d=std::make_pair(0.0, 1.0);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_func<double> >::v(st, d, speed_only,
-                                            cmp_ulp<double>(ulp, us),
+        float, _N, check_func<float> >::v(st, d, speed_only,
+                                            cmp_ulp<float>(ulp, us),
                                             cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;

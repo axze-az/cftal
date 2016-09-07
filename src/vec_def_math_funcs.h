@@ -223,6 +223,48 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::pow(b, e);                                       \
     }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::exp_mx2(arg<vec_float>::type d)                                 \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp_mx2(d);                                      \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::exp_px2(arg<vec_float>::type d)                                 \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp_px2(d);                                      \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::exp2_mx2(arg<vec_float>::type d)                                \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp2_mx2(d);                                     \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::exp2_px2(arg<vec_float>::type d)                                \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp2_px2(d);                                     \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::exp10_mx2(arg<vec_float>::type d)                               \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp10_mx2(d);                                    \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::exp10_px2(arg<vec_float>::type d)                               \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp10_px2(d);                                    \
+    }                                                                   \
 
 
 #define DEF_MATH_POW(ns, vec_float, vec_int, real_type)                 \
