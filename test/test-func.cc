@@ -90,7 +90,7 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-                using mp_t=mpfr_real<128>;
+                using mp_t=mpfr_real<2*sizeof(_T)*8>;
                 mp_t x=a;
                 x *= x;
                 x = -x;
@@ -123,7 +123,7 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-                using mp_t=mpfr_real<128>;
+                using mp_t=mpfr_real<2*sizeof(_T)*8>;
                 mp_t x=a;
                 x *= x;
                 x = -x;
@@ -156,7 +156,7 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-                using mp_t=mpfr_real<128>;
+                using mp_t=mpfr_real<2*sizeof(_T)*8>;
                 mp_t x=a;
                 x *= x;
                 // x = -x;
@@ -189,7 +189,7 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-                using mp_t=mpfr_real<128>;
+                using mp_t=mpfr_real<2*sizeof(_T)*8>;
                 mp_t x=a;
                 x *= x;
                 x = -x;
@@ -222,7 +222,7 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-                using mp_t=mpfr_real<128>;
+                using mp_t=mpfr_real<2*sizeof(_T)*8>;
                 mp_t x=a;
                 x *= x;
                 // x = -x;
@@ -256,7 +256,7 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-                using mp_t=mpfr_real<128>;
+                using mp_t=mpfr_real<2*sizeof(_T)*8>;
                 mp_t x=a;
                 x *= x;
                 mp_t mr;
@@ -288,7 +288,7 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-                using mp_t=mpfr_real<128>;
+                using mp_t=mpfr_real<2*sizeof(_T)*8>;
                 mp_t x=a;
                 x *= x;
                 x = -x;
@@ -435,8 +435,10 @@ exp_px2(arg_t<vf_type> xc)
     vf_type r= base_type::exp_k(x2h, false);
     // f(x) := e^(x+y);
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
-    x2l *= r;
-    r += x2l;
+    vf_type rt= r*0x1p-48f;
+    x2l *= rt;
+    rt += x2l;
+    r = rt*0x1p48f;
     using fc_t = math::func_constants<float>;
     r= _T::sel(x2h >= fc_t::exp_hi_inf, _T::pinf(), r);
     return r;
@@ -609,7 +611,7 @@ int exp10_px2_main(int argc, char** argv)
 int main(int argc, char** argv)
 {
 #if 1
-    return /* exp10_px2_main(argc, argv) & */ exp10_mx2_main(argc, argv);
+    return exp_px2_main(argc, argv);
 #else
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
