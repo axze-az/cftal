@@ -257,11 +257,6 @@ namespace cftal {
             vf_type
             exp10_k(arg_t<vf_type> x);
 
-            // calculates exp(x*x*sign(s))
-            static
-            vf_type
-            expxx_k(arg_t<vf_type> x, arg_t<vf_type> s);
-
             static
             vf_type
             sinh_k(arg_t<vf_type> x);
@@ -397,7 +392,7 @@ namespace cftal {
             static
             vf_type
             exp_px2_k(arg_t<vf_type> x);
-            
+
             static
             vf_type
             exp2_mx2_k(arg_t<vf_type> x);
@@ -413,7 +408,7 @@ namespace cftal {
             static
             vf_type
             exp10_px2_k(arg_t<vf_type> x);
-            
+
 
         };
 
@@ -1097,7 +1092,7 @@ exp10_k(arg_t<vf_type> x)
     const vf_type exp10_c13=+1.8432685022147710833876e-04;
     // x^ : +0x9.35d8dddaaa8bp-2
     const vf_type log10=+2.3025850929940459010936e+00;
-#if 1
+
     const vf_type log10sqr=log10*log10;
 #if 1
     vf_type xx=xr*xr;
@@ -1152,69 +1147,8 @@ exp10_k(arg_t<vf_type> x)
     vf_type yee= log10*cr + yee1;
     ye += yee;
     y += ye;
-#else
-    vf_type y=impl::poly(xr,
-                         exp10_c13,
-                         exp10_c12,
-                         exp10_c11,
-                         exp10_c10,
-                         exp10_c9,
-                         exp10_c8,
-                         exp10_c7,
-                         exp10_c6,
-                         exp10_c5,
-                         exp10_c4,
-                         exp10_c3,
-                         exp10_c2,
-                         exp10_c1,
-                         exp10_c0);
-#endif
     y= scale_exp_k(y, kf, k2);
     return y;
-}
-
-template <typename _T>
-inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
-expxx_k(arg_t<vf_type> xc, arg_t<vf_type> s)
-{
-#if 0
-    const vf_type M=128.0;
-    const vf_type MINV=1.0/128.0;
-    vf_type x=abs(xc);
-    vf_type m=MINV*rint(vf_type(M*x));
-    vf_type f=x-m;
-    vf_type uh=m*m;
-    vf_type ul= 2*m*f + f*f;
-    vf_type sgn=copysign(vf_type(1.0), s);
-    uh *= sgn;
-    ul *= sgn;
-    vf_type eh=exp_k(uh, false);
-    vf_type el=exp_k(ul, false);
-    return eh*el;
-#else
-    // exp(-x*x):
-    // log(exp(-x*x)) = -x*x
-    // x = h + l;
-    // x*x = (h+l)*(h+l) = h^2 + 2*h*l + l^ 2
-    vf_type x=abs(vf_type(xc));
-    vf_type h, l;
-    using traits_t=d_real_traits<vf_type>;
-    traits_t::split(x, h, l);
-    vf_type uh= h*h;
-    vf_type ul= 2*h*l + l*l;
-    vf_type sgn=copysign(vf_type(1.0), s);
-    uh *= sgn;
-    ul *= sgn;
-    vf_type eh=exp_k(uh, false);
-    vf_type el=exp_k(ul, false);
-    vf_type r=eh*el;
-    // vf_type xx=xc*xc*sgn;
-    // using fc_t = math::func_constants<double>;
-    // r= select(xx <= fc_t::exp_lo_zero, vf_type(0), r);
-    return r;
-#endif
 }
 
 #if 0
@@ -3274,7 +3208,7 @@ erfc_k(arg_t<vf_type> xc)
         operator()(vf_type x) {
             if (_calculated == true)
                 return;
-            _expmxx = expxx_k(x, vf_type(-1));
+            _expmxx = exp_mx2_k(x);
             _1_plus_2_x= 1 + 2*x;
             _f = _expmxx / _1_plus_2_x;
         };

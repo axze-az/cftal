@@ -71,7 +71,7 @@ cftal::impl::expmxx(double xc)
     using vf_type = vec<double, 1>;
     using vi_type = vec<int32_t, 1>;
     using vf_traits = cftal::math::func_traits<vf_type, vi_type>;
-    vf_type r= cftal::math::func<double, vf_traits>::expxx_k(xc, vf_type(-1));
+    vf_type r= cftal::math::func<double, vf_traits>::exp_mx2(xc);
     // using fc_t = math::func_constants<double>;
     // r= select(xx <= fc_t::exp_lo_zero, vf_type(0), r);
     return r();
