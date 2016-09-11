@@ -20,7 +20,8 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-                using mp_t=mpfr_real<128>;
+                const std::size_t _N=sizeof(_T)*8;
+                using mp_t=mpfr_real<2*_N>;
                 mp_t x=a;
                 x *= x;
                 x = -x;
