@@ -439,8 +439,13 @@ exp_px2(arg_t<vf_type> xc)
 #if 1
     vmf_type border_case = (x2h == fc_t::exp_hi_inf) &
         (x2l < 0.0);
-    x2h = _T::sel(border_case, x2h + 2*x2l, x2h);
-    x2l = _T::sel(border_case, -1.88 *x2l, x2l);
+    // if (any_of(border_case))
+    //    std::cout << xc << std::endl;
+    vf_type t= 0x1.02p-17;
+    x2h = _T::sel(border_case, x2h - t, x2h);
+    x2l = _T::sel(border_case, x2l + t, x2l);
+    // x2h = _T::sel(border_case, x2h + 2*x2l, x2h);
+    // x2l = _T::sel(border_case, -1.88 *x2l, x2l);
 #endif
     // std::cout << x2h << std::endl;
     // std::cout << x2l << std::endl;
@@ -490,7 +495,7 @@ int exp_px2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<float> d=std::make_pair(0, 9.5);
+    func_domain<float> d=std::make_pair(9.4, 9.5);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
@@ -572,7 +577,7 @@ int exp2_px2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<float> d=std::make_pair(0.0, 11.4);
+    func_domain<float> d=std::make_pair(11.3, 11.4);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
@@ -644,7 +649,7 @@ int exp10_px2_main(int argc, char** argv)
 int main(int argc, char** argv)
 {
 #if 1
-    return exp_px2_main(argc, argv);
+    return exp2_px2_main(argc, argv);
 #else
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
