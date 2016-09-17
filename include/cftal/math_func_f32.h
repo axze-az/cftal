@@ -562,10 +562,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         y = y*xr;
         y = d_ops::two_sum(y, exp_c1, ye);
         impl::eft_poly_si(y, ye, xr, y, ye, exp_c0);
-        // vf_type ye;
-        // y = y*xr;
-        // y = d_ops::two_sum(y, exp_c2, ye);
-        // impl::eft_poly_si(y, ye, xr, y, ye, exp_c1, exp_c0);
+        ye += yee;
         y += ye;
         y = scale_exp_k(y, kf, k);
     } else {
