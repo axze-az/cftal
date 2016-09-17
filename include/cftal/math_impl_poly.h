@@ -64,24 +64,33 @@ namespace cftal {
                     _CNM1 cnm1_0, _CNM1 cnm1_1, _CNM1 cnm1_2, _CNM1 cnm1_3,
                     _CS... cs);
 
+            // error free transformation of evaluation of polynomials
+            // setup step
             template <typename _X, typename _C1, typename _C0>
             void
             eft_poly_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0);
 
+            // error free transformation of evaluation of polynomials
+            // next step
             template <typename _X, typename _C1, typename _C0>
             void
             eft_poly_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
 
+            // error free transformation of evaluation of polynomials
+            // recursive next steps
             template <typename _X, typename _CN, typename _CNM1,
                       typename ... _CS>
             void
             eft_poly_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1,
                         _CS... cs);
 
+            // error free transformation of evaluation of polynomials
+            // overload for degree 1
             template <typename _X, typename _CN, typename _CNM1>
             void
             eft_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1);
             
+            // error free transformation of evaluation of polynomials
             template <typename _X, typename _CN, typename _CNM1,
                       typename ... _CS>
             void

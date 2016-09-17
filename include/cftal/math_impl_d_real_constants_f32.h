@@ -1,5 +1,5 @@
-#if !defined (__MATH_IMPL_D_REAL_CONSTANTS_F32_H__)
-#define __MATH_IMPL_D_REAL_CONSTANTS_F32_H__ 1
+#if !defined (__CFTAL_MATH_IMPL_D_REAL_CONSTANTS_F32_H__)
+#define __CFTAL_MATH_IMPL_D_REAL_CONSTANTS_F32_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>

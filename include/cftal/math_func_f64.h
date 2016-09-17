@@ -1,5 +1,5 @@
-#if !defined (__MATH_FUNC_F64_H__)
-#define __MATH_FUNC_F64_H__ 1
+#if !defined (__CFTAL_MATH_FUNC_F64_H__)
+#define __CFTAL_MATH_FUNC_F64_H__ 1
 
 // This code uses code from sun libm:
 /*

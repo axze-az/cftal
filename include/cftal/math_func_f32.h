@@ -1,5 +1,5 @@
-#if !defined (__MATH_FUNC_F32_H__)
-#define __MATH_FUNC_F32_H__ 1
+#if !defined (__CFTAL_MATH_FUNC_F32_H__)
+#define __CFTAL_MATH_FUNC_F32_H__ 1
 
 // This code uses code from sun libm:
 /*
@@ -459,7 +459,6 @@ typename cftal::math::func_core<float, _T>::vi_type
 cftal::math::func_core<float, _T>::
 ilogbp1(arg_t<vf_type> x)
 {
-#if 1
     vf_type xs=x;
     using fc=func_constants<float>;
     vmf_type is_denom= abs(x) <= fc::max_denormal;
@@ -473,14 +472,6 @@ ilogbp1(arg_t<vf_type> x)
     // exponent:
     vi_type e=((i >> 23) & 0xff) + eo - vi_type(_T::bias-1);
     return e;
-#else
-    vmf_type mf= vd < 5.421010862427522E-20f;
-    vf_type d = _T::sel(mf, 1.8446744073709552E19f * x, x);
-    vi_type q = _T::extract_exp(d);
-    vmi_type mi= _T::vmf_to_vmi(mf);
-    vi_type qs = _T::sel(mi, vi_type(64 + 0x7e), vi_type(0x7e));
-    return q - qs;
-#endif
 }
 
 template <typename _T>

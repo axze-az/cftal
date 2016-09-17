@@ -490,12 +490,12 @@ int exp_px2_main(int argc, char** argv)
     const int _N=16;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x10000);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
     }
-    func_domain<float> d=std::make_pair(9.4, 9.5);
+    func_domain<float> d=std::make_pair(0.0, 9.5);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
@@ -518,7 +518,7 @@ int exp_mx2_main(int argc, char** argv)
     const int _N=16;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x10000);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -545,7 +545,7 @@ int exp2_mx2_main(int argc, char** argv)
     const int _N=16;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x10000);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -572,12 +572,12 @@ int exp2_px2_main(int argc, char** argv)
     const int _N=16;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x10000);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
     }
-    func_domain<float> d=std::make_pair(11.3, 11.4);
+    func_domain<float> d=std::make_pair(0, 11.4);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
@@ -599,7 +599,7 @@ int exp10_mx2_main(int argc, char** argv)
     const int _N=16;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x10000);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -626,12 +626,12 @@ int exp10_px2_main(int argc, char** argv)
     const int _N=16;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x10000);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
     }
-    func_domain<float> d=std::make_pair(0.0, 6.3);
+    func_domain<float> d=std::make_pair(0, 6.3);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
@@ -649,7 +649,13 @@ int exp10_px2_main(int argc, char** argv)
 int main(int argc, char** argv)
 {
 #if 1
-    return exp2_px2_main(argc, argv);
+    return
+        exp10_px2_main(argc, argv) +
+        exp10_mx2_main(argc, argv) +
+        exp2_px2_main(argc, argv) +
+        exp2_mx2_main(argc, argv) +
+        exp_px2_main(argc, argv) +
+        exp_mx2_main(argc, argv);
 #else
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
