@@ -2335,12 +2335,19 @@ exp_px2_k(arg_t<vf_type> xc)
     // this implementation produces +-1 ulp but is not
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
+
+    using fc_t = math::func_constants<float>;
+    vmf_type border_case = (x2h == fc_t::exp_hi_inf) &
+        (x2l < 0.0);
+    vf_type t= 0x1.02p-17;
+    x2h = _T::sel(border_case, x2h - t, x2h);
+    x2l = _T::sel(border_case, x2l + t, x2l);
+
     vf_type r= exp_k(x2h, false);
     // f(x) := e^(x+y);
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
     x2l *= r;
     r += x2l;
-    using fc_t = math::func_constants<float>;
     r= _T::sel(x2h >= fc_t::exp_hi_inf, _T::pinf(), r);
     return r;
 }
