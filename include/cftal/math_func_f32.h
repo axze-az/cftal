@@ -551,13 +551,13 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
                   exp_c6,
                   exp_c5,
                   exp_c4,
-                  exp_c3);
+                  exp_c3,
+                  exp_c2);
     // correction for errors in argument reduction
     vf_type dx = hi-xr;
     vf_type cr = dx - kf * ctbl::m_ln2_cw[1];
     vf_type yee= cr + cr*xr;
     if (exp_m1 == false) {
-        y = impl::poly(xr, y, exp_c2);
         vf_type ye;
         y = y*xr;
         y = d_ops::two_sum(y, exp_c1, ye);
@@ -566,7 +566,6 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         y += ye;
         y = scale_exp_k(y, kf, k);
     } else {
-        y = impl::poly(xr, y, exp_c2);
         vf_type ye;
         y = y*xr;
         y = d_ops::two_sum(y, exp_c1, ye);
