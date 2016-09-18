@@ -668,7 +668,7 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
     const vf_type exp_c12=+2.0921639307947645130620e-09;
     // x^13 : +0xb.675e3ad02de48p-36
     const vf_type exp_c13=+1.6594686285988114700473e-10;
-#if 1
+
     vf_type xx=xr*xr;
     vf_type i=impl::poly(xx,
                          exp_c13,
@@ -684,37 +684,24 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
                          exp_c4);
     vf_type y=i*xr + j;
     y = impl::poly(xr, y,
-                   exp_c3);
-#else
-    vf_type y=impl::poly(xr,
-                         exp_c13,
-                         exp_c12,
-                         exp_c11,
-                         exp_c10,
-                         exp_c9,
-                         exp_c8,
-                         exp_c7,
-                         exp_c6,
-                         exp_c5,
-                         exp_c4,
-                         exp_c3);
-#endif
+                   exp_c3,
+                   exp_c2);
     // correction for errors in argument reduction
     vf_type dx = hi-xr;
     vf_type cr = dx - kf * ctbl::m_ln2_cw[1];
     vf_type yee= cr + cr*xr;
     if (exp_m1 == false) {
         vf_type ye;
-        y = y*xr;
-        y = d_ops::two_sum(y, exp_c2, ye);
-        impl::eft_poly_si(y, ye, xr, y, ye,
-                          exp_c1,
-                          exp_c0);
+        y = impl::poly(xr, y, exp_c1);
+        impl::eft_poly(y, ye, xr, y, exp_c0);
+        // y = d_ops::two_sum(y, exp_c2, ye);
+        // impl::eft_poly_si(y, ye, xr, y, ye,
+        //                  exp_c1,
+        //                  exp_c0);
         ye += yee;
         y += ye;
         y = scale_exp_k(y, kf, k2);
     } else {
-        y = impl::poly(y, xr, exp_c2);
         vf_type ye;
         y = y*xr;
         y = d_ops::two_sum(y, exp_c1, ye);
@@ -1002,7 +989,7 @@ exp2_k(arg_t<vf_type> x)
     const vf_type exp2_c12=+2.5525131689811799440090e-11;
     // x^13 : -0xa.7fd6a5d64da58p-40
     const vf_type exp2_c13=-9.5491204915762316409487e-12;
-#if 1
+
     vf_type xx=xr*xr;
     vf_type i=impl::poly(xx,
                          exp2_c13,
@@ -1018,27 +1005,17 @@ exp2_k(arg_t<vf_type> x)
                          exp2_c4);
     vf_type y=i*xr + j;
     y = impl::poly(xr, y,
-                   exp2_c3);
-#else
-    vf_type y=impl::poly(xr,
-                         exp2_c13,
-                         exp2_c12,
-                         exp2_c11,
-                         exp2_c10,
-                         exp2_c9,
-                         exp2_c8,
-                         exp2_c7,
-                         exp2_c6,
-                         exp2_c5,
-                         exp2_c4,
-                         exp2_c3);
-#endif
+                   exp2_c3,
+                   exp2_c2,
+                   exp2_c1);
+
     vf_type ye;
-    y = y*xr;
-    y = d_ops::two_sum(y, exp2_c2, ye);
-    impl::eft_poly_si(y, ye, xr, y, ye,
-                      exp2_c1,
-                      exp2_c0);
+    impl::eft_poly(y, ye, xr, y, exp2_c0);
+    // y = y*xr;
+    // y = d_ops::two_sum(y, exp2_c2, ye);
+    // impl::eft_poly_si(y, ye, xr, y, ye,
+    //                  exp2_c1,
+    //                  exp2_c0);
     y += ye;
     y= scale_exp_k(y, kf, k2);
     return y;
@@ -1149,7 +1126,7 @@ exp10_k(arg_t<vf_type> x)
     const vf_type log10=+2.3025850929940459010936e+00;
 
     const vf_type log10sqr=log10*log10;
-#if 1
+
     vf_type xx=xr*xr;
     vf_type i=impl::poly(xx,
                          exp10_c13,
@@ -1165,27 +1142,17 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c4);
     vf_type y=i*xr + j;
     y = impl::poly(xr, y,
-                   exp10_c3);
-#else
-    vf_type y=impl::poly(xr,
-                         exp10_c13,
-                         exp10_c12,
-                         exp10_c11,
-                         exp10_c10,
-                         exp10_c9,
-                         exp10_c8,
-                         exp10_c7,
-                         exp10_c6,
-                         exp10_c5,
-                         exp10_c4,
-                         exp10_c3);
-#endif
+                   exp10_c3,
+                   exp10_c2,
+                   exp10_c1);
+
     vf_type ye;
-    y = y*xr;
-    y = d_ops::two_sum(y, exp10_c2, ye);
-    impl::eft_poly_si(y, ye, xr, y, ye,
-                      exp10_c1,
-                      exp10_c0);
+    impl::eft_poly(y, ye, xr, y, exp10_c0);
+    // y = y*xr;
+    // y = d_ops::two_sum(y, exp10_c2, ye);
+    // impl::eft_poly_si(y, ye, xr, y, ye,
+    //                  exp10_c1,
+    //                  exp10_c0);
     // y = y*xr;
     // y = d_ops::two_sum(y, exp10_c1, ye);
     // impl::eft_poly_si(y, ye, xr, y, ye,
@@ -1206,24 +1173,6 @@ exp10_k(arg_t<vf_type> x)
     return y;
 #endif
 }
-
-#if 0
-template <typename _T>
-inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
-__expo_k(arg_t<vf_type> xc)
-{
-    // k is such that k*ln2 has minimal relative error and
-    // x - kln2 > log(DBL_MIN)
-    const uint64_t k = 2043;
-    const double kln2 = 0x1.62066151add8bp+10;
-    const vf_type scale=bytes8(uint64_t((0x3ffULL + k/2)<<52))._f64;
-    vf_type e= exp_k(xc - kln2, false);
-    e *= scale * scale;
-    return e;
-}
-#endif
 
 template <typename _T>
 inline
@@ -3711,10 +3660,7 @@ exp_mx2_k(arg_t<vf_type> xc)
     vf_type r= exp_k(sx2h, false);
     // f(x) := e^(x+y);
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
-    vf_type rt=r*0x1p256;
-    x2l *= rt;
-    rt -= x2l;
-    r = rt*0x1p-256;
+    r -= x2l * r;
     using fc_t = math::func_constants<double>;
     r= _T::sel(sx2h <= fc_t::exp_lo_zero, vf_type(0), r);
     return r;
@@ -3732,8 +3678,7 @@ exp_px2_k(arg_t<vf_type> xc)
     vf_type r= exp_k(x2h, false);
     // f(x) := e^(x+y);
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
-    x2l *= r;
-    r += x2l;
+    r += x2l*r;
     using fc_t = math::func_constants<double>;
     r= _T::sel(x2h >= fc_t::exp_hi_inf, _T::pinf(), r);
     return r;
@@ -3754,11 +3699,8 @@ exp2_mx2_k(arg_t<vf_type> xc)
     // f(x) := 2^(x+y);
     // f(x) ~ 2^x + 2^x log(2) y
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type rt=r*0x1p256;
-    x2l *= rt;
-    x2l *= ctbl::m_ln2.h();
-    rt -= x2l;
-    r = rt*0x1p-256;
+    vf_type xs= x2l*ctbl::m_ln2.h();
+    r -= xs*r;
     using fc_t = math::func_constants<double>;
     r= _T::sel(sx2h <= fc_t::exp2_lo_zero, vf_type(0), r);
     return r;
@@ -3777,9 +3719,8 @@ exp2_px2_k(arg_t<vf_type> xc)
     // f(x) := 2^(x+y);
     // f(x) ~ 2^x + 2^x log(2) y
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    x2l *= r;
-    x2l *= ctbl::m_ln2.h();
-    r += x2l;
+    vf_type xs= x2l*ctbl::m_ln2.h();
+    r += xs*r;
     using fc_t = math::func_constants<double>;
     r= _T::sel(x2h >= fc_t::exp2_hi_inf, _T::pinf(), r);
     return r;
@@ -3799,11 +3740,8 @@ exp10_mx2_k(arg_t<vf_type> xc)
     // f(x) := 10^(x+y);
     // f(x) ~ 10^x + 2^x log(10) y
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type rt=r*0x1p256;
-    x2l *= rt;
-    x2l *= ctbl::m_ln10.h();
-    rt -= x2l;
-    r = rt*0x1p-256;
+    vf_type xs=x2l*ctbl::m_ln10.h();
+    r -= xs*r;
     using fc_t = math::func_constants<double>;
     r= _T::sel(sx2h <= fc_t::exp10_lo_zero, vf_type(0), r);
     return r;

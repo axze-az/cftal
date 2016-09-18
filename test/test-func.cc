@@ -367,13 +367,36 @@ exp10_mx2(arg_t<vf_type> xc)
     vf_type sx2h=-x2h;
     vf_type r= base_type::exp10_k(sx2h);
     // f(x) := 10^(x+y);
-    // f(x) ~ 10^x + 2^x log(10) y
+    // f(x) ~ 10^x + 10^x log(10) y + 1/2 * log(10)*log(10)*10^x y^2
     using ctbl = impl::d_real_constants<d_real<float>, float>;
+    const vf_type ln10c=-ctbl::m_ln10.h();
+#if 1
+    // std::cout << r << std::endl;
+    // std::cout << x2l << std::endl;
+    // std::cout << base_type::exp10_k(-x2l) << std::endl;
+    vf_type rt=r ;// * 0x1p0f;
+    vf_type xs=x2l*ln10c;
+#if 1
+    vf_type e10l = xs;
+#else
+    vf_type e10l= impl::poly(xs,
+                             // 1.0f/720.0f,
+                             // 1.0f/120.0f,
+                             // 1.0f/24.0f,
+                             // 1.0f/6.0f,
+                             // 1.0f/2.0f,
+                             1.0f) *xs;
+#endif
+    // std::cout << e10l << std::endl;
+    rt += rt*e10l;
+    r = rt; //*0x1p-0f;
+#else
     vf_type rt=r*0x1p48f;
     x2l *= rt;
-    x2l *= ctbl::m_ln10.h();
+    x2l *= ln10c;
     rt -= x2l;
     r = rt*0x1p-48f;
+#endif
     using fc_t = math::func_constants<float>;
     r= _T::sel(sx2h <= fc_t::exp10_lo_zero, vf_type(0), r);
     return r;
@@ -414,10 +437,14 @@ exp_mx2(arg_t<vf_type> xc)
     vf_type r= base_type::exp_k(sx2h, false);
     // f(x) := e^(x+y);
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
+#if 1
+    r -= x2l*r;
+#else
     vf_type rt=r*0x1p48f;
     x2l *= rt;
     rt -= x2l;
     r = rt*0x1p-48f;
+#endif
     using fc_t = math::func_constants<float>;
     r= _T::sel(sx2h <= fc_t::exp_lo_zero, vf_type(0), r);
     return r;
@@ -592,6 +619,19 @@ int exp2_px2_main(int argc, char** argv)
 
 int exp10_mx2_main(int argc, char** argv)
 {
+#if 0
+    using namespace cftal;
+    using namespace cftal::test;
+    // return func_t::func(a);
+    std::cout << std::setprecision(18)
+              << std::hexfloat;
+    v1f32 t=6.173537731170654297e+00;
+    v1f32 l=check_exp10_mx2<float>::v(t);
+    auto r=check_exp10_mx2<float>::r(t());
+    std::cout << l << std::endl;
+    std::cout << std::get<0>(r) << std::endl;
+    return 0;
+#else
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -604,7 +644,7 @@ int exp10_mx2_main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    func_domain<float> d=std::make_pair(0.0, 6.8);
+    func_domain<float> d=std::make_pair(6.7, 6.8);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
@@ -615,6 +655,7 @@ int exp10_mx2_main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
+#endif
 }
 
 int exp10_px2_main(int argc, char** argv)
@@ -650,12 +691,12 @@ int main(int argc, char** argv)
 {
 #if 1
     return
-        exp10_px2_main(argc, argv) +
+        // exp10_px2_main(argc, argv) +
         // exp10_mx2_main(argc, argv) + // fails
         // exp2_px2_main(argc, argv) +
         // exp2_mx2_main(argc, argv) +
         // exp_px2_main(argc, argv) +
-        // exp_mx2_main(argc, argv) +
+        exp_mx2_main(argc, argv) +
         0;
 #else
     using namespace cftal::test;
