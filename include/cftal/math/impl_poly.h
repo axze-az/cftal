@@ -89,7 +89,7 @@ namespace cftal {
             template <typename _X, typename _CN, typename _CNM1>
             void
             eft_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1);
-            
+
             // error free transformation of evaluation of polynomials
             template <typename _X, typename _CN, typename _CNM1,
                       typename ... _CS>

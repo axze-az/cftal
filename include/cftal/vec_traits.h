@@ -100,8 +100,6 @@ namespace cftal {
             using vi_type = vec<int32_t, _N>;
             using vmi_type = typename vi_type::mask_type;
 
-            using vhpf_type = vec<double, _N>;
-            using hpf_traits = func_traits<vhpf_type, vi_type>;
             using dvf_type = d_real<vf_type>;
 
             static
@@ -112,24 +110,6 @@ namespace cftal {
             static
             constexpr std::size_t NVI() {
                 return _N;
-            }
-
-            static
-            constexpr std::size_t vhpf_per_vf() {
-                return 1;
-            }
-
-            static
-            void vf_to_vhpf(const vf_type& x, vhpf_type* r) {
-                r[0] = cvt<vhpf_type, vf_type>(x);
-            }
-
-            static
-            void vhpf_to_dvf(const vhpf_type* hpf, dvf_type& res) {
-                vf_type msv= cvt<vf_type>(hpf[0]);
-                vf_type lsv= cvt<vf_type>(
-                    vhpf_type(hpf[0] - cvt<vhpf_type>(msv)));
-                res = dvf_type(msv, lsv);
             }
 
             static
