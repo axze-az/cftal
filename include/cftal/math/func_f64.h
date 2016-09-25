@@ -611,15 +611,16 @@ cftal::math::func_core<double, _T>::
 scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi2_type> k)
 {
     vi2_type e_two_pow_k=_T::sel(k < vi2_type(-1021),
-                                 vi2_type((_T::bias+1000)+k),
-                                 vi2_type(_T::bias+k));
+                                 vi2_type((_T::bias+1000)),
+                                 vi2_type(_T::bias))+k;
     vf_type two_pow_k= _T::insert_exp(e_two_pow_k);
     // kf == 1024 or kf>=-1021
+    vf_type ymt=ym*two_pow_k;
     vf_type yt= _T::sel(kf == vf_type(1024),
                         ym * 2.0 * 0x1p1023,
-                        ym*two_pow_k);
+                        ymt);
     vf_type y = _T::sel(kf < vf_type(-1021),
-                        ym*two_pow_k*0x1p-1000, yt);
+                        ymt*0x1p-1000, yt);
     return y;
 }
 
