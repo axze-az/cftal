@@ -2,7 +2,7 @@
 #include <cftal/test/f32_f64.h>
 #include <cftal/test/uniform_distribution.h>
 #include <cftal/test/of_math_funcs.h>
-#include <cftal/math_func_constants.h>
+#include <cftal/math/func_constants.h>
 #include <cmath>
 #include <random>
 #include <iostream>

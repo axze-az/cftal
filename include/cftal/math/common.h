@@ -9,8 +9,8 @@
 #include <cftal/divisor.h>
 #include <cftal/constants.h>
 #include <cftal/mem.h>
-#include <cftal/math_func_constants.h>
-#include <cftal/math_impl_poly.h>
+#include <cftal/math/func_constants.h>
+#include <cftal/math/impl_poly.h>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -129,7 +129,7 @@ namespace cftal {
             static
             vf_type
             exp_px2(arg_t<vf_type> x);
-            
+
             static
             vf_type
             exp2_mx2(arg_t<vf_type> x);
@@ -1147,7 +1147,7 @@ typename cftal::math::func_common<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::func_common<_FLOAT_T, _TRAITS_T>::
 exp10_mx2(arg_t<vf_type> x)
 {
-    return base_type::exp10_mx2_k(x);    
+    return base_type::exp10_mx2_k(x);
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>

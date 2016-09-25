@@ -14,8 +14,8 @@
 #include <cftal/config.h>
 #include <cftal/d_real.h>
 #include <cftal/std_types.h>
-#include <cftal/math_common.h>
-#include <cftal/math_impl_d_real_constants_f32.h>
+#include <cftal/math/common.h>
+#include <cftal/math/impl_d_real_constants_f32.h>
 #include <type_traits>
 #include <limits>
 #include <utility>

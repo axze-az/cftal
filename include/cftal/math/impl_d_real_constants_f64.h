@@ -5,7 +5,7 @@
 #include <cftal/d_real.h>
 #include <cftal/t_real.h>
 #include <cftal/std_types.h>
-#include <cftal/math_func_constants.h>
+#include <cftal/math/func_constants.h>
 
 
 namespace cftal {
@@ -37,7 +37,7 @@ namespace cftal {
                 static const unsigned PI_2_BITS_MAX=3;
                 static const double m_pi_2_bits[PI_2_BITS_MAX];
 
-                
+
                 // 1/(i!)
                 static const unsigned MAX_FAC=30;
                 static const _T inv_fac[MAX_FAC+1];

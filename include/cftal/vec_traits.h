@@ -3,7 +3,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
-#include <cftal/math_func.h>
+#include <cftal/math/func.h>
 #include <cftal/divisor.h>
 #include <cftal/vec_cvt.h>
 #include <cftal/constants.h>

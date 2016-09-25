@@ -1,6 +1,6 @@
 #include <cmath>
 #include <cftal/vec.h>
-#include <cftal/math_func.h>
+#include <cftal/math/func.h>
 #include <cftal/test/f32_f64.h>
 #include <cftal/test/of_math_funcs.h>
 #include <cftal/test/check_cbrt.h>

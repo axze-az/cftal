@@ -1,7 +1,7 @@
 #include "cftal/vec.h"
 #include "cftal/vec_traits.h"
-#include "cftal/math_common.h"
-#include "cftal/math_func_f64.h"
+#include "cftal/math/common.h"
+#include "cftal/math/func_f64.h"
 #include "cftal/test/of_math_funcs.h"
 #include "cftal/test/check_expm1.h"
 #include <tuple>

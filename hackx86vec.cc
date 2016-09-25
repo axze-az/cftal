@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <iterator>
 #include <cmath>
-#include <cftal/math_func.h>
+#include <cftal/math/func.h>
 #include <cftal/d_real.h>
 #include <cftal/vec_traits.h>
 #include <cftal/test/call_mpfr.h>

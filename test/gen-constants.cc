@@ -1,8 +1,8 @@
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/of_fp_funcs.h>
 #include <cftal/test/pr_fp.h>
-#include <cftal/math_func_f64.h>
-#include <cftal/math_func_f32.h>
+#include <cftal/math/func_f64.h>
+#include <cftal/math/func_f32.h>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
