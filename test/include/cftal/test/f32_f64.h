@@ -12,17 +12,28 @@
 namespace cftal {
     namespace test {
 
+        // construct a double from sign & 1, exponent with bias and
+        // significant
         double make_double(unsigned sgn, unsigned exp, uint64_t sig);
+        // construct a float from sign &1, exponent with bias and
+        // significant
         float make_float(unsigned sgn, unsigned exp, uint32_t sig);
 
         struct ulp_stats {
+            // count of operations with nonzero ulp
             uint64_t _ulps;
+            // count of nan
             uint64_t _nans;
+            // operation count
             uint64_t _cnt;
+            // deviations of x ulp's n times
+            std::map<int32_t, uint64_t> _devs;
+            // faithfully rounded if first=true and second=true
             std::pair<bool, bool> _faithful;
-            std::map<int32_t, uint32_t> _devs;
+            // constructor.
             ulp_stats()
                 : _ulps(0), _nans(0), _cnt(0), _faithful(false, true) {};
+            // inrecrement the _ulps, ...
             void inc(int32_t ulp, int32_t is_nan) {
                 ++_cnt;
                 uint32_t au= ulp != 0 ? 1 : 0;
@@ -30,6 +41,7 @@ namespace cftal {
                 _devs[ulp] += 1;
                 _nans += is_nan != 0 ? 1 : 0;
             }
+            // set the faithful rounding values
             void faithful(bool v) {
                 _faithful.first = true;
                 if (_faithful.second == true)

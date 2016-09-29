@@ -5,4 +5,4 @@
 #include <cmath>
 #include <limits>
 
-DEF_MATH_FUNCS(cftal, v16f32, v16s32, float, 2)
+DEF_MATH_FUNCS(cftal, v16f32, v16s32, float)

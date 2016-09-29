@@ -187,6 +187,8 @@ namespace cftal {
             }
         };
 
+        // specialization of func_core for double and different
+        // traits
         template <typename _T>
         struct func_core<double, _T> {
             typedef typename _T::vf_type vf_type;
@@ -326,7 +328,6 @@ namespace cftal {
             __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl,
                     arg_t<vi_type> q);
 
-
             // core sine, cosine calculation
             static
             void
@@ -408,7 +409,6 @@ namespace cftal {
             static
             vf_type
             exp10_px2_k(arg_t<vf_type> x);
-
 
         };
 

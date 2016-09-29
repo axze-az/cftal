@@ -44,9 +44,16 @@ namespace cftal {
 
         }
 
+        // helper for func_core and func_common.
+        // contains conversion functions between _FLOAT_T
+        // _INT_T, extraction and insertion of integer
+        // exponents, bias ...
         template <typename _FLOAT_T, typename _INT_T>
         struct func_traits;
 
+        // core implementation of elementary and base
+        // functions exports exp_k, exp2_k ...
+        // must be specialized for different _FLOAT_T
         template <typename _FLOAT_T, typename _TRAITS_T>
         struct func_core {
             typedef typename _TRAITS_T::vf_type vf_type;
@@ -57,6 +64,9 @@ namespace cftal {
 
         };
 
+        // common implementation of base and elementary functions
+        // special argument handling like inf, nan, overflow, underflow
+        // is done here
         template <typename _FLOAT_T, typename _TRAITS_T>
         struct func_common : public func_core< _FLOAT_T, _TRAITS_T> {
             using base_type = func_core<_FLOAT_T, _TRAITS_T>;
@@ -69,7 +79,10 @@ namespace cftal {
 
             using base_type::frexp;
             using base_type::ldexp;
+            using base_type::ilogb;
             using base_type::ilogbp1;
+            // calls cbrt_k
+            static vf_type cbrt(arg_t<vf_type> vf);
 
             // exp, expm1, sinh, cosh call exp_k2
             static vf_type exp(arg_t<vf_type> vf);
@@ -122,26 +135,32 @@ namespace cftal {
             static vf_type erf(arg_t<vf_type> x);
             static vf_type erfc(arg_t<vf_type> x);
 
+            // returns e^(-x*x);
             static
             vf_type
             exp_mx2(arg_t<vf_type> x);
 
+            // returns e^(x*x);
             static
             vf_type
             exp_px2(arg_t<vf_type> x);
 
+            // returns 2^(-x*x);
             static
             vf_type
             exp2_mx2(arg_t<vf_type> x);
 
+            // returns 2^(x*x);
             static
             vf_type
             exp2_px2(arg_t<vf_type> x);
 
+            // returns 10^(-x*x);
             static
             vf_type
             exp10_mx2(arg_t<vf_type> x);
 
+            // returns 10^(x*x);
             static
             vf_type
             exp10_px2(arg_t<vf_type> x);
@@ -343,30 +362,6 @@ namespace cftal {
                 template <unsigned _STEPS=6>
                 static vf_type v(arg_t<vf_type> f);
             };
-#if 1
-            // specialization for cubic root
-            template <typename _FLOAT_T, typename _TRAITS>
-            struct nth_root<_FLOAT_T, _TRAITS, 3>
-                : public func<_FLOAT_T, _TRAITS> {
-
-                using vf_type = typename _TRAITS::vf_type;
-                using vi_type = typename _TRAITS::vi_type;
-                using vmf_type= typename _TRAITS::vmf_type;
-                using vmi_type = typename _TRAITS::vmi_type;
-                using dvf_type = typename _TRAITS::dvf_type;
-
-                using base_type = func<_FLOAT_T, _TRAITS>;
-                using base_type::frexp;
-                using base_type::ldexp;
-                using base_type::ilogbp1;
-                using base_type::scale_exp_k;
-
-                template <unsigned _NR_STEPS=6>
-                static
-                vf_type
-                v(arg_t<vf_type> x);
-            };
-#endif
         } // impl
 
         // integer power with constant _I
@@ -536,6 +531,19 @@ cftal::math::impl::nth_root_halley<_R, _RT, _T>::v(const _T& xi, const _T& x)
     _RT den(r * (x+x_pow) - x + x_pow);
     _RT xip1(xi + en /den);
     return xip1;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::func_common<_FLOAT_T, _T>::vf_type
+cftal::math::func_common<_FLOAT_T, _T>::
+cbrt(arg_t<vf_type> x)
+{
+    vf_type r=base_type::cbrt_k(x);
+    vmf_type is_zero_or_inf_or_nan=
+        (x == vf_type(0)) | isinf(x) | isnan(x);
+    r=_T::sel(is_zero_or_inf_or_nan, x, r);
+    return r;
 }
 
 template <typename _FLOAT_T, typename _T>
@@ -1324,57 +1332,6 @@ cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, _R>::v(arg_t<vf_type> x)
     return res;
 }
 
-#if 1
-template <typename _FLOAT_T, typename _TRAITS>
-template <unsigned _STEPS>
-typename cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::vf_type
-cftal::math::impl::nth_root<_FLOAT_T, _TRAITS, 3>::v(arg_t<vf_type> x)
-{
-#if 1
-    vf_type r=base_type::cbrt_k(x);
-    vmf_type is_zero_or_inf_or_nan=
-        (x == vf_type(0)) | isinf(x) | isnan(x);
-    r=_TRAITS::sel(is_zero_or_inf_or_nan, x, r);
-    return r;
-#else
-    vf_type xp=abs(x);
-    vi_type e3c;
-    // m in [0.5, 1)
-    const divisor<vi_type, int32_t> idiv3(3);
-    vi_type e = ilogbp1(xp);
-    vi_type e3= e / idiv3;
-    vi_type r3= remainder(e, vi_type(3), e3);
-    // select r3c so that r3c [-2,-1,0]
-    vmi_type r3gt0 = r3 > 0;
-    vi_type r3c= _TRAITS::sel(r3gt0, r3-3, r3);
-    e3c= _TRAITS::sel(r3gt0, e3+1, e3);
-    vi_type sc= r3c - e;
-    vf_type mm0 = ldexp(xp, sc);
-    vf_type mm = nth_root_approx<3, vf_type>::v(mm0);
-    if (_STEPS>1) {
-        using step_t= nth_root_halley<3, vf_type, vf_type>;
-        for (uint32_t i=0; i<_STEPS-1; ++i) {
-            mm= step_t::v(mm, mm0);
-        }
-    }
-    if (_STEPS>0) {
-        using step_t= nth_root_nr<3, vf_type, vf_type>;
-        mm= step_t::v(mm, mm0);
-    }
-    // scale back
-    vf_type res=scale_exp_k(mm, _TRAITS::cvt_i_to_f(e3c), e3c);
-    //vf_type res=ldexp(mm, e3c);
-    // restore sign
-    res=copysign(res, x);
-
-    vmf_type is_zero_or_inf_or_nan=
-        (x == vf_type(0)) | isinf(x) | isnan(x);
-    res=_TRAITS::sel(is_zero_or_inf_or_nan,
-                     x, res);
-    return res;
-#endif
-}
-#endif
 
 
 
