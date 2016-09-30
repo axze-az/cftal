@@ -22,7 +22,7 @@ int main(int argc, char** argv)
                                          std::numeric_limits< float >::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_log2<float> >::v(st, d, speed_only,
+        float, _N, check_log2<float> >::v(st, d, speed_only,
                                          cmp_ulp<float>(ulp, us),
                                          cnt);
     std::cout << "ulps: "

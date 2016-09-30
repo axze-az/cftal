@@ -22,13 +22,13 @@ int main(int argc, char** argv)
                            std::numeric_limits<float>::max());
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        float, 8, check_sincos<float>::sin >::v(st, dp, speed_only,
-                                                cmp_ulp<float>(ulp, us),
-                                                cnt);
+        float, _N, check_sincos<float>::sin >::v(st, dp, speed_only,
+                                                 cmp_ulp<float>(ulp, us),
+                                                 cnt);
     rc &= of_fp_func_up_to<
-        float, 8, check_sincos<float>::cos >::v(st, dp, speed_only,
-                                                cmp_ulp<float>(ulp, us),
-                                                cnt);
+        float, _N, check_sincos<float>::cos >::v(st, dp, speed_only,
+                                                 cmp_ulp<float>(ulp, us),
+                                                 cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
