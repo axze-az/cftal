@@ -114,17 +114,18 @@ namespace {
         bool r;
         int32_t u=0;
         if ((r=cftal::test::f_eq(a, b)) == false) {
+#if USE_DISTANCE == 0                
             u=sizeof(_T)*8;
             try {
-#if USE_DISTANCE == 0                
                 u = boost::math::float_distance<_T>(a, b);
-#else
-                u = distance(a, b);
-#endif
             }
             catch (...) {
             }
-            if ((u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
+#else
+            u = distance(a, b);
+#endif
+            //(u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
+            if (abs(u) <= int32_t(ulp)) 
                 r=true;
         }
         if (us != nullptr) {
