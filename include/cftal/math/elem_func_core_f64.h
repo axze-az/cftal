@@ -1,5 +1,5 @@
-#if !defined (__CFTAL_MATH_FUNC_F64_H__)
-#define __CFTAL_MATH_FUNC_F64_H__ 1
+#if !defined (__CFTAL_MATH_ELEM_FUNC_CORE_F64_H__)
+#define __CFTAL_MATH_ELEM_FUNC_CORE_F64_H__ 1
 
 // This code uses code from sun libm:
 /*
@@ -16,7 +16,7 @@
 #include <cftal/d_real.h>
 #include <cftal/t_real.h>
 #include <cftal/std_types.h>
-#include <cftal/math/common.h>
+#include <cftal/math/elem_func.h>
 #include <cftal/math/impl_poly.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
@@ -187,10 +187,10 @@ namespace cftal {
             }
         };
 
-        // specialization of func_core for double and different
+        // specialization of elem_func_core for double and different
         // traits
         template <typename _T>
-        struct func_core<double, _T> {
+        struct elem_func_core<double, _T> {
             typedef typename _T::vf_type vf_type;
             typedef typename _T::vi_type vi_type;
             using vli_type = typename _T::vli_type;
@@ -201,7 +201,7 @@ namespace cftal {
 
             typedef d_real<vf_type> dvf_type;
             typedef t_real<vf_type> tvf_type;
-            typedef func_core<double, _T> my_type;
+            typedef elem_func_core<double, _T> my_type;
 
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;
@@ -418,8 +418,8 @@ namespace cftal {
 template <typename _T>
 inline
 typename
-cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 pow2i(arg_t<vi_type> vi)
 {
     vi_type e(vi + vi_type(_T::bias));
@@ -438,8 +438,8 @@ pow2i(arg_t<vi_type> vi)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
 {
     vf_type xs=x;
@@ -498,8 +498,8 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
 {
     return ldexp_k(x, _T::vi_to_vi2(n));
@@ -507,8 +507,8 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 frexp_k(arg_t<vf_type> x, vi2_type* ve)
 {
     vf_type xs=x;
@@ -543,8 +543,8 @@ frexp_k(arg_t<vf_type> x, vi2_type* ve)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 frexp(arg_t<vf_type> x, vi_type* ve)
 {
     vi2_type e;
@@ -557,8 +557,8 @@ frexp(arg_t<vf_type> x, vi_type* ve)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vi2_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vi2_type
+cftal::math::elem_func_core<double, _T>::
 ilogbp1_k(arg_t<vf_type> x)
 {
     vf_type xs=x;
@@ -578,8 +578,8 @@ ilogbp1_k(arg_t<vf_type> x)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vi_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vi_type
+cftal::math::elem_func_core<double, _T>::
 ilogbp1(arg_t<vf_type> x)
 {
     return _T::vi2_odd_to_vi(ilogbp1_k(x));
@@ -587,8 +587,8 @@ ilogbp1(arg_t<vf_type> x)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vi_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vi_type
+cftal::math::elem_func_core<double, _T>::
 ilogb(arg_t<vf_type> d)
 {
     vi2_type e(ilogbp1_k(d) - vi2_type(1));
@@ -606,8 +606,8 @@ ilogb(arg_t<vf_type> d)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi2_type> k)
 {
     vi2_type e_two_pow_k=_T::sel(k < vi2_type(-1021),
@@ -627,8 +627,8 @@ scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi2_type> k)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp_k(arg_t<vf_type> xc, bool exp_m1)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
@@ -915,8 +915,8 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp2_k(arg_t<vf_type> x)
 {
     vf_type kf= rint(vf_type(x));
@@ -1026,8 +1026,8 @@ exp2_k(arg_t<vf_type> x)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp10_k(arg_t<vf_type> x)
 {
 #if 0
@@ -1177,8 +1177,8 @@ exp10_k(arg_t<vf_type> x)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 sinh_k(arg_t<vf_type> xc)
 {
     // for huge arguments:
@@ -1238,8 +1238,8 @@ sinh_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 cosh_k(arg_t<vf_type> xc)
 {
     // for really large arguments:
@@ -1300,8 +1300,8 @@ cosh_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 tanh_k(arg_t<vf_type> xc)
 {
     /* tanh(x) = (exp(x) - exp(-x))/(exp(x) + exp(-x))
@@ -1380,8 +1380,8 @@ tanh_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 log_k_poly(arg_t<vf_type> z)
 {
     // [3.4694469519536141888238489627838134765625e-18, 0.17157287895679473876953125] : | p - f | <= 2^-64.625
@@ -1431,8 +1431,8 @@ log_k_poly(arg_t<vf_type> z)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 log_k(arg_t<vf_type> xc, log_func func)
 {
 /* origin: FreeBSD /usr/src/lib/msun/src/e_log.c */
@@ -1575,8 +1575,8 @@ log_k(arg_t<vf_type> xc, log_func func)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 log1p_k(arg_t<vf_type> xc)
 {
 /* double log1p(double x)
@@ -1655,8 +1655,8 @@ log1p_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 log2_k(arg_t<vf_type> xc)
 {
 #if 0
@@ -1748,8 +1748,8 @@ log2_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 log10_k(arg_t<vf_type> xc)
 {
 /*
@@ -1764,8 +1764,8 @@ log10_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     return x+y;
@@ -1774,9 +1774,9 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 
 template <typename _T>
 inline
-std::pair<typename cftal::math::func_core<double, _T>::dvf_type,
-          typename cftal::math::func_core<double, _T>::vi_type>
-cftal::math::func_core<double, _T>::
+std::pair<typename cftal::math::elem_func_core<double, _T>::dvf_type,
+          typename cftal::math::elem_func_core<double, _T>::vi_type>
+cftal::math::elem_func_core<double, _T>::
 reduce_trig_arg_k(arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<double>, double>;
@@ -1829,8 +1829,8 @@ reduce_trig_arg_k(arg_t<vf_type> x)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 __sin_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
 /* __sin( x, y, iy)
@@ -1885,8 +1885,8 @@ __sin_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 __cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
 /*
@@ -1953,8 +1953,8 @@ __cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl, arg_t<vi_type> q)
 {
 /*
@@ -2133,7 +2133,7 @@ __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl, arg_t<vi_type> q)
 template <typename _T>
 __attribute__((flatten))
 void
-cftal::math::func_core<double, _T>::
+cftal::math::elem_func_core<double, _T>::
 sin_cos_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 {
     std::pair<dvf_type, vi_type> rq=reduce_trig_arg_k(xc);
@@ -2168,8 +2168,8 @@ sin_cos_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 
 template <typename _T>
 __attribute__((flatten))
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 tan_k(arg_t<vf_type> xc)
 {
     std::pair<dvf_type, vi_type> rq=reduce_trig_arg_k(xc);
@@ -2181,8 +2181,8 @@ tan_k(arg_t<vf_type> xc)
 
 template <typename _T>
 __attribute__((flatten))
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 atan_k(arg_t<vf_type> xc)
 {
 /*
@@ -2297,8 +2297,8 @@ atan_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
 {
     vf_type yx=y/x;
@@ -2323,8 +2323,8 @@ atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
 
 template <typename _T>
 __attribute__((flatten))
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 asin_k_poly(arg_t<vf_type> x2)
 {
     // [3.4694469519536141888238489627838134765625e-18, 0.5] : | p - f | <= 2^-55.578125
@@ -2375,8 +2375,8 @@ asin_k_poly(arg_t<vf_type> x2)
 
 template <typename _T>
 __attribute__((flatten))
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 asin_k(arg_t<vf_type> xc)
 {
 /* asin(x)
@@ -2431,8 +2431,8 @@ asin_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 acos_k(arg_t<vf_type> xc)
 {
 /* acos(x)
@@ -2487,8 +2487,8 @@ acos_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 asinh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
@@ -2564,8 +2564,8 @@ asinh_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 acosh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
@@ -2648,8 +2648,8 @@ acosh_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 atanh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
@@ -2760,8 +2760,8 @@ namespace cftal {
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 erf_k(arg_t<vf_type> xc)
 {
 
@@ -3185,8 +3185,8 @@ erf_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 erfc_k(arg_t<vf_type> xc)
 {
 #if 0
@@ -3559,8 +3559,8 @@ erfc_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type xa=abs(x);
@@ -3589,8 +3589,8 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
 }
 
 template <typename _T>
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 cbrt_k(arg_t<vf_type> xc)
 {
     vf_type xp=abs(xc);
@@ -3650,8 +3650,8 @@ cbrt_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp_mx2_k(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -3669,8 +3669,8 @@ exp_mx2_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp_px2_k(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -3688,8 +3688,8 @@ exp_px2_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp2_mx2_k(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -3709,8 +3709,8 @@ exp2_mx2_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp2_px2_k(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -3729,8 +3729,8 @@ exp2_px2_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp10_mx2_k(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not
@@ -3750,8 +3750,8 @@ exp10_mx2_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::func_core<double, _T>::vf_type
-cftal::math::func_core<double, _T>::
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp10_px2_k(arg_t<vf_type> xc)
 {
     // this implementation produces +-1 ulp but is not

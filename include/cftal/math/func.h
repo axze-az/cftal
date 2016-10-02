@@ -4,10 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/d_real.h>
 #include <cftal/std_types.h>
-#include <cftal/math/common.h>
-#include <cftal/math/func_f64.h>
-#include <cftal/math/func_f32.h>
-
+#include <cftal/math/elem_func.h>
 
 // Local Variables:
 // mode: c++

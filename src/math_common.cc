@@ -1,4 +1,4 @@
-#include <cftal/math/common.h>
+#include <cftal/math/func_constants.h>
 
 constexpr
 const double cftal::math::func_constants<double>::max_denormal;

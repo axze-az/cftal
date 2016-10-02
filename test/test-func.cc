@@ -1,7 +1,7 @@
 #include "cftal/vec.h"
 #include "cftal/vec_traits.h"
-#include "cftal/math/common.h"
-#include "cftal/math/func_f64.h"
+#include "cftal/math/elem_func.h"
+#include "cftal/math/elem_func_core_f64.h"
 #include "cftal/test/of_math_funcs.h"
 #include "cftal/test/check_expm1.h"
 #include <tuple>
@@ -13,9 +13,9 @@ namespace cftal {
 
     namespace math {
         template <typename _FLOAT_T, typename _TRAITS_T>
-        struct test_func : public func_core< _FLOAT_T, _TRAITS_T> {
-            using base_type = func_core<_FLOAT_T, _TRAITS_T>;
-            using my_type = func_common<_FLOAT_T, _TRAITS_T>;
+        struct test_func : public elem_func_core< _FLOAT_T, _TRAITS_T> {
+            using base_type = elem_func_core<_FLOAT_T, _TRAITS_T>;
+            using my_type = test_func<_FLOAT_T, _TRAITS_T>;
             using vf_type = typename base_type::vf_type;
             using vi_type = typename base_type::vi_type;
             using vmf_type = typename base_type::vmf_type;
@@ -26,8 +26,8 @@ namespace cftal {
         };
 
         template <typename _T>
-        struct test_func<double, _T> : public func_core<double, _T> {
-            using base_type = func_core<double, _T>;
+        struct test_func<double, _T> : public elem_func_core<double, _T> {
+            using base_type = elem_func_core<double, _T>;
             typedef typename _T::vf_type vf_type;
             typedef typename _T::vi_type vi_type;
             // using vli_type = typename _T::vli_type;
@@ -38,7 +38,7 @@ namespace cftal {
 
             typedef d_real<vf_type> dvf_type;
             typedef t_real<vf_type> tvf_type;
-            typedef func_core<double, _T> my_type;
+            typedef elem_func_core<double, _T> my_type;
 
             static vf_type func(arg_t<vf_type> vf);
 

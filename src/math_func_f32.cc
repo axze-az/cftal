@@ -1,4 +1,5 @@
-#include <cftal/math/func.h>
+#include <cftal/math/elem_func.h>
+#include <cftal/math/elem_func_core_f32.h>
 
 const cftal::int32_t cftal::math::func_traits<float, int32_t >::bias;
 const cftal::int32_t cftal::math::func_traits<float, int32_t >::e_mask;
