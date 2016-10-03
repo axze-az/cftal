@@ -219,7 +219,7 @@ cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
     // x^16 : -0xc.5cc4b7f19cb9p-24
     const vf_type erfc_i1_c16=-7.3685507098203703418816e-07;
     // x^ : +0xcp-4
-    const vf_type erfc_i1_left=+7.5000000000000000000000e-01;
+    // const vf_type erfc_i1_left=+7.5000000000000000000000e-01;
     // x^ : +0x8p-3
     const vf_type erfc_i1_x0=+1.0000000000000000000000e+00;
         vf_type xr= x - erfc_i1_x0;
@@ -303,7 +303,7 @@ cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
         // x^23 : +0xb.e2b6c1ea60f08p-40
         const vf_type erfc_i2_c23=+1.0809891280474724393940e-11;
         // x^ : +0xfp-3
-        const vf_type erfc_i2_left=+1.8750000000000000000000e+00;
+        // const vf_type erfc_i2_left=+1.8750000000000000000000e+00;
         // x^ : +0x8.23b4fp-2
         const vf_type erfc_i2_x0=+2.0348699092864990234375e+00;
 

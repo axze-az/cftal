@@ -4,8 +4,8 @@
 #define DEF_TRAITS_FUNC(vec_float, vec_int, real_type)  \
     using traits_t=cftal::math::func_traits<vec_float,  \
                                             vec_int>;   \
-    using func_t=cftal::math::func<real_type,           \
-                                   traits_t>
+    using func_t=cftal::math::elem_func<real_type,      \
+                                        traits_t>
 
 
 #define DEF_MATH_FUNCS(ns, vec_float, vec_int, real_type)               \

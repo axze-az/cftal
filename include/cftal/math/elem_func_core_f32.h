@@ -15,6 +15,7 @@
 #include <cftal/d_real.h>
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
+#include <cftal/math/func_traits_f32_s32.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
 #include <type_traits>
 #include <limits>
@@ -22,97 +23,6 @@
 
 namespace cftal {
     namespace math {
-
-        template <>
-        struct func_traits<float, int32_t>
-            : public d_real_traits<float> {
-            typedef float vf_type;
-            typedef int32_t vi_type;
-            typedef bool vmf_type;
-            typedef bool vmi_type;
-            typedef uint32_t mask_type;
-            typedef union {
-                float _d;
-                uint32_t _u;
-            } ud_t;
-
-            static constexpr int32_t bias = 127;
-            static constexpr int32_t e_max= 127;
-            static constexpr int32_t e_min= -126;
-            static constexpr int32_t e_mask= 0xff;
-            static constexpr int32_t bits=23;
-            static constexpr int32_t vec_len=1;
-
-            static constexpr float pinf() {
-                return std::numeric_limits<float>::infinity();
-            }
-            static constexpr float ninf() {
-                return -std::numeric_limits<float>::infinity();
-            }
-            static constexpr float nan() {
-                return std::numeric_limits<float>::quiet_NaN();
-            }
-            static
-            vmf_type vmi_to_vmf(const vmi_type& mi) {
-                return mi;
-            }
-            static
-            vmi_type vmf_to_vmi(const vmf_type& mf) {
-                return mf;
-            }
-            static
-            vi_type sel(const vmi_type& msk,
-                        const vi_type& t, const vi_type& f) {
-                return msk ? t : f;
-            }
-            static
-            vf_type sel(const vmf_type& msk,
-                        const vf_type& t, const vf_type& f) {
-                return msk ? t : f;
-            }
-            static
-            vf_type insert_exp(const vi_type& e) {
-                ud_t t;
-                t._u = uint32_t(e) << bits;
-                return t._d;
-            }
-            static
-            vi_type extract_exp(const vf_type& d) {
-                ud_t t;
-                t._d = d;
-                return (t._u >> bits) & e_mask;
-            }
-            static
-            vf_type cvt_i_to_f(const vi_type& i) {
-                return vf_type(i);
-            }
-            // including rounding to nearest.
-            static
-            vi_type cvt_f_to_i(const vf_type& f) {
-                return f < 0 ?
-                           (vi_type)(f - 0.5) :
-                    (vi_type)(f + 0.5);
-            }
-            // including rounding towards zero
-            static
-            vi_type cvt_rz_f_to_i(const vf_type& f) {
-                return (vi_type)f;
-            }
-
-            static
-            vi_type as_int(const vf_type& f) {
-                ud_t t;
-                t._d = f;
-                return t._u;
-            }
-
-            static
-            vf_type as_float(const vi_type& i) {
-                ud_t t;
-                t._u = i;
-                return t._d;
-            }
-        };
 
         // specialization of elem_func_core for float and different
         // traits
@@ -324,14 +234,6 @@ namespace cftal {
             exp10_px2_k(arg_t<vf_type> x);
         };
 
-        template <typename _T>
-        struct func<float, _T>
-            : public elem_func<float, _T> {
-            typedef typename _T::vf_type vf_type;
-            typedef typename _T::vi_type vi_type;
-            typedef typename _T::vmf_type vmf_type;
-            typedef typename _T::vmi_type vmi_type;
-        };
     }
 }
 

@@ -3,8 +3,8 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
-#include <cftal/math/elem_func_core_f32.h>
-#include <cftal/math/elem_func_core_f64.h>
+#include <cftal/math/func_traits_f32_s32.h>
+#include <cftal/math/func_traits_f64_s32.h>
 #include <cftal/divisor.h>
 #include <cftal/vec_cvt.h>
 #include <cftal/constants.h>
