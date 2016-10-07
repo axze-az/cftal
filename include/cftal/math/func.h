@@ -5,6 +5,7 @@
 #include <cftal/d_real.h>
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
+#include <cftal/math/spec_func.h>
 
 // Local Variables:
 // mode: c++

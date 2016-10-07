@@ -1,5 +1,5 @@
-#if !defined (__CFTAL_VEC_DEF_MATH_FUNCS_H__)
-#define __CFTAL_VEC_DEF_MATH_FUNCS_H__ 1
+#if !defined (__CFTAL_VEC_DEF_MATH_ELEM_FUNCS_H__)
+#define __CFTAL_VEC_DEF_MATH_ELEM_FUNCS_H__ 1
 
 #define DEF_TRAITS_FUNC(vec_float, vec_int, real_type)  \
     using traits_t=cftal::math::func_traits<vec_float,  \
@@ -8,7 +8,7 @@
                                         traits_t>
 
 
-#define DEF_MATH_FUNCS(ns, vec_float, vec_int, real_type)               \
+#define DEF_ELEM_FUNCS(ns, vec_float, vec_int, real_type)               \
                                                                         \
     ns::vec_float                                                       \
     ns::cbrt(arg<vec_float>::type a)                                    \
@@ -198,20 +198,6 @@
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::atanh(d);                                        \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::erf(arg<vec_float>::type d)                                     \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::erf(d);                                          \
-    }                                                                   \
-                                                                        \
-    ns::vec_float                                                       \
-    ns::erfc(arg<vec_float>::type d)                                    \
-    {                                                                   \
-        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::erfc(d);                                         \
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \

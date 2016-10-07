@@ -10,23 +10,32 @@ set (CSRCS
     x86_ops_1.cc
     vec_traits.cc
     # vec <double, 1>
-    v1f64.cc
+    v1f64_ef.cc
+    v1f64_sf.cc
     # vec <double, 2>
-    v2f64.cc
+    v2f64_ef.cc
+    v2f64_sf.cc
     # vec <double, 4>
-    v4f64.cc
+    v4f64_ef.cc
+    v4f64_sf.cc
     # vec <double, 8>
-    v8f64.cc
+    v8f64_ef.cc
+    v8f64_sf.cc
     # vec <float, 1>
-    v1f32.cc
+    v1f32_ef.cc
+    v1f32_sf.cc
     # vec <float, 2>
-    v2f32.cc
+    v2f32_ef.cc
+    v2f32_sf.cc
     # vec <float, 4>
-    v4f32.cc
+    v4f32_ef.cc
+    v4f32_sf.cc
     # vec <float, 8>
-    v8f32.cc
+    v8f32_ef.cc
+    v8f32_sf.cc
     # vec <float, 16>
-    v16f32.cc
+    v16f32_ef.cc
+    v16f32_sf.cc
 )
 
 if (CFTAL_STATIC_LIB)

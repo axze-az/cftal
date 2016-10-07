@@ -2,8 +2,9 @@
 #include "cftal/math/elem_func_core_f32.h"
 #include "cftal/d_real.h"
 #include "cftal/vec_traits.h"
-#include "vec_def_math_funcs.h"
+#include "vec_def_math_elem_funcs.h"
 #include <cmath>
 #include <limits>
 
-DEF_MATH_FUNCS(cftal, v2f32, v2s32, float)
+DEF_ELEM_FUNCS(cftal, v2f32, v2s32, float)
+// DEF_SPEC_FUNCS(cftal, v2f32, v2s32, float)
