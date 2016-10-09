@@ -560,7 +560,8 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
                                          _CMP cmp, std::size_t cnt)
 {
     bool r = true;
-
+    _T va[_N], vb[_N];
+#if 0
     const _T inf_nan_args []= {
         _T(0.0),
         _T(-0.0),
@@ -574,7 +575,6 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
         std::numeric_limits<_T>::quiet_NaN(),
     };
 
-    _T va[_N], vb[_N];
 
     for (auto ab=std::begin(inf_nan_args), ae=std::end(inf_nan_args);
          ab != ae; ++ab) {
@@ -593,7 +593,7 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
             r &= v(va, vb, st, speed_only, cmp);
         }
     }
-
+#endif
 
     std::mt19937_64 rnd;
     uniform_real_distribution<_T>

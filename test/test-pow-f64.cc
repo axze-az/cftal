@@ -36,20 +36,20 @@ int main(int argc, char** argv)
         rc&= check_func_2<double, 8, check_pow<double> >(v, ulp, 0, false);
 #endif
     }
-
+    exec_stats st(_N);
+    auto us=std::make_shared<ulp_stats>();
+#if 0
     func_domain<double> d=std::make_pair(-std::numeric_limits< double >::max(),
                                          std::numeric_limits< double >::max());
-    auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
     rc &= of_fp_func_2_up_to<
         double, _N, check_pow<double> >::v(st, d, d, speed_only,
                                            cmp_ulp<double>(ulp, us),
                                            cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
-
-    func_domain<double> d1=std::make_pair(0.0, 20.0);
-    func_domain<double> d2=std::make_pair(0.0, 100.0);
+#endif
+    func_domain<double> d1=std::make_pair(0.0, 1.0);
+    func_domain<double> d2=std::make_pair(0.0, 1.0);
     us= std::make_shared<ulp_stats>();
     rc &= of_fp_func_2_up_to<
         double, _N, check_pow<double> >::v(st, d1, d2, speed_only,
