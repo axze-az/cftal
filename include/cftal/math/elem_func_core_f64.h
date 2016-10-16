@@ -1528,13 +1528,38 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     // return x+y;
     vf_type abs_x= abs(x);
-    vf_type lnx = log_k(abs_x, log_func::c_log_2);
+#if 1
+    // x^y= exp( y * ln(x) );
+    // y= 2^j*f
+    // x= 2^i*m
+    // x^y= exp( 2^j* f * ln(2^i*m))
+    
+    // using ctbl = impl::d_real_constants<d_real<double>, double>;
+    // f(x) = exp(x) - a
+    // 
+    //  using Newton iteration.  The iteration is given by
+    // x' = x - f(x)/f'(x) 
+    //        = x - (1 - a * exp(-x))
+    //        = x + a * exp(-x) - 1.
+    vf_type lnx = log_k(abs_x, log_func::c_log_e);
+    dvf_type dlnx= lnx;
+    vf_type exp_lnx=exp_k(-lnx, false);
+    vf_type alnxl, alnxh = d_ops::two_prod(abs_x, exp_lnx, alnxl);
+    dvf_type alnx(alnxh, alnxl);
+    dlnx += alnx;
+    dlnx -= vf_type(1);
+    dlnx *= y;
+    vf_type p= exp_k(dlnx.h(), false);
+    vf_type xs= dlnx.l();
+    p += xs*p;
+#else
+    vf_type lnx = log_k(abs_x, log_func::c_log_e);
     vf_type xl, xh= d_ops::two_prod(y, lnx, xl);
-    vf_type p= exp2_k(xh);
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type xs= xl*ctbl::m_ln2.h();
+    vf_type p= exp_k(xh, false);
+    vf_type xs= xl;
     p += xs*p;    
-     // f(x) := e^(x+y);
+#endif
+    // f(x) := e^(x+y);
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
     return p;
 }
