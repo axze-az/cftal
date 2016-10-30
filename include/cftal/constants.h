@@ -49,16 +49,16 @@ namespace cftal {
     const bytes8 const_u64<_L, _H>::v{_L, _H};
 
     union __attribute__((__visibility__("hidden"))) bytes4 {
+    private:
         const float _f32;
         const uint32_t _u32;
-        const int32_t _s32;
-        const uint16_t _u16[2];
-        const int16_t _s16[2];
-        constexpr bytes4(int16_t l, int16_t h) : _s16{l, h} {}
-        constexpr bytes4(uint16_t l, uint16_t h) : _u16{l, h} {}
+    public:
         constexpr bytes4(float f) : _f32{f} {}
-        constexpr bytes4(int32_t u) : _s32{u} {}
+        constexpr bytes4(int32_t s) : _u32{static_cast<uint32_t>(s)} {}
         constexpr bytes4(uint32_t u) : _u32{u} {}
+        constexpr float f32() const { return _f32; }
+        constexpr uint32_t u32() const { return _u32; }
+        constexpr int32_t s32() const { return static_cast<int32_t>(_u32); }
     };
 
     template <uint32_t _N>
