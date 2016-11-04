@@ -170,7 +170,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
                 constexpr const bytes4 all_one{-1};
-                const full_type all_set(all_one._f32);
+                const full_type all_set(all_one.f32());
                 return _mm256_xor_ps(a(), all_set());
             }
         };
@@ -282,7 +282,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const full_type msk(sign_f32_msk::v._f32);
+                const full_type msk(sign_f32_msk::v.f32());
                 return _mm256_xor_ps(a(), msk());
             }
         };
@@ -617,7 +617,7 @@ cftal::v8f32 cftal::min(const v8f32& a, const v8f32& b)
 inline
 cftal::v8f32 cftal::abs(const v8f32& a)
 {
-    const v8f32 msk(not_sign_f32_msk::v._f32);
+    const v8f32 msk(not_sign_f32_msk::v.f32());
     return _mm256_and_ps(a(), msk());
 }
 
@@ -720,7 +720,7 @@ inline
 cftal::v8f32 cftal::copysign(const v8f32& x, const v8f32& y)
 {
     // return abs(x) * sgn(y)
-    const v8f32 msk(not_sign_f32_msk::v._f32);
+    const v8f32 msk(not_sign_f32_msk::v.f32());
     v8f32 abs_x(x & msk);
     v8f32 sgn_y(andnot(msk, y));
     return abs_x | sgn_y;
@@ -729,7 +729,7 @@ cftal::v8f32 cftal::copysign(const v8f32& x, const v8f32& y)
 inline
 cftal::v8f32 cftal::mulsign(const v8f32& x, const v8f32& y)
 {
-    const v8f32 msk(sign_f32_msk::v._f32);
+    const v8f32 msk(sign_f32_msk::v.f32());
     v8f32 sgn_y = y & msk;
     return x ^ sgn_y;
 }

@@ -164,7 +164,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
                 constexpr const bytes4 all_one{-1};
-                const full_type all_set(all_one._f32);
+                const full_type all_set(all_one.f32());
                 return _mm_xor_ps(a(), all_set());
             }
         };
@@ -277,7 +277,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const full_type msk(sign_f32_msk::v._f32);
+                const full_type msk(sign_f32_msk::v.f32());
                 return _mm_xor_ps(a(), msk());
             }
         };
@@ -539,7 +539,7 @@ cftal::v4f32 cftal::sqrt(const v4f32& a)
 inline
 cftal::v4f32 cftal::abs(const v4f32& a)
 {
-    const v4f32 msk(not_sign_f32_msk::v._f32);
+    const v4f32 msk(not_sign_f32_msk::v.f32());
     return _mm_and_ps(a(), msk());
 }
 
@@ -655,7 +655,7 @@ inline
 cftal::v4f32 cftal::copysign(const v4f32& x, const v4f32& y)
 {
     // return abs(x) * sgn(y)
-    const v4f32 msk(not_sign_f32_msk::v._f32);
+    const v4f32 msk(not_sign_f32_msk::v.f32());
     v4f32 abs_x(x & msk);
     v4f32 sgn_y(andnot(msk, y));
     return abs_x | sgn_y;
@@ -664,7 +664,7 @@ cftal::v4f32 cftal::copysign(const v4f32& x, const v4f32& y)
 inline
 cftal::v4f32 cftal::mulsign(const v4f32& x, const v4f32& y)
 {
-    const v4f32 msk(sign_f32_msk::v._f32);
+    const v4f32 msk(sign_f32_msk::v.f32());
     v4f32 sgn_y = y & msk;
     return x ^ sgn_y;
 }

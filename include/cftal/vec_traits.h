@@ -76,7 +76,7 @@ namespace cftal {
               vec<float, _N>& h,
               vec<float, _N>& l) {
             const vec<float, _N> msk(
-                const_u32<0xfffff000U>::v._f32);
+                const_u32<0xfffff000U>::v.f32());
             h = a & msk;
             l = a - h;
         }

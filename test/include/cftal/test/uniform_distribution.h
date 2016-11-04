@@ -44,7 +44,7 @@ namespace cftal {
 
             static
             float
-            make_fp(const bytes4& b) { return b._f32; }
+            make_fp(const bytes4& b) { return b.f32(); }
 
         public:
             using result_type = typename base_type::result_type;

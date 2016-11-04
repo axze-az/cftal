@@ -59,6 +59,8 @@ namespace cftal {
         constexpr float f32() const { return _f32; }
         constexpr uint32_t u32() const { return _u32; }
         constexpr int32_t s32() const { return static_cast<int32_t>(_u32); }
+        constexpr uint16_t u16l() const { return _u32; }
+        constexpr uint16_t u16h() const { return _u32>>16; }
     };
 
     template <uint32_t _N>

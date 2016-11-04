@@ -35,8 +35,8 @@ namespace cftal {
 #if defined (__AVX512VL__)
                 return _mm_cmp_epu32_mask(a(), b(), _CMP_LT_OS & 7);
 #else
-                v4u32 ta(a ^ full_type(sign_s32_msk::v._u32));
-                v4u32 tb(b ^ full_type(sign_s32_msk::v._u32));
+                v4u32 ta(a ^ full_type(sign_s32_msk::v.u32()));
+                v4u32 tb(b ^ full_type(sign_s32_msk::v.u32()));
                 return _mm_cmpgt_epi32(tb(), ta());
 #endif
             }
@@ -124,8 +124,8 @@ namespace cftal {
 #if defined (__AVX512VL__)
                 return _mm_cmp_epu32_mask(a(), b(), _CMP_GT_OS & 7);
 #else
-                v4u32 ta(a ^ full_type(sign_s32_msk::v._u32));
-                v4u32 tb(b ^ full_type(sign_s32_msk::v._u32));
+                v4u32 ta(a ^ full_type(sign_s32_msk::v.u32()));
+                v4u32 tb(b ^ full_type(sign_s32_msk::v.u32()));
                 return _mm_cmpgt_epi32(ta(), tb());
 #endif
             }
@@ -148,7 +148,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
 #if defined (__SSSE3__)
-                const full_type sgn(sign_s32_msk::v._u32);
+                const full_type sgn(sign_s32_msk::v.u32());
                 return _mm_sign_epi32(a(), sgn());
 #else
                 const full_type zero(0);

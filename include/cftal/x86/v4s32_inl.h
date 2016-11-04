@@ -149,7 +149,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
 #if defined (__SSSE3__)
-                const full_type sgn(sign_s32_msk::v._s32);
+                const full_type sgn(sign_s32_msk::v.s32());
                 return _mm_sign_epi32(a(), sgn());
 #else
                 const full_type zero(0);

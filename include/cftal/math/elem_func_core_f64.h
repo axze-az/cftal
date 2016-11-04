@@ -130,6 +130,11 @@ namespace cftal {
             vf_type
             log_k(arg_t<vf_type> x, log_func f=log_func::c_log_e);
 
+            
+            static
+            dvf_type
+            log_k2(arg_t<vf_type> x);
+            
             static
             vf_type
             log1p_k(arg_t<vf_type> x);
@@ -1406,6 +1411,16 @@ log_k(arg_t<vf_type> xc, log_func func)
         res = log2_x;
     }
     return res;
+}
+
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::dvf_type
+cftal::math::elem_func_core<double, _T>::
+log_k2(arg_t<vf_type> xc)
+{
+    
 }
 
 template <typename _T>

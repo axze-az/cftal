@@ -285,7 +285,7 @@ template <std::size_t _N, std::size_t _B>
 void
 cftal::test::csplit(float (&r)[_N], const mpfr_real<_B>& v)
 {
-    uint32_t msk=const_u32<0xfffffE00U>::v._u32;
+    uint32_t msk=const_u32<0xfffffE00U>::v.u32();
     mpfr_real<_B> vv(v);
     for (std::size_t i=0; i<_N-1; ++i) {
         float t= float(vv);
@@ -989,7 +989,7 @@ int main(int argc, char** argv)
             0x1p48f);
 
         std::cout << "const float max_denormal= "
-                  <<  sig_f32_msk::v._f32 << ";\n\n";
+                  <<  sig_f32_msk::v.f32() << ";\n\n";
 
         float a[2];
         mpfr_real<512> ln2=2.0;
