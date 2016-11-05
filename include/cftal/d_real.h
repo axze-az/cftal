@@ -96,6 +96,7 @@ namespace cftal {
         }
 
         static
+        constexpr
         double
         scale_div_threshold() {
             return 0x1.p-969;
@@ -147,6 +148,7 @@ namespace cftal {
         }
 
         static
+        constexpr
         float
         scale_div_threshold() {
             // -126 + 24
@@ -166,9 +168,9 @@ namespace cftal {
         constexpr d_real(const d_real<_U>& r) : _h(r.h()), _l(r.l()) {}
         constexpr d_real(const _T& h, const _T& l) : _h(h), _l(l) {}
         constexpr d_real(const _T& h) : _h(h), _l(_T(0)) {}
-        const _T& l() const { return _l; }
+        constexpr const _T& l() const { return _l; }
         _T& l() { return _l; }
-        const _T& h() const { return _h; }
+        constexpr const _T& h() const { return _h; }
         _T& h() { return _h; }
     };
 
