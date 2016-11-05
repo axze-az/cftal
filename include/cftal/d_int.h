@@ -21,8 +21,8 @@ namespace cftal {
         constexpr duint() : _l(0), _h(0) {}
         constexpr duint(const type& vl) : _l(vl), _h(0) {}
         constexpr duint(const type& vl, const type& vh) : _l(vl), _h(vh) {}
-        const type& l() const { return _l; }
-        const type& uh() const { return _h; }
+        constexpr const type& l() const { return _l; }
+        constexpr const type& uh() const { return _h; }
         void l(const type& v) { _l = v; }
         void uh(const type& v) { _h = v; }
         explicit operator _T() const { return _l; }
@@ -230,10 +230,11 @@ namespace cftal {
         constexpr dint(const utype& vl, const type& vh) : base_type(vl,vh) {}
         constexpr dint(const base_type& b) : base_type(b) { }
         // l is inherited from base_tpye.
-        const type& sh() const {
-            const utype& _uh= base_type::uh();
-            const type* ph= reinterpret_cast<const type*>(&_uh);
-            return *ph;
+        constexpr const type& sh() const {
+            return reinterpret_cast<const type&>(base_type::uh());
+            // const utype& _uh= base_type::uh();
+            // const type* ph= reinterpret_cast<const type*>(&_uh);
+            // return *ph;
         }
         explicit operator _T() const {
             return type(this->l());
