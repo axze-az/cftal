@@ -136,13 +136,55 @@ cftal::impl::f16_to_f32(uint16_t a)
     return as<float>(r);
 }
 
+namespace cftal {
+    namespace impl {
+        template <int i>
+        bool
+        check_elem_x(v8f32 v, float r);
+    }    
+}
+
+template <int i>
+bool
+cftal::impl::check_elem_x(v8f32 v, float r)
+{
+    float t=extract<i>(v);
+    return (t==r) || (std::isnan(t) && std::isnan(r));
+}
+
 bool
 cftal::impl::test_cvt_f32_f16()
 {
+#if defined (__F16C__)
+    // _mm_cvtph_ps
+    // _mm_cvtps_ph
+    bool r=true;
     for (uint32_t i=0; i<0x10000u; ++i) {
-        
+        uint16_t t=i;
+        v8u16 s={uint16_t(t+0), uint16_t(t+1), uint16_t(t+2), uint16_t(t+3),  
+                 uint16_t(t+4), uint16_t(t+5), uint16_t(t+6), uint16_t(t+7)};
+        v8f32 d=_mm256_cvtph_ps(s());          
+        float dr=f16_to_f32(i);
+        r &= check_elem_x<0>(d, dr);
+        dr=f16_to_f32(i+1);
+        r &= check_elem_x<0>(d, dr);
+        dr=f16_to_f32(i+2);
+        r &= check_elem_x<0>(d, dr);
+        dr=f16_to_f32(i+3);
+        r &= check_elem_x<0>(d, dr);
+        dr=f16_to_f32(i+4);
+        r &= check_elem_x<0>(d, dr);
+        dr=f16_to_f32(i+5);
+        r &= check_elem_x<0>(d, dr);
+        dr=f16_to_f32(i+6);
+        r &= check_elem_x<0>(d, dr);
+        dr=f16_to_f32(i+7);
+        r &= check_elem_x<0>(d, dr);
     }
-    return false;
+    return r;
+#else
+    return true;
+#endif
 }
 
 
