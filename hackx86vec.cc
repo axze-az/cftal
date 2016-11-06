@@ -159,7 +159,7 @@ cftal::impl::test_cvt_f32_f16()
     // _mm_cvtph_ps
     // _mm_cvtps_ph
     bool r=true;
-    for (uint32_t i=0; i<0x10000u; ++i) {
+    for (uint32_t i=0; i<0x10000u; i+=8) {
         uint16_t t=i;
         v8u16 s={uint16_t(t+0), uint16_t(t+1), uint16_t(t+2), uint16_t(t+3),  
                  uint16_t(t+4), uint16_t(t+5), uint16_t(t+6), uint16_t(t+7)};
@@ -181,6 +181,7 @@ cftal::impl::test_cvt_f32_f16()
         dr=f16_to_f32(i+7);
         r &= check_elem_x<0>(d, dr);
     }
+    std::cout << "passed\n";
     return r;
 #else
     return true;
@@ -201,5 +202,6 @@ int main3(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-    return main3(argc, argv);
+    // return main3(argc, argv);
+    return cftal::impl::test_cvt_f32_f16() == true ? 0 : 1;
 }
