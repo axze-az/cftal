@@ -136,7 +136,14 @@ cftal::impl::f16_to_f32(uint16_t a)
     return as<float>(r);
 }
 
-
+bool
+cftal::impl::test_cvt_f32_f16()
+{
+    for (uint32_t i=0; i<0x10000u; ++i) {
+        
+    }
+    return false;
+}
 
 
 int main3(int argc, char** argv)
