@@ -7,6 +7,7 @@
 #include <boost/math/special_functions.hpp>
 #include <string>
 #include <vector>
+#include <memory>
 #include <iostream>
 #include <iomanip>
 
