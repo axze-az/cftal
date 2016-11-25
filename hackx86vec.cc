@@ -16,6 +16,7 @@ namespace cftal {
         float f16_to_f32(uint16_t v);
         
         bool test_cvt_f32_f16();
+        bool test_cvt_f16_f32();
         
         
         template <typename _T>
@@ -141,6 +142,10 @@ namespace cftal {
         template <int i>
         bool
         check_elem_x(v8f32 v, float r);
+        
+        template <int i>
+        bool
+        check_elem_x(v8u16 v, uint16_t r);
     }    
 }
 
@@ -152,8 +157,16 @@ cftal::impl::check_elem_x(v8f32 v, float r)
     return (t==r) || (std::isnan(t) && std::isnan(r));
 }
 
+template <int i>
 bool
-cftal::impl::test_cvt_f32_f16()
+cftal::impl::check_elem_x(v8u16 v, uint16_t r)
+{
+    uint16_t t=extract<i>(v);
+    return (t==r);
+}
+
+bool
+cftal::impl::test_cvt_f16_f32()
 {
 #if defined (__F16C__)
     // _mm_cvtph_ps
@@ -167,22 +180,64 @@ cftal::impl::test_cvt_f32_f16()
         float dr=f16_to_f32(i);
         r &= check_elem_x<0>(d, dr);
         dr=f16_to_f32(i+1);
-        r &= check_elem_x<0>(d, dr);
+        r &= check_elem_x<1>(d, dr);
         dr=f16_to_f32(i+2);
-        r &= check_elem_x<0>(d, dr);
+        r &= check_elem_x<2>(d, dr);
         dr=f16_to_f32(i+3);
-        r &= check_elem_x<0>(d, dr);
+        r &= check_elem_x<3>(d, dr);
         dr=f16_to_f32(i+4);
-        r &= check_elem_x<0>(d, dr);
+        r &= check_elem_x<4>(d, dr);
         dr=f16_to_f32(i+5);
-        r &= check_elem_x<0>(d, dr);
+        r &= check_elem_x<5>(d, dr);
         dr=f16_to_f32(i+6);
-        r &= check_elem_x<0>(d, dr);
+        r &= check_elem_x<6>(d, dr);
         dr=f16_to_f32(i+7);
-        r &= check_elem_x<0>(d, dr);
+        r &= check_elem_x<7>(d, dr);
     }
-    std::cout << "passed\n";
+    std::cout << "f16 --> f32 "
+    if (r == true)
+        std::cout << "passed\n";
+    else 
+        std::cout << "failed\n";
     return r;
+#else
+    return true;
+#endif
+}
+
+bool
+cftal::impl::test_cvt_f32_f16()
+{
+#if defined (__F16C__)
+    bool r=true;
+    for (uint64_t i=0; i<0x1000000000u; i+=8) {
+        v8u32 s={uint32_t(t+0), uint32_t(t+1), uint32_t(t+2), uint32_t(t+3),  
+                 uint32_t(t+4), uint32_t(t+5), uint32_t(t+6), uint32_t(t+7)};
+        v8f32 sf=as<v8f32>(s);
+        v8u16 d=_mm256_cvtps_ph(d, 0);
+        uin16_t dr=f32_to_f16(as<float>(i));
+        r &= check_elem_x<0>(d, dr);
+        uin16_t dr=f32_to_f16(as<float>(i+1));
+        r &= check_elem_x<1>(d, dr);
+        uin16_t dr=f32_to_f16(as<float>(i+2));
+        r &= check_elem_x<2>(d, dr);
+        uin16_t dr=f32_to_f16(as<float>(i+3));
+        r &= check_elem_x<3>(d, dr);
+        uin16_t dr=f32_to_f16(as<float>(i+4));
+        r &= check_elem_x<4>(d, dr);
+        uin16_t dr=f32_to_f16(as<float>(i+5));
+        r &= check_elem_x<5>(d, dr);
+        uin16_t dr=f32_to_f16(as<float>(i+6));
+        r &= check_elem_x<6>(d, dr);
+        uin16_t dr=f32_to_f16(as<float>(i+7));
+        r &= check_elem_x<7>(d, dr);
+    }
+    std::cout << "f32 --> f16 "
+    if (r == true)
+        std::cout << "passed\n";
+    else 
+        std::cout << "failed\n";
+    return r;    
 #else
     return true;
 #endif
@@ -203,5 +258,7 @@ int main3(int argc, char** argv)
 int main(int argc, char** argv)
 {
     // return main3(argc, argv);
-    return cftal::impl::test_cvt_f32_f16() == true ? 0 : 1;
+    cftal::impl::test_cvt_f16_f32();
+    cftal::impl::test_cvt_f32_f16();
+    return true;
 }
