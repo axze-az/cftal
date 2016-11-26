@@ -154,7 +154,12 @@ bool
 cftal::impl::check_elem_x(v8f32 v, float r)
 {
     float t=extract<i>(v);
-    return (t==r) || (std::isnan(t) && std::isnan(r));
+    bool c = (t==r) || (std::isnan(t) && std::isnan(r));
+    if (c==false) {
+        std::cout << std::setprecision(16)
+                  << t << " should be " << r << std::endl;
+    }
+    return c;
 }
 
 template <int i>
@@ -210,7 +215,9 @@ cftal::impl::test_cvt_f32_f16()
 {
 #if defined (__F16C__)
     bool r=true;
-    for (uint64_t i=0; i<0x1000000000u; i+=8) {
+    for (uint64_t i=0; i<0x100000000u; i+=8) {
+        if ((i & 0xFFFFFF8) == 0xFFFFFF8)
+            std::cout << '.' << std::flush;
         uint32_t t=i;
         v8u32 s={uint32_t(t+0), uint32_t(t+1), uint32_t(t+2), uint32_t(t+3),  
                  uint32_t(t+4), uint32_t(t+5), uint32_t(t+6), uint32_t(t+7)};
