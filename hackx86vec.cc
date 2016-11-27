@@ -141,7 +141,7 @@ namespace cftal {
     namespace impl {
         template <int i>
         bool
-        check_elem_x(v8f32 v, float r);
+        check_elem_x(v8f32 v, float r, uint16_t s);
         
         template <int i>
         bool
