@@ -119,7 +119,7 @@ float
 cftal::impl::f16_to_f32(uint16_t a)
 {
     uint32_t sign = static_cast<uint32_t>(a & 0x8000) << 16;
-    int32_t aexp = (a >> 10) & 0x1f;
+    int32_t aexp = (uint32_t(a) >> 10) & 0x1f;
     uint32_t mantissa = a & 0x3ff;
 
     if (aexp == 0x1f)
