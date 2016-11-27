@@ -127,7 +127,7 @@ cftal::impl::f16_to_f32(uint16_t a)
 
     if (aexp == 0) {
         if (mantissa == 0)
-            return sign;
+            return as<float>(sign);
         int shift = lzcnt(mantissa) - 21;
         mantissa <<= shift;
         aexp = -shift;
