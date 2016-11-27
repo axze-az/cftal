@@ -123,7 +123,7 @@ cftal::impl::f16_to_f32(uint16_t a)
     uint32_t mantissa = a & 0x3ff;
 
     if (aexp == 0x1f)
-        return sign | 0x7f800000 | (mantissa << 13);
+        return as<float>(sign | 0x7f800000 | (mantissa << 13));
 
     if (aexp == 0) {
         if (mantissa == 0)
