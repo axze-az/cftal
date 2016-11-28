@@ -10,7 +10,8 @@
 #include <cftal/bitops.h>
 
 namespace cftal {
-    namespace impl {
+    
+    namespace test {
         
         uint16_t f32_to_f16(float v);
         float f16_to_f32(uint16_t v);
@@ -18,6 +19,10 @@ namespace cftal {
         bool test_cvt_f32_f16();
         bool test_cvt_f16_f32();
         
+    }
+    
+    namespace impl {
+                
         
         template <typename _T>
         std::pair<_T, _T>
@@ -61,7 +66,7 @@ namespace cftal {
 }
 
 cftal::uint16_t 
-cftal::impl::f32_to_f16(float v)
+cftal::test::f32_to_f16(float v)
 {
     uint32_t a= as<uint32_t>(v);
     uint16_t sign = (a >> 16) & 0x8000;
@@ -116,7 +121,7 @@ cftal::impl::f32_to_f16(float v)
 }
 
 float
-cftal::impl::f16_to_f32(uint16_t a)
+cftal::test::f16_to_f32(uint16_t a)
 {
     uint32_t sign = static_cast<uint32_t>(a & 0x8000) << 16;
     int32_t aexp = (uint32_t(a) >> 10) & 0x1f;
@@ -138,7 +143,7 @@ cftal::impl::f16_to_f32(uint16_t a)
 }
 
 namespace cftal {
-    namespace impl {
+    namespace test {
         template <int i>
         bool
         check_elem_x(v8f32 v, float r, uint16_t s);
@@ -151,7 +156,7 @@ namespace cftal {
 
 template <int i>
 bool
-cftal::impl::check_elem_x(v8f32 v, float r, uint16_t s)
+cftal::test::check_elem_x(v8f32 v, float r, uint16_t s)
 {
     float t=extract<i>(v);
     bool c = (t==r) || (std::isnan(t) && std::isnan(r));
@@ -165,14 +170,14 @@ cftal::impl::check_elem_x(v8f32 v, float r, uint16_t s)
 
 template <int i>
 bool
-cftal::impl::check_elem_x(v8u16 v, uint16_t r)
+cftal::test::check_elem_x(v8u16 v, uint16_t r)
 {
     uint16_t t=extract<i>(v);
     return (t==r);
 }
 
 bool
-cftal::impl::test_cvt_f16_f32()
+cftal::test::test_cvt_f16_f32()
 {
 #if defined (__F16C__)
     // _mm_cvtph_ps
@@ -212,7 +217,7 @@ cftal::impl::test_cvt_f16_f32()
 }
 
 bool
-cftal::impl::test_cvt_f32_f16()
+cftal::test::test_cvt_f32_f16()
 {
 #if defined (__F16C__)
     bool r=true;
@@ -267,7 +272,7 @@ int main3(int argc, char** argv)
 int main(int argc, char** argv)
 {
     // return main3(argc, argv);
-    cftal::impl::test_cvt_f16_f32();
-    cftal::impl::test_cvt_f32_f16();
+    cftal::test::test_cvt_f16_f32();
+    cftal::test::test_cvt_f32_f16();
     return true;
 }
