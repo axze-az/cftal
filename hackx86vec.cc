@@ -13,11 +13,11 @@ namespace cftal {
     
     namespace test {
         
-        uint16_t f32_to_f16(float v);
-        float f16_to_f32(uint16_t v);
+        uint16_t ref_f32_to_f16(float v);
+        float ref_f16_to_f32(uint16_t v);
         
-        bool test_cvt_f32_f16();
-        bool test_cvt_f16_f32();
+        bool test_ref_cvt_f32_f16();
+        bool test_ref_cvt_f16_f32();
         
     }
     
@@ -66,7 +66,7 @@ namespace cftal {
 }
 
 cftal::uint16_t 
-cftal::test::f32_to_f16(float v)
+cftal::test::ref_f32_to_f16(float v)
 {
     uint32_t a= as<uint32_t>(v);
     uint16_t sign = (a >> 16) & 0x8000;
@@ -121,7 +121,7 @@ cftal::test::f32_to_f16(float v)
 }
 
 float
-cftal::test::f16_to_f32(uint16_t a)
+cftal::test::ref_f16_to_f32(uint16_t a)
 {
     uint32_t sign = static_cast<uint32_t>(a & 0x8000) << 16;
     int32_t aexp = (uint32_t(a) >> 10) & 0x1f;
@@ -177,7 +177,7 @@ cftal::test::check_elem_x(v8u16 v, uint16_t r)
 }
 
 bool
-cftal::test::test_cvt_f16_f32()
+cftal::test::test_ref_cvt_f16_f32()
 {
 #if defined (__F16C__)
     // _mm_cvtph_ps
@@ -188,7 +188,7 @@ cftal::test::test_cvt_f16_f32()
         v8u16 s={uint16_t(t+0), uint16_t(t+1), uint16_t(t+2), uint16_t(t+3),  
                  uint16_t(t+4), uint16_t(t+5), uint16_t(t+6), uint16_t(t+7)};
         v8f32 d=_mm256_cvtph_ps(s());          
-        float dr=f16_to_f32(i);
+        float dr=ref_f16_to_f32(i);
         r &= check_elem_x<0>(d, dr, i);
         dr=f16_to_f32(i+1);
         r &= check_elem_x<1>(d, dr, i+1);
@@ -217,9 +217,10 @@ cftal::test::test_cvt_f16_f32()
 }
 
 bool
-cftal::test::test_cvt_f32_f16()
+cftal::test::test_ref_cvt_f32_f16()
 {
 #if defined (__F16C__)
+    // test code for processors with f16c
     bool r=true;
     for (uint64_t i=0; i<0x100000000u; i+=8) {
         if ((i & 0xFFFFFF8) == 0xFFFFFF8)
@@ -229,7 +230,7 @@ cftal::test::test_cvt_f32_f16()
                  uint32_t(t+4), uint32_t(t+5), uint32_t(t+6), uint32_t(t+7)};
         v8f32 sf=as<v8f32>(s);
         v8u16 d=_mm256_cvtps_ph(sf(), 0);
-        uint16_t dr=f32_to_f16(as<float>(t));
+        uint16_t dr=ref_f32_to_f16(as<float>(t));
         r &= check_elem_x<0>(d, dr);
         dr=f32_to_f16(as<float>(t+1));
         r &= check_elem_x<1>(d, dr);
@@ -272,7 +273,7 @@ int main3(int argc, char** argv)
 int main(int argc, char** argv)
 {
     // return main3(argc, argv);
-    cftal::test::test_cvt_f16_f32();
-    cftal::test::test_cvt_f32_f16();
+    cftal::test::test_ref_cvt_f16_f32();
+    cftal::test::test_ref_cvt_f32_f16();
     return true;
 }
