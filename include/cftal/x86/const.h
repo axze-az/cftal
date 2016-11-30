@@ -12,11 +12,10 @@ namespace cftal {
         // union of all mixed types
         template <class _V, class _E, int _EN>
         struct vecunion {
-            union u {
+            union u_t {
                 _V _v;
                 _E _e[_EN];
             };
-            typedef u u_t;
         };
 
         // static constants consisting of 4 uint32_t
