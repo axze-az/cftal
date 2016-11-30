@@ -28,7 +28,7 @@ namespace cftal {
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
         vec(std::initializer_list<float> l);
-        // allow construction from vec<float, 8>
+        // allow construction from init_list
         vec(init_list<float> l);
         // allow construction from two halfes
         vec(const vec<float, 1>& lh, const vec<float, 1>& hh);

@@ -27,7 +27,7 @@ namespace cftal {
         // constructor from std::initializer_list, fills remaining
         // elements with the last one given
         vec(std::initializer_list<uint32_t> l);
-        // allow construction from vec<int32_t, 8>
+        // allow construction from init_list
         vec(init_list<uint32_t> l);
         // expression template constructor
         template <template <class _U, std::size_t _M>
