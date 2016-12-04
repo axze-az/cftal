@@ -23,6 +23,16 @@ namespace cftal {
 
     }
 
+    // a 16 bit floating point number
+    class f16 {
+    public:
+        constexpr explicit f16(uint16_t f) : _f(f) {}
+        constexpr uint16_t v() const { return _f; }
+    private:
+        uint16_t _f;
+    };
+
+
     template <size_t _N>
     vec<float, _N>
     f16_to_f32(const vec<uint16_t, _N>& s);
@@ -155,15 +165,13 @@ cftal::f16_to_f32(const vec<uint16_t, _N> &s)
 {
     const vec<uint16_t, _N> z(0);
     using uv_t = vec<uint32_t, _N>;
-    using sv_t = vec<int32_t, _N>;
     uv_t sl= as<uv_t>(combine_even_odd(s, z));
     uv_t sign = (sl << 16) & uv_t(sign_f32_msk::v.u32());
     uv_t mant = sl & uv_t(0x3ff);
     uv_t ue= (sl >> 10) & uv_t(0x1f);
-    sv_t e = as<sv_t>(ue);
+    // sv_t e = as<sv_t>(ue);
 
     using um_t = typename uv_t::mask_type;
-    // using sm_t = typename sv_t::mask_type;
 
     // shifted mantissa
     uv_t mant_s = mant << 13;
@@ -178,15 +186,27 @@ cftal::f16_to_f32(const vec<uint16_t, _N> &s)
     // e  == 0 & mant !=0 --> subnormal
     um_t sub_nor = um_t(ue == uv_t(0x0)) & um_t(mant != 0);
     if (any_of(sub_nor)) {
+        // the f16 hidden bit
         const uv_t dot = uv_t(0x400);
-        uv_t dm= select(sub_nor, dot, mant);
+        // set the hidden bit for not sub normal components
+        uv_t dm= select(sub_nor, mant, dot);
+        // ue + the bias shift to reach f32 bias
+        uv_t due= ue + 0x70;
         // shift mantissa left until we have normalized all numbers
-        // to 1.xxxx
-        um_t is_norm = ((dm & dot) == dot) & sub_nor;
-
-
-
-
+        // to 1.xxxx and subtract for every step one from the exponent
+        while (1) {
+            um_t is_norm = ((dm & dot) == dot);
+            if (all_of(is_norm))
+                break;
+            dm = select(is_norm, dm, dm << 1);
+            due= select(is_norm, due, due - 1);
+        }
+        // clear the hidden bit
+        dm &= 0x3ff;
+        // and align the mantissa
+        dm <<=13;
+        uv_t f_sub_nor = sign | (due << exp_shift_f32) | dm;
+        f = select(sub_nor, f_sub_nor, f);
     }
 
     return as<vec<float, _N> >(f);
