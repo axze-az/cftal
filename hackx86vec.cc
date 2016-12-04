@@ -8,22 +8,29 @@
 #include <cftal/vec_traits.h>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/bitops.h>
+#include <cftal/vec.h>
+#include <cftal/constants.h>
 
 namespace cftal {
-    
+
     namespace test {
-        
+
         uint16_t ref_f32_to_f16(float v);
         float ref_f16_to_f32(uint16_t v);
-        
+
         bool test_ref_cvt_f32_f16();
         bool test_ref_cvt_f16_f32();
-        
+
     }
-    
+
+    template <size_t _N>
+    vec<float, _N>
+    f16_to_f32(const vec<uint16_t, _N>& s);
+
+
     namespace impl {
-                
-        
+
+
         template <typename _T>
         std::pair<_T, _T>
         agm_step(std::pair<_T, _T> p) {
@@ -65,7 +72,7 @@ namespace cftal {
 
 }
 
-cftal::uint16_t 
+cftal::uint16_t
 cftal::test::ref_f32_to_f16(float v)
 {
     uint32_t a= as<uint32_t>(v);
@@ -142,16 +149,59 @@ cftal::test::ref_f16_to_f32(uint16_t a)
     return as<float>(r);
 }
 
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::f16_to_f32(const vec<uint16_t, _N> &s)
+{
+    const vec<uint16_t, _N> z(0);
+    using uv_t = vec<uint32_t, _N>;
+    using sv_t = vec<int32_t, _N>;
+    uv_t sl= as<uv_t>(combine_even_odd(s, z));
+    uv_t sign = (sl << 16) & uv_t(sign_f32_msk::v.u32());
+    uv_t mant = sl & uv_t(0x3ff);
+    uv_t ue= (sl >> 10) & uv_t(0x1f);
+    sv_t e = as<sv_t>(ue);
+
+    using um_t = typename uv_t::mask_type;
+    // using sm_t = typename sv_t::mask_type;
+
+    // shifted mantissa
+    uv_t mant_s = mant << 13;
+    // e  == 0x1f --> inf or NaN
+    um_t inf_nan = ue == uv_t(0x1f);
+    uv_t f_inf_nan = sign | uv_t(exp_f32_msk::v.u32()) | mant_s;
+    // default normal value:
+    uv_t f= sign | ((ue + 0x70) << exp_shift_f32) | mant_s;
+    // combine inf/nan and normal values
+    f = select(inf_nan, f_inf_nan, f);
+
+    // e  == 0 & mant !=0 --> subnormal
+    um_t sub_nor = um_t(ue == uv_t(0x0)) & um_t(mant != 0);
+    if (any_of(sub_nor)) {
+        const uv_t dot = uv_t(0x400);
+        uv_t dm= select(sub_nor, dot, mant);
+        // shift mantissa left until we have normalized all numbers
+        // to 1.xxxx
+        um_t is_norm = ((dm & dot) == dot) & sub_nor;
+
+
+
+
+    }
+
+    return as<vec<float, _N> >(f);
+}
+
 namespace cftal {
     namespace test {
         template <int i>
         bool
         check_elem_x(v8f32 v, float r, uint16_t s);
-        
+
         template <int i>
         bool
         check_elem_x(v8u16 v, uint16_t r);
-    }    
+    }
 }
 
 template <int i>
@@ -185,9 +235,9 @@ cftal::test::test_ref_cvt_f16_f32()
     bool r=true;
     for (uint32_t i=0; i<0x10000u; i+=8) {
         uint16_t t=i;
-        v8u16 s={uint16_t(t+0), uint16_t(t+1), uint16_t(t+2), uint16_t(t+3),  
+        v8u16 s={uint16_t(t+0), uint16_t(t+1), uint16_t(t+2), uint16_t(t+3),
                  uint16_t(t+4), uint16_t(t+5), uint16_t(t+6), uint16_t(t+7)};
-        v8f32 d=_mm256_cvtph_ps(s());          
+        v8f32 d=_mm256_cvtph_ps(s());
         float dr=ref_f16_to_f32(i);
         r &= check_elem_x<0>(d, dr, i);
         dr=ref_f16_to_f32(i+1);
@@ -208,7 +258,7 @@ cftal::test::test_ref_cvt_f16_f32()
     std::cout << "f16 --> f32 ";
     if (r == true)
         std::cout << "passed\n";
-    else 
+    else
         std::cout << "failed\n";
     return r;
 #else
@@ -226,7 +276,7 @@ cftal::test::test_ref_cvt_f32_f16()
         if ((i & 0xFFFFFF8) == 0xFFFFFF8)
             std::cout << '.' << std::flush;
         uint32_t t=i;
-        v8u32 s={uint32_t(t+0), uint32_t(t+1), uint32_t(t+2), uint32_t(t+3),  
+        v8u32 s={uint32_t(t+0), uint32_t(t+1), uint32_t(t+2), uint32_t(t+3),
                  uint32_t(t+4), uint32_t(t+5), uint32_t(t+6), uint32_t(t+7)};
         v8f32 sf=as<v8f32>(s);
         v8u16 d=_mm256_cvtps_ph(sf(), 0);
@@ -250,9 +300,9 @@ cftal::test::test_ref_cvt_f32_f16()
     std::cout << "f32 --> f16 ";
     if (r == true)
         std::cout << "passed\n";
-    else 
+    else
         std::cout << "failed\n";
-    return r;    
+    return r;
 #else
     return true;
 #endif
