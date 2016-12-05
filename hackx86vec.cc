@@ -21,6 +21,9 @@ namespace cftal {
         bool test_ref_cvt_f32_f16();
         bool test_ref_cvt_f16_f32();
 
+        template <std::size_t _N>
+        bool test_cvt_f16_f32();
+
     }
 
     // a 16 bit floating point number
@@ -33,7 +36,7 @@ namespace cftal {
     };
 
 
-    template <size_t _N>
+    template <std::size_t _N>
     vec<float, _N>
     f16_to_f32(const vec<uint16_t, _N>& s);
 
@@ -183,32 +186,39 @@ cftal::f16_to_f32(const vec<uint16_t, _N> &s)
     // combine inf/nan and normal values
     f = select(inf_nan, f_inf_nan, f);
 
-    // e  == 0 & mant !=0 --> subnormal
-    um_t sub_nor = um_t(ue == uv_t(0x0)) & um_t(mant != 0);
-    if (any_of(sub_nor)) {
-        // the f16 hidden bit
-        const uv_t dot = uv_t(0x400);
-        // set the hidden bit for not sub normal components
-        uv_t dm= select(sub_nor, mant, dot);
-        // ue + the bias shift to reach f32 bias
-        uv_t due= ue + 0x70;
-        // shift mantissa left until we have normalized all numbers
-        // to 1.xxxx and subtract for every step one from the exponent
-        while (1) {
-            um_t is_norm = ((dm & dot) == dot);
-            if (all_of(is_norm))
-                break;
-            dm = select(is_norm, dm, dm << 1);
-            due= select(is_norm, due, due - 1);
+    um_t zero_or_sub_nor = ue == uv_t(0x0);
+    if (any_of(zero_or_sub_nor)) {
+        // combine zero values
+        um_t zero = um_t(mant == 0);
+        f = select(zero, sign, f);
+        // e  == 0 & mant !=0 --> subnormal
+        um_t sub_nor = um_t(mant != 0);
+        // std::cout << ue << std::endl;
+        // std::cout << mant << ' ' << sub_nor << std::endl;
+        if (any_of(sub_nor)) {
+            // the f16 hidden bit
+            const uv_t dot = uv_t(0x400);
+            // set the hidden bit for not sub normal components
+            uv_t dm= select(sub_nor, mant, dot);
+            // ue + the bias shift to reach f32 exponent with bias
+            uv_t due= ue + (0x70 + 1);
+            // shift mantissa left until we have normalized all numbers
+            // to 1.xxxx and subtract for every step one from the exponent
+            while (1) {
+                um_t is_norm = (uv_t(dm & dot) == dot);
+                if (all_of(is_norm))
+                    break;
+                dm = select(is_norm, dm, uv_t(dm << 1));
+                due= select(is_norm, due, uv_t(due - 1));
+            }
+            // clear the hidden bit
+            dm &= 0x3ff;
+            // and align the mantissa
+            dm <<=13;
+            uv_t f_sub_nor = sign | (due << exp_shift_f32) | dm;
+            f = select(sub_nor, f_sub_nor, f);
         }
-        // clear the hidden bit
-        dm &= 0x3ff;
-        // and align the mantissa
-        dm <<=13;
-        uv_t f_sub_nor = sign | (due << exp_shift_f32) | dm;
-        f = select(sub_nor, f_sub_nor, f);
     }
-
     return as<vec<float, _N> >(f);
 }
 
@@ -328,22 +338,61 @@ cftal::test::test_ref_cvt_f32_f16()
 #endif
 }
 
+template <std::size_t _N>
+bool cftal::test::test_cvt_f16_f32()
+{
+    bool r=true;
+    std::cout << std::hexfloat;
+    for (uint32_t i=0; i<0x10000u; i+=_N) {
+        uint16_t a[_N];
+        for (uint32_t j=0; j<_N; ++j)
+            a[j] = i+j;
+        vec<uint16_t, _N> d= mem<vec<uint16_t, _N> >::load(a, _N);
+        vec<float, _N> t=f16_to_f32(d);
+        float vr[_N];
+        mem<vec<float, _N> >::store(vr, t);
+        for (uint32_t j=0; j<_N; ++j) {
+            float ref=ref_f16_to_f32(a[j]);
+            float rt=vr[j];
+            if ( ! ((ref==rt) || (std::isnan(ref) && std::isnan(rt))) ) {
+                r=false;
+                std::cout << std::hex << a[j] << "--> " << rt << " should be "
+                          << ref << std::endl;
+            }
+        }
+    }
+    std::cout << std::defaultfloat;
+    std::cout << "vec " << _N << " f16 --> f32 ";
+    if (r == true)
+        std::cout << "passed\n";
+    else
+        std::cout << "failed\n";
+    return r;
+}
 
-int main3(int argc, char** argv)
+
+int main1(int argc, char** argv)
 {
     using namespace cftal;
-    v1f32 t=9.419280052185058594e+00f;
-    v1f32 l=exp_px2(t);
-    v1f32 r=exp(t);
-    std::cout << l << std::endl;
-    std::cout << r << std::endl;
+    uint16_t s=32678;
+    vec<uint16_t, 1> vs(s);
+    vec<float, 1> vd=f16_to_f32(vs);
+    float ref=test::ref_f16_to_f32(s);
+    std::cout << vs  << ' ' << vd << ' ' << ref << std::endl;
     return 0;
 }
 
 int main(int argc, char** argv)
 {
     // return main3(argc, argv);
-    cftal::test::test_ref_cvt_f16_f32();
-    cftal::test::test_ref_cvt_f32_f16();
+    // cftal::test::test_ref_cvt_f16_f32();
+    // cftal::test::test_ref_cvt_f32_f16();
+    bool r=true;
+    r &= cftal::test::test_cvt_f16_f32<1>();
+    r &= cftal::test::test_cvt_f16_f32<2>();
+    r &= cftal::test::test_cvt_f16_f32<4>();
+    r &= cftal::test::test_cvt_f16_f32<8>();
+    r &= cftal::test::test_cvt_f16_f32<16>();
+    r &= cftal::test::test_cvt_f16_f32<32>();
     return true;
 }
