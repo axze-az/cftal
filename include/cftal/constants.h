@@ -83,7 +83,7 @@ namespace cftal {
     using exp_f32_msk = const_u32<0x7f800000>;
     using not_exp_f32_msk = const_u32<0x807fffff>;
     using sig_f32_msk = const_u32<0x007fffff>;
-    const int bias_f32 = 0x1f;
+    const int bias_f32 = 0x7f;
     const int exp_shift_f32 = 23;
     const int exp_msk_f32 = 0xff;
 
