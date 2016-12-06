@@ -36,6 +36,12 @@ namespace cftal {
     };
 
 
+    // conversion of a f32 vector to a f16 vector
+    template <std::size_t _N>
+    vec<uint16_t, _N>
+    f32_to_f16(const vec<float, _N>& s);
+
+    // conversion of a f16 vector to a f32 vector
     template <std::size_t _N>
     vec<float, _N>
     f16_to_f32(const vec<uint16_t, _N>& s);
@@ -140,6 +146,22 @@ cftal::test::ref_f32_to_f16(float v)
     return sign | (((aexp + 14) << 10) + (mantissa >> 13));
 }
 
+template <std::size_t _N>
+cftal::vec<cftal::uint16_t, _N>
+cftal::f32_to_f16(const vec<float, _N> &sf)
+{
+    using uv_t = vec<uint32_t, _N>;
+    uv_t s = as<uv_t>(sf);
+    uv_t ue = (s >> exp_shift_f32) & uv_t(exp_msk_f32);
+    using sv_t = vec<int32_t, _N>;
+    sv_t e = as<sv_t>(ue) - sv_t(bias_f32);
+
+    // sign of result:
+    uv_t sgn= (s >> 16) & 0x8000;
+
+
+}
+
 float
 cftal::test::ref_f16_to_f32(uint16_t a)
 {
@@ -189,10 +211,10 @@ cftal::f16_to_f32(const vec<uint16_t, _N> &s)
     um_t zero_or_sub_nor = ue == uv_t(0x0);
     if (any_of(zero_or_sub_nor)) {
         // combine zero values
-        um_t zero = um_t(mant == 0);
+        um_t zero = um_t(mant == 0) & zero_or_sub_nor;
         f = select(zero, sign, f);
         // e  == 0 & mant !=0 --> subnormal
-        um_t sub_nor = um_t(mant != 0);
+        um_t sub_nor = um_t(mant != 0) & zero_or_sub_nor;
         // std::cout << ue << std::endl;
         // std::cout << mant << ' ' << sub_nor << std::endl;
         if (any_of(sub_nor)) {
