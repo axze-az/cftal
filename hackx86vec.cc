@@ -156,9 +156,19 @@ cftal::f32_to_f16(const vec<float, _N> &sf)
     using sv_t = vec<int32_t, _N>;
     sv_t e = as<sv_t>(ue) - sv_t(bias_f32);
 
+    using um_t = typename uv_t::mask_type;
+    
     // sign of result:
     uv_t sgn= (s >> 16) & 0x8000;
 
+    // correct exp/mantissas too small for normal f16 numbers
+    // numbers with exponents smaller than 2^-25 are flushed to
+    // zero, normal numbers have an exponent above -14
+    um_t is_ftz = ue < uv_t(-25+bias_f32);
+    // this contains also nan and infs
+    um_t is_norm= ue > uv_t(-13+bias_f32);
+
+    
 
 }
 

@@ -976,7 +976,6 @@ cftal::odd_elements(const vec<_T, 2>& v)
     return high_half(v);
 }
 
-
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N*2>
 cftal::combine_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o)

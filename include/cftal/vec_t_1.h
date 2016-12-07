@@ -657,7 +657,7 @@ namespace cftal {
                 return full_type(r);
             }
         };
-
+        
         template <typename _T>
         struct shr<_T, 1> {
             using full_type = vec<_T, 1>;
