@@ -672,6 +672,27 @@ namespace cftal {
                 return full_type(r);
             }
         };
+
+        template <typename _T>
+        struct vshl<_T, 1> {
+            using full_type = vec<_T, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type&  s) {
+                return full_type(a() << s());
+            }
+        };
+
+        template <typename _T>
+        struct vshr<_T, 1> {
+            using full_type = vec<_T, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type&  s) {
+                return full_type(a() >> s());
+            }
+        };
+        
     }
 }
 
