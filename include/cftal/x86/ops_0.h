@@ -822,8 +822,8 @@ namespace cftal {
                     return _mm256_srl_epi64(a, shift);
                 }
                 static __m256i v(__m256i a, unsigned shift) {
-                __m128i sh= _mm_cvtsi32_si128(shift);
-                return v(a, sh);
+                    __m128i sh= _mm_cvtsi32_si128(shift);
+                    return v(a, sh);
                 }
 #endif
             };
@@ -1157,6 +1157,17 @@ namespace cftal {
 inline
 __m128i cftal::x86::impl::vpsraq::v(__m128i a, unsigned shift)
 {
+#if 1
+    // signed right shift from unsigned right shift
+    // t = - (x>>63)
+    // r = ((x^t) >> shift) ^ t
+    __m128i sh = _mm_cvtsi32_si128(shift);
+    __m128i z= _mm_setzero_si128();
+    __m128i t= _mm_sub_epi64(z, vpsrlq::v(a, 63));
+    __m128i r= vpsrlq::v(_mm_xor_si128(a, t), sh);
+    r = _mm_xor_si128(r, t);
+    return r;
+#else
     __m128i r;
     if (shift <= 32) {
         // high parts of result.
@@ -1194,6 +1205,7 @@ __m128i cftal::x86::impl::vpsraq::v(__m128i a, unsigned shift)
         r= _mm_or_si128(allbits, sgnbits);
 #endif
     }
+#endif
     return r;
 }
 
@@ -1201,6 +1213,17 @@ __m128i cftal::x86::impl::vpsraq::v(__m128i a, unsigned shift)
 inline
 __m256i cftal::x86::impl::vpsraq::v(__m256i a, unsigned shift)
 {
+#if 1
+    // signed right shift from unsigned right shift
+    // t = - (x>>63)
+    // r = ((x^t) >> shift) ^ t
+    __m128i sh = _mm_cvtsi32_si128(shift);
+    __m256i z= _mm256_setzero_si256();
+    __m256i t= _mm256_sub_epi64(z, vpsrlq::v(a, 63));
+    __m256i r= vpsrlq::v(_mm256_xor_si256(a, t), sh);
+    r = _mm_xor_si128(r, t);
+    return r;
+#else
     __m256i r;
     if (shift <= 32) {
         // high parts of result.
@@ -1218,6 +1241,7 @@ __m256i cftal::x86::impl::vpsraq::v(__m256i a, unsigned shift)
         r= _mm256_cvtepi32_epi64(_mm256_castsi256_si128(r));
     }
     return r;
+#endif
 }
 #endif
 
