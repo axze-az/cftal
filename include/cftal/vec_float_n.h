@@ -10,8 +10,6 @@
 #include <cftal/arm/v2f32.h>
 #endif
 #if defined (__SSE2__)
-// not sse because we use integer vectors in various functions
-#include <cftal/x86/v2f32.h>
 #include <cftal/x86/v4f32.h>
 #endif
 #if defined (__AVX__)
