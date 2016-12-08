@@ -8,6 +8,7 @@
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_1.h>
 
+#if 0
 namespace cftal {
 
     namespace op {
@@ -299,6 +300,27 @@ namespace cftal {
             }
         };
 
+#if defined (__AVX2__)
+        template <>
+        struct vshl<uint32_t, 2> {
+            using full_type = vec<uint32_t, 2>;
+            static
+            full_type
+            v(const full_type& a, const full_type& s) {
+                return _mm_sllv_epi32(a(), s());
+            }
+        };
+
+        template <>
+        struct vshr<uint32_t, 2> {
+            using full_type = vec<uint32_t, 2>;
+            static
+            full_type
+            v(const full_type& a, const full_type& s) {
+                return _mm_srlv_epi32(a(), s());
+            }
+        };
+#endif
     }
 
 }
@@ -489,6 +511,7 @@ cftal::mul_lo_hi(const v2u32& x, const v2u32& y)
     v2u32 rh = h;
     return std::make_pair(rl, rh);
 }
+#endif
 
 // Local variables:
 // mode: c++

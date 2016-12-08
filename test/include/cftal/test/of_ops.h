@@ -171,22 +171,46 @@ cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
         for (std::size_t j=0; j<_N; ++j) {
             sref[j] = ai << ss[j];
         }
-        rc &= check(sr, sref, err_msg("<< (vec)"));
+        rc &= check(vr, sref, err_msg("<< (vec)"));
+        if (rc==false) {
+            std::cout << va << std::endl
+                      << s << std::endl
+                      << vr << std::endl;
+            std::exit(3);
+        }
         // <<=
         vr = va;
         vr <<= s;
-        rc &= check(sr, sref, err_msg("<<= (vec)"));
+        rc &= check(vr, sref, err_msg("<<= (vec)"));
+        if (rc==false) {
+            std::cout << va << std::endl
+                      << s << std::endl
+                      << vr << std::endl;
+            std::exit(3);
+        }
         // >>
         vr = va >> s;
         mem<v_t>::store(sr, vr);
         for (std::size_t j=0; j<_N; ++j) {
             sref[j] = ai >> ss[j];
         }
-        rc &= check(sr, sref, err_msg(">> (vec)"));
+        rc &= check(vr, sref, err_msg(">> (vec)"));
+        if (rc==false) {
+            std::cout << va << std::endl
+                      << s << std::endl
+                      << vr << std::endl;
+            std::exit(3);
+        }
         // >>=
         vr = va;
         vr >>= s;
-        rc &= check(sr, sref, err_msg(">>= (vec)"));
+        rc &= check(vr, sref, err_msg(">>= (vec)"));
+        if (rc==false) {
+            std::cout << va << std::endl
+                      << s << std::endl
+                      << vr << std::endl;
+            std::exit(3);
+        }
     }
     return rc;
 }

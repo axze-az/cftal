@@ -340,7 +340,10 @@ cftal::vec<cftal::uint32_t, 4>::vec(uint32_t v)
 
 inline
 cftal::vec<cftal::uint32_t, 4>::vec(vec<uint32_t, 2> l, vec<uint32_t, 2> h)
-    : base_type(x86::impl::vpunpcklqdq::v(l(), h()))
+    : base_type(_mm_setr_epi32(low_half(l)(),
+                               high_half(l)(),
+                               low_half(h)(),
+                               high_half(h)()))
 {
 }
 
@@ -405,7 +408,11 @@ inline
 cftal::vec<uint32_t, 2>
 cftal::low_half(const vec<uint32_t, 4>& v)
 {
-    return v();
+    uint32_t e0= _mm_cvtsi128_si32(v());
+    vec<uint32_t, 4> t= permute<1, 0, 2, 3>(v);
+    uint32_t e1= _mm_cvtsi128_si32(t());
+    vec<uint32_t, 2> r={e0, e1};
+    return r;
 }
 
 inline
@@ -413,7 +420,7 @@ cftal::vec<uint32_t, 2>
 cftal::high_half(const vec<uint32_t, 4>& v)
 {
     vec<uint32_t, 4> h= permute<2, 3, 0, 1>(v);
-    return h();
+    return low_half(h);
 }
 
 #if !defined (__AVX512VL__)

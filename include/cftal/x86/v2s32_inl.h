@@ -9,6 +9,7 @@
 #include <cftal/x86/ops_1.h>
 #include <cftal/divisor.h>
 
+#if 0
 namespace cftal {
 
     namespace op {
@@ -300,6 +301,28 @@ namespace cftal {
             }
         };
 
+#if defined (__AVX2__)
+        template <>
+        struct vshl<int32_t, 2> {
+            using full_type = vec<int32_t, 2>;
+            static
+            full_type
+            v(const full_type& a, const full_type& s) {
+                return _mm_sllv_epi32(a(), s());
+            }
+        };
+
+        template <>
+        struct vshr<int32_t, 2> {
+            using full_type = vec<int32_t, 2>;
+            static
+            full_type
+            v(const full_type& a, const full_type& s) {
+                return _mm_srav_epi32(a(), s());
+            }
+        };
+#endif
+
     }
 }
 
@@ -502,6 +525,7 @@ cftal::mul_lo_hi(const v2s32& x, const v2s32& y)
     return std::make_pair(sl, sh);
 #endif
 }
+#endif
 
 // Local variables:
 // mode: c++

@@ -8,6 +8,7 @@
 #include <cftal/x86/v2x32.h>
 #include <cftal/vec_op.h>
 
+#if 0
 namespace cftal {
 
     template <>
@@ -93,7 +94,7 @@ namespace cftal {
     mul_lo_hi(const vec<uint32_t, 2>& a,
               const vec<uint32_t, 2>& b);
 }
-
+#endif
 
 // Local variables:
 // mode: c++

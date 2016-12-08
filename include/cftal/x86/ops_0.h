@@ -1232,20 +1232,19 @@ __m256i cftal::x86::impl::vpsraq::v(__m256i a, unsigned shift)
     __m256i z= _mm256_setzero_si256();
     __m256i t= _mm256_sub_epi64(z, vpsrlq::v(a, 63));
     __m256i r= vpsrlq::v(_mm256_xor_si256(a, t), sh);
-    r = _mm_xor_si128(r, t);
+    r = _mm256_xor_si256(r, t);
     return r;
 }
 
-
 inline
-__m128i cftal::x86::impl::vpsravq::v(__m128 a, __m128i sh)
+__m128i cftal::x86::impl::vpsravq::v(__m128i a, __m128i sh)
 {
     // signed right shift from unsigned right shift
     // t = - (x>>63)
     // r = ((x^t) >> shift) ^ t
     __m128i z= _mm_setzero_si128();
     __m128i t= _mm_sub_epi64(z, vpsrlq::v(a, 63));
-    __m128i r= vpsrlvq::v(_mm256_xor_si256(a, t), sh);
+    __m128i r= vpsrlvq::v(_mm_xor_si128(a, t), sh);
     r = _mm_xor_si128(r, t);
     return r;
 }
@@ -1259,7 +1258,7 @@ __m256i cftal::x86::impl::vpsravq::v(__m256i a, __m256i sh)
     __m256i z= _mm256_setzero_si256();
     __m256i t= _mm256_sub_epi64(z, vpsrlq::v(a, 63));
     __m256i r= vpsrlvq::v(_mm256_xor_si256(a, t), sh);
-    r = _mm_xor_si128(r, t);
+    r = _mm256_xor_si256(r, t);
     return r;
 }
 
