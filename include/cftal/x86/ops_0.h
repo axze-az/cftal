@@ -739,6 +739,7 @@ namespace cftal {
 #endif
             };
 
+
             template <unsigned _P>
             struct vpsllq_const : public vpsllq {
                 static __m128i v(__m128i a) {
@@ -943,6 +944,58 @@ namespace cftal {
             template <>
             struct vpsrldq<0> : public select_arg_1<__m128i> {};
 
+#if defined (__AVX2__)
+            struct vpsllvd {
+                static __m128i v(__m128i a, __m128i s) {
+                    return _mm_sllv_epi32(a, s);
+                }
+                static __m256i v(__m256i a, __m256i s) {
+                    return _mm256_sllv_epi32(a, s);
+                }
+            };
+
+            struct vpsllvq {
+                static __m128i v(__m128i a, __m128i s) {
+                    return _mm_sllv_epi64(a, s);
+                }
+                static __m256i v(__m256i a, __m256i s) {
+                    return _mm256_sllv_epi64(a, s);
+                }
+            };
+
+            struct vpsrlvd {
+                static __m128i v(__m128i a, __m128i s) {
+                    return _mm_srlv_epi32(a, s);
+                }
+                static __m256i v(__m256i a, __m256i s) {
+                    return _mm256_srlv_epi32(a, s);
+                }
+            };
+
+            struct vpsrlvq {
+                static __m128i v(__m128i a, __m128i s) {
+                    return _mm_srlv_epi64(a, s);
+                }
+                static __m256i v(__m256i a, __m256i s) {
+                    return _mm256_srlv_epi64(a, s);
+                }
+            };
+
+            struct vpsravd {
+                static __m128i v(__m128i a, __m128i s) {
+                    return _mm_srav_epi32(a, s);
+                }
+                static __m256i v(__m256i a, __m256i s) {
+                    return _mm256_srav_epi32(a, s);
+                }
+            };
+
+            struct vpsravq {
+                static __m128i v(__m128i a, __m128i s);
+                static __m256i v(__m256i a, __m256i s);
+            };
+#endif
+            
             struct vpmullw {
                 static __m128i v(__m128i a, __m128i b) {
                     return _mm_mullo_epi16(a, b);
@@ -1157,7 +1210,6 @@ namespace cftal {
 inline
 __m128i cftal::x86::impl::vpsraq::v(__m128i a, unsigned shift)
 {
-#if 1
     // signed right shift from unsigned right shift
     // t = - (x>>63)
     // r = ((x^t) >> shift) ^ t
@@ -1167,53 +1219,12 @@ __m128i cftal::x86::impl::vpsraq::v(__m128i a, unsigned shift)
     __m128i r= vpsrlq::v(_mm_xor_si128(a, t), sh);
     r = _mm_xor_si128(r, t);
     return r;
-#else
-    __m128i r;
-    if (shift <= 32) {
-        // high parts of result.
-        __m128i sh = _mm_cvtsi32_si128(shift);
-        __m128i sgnbits= vpsrad::v(a, sh);
-        // low parts of result.
-        __m128i allbits= vpsrlq::v(a, sh);
-#if defined (__SSE4_1__)
-        r = select_v4u32<0, 1, 0, 1>::v(sgnbits, allbits);
-#else
-        // clear the low uint32_t of sgnbits
-        __m128i msk= const_v4u32<0, uint32_t(-1), 0, uint32_t(-1)>::iv();
-        sgnbits = _mm_and_si128(sgnbits, msk);
-        // works because high uint32_t of sgnbits contains
-        // either the same pattern as allbits or ones
-        r= _mm_or_si128(allbits, sgnbits);
-#endif
-    } else {
-#if defined (__SSE4_1__)
-        r= vpshufd<1, 3, 1, 3>::v(a);
-        r= vpsrad::v(r, shift-32);
-        r= _mm_cvtepi32_epi64(r);
-#else
-        // future sign bits.
-        __m128i sgnbits= vpsrad_const<31>::v(a);
-        // result bits right shifted by shift - 32
-        __m128i allbits= vpsrad::v(a, shift-32);
-        // result bits correctly located.
-        allbits = vpsrlq_const<32>::v(allbits);
-        // clear the low uint32_t of sgnbits
-        __m128i msk= const_v4u32<0, uint32_t(-1), 0, uint32_t(-1)>::iv();
-        sgnbits = _mm_and_si128(sgnbits, msk);
-        // works because high uint32_t of sgnbits contains
-        // either the same pattern as allbits or ones
-        r= _mm_or_si128(allbits, sgnbits);
-#endif
-    }
-#endif
-    return r;
 }
 
 #if defined (__AVX2__)
 inline
 __m256i cftal::x86::impl::vpsraq::v(__m256i a, unsigned shift)
 {
-#if 1
     // signed right shift from unsigned right shift
     // t = - (x>>63)
     // r = ((x^t) >> shift) ^ t
@@ -1223,26 +1234,35 @@ __m256i cftal::x86::impl::vpsraq::v(__m256i a, unsigned shift)
     __m256i r= vpsrlq::v(_mm256_xor_si256(a, t), sh);
     r = _mm_xor_si128(r, t);
     return r;
-#else
-    __m256i r;
-    if (shift <= 32) {
-        // high parts of result.
-        __m128i sh = _mm_cvtsi32_si128(shift);
-        __m256i sgnbits= vpsrad::v(a, sh);
-        // low parts of result.
-        __m256i allbits= vpsrlq::v(a, sh);
-        r = select_v8u32<0, 1, 0, 1, 0, 1, 0, 1>::v(sgnbits, allbits);
-    } else {
-        // r= vpshufd<1, 3, 1, 3>::v(a);
-        const __m256i v= _mm256_setr_epi32(1, 3, 5, 7,
-                                           1, 3, 5, 7);
-        r= _mm256_permutevar8x32_epi32(a, v);
-        r= vpsrad::v(r, shift-32);
-        r= _mm256_cvtepi32_epi64(_mm256_castsi256_si128(r));
-    }
-    return r;
-#endif
 }
+
+
+inline
+__m128i cftal::x86::impl::vpsravq::v(__m128 a, __m128i sh)
+{
+    // signed right shift from unsigned right shift
+    // t = - (x>>63)
+    // r = ((x^t) >> shift) ^ t
+    __m128i z= _mm_setzero_si128();
+    __m128i t= _mm_sub_epi64(z, vpsrlq::v(a, 63));
+    __m128i r= vpsrlvq::v(_mm256_xor_si256(a, t), sh);
+    r = _mm_xor_si128(r, t);
+    return r;
+}
+
+inline
+__m256i cftal::x86::impl::vpsravq::v(__m256i a, __m256i sh)
+{
+    // signed right shift from unsigned right shift
+    // t = - (x>>63)
+    // r = ((x^t) >> shift) ^ t
+    __m256i z= _mm256_setzero_si256();
+    __m256i t= _mm256_sub_epi64(z, vpsrlq::v(a, 63));
+    __m256i r= vpsrlvq::v(_mm256_xor_si256(a, t), sh);
+    r = _mm_xor_si128(r, t);
+    return r;
+}
+
 #endif
 
 

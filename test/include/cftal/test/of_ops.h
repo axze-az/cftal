@@ -124,16 +124,19 @@ cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
 {
     bool rc=true;
     _T a=ai, b=bi, r;
-    vec<_T, _N> va(a), vb(b), vr;
+
+    using v_t = vec<_T, _N>;
+    
+    v_t va(a), vb(b), vr;
 
     // mul_lo_hi
     std::pair<_T, _T> rp=mul_lo_hi(a, b);
-    std::pair<vec<_T, _N>, vec<_T, _N> > vrp=mul_lo_hi(va, vb);
+    std::pair<v_t, v_t> vrp=mul_lo_hi(va, vb);
     rc &= check(vrp.first, rp.first, "mul_lo_hi.first");
     rc &= check(vrp.second, rp.second, "mul_lo_hi.second");
 
     // left and right shifts by integer
-    for (std::size_t i=0; i<sizeof(_T); ++i) {
+    for (std::size_t i=0; i<sizeof(_T)*8; ++i) {
         // <<
         r = ai << i;
         vr = va << i;
@@ -155,7 +158,36 @@ cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
         vr >>= i;
         rc &= check(vr, r, err_msg(">>=", i));
     }
-
+    // left and right shifts by vector
+    _T ss[_N], sr[_N], sref[_N];
+    for (std::size_t i=0; i<sizeof(_T)*8; i+= _N) {
+        for (std::size_t j=0; j<_N; ++j) {
+            ss[j] = i+j;
+        }
+        v_t s= mem<v_t>::load(ss, _N);
+        // <<
+        vr = va << s;
+        mem<v_t>::store(sr, vr);
+        for (std::size_t j=0; j<_N; ++j) {
+            sref[j] = ai << ss[j];
+        }
+        rc &= check(sr, sref, err_msg("<< (vec)"));
+        // <<=
+        vr = va;
+        vr <<= s;
+        rc &= check(sr, sref, err_msg("<<= (vec)"));
+        // >>
+        vr = va >> s;
+        mem<v_t>::store(sr, vr);
+        for (std::size_t j=0; j<_N; ++j) {
+            sref[j] = ai >> ss[j];
+        }
+        rc &= check(sr, sref, err_msg(">> (vec)"));
+        // >>=
+        vr = va;
+        vr >>= s;
+        rc &= check(sr, sref, err_msg(">>= (vec)"));
+    }
     return rc;
 }
 
