@@ -945,6 +945,24 @@ namespace cftal {
             struct vpsrldq<0> : public select_arg_1<__m128i> {};
 
 #if defined (__AVX2__)
+
+            struct vpsxxvw {
+                // select uint16_t with the number 0, 2, 4, 6, 8, 10, 12, 14
+                static __m128i v(__m256i rt);
+            };
+            
+            struct vpsllvw {
+                static __m128i v(__m128i a, __m128i s);
+            };
+
+            struct vpsrlvw {
+                static __m128i v(__m128i a, __m128i s);
+            };
+
+            struct vpsravw {
+                static __m128i v(__m128i a, __m128i s);
+            };
+
             struct vpsllvd {
                 static __m128i v(__m128i a, __m128i s) {
                     return _mm_sllv_epi32(a, s);
@@ -1233,6 +1251,56 @@ __m256i cftal::x86::impl::vpsraq::v(__m256i a, unsigned shift)
     __m256i t= _mm256_sub_epi64(z, vpsrlq::v(a, 63));
     __m256i r= vpsrlq::v(_mm256_xor_si256(a, t), sh);
     r = _mm256_xor_si256(r, t);
+    return r;
+}
+
+inline
+__m128i cftal::x86::impl::vpsxxvw::v(__m256i i)
+{
+    const __m256i m= _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13,
+                                      0, 1, 4, 5, 8, 9, 12, 13,
+                                      0, 1, 4, 5, 8, 9, 12, 13,
+                                      0, 1, 4, 5, 8, 9, 12, 13);
+    // shuffle the interesting bytes into the low/high halfes of the
+    // two lanes 
+    __m256i it=_mm256_shuffle_epi8(i, m);
+    // and use vpermq to create the values in the low half
+    const int p=impl::shuffle4<0, 2, 0, 2>::val;
+    __m256i rt=_mm256_permute4x64_epi64(it, p);
+    __m128i r=_mm256_castsi256_si128(rt);
+    return r;
+}
+
+inline
+__m128i cftal::x86::impl::vpsllvw::v(__m128i a, __m128i s)
+{
+    // zero extension
+    __m256i at=_mm256_cvtepu16_epi32(a);
+    __m256i st=_mm256_cvtepi16_epi32(s);
+    __m256i rt=_mm256_sllv_epi32(at, st);
+    __m128i r=vpsxxvw::v(rt);
+    return r;
+}
+
+inline
+__m128i cftal::x86::impl::vpsrlvw::v(__m128i a, __m128i s)
+{
+    // zero extension
+    __m256i at=_mm256_cvtepu16_epi32(a);
+    __m256i st=_mm256_cvtepi16_epi32(s);
+    __m256i rt=_mm256_srlv_epi32(at, st);
+    __m128i r=vpsxxvw::v(rt);
+    return r;
+}
+
+inline
+__m128i cftal::x86::impl::vpsravw::v(__m128i a, __m128i s)
+{
+    // sign extension
+    __m256i at=_mm256_cvtepi16_epi32(a);
+    __m256i st=_mm256_cvtepi16_epi32(s);
+    __m256i rt=_mm256_srav_epi32(at, st);
+    __m128i r=vpsxxvw::v(rt);
     return r;
 }
 
