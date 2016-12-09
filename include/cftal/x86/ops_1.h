@@ -124,10 +124,6 @@ namespace cftal {
         bool all_of_s16(__m128i a);
         bool any_of_s16(__m128i a);
         bool none_of_s16(__m128i a);
-        // check the sign bits of v2s32
-        bool all_of_v2s32(__m128i a);
-        bool any_of_v2s32(__m128i a);
-        bool none_of_v2s32(__m128i a);
         // check the sign bits of v4s32
         bool all_of_v4s32(__m128i a);
         bool any_of_v4s32(__m128i a);
@@ -460,43 +456,6 @@ bool cftal::x86::any_of_v4s32(__m128i a)
     return compress_mask_u32(a) != 0x00;
 #endif
 }
-
-inline
-bool cftal::x86::all_of_v2s32(__m128i a)
-{
-#if defined (__SSE4_1__)
-    const __m128i msk=  v_sign_v2s32_msk::iv();
-    // test if (~a & msk) are all zero
-    return _mm_testc_si128(a, msk);
-#else
-    return (compress_mask_u32(a) & 0x03) == 0x03;
-#endif
-}
-
-inline
-bool cftal::x86::none_of_v2s32(__m128i a)
-{
-#if defined (__SSE4_1__)
-    const __m128i msk=  v_sign_v2s32_msk::iv();
-    // test if (a & msk) are all zero
-    return _mm_testz_si128(a, msk);
-#else
-    return (compress_mask_u32(a) & 0x03) == 0x00;
-#endif
-}
-
-inline
-bool cftal::x86::any_of_v2s32(__m128i a)
-{
-#if defined (__SSE4_1__)
-    const __m128i msk=  v_sign_v2s32_msk::iv();
-    // test if (a & msk) are all zero
-    return !_mm_testz_si128(a, msk);
-#else
-    return (compress_mask_u32(a) & 0x03) != 0x00;
-#endif
-}
-
 
 inline
 bool cftal::x86::all_of_s64(__m128i a)
