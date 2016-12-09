@@ -1,7 +1,7 @@
 #include "cftal/test/f32_f64.h"
 #include "cftal/cast.h"
-#include <boost/math/special_functions.hpp>
 #include <cmath>
+#include <iomanip>
 
 double cftal::test::make_double(unsigned sgn, unsigned exp, uint64_t sig)
 {
@@ -56,74 +56,61 @@ bool cftal::test::f_eq(float a, float b)
     return (a == b) || (std::isnan(a) && std::isnan(b));
 }
 
-namespace {
-
-#define USE_DISTANCE 1
-#if USE_DISTANCE > 0
-
-    std::int32_t 
-    distance(double a, double b)
-    {
-        std::int64_t ai = cftal::as<std::int64_t>(a);
-        std::int64_t bi = cftal::as<std::int64_t>(b);
-        std::int64_t abs_ai = ai & ~(1LLU<<63);
-        std::int64_t abs_bi = bi & ~(1LLU<<63);
-        bool sgn_a = abs_ai != ai;
-        bool sgn_b = abs_bi != bi;
-        std::int32_t d=0;
-        if ((sgn_a == sgn_b) || ((abs_ai|abs_bi) == 0)) {
-            d= abs_bi - abs_ai;
-        } else {
-            // a < 0 | b < 0 --> d = abs_ai + abs_bi
-            d= abs_bi + abs_ai;
-        }
-        // a < b positive sign
-        // a > b negative sign
-        if (sgn_b)
-            d = -d;
-        return d;
+std::int32_t 
+cftal::test::distance(double a, double b)
+{
+    std::int64_t ai = as<std::int64_t>(a);
+    std::int64_t bi = as<std::int64_t>(b);
+    std::int64_t abs_ai = ai & ~(1LLU<<63);
+    std::int64_t abs_bi = bi & ~(1LLU<<63);
+    bool sgn_a = abs_ai != ai;
+    bool sgn_b = abs_bi != bi;
+    std::int32_t d=0;
+    if ((sgn_a == sgn_b) || ((abs_ai|abs_bi) == 0)) {
+        d= abs_bi - abs_ai;
+    } else {
+        // a < 0 | b < 0 --> d = abs_ai + abs_bi
+        d= abs_bi + abs_ai;
     }
+    // a < b positive sign
+    // a > b negative sign
+    if (sgn_b)
+        d = -d;
+    return d;
+}
     
-    int32_t
-    distance(float a, float b)
-    {
-        std::int32_t ai = cftal::as<std::int32_t>(a);
-        std::int32_t bi = cftal::as<std::int32_t>(b);
-        std::int32_t abs_ai = ai & ~(1U<<31);
-        std::int32_t abs_bi = bi & ~(1U<<31);
-        bool sgn_a = abs_ai != ai;
-        bool sgn_b = abs_bi != bi;
-        std::int32_t d=0;
-        if ((sgn_a == sgn_b) || ((abs_ai|abs_bi) == 0)) {
-            d= abs_bi - abs_ai;
-        } else {
-            // a < 0 | b < 0 --> d = abs_ai + abs_bi
-            d= abs_bi + abs_ai;
-        }
-        // a < b positive sign
-        // a > b negative sign
-        if (sgn_b)
-            d = -d;
-        return d;
+std::int32_t
+cftal::test::distance(float a, float b)
+{
+    std::int32_t ai = cftal::as<std::int32_t>(a);
+    std::int32_t bi = cftal::as<std::int32_t>(b);
+    std::int32_t abs_ai = ai & ~(1U<<31);
+    std::int32_t abs_bi = bi & ~(1U<<31);
+    bool sgn_a = abs_ai != ai;
+    bool sgn_b = abs_bi != bi;
+    std::int32_t d=0;
+    if ((sgn_a == sgn_b) || ((abs_ai|abs_bi) == 0)) {
+        d= abs_bi - abs_ai;
+    } else {
+        // a < 0 | b < 0 --> d = abs_ai + abs_bi
+        d= abs_bi + abs_ai;
     }
-#endif
+    // a < b positive sign
+    // a > b negative sign
+    if (sgn_b)
+        d = -d;
+    return d;
+}
 
+namespace {
+    
     template <typename _T>
     bool cmp_ulp(_T a, _T b, uint32_t ulp, cftal::test::ulp_stats* us)
     {
         bool r;
         int32_t u=0;
         if ((r=cftal::test::f_eq(a, b)) == false) {
-#if USE_DISTANCE == 0                
-            u=sizeof(_T)*8;
-            try {
-                u = boost::math::float_distance<_T>(a, b);
-            }
-            catch (...) {
-            }
-#else
-            u = distance(a, b);
-#endif
+            u = cftal::test::distance(a, b);
             //(u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
             if (abs(u) <= int32_t(ulp)) 
                 r=true;

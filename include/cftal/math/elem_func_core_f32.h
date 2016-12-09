@@ -258,7 +258,7 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
 {
     vf_type xs=x;
     using fc=func_constants<float>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal;
+    vmf_type is_denom= abs(x) <= fc::max_denormal();
 
     vi_type eo=vi_type(0);
     // input denormal handling
@@ -299,7 +299,7 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
         vi_type mu= m | vi_type(1<<23);
         vf_type r_u= _T::as_float(mu);
         // create a scaling factor
-        vi_type ue= max(vi_type(re + (_T::bias-1)), vi_type(1));
+        vi_type ue= max(vi_type(re + (_T::bias()-1)), vi_type(1));
         vf_type s_u= _T::as_float(vi_type(ue << 23));
         r_u *= s_u;
         vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
@@ -320,7 +320,7 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     vf_type xs=x;
 
     using fc=func_constants<float>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal;
+    vmf_type is_denom= abs(x) <= fc::max_denormal();
 
     vi_type eo=vi_type(0);
     // denormal handling
@@ -342,7 +342,7 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     frc = _T::sel(f_inz, x, frc);
     if (ve != nullptr) {
         vmi_type i_inz=_T::vmf_to_vmi(f_inz);
-        e -= vi_type(_T::bias-1);
+        e -= vi_type(_T::bias()-1);
         e= _T::sel(i_inz, vi_type(0), e);
         *ve= e;
     }
@@ -357,7 +357,7 @@ ilogbp1(arg_t<vf_type> x)
 {
     vf_type xs=x;
     using fc=func_constants<float>;
-    vmf_type is_denom= abs(x) <= fc::max_denormal;
+    vmf_type is_denom= abs(x) <= fc::max_denormal();
     vi_type eo=vi_type(0);
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
@@ -366,7 +366,7 @@ ilogbp1(arg_t<vf_type> x)
     // reinterpret as integer
     vi_type i=_T::as_int(xs);
     // exponent:
-    vi_type e=((i >> 23) & 0xff) + eo - vi_type(_T::bias-1);
+    vi_type e=((i >> 23) & 0xff) + eo - vi_type(_T::bias()-1);
     return e;
 }
 
@@ -396,8 +396,8 @@ cftal::math::elem_func_core<float, _T>::
 scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi_type> k)
 {
     vi_type e_two_pow_k=_T::sel(k < vi_type(-125),
-                                vi_type((_T::bias+100)),
-                                vi_type(_T::bias)) +k;
+                                vi_type((_T::bias()+100)),
+                                vi_type(_T::bias())) +k;
     vf_type two_pow_k= _T::insert_exp(e_two_pow_k);
     // kf == 128f or kf>=-125
     vf_type ymt=ym*two_pow_k;
@@ -535,10 +535,10 @@ exp_k(arg_t<vf_type> xc, bool exp_m1)
         //      return x - (x*e-hxs);
         e  = xr*(e-cr) - cr;
         e -= hxs;
-        vi_type t= _T::bias - k;
+        vi_type t= _T::bias() - k;
         vf_type two_pow_minus_k=_T::insert_exp(t);
         // xr - e = y --> xr -y = e
-        t = _T::bias + k;
+        t = _T::bias() + k;
         vf_type two_pow_k=_T::insert_exp(t);
         // default cases:
         vf_type ym = _T::sel(kf < vf_type(20),
@@ -792,7 +792,7 @@ sinh_k(arg_t<vf_type> xc)
     //          = (expm1(x) + (expm1(x)/(expm1(x)+1))/2;
     vf_type x = abs(xc);
     using fc=func_constants<float>;
-    vmf_type x_huge = x >= fc::exp_hi_inf;
+    vmf_type x_huge = x >= fc::exp_hi_inf();
     // between 0 and 1
     // sinh(x) = x + x^3/Q(x^2)
     // [3.4694469519536141888238489627838134765625e-18, 1] : | p - f | <= 2^-26
@@ -843,7 +843,7 @@ cosh_k(arg_t<vf_type> xc)
     //          = 1 + (expm1(x)/(expm1(x)+1))/2;
     vf_type x=abs(xc);
     using fc=func_constants<float>;
-    vmf_type x_huge = x >= fc::exp_hi_inf;
+    vmf_type x_huge = x >= fc::exp_hi_inf();
     /*
         cosh(x) = 1 + x^2/2 + x^4/24 ...
         cosh(x)-1) = x^2*R
@@ -976,13 +976,13 @@ log_k(arg_t<vf_type> xc, log_func func)
     // const vf_type ln2_lo = 1.90821492927058770002e-10;  /* 3dea39ef 35793c76 */
 
     using fc = func_constants<float>;
-    vmf_type is_denom=xc <= fc::max_denormal;
+    vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p25f, xc);
     vi_type k=_T::sel(_T::vmf_to_vmi(is_denom), vi_type(-25), vi_type(0));
     vi_type hx = _T::as_int(x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     hx += 0x3f800000 - 0x3f3504f3;;
-    k += (hx>>23) - _T::bias;
+    k += (hx>>23) - _T::bias();
     hx = (hx&0x007fffff) + 0x3f3504f3;
     vf_type xr = _T::as_float(hx);
 
@@ -1101,7 +1101,7 @@ log1p_k(arg_t<vf_type> xc)
     vf_type u= 1+xc;
     vi_type hu=_T::as_int(u);
     hu += (0x3f800000 - 0x3f3504f3);
-    vi_type k=(hu >> 23) - _T::bias;
+    vi_type k=(hu >> 23) - _T::bias();
     vf_type kf= _T::cvt_i_to_f(k);
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0f), 1.0f-(u-x), x-(u-1.0f));
@@ -2028,7 +2028,7 @@ exp_mx2_k(arg_t<vf_type> xc)
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
     r -= x2l*r;
     using fc_t = math::func_constants<float>;
-    r= _T::sel(sx2h <= fc_t::exp_lo_zero, vf_type(0), r);
+    r= _T::sel(sx2h <= fc_t::exp_lo_zero(), vf_type(0), r);
     return r;
 }
 
@@ -2043,7 +2043,7 @@ exp_px2_k(arg_t<vf_type> xc)
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
 
     using fc_t = math::func_constants<float>;
-    vmf_type border_case = (x2h == fc_t::exp_hi_inf) &
+    vmf_type border_case = (x2h == fc_t::exp_hi_inf()) &
         (x2l < 0.0);
     vf_type t= 0x1.02p-17;
     x2h = _T::sel(border_case, x2h - t, x2h);
@@ -2054,7 +2054,7 @@ exp_px2_k(arg_t<vf_type> xc)
     // f(x) ~ e^x + e^x y + e^x/2 *y^2
     x2l *= r;
     r += x2l;
-    r= _T::sel(x2h >= fc_t::exp_hi_inf, _T::pinf(), r);
+    r= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), r);
     return r;
 }
 
@@ -2076,7 +2076,7 @@ exp2_mx2_k(arg_t<vf_type> xc)
     vf_type xs= x2l * ctbl::m_ln2.h();
     r -= xs*r;
     using fc_t = math::func_constants<float>;
-    r= _T::sel(sx2h <= fc_t::exp2_lo_zero, vf_type(0), r);
+    r= _T::sel(sx2h <= fc_t::exp2_lo_zero(), vf_type(0), r);
     return r;
 }
 
@@ -2096,7 +2096,7 @@ exp2_px2_k(arg_t<vf_type> xc)
     vf_type xs= x2l*ctbl::m_ln2.h();
     r += xs*r;
     using fc_t = math::func_constants<float>;
-    r= _T::sel(x2h >= fc_t::exp2_hi_inf, _T::pinf(), r);
+    r= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), r);
     return r;
 }
 
@@ -2117,7 +2117,7 @@ exp10_mx2_k(arg_t<vf_type> xc)
     vf_type xs = x2l*ctbl::m_ln10.h();
     r -= xs*r;
     using fc_t = math::func_constants<float>;
-    r= _T::sel(sx2h <= fc_t::exp10_lo_zero, vf_type(0), r);
+    r= _T::sel(sx2h <= fc_t::exp10_lo_zero(), vf_type(0), r);
     return r;
 }
 
@@ -2137,7 +2137,7 @@ exp10_px2_k(arg_t<vf_type> xc)
     vf_type xs= x2l*ctbl::m_ln10.h();
     r += xs*r;
     using fc_t = math::func_constants<float>;
-    r= _T::sel(x2h >= fc_t::exp10_hi_inf, _T::pinf(), r);
+    r= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), r);
     return r;
 }
 

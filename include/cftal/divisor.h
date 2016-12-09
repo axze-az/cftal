@@ -15,7 +15,7 @@ namespace cftal {
         _V _rec;
         _D _d;
     public:
-		explicit
+                explicit
         divisor(const _D& dd) : _rec(_V(_D(1)/dd)), _d(dd) {}
         const _D& d() const { return _d; }
         _V divide(const _V& n) const { return n * _rec; }
@@ -73,7 +73,7 @@ namespace cftal {
         public:
             typedef typename _TR::uword uword;
             typedef typename _TR::udword udword;
-			explicit
+                        explicit
             udiv_setup(const uword& d);
             const uword& m() const { return _m; }
             const uword& s1() const { return _s1; }
@@ -92,7 +92,7 @@ namespace cftal {
             typedef typename _TR::sword sword;
             typedef typename std::make_unsigned<sword>::type uword;
             typedef typename _TR::udword udword;
-			explicit
+                        explicit
             sdiv_setup(const sword& d);
             const sword& m() const { return _m; }
             const sword& s() const { return _s; }
@@ -113,7 +113,7 @@ namespace cftal {
             uint32_t _s2;
             bool _shift_only;
         public:
-			explicit
+                        explicit
             udiv(const _D& d) { set(d); }
             void set(const _D& d);
             const _D& d() const { return _d; }
@@ -129,7 +129,7 @@ namespace cftal {
             _D _d;
             uint32_t _s;
         public:
-			explicit
+                        explicit
             sdiv(const _D& d) { set(d); }
             void set(const _D& d);
             const _D& d() const { return _d; }
@@ -429,7 +429,7 @@ udiv<_V, _D, _UDIV_TRAITS, _UDIV_SETUP_TRAITS>::divide(const _V& n)
 template <typename _D, class _TR>
 cftal::impl::sdiv_setup<_D, _TR>::sdiv_setup(const sword& d)
 {
-    const sword min_sword=_D(1) << (_TR::_N-1);
+    const sword min_sword=sword(_D(1) << (_TR::_N-1));
     if (d==0) {
         _m = 0;
         _s = 0;

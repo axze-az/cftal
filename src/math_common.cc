@@ -1,5 +1,7 @@
 #include <cftal/math/func_constants.h>
 
+
+#if 0
 constexpr
 const double cftal::math::func_constants<double>::max_denormal;
 
@@ -96,3 +98,5 @@ const float cftal::math::func_constants<float>::erf_lt_one_fin;
 
 constexpr
 const float cftal::math::func_constants<float>::erfc_gt_zero_fin;
+
+#endif

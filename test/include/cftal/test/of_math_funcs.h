@@ -4,7 +4,6 @@
 #include <cftal/config.h>
 #include <cftal/test/of_fp_funcs.h>
 #include <cftal/test/call_mpfr.h>
-#include <boost/math/special_functions.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -118,7 +117,7 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
         _T vres0 = extract<0>(vres);
         int32_t ulp=0;
         try {
-            ulp=boost::math::float_distance<_T>(vres0, expected);
+            ulp= distance(vres0, expected);
         }
         catch (...) {
             ulp = sizeof(_T) * 8;
@@ -211,7 +210,7 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
         _T vres0 = extract<0>(vres);
         int32_t ulp=0;
         try {
-            ulp=boost::math::float_distance<_T>(vres0, expected);
+            ulp=distance(vres0, expected);
         }
         catch (...) {
             ulp = sizeof(_T) * 8;

@@ -25,8 +25,6 @@
 #include <cmath>
 
 
-#include <boost/math/special_functions/erf.hpp>
-
 namespace cftal {
     namespace math {
 

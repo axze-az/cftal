@@ -852,7 +852,7 @@ int main(int argc, char** argv)
                      check_max_denormal<double>(), "nom");
         write_constant(
             "const double exp_arg_large",
-            std::floor(func_constants<double>::exp_hi_inf));
+            std::floor(func_constants<double>::exp_hi_inf()));
         // exp1
         gen_constant(dp, "const double expm1_hi", mpfr_expm1,
                      check_inf<double>(), "inf");
@@ -950,7 +950,7 @@ int main(int argc, char** argv)
                      check_max_denormal<float>(), "nom");
         write_constant(
             "const float exp_arg_large",
-            std::floor(func_constants<float>::exp_hi_inf));
+            std::floor(func_constants<float>::exp_hi_inf()));
         // exp1
         gen_constant(dp, "const float expm1_hi", mpfr_expm1,
                      check_inf<float>(), "inf");

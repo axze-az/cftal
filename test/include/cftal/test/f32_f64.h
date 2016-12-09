@@ -65,6 +65,12 @@ namespace cftal {
         bool f_eq_ulp(float a, const std::tuple<float, float, float>& b,
                       uint32_t ulp, ulp_stats* us);
 
+        int32_t 
+        distance(double a, double b);
+        
+        int32_t
+        distance(float a, float b);
+
         template <typename _T>
         std::ostream&
         operator<<(std::ostream& s, const std::tuple<_T, _T, _T>& );

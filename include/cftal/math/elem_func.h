@@ -196,8 +196,8 @@ exp(arg_t<vf_type> d)
 {
     vf_type res=base_type::exp_k(d, false);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type exp_hi_inf= fc::exp_hi_inf;
-    const vf_type exp_lo_zero= fc::exp_lo_zero;
+    const vf_type exp_hi_inf= fc::exp_hi_inf();
+    const vf_type exp_lo_zero= fc::exp_lo_zero();
     res = _T::sel(d <= exp_lo_zero, 0.0, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
@@ -215,8 +215,8 @@ exp2(arg_t<vf_type> d)
 {
     vf_type res=base_type::exp2_k(d);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type exp2_hi_inf= fc::exp2_hi_inf;
-    const vf_type exp2_lo_zero= fc::exp2_lo_zero;
+    const vf_type exp2_hi_inf= fc::exp2_hi_inf();
+    const vf_type exp2_lo_zero= fc::exp2_lo_zero();
     res = _T::sel(d <= exp2_lo_zero, 0.0, res);
     res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
@@ -232,8 +232,8 @@ exp10(arg_t<vf_type> d)
 {
     vf_type res=base_type::exp10_k(d);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type exp10_hi_inf=fc::exp10_hi_inf;
-    const vf_type exp10_lo_zero=fc::exp10_lo_zero;
+    const vf_type exp10_hi_inf=fc::exp10_hi_inf();
+    const vf_type exp10_lo_zero=fc::exp10_lo_zero();
     res = _T::sel(d <= exp10_lo_zero, 0.0, res);
     res = _T::sel(d >= exp10_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
@@ -249,8 +249,8 @@ expm1(arg_t<vf_type> d)
 {
     vf_type res = base_type::exp_k(d, true);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type expm1_hi_inf= fc::expm1_hi_inf;
-    const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one;
+    const vf_type expm1_hi_inf= fc::expm1_hi_inf();
+    const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one();
     res = _T::sel(d <= expm1_lo_minus_one, -1.0, res);
     res = _T::sel(d >= expm1_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 0.0, res);
@@ -266,8 +266,8 @@ sinh(arg_t<vf_type> x)
 {
     using fc=func_constants<_FLOAT_T>;
     vf_type res=base_type::sinh_k(x);
-    const vf_type sinh_hi_inf= fc::sinh_hi_inf;
-    const vf_type sinh_lo_inf= fc::sinh_lo_inf;
+    const vf_type sinh_hi_inf= fc::sinh_hi_inf();
+    const vf_type sinh_lo_inf= fc::sinh_lo_inf();
     res = _T::sel(x >= sinh_hi_inf, _T::pinf(), res);
     res = _T::sel(x <= sinh_lo_inf, _T::ninf(), res);
     res = _T::sel(x == 0.0, 0.0, res);
@@ -281,7 +281,7 @@ cftal::math::elem_func<_FLOAT_T, _T>::
 cosh(arg_t<vf_type> x)
 {
     using fc=func_constants<_FLOAT_T>;
-    const vf_type cosh_hi_inf= fc::cosh_hi_inf;
+    const vf_type cosh_hi_inf= fc::cosh_hi_inf();
     vf_type res=base_type::cosh_k(x);
     res = _T::sel(abs(x) >= cosh_hi_inf, _T::pinf(), res);
     // res = _T::sel(x == 0.0, 1.0, res);

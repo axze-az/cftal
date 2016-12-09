@@ -36,8 +36,8 @@ erf(arg_t<vf_type> x)
 {
     vf_type r=base_type::erf_k(x);
     using fc=func_constants<_FLOAT_T>;
-    r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin, -1.0, r);
-    r = _TRAITS_T::sel(x > fc::erf_lt_one_fin, 1.0, r);
+    r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin(), -1.0, r);
+    r = _TRAITS_T::sel(x > fc::erf_lt_one_fin(), 1.0, r);
     r = _TRAITS_T::sel(x == 0, x, r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;

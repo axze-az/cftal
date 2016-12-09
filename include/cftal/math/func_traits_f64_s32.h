@@ -25,12 +25,12 @@ namespace cftal {
                 uint64_t _u;
             } ud_t;
 
-            static constexpr int32_t bias = 0x3ff;
-            static constexpr int32_t e_max= 0x3ff;
-            static constexpr int32_t e_min= -1022;
-            static constexpr int32_t e_mask= 0x7ff;
-            static constexpr int32_t bits=52;
-            static constexpr int32_t vec_len=1;
+            static constexpr int32_t bias() { return 0x3ff; }
+            static constexpr int32_t e_max() { return 0x3ff; }
+            static constexpr int32_t e_min() { return -1022; }
+            static constexpr int32_t e_mask() { return 0x7ff; }
+            static constexpr int32_t bits() { return 52; }
+            static constexpr int32_t vec_len() { return 1; }
 
             static constexpr double pinf() {
                 return std::numeric_limits<double>::infinity();
@@ -70,14 +70,14 @@ namespace cftal {
             static
             vf_type insert_exp(const vi_type& e) {
                 ud_t t;
-                t._u = uint64_t(e) << bits;
+                t._u = uint64_t(e) << bits();
                 return t._d;
             }
             static
             vi_type extract_exp(const vf_type& d) {
                 ud_t t;
                 t._d = d;
-                return (t._u >> bits) & e_mask;
+                return (t._u >> bits()) & e_mask();
             }
 
             static
