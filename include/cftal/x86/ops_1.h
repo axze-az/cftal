@@ -333,11 +333,11 @@ inline
 cftal::uint32_t
 cftal::x86::compress_mask_u16(__m256i m)
 {
-    const __m128i m0= _mm_setr_epi8( 1,  3,  5,  7,  9, 11, 13, 15,
-                                     -1, -1, -1, -1, -1, -1, -1, -1);
-    const __m256i m1= _mm256_castsi128_si256(m0);
-    const __m256i m2= _mm256_inserti128_si256(m1, m0, 1);
-    __m256i as= _mm256_shuffle_epi8(m, m2);
+    const __m256i m= _mm256_setr_epi8(1,  3,  5,  7,  9, 11, 13, 15,
+                                      -1, -1, -1, -1, -1, -1, -1, -1,
+                                      1,  3,  5,  7,  9, 11, 13, 15,
+                                      -1, -1, -1, -1, -1, -1, -1, -1);
+    __m256i as= _mm256_shuffle_epi8(m, m0);
     uint32_t r= _mm256_movemask_epi8(as);
     r = (r>>(16-8)) | (r & 0xFF);
     return r;
