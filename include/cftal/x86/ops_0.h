@@ -962,16 +962,36 @@ namespace cftal {
             struct vpsravw {
                 static __m128i v(__m128i a, __m128i s);
             };
+#endif            
 
             struct vpsllvd {
-                static __m128i v(__m128i a, __m128i s) {
-                    return _mm_sllv_epi32(a, s);
-                }
+                static __m128i v(__m128i a, __m128i s);
+#if defined (__AVX2__)                
                 static __m256i v(__m256i a, __m256i s) {
                     return _mm256_sllv_epi32(a, s);
                 }
+#endif                
             };
 
+            struct vpsrlvd {
+                static __m128i v(__m128i a, __m128i s);
+#if defined (__AVX2__)                
+                static __m256i v(__m256i a, __m256i s) {
+                    return _mm256_srlv_epi32(a, s);
+                }
+#endif
+            };
+
+            struct vpsravd {
+                static __m128i v(__m128i a, __m128i s);
+#if defined (__AVX2__)                
+                static __m256i v(__m256i a, __m256i s) {
+                    return _mm256_srav_epi32(a, s);
+                }
+#endif                
+            };
+
+#if defined (__AVX2__)            
             struct vpsllvq {
                 static __m128i v(__m128i a, __m128i s) {
                     return _mm_sllv_epi64(a, s);
@@ -981,14 +1001,6 @@ namespace cftal {
                 }
             };
 
-            struct vpsrlvd {
-                static __m128i v(__m128i a, __m128i s) {
-                    return _mm_srlv_epi32(a, s);
-                }
-                static __m256i v(__m256i a, __m256i s) {
-                    return _mm256_srlv_epi32(a, s);
-                }
-            };
 
             struct vpsrlvq {
                 static __m128i v(__m128i a, __m128i s) {
@@ -999,14 +1011,6 @@ namespace cftal {
                 }
             };
 
-            struct vpsravd {
-                static __m128i v(__m128i a, __m128i s) {
-                    return _mm_srav_epi32(a, s);
-                }
-                static __m256i v(__m256i a, __m256i s) {
-                    return _mm256_srav_epi32(a, s);
-                }
-            };
 
             struct vpsravq {
                 static __m128i v(__m128i a, __m128i s);
@@ -1303,7 +1307,87 @@ __m128i cftal::x86::impl::vpsravw::v(__m128i a, __m128i s)
     __m128i r=vpsxxvw::v(rt);
     return r;
 }
+#endif
 
+inline
+__m128i cftal::x86::impl::vpsllvd::v(__m128i a, __m128i s)
+{
+#if defined (__AVX2__)
+    return _mm_sllv_epi32(a, s);
+#else
+    __m128i s0 = s;
+    __m128i s1 = vpshufd<1, 1, 1, 1>::v(s);
+    __m128i s2 = vpshufd<2, 2, 2, 2>::v(s);
+    __m128i s3 = vpshufd<3, 3, 3, 3>::v(s);
+    const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
+    s0 = _mm_and_si128(s0, msk);
+    s1 = _mm_and_si128(s1, msk);
+    s2 = _mm_and_si128(s2, msk);
+    s3 = _mm_and_si128(s3, msk);
+    __m128i r  = vpslld::v(a, s0);
+    __m128i r1 = vpslld::v(a, s1);
+    __m128i r2 = vpslld::v(a, s2);
+    __m128i r3 = vpslld::v(a, s3);
+    r = select_u32<true, false, true, true>(r, r1);
+    r = select_u32<true, true, false, true>(r, r2);
+    r = select_u32<true, true, true, false>(r, r3);
+    return r;
+#endif
+}
+
+inline
+__m128i cftal::x86::impl::vpsrlvd::v(__m128i a, __m128i s)
+{
+#if defined (__AVX2__)
+    return _mm_srlv_epi32(a, s);
+#else
+    __m128i s0 = s;
+    __m128i s1 = vpshufd<1, 1, 1, 1>::v(s);
+    __m128i s2 = vpshufd<2, 2, 2, 2>::v(s);
+    __m128i s3 = vpshufd<3, 3, 3, 3>::v(s);
+    const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
+    s0 = _mm_and_si128(s0, msk);
+    s1 = _mm_and_si128(s1, msk);
+    s2 = _mm_and_si128(s2, msk);
+    s3 = _mm_and_si128(s3, msk);
+    __m128i r  = vpsrld::v(a, s0);
+    __m128i r1 = vpsrld::v(a, s1);
+    __m128i r2 = vpsrld::v(a, s2);
+    __m128i r3 = vpsrld::v(a, s3);
+    r = select_u32<true, false, true, true>(r, r1);
+    r = select_u32<true, true, false, true>(r, r2);
+    r = select_u32<true, true, true, false>(r, r3);
+    return r;
+#endif
+}
+
+inline
+__m128i cftal::x86::impl::vpsravd::v(__m128i a, __m128i s)
+{
+#if defined (__AVX2__)
+    return _mm_srav_epi32(a, s);
+#else
+    __m128i s0 = s;
+    __m128i s1 = vpshufd<1, 1, 1, 1>::v(s);
+    __m128i s2 = vpshufd<2, 2, 2, 2>::v(s);
+    __m128i s3 = vpshufd<3, 3, 3, 3>::v(s);
+    const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
+    s0 = _mm_and_si128(s0, msk);
+    s1 = _mm_and_si128(s1, msk);
+    s2 = _mm_and_si128(s2, msk);
+    s3 = _mm_and_si128(s3, msk);
+    __m128i r  = vpsrad::v(a, s0);
+    __m128i r1 = vpsrad::v(a, s1);
+    __m128i r2 = vpsrad::v(a, s2);
+    __m128i r3 = vpsrad::v(a, s3);
+    r = select_u32<true, false, true, true>(r, r1);
+    r = select_u32<true, true, false, true>(r, r2);
+    r = select_u32<true, true, true, false>(r, r3);
+    return r;
+#endif
+}
+
+#if defined (__AVX2__)
 inline
 __m128i cftal::x86::impl::vpsravq::v(__m128i a, __m128i sh)
 {
