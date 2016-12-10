@@ -402,7 +402,8 @@ namespace cftal {
                     _p1 = _P1,
                     _p2 = _P2,
                     _p3 = _P3,
-                    m= shuffle4<int(_p0), int(_p1), int(_p2), int(_p3)>::val & 0xff
+                    m= shuffle4<int(_p0), int(_p1), int(_p2), int(_p3)>::
+                    val & 0xff
                 };
 
                 static __m128i v(__m128i a) {
@@ -991,32 +992,33 @@ namespace cftal {
 #endif                
             };
 
-#if defined (__AVX2__)            
             struct vpsllvq {
-                static __m128i v(__m128i a, __m128i s) {
-                    return _mm_sllv_epi64(a, s);
-                }
+                static __m128i v(__m128i a, __m128i s);
+#if defined (__AVX2__)            
                 static __m256i v(__m256i a, __m256i s) {
                     return _mm256_sllv_epi64(a, s);
                 }
+#endif
             };
 
 
             struct vpsrlvq {
-                static __m128i v(__m128i a, __m128i s) {
-                    return _mm_srlv_epi64(a, s);
-                }
+                static __m128i v(__m128i a, __m128i s);
+#if defined (__AVX2__)                
                 static __m256i v(__m256i a, __m256i s) {
                     return _mm256_srlv_epi64(a, s);
                 }
+#endif
             };
 
 
             struct vpsravq {
                 static __m128i v(__m128i a, __m128i s);
+#if defined (__AVX2__)                
                 static __m256i v(__m256i a, __m256i s);
-            };
 #endif
+            };
+
             
             struct vpmullw {
                 static __m128i v(__m128i a, __m128i b) {
@@ -1387,7 +1389,36 @@ __m128i cftal::x86::impl::vpsravd::v(__m128i a, __m128i s)
 #endif
 }
 
+inline
+__m128i cftal::x86::impl::vpsllvq::v(__m128i a, __m128i s)
+{
 #if defined (__AVX2__)
+    return _mm_sllv_epi64(a, s);
+#else
+    __m128i s0 = s;
+    __m128i s1 = vpshufd<2, 3, 2, 3>::v(s);
+    __m128i r = vpsllq::v(a, s0);
+    __m128i r1= vpsllq::v(a, s1);
+    r = select_u64<true, false>(r, r1);
+    return r;
+#endif
+}
+
+inline
+__m128i cftal::x86::impl::vpsrlvq::v(__m128i a, __m128i s)
+{
+#if defined (__AVX2__)
+    return _mm_srlv_epi64(a, s);
+#else
+    __m128i s0 = s;
+    __m128i s1 = vpshufd<2, 3, 2, 3>::v(s);
+    __m128i r = vpsrlq::v(a, s0);
+    __m128i r1= vpsrlq::v(a, s1);
+    r = select_u64<true, false>(r, r1);
+    return r;
+#endif
+}
+
 inline
 __m128i cftal::x86::impl::vpsravq::v(__m128i a, __m128i sh)
 {
@@ -1401,6 +1432,7 @@ __m128i cftal::x86::impl::vpsravq::v(__m128i a, __m128i sh)
     return r;
 }
 
+#if defined (__AVX2__)
 inline
 __m256i cftal::x86::impl::vpsravq::v(__m256i a, __m256i sh)
 {

@@ -311,7 +311,6 @@ namespace cftal {
             }
         };
 
-#if defined (__AVX2__)        
         template <>
         struct vshl<uint64_t, 2> {
             using full_type = vec<uint64_t, 2>;
@@ -331,7 +330,6 @@ namespace cftal {
                 return x86::impl::vpsrlvq::v(a(), s());
             }
         };
-#endif        
 
     }
 
