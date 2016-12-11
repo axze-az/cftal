@@ -1,5 +1,14 @@
 #include <iostream>
 #include <cmath>
+#if defined (__clang__)
+
+int main()
+{
+    return 0;
+}
+
+#else
+
 #include <boost/operators.hpp>
 #include <cftal/boost_compat.h>
 
@@ -191,3 +200,4 @@ int main()
     std::cout << "steps: " << stepsa << std::endl;
     return 0;
 }
+#endif
