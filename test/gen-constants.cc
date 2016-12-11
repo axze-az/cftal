@@ -333,7 +333,6 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
 {
     using f_t = mpfr_real<_B>;
     using value_type = typename _X::value_type;
-    using tbl_type = _C<_X, value_type>;
 
     _X d;
 
@@ -395,22 +394,6 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     }
     s << "};\n\n";
 
-
-    x=0.5;
-    load_pi(v);
-    v *= x;
-    value_type pi_bits[tbl_type::PI_2_BITS_MAX];
-    create_expansion<value_type>(pi_bits, v);
-    s << "template <class _T>\nconst " << (is_double ? "double" : "float")
-      << "\n"
-      << "cftal::math::impl::" << pfx << "::\nm_pi_2_bits[PI_2_BITS_MAX]={\n";
-    for (std::size_t i=0; i< tbl_type::PI_2_BITS_MAX; ++i) {
-        s << "   " << pr_fp<value_type>(pi_bits[i]);
-        if (i != tbl_type::PI_2_BITS_MAX-1)
-            s << ',';
-        s << "\n";
-    }
-    s << "};\n\n";
 
     // ln(2) and reciprocal
     x=2.0;
