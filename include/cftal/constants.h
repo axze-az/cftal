@@ -17,6 +17,7 @@ namespace cftal {
         enum { v = (_N1 > _N2 ? _N1 : _N2) };
     };
 
+    // 8 byte union
     union __attribute__((__visibility__("hidden"))) bytes8  {
     private:
         const double _f64;
@@ -38,16 +39,17 @@ namespace cftal {
         constexpr int32_t s32h() const { return int32_t(_u64>>32); }
     };
 
+    // compile time 8 byte union
     template <uint32_t _L, uint32_t _H>
     struct const_u64 {
         constexpr const_u64() {} // keep clang happy
         static
         const bytes8 v;
     };
-
     template <uint32_t _L, uint32_t _H>
     const bytes8 const_u64<_L, _H>::v{_L, _H};
 
+    // 4 byte union
     union __attribute__((__visibility__("hidden"))) bytes4 {
     private:
         const float _f32;
@@ -61,8 +63,11 @@ namespace cftal {
         constexpr int32_t s32() const { return static_cast<int32_t>(_u32); }
         constexpr uint16_t u16l() const { return _u32; }
         constexpr uint16_t u16h() const { return _u32>>16; }
+        constexpr int16_t s16l() const { return _u32; }
+        constexpr int16_t s16h() const { return _u32 >>16; }
     };
 
+    // compile time 4 byte union
     template <uint32_t _N>
     struct const_u32 {
         constexpr const_u32() {} // keep clang happy

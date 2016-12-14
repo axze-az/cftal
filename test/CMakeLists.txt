@@ -1,6 +1,4 @@
-# empty for now
 project(cftal-tests)
-
 
 set (TEST_SRCS
   div.cc
