@@ -20,7 +20,7 @@ namespace cftal {
             vreg& operator=(const vreg& r) = default;
             vreg& operator=(vreg&& r) = default;
             constexpr vreg(_R x);
-            _R operator()() const;
+            constexpr _R operator()() const;
             _R& operator()();
         };
     }
@@ -35,6 +35,7 @@ cftal::impl::vreg<_X>::vreg(_X x) : _v(x)
 
 template <class _X>
 inline
+constexpr
 _X cftal::impl::vreg<_X>::operator()() const
 {
     return _v;
