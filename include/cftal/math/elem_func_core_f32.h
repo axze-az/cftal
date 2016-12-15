@@ -29,13 +29,13 @@ namespace cftal {
         template <typename _T>
         struct elem_func_core<float, _T> {
 
-            typedef elem_func_core<float, _T> my_type;
+            using my_type = elem_func_core<float, _T>;
 
-            typedef typename _T::vf_type vf_type;
-            typedef typename _T::vi_type vi_type;
-            typedef typename _T::vmf_type vmf_type;
-            typedef typename _T::vmi_type vmi_type;
-            typedef d_real<vf_type> dvf_type;
+            using vf_type = typename _T::vf_type;
+            using vi_type = typename _T::vi_type;
+            using vmf_type = typename _T::vmf_type;
+            using vmi_type = typename _T::vmi_type;
+            using dvf_type = d_real<vf_type>;
             using tvf_type = t_real<vf_type>;
 
             using d_ops=cftal::impl::d_real_ops<vf_type,

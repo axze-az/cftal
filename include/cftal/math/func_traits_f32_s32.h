@@ -13,15 +13,14 @@ namespace cftal {
         template <>
         struct func_traits<float, int32_t>
             : public d_real_traits<float> {
-            typedef float vf_type;
-            typedef int32_t vi_type;
-            typedef bool vmf_type;
-            typedef bool vmi_type;
-            typedef uint32_t mask_type;
-            typedef union {
+            using vf_type = float;
+            using vi_type = int32_t;
+            using vmf_type = bool;
+            using vmi_type = bool;
+            union ud_t {
                 float _d;
                 uint32_t _u;
-            } ud_t;
+            };
 
             static constexpr int32_t bias() { return 127; }
             static constexpr int32_t e_max() { return 127; }
@@ -29,7 +28,7 @@ namespace cftal {
             static constexpr int32_t e_mask() { return 0xff; }
             static constexpr int32_t bits() { return 23; }
             static constexpr int32_t vec_len() { return 1; }
-            
+
             static constexpr float pinf() {
                 return std::numeric_limits<float>::infinity();
             }

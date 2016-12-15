@@ -14,16 +14,15 @@ namespace cftal {
         template <>
         struct func_traits<double, int32_t>
             : public d_real_traits<double> {
-            typedef double vf_type;
-            typedef int32_t vi_type;
-            typedef int64_t vli_type;
-            typedef bool vmf_type;
-            typedef bool vmi_type;
-            typedef uint32_t mask_type;
-            typedef union {
+            using vf_type = double;
+            using vi_type = int32_t;
+            using vli_type = int64_t;
+            using vmf_type = bool;
+            using vmi_type = bool;
+            union ud_t {
                 double _d;
                 uint64_t _u;
-            } ud_t;
+            };
 
             static constexpr int32_t bias() { return 0x3ff; }
             static constexpr int32_t e_max() { return 0x3ff; }
@@ -168,7 +167,7 @@ namespace cftal {
                 return (vi_type)f;
             }
         };
-        
+
     } // end math
 } // end cftal
 
