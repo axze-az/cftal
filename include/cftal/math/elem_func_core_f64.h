@@ -128,11 +128,11 @@ namespace cftal {
             vf_type
             log_k(arg_t<vf_type> x, log_func f=log_func::c_log_e);
 
-            
+
             static
             dvf_type
             log_k2(arg_t<vf_type> x);
-            
+
             static
             vf_type
             log1p_k(arg_t<vf_type> x);
@@ -1418,7 +1418,7 @@ typename cftal::math::elem_func_core<double, _T>::dvf_type
 cftal::math::elem_func_core<double, _T>::
 log_k2(arg_t<vf_type> xc)
 {
-    
+
 }
 
 template <typename _T>
@@ -1546,12 +1546,12 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     // y= 2^j*f
     // x= 2^i*m
     // x^y= exp( 2^j* f * ln(2^i*m))
-    
+
     // using ctbl = impl::d_real_constants<d_real<double>, double>;
     // f(x) = exp(x) - a
-    // 
+    //
     //  using Newton iteration.  The iteration is given by
-    // x' = x - f(x)/f'(x) 
+    // x' = x - f(x)/f'(x)
     //        = x - (1 - a * exp(-x))
     //        = x + a * exp(-x) - 1.
     vf_type lnx = log_k(abs_x, log_func::c_log_e);
@@ -1570,7 +1570,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type xl, xh= d_ops::two_prod(y, lnx, xl);
     vf_type p= exp_k(xh, false);
     vf_type xs= xl;
-    p += xs*p;    
+    p += xs*p;
 #endif
     // f(x) := e^(x+y);
     // f(x) ~ e^x + e^x y + e^x/2 *y^2

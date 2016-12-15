@@ -170,7 +170,7 @@ namespace cftal {
             typedef typename _TRAITS_T::vmf_type vmf_type;
             typedef typename _TRAITS_T::vmi_type vmi_type;
         };
-        
+
     }
 }
 
@@ -202,8 +202,6 @@ exp(arg_t<vf_type> d)
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, M_E, res);
-    // res = _T::sel(d== vf_type(_T::ninf()), 0.0, res);
-    // res = _T::sel(d== vf_type(_T::pinf()), _T::pinf(), res);
     return res;
 }
 
@@ -547,7 +545,6 @@ typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 {
-#if 1
     vf_type r=base_type::atan2_k(y, x);
 
     using _T = _TRAITS_T;
@@ -619,34 +616,6 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
         r = _T::sel(x_nan | y_nan, _T::nan(), r);
     }
     return r;
-#else
-    // r = dvf_type(mulsign(r.h(), x),
-    //             mulsign(r.l(), x));
-    // r = mulsign(r, x);
-    vf_type sgn_x = copysign(vf_type(1.0), x);
-    vf_type r = rd.h();
-    r *= sgn_x;
-
-    vmf_type x_is_inf = isinf(x);
-    vmf_type y_is_inf = isinf(y);
-
-    // if (xisinf(x) || x == 0)
-    //    r = M_PI/2 - (xisinf(x) ? (sign(x) * (M_PI  /2)) : 0);
-    vf_type t1= _TRAITS_T::sel(x_is_inf, sgn_x * M_PI/2, 0);
-    r = _TRAITS_T::sel(x_is_inf | (x==0), M_PI/2 - t1, r);
-    // if (xisinf(y)          )
-    //    r = M_PI/2 - (xisinf(x) ? (sign(x) * (M_PI*1/4)) : 0);
-    vf_type t2= _TRAITS_T::sel(x_is_inf, sgn_x * M_PI/4, 0);
-    r = _TRAITS_T::sel(y_is_inf, M_PI/2 - t2, r);
-    // if (             y == 0) r = (sign(x) == -1 ? -M_PI : 0);
-    vf_type t3= _TRAITS_T::sel(sgn_x == -1.0, -vf_type(M_PI), vf_type(0));
-    r = _TRAITS_T::sel(y==0, t3, r);
-    // return xisnan(x) || xisnan(y) ? NAN : mulsign(r, y);
-    vf_type sgn_y= copysign(vf_type(1.0), y);
-    r *= sgn_y;
-    r = _TRAITS_T::sel(isnan(x) | isnan(y), _TRAITS_T::nan(), r);
-    return r;
-#endif
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
