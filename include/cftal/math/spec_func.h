@@ -9,13 +9,12 @@ namespace cftal {
 
     namespace math {
 
-        template <typename _FLOAT_T, typename _TRAITS_T> 
+        template <typename _FLOAT_T, typename _TRAITS_T>
         struct spec_func_core {
             // specializations contain the implementation of
             // special functions
-            
         };
-        
+
         // common code for special functions
         template <typename _FLOAT_T, typename _TRAITS_T>
         struct spec_func : public spec_func_core<_FLOAT_T, _TRAITS_T> {

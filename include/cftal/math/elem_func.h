@@ -56,12 +56,11 @@ namespace cftal {
         // must be specialized for different _FLOAT_T
         template <typename _FLOAT_T, typename _TRAITS_T>
         struct elem_func_core {
-            typedef typename _TRAITS_T::vf_type vf_type;
-            typedef typename _TRAITS_T::vi_type vi_type;
-            typedef typename _TRAITS_T::vmf_type vmf_type;
-            typedef typename _TRAITS_T::vmi_type vmi_type;
-            typedef d_real<vf_type> dvf_type;
-
+            using vf_type = typename _TRAITS_T::vf_type;
+            using vi_type = typename _TRAITS_T::vi_type;
+            using vmf_type = typename _TRAITS_T::vmf_type;
+            using vmi_type = typename _TRAITS_T::vmi_type;
+            using dvf_type = d_real<vf_type>;
         };
 
         // common implementation of base and elementary functions
@@ -82,26 +81,54 @@ namespace cftal {
             using base_type::ilogb;
             using base_type::ilogbp1;
             // calls cbrt_k
-            static vf_type cbrt(arg_t<vf_type> vf);
+            static
+            vf_type
+            cbrt(arg_t<vf_type> vf);
 
-            // exp, expm1, sinh, cosh call exp_k2
-            static vf_type exp(arg_t<vf_type> vf);
-            static vf_type exp2(arg_t<vf_type> vf);
-            static vf_type exp10(arg_t<vf_type> vf);
-            static vf_type expm1(arg_t<vf_type> vf);
-            static vf_type sinh(arg_t<vf_type> vf);
-            static vf_type cosh(arg_t<vf_type> vf);
-            static vf_type tanh(arg_t<vf_type> vf);
-            // log calls log_k2
-            static vf_type log(arg_t<vf_type> vf);
+            static
+            vf_type
+            exp(arg_t<vf_type> vf);
 
-            // log calls log_k2
-            static vf_type log1p(arg_t<vf_type> vf);
+            static
+            vf_type
+            exp2(arg_t<vf_type> vf);
 
-            static vf_type log10(arg_t<vf_type> vf);
-            static vf_type log2(arg_t<vf_type> vf);
+            static
+            vf_type
+            exp10(arg_t<vf_type> vf);
 
-            // pow calls exp_k2 and log_k2
+            static
+            vf_type
+            expm1(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            sinh(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            cosh(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            tanh(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            log(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            log1p(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            log10(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            log2(arg_t<vf_type> vf);
+
             static
             vf_type
             pow(arg_t<vf_type> b, arg_t<vf_type> e);
@@ -111,25 +138,49 @@ namespace cftal {
             vf_type
             pow(arg_t<vf_type> b, arg_t<vi_type> e);
 
-            // sincos, sin, cos, tan and cot call
-            // sin_cos_k
-            static void sincos(arg_t<vf_type> vf,
-                               vf_type* psin,
-                               vf_type* pcos);
-            static vf_type sin(arg_t<vf_type> vf);
-            static vf_type cos(arg_t<vf_type> vf);
-            static vf_type tan(arg_t<vf_type> vf);
-            static vf_type cot(arg_t<vf_type> vf);
+            static
+            void
+            sincos(arg_t<vf_type> vf, vf_type* psin, vf_type* pcos);
 
-            // atan2, atan, ... call atan2_k2
-            static vf_type atan2(arg_t<vf_type> x,
-                                 arg_t<vf_type> y);
-            static vf_type atan(arg_t<vf_type> x);
-            static vf_type asin(arg_t<vf_type> x);
-            static vf_type acos(arg_t<vf_type> x);
-            static vf_type asinh(arg_t<vf_type> x);
-            static vf_type acosh(arg_t<vf_type> x);
-            static vf_type atanh(arg_t<vf_type> x);
+            static
+            vf_type
+            sin(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            cos(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            tan(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            atan2(arg_t<vf_type> x, arg_t<vf_type> y);
+
+            static
+            vf_type
+            atan(arg_t<vf_type> x);
+
+            static
+            vf_type
+            asin(arg_t<vf_type> x);
+
+            static
+            vf_type
+            acos(arg_t<vf_type> x);
+
+            static
+            vf_type
+            asinh(arg_t<vf_type> x);
+
+            static
+            vf_type
+            acosh(arg_t<vf_type> x);
+
+            static
+            vf_type
+            atanh(arg_t<vf_type> x);
 
             // returns e^(-x*x);
             static
@@ -160,15 +211,6 @@ namespace cftal {
             static
             vf_type
             exp10_px2(arg_t<vf_type> x);
-        };
-
-
-        template <typename _FLOAT_T, typename _TRAITS_T>
-        struct func : public elem_func<_FLOAT_T, _TRAITS_T> {
-            typedef typename _TRAITS_T::vf_type vf_type;
-            typedef typename _TRAITS_T::vi_type vi_type;
-            typedef typename _TRAITS_T::vmf_type vmf_type;
-            typedef typename _TRAITS_T::vmi_type vmi_type;
         };
 
     }

@@ -19,7 +19,7 @@
 namespace cftal {
 
     namespace math {
-        
+
         namespace impl {
 
             // sin(x + y) = sin(x) * cos(y) + sin(y) * cos(x);
@@ -189,7 +189,7 @@ namespace cftal {
             // nth root implementation for double/float
             template <typename _FLOAT_T, typename _TRAITS,
                       unsigned _R>
-            struct nth_root : public func<_FLOAT_T, _TRAITS> {
+            struct nth_root : public elem_func<_FLOAT_T, _TRAITS> {
 
                 using vf_type = typename _TRAITS::vf_type;
                 using vi_type = typename _TRAITS::vi_type;
@@ -197,7 +197,7 @@ namespace cftal {
                 using vmi_type = typename _TRAITS::vmi_type;
                 using dvf_type = typename _TRAITS::dvf_type;
 
-                using base_type = func<_FLOAT_T, _TRAITS>;
+                using base_type = elem_func<_FLOAT_T, _TRAITS>;
                 using base_type::frexp;
                 using base_type::ldexp;
                 using base_type::ilogbp1;
