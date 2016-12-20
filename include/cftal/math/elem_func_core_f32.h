@@ -36,7 +36,6 @@ namespace cftal {
             using vmf_type = typename _T::vmf_type;
             using vmi_type = typename _T::vmi_type;
             using dvf_type = d_real<vf_type>;
-            using tvf_type = t_real<vf_type>;
 
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;

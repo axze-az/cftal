@@ -27,7 +27,6 @@
 namespace cftal {
     namespace math {
 
-
         // specialization of elem_func_core for double and different
         // traits
         template <typename _T>
@@ -41,7 +40,6 @@ namespace cftal {
             using vmi2_type = typename _T::vmi2_type;
 
             using dvf_type = d_real<vf_type>;
-            using my_type = elem_func_core<double, _T>;
 
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;

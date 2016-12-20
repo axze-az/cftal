@@ -1,7 +1,8 @@
-- f32: asinh, acosh, atanh 
+- f64 pow
+- f64 erfc
+- f32 pow
+- f32 erfc
 - permutation specializations for v4f64, v8f32, v8u32, v4u64
-
-- variable vector shifts for integer vectors
 
 double
 fmod(double x, double y)
