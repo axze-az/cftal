@@ -14,15 +14,12 @@
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
-#include <cftal/t_real.h>
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f64_s32.h>
 #include <cftal/math/impl_poly.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
-#include <cmath>
-
 
 namespace cftal {
     namespace math {

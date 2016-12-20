@@ -17,9 +17,7 @@
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f32_s32.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
-#include <type_traits>
-#include <limits>
-#include <utility>
+#include <cftal/mem.h>
 
 namespace cftal {
     namespace math {
@@ -28,8 +26,6 @@ namespace cftal {
         // traits
         template <typename _T>
         struct elem_func_core<float, _T> {
-
-            using my_type = elem_func_core<float, _T>;
 
             using vf_type = typename _T::vf_type;
             using vi_type = typename _T::vi_type;
