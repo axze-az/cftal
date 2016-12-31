@@ -46,6 +46,8 @@ namespace cftal {
             static vf_type func(arg_t<vf_type> vf);
 
             static dvf_type log_k2(arg_t<vf_type> vf);
+            
+            static vf_type exp_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
 
         };
     }
@@ -121,8 +123,10 @@ cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
     hx = (hx&0x000fffff) + 0x3fe6a09e;
     vf_type xr = _T::combine_words(lx, hx);
 
-    vf_type f = xr - 1.0;
-    vf_type hfsq = (0.5*f)*f;
+    // vf_type f = xr - 1.0;
+    dvf_type df= d_ops::add(xr, vf_type(-1.0));
+    vf_type f= df.h();
+    dvf_type dhfsq = mul_pwr2(df, vf_type(0.5))*df;
     vf_type s = f/(2.0+f);
     vf_type z = s*s;    
 
@@ -162,10 +166,11 @@ cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
     vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
 
     dvf_type log_x= kf* dvf_type(ctbl::m_ln2);
-    log_x += vf_type(s*hfsq);
+    log_x += vf_type(s*dhfsq.h());
     log_x += vf_type(s*y);
-    log_x -= hfsq;
-    log_x += f;
+    // log_x -= dhfsq;
+    // log_x += df;
+    log_x += (df -dhfsq);
     
     x= log_x.h() + log_x.l();
     
