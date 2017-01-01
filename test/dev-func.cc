@@ -98,17 +98,34 @@ namespace cftal {
     }
 }
 
-#if 0
 template <typename _T>
 typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
 {
-}
+#if 1
+    auto log_x = log_k2(xc);  
+    vf_type x= log_x.h() + log_x.l();
+    
+    const vf_type pinf(_T::pinf());
+    const vf_type ninf(_T::ninf());
+    x = _T::sel(isinf(xc), pinf, x);
+    // if (d < 0) x = NAN;
+    x = _T::sel(xc < vf_type(0.0), vf_type(_T::nan()), x);
+    // if (d == 0) x = -INFINITY;
+    x = _T::sel(xc == vf_type(0.0), ninf, x);
+    // NAN --> n_and_1
+    x = _T::sel(isnan(xc), xc, x);
+    // using fc= func_constants<_FLOAT_T>;
+    // const vf_type log_lo_fin= fc::log_lo_fin;
+    // const vf_type log_lo_val= fc::log_lo_val;
+    // x = _T::sel(d == log_lo_fin, log_lo_val, x);
+    return x;
 #endif
+}
     
 template <typename _T>
-typename cftal::math::test_func<double, _T>::vf_type
-cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
+typename cftal::math::test_func<double, _T>::dvf_type
+cftal::math::test_func<double, _T>::log_k2(arg_t<vf_type> xc)
 {
 
     using fc = func_constants<double>;
@@ -171,23 +188,7 @@ cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
     // log_x -= dhfsq;
     // log_x += df;
     log_x += (df -dhfsq);
-    
-    x= log_x.h() + log_x.l();
-    
-    const vf_type pinf(_T::pinf());
-    const vf_type ninf(_T::ninf());
-    x = _T::sel(isinf(xc), pinf, x);
-    // if (d < 0) x = NAN;
-    x = _T::sel(xc < vf_type(0.0), vf_type(_T::nan()), x);
-    // if (d == 0) x = -INFINITY;
-    x = _T::sel(xc == vf_type(0.0), ninf, x);
-    // NAN --> n_and_1
-    x = _T::sel(isnan(xc), xc, x);
-    // using fc= func_constants<_FLOAT_T>;
-    // const vf_type log_lo_fin= fc::log_lo_fin;
-    // const vf_type log_lo_val= fc::log_lo_val;
-    // x = _T::sel(d == log_lo_fin, log_lo_val, x);
-    return x;
+    return log_x;
 }
 
 int main(int argc, char** argv)
