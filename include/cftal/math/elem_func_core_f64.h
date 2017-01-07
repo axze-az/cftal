@@ -1355,17 +1355,15 @@ __pow_exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
                          exp_c13,
                          exp_c11,
                          exp_c9,
-                         exp_c7,
-                         exp_c5);
+                         exp_c7);
     vf_type j=impl::poly(xx,
                          exp_c12,
                          exp_c10,
                          exp_c8,
-                         exp_c6,
-                         exp_c4);
+                         exp_c6);
     vf_type y=i*xr.h() + j;
     y = impl::poly(xr.h(), y,
-                   exp_c3);
+                   exp_c5, exp_c4, exp_c3);
     // correction for errors in argument reduction
     vf_type cr = xr.l();
     vf_type yee= cr + cr*xr.h() + 0.5*cr*xx;
@@ -1394,8 +1392,17 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type abs_x= abs(x);
     dvf_type lnx = __pow_log_k2(abs_x);
     dvf_type ylnx = lnx * y;
-    vf_type r= __pow_exp_k2(ylnx.h(), ylnx.l());
-    return r;
+    vf_type res= __pow_exp_k2(ylnx.h(), ylnx.l());
+
+    using fc=func_constants<double>;
+    const vf_type& d= ylnx.h();
+    const vf_type exp_hi_inf= fc::exp_hi_inf();
+    const vf_type exp_lo_zero= fc::exp_lo_zero();
+    res = _T::sel(d <= exp_lo_zero, 0.0, res);
+    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    res = _T::sel(d == 0.0, 1.0, res);
+    res = _T::sel(d == 1.0, M_E, res);    
+    return res;
 }
 
 template <typename _T>
