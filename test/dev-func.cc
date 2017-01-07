@@ -91,7 +91,7 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::log(a);
+                return std::exp(a);
             }
             static
             const char* fname() { return "func"; }
