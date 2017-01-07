@@ -8,9 +8,9 @@ int main(int argc, char** argv)
     using namespace cftal::test;
 #if 0
     return 0;
-#else
-    const int ulp=128;
-    const int _N=2;
+#endif
+    const int ulp=256;
+    const int _N=8;
     bool rc=true;
     bool speed_only=false;
     std::cout << std::setprecision(18) << std::scientific;
@@ -20,7 +20,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-#if 0
+#if 1
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
             append_filename(test_data_dir, "../../test/data/pow.testdata");
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
 #if 0
-    func_domain<double> d=std::make_pair(-std::numeric_limits< double >::max(),
+    func_domain<double> d=std::make_pair(0,
                                          std::numeric_limits< double >::max());
     rc &= of_fp_func_2_up_to<
         double, _N, check_pow<double> >::v(st, d, d, speed_only,
@@ -47,9 +47,9 @@ int main(int argc, char** argv)
                                            cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
-#endif
-    func_domain<double> d1=std::make_pair(0.5, 1.0);
-    func_domain<double> d2=std::make_pair(0.5, 1.0);
+#endif              
+    func_domain<double> d1=std::make_pair(-10.0, 10.0);
+    func_domain<double> d2=std::make_pair(-10.0, 10.0);
     us= std::make_shared<ulp_stats>();
     rc &= of_fp_func_2_up_to<
         double, _N, check_pow<double> >::v(st, d1, d2, speed_only,
@@ -59,5 +59,4 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
-#endif
 }
