@@ -74,11 +74,10 @@ namespace cftal {
     vec<float, _N>
     cosh(const vec<float, _N>& v);
 
-#if 1
     template <std::size_t _N>
     vec<float, _N>
     pow(const vec<float, _N>& x, const vec<float, _N>& y);
-#endif
+
     template <std::size_t _N>
     vec<float, _N>
     atan2(const vec<float, _N>& x, const vec<float, _N>& y);
@@ -524,6 +523,7 @@ namespace cftal {
     vec<float, 16>
     erf(arg<vec<float, 16> >::type d);
 
+#if 0    
     // erfc, these functions are exact to XXX ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -543,16 +543,17 @@ namespace cftal {
 
     vec<float, 16>
     erfc(arg<vec<float, 16> >::type d);
-
-#if 1
-    // pow, these functions are exact to +-1 ulp with exception of _N=1
+#endif
+    
+    // pow
     template <std::size_t _N>
     vec<float, _N>
     pow(const vec<float, _N>& x, const vec<float, _N>& y);
 
     vec<float, 1>
-    pow(arg<vec<float, 1> >::type x, arg<vec<float, 1> >::type y);
+    pow(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
 
+#if 0
     vec<float, 2>
     pow(arg<vec<float, 2> >::type b, arg<vec<float, 2> >::type e);
 
@@ -1002,6 +1003,7 @@ cftal::erf(const vec<float, _N>& v)
     return r;
 }
 
+#if 0
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>
@@ -1010,6 +1012,7 @@ cftal::erfc(const vec<float, _N>& v)
     vec<float, _N> r(erfc(low_half(v)), erfc(high_half(v)));
     return r;
 }
+#endif
 
 template <std::size_t _N>
 inline
@@ -1029,7 +1032,6 @@ cftal::tanh(const vec<float, _N>& v)
     return r;
 }
 
-#if 0
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>
@@ -1039,7 +1041,15 @@ cftal::pow(const vec<float, _N>& x, const vec<float, _N>& y)
                      pow(high_half(x), high_half(y)));
     return r;
 }
-#endif
+
+inline
+cftal::vec<float, 1>
+cftal::pow(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y)
+{
+    vec<float, 1> r(std::pow(x(), y()));
+    return r;
+}
+
 
 template <std::size_t _N>
 inline

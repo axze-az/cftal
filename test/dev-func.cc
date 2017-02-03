@@ -70,10 +70,10 @@ namespace cftal {
             r(const _T& a) {
 #if 1 
                 std::pair<_T, _T> i;
-#if 1
+#if 0
                 _T v=call_mpfr::func(a, mpfr_exp, &i);
 #else
-                _T v=call_mpfr::func(a, mpfr_log, &i);
+                _T v=call_mpfr::func(a, mpfr_log2, &i);
 #endif
                 return std::make_tuple(v, i.first, i.second);                
 #else
@@ -106,7 +106,7 @@ template <typename _T>
 typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
 {
-#if 1
+#if 0
     const vf_type d=xc;
     vf_type res=exp_k2(xc, 0.0);
     using fc= func_constants<double>;

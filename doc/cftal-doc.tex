@@ -78,8 +78,8 @@ using the test data set.\\[1cm]
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
     \hline \hline
      &
-    \multicolumn{2}{| p{4.0cm} |} {\center{double precision}} &
-    \multicolumn{2}{| p{4.0cm} |} {\center{single precision}} \\
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
     \hline
     function & $\Delta$ ulp & (prob.) faithfully &
           $\Delta$ ulp & (prob.) faithfully \\
@@ -133,6 +133,8 @@ using the test data set.\\[1cm]
     acosh & $\pm$ 1 & n  & $\pm$ 1 & n \\
     \hline
     atanh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    \hline \hline
+    erf & $\pm$ 1 & y  & $\pm$ 1 & n \\
     \hline
 
 \end{tabular}

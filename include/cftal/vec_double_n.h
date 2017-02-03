@@ -390,7 +390,6 @@ namespace cftal {
     vec<double, 8>
     log2(arg_t<vec<double, 8> > d);
 
-#if 1
     // pow, these functions are exact to +-X ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -399,6 +398,7 @@ namespace cftal {
     vec<double, 1>
     pow(arg_t<vec<double, 1> > x, arg_t<vec<double, 1> > y);
 
+#if 0
     vec<double, 2>
     pow(arg_t<vec<double, 2> > b, arg_t<vec<double, 2> > e);
 
@@ -621,6 +621,7 @@ namespace cftal {
     vec<double, 8>
     erf(arg_t<vec<double, 8> > d);
 
+#if 0    
     // erfc, these functions are exact to XX ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -637,7 +638,7 @@ namespace cftal {
 
     vec<double, 8>
     erfc(arg_t<vec<double, 8> > d);
-
+#endif
 
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
@@ -904,6 +905,7 @@ cftal::erf(const vec<double, _N>& v)
     return r;
 }
 
+#if 0
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
@@ -912,6 +914,7 @@ cftal::erfc(const vec<double, _N>& v)
     vec<double, _N> r(erfc(low_half(v)), erfc(high_half(v)));
     return r;
 }
+#endif
 
 template <std::size_t _N>
 inline
@@ -1037,7 +1040,6 @@ cftal::tanh(const vec<double, _N>& v)
     return r;
 }
 
-#if 0
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
@@ -1047,7 +1049,15 @@ cftal::pow(const vec<double, _N>& x, const vec<double, _N>& y)
                       pow(high_half(x), high_half(y)));
     return r;
 }
-#endif
+
+inline
+cftal::vec<double, 1>
+cftal::pow(arg_t<vec<double, 1> > x, arg_t<vec<double, 1> > y)
+{
+    vec<double, 1> r(std::pow(x(), y()));
+    return r;
+}
+
 
 template <std::size_t _N>
 inline
