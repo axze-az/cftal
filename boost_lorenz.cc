@@ -69,8 +69,8 @@ namespace boost {
         namespace odeint {
             template<>
             struct vector_space_norm_inf< point3d > {
-                typedef double result_type;
-                double operator()(const point3d& p) const {
+                using result_type = double;
+                result_type operator()(const point3d& p) const {
                     using std::max;
                     using std::abs;
                     return max(max(abs(p.x), abs(p.y)), abs(p.z));

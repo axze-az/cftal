@@ -23,7 +23,7 @@ namespace cftal {
                 LAST
             };
         };
-        
+
         template <class _V, class _REF>
         bool check_div_16(const char* msg);
 
@@ -216,9 +216,9 @@ bool cftal::test::check_div_32_rnd(const char* msg)
         std::mt19937 _rnd;
         uint32_t next() { return _distribution(_rnd); }
     } rng;
-    
-    
-    typedef typename _T::value_type element_type;
+
+
+    using element_type = typename _T::value_type;
     element_type di(0);
     divisor<_T, element_type> dd(di);
 
@@ -343,8 +343,8 @@ bool cftal::test::check_div_64_rnd(const char* msg)
         std::mt19937_64 _rnd;
         uint64_t next() { return _distribution(_rnd); }
     } rng;
-    
-    typedef typename _T::value_type element_type;
+
+    using element_type = typename _T::value_type;
     element_type di(0);
     divisor<_T, element_type> dd(di);
 

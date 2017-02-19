@@ -51,7 +51,7 @@ namespace cftal {
     struct d_real_traits<double> : public has_fma<double> {
         constexpr d_real_traits<double>() = default;
         // result of a comparison operator
-        typedef bool cmp_result_type;
+        using cmp_result_type = bool;
         // corresponding integer type for ldexp, frexp
         using int_type = int32_t;
 
@@ -114,7 +114,7 @@ namespace cftal {
     struct d_real_traits<float> : public has_fma<float> {
         constexpr d_real_traits<float>() = default;
         // result of a comparison operator
-        typedef bool cmp_result_type;
+        using cmp_result_type = bool;
         // corresponding integer type for ldexp, frexp
         using int_type = int32_t;
 

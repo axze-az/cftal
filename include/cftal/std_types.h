@@ -22,8 +22,8 @@ namespace cftal {
     using std::int32_t;
     using std::int64_t;
 
-    typedef float f32_t;
-    typedef double f64_t;
+    using f32_t = float;
+    using f64_t = double;
 
 }
 

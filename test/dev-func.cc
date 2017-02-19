@@ -34,17 +34,17 @@ namespace cftal {
         template <typename _T>
         struct test_func<double, _T> : public elem_func_core<double, _T> {
             using base_type = elem_func_core<double, _T>;
-            typedef typename _T::vf_type vf_type;
-            typedef typename _T::vi_type vi_type;
+            using vf_type = typename _T::vf_type;
+            using vi_type = typename _T::vi_type;
             // using vli_type = typename _T::vli_type;
             using vi2_type = typename _T::vi2_type;
-            typedef typename _T::vmf_type vmf_type;
-            typedef typename _T::vmi_type vmi_type;
+            using vmf_type = typename _T::vmf_type;
+            using vmi_type = typename _T::vmi_type;
             // using vmi2_type = typename _T::vmi2_type;
 
-            typedef d_real<vf_type> dvf_type;
-            typedef t_real<vf_type> tvf_type;
-            typedef elem_func_core<double, _T> my_type;
+            using dvf_type = d_real<vf_type>;
+            using tvf_type = t_real<vf_type>;
+            using my_type = elem_func_core<double, _T>;
 
             using d_ops = typename base_type::d_ops;
 
