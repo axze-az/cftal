@@ -22,13 +22,61 @@
 
 \tableofcontents
 
-\section{introduction}
+\section{Introduction}
 \label{sec:introduction}
 
-\section{base components}
+The cftal library contains a C++11(+) short vector implementation. A
+short vector is vector with up to 64 elements.
+
+The design principles of the short vector library are
+templates, recursion and specialization:
+
+\begin{itemize}
+\item A vector of length $N$ contains two vectors of length $N/2$
+  (this also forces the library to vector lengths of powers of 2).
+\item The vectors of length $1$ are specialized
+\item Vectors with the same length as hardware vector implementation
+  for different system may be specialized.
+\item Partial and full specialization may be used to allow the
+  selection of special intrinsic functions for hardware vector
+  implementations
+\item Expression templates are used for operations on the short
+  vectors. This allows the filtering for special operation patterns,
+  for instance generation of fused multiply add intrinsics from
+  expressions like $ c= a* b + c $. More optimization are possible,
+  but not (yet) implemented.
+\end{itemize}
+
+\section{Base components}
 \label{sec:base}
 
-\section{vector math library}
+All short vectory library code is grouped around the class
+\begin{lstlisting}
+template <typename _T, std::size_t _N> vec<_T, _N>;
+\end{lstlisting}
+where $_T$ is the type and $_N$ of the elements of the vector.
+A vector of length $N$ may be constructed from
+\begin{itemize}
+\item a scalar, initializing every vector element to the scalar,
+\item two vectors of length $N/2$ with exception of length $1$,
+\item an initializer list, initializing excess elements in the
+  vector from the last element of the initializer list 
+\end{itemize}
+A vector may be split into low and high halfes using the functions
+\begin{lstlisting}
+template <typename _T, std::size_t _N>
+const typename vec<_T, _N>::half_type&
+low_half(const vec<_T, _N>& v);
+
+template <typename _T, std::size_t _N>
+const typename vec<_T, _N>::half_type&
+high_half(const vec<_T, _N>& v);
+\end{lstlisting}
+The most arithmetic operations are defined on all vectors. Logical
+operations on vectors return either a bit mask
+
+
+\section{Vector Math Library}
 \label{sec:vec_math_lib}
 
 This section contains the description of the algorithms used in the
