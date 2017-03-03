@@ -41,7 +41,7 @@ templates, recursion and specialization:
   selection of special intrinsic functions for hardware vector
   implementations
 \item Expression templates are used for operations on the short
-  vectors. This allows the filtering for special operation patterns,
+v  vectors. This allows the filtering for special operation patterns,
   for instance generation of fused multiply add intrinsics from
   expressions like $ c= a* b + c $. More optimization are possible,
   but not (yet) implemented.
@@ -54,7 +54,9 @@ All short vectory library code is grouped around the class
 \begin{lstlisting}
 template <typename _T, std::size_t _N> vec<_T, _N>;
 \end{lstlisting}
-where $_T$ is the type and $_N$ of the elements of the vector.
+where $\_T$ is the type and $\_N$ the number of the elements of the
+vector.\\
+%
 A vector of length $N$ may be constructed from
 \begin{itemize}
 \item a scalar, initializing every vector element to the scalar,
@@ -72,8 +74,14 @@ template <typename _T, std::size_t _N>
 const typename vec<_T, _N>::half_type&
 high_half(const vec<_T, _N>& v);
 \end{lstlisting}
-The most arithmetic operations are defined on all vectors. Logical
-operations on vectors return either a bit mask
+The most arithmetic operations are defined on all vectors.\\
+%
+Logical operations on vectors return either a bit mask or a vector of
+the same type as the operands. The choice of a bit mask (a vector of
+bits) or the same type depends on the machine -- machines with
+hardware bit mask should use a bit mask (this means, that on x86 the
+type of the result of logical operations depends on the existence of
+the 512 bit AVX vector extensions).
 
 
 \section{Vector Math Library}
