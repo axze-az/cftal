@@ -62,11 +62,11 @@ namespace cftal {
         const uint32_t _u32;
     public:
         constexpr bytes4(float f) : _f32{f} {}
-        constexpr bytes4(int32_t s) : _u32{static_cast<uint32_t>(s)} {}
+        constexpr bytes4(int32_t s) : _u32{uint32_t(s)} {}
         constexpr bytes4(uint32_t u) : _u32{u} {}
         constexpr float f32() const { return _f32; }
         constexpr uint32_t u32() const { return _u32; }
-        constexpr int32_t s32() const { return static_cast<int32_t>(_u32); }
+        constexpr int32_t s32() const { return int32_t(_u32); }
         constexpr uint16_t u16l() const { return _u32; }
         constexpr uint16_t u16h() const { return _u32>>16; }
         constexpr int16_t s16l() const { return _u32; }
