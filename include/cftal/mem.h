@@ -11,21 +11,27 @@
 #include <cftal/types.h>
 
 namespace cftal {
-    
+
+    // mem: memory load/store abstraction
     template <class _T>
     struct mem {
+        // load from memory
         static
-        _T load(const _T* p, std::size_t s = 1) {
+        _T
+        load(const _T* p, std::size_t s = 1) {
+            static_cast<void>(s);
             return *p;
         }
+        // store to memory
         static
-        void store(_T* p, const _T& v) {
+        void
+        store(_T* p, const _T& v) {
             *p = v;
         }
     };
-    
+
 }
-        
+
 
 // Local variables:
 // mode: c++
