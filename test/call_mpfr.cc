@@ -20,6 +20,7 @@ func(double a, f1_t f, std::pair<double, double>* ulp1i)
     }
     return dr;
 }
+
 double
 cftal::test::call_mpfr::
 func(double a, double b, f2_t f, std::pair<double, double>* ulp1i)
@@ -51,6 +52,7 @@ func(float a, f1_t f, std::pair<float, float>* ulp1i)
     }
     return dr;
 }
+
 float
 cftal::test::call_mpfr::
 func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
