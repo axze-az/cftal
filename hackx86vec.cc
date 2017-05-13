@@ -27,6 +27,9 @@ namespace cftal {
         bool test_ref_cvt_f32_f16();
         bool test_ref_cvt_f16_f32();
 
+        bool test_f16_to_f32();
+        bool test_f32_to_f16();
+
         template <std::size_t _N>
         bool test_cvt_f16_f32();
 
@@ -217,10 +220,12 @@ cftal::cvt_f32_to_f16(f32_t ff)
     const uint32_t sgn_msk = 0x80000000u;
 
     uint32_t f=as<uint32_t>(ff);
-    uint32_t s=(f & sgn_msk)>>16;
-    f &= sgn_msk;
+    uint32_t s=(f & sgn_msk);
+    f ^= s;
+    s >>= 16;
     if (f >= max_f16_u) {
-        f = f > inf_u ? 0x7e00 : 0x7c00;
+        f = f > inf_u ?
+            0x7e00 | ((f & 0x7fffff)>>13) : 0x7c00;
     } else {
         if (f < (113<<23)) {
             f = as<uint32_t>(as<f32_t>(f) + denom_magic);
@@ -398,6 +403,56 @@ cftal::test::test_ref_cvt_f16_f32()
 }
 
 bool
+cftal::test::test_f16_to_f32()
+{
+    bool rc=true;
+    for (uint32_t i=0; i<0x10000u; ++i) {
+        f16_t f(i);
+        f32_t r=ref_f16_to_f32(f.v());
+        f32_t t=cvt_f16_to_f32(f);
+        bool c = as<uint32_t>(r)==as<uint32_t>(t);
+        if (c==false) {
+            std::cout << std::setprecision(16)
+                    << t << " should be "
+                    << r << " from " << std::hex << f.v() << std::endl;
+        }
+        rc &= c;
+    }
+    std::cout << "f16 --> f32 ";
+    if (rc == true)
+        std::cout << "passed\n";
+    else
+        std::cout << "failed\n";
+    return rc;
+}
+
+bool
+cftal::test::test_f32_to_f16()
+{
+    bool rc=true;
+    for (uint64_t i=0; i<0x100000000u; ++i) {
+        uint32_t j=i;
+        f32_t s=as<float>(j);
+        f16_t r(ref_f32_to_f16(s));
+        f16_t t=cvt_f32_to_f16(s);
+        bool c= r.v() == t.v();
+        if (c==false) {
+            std::cout << std::setprecision(16)
+                      << t.v() << " should be "
+                      << r.v() << " from "
+                      << std::hex << s << std::endl;
+        }
+        rc &=c;
+    }
+    std::cout << "f32 --> f16 ";
+    if (rc == true)
+        std::cout << "passed\n";
+    else
+        std::cout << "failed\n";
+    return rc;
+}
+
+bool
 cftal::test::test_ref_cvt_f32_f16()
 {
 #if defined (__F16C__)
@@ -486,8 +541,13 @@ int main1(int argc, char** argv)
 int main(int argc, char** argv)
 {
     // return main3(argc, argv);
-    // cftal::test::test_ref_cvt_f16_f32();
-    // cftal::test::test_ref_cvt_f32_f16();
+    bool r=true;
+    // r &=cftal::test::test_ref_cvt_f16_f32();
+    // r &=cftal::test::test_ref_cvt_f32_f16();
+    r &=cftal::test::test_f16_to_f32();
+    r &=cftal::test::test_f32_to_f16();
+    return r==true ? 0 : 1;
+#if 0
     bool r=true;
     r &= cftal::test::test_cvt_f16_f32<1>();
     r &= cftal::test::test_cvt_f16_f32<2>();
@@ -496,4 +556,5 @@ int main(int argc, char** argv)
     r &= cftal::test::test_cvt_f16_f32<16>();
     r &= cftal::test::test_cvt_f16_f32<32>();
     return true;
+#endif
 }
