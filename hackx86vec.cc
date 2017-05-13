@@ -33,13 +33,21 @@ namespace cftal {
     }
 
     // a 16 bit floating point number
-    class f16 {
+    class f16_t {
     public:
-        constexpr explicit f16(uint16_t f) : _f(f) {}
+        constexpr explicit f16_t(uint16_t f) : _f(f) {}
         constexpr uint16_t v() const { return _f; }
     private:
         uint16_t _f;
     };
+
+
+    // conversion of a f32 to a f16 value
+    f16_t
+    cvt_f32_to_f16(f32_t f);
+    // conversion of a f16 value to a f16 value
+    f32_t
+    cvt_f16_to_f32(f16_t f);
 
 
     // conversion of a f32 vector to a f16 vector
@@ -152,31 +160,6 @@ cftal::test::ref_f32_to_f16(float v)
     return sign | (((aexp + 14) << 10) + (mantissa >> 13));
 }
 
-template <std::size_t _N>
-cftal::vec<cftal::uint16_t, _N>
-cftal::f32_to_f16(const vec<float, _N> &sf)
-{
-    using uv_t = vec<uint32_t, _N>;
-    uv_t s = as<uv_t>(sf);
-    uv_t ue = (s >> exp_shift_f32) & uv_t(exp_msk_f32);
-    using sv_t = vec<int32_t, _N>;
-    sv_t e = as<sv_t>(ue) - sv_t(bias_f32);
-
-    using um_t = typename uv_t::mask_type;
-    
-    // sign of result:
-    uv_t sgn= (s >> 16) & 0x8000;
-
-    // correct exp/mantissas too small for normal f16 numbers
-    // numbers with exponents smaller than 2^-25 are flushed to
-    // zero, normal numbers have an exponent above -14
-    um_t is_ftz = ue < uv_t(-25+bias_f32);
-    // this contains also nan and infs
-    um_t is_norm= ue > uv_t(-13+bias_f32);
-
-    
-
-}
 
 float
 cftal::test::ref_f16_to_f32(uint16_t a)
@@ -198,6 +181,86 @@ cftal::test::ref_f16_to_f32(uint16_t a)
 
     uint32_t r= sign | (((aexp + 0x70) << 23) + (mantissa << 13));
     return as<float>(r);
+}
+
+
+cftal::f32_t
+cftal::cvt_f16_to_f32(f16_t t)
+{
+    uint32_t tt= t.v();
+    const uint32_t exp_msk = 0x7c00 << 13;
+    uint32_t r= (tt & 0x7fff) << 13;
+    uint32_t s= (tt & 0x8000) << 16;
+    uint32_t e= exp_msk & r;
+    r += (127-15) << 23; // adust the exponent
+    if (e == exp_msk) {
+        // maximum exponent? inf/NaNs
+        r += (128-16) << 23;
+    } else if (e == 0) {
+        // denormal numbers
+        const f32_t magic = as<f32_t>(113 << 23);
+        r += 1<<23;
+        r = as<uint32_t>(as<f32_t>(r) - magic);
+    }
+    r |= s;
+    return as<f32_t>(r);
+}
+
+cftal::f16_t
+cftal::cvt_f32_to_f16(f32_t ff)
+{
+    const f32_t inf= std::numeric_limits<float>::infinity();
+    const uint32_t inf_u= as<uint32_t>(inf);
+    const uint32_t max_f16_u = (127+16)<<23;
+    const f32_t denom_magic= 0.5f;
+
+    const uint32_t sgn_msk = 0x80000000u;
+
+    uint32_t f=as<uint32_t>(ff);
+    uint32_t s=(f & sgn_msk)>>16;
+    f &= sgn_msk;
+    if (f >= max_f16_u) {
+        f = f > inf_u ? 0x7e00 : 0x7c00;
+    } else {
+        if (f < (113<<23)) {
+            f = as<uint32_t>(as<f32_t>(f) + denom_magic);
+            f = f - as<uint32_t>(denom_magic);
+        } else {
+            uint32_t mant_odd= (f>>13) & 1;
+            f += (uint32_t(15-127)<<23)+ 0xfff;
+            f += mant_odd;
+            f >>=13;
+        }
+    }
+    return f16_t(f|s);
+}
+
+
+
+template <std::size_t _N>
+cftal::vec<cftal::uint16_t, _N>
+cftal::f32_to_f16(const vec<float, _N> &sf)
+{
+    using uv_t = vec<uint32_t, _N>;
+    uv_t s = as<uv_t>(sf);
+    uv_t ue = (s >> exp_shift_f32) & uv_t(exp_msk_f32);
+    using sv_t = vec<int32_t, _N>;
+    sv_t e = as<sv_t>(ue) - sv_t(bias_f32);
+
+    using um_t = typename uv_t::mask_type;
+
+    // sign of result:
+    uv_t sgn= (s >> 16) & 0x8000;
+
+    // correct exp/mantissas too small for normal f16 numbers
+    // numbers with exponents smaller than 2^-25 are flushed to
+    // zero, normal numbers have an exponent above -14
+    um_t is_ftz = ue < uv_t(-25+bias_f32);
+    // this contains also nan and infs
+    um_t is_norm= ue > uv_t(-13+bias_f32);
+
+
+
 }
 
 template <std::size_t _N>
