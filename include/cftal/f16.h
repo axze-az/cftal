@@ -28,16 +28,24 @@ namespace cftal {
     cvt_f32_to_f16(f32_t f);
     // conversion of a f16 value to a f16 value
     f32_t
-    cvt_f16_to_f32(f16_t f);  
+    cvt_f16_to_f32(f16_t f);
 
 
     template <std::size_t _N>
     vec<fp16_t, _N>
-    cvt_f32_to_f16(const vec<f32_t, _N>& s);
+    cvt_f32_to_f16(arg_t<vec<f32_t, _N> > s);
 
     template <std::size_t _N>
     vec<f32_t, _N>
-    cvt_f16_to_f32(const vec<f16_t, _N>& s);
+    cvt_f16_to_f32(arg_t<vec<f16_t, _N> > s);
+}
+
+template <std::size_t _N>
+cftal::vec<fp16_t, _N>
+cftal::cvt_f32_to_f16(arg_t<vec<f32_t, _N> > ff)
+{
+    using f32vec = vec<f32_t, _N>;
+    using u32vec = vec<uint32_t, _N>
 
 }
 
