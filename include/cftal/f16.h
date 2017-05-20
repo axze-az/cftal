@@ -33,11 +33,11 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<f16_t, _N>
-    cvt_f32_to_f16(arg_t<vec<f32_t, _N> > s);
+    cvt_f32_to_f16(const vec<f32_t, _N>& s);
 
     template <std::size_t _N>
     vec<f32_t, _N>
-    cvt_f16_to_f32(arg_t<vec<f16_t, _N> > s);
+    cvt_f16_to_f32(const vec<f16_t, _N>& s);
 }
 
 inline
@@ -98,7 +98,7 @@ cftal::cvt_f32_to_f16(f32_t ff)
 
 template <std::size_t _N>
 cftal::vec<cftal::f16_t, _N>
-cftal::cvt_f32_to_f16(arg_t<vec<f32_t, _N> > ff)
+cftal::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
 {
     using f32vec = vec<f32_t, _N>;
     using u32vec = vec<int32_t, _N>;
@@ -143,14 +143,14 @@ cftal::cvt_f32_to_f16(arg_t<vec<f32_t, _N> > ff)
 
 template <std::size_t _N>
 cftal::vec<cftal::f32_t, _N>
-cftal::cvt_f16_to_f32(arg_t<vec<f16_t, _N> > ff)
+cftal::cvt_f16_to_f32(const vec<f16_t, _N>& ff)
 {
     using u32vec = vec<uint32_t, _N>;
     using u16vec = vec<uint16_t, _N>;
     using f32vec = vec<f32_t, _N>;
     u16vec ffu16=as<u16vec>(ff);
     u16vec z=0;
-    u32vec tt=combine_even_odd(ffu16, z);
+    u32vec tt=as<u32vec>(combine_even_odd(ffu16, z));
     
     const u32vec exp_msk = 0x7c00 << 13;
     u32vec r= (tt & 0x7fff) << 13;
