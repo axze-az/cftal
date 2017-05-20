@@ -31,13 +31,51 @@ namespace cftal {
     f32_t
     cvt_f16_to_f32(f16_t f);
 
+    namespace impl {
+
+        template <std::size_t _N>
+        vec<f16_t, _N>
+        cvt_f32_to_f16(const vec<f32_t, _N>& s);
+
+        template <std::size_t _N>
+        vec<f32_t, _N>
+        cvt_f16_to_f32(const vec<f16_t, _N>& s);
+    }
+
+
     template <std::size_t _N>
     vec<f16_t, _N>
     cvt_f32_to_f16(const vec<f32_t, _N>& s);
 
+    vec<f16_t, 1>
+    cvt_f32_to_f16(const vec<f32_t, 1>& s);
+
+    vec<f16_t, 2>
+    cvt_f32_to_f16(const vec<f32_t, 2>& s);
+
+    vec<f16_t, 4>
+    cvt_f32_to_f16(const vec<f32_t, 4>& s);
+
+    vec<f16_t, 8>
+    cvt_f32_to_f16(const vec<f32_t, 8>& s);
+
+
     template <std::size_t _N>
     vec<f32_t, _N>
     cvt_f16_to_f32(const vec<f16_t, _N>& s);
+
+    vec<f32_t, 1>
+    cvt_f16_to_f32(const vec<f16_t, 1>& s);
+
+    vec<f32_t, 2>
+    cvt_f16_to_f32(const vec<f16_t, 2>& s);
+
+    vec<f32_t, 4>
+    cvt_f16_to_f32(const vec<f16_t, 4>& s);
+
+    vec<f32_t, 8>
+    cvt_f16_to_f32(const vec<f16_t, 8>& s);
+    
 }
 
 inline
@@ -98,7 +136,7 @@ cftal::cvt_f32_to_f16(f32_t ff)
 
 template <std::size_t _N>
 cftal::vec<cftal::f16_t, _N>
-cftal::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
+cftal::impl::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
 {
     using f32vec = vec<f32_t, _N>;
     using u32vec = vec<int32_t, _N>;
@@ -135,15 +173,16 @@ cftal::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
     r = select(inf_or_nan, r_inf_nan, r);
     r |= s;
 
-    using u16vec2 = cftal::vec<uint16_t, 2*_N>;
-    auto t=as<u16vec2>(r);
+    using u16vec2 = vec<uint16_t, 2*_N>;
+    u16vec2 t=as<u16vec2>(r);
     auto rr=even_elements(t);
-    return rr;
+
+    return as<vec<f16_t, _N> >(rr);
 }
 
 template <std::size_t _N>
 cftal::vec<cftal::f32_t, _N>
-cftal::cvt_f16_to_f32(const vec<f16_t, _N>& ff)
+cftal::impl::cvt_f16_to_f32(const vec<f16_t, _N>& ff)
 {
     using u32vec = vec<uint32_t, _N>;
     using u16vec = vec<uint16_t, _N>;
@@ -169,7 +208,135 @@ cftal::cvt_f16_to_f32(const vec<f16_t, _N>& ff)
     r |= s;
     return as<f32vec>(r);
 }
-    
+
+
+template <std::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::cvt_f32_to_f16(const vec<f32_t, _N>& s)
+{
+    vec<cftal::f16_t, _N/2> rl=cvt_f32_to_f16(low_half(s));
+    vec<cftal::f16_t, _N/2> rh=cvt_f32_to_f16(high_half(s));
+    return vec<cftal::f16_t, _N>(rl, rh);
+}
+
+inline
+cftal::vec<cftal::f16_t, 1>
+cftal::cvt_f32_to_f16(const vec<f32_t, 1>& s)
+{
+#if defined (__F16C__)
+    vec<f16_t, 1> r=_cvtss_sh(s());
+#else
+    vec<f16_t, 1> r=impl::cvt_f32_to_f16(s);
+#endif
+    return r;
+}
+
+inline
+cftal::vec<cftal::f16_t, 2>
+cftal::cvt_f32_to_f16(const vec<f32_t, 2>& s)
+{
+#if defined (__F16C__)
+    v4f32 t(s, s);
+    v4u32 rr=_mm_cvtps_ph(t);
+    vec<f16_t, 2> r=as<vec<f16_t, 2> >(low_half(low_half(rr)));
+#else
+    vec<f16_t, 2> r=impl::cvt_f32_to_f16(s);
+#endif
+    return r;
+}
+
+inline
+cftal::vec<cftal::f16_t, 4>
+cftal::cvt_f32_to_f16(const vec<f32_t, 4>& s)
+{
+#if defined (__F16C__)
+    v4u32 rr=_mm_cvtps_ph(s());
+    vec<f16_t, 4> r=as<vec<f16_t, 2> >(low_half(rr));
+#else
+    vec<f16_t, 4> r=impl::cvt_f32_to_f16(s);
+#endif
+    return r;
+}
+
+inline
+cftal::vec<cftal::f16_t, 8>
+cftal::cvt_f32_to_f16(const vec<f32_t, 8>& s)
+{
+#if defined (__F16C__)
+    v4u32 rr=_mm256_cvtps_ph(s());
+    vec<f16_t, 8> r=as<vec<f16_t, 8> >(rr);
+#else
+    vec<f16_t, 8> r=impl::cvt_f32_to_f16(s);
+#endif
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<cftal::f32_t, _N>
+cftal::cvt_f16_to_f32(const vec<f16_t, _N>& s)
+{
+    vec<f32_t, _N/2> rl= cvt_f16_to_f32(low_half(s));
+    vec<f32_t, _N/2> rh= cvt_f16_to_f32(high_half(s));
+    return vec<f32_t, _N>(rl, rh);
+}
+
+inline
+cftal::vec<cftal::f32_t, 1>
+cftal::cvt_f16_to_f32(const vec<f16_t, 1>& s)
+{
+#if defined (__F16C__)
+    vec<f32_t, 1> r= _cvtsh_ss(s().v());
+#else
+    vec<f32_t, 1> r= impl::cvt_f16_to_f32(s);
+#endif
+    return r;
+}
+
+
+inline
+cftal::vec<cftal::f32_t, 2>
+cftal::cvt_f16_to_f32(const vec<f16_t, 2>& s)
+{
+#if defined (__F16C__)
+    v2u16 s0=as<v2u16>(s);
+    v4u16 s1(s0, s0);
+    v8u16 s2(s1, s1);
+    vec<f32_t, 4> rr= _mm_cvtph_ps(s2());
+    vec<f32_t, 2> r= low_half(rr);
+#else
+    vec<f32_t, 2> r= impl::cvt_f16_to_f32(s);
+#endif
+    return r;
+}
+
+inline
+cftal::vec<cftal::f32_t, 4>
+cftal::cvt_f16_to_f32(const vec<f16_t, 4>& s)
+{
+#if defined (__F16C__)
+    v4u16 s0=as<v4u16>(s);
+    v8u16 s1(s1, s1);
+    vec<f32_t, 4> r= _mm_cvtph_ps(s1());
+#else
+    vec<f32_t, 4> r= impl::cvt_f16_to_f32(s);
+#endif
+    return r;
+}
+
+inline
+cftal::vec<cftal::f32_t, 8>
+cftal::cvt_f16_to_f32(const vec<f16_t, 8>& s)
+{
+#if defined (__F16C__)
+    v8u16 s0(s, s);
+    vec<f32_t, 8> r= _mm_cvtph_ps(s0());
+#else
+    vec<f32_t, 8> r= impl::cvt_f16_to_f32(s);
+#endif
+    return r;
+}
+
+
 // Local variables:
 // mode: c++
 // end:
