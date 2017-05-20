@@ -34,6 +34,9 @@ namespace cftal {
         template <std::size_t _N>
         bool test_cvt_f16_f32();
 
+        template <std::size_t _N>
+        bool test_cvt_f32_f16();
+
     }
 
 
@@ -336,7 +339,8 @@ bool cftal::test::test_cvt_f16_f32()
         for (uint32_t j=0; j<_N; ++j)
             a[j] = i+j;
         vec<uint16_t, _N> d= mem<vec<uint16_t, _N> >::load(a, _N);
-        vec<float, _N> t=f16_to_f32(d);
+        vec<f16_t, _N> df=as<vec<f16_t, _N> >(d);
+        vec<float, _N> t=cvt_f16_to_f32(df);
         float vr[_N];
         mem<vec<float, _N> >::store(vr, t);
         for (uint32_t j=0; j<_N; ++j) {
@@ -346,6 +350,7 @@ bool cftal::test::test_cvt_f16_f32()
                 r=false;
                 std::cout << std::hex << a[j] << "--> " << rt << " should be "
                           << ref << std::endl;
+                std::exit(3);
             }
         }
     }
@@ -358,19 +363,57 @@ bool cftal::test::test_cvt_f16_f32()
     return r;
 }
 
+template <std::size_t _N>
+bool cftal::test::test_cvt_f32_f16()
+{
+    bool r=true;
+    for (uint64_t i=0; i<0x100000000u; i+=_N) {
+        uint32_t a[_N];
+        for (uint64_t j=0; j<_N; ++j)
+            a[j] = i+j;
+        vec<uint32_t, _N> du= mem<vec<uint32_t, _N> >::load(a, _N);
+        vec<float, _N> d= as<vec<float, _N> >(du);
+        vec<f16_t, _N> t= cvt_f32_to_f16(d);
 
-int main1(int argc, char** argv)
+        f16_t vr[_N];
+        mem<vec<f16_t, _N> >::store(vr, t);
+        for (uint32_t j=0; j<_N; ++j) {
+            float faj=as<float>(a[j]);
+            f16_t ref=f16_t(ref_f32_to_f16(faj));
+            f16_t rt=vr[j];
+            if (ref.v() != rt.v()) {
+                r=false;
+                std::cout << std::hex << a[j] << " --> " << rt.v() << " should be "
+                          << ref.v() << std::endl;
+                std::exit(3);
+            }
+        }
+    }
+    std::cout << std::defaultfloat;
+    std::cout << "vec " << _N << " f32 --> f16 ";
+    if (r == true)
+        std::cout << "passed\n";
+    else
+        std::cout << "failed\n";
+    return r;
+}
+
+#if 0
+int main(int argc, char** argv)
 {
     using namespace cftal;
-    uint16_t s=32678;
-    vec<uint16_t, 1> vs(s);
-    vec<f16_t, 1> vf16=as<vec<f16_t, 1> >(vs);
-    vec<float, 1> vd=cvt_f16_to_f32(vf16);
-    float ref=test::ref_f16_to_f32(s);
-    std::cout << vs  << ' ' << vd << ' ' << ref << std::endl;
+    uint32_t s=0x38800000;
+    float sf=as<float>(s);
+    vec<uint32_t, 1> vs(s);
+    vec<f32_t, 1> vf32=as<vec<f32_t, 1> >(vs);
+    vec<f16_t, 1> vd=cvt_f32_to_f16(vf32);
+    f16_t ref=f16_t(test::ref_f32_to_f16(sf));
+    std::cout << std::hex;
+    std::cout << sf  << ' ' << vd().v() << ' ' << ref.v() << std::endl;
     return 0;
 }
 
+#else
 int main(int argc, char** argv)
 {
     // return main3(argc, argv);
@@ -379,15 +422,19 @@ int main(int argc, char** argv)
     // r &=cftal::test::test_ref_cvt_f32_f16();
     r &=cftal::test::test_f16_to_f32();
     r &=cftal::test::test_f32_to_f16();
-    return r==true ? 0 : 1;
-#if 0
-    bool r=true;
     r &= cftal::test::test_cvt_f16_f32<1>();
     r &= cftal::test::test_cvt_f16_f32<2>();
     r &= cftal::test::test_cvt_f16_f32<4>();
     r &= cftal::test::test_cvt_f16_f32<8>();
     r &= cftal::test::test_cvt_f16_f32<16>();
     r &= cftal::test::test_cvt_f16_f32<32>();
-    return true;
-#endif
+    r &= cftal::test::test_cvt_f32_f16<1>();
+    r &= cftal::test::test_cvt_f32_f16<2>();
+    r &= cftal::test::test_cvt_f32_f16<4>();
+    r &= cftal::test::test_cvt_f32_f16<8>();
+    r &= cftal::test::test_cvt_f32_f16<16>();
+    r &= cftal::test::test_cvt_f32_f16<32>();
+    return r==true ? 0 : 1;
+
 }
+#endif

@@ -18,6 +18,7 @@ namespace cftal {
     // a 16 bit floating point number used as storage format
     class f16_t {
     public:
+        constexpr f16_t() : _f(0) {}
         constexpr explicit f16_t(uint16_t f) : _f(f) {}
         constexpr uint16_t v() const { return _f; }
     private:
@@ -41,7 +42,6 @@ namespace cftal {
         vec<f32_t, _N>
         cvt_f16_to_f32(const vec<f16_t, _N>& s);
     }
-
 
     template <std::size_t _N>
     vec<f16_t, _N>
@@ -75,7 +75,7 @@ namespace cftal {
 
     vec<f32_t, 8>
     cvt_f16_to_f32(const vec<f16_t, 8>& s);
-    
+
 }
 
 inline
@@ -146,7 +146,7 @@ cftal::impl::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
     const u32vec max_f16_u= (bias_f32+16) << exp_shift_f32;
     const f32vec denom_magic=0.5f;
     const u32vec denom_magic_u=as<u32vec>(denom_magic);
-    
+
     u32vec f= as<u32vec>(ff);
     u32vec s= f & u32vec(sign_f32_msk::v.u32());
     f ^= s;
@@ -161,11 +161,13 @@ cftal::impl::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
     u32vec r_inf_nan = select(f > inf_u, r_nan, r_inf);
     // denormal handling
     auto denom= f < u32vec(113<<23);
-    u32vec r_denom= as<u32vec>(as<f32vec>(f) + denom_magic);
+    f32vec f_denom = as<f32vec>(f);
+    f_denom += denom_magic;
+    u32vec r_denom= as<u32vec>(f_denom);
     r_denom -= denom_magic_u;
     // normal numbers
     u32vec mant_odd= (f>>13) & 1;
-    f += u32vec((uint32_t(15-bias_f32)<<13) +  0xfff);
+    f += u32vec((uint32_t(15-bias_f32)<<23) +  0xfff);
     f += mant_odd;
     f >>= 13;
     // produce result
@@ -190,7 +192,7 @@ cftal::impl::cvt_f16_to_f32(const vec<f16_t, _N>& ff)
     u16vec ffu16=as<u16vec>(ff);
     u16vec z=0;
     u32vec tt=as<u32vec>(combine_even_odd(ffu16, z));
-    
+
     const u32vec exp_msk = 0x7c00 << 13;
     u32vec r= (tt & 0x7fff) << 13;
     u32vec s= (tt & 0x8000) << 16;
@@ -199,9 +201,11 @@ cftal::impl::cvt_f16_to_f32(const vec<f16_t, _N>& ff)
 
     u32vec r_inf_nan= r + ((128-16) << 23);
 
-    u32vec r_denom = r + (1<<23);
     const f32vec magic=as<f32_t>(113<<23);
-    r_denom = as<u32vec>(as<f32vec>(r_denom) - magic);
+    u32vec r_denom = r + (1<<23);
+    f32vec f_denom = as<f32vec>(r_denom);
+    f_denom -= magic;
+    r_denom = as<u32vec>(f_denom);
 
     r = select(e== exp_msk, r_inf_nan, r);
     r = select(e== 0, r_denom, r);
