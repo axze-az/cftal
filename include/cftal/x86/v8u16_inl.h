@@ -300,9 +300,9 @@ namespace cftal {
             v(const full_type& a, const full_type& s) {
                 return x86::impl::vpsrlvw::v(a(), s());
             }
-        };      
+        };
 #endif
-        
+
     }
 
 }
@@ -334,6 +334,17 @@ vec(init_list<uint16_t> l)
 {
 }
 
+#if 1
+inline
+cftal::vec<uint16_t, 8>::
+vec(const vec<uint16_t, 4>& lh, const vec<uint16_t, 4>& hh)
+    : base_type(
+        _mm_set_epi64x(*reinterpret_cast<const uint64_t*>(&lh),
+                       *reinterpret_cast<const uint64_t*>(&hh)))
+{
+}
+
+#else
 inline
 cftal::vec<uint16_t, 8>::
 vec(const vec<uint16_t, 4>& lh, const vec<uint16_t, 4>& hh)
@@ -341,7 +352,7 @@ vec(const vec<uint16_t, 4>& lh, const vec<uint16_t, 4>& hh)
                                             as<vec<uint16_t, 8> >(hh)))
 {
 }
-
+#endif
 
 template <template <class _U, std::size_t _M> class _OP,
           class _L, class _R>
