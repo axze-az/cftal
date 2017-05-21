@@ -76,6 +76,17 @@ fp16_add(cftal::vec<cftal::f16_t, 4> a,
     return cvt_f32_to_f16(rf);
 }
 
+cftal::vec<cftal::f16_t, 2>
+fp16_add(cftal::vec<cftal::f16_t, 2> a,
+         cftal::vec<cftal::f16_t, 2> b)
+{
+    using namespace cftal;
+    vec<f32_t, 2> af=cvt_f16_to_f32(a);
+    vec<f32_t, 2> bf=cvt_f16_to_f32(b);
+    vec<f32_t, 2> rf=af+bf;
+    return cvt_f32_to_f16(rf);
+}
+
 int main(int argc, char** argv)
 {
     return 0;

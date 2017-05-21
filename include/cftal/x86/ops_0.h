@@ -1071,78 +1071,66 @@ namespace cftal {
             };
 
 
-            template <class _T>
+            template <class _T, std::size_t _SCALE>
             struct vgatherdpd {
                 static _T v(const double* base,
-                            __m128i idx,
-                            int scale);
+                            __m128i idx);
                 static _T v(const _T& src,
                             const double* base,
                             __m128i idx,
-                            const _T& msk,
-                            int scale);
+                            const _T& msk);
             };
 
-            template <>
-            struct vgatherdpd<__m128d> {
+            template <std::size_t _SCALE>
+            struct vgatherdpd<__m128d, _SCALE> {
                 static __m128d v(const double* base,
-                                 __m128i idx,
-                                 int scale);
+                                 __m128i idx);
                 static __m128d v(__m128d src,
                                  const double* base,
                                  __m128i idx,
-                                 __m128d msk,
-                                 int scale);
+                                 __m128d msk);
             };
 
-            template <class _T, class _I>
+            template <class _T, class _I, std::size_t _SCALE>
             struct vgatherdps {
                 static _T v(const float* base,
-                            const _I& idx,
-                            int scale);
+                            const _I& idx);
                 static _T v(const _T& src,
                             const float* base,
                             const _I& idx,
-                            const _T& msk,
-                            int scale);
+                            const _T& msk);
             };
 
-            template <>
-            struct vgatherdps<__m128, __m128i> {
+            template <std::size_t _SCALE>
+            struct vgatherdps<__m128, __m128i, _SCALE> {
                 static __m128 v(const float* base,
-                                __m128i idx,
-                                int scale);
+                                __m128i idx);
                 static __m128 v(__m128 src,
                                 const float* base,
                                 __m128i idx,
-                                __m128 msk,
-                                int scale);
+                                __m128 msk);
             };
 
 
 #if defined (__AVX__)
-            template <>
-            struct vgatherdpd<__m256d> {
+            template <std::size_t _SCALE>
+            struct vgatherdpd<__m256d, _SCALE> {
                 static __m256d v(const double* base,
-                                 __m128i idx,
-                                 int scale);
+                                 __m128i idx);
                 static __m256d v(__m256d src,
                                  const double* base,
                                  __m128i idx,
-                                 __m256d msk,
-                                 int scale);
+                                 __m256d msk);
             };
 
-            template <>
-            struct vgatherdps<__m256, __m256i> {
+            template <std::size_t _SCALE>
+            struct vgatherdps<__m256, __m256i, _SCALE> {
                 static __m256 v(const float* base,
-                                __m256i idx,
-                                int scale);
+                                __m256i idx);
                 static __m256 v(__m256 src,
                                 const float* base,
                                 __m256i idx,
-                                __m256 msk,
-                                int scale);
+                                __m256 msk);
             };
 #endif
 
@@ -1641,12 +1629,13 @@ __m256i cftal::x86::impl::vpmullq::v(__m256i a, __m256i b)
 }
 #endif
 
+template <std::size_t _SCALE>
 inline
 __m128d
-cftal::x86::impl::vgatherdpd<__m128d>::v(const double* base,
-                                         __m128i idx,
-                                         int scale)
+cftal::x86::impl::vgatherdpd<__m128d, _SCALE>::v(const double* base,
+                                                 __m128i idx)
 {
+    const int scale= _SCALE;
 #if defined (__AVX2__)
     return _mm_i32gather_pd(base, idx, scale);
 #else
@@ -1659,12 +1648,14 @@ cftal::x86::impl::vgatherdpd<__m128d>::v(const double* base,
 #endif
 }
 
+template <std::size_t _SCALE>
 inline
 __m128
-cftal::x86::impl::vgatherdps<__m128, __m128i>::v(const float* base,
-                                                 __m128i idx,
-                                                 int scale)
+cftal::x86::impl::
+vgatherdps<__m128, __m128i, _SCALE>::v(const float* base,
+                                       __m128i idx)
 {
+    const int scale=_SCALE;
 #if defined (__AVX2__)
     return _mm_i32gather_ps(base, idx, scale);
 #else
@@ -1683,12 +1674,15 @@ cftal::x86::impl::vgatherdps<__m128, __m128i>::v(const float* base,
 
 
 #if defined (__AVX__)
+
+template <std::size_t _SCALE>
 inline
 __m256d
-cftal::x86::impl::vgatherdpd<__m256d>::v(const double* base,
-                                         __m128i idx,
-                                         int scale)
+cftal::x86::impl::
+vgatherdpd<__m256d, _SCALE>::v(const double* base,
+                               __m128i idx)
 {
+    const int scale=_SCALE;
 #if defined (__AVX2__)
     return _mm256_i32gather_pd(base, idx, scale);
 #else
@@ -1707,12 +1701,14 @@ cftal::x86::impl::vgatherdpd<__m256d>::v(const double* base,
 #endif
 
 #if defined (__AVX2__)
+template <std::size_t _SCALE>
 inline
 __m256
-cftal::x86::impl::vgatherdps<__m256, __m256i>::v(const float* base,
-                                                 __m256i idx,
-                                                 int scale)
+cftal::x86::impl::
+vgatherdps<__m256, __m256i, _SCALE>::v(const float* base,
+                                       __m256i idx)
 {
+    const int scale=_SCALE;
     return _mm256_i32gather_ps(base, idx, scale);
 }
 

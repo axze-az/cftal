@@ -82,17 +82,19 @@ namespace cftal {
            const vec<int64_t, 4>& on_true,
            const vec<int64_t, 4>& on_false);
 
-    template <bool _P0, bool _P1>
+    template <bool _P0, bool _P1, bool _P2, bool _P3>
     vec<int64_t, 4> 
     select(const vec<int64_t, 4>& on_true,
            const vec<int64_t, 4>& on_false);
 
-    template <int _P0, int _P1>
-    vec<int64_t, 4> permute(const vec<int64_t, 4>& s);
+    template <int _P0, int _P1, int _P2, int _P3>
+    vec<int64_t, 4>
+    permute(const vec<int64_t, 4>& s);
 
-    template <int _P0, int _P1>
-    vec<int64_t, 4> permute(const vec<int64_t, 4>& s0, 
-                            const vec<int64_t, 4>& s1);
+    template <int _P0, int _P1, int _P2, int _P3>
+    vec<int64_t, 4>
+    permute(const vec<int64_t, 4>& s0, 
+            const vec<int64_t, 4>& s1);
 
     std::pair<vec<int64_t, 4>, vec<int64_t, 4> >
     mul_lo_hi(const vec<int64_t, 4>& a, const vec<int64_t, 4>& b);

@@ -304,7 +304,7 @@ cftal::vec<cftal::f32_t, 1>
 cftal::cvt_f16_to_f32(const vec<f16_t, 1>& s)
 {
 #if defined (__F16C__)
-    vec<f32_t, 1> r= _cvtsh_ss(s().v());
+    vec<f32_t, 1> r= _cvtsh_ss(read_bits(s()));
 #else
     vec<f32_t, 1> r= impl::cvt_f16_to_f32(s);
 #endif
@@ -317,9 +317,11 @@ cftal::vec<cftal::f32_t, 2>
 cftal::cvt_f16_to_f32(const vec<f16_t, 2>& s)
 {
 #if defined (__F16C__)
+    const vec<uint16_t, 2> z0=0;
     vec<uint16_t, 2> s0=as<vec<uint16_t, 2> >(s);
-    vec<uint16_t, 4> s1(s0, s0);
-    v8u16 s2(s1, s1);
+    vec<uint16_t, 4> s1(s0, z0);
+    const vec<uint16_t, 4> z1=0;
+    v8u16 s2(s1, z1);
     vec<f32_t, 4> rr= _mm_cvtph_ps(s2());
     vec<f32_t, 2> r= low_half(rr);
 #else
@@ -334,7 +336,8 @@ cftal::cvt_f16_to_f32(const vec<f16_t, 4>& s)
 {
 #if defined (__F16C__)
     vec<uint16_t, 4> s0=as<vec<uint16_t, 4> >(s);
-    v8u16 s1(s0, s0);
+    const vec<uint16_t, 4> z0=0;
+    v8u16 s1(s0, z0);
     vec<f32_t, 4> r= _mm_cvtph_ps(s1());
 #else
     vec<f32_t, 4> r= impl::cvt_f16_to_f32(s);
