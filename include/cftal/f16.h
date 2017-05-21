@@ -50,11 +50,11 @@ namespace cftal {
 
         template <std::size_t _N>
         vec<f16_t, _N>
-        cvt_f32_to_f16(const vec<f32_t, _N>& s);
+        cvt_f32_to_f16(vec<f32_t, _N> s);
 
         template <std::size_t _N>
         vec<f32_t, _N>
-        cvt_f16_to_f32(const vec<f16_t, _N>& s);
+        cvt_f16_to_f32(vec<f16_t, _N> s);
     }
 
     template <std::size_t _N>
@@ -150,19 +150,19 @@ cftal::cvt_f32_to_f16(f32_t ff)
 
 template <std::size_t _N>
 cftal::vec<cftal::f16_t, _N>
-cftal::impl::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
+cftal::impl::cvt_f32_to_f16(vec<f32_t, _N> ff)
 {
     using f32vec = vec<f32_t, _N>;
-    using u32vec = vec<int32_t, _N>;
+    using i32vec = vec<int32_t, _N>;
 
     const f32vec inf=std::numeric_limits<float>::infinity();
-    const u32vec inf_u= as<u32vec>(inf);
-    const u32vec max_f16_u= (bias_f32+16) << exp_shift_f32;
+    const i32vec inf_u= as<i32vec>(inf);
+    const i32vec max_f16_u= (bias_f32+16) << exp_shift_f32;
     const f32vec denom_magic=0.5f;
-    const u32vec denom_magic_u=as<u32vec>(denom_magic);
+    const i32vec denom_magic_u=as<i32vec>(denom_magic);
 
-    u32vec f= as<u32vec>(ff);
-    u32vec s= f & u32vec(sign_f32_msk::v.u32());
+    i32vec f= as<i32vec>(ff);
+    i32vec s= f & i32vec(sign_f32_msk::v.u32());
     f ^= s;
     // the signed shift does not matter because we truncate
     // the 16 higher bits anyway
@@ -170,23 +170,23 @@ cftal::impl::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
 
     // inf or nan handling
     auto inf_or_nan = f >= max_f16_u;
-    u32vec r_nan = u32vec(0x7e00) | ((f & sig_f32_msk::v.u32()) >> 13);
-    u32vec r_inf = u32vec(0x7c00);
-    u32vec r_inf_nan = select(f > inf_u, r_nan, r_inf);
+    i32vec r_nan = i32vec(0x7e00) | ((f & sig_f32_msk::v.u32()) >> 13);
+    i32vec r_inf = i32vec(0x7c00);
+    i32vec r_inf_nan = select(f > inf_u, r_nan, r_inf);
     // denormal handling
-    auto denom= f < u32vec(113<<23);
+    auto denom= f < i32vec(113<<23);
     f32vec f_denom = as<f32vec>(f);
     f_denom += denom_magic;
-    u32vec r_denom= as<u32vec>(f_denom);
+    i32vec r_denom= as<i32vec>(f_denom);
     r_denom -= denom_magic_u;
     // normal numbers
-    u32vec mant_odd= (f>>13) & 1;
+    i32vec mant_odd= (f>>13) & 1;
     const uint32_t offs=(uint32_t(15-bias_f32)<<23) +  0xfff;
-    f += u32vec(offs);
+    f += i32vec(offs);
     f += mant_odd;
     f >>= 13;
     // produce result
-    u32vec r = select(denom, r_denom, f);
+    i32vec r = select(denom, r_denom, f);
     r = select(inf_or_nan, r_inf_nan, r);
     r |= s;
 
@@ -199,7 +199,7 @@ cftal::impl::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
 
 template <std::size_t _N>
 cftal::vec<cftal::f32_t, _N>
-cftal::impl::cvt_f16_to_f32(const vec<f16_t, _N>& ff)
+cftal::impl::cvt_f16_to_f32(vec<f16_t, _N> ff)
 {
     using u32vec = vec<uint32_t, _N>;
     using u16vec = vec<uint16_t, _N>;
