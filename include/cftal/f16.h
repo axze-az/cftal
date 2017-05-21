@@ -15,6 +15,13 @@
 
 namespace cftal {
 
+#if 1
+    using f16_t = uint16_t;
+    inline
+    uint16_t read_bits(f16_t v) {
+        return v;
+    }
+#else
     // a 16 bit floating point number used as storage format
     class f16_t {
     public:
@@ -24,6 +31,13 @@ namespace cftal {
     private:
         uint16_t _f;
     };
+
+    inline
+    uint16_t read_bits(f16_t v) {
+        return v.v();
+    }
+
+#endif
 
     // conversion of a f32 to a f16 value
     f16_t
@@ -82,7 +96,7 @@ inline
 cftal::f32_t
 cftal::cvt_f16_to_f32(f16_t t)
 {
-    uint32_t tt= t.v();
+    uint32_t tt= read_bits(t);
     const uint32_t exp_msk = 0x7c00 << 13;
     uint32_t r= (tt & 0x7fff) << 13;
     uint32_t s= (tt & 0x8000) << 16;
@@ -167,7 +181,8 @@ cftal::impl::cvt_f32_to_f16(const vec<f32_t, _N>& ff)
     r_denom -= denom_magic_u;
     // normal numbers
     u32vec mant_odd= (f>>13) & 1;
-    f += u32vec((uint32_t(15-bias_f32)<<23) +  0xfff);
+    const uint32_t offs=(uint32_t(15-bias_f32)<<23) +  0xfff;
+    f += u32vec(offs);
     f += mant_odd;
     f >>= 13;
     // produce result

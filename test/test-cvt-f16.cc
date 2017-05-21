@@ -189,13 +189,15 @@ cftal::test::test_f16_to_f32()
     bool rc=true;
     for (uint32_t i=0; i<0x10000u; ++i) {
         f16_t f(i);
-        f32_t r=ref_f16_to_f32(f.v());
+        f32_t r=ref_f16_to_f32(read_bits(f));
         f32_t t=cvt_f16_to_f32(f);
         bool c = as<uint32_t>(r)==as<uint32_t>(t);
         if (c==false) {
             std::cout << std::setprecision(16)
                     << t << " should be "
-                    << r << " from " << std::hex << f.v() << std::endl;
+                    << r << " from "
+                    << std::hex
+                    << read_bits(f) << std::endl;
         }
         rc &= c;
     }
@@ -216,11 +218,11 @@ cftal::test::test_f32_to_f16()
         f32_t s=as<float>(j);
         f16_t r(ref_f32_to_f16(s));
         f16_t t=cvt_f32_to_f16(s);
-        bool c= r.v() == t.v();
+        bool c= read_bits(r) == read_bits(t);
         if (c==false) {
             std::cout << std::setprecision(16)
-                      << t.v() << " should be "
-                      << r.v() << " from "
+                      << read_bits(t) << " should be "
+                      << read_bits(r) << " from "
                       << std::hex << s << std::endl;
         }
         rc &=c;
@@ -327,10 +329,11 @@ bool cftal::test::test_cvt_f32_f16()
             float faj=as<float>(a[j]);
             f16_t ref=f16_t(ref_f32_to_f16(faj));
             f16_t rt=vr[j];
-            if (ref.v() != rt.v()) {
+            if (read_bits(ref) != read_bits(rt)) {
                 r=false;
-                std::cout << std::hex << a[j] << " --> " << rt.v() << " should be "
-                          << ref.v() << std::endl;
+                std::cout << std::hex << a[j] << " --> "
+                          << read_bits(rt) << " should be "
+                          << read_bits(ref) << std::endl;
                 std::exit(3);
             }
         }
