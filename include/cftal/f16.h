@@ -235,10 +235,13 @@ cftal::impl::cvt_f16_to_f32(vec<f16_t, _N> ff)
 {
     using u32vec = vec<uint32_t, _N>;
     using u16vec = vec<int16_t, _N>;
+    using u16vec2 = vec<int16_t, 2 * _N>;
     using f32vec = vec<f32_t, _N>;
     u16vec ffu16=as<u16vec>(ff);
     u16vec z=0;
-    u32vec tt=as<u32vec>(combine_even_odd(ffu16, z));
+
+    u16vec2 cc=combine_even_odd(ffu16, z);
+    u32vec tt=as<u32vec>(cc);
 
     const u32vec exp_msk = 0x7c00 << 13;
     u32vec r= (tt & 0x7fff) << 13;

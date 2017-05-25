@@ -369,11 +369,14 @@ int main(int argc, char** argv)
     bool r=true;
     // r &=cftal::test::test_ref_cvt_f16_f32();
     // r &=cftal::test::test_ref_cvt_f32_f16();
+#if 0
     r &=cftal::test::test_f16_to_f32();
     r &=cftal::test::test_f32_to_f16();
     r &= cftal::test::test_cvt_f16_f32<1>();
     r &= cftal::test::test_cvt_f16_f32<2>();
+#endif
     r &= cftal::test::test_cvt_f16_f32<4>();
+#if 1
     r &= cftal::test::test_cvt_f16_f32<8>();
     r &= cftal::test::test_cvt_f16_f32<16>();
     r &= cftal::test::test_cvt_f16_f32<32>();
@@ -383,6 +386,7 @@ int main(int argc, char** argv)
     r &= cftal::test::test_cvt_f32_f16<8>();
     r &= cftal::test::test_cvt_f32_f16<16>();
     r &= cftal::test::test_cvt_f32_f16<32>();
+#endif
     return r==true ? 0 : 1;
 
 }
