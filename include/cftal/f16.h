@@ -37,6 +37,38 @@ namespace cftal {
         return v.v();
     }
 
+#if defined (__SSE2__)
+    template <>
+    class vec<f16_t, 8> : public vec<uint16_t, 8> {
+    public:
+        using base_type = vec<uint16_t, 8>;
+        vec() = default;
+        vec(const base_type& b) : base_type(b) {}
+        vec(f16_t v) : base_type(read_bits(v)) {}
+    };
+    template <>
+    struct arg< vec<f16_t, 8> > {
+        using type = vec<f16_t, 8>;
+    };
+
+    template <>
+    struct mem< vec<f16_t, 8> > {
+        static
+        vec<f16_t, 8> load(const f16_t* p, std::size_t n=8) {
+            using v_t= vec<f16_t, 8>;
+            v_t r(mem<v_t::base_type>::load(
+                reinterpret_cast<const uint16_t*>(p), n));
+            return r;
+        }
+        static
+        void store(f16_t* p, const vec<int16_t, 8>& v) {
+            using v_t = vec<f16_t, 8>;
+            mem<v_t::base_type>::store(
+                reinterpret_cast<uint16_t*>(p), v);
+        }
+    };
+#endif
+
 #endif
 
     // conversion of a f32 to a f16 value
@@ -202,7 +234,7 @@ cftal::vec<cftal::f32_t, _N>
 cftal::impl::cvt_f16_to_f32(vec<f16_t, _N> ff)
 {
     using u32vec = vec<uint32_t, _N>;
-    using u16vec = vec<uint16_t, _N>;
+    using u16vec = vec<int16_t, _N>;
     using f32vec = vec<f32_t, _N>;
     u16vec ffu16=as<u16vec>(ff);
     u16vec z=0;

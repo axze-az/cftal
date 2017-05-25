@@ -10,6 +10,7 @@
 #include <iterator>
 #include <cmath>
 #include <cftal/math/func_constants.h>
+#include <cftal/math/impl_d_real_constants_f64.h>
 #include <cftal/f16.h>
 
 namespace cftal {
@@ -46,7 +47,7 @@ namespace cftal {
                 p += 64;
             }
             _T inv_s= 4.0 / s;
-            _T a=agm<10>(std::make_pair(1.0, inv_s)).first;
+            _T a=agm<20>(std::make_pair(1.0, inv_s)).first;
             a*=2.0;
             d_real<_T> t= ctbl::m_pi.h()/a - ctbl::m_ln2.h()* p;
             return t.h();
@@ -87,7 +88,27 @@ fp16_add(cftal::vec<cftal::f16_t, 2> a,
     return cvt_f32_to_f16(rf);
 }
 
+cftal::vec<cftal::f16_t, 1>
+fp16_add(cftal::vec<cftal::f16_t, 1> a,
+         cftal::vec<cftal::f16_t, 1> b)
+{
+    using namespace cftal;
+    vec<f32_t, 1> af=cvt_f16_to_f32(a);
+    vec<f32_t, 1> bf=cvt_f16_to_f32(b);
+    vec<f32_t, 1> rf=af+bf;
+    return cvt_f32_to_f16(rf);
+}
+
+
 int main(int argc, char** argv)
 {
+    using namespace cftal;
+
+    f16_t z=0;
+    vec<f16_t, 4> s(z);
+    vec<f32_t, 4> c=cvt_f16_to_f32(s);
+    std::cout << std::hexfloat
+              << c
+              << std::endl;
     return 0;
 }
