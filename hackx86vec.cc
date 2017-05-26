@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal;
 
-    f16_t z=0;
+    f16_t z(0);
     vec<f16_t, 4> s(z);
     vec<f32_t, 4> c=cvt_f16_to_f32(s);
     std::cout << std::hexfloat

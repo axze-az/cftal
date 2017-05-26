@@ -9,6 +9,8 @@ set (CSRCS
     math_common.cc
     x86_ops_1.cc
     vec_traits.cc
+    # vec <f16_t, _N>
+    vXf16.cc
     # vec <double, 1>
     v1f64_ef.cc
     v1f64_sf.cc
