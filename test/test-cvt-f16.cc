@@ -210,6 +210,22 @@ cftal::test::test_f16_to_f32()
     return rc;
 }
 
+namespace {
+    bool f16_eq(cftal::f16_t a, cftal::f16_t b)
+    {
+        uint32_t a0= read_bits(a);
+        uint32_t b0= read_bits(b);
+        if (a0 == b0)
+            return true;
+        if (((a0 & 0x7fff) > 0x7c00) &&
+            ((b0 & 0x7fff) > 0x7c00) &&
+            ((a0 & 0xfe00) == (b0 & 0xfe00))) {
+            return true;
+        }
+        return false;
+    }
+}
+
 bool
 cftal::test::test_f32_to_f16()
 {
@@ -218,8 +234,8 @@ cftal::test::test_f32_to_f16()
         uint32_t j=i;
         f32_t s=as<float>(j);
         f16_t r(ref_f32_to_f16(s));
-        f16_t t=cvt_f32_to_f16(s);
-        bool c= read_bits(r) == read_bits(t);
+        f16_t t(cvt_f32_to_f16(s));
+        bool c= f16_eq(t, r);
         if (c==false) {
             std::cout << std::setprecision(16)
                       << read_bits(t) << " should be "
@@ -330,7 +346,7 @@ bool cftal::test::test_cvt_f32_f16()
             float faj=as<float>(a[j]);
             f16_t ref=f16_t(ref_f32_to_f16(faj));
             f16_t rt=vr[j];
-            if (read_bits(ref) != read_bits(rt)) {
+            if (f16_eq(ref, rt) == false) {
                 r=false;
                 std::cout << std::hex << a[j] << " --> "
                           << read_bits(rt) << " should be "

@@ -17,7 +17,7 @@ namespace cftal {
         template <std::size_t _N>
         vec<f32_t, _N>
         t_cvt_f16_to_f32(vec<f16_t, _N> s);
-        
+
     }
 }
 
@@ -59,7 +59,7 @@ cftal::impl::_cvt_f32_to_f16(f32_t ff)
     s >>= 16;
     if (f >= max_f16_u) {
         f = f > inf_u ?
-            0x7e00 | ((f & 0x7fffff)>>13) : 0x7c00;
+            0x7e00 /*| ((f & 0x7fffff)>>13)*/ : 0x7c00;
     } else {
         if (f < (113<<23)) {
             f = as<uint32_t>(as<f32_t>(f) + denom_magic);
@@ -97,7 +97,7 @@ cftal::impl::t_cvt_f32_to_f16(vec<f32_t, _N> ff)
 
     // inf or nan handling
     auto inf_or_nan = f >= max_f16_u;
-    i32vec r_nan = i32vec(0x7e00) | ((f & sig_f32_msk::v.u32()) >> 13);
+    i32vec r_nan = i32vec(0x7e00) /*| ((f & sig_f32_msk::v.u32()) >> 13)*/;
     i32vec r_inf = i32vec(0x7c00);
     i32vec r_inf_nan = select(f > inf_u, r_nan, r_inf);
     // denormal handling
