@@ -191,7 +191,8 @@ cftal::test::test_f16_to_f32()
         f16_t f(i);
         f32_t r=ref_f16_to_f32(read_bits(f));
         f32_t t=cvt_f16_to_f32(f);
-        bool c = as<uint32_t>(r)==as<uint32_t>(t);
+        // bool c = as<uint32_t>(r)==as<uint32_t>(t);
+        bool c= (r==t) || (std::isnan(r) && std::isnan(t));
         if (c==false) {
             std::cout << std::setprecision(16)
                     << t << " should be "
