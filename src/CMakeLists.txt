@@ -40,15 +40,115 @@ set (CSRCS
     v16f32_sf.cc
 )
 
+# only for ides
+SET (HDRS
+  ../include/cftal/cast.h
+  ../include/cftal/mem.h
+  ../include/cftal/expr.h
+  ../include/cftal/math/misc.h
+  ../include/cftal/math/impl_d_real_constants_f64.h
+  ../include/cftal/math/elem_func_core_f64.h
+  ../include/cftal/math/func_traits_f64_s32.h
+  ../include/cftal/math/spec_func.h
+  ../include/cftal/math/spec_func_core_f64.h
+  ../include/cftal/math/impl_d_real_constants_f32.h
+  ../include/cftal/math/spec_func_core_f32.h
+  ../include/cftal/math/func_traits_f32_s32.h
+  ../include/cftal/math/func_constants.h
+  ../include/cftal/math/func.h
+  ../include/cftal/math/elem_func.h
+  ../include/cftal/math/elem_func_core_f32.h
+  ../include/cftal/math/impl_poly.h
+  ../include/cftal/std_types.h
+  ../include/cftal/vec_float_n.h
+  ../include/cftal/divisor.h
+  ../include/cftal/fenv.h
+  ../include/cftal/vec_cast.h
+  ../include/cftal/vec_traits.h
+  ../include/cftal/mul_div.h
+  ../include/cftal/constants.h
+  ../include/cftal/impl/divide.h
+  ../include/cftal/impl/vreg.h
+  ../include/cftal/vec_misc.h
+  ../include/cftal/vec_op.h
+  ../include/cftal/d_real.h
+  ../include/cftal/types.h
+  ../include/cftal/vec_mask.h
+  ../include/cftal/arg.h
+  ../include/cftal/d_int.h
+  ../include/cftal/boost_compat.h
+  ../include/cftal/vec_bit_n.h
+  ../include/cftal/x86/cast.h
+  ../include/cftal/x86/v2u64_inl.h
+  ../include/cftal/x86/ops_0.h
+  ../include/cftal/x86/v4u64_inl.h
+  ../include/cftal/x86/v4f64.h
+  ../include/cftal/x86/v4s64_inl.h
+  ../include/cftal/x86/v2s64_inl.h
+  ../include/cftal/x86/v4s64.h
+  ../include/cftal/x86/v8s32.h
+  ../include/cftal/x86/v8u16_inl.h
+  ../include/cftal/x86/perm.h
+  ../include/cftal/x86/v8s16.h
+  ../include/cftal/x86/intrin.h
+  ../include/cftal/x86/v4u32_inl.h
+  ../include/cftal/x86/v4s32.h
+  ../include/cftal/x86/ops_1.h
+  ../include/cftal/x86/vreg.h
+  ../include/cftal/x86/v4s32_inl.h
+  ../include/cftal/x86/v2s64.h
+  ../include/cftal/x86/v8u16.h
+  ../include/cftal/x86/v4f32.h
+  ../include/cftal/x86/ins_ext.h
+  ../include/cftal/x86/vec_bit.h
+  ../include/cftal/x86/v8s32_inl.h
+  ../include/cftal/x86/v2u64.h
+  ../include/cftal/x86/select.h
+  ../include/cftal/x86/v4u64.h
+  ../include/cftal/x86/v8f32.h
+  ../include/cftal/x86/v2f64.h
+  ../include/cftal/x86/v8s16_inl.h
+  ../include/cftal/x86/v8u32.h
+  ../include/cftal/x86/v4u32.h
+  ../include/cftal/x86/v8u32_inl.h
+  ../include/cftal/x86/v8f64.h
+  ../include/cftal/x86/const.h
+  ../include/cftal/config.h
+  ../include/cftal/bitops.h
+  ../include/cftal/vec_t_n.h
+  ../include/cftal/vec_cvt.h
+  ../include/cftal/vec.h
+  ../include/cftal/f16.h
+  ../include/cftal/select.h
+  ../include/cftal/vec_t_1.h
+  ../include/cftal/t_real.h
+  ../include/cftal/vec_double_n.h
+  ../include/cftal/arm/v2u64_inl.h
+  ../include/cftal/arm/v2s64_inl.h
+  ../include/cftal/arm/v2s32.h
+  ../include/cftal/arm/perm.h
+  ../include/cftal/arm/intrin.h
+  ../include/cftal/arm/v2s64.h
+  ../include/cftal/arm/v2u64.h
+  ../include/cftal/arm/v2u32_inl.h
+  ../include/cftal/arm/v2f64.h
+  ../include/cftal/arm/v2u32.h
+  ../include/cftal/arm/v2s32_inl.h
+  ../include/cftal/arm/v2f32.h
+  ../include/cftal/vec_math_funcs.h
+  ../include/cftal/init_list.h
+)
+  
+
 if (CFTAL_STATIC_LIB)
-    add_library (cftal STATIC ${CSRCS})
+    add_library (cftal STATIC ${CSRCS} ${HDRS})
     install(TARGETS cftal
         DESTINATION lib LIBRARY
         COMPONENT devel)
 endif()
 
 #set_target_properties(cftal PROPERTIES OUTPUT_NAME "cftal")
-add_library (cftal-so SHARED ${CSRCS})
+add_library (cftal-so SHARED ${CSRCS} ${HDRS})
 set_property(TARGET cftal-so
   PROPERTY INTERFACE_POSITION_INDEPENDENT_CODE ON)
 set_property(TARGET cftal-so
