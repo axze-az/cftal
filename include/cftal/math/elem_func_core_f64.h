@@ -2397,6 +2397,7 @@ cbrt_k(arg_t<vf_type> xc)
     vf_type s=mm*mm*mm;
     mm = mm -(s - mm0) * mm/(2*s+mm0);
 #if 1
+    // round mm to 17 bits == int(53)/3
     mm = rint(vf_type(mm*0x1p17))*0x1p-17;
 #else
     vi2_type hw, lw;
