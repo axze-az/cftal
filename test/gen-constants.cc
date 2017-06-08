@@ -590,7 +590,7 @@ int main(int argc, char** argv)
         write_constant(
             "const double exp_arg_large",
             std::floor(func_constants<double>::exp_hi_inf()));
-        // exp1
+        // expm1
         gen_constant(dp, "const double expm1_hi", mpfr_expm1,
                      check_inf<double>(), "inf");
         gen_constant(dm, "const double expm1_lo", mpfr_expm1,
@@ -613,12 +613,24 @@ int main(int argc, char** argv)
         gen_constant(dm, "const double exp2_lo_den", mpfr_exp2,
                      check_max_denormal<double>(), "nom");
 
+        // exp2m1
+        gen_constant(dp, "const double exp2m1_hi", mpfr_ext::exp2m1,
+                     check_inf<double>(), "inf");
+        gen_constant(dm, "const double exp2m1_lo", mpfr_ext::exp2m1,
+                     check_minus_one<double>(), "m_1");
+
+        // exp10
         gen_constant(dp, "const double exp10_hi", mpfr_exp10,
                      check_inf<double>(), "inf");
         gen_constant(dm, "const double exp10_lo", mpfr_exp10,
                      check_zero<double>(), "m_0");
         gen_constant(dm, "const double exp10_lo_den", mpfr_exp10,
                      check_max_denormal<double>(), "nom");
+        // exp10m1
+        gen_constant(dp, "const double exp10m1_hi", mpfr_ext::exp10m1,
+                     check_inf<double>(), "inf");
+        gen_constant(dm, "const double exp10m1_lo", mpfr_ext::exp10m1,
+                     check_minus_one<double>(), "m_1");
 
         gen_constant(dp, "const double erf_lt_one", mpfr_erf,
                      check_one<double>(), "1");
@@ -708,11 +720,23 @@ int main(int argc, char** argv)
                      check_inf<float>(), "inf");
         gen_constant(dm, "const float exp2_lo", mpfr_exp2,
                      check_zero<float>(), "m_0");
+        // exp2m1
+        gen_constant(dp, "const float exp2m1_hi", mpfr_ext::exp2m1,
+                     check_inf<float>(), "inf");
+        gen_constant(dm, "const float exp2m1_lo", mpfr_ext::exp2m1,
+                     check_minus_one<float>(), "m_1");
 
+        // exp10
         gen_constant(dp, "const float exp10_hi", mpfr_exp10,
                      check_inf<float>(), "inf");
         gen_constant(dm, "const float exp10_lo", mpfr_exp10,
                      check_zero<float>(), "m_0");
+
+        // exp10m1
+        gen_constant(dp, "const float exp10m1_hi", mpfr_ext::exp10m1,
+                     check_inf<float>(), "inf");
+        gen_constant(dm, "const float exp10m1_lo", mpfr_ext::exp10m1,
+                     check_minus_one<float>(), "m_1");
 
         gen_constant(dp, "const float erf_lt_one", mpfr_erf,
                      check_one<float>(), "1");

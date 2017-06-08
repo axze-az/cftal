@@ -70,3 +70,54 @@ func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
     return dr;
 }
 
+int
+cftal::test::mpfr_ext::
+exp2m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
+{
+    mpfr_prec_t tgt_prec=mpfr_get_prec(res);
+    fpn_handle t(tgt_prec);
+    fpn_handle u(tgt_prec);
+    int inexact_exp2 = ~0;
+    int inexact_exp2m1_1 = ~0;
+    int inexact_exp2m1_2 = ~0;
+    do {
+        mpfr_set_prec(t(), t.prec()+8);
+        inexact_exp2= mpfr_exp2(t(), src, MPFR_RNDZ);
+        inexact_exp2m1_1 = mpfr_sub_ui(res, t(), 1, rm);
+        if (inexact_exp2 == 0) {
+            break;
+        }
+        // round up exp2 to the next larger number
+        mpfr_nextabove(t());
+        // and repeat the subtraction
+        inexact_exp2m1_2 = mpfr_sub_ui(u(), t(), 1, rm);
+    } while ( ((inexact_exp2m1_1 !=0) != (inexact_exp2m1_2 !=0))
+            || (mpfr_cmp(u(), res) != 0));
+    return inexact_exp2m1_1;
+}
+
+int
+cftal::test::mpfr_ext::
+exp10m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
+{
+    mpfr_prec_t tgt_prec=mpfr_get_prec(res);
+    fpn_handle t(tgt_prec);
+    fpn_handle u(tgt_prec);
+    int inexact_exp10 = ~0;
+    int inexact_exp10m1_1 = ~0;
+    int inexact_exp10m1_2 = ~0;
+    do {
+        mpfr_set_prec(t(), t.prec()+8);
+        inexact_exp10= mpfr_exp10(t(), src, MPFR_RNDZ);
+        inexact_exp10m1_1 = mpfr_sub_ui(res, t(), 1, rm);
+        if (inexact_exp10 == 0) {
+            break;
+        }
+        // round up exp2 to the next larger number
+        mpfr_nextabove(t());
+        // and repeat the subtraction
+        inexact_exp10m1_2 = mpfr_sub_ui(u(), t(), 1, rm);
+    } while ( ((inexact_exp10m1_1 !=0) != (inexact_exp10m1_2 !=0))
+            || (mpfr_cmp(u(), res) != 0));
+    return inexact_exp10m1_1;
+}

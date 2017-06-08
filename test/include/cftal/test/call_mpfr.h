@@ -51,7 +51,7 @@ namespace cftal {
         class fpn_handle {
             mpfr_t _v;
             void cleanup();
-        protected:
+        public:
             fpn_handle(std::size_t prec);
             fpn_handle(mpfr_t t);
             fpn_handle(double x, std::size_t prec);
@@ -61,10 +61,19 @@ namespace cftal {
             fpn_handle& operator=(const fpn_handle& r);
             fpn_handle& operator=(fpn_handle&& r);
             ~fpn_handle();
-        public:
             mpfr_t& operator()() { return _v; };
             const mpfr_t& operator()() const { return _v; }
+            mpfr_prec_t prec() const { return mpfr_get_prec(_v); }
         };
+
+        namespace mpfr_ext {
+            // return exp2m1 with precision bits
+            int
+            exp2m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+            // return exp10m1 with precision bits
+            int
+            exp10m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+        }
 
         template <std::size_t _B>
         class mpfr_real : public fpn_handle {
