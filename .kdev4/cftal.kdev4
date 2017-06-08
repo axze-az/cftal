@@ -77,7 +77,7 @@ Path=gcc
 Type=GCC
 
 [Launch]
-Launch Configurations=Launch Configuration 1,Launch Configuration 2,Launch Configuration 0,Launch Configuration 3,Launch Configuration 4,Launch Configuration 5,Launch Configuration 6,Launch Configuration 7,Launch Configuration 8,Launch Configuration 9,Launch Configuration 10,Launch Configuration 11,Launch Configuration 12,Launch Configuration 13,Launch Configuration 14,Launch Configuration 15,Launch Configuration 17,Launch Configuration 16,Launch Configuration 18
+Launch Configurations=Launch Configuration 1,Launch Configuration 2,Launch Configuration 0,Launch Configuration 3,Launch Configuration 4,Launch Configuration 5,Launch Configuration 6,Launch Configuration 7,Launch Configuration 8,Launch Configuration 9,Launch Configuration 10,Launch Configuration 11,Launch Configuration 12,Launch Configuration 13,Launch Configuration 14,Launch Configuration 15,Launch Configuration 17,Launch Configuration 16,Launch Configuration 18,Launch Configuration 19
 
 [Launch][Launch Configuration 0]
 Configured Launch Modes=execute
@@ -267,6 +267,24 @@ EnvironmentGroup=
 Executable=file:///home/axel/projects/cpplib/cftal
 External Terminal=konsole --noclose --workdir %workdir -e %exe
 Project Target=cftal,test,test-cvt-f16
+Use External Terminal=false
+Working Directory=
+isExecutable=false
+
+[Launch][Launch Configuration 19]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=test-exp10m1-f64
+Type=Native Application
+
+[Launch][Launch Configuration 19][Data]
+Arguments=
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x03\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l\x00\x00\x00\x08\x00t\x00e\x00s\x00t\x00\x00\x00 \x00t\x00e\x00s\x00t\x00-\x00e\x00x\x00p\x001\x000\x00m\x001\x00-\x00f\x006\x004)
+Dependency Action=Build
+EnvironmentGroup=
+Executable=file:///home/axel/projects/cpplib/cftal
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+Project Target=cftal,test,test-exp10m1-f64
 Use External Terminal=false
 Working Directory=
 isExecutable=false

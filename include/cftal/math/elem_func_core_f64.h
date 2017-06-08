@@ -98,7 +98,7 @@ namespace cftal {
 
             static
             vf_type
-            exp10_k(arg_t<vf_type> x);
+            exp10_k(arg_t<vf_type> x, bool exp_m1);
 
             static
             vf_type
@@ -661,7 +661,8 @@ exp2_k(arg_t<vf_type> x, bool exp_m1)
         y *= 2;
         y  = y + 2*ye;
         // x small, required for handling of subnormal numbers
-        y = _T::sel(abs(x) < 0.5*M_LN2*0x1p-54, x*M_LN2, y);
+        using fc=func_constants<double>;
+        y = _T::sel(abs(x) <= fc::max_denormal()/M_LN2, x*M_LN2, y);
     }
 #endif
     return y;
@@ -672,7 +673,7 @@ template <typename _T>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-exp10_k(arg_t<vf_type> x)
+exp10_k(arg_t<vf_type> x, bool exp_m1)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type kf = rint(vf_type(x * ctbl::m_1_ld2.h()));
@@ -712,9 +713,9 @@ exp10_k(arg_t<vf_type> x)
     // x^13 : +0xc.147dcb213d25p-16
     const vf_type exp10_c13=+1.8432685022147710833876e-04;
     // x^ : +0x9.35d8dddaaa8bp-2
-    const vf_type log10=+2.3025850929940459010936e+00;
+    const double log10=+2.3025850929940459010936e+00;
 
-    const vf_type log10sqr=log10*log10;
+    const double log10sqr=log10*log10;
 
     vf_type xx=xr*xr;
     vf_type i=impl::poly(xx,
@@ -730,6 +731,7 @@ exp10_k(arg_t<vf_type> x)
                          exp10_c6,
                          exp10_c4);
     vf_type y=i*xr + j;
+#if 0
     y = impl::poly(xr, y,
                    exp10_c3,
                    exp10_c2,
@@ -759,6 +761,44 @@ exp10_k(arg_t<vf_type> x)
     ye += yee;
     y += ye;
     y= scale_exp_k(y, kf, k2);
+#else
+    y = impl::poly(xr, y,
+                   exp10_c3);
+    // correction for argument reduction
+    vf_type dx= (hi-xr);
+    vf_type cr = dx-kf * ctbl::m_ld2_cw[1];
+    // f(x) := 10^(r+c);
+    // f(x) ~ 10^r + log(10) 10^r c + ..
+    // 10^r ~ 1 + log(10) r
+    // f(x) ~ 10^r + (1+log(10)*r)*log(10)*c
+    //      = 10^r + log(10)*c + log(10)*log(10)*r*c
+    vf_type yee1=log10sqr*xr*cr;
+    vf_type yee= log10*cr + yee1;
+    if (exp_m1 == false) {
+        vf_type ye;
+        y = impl::poly(xr, y, exp10_c2, exp10_c1);
+        impl::eft_poly(y, ye, xr, y, exp10_c0);
+        ye += yee;
+        y += ye;
+        y = scale_exp_k(y, kf, k2);
+    } else {
+        vf_type ye;
+        y = y*xr;
+        y = d_ops::two_sum(y, exp10_c2, ye);
+        impl::eft_poly_si(y, ye, xr, y, ye,
+                          exp10_c1, exp10_c0);
+        ye += yee;
+        // 2^kf = 2*2^s ; s = kf/2
+        vf_type scale = scale_exp_k(vf_type(0.5), kf, k2);
+        // e^x-1 = 2*(y * 2^s - 0.5 * 2^s)
+        impl::eft_poly_si(y, ye, scale, y, ye, vf_type(-0.5));
+        y *= 2;
+        y  = y + 2*ye;
+        // x small, required for handling of subnormal numbers
+        // using fc=func_constants<double>;
+        y = _T::sel(abs(x) <= 0x1p-54/log10, x*log10, y);
+    }
+#endif
     return y;
 }
 
@@ -2531,7 +2571,7 @@ exp10_mx2_k(arg_t<vf_type> xc)
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
     vf_type sx2h=-x2h;
-    vf_type r= exp10_k(sx2h);
+    vf_type r= exp10_k(sx2h, false);
     // f(x) := 10^(x+y);
     // f(x) ~ 10^x + 2^x log(10) y
     using ctbl = impl::d_real_constants<d_real<double>, double>;
@@ -2551,7 +2591,7 @@ exp10_px2_k(arg_t<vf_type> xc)
     // this implementation produces +-1 ulp but is not
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
-    vf_type r= exp10_k(x2h);
+    vf_type r= exp10_k(x2h, false);
     // f(x) := 2^(x+y);
     // f(x) ~ 2^x + 2^x log(2) y
     using ctbl = impl::d_real_constants<d_real<double>, double>;

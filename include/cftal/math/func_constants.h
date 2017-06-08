@@ -55,6 +55,13 @@ namespace cftal {
             static constexpr double
             exp10_lo_zero() { return -3.236072453387798191215552e+02; }
 
+            // exp10m1(x) == +inf for x >= 0
+            static constexpr double
+            exp10m1_hi_inf() { return 3.082547155599167467698862e+02; }
+            // exp10m1(x) == -1 for x <=
+            static constexpr double
+            exp10m1_lo_minus_one() { return  -1.625561976585498769054539e+01; }
+
             // cosh(x) == +inf for abs(x) >=
             static constexpr double
             cosh_hi_inf() { return 7.104758600739439771132311e+02; }
@@ -122,6 +129,13 @@ namespace cftal {
             // exp10(x) == 0 for x <=
             static constexpr float
             exp10_lo_zero() { return -4.515450286865234375000000e+01f; }
+
+            // exp10m1(x) == +inf for x >= 0
+            static constexpr float
+            exp10m1_hi_inf() { return 3.853184127807617187500000e+01f; }
+            // exp10m1(x) == -1 for x <=
+            static constexpr float
+            exp10m1_lo_minus_one() { return -7.525750160217285156250000e+00f; }
 
             // cosh(x) == +inf for abs(x) >=
             static constexpr float

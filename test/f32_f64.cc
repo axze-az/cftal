@@ -62,7 +62,7 @@ bool cftal::test::f_eq(float a, float b)
     return (a == b) || (std::isnan(a) && std::isnan(b));
 }
 
-std::int32_t 
+std::int32_t
 cftal::test::distance(double a, double b)
 {
     std::int64_t ai = as<std::int64_t>(a);
@@ -84,7 +84,7 @@ cftal::test::distance(double a, double b)
         d = -d;
     return d;
 }
-    
+
 std::int32_t
 cftal::test::distance(float a, float b)
 {
@@ -109,7 +109,7 @@ cftal::test::distance(float a, float b)
 }
 
 namespace {
-    
+
     template <typename _T>
     bool cmp_ulp(_T a, _T b, uint32_t ulp, cftal::test::ulp_stats* us)
     {
@@ -118,8 +118,10 @@ namespace {
         if ((r=cftal::test::f_eq(a, b)) == false) {
             u = cftal::test::distance(a, b);
             //(u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
-            if (abs(u) <= int32_t(ulp)) 
+            if (abs(u) <= int32_t(ulp))
                 r=true;
+            else
+                std::cout << "distance " << u << std::endl;
         }
         if (us != nullptr) {
             int32_t isn= (std::isnan(a) || std::isnan(b)) ? 1 : 0;
@@ -133,7 +135,8 @@ namespace {
     {
         _T b0, b1, b2;
         std::tie(b0, b1, b2) = b;
-        if (std::isnan(a) && std::isnan(b0))
+        if (std::isnan(a) &&
+            (std::isnan(b0) || std::isnan(b1) || std::isnan(b2)))
             return true;
         return a == b0 || a == b1 || a == b2;
     }
@@ -157,6 +160,11 @@ bool cftal::test::f_eq_ulp(double a,
     bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
     if (us != nullptr) {
         bool f= is_faitful(a, b);
+#if 1
+        if (f==false) {
+            r=false;
+        }
+#endif
         us->faithful(f);
     }
     return r;

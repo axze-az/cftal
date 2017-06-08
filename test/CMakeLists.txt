@@ -21,6 +21,7 @@ set (TEST_HDRS
   ./include/cftal/test/check_log.h
   ./include/cftal/test/x86.h
   ./include/cftal/test/check_exp10.h
+  ./include/cftal/test/check_exp10m1.h
   ./include/cftal/test/check_exp2_mx2.h
   ./include/cftal/test/chebyshev.h
   ./include/cftal/test/check_sqrt.h
@@ -164,6 +165,7 @@ test_prog(test-tanh-f64)
 test_prog(test-exp2-f64)
 test_prog(test-exp2m1-f64)
 test_prog(test-exp10-f64)
+test_prog(test-exp10m1-f64)
 test_prog(test-log-f64)
 test_prog(test-log1p-f64)
 test_prog(test-log10-f64)
@@ -202,6 +204,7 @@ test_prog(test-tanh-f32)
 test_prog(test-exp2-f32)
 test_prog(test-exp2m1-f32)
 test_prog(test-exp10-f32)
+test_prog(test-exp10m1-f32)
 test_prog(test-log-f32)
 test_prog(test-log1p-f32)
 test_prog(test-log10-f32)

@@ -5,7 +5,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 #include "cftal/test/of_math_funcs.h"
-#include "cftal/test/check_exp2m1.h"
+#include "cftal/test/check_exp10m1.h"
 #include <iostream>
 #include <iomanip>
 
@@ -15,10 +15,10 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
-    const int _N=8;
+    const int _N=1;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x80);
+    std::size_t cnt=update_cnt(0x8);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -33,24 +33,24 @@ int main(int argc, char** argv)
         }
         std::vector<func_arg_result<double> > v=
             read_double_file(test_data_file, false);
-        rc &= check_func_1<double, 1, check_exp2m1<double> >(v, ulp,
-                                                             0, false);
-        rc &= check_func_1<double, 2, check_exp2m1<double> >(v, ulp,
-                                                             0, false);
-        rc &= check_func_1<double, 4, check_exp2m1<double> >(v, ulp,
-                                                             0, false);
-        rc &= check_func_1<double, 8, check_exp2m1<double> >(v, ulp,
-                                                             0, false);
+        rc &= check_func_1<double, 1, check_exp10m1<double> >(v, ulp,
+                                                              0, false);
+        rc &= check_func_1<double, 2, check_exp10m1<double> >(v, ulp,
+                                                              0, false);
+        rc &= check_func_1<double, 4, check_exp10m1<double> >(v, ulp,
+                                                              0, false);
+        rc &= check_func_1<double, 8, check_exp10m1<double> >(v, ulp,
+                                                              0, false);
 #endif
     }
-    func_domain<double> d=std::make_pair(-0x1p-57, 0x1p-57);
-    // func_domain<double> d=std::make_pair(-57.0, 1026.0);
+    func_domain<double> d=std::make_pair(0x1p-8, 1.0);
+    // func_domain<double> d=std::make_pair(-17.0, 310.0);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        double, _N, check_exp2m1<double> >::v(st, d, speed_only,
-                                              cmp_ulp<double>(ulp, us),
-                                              cnt);
+        double, _N, check_exp10m1<double> >::v(st, d, speed_only,
+                                               cmp_ulp<double>(ulp, us),
+                                               cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
