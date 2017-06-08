@@ -59,6 +59,7 @@ set (TEST_HDRS
   ./include/cftal/test/idx.h
   ./include/cftal/test/of_math_funcs.h
   ./include/cftal/test/check_exp2.h
+  ./include/cftal/test/check_exp2m1.h
   ./include/cftal/test/check_sincos.h
   ./include/cftal/test/pr_fp.h
   ./include/cftal/test/rcp_div.h
@@ -161,6 +162,7 @@ test_prog(test-sinh-f64)
 test_prog(test-cosh-f64)
 test_prog(test-tanh-f64)
 test_prog(test-exp2-f64)
+test_prog(test-exp2m1-f64)
 test_prog(test-exp10-f64)
 test_prog(test-log-f64)
 test_prog(test-log1p-f64)
@@ -198,6 +200,7 @@ test_prog(test-sinh-f32)
 test_prog(test-cosh-f32)
 test_prog(test-tanh-f32)
 test_prog(test-exp2-f32)
+test_prog(test-exp2m1-f32)
 test_prog(test-exp10-f32)
 test_prog(test-log-f32)
 test_prog(test-log1p-f32)

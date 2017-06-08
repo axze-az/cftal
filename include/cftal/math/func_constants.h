@@ -41,6 +41,13 @@ namespace cftal {
             static constexpr double
             exp2_lo_zero() { return -1.075000000000000000000000e+03; }
 
+            // exp2m1(x) == +inf for x >= 0
+            static constexpr double
+            exp2m1_hi_inf() { return 1.024000000000000000000000e+03; }
+            // exp2m1(x) == -1 for x <=
+            static constexpr double
+            exp2m1_lo_minus_one() { return -5.400000000000000000000000e+01; }
+            
             // exp10(x) == +inf for x >=
             static constexpr double
             exp10_hi_inf() { return 3.082547155599167467698862e+02; }
@@ -81,8 +88,10 @@ namespace cftal {
             static constexpr float
             max_denormal() { return 1.175494210692441075487029e-38f; }
 
+            // exp(x) == +inf for x >=
             static constexpr float
             exp_hi_inf() { return 8.872283935546875000000000e+01f; }
+            // exp(x) == 0 for x <=
             static constexpr float
             exp_lo_zero() { return -1.039720840454101562500000e+02f; }
 
@@ -92,12 +101,20 @@ namespace cftal {
             // expm1(x) == -1 for x <=
             static constexpr float
             expm1_lo_minus_one() { return -1.732868003845214843750000e+01f; }
+
             // exp2(x) == +inf for x >=
             static constexpr float
             exp2_hi_inf() { return 1.280000000000000000000000e+02f; }
             // exp2(x) == 0 for x <=
             static constexpr float
             exp2_lo_zero() { return -1.500000000000000000000000e+02f; }
+
+            // exp2m1(x) == +inf for x >= 0
+            static constexpr float
+            exp2m1_hi_inf() { return 1.280000000000000000000000e+02f; }
+            // exp2m1(x) == -1 for x <=
+            static constexpr float
+            exp2m1_lo_minus_one() { return -2.500000000000000000000000e+01f; }
 
             // exp10(x) == +inf for x >=
             static constexpr float

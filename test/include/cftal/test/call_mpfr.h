@@ -53,11 +53,12 @@ namespace cftal {
             void cleanup();
         public:
             fpn_handle(std::size_t prec);
-            fpn_handle(mpfr_t t);
+            fpn_handle(const mpfr_t t);
             fpn_handle(double x, std::size_t prec);
             fpn_handle(float x, std::size_t prec);
             fpn_handle(const fpn_handle& r);
             fpn_handle(fpn_handle&& r);
+            fpn_handle& operator=(const mpfr_t r);
             fpn_handle& operator=(const fpn_handle& r);
             fpn_handle& operator=(fpn_handle&& r);
             ~fpn_handle();
@@ -67,6 +68,10 @@ namespace cftal {
         };
 
         namespace mpfr_ext {
+            // return exp2 with precision bits
+            int
+            exp2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
             // return exp2m1 with precision bits
             int
             exp2m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
@@ -303,6 +308,14 @@ cftal::test::fpn_handle::fpn_handle(std::size_t prec)
 }
 
 inline
+cftal::test::fpn_handle::fpn_handle(const mpfr_t r)
+    : _v()
+{
+    mpfr_init2(_v, mpfr_get_prec(r));
+    mpfr_set(_v, r, MPFR_RNDN);
+}
+
+inline
 cftal::test::fpn_handle::fpn_handle(double x, std::size_t prec)
     : _v()
 {
@@ -353,6 +366,19 @@ cftal::test::fpn_handle::operator=(fpn_handle&& r)
     mpfr_swap(_v, r._v);
     return *this;
 }
+
+inline
+cftal::test::fpn_handle&
+cftal::test::fpn_handle::operator=(const mpfr_t r)
+{
+    if (r != this->_v) {
+        mpfr_clear(_v);
+        mpfr_init2(_v, mpfr_get_prec(r));
+        mpfr_set(_v, r, MPFR_RNDN);
+    }
+    return *this;
+}
+
 
 inline
 cftal::test::fpn_handle::~fpn_handle()

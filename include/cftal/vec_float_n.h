@@ -70,6 +70,10 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<float, _N>
+    exp2m1(const vec<float, _N>& v);
+
+    template <std::size_t _N>
+    vec<float, _N>
     exp10(const vec<float, _N>& v);
 
     template <std::size_t _N>
@@ -291,6 +295,26 @@ namespace cftal {
     vec<float, 16>
     exp2(arg<vec<float, 16> >::type d);
 
+    // exp2m1, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    exp2m1(const vec<float, _N>& v);
+
+    vec<float, 1>
+    exp2m1(arg<vec<float, 1> >::type v);
+
+    vec<float, 2>
+    exp2m1(arg<vec<float, 2> >::type d);
+
+    vec<float, 4>
+    exp2m1(arg<vec<float, 4> >::type d);
+
+    vec<float, 8>
+    exp2m1(arg<vec<float, 8> >::type d);
+
+    vec<float, 16>
+    exp2m1(arg<vec<float, 16> >::type d);
+    
     // exp10, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -916,6 +940,15 @@ cftal::vec<float, _N>
 cftal::exp2(const vec<float, _N>& v)
 {
     vec<float, _N> r(exp2(low_half(v)), exp2(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::exp2m1(const vec<float, _N>& v)
+{
+    vec<float, _N> r(exp2m1(low_half(v)), exp2m1(high_half(v)));
     return r;
 }
 

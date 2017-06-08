@@ -94,7 +94,7 @@ namespace cftal {
 
             static
             vf_type
-            exp2_k(arg_t<vf_type> x);
+            exp2_k(arg_t<vf_type> x, bool exp_m1);
 
             static
             vf_type
@@ -572,7 +572,7 @@ template <typename _T>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-exp2_k(arg_t<vf_type> x)
+exp2_k(arg_t<vf_type> x, bool exp_m1)
 {
     vf_type kf= rint(vf_type(x));
     vf_type xr = x - kf;
@@ -623,6 +623,7 @@ exp2_k(arg_t<vf_type> x)
                          exp2_c6,
                          exp2_c4);
     vf_type y=i*xr + j;
+#if 0
     y = impl::poly(xr, y,
                    exp2_c3,
                    exp2_c2,
@@ -637,6 +638,32 @@ exp2_k(arg_t<vf_type> x)
     //                  exp2_c0);
     y += ye;
     y= scale_exp_k(y, kf, k2);
+#else
+    y = impl::poly(xr, y,
+                   exp2_c3,
+                   exp2_c2);
+    if (exp_m1 == false) {
+        vf_type ye;
+        y = impl::poly(xr, y, exp2_c1);
+        impl::eft_poly(y, ye, xr, y, exp2_c0);
+        y += ye;
+        y = scale_exp_k(y, kf, k2);
+    } else {
+        vf_type ye;
+        y = y*xr;
+        y = d_ops::two_sum(y, exp2_c1, ye);
+        impl::eft_poly_si(y, ye, xr, y, ye,
+                          exp2_c0);
+        // 2^kf = 2*2^s ; s = kf/2
+        vf_type scale = scale_exp_k(vf_type(0.5), kf, k2);
+        // e^x-1 = 2*(y * 2^s - 0.5 * 2^s)
+        impl::eft_poly_si(y, ye, scale, y, ye, vf_type(-0.5));
+        y *= 2;
+        y  = y + 2*ye;
+        // x small, required for handling of subnormal numbers
+        y = _T::sel(abs(x) < 0.5*M_LN2*0x1p-54, x*M_LN2, y);
+    }
+#endif
     return y;
 }
 
@@ -2463,7 +2490,7 @@ exp2_mx2_k(arg_t<vf_type> xc)
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
     vf_type sx2h=-x2h;
-    vf_type r= exp2_k(sx2h);
+    vf_type r= exp2_k(sx2h, false);
     // f(x) := 2^(x+y);
     // f(x) ~ 2^x + 2^x log(2) y
     using ctbl = impl::d_real_constants<d_real<double>, double>;
@@ -2483,7 +2510,7 @@ exp2_px2_k(arg_t<vf_type> xc)
     // this implementation produces +-1 ulp but is not
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
-    vf_type r= exp2_k(x2h);
+    vf_type r= exp2_k(x2h, false);
     // f(x) := 2^(x+y);
     // f(x) ~ 2^x + 2^x log(2) y
     using ctbl = impl::d_real_constants<d_real<double>, double>;

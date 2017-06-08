@@ -73,6 +73,13 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
+    ns::exp2m1(arg<vec_float>::type d)                                  \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp2m1(d);                                       \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::exp10(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \

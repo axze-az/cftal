@@ -260,6 +260,23 @@ namespace cftal {
     vec<double, 8>
     exp2(arg_t<vec<double, 8> > d);
 
+    // exp2m1, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    exp2m1(const vec<double, _N>& v);
+
+    vec<double, 1>
+    exp2m1(arg_t<vec<double, 1> > v);
+
+    vec<double, 2>
+    exp2m1(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    exp2m1(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    exp2m1(arg_t<vec<double, 8> > d);
+    
     // exp10, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -971,6 +988,15 @@ cftal::vec<double, _N>
 cftal::exp2(const vec<double, _N>& v)
 {
     vec<double, _N> r(exp2(low_half(v)), exp2(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::exp2m1(const vec<double, _N>& v)
+{
+    vec<double, _N> r(exp2m1(low_half(v)), exp2m1(high_half(v)));
     return r;
 }
 

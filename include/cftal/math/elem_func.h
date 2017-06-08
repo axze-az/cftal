@@ -109,6 +109,10 @@ namespace cftal {
 
             static
             vf_type
+            exp2m1(arg_t<vf_type> vf);
+            
+            static
+            vf_type
             sinh(arg_t<vf_type> vf);
 
             static
@@ -259,7 +263,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 exp2(arg_t<vf_type> d)
 {
-    vf_type res=base_type::exp2_k(d);
+    vf_type res=base_type::exp2_k(d, false);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp2_hi_inf= fc::exp2_hi_inf();
     const vf_type exp2_lo_zero= fc::exp2_lo_zero();
@@ -303,6 +307,24 @@ expm1(arg_t<vf_type> d)
     res = _T::sel(d == 1.0, M_E-1.0, res);
     return res;
 }
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _T>::
+exp2m1(arg_t<vf_type> d)
+{
+    vf_type res = base_type::exp2_k(d, true);
+    using fc= func_constants<_FLOAT_T>;
+    const vf_type exp2m1_hi_inf= fc::exp2m1_hi_inf();
+    const vf_type exp2m1_lo_minus_one= fc::exp2m1_lo_minus_one();
+    res = _T::sel(d <= exp2m1_lo_minus_one, -1.0, res);
+    res = _T::sel(d >= exp2m1_hi_inf, _T::pinf(), res);
+    res = _T::sel(d == 0.0, 0.0, res);
+    res = _T::sel(d == 1.0, 1.0, res);
+    return res;
+}
+
 
 template <typename _FLOAT_T, typename _T>
 inline
