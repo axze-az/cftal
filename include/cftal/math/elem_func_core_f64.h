@@ -763,7 +763,8 @@ exp10_k(arg_t<vf_type> x, bool exp_m1)
     y= scale_exp_k(y, kf, k2);
 #else
     y = impl::poly(xr, y,
-                   exp10_c3);
+                   exp10_c3,
+                   exp10_c2);
     // correction for argument reduction
     vf_type dx= (hi-xr);
     vf_type cr = dx-kf * ctbl::m_ld2_cw[1];
@@ -776,7 +777,7 @@ exp10_k(arg_t<vf_type> x, bool exp_m1)
     vf_type yee= log10*cr + yee1;
     if (exp_m1 == false) {
         vf_type ye;
-        y = impl::poly(xr, y, exp10_c2, exp10_c1);
+        y = impl::poly(xr, y, exp10_c1);
         impl::eft_poly(y, ye, xr, y, exp10_c0);
         ye += yee;
         y += ye;
@@ -784,9 +785,9 @@ exp10_k(arg_t<vf_type> x, bool exp_m1)
     } else {
         vf_type ye;
         y = y*xr;
-        y = d_ops::two_sum(y, exp10_c2, ye);
+        y = d_ops::two_sum(y, exp10_c1, ye);
         impl::eft_poly_si(y, ye, xr, y, ye,
-                          exp10_c1, exp10_c0);
+                          exp10_c0);
         ye += yee;
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = scale_exp_k(vf_type(0.5), kf, k2);
