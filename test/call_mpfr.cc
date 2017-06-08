@@ -139,6 +139,7 @@ namespace {
         return (mpfr_nan_p(a) && mpfr_nan_p(b)) ||
             (mpfr_cmp(a, b)==0);
     }
+
 }
 
 int
@@ -204,9 +205,22 @@ exp10m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
     int inexact_exp10 = ~0;
     int inexact_exp10m1_1 = ~0;
     int inexact_exp10m1_2 = ~0;
+    mpfr_prec_t prec_inc=16;
+    switch (tgt_prec) {
+    case 24:
+        prec_inc=16;
+        mpfr_set_prec(t(), 32-prec_inc);
+        break;
+    case 53:
+        prec_inc=32;
+        mpfr_set_prec(t(), 64-prec_inc);
+        break;
+    default:
+        break;
+    }
     do {
-        mpfr_set_prec(t(), t.prec()+8);
-        inexact_exp10= mpfr_exp10(t(), src, MPFR_RNDZ);
+        mpfr_set_prec(t(), t.prec()+prec_inc);
+        inexact_exp10= mpfr_exp10(t(), src, MPFR_RNDD);
         inexact_exp10m1_1 = mpfr_sub_ui(res, t(), 1, rm);
         if (inexact_exp10 == 0) {
             break;
@@ -215,7 +229,8 @@ exp10m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
         mpfr_nextabove(t());
         // and repeat the subtraction
         inexact_exp10m1_2 = mpfr_sub_ui(u(), t(), 1, rm);
-    } while ( ((inexact_exp10m1_1 !=0) != (inexact_exp10m1_2 !=0))
-            || !mpfr_equal_or_nan(u(), res));
+    } while (!mpfr_equal_or_nan(u(), res) &&
+             ((inexact_exp10m1_1 >= 0 && inexact_exp10m1_2 <=0) ||
+             (inexact_exp10m1_1 <= 0 && inexact_exp10m1_2 >=0)));
     return inexact_exp10m1_1;
 }
