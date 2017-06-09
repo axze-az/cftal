@@ -43,7 +43,7 @@ templates, recursion and specialization:
 \item Expression templates are used for operations on the short
   vectors. This allows the filtering for special operation patterns,
   for instance generation of fused multiply add intrinsics from
-  expressions like $ c= a* b + c $. More optimization are possible,
+  expressions like $ c= a* b + c $. More optimizations are possible,
   but not (yet) implemented.
 \end{itemize}
 
@@ -153,7 +153,11 @@ using the test data set.\\[1cm]
     \hline
     exp2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
+    exp2m1 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
     exp10 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    exp10m1 & $\pm$ 1?? & n  & $\pm$ 1?? & n \\
     \hline
     sinh & $\pm$ 1 & n  & $\pm$ 1 & n \\
     \hline
