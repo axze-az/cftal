@@ -604,7 +604,7 @@ exp2_k(arg_t<vf_type> x, bool exp_m1)
         y *= 2;
         y  = y + 2*ye;
         // x small
-        y = _T::sel(abs(x) < 0.5*M_LN2*0x1p-25f, x*M_LN2, y);
+        y = _T::sel(abs(x) < 0x1p-25f/M_LN2, x*M_LN2, y);
     }
 #endif
     return y;
