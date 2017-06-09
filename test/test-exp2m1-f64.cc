@@ -26,10 +26,10 @@ int main(int argc, char** argv)
 #if 0
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
-            append_filename(test_data_dir, "../../test/data/expm1.testdata");
+            append_filename(test_data_dir, "../../test/data/exp2m1.testdata");
         if (argc > 1) {
             test_data_dir = argv[1];
-            test_data_file = append_filename(test_data_dir, "expm1.testdata");
+            test_data_file = append_filename(test_data_dir, "exp2m1.testdata");
         }
         std::vector<func_arg_result<double> > v=
             read_double_file(test_data_file, false);
@@ -51,6 +51,11 @@ int main(int argc, char** argv)
         double, _N, check_exp2m1<double> >::v(st, d, speed_only,
                                               cmp_ulp<double>(ulp, us),
                                               cnt);
+    d=std::make_pair(-0x1p-4, 0x1p-4);
+    rc &= of_fp_func_up_to<
+        double, _N, check_exp2m1<double> >::v(st, d, speed_only,
+                                              cmp_ulp<double>(ulp, us),
+                                              cnt>>2);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
