@@ -160,17 +160,16 @@ exp2m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
     switch (tgt_prec) {
     case 24:
         prec_inc=16;
-        mpfr_set_prec(t(), 32-prec_inc);
+        mpfr_set_prec(t(), 32);
         break;
     case 53:
         prec_inc=32;
-        mpfr_set_prec(t(), 64-prec_inc);
+        mpfr_set_prec(t(), 64);
         break;
     default:
         break;
     }
     do {
-        mpfr_set_prec(t(), t.prec()+prec_inc);
 #if DEBUG_EXP2M1>0
         if (t.prec()>64)
             std::cout << "using precision " << t.prec() << std::endl;
@@ -184,7 +183,7 @@ exp2m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
         mpfr_nextabove(t());
         // and repeat the subtraction
         inexact_exp2m1_2 = mpfr_sub_ui(u(), t(), 1, rm);
-        static_cast<void>(inexact_exp2m1_2);
+        mpfr_set_prec(t(), t.prec()+prec_inc);
     } while (!mpfr_equal_or_nan(u(), res) &&
              ((inexact_exp2m1_1 >= 0 && inexact_exp2m1_2 <=0) ||
              (inexact_exp2m1_1 <= 0 && inexact_exp2m1_2 >=0)));
