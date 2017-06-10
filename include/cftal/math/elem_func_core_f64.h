@@ -2478,7 +2478,13 @@ cbrt_k(arg_t<vf_type> xc)
 #endif
     s= (mm*mm*mm-mm0)/mm0;
     mm = mm - mm * ((((14.0/81.0) * s -(2.0/9.0))*s)+1.0/3.0)*s;
+#if 1
+    // no denormal results are possible
+    vf_type t= _T::insert_exp(_T::bias()+e3c);
+    mm *=t;
+#else
     mm = ldexp_k(mm, e3c);
+#endif
     mm = copysign(mm, xc);
     return mm;
 }
