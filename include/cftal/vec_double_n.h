@@ -192,6 +192,11 @@ namespace cftal {
     vec<double, 1>
     sqrt(const vec<double, 1>& v);
 
+    // rsqrt = 1/sqrt
+    template <std::size_t _N>
+    vec<double, _N>
+    rsqrt(const vec<double, _N>& v);
+
     // cbrt, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -276,7 +281,7 @@ namespace cftal {
 
     vec<double, 8>
     exp2m1(arg_t<vec<double, 8> > d);
-    
+
     // exp10, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -310,7 +315,7 @@ namespace cftal {
 
     vec<double, 8>
     exp10m1(arg_t<vec<double, 8> > d);
-    
+
     // sinh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -661,7 +666,7 @@ namespace cftal {
     vec<double, 8>
     erf(arg_t<vec<double, 8> > d);
 
-#if 0    
+#if 0
     // erfc, these functions are exact to XX ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -800,7 +805,7 @@ namespace cftal {
 
     vec<double, 8>
     exp10_px2(arg_t<vec<double, 8> > d);
-    
+
 }
 
 template <std::size_t _N>
@@ -970,6 +975,15 @@ cftal::vec<double, 1>
 cftal::sqrt(const vec<double, 1>& v)
 {
     return vec<double, 1>(std::sqrt(v()));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::rsqrt(const vec<double, _N>& v)
+{
+    vec<double, _N> r(sqrt(v)/v);
+    return r;
 }
 
 template <std::size_t _N>

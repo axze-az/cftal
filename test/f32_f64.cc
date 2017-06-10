@@ -120,8 +120,10 @@ namespace {
             //(u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
             if (abs(u) <= int32_t(ulp))
                 r=true;
+#if 0
             else
                 std::cout << "distance " << u << std::endl;
+#endif
         }
         if (us != nullptr) {
             int32_t isn= (std::isnan(a) || std::isnan(b)) ? 1 : 0;
@@ -160,7 +162,7 @@ bool cftal::test::f_eq_ulp(double a,
     bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
     if (us != nullptr) {
         bool f= is_faitful(a, b);
-#if 1
+#if 0
         if (f==false) {
             r=false;
         }

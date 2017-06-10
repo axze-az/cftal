@@ -636,6 +636,10 @@ int main(int argc, char** argv)
                      check_one<double>(), "1");
         gen_constant(dp, "const double erfc_gt_zero", mpfr_erfc,
                      check_zero<double>(), "zzz");
+        dp=std::make_pair(1.0, std::numeric_limits<double>::max());
+        gen_constant(dp, "const double rqsrt_", mpfr_rec_sqrt,
+                     check_zero<double>(), "zero");
+
         // -1022 - 53
         write_constant(
             "const double log_arg_small", 0x1p-969);
@@ -740,8 +744,11 @@ int main(int argc, char** argv)
 
         gen_constant(dp, "const float erf_lt_one", mpfr_erf,
                      check_one<float>(), "1");
-        gen_constant(dp, "const double erfc_gt_zero", mpfr_erfc,
+        gen_constant(dp, "const float erfc_gt_zero", mpfr_erfc,
                      check_zero<float>(), "zzz");
+        dp=std::make_pair(1.0, std::numeric_limits<float>::max());
+        gen_constant(dp, "const float rqsrt_", mpfr_rec_sqrt,
+                     check_zero<double>(), "zero");
         // -126 + 24
         write_constant(
             "const double log_arg_small", 0x1p-102f);
