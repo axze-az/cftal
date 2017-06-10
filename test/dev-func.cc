@@ -120,24 +120,14 @@ cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
     const vf_type rsqrt_c0=+2.1327725431704256386922e+00;
     // x^1 : -0x9.bff4077a2a658p-3
     const vf_type rsqrt_c1=-1.2187271675259576664274e+00;
-    vf_type mm=impl::poly(mm0,
-                          rsqrt_c1,
-                          rsqrt_c0);
-    // 1st NR --> 6 * 2 == 12
-#if 0
-    // NR 2.5 -> 5
-    mm = mm + 0.5* mm * (1- mm0 * mm* mm);
-    // NR 5 -> 10
-    mm = mm + 0.5* mm * (1- mm0 * mm* mm);
+    vf_type mm=impl::poly(mm0, rsqrt_c1, rsqrt_c0);
+#if 1
     // NR 10 -> 20
-    mm = mm + 0.5* mm * (1- mm0 * mm* mm);
-    // NR 20 -> 40
-    mm = mm + 0.5* mm * (1- mm0 * mm* mm);
+    for (int i=0; i<4; ++i)
+        mm = mm + 0.5* mm * (1- mm0 * mm* mm);
 
-    dvf_type dmm= vf_type(mm);
-    dmm = dmm + vf_type(0.5* dmm.h()) *
-        (vf_type(1) - d_ops::mul(mm0, dmm.h())* dmm.h());
-    mm = dmm.h();
+    mm = mm + 0.5* mm *
+        (vf_type(1) - d_ops::mul(mm0, mm)*mm).h();
 #else
     // 2.5 -> 7.5
     // 7.5 -> 22.5
