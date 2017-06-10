@@ -95,7 +95,7 @@ template <typename _T>
 typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
 {
-#if 1
+#if 0
     dvf_type g= vf_type(1.0/sqrt(xc));
     g = g + vf_type(0.5* g.h()) *
         (vf_type(1) - d_ops::mul(xc, g.h())* g.h());
@@ -124,7 +124,7 @@ cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
                           rsqrt_c1,
                           rsqrt_c0);
     // 1st NR --> 6 * 2 == 12
-#if 1
+#if 0
     // NR 2.5 -> 5
     mm = mm + 0.5* mm * (1- mm0 * mm* mm);
     // NR 5 -> 10
@@ -139,9 +139,19 @@ cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
         (vf_type(1) - d_ops::mul(mm0, dmm.h())* dmm.h());
     mm = dmm.h();
 #else
-    // f(x) = a - x^-2
-    // f'(x) = 2 * x^-3
-
+    // 2.5 -> 7.5
+    // 7.5 -> 22.5
+    for (int i=0; i<3; ++i) {
+        // NR:
+        // mm = mm - 0.5*(mm*mm*mm*mm0-mm);
+        vf_type s2=mm*mm;
+        vf_type s2a=s2*mm0;
+        mm = mm - 2*(s2a*mm-mm)/(3*s2a + 1.0);
+    }
+    dvf_type dmm= vf_type(mm);
+    dmm = dmm + vf_type(0.5* dmm.h()) *
+        (vf_type(1) - d_ops::mul(mm0, dmm.h())* dmm.h());
+    mm = dmm.h();
     // Jarrat method
     //            2 f(x_n)
     // y_n= x_n - ---------
@@ -150,11 +160,10 @@ cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
     //                 3 f'(y_n) + f'(x_n)      f(x_n)
     // x_{n+1} = x_n - --------------------- * --------
     //                 6 f'(y_n) - 2 f'(x_n)    f'(x_n)
-
-    vf_type y=
-
 #endif
-    mm = ldexp_k(mm, -e2c);
+    vf_type t= _T::insert_exp(_T::bias()-e2c);
+    mm *=t;
+    // mm = ldexp_k(mm, -e2c);
     return mm;
 #endif
 }
