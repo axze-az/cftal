@@ -95,6 +95,12 @@ template <typename _T>
 typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
 {
+#if 1
+    dvf_type g= vf_type(1.0/sqrt(xc));
+    g = g + vf_type(0.5* g.h()) *
+        (vf_type(1) - d_ops::mul(xc, g.h())* g.h());
+    return g.h();
+#else
     vf_type xp=abs(xc);
     // m in [0.5, 1)
     const divisor<vi2_type, int32_t> idiv2(2);
@@ -127,8 +133,11 @@ cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
     mm = mm + 0.5* mm * (1- mm0 * mm* mm);
     // NR 20 -> 40
     mm = mm + 0.5* mm * (1- mm0 * mm* mm);
-    mm = rint(vf_type(mm*0x1p49))*0x1p-49;
-    mm = mm + 0.5* mm * (1- mm0 * mm* mm);
+
+    dvf_type dmm= vf_type(mm);
+    dmm = dmm + vf_type(0.5* dmm.h()) *
+        (vf_type(1) - d_ops::mul(mm0, dmm.h())* dmm.h());
+    mm = dmm.h();
 #else
     // f(x) = a - x^-2
     // f'(x) = 2 * x^-3
@@ -145,9 +154,9 @@ cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
     vf_type y=
 
 #endif
-
     mm = ldexp_k(mm, -e2c);
     return mm;
+#endif
 }
 
 
@@ -160,8 +169,10 @@ cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
         (xc == vf_type(0)) | isinf(xc) | isnan(xc);
     y=_T::sel(is_zero_or_inf_or_nan, xc, y);
     y=_T::sel(xc ==0, _T::pinf(), y);
-    vf_type sgn=copysign(vf_type(1.0), xc);
-    y=_T::sel(sgn < 0.0, _T::nan(), y);
+    y=_T::sel(xc == _T::pinf(), vf_type(0), y);
+    // vf_type sgn=copysign(vf_type(1.0), xc);
+    // y=_T::sel(sgn < 0.0, _T::nan(), y);
+    y=_T::sel(xc < 0.0, _T::nan(), y);
     return y;
 }
 
