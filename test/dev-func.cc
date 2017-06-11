@@ -95,11 +95,11 @@ template <typename _T>
 typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
 {
-#if 0
-    dvf_type g= vf_type(1.0/sqrt(xc));
-    g = g + vf_type(0.5* g.h()) *
-        (vf_type(1) - d_ops::mul(xc, g.h())* g.h());
-    return g.h();
+#if 1
+    vf_type r= vf_type(1.0/sqrt(xc));
+    r = r + 0.5* r *
+        (vf_type(1) - d_ops::mul(xc, r)*r).h();
+    return r;
 #else
     vf_type xp=abs(xc);
     // m in [0.5, 1)
@@ -121,6 +121,7 @@ cftal::math::test_func<double, _T>::func_k(arg_t<vf_type> xc)
     // x^1 : -0x9.bff4077a2a658p-3
     const vf_type rsqrt_c1=-1.2187271675259576664274e+00;
     vf_type mm=impl::poly(mm0, rsqrt_c1, rsqrt_c0);
+
 #if 1
     // NR 10 -> 20
     for (int i=0; i<4; ++i)
