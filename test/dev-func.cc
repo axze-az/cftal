@@ -165,9 +165,7 @@ typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::func(arg_t<vf_type> xc)
 {
     vf_type y=func_k(xc);
-    vmf_type is_zero_or_inf_or_nan=
-        (xc == vf_type(0)) | isinf(xc) | isnan(xc);
-    y=_T::sel(is_zero_or_inf_or_nan, xc, y);
+    y=_T::sel(isnan(xc), xc, y);
     y=_T::sel(xc ==0, _T::pinf(), y);
     y=_T::sel(xc == _T::pinf(), vf_type(0), y);
     // vf_type sgn=copysign(vf_type(1.0), xc);
@@ -182,8 +180,8 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    const int ulp=2;
-    const int _N=4;
+    const int ulp=1;
+    const int _N=8;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);
