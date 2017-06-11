@@ -104,11 +104,12 @@ int main(int argc, char** argv)
 {
     using namespace cftal;
 
-    f16_t z(0);
-    vec<f16_t, 4> s(z);
-    vec<f32_t, 4> c=cvt_f16_to_f32(s);
+    vec<f32_t, 1> s=std::numeric_limits<float>::infinity();
+    vec<f32_t, 1> c=rsqrt(s);
     std::cout << std::hexfloat
               << c
+              << ' '
+              << s
               << std::endl;
     return 0;
 }

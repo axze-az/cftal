@@ -21,7 +21,7 @@ namespace cftal {
             static
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
-                return sqrt(a)/a;
+                return rsqrt(a);
             }
             static
             std::tuple<_T, _T, _T>

@@ -92,7 +92,6 @@ namespace cftal {
     v2f64 cbrt(arg<v2f64>::type a);
     v2f64 hypot(const v2f64& a, const v2f64& b);
 
-    v2f64 rsqrt(const v2f64& a);
     v2f64 native_rsqrt(const v2f64& a);
 
     namespace arm {

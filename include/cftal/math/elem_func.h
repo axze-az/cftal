@@ -290,10 +290,8 @@ rsqrt(arg_t<vf_type> x)
     vf_type y= mm*t;
 #endif
     y=_T::sel(isnan(x), x, y);
-    y=_T::sel(x ==0, _T::pinf(), y);
     y=_T::sel(x == _T::pinf(), vf_type(0), y);
-    // vf_type sgn=copysign(vf_type(1.0), x);
-    // y=_T::sel(sgn < 0.0, _T::nan(), y);
+    y=_T::sel(x == 0, _T::pinf(), y);
     y=_T::sel(x < 0.0, _T::nan(), y);
     return y;
 }

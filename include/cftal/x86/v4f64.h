@@ -105,7 +105,6 @@ namespace cftal {
     v4f64 sqrt(const v4f64& a);
     v4f64 hypot(const v4f64& a, const v4f64& b);
 
-    v4f64 rsqrt(const v4f64& a);
     v4f64 native_rsqrt(const v4f64& a);
 
     namespace x86 {
