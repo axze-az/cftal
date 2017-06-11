@@ -241,6 +241,20 @@ namespace cftal {
     vec<float, _N>
     rsqrt(const vec<float, _N>& v);
 
+    vec<float, 1>
+    rsqrt(arg_t<vec<float, 1> > v);
+
+    vec<float, 2>
+    rsqrt(arg_t<vec<float, 2> > v);
+
+    vec<float, 4>
+    rsqrt(arg_t<vec<float, 4> > v);
+
+    vec<float, 8>
+    rsqrt(arg_t<vec<float, 8> > v);
+
+    vec<float, 16>
+    rsqrt(arg_t<vec<float, 16> > v);
 
     // exp: exact to +-1 ulp
     template <std::size_t _N>
@@ -920,7 +934,7 @@ inline
 cftal::vec<float, _N>
 cftal::rsqrt(const vec<float, _N>& v)
 {
-    vec<float, _N> r(sqrt(v)/v);
+    vec<float, _N> r(rsqrt(low_half(v)), rsqrt(high_half(v)));
     return r;
 }
 

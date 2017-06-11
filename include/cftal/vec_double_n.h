@@ -197,6 +197,18 @@ namespace cftal {
     vec<double, _N>
     rsqrt(const vec<double, _N>& v);
 
+    vec<double, 1>
+    rsqrt(arg_t<vec<double, 1> > v);
+
+    vec<double, 2>
+    rsqrt(arg_t<vec<double, 2> > v);
+
+    vec<double, 4>
+    rsqrt(arg_t<vec<double, 4> > v);
+
+    vec<double, 8>
+    rsqrt(arg_t<vec<double, 8> > v);
+
     // cbrt, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -982,7 +994,7 @@ inline
 cftal::vec<double, _N>
 cftal::rsqrt(const vec<double, _N>& v)
 {
-    vec<double, _N> r(sqrt(v)/v);
+    vec<double, _N> r(rsqrt(low_half(v)), rsqrt(high_half(v)));
     return r;
 }
 

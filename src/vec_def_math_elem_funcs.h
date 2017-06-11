@@ -24,6 +24,13 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
+    ns::rsqrt(arg<vec_float>::type a)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::rsqrt(a);                                        \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::frexp(arg<vec_float>::type d, vec_int* pe)                      \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \

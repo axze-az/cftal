@@ -110,10 +110,12 @@ namespace cftal {
         gen_math_constants(std::ostream& s, const std::string& pfx);
 
         template <std::size_t _N, std::size_t _B>
-        void csplit(double (&r)[_N], const mpfr_real<_B>& v);
+        void csplit(double (&r)[_N], const mpfr_real<_B>& v,
+                    std::size_t low_bits_to_clear);
 
         template <std::size_t _N, std::size_t _B>
-        void csplit(float (&r)[_N], const mpfr_real<_B>& v);
+        void csplit(float (&r)[_N], const mpfr_real<_B>& v,
+                    std::size_t low_bits_to_clear);
 
 
         template <typename _T, std::size_t _N, std::size_t _B>
@@ -272,9 +274,12 @@ cftal::test::to_stream(t_real<_T>& d, const mpfr_real<_B>& v,
 
 template <std::size_t _N, std::size_t _B>
 void
-cftal::test::csplit(double (&r)[_N], const mpfr_real<_B>& v)
+cftal::test::csplit(double (&r)[_N], const mpfr_real<_B>& v,
+                    std::size_t low_bits_to_clear)
 {
-    uint64_t msk=const_u64<0xffe00000U, 0xffffffffU>::v.u64();
+    // uint64_t msk=const_u64<0xffe00000U, 0xffffffffU>::v.u64();
+    uint64_t msk = const_u64<uint32_t(-1), uint32_t(-1)>::v.u64() <<
+        low_bits_to_clear;
     mpfr_real<_B> vv(v);
     for (std::size_t i=0; i<_N-1; ++i) {
         double t= double(vv);
@@ -289,9 +294,11 @@ cftal::test::csplit(double (&r)[_N], const mpfr_real<_B>& v)
 
 template <std::size_t _N, std::size_t _B>
 void
-cftal::test::csplit(float (&r)[_N], const mpfr_real<_B>& v)
+cftal::test::csplit(float (&r)[_N], const mpfr_real<_B>& v,
+                    std::size_t low_bits_to_clear)
 {
-    uint32_t msk=const_u32<0xfffffE00U>::v.u32();
+    // uint32_t msk=const_u32<0xfffffE00U>::v.u32();
+    uint32_t msk=const_u32<0xffffffffU>::v.u32() << low_bits_to_clear;
     mpfr_real<_B> vv(v);
     for (std::size_t i=0; i<_N-1; ++i) {
         float t= float(vv);
@@ -345,6 +352,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     bool is_double = std::numeric_limits<double>::max() ==
         std::numeric_limits<value_type>::max();
 
+    std::size_t low_bits_to_clear= is_double ? 21 : 9;
     // mpfr_set_default_prec(_B);
     f_t v, x;
 
@@ -352,7 +360,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     value_type ln2_cw[ln2_bits];
     x=2.0;
     v=log(x);
-    csplit(ln2_cw, v);
+    csplit(ln2_cw, v, low_bits_to_clear);
     s << "template <class _T>\nconst " << (is_double ? "double" : "float")
       << "\n"
       << "cftal::math::impl::" << pfx << "::\nm_ln2_cw["
@@ -369,7 +377,8 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     value_type ld2_cw[ld2_bits];
     x=2.0;
     v=log10(x);
-    csplit(ld2_cw, v);
+    low_bits_to_clear = is_double ? 21 : 9;
+    csplit(ld2_cw, v, low_bits_to_clear);
     s << "template <class _T>\nconst " << (is_double ? "double" : "float")
       << "\n"
       << "cftal::math::impl::" << pfx << "::\nm_ld2_cw["
@@ -387,7 +396,8 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     v *= x;
     const int pi_2_bits=3;
     value_type pi_2_cw[pi_2_bits];
-    csplit(pi_2_cw, v);
+    low_bits_to_clear = is_double ? 21 : 9;
+    csplit(pi_2_cw, v, low_bits_to_clear);
     s << "template <class _T>\nconst " << (is_double ? "double" : "float")
       << "\n"
       << "cftal::math::impl::" << pfx << "::\nm_pi_2_cw["
@@ -665,7 +675,7 @@ int main(int argc, char** argv)
         double a[2];
         mpfr_real<512> ln2=2.0;
         ln2=log(ln2);
-        csplit(a, ln2);
+        csplit(a, ln2, 21);
         // std::cout << std::hexfloat;
         for (std::size_t i=0; i<2; ++i) {
             std::cout << "const double m_ln2_" << i << "= "
@@ -762,7 +772,7 @@ int main(int argc, char** argv)
         float a[2];
         mpfr_real<512> ln2=2.0;
         ln2=log(ln2);
-        csplit(a, ln2);
+        csplit(a, ln2, 9);
         // std::cout << std::hexfloat;
         for (std::size_t i=0; i<2; ++i) {
             std::cout << "const float m_ln2_" << i << "= "
