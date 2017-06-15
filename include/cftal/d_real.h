@@ -196,11 +196,20 @@ namespace cftal {
             void
             add12cond(_T& s, _T& r, const _T& a, const _T& b);
 
+            // return (zh, zl) = (xh, xl) + (yh + yl)
+            // |xh| > |yh|
+            static
+            void
+            add22(_T& zh, _T& zl,
+                  const _T& xh, const _T& xl,
+                  const _T& yh, const _T& yl);
+
+            // return (zh, zl) = (xh, xl) + (yh + yl)
             static
             void
             add22cond(_T& zh, _T& zl,
                       const _T& xh, const _T& xl,
-                      const _T& yh, const _T& al);
+                      const _T& yh, const _T& yl);
 
             static
             void
@@ -298,6 +307,7 @@ namespace cftal {
 
             using base_type::add12;
             using base_type::add12cond;
+            using base_type::add22;
             using base_type::add22cond;
             using base_type::add122;
 
@@ -338,6 +348,7 @@ namespace cftal {
 
             using base_type::add12;
             using base_type::add12cond;
+            using base_type::add22;
             using base_type::add22cond;
             using base_type::add122;
 
@@ -378,6 +389,7 @@ namespace cftal {
 
             using base_type::add12;
             using base_type::add12cond;
+            using base_type::add22;
             using base_type::add22cond;
             using base_type::mul12;
             using base_type::mul22;
@@ -635,6 +647,22 @@ add12cond(_T& s, _T& r, const _T& a, const _T& b)
     _T _u4 = _a - _u2;
     r = _u4 + _u3;
 }
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_common<_T>::
+add22(_T& zh, _T& zl,
+      const _T& xh, const _T& xl,
+      const _T& yh, const _T& yl)
+{
+    _T v1, v2;
+    v1 = xh + yh;
+    v2 = (((xh - v1) + yh) + yl) + xl;
+    zh = v1 + v2;
+    zl = (v1 - zh) + v2;
+}
+
 
 template <typename _T>
 inline
