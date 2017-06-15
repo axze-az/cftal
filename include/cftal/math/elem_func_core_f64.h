@@ -568,11 +568,13 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // correction for errors in argument reduction
     vf_type yee= xrl + xrl*xrh;
     vf_type ye;
-    y = y*xrh;
+
     // do the last 2 additions and the last multiplication
     // in higher precision
+    y = y*xrh;
     y = d_ops::two_sum(y, exp_c1, ye);
     impl::eft_poly_si(y, ye, xrh, y, ye, exp_c0);
+    // impl::eft_poly(y, ye, xrh, y, exp_c1, exp_c0);
     ye += yee;
     if (exp_m1 == false) {
         y += ye;
@@ -2627,8 +2629,21 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp2_mx2_k(arg_t<vf_type> xc)
 {
-#if 0
-    vf_type xl2, x2h;
+#if 1
+    vf_type x2h, x2l;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    d_ops::mul12(x2h, x2l, xc, -xc);
+
+    vf_type kf = rint(vf_type(x2h));
+    vi_type k = _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
+    vf_type xrh, xrl;
+    d_ops::add122(xrh, xrl, -kf, x2h, x2l);
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    vf_type y= __exp_k(xrh, xrl, kf, k2, false);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel(x2h <= fc_t::exp2_lo_zero(), vf_type(0), y);
+    return y;
 #else
     // this implementation produces +-1 ulp but is not
     // faithfully rounded
@@ -2652,6 +2667,22 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp2_px2_k(arg_t<vf_type> xc)
 {
+#if 1
+    vf_type x2h, x2l;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    d_ops::mul12(x2h, x2l, xc, xc);
+
+    vf_type kf = rint(vf_type(x2h));
+    vi_type k = _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
+    vf_type xrh, xrl;
+    d_ops::add122(xrh, xrl, -kf, x2h, x2l);
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    vf_type y= __exp_k(xrh, xrl, kf, k2, false);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
+    return y;
+#else
     // this implementation produces +-1 ulp but is not
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
@@ -2664,6 +2695,7 @@ exp2_px2_k(arg_t<vf_type> xc)
     using fc_t = math::func_constants<double>;
     r= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), r);
     return r;
+#endif
 }
 
 template <typename _T>
