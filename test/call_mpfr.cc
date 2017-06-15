@@ -208,28 +208,112 @@ exp10m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
     switch (tgt_prec) {
     case 24:
         prec_inc=16;
-        mpfr_set_prec(t(), 32-prec_inc);
+        mpfr_set_prec(t(), 32);
         break;
     case 53:
         prec_inc=32;
-        mpfr_set_prec(t(), 64-prec_inc);
+        mpfr_set_prec(t(), 64);
         break;
     default:
         break;
     }
     do {
-        mpfr_set_prec(t(), t.prec()+prec_inc);
         inexact_exp10= mpfr_exp10(t(), src, MPFR_RNDD);
         inexact_exp10m1_1 = mpfr_sub_ui(res, t(), 1, rm);
         if (inexact_exp10 == 0) {
             break;
         }
-        // round up exp2 to the next larger number
+        // round up exp10 to the next larger number
         mpfr_nextabove(t());
         // and repeat the subtraction
         inexact_exp10m1_2 = mpfr_sub_ui(u(), t(), 1, rm);
+        mpfr_set_prec(t(), t.prec()+prec_inc);
     } while (!mpfr_equal_or_nan(u(), res) &&
              ((inexact_exp10m1_1 >= 0 && inexact_exp10m1_2 <=0) ||
              (inexact_exp10m1_1 <= 0 && inexact_exp10m1_2 >=0)));
     return inexact_exp10m1_1;
+}
+
+int
+cftal::test::mpfr_ext::
+exp_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
+{
+    mpfr_prec_t tgt_prec=mpfr_get_prec(res);
+    fpn_handle t(tgt_prec);
+    fpn_handle u(tgt_prec);
+    int inexact_sqr = ~0;
+    int inexact_exp_px2_1 = ~0;
+    int inexact_exp_px2_2 = ~0;
+    mpfr_prec_t prec_inc=16;
+    switch (tgt_prec) {
+    case 24:
+        prec_inc=16;
+        mpfr_set_prec(t(), 32);
+        break;
+    case 53:
+        prec_inc=32;
+        mpfr_set_prec(t(), 64);
+        break;
+    default:
+        break;
+    }
+    do {
+        inexact_sqr= mpfr_sqr(t(), x, MPFR_RNDD);
+        inexact_exp_px2_1 = mpfr_exp(res, t(), rm);
+        if (inexact_sqr == 0) {
+            break;
+        }
+        // round up x^2 to the next larger number
+        mpfr_nextabove(t());
+        // and repeat the exponentiation
+        inexact_exp_px2_2 = mpfr_exp(u(), t(), rm);
+        mpfr_set_prec(t(), t.prec()+prec_inc);
+    } while (!mpfr_equal_or_nan(u(), res) &&
+             ((inexact_exp_px2_1 >= 0 && inexact_exp_px2_2 <=0) ||
+             (inexact_exp_px2_1 <= 0 && inexact_exp_px2_2 >=0)));
+    return inexact_exp_px2_1;
+}
+
+int
+cftal::test::mpfr_ext::
+exp_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
+{
+    mpfr_prec_t tgt_prec=mpfr_get_prec(res);
+    fpn_handle n(mpfr_get_prec(x));
+    fpn_handle t(tgt_prec);
+    fpn_handle u(tgt_prec);
+    int inexact_mul = ~0;
+    int inexact_exp_mx2_1 = ~0;
+    int inexact_exp_mx2_2 = ~0;
+    mpfr_prec_t prec_inc=16;
+    switch (tgt_prec) {
+    case 24:
+        prec_inc=16;
+        mpfr_set_prec(t(), 32);
+        mpfr_set_prec(n(), 32);
+        break;
+    case 53:
+        prec_inc=32;
+        mpfr_set_prec(t(), 64);
+        mpfr_set_prec(n(), 64);
+        break;
+    default:
+        break;
+    }
+    mpfr_neg(n(), x, MPFR_RNDN);
+    do {
+        inexact_mul= mpfr_mul(t(), x, n(), MPFR_RNDD);
+        inexact_exp_mx2_1 = mpfr_exp(res, t(), rm);
+        if (inexact_mul == 0) {
+            break;
+        }
+        // round up x^2 to the next larger number
+        mpfr_nextabove(t());
+        // and repeat the exponentiation
+        inexact_exp_mx2_2 = mpfr_exp(u(), t(), rm);
+        mpfr_set_prec(t(), t.prec()+prec_inc);
+    } while (!mpfr_equal_or_nan(u(), res) &&
+             ((inexact_exp_mx2_1 >= 0 && inexact_exp_mx2_2 <=0) ||
+             (inexact_exp_mx2_1 <= 0 && inexact_exp_mx2_2 >=0)));
+    return inexact_exp_mx2_1;
 }

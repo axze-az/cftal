@@ -78,6 +78,12 @@ namespace cftal {
             // return exp10m1 with precision bits
             int
             exp10m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+            // return exp(x*x) with precision bits
+            int
+            exp_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+            // return exp(-x*x) with precision bits
+            int
+            exp_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
         }
 
         template <std::size_t _B>
