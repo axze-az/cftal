@@ -28,7 +28,7 @@ namespace cftal {
             r(const _T& a) {
 #if 1
                 std::pair<_T, _T> i;
-                _T v=call_mpfr::func(a, mpfr_ext::exp2_mx2, &i);
+                _T v=call_mpfr::func(a, mpfr_ext::exp2_px2, &i);
                 return std::make_tuple(v, i.first, i.second);
 #else
                 const std::size_t _N=sizeof(_T)*8;

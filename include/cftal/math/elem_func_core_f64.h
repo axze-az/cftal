@@ -2594,7 +2594,6 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp_mx2_k(arg_t<vf_type> xc)
 {
-#if 1
     vf_type x2h, x2l;
     d_ops::mul12(x2h, x2l, xc, -xc);
     vf_type xrh, xrl, kf;
@@ -2603,19 +2602,6 @@ exp_mx2_k(arg_t<vf_type> xc)
     using fc_t = math::func_constants<double>;
     y= _T::sel(x2h <= fc_t::exp_lo_zero(), vf_type(0), y);
     return y;
-#else
-    // this implementation produces +-1 ulp but is not
-    // faithfully rounded
-    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
-    vf_type sx2h=-x2h;
-    vf_type r= exp_k(sx2h, false);
-    // f(x) := e^(x+y);
-    // f(x) ~ e^x + e^x y + e^x/2 *y^2
-    r -= x2l * r;
-    using fc_t = math::func_constants<double>;
-    r= _T::sel(sx2h <= fc_t::exp_lo_zero(), vf_type(0), r);
-    return r;
-#endif
 }
 
 template <typename _T>
@@ -2624,16 +2610,14 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp_px2_k(arg_t<vf_type> xc)
 {
-    // this implementation produces +-1 ulp but is not
-    // faithfully rounded
-    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
-    vf_type r= exp_k(x2h, false);
-    // f(x) := e^(x+y);
-    // f(x) ~ e^x + e^x y + e^x/2 *y^2
-    r += x2l*r;
+    vf_type x2h, x2l;
+    d_ops::mul12(x2h, x2l, xc, xc);
+    vf_type xrh, xrl, kf;
+    auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
+    vf_type y= __exp_k(xrh, xrl, kf, k, false);
     using fc_t = math::func_constants<double>;
-    r= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), r);
-    return r;
+    y= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), y);
+    return y;
 }
 
 
@@ -2643,6 +2627,9 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp2_mx2_k(arg_t<vf_type> xc)
 {
+#if 0
+    vf_type xl2, x2h;
+#else
     // this implementation produces +-1 ulp but is not
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
@@ -2656,6 +2643,7 @@ exp2_mx2_k(arg_t<vf_type> xc)
     using fc_t = math::func_constants<double>;
     r= _T::sel(sx2h <= fc_t::exp2_lo_zero(), vf_type(0), r);
     return r;
+#endif
 }
 
 template <typename _T>
