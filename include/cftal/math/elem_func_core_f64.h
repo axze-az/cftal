@@ -567,24 +567,17 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                    exp_c2);
     // correction for errors in argument reduction
     vf_type yee= xrl + xrl*xrh;
+    vf_type ye;
+    y = y*xrh;
+    // do the last 2 additions and the last multiplication
+    // in higher precision
+    y = d_ops::two_sum(y, exp_c1, ye);
+    impl::eft_poly_si(y, ye, xrh, y, ye, exp_c0);
+    ye += yee;
     if (exp_m1 == false) {
-        vf_type ye;
-        y = impl::poly(xrh, y, exp_c1);
-        impl::eft_poly(y, ye, xrh, y, exp_c0);
-        // y = d_ops::two_sum(y, exp_c2, ye);
-        // impl::eft_poly_si(y, ye, xr, y, ye,
-        //                  exp_c1,
-        //                  exp_c0);
-        ye += yee;
         y += ye;
         y = __scale_exp_k(y, kf, k2);
     } else {
-        vf_type ye;
-        y = y*xrh;
-        y = d_ops::two_sum(y, exp_c1, ye);
-        impl::eft_poly_si(y, ye, xrh, y, ye,
-                          exp_c0);
-        ye += yee;
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = __scale_exp_k(vf_type(0.5), kf, k2);
         // e^x-1 = 2*(y * 2^s - 0.5 * 2^s)
@@ -2601,6 +2594,16 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp_mx2_k(arg_t<vf_type> xc)
 {
+#if 1
+    vf_type x2h, x2l;
+    d_ops::mul12(x2h, x2l, xc, -xc);
+    vf_type xrh, xrl, kf;
+    auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
+    vf_type y= __exp_k(xrh, xrl, kf, k, false);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel(x2h <= fc_t::exp_lo_zero(), vf_type(0), y);
+    return y;
+#else
     // this implementation produces +-1 ulp but is not
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
@@ -2612,6 +2615,7 @@ exp_mx2_k(arg_t<vf_type> xc)
     using fc_t = math::func_constants<double>;
     r= _T::sel(sx2h <= fc_t::exp_lo_zero(), vf_type(0), r);
     return r;
+#endif
 }
 
 template <typename _T>
