@@ -70,7 +70,7 @@ namespace cftal {
         namespace mpfr_ext {
             // return exp2 with precision bits
             int
-            exp2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+            exp10(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
             // return exp2m1 with precision bits
             int

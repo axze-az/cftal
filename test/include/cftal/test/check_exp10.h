@@ -27,7 +27,7 @@ namespace cftal {
             auto
             r(const _T& a) {
                 std::pair<_T, _T> i;
-                _T v=call_mpfr::func(a, mpfr_exp10, &i);
+                _T v=call_mpfr::func(a, mpfr_ext::exp10, &i);
                 return std::make_tuple(v, i.first, i.second);
                 // return call_mpfr::func(a, mpfr_exp10);
             }

@@ -43,7 +43,7 @@ int main(int argc, char** argv)
                                                               0, false);
 #endif
     }
-    // func_domain<double> d=std::make_pair(0x1p-8, 1.0);
+    // func_domain<double> d=std::make_pair(-1.0, 1.0);
     func_domain<double> d=std::make_pair(-17.0, 310.0);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();

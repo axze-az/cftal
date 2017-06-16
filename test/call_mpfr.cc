@@ -5,6 +5,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 #include <cftal/test/call_mpfr.h>
+#include <mutex>
 
 #define DEBUG_EXP2M1 0
 #define DEBUG_EXPXM1 (DEBUG_EXP2M1)
@@ -77,68 +78,142 @@ func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
     return dr;
 }
 
-int
-cftal::test::mpfr_ext::
-exp2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
-{
-    // exp2(x) = exp(x * M_LN2)
-    fpn_handle ln2(mpfr_get_prec(x));
-    fpn_handle xln2(mpfr_get_prec(x)*2+32+16);
-    fpn_handle res_last(mpfr_get_prec(res));
-    int i1=~0, i2=~0;
-#if DEBUG_EXPXM1>0
-    std::cout << "calculating exp2 "
-              << mpfr_get_d(x, rm)
-              << std::endl;
-#endif
-    do {
-#if DEBUG_EXPXM1>0
-        std::cout << mpfr_get_prec(ln2()) << std::endl;
-#endif
-        mpfr_const_log2(ln2(), rm);
-        if (mpfr_mul(xln2(), x, ln2(), rm)!=0) {
-            std::abort();
-            // std::cout << "oops " << std::endl;
-            break;
-        }
-        i2=mpfr_exp(res, xln2(), rm);
-        if ((i1 == i2) &&
-            ((mpfr_nan_p(res) && mpfr_nan_p(res_last())) ||
-             (mpfr_cmp(res, res_last())==0)))
-            break;
-        i1=i2;
-        res_last = res;
-        mpfr_set_prec(ln2(), ln2.prec() + 32);
-        mpfr_set_prec(xln2(), mpfr_get_prec(x) + ln2.prec()+16);
-    } while (1);
-#if DEBUG_EXPXM1>0
-    fpn_handle e2(res);
-    int i3=mpfr_exp2(res, x, rm);
 
-    if ((i2 != i3) ||
-        ((mpfr_cmp(res, e2()) !=0) &&
-         (mpfr_nan_p(e2()) == 0))) {
-        std::cout << std::hexfloat;
-        std::cout << "invalid result from exp2 "
-                  << mpfr_get_d(x, rm)
-                  << std::endl
-                  << mpfr_get_d(res, rm)
-                  << std::endl
-                  << mpfr_get_d(e2(), rm)
-                  << std::endl;
-        std::cout << std::scientific;
+namespace cftal {
+    namespace test {
+        namespace mpfr_ext {
+
+            // int F(mfpr_t y, const mpfr_t x, mpfr_rnd_t rm)
+            template <typename _F>
+            int
+            call_ziv_func(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm, _F f);
+
+            bool
+            mpfr_equal_or_nan(const mpfr_t a, const mpfr_t b)
+            {
+                return (mpfr_nan_p(a) && mpfr_nan_p(b)) ||
+                    (mpfr_cmp(a, b)==0);
+            }
+
+            template <typename _F>
+            class cbase {
+            private:
+                fpn_handle _v;
+                std::mutex _v_mtx;
+            public:
+                cbase();
+                int
+                load(mpfr_t y, mpfr_rnd_t rm);
+            };
+
+
+            struct calc_log10 {
+                int
+                operator()(mpfr_t y, mpfr_rnd_t rm)
+                    const;
+            };
+
+            static cbase<calc_log10> const_log10;
+
+            struct calc_log2 {
+                int
+                operator()(mpfr_t y, mpfr_rnd_t rm)
+                    const;
+            };
+
+            static cbase<calc_log2> const_log2;
+        }
     }
-#endif
-    return i2;
 }
 
-namespace {
-    bool
-    mpfr_equal_or_nan(const mpfr_t a, const mpfr_t b)
-    {
-        return (mpfr_nan_p(a) && mpfr_nan_p(b)) ||
-            (mpfr_cmp(a, b)==0);
+template <typename _F>
+cftal::test::mpfr_ext::cbase<_F>::cbase() : _v(128), _v_mtx()
+{
+    _F f;
+    f(_v(), MPFR_RNDN);
+}
+
+template <typename _F>
+int
+cftal::test::mpfr_ext::cbase<_F>::
+load(mpfr_t y, mpfr_rnd_t rm)
+{
+    std::unique_lock<std::mutex> _l(_v_mtx);
+    auto yp=mpfr_get_prec(y);
+    if (mpfr_get_prec(_v()) < yp) {
+        mpfr_set_prec(_v(), yp+3);
+        _F f;
+        f(_v(), MPFR_RNDN);
     }
+    return mpfr_set(y, _v(), rm);
+}
+
+int
+cftal::test::mpfr_ext::
+calc_log10::operator()(mpfr_t y, mpfr_rnd_t rm)
+    const
+{
+    fpn_handle ten(32);
+    mpfr_set_ui(ten(), 10, MPFR_RNDN);
+    return mpfr_log(y, ten(), rm);
+}
+
+int
+cftal::test::mpfr_ext::
+calc_log2::operator()(mpfr_t y, mpfr_rnd_t rm)
+    const
+{
+    fpn_handle two(32);
+    mpfr_set_ui(two(), 2, MPFR_RNDN);
+    return mpfr_log(y, two(), rm);
+}
+
+
+template <typename _F>
+int
+cftal::test::mpfr_ext::
+call_ziv_func(mpfr_t yf, const mpfr_t x, mpfr_rnd_t rm, _F f)
+{
+    fpn_handle y1(yf);
+    fpn_handle y2(yf);
+    fpn_handle x1(x);
+    int r1, r2;
+
+    r1 = f(y1(), x1(), rm);
+    while (r1 !=0) {
+        mpfr_set_prec(x1(), x1.prec()+32);
+        mpfr_set(x1(), x, MPFR_RNDN);
+        r2 = f(y2(), x1(), rm);
+        if ((mpfr_equal_or_nan(y2(), y1()) == true) &&
+            (r1 == r2)) {
+            break;
+        }
+        r1 = r2;
+        mpfr_set(y1(), y2(), MPFR_RNDN);
+    }
+    mpfr_set(yf, y1(), MPFR_RNDN);
+    return r1;
+}
+
+
+int
+cftal::test::mpfr_ext::
+exp10(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
+{
+    auto f=[](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
+        fpn_handle xln10(mpfr_get_prec(xx));
+        fpn_handle ln10(mpfr_get_prec(xx));
+        const_log10.load(ln10(), rm);
+        mpfr_mul(xln10(), xx, ln10(), rm);
+        int r=mpfr_exp(rr, xln10(), rm);
+        return r;
+    };
+    int r= call_ziv_func(res, x, rm, f);
+    return r;
+}
+
+
+namespace {
 
 }
 
@@ -146,6 +221,18 @@ int
 cftal::test::mpfr_ext::
 exp2m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
 {
+#if 0
+    auto f=[](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
+        fpn_handle xln2(mpfr_get_prec(xx));
+        fpn_handle ln2(mpfr_get_prec(xx));
+        const_log2.load(ln2(), rm);
+        mpfr_mul(xln2(), xx, ln2(), rm);
+        int r=mpfr_expm1(rr, xln2(), rm);
+        return r;
+    };
+    int r= call_ziv_func(res, src, rm, f);
+    return r;
+#else
     mpfr_prec_t tgt_prec=mpfr_get_prec(res);
     fpn_handle t(tgt_prec);
     fpn_handle u(tgt_prec);
@@ -192,12 +279,24 @@ exp2m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
     std::cout << "result is " << tt << std::endl;
 #endif
     return inexact_exp2m1_1;
+#endif
 }
 
 int
 cftal::test::mpfr_ext::
 exp10m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
 {
+#if 1
+    auto f=[](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
+        fpn_handle xln10(mpfr_get_prec(xx));
+        fpn_handle ln10(mpfr_get_prec(xx));
+        const_log10.load(ln10(), rm);
+        mpfr_mul(xln10(), xx, ln10(), rm);
+        int r=mpfr_expm1(rr, xln10(), rm);
+        return r;
+    };
+    return call_ziv_func(res, src, rm, f);
+#else
     mpfr_prec_t tgt_prec=mpfr_get_prec(res);
     fpn_handle t(tgt_prec);
     fpn_handle u(tgt_prec);
@@ -232,6 +331,7 @@ exp10m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
              ((inexact_exp10m1_1 >= 0 && inexact_exp10m1_2 <=0) ||
              (inexact_exp10m1_1 <= 0 && inexact_exp10m1_2 >=0)));
     return inexact_exp10m1_1;
+#endif
 }
 
 int
