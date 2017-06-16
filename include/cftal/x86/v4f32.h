@@ -709,6 +709,15 @@ bool cftal::elements_equal(const v4f32& a)
 }
 
 inline
+cftal::v4f32
+cftal::native_rsqrt(const v4f32& x)
+{
+    v4f32 y= _mm_rsqrt_ps(x());
+    y = y + 0.5* y * (1- x * y* y);
+    return y;
+}
+
+inline
 cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
 {
     v4f32 r;

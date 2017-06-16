@@ -256,6 +256,11 @@ namespace cftal {
     vec<float, 16>
     rsqrt(arg_t<vec<float, 16> > v);
 
+    // native rsqrt, defaults to 1/sqrt with vector length 1
+    template <std::size_t _N>
+    vec<float, _N>
+    native_rsqrt(const vec<float, _N>& v);
+
     // exp: exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -937,6 +942,16 @@ cftal::rsqrt(const vec<float, _N>& v)
     vec<float, _N> r(rsqrt(low_half(v)), rsqrt(high_half(v)));
     return r;
 }
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::native_rsqrt(const vec<float, _N>& v)
+{
+    vec<float, _N> r(1.0/sqrt(v));
+    return r;
+}
+
 
 template <std::size_t _N>
 inline

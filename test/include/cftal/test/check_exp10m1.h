@@ -4,8 +4,8 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#if !defined(__CFTAL_TEST_CHECK_EXP2M1_H__)
-#define __CFTAL_TEST_CHECK_EXP2M1_H__ 1
+#if !defined(__CFTAL_TEST_CHECK_EXP10M1_H__)
+#define __CFTAL_TEST_CHECK_EXP10M1_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
