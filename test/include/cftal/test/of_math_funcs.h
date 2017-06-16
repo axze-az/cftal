@@ -31,7 +31,7 @@ namespace cftal {
         std::string
         filename_from_argv(const char* argv0, const std::string& fn);
 
-        
+
         template <class _T>
         class func_arg_result {
             _T _a0;
@@ -95,29 +95,38 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
     bool rc(true);
     uint32_t errs(0);
     std::size_t calls=v.size();
-    int64_t ticks(0), s_ticks(0);
+    int64_t ticks(0);
+#if 0
+    int64_t s_ticks(0);
+#endif
     cmp_t<_T> cmp;
     for (std::size_t i=0; i< calls; ++i) {
         const func_arg_result<_T>& vi= v[i];
         _T a0 = vi.arg0();
         _T expected = vi.res();
         vec_type va0=a0;
-        int64_t t0, t1, t2;
-        t0= cftal::rdtsc();
+        int64_t t1, t2;
+#if 0
+        int64_t t0= cftal::rdtsc();
         _T res = _F::s(a0);
+#endif
         t1= cftal::rdtsc();
         vec_type vres = _F::v(va0);
         t2 = cftal::rdtsc();
+#if 0
         s_ticks+= (t1 -t0);
+#endif
         ticks += (t2 -t1);
 
         bool c= check(vres, expected, _F::fname(), verbose);
+#if 0
         bool libc_err= (cmp(expected, res) == false);
         if (libc_err) {
             std::cerr << "libc error: " << res <<  " != "
                       << _F::fname()
                       << '(' << a0 << ")\n";
         }
+#endif
         if (c == true)
             continue;
         _T vres0 = extract<0>(vres);
@@ -141,7 +150,6 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
             std::cerr << "ulp: " << ulp << '\n';
             check(vres, expected, _F::fname(), true);
         }
-        static_cast<void>(res);
         std::cerr << _F::fname() << "("<< a0 << ") failed.\n";
         rc = false;
         ++errs;
@@ -156,10 +164,12 @@ cftal::test::check_func_1(const std::vector<func_arg_result<_T> >& v,
                   << std::fixed << std::setprecision(2)
                   << double(ticks)/calls
                   << std::endl;
+#if 0
         std::cout << "scalar ticks per call: "
                   << std::fixed << std::setprecision(2)
                   << double(s_ticks)/calls
                   << std::endl;
+#endif
         std::cout << std::scientific;
     } else {
         std::cout << 0.0 << std::endl;
@@ -186,7 +196,10 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
     bool rc(true);
     uint32_t errs(0);
     std::size_t calls=v.size();
-    int64_t ticks(0), s_ticks(0);
+    int64_t ticks(0);
+#if 0
+    int64_t s_ticks(0);
+#endif
     cmp_t<_T> cmp;
     for (std::size_t i=0; i< calls; ++i) {
         const func_arg_result<_T>& vi= v[i];
@@ -196,21 +209,27 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
         vec_type va0=a0;
         vec_type va1=a1;
         int64_t t0, t1, t2;
+#if 0
         t0= cftal::rdtsc();
         _T res = _F::s(a0, a1);
+#endif
         t1= cftal::rdtsc();
         vec_type vres = _F::v(va0, va1);
         t2 = cftal::rdtsc();
+#if 0
         s_ticks+= (t1 -t0);
+#endif
         ticks += (t2 -t1);
 
         bool c= check(vres, expected, _F::fname(), verbose);
+#if 0
         bool libc_err= (cmp(expected, res) == false);
         if (libc_err) {
             std::cerr << "libc error: " << res <<  " != "
                       << _F::fname()
                       << '(' << a0 << ", " << a1 << ")\n";
         }
+#endif
         if (c == true)
             continue;
         _T vres0 = extract<0>(vres);
@@ -234,7 +253,6 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
             std::cerr << "ulp: " << ulp << '\n';
             check(vres, expected, _F::fname(), true);
         }
-        static_cast<void>(res);
         std::cerr << _F::fname() << "("<< a0 << ", " << a1 << ") failed.\n";
         rc = false;
         ++errs;
@@ -249,10 +267,12 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
                   << std::fixed << std::setprecision(2)
                   << double(ticks)/calls
                   << std::endl;
+#if 0
         std::cout << "scalar ticks per call: "
                   << std::fixed << std::setprecision(2)
                   << double(s_ticks)/calls
                   << std::endl;
+#endif
         std::cout << std::scientific;
     } else {
         std::cout << 0.0 << std::endl;
