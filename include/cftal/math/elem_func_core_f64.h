@@ -580,9 +580,13 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // correction for errors in argument reduction
     vf_type yee= xrl + xrl*xrh;
     vf_type ye;
+#if 1
+    impl::eft_poly(y, ye, xrh, y, exp_c1, exp_c0);
+#else
     y = y*xrh;
     y = d_ops::two_sum(y, exp_c1, ye);
     impl::eft_poly_si(y, ye, xrh, y, ye, exp_c0);
+#endif
     ye += yee;
     if (exp_m1 == false) {
         y += ye;
