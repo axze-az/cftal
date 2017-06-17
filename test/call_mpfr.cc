@@ -179,6 +179,9 @@ call_ziv_func(mpfr_t yf, const mpfr_t x, mpfr_rnd_t rm, _F f)
     fpn_handle x1(x);
     int r1, r2;
 
+    mpfr_prec_t start_prec= ((mpfr_get_prec(x) + 31)/32)*32;
+    mpfr_set_prec(x1(), start_prec);
+    mpfr_set(x1(), x, MPFR_RNDN);
     r1 = f(y1(), x1(), rm);
     while (r1 !=0) {
         mpfr_set_prec(x1(), x1.prec()+32);
@@ -188,8 +191,8 @@ call_ziv_func(mpfr_t yf, const mpfr_t x, mpfr_rnd_t rm, _F f)
             (r1 == r2)) {
             break;
         }
-        r1 = r2;
-        mpfr_set(y1(), y2(), MPFR_RNDN);
+        std::swap(r1, r2);
+        mpfr_swap(y1(), y2());
     }
     mpfr_set(yf, y1(), MPFR_RNDN);
     return r1;
