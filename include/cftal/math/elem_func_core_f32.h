@@ -81,7 +81,6 @@ namespace cftal {
                     arg_t<vf_type> kf, arg_t<vi_type> k,
                     bool exp_m1);
 
-
             static
             vf_type
             exp_k(arg_t<vf_type> x, bool exp_m1);
