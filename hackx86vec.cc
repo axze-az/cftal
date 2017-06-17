@@ -104,12 +104,33 @@ int main(int argc, char** argv)
 {
     using namespace cftal;
 
-    vec<f32_t, 1> s=std::numeric_limits<float>::infinity();
-    vec<f32_t, 1> c=rsqrt(s);
-    std::cout << std::hexfloat
-              << c
-              << ' '
-              << s
-              << std::endl;
-    return 0;
+    std::cout << std::setprecision(12);
+
+    vec<f32_t, 1> x=0.50001;
+    vec<int32_t, 1> e;
+    vec<f32_t, 1> y=frexp(x, &e);
+    f32_t eb=ilogb(x())+1;
+    std::cout << x << ' ' << y << ' ' << e << std::endl;
+    std::cout << x << ' ' << eb << std::endl;
+
+    x=0.250001;
+    y=frexp(x, &e);
+    eb=ilogb(x())+1;
+    std::cout << x << ' ' << y << ' ' << e << std::endl;
+    std::cout << x << ' ' << eb << std::endl;
+
+    x=0.1250001;
+    y=frexp(x, &e);
+    eb=ilogb(x())+1;
+    std::cout << x << ' ' << y << ' ' << e << std::endl;
+    std::cout << x << ' ' << eb << std::endl;
+
+    x=0.367879;
+    y=frexp(x, &e);
+    eb=ilogb(x())+1;
+    std::cout << x << ' ' << y << ' ' << e << std::endl;
+    std::cout << x << ' ' << eb << std::endl;
+
+
+
 }

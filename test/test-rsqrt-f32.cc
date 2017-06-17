@@ -23,6 +23,7 @@ int main(int argc, char** argv)
     }
     func_domain<float> d=std::make_pair(-1.0e-38f,
                                         std::numeric_limits< float >::max());
+    // d=std::make_pair(0.5f, 1.0f);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<

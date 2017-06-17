@@ -96,9 +96,6 @@ namespace cftal {
     bool
     elements_equal(const vec<float, 4>& v);
 
-    vec<float, 4>
-    cbrt(vec<float, 4> v);
-
     v4f32 max(const v4f32& a, const v4f32& b);
     v4f32 min(const v4f32& a, const v4f32& b);
     v4f32 abs(const v4f32& a);
@@ -713,7 +710,7 @@ cftal::v4f32
 cftal::native_rsqrt(const v4f32& x)
 {
     v4f32 y= _mm_rsqrt_ps(x());
-    y = y + 0.5* y * (1- x * y* y);
+    y = y + 0.5* y * (1- (x * y) * y);
     return y;
 }
 

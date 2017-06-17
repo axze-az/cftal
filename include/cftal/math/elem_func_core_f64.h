@@ -78,10 +78,13 @@ namespace cftal {
             vi_type
             ilogbp1(arg_t<vf_type> x);
 
-
             static
             vi_type
             ilogb(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            rsqrt_k(arg_t<vf_type> vf);
 
             // scaling function for exponential functions
             // returns y*2^k, expects double(k) == kf
@@ -497,6 +500,18 @@ ilogb(arg_t<vf_type> d)
     mi = _T::vmf_to_vmi2(mf);
     e = _T::sel(mi, vi2_type(FP_ILOGBNAN), e);
     return _T::vi2_odd_to_vi(e);
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+rsqrt_k(arg_t<vf_type> x)
+{
+    vf_type y= vf_type(1.0/sqrt(x));
+    // vf_type y= native_rsqrt(x);
+    y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y).h();
+    return y;
 }
 
 template <typename _T>
