@@ -517,7 +517,7 @@ cftal::math::elem_func_core<double, _T>::
 __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         arg_t<vf_type> kf, arg_t<vi2_type> k2)
 {
-#if 1
+#if 0
     // exp(x) = 1 + 2x/(2-x+x^2*P(x^2)
     //                    x [x - x^2 * P]
     //        = 1 + x + ------------------
