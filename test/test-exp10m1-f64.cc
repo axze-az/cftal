@@ -51,6 +51,11 @@ int main(int argc, char** argv)
         double, _N, check_exp10m1<double> >::v(st, d, speed_only,
                                                cmp_ulp<double>(ulp, us),
                                                cnt);
+    d=std::make_pair(-0x1p-4, 0x1p-4);
+    rc &= of_fp_func_up_to<
+        double, _N, check_exp10m1<double> >::v(st, d, speed_only,
+                                               cmp_ulp<double>(ulp, us),
+                                               cnt>>2);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
