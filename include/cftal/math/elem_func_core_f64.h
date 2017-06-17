@@ -126,18 +126,51 @@ namespace cftal {
                              arg_t<vf_type> xh,
                              arg_t<vf_type> xl);
 
+            // calculates %e^x-1 if exp_m1 == true %e^x otherwise 
             static
             vf_type
             exp_k(arg_t<vf_type> x, bool exp_m1);
 
+            // calculates %e^(-x*x)
+            static
+            vf_type
+            exp_mx2_k(arg_t<vf_type> x);
+
+            // calculates %e^(x*x)
+            static
+            vf_type
+            exp_px2_k(arg_t<vf_type> x);
+           
+            // calculates 2^x-1 if exp_m1 == true 2^x otherwise 
             static
             vf_type
             exp2_k(arg_t<vf_type> x, bool exp_m1);
 
+            // calculates 2^(-x*x)
+            static
+            vf_type
+            exp2_mx2_k(arg_t<vf_type> x);
+
+            // calculates 2^(x*x)
+            static
+            vf_type
+            exp2_px2_k(arg_t<vf_type> x);
+
+            // calculates 10^x-1 if exp_m1 == true 10^x otherwise 
             static
             vf_type
             exp10_k(arg_t<vf_type> x, bool exp_m1);
 
+            // calculates 10^(-x*x)
+            static
+            vf_type
+            exp10_mx2_k(arg_t<vf_type> x);
+
+            // calculates 10^(x*x)
+            static
+            vf_type
+            exp10_px2_k(arg_t<vf_type> x);
+            
             static
             vf_type
             sinh_k(arg_t<vf_type> x);
@@ -271,29 +304,6 @@ namespace cftal {
             vf_type
             cbrt_k(arg_t<vf_type> x);
 
-            static
-            vf_type
-            exp_mx2_k(arg_t<vf_type> x);
-
-            static
-            vf_type
-            exp_px2_k(arg_t<vf_type> x);
-
-            static
-            vf_type
-            exp2_mx2_k(arg_t<vf_type> x);
-
-            static
-            vf_type
-            exp2_px2_k(arg_t<vf_type> x);
-
-            static
-            vf_type
-            exp10_mx2_k(arg_t<vf_type> x);
-
-            static
-            vf_type
-            exp10_px2_k(arg_t<vf_type> x);
 
         };
 
@@ -683,6 +693,38 @@ template <typename _T>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
+exp_mx2_k(arg_t<vf_type> xc)
+{
+    vf_type x2h, x2l;
+    d_ops::mul12(x2h, x2l, xc, -xc);
+    vf_type xrh, xrl, kf;
+    auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
+    vf_type y= __exp_k<false>(xrh, xrl, kf, k);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel(x2h <= fc_t::exp_lo_zero(), vf_type(0), y);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+exp_px2_k(arg_t<vf_type> xc)
+{
+    vf_type x2h, x2l;
+    d_ops::mul12(x2h, x2l, xc, xc);
+    vf_type xrh, xrl, kf;
+    auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
+    vf_type y= __exp_k<false>(xrh, xrl, kf, k);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), y);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 exp2_k(arg_t<vf_type> x, bool exp_m1)
 {
     vf_type kf= rint(vf_type(x));
@@ -701,6 +743,80 @@ exp2_k(arg_t<vf_type> x, bool exp_m1)
     return y;
 }
 
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+exp2_mx2_k(arg_t<vf_type> xc)
+{
+#if 1
+    vf_type x2h, x2l;
+    d_ops::mul12(x2h, x2l, xc, -xc);
+
+    vf_type kf = rint(vf_type(x2h));
+    vi_type k = _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
+    vf_type xrh, xrl;
+    d_ops::add122(xrh, xrl, -kf, x2h, x2l);
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel(x2h <= fc_t::exp2_lo_zero(), vf_type(0), y);
+    return y;
+#else
+    // this implementation produces +-1 ulp but is not
+    // faithfully rounded
+    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
+    vf_type sx2h=-x2h;
+    vf_type r= exp2_k(sx2h, false);
+    // f(x) := 2^(x+y);
+    // f(x) ~ 2^x + 2^x log(2) y
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type xs= x2l*ctbl::m_ln2.h();
+    r -= xs*r;
+    using fc_t = math::func_constants<double>;
+    r= _T::sel(sx2h <= fc_t::exp2_lo_zero(), vf_type(0), r);
+    return r;
+#endif
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+exp2_px2_k(arg_t<vf_type> xc)
+{
+#if 1
+    vf_type x2h, x2l;
+    d_ops::mul12(x2h, x2l, xc, xc);
+
+    vf_type kf = rint(vf_type(x2h));
+    vi_type k = _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
+    vf_type xrh, xrl;
+    d_ops::add122(xrh, xrl, -kf, x2h, x2l);
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
+    return y;
+#else
+    // this implementation produces +-1 ulp but is not
+    // faithfully rounded
+    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
+    vf_type r= exp2_k(x2h, false);
+    // f(x) := 2^(x+y);
+    // f(x) ~ 2^x + 2^x log(2) y
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type xs= x2l*ctbl::m_ln2.h();
+    r += xs*r;
+    using fc_t = math::func_constants<double>;
+    r= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), r);
+    return r;
+#endif
+}
 
 template <typename _T>
 inline
@@ -730,6 +846,49 @@ exp10_k(arg_t<vf_type> x, bool exp_m1)
         y=__exp_k<false>(xrh, xrl, kf, k2);
     return y;
 }
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+exp10_mx2_k(arg_t<vf_type> xc)
+{
+    // this implementation produces +-1 ulp but is not
+    // faithfully rounded
+    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
+    vf_type sx2h=-x2h;
+    vf_type r= exp10_k(sx2h, false);
+    // f(x) := 10^(x+y);
+    // f(x) ~ 10^x + 2^x log(10) y
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type xs=x2l*ctbl::m_ln10.h();
+    r -= xs*r;
+    using fc_t = math::func_constants<double>;
+    r= _T::sel(sx2h <= fc_t::exp10_lo_zero(), vf_type(0), r);
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+exp10_px2_k(arg_t<vf_type> xc)
+{
+    // this implementation produces +-1 ulp but is not
+    // faithfully rounded
+    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
+    vf_type r= exp10_k(x2h, false);
+    // f(x) := 2^(x+y);
+    // f(x) ~ 2^x + 2^x log(2) y
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    x2l *= r;
+    x2l *= ctbl::m_ln10.h();
+    r += x2l;
+    using fc_t = math::func_constants<double>;
+    r= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), r);
+    return r;
+}
+
 
 template <typename _T>
 inline
@@ -2417,155 +2576,6 @@ cbrt_k(arg_t<vf_type> xc)
     return mm;
 }
 
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<double, _T>::vf_type
-cftal::math::elem_func_core<double, _T>::
-exp_mx2_k(arg_t<vf_type> xc)
-{
-    vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, -xc);
-    vf_type xrh, xrl, kf;
-    auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
-    vf_type y= __exp_k<false>(xrh, xrl, kf, k);
-    using fc_t = math::func_constants<double>;
-    y= _T::sel(x2h <= fc_t::exp_lo_zero(), vf_type(0), y);
-    return y;
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<double, _T>::vf_type
-cftal::math::elem_func_core<double, _T>::
-exp_px2_k(arg_t<vf_type> xc)
-{
-    vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, xc);
-    vf_type xrh, xrl, kf;
-    auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
-    vf_type y= __exp_k<false>(xrh, xrl, kf, k);
-    using fc_t = math::func_constants<double>;
-    y= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), y);
-    return y;
-}
-
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<double, _T>::vf_type
-cftal::math::elem_func_core<double, _T>::
-exp2_mx2_k(arg_t<vf_type> xc)
-{
-#if 1
-    vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, -xc);
-
-    vf_type kf = rint(vf_type(x2h));
-    vi_type k = _T::cvt_f_to_i(kf);
-    vi2_type k2= _T::vi_to_vi2(k);
-    vf_type xrh, xrl;
-    d_ops::add122(xrh, xrl, -kf, x2h, x2l);
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
-    vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
-    using fc_t = math::func_constants<double>;
-    y= _T::sel(x2h <= fc_t::exp2_lo_zero(), vf_type(0), y);
-    return y;
-#else
-    // this implementation produces +-1 ulp but is not
-    // faithfully rounded
-    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
-    vf_type sx2h=-x2h;
-    vf_type r= exp2_k(sx2h, false);
-    // f(x) := 2^(x+y);
-    // f(x) ~ 2^x + 2^x log(2) y
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type xs= x2l*ctbl::m_ln2.h();
-    r -= xs*r;
-    using fc_t = math::func_constants<double>;
-    r= _T::sel(sx2h <= fc_t::exp2_lo_zero(), vf_type(0), r);
-    return r;
-#endif
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<double, _T>::vf_type
-cftal::math::elem_func_core<double, _T>::
-exp2_px2_k(arg_t<vf_type> xc)
-{
-#if 1
-    vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, xc);
-
-    vf_type kf = rint(vf_type(x2h));
-    vi_type k = _T::cvt_f_to_i(kf);
-    vi2_type k2= _T::vi_to_vi2(k);
-    vf_type xrh, xrl;
-    d_ops::add122(xrh, xrl, -kf, x2h, x2l);
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
-    vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
-    using fc_t = math::func_constants<double>;
-    y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
-    return y;
-#else
-    // this implementation produces +-1 ulp but is not
-    // faithfully rounded
-    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
-    vf_type r= exp2_k(x2h, false);
-    // f(x) := 2^(x+y);
-    // f(x) ~ 2^x + 2^x log(2) y
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type xs= x2l*ctbl::m_ln2.h();
-    r += xs*r;
-    using fc_t = math::func_constants<double>;
-    r= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), r);
-    return r;
-#endif
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<double, _T>::vf_type
-cftal::math::elem_func_core<double, _T>::
-exp10_mx2_k(arg_t<vf_type> xc)
-{
-    // this implementation produces +-1 ulp but is not
-    // faithfully rounded
-    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
-    vf_type sx2h=-x2h;
-    vf_type r= exp10_k(sx2h, false);
-    // f(x) := 10^(x+y);
-    // f(x) ~ 10^x + 2^x log(10) y
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type xs=x2l*ctbl::m_ln10.h();
-    r -= xs*r;
-    using fc_t = math::func_constants<double>;
-    r= _T::sel(sx2h <= fc_t::exp10_lo_zero(), vf_type(0), r);
-    return r;
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<double, _T>::vf_type
-cftal::math::elem_func_core<double, _T>::
-exp10_px2_k(arg_t<vf_type> xc)
-{
-    // this implementation produces +-1 ulp but is not
-    // faithfully rounded
-    vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
-    vf_type r= exp10_k(x2h, false);
-    // f(x) := 2^(x+y);
-    // f(x) ~ 2^x + 2^x log(2) y
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    x2l *= r;
-    x2l *= ctbl::m_ln10.h();
-    r += x2l;
-    using fc_t = math::func_constants<double>;
-    r= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), r);
-    return r;
-}
 
 // Local Variables:
 // mode: c++
