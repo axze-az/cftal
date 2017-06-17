@@ -606,7 +606,6 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                          exp_c4);
     vf_type y=i*xrh + j;
     y = impl::poly(xrh, y, exp_c3, exp_c2);
-
     vf_type ye;
     impl::eft_poly(y, ye, xrh, y, exp_c1);
     // calculate expm1/xrh for correction term
@@ -622,11 +621,16 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = __scale_exp_k(vf_type(0.5), kf, k2);
         // e^x-1 = 2*(y * 2^s - 0.5)
+#if 1
         impl::eft_poly_si(y, ye, scale, y, ye, vf_type(-0.5));
+#else
+        d_ops::mul122(y, ye, scale, y, ye);
+        d_ops::add122cond(y, ye, vf_type(-0.5), y, ye);
+#endif
         y *= 2;
         y  = y + 2*ye;
         // x small, required for handling of subnormal numbers
-        y = _T::sel((abs(xrh) < 0x1p-54) & (kf==0.0), xrh, y);
+        y = _T::sel((abs(xrh) < 0x1p-512) & (kf==0.0), xrh, y);
     }
     return y;
 }
@@ -666,9 +670,9 @@ __reduce_exp_arg(vf_type& xrh,
     vf_type neg_kfln2h, neg_kfln2l;
     d_ops::mul122(neg_kfln2h, neg_kfln2l,
                   kf, -ctbl::m_ln2.h(), -ctbl::m_ln2.l());
-    d_ops::add22(xrh, xrl,
-                 xh, xl,
-                 neg_kfln2h, neg_kfln2l);
+    d_ops::add22cond(xrh, xrl,
+                     xh, xl,
+                     neg_kfln2h, neg_kfln2l);
     vi_type k= _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);
     return k2;
@@ -837,6 +841,27 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp10_mx2_k(arg_t<vf_type> xc)
 {
+#if 1
+    vf_type x2h, x2l;
+    d_ops::mul12(x2h, x2l, xc, -xc);
+
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type kf = rint(vf_type(x2h*ctbl::m_1_ld2.h()));
+    vi_type k = _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
+    vf_type neg_kfln10h, neg_kfln10l;
+    d_ops::mul122(neg_kfln10h, neg_kfln10l,
+                  kf, -ctbl::m_ld2.h(), -ctbl::m_ld2.l());
+    vf_type xrh, xrl;
+    d_ops::add22cond(xrh, xrl,
+                     x2h, x2l,
+                     neg_kfln10h, neg_kfln10l);
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10.h(), ctbl::m_ln10.l());
+    vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel(x2h <= fc_t::exp10_lo_zero(), vf_type(0), y);
+    return y;
+#else
     // this implementation produces +-1 ulp but is not
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
@@ -850,6 +875,7 @@ exp10_mx2_k(arg_t<vf_type> xc)
     using fc_t = math::func_constants<double>;
     r= _T::sel(sx2h <= fc_t::exp10_lo_zero(), vf_type(0), r);
     return r;
+#endif
 }
 
 template <typename _T>
@@ -858,6 +884,27 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp10_px2_k(arg_t<vf_type> xc)
 {
+#if 1
+    vf_type x2h, x2l;
+    d_ops::mul12(x2h, x2l, xc, xc);
+
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type kf = rint(vf_type(x2h*ctbl::m_1_ld2.h()));
+    vi_type k = _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
+    vf_type neg_kfln10h, neg_kfln10l;
+    d_ops::mul122(neg_kfln10h, neg_kfln10l,
+                  kf, -ctbl::m_ld2.h(), -ctbl::m_ld2.l());
+    vf_type xrh, xrl;
+    d_ops::add22cond(xrh, xrl,
+                     x2h, x2l,
+                     neg_kfln10h, neg_kfln10l);
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10.h(), ctbl::m_ln10.l());
+    vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel(x2h <= fc_t::exp10_lo_zero(), vf_type(0), y);
+    return y;
+#else
     // this implementation produces +-1 ulp but is not
     // faithfully rounded
     vf_type x2l, x2h=d_ops::two_prod(xc, xc, x2l);
@@ -871,6 +918,7 @@ exp10_px2_k(arg_t<vf_type> xc)
     using fc_t = math::func_constants<double>;
     r= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), r);
     return r;
+#endif
 }
 
 

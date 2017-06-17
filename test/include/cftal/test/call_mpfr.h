@@ -91,6 +91,13 @@ namespace cftal {
             // return 2^(-x*x) with precision bits
             int
             exp2_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
+            // return 10^(x*x) with precision bits
+            int
+            exp10_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+            // return 10^(-x*x) with precision bits
+            int
+            exp10_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
         }
 
         template <std::size_t _B>

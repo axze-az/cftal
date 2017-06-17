@@ -503,3 +503,87 @@ exp2_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
              (inexact_exp2_mx2_1 <= 0 && inexact_exp2_mx2_2 >=0)));
     return inexact_exp2_mx2_1;
 }
+
+int
+cftal::test::mpfr_ext::
+exp10_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
+{
+    mpfr_prec_t tgt_prec=mpfr_get_prec(res);
+    fpn_handle t(tgt_prec);
+    fpn_handle u(tgt_prec);
+    int inexact_sqr = ~0;
+    int inexact_exp10_px2_1 = ~0;
+    int inexact_exp10_px2_2 = ~0;
+    mpfr_prec_t prec_inc=16;
+    switch (tgt_prec) {
+    case 24:
+        prec_inc=16;
+        mpfr_set_prec(t(), 32);
+        break;
+    case 53:
+        prec_inc=32;
+        mpfr_set_prec(t(), 64);
+        break;
+    default:
+        break;
+    }
+    do {
+        inexact_sqr= mpfr_sqr(t(), x, MPFR_RNDD);
+        inexact_exp10_px2_1 = exp10(res, t(), rm);
+        if (inexact_sqr == 0) {
+            break;
+        }
+        // round up x^2 to the next larger number
+        mpfr_nextabove(t());
+        // and repeat the exponentiation
+        inexact_exp10_px2_2 = exp10(u(), t(), rm);
+        mpfr_set_prec(t(), t.prec()+prec_inc);
+    } while (!mpfr_equal_or_nan(u(), res) &&
+             ((inexact_exp10_px2_1 >= 0 && inexact_exp10_px2_2 <=0) ||
+             (inexact_exp10_px2_1 <= 0 && inexact_exp10_px2_2 >=0)));
+    return inexact_exp10_px2_1;
+}
+
+int
+cftal::test::mpfr_ext::
+exp10_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
+{
+    mpfr_prec_t tgt_prec=mpfr_get_prec(res);
+    fpn_handle n(mpfr_get_prec(x));
+    fpn_handle t(tgt_prec);
+    fpn_handle u(tgt_prec);
+    int inexact_mul = ~0;
+    int inexact_exp10_mx2_1 = ~0;
+    int inexact_exp10_mx2_2 = ~0;
+    mpfr_prec_t prec_inc=16;
+    switch (tgt_prec) {
+    case 24:
+        prec_inc=16;
+        mpfr_set_prec(t(), 32);
+        mpfr_set_prec(n(), 32);
+        break;
+    case 53:
+        prec_inc=32;
+        mpfr_set_prec(t(), 64);
+        mpfr_set_prec(n(), 64);
+        break;
+    default:
+        break;
+    }
+    mpfr_neg(n(), x, MPFR_RNDN);
+    do {
+        inexact_mul= mpfr_mul(t(), x, n(), MPFR_RNDD);
+        inexact_exp10_mx2_1 = exp10(res, t(), rm);
+        if (inexact_mul == 0) {
+            break;
+        }
+        // round up x^2 to the next larger number
+        mpfr_nextabove(t());
+        // and repeat the exponentiation
+        inexact_exp10_mx2_2 = exp10(u(), t(), rm);
+        mpfr_set_prec(t(), t.prec()+prec_inc);
+    } while (!mpfr_equal_or_nan(u(), res) &&
+             ((inexact_exp10_mx2_1 >= 0 && inexact_exp10_mx2_2 <=0) ||
+             (inexact_exp10_mx2_1 <= 0 && inexact_exp10_mx2_2 >=0)));
+    return inexact_exp10_mx2_1;
+}
