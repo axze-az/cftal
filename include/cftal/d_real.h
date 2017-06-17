@@ -218,6 +218,11 @@ namespace cftal {
 
             static
             void
+            add122cond(_T& zh, _T& zl,
+                       const _T& a, const _T& bh, const _T& bl);
+
+            static
+            void
             add212(_T& zh, _T& zl,
                    const _T& ah, const _T& al, const _T& b);
 
@@ -688,6 +693,19 @@ add122(_T& zh, _T& zl,
 {
     _T _t1, _t2, _t3;
     add12(_t1,_t2, a, bh);
+    _t3 = _t2 + (bl);
+    add12(zh, zl,_t1,_t3);
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_common<_T>::
+add122cond(_T& zh, _T& zl,
+           const _T& a, const _T& bh, const _T& bl)
+{
+    _T _t1, _t2, _t3;
+    add12cond(_t1,_t2, a, bh);
     _t3 = _t2 + (bl);
     add12(zh, zl,_t1,_t3);
 }
