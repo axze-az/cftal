@@ -621,7 +621,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     } else {
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = __scale_exp_k(vf_type(0.5), kf, k2);
-        // e^x-1 = 2*(y * 2^s - 0.5 * 2^s)
+        // e^x-1 = 2*(y * 2^s - 0.5)
         impl::eft_poly_si(y, ye, scale, y, ye, vf_type(-0.5));
         y *= 2;
         y  = y + 2*ye;
