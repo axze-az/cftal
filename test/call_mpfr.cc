@@ -195,7 +195,6 @@ call_ziv_func(mpfr_t yf, const mpfr_t x, mpfr_rnd_t rm, _F f)
     return r1;
 }
 
-
 int
 cftal::test::mpfr_ext::
 exp10(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
@@ -221,7 +220,7 @@ int
 cftal::test::mpfr_ext::
 exp2m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
 {
-#if 0
+#if 1
     auto f=[](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
         fpn_handle xln2(mpfr_get_prec(xx));
         fpn_handle ln2(mpfr_get_prec(xx));
