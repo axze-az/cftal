@@ -952,7 +952,6 @@ cftal::native_rsqrt(const vec<float, _N>& v)
     return r;
 }
 
-
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>

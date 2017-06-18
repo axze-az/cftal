@@ -554,14 +554,16 @@ rsqrt_k(arg_t<vf_type> x)
                          rsqrt_c1);
     vf_type mm= impl::poly(mm0, b, a);
 
-#if 1
+#if 0
     //mm = rint(vf_type(mm*0x1p8)) * 0x1p-8;
-    // mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
-    // mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
+    mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
+    mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
+    // mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
+    // mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
     mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
-    mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
-    mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
+    // --------^ a fma is required here 
     // ---------------------^ a fma is required here
+    // for faithful rounding
 #else
     for (int i=0; i<2; ++i) {
         // mm = mm + 0.5* mm * (1- mm0 * mm* mm);
