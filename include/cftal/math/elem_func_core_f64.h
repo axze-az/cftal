@@ -2651,45 +2651,31 @@ cbrt_k(arg_t<vf_type> xc)
     // do a division by 3
     // vi2_type e3 = (((e)*fac_1_3)>>shift_1_3) -(e>>31);
     // do a division by 3 rounded down
-    vi2_type e3 = (((e+3*_T::bias())*fac_1_3)>>shift_1_3) -(_T::bias());
-    vi2_type r = e - e3 - (e3+e3);
-    vmf_type f_msk;
-    vmi2_type msk;
-    vf_type scale=1.0;
-    vi2_type c=0;
+    const vi2_type v_bias_3(3*_T::bias()), v_bias(_T::bias());
+    vi2_type e3 = (((e+v_bias_3)*fac_1_3)>>shift_1_3) - v_bias;
+    vi2_type r = e - e3 - (e3<<1);
 
-    msk = r == 1;
-    f_msk = _T::vmi2_to_vmf(msk);
-    scale = _T::sel(f_msk, 0.25, scale);
-    // c = _T::sel(msk, vi2_type(1), c);
+    vmi2_type msk = r == 1;
+    vmf_type f_msk = _T::vmi2_to_vmf(msk);
+    vf_type scale = _T::sel(f_msk, 0.25, 1.0);
 
     msk = r == 2;
     f_msk = _T::vmi2_to_vmf(msk);
     scale = _T::sel(f_msk, 0.5, scale);
-    // c = _T::sel(msk, vi2_type(1), c);
-    c = _T::sel(r != 0, vi2_type(1), c);
+
+    vi2_type c=_T::sel(r != 0, vi2_type(1), vi2_type(0));
 #if 0
     msk = r == -1;
     f_msk = _T::vmi2_to_vmf(msk);
     scale = _T::sel(f_msk, 0.5, scale);
-    c = _T::sel(msk, vi2_type(1), c);
 
     msk = r == -2;
     f_msk = _T::vmi2_to_vmf(msk);
     scale = _T::sel(f_msk, 0.25, scale);
-    c = _T::sel(msk, vi2_type(1), c);
 #endif
     mm0 = mm0 * scale;
     vi2_type e3c = e3+c;
 
-#if 0
-    std::cout << "x= "<< xc
-              << "mm0= " << mm0
-              << " e=" << e
-              << " e3c=" << e3c
-              << " r= " << r
-              << std::endl;
-#endif
 #else
     // m in [0.5, 1)
     const divisor<vi2_type, int32_t> idiv3(3);
