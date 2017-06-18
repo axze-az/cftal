@@ -2642,6 +2642,7 @@ cbrt_k(arg_t<vf_type> xc)
 {
     vf_type xp=abs(xc);
 #if 1
+    // reduce x into [2^-3, 1.0)
     const int32_t shift_1_3 = 13;
     const int32_t fac_1_3 = ((1<<shift_1_3)+2)/3;
 
@@ -2663,7 +2664,6 @@ cbrt_k(arg_t<vf_type> xc)
     f_msk = _T::vmi2_to_vmf(msk);
     scale = _T::sel(f_msk, 0.5, scale);
 
-    vi2_type c=_T::sel(r != 0, vi2_type(1), vi2_type(0));
 #if 0
     msk = r == -1;
     f_msk = _T::vmi2_to_vmf(msk);
@@ -2674,7 +2674,7 @@ cbrt_k(arg_t<vf_type> xc)
     scale = _T::sel(f_msk, 0.25, scale);
 #endif
     mm0 = mm0 * scale;
-    vi2_type e3c = e3+c;
+    vi2_type e3c=_T::sel(r != 0, e3+1, e3);
 
 #else
     // m in [0.5, 1)
