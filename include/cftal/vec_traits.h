@@ -294,7 +294,7 @@ namespace cftal {
 
             static
             vi_type vi2_even_to_vi(const vi2_type& r) {
-                vi_type t=odd_elements(r);
+                vi_type t=even_elements(r);
                 return t;
             }
 

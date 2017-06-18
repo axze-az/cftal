@@ -438,14 +438,15 @@ rsqrt_k(arg_t<vf_type> x)
 #if 1
     vi_type e;
     vf_type mm0=frexp(x, &e);
-    vmi_type msk = vi_type(e & 1) == 1;
+    vi_type e1= e & 1;
+    vmi_type msk = e1 == 1;
     // const divisor<vi_type, int32_t> idiv2(2);
     // vi_type e2= e / idiv2;
     // correction of the exponent only required for positve e
     // because of the signed division above
     // vi_type e2c= _T::sel(msk & vmi_type (e>0), e2+1, e2);
     vi_type e2 = e>>1;
-    vi_type e2c= _T::sel(msk, e2+1, e2);
+    vi_type e2c= e2 + e1; // _T::sel(msk, e2+1, e2);
     vmf_type f_msk = _T::vmi_to_vmf(msk);
     mm0 = _T::sel(f_msk, mm0*0.5, mm0);
 #else

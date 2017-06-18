@@ -106,31 +106,8 @@ int main(int argc, char** argv)
 
     std::cout << std::setprecision(12);
 
-    vec<f32_t, 1> x=0.50001;
-    vec<int32_t, 1> e;
-    vec<f32_t, 1> y=frexp(x, &e);
-    f32_t eb=ilogb(x())+1;
-    std::cout << x << ' ' << y << ' ' << e << std::endl;
-    std::cout << x << ' ' << eb << std::endl;
-
-    x=0.250001;
-    y=frexp(x, &e);
-    eb=ilogb(x())+1;
-    std::cout << x << ' ' << y << ' ' << e << std::endl;
-    std::cout << x << ' ' << eb << std::endl;
-
-    x=0.1250001;
-    y=frexp(x, &e);
-    eb=ilogb(x())+1;
-    std::cout << x << ' ' << y << ' ' << e << std::endl;
-    std::cout << x << ' ' << eb << std::endl;
-
-    x=0.367879;
-    y=frexp(x, &e);
-    eb=ilogb(x())+1;
-    std::cout << x << ' ' << y << ' ' << e << std::endl;
-    std::cout << x << ' ' << eb << std::endl;
-
-
-
+    vec<f64_t, 1> x=1.0;
+    vec<f64_t, 1> y=rsqrt(x);
+    std::cout << x << ' ' << y <<  std::endl;
+    return 0;
 }
