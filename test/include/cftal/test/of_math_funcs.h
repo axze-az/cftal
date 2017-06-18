@@ -208,9 +208,9 @@ cftal::test::check_func_2(const std::vector<func_arg_result<_T> >& v,
         _T expected = vi.res();
         vec_type va0=a0;
         vec_type va1=a1;
-        int64_t t0, t1, t2;
+        int64_t t1, t2;
 #if 0
-        t0= cftal::rdtsc();
+        int64_t t0= cftal::rdtsc();
         _T res = _F::s(a0, a1);
 #endif
         t1= cftal::rdtsc();
