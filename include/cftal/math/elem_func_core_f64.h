@@ -692,8 +692,8 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                          exp_c8,
                          exp_c6,
                          exp_c4);
-    vf_type y=i*xrh + j;
-    y = impl::poly(xrh, y, exp_c3, exp_c2);
+    vf_type y=impl::poly(xrh, i, j,
+                         exp_c3, exp_c2);
     vf_type ye;
     impl::eft_poly(y, ye, xrh, y, exp_c1);
     // calculate expm1/xrh for correction term
