@@ -101,13 +101,13 @@ namespace cftal {
             auto
             r(const _T& a) {
                 std::pair<_T, _T> i;
-                _T v=call_mpfr::func(a, mpfr_exp, &i);
+                _T v=call_mpfr::func(a, mpfr_expm1, &i);
                 return std::make_tuple(v, i.first, i.second);
             }
             static
             _T
             s(const _T& a) {
-                return std::exp(a);
+                return std::expm1(a);
             }
             static
             const char* fname() { return "func"; }
@@ -154,9 +154,24 @@ cftal::math::test_func<float, _T>::func_k(arg_t<vf_type> xc)
                           native_exp_c4,
                           native_exp_c2);
     vf_type y= impl::poly(xrh, j, i);
-    y= impl::poly(xrh, y, native_exp_c0);
     // y = impl::poly(xrh, y, native_exp_c0);
+#if EXP
+    y= impl::poly(xrh, y, native_exp_c0);
     y = __scale_exp_k(y, kf, k);
+#else
+    vf_type yl=y;
+    vf_type yee= xrl + xrl*xrh*yl;
+
+    vf_type ye;
+    impl::eft_poly(y, ye, xrh, y, native_exp_c0);
+    ye += yee;
+    vf_type scale = __scale_exp_k(vf_type(0.5f), kf, k);
+    impl::eft_poly_si(y, ye, scale, y, ye, vf_type(-0.5f));
+    y *= 2;
+    y  = y + 2*ye;
+    // x small
+    y = _T::sel((abs(xrh) < 0x1p-25f) & (kf==0.0), xrh, y);
+#endif
     return y;
 #endif
 }
@@ -166,6 +181,7 @@ typename cftal::math::test_func<float, _T>::vf_type
 cftal::math::test_func<float, _T>::
 func(arg_t<vf_type> d)
 {
+#if EXP
     vf_type res=func_k(d);
     using fc= func_constants<float>;
     const vf_type exp_hi_inf= fc::exp_hi_inf();
@@ -175,6 +191,17 @@ func(arg_t<vf_type> d)
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, M_E, res);
     return res;
+#else
+    vf_type res = func_k(d);
+    using fc= func_constants<float>;
+    const vf_type expm1_hi_inf= fc::expm1_hi_inf();
+    const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one();
+    res = _T::sel(d <= expm1_lo_minus_one, -1.0, res);
+    res = _T::sel(d >= expm1_hi_inf, _T::pinf(), res);
+    res = _T::sel(d == 0.0, 0.0, res);
+    res = _T::sel(d == 1.0, M_E-1.0, res);
+    return res;
+#endif
 }
 
 
@@ -183,7 +210,7 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    const int ulp=256;
+    const int ulp=4;
     const int _N=16;
     bool rc=true;
     bool speed_only=false;
@@ -199,12 +226,18 @@ int main(int argc, char** argv)
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
     d=std::make_pair(-104.0f, 89.0f);
+    d=std::make_pair(-18.0f, 89.0f);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         ftype, _N, check_func<ftype> >::v(st, d, speed_only,
                                           cmp_ulp<ftype>(ulp, us),
                                           cnt);
+    d=std::make_pair(-0x1p-4, 0x1p-4);
+    rc &= of_fp_func_up_to<
+        ftype, _N, check_func<ftype> >::v(st, d, speed_only,
+                                           cmp_ulp<ftype>(ulp, us),
+                                           cnt>>2);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
