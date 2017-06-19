@@ -41,7 +41,7 @@ templates, recursion and specialization:
   implementations
 \item Expression templates are used for operations on the short
   vectors. This allows the filtering for special operation patterns,
-  for instance generation of fused multiply add intrinsics from
+  for instance generation of fused multiply and add intrinsics from
   expressions like $ c= a* b + c $. More optimizations are possible,
   but not (yet) implemented.
 \end{itemize}
@@ -133,15 +133,35 @@ cftal::func(const vec<_T, _N>& x)
 recursively, where \textbf{func} is the name of the
 function to construct.\\[10pt]
 %
-All polynomial approximations are produced using sollya
-\cite{ChevillardJoldesLauter2010}.
+To suppress the generation of fused multiply and add instruction
+in expressions like
+\begin{lstlisting}
+vec<double, 2> r0= a * b + c;
+vec<double, 2> r1= a * b - c;
+vec<double, 2> r2= c - a * b;
+\end{lstlisting}
+the result of the multiplication should be assigned to a (temporary)
+variable
+\begin{lstlisting}
+vec<double, 2> t=a*b;
+vec<double, 2> r1= t + c;
+vec<double, 2> r2= t - c;
+vec<double, 2> r3= c - t ;
+\end{lstlisting}
+which breaks the expression tree and avoids the generation of these
+instructions.\\[10pt]
+%
+The polynomial approximations used in the implemented functions
+are produced using sollya \cite{ChevillardJoldesLauter2010}.
 
-\pagebreak
 \subsection{List of functions and precisions}
 \label{sub_sec:func_list}
 The tables in this section contain the list of implemented functions and
 their measured maximium deviations against the corresponding functions
-from the mpfr library. The column about faithfully rounding describes if faithfully rounding was observed using a test data set.
+from the mpfr library. The column about faithfully rounding describes if faithfully rounding was observed using a test data set.\\
+%
+Functions with names like native\_xxx implement the function xxx with
+reduced precision or range or both.
 %
 \subsubsection{support functions}
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
@@ -256,7 +276,12 @@ The sqrt function uses the hardware instruction provided by modern processors.
     erf & $\pm$ 1 & y  & $\pm$ 1 & n \\
     \hline
 \end{tabular}\\[10pt]
-The function exp2m1 and expm10 calculate $2^x-1$ and $10^x-1$.
+The function exp2m1 and expm10 calculate $2^x-1$ and $10^x-1$ respectively.
+
+
+\subsection{Algorithms}
+
+TODO
 
 double argument identity for exponential functions:
 \[
