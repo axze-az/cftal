@@ -30,7 +30,6 @@ short vector is vector with up to 64 elements.
 
 The design principles of the short vector library are
 templates, recursion and specialization:
-
 \begin{itemize}
 \item A vector of length $N$ contains two vectors of length $N/2$
   (this also forces the library to vector lengths of powers of 2).
@@ -50,12 +49,17 @@ templates, recursion and specialization:
 \section{Base components}
 \label{sec:base}
 
-All short vectory library code is grouped around the class
+All short vectory library code is grouped around the recursive template
+class
 \begin{lstlisting}
 template <typename _T, std::size_t _N> vec<_T, _N>;
 \end{lstlisting}
 where $\_T$ is the type and $\_N$ the number of the elements of the
-vector.\\
+vector. The partial specialized template class
+\begin{lstlisting}
+template <typename _T> vec<_T, 1>;
+\end{lstlisting}
+is defined to stop the recursion.
 %
 A vector of length $N$ may be constructed from
 \begin{itemize}
@@ -74,14 +78,20 @@ template <typename _T, std::size_t _N>
 const typename vec<_T, _N>::half_type&
 high_half(const vec<_T, _N>& v);
 \end{lstlisting}
-The most arithmetic operations are defined on all vectors.\\
-%
+The most arithmetic operations are defined on all types of vectors.
 Logical operations on vectors return either a bit mask or a vector of
 the same type as the operands. The choice of a bit mask (a vector of
 bits) or the same type depends on the machine -- machines with
 hardware bit mask should use a bit mask (this means, that on x86 the
 type of the result of logical operations depends on the existence of
-the 512 bit AVX vector extensions).
+the 512 bit AVX vector extensions). \\[10pt]
+%
+A large number of functions exist only for vector classes of the
+two floating point types double (binary64) and float (binary32).\\
+The file \texttt{include/cftal/vec\_double\_n.h} declares the functions
+for vectors of binary64 and also contains inline implementation of
+the most functions, the file \texttt{include/cftal/vec\_float\_n.h} contains
+the corresponding float functions and their implementations.
 
 \section{Vector Math Library}
 \label{sec:vec_math_lib}
@@ -101,13 +111,15 @@ library. Therefore the copyright of the sun libm source codes
  * ====================================================
  */
 \end{verbatim}
-applies.
-
-Functions for vector length from 1 to 8 are implemented as direct
-instantiations of the template code in \texttt{include/cftal/math/elem\_func.h}
+applies.\\[10pt]
+%
+Functions for vector lengths from 1 to 8 for binary64 and binary32 are implemented as direct instantiations of the template code in
+\texttt{include/cftal/math/elem\_func.h}
 and in \texttt{include/cftal/math/spec\_func.h}
 using the macros in \texttt{src/vec\_def\_math\_functions.h}.
-Functions for greater vector lengths are constructed using the template
+The binary32 functions are additionally instantiated for vector length 16.
+%%
+Vector functions with greater length are constructed using the template
 \begin{lstlisting}
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N>
@@ -118,35 +130,83 @@ cftal::func(const vec<_T, _N>& x)
     return r;
 }
 \end{lstlisting}
-recursively, where \textbf{func} is the name of the function to construct.\\
+recursively, where \textbf{func} is the name of the
+function to construct.\\[10pt]
 %
 All polynomial approximations are produced using sollya
-(\cite{ChevillardJoldesLauter2010}).
+\cite{ChevillardJoldesLauter2010}.
 
 \pagebreak
 \subsection{List of functions and precisions}
 \label{sub_sec:func_list}
-The following table contains the list of functions and their measured maximium
-deviations against the corresponding functions from the mpfr library. The
-column about faithfully rounding describes if faithfully rounding was observed
-using the test data set.\\[1cm]
+The tables in this section contain the list of implemented functions and
+their measured maximium deviations against the corresponding functions
+from the mpfr library. The column about faithfully rounding describes if faithfully rounding was observed using a test data set.
+%
+\subsubsection{support functions}
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
-    \hline \hline
+    \hline
      &
     \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
     \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
     \hline
     function & $\Delta$ ulp & (prob.) faithfully &
           $\Delta$ ulp & (prob.) faithfully \\
-    \hline \hline
+    \hline
     ldexp & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
     \hline
     frexp & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
     \hline
     ilogb & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
-    \hline \hline
+    \hline
+    isnan & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    isinf & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    isfinite & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    copysign & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    abs/fabs & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    floor & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    ceil & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    trunc & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+    rint & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
+\end{tabular}\\[10pt]
+All these functions behave as their counterparts in the std namespace.
+
+\subsubsection{root and inverse root functions}
+\begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
+    \hline
+     &
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
+    \hline
+    function & $\Delta$ ulp & (prob.) faithfully &
+          $\Delta$ ulp & (prob.) faithfully \\
+    \hline
+    rsqrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
     cbrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
-    \hline \hline
+    \hline
+\end{tabular}\\[10pt]
+The sqrt function uses the hardware instruction provided by modern processors.
+
+\subsubsection{elementary functions and erf}
+\begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
+    \hline
+     &
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
+    \hline
+    function & $\Delta$ ulp & (prob.) faithfully &
+          $\Delta$ ulp & (prob.) faithfully \\
+    \hline
     exp & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
     expm1 & $\pm$ 1 & y  & $\pm$ 1 & y \\
@@ -195,8 +255,8 @@ using the test data set.\\[1cm]
     \hline \hline
     erf & $\pm$ 1 & y  & $\pm$ 1 & n \\
     \hline
-
-\end{tabular}
+\end{tabular}\\[10pt]
+The function exp2m1 and expm10 calculate $2^x-1$ and $10^x-1$.
 
 double argument identity for exponential functions:
 \[
