@@ -2681,7 +2681,7 @@ cbrt_k(arg_t<vf_type> xc)
     msk = r == 2;
     f_msk = _T::vmi2_to_vmf(msk);
     scale = _T::sel(f_msk, 0.5, scale);
-
+#if 0
     msk = r == -1;
     f_msk = _T::vmi2_to_vmf(msk);
     scale = _T::sel(f_msk, 0.5, scale);
@@ -2689,6 +2689,7 @@ cbrt_k(arg_t<vf_type> xc)
     msk = r == -2;
     f_msk = _T::vmi2_to_vmf(msk);
     scale = _T::sel(f_msk, 0.25, scale);
+#endif
 #endif
     mm0 = mm0 * scale;
 

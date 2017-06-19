@@ -87,6 +87,7 @@ namespace cftal {
             using base_type::ldexp;
             using base_type::ilogb;
             using base_type::ilogbp1;
+
             // calls cbrt_k
             static
             vf_type
