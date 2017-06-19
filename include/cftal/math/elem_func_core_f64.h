@@ -2651,11 +2651,29 @@ cbrt_k(arg_t<vf_type> xc)
     e=copy_odd_to_even(e);
     // do a division by 3
     // vi2_type e3 = (((e)*fac_1_3)>>shift_1_3) -(e>>31);
-    // do a division by 3 rounded down
+    // do a division by 3 rounded to - infinity
     const vi2_type v_bias_3(3*_T::bias()), v_bias(_T::bias());
-    vi2_type e3 = (((e+v_bias_3)*fac_1_3)>>shift_1_3) - v_bias;
+    vi2_type e3_with_bias = (((e+v_bias_3)*fac_1_3)>>shift_1_3);
+    vi2_type e3 =e3_with_bias - v_bias;
+    // r is always in 0, 1, 2 because of the round down
     vi2_type r = e - e3 - (e3<<1);
 
+    // correction of mm0 in dependence of r
+    // r    scale   log_2(scale) r - 3
+    // 1    0.25    -2           -2
+    // 2    0.5     -1           -1
+    // 0    1.0     -0            0
+    // -1   0.5     -1           -4
+    // -2   0.25    -2           -5
+    vmi2_type r_ne_z = r != 0;
+    e3_with_bias=_T::sel(r_ne_z, e3_with_bias+1, e3_with_bias);
+#if 1
+    // log_2(scale) = bias + (r-3) = bias - 3 + r
+    const vi2_type v_bias_plus_3(_T::bias()-3);
+    vf_type scale = _T::insert_exp(v_bias_plus_3 + r);
+    vmf_type f_r_ne_z = _T::vmi2_to_vmf(r_ne_z);
+    scale = _T::sel(f_r_ne_z, scale, 1.0);
+#else
     vmi2_type msk = r == 1;
     vmf_type f_msk = _T::vmi2_to_vmf(msk);
     vf_type scale = _T::sel(f_msk, 0.25, 1.0);
@@ -2664,7 +2682,6 @@ cbrt_k(arg_t<vf_type> xc)
     f_msk = _T::vmi2_to_vmf(msk);
     scale = _T::sel(f_msk, 0.5, scale);
 
-#if 0
     msk = r == -1;
     f_msk = _T::vmi2_to_vmf(msk);
     scale = _T::sel(f_msk, 0.5, scale);
@@ -2674,7 +2691,6 @@ cbrt_k(arg_t<vf_type> xc)
     scale = _T::sel(f_msk, 0.25, scale);
 #endif
     mm0 = mm0 * scale;
-    vi2_type e3c=_T::sel(r != 0, e3+1, e3);
 
 #else
     // m in [0.5, 1)
@@ -2722,13 +2738,11 @@ cbrt_k(arg_t<vf_type> xc)
 #endif
     s= (mm*mm*mm-mm0)/mm0;
     mm = mm - mm * ((((14.0/81.0) * s -(2.0/9.0))*s)+1.0/3.0)*s;
-#if 1
+
     // no denormal results are possible
-    vf_type t= _T::insert_exp(_T::bias()+e3c);
+    // vf_type t= _T::insert_exp(_T::bias()+e3c);
+    vf_type t= _T::insert_exp(e3_with_bias);
     mm *=t;
-#else
-    mm = ldexp_k(mm, e3c);
-#endif
     mm = copysign(mm, xc);
     return mm;
 }
