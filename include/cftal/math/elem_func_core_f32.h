@@ -2033,7 +2033,7 @@ cbrt_k(arg_t<vf_type> xc)
     vf_type xp=abs(xc);
 
     // reduce x into [2^-3, 1.0)
-    const int32_t shift_1_3 = 13;
+    const int32_t shift_1_3 = 9;
     const int32_t fac_1_3 = ((1<<shift_1_3)+2)/3;
 
     vi_type e;
