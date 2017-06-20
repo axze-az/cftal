@@ -695,10 +695,10 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type y=impl::poly(xrh, i, j,
                          exp_c3, exp_c2);
     vf_type ye;
-    impl::eft_poly(y, ye, xrh, y, exp_c1);
+    impl::eft_quick_poly(y, ye, xrh, y, exp_c1);
     // calculate expm1/xrh for correction term
     vf_type yl=y+ye;
-    impl::eft_poly_si(y, ye, xrh, y, ye, exp_c0);
+    impl::eft_quick_poly_si(y, ye, xrh, y, ye, exp_c0);
 #endif
     vf_type yee= xrl + xrl * xrh * yl;
     ye += yee;
@@ -709,12 +709,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = __scale_exp_k(vf_type(0.5), kf, k2);
         // e^x-1 = 2*(y * 2^s - 0.5)
-#if 1
         impl::eft_poly_si(y, ye, scale, y, ye, vf_type(-0.5));
-#else
-        d_ops::mul122(y, ye, scale, y, ye);
-        d_ops::add122cond(y, ye, vf_type(-0.5), y, ye);
-#endif
         y *= 2;
         y  = y + 2*ye;
         // x small, required for handling of subnormal numbers
@@ -1650,8 +1645,8 @@ __pow_exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
     vf_type yee= cr + cr*xr.h() + 0.5*cr*xx;
     vf_type ye;
     // y = impl::poly(xr.h(), y, exp_c1);
-    impl::eft_poly(y, ye, xr.h(), y,
-                   exp_c2, exp_c1, exp_c0);
+    impl::eft_quick_poly(y, ye, xr.h(), y,
+                         exp_c2, exp_c1, exp_c0);
     // y = d_ops::two_sum(y, exp_c2, ye);
     // impl::eft_poly_si(y, ye, xr, y, ye,
     //                  exp_c1,

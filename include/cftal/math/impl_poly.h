@@ -71,19 +71,20 @@ namespace cftal {
                     _CS... cs);
 
             // error free transformation of evaluation of polynomials
-            // setup step
+            // setup step, assumes nothing about |x*c1| and |c0|
             template <typename _X, typename _C1, typename _C0>
             void
             eft_poly_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0);
 
             // error free transformation of evaluation of polynomials
-            // next step
+            // next step, assumes nothing about |x*c1| and |c0|
             template <typename _X, typename _C1, typename _C0>
             void
             eft_poly_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
 
             // error free transformation of evaluation of polynomials
-            // recursive next steps
+            // recursive next steps,
+            // assumes nothing about |x*c_N| and |c_N-1|
             template <typename _X, typename _CN, typename _CNM1,
                       typename ... _CS>
             void
@@ -92,16 +93,54 @@ namespace cftal {
 
             // error free transformation of evaluation of polynomials
             // overload for degree 1
+            // assumes nothing about |x*c_1| and |c_0|
             template <typename _X, typename _CN, typename _CNM1>
             void
-            eft_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1);
+            eft_poly(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0);
 
             // error free transformation of evaluation of polynomials
+            // assumes nothing about x*c_N and c_N-1
             template <typename _X, typename _CN, typename _CNM1,
                       typename ... _CS>
             void
             eft_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
                      _CS... cs);
+
+            // error free transformation of evaluation of polynomials
+            // setup step, assumes |x*c1| < |c0|
+            template <typename _X, typename _C1, typename _C0>
+            void
+            eft_quick_poly_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0);
+
+            // error free transformation of evaluation of polynomials
+            // next step, assumes |x*c1| < |c0|
+            template <typename _X, typename _C1, typename _C0>
+            void
+            eft_quick_poly_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
+
+            // error free transformation of evaluation of polynomials
+            // recursive next steps,
+            // assumes |x*c_N| < |c_N-1|
+            template <typename _X, typename _CN, typename _CNM1,
+                      typename ... _CS>
+            void
+            eft_quick_poly_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
+                              _CNM1 cnm1, _CS... cs);
+
+            // error free transformation of evaluation of polynomials
+            // overload for degree 1
+            // assumes  |x*c_1| < |c_0|
+            template <typename _X, typename _CN, typename _CNM1>
+            void
+            eft_quick_poly(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0);
+
+            // error free transformation of evaluation of polynomials
+            // assumes |x*c_N| < |c_N-1|, |x*c_N_1| < |c_N-2| ..
+            template <typename _X, typename _CN, typename _CNM1,
+                      typename ... _CS>
+            void
+            eft_quick_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
+                           _CS... cs);
 
         }
     }
@@ -234,8 +273,10 @@ cftal::math::impl::eft_poly_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
-    y = d_ops::two_prod(c1, x, p_i);
-    y = d_ops::two_sum(y, c0, o_i);
+    // y = d_ops::two_prod(c1, x, p_i);
+    // y = d_ops::two_sum(y, c0, o_i);
+    d_ops::mul12(y, p_i, c1, x);
+    d_ops::add12cond(y, o_i, c0, y);
     ye= (p_i + o_i);
 }
 
@@ -245,8 +286,10 @@ cftal::math::impl::eft_poly_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
-    y = d_ops::two_prod(c1h, x, p_i);
-    y = d_ops::two_sum(y, c0, o_i);
+    // y = d_ops::two_prod(c1h, x, p_i);
+    // y = d_ops::two_sum(y, c0, o_i);
+    d_ops::mul12(y, p_i, c1h, x);
+    d_ops::add12cond(y, o_i, c0, y);
     ye= c1l*x + (p_i + o_i);
 }
 
@@ -265,9 +308,9 @@ eft_poly_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1, _CS ... cs)
 template <typename _X, typename _CN, typename _CNM1>
 void
 cftal::math::impl::
-eft_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1)
+eft_poly(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
 {
-    eft_poly_s0(y, ye, x, cn, cnm1);
+    eft_poly_s0(y, ye, x, c1, c0);
 }
 
 template <typename _X,
@@ -280,6 +323,67 @@ eft_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
     // const _X _y=y;
     // const _X _ye=ye;
     eft_poly_si(y, ye, x, y, ye, cs...);
+}
+
+template <typename _X, typename _C1, typename _C0>
+void
+cftal::math::impl::
+eft_quick_poly_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
+{
+    using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
+    _X p_i, o_i;
+    // y = d_ops::two_prod(c1, x, p_i);
+    // y = d_ops::two_sum(y, c0, o_i);
+    d_ops::mul12(y, p_i, c1, x);
+    d_ops::add12(y, o_i, c0, y);
+    ye= (p_i + o_i);
+}
+
+template <typename _X, typename _C1, typename _C0>
+void
+cftal::math::impl::
+eft_quick_poly_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
+{
+    using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
+    _X p_i, o_i;
+    // y = d_ops::two_prod(c1h, x, p_i);
+    // y = d_ops::two_sum(y, c0, o_i);
+    d_ops::mul12(y, p_i, c1h, x);
+    d_ops::add12(y, o_i, c0, y);
+    ye= c1l*x + (p_i + o_i);
+}
+
+template <typename _X,
+          typename _CN, typename _CNM1, typename ... _CS>
+void
+cftal::math::impl::
+eft_quick_poly_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
+                  _CNM1 cnm1, _CS ... cs)
+{
+    eft_quick_poly_si(y, ye, x, cnh, cnl, cnm1);
+    // const _X _y=y;
+    // const _X _ye=ye;
+    eft_quick_poly_si(y, ye, x, y, ye, cs...);
+}
+
+template <typename _X, typename _CN, typename _CNM1>
+void
+cftal::math::impl::
+eft_quick_poly(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
+{
+    eft_quick_poly_s0(y, ye, x, c1, c0);
+}
+
+template <typename _X,
+          typename _CN, typename _CNM1, typename ... _CS>
+void
+cftal::math::impl::
+eft_quick_poly(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
+{
+    eft_quick_poly_s0(y, ye, x, cn, cnm1);
+    // const _X _y=y;
+    // const _X _ye=ye;
+    eft_quick_poly_si(y, ye, x, y, ye, cs...);
 }
 
 

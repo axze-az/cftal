@@ -551,10 +551,10 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                          exp_c4);
     vf_type y= impl::poly(xrh, i, j, exp_c3, exp_c2);
     vf_type ye;
-    impl::eft_poly(y, ye, xrh, y, exp_c1);
+    impl::eft_quick_poly(y, ye, xrh, y, exp_c1);
     // correction for errors in argument reduction
     vf_type yl=y+ye;
-    impl::eft_poly_si(y, ye, xrh, y, ye, exp_c0);
+    impl::eft_quick_poly_si(y, ye, xrh, y, ye, exp_c0);
     vf_type yee= xrl + xrl*xrh*yl;
     ye += yee;
     if (_EXP_M1 == false) {

@@ -196,7 +196,7 @@ namespace cftal {
             void
             add12cond(_T& s, _T& r, const _T& a, const _T& b);
 
-            // return (zh, zl) = (xh, xl) + (yh + yl)
+            // return (zh, zl) = (xh, xl) + (yh, yl)
             // |xh| > |yh|
             static
             void
@@ -204,40 +204,49 @@ namespace cftal {
                   const _T& xh, const _T& xl,
                   const _T& yh, const _T& yl);
 
-            // return (zh, zl) = (xh, xl) + (yh + yl)
+            // return (zh, zl) = (xh, xl) + (yh, yl)
             static
             void
             add22cond(_T& zh, _T& zl,
                       const _T& xh, const _T& xl,
                       const _T& yh, const _T& yl);
 
+            // return (zh, zl) = a + (bh, bl)
+            // with |a| > |bh|
             static
             void
             add122(_T& zh, _T& zl,
                    const _T& a, const _T& bh, const _T& bl);
 
+            // return (zh, zl) = a + (bh, bl)
             static
             void
             add122cond(_T& zh, _T& zl,
                        const _T& a, const _T& bh, const _T& bl);
 
+            // return (zh, zl) = (ah, bl) + b
+            // with |ah| > b
             static
             void
             add212(_T& zh, _T& zl,
                    const _T& ah, const _T& al, const _T& b);
 
+            // return (r,e) = a + b with |a| > |b|
             static
             _T
             quick_two_sum(const _T& a, const _T& b, _T& e);
 
+            // return (r,e) = a - b with |a| > |b|
             static
             _T
             quick_two_diff(const _T& a, const _T& b, _T& e);
 
+            // return (r,e) = a + b --> add12cond
             static
             _T
             two_sum(const _T& a, const _T& b, _T& e);
 
+            // return (r,e) = a - b --> add12cond(r, e, a, -b)
             static
             _T
             two_diff(const _T& a, const _T& b, _T& e);
