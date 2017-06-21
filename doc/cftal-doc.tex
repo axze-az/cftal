@@ -280,8 +280,24 @@ The function exp2m1 and expm10 calculate $2^x-1$ and $10^x-1$ respectively.
 
 
 \subsection{Algorithms}
+%
+%TODO
+%
+\subsubsection{roots}
+The cbrt function ($ y=\sqrt[3]{x} $) was implemented as discussed by
+W. Kahan in \cite{Kahan1991}.
 
-TODO
+Inverse square root, to calculate $ y = 1/\sqrt(x) $
+\begin{equation}
+        \begin{aligned}
+            y &= y_n \left( 1+ (x y_n^2 -1) \right)^{-1/2}
+             = y_n \sum_{k=0} \left({{-1/2}\atop{k}}\right) (x y_n^2 -1)^k \\
+             & = y_n \left( 1 + \frac{1}{2} (1 - x y_n^2 ) +
+                \frac{3}{8}(1- x y_n^2)^2 +
+                \frac{5}{16} (1-x y_n^2)^3 \dots
+                \right)
+        \end{aligned}
+\end{equation}
 
 double argument identity for exponential functions:
 \[
