@@ -556,10 +556,12 @@ rsqrt_k(arg_t<vf_type> x)
                          rsqrt_c1);
     vf_type mm= impl::poly(mm0, b, a);
 
-#if 0
-    mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
-    mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
-    mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
+#if 1
+    vf_type rr=1.0-mm*mm*mm0;
+    mm = mm + 0.5 * mm * rr + 3.0/8.0*mm*rr*rr + 5.0/16*mm*rr*rr*rr;
+    rr = rint(vf_type(mm*0x1p26))*0x1p-26;
+    rr = 1.0-mm*mm*mm0;
+    mm = mm + 0.5 * mm * rr + 3.0/8.0*mm*rr*rr + 5.0/16*mm*rr*rr*rr;
     // mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
     // mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
     // --------^ a fma is required here
