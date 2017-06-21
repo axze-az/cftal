@@ -556,7 +556,7 @@ rsqrt_k(arg_t<vf_type> x)
                          rsqrt_c1);
     vf_type mm= impl::poly(mm0, b, a);
 
-#if 1
+#if 0
     // this algorithm with fma produces a faithfully rounded rsqrt
     vf_type rr=1.0-mm*mm*mm0;
     mm = mm + 0.5 * mm*rr + 3.0/8.0*mm*rr*rr;
