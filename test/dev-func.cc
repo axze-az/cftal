@@ -133,6 +133,125 @@ namespace cftal {
 
 
     }
+
+    // native div
+    template <typename _T>
+    _T
+    native_div(_T a, _T b);
+
+    template <typename _T, std::size_t _N>
+    vec<_T, _N>
+    native_div(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+    template <typename _T>
+    vec<_T, 1>
+    native_div(const vec<_T, 1>& a, const vec<_T, 1>& b);
+
+    v1f32
+    native_div(const v1f32& a, const v1f32& b);
+
+    v2f32
+    native_div(const v2f32& a, const v2f32& b);
+
+    v4f32
+    native_div(const v4f32& a, const v4f32& b);
+
+    v8f32
+    native_div(const v8f32& a, const v8f32& b);
+}
+
+template <typename _T>
+_T
+cftal::native_div(_T a, _T b)
+{
+    return a/b;
+}
+
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N>
+cftal::native_div(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+    vec<_T, _N> r(native_div(low_half(a), low_half(b)),
+                  native_div(high_half(a), high_half(b)));
+    return r;
+}
+
+template <typename _T>
+cftal::vec<_T, 1>
+cftal::native_div(const vec<_T, 1>& a, const vec<_T, 1>& b)
+{
+    vec<_T, 1> r(native_div(a(), b()));
+    return r;
+}
+
+inline
+cftal::v1f32
+cftal::native_div(const v1f32& b, const v1f32& a)
+{
+#if defined (__SSE__)
+    v1f32 rcp=_mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(a())));
+    rcp = rcp + rcp*(1-rcp*a);
+    // goldstein iteration
+    v1f32 x= b*rcp;
+    v1f32 y= a*rcp;
+    v1f32 r= 2-y;
+    y= r*y;
+    v1f32 bda= r*x;
+    return bda;
+#else
+    return x/y;
+#endif
+}
+
+inline
+cftal::v2f32
+cftal::native_div(const v2f32& x, const v2f32& y)
+{
+#if defined (__SSE__)
+    v4f32 x4(x, x);
+    v4f32 y4(y, y);
+    return low_half(native_div(x4, y4));
+#else
+    return x/y;
+#endif
+}
+
+inline
+cftal::v4f32
+cftal::native_div(const v4f32& b, const v4f32& a)
+{
+#if defined (__SSE__)
+    v4f32 rcp=_mm_rcp_ps(a());
+    rcp = rcp + rcp*(1-rcp*a);
+    // goldstein iteration
+    v4f32 x= b*rcp;
+    v4f32 y= a*rcp;
+    v4f32 r= 2-y;
+    y= r*y;
+    v4f32 bda= r*x;
+    return bda;
+#else
+    return x/y;
+#endif
+}
+
+inline
+cftal::v8f32
+cftal::native_div(const v8f32& b, const v8f32& a)
+{
+#if defined (__AVX__)
+    v8f32 rcp=_mm256_rcp_ps(a());
+    rcp = rcp + rcp*(1-rcp*a);
+    // goldstein iteration
+    v8f32 x= b*rcp;
+    v8f32 y= a*rcp;
+    v8f32 r= 2-y;
+    y= r*y;
+    v8f32 bda= r*x;
+    return bda;
+#else
+    return a/b;
+#endif
 }
 
 template <typename _T>
@@ -159,7 +278,8 @@ __native_exp_k(arg_t<vf_type> xrh,
                                     exp_c4,
                                     exp_c2);
     vf_type y = xrl + xrl*xrh;
-    y += xrh*c/(2.0f-c) + xrh;
+    y += native_div(vf_type(xrh*c), vf_type(2.0f-c)) + xrh;
+    // y +=vf_type(xrh*c)/vf_type(2.0f-c) + xrh;
     y += 1.0f;
     // y = ldexp(y, k);
     y= __scale_exp_k(y, kf, k);
