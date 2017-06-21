@@ -557,18 +557,18 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type mm= impl::poly(mm0, b, a);
 
 #if 1
+    // this algorithm with fma produces a faithfully rounded rsqrt
     vf_type rr=1.0-mm*mm*mm0;
-    mm = mm + 0.5 * mm * rr + 3.0/8.0*mm*rr*rr + 5.0/16*mm*rr*rr*rr;
-    rr = rint(vf_type(mm*0x1p26))*0x1p-26;
+    mm = mm + 0.5 * mm*rr + 3.0/8.0*mm*rr*rr;
     rr = 1.0-mm*mm*mm0;
-    mm = mm + 0.5 * mm * rr + 3.0/8.0*mm*rr*rr + 5.0/16*mm*rr*rr*rr;
+    mm = mm + 0.5 * mm*rr + 3.0/8.0*mm*rr*rr;
     // mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
     // mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
     // --------^ a fma is required here
     // ---------------------^ a fma is required here
     // for faithful rounding
 #else
-    for (int i=0; i<2; ++i) {
+    for (int i=0; i<1; ++i) {
         // mm = mm + 0.5* mm * (1- mm0 * mm* mm);
         // less operations:
         // mm = mm + mm * (0.5 - 0.5 * mm0 * mm* mm);
@@ -577,7 +577,9 @@ rsqrt_k(arg_t<vf_type> x)
         // powers separated
         // mm = mm + 0.5*mm - 0.5*mm0*mm*mm*mm
 
-        mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
+        // mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
+        vf_type rr = 1-mm*mm*mm0;
+        mm = mm + 0.5 * mm * rr + 3.0/8.0*mm*rr*rr + 5.0/16*mm*rr*rr*rr;
     }
     mm = mm + 0.5* mm *
         (vf_type(1) - d_ops::mul(mm0, mm)*mm).h();
