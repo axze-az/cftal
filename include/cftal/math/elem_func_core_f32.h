@@ -813,12 +813,12 @@ exp10_k(arg_t<vf_type> x, bool exp_m1)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
 #if 1
-    vf_type kf = rint(vf_type(x * ctbl::m_1_ld2.h()));
-    vf_type hi = x - kf * ctbl::m_ld2_cw[0];
-    vf_type xr = hi - kf * ctbl::m_ld2_cw[1];
+    vf_type kf = rint(vf_type(x * ctbl::m_1_lg2.h()));
+    vf_type hi = x - kf * ctbl::m_lg2_cw[0];
+    vf_type xr = hi - kf * ctbl::m_lg2_cw[1];
     vi_type k= _T::cvt_f_to_i(kf);
     vf_type dx= (hi-xr);
-    vf_type cr = dx-kf * ctbl::m_ld2_cw[1];
+    vf_type cr = dx-kf * ctbl::m_lg2_cw[1];
     vf_type xrh, xrl;
     // for exp10 mul12 would be sufficient
     d_ops::mul122(xrh, xrl, xr, ctbl::m_ln10.h(), ctbl::m_ln10.l());

@@ -900,14 +900,14 @@ cftal::math::elem_func_core<double, _T>::
 exp10_k(arg_t<vf_type> x, bool exp_m1)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type kf = rint(vf_type(x * ctbl::m_1_ld2.h()));
-    vf_type hi = x - kf * ctbl::m_ld2_cw[0];
-    vf_type xr = hi - kf * ctbl::m_ld2_cw[1];
+    vf_type kf = rint(vf_type(x * ctbl::m_1_lg2.h()));
+    vf_type hi = x - kf * ctbl::m_lg2_cw[0];
+    vf_type xr = hi - kf * ctbl::m_lg2_cw[1];
     vi_type k= _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);
 
     vf_type dx= (hi-xr);
-    vf_type cr = dx-kf * ctbl::m_ld2_cw[1];
+    vf_type cr = dx-kf * ctbl::m_lg2_cw[1];
     vf_type xrh, xrl;
     // for exp10 mul12 would be sufficient
     d_ops::mul122(xrh, xrl, xr, ctbl::m_ln10.h(), ctbl::m_ln10.l());
@@ -933,12 +933,12 @@ exp10_mx2_k(arg_t<vf_type> xc)
     d_ops::mul12(x2h, x2l, xc, -xc);
 
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type kf = rint(vf_type(x2h*ctbl::m_1_ld2.h()));
+    vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2.h()));
     vi_type k = _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);
     vf_type neg_kfln10h, neg_kfln10l;
     d_ops::mul122(neg_kfln10h, neg_kfln10l,
-                  kf, -ctbl::m_ld2.h(), -ctbl::m_ld2.l());
+                  kf, -ctbl::m_lg2.h(), -ctbl::m_lg2.l());
     vf_type xrh, xrl;
     d_ops::add22cond(xrh, xrl,
                      x2h, x2l,
@@ -976,12 +976,12 @@ exp10_px2_k(arg_t<vf_type> xc)
     d_ops::mul12(x2h, x2l, xc, xc);
 
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type kf = rint(vf_type(x2h*ctbl::m_1_ld2.h()));
+    vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2.h()));
     vi_type k = _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);
     vf_type neg_kfln10h, neg_kfln10l;
     d_ops::mul122(neg_kfln10h, neg_kfln10l,
-                  kf, -ctbl::m_ld2.h(), -ctbl::m_ld2.l());
+                  kf, -ctbl::m_lg2.h(), -ctbl::m_lg2.l());
     vf_type xrh, xrl;
     d_ops::add22cond(xrh, xrl,
                      x2h, x2l,

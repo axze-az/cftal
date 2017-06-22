@@ -34,15 +34,15 @@ namespace cftal {
                 static const double native_sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const double m_ln2_cw[2];
-                // M_LD2 LOG_10(2) for cody and waite argument reduction
-                static const double m_ld2_cw[2];
+                // M_LG2 LOG_10(2) for cody and waite argument reduction
+                static const double m_lg2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
                 static const double m_pi_2_cw[];
 
                 // M_LN2 LOG_E(2)
                 static const _T m_ln2;
-                // M_LD2 LOG_10(2)
-                static const _T m_ld2;
+                // M_LG2 LOG_10(2)
+                static const _T m_lg2;
                 // M_LN10 LOG_E(10)
                 static const _T m_ln10;
                 // M_LN_2POW106
@@ -55,8 +55,8 @@ namespace cftal {
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
-                // M_1_LD2 1/LOG_10(2)
-                static const _T m_1_ld2;
+                // M_1_LG2 1/LOG_10(2)
+                static const _T m_1_lg2;
                 // M_1_LN10 1/LOG_E(10)
                 static const _T m_1_ln10;
                 // 2*PI
@@ -118,7 +118,7 @@ m_ln2_cw[2]={
 template <class _T>
 const double
 cftal::math::impl::d_real_constants<_T, double>::
-m_ld2_cw[2]={
+m_lg2_cw[2]={
    +3.0102999554947018623352e-01,
    +1.1451100898021838421065e-10
 };
@@ -144,12 +144,12 @@ cftal::math::impl::d_real_constants<_T, double>::m_1_ln2(
 
 template <class _T>
 const _T
-cftal::math::impl::d_real_constants<_T, double>::m_ld2(
+cftal::math::impl::d_real_constants<_T, double>::m_lg2(
     +3.0102999566398119801747e-01, -2.8037281277851703937326e-18);
 
 template <class _T>
 const _T
-cftal::math::impl::d_real_constants<_T, double>::m_1_ld2(
+cftal::math::impl::d_real_constants<_T, double>::m_1_lg2(
     +3.3219280948873621817086e+00, +1.6616175169735920064130e-16);
 
 template <class _T>

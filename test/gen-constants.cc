@@ -435,14 +435,14 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     f_t ld2=v;
     // mpfr_printf("%.128Rf\n", v);
     s << "template <class _T>\nconst _T\n"
-      << "cftal::math::impl::" << pfx << "::m_ld2("
+      << "cftal::math::impl::" << pfx << "::m_lg2("
         "\n    "
       << to_stream(d, v)
       << ");\n"
       << std::endl;
     v= f_t(1.0)/v;
     s << "template <class _T>\nconst _T\n"
-      << "cftal::math::impl::" << pfx << "::m_1_ld2("
+      << "cftal::math::impl::" << pfx << "::m_1_lg2("
         "\n    "
       << to_stream(d, v)
       << ");\n"

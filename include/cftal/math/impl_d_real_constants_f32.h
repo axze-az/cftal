@@ -31,8 +31,8 @@ namespace cftal {
                 static const float native_sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const float m_ln2_cw[2];
-                // M_LD2 LOG_10(2) for cody and waite argument reduction
-                static const float m_ld2_cw[2];
+                // M_LG2 LOG_10(2) for cody and waite argument reduction
+                static const float m_lg2_cw[2];
                 // M_PI/2 for cody and waite argument reduction
                 static const float m_pi_2_cw[3];
 
@@ -40,8 +40,8 @@ namespace cftal {
                 static const _T m_ln2;
                 // M_LN10 LOG_E(10)
                 static const _T m_ln10;
-                // M_LD(2) LOG_10(2)
-                static const _T m_ld2;
+                // M_LG(2) LOG_10(2)
+                static const _T m_lg2;
                 // M_LN_2POW106
                 static const _T m_ln2pow106;
                 // M_LN_2POW48
@@ -52,8 +52,8 @@ namespace cftal {
                 // static const _T m_ln2_low;
                 // M_1_LN2 1/LOG_E(2)
                 static const _T m_1_ln2;
-                // M_1_LD2 1/LOG_10(2)
-                static const _T m_1_ld2;
+                // M_1_LG2 1/LOG_10(2)
+                static const _T m_1_lg2;
                 // M_1_LN10 1/LOG_E(10)
                 static const _T m_1_ln10;
                 // 2*PI
@@ -115,7 +115,7 @@ m_ln2_cw[2]={
 template <class _T>
 const float
 cftal::math::impl::d_real_constants<_T, float>::
-m_ld2_cw[2]={
+m_lg2_cw[2]={
    +3.0102539062500e-01f,
    +4.6050390665187e-06f
 };
@@ -141,12 +141,12 @@ cftal::math::impl::d_real_constants<_T, float>::m_1_ln2(
 
 template <class _T>
 const _T
-cftal::math::impl::d_real_constants<_T, float>::m_ld2(
+cftal::math::impl::d_real_constants<_T, float>::m_lg2(
     +3.0103000998497e-01f, -1.4320988839245e-08f);
 
 template <class _T>
 const _T
-cftal::math::impl::d_real_constants<_T, float>::m_1_ld2(
+cftal::math::impl::d_real_constants<_T, float>::m_1_lg2(
     +3.3219280242920e+00f, +7.0595369550119e-08f);
 
 template <class _T>

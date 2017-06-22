@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper,wide]{article}
+\documentclass[10pt,a4paper,draft]{article}
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{color}
@@ -280,79 +280,172 @@ The function exp2m1 and expm10 calculate $2^x-1$ and $10^x-1$ respectively.
 
 
 \subsection{Algorithms}
+In the subsections below the notation $ lg(x) = log_{10}(x)$
+$ ld(x) = log_2(x) $ and $ log(x) = log_e(x) $ is used. A double pair
+or double double variable is floating point expansion
+\[
+    (x_h, x_l) = x_h + x_l \, |x_l| < \frac{1}{2} |x_h^{-n}|
+\]
+where n is the number of mantissa bits in the double variable.
 %
 %TODO
 %
 \subsubsection{roots}
 The cbrt function ($ y=\sqrt[3]{x} $) was implemented as discussed by
-W. Kahan in \cite{Kahan1991}.
-
-Inverse square root, to calculate $ y = 1/\sqrt(x) $
+W. Kahan in \cite{Kahan1991}.\\[10pt]
+%
+Inverse square root, to calculate $ y = 1/\sqrt{x} $
 \begin{equation}
-        \begin{aligned}
-            y &= y_n \left( 1+ (x y_n^2 -1) \right)^{-1/2}
-             = y_n \sum_{k=0} \left({{-1/2}\atop{k}}\right) (x y_n^2 -1)^k \\
-             & = y_n \left( 1 + \frac{1}{2} (1 - x y_n^2 ) +
-                \frac{3}{8}(1- x y_n^2)^2 +
-                \frac{5}{16} (1-x y_n^2)^3 \dots
-                \right)
-        \end{aligned}
+    \begin{aligned}
+        y &= y_n \left( 1+ ( x y_n^2 -1) \right)^{-1/2}
+            = y_n \sum_{k=0} ({{-1/2}\atop{k}}) (x y_n^2 -1)^k \\
+            & = y_n \left( 1 + \frac{1}{2} (1 - x y_n^2 ) +
+            \frac{3}{8}(1- x y_n^2)^2 +
+            \frac{5}{16} (1-x y_n^2)^3 \dots
+            \right)
+    \end{aligned}
 \end{equation}
 
-double argument identity for exponential functions:
-\[
-    \begin{aligned}
-        (b^x-1)^2 &= b^{2x} - 2b^x + 1 \\
-        b^{2x}    &= (b^x-1)^2 + 2b^x - 1 \\
-        b^{2x} -1 &= (b^x-1)^2 + 2b^x -2 \\
-                  &= (b^x-1)^2 + 2(b^x-1)
-    \end{aligned}
-\]
-
-argument transformation from $ [a, b] $ into interval $ [-1, 1] $:
-\[
-    \tilde x = \frac{1}{2} \big[(b-a) x + a +b \big]
-\]
-\\[10pt]
-mapping of the interval $ [0, \infty] $ to the interval $ [-1, 1] $ for
-calculation of the error function
-\[
-    \tilde x = \frac{x-k}{x+k}
-\]
-with $ k = 3.75 $.
-
-\subsection{basic functions: ldexp, frexp, ilogb}
-\label{sub_sec:base_math}
-\subsubsection{precision}
-The functions have an error of $ \pm 0\, ulp$ compared against their glibc
-counterparts
 
 \subsection{exponential functions}
-\label{sub_sec:exp}
-The function exp(x) calculates $ e^x $.
+\label{sub_sec:expxxx}
 
-\subsubsection{precision}
-The functions have an error of $ \pm 1\, ulp$.
+The exponential functions use additive argument reduction.
+They use common code for the calculation of the exponential function
+after reduction and scaling of the reduced argument for bases not
+equal to $e$.
 
-\subsubsection{implementation}
-\begin{itemize}
-\item Argument reduction
+\subsubsection{argument reduction for exp(x) and expm1(x)}
 
-    Reduce $x$ to $r$ so that $ |r| \le \frac{1}{2} log(2) $
+    The input argument is split into
     \begin{equation}
-        x = k \times log(2) + r, \; |r| \le \frac{1}{2} log(2)
+        x = k \times log(2) + r_h + r_l, \;
+        |r_h +r_l| \le \frac{1}{2} log(2)
     \end{equation}
-    $r$ is split into two values for calculation purposes
+    whith $r = r_h + r_l$.
+    After the determination of
+    \[
+        k = x \times \frac{1}{log(2)}
+    \]
+    the values $r_h$ and $r_l$ can be calculated as
     \[
        \begin{aligned}
-       r_h &= x - k \times LN2_{HI} \\
-       r_l &= k \times LN2_{LO} \\
-       r &= r_h - r_l
+       hi &= x - k \times LN2_{HI} \\
+       r_h &= hi - k \times LN2_{LO} \\
+       dx & = hi - r_h \\
+       r_l &= dx - k \times LN2_{LO}
        \end{aligned}
     \]
-    where $LN2_{HI}$ and $LN2_{LO}$ are Cody and Waite constants for $log(2)$.
+    where $LN2_{HI}$ and $LN2_{LO}$ are Cody and Waite constants for $log(2)$
+    and the expressions are organized to allow utilization of fma operations.
 
-\item Approximation of $e^r$ by a rational function on the interval
+\subsubsection{argument reduction for exp2(x) and exp2m1(x)}
+
+    The calculations of exp2(x) and exp2m1(x) use the
+    identity
+    \begin{equation}
+        2^x + C = e^{x*log(2)} + C
+    \end{equation}
+    for the reduced arguments.
+    The reduced argument $ r_0 $ satisfies
+    \begin{equation}
+        x = k + r_0, \;
+        |r_0| \le \frac{1}{2}
+    \end{equation}
+    After the determination of
+    \[
+        k = rint(x)
+    \]
+    the value $r_0$ is calculated as
+    \[
+       r_0 = x - k
+    \]
+    and then scaled
+    \[
+       (r_h, r_l) = r_0 - k * (LN2_{HI}, LN2_{LO})
+    \]
+    to allow the calculation of $ 2^x + C $ as $ 2^k * e^{r_h+ rl} + C$.
+    The constants $LN2_{HI}$ and $LN2_{LO}$ are the two parts of a double double number for $log(2)$.
+
+\subsubsection{argument reduction for exp10(x) and expm10m1(x)}
+
+    The calculations of exp2(x) and exp2m1(x) use the
+    identity
+    \begin{equation}
+        10^x + C = e^{x*log(10)} + C
+    \end{equation}
+    for the reduced arguments. A  double double pair $ r_0= r_{0h} + r_{0l} $ is constructed which satisfies
+    \begin{equation}
+        x = k \times log_{10}(2) + r_h + r_l, \;
+        |xr_h +xr_l| \le \frac{1}{2} log_{10}(2)
+    \end{equation}
+    After the determination of
+    \[
+        k = x \times \frac{1}{log_{10}(2)}
+    \]
+    the values $r_{0h}$ and $r_{0l}$ can be calculated as
+    \[
+       \begin{aligned}
+       hi &= x - k \times LG2_{HI} \\
+       r_h &= hi - k \times LG2_{LO} \\
+       dx & = hi - r_h \\
+       r_l &= dx - k \times LG2_{LO}
+       \end{aligned}
+    \]
+    where $LG2_{HI}$ and $LG2_{LO}$ are Cody and Waite constants for
+    $log_{10}(2)$
+    and the expressions are organized to allow utilization of fma operations.
+    This reduced argument is then scaled
+    \[
+        \begin{aligned}
+        (r_h, r_l) &= r_{0h} - k * (LN10_{HI}, LN10_{LO}) \\
+        r_l &= r_l + r_{0l} * LN10_{HI}
+        \end{aligned}
+    \]
+    to allow the calculation of $ 10^x + C $ as $ 10^k * e^{r_h+ rl} + C$.
+    The constants $LN10_{HI}$ and $LN10_{LO}$ are the two parts of a double double number for $log(10)$.
+
+
+\subsubsection{approximation of $e^r$ in [$-log(2)/2, log(2)/2$] and scaling}
+
+    The function $y = e^r$ is approximated as
+    \begin{equation}
+        y = \sum_{i=0}^{N}c_i*r_h^i
+    \end{equation}
+    with $N=13$ for binary64 operands and $N=7$ for binary32 operands.
+    The summations with index 0 and 1 are done in higher precision
+    using a error free transformation of the horner schema to achieve
+    faithful rounded results.
+    %
+    Using the identity for the exponential function
+    \[
+        \begin{aligned}
+        e^{r_h+r_l} - 1 &=
+            e^{r_h} \times e^{r_l} - 1 \\
+                        &=
+            e^{r_h} \times \big( 1+ r_l + \frac{r_l^2}{2} + \dots \big) - 1 \\
+                        &=
+            e^{r_h} -1 + \big( e^{r_h} \times r_l +
+                                e^{r_h} \times \frac{r_l^2}{2} +
+                                \dots
+                         \big) \\
+                        &=
+            e^{r_h} -1 + \big( r_l + (e^{r_h}-1) \times r_l +
+                                e^{r_h} \times \frac{r_l^2}{2} +
+                                \dots
+                         \big) \\
+        \end{aligned}
+    \]
+    and supressing all terms with higher powers of $r_l$ as 1 one yields
+    \begin{equation}
+        \begin{aligned}
+        e^{r_h+r_l} - 1 & \approx
+            (e^{r_h} -1) + (r_l + (e^{r_h}-1) \times r_l)
+        \end{aligned}
+    \end{equation}
+    as error correction formula.
+
+
     $[0,\,\frac{1}{2}log(2)]$:
 
     as
@@ -400,13 +493,36 @@ The functions have an error of $ \pm 1\, ulp$.
 
     The order of the minimax polynomial $P(r^2)$ is 10 for double precision.
 
-\item The function value of the reduced argument is scaled back using
+ The function value of the reduced argument is scaled back using
     \begin{equation}
         e^x = 2^k \times e^r
     \end{equation}
     to obtain the result.
 
-\end{itemize}
+
+
+\subsection{TODO}
+double argument identity for exponential functions:
+\[
+    \begin{aligned}
+        (b^x-1)^2 &= b^{2x} - 2b^x + 1 \\
+        b^{2x}    &= (b^x-1)^2 + 2b^x - 1 \\
+        b^{2x} -1 &= (b^x-1)^2 + 2b^x -2 \\
+                  &= (b^x-1)^2 + 2(b^x-1)
+    \end{aligned}
+\]
+
+argument transformation from $ [a, b] $ into interval $ [-1, 1] $:
+\[
+    \tilde x = \frac{1}{2} \big[(b-a) x + a +b \big]
+\]
+\\[10pt]
+mapping of the interval $ [0, \infty] $ to the interval $ [-1, 1] $ for
+calculation of the error function
+\[
+    \tilde x = \frac{x-k}{x+k}
+\]
+with $ k = 3.75 $.
 
 
 \subsection{expm1}
