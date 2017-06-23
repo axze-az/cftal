@@ -16,7 +16,7 @@
 #include <iomanip>
 #include <memory>
 
-#define EXP 0
+#define EXP 1
 
 namespace cftal {
 
@@ -121,13 +121,19 @@ namespace cftal {
             _T
             s(const _T& a) {
 #if EXP>0
-                return std::expm1(a);
+                return std::exp(a);
 #else
                 return std::expm1(a);
 #endif
             }
             static
-            const char* fname() { return "func"; }
+            const char* fname() {
+#if EXP >0
+                return "func-exp";
+#else
+                return "func-expm1";
+#endif
+            }
         };
 
 
@@ -315,11 +321,19 @@ __native_exp_k(arg_t<vf_type> xrh,
                           native_exp_c2,
                           native_exp_c0);
     vf_type br= xrh- xx*P;
+#if 1
+    vf_type t= br/(2.0f-br);
+    vf_type y, ye;
+    d_ops::add12(y, ye, vf_type(1.0), t);
+    impl::eft_poly_si(y, ye, xrh, y, ye, vf_type(1.0));
+    y += ye;
+#else
     // y += (xrh*br)/(2.0f-br) + xrh;
     vf_type t= (xrh*br)/(2.0f-br) + xrh;
     vf_type y = xrl + xrl*xrh;
     y += t;
     y += 1.0f;
+#endif
     y = __scale_exp_k(y, kf, k);
     return y;
 #endif
