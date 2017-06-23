@@ -2,7 +2,7 @@
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{color}
-\usepackage{listings}
+\usepackage[final]{listings}
 \usepackage[bookmarks=true,hidelinks]{hyperref}
 \numberwithin{equation}{subsection}
 
@@ -100,6 +100,7 @@ This section contains the description of the algorithms used in the
 vector math library. The implemented algorithms are the same or
 heavily based on the algorithms used in the sun math
 library. Therefore the copyright of the sun libm source codes
+\small
 \begin{verbatim}
 /*
  * ====================================================
@@ -111,13 +112,18 @@ library. Therefore the copyright of the sun libm source codes
  * ====================================================
  */
 \end{verbatim}
+\normalsize
 applies.\\[10pt]
 %
 Functions for vector lengths from 1 to 8 for binary64 and binary32 are implemented as direct instantiations of the template code in
-\texttt{include/cftal/math/elem\_func.h}
-and in \texttt{include/cftal/math/spec\_func.h}
-using the macros in \texttt{src/vec\_def\_math\_functions.h}.
+\lstinline{cftal/math/elem_func.h}
+and in \lstinline{cftal/math/spec_func.h}
+using the macros in
+\lstinline{src/vec_def_math_functions.h}.
 The binary32 functions are additionally instantiated for vector length 16.
+The implementation of the instantiated functions is located in
+\lstinline{cftal/math/elem_func_core_f64.h} and
+\lstinline{cftal/math/elem_func_core_f32.h}.
 %%
 Vector functions with greater length are constructed using the template
 \begin{lstlisting}
@@ -286,7 +292,7 @@ or double double variable is floating point expansion
 \[
     (x_h, x_l) = x_h + x_l \, |x_l| < \frac{1}{2} |x_h^{-n}|
 \]
-where n is the number of mantissa bits in the double variable.
+where n is the number of mantissa bits in the floating variable.
 %
 %TODO
 %
@@ -402,11 +408,11 @@ equal to $e$.
         r_l &= r_l + r_{0l} * LN10_{HI}
         \end{aligned}
     \]
-    to allow the calculation of $ 10^x + C $ as $ 10^k * e^{r_h+ rl} + C$.
+    to allow the calculation of $ 10^x + C $ as $ 2^k * e^{r_h+ rl} + C$.
     The constants $LN10_{HI}$ and $LN10_{LO}$ are the two parts of a double double number for $log(10)$.
 
 
-\subsubsection{approximation of $e^r$ in [$-log(2)/2, log(2)/2$] and scaling}
+\subsubsection{approximation of $e^r$ in [$-\text{log}(2)/2, \text{log}(2)/2$]}
 
     The function $y = e^r$ is approximated as
     \begin{equation}
@@ -414,7 +420,7 @@ equal to $e$.
     \end{equation}
     with $N=13$ for binary64 operands and $N=7$ for binary32 operands.
     The summations with index 0 and 1 are done in higher precision
-    using a error free transformation of the horner schema to achieve
+    using a error free transformation of the horner's scheme to achieve
     faithful rounded results.
     %
     Using the identity for the exponential function
@@ -445,7 +451,44 @@ equal to $e$.
     \end{equation}
     as error correction formula.
 
+\subsubsection{back scaling}
+    Scaling back for all functions of the from $b^x$ is done
+    as
+    \begin{equation}
+        e ^ x = 2^k * e^{(r_h + r_l)}
+    \end{equation}
+    with special care for border cases of k.\\[10pt]
+    %
+    Scaling back for all functions of the form $b^x-1$ uses
+    with $ s  = \frac{1}{2} k $ one step of the error free
+    transformation of the horner's scheme
+    \begin{equation}
+        \begin{aligned}
+            (e^{\frac{1}{2}x_h}-\frac{1}{2}, e^{\frac{1}{2}x_l}-\frac{1}{2})
+                &=
+                    2^s \times (e^{r_h},e^{r_l}) - \frac{1}{2}\\
+                &=
+                    (0.5 \times 2^k) \times (e^{r_h},e^{r_l}) - \frac{1}{2}
+        \end{aligned}
+    \end{equation}
+    for a polynomial of first order in $2^s$ and then combines the two parts
+    of $ e^{\frac{1}{2}x} - \frac{1}{2} $
+    \begin{equation}
+        \begin{aligned}
+        t &= 2 \times ( e^{\frac{1}{2}x_h} -\frac{1}{2} ) \\
+        e ^ x -1 &= t + 2 \times (e^{\frac{1}{2}x_l} -\frac{1}{2})
+        \end{aligned}
+    \end{equation}
+    into the final result. This rather complicated approach avoids the
+    handling of different cases for k, especially overflows during the calculation.
 
+\subsection{All other functions}
+
+    All other elementary functions use the algorithms from the sun
+    math library. The polynomial approximations are recalculated
+    using sollya.
+
+\subsection{TODO}
     $[0,\,\frac{1}{2}log(2)]$:
 
     as
@@ -491,6 +534,7 @@ equal to $e$.
         \end{aligned}
     \end{equation}
 
+
     The order of the minimax polynomial $P(r^2)$ is 10 for double precision.
 
  The function value of the reduced argument is scaled back using
@@ -501,7 +545,6 @@ equal to $e$.
 
 
 
-\subsection{TODO}
 double argument identity for exponential functions:
 \[
     \begin{aligned}

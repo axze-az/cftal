@@ -154,7 +154,7 @@ cftal::math::impl::poly(_X x, _C1 c1, _C0 c0)
 }
 
 template <typename _X,
-            typename _CN, typename _CNM1, typename ... _CS>
+          typename _CN, typename _CNM1, typename ... _CS>
 _X
 cftal::math::impl::poly(_X x, _CN cn, _CNM1 cnm1, _CS... cs)
 {
