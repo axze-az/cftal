@@ -182,7 +182,7 @@ namespace cftal {
                      _C9 c9, _C8 c8, _C7 c7,
                      _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
                 return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_4(x, x2, c7, c6, c5, c4) * x4 +
+                    estrin_3(x, x2, c7, c6, c5, c4) * x4 +
                     estrin_1(x, c9, c8)*x8;
             }
 
@@ -210,7 +210,7 @@ namespace cftal {
                       _C10 c10, _C9 c9, _C8 c8, _C7 c7,
                       _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
                 return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_4(x, x2, c7, c6, c5, c4) * x4 +
+                    estrin_3(x, x2, c7, c6, c5, c4) * x4 +
                     estrin_2(x, x2, c10, c9, c8)*x8;
             }
 
@@ -239,7 +239,7 @@ namespace cftal {
                       _C11 c11, _C10 c10, _C9 c9, _C8 c8, _C7 c7,
                       _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
                 return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_4(x, x2, c7, c6, c5, c4) * x4 +
+                    estrin_3(x, x2, c7, c6, c5, c4) * x4 +
                     estrin_3(x, x2, c11, c10, c9, c8)*x8;
             }
 
@@ -270,7 +270,7 @@ namespace cftal {
                       _C11 c11, _C10 c10, _C9 c9, _C8 c8, _C7 c7,
                       _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
                 return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_4(x, x2, c7, c6, c5, c4) * x4 +
+                    estrin_3(x, x2, c7, c6, c5, c4) * x4 +
                     estrin_4(x, x2, x4, c12, c11, c10, c9, c8)*x8;
             }
 

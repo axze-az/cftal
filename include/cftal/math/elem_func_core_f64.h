@@ -24,6 +24,7 @@
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f64_s32.h>
 #include <cftal/math/impl_poly.h>
+#include <cftal/math/impl_estrin.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
 
@@ -683,6 +684,15 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const double exp_c12=+2.0921639307947297714762e-09;
     // x^13 : +0xb.675e3aadcbc88p-36
     const double exp_c13=+1.6594686274338619941159e-10;
+#if 0
+    vf_type y=impl::estrin(xrh,
+                           exp_c13, exp_c12,
+                           exp_c11, exp_c10,
+                           exp_c9, exp_c8,
+                           exp_c7, exp_c6,
+                           exp_c5, exp_c4,
+                           exp_c3, exp_c2);
+#else
     vf_type xx=xrh*xrh;
     vf_type i=impl::poly(xx,
                          exp_c13,
@@ -698,6 +708,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                          exp_c4);
     vf_type y=impl::poly(xrh, i, j,
                          exp_c3, exp_c2);
+#endif
     vf_type ye;
     impl::eft_quick_poly(y, ye, xrh, y, exp_c1);
     // calculate expm1/xrh for correction term
