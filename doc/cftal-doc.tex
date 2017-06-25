@@ -17,7 +17,7 @@
 
 \begin{document}
 \title{cftal - yet another short vector library}
-\author{axel zeuner\footnote{I am not a native english speaker, corrections are welcome} (axel.zeuner@gmx.de)}
+\author{axel zeuner\footnote{I am not a native english speaker, corrections are welcome, axel.zeuner@gmx.de}}
 \maketitle
 
 \tableofcontents
@@ -166,8 +166,8 @@ The tables in this section contain the list of implemented functions and
 their measured maximium deviations against the corresponding functions
 from the mpfr library. The column about faithfully rounding describes if faithfully rounding was observed using a test data set.\\
 %
-Functions with names like native\_xxx implement the function xxx with
-reduced precision or range or both.
+%Functions with names like native\_xxx implement the function xxx with
+%reduced precision or range or both.
 %
 \subsubsection{support functions}
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
@@ -288,7 +288,7 @@ The function exp2m1 and expm10 calculate $2^x-1$ and $10^x-1$ respectively.
 \subsection{Algorithms}
 In the subsections below the notation $ lg(x) = log_{10}(x)$
 $ ld(x) = log_2(x) $ and $ log(x) = log_e(x) $ is used. A double pair
-or double double variable is floating point expansion
+or double double variable is a floating point expansion of the form
 \[
     (x_h, x_l) = x_h + x_l \, |x_l| < \frac{1}{2} |x_h^{-n}|
 \]
@@ -350,7 +350,7 @@ equal to $e$.
     The calculations of exp2(x) and exp2m1(x) use the
     identity
     \begin{equation}
-        2^x + C = e^{x*log(2)} + C
+        2^x + C = e^{x \times log(2)} + C
     \end{equation}
     for the reduced arguments.
     The reduced argument $ r_0 $ satisfies
@@ -368,9 +368,9 @@ equal to $e$.
     \]
     and then scaled
     \[
-       (r_h, r_l) = r_0 - k * (LN2_{HI}, LN2_{LO})
+       (r_h, r_l) = r_0 - k \times (LN2_{HI}, LN2_{LO})
     \]
-    to allow the calculation of $ 2^x + C $ as $ 2^k * e^{r_h+ rl} + C$.
+    to allow the calculation of $ 2^x + C $ as $ 2^k \times e^{r_h+ rl} + C$.
     The constants $LN2_{HI}$ and $LN2_{LO}$ are the two parts of a double double number for $log(2)$.
 
 \subsubsection{argument reduction for exp10(x) and expm10m1(x)}
@@ -378,11 +378,11 @@ equal to $e$.
     The calculations of exp2(x) and exp2m1(x) use the
     identity
     \begin{equation}
-        10^x + C = e^{x*log(10)} + C
+        10^x + C = e^{x \times log(10)} + C
     \end{equation}
     for the reduced arguments. A  double double pair $ r_0= r_{0h} + r_{0l} $ is constructed which satisfies
     \begin{equation}
-        x = k \times log_{10}(2) + r_h + r_l, \;
+        x = k \times log_{10}(2) + r_{0h} + r_{0l}, \;
         |xr_h +xr_l| \le \frac{1}{2} log_{10}(2)
     \end{equation}
     After the determination of
@@ -393,19 +393,19 @@ equal to $e$.
     \[
        \begin{aligned}
        hi &= x - k \times LG2_{HI} \\
-       r_h &= hi - k \times LG2_{LO} \\
-       dx & = hi - r_h \\
-       r_l &= dx - k \times LG2_{LO}
+       r_{0h} &= hi - k \times LG2_{LO} \\
+       dx & = hi - r_{0h} \\
+       r_{0l} &= dx - k \times LG2_{LO}
        \end{aligned}
     \]
     where $LG2_{HI}$ and $LG2_{LO}$ are Cody and Waite constants for
     $log_{10}(2)$
     and the expressions are organized to allow utilization of fma operations.
-    This reduced argument is then scaled
+    The reduced argument is then scaled
     \[
         \begin{aligned}
-        (r_h, r_l) &= r_{0h} - k * (LN10_{HI}, LN10_{LO}) \\
-        r_l &= r_l + r_{0l} * LN10_{HI}
+        (r_h, r_l) &= r_{0h} - k \times (LN10_{HI}, LN10_{LO}) \\
+        r_l &= r_l + r_{0l} \times LN10_{HI}
         \end{aligned}
     \]
     to allow the calculation of $ 10^x + C $ as $ 2^k * e^{r_h+ rl} + C$.
@@ -416,11 +416,12 @@ equal to $e$.
 
     The function $y = e^r$ is approximated as
     \begin{equation}
-        y = \sum_{i=0}^{N}c_i*r_h^i
+        y = \sum_{i=0}^{N}c_i r_h^i
     \end{equation}
     with $N=13$ for binary64 operands and $N=7$ for binary32 operands.
     The summations with index 0 and 1 are done in higher precision
-    using a error free transformation of the horner's scheme to achieve
+    using a error free transformation of the horner's scheme
+    (see \cite{Graillat05compensatedhorner}) to achieve
     faithful rounded results.
     %
     Using the identity for the exponential function
