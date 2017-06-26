@@ -6,6 +6,8 @@
 //
 #include <cftal/test/call_mpfr.h>
 #include <mutex>
+#include <cstdarg>
+#include <vector>
 
 #define DEBUG_EXP2M1 0
 #define DEBUG_EXPXM1 (DEBUG_EXP2M1)
@@ -586,4 +588,38 @@ exp10_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
              ((inexact_exp10_mx2_1 >= 0 && inexact_exp10_mx2_2 <=0) ||
              (inexact_exp10_mx2_1 <= 0 && inexact_exp10_mx2_2 >=0)));
     return inexact_exp10_mx2_1;
+}
+
+int
+cftal::test::mpfr_ext::
+horner(mpfr_t res,
+       const mpfr_t x,
+       mpfr_rnd_t rm,
+       const mpfr_t c_n,
+       ...)
+{
+    std::vector<const __mpfr_struct*> vcx;
+    va_list va;
+    const __mpfr_struct* c= c_n;
+    vcx.push_back(c);
+    va_start(va, c_n);
+    do {
+        c = va_arg(va, const __mpfr_struct*);
+        vcx.push_back(c);
+    } while (c != nullptr);
+    va_end(va);
+
+    auto f=[&vcx](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
+        fpn_handle r(mpfr_get_prec(xx));
+        const __mpfr_struct* cn=vcx[0];
+        mpfr_set(r(), cn, rm);
+        for (std::size_t i=1; i< vcx.size(); ++i) {
+            mpfr_mul(r(), xx, r(), rm);
+            const __mpfr_struct* cn= vcx[1];
+            mpfr_add(r(), xx, cn, rm);
+        }
+        return mpfr_set(rr, r(), rm);
+    };
+    return call_ziv_func(res, x, rm, f);
+
 }

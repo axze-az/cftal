@@ -68,36 +68,45 @@ namespace cftal {
         };
 
         namespace mpfr_ext {
-            // return exp2 with precision bits
+            // return exp10 with res precision bits
             int
             exp10(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
-            // return exp2m1 with precision bits
+            // return exp2m1 with res precision bits
             int
             exp2m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-            // return exp10m1 with precision bits
+            // return exp10m1 with res precision bits
             int
             exp10m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-            // return exp(x*x) with precision bits
+            // return exp(x*x) with res precision bits
             int
             exp_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-            // return exp(-x*x) with precision bits
+            // return exp(-x*x) with res precision bits
             int
             exp_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
-            // return 2^(x*x) with precision bits
+            // return 2^(x*x) with res precision bits
             int
             exp2_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-            // return 2^(-x*x) with precision bits
+            // return 2^(-x*x) with res precision bits
             int
             exp2_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
-            // return 10^(x*x) with precision bits
+            // return 10^(x*x) with res precision bits
             int
             exp10_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-            // return 10^(-x*x) with precision bits
+            // return 10^(-x*x) with res precision bits
             int
             exp10_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
+            // returns c_n*x^X + .. c_1*x^1 + c_0, nullptr as last argument
+            int
+            horner(mpfr_t res,
+                   const mpfr_t x,
+                   mpfr_rnd_t rm,
+                   const mpfr_t c_n,
+                   ...);
+            
         }
 
         template <std::size_t _B>
