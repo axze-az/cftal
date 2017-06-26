@@ -710,10 +710,10 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                      exp_c3, exp_c2);
 #endif
     vf_type ye;
-    eft_quick_horner(y, ye, xrh, y, exp_c1);
+    horner_comp_quick(y, ye, xrh, y, exp_c1);
     // calculate expm1/xrh for correction term
     vf_type yl=y+ye;
-    eft_quick_horner_si(y, ye, xrh, y, ye, exp_c0);
+    horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
 #endif
     vf_type yee= xrl + xrl * xrh * yl;
     ye += yee;
@@ -724,7 +724,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = __scale_exp_k(vf_type(0.5), kf, k2);
         // e^x-1 = 2*(y * 2^s - 0.5)
-        eft_horner_si(y, ye, scale, y, ye, vf_type(-0.5));
+        horner_comp_si(y, ye, scale, y, ye, vf_type(-0.5));
         y *= 2;
         y  = y + 2*ye;
         // x small, required for handling of subnormal numbers

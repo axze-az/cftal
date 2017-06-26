@@ -544,10 +544,10 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                      exp_c4);
     vf_type y= horner(xrh, i, j, exp_c3, exp_c2);
     vf_type ye;
-    eft_quick_horner(y, ye, xrh, y, exp_c1);
+    horner_comp_quick(y, ye, xrh, y, exp_c1);
     // correction for errors in argument reduction
     vf_type yl=y+ye;
-    eft_quick_horner_si(y, ye, xrh, y, ye, exp_c0);
+    horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
     vf_type yee= xrl + xrl*xrh*yl;
     ye += yee;
     if (_EXP_M1 == false) {
@@ -557,7 +557,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         // 2^kf = 2*2^s ; s = kf/2
         // e^x-1 = 2*(y * 2^s - 0.5)
         vf_type scale = __scale_exp_k(vf_type(0.5f), kf, k);
-        eft_horner_si(y, ye, scale, y, ye, vf_type(-0.5f));
+        horner_comp_si(y, ye, scale, y, ye, vf_type(-0.5f));
         y *= 2;
         y  = y + 2*ye;
         // x small

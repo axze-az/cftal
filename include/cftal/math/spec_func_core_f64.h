@@ -164,8 +164,8 @@ erf_k(arg_t<vf_type> xc)
                              erf_i0_c5,
                              erf_i0_c3);
         vf_type ye;
-        eft_horner(y_i0, ye, xx, y_i0,
-                   erf_i0_c1);
+        horner_comp(y_i0, ye, xx, y_i0,
+                    erf_i0_c1);
         vf_type p_i;
         y_i0 = d_ops::two_prod(y_i0, x, p_i);
         ye = ye*x + p_i;
@@ -282,8 +282,8 @@ erf_k(arg_t<vf_type> xc)
                              erf_i1_c1);
 #endif
         vf_type ye;
-        eft_horner(y_i1, ye, x_i1, y_i1,
-                   erf_i1_c0h);
+        horner_comp(y_i1, ye, x_i1, y_i1,
+                    erf_i1_c0h);
         y_i1 += ye+erf_i1_c0l;
         return y_i1;
     };
@@ -394,8 +394,8 @@ erf_k(arg_t<vf_type> xc)
                              erf_i2_c1);
 #endif
         vf_type ye;
-        eft_horner(y_i2, ye, x_i2, y_i2,
-                   erf_i2_c0h);
+        horner_comp(y_i2, ye, x_i2, y_i2,
+                    erf_i2_c0h);
         y_i2 += ye+erf_i2_c0l;
         return y_i2;
     };
@@ -508,8 +508,8 @@ erf_k(arg_t<vf_type> xc)
                              erf_i3_c1);
 #endif
         vf_type ye;
-        eft_horner(y_i3, ye, x_i3, y_i3,
-                   erf_i3_c0h);
+        horner_comp(y_i3, ye, x_i3, y_i3,
+                    erf_i3_c0h);
         y_i3 += ye+erf_i3_c0l;
         return y_i3;
     };
@@ -622,10 +622,10 @@ erfc_k(arg_t<vf_type> xc)
                             erfc_i0_c5,
                             erfc_i0_c3);
         vf_type ye;
-        eft_horner(y_i0, ye, xx, y_i0,
-                   erfc_i0_c1);
-        eft_horner_si(y_i0, ye, x, y_i0, ye,
-                      erfc_i0_c0);
+        horner_comp(y_i0, ye, xx, y_i0,
+                    erfc_i0_c1);
+        horner_comp_si(y_i0, ye, x, y_i0, ye,
+                       erfc_i0_c0);
         y_i0 += ye;
         return y_i0;
     };
@@ -707,14 +707,14 @@ erfc_k(arg_t<vf_type> xc)
                              erfc_i1_c8,
                              erfc_i1_c7);
         vf_type ye;
-        eft_horner(y_i1, ye, x_i1, y_i1,
-                   erfc_i1_c6,
-                   erfc_i1_c5,
-                   erfc_i1_c4,
-                   erfc_i1_c3,
-                   erfc_i1_c2,
-                   erfc_i1_c1,
-                   erfc_i1_c0h);
+        horner_comp(y_i1, ye, x_i1, y_i1,
+                    erfc_i1_c6,
+                    erfc_i1_c5,
+                    erfc_i1_c4,
+                    erfc_i1_c3,
+                    erfc_i1_c2,
+                    erfc_i1_c1,
+                    erfc_i1_c0h);
         y_i1 += ye +erfc_i1_c0l;
         return y_i1;
     };
@@ -794,17 +794,17 @@ erfc_k(arg_t<vf_type> xc)
                              erfc_i2_c11,
                              erfc_i2_c10);
         vf_type ye;
-        eft_horner(y_i2, ye, x_i2, y_i2,
-                   erfc_i2_c9,
-                   erfc_i2_c8,
-                   erfc_i2_c7,
-                   erfc_i2_c6,
-                   erfc_i2_c5,
-                   erfc_i2_c4,
-                   erfc_i2_c3,
-                   erfc_i2_c2,
-                   erfc_i2_c1,
-                   erfc_i2_c0h);
+        horner_comp(y_i2, ye, x_i2, y_i2,
+                    erfc_i2_c9,
+                    erfc_i2_c8,
+                    erfc_i2_c7,
+                    erfc_i2_c6,
+                    erfc_i2_c5,
+                    erfc_i2_c4,
+                    erfc_i2_c3,
+                    erfc_i2_c2,
+                    erfc_i2_c1,
+                    erfc_i2_c0h);
         y_i2 += ye +erfc_i2_c0l;
         return y_i2;
     };

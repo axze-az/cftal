@@ -68,77 +68,87 @@ namespace cftal {
                   _CNM1 cnm1_0, _CNM1 cnm1_1, _CNM1 cnm1_2, _CNM1 cnm1_3,
                   _CS... cs);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // setup step, assumes nothing about |x*c1| and |c0|
         template <typename _X, typename _C1, typename _C0>
         void
-        eft_horner_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0);
+        horner_comp_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // next step, assumes nothing about |x*c1| and |c0|
         template <typename _X, typename _C1, typename _C0>
         void
-        eft_horner_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
+        horner_comp_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // recursive next steps,
         // assumes nothing about |x*c_N| and |c_N-1|
         template <typename _X, typename _CN, typename _CNM1,
                   typename ... _CS>
         void
-        eft_horner_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1,
-                      _CS... cs);
+        horner_comp_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1,
+                       _CS... cs);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // overload for degree 1
         // assumes nothing about |x*c_1| and |c_0|
         template <typename _X, typename _CN, typename _CNM1>
         void
-        eft_horner(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0);
+        horner_comp(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // assumes nothing about x*c_N and c_N-1
         template <typename _X, typename _CN, typename _CNM1,
                   typename ... _CS>
         void
-        eft_horner(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
-                   _CS... cs);
+        horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
+                    _CS... cs);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // setup step, assumes |x*c1| < |c0|
         template <typename _X, typename _C1, typename _C0>
         void
-        eft_quick_horner_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0);
+        horner_comp_quick_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // next step, assumes |x*c1| < |c0|
         template <typename _X, typename _C1, typename _C0>
         void
-        eft_quick_horner_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
+        horner_comp_quick_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // recursive next steps,
         // assumes |x*c_N| < |c_N-1|
         template <typename _X, typename _CN, typename _CNM1,
                   typename ... _CS>
         void
-        eft_quick_horner_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
-                            _CNM1 cnm1, _CS... cs);
+        horner_comp_quick_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
+                             _CNM1 cnm1, _CS... cs);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // overload for degree 1
         // assumes  |x*c_1| < |c_0|
         template <typename _X, typename _CN, typename _CNM1>
         void
-        eft_quick_horner(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0);
+        horner_comp_quick(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0);
 
+        // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // assumes |x*c_N| < |c_N-1|, |x*c_N_1| < |c_N-2| ..
         template <typename _X, typename _CN, typename _CNM1,
                   typename ... _CS>
         void
-        eft_quick_horner(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
-                         _CS... cs);
+        horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
+                          _CS... cs);
     }
 }
 
@@ -265,7 +275,7 @@ horner_n4(_X& y0, _X& y1, _X& y2, _X& y3,
 
 template <typename _X, typename _C1, typename _C0>
 void
-cftal::math::eft_horner_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
+cftal::math::horner_comp_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
@@ -278,7 +288,7 @@ cftal::math::eft_horner_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 
 template <typename _X, typename _C1, typename _C0>
 void
-cftal::math::eft_horner_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
+cftal::math::horner_comp_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
@@ -293,38 +303,38 @@ template <typename _X,
           typename _CN, typename _CNM1, typename ... _CS>
 void
 cftal::math::
-eft_horner_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1, _CS ... cs)
+horner_comp_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1, _CS ... cs)
 {
-    eft_horner_si(y, ye, x, cnh, cnl, cnm1);
+    horner_comp_si(y, ye, x, cnh, cnl, cnm1);
     // const _X _y=y;
     // const _X _ye=ye;
-    eft_horner_si(y, ye, x, y, ye, cs...);
+    horner_comp_si(y, ye, x, y, ye, cs...);
 }
 
 template <typename _X, typename _CN, typename _CNM1>
 void
 cftal::math::
-eft_horner(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
+horner_comp(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
 {
-    eft_horner_s0(y, ye, x, c1, c0);
+    horner_comp_s0(y, ye, x, c1, c0);
 }
 
 template <typename _X,
           typename _CN, typename _CNM1, typename ... _CS>
 void
 cftal::math::
-eft_horner(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
+horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
 {
-    eft_horner_s0(y, ye, x, cn, cnm1);
+    horner_comp_s0(y, ye, x, cn, cnm1);
     // const _X _y=y;
     // const _X _ye=ye;
-    eft_horner_si(y, ye, x, y, ye, cs...);
+    horner_comp_si(y, ye, x, y, ye, cs...);
 }
 
 template <typename _X, typename _C1, typename _C0>
 void
 cftal::math::
-eft_quick_horner_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
+horner_comp_quick_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
@@ -338,7 +348,7 @@ eft_quick_horner_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 template <typename _X, typename _C1, typename _C0>
 void
 cftal::math::
-eft_quick_horner_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
+horner_comp_quick_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
@@ -353,33 +363,33 @@ template <typename _X,
           typename _CN, typename _CNM1, typename ... _CS>
 void
 cftal::math::
-eft_quick_horner_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
-                    _CNM1 cnm1, _CS ... cs)
+horner_comp_quick_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
+                     _CNM1 cnm1, _CS ... cs)
 {
-    eft_quick_horner_si(y, ye, x, cnh, cnl, cnm1);
+    horner_comp_quick_si(y, ye, x, cnh, cnl, cnm1);
     // const _X _y=y;
     // const _X _ye=ye;
-    eft_quick_horner_si(y, ye, x, y, ye, cs...);
+    horner_comp_quick_si(y, ye, x, y, ye, cs...);
 }
 
 template <typename _X, typename _CN, typename _CNM1>
 void
 cftal::math::
-eft_quick_horner(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
+horner_comp_quick(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
 {
-    eft_quick_horner_s0(y, ye, x, c1, c0);
+    horner_comp_quick_s0(y, ye, x, c1, c0);
 }
 
 template <typename _X,
           typename _CN, typename _CNM1, typename ... _CS>
 void
 cftal::math::
-eft_quick_horner(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
+horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
 {
-    eft_quick_horner_s0(y, ye, x, cn, cnm1);
+    horner_comp_quick_s0(y, ye, x, cn, cnm1);
     // const _X _y=y;
     // const _X _ye=ye;
-    eft_quick_horner_si(y, ye, x, y, ye, cs...);
+    horner_comp_quick_si(y, ye, x, y, ye, cs...);
 }
 
 // local variables:

@@ -27,14 +27,15 @@ namespace cftal {
                       typename _C1, typename _C0>
             _X
             estrin(_X x, _C1 c1, _C0 c0) {
-                return estring_1(x, c1, c0);
+                return estrin_1(x, c1, c0);
             }
 
             template <typename _X,
                       typename _C2, typename _C1, typename _C0>
             _X
             estrin_2(_X x, _X x2, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_1(x, c1, c0) + x2*c2;
+                _X t1 = estrin_1(x, c1, c0);
+                return t1 + x2*c2;
             }
 
             template <typename _X,
@@ -49,7 +50,8 @@ namespace cftal {
                       typename _C3, typename _C2, typename _C1, typename _C0>
             _X
             estrin_3(_X x, _X x2, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_1(x, c1, c0) + x2*estrin_1(x, c3, c2);
+                _X t1= estrin_1(x, c1, c0) , t2=estrin_1(x, c3, c2);
+                return t1 + x2* t2;
             }
 
             template <typename _X,
@@ -66,8 +68,8 @@ namespace cftal {
             _X
             estrin_4(_X x, _X x2, _X x4,
                      _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_3(x, x2, c3, c2, c1, c0) +
-                    c4*x4;
+                _X t=estrin_3(x, x2, c3, c2, c1, c0);
+                return t + c4*x4;
             }
 
             template <typename _X,
@@ -87,8 +89,9 @@ namespace cftal {
             _X
             estrin_5(_X x, _X x2, _X x4,
                      _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_1(x, c5, c4) * x4;
+                _X t1= estrin_3(x, x2, c3, c2, c1, c0);
+                _X t2= estrin_1(x, c5, c4);
+                return t1 + t2*x4;
             }
 
             template <typename _X,
@@ -108,8 +111,9 @@ namespace cftal {
             _X
             estrin_6(_X x, _X x2, _X x4,
                      _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_2(x, x2, c6, c5, c4) * x4;
+                _X t1= estrin_3(x, x2, c3, c2, c1, c0);
+                _X t2= estrin_2(x, x2, c6, c5, c4);
+                return t1 + t2*x4;
             }
 
             template <typename _X,
@@ -130,8 +134,9 @@ namespace cftal {
             estrin_7(_X x, _X x2, _X x4,
                      _C7 c7,
                      _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_3(x, x2, c7, c6, c5, c4) * x4;
+                _X t1= estrin_3(x, x2, c3, c2, c1, c0);
+                _X t2= estrin_3(x, x2, c7, c6, c5, c4);
+                return t1 + t2*x4;
             }
 
             template <typename _X,
@@ -154,8 +159,10 @@ namespace cftal {
             estrin_8(_X x, _X x2, _X x4, _X x8,
                      _C8 c8, _C7 c7,
                      _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_4(x, x2, c7, c6, c5, c4) * x4 + c8*x8;
+                _X t1= estrin_3(x, x2, c3, c2, c1, c0);
+                _X t2= estrin_3(x, x2, c7, c6, c5, c4);
+                _X t3= t1 + t2* x4;
+                return t3 + c8*x8;
             }
 
             template <typename _X,
@@ -181,9 +188,11 @@ namespace cftal {
             estrin_9(_X x, _X x2, _X x4, _X x8,
                      _C9 c9, _C8 c8, _C7 c7,
                      _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_3(x, x2, c7, c6, c5, c4) * x4 +
-                    estrin_1(x, c9, c8)*x8;
+                _X t1= estrin_3(x, x2, c3, c2, c1, c0);
+                _X t2= estrin_3(x, x2, c7, c6, c5, c4);
+                _X t3= t1 + t2* x4;
+                _X t4= estrin_1(x, c9, c8);
+                return t3 + t4*x8;
             }
 
             template <typename _X,
@@ -209,9 +218,11 @@ namespace cftal {
             estrin_10(_X x, _X x2, _X x4, _X x8,
                       _C10 c10, _C9 c9, _C8 c8, _C7 c7,
                       _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_3(x, x2, c7, c6, c5, c4) * x4 +
-                    estrin_2(x, x2, c10, c9, c8)*x8;
+                _X t1= estrin_3(x, x2, c3, c2, c1, c0);
+                _X t2= estrin_3(x, x2, c7, c6, c5, c4);
+                _X t3= t1 + t2* x4;
+                _X t4= estrin_2(x, x2, c10, c9, c8);
+                return t3 + t4*x8;
             }
 
             template <typename _X,
@@ -238,9 +249,11 @@ namespace cftal {
             estrin_11(_X x, _X x2, _X x4, _X x8,
                       _C11 c11, _C10 c10, _C9 c9, _C8 c8, _C7 c7,
                       _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_3(x, x2, c7, c6, c5, c4) * x4 +
-                    estrin_3(x, x2, c11, c10, c9, c8)*x8;
+                _X t1= estrin_3(x, x2, c3, c2, c1, c0);
+                _X t2= estrin_3(x, x2, c7, c6, c5, c4);
+                _X t3= t1 + t2* x4;
+                _X t4= estrin_3(x, x2, c11, c10, c9, c8);
+                return t3 + t4*x8;
             }
 
             template <typename _X,
@@ -269,9 +282,11 @@ namespace cftal {
                       _C12 c12,
                       _C11 c11, _C10 c10, _C9 c9, _C8 c8, _C7 c7,
                       _C6 c6, _C5 c5, _C4 c4, _C3 c3, _C2 c2, _C1 c1, _C0 c0) {
-                return estrin_3(x, x2, c3, c2, c1, c0) +
-                    estrin_3(x, x2, c7, c6, c5, c4) * x4 +
-                    estrin_4(x, x2, x4, c12, c11, c10, c9, c8)*x8;
+                _X t1=estrin_3(x, x2, c3, c2, c1, c0);
+                _X t2=estrin_3(x, x2, c7, c6, c5, c4);
+                _X t3=t1+t2*x4;
+                _X t4=estrin_4(x, x2, x4, c12, c11, c10, c9, c8);
+                return t3 + t4* x8;
             }
 
             template <typename _X,
