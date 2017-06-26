@@ -58,7 +58,7 @@ SET (HDRS
   ../include/cftal/math/func.h
   ../include/cftal/math/elem_func.h
   ../include/cftal/math/elem_func_core_f32.h
-  ../include/cftal/math/impl_poly.h
+  ../include/cftal/math/horner.h
   ../include/cftal/std_types.h
   ../include/cftal/vec_float_n.h
   ../include/cftal/divisor.h

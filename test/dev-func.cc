@@ -323,16 +323,16 @@ __native_exp_k(arg_t<vf_type> xrh,
     // x^2 : +0xa.aaa8fp-6f
 #if 0
     // pade 4, 4, taylor 8 of %e^x-1-x faithfully
-    vf_type p= impl::poly(xrh,
-                          +60.0f,
-                          -280.0f,
-                          +4200.0f)*xrh*xrh;
-    vf_type q= impl::poly1(xrh,
-                           // 1.0f
-                           -40.0f,
-                           +540.0f,
-                           -3360.0f,
-                           +8400.0f);
+    vf_type p= horner(xrh,
+                      +60.0f,
+                      -280.0f,
+                      +4200.0f)*xrh*xrh;
+    vf_type q= horner1(xrh,
+                       // 1.0f
+                       -40.0f,
+                       +540.0f,
+                       -3360.0f,
+                       +8400.0f);
     vf_type y= xrh + p/q;
     vf_type ye= xrl + xrl*xrh;
     y += ye;
@@ -342,16 +342,16 @@ __native_exp_k(arg_t<vf_type> xrh,
 #endif
 #if 1
 
-    vf_type e= impl::poly(xrh,
-                          7.610925536017418e1f,
-                          8.73744877496524e2f,
-                          4.256882124716833e3f, 
-                          8.368816062267611e3f);
-    vf_type d= impl::poly(xrh,
-                          -6.4e1f,
-                          8.012710646668774e2f,
-                          -4.111933953502037e3f, 
-                          8.36881606265761e3f);
+    vf_type e= horner(xrh,
+                      7.610925536017418e1f,
+                      8.73744877496524e2f,
+                      4.256882124716833e3f, 
+                      8.368816062267611e3f);
+    vf_type d= horner(xrh,
+                      -6.4e1f,
+                      8.012710646668774e2f,
+                      -4.111933953502037e3f, 
+                      8.36881606265761e3f);
 #if 0    
     vmf_type x_lt_z = xrh < vf_type(0.0);
     vf_type p= _T::sel(x_lt_z, d, e);

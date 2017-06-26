@@ -90,15 +90,15 @@ erf_k(arg_t<vf_type> xc)
         // x^ l: -0xf.bd649p-28f
         const vf_type two_o_sqrt_pil=-5.8635382771e-08f;
         vf_type xx= x* x;
-        vf_type y_i0= impl::poly(xx,
-                                 // erf_i0_c14,
-                                 // erf_i0_c12,
-                                 erf_i0_c10,
-                                 erf_i0_c8,
-                                 erf_i0_c6,
-                                 erf_i0_c4,
-                                 erf_i0_c2,
-                                 erf_i0_c0);
+        vf_type y_i0= horner(xx,
+                             // erf_i0_c14,
+                             // erf_i0_c12,
+                             erf_i0_c10,
+                             erf_i0_c8,
+                             erf_i0_c6,
+                             erf_i0_c4,
+                             erf_i0_c2,
+                             erf_i0_c0);
         vf_type yh, yl;
         yh = d_ops::two_prod(y_i0, x, yl);
         // vf_type ye;
@@ -142,17 +142,17 @@ erf_k(arg_t<vf_type> xc)
         // x^ : +0xap-3f
         const vf_type erf_i1_x0=+1.2500000000e+00f;
         vf_type x_i1 = x - erf_i1_x0;
-        vf_type y_i1= impl::poly(x_i1,
-                                 erf_i1_c10,
-                                 erf_i1_c9,
-                                 erf_i1_c8,
-                                 erf_i1_c7,
-                                 erf_i1_c6,
-                                 erf_i1_c5,
-                                 erf_i1_c4,
-                                 erf_i1_c3,
-                                 erf_i1_c2,
-                                 erf_i1_c1)*x_i1;
+        vf_type y_i1= horner(x_i1,
+                             erf_i1_c10,
+                             erf_i1_c9,
+                             erf_i1_c8,
+                             erf_i1_c7,
+                             erf_i1_c6,
+                             erf_i1_c5,
+                             erf_i1_c4,
+                             erf_i1_c3,
+                             erf_i1_c2,
+                             erf_i1_c1)*x_i1;
         y_i1 += erf_i1_c0l;
         y_i1 += erf_i1_c0h;
         return y_i1;
@@ -190,17 +190,17 @@ erf_k(arg_t<vf_type> xc)
         // x^ : +0x9.8p-2f
         const vf_type erf_i2_x0=+2.3750000000e+00f;
         vf_type x_i2 = x - erf_i2_x0;
-        vf_type y_i2= impl::poly(x_i2,
-                                 erf_i2_c10,
-                                 erf_i2_c9,
-                                 erf_i2_c8,
-                                 erf_i2_c7,
-                                 erf_i2_c6,
-                                 erf_i2_c5,
-                                 erf_i2_c4,
-                                 erf_i2_c3,
-                                 erf_i2_c2,
-                                 erf_i2_c1)*x_i2;
+        vf_type y_i2= horner(x_i2,
+                             erf_i2_c10,
+                             erf_i2_c9,
+                             erf_i2_c8,
+                             erf_i2_c7,
+                             erf_i2_c6,
+                             erf_i2_c5,
+                             erf_i2_c4,
+                             erf_i2_c3,
+                             erf_i2_c2,
+                             erf_i2_c1)*x_i2;
         y_i2 += erf_i2_c0l;
         y_i2 += erf_i2_c0h;
         return y_i2;
@@ -236,17 +236,17 @@ erf_k(arg_t<vf_type> xc)
         // x^ : +0xep-2f
         const vf_type erf_i3_x0=+3.5000000000e+00f;
         vf_type x_i3 = x - erf_i3_x0;
-        vf_type y_i3= impl::poly(x_i3,
-                                 erf_i3_c10,
-                                 erf_i3_c9,
-                                 erf_i3_c8,
-                                 erf_i3_c7,
-                                 erf_i3_c6,
-                                 erf_i3_c5,
-                                 erf_i3_c4,
-                                 erf_i3_c3,
-                                 erf_i3_c2,
-                                 erf_i3_c1)*x_i3;
+        vf_type y_i3= horner(x_i3,
+                             erf_i3_c10,
+                             erf_i3_c9,
+                             erf_i3_c8,
+                             erf_i3_c7,
+                             erf_i3_c6,
+                             erf_i3_c5,
+                             erf_i3_c4,
+                             erf_i3_c3,
+                             erf_i3_c2,
+                             erf_i3_c1)*x_i3;
         y_i3 += erf_i3_c0l;
         y_i3 += erf_i3_c0h;
         return y_i3;

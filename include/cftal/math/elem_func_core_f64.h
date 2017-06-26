@@ -23,7 +23,7 @@
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f64_s32.h>
-#include <cftal/math/impl_poly.h>
+#include <cftal/math/horner.h>
 #include <cftal/math/impl_estrin.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
@@ -547,15 +547,15 @@ rsqrt_k(arg_t<vf_type> x)
     // x^5 : -0xc.333a5d2e8ea7p-1
     const double rsqrt_c5=-6.1000546569187701351211e+00;
     vf_type mm0sqr= mm0*mm0;
-    vf_type a=impl::poly(mm0sqr,
-                         rsqrt_c4,
-                         rsqrt_c2,
-                         rsqrt_c0);
-    vf_type b=impl::poly(mm0sqr,
-                         rsqrt_c5,
-                         rsqrt_c3,
-                         rsqrt_c1);
-    vf_type mm= impl::poly(mm0, b, a);
+    vf_type a=horner(mm0sqr,
+                     rsqrt_c4,
+                     rsqrt_c2,
+                     rsqrt_c0);
+    vf_type b=horner(mm0sqr,
+                     rsqrt_c5,
+                     rsqrt_c3,
+                     rsqrt_c1);
+    vf_type mm=horner(mm0, b, a);
 
 #if 0
     // this algorithm with fma produces a faithfully rounded rsqrt
@@ -641,13 +641,13 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // x^10 : -0x8.b38f6a7d59358p-33
     const vf_type expn_c10=-1.0129771083725208005378e-09;
     vf_type xx= xrh*xrh;
-    vf_type P= impl::poly(xx,
-                          expn_c10,
-                          expn_c8,
-                          expn_c6,
-                          expn_c4,
-                          expn_c2,
-                          expn_c0);
+    vf_type P= horner(xx,
+                      expn_c10,
+                      expn_c8,
+                      expn_c6,
+                      expn_c4,
+                      expn_c2,
+                      expn_c0);
     vf_type br= vf_type(xrh- xx*P);
     vf_type ye = xrl + xrh*xrl;
     vf_type y = (xrh*br)/(2.0-br);
@@ -694,26 +694,26 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                            exp_c3, exp_c2);
 #else
     vf_type xx=xrh*xrh;
-    vf_type i=impl::poly(xx,
-                         exp_c13,
-                         exp_c11,
-                         exp_c9,
-                         exp_c7,
-                         exp_c5);
-    vf_type j=impl::poly(xx,
-                         exp_c12,
-                         exp_c10,
-                         exp_c8,
-                         exp_c6,
-                         exp_c4);
-    vf_type y=impl::poly(xrh, i, j,
-                         exp_c3, exp_c2);
+    vf_type i=horner(xx,
+                     exp_c13,
+                     exp_c11,
+                     exp_c9,
+                     exp_c7,
+                     exp_c5);
+    vf_type j=horner(xx,
+                     exp_c12,
+                     exp_c10,
+                     exp_c8,
+                     exp_c6,
+                     exp_c4);
+    vf_type y=horner(xrh, i, j,
+                     exp_c3, exp_c2);
 #endif
     vf_type ye;
-    impl::eft_quick_poly(y, ye, xrh, y, exp_c1);
+    eft_quick_horner(y, ye, xrh, y, exp_c1);
     // calculate expm1/xrh for correction term
     vf_type yl=y+ye;
-    impl::eft_quick_poly_si(y, ye, xrh, y, ye, exp_c0);
+    eft_quick_horner_si(y, ye, xrh, y, ye, exp_c0);
 #endif
     vf_type yee= xrl + xrl * xrh * yl;
     ye += yee;
@@ -724,7 +724,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = __scale_exp_k(vf_type(0.5), kf, k2);
         // e^x-1 = 2*(y * 2^s - 0.5)
-        impl::eft_poly_si(y, ye, scale, y, ye, vf_type(-0.5));
+        eft_horner_si(y, ye, scale, y, ye, vf_type(-0.5));
         y *= 2;
         y  = y + 2*ye;
         // x small, required for handling of subnormal numbers
@@ -1059,14 +1059,14 @@ sinh_k(arg_t<vf_type> xc)
     const vf_type sinh_c12=-2.6440801473562751133314e-10;
 
     vf_type x2=x*x;
-    vf_type q=impl::poly(x2,
-                         sinh_c12,
-                         sinh_c10,
-                         sinh_c8,
-                         sinh_c6,
-                         sinh_c4,
-                         sinh_c2,
-                         sinh_c0);
+    vf_type q=horner(x2,
+                     sinh_c12,
+                     sinh_c10,
+                     sinh_c8,
+                     sinh_c6,
+                     sinh_c4,
+                     sinh_c2,
+                     sinh_c0);
     vf_type sinh_le_1 = x + (x*x2)/q;
     vf_type xr= _T::sel(x_huge, x - 0.75, x);
     vf_type em=exp_k(xr, true);
@@ -1101,10 +1101,10 @@ cosh_k(arg_t<vf_type> xc)
     using fc=func_constants<double>;
     vmf_type x_huge = x >= fc::exp_hi_inf();
     /*
-        cosh(x) = 1 + x^2/2 + x^4/24 ...
-        cosh(x)-1) = x^2*R
-        R= f(x^2)
-        cosh(x)-1)/(x^2)= R
+      cosh(x) = 1 + x^2/2 + x^4/24 ...
+      cosh(x)-1) = x^2*R
+      R= f(x^2)
+      cosh(x)-1)/(x^2)= R
     */
     // [3.4694469519536141888238489627838134765625e-18, 0.693147182464599609375] : | p - f | <= 2^-64.1875
     // coefficients for cosh generated by sollya
@@ -1123,14 +1123,14 @@ cosh_k(arg_t<vf_type> xc)
     // x^12 : +0xc.b279999c86d88p-40
     const vf_type cosh_c12=+1.1548006995718819778011e-11;
     vf_type xx= x*x;
-    vf_type cosh_le_ln2 = 1.0 + xx*impl::poly(xx,
-                                              cosh_c12,
-                                              cosh_c10,
-                                              cosh_c8,
-                                              cosh_c6,
-                                              cosh_c4,
-                                              cosh_c2,
-                                              cosh_c0);
+    vf_type cosh_le_ln2 = 1.0 + xx*horner(xx,
+                                          cosh_c12,
+                                          cosh_c10,
+                                          cosh_c8,
+                                          cosh_c6,
+                                          cosh_c4,
+                                          cosh_c2,
+                                          cosh_c0);
     vf_type xr= _T::sel(x_huge, x - 0.75, x);
     vf_type em=exp_k(xr, true);
     vf_type e=em+1;
@@ -1198,24 +1198,24 @@ tanh_k(arg_t<vf_type> xc)
     const vf_type tanh_c16=+1.9737065938582685348246e-03;
     // x^17 : -0xc.c65594c3b6598p-15
     const vf_type tanh_c17=-3.8985422864152712322736e-04;
-    vf_type R= impl::poly(x,
-                          tanh_c17,
-                          tanh_c16,
-                          tanh_c15,
-                          tanh_c14,
-                          tanh_c13,
-                          tanh_c12,
-                          tanh_c11,
-                          tanh_c10,
-                          tanh_c9,
-                          tanh_c8,
-                          tanh_c7,
-                          tanh_c6,
-                          tanh_c5,
-                          tanh_c4,
-                          tanh_c3,
-                          tanh_c2,
-                          tanh_c1);
+    vf_type R= horner(x,
+                      tanh_c17,
+                      tanh_c16,
+                      tanh_c15,
+                      tanh_c14,
+                      tanh_c13,
+                      tanh_c12,
+                      tanh_c11,
+                      tanh_c10,
+                      tanh_c9,
+                      tanh_c8,
+                      tanh_c7,
+                      tanh_c6,
+                      tanh_c5,
+                      tanh_c4,
+                      tanh_c3,
+                      tanh_c2,
+                      tanh_c1);
     vf_type tanh_x_small = R * x;
     vf_type tanh_x = _T::sel(x_gt_ln_3_2, tanh_x_gt_ln_3_2, tanh_x_small);
     tanh_x = _T::sel(x_gt_20, tanh_x_gt_20, tanh_x);
@@ -1249,16 +1249,16 @@ log_k_poly(arg_t<vf_type> z)
     const vf_type log_c16=+1.3288089391701582431260e-01;
 
     vf_type w = z*z;
-    vf_type t1= z*impl::poly(w,
-                             log_c14,
-                             log_c10,
-                             log_c6,
-                             log_c2);
-    vf_type t2= impl::poly(w,
-                           log_c16,
-                           log_c12,
-                           log_c8,
-                           log_c4);
+    vf_type t1= z*horner(w,
+                         log_c14,
+                         log_c10,
+                         log_c6,
+                         log_c2);
+    vf_type t2= horner(w,
+                       log_c16,
+                       log_c12,
+                       log_c8,
+                       log_c4);
     vf_type y = t2*w + t1;
     return y;
 }
@@ -1363,13 +1363,13 @@ log_k(arg_t<vf_type> xc, log_func func)
         res = log_x;
     } else if (func == log_func::c_log_10) {
         const vf_type
-        ivln10hi  = 4.34294481878168880939e-01; /* 0x3fdbcb7b, 0x15200000 */
+            ivln10hi  = 4.34294481878168880939e-01; /* 0x3fdbcb7b, 0x15200000 */
         const vf_type
-        ivln10lo  = 2.50829467116452752298e-11; /* 0x3dbb9438, 0xca9aadd5 */
+            ivln10lo  = 2.50829467116452752298e-11; /* 0x3dbb9438, 0xca9aadd5 */
         const vf_type
-        log10_2hi = 3.01029995663611771306e-01; /* 0x3FD34413, 0x509F6000 */
+            log10_2hi = 3.01029995663611771306e-01; /* 0x3FD34413, 0x509F6000 */
         const vf_type
-        log10_2lo = 3.69423907715893078616e-13; /* 0x3D59FEF3, 0x11F12B36 */
+            log10_2lo = 3.69423907715893078616e-13; /* 0x3D59FEF3, 0x11F12B36 */
 
         vf_type t = f - hfsq;
         vf_type hi= _T::clear_low_word(t);
@@ -1387,9 +1387,9 @@ log_k(arg_t<vf_type> xc, log_func func)
         res =log10_x;
     } else if (func == log_func::c_log_2) {
         const vf_type
-        ivln2hi = 1.44269504072144627571e+00; /* 0x3ff71547, 0x65200000 */
+            ivln2hi = 1.44269504072144627571e+00; /* 0x3ff71547, 0x65200000 */
         const vf_type
-        ivln2lo = 1.67517131648865118353e-10; /* 0x3de705fc, 0x2eefa200 */
+            ivln2lo = 1.67517131648865118353e-10; /* 0x3de705fc, 0x2eefa200 */
 
         vf_type t= f - hfsq;
         vf_type hi= _T::clear_low_word(t);
@@ -1574,16 +1574,16 @@ __pow_log_k2(arg_t<vf_type> xc)
     const vf_type log_c16=+1.3288089391701582431260e-01;
 
     vf_type w = z*z;
-    vf_type t1= z*impl::poly(w,
-                             log_c14,
-                             log_c10,
-                             log_c6,
-                             log_c2);
-    vf_type t2= impl::poly(w,
-                           log_c16,
-                           log_c12,
-                           log_c8,
-                           log_c4);
+    vf_type t1= z*horner(w,
+                         log_c14,
+                         log_c10,
+                         log_c6,
+                         log_c2);
+    vf_type t2= horner(w,
+                       log_c16,
+                       log_c12,
+                       log_c8,
+                       log_c4);
     vf_type y = t2*w + t1;
 
     using ctbl=impl::d_real_constants<d_real<double>, double>;
@@ -1642,26 +1642,26 @@ __pow_exp_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
     const vf_type exp_c13=+1.6594686285988114700473e-10;
 
     vf_type xx=xr.h()*xr.h();
-    vf_type i=impl::poly(xx,
-                         exp_c13,
-                         exp_c11,
-                         exp_c9,
-                         exp_c7);
-    vf_type j=impl::poly(xx,
-                         exp_c12,
-                         exp_c10,
-                         exp_c8,
-                         exp_c6);
+    vf_type i=horner(xx,
+                     exp_c13,
+                     exp_c11,
+                     exp_c9,
+                     exp_c7);
+    vf_type j=horner(xx,
+                     exp_c12,
+                     exp_c10,
+                     exp_c8,
+                     exp_c6);
     vf_type y=i*xr.h() + j;
-    y = impl::poly(xr.h(), y,
-                   exp_c5, exp_c4, exp_c3);
+    y = horner(xr.h(), y,
+               exp_c5, exp_c4, exp_c3);
     // correction for errors in argument reduction
     vf_type cr = xr.l();
     vf_type yee= cr + cr*xr.h() + 0.5*cr*xx;
     vf_type ye;
-    // y = impl::poly(xr.h(), y, exp_c1);
-    impl::eft_quick_poly(y, ye, xr.h(), y,
-                         exp_c2, exp_c1, exp_c0);
+    // y = horner(xr.h(), y, exp_c1);
+    eft_quick_poly(y, ye, xr.h(), y,
+                   exp_c2, exp_c1, exp_c0);
     // y = d_ops::two_sum(y, exp_c2, ye);
     // impl::eft_poly_si(y, ye, xr, y, ye,
     //                  exp_c1,
@@ -1862,7 +1862,7 @@ __cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     vf_type z  = xh*xh;
     vf_type w  = z*z;
     vf_type r  = z*(cos_c4+z*(cos_c6+z*cos_c8)) +
-                 w*w*(cos_c10+z*(cos_c12+z*cos_c14));
+        w*w*(cos_c10+z*(cos_c12+z*cos_c14));
     vf_type hz = 0.5*z;
     w  = 1.0-hz;
     return w + (((1.0-w)-hz) + (z*r-xh*xl));
@@ -1992,19 +1992,19 @@ __tan_k(arg_t<vf_type> xh, arg_t<vf_type> xl, arg_t<vi_type> q)
     vf_type z = xrh*xrh;
 
     vf_type s= z * xrh;
-    vf_type r = s* impl::poly(z,
-                              tan_c26,
-                              tan_c24,
-                              tan_c22,
-                              tan_c20,
-                              tan_c18,
-                              tan_c16,
-                              tan_c14,
-                              tan_c12,
-                              tan_c10,
-                              tan_c8,
-                              tan_c6,
-                              tan_c4);
+    vf_type r = s* horner(z,
+                          tan_c26,
+                          tan_c24,
+                          tan_c22,
+                          tan_c20,
+                          tan_c18,
+                          tan_c16,
+                          tan_c14,
+                          tan_c12,
+                          tan_c10,
+                          tan_c8,
+                          tan_c6,
+                          tan_c4);
     r = tan_c2*s + (z *(r+xrl)+ xrl);
     vf_type txy= xrh + r;
 
@@ -2128,17 +2128,17 @@ atan_k(arg_t<vf_type> xc)
     const vf_type atan_0_5_hi = 4.63647609000806093515e-01;
     /* atan(0.5)lo 0x3C7A2B7F, 0x222F65E2 */
     const vf_type atan_0_5_lo = 2.26987774529616870924e-17;
-     /* atan(1.0)hi 0x3FE921FB, 0x54442D18 */
+    /* atan(1.0)hi 0x3FE921FB, 0x54442D18 */
     const vf_type atan_1_0_hi = 7.85398163397448278999e-01;
     /* atan(1.0)lo 0x3C81A626, 0x33145C07 */
     const vf_type atan_1_0_lo = 3.06161699786838301793e-17;
     /* atan(1.5)hi 0x3FEF730B, 0xD281F69B */
     const vf_type atan_1_5_hi = 9.82793723247329054082e-01;
-     /* atan(1.5)lo 0x3C700788, 0x7AF0CBBD */
+    /* atan(1.5)lo 0x3C700788, 0x7AF0CBBD */
     const vf_type atan_1_5_lo = 1.39033110312309984516e-17;
-     /* atan(inf)hi 0x3FF921FB, 0x54442D18 */
+    /* atan(inf)hi 0x3FF921FB, 0x54442D18 */
     const vf_type atan_inf_hi = 1.57079632679489655800e+00;
-     /* atan(inf)lo 0x3C91A626, 0x33145C07 */
+    /* atan(inf)lo 0x3C91A626, 0x33145C07 */
     const vf_type atan_inf_lo = 6.12323399573676603587e-17;
 
     vf_type x=abs(xc);
@@ -2188,19 +2188,19 @@ atan_k(arg_t<vf_type> xc)
     const vf_type atan_c22=-1.4587149834858851096819e-02;
 
     vf_type t2=t*t;
-    vf_type p= t2 * impl::poly(t2,
-                               atan_c22,
-                               atan_c20,
-                               atan_c18,
-                               atan_c16,
-                               atan_c14,
-                               atan_c12,
-                               atan_c10,
-                               atan_c8,
-                               atan_c6,
-                               atan_c4,
-                               atan_c2,
-                               atan_c0);
+    vf_type p= t2 * horner(t2,
+                           atan_c22,
+                           atan_c20,
+                           atan_c18,
+                           atan_c16,
+                           atan_c14,
+                           atan_c12,
+                           atan_c10,
+                           atan_c8,
+                           atan_c6,
+                           atan_c4,
+                           atan_c2,
+                           atan_c0);
     vf_type at=  atan_hi - (t * p - atan_lo - t);
     at = copysign(at, xc);
     return at;
@@ -2266,20 +2266,20 @@ asin_k_poly(arg_t<vf_type> x2)
     // x^24 : +0xe.d339866978be8p-9
     const vf_type asin_c24=+2.8955266626085929965173e-02;
 
-    vf_type r=x2*impl::poly(x2,
-                            asin_c24,
-                            asin_c22,
-                            asin_c20,
-                            asin_c18,
-                            asin_c16,
-                            asin_c14,
-                            asin_c12,
-                            asin_c10,
-                            asin_c8,
-                            asin_c6,
-                            asin_c4,
-                            asin_c2,
-                            asin_c0);
+    vf_type r=x2*horner(x2,
+                        asin_c24,
+                        asin_c22,
+                        asin_c20,
+                        asin_c18,
+                        asin_c16,
+                        asin_c14,
+                        asin_c12,
+                        asin_c10,
+                        asin_c8,
+                        asin_c6,
+                        asin_c4,
+                        asin_c2,
+                        asin_c0);
     return r;
 }
 
@@ -2334,7 +2334,7 @@ asin_k(arg_t<vf_type> xc)
     vf_type f=_T::clear_low_word(s);
     vf_type c= (z-f*f)/(s+f);
     vf_type as1= 0.5 * ctbl::m_pi_2.h() -
-        (2*s*r - (ctbl::m_pi_2.l() -2 *c) - (0.5*ctbl::m_pi_2.h()-2*f));
+                         (2*s*r - (ctbl::m_pi_2.l() -2 *c) - (0.5*ctbl::m_pi_2.h()-2*f));
     vf_type as=_T::sel(x_lt_1_2, as0, as1);
     as = copysign(as, xc);
     return as;
@@ -2449,22 +2449,22 @@ asinh_k(arg_t<vf_type> xc)
     // x^28 : +0x9.73fd0c879255p-15
     const vf_type asinh_c28=+2.8848510652019576736699e-04;
 
-    vf_type yss= x* impl::poly(t,
-                               asinh_c28,
-                               asinh_c26,
-                               asinh_c24,
-                               asinh_c22,
-                               asinh_c20,
-                               asinh_c18,
-                               asinh_c16,
-                               asinh_c14,
-                               asinh_c12,
-                               asinh_c10,
-                               asinh_c8,
-                               asinh_c6,
-                               asinh_c4,
-                               asinh_c2,
-                               asinh_c0);
+    vf_type yss= x* horner(t,
+                           asinh_c28,
+                           asinh_c26,
+                           asinh_c24,
+                           asinh_c22,
+                           asinh_c20,
+                           asinh_c18,
+                           asinh_c16,
+                           asinh_c14,
+                           asinh_c12,
+                           asinh_c10,
+                           asinh_c8,
+                           asinh_c6,
+                           asinh_c4,
+                           asinh_c2,
+                           asinh_c0);
 
     ys = _T::sel(x<= M_SQRT2*0.5, yss, ys);
 
@@ -2530,24 +2530,24 @@ acosh_k(arg_t<vf_type> xc)
     const vf_type acosh_c15=-2.5271917436897211509152e-08;
     // x^16 : +0xa.262fe8ff68a98p-32
     const vf_type acosh_c16=+2.3630374462414833615335e-09;
-    vf_type ys=impl::poly(xm1,
-                          acosh_c16,
-                          acosh_c15,
-                          acosh_c14,
-                          acosh_c13,
-                          acosh_c12,
-                          acosh_c11,
-                          acosh_c10,
-                          acosh_c9,
-                          acosh_c8,
-                          acosh_c7,
-                          acosh_c6,
-                          acosh_c5,
-                          acosh_c4,
-                          acosh_c3,
-                          acosh_c2,
-                          acosh_c1,
-                          acosh_c0);
+    vf_type ys=horner(xm1,
+                      acosh_c16,
+                      acosh_c15,
+                      acosh_c14,
+                      acosh_c13,
+                      acosh_c12,
+                      acosh_c11,
+                      acosh_c10,
+                      acosh_c9,
+                      acosh_c8,
+                      acosh_c7,
+                      acosh_c6,
+                      acosh_c5,
+                      acosh_c4,
+                      acosh_c3,
+                      acosh_c2,
+                      acosh_c1,
+                      acosh_c0);
     ys= (sqrt2xm1 * ys).h();
     vf_type y= _T::sel(x < 2.0, ys, yl);
     return y;
@@ -2591,20 +2591,20 @@ atanh_k(arg_t<vf_type> xc)
     // x^24 : -0xf.5530a41a25ddp-8
     const vf_type atanh_c24=-5.9893646301268657627936e-02;
     vf_type xx=x*x;
-    vf_type Q = impl::poly(xx,
-                           atanh_c24,
-                           atanh_c22,
-                           atanh_c20,
-                           atanh_c18,
-                           atanh_c16,
-                           atanh_c14,
-                           atanh_c12,
-                           atanh_c10,
-                           atanh_c8,
-                           atanh_c6,
-                           atanh_c4,
-                           atanh_c2,
-                           atanh_c0);
+    vf_type Q = horner(xx,
+                       atanh_c24,
+                       atanh_c22,
+                       atanh_c20,
+                       atanh_c18,
+                       atanh_c16,
+                       atanh_c14,
+                       atanh_c12,
+                       atanh_c10,
+                       atanh_c8,
+                       atanh_c6,
+                       atanh_c4,
+                       atanh_c2,
+                       atanh_c0);
     vf_type ys= x + x*xx/(3.0 + xx * Q);
     vf_type log1p_arg= 2*(x/(1-x));
     vf_type yl= 0.5*log1p_k(log1p_arg);
@@ -2726,11 +2726,11 @@ cbrt_k(arg_t<vf_type> xc)
     const vf_type cbrt_c2=-1.3859252552410810110928e+00;
     // x^3 : +0x9.79975a0a1a7ap-4
     const vf_type cbrt_c3=+5.9218535586992837593812e-01;
-    vf_type mm = impl::poly(mm0,
-                            cbrt_c3,
-                            cbrt_c2,
-                            cbrt_c1,
-                            cbrt_c0);
+    vf_type mm = horner(mm0,
+                        cbrt_c3,
+                        cbrt_c2,
+                        cbrt_c1,
+                        cbrt_c0);
     // one halley step
     vf_type s=mm*mm*mm;
     mm = mm -(s - mm0) * mm/(2*s+mm0);
