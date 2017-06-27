@@ -211,15 +211,6 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
-#if 0
-    auto r= check_exp_f64_base::r(0.0);
-    double r0, rl, rr;
-    std::tie(r0, rl, rr) = r;
-
-    std::cout << r0 << std::endl
-              << rl << std::endl
-              << rr << std::endl;
-#else
     const int ulp=256;
     const int _N=16;
     bool rc=true;
@@ -271,5 +262,4 @@ int main(int argc, char** argv)
     std::cout << st << std::endl;
 
     return (rc == true) ? 0 : 1;
-#endif
 }
