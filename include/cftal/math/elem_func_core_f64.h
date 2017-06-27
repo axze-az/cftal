@@ -205,11 +205,6 @@ namespace cftal {
             vf_type
             log_k(arg_t<vf_type> x, log_func f=log_func::c_log_e);
 
-
-            static
-            dvf_type
-            log_k2(arg_t<vf_type> x);
-
             static
             vf_type
             log1p_k(arg_t<vf_type> x);
@@ -706,8 +701,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                      exp_c8,
                      exp_c6,
                      exp_c4);
-    vf_type y=horner(xrh, i, j,
-                     exp_c3, exp_c2);
+    vf_type y=horner(xrh, i, j, exp_c3, exp_c2);
 #endif
     vf_type ye;
     horner_comp_quick(y, ye, xrh, y, exp_c1);
@@ -1360,16 +1354,6 @@ log_k(arg_t<vf_type> xc, log_func func)
     return res;
 }
 
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<double, _T>::dvf_type
-cftal::math::elem_func_core<double, _T>::
-log_k2(arg_t<vf_type> xc)
-{
-
-}
-
 template <typename _T>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
@@ -1636,8 +1620,9 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type abs_x= abs(x);
     dvf_type lnx = __pow_log_k2(abs_x);
     dvf_type ylnx = lnx * y;
-    vf_type res= __pow_exp_k2(ylnx.h(), ylnx.l());
-
+    vf_type xrh, xrl, kf;
+    auto k=__reduce_exp_arg(xrh, xrl, kf, ylnx.h(), ylnx.l());
+    vf_type res=__exp_k<false>(xrh, xrl, kf, k);
     using fc=func_constants<double>;
     const vf_type& d= ylnx.h();
     const vf_type exp_hi_inf= fc::exp_hi_inf();
