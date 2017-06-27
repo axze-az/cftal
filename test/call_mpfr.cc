@@ -603,10 +603,9 @@ horner(mpfr_t res,
     const __mpfr_struct* c= c_n;
     vcx.push_back(c);
     va_start(va, c_n);
-    do {
-        c = va_arg(va, const __mpfr_struct*);
+    while ((c =va_arg(va, const __mpfr_struct*)) != nullptr) {
         vcx.push_back(c);
-    } while (c != nullptr);
+    }
     va_end(va);
 
     auto f=[&vcx](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
@@ -615,8 +614,8 @@ horner(mpfr_t res,
         mpfr_set(r(), cn, rm);
         for (std::size_t i=1; i< vcx.size(); ++i) {
             mpfr_mul(r(), xx, r(), rm);
-            const __mpfr_struct* cn= vcx[1];
-            mpfr_add(r(), xx, cn, rm);
+            const __mpfr_struct* cnm1= vcx[i];
+            mpfr_add(r(), r(), cnm1, rm);
         }
         return mpfr_set(rr, r(), rm);
     };
