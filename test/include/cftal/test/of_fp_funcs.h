@@ -92,7 +92,8 @@ namespace cftal {
               func_domain<_T> domain = default_domain<_T>::value,
               bool speed_only = false,
               _CMP cmp=_CMP(),
-              std::size_t cnt=default_cnt);
+              std::size_t cnt=default_cnt,
+              bool suppress_defaults= false);
 
             template <typename _CMP=cmp_t<_T> >
             static
@@ -109,9 +110,11 @@ namespace cftal {
               func_domain<_T> domain = default_domain<_T>::value,
               bool speed_only = false,
               _CMP cmp= _CMP(),
-              std::size_t cnt=default_cnt) {
+              std::size_t cnt=default_cnt,
+              bool suppress_defaults= false) {
                 bool r=of_fp_func<_T, _N, _F>::v(st, domain,
-                                                 speed_only, cmp, cnt);
+                                                 speed_only, cmp, cnt,
+                                                 suppress_defaults);
                 return r;
             }
         };
@@ -127,7 +130,8 @@ namespace cftal {
               func_domain<_T> domain_2 = default_domain<_T>::value,
               bool speed_only = false,
               _CMP cmp=_CMP(),
-              std::size_t cnt=default_cnt);
+              std::size_t cnt=default_cnt,
+              bool suppress_defaults=false);
 
             template <typename _CMP=cmp_t<_T> >
             static
@@ -145,9 +149,11 @@ namespace cftal {
               func_domain<_T> domain_2 = default_domain<_T>::value,
               bool speed_only = false,
               _CMP cmp= _CMP(),
-              std::size_t cnt=default_cnt) {
+              std::size_t cnt=default_cnt,
+              bool suppress_defaults=false) {
                 bool r=of_fp_func_2<_T, _N, _F>::v(st, domain_1, domain_2,
-                                                   speed_only, cmp, cnt);
+                                                   speed_only, cmp, cnt,
+                                                   suppress_defaults);
                 return r;
             }
         };
@@ -378,83 +384,85 @@ bool
 cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
                                        func_domain<_T> domain,
                                        bool speed_only,
-                                       _CMP cmp, std::size_t cnt)
+                                       _CMP cmp, std::size_t cnt,
+                                       bool suppress_defaults)
 {
     bool r = true;
     _T va[_N];
-#if 1
-    const _T inf_nan_args []= {
-        _T(0.0),
-        _T(-0.0),
-        _T(0.5),
-        _T(1),
-        _T(2),
-        _T(7),
-        _T(8),
-        _T(20),
-        _T(M_E), _T(1/M_E),
-        _T(M_LOG2E),  _T(1/M_LOG2E),
-        _T(M_LOG10E), _T(1/M_LOG10E),
-        _T(M_LN2),  _T(1/M_LN2),
-        _T(M_LN10), _T(1/M_LN10),
-        _T(M_PI), _T(M_1_PI),
-        _T(M_PI_2), _T(M_2_PI),
-        _T(M_PI_4), _T(1/M_PI_4),
-        _T(M_2_SQRTPI), _T(1/M_2_SQRTPI),
-        _T(M_SQRT2), _T(M_SQRT1_2),
-        _T(M_SQRT2/2), _T(2/M_SQRT2),
-        // log functions
-        _T(std::log(3)/2),
-        // tan
-        _T(6.0/7.0*M_PI_4),
-        // atan
-        _T(7.0/16), _T(11.0/16), _T(19.0/16), _T(39.0/16),
-        // asinh
-        _T(0x1p28),
-        // acosh
-        _T(0x1p26),
-        _T(uint64_t(1ULL<<23)),
-        _T(uint64_t(1ULL<<52)),
-        _T(0x1.0p31),
-        _T(0x1.0p21),
-        _T(0x1.0p23),
-        _T(0x1.0p24),
-        _T(0x1.0p51),
-        _T(0x1.0p52),
-        std::numeric_limits<_T>::denorm_min(),
-        2*std::numeric_limits<_T>::denorm_min(),
-        4*std::numeric_limits<_T>::denorm_min(),
-        8*std::numeric_limits<_T>::denorm_min(),
-        16*std::numeric_limits<_T>::denorm_min(),
-        32*std::numeric_limits<_T>::denorm_min(),
-        64*std::numeric_limits<_T>::denorm_min(),
-        std::numeric_limits<_T>::min(),
-        2*std::numeric_limits<_T>::min(),
-        4*std::numeric_limits<_T>::min(),
-        8*std::numeric_limits<_T>::min(),
-        16*std::numeric_limits<_T>::min(),
-        32*std::numeric_limits<_T>::min(),
-        64*std::numeric_limits<_T>::min(),
-        std::numeric_limits<_T>::max(),
-        1.0/2.0*std::numeric_limits<_T>::max(),
-        1.0/4.0*std::numeric_limits<_T>::max(),
-        1.0/8.0*std::numeric_limits<_T>::max(),
-        1.0/16.0*std::numeric_limits<_T>::max(),
-        1.0/32.0*std::numeric_limits<_T>::max(),
-        1.0/64.0*std::numeric_limits<_T>::max(),
-        std::numeric_limits<_T>::infinity(),
-        std::numeric_limits<_T>::quiet_NaN(),
-    };
 
-    for (auto b=std::begin(inf_nan_args), e=std::end(inf_nan_args);
-         b!=e; ++b) {
-        const auto& ai= *b;
-        std::fill(std::begin(va), std::end(va), ai);
-        r &=v(va, st, speed_only, cmp);
-        std::fill(std::begin(va), std::end(va), -ai);
-        r &=v(va, st, speed_only, cmp);
+    if (suppress_defaults == false) {
+        const _T inf_nan_args []= {
+            _T(0.0),
+            _T(-0.0),
+            _T(0.5),
+            _T(1),
+            _T(2),
+            _T(7),
+            _T(8),
+            _T(20),
+            _T(M_E), _T(1/M_E),
+            _T(M_LOG2E),  _T(1/M_LOG2E),
+            _T(M_LOG10E), _T(1/M_LOG10E),
+            _T(M_LN2),  _T(1/M_LN2),
+            _T(M_LN10), _T(1/M_LN10),
+            _T(M_PI), _T(M_1_PI),
+            _T(M_PI_2), _T(M_2_PI),
+            _T(M_PI_4), _T(1/M_PI_4),
+            _T(M_2_SQRTPI), _T(1/M_2_SQRTPI),
+            _T(M_SQRT2), _T(M_SQRT1_2),
+            _T(M_SQRT2/2), _T(2/M_SQRT2),
+            // log functions
+            _T(std::log(3)/2),
+            // tan
+            _T(6.0/7.0*M_PI_4),
+            // atan
+            _T(7.0/16), _T(11.0/16), _T(19.0/16), _T(39.0/16),
+            // asinh
+            _T(0x1p28),
+            // acosh
+            _T(0x1p26),
+            _T(uint64_t(1ULL<<23)),
+            _T(uint64_t(1ULL<<52)),
+            _T(0x1.0p31),
+            _T(0x1.0p21),
+            _T(0x1.0p23),
+            _T(0x1.0p24),
+            _T(0x1.0p51),
+            _T(0x1.0p52),
+            std::numeric_limits<_T>::denorm_min(),
+            2*std::numeric_limits<_T>::denorm_min(),
+            4*std::numeric_limits<_T>::denorm_min(),
+            8*std::numeric_limits<_T>::denorm_min(),
+            16*std::numeric_limits<_T>::denorm_min(),
+            32*std::numeric_limits<_T>::denorm_min(),
+            64*std::numeric_limits<_T>::denorm_min(),
+            std::numeric_limits<_T>::min(),
+            2*std::numeric_limits<_T>::min(),
+            4*std::numeric_limits<_T>::min(),
+            8*std::numeric_limits<_T>::min(),
+            16*std::numeric_limits<_T>::min(),
+            32*std::numeric_limits<_T>::min(),
+            64*std::numeric_limits<_T>::min(),
+            std::numeric_limits<_T>::max(),
+            1.0/2.0*std::numeric_limits<_T>::max(),
+            1.0/4.0*std::numeric_limits<_T>::max(),
+            1.0/8.0*std::numeric_limits<_T>::max(),
+            1.0/16.0*std::numeric_limits<_T>::max(),
+            1.0/32.0*std::numeric_limits<_T>::max(),
+            1.0/64.0*std::numeric_limits<_T>::max(),
+            std::numeric_limits<_T>::infinity(),
+            std::numeric_limits<_T>::quiet_NaN(),
+        };
+
+        for (auto b=std::begin(inf_nan_args), e=std::end(inf_nan_args);
+            b!=e; ++b) {
+            const auto& ai= *b;
+            std::fill(std::begin(va), std::end(va), ai);
+            r &=v(va, st, speed_only, cmp);
+            std::fill(std::begin(va), std::end(va), -ai);
+            r &=v(va, st, speed_only, cmp);
+        }
     }
-#endif
     std::mt19937_64 rnd;
     uniform_real_distribution<_T>
         distrib(domain.first, domain.second);
@@ -563,43 +571,44 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
                                          func_domain<_T> domain_1,
                                          func_domain<_T> domain_2,
                                          bool speed_only,
-                                         _CMP cmp, std::size_t cnt)
+                                         _CMP cmp, std::size_t cnt,
+                                         bool suppress_defaults)
 {
     bool r = true;
     _T va[_N], vb[_N];
-#if 0
-    const _T inf_nan_args []= {
-        _T(0.0),
-        _T(-0.0),
-        _T(1),
-        _T(2),
-        _T(7),
-        _T(8),
-        _T(uint64_t(1ULL<<23)),
-        _T(uint64_t(1ULL<<52)),
-        std::numeric_limits<_T>::infinity(),
-        std::numeric_limits<_T>::quiet_NaN(),
-    };
+    if (suppress_defaults == false) {
+        const _T inf_nan_args []= {
+            _T(0.0),
+            _T(-0.0),
+            _T(1),
+            _T(2),
+            _T(7),
+            _T(8),
+            _T(uint64_t(1ULL<<23)),
+            _T(uint64_t(1ULL<<52)),
+            std::numeric_limits<_T>::infinity(),
+            std::numeric_limits<_T>::quiet_NaN(),
+        };
 
 
-    for (auto ab=std::begin(inf_nan_args), ae=std::end(inf_nan_args);
-         ab != ae; ++ab) {
-        _T ai=*ab;
-        for (auto bb=std::begin(inf_nan_args), be=std::end(inf_nan_args);
-             bb !=be; ++bb) {
-            _T bi= *bb;
-            std::fill(std::begin(va), std::end(va), ai);
-            std::fill(std::begin(vb), std::end(vb), bi);
-            r &= v(va, vb, st, speed_only, cmp);
-            std::fill(std::begin(vb), std::end(vb), -bi);
-            r &= v(va, vb, st, speed_only, cmp);
-            std::fill(std::begin(va), std::end(va), -ai);
-            r &= v(va, vb, st, speed_only, cmp);
-            std::fill(std::begin(vb), std::end(vb), bi);
-            r &= v(va, vb, st, speed_only, cmp);
+        for (auto ab=std::begin(inf_nan_args), ae=std::end(inf_nan_args);
+            ab != ae; ++ab) {
+            _T ai=*ab;
+            for (auto bb=std::begin(inf_nan_args), be=std::end(inf_nan_args);
+                bb !=be; ++bb) {
+                _T bi= *bb;
+                std::fill(std::begin(va), std::end(va), ai);
+                std::fill(std::begin(vb), std::end(vb), bi);
+                r &= v(va, vb, st, speed_only, cmp);
+                std::fill(std::begin(vb), std::end(vb), -bi);
+                r &= v(va, vb, st, speed_only, cmp);
+                std::fill(std::begin(va), std::end(va), -ai);
+                r &= v(va, vb, st, speed_only, cmp);
+                std::fill(std::begin(vb), std::end(vb), bi);
+                r &= v(va, vb, st, speed_only, cmp);
+            }
         }
     }
-#endif
 
     std::mt19937_64 rnd;
     uniform_real_distribution<_T>

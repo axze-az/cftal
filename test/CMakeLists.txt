@@ -68,7 +68,7 @@ set (TEST_HDRS
   ./include/cftal/test/check_atan2.h
   ./include/cftal/test/check_exp_mx2.h
   ./include/cftal/test/check_sin.h
-  ./include/cftal/test/check_acosh.h  
+  ./include/cftal/test/check_acosh.h
 )
 
 find_package(Boost REQUIRED)
@@ -151,6 +151,7 @@ test_prog(test-trunc)
 test_prog(test-rint)
 test_prog(test-intops)
 
+test_prog(test-poly)
 test_prog(test-sqrt-f64)
 test_prog(test-rsqrt-f64)
 test_prog(test-cbrt-f64)
