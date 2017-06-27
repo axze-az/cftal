@@ -69,6 +69,7 @@ namespace cftal {
             v(const vec<_T, 1>& x, const vec<_T, 1>& fx, exec_stats& st) {
                 static_cast<void>(x);
                 static_cast<void>(fx);
+                static_cast<void>(st);
                 return true;
             }
             static
@@ -78,6 +79,7 @@ namespace cftal {
                 static_cast<void>(x);
                 static_cast<void>(y);
                 static_cast<void>(fx);
+                static_cast<void>(st);
                 return true;
             }
         };

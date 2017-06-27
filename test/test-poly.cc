@@ -118,10 +118,11 @@ namespace cftal {
             vec<double, _N>
             v(const vec<double, _N>& x) {
                 using vf_type = vec<double, _N>;
-                vf_type y=math::impl::estrin(x,
-                                       c13, c12, c11, c10,
-                                       c9, c8, c7, c6, c5,
-                                       c4, c3, c2);
+                vf_type y= math::impl::estrin(x,
+                                              c13, c12, c11, c10,
+                                              c9, c8, c7, c6, c5,
+                                              c4, c3);
+                y=math::horner(x, y, c2);
                 vf_type ye;
                 math::horner_comp_quick(y, ye, x, y, c1, c0);
                 return y+ ye;
@@ -212,7 +213,7 @@ int main(int argc, char** argv)
     std::cerr << std::setprecision(18) << std::scientific;
 
     const int ulp=256;
-    const int _N=16;
+    const int _N=8;
     bool rc=true;
     bool speed_only=false;
     std::size_t cnt=update_cnt(0x8000);
@@ -225,6 +226,7 @@ int main(int argc, char** argv)
     func_domain<ftype> d=std::make_pair(-M_LN2/2, M_LN2/2);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
+#if 0
     rc &= of_fp_func_up_to<
         ftype, _N, check_exp_f64_base>::v(st, d, speed_only,
                                           cmp_ulp<ftype>(ulp, us),
@@ -232,9 +234,8 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
-
-
     us=std::make_shared<ulp_stats>();
+#endif
     rc &= of_fp_func_up_to<
         ftype, _N, check_exp_f64_impl>::v(st, d, speed_only,
                                           cmp_ulp<ftype>(ulp, us),
@@ -243,6 +244,8 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
 
+#if 0
+    // deactivated, no new information
     us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         ftype, _N, check_exp_f64_horner>::v(st, d, speed_only,
@@ -251,6 +254,7 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
+#endif
 
     us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
