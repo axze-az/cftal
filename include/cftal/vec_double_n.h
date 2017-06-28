@@ -213,7 +213,7 @@ namespace cftal {
     template <std::size_t _N>
     vec<double, _N>
     native_rsqrt(const vec<double, _N>& v);
-    
+
     // cbrt, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -823,6 +823,43 @@ namespace cftal {
     vec<double, 8>
     exp10_px2(arg_t<vec<double, 8> > d);
 
+#if defined (FP_FAST_FMA) && (FP_FAST_FMA > 0)
+    namespace op {
+    // overwrite the fma ops for vectors of length 1
+        template <>
+        struct fma<double, 1> {
+            using full_type = vec<double, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+                return fma(a(), b(), c());
+            }
+        };
+
+        template <>
+        struct fms<double, 1> {
+            using full_type = vec<double, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+                return fma(a(), b(), -c());
+            }
+        };
+
+        template <>
+        struct fnma<double, 1> {
+            using full_type = vec<double, 1>;
+            static
+            full_type
+            v(const full_type& a, const full_type& b,
+              const full_type& c) {
+                return fma(-a(), b(), c());
+            }
+        };
+    }
+#endif
 }
 
 template <std::size_t _N>
