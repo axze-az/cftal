@@ -823,7 +823,7 @@ namespace cftal {
     vec<double, 8>
     exp10_px2(arg_t<vec<double, 8> > d);
 
-#if defined (FP_FAST_FMA) && (FP_FAST_FMA > 0)
+#if defined (FP_FAST_FMA)
     namespace op {
     // overwrite the fma ops for vectors of length 1
         template <>
