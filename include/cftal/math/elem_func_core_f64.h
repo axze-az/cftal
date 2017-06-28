@@ -1489,7 +1489,7 @@ __pow_log_k2(arg_t<vf_type> xc)
     // vf_type f= df.h();
     dvf_type dhfsq = mul_pwr2(df, vf_type(0.5))*df;
 #if 1
-    dvf_type ds=df/(vf_type(2.0)+df);
+    dvf_type ds=d_ops::raw_ieee_div(df, (vf_type(2.0)+df));
     // with mul12(zh, zl, ds.h(), ds.h()) pow does not become
     // faitfully rounded
     dvf_type dz=sqr(ds);

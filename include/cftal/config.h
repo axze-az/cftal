@@ -20,6 +20,13 @@
 #endif
 #endif
 
+#if defined (__clang__)
+#if defined (__FMA__)
+#define FP_FAST_FMA 1
+#define FP_FAST_FMAF 1
+#endif
+#endif
+
 #if !defined (__GNUC__) && !defined(__clang__) || (IN_KDEVELOP_PARSER>0)
 #define alignas(X)
 #define __SSSE3__
