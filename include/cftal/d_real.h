@@ -1280,8 +1280,10 @@ scaled_div(const d_real<_T>&a, const d_real<_T>& b)
     int_type ea, eb;
     _T sah=frexp(a.h(), &ea);
     _T sbh=frexp(b.h(), &eb);
-    _T sal=ldexp(a.l(), -ea);
-    _T sbl=ldexp(b.l(), -eb);
+    int_type nea=-ea;
+    _T sal=ldexp(a.l(), nea);
+    int_type neb=-eb;
+    _T sbl=ldexp(b.l(), neb);
     d_real<_T> as(sah, sal);
     d_real<_T> bs(sbh, sbl);
     d_real<_T> q0=raw_ieee_div(as, bs);

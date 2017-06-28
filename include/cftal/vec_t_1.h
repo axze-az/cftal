@@ -457,6 +457,8 @@ namespace cftal {
               const full_type& c) {
 #if defined (FP_FAST_FMA) && (FP_FAST_FMA>0)
                 return full_type(std::fma(a(), b(), c()));
+#elif defined (__clang__) && defined (__FMA__)
+                return __builtin_fma(a(), b(), c());
 #else
                 return full_type(a() * b() + c());
 #endif
@@ -472,6 +474,8 @@ namespace cftal {
               const full_type& c) {
 #if defined (FP_FAST_FMA) && (FP_FAST_FMA>0)
                 return full_type(std::fma(a(), b(), -c()));
+#elif defined (__clang__) && defined (__FMA__)
+                return __builtin_fma(a(), b(), -c());
 #else
                 return full_type(a() * b() - c());
 #endif
@@ -487,6 +491,8 @@ namespace cftal {
               const full_type& c) {
 #if defined (FP_FAST_FMA) && (FP_FAST_FMA>0)
                 return full_type(std::fma(-a(), b(), c()));
+#elif defined (__clang__) && defined (__FMA__)
+                return __builtin_fma(-a(), b(), c());
 #else
                 return full_type(c() - a() * b());
 #endif
@@ -502,6 +508,8 @@ namespace cftal {
               const full_type& c) {
 #if defined (FP_FAST_FMAF) && (FP_FAST_FMAF>0)
                 return full_type(std::fmaf(a(), b(), c()));
+#elif defined (__clang__) && defined (__FMA__)
+                return __builtin_fmaf(a(), b(), c());
 #else
                 return full_type(a() * b() + c());
 #endif
@@ -517,6 +525,8 @@ namespace cftal {
               const full_type& c) {
 #if defined (FP_FAST_FMAF) && (FP_FAST_FMAF>0)
                 return full_type(std::fmaf(a(), b(), -c()));
+#elif defined (__clang__) && defined (__FMA__)
+                return __builtin_fmaf(a(), b(), -c());
 #else
                 return full_type(a() * b() - c());
 #endif
@@ -532,6 +542,8 @@ namespace cftal {
               const full_type& c) {
 #if defined (FP_FAST_FMAF) && (FP_FAST_FMAF>0)
                 return full_type(std::fmaf(-a(), b(), c()));
+#elif defined (__clang__) && defined (__FMA__)
+                return __builtin_fmaf(-a(), b(), c());
 #else
                 return full_type(c() - a() * b());
 #endif

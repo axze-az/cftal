@@ -656,7 +656,7 @@ int main(int argc, char** argv)
     return 0;
 #else
     const int ulp=64;
-    const int _N=8;
+    const int _N=16;
     bool rc=true;
     bool speed_only=false;
     std::cout << std::setprecision(18) << std::scientific;
