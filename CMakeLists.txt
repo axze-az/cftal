@@ -38,7 +38,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     # warnings for all
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -Ofast")
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # disable some warnings
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-infinite-recursion")
