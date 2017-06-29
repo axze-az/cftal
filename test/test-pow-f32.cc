@@ -173,11 +173,10 @@ __pow_log_k(arg_t<vf_type> xc)
                       pow_log_c11,
                       pow_log_c9,
                       pow_log_c7,
-                      pow_log_c5,
-                      pow_log_c3);
+                      pow_log_c5);
 #endif
     vf_type ph, pl;
-    horner_comp_quick(ph, pl, s2, p, pow_log_c1);
+    horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
     d_ops::mul22(ph, pl, ph, pl, ds.h(), ds.l());
     vf_type kf = _T::cvt_i_to_f(k);
     using ctbl=impl::d_real_constants<d_real<float>, float>;
@@ -293,7 +292,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
 
-    const int ulp=64;
+    const int ulp=1;
     const int _N=16;
     bool rc=true;
     bool speed_only=false;
