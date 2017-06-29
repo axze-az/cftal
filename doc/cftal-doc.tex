@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper,draft]{article}
+\documentclass[10pt,a4paper,final,oneside]{article}
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{color}
@@ -19,6 +19,8 @@
 \title{cftal - yet another short vector library}
 \author{axel zeuner\footnote{I am not a native english speaker, corrections are welcome, axel.zeuner@gmx.de}}
 \maketitle
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{3}
 
 \tableofcontents
 
@@ -206,7 +208,7 @@ from the mpfr library. The column about faithfully rounding describes if faithfu
 \end{tabular}\\[10pt]
 All these functions behave as their counterparts in the std namespace.
 
-\subsubsection{root and inverse root functions}
+\subsubsection{power functions}
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
     \hline
      &
@@ -219,6 +221,8 @@ All these functions behave as their counterparts in the std namespace.
     rsqrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
     cbrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    pow & $\pm$ 1 & y  & $\pm$ ?? & n \\
     \hline
 \end{tabular}\\[10pt]
 The sqrt function uses the hardware instruction provided by modern processors.
@@ -293,27 +297,7 @@ or double double variable is a floating point expansion of the form
     (x_h, x_l) = x_h + x_l \, |x_l| < \frac{1}{2} |x_h^{-n}|
 \]
 where n is the number of mantissa bits in the floating variable.
-%
-%TODO
-%
-\subsubsection{roots}
-The cbrt function ($ y=\sqrt[3]{x} $) was implemented as discussed by
-W. Kahan in \cite{Kahan1991}.\\[10pt]
-%
-Inverse square root, to calculate $ y = 1/\sqrt{x} $
-\begin{equation}
-    \begin{aligned}
-        y &= y_n \left( 1+ ( x y_n^2 -1) \right)^{-1/2}
-            = y_n \sum_{k=0} ({{-1/2}\atop{k}}) (x y_n^2 -1)^k \\
-            & = y_n \left( 1 + \frac{1}{2} (1 - x y_n^2 ) +
-            \frac{3}{8}(1- x y_n^2)^2 +
-            \frac{5}{16} (1-x y_n^2)^3 \dots
-            \right)
-    \end{aligned}
-\end{equation}
-
-
-\subsection{exponential functions}
+\subsubsection{exponential functions}
 \label{sub_sec:expxxx}
 
 The exponential functions use additive argument reduction.
@@ -321,7 +305,7 @@ They use common code for the calculation of the exponential function
 after reduction and scaling of the reduced argument for bases not
 equal to $e$.
 
-\subsubsection{argument reduction for exp(x) and expm1(x)}
+\paragraph{argument reduction for exp(x) and expm1(x)}
 
     The input argument is split into
     \begin{equation}
@@ -345,7 +329,7 @@ equal to $e$.
     where $LN2_{HI}$ and $LN2_{LO}$ are Cody and Waite constants for $log(2)$
     and the expressions are organized to allow utilization of fma operations.
 
-\subsubsection{argument reduction for exp2(x) and exp2m1(x)}
+\paragraph{argument reduction for exp2(x) and exp2m1(x)}
 
     The calculations of exp2(x) and exp2m1(x) use the
     identity
@@ -373,7 +357,7 @@ equal to $e$.
     to allow the calculation of $ 2^x + C $ as $ 2^k \times e^{r_h+ rl} + C$.
     The constants $LN2_{HI}$ and $LN2_{LO}$ are the two parts of a double double number for $log(2)$.
 
-\subsubsection{argument reduction for exp10(x) and expm10m1(x)}
+\paragraph{argument reduction for exp10(x) and expm10m1(x)}
 
     The calculations of exp2(x) and exp2m1(x) use the
     identity
@@ -412,7 +396,7 @@ equal to $e$.
     The constants $LN10_{HI}$ and $LN10_{LO}$ are the two parts of a double double number for $log(10)$.
 
 
-\subsubsection{approximation of $e^r$ in [$-\text{log}(2)/2, \text{log}(2)/2$]}
+\paragraph{approximation of $e^r$ in [$-\text{log}(2)/2, \text{log}(2)/2$]}
 
     The function $y = e^r$ is approximated as
     \begin{equation}
@@ -452,7 +436,7 @@ equal to $e$.
     \end{equation}
     as error correction formula.
 
-\subsubsection{back scaling}
+\paragraph{back scaling}
     Scaling back for all functions of the from $b^x$ is done
     as
     \begin{equation}
@@ -484,10 +468,34 @@ equal to $e$.
     handling of different cases for k, especially overflows during the
     calculation.
 
-\subsection{hyperbolic functions}
+\subsubsection{hyperbolic functions}
 
 The hyperbolic function sinh(x), cosh(x) and tanh(x) are approximated as
 described by Manos et al. in their report \cite{manos1972constrained}.
+
+%
+%TODO
+%
+\subsubsection{power functions}
+
+The cbrt function ($ y=\sqrt[3]{x} $) was implemented as discussed by
+W. Kahan in \cite{Kahan1991}.\\[10pt]
+%
+Inverse square root, to calculate $ y = 1/\sqrt{x} $ one may use the
+iteration
+\begin{equation}
+    \begin{aligned}
+        y &= y_n \left( 1+ ( x y_n^2 -1) \right)^{-1/2}
+            = y_n \sum_{k=0} ({{-1/2}\atop{k}}) (x y_n^2 -1)^k \\
+            & = y_n \left( 1 + \frac{1}{2} (1 - x y_n^2 ) +
+            \frac{3}{8}(1- x y_n^2)^2 +
+            \frac{5}{16} (1-x y_n^2)^3 \dots
+            \right)
+    \end{aligned}
+\end{equation}
+with a higher convergence rate than the newton raphson method.
+
+
 
 \subsection{All other functions}
 

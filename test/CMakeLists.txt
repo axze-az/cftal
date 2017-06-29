@@ -69,6 +69,7 @@ set (TEST_HDRS
   ./include/cftal/test/check_exp_mx2.h
   ./include/cftal/test/check_sin.h
   ./include/cftal/test/check_acosh.h
+  ./include/cftal/test/check_pow.h
 )
 
 find_package(Boost REQUIRED)
@@ -208,7 +209,7 @@ test_prog(test-log-f32)
 test_prog(test-log1p-f32)
 test_prog(test-log10-f32)
 test_prog(test-log2-f32)
-#test_prog(test-pow-f32)
+test_prog(test-pow-f32)
 test_prog(test-asinh-f32)
 test_prog(test-acosh-f32)
 test_prog(test-atanh-f32)

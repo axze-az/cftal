@@ -629,7 +629,6 @@ namespace cftal {
     vec<float, 1>
     pow(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
 
-#if 0
     vec<float, 2>
     pow(arg<vec<float, 2> >::type b, arg<vec<float, 2> >::type e);
 
@@ -642,7 +641,6 @@ namespace cftal {
     vec<float, 16>
     pow(arg<vec<float, 16> >::type b, arg<vec<float, 16> >::type e);
 
-#endif
 
 // TODO: tests for the functions below
     template <std::size_t _N>
@@ -1153,15 +1151,6 @@ cftal::pow(const vec<float, _N>& x, const vec<float, _N>& y)
                      pow(high_half(x), high_half(y)));
     return r;
 }
-
-inline
-cftal::vec<float, 1>
-cftal::pow(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y)
-{
-    vec<float, 1> r(std::pow(x(), y()));
-    return r;
-}
-
 
 template <std::size_t _N>
 inline

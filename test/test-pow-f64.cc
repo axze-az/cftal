@@ -4,316 +4,17 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/vec.h"
-#include "cftal/vec_traits.h"
-#include "cftal/math/elem_func.h"
-#include "cftal/math/elem_func_core_f64.h"
-#include "cftal/math/elem_func_core_f32.h"
-#include "cftal/math/impl_estrin.h"
 #include "cftal/test/of_math_funcs.h"
-#include "cftal/test/check_expm1.h"
-#include <tuple>
+#include "cftal/test/check_pow.h"
 #include <iostream>
 #include <iomanip>
-#include <memory>
-
-#define EXP 1
-
-namespace cftal {
-
-    namespace math {
-        template <typename _FLOAT_T, typename _TRAITS_T>
-        struct test_func : public elem_func_core< _FLOAT_T, _TRAITS_T> {
-            using base_type = elem_func_core<_FLOAT_T, _TRAITS_T>;
-            using my_type = test_func<_FLOAT_T, _TRAITS_T>;
-            using vf_type = typename base_type::vf_type;
-            using vi_type = typename base_type::vi_type;
-            using vmf_type = typename base_type::vmf_type;
-            using vmi_type = typename base_type::vmi_type;
-            using dvf_type = typename base_type::dvf_type;
-
-            static vf_type func(arg_t<vf_type> vf);
-        };
-
-        template <typename _T>
-        struct test_func<double, _T> : public elem_func_core<double, _T> {
-            using base_type = elem_func_core<double, _T>;
-            using vf_type = typename _T::vf_type;
-            using vi_type = typename _T::vi_type;
-            // using vli_type = typename _T::vli_type;
-            using vi2_type = typename _T::vi2_type;
-            using vmf_type = typename _T::vmf_type;
-            using vmi_type = typename _T::vmi_type;
-            using vmi2_type = typename _T::vmi2_type;
-
-            using dvf_type = d_real<vf_type>;
-            using tvf_type = t_real<vf_type>;
-            using my_type = test_func<double, _T>;
-
-            using d_ops = typename base_type::d_ops;
-
-            // static vf_type func_k(arg_t<vf_type> vf);
-
-            using base_type::ilogbp1_k;
-            using base_type::ldexp_k;
-
-            static
-            dvf_type
-            __pow_log_k(arg_t<vf_type> x);
-
-            static
-            vf_type
-            pow_k(arg_t<vf_type> x, arg_t<vf_type> y);
-
-            static
-            vf_type
-            pow(arg_t<vf_type> x, arg_t<vf_type> y);
-
-        };
-
-        template <typename _T>
-        struct test_func<float, _T> : public elem_func_core<float, _T> {
-            using base_type = elem_func_core<float, _T>;
-            using vf_type = typename _T::vf_type;
-            using vi_type = typename _T::vi_type;
-            // using vli_type = typename _T::vli_type;
-            using vmf_type = typename _T::vmf_type;
-            using vmi_type = typename _T::vmi_type;
-
-            using dvf_type = d_real<vf_type>;
-            using tvf_type = t_real<vf_type>;
-            using my_type = test_func<float, _T>;
-
-            using d_ops = typename base_type::d_ops;
-
-            static vf_type func(arg_t<vf_type> vf);
-            static vf_type func_k(arg_t<vf_type> vf);
-
-        };
-
-
-    }
-
-    namespace test {
-
-        template <typename _T>
-        struct check_pow {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a, const vec<_T, _N>& b) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::pow(a, b);
-            }
-            static
-            auto
-            r(const _T& a, const _T& b) {
-                std::pair<_T, _T> i;
-                _T v=call_mpfr::func(a, b, mpfr_pow, &i);
-                return std::make_tuple(v, i.first, i.second);
-            }
-            static
-            _T
-            s(const _T& a, const _T& b) {
-                return std::pow(a, b);
-            }
-            static
-            const char* fname() {
-                return "pow";
-            }
-        };
-    }
-}
-template <typename _T>
-inline
-typename cftal::math::test_func<double, _T>::dvf_type
-cftal::math::test_func<double, _T>::
-__pow_log_k(arg_t<vf_type> xc)
-{
-    using fc = func_constants<double>;
-    vmf_type is_denom=xc <= fc::max_denormal();
-    vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi2_type k=_T::sel(_T::vmf_to_vmi2(is_denom), vi2_type(-54), vi2_type(0));
-    vi2_type lx, hx;
-    _T::extract_words(lx, hx, x);
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    hx += 0x3ff00000 - 0x3fe6a09e;
-    k += (hx>>20) - _T::bias();
-    hx = (hx&0x000fffff) + 0x3fe6a09e;
-    vf_type xr = _T::combine_words(lx, hx);
-
-    // brute force:
-    dvf_type ym= d_ops::add(xr, vf_type(-1.0));
-    dvf_type yp= d_ops::add(xr, vf_type(+1.0));
-    dvf_type ds= d_ops::sloppy_div(ym, yp);
-    // [3.4694469519536141888238489627838134765625e-18, 0.17157287895679473876953125] : | p - f | <= 2^-70.84375
-    // coefficients for pow_log generated by sollya
-    // x^1 : +0x8p-2
-    const vf_type pow_log_c1=+2.0000000000000000000000e+00;
-    // x^3 : +0xa.aaaaaaaaaaaa8p-4
-    const vf_type pow_log_c3=+6.6666666666666662965923e-01;
-    // x^5 : +0xc.cccccccccde78p-5
-    const vf_type pow_log_c5=+4.0000000000003138600491e-01;
-    // x^7 : +0x9.2492492337668p-5
-    const vf_type pow_log_c7=+2.8571428570442664041096e-01;
-    // x^9 : +0xe.38e38fe69c078p-6
-    const vf_type pow_log_c9=+2.2222222378553666000123e-01;
-    // x^11 : +0xb.a2e82369f50d8p-6
-    const vf_type pow_log_c11=+1.8181804140461185759214e-01;
-    // x^13 : +0x9.d8bcabeda57cp-6
-    const vf_type pow_log_c13=+1.5385357656358400468832e-01;
-    // x^15 : +0x8.84d39be12c3ap-6
-    const vf_type pow_log_c15=+1.3310709211936322393655e-01;
-    // x^17 : +0xf.83603792c34dp-7
-    const vf_type pow_log_c17=+1.2119677270450282535741e-01;
-    // x^19 : +0xb.333e5bd067258p-7
-    const vf_type pow_log_c19=+8.7501330214586989231229e-02;
-    vf_type s2= sqr(ds).h();
-#if 1
-    vf_type s4=s2*s2;
-    vf_type p1= horner(s4,
-                       pow_log_c19,
-                       pow_log_c15,
-                       pow_log_c11,
-                       pow_log_c7);
-    vf_type p2= horner(s4,
-                       pow_log_c17,
-                       pow_log_c13,
-                       pow_log_c9,
-                       pow_log_c5);
-    vf_type p= horner(s2, p1, p2);
-#else
-    vf_type p= horner(s2,
-                      pow_log_c19,
-                      pow_log_c17,
-                      pow_log_c15,
-                      pow_log_c13,
-                      pow_log_c11,
-                      pow_log_c9,
-                      pow_log_c7,
-                      pow_log_c5);
-#endif
-    vf_type ph, pl;
-    horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
-    d_ops::mul22(ph, pl, ph, pl, ds.h(), ds.l());
-    vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
-    using ctbl=impl::d_real_constants<d_real<double>, double>;
-    dvf_type log_x= // kf* dvf_type(ctbl::m_ln2);
-        vf_type(kf* ctbl::m_ln2_cw[1]);
-    log_x += vf_type(kf*ctbl::m_ln2_cw[0]);
-    log_x += dvf_type(ph, pl);
-    return log_x;
-}
-
-template <typename _T>
-inline
-typename cftal::math::test_func<double, _T>::vf_type
-cftal::math::test_func<double, _T>::pow_k(arg_t<vf_type> x,
-                                          arg_t<vf_type> y)
-{
-    vf_type abs_x= abs(x);
-    dvf_type lnx = __pow_log_k(abs_x);
-    dvf_type ylnx = lnx * y;
-    vf_type xrh, xrl, kf;
-    auto k=base_type::__reduce_exp_arg(xrh, xrl, kf, ylnx.h(), ylnx.l());
-    vf_type res=base_type:: template __exp_k<false>(xrh, xrl, kf, k);
-    using fc=func_constants<double>;
-    const vf_type& d= ylnx.h();
-    const vf_type exp_hi_inf= fc::exp_hi_inf();
-    const vf_type exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel(d <= exp_lo_zero, 0.0, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 1.0, res);
-    res = _T::sel(d == 1.0, M_E, res);
-    return res;
-}
-
-template <typename _T>
-inline
-typename cftal::math::test_func<double, _T>::vf_type
-cftal::math::test_func<double, _T>::pow(arg_t<vf_type> x,
-                                       arg_t<vf_type> y)
-{
-    // we have a problem if e is an integer
-    // dvf_type ln_x(my_type::log_k2(abs(x), vf_type(0)));
-    // dvf_type ln_x_y(ln_x * y);
-    // dvf_type pow0(my_type::exp_k2(ln_x_y.h(), ln_x_y.l(), false));
-    // vf_type res(pow0.h() + pow0.l());
-    // vf_type ln_x= my_type::log_k(abs(x));
-    // vf_type ln_x_y = ln_x * y;
-    // vf_type pow0= my_type::exp_k(ln_x_y, false);
-    vf_type res=my_type::pow_k(x, y);
-
-#if 0
-    using fc=func_constants<_FLOAT_T>;
-    const vf_type& d= ln_x_y;
-    const vf_type exp_hi_inf= fc::exp_hi_inf;
-    const vf_type exp_lo_zero= fc::exp_lo_zero;
-    res = _T::sel(d <= exp_lo_zero, 0.0, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 1.0, res);
-    res = _T::sel(d == 1.0, M_E, res);
-#endif
-
-    // guess the result if the calculation failed
-    vmf_type res_nan = isnan(res);
-    vmf_type abs_x_lt_1 = abs(x) < 1.0;
-    vmf_type y_gt_1 = y > 1.0;
-    res = _T::sel(res_nan, _T::pinf(), res);
-    res = _T::sel(res_nan & abs_x_lt_1 & y_gt_1, 0.0, res);
-    res = _T::sel(res_nan & (~abs_x_lt_1) & (~y_gt_1), 0.0, res);
-
-    vmf_type y_is_int = rint(y) == y;
-    vf_type y_half=0.5 *y;
-    vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
-
-    vf_type res_fac= _T::sel(y_is_odd, vf_type(-1), vf_type(1));
-    res_fac = _T::sel(~y_is_int, _T::nan(), res_fac);
-    res_fac = _T::sel(x >= 0, vf_type(1), res_fac);
-    res *= res_fac;
-
-    vf_type efx= (abs(x) -1) * _T::sel(y<0, vf_type(-1), vf_type(1));
-
-    vmf_type y_inf= isinf(y);
-    vf_type t= _T::sel(efx==0.0, vf_type(1), _T::pinf());
-    t = _T::sel(efx < 0.0, vf_type(0.0), t);
-    res = _T::sel(y_inf, t, res);
-
-    vmf_type x_zero = x == 0.0;
-    vmf_type x_inf_or_zero= isinf(x) | x_zero;
-    t= _T::sel(x_zero, -y, y);
-    t= _T::sel(t < 0.0, vf_type(0), _T::pinf());
-    vf_type sgn_x= copysign(vf_type(1), x);
-    vf_type t1=_T::sel(y_is_odd, sgn_x, vf_type(1));
-    t1 *= t;
-    res = _T::sel(x_inf_or_zero, t1, res);
-
-    res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
-    res = _T::sel((y==0.0) | (x==1.0), vf_type(1), res);
-
-#if 0
-    res = xisnan(result) ? INFINITY : res;
-    res *=  (x >= 0 ? 1 : (!yisint ? NAN : (yisodd ? -1 : 1)));
-
-    double efx = mulsign(xfabs(x) - 1, y);
-    if (xisinf(y)) res = efx < 0 ? 0.0 : (efx == 0 ? 1.0 : INFINITY);
-    if (xisinf(x) || x == 0) res = (yisodd ? sign(x) : 1) * ((x == 0 ? -y : y) < 0 ? 0 : INFINITY);
-    if (xisnan(x) || xisnan(y)) res = NAN;
-    if (y == 0 || x == 1) res = 1;
-
-    return res;
-#endif
-    return res;
-}
 
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
 
-    const int ulp=64;
-    const int _N=4;
+    const int ulp=1;
+    const int _N=8;
     bool rc=true;
     bool speed_only=false;
     std::cout << std::setprecision(18) << std::scientific;
@@ -323,7 +24,6 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-#if 0
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
             append_filename(test_data_dir, "../../test/data/pow.testdata");
@@ -337,7 +37,6 @@ int main(int argc, char** argv)
         rc&= check_func_2<double, 2, check_pow<double> >(v, ulp, 0, false);
         rc&= check_func_2<double, 4, check_pow<double> >(v, ulp, 0, false);
         rc&= check_func_2<double, 8, check_pow<double> >(v, ulp, 0, false);
-#endif
     }
 
     func_domain<double> d=std::make_pair(-std::numeric_limits< double >::max(),
@@ -347,7 +46,7 @@ int main(int argc, char** argv)
     rc &= of_fp_func_2_up_to<
         double, _N, check_pow<double> >::v(st, d, d, speed_only,
                                            cmp_ulp<double>(ulp, us),
-                                           cnt>>2, true);
+                                           cnt>>2, false);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

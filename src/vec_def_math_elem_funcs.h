@@ -268,9 +268,7 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::exp10_px2(d);                                    \
     }                                                                   \
-
-
-#define DEF_MATH_POW(ns, vec_float, vec_int, real_type)                 \
+                                                                        \
     ns::vec_float                                                       \
     ns::pow(arg<vec_float>::type b, arg<vec_float>::type e)             \
     {                                                                   \
