@@ -49,6 +49,12 @@ namespace cftal {
             vf_type
             pow2i(arg_t<vi_type> d);
 
+
+            // as frexp but without checking for 0, inf, nan
+            static
+            vi_type
+            __frexp_k(vf_type& m, arg_t<vf_type> x);
+
             static
             vf_type
             frexp(arg_t<vf_type> vf, vi_type* vi);
@@ -365,6 +371,29 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
 
 template <typename _T>
 inline
+typename cftal::math::elem_func_core<float, _T>::vi_type
+cftal::math::elem_func_core<float, _T>::
+__frexp_k(vf_type& m, arg_t<vf_type> x)
+{
+    vf_type xs=x;
+    using fc=func_constants<float>;
+    vmf_type is_denom= abs(x) <= fc::max_denormal();
+    // denormal handling
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
+    vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
+    vi_type eo= _T::sel(i_is_denom, vi_type(-24), vi_type(0));
+    // reinterpret a integer
+    vi_type i=_T::as_int(xs);
+    // exponent:
+    vi_type e=((i >> 23) & 0xff) + eo - vi_type(_T::bias()-1);
+    // insert exponent
+    i = (i & vi_type(0x807fffff)) | vi_type(0x7e<<23);
+    m= _T::as_float(i);
+    return e;
+}
+
+template <typename _T>
+inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 frexp(arg_t<vf_type> x, vi_type* ve)
@@ -452,10 +481,9 @@ rsqrt_k(arg_t<vf_type> x)
     // vf_type y= native_rsqrt(x);
     y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y).h();
 #else
-    // vf_type xp=abs(xc);
     // m in [0.5, 1)
-    vi_type e;
-    vf_type mm0=frexp(x, &e);
+    vf_type mm0;
+    auto e=__frexp_k(mm0, x);
     vi_type e1= e & 1;
     vmi_type msk = e1 == 1;
     // const divisor<vi_type, int32_t> idiv2(2);
@@ -2019,8 +2047,8 @@ cbrt_k(arg_t<vf_type> xc)
     const int32_t shift_1_3 = 9;
     const int32_t fac_1_3 = ((1<<shift_1_3)+2)/3;
 
-    vi_type e;
-    vf_type mm0=frexp(xp, &e);
+    vf_type mm0;
+    auto e=__frexp_k(mm0, xp);
     // do a division by 3
     // vi2_type e3 = (((e)*fac_1_3)>>shift_1_3) -(e>>31);
     // do a division by 3 rounded down
