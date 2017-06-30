@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 
     const int ulp3=3;
     const int ulp=1;
-    const int _N=16;
+    const int _N=8;
     bool rc=true;
     bool speed_only=false;
     std::cout << std::setprecision(18) << std::scientific;
