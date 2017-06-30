@@ -159,7 +159,7 @@ __pow_log_k(arg_t<vf_type> xc)
     // x^11 : +0xd.d007bp-5f
     const vf_type pow_log_c11=+4.3164429069e-01f;
     vf_type s2= sqr(ds).h();
-#if 0
+#if 1
     vf_type s4=s2*s2;
     vf_type p1= horner(s4,
                        pow_log_c11,
@@ -167,7 +167,7 @@ __pow_log_k(arg_t<vf_type> xc)
     vf_type p2= horner(s4,
                        pow_log_c9,
                        pow_log_c5);
-    vf_type p= horner(s2, p1, p2, pow_log_c3);
+    vf_type p= horner(s2, p1, p2);
 #else
     vf_type p= horner(s2,
                       pow_log_c11,
@@ -180,9 +180,13 @@ __pow_log_k(arg_t<vf_type> xc)
     d_ops::mul22(ph, pl, ph, pl, ds.h(), ds.l());
     vf_type kf = _T::cvt_i_to_f(k);
     using ctbl=impl::d_real_constants<d_real<float>, float>;
+#if 0
+    dvf_type log_x = kf * dvf_type(ctbl::m_ln2);
+#else
     dvf_type log_x= // kf* dvf_type(ctbl::m_ln2);
         vf_type(kf* ctbl::m_ln2_cw[1]);
     log_x += vf_type(kf*ctbl::m_ln2_cw[0]);
+#endif
     log_x += dvf_type(ph, pl);
     return log_x;
 }
@@ -327,14 +331,14 @@ int main(int argc, char** argv)
     rc &= of_fp_func_2_up_to<
         float, _N, check_pow<float> >::v(st, d, d, speed_only,
                                            cmp_ulp<float>(ulp, us),
-                                           cnt>>2, true);
+                                           cnt, false);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     st=exec_stats(_N);
     us=std::make_shared<ulp_stats>();
     func_domain<float> d1=std::make_pair(0.0f, 20.0f);
-    func_domain<float> d2=std::make_pair(-100.0f, 100.0f);
+    func_domain<float> d2=std::make_pair(-40.0f, 40.0f);
     us= std::make_shared<ulp_stats>();
     rc &= of_fp_func_2_up_to<
         float, _N, check_pow<float> >::v(st, d1, d2, speed_only,
