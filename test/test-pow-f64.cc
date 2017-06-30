@@ -13,6 +13,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
 
+    const int ulp3=3;
     const int ulp=1;
     const int _N=16;
     bool rc=true;
@@ -45,7 +46,7 @@ int main(int argc, char** argv)
     exec_stats st(_N);
     rc &= of_fp_func_2_up_to<
         double, _N, check_pow<double> >::v(st, d, d, speed_only,
-                                           cmp_ulp<double>(ulp, us),
+                                           cmp_ulp<double>(ulp3, us),
                                            cnt, false);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;

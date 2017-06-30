@@ -225,11 +225,12 @@ All these functions behave as their counterparts in the std namespace.
     \hline
     cbrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
-    pow & $\pm$ 1?? & ??  & $\pm$ 2?? & ?? \\
+    pow & $\pm$ 3?? & ??  & $\pm$ 3?? & ?? \\
     \hline
 \end{tabular}\\[10pt]
 The sqrt function uses the hardware instruction provided by modern processors.
-Please note, that it is impossible to do a full test of the pow function.
+Please note, that it seems to be impossible to do a full test of the pow
+function, the precision in more common areas $[0, 100]$ is much better.
 
 \subsubsection{elementary functions and erf}
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}

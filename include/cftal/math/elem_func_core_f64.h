@@ -1549,7 +1549,6 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
-    // return x+y;
     vf_type abs_x= abs(x);
     dvf_type lnx = __pow_log_k(abs_x);
     dvf_type ylnx = lnx * y;
