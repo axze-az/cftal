@@ -206,7 +206,7 @@ namespace cftal {
 
             static
             dvf_type
-            __pow_log_k(arg_t<vf_type> x);
+            __pow_log2_k(arg_t<vf_type> x);
 
             static
             vf_type
@@ -1233,7 +1233,7 @@ template <typename _T>
 inline
 typename cftal::math::elem_func_core<float, _T>::dvf_type
 cftal::math::elem_func_core<float, _T>::
-__pow_log_k(arg_t<vf_type> xc)
+__pow_log2_k(arg_t<vf_type> xc)
 {
     using fc = func_constants<float>;
     vmf_type is_denom=xc <= fc::max_denormal();
@@ -1245,6 +1245,7 @@ __pow_log_k(arg_t<vf_type> xc)
     k += (hx>>23) - _T::bias();
     hx = (hx&0x007fffff) + 0x3f3504f3;
     vf_type xr = _T::as_float(hx);
+    vf_type kf = _T::cvt_i_to_f(k);
 
     // brute force:
     dvf_type ym= d_ops::add(xr, vf_type(-1.0f));
@@ -1282,16 +1283,17 @@ __pow_log_k(arg_t<vf_type> xc)
                       pow_log_c7,
                       pow_log_c5);
 #endif
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    vf_type qh, ql;
+    d_ops::mul22(qh, ql,
+                 ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l(),
+                 ds.h(), ds.l());
     vf_type ph, pl;
     horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
-    d_ops::mul22(ph, pl, ph, pl, ds.h(), ds.l());
-    vf_type kf = _T::cvt_i_to_f(k);
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-    dvf_type log_x= // kf* dvf_type(ctbl::m_ln2);
-        vf_type(kf* ctbl::m_ln2_cw[1]);
-    log_x += vf_type(kf*ctbl::m_ln2_cw[0]);
-    log_x += dvf_type(ph, pl);
-    return log_x;
+    d_ops::mul22(ph, pl, ph, pl, qh, ql);
+    d_ops::add122cond(ph, pl, kf, ph, pl);
+    dvf_type log2_x(ph, pl);
+    return log2_x;
 }
 
 template <typename _T>
@@ -1300,20 +1302,27 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type abs_x= abs(x);
-    dvf_type lnx = __pow_log_k(abs_x);
-    dvf_type ylnx = lnx * y;
-    vf_type xrh, xrl, kf;
-    auto k=__reduce_exp_arg(xrh, xrl, kf, ylnx.h(), ylnx.l());
+    dvf_type ldx= __pow_log2_k(abs_x);
+    dvf_type yldx = y*ldx;
+    vf_type kf= rint(vf_type(yldx.h()));
+    dvf_type xrhl= yldx - kf;
+    vf_type xrh, xrl;
+    d_ops::mul22(xrh, xrl, xrhl.h(), xrhl.l(),
+                 ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    vi_type k= _T::cvt_f_to_i(kf);
     vf_type res=__exp_k<false>(xrh, xrl, kf, k);
+    // std::cout << kf << std::endl;
+    // std::cout << k << std::endl;
     using fc=func_constants<float>;
-    const vf_type& d= ylnx.h();
-    const vf_type exp_hi_inf= fc::exp_hi_inf();
-    const vf_type exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel(d <= exp_lo_zero, 0.0, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 1.0, res);
-    res = _T::sel(d == 1.0, M_E, res);
+    const vf_type& d= yldx.h();
+    const vf_type exp2_hi_inf= fc::exp2_hi_inf();
+    const vf_type exp2_lo_zero= fc::exp2_lo_zero();
+    res = _T::sel(d <= exp2_lo_zero, 0.0f, res);
+    res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
+    res = _T::sel(d == 0.0f, 1.0f, res);
+    res = _T::sel(d == 1.0f, 2.0f, res);
     return res;
 }
 

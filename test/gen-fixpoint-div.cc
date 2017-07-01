@@ -15,8 +15,8 @@ int main(int argc, char** argv)
     // 1/3 = x/2^16
     // x=2^16/3;
 
-    const int32_t divisor=3;
-    const int32_t shift_1_d=13;
+    const int32_t divisor=12;
+    const int32_t shift_1_d=17;
     const int32_t fac_1_d=((1<<shift_1_d)+(divisor-1))/divisor;
 #if 1
     const int32_t bias=1023;
