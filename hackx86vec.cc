@@ -103,38 +103,17 @@ fp16_add(cftal::vec<cftal::f16_t, 1> a,
 int main(int argc, char** argv)
 {
     using namespace cftal;
-
-    vec<f64_t, 1> a(2.0), b(8.0);
-    vec<f64_t, 1> r= pow(a, b);
     std::cout << std::setprecision(18) << std::scientific;
-    std::cout << "pow(" << a << ", " << b << ")= " << r << std::endl;
 
-    a = 1.293872646225411094e+00;
-    b = -1.778789453749938048e+03;
-
-    // a= 9.300873445558910399e-200
-    r= pow(a, b);
-    double r0=std::pow(a(), b());
-    std::cout << std::hexfloat;
-    std::cout << "pow(" << a << ", " << b << ")= " << r << std::endl
-              << "std: = " << r0 << std::endl;
-#if 0
-    using std::pow;
-    std::cout << std::setprecision(18) << std::scientific;
-    std::cout << pow(1.707691556434847363e+270, -1.584428270109483712e-292) << std::endl;
-    std::cout << pow(3.318673950979016805e+72, 1.018344828454018569e-151) << std::endl;
-    std::cout << pow(7.028185783015430921e+69, 7.699180155330558859e+234) << std::endl;
-    std::cout << pow(-1.355792883622827927e-08, -8.363370142327814890e-59) << std::endl;
-    std::cout << pow(2.063525752258746191e+220, 4.057052232034880458e-144) << std::endl;
-    std::cout << pow(6.280867096515241415e-18, -3.835285535601180671e+171) << std::endl;
-    std::cout << pow(1.293872646225411094e+00, -1.778789453749938048e+03) << std::endl;
-    std::cout << pow(-9.106974672490315352e+232, -3.163755698809354380e+07) << std::endl;
-#endif
-#if 0
     bytes8 t(0, 0x3fe6a09e);
-    std::cout << std::setprecision(18) << std::fixed << t.f64() << std::endl;
+    const double d=(M_SQRT2/2) - t.f64();
+    std::cout << std::setprecision(18) << t.f64() << std::endl
+              << d << std::endl
+              << std::hexfloat
+              << d << std::endl
+              << std::scientific
+              << 0x1p-22 << std::endl;
     bytes8 k(0.5);
     std::cout << std::hex << k.u32h() <<  std::dec << std::endl;
-#endif
     return 0;
 }
