@@ -1534,6 +1534,11 @@ __pow_log2_k(arg_t<vf_type> xc)
     const vf_type pow_log_c19=+8.7501330214586989231229e-02;
     dvf_type ds2=sqr(ds);
     vf_type s2= ds2.h();
+    vf_type qh, ql;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    d_ops::mul22(qh, ql,
+                 ds.h(), ds.l(),
+                 ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l());
 #if 1
     vf_type s4=s2*s2;
     vf_type p1= horner(s4,
@@ -1558,11 +1563,6 @@ __pow_log2_k(arg_t<vf_type> xc)
                       pow_log_c7,
                       pow_log_c5);
 #endif
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type qh, ql;
-    d_ops::mul22(qh, ql,
-                 ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l(),
-                 ds.h(), ds.l());
     vf_type ph, pl;
     horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
     d_ops::mul22(ph, pl, ph, pl, qh, ql);
