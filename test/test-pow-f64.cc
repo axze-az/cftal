@@ -9,11 +9,14 @@
 #include <iostream>
 #include <iomanip>
 
+// critical values during test a^b
+// v1f64 a=1.293872646225411094e+00;  v1f64 b=-1.778789453749938048e+03;
+
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
 
-    const int ulp2=2;
+    const int ulp2=1;
     const int ulp=1;
     const int _N=8;
     bool rc=true;

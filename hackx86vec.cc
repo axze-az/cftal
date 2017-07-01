@@ -105,6 +105,13 @@ int main(int argc, char** argv)
     using namespace cftal;
     std::cout << std::setprecision(18) << std::scientific;
 
+    v1f64 a=1.293872646225411094e+00;
+    v1f64 b=-1.778789453749938048e+03;
+    v1f64 r=pow(a, b);
+    double t=std::pow(a(), b());
+    std::cout << r << std::endl
+              << t << std::endl;
+#if 0
     bytes8 t(0, 0x3fe6a09e);
     const double d=(M_SQRT2/2) - t.f64();
     std::cout << std::setprecision(18) << t.f64() << std::endl
@@ -115,5 +122,6 @@ int main(int argc, char** argv)
               << 0x1p-22 << std::endl;
     bytes8 k(0.5);
     std::cout << std::hex << k.u32h() <<  std::dec << std::endl;
+#endif
     return 0;
 }

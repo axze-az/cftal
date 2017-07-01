@@ -1494,6 +1494,14 @@ typename cftal::math::elem_func_core<double, _T>::dvf_type
 cftal::math::elem_func_core<double, _T>::
 __pow_log2_k(arg_t<vf_type> xc)
 {
+#if 0
+    vf_type xr;
+    auto k=__frexp_k(xr, xc);
+    vmf_type c= xr < M_SQRT2*0.5;
+    vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
+    xr = _T::sel(c, xr*2.0, xr);
+    kf = _T::sel(c, kf-1.0, kf);
+#else
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
@@ -1504,8 +1512,9 @@ __pow_log2_k(arg_t<vf_type> xc)
     hx += 0x3ff00000 - 0x3fe6a09e;
     k += (hx>>20) - _T::bias();
     hx = (hx&0x000fffff) + 0x3fe6a09e;
-    vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
     vf_type xr = _T::combine_words(lx, hx);
+    vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
+#endif
     // brute force:
     dvf_type ym= d_ops::add(xr, vf_type(-1.0));
     dvf_type yp= d_ops::add(xr, vf_type(+1.0));
@@ -1564,7 +1573,13 @@ __pow_log2_k(arg_t<vf_type> xc)
                       pow_log_c5);
 #endif
     vf_type ph, pl;
-    horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
+    vf_type s2l=ds2.l();
+    p= s2* p;
+    d_ops::add12(ph, pl, pow_log_c3, p);
+    d_ops::mul22(ph, pl, s2, s2l, ph, pl);
+    d_ops::add122(ph, pl, pow_log_c1, ph, pl);
+    // this does not work :-(
+    // horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
     d_ops::mul22(ph, pl, ph, pl, qh, ql);
     d_ops::add122cond(ph, pl, kf, ph, pl);
     dvf_type log2_x(ph, pl);
