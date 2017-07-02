@@ -99,6 +99,10 @@ namespace cftal {
             int
             exp10_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
+            // return x^(1/12)
+            int
+            root12(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+            
             // returns c_n*x^X + .. c_1*x^1 + c_0, nullptr as last argument
             int
             horner(mpfr_t res,

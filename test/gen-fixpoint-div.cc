@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
     std::cout << "const int32_t shift_1_" << divisor
               << "= 0x" << std::hex << shift_1_d << std::dec << ";\n";
-    std::cout << std::hex << "const int32_t fac_1_" << divisor
+    std::cout << "const int32_t fac_1_" << divisor
               << "= 0x" << std::hex << fac_1_d << std::dec<<";\n";
 
     for (int32_t i=-bias-bits; i<bias+1; ++i) {

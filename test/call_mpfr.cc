@@ -592,6 +592,15 @@ exp10_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
 
 int
 cftal::test::mpfr_ext::
+root12(mpfr_t res,
+       const mpfr_t x,
+       mpfr_rnd_t rm)
+{
+    return mpfr_root(res, x, 12, rm);
+}
+
+int
+cftal::test::mpfr_ext::
 horner(mpfr_t res,
        const mpfr_t x,
        mpfr_rnd_t rm,
