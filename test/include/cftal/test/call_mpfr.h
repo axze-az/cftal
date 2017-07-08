@@ -102,7 +102,7 @@ namespace cftal {
             // return x^(1/12)
             int
             root12(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-            
+
             // returns c_n*x^X + .. c_1*x^1 + c_0, nullptr as last argument
             int
             horner(mpfr_t res,
@@ -110,7 +110,7 @@ namespace cftal {
                    mpfr_rnd_t rm,
                    const mpfr_t c_n,
                    ...);
-            
+
         }
 
         template <std::size_t _B>
@@ -327,8 +327,10 @@ cftal::test::call_mpfr::ulp1_interval(_T res, int mpres)
         pr.second = std::nextafter(res, up);
     } else if (mpres == 0) {
         // res is exact:
-        pr.first = std::nextafter(res, down);
-        pr.second = std::nextafter(res, up);
+        // pr.first = std::nextafter(res, down);
+        // pr.second = std::nextafter(res, up);
+        // exact result --> no interval for faithul rounding
+        pr.first = pr.second= res;
     }
     return pr;
 }
