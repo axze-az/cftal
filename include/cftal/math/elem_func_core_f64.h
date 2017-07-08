@@ -1041,9 +1041,9 @@ sinh_k(arg_t<vf_type> xc)
     vf_type xr= _T::sel(x_huge, x - 0.75, x);
     vf_type em=exp_k(xr, true);
     vf_type e= em+1;
+    vf_type sinh_gt_1 = 0.5 * (em + em/e);
     const vf_type e_v_2_m_1 = +5.8500008306337336616565e-02;
     const vf_type e_m_v_2 = +2.3618327637050734457702e-01;
-    vf_type sinh_gt_1 = 0.5 * (em + em/e);
     vf_type sinh_huge = e + e_v_2_m_1 * e - e_m_v_2 / e;
     vf_type sinh_x = _T::sel(x<=1.0, sinh_le_1, sinh_gt_1);
     sinh_x = _T::sel(x_huge, sinh_huge, sinh_x);
