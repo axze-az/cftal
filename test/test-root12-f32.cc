@@ -10,6 +10,7 @@
 #include "cftal/math/elem_func_core_f64.h"
 #include "cftal/math/elem_func_core_f32.h"
 #include "cftal/math/impl_estrin.h"
+#include "cftal/math/misc.h"
 #include "cftal/test/of_math_funcs.h"
 #include "cftal/test/check_expm1.h"
 #include <tuple>
@@ -169,227 +170,6 @@ namespace cftal {
 
 }
 
-
-namespace cftal {
-    namespace math {
-
-        namespace impl {
-            struct root12 {
-
-                template <typename _T>
-                static
-                _T
-                pow12(_T x);
-
-                // x^12 = y
-                template <typename _T>
-                static
-                _T
-                nr(_T y, _T x);
-
-                template <typename _T>
-                static
-                _T
-                halley(_T y, _T x);
-
-                template <typename _T>
-                static
-                _T
-                householder3(_T x, _T y);
-
-                template <typename _T>
-                static
-                _T
-                householder4(_T x, _T y);
-
-                template <typename _T>
-                static
-                _T
-                householder5(_T x, _T y);
-
-                template <typename _T>
-                static
-                _T
-                householder6(_T x, _T y);
-
-                template <typename _T>
-                static
-                _T
-                householder7(_T x, _T y);
-            };
-
-        }
-    }
-}
-
-template <typename _T>
-_T
-cftal::math::impl::root12::nr(_T x, _T y)
-{
-    _T x2=x*x;
-    _T x3=x2*x;
-    _T x6=x3*x3;
-    _T x11=x6*x3*x2;
-    _T xn = x - _T(1.0/12.0) * (x - y/x11);
-    return xn;
-}
-
-template <typename _T>
-_T
-cftal::math::impl::root12::halley(_T x, _T y)
-{
-    _T x2=x*x;
-    _T x4=x2*x2;
-    _T x8=x4*x4;
-    _T x12=x8*x4;
-    _T num= _T(2.0/11.0) * x * (y - x12);
-    _T denom= y + _T(13.0/11.0) *x12;
-    _T xn = x + num/denom;
-    return xn;
-}
-
-template <typename _T>
-_T
-cftal::math::impl::root12::householder3(_T x, _T y)
-{
-    _T x2=x*x;
-    _T x4=x2*x2;
-    _T x8=x4*x4;
-    _T x12=x8*x4;
-    _T y1=y;
-    _T y2=y*y;
-    _T num= x*horner(x12,
-                     _T(-39.0),
-                     _T(6.0)*y1,
-                     _T(33.0)*y2);
-    _T denom= horner(x12,
-                     _T(182.0),
-                     _T(572.0)*y1,
-                     _T(110)*y2);
-    _T xn = x + num/denom;
-    return xn;
-}
-
-template <typename _T>
-_T
-cftal::math::impl::root12::householder4(_T x, _T y)
-{
-    _T x2=x*x;
-    _T x4=x2*x2;
-    _T x8=x4*x4;
-    _T x12=x8*x4;
-    _T y1=y;
-    _T y2=y*y;
-    _T y3=y1*y2;
-    _T num= x*horner(x12,
-                     _T(-364.0),
-                     _T(-780)*y1,
-                     _T(924.0)*y2,
-                     _T(220.0)*y3);
-    _T denom= horner(x12,
-                     _T(1365.0),
-                     _T(10725.0)*y1,
-                     _T(8151.0)*y2,
-                     _T(495.0)*y3);
-    _T xn = x + num/denom;
-    return xn;
-}
-
-template <typename _T>
-_T
-cftal::math::impl::root12::householder5(_T x, _T y)
-{
-    _T x12=pow12(x);
-    _T y1=y;
-    _T y2=y*y;
-    _T y3=y1*y2;
-    _T y4=y2*y2;
-    _T num= x*horner(x12,
-                     _T(-455.0),
-                     _T(-3120.0)*y1,
-                     _T(858.0)*y2,
-                     _T(2552.0)*y3,
-                     _T(165.0)*y4);
-    _T denom= horner(x12,
-                     _T(1456.0),
-                     _T(24024.0)*y1,
-                     _T(44616.0)*y2,
-                     _T(12584.0)*y3,
-                     _T(264.0)*y4);
-    _T xn = x + num/denom;
-    return xn;
-}
-
-template <typename _T>
-_T
-cftal::math::impl::root12::pow12(_T x)
-{
-    _T x2=x*x;
-    _T x4=x2*x2;
-    _T x8=x4*x4;
-    _T x12=x8*x4;
-    return x12;
-}
-
-template <typename _T>
-_T
-cftal::math::impl::root12::householder6(_T x, _T y)
-{
-    _T x12= pow12(x);
-    _T y1=y;
-    _T y2=y*y;
-    _T y3=y2*y;
-    _T y4=y2*y2;
-    _T y5=y3*y2;
-    _T num= x*horner(x12,
-                     _T(-1092.0),
-                     _T(-16926.0)*y1,
-                     _T(-15444.0)*y2,
-                     _T(24024.0)*y3,
-                     _T(9240.0)*y4,
-                     _T(198.0)*y5);
-    _T denom= horner(x12,
-                     _T(3094.0),
-                     _T(97097.0)*y1,
-                     _T(357786.0)*y2,
-                     _T(256256.0)*y3,
-                     _T(32032.0)*y4,
-                     _T(231.0)*y5);
-    _T xn = x + num/denom;
-    return xn;
-}
-
-template <typename _T>
-_T
-cftal::math::impl::root12::householder7(_T x, _T y)
-{
-    _T x12= pow12(x);
-    _T y1=y;
-    _T y2=y*y;
-    _T y3=y2*y;
-    _T y4=y2*y2;
-    _T y5=y3*y2;
-    _T y6=y3*y3;
-    _T num= x*horner(x12,
-                     _T(-3094.0),
-                     _T(-94003.0)*y1,
-                     _T(-260689.0)*y2,
-                     _T(101530.0)*y3,
-                     _T(224224.0)*y4,
-                     _T(31801.0)*y5,
-                     _T(231.0)*y6);
-    _T denom= horner(x12,
-                     _T(7956.0),
-                     _T(445302.0)*y1,
-                     _T(2895750.0)*y2,
-                     _T(4123548.0)*y3,
-                     _T(1400256.0)*y4,
-                     _T(84942.0)*y5,
-                     _T(198.0)*y6);
-    _T xn = x + num/denom;
-    return xn;
-}
-
 template <typename _T>
 typename cftal::math::test_func<float, _T>::vf_type
 __attribute__((flatten))
@@ -451,10 +231,10 @@ root12_k(arg_t<vf_type> xc)
                         root12_c2,
                         root12_c1,
                         root12_c0);
-    mm = impl::root12::householder4(mm, mm0);
-    mm = impl::root12::householder4(mm, mm0);
-    mm = impl::root12::nr(mm, mm0);
-    mm = impl::root12::nr(mm, mm0);
+    mm = impl::root12::householder4<float>(mm, mm0);
+    mm = impl::root12::householder4<float>(mm, mm0);
+    mm = impl::root12::nr<float>(mm, mm0);
+    mm = impl::root12::nr<float>(mm, mm0);
 #endif
 #if 0
     // faithful: 864807
