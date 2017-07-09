@@ -111,7 +111,7 @@ namespace cftal {
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
 #if 0
-                // return sqrt(sqrt(cbrt(a))); // 1351533  
+                // return sqrt(sqrt(cbrt(a))); // 1351533
                 // return cbrt(sqrt(sqrt(a))); //  927090
                 // return sqrt(cbrt(sqrt(a))); // 1289438
 #else
@@ -691,12 +691,18 @@ namespace cftal {
 
         namespace impl {
             struct root12 {
-                // x^12 = y 
+
+                template <typename _T>
+                static
+                _T
+                pow12(_T x);
+
+                // x^12 = y
                 template <typename _T>
                 static
                 _T
                 nr(_T y, _T x);
-                
+
                 template <typename _T>
                 static
                 _T
@@ -716,8 +722,18 @@ namespace cftal {
                 static
                 _T
                 householder5(_T x, _T y);
+
+                template <typename _T>
+                static
+                _T
+                householder6(_T x, _T y);
+
+                template <typename _T>
+                static
+                _T
+                householder7(_T x, _T y);
             };
-            
+
         }
     }
 }
@@ -769,7 +785,7 @@ cftal::math::impl::root12::householder3(_T x, _T y)
     _T xn = x + num/denom;
     return xn;
 }
-    
+
 template <typename _T>
 _T
 cftal::math::impl::root12::householder4(_T x, _T y)
@@ -791,18 +807,15 @@ cftal::math::impl::root12::householder4(_T x, _T y)
                      _T(10725.0)*y1,
                      _T(8151.0)*y2,
                      _T(495.0)*y3);
-    _T xn = xn + num/denom;
+    _T xn = x + num/denom;
     return xn;
 }
-    
+
 template <typename _T>
 _T
 cftal::math::impl::root12::householder5(_T x, _T y)
 {
-    _T x2=x*x;
-    _T x4=x2*x2;
-    _T x8=x4*x4;
-    _T x12=x8*x4;
+    _T x12=pow12(x);
     _T y1=y;
     _T y2=y*y;
     _T y3=y1*y2;
@@ -819,6 +832,76 @@ cftal::math::impl::root12::householder5(_T x, _T y)
                      _T(44616.0)*y2,
                      _T(12584.0)*y3,
                      _T(264.0)*y4);
+    _T xn = x + num/denom;
+    return xn;
+}
+
+template <typename _T>
+_T
+cftal::math::impl::root12::pow12(_T x)
+{
+    _T x2=x*x;
+    _T x4=x2*x2;
+    _T x8=x4*x4;
+    _T x12=x8*x4;
+    return x12;
+}
+
+template <typename _T>
+_T
+cftal::math::impl::root12::householder6(_T x, _T y)
+{
+    _T x12= pow12(x);
+    _T y1=y;
+    _T y2=y*y;
+    _T y3=y2*y;
+    _T y4=y2*y2;
+    _T y5=y3*y2;
+    _T num= x*horner(x12,
+                     _T(-1092.0),
+                     _T(-16926.0)*y1,
+                     _T(-15444.0)*y2,
+                     _T(24024.0)*y3,
+                     _T(9240.0)*y4,
+                     _T(198.0)*y5);
+    _T denom= horner(x12,
+                     _T(3094.0),
+                     _T(97097.0)*y1,
+                     _T(357786.0)*y2,
+                     _T(256256.0)*y3,
+                     _T(32032.0)*y4,
+                     _T(231.0)*y5);
+    _T xn = x + num/denom;
+    return xn;
+}
+
+template <typename _T>
+_T
+cftal::math::impl::root12::householder7(_T x, _T y)
+{
+    _T x12= pow12(x);
+    _T y1=y;
+    _T y2=y*y;
+    _T y3=y2*y;
+    _T y4=y2*y2;
+    _T y5=y3*y2;
+    _T y6=y3*y3;
+    _T num= x*horner(x12,
+                     _T(-3094.0),
+                     _T(-94003.0)*y1,
+                     _T(-260689.0)*y2,
+                     _T(101530.0)*y3,
+                     _T(224224.0)*y4,
+                     _T(31801.0)*y5,
+                     _T(231.0)*y6);
+    _T denom= horner(x12,
+                     _T(7956.0),
+                     _T(445302.0)*y1,
+                     _T(2895750.0)*y2,
+                     _T(4123548.0)*y3,
+                     _T(1400256.0)*y4,
+                     _T(84942.0)*y5,
+                     _T(198.0)*y6);
     _T xn = x + num/denom;
     return xn;
 }
@@ -885,45 +968,21 @@ root12_k(arg_t<vf_type> xc)
                         root12_c2,
                         root12_c1,
                         root12_c0);
-    // faithful: 884098
-    // const int halley=4; const int nr=2;
-    // faithful: 846889
-    const int order5=2;
-    const int order4=0;
-    const int order3=0;
-    const int halley=0;
-    const int nr=2;
+    // mm = impl::root12::householder5(mm, mm0);
+    mm = impl::root12::householder5(mm, mm0);
+    mm = impl::root12::householder5(mm, mm0);
+    mm = impl::root12::nr(mm, mm0);
+    mm = impl::root12::nr(mm, mm0);
 #endif
 #if 0
     // faithful: 864807
     vf_type mm = M_SQRT2/2;
-    // vf_type mm = M_SQRT2/2;
-    // faithful: 
-    const int order5=3;
-    const int order4=0;
-    const int order3=0;
-    const int halley=0;
-    const int nr=2;
+    mm = impl::root12::householder5(mm, mm0);
+    mm = impl::root12::householder5(mm, mm0);
+    mm = impl::root12::householder5(mm, mm0);
+    mm = impl::root12::nr(mm, mm0);
+    mm = impl::root12::nr(mm, mm0);
 #endif
-
-    for (int i=0; i<order5; ++i) {
-        mm = impl::root12::householder5(mm, mm0);
-    }
-
-    for (int i=0; i<order4; ++i) {
-        mm = impl::root12::householder4(mm, mm0);
-    }
-
-    for (int i=0; i<order3; ++i) {
-        mm = impl::root12::householder3(mm, mm0);
-    }
-
-    for (int i=0; i<halley; ++i) {
-        mm = impl::root12::halley(mm, mm0);
-    }
-    for (int i=0; i<nr; ++i) {
-        mm = impl::root12::nr(mm, mm0);
-    }
 #else
     // faithful: 927090
     vf_type mm= cbrt(sqrt(sqrt(mm0)));
