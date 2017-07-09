@@ -275,8 +275,8 @@ exp(arg_t<vf_type> d)
     const vf_type exp_lo_zero= fc::exp_lo_zero();
     res = _T::sel(d <= exp_lo_zero, 0.0, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 1.0, res);
-    res = _T::sel(d == 1.0, M_E, res);
+    // res = _T::sel(d == 0.0, 1.0, res);
+    // res = _T::sel(d == 1.0, M_E, res);
     return res;
 }
 
@@ -292,8 +292,8 @@ exp2(arg_t<vf_type> d)
     const vf_type exp2_lo_zero= fc::exp2_lo_zero();
     res = _T::sel(d <= exp2_lo_zero, 0.0, res);
     res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 1.0, res);
-    res = _T::sel(d == 1.0, 2.0, res);
+    // res = _T::sel(d == 0.0, 1.0, res);
+    // res = _T::sel(d == 1.0, 2.0, res);
     return res;
 }
 
@@ -309,8 +309,8 @@ exp10(arg_t<vf_type> d)
     const vf_type exp10_lo_zero=fc::exp10_lo_zero();
     res = _T::sel(d <= exp10_lo_zero, 0.0, res);
     res = _T::sel(d >= exp10_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 1.0, res);
-    res = _T::sel(d == 1.0, 10.0, res);
+    // res = _T::sel(d == 0.0, 1.0, res);
+    // res = _T::sel(d == 1.0, 10.0, res);
     return res;
 }
 
@@ -326,8 +326,8 @@ expm1(arg_t<vf_type> d)
     const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one();
     res = _T::sel(d <= expm1_lo_minus_one, -1.0, res);
     res = _T::sel(d >= expm1_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 0.0, res);
-    res = _T::sel(d == 1.0, M_E-1.0, res);
+    // res = _T::sel(d == 0.0, 0.0, res);
+    // res = _T::sel(d == 1.0, M_E-1.0, res);
     return res;
 }
 
@@ -343,8 +343,8 @@ exp2m1(arg_t<vf_type> d)
     const vf_type exp2m1_lo_minus_one= fc::exp2m1_lo_minus_one();
     res = _T::sel(d <= exp2m1_lo_minus_one, -1.0, res);
     res = _T::sel(d >= exp2m1_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 0.0, res);
-    res = _T::sel(d == 1.0, 1.0, res);
+    // res = _T::sel(d == 0.0, 0.0, res);
+    // res = _T::sel(d == 1.0, 1.0, res);
     return res;
 }
 
@@ -360,8 +360,8 @@ exp10m1(arg_t<vf_type> d)
     const vf_type exp10m1_lo_minus_one= fc::exp10m1_lo_minus_one();
     res = _T::sel(d <= exp10m1_lo_minus_one, -1.0, res);
     res = _T::sel(d >= exp10m1_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 0.0, res);
-    res = _T::sel(d == 1.0, 9.0, res);
+    // res = _T::sel(d == 0.0, 0.0, res);
+    // res = _T::sel(d == 1.0, 9.0, res);
     return res;
 }
 
