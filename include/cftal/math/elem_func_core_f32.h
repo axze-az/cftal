@@ -24,6 +24,7 @@
 #include <cftal/math/func_traits_f32_s32.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/horner.h>
+#include <cftal/math/misc.h>
 #include <cftal/mem.h>
 
 #include <iostream>
@@ -2093,11 +2094,10 @@ cbrt_k(arg_t<vf_type> xc)
                         cbrt_c1,
                         cbrt_c0);
     // 1st iteration
-    vf_type s=mm*mm*mm;
-    mm = mm -(s - mm0) * mm/(2*s+mm0);
+    mm = impl::root3::order3<float>(mm, mm0);
 #if 1
     // round mm to 8 bits = int(24)/3
-    mm = rint(vf_type(mm*0x1p8))*0x1p-8;
+    mm = rint(vf_type(mm*0x1p8f))*0x1p-8f;
 #else
     vi_type hw=_T::as_int(mm);
     // round mm to 8 bits (including the hidden one)
@@ -2113,9 +2113,7 @@ cbrt_k(arg_t<vf_type> xc)
     mm=_T::as_float(hw);
 #endif
     // second iteration
-    s= (mm*mm*mm-mm0)/mm0;
-    mm = mm - mm * ((((14.0/81.0) * s -(2.0/9.0))*s)+1.0/3.0)*s;
-
+    mm = impl::root3::order4<float>(mm, mm0);
     // no denormal results are possible
     // vf_type t= _T::insert_exp(_T::bias()+e3c);
     vf_type t= _T::insert_exp(e3_with_bias);

@@ -87,7 +87,34 @@ namespace cftal {
                 static _T v(const _T& x);
             };
 
-            // helper functions for different root12
+            // helper functions for different root3 iteration steps
+            struct root3 {
+                // x^3 = y
+                template <typename _C, typename _T>
+                static
+                _T
+                nr(_T y, _T x);
+
+                // x^3 = y
+                template <typename _C, typename _T>
+                static
+                _T
+                halley(_T y, _T x);
+
+                // x^3 = y
+                template <typename _C, typename _T>
+                static
+                _T
+                order3(_T y, _T x);
+
+                // x^3 = y
+                template <typename _C, typename _T>
+                static
+                _T
+                order4(_T y, _T x);
+            };
+
+            // helper functions for different root12 iteration steps
             struct root12 {
                 // x^12 = y
                 template <typename _C, typename _T>
@@ -374,6 +401,43 @@ _T
 cftal::math::impl::powu<_T, 2U>::v(const _T& x)
 {
     return x*x;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root3::nr(_T x, _T y)
+{
+    _T d= _C(1.0/3.0) * (y/(x*x) - x);
+    _T xn= x + d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root3::halley(_T x, _T y)
+{
+    _T s=x*x*x;
+    _T xn = x -(s - y) * x/(_C(2.0)*s+y);
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root3::order3(_T x, _T y)
+{
+    _T x3= x*x*x;
+    _T d = (x3 - y)*x/(_C(2.0)*x3+y);
+    _T xn= x - d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root3::order4(_T x, _T y)
+{
+    _T s= (x*x*x-y)/y;
+    _T xn= x - x * (((_C(14.0/81.0) * s -_C(2.0/9.0))*s)+_C(1.0/3.0))*s;
+    return xn;
 }
 
 template <typename _C, typename _T>

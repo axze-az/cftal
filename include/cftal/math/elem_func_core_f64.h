@@ -23,6 +23,7 @@
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f64_s32.h>
+#include <cftal/math/misc.h>
 #include <cftal/math/horner.h>
 #include <cftal/math/impl_estrin.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
@@ -2637,10 +2638,9 @@ cbrt_k(arg_t<vf_type> xc)
                         cbrt_c1,
                         cbrt_c0);
     // one halley step
-    vf_type s=mm*mm*mm;
-    mm = mm -(s - mm0) * mm/(2*s+mm0);
+    mm = impl::root3::order3<double>(mm, mm0);
 #if 1
-    // round mm to 17 bits == int(53)/3
+    // round mm to 17 bits == int(53/3)
     mm = rint(vf_type(mm*0x1p17))*0x1p-17;
 #else
     vi2_type hw, lw;
@@ -2651,8 +2651,7 @@ cbrt_k(arg_t<vf_type> xc)
     hw &= 0xfffffff0;
     mm=_T::combine_words(vi2_type(0), hw);
 #endif
-    s= (mm*mm*mm-mm0)/mm0;
-    mm = mm - mm * ((((14.0/81.0) * s -(2.0/9.0))*s)+1.0/3.0)*s;
+    mm = impl::root3::order4<double>(mm, mm0);
 
     // no denormal results are possible
     // vf_type t= _T::insert_exp(_T::bias()+e3c);
