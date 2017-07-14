@@ -17,6 +17,13 @@
 #define DEF_ELEM_FUNCS(ns, vec_float, vec_int, real_type)               \
                                                                         \
     ns::vec_float                                                       \
+    ns::rsqrt(arg<vec_float>::type a)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::rsqrt(a);                                        \
+    }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
     ns::cbrt(arg<vec_float>::type a)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -24,10 +31,10 @@
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \
-    ns::rsqrt(arg<vec_float>::type a)                                   \
+    ns::root12(arg<vec_float>::type a)                                  \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
-        return func_t::rsqrt(a);                                        \
+        return func_t::root12(a);                                       \
     }                                                                   \
                                                                         \
     ns::vec_float                                                       \

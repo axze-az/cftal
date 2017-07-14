@@ -87,6 +87,10 @@ namespace cftal {
             using base_type::ilogb;
             using base_type::ilogbp1;
 
+            static
+            vf_type
+            rsqrt(arg_t<vf_type> vf);
+
             // calls cbrt_k
             static
             vf_type
@@ -94,7 +98,7 @@ namespace cftal {
 
             static
             vf_type
-            rsqrt(arg_t<vf_type> vf);
+            root12(arg_t<vf_type> vf);
 
             static
             vf_type
@@ -240,6 +244,20 @@ template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
+rsqrt(arg_t<vf_type> x)
+{
+    vf_type y= base_type::rsqrt_k(x);
+    y=_T::sel(isnan(x), x, y);
+    y=_T::sel(x == _T::pinf(), vf_type(0), y);
+    y=_T::sel(x == 0, _T::pinf(), y);
+    y=_T::sel(x < 0.0, _T::nan(), y);
+    return y;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _T>::
 cbrt(arg_t<vf_type> x)
 {
     vf_type r=base_type::cbrt_k(x);
@@ -250,15 +268,14 @@ cbrt(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _T>
-inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
-rsqrt(arg_t<vf_type> x)
+root12(arg_t<vf_type> x)
 {
-    vf_type y= base_type::rsqrt_k(x);
+    vf_type y= base_type::root12_k(x);
     y=_T::sel(isnan(x), x, y);
-    y=_T::sel(x == _T::pinf(), vf_type(0), y);
-    y=_T::sel(x == 0, _T::pinf(), y);
+    y=_T::sel(x == _T::pinf(), _T::pinf(), y);
+    y=_T::sel(x == 0, 0.0, y);
     y=_T::sel(x < 0.0, _T::nan(), y);
     return y;
 }

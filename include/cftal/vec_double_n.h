@@ -231,6 +231,23 @@ namespace cftal {
     vec<double, 8>
     cbrt(arg_t<vec<double, 8> > v);
 
+    // root12, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    root12(const vec<double, _N>& v);
+
+    vec<double, 1>
+    root12(arg_t<vec<double, 1> > v);
+
+    vec<double, 2>
+    root12(arg_t<vec<double, 2> > v);
+
+    vec<double, 4>
+    root12(arg_t<vec<double, 4> > v);
+
+    vec<double, 8>
+    root12(arg_t<vec<double, 8> > v);
+
     // exp, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -1009,13 +1026,21 @@ cftal::native_rsqrt(const vec<double, _N>& v)
     return r;
 }
 
-
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
 cftal::cbrt(const vec<double, _N>& v)
 {
     vec<double, _N> r(cbrt(low_half(v)), cbrt(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::root12(const vec<double, _N>& v)
+{
+    vec<double, _N> r(root12(low_half(v)), root12(high_half(v)));
     return r;
 }
 

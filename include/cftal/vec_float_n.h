@@ -256,6 +256,46 @@ namespace cftal {
     vec<float, 16>
     rsqrt(arg_t<vec<float, 16> > v);
 
+    // cbrt
+    template <std::size_t _N>
+    vec<float, _N>
+    cbrt(const vec<float, _N>& v);
+
+    vec<float, 1>
+    cbrt(arg_t<vec<float, 1> > v);
+
+    vec<float, 2>
+    cbrt(arg_t<vec<float, 2> > v);
+
+    vec<float, 4>
+    cbrt(arg_t<vec<float, 4> > v);
+
+    vec<float, 8>
+    cbrt(arg_t<vec<float, 8> > v);
+
+    vec<float, 16>
+    cbrt(arg_t<vec<float, 16> > v);
+
+    // root12
+    template <std::size_t _N>
+    vec<float, _N>
+    root12(const vec<float, _N>& v);
+
+    vec<float, 1>
+    root12(arg_t<vec<float, 1> > v);
+
+    vec<float, 2>
+    root12(arg_t<vec<float, 2> > v);
+
+    vec<float, 4>
+    root12(arg_t<vec<float, 4> > v);
+
+    vec<float, 8>
+    root12(arg_t<vec<float, 8> > v);
+
+    vec<float, 16>
+    root12(arg_t<vec<float, 16> > v);
+
     // native rsqrt, defaults to 1/sqrt with vector length 1
     template <std::size_t _N>
     vec<float, _N>
@@ -647,8 +687,6 @@ namespace cftal {
     vec<float, _N>
     sin(const vec<float, _N>& v);
 
-    v1f32 cbrt(arg<v1f32>::type a);
-    v2f32 cbrt(arg<v2f32>::type a);
 
     v2f32 frexp(arg<v2f32>::type x, v2s32* e);
 
@@ -686,7 +724,6 @@ namespace cftal {
 
 
 
-    v4f32 cbrt(arg<v4f32>::type a);
     v4f32 frexp(arg<v4f32>::type x, v4s32* e);
     // v4f32 pow2i(arg<v4s32>::type e);
     v4s32 ilogbp1(arg<v4f32>::type v);
@@ -704,8 +741,6 @@ namespace cftal {
     v4f32 tan(arg<v4f32>::type d);
     v4f32 atan2(arg<v4f32>::type x, arg<v4f32>::type y);
 
-    v8f32 cbrt(arg<v8f32>::type a);
-    v16f32 cbrt(arg<v16f32>::type a);
 
     v8f32 frexp(arg<v8f32>::type x, v8s32* e);
     // v8f32 pow2i(arg<v4s32>::type e);
@@ -947,6 +982,24 @@ cftal::vec<float, _N>
 cftal::native_rsqrt(const vec<float, _N>& v)
 {
     vec<float, _N> r(1.0/sqrt(v));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::cbrt(const vec<float, _N>& v)
+{
+    vec<float, _N> r(cbrt(low_half(v)), cbrt(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::root12(const vec<float, _N>& v)
+{
+    vec<float, _N> r(root12(low_half(v)), root12(high_half(v)));
     return r;
 }
 
