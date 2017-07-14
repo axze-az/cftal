@@ -17,6 +17,24 @@
 #include <iomanip>
 #include <memory>
 
+
+/*
+    floatn cos(floatn x);
+    floatn exp(floatn x);
+    floatn exp2(floatn x);
+    floatn exp10(floatn x);
+    floatn log(floatn x);
+    floatn log2(floatn x);
+    floatn log10(floatn x);
+    floatn recip(floatn x);
+    floatn rsqrt(floatn x);
+    floatn sin(floatn x);
+    floatn sqrt(floatn x);
+    floatn tan(floatn x);
+    floatn divide(floatn x, floatn y);
+    floatn powr(floatn x, floatn y);
+ */
+
 #define EXP 1
 
 namespace cftal {
@@ -93,52 +111,38 @@ namespace cftal {
 
             static
             vf_type
-            __native_exp_k(arg_t<vf_type> xrh,
-                           arg_t<vf_type> xrl,
-                           arg_t<vf_type> kf,
-                           arg_t<vi_type> k);
+            __half_exp_k(arg_t<vf_type> xrh,
+                         arg_t<vi_type> k);
+
+            static
+            vf_type
+            half_exp_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            half_exp(arg_t<vf_type> x);
+
+            static
+            vf_type
+            half_exp2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            half_exp2(arg_t<vf_type> x);
+
+            static
+            vf_type
+            half_exp10_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            half_exp10(arg_t<vf_type> x);
         };
 
 
     }
 
     namespace test {
-
-        template <typename _T>
-        struct check_root12 {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-#if 0
-                // return sqrt(sqrt(cbrt(a))); // 1351533
-                // return cbrt(sqrt(sqrt(a))); //  927090
-                // return sqrt(cbrt(sqrt(a))); // 1289438
-#else
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::root12(a);
-#endif
-            }
-            static
-            auto
-            r(const _T& a) {
-                std::pair<_T, _T> i;
-                _T v=call_mpfr::func(a, mpfr_ext::root12, &i);
-                return std::make_tuple(v, i.first, i.second);
-            }
-            static
-            _T
-            s(const _T& a) {
-                return std::cbrt(std::sqrt(std::sqrt(a)));
-                // return std::pow(a, 1.0/12.0);
-            }
-            static
-            const char* fname() {
-                return "root12";
-            }
-        };
 
         template <typename _T>
         struct check_pow {
@@ -166,6 +170,97 @@ namespace cftal {
             static
             const char* fname() {
                 return "pow";
+            }
+        };
+
+        template <typename _T>
+        struct check_half_exp {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                using traits_t=math::func_traits<vec<_T, _N>,
+                                                 vec<int32_t, _N> >;
+                using func_t=math::test_func<_T, traits_t>;
+                return func_t::half_exp(a);
+            }
+            static
+            auto
+            r(const _T& a) {
+#if 0
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_exp, &i);
+                return std::make_tuple(v, i.first, i.second);
+#else
+                return call_mpfr::func(a, mpfr_exp);
+#endif
+            }
+            static
+            _T
+            s(const _T& a) {
+                return std::exp(a);
+            }
+            static
+            const char* fname() {
+                return "half_exp";
+            }
+        };
+
+        template <typename _T>
+        struct check_half_exp2 {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                using traits_t=math::func_traits<vec<_T, _N>,
+                                                 vec<int32_t, _N> >;
+                using func_t=math::test_func<_T, traits_t>;
+                return func_t::half_exp2(a);
+            }
+            static
+            auto
+            r(const _T& a) {
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_exp2, &i);
+                return std::make_tuple(v, i.first, i.second);
+            }
+            static
+            _T
+            s(const _T& a) {
+                return std::exp2(a);
+            }
+            static
+            const char* fname() {
+                return "half_exp2";
+            }
+        };
+
+        template <typename _T>
+        struct check_half_exp10 {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                using traits_t=math::func_traits<vec<_T, _N>,
+                                                 vec<int32_t, _N> >;
+                using func_t=math::test_func<_T, traits_t>;
+                return func_t::half_exp10(a);
+            }
+            static
+            auto
+            r(const _T& a) {
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_ext::exp10, &i);
+                return std::make_tuple(v, i.first, i.second);
+            }
+            static
+            _T
+            s(const _T& a) {
+                return ::exp10(a);
+            }
+            static
+            const char* fname() {
+                return "half_exp10";
             }
         };
 
@@ -443,74 +538,10 @@ template <typename _T>
 inline
 typename cftal::math::test_func<float, _T>::vf_type
 cftal::math::test_func<float, _T>::
-__native_exp_k(arg_t<vf_type> xrh,
-               arg_t<vf_type> xrl,
-               arg_t<vf_type> kf,
-               arg_t<vi_type> k)
+__half_exp_k(arg_t<vf_type> xrh,
+             arg_t<vi_type> k)
 {
-#if 0
-#if 0
-    // [0, 0.3465735912322998046875] : | p - f | <= 2^-27.578125
-    // coefficients for native_exp generated by sollya
-    // x^0 : +0xa.aaaabp-6f
-    const float native_exp_c0=+1.6666667163e-01f;
-    // x^2 : -0xb.60dfap-12f
-    const float native_exp_c2=-2.7779326774e-03f;
-    // x^4 : +0x8.c6d66p-17f
-    const float native_exp_c4=+7.0000000000e-05f;
-    vf_type xx= xrh*xrh;
-    vf_type P= horner(xx,
-                      native_exp_c4,
-                      native_exp_c2,
-                      native_exp_c0);
-    vf_type br= xrh- xx*P;
-#if 0
-    vf_type t= br/(2.0f-br);
-    vf_type y, ye;
-    d_ops::add12(y, ye, vf_type(1.0), t);
-    // vf_type yl=y+ye;
-    horner_comp_quick_si(y, ye, xrh, y, ye, vf_type(1.0));
-    ye += xrl + xrl*xrh;
-    y += ye;
-#else
-    // y += (xrh*br)/(2.0f-br) + xrh;
-    vf_type t= (xrh*br)/(2.0f-br) + xrh;
-    // vf_type t= native_div(vf_type(xrh*br),vf_type(2.0f-br)) + xrh;
-    vf_type y = xrl + xrl*t;
-    y += t;
-    y += 1.0f;
-#endif
-    y = __scale_exp_k(y, kf, k);
-    return y;
-#else
-    // exp(x) = 1 + 2x/(2-x+x^2*P(x^2)
-    //                    x [x - x^2 * P]
-    //        = 1 + x + ------------------
-    //                    2 - [x - x^2 * P]
-    // x^2 : +0xa.aaa8fp-6f
-#if 1
-    // pade 4, 4, taylor 8 of %e^x-1-x faithfully
-    vf_type p= horner(xrh,
-                      +60.0f,
-                      -280.0f,
-                      +4200.0f)*xrh*xrh;
-    vf_type q= horner1(xrh,
-                       // 1.0f
-                       -40.0f,
-                       +540.0f,
-                       -3360.0f,
-                       +8400.0f);
-    vf_type y= xrh + p/q;
-    vf_type ye= xrl + xrl*xrh;
-    y += ye;
-    y += 1.0f;
-    y = __scale_exp_k(y, kf, k);
-    return y;
-#endif
-#endif
-#else
-#if 1
-   // [-0.3465735912322998046875, 0.3465735912322998046875] : | p - f | <= 2^-18.0546875
+    // [-0.3465735912322998046875, 0.3465735912322998046875] : | p - f | <= 2^-18.0546875
     // coefficients for exp generated by sollya
     // x^0 : +0xf.ffff4p-4f
     const vf_type exp_f16_c0=+9.9999928474e-01f;
@@ -522,132 +553,98 @@ __native_exp_k(arg_t<vf_type> xrh,
     const vf_type exp_f16_c3=+1.6790908575e-01f;
     // x^4 : +0xa.9d60bp-8f
     const vf_type exp_f16_c4=+4.1463892907e-02f;
-    vf_type y= fast_poly(xrh,
-                         exp_f16_c4,
-                         exp_f16_c3,
-                         exp_f16_c2,
-                         exp_f16_c1);
-    // vf_type yl=y;
-    // vf_type yee= xrl + xrl*xrh*yl;
-    y = horner(xrh, y, exp_f16_c0);
-    // y += yee;
-    // y = __scale_exp_k(y, kf, k);
+    vf_type xx= xrh*xrh;
+    vf_type y1= horner(xx,
+                       exp_f16_c4,
+                       exp_f16_c2);
+    vf_type y2= horner(xx,
+                       exp_f16_c3,
+                       exp_f16_c1);
+    vf_type y= horner(xrh, y1, y2, exp_f16_c0);
     vf_type ee=_T::insert_exp(k + _T::bias());
     y *= ee;
     return y;
-#else
-    // [-0.3465735912322998046875, 0.3465735912322998046875] : | p - f | <= 2^-32.609375
-    // coefficients for exp generated by sollya
-    // x^0 : +0x8p-3f
-    const float exp_c0=+1.0000000000e+00f;
-    // x^1 : +0x8p-3f
-    const float exp_c1=+1.0000000000e+00f;
-    // x^2 : +0x8p-4f
-    const float exp_c2=+5.0000000000e-01f;
-    // x^3 : +0xa.aaaa9p-6f
-    const float exp_c3=+1.6666664183e-01f;
-    // x^4 : +0xa.aaa73p-8f
-    const float exp_c4=+4.1666459292e-02f;
-    // x^5 : +0x8.88ae5p-10f
-    const float exp_c5=+8.3338962868e-03f;
-    // x^6 : +0xb.6a77ep-13f
-    const float exp_c6=+1.3935414609e-03f;
-    // x^7 : +0xc.d3317p-16f
-    const float exp_c7=+1.9569355936e-04f;
-    vf_type xx= xrh*xrh;
-    vf_type i=horner(xx,
-                     exp_c7,
-                     exp_c5);
-    vf_type j=horner(xx,
-                     exp_c6,
-                     exp_c4);
-    vf_type y= horner(xrh, i, j, exp_c3, exp_c2);
-    vf_type ye;
-    horner_comp_quick(y, ye, xrh, y, exp_c1);
-    // correction for errors in argument reduction
-    vf_type yl=y +ye;
-    horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
-    vf_type yee= xrl + xrl*xrh*yl;
-    ye += yee;
-    y += ye;
-    y = __scale_exp_k(y, kf, k);
-    return y;
-#endif
-#endif
 }
 
 template <typename _T>
 inline
 typename cftal::math::test_func<float, _T>::vf_type
-cftal::math::test_func<float, _T>::func_k(arg_t<vf_type> xc)
+cftal::math::test_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
 {
-    vf_type xrh, xrl, kf;
-    auto k= __reduce_exp_arg(xrh, xrl, kf, xc);
-#if EXP> 0
-    auto y= __native_exp_k(xrh, xrl, kf, k);
-#else
-    // exp(x) = 1 + 2x/(2-x+x^2*P(x^2)
-    //                    x [x - x^2 * P]
-    //        = 1 + x + ------------------
-    //                    2 - [x - x^2 * P]
-    // [0, 0.3465735912322998046875] : | p - f | <= 2^-27.578125
-    // coefficients for native_exp generated by sollya
-    // x^0 : +0xa.aaaabp-6f
-    const float native_exp_c0=+1.6666667163e-01f;
-    // x^2 : -0xb.60dfap-12f
-    const float native_exp_c2=-2.7779326774e-03f;
-    // x^4 : +0x8.c6d66p-17f
-    const float native_exp_c4=+7.0000000000e-05f;
-    vf_type xx= xrh*xrh;
-    vf_type P= horner(xx,
-                      native_exp_c4,
-                      native_exp_c2,
-                      native_exp_c0);
-    vf_type br= xrh- xx*P;
-    vf_type t= br/(2.0f-br);
-    vf_type y, ye;
-    d_ops::add12(y, ye, vf_type(1.0), t);
-    horner_comp_quick_si(y, ye, xrh, y, ye, vf_type(1.0));
-    ye += xrl + xrl*xrh;
-    // 2^kf = 2*2^s ; s = kf/2
-    vf_type scale = __scale_exp_k(vf_type(0.5f), kf, k);
-    // e^x-1 = 2*(y * 2^s - 0.5)
-    horner_comp_si(y, ye, scale, y, ye, vf_type(-0.5f));
-    y *= 2;
-    y  = y + 2*ye;
-    // x small, required for handling of subnormal numbers
-    y = _T::sel((abs(xrh) < 0x1p-25f) & (kf==0.0), xrh, y);
-    return y;
-#endif
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type kf = rint(vf_type(xc * ctbl::m_1_ln2.h()));
+    vf_type xrh = xc - kf*ctbl::m_ln2.h();
+    vi_type k= _T::cvt_f_to_i(kf);
+    auto y= __half_exp_k(xrh,k);
     return y;
 }
 
 template <typename _T>
 typename cftal::math::test_func<float, _T>::vf_type
 cftal::math::test_func<float, _T>::
-func(arg_t<vf_type> d)
+half_exp(arg_t<vf_type> d)
 {
-#if EXP
-    vf_type res=func_k(d);
+    vf_type res=half_exp_k(d);
     using fc= func_constants<float>;
     const vf_type exp_hi_inf= fc::exp_hi_inf();
     const vf_type exp_lo_zero= fc::exp_lo_zero();
     res = _T::sel(d <= exp_lo_zero, 0.0, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
-    // res = _T::sel(d == 0.0, 1.0, res);
-    // res = _T::sel(d == 1.0, M_E, res);
     return res;
-#else
-    vf_type res = func_k(d);
+}
+
+template <typename _T>
+inline
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::half_exp2_k(arg_t<vf_type> xc)
+{
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type kf = rint(xc);
+    vf_type xrh = xc - kf;
+    vi_type k= _T::cvt_f_to_i(kf);
+    auto y= __half_exp_k(xrh*ctbl::m_ln2.h(), k);
+    return y;
+}
+
+template <typename _T>
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::
+half_exp2(arg_t<vf_type> d)
+{
+    vf_type res=half_exp2_k(d);
     using fc= func_constants<float>;
-    const vf_type expm1_hi_inf= fc::expm1_hi_inf();
-    const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one();
-    res = _T::sel(d <= expm1_lo_minus_one, -1.0, res);
-    res = _T::sel(d >= expm1_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 0.0, res);
-    res = _T::sel(d == 1.0, M_E-1.0, res);
+    const vf_type exp_hi_inf= fc::exp2_hi_inf();
+    const vf_type exp_lo_zero= fc::exp2_lo_zero();
+    res = _T::sel(d <= exp_lo_zero, 0.0, res);
+    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     return res;
-#endif
+}
+
+template <typename _T>
+inline
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::half_exp10_k(arg_t<vf_type> xc)
+{
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type kf = rint(vf_type(xc * ctbl::m_1_lg2.h()));
+    vf_type xrh = xc - kf*ctbl::m_lg2.h();
+    vi_type k= _T::cvt_f_to_i(kf);
+    auto y= __half_exp_k(xrh*ctbl::m_ln10.h(), k);
+    return y;
+}
+
+template <typename _T>
+typename cftal::math::test_func<float, _T>::vf_type
+cftal::math::test_func<float, _T>::
+half_exp10(arg_t<vf_type> d)
+{
+    vf_type res=half_exp10_k(d);
+    using fc= func_constants<float>;
+    const vf_type exp_hi_inf= fc::exp_hi_inf();
+    const vf_type exp_lo_zero= fc::exp_lo_zero();
+    res = _T::sel(d <= exp_lo_zero, 0.0, res);
+    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    return res;
 }
 
 int main(int argc, char** argv)
@@ -670,19 +667,19 @@ int main(int argc, char** argv)
     //                                     std::numeric_limits< double >::max());
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
-#if EXP>0
     // d=std::make_pair(-104.0f, 89.0f);
-    d=std::make_pair(-10.4f, 8.9f);
-#else
-    d=std::make_pair(-18.0f, 89.0f);
-    // d=std::make_pair(-M_LN2/2, M_LN2/2);
-#endif
+    // EXP:
+    d=std::make_pair(-16.75f, 12.0f);
+    // EXP2:
+    // d = std::make_pair(-24.5f, 15.5f);
+    // EXP10:
+    // d = std::make_pair(-7.3f, 4.9f);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        ftype, _N, check_func<ftype> >::v(st, d, speed_only,
-                                          cmp_ulp<ftype>(ulp, us),
-                                          cnt, true);
+        ftype, _N, check_half_exp<ftype> >::v(st, d, speed_only,
+                                                cmp_ulp<ftype>(ulp, us),
+                                                cnt, false);
 #if 0
     d=std::make_pair(-0x1p-4, 0x1p-4);
     rc &= of_fp_func_up_to<

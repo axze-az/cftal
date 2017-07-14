@@ -213,8 +213,8 @@ cftal::test::test_f16_to_f32()
 namespace {
     bool f16_eq(cftal::f16_t a, cftal::f16_t b)
     {
-        uint32_t a0= read_bits(a);
-        uint32_t b0= read_bits(b);
+        uint32_t a0= cftal::read_bits(a);
+        uint32_t b0= cftal::read_bits(b);
         if (a0 == b0)
             return true;
         if (((a0 & 0x7fff) > 0x7c00) &&

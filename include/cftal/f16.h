@@ -15,7 +15,7 @@
 
 namespace cftal {
 
-#if 0
+#if 1
     using f16_t = uint16_t;
     inline
     uint16_t read_bits(f16_t v) {
@@ -42,6 +42,8 @@ namespace cftal {
     class vec<f16_t, 8> : public vec<uint16_t, 8> {
     public:
         using base_type = vec<uint16_t, 8>;
+        using mask_type = vec<uint16_t, 8>::mask_type;
+        using mask_value_type = vec<uint16_t, 8>::mask_value_type;
         vec() = default;
         vec(const base_type& b) : base_type(b) {}
         vec(f16_t v) : base_type(read_bits(v)) {}
@@ -144,7 +146,6 @@ namespace cftal {
         _cvt_f16_to_f32(vec<f16_t, 8> s);
 
     }
-    
 }
 
 inline
