@@ -44,8 +44,11 @@ add_custom_target(
           ${CMAKE_CURRENT_BINARY_DIR}
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${script}
   )
-set(ADDITIONAL_MAKE_CLEAN_FILES "${ADDITIONAL_MAKE_CLEAN_FILES}
-  ${CMAKE_CURRENT_BINARY_DIR}/${script}")
+get_directory_property(ff ADDITIONAL_MAKE_CLEAN_FILES)
+message("${ff}")
+set(ff "${ff};${CMAKE_CURRENT_BINARY_DIR}/${script}")
+message("${ff}")
+set_directory_properties(PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${ff}")
 endfunction()
 
 add_script(common.sollya)
