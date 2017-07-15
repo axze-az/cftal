@@ -39,14 +39,15 @@ function(add_script script)
 add_custom_target(
   ${script} ALL
   #OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${script}
-  COMMAND ${CMAKE_COMMAND} -E copy
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
           ${CMAKE_CURRENT_SOURCE_DIR}/${script}
           ${CMAKE_CURRENT_BINARY_DIR}
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${script}
-  )
+  #COMMENT ${script}
+  #DEPENDS ${script}
+)
 get_directory_property(ff ADDITIONAL_MAKE_CLEAN_FILES)
 message("${ff}")
-set(ff "${ff};${CMAKE_CURRENT_BINARY_DIR}/${script}")
+list(APPEND ff "${CMAKE_CURRENT_BINARY_DIR}/${script}")
 message("${ff}")
 set_directory_properties(PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${ff}")
 endfunction()
