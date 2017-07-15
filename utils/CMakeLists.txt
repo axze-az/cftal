@@ -1,4 +1,4 @@
-project(cftal-tools)
+project(cftal-utils)
 
 include_directories(../test/include)
 
@@ -46,9 +46,9 @@ add_custom_target(
   #DEPENDS ${script}
 )
 get_directory_property(ff ADDITIONAL_MAKE_CLEAN_FILES)
-message("${ff}")
+#message("${ff}")
 list(APPEND ff "${CMAKE_CURRENT_BINARY_DIR}/${script}")
-message("${ff}")
+#message("${ff}")
 set_directory_properties(PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${ff}")
 endfunction()
 

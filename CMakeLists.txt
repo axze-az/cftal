@@ -130,7 +130,7 @@ include_directories(include)
 add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(test)
-add_subdirectory(tools)
+add_subdirectory(utils)
 
 include_directories(test/include)
 
