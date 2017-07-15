@@ -12,7 +12,7 @@ f = exp(x);
 i = [-log(2)/2, log(2)/2];
 d = guessdegree(f, i, 0x1p-15);
 d;
-b = [|0, ..., 4|];
+b = [|0, ..., 3|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
@@ -100,7 +100,7 @@ plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "erfc_i2-f64");
 */
 /* a simple polynomial for exp */
-/* 
+/*
    pow:
    log function = log((1-s)/(1+s));
 
@@ -121,7 +121,7 @@ plot((p(x)-f(x))/f(x), i,
 ir=dirtyfindzeros(erfc(x)-erf(x), [0.4, .5])[0];
 */
 /* erfc(x) as polynomial between 0 and 0.75 */
-/* 
+/*
 f = erfc(x);
 i = [0x1p-58, 0.75];
 d = guessdegree(f, i, 0x1p-58);

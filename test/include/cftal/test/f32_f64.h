@@ -57,6 +57,14 @@ namespace cftal {
 
         std::ostream& operator<<(std::ostream& s, const ulp_stats& us);
 
+        struct ulp_stats_summary {
+            const ulp_stats* _us;
+            ulp_stats_summary(const ulp_stats& us) : _us(&us) {}
+        };
+
+        std::ostream&
+        operator<<(std::ostream& s, const ulp_stats_summary& uss);
+
         // compare a and b, returns also true for a==NAN and b
         // == NAN
         bool f_eq(double a, double b);
@@ -71,9 +79,9 @@ namespace cftal {
         bool f_eq_ulp(float a, const std::tuple<float, float, float>& b,
                       uint32_t ulp, ulp_stats* us);
 
-        int32_t 
+        int32_t
         distance(double a, double b);
-        
+
         int32_t
         distance(float a, float b);
 

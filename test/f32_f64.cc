@@ -35,6 +35,7 @@ float cftal::test::make_float(unsigned sgn, unsigned exp, uint32_t sig)
     return t._d;
 }
 
+
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const ulp_stats& us)
 {
@@ -51,6 +52,33 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats& us)
     _ulps /= us._cnt;
     _ulps += 0.5;
 
+    s << "ulps: " << _ulps
+      << " , max delta: "
+      << std::begin(us._devs)->first
+      << " / "
+      << std::prev(std::end(us._devs))->first
+      << " bits\n";
+    if (us._faithful.first) {
+        s << "faithful: "
+          << (us._faithful.second ? "perhaps yes" : "no") << '\n';
+    }
+    return s;
+}
+
+std::ostream&
+cftal::test::operator<<(std::ostream& s, const ulp_stats_summary& uss)
+{
+    const ulp_stats& us= *(uss._us);
+    s << us._cnt << " cases (with " << us._nans
+      << " NAN results), with delta: "
+      << us._ulps << " rate: " << double(us._ulps)/double(us._cnt) << '\n';
+    double _ulps=0.0;
+    for (const auto& t : us._devs) {
+        if (t.first)
+            _ulps += std::fabs(double(t.first)*double(t.second));
+    }
+    _ulps /= us._cnt;
+    _ulps += 0.5;
     s << "ulps: " << _ulps
       << " , max delta: "
       << std::begin(us._devs)->first

@@ -80,7 +80,6 @@ func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
     return dr;
 }
 
-
 namespace cftal {
     namespace test {
         namespace mpfr_ext {
