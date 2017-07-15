@@ -1,0 +1,90 @@
+#! /usr/bin/sollya
+execute("common.sollya");
+
+/* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
+/* printexpansion(p-1.0); */
+verbosity=2!;
+prec=512!;
+write("\n");
+
+/* erf(x) as polynomial between 0 and 0.75 */
+t=erf(x)/(2/sqrt(pi));
+f = t(x)/x;
+i = [0x1p-58, 0.75];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, 2, 4, 6, 8, 10|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type erf_i0_c", "erf_i0", b, c);
+write_coeff(2/sqrt(pi), "", "const vf_type two_o_sqrt_pi", "floatfloat");
+plot((p(x)-f(x))/f(x), i, postscriptfile, "erf_i0-f32");
+
+/* erf(x) piecewise polynomial approximations */
+il= 0.75;
+ir= 1.75;
+im= (ir+il)/2;
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = erf(x+x0);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 10|];
+c = [|49, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "const vf_type erf_i1_c", "erf_i1", b, c);
+write_coeff(il, "", "const vf_type erf_i1_left", single);
+write_coeff(x0, "", "const vf_type erf_i1_x0", single);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "erf_i1-f32");
+
+il= 1.75;
+ir= 3.00;
+im= (ir+il)/2;
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = erf(x+x0);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 10|];
+c = [|49, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "const vf_type erf_i2_c", "erf_i2", b, c);
+write_coeff(il, "", "const vf_type erf_i2_left", single);
+write_coeff(x0, "", "const vf_type erf_i2_x0", single);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "erf_i2-f32");
+
+il= 3.00;
+ir= 4.00;
+im= (ir+il)/2;
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = erf(x+x0);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 10|];
+c = [|49, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "const vf_type erf_i3_c", "erf_i3", b, c);
+write_coeff(il, "", "const vf_type erf_i3_left", single);
+write_coeff(x0, "", "const vf_type erf_i3_x0", single);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "erf_i3-f32");
+
+
+/*
+ * Local variables:
+ * mode: c++
+ * end:
+ */

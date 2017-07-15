@@ -1,0 +1,296 @@
+#! /usr/bin/sollya
+execute("common.sollya");
+
+/* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
+/* printexpansion(p-1.0); */
+verbosity=2!;
+prec=1024!;
+write("\n");
+
+/* exp(x) f32 */
+f= x*(exp(x)+1)/(exp(x)-1);
+i = [0, log(2)/2];
+b = [|0, 2, 4|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p-2, "const vf_type exp_c", "exp", b, c);
+// print_f_poly_coeffs(p-2, "const vf_type exp_c", "exp");
+plot((p(x)-f(x))/f(x), [0, log(2)/2],
+                       postscriptfile, "exp-f32");
+
+f = (2*x/(exp(x)-1) - 2 +x)/(x^2);
+i = [0x1p-512, log(2)/2];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, 2, 4|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_coeffs(p, "const vf_type expn_c", "expn", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "exp-n-f32");
+
+/* a simple polynomial for exp f32 */
+f = exp(x);
+i = [-log(2)/2, log(2)/2];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 7|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type exp_c", "exp", b, c);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-f32");
+
+/* expm1(x) f32 */
+f= 6*((x*(exp(x)+1)/(exp(x)-1))-2)/(x^2);
+p = fpminimax(f, [|2, 4 |], [|SG...|], [0x1p-512, log(2)/2], 1.0,
+                 relative, floating);
+print_f_poly_coeffs_pow_i(p-1, "const vf_type expm1_c", "expm1");
+plot((p(x)-f(x))/f(x), p(x)-f(x), [0x1p-58, log(2)/2],
+     postscriptfile, "expm1-f32");
+
+/* exp2(x) f32 */
+i = [-0.5, 0.5];
+f = 2^x;
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ... , 6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type exp2_c", "exp2", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+     postscriptfile, "exp2-f32");
+
+/* exp10(x) f32 */
+i = [-log(2)/log(10)/2, log(2)/log(10)/2];
+f = 10^x;
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ... , 6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type exp10_c", "exp10", b, c);
+write_coeff(log(10), "", "const vf_type log10", single);
+write_coeff(log(10)*log(10), "", "const vf_type log10sqr", single);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+     postscriptfile, "exp10-f32");
+
+/* log(x) f32 */
+f= log((1+x)/(1-x))/x-2.0;
+i= [0x1p-58, (sqrt(2)-1)/(1+sqrt(2))];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|2, 4, 6, 8|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type log_c", "log", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+     postscriptfile, "log-f32");
+
+/* y= (x-1)/(x+1) */
+/* log(x) f32 */
+f= log((1+x)/(1-x));
+i= [0x1p-58, (sqrt(2)-1)/(1+sqrt(2))];
+d = guessdegree(f, i, 0x1p-40);
+d;
+b = [|1, 3, 5, 7, 9, 11|];
+c = [|SG, SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type pow_log_c", "pow_log", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "pow-log-f32");
+// implementpoly(p, i, 0x1p-38, D, "log", "log.c");
+
+/* sin(x) f32 */
+i = [0x1p-58, pi/4];
+f = sin(x)/x;
+b = [|2,4,6,8|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, 1.0,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type sin_c", "sin", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "sin-f32");
+
+/* cos(x) f32 */
+i = [0x1p-58, pi/4];
+f = cos(x)-1+(x^2)/2;
+b = [|4,6,8,10|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type cos_c", "cos", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cos-f32");
+
+/* tan(x) f32 */
+f = tan(x)/x;
+i = [0x1p-58, 6/7*pi/4];
+b = [|2,4,6,8,10,12,14,16,18|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, 1.0,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type tan_c", "tan", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "tan-f32");
+
+/* atan(x) f32 */
+f = (atan(x)-x)/(-x^3);
+i = [0x1p-58, 7/16];
+b = [|0, 2, 4, 6, 8, 10|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type atan_c", "atan", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), [0x1p-58, 7/16],
+                       postscriptfile, "atan-f32");
+
+/* asin(x) f32 */
+i = [0x1p-58, 0.5];
+f = (asin(x)-x)/(x^3);
+b = [|0, 2, 4, 6, 8, 10, 12|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type asin_c", "asin", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i, 
+                       postscriptfile, "asin-f32");
+
+/* cbrt(x) f32 */
+i = [2^-3, 1];
+f = (x)^(1/3);
+b= [|0,...,1|];
+c= [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type cbrt_c", "cbrt", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cbrt-f32");
+
+/* asinh(x) f32 */
+f = asinh(x)/x;
+i = [0x1p-58, sqrt(2)/2];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0,2,4,6,8,10,12,14|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type asinh_c", "asinh", b, c); 
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "asinh-f32");
+
+/* atanh(x) f32 */
+f = atanh(x)/x; 
+f = (x^3/(atanh(x)-x)-3)/x^2;
+i = [0x1p-58, 0.5];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0,2,4,6,8,10,12|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type atanh_c", "atanh", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "atanh-f32");
+
+/* sinh(x) f32 */
+f= x^3/(sinh(x)-x);
+i =[0x1p-58, 1.0];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, 2, 4, 6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type sinh_c", "sinh", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "sinh-f32");
+
+/* cosh(x) f32 */
+f= (cosh(x)-1)/(x^2);
+i =[0x1p-58, log(2.0)];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, 2, 4, 6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type cosh_c", "cosh", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "cosh-f32");
+/* tanh(x) f32 */
+f= (((x^3)/(x-tanh(x)))-3)/(x^2);
+i =[0x1p-58, log(3)/2];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, 2, 4, 6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type tanh_c", "tanh", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "tanh-f32");
+/* tanh(x) f32 */
+f = tanh(x);
+i = [0, 1/2+1/16];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|1, ..., 10|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type tanh_c", "tanh", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "tanh-poly-f32");
+
+/* acosh f32 */
+f = acosh(1+x)/sqrt(2*x);
+i = [0x1p-58, 1.0];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 8|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type acosh_c", "acosh", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "acosh-f32");
+
+/* rsqrt f32 */
+f= 1.0/sqrt(x);
+i= [0.25, 1.0];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 5|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float rsqrt_c", "rsqrt", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "rsqrt-f32");
+
+/*
+ * Local variables:
+ * mode: c++
+ * end:
+ */

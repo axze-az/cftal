@@ -256,12 +256,4 @@ endif()
 add_executable(dev-func dev-func.cc)
 target_add_test_libs(dev-func)
 
-add_executable(gen-func-data gen-func-data.cc)
-target_add_test_libs(gen-func-data)
-add_executable(gen-constants gen-constants.cc)
-target_add_test_libs(gen-constants)
-add_executable(gen-approx gen-approx.cc)
-target_add_test_libs(gen-approx)
-
-add_executable(gen-fixpoint-div gen-fixpoint-div.cc)
 add_executable(gen-test-vec gen-test-vec.cc)

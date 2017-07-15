@@ -1,0 +1,379 @@
+#! /usr/bin/sollya
+execute("common.sollya");
+
+/* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
+/* printexpansion(p-1.0); */
+verbosity=2!;
+prec=2048!;
+write("\n");
+
+/* exp(x) f64 */
+f = x*(exp(x)+1)/(exp(x)-1)-2;
+i = [0x1p-512, log(2)/2];
+d = guessdegree(f, i, 0x1p-60);
+b = [|2, 4, 6, 8, 10|];
+c = [|D...|];
+d;
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type exp_c", "exp", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "exp-f64");
+// implementpoly(p, i, 0x1p-60, D, "exp_poly_k", "exp.c");
+
+
+/*
+        exp(x) = 1 + 2x/(2-x+x^2*P(x^2)
+        exp(x) -1 = 2x/(2-x+x^2*P(x^2)
+
+           2x
+        -------- = 2-x+x^2*P(x^2)
+        exp(x)-1
+
+          2x
+        ----- - 2 + x = x^2*P(x^2)
+        e^x-1
+
+        (2x/(exp(x)-1) - 2 +x)/x^2 = P(x^2)
+
+*/
+f = (2*x/(exp(x)-1) - 2 +x)/(x^2);
+i = [0x1p-512, log(2)/2];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, 2, 4, 6, 8, 10|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type expn_c", "expn", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "exp-n-f64");
+// implementpoly(p, i, 0x1p-60, DD, "exp_poly_k", "expn.c");
+
+/* a simple polynomial for exp f64 */
+f = exp(x);
+i = [-log(2)/2, log(2)/2];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, ..., 13|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double exp_c", "exp", b, c);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-poly-f64");
+// implementpoly(p, i, 0x1p-53, DD, "exp_poly_k", "expn.c");
+implementpoly(p, i, 0x1p-54, D , "f", "f.c");
+
+/* expm1(x) f64 */
+f= 6*((x*(exp(x)+1)/(exp(x)-1))-2)/(x^2);
+i = [0x1p-512, log(2)/2];
+d = guessdegree(f, i, 0x1p-60);
+b = [|2, 4, 6, 8, 10|];
+c = [|D...|];
+d;
+p = fpminimax(f, b, c, i, 1.0, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs_pow_2_i(p-1, "const vf_type expm1_c", "expm1", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "expm1-f64");
+
+/* exp2(x) f64 */
+i = [-0.5, 0.5];
+f = 2^x;
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, ... , 13|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type exp2_c", "exp2", b, c);
+// write_coeff(log(2), "", "const vf_type log2", double);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "exp2-f64");
+implementpoly(p, i, 0x1p-55, D, "exp2_poly_k", "exp2.c");
+
+
+/* exp10(x) f64 */
+i = [-log(2)/log(10)/2, log(2)/log(10)/2];
+f = 10^x;
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, ... , 12|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double exp10_c", "exp10", b, c);
+write_coeff(log(10), "", "const double log10", double);
+write_coeff(log(10)*log(10), "", "const double log10sqr", double);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "exp10-f64");
+
+/* log(x) f64 */
+f= log((1+x)/(1-x))/x-2.0;
+i= [0x1p-58, (sqrt(2)-1)/(1+sqrt(2))];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|2, 4, 6, 8, 10, 12, 14, 16|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type log_c", "log", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "log-f64");
+
+/* y= (x-1)/(x+1) */
+/* log(x) f64 */
+f= log((1+x)/(1-x));
+i= [0, (sqrt(2)-1)/(1+sqrt(2))];
+d = guessdegree(f, i, 0x1p-84);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13, 15, 17, 19|];
+c = [|D, D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type pow_log_c", "pow_log", b, c);
+write_coeff(1/log(2), "", "const double c_1_ln2_", doubledouble);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "pow-log-f64");
+
+/* sin(x) f64 */
+i = [0x1p-58, pi/4];
+f = sin(x)/x;
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|2,4,6,8,10,12|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, 1.0, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type sin_c", "sin", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "sin-f64");
+
+/* cos(x) f64 */
+i = [0x1p-58, pi/4];
+f = cos(x)-1+(x^2)/2;
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|4,6,8,10,12,14|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type cos_c", "cos", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cos-f64");
+
+/* tan(x) f64 */
+f = tan(x)/x;
+i = [0x1p-58, 6/7*pi/4];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|2,4,6,8,10,12,14,16,18,20,22,24,26|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, 1.0, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type tan_c", "tan", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "tan-f64");
+
+/* atan(x) f64 */
+f = (atan(x)-x)/(-x^3);
+i = [0x1p-58, 7/16];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type atan_c", "atan", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "atan-f64");
+
+/* asin(x) f64 */
+i = [0x1p-58, 0.5];
+f = (asin(x)-x)/(x^3);
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type asin_c", "asin", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i, 
+                       postscriptfile, "asin-f64");
+
+/* cbrt(x) f64 */
+i = [2^-3, 1];
+f = (x)^(1/3);
+d = guessdegree(f, i, 0x1p-7);
+d;
+b= [|0,...,3|];
+c= [|D...|];
+p = fpminimax(f, b, c, i,        
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type cbrt_c", "cbrt", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cbrt-f64");
+
+/* asinh(x) f64 */
+f = asinh(x)/x;
+i = [0x1p-58, sqrt(2)/2];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0,2,4,6,8,10,12,14,16,18,20,22,24,26,28|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type asinh_c", "asinh", b, c); 
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "asinh-f64");
+
+/* atanh(x) f64 */
+f = atanh(x)/x; 
+f = (x^3/(atanh(x)-x)-3)/x^2;
+i = [0x1p-58, 0.5];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0,2,4,6,8,10,12,14,16,18,20,22,24|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type atanh_c", "atanh", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "atanh-f64");
+
+/* sinh(x) f64 */
+f= x^3/(sinh(x)-x);
+i =[0x1p-58, 1.0];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, 2, 4, 6, 8, 10, 12|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type sinh_c", "sinh", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "sinh-f64");
+
+/* cosh(x) f64 */
+f= (cosh(x)-1)/(x^2);
+i =[0x1p-58, log(2.0)];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, 2, 4, 6, 8, 10, 12|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, 
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type cosh_c", "cosh", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "cosh-f64");
+
+/* tanh(x) f64 */
+/*
+       tanh(x) = x - x^3/3 + 2x^5/15
+               = x - x^3/(3 + x^2 Q(x^2));
+       tanh(x) -x = - x^3/(3 - x^2 Q(x^2));
+       (tanh(x) -x)/(-x^3) = 1/(3+x^2 Q(x^2))
+           x^3
+       ---------- = 3 + x^2 *Q;
+       x - tanh(x)
+
+*/
+/* tanh(x) f64 */
+f = tanh(x);
+i = [0, 1/2+1/16];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|1, ..., 17|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type tanh_c", "tanh", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "tanh-poly-f64");
+
+/* acosh f64 */
+f = acosh(1+x)/sqrt(2*x);
+i = [0x1p-58, 1.0];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, ..., 16|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type acosh_c", "acosh", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "acosh-f64");
+
+/* erf(x) f64
+   erf(x) = 2/sqrt(pi) * { x - x^3/3 + x^5/10 - x^7/42 + ... }
+          = 2/sqrt(pi) * { x - x^3/P(x^2) }
+   erf(x)/(2/sqrt(pi)) = x - x^3/P(x^2)
+   x - erf(x)/(2/sqrt(pi)) = x^3/P(x^2);
+   (x - erf(x)/(2/sqrt(pi)))/x^3 = 1/P(x^2)
+*/
+t=erf(x)/(2/sqrt(pi));
+f = (x^3)/(x-t(x));
+i = [0x1p-58, 0.75];
+b = [|0, 2, 4, 6, 8, 10, 12, 14, 16, 18|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type erf_i0_c", "erf_i0", b, c);
+write_coeff(2/sqrt(pi), "", "const vf_type two_o_sqrt_pi", doubledouble);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "erf_i0-f64");
+
+/* 
+   pow:
+   log function = log((1-s)/(1+s));
+*/
+f = 3/2*log((1+x)/(1-x))/x;
+i= [0x1p-58, (sqrt(3/2)-1)/(1+sqrt(3/2))];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|4, 6, 8, 10, 12, 14|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating, 3+x^2);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type pow_log_c", "pow_log", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "pow-log-f64");
+
+
+/* rsqrt f64 */
+f= 1.0/sqrt(x);
+i= [0.25, 1.0];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 5|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double rsqrt_c", "rsqrt", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "rsqrt-f64");
+/*
+ * Local variables:
+ * mode: c++
+ * end:
+ */

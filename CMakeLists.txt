@@ -27,7 +27,7 @@ endif()
 
 project (CFTAL)
 set (CFTAL_VERSION_MAJ 0)
-set (CFTAL_VERSION_MIN 3)
+set (CFTAL_VERSION_MIN 4)
 set (CFTAL_VERSION_PLV 0)
 set (CFTAL_VERSION_STR
     "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}.${CFTAL_VERSION_PLV}")
@@ -125,6 +125,7 @@ include_directories(include)
 add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(test)
+add_subdirectory(tools)
 
 include_directories(test/include)
 
