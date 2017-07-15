@@ -6,6 +6,7 @@
 //
 #include <iostream>
 #include <iomanip>
+#include <cftal/test/of_fp_funcs.h>
 #include <cftal/f16.h>
 
 namespace cftal {
@@ -22,10 +23,10 @@ namespace cftal {
         bool test_f32_to_f16();
 
         template <std::size_t _N>
-        bool test_cvt_f16_f32();
+        bool test_cvt_f16_f32(exec_stats& st);
 
         template <std::size_t _N>
-        bool test_cvt_f32_f16();
+        bool test_cvt_f32_f16(exec_stats& st);
 
     }
 }
@@ -295,9 +296,10 @@ cftal::test::test_ref_cvt_f32_f16()
 }
 
 template <std::size_t _N>
-bool cftal::test::test_cvt_f16_f32()
+bool cftal::test::test_cvt_f16_f32(exec_stats& st)
 {
     bool r=true;
+    uint64_t t0, t1;
     std::cout << std::hexfloat;
     for (uint32_t i=0; i<0x10000u; i+=_N) {
         uint16_t a[_N];
@@ -305,11 +307,17 @@ bool cftal::test::test_cvt_f16_f32()
             a[j] = i+j;
         vec<uint16_t, _N> d= mem<vec<uint16_t, _N> >::load(a, _N);
         vec<f16_t, _N> df=as<vec<f16_t, _N> >(d);
+        t0 = exec_stats::hr_timer();
         vec<float, _N> t=cvt_f16_to_f32(df);
+        t1 = exec_stats::hr_timer();
+        st.insert(t0, t1, _N);
         float vr[_N];
         mem<vec<float, _N> >::store(vr, t);
         for (uint32_t j=0; j<_N; ++j) {
+            t0 = exec_stats::hr_timer();
             float ref=ref_f16_to_f32(a[j]);
+            t1 = exec_stats::hr_timer();
+            st.insert(t0, t1, 0);
             float rt=vr[j];
             if ( ! ((ref==rt) || (std::isnan(ref) && std::isnan(rt))) ) {
                 r=false;
@@ -329,22 +337,28 @@ bool cftal::test::test_cvt_f16_f32()
 }
 
 template <std::size_t _N>
-bool cftal::test::test_cvt_f32_f16()
+bool cftal::test::test_cvt_f32_f16(exec_stats& st)
 {
     bool r=true;
+    uint64_t t0, t1;
     for (uint64_t i=0; i<0x100000000u; i+=_N) {
         uint32_t a[_N];
         for (uint64_t j=0; j<_N; ++j)
             a[j] = i+j;
         vec<uint32_t, _N> du= mem<vec<uint32_t, _N> >::load(a, _N);
         vec<float, _N> d= as<vec<float, _N> >(du);
+        t0= exec_stats::hr_timer();
         vec<f16_t, _N> t= cvt_f32_to_f16(d);
-
+        t1= exec_stats::hr_timer();
+        st.insert(t0, t1, _N);
         f16_t vr[_N];
         mem<vec<f16_t, _N> >::store(vr, t);
         for (uint32_t j=0; j<_N; ++j) {
             float faj=as<float>(a[j]);
+            t0= exec_stats::hr_timer();
             f16_t ref=f16_t(ref_f32_to_f16(faj));
+            t1= exec_stats::hr_timer();
+            st.insert(t0, t1, 0);
             f16_t rt=vr[j];
             if (f16_eq(ref, rt) == false) {
                 r=false;
@@ -388,18 +402,23 @@ int main(int argc, char** argv)
     // r &=cftal::test::test_ref_cvt_f32_f16();
     r &=cftal::test::test_f16_to_f32();
     r &=cftal::test::test_f32_to_f16();
-    r &= cftal::test::test_cvt_f16_f32<1>();
-    r &= cftal::test::test_cvt_f16_f32<2>();
-    r &= cftal::test::test_cvt_f16_f32<4>();
-    r &= cftal::test::test_cvt_f16_f32<8>();
-    r &= cftal::test::test_cvt_f16_f32<16>();
-    r &= cftal::test::test_cvt_f16_f32<32>();
-    r &= cftal::test::test_cvt_f32_f16<1>();
-    r &= cftal::test::test_cvt_f32_f16<2>();
-    r &= cftal::test::test_cvt_f32_f16<4>();
-    r &= cftal::test::test_cvt_f32_f16<8>();
-    r &= cftal::test::test_cvt_f32_f16<16>();
-    r &= cftal::test::test_cvt_f32_f16<32>();
+    cftal::test::exec_stats f16_f32(32);
+    r &= cftal::test::test_cvt_f16_f32<1>(f16_f32);
+    r &= cftal::test::test_cvt_f16_f32<2>(f16_f32);
+    r &= cftal::test::test_cvt_f16_f32<4>(f16_f32);
+    r &= cftal::test::test_cvt_f16_f32<8>(f16_f32);
+    r &= cftal::test::test_cvt_f16_f32<16>(f16_f32);
+    r &= cftal::test::test_cvt_f16_f32<32>(f16_f32);
+    std::cout << "cvt f16 --> f32 " << f16_f32;
+
+    cftal::test::exec_stats f32_f16(32);
+    r &= cftal::test::test_cvt_f32_f16<1>(f32_f16);
+    r &= cftal::test::test_cvt_f32_f16<2>(f32_f16);
+    r &= cftal::test::test_cvt_f32_f16<4>(f32_f16);
+    r &= cftal::test::test_cvt_f32_f16<8>(f32_f16);
+    r &= cftal::test::test_cvt_f32_f16<16>(f32_f16);
+    r &= cftal::test::test_cvt_f32_f16<32>(f32_f16);
+    std::cout << "cvt f32 -> f16 " << f32_f16;
     return r==true ? 0 : 1;
 
 }
