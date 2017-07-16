@@ -15,7 +15,7 @@
 
 namespace cftal {
 
-#if 1
+#if 0
     using f16_t = uint16_t;
     inline
     uint16_t read_bits(f16_t v) {
@@ -27,51 +27,88 @@ namespace cftal {
     public:
         constexpr f16_t() : _f(0) {}
         constexpr explicit f16_t(uint16_t f) : _f(f) {}
-        constexpr uint16_t v() const { return _f; }
+        constexpr uint16_t operator()() const { return _f; }
     private:
         uint16_t _f;
     };
 
     inline
     uint16_t read_bits(f16_t v) {
-        return v.v();
+        return v();
     }
 
-#if defined (__SSE2__)
-    template <>
-    class vec<f16_t, 8> : public vec<uint16_t, 8> {
+    template <size_t _N>
+    class vec<f16_t, _N> : public vec<uint16_t, _N> {
     public:
-        using base_type = vec<uint16_t, 8>;
-        using mask_type = vec<uint16_t, 8>::mask_type;
-        using mask_value_type = vec<uint16_t, 8>::mask_value_type;
+        using value_type = f16_t;
+        using half_type = vec<f16_t, _N/2>;
+        using base_type = vec<uint16_t, _N>;
+        using mask_type = typename base_type::mask_type;
+        using mask_value_type = typename base_type::mask_value_type;
         vec() = default;
-        vec(const base_type& b) : base_type(b) {}
+        vec(const vec& r) = default;
+        vec(vec&& r) = default;
+        vec& operator=(const vec& r) = default;
+        vec& operator=(vec&& r) = default;
+        vec(const half_type& lh, const half_type& hh) :
+            base_type(lh, hh) {}
+        const half_type& lh() const {
+            return static_cast<const half_type&>(base_type::lh());
+        }
+        const half_type& hh() const {
+            return static_cast<const half_type&>(base_type::hh());
+        }
         vec(f16_t v) : base_type(read_bits(v)) {}
-    };
-    template <>
-    struct arg< vec<f16_t, 8> > {
-        using type = vec<f16_t, 8>;
+        vec(const base_type& r) : base_type(r) {}
     };
 
     template <>
-    struct mem< vec<f16_t, 8> > {
+    class vec<f16_t, 1> : public vec<uint16_t, 1> {
+    public:
+        using base_type = vec<uint16_t, 1>;
+        using mask_type = typename vec<uint16_t, 1>::mask_type;
+        using mask_value_type = typename vec<uint16_t, 1>::mask_value_type;
+        vec() = default;
+        vec(f16_t v) : base_type(read_bits(v)) {}
+        f16_t operator()() const { return f16_t(base_type::operator()()); }
+    };
+
+    template <size_t _N>
+    struct arg< vec<f16_t, _N> > {
+        using type = typename arg <vec<uint16_t, _N> >::type;
+    };
+
+    template <>
+    struct mem< vec<f16_t, 1> > {
         static
-        vec<f16_t, 8> load(const f16_t* p, std::size_t n=8) {
-            using v_t= vec<f16_t, 8>;
-            v_t r(mem<v_t::base_type>::load(
+        vec<f16_t, 1> load(const f16_t* p, std::size_t n=1) {
+            return vec<f16_t, 1>(*p);
+        }
+        static
+        void store(f16_t* p, const vec<f16_t, 1>& v) {
+            *p = v();
+        }
+    };
+
+    template <size_t _N>
+    struct mem< vec<f16_t, _N> > {
+        static
+        vec<f16_t, _N> load(const f16_t* p, std::size_t n=_N) {
+            using v_t= vec<uint16_t, _N>;
+            v_t r(mem<typename v_t::base_type>::load(
                 reinterpret_cast<const uint16_t*>(p), n));
             return r;
         }
         static
-        void store(f16_t* p, const vec<int16_t, 8>& v) {
-            using v_t = vec<f16_t, 8>;
-            mem<v_t::base_type>::store(
+        void store(f16_t* p, const vec<f16_t, _N>& v) {
+            using v_t = vec<f16_t, _N>;
+            mem<typename v_t::base_type>::store(
                 reinterpret_cast<uint16_t*>(p), v);
         }
     };
-#endif
 
 #endif
+
 
     // conversion of a f32 to a f16 value
     f16_t
@@ -152,12 +189,6 @@ namespace cftal {
 
     namespace impl {
 
-        f16_t
-        _cvt_f32_to_f16(f32_t f);
-
-        f32_t
-        _cvt_f16_to_f32(f16_t f);
-
         vec<f16_t, 1>
         _cvt_f32_to_f16(vec<f32_t, 1> s);
 
@@ -181,6 +212,13 @@ namespace cftal {
 
         vec<f32_t, 8>
         _cvt_f16_to_f32(vec<f16_t, 8> s);
+
+        f16_t
+        _cvt_f32_to_f16(f32_t f);
+
+        f32_t
+        _cvt_f16_to_f32(f16_t f);
+
 
     }
 }
