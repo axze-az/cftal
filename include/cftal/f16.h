@@ -60,6 +60,10 @@ namespace cftal {
         }
         vec(f16_t v) : base_type(read_bits(v)) {}
         vec(const base_type& r) : base_type(r) {}
+        template <template <class _U, std::size_t _M>
+                  class _OP,
+                  class _L, class _R>
+        vec(const expr<_OP<f16_t, _N>, _L, _R>& r) : vec(eval(r)) {}
     };
 
     template <>
@@ -69,8 +73,16 @@ namespace cftal {
         using mask_type = typename vec<uint16_t, 1>::mask_type;
         using mask_value_type = typename vec<uint16_t, 1>::mask_value_type;
         vec() = default;
+        vec(const vec& r) = default;
+        vec(vec&& r) = default;
+        vec& operator=(const vec& r) = default;
+        vec& operator=(vec&& r) = default;
         vec(f16_t v) : base_type(read_bits(v)) {}
         f16_t operator()() const { return f16_t(base_type::operator()()); }
+        template <template <class _U, std::size_t _M>
+                  class _OP,
+                  class _L, class _R>
+        vec(const expr<_OP<f16_t, 1>, _L, _R>& r) : vec(eval(r)) {}
     };
 
     template <size_t _N>

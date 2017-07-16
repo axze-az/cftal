@@ -92,11 +92,15 @@ cftal::vec<cftal::f16_t, 1>
 fp16_add(cftal::vec<cftal::f16_t, 1> a,
          cftal::vec<cftal::f16_t, 1> b)
 {
+#if 0
+    return a + b;
+#else
     using namespace cftal;
     vec<f32_t, 1> af=cvt_f16_to_f32(a);
     vec<f32_t, 1> bf=cvt_f16_to_f32(b);
     vec<f32_t, 1> rf=af+bf;
     return cvt_f32_to_f16(rf);
+#endif
 }
 
 

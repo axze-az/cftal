@@ -65,7 +65,7 @@ namespace cftal {
         template <template <class _U, std::size_t _M>
                   class _OP,
                   class _L, class _R>
-            vec(const expr<_OP<_T, _N>, _L, _R>& r);
+        vec(const expr<_OP<_T, _N>, _L, _R>& r);
     private:
         static_assert(0==(_N & (_N-1)),
                       "vec<_T, _N>: _N is not a power of 2");
