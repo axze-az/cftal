@@ -55,44 +55,103 @@ namespace cftal {
     }
 }
 
+namespace cftal {
+    namespace op {
+
+        template <size_t _N>
+        struct lt<f16_t, _N> {
+            using full_type = vec<f16_t, _N>;
+            using mask_type = typename full_type::mask_type;
+            static
+            mask_type
+            v(const full_type& a, const full_type& b);
+        };
+
+        namespace impl {
+
+            template <size_t _N>
+            struct f16_add {
+                using full_type = vec<f16_t, _N>;
+                static
+                full_type
+                v(const full_type& a, const full_type& b) {
+#if 1
+                    auto af=cvt_f16_to_f32(a), bf=cvt_f16_to_f32(b);
+                    auto rf=af+bf;
+                    auto r=cvt_f32_to_f16(rf);
+                    return r;
+#else
+                    vec<f16_t, 2*_N> ab(a, b);
+                    auto abf=cvt_f16_to_f32(ab);
+                    auto af=low_half(abf), bf=high_half(abf);
+                    auto rf=af+bf;
+                    auto r=cvt_f32_to_f16(rf);
+                    return r;
+#endif
+                }
+            };
+        }
+
+        template <size_t _N>
+        struct add<f16_t, _N> : public impl::f16_add<_N> {};
+
+        template <>
+        struct add<f16_t, 1>  : public impl::f16_add<1> {};
+
+    }
+}
+
+
 cftal::vec<cftal::f16_t, 8>
 fp16_add(cftal::vec<cftal::f16_t, 8> a,
          cftal::vec<cftal::f16_t, 8> b)
 {
+#if 1
+    return a + b;
+#else
     using namespace cftal;
     vec<f32_t, 8> af=cvt_f16_to_f32(a);
     vec<f32_t, 8> bf=cvt_f16_to_f32(b);
     vec<f32_t, 8> rf=af+bf;
     return cvt_f32_to_f16(rf);
+#endif
 }
 
 cftal::vec<cftal::f16_t, 4>
 fp16_add(cftal::vec<cftal::f16_t, 4> a,
          cftal::vec<cftal::f16_t, 4> b)
 {
+#if 1
+    return a + b;
+#else
     using namespace cftal;
     vec<f32_t, 4> af=cvt_f16_to_f32(a);
     vec<f32_t, 4> bf=cvt_f16_to_f32(b);
     vec<f32_t, 4> rf=af+bf;
     return cvt_f32_to_f16(rf);
+#endif
 }
 
 cftal::vec<cftal::f16_t, 2>
 fp16_add(cftal::vec<cftal::f16_t, 2> a,
          cftal::vec<cftal::f16_t, 2> b)
 {
+#if 1
+    return a + b;
+#else
     using namespace cftal;
     vec<f32_t, 2> af=cvt_f16_to_f32(a);
     vec<f32_t, 2> bf=cvt_f16_to_f32(b);
     vec<f32_t, 2> rf=af+bf;
     return cvt_f32_to_f16(rf);
+#endif
 }
 
 cftal::vec<cftal::f16_t, 1>
 fp16_add(cftal::vec<cftal::f16_t, 1> a,
          cftal::vec<cftal::f16_t, 1> b)
 {
-#if 0
+#if 1
     return a + b;
 #else
     using namespace cftal;
