@@ -46,7 +46,7 @@ namespace cftal {
             exec_stats(unsigned n)
                 : _tics(n+1, uint64_t(0)), _evals(n+1, uint64_t(0)) {}
             static
-            uint64_t hr_timer();
+            uint64_t hr_timer() { return rdtsc(); }
         };
         std::ostream& operator<<(std::ostream& s, const exec_stats& st);
 
