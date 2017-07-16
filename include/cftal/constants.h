@@ -81,8 +81,29 @@ namespace cftal {
         const bytes4 v;
     };
 
+
     template <uint32_t _N>
     const bytes4 const_u32<_N>::v{_N};
+
+    // 2 byte compile time union
+    class bytes2 {
+    private:
+        uint16_t _u16;
+    public:
+        constexpr bytes2(int16_t i) : _u16(i) {}
+        constexpr bytes2(uint16_t u) : _u16(u) {}
+        constexpr uint16_t u16() const { return _u16; }
+        constexpr int16_t s16() const { return int16_t(_u16); }
+    };
+    template <uint16_t _N>
+    struct const_u16 {
+        constexpr const_u16() {}
+        static
+        const bytes2 v;
+    };
+
+    template <uint16_t _N>
+    const bytes2 const_u16<_N>::v{_N};
 
     using sign_s16_msk = const_u32<0x80008000>;
     using not_sign_s16_msk = const_u32<0x7fff7fff>;

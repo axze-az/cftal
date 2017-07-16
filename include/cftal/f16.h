@@ -76,42 +76,79 @@ namespace cftal {
     // conversion of a f32 to a f16 value
     f16_t
     cvt_f32_to_f16(f32_t f);
-    // conversion of a f16 value to a f16 value
+    // conversion of a f16 value to a f32 value
     f32_t
     cvt_f16_to_f32(f16_t f);
 
+    // conversion of a f16 vector to a f32 vector
     template <std::size_t _N>
     vec<f16_t, _N>
     cvt_f32_to_f16(const vec<f32_t, _N>& s);
 
+    // conversion of a f16 vector to a f32 vector
     vec<f16_t, 1>
     cvt_f32_to_f16(const vec<f32_t, 1>& s);
 
+    // conversion of a f16 vector to a f32 vector
     vec<f16_t, 2>
     cvt_f32_to_f16(const vec<f32_t, 2>& s);
 
+    // conversion of a f16 vector to a f32 vector
     vec<f16_t, 4>
     cvt_f32_to_f16(const vec<f32_t, 4>& s);
 
+    // conversion of a f16 vector to a f32 vector
     vec<f16_t, 8>
     cvt_f32_to_f16(const vec<f32_t, 8>& s);
 
-
+    // conversion of a f32 vector to a f16 vector
     template <std::size_t _N>
     vec<f32_t, _N>
     cvt_f16_to_f32(const vec<f16_t, _N>& s);
 
+    // conversion of a f32 vector to a f16 vector
     vec<f32_t, 1>
     cvt_f16_to_f32(const vec<f16_t, 1>& s);
 
+    // conversion of a f32 vector to a f16 vector
     vec<f32_t, 2>
     cvt_f16_to_f32(const vec<f16_t, 2>& s);
 
+    // conversion of a f32 vector to a f16 vector
     vec<f32_t, 4>
     cvt_f16_to_f32(const vec<f16_t, 4>& s);
 
+    // conversion of a f32 vector to a f16 vector
     vec<f32_t, 8>
     cvt_f16_to_f32(const vec<f16_t, 8>& s);
+
+
+#if 0
+    // abs
+    template <size_t _N>
+    vec<f16_t, _N>
+    abs(const vec<f16_t, _N>& a);
+
+    // nan
+    template <size_t _N>
+    typename vec<f16_t, _N>::mask_type
+    isnan(const vec<f16_t, _N>& a);
+
+    // inf
+    template <size_t _N>
+    typename vec<f16_t, _N>::mask_type
+    isinf(const vec<f16_t, _N>& a);
+
+    // operator == for f16_t
+    template <size_t _N>
+    typename vec<f16_t, _N>::mask_type
+    operator==(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b);
+
+    // operator != for f16_t
+    template <size_t _N>
+    typename vec<f16_t, _N>::mask_type
+    operator!=(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b);
+#endif
 
     namespace impl {
 
