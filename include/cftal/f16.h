@@ -247,7 +247,7 @@ cftal::mf_f16_t
 cftal::cvt_f32_to_f16(f32_t ff)
 {
 #if defined (__F16C__)
-    return f16_t(_cvtss_sh(ff, 0));
+    return mf_f16_t(_cvtss_sh(ff, 0));
 #else
     return impl::_cvt_f32_to_f16(ff);
 #endif
