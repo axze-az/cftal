@@ -189,7 +189,7 @@ cftal::test::test_f16_to_f32()
 {
     bool rc=true;
     for (uint32_t i=0; i<0x10000u; ++i) {
-        f16_t f(i);
+        mf_f16_t f(i);
         f32_t r=ref_f16_to_f32(read_bits(f));
         f32_t t=cvt_f16_to_f32(f);
         // bool c = as<uint32_t>(r)==as<uint32_t>(t);
@@ -212,7 +212,7 @@ cftal::test::test_f16_to_f32()
 }
 
 namespace {
-    bool f16_eq(cftal::f16_t a, cftal::f16_t b)
+    bool f16_eq(cftal::mf_f16_t a, cftal::mf_f16_t b)
     {
         uint32_t a0= cftal::read_bits(a);
         uint32_t b0= cftal::read_bits(b);
@@ -234,8 +234,8 @@ cftal::test::test_f32_to_f16()
     for (uint64_t i=0; i<0x100000000u; ++i) {
         uint32_t j=i;
         f32_t s=as<float>(j);
-        f16_t r(ref_f32_to_f16(s));
-        f16_t t(cvt_f32_to_f16(s));
+        mf_f16_t r(ref_f32_to_f16(s));
+        mf_f16_t t(cvt_f32_to_f16(s));
         bool c= f16_eq(t, r);
         if (c==false) {
             std::cout << std::setprecision(16)
@@ -306,7 +306,7 @@ bool cftal::test::test_cvt_f16_f32(exec_stats& st)
         for (uint32_t j=0; j<_N; ++j)
             a[j] = i+j;
         vec<uint16_t, _N> d= mem<vec<uint16_t, _N> >::load(a, _N);
-        vec<f16_t, _N> df=as<vec<f16_t, _N> >(d);
+        vec<mf_f16_t, _N> df=as<vec<mf_f16_t, _N> >(d);
         t0 = exec_stats::hr_timer();
         vec<float, _N> t=cvt_f16_to_f32(df);
         t1 = exec_stats::hr_timer();
@@ -348,18 +348,18 @@ bool cftal::test::test_cvt_f32_f16(exec_stats& st)
         vec<uint32_t, _N> du= mem<vec<uint32_t, _N> >::load(a, _N);
         vec<float, _N> d= as<vec<float, _N> >(du);
         t0= exec_stats::hr_timer();
-        vec<f16_t, _N> t= cvt_f32_to_f16(d);
+        vec<mf_f16_t, _N> t= cvt_f32_to_f16(d);
         t1= exec_stats::hr_timer();
         st.insert(t0, t1, _N);
-        f16_t vr[_N];
-        mem<vec<f16_t, _N> >::store(vr, t);
+        mf_f16_t vr[_N];
+        mem<vec<mf_f16_t, _N> >::store(vr, t);
         for (uint32_t j=0; j<_N; ++j) {
             float faj=as<float>(a[j]);
             t0= exec_stats::hr_timer();
-            f16_t ref=f16_t(ref_f32_to_f16(faj));
+            mf_f16_t ref=mf_f16_t(ref_f32_to_f16(faj));
             t1= exec_stats::hr_timer();
             st.insert(t0, t1, 0);
-            f16_t rt=vr[j];
+            mf_f16_t rt=vr[j];
             if (f16_eq(ref, rt) == false) {
                 r=false;
                 std::cout << std::hex << a[j] << " --> "

@@ -15,212 +15,85 @@
 
 namespace cftal {
 
-#if 1
-    using f16_t = uint16_t;
+    // memory format for f16_t types
+    using mf_f16_t = uint16_t;
     inline
-    uint16_t read_bits(f16_t v) {
+    uint16_t read_bits(mf_f16_t v) {
         return v;
     }
-#else
-    // a 16 bit floating point number used as storage format
-    class f16_t {
-    public:
-        constexpr f16_t() : _f(0) {}
-        constexpr explicit f16_t(uint16_t f) : _f(f) {}
-        constexpr uint16_t operator()() const { return _f; }
-    private:
-        uint16_t _f;
-    };
-
-    inline
-    uint16_t read_bits(f16_t v) {
-        return v();
-    }
-
-    template <size_t _N>
-    class vec<f16_t, _N> : public vec<uint16_t, _N> {
-    public:
-        using value_type = f16_t;
-        using half_type = vec<f16_t, _N/2>;
-        using base_type = vec<uint16_t, _N>;
-        using mask_type = typename base_type::mask_type;
-        using mask_value_type = typename base_type::mask_value_type;
-        vec() = default;
-        vec(const vec& r) = default;
-        vec(vec&& r) = default;
-        vec& operator=(const vec& r) = default;
-        vec& operator=(vec&& r) = default;
-        vec(const half_type& lh, const half_type& hh) :
-            base_type(lh, hh) {}
-        const half_type& lh() const {
-            return static_cast<const half_type&>(base_type::lh());
-        }
-        const half_type& hh() const {
-            return static_cast<const half_type&>(base_type::hh());
-        }
-        vec(f16_t v) : base_type(read_bits(v)) {}
-        vec(const base_type& r) : base_type(r) {}
-        template <template <class _U, std::size_t _M>
-                  class _OP,
-                  class _L, class _R>
-        vec(const expr<_OP<f16_t, _N>, _L, _R>& r) : vec(eval(r)) {}
-    };
-
-    template <>
-    class vec<f16_t, 1> : public vec<uint16_t, 1> {
-    public:
-        using base_type = vec<uint16_t, 1>;
-        using mask_type = typename vec<uint16_t, 1>::mask_type;
-        using mask_value_type = typename vec<uint16_t, 1>::mask_value_type;
-        vec() = default;
-        vec(const vec& r) = default;
-        vec(vec&& r) = default;
-        vec& operator=(const vec& r) = default;
-        vec& operator=(vec&& r) = default;
-        vec(f16_t v) : base_type(read_bits(v)) {}
-        f16_t operator()() const { return f16_t(base_type::operator()()); }
-        template <template <class _U, std::size_t _M>
-                  class _OP,
-                  class _L, class _R>
-        vec(const expr<_OP<f16_t, 1>, _L, _R>& r) : vec(eval(r)) {}
-    };
-
-    template <size_t _N>
-    struct arg< vec<f16_t, _N> > {
-        using type = typename arg <vec<uint16_t, _N> >::type;
-    };
-
-    template <>
-    struct mem< vec<f16_t, 1> > {
-        static
-        vec<f16_t, 1> load(const f16_t* p, std::size_t n=1) {
-            return vec<f16_t, 1>(*p);
-        }
-        static
-        void store(f16_t* p, const vec<f16_t, 1>& v) {
-            *p = v();
-        }
-    };
-
-    template <size_t _N>
-    struct mem< vec<f16_t, _N> > {
-        static
-        vec<f16_t, _N> load(const f16_t* p, std::size_t n=_N) {
-            using v_t= vec<uint16_t, _N>;
-            v_t r(mem<typename v_t::base_type>::load(
-                reinterpret_cast<const uint16_t*>(p), n));
-            return r;
-        }
-        static
-        void store(f16_t* p, const vec<f16_t, _N>& v) {
-            using v_t = vec<f16_t, _N>;
-            mem<typename v_t::base_type>::store(
-                reinterpret_cast<uint16_t*>(p), v);
-        }
-    };
-
-#endif
-
 
     // conversion of a f32 to a f16 value
-    f16_t
+    mf_f16_t
     cvt_f32_to_f16(f32_t f);
     // conversion of a f16 value to a f32 value
     f32_t
-    cvt_f16_to_f32(f16_t f);
+    cvt_f16_to_f32(mf_f16_t f);
 
     // conversion of a f16 vector to a f32 vector
     template <std::size_t _N>
-    vec<f16_t, _N>
+    vec<mf_f16_t, _N>
     cvt_f32_to_f16(const vec<f32_t, _N>& s);
 
     // conversion of a f16 vector to a f32 vector
-    vec<f16_t, 1>
+    vec<mf_f16_t, 1>
     cvt_f32_to_f16(const vec<f32_t, 1>& s);
 
     // conversion of a f16 vector to a f32 vector
-    vec<f16_t, 2>
+    vec<mf_f16_t, 2>
     cvt_f32_to_f16(const vec<f32_t, 2>& s);
 
     // conversion of a f16 vector to a f32 vector
-    vec<f16_t, 4>
+    vec<mf_f16_t, 4>
     cvt_f32_to_f16(const vec<f32_t, 4>& s);
 
     // conversion of a f16 vector to a f32 vector
-    vec<f16_t, 8>
+    vec<mf_f16_t, 8>
     cvt_f32_to_f16(const vec<f32_t, 8>& s);
 
     // conversion of a f32 vector to a f16 vector
     template <std::size_t _N>
     vec<f32_t, _N>
-    cvt_f16_to_f32(const vec<f16_t, _N>& s);
+    cvt_f16_to_f32(const vec<mf_f16_t, _N>& s);
 
     // conversion of a f32 vector to a f16 vector
     vec<f32_t, 1>
-    cvt_f16_to_f32(const vec<f16_t, 1>& s);
+    cvt_f16_to_f32(const vec<mf_f16_t, 1>& s);
 
     // conversion of a f32 vector to a f16 vector
     vec<f32_t, 2>
-    cvt_f16_to_f32(const vec<f16_t, 2>& s);
+    cvt_f16_to_f32(const vec<mf_f16_t, 2>& s);
 
     // conversion of a f32 vector to a f16 vector
     vec<f32_t, 4>
-    cvt_f16_to_f32(const vec<f16_t, 4>& s);
+    cvt_f16_to_f32(const vec<mf_f16_t, 4>& s);
 
     // conversion of a f32 vector to a f16 vector
     vec<f32_t, 8>
-    cvt_f16_to_f32(const vec<f16_t, 8>& s);
+    cvt_f16_to_f32(const vec<mf_f16_t, 8>& s);
 
-
-#if 0
-    // abs
-    template <size_t _N>
-    vec<f16_t, _N>
-    abs(const vec<f16_t, _N>& a);
-
-    // nan
-    template <size_t _N>
-    typename vec<f16_t, _N>::mask_type
-    isnan(const vec<f16_t, _N>& a);
-
-    // inf
-    template <size_t _N>
-    typename vec<f16_t, _N>::mask_type
-    isinf(const vec<f16_t, _N>& a);
-
-    // operator == for f16_t
-    template <size_t _N>
-    typename vec<f16_t, _N>::mask_type
-    operator==(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b);
-
-    // operator != for f16_t
-    template <size_t _N>
-    typename vec<f16_t, _N>::mask_type
-    operator!=(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b);
-#endif
 
     namespace impl {
 
-        f16_t
+        mf_f16_t
         _cvt_f32_to_f16(f32_t f);
 
         f32_t
-        _cvt_f16_to_f32(f16_t f);
+        _cvt_f16_to_f32(mf_f16_t f);
 
         template <std::size_t _N>
-        vec<f16_t, _N>
+        vec<mf_f16_t, _N>
         _cvt_f32_to_f16(vec<f32_t, _N> s);
 
         template <std::size_t _N>
         vec<f32_t, _N>
-        _cvt_f16_to_f32(vec<f16_t, _N> s);
+        _cvt_f16_to_f32(vec<mf_f16_t, _N> s);
 
     }
 }
 
 inline
 cftal::f32_t
-cftal::impl::_cvt_f16_to_f32(f16_t t)
+cftal::impl::_cvt_f16_to_f32(mf_f16_t t)
 {
     uint32_t tt= read_bits(t);
     const uint32_t exp_msk = 0x7c00 << 13;
@@ -242,7 +115,7 @@ cftal::impl::_cvt_f16_to_f32(f16_t t)
 }
 
 inline
-cftal::f16_t
+cftal::mf_f16_t
 cftal::impl::_cvt_f32_to_f16(f32_t ff)
 {
     const f32_t inf= std::numeric_limits<float>::infinity();
@@ -270,12 +143,12 @@ cftal::impl::_cvt_f32_to_f16(f32_t ff)
             f >>=13;
         }
     }
-    return f16_t(f|s);
+    return mf_f16_t(f|s);
 }
 
 template <std::size_t _N>
 inline
-cftal::vec<cftal::f16_t, _N>
+cftal::vec<cftal::mf_f16_t, _N>
 cftal::impl::_cvt_f32_to_f16(vec<f32_t, _N> ff)
 {
     using f32vec = vec<f32_t, _N>;
@@ -320,13 +193,13 @@ cftal::impl::_cvt_f32_to_f16(vec<f32_t, _N> ff)
     u16vec2 t=as<u16vec2>(r);
     auto rr=even_elements(t);
 
-    return as<vec<f16_t, _N> >(rr);
+    return as<vec<mf_f16_t, _N> >(rr);
 }
 
 template <std::size_t _N>
 inline
 cftal::vec<cftal::f32_t, _N>
-cftal::impl::_cvt_f16_to_f32(vec<f16_t, _N> ff)
+cftal::impl::_cvt_f16_to_f32(vec<mf_f16_t, _N> ff)
 {
     using u32vec = vec<uint32_t, _N>;
     using u16vec = vec<int16_t, _N>;
@@ -360,7 +233,7 @@ cftal::impl::_cvt_f16_to_f32(vec<f16_t, _N> ff)
 
 inline
 cftal::f32_t
-cftal::cvt_f16_to_f32(f16_t t)
+cftal::cvt_f16_to_f32(mf_f16_t t)
 {
 #if defined (__F16C__)
     return _cvtsh_ss(read_bits(t));
@@ -370,7 +243,7 @@ cftal::cvt_f16_to_f32(f16_t t)
 }
 
 inline
-cftal::f16_t
+cftal::mf_f16_t
 cftal::cvt_f32_to_f16(f32_t ff)
 {
 #if defined (__F16C__)
@@ -382,69 +255,69 @@ cftal::cvt_f32_to_f16(f32_t ff)
 
 
 template <std::size_t _N>
-cftal::vec<cftal::f16_t, _N>
+cftal::vec<cftal::mf_f16_t, _N>
 cftal::cvt_f32_to_f16(const vec<f32_t, _N>& s)
 {
-    vec<cftal::f16_t, _N/2> rl=cvt_f32_to_f16(low_half(s));
-    vec<cftal::f16_t, _N/2> rh=cvt_f32_to_f16(high_half(s));
-    return vec<cftal::f16_t, _N>(rl, rh);
+    vec<cftal::mf_f16_t, _N/2> rl=cvt_f32_to_f16(low_half(s));
+    vec<cftal::mf_f16_t, _N/2> rh=cvt_f32_to_f16(high_half(s));
+    return vec<cftal::mf_f16_t, _N>(rl, rh);
 }
 
 inline
-cftal::vec<cftal::f16_t, 1>
+cftal::vec<cftal::mf_f16_t, 1>
 cftal::cvt_f32_to_f16(const vec<f32_t, 1>& s)
 {
 #if defined (__F16C__)
-    vec<f16_t, 1> r=f16_t(_cvtss_sh(s(), 0));
+    vec<mf_f16_t, 1> r=mf_f16_t(_cvtss_sh(s(), 0));
 #else
-    vec<f16_t, 1> r=impl::_cvt_f32_to_f16(s);
+    vec<mf_f16_t, 1> r=impl::_cvt_f32_to_f16(s);
 #endif
     return r;
 }
 
 inline
-cftal::vec<cftal::f16_t, 2>
+cftal::vec<cftal::mf_f16_t, 2>
 cftal::cvt_f32_to_f16(const vec<f32_t, 2>& s)
 {
 #if defined (__F16C__)
     v4f32 t(s, s);
     v4u32 rr=_mm_cvtps_ph(t(), 0);
-    vec<f16_t, 2> r=as<vec<f16_t, 2> >(low_half(low_half(rr)));
+    vec<mf_f16_t, 2> r=as<vec<mf_f16_t, 2> >(low_half(low_half(rr)));
 #else
-    vec<f16_t, 2> r=impl::_cvt_f32_to_f16(s);
+    vec<mf_f16_t, 2> r=impl::_cvt_f32_to_f16(s);
 #endif
     return r;
 }
 
 inline
-cftal::vec<cftal::f16_t, 4>
+cftal::vec<cftal::mf_f16_t, 4>
 cftal::cvt_f32_to_f16(const vec<f32_t, 4>& s)
 {
 #if defined (__F16C__)
     v4u32 rr=_mm_cvtps_ph(s(), 0);
-    vec<f16_t, 4> r=as<vec<f16_t, 4> >(low_half(rr));
+    vec<mf_f16_t, 4> r=as<vec<f16_t, 4> >(low_half(rr));
 #else
-    vec<f16_t, 4> r=impl::_cvt_f32_to_f16(s);
+    vec<mf_f16_t, 4> r=impl::_cvt_f32_to_f16(s);
 #endif
     return r;
 }
 
 inline
-cftal::vec<cftal::f16_t, 8>
+cftal::vec<cftal::mf_f16_t, 8>
 cftal::cvt_f32_to_f16(const vec<f32_t, 8>& s)
 {
 #if defined (__F16C__)
     v4u32 rr=_mm256_cvtps_ph(s(), 0);
-    vec<f16_t, 8> r=as<vec<f16_t, 8> >(rr);
+    vec<mf_f16_t, 8> r=as<vec<mf_f16_t, 8> >(rr);
 #else
-    vec<f16_t, 8> r=impl::_cvt_f32_to_f16(s);
+    vec<mf_f16_t, 8> r=impl::_cvt_f32_to_f16(s);
 #endif
     return r;
 }
 
 template <std::size_t _N>
 cftal::vec<cftal::f32_t, _N>
-cftal::cvt_f16_to_f32(const vec<f16_t, _N>& s)
+cftal::cvt_f16_to_f32(const vec<mf_f16_t, _N>& s)
 {
     vec<f32_t, _N/2> rl= cvt_f16_to_f32(low_half(s));
     vec<f32_t, _N/2> rh= cvt_f16_to_f32(high_half(s));
@@ -453,7 +326,7 @@ cftal::cvt_f16_to_f32(const vec<f16_t, _N>& s)
 
 inline
 cftal::vec<cftal::f32_t, 1>
-cftal::cvt_f16_to_f32(const vec<f16_t, 1>& s)
+cftal::cvt_f16_to_f32(const vec<mf_f16_t, 1>& s)
 {
 #if defined (__F16C__)
     vec<f32_t, 1> r= _cvtsh_ss(read_bits(s()));
@@ -466,7 +339,7 @@ cftal::cvt_f16_to_f32(const vec<f16_t, 1>& s)
 
 inline
 cftal::vec<cftal::f32_t, 2>
-cftal::cvt_f16_to_f32(const vec<f16_t, 2>& s)
+cftal::cvt_f16_to_f32(const vec<mf_f16_t, 2>& s)
 {
 #if defined (__F16C__)
     const uint32_t& t=reinterpret_cast<const uint32_t&>(s);
@@ -481,7 +354,7 @@ cftal::cvt_f16_to_f32(const vec<f16_t, 2>& s)
 
 inline
 cftal::vec<cftal::f32_t, 4>
-cftal::cvt_f16_to_f32(const vec<f16_t, 4>& s)
+cftal::cvt_f16_to_f32(const vec<mf_f16_t, 4>& s)
 {
 #if defined (__F16C__)
     const uint64_t& t=reinterpret_cast<const uint64_t&>(s);
@@ -495,7 +368,7 @@ cftal::cvt_f16_to_f32(const vec<f16_t, 4>& s)
 
 inline
 cftal::vec<cftal::f32_t, 8>
-cftal::cvt_f16_to_f32(const vec<f16_t, 8>& s)
+cftal::cvt_f16_to_f32(const vec<mf_f16_t, 8>& s)
 {
 #if defined (__F16C__)
     __m128i s0= s();
