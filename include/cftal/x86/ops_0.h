@@ -957,7 +957,7 @@ namespace cftal {
                 // select uint16_t with the number 0, 2, 4, 6, 8, 10, 12, 14
                 static __m128i v(__m256i rt);
             };
-            
+
             struct vpsllvw {
                 static __m128i v(__m128i a, __m128i s);
             };
@@ -969,20 +969,20 @@ namespace cftal {
             struct vpsravw {
                 static __m128i v(__m128i a, __m128i s);
             };
-#endif            
+#endif
 
             struct vpsllvd {
                 static __m128i v(__m128i a, __m128i s);
-#if defined (__AVX2__)                
+#if defined (__AVX2__)
                 static __m256i v(__m256i a, __m256i s) {
                     return _mm256_sllv_epi32(a, s);
                 }
-#endif                
+#endif
             };
 
             struct vpsrlvd {
                 static __m128i v(__m128i a, __m128i s);
-#if defined (__AVX2__)                
+#if defined (__AVX2__)
                 static __m256i v(__m256i a, __m256i s) {
                     return _mm256_srlv_epi32(a, s);
                 }
@@ -991,16 +991,16 @@ namespace cftal {
 
             struct vpsravd {
                 static __m128i v(__m128i a, __m128i s);
-#if defined (__AVX2__)                
+#if defined (__AVX2__)
                 static __m256i v(__m256i a, __m256i s) {
                     return _mm256_srav_epi32(a, s);
                 }
-#endif                
+#endif
             };
 
             struct vpsllvq {
                 static __m128i v(__m128i a, __m128i s);
-#if defined (__AVX2__)            
+#if defined (__AVX2__)
                 static __m256i v(__m256i a, __m256i s) {
                     return _mm256_sllv_epi64(a, s);
                 }
@@ -1010,7 +1010,7 @@ namespace cftal {
 
             struct vpsrlvq {
                 static __m128i v(__m128i a, __m128i s);
-#if defined (__AVX2__)                
+#if defined (__AVX2__)
                 static __m256i v(__m256i a, __m256i s) {
                     return _mm256_srlv_epi64(a, s);
                 }
@@ -1020,28 +1020,43 @@ namespace cftal {
 
             struct vpsravq {
                 static __m128i v(__m128i a, __m128i s);
-#if defined (__AVX2__)                
+#if defined (__AVX2__)
                 static __m256i v(__m256i a, __m256i s);
 #endif
             };
 
-            
+
             struct vpmullw {
                 static __m128i v(__m128i a, __m128i b) {
                     return _mm_mullo_epi16(a, b);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_mullo_epi16(a, b);
+                }
+#endif
             };
 
             struct vpmulhw {
                 static __m128i v(__m128i a, __m128i b) {
                     return _mm_mulhi_epi16(a, b);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_mulhi_epi16(a, b);
+                }
+#endif
             };
 
             struct vpmulhuw {
                 static __m128i v(__m128i a, __m128i b) {
                     return _mm_mulhi_epu16(a, b);
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    return _mm256_mulhi_epu16(a, b);
+                }
+#endif
             };
 
             struct vpmulld {
@@ -1262,7 +1277,7 @@ __m128i cftal::x86::impl::vpsxxvw::v(__m256i i)
                                       0, 1, 4, 5, 8, 9, 12, 13,
                                       0, 1, 4, 5, 8, 9, 12, 13);
     // shuffle the interesting bytes into the low/high halfes of the
-    // two lanes 
+    // two lanes
     __m256i it=_mm256_shuffle_epi8(i, m);
     // and use vpermq to create the values in the low half
     const int p=impl::shuffle4<0, 2, 0, 2>::val;
