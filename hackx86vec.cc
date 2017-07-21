@@ -75,7 +75,7 @@ namespace cftal {
                 static
                 full_type
                 v(const full_type& a, const full_type& b) {
-#if 1
+#if 0
                     auto af=cvt_f16_to_f32(a), bf=cvt_f16_to_f32(b);
                     auto rf=af+bf;
                     auto r=cvt_f32_to_f16(rf);
@@ -121,7 +121,7 @@ cftal::vec<cftal::f16_t, 4>
 fp16_add(cftal::vec<cftal::f16_t, 4> a,
          cftal::vec<cftal::f16_t, 4> b)
 {
-#if 0
+#if 1
     return a + b;
 #else
     using namespace cftal;
