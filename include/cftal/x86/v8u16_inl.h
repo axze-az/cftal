@@ -339,8 +339,8 @@ inline
 cftal::vec<uint16_t, 8>::
 vec(const vec<uint16_t, 4>& lh, const vec<uint16_t, 4>& hh)
     : base_type(
-        _mm_set_epi64x(*reinterpret_cast<const uint64_t*>(&hh),
-                       *reinterpret_cast<const uint64_t*>(&lh)))
+        _mm_set_epi64x(reinterpret_cast<const uint64_t&>(hh),
+                       reinterpret_cast<const uint64_t&>(lh)))
 {
 }
 

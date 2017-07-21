@@ -346,9 +346,9 @@ cftal::vec<cftal::f32_t, 2>
 cftal::cvt_f16_to_f32(const vec<f16_t, 2>& s)
 {
 #if defined (__F16C__)
-    uint32_t t=as<uint32_t>(s);
-    vec<uint32_t, 4> s2(t);
-    vec<f32_t, 4> rr= _mm_cvtph_ps(s2());
+    const uint32_t& t=reinterpret_cast<const uint32_t&>(s);
+    __m128i s2=_mm_set_epi32(0, 0, 0, t);
+    vec<f32_t, 4> rr= _mm_cvtph_ps(s2);
     vec<f32_t, 2> r= low_half(rr);
 #else
     vec<f32_t, 2> r= impl::_cvt_f16_to_f32(s);
@@ -361,9 +361,9 @@ cftal::vec<cftal::f32_t, 4>
 cftal::cvt_f16_to_f32(const vec<f16_t, 4>& s)
 {
 #if defined (__F16C__)
-    uint64_t t=as<uint64_t>(s);
-    vec<uint64_t, 2> s2(t);
-    vec<f32_t, 4> r= _mm_cvtph_ps(s2());
+    const uint64_t& t=reinterpret_cast<const uint64_t&>(s);
+    __m128i s2= _mm_set_epi64x(0, t);
+    vec<f32_t, 4> r= _mm_cvtph_ps(s2);
 #else
     vec<f32_t, 4> r= impl::_cvt_f16_to_f32(s);
 #endif
