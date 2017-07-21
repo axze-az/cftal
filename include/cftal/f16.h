@@ -295,7 +295,7 @@ cftal::cvt_f32_to_f16(const vec<f32_t, 4>& s)
 {
 #if defined (__F16C__)
     v4u32 rr=_mm_cvtps_ph(s(), 0);
-    vec<mf_f16_t, 4> r=as<vec<f16_t, 4> >(low_half(rr));
+    vec<mf_f16_t, 4> r=as<vec<mf_f16_t, 4> >(low_half(rr));
 #else
     vec<mf_f16_t, 4> r=impl::_cvt_f32_to_f16(s);
 #endif
