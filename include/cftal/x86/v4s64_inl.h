@@ -441,7 +441,7 @@ cftal::v4s64 cftal::abs(const v4s64& a)
 {
     v4s64 sgn= _mm256_cmpgt_epi64(_mm256_setzero_si256(), a());
     // invert where sgn < 0
-    v2s64 inv = a ^ sgn;
+    v4s64 inv = a ^ sgn;
     // add 1
     return inv - sgn;
 }
