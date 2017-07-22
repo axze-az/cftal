@@ -331,7 +331,7 @@ namespace cftal {
                 return x86::impl::vpsravq::v(a(), s());
             }
         };
-        
+
     }
 
 }
@@ -435,6 +435,21 @@ cftal::v2s64 cftal::min(const v2s64& a, const v2s64& b)
 {
     v2s64::mask_type _lt(a < b);
     return select(_lt, a, b);
+}
+
+inline
+cftal::v2s64
+cftal::abs(const v2s64& a)
+{
+#if defined (__SSE4_2__)
+    v2s64 sgn= _mm_cmpgt_epi64(_mm_setzero_si128(), a());
+#else
+    v2s64 sgn= _mm_srai_epi32(a(), 31);
+    sgn = x86::impl::vpshufd<1, 1, 3, 3>::v(sgn());
+#endif
+    v2s64 inv = a ^ sgn;
+    // add 1
+    return inv - sgn;
 }
 
 inline

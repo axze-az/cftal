@@ -325,7 +325,7 @@ namespace cftal {
                 return x86::impl::vpsravd::v(a(), s());
             }
         };
-        
+
     }
 
 }
@@ -466,6 +466,20 @@ cftal::v4s32 cftal::min(const v4s32& a, const v4s32& b)
 #else
     v4s32 _lt(a < b);
     return select(_lt, a, b);
+#endif
+}
+
+inline
+cftal::v4s32 cftal::abs(const v4s32& a)
+{
+#if defined (__SSSE3__)
+    return _mm_sign_epi32(a(), a());
+#else
+    v4s32 sgn= a >> 31;
+    // invert if negative
+    v4s32 inv= a ^ sgn;
+    // add 1
+    return inv - sgn;
 #endif
 }
 

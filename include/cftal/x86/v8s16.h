@@ -67,6 +67,7 @@ namespace cftal {
 
     v8s16 max(const v8s16& a, const v8s16& b);
     v8s16 min(const v8s16& a, const v8s16& b);
+    v8s16 abs(const v8s16& a);
 
     vec<int16_t, 8>
     select(const typename vec<int16_t, 8>::mask_type& msk,

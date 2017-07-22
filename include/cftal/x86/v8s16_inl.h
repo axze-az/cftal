@@ -461,6 +461,20 @@ cftal::v8s16 cftal::min(const v8s16& a, const v8s16& b)
 }
 
 inline
+cftal::v8s16 cftal::abs(const v8s16& a)
+{
+#if defined (__SSSE3__)
+    return _mm_sign_epi16(a(), a());
+#else
+    v8s16 sgn= a >> 15;
+    // invert if negative
+    v8s16 inv= a ^ sgn;
+    // add 1
+    return inv - sgn;
+#endif
+}
+
+inline
 cftal::v8s16 cftal::select(const v8s16::mask_type& m,
                            const v8s16& on_true,
                            const v8s16& on_false)

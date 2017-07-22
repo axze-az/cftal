@@ -464,6 +464,12 @@ cftal::v8s32 cftal::min(const v8s32& a, const v8s32& b)
 }
 
 inline
+cftal::v8s32 cftal::abs(const v8s32& a)
+{
+    return _mm256_sign_epi32(a(), a());
+}
+
+inline
 cftal::v8s32 cftal::select(const v8s32::mask_type& m,
                            const v8s32& on_true,
                            const v8s32& on_false)
@@ -504,7 +510,7 @@ inline
 std::pair<cftal::v8s32, cftal::v8s32>
 cftal::mul_lo_hi(const v8s32& x, const v8s32& y)
 {
-#if 0    
+#if 0
     // p0l p0h p2l p2h
     v4s32 e= _mm_mul_epi32(x(), y());
     // p1l p1h p3l p3h

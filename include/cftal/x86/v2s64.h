@@ -51,7 +51,7 @@ namespace cftal {
     struct arg< vec<int64_t, 2> > {
         using type = vec<int64_t, 2>;
     };
-   
+
     template <>
     struct mem< vec<int64_t, 2> > {
         static
@@ -65,18 +65,19 @@ namespace cftal {
 
     vec<int64_t, 1>
     high_half(const vec<int64_t, 2>& v);
-    
-    
+
+
     v2s64 max(const v2s64& a, const v2s64& b);
     v2s64 min(const v2s64& a, const v2s64& b);
-  
-    vec<int64_t, 2> 
+    v2s64 abs(const v2s64& a);
+
+    vec<int64_t, 2>
     select(const typename vec<int64_t, 2>::mask_type& msk,
            const vec<int64_t, 2>& on_true,
            const vec<int64_t, 2>& on_false);
 
     template <bool _P0, bool _P1>
-    vec<int64_t, 2> 
+    vec<int64_t, 2>
     select(const vec<int64_t, 2>& on_true,
            const vec<int64_t, 2>& on_false);
 
@@ -84,13 +85,13 @@ namespace cftal {
     vec<int64_t, 2> permute(const vec<int64_t, 2>& s);
 
     template <int _P0, int _P1>
-    vec<int64_t, 2> permute(const vec<int64_t, 2>& s0, 
+    vec<int64_t, 2> permute(const vec<int64_t, 2>& s0,
                             const vec<int64_t, 2>& s1);
 
     std::pair<vec<int64_t, 2>, vec<int64_t, 2> >
     mul_lo_hi(const vec<int64_t, 2>& a, const vec<int64_t, 2>& b);
 
-#if !defined (__AVX512VL__)    
+#if !defined (__AVX512VL__)
     bool
     all_of(const vec<int64_t, 2>::mask_type& v);
     bool
@@ -98,8 +99,8 @@ namespace cftal {
     bool
     none_of(const vec<int64_t, 2>::mask_type& v);
 #endif
-    
-}    
+
+}
 
 // Local variables:
 // mode: c++
