@@ -687,7 +687,7 @@ cbrt_k(arg_t<vf_type> xc)
     hw &= 0xfffffff0;
     mm=_T::combine_words(vi2_type(0), hw);
 #endif
-    mm = impl::root3::order4<double>(mm, mm0);
+    mm = impl::root3::order5<double>(mm, mm0);
     // no denormal results are possible
     // vf_type t= _T::insert_exp(_T::bias()+e3c);
     vf_type t= _T::insert_exp(e3_with_bias);
@@ -757,9 +757,10 @@ root12_k(arg_t<vf_type> xc)
                         root12_c2,
                         root12_c1,
                         root12_c0);
-    // mm = impl::root12::householder5(mm, mm0);
     mm = impl::root12::householder5<double>(mm, mm0);
     mm = impl::root12::householder5<double>(mm, mm0);
+    // mm = impl::root12::householder5<double>(mm, mm0);
+    // mm = impl::root12::order7<double>(mm, mm0);
     mm = impl::root12::nr<double>(mm, mm0);
     mm = impl::root12::nr<double>(mm, mm0);
     vf_type t= _T::insert_exp(e12_with_bias);

@@ -617,7 +617,7 @@ cbrt_k(arg_t<vf_type> xc)
     mm=_T::as_float(hw);
 #endif
     // second iteration
-    mm = impl::root3::order4<float>(mm, mm0);
+    mm = impl::root3::order5<float>(mm, mm0);
     // no denormal results are possible
     // vf_type t= _T::insert_exp(_T::bias()+e3c);
     vf_type t= _T::insert_exp(e3_with_bias);

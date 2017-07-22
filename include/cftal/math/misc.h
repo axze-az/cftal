@@ -112,6 +112,12 @@ namespace cftal {
                 static
                 _T
                 order4(_T y, _T x);
+
+                // x^3 = y
+                template <typename _C, typename _T>
+                static
+                _T
+                order5(_T y, _T x);
             };
 
             // helper functions for different root12 iteration steps
@@ -126,6 +132,16 @@ namespace cftal {
                 static
                 _T
                 halley(_T y, _T x);
+
+                template <typename _C, typename _T>
+                static
+                _T
+                order3(_T y, _T x);
+
+                template <typename _C, typename _T>
+                static
+                _T
+                order7(_T y, _T x);
 
                 template <typename _C, typename _T>
                 static
@@ -425,18 +441,54 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root3::order3(_T x, _T y)
 {
+#if 1
+    _T x3= x*x*x;
+    _T z= (y -x3)/x3;
+    _T d= z*horner(z,
+                   _C(-1.0/9.0),
+                   _C(1.0/3.0));
+    _T xn= x+ x*d;
+    return xn;
+#else
     _T x3= x*x*x;
     _T d = (x3 - y)*x/(_C(2.0)*x3+y);
     _T xn= x - d;
     return xn;
+#endif
 }
 
 template <typename _C, typename _T>
 _T
 cftal::math::impl::root3::order4(_T x, _T y)
 {
+#if 1
+    _T x3= x*x*x;
+    _T z= (y -x3)/x3;
+    _T d= z*horner(z,
+                   _C(5.0/81.0),
+                   _C(-1.0/9.0),
+                   _C(1.0/3.0));
+    _T xn= x + x*d;
+    return xn;
+#else
     _T s= (x*x*x-y)/y;
     _T xn= x - x * (((_C(14.0/81.0) * s -_C(2.0/9.0))*s)+_C(1.0/3.0))*s;
+#endif
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root3::order5(_T x, _T y)
+{
+    _T x3= x*x*x;
+    _T z= (y -x3)/x3;
+    _T d= z*horner(z,
+                   _C(-10.0/243.0),
+                   _C(5.0/81.0),
+                   _C(-1.0/9.0),
+                   _C(1.0/3.0));
+    _T xn= x + x*d;
     return xn;
 }
 
@@ -457,6 +509,36 @@ cftal::math::impl::root12::halley(_T x, _T y)
     _T num= _C(2.0/11.0) * x * (y - x12);
     _T denom= y + _C(13.0/11.0) *x12;
     _T xn = x + num/denom;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::order3(_T x, _T y)
+{
+    _T x12=powu<_T, 12>::v(x);
+    _T z = (y-x12)/x12;
+    _T d= z* horner(z,
+                    _C(-11.0/288.0),
+                    _C(1.0/12.0));
+    _T xn= x + x*d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::order7(_T x, _T y)
+{
+    _T x12=powu<_T, 12>::v(x);
+    _T z = (y-x12)/x12;
+    _T d= z* horner(z,
+                    _C(-4910983/429981696.0),
+                    _C(83237.0/5971968.0),
+                    _C(-8855.0/497664.0),
+                    _C(253.0/10368.0),
+                    _C(-11.0/288.0),
+                    _C(1.0/12.0));
+    _T xn= x + x*d;
     return xn;
 }
 
