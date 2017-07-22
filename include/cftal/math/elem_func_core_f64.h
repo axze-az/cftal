@@ -603,11 +603,11 @@ rsqrt_k(arg_t<vf_type> x)
         // powers separated
         // mm = mm + 0.5*mm - 0.5*mm0*mm*mm*mm
         // one step of order 4
-        vf_type rr = 1-mm*mm*mm0;
+        vf_type rr = mm*mm*mm0-1.0;
         mm = mm*horner(rr,
-                       5.0/16.0,
+                       -5.0/16.0,
                        3.0/8.0,
-                       0.5,
+                       -0.5,
                        1.0);
     }
     mm = mm + 0.5* mm *
