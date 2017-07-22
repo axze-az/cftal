@@ -595,17 +595,20 @@ rsqrt_k(arg_t<vf_type> x)
     // for faithful rounding
 #else
     for (int i=0; i<1; ++i) {
+        // nr step
         // mm = mm + 0.5* mm * (1- mm0 * mm* mm);
         // less operations:
         // mm = mm + mm * (0.5 - 0.5 * mm0 * mm* mm);
         // mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
-
         // powers separated
         // mm = mm + 0.5*mm - 0.5*mm0*mm*mm*mm
-
-        // mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
+        // one step of order 4
         vf_type rr = 1-mm*mm*mm0;
-        mm = mm + 0.5 * mm * rr + 3.0/8.0*mm*rr*rr + 5.0/16*mm*rr*rr*rr;
+        mm = mm*horner(rr,
+                       5.0/16.0,
+                       3.0/8.0,
+                       0.5,
+                       1.0);
     }
     mm = mm + 0.5* mm *
         (vf_type(1) - d_ops::mul(mm0, mm)*mm).h();

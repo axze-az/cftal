@@ -158,7 +158,7 @@ namespace {
         if ((r=cftal::test::f_eq(a, b)) == false) {
             u = cftal::test::distance(a, b);
             //(u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
-            if (abs(u) <= int32_t(ulp))
+            if (std::abs(u) <= int32_t(ulp))
                 r=true;
 #if 0
             else
