@@ -72,11 +72,11 @@ namespace cftal {
     }
 
     template <size_t _N>
-    class vec<f16_t, _N> : public vec<uint16_t, _N> {
+    class vec<f16_t, _N> : public vec<int16_t, _N> {
     public:
         using value_type = f16_t;
         using half_type = vec<f16_t, _N/2>;
-        using base_type = vec<uint16_t, _N>;
+        using base_type = vec<int16_t, _N>;
         using mask_value_type = typename half_type::mask_value_type;
         using mask_type = vec<mask_value_type, _N>;
         vec() = default;
@@ -102,9 +102,9 @@ namespace cftal {
     };
 
     template <>
-    class vec<f16_t, 1> : public vec<uint16_t, 1> {
+    class vec<f16_t, 1> : public vec<int16_t, 1> {
     public:
-        using base_type = vec<uint16_t, 1>;
+        using base_type = vec<int16_t, 1>;
         using mask_type = vec<f16_t, 1>;
         using mask_value_type = f16_t;
         vec() = default;
@@ -123,7 +123,7 @@ namespace cftal {
 
     template <size_t _N>
     struct arg< vec<f16_t, _N> > {
-        using type = typename arg <vec<uint16_t, _N> >::type;
+        using type = typename arg <vec<int16_t, _N> >::type;
     };
 
     template <>
@@ -177,17 +177,6 @@ namespace cftal {
     typename vec<f16_t, _N>::mask_type
     isinf(const vec<f16_t, _N>& a);
 
-
-    // operator == for f16_t
-    template <size_t _N>
-    typename vec<f16_t, _N>::mask_type
-    operator==(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b);
-
-    // operator != for f16_t
-    template <size_t _N>
-    typename vec<f16_t, _N>::mask_type
-    operator!=(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b);
-
     namespace op {
 
         template <size_t _N>
@@ -225,6 +214,31 @@ namespace cftal {
         }
 
         template <size_t _N>
+        struct eq<f16_t, _N> {
+            using full_type = vec<f16_t, _N>;
+            static
+            typename full_type::mask_type
+            v(const full_type& a, const full_type& b);
+        };
+
+        template <size_t _N>
+        struct ne<f16_t, _N> {
+            using full_type = vec<f16_t, _N>;
+            static
+            typename full_type::mask_type
+            v(const full_type& a, const full_type& b);
+        };
+
+        template <size_t _N>
+        struct le<f16_t, _N> {
+            using full_type = vec<f16_t, _N>;
+            static
+            typename full_type::mask_type
+            v(const full_type& a, const full_type& b);
+        };
+
+
+        template <size_t _N>
         struct add<mf_f16_t, _N> : public impl::f16_add<_N> {};
 
         template <>
@@ -247,7 +261,8 @@ template <std::size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::abs(const vec<f16_t, _N>& a)
 {
-    return (a() & not_sign_f16_msk);
+    vec<f16_t, _N> r(a() & vec<f16_t, _N>(not_sign_f16_msk)());
+    return r;
 }
 
 template <std::size_t _N>
@@ -274,21 +289,44 @@ cftal::isinf(const vec<f16_t, _N>& a)
 
 template <std::size_t _N>
 typename cftal::vec<cftal::f16_t, _N>::mask_type
-cftal::operator==(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
+cftal::op::eq<cftal::f16_t, _N>::
+v(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
 {
-#if 1
-    vec<f32_t, _N> af=cvt_f16_to_f32(a), bf=cvt_f16_to_f32(b);
-    typename vec<f16_t, _N>::mask_type tf=cvt_f32_msk_to_f16_msk(af == bf);
-    return tf;
-#else
     using bv_t = typename vec<f16_t, _N>::base_type;
     using m_bv_t = typename bv_t::mask_type;
     bv_t x= a(), y=b();
-    bv_t xs = x + x;
-    bv_t ys = y + y;
+    bv_t a_x = abs(a)(), a_y = abs(b)();
+    m_bv_t x_nan = a_x > 0x7c00u;
+    m_bv_t y_nan = a_y > 0x7c00u;
+    m_bv_t x_eq_y = (x == y) | (bv_t(a_x|a_y) == 0);
+    x_eq_y = select(x_nan | y_nan, x_eq_y, 0);
+    return x_eq_y;
+}
 
-    m_bv_t x_not_nan = xs <= (0x7c00u*2);
-    m_bv_t y_not_nan = ys <= (0x7c00u*2);
+template <std::size_t _N>
+typename cftal::vec<cftal::f16_t, _N>::mask_type
+cftal::op::le<cftal::f16_t, _N>::
+v(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y)
+{
+    return 0;
+#if 0
+    using bv_t = typename vec<f16_t, _N>::base_type;
+    using m_bv_t = typename bv_t::mask_type;
+    bv_t a= x(), b=y();
+    m_bv_t asgn = (a & sign_f16_msk) < 0;
+    m_bv_t bsgn = (b & sign_f16_msk) < 0;
+
+    m_bv_t x_is_nan = (x & not_sign_f16_msk) <= (0x7c00u);
+    m_bv_t y_is_nan = (y & not_sign_f16_msk) <= (0x7c00u);
+
+
+
+
+    m_bv_t diff_signs = asgn != ysgn;
+
+    m_bv_t b_le_a = x <= y;
+
+
 
     m_bv_t x_eq_y = (x == y) | (bv_t(xs|ys) == 0);
     m_bv_t r= x_not_nan & y_not_nan & x_eq_y;
@@ -296,11 +334,30 @@ cftal::operator==(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
 #endif
 }
 
+template <std::size_t _N>
+typename cftal::vec<cftal::f16_t, _N>::mask_type
+cftal::op::ne<cftal::f16_t, _N>::
+v(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
+{
+    auto t=eq<cftal::f16_t, _N>::v(a, b)();
+    using bv_t = typename vec<f16_t, _N>::base_type;
+    using m_bv_t = typename bv_t::mask_type;
+    m_bv_t nt= ~t;
+    return nt;
+}
+
 cftal::vec<cftal::f16_t, 8>::mask_type
-fp16_eq_add(cftal::vec<cftal::f16_t, 8> a,
-            cftal::vec<cftal::f16_t, 8> b)
+fp16_eq(cftal::vec<cftal::f16_t, 8> a,
+        cftal::vec<cftal::f16_t, 8> b)
 {
     return a == b;
+}
+
+cftal::vec<cftal::f16_t, 8>::mask_type
+fp16_ne(cftal::vec<cftal::f16_t, 8> a,
+        cftal::vec<cftal::f16_t, 8> b)
+{
+    return a != b;
 }
 
 cftal::vec<cftal::mf_f16_t, 8>
@@ -369,13 +426,15 @@ int main(int argc, char** argv)
     using namespace cftal;
     std::cout << std::setprecision(18) << std::scientific;
 
-    v1f64 a=1.293872646225411094e+00;
-    v1f64 b=-1.778789453749938048e+03;
-    v1f64 r=pow(a, b);
-    double rt=std::pow(a(), b());
-    std::cout << r << std::endl
-              << rt << std::endl;
-#if 1
+    bytes4 t0(-1.0f);
+    bytes4 t1(-1.1f);
+    bytes4 t2(1.0f);
+    bytes4 t3(1.1f);
+    std::cout << t0.s32() << std::endl
+              << t1.s32() << std::endl;
+    std::cout << t2.s32() << std::endl
+              << t3.s32() << std::endl;
+#if 0
     bytes8 t(0, 0x3fe6a09e);
     const double d=(M_SQRT2/2) - t.f64();
     std::cout << std::setprecision(18) << t.f64() << std::endl
