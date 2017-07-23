@@ -1042,6 +1042,19 @@ mul(const _T& a, const _T& b)
     return d_real<_T>(p, e);
 }
 
+#if 1
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::impl::d_real_ops_fma<_T, true>::
+mul(const d_real<_T>& x, const _T& y)
+{
+    _T cl1, ch= two_prod(x.h(), y, cl1);
+    _T cl3 = fma(x.l(), y, cl1);
+    _T zl, zh= quick_two_sum(ch, cl3);
+    return d_real<_T>(zh, zl);
+}
+#else
 template <typename _T>
 inline
 cftal::d_real<_T>
@@ -1058,7 +1071,24 @@ mul(const d_real<_T>& a, const _T& b)
     p2 += pl;
     return d_real<_T>(p1, p2);
 }
+#endif
 
+#if 1
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::impl::d_real_ops_fma<_T, false>::
+mul(const d_real<_T>& x, const _T& y)
+{
+    _T cl1, ch= two_prod(x.h(), y, cl1);
+    _T cl2 = x.l()*y;
+    _T tl1, th= base_type::quick_two_sum(ch, cl2, tl1);
+    _T tl2 = tl1 +cl1;
+    _T zl, zh = base_type::quick_two_sum(th, tl2, zl);
+    return d_real<_T>(zh, zl);
+}
+
+#else
 template <typename _T>
 inline
 cftal::d_real<_T>
@@ -1071,7 +1101,24 @@ mul(const d_real<_T>& a, const _T& b)
     p1 = base_type::quick_two_sum(p1, p2, p2);
     return d_real<_T>(p1, p2);
 }
+#endif
 
+#if 1
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::impl::d_real_ops_fma<_T, true>::
+mul(const d_real<_T>& x, const d_real<_T>& y)
+{
+    _T cl1, ch = two_prod(x.h(), y.h(), cl1);
+    _T tl0= x.l()*y.l();
+    _T tl1= fma(x.h(), y.l(), tl0);
+    _T cl2= fma(x.l(), y.h(), tl1);
+    _T cl3= cl1 + cl2;
+    _T zl, zh= base_type::quick_two_sum(ch, cl3, zl);
+    return d_real<_T>(zh, zl);
+}
+#else
 template <typename _T>
 inline
 cftal::d_real<_T>
@@ -1088,6 +1135,7 @@ mul(const d_real<_T>& a, const d_real<_T>& b)
     p2 += pl;
     return d_real<_T>(p1, p2);
 }
+#endif
 
 template <typename _T>
 inline
@@ -1315,7 +1363,37 @@ ieee_div(const d_real<_T>&a, const d_real<_T>& b)
     return q;
 #endif
 }
-
+#if 1
+/*
+@unpublished{joldes:hal-01351529,
+  TITLE = {{Tight and rigourous error bounds for basic building blocks of double-word arithmetic}},
+  AUTHOR = {Joldes, Mioara and Muller, Jean-Michel and Popescu, Valentina},
+  URL = {https://hal.archives-ouvertes.fr/hal-01351529},
+  NOTE = {working paper or preprint},
+  HAL_LOCAL_REFERENCE = {Rapport LAAS n{\textdegree} 16225},
+  YEAR = {2016},
+  MONTH = Jul,
+  KEYWORDS = {Floating-point arithmetic ; double-word arithmetic ; double-double arithmetic ; error-free transforms},
+  PDF = {https://hal.archives-ouvertes.fr/hal-01351529/file/Bailey2add2mult-revision-sent.pdf},
+  HAL_ID = {hal-01351529},
+  HAL_VERSION = {v2},
+*/
+template <typename _T, bool _FMA>
+inline
+cftal::d_real<_T>
+cftal::impl::d_real_ops<_T, _FMA>::
+sloppy_div(const d_real<_T>&x, const d_real<_T>& y)
+{
+    _T th= x.h() / y.h();
+    d_real<_T> r= y* th;
+    _T ph = x.h() - r.h();
+    _T dl = x.l() - r.l();
+    _T d= ph + dl;
+    _T tl= d/y.h();
+    _T zl, zh= base_type::quick_two_sum(th, tl, zl);
+    return d_real<_T>(zh, zl);
+}
+#else
 template <typename _T, bool _FMA>
 inline
 cftal::d_real<_T>
@@ -1337,6 +1415,7 @@ sloppy_div(const d_real<_T>&a, const d_real<_T>& b)
     r.h() = base_type::quick_two_sum(q1, q2, r.l());
     return r;
 }
+#endif
 
 template <typename _T, bool _FMA>
 inline
