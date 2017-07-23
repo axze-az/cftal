@@ -1051,7 +1051,7 @@ mul(const d_real<_T>& x, const _T& y)
 {
     _T cl1, ch= two_prod(x.h(), y, cl1);
     _T cl3 = fma(x.l(), y, cl1);
-    _T zl, zh= quick_two_sum(ch, cl3);
+    _T zl, zh= quick_two_sum(ch, cl3, zl);
     return d_real<_T>(zh, zl);
 }
 #else
