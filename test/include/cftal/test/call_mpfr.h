@@ -103,7 +103,7 @@ namespace cftal {
             int
             root12(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
-            // returns c_n*x^X + .. c_1*x^1 + c_0, nullptr as last argument
+            // returns c_n*x^n + .. c_1*x^1 + c_0, nullptr as last argument
             int
             horner(mpfr_t res,
                    const mpfr_t x,
