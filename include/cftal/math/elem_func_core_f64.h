@@ -594,6 +594,12 @@ rsqrt_k(arg_t<vf_type> x)
     // ---------------------^ a fma is required here
     // for faithful rounding
 #else
+#if 0
+    mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
+    mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
+    // mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
+    // mm = mm + 0.5* mm * (1- (mm0 * mm)* mm);
+#else    
     for (int i=0; i<1; ++i) {
         // nr step
         // mm = mm + 0.5* mm * (1- mm0 * mm* mm);
@@ -610,6 +616,7 @@ rsqrt_k(arg_t<vf_type> x)
                        -0.5,
                        1.0);
     }
+#endif
     mm = mm + 0.5* mm *
         (vf_type(1) - d_ops::mul(mm0, mm)*mm).h();
 #endif
