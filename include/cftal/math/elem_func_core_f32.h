@@ -537,6 +537,7 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type mm= horner(mm0, b, a);
 
     mm = mm + 0.5* mm * (1- mm0 * mm* mm);
+    mm = mm + 0.5* mm * (1- mm0 * mm* mm);
     // mm = mm + mm * (0.5 - 0.5 * mm0 * mm* mm);
     // mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
     // mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
