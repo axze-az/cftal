@@ -363,7 +363,7 @@ f= 1.0/sqrt(x);
 i= [0.25, 1.0];
 d = guessdegree(f, i, 0x1p-8);
 d;
-b = [|0, ..., 5|];
+b = [|0, ..., 4|];
 c = [|D...|];
 p = fpminimax(f, b, c, i,
               relative, floating);

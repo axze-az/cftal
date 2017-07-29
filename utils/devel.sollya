@@ -7,17 +7,20 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
-/* a simple polynomial for exp f32 */
-f = x^(-1/2);
-i = [2^-2, 1];
-d = guessdegree(f, i, 0x1p-15);
+/* rsqrt f32 */
+f= 1.0/sqrt(x);
+i= [0.25, 1.0];
+d = guessdegree(f, i, 0x1p-8);
 d;
-b = [|0, ..., 2|];
-c = [|D...|];
-p = fpminimax(f, b, c, i, relative, floating);
+b = [|0, ..., 4|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type rsqrt_c", "rsqrt", b, c);
-plot((p(x)-f(x))/f(x), i, postscriptfile, "rsqrt-f64");
+write_coeffs(p, "const float rsqrt_c", "rsqrt", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "rsqrt-f32");
 
 // implementpoly(p, i, 0x1p-84, D, "log_k", "log.c");
 /*
