@@ -165,7 +165,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "const vf_type asin_c", "asin", b, c);
-plot((p(x)-f(x))/f(x), p(x)-f(x), i, 
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "asin-f32");
 
 /* cbrt(x) f32 */
@@ -186,22 +186,22 @@ d = guessdegree(f, i, 0x1p-28);
 d;
 b = [|0,2,4,6,8,10,12,14|];
 c = [|SG...|];
-p = fpminimax(f, b, c, i, 
+p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type asinh_c", "asinh", b, c); 
+write_coeffs(p, "const vf_type asinh_c", "asinh", b, c);
 plot((p(x)-f(x))/f(x), i,
                        postscriptfile, "asinh-f32");
 
 /* atanh(x) f32 */
-f = atanh(x)/x; 
+f = atanh(x)/x;
 f = (x^3/(atanh(x)-x)-3)/x^2;
 i = [0x1p-58, 0.5];
 d = guessdegree(f, i, 0x1p-28);
 d;
 b = [|0,2,4,6,8,10,12|];
 c = [|SG...|];
-p = fpminimax(f, b, c, i, 
+p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "const vf_type atanh_c", "atanh", b, c);
@@ -276,18 +276,92 @@ plot((p(x)-f(x))/f(x), i,
 
 /* rsqrt f32 */
 f= 1.0/sqrt(x);
-i= [0.25, 1.0];
+i= [2^(-2), 2^(-1)];
 d = guessdegree(f, i, 0x1p-8);
 d;
-b = [|0, ..., 4|];
+b = [|0, ..., 2|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float rsqrt_c", "rsqrt", b, c);
+write_coeffs(p, "const float rsqrt_i0_c", "rsqrt", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
-                       postscriptfile, "rsqrt-f32");
+                       postscriptfile, "rsqrt-i0-f32");
+
+f= 1.0/sqrt(x);
+i= [2^(-1), 2^(-0)];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 2|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float rsqrt_i1_c", "rsqrt", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "rsqrt-i1-f32");
+
+/* root12 f32 */
+f= x^(1/12);
+i= [2^(-12), 2^(-9)];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 2|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float root12_i0_c", "root12_i0", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "root12-i0-f32");
+
+/* root12 f32 */
+f= x^(1/12);
+i= [2^(-9), 2^(-6)];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 2|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float root12_i1_c", "root12_i1", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "root12-i1-f32");
+
+/* root12 f32 */
+f= x^(1/12);
+i= [2^(-6), 2^(-3)];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 2|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float root12_i2_c", "root12_i2", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "root12-i2-f32");
+
+/* root12 f32 */
+f= x^(1/12);
+i= [2^(-3), 2^(-0)];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 2|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float root12_i3_c", "root12_i3", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "root12-i3-f32");
 
 /*
  * Local variables:

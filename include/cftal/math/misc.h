@@ -141,7 +141,12 @@ namespace cftal {
                 template <typename _C, typename _T>
                 static
                 _T
-                order7(_T y, _T x);
+                order4(_T y, _T x);
+
+                template <typename _C, typename _T>
+                static
+                _T
+                order5(_T y, _T x);
 
                 template <typename _C, typename _T>
                 static
@@ -167,6 +172,11 @@ namespace cftal {
                 static
                 _T
                 householder7(_T x, _T y);
+
+                template <typename _C, typename _T>
+                static
+                _T
+                householder8(_T x, _T y);
             };
 
 
@@ -497,7 +507,13 @@ _T
 cftal::math::impl::root12::nr(_T x, _T y)
 {
     _T x11=powu<_T, 11>::v(x);
+#if 0
+    using d_ops=cftal::impl::
+        d_real_ops<_T, d_real_traits<_T>::fma>;
+    _T xn = x - _C(1.0/12.0) * d_ops::xfma(-1.0/x11, y, x);
+#else
     _T xn = x - _C(1.0/12.0) * (x - y/x11);
+#endif
     return xn;
 }
 
@@ -527,13 +543,26 @@ cftal::math::impl::root12::order3(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::order7(_T x, _T y)
+cftal::math::impl::root12::order4(_T x, _T y)
 {
     _T x12=powu<_T, 12>::v(x);
     _T z = (y-x12)/x12;
     _T d= z* horner(z,
-                    _C(-4910983/429981696.0),
-                    _C(83237.0/5971968.0),
+                    _C(-8855.0/497664.0),
+                    _C(253.0/10368.0),
+                    _C(-11.0/288.0),
+                    _C(1.0/12.0));
+    _T xn= x + x*d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::order5(_T x, _T y)
+{
+    _T x12=powu<_T, 12>::v(x);
+    _T z = (y-x12)/x12;
+    _T d= z* horner(z,
                     _C(-8855.0/497664.0),
                     _C(253.0/10368.0),
                     _C(-11.0/288.0),
@@ -664,6 +693,40 @@ cftal::math::impl::root12::householder7(_T x, _T y)
                      _C(1400256.0)*y4,
                      _C(84942.0)*y5,
                      _C(198.0)*y6);
+    _T xn = x + num/denom;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::householder8(_T x, _T y)
+{
+    _T x12= powu<_T,12>::v(x);
+    _T y1=y;
+    _T y2=y*y;
+    _T y3=y2*y;
+    _T y4=y2*y2;
+    _T y5=y3*y2;
+    _T y6=y3*y3;
+    _T y7=y3*y4;
+    _T num= x*horner(x12,
+                     _C(-3536.0),
+                     _C(-194376.0)*y1,
+                     _C(-1089088.0)*y2,
+                     _C(-545688.0)*y3,
+                     _C(1210352.0)*y4,
+                     _C(584584.0)*y5,
+                     _C(37664.0)*y6,
+                     _C(88.0)*y7);
+    _T denom= horner(x12,
+                     _C(8398.0),
+                     _C(800943.0)*y1,
+                     _C(8525660.0)*y2,
+                     _C(21126105.0)*y3,
+                     _C(14604590.0)*y4,
+                     _C(2628769.0)*y5,
+                     _C(81224.0)*y6,
+                     _C(55.0)*y7);
     _T xn = x + num/denom;
     return xn;
 }
