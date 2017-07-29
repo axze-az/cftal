@@ -298,6 +298,9 @@ namespace cftal {
             static
             _T two_sqr(const _T& a, _T& e);
             static
+            _T xfma(const _T& a, const _T& b, const _T& c);
+
+            static
             d_real<_T> mul(const _T& a, const _T& b);
             static
             d_real<_T> mul(const d_real<_T>& a,
@@ -329,6 +332,8 @@ namespace cftal {
             _T two_prod(const _T& a, const _T& b, _T& e);
             static
             _T two_sqr(const _T& a, _T& e);
+            static
+            _T xfma(const _T& a, const _T& b, const _T& c);
             static
             d_real<_T> mul(const _T& a, const _T& b);
             static
@@ -370,6 +375,8 @@ namespace cftal {
             _T two_prod(const _T& a, const _T& b, _T& e);
             static
             _T two_sqr(const _T& a, _T& e);
+            static
+            _T xfma(const _T& a, const _T& b, const _T& c);
             static
             d_real<_T> mul(const _T& a, const _T& b);
             static
@@ -1016,8 +1023,32 @@ two_sqr(const _T& a, _T& err)
     _T a_h, a_l;
     using traits=d_real_traits<_T>;
     traits::split(a, a_h, a_l);
-    err=((a_h*a_h-p)+2.0*a_h*a_l)+a_l*a_l;
+    _T t0 = a_h * a_h;
+    _T t1 = a_h * a_l;
+    _T t2 = a_l * a_l;
+    t1 += t1;
+    t0 -= p;
+    err= (t0 + t1) + t2;
     return p;
+}
+
+template <typename _T>
+_T
+cftal::impl::d_real_ops_fma<_T, true>::
+xfma(const _T& a, const _T& b, const _T& c)
+{
+    return fma(a, b, c);
+}
+
+template <typename _T>
+_T
+cftal::impl::d_real_ops_fma<_T, false>::
+xfma(const _T& a, const _T& b, const _T& c)
+{
+    _T pl, ph = two_prod(a, b, pl);
+    _T rh, rl;
+    base_type::add122cond(rh, rl, c, ph, pl);
+    return rh + rl;
 }
 
 template <typename _T>
@@ -1157,7 +1188,7 @@ cftal::impl::d_real_ops_fma<_T, true>::
 sqr(const _T& a)
 {
     _T p, e;
-    p= two_prod(a, a);
+    p= two_sqr(a, e);
     return d_real<_T>(p, e);
 }
 
@@ -1168,7 +1199,7 @@ cftal::impl::d_real_ops_fma<_T, false>::
 sqr(const _T& a)
 {
     _T p, e;
-    p= two_prod(a, a);
+    p= two_sqr(a, e);
     return d_real<_T>(p, e);
 }
 
