@@ -580,13 +580,22 @@ rsqrt_k(arg_t<vf_type> x)
                      rsqrt_c3,
                      rsqrt_c1);
     vf_type mm=horner(mm0, b, a);
-    // mm = mm + 0.5*mm*(1.0 - mm0 * mm *mm);
-    // mm = mm + 0.5*mm*(1.0 - mm0 * mm *mm);
-    mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
-    mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
-    mm = mm * (1.5 - 0.5 * mm0 * mm *mm);
+#if 1
+    mm = 0.5 * mm * (3.0 - mm0 * mm * mm);
+    mm = 0.5 * mm * (3.0 - mm0 * mm * mm);
+    // mm = mm + 0.5 * mm * (1.0 - mm0 * mm * mm);
+    // mm = mm + 0.5 * mm * (1.0 - mm0 * mm * mm);
+    mm = mm - mm * 0.5*d_ops::xfma(mm, mm*mm0, -1.0);
+
+    // mm = d_ops::xfma(mm,
+    //                 -0.5*d_ops::xfma(mm, mm*mm0, -1.0),
+    //                 mm);
+#else
+    mm = 0.5*mm*(3.0 - mm0 * (mm *mm));
+    mm = 0.5*mm*(3.0 - mm0 * (mm *mm));
     mm = mm + 0.5* mm *
-        (vf_type(1) - d_ops::mul(mm0, mm)*mm).h();
+        (vf_type(1) - d_ops::mul(mm, mm)*mm0).h();
+#endif
     // avoid ldexp because no overflows and underflows a possible
     // mm = ldexp_k(mm, -e2c);
     vf_type t= _T::insert_exp(_T::bias()-e2c);
