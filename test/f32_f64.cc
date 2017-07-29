@@ -79,12 +79,16 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats_summary& uss)
     }
     _ulps /= us._cnt;
     _ulps += 0.5;
-    s << "ulps: " << _ulps
-      << " , max delta: "
-      << std::begin(us._devs)->first
-      << " / "
-      << std::prev(std::end(us._devs))->first
-      << " bits\n";
+    s << "ulps: " << _ulps;
+    if (!us._devs.empty()) {
+        s << " , max delta: "
+          << std::begin(us._devs)->first
+          << " / "
+          << std::prev(std::end(us._devs))->first
+          << " bits\n";
+    } else {
+        s << '\n';
+    }
     if (us._faithful.first) {
         s << "faithful: "
           << (us._faithful.second ? "perhaps yes" : "no") << '\n';
