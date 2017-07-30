@@ -10,7 +10,8 @@
 #include <iterator>
 #include <cmath>
 #include <cftal/math/func_constants.h>
-#include <cftal/math/impl_d_real_constants_f64.h>
+#include <cftal/math/elem_func_core_f32.h>
+
 #include <cftal/f16.h>
 
 namespace cftal {
