@@ -24,9 +24,11 @@ namespace cftal {
                 return atan2(a, b);
             }
             static
-            _T
+            auto
             r(const _T& a, const _T& b) {
-                return call_mpfr::func(a, b, mpfr_atan2);
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, b, mpfr_atan2, &i);
+                return std::make_tuple(v, i.first, i.second);
             }
             static
             _T
