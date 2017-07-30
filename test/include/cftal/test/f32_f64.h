@@ -57,13 +57,18 @@ namespace cftal {
 
         std::ostream& operator<<(std::ostream& s, const ulp_stats& us);
 
-        struct ulp_stats_summary {
+        // output control for ulp_stats: hist = false supresses
+        // the output of the histogram with the deviations
+        struct ulp_stats_to_stream {
             const ulp_stats* _us;
-            ulp_stats_summary(const ulp_stats& us) : _us(&us) {}
+            bool _hist;
+            ulp_stats_to_stream(const ulp_stats& us,
+                                bool hist)
+                : _us(&us), _hist(hist) {}
         };
 
         std::ostream&
-        operator<<(std::ostream& s, const ulp_stats_summary& uss);
+        operator<<(std::ostream& s, const ulp_stats_to_stream& uss);
 
         // compare a and b, returns also true for a==NAN and b
         // == NAN
