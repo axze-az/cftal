@@ -112,6 +112,7 @@ namespace cftal {
             static
             vf_type
             __half_exp_k(arg_t<vf_type> xrh,
+                         arg_t<vf_type> kf,
                          arg_t<vi_type> k);
 
             static
@@ -420,53 +421,105 @@ namespace cftal {
 
     }
 
-    // native div
-    template <typename _T>
-    _T
-    native_div(_T a, _T b);
+    template <std::size_t _N>
+    vec<float, _N>
+    native_recip(const vec<float, _N>& a);
 
-    template <typename _T, std::size_t _N>
-    vec<_T, _N>
-    native_div(const vec<_T, _N>& a, const vec<_T, _N>& b);
+    v1f32
+    native_recip(const v1f32& b);
 
-    template <typename _T>
-    vec<_T, 1>
-    native_div(const vec<_T, 1>& a, const vec<_T, 1>& b);
+#if defined (__SSE__)
+    v2f32
+    native_recip(const v2f32& b);
+
+    v4f32
+    native_recip(const v4f32& b);
+
+#endif
+#if defined (__AVX__)
+    v8f32
+    native_recip(const v8f32& b);
+#endif
+
+    template <std::size_t _N>
+    vec<float, _N>
+    native_div(const vec<float, _N>& a, const vec<float, _N>& b);
 
     v1f32
     native_div(const v1f32& a, const v1f32& b);
 
+#if defined (__SSE__)
     v2f32
     native_div(const v2f32& a, const v2f32& b);
 
     v4f32
     native_div(const v4f32& a, const v4f32& b);
-
+#endif
+#if defined (__AVX__)
     v8f32
     native_div(const v8f32& a, const v8f32& b);
+#endif
 }
 
-template <typename _T>
-_T
-cftal::native_div(_T a, _T b)
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::native_recip(const vec<float, _N>& b)
 {
-    return a/b;
-}
-
-template <typename _T, std::size_t _N>
-cftal::vec<_T, _N>
-cftal::native_div(const vec<_T, _N>& a, const vec<_T, _N>& b)
-{
-    vec<_T, _N> r(native_div(low_half(a), low_half(b)),
-                  native_div(high_half(a), high_half(b)));
+    vec<float, _N> r(native_recip(low_half(b)),
+                     native_recip(high_half(b)));
     return r;
 }
 
-template <typename _T>
-cftal::vec<_T, 1>
-cftal::native_div(const vec<_T, 1>& a, const vec<_T, 1>& b)
+inline
+cftal::v1f32
+cftal::native_recip(const v1f32& a)
 {
-    vec<_T, 1> r(native_div(a(), b()));
+#if defined (__SSE__)
+    v1f32 rcp=_mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(a())));
+    rcp = rcp + rcp*(1-rcp*a);
+    return rcp;
+#else
+    return 1.0f/a();
+#endif
+}
+
+#if defined (__SSE__)
+inline
+cftal::v2f32
+cftal::native_recip(const v2f32& y)
+{
+    v4f32 y4(y, y);
+    return low_half(native_recip(y4));
+}
+
+inline
+cftal::v4f32
+cftal::native_recip(const v4f32& a)
+{
+    v4f32 rcp=_mm_rcp_ps(a());
+    rcp = rcp + rcp*(1-rcp*a);
+    return rcp;
+}
+#endif
+
+#if defined (__AVX__)
+inline
+cftal::v8f32
+cftal::native_recip(const v8f32& a)
+{
+    v8f32 rcp=_mm256_rcp_ps(a());
+    rcp = rcp + rcp*(1-rcp*a);
+    return rcp;
+}
+
+#endif
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::native_div(const vec<float, _N>& a, const vec<float, _N>& b)
+{
+    vec<float, _N> r(native_div(low_half(a), low_half(b)),
+                     native_div(high_half(a), high_half(b)));
     return r;
 }
 
@@ -475,82 +528,38 @@ cftal::v1f32
 cftal::native_div(const v1f32& b, const v1f32& a)
 {
 #if defined (__SSE__)
-    v1f32 rcp=_mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(a())));
-    rcp = rcp + rcp*(1-rcp*a);
-#if 1
-    return b*rcp;
+    return native_recip(a) * b;
 #else
-    // goldstein iteration
-    v1f32 x= b*rcp;
-    v1f32 y= a*rcp;
-    v1f32 r= 2-y;
-    y= r*y;
-    v1f32 bda= r*x;
-    return bda;
-#endif
-#else
-    return x/y;
+    return b / a;
 #endif
 }
 
+#if defined (__SSE__)
 inline
 cftal::v2f32
-cftal::native_div(const v2f32& x, const v2f32& y)
+cftal::native_div(const v2f32& b, const v2f32& a)
 {
-#if defined (__SSE__)
-    v4f32 x4(x, x);
-    v4f32 y4(y, y);
-    return low_half(native_div(x4, y4));
-#else
-    return x/y;
-#endif
+    v4f32 b4(b, b);
+    v4f32 a4(a, a);
+    return low_half(native_div(b4, a4));
 }
 
 inline
 cftal::v4f32
 cftal::native_div(const v4f32& b, const v4f32& a)
 {
-#if defined (__SSE__)
-    v4f32 rcp=_mm_rcp_ps(a());
-    rcp = rcp + rcp*(1-rcp*a);
-#if 1
-    return b*rcp;
-#else
-    // goldstein iteration
-    v4f32 x= b*rcp;
-    v4f32 y= a*rcp;
-    v4f32 r= 2-y;
-    y= r*y;
-    v4f32 bda= r*x;
-    return bda;
-#endif
-#else
-    return x/y;
-#endif
+    return native_recip(a) * b;
 }
+#endif
 
+#if defined (__AVX__)
 inline
 cftal::v8f32
 cftal::native_div(const v8f32& b, const v8f32& a)
 {
-#if defined (__AVX__)
-    v8f32 rcp=_mm256_rcp_ps(a());
-    rcp = rcp + rcp*(1-rcp*a);
-#if 1
-    return b*rcp;
-#else
-    // goldstein iteration
-    v8f32 x= b*rcp;
-    v8f32 y= a*rcp;
-    v8f32 r= 2-y;
-    y= r*y;
-    v8f32 bda= r*x;
-    return bda;
-#endif
-#else
-    return a/b;
-#endif
+    return native_recip(a) * b;
 }
+#endif
 
 namespace cftal {
     namespace math {
@@ -580,6 +589,7 @@ namespace cftal {
 
     }
 }
+
 template <typename _X, typename _C>
 _X
 cftal::math::
@@ -649,29 +659,33 @@ inline
 typename cftal::math::test_func<float, _T>::vf_type
 cftal::math::test_func<float, _T>::
 __half_exp_k(arg_t<vf_type> xrh,
+             arg_t<vf_type> kf,
              arg_t<vi_type> k)
 {
-    // [-0.3465735912322998046875, 0.3465735912322998046875] : | p - f | <= 2^-18.0546875
-    // coefficients for exp generated by sollya
-    // x^0 : +0xf.ffff4p-4f
-    const vf_type exp_f16_c0=+9.9999928474e-01f;
-    // x^1 : +0xf.ffd9ap-4f
-    const vf_type exp_f16_c1=+9.9996340275e-01f;
-    // x^2 : +0x8.002cep-4f
-    const vf_type exp_f16_c2=+5.0004279613e-01f;
-    // x^3 : +0xa.bf05cp-6f
-    const vf_type exp_f16_c3=+1.6790908575e-01f;
-    // x^4 : +0xa.9d60bp-8f
-    const vf_type exp_f16_c4=+4.1463892907e-02f;
-
+   // [-0.3465735912322998046875, 0.3465735912322998046875] : | p - f | <= 2^-22.984375
+    // coefficients for exp_f16 generated by sollya
+    // x^0 : +0x8.00001p-3f
+    const vf_type exp_f16_c0=+1.0000001192e+00f;
+    // x^1 : +0xf.ffffcp-4f
+    const vf_type exp_f16_c1=+9.9999976158e-01f;
+    // x^2 : +0xf.ffe57p-5f
+    const vf_type exp_f16_c2=+4.9998733401e-01f;
+    // x^3 : +0xa.aac63p-6f
+    const vf_type exp_f16_c3=+1.6667322814e-01f;
+    // x^4 : +0xa.bbadap-8f
+    const vf_type exp_f16_c4=+4.1926242411e-02f;
+    // x^5 : +0x8.83bb8p-10f
+    const vf_type exp_f16_c5=+8.3150193095e-03f;
     vf_type y= fast_poly(xrh,
+                         exp_f16_c5,
                          exp_f16_c4,
                          exp_f16_c3,
                          exp_f16_c2,
                          exp_f16_c1,
                          exp_f16_c0);
-    vf_type ee=_T::insert_exp(k + _T::bias());
-    y *= ee;
+    // vf_type ee=_T::insert_exp(k + _T::bias());
+    // y *= ee;
+    y=__scale_exp_k(y, kf, k);
     return y;
 }
 
@@ -684,7 +698,7 @@ cftal::math::test_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
     vf_type kf = rint(vf_type(xc * ctbl::m_1_ln2.h()));
     vf_type xrh = xc - kf*ctbl::m_ln2.h();
     vi_type k= _T::cvt_f_to_i(kf);
-    auto y= __half_exp_k(xrh,k);
+    auto y= __half_exp_k(xrh, kf, k);
     return y;
 }
 
@@ -711,7 +725,7 @@ cftal::math::test_func<float, _T>::half_exp2_k(arg_t<vf_type> xc)
     vf_type kf = rint(xc);
     vf_type xrh = xc - kf;
     vi_type k= _T::cvt_f_to_i(kf);
-    auto y= __half_exp_k(xrh*ctbl::m_ln2.h(), k);
+    auto y= __half_exp_k(xrh*ctbl::m_ln2.h(), kf, k);
     return y;
 }
 
@@ -738,7 +752,7 @@ cftal::math::test_func<float, _T>::half_exp10_k(arg_t<vf_type> xc)
     vf_type kf = rint(vf_type(xc * ctbl::m_1_lg2.h()));
     vf_type xrh = xc - kf*ctbl::m_lg2.h();
     vi_type k= _T::cvt_f_to_i(kf);
-    auto y= __half_exp_k(xrh*ctbl::m_ln10.h(), k);
+    auto y= __half_exp_k(xrh*ctbl::m_ln10.h(), kf, k);
     return y;
 }
 
@@ -777,15 +791,19 @@ cftal::math::test_func<float, _T>::half_log_k(arg_t<vf_type> xc)
     // brute force:
     vf_type ym= xr-1.0f;
     vf_type yp= xr+1.0f;
-    vf_type s= ym/yp;
-   // [3.4694469519536141888238489627838134765625e-18, 0.17157287895679473876953125] : | p - f | <= 2^-16.9765625
-    // coefficients for pow_log generated by sollya
-    // x^1 : +0xf.ffe8bp-3f
-    const vf_type log_f16_c1=+1.9999555349e+00f;
-    // x^3 : +0xa.dbdd4p-4f
-    const vf_type log_f16_c3=+6.7867779732e-01f;
+    vf_type s= native_div(ym, yp);
+    // vf_type s= ym/yp;
+    // [3.4694469519536141888238489627838134765625e-18, 0.17157287895679473876953125] : | p - f | <= 2^-24.53125
+    // coefficients for log_f16 generated by sollya
+    // x^1 : +0x8.00001p-2f
+    const vf_type log_f16_c1=+2.0000002384e+00f;
+    // x^3 : +0xa.aa131p-4f
+    const vf_type log_f16_c3=+6.6652208567e-01f;
+    // x^5 : +0xd.37089p-5f
+    const vf_type log_f16_c5=+4.1296795011e-01f;
     vf_type s2=s*s;
     vf_type y = horner(s2,
+                       log_f16_c5,
                        log_f16_c3,
                        log_f16_c1)*s;
     using ctbl=impl::d_real_constants<d_real<float>, float>;
@@ -858,7 +876,7 @@ int main_exp(int argc, char** argv)
     const int _N=32;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x800);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -889,7 +907,7 @@ int main_exp2(int argc, char** argv)
     const int _N=32;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x800);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -920,7 +938,7 @@ int main_exp10(int argc, char** argv)
     const int _N=32;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x800);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -951,7 +969,7 @@ int main_log(int argc, char** argv)
     const int _N=32;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x800);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -962,7 +980,7 @@ int main_log(int argc, char** argv)
     //                                     std::numeric_limits< double >::max());
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
-    d = std::make_pair(-0x1p-25f, 0x1.1p15f);
+    d = std::make_pair(-0x1p-25f, 0x1.1p16f);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
@@ -985,7 +1003,7 @@ int main_log2(int argc, char** argv)
     const int _N=32;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x800);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -996,7 +1014,7 @@ int main_log2(int argc, char** argv)
     //                                     std::numeric_limits< double >::max());
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
-    d = std::make_pair(-0x1p-25f, 0x1.1p15f);
+    d = std::make_pair(-0x1p-25f, 0x1.1p16f);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
@@ -1019,7 +1037,7 @@ int main_log10(int argc, char** argv)
     const int _N=32;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
+    std::size_t cnt=update_cnt(0x800);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
@@ -1030,7 +1048,7 @@ int main_log10(int argc, char** argv)
     //                                     std::numeric_limits< double >::max());
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
-    d = std::make_pair(-0x1p-25f, 0x1.1p15f);
+    d = std::make_pair(-0x1p-25f, 0x1.1p16f);
     exec_stats st(_N);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<

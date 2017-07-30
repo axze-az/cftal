@@ -154,7 +154,7 @@ namespace cftal {
     vec<float, 16>
     frexp(arg<vec<float, 16> >::type x, vec<int32_t, 16>* e);
 
-    // ldexp, +-1 ulp if the result is a denormal number, 0 otherwise
+    // ldexp, +-0 ulp
     template <std::size_t _N>
     vec<float, _N>
     ldexp(const vec<float, _N>& a, const vec<int32_t, _N>& e);
@@ -227,7 +227,7 @@ namespace cftal {
     trunc(const vec<float, 1>& v);
 
     // sqrt
-    // specializations are inline
+    // overloads are inline
     template <std::size_t _N>
     vec<float, _N>
     sqrt(const vec<float, _N>& v);
@@ -235,8 +235,7 @@ namespace cftal {
     vec<float, 1>
     sqrt(const vec<float, 1>& v);
 
-    // sqrt
-    // specializations are inline
+    // rsqrt
     template <std::size_t _N>
     vec<float, _N>
     rsqrt(const vec<float, _N>& v);
