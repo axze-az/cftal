@@ -326,11 +326,10 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     using fc=func_constants<float>;
     vmf_type is_denom= abs(x) <= fc::max_denormal();
 
-    vi_type eo=vi_type(0);
     // input denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel(i_is_denom, vi_type(-24), eo);
+    vi_type eo= _T::sel_or_set_zero(i_is_denom, vi_type(-24));
     // mantissa
     vi_type m=_T::as_int(xs);
     vi_type xe=((m>>23) & 0xff) + eo;
@@ -389,7 +388,7 @@ __frexp_k(vf_type& m, arg_t<vf_type> x)
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    vi_type eo= _T::sel(i_is_denom, vi_type(-24), vi_type(0));
+    vi_type eo= _T::sel_or_set_zero(i_is_denom, vi_type(-24));
     // reinterpret a integer
     vi_type i=_T::as_int(xs);
     // exponent:
@@ -411,11 +410,10 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     using fc=func_constants<float>;
     vmf_type is_denom= abs(x) <= fc::max_denormal();
 
-    vi_type eo=vi_type(0);
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel(i_is_denom, vi_type(-24), eo);
+    vi_type eo= _T::sel_or_set_zero(i_is_denom, vi_type(-24));
 
     // reinterpret a integer
     vi_type i=_T::as_int(xs);
@@ -1279,7 +1277,7 @@ log_k(arg_t<vf_type> xc, log_func func)
     using fc = func_constants<float>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p25f, xc);
-    vi_type k=_T::sel(_T::vmf_to_vmi(is_denom), vi_type(-25), vi_type(0));
+    vi_type k=_T::sel_or_set_zero(_T::vmf_to_vmi(is_denom), vi_type(-25));
     vi_type hx = _T::as_int(x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     hx += 0x3f800000 - 0x3f3504f3;;
@@ -1407,7 +1405,7 @@ log1p_k(arg_t<vf_type> xc)
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0f), 1.0f-(u-x), x-(u-1.0f));
     c_k_2 /= u;
-    vf_type c = _T::sel(kf < vf_type(25.0f), c_k_2, vf_type(0));
+    vf_type c = _T::sel_or_set_zero(kf < vf_type(25.0f), c_k_2);
     /* reduce u into [sqrt(2)/2, sqrt(2)] */
     hu = (hu&0x007fffff) + 0x3f3504f3;
     vf_type nu = _T::as_float(hu);
@@ -1469,7 +1467,7 @@ __pow_log2_k(arg_t<vf_type> xc)
     using fc = func_constants<float>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p25f, xc);
-    vi_type k=_T::sel(_T::vmf_to_vmi(is_denom), vi_type(-25), vi_type(0));
+    vi_type k=_T::sel_or_set_zero(_T::vmf_to_vmi(is_denom), vi_type(-25));
     vi_type hx = _T::as_int(x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     hx += 0x3f800000 - 0x3f3504f3;;
@@ -1948,8 +1946,8 @@ atan_k(arg_t<vf_type> xc)
     vf_type x=abs(xc);
     // range reduction
     vmf_type r=x > 7.0/16;
-    vf_type atan_hi= _T::sel(r, atan_0_5_hi, vf_type(0.0));
-    vf_type atan_lo= _T::sel(r, atan_0_5_lo, vf_type(0.0));
+    vf_type atan_hi= _T::sel_or_set_zero(r, atan_0_5_hi);
+    vf_type atan_lo= _T::sel_or_set_zero(r, atan_0_5_lo);
     vf_type t=_T::sel(r, (2.0f*x-1.0f)/(2.0f+x), x);
     r = x>11.0f/16;
     atan_hi=_T::sel(r, atan_1_0_hi, atan_hi);
@@ -2128,7 +2126,7 @@ asinh_k(arg_t<vf_type> xc)
     using ctbl=impl::d_real_constants<d_real<float>, float>;
 
     vmf_type x_gt_0x1p12 = x > 0x1p12;
-    vf_type add_2_log=_T::sel(x_gt_0x1p12, ctbl::m_ln2.h(), vf_type(0));
+    vf_type add_2_log=_T::sel_or_set_zero(x_gt_0x1p12, ctbl::m_ln2.h());
     vf_type t= x*x;
     vf_type log_arg=_T::sel(x_gt_0x1p12,
                             x,
@@ -2185,7 +2183,7 @@ acosh_k(arg_t<vf_type> xc)
     using ctbl=impl::d_real_constants<d_real<float>, float>;
 
     vmf_type x_gt_0x1p12 = x > 0x1p12;
-    vf_type add_2_log=_T::sel(x_gt_0x1p12, ctbl::m_ln2.h(), vf_type(0));
+    vf_type add_2_log=_T::sel_or_set_zero(x_gt_0x1p12, ctbl::m_ln2.h());
     // vf_type t= x*x;
     vf_type log_arg=_T::sel(x_gt_0x1p12,
                             x,
