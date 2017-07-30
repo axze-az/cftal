@@ -13,7 +13,7 @@
 #include <cftal/x86/v8s32.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_1.h>
- 
+
 namespace cftal {
 
     namespace op {
@@ -29,7 +29,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <>
         struct lt<uint32_t, 8> {
             using full_type = vec<uint32_t, 8>;
@@ -237,10 +237,10 @@ namespace cftal {
                 // return full_type(std::fma(-a(), b(), c()));
                 return sub<uint32_t, 8>::v(
                     c, mul<uint32_t, 8>::v(a, b));
-                                          
+
             }
         };
-        
+
         template <>
         struct bit_or<uint32_t, 8> {
             using full_type = vec<uint32_t, 8>;
@@ -314,7 +314,7 @@ namespace cftal {
             }
         };
 #endif
-        
+
     }
 
 }
@@ -471,6 +471,14 @@ cftal::v8u32 cftal::select(const v8u32::mask_type& m,
 #else
     return x86::select(m(), on_true(), on_false());
 #endif
+}
+
+inline
+cftal::v8u32
+cftal::select_or_set_zero(const v8u32::mask_type& m,
+                          const v8u32& on_true)
+{
+    return _mm256_and_si256(m(), on_true());
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3,

@@ -84,9 +84,13 @@ namespace cftal {
     extract(const vec<double, 2>& s);
 
     vec<double, 2>
-    select(const typename vec<double, 2>::mask_type& msk,
+    select(const vec<double, 2>::mask_type& msk,
            const vec<double, 2>& on_true,
            const vec<double, 2>& on_false);
+
+    vec<double, 2>
+    select_or_set_zero(const vec<double, 2>::mask_type& msk,
+                       const vec<double, 2>& on_true);
 
     unsigned
     read_signs(const vec<double, 2>& b);
@@ -530,6 +534,15 @@ cftal::select(const v2f64::mask_type& m,
               const v2f64& on_true, const v2f64& on_false)
 {
     return x86::select_f64(m(), on_true(), on_false());
+}
+
+inline
+cftal::v2f64
+cftal::select_or_set_zero(const v2f64::mask_type& m,
+                          const v2f64& on_true)
+{
+    // we know that all mask bits are 1
+    return _mm_and_pd(m(), on_true());
 }
 
 inline

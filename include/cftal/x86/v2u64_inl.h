@@ -454,6 +454,14 @@ cftal::v2u64 cftal::select(const v2u64::mask_type& m,
 #endif
 }
 
+inline
+cftal::v2u64
+cftal::select_or_set_zero(const v2u64::mask_type& m,
+                          const v2u64& on_true)
+{
+    return _mm_and_si128(m(), on_true());
+}
+
 template <bool _I0, bool _I1>
 inline
 cftal::v2u64 cftal::select(const v2u64& a, const v2u64& b)

@@ -79,9 +79,13 @@ namespace cftal {
     v4u64 min(const v4u64& a, const v4u64& b);
 
     vec<uint64_t, 4>
-    select(const typename vec<uint64_t, 4>::mask_type& msk,
+    select(const vec<uint64_t, 4>::mask_type& msk,
            const vec<uint64_t, 4>& on_true,
            const vec<uint64_t, 4>& on_false);
+
+    vec<uint64_t, 4>
+    select_or_set_zero(const vec<uint64_t, 4>::mask_type& msk,
+                       const vec<uint64_t, 4>& on_true);
 
     template <bool _P0, bool _P1, bool _P2, bool _P3>
     vec<uint64_t, 4>

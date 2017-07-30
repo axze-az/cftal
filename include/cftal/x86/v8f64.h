@@ -73,9 +73,13 @@ namespace cftal {
     extract(const vec<double, 8>& s);
 
     vec<double, 8>
-    select(const typename vec<double, 8>::mask_type& msk,
+    select(const vec<double, 8>::mask_type& msk,
            const vec<double, 8>& on_true,
            const vec<double, 8>& on_false);
+
+    vec<double, 8>
+    select_or_set_zero(const vec<double, 8>::mask_type& msk,
+                       const vec<double, 8>& on_true);
 
     unsigned
     read_signs(const vec<double, 8>::mask_type& b);

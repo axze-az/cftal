@@ -11,13 +11,20 @@
 
 namespace cftal {
 
+    // select: m ? on_true : on_false
     template <class _M, class _T>
     _T select(const _M& m,
               const _T& on_true, const _T& on_false);
 
+    // if_else: m ? on_true : on_false
     template <class _M, class _T>
     _T if_else(const _M& m,
                const _T& on_true, const _T& on_false);
+
+    // select_or_set_zero: m ? on_true : _T(0)
+    template <class _M, class _T>
+    _T select_or_set_zero(const _M& m,
+                          const _T& on_true);
 }
 
 template <typename _M, typename _T>
@@ -34,6 +41,15 @@ _T
 cftal::if_else(const _M& m, const _T& on_true, const _T& on_false)
 {
     return select(m, on_true, on_false);
+}
+
+template <typename _M, typename _T>
+inline
+_T
+cftal::
+select_or_set_zero(const _M& m, const _T& on_true)
+{
+    return select(m, on_true, _T(0));
 }
 
 // Local variables:

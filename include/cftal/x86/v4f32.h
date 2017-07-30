@@ -75,9 +75,13 @@ namespace cftal {
     extract(const vec<float, 4>& s);
 
     vec<float, 4>
-    select(const typename vec<float, 4>::mask_type& msk,
+    select(const vec<float, 4>::mask_type& msk,
            const vec<float, 4>& on_true,
            const vec<float, 4>& on_false);
+
+    vec<float, 4>
+    select_or_set_zero(const vec<float, 4>::mask_type& msk,
+                       const vec<float, 4>& on_true);
 
 #if !defined (__AVX512VL__)
     bool
@@ -521,6 +525,14 @@ cftal::v4f32 cftal::select(const v4f32::mask_type& m,
                            const v4f32& on_false)
 {
     return x86::select_f32(m(), on_true(), on_false());
+}
+
+inline
+cftal::v4f32
+cftal::select_or_set_zero(const v4f32::mask_type& m,
+                          const v4f32& on_true)
+{
+    return _mm_and_ps(m(), on_true());
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3>

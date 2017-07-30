@@ -491,6 +491,14 @@ cftal::v4s32 cftal::select(const v4s32::mask_type& m,
     return x86::select_u32(m(), on_true(), on_false());
 }
 
+inline
+cftal::v4s32
+cftal::select_or_set_zero(const v4s32::mask_type& m,
+                          const v4s32& on_true)
+{
+    return _mm_and_si128(m(), on_true());
+}
+
 template <bool _I0, bool _I1, bool _I2, bool _I3>
 inline
 cftal::v4s32 cftal::select(const v4s32& a, const v4s32& b)

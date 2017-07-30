@@ -287,7 +287,7 @@ namespace cftal {
             }
         };
 
-#if defined (__AVX2__)        
+#if defined (__AVX2__)
         template <>
         struct vshl<uint64_t, 4> {
             using full_type = vec<uint64_t, 4>;
@@ -307,8 +307,8 @@ namespace cftal {
                 return x86::impl::vpsrlvq::v(a(), s());
             }
         };
-#endif        
-        
+#endif
+
     }
 
 }
@@ -448,6 +448,14 @@ cftal::v4u64 cftal::select(const v4u64::mask_type& m,
 #else
     return x86::select(m(), on_true(), on_false());
 #endif
+}
+
+inline
+cftal::v4u64
+cftal::select_or_set_zero(const v4u64::mask_type& m,
+                          const v4u64& on_true)
+{
+    return _mm256_and_pd(m, on_true);
 }
 
 template <bool _I0, bool _I1, bool _I2, bool _I3>

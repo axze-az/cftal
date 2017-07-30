@@ -325,7 +325,7 @@ namespace cftal {
                 return x86::impl::vpsrlvd::v(a(), s());
             }
         };
-        
+
     }
 
 }
@@ -475,6 +475,14 @@ cftal::v4u32 cftal::select(const v4u32::mask_type& m,
                            const v4u32& on_false)
 {
     return x86::select_u32(m(), on_true(), on_false());
+}
+
+inline
+cftal::v4u32
+cftal::select_or_set_zero(const v4u32::mask_type& m,
+                          const v4u32& on_true)
+{
+    return _mm_and_si128(m(), on_true());
 }
 
 template <bool _I0, bool _I1, bool _I2, bool _I3>

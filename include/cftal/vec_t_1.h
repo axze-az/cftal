@@ -258,6 +258,11 @@ namespace cftal {
            const vec<_T, 1>& on_true,
            const vec<_T, 1>& on_false);
 
+    template <typename _T>
+    vec<_T, 1>
+    select_or_set_zero(const typename vec<_T, 1>::mask_type& m,
+                       const vec<_T, 1>& on_true);
+
     template <int32_t _I0, typename _T>
     vec<_T, 1>
     permute(const vec<_T, 1>& v);
@@ -550,7 +555,7 @@ namespace cftal {
             }
         };
 
-        
+
         template <class _T>
         struct bitrep {
             using int_type = _T;
@@ -675,7 +680,7 @@ namespace cftal {
                 return full_type(r);
             }
         };
-        
+
         template <typename _T>
         struct shr<_T, 1> {
             using full_type = vec<_T, 1>;
@@ -710,7 +715,7 @@ namespace cftal {
                 return full_type(a() >> s());
             }
         };
-        
+
     }
 }
 
@@ -870,6 +875,18 @@ cftal::select(const typename vec<_T, 1>::mask_type& vm,
     using mvt= typename vec<_T, 1>::mask_type::value_type;
     typename vec<_T, 1>::value_type r{
         select(impl::mask_to_bool<mvt>::v(vm()), on_true(), on_false())};
+    return vec<_T, 1>{r};
+}
+
+template <class _T>
+inline
+cftal::vec<_T, 1>
+cftal::select_or_set_zero(const typename vec<_T, 1>::mask_type& vm,
+                          const vec<_T, 1>& on_true)
+{
+    using mvt= typename vec<_T, 1>::mask_type::value_type;
+    typename vec<_T, 1>::value_type r{
+        select(impl::mask_to_bool<mvt>::v(vm()), on_true(), _T(0))};
     return vec<_T, 1>{r};
 }
 

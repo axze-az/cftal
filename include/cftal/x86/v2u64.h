@@ -59,23 +59,27 @@ namespace cftal {
         static
         void store(uint64_t* p, const vec<uint64_t, 2>& v);
     };
-    
+
     vec<uint64_t, 1>
     low_half(const vec<uint64_t, 2>& v);
 
     vec<uint64_t, 1>
     high_half(const vec<uint64_t, 2>& v);
-    
+
     v2u64 max(const v2u64& a, const v2u64& b);
     v2u64 min(const v2u64& a, const v2u64& b);
- 
-    vec<uint64_t, 2> 
-    select(const typename vec<uint64_t, 2>::mask_type& msk,
+
+    vec<uint64_t, 2>
+    select(const vec<uint64_t, 2>::mask_type& msk,
            const vec<uint64_t, 2>& on_true,
            const vec<uint64_t, 2>& on_false);
 
+    vec<uint64_t, 2>
+    select_or_set_zero(const vec<uint64_t, 2>::mask_type& msk,
+                       const vec<uint64_t, 2>& on_true);
+
     template <bool _P0, bool _P1>
-    vec<uint64_t, 2> 
+    vec<uint64_t, 2>
     select(const vec<uint64_t, 2>& on_true,
            const vec<uint64_t, 2>& on_false);
 
@@ -83,14 +87,14 @@ namespace cftal {
     vec<uint64_t, 2> permute(const vec<uint64_t, 2>& s);
 
     template <int _P0, int _P1>
-    vec<uint64_t, 2> permute(const vec<uint64_t, 2>& s0, 
+    vec<uint64_t, 2> permute(const vec<uint64_t, 2>& s0,
                              const vec<uint64_t, 2>& s1);
 
     std::pair<vec<uint64_t, 2>, vec<uint64_t, 2> >
     mul_lo_hi(const vec<uint64_t, 2>& a,
               const vec<uint64_t, 2>& b);
-    
-#if !defined (__AVX512VL__)    
+
+#if !defined (__AVX512VL__)
     bool
     all_of(const vec<uint64_t, 2>::mask_type& v);
     bool
@@ -98,7 +102,7 @@ namespace cftal {
     bool
     none_of(const vec<uint64_t, 2>::mask_type& v);
 #endif
-}    
+}
 
 
 // Local variables:

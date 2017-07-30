@@ -481,6 +481,15 @@ cftal::v8s32 cftal::select(const v8s32::mask_type& m,
 #endif
 }
 
+inline
+cftal::v8s32
+cftal::select_or_set_zero(const v8s32::mask_type& m,
+                          const v8s32& on_true)
+{
+    return _mm256_and_si256(m(), on_true());
+}
+
+
 template <bool _P0, bool _P1, bool _P2, bool _P3,
           bool _P4, bool _P5, bool _P6, bool _P7>
 inline

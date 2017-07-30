@@ -70,9 +70,13 @@ namespace cftal {
     v8s16 abs(const v8s16& a);
 
     vec<int16_t, 8>
-    select(const typename vec<int16_t, 8>::mask_type& msk,
+    select(const vec<int16_t, 8>::mask_type& msk,
            const vec<int16_t, 8>& on_true,
            const vec<int16_t, 8>& on_false);
+
+    vec<int16_t, 8>
+    select_or_set_zero(const vec<int16_t, 8>::mask_type& msk,
+                       const vec<int16_t, 8>& on_true);
 
     template <bool _P0, bool _P1, bool _P2, bool _P3,
               bool _P4, bool _P5, bool _P6, bool _P7>

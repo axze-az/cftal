@@ -50,7 +50,7 @@ namespace cftal {
     struct arg< vec<uint32_t, 8> > {
         using type = vec<uint32_t, 8>;
     };
-    
+
     template <>
     struct mem< vec<uint32_t, 8> > {
         static
@@ -70,18 +70,22 @@ namespace cftal {
     bool
     none_of(const vec<uint32_t, 8>::mask_type& v);
 #endif
-    
+
     v8u32 max(const v8u32& a, const v8u32& b);
     v8u32 min(const v8u32& a, const v8u32& b);
- 
-    vec<uint32_t, 8> 
-    select(const typename vec<uint32_t, 8>::mask_type& msk,
+
+    vec<uint32_t, 8>
+    select(const vec<uint32_t, 8>::mask_type& msk,
            const vec<uint32_t, 8>& on_true,
            const vec<uint32_t, 8>& on_false);
 
+    vec<uint32_t, 8>
+    select_or_set_zero(const vec<uint32_t, 8>::mask_type& msk,
+                       const vec<uint32_t, 8>& on_true);
+
     template <bool _P0, bool _P1, bool _P2, bool _P3,
               bool _P4, bool _P5, bool _P6, bool _P7>
-    vec<uint32_t, 8> 
+    vec<uint32_t, 8>
     select(const vec<uint32_t, 8>& on_true,
            const vec<uint32_t, 8>& on_false);
 
@@ -91,13 +95,13 @@ namespace cftal {
 
     template <int32_t _P0, int32_t _P1, int32_t _P2, int32_t _P3,
               int32_t _P4, int32_t _P5, int32_t _P6, int32_t _P7>
-    vec<uint32_t, 8> permute(const vec<uint32_t, 8>& s0, 
+    vec<uint32_t, 8> permute(const vec<uint32_t, 8>& s0,
                              const vec<uint32_t, 8>& s1);
 
     std::pair<vec<uint32_t, 8>, vec<uint32_t, 8> >
     mul_lo_hi(const vec<uint32_t, 8>& a,
-              const vec<uint32_t, 8>& b);   
-}    
+              const vec<uint32_t, 8>& b);
+}
 
 
 // Local variables:
