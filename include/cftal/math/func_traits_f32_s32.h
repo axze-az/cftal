@@ -58,9 +58,20 @@ namespace cftal {
                 return msk ? t : f;
             }
             static
+            vi_type sel_or_set_zero(const vmi_type& msk,
+                                    const vi_type& t) {
+                return msk ? t : vi_type(0);
+            }
+
+            static
             vf_type sel(const vmf_type& msk,
                         const vf_type& t, const vf_type& f) {
                 return msk ? t : f;
+            }
+            static
+            vf_type sel_or_set_zero(const vmf_type& msk,
+                                    const vf_type& t) {
+                return msk ? t : vf_type(0);
             }
             static
             vf_type insert_exp(const vi_type& e) {

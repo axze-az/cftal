@@ -133,11 +133,20 @@ namespace cftal {
                 return select(msk, t, f);
             }
             static
+            vi_type sel_or_set_zero(const vmi_type& msk,
+                                    const vi_type& t) {
+                return select_or_set_zero(msk, t);
+            }
+            static
             vf_type sel(const vmf_type& msk,
                         const vf_type& t, const vf_type& f) {
                 return select(msk, t, f);
             }
-
+            static
+            vf_type sel_or_set_zero(const vmf_type& msk,
+                                    const vf_type& t) {
+                return select_or_set_zero(msk, t);
+            }
             static
             vf_type insert_exp(const vi_type& e) {
                 vi_type ep(e << 23);
@@ -261,15 +270,33 @@ namespace cftal {
             }
 
             static
+            vi_type sel_or_set_zero(const vmi_type& msk,
+                                    const vi_type& t) {
+                return select_or_set_zero(msk, t);
+            }
+
+            static
             vf_type sel(const vmf_type& msk,
                         const vf_type& t, const vf_type& f) {
                 return select(msk, t, f);
             }
 
             static
+            vf_type sel_or_set_zero(const vmf_type& msk,
+                                    const vf_type& t) {
+                return select_or_set_zero(msk, t);
+            }
+
+            static
             vi2_type sel(const vmi2_type& msk,
                          const vi2_type& t, const vi2_type& f) {
                 return select(msk, t, f);
+            }
+
+            static
+            vi2_type sel_or_set_zero(const vmi2_type& msk,
+                                     const vi2_type& t) {
+                return select_or_set_zero(msk, t);
             }
 
             static
