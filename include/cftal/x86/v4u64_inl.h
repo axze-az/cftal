@@ -455,7 +455,7 @@ cftal::v4u64
 cftal::select_or_set_zero(const v4u64::mask_type& m,
                           const v4u64& on_true)
 {
-    return _mm256_and_pd(m, on_true);
+    return _mm256_and_si256(m(), on_true());
 }
 
 template <bool _I0, bool _I1, bool _I2, bool _I3>
