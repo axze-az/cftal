@@ -435,6 +435,8 @@ int main(int argc, char** argv)
               << t1.s32() << std::endl;
     std::cout << t2.s32() << std::endl
               << t3.s32() << std::endl;
+
+    std::cout << rsqrt(v1f32(0.0/0.0)) << std::endl;
 #if 0
     bytes8 t(0, 0x3fe6a09e);
     const double d=(M_SQRT2/2) - t.f64();
