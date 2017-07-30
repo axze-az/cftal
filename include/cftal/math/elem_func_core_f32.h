@@ -560,7 +560,8 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type mm= horner(mm0, a, b, rsqrt_c0);
 #endif
     mm = 0.5 * mm * (3.0 - mm0 * mm * mm);
-    mm = mm - mm * 0.5*d_ops::xfma(mm, mm*mm0, -1.0);
+    vf_type s= d_ops::xfma(mm, mm*mm0, -1.0);
+    mm = mm - mm * 0.5 * s;
     vf_type t= _T::insert_exp(_T::bias()-e2c);
     // mm = ldexp_k(mm, -e2c);
     vf_type y= mm*t;
