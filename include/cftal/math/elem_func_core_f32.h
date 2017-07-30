@@ -327,9 +327,9 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     vmf_type is_denom= abs(x) <= fc::max_denormal();
 
     // input denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    vi_type eo= _T::sel_or_set_zero(i_is_denom, vi_type(-24));
+    vi_type eo= _T::sel_or_set_zero(i_is_denom, vi_type(-25));
     // mantissa
     vi_type m=_T::as_int(xs);
     vi_type xe=((m>>23) & 0xff) + eo;
@@ -386,9 +386,9 @@ __frexp_k(vf_type& m, arg_t<vf_type> x)
     using fc=func_constants<float>;
     vmf_type is_denom= abs(x) <= fc::max_denormal();
     // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    vi_type eo= _T::sel_or_set_zero(i_is_denom, vi_type(-24));
+    vi_type eo= _T::sel_or_set_zero(i_is_denom, vi_type(-25));
     // reinterpret a integer
     vi_type i=_T::as_int(xs);
     // exponent:
@@ -411,9 +411,9 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     vmf_type is_denom= abs(x) <= fc::max_denormal();
 
     // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    vi_type eo= _T::sel_or_set_zero(i_is_denom, vi_type(-24));
+    vi_type eo= _T::sel_or_set_zero(i_is_denom, vi_type(-25));
 
     // reinterpret a integer
     vi_type i=_T::as_int(xs);
@@ -447,9 +447,9 @@ ilogbp1(arg_t<vf_type> x)
     vmf_type is_denom= abs(x) <= fc::max_denormal();
     vi_type eo=vi_type(0);
     // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p24f), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel(i_is_denom, vi_type(-24), eo);
+    eo= _T::sel(i_is_denom, vi_type(-25), eo);
     // reinterpret as integer
     vi_type i=_T::as_int(xs);
     // exponent:
@@ -1422,7 +1422,7 @@ log1p_k(arg_t<vf_type> xc)
     log1p_x -= hfsq;
     log1p_x += f;
     log1p_x += kf*ctbl::m_ln2_cw[0];
-    log1p_x= _T::sel(abs(x) < 0x1p-24, x, log1p_x);
+    log1p_x= _T::sel(abs(x) < 0x1p-24f, x, log1p_x);
     return log1p_x;
 }
 
