@@ -888,6 +888,24 @@ namespace cftal {
 
     vec<float, 16>
     exp10_px2(arg_t<vec<float, 16> > d);
+
+    // approximates 1/a
+    template <std::size_t _N>
+    vec<float, _N>
+    native_recip(const vec<float, _N>& a);
+
+    // approximates 1/a
+    vec<float, 1>
+    native_recip(const vec<float, 1>& b);
+
+    // approximates a/b
+    template <std::size_t _N>
+    vec<float, _N>
+    native_div(const vec<float, _N>& a, const vec<float, _N>& b);
+
+    // approximates a/b
+    vec<float, 1>
+    native_div(const vec<float, 1>& a, const vec<float, 1>& b);
 }
 
 template <std::size_t _N>
@@ -1443,6 +1461,50 @@ cftal::exp10_px2(const vec<float, _N>& x)
     return vec<float, _N>(exp10_px2(low_half(x)),
                           exp10_px2(high_half(x)));
 }
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::native_recip(const vec<float, _N>& b)
+{
+    vec<float, _N> r(native_recip(low_half(b)),
+                     native_recip(high_half(b)));
+    return r;
+}
+
+inline
+cftal::vec<float, 1>
+cftal::native_recip(const vec<float, 1>& a)
+{
+#if defined (__SSE__)
+    v1f32 rcp=_mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(a())));
+    rcp = rcp + rcp*(1-rcp*a);
+    return rcp;
+#else
+    return 1.0f/a();
+#endif
+}
+
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::native_div(const vec<float, _N>& a, const vec<float, _N>& b)
+{
+    vec<float, _N> r(native_div(low_half(a), low_half(b)),
+                     native_div(high_half(a), high_half(b)));
+    return r;
+}
+
+inline
+cftal::vec<float, 1>
+cftal::native_div(const vec<float, 1>& b, const vec<float, 1>& a)
+{
+#if defined (__SSE__)
+    return native_recip(a) * b;
+#else
+    return b / a;
+#endif
+}
+
 
 
 // local variables:

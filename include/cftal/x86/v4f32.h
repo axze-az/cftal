@@ -156,6 +156,19 @@ namespace cftal {
     permute(const vec<float, 4>& s0,
             const vec<float, 4>& s1);
 
+    vec<float, 2>
+    native_recip(const vec<float, 2>& b);
+
+    vec<float, 4>
+    native_recip(const vec<float, 4>& b);
+
+    vec<float, 2>
+    native_div(const vec<float, 2>& a, const vec<float, 2>& b);
+
+    vec<float, 4>
+    native_div(const vec<float, 4>& a, const vec<float, 4>& b);
+
+
     namespace op {
 
         template <>
@@ -798,6 +811,39 @@ inline
 cftal::v4f32 cftal::trunc(const v4f32& a)
 {
     return x86::round(a, rounding_mode::towardzero);
+}
+
+inline
+cftal::v2f32
+cftal::native_recip(const v2f32& y)
+{
+    v4f32 y4(y, y);
+    return low_half(native_recip(y4));
+}
+
+inline
+cftal::v4f32
+cftal::native_recip(const v4f32& a)
+{
+    v4f32 rcp=_mm_rcp_ps(a());
+    rcp = rcp + rcp*(1-rcp*a);
+    return rcp;
+}
+
+inline
+cftal::v2f32
+cftal::native_div(const v2f32& b, const v2f32& a)
+{
+    v4f32 b4(b, b);
+    v4f32 a4(a, a);
+    return low_half(native_div(b4, a4));
+}
+
+inline
+cftal::v4f32
+cftal::native_div(const v4f32& b, const v4f32& a)
+{
+    return native_recip(a) * b;
 }
 
 // Local variables:

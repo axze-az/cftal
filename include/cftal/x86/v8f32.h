@@ -164,6 +164,12 @@ namespace cftal {
     permute(const vec<float, 8>& s0,
             const vec<float, 8>& s1);
 
+    vec<float, 8>
+    native_recip(const vec<float, 8>& a);
+
+    vec<float, 8>
+    native_div(const vec<float, 8>& a, const vec<float, 8>& b);
+
     namespace op {
 
         template <>
@@ -827,6 +833,22 @@ inline
 cftal::v8f32 cftal::trunc(const v8f32& a)
 {
     return x86::round(a, rounding_mode::towardzero);
+}
+
+inline
+cftal::v8f32
+cftal::native_recip(const v8f32& a)
+{
+    v8f32 rcp=_mm256_rcp_ps(a());
+    rcp = rcp + rcp*(1-rcp*a);
+    return rcp;
+}
+
+inline
+cftal::v8f32
+cftal::native_div(const v8f32& b, const v8f32& a)
+{
+    return native_recip(a) * b;
 }
 
 // Local variables:
