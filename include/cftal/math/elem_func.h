@@ -292,7 +292,7 @@ exp(arg_t<vf_type> d)
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp_hi_inf= fc::exp_hi_inf();
     const vf_type exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel(d <= exp_lo_zero, 0.0, res);
+    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     // res = _T::sel(d == 0.0, 1.0, res);
     // res = _T::sel(d == 1.0, M_E, res);
@@ -309,7 +309,7 @@ exp2(arg_t<vf_type> d)
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp2_hi_inf= fc::exp2_hi_inf();
     const vf_type exp2_lo_zero= fc::exp2_lo_zero();
-    res = _T::sel(d <= exp2_lo_zero, 0.0, res);
+    res = _T::sel_zero_or_val(d <= exp2_lo_zero, res);
     res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
     // res = _T::sel(d == 0.0, 1.0, res);
     // res = _T::sel(d == 1.0, 2.0, res);
@@ -326,7 +326,7 @@ exp10(arg_t<vf_type> d)
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp10_hi_inf=fc::exp10_hi_inf();
     const vf_type exp10_lo_zero=fc::exp10_lo_zero();
-    res = _T::sel(d <= exp10_lo_zero, 0.0, res);
+    res = _T::sel_zero_or_val(d <= exp10_lo_zero, res);
     res = _T::sel(d >= exp10_hi_inf, _T::pinf(), res);
     // res = _T::sel(d == 0.0, 1.0, res);
     // res = _T::sel(d == 1.0, 10.0, res);
@@ -397,7 +397,7 @@ sinh(arg_t<vf_type> x)
     const vf_type sinh_lo_inf= fc::sinh_lo_inf();
     res = _T::sel(x >= sinh_hi_inf, _T::pinf(), res);
     res = _T::sel(x <= sinh_lo_inf, _T::ninf(), res);
-    res = _T::sel(x == 0.0, 0.0, res);
+    res = _T::sel_zero_or_val(x == 0.0, res);
     return res;
 }
 
@@ -553,8 +553,8 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     vmf_type abs_x_lt_1 = abs(x) < 1.0;
     vmf_type y_gt_1 = y > 1.0;
     res = _T::sel(res_nan, _T::pinf(), res);
-    res = _T::sel(res_nan & abs_x_lt_1 & y_gt_1, 0.0, res);
-    res = _T::sel(res_nan & (~abs_x_lt_1) & (~y_gt_1), 0.0, res);
+    res = _T::sel_zero_or_val(res_nan & abs_x_lt_1 & y_gt_1, res);
+    res = _T::sel_zero_or_val(res_nan & (~abs_x_lt_1) & (~y_gt_1), res);
 
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=0.5 *y;
@@ -569,13 +569,13 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 
     vmf_type y_inf= isinf(y);
     vf_type t= _T::sel(efx==0.0, vf_type(1), _T::pinf());
-    t = _T::sel(efx < 0.0, vf_type(0.0), t);
+    t = _T::sel_zero_or_val(efx < 0.0, t);
     res = _T::sel(y_inf, t, res);
 
     vmf_type x_zero = x == 0.0;
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     t= _T::sel(x_zero, -y, y);
-    t= _T::sel(t < 0.0, vf_type(0), _T::pinf());
+    t= _T::sel_zero_or_val(t < 0.0, _T::pinf());
     vf_type sgn_x= copysign(vf_type(1), x);
     vf_type t1=_T::sel(y_is_odd, sgn_x, vf_type(1));
     t1 *= t;
@@ -621,7 +621,7 @@ pow(arg_t<vf_type> b, arg_t<vi_type> e)
         n_ne_0 = n != vi_type(0);
         vmf_type f_n_ne_0 = _T::vmi_to_vmf(n_ne_0);
         // clear vector entries not required any more
-        x = _T::sel(f_n_ne_0, x*x, 0);
+        x = _T::sel_val_or_zero(f_n_ne_0, x*x);
     }
     return r;
 }
@@ -723,7 +723,7 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
         //  atan2(y<0, 0) = -Pi/2
         r = _T::sel(y_lt_z & x_zero, -M_PI/2, r);
         //  atan2(y, +Inf) = 0
-        r = _T::sel(x_p_inf, 0, r);
+        r = _T::sel_zero_or_val(x_p_inf, r);
         //  atan2(y>0, -Inf) = +Pi
         r = _T::sel(y_gt_z & x_n_inf, M_PI, r);
         //  atan2(y<0, -Inf) = -Pi
@@ -785,7 +785,7 @@ acos(arg_t<vf_type> x)
 {
     vf_type r=base_type::acos_k(x);
     r = _TRAITS_T::sel(x == vf_type(-1), M_PI, r);
-    r = _TRAITS_T::sel(x == vf_type(1), 0, r);
+    r = _TRAITS_T::sel_zero_or_val(x == vf_type(1), r);
     r = _TRAITS_T::sel(x == vf_type(0), M_PI/2, r);
     r = _TRAITS_T::sel(x < vf_type(-1), -_TRAITS_T::nan(), r);
     r = _TRAITS_T::sel(x > vf_type(1), _TRAITS_T::nan(), r);

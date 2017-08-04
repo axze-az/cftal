@@ -334,7 +334,7 @@ pow2i(arg_t<vi_type> vi)
     vmf_type mf;
     mi= (vi < vi_type(_T::e_min()));
     mf= _T::vmi_to_vmf(mi);
-    r= _T::sel(mf, vf_type(0.0), r);
+    r= _T::sel_zero_or_val(mf, r);
     mi= (vi > vi_type(_T::e_max()));
     mf= _T::vmi_to_vmf(mi);
     vf_type inf(_T::pinf());
@@ -460,7 +460,7 @@ frexp_k(arg_t<vf_type> x, vi2_type* ve)
         // remove bias from e
         vmi2_type i_inz=_T::vmf_to_vmi2(f_inz);
         e -= vi2_type(_T::bias()-1);
-        e= _T::sel(i_inz, vi2_type(0), e);
+        e= _T::sel_zero_or_val(i_inz, e);
         *ve= e;
     }
     return frc;
@@ -997,7 +997,7 @@ exp_mx2_k(arg_t<vf_type> xc)
     auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
     vf_type y= __exp_k<false>(xrh, xrl, kf, k);
     using fc_t = math::func_constants<double>;
-    y= _T::sel(x2h <= fc_t::exp_lo_zero(), vf_type(0), y);
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp_lo_zero(), y);
     return y;
 }
 
@@ -1056,7 +1056,7 @@ exp2_mx2_k(arg_t<vf_type> xc)
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
     vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
     using fc_t = math::func_constants<double>;
-    y= _T::sel(x2h <= fc_t::exp2_lo_zero(), vf_type(0), y);
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
     return y;
 }
 
@@ -1134,7 +1134,7 @@ exp10_mx2_k(arg_t<vf_type> xc)
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10.h(), ctbl::m_ln10.l());
     vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
     using fc_t = math::func_constants<double>;
-    y= _T::sel(x2h <= fc_t::exp10_lo_zero(), vf_type(0), y);
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp10_lo_zero(), y);
     return y;
 }
 
@@ -1786,7 +1786,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     const vf_type& d= yldx.h();
     const vf_type exp2_hi_inf= fc::exp2_hi_inf();
     const vf_type exp2_lo_zero= fc::exp2_lo_zero();
-    res = _T::sel(d <= exp2_lo_zero, 0.0, res);
+    res = _T::sel_zero_or_val(d <= exp2_lo_zero, res);
     res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, 2.0, res);
@@ -2740,8 +2740,6 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
                                   sqr_mi.h() + sqr_mi.l()));
     return r;
 }
-
-
 
 // Local Variables:
 // mode: c++
