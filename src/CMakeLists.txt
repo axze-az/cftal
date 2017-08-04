@@ -1,4 +1,10 @@
+#cmake_minimum_required(VERSION 3.9)
 project(cftal-src)
+
+#include (CheckIPOSupport)
+#check_ipo_support(RESULT has_ipo)
+
+set(has_ipo, FALSE)
 
 set (CSRCS
     mul_div_32.cc
@@ -138,7 +144,7 @@ SET (HDRS
   ../include/cftal/vec_math_funcs.h
   ../include/cftal/init_list.h
 )
-  
+
 
 if (CFTAL_STATIC_LIB)
     add_library (cftal STATIC ${CSRCS} ${HDRS})
@@ -153,8 +159,10 @@ set_property(TARGET cftal-so
   PROPERTY INTERFACE_POSITION_INDEPENDENT_CODE ON)
 set_property(TARGET cftal-so
   PROPERTY OUTPUT_NAME cftal)
-set_property(TARGET cftal-so
-  PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+if (has_ipo)
+    set_property(TARGET cftal-so
+        PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+endif()
 set_target_properties(cftal-so PROPERTIES SOVERSION "${CFTAL_VERSION_MAJ}"
   VERSION "${CFTAL_VERSION_MAJ}.${CFTAL_VERSION_MIN}")
 
