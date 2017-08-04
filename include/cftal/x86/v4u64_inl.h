@@ -458,6 +458,14 @@ cftal::select_val_or_zero(const v4u64::mask_type& m,
     return _mm256_and_si256(m(), on_true());
 }
 
+inline
+cftal::v4u64
+cftal::select_zero_or_val(const v4u64::mask_type& m,
+                          const v4u64& on_false)
+{
+    return _mm256_andnot_si256(m(), on_false());
+}
+
 template <bool _I0, bool _I1, bool _I2, bool _I3>
 inline
 cftal::v4u64 cftal::select(const v4u64& a, const v4u64& b)

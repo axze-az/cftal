@@ -65,6 +65,11 @@ namespace cftal {
                 return msk ? t : vi_type(0);
             }
             static
+            vi_type sel_zero_or_val(const vmi_type& msk,
+                                    const vi_type& f) {
+                return msk ? vi_type(0) : f;
+            }
+            static
             vf_type sel(const vmf_type& msk,
                         const vf_type& t, const vf_type& f) {
                 return msk ? t : f;
@@ -73,6 +78,11 @@ namespace cftal {
             vf_type sel_val_or_zero(const vmf_type& msk,
                                     const vf_type& t) {
                 return msk ? t : vf_type(0);
+            }
+            static
+            vf_type sel_zero_or_val(const vmf_type& msk,
+                                    const vf_type& f) {
+                return msk ? vf_type(0) : f;
             }
             static
             vf_type gather(const double* p, vi_type idx, int sc) {

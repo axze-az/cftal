@@ -81,6 +81,10 @@ namespace cftal {
     select_val_or_zero(const vec<double, 8>::mask_type& msk,
                        const vec<double, 8>& on_true);
 
+    vec<double, 8>
+    select_zero_or_val(const vec<double, 8>::mask_type& msk,
+                       const vec<double, 8>& on_false);
+
     unsigned
     read_signs(const vec<double, 8>::mask_type& b);
 

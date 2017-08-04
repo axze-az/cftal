@@ -93,6 +93,10 @@ namespace cftal {
     select_val_or_zero(const vec<double, 4>::mask_type& msk,
                        const vec<double, 4>& on_true);
 
+    vec<double, 4>
+    select_zero_or_val(const vec<double, 4>::mask_type& msk,
+                       const vec<double, 4>& on_false);
+
     unsigned
     read_signs(const vec<double, 4>& b);
 
@@ -548,6 +552,14 @@ cftal::select_val_or_zero(const v4f64::mask_type& m,
                           const v4f64& on_true)
 {
     return _mm256_and_pd(m(), on_true());
+}
+
+inline
+cftal::v4f64
+cftal::select_zero_or_val(const v4f64::mask_type& m,
+                          const v4f64& on_false)
+{
+    return _mm256_andnot_pd(m(), on_false());
 }
 
 inline

@@ -83,6 +83,10 @@ namespace cftal {
     select_val_or_zero(const vec<float, 8>::mask_type& msk,
                        const vec<float, 8>& on_true);
 
+    vec<float, 8>
+    select_zero_or_val(const vec<float, 8>::mask_type& msk,
+                       const vec<float, 8>& on_false);
+
 #if !defined (__AVX512VL__)
     bool
     all_of(const vec<float, 8>::mask_type& a);
@@ -587,6 +591,14 @@ cftal::select_val_or_zero(const v8f32::mask_type& m,
                           const v8f32& on_true)
 {
     return _mm256_and_ps(m(), on_true());
+}
+
+inline
+cftal::v8f32
+cftal::select_zero_or_val(const v8f32::mask_type& m,
+                          const v8f32& on_false)
+{
+    return _mm256_andnot_ps(m(), on_false());
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3,

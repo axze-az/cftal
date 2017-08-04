@@ -87,6 +87,10 @@ namespace cftal {
     select_val_or_zero(const vec<uint64_t, 4>::mask_type& msk,
                        const vec<uint64_t, 4>& on_true);
 
+    vec<uint64_t, 4>
+    select_zero_or_val(const vec<uint64_t, 4>::mask_type& msk,
+                       const vec<uint64_t, 4>& on_false);
+
     template <bool _P0, bool _P1, bool _P2, bool _P3>
     vec<uint64_t, 4>
     select(const vec<uint64_t, 4>& on_true,

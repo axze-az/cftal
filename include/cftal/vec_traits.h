@@ -138,6 +138,11 @@ namespace cftal {
                 return select_val_or_zero(msk, t);
             }
             static
+            vi_type sel_zero_or_val(const vmi_type& msk,
+                                    const vi_type& f) {
+                return select_zero_or_val(msk, f);
+            }
+            static
             vf_type sel(const vmf_type& msk,
                         const vf_type& t, const vf_type& f) {
                 return select(msk, t, f);
@@ -146,6 +151,11 @@ namespace cftal {
             vf_type sel_val_or_zero(const vmf_type& msk,
                                     const vf_type& t) {
                 return select_val_or_zero(msk, t);
+            }
+            static
+            vf_type sel_zero_or_val(const vmf_type& msk,
+                                    const vf_type& f) {
+                return select_zero_or_val(msk, f);
             }
             static
             vf_type insert_exp(const vi_type& e) {
@@ -276,6 +286,12 @@ namespace cftal {
             }
 
             static
+            vi_type sel_zero_or_val(const vmi_type& msk,
+                                    const vi_type& f) {
+                return select_zero_or_val(msk, f);
+            }
+
+            static
             vf_type sel(const vmf_type& msk,
                         const vf_type& t, const vf_type& f) {
                 return select(msk, t, f);
@@ -288,6 +304,12 @@ namespace cftal {
             }
 
             static
+            vf_type sel_zero_or_val(const vmf_type& msk,
+                                    const vf_type& f) {
+                return select_zero_or_val(msk, f);
+            }
+
+            static
             vi2_type sel(const vmi2_type& msk,
                          const vi2_type& t, const vi2_type& f) {
                 return select(msk, t, f);
@@ -297,6 +319,12 @@ namespace cftal {
             vi2_type sel_val_or_zero(const vmi2_type& msk,
                                      const vi2_type& t) {
                 return select_val_or_zero(msk, t);
+            }
+
+            static
+            vi2_type sel_zero_or_val(const vmi2_type& msk,
+                                     const vi2_type& f) {
+                return select_zero_or_val(msk, f);
             }
 
             static

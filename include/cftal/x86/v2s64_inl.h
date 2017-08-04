@@ -472,6 +472,14 @@ cftal::select_val_or_zero(const v2s64::mask_type& m,
     return _mm_and_si128(m(), on_true());
 }
 
+inline
+cftal::v2s64
+cftal::select_zero_or_val(const v2s64::mask_type& m,
+                          const v2s64& on_false)
+{
+    return _mm_andnot_si128(m(), on_false());
+}
+
 template <bool _I0, bool _I1>
 inline
 cftal::v2s64

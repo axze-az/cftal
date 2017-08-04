@@ -499,6 +499,14 @@ cftal::select_val_or_zero(const v4s32::mask_type& m,
     return _mm_and_si128(m(), on_true());
 }
 
+inline
+cftal::v4s32
+cftal::select_zero_or_val(const v4s32::mask_type& m,
+                          const v4s32& on_false)
+{
+    return _mm_andnot_si128(m(), on_false());
+}
+
 template <bool _I0, bool _I1, bool _I2, bool _I3>
 inline
 cftal::v4s32 cftal::select(const v4s32& a, const v4s32& b)

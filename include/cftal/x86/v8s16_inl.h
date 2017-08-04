@@ -490,6 +490,13 @@ cftal::select_val_or_zero(const v8s16::mask_type& m,
     return _mm_and_si128(m(), on_true());
 }
 
+inline
+cftal::v8s16
+cftal::select_zero_or_val(const v8s16::mask_type& m,
+                          const v8s16& on_false)
+{
+    return _mm_andnot_si128(m(), on_false());
+}
 
 template <bool _P0, bool _P1, bool _P2, bool _P3,
           bool _P4, bool _P5, bool _P6, bool _P7>
