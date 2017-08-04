@@ -460,7 +460,7 @@ cftal::v4s64 cftal::select(const v4s64::mask_type& m,
 
 inline
 cftal::v4s64
-cftal::select_or_set_zero(const v4s64::mask_type& m,
+cftal::select_val_or_zero(const v4s64::mask_type& m,
                           const v4s64& on_true)
 {
     return _mm256_and_si256(m(), on_true());

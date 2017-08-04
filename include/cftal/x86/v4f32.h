@@ -80,7 +80,7 @@ namespace cftal {
            const vec<float, 4>& on_false);
 
     vec<float, 4>
-    select_or_set_zero(const vec<float, 4>::mask_type& msk,
+    select_val_or_zero(const vec<float, 4>::mask_type& msk,
                        const vec<float, 4>& on_true);
 
 #if !defined (__AVX512VL__)
@@ -529,7 +529,7 @@ cftal::v4f32 cftal::select(const v4f32::mask_type& m,
 
 inline
 cftal::v4f32
-cftal::select_or_set_zero(const v4f32::mask_type& m,
+cftal::select_val_or_zero(const v4f32::mask_type& m,
                           const v4f32& on_true)
 {
     return _mm_and_ps(m(), on_true());

@@ -479,7 +479,7 @@ cftal::v4u32 cftal::select(const v4u32::mask_type& m,
 
 inline
 cftal::v4u32
-cftal::select_or_set_zero(const v4u32::mask_type& m,
+cftal::select_val_or_zero(const v4u32::mask_type& m,
                           const v4u32& on_true)
 {
     return _mm_and_si128(m(), on_true());

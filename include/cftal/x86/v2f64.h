@@ -89,7 +89,7 @@ namespace cftal {
            const vec<double, 2>& on_false);
 
     vec<double, 2>
-    select_or_set_zero(const vec<double, 2>::mask_type& msk,
+    select_val_or_zero(const vec<double, 2>::mask_type& msk,
                        const vec<double, 2>& on_true);
 
     unsigned
@@ -538,7 +538,7 @@ cftal::select(const v2f64::mask_type& m,
 
 inline
 cftal::v2f64
-cftal::select_or_set_zero(const v2f64::mask_type& m,
+cftal::select_val_or_zero(const v2f64::mask_type& m,
                           const v2f64& on_true)
 {
     // we know that all mask bits are 1

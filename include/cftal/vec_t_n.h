@@ -144,8 +144,13 @@ namespace cftal {
 
     template <typename _T, std::size_t _N>
     vec<_T, _N>
-    select_or_set_zero(const typename vec<_T, _N>::mask_type& m,
+    select_val_or_zero(const typename vec<_T, _N>::mask_type& m,
                        const vec<_T, _N>& on_true);
+
+    template <typename _T, std::size_t _N>
+    vec<_T, _N>
+    select_zero_or_val(const typename vec<_T, _N>::mask_type& m,
+                       const vec<_T, _N>& on_false);
 
     template <bool _I0, bool _I1, typename _T>
     vec<_T, 2>
@@ -585,14 +590,27 @@ cftal::select(const typename vec<_T, _N>::mask_type& m,
 template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>
-cftal::select_or_set_zero(const typename vec<_T, _N>::mask_type& m,
+cftal::select_val_or_zero(const typename vec<_T, _N>::mask_type& m,
                           const vec<_T, _N>& on_true)
 {
     vec<_T, _N> res(
-        select_or_set_zero(low_half(m), low_half(on_true)),
-        select_or_set_zero(high_half(m), high_half(on_true)));
+        select_val_or_zero(low_half(m), low_half(on_true)),
+        select_val_or_zero(high_half(m), high_half(on_true)));
     return res;
 }
+
+template <class _T, std::size_t _N>
+inline
+cftal::vec<_T, _N>
+cftal::select_zero_or_val(const typename vec<_T, _N>::mask_type& m,
+                          const vec<_T, _N>& on_false)
+{
+    vec<_T, _N> res(
+        select_zero_or_val(low_half(m), low_half(on_false)),
+        select_zero_or_val(high_half(m), high_half(on_false)));
+    return res;
+}
+
 
 template <bool _I0, bool _I1, class _T>
 inline

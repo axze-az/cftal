@@ -90,7 +90,7 @@ namespace cftal {
            const vec<double, 4>& on_false);
 
     vec<double, 4>
-    select_or_set_zero(const vec<double, 4>::mask_type& msk,
+    select_val_or_zero(const vec<double, 4>::mask_type& msk,
                        const vec<double, 4>& on_true);
 
     unsigned
@@ -544,7 +544,7 @@ cftal::select(const v4f64::mask_type& m,
 
 inline
 cftal::v4f64
-cftal::select_or_set_zero(const v4f64::mask_type& m,
+cftal::select_val_or_zero(const v4f64::mask_type& m,
                           const v4f64& on_true)
 {
     return _mm256_and_pd(m(), on_true());

@@ -260,8 +260,14 @@ namespace cftal {
 
     template <typename _T>
     vec<_T, 1>
-    select_or_set_zero(const typename vec<_T, 1>::mask_type& m,
+    select_val_or_zero(const typename vec<_T, 1>::mask_type& m,
                        const vec<_T, 1>& on_true);
+
+
+    template <typename _T>
+    vec<_T, 1>
+    select_zero_or_val(const typename vec<_T, 1>::mask_type& m,
+                       const vec<_T, 1>& on_false);
 
     template <int32_t _I0, typename _T>
     vec<_T, 1>
@@ -881,12 +887,24 @@ cftal::select(const typename vec<_T, 1>::mask_type& vm,
 template <class _T>
 inline
 cftal::vec<_T, 1>
-cftal::select_or_set_zero(const typename vec<_T, 1>::mask_type& vm,
+cftal::select_val_or_zero(const typename vec<_T, 1>::mask_type& vm,
                           const vec<_T, 1>& on_true)
 {
     using mvt= typename vec<_T, 1>::mask_type::value_type;
     typename vec<_T, 1>::value_type r{
         select(impl::mask_to_bool<mvt>::v(vm()), on_true(), _T(0))};
+    return vec<_T, 1>{r};
+}
+
+template <class _T>
+inline
+cftal::vec<_T, 1>
+cftal::select_zero_or_val(const typename vec<_T, 1>::mask_type& vm,
+                          const vec<_T, 1>& on_false)
+{
+    using mvt= typename vec<_T, 1>::mask_type::value_type;
+    typename vec<_T, 1>::value_type r{
+        select(impl::mask_to_bool<mvt>::v(vm()), _T(0), on_false())};
     return vec<_T, 1>{r};
 }
 
