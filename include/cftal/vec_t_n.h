@@ -131,6 +131,8 @@ namespace cftal {
     template <typename _T, std::size_t _N>
     bool none_of(const vec<_T, _N>& v);
 
+    // return the low and the high part of a
+    // multiplication for integer types
     template <typename _T, std::size_t _N>
     std::enable_if_t<std::is_integral<_T>::value,
                      std::pair<vec<_T, _N>, vec<_T, _N> > >
@@ -232,90 +234,117 @@ namespace cftal {
     vec<_T, 16>
     sort_even_odd(const vec<_T, 16>& v);
 
+    // return the even elements 0, 2, ... of v
     template <typename _T, std::size_t _N>
     vec<_T, _N/2>
     even_elements(const vec<_T, _N>& v);
 
+    // return the even elements 0, 2, 4, 6, 8, 10, 12, 14 of v
     template <typename _T>
     vec<_T, 8>
     even_elements(const vec<_T, 16>& v);
 
+    // return the even elements 0, 2, 4, 6 of v
     template <typename _T>
     vec<_T, 4>
     even_elements(const vec<_T, 8>& v);
 
+    // return the even elements 0, 2 of v
     template <typename _T>
     vec<_T, 2>
     even_elements(const vec<_T, 4>& v);
 
+    // return the even element 0 of v
     template <typename _T>
     vec<_T, 1>
     even_elements(const vec<_T, 2>& v);
 
+    // return the odd elements 1, 3, 5, ... of v
     template <typename _T, std::size_t _N>
     vec<_T, _N/2>
     odd_elements(const vec<_T, _N>& v);
 
+    // return the odd elements 1, 3, 5, 7, 9, 11, 13, 15 of v
     template <typename _T>
     vec<_T, 8>
     odd_elements(const vec<_T, 16>& v);
 
+    // return the odd elements 1, 3, 5, 7 of v
     template <typename _T>
     vec<_T, 4>
     odd_elements(const vec<_T, 8>& v);
 
+    // return the odd elements 1, 3 of v
     template <typename _T>
     vec<_T, 2>
     odd_elements(const vec<_T, 4>& v);
 
+    // return the odd element 1 of v
     template <typename _T>
     vec<_T, 1>
     odd_elements(const vec<_T, 2>& v);
 
+    // combine e and o into e0, o0, e1, o1, ...
     template <typename _T, std::size_t _N>
     vec<_T, _N*2>
     combine_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o);
 
+    // combine e and o into e0, o0, e1, o1, ..
     template <typename _T>
     vec<_T, 16>
     combine_even_odd(const vec<_T, 8>& e, const vec<_T, 8>& o);
 
+    // combine e and o into e0, o0, e1, o1, ..
     template <typename _T>
     vec<_T, 8>
     combine_even_odd(const vec<_T, 4>& e, const vec<_T, 4>& o);
 
+    // combine e and o into e0, o0, e1, o1, ..
     template <typename _T>
     vec<_T, 4>
     combine_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o);
 
+    // combine e and o into e0, o0
     template <typename _T>
     vec<_T, 2>
     combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o);
 
+    // select even elements from e and odd elements from o
+    // e0 o1 e2 o3 e4 o5 ..
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     select_even_odd(const vec<_T, _N>& e, const vec<_T, _N>& o);
 
+    // select even elements from e and odd elements from o
+    // e0 o1 e2 o3 e4 o5 ..
     template <typename _T>
     vec<_T, 16>
     select_even_odd(const vec<_T, 16>& e, const vec<_T, 16>& o);
 
+    // select even elements from e and odd elements from o
+    // e0 o1 e2 o3 e4 o5 ..
     template <typename _T>
     vec<_T, 8>
     select_even_odd(const vec<_T, 8>& e, const vec<_T, 8>& o);
 
+    // select even elements from e and odd elements from o
+    // e0 o1 e2 o3
     template <typename _T>
     vec<_T, 4>
     select_even_odd(const vec<_T, 4>& e, const vec<_T, 4>& o);
 
+    // select even elements from e and odd elements from o
+    // e0 o1
     template <typename _T>
     vec<_T, 2>
     select_even_odd(const vec<_T, 2>& e, const vec<_T, 2>& o);
 
+    // copy odd elements to even elements: v1 v1 v3 v3 v5 v5 ...
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     copy_odd_to_even(const vec<_T, _N>& v);
 
+    // copy even elements to odd elements: v0 v0 v2 v2 v4 v4 ...
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     copy_even_to_odd(const vec<_T, _N>& v);
@@ -352,6 +381,7 @@ namespace cftal {
     vec<_T, 2>
     copy_even_to_odd(const vec<_T, 2>& v);
 
+    // checks if all elements for v are equal
     template <typename _T, std::size_t _N>
     bool
     elements_equal(const vec<_T, _N>& v);
@@ -364,28 +394,34 @@ namespace cftal {
     bool
     elements_equal(const vec<_T, 1>& v);
 
+    // absolute value for signed integers
     template <typename _T, std::size_t _N>
     std::enable_if_t< std::is_signed<_T>::value &&
                       !std::is_floating_point<_T>::value,
                       vec<_T, _N> >
     abs(const vec<_T, _N>& v);
 
+    // return elementwise maximum
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     max(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
+    // return elementwise minimum
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     min(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
+    // return the maximum element
     template <typename _T, std::size_t _N>
     _T
     max_element(const vec<_T, _N>& v);
 
+    // return the minimum element
     template <typename _T, std::size_t _N>
     _T
     min_element(const vec<_T, _N>& v);
 
+    // load and store vectors from and to memory
     template <class _T, std::size_t _N>
     struct mem< vec<_T, _N> > {
         static
