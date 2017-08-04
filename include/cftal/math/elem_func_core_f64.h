@@ -354,7 +354,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
     // input denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
-    vi2_type eo= _T::sel_or_set_zero(i_is_denom, vi2_type(-54));
+    vi2_type eo= _T::sel_val_or_zero(i_is_denom, vi2_type(-54));
     // split mantissa
     vi2_type ml, mh;
     _T::extract_words(ml, mh, xs);
@@ -421,7 +421,7 @@ __frexp_k(vf_type& m, arg_t<vf_type> x)
     using fc = func_constants<double>;
     vmf_type is_denom= abs(x) <= fc::max_denormal();
     vf_type xn=_T::sel(is_denom, x*0x1p54, x);
-    vi2_type e=_T::sel_or_set_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
+    vi2_type e=_T::sel_val_or_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
     vi2_type lx, hx;
     _T::extract_words(lx, hx, xn);
     /* reduce x into [0.5, 1.0) */
@@ -443,7 +443,7 @@ frexp_k(arg_t<vf_type> x, vi2_type* ve)
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
-    vi2_type eo= _T::sel_or_set_zero(i_is_denom, vi2_type(-54));
+    vi2_type eo= _T::sel_val_or_zero(i_is_denom, vi2_type(-54));
     // extract mantissa
     vi2_type lo_word, hi_word;
     _T::extract_words(lo_word, hi_word, xs);
@@ -493,7 +493,7 @@ ilogbp1_k(arg_t<vf_type> x)
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
-    vi2_type eo= _T::sel_or_set_zero(i_is_denom, vi2_type(-54));
+    vi2_type eo= _T::sel_val_or_zero(i_is_denom, vi2_type(-54));
     // reinterpret as integer
     vi2_type hi_word, lo_word;
     _T::extract_words(lo_word, hi_word, xs);
@@ -1482,7 +1482,7 @@ log_k(arg_t<vf_type> xc, log_func func)
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi2_type k=_T::sel_or_set_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
+    vi2_type k=_T::sel_val_or_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
     vi2_type lx, hx;
     _T::extract_words(lx, hx, x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
@@ -1612,7 +1612,7 @@ log1p_k(arg_t<vf_type> xc)
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-x), x-(u-1.0));
     c_k_2 /= u;
-    vf_type c = _T::sel_or_set_zero(kf < vf_type(54.0), c_k_2);
+    vf_type c = _T::sel_val_or_zero(kf < vf_type(54.0), c_k_2);
     /* reduce u into [sqrt(2)/2, sqrt(2)] */
     hu = (hu&0x000fffff) + 0x3fe6a09e;
     vf_type nu = _T::combine_words(lu, hu);
@@ -1681,7 +1681,7 @@ __pow_log2_k(arg_t<vf_type> xc)
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi2_type k=_T::sel_or_set_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
+    vi2_type k=_T::sel_val_or_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
     vi2_type lx, hx;
     _T::extract_words(lx, hx, x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
@@ -2241,8 +2241,8 @@ atan_k(arg_t<vf_type> xc)
     vf_type x=abs(xc);
     // range reduction
     vmf_type r=x > 7.0/16;
-    vf_type atan_hi= _T::sel_or_set_zero(r, atan_0_5_hi);
-    vf_type atan_lo= _T::sel_or_set_zero(r, atan_0_5_lo);
+    vf_type atan_hi= _T::sel_val_or_zero(r, atan_0_5_hi);
+    vf_type atan_lo= _T::sel_val_or_zero(r, atan_0_5_lo);
     vf_type t=_T::sel(r, (2.0*x-1.0)/(2.0+x), x);
     r = x>11.0/16;
     atan_hi=_T::sel(r, atan_1_0_hi, atan_hi);
@@ -2502,7 +2502,7 @@ asinh_k(arg_t<vf_type> xc)
     using ctbl=impl::d_real_constants<d_real<double>, double>;
 
     vmf_type x_gt_0x1p28 = x > 0x1p28;
-    vf_type add_2_log=_T::sel_or_set_zero(x_gt_0x1p28, ctbl::m_ln2.h());
+    vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p28, ctbl::m_ln2.h());
     vf_type t= x*x;
     vf_type log_arg=_T::sel(x_gt_0x1p28,
                             x,
@@ -2579,7 +2579,7 @@ acosh_k(arg_t<vf_type> xc)
     using ctbl=impl::d_real_constants<d_real<double>, double>;
 
     vmf_type x_gt_0x1p26 = x > 0x1p26;
-    vf_type add_2_log=_T::sel_or_set_zero(x_gt_0x1p26, ctbl::m_ln2.h());
+    vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p26, ctbl::m_ln2.h());
     // vf_type t= x*x;
     vf_type log_arg=_T::sel(x_gt_0x1p26,
                             x,

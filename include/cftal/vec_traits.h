@@ -133,7 +133,7 @@ namespace cftal {
                 return select(msk, t, f);
             }
             static
-            vi_type sel_or_set_zero(const vmi_type& msk,
+            vi_type sel_val_or_zero(const vmi_type& msk,
                                     const vi_type& t) {
                 return select_val_or_zero(msk, t);
             }
@@ -143,7 +143,7 @@ namespace cftal {
                 return select(msk, t, f);
             }
             static
-            vf_type sel_or_set_zero(const vmf_type& msk,
+            vf_type sel_val_or_zero(const vmf_type& msk,
                                     const vf_type& t) {
                 return select_val_or_zero(msk, t);
             }
@@ -270,7 +270,7 @@ namespace cftal {
             }
 
             static
-            vi_type sel_or_set_zero(const vmi_type& msk,
+            vi_type sel_val_or_zero(const vmi_type& msk,
                                     const vi_type& t) {
                 return select_val_or_zero(msk, t);
             }
@@ -282,7 +282,7 @@ namespace cftal {
             }
 
             static
-            vf_type sel_or_set_zero(const vmf_type& msk,
+            vf_type sel_val_or_zero(const vmf_type& msk,
                                     const vf_type& t) {
                 return select_val_or_zero(msk, t);
             }
@@ -294,7 +294,7 @@ namespace cftal {
             }
 
             static
-            vi2_type sel_or_set_zero(const vmi2_type& msk,
+            vi2_type sel_val_or_zero(const vmi2_type& msk,
                                      const vi2_type& t) {
                 return select_val_or_zero(msk, t);
             }

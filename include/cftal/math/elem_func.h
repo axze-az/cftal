@@ -248,7 +248,7 @@ rsqrt(arg_t<vf_type> x)
 {
     vf_type y= base_type::rsqrt_k(x);
     // y=_T::sel(x == _T::pinf(), vf_type(0), y);
-    y=_T::sel_or_set_zero(x != _T::pinf(), y);
+    y=_T::sel_val_or_zero(x != _T::pinf(), y);
     y=_T::sel(x == 0, _T::pinf(), y);
     y=_T::sel(x < 0.0, _T::nan(), y);
     y=_T::sel(isnan(x), x, y);
@@ -276,7 +276,7 @@ root12(arg_t<vf_type> x)
     vf_type y= base_type::root12_k(x);
     y=_T::sel(x == _T::pinf(), _T::pinf(), y);
     // y=_T::sel(x == 0, 0.0, y);
-    y=_T::sel_or_set_zero(x != 0, y);
+    y=_T::sel_val_or_zero(x != 0, y);
     y=_T::sel(x < 0.0, _T::nan(), y);
     y=_T::sel(isnan(x), x, y);
     return y;
