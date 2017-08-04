@@ -1,8 +1,8 @@
-#cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.9)
 project(cftal-src)
 
-#include (CheckIPOSupport)
-#check_ipo_support(RESULT has_ipo)
+include (CheckIPOSupport)
+check_ipo_support(RESULT has_ipo)
 
 set(has_ipo, FALSE)
 
