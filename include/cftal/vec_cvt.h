@@ -117,7 +117,7 @@ namespace cftal {
             return vec<bool, 1>(bool(rs));
         }
     };
-    
+
 
     template <std::size_t _N>
     struct cvt_mask<int32_t, _N, float, _N> {
@@ -424,31 +424,32 @@ namespace cftal {
                 return l(permute<2,3,0,1>(d));
             }
         };
-#if 0
+#if 1
         template <>
         struct cvt<v2s32, v2f64> {
             static v2s32 l(const v2f64& d) {
-                v2s32 r=_mm_cvtpd_epi32(d());
-                return r;
+                v4s32 r=_mm_cvtpd_epi32(d());
+                return low_half(r);
             }
         };
 
         template <>
         struct cvt_rz<v2s32, v2f64> {
             static v2s32 l(const v2f64& d) {
-                v2s32 r=_mm_cvttpd_epi32(d());
-                return r;
+                v4s32 r=_mm_cvttpd_epi32(d());
+                return low_half(r);
             }
         };
 
         template <>
         struct cvt<v2f64, v2s32> {
             static v2f64 l(const v2s32& d) {
-                return _mm_cvtepi32_pd(d());
+                v4s32 t(d, d);
+                return _mm_cvtepi32_pd(t());
             };
         };
 #endif
-        
+
         template <>
         struct cvt<v4s32, v2f64> {
             static v4s32 l(const v2f64& d) {
@@ -482,7 +483,7 @@ namespace cftal {
             }
         };
 
-#if 0        
+#if 0
         template <>
         struct cvt<v4f32, v2s32> {
             static v4f32 l(const v2s32& s) {
