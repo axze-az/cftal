@@ -606,12 +606,14 @@ rsqrt_k(arg_t<vf_type> x)
                      rsqrt_c1);
     vf_type mm=horner(mm0, a, b, rsqrt_c0);
 #endif
-#if 1
+#if 0
     mm = 0.5 * mm * (3.0 - vf_type(mm0 * mm) * mm);
     mm = 0.5 * mm * (3.0 - vf_type(mm0 * mm) * mm);
+    // mm = 0.5 * mm * (3.0 - vf_type(mm0 * mm) * mm);
     vf_type s= d_ops::xfma(mm, mm*mm0, -1.0);
     mm = mm - mm * 0.5 * s;
 #else
+    mm = 0.5*mm*(3.0 - mm0 * (mm *mm));
     mm = 0.5*mm*(3.0 - mm0 * (mm *mm));
     mm = 0.5*mm*(3.0 - mm0 * (mm *mm));
     mm = mm + 0.5* mm *
