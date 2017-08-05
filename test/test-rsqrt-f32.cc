@@ -12,6 +12,8 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+    std::cout << std::setprecision(10) << std::scientific;
+    std::cerr << std::setprecision(10) << std::scientific;
     const int ulp=1;
     const int _N=16;
     bool rc=true;

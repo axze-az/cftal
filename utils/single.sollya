@@ -279,7 +279,7 @@ f= 1.0/sqrt(x);
 i= [2^(-2), 2^(-1)];
 d = guessdegree(f, i, 0x1p-8);
 d;
-b = [|0, ..., 2|];
+b = [|0, ..., 3|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
@@ -293,7 +293,7 @@ f= 1.0/sqrt(x);
 i= [2^(-1), 2^(-0)];
 d = guessdegree(f, i, 0x1p-8);
 d;
-b = [|0, ..., 2|];
+b = [|0, ..., 3|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);

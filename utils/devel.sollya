@@ -7,6 +7,7 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
+/*
 f = exp(x);
 i = [-log(2)/2, log(2)/2];
 d = guessdegree(f, i, 0x1p-14);
