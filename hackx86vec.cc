@@ -248,13 +248,13 @@ namespace cftal {
     }
 
     const uint16_t not_sign_f16_msk = 0x7fffu;
-    const uint16_t sign_f16_msk=  0x8000;
-    const uint16_t exp_f16_msk = 0x7c00;
-    const uint16_t not_exp16_msk = ~exp_f16_msk;
-    const uint16_t sig_f16_msk = 0x03ff;
-    const uint16_t bias_f16 = 0xf;
-    const uint16_t exp_shift_f16 = 10;
-    const uint16_t exp_msk_f16 = 0x1f;
+    // const uint16_t sign_f16_msk=  0x8000;
+    // const uint16_t exp_f16_msk = 0x7c00;
+    // const uint16_t not_exp16_msk = ~exp_f16_msk;
+    // const uint16_t sig_f16_msk = 0x03ff;
+    // const uint16_t bias_f16 = 0xf;
+    // const uint16_t exp_shift_f16 = 10;
+    // const uint16_t exp_msk_f16 = 0x1f;
 
 }
 
