@@ -17,7 +17,6 @@ p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "const double sinh_c", "sinh", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "sinh-poly-f64");
-// implementpoly(p, i, 0x1p-53, DD, "exp_poly_k", "expn.c");
 
 f = cosh(x);
 i = [0x1p-512, log(2)/2];
@@ -29,8 +28,6 @@ p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "const double cosh_c", "cosh", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "cosh-poly-f64");
-// implementpoly(p, i, 0x1p-53, DD, "exp_poly_k", "expn.c");
-
 
 /*
 f = exp(x);

@@ -305,17 +305,6 @@ sinh_cosh_k(arg_t<vf_type> xc, vf_type* s, vf_type* c)
         d_ops::add22cond(rh, rl, th, tl, rh, rl);
 
         vf_type cosh_x = (rh + rl)*scale;
-    #if 0
-        std::cout << std::hexfloat
-                << "x= " << x << '\n'
-                << two_pow_plus_k_minus_1 << '\n'
-                << two_pow_minus_k_minus_1 << '\n'
-                << t0 << '\n'
-                << t1 << '\n'
-                << t2 << '\n'
-                << rch << '\n'
-                << rsh << '\n';
-    #endif
         *c = cosh_x;
     }
 }
@@ -386,7 +375,6 @@ int main_cosh(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-#if 0
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
             append_filename(test_data_dir, "../../test/data/cosh.testdata");
@@ -401,7 +389,6 @@ int main_cosh(int argc, char** argv)
         rc &= check_func_1<double, 2, check_cosh<double> >(v, ulp, 0, false);
         rc &= check_func_1<double, 4, check_cosh<double> >(v, ulp, 0, false);
         rc &= check_func_1<double, 8, check_cosh<double> >(v, ulp, 0, false);
-#endif
     }
     func_domain<double> d=std::make_pair(-710.5, 710.5);
     auto us=std::make_shared<ulp_stats>();
