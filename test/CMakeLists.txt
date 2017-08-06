@@ -256,4 +256,7 @@ endif()
 add_executable(dev-func dev-func.cc)
 target_add_test_libs(dev-func)
 
+add_executable(dev-native dev-native.cc)
+target_add_test_libs(dev-native)
+
 add_executable(gen-test-vec gen-test-vec.cc)
