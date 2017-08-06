@@ -295,6 +295,18 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
        x - tanh(x)
 
 */
+f = x^3/(x-tanh(x))-3;
+i = [0x1p-512, 1/2+1/16];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [| 2, 4, 6, 8, 10, 12|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type tanh_c", "tanh", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "tanh-f64");
+
 /* tanh(x) f64 */
 f = tanh(x);
 i = [0, 1/2+1/16];
