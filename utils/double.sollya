@@ -300,25 +300,12 @@ i = [0x1p-512, 1/2+1/16];
 d = guessdegree(f, i, 0x1p-28);
 d;
 b = [| 2, 4, 6, 8, 10, 12|];
-c = [|SG...|];
-p = fpminimax(f, b, c, i, relative, floating);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type tanh_c", "tanh", b, c);
-plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "tanh-f64");
-
-/* tanh(x) f64 */
-f = tanh(x);
-i = [0, 1/2+1/16];
-d = guessdegree(f, i, 0x1p-60);
-d;
-b = [|1, ..., 17|];
 c = [|D...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "const vf_type tanh_c", "tanh", b, c);
 plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "tanh-poly-f64");
+                       postscriptfile, "tanh-f64");
 
 /* acosh f64 */
 f = acosh(1+x)/sqrt(2*x);
