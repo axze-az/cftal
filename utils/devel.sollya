@@ -18,18 +18,17 @@ write("\n");
        x - tanh(x)
 
 */
-/* tanh(x) f64 */
 f = x^3/(x-tanh(x))-3;
 i = [0x1p-512, 1/2+1/16];
-d = guessdegree(f, i, 0x1p-60);
+d = guessdegree(f, i, 0x1p-28);
 d;
-b = [| 2, 4, 6, 8, 10, 12|];
-c = [|D...|];
+b = [| 2, 4, 6|];
+c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "const vf_type tanh_c", "tanh", b, c);
 plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "tanh-f64");
+                       postscriptfile, "tanh-f32");
 
 /*
 f = exp(x);

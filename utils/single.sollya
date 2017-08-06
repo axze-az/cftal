@@ -236,17 +236,26 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "cosh-f32");
 /* tanh(x) f32 */
-f= (((x^3)/(x-tanh(x)))-3)/(x^2);
-i =[0x1p-58, log(3)/2];
+/*
+       tanh(x) = x - x^3/3 + 2x^5/15
+               = x - x^3/(3 + x^2 Q(x^2));
+       tanh(x) -x = - x^3/(3 - x^2 Q(x^2));
+       (tanh(x) -x)/(-x^3) = 1/(3+x^2 Q(x^2))
+           x^3
+       ---------- = 3 + Q(x^2);
+       x - tanh(x)
+
+*/
+f = x^3/(x-tanh(x))-3;
+i = [0x1p-512, 1/2+1/16];
 d = guessdegree(f, i, 0x1p-28);
 d;
-b = [|0, 2, 4, 6|];
+b = [| 2, 4, 6|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "const vf_type tanh_c", "tanh", b, c);
-plot((p(x)-f(x))/f(x), p(x)-f(x),
-                       i,
+plot((p(x)-f(x))/f(x), i,
                        postscriptfile, "tanh-f32");
 /* tanh(x) f32 */
 f = tanh(x);
