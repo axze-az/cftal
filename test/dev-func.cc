@@ -158,10 +158,13 @@ cosh_k(arg_t<vf_type> x)
     vf_type xrh, xrl, kf;
     auto k= base_type::__reduce_exp_arg(xrh, xrl, kf, xc);
 
+    vf_type scale=_T::sel(kf >= 1024, 2.0, 1.0);
+    auto kn= _T::sel(k>= 1024, k-1, k);
+
     // calculate 2^(k-1)
-    vf_type two_pow_plus_k_minus_1 = _T::insert_exp((_T::bias()-1) + k);
+    vf_type two_pow_plus_k_minus_1 = _T::insert_exp((_T::bias()-1) + kn);
     // calculate 2^(-k-1)
-    vf_type two_pow_minus_k_minus_1 = _T::insert_exp((_T::bias()-1) - k);
+    vf_type two_pow_minus_k_minus_1 = _T::insert_exp((_T::bias()-1) - kn);
 
     // calculate sinh + cosh
     // [0, 0.3465735912322998046875] : | p - f | <= 2^-68.1875
@@ -215,9 +218,10 @@ cosh_k(arg_t<vf_type> x)
                         cosh_c10,
                         cosh_c8,
                         cosh_c6,
-                        cosh_c4);
+                        cosh_c4,
+                        cosh_c2);
     vf_type rch_h, rch_l;
-    horner_comp_quick(rch_h, rch_l, xx, rch, cosh_c2, cosh_c0);
+    horner_comp_quick(rch_h, rch_l, xx, rch, cosh_c0);
 
     // cosh(x + y) = cosh(x) cosh(y) + sinh(x)*sinh(y)
     // sinh(x + y) = sinh(x) cosh(y) + sinh(y)*cosh(x);
@@ -258,7 +262,7 @@ cosh_k(arg_t<vf_type> x)
               << rch << '\n'
               << rsh << '\n';
 #endif
-    return cosh_x;
+    return cosh_x*scale;
 }
 
 template <typename _T>
@@ -309,7 +313,7 @@ int main(int argc, char** argv)
     func_domain<double> d=std::make_pair(-710.5, 710.5);
     auto us=std::make_shared<ulp_stats>();
     // d= std::make_pair(710.0, 710.5);
-    d= std::make_pair(0.0, 710);
+    d= std::make_pair(0.0, 710.5);
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
         double, _N, check_cosh<double> >::v(st, d, speed_only,
