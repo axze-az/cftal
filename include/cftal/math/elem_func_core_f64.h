@@ -201,8 +201,7 @@ namespace cftal {
 
             enum hyperbolic_func {
                 c_sinh,
-                c_cosh,
-                c_tanh
+                c_cosh
             };
 
             template <hyperbolic_func _F>
