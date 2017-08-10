@@ -789,6 +789,22 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi_type> k)
 {
+#if 1
+    // avoid subnormals
+    vmi_type k_lt_m_125 = k < -125;
+    vi_type ep = _T::sel(k_lt_m_125, k+64, k);
+    vf_type two_pow_k= _T::insert_exp(_T::bias()+ep);
+    // start scaling
+    vf_type ys= ym * two_pow_k;
+    // avoid overflows
+    ys = _T::sel(kf >= vf_type(128),
+                 ym * 2.0f * 0x1p127f,
+                 ys);
+    // correct subnormal results
+    vmf_type kf_lt_m_125= _T::vmi_to_vmf(k_lt_m_125);
+    ys = _T::sel(kf_lt_m_125, ys* 0x1p-64f, ys);
+    return ys;
+#else
     vi_type e_two_pow_k=_T::sel(k < vi_type(-125),
                                 vi_type((_T::bias()+100)),
                                 vi_type(_T::bias())) +k;
@@ -801,6 +817,7 @@ __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi_type> k)
     vf_type y = _T::sel(kf < vf_type(-125),
                         ymt*0x1p-100f, yt);
     return y;
+#endif
 }
 
 template <typename _T>
