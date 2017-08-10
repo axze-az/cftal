@@ -79,7 +79,9 @@ namespace cftal {
 
             static
             void
-            sinh_cosh_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
+            sinh_cosh_k(arg_t<vf_type> x,
+                        vf_type* s,
+                        vf_type* c);
 
             static
             vf_type
@@ -261,50 +263,58 @@ sinh_cosh_k(arg_t<vf_type> xc, vf_type* s, vf_type* c)
     // cosh(k * ln(2)) = 2^(k-1) + 2^(-k-1)
     // sinh(k * ln(2)) = 2^(k-1) - 2^(-k-1)
 
+    // two_pow_plus_k_minus_1 = _T::sel_zero_or_val(kf < -35,
+    //                                             two_pow_plus_k_minus_1);
+    vf_type two_pow_km1_rch_h = two_pow_plus_k_minus_1 * rch_h;
+    vf_type two_pow_km1_rch_l = two_pow_plus_k_minus_1 * rch_l;
+
+    vf_type two_pow_km1_rsh_h= two_pow_plus_k_minus_1 * rsh_h;
+    vf_type two_pow_km1_rsh_l= two_pow_plus_k_minus_1 * rsh_l;
+
+    vf_type cosh_h, cosh_l;
+    d_ops::add22cond(cosh_h,
+                     cosh_l,
+                     two_pow_km1_rsh_h, two_pow_km1_rsh_l,
+                     two_pow_km1_rch_h, two_pow_km1_rch_l);
+    vf_type sinh_h = cosh_h;
+    vf_type sinh_l = cosh_l;
+
     // filter out small terms
-    two_pow_plus_k_minus_1 = _T::sel_zero_or_val(kf < -35,
-                                                 two_pow_plus_k_minus_1);
-    two_pow_minus_k_minus_1= _T::sel_zero_or_val(kf > 35,
-                                                 two_pow_minus_k_minus_1);
-
+    vmf_type kf_le_35 = kf <= 35.0;
+    if (true /*any_of(kf_le_35)*/) {
+        two_pow_minus_k_minus_1= _T::sel_val_or_zero(kf_le_35,
+                                                     two_pow_minus_k_minus_1);
+        vf_type two_pow_mkm1_rch_h = two_pow_minus_k_minus_1 * rch_h;
+        vf_type two_pow_mkm1_rch_l = two_pow_minus_k_minus_1 * rch_l;
+        vf_type two_pow_mkm1_rsh_h = two_pow_minus_k_minus_1 * rsh_h;
+        vf_type two_pow_mkm1_rsh_l = two_pow_minus_k_minus_1 * rsh_l;
+        if (s != nullptr) {
+            d_ops::add22cond(sinh_h, sinh_l,
+                             -two_pow_mkm1_rch_h,
+                             -two_pow_mkm1_rch_l,
+                             sinh_h, sinh_l);
+            d_ops::add22cond(sinh_h, sinh_l,
+                             two_pow_mkm1_rsh_h, two_pow_mkm1_rsh_l,
+                             sinh_h, sinh_l);
+        }
+        if (c != nullptr) {
+            d_ops::add22cond(cosh_h, cosh_l,
+                             two_pow_mkm1_rch_h,
+                             two_pow_mkm1_rch_l,
+                             cosh_h, cosh_l);
+            d_ops::add22cond(cosh_h, cosh_l,
+                             -two_pow_mkm1_rsh_h, -two_pow_mkm1_rsh_l,
+                             cosh_h, cosh_l);
+        }
+    }
     if (s != nullptr) {
-        vf_type rh = two_pow_plus_k_minus_1 * rch_h;
-        vf_type rl = two_pow_plus_k_minus_1 * rch_l;
-
-        vf_type th = two_pow_minus_k_minus_1 * -rch_h;
-        vf_type tl = two_pow_minus_k_minus_1 * -rch_l;
-        d_ops::add22cond(rh, rl, th, tl, rh, rl);
-
-        th = two_pow_plus_k_minus_1 * rsh_h;
-        tl = two_pow_plus_k_minus_1 * rsh_l;
-        d_ops::add22cond(rh, rl, th, tl, rh, rl);
-
-        th = two_pow_minus_k_minus_1 * rsh_h;
-        tl = two_pow_minus_k_minus_1 * rsh_l;
-        d_ops::add22cond(rh, rl, th, tl, rh, rl);
-
-        vf_type sinh_x = (rh + rl)*scale;
+        vf_type sinh_x = sinh_h*scale;
         sinh_x = _T::sel(x < 0x1p-26, x, sinh_x);
         sinh_x = copysign(sinh_x, xc);
         *s = sinh_x;
     }
     if (c != nullptr) {
-        vf_type rh = two_pow_plus_k_minus_1 * rch_h;
-        vf_type rl = two_pow_plus_k_minus_1 * rch_l;
-
-        vf_type th = two_pow_minus_k_minus_1 * rch_h;
-        vf_type tl = two_pow_minus_k_minus_1 * rch_l;
-        d_ops::add22cond(rh, rl, th, tl, rh, rl);
-
-        th = two_pow_plus_k_minus_1 * rsh_h;
-        tl = two_pow_plus_k_minus_1 * rsh_l;
-        d_ops::add22cond(rh, rl, th, tl, rh, rl);
-
-        th = two_pow_minus_k_minus_1 * -rsh_h;
-        tl = two_pow_minus_k_minus_1 * -rsh_l;
-        d_ops::add22cond(rh, rl, th, tl, rh, rl);
-
-        vf_type cosh_x = (rh + rl)*scale;
+        vf_type cosh_x = cosh_h*scale;
         *c = cosh_x;
     }
 }
