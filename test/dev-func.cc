@@ -293,22 +293,20 @@ sinh_cosh_k(arg_t<vf_type> xc)
         vf_type two_pow_mkm1_rsh_h = two_pow_minus_k_minus_1 * rsh_h;
         vf_type two_pow_mkm1_rsh_l = two_pow_minus_k_minus_1 * rsh_l;
         if (_F == hyperbolic_func::c_sinh) {
-            d_ops::add22cond(sinh_h, sinh_l,
-                             -two_pow_mkm1_rch_h,
-                             -two_pow_mkm1_rch_l,
-                             sinh_h, sinh_l);
-            d_ops::add22cond(sinh_h, sinh_l,
-                             two_pow_mkm1_rsh_h, two_pow_mkm1_rsh_l,
-                             sinh_h, sinh_l);
+            d_ops::add22(sinh_h, sinh_l,
+                         sinh_h, sinh_l,
+                         -two_pow_mkm1_rch_h, -two_pow_mkm1_rch_l);
+            d_ops::add22(sinh_h, sinh_l,
+                         sinh_h, sinh_l,
+                         two_pow_mkm1_rsh_h, two_pow_mkm1_rsh_l);
         }
         if (_F == hyperbolic_func::c_cosh) {
-            d_ops::add22cond(cosh_h, cosh_l,
-                             two_pow_mkm1_rch_h,
-                             two_pow_mkm1_rch_l,
-                             cosh_h, cosh_l);
-            d_ops::add22cond(cosh_h, cosh_l,
-                             -two_pow_mkm1_rsh_h, -two_pow_mkm1_rsh_l,
-                             cosh_h, cosh_l);
+            d_ops::add22(cosh_h, cosh_l,
+                         cosh_h, cosh_l,
+                         two_pow_mkm1_rch_h, two_pow_mkm1_rch_l);
+            d_ops::add22(cosh_h, cosh_l,
+                         cosh_h, cosh_l,
+                         -two_pow_mkm1_rsh_h, -two_pow_mkm1_rsh_l);
         }
     }
     vf_type r;
