@@ -132,9 +132,10 @@ namespace cftal {
                              arg_t<vf_type> xl);
 
             // calculates %e^x-1 if exp_m1 == true %e^x otherwise
+            template <bool _EXP_M1>
             static
             vf_type
-            exp_k(arg_t<vf_type> x, bool exp_m1);
+            exp_k(arg_t<vf_type> x);
 
             // calculates %e^(-x*x)
             static
@@ -147,9 +148,10 @@ namespace cftal {
             exp_px2_k(arg_t<vf_type> x);
 
             // calculates 2^x-1 if exp_m1 == true 2^x otherwise
+            template <bool _EXP2_M1>
             static
             vf_type
-            exp2_k(arg_t<vf_type> x, bool exp_m1);
+            exp2_k(arg_t<vf_type> x);
 
             // calculates 2^(-x*x)
             static
@@ -162,9 +164,10 @@ namespace cftal {
             exp2_px2_k(arg_t<vf_type> x);
 
             // calculates 10^x-1 if exp_m1 == true 10^x otherwise
+            template <bool _EXP10_M1>
             static
             vf_type
-            exp10_k(arg_t<vf_type> x, bool exp_m1);
+            exp10_k(arg_t<vf_type> x);
 
             // calculates 10^(-x*x)
             static
@@ -920,21 +923,17 @@ __reduce_exp_arg(vf_type& xrh,
 }
 
 template <typename _T>
+template <bool _EXP_M1>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-exp_k(arg_t<vf_type> xc, bool exp_m1)
+exp_k(arg_t<vf_type> xc)
 {
     vf_type xrh, xrl, kf;
     auto k=__reduce_exp_arg(xrh, xrl, kf, xc);
-    vf_type y;
-    if (exp_m1)
-        y=__exp_k<true>(xrh, xrl, kf, k);
-    else
-        y=__exp_k<false>(xrh, xrl, kf, k);
+    vf_type y=__exp_k<_EXP_M1>(xrh, xrl, kf, k);
     return y;
 }
-
 
 template <typename _T>
 inline
@@ -969,10 +968,11 @@ exp_px2_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+template <bool _EXP2_M1>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-exp2_k(arg_t<vf_type> x, bool exp_m1)
+exp2_k(arg_t<vf_type> x)
 {
     vf_type kf= rint(vf_type(x));
     vi_type k = _T::cvt_f_to_i(kf);
@@ -981,11 +981,7 @@ exp2_k(arg_t<vf_type> x, bool exp_m1)
     vf_type xrh, xrl;
     // for exp2 mul12 would be sufficient
     d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2.h(), ctbl::m_ln2.l());
-    vf_type y;
-    if (exp_m1)
-        y=__exp_k<true>(xrh, xrl, kf, k);
-    else
-        y=__exp_k<false>(xrh, xrl, kf, k);
+    vf_type y=__exp_k<_EXP2_M1>(xrh, xrl, kf, k);
     return y;
 }
 
@@ -1030,10 +1026,11 @@ exp2_px2_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+template <bool _EXP10_M1>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-exp10_k(arg_t<vf_type> x, bool exp_m1)
+exp10_k(arg_t<vf_type> x)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf = rint(vf_type(x * ctbl::m_1_lg2.h()));
@@ -1048,11 +1045,7 @@ exp10_k(arg_t<vf_type> x, bool exp_m1)
     xrl += cr * ctbl::m_ln10.h();
     // do not normalize xrh, xrl
     // d_ops::add12(xrh, xrl, xrh, xrl);
-    vf_type y;
-    if (exp_m1)
-        y=__exp_k<true>(xrh, xrl, kf, k);
-    else
-        y=__exp_k<false>(xrh, xrl, kf, k);
+    vf_type y=__exp_k<_EXP10_M1>(xrh, xrl, kf, k);
     return y;
 }
 
@@ -1148,7 +1141,7 @@ sinh_k(arg_t<vf_type> xc)
                      sinh_c0);
     vf_type sinh_le_1 = x + (x*x2)/q;
     vf_type xr= _T::sel(x_huge, x - 0.75, x);
-    vf_type em=exp_k(xr, true);
+    vf_type em=exp_k<true>(xr);
     vf_type e= em+1;
     const vf_type e_v_2_m_1 = +5.8500006794930e-02f;
     const vf_type e_m_v_2 = +2.3618327081203e-01f;
@@ -1202,7 +1195,7 @@ cosh_k(arg_t<vf_type> xc)
                                           cosh_c2,
                                           cosh_c0);
     vf_type xr= _T::sel(x_huge, x - 0.75, x);
-    vf_type em=exp_k(xr, true);
+    vf_type em=exp_k<true>(xr);
     vf_type e=em+1;
     const vf_type e_v_2_m_1 = +5.8500006794930e-02f;
     const vf_type e_m_v_2 = +2.3618327081203e-01f;
@@ -1228,7 +1221,7 @@ tanh_k(arg_t<vf_type> xc)
     vmf_type x_gt_20 = x >= 20.0f;
     vf_type tanh_x_gt_20 = 1.0f;
     vf_type x2=2.0f*x;
-    vf_type em= exp_k(x2, false);
+    vf_type em= exp_k<false>(x2);
     vmf_type x_gt_ln_3_2= x > 0.5625f;
     // produce a faithfully rounded tanh:
     vf_type emp1l, emp1h=d_ops::quick_two_sum(em, vf_type(1.0f), emp1l);
@@ -1342,7 +1335,7 @@ log_k(arg_t<vf_type> xc, log_func func)
 
         vf_type log10_x = val_lo + val_hi;
         res =log10_x;
-    } else if (func == log_func::c_log_2) {
+    } else /* if (func == log_func::c_log_2) */ {
         const vf_type ivln2hi =  1.4428710938e+00f; /* 0x3fb8b000 */
         const vf_type ivln2lo = -1.7605285393e-04f; /* 0xb9389ad4 */
 

@@ -152,9 +152,10 @@ namespace cftal {
                              arg_t<vf_type> xl);
 
             // calculates %e^x-1 if exp_m1 == true %e^x otherwise
+            template <bool _EXP_M1>
             static
             vf_type
-            exp_k(arg_t<vf_type> x, bool exp_m1);
+            exp_k(arg_t<vf_type> x);
 
             // calculates %e^(-x*x)
             static
@@ -167,9 +168,10 @@ namespace cftal {
             exp_px2_k(arg_t<vf_type> x);
 
             // calculates 2^x-1 if exp_m1 == true 2^x otherwise
+            template <bool _EXP2_M1>
             static
             vf_type
-            exp2_k(arg_t<vf_type> x, bool exp_m1);
+            exp2_k(arg_t<vf_type> x);
 
             // calculates 2^(-x*x)
             static
@@ -182,9 +184,10 @@ namespace cftal {
             exp2_px2_k(arg_t<vf_type> x);
 
             // calculates 10^x-1 if exp_m1 == true 10^x otherwise
+            template <bool _EXP10_M1>
             static
             vf_type
-            exp10_k(arg_t<vf_type> x, bool exp_m1);
+            exp10_k(arg_t<vf_type> x);
 
             // calculates 10^(-x*x)
             static
@@ -892,6 +895,7 @@ __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi2_type> k)
 
 template <typename _T>
 template <bool _EXP_M1>
+__attribute__((always_inline))
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
@@ -1010,18 +1014,15 @@ __reduce_exp_arg(vf_type& xrh,
 }
 
 template <typename _T>
+template <bool _EXP_M1>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-exp_k(arg_t<vf_type> xc, bool exp_m1)
+exp_k(arg_t<vf_type> xc)
 {
     vf_type xrh, xrl, kf;
     auto k=__reduce_exp_arg(xrh, xrl, kf, xc);
-    vf_type y;
-    if (exp_m1)
-        y=__exp_k<true>(xrh, xrl, kf, k);
-    else
-        y=__exp_k<false>(xrh, xrl, kf, k);
+    vf_type y=__exp_k<_EXP_M1>(xrh, xrl, kf, k);
     return y;
 }
 
@@ -1058,10 +1059,11 @@ exp_px2_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+template <bool _EXP2_M1>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-exp2_k(arg_t<vf_type> x, bool exp_m1)
+exp2_k(arg_t<vf_type> x)
 {
     vf_type kf= rint(vf_type(x));
     vi_type k = _T::cvt_f_to_i(kf);
@@ -1071,11 +1073,7 @@ exp2_k(arg_t<vf_type> x, bool exp_m1)
     vf_type xrh, xrl;
     // for exp2 mul12 would be sufficient
     d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2.h(), ctbl::m_ln2.l());
-    vf_type y;
-    if (exp_m1)
-        y=__exp_k<true>(xrh, xrl, kf, k2);
-    else
-        y=__exp_k<false>(xrh, xrl, kf, k2);
+    vf_type y=__exp_k<_EXP2_M1>(xrh, xrl, kf, k2);
     return y;
 }
 
@@ -1123,10 +1121,11 @@ exp2_px2_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+template <bool _EXP10_M1>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-exp10_k(arg_t<vf_type> x, bool exp_m1)
+exp10_k(arg_t<vf_type> x)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type kf = rint(vf_type(x * ctbl::m_1_lg2.h()));
@@ -1143,11 +1142,7 @@ exp10_k(arg_t<vf_type> x, bool exp_m1)
     xrl += cr * ctbl::m_ln10.h();
     // do not normalize xrh, xrl
     // d_ops::add12(xrh, xrl, xrh, xrl);
-    vf_type y;
-    if (exp_m1)
-        y=__exp_k<true>(xrh, xrl, kf, k2);
-    else
-        y=__exp_k<false>(xrh, xrl, kf, k2);
+    vf_type y=__exp_k<_EXP10_M1>(xrh, xrl, kf, k2);
     return y;
 }
 
@@ -1497,7 +1492,7 @@ tanh_k(arg_t<vf_type> xc)
     vmf_type x_gt_20 = x >= 20.0;
     vf_type tanh_x_gt_20 = 1.0;
     vf_type x2=2.0*x;
-    vf_type e= exp_k(x2, false);
+    vf_type e= exp_k<false>(x2);
     vmf_type x_gt_ln_3_2= x > 0.5625;
     // vf_type tanh_x_gt_ln_3_2 = 1.0 - 2.0/(e+1);
     // produce a faithfully rounded tanh:
@@ -1695,7 +1690,7 @@ log_k(arg_t<vf_type> xc, log_func func)
 
         vf_type log10_x = val_lo + val_hi;
         res =log10_x;
-    } else if (func == log_func::c_log_2) {
+    } else /* if (func == log_func::c_log_2)*/ {
         const vf_type
             ivln2hi = 1.44269504072144627571e+00; /* 0x3ff71547, 0x65200000 */
         const vf_type

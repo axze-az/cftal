@@ -949,7 +949,7 @@ mul22(_T& pzh, _T& pzl,
 }
 
 template <typename _T>
-inline
+inline __attribute__((always_inline))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
 mul12(_T& rh, _T& rl, const _T& a, const _T& b)
@@ -1235,6 +1235,7 @@ sqr(const d_real<_T>& a)
 
 template <typename _T, bool _FMA>
 inline
+__attribute__((always_inline))
 void
 cftal::impl::d_real_ops<_T, _FMA>::
 mul122(_T& rh, _T& rl,

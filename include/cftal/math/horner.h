@@ -275,6 +275,7 @@ horner_n4(_X& y0, _X& y1, _X& y2, _X& y3,
 
 template <typename _X, typename _C1, typename _C0>
 inline
+__attribute__((always_inline))
 void
 cftal::math::horner_comp_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 {
@@ -289,6 +290,7 @@ cftal::math::horner_comp_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 
 template <typename _X, typename _C1, typename _C0>
 inline
+__attribute__((always_inline))
 void
 cftal::math::horner_comp_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 {
@@ -304,6 +306,7 @@ cftal::math::horner_comp_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 template <typename _X,
           typename _CN, typename _CNM1, typename ... _CS>
 inline
+__attribute__((always_inline))
 void
 cftal::math::
 horner_comp_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1, _CS ... cs)
@@ -316,6 +319,7 @@ horner_comp_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1, _CS ... cs)
 
 template <typename _X, typename _CN, typename _CNM1>
 inline
+__attribute__((always_inline))
 void
 cftal::math::
 horner_comp(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
@@ -326,6 +330,7 @@ horner_comp(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
 template <typename _X,
           typename _CN, typename _CNM1, typename ... _CS>
 inline
+__attribute__((always_inline))
 void
 cftal::math::
 horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
@@ -338,6 +343,7 @@ horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
 
 template <typename _X, typename _C1, typename _C0>
 inline
+__attribute__((always_inline))
 void
 cftal::math::
 horner_comp_quick_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
@@ -353,6 +359,7 @@ horner_comp_quick_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 
 template <typename _X, typename _C1, typename _C0>
 inline
+__attribute__((always_inline))
 void
 cftal::math::
 horner_comp_quick_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
@@ -369,6 +376,7 @@ horner_comp_quick_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 template <typename _X,
           typename _CN, typename _CNM1, typename ... _CS>
 inline
+__attribute__((always_inline))
 void
 cftal::math::
 horner_comp_quick_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
@@ -382,6 +390,7 @@ horner_comp_quick_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
 
 template <typename _X, typename _CN, typename _CNM1>
 inline
+__attribute__((always_inline))
 void
 cftal::math::
 horner_comp_quick(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
@@ -392,6 +401,7 @@ horner_comp_quick(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
 template <typename _X,
           typename _CN, typename _CNM1, typename ... _CS>
 inline
+__attribute__((always_inline))
 void
 cftal::math::
 horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
