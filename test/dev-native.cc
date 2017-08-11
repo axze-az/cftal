@@ -841,7 +841,7 @@ __half_reduce_trig_arg(arg_t<vf_type> x)
     vf_type xrh, xrl;
     d_ops::add122cond(xrh, xrl, x, dh, dl);
     d_ops::mul12(dh, dl, fn, -ctbl::m_pi_2.l());
-    d_ops::add22(xrh, xrl, xrh, xrl, dh, dl);
+    d_ops::add22cond(xrh, xrl, xrh, xrl, dh, dl);
 
     // d_ops::mul122(dh, dl, fn, -ctbl::m_pi_2.h(), -ctbl::m_pi_2.l());
     // d_ops::add122cond(xrh, xrl, x, dh, dl);
@@ -944,6 +944,7 @@ typename cftal::math::test_func<float, _T>::vf_type
 cftal::math::test_func<float, _T>::
 half_tan(arg_t<vf_type> x)
 {
+#if 0
     auto xr_q = __half_reduce_trig_arg(x);
     auto xr= xr_q.first;
 
@@ -973,9 +974,11 @@ half_tan(arg_t<vf_type> x)
                         tan_f16_c3,
                         tan_f16_c1);
     return t;
-    // vf_type s, c;
-    // half_sin_cos_k(x, &s, &c);
-    // return s/c;
+#else
+    vf_type s, c;
+    half_sin_cos_k(x, &s, &c);
+    return s/c;
+#endif
 }
 
 int main_exp(int argc, char** argv)
