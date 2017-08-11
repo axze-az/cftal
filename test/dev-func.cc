@@ -97,12 +97,19 @@ namespace cftal {
 
             static
             vf_type
+            tanh_k(arg_t<vf_type> x);
+
+            static
+            vf_type
             new_cosh(arg_t<vf_type> x);
 
             static
             vf_type
             new_sinh(arg_t<vf_type> x);
 
+            static
+            vf_type
+            new_tanh(arg_t<vf_type> x);
         };
 
         template <typename _T>
@@ -184,6 +191,33 @@ namespace cftal {
             }
             static
             const char* fname() { return "sinh"; }
+        };
+
+        template <typename _T>
+        struct check_tanh {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                using traits_t=math::func_traits<vec<_T, _N>,
+                                                 vec<int32_t, _N> >;
+                using func_t=math::test_func<_T, traits_t>;
+                return func_t::new_tanh(a);
+            }
+            static
+            std::tuple<_T, _T, _T>
+            r(const _T& a) {
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_tanh, &i);
+                return std::make_tuple(v, i.first, i.second);
+            }
+            static
+            _T
+            s(const _T& a) {
+                return std::tanh(a);
+            }
+            static
+            const char* fname() { return "tanh"; }
         };
 
     }
@@ -274,10 +308,11 @@ sinh_cosh_k(arg_t<vf_type> xc)
     vf_type two_pow_km1_rsh_l= two_pow_plus_k_minus_1 * rsh_l;
 
     vf_type cosh_h, cosh_l;
-    d_ops::add22cond(cosh_h,
-                     cosh_l,
-                     two_pow_km1_rsh_h, two_pow_km1_rsh_l,
-                     two_pow_km1_rch_h, two_pow_km1_rch_l);
+    // |rch| > |rsh|
+    d_ops::add22(cosh_h,
+                 cosh_l,
+                 two_pow_km1_rch_h, two_pow_km1_rch_l,
+                 two_pow_km1_rsh_h, two_pow_km1_rsh_l);
     vf_type sinh_h = cosh_h;
     vf_type sinh_l = cosh_l;
 
@@ -293,20 +328,28 @@ sinh_cosh_k(arg_t<vf_type> xc)
         vf_type two_pow_mkm1_rsh_h = two_pow_minus_k_minus_1 * rsh_h;
         vf_type two_pow_mkm1_rsh_l = two_pow_minus_k_minus_1 * rsh_l;
         if (_F == hyperbolic_func::c_sinh) {
-            d_ops::add22(sinh_h, sinh_l,
-                         sinh_h, sinh_l,
-                         -two_pow_mkm1_rch_h, -two_pow_mkm1_rch_l);
-            d_ops::add22(sinh_h, sinh_l,
-                         sinh_h, sinh_l,
+            vf_type th, tl;
+            // |rch| >  |rsh|
+            d_ops::add22(th, tl,
+                         -two_pow_mkm1_rch_h, -two_pow_mkm1_rch_l,
                          two_pow_mkm1_rsh_h, two_pow_mkm1_rsh_l);
+            // kf =0: (rch + rsh) + (-rch + rsh)
+            // otherwise scaling with 2^(-k-1)
+            d_ops::add22(sinh_h, sinh_l,
+                         sinh_h, sinh_l,
+                         th, tl);
         }
         if (_F == hyperbolic_func::c_cosh) {
-            d_ops::add22(cosh_h, cosh_l,
-                         cosh_h, cosh_l,
-                         two_pow_mkm1_rch_h, two_pow_mkm1_rch_l);
-            d_ops::add22(cosh_h, cosh_l,
-                         cosh_h, cosh_l,
+            vf_type th, tl;
+            // |rch| >  |rsh|
+            d_ops::add22(th, tl,
+                         two_pow_mkm1_rch_h, two_pow_mkm1_rch_l,
                          -two_pow_mkm1_rsh_h, -two_pow_mkm1_rsh_l);
+            // kf =0: (rch + rsh) + (rch - rsh)
+            // otherwise scaling with 2^(-k-1)
+            d_ops::add22(cosh_h, cosh_l,
+                         cosh_h, cosh_l,
+                         th, tl);
         }
     }
     vf_type r;
@@ -342,6 +385,15 @@ sinh_k(arg_t<vf_type> x)
 }
 
 template <typename _T>
+inline
+typename cftal::math::test_func<double, _T>::vf_type
+cftal::math::test_func<double, _T>::
+tanh_k(arg_t<vf_type> x)
+{
+    return sinh_cosh_k<hyperbolic_func::c_tanh>(x);
+}
+
+template <typename _T>
 typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::
 new_cosh(arg_t<vf_type> x)
@@ -367,6 +419,19 @@ new_sinh(arg_t<vf_type> x)
     res = _T::sel(x >= sinh_hi_inf, _T::pinf(), res);
     res = _T::sel(x <= sinh_lo_inf, _T::ninf(), res);
     res = _T::sel_zero_or_val(x == 0.0, res);
+    return res;
+}
+
+template <typename _T>
+inline
+typename cftal::math::test_func<double, _T>::vf_type
+cftal::math::test_func<double, _T>::
+new_tanh(arg_t<vf_type> x)
+{
+    vf_type res=base_type::tanh_k(x);
+    // res = _T::sel(abs(x) >= cosh_hi_inf, _T::pinf(), res);
+    res = _T::sel(isnan(x), x, res);
+    // res = _T::sel(isinf(x), copysign(1.0, x), res);
     return res;
 }
 
@@ -457,10 +522,55 @@ int main_sinh(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
+int main_tanh(int argc, char** argv)
+{
+    using namespace cftal::test;
+    const int ulp=1;
+    const int _N=8;
+    bool speed_only=false;
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
+    bool rc= true;
+    std::size_t cnt=update_cnt(0x8000);
+    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
+        speed_only=true;
+        cnt *= 8;
+    }
+#if 0
+    std::string test_data_dir = dirname(argv[0]);
+    std::string test_data_file=
+        append_filename(test_data_dir, "../../test/data/tanh.testdata");
+    if (argc > 1) {
+        test_data_dir = argv[1];
+        test_data_file = append_filename(test_data_dir, "tanh.testdata");
+    }
+    std::vector<func_arg_result<double> > v=
+        read_double_file(test_data_file, false);
+
+    rc &= check_func_1<double, 1, check_tanh<double> >(v, ulp, 0, false);
+    rc &= check_func_1<double, 2, check_tanh<double> >(v, ulp, 0, false);
+    rc &= check_func_1<double, 4, check_tanh<double> >(v, ulp, 0, false);
+    rc &= check_func_1<double, 8, check_tanh<double> >(v, ulp, 0, false);
+#endif
+    func_domain<double> d=std::make_pair(-25, 25);
+    auto us=std::make_shared<ulp_stats>();
+    exec_stats st(_N);
+    rc &= of_fp_func_up_to<
+        double, _N, check_tanh<double> >::v(st, d,
+                                            speed_only,
+                                            cmp_ulp<double>(ulp, us),
+                                            cnt);
+    std::cout << "ulps: "
+              << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
+    return (rc == true) ? 0 : 1;
+}
 
 int main(int argc, char**argv)
 {
-    int r=main_cosh(argc, argv);
-    r &= main_sinh(argc, argv);
+    int r=0;
+    r |= main_cosh(argc, argv);
+    r |= main_sinh(argc, argv);
+    r |= main_tanh(argc, argv);
     return r;
 }
