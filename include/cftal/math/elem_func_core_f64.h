@@ -1315,7 +1315,7 @@ hyperbolic_k(arg_t<vf_type> xc)
 
     // filter out small terms
     vmf_type kf_le_35 = kf <= 35.0;
-    if (any_of(kf_le_35)) {
+    if (likely(any_of(kf_le_35))) {
         // calculate 2^(-k-1)
         vf_type two_pow_minus_k_minus_1 = _T::insert_exp((_T::bias()-1) - kn);
         two_pow_minus_k_minus_1= _T::sel_val_or_zero(kf_le_35,
