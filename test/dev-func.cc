@@ -316,6 +316,11 @@ sinh_cosh_k(arg_t<vf_type> xc)
     vf_type sinh_h = cosh_h;
     vf_type sinh_l = cosh_l;
 
+    const bool calc_sinh=_F == hyperbolic_func::c_sinh ||
+        _F == hyperbolic_func::c_tanh;
+    const bool calc_cosh=_F == hyperbolic_func::c_cosh ||
+        _F == hyperbolic_func::c_tanh;
+
     // filter out small terms
     vmf_type kf_le_35 = kf <= 35.0;
     if (any_of(kf_le_35)) {
@@ -327,7 +332,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
         vf_type two_pow_mkm1_rch_l = two_pow_minus_k_minus_1 * rch_l;
         vf_type two_pow_mkm1_rsh_h = two_pow_minus_k_minus_1 * rsh_h;
         vf_type two_pow_mkm1_rsh_l = two_pow_minus_k_minus_1 * rsh_l;
-        if (_F == hyperbolic_func::c_sinh) {
+        if (calc_sinh) {
             vf_type th, tl;
             // |rch| >  |rsh|
             d_ops::add22(th, tl,
@@ -340,7 +345,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
                          sinh_h, sinh_l,
                          th, tl);
         }
-        if (_F == hyperbolic_func::c_cosh) {
+        if (calc_cosh) {
             vf_type th, tl;
             // |rch| >  |rsh|
             d_ops::add22(th, tl,
@@ -364,6 +369,14 @@ sinh_cosh_k(arg_t<vf_type> xc)
     if (_F == hyperbolic_func::c_cosh) {
         vf_type cosh_x = cosh_h*scale;
         r = cosh_x;
+    }
+    if (_F == hyperbolic_func::c_tanh) {
+        dvf_type s(sinh_h, sinh_l), c(cosh_h, cosh_l);
+        dvf_type t=d_ops::sloppy_div(s, c);
+        vf_type tanh_x=_T::sel(kf_le_35, t.h(), 1.0);
+        tanh_x = _T::sel(x < 0x1p-26, x, tanh_x);
+        tanh_x = copysign(tanh_x, xc);
+        r = tanh_x;
     }
     return r;
 }
@@ -571,8 +584,8 @@ int main_tanh(int argc, char** argv)
 int main(int argc, char**argv)
 {
     int r=0;
-    r |= main_cosh(argc, argv);
-    r |= main_sinh(argc, argv);
+    // r |= main_cosh(argc, argv);
+    // r |= main_sinh(argc, argv);
     r |= main_tanh(argc, argv);
     return r;
 }
