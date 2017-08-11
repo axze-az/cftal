@@ -201,13 +201,14 @@ namespace cftal {
 
             enum hyperbolic_func {
                 c_sinh,
-                c_cosh
+                c_cosh,
+                c_tanh
             };
 
             template <hyperbolic_func _F>
             static
             vf_type
-            sinh_cosh_k(arg_t< vf_type > xc);
+            hyperbolic_k(arg_t< vf_type > xc);
 
             static
             vf_type
@@ -219,6 +220,10 @@ namespace cftal {
 
             static
             vf_type
+            tanh_k(arg_t<vf_type> x);
+
+            static
+            vf_type
             old_sinh_k(arg_t<vf_type> x);
 
             static
@@ -227,7 +232,7 @@ namespace cftal {
 
             static
             vf_type
-            tanh_k(arg_t<vf_type> x);
+            old_tanh_k(arg_t<vf_type> x);
 
             // polynomial approximation of log(1+f) with
             // s = f/(2.0+f) and z = s*s;
@@ -1204,12 +1209,11 @@ template <enum cftal::math::elem_func_core<double, _T>::hyperbolic_func _F>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-sinh_cosh_k(arg_t<vf_type> xc)
+hyperbolic_k(arg_t<vf_type> xc)
 {
     vf_type x= abs(xc);
     vf_type xrh, xrl, kf;
     auto k= __reduce_exp_arg(xrh, xrl, kf, x);
-
     vf_type scale=_T::sel(kf >= 1024, 2.0, 1.0);
     auto kn= _T::sel(k>= 1024, k-1, k);
 
@@ -1256,9 +1260,10 @@ sinh_cosh_k(arg_t<vf_type> xc)
                         sinh_c11,
                         sinh_c9,
                         sinh_c7,
-                        sinh_c5);
+                        sinh_c5,
+                        sinh_c3);
     vf_type rsh_h, rsh_l;
-    horner_comp_quick(rsh_h, rsh_l, xx, rsh, sinh_c3, sinh_c1);
+    horner_comp_quick(rsh_h, rsh_l, xx, rsh, sinh_c1);
     d_ops::mul122(rsh_h, rsh_l, xrh, rsh_h, rsh_l);
 
     vf_type rch= horner(xx,
@@ -1266,9 +1271,20 @@ sinh_cosh_k(arg_t<vf_type> xc)
                         cosh_c10,
                         cosh_c8,
                         cosh_c6,
-                        cosh_c4);
+                        cosh_c4,
+                        cosh_c2);
     vf_type rch_h, rch_l;
-    horner_comp_quick(rch_h, rch_l, xx, rch, cosh_c2, cosh_c0);
+    horner_comp_quick(rch_h, rch_l, xx, rch, cosh_c0);
+
+    // correction of argument reduction errors:
+    // cosh(x+y) \approx cosh(y) + sinh(y) x
+    // sinh(x+y) \approx sinh(y) + cosh(y) x
+    vf_type rch_corr= rsh_h* xrl;
+    vf_type rsh_corr= rch_h* xrl;
+    rch_l += rch_corr;
+    d_ops::add12(rch_h, rch_l, rch_h, rch_l);
+    rsh_l += rsh_corr;
+    d_ops::add12(rsh_h, rsh_l, rsh_h, rsh_l);
 
     // cosh(x + y) = cosh(x) cosh(y) + sinh(x)*sinh(y)
     // sinh(x + y) = sinh(x) cosh(y) + sinh(x)*cosh(y);
@@ -1292,6 +1308,11 @@ sinh_cosh_k(arg_t<vf_type> xc)
     vf_type sinh_h = cosh_h;
     vf_type sinh_l = cosh_l;
 
+    const bool calc_sinh=_F == hyperbolic_func::c_sinh ||
+        _F == hyperbolic_func::c_tanh;
+    const bool calc_cosh=_F == hyperbolic_func::c_cosh ||
+        _F == hyperbolic_func::c_tanh;
+
     // filter out small terms
     vmf_type kf_le_35 = kf <= 35.0;
     if (any_of(kf_le_35)) {
@@ -1303,7 +1324,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
         vf_type two_pow_mkm1_rch_l = two_pow_minus_k_minus_1 * rch_l;
         vf_type two_pow_mkm1_rsh_h = two_pow_minus_k_minus_1 * rsh_h;
         vf_type two_pow_mkm1_rsh_l = two_pow_minus_k_minus_1 * rsh_l;
-        if (_F == hyperbolic_func::c_sinh) {
+        if (calc_sinh) {
             vf_type th, tl;
             // |rch| >  |rsh|
             d_ops::add22(th, tl,
@@ -1316,7 +1337,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
                          sinh_h, sinh_l,
                          th, tl);
         }
-        if (_F == hyperbolic_func::c_cosh) {
+        if (calc_cosh) {
             vf_type th, tl;
             // |rch| >  |rsh|
             d_ops::add22(th, tl,
@@ -1341,8 +1362,15 @@ sinh_cosh_k(arg_t<vf_type> xc)
         vf_type cosh_x = cosh_h*scale;
         r = cosh_x;
     }
+    if (_F == hyperbolic_func::c_tanh) {
+        dvf_type s(sinh_h, sinh_l), c(cosh_h, cosh_l);
+        dvf_type t=d_ops::sloppy_div(s, c);
+        vf_type tanh_x=_T::sel(kf_le_35, t.h(), 1.0);
+        tanh_x = _T::sel(x < 0x1p-26, x, tanh_x);
+        tanh_x = copysign(tanh_x, xc);
+        r = tanh_x;
+    }
     return r;
-
 }
 
 template <typename _T>
@@ -1351,7 +1379,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 sinh_k(arg_t<vf_type> x)
 {
-    return sinh_cosh_k<hyperbolic_func::c_sinh>(x);
+    return hyperbolic_k<hyperbolic_func::c_sinh>(x);
 }
 
 template <typename _T>
@@ -1360,7 +1388,16 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 cosh_k(arg_t<vf_type> x)
 {
-    return sinh_cosh_k<hyperbolic_func::c_cosh>(x);
+    return hyperbolic_k<hyperbolic_func::c_cosh>(x);
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+tanh_k(arg_t<vf_type> x)
+{
+    return hyperbolic_k<hyperbolic_func::c_tanh>(x);
 }
 
 template <typename _T>
@@ -1490,7 +1527,7 @@ template <typename _T>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-tanh_k(arg_t<vf_type> xc)
+old_tanh_k(arg_t<vf_type> xc)
 {
     /* tanh(x) = (exp(x) - exp(-x))/(exp(x) + exp(-x))
      *         = (exp(2*x) - 1)/(exp(2*x) - 1 + 2)

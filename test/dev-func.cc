@@ -280,9 +280,10 @@ sinh_cosh_k(arg_t<vf_type> xc)
                         sinh_c11,
                         sinh_c9,
                         sinh_c7,
-                        sinh_c5);
+                        sinh_c5,
+                        sinh_c3);
     vf_type rsh_h, rsh_l;
-    horner_comp_quick(rsh_h, rsh_l, xx, rsh, sinh_c3, sinh_c1);
+    horner_comp_quick(rsh_h, rsh_l, xx, rsh, sinh_c1);
     d_ops::mul122(rsh_h, rsh_l, xrh, rsh_h, rsh_l);
 
     vf_type rch= horner(xx,
@@ -290,9 +291,20 @@ sinh_cosh_k(arg_t<vf_type> xc)
                         cosh_c10,
                         cosh_c8,
                         cosh_c6,
-                        cosh_c4);
+                        cosh_c4,
+                        cosh_c2);
     vf_type rch_h, rch_l;
-    horner_comp_quick(rch_h, rch_l, xx, rch, cosh_c2, cosh_c0);
+    horner_comp_quick(rch_h, rch_l, xx, rch, cosh_c0);
+
+    // correction of argument reduction errors:
+    // cosh(x+y) \approx cosh(y) + sinh(y) x
+    // sinh(x+y) \approx sinh(y) + cosh(y) x
+    vf_type rch_corr= rsh_h* xrl;
+    vf_type rsh_corr= rch_h* xrl;
+    rch_l += rch_corr;
+    d_ops::add12(rch_h, rch_l, rch_h, rch_l);
+    rsh_l += rsh_corr;
+    d_ops::add12(rsh_h, rsh_l, rsh_h, rsh_l);
 
     // cosh(x + y) = cosh(x) cosh(y) + sinh(x)*sinh(y)
     // sinh(x + y) = sinh(x) cosh(y) + sinh(x)*cosh(y);
@@ -443,7 +455,7 @@ typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::
 new_tanh(arg_t<vf_type> x)
 {
-    vf_type res=base_type::tanh_k(x);
+    vf_type res=tanh_k(x);
     // res = _T::sel(abs(x) >= cosh_hi_inf, _T::pinf(), res);
     res = _T::sel(isnan(x), x, res);
     // res = _T::sel(isinf(x), copysign(1.0, x), res);
@@ -584,8 +596,8 @@ int main_tanh(int argc, char** argv)
 int main(int argc, char**argv)
 {
     int r=0;
-    // r |= main_cosh(argc, argv);
-    // r |= main_sinh(argc, argv);
+    r |= main_cosh(argc, argv);
+    r |= main_sinh(argc, argv);
     r |= main_tanh(argc, argv);
     return r;
 }
