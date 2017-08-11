@@ -1315,7 +1315,8 @@ hyperbolic_k(arg_t<vf_type> xc)
 
     // filter out small terms
     vmf_type kf_le_35 = kf <= 35.0;
-    if (likely(any_of(kf_le_35))) {
+    bool any_of_kf_le_35 = any_of(kf_le_35);
+    if (likely(any_of_kf_le_35)) {
         // calculate 2^(-k-1)
         vf_type two_pow_minus_k_minus_1 = _T::insert_exp((_T::bias()-1) - kn);
         two_pow_minus_k_minus_1= _T::sel_val_or_zero(kf_le_35,
@@ -1363,10 +1364,13 @@ hyperbolic_k(arg_t<vf_type> xc)
         r = cosh_x;
     }
     if (_F == hyperbolic_func::c_tanh) {
-        dvf_type s(sinh_h, sinh_l), c(cosh_h, cosh_l);
-        dvf_type t=d_ops::sloppy_div(s, c);
-        vf_type tanh_x=_T::sel(kf_le_35, t.h(), 1.0);
-        tanh_x = _T::sel(x < 0x1p-26, x, tanh_x);
+        vf_type tanh_x=1.0;
+        if (likely(any_of_kf_le_35)) {
+            dvf_type s(sinh_h, sinh_l), c(cosh_h, cosh_l);
+            dvf_type t=d_ops::sloppy_div(s, c);
+            tanh_x=_T::sel(kf_le_35, t.h(), tanh_x);
+            tanh_x = _T::sel(x < 0x1p-26, x, tanh_x);
+        }
         tanh_x = copysign(tanh_x, xc);
         r = tanh_x;
     }
