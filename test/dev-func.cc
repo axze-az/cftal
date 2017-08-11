@@ -333,8 +333,8 @@ sinh_cosh_k(arg_t<vf_type> xc)
             d_ops::add22(th, tl,
                          -two_pow_mkm1_rch_h, -two_pow_mkm1_rch_l,
                          two_pow_mkm1_rsh_h, two_pow_mkm1_rsh_l);
-            // kf =0: (rch + rsh) + (-rch + rsh)
-            // otherwise scaling with 2^(-k-1)
+            // k ==0: (rch + rsh) + (-rch + rsh)
+            // otherwise: (rch + rsh) * 2^(k-1) + (-rch + rsh) * 2^(-k-1)
             d_ops::add22(sinh_h, sinh_l,
                          sinh_h, sinh_l,
                          th, tl);
@@ -345,8 +345,8 @@ sinh_cosh_k(arg_t<vf_type> xc)
             d_ops::add22(th, tl,
                          two_pow_mkm1_rch_h, two_pow_mkm1_rch_l,
                          -two_pow_mkm1_rsh_h, -two_pow_mkm1_rsh_l);
-            // kf =0: (rch + rsh) + (rch - rsh)
-            // otherwise scaling with 2^(-k-1)
+            // k ==0: (rch + rsh) + (rch - rsh)
+            // otherwise: (rch + rsh) * 2^(k-1) + (rch - rsh) * 2^(-k-1)
             d_ops::add22(cosh_h, cosh_l,
                          cosh_h, cosh_l,
                          th, tl);
