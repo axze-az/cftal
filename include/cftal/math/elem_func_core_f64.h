@@ -1301,8 +1301,6 @@ hyperbolic_k(arg_t<vf_type> xc)
     // cosh(k * ln(2)) = 2^(k-1) + 2^(-k-1)
     // sinh(k * ln(2)) = 2^(k-1) - 2^(-k-1)
 
-    // two_pow_plus_k_minus_1 = _T::sel_zero_or_val(kf < -35,
-    //                                             two_pow_plus_k_minus_1);
     vf_type two_pow_km1_rch_h = two_pow_plus_k_minus_1 * rch_h;
     vf_type two_pow_km1_rch_l = two_pow_plus_k_minus_1 * rch_l;
 
