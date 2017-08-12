@@ -506,9 +506,9 @@ together with
     \end{aligned}
 \]
 allow the argument reduction of $|x|$ as
-$ |x|= k \times \log(2) + x_{rh} + x_{rl}$.
+$ |x|= k \times \log(2) + x_{rh} + x_{rl}$ with $x_r =x_{rh} + x_{rl}$.
 This is done as in the case of the exponential function.
-For the reduced argument $x_{rh}$ the $\cosh(x_{rh})$ and $\sinh(x_{rh})$ are approximated as polynomials of order 12 and 13 for binary64 and of
+For the reduced argument $x_{rh}$ $\cosh(x_{rh})$ and $\sinh(x_{rh})$ are approximated as polynomials of order 12 and 13 for binary64 and of
 order 7 and 6 for binary32. The last two steps of the polynomial
 evaluation are done in double double precision.
 The errors in the argument reduction are corrected using the first
@@ -519,13 +519,26 @@ order taylor expansions
         \sinh(x_{rh} + x_{rl}) &\approx \sinh(x_{rh}) + \cosh(x_{rh}) x_{rl} \\
     \end{aligned}
 \]
-The addition of the final values is also done in double double precision.
+The eight products
+\begin{itemize}
+\item $2^{k-1} \times \cosh(x_r)_h$,
+\item $2^{k-1} \times \cosh(x_r)_l$,
+\item $2^{k-1} \times \sinh(x_r)_h$,
+\item $2^{k-1} \times \sinh(x_r)_l$,
+\item $2^{-k-1} \times \cosh(x_r)_h$,
+\item $2^{-k-1} \times \cosh(x_r)_l$,
+\item $2^{-k-1} \times \sinh(x_r)_h$ and
+\item $2^{-k-1} \sinh(x_r)_l$
+\end{itemize}
+are exact.
+The summation of these products is done in
+double double precision.
 The terms of order $ 2^{-k-1} $ are only calculated for values of
 $ k <= 35 $ for binary64 and $ k <= 13 $ for binary64.
 The case $k$ equal to the maximim possible exponent is handled
 via  $k' = k - 1$ and a final multiplcation by 2. \\[10pt]
-The function $\tanh(x)$ is calculated from the obtained double precision
-values for $\cosh(x)$ and $\sinh(x)$ for $ k<=35 $ in binary64 and
+The function $\tanh(x)$ is calculated from the obtained double double
+precision values for $\cosh(x)$ and $\sinh(x)$ for $ k<=35 $ in binary64 and
 $k <=13$ for binary32, otherwise $\pm 1$ is returned.
 
 
