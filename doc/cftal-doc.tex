@@ -473,8 +473,61 @@ equal to $e$.
 
 \subsubsection{hyperbolic functions}
 
-The hyperbolic function sinh(x), cosh(x) and tanh(x) are approximated as
-described by Manos et al. in their report \cite{manos1972constrained}.
+%The hyperbolic function sinh(x), cosh(x) and tanh(x) are approximated as
+%described by Manos et al. in their report \cite{manos1972constrained}.
+The hyperbolic functions $\sinh(x)$, $\cosh(x)$ and $\tanh(x)$
+are approximated similiar to the quick phase of of the algorithm
+described in crlibm \cite{crlibmweb}.
+The implemented hyperbolic functions are defined by
+\[
+    \begin{aligned}
+        \sinh(x) &= \frac{e^x -  e^{-x}}{2} \\
+        \cosh(x) &= \frac{e^x +  e^{-x}}{2}
+    \end{aligned}
+\]
+and
+\[
+    \tanh(x) = \frac{e^x -  e^{-x}}{e^x +  e^{-x}}
+\]
+respectively. Because of symmetries only positive values of $x$ are used
+in the calculations.
+The addition formulaes
+\[
+    \begin{aligned}
+        \cosh(x + y) &= \cosh(x)  \cosh(y) + \sinh(x)  \sinh(y) \\
+        \sinh(x + y) &= \sinh(x)  \cosh(y) + \sinh(y)  \cosh(x)
+    \end{aligned}
+\]
+together with
+\[
+    \begin{aligned}
+        \cosh(k\times\log(2)) &= 2^{k-1} + 2^{-k-1} \\
+        \sinh(k\times\log(2)) &= 2^{k-1} - 2^{-k-1}
+    \end{aligned}
+\]
+allow the argument reduction of $|x|$ as
+$ |x|= k \times \log(2) + x_{rh} + x_{rl}$.
+This is done as in the case of the exponential function.
+For the reduced argument $x_{rh}$ the $\cosh(x_{rh})$ and $\sinh(x_{rh})$ are approximated as polynomials of order 12 and 13 for binary64 and of
+order 7 and 6 for binary32. The last two steps of the polynomial
+evaluation are done in double double precision.
+The errors in the argument reduction are corrected using the first
+order taylor expansions
+\[
+    \begin{aligned}
+        \cosh(x_{rh} + x_{rl}) &\approx \cosh(x_{rh}) + \sinh(x_{rh}) x_{rl} \\
+        \sinh(x_{rh} + x_{rl}) &\approx \sinh(x_{rh}) + \cosh(x_{rh}) x_{rl} \\
+    \end{aligned}
+\]
+The addition of the final values is also done in double double precision.
+The terms of order $ 2^{-k-1} $ are only calculated for values of
+$ k <= 35 $ for binary64 and $ k <= 13 $ for binary64.
+The case $k$ equal to the maximim possible exponent is handled
+via  $k' = k - 1$ and a final multiplcation by 2. \\[10pt]
+The function $\tanh(x)$ is calculated from the obtained double precision
+values for $\cosh(x)$ and $\sinh(x)$ for $ k<=35 $ in binary64 and
+$k <=13$ for binary32, otherwise $\pm 1$ is returned.
+
 
 %
 %TODO
