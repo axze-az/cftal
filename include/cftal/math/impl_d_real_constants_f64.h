@@ -22,16 +22,6 @@ namespace cftal {
 
             template <class _T>
             struct d_real_constants<_T, double> {
-                // exp(x) may be to large
-                static const double exp_arg_large;
-                // log(x): avoid denormals
-                static const double log_arg_small;
-                // if above factor to multiply with
-                static const double log_arg_small_factor;
-                // large sin cos argument
-                static const double sin_cos_arg_large;
-                // large native sin cos argument
-                static const double native_sin_cos_arg_large;
                 // M_LN2 LOG_E(2) for cody and waite argument reduction
                 static const double m_ln2_cw[2];
                 // M_LG2 LOG_10(2) for cody and waite argument reduction
@@ -80,31 +70,6 @@ namespace cftal {
         } // impl
     } // math
 } // cftal
-
-template <class _T>
-const double
-cftal::math::impl::d_real_constants<_T, double>::
-exp_arg_large= 7.0900000000000000000000e+02;
-
-template <class _T>
-const double
-cftal::math::impl::d_real_constants<_T, double>::
-log_arg_small= 2.0041683600089727779961e-292;
-
-template <class _T>
-const double
-cftal::math::impl::d_real_constants<_T, double>::
-log_arg_small_factor= 8.1129638414606681695789e+31;
-
-template <class _T>
-const double
-cftal::math::impl::d_real_constants<_T, double>::
-sin_cos_arg_large= 0x1.0p31;
-
-template <class _T>
-const double
-cftal::math::impl::d_real_constants<_T, double>::
-native_sin_cos_arg_large= 0x1.0p31;
 
 /* ----------------------------------------------------------------*/
 template <class _T>

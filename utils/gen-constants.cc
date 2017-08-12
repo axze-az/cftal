@@ -68,6 +68,14 @@ namespace cftal {
             }
         };
 
+        template <>
+        struct check_max_denormal<float> {
+            bool operator() (float a) const  {
+                const float flt_max_denormal= 1.175494210692441075487029e-38;
+                return std::fabs(a) <= flt_max_denormal;
+            }
+        };
+
         template <typename _T>
         struct check_atan_eq_x  {
             bool operator() (_T a) const {
@@ -597,9 +605,6 @@ int main(int argc, char** argv)
                      check_zero<double>(), "m_0");
         gen_constant(dm, "const double exp_lo_den", mpfr_exp,
                      check_max_denormal<double>(), "nom");
-        write_constant(
-            "const double exp_arg_large",
-            std::floor(func_constants<double>::exp_hi_inf()));
         // expm1
         gen_constant(dp, "const double expm1_hi", mpfr_expm1,
                      check_inf<double>(), "inf");
@@ -650,13 +655,6 @@ int main(int argc, char** argv)
         gen_constant(dp, "const double rqsrt_", mpfr_rec_sqrt,
                      check_zero<double>(), "zero");
 
-        // -1022 - 53
-        write_constant(
-            "const double log_arg_small", 0x1p-969);
-        write_constant(
-            "const double log_arg_small_factor",
-            0x1p106);
-
         std::cout << "const double max_denormal= "
                   <<  sig_f64_msk::v.f64() << ";\n\n";
         std::cout << "const double _2pow106="
@@ -690,18 +688,16 @@ int main(int argc, char** argv)
                            math::impl::d_real_constants >(
                                std::cout,
                                "d_real_constants<_T, double>");
-#if 0
-        gen_math_constants<256, t_real<double>,
+        gen_math_constants<512, t_real<double>,
                            math::impl::t_real_constants>(
                                std::cout,
                                "t_real_constants<_T, double>");
-#endif
     }
     if (gen_float) {
-        auto dp=std::make_pair(0.0f, 800.0f);
+        auto dp=std::make_pair(0.0f, 200.0f);
         gen_constant(dp, "const float sinh_hi", mpfr_sinh,
                      check_inf<float>(), "inf");
-        auto dm=std::make_pair(-800.0f, 0.0f);
+        auto dm=std::make_pair(-200.0f, 0.0f);
         gen_constant(dm, "const float sinh_lo", mpfr_sinh,
                      check_inf<float>(), "inf");
         // exp constants
@@ -711,9 +707,6 @@ int main(int argc, char** argv)
                      check_zero<float>(), "m_0");
         gen_constant(dm, "const float exp_lo_den", mpfr_exp,
                      check_max_denormal<float>(), "nom");
-        write_constant(
-            "const float exp_arg_large",
-            std::floor(func_constants<float>::exp_hi_inf()));
         // exp1
         gen_constant(dp, "const float expm1_hi", mpfr_expm1,
                      check_inf<float>(), "inf");
@@ -759,12 +752,6 @@ int main(int argc, char** argv)
         dp=std::make_pair(1.0, std::numeric_limits<float>::max());
         gen_constant(dp, "const float rqsrt_", mpfr_rec_sqrt,
                      check_zero<double>(), "zero");
-        // -126 + 24
-        write_constant(
-            "const double log_arg_small", 0x1p-102f);
-        write_constant(
-            "const double log_arg_small_factor",
-            0x1p48f);
 
         std::cout << "const float max_denormal= "
                   <<  sig_f32_msk::v.f32() << ";\n\n";
@@ -785,6 +772,11 @@ int main(int argc, char** argv)
                            math::impl::d_real_constants >(
                                std::cout,
                                "d_real_constants<_T, float>");
+        gen_math_constants<256,
+                           t_real<float>,
+                           math::impl::t_real_constants >(
+                               std::cout,
+                               "t_real_constants<_T, float>");
 
     }
     return 0;
