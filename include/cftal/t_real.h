@@ -100,15 +100,69 @@ namespace cftal {
 
             static
             void
+            add123(_T& rh, _T& rm, _T& rl,
+                   const _T& a,
+                   const _T& bh, const _T& bl);
+
+            static
+            void
+            add123cond(_T& rh, _T& rm, _T& rl,
+                       const _T& a,
+                       const _T& bh, const _T& bl);
+
+            static
+            void
+            add213(_T& rh, _T& rm, _T& rl,
+                   const _T& ah, const _T& al,
+                   const _T& b);
+
+            static
+            void
+            add213cond(_T& rh, _T& rm, _T& rl,
+                       const _T& ah, const _T& al,
+                       const _T& b);
+
+            static
+            void
+            add23(_T& rh, _T& rm, _T& rl,
+                  const _T& ah, const _T& al,
+                  const _T& bh, const _T& bl);
+
+            static
+            void
+            add23cond(_T& rh, _T& rm, _T& rl,
+                      const _T& ah, const _T& al,
+                      const _T& bh, const _T& bl);
+
+            static
+            void
+            add33(_T& rh, _T& rm, _T& rl,
+                  const _T& ah, const _T& am, const _T& al,
+                  const _T& bh, const _T& bm, const _T& bl);
+
+            static
+            void
             add33cond(_T& rh, _T& rm, _T& rl,
                       const _T& ah, const _T& am, const _T& al,
                       const _T& bh, const _T& bm, const _T& bl);
 
             static
             void
+            add233(_T& rh, _T& rm, _T& rl,
+                  const _T& ah, const _T& al,
+                  const _T& bh, const _T& bm, const _T& bl);
+
+            static
+            void
             add233cond(_T& rh, _T& rm, _T& rl,
                        const _T& ah, const _T& al,
                        const _T& bh, const _T& bm, const _T& bl);
+
+            static
+            void
+            add133(_T& rh, _T& rm, _T& rl,
+                  const _T& a,
+                  const _T& bh, const _T& bm, const _T& bl);
 
             static
             void
@@ -125,7 +179,7 @@ namespace cftal {
             static
             t_real<_T>
             renormalize(const _T& rh, const _T& rm, const _T& rl);
-            
+
             static
             t_real<_T>
             add(const _T& a,
@@ -500,6 +554,93 @@ recp3(_T& rh, _T& rm, _T& rl,
 template <typename _T>
 void
 cftal::impl::t_real_ops<_T>::
+add123(_T& rh, _T& rm, _T& rl, const _T& a, const _T& bh, const _T& bl)
+{
+    _T t1;
+    add12(rh, t1, a, bh);
+    add12(rm, rl, t1, bl);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+add123cond(_T& rh, _T& rm, _T& rl, const _T& a, const _T& bh, const _T& bl)
+{
+    _T t1;
+    add12cond(rh, t1, a, bh);
+    add12(rm, rl, t1, bl);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+add213(_T& rh, _T& rm, _T& rl, const _T& ah, const _T& al, const _T& b)
+{
+    _T t1;
+    add12(rh, t1, ah, b);
+    add12cond(rm, rl, al, t1);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+add213cond(_T& rh, _T& rm, _T& rl, const _T& ah, const _T& al, const _T& b)
+{
+    _T t1;
+    add12cond(rh, t1, ah, b);
+    add12cond(rm, rl, al, t1);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+add23(_T& rh, _T& rm, _T& rl,
+      const _T& ah, const _T& al,
+      const _T& bh, const _T& bl)
+{
+    _T t1, t2, t3, t4, t5, t6;
+    add12(rh, t1, ah, bh);
+    add12cond(t2, t3, al, bl);
+    add12cond(t4, t4, t1, t2);
+    t6 = t3+t5;
+    add12cond(rm, rl, t4, t6);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+add23cond(_T& rh, _T& rm, _T& rl,
+           const _T& ah, const _T& al,
+           const _T& bh, const _T& bl)
+{
+    _T t1, t2, t3, t4, t5, t6;
+    add12cond(rh, t1, ah, bh);
+    add12cond(t2, t3, al, bl);
+    add12cond(t4, t4, t1, t2);
+    t6 = t3+t5;
+    add12cond(rm, rl, t4, t6);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+add33(_T& rh, _T& rm, _T& rl,
+      const _T& ah, const _T& am, const _T& al,
+      const _T& bh, const _T& bm, const _T& bl)
+{
+    _T t1, t2, t3, t4, t5, t6, t7, t8;
+    add12(rh, t1, ah, bh);
+    add12cond(t2, t3, am, bm);
+    t6 = al + bl;
+    add12cond(t7, t4, t1, t2);
+    t5 = t3 + t4;
+    t8 = t5 + t6;
+    add12cond(rm, rl, t7, t8);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
 add33cond(_T& rh, _T& rm, _T& rl,
           const _T& ah, const _T& am, const _T& al,
           const _T& bh, const _T& bm, const _T& bl)
@@ -517,6 +658,22 @@ add33cond(_T& rh, _T& rm, _T& rl,
 template <typename _T>
 void
 cftal::impl::t_real_ops<_T>::
+add233(_T& rh, _T& rm, _T& rl,
+       const _T& ah, const _T& al,
+       const _T& bh, const _T& bm, const _T& bl)
+{
+    _T t1, t2, t3, t4, t5, t6, t7;
+    add12(rh, t1, ah, bh);
+    add12cond(t2, t3, al, bm);
+    add12cond(t4, t5, t1, t2);
+    t6 = t3 + bl;
+    t7 = t6 + t5;
+    add12cond(rm, rl, t4, t7);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
 add233cond(_T& rh, _T& rm, _T& rl,
            const _T& ah, const _T& al,
            const _T& bh, const _T& bm, const _T& bl)
@@ -528,6 +685,20 @@ add233cond(_T& rh, _T& rm, _T& rl,
     t6 = t3 + bl;
     t7 = t6 + t5;
     add12cond(rm, rl, t4, t7);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+add133(_T& rh, _T& rm, _T& rl,
+       const _T& a,
+       const _T& bh, const _T& bm, const _T& bl)
+{
+    _T t1, t2, t3, t4;
+    add12(rh, t1, a, bh);
+    add12cond(t2, t3, t1, bm);
+    t4 = t3+ bl;
+    add12cond(rm, rl, t2, t4);
 }
 
 template <typename _T>
