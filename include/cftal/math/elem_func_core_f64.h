@@ -1369,9 +1369,17 @@ hyperbolic_k(arg_t<vf_type> xc)
         r = cosh_x;
     }
     if (_F == hyperbolic_func::c_tanh) {
+#if 1
+        vf_type rh, rl;
+        vf_type rcp_cosh_h, rcp_cosh_l;
+        d_ops::rcp2(rcp_cosh_h, rcp_cosh_l, cosh_h, cosh_l);
+        d_ops::mul22(rh, rl, rcp_cosh_h, rcp_cosh_l, sinh_h, sinh_l);
+        vf_type tanh_x=_T::sel(kf_le_35, rh, 1.0);
+#else
         dvf_type s(sinh_h, sinh_l), c(cosh_h, cosh_l);
         dvf_type t=d_ops::sloppy_div(s, c);
         vf_type tanh_x=_T::sel(kf_le_35, t.h(), 1.0);
+#endif
         tanh_x = _T::sel(x < 0x1p-26, x, tanh_x);
         tanh_x = copysign(tanh_x, xc);
         r = tanh_x;
