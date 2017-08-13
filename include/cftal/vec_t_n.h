@@ -577,7 +577,7 @@ inline
 bool
 cftal::all_of(const vec<_T, _N>& v)
 {
-    return all_of(low_half(v)) && all_of(high_half(v));
+    return all_of(low_half(v)) & all_of(high_half(v));
 }
 
 template <class _T, std::size_t _N>
@@ -585,7 +585,7 @@ inline
 bool
 cftal::any_of(const vec<_T, _N>& v)
 {
-    return any_of(low_half(v)) || any_of(high_half(v));
+    return any_of(low_half(v)) | any_of(high_half(v));
 }
 
 template <class _T, std::size_t _N>
@@ -593,7 +593,7 @@ inline
 bool
 cftal::none_of(const vec<_T, _N>& v)
 {
-    return none_of(low_half(v)) && none_of(high_half(v));
+    return none_of(low_half(v)) & none_of(high_half(v));
 }
 
 template <class _T, std::size_t _N>

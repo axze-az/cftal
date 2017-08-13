@@ -45,12 +45,12 @@ cftal::int64_t cftal::rdtsc()
 #if defined (__x86_64__)
     uint64_t a, d;
     __asm__ __volatile__("lfence;\n\t"
-                         "rdtsc" :"=a"(a), "=d"(d) ::"memory");
+                        "rdtsc" :"=a"(a), "=d"(d) ::"memory");
     return (d<<32) | a;
 #elif defined (__i386__)
     uint64_t a;
     __asm__ __volatile__("lfence;\n\t"
-                         "rdtsc" :"=A"(a)::"memory");
+                        "rdtsc" :"=A"(a)::"memory");
     return a;
 #elif defined (_M_AMD64) && defined (_MSC_VER)
 	__mm_lfence();
@@ -60,7 +60,7 @@ cftal::int64_t cftal::rdtsc()
     uint64_t final_tsc;
     /* Read PMCCNTR synchronized*/
     __asm__ __volatile__("isb sy\n\t"
-                         "mrc p15, 0, %0, c9, c13, 0\n\t"
+                        "mrc p15, 0, %0, c9, c13, 0\n\t"
                          : "=r"(tsc));
     /* 1 tick = 64 clocks */
     final_tsc = ((uint64_t)tsc) << 6;
