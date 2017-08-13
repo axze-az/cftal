@@ -259,4 +259,7 @@ target_add_test_libs(dev-func)
 add_executable(dev-native dev-native.cc)
 target_add_test_libs(dev-native)
 
+add_executable(dev-half dev-half.cc)
+target_add_test_libs(dev-half)
+
 add_executable(gen-test-vec gen-test-vec.cc)
