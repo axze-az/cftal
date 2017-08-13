@@ -1494,16 +1494,15 @@ rcp2(_T& rh, _T& rl, const _T& ah, const _T& al)
     // v4f32 rcp=_mm_rcp_ps(a());
     // rcp = rcp + rcp*(1-rcp*a);
     // return rcp;
+    // rcp = rcp * (2-rcp*a)
     _T r0h=_T(1.0)/ah;
     _T th, tl;
     // -rcp * a
     mul122(th, tl, -r0h, ah, al);
     // 1 - rcp * a
-    add122(th, tl, _T(1.0), th, tl);
-    // rcp ( 1 - rcp*a)
-    mul122(th, tl, r0h, th, tl);
-    // rcp = rcp + rcp * (1-rcp*a)
-    add122(rh, rl, r0h, th, tl);
+    add122(th, tl, _T(2.0), th, tl);
+    // rcp ( 2 - rcp*a)
+    mul122(rh, rl, r0h, th, tl);
 }
 
 template <typename _T>
