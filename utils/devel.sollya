@@ -22,6 +22,9 @@ approx_on_interval = proc(f, i, b, c, pfx, n) {
     // plot((p(x)-f(x))/f(x), i, postscriptfile, psfile);
 };
 
+
+
+/*
 f = erfc(x);
 i = [0.0, 0.75];
 b = [|0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23 |];
@@ -33,6 +36,7 @@ f = erfc(x) * exp(x*x) * x;
 i = [0.75, 26];
 d = guessdegree(f, i, 0x1p-58);
 d;
+*/
 
 /*
 b = [|0, ..., 21|];
