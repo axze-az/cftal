@@ -61,14 +61,20 @@ vector. The partial specialized template class
 \begin{lstlisting}
 template <typename _T> vec<_T, 1>;
 \end{lstlisting}
-is defined to stop the recursion.
+is defined to stop the recursion.\\
 %
 A vector of length $N$ may be constructed from
 \begin{itemize}
 \item a scalar, initializing every vector element to the scalar,
-\item two vectors of length $N/2$ with exception of length $1$,
+\item two vectors of length $N/2$ for $N/2>0$
+      using a constructor like
+\begin{lstlisting}
+vec(const vec<_T, _N/2>& lh, const vec<_T, _N/2>& hh);
+\end{lstlisting}
+      where lh is the lower half and hh the higher half of the vector to
+      construct,
 \item an initializer list, initializing excess elements in the
-  vector from the last element of the initializer list
+  vector from the last element of the initializer list.
 \end{itemize}
 A vector may be split into low and high halfes using the functions
 \begin{lstlisting}
@@ -79,7 +85,7 @@ low_half(const vec<_T, _N>& v);
 template <typename _T, std::size_t _N>
 const typename vec<_T, _N>::half_type&
 high_half(const vec<_T, _N>& v);
-\end{lstlisting}
+\end{lstlisting}{\ }\\[10pt]
 The most arithmetic operations are defined on all types of vectors.
 Logical operations on vectors return either a bit mask or a vector of
 the same type as the operands. The choice of a bit mask (a vector of
@@ -87,6 +93,24 @@ bits) or the same type depends on the machine -- machines with
 hardware bit mask should use a bit mask (this means, that on x86 the
 type of the result of logical operations depends on the existence of
 the 512 bit AVX vector extensions). \\[10pt]
+%
+To suppress the generation of fused multiply and add instruction
+in expressions like
+\begin{lstlisting}
+vec<double, 2> r0= a * b + c;
+vec<double, 2> r1= a * b - c;
+vec<double, 2> r2= c - a * b;
+\end{lstlisting}
+the result of the multiplication should be assigned to a (temporary)
+variable
+\begin{lstlisting}
+vec<double, 2> t=a*b;
+vec<double, 2> r1= t + c;
+vec<double, 2> r2= t - c;
+vec<double, 2> r3= c - t ;
+\end{lstlisting}
+which breaks the expression tree and avoids the generation of these
+instructions (if the compiler is not too clever).\\[10pt]
 %
 A large number of functions exist only for vector classes of the
 two floating point types double (binary64) and float (binary32).\\
@@ -117,7 +141,9 @@ library. Therefore the copyright of the sun libm source codes
 \normalsize
 applies.\\[10pt]
 %
-Functions for vector lengths from 1 to 8 for binary64 and binary32 are implemented as direct instantiations of the template code in
+Functions for vector lengths from 1 to 8 for binary64 and
+1 to 16 for binary32 are implemented as direct instantiations of
+the template code in
 \lstinline{cftal/math/elem_func.h}
 and in \lstinline{cftal/math/spec_func.h}
 using the macros in
@@ -140,25 +166,6 @@ cftal::func(const vec<_T, _N>& x)
 \end{lstlisting}
 recursively, where \textbf{func} is the name of the
 function to construct.\\[10pt]
-%
-To suppress the generation of fused multiply and add instruction
-in expressions like
-\begin{lstlisting}
-vec<double, 2> r0= a * b + c;
-vec<double, 2> r1= a * b - c;
-vec<double, 2> r2= c - a * b;
-\end{lstlisting}
-the result of the multiplication should be assigned to a (temporary)
-variable
-\begin{lstlisting}
-vec<double, 2> t=a*b;
-vec<double, 2> r1= t + c;
-vec<double, 2> r2= t - c;
-vec<double, 2> r3= c - t ;
-\end{lstlisting}
-which breaks the expression tree and avoids the generation of these
-instructions.\\[10pt]
-%
 The polynomial approximations used in the implemented functions
 are produced using sollya \cite{ChevillardJoldesLauter2010}.
 
@@ -298,9 +305,10 @@ In the subsections below the notation $ lg(x) = \log_{10}(x)$,
 $ ld(x) = \log_2{(x)} $ and $ \log{(x)} = \log_e{(x)} $ is used. A double pair
 or double double variable is a floating point expansion of the form
 \[
-    (x_h, x_l) = x_h + x_l \, |x_l| < \frac{1}{2} |x_h^{-n}|
+    (x_h, x_l) = x_h + x_l
 \]
-where n is the number of mantissa bits in the floating variable.
+with $ |x_l| < \frac{1}{2} |x_h^{-p}| $, where p is the number of mantissa
+bits in the floating variable.
 \subsubsection{exponential functions}
 \label{sub_sec:expxxx}
 
