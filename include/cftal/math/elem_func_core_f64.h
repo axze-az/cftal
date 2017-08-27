@@ -1221,7 +1221,7 @@ hyperbolic_k(arg_t<vf_type> xc)
     vf_type scale=_T::sel(kf >= 1024, 2.0, 1.0);
     auto kn= _T::sel(k>= 1024, k-1, k);
 
-    // filter out small terms
+    // filter out large arguments for tanh
     vmf_type kf_le_35 = kf <= 35.0;
     bool any_of_kf_le_35 = any_of(kf_le_35);
     if (_F == hyperbolic_func::c_tanh) {
