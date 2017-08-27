@@ -303,260 +303,6 @@ namespace cftal {
             }
         };
 
-        template <typename _T>
-        struct check_half_exp2 {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::half_exp2(a);
-            }
-            static
-            auto
-            r(const _T& a) {
-                // _T v=call_mpfr::func(a, mpfr_exp2);
-                vec<_T, 4> aa(a);
-                return extract<0>(exp2(aa));
-            }
-            static
-            _T
-            s(const _T& a) {
-                return std::exp2(a);
-            }
-            static
-            const char* fname() {
-                return "half_exp2";
-            }
-        };
-
-        template <typename _T>
-        struct check_half_exp10 {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::half_exp10(a);
-            }
-            static
-            auto
-            r(const _T& a) {
-                // _T v=call_mpfr::func(a, mpfr_ext::exp10);
-                vec<_T, 4> aa(a);
-                return extract<0>(exp10(aa));
-            }
-            static
-            _T
-            s(const _T& a) {
-                return ::exp10(a);
-            }
-            static
-            const char* fname() {
-                return "half_exp10";
-            }
-        };
-
-        template <typename _T>
-        struct check_half_log {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::half_log(a);
-            }
-            static
-            auto
-            r(const _T& a) {
-                vec<_T, 4> aa(a);
-                return extract<0>(log(aa));
-            }
-            static
-            _T
-            s(const _T& a) {
-                return std::log(a);
-            }
-            static
-            const char* fname() { return "half_log"; }
-        };
-
-        template <typename _T>
-        struct check_half_log2 {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::half_log2(a);
-            }
-            static
-            auto
-            r(const _T& a) {
-                vec<_T, 4> aa(a);
-                return extract<0>(log2(aa));
-            }
-            static
-            _T
-            s(const _T& a) {
-                return std::log2(a);
-            }
-            static
-            const char* fname() { return "half_log2"; }
-        };
-
-        template <typename _T>
-        struct check_half_log10 {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::half_log10(a);
-            }
-            static
-            auto
-            r(const _T& a) {
-                vec<_T, 4> aa(a);
-                return extract<0>(log10(aa));
-            }
-            static
-            _T
-            s(const _T& a) {
-                return std::log10(a);
-            }
-            static
-            const char* fname() { return "half_log10"; }
-        };
-
-        template <typename _T>
-        struct check_half_sin {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::half_sin(a);
-            }
-            static
-            auto
-            r(const _T& a) {
-                vec<_T, 4> aa(a);
-                return extract<0>(sin(aa));
-            }
-            static
-            _T
-            s(const _T& a) {
-                return std::sin(a);
-            }
-            static
-            const char* fname() { return "half_sin"; }
-        };
-
-        template <typename _T>
-        struct check_half_cos {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::half_cos(a);
-            }
-            static
-            auto
-            r(const _T& a) {
-                vec<_T, 4> aa(a);
-                return extract<0>(cos(aa));
-            }
-            static
-            _T
-            s(const _T& a) {
-                return std::cos(a);
-            }
-            static
-            const char* fname() { return "half_cos"; }
-        };
-
-        template <typename _T>
-        struct check_half_tan {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::half_tan(a);
-            }
-            static
-            auto
-            r(const _T& a) {
-                vec<_T, 4> aa(a);
-                return extract<0>(tan(aa));
-            }
-            static
-            _T
-            s(const _T& a) {
-                return std::tan(a);
-            }
-            static
-            const char* fname() { return "half_tan"; }
-        };
-
-        template <typename _T>
-        struct check_func {
-            template <std::size_t _N>
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& a) {
-                using traits_t=math::func_traits<vec<_T, _N>,
-                                                 vec<int32_t, _N> >;
-                using func_t=math::test_func<_T, traits_t>;
-                return func_t::func(a);
-            }
-            static
-            auto
-            r(const _T& a) {
-                std::pair<_T, _T> i;
-#if EXP>0
-                _T v=call_mpfr::func(a, mpfr_exp, &i);
-#else
-                _T v=call_mpfr::func(a, mpfr_expm1, &i);
-#endif
-                return std::make_tuple(v, i.first, i.second);
-            }
-            static
-            _T
-            s(const _T& a) {
-#if EXP>0
-                return std::exp(a);
-#else
-                return std::expm1(a);
-#endif
-            }
-            static
-            const char* fname() {
-#if EXP >0
-                return "func-exp";
-#else
-                return "func-expm1";
-#endif
-            }
-        };
 
     }
 }
@@ -571,136 +317,194 @@ cftal::math::test_func<double, _T>::
 __native_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                arg_t<vf_type> kf, arg_t<vi2_type> k2)
 {
-#if 1
-    // [-0.3465735912322998046875, 0.3465735912322998046875] : | p - f | <= 2^-67.5
-    // coefficients for exp generated by sollya
-    // x^0 : +0x8p-3
-    const double exp_c0=+1.0000000000000000000000e+00;
-    // x^1 : +0x8p-3
-    const double exp_c1=+1.0000000000000000000000e+00;
-    // x^2 : +0x8p-4
-    const double exp_c2=+5.0000000000000000000000e-01;
-    // x^3 : +0xa.aaaaaaaaaaaa8p-6
-    const double exp_c3=+1.6666666666666665741481e-01;
-    // x^4 : +0xa.aaaaaaaaaaacp-8
-    const double exp_c4=+4.1666666666666685170384e-02;
-    // x^5 : +0x8.888888888961p-10
-    const double exp_c5=+8.3333333333340843529502e-03;
-    // x^6 : +0xb.60b60b60a81p-13
-    const double exp_c6=+1.3888888888873365812238e-03;
-    // x^7 : +0xd.00d00cfa88cc8p-16
-    const double exp_c7=+1.9841269839039331096715e-04;
-    // x^8 : +0xd.00d00d6b5b978p-19
-    const double exp_c8=+2.4801587348902822885563e-05;
-    // x^9 : +0xb.8ef1e87f81768p-22
-    const double exp_c9=+2.7557322326013774747291e-06;
-    // x^10 : +0x9.3f26623e02258p-25
-    const double exp_c10=+2.7557252167692825528943e-07;
-    // x^11 : +0xd.72da4d99dd1ep-29
-    const double exp_c11=+2.5050050656120229688701e-08;
-    // x^12 : +0x8.fc5bcb2f9dd7p-32
-    const double exp_c12=+2.0921639307947297714762e-09;
-    // x^13 : +0xb.675e3aadcbc88p-36
-    const double exp_c13=+1.6594686274338619941159e-10;
-    vf_type xx=xrh*xrh;
-    vf_type i=horner(xx,
-                     exp_c13,
-                     exp_c11,
-                     exp_c9,
-                     exp_c7,
-                     exp_c5);
-    vf_type j=horner(xx,
-                     exp_c12,
-                     exp_c10,
-                     exp_c8,
-                     exp_c6,
-                     exp_c4);
-    vf_type y=horner(xrh, i, j, exp_c3, exp_c2);
+    vf_type y;
     if (_EXP_M1 == false) {
-        y = horner(xrh, y, exp_c1)*xrh;
-        // calculate y==expm1, for correction term
+        // exp(x) = 1 + 2x/(2-x+x^2*P(x^2)
+        //                    x [x - x^2 * P]
+        //        = 1 + x + ------------------
+        //                    2 - [x - x^2 * P]
+        // [0, 0.3465735912322998046875] : | p - f | <= 2^-56.578125
+        // coefficients for expn generated by sollya
+        // x^0 : +0xa.aaaaaaaaaaaa8p-6
+        const vf_type expn_c0=+1.6666666666666665741481e-01;
+        // x^2 : -0xb.60b60b60af088p-12
+        const vf_type expn_c2=-2.7777777777762209694690e-03;
+        // x^4 : +0x8.ab355dd7070ep-17
+        const vf_type expn_c4=+6.6137566063822030622971e-05;
+        // x^6 : -0xd.debafedf4fbdp-23
+        const vf_type expn_c6=-1.6534377129482213292548e-06;
+        // x^8 : +0xb.3469aa5968fdp-28
+        const vf_type expn_c8=+4.1740899259070261892474e-08;
+        // x^10 : -0x8.b38f6a7d59358p-33
+        const vf_type expn_c10=-1.0129771083725208005378e-09;
+        vf_type xx= xrh*xrh;
+        vf_type P= horner(xx,
+                          expn_c10,
+                          expn_c8,
+                          expn_c6,
+                          expn_c4,
+                          expn_c2,
+                          expn_c0);
+        vf_type br= xrh- xx*P;
+        y = (xrh*br)/(2.0-br);
+        y += xrh;
         vf_type yee= xrl + xrl * y;
-        vf_type ye;
-        d_ops::add12(y, ye, exp_c0, y);
-        ye += yee;
-        y += ye;
+        y += yee;
+        y += 1;
         y = base_type::__scale_exp_k(y, kf, k2);
     } else {
-        vf_type ye;
-        y = y*xrh;
-        d_ops::add12(y, ye, exp_c1, y);
-        // y+ye = expm1/xrh
-        vf_type yee= xrl + xrl * xrh * (y+ye);
-        horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
-        ye += yee;
-        // 2^kf = 2*2^s ; s = kf/2
-        vf_type scale = base_type::__scale_exp_k(vf_type(0.5), kf, k2);
-        // e^x-1 = 2*(y * 2^s - 0.5)
-        horner_comp_si(y, ye, scale, y, ye, vf_type(-0.5));
-        y *= 2;
-        y  = y + 2*ye;
-        // x small, required for handling of subnormal numbers
-        y = _T::sel((abs(xrh) < 0x1p-512) & (kf==0.0), xrh, y);
+    /* expm1(x)
+    * Returns exp(x)-1, the exponential of x minus 1.
+    *
+    * Method
+    *   1. Argument reduction:
+    *      Given x, find r and integer k such that
+    *
+    *               x = k*ln2 + r,  |r| <= 0.5*ln2 ~ 0.34658
+    *
+    *      Here a correction term c will be computed to compensate
+    *      the error in r when rounded to a floating-point number.
+    *
+    *   2. Approximating expm1(r) by a special rational function on
+    *      the interval [0,0.34658]:
+    *      Since
+    *          r*(exp(r)+1)/(exp(r)-1) = 2+ r^2/6 - r^4/360 + ...
+    *      we define R1(r*r) by
+    *          r*(exp(r)+1)/(exp(r)-1) = 2+ r^2/6 * R1(r*r)
+    *      That is,
+    *          R1(r**2) = 6/r *((exp(r)+1)/(exp(r)-1) - 2/r)
+    *                   = 6/r * ( 1 + 2.0*(1/(exp(r)-1) - 1/r))
+    *                   = 1 - r^2/60 + r^4/2520 - r^6/100800 + ...
+    *      We use a special Remez algorithm on [0,0.347] to generate
+    *      a polynomial of degree 5 in r*r to approximate R1. The
+    *      maximum error of this polynomial approximation is bounded
+    *      by 2**-61. In other words,
+    *          R1(z) ~ 1.0 + Q1*z + Q2*z**2 + Q3*z**3 + Q4*z**4 + Q5*z**5
+    *      where   Q1  =  -1.6666666666666567384E-2,
+    *              Q2  =   3.9682539681370365873E-4,
+    *              Q3  =  -9.9206344733435987357E-6,
+    *              Q4  =   2.5051361420808517002E-7,
+    *              Q5  =  -6.2843505682382617102E-9;
+    *              z   =  r*r,
+    *      with error bounded by
+    *          |                  5           |     -61
+    *          | 1.0+Q1*z+...+Q5*z   -  R1(z) | <= 2
+    *          |                              |
+    *
+    *      expm1(r) = exp(r)-1 is then computed by the following
+    *      specific way which minimize the accumulation rounding error:
+    *                             2     3
+    *                            r     r    [ 3 - (R1 + R1*r/2)  ]
+    *            expm1(r) = r + --- + --- * [--------------------]
+    *                            2     2    [ 6 - r*(3 - R1*r/2) ]
+    *
+    *      To compensate the error in the argument reduction, we use
+    *              expm1(r+c) = expm1(r) + c + expm1(r)*c
+    *                         ~ expm1(r) + c + r*c
+    *      Thus c+r*c will be added in as the correction terms for
+    *      expm1(r+c). Now rearrange the term to avoid optimization
+    *      screw up:
+    *                      (      2                                    2 )
+    *                      ({  ( r    [ R1 -  (3 - R1*r/2) ]  )  }    r  )
+    *       expm1(r+c)~r - ({r*(--- * [--------------------]-c)-c} - --- )
+    *                      ({  ( 2    [ 6 - r*(3 - R1*r/2) ]  )  }    2  )
+    *                      (                                             )
+    *
+    *                 = r - E
+    *   3. Scale back to obtain expm1(x):
+    *      From step 1, we have
+    *         expm1(x) = either 2^k*[expm1(r)+1] - 1
+    *                  = or     2^k*[expm1(r) + (1-2^-k)]
+    *   4. Implementation notes:
+    *      (A). To save one multiplication, we scale the coefficient Qi
+    *           to Qi*2^i, and replace z by (x^2)/2.
+    *      (B). To achieve maximum accuracy, we compute expm1(x) by
+    *        (i)   if x < -56*ln2, return -1.0, (raise inexact if x!=inf)
+    *        (ii)  if k=0, return r-E
+    *        (iii) if k=-1, return 0.5*(r-E)-0.5
+    *        (iv)  if k=1 if r < -0.25, return 2*((r+0.5)- E)
+    *                     else          return  1.0+2.0*(r-E);
+    *        (v)   if (k<-2||k>56) return 2^k(1-(E-r)) - 1 (or exp(x)-1)
+    *        (vi)  if k <= 20, return 2^k((1-2^-k)-(E-r)), else
+    *        (vii) return 2^k(1-((E+2^-k)-r))
+    *
+    * Special cases:
+    *      expm1(INF) is INF, expm1(NaN) is NaN;
+    *      expm1(-INF) is -1, and
+    *      for finite argument, only expm1(0)=0 is exact.
+    *
+    * Accuracy:
+    *      according to an error analysis, the error is always less than
+    *      1 ulp (unit in the last place).
+    *
+    * Misc. info.
+    *      For IEEE double
+    *          if x >  7.09782712893383973096e+02 then expm1(x) overflow
+    *
+    * Constants:
+    * The hexadecimal values are the intended ones for the following
+    * constants. The decimal values may be used, provided that the
+    * compiler will convert from decimal to binary accurately enough
+    * to produce the hexadecimal values shown.
+    */
+        // vf_type e= xr - y;
+        // [0, 0.3465735912322998046875] : | p - f | <= 2^-61.734375
+        // coefficients for expm1 generated by sollya
+        // x^2 : -0x8.88888888887a8p-8
+        const vf_type expm1_c2=-3.3333333333333138581711e-02;
+        // x^4 : +0xd.00d00cff30828p-13
+        const vf_type expm1_c4=+1.5873015872554529798882e-03;
+        // x^6 : -0xa.670ccf68a8e2p-17
+        const vf_type expm1_c6=-7.9365075820909145119103e-05;
+        // x^8 : +0x8.67e55d0229b4p-21
+        const vf_type expm1_c8=+4.0082185537485440587381e-06;
+        // x^10 : -0xd.7ef32948d0b58p-26
+        const vf_type expm1_c10=-2.0110454926619305237525e-07;
+        /* x is now in primary range */
+        vf_type hfx = 0.5*xrh;
+        vf_type hxs = xrh*hfx;
+        vf_type r1 = 1.0+hxs*horner(hxs,
+                                    expm1_c10,
+                                    expm1_c8,
+                                    expm1_c6,
+                                    expm1_c4,
+                                    expm1_c2);
+        vf_type tt  = 3.0-r1*hfx;
+        vf_type e  = (hxs*(r1-tt))/(6.0 - xrh*tt);
+        // if (k == 0)   /* c is 0 */
+        //      return x - (x*e-hxs);
+        vf_type cr = xrl;
+        e  = xrh*(e-cr) - cr;
+        e -= hxs;
+        vi2_type t= _T::bias() - k2;
+        vf_type two_pow_minus_k=_T::insert_exp(t);
+        // xr - e = y --> xr -y = e
+        t = _T::bias() + k2;
+        vf_type two_pow_k=_T::insert_exp(t);
+        // default cases:
+        vf_type ym = _T::sel(kf < vf_type(20),
+                            (xrh - e + (1.0 - two_pow_minus_k))*two_pow_k,
+                            (xrh - (e+two_pow_minus_k)+1.0)*two_pow_k);
+        // k < 0 || k > 56
+        vf_type yt= xrh - e  + 1.0;
+        yt= _T::sel(kf == vf_type(1024),
+                    yt * 2.0 * 0x1p1023,
+                    yt * two_pow_k);
+        yt -= 1.0;
+        ym = _T::sel((kf < vf_type(0)) | (kf>vf_type(56)), yt, ym);
+        // k == 1
+        yt = _T::sel(xrh < -0.25, -2.0*(e-(xrh+0.5)),1.0+2.0*(xrh-e));
+        ym = _T::sel(kf == vf_type(1.0), yt, ym);
+        // k == -1
+        yt = 0.5 *(xrh-e) - 0.5;
+        ym = _T::sel(kf == vf_type(-1.0), yt, ym);
+        // k == 0
+        ym = _T::sel(kf == vf_type(0.0), xrh-e, ym);
+        // x small
+        // ym = _T::sel(abs(x) < 0x1p-54, x, ym);
+        y = ym;
     }
     return y;
-#else
-    // exp(x) = 1 + 2x/(2-x+x^2*P(x^2)
-    //                    x [x - x^2 * P]
-    //        = 1 + x + ------------------
-    //                    2 - [x - x^2 * P]
-    // [0, 0.3465735912322998046875] : | p - f | <= 2^-56.578125
-    // coefficients for expn generated by sollya
-    // x^0 : +0xa.aaaaaaaaaaaa8p-6
-    const vf_type expn_c0=+1.6666666666666665741481e-01;
-    // x^2 : -0xb.60b60b60af088p-12
-    const vf_type expn_c2=-2.7777777777762209694690e-03;
-    // x^4 : +0x8.ab355dd7070ep-17
-    const vf_type expn_c4=+6.6137566063822030622971e-05;
-    // x^6 : -0xd.debafedf4fbdp-23
-    const vf_type expn_c6=-1.6534377129482213292548e-06;
-    // x^8 : +0xb.3469aa5968fdp-28
-    const vf_type expn_c8=+4.1740899259070261892474e-08;
-    // x^10 : -0x8.b38f6a7d59358p-33
-    const vf_type expn_c10=-1.0129771083725208005378e-09;
-    vf_type xx= xrh*xrh;
-    vf_type P= horner(xx,
-                      expn_c10,
-                      expn_c8,
-                      expn_c6,
-                      expn_c4,
-                      expn_c2,
-                      expn_c0);
-    vf_type br= xrh- xx*P;
-    vf_type t = (br)/(2.0-br);
-#if 1
-    vf_type y, ye;
-    horner_comp(y, ye, xrh, t, xrh);
-    vf_type yee = xrl + xrl * (y+ye);
-    d_ops::add122(y, ye, 1.0, y, ye);
-    ye = ye + yee;
-#else
-    vf_type y, ye;
-    d_ops::mul12(y, ye, xrh, t);
-    d_ops::add122(y, ye, xrh, y, ye);
-    vf_type yee = xrl + xrl * (y+ye);
-    d_ops::add122(y, ye, 1.0, y, ye);
-    ye += yee;
-#endif
-    if (_EXP_M1 == false) {
-        y += ye;
-        y = base_type::__scale_exp_k(y, kf, k2);
-    } else {
-        // 2^kf = 2*2^s ; s = kf/2
-        vf_type scale = base_type::__scale_exp_k(vf_type(0.5), kf, k2);
-        // e^x-1 = 2*(y * 2^s - 0.5)
-        horner_comp_si(y, ye, scale, y, ye, vf_type(-0.5));
-        y *= 2;
-        y  = y + 2*ye;
-        // x small, required for handling of subnormal numbers
-        y = _T::sel((abs(xrh) < 0x1p-512) & (kf==0.0), xrh, y);
-    }
-    return y;
-#endif
 }
 
 template <typename _T>
