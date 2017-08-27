@@ -811,6 +811,7 @@ root12_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi_type> k)
@@ -849,6 +850,7 @@ __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi_type> k)
 template <typename _T>
 template <bool _EXP_M1>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,

@@ -387,6 +387,7 @@ exp10m1(arg_t<vf_type> d)
 
 template <typename _FLOAT_T, typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 sinh(arg_t<vf_type> x)
@@ -403,6 +404,7 @@ sinh(arg_t<vf_type> x)
 
 template <typename _FLOAT_T, typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 cosh(arg_t<vf_type> x)
@@ -417,6 +419,7 @@ cosh(arg_t<vf_type> x)
 
 template <typename _FLOAT_T, typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 tanh(arg_t<vf_type> x)
