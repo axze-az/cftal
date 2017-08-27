@@ -1127,6 +1127,7 @@ exp10_px2_k(arg_t<vf_type> xc)
 template <typename _T>
 template <enum cftal::math::elem_func_core<float, _T>::hyperbolic_func _F>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 hyperbolic_k(arg_t<vf_type> xc)
@@ -1283,6 +1284,7 @@ hyperbolic_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 cosh_k(arg_t<vf_type> x)
@@ -1292,6 +1294,7 @@ cosh_k(arg_t<vf_type> x)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 sinh_k(arg_t<vf_type> x)
@@ -1301,6 +1304,7 @@ sinh_k(arg_t<vf_type> x)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 tanh_k(arg_t<vf_type> x)

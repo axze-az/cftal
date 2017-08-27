@@ -864,6 +864,7 @@ root12_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi2_type> k)
@@ -976,6 +977,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vi2_type
 cftal::math::elem_func_core<double, _T>::
 __reduce_exp_arg(vf_type& xrh,
@@ -1020,6 +1022,7 @@ __reduce_exp_arg(vf_type& xrh,
 template <typename _T>
 template <bool _EXP_M1>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp_k(arg_t<vf_type> xc)
@@ -1207,6 +1210,7 @@ exp10_px2_k(arg_t<vf_type> xc)
 template <typename _T>
 template <enum cftal::math::elem_func_core<double, _T>::hyperbolic_func _F>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 hyperbolic_k(arg_t<vf_type> xc)
@@ -1381,6 +1385,7 @@ hyperbolic_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 sinh_k(arg_t<vf_type> x)
@@ -1390,6 +1395,7 @@ sinh_k(arg_t<vf_type> x)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 cosh_k(arg_t<vf_type> x)
@@ -1399,6 +1405,7 @@ cosh_k(arg_t<vf_type> x)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 tanh_k(arg_t<vf_type> x)
