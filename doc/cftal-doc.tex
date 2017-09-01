@@ -372,7 +372,7 @@ equal to $e$.
 
 \paragraph{argument reduction for exp10(x) and expm10m1(x)}
 
-    The calculations of exp2(x) and exp2m1(x) use the
+    The calculations of exp10(x) and exp10m1(x) use the
     identity
     \begin{equation}
         10^x + C = e^{x \times \log{(10)}} + C
@@ -543,11 +543,11 @@ are exact.
 The summation of these products is done in
 double double precision.
 The terms of order $ 2^{-k-1} $ are only calculated for values of
-$ k <= 35 $ for binary64 and $ k <= 13 $ for binary64.
+$ k <= 35 $ for binary64 and $ k <= 13 $ for binary32.
 The case $k$ equal to the maximim possible exponent is handled
 via  $k' = k - 1$ and a final multiplcation by 2. \\[10pt]
-The function $\tanh(x)$ is calculated from the obtained double double
-precision values for $\cosh(x)$ and $\sinh(x)$ for $ k<=35 $ in binary64 and
+The function $\tanh(x)$ is calculated as quotient the obtained double double
+precision values for $\sinh(x)$ and $\cosh(x)$ for $ k<=35 $ in binary64 and
 $k <=13$ for binary32, otherwise $\pm 1$ is returned.
 
 
@@ -584,7 +584,7 @@ The logarithm function is calculated using
 \end{equation}
 and the right choice of k enforces
 $ \frac{\sqrt{2}}{2} \le x_r \le \sqrt{2} $.
-This may done using standard function \mbox{frexp(x, \&k)} and doubling
+This may be done using standard function \mbox{frexp(x, \&k)} and doubling
 the resulting mantissa and decrementing k by one if the mantissa is
 smaller then $\frac{\sqrt{2}}{2}$.\\[10pt]
 %
