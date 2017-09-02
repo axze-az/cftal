@@ -126,6 +126,22 @@ endif()
 option(CFTAL_STATIC_LIB "create static libcftal.a" OFF)
 # Full test ?
 option(CFTAL_FULL_TEST "perform a full test with long compile times" OFF)
+# Doxygen docu ?
+
+option(CFTAL_DOXYGEN "create documentation using doxygen" OFF)
+if (CFTAL_DOXYGEN)
+    cmake_policy(PUSH)
+    cmake_policy(SET CMP0057 OLD)
+    find_package(Doxygen)
+    set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_GENERATE_MAN NO)
+    doxygen_add_docs(
+        doxygen-docs
+        ${PROJECT_SOURCE_DIR}/include/
+        COMMENT "Generate html pages"
+    )
+    cmake_policy(POP)
+endif()
 
 include_directories(include)
 
