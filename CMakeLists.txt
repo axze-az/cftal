@@ -135,6 +135,7 @@ if (CFTAL_DOXYGEN)
     find_package(Doxygen)
     set(DOXYGEN_GENERATE_HTML YES)
     set(DOXYGEN_GENERATE_MAN NO)
+    set(DOXYGEN_PREDEFINED "__AVX__" "__AVX2__" "__SSE2__" "__SSE__")
     doxygen_add_docs(
         doxygen-docs
         ${PROJECT_SOURCE_DIR}/include/
