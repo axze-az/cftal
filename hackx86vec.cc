@@ -422,6 +422,23 @@ fp16_add(cftal::vec<cftal::mf_f16_t, 1> a,
 }
 
 
+void
+transpose4x4(double* d,
+             const double* a)
+{
+    using namespace cftal;
+    v4f64 a0=mem<v4f64>::load(a, 4),
+        a1=mem<v4f64>::load(a+4, 4),
+        a2=mem<v4f64>::load(a+8, 4),
+        a3=mem<v4f64>::load(a+12, 4);
+    transpose_4x4(a0, a1, a2, a3);
+    mem<v4f64>::store(d+0, a0);
+    mem<v4f64>::store(d+4, a1);
+    mem<v4f64>::store(d+8, a2);
+    mem<v4f64>::store(d+12, a3);
+}
+
+
 int main(int argc, char** argv)
 {
     using namespace cftal;
