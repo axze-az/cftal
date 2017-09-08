@@ -747,9 +747,7 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm0;
     auto e=__frexp_k(mm0, xp);
     e=copy_odd_to_even(e);
-    // do a division by 3
-    // vi2_type e3 = (((e)*fac_1_3)>>shift_1_3) -(e>>31);
-    // do a division by 3 rounded to - infinity
+    // do a division by 12 rounded to - infinity
     const vi2_type v_bias_12(12*_T::bias()), v_bias(_T::bias());
     vi2_type e12_with_bias = (((e+v_bias_12)*fac_1_12)>>shift_1_12);
     vi2_type e12 =e12_with_bias - v_bias;
