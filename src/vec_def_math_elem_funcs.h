@@ -7,6 +7,7 @@
 #if !defined (__CFTAL_VEC_DEF_MATH_ELEM_FUNCS_H__)
 #define __CFTAL_VEC_DEF_MATH_ELEM_FUNCS_H__ 1
 
+
 #define DEF_TRAITS_FUNC(vec_float, vec_int, real_type)  \
     using traits_t=cftal::math::func_traits<vec_float,  \
                                             vec_int>;   \

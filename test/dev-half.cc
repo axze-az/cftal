@@ -35,7 +35,6 @@
     floatn powr(floatn x, floatn y);
  */
 
-#define EXP 1
 
 namespace cftal {
 

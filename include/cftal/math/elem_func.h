@@ -20,6 +20,7 @@
 #include <limits>
 #include <utility>
 #include <stdexcept>
+#include </home/axel/iaca-lin64/include/iacaMarks.h>
 
 namespace cftal {
 
@@ -305,6 +306,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 exp2(arg_t<vf_type> d)
 {
+    IACA_START
     vf_type res=base_type:: template exp2_k<false>(d);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp2_hi_inf= fc::exp2_hi_inf();
@@ -313,6 +315,7 @@ exp2(arg_t<vf_type> d)
     res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
     // res = _T::sel(d == 0.0, 1.0, res);
     // res = _T::sel(d == 1.0, 2.0, res);
+    IACA_END
     return res;
 }
 

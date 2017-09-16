@@ -143,6 +143,7 @@ namespace cftal {
     }
 }
 
+
 template <typename _T>
 inline
 typename cftal::math::test_func<double, _T>::vf_type
