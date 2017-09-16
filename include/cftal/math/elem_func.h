@@ -306,7 +306,6 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 exp2(arg_t<vf_type> d)
 {
-    IACA_START
     vf_type res=base_type:: template exp2_k<false>(d);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp2_hi_inf= fc::exp2_hi_inf();
@@ -315,7 +314,6 @@ exp2(arg_t<vf_type> d)
     res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
     // res = _T::sel(d == 0.0, 1.0, res);
     // res = _T::sel(d == 1.0, 2.0, res);
-    IACA_END
     return res;
 }
 
@@ -553,7 +551,6 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     res = _T::sel(d == 0.0, 1.0, res);
     res = _T::sel(d == 1.0, M_E, res);
 #endif
-
     // guess the result if the calculation failed
     vmf_type res_nan = isnan(res);
     vmf_type abs_x_lt_1 = abs(x) < 1.0;

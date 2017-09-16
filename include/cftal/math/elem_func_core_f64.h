@@ -1895,6 +1895,7 @@ __pow_log2_k(arg_t<vf_type> xc)
     xr = _T::sel(c, xr*2.0, xr);
     kf = _T::sel(c, kf-1.0, kf);
 #else
+    IACA_START
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
@@ -1976,6 +1977,7 @@ __pow_log2_k(arg_t<vf_type> xc)
     d_ops::mul22(ph, pl, ph, pl, qh, ql);
     d_ops::add122cond(ph, pl, kf, ph, pl);
     dvf_type log2_x(ph, pl);
+    IACA_END
     return log2_x;
 }
 
