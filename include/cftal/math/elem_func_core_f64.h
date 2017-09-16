@@ -1202,7 +1202,7 @@ exp10_px2_k(arg_t<vf_type> xc)
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10.h(), ctbl::m_ln10.l());
     vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
     using fc_t = math::func_constants<double>;
-    y= _T::sel(x2h <= fc_t::exp10_lo_zero(), vf_type(0), y);
+    y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
     return y;
 }
 
