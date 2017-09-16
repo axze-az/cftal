@@ -44,7 +44,7 @@ cftal::int64_t cftal::rdtsc()
 {
 #if defined (__x86_64__)
     uint64_t a, d;
-    __asm__ __volatile__("lfence;\n\t"
+    __asm__ __volatile__(// "lfence;\n\t" // NO fences during devel
                         "rdtsc" :"=a"(a), "=d"(d) ::"memory");
     return (d<<32) | a;
 #elif defined (__i386__)
