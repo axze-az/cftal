@@ -26,22 +26,34 @@ namespace cftal {
             using f2_t = int (*)(mpfr_t, const mpfr_t,
                                  const mpfr_t, mpfr_rnd_t);
 
+            // call f(a), returns also the interval
+            // containing the unrounded result
             double
             func(double a, f1_t f,
                  std::pair<double, double>* ulp1i= nullptr);
 
+            // call f(a, b), returns also the interval
+            // containing the unrounded result
             double
             func(double a, double b, f2_t f,
                  std::pair<double, double>* ulp1i= nullptr);
 
+            // call f(a), returns also the interval
+            // containing the unrounded result
             float
             func(float a, f1_t f,
                  std::pair<float, float>* ulp1i= nullptr);
 
+            // call f(a, b), returns also the interval
+            // containing the unrounded result
             float
             func(float a, float b, f2_t f,
                  std::pair<float, float>* ulp1i= nullptr);
 
+            // mpfr result to interval conversion:
+            // returns [res, nextafter(res, +inf)] for mpfr_res > 0
+            // returns [nextafter(res, -inf), res] for mpfr_res < 0
+            // returns [res, res] for mpfr_res=0
             template <class _T>
             std::pair<_T, _T>
             ulp1_interval(_T res, int mpfr_res);
