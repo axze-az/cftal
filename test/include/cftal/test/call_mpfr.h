@@ -48,9 +48,9 @@ namespace cftal {
 
         }
 
+        // wrapper around a mpfr_t
         class fpn_handle {
             mpfr_t _v;
-            void cleanup();
         public:
             fpn_handle(std::size_t prec);
             fpn_handle(const mpfr_t t);
@@ -61,11 +61,34 @@ namespace cftal {
             fpn_handle& operator=(const mpfr_t r);
             fpn_handle& operator=(const fpn_handle& r);
             fpn_handle& operator=(fpn_handle&& r);
+            template <class _F>
+            fpn_handle(const d_real<_F>& d, std::size_t prec);
+            template <class _F>
+            fpn_handle(const t_real<_F>& t, std::size_t prec);
             ~fpn_handle();
             mpfr_t& operator()() { return _v; };
             const mpfr_t& operator()() const { return _v; }
             mpfr_prec_t prec() const { return mpfr_get_prec(_v); }
+            explicit operator double() const;
+            explicit operator float() const;
+            explicit operator d_real<double>() const;
+            explicit operator t_real<double>() const;
+            explicit operator d_real<float>() const;
+            explicit operator t_real<float>() const;
         };
+
+        bool
+        operator<(const fpn_handle& a, const fpn_handle& b);
+        bool
+        operator<=(const fpn_handle& a, const fpn_handle& b);
+        bool
+        operator==(const fpn_handle& a, const fpn_handle& b);
+        bool
+        operator!=(const fpn_handle& a, const fpn_handle& b);
+        bool
+        operator>=(const fpn_handle& a, const fpn_handle& b);
+        bool
+        operator>(const fpn_handle& a, const fpn_handle& b);
 
         namespace mpfr_ext {
             // return exp10 with res precision bits
@@ -118,54 +141,12 @@ namespace cftal {
         public:
             mpfr_real() : fpn_handle(_B) {}
             mpfr_real(double x) : fpn_handle(x, _B) {}
-            // mpfr_real(float f) : fpn_handle(f, _B) {}
+            mpfr_real(float f) : fpn_handle(f, _B) {}
             template <class _F>
-            mpfr_real(const d_real<_F>& d);
+            mpfr_real(const d_real<_F>& d) : fpn_handle(d, _B) {}
             template <class _F>
-            mpfr_real(const t_real<_F>& t);
-            explicit operator double() const;
-            explicit operator float() const;
-            explicit operator d_real<double>() const;
-            explicit operator t_real<double>() const;
-            explicit operator d_real<float>() const;
-            explicit operator t_real<float>() const;
+            mpfr_real(const t_real<_F>& t) : fpn_handle(t, _B) {}
         };
-
-        template <std::size_t _B>
-        bool
-        operator<(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return mpfr_cmp(a(), b()) <0;
-        }
-
-        template <std::size_t _B>
-        bool
-        operator<=(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return mpfr_cmp(a(), b()) <=0;
-        }
-
-        template <std::size_t _B>
-        bool
-        operator==(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return mpfr_cmp(a(), b()) ==0;
-        }
-
-        template <std::size_t _B>
-        bool
-        operator!=(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return mpfr_cmp(a(), b()) !=0;
-        }
-
-        template <std::size_t _B>
-        bool
-        operator>=(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return mpfr_cmp(a(), b()) >=0;
-        }
-
-        template <std::size_t _B>
-        bool
-        operator>(const mpfr_real<_B>& a, const mpfr_real<_B>& b) {
-            return mpfr_cmp(a(), b()) >0;
-        }
 
         template <std::size_t _B>
         const mpfr_real<_B>&
@@ -415,89 +396,136 @@ cftal::test::fpn_handle::operator=(const mpfr_t r)
 }
 
 
+template <class _F>
+inline
+cftal::test::fpn_handle::fpn_handle(const d_real<_F>& d, std::size_t p)
+    : fpn_handle(d.h(), p)
+{
+    fpn_handle t(d.l(), p);
+    mpfr_add(_v, _v, t(), MPFR_RNDN);
+}
+
+template <class _F>
+inline
+cftal::test::fpn_handle::fpn_handle(const t_real<_F>& d, std::size_t p)
+    : fpn_handle(d.h(), p)
+{
+    fpn_handle m(d.m(), p);
+    mpfr_add(_v, _v, m(), MPFR_RNDN);
+    fpn_handle l(d.l(), p);
+    mpfr_add(_v, _v, l(), MPFR_RNDN);
+}
+
 inline
 cftal::test::fpn_handle::~fpn_handle()
 {
     mpfr_clear(_v);
 }
 
-template <std::size_t _B>
-template <class _F>
-cftal::test::mpfr_real<_B>::mpfr_real(const d_real<_F>& d)
-    : fpn_handle(d.h(), _B)
+inline
+cftal::test::fpn_handle::operator double() const
 {
-    mpfr_real<_B> l(d.l());
-    *this += l;
-}
-
-template <std::size_t _B>
-template <class _F>
-cftal::test::mpfr_real<_B>::mpfr_real(const t_real<_F>& d)
-    : fpn_handle(d.h(), _B)
-{
-    mpfr_real<_B> m(d.m());
-    mpfr_real<_B> l(d.l());
-    *this += m;
-    *this += l;
-}
-
-template <std::size_t _B>
-cftal::test::mpfr_real<_B>::operator double() const
-{
-    mpfr_real<_B> t(*this);
-    double r=mpfr_get_d(t(), MPFR_RNDN);
+    double r=mpfr_get_d(_v, MPFR_RNDN);
     return r;
 }
 
-template <std::size_t _B>
-cftal::test::mpfr_real<_B>::operator d_real<double>() const
+inline
+cftal::test::fpn_handle::operator d_real<double>() const
 {
-    mpfr_real<_B> t(*this);
-    double h= double(t);
-    t -= mpfr_real<_B>(h);
-    double l= double(t);
+    double h=mpfr_get_d(_v, MPFR_RNDN);
+    fpn_handle th(h, prec());
+    fpn_handle tr(prec());
+    mpfr_sub(tr(), _v, th(), MPFR_RNDN);
+    double l=mpfr_get_d(tr(), MPFR_RNDN);
     return d_real<double>(h, l);
 }
 
-template <std::size_t _B>
-cftal::test::mpfr_real<_B>::operator t_real<double>() const
+inline
+cftal::test::fpn_handle::operator t_real<double>() const
 {
-    mpfr_real<_B> t(*this);
-    double h= double(t);
-    t -= mpfr_real<_B>(h);
-    double m= double(t);
-    t -= mpfr_real<_B>(m);
-    double l= double(t);
+    double h=mpfr_get_d(_v, MPFR_RNDN);
+    fpn_handle th(h, prec());
+    fpn_handle tr(prec());
+    mpfr_sub(tr(), _v, th(), MPFR_RNDN);
+    double m=mpfr_get_d(tr(), MPFR_RNDN);
+    fpn_handle tm(m, prec());
+    mpfr_sub(tr(), tr(), tm(), MPFR_RNDN);
+    double l=mpfr_get_d(tr(), MPFR_RNDN);
     return t_real<double>(h, m, l);
 }
 
-template <std::size_t _B>
-cftal::test::mpfr_real<_B>::operator float() const
+inline
+cftal::test::fpn_handle::operator float() const
 {
-    float r=mpfr_get_flt((*this)(), MPFR_RNDN);
+    float r=mpfr_get_flt(_v, MPFR_RNDN);
     return r;
 }
 
-template <std::size_t _B>
-cftal::test::mpfr_real<_B>::operator d_real<float>() const
+inline
+cftal::test::fpn_handle::operator d_real<float>() const
 {
-    mpfr_real<_B> t(*this);
-    float h= float(t);
-    t -= mpfr_real<_B>(h);
-    float l= float(t);
+    float h=mpfr_get_flt(_v, MPFR_RNDN);
+    fpn_handle th(h, prec());
+    fpn_handle tr(prec());
+    mpfr_sub(tr(), _v, th(), MPFR_RNDN);
+    float l=mpfr_get_flt(tr(), MPFR_RNDN);
     return d_real<float>(h, l);
 }
 
-template <std::size_t _B>
-cftal::test::mpfr_real<_B>::operator t_real<float>() const
+inline
+cftal::test::fpn_handle::operator t_real<float>() const
 {
-    mpfr_real<_B> t(*this);
-    float h= float(t);
-    t -= mpfr_real<_B>(h);
-    float m= float(t);
-    t -= mpfr_real<_B>(m);
-    float l= float(t);
+    float h=mpfr_get_flt(_v, MPFR_RNDN);
+    fpn_handle th(h, prec());
+    fpn_handle tr(prec());
+    mpfr_sub(tr(), _v, th(), MPFR_RNDN);
+    float m=mpfr_get_flt(tr(), MPFR_RNDN);
+    fpn_handle tm(m, prec());
+    mpfr_sub(tr(), tr(), tm(), MPFR_RNDN);
+    float l=mpfr_get_flt(tr(), MPFR_RNDN);
     return t_real<float>(h, m, l);
+}
+
+inline
+bool
+cftal::test::operator<(const fpn_handle& a, const fpn_handle& b)
+{
+    return mpfr_less_p(a(), b());
+}
+
+inline
+bool
+cftal::test::operator<=(const fpn_handle& a, const fpn_handle& b)
+{
+    return mpfr_lessequal_p(a(), b());
+}
+
+inline
+bool
+cftal::test::operator==(const fpn_handle& a, const fpn_handle& b)
+{
+    return mpfr_equal_p(a(), b());
+}
+
+inline
+bool
+cftal::test::operator!=(const fpn_handle& a, const fpn_handle& b)
+{
+    return !mpfr_equal_p(a(), b());
+}
+
+inline
+bool
+cftal::test::operator>=(const fpn_handle& a, const fpn_handle& b)
+{
+    return mpfr_greaterequal_p(a(), b());
+}
+
+inline
+bool
+cftal::test::operator>(const fpn_handle& a, const fpn_handle& b)
+{
+    return mpfr_greater_p(a(), b());
 }
 
 

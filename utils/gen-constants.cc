@@ -555,14 +555,14 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << to_stream(d, v)
       << ");\n"
       << std::endl;
-    v= exp(f_t(0.75))/f_t(2)-f_t(1);
+    v= exp(f_t(0.75))/f_t(2.0)-f_t(1.0);
     s << "template <class _T>\nconst _T\n"
       << "cftal::math::impl::" << pfx << "::m_exp_3_4_m_1("
         "\n    "
       << to_stream(d, v)
       << ");\n"
       << std::endl;
-    v= exp(f_t(-0.75))/f_t(2);
+    v= exp(f_t(-0.75))/f_t(2.0);
     s << "template <class _T>\nconst _T\n"
       << "cftal::math::impl::" << pfx << "::m_1_exp_3_4("
         "\n    "

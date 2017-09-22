@@ -355,7 +355,7 @@ _T
 cftal::test::abs_err(_T a0, _T a1)
 {
     _T d= a0 - a1;
-    return select(d > _T(0), d , -d);
+    return select(d > _T(0.0), d , -d);
 }
 
 template <class _T>
