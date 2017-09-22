@@ -12,7 +12,7 @@
 int main()
 {
     std::cerr << std::setprecision(20);
-#if 0
+#if 1
     using namespace cftal::test;
     std::cerr << "t_real<double>:\n";
     bool rd= cftal::test::check_x_real<cftal::t_real, double,

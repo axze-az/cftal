@@ -118,7 +118,7 @@ namespace cftal {
             static
             double eps() {
                 // return std::pow(2, -64);
-                return std::ldexp(1.0, -71);
+                return std::ldexp(1.0, -66);
             }
             template <typename _D, typename _RND>
             static
@@ -231,7 +231,7 @@ ops(_X<_T> a0, _X<_T> b0)
     vr = min(va, vb);
     rc &= check(vr, r, "min");
 
-    r = a > _R(0) ? a : -a;
+    r = a > _R(0.0) ? a : -a;
     vr = abs(va);
     rc &= check(vr, r, "abs");
 
