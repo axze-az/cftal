@@ -951,8 +951,12 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                      exp_c4);
     vf_type y=horner(xrh, i, j, exp_c3);
     vf_type ye;
-    // y= horner(xrh, y, exp_c2);
+#if 1
     horner_comp_quick(y, ye, xrh, y, exp_c2, exp_c1);
+#else
+    y= horner(xrh, y, exp_c2);
+    horner_comp_quick(y, ye, xrh, y, exp_c1);
+#endif
     // calculate expm1/xrh for correction term
     vf_type yl=y+ye;
     horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
