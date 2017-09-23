@@ -350,6 +350,10 @@ namespace cftal {
 
             static
             void
+            sqr12(_T& rh, _T& rl, const _T& u);
+
+            static
+            void
             mul12(_T& rh, _T& rl, const _T& u, const _T& v);
 
             static
@@ -390,6 +394,10 @@ namespace cftal {
 
             static
             d_real<_T> sqr(const d_real<_T>& a);
+
+            static
+            void
+            sqr12(_T& rh, _T& rl, const _T& u);
 
             static
             void
@@ -930,6 +938,16 @@ template <typename _T>
 inline
 void
 cftal::impl::d_real_ops_fma<_T, true>::
+sqr12(_T& rh, _T& rl, const _T& u)
+{
+    rh = u * u;
+    rl = fms(u, u, rh);
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_fma<_T, true>::
 mul12(_T& rh, _T& rl, const _T& u, const _T& v)
 {
     rh = u * v;
@@ -951,6 +969,20 @@ mul22(_T& pzh, _T& pzl,
     pzh = ph + pl;
     pzl = ph - pzh;
     pzl+= pl;
+}
+
+template <typename _T>
+inline __attribute__((always_inline))
+void
+cftal::impl::d_real_ops_fma<_T, false>::
+sqr12(_T& rh, _T& rl, const _T& a)
+{
+    _T a_h, a_l;
+    using traits=d_real_traits<_T>;
+    traits::split(a, a_h, a_l);
+    rh=a*a;
+    _T t= a_h * a_l;
+    rl=((a_h*a_h-rh)+t+t)+a_l*a_l;
 }
 
 template <typename _T>

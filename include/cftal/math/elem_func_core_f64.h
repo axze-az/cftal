@@ -1039,7 +1039,13 @@ cftal::math::elem_func_core<double, _T>::
 exp_mx2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, -xc);
+    if (d_real_traits<vf_type>::fma) {
+        d_ops::mul12(x2h, x2l, xc, -xc);
+    } else {
+        d_ops::sqr12(x2h, x2l, xc);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
     vf_type xrh, xrl, kf;
     auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
     vf_type y= __exp_k<false>(xrh, xrl, kf, k);
@@ -1055,7 +1061,7 @@ cftal::math::elem_func_core<double, _T>::
 exp_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, xc);
+    d_ops::sqr12(x2h, x2l, xc);
     vf_type xrh, xrl, kf;
     auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
     vf_type y= __exp_k<false>(xrh, xrl, kf, k);
@@ -1089,6 +1095,23 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp2_mx2_k(arg_t<vf_type> xc)
 {
+#if 1
+    vf_type x2h, x2l;
+    d_ops::sqr12(x2h, x2l, xc);
+    x2h = -x2h;
+    x2l = -x2l;
+    vf_type kf = rint(vf_type(x2h));
+    vi_type k = _T::cvt_f_to_i(kf);
+    vi2_type k2= _T::vi_to_vi2(k);
+    vf_type xrh, xrl;
+    d_ops::add122cond(xrh, xrl, -kf, x2h, x2l);
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
+    using fc_t = math::func_constants<double>;
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
+    return y;
+#else
     vf_type x2h, x2l;
     d_ops::mul12(x2h, x2l, xc, -xc);
     vf_type kf = rint(vf_type(x2h));
@@ -1102,6 +1125,7 @@ exp2_mx2_k(arg_t<vf_type> xc)
     using fc_t = math::func_constants<double>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
     return y;
+#endif
 }
 
 template <typename _T>

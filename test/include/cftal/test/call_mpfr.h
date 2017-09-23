@@ -51,8 +51,8 @@ namespace cftal {
                  std::pair<float, float>* ulp1i= nullptr);
 
             // mpfr result to interval conversion:
-            // returns [res, nextafter(res, +inf)] for mpfr_res > 0
-            // returns [nextafter(res, -inf), res] for mpfr_res < 0
+            // returns [nextafter(res, -inf), res] for mpfr_res > 0
+            // returns [res, nextafter(res, +inf)] for mpfr_res < 0
             // returns [res, res] for mpfr_res=0
             template <class _T>
             std::pair<_T, _T>
@@ -64,7 +64,7 @@ namespace cftal {
         class fpn_handle {
             mpfr_t _v;
         public:
-            fpn_handle(std::size_t prec);
+            explicit fpn_handle(std::size_t prec);
             fpn_handle(const mpfr_t t);
             fpn_handle(double x, std::size_t prec);
             fpn_handle(float x, std::size_t prec);
