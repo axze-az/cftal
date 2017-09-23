@@ -949,15 +949,16 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                      exp_c8,
                      exp_c6,
                      exp_c4);
-    vf_type y=horner(xrh, i, j, exp_c3, exp_c2);
+    vf_type y=horner(xrh, i, j, exp_c3);
     vf_type ye;
-    horner_comp_quick(y, ye, xrh, y, exp_c1);
+    // y= horner(xrh, y, exp_c2);
+    horner_comp_quick(y, ye, xrh, y, exp_c2, exp_c1);
     // calculate expm1/xrh for correction term
     vf_type yl=y+ye;
     horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
-
     vf_type yee= xrl + xrl * xrh * yl;
     ye += yee;
+
     if (_EXP_M1 == false) {
         y += ye;
         y = __scale_exp_k(y, kf, k2);
@@ -1039,7 +1040,7 @@ cftal::math::elem_func_core<double, _T>::
 exp_mx2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    if (d_real_traits<vf_type>::fma) {
+    if (d_real_traits<vf_type>::fma==true) {
         d_ops::mul12(x2h, x2l, xc, -xc);
     } else {
         d_ops::sqr12(x2h, x2l, xc);
@@ -1080,8 +1081,8 @@ exp2_k(arg_t<vf_type> x)
     vf_type kf= rint(vf_type(x));
     vi_type k = _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type xr = x - kf;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type xrh, xrl;
     // for exp2 mul12 would be sufficient
     d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2.h(), ctbl::m_ln2.l());
@@ -1095,37 +1096,25 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp2_mx2_k(arg_t<vf_type> xc)
 {
-#if 1
     vf_type x2h, x2l;
-    d_ops::sqr12(x2h, x2l, xc);
-    x2h = -x2h;
-    x2l = -x2l;
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(x2h, x2l, xc, -xc);
+    } else {
+        d_ops::sqr12(x2h, x2l, xc);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
     vf_type kf = rint(vf_type(x2h));
     vi_type k = _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);
     vf_type xrh, xrl;
-    d_ops::add122cond(xrh, xrl, -kf, x2h, x2l);
+    d_ops::add122cond(xrh, xrl, vf_type(-kf), x2h, x2l);
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
     vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
     using fc_t = math::func_constants<double>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
     return y;
-#else
-    vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, -xc);
-    vf_type kf = rint(vf_type(x2h));
-    vi_type k = _T::cvt_f_to_i(kf);
-    vi2_type k2= _T::vi_to_vi2(k);
-    vf_type xrh, xrl;
-    d_ops::add122cond(xrh, xrl, -kf, x2h, x2l);
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
-    vf_type y= __exp_k<false>(xrh, xrl, kf, k2);
-    using fc_t = math::func_constants<double>;
-    y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
-    return y;
-#endif
 }
 
 template <typename _T>
@@ -1135,8 +1124,7 @@ cftal::math::elem_func_core<double, _T>::
 exp2_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, xc);
-
+    d_ops::sqr12(x2h, x2l, xc);
     vf_type kf = rint(vf_type(x2h));
     vi_type k = _T::cvt_f_to_i(kf);
     vi2_type k2= _T::vi_to_vi2(k);
@@ -1183,8 +1171,13 @@ cftal::math::elem_func_core<double, _T>::
 exp10_mx2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, -xc);
-
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(x2h, x2l, xc, -xc);
+    } else {
+        d_ops::sqr12(x2h, x2l, xc);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2.h()));
     vi_type k = _T::cvt_f_to_i(kf);
@@ -1210,7 +1203,7 @@ cftal::math::elem_func_core<double, _T>::
 exp10_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, xc);
+    d_ops::sqr12(x2h, x2l, xc);
 
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2.h()));
