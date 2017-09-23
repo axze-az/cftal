@@ -120,7 +120,6 @@ typename cftal::math::spec_func_core<double, _T>::vf_type
 cftal::math::spec_func_core<double, _T>::
 erf_k(arg_t<vf_type> xc)
 {
-
     vf_type x=abs(xc);
 
     auto i0 = [x]() -> vf_type {

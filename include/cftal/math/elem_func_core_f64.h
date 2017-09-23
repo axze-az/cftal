@@ -29,7 +29,7 @@
 #include <cftal/math/impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
 
-#include <iostream>
+// #include <iostream>
 
 namespace cftal {
     namespace math {
