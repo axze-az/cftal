@@ -80,9 +80,15 @@ namespace cftal {
             template <bool _EXP_M1>
             static
             vf_type
+            __native_exp_div_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+                               arg_t<vf_type> kf, arg_t<vi2_type> k);
+
+            template <bool _EXP_M1>
+            static
+            vf_type
             __native_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                            arg_t<vf_type> kf, arg_t<vi2_type> k);
-
+            
             template <bool _EXP_M1>
             static
             vf_type
@@ -307,7 +313,6 @@ namespace cftal {
     }
 }
 
-
 template <typename _T>
 template <bool _EXP_M1>
 __attribute__((always_inline))
@@ -316,6 +321,17 @@ typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::
 __native_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                arg_t<vf_type> kf, arg_t<vi2_type> k2)
+{
+}
+
+template <typename _T>
+template <bool _EXP_M1>
+__attribute__((always_inline))
+inline
+typename cftal::math::test_func<double, _T>::vf_type
+cftal::math::test_func<double, _T>::
+__native_exp_div_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+                   arg_t<vf_type> kf, arg_t<vi2_type> k2)
 {
     vf_type y;
     if (_EXP_M1 == false) {
@@ -516,7 +532,7 @@ native_exp_k(arg_t<vf_type> xc)
 {
     vf_type xrh, xrl, kf;
     auto k=base_type::__reduce_exp_arg(xrh, xrl, kf, xc);
-    vf_type y=__native_exp_k<_EXP_M1>(xrh, xrl, kf, k);
+    vf_type y=__native_exp_div_k<_EXP_M1>(xrh, xrl, kf, k);
     return y;
 }
 
