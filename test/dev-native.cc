@@ -16,7 +16,7 @@
 #include <iostream>
 #include <iomanip>
 #include <memory>
-#include </home/axel/iaca-lin64/include/iacaMarks.h>
+// #include </home/axel/iaca-lin64/include/iacaMarks.h>
 
 /*
     floatn cos(floatn x);
@@ -317,7 +317,6 @@ cftal::math::test_func<double, _T>::
 __native_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                arg_t<vf_type> kf, arg_t<vi2_type> k2)
 {
-    IACA_START
     vf_type y;
     if (_EXP_M1 == false) {
         // exp(x) = 1 + 2x/(2-x+x^2*P(x^2)
@@ -505,7 +504,6 @@ __native_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         // ym = _T::sel(abs(x) < 0x1p-54, x, ym);
         y = ym;
     }
-    IACA_END
     return y;
 }
 
