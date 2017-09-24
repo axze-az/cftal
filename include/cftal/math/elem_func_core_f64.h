@@ -1974,6 +1974,7 @@ __pow_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type yee= xrl + xrl * xrh * yl;
     ye += yee;
     y += ye;
+    y = __scale_exp_k(y, kf, k2);
     return y;
 }
 
