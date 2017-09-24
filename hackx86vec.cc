@@ -454,6 +454,15 @@ int main(int argc, char** argv)
               << t3.s32() << std::endl;
 
     std::cout << rsqrt(v1f32(0.0/0.0)) << std::endl;
+    d_real<float> f=9.419280052185058594;
+    f *= f;
+    std::cout << std::hexfloat << f.h() << ' ' << f.l()
+              << std::endl
+              << 8.872283935546875000000000e+01f
+              << std::endl
+              << std::numeric_limits<float>::max()
+              << std::endl;
+
 #if 0
     bytes8 t(0, 0x3fe6a09e);
     const double d=(M_SQRT2/2) - t.f64();
