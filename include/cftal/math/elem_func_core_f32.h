@@ -1005,10 +1005,16 @@ exp_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
+    using fc_t = math::func_constants<float>;
+    vmf_type border_case = (x2h == fc_t::exp_hi_inf()) &
+        (x2l < 0.0);
+    vf_type t= 0x1.02p-17f;
+    x2h = _T::sel(border_case, x2h - t, x2h);
+    x2l = _T::sel(border_case, x2l + t, x2l);
+
     vf_type xrh, xrl, kf;
     auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
     vf_type y= __exp_k<false>(xrh, xrl, kf, k);
-    using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), y);
     return y;
 }
