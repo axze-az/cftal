@@ -982,7 +982,13 @@ cftal::math::elem_func_core<float, _T>::
 exp_mx2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, -xc);
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(x2h, x2l, xc, -xc);
+    } else {
+        d_ops::sqr12(x2h, x2l, xc);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
     vf_type xrh, xrl, kf;
     auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
     vf_type y= __exp_k<false>(xrh, xrl, kf, k);
@@ -998,7 +1004,7 @@ cftal::math::elem_func_core<float, _T>::
 exp_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, xc);
+    d_ops::sqr12(x2h, x2l, xc);
     vf_type xrh, xrl, kf;
     auto k=__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
     vf_type y= __exp_k<false>(xrh, xrl, kf, k);
@@ -1032,7 +1038,13 @@ cftal::math::elem_func_core<float, _T>::
 exp2_mx2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, -xc);
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(x2h, x2l, xc, -xc);
+    } else {
+        d_ops::sqr12(x2h, x2l, xc);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
     vf_type kf = rint(vf_type(x2h));
     vi_type k = _T::cvt_f_to_i(kf);
     vf_type xrh, xrl;
@@ -1052,7 +1064,7 @@ cftal::math::elem_func_core<float, _T>::
 exp2_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, xc);
+    d_ops::sqr12(x2h, x2l, xc);
     vf_type kf = rint(vf_type(x2h));
     vi_type k = _T::cvt_f_to_i(kf);
     vf_type xrh, xrl;
@@ -1096,8 +1108,13 @@ cftal::math::elem_func_core<float, _T>::
 exp10_mx2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, -xc);
-
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(x2h, x2l, xc, -xc);
+    } else {
+        d_ops::sqr12(x2h, x2l, xc);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2.h()));
     vi_type k = _T::cvt_f_to_i(kf);
@@ -1122,7 +1139,7 @@ cftal::math::elem_func_core<float, _T>::
 exp10_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
-    d_ops::mul12(x2h, x2l, xc, xc);
+    d_ops::sqr12(x2h, x2l, xc);
 
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2.h()));
