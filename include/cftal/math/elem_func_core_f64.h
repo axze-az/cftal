@@ -242,6 +242,7 @@ namespace cftal {
 
             enum log_func {
                 c_log_e,
+                c_log1p_e,
                 c_log_2,
                 c_log_10
             };
@@ -1658,8 +1659,11 @@ inline
 __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-nlog_k(arg_t<vf_type> xc)
+nlog_k(arg_t<vf_type> xc0)
 {
+    vf_type xc= xc0;
+    if (_F==c_log1p_e)
+        xc = xc0 + 1.0;
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
@@ -1701,11 +1705,7 @@ nlog_k(arg_t<vf_type> xc)
     const vf_type log_c19=+8.7501330214586989231229e-02;
     dvf_type ds2=sqr(ds);
     vf_type s2= ds2.h();
-    vf_type qh, ql;
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul22(qh, ql,
-                 ds.h(), ds.l(),
-                 ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l());
 #if 1
     vf_type s4=s2*s2;
     vf_type p1= horner(s4,
@@ -1732,13 +1732,26 @@ nlog_k(arg_t<vf_type> xc)
 #endif
     vf_type ph, pl;
     horner_comp_quick(ph, pl, s2, p, log_c3, log_c1);
-    if (_F == log_func::c_log_e) {
+    if (_F == log_func::c_log_e || _F == log_func::c_log1p_e) {
         vf_type kfh, kfl;
         d_ops::mul122(kfh, kfl, kf, ctbl::m_ln2.h(), ctbl::m_ln2.l());
         d_ops::mul22(ph, pl, ds.h(), ds.l(), ph, pl);
         d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
     } else if (_F == log_func::c_log_2) {
+        vf_type qh, ql;
+        d_ops::mul22(qh, ql,
+                     ds.h(), ds.l(),
+                     ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l());
+        d_ops::mul22(ph, pl, qh, ql, ph, pl);
+        d_ops::add122cond(ph, pl, kf, ph, pl);
     } else if (_F == log_func::c_log_10) {
+        vf_type qh, ql;
+        d_ops::mul22(qh, ql, ds.h(), ds.l(),
+                     ctbl::m_1_ln10.h(), ctbl::m_1_ln10.l());
+        vf_type kfh, kfl;
+        d_ops::mul122(kfh, kfl, kf, ctbl::m_lg2.h(), ctbl::m_lg2.l());
+        d_ops::mul22(ph, pl, qh, ql, ph, pl);
+        d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
     }
     return ph + pl;
 #if 0
@@ -1765,6 +1778,10 @@ log_k(arg_t<vf_type> xc, log_func func)
 {
     if (func==c_log_e) {
         return nlog_k<c_log_e>(xc);
+    } else if (func==c_log_2) {
+        return nlog_k<c_log_2>(xc);
+    } else if (func==c_log_10) {
+        return nlog_k<c_log_10>(xc);
     }
 /* origin: FreeBSD /usr/src/lib/msun/src/e_log.c */
 /*
@@ -1910,6 +1927,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log1p_k(arg_t<vf_type> xc)
 {
+    // return nlog_k<c_log1p_e>(xc);
 /* double log1p(double x)
  * Return the natural logarithm of 1+x.
  *
