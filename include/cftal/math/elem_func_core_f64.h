@@ -1721,20 +1721,20 @@ nlog_k(arg_t<vf_type> xc)
     vf_type p= horner(s2, p1, p2);
 #else
     vf_type p= horner(s2,
-                      pow_log_c19,
-                      pow_log_c17,
-                      pow_log_c15,
-                      pow_log_c13,
-                      pow_log_c11,
-                      pow_log_c9,
-                      pow_log_c7,
-                      pow_log_c5);
+                      log_c19,
+                      log_c17,
+                      log_c15,
+                      log_c13,
+                      log_c11,
+                      log_c9,
+                      log_c7,
+                      log_c5);
 #endif
     vf_type ph, pl;
     horner_comp_quick(ph, pl, s2, p, log_c3, log_c1);
     if (_F == log_func::c_log_e) {
         vf_type kfh, kfl;
-        d_ops::mul12(kfh, kfl, kf, ctbl::m_ln2.h()/*, ctbl::m_ln2.l()*/);
+        d_ops::mul122(kfh, kfl, kf, ctbl::m_ln2.h(), ctbl::m_ln2.l());
         d_ops::mul22(ph, pl, ds.h(), ds.l(), ph, pl);
         d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
     } else if (_F == log_func::c_log_2) {
