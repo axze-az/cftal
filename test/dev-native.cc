@@ -89,6 +89,10 @@ namespace cftal {
             __native_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                            arg_t<vf_type> kf, arg_t<vi2_type> k);
 
+            static
+            vf_type
+            native_log_k(arg_t<vf_type> x);
+
             template <bool _EXP_M1>
             static
             vf_type
@@ -101,6 +105,10 @@ namespace cftal {
             static
             vf_type
             native_expm1(arg_t<vf_type> x);
+
+            static
+            vf_type
+            native_log(arg_t<vf_type> x);
         };
 
         template <typename _T>
@@ -309,6 +317,35 @@ namespace cftal {
             }
         };
 
+        template <typename _T>
+        struct check_native_log {
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a) {
+                using traits_t=math::func_traits<vec<_T, _N>,
+                                                 vec<int32_t, _N> >;
+                using func_t=math::test_func<_T, traits_t>;
+                auto r=func_t::native_log(a);
+                return r;
+            }
+            static
+            auto
+            r(const _T& a) {
+                std::pair<_T, _T> i;
+                _T v=call_mpfr::func(a, mpfr_log, &i);
+                return std::make_tuple(v, i.first, i.second);
+            }
+            static
+            _T
+            s(const _T& a) {
+                return std::log(a);
+            }
+            static
+            const char* fname() {
+                return "native_log";
+            }
+        };
 
     }
 }
@@ -608,6 +645,40 @@ __native_exp_div_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 }
 
 template <typename _T>
+inline
+typename cftal::math::test_func<double, _T>::vf_type
+cftal::math::test_func<double, _T>::
+native_log_k(arg_t<vf_type> xc)
+{
+    using fc = func_constants<double>;
+    vmf_type is_denom=xc <= fc::max_denormal();
+    vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
+    vi2_type k=_T::sel_val_or_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
+    vi2_type lx, hx;
+    _T::extract_words(lx, hx, x);
+    /* reduce x into [sqrt(2)/2, sqrt(2)] */
+    hx += 0x3ff00000 - 0x3fe6a09e;
+    k += (hx>>20) - _T::bias();
+    hx = (hx&0x000fffff) + 0x3fe6a09e;
+    vf_type xr = _T::combine_words(lx, hx);
+
+    vf_type xm = xr - 1.0;
+    vf_type xp = xr + 1.0;
+    vf_type s= xm/xp;
+    vf_type z= s*s;
+
+    vf_type P= base_type::log_k_poly(z);
+    vf_type kf= _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
+
+    vf_type log_x = s*(P-xm);
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+    log_x += kf * ctbl::m_ln2_cw[1];
+    log_x += xm;
+    log_x += kf * ctbl::m_ln2_cw[0];
+    return log_x;
+}
+
+template <typename _T>
 template <bool _EXP_M1>
 inline
 typename cftal::math::test_func<double, _T>::vf_type
@@ -639,6 +710,29 @@ native_exp(arg_t<vf_type> d)
     // res = _T::sel(d == 0.0, 1.0, res);
     // res = _T::sel(d == 1.0, M_E, res);
     return res;
+}
+
+template <typename  _T>
+inline
+typename cftal::math::test_func<double, _T>::vf_type
+cftal::math::test_func<double, _T>::
+native_log(arg_t<vf_type> d)
+{
+    vf_type x = native_log_k(d);
+    const vf_type pinf(_T::pinf());
+    const vf_type ninf(_T::ninf());
+    x = _T::sel(isinf(d), pinf, x);
+    // if (d < 0) x = NAN;
+    x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
+    // if (d == 0) x = -INFINITY;
+    x = _T::sel(d == vf_type(0.0), ninf, x);
+    // NAN --> n_and_1
+    x = _T::sel(isnan(d), d, x);
+    // using fc= func_constants<_FLOAT_T>;
+    // const vf_type log_lo_fin= fc::log_lo_fin;
+    // const vf_type log_lo_val= fc::log_lo_val;
+    // x = _T::sel(d == log_lo_fin, log_lo_val, x);
+    return x;
 }
 
 template <typename _T>
@@ -760,11 +854,54 @@ int main_native_expm1(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
+int main_native_log(int argc, char** argv)
+{
+    using namespace cftal::test;
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
+    const int ulp=1;
+    const int _N=8;
+    bool rc=true;
+    bool speed_only=false;
+    std::size_t cnt=update_cnt(0x8000);
+    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
+        speed_only=true;
+        cnt *=8;
+    } else {
+        std::string test_data_dir = dirname(argv[0]);
+        std::string test_data_file=
+            append_filename(test_data_dir, "../../test/data/log.testdata");
+        if (argc > 1) {
+            test_data_dir = argv[1];
+            test_data_file = append_filename(test_data_dir, "log.testdata");
+        }
+        std::vector<func_arg_result<double> > v=
+            read_double_file(test_data_file, false);
+        rc&= check_func_1<double, 1, check_native_log<double> >(v, ulp, 0, false);
+        rc&= check_func_1<double, 2, check_native_log<double> >(v, ulp, 0, false);
+        rc&= check_func_1<double, 4, check_native_log<double> >(v, ulp, 0, false);
+        rc&= check_func_1<double, 8, check_native_log<double> >(v, ulp, 0, false);
+    }
+    func_domain<double> d=std::make_pair(0.0,
+                                         std::numeric_limits< double >::max());
+    auto us=std::make_shared<ulp_stats>();
+    exec_stats st(_N);
+    rc &= of_fp_func_up_to<
+        double, _N, check_native_log<double> >::v(st, d, speed_only,
+                                           cmp_ulp<double>(ulp, us),
+                                           cnt);
+    std::cout << "ulps: "
+              << std::fixed << std::setprecision(4) << *us << std::endl;
+    std::cout << st << std::endl;
+    return (rc == true) ? 0 : 1;
+}
+
 
 int main(int argc, char** argv)
 {
     int r=0;
     // r |= main_native_exp(argc, argv);
-    r |= main_native_expm1(argc, argv);
+    // r |= main_native_expm1(argc, argv);
+    r = main_native_log(argc, argv);
     return r;
 }
