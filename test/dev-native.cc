@@ -663,6 +663,8 @@ native_log_k(arg_t<vf_type> xc)
     vf_type xr = _T::combine_words(lx, hx);
 
     vf_type xm = xr - 1.0;
+    // xm^2 = xr^2 - 2.0 xr + 1.0
+    // 1/2 xm^2 = 0.5 * xr^2 - xr + 1.0
     vf_type xp = xr + 1.0;
     vf_type s= xm/xp;
     vf_type z= s*s;
