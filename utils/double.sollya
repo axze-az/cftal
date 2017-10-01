@@ -62,7 +62,6 @@ write_approx_prec(p, f, i);
 write_coeffs(p, "const double exp_c", "exp", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-poly-f64");
 // implementpoly(p, i, 0x1p-53, DD, "exp_poly_k", "expn.c");
-implementpoly(p, i, 0x1p-54, D , "f", "f.c");
 
 /* expm1(x) f64 */
 f= 6*((x*(exp(x)+1)/(exp(x)-1))-2)/(x^2);
@@ -363,22 +362,6 @@ write_coeffs(p, "const vf_type erf_i0_c", "erf_i0", b, c);
 write_coeff(2/sqrt(pi), "", "const vf_type two_o_sqrt_pi", doubledouble);
 plot((p(x)-f(x))/f(x), i,
                        postscriptfile, "erf_i0-f64");
-
-/*
-   pow:
-   log function = log((1-s)/(1+s));
-*/
-f = 3/2*log((1+x)/(1-x))/x;
-i= [0x1p-58, (sqrt(3/2)-1)/(1+sqrt(3/2))];
-d = guessdegree(f, i, 0x1p-60);
-d;
-b = [|4, 6, 8, 10, 12, 14|];
-c = [|D...|];
-p = fpminimax(f, b, c, i, relative, floating, 3+x^2);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type pow_log_c", "pow_log", b, c);
-plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "pow-log-f64");
 
 /* rsqrt f64 */
 f= 1.0/sqrt(x);

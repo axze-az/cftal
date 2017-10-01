@@ -7,7 +7,21 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
+i=[1/6.0, 1/26.5];
+deg=25;
+f=exp(1/x*1/x)*1/x*erfc(1/x);
+// efl=chebyshevform(f, deg, i);
+// p=efl[0];
+b=[|0, ..., deg|];
+c= [|D, D...|];
+p=fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double erfc_asymp_c", "erfc", b, c);
+plot(log(abs(p(x)-f(x))), i, postscriptfile, "erfc-i-n-f64");
+implementpoly(p, i, 0x1p-52, D, "erfc_i_n", "erfc_i_n.c");
+
 /* a simple polynomial for exp f64 */
+/*
 f = exp(x);
 i = [-log(2)/2, log(2)/2];
 d = guessdegree(f, i, 0x1p-53);
@@ -19,6 +33,7 @@ write_approx_prec(p, f, i);
 write_coeffs(p, "const double nat_exp_c", "exp", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-poly-f64");
 implementpoly(p, i, 0x1p-54, D , "f", "f.c");
+*/
 
 approx_on_interval = proc(f, i, b, c, pfx, n) {
     var d, p, cname, psfile, fname, lname;
@@ -35,18 +50,7 @@ approx_on_interval = proc(f, i, b, c, pfx, n) {
     // plot((p(x)-f(x))/f(x), i, postscriptfile, psfile);
 };
 
-/*
-i=[6, 27.23];
-deg=25;
-f=erfc(x);
-efl=chebyshevform(f, deg, i);
-b=[|0, ..., deg|];
-c= [|D, D...|];
-p=efl[0];
-write_approx_prec(p, f, i);
-write_coeffs(p, "erfc_cheb_", "erfc", b, c);
-plot(log(abs(p(x)-f(x))), i, postscriptfile, "erfc-f64");
-*/
+
 
 //b=[|0, ..., deg|];
 // p1 = fpminimax(f, b, c, i, relative, floating);

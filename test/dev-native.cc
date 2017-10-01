@@ -902,8 +902,8 @@ int main_native_log(int argc, char** argv)
 int main(int argc, char** argv)
 {
     int r=0;
-    // r |= main_native_exp(argc, argv);
+    r |= main_native_exp(argc, argv);
     // r |= main_native_expm1(argc, argv);
-    r = main_native_log(argc, argv);
+    // r = main_native_log(argc, argv);
     return r;
 }
