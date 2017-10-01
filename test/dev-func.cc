@@ -300,9 +300,8 @@ erfc_k(arg_t<vf_type> xc)
                       erfc_asymp_c4,
                       erfc_asymp_c3,
                 erfc_asymp_c2,
-                erfc_asymp_c1,
-                erfc_asymp_c0);
-
+                erfc_asymp_c1);
+    horner_comp(ea, eal, inv_x, ea, erfc_asymp_c0);
     vf_type x2h, x2l;
     if (d_real_traits<vf_type>::fma==true) {
         d_ops::mul12(x2h, x2l, xc, -xc);
@@ -314,7 +313,7 @@ erfc_k(arg_t<vf_type> xc)
     vf_type xrh, xrl, kf;
     auto k=base_type::__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
     vf_type exl, ex= base_type::__pow_exp_k(xrh, xrl, kf, k, &exl);
-    d_ops::mul122(ea, eal, ea, ex, exl);
+    d_ops::mul22(ea, eal, ea, eal, ex, exl);
     dvf_type t(ea, eal);
     t = d_ops::sloppy_div(t, xc);
     return t.h()+t.l();
