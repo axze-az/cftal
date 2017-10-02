@@ -111,6 +111,8 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::store()
     // sort the results:
     std::cout << "info: moving the results"<< std::endl;
     std::move(std::begin(_m), std::end(_m), std::back_inserter(_v));
+    // does not help anything because the memory is not given back
+    // to the system :-(
     _m.clear();
     std::cout << "info: sorting the results"<< std::endl;
     std::sort(std::begin(_v), std::end(_v),
@@ -172,7 +174,7 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::
 empty()
     const
 {
-    return _v.empty();
+    return _v.empty() && _m.empty();
 }
 
 cftal::test::mpfr_cache::f1_cache_map

@@ -7,11 +7,9 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
-i=[1/6.0, 1/26.5];
+i=[0.75, 3];
 deg=25;
-f=exp(1/x*1/x)*1/x*erfc(1/x);
-// efl=chebyshevform(f, deg, i);
-// p=efl[0];
+f=exp(x*x)*x*erfc(x);
 b=[|0, ..., deg|];
 c= [|D, D...|];
 p=fpminimax(f, b, c, i, relative, floating);

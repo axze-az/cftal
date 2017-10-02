@@ -6,7 +6,7 @@
 //
 #include "cftal/test/of_math_funcs.h"
 #include "cftal/test/check_exp.h"
-// #include "cftal/test/mpfr_cache.h"
+#include "cftal/test/mpfr_cache.h"
 #include <iostream>
 #include <iomanip>
 
