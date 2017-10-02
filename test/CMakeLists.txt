@@ -11,6 +11,7 @@ set (TEST_SRCS
   of_fp_funcs.cc
   of_math_funcs.cc
   call_mpfr.cc
+  mpfr_cache.cc
 )
 include_directories(../..)
 include_directories(../include)
@@ -88,9 +89,17 @@ find_library(LIBMPFR mpfr REQUIRED)
 if (LIBMPFR)
     message(${LIBMPFR})
 endif()
-find_file(HDRMPFR mpfr.h)
+find_file(HDRMPFR mpfr.h REQUIRED)
 if (HDRMPFR)
     message(${HDRMPFR})
+endif()
+find_library(LIBSQLITE3 sqlite3 REQUIRED)
+if (LIBSQLITE3)
+    message(${LIBSQLITE3})
+endif()
+find_file(HDRQLITE3 sqlite3.h REQUIRED)
+if (HDRQLITE3)
+    message(${HDRQLITE3})
 endif()
 
 function(target_add_mpfr_libs arg1)
@@ -107,6 +116,7 @@ set_target_properties(cftal-test PROPERTIES
 target_link_libraries(cftal-test cftal-so)
 target_link_libraries(cftal-test stdc++fs)
 target_add_mpfr_libs(cftal-test)
+target_link_libraries(cftal-test ${LIBSQLITE3})
 enable_testing()
 
 function(target_add_test_libs arg1)

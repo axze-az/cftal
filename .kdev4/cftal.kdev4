@@ -9,18 +9,18 @@ ProjectRootRelative=./
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/build
 Build Type=release
-CMake Binary=file:///usr/bin/cmake
+CMake Binary=/usr/bin/cmake
 Environment Profile=
 Extra Arguments=
-Install Directory=file:///usr/local
+Install Directory=/usr/local
 
 [CMake][CMake Build Directory 1]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/debug
 Build Type=debug
-CMake Binary=file:///usr/bin/cmake
+CMake Binary=/usr/bin/cmake
 Environment Profile=
 Extra Arguments=
-Install Directory=file:///usr/local
+Install Directory=/usr/local
 
 [CMake][CMake Build Directory 2]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/profile

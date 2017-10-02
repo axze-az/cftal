@@ -5,6 +5,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/mpfr_cache.h>
 #include <mutex>
 #include <cstdarg>
 #include <vector>
@@ -20,11 +21,28 @@ double
 cftal::test::call_mpfr::
 func(double a, f1_t f, std::pair<double, double>* ulp1i)
 {
+#if 0
     MPFR_DECL_INIT(ai, 53);
     MPFR_DECL_INIT(r, 53);
     mpfr_set_d(ai, a, GMP_RNDN);
     int mpres=f(r, ai, GMP_RNDN);
     double dr=mpfr_get_d(r, GMP_RNDN);
+#else
+    mpfr_cache::mpfr_result<double> c;
+    auto pf= mpfr_cache::result(a, f, c);
+    if (pf == nullptr) {
+        MPFR_DECL_INIT(ai, 53);
+        MPFR_DECL_INIT(r, 53);
+        mpfr_set_d(ai, a, GMP_RNDN);
+        int mpres=f(r, ai, GMP_RNDN);
+        double dr=mpfr_get_d(r, GMP_RNDN);
+        c._mpfr_res= mpres;
+        c._res = dr;
+        mpfr_cache::update(a, f, c);
+    }
+    double dr=c._res;
+    int mpres=c._mpfr_res;
+#endif
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }

@@ -23,6 +23,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
+        call_mpfr::func(0.0, mpfr_exp);
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
             append_filename(test_data_dir, "../../test/data/exp.testdata");

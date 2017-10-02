@@ -20,9 +20,10 @@ namespace cftal {
     namespace test {
 
         namespace call_mpfr {
-
+            // mpfr function with one argument
             using f1_t = int (*)(mpfr_t, const mpfr_t,
                                  mpfr_rnd_t);
+            // mpfr function with two arguments
             using f2_t = int (*)(mpfr_t, const mpfr_t,
                                  const mpfr_t, mpfr_rnd_t);
 
