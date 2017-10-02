@@ -70,11 +70,28 @@ float
 cftal::test::call_mpfr::
 func(float a, f1_t f, std::pair<float, float>* ulp1i)
 {
+#if 0
     MPFR_DECL_INIT(ai, 24);
     MPFR_DECL_INIT(r, 24);
     mpfr_set_flt(ai, a, GMP_RNDN);
     int mpres=f(r, ai, GMP_RNDN);
     float dr=mpfr_get_flt(r, GMP_RNDN);
+#else
+    mpfr_cache::mpfr_result<float> c;
+    auto pf= mpfr_cache::result(a, f, c);
+    if (pf == nullptr) {
+        MPFR_DECL_INIT(ai, 24);
+        MPFR_DECL_INIT(r, 24);
+        mpfr_set_flt(ai, a, GMP_RNDN);
+        int mpres=f(r, ai, GMP_RNDN);
+        float dr=mpfr_get_flt(r, GMP_RNDN);
+        c._mpfr_res= mpres;
+        c._res = dr;
+        mpfr_cache::update(a, f, c);
+    }
+    float dr=c._res;
+    int mpres=c._mpfr_res;
+#endif
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }

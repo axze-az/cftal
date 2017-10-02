@@ -4,6 +4,7 @@
 #include <cftal/config.h>
 #include <cftal/std_types.h>
 #include <cftal/test/call_mpfr.h>
+#include <string>
 
 namespace cftal {
     namespace test {
@@ -21,9 +22,22 @@ namespace cftal {
             // returns nullptr if nothing was found
             const mpfr_result<double>*
             result(double a, f1_t f, mpfr_result<double>& spc);
-            // update the data base
+            // update the data base if f is cached
             void
             update(double a, f1_t f, const mpfr_result<double>& r);
+            // enable caching for f in func-name-f64.bin
+            void
+            use(f1_t f, const std::string& func_name, double v);
+
+            // returns nullptr if nothing was found
+            const mpfr_result<float>*
+            result(float a, f1_t f, mpfr_result<float>& spc);
+            // update the data base if f is cached
+            void
+            update(float a, f1_t f, const mpfr_result<float>& r);
+            // enable caching for f in func-name-f32.bin
+            void
+            use(f1_t f, const std::string& func_name, float v);
 
         }
     }

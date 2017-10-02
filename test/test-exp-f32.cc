@@ -6,6 +6,7 @@
 //
 #include "cftal/test/of_math_funcs.h"
 #include "cftal/test/check_exp.h"
+// #include "cftal/test/mpfr_cache.h"
 #include <iostream>
 #include <iomanip>
 
@@ -22,6 +23,8 @@ int main(int argc, char** argv)
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
+    } else {
+        // mpfr_cache::use(mpfr_exp, "exp", 0.0f);
     }
     exec_stats st(_N);
     func_domain<float> d=std::make_pair(-104.0f, 89.0f);
