@@ -655,7 +655,6 @@ namespace cftal {
 
 template <typename _T>
 inline
-__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_common<_T>::
 add12(_T& s, _T& r, const _T& a, const _T& b)
@@ -669,7 +668,6 @@ add12(_T& s, _T& r, const _T& a, const _T& b)
 
 template <typename _T>
 inline
-__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_common<_T>::
 add12cond(_T& s, _T& r, const _T& a, const _T& b)

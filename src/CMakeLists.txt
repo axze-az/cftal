@@ -175,7 +175,7 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -Winline")
         set (CMAKE_CXX_FLAGS_RELEASE
-            "${CMAKE_CXX_FLAGS_RELEASE} --param inline-unit-growth=100")
+            "${CMAKE_CXX_FLAGS_RELEASE} --param inline-unit-growth=1000")
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} --param large-function-growth=1000")
         set (CMAKE_CXX_FLAGS_RELEASE
