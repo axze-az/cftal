@@ -588,11 +588,11 @@ int main_erfc(int argc, char** argv)
     } else {
         mpfr_cache::use(mpfr_erfc, "erfc", 0.0);
     }
-    // func_domain<double> d=std::make_pair(6, 27.25);
+    func_domain<double> d=std::make_pair(6, 27.25);
     //func_domain<double> d=std::make_pair(-0.75, 0.75);
     // func_domain<double> d=std::make_pair(0.75, 3.0);
     // func_domain<double> d=std::make_pair(3.0, 6.0);
-    func_domain<double> d=std::make_pair(-27.25, 27.25);
+    // func_domain<double> d=std::make_pair(-27.25, 27.25);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
