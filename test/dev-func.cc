@@ -287,7 +287,8 @@ erfc_k(arg_t<vf_type> xc)
 #if 1
             i1h = horner(x,
                              erfc_i1_c25,
-                             erfc_i1_c24);
+                             erfc_i1_c24
+                        );
             horner_comp(i1h, i1l, x,
                             i1h,
                              erfc_i1_c23,
@@ -398,7 +399,7 @@ erfc_k(arg_t<vf_type> xc)
             // x^25 : +0x8.a8ea5c03759d8p-65
             const double erfc_i2_c25=+2.3472505517695831739038e-19;
 #if 1
-            horner_comp(i2h, i2l, x, i2h,
+            horner_comp(i2h, i2l, x,
                         erfc_i2_c25, erfc_i2_c24,
                              erfc_i2_c23,
                              erfc_i2_c22,
@@ -543,7 +544,7 @@ erfc_k(arg_t<vf_type> xc)
         d_ops::mul22(i123h, i123l, i123h, i123l, exh, exl);
         // divide by x
         dvf_type t(i123h, i123l);
-        dvf_type r = d_ops::sloppy_div(t, x);
+        dvf_type r = d_ops::div(t, x);
         i123h = r.h();
         i123l = r.l();
     }
@@ -591,8 +592,8 @@ int main_erfc(int argc, char** argv)
     // func_domain<double> d=std::make_pair(6, 27.25);
     // func_domain<double> d=std::make_pair(-0.75, 0.75);
     // func_domain<double> d=std::make_pair(0.75, 3.0);
-    // func_domain<double> d=std::make_pair(3.0, 6.0);
-    func_domain<double> d=std::make_pair(-27.25, 27.25);
+    func_domain<double> d=std::make_pair(3.0, 6.0);
+    // func_domain<double> d=std::make_pair(-27.25, 27.25);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
