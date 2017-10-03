@@ -522,6 +522,7 @@ template <typename _T, std::size_t _N>
 template <template <class _U, std::size_t _M>
           class _OP,
           class _L, class _R>
+inline
 cftal::vec<_T, _N>::vec(const expr<_OP<_T, _N>, _L, _R>& r)
     : vec(eval(r))
 {
