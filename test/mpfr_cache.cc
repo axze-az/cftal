@@ -9,6 +9,7 @@
 
 namespace cftal { namespace test { namespace mpfr_cache {
 
+    // these object may be really large
     template <typename _K, typename _R>
     class result_cache {
         using key_type = _K;
@@ -21,15 +22,29 @@ namespace cftal { namespace test { namespace mpfr_cache {
         vec_type _v;
         map_type _m;
         std::string _file_name;
-    public:
-        // file as argument
-        result_cache(const std::string& fn);
-        // stores if not empty
-        ~result_cache();
+        bool _save;
+        // move _m into _v and sort _v
+        void
+        move_map_to_vec();
+        // load from _file_name
         void
         load();
+        // save to to _file_name
         void
         store();
+
+        const std::size_t move_treshold= 1<<25;
+    public:
+        result_cache()= delete;
+        result_cache(const result_cache&) = delete;
+        result_cache& operator=(const result_cache&)= delete;
+        result_cache& operator=(result_cache&&)= delete;
+        // file as argument
+        result_cache(const std::string& fn);
+        // move constructor
+        result_cache(result_cache&& r);
+        // stores if not empty
+        ~result_cache();
 
         const mapped_type*
         find(const key_type& k)
@@ -46,33 +61,51 @@ namespace cftal { namespace test { namespace mpfr_cache {
     using f1_f64_map = result_cache<int64_t, int64_t>;
     using f1_f32_map = result_cache<int32_t, int32_t>;
 
-    struct f1_cache_entry {
+    static
+    std::string file_name(const std::string& a, const std::string& t);
+
+    struct f1_64_cache_entry {
         std::string _name;
-        f1_f32_map _m32;
         f1_f64_map _m64;
-        f1_cache_entry(const std::string& name)
+        f1_64_cache_entry(const std::string& name)
             : _name(name),
-              _m32(file_name(name, "f32")),
               _m64(file_name(name, "f64")) {
         }
-        static
-        std::string
-        file_name(const std::string& a,
-                  const std::string& t);
     };
 
-    using f1_cache_map=std::map<f1_t, f1_cache_entry>;
-    extern f1_cache_map f1_entries;
+    struct f1_32_cache_entry {
+        std::string _name;
+        f1_f32_map _m32;
+        f1_32_cache_entry(const std::string& name)
+            : _name(name),
+              _m32(file_name(name, "f32")) {
+        }
+    };
 
-    f1_cache_entry*
-    lookup(f1_t f);
+    using f1_64_cache_map=std::map<f1_t, f1_64_cache_entry>;
+    extern f1_64_cache_map f1_64_entries;
+
+    using f1_32_cache_map=std::map<f1_t, f1_32_cache_entry>;
+    extern f1_32_cache_map f1_32_entries;
+
 
 }}}
 
 template <typename _K, typename _R>
 cftal::test::mpfr_cache::result_cache<_K, _R>::
 result_cache(const std::string& fn)
-    : _file_name(fn)
+    : _file_name(fn), _save(false)
+{
+    load();
+}
+
+template <typename _K, typename _R>
+cftal::test::mpfr_cache::result_cache<_K, _R>::
+result_cache(result_cache&& r)
+    : _v(std::move(r._v)),
+      _m(std::move(r._m)),
+      _file_name(std::move(r._file_name)),
+      _save(std::move(r._save))
 {
 }
 
@@ -81,6 +114,26 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::
 ~result_cache()
 {
     store();
+}
+
+template <typename _K, typename _R>
+void
+cftal::test::mpfr_cache::result_cache<_K, _R>::
+move_map_to_vec()
+{
+    if (_m.empty())
+        return;
+    std::size_t vs=_v.size(), ms= _m.size(), s=vs+ms;
+    _v.reserve(s);
+    std::move(std::begin(_m), std::end(_m), std::back_inserter(_v));
+    // does not help anything because the memory is not given back
+    // to the system :-(
+    _m.clear();
+    std::sort(std::begin(_v), std::end(_v),
+              [](const value_type& a, const value_type& b)->bool {
+                  return a < b;
+              });
+    _save = true;
 }
 
 template <typename _K, typename _R>
@@ -104,22 +157,9 @@ void
 cftal::test::mpfr_cache::result_cache<_K, _R>::store()
 {
     std::size_t vs=_v.size(), ms= _m.size(), s=vs+ms;
-    if (ms==0)
+    move_map_to_vec();
+    if (_save == false)
         return;
-    _v.reserve(s);
-    std::cout << "writing cache into " << _file_name << std::endl;
-    // sort the results:
-    std::cout << "info: moving the results"<< std::endl;
-    std::move(std::begin(_m), std::end(_m), std::back_inserter(_v));
-    // does not help anything because the memory is not given back
-    // to the system :-(
-    _m.clear();
-    std::cout << "info: sorting the results"<< std::endl;
-    std::sort(std::begin(_v), std::end(_v),
-              [](const value_type& a, const value_type& b)->bool {
-                  return a < b;
-              });
-    std::cout << "info: writing the results"<< std::endl;
     std::ofstream f(_file_name.c_str(),
                     std::ios::binary | std::ios::trunc | std::ios::out);
     using c_t = std::ifstream::char_type;
@@ -147,6 +187,7 @@ find(const key_type& k)
         --vf;
         if (vf->first == k) {
             pr = &vf->second;
+            return pr;
         }
     }
     // map lookup if nothing was found
@@ -166,6 +207,8 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::
 insert(const value_type& v)
 {
     _m.insert(v);
+    if (_m.size() >= move_treshold)
+        move_map_to_vec();
 }
 
 template <typename _K, typename _R>
@@ -177,22 +220,15 @@ empty()
     return _v.empty() && _m.empty();
 }
 
-cftal::test::mpfr_cache::f1_cache_map
-cftal::test::mpfr_cache::f1_entries;
+cftal::test::mpfr_cache::f1_32_cache_map
+cftal::test::mpfr_cache::f1_32_entries;
 
-cftal::test::mpfr_cache::f1_cache_entry*
-cftal::test::mpfr_cache::lookup(f1_t f)
-{
-    f1_cache_entry* r=nullptr;
-    auto ff= f1_entries.find(f);
-    if (ff != std::end(f1_entries)) {
-        r = &ff->second;
-    }
-    return r;
-}
+cftal::test::mpfr_cache::f1_64_cache_map
+cftal::test::mpfr_cache::f1_64_entries;
+
 
 std::string
-cftal::test::mpfr_cache::f1_cache_entry::
+cftal::test::mpfr_cache::
 file_name(const std::string& a, const std::string& t)
 {
     return a+ "-" + t + ".bin";
@@ -203,12 +239,10 @@ cftal::test::mpfr_cache::result(double a, f1_t f,
                                 mpfr_result<double>& r)
 {
     mpfr_result<double>* p=nullptr;
-    f1_cache_entry* pe=lookup(f);
-    if (pe == nullptr)
+    auto i= f1_64_entries.find(f);
+    if (i== std::cend(f1_64_entries))
         return p;
-    if (pe->_m64.empty()) {
-        pe->_m64.load();
-    }
+    f1_64_cache_entry* pe=&i->second;
     int64_t ai= as<int64_t>(a);
     auto pi=pe->_m64.find(ai);
     if (pi == nullptr)
@@ -224,12 +258,10 @@ cftal::test::mpfr_cache::result(float a, f1_t f,
                                 mpfr_result<float>& r)
 {
     mpfr_result<float>* p=nullptr;
-    f1_cache_entry* pe=lookup(f);
-    if (pe == nullptr)
+    auto i= f1_32_entries.find(f);
+    if (i== std::cend(f1_32_entries))
         return p;
-    if (pe->_m32.empty()) {
-        pe->_m32.load();
-    }
+    f1_32_cache_entry* pe=&i->second;
     int32_t ai= as<int32_t>(a);
     auto pi=pe->_m32.find(ai);
     if (pi == nullptr)
@@ -244,12 +276,10 @@ void
 cftal::test::mpfr_cache::update(double a, f1_t f,
                                 const mpfr_result<double>& r)
 {
-    f1_cache_entry* pe=lookup(f);
-    if (pe == nullptr)
+    auto i= f1_64_entries.find(f);
+    if (i== std::cend(f1_64_entries))
         return;
-    if (pe->_m64.empty()) {
-        pe->_m64.load();
-    }
+    f1_64_cache_entry* pe=&i->second;
     int64_t ai= as<int64_t>(a);
     int64_t ri= as<int64_t>(r._res);
     pe->_m64.insert(std::make_pair(ai, std::make_pair(ri, r._mpfr_res)));
@@ -259,12 +289,10 @@ void
 cftal::test::mpfr_cache::update(float a, f1_t f,
                                 const mpfr_result<float>& r)
 {
-    f1_cache_entry* pe=lookup(f);
-    if (pe == nullptr)
+    auto i= f1_32_entries.find(f);
+    if (i== std::cend(f1_32_entries))
         return;
-    if (pe->_m32.empty()) {
-        pe->_m32.load();
-    }
+    f1_32_cache_entry* pe=&i->second;
     int32_t ai= as<int32_t>(a);
     int32_t ri= as<int32_t>(r._res);
     pe->_m32.insert(std::make_pair(ai, std::make_pair(ri, r._mpfr_res)));
@@ -274,10 +302,7 @@ void
 cftal::test::mpfr_cache::
 use(f1_t f, const std::string& fn, double v)
 {
-    auto p=f1_entries.insert(std::make_pair(f, f1_cache_entry(fn.c_str())));
-    f1_cache_entry& e=p.first->second;
-    if (e._m64.empty())
-        e._m64.load();
+    f1_64_entries.insert(std::make_pair(f, f1_64_cache_entry(fn.c_str())));
     static_cast<void>(v);
 }
 
@@ -285,9 +310,6 @@ void
 cftal::test::mpfr_cache::
 use(f1_t f, const std::string& fn, float v)
 {
-    auto p=f1_entries.insert(std::make_pair(f, f1_cache_entry(fn.c_str())));
-    f1_cache_entry& e=p.first->second;
-    if (e._m32.empty())
-        e._m32.load();
+    f1_32_entries.insert(std::make_pair(f, f1_32_cache_entry(fn.c_str())));
     static_cast<void>(v);
 }

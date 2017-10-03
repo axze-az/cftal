@@ -7,6 +7,18 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
+i=[1/6.0, 1/27.25];
+deg=25;
+f=exp(1/x*1/x)*1/x*erfc(1/x);
+b=[|0, ..., deg|];
+c= [|D, D...|];
+p=fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double erfc_asymp_c", "erfc", b, c);
+plot(log(abs(p(x)-f(x))), i, postscriptfile, "erfc-i-n-f64");
+implementpoly(p, i, 0x1p-52, D, "erfc_i_n", "erfc_i_n.c");
+
+/*
 i=[0.75, 3];
 deg=25;
 f=exp(x*x)*x*erfc(x);
@@ -17,7 +29,7 @@ write_approx_prec(p, f, i);
 write_coeffs(p, "const double erfc_asymp_c", "erfc", b, c);
 plot(log(abs(p(x)-f(x))), i, postscriptfile, "erfc-i-n-f64");
 implementpoly(p, i, 0x1p-52, D, "erfc_i_n", "erfc_i_n.c");
-
+*/
 /* a simple polynomial for exp f64 */
 /*
 f = exp(x);
