@@ -578,10 +578,10 @@ int main_erfc(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=32;
-    const int _N=1;
+    const int _N=8;
     bool rc=true;
     bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
+    std::size_t cnt=update_cnt(0x8000);
     if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
         speed_only=true;
         cnt *=8;
