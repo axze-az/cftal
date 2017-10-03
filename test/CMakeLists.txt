@@ -116,7 +116,7 @@ set_target_properties(cftal-test PROPERTIES
 target_link_libraries(cftal-test cftal-so)
 target_link_libraries(cftal-test stdc++fs)
 target_add_mpfr_libs(cftal-test)
-target_link_libraries(cftal-test ${LIBSQLITE3})
+#target_link_libraries(cftal-test ${LIBSQLITE3})
 enable_testing()
 
 function(target_add_test_libs arg1)
