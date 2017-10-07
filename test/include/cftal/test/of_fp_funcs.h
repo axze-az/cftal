@@ -466,7 +466,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
             r &=v(va, st, speed_only, cmp);
         }
     }
-    std::mt19937_64 rnd(2);
+    std::mt19937_64 rnd;
     uniform_real_distribution<_T>
         distrib(domain.first, domain.second);
 
