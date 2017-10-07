@@ -32,6 +32,7 @@ namespace cftal {
             std::uniform_int_distribution<int_type> _i_dist;
             _T _min;
             _T _max;
+            _T _range;
             bool _use_int;
 
             _T trunc_max_val(_T m) {
@@ -58,8 +59,9 @@ namespace cftal {
                 : base_type(trunc_min_val(amin), trunc_max_val(amax)),
                   _i_dist(),
                   _min(amin), _max(amax),
-                  _use_int(1 /*(trunc_min_val(amin) != amin) ||
-                           (trunc_max_val(amax) != amax)*/) {
+                  _range(_max - _min),
+                  _use_int((trunc_min_val(amin) != amin) ||
+                           (trunc_max_val(amax) != amax)) {
             }
 
             template <class _G>
@@ -80,7 +82,11 @@ namespace cftal {
                         break;
                     }
                 } else {
-                    r = base_type::operator()(g);
+                    _T t= _range;
+                    _T rnd= std::generate_canonical<
+                        _T, std::numeric_limits<_T>::digits, _G>(g);
+                    t *= rnd;
+                    r = t + _min;
                 }
                 return r;
             }
