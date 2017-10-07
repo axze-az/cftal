@@ -64,8 +64,12 @@ namespace cftal {
                            (trunc_max_val(amax) != amax)) {
             }
 
+            // switch off fma to get the same random numbers
+            // on machines with and without fma
             template <class _G>
+#if defined (__x86_64__) || defined (__i386__)
             __attribute__((__target__("ieee-fp,no-fma,no-fma4")))
+#endif
             result_type
             operator()(_G& g) {
                 _T r;
