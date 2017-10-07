@@ -65,6 +65,7 @@ namespace cftal {
             }
 
             template <class _G>
+            __attribute__((__target__("ieee-fp,no-fma,no-fma4")))
             result_type
             operator()(_G& g) {
                 _T r;
@@ -86,7 +87,6 @@ namespace cftal {
                     _T rnd= std::generate_canonical<
                         _T, std::numeric_limits<_T>::digits, _G>(g);
                     t *= rnd;
-                    __asm__ __volatile("");
                     r = t + _min;
                 }
                 return r;
