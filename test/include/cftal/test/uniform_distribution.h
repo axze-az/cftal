@@ -58,8 +58,8 @@ namespace cftal {
                 : base_type(trunc_min_val(amin), trunc_max_val(amax)),
                   _i_dist(),
                   _min(amin), _max(amax),
-                  _use_int((trunc_min_val(amin) != amin) ||
-                           (trunc_max_val(amax) != amax)) {
+                  _use_int(1 /*(trunc_min_val(amin) != amin) ||
+                           (trunc_max_val(amax) != amax)*/) {
             }
 
             template <class _G>
