@@ -86,6 +86,7 @@ namespace cftal {
                     _T rnd= std::generate_canonical<
                         _T, std::numeric_limits<_T>::digits, _G>(g);
                     t *= rnd;
+                    __asm__ __volatile("");
                     r = t + _min;
                 }
                 return r;
