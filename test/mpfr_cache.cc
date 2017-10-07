@@ -188,7 +188,6 @@ find(const key_type& k)
         --vf;
         if (vf->first == k) {
             pr = &vf->second;
-            std::cout << "hit" << std::endl;
             return pr;
         }
     }
@@ -198,7 +197,6 @@ find(const key_type& k)
         auto mf=_m.find(k);
         if (mf != me) {
             pr = &mf->second;
-            std::cout << "hit" << std::endl;
         }
     }
     return pr;
