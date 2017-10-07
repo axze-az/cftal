@@ -149,6 +149,7 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::load()
     _v.clear();
     _v.resize(s/sizeof(value_type));
     using c_t = std::ifstream::char_type;
+    std::cout << "reading from " << _file_name << std::endl;
     f.read(reinterpret_cast<c_t*>(_v.data()), s);
 }
 
