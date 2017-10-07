@@ -136,9 +136,9 @@ c = [|DD, D...|];
 p = fpminimax(f, b, c, i, relative, floating);
 p;
 write_approx_prec_shift(p, f, i, im);
-write_coeffs(p, "const vf_type erfc_i1_c", "erfc_i1", b, c);
-write_coeff(il, "", "const vf_type erfc_i1_left", double);
-write_coeff(x0, "", "const vf_type erfc_i1_x0", double);
+write_coeffs(p, "const double erfc_i1_c", "erfc_i1", b, c);
+write_coeff(il, "", "const double erfc_i1_left", double);
+write_coeff(x0, "", "const double erfc_i1_x0", double);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "erfc_i1-f64");
 
 g= exp(x*x)*x*erfc(x);
@@ -158,9 +158,9 @@ c = [|DD, D...|];
 p = fpminimax(f, b, c, i, relative, floating);
 p;
 write_approx_prec_shift(p, f, i, im);
-write_coeffs(p, "const vf_type erfc_i2_c", "erfc_i2", b, c);
-write_coeff(il, "", "const vf_type erfc_i2_left", double);
-write_coeff(x0, "", "const vf_type erfc_i2_x0", double);
+write_coeffs(p, "const double erfc_i2_c", "erfc_i2", b, c);
+write_coeff(il, "", "const double erfc_i2_left", double);
+write_coeff(x0, "", "const double erfc_i2_x0", double);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "erfc_i2-f64");
 
 i=[1/6.0, 1/27.25];
