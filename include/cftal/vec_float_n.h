@@ -638,7 +638,6 @@ namespace cftal {
     vec<float, 16>
     erf(arg<vec<float, 16> >::type d);
 
-#if 0
     // erfc, these functions are exact to XXX ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -658,7 +657,6 @@ namespace cftal {
 
     vec<float, 16>
     erfc(arg<vec<float, 16> >::type d);
-#endif
 
     // pow
     template <std::size_t _N>
@@ -1183,7 +1181,6 @@ cftal::erf(const vec<float, _N>& v)
     return r;
 }
 
-#if 0
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>
@@ -1192,7 +1189,6 @@ cftal::erfc(const vec<float, _N>& v)
     vec<float, _N> r(erfc(low_half(v)), erfc(high_half(v)));
     return r;
 }
-#endif
 
 template <std::size_t _N>
 inline

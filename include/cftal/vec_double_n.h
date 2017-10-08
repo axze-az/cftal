@@ -698,8 +698,7 @@ namespace cftal {
     vec<double, 8>
     erf(arg_t<vec<double, 8> > d);
 
-#if 0
-    // erfc, these functions are exact to XX ulp
+    // erfc, these functions are exact to +-1 ulp but not faithfully rounded
     template <std::size_t _N>
     vec<double, _N>
     erfc(const vec<double, _N>& x);
@@ -715,7 +714,6 @@ namespace cftal {
 
     vec<double, 8>
     erfc(arg_t<vec<double, 8> > d);
-#endif
 
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
@@ -981,7 +979,6 @@ cftal::erf(const vec<double, _N>& v)
     return r;
 }
 
-#if 0
 template <std::size_t _N>
 inline
 cftal::vec<double, _N>
@@ -990,7 +987,6 @@ cftal::erfc(const vec<double, _N>& v)
     vec<double, _N> r(erfc(low_half(v)), erfc(high_half(v)));
     return r;
 }
-#endif
 
 template <std::size_t _N>
 inline
