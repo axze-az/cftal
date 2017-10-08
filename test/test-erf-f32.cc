@@ -26,8 +26,7 @@ int main(int argc, char** argv)
     } else {
         mpfr_cache::use(mpfr_erf, "erf", 0.0f);
     }
-    // func_domain<float> d=std::make_pair(-4.0f, 4.0f);
-    func_domain<float> d=std::make_pair(0.0f, 0.75f);
+    func_domain<float> d=std::make_pair(-4.0f, 4.0f);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
