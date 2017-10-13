@@ -645,7 +645,7 @@ typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::
 native_log2_k(arg_t<vf_type> xc)
 {
-#if 0
+#if 1
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
@@ -772,9 +772,9 @@ native_log2_k(arg_t<vf_type> xc)
     // d_ops::add122cond(lxh, lxl, kf * ctbl::m_ln2_cw[0], lxh, lxl);
     return lxh + lxl;
 #else
-    // auto t= base_type::__pow_log2_k(xc);
-    // return t.h()+t.l();
-    return base_type::log_k(xc, base_type::log_func::c_log_2);
+    auto t= base_type::__pow_log2_k(xc);
+    return t.h()+t.l();
+    // return base_type::log_k(xc, base_type::log_func::c_log_2);
 #endif
 }
 

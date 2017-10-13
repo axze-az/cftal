@@ -68,7 +68,7 @@ namespace cftal {
             // on machines with and without fma
             template <class _G>
 #if defined (__x86_64__) || defined (__i386__)
-            __attribute__((__target__("ieee-fp,no-fma,no-fma4")))
+            __attribute__((__target__("no-fma,no-fma4")))
 #endif
             result_type
             operator()(_G& g) {
