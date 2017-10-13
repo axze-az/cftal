@@ -1889,7 +1889,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log2_k(arg_t<vf_type> xc)
 {
-    return __pow_log2_k(xc).h();
+    // return __pow_log2_k(xc).h();
 /*
  * Return the base 2 logarithm of x.  See log.c for most comments.
  *
@@ -1897,7 +1897,7 @@ log2_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
-    // return log_k(xc, log_func::c_log_2);
+    return log_k(xc, log_func::c_log_2);
 }
 
 template <typename _T>
