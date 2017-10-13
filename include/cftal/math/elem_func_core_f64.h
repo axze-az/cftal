@@ -981,11 +981,10 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         vf_type scale = __scale_exp_k(vf_type(0.5), kf, k2);
         // e^x-1 = 2*(y * 2^s - 0.5)
 #if 1
-        ye *= scale;
         y  *= scale;
         vf_type t;
         d_ops::add12cond(y, t, -0.5, y);
-        ye = 2.0*(ye + t);
+        ye = 2.0 * (ye * scale + t);
         y = 2.0*y + ye;
 #else
         horner_comp_si(y, ye, scale, y, ye, vf_type(-0.5));
