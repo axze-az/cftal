@@ -340,7 +340,7 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::log(a);
+                return std::log2(a);
             }
             static
             const char* fname() {
