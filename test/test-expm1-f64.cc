@@ -6,6 +6,7 @@
 //
 #include "cftal/test/of_math_funcs.h"
 #include "cftal/test/check_expm1.h"
+#include "cftal/test/mpfr_cache.h"
 #include <iostream>
 #include <iomanip>
 
@@ -23,6 +24,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
+        // mpfr_cache::use(mpfr_expm1, "expm1", 0.0);
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
             append_filename(test_data_dir, "../../test/data/expm1.testdata");
