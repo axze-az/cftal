@@ -645,7 +645,7 @@ typename cftal::math::test_func<double, _T>::vf_type
 cftal::math::test_func<double, _T>::
 native_log2_k(arg_t<vf_type> xc)
 {
-#if 1
+#if 0
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
