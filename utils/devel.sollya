@@ -7,27 +7,47 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
-g=exp(1/x*1/x)*1/x*erfc(1/x);
-/* erfc(x) piecewise polynomial approximations */
-g= exp(1/x*1/x)*1/x*erfc(1/x);
-ir=1.0/6.0;
-il=1.0/27.5;
-im= dirtyfindzeros(g(x)-(0.5*(g(il)+g(ir))), [il, ir])[0];
-im= round(im, 24, RN);
-i = [il-im, ir-im];
-i;
-im;
-x0=im;
-deg=25;
-f=g(x+x0);
-b=[|0, ..., deg|];
-c= [|DD, D...|];
-p=fpminimax(f, b, c, i, relative, floating);
+/*
+f = log(1+x);
+i = [sqrt(2)/2-1, -0x1p-512];
+d = guessdegree(f, i, 0x1p-60);
+b = [|1, ..., 17|];
+c = [|D...|];
+d;
+p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const double erfc_i3_c", "erfc", b, c);
-write_coeff(il, "", "const double erfc_i3_left", double);
-write_coeff(x0, "", "const double erfc_i3_x0", double);
-plot(log(abs(p(x)-f(x))), i, postscriptfile, "erfc_i3-f64");
+write_coeffs(p, "const double log_l_c", "log_l", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "log_l-f64");
+implementpoly(p, i, 0x1p-56, D, "log_l", "log_l.c");
+
+f = log(1+x);
+i = [0x1p-512, sqrt(2)-1];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|1, ..., 17|];
+c = [|D...|];
+d;
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double log_r_c", "log_r", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "log_r-f64");
+implementpoly(p, i, 0x1p-56, D, "log_r", "log_r.c");
+*/
+
+f = log(1+x);
+i = [sqrt(2)/2-1, sqrt(2)-1];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|1, ..., 23|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double log_c", "log", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "log-f64");
+implementpoly(p, i, 0x1p-56, D, "log", "log.c");
 
 /*
  * Local variables:
