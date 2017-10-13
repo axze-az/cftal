@@ -36,7 +36,7 @@ plot((p(x)-f(x))/f(x), i,
 implementpoly(p, i, 0x1p-56, D, "log_r", "log_r.c");
 */
 
-f = log(1+x);
+f = log2(1+x);
 i = [sqrt(2)/2-1, sqrt(2)-1];
 d = guessdegree(f, i, 0x1p-60);
 d;
