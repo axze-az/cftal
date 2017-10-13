@@ -7,47 +7,22 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
-/*
-f = log(1+x);
-i = [sqrt(2)/2-1, -0x1p-512];
-d = guessdegree(f, i, 0x1p-60);
-b = [|1, ..., 17|];
-c = [|D...|];
-d;
-p = fpminimax(f, b, c, i, relative, floating);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const double log_l_c", "log_l", b, c);
-plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "log_l-f64");
-implementpoly(p, i, 0x1p-56, D, "log_l", "log_l.c");
-
-f = log(1+x);
-i = [0x1p-512, sqrt(2)-1];
+k = log(2)/4;
+f = exp(x);
+il= -log(2)/2 + 0*k;
+ir= il + k;
+im= dirtyfindzeros(exp(x)-(0.5*(exp(il)+exp(ir))), [il, ir])[0];
+im= round(im, 24, RN);
+i = [il-im, ir-im];
+ll=round(inf(i), 24, RN);
+ll;
+ll=round(sup(i), 24, RN);
+ll;
+x0 = im;
+x0;
+f = exp(x-x0)-exp(x0);
 d = guessdegree(f, i, 0x1p-60);
 d;
-b = [|1, ..., 17|];
-c = [|D...|];
-d;
-p = fpminimax(f, b, c, i, relative, floating);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const double log_r_c", "log_r", b, c);
-plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "log_r-f64");
-implementpoly(p, i, 0x1p-56, D, "log_r", "log_r.c");
-*/
-
-f = log2(1+x);
-i = [sqrt(2)/2-1, sqrt(2)-1];
-d = guessdegree(f, i, 0x1p-60);
-d;
-b = [|1, ..., 23|];
-c = [|D...|];
-p = fpminimax(f, b, c, i, relative, floating);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const double log_c", "log", b, c);
-plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "log-f64");
-implementpoly(p, i, 0x1p-56, D, "log", "log.c");
 
 /*
  * Local variables:
