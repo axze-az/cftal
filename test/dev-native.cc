@@ -11,12 +11,13 @@
 #include "cftal/math/elem_func_core_f32.h"
 #include "cftal/math/impl_estrin.h"
 #include "cftal/test/of_math_funcs.h"
+#include "cftal/test/mpfr_cache.h"
 #include "cftal/test/check_expm1.h"
 #include <tuple>
 #include <iostream>
 #include <iomanip>
 #include <memory>
-#include </home/axel/iaca-lin64/include/iacaMarks.h>
+//#include </home/axel/iaca-lin64/include/iacaMarks.h>
 
 /*
     floatn cos(floatn x);
@@ -406,14 +407,7 @@ __native_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                      nat_exp_c3, nat_exp_c2);
     vf_type ye;
 #if 1
-    if (_EXP_M1 == false) {
-        y = horner(xrh, y, nat_exp_c1);
-    } else {
-        // y = horner(xrh, y, nat_exp_c1);
-        y *= xrh;
-        d_ops::add12cond(y, ye, nat_exp_c1, y);
-        // horner_comp_quick(y, ye, xrh, y, nat_exp_c1);
-    }
+    y = horner(xrh, y, nat_exp_c1);
 #endif
     // calculate expm1/xrh for correction term
     if (_EXP_M1 == false) {
@@ -427,10 +421,11 @@ __native_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     } else {
         vf_type yl=y;
         // y = xrh * y;
-        d_ops::mul122(y, ye, xrh, y, ye);
+        horner_comp_quick(y, ye, xrh, y, nat_exp_c0);
         // correction for errors in argument reduction
         vf_type yee= xrl + xrl * xrh*yl;
         ye= +yee;
+        d_ops::add12(y, ye, y, ye);
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = base_type::__scale_exp_k(vf_type(0.5), kf, k2);
         // e^x-1 = 2*(y * 2^s - 0.5)
@@ -768,6 +763,7 @@ int main_native_exp(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
+        mpfr_cache::use(mpfr_exp, "exp", 0.0);
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
             append_filename(test_data_dir, "../../test/data/exp.testdata");
@@ -807,7 +803,7 @@ int main_native_expm1(int argc, char** argv)
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    const int ulp=1;
+    const int ulp=128;
     const int _N=8;
     bool rc=true;
     bool speed_only=false;
@@ -816,6 +812,7 @@ int main_native_expm1(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
+        mpfr_cache::use(mpfr_expm1, "expm1", 0.0);
 #if 0
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
@@ -902,8 +899,8 @@ int main_native_log(int argc, char** argv)
 int main(int argc, char** argv)
 {
     int r=0;
-    r |= main_native_exp(argc, argv);
-    // r |= main_native_expm1(argc, argv);
+    // r |= main_native_exp(argc, argv);
+    r |= main_native_expm1(argc, argv);
     // r = main_native_log(argc, argv);
     return r;
 }
