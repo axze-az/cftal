@@ -39,9 +39,14 @@ namespace cftal {
                 using base_type::base_type;
                 // definition interval
                 func_domain<_T> _dom;
+                _T _a_plus_b;
+                _T _inv_b_minus_a;
                 // coefficients
                 coefficients(const func_domain<_T>& d, std::size_t n)
-                    : base_type(n, _T(0)), _dom(d) {}
+                    : base_type(n, _T(0)), _dom(d),
+                      _a_plus_b(d.first + d.second),
+                      _inv_b_minus_a(_T(1)/(d.second - d.first)) {
+                }
             };
 
             template <class _T, class _F>
@@ -188,7 +193,8 @@ cftal::test::chebyshev::evaluate(const coefficients<_T>& c, _T x)
         throw std::range_error(
             "cftal::test:chebyshev::evaluate: x out of range");
     }
-    _T y=(_T(2.0)*x-a-b)/(b-a);
+    // _T y=(_T(2.0)*x-a-b)/(b-a);
+    _T y=(_T(2.0)*x-(c._a_plus_b))*c._inv_b_minus_a;
     _T y2=_T(2.0)*y;
     _T d=_T(0), dd=_T(0);
     for (std::size_t j=c.size()-1; j>0; --j) {

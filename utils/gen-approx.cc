@@ -39,14 +39,14 @@ struct calc_f {
 int main()
 {
     using namespace cftal::test;
-    auto pi=interpolate(std::make_pair(-M_LN2, M_LN2),
-                        std::size_t(8), calc_f<double>());
+    auto pi=interpolate(std::make_pair(-M_LN2/2, M_LN2/2),
+                        std::size_t(14), calc_f<double>());
     std::cout << chebyshev::poly_to_table(pi) << "\n";
 
     std::cout << chebyshev::poly_to_maxima(pi) << "\n";
     chebyshev::coefficients<double> c=
-        chebyshev::interpolate(std::make_pair(-M_LN2, M_LN2),
-                               std::size_t(8), calc_f<double>());
+        chebyshev::interpolate(std::make_pair(-M_LN2/2, M_LN2/2),
+                               std::size_t(14), calc_f<double>());
     for (const auto& a : c) {
         std::cout << pr_fp<double>(a) << std::endl;
     }

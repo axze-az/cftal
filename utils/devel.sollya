@@ -7,9 +7,9 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
-k = log(2)/4;
+k = log(2)/2;
 f = exp(x);
-il= -log(2)/2 + 0*k;
+il= -log(2)/2;
 ir= il + k;
 im= dirtyfindzeros(exp(x)-(0.5*(exp(il)+exp(ir))), [il, ir])[0];
 im= round(im, 24, RN);
@@ -20,7 +20,7 @@ ll=round(sup(i), 24, RN);
 ll;
 x0 = im;
 x0;
-f = exp(x-x0)-exp(x0);
+f = exp(x);
 d = guessdegree(f, i, 0x1p-60);
 d;
 

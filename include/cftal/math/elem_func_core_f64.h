@@ -947,19 +947,19 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // x^13 : +0xb.675e3aadcbc88p-36
     const double exp_c13=+1.6594686274338619941159e-10;
     vf_type xx=xrh*xrh;
-    vf_type i=horner(xx,
+    vf_type o=horner(xx,
                      exp_c13,
                      exp_c11,
                      exp_c9,
                      exp_c7,
                      exp_c5);
-    vf_type j=horner(xx,
+    vf_type e=horner(xx,
                      exp_c12,
                      exp_c10,
                      exp_c8,
                      exp_c6,
                      exp_c4);
-    vf_type y=horner(xrh, i, j, exp_c3, exp_c2);
+    vf_type y=horner(xrh, o, e, exp_c3, exp_c2);
     vf_type ye;
     if (_EXP_M1 == false) {
         y *= xrh;
