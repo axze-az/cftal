@@ -24,7 +24,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-        mpfr_cache::use(mpfr_erfc, "erfc", 0.0);
+        // mpfr_cache::use(mpfr_erfc, "erfc", 0.0);
     }
     func_domain<double> d=std::make_pair(-27.25, 27.25);
     auto us=std::make_shared<ulp_stats>();
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     rc &= of_fp_func_up_to<
         double, _N, check_erfc<double> >::v(st, d, speed_only,
                                             cmp_ulp<double>(ulp, us),
-                                            cnt, true);
+                                            cnt);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
