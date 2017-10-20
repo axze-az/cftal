@@ -54,9 +54,9 @@ cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
 erfc(arg_t<vf_type> x)
 {
     vf_type r=base_type::erfc_k(x);
-    // using fc=func_constants<_FLOAT_T>;
-    // r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin, -1.0, r);
-    // r = _TRAITS_T::sel(x > fc::erf_lt_one_fin, 1.0, r);
+    using fc=func_constants<_FLOAT_T>;
+    r = _TRAITS_T::sel_zero_or_val(x > fc::erfc_gt_zero_fin(), r);
+    r = _TRAITS_T::sel(x < -fc::erfc_gt_zero_fin(), 2.0, r);
     r = _TRAITS_T::sel(x == 0, 1.0, r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
