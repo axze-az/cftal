@@ -88,7 +88,7 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::erf(a);
+                return std::erfc(a);
             }
             static
             const char* fname() { return "erfc"; }
