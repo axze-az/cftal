@@ -169,13 +169,14 @@ cftal::test::chebyshev::interpolate(const func_domain<_T>& d,
         _T xs=cos(M_PI*(k+0.5)/n);
         fx[k]=f(default_domain_to(d, xs));
     }
-    _T fac=2.0/n;
+    using _DT = d_real<_T>;
+    _DT fac=_DT(2.0)/_T(n);
     for (std::size_t j=0; j<n; ++j) {
-        _T sum=0.0;
+        _DT sum=0.0;
         for (std::size_t k=0; k<n; ++k) {
-            sum += fx[k]*cos(M_PI*j*(k+0.5)/n);
+            sum += _DT(fx[k])*cos(M_PI*j*(k+0.5)/n);
         }
-        r[j]=fac*sum;
+        r[j]=(fac*sum).h();
     }
     return r;
 }

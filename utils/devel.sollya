@@ -69,7 +69,7 @@ i=[1/4.0, 1/10.0125];
 deg=13;
 f=exp(1/x*1/x)*1/x*erfc(1/x);
 b=[|0, ..., deg|];
-c= [|SG, SG...|];
+c= [|49, SG...|];
 p=fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "const float erfc_i3_c", "erfc", b, c);

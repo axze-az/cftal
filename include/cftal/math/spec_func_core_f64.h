@@ -73,6 +73,7 @@ namespace cftal {
 } // end cftal
 
 
+#if 0
 namespace cftal {
     namespace math {
         namespace impl {
@@ -114,6 +115,7 @@ namespace cftal {
         }
     }
 }
+#endif
 
 template <typename _T>
 typename cftal::math::spec_func_core<double, _T>::vf_type
