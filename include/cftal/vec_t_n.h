@@ -82,7 +82,7 @@ namespace cftal {
 
     template <typename _T>
     struct expr_traits<vec<_T, 1> > {
-        using type = const vec<_T, 1>;
+        using type = const vec<_T, 1>&;
     };
 #endif
 
