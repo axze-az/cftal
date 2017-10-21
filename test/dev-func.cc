@@ -199,6 +199,23 @@ erfc_k(arg_t<vf_type> xc)
 
             vf_type x_i1 = x - erfc_i1_x0;
             vf_type i1h, i1l;
+#if 1
+            vf_type x_i1_sqr= x_i1* x_i1;
+            vf_type e = horner(x_i1_sqr,
+                               erfc_i1_c11,
+                               erfc_i1_c9,
+                               erfc_i1_c7,
+                               erfc_i1_c5);
+            vf_type o = horner(x_i1_sqr,
+                               erfc_i1_c10,
+                               erfc_i1_c8,
+                               erfc_i1_c6,
+                               erfc_i1_c4);
+            i1h = horner(x_i1, e, o,
+                         erfc_i1_c3,
+                         erfc_i1_c2,
+                         erfc_i1_c1);
+#else
             i1h = horner(x_i1,
                          erfc_i1_c11,
                          erfc_i1_c10,
@@ -211,6 +228,7 @@ erfc_k(arg_t<vf_type> xc)
                          erfc_i1_c3,
                          erfc_i1_c2,
                          erfc_i1_c1);
+#endif
             i1h *= x_i1;
             d_ops::add122cond(i1h, i1l, i1h, erfc_i1_c0h, erfc_i1_c0l);
             i123h= i1h;
@@ -251,6 +269,23 @@ erfc_k(arg_t<vf_type> xc)
             const float erfc_i2_x0=+2.5996093750e+00f;
             vf_type x_i2 = x - erfc_i2_x0;
             vf_type i2h, i2l;
+#if 1
+            vf_type x_i2_sqr= x_i2* x_i2;
+            vf_type e = horner(x_i2_sqr,
+                               erfc_i2_c11,
+                               erfc_i2_c9,
+                               erfc_i2_c7,
+                               erfc_i2_c5);
+            vf_type o = horner(x_i2_sqr,
+                               erfc_i2_c10,
+                               erfc_i2_c8,
+                               erfc_i2_c6,
+                               erfc_i2_c4);
+            i2h = horner(x_i2, e, o,
+                         erfc_i2_c3,
+                         erfc_i2_c2,
+                         erfc_i2_c1);
+#else
             i2h = horner(x_i2,
                          erfc_i2_c11,
                          erfc_i2_c10,
@@ -263,6 +298,7 @@ erfc_k(arg_t<vf_type> xc)
                          erfc_i2_c3,
                          erfc_i2_c2,
                          erfc_i2_c1);
+#endif
             i2h *= x_i2;
             d_ops::add122cond(i2h, i2l, i2h, erfc_i2_c0h, erfc_i2_c0l);
             i123h = _T::sel(x_gt_2_00, i2h, i123h);
@@ -380,7 +416,7 @@ int main_erfc(int argc, char** argv)
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    const int ulp=16;
+    const int ulp=1;
     const int _N=16;
     bool rc=true;
     bool speed_only=false;
@@ -401,7 +437,7 @@ int main_erfc(int argc, char** argv)
     rc &= of_fp_func_up_to<
         float, _N, check_erfc<float> >::v(st, d, speed_only,
                                           cmp_ulp<float>(ulp, us),
-                                          cnt);
+                                          cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

@@ -246,7 +246,7 @@ test_prog(test-exp10_px2-f32)
 test_prog(test-root12-f32)
 
 test_prog(test-erf-f32)
-#test_prog(test-erfc-f32)
+test_prog(test-erfc-f32)
 
 test_prog(test-v2)
 
