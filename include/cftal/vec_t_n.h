@@ -74,7 +74,7 @@ namespace cftal {
         pair_type _v;
     };
 
-#if 0
+#if 1
     template <typename _T, std::size_t _N>
     struct expr_traits<vec<_T, _N> > {
         using type = const vec<_T, _N>&;

@@ -13,7 +13,7 @@ namespace cftal {
 
     template <typename _T>
     struct expr_traits {
-        using type = const _T&;
+        using type = const _T;
     };
 
     template <class _OP, class _L, class _R>
