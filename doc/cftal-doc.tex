@@ -5,6 +5,7 @@
 \usepackage[final]{listings}
 \usepackage[bookmarks=true,hidelinks]{hyperref}
 \usepackage[margin=1in]{geometry}
+\usepackage{mathtools}
 \numberwithin{equation}{subsection}
 
 
@@ -177,7 +178,27 @@ their measured maximium deviations against the corresponding functions
 from the mpfr library. The column about faithfully rounding describes if faithfully rounding was observed using a test data set.
 All test programs use the routines from The GNU MPFR library, see
 \cite{mpfr}, \cite{Fousse:2007:MMB:1236463.1236468}, as reference
-implementation.
+implementation.\\[10pt]
+MPFR functions return a function value $res$ rounded to target precision
+and information about the direction of the final rounding $mpfr\_res$.
+The formulaes
+\[
+    \begin{aligned}
+        \left[\text{std::nextafter}(res, -\infty), res\right] &
+            \, \text{ when } mpfr\_res > 0 \\
+        \left[res, \text{std::nextafter}(res, +\infty)\right] &
+            \, \text{ when } mpfr\_res < 0 \\
+        \left[res, res\right] &
+            \, \text{ when } mpfr\_res = 0
+    \end{aligned}
+\]
+describe the conversion between the values $res$ and $mpfr\_res$
+and an interval.\\[10pt]
+The column $\Delta$ulp in the subsections below shows the maximum
+deviation in bits against the GNU MPFR library functions observed,
+this means functions with $\Delta$ulp = 0 are correctly rounded.
+Faithful rounding is achieved if the implemented function returns
+one of the 2 interval borders.
 %
 %Functions with names like native\_xxx implement the function xxx with
 %reduced precision or range or both.
@@ -189,8 +210,8 @@ implementation.
     \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
     \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
     \hline
-    function & $\Delta$ ulp & (prob.) faithfully &
-          $\Delta$ ulp & (prob.) faithfully \\
+    function & $\Delta$ulp & (prob.) faithfully &
+          $\Delta$ulp & (prob.) faithfully \\
     \hline
     ldexp & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
     \hline
@@ -226,8 +247,8 @@ All these functions behave as their counterparts in the std namespace.
     \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
     \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
     \hline
-    function & $\Delta$ ulp & (prob.) faithfully &
-          $\Delta$ ulp & (prob.) faithfully \\
+    function & $\Delta$ulp & (prob.) faithfully &
+          $\Delta$ulp & (prob.) faithfully \\
     \hline
     rsqrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
@@ -247,8 +268,8 @@ $(0, 100), (0, 100)$ is better than mentioned in the table.
     \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
     \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
     \hline
-    function & $\Delta$ ulp & (prob.) faithfully &
-          $\Delta$ ulp & (prob.) faithfully \\
+    function & $\Delta$ulp & (prob.) faithfully &
+          $\Delta$ulp & (prob.) faithfully \\
     \hline
     exp & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
@@ -296,9 +317,9 @@ $(0, 100), (0, 100)$ is better than mentioned in the table.
     \hline
     atanh & $\pm$ 1 & n  & $\pm$ 1 & n \\
     \hline \hline
-    erf & $\pm$ 1 & y  & $\pm$ ? & n \\
-    \hline 
-    erfc & $\pm$ 1 & n  & $\pm$ ? & n \\
+    erf & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    erfc & $\pm$ 1 & n  & $\pm$ 1 & n \\
     \hline
 \end{tabular}\\[10pt]
 The functions exp2m1 and expm10 calculate $2^x-1$ and $10^x-1$ respectively.
@@ -459,23 +480,22 @@ equal to $e$.
     with special care for border cases of k.\\[10pt]
     %
     Reconstruction of all functions similiar to $b^x-1$ uses
-    with $ s  = \frac{1}{2} k $ one step of the error free
-    transformation of the horner's scheme
+    with $ s  = \frac{1}{2} k $
     \begin{equation}
         \begin{aligned}
-            (e^{\frac{1}{2}x_h}-\frac{1}{2}, e^{\frac{1}{2}x_l}-\frac{1}{2})
+            (e^{\frac{x_h}{2}}-\frac{1}{2}, e^{\frac{x_l}{2}}-\frac{1}{2})
                 &=
                     2^s \times (e^{r_h},e^{r_l}) - \frac{1}{2}\\
                 &=
                     (0.5 \times 2^k) \times (e^{r_h},e^{r_l}) - \frac{1}{2}
         \end{aligned}
     \end{equation}
-    for a polynomial of first order in $2^s$ and then combines the two parts
-    of $ e^{\frac{1}{2}x} - \frac{1}{2} $
+    calculated in multiple precision and then combines the two parts
+    of $ e^{\frac{x}{2}} - \frac{1}{2} $
     \begin{equation}
         \begin{aligned}
-        t &= 2 \times ( e^{\frac{1}{2}x_h} -\frac{1}{2} ) \\
-        e ^ x -1 &= t + 2 \times (e^{\frac{1}{2}x_l} -\frac{1}{2})
+        t &= 2 \times ( e^{\frac{x_h}{2}} -\frac{1}{2} ) \\
+        e ^ x -1 &= t + 2 \times (e^{\frac{x_l}{2}} -\frac{1}{2})
         \end{aligned}
     \end{equation}
     into the final result. This rather complicated approach avoids the
