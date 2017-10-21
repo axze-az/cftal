@@ -479,8 +479,8 @@ equal to $e$.
     \end{equation}
     with special care for border cases of k.\\[10pt]
     %
-    Reconstruction of all functions similiar to $b^x-1$ uses
-    with $ s  = \frac{1}{2} k $
+    The reconstruction phase of all functions similiar to $b^x-1$ uses
+    with $ s  = \frac{1}{2} k $ the formulaes
     \begin{equation}
         \begin{aligned}
             (e^{\frac{x_h}{2}}-\frac{1}{2}, e^{\frac{x_l}{2}}-\frac{1}{2})
@@ -490,8 +490,8 @@ equal to $e$.
                     (0.5 \times 2^k) \times (e^{r_h},e^{r_l}) - \frac{1}{2}
         \end{aligned}
     \end{equation}
-    calculated in multiple precision and then combines the two parts
-    of $ e^{\frac{x}{2}} - \frac{1}{2} $
+    calculated in multiple precision. The two parts of
+    $ e^{\frac{x}{2}} - \frac{1}{2} $ are then combined
     \begin{equation}
         \begin{aligned}
         t &= 2 \times ( e^{\frac{x_h}{2}} -\frac{1}{2} ) \\
