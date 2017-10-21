@@ -1,7 +1,3 @@
-- f64 pow
-- f64 erfc
-- f32 pow
-- f32 erfc
 - permutation specializations for v4f64, v8f32, v8u32, v4u64
 
 double
