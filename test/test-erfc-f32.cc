@@ -24,7 +24,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-        mpfr_cache::use(mpfr_erfc, "erfc", 0.0f);
+        // mpfr_cache::use(mpfr_erfc, "erfc", 0.0f);
     }
     // func_domain<float> d=std::make_pair(0.0f, 0.75f);
     // func_domain<float> d=std::make_pair(0.75f, 2.00f);
