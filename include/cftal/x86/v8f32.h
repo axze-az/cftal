@@ -178,6 +178,19 @@ namespace cftal {
     vec<float, 8>
     native_div(const vec<float, 8>& a, const vec<float, 8>& b);
 
+    namespace impl {
+#if defined (__AVX2__)
+        template <std::size_t _L>
+        struct lookup<_L, int32_t, float, 8> {
+            static
+            vec<float, 8>
+            v(const vec<int32_t, 8>& idx, const float* tbl) {
+                return _mm256_i32gather_ps(idx(), p, sizeof(float));
+            }
+        };
+#endif
+    }
+
     namespace op {
 
         template <>

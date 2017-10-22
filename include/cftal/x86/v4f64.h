@@ -157,6 +157,19 @@ namespace cftal {
     permute(const vec<double, 4>& s0,
             const vec<double, 4>& s1);
 
+    namespace impl {
+#if defined (__AVX2__)
+        template <std::size_t _L>
+        struct lookup<_L, int32_t, double, 4> {
+            static
+            vec<double, 4>
+            v(const vec<int32_t, 4>& idx, const double* tbl) {
+                return _mm256_i32gather_pd(idx(), p, sizeof(double));
+            }
+        };
+#endif
+    }
+
     namespace op {
 
         template <>
