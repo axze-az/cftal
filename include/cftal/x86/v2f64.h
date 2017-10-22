@@ -168,7 +168,7 @@ namespace cftal {
             vec<double, 2>
             v(const vec<int32_t, 2>& idx, const double* tbl) {
                 vec<int32_t, 4> i(idx, idx);
-                return _mm_i32gather_pd(i(), tbl, sizeof(double));
+                return _mm_i32gather_pd(tbl, i(), sizeof(double));
             }
         };
 #endif

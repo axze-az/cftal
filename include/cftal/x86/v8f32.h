@@ -185,7 +185,7 @@ namespace cftal {
             static
             vec<float, 8>
             v(const vec<int32_t, 8>& idx, const float* tbl) {
-                return _mm256_i32gather_ps(idx(), tbl, sizeof(float));
+                return _mm256_i32gather_ps(tbl, idx(), sizeof(float));
             }
         };
 #endif
