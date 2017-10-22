@@ -183,7 +183,7 @@ namespace cftal {
             static
             vec<float, 4>
             v(const vec<int32_t, 4>& idx, const float* tbl) {
-                return _mm_i32gather_ps(idx(), p, sizeof(float));
+                return _mm_i32gather_ps(idx(), tbl, sizeof(float));
             }
         };
 #endif
