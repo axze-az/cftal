@@ -32,33 +32,6 @@ namespace cftal {
                   _ON_TRUE on_true, _ON_FALSE on_false)
         -> typename std::result_of<_ON_TRUE()>::type;
 
-    namespace impl {
-
-        template <typename _T, std::size_t _N, typename _X, std::size_t _L>
-        struct lookup {
-            // lookup with default value
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
-              const _X* p);
-        };
-
-        template <typename _T, std::size_t _N, typename _X>
-        struct lookup<_T, _N, _X, 0> {
-            // lookup with default value
-            static
-            vec<_T, _N>
-            v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
-              const _X* p);
-        };
-
-    }
-
-    // lookup with default value
-    template <typename _T, std::size_t _N, typename _X, std::size_t _L>
-    vec<_T, _N>
-    lookup(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
-           const _X (&r)[_L]);
 
     template <class _V4>
     void
@@ -137,7 +110,7 @@ cftal::select_branch(const vec<_T, 1>& m,
     return on_false();
 }
 
-
+#if 0
 template <typename _T, std::size_t _N, typename _X>
 cftal::vec<_T, _N>
 cftal::impl::lookup<_T, _N, _X, 0>::
@@ -178,6 +151,7 @@ cftal::lookup(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
 {
     return impl::lookup<_T, _N, _X, _L-1>::v(def, idx, p);
 }
+#endif
 
 template <class _V4>
 inline

@@ -122,14 +122,17 @@ namespace cftal {
     using v8s64 = vec<int64_t, 8>;
     using v8u64 = vec<uint64_t, 8>;
 
+    // return the lower half of the vector
     template <typename _T, std::size_t _N>
     const typename vec<_T, _N>::half_type&
     low_half(const vec<_T, _N>& v);
 
+    // return the higher half of the vector
     template <typename _T, std::size_t _N>
     const typename vec<_T, _N>::half_type&
     high_half(const vec<_T, _N>& v);
 
+    // extract one element from a vector
     template <std::size_t _I, typename _T, std::size_t _N>
     _T extract(const vec<_T, _N>& v);
 
@@ -150,35 +153,42 @@ namespace cftal {
                      std::pair<vec<_T, _N>, vec<_T, _N> > >
     mul_lo_hi(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
+    // variable select function on mask
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     select(const typename vec<_T, _N>::mask_type& m,
            const vec<_T, _N>& on_true,
            const vec<_T, _N>& on_false);
 
+    // variable select value or zero function on mask
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     select_val_or_zero(const typename vec<_T, _N>::mask_type& m,
                        const vec<_T, _N>& on_true);
 
+    // variable select zero or value function on mask
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     select_zero_or_val(const typename vec<_T, _N>::mask_type& m,
                        const vec<_T, _N>& on_false);
 
+    // fixed select on vector of length 2
     template <bool _I0, bool _I1, typename _T>
     vec<_T, 2>
     select(const vec<_T, 2>& a, const vec<_T, 2>& b);
 
+    // fixed select on vector of length 4
     template <bool _I0, bool _I1, bool _I2, bool _I3, typename _T>
     vec<_T, 4>
     select(const vec<_T, 4>& a, const vec<_T, 4>& b);
 
+    // fixed select on vector of length 8
     template <bool _I0, bool _I1, bool _I2, bool _I3,
               bool _I4, bool _I5, bool _I6, bool _I7, typename _T>
     vec<_T, 8>
     select(const vec<_T, 8>& a, const vec<_T, 8>& b);
 
+    // fixed select on vector of length 16
     template <bool _I0, bool _I1, bool _I2, bool _I3,
               bool _I4, bool _I5, bool _I6, bool _I7,
               bool _I8, bool _I9, bool _IA, bool _IB,
@@ -186,36 +196,43 @@ namespace cftal {
     vec<_T, 16>
     select(const vec<_T, 16>& a, const vec<_T, 16>& b);
 
+    // fixed permutation of one vector of length 2
     template <int32_t _I0, int32_t _I1, typename _T>
     vec<_T, 2>
     permute(const vec<_T, 2>& v);
 
+    // fixed permutation of two vectors of length 2
     template <int32_t _I0, int32_t _I1, typename _T>
     vec<_T, 2>
     permute(const vec<_T, 2>& v0, const vec<_T, 2>& v1);
 
+    // fixed permutation of one vector of length 4
     template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
               typename _T>
     vec<_T, 4>
     permute(const vec<_T, 4>& v);
 
+    // fixed permutation of two vectors of length 4
     template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
               typename _T>
     vec<_T, 4>
     permute(const vec<_T, 4>& v0, const vec<_T, 4>& v1);
 
+    // fixed permutation of one vector of length 8
     template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
               int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
               typename _T>
     vec<_T, 8>
     permute(const vec<_T, 8>& v);
 
+    // fixed permutation of two vectors of length 8
     template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
               int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
               typename _T>
     vec<_T, 8>
     permute(const vec<_T, 8>& v0, const vec<_T, 8>& v1);
 
+    // fixed permutation of one vector of length 8
     template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
               int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
               int32_t _I8, int32_t _I9, int32_t _IA, int32_t _IB,
@@ -224,6 +241,7 @@ namespace cftal {
     vec<_T, 16>
     permute(const vec<_T, 16>& v);
 
+    // fixed permutation of two vectors of length 16
     template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
               int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
               int32_t _I8, int32_t _I9, int32_t _IA, int32_t _IB,
@@ -393,18 +411,50 @@ namespace cftal {
     vec<_T, 2>
     copy_even_to_odd(const vec<_T, 2>& v);
 
-    // checks if all elements for v are equal
+    // checks if all elements in v are equal
     template <typename _T, std::size_t _N>
     bool
     elements_equal(const vec<_T, _N>& v);
 
+    // checks if all elements in v are equal
     template <typename _T>
     bool
     elements_equal(const vec<_T, 2>& v);
 
+    // checks if all elements in v are equal
     template <typename _T>
     bool
     elements_equal(const vec<_T, 1>& v);
+
+    namespace impl {
+
+        // helper class for lookup functions
+        template <std::size_t _L,
+                  typename _I, typename _T, std::size_t _N>
+        struct lookup {
+            static
+            vec<_T, _N>
+            v(const vec<_I, _N>& idx, const _T* table);
+        };
+
+        // helper class for lookup functions for vector length 1
+        template <std::size_t _L, typename _I, typename _T>
+        struct lookup<_L, _I, _T, 1> {
+            static
+            vec<_T, 1>
+            v(const vec<_I, 1>& idx, const _T* table);
+        };
+
+    }
+
+    template <std::size_t _L, typename _I, typename _T, std::size_t _N>
+    vec<_T, _N>
+    lookup(const vec<_I, _N>& idx, const _T* table);
+
+    template <std::size_t _L, typename _I, typename _T, std::size_t _N>
+    vec<_T, _N>
+    lookup(const vec<_I, _N>& idx, const _T(&table)[_L]);
+
 
     // absolute value for signed integers
     template <typename _T, std::size_t _N>
@@ -1225,6 +1275,37 @@ cftal::copy_odd_to_even(const vec<_T, 2>& v)
     return permute< 1,  1>(v);
 }
 
+template <std::size_t _L, typename _I, typename _T, std::size_t _N>
+cftal::vec<_T, _N>
+cftal::impl::lookup<_L, _I, _T, _N>::
+v(const vec<_I, _N>& idx, const _T* table)
+{
+    using hl_t= cftal::impl::lookup<_L, _I, _T, _N/2>;
+    return vec<_T, _N>(hl_t::v(low_half(idx), table),
+                       hl_t::v(high_half(idx), table));
+}
+
+template <std::size_t _L, typename _I, typename _T>
+cftal::vec<_T, 1>
+cftal::impl::lookup<_L, _I, _T, 1>::
+v(const vec<_I, 1>& idx, const _T* table)
+{
+    return vec<_T, 1>(table[idx()]);
+}
+
+template <std::size_t _L, typename _I, typename _T, std::size_t _N>
+cftal::vec<_T, _N>
+cftal::lookup(const vec<_I, _N>& idx, const _T* table)
+{
+    return impl::lookup<_L, _I, _T, _N>::v(idx, table);
+}
+
+template <std::size_t _L, typename _I, typename _T, std::size_t _N>
+cftal::vec<_T, _N>
+cftal::lookup(const vec<_I, _N>& idx, const _T(&table)[_L])
+{
+    return impl::lookup<_L, _I, _T, _N>::v(idx, table);
+}
 
 template <typename _T, std::size_t _N>
 std::ostream&
