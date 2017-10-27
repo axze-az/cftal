@@ -721,19 +721,19 @@ cftal::v8f64 cftal::x86::round(const v8f64& a, rounding_mode::type m)
     v8f64 r;
     switch (m) {
     case rounding_mode::nearest:
-        r= _mm512_roundscale_round_pd(a(), 0, 0);
+        r= _mm512_roundscale_round_pd(a(), 0, 0+8);
         break;
     case rounding_mode::downward:
-        r= _mm512_roundscale_round_pd(a(), 0, 1);
+        r= _mm512_roundscale_round_pd(a(), 0, 1+8);
         break;
     case rounding_mode::upward:
-        r= _mm512_roundscale_round_pd(a(), 0, 2);
+        r= _mm512_roundscale_round_pd(a(), 0, 2+8);
         break;
     case rounding_mode::towardzero:
-        r= _mm512_roundscale_round_pd(a(), 0, 3);
+        r= _mm512_roundscale_round_pd(a(), 0, 3+8);
         break;
     case rounding_mode::current:
-        r= _mm512_roundscale_round_pd(a(), 0, 4);
+        r= _mm512_roundscale_round_pd(a(), 0, 4+8);
         break;
     }
     return r;

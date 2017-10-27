@@ -770,19 +770,19 @@ cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
 #if defined (__SSE4_1__)
     switch (m) {
     case rounding_mode::nearest:
-        r= _mm_round_ps(a(), 0);
+        r= _mm_round_ps(a(), 0+8);
         break;
     case rounding_mode::downward:
-        r= _mm_round_ps(a(), 1);
+        r= _mm_round_ps(a(), 1+8);
         break;
     case rounding_mode::upward:
-        r= _mm_round_ps(a(), 2);
+        r= _mm_round_ps(a(), 2+8);
         break;
     case rounding_mode::towardzero:
-        r= _mm_round_ps(a(), 3);
+        r= _mm_round_ps(a(), 3+8);
         break;
     case rounding_mode::current:
-        r= _mm_round_ps(a(), 4);
+        r= _mm_round_ps(a(), 4+8);
         break;
     }
 #else
