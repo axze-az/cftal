@@ -16,7 +16,7 @@ b = [|0, ..., 5|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type exp_f16_c", "exp_f16", b, c);
+write_coeffs(p, "const float exp_f16_c", "exp_f16", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-f16");
 
 /* half log f32 */
@@ -29,7 +29,7 @@ c = [|SG, SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type log_f16_c", "log_f16", b, c);
+write_coeffs(p, "const float log_f16_c", "log_f16", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "log-f16");
@@ -44,7 +44,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type sin_f16_c", "sin_f16", b, c);
+write_coeffs(p, "const float sin_f16_c", "sin_f16", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "sin-f16");
 
@@ -57,7 +57,7 @@ b = [|0,2,4,6,8|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type cos_f16_c", "cos_f16", b, c);
+write_coeffs(p, "const float cos_f16_c", "cos_f16", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cos-f16");
 
@@ -66,12 +66,12 @@ f = tan(x);
 i = [0, pi/4];
 d = guessdegree(f, i, 0x1p-14);
 d;
-b = [|1,3,5,7,9,11,13|];
+b = [|1,3,5,7,9,11,13,15|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type tan_f16_c", "tan_16", b, c);
+write_coeffs(p, "const float tan_f16_c", "tan_16", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "tan-f16");
 
