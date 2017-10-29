@@ -8,6 +8,6 @@
 
 int main(int argc, char** argv)
 {
-        // x86vec::test::generate("./x86vec_test_gen");
-        return 0;
+    // x86vec::test::generate("./x86vec_test_gen");
+    return 0;
 }
