@@ -7,7 +7,6 @@ set (TEST_SRCS
   intops.cc
   signs.cc
   f32_f64.cc
-  snippets.cc
   of_fp_funcs.cc
   of_math_funcs.cc
   call_mpfr.cc
