@@ -31,7 +31,7 @@ namespace cftal {
             // the integer results contains
             // only the lower bits of N
             int32_t
-            __attribute__((__visibility__("internal")))
+            // __attribute__((__visibility__("internal")))
             __ieee754_rem_pio2(float x, float *y);
 
 
@@ -39,10 +39,10 @@ namespace cftal {
             // the integer results contains
             // only the lower bits of N
             int32_t
-            __attribute__((__visibility__("internal")))
+            // __attribute__((__visibility__("internal")))
             __ieee754_rem_pio2(double x, double *y);
             int
-            __attribute__((__visibility__("internal")))
+            // __attribute__((__visibility__("internal")))
             __kernel_rem_pio2(double *x, double *y, int e0,
                               int nx, int prec,
                               const int32_t *ipio2);

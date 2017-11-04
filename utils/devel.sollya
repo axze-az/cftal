@@ -7,6 +7,20 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
+f = tan(x);
+i = [0, pi/4];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double tan_c", "tan", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "tan-f64");
+
+/*
 print_table=proc(f, x0, n, inc, fmt, pfx) {
     var xx, y, i, s;
     s := pfx @ "[]= {\n";
@@ -35,8 +49,8 @@ inc=log(2)/2/n;
 x0=-log(2)/2;
 pfx="const double exp_t";
 print_table(exp(x), x0, n, inc, c, pfx);
+*/
 
-    
 
 /*
  * Local variables:
