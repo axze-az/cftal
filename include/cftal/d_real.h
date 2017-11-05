@@ -20,6 +20,16 @@ namespace cftal {
     _T fms(const _T& a, const _T& b, const _T& c) {
         return fma(a, b, -c);
     }
+    
+    template <class _T>
+    _T nfma(const _T& a, const _T& b, const _T& c) {
+        return fma(-a, b, c);
+    }    
+
+    template <class _T>
+    _T nfms(const _T& a, const _T& b, const _T& c) {
+        return fma(-a, b, -c);
+    }    
 
     template <typename _T>
     struct d_real_traits {};
@@ -435,6 +445,7 @@ namespace cftal {
             using base_type::mul22;
             using base_type::add122;
             using base_type::add212;
+            using base_type::rcp21;
 
             static
             void
@@ -975,10 +986,9 @@ rcp21(_T& rh, const _T& ah, const _T& al)
 {
     _T q0 = _T(1.0)/ah;
     // rh = q0 + q0 * ((_T(1.0) - q0*ah) - q0*al);
-    _T nq0 = -q0;
-    _T t = xfma(nq0, ah, _T(1.0));
-    t = xfma(nq0, al, t);
-    rh = xfma(q0, t, q0);
+    _T t = nfma(q0, ah, _T(1.0));
+    t = nfma(q0, al, t);
+    rh = fma(q0, t, q0);
 }
 
 template <typename _T>

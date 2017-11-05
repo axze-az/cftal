@@ -127,11 +127,17 @@ namespace cftal {
     vec<float, _N>
     nfma(const vec<float, _N>& a, const vec<float, _N>& b,
          const vec<float, _N>& c);
+    vec<float, 1>
+    nfma(const vec<float, 1>& a, const vec<float, 1>& b,
+         const vec<float, 1>& c);
     // -(a*b) - c
     template <std::size_t _N>
     vec<float, _N>
     nfms(const vec<float, _N>& a, const vec<float, _N>& b,
          const vec<float, _N>& c);
+    vec<float, 1>
+    nfms(const vec<float, 1>& a, const vec<float, 1>& b,
+         const vec<float, 1>& c);
 
     // TODO: tests for the functions above
     template <std::size_t _N>
@@ -1309,6 +1315,22 @@ cftal::fms(const vec<float, 1>& a, const vec<float, 1>& b,
            const vec<float, 1>& c)
 {
     return vec<float, 1>(fmaf(a(), b(), -c()));
+}
+
+inline
+cftal::vec<float, 1>
+cftal::nfma(const vec<float, 1>& a, const vec<float, 1>& b,
+            const vec<float, 1>& c)
+{
+    return vec<float, 1>(fmaf(-a(), b(), c()));
+}
+
+inline
+cftal::vec<float, 1>
+cftal::nfms(const vec<float, 1>& a, const vec<float, 1>& b,
+            const vec<float, 1>& c)
+{
+    return vec<float, 1>(fmaf(-a(), b(), -c()));
 }
 
 template <std::size_t _N>
