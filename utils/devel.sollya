@@ -7,11 +7,57 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
+/* sin(x) f64 */
+i = [0, pi/4];
+f = sin(x);
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13, 15|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double sin_c", "sin", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "sin-f64");
+
+/* cos(x) f64 */
+i = [0, pi/4];
+f = cos(x);
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, 2, 4, 6, 8, 10, 12, 14, 16|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double cos_c", "cos", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cos-f64");
+
+
 f = tan(x);
 i = [0, pi/4];
 d = guessdegree(f, i, 0x1p-60);
 d;
 b = [|1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31|];
+c = [|D, D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double tan_i1_c", "tan", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "tan-i1-f64");
+/*
+    tan(x) = x + x ^3/(3+x^2*P(x^2))
+    (tan(x) - x)/(x^3) = 1/(3+x^2*P)
+    3 + x^2 * P = x^3/(tan(x)-x)
+    x^2*P=x^3/(tan(x)-x)-3;
+f = x^3/(tan(x)-x) - 3;
+i = [0x1p-512, pi/4];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|2, 4, 6, 8, 10, 12, 14, 16|];
 c = [|D...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
@@ -19,7 +65,7 @@ write_approx_prec(p, f, i);
 write_coeffs(p, "const double tan_c", "tan", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "tan-f64");
-
+*/
 /*
 print_table=proc(f, x0, n, inc, fmt, pfx) {
     var xx, y, i, s;
