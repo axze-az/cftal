@@ -20,16 +20,16 @@ namespace cftal {
     _T fms(const _T& a, const _T& b, const _T& c) {
         return fma(a, b, -c);
     }
-    
+
     template <class _T>
     _T nfma(const _T& a, const _T& b, const _T& c) {
         return fma(-a, b, c);
-    }    
+    }
 
     template <class _T>
     _T nfms(const _T& a, const _T& b, const _T& c) {
         return fma(-a, b, -c);
-    }    
+    }
 
     template <typename _T>
     struct d_real_traits {};

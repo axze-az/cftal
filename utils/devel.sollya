@@ -47,7 +47,7 @@ p = fpminimax(f, b, c, i,
 write_approx_prec(p, f, i);
 write_coeffs(p, "const double tan_i1_c", "tan", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
-                       postscriptfile, "tan-i1-f64");
+                       postscriptfile, "tan-f64");
 /*
     tan(x) = x + x ^3/(3+x^2*P(x^2))
     (tan(x) - x)/(x^3) = 1/(3+x^2*P)
