@@ -480,10 +480,17 @@ namespace cftal {
             d_real<_T> sloppy_div(const d_real<_T>& a,
                                   const d_real<_T>& b);
 
+            template <bool _NEGATE>
             static
             void
             rcp2(_T& rh,  _T& rl,
                  const _T& ah, const _T& al);
+            
+            template <bool _NEGATE>
+            static
+            void
+            rcp21(_T& r, 
+                  const _T& ah, const _T& al);
         };
 
     }
@@ -1519,6 +1526,7 @@ div(const d_real<_T>&a, const d_real<_T>& b)
 }
 
 template <typename _T, bool _FMA>
+template <bool _NEGATE>
 inline
 void
 cftal::impl::d_real_ops<_T, _FMA>::
@@ -1528,15 +1536,40 @@ rcp2(_T& rh, _T& rl, const _T& ah, const _T& al)
     // rcp = rcp + rcp*(1-rcp*a);
     // return rcp;
     // rcp = rcp * (2-rcp*a)
-    _T r0h=_T(1.0)/ah;
-    _T th, tl;
+    _T r0h, r0ht;
+    
+    if (_NEGATE==true) {
+        r0h=-_T(1.0)/ah;
+        r0ht=r0h;
+    } else {
+        r0h=_T(1.0)/ah;
+        r0ht=-r0h;
+    }    
     // -rcp * a
-    mul122(th, tl, -r0h, ah, al);
+    _T th, tl;
+    mul122(th, tl, r0ht, ah, al);
     // 2 - rcp * a
     add122(th, tl, _T(2.0), th, tl);
     // rcp ( 2 - rcp*a)
     mul122(rh, rl, r0h, th, tl);
 }
+
+template <typename _T, bool _FMA>
+template <bool _NEGATE>
+inline
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+rcp21(_T& rh, const _T& ah, const _T& al)
+{
+    if (_NEGATE==false) {
+        _T q0 = _T(1.0)/ah;
+        rh = q0 + q0 * ((_T(1.0) - q0*ah) - q0*al);
+    } else {
+        _T q0 = -1.0/ah;
+        rh = q0 + q0 * ((_T(1.0) + q0*ah) + q0*al);
+    }    
+}
+
 
 template <typename _T>
 inline
