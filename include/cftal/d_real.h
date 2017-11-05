@@ -361,6 +361,11 @@ namespace cftal {
             mul22(_T& rh, _T& rl,
                   const _T& xh, const _T& xl,
                   const _T& yh, const _T& yl);
+
+            static
+            void
+            rcp21(_T& r,
+                  const _T& ah, const _T& al);
         };
 
         // specialization using fma
@@ -381,6 +386,7 @@ namespace cftal {
             _T two_sqr(const _T& a, _T& e);
             static
             _T xfma(const _T& a, const _T& b, const _T& c);
+
             static
             d_real<_T> mul(const _T& a, const _T& b);
             static
@@ -408,6 +414,11 @@ namespace cftal {
             mul22(_T& rh, _T& rl,
                   const _T& xh, const _T& xl,
                   const _T& yh, const _T& yl);
+
+            static
+            void
+            rcp21(_T& r,
+                  const _T& ah, const _T& al);
         };
 
 
@@ -480,17 +491,11 @@ namespace cftal {
             d_real<_T> sloppy_div(const d_real<_T>& a,
                                   const d_real<_T>& b);
 
-            template <bool _NEGATE>
             static
             void
             rcp2(_T& rh,  _T& rl,
                  const _T& ah, const _T& al);
-            
-            template <bool _NEGATE>
-            static
-            void
-            rcp21(_T& r, 
-                  const _T& ah, const _T& al);
+
         };
 
     }
@@ -966,6 +971,20 @@ template <typename _T>
 inline
 void
 cftal::impl::d_real_ops_fma<_T, true>::
+rcp21(_T& rh, const _T& ah, const _T& al)
+{
+    _T q0 = _T(1.0)/ah;
+    // rh = q0 + q0 * ((_T(1.0) - q0*ah) - q0*al);
+    _T nq0 = -q0;
+    _T t = xfma(nq0, ah, _T(1.0));
+    t = xfma(nq0, al, t);
+    rh = xfma(q0, t, q0);
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_fma<_T, true>::
 mul22(_T& pzh, _T& pzl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
@@ -1005,6 +1024,22 @@ mul12(_T& rh, _T& rl, const _T& a, const _T& b)
     traits::split(b, b_h, b_l);
     rh=a*b;
     rl=((a_h*b_h-rh)+a_h*b_l+a_l*b_h)+a_l*b_l;
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_fma<_T, false>::
+rcp21(_T& rh, const _T& ah, const _T& al)
+{
+    using traits=d_real_traits<_T>;
+    _T ahh, ahl;
+    traits::split(ah, ahh, ahl);
+    ahl += al;
+    _T q0 = _T(1.0)/ah;
+    _T qh, ql;
+    traits::split(q0, qh, ql);
+    rh = qh + q0 * ((_T(1.0) - qh * ahh) - qh * ahl);
 }
 
 template <typename _T>
@@ -1526,7 +1561,6 @@ div(const d_real<_T>&a, const d_real<_T>& b)
 }
 
 template <typename _T, bool _FMA>
-template <bool _NEGATE>
 inline
 void
 cftal::impl::d_real_ops<_T, _FMA>::
@@ -1536,38 +1570,14 @@ rcp2(_T& rh, _T& rl, const _T& ah, const _T& al)
     // rcp = rcp + rcp*(1-rcp*a);
     // return rcp;
     // rcp = rcp * (2-rcp*a)
-    _T r0h, r0ht;
-    
-    if (_NEGATE==true) {
-        r0h=-_T(1.0)/ah;
-        r0ht=r0h;
-    } else {
-        r0h=_T(1.0)/ah;
-        r0ht=-r0h;
-    }    
+    _T r0h= _T(1.0)/ah;
     // -rcp * a
     _T th, tl;
-    mul122(th, tl, r0ht, ah, al);
+    mul122(th, tl, -r0h, ah, al);
     // 2 - rcp * a
     add122(th, tl, _T(2.0), th, tl);
     // rcp ( 2 - rcp*a)
     mul122(rh, rl, r0h, th, tl);
-}
-
-template <typename _T, bool _FMA>
-template <bool _NEGATE>
-inline
-void
-cftal::impl::d_real_ops<_T, _FMA>::
-rcp21(_T& rh, const _T& ah, const _T& al)
-{
-    if (_NEGATE==false) {
-        _T q0 = _T(1.0)/ah;
-        rh = q0 + q0 * ((_T(1.0) - q0*ah) - q0*al);
-    } else {
-        _T q0 = -1.0/ah;
-        rh = q0 + q0 * ((_T(1.0) + q0*ah) + q0*al);
-    }    
 }
 
 
