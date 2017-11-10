@@ -178,7 +178,7 @@ c = [|D, D...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const double tan_i1_c", "tan", b, c);
+write_coeffs(p, "const double tan_c", "tan", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "tan-f64");
 
