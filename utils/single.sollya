@@ -133,6 +133,20 @@ write_coeffs(p, "const vf_type cos_c", "cos", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cos-f32");
 
+/* tan as polynomial in [0, pi/4] */
+f = tan(x);
+i = [0, pi/4];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13, 15|];
+c = [|SG, SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float tan_c", "tan", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "tan-f32");
+
 /* tan(x) f32 */
 f = tan(x)/x;
 i = [0x1p-58, 6/7*pi/4];
@@ -141,9 +155,9 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i, 1.0,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type tan_c", "tan", b, c);
+write_coeffs(p, "const vf_type tan_sun_c", "tan", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
-                       postscriptfile, "tan-f32");
+                       postscriptfile, "tan-sun-f32");
 
 /* atan(x) f32 */
 f = (atan(x)-x)/(-x^3);
