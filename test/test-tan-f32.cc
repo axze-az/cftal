@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     std::cout << st << std::endl;
 
     exec_stats st2(_N);
-    auto dp2=std::make_pair(-0x1p6f, 0x1p6f);
+    auto dp2=std::make_pair(-0x1p18f, 0x1p18f);
     auto us2=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         float, _N, check_tan<float> >::v(st2, dp2, speed_only,

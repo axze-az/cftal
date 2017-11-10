@@ -1947,15 +1947,22 @@ cftal::math::elem_func_core<float, _T>::
 reduce_trig_arg_k(arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    vf_type y0, y1;
     vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
-    y0= d_ops::two_diff(x, fn* ctbl::m_pi_2_cw[0], y1);
-    dvf_type d0(y0, y1);
-    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[1]);
-    d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[2]);
+    vf_type xrh, xrl;
+    const float m_pi_2_h=+1.5707963705063e+00f;
+    const float m_pi_2_m=-4.3711388286738e-08f;
+    const float m_pi_2_l=-1.7151245100059e-15f;
+    vf_type th, tl;
+    d_ops::mul12(th, tl, fn, -m_pi_2_h);
+    d_ops::add122cond(xrh, xrl, x, th, tl);
+    d_ops::mul12(th, tl, fn, -m_pi_2_m);
+    d_ops::add22cond(xrh, xrl, xrh, xrl, th, tl);
+    d_ops::mul12(th, tl, fn, -m_pi_2_l);
+    d_ops::add22cond(xrh, xrl, xrh, xrl, th, tl);
+    dvf_type d0(xrh, xrl);
     vi_type q(_T::cvt_f_to_i(fn));
+    const float large_arg=0x1p18f;
 
-    const float large_arg=0x1p6f;
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
     if (any_of(v_large_arg)) {
         // reduce the large arguments

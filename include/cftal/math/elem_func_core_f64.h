@@ -2154,6 +2154,23 @@ cftal::math::elem_func_core<double, _T>::
 reduce_trig_arg_k(arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<double>, double>;
+#if 1
+    vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
+    vf_type xrh, xrl;
+    const double m_pi_2_h=+1.5707963267948965579990e+00;
+    const double m_pi_2_m=+6.1232339957367660358688e-17;
+    const double m_pi_2_l=-1.4973849048591698329435e-33;
+    vf_type th, tl;
+    d_ops::mul12(th, tl, fn, -m_pi_2_h);
+    d_ops::add122cond(xrh, xrl, x, th, tl);
+    d_ops::mul12(th, tl, fn, -m_pi_2_m);
+    d_ops::add22cond(xrh, xrl, xrh, xrl, th, tl);
+    d_ops::mul12(th, tl, fn, -m_pi_2_l);
+    d_ops::add22cond(xrh, xrl, xrh, xrl, th, tl);
+    dvf_type d0(xrh, xrl);
+    vi_type q(_T::cvt_f_to_i(fn));
+    const double large_arg=0x1p28;
+#else
     vf_type y0, y1;
     vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
     y0= d_ops::two_diff(x, fn* ctbl::m_pi_2_cw[0], y1);
@@ -2161,8 +2178,8 @@ reduce_trig_arg_k(arg_t<vf_type> x)
     d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[1]);
     d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[2]);
     vi_type q(_T::cvt_f_to_i(fn));
-
     const double large_arg=0x1p20;
+#endif
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
     if (any_of(v_large_arg)) {
         // reduce the large arguments

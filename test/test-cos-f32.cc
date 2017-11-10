@@ -35,7 +35,7 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     exec_stats st2(_N);
-    auto dp2=std::make_pair(-0x1p7f, 0x1p7f);
+    auto dp2=std::make_pair(-0x1p18f, 0x1p18f);
     auto us2=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         float, _N, check_cos<float> >::v(st2, dp2, speed_only,
