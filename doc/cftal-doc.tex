@@ -632,6 +632,25 @@ The functions log2(x) and log10(x) are calculated as given by their definition
 \]
 from log(x) with higher precision with special handling for the integer part.
 
+\subsection{trigonometric functions}
+
+Let S,C and T denote the sin, cos and tan respectively on
+$ \left[ -\pi/4, +\pi/4 \right] $.
+Reduce the argument $x$ to $y1+y2 = x-k*\pi/2$
+in $ \left[ -\pi/4, +\pi/4 \right] $, and let $n = k \mod 4 $.
+The table\\[12pt]
+\begin{tabular}{ | p{2.0cm} | p{2.5cm} | p{2.5cm} | p{2.5cm} |}
+    \hline
+    n & $\sin(x)$ &  $\cos(x)$ & $\tan(x)$ \\
+    \hline
+    0 & S &  C & T \\
+    1 & C &  -S & -1/T \\
+    2 & -S &  -C & T \\
+    3 & -C &  S & -1/T \\
+    \hline
+\end{tabular}\\[12pt]
+displays the values of the trigonometric functions for different $n$.
+
 \subsection{All other functions}
 
     All other elementary functions use the algorithms from the sun
