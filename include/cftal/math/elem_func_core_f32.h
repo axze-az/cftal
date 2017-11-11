@@ -2339,14 +2339,12 @@ sin_cos_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
     vf_type rc(_T::sel(q_and_1_f, s, c));
     // swap signs
     if (ps != nullptr) {
-        vf_type fs = _T::sel(q_and_2_f, vf_type(-1.0), vf_type(1.0));
-        rs *= fs;
+        rs = _T::sel(q_and_2_f, -rs, rs);
         *ps = rs;
     }
     if (pc != nullptr) {
         vmf_type mt = q_and_2_f ^ q_and_1_f;
-        vf_type fc =  _T::sel(mt, vf_type(-1.0), vf_type(1.0));
-        rc *= fc;
+        rc = _T::sel(mt, -rc, rc);
         *pc= rc;
     }
 }
