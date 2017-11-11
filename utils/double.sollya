@@ -379,10 +379,10 @@ plot((p(x)-f(x))/f(x), i,
 
 /* rsqrt f64 */
 f= 1.0/sqrt(x);
-i= [2^(-4/2), 2^(-3/2)];
-d = guessdegree(f, i, 0x1p-8);
+i= [2^(-2), 2^(-1)];
+d = guessdegree(f, i, 0x1p-20);
 d;
-b = [|0, ..., 2|];
+b = [|0, ..., 7|];
 c = [|D...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
@@ -394,10 +394,10 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
                        postscriptfile, "rsqrt-i0-f64");
 
 f= 1.0/sqrt(x);
-i= [2^(-3/2), 2^(-2/2)];
-d = guessdegree(f, i, 0x1p-8);
+i= [2^(-1), 2^(-0)];
+d = guessdegree(f, i, 0x1p-20);
 d;
-b = [|0, ..., 2|];
+b = [|0, ..., 7|];
 c = [|D...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
@@ -407,36 +407,6 @@ write_coeff(inf(i), "", "const double rsqrt_i1_left", double);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "rsqrt-i1-f64");
-
-f= 1.0/sqrt(x);
-i= [2^(-2/2), 2^(-1/2)];
-d = guessdegree(f, i, 0x1p-8);
-d;
-b = [|0, ..., 2|];
-c = [|D...|];
-p = fpminimax(f, b, c, i,
-              relative, floating);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const double rsqrt_i2_c", "rsqrt", b, c);
-write_coeff(inf(i), "", "const double rsqrt_i2_left", double);
-plot((p(x)-f(x))/f(x), p(x)-f(x),
-                       i,
-                       postscriptfile, "rsqrt-i2-f64");
-
-f= 1.0/sqrt(x);
-i= [2^(-1/2), 2^(-0/2)];
-d = guessdegree(f, i, 0x1p-8);
-d;
-b = [|0, ..., 2|];
-c = [|D...|];
-p = fpminimax(f, b, c, i,
-              relative, floating);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const double rsqrt_i3_c", "rsqrt", b, c);
-write_coeff(inf(i), "", "const double rsqrt_i3_left", double);
-plot((p(x)-f(x))/f(x), p(x)-f(x),
-                       i,
-                       postscriptfile, "rsqrt-i3-f64");
 
 /* root12 f64 */
 f= x^(1/12);
