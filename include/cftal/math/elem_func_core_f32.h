@@ -2151,7 +2151,6 @@ __tan_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl, arg_t<vi_type> q)
     vmi_type qm1= q1 == vi_type(1);
     vmf_type fqm1= _T::vmi_to_vmf(qm1);
 
-    dvf_type thl(th, tl);
     vf_type c;
     d_ops::rcp21(c, th, tl);
     th = _T::sel(fqm1, -c, th);
