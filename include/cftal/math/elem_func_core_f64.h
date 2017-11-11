@@ -632,6 +632,7 @@ rsqrt_k(arg_t<vf_type> x)
     const double rsqrt_i1_c7=-2.2806736739045461170861e+00;
     // x^ : +0x8p-4
     const double rsqrt_i1_left=+5.0000000000000000000000e-01;
+    vf_type mm0half = 0.5*mm0;
     vf_type mm0s = mm0*mm0;
     vf_type mm_i0_e=horner(mm0s,
                            rsqrt_i0_c7,
@@ -656,16 +657,19 @@ rsqrt_k(arg_t<vf_type> x)
                            rsqrt_i1_c0);
     vf_type mm_i1= horner(mm0, mm_i1_e, mm_i1_o);
     vf_type mm = _T::sel(mm0 <= rsqrt_i1_left, mm_i0, mm_i1);
-    mm = 0.5*mm*(3.0 - vf_type(mm0 * mm) *mm);
+    // mm = 0.5 *mm*(3.0 - vf_type(mm0 * mm) *mm);
+    // mm = mm*(1.5 - mm0half * mm *mm
+    mm = mm*(1.5 - vf_type(mm0half * mm) *mm);
 #else
     vf_type mm = 1.0/sqrt(mm0);
 #endif
-    // mm= mm + 0.5f * mm * (1.0f - mm*mm*mm0);
+    // mm= mm + 0.5 * mm * (1.0 - mm*mm*mm0);
+    // mm= mm + mm * (0.5 - mm*mm*mm0half);
     vf_type sh, sl;
     d_ops::sqr12(sh, sl, mm);
-    d_ops::mul122(sh, sl, -mm0, sh, sl);
-    d_ops::add122(sh, sl, 1.0, sh, sl);
-    mm = mm + 0.5*mm*sh;
+    d_ops::mul122(sh, sl, -mm0half, sh, sl);
+    d_ops::add122(sh, sl, 0.5, sh, sl);
+    mm = mm + mm*sh;
     // avoid ldexp because no overflows and underflows a possible
     // mm = ldexp_k(mm, -e2c);
     vf_type t= _T::insert_exp(_T::bias()-e2c);
