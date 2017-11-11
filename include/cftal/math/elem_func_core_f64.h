@@ -657,8 +657,17 @@ rsqrt_k(arg_t<vf_type> x)
 #else
     mm = 0.5*mm*(3.0 - vf_type(mm0 * mm) *mm);
     mm = 0.5*mm*(3.0 - vf_type(mm0 * mm) *mm);
+    // mm= mm + 0.5f * mm * (1.0f - mm*mm*mm0);
+#if 1
+    vf_type sh, sl;
+    d_ops::sqr12(sh, sl, mm);
+    d_ops::mul122(sh, sl, -mm0, sh, sl);
+    d_ops::add122(sh, sl, 1.0, sh, sl);
+    mm = mm + 0.5*mm*sh;
+#else
     mm = mm + 0.5* mm *
         (vf_type(1) - d_ops::sqr(mm)*mm0).h();
+#endif
 #endif
     // avoid ldexp because no overflows and underflows a possible
     // mm = ldexp_k(mm, -e2c);

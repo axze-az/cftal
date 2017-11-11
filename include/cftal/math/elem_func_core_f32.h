@@ -605,8 +605,17 @@ rsqrt_k(arg_t<vf_type> x)
     mm = mm - mm * 0.5f * s;
 #else
     mm = 0.5f *mm*(3.0f - vf_type(mm0 * mm) *mm);
+    // mm= mm + 0.5f * mm * (1.0f - mm*mm*mm0);
+#if 1
+    vf_type sh, sl;
+    d_ops::sqr12(sh, sl, mm);
+    d_ops::mul122(sh, sl, -mm0, sh, sl);
+    d_ops::add122(sh, sl, 1.0f, sh, sl);
+    mm = mm + 0.5f*mm*sh;
+#else
     dvf_type s=vf_type(1.0f) - d_ops::sqr(mm)*mm0;
     mm = mm + 0.5f*mm * s.h();
+#endif
 #endif
     vf_type t= _T::insert_exp(_T::bias()-e2c);
     // mm = ldexp_k(mm, -e2c);
