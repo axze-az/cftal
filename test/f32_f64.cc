@@ -81,12 +81,12 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats_to_stream& uss)
 
 bool cftal::test::f_eq(double a, double b)
 {
-    return (a == b) || (std::isnan(a) && std::isnan(b));
+    return (a == b) || ((a != a) && (b != b));
 }
 
 bool cftal::test::f_eq(float a, float b)
 {
-    return (a == b) || (std::isnan(a) && std::isnan(b));
+    return (a == b) || ((a != a) && (b != b));
 }
 
 std::int32_t
