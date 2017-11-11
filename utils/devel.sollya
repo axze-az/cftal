@@ -7,36 +7,36 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
-/* rsqrt f64 */
+/* rsqrt f32 */
 f= 1.0/sqrt(x);
 i= [2^(-2), 2^(-1)];
-d = guessdegree(f, i, 0x1p-20);
+d = guessdegree(f, i, 0x1p-12);
 d;
-b = [|0, ..., 7|];
-c = [|D...|];
+b = [|0, ..., 3|];
+c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const double rsqrt_i0_c", "rsqrt", b, c);
-/* write_coeff(inf(i), "", "const double rsqrt_i0_left", double); */
+write_coeffs(p, "const float rsqrt_i0_c", "rsqrt", b, c);
+/* write_coeff(inf(i), "", "const float rsqrt_i0_left", single); */
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
-                       postscriptfile, "rsqrt-i0-f64");
+                       postscriptfile, "rsqrt-i0-f32");
 
 f= 1.0/sqrt(x);
 i= [2^(-1), 2^(-0)];
-d = guessdegree(f, i, 0x1p-20);
+d = guessdegree(f, i, 0x1p-12);
 d;
-b = [|0, ..., 7|];
-c = [|D...|];
+b = [|0, ..., 3|];
+c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const double rsqrt_i1_c", "rsqrt", b, c);
-write_coeff(inf(i), "", "const double rsqrt_i1_left", double);
+write_coeffs(p, "const float rsqrt_i1_c", "rsqrt", b, c);
+write_coeff(inf(i), "", "const float rsqrt_i1_left", single);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
-                       postscriptfile, "rsqrt-i1-f64");
+                       postscriptfile, "rsqrt-i1-f32");
 
 /*
 print_table=proc(f, x0, n, inc, fmt, pfx) {
