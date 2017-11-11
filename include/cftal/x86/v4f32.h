@@ -111,6 +111,7 @@ namespace cftal {
     v4f32 sqrt(const v4f32& a);
     v4f32 hypot(const v4f32& a, const v4f32& b);
 
+    v2f32 native_rsqrt(const v2f32& a);
     v4f32 native_rsqrt(const v4f32& a);
 
     namespace x86 {
@@ -755,11 +756,21 @@ bool cftal::elements_equal(const v4f32& a)
 }
 
 inline
+cftal::v2f32
+cftal::native_rsqrt(const v2f32& xx)
+{
+    v4f32 x(xx, xx);
+    v4f32 y= _mm_rsqrt_ps(x());
+    y = y + 0.5f* y * (1.0f- (x * y) * y);
+    return low_half(y);
+}
+
+inline
 cftal::v4f32
 cftal::native_rsqrt(const v4f32& x)
 {
     v4f32 y= _mm_rsqrt_ps(x());
-    y = y + 0.5* y * (1- (x * y) * y);
+    y = y + 0.5f* y * (1.0f- (x * y) * y);
     return y;
 }
 

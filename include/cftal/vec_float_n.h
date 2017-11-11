@@ -305,6 +305,9 @@ namespace cftal {
     vec<float, _N>
     native_rsqrt(const vec<float, _N>& v);
 
+    vec<float, 1>
+    native_rsqrt(const vec<float, 1>& v);
+
     // exp: exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -909,6 +912,69 @@ namespace cftal {
     // approximates a/b
     vec<float, 1>
     native_div(const vec<float, 1>& a, const vec<float, 1>& b);
+
+    // namespace for functions with reduced range and precision
+    // similiar to opencl c++ 2.0
+    namespace half_math {
+
+        template <std::size_t _N>
+        vec<float, _N>
+        cos(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        divide(const vec<float, _N>& x, const vec<float, _N>& y);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        exp(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        exp2(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        exp10(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        log(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        log2(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        log10(const vec<float, _N>& v);
+
+#if 0
+        template <std::size_t _N>
+        vec<float, _N>
+        powr(const vec<float, _N>& x, const vec<float, _N>& y);
+#endif
+
+        template <std::size_t _N>
+        vec<float, _N>
+        recip(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        rsqrt(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        sin(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        sqrt(const vec<float, _N>& v);
+
+        template <std::size_t _N>
+        vec<float, _N>
+        tan(const vec<float, _N>& v);
+    };
 }
 
 template <std::size_t _N>
@@ -1001,8 +1067,23 @@ inline
 cftal::vec<float, _N>
 cftal::native_rsqrt(const vec<float, _N>& v)
 {
-    vec<float, _N> r(1.0/sqrt(v));
+    vec<float, _N> r(native_rsqrt(low_half(v)),
+                     native_rsqrt(high_half(v)));
     return r;
+}
+
+inline
+cftal::vec<float, 1>
+cftal::native_rsqrt(const vec<float, 1>& x)
+{
+#if defined (__SSE__)
+    v1f32 y= _mm_cvtss_f32(_mm_rsqrt_ps(_mm_set1_ps(x())));
+    y = y + 0.5f* y * (1.0f- (x * y) * y);
+    return y;
+#else
+    vec<float, 1> r(1.0/sqrt(v));
+    return r;
+#endif
 }
 
 template <std::size_t _N>
