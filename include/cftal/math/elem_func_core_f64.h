@@ -644,7 +644,6 @@ rsqrt_k(arg_t<vf_type> x)
                            rsqrt_i0_c4,
                            rsqrt_i0_c2,
                            rsqrt_i0_c0);
-    vf_type mm_i0= horner(mm0, mm_i0_e, mm_i0_o);
     vf_type mm_i1_e=horner(mm0s,
                            rsqrt_i1_c7,
                            rsqrt_i1_c5,
@@ -655,13 +654,15 @@ rsqrt_k(arg_t<vf_type> x)
                            rsqrt_i1_c4,
                            rsqrt_i1_c2,
                            rsqrt_i1_c0);
+    vf_type mm_i0= horner(mm0, mm_i0_e, mm_i0_o);
     vf_type mm_i1= horner(mm0, mm_i1_e, mm_i1_o);
     vf_type mm = _T::sel(mm0 <= rsqrt_i1_left, mm_i0, mm_i1);
     // mm = 0.5 *mm*(3.0 - vf_type(mm0 * mm) *mm);
     // mm = mm*(1.5 - mm0half * mm *mm
     mm = mm*(1.5 - vf_type(mm0half * mm) *mm);
 #else
-    vf_type mm = 1.0/sqrt(mm0);
+    vf_type mm0half=0.5*mm0;
+    vf_type mm=1.0/sqrt(mm0);
 #endif
     // mm= mm + 0.5 * mm * (1.0 - mm*mm*mm0);
     // mm= mm + mm * (0.5 - mm*mm*mm0half);
