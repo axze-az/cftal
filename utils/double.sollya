@@ -379,7 +379,7 @@ plot((p(x)-f(x))/f(x), i,
 
 /* rsqrt f64 */
 f= 1.0/sqrt(x);
-i= [2^(-2), 2^(-1)];
+i= [2^(-2), 2^(-1)-2^(-7)];
 d = guessdegree(f, i, 0x1p-20);
 d;
 b = [|0, ..., 7|];
@@ -394,7 +394,7 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
                        postscriptfile, "rsqrt-i0-f64");
 
 f= 1.0/sqrt(x);
-i= [2^(-1), 2^(-0)];
+i= [2^(-1)-2^(-7), 2^(-0)];
 d = guessdegree(f, i, 0x1p-20);
 d;
 b = [|0, ..., 7|];
