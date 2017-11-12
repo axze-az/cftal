@@ -761,7 +761,7 @@ cftal::native_rsqrt(const v2f32& xx)
 {
     v4f32 x(xx, xx);
     v4f32 y= _mm_rsqrt_ps(x());
-    y = y + 0.5f* y * (1.0f- (x * y) * y);
+    y = y + y * (0.5f- (0.5f*x * y) * y);
     return low_half(y);
 }
 
@@ -770,7 +770,7 @@ cftal::v4f32
 cftal::native_rsqrt(const v4f32& x)
 {
     v4f32 y= _mm_rsqrt_ps(x());
-    y = y + 0.5f* y * (1.0f- (x * y) * y);
+    y = y + y * (0.5f- (0.5f*x * y) * y);
     return y;
 }
 

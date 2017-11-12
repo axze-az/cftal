@@ -1078,7 +1078,7 @@ cftal::native_rsqrt(const vec<float, 1>& x)
 {
 #if defined (__SSE__)
     v1f32 y= _mm_cvtss_f32(_mm_rsqrt_ps(_mm_set1_ps(x())));
-    y = y + 0.5f* y * (1.0f- (x * y) * y);
+    y = y + y * (0.5f- (0.5f*x * y) * y);
     return y;
 #else
     vec<float, 1> r(1.0/sqrt(v));
