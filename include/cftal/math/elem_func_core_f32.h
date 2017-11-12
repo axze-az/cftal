@@ -616,7 +616,9 @@ rsqrt_k(arg_t<vf_type> x)
                           rsqrt_i1_c1, rsqrt_i1_c0) + mm0s *rsqrt_i1_c2;
     vf_type mm = _T::sel(mm0 <= rsqrt_i1_left, mm_i0, mm_i1);
     vf_type z = mm * mm * mm0 - 1.0f;
-    mm = mm * horner(z, 3.0f/8.0f, -0.5f, 1.0f);
+    //mm = mm * horner(z, 3.0f/8.0f, -0.5f, 1.0f);
+    vf_type mmz = mm * z;
+    mm = mm + mmz * horner(z, 3.0f/8.0f, -0.5f);
 #endif
 #if 0
     mm = 0.5f * mm * (3.0f - mm0 * mm * mm);
