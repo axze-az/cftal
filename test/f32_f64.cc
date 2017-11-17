@@ -89,16 +89,16 @@ bool cftal::test::f_eq(float a, float b)
     return (a == b) || ((a != a) && (b != b));
 }
 
-std::int32_t
+cftal::int32_t
 cftal::test::distance(double a, double b)
 {
-    std::int64_t ai = as<std::int64_t>(a);
-    std::int64_t bi = as<std::int64_t>(b);
-    std::int64_t abs_ai = ai & ~(1ULL<<63);
-    std::int64_t abs_bi = bi & ~(1ULL<<63);
+    int64_t ai = as<int64_t>(a);
+    int64_t bi = as<int64_t>(b);
+    int64_t abs_ai = ai & ~(1ULL<<63);
+    int64_t abs_bi = bi & ~(1ULL<<63);
     bool sgn_a = abs_ai != ai;
     bool sgn_b = abs_bi != bi;
-    std::int32_t d=0;
+    int32_t d=0;
     if ((sgn_a == sgn_b) || ((abs_ai|abs_bi) == 0)) {
         d= abs_bi - abs_ai;
     } else {
@@ -112,16 +112,16 @@ cftal::test::distance(double a, double b)
     return d;
 }
 
-std::int32_t
+cftal::int32_t
 cftal::test::distance(float a, float b)
 {
-    std::int32_t ai = cftal::as<std::int32_t>(a);
-    std::int32_t bi = cftal::as<std::int32_t>(b);
-    std::int32_t abs_ai = ai & ~(1U<<31);
-    std::int32_t abs_bi = bi & ~(1U<<31);
+    int32_t ai = as<int32_t>(a);
+    int32_t bi = as<int32_t>(b);
+    int32_t abs_ai = ai & ~(1U<<31);
+    int32_t abs_bi = bi & ~(1U<<31);
     bool sgn_a = abs_ai != ai;
     bool sgn_b = abs_bi != bi;
-    std::int32_t d=0;
+    int32_t d=0;
     if ((sgn_a == sgn_b) || ((abs_ai|abs_bi) == 0)) {
         d= abs_bi - abs_ai;
     } else {
@@ -153,19 +153,19 @@ namespace {
 #endif
         }
         if (us != nullptr) {
-            int32_t isn= (std::isnan(a) || std::isnan(b)) ? 1 : 0;
+            int32_t isn= ((a!=a) || (b!=b)) ? 1 : 0;
             us->inc(u, isn);
         }
         return r;
     }
 
     template <typename _T>
-    bool is_faitful(_T a, const std::tuple<_T, _T, _T>& b)
+    bool is_faithful(_T a, const std::tuple<_T, _T, _T>& b)
     {
         _T b0, b1, b2;
         std::tie(b0, b1, b2) = b;
-        if (std::isnan(a) &&
-            (std::isnan(b0) || std::isnan(b1) || std::isnan(b2)))
+        if ((a!=a) &&
+            ((b0!=b0) || (b1!=b1) || (b2!=b2)))
             return true;
         return a == b0 || a == b1 || a == b2;
     }
@@ -188,7 +188,7 @@ bool cftal::test::f_eq_ulp(double a,
 {
     bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
     if (us != nullptr) {
-        bool f= is_faitful(a, b);
+        bool f= is_faithful(a, b);
 #if 0
         if (f==false) {
             r=false;
@@ -205,7 +205,7 @@ bool cftal::test::f_eq_ulp(float a,
 {
     bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
     if (us != nullptr) {
-        bool f= is_faitful(a, b);
+        bool f= is_faithful(a, b);
         us->faithful(f);
     }
     return r;
