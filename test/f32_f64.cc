@@ -94,8 +94,8 @@ cftal::test::distance(double a, double b)
 {
     std::int64_t ai = as<std::int64_t>(a);
     std::int64_t bi = as<std::int64_t>(b);
-    std::int64_t abs_ai = ai & ~(1LLU<<63);
-    std::int64_t abs_bi = bi & ~(1LLU<<63);
+    std::int64_t abs_ai = ai & ~(1ULL<<63);
+    std::int64_t abs_bi = bi & ~(1ULL<<63);
     bool sgn_a = abs_ai != ai;
     bool sgn_b = abs_bi != bi;
     std::int32_t d=0;
