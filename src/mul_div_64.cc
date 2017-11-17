@@ -16,7 +16,6 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word_i(uint64_t d)
 #define USE_DIV 0
 #define USE_CPP 1
 #define USE_ASM 2
-#define USE_GPL 3
 #if defined (__x86_64__)
 #define ALG USE_ASM
 #else
@@ -105,66 +104,10 @@ cftal::impl::udiv_2by1_rcp_64::reciprocal_word_i(uint64_t d)
     return v4;
 #endif
 
-#if USE_GPL == ALG
-    uint64_t inv, t0, t1;
-    const uint16_t* tblptr= _tbl;
-    __asm__ __volatile__(
-        "mov %[rdi], %[rax] \n\t"
-        "shr $55, %[rax] \n\t"
-        "movzwl (%[rcx], %[rax], 2), %k[rcx] \n\t"
-        // v1 = (v0 << 11) - (v0*v0*d40 >> 40) - 1
-        "mov %[rdi], %[rsi] \n\t"
-        "mov %k[rcx], %k[rax] \n\t"
-        "imul %k[rcx], %k[rcx] \n\t"
-        "shr $24, %[rsi] \n\t"
-        "inc %[rsi] \n\t" // %[rsi] = d40
-        "imul %[rsi], %[rcx] \n\t"
-        "shr $40, %[rcx] \n\t"
-        "sal $11, %k[rax] \n\t"
-        "dec %k[rax] \n\t"
-        "sub %k[rcx], %k[rax] \n\t" // %[rax] = v1
-
-        // v2 = (v1 << 13) + (v1 * (2^60 - v1*d40) >> 47
-        "mov $0x1000000000000000, %[rcx] \n\t"
-        "imul %[rax], %[rsi] \n\t"
-        "sub %[rsi], %[rcx] \n\t"
-        "imul %[rax], %[rcx] \n\t"
-        "sal $13, %[rax] \n\t"
-        "shr $47, %[rcx] \n\t"
-        "add %[rax], %[rcx]  \n\t" // %[rcx] = v2
-
-        // v3 = (v2 << 31) +
-        // (v2 * (2^96 - v2 * d63 + (v2>>1) & mask) >> 65
-        "mov %[rdi], %[rsi] \n\t"
-        "shr $1, %[rsi] \n\t" // d/2
-        "sbb %[rax], %[rax] \n\t" // -d0 = -(d mod 2)
-        "sub %[rax], %[rsi] \n\t" // d63 = ceil(d/2)
-        "imul %[rcx], %[rsi] \n\t" // v2 * d63
-        "and %[rcx], %[rax] \n\t" // v2 * d0
-        "shr $1, %[rax] \n\t" // (v2>>1) * d0
-        "sub %[rsi], %[rax] \n\t" // (v2>>1) * d0 - v2 * d63
-        "mul %[rcx] \n\t"
-        "sal $31, %[rcx] \n\t"
-        "shr $1, %[rdx] \n\t"
-        "add %[rdx], %[rcx] \n\t" // %[rcx] = v3
-
-        "mov %[rdi], %[rax] \n\t"
-        "mul %[rcx] \n\t"
-        "add %[rdi], %[rax] \n\t"
-        "mov %[rcx], %[rax] \n\t"
-        "adc %[rdi], %[rdx] \n\t"
-        "sub %[rdx], %[rax] \n\t"
-        : [rax] "=&a" (inv), [rdx] "=&d" (t0),
-          [rsi] "=&r" (t1), [rcx] "+&r" (tblptr)
-        : [rdi] "rm" (d)
-        : "cc");
-    return inv;
-#endif
 
 #undef USE_DIV
 #undef USE_CPP
 #undef USE_ASM
-#undef USE_GPL
 #undef ALG
 }
 

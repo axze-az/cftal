@@ -1603,6 +1603,125 @@ cftal::native_div(const vec<float, 1>& b, const vec<float, 1>& a)
 #endif
 }
 
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::
+cos(const vec<float, _N>& v)
+{
+    vec<float, _N> r(cos(low_half(v)),
+                     cos(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::
+divide(const vec<float, _N>& x, const vec<float, _N>& y)
+{
+    return native_div(x, y);
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::exp(const vec<float, _N>& v)
+{
+    vec<float, _N> r(exp(low_half(v)),
+                     exp(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::exp2(const vec<float, _N>& v)
+{
+    vec<float, _N> r(exp2(low_half(v)),
+                     exp2(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::exp10(const vec<float, _N>& v)
+{
+    vec<float, _N> r(exp10(low_half(v)),
+                     exp10(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::log(const vec<float, _N>& v)
+{
+    vec<float, _N> r(log(low_half(v)),
+                     log(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::log2(const vec<float, _N>& v)
+{
+    vec<float, _N> r(log2(low_half(v)),
+                     log2(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::log10(const vec<float, _N>& v)
+{
+    vec<float, _N> r(log10(low_half(v)),
+                     log10(high_half(v)));
+    return r;
+}
+
+#if 0
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::
+powr(const vec<float, _N>& x, const vec<float, _N>& y)
+{
+    vec<float, _N> r(powr(low_half(x), low_half(y)),
+                     powr(high_half(x), high_half(y)));
+    return r;
+}
+#endif
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::rsqrt(const vec<float, _N>& v)
+{
+    vec<float, _N> r(rsqrt(low_half(v)),
+                     rsqrt(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::sin(const vec<float, _N>& v)
+{
+    vec<float, _N> r(sin(low_half(v)),
+                     sin(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::sqrt(const vec<float, _N>& v)
+{
+    vec<float, _N> r(sqrt(low_half(v)),
+                     sqrt(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+cftal::vec<float, _N>
+cftal::half_math::tan(const vec<float, _N>& v)
+{
+    vec<float, _N> r(tan(low_half(v)),
+                     tan(high_half(v)));
+    return r;
+}
 
 
 // local variables:
