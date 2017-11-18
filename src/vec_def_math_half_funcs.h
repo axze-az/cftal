@@ -17,73 +17,73 @@
 #define DEF_HALF_FUNCS(ns, vec_float, vec_int, real_type)       \
                                                                 \
     ns::vec_float                                               \
-    ns::cos(arg<vec_float>::type a)                             \
+    ns::half_math::cos(arg<vec_float>::type a)                  \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::cos(a);                                  \
+        return func_t::half_cos(a);                             \
     }                                                           \
                                                                 \
     ns::vec_float                                               \
-    ns::exp(arg<vec_float>::type a)                             \
+    ns::half_math::exp(arg<vec_float>::type a)                  \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::exp(a);                                  \
+        return func_t::half_exp(a);                             \
     }                                                           \
                                                                 \
     ns::vec_float                                               \
-    ns::exp2(arg<vec_float>::type d)                            \
+    ns::half_math::exp2(arg<vec_float>::type d)                 \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::exp2(d);                                 \
+        return func_t::half_exp2(d);                            \
     }                                                           \
                                                                 \
     ns::vec_float                                               \
-    ns::exp10(arg<vec_float>::type d)                           \
+    ns::half_math::exp10(arg<vec_float>::type d)                \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::exp10(d);                                \
+        return func_t::half_exp10(d);                           \
     }                                                           \
                                                                 \
     ns::vec_float                                               \
-    ns::log(arg<vec_float>::type d)                             \
+    ns::half_math::log(arg<vec_float>::type d)                  \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::log(d);                                  \
+        return func_t::half_log(d);                             \
     }                                                           \
                                                                 \
     ns::vec_float                                               \
-    ns::log2(arg<vec_float>::type d)                            \
+    ns::half_math::log2(arg<vec_float>::type d)                 \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::log2(d);                                 \
+        return func_t::half_log2(d);                            \
     }                                                           \
                                                                 \
     ns::vec_float                                               \
-    ns::log10(arg<vec_float>::type d)                           \
+    ns::half_math::log10(arg<vec_float>::type d)                \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::log10(d);                                \
+        return func_t::half_log10(d);                           \
     }                                                           \
                                                                 \
     ns::vec_float                                               \
-    ns::rsqrt(arg<vec_float>::type d)                           \
+    ns::half_math::rsqrt(arg<vec_float>::type d)                \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::rsqrt(d);                                \
+        return func_t::half_rsqrt(d);                           \
     }                                                           \
                                                                 \
     ns::vec_float                                               \
-    ns::sin(arg<vec_float>::type d)                             \
+    ns::half_math::sin(arg<vec_float>::type d)                  \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::sin(d);                                  \
+        return func_t::half_sin(d);                             \
     }                                                           \
                                                                 \
     ns::vec_float                                               \
-    ns::tan(arg<vec_float>::type d)                             \
+    ns::half_math::tan(arg<vec_float>::type d)                  \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
-        return func_t::tan(d);                                  \
+        return func_t::half_tan(d);                             \
     }                                                           \
 
 

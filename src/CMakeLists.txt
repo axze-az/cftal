@@ -31,18 +31,23 @@ set (CSRCS
     # vec <float, 1>
     v1f32_ef.cc
     v1f32_sf.cc
+    v1f32_hf.cc
     # vec <float, 2>
     v2f32_ef.cc
     v2f32_sf.cc
+    v2f32_hf.cc
     # vec <float, 4>
     v4f32_ef.cc
     v4f32_sf.cc
+    v4f32_hf.cc
     # vec <float, 8>
     v8f32_ef.cc
     v8f32_sf.cc
+    v8f32_hf.cc
     # vec <float, 16>
     v16f32_ef.cc
     v16f32_sf.cc
+    v16f32_hf.cc
 )
 
 # only for ides

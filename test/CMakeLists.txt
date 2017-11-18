@@ -247,6 +247,8 @@ test_prog(test-root12-f32)
 test_prog(test-erf-f32)
 test_prog(test-erfc-f32)
 
+test_prog(test-half-f32)
+
 test_prog(test-v2)
 
 if (CFTAL_FULL_TEST)
