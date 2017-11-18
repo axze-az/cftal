@@ -497,13 +497,13 @@ namespace cftal {
     log(arg<vec<float, 1> >::type v);
 
     v2f32
-    log(arg<v2f32>::type d);
+    log(arg_t<v2f32> d);
 
     v4f32
-    log(arg<v4f32>::type d);
+    log(arg_t<v4f32> d);
 
     v8f32
-    log(arg<v8f32>::type d);
+    log(arg_t<v8f32> d);
 
     vec<float, 16>
     log(arg<vec<float, 16> >::type d);
@@ -664,7 +664,7 @@ namespace cftal {
     erfc(arg_t<vec<float, 8> > d);
 
     vec<float, 16>
-    erfc(arg<vec<float, 16> >::type d);
+    erfc(arg_t<vec<float, 16> > d);
 
     // pow
     template <std::size_t _N>
@@ -917,9 +917,28 @@ namespace cftal {
     // similiar to opencl c++ 2.0
     namespace half_math {
 
+        // for all functions below:
+        // range: +- 2^16
+        // precision: +-8 ulps
+
         template <std::size_t _N>
         vec<float, _N>
         cos(const vec<float, _N>& v);
+
+        vec<float, 1>
+        cos(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        cos(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        cos(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        cos(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        cos(arg_t<vec<float, 16> > v);
 
         template <std::size_t _N>
         vec<float, _N>
@@ -929,25 +948,121 @@ namespace cftal {
         vec<float, _N>
         exp(const vec<float, _N>& v);
 
+        vec<float, 1>
+        exp(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        exp(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        exp(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        exp(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        exp(arg_t<vec<float, 16> > v);
+
+
         template <std::size_t _N>
         vec<float, _N>
         exp2(const vec<float, _N>& v);
+
+        vec<float, 1>
+        exp2(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        exp2(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        exp2(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        exp2(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        exp2(arg_t<vec<float, 16> > v);
+
 
         template <std::size_t _N>
         vec<float, _N>
         exp10(const vec<float, _N>& v);
 
+        vec<float, 1>
+        exp10(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        exp10(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        exp10(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        exp10(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        exp10(arg_t<vec<float, 16> > v);
+
+
         template <std::size_t _N>
         vec<float, _N>
         log(const vec<float, _N>& v);
+
+        vec<float, 1>
+        log(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        log(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        log(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        log(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        log(arg_t<vec<float, 16> > v);
+
 
         template <std::size_t _N>
         vec<float, _N>
         log2(const vec<float, _N>& v);
 
+        vec<float, 1>
+        log2(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        log2(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        log2(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        log2(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        log2(arg_t<vec<float, 16> > v);
+
+
         template <std::size_t _N>
         vec<float, _N>
         log10(const vec<float, _N>& v);
+
+        vec<float, 1>
+        log10(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        log10(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        log10(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        log10(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        log10(arg_t<vec<float, 16> > v);
+
 
 #if 0
         template <std::size_t _N>
@@ -963,9 +1078,40 @@ namespace cftal {
         vec<float, _N>
         rsqrt(const vec<float, _N>& v);
 
+        vec<float, 1>
+        rsqrt(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        rsqrt(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        rsqrt(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        rsqrt(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        rsqrt(arg_t<vec<float, 16> > v);
+
+
         template <std::size_t _N>
         vec<float, _N>
         sin(const vec<float, _N>& v);
+
+        vec<float, 1>
+        sin(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        sin(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        sin(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        sin(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        sin(arg_t<vec<float, 16> > v);
 
         template <std::size_t _N>
         vec<float, _N>
@@ -974,6 +1120,22 @@ namespace cftal {
         template <std::size_t _N>
         vec<float, _N>
         tan(const vec<float, _N>& v);
+
+        vec<float, 1>
+        tan(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        tan(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        tan(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        tan(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        tan(arg_t<vec<float, 16> > v);
+
     };
 }
 
@@ -1709,9 +1871,10 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::sqrt(const vec<float, _N>& v)
 {
-    vec<float, _N> r(sqrt(low_half(v)),
-                     sqrt(high_half(v)));
-    return r;
+    return cftal::sqrt(v);
+    // vec<float, _N> r(sqrt(low_half(v)),
+    //                 sqrt(high_half(v)));
+    // return r;
 }
 
 template <std::size_t _N>
