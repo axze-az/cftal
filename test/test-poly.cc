@@ -108,7 +108,7 @@ namespace cftal {
             }
 
             static
-            const char* fname() { return "exp_f64_horner horner"; }
+            const char* fname() { return "exp_f64 poly horner"; }
         };
 
         struct check_exp_f64_estrin : public check_exp_f64_base {
@@ -129,7 +129,7 @@ namespace cftal {
             }
 
             static
-            const char* fname() { return "exp_f64_horner estrin"; }
+            const char* fname() { return "exp_f64 poly estrin"; }
         };
 
     }
