@@ -473,17 +473,23 @@ namespace cftal {
     vec<_T, _N>
     min(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
-    // floating point minimum and maximum
+    // floating point minimum with nan and signed 0.0 handling
     template <typename _T, std::size_t _N>
     std::enable_if_t<std::is_floating_point<_T>::value,
                      vec<_T, _N> >
     fmin(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
-    // floating point minimum and maximum
+    // floating point maximum with nan and signed 0.0 handling
     template <typename _T, std::size_t _N>
     std::enable_if_t<std::is_floating_point<_T>::value,
                      vec<_T, _N> >
     fmax(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+    // fdim: max(x-y, 0)
+    template <typename _T, std::size_t _N>
+    std::enable_if_t<std::is_floating_point<_T>::value,
+                     vec<_T, _N> >
+    fdim(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
     // return the maximum element
     template <typename _T, std::size_t _N>
@@ -839,6 +845,19 @@ cftal::fmax(const vec<_T, _N>& a, const vec<_T, _N>& b)
     }
     r = select(isnan(a), b, r);
     r = select(isnan(b), a, r);
+    return r;
+}
+
+template <typename _T, std::size_t _N>
+inline
+std::enable_if_t<std::is_floating_point<_T>::value,
+                 cftal::vec<_T, _N> >
+cftal::fdim(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+    using v_t = vec<_T, _N>;
+    v_t r= max(a - b, v_t(0));
+    r = select(isnan(a), a, r);
+    r = select(isnan(b), b, r);
     return r;
 }
 
