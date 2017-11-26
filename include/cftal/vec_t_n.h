@@ -463,15 +463,15 @@ namespace cftal {
                       vec<_T, _N> >
     abs(const vec<_T, _N>& v);
 
-    // return elementwise maximum
-    template <typename _T, std::size_t _N>
-    vec<_T, _N>
-    max(const vec<_T, _N>& a, const vec<_T, _N>& b);
-
     // return elementwise minimum
     template <typename _T, std::size_t _N>
     vec<_T, _N>
     min(const vec<_T, _N>& a, const vec<_T, _N>& b);
+
+    // return elementwise maximum
+    template <typename _T, std::size_t _N>
+    vec<_T, _N>
+    max(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
     // floating point minimum with nan and signed 0.0 handling
     template <typename _T, std::size_t _N>
@@ -812,19 +812,40 @@ cftal::abs(const vec<_T, _N>& v)
 template <class _T, std::size_t _N>
 inline
 cftal::vec<_T, _N>
+cftal::min(const vec<_T, _N>& a, const vec<_T, _N>& b)
+{
+    return vec<_T, _N>(min(low_half(a), low_half(b)),
+                       min(high_half(a), high_half(b)));
+}
+
+template <class _T, std::size_t _N>
+inline
+cftal::vec<_T, _N>
 cftal::max(const vec<_T, _N>& a, const vec<_T, _N>& b)
 {
     return vec<_T, _N>(max(low_half(a), low_half(b)),
                        max(high_half(a), high_half(b)));
 }
 
-template <class _T, std::size_t _N>
+template <typename _T, std::size_t _N>
 inline
-cftal::vec<_T, _N>
-cftal::min(const vec<_T, _N>& a, const vec<_T, _N>& b)
+std::enable_if_t<std::is_floating_point<_T>::value,
+                 cftal::vec<_T, _N> >
+cftal::fmin(const vec<_T, _N>& a, const vec<_T, _N>& b)
 {
-    return vec<_T, _N>(min(low_half(a), low_half(b)),
-                       min(high_half(a), high_half(b)));
+    using v_t = vec<_T, _N>;
+    v_t r=min(a, b);
+    // select the "smaller" of signed zeros
+    typename v_t::mask_type abz= (a==b) & (a==_T(0));
+    if (any_of(abz)) {
+        v_t a1=copysign(v_t(_T(1)), a);
+        v_t b1=copysign(v_t(_T(1)), b);
+        v_t r1=min(a1, b1);
+        r = select(abz, copysign(v_t(_T(0)), r1), r);
+    }
+    r = select(isnan(a), b, r);
+    r = select(isnan(b), a, r);
+    return r;
 }
 
 template <typename _T, std::size_t _N>
@@ -860,28 +881,6 @@ cftal::fdim(const vec<_T, _N>& a, const vec<_T, _N>& b)
     r = select(isnan(b), b, r);
     return r;
 }
-
-template <typename _T, std::size_t _N>
-inline
-std::enable_if_t<std::is_floating_point<_T>::value,
-                 cftal::vec<_T, _N> >
-cftal::fmin(const vec<_T, _N>& a, const vec<_T, _N>& b)
-{
-    using v_t = vec<_T, _N>;
-    v_t r=min(a, b);
-    // select the "smaller" of signed zeros
-    typename v_t::mask_type abz= (a==b) & (a==_T(0));
-    if (any_of(abz)) {
-        v_t a1=copysign(v_t(_T(1)), a);
-        v_t b1=copysign(v_t(_T(1)), b);
-        v_t r1=min(a1, b1);
-        r = select(abz, copysign(v_t(_T(0)), r1), r);
-    }
-    r = select(isnan(a), b, r);
-    r = select(isnan(b), a, r);
-    return r;
-}
-
 
 template <class _T, std::size_t _N>
 inline
