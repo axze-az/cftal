@@ -141,8 +141,8 @@ using namespace boost::numeric::odeint;
 int main()
 {
     const double end_p = 10.0;
-    const double abs_err = 1e-14;
-    const double rel_err = 1e-14;
+    const double abs_err = 1e-15;
+    const double rel_err = 1e-15;
 
     std::cout << "point3d dopri5" << std::endl;
     point3d x(10.0, 5.0, 5.0);
