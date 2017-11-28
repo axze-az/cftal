@@ -108,6 +108,7 @@ namespace cftal {
     v4f32 min(const v4f32& a, const v4f32& b);
     v4f32 abs(const v4f32& a);
     v4f32 fabs(const v4f32& a);
+    v2f32 sqrt(const v2f32& a);
     v4f32 sqrt(const v4f32& a);
     v4f32 hypot(const v4f32& a, const v4f32& b);
 
@@ -582,6 +583,13 @@ cftal::v4f32 cftal::permute(const v4f32& a, const v4f32& b)
 }
 
 inline
+cftal::v2f32 cftal::sqrt(const v2f32& a)
+{
+    v4f32 s=sqrt(v4f32(a, a));
+    return low_half(s);
+}
+
+inline
 cftal::v4f32 cftal::sqrt(const v4f32& a)
 {
     return _mm_sqrt_ps(a());
@@ -760,8 +768,7 @@ cftal::v2f32
 cftal::native_rsqrt(const v2f32& xx)
 {
     v4f32 x(xx, xx);
-    v4f32 y= _mm_rsqrt_ps(x());
-    y = y + y * (0.5f- (0.5f*x * y) * y);
+    v4f32 y= native_rsqrt(x);
     return low_half(y);
 }
 
@@ -770,7 +777,8 @@ cftal::v4f32
 cftal::native_rsqrt(const v4f32& x)
 {
     v4f32 y= _mm_rsqrt_ps(x());
-    y = y + y * (0.5f- (0.5f*x * y) * y);
+    y = y + (0.5f*y) * (1.0f- y*(x * y));
+    // y= 0.5f*y *(3.0f - y*(y*x));
     return y;
 }
 

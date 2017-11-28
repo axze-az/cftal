@@ -527,21 +527,31 @@ half_rsqrt(arg_t<vf_type> x)
 {
 #if 1
     vf_type y=native_rsqrt(x);
-    y = y + y * (0.5f- (0.5f*x * y) * y);
+    // ensure higher precision at the cost of one operation
+    y = y + (0.5f*y) * (1.0f- y*(x * y));
+    // y= 0.5f*y *(3.0f - y*(y*x));
     return y;
 #else
-    vi_type y = _T::as_int(x);
-    y = ((0xbe6eb50c - y) >> 1) & 0x7fffffff;
-    vf_type yi= _T::as_float(y);
+    vi_type yi = _T::as_int(x);
+    yi = ((0xbe6eb50c - yi) >> 1) & 0x7fffffff;
+    vf_type y= _T::as_float(yi);
+#if 1
+    vf_type xh=0.5f *x;
+    y= y *(1.5f - y*(y*xh));
+    y= y *(1.5f - y*(y*xh));
+    y = y + (0.5f*y) * (1.0f- y*(x * y));
+    return y;
+#else
     vf_type xh= 0.5f *x;
-    yi= yi *(1.5f - yi*yi*xh);
-    yi= yi *(1.5f - yi*yi*xh);
-    yi= yi *(1.5f - yi*yi*xh);
-    // yi= 0.5f * yi *(3.0f - yi*yi*x);
-    // yi= yi + 0.5f * yi * (1.0f - yi*yi*x);
-    yi= _T::sel(x<0, _T::nan(), yi);
-    yi= _T::sel(x!=x, x, yi);
+    y= y *(1.5f - y*y*xh);
+    y= y *(1.5f - y*y*xh);
+    y= y *(1.5f - y*y*xh);
+    // y= 0.5f * y *(3.0f - y*y*x);
+    // y= y + 0.5f * y * (1.0f - yi*y*x);
+    yi= _T::sel(x<0, _T::nan(), y);
+    yi= _T::sel(x!=x, x, y);
     return yi;
+#endif
 #endif
 }
 
@@ -550,7 +560,7 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
 half_sqrt(arg_t<vf_type> x)
 {
-    // return x*half_rsqrt(x);
+    // return x*native_rsqrt(x);
     return sqrt(x);
 }
 

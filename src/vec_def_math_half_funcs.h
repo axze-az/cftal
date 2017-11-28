@@ -73,6 +73,13 @@
     }                                                           \
                                                                 \
     ns::vec_float                                               \
+    ns::half_math::sqrt(arg<vec_float>::type d)                 \
+    {                                                           \
+        DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
+        return func_t::half_sqrt(d);                            \
+    }                                                           \
+                                                                \
+    ns::vec_float                                               \
     ns::half_math::sin(arg<vec_float>::type d)                  \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \

@@ -1117,6 +1117,21 @@ namespace cftal {
         vec<float, _N>
         sqrt(const vec<float, _N>& v);
 
+        vec<float, 1>
+        sqrt(arg_t<vec<float, 1> > v);
+
+        vec<float, 2>
+        sqrt(arg_t<vec<float, 2> > v);
+
+        vec<float, 4>
+        sqrt(arg_t<vec<float, 4> > v);
+
+        vec<float, 8>
+        sqrt(arg_t<vec<float, 8> > v);
+
+        vec<float, 16>
+        sqrt(arg_t<vec<float, 16> > v);
+
         template <std::size_t _N>
         vec<float, _N>
         tan(const vec<float, _N>& v);
@@ -1240,10 +1255,11 @@ cftal::native_rsqrt(const vec<float, 1>& x)
 {
 #if defined (__SSE__)
     v1f32 y= _mm_cvtss_f32(_mm_rsqrt_ps(_mm_set1_ps(x())));
-    y = y + y * (0.5f- (0.5f*x * y) * y);
+    y = y + (0.5f*y) * (1.0f- y*(x * y));
+    // y= 0.5f*y *(3.0f - y*(y*x));
     return y;
 #else
-    vec<float, 1> r(1.0/sqrt(v));
+    vec<float, 1> r(1.0f/sqrt(v));
     return r;
 #endif
 }
@@ -1871,10 +1887,10 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::sqrt(const vec<float, _N>& v)
 {
-    return cftal::sqrt(v);
-    // vec<float, _N> r(sqrt(low_half(v)),
-    //                 sqrt(high_half(v)));
-    // return r;
+    // return cftal::sqrt(v);
+    vec<float, _N> r(sqrt(low_half(v)),
+                     sqrt(high_half(v)));
+    return r;
 }
 
 template <std::size_t _N>
