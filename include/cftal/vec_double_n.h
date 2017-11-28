@@ -144,6 +144,23 @@ namespace cftal {
     vec<double, 8>
     ldexp(arg_t<vec<double, 8> > a, arg_t<vec<int32_t, 8> > e);
 
+    // nextafter, 0 ulps
+    template <std::size_t _N>
+    vec<double, _N>
+    nextafter(const vec<double, _N>& x, const vec<double, _N>& y);
+
+    vec<double, 1>
+    nextafter(arg_t<vec<double, 1> > x, arg_t<vec<double, 1> > y);
+
+    vec<double, 2>
+    nextafter(arg_t<vec<double, 2> > b, arg_t<vec<double, 2> > e);
+
+    vec<double, 4>
+    nextafter(arg_t<vec<double, 4> > b, arg_t<vec<double, 4> > e);
+
+    vec<double, 8>
+    nextafter(arg_t<vec<double, 8> > b, arg_t<vec<double, 8> > e);
+
     // ilogb
     template <std::size_t _N>
     vec<int32_t, _N>
@@ -1323,6 +1340,15 @@ cftal::ldexp(const vec<double, _N>& a, const vec<int32_t, _N>& e)
 {
     return vec<double, _N>(ldexp(low_half(a), low_half(e)),
                            ldexp(high_half(a), high_half(e)));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::nextafter(const vec<double, _N>& a, const vec<double, _N>& b)
+{
+    return vec<double, _N>(nextafter(low_half(a), low_half(b)),
+                           nextafter(high_half(a), high_half(b)));
 }
 
 template <std::size_t _N>

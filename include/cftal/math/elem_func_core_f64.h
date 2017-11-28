@@ -59,9 +59,15 @@ namespace cftal {
             vf_type
             ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> e);
 
-            static vf_type
+            static
+            vf_type
             ldexp(arg_t<vf_type> x,
                   arg_t<vi_type> e);
+
+            // nextafter without nan handling
+            static
+            vf_type
+            nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
 
             // frexp_k without nan, inf, zero handling
             // the exponents are returned in the odd numbered
@@ -448,6 +454,28 @@ ldexp(arg_t<vf_type> x, arg_t<vi_type> n)
     return ldexp_k(x, _T::vi_to_vi2(n));
 }
 
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc)
+{
+    vli_type ux=_T::as_vli(xc);
+    vli_type uy=_T::as_vli(yc);
+    vli_type ax= ux & not_sign_f64_msk::v.s64();
+    vli_type ay= uy & not_sign_f64_msk::v.s64();
+    vli_type ux_inc= ux + 1;
+    vli_type ux_dec= ux - 1;
+    // decrement required if ax > ay or (ux^uy & sgn) != 0
+    vmli_type opp_sgn=
+        vli_type((ux^uy) & sign_f64_msk::v.s64()) != vli_type(0LL);
+    vli_type r= _T::sel((ax > ay) | opp_sgn, ux_dec, ux_inc);
+    vli_type r0= _T::sel(ay == 0, uy, (uy & sign_f64_msk::v.s64()) | 1LL);
+    r = _T::sel(ax == 0, r0, r);
+    r = _T::sel(ux == uy, uy, r);
+    vf_type rf=_T::as_vf(r);
+    return rf;
+}
 
 template <typename _T>
 inline

@@ -50,6 +50,10 @@ namespace cftal {
             vf_type
             pow2i(arg_t<vi_type> d);
 
+            // nextafter without nan handling
+            static
+            vf_type
+            nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
 
             // as frexp but without checking for 0, inf, nan
             static
@@ -350,6 +354,29 @@ pow2i(arg_t<vi_type> vi)
     vf_type inf(_T::pinf());
     r= _T::sel(mf, vf_type(inf), r);
     return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc)
+{
+    vi_type ux=_T::as_int(xc);
+    vi_type uy=_T::as_int(yc);
+    vi_type ax= ux & not_sign_f32_msk::v.s32();
+    vi_type ay= uy & not_sign_f32_msk::v.s32();
+    vi_type ux_inc= ux + 1;
+    vi_type ux_dec= ux - 1;
+    // decrement required if ax > ay or (ux^uy & sgn) != 0
+    vmi_type opp_sgn=
+        vi_type((ux^uy) & sign_f32_msk::v.s32()) != vi_type(0);
+    vi_type r= _T::sel((ax > ay) | opp_sgn, ux_dec, ux_inc);
+    vi_type r0= _T::sel(ay == 0, uy, (uy & sign_f32_msk::v.s32()) | 1);
+    r = _T::sel(ax == 0, r0, r);
+    r = _T::sel(ux == uy, uy, r);
+    vf_type rf=_T::as_float(r);
+    return rf;
 }
 
 template <typename _T>

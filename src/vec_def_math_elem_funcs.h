@@ -283,6 +283,13 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::pow(b, e);                                       \
     }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::nextafter(arg<vec_float>::type b, arg<vec_float>::type e)       \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::nextafter(b, e);                                 \
+    }                                                                   \
 
 
 // Local variables:
