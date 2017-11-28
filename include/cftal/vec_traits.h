@@ -225,9 +225,10 @@ namespace cftal {
             using vmi_type = typename vec<int32_t, _N>::mask_type;
             // integer vector with the same length as vf_type
             using vi2_type = vec<int32_t, 2*_N >;
-            using vmi2_type = vec<int32_t, 2* _N>;
+            using vmi2_type = typename vec<int32_t, 2* _N>::mask_type;
 
             using vli_type = vec<int64_t, _N>;
+            using vmli_type= typename vec<int64_t, _N>::mask_type;
 
             using dvf_type = d_real<vf_type>;
 
@@ -325,6 +326,12 @@ namespace cftal {
             vi2_type sel_zero_or_val(const vmi2_type& msk,
                                      const vi2_type& f) {
                 return select_zero_or_val(msk, f);
+            }
+
+            static
+            vli_type sel(const vmli_type& msk,
+                         const vli_type& t, const vli_type& f) {
+                return select(msk, t, f);
             }
 
             static

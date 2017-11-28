@@ -23,6 +23,7 @@ namespace cftal {
             // mpfr function with one argument
             using f1_t = int (*)(mpfr_t, const mpfr_t,
                                  mpfr_rnd_t);
+
             // mpfr function with two arguments
             using f2_t = int (*)(mpfr_t, const mpfr_t,
                                  const mpfr_t, mpfr_rnd_t);
@@ -138,6 +139,12 @@ namespace cftal {
             // return x^(1/12)
             int
             root12(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
+            // make mpfr_nextafter compatible with mpfr_pow ...
+            int
+            wrap_nextafter(mpfr_t res,
+                           const mpfr_t x, const mpfr_t y,
+                           mpfr_rnd_t rm);
 
             // returns c_n*x^n + .. c_1*x^1 + c_0, nullptr as last argument
             int

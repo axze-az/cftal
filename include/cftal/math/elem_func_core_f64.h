@@ -44,6 +44,7 @@ namespace cftal {
             using vi2_type = typename _T::vi2_type;
             using vmf_type = typename _T::vmf_type;
             using vmi_type = typename _T::vmi_type;
+            using vmli_type = typename _T::vmli_type;
             using vmi2_type = typename _T::vmi2_type;
 
             using dvf_type = d_real<vf_type>;

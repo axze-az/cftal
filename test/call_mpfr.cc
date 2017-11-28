@@ -22,7 +22,6 @@ cftal::test::call_mpfr::
 func(double a, f1_t f, std::pair<double, double>* ulp1i)
 {
 #if 0
-    MPFR_DECL_INIT(ai, 53);
     MPFR_DECL_INIT(r, 53);
     mpfr_set_d(ai, a, GMP_RNDN);
     int mpres=f(r, ai, GMP_RNDN);
@@ -631,6 +630,19 @@ root12(mpfr_t res,
        mpfr_rnd_t rm)
 {
     return mpfr_root(res, x, 12, rm);
+}
+
+int
+cftal::test::mpfr_ext::
+wrap_nextafter(mpfr_t res,
+               const mpfr_t x, const mpfr_t y,
+               mpfr_rnd_t rm)
+{
+    static_cast<void>(rm);
+    fpn_handle r(x);
+    mpfr_nexttoward(r(), y);
+    mpfr_set(res, r(), MPFR_RNDN);
+    return 0;
 }
 
 int
