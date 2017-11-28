@@ -639,9 +639,8 @@ wrap_nextafter(mpfr_t res,
                mpfr_rnd_t rm)
 {
     static_cast<void>(rm);
-    fpn_handle r(x);
-    mpfr_nexttoward(r(), y);
-    mpfr_set(res, r(), MPFR_RNDN);
+    mpfr_set(res, x, MPFR_RNDN);
+    mpfr_nexttoward(res, y);
     return 0;
 }
 
