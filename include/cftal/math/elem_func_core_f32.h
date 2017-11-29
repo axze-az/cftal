@@ -852,7 +852,7 @@ root12_k(arg_t<vf_type> xc)
     mm= _T::sel(mm0 < 0x1p-6f, mm_i1, mm);
     mm = _T::sel(mm0 < 0x1p-9f, mm_i0, mm);
 #if 1
-    mm = impl::root12::householder5<float>(mm, mm0);
+    mm = impl::root12::order6<float>(mm, mm0);
 #else
     mm = impl::root12::nr<float>(mm, mm0);
     mm = impl::root12::order3<float>(mm, mm0);

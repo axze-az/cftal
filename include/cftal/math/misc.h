@@ -157,6 +157,11 @@ namespace cftal {
                 template <typename _C, typename _T>
                 static
                 _T
+                order6(_T y, _T x);
+
+                template <typename _C, typename _T>
+                static
+                _T
                 order8(_T y, _T x);
 
                 template <typename _C, typename _T>
@@ -602,6 +607,23 @@ cftal::math::impl::root12::order5(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
+cftal::math::impl::root12::order6(_T x, _T y)
+{
+    // _T x12=powu<_T, 12>::v(x);
+    _T x12=pow12(x);
+    _T z = (y-x12)/x12;
+    _T d= z* horner(z,
+                    _C(83237.0/5971968.0),
+                    _C(-8855.0/497664.0),
+                    _C(253.0/10368.0),
+                    _C(-11.0/288.0),
+                    _C(1.0/12.0));
+    _T xn= x + x*d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
 cftal::math::impl::root12::order8(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
@@ -690,7 +712,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root12::householder6(_T x, _T y)
 {
-    _T x12= powe12(x);
+    _T x12= pow12(x);
     _T y1=y;
     _T y2=y*y;
     _T y3=y2*y;

@@ -889,7 +889,7 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm= _T::sel(mm0 < 0x1p-3, mm_i2, mm_i3);
     mm= _T::sel(mm0 < 0x1p-6, mm_i1, mm);
     mm = _T::sel(mm0 < 0x1p-9, mm_i0, mm);
-#if 1
+#if 0
     // only one division and much parallelism
     mm = impl::root12::householder8<double>(mm, mm0);
 #else
