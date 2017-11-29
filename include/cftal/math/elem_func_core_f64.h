@@ -891,7 +891,7 @@ root12_k(arg_t<vf_type> xc)
     mm = _T::sel(mm0 < 0x1p-9, mm_i0, mm);
 #if 0
     // only one division and much parallelism
-    mm = impl::root12::householder8<double>(mm, mm0);
+    mm = impl::root12::householder16<double>(mm, mm0);
 #else
     mm = impl::root12::order4<double>(mm, mm0);
     mm = impl::root12::order4<double>(mm, mm0);

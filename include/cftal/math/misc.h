@@ -193,6 +193,21 @@ namespace cftal {
                 static
                 _T
                 householder8(_T x, _T y);
+
+                template <typename _C, typename _T>
+                static
+                _T
+                householder9(_T x, _T y);
+
+                template <typename _C, typename _T>
+                static
+                _T
+                householder10(_T x, _T y);
+
+                template <typename _C, typename _T>
+                static
+                _T
+                householder16(_T x, _T y);
             };
 
 
@@ -801,6 +816,137 @@ cftal::math::impl::root12::householder8(_T x, _T y)
     return xn;
 }
 
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::householder9(_T x, _T y)
+{
+    _T x12=pow12(x);
+    _T y1=y;
+    _T y2=y*y;
+    _T y3=y2*y;
+    _T y4=y3*y;
+    _T y5=y4*y;
+    _T y6=y5*y;
+    _T y7=y6*y;
+    _T y8=y7*y;
+    _T num = x*horner(x12,
+                      _C(-75582.0),
+                      _C(-7132905.0)*y1,
+                      _C(-69522453.0)*y2,
+                      _C(-113404005.0)*y3,
+                      _C(58693635.0)*y4,
+                      _C(107782389.0)*y5,
+                      _C(22927905.0)*y6,
+                      _C(730521.0)*y7,
+                      _C(495.0)*y8);
+    _T denom=horner(x12,
+                    _C(167960.0),
+                    _C(26369200.0)*y1,
+                    _C(436000708.0)*y2,
+                    _C(1728704120.0)*y3,
+                    _C(2091669580.0)*y4,
+                    _C(794485120.0)*y5,
+                    _C(81078140.0)*y6,
+                    _C(1305304.0)*y7,
+                    _C(220.0)*y8);
+    _T xn = x + num/denom;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::householder10(_T x, _T y)
+{
+    _T x12=pow12(x);
+    _T y1=y;
+    _T y2=y*y;
+    _T y3=y2*y;
+    _T y4=y3*y;
+    _T y5=y4*y;
+    _T y6=y5*y;
+    _T y7=y6*y;
+    _T y8=y7*y;
+    _T y9=y8*y;
+    _T num = x*horner(x12,
+                      _C(-83980.0),
+                      _C(-13100620.0)*y1,
+                      _C(-204815754.0)*y2,
+                      _C(-646351706.0)*y3,
+                      _C(-181482730.0)*y4,
+                      _C(648592230.0)*y5,
+                      _C(356703490.0)*y6,
+                      _C(39886418.0)*y7,
+                      _C(652542.0)*y8,
+                      _C(110.0)*y9);
+    _T denom = horner(x12,
+                      _C(176358.0),
+                      _C(44340582.0)* y1,
+                      _C(1095707613.0)* y2,
+                      _C(6561809397.0)* y3,
+                      _C(12661678029.0)* y4,
+                      _C(8551422165.0)* y5,
+                      _C(1926259335.0)* y6,
+                      _C(116308335.0)* y7,
+                      _C(980265.0)* y8,
+                      _C(33.0)*y9);
+    _T xn = x + num/denom;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::householder16(_T x, _T y)
+{
+    _T x12=pow12(x);
+    _T y1=y;
+    _T y2=y*y;
+    _T y3=y2*y;
+    _T y4=y3*y;
+    _T y5=y4*y;
+    _T y6=y5*y;
+    _T y7=y6*y;
+    _T y8=y7*y;
+    _T y9=y8*y;
+    _T y10=y9*y;
+    _T y11=y10*y;
+    _T y12=y11*y;
+    _T y13=y12*y;
+    _T y14=y13*y;
+    _T num = x*horner(x12,
+                      _C(-7726160),
+                      _C(-15339941840.0)*y1,
+                      _C(-1988868461360.0)* y2,
+                      _C(-56887488326240.0)* y3,
+                      _C(-537724136350544.0)* y4,
+                      _C(-1937247572120432.0)* y5,
+                      _C(-2433001887386928.0)* y6,
+                      _C(292591938944448.0)* y7,
+                      _C(2569584379005072.0)* y8,
+                      _C(1672264804393040.0)* y9,
+                      _C(396054833942768.0)* y10,
+                      _C(35365013489312.0)* y11,
+                      _C(998783556368.0)* y12,
+                      _C(5545674992.0)* y13,
+                      _C(1307504.0)* y14);
+    _T denom = horner(x12,
+                      _C(13037895),
+                      _C(37489616775.0)* y1,
+                      _C(6535200987585.0)* y2,
+                      _C(249548240933910.0)* y3,
+                      _C(3271451120952075.0)* y4,
+                      _C(18140635643683185.0)* y5,
+                      _C(47360957693020461.0)* y6,
+                      _C(61297676002570068.0)* y7,
+                      _C(39843305443853973.0)* y8,
+                      _C(12725050238074521.0)* y9,
+                      _C(1874654482280355.0)* y10,
+                      _C(112269314809206.0)* y11,
+                      _C(2130715111833.0)* y12,
+                      _C(7295369103.0)* y13,
+                      _C(735471.0)*y14);
+    _T xn = x + num/denom;
+    return xn;
+}
 
 template <class _RT, class _T>
 _RT
