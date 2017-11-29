@@ -634,18 +634,6 @@ root12(mpfr_t res,
 
 int
 cftal::test::mpfr_ext::
-wrap_nextafter(mpfr_t res,
-               const mpfr_t x, const mpfr_t y,
-               mpfr_rnd_t rm)
-{
-    static_cast<void>(rm);
-    mpfr_set(res, x, MPFR_RNDN);
-    mpfr_nexttoward(res, y);
-    return 0;
-}
-
-int
-cftal::test::mpfr_ext::
 horner(mpfr_t res,
        const mpfr_t x,
        mpfr_rnd_t rm,
