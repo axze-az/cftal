@@ -7,16 +7,16 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
-f= exp(x);
-i= [-log(2)/2, log(2)/2];
+f= log2(x);
+i= [2^(-1/2), 2^0];
 d = guessdegree(f, i, 0x1p-64);
 d;
-b = [|0, ..., 13|];
+b = [|1, ..., 16|];
 c = [|D...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const double rsqrt_i0_c", "rsqrt", b, c);
+write_coeffs(p, "const double flog_c", "flog", b, c);
 p;
 
 /*
