@@ -694,8 +694,8 @@ cftal::math::impl::root12::householder6(_T x, _T y)
     _T y1=y;
     _T y2=y*y;
     _T y3=y2*y;
-    _T y4=y2*y2;
-    _T y5=y3*y2;
+    _T y4=y3*y;
+    _T y5=y4*y;
     _T num= x*horner(x12,
                      _C(-1092.0),
                      _C(-16926.0)*y1,
@@ -722,9 +722,9 @@ cftal::math::impl::root12::householder7(_T x, _T y)
     _T y1=y;
     _T y2=y*y;
     _T y3=y2*y;
-    _T y4=y2*y2;
-    _T y5=y3*y2;
-    _T y6=y3*y3;
+    _T y4=y3*y;
+    _T y5=y4*y;
+    _T y6=y5*y;
     _T num= x*horner(x12,
                      _C(-3094.0),
                      _C(-94003.0)*y1,
@@ -753,10 +753,10 @@ cftal::math::impl::root12::householder8(_T x, _T y)
     _T y1=y;
     _T y2=y*y;
     _T y3=y2*y;
-    _T y4=y2*y2;
-    _T y5=y3*y2;
-    _T y6=y3*y3;
-    _T y7=y3*y4;
+    _T y4=y3*y;
+    _T y5=y4*y;
+    _T y6=y5*y;
+    _T y7=y6*y;
     _T num= x*horner(x12,
                      _C(-3536.0),
                      _C(-194376.0)*y1,

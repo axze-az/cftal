@@ -851,9 +851,12 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm= _T::sel(mm0 < 0x1p-3f, mm_i2, mm_i3);
     mm= _T::sel(mm0 < 0x1p-6f, mm_i1, mm);
     mm = _T::sel(mm0 < 0x1p-9f, mm_i0, mm);
+#if 1
+    mm = impl::root12::householder4<float>(mm, mm0);
+#else
     mm = impl::root12::nr<float>(mm, mm0);
     mm = impl::root12::order3<float>(mm, mm0);
-
+#endif
     vf_type t= _T::insert_exp(e12_with_bias);
     mm *=t;
     // mm = copysign(mm, xc);
