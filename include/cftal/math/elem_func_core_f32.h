@@ -546,7 +546,7 @@ cftal::math::elem_func_core<float, _T>::
 rsqrt_k(arg_t<vf_type> x)
 {
 #if 1
-#if 1
+#if 0
     const float large = 0x1p64f;
     const float small = 0x1p-64f;
     const float rsqrt_large = 0x1p-32f;
