@@ -545,9 +545,9 @@ cftal::math::impl::root12::pow12(_T x)
     _T x3h, x3l;
     d_ops::mul122(x3h, x3l, x, x2h, x2l);
     _T x6h, x6l;
-    d_ops::mul22(x6h, x6l, x3h, x3l, x3h, x3l);
+    d_ops::sqr22(x6h, x6l, x3h, x3l);
     _T x12h, x12l;
-    d_ops::mul22(x12h, x12l, x6h, x6l, x6h, x6l);
+    d_ops::sqr22(x12h, x12l, x6h, x6l);
     return x12h;
 #else
     // avoid rounding errors, but is also slow

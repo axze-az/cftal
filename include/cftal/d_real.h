@@ -368,6 +368,11 @@ namespace cftal {
 
             static
             void
+            sqr22(_T& rh, _T& rl,
+                  const _T& xh, const _T& xl);
+
+            static
+            void
             mul22(_T& rh, _T& rl,
                   const _T& xh, const _T& xl,
                   const _T& yh, const _T& yl);
@@ -418,6 +423,11 @@ namespace cftal {
             static
             void
             mul12(_T& rh, _T& rl, const _T& u, const _T& v);
+
+            static
+            void
+            sqr22(_T& rh, _T& rl,
+                  const _T& xh, const _T& xl);
 
             static
             void
@@ -995,6 +1005,22 @@ template <typename _T>
 inline
 void
 cftal::impl::d_real_ops_fma<_T, true>::
+sqr22(_T& pzh, _T& pzl,
+      const _T& xh, const _T& xl)
+{
+    _T ph = xh * xh;
+    _T pl = fms(xh, xh, ph);
+    _T xl2= _T(2.0)*xl;
+    pl = fma(xh, xl2, pl);
+    pzh = ph + pl;
+    pzl = ph - pzh;
+    pzl+= pl;
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_fma<_T, true>::
 mul22(_T& pzh, _T& pzl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
@@ -1050,6 +1076,20 @@ rcp21(_T& rh, const _T& ah, const _T& al)
     _T qh, ql;
     traits::split(q0, qh, ql);
     rh = qh + q0 * ((_T(1.0) - qh * ahh) - qh * ahl);
+}
+
+template <typename _T>
+inline
+void
+cftal::impl::d_real_ops_fma<_T, false>::
+sqr22(_T& pzh, _T& pzl,
+      const _T& xh, const _T& xl)
+{
+    _T p1, p2;
+    sqr12(p1, p2, xh);
+    _T xhl= xh*xl;
+    p2+= (xhl + xhl);
+    add12(pzh, pzl, p1, p2);
 }
 
 template <typename _T>
