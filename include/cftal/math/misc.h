@@ -540,8 +540,6 @@ cftal::math::impl::root12::pow12(_T x)
     // _T x12=powu<_T, 12>::v(x);
 #if 1
     using d_ops=cftal::impl::d_real_ops<_T, d_real_traits<_T>::fma>;
-#if 1
-#if 1
     _T x2h, x2l;
     d_ops::sqr12(x2h, x2l, x);
     _T x3h, x3l;
@@ -552,27 +550,7 @@ cftal::math::impl::root12::pow12(_T x)
     d_ops::mul22(x12h, x12l, x6h, x6l, x6h, x6l);
     return x12h;
 #else
-    _T x2h, x2l;
-    d_ops::sqr12(x2h, x2l, x);
-    _T x4h, x4l;
-    d_ops::mul22(x4h, x4l, x2h, x2l, x2h, x2l);
-    _T x6h, x6l;
-    d_ops::mul22(x6h, x6l, x2h, x2l, x4h, x4l);
-    _T x12h, x12l;
-    d_ops::mul22(x12h, x12l, x6h, x6l, x6h, x6l);
-    return x12h;
-#endif
-#else
-    _T xh=x, xl=0.0;
-    for (int i=0; i<11; ++i) {
-        _T xlt;
-        d_ops::mul12(xh, xlt, xh, x);
-        xl = xl * x + xlt;
-    }
-    return xh + xl;
-#endif
-#else
-    // avoid rounding errors:
+    // avoid rounding errors, but is also slow
     _T x12=x;
     for (int i=0; i<11; ++i)
         x12*=x;
