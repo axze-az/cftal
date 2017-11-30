@@ -753,8 +753,9 @@ cbrt_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
-__attribute__((flatten))
 cftal::math::elem_func_core<float, _T>::
 root12_k(arg_t<vf_type> xc)
 {

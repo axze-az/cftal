@@ -7,17 +7,65 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
-f= log2(x);
-i= [2^(-1/2), 2^0];
-d = guessdegree(f, i, 0x1p-64);
+/* root12 f64 */
+f= x^(1/12);
+i= [2^(-12), 2^(-9)];
+d = guessdegree(f, i, 0x1p-8);
 d;
-b = [|1, ..., 16|];
+b = [|0, ..., 3|];
 c = [|D...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const double flog_c", "flog", b, c);
-p;
+write_coeffs(p, "const double root12_i0_c", "root12_i0", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "root12-i0-f64");
+
+/* root12 f64 */
+f= x^(1/12);
+i= [2^(-9), 2^(-6)];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 3|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double root12_i1_c", "root12_i1", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "root12-i1-f64");
+
+/* root12 f64 */
+f= x^(1/12);
+i= [2^(-6), 2^(-3)];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 3|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double root12_i2_c", "root12_i2", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "root12-i2-f64");
+
+/* root12 f64 */
+f= x^(1/12);
+i= [2^(-3), 2^(-0)];
+d = guessdegree(f, i, 0x1p-8);
+d;
+b = [|0, ..., 3|];
+c = [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double root12_i3_c", "root12_i3", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "root12-i3-f64");
 
 /*
 print_table=proc(f, x0, n, inc, fmt, pfx) {
