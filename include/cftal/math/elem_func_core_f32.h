@@ -546,6 +546,25 @@ cftal::math::elem_func_core<float, _T>::
 rsqrt_k(arg_t<vf_type> x)
 {
 #if 1
+#if 1
+    const float large = 0x1p64f;
+    const float small = 0x1p-64f;
+    const float rsqrt_large = 0x1p-32f;
+    const float rsqrt_small = 0x1p32f;
+    vmf_type x_large= x >= large;
+    vmf_type x_small= x <= small;
+    vf_type xr = _T::sel(x_large, x* small, x);
+    vf_type s = _T::sel(x_large, rsqrt_large, 1.0);
+    xr = _T::sel(x_small, x*large, xr);
+    s = _T::sel(x_small, rsqrt_small, s);
+    vf_type y = native_rsqrt(xr);
+    vf_type yh, yl;
+    d_ops::mul12(yh, yl, xr, y);
+    d_ops::mul122(yh, yl, y, yh, yl);
+    d_ops::add122(yh, yl, -1.0, yh, yl);
+    y = y + (-0.5f*y)*yh;
+    y *= s;
+#else
     vf_type y= vf_type(1.0/sqrt(x));
     // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y).h();
     vf_type yh, yl;
@@ -553,6 +572,7 @@ rsqrt_k(arg_t<vf_type> x)
     d_ops::mul122(yh, yl, y, yh, yl);
     d_ops::add122(yh, yl, -1.0, yh, yl);
     y = y + (-0.5*y)*yh;
+#endif
 #else
     // m in [0.5, 1)
     vf_type mm0;
