@@ -491,6 +491,12 @@ namespace cftal {
                      vec<_T, _N> >
     fdim(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
+    // modf
+    template <typename _T, std::size_t _N>
+    std::enable_if_t<std::is_floating_point<_T>::value,
+                     vec<_T, _N> >
+    modf(const vec<_T, _N>& x, vec<_T, _N>* iptr);
+
     // return the maximum element
     template <typename _T, std::size_t _N>
     _T
@@ -879,6 +885,28 @@ cftal::fdim(const vec<_T, _N>& a, const vec<_T, _N>& b)
     v_t r= max(a - b, v_t(0));
     r = select(isnan(a), a, r);
     r = select(isnan(b), b, r);
+    return r;
+}
+
+template <typename _T, std::size_t _N>
+inline
+std::enable_if_t<std::is_floating_point<_T>::value,
+                 cftal::vec<_T, _N> >
+cftal::modf(const vec<_T, _N>& x, vec<_T, _N>* iptr)
+{
+    using v_t = vec<_T, _N>;
+    v_t i= trunc(x);
+    v_t r= x - i;
+    using mv_t = typename v_t::mask_type;
+    mv_t x_inf = isinf(x);
+    // return +-0 on x== +-inf
+    v_t r_inf= copysign(v_t(0.0), x);
+    r = select(x_inf, r_inf , r);
+    if (iptr != nullptr) {
+        // iptr +-inf on x== +-inf
+        i = select(x_inf, x, i);
+        *iptr = i;
+    }
     return r;
 }
 
