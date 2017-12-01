@@ -651,6 +651,12 @@ int main(int argc, char** argv)
                      check_one<double>(), "1");
         gen_constant(dp, "const double erfc_gt_zero", mpfr_erfc,
                      check_zero<double>(), "zzz");
+
+        // tgamma
+        auto gm=std::make_pair(10.0, 1100.0);
+        gen_constant(gm, "const double tgamma_hi", mpfr_gamma,
+                     check_inf<double>(), "inf");
+
         dp=std::make_pair(1.0, std::numeric_limits<double>::max());
         gen_constant(dp, "const double rqsrt_", mpfr_rec_sqrt,
                      check_zero<double>(), "zero");
@@ -749,6 +755,11 @@ int main(int argc, char** argv)
                      check_one<float>(), "1");
         gen_constant(dp, "const float erfc_gt_zero", mpfr_erfc,
                      check_zero<float>(), "zzz");
+        // tgamma
+        auto gm=std::make_pair(10.0f, 200.0f);
+        gen_constant(gm, "const float tgamma_hi", mpfr_gamma,
+                     check_inf<float>(), "inf");
+
         dp=std::make_pair(1.0, std::numeric_limits<float>::max());
         gen_constant(dp, "const float rqsrt_", mpfr_rec_sqrt,
                      check_zero<double>(), "zero");
