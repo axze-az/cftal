@@ -149,6 +149,30 @@ namespace cftal {
         void
         horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
                           _CS... cs);
+
+        // evaluation of a rational function
+        // the parameters with the highest order are stored in p[0]
+        // and q[0] as in the horner functions
+        template <typename _X,
+                  typename _C,
+                  std::size_t _N1, std::size_t _N2>
+        _X
+        eval_rational(_X xc,
+                      const _C(&p)[_N1],
+                      const _C(&q)[_N2]);
+        // evaluation of a rational function using _N1HP and _N2HP
+        // compensated horner steps during the evaluation
+        // _N1HP <= _N1-1, _N2HP <= _N2-1
+        // the parameters with the highest order are stored in p[0]
+        // and q[0] as in the horner functions
+        template <std::size_t _N1HP, std::size_t _N2HP,
+                  typename _X,
+                  typename _C,
+                  std::size_t _N1, std::size_t _N2>
+        _X
+        eval_rational(_X xc,
+                      const _C(&p)[_N1],
+                      const _C(&q)[_N2]);
     }
 }
 
@@ -410,6 +434,131 @@ horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
     // const _X _y=y;
     // const _X _ye=ye;
     horner_comp_quick_si(y, ye, x, y, ye, cs...);
+}
+
+template <typename _X,
+          typename _C,
+          std::size_t _N1, std::size_t _N2>
+_X
+cftal::math::
+eval_rational(_X xc,
+              const _C (&p)[_N1],
+              const _C (&q)[_N2])
+{
+    _X x=xc;
+    const _X c=_X(1.0);
+    auto x_le_c = x <= c;
+    auto x_gt_c = x > c;
+    // normal enumerator and denominator
+    _X n;
+    _X d;
+    if (any_of(x_le_c)) {
+        n= horner(x, p);
+        d= horner(x, q);
+    }
+    if (any_of(x_gt_c)) {
+        _X r_x=_X(1.0)/x;
+        _X r_n= p[_N1-1];
+        for (int i= _N1-2; i>= 0; --i)
+            r_n = r_n * r_x + p[i];
+        _X r_d= q[_N2-1];
+        for (int i= _N2-2; i>= 0; --i)
+            r_d = r_d * r_x + q[i];
+        if (any_of(x_le_c)) {
+            n = select(x_le_c, n, r_n);
+            d = select(x_le_c, d, r_d);
+        } else {
+            n = r_n;
+            d = r_d;
+        }
+    }
+    return n/d;
+}
+
+template <std::size_t _N1HP, std::size_t _N2HP,
+          typename _X,
+          typename _C,
+          std::size_t _N1, std::size_t _N2>
+_X
+cftal::math::
+eval_rational(_X xc,
+              const _C (&p)[_N1],
+              const _C (&q)[_N2])
+{
+    static_assert(_N1HP < _N1, "ooops");
+    static_assert(_N2HP < _N2, "ooops");
+    _X x=xc;
+    const _X c=_X(1.0);
+    auto x_le_c = x <= c;
+    auto x_gt_c = x > c;
+    // normal enumerator and denominator
+    _X n, n_l;
+    _X d, d_l;
+
+    if (any_of(x_le_c)) {
+        n= p[0];
+        for (int i=1; i<int(_N1-_N1HP); ++i)
+            n = n * x + p[i];
+        d= q[0];
+        for (int i=1; i<int(_N2-_N2HP); ++i)
+            d = d * x + q[i];
+        n_l = d_l = _X(0);
+        if (_N1HP != 0) {
+            horner_comp_s0(n, n_l, x, n, p[_N1-_N1HP]);
+            for (int i=int(_N1-_N1HP)+1; i<int(_N1); ++i)
+                horner_comp_si(n, n_l, x, n, n_l, p[i]);
+        }
+        if (_N2HP != 0) {
+            horner_comp_s0(d, d_l, x, d, q[_N2-_N2HP]);
+            for (int i=int(_N2-_N2HP)+1; i<int(_N2); ++i)
+                horner_comp_si(d, d_l, x, d, d_l, q[i]);
+        }
+    }
+    if (any_of(x_gt_c)) {
+        _X r_x=_X(1.0)/x;
+        _X r_n= p[_N1-1];
+        for (int i= int(_N1)-2; i>= int(_N1HP); --i)
+            r_n = r_n * r_x + p[i];
+        _X r_d= q[_N2-1];
+        for (int i= int(_N2)-2; i>= int(_N2HP); --i)
+            r_d = r_d * r_x + q[i];
+        _X r_n_l = _X(0);
+        if (_N1HP != 0) {
+            horner_comp_s0(r_n, r_n_l, r_x, r_n, p[_N1HP-1]);
+            for (int i=int(_N1HP)-2; i>=0; --i)
+                horner_comp_si(r_n, r_n_l, r_x, r_n, r_n_l, p[i]);
+        }
+        _X r_d_l = _X(0);
+        if (_N2HP != 0) {
+            horner_comp_s0(r_d, r_d_l, r_x, r_d, q[_N2HP-1]);
+            for (int i=int(_N2HP)-2; i>=0; --i)
+                horner_comp_si(r_d, r_d_l, r_x, r_d, r_d_l, q[i]);
+        }
+        if (any_of(x_le_c)) {
+            n = select(x_le_c, n, r_n);
+            d = select(x_le_c, d, r_d);
+            if (_N1HP|_N2HP) {
+                n_l = select(x_le_c, n_l, r_n_l);
+                d_l = select(x_le_c, d_l, r_d_l);
+            }
+        } else {
+            n = r_n;
+            d = r_d;
+            if (_N1HP|_N2HP) {
+                n_l = r_n_l;
+                d_l = r_d_l;
+            }
+        }
+    }
+    _X qq;
+    if (_N1HP|_N2HP) {
+        using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
+        _X ql;
+        d_ops::div22(qq, ql, n, n_l, d, d_l);
+    } else {
+        qq = n/d;
+    }
+    return qq;
 }
 
 // local variables:
