@@ -47,7 +47,7 @@ namespace cftal {
             // exp2m1(x) == -1 for x <=
             static constexpr double
             exp2m1_lo_minus_one() { return -5.400000000000000000000000e+01; }
-            
+
             // exp10(x) == +inf for x >=
             static constexpr double
             exp10_hi_inf() { return 3.082547155599167467698862e+02; }
@@ -88,6 +88,13 @@ namespace cftal {
             static constexpr double
             erfc_gt_zero_fin() { return 2.722601711110836220086640e+01; }
 
+            // tgamma(x) == +inf for x>=
+            static constexpr double
+            tgamma_hi_inf() { return 1.716243769563027399271959e+02; }
+
+            // tgamma(x) == +- 0 for x<
+            static constexpr double
+            tgamma_lo_zero() { return -178.0; }
         };
 
         template <>
@@ -158,6 +165,13 @@ namespace cftal {
 
             static constexpr float
             erfc_gt_zero_fin() { return 1.005419445037841796875000e+01f; }
+
+            static constexpr float
+            tgamma_hi_inf() { return 3.504010009765625000000000e+01f; }
+
+            // tgamma(x) == +- 0 for x<
+            static constexpr double
+            tgamma_lo_zero() { return -39.0; }
         };
 
         namespace impl {

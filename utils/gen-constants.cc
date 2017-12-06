@@ -653,9 +653,14 @@ int main(int argc, char** argv)
                      check_zero<double>(), "zzz");
 
         // tgamma
-        auto gm=std::make_pair(10.0, 1100.0);
-        gen_constant(gm, "const double tgamma_hi", mpfr_gamma,
+        auto gp=std::make_pair(10.0, 1100.0);
+        gen_constant(gp, "const double tgamma_hi", mpfr_gamma,
                      check_inf<double>(), "inf");
+
+        auto gm=std::make_pair(-178.0+0x1p-50,
+                               -177.0-0x1p-50);
+        gen_constant(gm, "const double tgamma_gt_zero", mpfr_gamma,
+                     check_zero<double>(), "m_0");
 
         dp=std::make_pair(1.0, std::numeric_limits<double>::max());
         gen_constant(dp, "const double rqsrt_", mpfr_rec_sqrt,
