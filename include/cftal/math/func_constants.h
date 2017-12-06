@@ -94,7 +94,7 @@ namespace cftal {
 
             // tgamma(x) == +- 0 for x<
             static constexpr double
-            tgamma_lo_zero() { return -178.0; }
+            tgamma_lo_zero() { return -184.0; }
         };
 
         template <>
