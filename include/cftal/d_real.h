@@ -688,6 +688,7 @@ namespace cftal {
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_common<_T>::
 add12(_T& s, _T& r, const _T& a, const _T& b)
@@ -701,6 +702,7 @@ add12(_T& s, _T& r, const _T& a, const _T& b)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_common<_T>::
 add12cond(_T& s, _T& r, const _T& a, const _T& b)
@@ -734,6 +736,7 @@ add22(_T& zh, _T& zl,
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_common<_T>::
 add22cond(_T& zh, _T& zl,
@@ -749,6 +752,7 @@ add22cond(_T& zh, _T& zl,
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_common<_T>::
 add122(_T& zh, _T& zl,
@@ -762,6 +766,7 @@ add122(_T& zh, _T& zl,
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_common<_T>::
 add122cond(_T& zh, _T& zl,
@@ -775,6 +780,7 @@ add122cond(_T& zh, _T& zl,
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_common<_T>::
 add212(_T& zh, _T& zl,
@@ -970,6 +976,7 @@ sub(const d_real<_T>& a, const d_real<_T>& b)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_fma<_T, true>::
 sqr12(_T& rh, _T& rl, const _T& u)
@@ -980,6 +987,7 @@ sqr12(_T& rh, _T& rl, const _T& u)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_fma<_T, true>::
 mul12(_T& rh, _T& rl, const _T& u, const _T& v)
@@ -990,6 +998,7 @@ mul12(_T& rh, _T& rl, const _T& u, const _T& v)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_fma<_T, true>::
 rcp21(_T& rh, const _T& ah, const _T& al)
@@ -1003,6 +1012,7 @@ rcp21(_T& rh, const _T& ah, const _T& al)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_fma<_T, true>::
 sqr22(_T& pzh, _T& pzl,
@@ -1019,6 +1029,7 @@ sqr22(_T& pzh, _T& pzl,
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_fma<_T, true>::
 mul22(_T& pzh, _T& pzl,
@@ -1035,7 +1046,8 @@ mul22(_T& pzh, _T& pzl,
 }
 
 template <typename _T>
-inline __attribute__((always_inline))
+inline 
+__attribute__((always_inline))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
 sqr12(_T& rh, _T& rl, const _T& a)
@@ -1049,7 +1061,8 @@ sqr12(_T& rh, _T& rl, const _T& a)
 }
 
 template <typename _T>
-inline __attribute__((always_inline))
+inline 
+__attribute__((always_inline))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
 mul12(_T& rh, _T& rl, const _T& a, const _T& b)
@@ -1064,6 +1077,7 @@ mul12(_T& rh, _T& rl, const _T& a, const _T& b)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
 rcp21(_T& rh, const _T& ah, const _T& al)
@@ -1080,6 +1094,7 @@ rcp21(_T& rh, const _T& ah, const _T& al)
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
 sqr22(_T& pzh, _T& pzl,
@@ -1094,6 +1109,7 @@ sqr22(_T& pzh, _T& pzl,
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
 mul22(_T& pzh, _T& pzl,
@@ -1381,6 +1397,7 @@ mul122(_T& rh, _T& rl,
 
 template <typename _T, bool _FMA>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops<_T, _FMA>::
 muladd212(_T& rh, _T& rl,
@@ -1400,6 +1417,7 @@ muladd212(_T& rh, _T& rl,
 
 template <typename _T, bool _FMA>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops<_T, _FMA>::
 muladd22(_T& rh, _T& rl,
@@ -1422,6 +1440,7 @@ muladd22(_T& rh, _T& rl,
 
 template <typename _T, bool _FMA>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops<_T, _FMA>::
 div22(_T& rh, _T& rl,
@@ -1612,6 +1631,7 @@ div(const d_real<_T>&a, const d_real<_T>& b)
 
 template <typename _T, bool _FMA>
 inline
+__attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops<_T, _FMA>::
 rcp2(_T& rh, _T& rl, const _T& ah, const _T& al)
