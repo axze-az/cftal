@@ -507,13 +507,11 @@ eval_rational(_X xc,
         n_l = d_l = _X(0);
         if (_N1HP != 0) {
             horner_comp_s0(n, n_l, x, n, p[_N1-_N1HP]);
-#pragma nounroll
             for (int i=int(_N1-_N1HP)+1; i<int(_N1); ++i)
                 horner_comp_si(n, n_l, x, n, n_l, p[i]);
         }
         if (_N2HP != 0) {
             horner_comp_s0(d, d_l, x, d, q[_N2-_N2HP]);
-#pragma nounroll
             for (int i=int(_N2-_N2HP)+1; i<int(_N2); ++i)
                 horner_comp_si(d, d_l, x, d, d_l, q[i]);
         }
@@ -529,14 +527,12 @@ eval_rational(_X xc,
         _X r_n_l = _X(0);
         if (_N1HP != 0) {
             horner_comp_s0(r_n, r_n_l, r_x, r_n, p[_N1HP-1]);
-#pragma nounroll
             for (int i=int(_N1HP)-2; i>=0; --i)
                 horner_comp_si(r_n, r_n_l, r_x, r_n, r_n_l, p[i]);
         }
         _X r_d_l = _X(0);
         if (_N2HP != 0) {
             horner_comp_s0(r_d, r_d_l, r_x, r_d, q[_N2HP-1]);
-#pragma nounroll
             for (int i=int(_N2HP)-2; i>=0; --i)
                 horner_comp_si(r_d, r_d_l, r_x, r_d, r_d_l, q[i]);
         }
