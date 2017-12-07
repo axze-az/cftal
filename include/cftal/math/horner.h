@@ -172,7 +172,8 @@ namespace cftal {
         _X
         eval_rational(_X xc,
                       const _C(&p)[_N1],
-                      const _C(&q)[_N2]);
+                      const _C(&q)[_N2],
+                      _X* ql=nullptr);
     }
 }
 
@@ -483,7 +484,8 @@ _X
 cftal::math::
 eval_rational(_X xc,
               const _C (&p)[_N1],
-              const _C (&q)[_N2])
+              const _C (&q)[_N2],
+              _X* pql)
 {
     static_assert(_N1HP < _N1, "ooops");
     static_assert(_N2HP < _N2, "ooops");
@@ -551,12 +553,18 @@ eval_rational(_X xc,
         }
     }
     _X qq;
+    using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     if (_N1HP|_N2HP) {
-        using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
         _X ql;
         d_ops::div22(qq, ql, n, n_l, d, d_l);
+        if (pql != nullptr)
+            *pql = ql;
     } else {
-        qq = n/d;
+        if (pql != nullptr) {
+            d_ops::div12(qq, *pql, n, d);
+        } else {
+            qq = n/d;
+        }
     }
     return qq;
 }
