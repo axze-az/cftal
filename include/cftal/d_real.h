@@ -481,6 +481,12 @@ namespace cftal {
             // a/b
             static
             void
+            div12(_T& rh, _T& rl,
+                  const _T& a, const _T& b);
+            
+            // a/b
+            static
+            void
             div22(_T& rh, _T& rl,
                   const _T& ah, const _T& al,
                   const _T& bh, const _T& bl);
@@ -1437,6 +1443,26 @@ muladd22(_T& rh, _T& rl,
     _t10 = _t8 + _t9;
     add12(rh, rl, _t3, _t10);
 }
+
+template <typename _T, bool _FMA>
+inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+div12(_T& rh, _T& rl,
+      const _T& xh,
+      const _T& yh)
+{
+    _T _ch = xh / yh;
+    _T _uh, _ul;
+    mul12(_uh, _ul, _ch, yh);
+    _T _cl = xh - _uh;
+    _cl-= _ul;
+    _cl/= yh;
+    rh = _ch + _cl;
+    rl = (_ch - rh) + _cl;
+}
+
 
 template <typename _T, bool _FMA>
 inline
