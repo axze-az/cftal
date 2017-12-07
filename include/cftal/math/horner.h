@@ -512,8 +512,8 @@ eval_rational(_X xc,
                 horner_comp_si(n, n_l, x, n, n_l, p[i]);
         }
         if (_N2HP != 0) {
-#pragma nounroll
             horner_comp_s0(d, d_l, x, d, q[_N2-_N2HP]);
+#pragma nounroll
             for (int i=int(_N2-_N2HP)+1; i<int(_N2); ++i)
                 horner_comp_si(d, d_l, x, d, d_l, q[i]);
         }
