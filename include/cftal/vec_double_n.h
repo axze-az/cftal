@@ -737,6 +737,23 @@ namespace cftal {
     vec<double, 8>
     erfc(arg_t<vec<double, 8> > d);
 
+    // tgamma, these functions are exact to +-7 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    tgamma(const vec<double, _N>& x);
+
+    vec<double, 1>
+    tgamma(arg_t<vec<double, 1> > d);
+
+    vec<double, 2>
+    tgamma(arg_t<vec<double, 2> > d);
+
+    vec<double, 4>
+    tgamma(arg_t<vec<double, 4> > d);
+
+    vec<double, 8>
+    tgamma(arg_t<vec<double, 8> > d);
+
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
 
@@ -1007,6 +1024,15 @@ cftal::vec<double, _N>
 cftal::erfc(const vec<double, _N>& v)
 {
     vec<double, _N> r(erfc(low_half(v)), erfc(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::tgamma(const vec<double, _N>& v)
+{
+    vec<double, _N> r(tgamma(low_half(v)), tgamma(high_half(v)));
     return r;
 }
 
