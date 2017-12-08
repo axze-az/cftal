@@ -170,8 +170,8 @@ namespace cftal {
             tgamma_hi_inf() { return 3.504010009765625000000000e+01f; }
 
             // tgamma(x) == +- 0 for x<
-            static constexpr double
-            tgamma_lo_zero() { return -42.0; }
+            static constexpr float
+            tgamma_lo_zero() { return -42.0f; }
         };
 
         namespace impl {
