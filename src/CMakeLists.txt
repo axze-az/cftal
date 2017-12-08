@@ -12,6 +12,7 @@ set (CSRCS
     math_func_f64.cc
     math_func_f32.cc
     math_common.cc
+    lanczos.cc
     x86_ops_1.cc
     vec_traits.cc
     # vec <f16_t, _N>

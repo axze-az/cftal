@@ -7,16 +7,6 @@
 #if !defined (__CFTAL_MATH_SPEC_FUNC_CORE_F32_H__)
 #define __CFTAL_MATH_ELEM_SPEC_CORE_F32_H__ 1
 
-// This code uses code from sun libm:
-/*
- * ====================================================
- * Copyright (C) 2004 by Sun Microsystems, Inc. All rights reserved.
- *
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
 #include <cftal/config.h>
 #include <cftal/d_real.h>
 #include <cftal/std_types.h>
@@ -24,6 +14,7 @@
 #include <cftal/math/elem_func_core_f32.h>
 #include <cftal/math/func_traits_f32_s32.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
+#include <cftal/math/lanczos.h>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -50,6 +41,12 @@ namespace cftal {
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;
 
+            // calculates sin(pi*x), cos(pi*x)
+            static
+            void
+            __sinpi_cospi_k(arg_t<vf_type> xc,
+                            vf_type* ps, vf_type *pc);
+
             static
             vf_type
             erf_k(arg_t<vf_type> x);
@@ -58,11 +55,49 @@ namespace cftal {
             vf_type
             erfc_k(arg_t<vf_type> x);
 
+            static
+            vf_type
+            tgamma_k(arg_t<vf_type> xc);
+
         };
 
     }
 }
 
+template <typename _T>
+void
+cftal::math::spec_func_core<float, _T>::
+__sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
+{
+    vf_type fh= rint(vf_type(xc*2.0f));
+    vf_type xrh, xrl;
+    d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    d_ops::mul22(xrh, xrl, ctbl::m_pi.h(), ctbl::m_pi.l(), xrh, xrl);
+    vi_type q= _T::cvt_f_to_i(fh);
+
+    vf_type s = base_type::__sin_k(xrh, xrl);
+    vf_type c = base_type::__cos_k(xrh, xrl);
+
+    vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
+    vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
+    vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
+    vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
+
+    // swap sin/cos if q & 1
+    vf_type rs(_T::sel(q_and_1_f, c, s));
+    vf_type rc(_T::sel(q_and_1_f, s, c));
+    // swap signs
+    if (ps != nullptr) {
+        rs = _T::sel(q_and_2_f, -rs, rs);
+        *ps = rs;
+    }
+    if (pc != nullptr) {
+        vmf_type mt = q_and_2_f ^ q_and_1_f;
+        rc = _T::sel(mt, -rc, rc);
+        *pc= rc;
+    }
+}
 
 template <typename _T>
 typename cftal::math::spec_func_core<float, _T>::vf_type
@@ -549,6 +584,44 @@ erfc_k(arg_t<vf_type> xc)
     return ih;
 }
 
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+tgamma_k(arg_t<vf_type> xc)
+{
+    vmf_type xc_lt_0 = xc < 0.0f;
+    vmf_type x0 = abs(xc);
+    // G(z+1) = z * G(z)
+    // G(z) * G(1-z) = pi/sin(pi*z)
+    // with G(-z+1) = -z * G(z)
+    // G(z) * -z * G(-z) = pi/sin(pi*z)
+    // G(-z) = -pi/[sin(pi*z)*z * G(z)]
+    // lanczos sum:
+    using lanczos_ratfunc=lanczos_rational_f32<vf_type>;
+    vf_type sum= lanczos_ratfunc::at(x0);
+    // base of the Lanczos exponential
+    vf_type base, base_l;
+    d_ops::add12cond(base, base_l, x0, lanczos_ratfunc::gm0_5());
+    vf_type r = sum * base_type::template exp_k<false>(-base);
+    vf_type z = x0 - 0.5f;
+    if (any_of(xc_lt_0)) {
+        // G(-z) = -pi/[sin(pi*z)*z * G(z)]
+        vf_type s;
+        __sinpi_cospi_k(x0, &s, nullptr);
+        vf_type r_n = -M_PI/(s * x0 * r);
+        r = _T::sel(xc_lt_0, r_n, r);
+        base_l = _T::sel(xc_lt_0, -base_l, base_l);
+        z = _T::sel(xc_lt_0, -z, z);
+    }
+    // how does this error correction work?
+    r += base_l * (-lanczos_ratfunc::g()) * r/base;
+    // calculate the base^z as base^(1/2 z)^2 to avoid overflows
+    vf_type powh = base_type::pow_k(base,0.5f*z);
+    vf_type t= r * powh*powh;
+    t = _T::sel(x0 < 0x1p-25f, 1.0f/xc, t);
+    return t;
+}
 
 // Local Variables:
 // mode: c++

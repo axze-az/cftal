@@ -7,17 +7,6 @@
 #if !defined (__CFTAL_MATH_SPEC_FUNC_CORE_F64_H__)
 #define __CFTAL_MATH_SPEC_FUNC_CORE_F64_H__ 1
 
-// This code uses code from sun libm:
-/*
- * ====================================================
- * Copyright (C) 2004 by Sun Microsystems, Inc. All rights reserved.
- *
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
-
 #include <cftal/config.h>
 #include <cftal/d_real.h>
 #include <cftal/t_real.h>
@@ -27,6 +16,7 @@
 #include <cftal/math/func_traits_f64_s32.h>
 #include <cftal/math/horner.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
+#include <cftal/math/lanczos.h>
 #include <cftal/mem.h>
 #include <cmath>
 
@@ -56,8 +46,11 @@ namespace cftal {
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;
 
-
-            using base_type::exp_mx2_k;
+            // calculates sin(pi*x), cos(pi*x)
+            static
+            void
+            __sinpi_cospi_k(arg_t<vf_type> xc,
+                            vf_type* ps, vf_type *pc);
 
             static
             vf_type
@@ -67,55 +60,51 @@ namespace cftal {
             vf_type
             erfc_k(arg_t<vf_type> x);
 
+            static
+            vf_type
+            tgamma_k(arg_t<vf_type> x);
+
         };
 
     } // end math
 } // end cftal
 
+template <typename _T>
+void
+cftal::math::spec_func_core<double, _T>::
+__sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
+{
+    vf_type fh= rint(vf_type(xc*2.0));
+    vf_type xrh, xrl;
+    d_ops::add12cond(xrh, xrl, xc, fh*(-0.5));
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+    d_ops::mul22(xrh, xrl, ctbl::m_pi.h(), ctbl::m_pi.l(), xrh, xrl);
+    vi_type q0= _T::cvt_f_to_i(fh);
+    vi2_type q=_T::vi_to_vi2(q0);
 
-#if 0
-namespace cftal {
-    namespace math {
-        namespace impl {
+    vf_type s = base_type::__sin_k(xrh, xrl);
+    vf_type c = base_type::__cos_k(xrh, xrl);
 
-            template <typename _V>
-            struct erf_res {
-                _V _x;
-                _V _yh;
-                _V _yl;
-                _V _c0h;
-                _V _c0l;
+    vmi2_type q_and_2(vi2_type(q & vi2_type(2))==vi2_type(2));
+    vmf_type q_and_2_f(_T::vmi2_to_vmf(q_and_2));
+    vmi2_type q_and_1(vi2_type(q & vi2_type(1))==vi2_type(1));
+    vmf_type q_and_1_f(_T::vmi2_to_vmf(q_and_1));
 
-                erf_res(_V x, _V yh, _V yl, _V c0h, _V c0l)
-                    : _x(x), _yh(yh), _yl(yl), _c0h(c0h), _c0l(c0l) {}
-            };
-
-            template <typename _V>
-            _V
-            final_result(const erf_res<_V>& r)
-            {
-                _V rh, rl;
-                eft_poly_si(rh, rl, r._x, r._yh, r._yl, r._c0h);
-                rh += (rl + r._c0l);
-                return rh;
-            };
-
-            template <typename _M, typename _V>
-            erf_res<_V>
-            select(const _M& m, const erf_res<_V>& t, const erf_res<_V>& f)
-            {
-                erf_res<_V> r(select(m, t._x, f._x),
-                              select(m, t._yh, f._yh),
-                              select(m, t._yl, f._yl),
-                              select(m, t._c0h, f._c0l),
-                              select(m, t._c0l, f._c0l));
-                return r;
-            }
-
-        }
+    // swap sin/cos if q & 1
+    vf_type rs(_T::sel(q_and_1_f, c, s));
+    vf_type rc(_T::sel(q_and_1_f, s, c));
+    // swap signs
+    if (ps != nullptr) {
+        rs = _T::sel(q_and_2_f, -rs, rs);
+        *ps = rs;
+    }
+    if (pc != nullptr) {
+        vmf_type mt = q_and_2_f ^ q_and_1_f;
+        rc = _T::sel(mt, -rc, rc);
+        *pc= rc;
     }
 }
-#endif
+
 
 template <typename _T>
 typename cftal::math::spec_func_core<double, _T>::vf_type
@@ -929,6 +918,45 @@ erfc_k(arg_t<vf_type> xc)
         ih = _T::sel(x_lt_0_00, nih, ih);
     }
     return ih;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<double, _T>::vf_type
+cftal::math::spec_func_core<double, _T>::
+tgamma_k(arg_t<vf_type> xc)
+{
+    vmf_type xc_lt_0 = xc < 0.0;
+    vmf_type x0 = abs(xc);
+    // G(z+1) = z * G(z)
+    // G(z) * G(1-z) = pi/sin(pi*z)
+    // with G(-z+1) = -z * G(z)
+    // G(z) * -z * G(-z) = pi/sin(pi*z)
+    // G(-z) = -pi/[sin(pi*z)*z * G(z)]
+    // lanczos sum:
+    using lanczos_ratfunc=lanczos_rational_f64<vf_type>;
+    vf_type sum= lanczos_ratfunc::at(x0);
+    // base of the Lanczos exponential
+    vf_type base, base_l;
+    d_ops::add12cond(base, base_l, x0, lanczos_ratfunc::gm0_5());
+    vf_type r = sum * base_type::template exp_k<false>(-base);
+    vf_type z = x0 - 0.5;
+    if (any_of(xc_lt_0)) {
+        // G(-z) = -pi/[sin(pi*z)*z * G(z)]
+        vf_type s;
+        __sinpi_cospi_k(x0, &s, nullptr);
+        vf_type r_n = -M_PI/(s * x0 * r);
+        r = _T::sel(xc_lt_0, r_n, r);
+        base_l = _T::sel(xc_lt_0, -base_l, base_l);
+        z = _T::sel(xc_lt_0, -z, z);
+    }
+    // how does this error correction work?
+    r += base_l * (-lanczos_ratfunc::g()) * r/base;
+    // calculate the base^z as base^(1/2 z)^2 to avoid overflows
+    vf_type powh = base_type::pow_k(base,0.5*z);
+    vf_type t= r * powh*powh;
+    t = _T::sel(x0 < 0x1p-54f, 1.0f/xc, t);
+    return t;
 }
 
 // Local Variables:

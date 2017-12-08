@@ -46,6 +46,7 @@ set (TEST_HDRS
   ./include/cftal/test/of_vec_v4.h
   ./include/cftal/test/check_erf.h
   ./include/cftal/test/check_erfc.h
+  ./include/cftal/test/check_tgamma.h
   ./include/cftal/test/check_cos.h
   ./include/cftal/test/of_ops.h
   ./include/cftal/test/check_exp.h
@@ -205,6 +206,7 @@ test_prog(test-root12-f64)
 
 test_prog(test-erf-f64)
 test_prog(test-erfc-f64)
+test_prog(test-tgamma-f64)
 
 test_prog(test-sqrt-f32)
 test_prog(test-rsqrt-f32)
@@ -247,6 +249,7 @@ test_prog(test-root12-f32)
 
 test_prog(test-erf-f32)
 test_prog(test-erfc-f32)
+test_prog(test-tgamma-f32)
 
 test_prog(test-half-f32)
 

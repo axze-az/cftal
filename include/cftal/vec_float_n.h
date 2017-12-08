@@ -666,7 +666,7 @@ namespace cftal {
     vec<float, 16>
     erf(arg<vec<float, 16> >::type d);
 
-    // erfc, these functions are exact to XXX ulp
+    // erfc, these functions are exact to +-1 ulp, but not faithfully rounded
     template <std::size_t _N>
     vec<float, _N>
     erfc(const vec<float, _N>& x);
@@ -686,7 +686,7 @@ namespace cftal {
     vec<float, 16>
     erfc(arg_t<vec<float, 16> > d);
 
-    // erfc, these functions are exact to XXX ulp
+    // tgamma, these functions are exact to +-7 ulp
     template <std::size_t _N>
     vec<float, _N>
     tgamma(const vec<float, _N>& x);
