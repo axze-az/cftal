@@ -1,0 +1,340 @@
+load ("lrats");
+/*
+ * Raymond Toy provided the following Maxima implementation of the
+ * formulas by Paul Godfrey:
+ */
+load("diag");
+
+Dc(n) := diag(makelist(2*double_factorial(2*k-1),k,0,n));
+
+cmatrix_element[row,col]:=
+    if is(col>row) then 0
+    elseif row=1 and col=1 then 1/2
+    else (-1)^(row+col)*4^(col-1)*(row-1)*(row+col-3)!/(row-col)!/(2*col-2)!;
+
+C(n) := genmatrix(cmatrix_element, n+1);
+
+f(g,n):=2^(1/2)*(%e/(2*(n+g)+1))^(n+1/2);
+
+Dr(k) := diag(append([1],makelist(-(2*n+2)!/(2*n!*(n+1)!),n,0,k-1)));
+
+bmatrix_element[row,col] :=
+    if row = 1 then 1
+    elseif is(row > col) then 0
+    else (-1)^(col-row)*binomial(col+row-3,2*row-3);
+
+B(k) := genmatrix(bmatrix_element,k+1);
+
+lanczos_coeff(g, n) :=
+    block([M : (Dr(n) . B(n)) . (C(n) . Dc(n)),
+           f : transpose(matrix(makelist(f(g,k), k, 0, n)))],
+      (M . f));
+
+tlg1(g,n) := float(bfloat(lanczos_coeff(g,n-1)*(%e^g)/((2*%pi)^(1/2))));
+
+/* these functions are from me: */
+fmt_double_1(f) :=
+    block([s],
+        local(os, ff),
+        ff : float(f),
+        s : printf(false, "~40,27,3h", bfloat(ff)), 
+        /* s : printf(false, "~e", ff), */
+        ssubst("e", "b", s)
+    );
+
+fmt_double(f) :=
+    block([os, s],
+        /* write f into a file */
+        os : openw("/tmp/i.mac"),
+        s: printf(false, "~40,27,3h", bfloat(f)),
+        s : ssubst("e", "b", s),
+        printf(os, "~a", s),
+        close(os),
+        system("/usr/bin/printf %+.22e `cat /tmp/i.mac` >/tmp/o.mac"),
+        /* result from the output file */
+        os : openr("/tmp/o.mac"),
+        s : readline(os),
+        close(os),
+        system("rm /tmp/i.mac"),
+        system("rm /tmp/o.mac"),
+        s
+    );
+
+/*
+fmt_double(f) :=
+    block([s],
+        s : lisp (format t "~,22,2,,@e" f),
+        s
+    );
+*/
+
+make_doubledouble(f) :=
+    block([l, bf, fh, fl],
+        bf : bfloat(f),
+        fh : float(bf),
+        fl : bf - fh,
+        fl : float(fl),
+        l : [fh, fl]
+    );
+
+print_double(pfx, f) :=
+    block([],
+        printf(true, "const double ~a=~a;~%", pfx, fmt_double(f))
+    );
+
+print_doubledouble(pfx, f) :=
+    block([ll],
+        ll : make_doubledouble(f),
+        print_double(concat(pfx, "_h"), ll[1]),
+        print_double(concat(pfx, "_l"), ll[2])
+    );
+
+print_lanczos_coeffs(g, n) :=
+    block([l, lpi, t, i, old_fpprec, dd],
+        old_fpprec : fpprec,
+        fpprec: 1024,
+        t : bfloat(lanczos_coeff(g,n-1)*(%e^g)/((2*%pi)^(1/2))),
+        l : makelist(t[i][1], i, 1, n),
+        l : l /* makelist(l[i]*((2*%pi)^(1/2)), i, 1, n)*/,
+        print_doubledouble("sqrt_2pi",((2*%pi)^(1/2))),
+        printf(true, "const double g=~a;~%", fmt_double(g)),
+        printf(true, "const double gm0_5=~a;~%", fmt_double(g-1/2)),
+        printf(true, "const double lct[]={~%"),
+        for i : 1 thru n do (
+            dd : make_doubledouble(l[i]),
+            if is(i=n) then
+               printf(true, "~a  // ~d~%", fmt_double(dd[1]), i-1)
+            else
+               printf(true, "~a, // ~d~%", fmt_double(dd[1]), i-1)
+        ),
+        printf(true, "};~%"),
+        printf(true, "const double lct_l[]={~%"),
+        for i : 1 thru n do (
+            dd : make_doubledouble(l[i]),
+            if is(i=n) then
+               printf(true, "~a  // ~d~%", fmt_double(dd[2]), i-1)
+            else
+               printf(true, "~a, // ~d~%", fmt_double(dd[2]), i-1)
+        ),
+        printf(true, "};~%"),
+        fpprec : old_fpprec,
+        nil
+    );
+
+print_dd_poly_coeffs(pfx, p) :=
+    block([i, n, dd, pn],
+        printf(true, "const double ~a[]={~%", pfx),
+        pn : rat(p),
+        n : hipow(pn, x),
+        old_fpprec : fpprec,
+        fpprec: 1024,
+        for i : n thru 0 step -1 do (
+            dd : make_doubledouble(coeff(pn, x, i)),
+            if is(i=0) then
+               printf(true, "~a  // ~d~%", fmt_double(dd[1]), i)
+            else
+               printf(true, "~a, // ~d~%", fmt_double(dd[1]), i)
+        ),
+        printf(true, "};~%"),
+        printf(true, "const double ~a_l[]={~%", pfx),
+        for i : n thru 0 step -1 do (
+            dd : make_doubledouble(coeff(pn, x, i)),
+            if is(i=0) then
+               printf(true, "~a  // ~d~%", fmt_double(dd[2]), i)
+            else
+               printf(true, "~a, // ~d~%", fmt_double(dd[2]), i)
+        ),
+        printf(true, "};~%"),
+        fpprec : old_fpprec,
+        nil
+    );
+
+print_d_poly_coeffs(pfx, p) :=
+    block([i, n, dd, pn],
+        printf(true, "static constexpr~%"),
+        printf(true, "const double ~a[]={~%", pfx),
+        pn : rat(p),
+        n : hipow(pn, x),
+        old_fpprec : fpprec,
+        fpprec: 1024, 
+        for i : n thru 0 step -1 do (
+            dd : make_doubledouble(coeff(pn, x, i)),
+            if is(i=0) then
+               printf(true, "~a  // ~d~%", fmt_double(dd[1]), i)
+            else
+               printf(true, "~a, // ~d~%", fmt_double(dd[1]), i)
+        ),
+        printf(true, "};~%"),
+        fpprec : old_fpprec,
+        nil
+    );
+
+normalize_rat_poly(p) :=
+    block([pn, n, d, i, f, t],
+        /* print("p=", float(p)), */
+        pn: rat(p),
+        n : ratnumer(pn),
+        d : ratdenom(pn),
+        f : coeff(d, x, hipow(d, x)),
+        /* print("bn= ", float(f)), */
+        if is(f*f>0) then ( 
+            d : expand(d/f),
+            n : expand(n/f)
+        ),
+        pn : n/d,
+        /*
+        t : fullratsimp(pn - p),
+        print("delta: ", t),
+        */
+        [n, d]
+    );
+          
+make_lanczos_ratfunc(g, n) :=
+    block([old_fpprec, t, l, a],
+        old_fpprec : fpprec,   
+        fpprec: 16*1024,
+        t : lanczos_coeff(g,n-1)*(%e^g)/((2*%pi)^(1/2)),
+        l : makelist(t[i][1], i, 1, n),
+        a : l[1], 
+        for i : 2 thru n do (
+            a : a + l[i]/(x+i-1)
+        ),
+        print("a=", float(a)),
+        fpprec : old_fpprec,
+        a
+    );
+
+create_lanczos_ratfunc(g, n) :=
+    block([old_fpprec, t, l, p, q, a, r, rn, u, v],
+        old_fpprec : fpprec,   
+        fpprec: 16*1024,
+        gr: rationalize(g),
+        t : lanczos_coeff(gr,n-1)*(%e^gr)/((2*%pi)^(1/2)),
+        l : makelist(t[i][1], i, 1, n),
+        a : l[1], 
+        for i : 2 thru n do (
+            a : a + l[i]/(x+i-2)
+        ),
+        /* a : bfloat(a), */
+        a : ratsimp(a),
+        fpprec : old_fpprec,
+        a
+    );
+
+print_lanczos_ratfunc(g, n) :=
+    block([old_fpprec, gr, a, l, p, q, s],
+        old_fpprec : fpprec,   
+        fpprec: 16*1024,
+        gr: rationalize(g),
+        a : create_lanczos_ratfunc(gr, n)/**((2*%pi)^(1/2))*/,
+        l : normalize_rat_poly(a),
+        p : l[1] *((2*%pi)^(1/2)),
+        q : l[2],
+        s : printf(false, "~,5h", gr),
+        s : ssubst("_", "+", s),
+        s : ssubst("_", "b", s),
+        s : ssubst("_", ".", s),
+        printf(true, "struct lanczos_table_g_~a_N~d {~%", s, n),
+        printf(true, "static constexpr~%"),
+        printf(true, "double g() {~%"),
+        printf(true, "    return ~a;~%", fmt_double(gr)),
+        printf(true, "}~%"),
+        printf(true, "static constexpr~%"),
+        printf(true, "double gm0_5() {~%"),
+        printf(true, "    return ~a;~%", fmt_double(gr-1/2)),
+        printf(true, "}~%"),
+        print_d_poly_coeffs("p", p),
+        print_d_poly_coeffs("q", q),
+        printf(true, "};~%"),
+        fpprec : old_fpprec
+        /* fullratsimp(bfloat(a) - bfloat(p)/bfloat(q))*/
+    );
+
+print_lanczos_ratfunc2(g, n) :=
+    block([old_fpprec, t, l, a0, ar, arn, p, q, tst],
+        old_fpprec : fpprec,   
+        fpprec: 1024*16,
+        t : lanczos_coeff(g,n-1)*(%e^g)/*((2*%pi)^(1/2))*/,
+        l : makelist(t[i][1], i, 1, n),
+        ar : 0, 
+        for i : 2 thru n do (
+            ar : ar + l[i]/(x+i-2)
+        ),
+        ar : ratsimp(ar),
+        ar : bfloat(ar),
+        a0 : l[1],
+        arn : normalize_rat_poly(ar),
+        p : arn[1],
+        q : arn[2],
+        print_doubledouble("sqrt_2pi",((2*%pi)^(1/2))),
+        printf(true, "const double g=~a;~%", fmt_double(g)),
+        printf(true, "const double gm0_5=~a;~%", fmt_double(g-1/2)),
+        printf(true, "const double c0=~a;~%", fmt_double(a0)),
+        print_d_poly_coeffs("p", p),
+        print_d_poly_coeffs("q", q),
+        /* tst: fullratsimp(ar - p/q),*/
+        fpprec : old_fpprec,
+        tst
+    );
+
+
+/* the method used by boost */
+create_lanczos_rational(g, n) :=
+    block([old_fpprec, t, c, l_denom, l_num, i, bot, top],
+        old_fpprec : fpprec,   
+        fpprec: 256,
+        t : lanczos_coeff(g,n-1)*(%e^g)*((2*%pi)^(1/2)),
+        c : makelist(t[i][1], i, 1, n),
+        /* print the lanczos coefficients */
+        print("c=", float(t)),
+        print_doubledouble("sqrt_2pi",((2*%pi)^(1/2))),
+        printf(true, "const double g=~a;~%", fmt_double(g)),
+        printf(true, "const double gm0_5=~a;~%", fmt_double(g-1/2)),
+        printf(true, "const double lct[]={~%"),
+        for i : 1 thru n do (
+            dd : make_doubledouble(c[i])/((2*%pi)^(1/2)),
+            if is(i=n) then
+               printf(true, "~a  // ~d~%", fmt_double(dd[1]), i-1)
+            else
+               printf(true, "~a, // ~d~%", fmt_double(dd[1]), i-1)
+        ),
+        printf(true, "};~%"),
+        /* create the ratioal function from it */
+        l_denom : 0 + 1*x,
+        l_num : c[2],
+        /* l_num : bfloat(l_num), */
+        for i : 2 thru n-1 do (
+            bot : i-1 + 1*x,
+            top : c[i+1],
+            l_num : l_num * bot,
+            top : top * l_denom,
+            l_denom : l_denom * bot,
+            l_num : l_num + top
+            /*, l_num : bfloat(l_num) */
+        ),
+        l_num : l_num + l_denom * c[1],
+        l_num : bfloat(ratsimp(l_num)),
+        ratprint: false,
+        print_d_poly_coeffs("p", rat(l_num)),
+        print_d_poly_coeffs("q", rat(l_denom))
+    );
+    
+t(g, n) := create_lanczos_rational(g, n);
+ratprint: false;
+
+/*
+print_lanczos_ratfunc(60246800407767295837402/10000000000000000000000,
+                      13);
+*/                             
+
+/* we use this (from boost) for double precision */
+print_lanczos_ratfunc(
+        6024680040776729583740234375/1000000000000000000000000000,
+        13);
+
+/* we use this for float precision */
+print_lanczos_ratfunc(
+        5,
+        7);
+
+
