@@ -483,7 +483,7 @@ namespace cftal {
             void
             div12(_T& rh, _T& rl,
                   const _T& a, const _T& b);
-            
+
             // a/b
             static
             void
@@ -1052,7 +1052,7 @@ mul22(_T& pzh, _T& pzl,
 }
 
 template <typename _T>
-inline 
+inline
 __attribute__((always_inline))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
@@ -1067,7 +1067,7 @@ sqr12(_T& rh, _T& rl, const _T& a)
 }
 
 template <typename _T>
-inline 
+inline
 __attribute__((always_inline))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
@@ -1953,6 +1953,14 @@ cftal::d_real<_T>
 cftal::rint(const d_real<_T>& a)
 {
     _T hi= rint(a.h());
+
+    // if rint(hi)==hi
+    //      return (hi, rint(lo))
+    // else
+    //      if (abs(hi - rint(hi)) == 0.5 && lo < 0)
+    //          return (hi-1, 0)
+    //      else
+    //          return (hi, 0)
     // _T lo;
 
     using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
@@ -1984,6 +1992,8 @@ inline
 cftal::d_real<_T>
 cftal::floor(const d_real<_T>& a)
 {
+    // if ah == floor(ah), return ah, floor(al)
+    // else return floor(ah), 0
     _T hi = floor(a.h());
     _T lo(0);
     using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
@@ -2004,7 +2014,9 @@ inline
 cftal::d_real<_T>
 cftal::ceil(const d_real<_T>& a)
 {
-    _T hi = floor(a.h());
+    // if ah == ceil(ah), return ah, ceil(al)
+    // else return ceil(ah), 0
+    _T hi = ceil(a.h());
     _T lo(0);
     typename d_real_traits<_T>::cmp_result_type r=
         hi == a.h();
