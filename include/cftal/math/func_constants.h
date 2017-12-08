@@ -171,7 +171,7 @@ namespace cftal {
 
             // tgamma(x) == +- 0 for x<
             static constexpr double
-            tgamma_lo_zero() { return -40.0; }
+            tgamma_lo_zero() { return -42.0; }
         };
 
         namespace impl {
