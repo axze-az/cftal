@@ -27,8 +27,6 @@
 #include <cftal/math/misc.h>
 #include <cftal/mem.h>
 
-#include <iostream>
-
 namespace cftal {
     namespace math {
 

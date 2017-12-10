@@ -183,7 +183,7 @@ namespace cftal {
             struct t_real_constants {};
         }
     }
-}
+} // end namespace cftal
 
 
 // Local Variables:

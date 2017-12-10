@@ -47,8 +47,8 @@ int cftal::test::check_cbrt_f64(const _V& v, double x, bool verbose)
     _V vx(x);
     _V vr3(cbrt(vx));
 
-    double p3(cftal::math::pow<3>(r3));
-    _V vp3(cftal::math::pow<3>(vr3));
+    double p3(r3*r3*r3);
+    _V vp3(vr3*vr3*vr3);
 
     if (!elements_equal(vr3) && !(std::isnan(r3) && all_of(isnan(vr3)))) {
         std::cout << "Invalid vector values for cbrt(" << x << ")\n";
