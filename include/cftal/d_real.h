@@ -1735,7 +1735,7 @@ sqrt21(_T& rh, const _T& ah, const _T& al)
         max2l = -max2l;
     }
     _T a0h, a0l;
-    add22cond(a0h, a0l, ah, al, max2h, max2l);
+    add22(a0h, a0l, ah, al, max2h, max2l);
     _T a1=a0h* (inv_root*_T(0.5));
     rh=ax+a1;
     auto is_zero= ah == _T(0);
