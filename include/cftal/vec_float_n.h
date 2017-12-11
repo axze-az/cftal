@@ -328,6 +328,26 @@ namespace cftal {
     vec<float, 1>
     native_rsqrt(const vec<float, 1>& v);
 
+    // hypot, these functions are exact to +-1 ulp (or to +-0 ulp)
+    template <std::size_t _N>
+    vec<float, _N>
+    hypot(const vec<float, _N>& x, const vec<float, _N>& y);
+
+    vec<float, 1>
+    hypot(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
+
+    vec<float, 2>
+    hypot(arg_t<vec<float, 2> > x, arg_t<vec<float, 2> > y);
+
+    vec<float, 4>
+    hypot(arg_t<vec<float, 4> > x, arg_t<vec<float, 4> > y);
+
+    vec<float, 8>
+    hypot(arg_t<vec<float, 8> > x, arg_t<vec<float, 8> > y);
+
+    vec<float, 16>
+    hypot(arg_t<vec<float, 16> > x, arg_t<vec<float, 16> > y);
+
     // exp: exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -1319,6 +1339,15 @@ cftal::vec<float, _N>
 cftal::root12(const vec<float, _N>& v)
 {
     vec<float, _N> r(root12(low_half(v)), root12(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::hypot(const vec<float, _N>& x, const vec<float, _N>& y)
+{
+    vec<float, _N> r(hypot(low_half(x)), hypot(high_half(y)));
     return r;
 }
 

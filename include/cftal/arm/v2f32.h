@@ -90,7 +90,6 @@ namespace cftal {
     v2f32 fabs(const v2f32& a);
     v2f32 sqrt(const v2f32& a);
     v2f32 cbrt(arg<v2f32>::type a);
-    v2f32 hypot(const v2f32& a, const v2f32& b);
 
     v2f32 rsqrt(const v2f32& a);
     v2f32 native_rsqrt(const v2f32& a);

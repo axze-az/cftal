@@ -3182,7 +3182,6 @@ atanh_k(arg_t<vf_type> xc)
     return y;
 }
 
-
 template <typename _T>
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
@@ -3196,9 +3195,9 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type scale=1.0;
     vf_type factor=1.0;
     // avoid underflows
-    vmf_type mi_small= mi < 0x1p-450;
-    scale = _T::sel(mi_small, 0x1p-450, scale);
-    factor= _T::sel(mi_small, 0x1p450, factor);
+    vmf_type ma_small= ma < 0x1p-450;
+    scale = _T::sel(ma_small, 0x1p-700, scale);
+    factor= _T::sel(ma_small, 0x1p700, factor);
     // avoid overflows
     vmf_type ma_large= ma > 0x1p510;
     scale = _T::sel(ma_large, 0x1p700, scale);
@@ -3206,10 +3205,37 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     ma *= factor;
     mi *= factor;
 
-    dvf_type sqr_ma=d_ops::sqr(ma);
-    dvf_type sqr_mi=d_ops::sqr(mi);
-    vf_type r= scale*sqrt(vf_type(sqr_ma.h() + sqr_ma.l() +
-                                  sqr_mi.h() + sqr_mi.l()));
+    vf_type smah, smal;
+    d_ops::sqr12(smah, smal, ma);
+    vf_type smih, smil;
+    d_ops::sqr12(smih, smil, mi);
+#if 0
+    // this produces not faithfully rounded results:
+    // vf_type r= sqrt(vf_type(smah + smal + smih + smil));
+    // faithfully round:
+    vf_type sh, sl;
+    d_ops::add22(sh, sl, smah, smal, smih, smil);
+    vf_type r= sqrt(sh);
+#else
+    vf_type sh, sl;
+    d_ops::add22(sh, sl, smah, smal, smih, smil);
+    vf_type root=sqrt(sh);
+    vf_type inv_root= vf_type(1.0)/root;
+    vf_type ax= sh * inv_root;
+    vf_type max2h, max2l;
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(max2h, max2l, ax, -ax);
+    } else {
+        d_ops::sqr12(max2h, max2l, ax);
+        max2h = -max2h;
+        max2l = -max2l;
+    }
+    vf_type a0h, a0l;
+    d_ops::add22(a0h, a0l, sh, sl, max2h, max2l);
+    vf_type a1=a0h* (inv_root*vf_type(0.5));
+    vf_type r=(ax+a1);
+#endif
+    r = _T::sel(ma==vf_type(0), vf_type(0), r*scale);
     return r;
 }
 

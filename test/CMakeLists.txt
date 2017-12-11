@@ -72,6 +72,7 @@ set (TEST_HDRS
   ./include/cftal/test/check_sin.h
   ./include/cftal/test/check_acosh.h
   ./include/cftal/test/check_pow.h
+  ./include/cftal/test/check_hypot.h
 )
 
 find_package(Boost REQUIRED)
@@ -168,6 +169,7 @@ test_prog(test-poly)
 test_prog(test-sqrt-f64)
 test_prog(test-rsqrt-f64)
 test_prog(test-cbrt-f64)
+test_prog(test-hypot-f64)
 test_prog(test-exp-f64)
 test_prog(test-expm1-f64)
 test_prog(test-sinh-f64)
@@ -211,6 +213,7 @@ test_prog(test-tgamma-f64)
 test_prog(test-sqrt-f32)
 test_prog(test-rsqrt-f32)
 test_prog(test-cbrt-f32)
+test_prog(test-hypot-f32)
 test_prog(test-exp-f32)
 test_prog(test-expm1-f32)
 test_prog(test-sinh-f32)

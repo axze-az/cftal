@@ -290,6 +290,13 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::nextafter(b, e);                                 \
     }                                                                   \
+                                                                        \
+    ns::vec_float                                                       \
+    ns::hypot(arg<vec_float>::type b, arg<vec_float>::type e)           \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::hypot(b, e);                                     \
+    }
 
 
 // Local variables:

@@ -112,8 +112,6 @@ namespace cftal {
     v2f64 abs(const v2f64& a);
     v2f64 fabs(const v2f64& a);
     v2f64 sqrt(const v2f64& a);
-    v2f64 cbrt(arg<v2f64>::type a);
-    v2f64 hypot(const v2f64& a, const v2f64& b);
 
     namespace x86 {
         v2f64 round(const v2f64& v, rounding_mode::type m);

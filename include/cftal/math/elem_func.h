@@ -106,6 +106,10 @@ namespace cftal {
 
             static
             vf_type
+            hypot(arg_t<vf_type> xc, arg_t<vf_type> yc);
+
+            static
+            vf_type
             exp(arg_t<vf_type> vf);
 
             static
@@ -294,6 +298,19 @@ root12(arg_t<vf_type> x)
     y=_T::sel(x < 0.0, _T::nan(), y);
     y=_T::sel(isnan(x), x, y);
     return y;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _T>::
+hypot(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    vf_type r= base_type::hypot_k(x, y);
+    // NaN only if the other argument is not inf
+    r = _T::sel(isnan(x)|isnan(y), _T::nan(), r);
+    r = _T::sel(isinf(x)|isinf(y), _T::pinf(), r);
+    return r;
 }
 
 template <typename _FLOAT_T, typename _T>

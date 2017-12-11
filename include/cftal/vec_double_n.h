@@ -270,6 +270,23 @@ namespace cftal {
     vec<double, 8>
     root12(arg_t<vec<double, 8> > v);
 
+    // hypot, these functions are exact to +-1 ulp (or to +-0 ulp)
+    template <std::size_t _N>
+    vec<double, _N>
+    hypot(const vec<double, _N>& x, const vec<double, _N>& y);
+
+    vec<double, 1>
+    hypot(arg_t<vec<double, 1> > x, arg_t<vec<double, 1> > y);
+
+    vec<double, 2>
+    hypot(arg_t<vec<double, 2> > x, arg_t<vec<double, 2> > y);
+
+    vec<double, 4>
+    hypot(arg_t<vec<double, 4> > x, arg_t<vec<double, 4> > y);
+
+    vec<double, 8>
+    hypot(arg_t<vec<double, 8> > x, arg_t<vec<double, 8> > y);
+
     // exp, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -1076,6 +1093,15 @@ cftal::vec<double, _N>
 cftal::root12(const vec<double, _N>& v)
 {
     vec<double, _N> r(root12(low_half(v)), root12(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::hypot(const vec<double, _N>& x, const vec<double, _N>& y)
+{
+    vec<double, _N> r(hypot(low_half(x)), hypot(high_half(y)));
     return r;
 }
 
