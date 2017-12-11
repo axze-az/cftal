@@ -114,6 +114,12 @@ vec<double, 2> r3= c - t ;
 which breaks the expression tree and avoids the generation of these
 instructions (if the compiler is not too clever).\\[10pt]
 %
+Do not use vector lengths greater than 1 and smaller than the smallest
+specialized vector length on your target machine, for instance avoid on
+x86 machines vector lengths of 2 for float, int32\_t and uint32\_t and
+vector lengths of 4 for int16\_t and uint16\_t
+(these are cases where the compilers are not clever enough).\\[10pt]
+%
 A large number of functions exist only for vector classes of the
 two floating point types double (binary64) and float (binary32).\\
 The file \texttt{include/cftal/vec\_double\_n.h} declares the functions
