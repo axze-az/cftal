@@ -456,6 +456,7 @@ namespace cftal {
             using base_type::add122;
             using base_type::add212;
             using base_type::rcp21;
+            using base_type::sqr12;
 
             static
             void
@@ -522,6 +523,16 @@ namespace cftal {
             void
             rcp2(_T& rh,  _T& rl,
                  const _T& ah, const _T& al);
+
+            static
+            void
+            sqrt2(_T& rh, _T& rl,
+                  const _T& ah, const _T& al);
+
+            static
+            void
+            sqrt21(_T& rh,
+                   const _T& ah, const _T& al);
 
         };
 
@@ -1674,6 +1685,61 @@ rcp2(_T& rh, _T& rl, const _T& ah, const _T& al)
     add122(th, tl, _T(2.0), th, tl);
     // rcp ( 2 - rcp*a)
     mul122(rh, rl, r0h, th, tl);
+}
+
+template <typename _T, bool _FMA>
+inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+sqrt2(_T& rh, _T& rl, const _T& ah, const _T& al)
+{
+    using std::sqrt;
+    _T root=sqrt(ah);
+    _T  inv_root= _T(1.0)/root;
+    _T  ax= ah * inv_root;
+    _T  max2h, max2l;
+    if (_FMA==true) {
+        mul12(max2h, max2l, ax, -ax);
+    } else {
+        sqr12(max2h, max2l, ax);
+        max2h = -max2h;
+        max2l = -max2l;
+    }
+    _T a0h, a0l;
+    add22(a0h, a0l, ah, al, max2h, max2l);
+    _T a1=a0h* (inv_root*_T(0.5));
+    add12(rh, rl, ax, a1);
+    auto is_zero= ah == _T(0);
+    rh = select(is_zero, _T(0), rh);
+    rl = select(is_zero, _T(0), rl);
+}
+
+template <typename _T, bool _FMA>
+inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+sqrt21(_T& rh, const _T& ah, const _T& al)
+{
+    using std::sqrt;
+    _T root=sqrt(ah);
+    _T inv_root= _T(1.0)/root;
+    _T ax= ah * inv_root;
+    _T max2h, max2l;
+    if (_FMA==true) {
+        mul12(max2h, max2l, ax, -ax);
+    } else {
+        sqr12(max2h, max2l, ax);
+        max2h = -max2h;
+        max2l = -max2l;
+    }
+    _T a0h, a0l;
+    add22cond(a0h, a0l, ah, al, max2h, max2l);
+    _T a1=a0h* (inv_root*_T(0.5));
+    rh=ax+a1;
+    auto is_zero= ah == _T(0);
+    rh = select(is_zero, _T(0), rh);
 }
 
 

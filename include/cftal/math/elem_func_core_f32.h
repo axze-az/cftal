@@ -2803,31 +2803,18 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     d_ops::sqr12(smih, smil, mi);
 #if 0
     // this produces not faithfully rounded results:
-    // vf_type r= sqrt(vf_type(smah + smal + smih + smil));
+    // vf_type r= sqrt(vf_type(smah + smal + smih + smil))*scale;
     // faithfully round:
     vf_type sh, sl;
     d_ops::add22(sh, sl, smah, smal, smih, smil);
-    vf_type r= sqrt(sh);
+    vf_type r= sqrt(sh)*scale;
 #else
     vf_type sh, sl;
     d_ops::add22(sh, sl, smah, smal, smih, smil);
-    vf_type root=sqrt(sh);
-    vf_type inv_root= vf_type(1.0f)/root;
-    vf_type ax= sh * inv_root;
-    vf_type max2h, max2l;
-    if (d_real_traits<vf_type>::fma==true) {
-        d_ops::mul12(max2h, max2l, ax, -ax);
-    } else {
-        d_ops::sqr12(max2h, max2l, ax);
-        max2h = -max2h;
-        max2l = -max2l;
-    }
-    vf_type a0h, a0l;
-    d_ops::add22(a0h, a0l, sh, sl, max2h, max2l);
-    vf_type a1=a0h* (inv_root*vf_type(0.5f));
-    vf_type r=(ax+a1);
+    vf_type r;
+    d_ops::sqrt21(r, sh, sl);
+    r *= scale;
 #endif
-    r = _T::sel(ma==vf_type(0.0f), vf_type(0.0f), r*scale);
     return r;
 }
 
