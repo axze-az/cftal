@@ -2788,12 +2788,12 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type factor=1.0f;
     // avoid underflows
     vmf_type ma_small= ma < 0x1p-60f;
-    scale = _T::sel(ma_small, 0x1p-64f, scale);
-    factor= _T::sel(ma_small, 0x1p64f, factor);
+    scale = _T::sel(ma_small, 0x1p-70f, scale);
+    factor= _T::sel(ma_small, 0x1p70f, factor);
     // avoid overflows
     vmf_type ma_large= ma > 0x1p60f;
-    scale = _T::sel(ma_large, 0x1p64f, scale);
-    factor= _T::sel(ma_large, 0x1p-64f, factor);
+    scale = _T::sel(ma_large, 0x1p70f, scale);
+    factor= _T::sel(ma_large, 0x1p-70f, factor);
     ma *= factor;
     mi *= factor;
 
