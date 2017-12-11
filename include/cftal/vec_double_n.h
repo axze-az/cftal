@@ -270,7 +270,7 @@ namespace cftal {
     vec<double, 8>
     root12(arg_t<vec<double, 8> > v);
 
-    // hypot, these functions are exact to +-1 ulp (or to +-0 ulp)
+    // hypot, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     hypot(const vec<double, _N>& x, const vec<double, _N>& y);

@@ -328,7 +328,7 @@ namespace cftal {
     vec<float, 1>
     native_rsqrt(const vec<float, 1>& v);
 
-    // hypot, these functions are exact to +-1 ulp (or to +-0 ulp)
+    // hypot, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
     hypot(const vec<float, _N>& x, const vec<float, _N>& y);
