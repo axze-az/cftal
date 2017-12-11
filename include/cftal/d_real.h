@@ -2101,12 +2101,12 @@ cftal::sqrt(const d_real<_T>& a)
     _T ah= a.h();
     _T root(sqrt(ah));
     _T x= _T(1.0)/root;
-    _T ax= a.h() * x;
+    _T ax= ah * x;
     _T err, ax2= impl_t::two_sqr(ax, err);
     d_real<_T> a0(a - d_real<_T>(ax2, err));
     _T a1(a0.h() * (x * _T(0.5)));
     d_real<_T> res(impl_t::add(ax, a1));
-    res = select(a.h() == _T(0), a, res);
+    res = select(ah == _T(0), a, res);
     return res;
 }
 
