@@ -743,11 +743,23 @@ add22(_T& zh, _T& zl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
 {
+#if 0
+    _T sh, sl;
+    add12(sh, sl, xh, yh);
+    _T th, tl;
+    add12(th, tl, xl, yl);
+    _T c = sl + th;
+    _T vh, vl;
+    add12(vh, vl, sh, c);
+    _T w = tl +vl;
+    add12(zh, zl, vh, w);
+#else
     _T v1, v2;
     v1 = xh + yh;
     v2 = (((xh - v1) + yh) + yl) + xl;
     zh = v1 + v2;
     zl = (v1 - zh) + v2;
+#endif
 }
 
 
@@ -760,11 +772,24 @@ add22cond(_T& zh, _T& zl,
           const _T& xh, const _T& xl,
           const _T& yh, const _T& yl)
 {
+#if 0
+    _T sh, sl;
+    add12cond(sh, sl, xh, yh);
+    _T th, tl;
+    add12cond(th, tl, xl, yl);
+    _T c = sl + th;
+    _T vh, vl;
+    add12(vh, vl, sh, c);
+    _T w = tl +vl;
+    add12(zh, zl, vh, w);
+#else
+    // sloppy add
     _T v1, v2;
     add12cond(v1, v2, xh, yh);
     _T v3 = xl + yl;
     _T v4 = v2 + v3;
     add12(zh, zl, v1, v4);
+#endif
 }
 
 template <typename _T>
@@ -1405,11 +1430,21 @@ mul122(_T& rh, _T& rl,
        const _T& a,
        const _T& bh, const _T& bl)
 {
+#if 0
+    _T ch, cl1;
+    mul12(ch, cl1, bh, a);
+    _T cl2= bl*a;
+    _T th, tl1;
+    add12(th, tl1, ch, cl2);
+    _T tl2= tl1 + cl1;
+    add12(rh, rl, th, tl2);
+#else
     _T t1, t2, t3, t4;
     mul12(t1,t2, a, bh);
     t3 = a * bl;
     t4 = t2 + t3;
     add12(rh, rl, t1, t4);
+#endif
 }
 
 template <typename _T, bool _FMA>
