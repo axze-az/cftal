@@ -123,7 +123,8 @@ print_lanczos_coeffs(g, n) :=
 
 print_dd_poly_coeffs(pfx, p) :=
     block([i, n, dd, pn],
-        printf(true, "const double ~a[]={~%", pfx),
+        printf(true, "static constexpr~%"),
+        printf(true, "const d_real<double> ~a[]={~%", pfx),
         pn : rat(p),
         n : hipow(pn, x),
         old_fpprec : fpprec,
@@ -131,18 +132,15 @@ print_dd_poly_coeffs(pfx, p) :=
         for i : n thru 0 step -1 do (
             dd : make_doubledouble(coeff(pn, x, i)),
             if is(i=0) then
-               printf(true, "~a  // ~d~%", fmt_double(dd[1]), i)
+               printf(true, "{~a, ~a}  // ~d~%",
+                            fmt_double(dd[1]),
+                            fmt_double(dd[2]),
+                            i)
             else
-               printf(true, "~a, // ~d~%", fmt_double(dd[1]), i)
-        ),
-        printf(true, "};~%"),
-        printf(true, "const double ~a_l[]={~%", pfx),
-        for i : n thru 0 step -1 do (
-            dd : make_doubledouble(coeff(pn, x, i)),
-            if is(i=0) then
-               printf(true, "~a  // ~d~%", fmt_double(dd[2]), i)
-            else
-               printf(true, "~a, // ~d~%", fmt_double(dd[2]), i)
+               printf(true, "{~a, ~a}, // ~d~%",
+                            fmt_double(dd[1]),
+                            fmt_double(dd[2]),
+                            i)
         ),
         printf(true, "};~%"),
         fpprec : old_fpprec,
@@ -245,6 +243,8 @@ print_lanczos_ratfunc(g, n) :=
         printf(true, "}~%"),
         print_d_poly_coeffs("p", p),
         print_d_poly_coeffs("q", q),
+        print_dd_poly_coeffs("pd", p),
+        print_dd_poly_coeffs("qd", q),
         printf(true, "};~%"),
         fpprec : old_fpprec
         /* fullratsimp(bfloat(a) - bfloat(p)/bfloat(q))*/
