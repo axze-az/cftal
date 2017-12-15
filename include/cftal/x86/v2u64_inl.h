@@ -134,7 +134,7 @@ namespace cftal {
                 // c1 ---------^
                 // c2 -------------------------^
                 // c3 -----------------------------------------^
-                const __m128i msk= _mm_set1_epi32(sign_s32_msk::v._u32);
+                const __m128i msk= _mm_set1_epi32(sign_s32_msk::v.u32());
                 __m128i ax= _mm_xor_si128(a(), msk);
                 __m128i bx= _mm_xor_si128(b(), msk);
                 __m128i c2= _mm_cmpeq_epi32(a(), b());

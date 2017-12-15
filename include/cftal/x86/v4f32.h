@@ -828,7 +828,7 @@ cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
         if (unlikely(mxcsr != rmxcsr))
             _mm_setcsr(rmxcsr);
     }
-    const v4f32 sgn_msk(sign_f32_msk::v._f32);
+    const v4f32 sgn_msk(sign_f32_msk::v.f32());
     // (127+23)<< 23 = 0x4B000000 = 2^23
     const __m128 magic= const_v4u32<0x4B000000, 0x4B000000,
                                     0x4B000000, 0x4B000000>::fv();
