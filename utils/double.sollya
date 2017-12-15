@@ -169,6 +169,19 @@ plot((p(x)-f(x))/f(x), p(x)-f(x), i,
 
 /* cos(x) f64 */
 i = [0x1p-58, pi/4];
+f = cos(x);
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|4, 6, 8, 10, 12, 14, 16|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, 1-1/2*x^2, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const vf_type cos_c", "cos", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cos-f64");
+
+/* cos(x) f64 from sun libm */
+i = [0x1p-58, pi/4];
 f = cos(x)-1+(x^2)/2;
 d = guessdegree(f, i, 0x1p-60);
 d;
@@ -177,9 +190,9 @@ c = [|D...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type cos_c", "cos", b, c);
+write_coeffs(p, "const vf_type cos_sun_c", "cos", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
-                       postscriptfile, "cos-f64");
+                       postscriptfile, "cos-sun-f64");
 
 /* tan as one polynomial over [0,pi/4]
 f = tan(x);
