@@ -2378,6 +2378,7 @@ __cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 
     // cos(x+xl) ~ 1.0 - 0.5*x^2 + c4*x^4+c4*x5 + ...- sin(x)*xl
     //           ~ 1.0 - 0.5*x^2 + p - x*xl
+    // to increase precision add and subtract 1-0.5*x^2:
     //           = (1-0.5*x^2)+(1.0-(1.0-0.5*x^2)-0.5*x^2) + (p-x*xl)
     //           =      w     +(1.0-      w)     -0.5*x^2  + (p-x*xl)
     vf_type x2=xh*xh;
