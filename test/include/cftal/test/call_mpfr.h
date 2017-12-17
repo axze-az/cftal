@@ -115,13 +115,13 @@ namespace cftal {
         operator/=(fpn_handle& a, const fpn_handle& b);
 
         fpn_handle
-        operator+(fpn_handle& a, fpn_handle& b);
+        operator+(const fpn_handle& a, const fpn_handle& b);
         fpn_handle
-        operator-(fpn_handle& a, fpn_handle& b);
+        operator-(const fpn_handle& a, const fpn_handle& b);
         fpn_handle
-        operator*(fpn_handle& a, fpn_handle& b);
+        operator*(const fpn_handle& a, const fpn_handle& b);
         fpn_handle
-        operator/(fpn_handle& a, fpn_handle& b);
+        operator/(const fpn_handle& a, const fpn_handle& b);
 
         namespace mpfr_ext {
             // return exp10 with res precision bits
@@ -603,7 +603,7 @@ cftal::test::operator/=(fpn_handle& a, const fpn_handle& b)
 
 inline
 cftal::test::fpn_handle
-cftal::test::operator+(fpn_handle& a, fpn_handle& b)
+cftal::test::operator+(const fpn_handle& a, const fpn_handle& b)
 {
     fpn_handle t(std::max(a.prec(), b.prec()));
     mpfr_add(t(), a(), b(), MPFR_RNDN);
@@ -612,7 +612,7 @@ cftal::test::operator+(fpn_handle& a, fpn_handle& b)
 
 inline
 cftal::test::fpn_handle
-cftal::test::operator-(fpn_handle& a, fpn_handle& b)
+cftal::test::operator-(const fpn_handle& a, const fpn_handle& b)
 {
     fpn_handle t(std::max(a.prec(), b.prec()));
     mpfr_sub(t(), a(), b(), MPFR_RNDN);
@@ -621,7 +621,7 @@ cftal::test::operator-(fpn_handle& a, fpn_handle& b)
 
 inline
 cftal::test::fpn_handle
-cftal::test::operator*(fpn_handle& a, fpn_handle& b)
+cftal::test::operator*(const fpn_handle& a, const fpn_handle& b)
 {
     fpn_handle t(std::max(a.prec(), b.prec()));
     mpfr_mul(t(), a(), b(), MPFR_RNDN);
@@ -630,7 +630,7 @@ cftal::test::operator*(fpn_handle& a, fpn_handle& b)
 
 inline
 cftal::test::fpn_handle
-cftal::test::operator/(fpn_handle& a, fpn_handle& b)
+cftal::test::operator/(const fpn_handle& a, const fpn_handle& b)
 {
     fpn_handle t(std::max(a.prec(), b.prec()));
     mpfr_div(t(), a(), b(), MPFR_RNDN);
