@@ -203,7 +203,6 @@ calc_log2::operator()(mpfr_t y, mpfr_rnd_t rm)
     return mpfr_log(y, two(), rm);
 }
 
-
 template <typename _F>
 int
 cftal::test::mpfr_ext::

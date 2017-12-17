@@ -14,6 +14,7 @@
 #include <utility>
 #include <cmath>
 #include <climits>
+#include <algorithm>
 #include <mpfr.h>
 
 namespace cftal {
@@ -103,6 +104,24 @@ namespace cftal {
         operator>=(const fpn_handle& a, const fpn_handle& b);
         bool
         operator>(const fpn_handle& a, const fpn_handle& b);
+
+        fpn_handle&
+        operator+=(fpn_handle& a, const fpn_handle& b);
+        fpn_handle&
+        operator-=(fpn_handle& a, const fpn_handle& b);
+        fpn_handle&
+        operator*=(fpn_handle& a, const fpn_handle& b);
+        fpn_handle&
+        operator/=(fpn_handle& a, const fpn_handle& b);
+
+        fpn_handle
+        operator+(fpn_handle& a, fpn_handle& b);
+        fpn_handle
+        operator-(fpn_handle& a, fpn_handle& b);
+        fpn_handle
+        operator*(fpn_handle& a, fpn_handle& b);
+        fpn_handle
+        operator/(fpn_handle& a, fpn_handle& b);
 
         namespace mpfr_ext {
             // return exp10 with res precision bits
@@ -382,8 +401,12 @@ cftal::test::fpn_handle&
 cftal::test::fpn_handle::operator=(const fpn_handle& r)
 {
     if (&r != this) {
-        mpfr_clear(_v);
-        mpfr_init2(_v, mpfr_get_prec(r._v));
+        mpfr_prec_t pr=mpfr_get_prec(r._v);
+        mpfr_prec_t pt=mpfr_get_prec(_v);
+        if (pr != pt) {
+            mpfr_clear(_v);
+            mpfr_init2(_v, pr);
+        }
         mpfr_set(_v, r._v, MPFR_RNDN);
     }
     return *this;
@@ -402,8 +425,12 @@ cftal::test::fpn_handle&
 cftal::test::fpn_handle::operator=(const mpfr_t r)
 {
     if (r != this->_v) {
-        mpfr_clear(_v);
-        mpfr_init2(_v, mpfr_get_prec(r));
+        mpfr_prec_t pr=mpfr_get_prec(r);
+        mpfr_prec_t pt=mpfr_get_prec(_v);
+        if (pr != pt) {
+            mpfr_clear(_v);
+            mpfr_init2(_v, pr);
+        }
         mpfr_set(_v, r, MPFR_RNDN);
     }
     return *this;
@@ -542,6 +569,73 @@ cftal::test::operator>(const fpn_handle& a, const fpn_handle& b)
     return mpfr_greater_p(a(), b());
 }
 
+inline
+cftal::test::fpn_handle&
+cftal::test::operator+=(fpn_handle& a, const fpn_handle& b)
+{
+    mpfr_add(a(), a(), b(), MPFR_RNDN);
+    return a;
+}
+
+inline
+cftal::test::fpn_handle&
+cftal::test::operator-=(fpn_handle& a, const fpn_handle& b)
+{
+    mpfr_sub(a(), a(), b(), MPFR_RNDN);
+    return a;
+}
+
+inline
+cftal::test::fpn_handle&
+cftal::test::operator*=(fpn_handle& a, const fpn_handle& b)
+{
+    mpfr_mul(a(), a(), b(), MPFR_RNDN);
+    return a;
+}
+
+inline
+cftal::test::fpn_handle&
+cftal::test::operator/=(fpn_handle& a, const fpn_handle& b)
+{
+    mpfr_div(a(), a(), b(), MPFR_RNDN);
+    return a;
+}
+
+inline
+cftal::test::fpn_handle
+cftal::test::operator+(fpn_handle& a, fpn_handle& b)
+{
+    fpn_handle t(std::max(a.prec(), b.prec()));
+    mpfr_add(t(), a(), b(), MPFR_RNDN);
+    return t;
+}
+
+inline
+cftal::test::fpn_handle
+cftal::test::operator-(fpn_handle& a, fpn_handle& b)
+{
+    fpn_handle t(std::max(a.prec(), b.prec()));
+    mpfr_sub(t(), a(), b(), MPFR_RNDN);
+    return t;
+}
+
+inline
+cftal::test::fpn_handle
+cftal::test::operator*(fpn_handle& a, fpn_handle& b)
+{
+    fpn_handle t(std::max(a.prec(), b.prec()));
+    mpfr_mul(t(), a(), b(), MPFR_RNDN);
+    return t;
+}
+
+inline
+cftal::test::fpn_handle
+cftal::test::operator/(fpn_handle& a, fpn_handle& b)
+{
+    fpn_handle t(std::max(a.prec(), b.prec()));
+    mpfr_div(t(), a(), b(), MPFR_RNDN);
+    return t;
+}
 
 
 // Local variables:
