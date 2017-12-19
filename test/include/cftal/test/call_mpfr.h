@@ -105,6 +105,9 @@ namespace cftal {
         bool
         operator>(const fpn_handle& a, const fpn_handle& b);
 
+        fpn_handle
+        operator-(const fpn_handle& b);
+
         fpn_handle&
         operator+=(fpn_handle& a, const fpn_handle& b);
         fpn_handle&
@@ -567,6 +570,15 @@ bool
 cftal::test::operator>(const fpn_handle& a, const fpn_handle& b)
 {
     return mpfr_greater_p(a(), b());
+}
+
+inline
+cftal::test::fpn_handle
+cftal::test::operator-(const fpn_handle& a)
+{
+    fpn_handle n(a);
+    mpfr_neg(n(), a(), MPFR_RNDN);
+    return n;
 }
 
 inline
