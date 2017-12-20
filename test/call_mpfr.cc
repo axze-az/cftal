@@ -628,7 +628,11 @@ root12(mpfr_t res,
        const mpfr_t x,
        mpfr_rnd_t rm)
 {
+#if MPFR_VERSION_MAJOR<4
     return mpfr_root(res, x, 12, rm);
+#else
+    return mpfr_rootn_ui(res, x, 12, rm);
+#endif
 }
 
 int
