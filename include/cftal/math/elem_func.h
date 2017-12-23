@@ -27,6 +27,10 @@ namespace cftal {
 
         namespace impl {
 
+            // argument reduction routine for large doubles
+            int
+            __kernel_rem_pio2(double xr[2], double x);
+
             // returns (y0+y1) = x - N * pi/2
             // the integer results contains
             // only the lower bits of N
@@ -41,12 +45,22 @@ namespace cftal {
             int32_t
             // __attribute__((__visibility__("internal")))
             __ieee754_rem_pio2(double x, double *y);
+
             int
             // __attribute__((__visibility__("internal")))
             __kernel_rem_pio2(double *x, double *y, int e0,
                               int nx, int prec,
                               const int32_t *ipio2);
 
+
+            // same routine as from sun but uses internal tables
+            __attribute__((__visibility__("internal")))
+            int
+            __kernel_rem_pio2(double* x,
+                              double* y,
+                              int e0,
+                              int nx,
+                              int prec);
         }
 
         // helper for func_core and func_common.

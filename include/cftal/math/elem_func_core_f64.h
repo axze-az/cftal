@@ -717,6 +717,7 @@ rsqrt_k(arg_t<vf_type> x)
 }
 
 template <typename _T>
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 cbrt_k(arg_t<vf_type> xc)
@@ -792,8 +793,8 @@ cbrt_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
-__attribute__((flatten))
 cftal::math::elem_func_core<double, _T>::
 root12_k(arg_t<vf_type> xc)
 {
@@ -2248,7 +2249,8 @@ reduce_trig_arg_k(arg_t<vf_type> x)
         for (std::size_t i=0; i<N; ++i) {
             if (large_arg < std::fabs(tf._sc[i])) {
                 double y[2];
-                ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
+                // ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
+                ti._sc[i]=impl::__kernel_rem_pio2(y, tf._sc[i]);
                 d0_l._sc[i]= y[1];
                 d0_h._sc[i]= y[0];
             }
