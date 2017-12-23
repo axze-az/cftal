@@ -8,6 +8,7 @@
 #include <cftal/std_types.h>
 #include <cftal/cast.h>
 #include <cmath>
+#include <iostream>
 
 /*
  * ====================================================
@@ -24,10 +25,6 @@ namespace cftal {
     namespace math {
         namespace impl {
 
-            // argument reduction routine for large floats
-            int
-            __kernel_rem_pio2(float xr[2], float x);
-
             // same routine as from sun but uses internal tables
             __attribute__((__visibility__("internal")))
             int
@@ -37,7 +34,7 @@ namespace cftal {
                               int nx,
                               int prec);
 
-            // the init table for the chunks to used
+            // the init table for the chunks to use
             extern
             const int init_jk[4];
 
@@ -47,18 +44,12 @@ namespace cftal {
                 pi_over_2[8];
 
             // bits of 1/(2*M_PI) in 24 bit chunks, i.e.
-            // offset 0: bit [0, 24)*2^(1+24)
-            // offset 1: bit [24, 48)*2^(2+24)
-            // offset 2: bit [48, 62)*2^(3+24)
+            // offset 0: bit [0, 24)*2^(1*24)
+            // offset 1: bit [24, 48)*2^(2*24)
+            // offset 2: bit [48, 62)*2^(3*24)
             extern
             const int32_t __attribute__((__visibility__("internal")))
             two_over_pi[948];
-
-            // bits of 1/(2*M_PI) in 24 bit chunks,
-            // as in two_over_pi but as dbl
-            extern
-            const double __attribute__((__visibility__("internal")))
-            two_over_pi_dbl[948];
 
         }
     }
@@ -74,7 +65,7 @@ __kernel_rem_pio2(double xr[2], double x)
         return 0;
     }
     uint64_t lax=as<uint64_t>(ax);
-    if (lax >= 0x7ff0000000000000) {
+    if (lax >= 0x7ff0000000000000ULL) {
         // inf or nan --> nan
         xr[0]=xr[1] = x+x;
         return 0;
@@ -92,7 +83,7 @@ __kernel_rem_pio2(double xr[2], double x)
     int32_t nx=3;
     while (xi[nx-1]==0.0)
         --nx;
-    int n = __kernel_rem_pio2(xi, xr, e0, nx, 2);
+    int n = __kernel_rem_pio2(xi, xr, e0, nx, 1);
     // x==+-0.0 was handled above
     if (x < 0) {
         xr[0]=-xr[0];
@@ -111,7 +102,26 @@ __kernel_rem_pio2(float xr[2], float x)
         xr[1] = 0;
         return 0;
     }
-    return x;
+    // z = scalbn(|x|, ilogb(x)-23)
+    uint64_t lax=as<uint64_t>(double(ax));
+    if (lax >= 0x7ff0000000000000ULL) {
+        // inf or nan --> nan
+        xr[0]=xr[1] = x+x;
+        return 0;
+    }
+    int64_t e0= (lax>>52)-1046;
+    int64_t lz= lax - (int64_t(e0)<<52);
+    double z=as<double>(lz);
+    double xi=int32_t(z);
+    double dxr;
+    int n= __kernel_rem_pio2(&xi, &dxr, e0, 1, 0);
+    if (x < 0.0f) {
+        dxr = -dxr;
+        n = -n;
+    }
+    xr[0] = float(dxr);
+    xr[1] = float(dxr-double(xr[0]));
+    return n;
 }
 
 /*
@@ -186,9 +196,11 @@ __kernel_rem_pio2(float xr[2], float x)
  *      jk      jk+1 is the initial number of terms of ipio2[] needed
  *              in the computation. The recommended value is 2,3,4,
  *              6 for single, double, extended,and quad.
+ *              The recommended value should be 3, 4, 4?, 6 for
+ *              single, double, double extended and quad
  *
  *      jz      local integer variable indicating the number of
- *              terms of ipio2[] used.
+ *              terms of ipio2[] (two_over_pi) used.
  *
  *      jx      nx - 1
  *
@@ -199,7 +211,8 @@ __kernel_rem_pio2(float xr[2], float x)
  *                      e0-3-24*jv >= 0 or (e0-3)/24 >= jv
  *              Hence jv = max(0,(e0-3)/24).
  *
- *      jp      jp+1 is the number of terms in PIo2[] needed, jp = jk.
+ *      jp      jp+1 is the number of terms in PIo2[] (pi_over_2)
+ *              needed, jp = jk.
  *
  *      q[]     double array with integral value, representing the
  *              24-bits chunk of the product of x and 2/pi.
@@ -210,7 +223,7 @@ __kernel_rem_pio2(float xr[2], float x)
  *      PIo2[]  double precision array, obtained by cutting pi/2
  *              into 24 bits chunks.
  *
- *      f[]     ipio2[] in floating point
+ *      f[]     ipio2[] (two_over_pi) in floating point
  *
  *      iq[]    integer array by breaking up q[] in 24-bits chunk.
  *
@@ -398,7 +411,9 @@ recompute:
 
 /* initial value for jk */
 const int
-cftal::math::impl::init_jk[] = {2,3,4,6};
+cftal::math::impl::init_jk[] = {3, 4, 4, 6};
+// original values
+// {2,3,4,6};
 
 const cftal::int32_t cftal::math::impl::two_over_pi[948]={
     0xa2f983, 0x6e4e44, 0x1529fc, 0x2757d1, 0xf534dd, 0xc0db62,
@@ -560,324 +575,7 @@ const cftal::int32_t cftal::math::impl::two_over_pi[948]={
     0x7b7b89, 0x483d38, 0x96b03c, 0xc79cb1, 0xd0825d, 0x88edb7,
     0xd38339, 0x0c6e66, 0xe912dc, 0x112034, 0x0de782, 0xa0fee6
 };
-const double cftal::math::impl::two_over_pi_dbl[948]={
-    0x1.45f306p+23, 0x1.b9391p+22, 0x1.529fcp+20,
-    0x1.3abe88p+21, 0x1.ea69bap+23, 0x1.81b6c4p+23,
-    0x1.2b3278p+23, 0x1.0e4104p+22, 0x1.fca2c6p+23,
-    0x1.57bd76p+23, 0x1.8ac36ep+23, 0x1.2371dp+21,
-    0x1.093748p+22, 0x1.c00c92p+23, 0x1.775048p+21,
-    0x1.a32438p+23, 0x1.fc3bd6p+23, 0x1.cb129p+20,
-    0x1.4e7ddp+23, 0x1.046beap+23, 0x1.75da2p+21,
-    0x1.09d338p+23, 0x1.c09adp+22, 0x1.7df904p+22,
-    0x1.cc8ebp+21, 0x1.cc1a98p+21, 0x1.cfa4ep+21,
-    0x1.08bf16p+23, 0x1.7bf25p+23, 0x1.d8ffcp+21,
-    0x1.2fffbcp+23, 0x1.6603cp+18, 0x1.de5e22p+23,
-    0x1.16b414p+23, 0x1.b47db4p+22, 0x1.b3f678p+21,
-    0x1.3e5848p+21, 0x1.6e9e8cp+23, 0x1.fb34fp+21,
-    0x1.7fa8b4p+22, 0x1.d49ee8p+22, 0x1.8fd7cap+23,
-    0x1.e2f67ap+23, 0x1.ce7dcp+18, 0x1.14a524p+23,
-    0x1.d4d7f6p+23, 0x1.7ec47cp+22, 0x1.1aba1p+23,
-    0x1.580ccp+22, 0x1.1bf1ecp+22, 0x1.aeafcp+22,
-    0x1.9f784p+23, 0x1.35e86cp+23, 0x1.da9e3p+20,
-    0x1.22c2bcp+23, 0x1.cc361p+23, 0x1.966614p+22,
-    0x1.7c528p+22, 0x1.a10234p+22, 0x1.ffb1p+23,
-    0x1.35cc9cp+22, 0x1.88303p+21, 0x1.556cap+20,
-    0x1.cea324p+22, 0x1.8389ecp+22, 0x1.8118d6p+23,
-    0x1.1f1064p+22, 0x1.86cf9ap+23, 0x1.b9d012p+23,
-    0x1.541ac8p+21, 0x1.88ed16p+23, 0x1.2c394cp+23,
-    0x1.bb5e88p+23, 0x1.a2ae32p+23, 0x1.4fa94p+18,
-    0x1.fe0e0ap+23, 0x1.fbf198p+21, 0x1.d06584p+23,
-    0x1.bc9f3p+23, 0x1.93edd8p+21, 0x1.867a4cp+23,
-    0x1.ded63cp+23, 0x1.7be27cp+22, 0x1.d0f9a8p+21,
-    0x1.95e4fep+23, 0x1.d87f1p+20, 0x1.0c83ep+21,
-    0x1.f091a8p+22, 0x1.f4ddaap+23, 0x1.dcb4cp+22,
-    0x1.0cec54p+22, 0x1.8c296ap+23, 0x1.3a3386p+23,
-    0x1.85895ap+23, 0x1.0534bp+22, 0x1.74003p+22,
-    0x1.19f618p+22, 0x1.6b8f18p+21, 0x1.358d36p+23,
-    0x1.88ccp+14, 0x1.f34adp+22, 0x1.2f4f68p+23,
-    0x1.aaaa6ep+23, 0x1.ec7daep+23, 0x1.810a3p+20,
-    0x1.f8ec9ap+23, 0x1.54eb2p+21, 0x1.57aeep+23,
-    0x1.f0f8c6p+23, 0x1.5ec1e8p+22, 0x1.ce2a2ep+23,
-    0x1.5927p+22, 0x1.b3ac76p+23, 0x1.c42538p+21,
-    0x1.964648p+23, 0x1.de2b58p+22, 0x1.1aa2dp+21,
-    0x1.723ep+23, 0x1.b0af1p+20, 0x1.bf9c32p+23,
-    0x1.fe633ep+23, 0x1.a87998p+22, 0x1.855e64p+22,
-    0x1.1feebp+22, 0x1.b0fefcp+23, 0x1.6eca44p+23,
-    0x1.13d064p+23, 0x1.82ff98p+22, 0x1.9b89dep+23,
-    0x1.26cd8p+19, 0x1.a87ebap+23, 0x1.afbc2cp+23,
-    0x1.bc76bp+23, 0x1.2537bcp+23, 0x1.41169p+21,
-    0x1.d10c5p+23, 0x1.356388p+22, 0x1.96563p+21,
-    0x1.6e308p+20, 0x1.96fbcp+23, 0x1.43005cp+22,
-    0x1.4e3be6p+23, 0x1.6f806p+22, 0x1.a0997p+21,
-    0x1.884a0cp+22, 0x1.4883p+16, 0x1.6e3bd4p+22,
-    0x1.fec2b4p+22, 0x1.e5d23cp+23, 0x1.0d292p+22,
-    0x1.a6ce2p+23, 0x1.b1bb54p+23, 0x1.097eb8p+22,
-    0x1.9cc2d4p+23, 0x1.485014p+23, 0x1.6933a6p+23,
-    0x1.e54c0cp+23, 0x1.fddd7p+22, 0x1.078546p+23,
-    0x1.1078c2p+23, 0x1.e1ce28p+22, 0x1.6a32bcp+22,
-    0x1.7baedep+23, 0x1.8e98b4p+22, 0x1.977fe8p+23,
-    0x1.df031ap+23, 0x1.9f0498p+22, 0x1.172954p+22,
-    0x1.b6ce5p+21, 0x1.a5505p+23, 0x1.1ac384p+23,
-    0x1.df2448p+22, 0x1.42604p+20, 0x1.368c24p+23,
-    0x1.88b388p+23, 0x1.13172p+22, 0x1.23649ap+23,
-    0x1.e62ep+23, 0x1.5a87a8p+23, 0x1.ca9252p+23,
-    0x1.0d5fdp+20, 0x1.f97cp+23, 0x1.99283cp+23,
-    0x1.dd9cep+23, 0x1.ea7c26p+23, 0x1.01e3d8p+23,
-    0x1.87cf66p+23, 0x1.47c638p+21, 0x1.280b26p+23,
-    0x1.f38e08p+21, 0x1.66125cp+23, 0x1.e68a16p+23,
-    0x1.38251p+23, 0x1.ec82acp+22, 0x1.3f6a5cp+23,
-    0x1.85248ep+23, 0x1.7993d8p+21, 0x1.b5543p+22,
-    0x1.214ee4p+23, 0x1.fe76bp+20, 0x1.2d9662p+23,
-    0x1.2859e4p+22, 0x1.c4f282p+23, 0x1.13bfe8p+23,
-    0x1.2f29dp+23, 0x1.09cdc4p+23, 0x1.2e6332p+23,
-    0x1.afb62p+22, 0x1.b2faf8p+21, 0x1.dfb76p+19,
-    0x1.69349p+23, 0x1.b2919cp+22, 0x1.09c9c4p+22,
-    0x1.92ec68p+21, 0x1.702b3ep+23, 0x1.3cb78p+19,
-    0x1.298c68p+21, 0x1.cba7b8p+21, 0x1.c053p+20,
-    0x1.0c0dp+16, 0x1.a0212cp+22, 0x1.63b8bp+22,
-    0x1.21548ep+23, 0x1.73bap+17, 0x1.26b5e8p+21,
-    0x1.4cfbeep+23, 0x1.c921b8p+22, 0x1.de2d3ep+23,
-    0x1.4d291cp+23, 0x1.ed2368p+23, 0x1.454f44p+22,
-    0x1.e4159ep+23, 0x1.9cc1p+21, 0x1.f92fd4p+22,
-    0x1.a18ec8p+22, 0x1.7cfb74p+22, 0x1.aeap+17,
-    0x1.fe2614p+22, 0x1.4a92a8p+21, 0x1.80c86ep+23,
-    0x1.0d86dp+20, 0x1.92419p+21, 0x1.d5316cp+22,
-    0x1.a8e29cp+23, 0x1.b95114p+22, 0x1.821216p+23,
-    0x1.a7d4a8p+22, 0x1.aacc28p+23, 0x1.3a0e4ep+23,
-    0x1.401174p+22, 0x1.b67768p+23, 0x1.8aedd4p+23,
-    0x1.7f987p+20, 0x1.f5ad24p+22, 0x1.744e3ap+23,
-    0x1.4b4cbp+21, 0x1.59998cp+23, 0x1.5052b4p+22,
-    0x1.ab8a4p+22, 0x1.13b31p+23, 0x1.41c8bp+22,
-    0x1.7d4808p+23, 0x1.280eeep+23, 0x1.c0c3ccp+22,
-    0x1.3fep+21, 0x1.50e3d4p+23, 0x1.270998p+22,
-    0x1.ef032p+21, 0x1.07bb2ep+23, 0x1.2e7f46p+23,
-    0x1.fb2886p+23, 0x1.190c1ap+23, 0x1.bc8262p+23,
-    0x1.3a7324p+23, 0x1.18e1bap+23, 0x1.cf6e2ep+23,
-    0x1.def84p+21, 0x1.59b8a8p+21, 0x1.4100b8p+23,
-    0x1.2700b4p+23, 0x1.24222p+23, 0x1.b1d01ep+23,
-    0x1.5f00d8p+23, 0x1.2fff6cp+22, 0x1.f207p+19,
-    0x1.d86164p+22, 0x1.5a562p+20, 0x1.7796c2p+23,
-    0x1.73138ep+23, 0x1.7a802p+23, 0x1.3cb48p+18,
-    0x1.3baa48p+21, 0x1.ed6dd6p+23, 0x1.7645b6p+23,
-    0x1.542814p+23, 0x1.793448p+21, 0x1.da0d9p+22,
-    0x1.99d848p+21, 0x1.a940ep+20, 0x1.5474a2p+23,
-    0x1.85463ap+23, 0x1.5ddb5ep+23, 0x1.2265cp+20,
-    0x1.3709b4p+22, 0x1.38f45ap+23, 0x1.2ead8p+23,
-    0x1.067e06p+23, 0x1.ede012p+23, 0x1.188056p+23,
-    0x1.3262dap+23, 0x1.ed0e4p+18, 0x1.5200cp+20,
-    0x1.6f0f6p+22, 0x1.8925eap+23, 0x1.2eb718p+22,
-    0x1.4b949cp+23, 0x1.9a6f4ep+23, 0x1.b54f3p+21,
-    0x1.292556p+23, 0x1.a10b74p+22, 0x1.bcc632p+23,
-    0x1.df18ecp+23, 0x1.4a2dap+22, 0x1.bedfep+21,
-    0x1.57435cp+23, 0x1.88aef8p+21, 0x1.435cp+23,
-    0x1.b5f618p+23, 0x1.99359p+22, 0x1.6e0bdap+23,
-    0x1.832948p+21, 0x1.7eacaep+23, 0x1.d7fa38p+21,
-    0x1.73f2d4p+23, 0x1.e77ceap+23, 0x1.bf265p+23,
-    0x1.840558p+21, 0x1.ed18ccp+23, 0x1.5cb04p+20,
-    0x1.88be8p+18, 0x1.de4d9p+20, 0x1.49667ap+23,
-    0x1.1e36aep+23, 0x1.39a6cp+19, 0x1.d2849cp+23,
-    0x1.497c26p+23, 0x1.6a4666p+23, 0x1.aaafp+20,
-    0x1.50ca9ep+23, 0x1.4b83a4p+23, 0x1.e7e16p+19,
-    0x1.9af0b6p+23, 0x1.dbe48cp+22, 0x1.22decp+18,
-    0x1.c85e24p+22, 0x1.4e9b18p+22, 0x1.c4dcdep+23,
-    0x1.d7dep+15, 0x1.612a6cp+22, 0x1.6fb588p+23,
-    0x1.74cd54p+23, 0x1.9f9eecp+23, 0x1.d02d1p+20,
-    0x1.6f8d88p+21, 0x1.833318p+23, 0x1.deb70cp+22,
-    0x1.b4910cp+23, 0x1.40bbeep+23, 0x1.e9018cp+23,
-    0x1.7f856p+21, 0x1.35d9bap+23, 0x1.78b87ep+23,
-    0x1.b77b4p+22, 0x1.fc79p+20, 0x1.6db654p+23,
-    0x1.d12d18p+21, 0x1.355ep+23, 0x1.26a75ap+23,
-    0x1.15ed8p+18, 0x1.685a52p+23, 0x1.fa012cp+22,
-    0x1.4e0fb4p+23, 0x1.d54ecp+19, 0x1.42b2f6p+23,
-    0x1.5090bp+21, 0x1.6dbeep+21, 0x1.fbcbf4p+23,
-    0x1.fdb712p+23, 0x1.fb7d12p+23, 0x1.b1db9p+22,
-    0x1.f9520cp+23, 0x1.c200f8p+22, 0x1.56e85p+20,
-    0x1.ff0ffap+23, 0x1.cf8ap+18, 0x1.9b3b08p+21,
-    0x1.0c3054p+23, 0x1.d57a9ap+23, 0x1.5fcf66p+23,
-    0x1.b9b63cp+22, 0x1.cb3ca8p+21, 0x1.6efcc4p+22,
-    0x1.235e1p+22, 0x1.6df3p+20, 0x1.0cb71cp+22,
-    0x1.ab0928p+21, 0x1.9ce192p+23, 0x1.71966p+23,
-    0x1.fad97ep+23, 0x1.440148p+23, 0x1.c8d80ap+23,
-    0x1.41bab4p+23, 0x1.1dbc84p+22, 0x1.a424c4p+23,
-    0x1.08b972p+23, 0x1.2585cp+22, 0x1.c0acd6p+23,
-    0x1.5299p+16, 0x1.baaa8p+21, 0x1.6faa3cp+23,
-    0x1.89e266p+23, 0x1.7db84cp+22, 0x1.c860bap+23,
-    0x1.525d0ap+23, 0x1.87643ap+23, 0x1.b19508p+21,
-    0x1.496e1p+23, 0x1.a963d4p+23, 0x1.0fb8bp+21,
-    0x1.c8d31ep+23, 0x1.dffc9cp+22, 0x1.000618p+23,
-    0x1.6a0468p+21, 0x1.419a9ep+23, 0x1.334a4p+23,
-    0x1.a74566p+23, 0x1.4ba5ep+19, 0x1.0be6dp+22,
-    0x1.97b422p+23, 0x1.a17cfap+23, 0x1.83b736p+23,
-    0x1.7a2f56p+23, 0x1.034594p+23, 0x1.71a82p+22,
-    0x1.7552ep+20, 0x1.54009cp+22, 0x1.e028fep+23,
-    0x1.0c0fc2p+23, 0x1.902c5p+22, 0x1.1a832cp+23,
-    0x1.bd7d0ep+23, 0x1.57eedp+21, 0x1.6c4ad6p+23,
-    0x1.a44bd8p+21, 0x1.fde60ap+23, 0x1.3d7f72p+23,
-    0x1.3da9ap+22, 0x1.505494p+23, 0x1.6b113cp+22,
-    0x1.79f05ap+23, 0x1.30b5aep+23, 0x1.2b8fe8p+23,
-    0x1.1a9a1ap+23, 0x1.4c744p+23, 0x1.7d5e9p+22,
-    0x1.627e28p+23, 0x1.2a71p+23, 0x1.20ccp+16,
-    0x1.0dbae2p+23, 0x1.6dbd92p+23, 0x1.eac17ep+23,
-    0x1.1654dp+20, 0x1.ac1c04p+22, 0x1.596118p+23,
-    0x1.a18164p+23, 0x1.215544p+22, 0x1.df63cp+19,
-    0x1.86e52ap+23, 0x1.d83518p+21, 0x1.aa06p+21,
-    0x1.ef7018p+22, 0x1.988bcp+23, 0x1.f4529cp+23,
-    0x1.9195acp+23, 0x1.07cfap+22, 0x1.bcc8f8p+23,
-    0x1.b0c936p+23, 0x1.8df6c8p+21, 0x1.872f48p+23,
-    0x1.a8b0eep+23, 0x1.8bc6d2p+23, 0x1.3dafp+20,
-    0x1.e1d5dp+21, 0x1.186118p+22, 0x1.7dd554p+22,
-    0x1.eb7ba4p+23, 0x1.8d24dcp+23, 0x1.74babp+22,
-    0x1.da881cp+23, 0x1.08f87p+22, 0x1.0f88c2p+23,
-    0x1.d3fa52p+23, 0x1.e7adcep+23, 0x1.94f844p+23,
-    0x1.ac8b78p+21, 0x1.8bc01p+23, 0x1.1baffep+23,
-    0x1.c4d4dcp+23, 0x1.8dfb6p+23, 0x1.821126p+23,
-    0x1.d175fp+22, 0x1.655ad6p+23, 0x1.3add9ap+23,
-    0x1.edc8f8p+22, 0x1.a84718p+22, 0x1.539feep+23,
-    0x1.bee652p+23, 0x1.75936ap+23, 0x1.4402dcp+22,
-    0x1.b65c4p+19, 0x1.25d3ap+21, 0x1.81f794p+22,
-    0x1.15b0e8p+23, 0x1.60a868p+21, 0x1.83102p+19,
-    0x1.28ccfcp+23, 0x1.62901p+20, 0x1.d9ea7cp+22,
-    0x1.7dfbfap+23, 0x1.de8aacp+23, 0x1.b3f6c8p+21,
-    0x1.3d9ecp+20, 0x1.737516p+23, 0x1.f92f88p+23,
-    0x1.3d4188p+21, 0x1.86dde2p+23, 0x1.b62cap+21,
-    0x1.5aa36p+22, 0x1.6b5168p+23, 0x1.d999ep+19,
-    0x1.6c489p+21, 0x1.a2bb78p+21, 0x1.12ac58p+23,
-    0x1.c79d32p+23, 0x1.7241acp+23, 0x1.54bcd6p+23,
-    0x1.38547cp+23, 0x1.98be22p+23, 0x1.282ff4p+22,
-    0x1.f7e9c2p+23, 0x1.b4ee38p+22, 0x1.64371p+21,
-    0x1.09a9d2p+23, 0x1.5369f8p+23, 0x1.a3dddep+23,
-    0x1.926a5cp+23, 0x1.84e4bcp+22, 0x1.1084ep+22,
-    0x1.91b236p+23, 0x1.5f902p+19, 0x1.a92becp+22,
-    0x1.b0385ep+23, 0x1.0968a6p+23, 0x1.19329cp+23,
-    0x1.9844a8p+23, 0x1.b8aa54p+23, 0x1.ad8d8p+23,
-    0x1.2c3216p+23, 0x1.70e034p+23, 0x1.9255a4p+22,
-    0x1.816898p+22, 0x1.dca47ep+23, 0x1.e22fep+19,
-    0x1.1b5f4p+20, 0x1.eb97f8p+23, 0x1.6de1ap+21,
-    0x1.dd7868p+23, 0x1.98bbdp+23, 0x1.817b74p+22,
-    0x1.371ccep+23, 0x1.de6724p+23, 0x1.702f92p+23,
-    0x1.36b0c2p+23, 0x1.78afc2p+23, 0x1.8d06a2p+23,
-    0x1.03ed8p+20, 0x1.21c774p+22, 0x1.ba385ap+23,
-    0x1.42315ep+23, 0x1.18b084p+22, 0x1.afe6b2p+23,
-    0x1.30f5b2p+23, 0x1.80a93cp+23, 0x1.f50c9ep+23,
-    0x1.f80cacp+23, 0x1.5cf3cap+23, 0x1.b11448p+21,
-    0x1.1569cp+21, 0x1.b926cep+23, 0x1.55d0aap+23,
-    0x1.c1341p+21, 0x1.37cf94p+23, 0x1.481aa2p+23,
-    0x1.626732p+23, 0x1.daf52p+19, 0x1.2015a4p+22,
-    0x1.e164cap+23, 0x1.4f10fep+23, 0x1.2e991p+23,
-    0x1.b68fc8p+21, 0x1.672442p+23, 0x1.2a09ecp+22,
-    0x1.0e7ccp+21, 0x1.b93e8p+23, 0x1.551f7p+22,
-    0x1.d3a708p+21, 0x1.0bad9cp+22, 0x1.bf3bfcp+23,
-    0x1.7f5178p+22, 0x1.48cef6p+23, 0x1.eab2e8p+22,
-    0x1.45ecaap+23, 0x1.1c4158p+21, 0x1.56e904p+22,
-    0x1.0dcb2p+19, 0x1.0c5442p+23, 0x1.068e72p+23,
-    0x1.cdc712p+23, 0x1.a93dcap+23, 0x1.03ed24p+22,
-    0x1.d2adfep+23, 0x1.941e38p+23, 0x1.14b38ap+23,
-    0x1.5fd4ap+21, 0x1.8b83a6p+23, 0x1.9f8a1ep+23,
-    0x1.5cb5b6p+23, 0x1.0d8a8ep+23, 0x1.890e14p+22,
-    0x1.dc3108p+21, 0x1.28f258p+23, 0x1.0ec22p+23,
-    0x1.ed30a8p+22, 0x1.a2c8p+20, 0x1.2bf43p+20,
-    0x1.204d1p+23, 0x1.1278fp+23, 0x1.c9895p+23,
-    0x1.ef6f94p+22, 0x1.847588p+23, 0x1.d5e84cp+23,
-    0x1.14cfeep+23, 0x1.7f241ap+23, 0x1.5d1b28p+21,
-    0x1.63267ap+23, 0x1.6f97ap+19, 0x1.b8a348p+23,
-    0x1.8f749cp+22, 0x1.bbc2d2p+23, 0x1.9949ap+20,
-    0x1.2a535p+23, 0x1.46734p+21, 0x1.69da12p+23,
-    0x1.04fa2p+21, 0x1.95309cp+23, 0x1.8e09cp+22,
-    0x1.1be3fp+21, 0x1.95c878p+21, 0x1.1deb4ep+23,
-    0x1.ceac28p+23, 0x1.1e242p+19, 0x1.54eda8p+21,
-    0x1.35f9bcp+22, 0x1.446694p+22, 0x1.57f36ap+23,
-    0x1.adbf04p+23, 0x1.877658p+22, 0x1.1b0bp+17,
-    0x1.3e7588p+23, 0x1.434506p+23, 0x1.b7b5c8p+22,
-    0x1.ea34e4p+22, 0x1.537104p+23, 0x1.70c9acp+22,
-    0x1.6c9d18p+22, 0x1.da68p+23, 0x1.dc0348p+22,
-    0x1.57d3fp+22, 0x1.356404p+22, 0x1.00e3cp+23,
-    0x1.c27f12p+23, 0x1.652be6p+23, 0x1.92a3c4p+22,
-    0x1.5d4e96p+23, 0x1.c7e26p+21, 0x1.d56576p+23,
-    0x1.1c9c2cp+22, 0x1.57874ep+23, 0x1.a5d3p+21,
-    0x1.4b74dp+22, 0x1.f0ac74p+23, 0x1.d6fd14p+23,
-    0x1.8dd9bp+21, 0x1.6256dcp+22, 0x1.1fdea4p+22,
-    0x1.298754p+23, 0x1.a7244ap+23, 0x1.e7f3ep+20,
-    0x1.b12e9cp+23, 0x1.77529ep+23, 0x1.b15c02p+23,
-    0x1.ccc368p+23, 0x1.c9ec7p+21, 0x1.4a4754p+23,
-    0x1.98347p+21, 0x1.633b5p+20, 0x1.dd8c4p+21,
-    0x1.d3a9dp+20, 0x1.004f4p+22, 0x1.9837cap+23,
-    0x1.f0c5cep+23, 0x1.df9478p+21, 0x1.cdadf8p+21,
-    0x1.7846ap+19, 0x1.13a3fp+21, 0x1.448f8p+23,
-    0x1.aa5a3ep+23, 0x1.9add3p+20, 0x1.2129bep+23,
-    0x1.2623ap+23, 0x1.68564ap+23, 0x1.25b6c8p+22,
-    0x1.c4c964p+23, 0x1.7bc4d4p+22, 0x1.de352p+21,
-    0x1.a4adp+20, 0x1.55925cp+23, 0x1.93a218p+22,
-    0x1.5cc244p+22, 0x1.3059f6p+23, 0x1.88d8dp+21,
-    0x1.0e516p+19, 0x1.7b9dc2p+23, 0x1.838508p+22,
-    0x1.d6c83ap+23, 0x1.a17746p+23, 0x1.cab3a8p+23,
-    0x1.65ee3p+22, 0x1.522418p+21, 0x1.e66574p+23,
-    0x1.f090cep+23, 0x1.6468d8p+21, 0x1.7d4d8p+21,
-    0x1.43cf74p+22, 0x1.f3eae6p+23, 0x1.b6c368p+23,
-    0x1.fc467cp+23, 0x1.b10698p+22, 0x1.dd463p+23,
-    0x1.dd6898p+22, 0x1.78bcb8p+23, 0x1.9d4e1p+23,
-    0x1.29b8aep+23, 0x1.c4032cp+23, 0x1.e3d072p+23,
-    0x1.7c90a2p+23, 0x1.74b4bcp+22, 0x1.3a5554p+22,
-    0x1.b2dd84p+23, 0x1.cfaeaap+23, 0x1.8c138p+22,
-    0x1.805c1cp+23, 0x1.f8814p+23, 0x1.77f366p+23,
-    0x1.c4969cp+22, 0x1.116fd8p+21, 0x1.ec33bp+23,
-    0x1.071838p+23, 0x1.986798p+22, 0x1.641aaap+23,
-    0x1.76a26ep+23, 0x1.e7a024p+22, 0x1.5f2292p+23,
-    0x1.ae7bcp+19, 0x1.61b4ap+19, 0x1.9cfebp+23,
-    0x1.583268p+23, 0x1.c9199cp+22, 0x1.e8684cp+22,
-    0x1.3c4d78p+23, 0x1.15579cp+22, 0x1.6172d4p+22,
-    0x1.c4745p+22, 0x1.21a644p+22, 0x1.20358p+22,
-    0x1.5ab6acp+22, 0x1.ac5ec8p+23, 0x1.2ddc18p+23,
-    0x1.097f98p+21, 0x1.75b62p+22, 0x1.4ced08p+23,
-    0x1.2aca3cp+23, 0x1.573c14p+23, 0x1.377bf8p+22,
-    0x1.5c404p+22, 0x1.06d472p+23, 0x1.f1d462p+23,
-    0x1.3c703ap+23, 0x1.d59162p+23, 0x1.9592d6p+23,
-    0x1.bf90fp+21, 0x1.aa0bd2p+23, 0x1.308e86p+23,
-    0x1.3f8ad8p+23, 0x1.98db8p+17, 0x1.dc5fcp+21,
-    0x1.0dcad4p+23, 0x1.1b8686p+23, 0x1.88c39cp+22,
-    0x1.279faap+23, 0x1.aa3cb4p+22, 0x1.ccc014p+22,
-    0x1.af021p+20, 0x1.413f96p+23, 0x1.d05684p+22,
-    0x1.aad646p+23, 0x1.bfdc94p+22, 0x1.7a5e38p+21,
-    0x1.714b22p+23, 0x1.feb164p+22, 0x1.715778p+22,
-    0x1.0961cp+21, 0x1.62652cp+23, 0x1.73fd4p+22,
-    0x1.b3131p+21, 0x1.f4f62cp+23, 0x1.e9b34cp+23,
-    0x1.567f38p+21, 0x1.e0e806p+23, 0x1.a9ac08p+23,
-    0x1.bf6458p+22, 0x1.8d8df8p+21, 0x1.9768ap+23,
-    0x1.6f5f2p+22, 0x1.9c328p+19, 0x1.af590cp+22,
-    0x1.3f647p+22, 0x1.be8a86p+23, 0x1.7cd14cp+22,
-    0x1.c56b54p+23, 0x1.935d9p+23, 0x1.31485p+20,
-    0x1.f3a57ep+23, 0x1.75b73cp+23, 0x1.dbd6e4p+22,
-    0x1.5e2b9ep+23, 0x1.946304p+23, 0x1.4b56dp+20,
-    0x1.d3fc9ap+23, 0x1.43f0d4p+22, 0x1.eb5daap+23,
-    0x1.45a182p+23, 0x1.92c0aep+23, 0x1.92eb6p+20,
-    0x1.d23b24p+23, 0x1.f451p+18, 0x1.5d478cp+23,
-    0x1.a1ab3p+21, 0x1.36adap+21, 0x1.8b0f1p+21,
-    0x1.bf8d1p+21, 0x1.04f7f8p+21, 0x1.2b1c46p+23,
-    0x1.24de6p+22, 0x1.afa53p+21, 0x1.2f7008p+22,
-    0x1.857c26p+23, 0x1.7d014p+23, 0x1.6e546p+19,
-    0x1.15c5fp+20, 0x1.e1bd1p+20, 0x1.b69a6p+19,
-    0x1.0d3d0ap+23, 0x1.2d2ed6p+23, 0x1.5648f8p+21,
-    0x1.144d84p+23, 0x1.83878p+21, 0x1.05048p+18,
-    0x1.f93f4ap+23, 0x1.ee547p+23, 0x1.38d0fp+23,
-    0x1.c554ecp+23, 0x1.433f84p+22, 0x1.5649dp+22,
-    0x1.269c7p+23, 0x1.525eep+19, 0x1.54cfcp+22,
-    0x1.4c7b68p+23, 0x1.cccb88p+21, 0x1.c56eaap+23,
-    0x1.5314f8p+23, 0x1.1e32p+15, 0x1.58a9a4p+23,
-    0x1.7505ap+21, 0x1.ebe7cp+23, 0x1.832124p+22,
-    0x1.ffa4d2p+23, 0x1.5ca59cp+23, 0x1.e97f74p+22,
-    0x1.d39c0cp+23, 0x1.f615dp+23, 0x1.4a199cp+23,
-    0x1.d53a7cp+23, 0x1.bb36e8p+21, 0x1.7069eap+23,
-    0x1.b412p+19, 0x1.08df1p+23, 0x1.2b8f54p+22,
-    0x1.33406p+19, 0x1.757168p+21, 0x1.f96814p+23,
-    0x1.f73666p+23, 0x1.c503bap+23, 0x1.b16bap+20,
-    0x1.b1815ep+23, 0x1.b2d72ep+23, 0x1.6a5b92p+23,
-    0x1.384efep+23, 0x1.654754p+22, 0x1.0e66bp+21,
-    0x1.6c92d6p+23, 0x1.611588p+22, 0x1.6775e4p+23,
-    0x1.434b88p+23, 0x1.f28b3cp+22, 0x1.53727ap+23,
-    0x1.edee24p+22, 0x1.20f4ep+22, 0x1.2d6078p+23,
-    0x1.8f3962p+23, 0x1.a104bap+23, 0x1.11db6ep+23,
-    0x1.a70672p+23, 0x1.8dcccp+19, 0x1.d225b8p+23,
-    0x1.12034p+20, 0x1.bcf04p+19, 0x1.41fdccp+23
-};
+
 const double cftal::math::impl::pi_over_2[8]={
    1.5707962512969970703125e+00, // 0x3ff921fb, 0x40000000
    7.5497894158615963533521e-08, // 0x3e74442d, 0x00000000

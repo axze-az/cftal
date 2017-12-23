@@ -27,10 +27,16 @@ endfunction()
 
 add_executable(gen-func-data gen-func-data.cc)
 target_add_test_libs(gen-func-data)
+
 add_executable(gen-constants gen-constants.cc)
 target_add_test_libs(gen-constants)
+
 add_executable(gen-approx gen-approx.cc)
 target_add_test_libs(gen-approx)
+
+add_executable(gen-2-over-pi gen-2-over-pi.cc)
+target_add_test_libs(gen-2-over-pi)
+
 add_executable(gen-fixpoint-div gen-fixpoint-div.cc)
 
 #add_custom_target(sollya-scripts ALL)
