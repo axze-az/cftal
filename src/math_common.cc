@@ -36,12 +36,7 @@ namespace cftal {
 
             // the init table for the chunks to use
             extern
-            const int init_jk[4];
-
-            // M_PI/2 in 24 bit chunks
-            extern
-            const double __attribute__((__visibility__("internal")))
-                pi_over_2[8];
+            const int init_jk_f64[4];
 
             // bits of 1/(2*M_PI) in 24 bit chunks, i.e.
             // offset 0: bit [0, 24)*2^(1*24)
@@ -49,8 +44,12 @@ namespace cftal {
             // offset 2: bit [48, 62)*2^(3*24)
             extern
             const int32_t __attribute__((__visibility__("internal")))
-            two_over_pi[948];
+                two_over_pi_b24[948];
 
+            // M_PI/2 in 24 bit chunks
+            extern
+            const double __attribute__((__visibility__("internal")))
+                pi_over_2_f64[8];
         }
     }
 }
@@ -93,6 +92,7 @@ __kernel_rem_pio2(double xr[2], double x)
     return n;
 }
 
+#if 0
 int cftal::math::impl::
 __kernel_rem_pio2(float xr[2], float x)
 {
@@ -123,10 +123,11 @@ __kernel_rem_pio2(float xr[2], float x)
     xr[1] = float(dxr-double(xr[0]));
     return n;
 }
+#endif
 
 /*
- * __kernel_rem_pio2(x,y,e0,nx,prec,ipio2)
- * double x[],y[]; int e0,nx,prec; int ipio2[];
+ * __kernel_rem_pio2(x,y,e0,nx,prec)
+ * double x[],y[]; int e0,nx,prec;
  *
  * __kernel_rem_pio2 return the last three digits of N with
  *              y = x - N*pi/2
@@ -138,7 +139,7 @@ __kernel_rem_pio2(float xr[2], float x)
  * more accurately, = 0 mod 8 ). Thus the number of operations are
  * independent of the exponent of the input.
  *
- * (2/pi) is represented by an array of 24-bit integers in ipio2[].
+ * (2/pi) is represented by an array of 24-bit integers in two_over_pi
  *
  * Input parameters:
  *      x[]     The input value (must be positive) is broken into nx
@@ -252,7 +253,7 @@ __kernel_rem_pio2(double* x,
     double z,fw,f[20],fq[20],q[20];
 
     /* initialize jk*/
-    jk = init_jk[prec];
+    jk = init_jk_f64[prec];
     jp = jk;
 
     /* determine jx,jv,q0, note that 3>q0 */
@@ -262,7 +263,7 @@ __kernel_rem_pio2(double* x,
 
     /* set up f[0] to f[jx+jk] where f[jx+jk] = ipio2[jv+jk] */
     j = jv-jx; m = jx+jk;
-    for(i=0;i<=m;i++,j++) f[i] = (j<0)? zero : (double) two_over_pi[j];
+    for(i=0;i<=m;i++,j++) f[i] = (j<0)? zero : (double) two_over_pi_b24[j];
 
     /* compute q[0],q[1],...q[jk] */
     for (i=0;i<=jk;i++) {
@@ -326,7 +327,7 @@ recompute:
             for(k=1;iq[jk-k]==0;k++);   /* k = no. of terms needed */
 
             for(i=jz+1;i<=jz+k;i++) {   /* add q[jz+1] to q[jz+k] */
-                f[jx+i] = (double) two_over_pi[jv+i];
+                f[jx+i] = (double) two_over_pi_b24[jv+i];
                 for(j=0,fw=0.0;j<=jx;j++) fw += x[j]*f[jx+i-j];
                 q[i] = fw;
             }
@@ -357,7 +358,7 @@ recompute:
 
     /* compute PIo2[0,...,jp]*q[jz,...,0] */
     for(i=jz;i>=0;i--) {
-        for(fw=0.0,k=0;k<=jp&&k<=jz-i;k++) fw += pi_over_2[k]*q[i+k];
+        for(fw=0.0,k=0;k<=jp&&k<=jz-i;k++) fw += pi_over_2_f64[k]*q[i+k];
         fq[jz-i] = fw;
     }
 
@@ -411,11 +412,11 @@ recompute:
 
 /* initial value for jk */
 const int
-cftal::math::impl::init_jk[] = {3, 4, 4, 6};
+cftal::math::impl::init_jk_f64[] = {3, 4, 4, 6};
 // original values
 // {2,3,4,6};
 
-const cftal::int32_t cftal::math::impl::two_over_pi[948]={
+const cftal::int32_t cftal::math::impl::two_over_pi_b24[948]={
     0xa2f983, 0x6e4e44, 0x1529fc, 0x2757d1, 0xf534dd, 0xc0db62,
     0x95993c, 0x439041, 0xfe5163, 0xabdebb, 0xc561b7, 0x246e3a,
     0x424dd2, 0xe00649, 0x2eea09, 0xd1921c, 0xfe1deb, 0x1cb129,
@@ -576,7 +577,7 @@ const cftal::int32_t cftal::math::impl::two_over_pi[948]={
     0xd38339, 0x0c6e66, 0xe912dc, 0x112034, 0x0de782, 0xa0fee6
 };
 
-const double cftal::math::impl::pi_over_2[8]={
+const double cftal::math::impl::pi_over_2_f64[8]={
    1.5707962512969970703125e+00, // 0x3ff921fb, 0x40000000
    7.5497894158615963533521e-08, // 0x3e74442d, 0x00000000
    5.3903025299577647655447e-15, // 0x3cf84698, 0x80000000
