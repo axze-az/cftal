@@ -11,6 +11,8 @@
 #include <cftal/types.h>
 #include <cftal/cast.h>
 
+#define USE_FLOAT_KERNEL_REM_PIO2 1
+
 /*
  * ====================================================
  * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
