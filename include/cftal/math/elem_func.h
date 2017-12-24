@@ -35,28 +35,16 @@ namespace cftal {
             int
             __kernel_rem_pio2(float xr[2], float x);
 
-
-            // returns (y0+y1) = x - N * pi/2
-            // the integer results contains
-            // only the lower bits of N
-            int32_t
-            // __attribute__((__visibility__("internal")))
-            __ieee754_rem_pio2(float x, float *y);
-
-
-            // returns (y0+y1) = x - N * pi/2
-            // the integer results contains
-            // only the lower bits of N
-            int32_t
-            // __attribute__((__visibility__("internal")))
-            __ieee754_rem_pio2(double x, double *y);
-
+            // declared here to allow the float routine above to
+            // use the faster double version
+            // same routine as from sun but uses internal tables
+            __attribute__((__visibility__("internal")))
             int
-            // __attribute__((__visibility__("internal")))
-            __kernel_rem_pio2(double *x, double *y, int e0,
-                              int nx, int prec,
-                              const int32_t *ipio2);
-
+            __kernel_rem_pio2(double* x,
+                              double* y,
+                              int e0,
+                              int nx,
+                              int prec);
         }
 
         // helper for func_core and func_common.

@@ -4,6 +4,8 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
+#include <cftal/vec.h>
+#include <cftal/vec_traits.h>
 #include <cftal/math/elem_func.h>
 #include <cftal/math/elem_func_core_f32.h>
 #include <cftal/types.h>
@@ -23,6 +25,10 @@
 namespace cftal {
     namespace math {
         namespace impl {
+
+            inline
+            float
+            __scalbn(float x, int32_t ex);
 
             // same routine as from sun but uses internal tables
             __attribute__((__visibility__("internal")))
@@ -53,39 +59,26 @@ namespace cftal {
     }
 }
 
-cftal::int32_t
-cftal::math::impl::__ieee754_rem_pio2(float x, float *y)
-{
-    double xd=static_cast<double>(x);
-    double r[2];
-    int32_t n=__ieee754_rem_pio2(xd, r);
-    float h= static_cast<float>(r[0]);
-    double hd= static_cast<double>(h);
-    double hl= r[0] - hd;
-    float l= static_cast<float>(hl);
-    y[0] = h;
-    y[1] = l;
-    return n;
-}
-
 int cftal::math::impl::
 __kernel_rem_pio2(float xr[2], float x)
 {
-    float ax=std::fabs(x);
+    uint32_t ix=as<uint32_t>(x);
+    uint32_t iax=ix & not_sign_f32_msk::v.u32();
+    float ax=as<float>(iax);
     if (ax <= M_PI_4) {
         xr[0] = x;
         xr[1] = 0;
         return 0;
     }
-    // z = scalbn(|x|, ilogb(x)-23)
-    uint32_t iax=as<uint32_t>(ax);
-    if (iax >= 0x7f800000) {
+    if (iax >= exp_f32_msk::v.u32()) {
         // inf or nan --> nan
         xr[0]=xr[1] = x+x;
         return 0;
     }
-    int32_t e0= (iax>>23)-(135); // bias - 8
-    int32_t iz= iax - (int64_t(e0)<<23);
+#if USE_FLOAT_KERNEL_REM_PIO2>0
+    // z = scalbn(|x|, ilogb(x)-8)
+    int32_t e0= (iax>>exp_shift_f32)-(bias_f32+8); // bias + 8
+    int32_t iz= iax - (e0<<exp_shift_f32);
     float z=as<float>(iz);
 
     float xi[3];
@@ -105,6 +98,32 @@ __kernel_rem_pio2(float xr[2], float x)
         n= -n;
     }
     return n;
+#else
+    double dx=ax;
+    uint64_t lax=as<uint64_t>(dx);
+    int64_t e0= (lax>>exp_shift_f64)-(bias_f64+23);
+    int64_t lz= lax - (e0<<exp_shift_f64);
+    double z=as<double>(lz);
+    double xi=int32_t(z);
+    double dxr;
+    int n= __kernel_rem_pio2(&xi, &dxr, e0, 1, 0);
+    if (x < 0.0f) {
+        dxr = -dxr;
+        n = -n;
+    }
+    xr[0] = float(dxr);
+    xr[1] = float(dxr-double(xr[0]));
+    return n;
+#endif
+}
+
+inline
+float
+cftal::math::impl::__scalbn(float x, int32_t ex)
+{
+    using traits_t = cftal::math::func_traits<v1f32, v1s32>;
+    using func_t = cftal::math::elem_func<float, traits_t>;
+    return func_t::ldexp(x, ex)();
 }
 
 /*
@@ -223,13 +242,10 @@ __kernel_rem_pio2(float* x,
                   int nx,
                   int prec)
 {
-#if 0
-    return __kernel_rem_pio2(x, y, e0, nx, prec, two_over_pi);
-#else
     const float zero=0.0f;
     const float two9=0x1p9f;
-    const double twon9=0x1p-9f;
-    const double one=1.0f;
+    const float twon9=0x1p-9f;
+    const float one=1.0f;
 
     int32_t jz,jx,jv,jp,jk,carry,n,iq[20],i,j,k,m,q0,ih;
     float z,fw,f[20],fq[20],q[20];
@@ -264,10 +280,10 @@ recompute:
     }
 
     /* compute n */
-    z  = std::scalbn(z,q0);            /* actual value of z */
+    z  = __scalbn(z,q0);            /* actual value of z */
     z -= 8.0f*std::floor(z*0.125f);          /* trim off integer >= 8 */
     n  = (int32_t) z;
-    z -= (double)n;
+    z -= (float)n;
     ih = 0;
     if(q0>0) {      /* need iq[jz-1] to determine n */
         i  = (iq[jz-1]>>(9-q0)); n += i;
@@ -297,7 +313,7 @@ recompute:
         }
         if(ih==2) {
             z = one - z;
-            if(carry!=0) z -= std::scalbn(one,q0);
+            if(carry!=0) z -= __scalbn(one,q0);
         }
     }
 
@@ -323,7 +339,7 @@ recompute:
         jz -= 1; q0 -= 9;
         while(iq[jz]==0) { jz--; q0-=9;}
     } else { /* break z into 24-bit if necessary */
-        z = std::scalbn(z,-q0);
+        z = __scalbn(z,-q0);
         if(z>=two9) {
             fw = (float)((int32_t)(twon9*z));
             iq[jz] = (int32_t)(z-two9*fw);
@@ -333,7 +349,7 @@ recompute:
     }
 
     /* convert integer "bit" chunk to floating-point value */
-    fw = std::scalbn(one,q0);
+    fw = __scalbn(one,q0);
     for(i=jz;i>=0;i--) {
         q[i] = fw*(float)iq[i]; fw*=twon9;
     }
@@ -389,7 +405,6 @@ recompute:
         }
     }
     return n&7;
-#endif
 }
 
 /* initial value for jk */
