@@ -162,11 +162,6 @@ namespace cftal {
             vf_type
             pow(arg_t<vf_type> b, arg_t<vf_type> e);
 
-            // done by squaring
-            static
-            vf_type
-            pow(arg_t<vf_type> b, arg_t<vi_type> e);
-
             static
             void
             sincos(arg_t<vf_type> vf, vf_type* psin, vf_type* pcos);
@@ -556,29 +551,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 pow(arg_t<vf_type> x, arg_t<vf_type> y)
 {
-#if 0
-    return x+y;
-#else
-    // we have a problem if e is an integer
-    // dvf_type ln_x(my_type::log_k2(abs(x), vf_type(0)));
-    // dvf_type ln_x_y(ln_x * y);
-    // dvf_type pow0(my_type::exp_k2(ln_x_y.h(), ln_x_y.l(), false));
-    // vf_type res(pow0.h() + pow0.l());
-    // vf_type ln_x= my_type::log_k(abs(x));
-    // vf_type ln_x_y = ln_x * y;
-    // vf_type pow0= my_type::exp_k(ln_x_y, false);
     vf_type res=my_type::pow_k(x, y);
-
-#if 0
-    using fc=func_constants<_FLOAT_T>;
-    const vf_type& d= ln_x_y;
-    const vf_type exp_hi_inf= fc::exp_hi_inf;
-    const vf_type exp_lo_zero= fc::exp_lo_zero;
-    res = _T::sel(d <= exp_lo_zero, 0.0, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 1.0, res);
-    res = _T::sel(d == 1.0, M_E, res);
-#endif
     // guess the result if the calculation failed
     vmf_type res_nan = isnan(res);
     vmf_type abs_x_lt_1 = abs(x) < 1.0;
@@ -614,7 +587,6 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
     res = _T::sel((y==0.0) | (x==1.0), vf_type(1), res);
-
 #if 0
     res = xisnan(result) ? INFINITY : res;
     res *=  (x >= 0 ? 1 : (!yisint ? NAN : (yisodd ? -1 : 1)));
@@ -628,35 +600,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     return res;
 #endif
     return res;
-#endif
 }
-
-template <typename _FLOAT_T, typename _TRAITS_T>
-typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
-cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
-pow(arg_t<vf_type> b, arg_t<vi_type> e)
-{
-    using _T = _TRAITS_T;
-    vmi_type e_lt_z = e < vi_type(0);
-    vmf_type f_e_lt_z = _T::vmi_to_vmf(e_lt_z);
-    vi_type n= _T::sel(e_lt_z, -e, e);
-    vf_type x= _T::sel(f_e_lt_z, vf_type(1.0)/b, b);
-    vf_type r= vf_type(1.0);
-
-    vmi_type n_ne_0 = n != vi_type(0);
-    while (any_of(n_ne_0)) {
-        vmi_type n_and_1 = (n & vi_type(1)) != vi_type(0);
-        vmf_type f_n_and_1 = _T::vmi_to_vmf(n_and_1);
-        r = _T::sel(f_n_and_1, r*x, r);
-        n >>= 1;
-        n_ne_0 = n != vi_type(0);
-        vmf_type f_n_ne_0 = _T::vmi_to_vmf(n_ne_0);
-        // clear vector entries not required any more
-        x = _T::sel_val_or_zero(f_n_ne_0, x*x);
-    }
-    return r;
-}
-
 
 template <typename _FLOAT_T, typename _TRAITS_T>
 void

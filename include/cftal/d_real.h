@@ -521,6 +521,11 @@ namespace cftal {
 
             static
             void
+            rcp12(_T& rh,  _T& rl,
+                  const _T& a);
+
+            static
+            void
             rcp2(_T& rh,  _T& rl,
                  const _T& ah, const _T& al);
 
@@ -1699,6 +1704,27 @@ cftal::impl::d_real_ops<_T, _FMA>::
 div(const d_real<_T>&a, const d_real<_T>& b)
 {
     return ieee_div(a, b);
+}
+
+template <typename _T, bool _FMA>
+inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+rcp12(_T& rh, _T& rl, const _T& a)
+{
+    // v4f32 rcp=_mm_rcp_ps(a());
+    // rcp = rcp + rcp*(1-rcp*a);
+    // return rcp;
+    // rcp = rcp * (2-rcp*a)
+    _T r0h= _T(1.0)/a;
+    // -rcp * a
+    _T th, tl;
+    mul12(th, tl, -r0h, a);
+    // 2 - rcp * a
+    add122(th, tl, _T(2.0), th, tl);
+    // rcp ( 2 - rcp*a)
+    mul122(rh, rl, r0h, th, tl);
 }
 
 template <typename _T, bool _FMA>
