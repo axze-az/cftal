@@ -76,12 +76,12 @@ namespace cftal {
 
     template <typename _T, std::size_t _N>
     struct expr_traits<vec<_T, _N> > {
-        using type = const vec<_T, _N>;
+        using type = const vec<_T, _N>&;
     };
 
     template <typename _T>
     struct expr_traits<vec<_T, 1> > {
-        using type = const vec<_T, 1>;
+        using type = vec<_T, 1>;
     };
 
     using v1f64 = vec<double, 1>;
