@@ -10,7 +10,6 @@
 #include <cftal/config.h>
 #include <cftal/std_types.h>
 
-
 namespace cftal {
 
     template <typename _T>
