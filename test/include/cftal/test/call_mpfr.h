@@ -170,6 +170,13 @@ namespace cftal {
                    const mpfr_t c_n,
                    ...);
 
+            bool
+            mpfr_equal_or_nan(const mpfr_t a, const mpfr_t b);
+
+            // int F(mfpr_t y, const mpfr_t x, mpfr_rnd_t rm)
+            template <typename _F>
+            int
+            call_ziv_func(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm, _F f);
         }
 
         template <std::size_t _B>
@@ -649,6 +656,42 @@ cftal::test::operator/(const fpn_handle& a, const fpn_handle& b)
     return t;
 }
 
+inline
+bool
+cftal::test::mpfr_ext::
+mpfr_equal_or_nan(const mpfr_t a, const mpfr_t b)
+{
+    return (mpfr_nan_p(a) && mpfr_nan_p(b)) || (mpfr_cmp(a, b)==0);
+}
+
+template <typename _F>
+int
+cftal::test::mpfr_ext::
+call_ziv_func(mpfr_t yf, const mpfr_t x, mpfr_rnd_t rm, _F f)
+{
+    fpn_handle y1(yf);
+    fpn_handle y2(yf);
+    fpn_handle x1(x);
+    int r1, r2;
+
+    mpfr_prec_t start_prec= ((mpfr_get_prec(x) + 31)/32)*32;
+    mpfr_set_prec(x1(), start_prec);
+    mpfr_set(x1(), x, MPFR_RNDN);
+    r1 = f(y1(), x1(), rm);
+    while (r1 !=0) {
+        mpfr_set_prec(x1(), x1.prec()+32);
+        mpfr_set(x1(), x, MPFR_RNDN);
+        r2 = f(y2(), x1(), rm);
+        if ((mpfr_equal_or_nan(y2(), y1()) == true) &&
+            (r1 == r2)) {
+            break;
+        }
+        std::swap(r1, r2);
+        mpfr_swap(y1(), y2());
+    }
+    mpfr_set(yf, y1(), MPFR_RNDN);
+    return r1;
+}
 
 // Local variables:
 // mode: c++
