@@ -54,8 +54,22 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats_to_stream& uss)
     double _ulps=0.0;
     for (const auto& t : us._devs) {
         if (pr_hist) {
-            s << std::setw(4) << t.first << " "
-              << std::setw(16) << t.second << '\n';
+            int32_t tfa=std::abs(t.first);
+            if (tfa <= us.lin_max) {
+                // std::numeric_limits<int32_t>::min() also lands here
+                s << std::setw(27) << t.first << " "
+                  << std::setw(11) << t.second << '\n';
+            } else if (t.first < 0) {
+                int32_t ts= -((tfa>>1)+1);
+                s << std::setw(11) << t.first << " ... "
+                  << std::setw(11) << ts << " "
+                  << std::setw(11) << t.second << '\n';
+            } else if (t.first > 0) {
+                int32_t ts= (tfa>>1)+1;
+                s << std::setw(11) << ts << " ... "
+                  << std::setw(11) << t.first << " "
+                  << std::setw(11) << t.second << '\n';
+            }
         }
         if (t.first)
             _ulps += std::fabs(double(t.first)*double(t.second));

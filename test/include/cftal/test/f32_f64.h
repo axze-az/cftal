@@ -12,6 +12,7 @@
 #include <cftal/vec.h>
 #include <cftal/mem.h>
 #include <cftal/select.h>
+#include <cftal/bitops.h>
 #include <iostream>
 #include <map>
 
@@ -32,7 +33,12 @@ namespace cftal {
             uint64_t _nans;
             // operation count
             uint64_t _cnt;
-            // deviations of x ulp's n times
+            // deviations of x ulp's n times, deviations larger/smaller
+            // than lin_max are grouped together into ranges (2^(n-1), 2^n]
+            // where 2^(n-1) < x <= 2^n if x positive ....
+            static const int32_t lin_max=32;
+            static_assert((lin_max & (lin_max-1))==0,
+                          "lin_max must be a power of 2");
             std::map<int32_t, uint64_t> _devs;
             // faithfully rounded if first=true and second=true
             std::pair<bool, bool> _faithful;
@@ -44,7 +50,17 @@ namespace cftal {
                 ++_cnt;
                 uint32_t au= ulp != 0 ? 1 : 0;
                 _ulps +=  au;
-                _devs[ulp] += 1;
+                int32_t aulp=std::abs(ulp);
+                if (likely(aulp <= lin_max)) {
+                    // std::numeric_limits<int32_t>::min() also lands here
+                    _devs[ulp] += 1;
+                } else {
+                    // round up/down to the next power of 2
+                    uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1));
+                    int32_t rulp= 1U << log2_u;
+                    rulp= ulp < 0 ? -rulp : rulp;
+                    _devs[rulp] += 1;
+                }
                 _nans += is_nan != 0 ? 1 : 0;
             }
             // set the faithful rounding values
