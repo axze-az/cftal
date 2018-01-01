@@ -2033,28 +2033,32 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<float>, float>;
     vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
-    const float m_pi_2_h=+1.5707963705063e+00f;
-    const float m_pi_2_m=-4.3711388286738e-08f;
-    const float m_pi_2_l=-1.7151245100059e-15f;
-
-    vf_type f0, f1, f2, f3, f4, f5;
-    d_ops::mul12(f0, f1, fn, -m_pi_2_h);
-    d_ops::mul12(f2, f3, fn, -m_pi_2_m);
-    d_ops::mul12(f4, f5, fn, -m_pi_2_l);
-    // normalize f0 - f5 into p0..p2
-    vf_type p0, p1, p2, t;
-    p0 = f0;
-    d_ops::add12(p1, t, f1, f2);
-    p2 = f4 + t + f3 + f5;
-    d_ops::add12(p0, p1, p0, p1);
-    d_ops::add12(p1, p2, p1, p2);
-    t = x + p0;
-    xrh = t + p1;
-    xrl = p1 - (xrh - t) + p2;
-
-    vi_type q(_T::cvt_f_to_i(fn));
     const float large_arg=0x1p18f;
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
+
+    if (likely(!all_of(v_large_arg))) {
+        const float m_pi_2_h=+1.5707963705063e+00f;
+        const float m_pi_2_m=-4.3711388286738e-08f;
+        const float m_pi_2_l=-1.7151245100059e-15f;
+        vf_type f0, f1, f2, f3, f4, f5;
+        d_ops::mul12(f0, f1, fn, -m_pi_2_h);
+        d_ops::mul12(f2, f3, fn, -m_pi_2_m);
+        d_ops::mul12(f4, f5, fn, -m_pi_2_l);
+        // normalize f0 - f5 into p0..p2
+        vf_type p0, p1, p2, t;
+        p0 = f0;
+        d_ops::add12(p1, t, f1, f2);
+        p2 = f4 + t + f3 + f5;
+        d_ops::add12(p0, p1, p0, p1);
+        d_ops::add12(p1, p2, p1, p2);
+        t = x + p0;
+        xrh = t + p1;
+        xrl = p1 - (xrh - t) + p2;
+    } else {
+        xrh=x;
+        xrl=0.0;
+    }
+    vi_type q(_T::cvt_f_to_i(fn));
     if (any_of(v_large_arg)) {
         // reduce the large arguments
         constexpr std::size_t N=_T::NVF();
