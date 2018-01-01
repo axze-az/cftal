@@ -284,14 +284,15 @@ namespace cftal {
             dvf_type
             __pow_log2_k(arg_t<vf_type> vf);
 
+            // calculation of x^y 
             static
             vf_type
             pow_k(arg_t<vf_type> x, arg_t<vf_type> y);
 
-
             // argument reduction for all trigonometric functions,
-            // reduction by %pi/2, the low bits of multiple of %pi/2
-            // is returned in the return type
+            // reduction by %pi/2, the low bits of multiples of %pi/2
+            // are returned in the value, the reduced argument is
+            // stored into xrh and xrl
             static
             vi2_type
             __reduce_trig_arg(vf_type& xrh,
