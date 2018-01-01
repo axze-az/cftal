@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
+#include <cftal/t_real.h>
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f64_s32.h>
@@ -51,6 +52,9 @@ namespace cftal {
 
             using d_ops=cftal::impl::
                 d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
+
+            using t_ops=cftal::impl::t_real_ops<vf_type>;
+            
             static
             vf_type
             pow2i(arg_t<vi_type> vi);
@@ -2206,27 +2210,34 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
-    const double m_pi_2_h=+1.5707963267948965579990e+00;
-    const double m_pi_2_m=+6.1232339957367660358688e-17;
-    const double m_pi_2_l=-1.4973849048591698329435e-33;
-    vf_type f0, f1, f2, f3, f4, f5;
-    d_ops::mul12(f0, f1, fn, -m_pi_2_h);
-    d_ops::mul12(f2, f3, fn, -m_pi_2_m);
-    d_ops::mul12(f4, f5, fn, -m_pi_2_l);
-    // normalize f0 - f5 into p0..p2
-    vf_type p0, p1, p2, t;
-    p0 = f0;
-    d_ops::add12(p1, t, f1, f2);
-    p2 = f4 + t + f3 + f5;
-    d_ops::add12(p0, p1, p0, p1);
-    d_ops::add12(p1, p2, p1, p2);
-    t = x + p0;
-    xrh = t + p1;
-    xrl = p1 - (xrh - t) + p2;
 
-    vi_type q(_T::cvt_f_to_i(fn));
     const double large_arg=0x1p28;
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
+
+    if (likely(!all_of(v_large_arg))) {
+        const double m_pi_2_h=+1.5707963267948965579990e+00;
+        const double m_pi_2_m=+6.1232339957367660358688e-17;
+        const double m_pi_2_l=-1.4973849048591698329435e-33;
+        vf_type f0, f1, f2, f3, f4, f5;
+        d_ops::mul12(f0, f1, fn, -m_pi_2_h);
+        d_ops::mul12(f2, f3, fn, -m_pi_2_m);
+        d_ops::mul12(f4, f5, fn, -m_pi_2_l);
+        // normalize f0 - f5 into p0..p2
+        vf_type p0, p1, p2, t;
+        p0 = f0;
+        d_ops::add12(p1, t, f1, f2);
+        p2 = f4 + t + f3 + f5;
+        d_ops::add12(p0, p1, p0, p1);
+        d_ops::add12(p1, p2, p1, p2);
+        t = x + p0;
+        xrh = t + p1;
+        xrl = p1 - (xrh - t) + p2;
+    } else {
+        // keep the compiler silent
+        xrh=x;
+        xrl=0.0;
+    }
+    vi_type q(_T::cvt_f_to_i(fn));
     if (any_of(v_large_arg)) {
         // reduce the large arguments
         constexpr std::size_t N=_T::NVF();
