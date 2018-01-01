@@ -54,7 +54,7 @@ namespace cftal {
                 d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
 
             using t_ops=cftal::impl::t_real_ops<vf_type>;
-            
+
             static
             vf_type
             pow2i(arg_t<vi_type> vi);
@@ -288,7 +288,7 @@ namespace cftal {
             dvf_type
             __pow_log2_k(arg_t<vf_type> vf);
 
-            // calculation of x^y 
+            // calculation of x^y
             static
             vf_type
             pow_k(arg_t<vf_type> x, arg_t<vf_type> y);
@@ -335,7 +335,7 @@ namespace cftal {
             __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                         arg_t<vi2_type> q,
                         vf_type* s, vf_type* c);
-            
+
             // core sine, cosine calculation
             static
             void

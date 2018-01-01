@@ -21,9 +21,11 @@ Runtime=Host System
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/debug
 Build Type=debug
 CMake Binary=/usr/bin/cmake
+CMake Executable=/usr/bin/cmake
 Environment Profile=
 Extra Arguments=
 Install Directory=/usr/local
+Runtime=Host System
 
 [CMake][CMake Build Directory 2]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/profile

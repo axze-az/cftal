@@ -31,6 +31,10 @@ namespace cftal {
             int
             __kernel_rem_pio2(double xr[2], double x);
 
+            // argument reduction routine for large doubles
+            int
+            __kernel_rem_pio2(double xr[2], double x, double xl);
+
             // argument reduction routine for large floats
             int
             __kernel_rem_pio2(float xr[2], float x);

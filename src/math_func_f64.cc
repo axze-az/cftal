@@ -10,6 +10,7 @@
 #include <cftal/math/elem_func_core_f64.h>
 #include <cftal/types.h>
 #include <cftal/cast.h>
+#include <cftal/d_real.h>
 
 /*
  * ====================================================
@@ -74,13 +75,17 @@ __kernel_rem_pio2(double xr[2], double x)
         xr[0]=xr[1] = x+x;
         return 0;
     }
-    // z = scalbn(|x|, ilogb(x)-23)
+#if 0
+    int e0 = std::ilogb(ax)-23;
+    double z = scalbn(ax, -e0);
+#else
     int64_t e0= (lax>>exp_shift_f64)-(bias_f64+23);
     int64_t lz= lax - (e0<<exp_shift_f64);
     double z=as<double>(lz);
+#endif
     double xi[3];
     for (int i=0; i<2; ++i) {
-        xi[i]= int32_t(z);
+        xi[i]= __trunc(z);
         z = (z - xi[i])*0x1p24;
     }
     xi[2] = z;
@@ -88,6 +93,64 @@ __kernel_rem_pio2(double xr[2], double x)
     while (xi[nx-1]==0.0)
         --nx;
     int n = __kernel_rem_pio2(xi, xr, e0, nx, 1);
+    // x==+-0.0 was handled above
+    if (x < 0) {
+        xr[0]=-xr[0];
+        xr[1]=-xr[1];
+        n= -n;
+    }
+    return n;
+}
+
+int cftal::math::impl::
+__kernel_rem_pio2(double xr[2], double x, double xl)
+{
+    uint64_t lx=as<uint64_t>(x);
+    uint64_t lax= lx & not_sign_f64_msk::v.u64();
+    double ax= as<double>(lax);
+    if (ax <= M_PI_4) {
+        xr[0] = x;
+        xr[1] = xl;
+        return 0;
+    }
+    if (lax >= exp_f64_msk::v.u64()) {
+        // inf or nan --> nan
+        xr[0]=xr[1] = x+x;
+        return 0;
+    }
+    // z = scalbn(|x|, -(ilogb(x)-23))
+#if 0
+    int e0 = std::ilogb(ax) - 23;
+    double z = scalbn(ax, -e0);
+    double zl = scalbn(xl, -e0);
+    zl = x < 0.0 ? -zl : zl;
+    // zl=0.0;
+#else
+    int64_t e0= (lax>>exp_shift_f64)-(bias_f64+23);
+    int64_t lz= lax - (e0<<exp_shift_f64);
+    double z=as<double>(lz);
+    uint64_t lxl=as<uint64_t>(xl);
+    int64_t lzl= (lxl - (e0<<exp_shift_f64));
+    double zl=as<double>(lzl);
+    zl = xl == 0.0 ? xl : zl;
+    zl = x < 0.0 ? -zl : zl;
+#endif
+    using d_traits= d_real_traits<double>;
+    using d_ops = cftal::impl::d_real_ops<double, d_traits::fma>;
+
+    double xi[5];
+    for (int i=0; i<4; ++i) {
+        xi[i]= int32_t(z);
+        // z = (z - xi[i])*0x1p24;
+        d_ops::add122cond(z, zl, -xi[i], z, zl);
+        z*=0x1p24;
+        zl*=0x1p24;
+    }
+    xi[4] = z;
+    int32_t nx=5;
+    while (xi[nx-1]==0.0)
+        --nx;
+    int n = __kernel_rem_pio2(xi, xr, e0, nx, 2);
     // x==+-0.0 was handled above
     if (x < 0) {
         xr[0]=-xr[0];
@@ -415,7 +478,7 @@ recompute:
 
 /* initial value for jk */
 const int
-cftal::math::impl::init_jk_f64[] = {3, 4, 4, 6};
+cftal::math::impl::init_jk_f64[] = {3, 4, 5, 6};
 // original values
 // {2,3,4,6};
 
