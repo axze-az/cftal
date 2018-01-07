@@ -209,10 +209,10 @@ half_exp2(arg_t<vf_type> d)
 {
     vf_type res=half_exp2_k(d);
     using fc= func_constants<float>;
-    const vf_type exp_hi_inf= fc::exp2_hi_inf();
-    const vf_type exp_lo_zero= fc::exp2_lo_zero();
-    res = _T::sel(d <= exp_lo_zero, 0.0, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    const vf_type exp2_hi_inf= fc::exp2_hi_inf();
+    const vf_type exp2_lo_zero= fc::exp2_lo_zero();
+    res = _T::sel(d <= exp2_lo_zero, 0.0, res);
+    res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
     return res;
 }
 
@@ -237,10 +237,10 @@ half_exp10(arg_t<vf_type> d)
 {
     vf_type res=half_exp10_k(d);
     using fc= func_constants<float>;
-    const vf_type exp_hi_inf= fc::exp_hi_inf();
-    const vf_type exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel(d <= exp_lo_zero, 0.0, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    const vf_type exp10_hi_inf= fc::exp10_hi_inf();
+    const vf_type exp10_lo_zero= fc::exp10_lo_zero();
+    res = _T::sel(d <= exp10_lo_zero, 0.0, res);
+    res = _T::sel(d >= exp10_hi_inf, _T::pinf(), res);
     return res;
 }
 
