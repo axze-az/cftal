@@ -351,6 +351,46 @@ __half_reduce_trig_arg(arg_t<vf_type> x)
     using ctbl=impl::d_real_constants<d_real<float>, float>;
     vf_type fn= rint(vf_type(x*ctbl::m_2_pi.h()));
     vf_type xrh, xrl;
+#if 1
+#if 1
+    const float m_pi_2_h=+1.5707963705063e+00f;
+    const float m_pi_2_m=-4.3711388286738e-08f;
+    const float m_pi_2_l=-1.7151245100059e-15f;
+    vf_type f0, f1, f2, f3, f4;
+    d_ops::mul12(f0, f1, fn, -m_pi_2_h);
+    d_ops::mul12(f2, f3, fn, -m_pi_2_m);
+    f4 = fn * -m_pi_2_l;
+    // d_ops::mul12(f4, f5, fn, -m_pi_2_l);
+    // normalize f0 - f4 into p0..p2
+    vf_type p0, p1, p2, t;
+    p0 = f0;
+    d_ops::add12(p1, t, f1, f2);
+    p2 = f4 + t + f3;
+    d_ops::add12(p0, p1, p0, p1);
+    d_ops::add12(p1, p2, p1, p2);
+    t = x + p0;
+    xrh = t + p1;
+    // xrl = p1 - (xrh - t) + p2;
+#else
+    const float m_pi_2_h=+1.5707963705063e+00f;
+    const float m_pi_2_m=-4.3711388286738e-08f;
+    const float m_pi_2_l=-1.7151245100059e-15f;
+    vf_type f0, f1, f2, f3, f4, f5;
+    d_ops::mul12(f0, f1, fn, -m_pi_2_h);
+    d_ops::mul12(f2, f3, fn, -m_pi_2_m);
+    d_ops::mul12(f4, f5, fn, -m_pi_2_l);
+    // normalize f0 - f5 into p0..p2
+    vf_type p0, p1, p2, t;
+    p0 = f0;
+    d_ops::add12(p1, t, f1, f2);
+    p2 = f4 + t + f3 + f5;
+    d_ops::add12(p0, p1, p0, p1);
+    d_ops::add12(p1, p2, p1, p2);
+    t = x + p0;
+    xrh = t + p1;
+    xrl = p1 - (xrh - t) + p2;
+#endif
+#else
     if (any_of(abs(x) > 0x1p6f)) {
         const float m_pi_2_h=+1.5707963705063e+00f;
         const float m_pi_2_m=-4.3711388286738e-08f;
@@ -367,6 +407,7 @@ __half_reduce_trig_arg(arg_t<vf_type> x)
         d_ops::add122cond(xrh, xrl, fn* -ctbl::m_pi_2_cw[1], xrh, xrl);
         d_ops::add122cond(xrh, xrl, fn* -ctbl::m_pi_2_cw[2], xrh, xrl);
     }
+#endif
     vi_type q=_T::cvt_f_to_i(fn);
     return std::make_pair(xrh, q);
 }
@@ -515,7 +556,7 @@ half_tan(arg_t<vf_type> x)
     vmi_type qm1= vi_type(xr_q.second & vi_type(1)) == vi_type(1);
     vmf_type fqm1= _T::vmi_to_vmf(qm1);
 
-    vf_type ct=native_recip(t);
+    vf_type ct=1.0f/t; // native_recip(t);
     t = _T::sel(fqm1, -ct, t);
     return t;
 }

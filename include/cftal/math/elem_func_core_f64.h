@@ -2222,6 +2222,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         d_ops::mul12(f0, f1, fn, -m_pi_2_h);
         d_ops::mul12(f2, f3, fn, -m_pi_2_m);
         d_ops::mul12(f4, f5, fn, -m_pi_2_l);
+        // f4 = fn * -m_pi_2_l;
         // normalize f0 - f5 into p0..p2
         vf_type p0, p1, p2, t;
         p0 = f0;
