@@ -11,8 +11,6 @@
 #include <memory>
 
 
-
-
 namespace cftal {
 
     namespace test {
