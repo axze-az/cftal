@@ -2623,9 +2623,8 @@ __tan_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl, arg_t<vi2_type> q)
     const double tan_c29=-2.3935215700734370540765e-05;
     // x^31 : +0xa.31e5a50639158p-20
     const double tan_c31=+9.7226241578203219248977e-06;
-    dvf_type dxr2=sqr(dvf_type(xrh, xrl));
-    vf_type xrh2=dxr2.h();
-
+    vf_type xrh2;
+    d_ops::sqr21(xrh2, xrh, xrl);
     vf_type xrh4=xrh2*xrh2;
     vf_type xrh8=xrh4*xrh4;
     vf_type ee=horner(xrh8,

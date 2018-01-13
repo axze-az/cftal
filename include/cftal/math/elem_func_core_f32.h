@@ -2300,8 +2300,8 @@ __tan_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl, arg_t<vi_type> q)
     const float tan_c13=+1.0449998808e-04f;
     // x^15 : +0x8.f2db7p-11f
     const float tan_c15=+4.3694633059e-03f;
-    dvf_type dxr2=sqr(dvf_type(xrh, xrl));
-    vf_type xrh2=dxr2.h();
+    vf_type xrh2;
+    d_ops::sqr21(xrh2, xrh, xrl);
     vf_type xrh4=xrh2*xrh2;
     vf_type e= horner(xrh4,
                       tan_c15,

@@ -381,6 +381,11 @@ namespace cftal {
             void
             rcp21(_T& r,
                   const _T& ah, const _T& al);
+
+            static
+            void
+            sqr21(_T& rh,
+                  const _T& xh, const _T& xl);
         };
 
         // specialization using fma
@@ -438,6 +443,12 @@ namespace cftal {
             static
             void
             rcp21(_T& r,
+                  const _T& ah, const _T& al);
+
+            // return (ah,al)^2
+            static
+            void
+            sqr21(_T& r,
                   const _T& ah, const _T& al);
         };
 
@@ -1094,6 +1105,21 @@ mul22(_T& pzh, _T& pzl,
 
 template <typename _T>
 inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops_fma<_T, true>::
+sqr21(_T& pzh,
+      const _T& xh, const _T& xl)
+{
+    _T ph = xh * xh;
+    _T pl = fms(xh, xh, ph);
+    _T xl2= _T(2.0)*xl;
+    pl = fma(xh, xl2, pl);
+    pzh = ph + pl;
+}
+
+template <typename _T>
+inline
 __attribute__((always_inline))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
@@ -1152,6 +1178,21 @@ sqr22(_T& pzh, _T& pzl,
     _T xhl= xh*xl;
     p2+= (xhl + xhl);
     add12(pzh, pzl, p1, p2);
+}
+
+template <typename _T>
+inline
+__attribute__((always_inline))
+void
+cftal::impl::d_real_ops_fma<_T, false>::
+sqr21(_T& pzh,
+      const _T& xh, const _T& xl)
+{
+    _T p1, p2;
+    sqr12(p1, p2, xh);
+    _T xhl= xh*xl;
+    p2+= (xhl + xhl);
+    pzh= p1+p2;
 }
 
 template <typename _T>
