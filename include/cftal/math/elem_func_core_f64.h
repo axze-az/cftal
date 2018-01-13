@@ -2218,16 +2218,15 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         const double m_pi_2_h=+1.5707963267948965579990e+00;
         const double m_pi_2_m=+6.1232339957367660358688e-17;
         const double m_pi_2_l=-1.4973849048591698329435e-33;
-        vf_type f0, f1, f2, f3, f4, f5;
+        vf_type f0, f1, f2, f3, f4;
         d_ops::mul12(f0, f1, fn, -m_pi_2_h);
         d_ops::mul12(f2, f3, fn, -m_pi_2_m);
-        d_ops::mul12(f4, f5, fn, -m_pi_2_l);
-        // f4 = fn * -m_pi_2_l;
-        // normalize f0 - f5 into p0..p2
+        f4 = fn * -m_pi_2_l;
+        // normalize f0 - f4 into p0..p2
         vf_type p0, p1, p2, t;
         p0 = f0;
         d_ops::add12(p1, t, f1, f2);
-        p2 = f4 + t + f3 + f5;
+        p2 = f4 + t + f3;
         d_ops::add12(p0, p1, p0, p1);
         d_ops::add12(p1, p2, p1, p2);
         t = x + p0;
