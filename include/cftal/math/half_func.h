@@ -397,7 +397,6 @@ __half_reduce_trig_arg(vf_type& xrh, arg_t<vf_type> x)
 
 template <typename _T>
 inline
-__attribute__((__always_inline__))
 void
 cftal::math::half_func<float, _T>::
 half_sin_cos_k(arg_t<vf_type> x, vf_type* ps, vf_type* pc)
