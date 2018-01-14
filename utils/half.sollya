@@ -75,6 +75,20 @@ write_coeffs(p, "const float tan_f16_c", "tan_16", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "tan-f16");
 
+ph=pi/2;
+bits=7;
+ph0=round(ph, bits, RN);
+ph1=round(ph-ph0, bits, RN);
+ph2=round(ph-ph0-ph1, bits, RN);
+ph3=round(ph-ph0-ph1-ph2, bits, RN);
+ph4=round(ph-ph0-ph1-ph2-ph3, bits, RN);
+ph5=ph-ph0-ph1-ph2-ph3-ph4;
+write_coeff(ph0, "", "const float pi_2_0", single);
+write_coeff(ph1, "", "const float pi_2_1", single);
+write_coeff(ph2, "", "const float pi_2_2", single);
+write_coeff(ph3, "", "const float pi_2_3", single);
+write_coeff(ph4, "", "const float pi_2_4", single);
+write_coeff(ph5, "", "const float pi_2_5", single);
 /*
  * Local variables:
  * mode: c++

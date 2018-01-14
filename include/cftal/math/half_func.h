@@ -343,6 +343,7 @@ half_log10(arg_t<vf_type> d)
 }
 
 template <typename _T>
+inline
 typename cftal::math::half_func<float, _T>::vi_type
 cftal::math::half_func<float, _T>::
 __half_reduce_trig_arg(vf_type& xrh, arg_t<vf_type> x)
@@ -369,21 +370,26 @@ __half_reduce_trig_arg(vf_type& xrh, arg_t<vf_type> x)
     xrh = t + p1;
     // xrl = p1 - (xrh - t) + p2;
 #else
-    // 1. seven bits of pi/2
-    const float m_pi_2_0=+1.578125f;
-    // 2. seven bits of pi/2
-    const float m_pi_2_1=-7.32421875e-3f;
-    const float m_pi_2_2=-4.470348358154296875e-6f;
-    const float m_pi_2_3=+1.583248376846313476e-8f;
-    const float m_pi_2_4=6.0936145018786191940e-11f;
-    // remaining bits of pi/2
-    const float m_pi_2_5=-1.651399557465321743e-13f;
-    xrh = x + fn * -m_pi_2_0;
-    xrh = xrh + fn * -m_pi_2_1;
-    xrh = xrh + fn * -m_pi_2_2;
-    xrh = xrh + fn * -m_pi_2_3;
-    xrh = xrh + fn * -m_pi_2_4;
-    xrh = xrh + fn * -m_pi_2_5;
+    // seven bit chunks of pi/2
+    // x^ : +0xc.ap-3f
+    const float pi_2_0=+1.5781250000e+00f;
+    // x^ : -0xfp-11f
+    const float pi_2_1=-7.3242187500e-03f;
+    // x^ : -0x9.6p-21f
+    const float pi_2_2=-4.4703483582e-06f;
+    // x^ : +0x8.8p-29f
+    const float pi_2_3=+1.5832483768e-08f;
+    // x^ : +0x8.6p-37f
+    const float pi_2_4=+6.0936145019e-11f;
+    // and the remaining bits
+    // x^ : -0xb.9ee5ap-46f
+    const float pi_2_5=-1.6513995575e-13f;
+    xrh = x + fn * -pi_2_0;
+    xrh = xrh + fn * -pi_2_1;
+    xrh = xrh + fn * -pi_2_2;
+    xrh = xrh + fn * -pi_2_3;
+    xrh = xrh + fn * -pi_2_4;
+    xrh = xrh + fn * -pi_2_5;
 #endif
     vi_type q=_T::cvt_f_to_i(fn);
     return q;
