@@ -37,7 +37,7 @@ fmt_double_1(f) :=
     block([s],
         local(os, ff),
         ff : float(f),
-        s : printf(false, "~40,27,3h", bfloat(ff)), 
+        s : printf(false, "~40,27,3h", bfloat(ff)),
         /* s : printf(false, "~e", ff), */
         ssubst("e", "b", s)
     );
@@ -154,7 +154,7 @@ print_d_poly_coeffs(pfx, p) :=
         pn : rat(p),
         n : hipow(pn, x),
         old_fpprec : fpprec,
-        fpprec: 1024, 
+        fpprec: 1024,
         for i : n thru 0 step -1 do (
             dd : make_doubledouble(coeff(pn, x, i)),
             if is(i=0) then
@@ -175,7 +175,7 @@ normalize_rat_poly(p) :=
         d : ratdenom(pn),
         f : coeff(d, x, hipow(d, x)),
         /* print("bn= ", float(f)), */
-        if is(f*f>0) then ( 
+        if is(f*f>0) then (
             d : expand(d/f),
             n : expand(n/f)
         ),
@@ -186,14 +186,14 @@ normalize_rat_poly(p) :=
         */
         [n, d]
     );
-          
+
 make_lanczos_ratfunc(g, n) :=
     block([old_fpprec, t, l, a],
-        old_fpprec : fpprec,   
+        old_fpprec : fpprec,
         fpprec: 16*1024,
         t : lanczos_coeff(g,n-1)*(%e^g)/((2*%pi)^(1/2)),
         l : makelist(t[i][1], i, 1, n),
-        a : l[1], 
+        a : l[1],
         for i : 2 thru n do (
             a : a + l[i]/(x+i-1)
         ),
@@ -204,12 +204,12 @@ make_lanczos_ratfunc(g, n) :=
 
 create_lanczos_ratfunc(g, n) :=
     block([old_fpprec, t, l, p, q, a, r, rn, u, v],
-        old_fpprec : fpprec,   
+        old_fpprec : fpprec,
         fpprec: 16*1024,
         gr: rationalize(g),
         t : lanczos_coeff(gr,n-1)*(%e^gr)/((2*%pi)^(1/2)),
         l : makelist(t[i][1], i, 1, n),
-        a : l[1], 
+        a : l[1],
         for i : 2 thru n do (
             a : a + l[i]/(x+i-2)
         ),
@@ -221,7 +221,7 @@ create_lanczos_ratfunc(g, n) :=
 
 print_lanczos_ratfunc(g, n) :=
     block([old_fpprec, gr, a, l, p, q, s],
-        old_fpprec : fpprec,   
+        old_fpprec : fpprec,
         fpprec: 16*1024,
         gr: rationalize(g),
         a : create_lanczos_ratfunc(gr, n)/**((2*%pi)^(1/2))*/,
@@ -232,6 +232,7 @@ print_lanczos_ratfunc(g, n) :=
         s : ssubst("_", "+", s),
         s : ssubst("_", "b", s),
         s : ssubst("_", ".", s),
+        printf(true, "~%"),
         printf(true, "struct lanczos_table_g_~a_N~d {~%", s, n),
         printf(true, "static constexpr~%"),
         printf(true, "double g() {~%"),
@@ -243,8 +244,8 @@ print_lanczos_ratfunc(g, n) :=
         printf(true, "}~%"),
         print_d_poly_coeffs("p", p),
         print_d_poly_coeffs("q", q),
-        /* print_dd_poly_coeffs("pd", p), */
-        /* print_dd_poly_coeffs("qd", q), */
+        print_dd_poly_coeffs("pd", p),
+        print_dd_poly_coeffs("qd", q),
         printf(true, "};~%"),
         fpprec : old_fpprec
         /* fullratsimp(bfloat(a) - bfloat(p)/bfloat(q))*/
@@ -252,11 +253,11 @@ print_lanczos_ratfunc(g, n) :=
 
 print_lanczos_ratfunc2(g, n) :=
     block([old_fpprec, t, l, a0, ar, arn, p, q, tst],
-        old_fpprec : fpprec,   
+        old_fpprec : fpprec,
         fpprec: 1024*16,
         t : lanczos_coeff(g,n-1)*(%e^g)/*((2*%pi)^(1/2))*/,
         l : makelist(t[i][1], i, 1, n),
-        ar : 0, 
+        ar : 0,
         for i : 2 thru n do (
             ar : ar + l[i]/(x+i-2)
         ),
@@ -281,7 +282,7 @@ print_lanczos_ratfunc2(g, n) :=
 /* the method used by boost */
 create_lanczos_rational(g, n) :=
     block([old_fpprec, t, c, l_denom, l_num, i, bot, top],
-        old_fpprec : fpprec,   
+        old_fpprec : fpprec,
         fpprec: 256,
         t : lanczos_coeff(g,n-1)*(%e^g)*((2*%pi)^(1/2)),
         c : makelist(t[i][1], i, 1, n),
@@ -318,14 +319,14 @@ create_lanczos_rational(g, n) :=
         print_d_poly_coeffs("p", rat(l_num)),
         print_d_poly_coeffs("q", rat(l_denom))
     );
-    
+
 t(g, n) := create_lanczos_rational(g, n);
 ratprint: false;
 
 /*
 print_lanczos_ratfunc(60246800407767295837402/10000000000000000000000,
                       13);
-*/                             
+*/
 
 /* we use this (from boost) for double precision */
 print_lanczos_ratfunc(
