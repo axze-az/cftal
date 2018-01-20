@@ -336,7 +336,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
 {
     vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
     uint64_t t0 = exec_stats::hr_timer();
-    vec<_T, _N> vr=_F::v(va);
+    auto vr=_F::v(va);
     uint64_t t1 = exec_stats::hr_timer();
     uint64_t t0i[_N], t1i[_N];
     // std::result_of<decltype(&F::r)(_T)>::type ri[_N];
@@ -348,7 +348,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
             r[i] = _F::s(a[i]);
             t1i[i]= exec_stats::hr_timer();
         }
-        c= check(vr, r, _F::fname(), !speed_only, cmp);
+        c= check(vr, r, _F::fname(), false, cmp);
     } else {
         typename std::result_of<decltype(&_F::r)(_T)>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
@@ -356,7 +356,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
             r[i] = _F::r(a[i]);
             t1i[i]= exec_stats::hr_timer();
         }
-        c= check(vr, r, _F::fname(), !speed_only, cmp);
+        c= check(vr, r, _F::fname(), true, cmp);
     }
     for (std::size_t i=0; i<_N; ++i) {
         st.insert(t0i[i], t1i[i], 0);
@@ -364,9 +364,9 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
     st.insert(t0, t1, _N);
     // std::cout << std::setprecision(18) << a << std::endl;
     bool cs= vec_parts<_T, _N, _F>::v(va, vr, st);
-    // do only a subvector test if speed_only
+    // do only a subvector test if speed_only==true
     if (speed_only)
-        c = cs;
+        c= cs;
     else
         c &= cs;
     if (c == false) {
@@ -552,7 +552,7 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, bool speed_only, _CMP cmp)
     vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
     vec<_T, _N> vb=mem<vec<_T, _N> >::load(b);
     uint64_t t0=exec_stats::hr_timer();
-    vec<_T, _N> vr=_F::v(va, vb);
+    auto vr=_F::v(va, vb);
     uint64_t t1=exec_stats::hr_timer();
     uint64_t t0i[_N], t1i[_N];
     bool c;
@@ -563,7 +563,7 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, bool speed_only, _CMP cmp)
             r[i] = _F::s(a[i], b[i]);
             t1i[i]=exec_stats::hr_timer();
         }
-        c= check(vr, r, _F::fname(), !speed_only, cmp);
+        c= check(vr, r, _F::fname(), false, cmp);
     } else {
         typename std::result_of<decltype(&_F::r)(_T, _T)>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
@@ -571,13 +571,14 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, bool speed_only, _CMP cmp)
             r[i] = _F::r(a[i], b[i]);
             t1i[i]=exec_stats::hr_timer();
         }
-        c= check(vr, r, _F::fname(), !speed_only, cmp);
+        c= check(vr, r, _F::fname(), true, cmp);
     }
     for (std::size_t i=0; i<_N; ++i) {
         st.insert(t0i[i], t1i[i], 0);
     }
     st.insert(t0, t1, _N);
     bool cs= vec_parts<_T, _N, _F>::v(va, vb, vr, st);
+    // do only the subvector test if speed_only==true
     if (speed_only)
         c= cs;
     else
