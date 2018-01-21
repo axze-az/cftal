@@ -106,9 +106,18 @@ namespace cftal {
         int32_t
         distance(float a, float b);
 
+        template <typename _I, typename _T>
+        std::ostream&
+        operator<<(std::ostream& s, const std::pair<_I, _T>& );
+
         template <typename _T>
         std::ostream&
         operator<<(std::ostream& s, const std::tuple<_T, _T, _T>& );
+
+        template <typename _I, typename _T>
+        std::ostream&
+        operator<<(std::ostream& s,
+                   const std::pair<_I, std::tuple<_T, _T, _T> >& );
 
         template <typename _T>
         struct cmp_t {
@@ -213,6 +222,16 @@ namespace cftal {
     }
 }
 
+template <typename _I, typename _T>
+std::ostream&
+cftal::test::
+operator<<(std::ostream& s,
+           const std::pair<_I,  _T>& t)
+{
+    s << t.first << ' ' << t.second;
+    return s;
+}
+
 template <typename _T>
 std::ostream&
 cftal::test::
@@ -220,6 +239,16 @@ operator<<(std::ostream& s, const std::tuple<_T, _T, _T>& t)
 {
     s << std::get<0>(t)
       << " [ "  << std::get<1>(t) << ", "  << std::get<2>(t) << " ]";
+    return s;
+}
+
+template <typename _I, typename _T>
+std::ostream&
+cftal::test::
+operator<<(std::ostream& s,
+           const std::pair<_I, std::tuple<_T, _T, _T> >& t)
+{
+    s << t.first << ' ' << t.second;
     return s;
 }
 
@@ -313,8 +342,11 @@ cftal::test::check(const std::pair<vec<_I, _N>, vec<_T, _N> >& vr,
         auto ri=std::make_pair(vir[i], vtr[i]);
         if (cmp(ri, exi) == false) {
             if (verbose) {
-                std::cerr << msg << " failed: " << ri << " expected: "
-                          << exi << std::endl;
+                std::cerr << msg << " failed: "
+                          << ri.first << ' ' << ri.second
+                          << " expected: "
+                          << exi
+                          << std::endl;
             }
             r = false;
         }

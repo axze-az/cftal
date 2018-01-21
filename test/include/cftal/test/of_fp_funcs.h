@@ -59,6 +59,11 @@ namespace cftal {
         };
         std::ostream& operator<<(std::ostream& s, const exec_stats& st);
 
+        template <typename _I, typename _T, std::size_t _N>
+        std::ostream&
+        operator<<(std::ostream& s,
+                   const std::pair<vec<_I, _N>, vec<_T, _N> >& vp);
+
         // template to check if two half vectors yield the same
         // results as the full vector
         template <typename _T, std::size_t _N, typename _F>
@@ -67,6 +72,14 @@ namespace cftal {
             static
             bool
             v(const vec<_T, _N>& x, const vec<_T, _N>& fx,
+              exec_stats& st);
+            // check for functions with one argument and an
+            // additional result pointer
+            template <typename _I>
+            static
+            bool
+            v(const vec<_T, _N>& x,
+              const std::pair<vec<_I, _N>, vec<_T, _N> >& fx,
               exec_stats& st);
             // check for functions with two arguments
             static
@@ -86,6 +99,19 @@ namespace cftal {
                 static_cast<void>(st);
                 return true;
             }
+
+            template <typename _I>
+            static
+            bool
+            v(const vec<_T, 1>& x,
+              const std::pair<vec<_I, 1>, vec<_T, 1> >& fx,
+              exec_stats& st) {
+                static_cast<void>(x);
+                static_cast<void>(fx);
+                static_cast<void>(st);
+                return true;
+            }
+
             static
             bool
             v(const vec<_T, 1>& x, const vec<_T, 1>& y,
@@ -265,6 +291,15 @@ namespace cftal {
     }
 }
 
+template <typename _I, typename _T, std::size_t _N>
+std::ostream&
+cftal::test::operator<<(std::ostream& s,
+                        const std::pair<vec<_I, _N>, vec<_T, _N> >& vp)
+{
+    s << vp.first << ' ' << vp.second;
+    return s;
+}
+
 template <typename _T, std::size_t _N, typename _F>
 bool
 cftal::test::vec_parts<_T, _N, _F>::
@@ -291,6 +326,52 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
         std::cerr << "sub vector test " << _N << " failed.\n";
         std::cerr << "x:    " << x << "\n";
         std::cerr << "fx:   " << fx << "\n";
+        std::cerr << "fxlh: " << fxlh << "\n";
+        std::cerr << "vr: " << vr << "\n";
+        std::cerr << std::scientific;
+        std::exit(3);
+    }
+    st.insert(t0, t1, _N2);
+    st.insert(t1, t2, _N2);
+    return r;
+}
+
+template <typename _T, std::size_t _N, typename _F>
+template <typename _I>
+bool
+cftal::test::vec_parts<_T, _N, _F>::
+v(const vec<_T, _N>& x,
+  const std::pair<vec<_I, _N>, vec<_T, _N> >& fx,
+  exec_stats& st)
+{
+    const int _N2=_N/2;
+    vec<_T, _N2> xl=low_half(x);
+    vec<_T, _N2> xh=high_half(x);
+    uint64_t t0= exec_stats::hr_timer();
+    auto fxl=_F::v(xl);
+    uint64_t t1= exec_stats::hr_timer();
+    auto fxh=_F::v(xh);
+    uint64_t t2 = exec_stats::hr_timer();
+    bool r=true;
+    r &= vec_parts<_T, _N2, _F>::v(xl, fxl, st);
+    r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
+
+    vec<_I, _N> ifxlh(fxl.first, fxh.first);
+    typename vec<_I, _N>::mask_type vi=(fx.first == ifxlh);
+    bool ri= all_of(vi);
+    r &= ri;
+    vec<_T, _N> fxlh(fxl.second, fxh.second);
+    typename vec<_T, _N>::mask_type vr=
+        (fx.second == fxlh) | (isnan(fx.second) & isnan(fxlh));
+    bool rc= all_of(vr);
+    r &= rc;
+    if (rc == false || ri==false) {
+        std::cerr << std::hexfloat;
+        std::cerr << "sub vector test " << _N << " failed.\n";
+        std::cerr << "x:    " << x << "\n";
+        std::cerr << "fxi:   " << fx.first << "\n";
+        std::cerr << "fx:   " << fx.second << "\n";
+        std::cerr << "fxlhi: " << ifxlh << "\n";
         std::cerr << "fxlh: " << fxlh << "\n";
         std::cerr << "vr: " << vr << "\n";
         std::cerr << std::scientific;
