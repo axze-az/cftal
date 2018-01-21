@@ -21,15 +21,18 @@
 namespace cftal {
     namespace test {
 
+        // domain of a functions
         template <typename _T>
         using func_domain = std::pair<_T, _T>;
 
+        // the default domain
         template <typename _T>
         struct default_domain {
             static
             const func_domain<_T> value;
         };
 
+        // default test cnt
         const std::size_t default_cnt=0x80000ULL;
 
         template <typename _T>
@@ -38,30 +41,41 @@ namespace cftal {
             std::make_pair(std::numeric_limits<_T>::lowest(),
                            std::numeric_limits<_T>::max());
 
+        // execution statistics
         struct exec_stats {
+            // the tics for the vectors of length 1...2^tics.size()
             std::vector<uint64_t> _tics;
+            // number of function calls
             std::vector<uint64_t> _evals;
+            // insert into _tics
             void insert(uint64_t _tic_before, uint64_t tic_after,
                         unsigned n);
+            // constructor
             exec_stats(unsigned n)
                 : _tics(n+1, uint64_t(0)), _evals(n+1, uint64_t(0)) {}
+            // timer function
             static
             uint64_t hr_timer() { return rdtsc(); }
         };
         std::ostream& operator<<(std::ostream& s, const exec_stats& st);
 
+        // template to check if two half vectors yield the same
+        // results as the full vector
         template <typename _T, std::size_t _N, typename _F>
         struct vec_parts {
+            // check for functions with one argument
             static
             bool
             v(const vec<_T, _N>& x, const vec<_T, _N>& fx,
               exec_stats& st);
+            // check for functions with two arguments
             static
             bool
             v(const vec<_T, _N>& x, const vec<_T, _N>& y,
               const vec<_T, _N>& fx, exec_stats& st);
         };
 
+        // recursion stop
         template <typename _T, typename _F>
         struct vec_parts<_T, 1, _F> {
             static
