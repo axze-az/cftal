@@ -81,6 +81,31 @@ namespace cftal {
             }
         };
 
+        template <typename _I, typename _T>
+        struct cmp_i_ulp : public cmp_ulp<_T> {
+            cmp_i_ulp(uint32_t u, const std::shared_ptr<ulp_stats>& us)
+                : cmp_ulp<_T>(u, us) {}
+            using cmp_ulp<_T>::operator();
+            // compare an _I, _T pair
+            bool
+            operator()(const std::pair<_I, _T>& a,
+                       const std::pair<_I, _T>& b) {
+                ulp_stats* p=&(*(this->_stats));
+                bool r1=f_eq_ulp(a.second, b.second, this->_ulp, p);
+                bool r2=a.first==b.first;
+                return r1 && r2;
+            }
+            // compare an _I, _T pair with interval information
+            bool
+            operator()(const std::pair<_I, _T>& a,
+                       const std::pair<_I, std::tuple<_T, _T, _T> >& b) {
+                ulp_stats* p=&(*(this->_stats));
+                bool r1=f_eq_ulp(a.second, b.second, this->_ulp, p);
+                bool r2=a.first==b.first;
+                return r1 && r2;
+            }
+        };
+
     }
 }
 

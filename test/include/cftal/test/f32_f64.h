@@ -142,24 +142,28 @@ namespace cftal {
             }
         };
 
+        // check a[_N] against expected
         template <class _T, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
         bool check(const _T(&a)[_N], _T expected, _MSG msg,
                    bool verbose=true,
                    _CMP cmp = _CMP());
 
+        // check a against expected
         template <class _T, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
         bool check(vec<_T, _N> a, _T expected, _MSG msg,
                    bool verbose=true,
                    _CMP cmp= _CMP());
 
+        // check a[_N] against expected[_N]
         template <class _T, class _R, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
         bool check(const _T(&a)[_N], const _R(&expected)[_N], _MSG msg,
                    bool verbose=true,
                    _CMP cmp = _CMP());
 
+        // check a against expected[_N]
         template <class _T, class _R, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
         bool check(vec<_T, _N> a,
@@ -167,24 +171,42 @@ namespace cftal {
                    bool verbose=true,
                    _CMP cmp = _CMP());
 
+        // check i,a against expected[_N]
+        template <class _I, class _T, class _R, std::size_t _N,
+                  typename _MSG, typename _CMP>
+        bool check(const std::pair<vec<_I, _N>, vec<_T, _N> >& a,
+                   const _R(&expected)[_N] , _MSG msg,
+                   bool verbose,
+                   _CMP cmp);
+
+        // check a against expected, a contains the result of
+        // a comparison
         template <class _T, std::size_t _N>
         bool check_cmp(const _T(&a)[_N], bool expected, const char* msg);
 
+        // check a against expected, a contains the result of
+        // a comparison
         template <std::size_t _N>
         bool check_cmp(const double(&a)[_N], bool expected, const char* msg);
 
         template <std::size_t _N>
         bool check_cmp(const float(&a)[_N], bool expected, const char* msg);
 
+        // check a against expected, a contains the result of
+        // a comparison
         template <std::size_t _N>
         bool check_cmp(const bit(&a)[_N], bool expected, const char* msg);
 
+        // check a against expected, a contains the result of
+        // a comparison
         template <class _T, std::size_t _N>
         bool check_cmp(vec<_T, _N> a, bool expected, const char* msg);
 
+        // error [abs of difference] between a0 and a1
         template <class _T>
         _T abs_err(_T a0, _T a1);
 
+        // relative error [abs of difference] between a0 and a1
         template <class _T>
         _T rel_err(_T a0, _T a1);
 
@@ -249,7 +271,7 @@ bool cftal::test::check(const _T(&a)[_N],
     bool r=true;
     auto ex=std::cbegin(expected);
     for (auto b=std::cbegin(a), e=std::cend(a); b != e; ++b, ++ex) {
-        auto ei= *ex;
+        const auto& ei= *ex;
         _T ai=*b;
         if (cmp(ai, ei) == false) {
             if (verbose) {
@@ -270,6 +292,34 @@ bool cftal::test::check(vec<_T, _N> vr,
     _T vsr[_N];
     mem< vec<_T, _N> >::store(vsr, vr);
     return check(vsr, expected, msg, verbose, cmp);
+}
+
+template <class _I, class _T, class _R, std::size_t _N,
+          typename _MSG, typename _CMP>
+bool
+cftal::test::check(const std::pair<vec<_I, _N>, vec<_T, _N> >& vr,
+                   const _R(&expected)[_N], _MSG msg,
+                   bool verbose, _CMP cmp)
+{
+    _I vir[_N];
+    _T vtr[_N];
+    mem< vec<_I, _N> >::store(vir, vr.first);
+    mem< vec<_T, _N> >::store(vtr, vr.second);
+    bool r=true;
+    std::size_t i=0;
+    for (auto b=std::cbegin(expected), e=std::cend(expected);
+         b != e; ++b, ++i) {
+        const auto& exi=*b;
+        auto ri=std::make_pair(vir[i], vtr[i]);
+        if (cmp(ri, exi) == false) {
+            if (verbose) {
+                std::cerr << msg << " failed: " << ri << " expected: "
+                          << exi << std::endl;
+            }
+            r = false;
+        }
+    }
+    return r;
 }
 
 

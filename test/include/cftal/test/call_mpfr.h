@@ -25,6 +25,11 @@ namespace cftal {
             using f1_t = int (*)(mpfr_t, const mpfr_t,
                                  mpfr_rnd_t);
 
+            // mpfr function with one argument returning an
+            // additional integer via pointer
+            using f1i_t = int (*)(mpfr_t, int32_t*, const mpfr_t,
+                                  mpfr_rnd_t);
+
             // mpfr function with two arguments
             using f2_t = int (*)(mpfr_t, const mpfr_t,
                                  const mpfr_t, mpfr_rnd_t);
@@ -33,6 +38,12 @@ namespace cftal {
             // containing the unrounded result
             double
             func(double a, f1_t f,
+                 std::pair<double, double>* ulp1i= nullptr);
+
+            // call f(a, i), returns also the interval
+            // containing the unrounded result
+            double
+            func(int32_t* ip, double a, f1i_t f,
                  std::pair<double, double>* ulp1i= nullptr);
 
             // call f(a, b), returns also the interval
@@ -45,6 +56,12 @@ namespace cftal {
             // containing the unrounded result
             float
             func(float a, f1_t f,
+                 std::pair<float, float>* ulp1i= nullptr);
+
+            // call f(a, i), returns also the interval
+            // containing the unrounded result
+            float
+            func(int32_t* ip, float a, f1i_t f,
                  std::pair<float, float>* ulp1i= nullptr);
 
             // call f(a, b), returns also the interval
