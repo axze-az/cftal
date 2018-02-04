@@ -933,6 +933,8 @@ tgamma_k(arg_t<vf_type> xc)
     // with G(-z+1) = -z * G(z)
     // G(z) * -z * G(-z) = pi/sin(pi*z)
     // G(-z) = -pi/[sin(pi*z)*z * G(z)]
+    // lanczos approximation:
+    // G(x) = (x+g-0.5)^(x-0.5) * S * exp(-(x+g-0.5));
     // lanczos sum:
     using lanczos_ratfunc=lanczos_rational_f64<vf_type>;
     vf_type sum= lanczos_ratfunc::at(x0);
@@ -955,7 +957,7 @@ tgamma_k(arg_t<vf_type> xc)
     // calculate the base^z as base^(1/2 z)^2 to avoid overflows
     vf_type powh = base_type::pow_k(base,0.5*z);
     vf_type t= r * powh*powh;
-    t = _T::sel(x0 < 0x1p-54f, 1.0f/xc, t);
+    t = _T::sel(x0 < 0x1p-54, 1.0/xc, t);
     return t;
 }
 
