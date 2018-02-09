@@ -109,11 +109,20 @@ namespace cftal {
         horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
                     _CS... cs);
 
-        // compensated horner scheme using a coefficient arry
+        // compensated horner scheme using a coefficient array
+        // assumes nothing about the coefficients
         template <typename _X, typename _C, std::size_t _N>
         void
-        horner_comp(_X& y, _X& ye, _X,
+        horner_comp(_X& y, _X& ye, _X x,
                     const _C (&a)[_N]);
+
+        // compensated horner scheme using a coefficient array
+        // return ((_X * (y+ye) + a[0])*x)+...)+a[_N-1]
+        // assumes nothing about the coefficients
+        template <typename _X, typename _C, std::size_t _N>
+        void
+        horner_comp_sn(_X& y, _X& ye, _X x,  _X yi, _X yie,
+                       const _C (&a)[_N]);
 
         // compensated horner scheme
         // error free transformation of evaluation of polynomials
@@ -155,6 +164,21 @@ namespace cftal {
         void
         horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
                           _CS... cs);
+
+        // compensated horner scheme using a coefficient array
+        // assumes |x*a[0]| < |a[1]|, |x*a[1]| < |a[2]| ..
+        template <typename _X, typename _C, std::size_t _N>
+        void
+        horner_comp_quick(_X& y, _X& ye, _X x,
+                          const _C (&a)[_N]);
+
+        // compensated horner scheme using a coefficient array
+        // return ((_X * (y+ye) + a[0])*x)+...)+a[_N-1]
+        // assumes |x*a[0]| < |a[1]|, |x*a[1]| < |a[2]| ..
+        template <typename _X, typename _C, std::size_t _N>
+        void
+        horner_comp_quick_sn(_X& y, _X& ye, _X x,  _X yi, _X yie,
+                             const _C (&a)[_N]);
 
         // evaluation of a rational function
         // the parameters with the highest order are stored in p[0]
@@ -386,6 +410,18 @@ horner_comp(_X& y, _X& ye, _X x, const _C (&a)[_N])
     }
 }
 
+template <typename _X, typename _C, std::size_t _N>
+void
+cftal::math::
+horner_comp_sn(_X& y, _X& ye, _X x, _X yi, _X yie, const _C (&a)[_N])
+{
+    static_assert(_N > 0, "at least 1 array element required");
+    horner_comp_si(y, ye, x, yi, yie, a[0]);
+    for (std::size_t i=1; i < _N; ++i) {
+        horner_comp_si(y, ye, x, y, ye, a[i]);
+    }
+}
+
 
 template <typename _X, typename _C1, typename _C0>
 inline
@@ -456,6 +492,32 @@ horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
     // const _X _y=y;
     // const _X _ye=ye;
     horner_comp_quick_si(y, ye, x, y, ye, cs...);
+}
+
+template <typename _X, typename _C, std::size_t _N>
+void
+cftal::math::
+horner_comp_quick(_X& y, _X& ye, _X x, const _C (&a)[_N])
+{
+    static_assert(_N > 1, "at least 2 array elements required");
+    horner_comp_quick_s0(y, ye, x, a[0], a[1]);
+    // const _X _y=y;
+    // const _X _ye=ye;
+    for (std::size_t i=2; i < _N; ++i) {
+        horner_comp_quick_si(y, ye, x, y, ye, a[i]);
+    }
+}
+
+template <typename _X, typename _C, std::size_t _N>
+void
+cftal::math::
+horner_comp_quick_sn(_X& y, _X& ye, _X x, _X yi, _X yie, const _C (&a)[_N])
+{
+    static_assert(_N > 0, "at least 1 array element required");
+    horner_comp_quick_si(y, ye, x, yi, yie, a[0]);
+    for (std::size_t i=1; i < _N; ++i) {
+        horner_comp_quick_si(y, ye, x, y, ye, a[i]);
+    }
 }
 
 template <typename _X,
