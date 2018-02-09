@@ -109,6 +109,12 @@ namespace cftal {
         horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
                     _CS... cs);
 
+        // compensated horner scheme using a coefficient arry
+        template <typename _X, typename _C, std::size_t _N>
+        void
+        horner_comp(_X& y, _X& ye, _X,
+                    const _C (&a)[_N]);
+
         // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // setup step, assumes |x*c1| < |c0|
@@ -365,6 +371,21 @@ horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
     // const _X _ye=ye;
     horner_comp_si(y, ye, x, y, ye, cs...);
 }
+
+template <typename _X, typename _C, std::size_t _N>
+void
+cftal::math::
+horner_comp(_X& y, _X& ye, _X x, const _C (&a)[_N])
+{
+    static_assert(_N > 1, "at least 2 array elements required");
+    horner_comp_s0(y, ye, x, a[0], a[1]);
+    // const _X _y=y;
+    // const _X _ye=ye;
+    for (std::size_t i=2; i < _N; ++i) {
+        horner_comp_si(y, ye, x, y, ye, a[i]);
+    }
+}
+
 
 template <typename _X, typename _C1, typename _C0>
 inline
