@@ -1002,6 +1002,26 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // x^13 : +0xb.675e3aadcbc88p-36
     const double exp_c13=+1.6594686274338619941159e-10;
     vf_type x2=xrh*xrh;
+#if 1
+    static const double oc[]={
+        exp_c13,
+        exp_c11,
+        exp_c9,
+        exp_c7,
+        exp_c5
+    };
+    // vf_type o=horner(x2, oc);
+    static const double ec[]= {
+        exp_c12,
+        exp_c10,
+        exp_c8,
+        exp_c6,
+        exp_c4
+    };
+    // vf_type e=horner(x2, ec);
+    vf_type o, e;
+    horner_n2(o, e, x2, oc, ec);
+#else
     vf_type o=horner(x2,
                      exp_c13,
                      exp_c11,
@@ -1014,6 +1034,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                      exp_c8,
                      exp_c6,
                      exp_c4);
+#endif
     vf_type y=horner(xrh, o, e, exp_c3, exp_c2);
     vf_type ye;
     if (_EXP_M1 == false) {
