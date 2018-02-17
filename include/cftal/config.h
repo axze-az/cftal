@@ -11,6 +11,12 @@
 #define __CFTAL_MINOR__ 3
 #define __CFTAL_PATCHLEVEL__ 0
 
+#if defined (__ARM_NEON)
+#if !defined (__ARM_NEON__)
+#define __ARM_NEON__ 1
+#endif
+#endif
+
 #if defined (__GNUC__) || defined (__clang__)
 #define thread_local __thread
 #define likely(a) __builtin_expect(!!(a), 1)

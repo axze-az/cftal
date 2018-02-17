@@ -1312,14 +1312,14 @@ hyperbolic_k(arg_t<vf_type> xc)
                         sinh_c7,
                         sinh_c5,
                         sinh_c3);
-    vf_type rsh_h, rsh_l;
-    horner_comp_quick(rsh_h, rsh_l, xx, rsh, sinh_c1);
-    d_ops::mul122(rsh_h, rsh_l, xrh, rsh_h, rsh_l);
-
     vf_type rch= horner(xx,
                         cosh_c6,
                         cosh_c4,
                         cosh_c2);
+    vf_type rsh_h, rsh_l;
+    horner_comp_quick(rsh_h, rsh_l, xx, rsh, sinh_c1);
+    d_ops::mul122(rsh_h, rsh_l, xrh, rsh_h, rsh_l);
+
     vf_type rch_h, rch_l;
     horner_comp_quick(rch_h, rch_l, xx, rch, cosh_c0);
 
