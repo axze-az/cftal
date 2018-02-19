@@ -271,7 +271,7 @@ erf_k(arg_t<vf_type> xc)
         };
         vf_type i, j;
         horner_n2(i, j, xx, c_i, c_j);
-#else        
+#else
         vf_type i= horner(xx,
                           erf_i1_c21,
                           erf_i1_c19,
@@ -685,7 +685,7 @@ erfc_k(arg_t<vf_type> xc)
             erfc_i0_c3
         };
         i0h = horner(x2h, ci0);
-#else        
+#else
         i0h = horner(x2h,
                      erfc_i0_c23,
                      erfc_i0_c21,
@@ -1151,10 +1151,22 @@ tgamma_k(arg_t<vf_type> xc)
         z = _T::sel(xc_lt_0, -z, z);
     }
     // how does this error correction work?
+#if 1
     r += base_l * (-lanczos_ratfunc::g()) * r/base;
+#else
+    vf_type rl = base_l * (-lanczos_ratfunc::g()) * r/base;
+    d_ops::add12(r, rl, r, rl);
+#endif
     // calculate the base^z as base^(1/2 z)^2 to avoid overflows
     vf_type powh = base_type::pow_k(base,0.5*z);
+#if 1
     vf_type t= r * powh*powh;
+#else
+    vf_type th, tl;
+    d_ops::mul122(th, tl, powh, r, rl);
+    d_ops::mul122(th, tl, powh, th, tl);
+    vf_type t= th;
+#endif
     t = _T::sel(x0 < 0x1p-54, 1.0/xc, t);
     return t;
 }
