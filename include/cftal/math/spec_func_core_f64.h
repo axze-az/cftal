@@ -1150,22 +1150,19 @@ tgamma_k(arg_t<vf_type> xc)
         base_l = _T::sel(xc_lt_0, -base_l, base_l);
         z = _T::sel(xc_lt_0, -z, z);
     }
-    // how does this error correction work?
-#if 1
-    r += base_l * (-lanczos_ratfunc::g()) * r/base;
-#else
     vf_type rl = base_l * (-lanczos_ratfunc::g()) * r/base;
-    d_ops::add12(r, rl, r, rl);
-#endif
-    // calculate the base^z as base^(1/2 z)^2 to avoid overflows
-    vf_type powh = base_type::pow_k(base,0.5*z);
 #if 1
-    vf_type t= r * powh*powh;
-#else
+    d_ops::add12(r, rl, r, rl);
+    // calculate the base^z as base^(1/2 z)^2 to avoid overflows
+    vf_type powh= base_type::pow_k(base, 0.5*z);
     vf_type th, tl;
     d_ops::mul122(th, tl, powh, r, rl);
     d_ops::mul122(th, tl, powh, th, tl);
     vf_type t= th;
+#else
+    r += rl;
+    vf_type powh = base_type::pow_k(base,0.5*z);
+    vf_type t= r * powh*powh;
 #endif
     t = _T::sel(x0 < 0x1p-54, 1.0/xc, t);
     return t;
