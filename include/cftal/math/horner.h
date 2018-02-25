@@ -422,6 +422,7 @@ horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
 }
 
 template <typename _X, typename _C, std::size_t _N>
+__attribute__((optimize("no-unroll-loops")))
 void
 cftal::math::
 horner_comp(_X& y, _X& ye, _X x, const _C (&a)[_N])
@@ -511,7 +512,7 @@ inline
 __attribute__((always_inline))
 void
 cftal::math::
-horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
+horner_comp_qui ck(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
 {
     horner_comp_quick_s0(y, ye, x, cn, cnm1);
     // const _X _y=y;
@@ -520,6 +521,7 @@ horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
 }
 
 template <typename _X, typename _C, std::size_t _N>
+__attribute__((optimize("no-unroll-loops")))
 void
 cftal::math::
 horner_comp_quick(_X& y, _X& ye, _X x, const _C (&a)[_N])
