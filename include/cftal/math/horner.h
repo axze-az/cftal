@@ -590,6 +590,7 @@ template <std::size_t _N1HP, std::size_t _N2HP,
           typename _X,
           typename _C,
           std::size_t _N1, std::size_t _N2>
+__attribute__((optimize("no-unroll-loops")))
 _X
 cftal::math::
 eval_rational(_X xc,
