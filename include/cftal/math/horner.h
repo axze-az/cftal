@@ -129,7 +129,7 @@ namespace cftal {
         // assumes nothing about the coefficients
         template <typename _X, typename _C, std::size_t _N>
         void
-        horner_comp_sn(_X& y, _X& ye, _X x,  _X yi, _X yie,
+        horner_comp_sn(_X& y, _X& ye, _X x,  _X yi,
                        const _C (&a)[_N]);
 
         // compensated horner scheme
@@ -185,7 +185,7 @@ namespace cftal {
         // assumes |x*a[0]| < |a[1]|, |x*a[1]| < |a[2]| ..
         template <typename _X, typename _C, std::size_t _N>
         void
-        horner_comp_quick_sn(_X& y, _X& ye, _X x,  _X yi, _X yie,
+        horner_comp_quick_sn(_X& y, _X& ye, _X x, _X yi,
                              const _C (&a)[_N]);
 
         // evaluation of a rational function
@@ -437,13 +437,14 @@ horner_comp(_X& y, _X& ye, _X x, const _C (&a)[_N])
 }
 
 template <typename _X, typename _C, std::size_t _N>
+__attribute__((optimize("no-unroll-loops")))
 void
 cftal::math::
-horner_comp_sn(_X& y, _X& ye, _X x, _X yi, _X yie, const _C (&a)[_N])
+horner_comp_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
 {
     static_assert(_N > 0, "at least 1 array element required");
-    horner_comp_si(y, ye, x, yi, yie, a[0]);
-    for (std::size_t i=1; i < _N; ++i) {
+    horner_comp_s0(y, ye, x, yi, a[0]);
+    for (std::size_t i=0; i < _N; ++i) {
         horner_comp_si(y, ye, x, y, ye, a[i]);
     }
 }
@@ -536,13 +537,14 @@ horner_comp_quick(_X& y, _X& ye, _X x, const _C (&a)[_N])
 }
 
 template <typename _X, typename _C, std::size_t _N>
+__attribute__((optimize("no-unroll-loops")))
 void
 cftal::math::
-horner_comp_quick_sn(_X& y, _X& ye, _X x, _X yi, _X yie, const _C (&a)[_N])
+horner_comp_quick_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
 {
     static_assert(_N > 0, "at least 1 array element required");
-    horner_comp_quick_si(y, ye, x, yi, yie, a[0]);
-    for (std::size_t i=1; i < _N; ++i) {
+    horner_comp_quick_s0(y, ye, x, yi, a[0]);
+    for (std::size_t i=0; i < _N; ++i) {
         horner_comp_quick_si(y, ye, x, y, ye, a[i]);
     }
 }
