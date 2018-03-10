@@ -84,6 +84,9 @@ namespace cftal {
         using type = vec<_T, 1>;
     };
 
+    template <typename _T, std::size_t _N>
+    struct is_vec_specialized : public std::false_type {};
+
     using v1f64 = vec<double, 1>;
     using v2f64 = vec<double, 2>;
     using v4f64 = vec<double, 4>;

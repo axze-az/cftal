@@ -55,6 +55,9 @@ namespace cftal {
     };
 
     template <>
+    struct is_vec_specialized<double, 2> : public std::true_type {};
+
+    template <>
     struct mem< vec<double, 2> > {
         static
         vec<double, 2> load(const double* p, std::size_t n=2);

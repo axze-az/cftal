@@ -52,6 +52,8 @@ namespace cftal {
         using type = vec<uint64_t, 4>;
     };
 
+    template <>
+    struct is_vec_specialized<uint64_t, 4> : public std::true_type {};
 
     template <>
     struct mem< vec<uint64_t, 4> > {
