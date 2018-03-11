@@ -1237,13 +1237,13 @@ cftal::vec<float, _N>
 cftal::copysign(const vec<float, _N>& x, const vec<float, _N>& y)
 {
     // return abs(x) * sgn(y)
+    using v_t = vec<float, _N>;
 #if 1
     const float abs_msk=not_sign_f32_msk::v.f32();
     v_t abs_x=x & abs_msk;
     const float sgn_msk=sign_f32_msk::v.f32();
     v_t sgn_y=y & sgn_msk;
 #else
-    using v_t = vec<float, _N>;
     const float msk=not_sign_f32_msk::v.f32();
     v_t abs_x(x & msk);
     v_t sgn_y(andnot(v_t(msk), y));
