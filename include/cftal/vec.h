@@ -63,6 +63,7 @@
 
 #include <cftal/vec_double_n.h>
 #include <cftal/vec_float_n.h>
+#include <cftal/vec_math_funcs.h>
 
 #include <cftal/vec_cvt.h>
 #include <cftal/vec_cast.h>

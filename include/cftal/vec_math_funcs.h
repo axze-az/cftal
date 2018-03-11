@@ -8,6 +8,47 @@
 #define __CFTAL_VEC_MATH_FUNCS_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/types.h>
+#include <cftal/vec_t_n.h>
+
+namespace cftal {
+    namespace impl {
+
+        template <typename _T, std::size_t _N>
+        struct is_vec_math_func {
+            static
+            constexpr bool
+            fast() { return false; }
+        };
+
+        template <std::size_t _N>
+        struct is_vec_math_func<double, _N> {
+            static
+            constexpr bool
+            fast() {
+                return (is_vec_specialized<double, _N>::value ||
+                       (is_vec_specialized<double, _N/2>::value &&
+                        is_vec_specialized<int32_t, _N>::value));
+            }
+        };
+
+        template <std::size_t _N>
+        struct is_vec_math_func<float, _N> {
+            static
+            constexpr bool
+            fast() {
+                bool r=(is_vec_specialized<float, _N>::value ||
+                       (is_vec_specialized<float, _N/2>::value &&
+                        is_vec_specialized<int32_t, _N/2>::value));
+#if defined (__SSE__)
+                r &= _N != 2;
+#endif
+                return r;
+            }
+        };
+
+    }
+}
 
 // Local variables:
 // mode: c++

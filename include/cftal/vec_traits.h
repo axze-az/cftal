@@ -42,8 +42,8 @@ namespace cftal {
         split(const vec<double, _N> & a,
               vec<double, _N>& h,
               vec<double, _N>& l) {
-            const vec<double, _N> msk(
-                const_u64<0xf8000000U, 0xffffffffU>::v.f64());
+            const double msk=
+                const_u64<0xf8000000U, 0xffffffffU>::v.f64();
             h = a & msk;
             l = a - h;
         }
@@ -81,8 +81,8 @@ namespace cftal {
         split(const vec<float, _N> & a,
               vec<float, _N>& h,
               vec<float, _N>& l) {
-            const vec<float, _N> msk(
-                const_u32<0xfffff000U>::v.f32());
+            const float msk=
+                const_u32<0xfffff000U>::v.f32();
             h = a & msk;
             l = a - h;
         }

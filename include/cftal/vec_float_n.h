@@ -1219,7 +1219,7 @@ inline
 cftal::vec<float, _N>
 cftal::abs(const vec<float, _N>& v)
 {
-    const vec<float, _N> msk(not_sign_f32_msk::v.f32());
+    const float msk=not_sign_f32_msk::v.f32();
     return v & msk;
 }
 
@@ -1237,10 +1237,17 @@ cftal::vec<float, _N>
 cftal::copysign(const vec<float, _N>& x, const vec<float, _N>& y)
 {
     // return abs(x) * sgn(y)
+#if 1
+    const float abs_msk=not_sign_f32_msk::v.f32();
+    v_t abs_x=x & abs_msk;
+    const float sgn_msk=sign_f32_msk::v.f32();
+    v_t sgn_y=y & sgn_msk;
+#else
     using v_t = vec<float, _N>;
-    const v_t msk(not_sign_f32_msk::v.f32());
+    const float msk=not_sign_f32_msk::v.f32();
     v_t abs_x(x & msk);
-    v_t sgn_y(andnot(msk, y));
+    v_t sgn_y(andnot(v_t(msk), y));
+#endif
     return v_t(abs_x | sgn_y);
 }
 
@@ -1250,7 +1257,7 @@ cftal::vec<float, _N>
 cftal::mulsign(const vec<float, _N>& x, const vec<float, _N>& y)
 {
     using v_t = vec<float, _N>;
-    const v_t msk(sign_f32_msk::v.f32());
+    const float msk=sign_f32_msk::v.f32();
     v_t sgn_y = y & msk;
     return v_t(x ^ sgn_y);
 }
@@ -1586,7 +1593,7 @@ typename cftal::vec<float, _N>::mask_type
 cftal::isinf(const vec<float, _N>& x)
 {
     vec<float, _N> absx(abs(x));
-    const vec<float, _N> vm(exp_f32_msk::v.f32());
+    const float vm=exp_f32_msk::v.f32();
     return absx == vm;
 }
 
