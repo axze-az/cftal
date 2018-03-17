@@ -12,4 +12,4 @@
 #include <limits>
 
 // DEF_ELEM_FUNCS(cftal, v16f32, v16s32, float)
-DEF_SPEC_FUNCS(cftal, cftal, v16f32, v16s32, float)
+DEF_SPEC_FUNCS(cftal, cftal::math, v16f32, v16s32, float)

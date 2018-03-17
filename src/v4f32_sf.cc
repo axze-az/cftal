@@ -10,4 +10,4 @@
 #include "vec_def_math_spec_funcs.h"
 
 // DEF_ELEM_FUNCS(cftal, v4f32, v4s32, float)
-DEF_SPEC_FUNCS(cftal, cftal, v4f32, v4s32, float)
+DEF_SPEC_FUNCS(cftal, cftal::math, v4f32, v4s32, float)
