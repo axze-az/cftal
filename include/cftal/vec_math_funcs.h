@@ -41,7 +41,7 @@ namespace cftal {
                        (is_vec_specialized<float, _N/2>::value &&
                         is_vec_specialized<int32_t, _N/2>::value));
 #if defined (__SSE__)
-                // r &= _N != 2;
+                r &= _N != 2;
 #endif
                 return r;
             }
