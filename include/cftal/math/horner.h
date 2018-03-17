@@ -14,6 +14,10 @@
 
 namespace cftal {
     namespace math {
+
+        // please note: most arguments are by value to avoid
+        // problems with aliasing
+
         // arrays and containers contain c_n in C[0]
         template <typename _X, typename _C1, typename _C0>
         _X
