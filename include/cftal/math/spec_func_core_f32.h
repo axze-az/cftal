@@ -129,12 +129,23 @@ erf_k(arg_t<vf_type> xc)
         // x^11 : -0xb.1233p-14f
         const float erf_i0_c11=-6.7572575063e-04f;
         vf_type xx=x*x;
+#if 1
+        static const double c_y_i0[]= {
+            erf_i0_c11,
+            erf_i0_c9,
+            erf_i0_c7,
+            erf_i0_c5,
+            erf_i0_c3
+        };
+        vf_type i0h= horner(xx, c_y_i0)* xx;
+#else
         vf_type i0h= horner(xx,
                             erf_i0_c11,
                             erf_i0_c9,
                             erf_i0_c7,
                             erf_i0_c5,
                             erf_i0_c3)*xx;
+#endif
         vf_type i0l;
         d_ops::add212(i0h, i0l, erf_i0_c1h, erf_i0_c1l, i0h);
         d_ops::mul122(i0h, i0l, x, i0h, i0l);
@@ -172,6 +183,21 @@ erf_k(arg_t<vf_type> xc)
         // x^ : +0xap-3f
         const float erf_i1_x0=+1.2500000000e+00f;
         vf_type x_i1 = x - erf_i1_x0;
+#if 1
+        static const float c_i[]={
+            erf_i1_c10,
+            erf_i1_c9,
+            erf_i1_c8,
+            erf_i1_c7,
+            erf_i1_c6,
+            erf_i1_c5,
+            erf_i1_c4,
+            erf_i1_c3,
+            erf_i1_c2,
+            erf_i1_c1
+        };
+        vf_type y_i1= horner(x_i1, c_i)*x_i1;
+#else
         vf_type y_i1= horner(x_i1,
                              erf_i1_c10,
                              erf_i1_c9,
@@ -183,6 +209,7 @@ erf_k(arg_t<vf_type> xc)
                              erf_i1_c3,
                              erf_i1_c2,
                              erf_i1_c1)*x_i1;
+#endif
         y_i1 += erf_i1_c0l;
         y_i1 += erf_i1_c0h;
         y = _T::sel(x_in_i1, y_i1, y);
@@ -221,6 +248,21 @@ erf_k(arg_t<vf_type> xc)
         // x^ : +0x9.8p-2f
         const float erf_i2_x0=+2.3750000000e+00f;
         vf_type x_i2 = x - erf_i2_x0;
+#if 1
+        static const float c_i[]={
+            erf_i2_c10,
+            erf_i2_c9,
+            erf_i2_c8,
+            erf_i2_c7,
+            erf_i2_c6,
+            erf_i2_c5,
+            erf_i2_c4,
+            erf_i2_c3,
+            erf_i2_c2,
+            erf_i2_c1
+        };
+        vf_type y_i2= horner(x_i2, c_i)* x_i2;
+#else
         vf_type y_i2= horner(x_i2,
                              erf_i2_c10,
                              erf_i2_c9,
@@ -232,6 +274,7 @@ erf_k(arg_t<vf_type> xc)
                              erf_i2_c3,
                              erf_i2_c2,
                              erf_i2_c1)*x_i2;
+#endif
         y_i2 += erf_i2_c0l;
         y_i2 += erf_i2_c0h;
         y = _T::sel(x_in_i2, y_i2, y);
@@ -268,6 +311,21 @@ erf_k(arg_t<vf_type> xc)
         // x^ : +0xep-2f
         const float erf_i3_x0=+3.5000000000e+00f;
         vf_type x_i3 = x - erf_i3_x0;
+#if 1
+        static const float c_i[]={
+            erf_i3_c10,
+            erf_i3_c9,
+            erf_i3_c8,
+            erf_i3_c7,
+            erf_i3_c6,
+            erf_i3_c5,
+            erf_i3_c4,
+            erf_i3_c3,
+            erf_i3_c2,
+            erf_i3_c1
+        };
+        vf_type y_i3= horner(x_i3, c_i)*x_i3;
+#else
         vf_type y_i3= horner(x_i3,
                              erf_i3_c10,
                              erf_i3_c9,
@@ -279,6 +337,7 @@ erf_k(arg_t<vf_type> xc)
                              erf_i3_c3,
                              erf_i3_c2,
                              erf_i3_c1)*x_i3;
+#endif
         y_i3 += erf_i3_c0l;
         y_i3 += erf_i3_c0h;
         y=_T::sel(x_in_i3, y_i3, y);
@@ -334,12 +393,23 @@ erfc_k(arg_t<vf_type> xc)
         const float erfc_i0_c9=-5.0468514673e-03f;
         // x^11 : +0xa.643d6p-14f
         const float erfc_i0_c11=+6.3425058033e-04f;
+#if 1
+        static const float c_i0[]={
+            erfc_i0_c11,
+            erfc_i0_c9,
+            erfc_i0_c7,
+            erfc_i0_c5,
+            erfc_i0_c3
+        };
+        i0h = horner(x2h, c_i0);
+#else
         i0h = horner(x2h,
                      erfc_i0_c11,
                      erfc_i0_c9,
                      erfc_i0_c7,
                      erfc_i0_c5,
                      erfc_i0_c3);
+#endif
         horner_comp_quick(i0h, i0l, x2h, i0h, erfc_i0_c1);
         d_ops::mul122(i0h, i0l, x, i0h, i0l);
         d_ops::add122(i0h, i0l, erfc_i0_c0, i0h, i0l);
@@ -388,6 +458,22 @@ erfc_k(arg_t<vf_type> xc)
             vf_type i1h, i1l;
 #if 1
             vf_type x_i1_sqr= x_i1* x_i1;
+#if 1
+            const float c_e[]={
+                erfc_i1_c11,
+                erfc_i1_c9,
+                erfc_i1_c7,
+                erfc_i1_c5
+            };
+            const float c_o[]={
+                erfc_i1_c10,
+                erfc_i1_c8,
+                erfc_i1_c6,
+                erfc_i1_c4
+            };
+            vf_type e, o;
+            horner_n2(e, o, x_i1_sqr, c_e, c_o);
+#else
             vf_type e = horner(x_i1_sqr,
                                erfc_i1_c11,
                                erfc_i1_c9,
@@ -398,6 +484,7 @@ erfc_k(arg_t<vf_type> xc)
                                erfc_i1_c8,
                                erfc_i1_c6,
                                erfc_i1_c4);
+#endif
             i1h = horner(x_i1, e, o,
                          erfc_i1_c3,
                          erfc_i1_c2,
@@ -458,6 +545,22 @@ erfc_k(arg_t<vf_type> xc)
             vf_type i2h, i2l;
 #if 1
             vf_type x_i2_sqr= x_i2* x_i2;
+#if 1
+            const float c_e[]={
+                erfc_i2_c11,
+                erfc_i2_c9,
+                erfc_i2_c7,
+                erfc_i2_c5
+            };
+            const float c_o[]={
+                erfc_i2_c10,
+                erfc_i2_c8,
+                erfc_i2_c6,
+                erfc_i2_c4
+            };
+            vf_type e, o;
+            horner_n2(e, o, x_i2_sqr, c_e, c_o);
+#else
             vf_type e = horner(x_i2_sqr,
                                erfc_i2_c11,
                                erfc_i2_c9,
@@ -468,6 +571,7 @@ erfc_k(arg_t<vf_type> xc)
                                erfc_i2_c8,
                                erfc_i2_c6,
                                erfc_i2_c4);
+#endif
             i2h = horner(x_i2, e, o,
                          erfc_i2_c3,
                          erfc_i2_c2,
@@ -527,6 +631,25 @@ erfc_k(arg_t<vf_type> xc)
             vf_type inv_x=1.0/x;
 #if 1
             vf_type inv_x2= inv_x*inv_x;
+#if 1
+            const float c_e[]={
+                erfc_i3_c13,
+                erfc_i3_c11,
+                erfc_i3_c9,
+                erfc_i3_c7,
+                erfc_i3_c5
+            };
+            const float c_o[]={
+                erfc_i3_c12,
+                erfc_i3_c10,
+                erfc_i3_c8,
+                erfc_i3_c6,
+                erfc_i3_c4
+            };
+            vf_type e, o;
+            horner_n2(e, o, inv_x2, c_e, c_o);
+#else
+
             vf_type e=horner(inv_x2,
                              erfc_i3_c13,
                              erfc_i3_c11,
@@ -539,6 +662,7 @@ erfc_k(arg_t<vf_type> xc)
                              erfc_i3_c8,
                              erfc_i3_c6,
                              erfc_i3_c4);
+#endif
             vf_type i3h, i3l;
             i3h = horner(inv_x, e, o, erfc_i3_c3, erfc_i3_c2, erfc_i3_c1);
 #else
