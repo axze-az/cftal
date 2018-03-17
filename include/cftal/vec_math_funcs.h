@@ -30,8 +30,8 @@ namespace cftal {
                        (is_vec_specialized<double, _N/2>::value &&
                        is_vec_specialized<int32_t, _N>::value));
 #if defined (__tune_btver2__)
-                r = _N > 2 ? false : true;
-#endif                
+                r &= _N > 2 ? false : true;
+#endif
                 return r;
             }
         };
@@ -46,6 +46,9 @@ namespace cftal {
                         is_vec_specialized<int32_t, _N/2>::value));
 #if defined (__SSE__)
                 r &= _N != 2;
+#endif
+#if defined (__tune_btver2__)
+                r &= _N > 4 ? false : true;
 #endif
                 return r;
             }
