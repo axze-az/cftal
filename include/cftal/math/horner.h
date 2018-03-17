@@ -17,70 +17,63 @@ namespace cftal {
         // arrays and containers contain c_n in C[0]
         template <typename _X, typename _C1, typename _C0>
         _X
-        horner(const _X& x, const _C1& c1, const _C0& c0);
+        horner(_X x, _C1 c1, _C0 c0);
 
         template <typename _X,
                   typename _CN, typename _CNM1, typename ... _CS>
         _X
-        horner(const _X& x, const _CN& cn, const _CNM1& cnm1,
-               _CS... cs);
+        horner(_X x, _CN cn, _CNM1 cnm1, _CS... cs);
 
         // a_n in a[0]
         template <typename _X, typename _C>
         _X
-        horner(const _X& x, const _C& c);
+        horner(_X x, const _C& c);
 
         // a_n in a[0]
         template <typename _X, typename _C, std::size_t _N>
         _X
-        horner(const _X& x, const _C (&a)[_N]);
+        horner(_X x, const _C (&a)[_N]);
 
         template <typename _F, typename _C, std::size_t _N>
         d_real<_F>
-        horner(const d_real<_F>& x, const d_real<_C> (&a)[_N]);
+        horner(d_real<_F> x, const d_real<_C> (&a)[_N]);
 
         template <typename _F, typename _C, std::size_t _N>
         _F
-        horner(const _F& x, const d_real<_C> (&a)[_N]);
+        horner(_F x, const d_real<_C> (&a)[_N]);
 
         // polynomial with c1 = 1.0
         template <typename _X, typename _C0>
         _X
-        horner1(const _X& x, const _C0& c0);
+        horner1(_X x, _C0 c0);
 
         // polynomial with cn = 1.0
         template <typename _X,
                   typename _CNM1, typename ... _CS>
         _X
-        horner1(const _X& x, const _CNM1& cnm1, _CS... cs);
+        horner1(_X x, _CNM1 cnm1, _CS... cs);
 
         // a_n in a[0], b_n in b[0]
         template <typename _X, typename _C, std::size_t _N>
         void
-        horner_n2(_X& ya, _X& yb, const _X& x,
+        horner_n2(_X& ya, _X& yb, _X x,
                   const _C (&a)[_N], const _C (&b)[_N]);
 
 
         template <typename _X, typename _C1, typename _C0>
         void
         horner_n4(_X& y0, _X& y1, _X& y2, _X& y3,
-                  const _X& x0, const _X& x1,
-                  const _X& x2, const _X& x3,
-                  const _C1& c1_0, const _C1& c1_1,
-                  const _C1& c1_2, const _C1& c1_3,
-                  const _C0& c0_0, const _C0& c0_1,
-                  const _C0& c0_2, const _C0& c0_3);
+                  _X x0, _X x1, _X x2, _X x3,
+                  _C1 c1_0, _C1 c1_1, _C1 c1_2, _C1 c1_3,
+                  _C0 c0_0, _C0 c0_1, _C0 c0_2, _C0 c0_3);
 
         template <typename _X,
                   typename _CN, typename _CNM1, typename ... _CS>
         void
         horner_n4(_X& y0, _X& y1, _X& y2, _X& y3,
-                  const _X& x0, const _X& x1,
-                  const _X& x2, const _X& x3,
-                  const _CN& cn_0, const _CN& cn_1,
-                  const _CN& cn_2, const _CN& cn_3,
-                  const _CNM1& cnm1_0, const _CNM1& cnm1_1,
-                  const _CNM1& cnm1_2, const _CNM1& cnm1_3,
+                  _X x0, _X x1, _X x2, _X x3,
+                  _CN cn_0, _CN cn_1, _CN cn_2, _CN cn_3,
+                  _CNM1 cnm1_0, _CNM1 cnm1_1, _CNM1 cnm1_2, _CNM1 cnm1_3,
                   _CS... cs);
 
         // compensated horner scheme
@@ -88,18 +81,14 @@ namespace cftal {
         // setup step, assumes nothing about |x*c1| and |c0|
         template <typename _X, typename _C1, typename _C0>
         void
-        horner_comp_s0(_X& y, _X& ye,
-                       const _X& x,
-                       const _C1& c1, const _C0& c0);
+        horner_comp_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0);
 
         // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // next step, assumes nothing about |x*c1| and |c0|
         template <typename _X, typename _C1, typename _C0>
         void
-        horner_comp_si(_X& y, _X& ye,
-                       const _X& x,
-                       const _C1& c1h, const _C1& c1l, const _C0& c0);
+        horner_comp_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
 
         // compensated horner scheme
         // error free transformation of evaluation of polynomials
@@ -108,9 +97,7 @@ namespace cftal {
         template <typename _X, typename _CN, typename _CNM1,
                   typename ... _CS>
         void
-        horner_comp_si(_X& y, _X& ye,
-                       const _X& x,
-                       const _CN& cnh, const _CN& cnl, const _CNM1& cnm1,
+        horner_comp_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1,
                        _CS... cs);
 
         // compensated horner scheme
@@ -119,9 +106,7 @@ namespace cftal {
         // assumes nothing about |x*c_1| and |c_0|
         template <typename _X, typename _CN, typename _CNM1>
         void
-        horner_comp(_X& y, _X& ye,
-                    const _X& x,
-                    const _CN& c1, const _CNM1& c0);
+        horner_comp(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0);
 
         // compensated horner scheme
         // error free transformation of evaluation of polynomials
@@ -129,16 +114,14 @@ namespace cftal {
         template <typename _X, typename _CN, typename _CNM1,
                   typename ... _CS>
         void
-        horner_comp(_X& y, _X& ye,
-                    const _X& x, const _CN& cn, const _CNM1& cnm1,
+        horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
                     _CS... cs);
 
         // compensated horner scheme using a coefficient array
         // assumes nothing about the coefficients
         template <typename _X, typename _C, std::size_t _N>
         void
-        horner_comp(_X& y, _X& ye,
-                    const _X& x,
+        horner_comp(_X& y, _X& ye, _X x,
                     const _C (&a)[_N]);
 
         // compensated horner scheme using a coefficient array
@@ -146,7 +129,7 @@ namespace cftal {
         // assumes nothing about the coefficients
         template <typename _X, typename _C, std::size_t _N>
         void
-        horner_comp_sn(_X& y, _X& ye, const _X& x,  const _X& yi,
+        horner_comp_sn(_X& y, _X& ye, _X x,  _X yi,
                        const _C (&a)[_N]);
 
         // compensated horner scheme
@@ -154,17 +137,14 @@ namespace cftal {
         // setup step, assumes |x*c1| < |c0|
         template <typename _X, typename _C1, typename _C0>
         void
-        horner_comp_quick_s0(_X& y, _X& ye,
-                             const _X& x, const _C1& c1, const _C0& c0);
+        horner_comp_quick_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0);
 
         // compensated horner scheme
         // error free transformation of evaluation of polynomials
         // next step, assumes |x*c1| < |c0|
         template <typename _X, typename _C1, typename _C0>
         void
-        horner_comp_quick_si(_X& y, _X& ye,
-                             const _X& x,
-                             const _C1& c1h, const _C1& c1l, const _C0& c0);
+        horner_comp_quick_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0);
 
         // compensated horner scheme
         // error free transformation of evaluation of polynomials
@@ -173,11 +153,8 @@ namespace cftal {
         template <typename _X, typename _CN, typename _CNM1,
                   typename ... _CS>
         void
-        horner_comp_quick_si(_X& y, _X& ye,
-                             const _X& x,
-                             const _CN& cnh, const _CN& cnl,
-                             const _CNM1& cnm1,
-                             _CS... cs);
+        horner_comp_quick_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
+                             _CNM1 cnm1, _CS... cs);
 
         // compensated horner scheme
         // error free transformation of evaluation of polynomials
@@ -185,9 +162,7 @@ namespace cftal {
         // assumes  |x*c_1| < |c_0|
         template <typename _X, typename _CN, typename _CNM1>
         void
-        horner_comp_quick(_X& y, _X& ye,
-                          const _X& x,
-                          const _CN& c1, const _CNM1& c0);
+        horner_comp_quick(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0);
 
         // compensated horner scheme
         // error free transformation of evaluation of polynomials
@@ -195,17 +170,14 @@ namespace cftal {
         template <typename _X, typename _CN, typename _CNM1,
                   typename ... _CS>
         void
-        horner_comp_quick(_X& y, _X& ye,
-                          const _X& x,
-                          const _CN& cn, const _CNM1& cnm1,
+        horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1,
                           _CS... cs);
 
         // compensated horner scheme using a coefficient array
         // assumes |x*a[0]| < |a[1]|, |x*a[1]| < |a[2]| ..
         template <typename _X, typename _C, std::size_t _N>
         void
-        horner_comp_quick(_X& y, _X& ye,
-                          const _X& x,
+        horner_comp_quick(_X& y, _X& ye, _X x,
                           const _C (&a)[_N]);
 
         // compensated horner scheme using a coefficient array
@@ -213,8 +185,7 @@ namespace cftal {
         // assumes |x*a[0]| < |a[1]|, |x*a[1]| < |a[2]| ..
         template <typename _X, typename _C, std::size_t _N>
         void
-        horner_comp_quick_sn(_X& y, _X& ye,
-                             const _X& x, const _X& yi,
+        horner_comp_quick_sn(_X& y, _X& ye, _X x, _X yi,
                              const _C (&a)[_N]);
 
         // evaluation of a rational function
@@ -224,7 +195,7 @@ namespace cftal {
                   typename _C,
                   std::size_t _N1, std::size_t _N2>
         _X
-        eval_rational(const _X& xc,
+        eval_rational(_X xc,
                       const _C(&p)[_N1],
                       const _C(&q)[_N2]);
         // evaluation of a rational function using _N1HP and _N2HP
@@ -237,7 +208,7 @@ namespace cftal {
                   typename _C,
                   std::size_t _N1, std::size_t _N2>
         _X
-        eval_rational(const _X& xc,
+        eval_rational(_X xc,
                       const _C(&p)[_N1],
                       const _C(&q)[_N2],
                       _X* ql=nullptr);
@@ -246,7 +217,7 @@ namespace cftal {
 
 template <typename _X, typename _C1, typename _C0>
 _X
-cftal::math::horner(const _X& x, const _C1& c1, const _C0& c0)
+cftal::math::horner(_X x, _C1 c1, _C0 c0)
 {
     return x*c1 + c0;
 }
@@ -254,9 +225,7 @@ cftal::math::horner(const _X& x, const _C1& c1, const _C0& c0)
 template <typename _X,
           typename _CN, typename _CNM1, typename ... _CS>
 _X
-cftal::math::horner(const _X& x,
-                    const _CN& cn, const _CNM1& cnm1,
-                    _CS... cs)
+cftal::math::horner(_X x, _CN cn, _CNM1 cnm1, _CS... cs)
 {
     _X t = horner(x, cn, cnm1);
     _X r = horner(x, t, cs...);
@@ -265,7 +234,7 @@ cftal::math::horner(const _X& x,
 
 template <typename _X, typename _C>
 _X
-cftal::math::horner(const _X& x, const _C& c)
+cftal::math::horner(_X x, const _C& c)
 {
     auto b=std::cbegin(c);
     auto e=std::cend(c);
@@ -283,7 +252,7 @@ cftal::math::horner(const _X& x, const _C& c)
 
 template <typename _X, typename _C, std::size_t _N>
 _X
-cftal::math::horner(const _X& x, const _C (&a)[_N])
+cftal::math::horner(_X x, const _C (&a)[_N])
 {
     static_assert(_N > 0, "invalid call to horner(x, array)");
     _X r= _X(a[0]);
@@ -295,7 +264,7 @@ cftal::math::horner(const _X& x, const _C (&a)[_N])
 
 template <typename _F, typename _C, std::size_t _N>
 cftal::d_real<_F>
-cftal::math::horner(const d_real<_F>& x, const d_real<_C> (&a)[_N])
+cftal::math::horner(d_real<_F> x, const d_real<_C> (&a)[_N])
 {
     static_assert(
         _N > 0,
@@ -309,7 +278,7 @@ cftal::math::horner(const d_real<_F>& x, const d_real<_C> (&a)[_N])
 
 template <typename _F, typename _C, std::size_t _N>
 _F
-cftal::math::horner(const _F& x, const d_real<_C> (&a)[_N])
+cftal::math::horner(_F x, const d_real<_C> (&a)[_N])
 {
     static_assert(_N > 0, "invalid call to horner(_F, d_real<_C>(&a)[])");
     _F r= a[0].h();
@@ -322,7 +291,7 @@ cftal::math::horner(const _F& x, const d_real<_C> (&a)[_N])
 // polynomial with c1 = 1.0
 template <typename _X, typename _C0>
 _X
-cftal::math::horner1(const _X& x, const _C0& c0)
+cftal::math::horner1(_X x, _C0 c0)
 {
     return x + c0;
 }
@@ -330,7 +299,7 @@ cftal::math::horner1(const _X& x, const _C0& c0)
 // polynomial with cn = 1.0
 template <typename _X,typename _CNM1, typename ... _CS>
 _X
-cftal::math::horner1(const _X& x, const _CNM1& cnm1, _CS... cs)
+cftal::math::horner1(_X x, _CNM1 cnm1, _CS... cs)
 {
     _X t = horner1(x, cnm1);
     _X r = horner(x, t, cs...);
@@ -339,7 +308,7 @@ cftal::math::horner1(const _X& x, const _CNM1& cnm1, _CS... cs)
 
 template <typename _X, typename _C, std::size_t _N>
 void
-cftal::math::horner_n2(_X& ya, _X& yb, const _X& x,
+cftal::math::horner_n2(_X& ya, _X& yb, _X x,
                        const _C (&a)[_N], const _C (&b)[_N])
 {
     static_assert(_N > 0, "invalid call to horner(ya, ybm x, array, array)");
@@ -356,14 +325,10 @@ cftal::math::horner_n2(_X& ya, _X& yb, const _X& x,
 
 template <typename _X, typename _C1, typename _C0>
 void
-cftal::math::
-horner_n4(_X& y0, _X& y1, _X& y2, _X& y3,
-          const _X& x0, const _X& x1,
-          const _X& x2, const _X& x3,
-          const _C1& c1_0, const _C1& c1_1,
-          const _C1& c1_2, const _C1& c1_3,
-          const _C0& c0_0, const _C0& c0_1,
-          const _C0& c0_2, const _C0& c0_3)
+cftal::math::horner_n4(_X& y0, _X& y1, _X& y2, _X& y3,
+                       _X x0, _X x1, _X x2, _X x3,
+                       _C1 c1_0, _C1 c1_1, _C1 c1_2, _C1 c1_3,
+                       _C0 c0_0, _C0 c0_1, _C0 c0_2, _C0 c0_3)
 {
     y0 = horner(x0, c1_0, c0_0);
     y1 = horner(x1, c1_1, c0_1);
@@ -376,11 +341,9 @@ template <typename _X,
 void
 cftal::math::
 horner_n4(_X& y0, _X& y1, _X& y2, _X& y3,
-          const _X& x0, const _X& x1, const _X& x2, const _X& x3,
-          const _CN& cn_0, const _CN& cn_1,
-          const _CN& cn_2, const _CN& cn_3,
-          const _CNM1& cnm1_0, const _CNM1& cnm1_1,
-          const _CNM1& cnm1_2, const _CNM1& cnm1_3,
+          _X x0, _X x1, _X x2, _X x3,
+          _CN cn_0, _CN cn_1, _CN cn_2, _CN cn_3,
+          _CNM1 cnm1_0, _CNM1 cnm1_1, _CNM1 cnm1_2, _CNM1 cnm1_3,
           _CS... cs)
 {
     horner_n4(y0, y1, y2, y3, x0, x1, x2, x3,
@@ -394,9 +357,7 @@ template <typename _X, typename _C1, typename _C0>
 inline
 __attribute__((always_inline))
 void
-cftal::math::
-horner_comp_s0(_X& y, _X& ye,
-               const _X& x, const _C1& c1, const _C0& c0)
+cftal::math::horner_comp_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
@@ -411,10 +372,7 @@ template <typename _X, typename _C1, typename _C0>
 inline
 __attribute__((always_inline))
 void
-cftal::math::
-horner_comp_si(_X& y, _X& ye,
-               const _X& x,
-               const _C1& c1h, const _C1& c1l, const _C0& c0)
+cftal::math::horner_comp_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
@@ -431,10 +389,7 @@ inline
 __attribute__((always_inline))
 void
 cftal::math::
-horner_comp_si(_X& y, _X& ye,
-               const _X& x,
-               const _CN& cnh, const _CN& cnl, const _CNM1& cnm1,
-               _CS ... cs)
+horner_comp_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl, _CNM1 cnm1, _CS ... cs)
 {
     horner_comp_si(y, ye, x, cnh, cnl, cnm1);
     // const _X _y=y;
@@ -447,8 +402,7 @@ inline
 __attribute__((always_inline))
 void
 cftal::math::
-horner_comp(_X& y, _X& ye,
-            const _X& x, const _CN& c1, const _CNM1& c0)
+horner_comp(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
 {
     horner_comp_s0(y, ye, x, c1, c0);
 }
@@ -459,9 +413,7 @@ inline
 __attribute__((always_inline))
 void
 cftal::math::
-horner_comp(_X& y, _X& ye,
-            const _X& x, const _CN& cn, const _CNM1& cnm1,
-            _CS ... cs)
+horner_comp(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
 {
     horner_comp_s0(y, ye, x, cn, cnm1);
     // const _X _y=y;
@@ -473,7 +425,7 @@ template <typename _X, typename _C, std::size_t _N>
 __attribute__((optimize("no-unroll-loops")))
 void
 cftal::math::
-horner_comp(_X& y, _X& ye, const _X& x, const _C (&a)[_N])
+horner_comp(_X& y, _X& ye, _X x, const _C (&a)[_N])
 {
     static_assert(_N > 1, "at least 2 array elements required");
     horner_comp_s0(y, ye, x, a[0], a[1]);
@@ -488,7 +440,7 @@ template <typename _X, typename _C, std::size_t _N>
 __attribute__((optimize("no-unroll-loops")))
 void
 cftal::math::
-horner_comp_sn(_X& y, _X& ye, const _X& x, const _X& yi, const _C (&a)[_N])
+horner_comp_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
 {
     static_assert(_N > 0, "at least 1 array element required");
     horner_comp_s0(y, ye, x, yi, a[0]);
@@ -503,8 +455,7 @@ inline
 __attribute__((always_inline))
 void
 cftal::math::
-horner_comp_quick_s0(_X& y, _X& ye,
-                     const _X& x, const _C1& c1, const _C0& c0)
+horner_comp_quick_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
@@ -520,9 +471,7 @@ inline
 __attribute__((always_inline))
 void
 cftal::math::
-horner_comp_quick_si(_X& y, _X& ye,
-                     const _X& x,
-                     const _C1& c1h, const _C1& c1l, const _C0& c0)
+horner_comp_quick_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 {
     using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
@@ -539,10 +488,8 @@ inline
 __attribute__((always_inline))
 void
 cftal::math::
-horner_comp_quick_si(_X& y, _X& ye,
-                     const _X& x,
-                     const _CN& cnh, const _CN& cnl, const _CNM1& cnm1,
-                     _CS ... cs)
+horner_comp_quick_si(_X& y, _X& ye, _X x, _CN cnh, _CN cnl,
+                     _CNM1 cnm1, _CS ... cs)
 {
     horner_comp_quick_si(y, ye, x, cnh, cnl, cnm1);
     // const _X _y=y;
@@ -555,8 +502,7 @@ inline
 __attribute__((always_inline))
 void
 cftal::math::
-horner_comp_quick(_X& y, _X& ye,
-                  const _X& x, const _CN& c1, const _CNM1& c0)
+horner_comp_quick(_X& y, _X& ye, _X x, _CN c1, _CNM1 c0)
 {
     horner_comp_quick_s0(y, ye, x, c1, c0);
 }
@@ -567,9 +513,7 @@ inline
 __attribute__((always_inline))
 void
 cftal::math::
-horner_comp_quick(_X& y, _X& ye,
-                  const _X& x, const _CN& cn, const _CNM1& cnm1,
-                  _CS ... cs)
+horner_comp_quick(_X& y, _X& ye, _X x, _CN cn, _CNM1 cnm1, _CS ... cs)
 {
     horner_comp_quick_s0(y, ye, x, cn, cnm1);
     // const _X _y=y;
@@ -581,7 +525,7 @@ template <typename _X, typename _C, std::size_t _N>
 __attribute__((optimize("no-unroll-loops")))
 void
 cftal::math::
-horner_comp_quick(_X& y, _X& ye, const _X& x, const _C (&a)[_N])
+horner_comp_quick(_X& y, _X& ye, _X x, const _C (&a)[_N])
 {
     static_assert(_N > 1, "at least 2 array elements required");
     horner_comp_quick_s0(y, ye, x, a[0], a[1]);
@@ -596,8 +540,7 @@ template <typename _X, typename _C, std::size_t _N>
 __attribute__((optimize("no-unroll-loops")))
 void
 cftal::math::
-horner_comp_quick_sn(_X& y, _X& ye,
-                     const _X& x, const _X& yi, const _C (&a)[_N])
+horner_comp_quick_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
 {
     static_assert(_N > 0, "at least 1 array element required");
     horner_comp_quick_s0(y, ye, x, yi, a[0]);
@@ -611,7 +554,7 @@ template <typename _X,
           std::size_t _N1, std::size_t _N2>
 _X
 cftal::math::
-eval_rational(const _X& xc,
+eval_rational(_X xc,
               const _C (&p)[_N1],
               const _C (&q)[_N2])
 {
@@ -652,7 +595,7 @@ template <std::size_t _N1HP, std::size_t _N2HP,
 __attribute__((optimize("no-unroll-loops")))
 _X
 cftal::math::
-eval_rational(const _X& xc,
+eval_rational(_X xc,
               const _C (&p)[_N1],
               const _C (&q)[_N2],
               _X* pql)
