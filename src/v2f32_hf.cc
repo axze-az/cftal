@@ -10,4 +10,4 @@
 #include <cmath>
 #include <limits>
 
-DEF_HALF_FUNCS(cftal, v2f32, v2s32, float)
+DEF_HALF_FUNCS(cftal, cftal::half_math, v2f32, v2s32, float)

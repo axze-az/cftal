@@ -12,5 +12,5 @@
 #include <cmath>
 #include <limits>
 
-DEF_ELEM_FUNCS(cftal, v8f32, v8s32, float)
+DEF_ELEM_FUNCS(cftal, cftal, v8f32, v8s32, float)
 // DEF_SPEC_FUNCS(cftal, v8f32, v8s32, float)

@@ -30,6 +30,7 @@ namespace cftal {
     };
 
     template <typename _T>
+    __attribute__((__always_inline__))
     inline
     const _T&
     eval(const _T& v) {
@@ -37,6 +38,7 @@ namespace cftal {
     }
 
     template <class _OP, class _L, class _R>
+    __attribute__((__always_inline__))
     inline
     typename _OP::full_type
     eval(const expr<_OP, _L, _R>& e) {
@@ -44,6 +46,7 @@ namespace cftal {
     }
 
     template <class _OP, class _L>
+    __attribute__((__always_inline__))
     inline
     typename _OP::full_type
     eval(const expr<_OP, _L, void>& e) {

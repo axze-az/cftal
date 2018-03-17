@@ -179,17 +179,17 @@ endif(LIBM)
 if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         #set (CMAKE_CXX_FLAGS_RELEASE
-        #    "${CMAKE_CXX_FLAGS_RELEASE} -Winline")
+        #     "${CMAKE_CXX_FLAGS_RELEASE} -Winline")
         #set (CMAKE_CXX_FLAGS_RELEASE
-        #    "${CMAKE_CXX_FLAGS_RELEASE} --param inline-unit-growth=1000")
+        #     "${CMAKE_CXX_FLAGS_RELEASE} --param inline-unit-growth=1000")
         #set (CMAKE_CXX_FLAGS_RELEASE
-        #    "${CMAKE_CXX_FLAGS_RELEASE} --param large-function-growth=1000")
+        #     "${CMAKE_CXX_FLAGS_RELEASE} --param large-function-growth=1000")
         #set (CMAKE_CXX_FLAGS_RELEASE
-        #    "${CMAKE_CXX_FLAGS_RELEASE} --param max-inline-insns-single=8192")
+        #     "${CMAKE_CXX_FLAGS_RELEASE} --param max-inline-insns-single=8192")
         #set (CMAKE_CXX_FLAGS_RELEASE
-        #    "${CMAKE_CXX_FLAGS_RELEASE} --param large-stack-frame=16384")
+        #     "${CMAKE_CXX_FLAGS_RELEASE} --param large-stack-frame=16384")
         #set (CMAKE_CXX_FLAGS_RELEASE
-        #    "${CMAKE_CXX_FLAGS_RELEASE} --param large-stack-frame-growth=1000")
+        #     "${CMAKE_CXX_FLAGS_RELEASE} --param large-stack-frame-growth=1000")
     endif()
 endif()
 
