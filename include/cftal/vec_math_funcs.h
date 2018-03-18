@@ -47,8 +47,10 @@ namespace cftal {
 #if defined (__SSE__)
                 r &= _N != 2;
 #endif
+#if defined (__GNUC__) && !defined (__clang__)
 #if defined (__tune_btver2__)
                 r &= _N > 4 ? false : true;
+#endif
 #endif
                 return r;
             }
