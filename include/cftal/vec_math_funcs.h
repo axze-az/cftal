@@ -29,7 +29,7 @@ namespace cftal {
                 bool r=(is_vec_specialized<double, _N>::value ||
                        (is_vec_specialized<double, _N/2>::value &&
                        is_vec_specialized<int32_t, _N>::value));
-#if defined (__tune_btver2__) || defined  (__tune_k8__)
+#if defined (__tune_btver2__) || defined (__tune_bdver3__)
                 r &= _N > 2 ? false : true;
 #endif
                 return r;
@@ -47,7 +47,7 @@ namespace cftal {
 #if defined (__SSE__)
                 r &= _N != 2;
 #endif
-#if defined (__tune_btver2__) || defined (__tune_k8__)
+#if defined (__tune_btver2__) || defined (__tune_bdver3__)
                 r &= _N > 4 ? false : true;
 #endif
                 return r;
