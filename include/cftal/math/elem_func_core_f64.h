@@ -1746,7 +1746,7 @@ log_k_poly(arg_t<vf_type> z)
     const double log_c16=+1.3288089391701582431260e-01;
 
     vf_type w = z*z;
-#if 1
+#if 0
     static const double ct1[]={
         log_c14,
         log_c10,
