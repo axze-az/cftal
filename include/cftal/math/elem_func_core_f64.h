@@ -1746,7 +1746,7 @@ log_k_poly(arg_t<vf_type> z)
     const double log_c16=+1.3288089391701582431260e-01;
 
     vf_type w = z*z;
-#if 0
+#if 1
     static const double ct1[]={
         log_c14,
         log_c10,
@@ -1763,11 +1763,11 @@ log_k_poly(arg_t<vf_type> z)
     horner_n2(t1, t2, w, ct1, ct2);
     t1 *= z;
 #else
-    vf_type t1= z*horner(w,
-                         log_c14,
-                         log_c10,
-                         log_c6,
-                         log_c2);
+    vf_type t1= horner(w,
+                       log_c14,
+                       log_c10,
+                       log_c6,
+                       log_c2) * z;
     vf_type t2= horner(w,
                        log_c16,
                        log_c12,
