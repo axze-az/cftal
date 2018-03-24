@@ -1858,6 +1858,7 @@ log_k(arg_t<vf_type> xc, log_func func)
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     hx += 0x3ff00000 - 0x3fe6a09e;
     k += (hx>>20) - _T::bias();
+    vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
     hx = (hx&0x000fffff) + 0x3fe6a09e;
     vf_type xr = _T::combine_words(lx, hx);
 
@@ -1868,7 +1869,6 @@ log_k(arg_t<vf_type> xc, log_func func)
 
     vf_type R = log_k_poly(z);
     vf_type res;
-    vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
     if (func == log_func::c_log_e) {
         using ctbl=impl::d_real_constants<d_real<double>, double>;
         vf_type log_x=s*(hfsq+R);
