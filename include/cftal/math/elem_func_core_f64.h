@@ -257,7 +257,7 @@ namespace cftal {
                 c_log_10
             };
 
-            template <log_func e>
+            template <log_func _F>
             static
             vf_type
             __log_k(arg_t<vf_type> x);

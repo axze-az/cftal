@@ -228,13 +228,18 @@ namespace cftal {
                 c_log_10
             };
 
+            template <log_func _F>
             static
             vf_type
-            log_k(arg_t<vf_type> x, log_func f=log_func::c_log_e);
+            __log_k(arg_t<vf_type> x);
 
             static
             vf_type
             log1p_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            log_k(arg_t<vf_type> x);
 
             static
             vf_type
@@ -1622,10 +1627,11 @@ log_k_poly(arg_t<vf_type> z)
 }
 
 template <typename _T>
+template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-log_k(arg_t<vf_type> xc, log_func func)
+__log_k(arg_t<vf_type> xc)
 {
 /*
  * ====================================================
@@ -1710,7 +1716,7 @@ log_k(arg_t<vf_type> xc, log_func func)
     vf_type R = log_k_poly(z);
     vf_type res;
     vf_type kf = _T::cvt_i_to_f(k);
-    if (func == log_func::c_log_e) {
+    if (_LFUNC == log_func::c_log_e) {
         using ctbl=impl::d_real_constants<d_real<float>, float>;
         vf_type log_x=s*(hfsq+R);
         log_x += kf*ctbl::m_ln2_cw[1];
@@ -1718,7 +1724,7 @@ log_k(arg_t<vf_type> xc, log_func func)
         log_x += f;
         log_x += kf*ctbl::m_ln2_cw[0];
         res = log_x;
-    } else if (func == log_func::c_log_10) {
+    } else if (_LFUNC == log_func::c_log_10) {
         const float ivln10hi  =  4.3432617188e-01f; /* 0x3ede6000 */
         const float ivln10lo  = -3.1689971365e-05f; /* 0xb804ead9 */
         const float log10_2hi =  3.0102920532e-01f; /* 0x3e9a2080 */
@@ -1846,6 +1852,15 @@ template <typename _T>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
+log_k(arg_t<vf_type> xc)
+{
+    return __log_k<log_func::c_log_e>(xc);
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
 log2_k(arg_t<vf_type> xc)
 {
 /*
@@ -1855,7 +1870,7 @@ log2_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
-    return log_k(xc, log_func::c_log_2);
+    return __log_k<log_func::c_log_2>(xc);
 }
 
 template <typename _T>
@@ -1871,7 +1886,7 @@ log10_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
  */
-    return log_k(xc, log_func::c_log_10);
+    return __log_k<log_func::c_log_10>(xc);
 }
 
 template <typename _T>
@@ -2739,7 +2754,7 @@ asinh_k(arg_t<vf_type> xc)
     vf_type log_arg=_T::sel(x_gt_0x1p12,
                             x,
                             2.0f * x+ 1.0f/(sqrt(vf_type(t+1.0f))+x));
-    vf_type yl= log_k(log_arg, log_func::c_log_e);
+    vf_type yl= __log_k<log_func::c_log_e>(log_arg);
     yl += add_2_log;
     // |x| < 2.0
     vf_type log1p_arg= x+t/(1.0f+sqrt(vf_type(1.0f+t)));
@@ -2796,7 +2811,7 @@ acosh_k(arg_t<vf_type> xc)
     vf_type log_arg=_T::sel(x_gt_0x1p12,
                             x,
                             2.0f*x - 1.0f/(x+sqrt(vf_type(x*x-1.0f))));
-    vf_type yl= log_k(log_arg, log_func::c_log_e);
+    vf_type yl= __log_k<log_func::c_log_e>(log_arg);
     yl += add_2_log;
 
     vf_type xm1l;
