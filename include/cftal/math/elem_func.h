@@ -284,6 +284,7 @@ cbrt(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 root12(arg_t<vf_type> x)
@@ -415,7 +416,6 @@ exp10m1(arg_t<vf_type> d)
 
 template <typename _FLOAT_T, typename _T>
 inline
-__attribute__((__always_inline__))
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 sinh(arg_t<vf_type> x)
@@ -432,7 +432,6 @@ sinh(arg_t<vf_type> x)
 
 template <typename _FLOAT_T, typename _T>
 inline
-__attribute__((__always_inline__))
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 cosh(arg_t<vf_type> x)
@@ -447,7 +446,6 @@ cosh(arg_t<vf_type> x)
 
 template <typename _FLOAT_T, typename _T>
 inline
-__attribute__((__always_inline__))
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 tanh(arg_t<vf_type> x)
@@ -607,6 +605,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 void
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 sincos(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
@@ -617,6 +616,7 @@ sincos(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 sin(arg_t<vf_type> d)
@@ -627,6 +627,7 @@ sin(arg_t<vf_type> d)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 cos(arg_t<vf_type> d)
@@ -637,6 +638,7 @@ cos(arg_t<vf_type> d)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 tan(arg_t<vf_type> d)
@@ -649,6 +651,7 @@ tan(arg_t<vf_type> d)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atan2(arg_t<vf_type> y, arg_t<vf_type> x)
@@ -727,6 +730,7 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
@@ -740,6 +744,7 @@ atan(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 asin(arg_t<vf_type> x)
@@ -758,6 +763,7 @@ asin(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 acos(arg_t<vf_type> x)
@@ -773,6 +779,7 @@ acos(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 asinh(arg_t<vf_type> x)
@@ -784,6 +791,7 @@ asinh(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 acosh(arg_t<vf_type> x)
@@ -796,6 +804,7 @@ acosh(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atanh(arg_t<vf_type> x)
@@ -810,6 +819,7 @@ atanh(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 exp_mx2(arg_t<vf_type> x)
@@ -818,6 +828,7 @@ exp_mx2(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 exp_px2(arg_t<vf_type> x)
@@ -826,6 +837,7 @@ exp_px2(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 exp2_mx2(arg_t<vf_type> x)
@@ -834,6 +846,7 @@ exp2_mx2(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 exp2_px2(arg_t<vf_type> x)
@@ -842,6 +855,7 @@ exp2_px2(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 exp10_mx2(arg_t<vf_type> x)
@@ -850,6 +864,7 @@ exp10_mx2(arg_t<vf_type> x)
 }
 
 template <typename _FLOAT_T, typename _TRAITS_T>
+inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 exp10_px2(arg_t<vf_type> x)

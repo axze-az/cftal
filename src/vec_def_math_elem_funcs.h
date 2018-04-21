@@ -18,6 +18,7 @@
 #define DEF_ELEM_FUNCS(nsr, ns, vec_float, vec_int, real_type)          \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::rsqrt(arg<vec_float>::type a)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -25,6 +26,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::cbrt(arg<vec_float>::type a)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -32,6 +34,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::root12(arg<vec_float>::type a)                                  \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -39,6 +42,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::frexp(arg<vec_float>::type d, vec_int* pe)                      \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -46,6 +50,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::ldexp(arg<vec_float>::type d, arg<vec_int>::type q)             \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -53,6 +58,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_int                                                        \
+    __attribute__((__flatten__))                                        \
     ns::ilogbp1(arg<vec_float>::type d)                                 \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -60,6 +66,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_int                                                        \
+    __attribute__((__flatten__))                                        \
     ns::ilogb(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -67,6 +74,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp(arg<vec_float>::type d)                                     \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -74,6 +82,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::expm1(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -81,6 +90,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp2(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -88,6 +98,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp2m1(arg<vec_float>::type d)                                  \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -95,6 +106,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp10(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -102,6 +114,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp10m1(arg<vec_float>::type d)                                 \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -109,6 +122,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::atan2(arg<vec_float>::type x, arg<vec_float>::type y)           \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -116,6 +130,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::atan(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -123,6 +138,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::asin(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -130,6 +146,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::acos(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -137,6 +154,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::log(arg<vec_float>::type d)                                     \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -144,6 +162,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::log1p(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -151,6 +170,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::log10(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -158,6 +178,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::log2(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -165,6 +186,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::sinh(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -172,6 +194,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::cosh(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -179,6 +202,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::tanh(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -186,6 +210,7 @@
     }                                                                   \
                                                                         \
     void                                                                \
+    __attribute__((__flatten__))                                        \
     ns::sincos(arg<vec_float>::type d,                                  \
                vec_float* psin, vec_float* pcos)                        \
     {                                                                   \
@@ -194,6 +219,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::sin(arg<vec_float>::type d)                                     \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -201,6 +227,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::cos(arg<vec_float>::type d)                                     \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -208,6 +235,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::tan(arg<vec_float>::type d)                                     \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -215,6 +243,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::asinh(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -222,6 +251,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::acosh(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -229,6 +259,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::atanh(arg<vec_float>::type d)                                   \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -236,6 +267,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp_mx2(arg<vec_float>::type d)                                 \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -243,6 +275,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp_px2(arg<vec_float>::type d)                                 \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -250,6 +283,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp2_mx2(arg<vec_float>::type d)                                \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -257,6 +291,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp2_px2(arg<vec_float>::type d)                                \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -264,6 +299,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp10_mx2(arg<vec_float>::type d)                               \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -271,6 +307,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp10_px2(arg<vec_float>::type d)                               \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -278,6 +315,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::pow(arg<vec_float>::type b, arg<vec_float>::type e)             \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -285,6 +323,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::nextafter(arg<vec_float>::type b, arg<vec_float>::type e)       \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
@@ -292,6 +331,7 @@
     }                                                                   \
                                                                         \
     nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::hypot(arg<vec_float>::type b, arg<vec_float>::type e)           \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \

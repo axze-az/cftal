@@ -2993,6 +2993,7 @@ __tan_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl, arg_t<vi2_type> q)
 }
 
 template <typename _T>
+inline
 void
 cftal::math::elem_func_core<double, _T>::
 __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
@@ -3021,7 +3022,7 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 }
 
 template <typename _T>
-__attribute__((flatten))
+inline
 void
 cftal::math::elem_func_core<double, _T>::
 sin_cos_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
@@ -3032,7 +3033,7 @@ sin_cos_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 }
 
 template <typename _T>
-__attribute__((flatten))
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 tan_k(arg_t<vf_type> xc)
@@ -3044,7 +3045,7 @@ tan_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-__attribute__((flatten))
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 atan_k(arg_t<vf_type> xc)
@@ -3161,6 +3162,7 @@ atan_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
@@ -3186,7 +3188,7 @@ atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
 }
 
 template <typename _T>
-__attribute__((flatten))
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 asin_k_poly(arg_t<vf_type> x2)
@@ -3238,7 +3240,7 @@ asin_k_poly(arg_t<vf_type> x2)
 }
 
 template <typename _T>
-__attribute__((flatten))
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 asin_k(arg_t<vf_type> xc)
@@ -3295,6 +3297,7 @@ asin_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 acos_k(arg_t<vf_type> xc)
@@ -3351,6 +3354,7 @@ acos_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 asinh_k(arg_t<vf_type> xc)
@@ -3428,6 +3432,7 @@ asinh_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 acosh_k(arg_t<vf_type> xc)
@@ -3508,6 +3513,7 @@ acosh_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 atanh_k(arg_t<vf_type> xc)
@@ -3568,6 +3574,7 @@ atanh_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
