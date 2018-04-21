@@ -46,6 +46,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
         result_cache& operator=(const result_cache&)= delete;
         result_cache& operator=(result_cache&&)= delete;
         // file as argument
+        explicit
         result_cache(const std::string& fn);
         // move constructor
         result_cache(result_cache&& r);
@@ -73,6 +74,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
     struct f1_64_cache_entry {
         std::string _name;
         f1_f64_map _m64;
+        explicit
         f1_64_cache_entry(const std::string& name)
             : _name(name),
               _m64(file_name(name, "f64")) {
@@ -82,6 +84,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
     struct f1_32_cache_entry {
         std::string _name;
         f1_f32_map _m32;
+        explicit
         f1_32_cache_entry(const std::string& name)
             : _name(name),
               _m32(file_name(name, "f32")) {

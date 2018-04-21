@@ -34,13 +34,13 @@ cftal::test::udiv_32_one(uint32_t v,
                          rng_u32_t& rng,
                          uint64_t* timings)
 {
-    uint64_t t0, t1, t2;
 #if defined (__tune_atom__)
     const int N= 2000;
 #else
     const int N= 20000;
 #endif
     for (int i=0; i<N; ++i) {
+        uint64_t t0, t1, t2;
         uint32_t ul= rng.next();
         uint32_t uh= rng.next();
 

@@ -583,6 +583,7 @@ __m128i cftal::x86::div_s64::v(__m128i x, __m128i y, __m128i* rem)
 }
 #endif
 
+#if 0
 extern "C" double cvt_u32_double(uint32_t t);
 extern "C" double cvt_u64_double(uint64_t t);
 extern "C" uint64_t cvt_double_uint64(double x);
@@ -609,4 +610,5 @@ uint32_t cvt_double_uint32(double x)
 {
     return uint32_t(x);
 }
+#endif
 #endif

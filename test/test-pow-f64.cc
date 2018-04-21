@@ -58,7 +58,6 @@ int main(int argc, char** argv)
     us=std::make_shared<ulp_stats>();
     func_domain<double> d1=std::make_pair(0.0, 20.0);
     func_domain<double> d2=std::make_pair(-200.0, 200.0);
-    us= std::make_shared<ulp_stats>();
     rc &= of_fp_func_2_up_to<
         double, _N, check_pow<double> >::v(st, d1, d2, speed_only,
                                            cmp_ulp<double>(ulp, us),

@@ -55,8 +55,7 @@ cftal::test::check_ldexp<_T, _N>::v(_T a, int32_t e)
     _T r= std::ldexp(a, e);
     vec<int32_t, _N> ve=e;
     vec<_T, _N> vr= ldexp(va, ve);
-    bool rc=true;
-    rc= check(vr, r, "ldexp");
+    bool rc=check(vr, r, "ldexp");
     if (rc==false) {
         std::cerr << "ldexp("
                   << std::setprecision(22) << std::hexfloat
@@ -128,9 +127,8 @@ cftal::test::check_ldexp<_T, _N>::v()
 int main()
 {
     std::cerr << std::setprecision(22) << std::hexfloat;
-    bool rd=true;
     std::cout << "testing ldexp vXf64" << std::endl;
-    rd=cftal::test::check_ldexp_up_to<double, 8>::v();
+    bool rd=cftal::test::check_ldexp_up_to<double, 8>::v();
     if (rd==false)
         std::cerr << "double test failed" << std::endl;
     std::cout << "testing ldexp vXf32" << std::endl;

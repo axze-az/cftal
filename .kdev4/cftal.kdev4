@@ -2,9 +2,9 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
 
 [CMake]
-Build Directory Count=7
+Build Directory Count=8
 Current Build Directory Index=0
-Current Build Directory Index-Host System=4
+Current Build Directory Index-Host System=7
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -68,6 +68,27 @@ CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
 Install Directory=file:///usr/local
+
+[CMake][CMake Build Directory 7]
+Build Directory Path=/home/axel/projects/cpplib/cftal/gcc8
+Build Type=release
+CMake Binary=/usr/bin/cmake
+CMake Executable=/usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=/usr/local
+Runtime=Host System
+
+[Cppcheck]
+checkConfig=true
+checkInformation=true
+checkPerformance=true
+checkPortability=true
+checkStyle=true
+checkUnusedFunction=true
+forceCheck=true
+inconclusiveAnalysis=true
+useSystemIncludes=true
 
 [CustomDefinesAndIncludes][ProjectPath0]
 Path=.

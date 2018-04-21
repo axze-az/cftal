@@ -39,7 +39,6 @@ cftal::test::ref_f32_to_f16(float v)
     int32_t aexp = (a >> 23) & 0xff;
     uint32_t mantissa = a & 0x007fffff;
     uint32_t mask;
-    uint32_t increment;
 
     if (aexp == 0xff) {
         if (mantissa == 0)
@@ -64,7 +63,7 @@ cftal::test::ref_f32_to_f16(float v)
     }
     /* Round.  */
     if (mantissa & mask) {
-        increment = (mask + 1) >> 1;
+        uint32_t increment = (mask + 1) >> 1;
         if ((mantissa & mask) == increment)
             increment = mantissa & (increment << 1);
         mantissa += increment;

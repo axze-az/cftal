@@ -87,6 +87,7 @@ namespace cftal {
         template <typename _T>
         struct out_df {
             d_real<_T> _v;
+            explicit
             out_df(const d_real<_T>& v) : _v(v) {}
         };
         template <typename _T>
@@ -96,6 +97,7 @@ namespace cftal {
         template <typename _T>
         struct out_tf {
             t_real<_T> _v;
+            explicit
             out_tf(const t_real<_T>& v) : _v(v) {}
         };
         template <typename _T>
@@ -215,9 +217,9 @@ cftal::test::write_constant(const char* name_type, _T val)
 
 template <typename _T>
 std::ostream&
-cftal::test::operator<<(std::ostream& s, const out_df<_T>& p)
+cftal::test::operator<<(std::ostream& s, const out_df<_T>& v)
 {
-    const cftal::d_real<_T>& d=p._v;
+    const cftal::d_real<_T>& d=v._v;
     s << pr_fp<_T>(d.h())
       << std::setw(0)
       << ", " ;
@@ -228,9 +230,9 @@ cftal::test::operator<<(std::ostream& s, const out_df<_T>& p)
 
 template <typename _T>
 std::ostream&
-cftal::test::operator<<(std::ostream& s, const out_tf<_T>& p)
+cftal::test::operator<<(std::ostream& s, const out_tf<_T>& v)
 {
-    const cftal::t_real<_T>& d=p._v;
+    const cftal::t_real<_T>& d=v._v;
     s << pr_fp<_T>(d.h())
       << std::setw(0)
       << ", " ;
@@ -332,6 +334,7 @@ cftal::test::create_expansion(_T (&r)[_N], const mpfr_real<_B>& v)
     r[_N-1]= _T(vv);
 }
 
+#if 0
 std::pair<std::uint64_t, std::uint64_t>
 atan_coeff(int n)
 {
@@ -346,6 +349,7 @@ atan_coeff(int n)
     }
     return r;
 }
+#endif
 
 template <std::size_t _B, typename _X,
           template <typename _Y, typename _T> class _C>

@@ -22,10 +22,10 @@ namespace cftal {
 
 
         template <class _V>
-        int check_cbrt_f64(const _V& v0, double x, bool verbose);
+        int check_cbrt_f64(const _V& v, double x, bool verbose);
 
         template <class _V>
-        bool check_cbrt_f64(const _V& v0, bool verbose);
+        bool check_cbrt_f64(const _V& v, bool verbose);
 
     }
 }
