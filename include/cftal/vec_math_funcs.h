@@ -26,6 +26,10 @@ namespace cftal {
             static
             constexpr bool
             fast() {
+#if 0
+                bool r=(is_vec_specialized<double, _N>::value);
+                return r;
+#else
                 bool r=(is_vec_specialized<double, _N>::value ||
                        (is_vec_specialized<double, _N/2>::value &&
                        is_vec_specialized<int32_t, _N>::value));
@@ -33,6 +37,7 @@ namespace cftal {
                 r &= _N > 2 ? false : true;
 #endif
                 return r;
+#endif
             }
         };
 

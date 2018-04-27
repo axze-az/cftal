@@ -109,6 +109,16 @@ namespace cftal {
                 template <typename _C, typename _T>
                 static
                 _T
+                order9(_T y, _T x);
+
+                template <typename _C, typename _T>
+                static
+                _T
+                order10(_T y, _T x);
+
+                template <typename _C, typename _T>
+                static
+                _T
                 householder3(_T x, _T y);
 
                 template <typename _C, typename _T>
@@ -258,6 +268,12 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root12::nr(_T x, _T y)
 {
+#if 1
+    _T x12=pow12(x);
+    _T z= (y-x12)/x12;
+    _T d= (z * _C(1.0/12.0));
+    _T xn= x + x*d;
+#else
     // _T x11=powu<_T, 11>::v(x);
     _T x11=x;
     for (int i=0; i<10;++i)
@@ -268,6 +284,7 @@ cftal::math::impl::root12::nr(_T x, _T y)
     _T xn = x - _C(1.0/12.0) * d_ops::xfma(-1.0/x11, y, x);
 #else
     _T xn = x - _C(1.0/12.0) * (x - y/x11);
+#endif
 #endif
     return xn;
 }
@@ -364,6 +381,48 @@ cftal::math::impl::root12::order8(_T x, _T y)
     _T xn= x + x*d;
     return xn;
 }
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::order9(_T x, _T y)
+{
+    // _T x12=powu<_T, 12>::v(x);
+    _T x12=pow12(x);
+    _T z = (y-x12)/x12;
+    _T d= z* horner(z,
+                    _C(4134346117.0/495338913792.0),
+                    _C(49811399.0/5159780352.0),
+                    _C(-4910983.0/429981696.0),
+                    _C(83237.0/5971968.0),
+                    _C(-8855.0/497664.0),
+                    _C(253.0/10368.0),
+                    _C(-11.0/288.0),
+                    _C(1.0/12.0));
+    _T xn= x + x*d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::order10(_T x, _T y)
+{
+    // _T x12=powu<_T, 12>::v(x);
+    _T x12=pow12(x);
+    _T z = (y-x12)/x12;
+    _T d= z* horner(z,
+                    _C(392762881115.0/53496602689536.0),
+                    _C(4134346117.0/495338913792.0),
+                    _C(49811399.0/5159780352.0),
+                    _C(-4910983.0/429981696.0),
+                    _C(83237.0/5971968.0),
+                    _C(-8855.0/497664.0),
+                    _C(253.0/10368.0),
+                    _C(-11.0/288.0),
+                    _C(1.0/12.0));
+    _T xn= x + x*d;
+    return xn;
+}
+
 
 template <typename _C, typename _T>
 _T
