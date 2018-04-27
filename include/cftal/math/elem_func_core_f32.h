@@ -894,9 +894,9 @@ root12_k(arg_t<vf_type> xc)
                            root12_i3_c2,
                            root12_i3_c1,
                            root12_i3_c0);
-    vf_type mm= _T::sel(mm0 < 0x1p-3f, mm_i2, mm_i3);
-    mm= _T::sel(mm0 < 0x1p-6f, mm_i1, mm);
-    mm = _T::sel(mm0 < 0x1p-9f, mm_i0, mm);
+    vf_type mm_a= _T::sel(mm0 < 0x1p-9f, mm_i0, mm_i1);
+    vf_type mm_b= _T::sel(mm0 < 0x1p-3f, mm_i2, mm_i3);
+    vf_type mm= _T::sel(mm0 < 0x1p-6f, mm_a, mm_b);
 #if 1
     mm = impl::root12::householder4<float>(mm, mm0);
 #else
