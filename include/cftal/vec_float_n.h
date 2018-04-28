@@ -111,7 +111,7 @@ namespace cftal {
     vec<float, 1>
     frexp(arg_t<vec<float, 1> > a, vec<int32_t, 1>* e);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         frexp(arg_t<vec<float, 2> > x, vec<int32_t, 2>* e);
 
@@ -133,7 +133,7 @@ namespace cftal {
     vec<float, 1>
     ldexp(arg_t<vec<float, 1> > a, arg_t<vec<int32_t, 1> > e);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         ldexp(arg_t<vec<float, 2> > a, arg_t<vec<int32_t, 2> > e);
 
@@ -155,7 +155,7 @@ namespace cftal {
     vec<float, 1>
     nextafter(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         nextafter(arg_t<vec<float, 2> > x, arg_t<vec<float, 2> > y);
 
@@ -177,7 +177,7 @@ namespace cftal {
     vec<int32_t, 1>
     ilogb(arg_t<vec<float, 1> > a);
 
-    namespace math {    
+    namespace math {
         vec<int32_t, 2>
         ilogb(arg_t<vec<float, 2> > a);
 
@@ -239,7 +239,7 @@ namespace cftal {
     vec<float, 1>
     rsqrt(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         rsqrt(arg_t<vec<float, 2> > v);
 
@@ -261,7 +261,7 @@ namespace cftal {
     vec<float, 1>
     cbrt(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         cbrt(arg_t<vec<float, 2> > v);
 
@@ -283,7 +283,7 @@ namespace cftal {
     vec<float, 1>
     root12(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         root12(arg_t<vec<float, 2> > v);
 
@@ -305,7 +305,7 @@ namespace cftal {
     vec<float, 1>
     hypot(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         hypot(arg_t<vec<float, 2> > x, arg_t<vec<float, 2> > y);
 
@@ -327,7 +327,7 @@ namespace cftal {
     vec<float, 1>
     exp(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp(arg_t<vec<float, 2> > d);
 
@@ -349,7 +349,7 @@ namespace cftal {
     vec<float, 1>
     expm1(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         expm1(arg_t<vec<float, 2> > d);
 
@@ -371,7 +371,7 @@ namespace cftal {
     vec<float, 1>
     exp2(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp2(arg_t<vec<float, 2> > d);
 
@@ -393,7 +393,7 @@ namespace cftal {
     vec<float, 1>
     exp2m1(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp2m1(arg_t<vec<float, 2> > d);
 
@@ -415,7 +415,7 @@ namespace cftal {
     vec<float, 1>
     exp10(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp10(arg_t<vec<float, 2> > d);
 
@@ -437,7 +437,7 @@ namespace cftal {
     vec<float, 1>
     exp10m1(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp10m1(arg_t<vec<float, 2> > d);
 
@@ -459,7 +459,7 @@ namespace cftal {
     vec<float, 1>
     sinh(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         sinh(arg_t<vec<float, 2> > d);
 
@@ -481,7 +481,7 @@ namespace cftal {
     vec<float, 1>
     cosh(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         cosh(arg_t<vec<float, 2> > d);
 
@@ -503,7 +503,7 @@ namespace cftal {
     vec<float, 1>
     tanh(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         tanh(arg_t<vec<float, 2> > d);
 
@@ -525,7 +525,7 @@ namespace cftal {
     vec<float, 1>
     log(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         log(arg_t<vec<float, 2> > d);
 
@@ -547,7 +547,7 @@ namespace cftal {
     vec<float, 1>
     log1p(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         log1p(arg_t<vec<float, 2> > d);
 
@@ -569,7 +569,7 @@ namespace cftal {
     vec<float, 1>
     log10(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         log10(arg_t<vec<float, 2> > d);
 
@@ -591,7 +591,7 @@ namespace cftal {
     vec<float, 1>
     log2(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         log2(arg_t<vec<float, 2> > d);
 
@@ -613,7 +613,7 @@ namespace cftal {
     vec<float, 1>
     pow(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         pow(arg_t<vec<float, 2> > b, arg_t<vec<float, 2> > e);
 
@@ -635,7 +635,7 @@ namespace cftal {
     vec<float, 1>
     atan(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         atan(arg_t<vec<float, 2> > d);
 
@@ -657,7 +657,7 @@ namespace cftal {
     vec<float, 1>
     asin(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         asin(arg_t<vec<float, 2> > d);
 
@@ -679,7 +679,7 @@ namespace cftal {
     vec<float, 1>
     acos(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         acos(arg_t<vec<float, 2> > d);
 
@@ -701,7 +701,7 @@ namespace cftal {
     vec<float, 1>
     atan2(arg_t<vec<float, 1> > y, arg_t<vec<float, 1> > x);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         atan2(arg_t<vec<float, 2> > y, arg_t<vec<float, 2> > x);
 
@@ -726,7 +726,7 @@ namespace cftal {
     vec<float, 1>
     sin(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         sin(arg_t<vec<float, 2> > d);
 
@@ -748,7 +748,7 @@ namespace cftal {
     vec<float, 1>
     cos(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         cos(arg_t<vec<float, 2> > d);
 
@@ -772,7 +772,7 @@ namespace cftal {
     sincos(arg_t<vec<float, 1> > x,
            vec<float, 1>* s, vec<float, 1>* c);
 
-    namespace math {    
+    namespace math {
         void
         sincos(arg_t<vec<float, 2> > d,
                vec<float, 2> * psin, vec<float, 2> * pcos);
@@ -798,7 +798,7 @@ namespace cftal {
     vec<float, 1>
     tan(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         tan(arg_t<vec<float, 2> > d);
 
@@ -820,7 +820,7 @@ namespace cftal {
     vec<float, 1>
     asinh(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         asinh(arg_t<vec<float, 2> > d);
 
@@ -842,7 +842,7 @@ namespace cftal {
     vec<float, 1>
     acosh(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         acosh(arg_t<vec<float, 2> > d);
 
@@ -864,7 +864,7 @@ namespace cftal {
     vec<float, 1>
     atanh(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         atanh(arg_t<vec<float, 2> > d);
 
@@ -886,7 +886,7 @@ namespace cftal {
     vec<float, 1>
     erf(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         erf(arg_t<vec<float, 2> > d);
 
@@ -908,7 +908,7 @@ namespace cftal {
     vec<float, 1>
     erfc(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         erfc(arg_t<vec<float, 2> > d);
 
@@ -930,7 +930,7 @@ namespace cftal {
     vec<float, 1>
     tgamma(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         tgamma(arg_t<vec<float, 2> > d);
 
@@ -949,7 +949,7 @@ namespace cftal {
     vec<int32_t, 1>
     ilogbp1(arg_t<vec<float, 1> > v);
 
-    namespace math {    
+    namespace math {
         vec<int32_t, 2>
         ilogbp1(arg_t<vec<float, 2> > v);
 
@@ -971,7 +971,7 @@ namespace cftal {
     vec<float, 1>
     exp_mx2(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp_mx2(arg_t<vec<float, 2> > d);
 
@@ -993,7 +993,7 @@ namespace cftal {
     vec<float, 1>
     exp_px2(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp_px2(arg_t<vec<float, 2> > d);
 
@@ -1015,7 +1015,7 @@ namespace cftal {
     vec<float, 1>
     exp2_mx2(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp2_mx2(arg_t<vec<float, 2> > d);
 
@@ -1037,7 +1037,7 @@ namespace cftal {
     vec<float, 1>
     exp2_px2(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp2_px2(arg_t<vec<float, 2> > d);
 
@@ -1059,7 +1059,7 @@ namespace cftal {
     vec<float, 1>
     exp10_mx2(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp10_mx2(arg_t<vec<float, 2> > d);
 
@@ -1081,7 +1081,7 @@ namespace cftal {
     vec<float, 1>
     exp10_px2(arg_t<vec<float, 1> > d);
 
-    namespace math {    
+    namespace math {
         vec<float, 2>
         exp10_px2(arg_t<vec<float, 2> > d);
 
@@ -1093,7 +1093,7 @@ namespace cftal {
 
         vec<float, 16>
         exp10_px2(arg_t<vec<float, 16> > d);
-    }   
+    }
 
     // approximates 1/sqrt(a)
     template <std::size_t _N>
@@ -1103,7 +1103,7 @@ namespace cftal {
     // approximates 1/sqrt(a)
     vec<float, 1>
     native_rsqrt(const vec<float, 1>& b);
-    
+
     // approximates 1/a
     template <std::size_t _N>
     vec<float, _N>
@@ -1592,7 +1592,7 @@ template <std::size_t _N>
 inline
 cftal::vec<float, _N>
 cftal::asinh(const vec<float, _N>& v)
-{    
+{
     if (impl::is_vec_math_func<float, _N>::fast()) {
         return math::asinh(v);
     }
@@ -1719,7 +1719,7 @@ cftal::hypot(const vec<float, _N>& x, const vec<float, _N>& y)
 {
     if (impl::is_vec_math_func<float, _N>::fast()) {
         return math::hypot(x, y);
-    }    
+    }
     vec<float, _N> r(hypot(low_half(x), low_half(y)),
                      hypot(high_half(x), high_half(y)));
     return r;
