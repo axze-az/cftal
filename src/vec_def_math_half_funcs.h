@@ -17,6 +17,7 @@
 #define DEF_HALF_FUNCS(nsr, ns, vec_float, vec_int, real_type)  \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::cos(arg<vec_float>::type a)                             \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -24,6 +25,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::exp(arg<vec_float>::type a)                             \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -31,6 +33,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::exp2(arg<vec_float>::type d)                            \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -38,6 +41,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::exp10(arg<vec_float>::type d)                           \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -45,6 +49,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::log(arg<vec_float>::type d)                             \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -52,6 +57,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::log2(arg<vec_float>::type d)                            \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -59,6 +65,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::log10(arg<vec_float>::type d)                           \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -66,6 +73,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::rsqrt(arg<vec_float>::type d)                           \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -73,6 +81,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::sqrt(arg<vec_float>::type d)                            \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -80,6 +89,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::sin(arg<vec_float>::type d)                             \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
@@ -87,6 +97,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
     ns::tan(arg<vec_float>::type d)                             \
     {                                                           \
         DEF_TRAITS_HFUNC(vec_float, vec_int, real_type);        \
