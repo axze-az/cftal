@@ -655,6 +655,8 @@ int main(int argc, char** argv)
                      check_one<double>(), "1");
         gen_constant(dp, "const double erfc_gt_zero", mpfr_erfc,
                      check_zero<double>(), "zzz");
+        gen_constant(dp, "const double erfc_lo_den", mpfr_erfc,
+                     check_max_denormal<double>(), "nom");
 
         // tgamma
         auto gp=std::make_pair(10.0, 1100.0);
