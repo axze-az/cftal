@@ -766,6 +766,8 @@ int main(int argc, char** argv)
                      check_one<float>(), "1");
         gen_constant(dp, "const float erfc_gt_zero", mpfr_erfc,
                      check_zero<float>(), "zzz");
+        gen_constant(dp, "const float erfc_lo_den", mpfr_erfc,
+                     check_max_denormal<float>(), "nom");
         // tgamma
         auto gm=std::make_pair(10.0f, 200.0f);
         gen_constant(gm, "const float tgamma_hi", mpfr_gamma,
