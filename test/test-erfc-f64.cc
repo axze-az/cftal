@@ -26,7 +26,10 @@ int main(int argc, char** argv)
     } else {
         // mpfr_cache::use(mpfr_erfc, "erfc", 0.0);
     }
-    func_domain<double> d=std::make_pair(-27.25, 27.25);
+    // first x with erfc(x) <= max sub normal:
+    // const double mx=2.654325845425098151508791e+01;
+    const double mx=27.25;
+    func_domain<double> d=std::make_pair(-mx, mx);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
