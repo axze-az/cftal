@@ -623,6 +623,8 @@ erfc_k(arg_t<vf_type> xc)
     vf_type exl=0, exh=0;
 
     vf_type i0h=0, i0l=0, i123h=0, i123l=0;
+    vi2_type k=0;
+    vf_type kf=0;
     vf_type x2h;
     bool any_of_x_gt_0_75=any_of(x_gt_0_75);
     if (likely(any_of_x_gt_0_75)) {
@@ -634,9 +636,9 @@ erfc_k(arg_t<vf_type> xc)
             x2h = -x2h;
             x2l = -x2l;
         }
-        vf_type xrh, xrl, kf;
-        auto k=base_type::__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
-        exh= base_type::__pow_exp_k(xrh, xrl, kf, k, &exl);
+        vf_type xrh, xrl;
+        k=base_type::__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
+        exh= base_type::__pow_exp_poly_k(xrh, xrl, &exl);
         x2h = -x2h;
     } else {
         x2h = x*x;
@@ -1104,8 +1106,8 @@ erfc_k(arg_t<vf_type> xc)
         // divide by x
         dvf_type t(i123h, i123l);
         dvf_type r = d_ops::sloppy_div(t, x);
-        i123h = r.h();
-        i123l = r.l();
+        i123h = base_type::__scale_exp_k(r.h(), kf, k);
+        i123l = base_type::__scale_exp_k(r.l(), kf, k);
     }
     vmf_type x_lt_0_00 = xc < 0.0;
     vf_type ih= _T::sel(x_le_0_75, i0h, i123h);
