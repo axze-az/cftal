@@ -30,7 +30,10 @@ int main(int argc, char** argv)
     // func_domain<float> d=std::make_pair(0.75f, 2.00f);
     // func_domain<float> d=std::make_pair(2.00f, 4.00f);
     // func_domain<float> d=std::make_pair(4.00f, 10.05f);
-    func_domain<float> d=std::make_pair(-10.05f, 10.05f);
+    // auto mx = 9.194549560546875000000000e+00f;
+    // mx = std::nextafter(mx, -1.0f);
+    const auto mx = 10.05f;
+    func_domain<float> d=std::make_pair(-mx, mx);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
