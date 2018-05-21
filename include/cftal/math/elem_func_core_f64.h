@@ -284,7 +284,7 @@ namespace cftal {
             static
             vf_type
             __pow_exp_poly_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-                        vf_type* exl=nullptr);
+                             vf_type* exl=nullptr);
 
             // arguments are the reduced xrh, xrl in
             // [-log(2)/2, log(2)/2], and the arguments
