@@ -16,7 +16,7 @@
 
 #define DEF_SPEC_FUNCS(nsr, ns, vec_float, vec_int, real_type)  \
     nsr::vec_float                                              \
-    __attribute__((__flatten__))                                        \
+    __attribute__((__flatten__))                                \
     ns::erf(arg<vec_float>::type d)                             \
     {                                                           \
         DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
@@ -24,7 +24,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
-    __attribute__((__flatten__))                                        \
+    __attribute__((__flatten__))                                \
     ns::erfc(arg<vec_float>::type d)                            \
     {                                                           \
         DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
@@ -32,7 +32,7 @@
     }                                                           \
                                                                 \
     nsr::vec_float                                              \
-    __attribute__((__flatten__))                                        \
+    __attribute__((__flatten__))                                \
     ns::tgamma(arg<vec_float>::type d)                          \
     {                                                           \
         DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
