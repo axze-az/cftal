@@ -957,6 +957,7 @@ __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> kf, arg_t<vi2_type> k)
                  ym * 2.0 * 0x1p1023,
                  ys);
     // correct subnormal results
+    // vmf_type fsn=_T::vmi2_to_vmf(sn);
     ys = _T::sel(kf < vf_type(-1021), ys* 0x1p-128, ys);
     return ys;
 #else
@@ -1056,9 +1057,9 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     }
     // calculate expm1/xrh for correction term
     vf_type yl=y + ye;
-    horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
     // correction for errors in argument reduction
     vf_type yee= xrl + xrl * xrh * yl;
+    horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
     ye += yee;
     if (_EXP_M1 == false) {
         y += ye;

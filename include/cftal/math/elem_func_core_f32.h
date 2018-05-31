@@ -1001,9 +1001,9 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     }
     // calculate expm1/xrh for correction term
     vf_type yl=y+ye;
-    horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
     // correction for errors in argument reduction
     vf_type yee= xrl + xrl*xrh*yl;
+    horner_comp_quick_si(y, ye, xrh, y, ye, exp_c0);
     ye += yee;
     if (_EXP_M1 == false) {
         y += ye;
