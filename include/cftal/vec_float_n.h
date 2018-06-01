@@ -21,6 +21,12 @@
 #if defined (__AVX__)
 #include <cftal/x86/v8f32.h>
 #endif
+#if defined (__SSE2__)
+#include <cftal/x86/v4f32_inl.h>
+#endif
+#if defined (__AVX__)
+#include <cftal/x86/v8f32_inl.h>
+#endif
 
 namespace cftal {
 
