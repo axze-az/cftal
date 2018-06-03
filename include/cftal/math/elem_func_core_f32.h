@@ -985,21 +985,13 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const float exp_c7=+1.9569355936e-04f;
 
     vf_type xx= xrh*xrh;
-#if 1
+
     const float ci[]= {exp_c7, exp_c5, exp_c3};
     const float cj[]= {exp_c6, exp_c4, exp_c2};
     vf_type i, j;
     horner_n2(i, j, xx, ci, cj);
     vf_type y= horner(xrh, i, j);
-#else
-    vf_type i=horner(xx,
-                     exp_c7,
-                     exp_c5);
-    vf_type j=horner(xx,
-                     exp_c6,
-                     exp_c4);
-    vf_type y= horner(xrh, i, j, exp_c3, exp_c2);
-#endif
+
     vf_type ye;
     if (_EXP_M1 == false) {
         y *= xrh;
