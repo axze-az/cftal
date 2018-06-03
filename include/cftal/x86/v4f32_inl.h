@@ -310,7 +310,7 @@ inline
 cftal::vec<float, 4>::
 vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
     : vec{low_half(lh)(), high_half(lh)(),
-        low_half(hh)(), high_half(hh)()}
+          low_half(hh)(), high_half(hh)()}
 {
 }
 

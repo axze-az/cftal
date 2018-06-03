@@ -13,6 +13,7 @@
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
 #include <cftal/x86/v2f64.h>
+#include <cftal/x86/v4f64.h>
 #include <cftal/x86/v4s32.h>
 
 namespace cftal {
@@ -41,8 +42,7 @@ namespace cftal {
         vec(init_list<float> l);
         // allow construction from two halfes
         vec(const vec<float, 2>& lh, const vec<float, 2>& hh);
-
-        // expression template constructor
+         // expression template constructor
         template <template <class _U, std::size_t _M>
                   class _OP,
                   class _L, class _R>
