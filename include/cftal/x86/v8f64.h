@@ -9,7 +9,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-#include <cftal/vec_double_n.h>
+#include <cftal/vec_t_n.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/v4f64.h>
 

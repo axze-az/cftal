@@ -11,7 +11,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
-#include <cftal/vec_float_n.h>
+#include <cftal/vec_t_n.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
 #include <cftal/x86/v4f32.h>
