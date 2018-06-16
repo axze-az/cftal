@@ -103,6 +103,7 @@ namespace cftal {
         template <std::size_t _N>
         struct vec_func_traits_f32 : public func_traits<float, int32_t> {
             using vf_type = vec<float, _N>;
+            using vf2_type = vec<double, _N>;
             using vmf_type = typename vf_type::mask_type;
             using vi_type = vec<int32_t, _N>;
             using vmi_type = typename vi_type::mask_type;

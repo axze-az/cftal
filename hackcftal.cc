@@ -472,6 +472,14 @@ f(cftal::arg_t<cftal::vec<int32_t, 8> > idx, const float* tbl)
 int main(int argc, char** argv)
 {
     using namespace cftal;
+#if 1
+    v4f64 x=0x1.7ffffffffffffp-1;
+    v4s32 e=-1073;
+    v4f64 t= ldexp(x, e);
+    std::cout << std::hexfloat << t << std::endl;
+    v4f64 t1=0x1p-1073, t2= 0x1p-1074;
+    std::cout << t1 << std::endl << t2 << std::endl;
+#else
     std::cout << std::setprecision(18) << std::scientific;
 
     bytes4 t0(-1.0f);
@@ -492,7 +500,7 @@ int main(int argc, char** argv)
               << std::endl
               << std::numeric_limits<float>::max()
               << std::endl;
-
+#endif
 #if 0
     bytes8 t(0, 0x3fe6a09e);
     const double d=(M_SQRT2/2) - t.f64();
