@@ -139,21 +139,19 @@ namespace cftal {
                           arg_t<vf_type> k);
 
             // arguments are the reduced xrh, xrl in
-            // [-log(2)/2, log(2)/2], and the arguments
-            // kf and k as argument for __scale_exp_k
+            // [-log(2)/2, log(2)/2], and the argument
+            // k as argument for __scale_exp_k
             // calculates %e^(xrh+xrl)*2^k - 1 if exp_m1 is true,
             // %e^(xrh+xrl)*2^k otherwise
             template <bool _EXP_M1>
             static
             vf_type
             __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-                    arg_t<vf_type> kf);
+                    arg_t<vf_type> k);
 
             // argument reduction for %e^x and %e^x-1
             // return 2^k * (xrh + xrl) with xrh in
             // [-log(2)/2, log(2)/2] for calling __exp_k
-            // the return type must match the type of the k
-            // argument of __exp_k
             static
             void
             __reduce_exp_arg(vf_type& xrh,
@@ -164,8 +162,6 @@ namespace cftal {
             // argument reduction for %e^(xh+xl) and %e^(xh+xl)-1
             // return 2^k * (xrh + xrl) with xrh in
             // [-log(2)/2, log(2)/2] for calling __exp_k
-            // the return type must match the type of the k
-            // argument of __exp_k
             static
             void
             __reduce_exp_arg(vf_type& xrh,
