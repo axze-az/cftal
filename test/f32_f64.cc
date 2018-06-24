@@ -220,6 +220,11 @@ bool cftal::test::f_eq_ulp(float a,
     bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
     if (us != nullptr) {
         bool f= is_faithful(a, b);
+#if 0
+        if (f==false) {
+            r=false;
+        }
+#endif
         us->faithful(f);
     }
     return r;
