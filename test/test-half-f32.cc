@@ -310,7 +310,7 @@ int main_exp(int argc, char** argv)
     rc &= of_fp_func_up_to<
         ftype, _N, check_half_exp<ftype> >::v(st, d, speed_only,
                                               cmp_ulp<ftype>(ulp, us),
-                                              cnt, false);
+                                              cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -341,7 +341,7 @@ int main_exp2(int argc, char** argv)
     rc &= of_fp_func_up_to<
         ftype, _N, check_half_exp2<ftype> >::v(st, d, speed_only,
                                                cmp_ulp<ftype>(ulp, us),
-                                               cnt, false);
+                                               cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -372,7 +372,7 @@ int main_exp10(int argc, char** argv)
     rc &= of_fp_func_up_to<
         ftype, _N, check_half_exp10<ftype> >::v(st, d, speed_only,
                                                 cmp_ulp<ftype>(ulp, us),
-                                                cnt, false);
+                                                cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;

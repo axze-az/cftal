@@ -33,6 +33,9 @@ namespace cftal {
             using vmi_type = typename _T::vmi_type;
             using dvf_type = d_real<vf_type>;
 
+            static
+            vf_type
+            __scale_exp_k(arg_t<vf_type> kf);
 
             static
             vf_type
@@ -116,6 +119,19 @@ template <typename _T>
 inline
 typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
+__scale_exp_k(arg_t<vf_type> kf)
+{
+    vf_type kt=max(vf_type(-64.0f), kf);
+    kt= min(vf_type(64.0f), kt);
+    vi_type ki= _T::cvt_f_to_i(kt);
+    vf_type rh= _T::insert_exp(_T::bias()+ki);
+    return rh;
+}
+
+template <typename _T>
+inline
+typename cftal::math::half_func<float, _T>::vf_type
+cftal::math::half_func<float, _T>::
 __half_exp_k(arg_t<vf_type> xrh,
              arg_t<vf_type> kf)
 {
@@ -155,7 +171,8 @@ __half_exp_k(arg_t<vf_type> xrh,
 #endif
     // vf_type ee=_T::insert_exp(k + _T::bias());
     // y *= ee;
-    y=base_type::__scale_exp_k(y, kf);
+    // y=base_type::__scale_exp_k(y, kf);
+    y*= __scale_exp_k(kf);
     return y;
 }
 
