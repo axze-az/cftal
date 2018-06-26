@@ -1054,7 +1054,8 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type y=horner(xrh, o, e, exp_c3, exp_c2);
     vf_type ye;
     if (_EXP_M1 == false) {
-        y = y* x2 + xrh;
+        y = y* x2;
+        d_ops::add12(y, ye, xrh, y);
     } else {
         y = y* x2;
         d_ops::add12(y, ye, xrh, y);
@@ -1064,10 +1065,9 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // correction for errors in argument reduction
     vf_type yee= xrl + xrl * yl;
     if (_EXP_M1 == false) {
-        // y *= xrh;
-        // d_ops::add12(y, ye, exp_c0, y);
-        y += yee;
-        y += exp_c0;
+        yee += ye;
+        d_ops::add12(y, ye, exp_c0, y);
+        y += (yee+ye);
         y = __scale_exp_k(y, kf);
     } else {
         yee += ye;
