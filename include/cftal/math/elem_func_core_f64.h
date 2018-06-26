@@ -1055,7 +1055,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     y = y * x2;
     vf_type ye;
     d_ops::add12(y, ye, xrh, y);
-    // calculate expm1/xrh for correction term
+    // calculate expm1 for correction term
     vf_type yl=y;
     // correction for errors in argument reduction
     vf_type yee= xrl + xrl * yl;
