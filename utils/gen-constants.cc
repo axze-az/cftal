@@ -55,8 +55,6 @@ namespace cftal {
         struct check_max_denormal {
             bool operator() (_T a) const  {
                 return false;
-                // const double dbl_max_denormal= 2.225073858507200889024587e-308;
-                // return std::fabs(a) <= dbl_max_denormal;
             }
         };
 
