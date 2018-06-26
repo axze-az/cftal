@@ -154,9 +154,9 @@ namespace cftal {
             // [-log(2)/2, log(2)/2] for calling __exp_k
             static
             void
-            __reduce_exp_arg(vf_type& xrh,
-                             vf_type& xrl,
-                             vf_type& kf,
+            __reduce_exp_arg(vf_type& __restrict xrh,
+                             vf_type& __restrict xrl,
+                             vf_type& __restrict kf,
                              arg_t<vf_type> x);
 
             // argument reduction for %e^(xh+xl) and %e^(xh+xl)-1
@@ -164,9 +164,9 @@ namespace cftal {
             // [-log(2)/2, log(2)/2] for calling __exp_k
             static
             void
-            __reduce_exp_arg(vf_type& xrh,
-                             vf_type& xrl,
-                             vf_type& kf,
+            __reduce_exp_arg(vf_type& __restrict xrh,
+                             vf_type& __restrict xrl,
+                             vf_type& __restrict kf,
                              arg_t<vf_type> xh,
                              arg_t<vf_type> xl);
 
@@ -320,8 +320,8 @@ namespace cftal {
             // stored into xrh and xrl
             static
             vi2_type
-            __reduce_trig_arg(vf_type& xrh,
-                              vf_type& xrl,
+            __reduce_trig_arg(vf_type& __restrict xrh,
+                              vf_type& __restrict xrl,
                               arg_t<vf_type> x);
 
             // argument reduction for all trigonometric

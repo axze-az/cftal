@@ -8,7 +8,7 @@
 #define __CFTAL_CONFIG_H__ 1
 
 #define __CFTAL_MAJOR__ 0
-#define __CFTAL_MINOR__ 3
+#define __CFTAL_MINOR__ 4
 #define __CFTAL_PATCHLEVEL__ 0
 
 #if defined (__ARM_NEON)
@@ -52,6 +52,9 @@
 #endif
 #if !defined (unlikely)
 #define unlikely(a) a
+#endif
+#if !defined(__GNUC__) && !defined (__CLANG__)
+#define __restrict
 #endif
 
 
