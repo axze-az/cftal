@@ -1017,29 +1017,21 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type yl=y;
     // correction for errors in argument reduction
     vf_type yee= xrl + xrl * yl;
+    yee += ye;
+    d_ops::add12(y, ye, exp_c0, y);
     if (_EXP_M1 == false) {
-        yee += ye;
-        d_ops::add12(y, ye, exp_c0, y);
         y += (yee+ye);
         y = __scale_exp_k(y, kf);
     } else {
-        yee += ye;
-        d_ops::add12(y, ye, exp_c0, y);
         ye += yee;
         // 2^kf = 2*2^s ; s = kf/2
         vf_type scale = __scale_exp_k(vf_type(0.5f), kf);
         // e^x-1 = 2*(y * 2^s - 0.5)
-#if 1
         y  *= scale;
         vf_type t;
         d_ops::add12cond(y, t, -0.5f, y);
         ye = 2.0f * (ye * scale + t);
         y = 2.0f*y + ye;
-#else
-        horner_comp_si(y, ye, scale, y, ye, vf_type(-0.5));
-        y *= 2;
-        y  = y + 2*ye;
-#endif
         // x small, required for handling of subnormal numbers
         y = _T::sel((abs(xrh) < 0x1p-25f) & (kf==0.0), xrh, y);
     }
