@@ -1005,14 +1005,9 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type i, j;
     horner_n2(i, j, x2, ci, cj);
     vf_type y= horner(xrh, i, j);
+    y = y* x2;
     vf_type ye;
-    if (_EXP_M1 == false) {
-        y = y* x2;
-        d_ops::add12(y, ye, xrh, y);
-    } else {
-        y = y* x2;
-        d_ops::add12(y, ye, xrh, y);
-    }
+    d_ops::add12(y, ye, xrh, y);
     // calculate expm1/xrh for correction term
     vf_type yl=y;
     // correction for errors in argument reduction
