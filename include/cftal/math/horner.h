@@ -237,6 +237,7 @@ cftal::math::horner(_X x, _CN cn, _CNM1 cnm1, _CS... cs)
 }
 
 template <typename _X, typename _C>
+__attribute__((optimize("no-unroll-loops")))
 _X
 cftal::math::horner(_X x, const _C& c)
 {
@@ -255,6 +256,7 @@ cftal::math::horner(_X x, const _C& c)
 }
 
 template <typename _X, typename _C, std::size_t _N>
+__attribute__((optimize("no-unroll-loops")))
 _X
 cftal::math::horner(_X x, const _C (&a)[_N])
 {
@@ -267,6 +269,7 @@ cftal::math::horner(_X x, const _C (&a)[_N])
 }
 
 template <typename _F, typename _C, std::size_t _N>
+__attribute__((optimize("no-unroll-loops")))
 cftal::d_real<_F>
 cftal::math::horner(d_real<_F> x, const d_real<_C> (&a)[_N])
 {
@@ -281,6 +284,7 @@ cftal::math::horner(d_real<_F> x, const d_real<_C> (&a)[_N])
 }
 
 template <typename _F, typename _C, std::size_t _N>
+__attribute__((optimize("no-unroll-loops")))
 _F
 cftal::math::horner(_F x, const d_real<_C> (&a)[_N])
 {
@@ -311,6 +315,7 @@ cftal::math::horner1(_X x, _CNM1 cnm1, _CS... cs)
 }
 
 template <typename _X, typename _C, std::size_t _N>
+__attribute__((optimize("no-unroll-loops")))
 void
 cftal::math::horner_n2(_X& ya, _X& yb, _X x,
                        const _C (&a)[_N], const _C (&b)[_N])
@@ -318,8 +323,8 @@ cftal::math::horner_n2(_X& ya, _X& yb, _X x,
     static_assert(_N > 0, "invalid call to horner(ya, ybm x, array, array)");
     _X ra= _X(a[0]);
     _X rb= _X(b[0]);
-// #pragma GCC unroll 0
-// #pragma clang loop unroll(disable)
+#pragma GCC unroll 0
+#pragma clang loop unroll(disable)
     for (std::size_t i=1; i<_N; ++i) {
         ra= horner(x, ra, a[i]);
         rb= horner(x, rb, b[i]);
