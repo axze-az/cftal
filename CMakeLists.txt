@@ -44,6 +44,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-attributes")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
     #never activate this
     #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math")
     #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fverbose-asm")
