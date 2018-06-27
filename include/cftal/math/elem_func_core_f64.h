@@ -1035,14 +1035,14 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const double exp_c13=+1.6594686274338619941159e-10;
     vf_type x2=xrh*xrh;
 
-    static const vftype oc[]={
+    static const vf_type oc[]={
         exp_c13,
         exp_c11,
         exp_c9,
         exp_c7,
         exp_c5
     };
-    static const vftype ec[]= {
+    static const vf_type ec[]= {
         exp_c12,
         exp_c10,
         exp_c8,
