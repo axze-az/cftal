@@ -24,7 +24,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-        // mpfr_cache::use(mpfr_gamma, "tgamma", 0.0);
+        mpfr_cache::use(mpfr_gamma, "tgamma", 0.0);
     }
     func_domain<double> d=std::make_pair(-186.0, +172.0);
     std::cout << "testing tgamma" << std::endl;
