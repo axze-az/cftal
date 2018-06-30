@@ -271,7 +271,7 @@ namespace cftal {
             static
             vf_type
             __pow_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-                        arg_t<vf_type> kf, arg_t<vi_type> k,
+                        arg_t<vf_type> kf,
                         vf_type* exl=nullptr);
 
             // log2 with enhanced precision
@@ -2026,7 +2026,7 @@ __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 __pow_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-            arg_t<vf_type> kf, arg_t<vi_type> k,
+            arg_t<vf_type> kf,
             vf_type* exl)
 {
     vf_type y=__pow_exp_poly_k(xrh, xrl, exl);
@@ -2121,8 +2121,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type xrh, xrl;
     d_ops::mul22(xrh, xrl, xrhl.h(), xrhl.l(),
                  ctbl::m_ln2.h(), ctbl::m_ln2.l());
-    vi_type k= _T::cvt_f_to_i(kf);
-    vf_type res=__pow_exp_k(xrh, xrl, kf, k);
+    vf_type res=__pow_exp_k(xrh, xrl, kf);
     // std::cout << kf << std::endl;
     // std::cout << k << std::endl;
     using fc=func_constants<float>;
