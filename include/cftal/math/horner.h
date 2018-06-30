@@ -223,7 +223,7 @@ template <typename _X, typename _C1, typename _C0>
 _X
 cftal::math::horner(_X x, _C1 c1, _C0 c0)
 {
-    return x*c1 + c0;
+    return x*c1 + _X(c0);
 }
 
 template <typename _X,
@@ -452,7 +452,7 @@ horner_comp_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
 {
     static_assert(_N > 0, "at least 1 array element required");
     horner_comp_s0(y, ye, x, yi, a[0]);
-    for (std::size_t i=0; i < _N; ++i) {
+    for (std::size_t i=1; i < _N; ++i) {
         horner_comp_si(y, ye, x, y, ye, a[i]);
     }
 }
@@ -552,7 +552,7 @@ horner_comp_quick_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
 {
     static_assert(_N > 0, "at least 1 array element required");
     horner_comp_quick_s0(y, ye, x, yi, a[0]);
-    for (std::size_t i=0; i < _N; ++i) {
+    for (std::size_t i=1; i < _N; ++i) {
         horner_comp_quick_si(y, ye, x, y, ye, a[i]);
     }
 }
@@ -581,10 +581,10 @@ eval_rational(_X xc,
         _X r_x=_X(1.0)/x;
         _X r_n= p[_N1-1];
         for (int i= _N1-2; i>= 0; --i)
-            r_n = r_n * r_x + p[i];
+            r_n = r_n * r_x + _X(p[i]);
         _X r_d= q[_N2-1];
         for (int i= _N2-2; i>= 0; --i)
-            r_d = r_d * r_x + q[i];
+            r_d = r_d * r_x + _X(q[i]);
         if (any_of(x_le_c)) {
             n = select(x_le_c, n, r_n);
             d = select(x_le_c, d, r_d);
