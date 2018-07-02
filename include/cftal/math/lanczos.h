@@ -190,7 +190,7 @@ namespace cftal {
 
         template <typename _V>
         using lanczos_rational_f32 =
-            lanczos_rational<_V, lanczos_table_g_5_00000_N7, 4, 3>;
+            lanczos_rational<_V, lanczos_table_g_5_00000_N7, 3, 2>;
     }
 }
 
