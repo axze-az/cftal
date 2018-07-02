@@ -1039,8 +1039,10 @@ void
 cftal::impl::d_real_ops_fma<_T, true>::
 sqr12(_T& rh, _T& rl, const _T& u)
 {
-    rh = u * u;
-    rl = fms(u, u, rh);
+    _T h = u * u;
+    _T l = fms(u, u, h);
+    rh = h;
+    rl = l;
 }
 
 template <typename _T>
@@ -1050,8 +1052,10 @@ void
 cftal::impl::d_real_ops_fma<_T, true>::
 mul12(_T& rh, _T& rl, const _T& u, const _T& v)
 {
-    rh = u * v;
-    rl = fms(u, v, rh);
+    _T h = u * v;
+    _T l = fms(u, v, h);
+    rh = h;
+    rl = l;
 }
 
 template <typename _T>
