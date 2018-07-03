@@ -170,7 +170,7 @@ namespace cftal {
 #if 1
         template <typename _V>
         using lanczos_rational_f64 =
-            lanczos_rational<_V, lanczos_table_g_6_02468_N13, 12, 9>;
+            lanczos_rational<_V, lanczos_table_g_6_02468_N13, 11, 8>;
 #endif
 
         struct lanczos_table_g_5_00000_N7 {
