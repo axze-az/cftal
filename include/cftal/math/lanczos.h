@@ -40,6 +40,14 @@ namespace cftal {
             constexpr double gm0_5() {
                 return +5.5246800407767295837402e+00;
             }
+            static constexpr
+            double exp_minus_gm0_5_h() {
+                return +3.9871442116253151197180e-03;
+            }
+            static constexpr
+            double exp_minus_gm0_5_l() {
+                return -3.8417174999999999999696e-20;
+            }
             static
             constexpr const double p[]={
                 2.5066282746310002701649081771338373386264310793408,
@@ -83,6 +91,14 @@ namespace cftal {
             static constexpr
             double gm0_5() {
                 return +5.5246800407767295837402e+00;
+            }
+            static constexpr
+            double exp_minus_gm0_5_h() {
+                return +3.9871442116253151197180e-03;
+            }
+            static constexpr
+            double exp_minus_gm0_5_l() {
+                return -3.8417174999999999999696e-20;
             }
             static constexpr
             const double p[]={

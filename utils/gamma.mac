@@ -220,7 +220,7 @@ create_lanczos_ratfunc(g, n) :=
     );
 
 print_lanczos_ratfunc(g, n) :=
-    block([old_fpprec, gr, a, l, p, q, s],
+    block([old_fpprec, gr, exp_gr, exp_gr_dd, a, l, p, q, s],
         old_fpprec : fpprec,
         fpprec: 16*1024,
         gr: rationalize(g),
@@ -228,6 +228,8 @@ print_lanczos_ratfunc(g, n) :=
         l : normalize_rat_poly(a),
         p : l[1] *((2*%pi)^(1/2)),
         q : l[2],
+        exp_gr : rationalize(%e^(-gr+1/2)),
+        exp_gr_dd : make_doubledouble(exp_gr),
         s : printf(false, "~,5h", gr),
         s : ssubst("_", "+", s),
         s : ssubst("_", "b", s),
@@ -241,6 +243,14 @@ print_lanczos_ratfunc(g, n) :=
         printf(true, "static constexpr~%"),
         printf(true, "double gm0_5() {~%"),
         printf(true, "    return ~a;~%", fmt_double(gr-1/2)),
+        printf(true, "}~%"),
+        printf(true, "static constexpr~%"),
+        printf(true, "double exp_minus_gm0_5_h() {~%"),
+        printf(true, "    return ~a;~%", fmt_double(exp_gr_dd[1])),
+        printf(true, "}~%"),
+        printf(true, "static constexpr~%"),
+        printf(true, "double exp_minus_gm0_5_l() {~%"),
+        printf(true, "    return ~a;~%", fmt_double(exp_gr_dd[2])),
         printf(true, "}~%"),
         print_d_poly_coeffs("p", p),
         print_d_poly_coeffs("q", q),
@@ -344,9 +354,8 @@ print_lanczos_ratfunc(
         54829004630446434/
         10000000000000000,
         17);
-*/      
 print_lanczos_ratfunc(
         122252227365970611572265625/
          10000000000000000000000000,
         17);
-
+*/

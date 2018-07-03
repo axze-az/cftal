@@ -158,6 +158,8 @@ namespace {
         int32_t u=0;
         if ((r=cftal::test::f_eq(a, b)) == false) {
             u = cftal::test::distance(a, b);
+            if ((a!=a && b==b) || (a==a && b != b))
+                u = -1<<30;
             //(u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
             if (std::abs(u) <= int32_t(ulp))
                 r=true;
