@@ -244,7 +244,7 @@ _T
 cftal::math::impl::root12::pow12(_T x)
 {
     // _T x12=powu<_T, 12>::v(x);
-#if 0
+#if 1
     using d_ops=cftal::impl::d_real_ops<_T, d_real_traits<_T>::fma>;
     _T x2h, x2l;
     d_ops::sqr12(x2h, x2l, x);
@@ -256,12 +256,13 @@ cftal::math::impl::root12::pow12(_T x)
     d_ops::sqr22(x12h, x12l, x6h, x6l);
     return x12h;
 #else
+    // not exact enough
     using d_ops=cftal::impl::d_real_ops<_T, d_real_traits<_T>::fma>;
     _T x12h, x12l;
     _T t;
     // compensated product with first multiplication unrolled
     d_ops::sqr12(x12h, x12l, x);
-    for (int i=2; i<12; ++i) {
+    for (int i=0; i<10; ++i) {
         d_ops::mul12(x12h, t, x12h, x);
         x12l = x12l * x + t;
     }
