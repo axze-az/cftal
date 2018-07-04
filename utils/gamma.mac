@@ -254,8 +254,8 @@ print_lanczos_ratfunc(g, n) :=
         printf(true, "}~%"),
         print_d_poly_coeffs("p", p),
         print_d_poly_coeffs("q", q),
-        print_dd_poly_coeffs("pd", p),
-        print_dd_poly_coeffs("qd", q),
+        /* print_dd_poly_coeffs("pd", p), */
+        /* print_dd_poly_coeffs("qd", q), */
         printf(true, "};~%"),
         fpprec : old_fpprec
         /* fullratsimp(bfloat(a) - bfloat(p)/bfloat(q))*/
@@ -343,7 +343,6 @@ print_lanczos_ratfunc(
         6024680040776729583740234375/
         1000000000000000000000000000,
         13);
-
 /* we use this for float precision */
 print_lanczos_ratfunc(
         5,
