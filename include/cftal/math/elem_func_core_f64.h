@@ -3166,7 +3166,7 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     };
     vf_type p_sin_a, p_sin_b;
     vf_type p_cos_a, p_cos_b;
-#if 1
+#if 0
     horner_n2(p_sin_a, p_sin_b,
               x4,
               c_sin_a, c_sin_b);
