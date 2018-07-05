@@ -3152,33 +3152,18 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     //           =      w     +(1.0-      w)     -0.5*x^2  + (p-x*xl)
     vf_type x2= xrh * xrh;
     vf_type x4= x2* x2;
-    static const double c_sin_a[]= {
-        sin_c17, sin_c13, sin_c9
-    };
-    static const double c_sin_b[]= {
-        sin_c15, sin_c11, sin_c7
-    };
-    static const double c_cos_a[]= {
-        cos_c16, cos_c12, cos_c8
-    };
-    static const double c_cos_b[]= {
-        cos_c14, cos_c10, cos_c6
-    };
+
+    static const double c_sin_a[]= { sin_c17, sin_c13, sin_c9 };
+    static const double c_sin_b[]= { sin_c15, sin_c11, sin_c7 };
     vf_type p_sin_a, p_sin_b;
-    vf_type p_cos_a, p_cos_b;
-#if 0
-    horner_n2(p_sin_a, p_sin_b,
-              x4,
-              c_sin_a, c_sin_b);
-    horner_n2(p_cos_a, p_cos_b,
-              x4,
-              c_cos_a, c_cos_b);
-#else
-    horner_n4(p_sin_a, p_sin_b, p_cos_a, p_cos_b,
-              x4,
-              c_sin_a, c_sin_b, c_cos_a, c_cos_b);
-#endif
+    horner_n2(p_sin_a, p_sin_b, x4, c_sin_a, c_sin_b);
     vf_type x3= x2* xrh;
+
+    static const double c_cos_a[]= { cos_c16, cos_c12, cos_c8 };
+    static const double c_cos_b[]= { cos_c14, cos_c10, cos_c6 };
+    vf_type p_cos_a, p_cos_b;
+    horner_n2(p_cos_a, p_cos_b, x4, c_cos_a, c_cos_b);
+
     vf_type p_sin = horner(x2, p_sin_a, p_sin_b, sin_c5)* x3;
     vf_type p_cos = horner(x2, p_cos_a, p_cos_b, cos_c4);
 
