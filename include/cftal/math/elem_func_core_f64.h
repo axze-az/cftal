@@ -3166,10 +3166,18 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     };
     vf_type p_sin_a, p_sin_b;
     vf_type p_cos_a, p_cos_b;
+#if 1
+    horner_n2(p_sin_a, p_sin_b,
+              x4,
+              c_sin_a, c_sin_b);
+    horner_n2(p_cos_a, p_cos_b,
+              x4,
+              c_cos_a, c_cos_b);
+#else
     horner_n4(p_sin_a, p_sin_b, p_cos_a, p_cos_b,
               x4,
               c_sin_a, c_sin_b, c_cos_a, c_cos_b);
-
+#endif
     vf_type x3= x2* xrh;
     vf_type p_sin = horner(x2, p_sin_a, p_sin_b, sin_c5)* x3;
     vf_type p_cos = horner(x2, p_cos_a, p_cos_b, cos_c4);
