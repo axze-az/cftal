@@ -2608,14 +2608,14 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
     vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
     // swap sin/cos if q & 1
-    vf_type rs(_T::sel(q_and_1_f, c, s));
-    vf_type rc(_T::sel(q_and_1_f, s, c));
     // swap signs
     if (ps != nullptr) {
+        vf_type rs(_T::sel(q_and_1_f, c, s));
         rs = _T::sel(q_and_2_f, -rs, rs);
         *ps = rs;
     }
     if (pc != nullptr) {
+        vf_type rc(_T::sel(q_and_1_f, s, c));
         vmf_type mt = q_and_2_f ^ q_and_1_f;
         rc = _T::sel(mt, -rc, rc);
         *pc= rc;

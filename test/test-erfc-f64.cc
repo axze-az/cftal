@@ -24,7 +24,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-        // mpfr_cache::use(mpfr_erfc, "erfc", 0.0);
+        mpfr_cache::use(mpfr_erfc, "erfc", 0.0);
     }
     // first x with erfc(x) <= max sub normal:
     // const double mx=2.654325845425098151508791e+01;
