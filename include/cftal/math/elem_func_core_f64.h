@@ -124,6 +124,8 @@ namespace cftal {
                 vf_type _f1;
             public:
                 constexpr
+                scale_result() = default;
+                constexpr
                 scale_result(const vf_type& s0, const vf_type& s1)
                     : _f0(s0), _f1(s1) {}
                 constexpr const vf_type& f0() const { return _f0; }

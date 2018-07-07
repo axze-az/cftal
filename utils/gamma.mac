@@ -260,7 +260,7 @@ print_lanczos_ratfunc(g, n) :=
         printf(true, "}~%"),
         print_d_poly_coeffs("p", p),
         print_d_poly_coeffs("q", q),
-        print_dd_poly_coeffs("pd", p), 
+        print_dd_poly_coeffs("pd", p),
         print_dd_poly_coeffs("qd", q),
         printf(true, "};~%"),
         fpprec : old_fpprec
@@ -344,7 +344,7 @@ print_lanczos_ratfunc(60246800407767295837402/10000000000000000000000,
                       13);
 */
 
-/* we use this (from boost) for double precision */
+/* (from boost) for double precision */
 print_lanczos_ratfunc(
         6024680040776729583740234375/
         1000000000000000000000000000,
@@ -354,13 +354,20 @@ print_lanczos_ratfunc(
         5,
         7);
 
+/* we use this for double precision */
+print_lanczos_ratfunc(
+        13141756854951382/
+        1000000000000000,
+        13);
 /*
 print_lanczos_ratfunc(
         54829004630446434/
         10000000000000000,
         17);
 */
+/* works with double precision 19.059829846024513
 print_lanczos_ratfunc(
         19059829846024513/
         1000000000000000,
         19);
+*/
