@@ -31,6 +31,10 @@ namespace cftal {
             uint64_t _ulps;
             // count of nan
             uint64_t _nans;
+            // count of unexpected nans
+            uint64_t _nans_unexpected;
+            // count of not calculated nans
+            uint64_t _nans_not_calculated;
             // operation count
             uint64_t _cnt;
             // deviations of x ulp's n times, deviations larger/smaller
@@ -44,25 +48,40 @@ namespace cftal {
             std::pair<bool, bool> _faithful;
             // constructor.
             ulp_stats()
-                : _ulps(0), _nans(0), _cnt(0), _faithful(false, true) {};
+                : _ulps(0), _nans(0),
+                  _nans_unexpected(0),
+                  _nans_not_calculated(0),
+                  _cnt(0), _faithful(false, true) {};
             // inrecrement the _ulps, ...
-            void inc(int32_t ulp, int32_t is_nan) {
+            void inc(int32_t ulp,
+                     bool is_nan,
+                     bool nan_not_calculated,
+                     bool nan_unexpected) {
                 ++_cnt;
                 uint32_t au= ulp != 0 ? 1 : 0;
-                _ulps +=  au;
-                int32_t aulp=std::abs(ulp);
-                if (likely(aulp <= lin_max)) {
-                    // std::numeric_limits<int32_t>::min() also lands here
-                    _devs[ulp] += 1;
+                _ulps += au;
+                if (is_nan)
+                    ++_nans;
+                if (nan_not_calculated| nan_unexpected) {
+                    if (nan_not_calculated)
+                        ++_nans_not_calculated;
+                    if (nan_unexpected)
+                        ++_nans_unexpected;
                 } else {
-                    // round up/down to the next power of 2
-                    uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1));
-                    int32_t rulp= 1U << log2_u;
-                    rulp= ulp < 0 ? -rulp : rulp;
-                    _devs[rulp] += 1;
+                    int32_t aulp=std::abs(ulp);
+                    if (likely(aulp <= lin_max)) {
+                        // std::numeric_limits<int32_t>::min() also lands here
+                        _devs[ulp] += 1;
+                    } else {
+                        // round up/down to the next power of 2
+                        uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1));
+                        int32_t rulp= 1U << log2_u;
+                        rulp= ulp < 0 ? -rulp : rulp;
+                        _devs[rulp] += 1;
+                    }
                 }
-                _nans += is_nan != 0 ? 1 : 0;
             }
+
             // set the faithful rounding values
             void faithful(bool v) {
                 _faithful.first = true;

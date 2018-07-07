@@ -50,7 +50,16 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats_to_stream& uss)
     bool pr_hist= uss._hist;
     s << us._cnt << " cases (with " << us._nans
       << " NAN results), with delta: "
-      << us._ulps << " rate: " << double(us._ulps)/double(us._cnt) << '\n';
+      << us._ulps << " rate: "
+      << double(us._ulps)/double(us._cnt-us._nans) << '\n'
+      << std::setw(28)
+      << "nans not calculated "
+      << std::setw(11)
+      << us._nans_not_calculated << '\n'
+      << std::setw(28)
+      << "nans unexpected "
+      << std::setw(11)
+      << us._nans_unexpected << '\n';
     double _ulps=0.0;
     for (const auto& t : us._devs) {
         if (pr_hist) {
@@ -152,28 +161,32 @@ cftal::test::distance(float a, float b)
 namespace {
 
     template <typename _T>
-    bool cmp_ulp(_T a, _T b, uint32_t ulp, cftal::test::ulp_stats* us)
+    int32_t get_ulp(_T a, _T b)
     {
-        bool r;
         int32_t u=0;
-        if ((r=cftal::test::f_eq(a, b)) == false) {
+        if (a != b) {
             u = cftal::test::distance(a, b);
-            if ((a!=a && b==b) || (a==a && b != b))
-                u = -(1<<30);
-            //(u >= -int32_t(ulp)) && (u <= int32_t(ulp)))
-            if (std::abs(u) <= int32_t(ulp))
-                r=true;
-#if 0
-            else
-                std::cout << "distance " << u << std::endl;
-#endif
+        }
+        return u;
+    }
+
+    template <typename _T>
+    bool cmp_ulp(_T a, _T b, int32_t ulp, cftal::test::ulp_stats* us)
+    {
+        bool ref_nan = b!=b;
+        bool res_nan = a!=a;
+        int32_t u=0;
+        if (ref_nan == false) {
+            u = get_ulp(a, b);
         }
         if (us != nullptr) {
-            int32_t isn= ((a!=a) || (b!=b)) ? 1 : 0;
-            us->inc(u, isn);
+            bool nan_not_calculated= (ref_nan == true) && (res_nan == false);
+            bool nan_unexpected= (ref_nan == false) && (res_nan == true);
+            us->inc(u, ref_nan, nan_not_calculated, nan_unexpected);
         }
-        return r;
+        return (u <= ulp) && (ref_nan == res_nan);
     }
+
 
     template <typename _T>
     bool is_faithful(_T a, const std::tuple<_T, _T, _T>& b)
@@ -185,6 +198,7 @@ namespace {
             return true;
         return a == b0 || a == b1 || a == b2;
     }
+
 
 }
 
