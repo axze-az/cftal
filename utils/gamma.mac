@@ -339,35 +339,27 @@ create_lanczos_rational(g, n) :=
 t(g, n) := create_lanczos_rational(g, n);
 ratprint: false;
 
-/*
-print_lanczos_ratfunc(60246800407767295837402/10000000000000000000000,
-                      13);
-*/
-
 /* (from boost) for double precision */
+/*
 print_lanczos_ratfunc(
         6024680040776729583740234375/
         1000000000000000000000000000,
         13);
+*/
 /* we use this for float precision */
+/*
 print_lanczos_ratfunc(
         5,
         7);
+*/
 
-/* we use this for double precision */
+/* we use this for double precision, error 1.1197702118472231e-019 */
 print_lanczos_ratfunc(
-        13141756854951382/
+        12068153090775013/
         1000000000000000,
-        13);
-/*
+        12);
+
 print_lanczos_ratfunc(
-        54829004630446434/
+        55917193591594696/
         10000000000000000,
-        17);
-*/
-/* works with double precision 19.059829846024513
-print_lanczos_ratfunc(
-        19059829846024513/
-        1000000000000000,
-        19);
-*/
+        6);
