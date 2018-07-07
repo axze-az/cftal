@@ -89,9 +89,20 @@ namespace cftal {
             vf_type
             root12_k(arg_t<vf_type> x);
 
-            // returns 2^k = r.h()* r.l() to avoid over and underflows
+            class scale_result {
+                vf_type _f0;
+                vf_type _f1;
+            public:
+                constexpr
+                scale_result(const vf_type& s0, const vf_type& s1)
+                    : _f0(s0), _f1(s1) {}
+                constexpr const vf_type& f0() const { return _f0; }
+                constexpr const vf_type& f1() const { return _f1; }
+            };
+
+            // returns 2^k = r.f0()* r.f1() to avoid over and underflows
             static
-            dvf_type
+            scale_result
             __scale_exp_k(arg_t<vf_type> k);
 
             // scaling function for exponential functions
@@ -927,7 +938,7 @@ root12_k(arg_t<vf_type> xc)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_core<float, _T>::dvf_type
+typename cftal::math::elem_func_core<float, _T>::scale_result
 cftal::math::elem_func_core<float, _T>::
 __scale_exp_k(arg_t<vf_type> k)
 {
@@ -941,7 +952,7 @@ __scale_exp_k(arg_t<vf_type> k)
     scale = _T::sel(k_large, 2.0f, scale);
     vi_type ki= _T::cvt_f_to_i(kt);
     vf_type rh= _T::insert_exp(_T::bias()+ki);
-    return dvf_type(rh, scale);
+    return scale_result(rh, scale);
 }
 
 template <typename _T>
@@ -952,7 +963,7 @@ cftal::math::elem_func_core<float, _T>::
 __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> k)
 {
     auto sc=__scale_exp_k(k);
-    vf_type ys = (ym * sc.h()) * sc.l();
+    vf_type ys = (ym * sc.f0()) * sc.f1();
     return ys;
 }
 
@@ -964,8 +975,8 @@ cftal::math::elem_func_core<float, _T>::
 __scale_exp_k(arg_t<vf_type> yh, arg_t<vf_type> yl, arg_t<vf_type> k)
 {
     auto sc = __scale_exp_k(k);
-    vf_type ysh = (yh * sc.h()) * sc.l();
-    vf_type ysl = (yl * sc.h()) * sc.l();
+    vf_type ysh = (yh * sc.f0()) * sc.f0();
+    vf_type ysl = (yl * sc.f0()) * sc.f0();
     return dvf_type(ysh, ysl);
 }
 
@@ -2030,11 +2041,11 @@ __pow_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
             vf_type* exl)
 {
     vf_type y=__pow_exp_poly_k(xrh, xrl, exl);
-    dvf_type sc= __scale_exp_k(kf);
-    y = (y* sc.h()) * sc.l();
+    auto sc= __scale_exp_k(kf);
+    y = (y* sc.f0()) * sc.f1();
     if (exl != nullptr) {
         vf_type ye=*exl;
-        *exl = (ye * sc.h())* sc.l();
+        *exl = (ye * sc.f0())* sc.f1();
     }
     return y;
 }
