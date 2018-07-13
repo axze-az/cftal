@@ -25,3 +25,29 @@ constexpr const float
 cftal::math::lanczos_table_g_5_00000_N7::p[];
 constexpr const float
 cftal::math::lanczos_table_g_5_00000_N7::q[];
+
+constexpr const double
+cftal::math::lanczos_table_g_12_06815_N12::p[];
+constexpr const double
+cftal::math::lanczos_table_g_12_06815_N12::q[];
+constexpr const cftal::d_real<double>
+cftal::math::lanczos_table_g_12_06815_N12::pd[];
+constexpr const cftal::d_real<double>
+cftal::math::lanczos_table_g_12_06815_N12::qd[];
+constexpr const cftal::d_real<float>
+cftal::math::lanczos_table_g_12_06815_N12::pdf[];
+constexpr const float
+cftal::math::lanczos_table_g_12_06815_N12::qf[];
+
+constexpr const double
+cftal::math::lanczos_table_g_5_59172_N6::p[];
+constexpr const double
+cftal::math::lanczos_table_g_5_59172_N6::q[];
+constexpr const cftal::d_real<double>
+cftal::math::lanczos_table_g_5_59172_N6::pd[];
+constexpr const cftal::d_real<double>
+cftal::math::lanczos_table_g_5_59172_N6::qd[];
+constexpr const cftal::d_real<float>
+cftal::math::lanczos_table_g_5_59172_N6::pdf[];
+constexpr const float
+cftal::math::lanczos_table_g_5_59172_N6::qf[];

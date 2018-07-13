@@ -128,7 +128,7 @@ erf_k(arg_t<vf_type> xc)
         const float erf_i0_c11=-6.7572575063e-04f;
         vf_type xx=x*x;
 #if 1
-        static const double c_y_i0[]= {
+        static const float c_y_i0[]= {
             erf_i0_c11,
             erf_i0_c9,
             erf_i0_c7,
@@ -712,38 +712,54 @@ template <typename _T>
 inline
 typename cftal::math::spec_func_core<float, _T>::vf_type
 cftal::math::spec_func_core<float, _T>::
-tgamma_k(arg_t<vf_type> xc, arg_t<vmf_type> xc_lt_0)
+tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
 {
-    vmf_type x0 = abs(xc);
     // G(z+1) = z * G(z)
     // G(z) * G(1-z) = pi/sin(pi*z)
     // with G(-z+1) = -z * G(z)
     // G(z) * -z * G(-z) = pi/sin(pi*z)
     // G(-z) = -pi/[sin(pi*z)*z * G(z)]
     // lanczos sum:
-    using lanczos_ratfunc=lanczos_rational_f32<vf_type>;
-    vf_type sum= lanczos_ratfunc::at(x0);
+    vf_type xa=abs(x);
+    using lanczos_ratfunc=lanczos_table_g_5_59172_N6;
+    auto pq=lanczos_rational_at(xa,
+                                lanczos_ratfunc::pdf,
+                                lanczos_ratfunc::qf);
+    vf_type sum = pq.h(), sum_l= pq.l();
     // base of the Lanczos exponential
     vf_type base, base_l;
-    d_ops::add12cond(base, base_l, x0, lanczos_ratfunc::gm0_5());
-    vf_type r = sum * base_type::template exp_k<false>(-base);
-    vf_type z = x0 - 0.5f;
-    if (any_of(xc_lt_0)) {
-        // G(-z) = -pi/[sin(pi*z)*z * G(z)]
-        vf_type s;
-        sinpi_cospi_k(x0, &s, nullptr);
-        vf_type r_n = -M_PI/(s * x0 * r);
-        r = _T::sel(xc_lt_0, r_n, r);
-        base_l = _T::sel(xc_lt_0, -base_l, base_l);
-        z = _T::sel(xc_lt_0, -z, z);
+    d_ops::add122cond(base, base_l, xa,
+                      lanczos_ratfunc::gm0_5f(),
+                      lanczos_ratfunc::gm0_5f_l());
+    vf_type zh, zl;
+    d_ops::add12cond(zh, zl, xa,  -0.5);
+    vf_type gh, gl;
+    base_type::exp_k2(gh, gl, -base, -base_l);
+    d_ops::mul22(gh, gl, gh, gl, sum, sum_l);
+    if (any_of(x_lt_zero)) {
+        dvf_type s;
+        sinpi_cospi_k(xa, &s, nullptr);
+        // vf_type r_n = -M_PI/(s * x0 * r);
+        using ctbl = impl::d_real_constants<d_real<float>, float>;
+        const dvf_type p=-ctbl::m_pi;
+        dvf_type q=s * (xa *dvf_type(gh, gl));
+        dvf_type g_n= d_ops::sloppy_div(p, q);
+        gh = _T::sel(x_lt_zero, g_n.h(), gh);
+        gl = _T::sel(x_lt_zero, g_n.l(), gl);
+        zh = _T::sel(x_lt_zero, -zh, zh);
+        zl = _T::sel(x_lt_zero, -zl, zl);
     }
-    // how does this error correction work?
-    r += base_l * (-lanczos_ratfunc::g()) * r/base;
-    // calculate the base^z as base^(1/2 z)^2 to avoid overflows
-    vf_type powh = base_type::pow_k(base,0.5f*z);
-    vf_type t= r * powh*powh;
-    t = _T::sel(x0 < 0x1p-25f, 1.0f/xc, t);
-    return t;
+    auto p_sc=base_type::pow_k2(base, base_l, 0.5*zh, 0.5*zl);
+    const dvf_type& powh= p_sc.first;
+    d_ops::mul22(gh, gl, powh.h(), powh.l(), gh, gl);
+    d_ops::mul22(gh, gl, powh.h(), powh.l(), gh, gl);
+    const auto& sc=p_sc.second;
+    gh *= sc.f0();
+    gh *= sc.f1();
+    gh *= sc.f0();
+    gh *= sc.f1();
+    gh = _T::sel(xa < 0x1p-24f, 1.0f/x, gh);
+    return gh;
 }
 
 // Local Variables:
