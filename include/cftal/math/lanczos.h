@@ -29,13 +29,14 @@ namespace cftal {
 
         };
 
-        template <typename _T, std::size_t _N1, std::size_t _N2>
+        template <typename _T, typename _C,
+                  std::size_t _N1, std::size_t _N2>
         d_real<_T>
         lanczos_rational_at(_T x,
-                            const d_real<_T>(p)[_N1],
-                            const _T (q)[_N2]);
+                            const d_real<_C>(&p)[_N1],
+                            const _C (&q)[_N2]);
 
-        
+
         // a lanczos table from boost
         struct lanczos_table_boost_g_6_0246_N13 {
             static
@@ -219,19 +220,20 @@ namespace cftal {
     }
 }
 
-template <typename _T, std::size_t _N1, std::size_t _N2>
+template <typename _T, typename _C, std::size_t _N1, std::size_t _N2>
 cftal::d_real<_T>
 cftal::math::
 lanczos_rational_at(_T x,
-                    const d_real<_T>(p)[_N1],
-                    const _T (q)[_N2])
+                    const d_real<_C>(&p)[_N1],
+                    const _C (&q)[_N2])
 {
     _T ph, pl;
     ph = p[0].h();
     pl = p[0].l();
     using d_ops=cftal::impl::d_real_ops<_T,
                                         d_real_traits<_T>::fma>;
-
+#pragma GCC unroll 0
+#pragma clang loop unroll(disable)
     for (std::size_t i=1; i< _N1; ++i) {
         d_ops::mul122(ph, pl, x, ph, pl);
         d_ops::add22cond(ph, pl,
