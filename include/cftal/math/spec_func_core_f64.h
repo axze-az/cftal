@@ -1136,9 +1136,27 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     vf_type xa=abs(x);
     // lanczos sum:
     using lanczos_ratfunc = lanczos_table_g_12_06815_N12;
+#if 1
     auto pq=lanczos_rational_at(xa,
                                 lanczos_ratfunc::pd,
                                 lanczos_ratfunc::q);
+#else
+    const std::size_t _N1=std::cend(lanczos_ratfunc::pd)
+        - std::cbegin(lanczos_ratfunc::pd);
+    vf_type ph, pl;
+    ph = lanczos_ratfunc::pd[0].h();
+    pl = lanczos_ratfunc::pd[0].l();
+    for (std::size_t i=1; i< _N1; ++i) {
+        d_ops::mul122(ph, pl, xa, ph, pl);
+        d_ops::add22cond(ph, pl,
+                         lanczos_ratfunc::pd[i].h(),
+                         lanczos_ratfunc::pd[i].l(),
+                         ph, pl);
+    }
+    vf_type qh, ql;
+    horner_comp(qh, ql, xa, lanczos_ratfunc::q);
+    dvf_type p(ph, pl), q(qh, ql), pq=d_ops::sloppy_div(p, q);
+#endif
     vf_type sum = pq.h(), sum_l= pq.l();
     // base of the Lanczos exponential
     vf_type base, base_l;

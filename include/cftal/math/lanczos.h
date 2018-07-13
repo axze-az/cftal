@@ -412,6 +412,7 @@ namespace cftal {
 template <typename _T, typename _C, std::size_t _N1, std::size_t _N2>
 inline
 __attribute__((optimize("no-unroll-loops")))
+__attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::math::
 lanczos_rational_at(const _T& x,
@@ -423,8 +424,8 @@ lanczos_rational_at(const _T& x,
     pl = p[0].l();
     using d_ops=cftal::impl::d_real_ops<_T,
                                         d_real_traits<_T>::fma>;
-// #pragma GCC unroll 0
-// #pragma clang loop unroll(disable)
+#pragma GCC unroll 0
+#pragma clang loop unroll(disable)
     for (std::size_t i=1; i< _N1; ++i) {
         d_ops::mul122(ph, pl, x, ph, pl);
         d_ops::add22cond(ph, pl,
