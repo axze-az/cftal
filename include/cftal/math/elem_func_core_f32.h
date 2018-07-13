@@ -321,7 +321,7 @@ namespace cftal {
             pow_k2_result
             pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
                    arg_t<vf_type> yh, arg_t<vf_type> yl);
-            
+
             // argument reduction for all trigonometric functions,
             // reduction by %pi/2, the low bits of multiples of %pi/2
             // are returned in the value, the reduced argument is
@@ -1439,12 +1439,12 @@ hyperbolic_k(arg_t<vf_type> xc)
 
     vf_type xx= xrh*xrh;
 #if 1
-    static const double cs[]= {
+    static const float cs[]= {
         sinh_c7,
         sinh_c5,
         sinh_c3
     };
-    static const double cc[]= {
+    static const float cc[]= {
         cosh_c6,
         cosh_c4,
         cosh_c2
@@ -1711,7 +1711,6 @@ old_tanh_k(arg_t<vf_type> xc)
      *         = (1 - exp(-2*x))/(exp(-2*x) - 1 + 2)
      */
     vf_type x= abs(xc);
-    // using fc=func_constants<double>;
     vmf_type x_gt_20 = x >= 20.0f;
     vf_type tanh_x_gt_20 = 1.0f;
     vf_type x2=2.0f*x;
