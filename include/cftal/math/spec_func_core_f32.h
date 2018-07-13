@@ -44,8 +44,13 @@ namespace cftal {
             // calculates sin(pi*x), cos(pi*x)
             static
             void
-            __sinpi_cospi_k(arg_t<vf_type> xc,
-                            vf_type* ps, vf_type *pc);
+            sinpi_cospi_k(arg_t<vf_type> xc,
+                          vf_type* ps, vf_type *pc);
+
+            static
+            void
+            sinpi_cospi_k(arg_t<vf_type> xc,
+                          dvf_type* ps, dvf_type *pc);
 
             static
             vf_type
@@ -57,7 +62,7 @@ namespace cftal {
 
             static
             vf_type
-            tgamma_k(arg_t<vf_type> xc);
+            tgamma_k(arg_t<vf_type> xc, arg_t<vmf_type> xc_lt_0);
 
         };
 
@@ -67,36 +72,29 @@ namespace cftal {
 template <typename _T>
 void
 cftal::math::spec_func_core<float, _T>::
-__sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
+sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 {
-    vf_type fh= rint(vf_type(xc*2.0f));
+    vf_type fh= rint(vf_type(xc*2.0));
     vf_type xrh, xrl;
     d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<float>, float>;
     d_ops::mul22(xrh, xrl, ctbl::m_pi.h(), ctbl::m_pi.l(), xrh, xrl);
     vi_type q= _T::cvt_f_to_i(fh);
+    base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
+}
 
-    vf_type s = base_type::__sin_k(xrh, xrl);
-    vf_type c = base_type::__cos_k(xrh, xrl);
-
-    vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
-    vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
-    vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
-    vmf_type q_and_1_f(_T::vmi_to_vmf(q_and_1));
-
-    // swap sin/cos if q & 1
-    vf_type rs(_T::sel(q_and_1_f, c, s));
-    vf_type rc(_T::sel(q_and_1_f, s, c));
-    // swap signs
-    if (ps != nullptr) {
-        rs = _T::sel(q_and_2_f, -rs, rs);
-        *ps = rs;
-    }
-    if (pc != nullptr) {
-        vmf_type mt = q_and_2_f ^ q_and_1_f;
-        rc = _T::sel(mt, -rc, rc);
-        *pc= rc;
-    }
+template <typename _T>
+void
+cftal::math::spec_func_core<float, _T>::
+sinpi_cospi_k(arg_t<vf_type> xc, dvf_type* ps, dvf_type* pc)
+{
+    vf_type fh= rint(vf_type(xc*2.0));
+    vf_type xrh, xrl;
+    d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    d_ops::mul22(xrh, xrl, ctbl::m_pi.h(), ctbl::m_pi.l(), xrh, xrl);
+    vi_type q= _T::cvt_f_to_i(fh);
+    base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
 }
 
 template <typename _T>
@@ -714,9 +712,8 @@ template <typename _T>
 inline
 typename cftal::math::spec_func_core<float, _T>::vf_type
 cftal::math::spec_func_core<float, _T>::
-tgamma_k(arg_t<vf_type> xc)
+tgamma_k(arg_t<vf_type> xc, arg_t<vmf_type> xc_lt_0)
 {
-    vmf_type xc_lt_0 = xc < 0.0f;
     vmf_type x0 = abs(xc);
     // G(z+1) = z * G(z)
     // G(z) * G(1-z) = pi/sin(pi*z)
@@ -734,7 +731,7 @@ tgamma_k(arg_t<vf_type> xc)
     if (any_of(xc_lt_0)) {
         // G(-z) = -pi/[sin(pi*z)*z * G(z)]
         vf_type s;
-        __sinpi_cospi_k(x0, &s, nullptr);
+        sinpi_cospi_k(x0, &s, nullptr);
         vf_type r_n = -M_PI/(s * x0 * r);
         r = _T::sel(xc_lt_0, r_n, r);
         base_l = _T::sel(xc_lt_0, -base_l, base_l);

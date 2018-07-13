@@ -494,6 +494,35 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "root12-i3-f64");
 
+
+/* sin(x) f64 with ~64 bit precision */
+i = [0x1p-512, pi/4];
+f = sin(x);
+d = guessdegree(f, i, 0x1p-64);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13, 15, 17|];
+c = [|D, DD, D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double sin_c", "sin", b, c);
+/*implementpoly(p, i, 0x1p-64, DD, "__sin_k", "sin.c");*/
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "sin-f64-ep");
+
+/* cos(x) f64 with ~64 bit precision */
+i = [0x1p-512, pi/4];
+f = cos(x);
+d = guessdegree(f, i, 0x1p-64);
+d;
+b = [|0, 2, 4, 6, 8, 10, 12, 14, 16|];
+c = [|D, D, DD, D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double cos_c", "cos", b, c);
+/*implementpoly(p, i, 0x1p-64, DD, "__cos_k", "cos.c");*/
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cos-f64-ep");
+
 /*
  * Local variables:
  * mode: c++

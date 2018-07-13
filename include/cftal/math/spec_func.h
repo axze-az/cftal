@@ -78,10 +78,10 @@ typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
 tgamma(arg_t<vf_type> xc)
 {
-    vf_type r= base_type::tgamma_k(xc);
+    vmf_type xc_lt_0 = xc < vf_type(0.0);
+    vf_type r= base_type::tgamma_k(xc, xc_lt_0);
     using fc= func_constants<_FLOAT_T>;
     r = _TRAITS_T::sel(xc >= fc::tgamma_hi_inf(), _TRAITS_T::pinf(), r);
-    vmf_type xc_lt_0 = xc < vf_type(0.0);
     if (any_of(xc_lt_0)) {
         if (any_of(xc <= fc::tgamma_lo_zero())) {
             // tgamma(x) = -0 for -odd < x <= -even

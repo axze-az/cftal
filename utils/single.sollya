@@ -400,6 +400,37 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "root12-i3-f32");
 
+
+/* sin(x) f32 ~29 bits */
+i = [0x1p-64, pi/4];
+f = sin(x);
+d = guessdegree(f, i, 0x1p-29);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13|];
+c = [|SG, SG, SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float sin_c", "sin", b, c);
+/*implementpoly(p, i, 0x1p-29, single, "__sin_k", "sin32.c");*/
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "sin-f32-ep");
+
+/* cos(x) f32 ~29 bits*/
+i = [0x1p-64, pi/4];
+f = cos(x);
+d = guessdegree(f, i, 0x1p-29);
+d;
+b = [|0, 2, 4, 6, 8, 10, 12|];
+c = [|SG, SG, SG, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float cos_c", "cos", b, c);
+/*implementpoly(p, i, 0x1p-29, single, "__cos_k", "cos32.c");*/
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cos-f32-ep");
+
+
 /*
  * Local variables:
  * mode: c++

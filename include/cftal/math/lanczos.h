@@ -26,8 +26,16 @@ namespace cftal {
                                                    _TBL::q,
                                                    res_lo);
             }
+
         };
 
+        template <typename _T, std::size_t _N1, std::size_t _N2>
+        d_real<_T>
+        lanczos_rational_at(_T x,
+                            const d_real<_T>(p)[_N1],
+                            const _T (q)[_N2]);
+
+        
         // a lanczos table from boost
         struct lanczos_table_boost_g_6_0246_N13 {
             static
@@ -209,6 +217,31 @@ namespace cftal {
         using lanczos_rational_f32 =
             lanczos_rational<_V, lanczos_table_g_5_00000_N7, 3, 2>;
     }
+}
+
+template <typename _T, std::size_t _N1, std::size_t _N2>
+cftal::d_real<_T>
+cftal::math::
+lanczos_rational_at(_T x,
+                    const d_real<_T>(p)[_N1],
+                    const _T (q)[_N2])
+{
+    _T ph, pl;
+    ph = p[0].h();
+    pl = p[0].l();
+    using d_ops=cftal::impl::d_real_ops<_T,
+                                        d_real_traits<_T>::fma>;
+
+    for (std::size_t i=1; i< _N1; ++i) {
+        d_ops::mul122(ph, pl, x, ph, pl);
+        d_ops::add22cond(ph, pl,
+                         p[i].h(), p[i].l(),
+                         ph, pl);
+    }
+    _T qh, ql;
+    horner_comp(qh, ql, x, q);
+    d_real<_T> dp(ph, pl), dq(qh, ql), pq=d_ops::sloppy_div(dp, dq);
+    return pq;
 }
 
 // local variables:
