@@ -155,10 +155,29 @@ namespace cftal {
         };
 
         template <>
+        struct cmp_t<std::pair<double, double> > {
+            cmp_t() {}
+            bool operator()(const std::pair<double, double>& a,
+                            const std::pair<double, double>& b) const {
+                return f_eq(a.first, b.first) && f_eq(a.second, b.second);
+            }
+        };
+
+
+        template <>
         struct cmp_t<float> {
             cmp_t() {}
             bool operator()(float a, float b) const {
                 return f_eq(a, b);
+            }
+        };
+
+        template <>
+        struct cmp_t<std::pair<float, float> > {
+            cmp_t() {}
+            bool operator()(const std::pair<float, float>& a,
+                            const std::pair<float, float>& b) const {
+                return f_eq(a.first, b.first) && f_eq(a.second, b.second);
             }
         };
 

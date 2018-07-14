@@ -17,6 +17,52 @@ namespace cftal {
 
         template <typename _T>
         struct check_sincos {
+
+            template <std::size_t _N>
+            static
+            std::pair<vec<_T, _N>, vec<_T, _N> >
+            v(const vec<_T, _N>& a) {
+                vec<_T, _N> s, c;
+                sincos(a, &s, &c);
+                return std::make_pair(s, c);
+            }
+
+            static
+            auto
+            r(const _T& a) {
+                std::pair<_T, _T> r, i0, i1;
+                r=call_mpfr::func(a, mpfr_sin_cos, &i0, &i1);
+                auto r0=std::make_tuple(r.first, i0.first, i0.second);
+                auto r1=std::make_tuple(r.second, i1.first, i1.second);
+                return std::make_pair(r0, r1);
+            }
+
+            static
+            std::pair<double, double>
+            __sincos(double a) {
+                double s, c;
+                ::sincos(a, &s, &c);
+                return std::make_pair(s, c);
+            }
+
+
+            static
+            std::pair<float, float>
+            __sincos(float a) {
+                float s, c;
+                ::sincosf(a, &s, &c);
+                return std::make_pair(s, c);
+            }
+
+            static
+            std::pair<_T, _T>
+            s(const _T& a) {
+                return __sincos(a);
+            }
+
+            static
+            const char* fname() { return "sincos"; }
+
             struct sin {
                 template <std::size_t _N>
                 static

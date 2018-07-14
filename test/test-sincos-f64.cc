@@ -59,6 +59,34 @@ int main(int argc, char** argv)
         rc &= check_func_1<double, 8, check_sincos<double>::cos >(v, ulp,
                                                                   0, false);
     }
+#if 1
+    auto dp=std::make_pair(-std::numeric_limits<double>::max(),
+                           std::numeric_limits<double>::max());
+    auto us_sin=std::make_shared<ulp_stats>();
+    auto us_cos=std::make_shared<ulp_stats>();
+    exec_stats st(_N);
+    struct cmp_ulp<std::pair<double, double> > cmp(ulp, us_sin, us_cos);
+    rc &= of_fp_func_up_to<
+        double, _N, check_sincos<double> >::v(st, dp, speed_only, cmp, cnt);
+    std::cout << "sin ulps: "
+              << std::fixed << std::setprecision(4) << *us_sin << std::endl;
+    std::cout << "cos ulps: "
+              << std::fixed << std::setprecision(4) << *us_cos << std::endl;
+    std::cout << st << std::endl;
+
+    auto dp2=std::make_pair(-0x1p28, 0x1p28);
+    auto us_sin2=std::make_shared<ulp_stats>();
+    auto us_cos2=std::make_shared<ulp_stats>();
+    exec_stats st2(_N);
+    struct cmp_ulp<std::pair<double, double> > cmp2(ulp, us_sin2, us_cos2);
+    rc &= of_fp_func_up_to<
+        double, _N, check_sincos<double> >::v(st, dp2, speed_only, cmp2, cnt);
+    std::cout << "sin ulps: "
+              << std::fixed << std::setprecision(4) << *us_sin2 << std::endl;
+    std::cout << "cos ulps: "
+              << std::fixed << std::setprecision(4) << *us_cos2 << std::endl;
+    std::cout << st << std::endl;
+#else
     auto dp=std::make_pair(-std::numeric_limits<double>::max(),
                            std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
@@ -74,5 +102,6 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
+#endif
     return (rc == true) ? 0 : 1;
 }

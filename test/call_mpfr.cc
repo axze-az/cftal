@@ -23,18 +23,18 @@ func(double a, f1_t f, std::pair<double, double>* ulp1i)
 {
 #if 0
     MPFR_DECL_INIT(r, 53);
-    mpfr_set_d(ai, a, GMP_RNDN);
-    int mpres=f(r, ai, GMP_RNDN);
-    double dr=mpfr_get_d(r, GMP_RNDN);
+    mpfr_set_d(ai, a, MPFR_RNDN);
+    int mpres=f(r, ai, MPFR_RNDN);
+    double dr=mpfr_get_d(r, MPFR_RNDN);
 #else
     mpfr_cache::mpfr_result<double> c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
         MPFR_DECL_INIT(ai, 53);
         MPFR_DECL_INIT(r, 53);
-        mpfr_set_d(ai, a, GMP_RNDN);
-        int mpres=f(r, ai, GMP_RNDN);
-        double dr=mpfr_get_d(r, GMP_RNDN);
+        mpfr_set_d(ai, a, MPFR_RNDN);
+        int mpres=f(r, ai, MPFR_RNDN);
+        double dr=mpfr_get_d(r, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = dr;
         mpfr_cache::update(a, f, c);
@@ -48,15 +48,43 @@ func(double a, f1_t f, std::pair<double, double>* ulp1i)
     return dr;
 }
 
+std::pair<double, double>
+cftal::test::call_mpfr::
+func(double a, f1p_t f,
+     std::pair<double, double>* ulp1i0,
+     std::pair<double, double>* ulp1i1)
+{
+    MPFR_DECL_INIT(ai, 53);
+    MPFR_DECL_INIT(r0, 53);
+    MPFR_DECL_INIT(r1, 53);
+    mpfr_set_d(ai, a, MPFR_RNDN);
+    int i01=f(r0, r1, ai, MPFR_RNDN);
+    double d0, d1;
+    d0 = mpfr_get_d(r0, MPFR_RNDN);
+    d1 = mpfr_get_d(r1, MPFR_RNDN);
+
+    if (ulp1i0 != nullptr) {
+        int i0 = i01 & 3;
+        int t= i0 > 1 ? -1 : i0;
+        *ulp1i0= ulp1_interval(d0, t);
+    }
+    if (ulp1i1 != nullptr) {
+        int i1 = (i01>>2) & 3;
+        int t= i1 > 1 ? -1 : i1;
+        *ulp1i1= ulp1_interval(d1, t);
+    }
+    return std::make_pair(d0, d1);
+}
+
 double
 cftal::test::call_mpfr::
 func(int32_t* ip, double a, f1i_t f, std::pair<double, double>* ulp1i)
 {
     MPFR_DECL_INIT(ai, 53);
     MPFR_DECL_INIT(r, 53);
-    mpfr_set_d(ai, a, GMP_RNDN);
-    int mpres=f(r, ip, ai, GMP_RNDN);
-    double dr=mpfr_get_d(r, GMP_RNDN);
+    mpfr_set_d(ai, a, MPFR_RNDN);
+    int mpres=f(r, ip, ai, MPFR_RNDN);
+    double dr=mpfr_get_d(r, MPFR_RNDN);
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }
@@ -70,10 +98,10 @@ func(double a, double b, f2_t f, std::pair<double, double>* ulp1i)
     MPFR_DECL_INIT(ai, 53);
     MPFR_DECL_INIT(bi, 53);
     MPFR_DECL_INIT(r, 53);
-    mpfr_set_d(ai, a, GMP_RNDN);
-    mpfr_set_d(bi, b, GMP_RNDN);
-    int mpres=f(r, ai, bi, GMP_RNDN);
-    double dr=mpfr_get_d(r, GMP_RNDN);
+    mpfr_set_d(ai, a, MPFR_RNDN);
+    mpfr_set_d(bi, b, MPFR_RNDN);
+    int mpres=f(r, ai, bi, MPFR_RNDN);
+    double dr=mpfr_get_d(r, MPFR_RNDN);
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }
@@ -87,18 +115,18 @@ func(float a, f1_t f, std::pair<float, float>* ulp1i)
 #if 0
     MPFR_DECL_INIT(ai, 24);
     MPFR_DECL_INIT(r, 24);
-    mpfr_set_flt(ai, a, GMP_RNDN);
-    int mpres=f(r, ai, GMP_RNDN);
-    float dr=mpfr_get_flt(r, GMP_RNDN);
+    mpfr_set_flt(ai, a, MPFR_RNDN);
+    int mpres=f(r, ai, MPFR_RNDN);
+    float dr=mpfr_get_flt(r, MPFR_RNDN);
 #else
     mpfr_cache::mpfr_result<float> c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
         MPFR_DECL_INIT(ai, 24);
         MPFR_DECL_INIT(r, 24);
-        mpfr_set_flt(ai, a, GMP_RNDN);
-        int mpres=f(r, ai, GMP_RNDN);
-        float dr=mpfr_get_flt(r, GMP_RNDN);
+        mpfr_set_flt(ai, a, MPFR_RNDN);
+        int mpres=f(r, ai, MPFR_RNDN);
+        float dr=mpfr_get_flt(r, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = dr;
         mpfr_cache::update(a, f, c);
@@ -112,15 +140,43 @@ func(float a, f1_t f, std::pair<float, float>* ulp1i)
     return dr;
 }
 
+std::pair<float, float>
+cftal::test::call_mpfr::
+func(float a, f1p_t f,
+     std::pair<float, float>* ulp1i0,
+     std::pair<float, float>* ulp1i1)
+{
+    MPFR_DECL_INIT(ai, 24);
+    MPFR_DECL_INIT(r0, 24);
+    MPFR_DECL_INIT(r1, 24);
+    mpfr_set_flt(ai, a, MPFR_RNDN);
+    int i01=f(r0, r1, ai, MPFR_RNDN);
+    float d0, d1;
+    d0 = mpfr_get_flt(r0, MPFR_RNDN);
+    d1 = mpfr_get_flt(r1, MPFR_RNDN);
+
+    if (ulp1i0 != nullptr) {
+        int i0 = i01 & 3;
+        int t= i0 > 1 ? -1 : i0;
+        *ulp1i0= ulp1_interval(d0, t);
+    }
+    if (ulp1i1 != nullptr) {
+        int i1 = (i01>>2) & 3;
+        int t= i1 > 1 ? -1 : i1;
+        *ulp1i1= ulp1_interval(d1, t);
+    }
+    return std::make_pair(d0, d1);
+}
+
 float
 cftal::test::call_mpfr::
 func(int32_t* ip, float a, f1i_t f, std::pair<float, float>* ulp1i)
 {
     MPFR_DECL_INIT(ai, 24);
     MPFR_DECL_INIT(r, 24);
-    mpfr_set_flt(ai, a, GMP_RNDN);
-    int mpres=f(r, ip, ai, GMP_RNDN);
-    float dr=mpfr_get_flt(r, GMP_RNDN);
+    mpfr_set_flt(ai, a, MPFR_RNDN);
+    int mpres=f(r, ip, ai, MPFR_RNDN);
+    float dr=mpfr_get_flt(r, MPFR_RNDN);
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }
@@ -134,10 +190,10 @@ func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
     MPFR_DECL_INIT(ai, 24);
     MPFR_DECL_INIT(bi, 24);
     MPFR_DECL_INIT(r, 24);
-    mpfr_set_flt(ai, a, GMP_RNDN);
-    mpfr_set_flt(bi, b, GMP_RNDN);
-    int mpres=f(r, ai, bi, GMP_RNDN);
-    float dr=mpfr_get_flt(r, GMP_RNDN);
+    mpfr_set_flt(ai, a, MPFR_RNDN);
+    mpfr_set_flt(bi, b, MPFR_RNDN);
+    int mpres=f(r, ai, bi, MPFR_RNDN);
+    float dr=mpfr_get_flt(r, MPFR_RNDN);
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }

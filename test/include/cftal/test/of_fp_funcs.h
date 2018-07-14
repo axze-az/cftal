@@ -68,10 +68,16 @@ namespace cftal {
         // results as the full vector
         template <typename _T, std::size_t _N, typename _F>
         struct vec_parts {
-            // check for functions with one argument
+            // check for functions with one argument returning a single value
             static
             bool
             v(const vec<_T, _N>& x, const vec<_T, _N>& fx,
+              exec_stats& st);
+            // check for functions with one argument return a pair
+            static
+            bool
+            v(const vec<_T, _N>& x,
+              const std::pair<vec<_T, _N>, vec<_T, _N> >& fx,
               exec_stats& st);
             // check for functions with one argument and an
             // additional result pointer
@@ -323,11 +329,62 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
     r &= rc;
     if (rc == false) {
         std::cerr << std::hexfloat;
+        std::cerr << __FILE__ << ": " << __LINE__ << '\n';
         std::cerr << "sub vector test " << _N << " failed.\n";
         std::cerr << "x:    " << x << "\n";
         std::cerr << "fx:   " << fx << "\n";
         std::cerr << "fxlh: " << fxlh << "\n";
         std::cerr << "vr: " << vr << "\n";
+        std::cerr << std::scientific;
+        std::exit(3);
+    }
+    st.insert(t0, t1, _N2);
+    st.insert(t1, t2, _N2);
+    return r;
+}
+
+template <typename _T, std::size_t _N, typename _F>
+bool
+cftal::test::vec_parts<_T, _N, _F>::
+v(const vec<_T, _N>& x,
+  const std::pair<vec<_T, _N>, vec<_T, _N> >& fx,
+  exec_stats& st)
+{
+    const int _N2=_N/2;
+    vec<_T, _N2> xl=low_half(x);
+    vec<_T, _N2> xh=high_half(x);
+    uint64_t t0= exec_stats::hr_timer();
+    auto fxl=_F::v(xl);
+    uint64_t t1= exec_stats::hr_timer();
+    auto fxh=_F::v(xh);
+    uint64_t t2 = exec_stats::hr_timer();
+    bool r=true;
+    r &= vec_parts<_T, _N2, _F>::v(xl, fxl, st);
+    r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
+
+    vec<_T, _N> fxlh0(fxl.first, fxh.first);
+    typename vec<_T, _N>::mask_type vr0=
+        (fx.first == fxlh0) | (isnan(fx.first) & isnan(fxlh0));
+    bool r0= all_of(vr0);
+    r &= r0;
+
+    vec<_T, _N> fxlh1(fxl.second, fxh.second);
+    typename vec<_T, _N>::mask_type vr1=
+        (fx.second == fxlh1) | (isnan(fx.second) & isnan(fxlh1));
+    bool r1= all_of(vr1);
+    r &= r1;
+
+    if (r0 == false || r1==false) {
+        std::cerr << std::hexfloat;
+        std::cerr << __FILE__ << ": "<<  __LINE__ << '\n';
+        std::cerr << "sub vector test " << _N << " failed.\n";
+        std::cerr << "x:    " << x << "\n";
+        std::cerr << "fx.first:    " << fx.first << "\n";
+        std::cerr << "fx.second:   " << fx.second << "\n";
+        std::cerr << "fxlh.first:  " << fxlh0 << "\n";
+        std::cerr << "fxlh.second: " << fxlh1 << "\n";
+        std::cerr << "vr.first:    " << vr0 << "\n";
+        std::cerr << "vr.second:   " << vr1 << "\n";
         std::cerr << std::scientific;
         std::exit(3);
     }
@@ -367,6 +424,7 @@ v(const vec<_T, _N>& x,
     r &= rc;
     if (rc == false || ri==false) {
         std::cerr << std::hexfloat;
+        std::cerr << __FILE__ << ": "<<  __LINE__ << '\n';
         std::cerr << "sub vector test " << _N << " failed.\n";
         std::cerr << "x:    " << x << "\n";
         std::cerr << "fxi:   " << fx.first << "\n";
@@ -407,6 +465,7 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& y,
     bool rc=all_of(vr);
     r &= rc;
     if (rc == false) {
+        std::cerr << __FILE__ << ": " << __LINE__ << '\n';
         std::cerr << "sub vector test " << _N << " failed.\n";
         std::cerr << "x:    " << x << "\n";
         std::cerr << "y:    " << y << "\n";

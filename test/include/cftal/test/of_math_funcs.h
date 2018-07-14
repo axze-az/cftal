@@ -65,6 +65,7 @@ namespace cftal {
                           uint32_t max_ulp, uint32_t max_err,
                           bool verbose);
 
+        // comparison against reference with non zero tolerance
         template <typename _T>
         struct cmp_ulp {
             uint32_t _ulp;
@@ -78,6 +79,36 @@ namespace cftal {
             bool operator()(const _T& a, const std::tuple<_T, _T, _T>& b) {
                 ulp_stats* p=&*_stats;
                 return f_eq_ulp(a, b, _ulp, p);
+            }
+        };
+
+        // comparison against reference with non zero tolerance for
+        // functions returning pairs
+        template <typename _T>
+        struct cmp_ulp< std::pair<_T, _T> > {
+            uint32_t _ulp;
+            std::shared_ptr<ulp_stats> _stats0;
+            std::shared_ptr<ulp_stats> _stats1;
+            cmp_ulp(uint32_t u,
+                    const std::shared_ptr<ulp_stats>& us0,
+                    const std::shared_ptr<ulp_stats>& us1)
+                : _ulp(u), _stats0(us0), _stats1(us1) {}
+            bool operator()(const std::pair<_T, _T>& a,
+                            const std::pair<_T, _T>& b) {
+                ulp_stats* p0= &*_stats0;
+                bool r0=f_eq_ulp(a.first, b.first, _ulp, p0);
+                ulp_stats* p1= &*_stats1;
+                bool r1=f_eq_ulp(a.second, b.second, _ulp, p1);
+                return r0 && r1;
+            }
+            bool operator()(const std::pair<_T, _T>& a,
+                            const std::pair<std::tuple<_T, _T, _T>,
+                                            std::tuple<_T, _T, _T> >& b) {
+                ulp_stats* p0= &*_stats0;
+                bool r0=f_eq_ulp(a.first, b.first, _ulp, p0);
+                ulp_stats* p1= &*_stats1;
+                bool r1=f_eq_ulp(a.second, b.second, _ulp, p1);
+                return r0 && r1;
             }
         };
 
