@@ -666,6 +666,11 @@ int main(int argc, char** argv)
         gen_constant(gm, "const double tgamma_gt_zero", mpfr_gamma,
                      check_zero<double>(), "m_0");
 
+        // lgamma
+        auto lngp=std::make_pair(174.0, std::numeric_limits<double>::max());
+        gen_constant(lngp, "const double lgamma_hi", mpfr_lngamma,
+                     check_inf<double>(), "inf");
+        
         dp=std::make_pair(1.0, std::numeric_limits<double>::max());
         gen_constant(dp, "const double rqsrt_", mpfr_rec_sqrt,
                      check_zero<double>(), "zero");
