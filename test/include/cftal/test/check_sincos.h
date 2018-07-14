@@ -24,7 +24,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 vec<_T, _N> s, c;
                 sincos(a, &s, &c);
-                return std::make_pair(s, c);
+                return std::pair<vec<_T, _N>, vec<_T, _N> >(s, c);
             }
 
             static
@@ -42,7 +42,7 @@ namespace cftal {
             __sincos(double a) {
                 double s, c;
                 ::sincos(a, &s, &c);
-                return std::make_pair(s, c);
+                return std::pair<double, double>(s, c);
             }
 
 
@@ -51,7 +51,7 @@ namespace cftal {
             __sincos(float a) {
                 float s, c;
                 ::sincosf(a, &s, &c);
-                return std::make_pair(s, c);
+                return std::pair<float, float>(s, c);
             }
 
             static
