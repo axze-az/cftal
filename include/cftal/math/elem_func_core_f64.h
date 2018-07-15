@@ -2333,6 +2333,19 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     dvf_type ds2=sqr(ds);
     vf_type s2= ds2.h();
     using ctbl = impl::d_real_constants<d_real<double>, double>;
+
+    vf_type th, tl;
+    if (_F == log_func::c_log_e) {
+        d_ops::mul122(th, tl, kf,
+                      ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    } else if (_F == log_func::c_log_2) {
+        d_ops::mul22(th, tl, ds.h(), ds.l(),
+                     ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l());
+    } else if (_F == log_func::c_log_10) {
+        d_ops::mul22(th, tl, ds.h(), ds.l(),
+                     ctbl::m_1_ln10.h(), ctbl::m_1_ln10.l());
+    }
+
     vf_type s4=s2*s2;
     static const double cp1[]= {
         pow_log_c19,
@@ -2359,24 +2372,15 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     // this does not work :-(
     // horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
     if (_F == log_func::c_log_e) {
-        vf_type kfh, kfl;
-        d_ops::mul122(kfh, kfl, kf, ctbl::m_ln2.h(), ctbl::m_ln2.l());
         d_ops::mul22(ph, pl, ds.h(), ds.l(), ph, pl);
-        d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
+        d_ops::add22cond(ph, pl, th, tl, ph, pl);
     } else if (_F == log_func::c_log_2) {
-        vf_type qh, ql;
-        d_ops::mul22(qh, ql,
-                     ds.h(), ds.l(),
-                     ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l());
-        d_ops::mul22(ph, pl, qh, ql, ph, pl);
+        d_ops::mul22(ph, pl, th, tl, ph, pl);
         d_ops::add122cond(ph, pl, kf, ph, pl);
     } else if (_F == log_func::c_log_10) {
-        vf_type qh, ql;
-        d_ops::mul22(qh, ql, ds.h(), ds.l(),
-                     ctbl::m_1_ln10.h(), ctbl::m_1_ln10.l());
         vf_type kfh, kfl;
         d_ops::mul122(kfh, kfl, kf, ctbl::m_lg2.h(), ctbl::m_lg2.l());
-        d_ops::mul22(ph, pl, qh, ql, ph, pl);
+        d_ops::mul22(ph, pl, th, tl, ph, pl);
         d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
     }
     return dvf_type(ph, pl);
