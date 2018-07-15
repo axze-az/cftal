@@ -2131,6 +2131,19 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     const float pow_log_c11=+4.3164429069e-01f;
     vf_type s2= sqr(ds).h();
     using ctbl=impl::d_real_constants<d_real<float>, float>;
+
+    vf_type th, tl;
+    if (_F == log_func::c_log_e) {
+        d_ops::mul122(th, tl, kf,
+                      ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    } else if (_F == log_func::c_log_2) {
+        d_ops::mul22(th, tl, ds.h(), ds.l(),
+                     ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l());
+    } else if (_F == log_func::c_log_10) {
+        d_ops::mul22(th, tl, ds.h(), ds.l(),
+                     ctbl::m_1_ln10.h(), ctbl::m_1_ln10.l());
+    }
+
     vf_type s4=s2*s2;
     vf_type p1= horner(s4,
                        pow_log_c11,
@@ -2142,24 +2155,15 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     vf_type ph, pl;
     horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
     if (_F == log_func::c_log_e) {
-        vf_type kfh, kfl;
-        d_ops::mul122(kfh, kfl, kf, ctbl::m_ln2.h(), ctbl::m_ln2.l());
         d_ops::mul22(ph, pl, ds.h(), ds.l(), ph, pl);
-        d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
+        d_ops::add22cond(ph, pl, th, tl, ph, pl);
     } else if (_F == log_func::c_log_2) {
-        vf_type qh, ql;
-        d_ops::mul22(qh, ql,
-                     ds.h(), ds.l(),
-                     ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l());
-        d_ops::mul22(ph, pl, qh, ql, ph, pl);
+        d_ops::mul22(ph, pl, th, tl, ph, pl);
         d_ops::add122cond(ph, pl, kf, ph, pl);
     } else if (_F == log_func::c_log_10) {
-        vf_type qh, ql;
-        d_ops::mul22(qh, ql, ds.h(), ds.l(),
-                     ctbl::m_1_ln10.h(), ctbl::m_1_ln10.l());
         vf_type kfh, kfl;
         d_ops::mul122(kfh, kfl, kf, ctbl::m_lg2.h(), ctbl::m_lg2.l());
-        d_ops::mul22(ph, pl, qh, ql, ph, pl);
+        d_ops::mul22(ph, pl, th, tl, ph, pl);
         d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
     }
     return dvf_type(ph, pl);
