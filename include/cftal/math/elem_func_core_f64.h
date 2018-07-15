@@ -194,7 +194,7 @@ namespace cftal {
             void
             exp_k2(vf_type& eh, vf_type& el,
                    arg_t<vf_type> xh, arg_t<vf_type> xl);
-            
+
             // calculates %e^(-x*x)
             static
             vf_type
@@ -323,17 +323,19 @@ namespace cftal {
                         arg_t<vf_type> kf,
                         vf_type* exl=nullptr);
 
-            // log2 worker with enhanced precision, inputs are
+            // log worker with enhanced precision, inputs are
             // sh, sl = (xr-1)/(xr+1) and kf with x= xr*2^kf
+            template <log_func _F>
             static
             dvf_type
-            __pow_log2_k(arg_t<vf_type> sh, arg_t<vf_type> sl,
+            __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl,
                          arg_t<vf_type> kf);
 
-            // log2 with enhanced precision
+            // log with enhanced precision
+            template <log_func _F>
             static
             dvf_type
-            __pow_log2_k(arg_t<vf_type> vf);
+            __pow_log_k(arg_t<vf_type> vf);
 
             // calculation of x^y
             static
@@ -2155,6 +2157,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log_k(arg_t<vf_type> xc)
 {
+    // return __pow_log_k<log_func::c_log_e>(xc).h();
     return __log_k<log_func::c_log_e>(xc);
 }
 
@@ -2164,7 +2167,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log2_k(arg_t<vf_type> xc)
 {
-    // return __pow_log2_k(xc).h();
+    // return __pow_log_k<log_func::c_log_2>(xc).h();
 /*
  * Return the base 2 logarithm of x.  See log.c for most comments.
  *
@@ -2181,6 +2184,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log10_k(arg_t<vf_type> xc)
 {
+    // return __pow_log_k<log_func::c_log_10>(xc).h();
 /*
  * Return the base 10 logarithm of x.  See log.c for most comments.
  *
@@ -2298,9 +2302,10 @@ __pow_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 }
 
 template <typename _T>
+template <typename cftal::math::elem_func_core<double, _T>::log_func _F>
 typename cftal::math::elem_func_core<double, _T>::dvf_type
 cftal::math::elem_func_core<double, _T>::
-__pow_log2_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
+__pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
 {
     dvf_type ds(sh, sl);
     // [0, 0.17157287895679473876953125] : | p - f | <= 2^-70.84375
@@ -2327,14 +2332,8 @@ __pow_log2_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     const double pow_log_c19=+8.7501330214586989231229e-02;
     dvf_type ds2=sqr(ds);
     vf_type s2= ds2.h();
-    vf_type qh, ql;
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul22(qh, ql,
-                 ds.h(), ds.l(),
-                 ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l());
-#if 1
     vf_type s4=s2*s2;
-#if 1
     static const double cp1[]= {
         pow_log_c19,
         pow_log_c15,
@@ -2349,30 +2348,8 @@ __pow_log2_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     };
     vf_type p1, p2;
     horner_n2(p1, p2, s4, cp1, cp2);
-#else
-    vf_type p1= horner(s4,
-                       pow_log_c19,
-                       pow_log_c15,
-                       pow_log_c11,
-                       pow_log_c7);
-    vf_type p2= horner(s4,
-                       pow_log_c17,
-                       pow_log_c13,
-                       pow_log_c9,
-                       pow_log_c5);
-#endif
     vf_type p= horner(s2, p1, p2);
-#else
-    vf_type p= horner(s2,
-                      pow_log_c19,
-                      pow_log_c17,
-                      pow_log_c15,
-                      pow_log_c13,
-                      pow_log_c11,
-                      pow_log_c9,
-                      pow_log_c7,
-                      pow_log_c5);
-#endif
+
     vf_type ph, pl;
     vf_type s2l=ds2.l();
     p= s2* p;
@@ -2381,11 +2358,6 @@ __pow_log2_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     d_ops::add122(ph, pl, pow_log_c1, ph, pl);
     // this does not work :-(
     // horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
-    d_ops::mul22(ph, pl, ph, pl, qh, ql);
-    d_ops::add122cond(ph, pl, kf, ph, pl);
-    dvf_type log2_x(ph, pl);
-#if 0
-    horner_comp_quick(ph, pl, s2, p, log_c3, log_c1);
     if (_F == log_func::c_log_e) {
         vf_type kfh, kfl;
         d_ops::mul122(kfh, kfl, kf, ctbl::m_ln2.h(), ctbl::m_ln2.l());
@@ -2407,15 +2379,15 @@ __pow_log2_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
         d_ops::mul22(ph, pl, qh, ql, ph, pl);
         d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
     }
-#endif
-    return log2_x;
+    return dvf_type(ph, pl);
 }
 
 
 template <typename _T>
+template <typename cftal::math::elem_func_core<double, _T>::log_func _F>
 typename cftal::math::elem_func_core<double, _T>::dvf_type
 cftal::math::elem_func_core<double, _T>::
-__pow_log2_k(arg_t<vf_type> xc)
+__pow_log_k(arg_t<vf_type> xc)
 {
 #if 0
     vf_type xr;
@@ -2442,7 +2414,7 @@ __pow_log2_k(arg_t<vf_type> xc)
     dvf_type ym= d_ops::add(xr, vf_type(-1.0));
     dvf_type yp= d_ops::add(xr, vf_type(+1.0));
     dvf_type ds= d_ops::sloppy_div(ym, yp);
-    return __pow_log2_k(ds.h(), ds.l(), kf);
+    return __pow_log_k<_F>(ds.h(), ds.l(), kf);
 }
 
 
@@ -2452,12 +2424,12 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type abs_x= abs(x);
-    dvf_type ldx= __pow_log2_k(abs_x);
+    dvf_type ldx= __pow_log_k<log_func::c_log_2>(abs_x);
     dvf_type yldx = y*ldx;
     vf_type kf= rint(vf_type(yldx.h()));
     dvf_type xrhl= yldx - kf;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type xrh, xrl;
     d_ops::mul22(xrh, xrl, xrhl.h(), xrhl.l(),
                  ctbl::m_ln2.h(), ctbl::m_ln2.l());
@@ -2470,8 +2442,8 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     const double exp2_lo_zero= fc::exp2_lo_zero();
     res = _T::sel_zero_or_val(d <= exp2_lo_zero, res);
     res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
-    res = _T::sel(d == 0.0, 1.0, res);
-    res = _T::sel(d == 1.0, 2.0, res);
+    // res = _T::sel(d == 0.0, 1.0, res);
+    // res = _T::sel(d == 1.0, 2.0, res);
     return res;
 }
 
@@ -2501,7 +2473,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     dvf_type yp;
     d_ops::add122cond(yp.h(), yp.l(), +1.0, axrh, axrl);
     dvf_type ds= d_ops::sloppy_div(ym, yp);
-    dvf_type ldx=__pow_log2_k(ds.h(), ds.l(), kf);
+    dvf_type ldx=__pow_log_k<log_func::c_log_2>(ds.h(), ds.l(), kf);
     dvf_type yldx = dvf_type(yh, yl)*ldx;
     kf= rint(vf_type(yldx.h()));
     dvf_type xrhl= yldx - kf;
