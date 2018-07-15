@@ -311,6 +311,12 @@ namespace cftal {
             dvf_type
             __pow_log_k(arg_t<vf_type> x);
 
+            // log with enhanced precision
+            template <log_func _F>
+            static
+            dvf_type
+            __pow_log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl);
+
             // calculation of x^y
             static
             vf_type
@@ -2196,6 +2202,29 @@ __pow_log_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
+template <typename cftal::math::elem_func_core<float, _T>::log_func _F>
+typename cftal::math::elem_func_core<float, _T>::dvf_type
+cftal::math::elem_func_core<float, _T>::
+__pow_log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
+{
+    vf_type xrh;
+    auto k=__frexp_k(xrh, xh);
+    vf_type xrl=ldexp_k(xl, -k);
+
+    vmf_type c= xrh < M_SQRT2*0.5f;
+    vf_type kf = _T::cvt_i_to_f(k);
+    xrh = _T::sel(c, xrh*2.0f, xrh);
+    xrl = _T::sel(c, xrl*2.0f, xrl);
+    kf = _T::sel(c, kf-1.0f, kf);
+    dvf_type ym;
+    d_ops::add122cond(ym.h(), ym.l(), -1.0f, xrh, xrl);
+    dvf_type yp;
+    d_ops::add122cond(yp.h(), yp.l(), +1.0f, xrh, xrl);
+    dvf_type ds= d_ops::sloppy_div(ym, yp);
+    return __pow_log_k<_F>(ds.h(), ds.l(), kf);
+}
+
+template <typename _T>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
@@ -2232,26 +2261,9 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     dvf_type abs_x= select(xh >= 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
-    // argument reduction of abs_x
-
-    vf_type axrh;
-    auto k=__frexp_k(axrh, abs_x.h());
-    vf_type axrl=ldexp_k(abs_x.l(), -k);
-
-    vmf_type c= axrh < M_SQRT2*0.5f;
-    vf_type kf = _T::cvt_i_to_f(k);
-    axrh = _T::sel(c, axrh*2.0f, axrh);
-    axrl = _T::sel(c, axrl*2.0f, axrl);
-    kf = _T::sel(c, kf-1.0f, kf);
-
-    dvf_type ym;
-    d_ops::add122cond(ym.h(), ym.l(), -1.0, axrh, axrl);
-    dvf_type yp;
-    d_ops::add122cond(yp.h(), yp.l(), +1.0, axrh, axrl);
-    dvf_type ds= d_ops::sloppy_div(ym, yp);
-    dvf_type ldx= __pow_log_k<log_func::c_log_2>(ds.h(), ds.l(), kf);
+    dvf_type ldx=__pow_log_k2<log_func::c_log_2>(abs_x.h(), abs_x.l());
     dvf_type yldx = dvf_type(yh, yl)*ldx;
-    kf= rint(vf_type(yldx.h()));
+    vf_type kf= rint(vf_type(yldx.h()));
     dvf_type xrhl= yldx - kf;
     vf_type xrh, xrl;
     d_ops::mul22(xrh, xrl, xrhl.h(), xrhl.l(),
