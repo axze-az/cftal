@@ -2260,7 +2260,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
-    dvf_type abs_x= select(xh >= 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
+    dvf_type abs_x= select(xh > 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
     dvf_type ldx=__pow_log_k2<log_func::c_log_2>(abs_x.h(), abs_x.l());
     dvf_type yldx = dvf_type(yh, yl)*ldx;
     vf_type kf= rint(vf_type(yldx.h()));
