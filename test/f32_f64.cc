@@ -175,15 +175,16 @@ namespace {
     {
         bool ref_nan = b!=b;
         bool res_nan = a!=a;
-        int32_t u=0;
+        int32_t iu=0;
         if (ref_nan == false) {
-            u = get_ulp(a, b);
+            iu = get_ulp(a, b);
         }
         if (us != nullptr) {
             bool nan_not_calculated= (ref_nan == true) && (res_nan == false);
             bool nan_unexpected= (ref_nan == false) && (res_nan == true);
-            us->inc(u, ref_nan, nan_not_calculated, nan_unexpected);
+            us->inc(iu, ref_nan, nan_not_calculated, nan_unexpected);
         }
+        int32_t u=abs(iu);
         return (u <= ulp) && (ref_nan == res_nan);
     }
 

@@ -132,7 +132,21 @@ namespace cftal {
                        const std::pair<_I, std::tuple<_T, _T, _T> >& b) {
                 ulp_stats* p=&(*(this->_stats));
                 bool r1=f_eq_ulp(a.second, b.second, this->_ulp, p);
+#if 0
+                if (r1== false) {
+                    std::cout << "value failed" << std::endl;
+                } else {
+                    std::cout << "value success" << std::endl;
+                }
+#endif
                 bool r2=a.first==b.first;
+#if 0
+                if (r2== false) {
+                    std::cout << "sign failed" << std::endl;
+                } else {
+                    std::cout << "sign success" << std::endl;
+                }
+#endif
                 return r1 && r2;
             }
         };
