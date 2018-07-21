@@ -670,7 +670,7 @@ int main(int argc, char** argv)
         auto lngp=std::make_pair(174.0, std::numeric_limits<double>::max());
         gen_constant(lngp, "const double lgamma_hi", mpfr_lngamma,
                      check_inf<double>(), "inf");
-        
+
         dp=std::make_pair(1.0, std::numeric_limits<double>::max());
         gen_constant(dp, "const double rqsrt_", mpfr_rec_sqrt,
                      check_zero<double>(), "zero");

@@ -220,10 +220,12 @@ create_lanczos_ratfunc(g, n) :=
     );
 
 print_lanczos_ratfunc(g, n) :=
-    block([old_fpprec, gr, exp_gr, exp_gr_dd, grmh, grmh_dd, a, l, p, q, s],
+    block([old_fpprec, gr, g_dd,
+           exp_gr, exp_gr_dd, grmh, grmh_dd, a, l, p, q, s],
         old_fpprec : fpprec,
         fpprec: 16*1024,
         gr: rationalize(g),
+        g_dd:  make_doubledouble(gr),
         a : create_lanczos_ratfunc(gr, n)/**((2*%pi)^(1/2))*/,
         l : normalize_rat_poly(a),
         p : l[1] *((2*%pi)^(1/2)),
@@ -240,7 +242,11 @@ print_lanczos_ratfunc(g, n) :=
         printf(true, "struct lanczos_table_g_~a_N~d {~%", s, n),
         printf(true, "static constexpr~%"),
         printf(true, "double g() {~%"),
-        printf(true, "    return ~a;~%", fmt_double(gr)),
+        printf(true, "    return ~a;~%", fmt_double(g_dd[1])),
+        printf(true, "}~%"),
+        printf(true, "static constexpr~%"),
+        printf(true, "double g_l() {~%"),
+        printf(true, "    return ~a;~%", fmt_double(g_dd[2])),
         printf(true, "}~%"),
         printf(true, "static constexpr~%"),
         printf(true, "double gm0_5() {~%"),
@@ -358,8 +364,13 @@ print_lanczos_ratfunc(
         12068153090775013/
         1000000000000000,
         12);
-
+/* we use this for float precision, error 1.242916896389048e-010 */
 print_lanczos_ratfunc(
         55917193591594696/
         10000000000000000,
         6);
+
+print_lanczos_ratfunc(
+        122252227365970611572265625/
+        10000000000000000000000000,
+        17);
