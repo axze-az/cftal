@@ -2353,6 +2353,32 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     }
 
     vf_type s4=s2*s2;
+#if 0
+    static const double cp1[]= {
+        pow_log_c19,
+        pow_log_c15
+    };
+    static const double cp2[]= {
+        pow_log_c17,
+        pow_log_c13
+    };
+    vf_type p1, p2;
+    horner_n2(p1, p2, s4, cp1, cp2);
+    vf_type p= horner(s2, p1, p2);
+
+    vf_type ph, pl;
+    vf_type s2l=ds2.l();
+    p= s2* p;
+    d_ops::add12(ph, pl, pow_log_c11, p);
+    d_ops::mul22(ph, pl, s2, s2l, ph, pl);
+    d_ops::add122(ph, pl, pow_log_c9, ph, pl);
+    d_ops::mul22(ph, pl, s2, s2l, ph, pl);
+    d_ops::add122(ph, pl, pow_log_c7, ph, pl);
+    d_ops::mul22(ph, pl, s2, s2l, ph, pl);
+    d_ops::add122(ph, pl, pow_log_c5, ph, pl);
+    d_ops::mul22(ph, pl, s2, s2l, ph, pl);
+    d_ops::add122(ph, pl, pow_log_c3, ph, pl);
+#else
     static const double cp1[]= {
         pow_log_c19,
         pow_log_c15,
@@ -2373,6 +2399,7 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     vf_type s2l=ds2.l();
     p= s2* p;
     d_ops::add12(ph, pl, pow_log_c3, p);
+#endif
     d_ops::mul22(ph, pl, s2, s2l, ph, pl);
     d_ops::add122(ph, pl, pow_log_c1, ph, pl);
     // this does not work :-(
