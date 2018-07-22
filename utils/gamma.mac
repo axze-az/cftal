@@ -268,6 +268,7 @@ print_lanczos_ratfunc(g, n) :=
         print_d_poly_coeffs("q", q),
         print_dd_poly_coeffs("pd", p),
         print_dd_poly_coeffs("qd", q),
+        print_dd_poly_coeffs("ped", p*%e^(-gr)),
         printf(true, "};~%"),
         fpprec : old_fpprec
         /* fullratsimp(bfloat(a) - bfloat(p)/bfloat(q))*/
@@ -371,6 +372,6 @@ print_lanczos_ratfunc(
         6);
 
 print_lanczos_ratfunc(
-        122252227365970611572265625/
-        10000000000000000000000000,
-        17);
+        6024680040776729583740234375/
+        1000000000000000000000000000,
+        13);
