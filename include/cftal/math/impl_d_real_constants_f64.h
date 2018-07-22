@@ -65,6 +65,8 @@ namespace cftal {
                 static const _T m_pi_4;
                 // 4/PI
                 static const _T m_4_pi;
+                // log_e(PI)
+                static const _T m_ln_pi;
             };
 
         } // impl
@@ -176,6 +178,11 @@ template <class _T>
 const _T
 cftal::math::impl::d_real_constants<_T, double>::m_4_pi(
     +1.2732395447351627648658e+00, -7.8714706700729943527581e-17);
+
+template <class _T>
+const _T
+cftal::math::impl::d_real_constants<_T, double>::m_ln_pi(
+    +1.1447298858494001638775e+00, +1.0265951162707826380030e-17);
 
 // Local Variables:
 // mode: c++
