@@ -2364,21 +2364,21 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     const double pow_log_c23=+1.0236634029331442841126e-01;
     static const double cp1[]= {
         pow_log_c23,
-        pow_log_c19,
-        pow_log_c15
+        pow_log_c19
     };
     static const double cp2[]= {
         pow_log_c21,
-        pow_log_c17,
-        pow_log_c13
+        pow_log_c17
     };
     vf_type p1, p2;
     horner_n2(p1, p2, s4, cp1, cp2);
-    vf_type p= horner(s2, p1, p2);
+    vf_type p= horner(s2, p1, p2, pow_log_c15);
 
     vf_type ph, pl;
     vf_type s2l=ds2.l();
     d_ops::mul122(ph, pl, p, s2, s2l);
+    d_ops::add122(ph, pl, pow_log_c13, ph, pl);
+    d_ops::mul22(ph, pl, s2, s2l, ph, pl);
     d_ops::add122(ph, pl, pow_log_c11, ph, pl);
     d_ops::mul22(ph, pl, s2, s2l, ph, pl);
     d_ops::add122(ph, pl, pow_log_c9, ph, pl);
@@ -3414,6 +3414,46 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type xxh, xxl;
     d_ops::sqr22(xxh, xxl, xrh, xrl);
 
+#if 1
+    static const double c_cos[]={
+        cos_c16, cos_c14
+    };
+    static const double c_sin[]={
+        sin_c17, sin_c15
+    };
+    horner_n2(ch, sh, xxh, c_cos, c_sin);
+    ch *= xxh;
+    sh = horner(xxh, sh, sin_c13)*xxh;
+
+    vf_type cl;
+    d_ops::add12(ch, cl, cos_c12, ch);
+    d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
+    d_ops::add122(ch, cl, cos_c10, ch, cl);
+    d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
+    d_ops::add122(ch, cl, cos_c8, ch, cl);
+    d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
+    d_ops::add122(ch, cl, cos_c6, ch, cl);
+    d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
+    d_ops::add22(ch, cl, cos_c4h, cos_c4l, ch, cl);
+    d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
+    d_ops::add122(ch, cl, cos_c2, ch, cl);
+    d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
+    d_ops::add122(ch, cl, cos_c0, ch, cl);
+
+    vf_type sl;
+    d_ops::add12(sh, sl, sin_c11, sh);
+    d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
+    d_ops::add122(sh, sl, sin_c9, sh, sl);
+    d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
+    d_ops::add122(sh, sl, sin_c7, sh, sl);
+    d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
+    d_ops::add122(sh, sl, sin_c5, sh, sl);
+    d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
+    d_ops::add22(sh, sl, sin_c3h, sin_c3l, sh, sl);
+    d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
+    d_ops::add122(sh, sl, sin_c1, sh, sl);
+    d_ops::mul22(sh, sl, sh, sl, xrh, xrl);
+#else
     static const double c_cos[]={
         cos_c16, cos_c14, cos_c12, cos_c10, cos_c8
     };
@@ -3440,7 +3480,7 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
     d_ops::add122(sh, sl, sin_c1, sh, sl);
     d_ops::mul22(sh, sl, sh, sl, xrh, xrl);
-
+#endif
 
     vmi2_type q_and_2(vi2_type(q & vi2_type(2))==vi2_type(2));
     vmf_type q_and_2_f(_T::vmi2_to_vmf(q_and_2));
