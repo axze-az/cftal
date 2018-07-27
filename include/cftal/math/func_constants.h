@@ -95,6 +95,10 @@ namespace cftal {
             // tgamma(x) == +- 0 for x<
             static constexpr double
             tgamma_lo_zero() { return -184.0; }
+
+            // lgamma(x) == +inf for x>=
+            static constexpr double
+            lgamma_hi_inf() { return 2.559983327851638715584478e+305; }
         };
 
         template <>
@@ -172,6 +176,9 @@ namespace cftal {
             // tgamma(x) == +- 0 for x<
             static constexpr float
             tgamma_lo_zero() { return -42.0f; }
+
+            static constexpr float
+            lgamma_hi_inf() { return 4.085003425410169132208425e+36f; }
         };
 
         namespace impl {
