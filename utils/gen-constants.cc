@@ -785,9 +785,14 @@ int main(int argc, char** argv)
         gen_constant(gm, "const float tgamma_hi", mpfr_gamma,
                      check_inf<float>(), "inf");
 
-        dp=std::make_pair(1.0, std::numeric_limits<float>::max());
+        dp=std::make_pair(1.0f, std::numeric_limits<float>::max());
         gen_constant(dp, "const float rqsrt_", mpfr_rec_sqrt,
                      check_zero<double>(), "zero");
+
+        // lgamma
+        auto lngp=std::make_pair(174.0f, std::numeric_limits<float>::max());
+        gen_constant(lngp, "const float lgamma_hi", mpfr_lngamma,
+                     check_inf<float>(), "inf");
 
         std::cout << "const float max_denormal= "
                   <<  sig_f32_msk::v.f32() << ";\n\n";
