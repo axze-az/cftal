@@ -602,6 +602,9 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
             _T(0x1p28),
             // acosh
             _T(0x1p26),
+            // lgamma
+            _T(-2.747682668831582298e+00),
+            _T(-2.747682643214721665e+00),
             _T(uint64_t(1ULL<<23)),
             _T(uint64_t(1ULL<<52)),
             _T(0x1.0p31),

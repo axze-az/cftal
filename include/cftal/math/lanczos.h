@@ -336,7 +336,7 @@ namespace cftal {
                 { 1.3043078267e+12f, -1.9257348633e+03f }
             };
             static constexpr
-            const d_real<float> pdef[]={
+            const d_real<float> pedf[]={
                 { 1.4386582734e-05f, -2.4819602211e-13f },
                 { 1.8382958369e-03f, -9.7128451115e-12f },
                 { 1.0677277297e-01f, -3.5787819375e-09f },

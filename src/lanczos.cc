@@ -34,8 +34,12 @@ constexpr const cftal::d_real<double>
 cftal::math::lanczos_table_g_12_06815_N12::pd[];
 constexpr const cftal::d_real<double>
 cftal::math::lanczos_table_g_12_06815_N12::qd[];
+constexpr const cftal::d_real<double>
+cftal::math::lanczos_table_g_12_06815_N12::ped[];
 constexpr const cftal::d_real<float>
 cftal::math::lanczos_table_g_12_06815_N12::pdf[];
+constexpr const cftal::d_real<float>
+cftal::math::lanczos_table_g_12_06815_N12::pedf[];
 constexpr const float
 cftal::math::lanczos_table_g_12_06815_N12::qf[];
 
