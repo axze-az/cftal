@@ -212,7 +212,7 @@ write_coeffs(p, "const double cos_sun_c", "cos", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cos-sun-f64");
 
-/* tan as one polynomial over [0,pi/4]
+/* tan as one polynomial over [0,pi/4] */
 f = tan(x);
 i = [0, pi/4];
 d = guessdegree(f, i, 0x1p-60);
