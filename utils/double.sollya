@@ -140,6 +140,24 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "pow-log-f64");
 
+/* pow log with high precision */
+/* y= (x-1)/(x+1) */
+/* log(x) f64 */
+f= log((1+x)/(1-x));
+i= [0, (sqrt(2)-1)/(1+sqrt(2))];
+d = guessdegree(f, i, 0x1p-84);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23|];
+c = [|D, DD, DD, D, D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const double pow_log_hp_c", "pow_log_hp", b, c);
+// write_coeff(1/log(2), "", "const double c_1_ln2_", doubledouble);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "pow-log-hp-f64");
+
 /* sin(x) f64 */
 i = [0x1p-512, pi/4];
 f = sin(x);
