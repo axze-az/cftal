@@ -457,6 +457,32 @@ namespace cftal {
     lookup(const vec<_I, _N>& idx, const _T(&table)[_L]);
 
 
+    template <std::size_t _TABLE_LEN, typename _T,
+              typename _I, std::size_t _VEC_LEN>
+    class fixed_lookup_table {
+    private:
+        fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
+        fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
+    public:
+        // constructor, prepares table lookups into _T[_TABLE_LEN]
+        fixed_lookup_table(const vec<_I, _VEC_LEN>& idx)
+            : _lh(low_half(idx)), _hh(high_half(idx)) {}
+        // perform the lookup using the prepared data
+        vec<_T, _VEC_LEN>
+        from(const _T (&tbl)[_TABLE_LEN]) const {
+            vec<_T, _VEC_LEN/2> lh=_lh.from(tbl);
+            vec<_T, _VEC_LEN/2> hh=_hh.from(tbl);
+            return vec<_T, _VEC_LEN>(lh, hh);
+        }
+    };
+
+    template <std::size_t _TABLE_LEN, typename _T,
+              typename _I, std::size_t _VEC_LEN>
+    fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>
+    make_fixed_lookup_table(const vec<_I, _VEC_LEN>& idx) {
+        return fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>(idx);
+    }
+    
     // absolute value for signed integers
     template <typename _T, std::size_t _N>
     std::enable_if_t< std::is_signed<_T>::value &&

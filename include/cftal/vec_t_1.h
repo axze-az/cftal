@@ -282,6 +282,20 @@ namespace cftal {
     template <typename _T>
     std::ostream& operator<<(std::ostream& s, const vec<_T, 1>& v);
 
+    template <std::size_t _TABLE_LEN, typename _T, typename _I>
+    class fixed_lookup_table<_TABLE_LEN, _T, _I, 1> {
+    private:
+        // vec<_I, 1> m_idx;
+        typename std::make_unsigned<_I>::type _idx;
+    public:
+        fixed_lookup_table(const vec<_I, 1> idx) : _idx(idx()) {}
+        vec<_T, 1>
+        from(const _T (&tbl)[_TABLE_LEN]) const {
+            vec<_T, 1> r=tbl[_idx];
+            return r;
+        }
+    };
+
     namespace op {
         template <typename _T>
         struct lt<_T, 1> {
