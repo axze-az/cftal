@@ -19,19 +19,6 @@
 
 namespace cftal {
 
-    namespace impl {
-#if defined (__AVX2__)
-        template <std::size_t _L>
-        struct lookup<_L, int32_t, float, 4> {
-            static
-            vec<float, 4>
-            v(const vec<int32_t, 4>& idx, const float* tbl) {
-                return _mm_i32gather_ps(tbl, idx(), sizeof(float));
-            }
-        };
-#endif
-    }
-
     namespace op {
 
         template <>
@@ -741,6 +728,24 @@ cftal::native_div(const v4f32& b, const v4f32& a)
 {
     return native_recip(a) * b;
 }
+
+#if defined (__AVX2__)
+inline
+cftal::variable_lookup_table<float, int32_t, 4>::
+variable_lookup_table(const vec<int32_t>& idx)
+    : _msk(idx)
+{
+}
+
+inline
+cftal::vec<float, 4>
+cftal::variable_lookup_table<float, int32_t, 4>::
+from(const float* tbl)
+{
+    return _mm_i32gather_ps(tbl, _msk(), sizeof(float));
+}
+
+#endif
 
 #if defined (__SSSE3__)
 inline

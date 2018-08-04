@@ -734,6 +734,21 @@ cftal::native_div(const v8f32& b, const v8f32& a)
 #if defined (__AVX2__)
 
 inline
+cftal::variable_lookup_table<4, float, int32_t, 8>::
+fixed_lookup_table(const vec<int32_t, 8>& idx)
+    : _msk(idx)
+{
+}
+
+inline
+cftal::v8f32
+cftal::variable_lookup_table<float, int32_t, 8>::
+from(const float* tbl) const
+{
+    return _mm256_i32gather_ps(tbl, _msk(), sizeof(float));
+}
+
+inline
 __m256i
 cftal::fixed_lookup_table<4, float, int32_t, 8>::
 setup_msk(const vec<int32_t, 8>& idx)

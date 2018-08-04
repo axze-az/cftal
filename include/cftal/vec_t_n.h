@@ -427,35 +427,27 @@ namespace cftal {
     bool
     elements_equal(const vec<_T, 1>& v);
 
-    namespace impl {
+    template <typename _T, typename _I, std::size_t _VEC_LEN>
+    class variable_lookup_table {
+    private:
+        variable_lookup_table<_T, _I, _VEC_LEN/2> _lh;
+        variable_lookup_table<_T, _I, _VEC_LEN/2> _hh;
+    public:
+        variable_lookup_table(const vec<_I, _VEC_LEN>& idx)
+            : _lh(low_half(idx)), _hh(low_half(idx)) {}
+        vec<_T, _VEC_LEN>
+        from(const _T* tbl) const {
+            vec<_T, _VEC_LEN/2> lh=_lh.from(tbl);
+            vec<_T, _VEC_LEN/2> hh=_hh.from(tbl);
+            return vec<_T, _VEC_LEN>(lh, hh);
+        }
+    };
 
-        // helper class for lookup functions
-        template <std::size_t _L,
-                  typename _I, typename _T, std::size_t _N>
-        struct lookup {
-            static
-            vec<_T, _N>
-            v(const vec<_I, _N>& idx, const _T* table);
-        };
-
-        // helper class for lookup functions for vector length 1
-        template <std::size_t _L, typename _I, typename _T>
-        struct lookup<_L, _I, _T, 1> {
-            static
-            vec<_T, 1>
-            v(const vec<_I, 1>& idx, const _T* table);
-        };
-
+    template <typename _T, typename _I, std::size_t _VEC_LEN>
+    variable_lookup_table<_T, _I, _VEC_LEN>
+    make_variable_lookup_table(const vec<_I, _VEC_LEN>& idx) {
+        return make_variable_lookup_table<_T, _I, _VEC_LEN>(idx);
     }
-
-    template <std::size_t _L, typename _I, typename _T, std::size_t _N>
-    vec<_T, _N>
-    lookup(const vec<_I, _N>& idx, const _T* table);
-
-    template <std::size_t _L, typename _I, typename _T, std::size_t _N>
-    vec<_T, _N>
-    lookup(const vec<_I, _N>& idx, const _T(&table)[_L]);
-
 
     template <std::size_t _TABLE_LEN, typename _T,
               typename _I, std::size_t _VEC_LEN>
@@ -482,7 +474,7 @@ namespace cftal {
     make_fixed_lookup_table(const vec<_I, _VEC_LEN>& idx) {
         return fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>(idx);
     }
-    
+
     // absolute value for signed integers
     template <typename _T, std::size_t _N>
     std::enable_if_t< std::is_signed<_T>::value &&
@@ -1401,38 +1393,6 @@ cftal::vec<_T, 2>
 cftal::copy_odd_to_even(const vec<_T, 2>& v)
 {
     return permute< 1,  1>(v);
-}
-
-template <std::size_t _L, typename _I, typename _T, std::size_t _N>
-cftal::vec<_T, _N>
-cftal::impl::lookup<_L, _I, _T, _N>::
-v(const vec<_I, _N>& idx, const _T* table)
-{
-    using hl_t= cftal::impl::lookup<_L, _I, _T, _N/2>;
-    return vec<_T, _N>(hl_t::v(low_half(idx), table),
-                       hl_t::v(high_half(idx), table));
-}
-
-template <std::size_t _L, typename _I, typename _T>
-cftal::vec<_T, 1>
-cftal::impl::lookup<_L, _I, _T, 1>::
-v(const vec<_I, 1>& idx, const _T* table)
-{
-    return vec<_T, 1>(table[idx()]);
-}
-
-template <std::size_t _L, typename _I, typename _T, std::size_t _N>
-cftal::vec<_T, _N>
-cftal::lookup(const vec<_I, _N>& idx, const _T* table)
-{
-    return impl::lookup<_L, _I, _T, _N>::v(idx, table);
-}
-
-template <std::size_t _L, typename _I, typename _T, std::size_t _N>
-cftal::vec<_T, _N>
-cftal::lookup(const vec<_I, _N>& idx, const _T(&table)[_L])
-{
-    return impl::lookup<_L, _I, _T, _N>::v(idx, table);
 }
 
 template <typename _T, std::size_t _N>

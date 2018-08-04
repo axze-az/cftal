@@ -181,6 +181,16 @@ namespace cftal {
 
 #if defined (__AVX2__)
     template <>
+    class variable_lookup_table<float, int32_t, 8> {
+    private:
+        vec<int32_t, 8> _msk;
+    public:
+        fixed_lookup_table(const vec<int32_t, 8>& idx);
+        vec<float, 8>
+        variable_lookup_table(const float* tbl) const;
+    };
+
+    template <>
     class fixed_lookup_table<4, float, int32_t, 8> {
     private:
         __m256i _msk;

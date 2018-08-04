@@ -22,19 +22,6 @@
 namespace cftal {
 
 
-    namespace impl {
-#if defined (__AVX2__)
-        template <std::size_t _L>
-        struct lookup<_L, int32_t, double, 4> {
-            static
-            vec<double, 4>
-            v(const vec<int32_t, 4>& idx, const double* tbl) {
-                return _mm256_i32gather_pd(tbl, idx(), sizeof(double));
-            }
-        };
-#endif
-    }
-
     namespace op {
 
         template <>
@@ -709,6 +696,21 @@ cftal::permute(const vec<double, 4>& l, const vec<double, 4>& r)
 }
 
 #if defined (__AVX2__)
+inline
+cftal::variable_lookup_table<double, int32_t, 4>::
+fixed_lookup_table(const vec<int32_t, 4>& idx)
+    : _msk(idx)
+{
+}
+
+inline
+cftal::vec<double, 4>
+cftal::variable_lookup_table<double, int32_t, 4>::
+from(const double* tbl) const
+{
+    return _mm_i32gather_pd(tbl, _msk(), sizeof(double));
+}
+
 
 inline
 __m256i
