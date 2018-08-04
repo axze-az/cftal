@@ -736,7 +736,7 @@ cftal::fixed_lookup_table<4, double, int32_t, 4>::
 from(const double (&tbl)[4]) const
 {
     vec<double, 4> r=mem<vec<double, 4> >::load(tbl, 4);
-    __m256i ir=_mm256_permutexvar_epi32(_msk, _mm256_castpd_si256(r()));
+    __m256i ir=_mm256_permutevar8x32_epi32(_mm256_castpd_si256(r()), _msk);
     r=_mm256_castsi256_pd(ir);
     return r;
 }

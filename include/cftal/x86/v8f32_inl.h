@@ -755,7 +755,7 @@ from(const float (&tbl)[4]) const
 {
     vec<float, 4> rh=mem<vec<float, 4> >::load(tbl, 4);
     __m256 r=_mm256_castps128_ps256(rh());
-    r = _mm256_permutexvar_ps(_msk, r);
+    r=_mm256_permutevar8x32_ps(r, _msk);
     return r;
 }
 
@@ -780,7 +780,7 @@ cftal::fixed_lookup_table<8, float, int32_t, 8>::
 from(const float (&tbl)[8]) const
 {
     vec<float, 8> r=mem<vec<float, 8> >::load(tbl, 8);
-    r=_mm256_permutexvar_ps(_msk, r());
+    r=_mm256_permutevar8x32_ps(r(), _msk);
     return r;
 }
 
