@@ -158,9 +158,9 @@ namespace cftal {
         __m256i _msk;
         static
         __m256i
-        setup_msk(vec<int32_t, 4> idx);
+        setup_msk(const vec<int32_t, 4>& idx);
     public:
-        fixed_lookup_table(vec<int32_t, 4> idx);
+        fixed_lookup_table(const vec<int32_t, 4>& idx);
         vec<double, 4>
         from(const double (&tbl)[4]) const;
     };

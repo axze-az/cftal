@@ -194,7 +194,7 @@ namespace cftal {
     };
 
     template <>
-    class fixed_lookup_table<4, float, int32_t, 8> {
+    class fixed_lookup_table<8, float, int32_t, 8> {
     private:
         __m256i _msk;
         static
@@ -203,7 +203,7 @@ namespace cftal {
     public:
         fixed_lookup_table(const vec<int32_t, 8>& idx);
         vec<float, 8>
-        from(const float (&tbl)[4]) const;
+        from(const float (&tbl)[8]) const;
     };
 
 #endif
