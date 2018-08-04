@@ -438,36 +438,6 @@ transpose4x4(double* d,
     mem<v4f64>::store(d+12, a3);
 }
 
-cftal::vec<double, 2>
-f(cftal::arg_t<cftal::vec<int32_t, 2> > idx, const double* tbl)
-{
-    return cftal::lookup<32>(idx, tbl);
-}
-
-cftal::vec<double, 4>
-f(cftal::arg_t<cftal::vec<int32_t, 4> > idx, const double* tbl)
-{
-    return cftal::lookup<32>(idx, tbl);
-}
-
-cftal::vec<float, 4>
-f(cftal::arg_t<cftal::vec<int32_t, 4> > idx, const float* tbl)
-{
-    return cftal::lookup<32>(idx, tbl);
-}
-
-cftal::vec<double, 8>
-f(cftal::arg_t<cftal::vec<int32_t, 8> > idx, const double* tbl)
-{
-    return cftal::lookup<32>(idx, tbl);
-}
-
-cftal::vec<float, 8>
-f(cftal::arg_t<cftal::vec<int32_t, 8> > idx, const float* tbl)
-{
-    return cftal::lookup<32>(idx, tbl);
-}
-
 
 int main(int argc, char** argv)
 {
