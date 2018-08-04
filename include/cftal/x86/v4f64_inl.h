@@ -708,6 +708,40 @@ cftal::permute(const vec<double, 4>& l, const vec<double, 4>& r)
     return x86::perm_v4f64<_I0, _I1, _I2, _I3>(l(), r());
 }
 
+#if defined (__AVX2__)
+
+inline
+__m256i
+cftal::fixed_lookup_table<4, double, int32_t, 4>::
+setup_msk(const vec<int32_t, 4>& idx)
+{
+    vec<int32_t, 4> i2=idx+idx;
+    vec<int32_t, 8> t(i2, i2);
+    t=permute<0, 0, 1, 1, 6, 6, 7, 7>(t);
+    const __m256i offs=_mm256_setr_epi32(0, 1, 0, 1, 0, 1, 0, 1);
+    __m256i r=_mm256_add_epi32(t(), offs);
+    return r;
+}
+
+inline
+cftal::fixed_lookup_table<4, double, int32_t, 4>::
+fixed_lookup_table(const vec<int32_t, 4>& idx)
+    : _msk(setup_msk(idx))
+{
+}
+
+inline
+cftal::vec<double, 4>
+cftal::fixed_lookup_table<4, double, int32_t, 4>::
+from(const double (&tbl)[4]) const
+{
+    vec<double, 4> r=mem<vec<double, 4> >::load(tbl, 4);
+    __m256i ir=_mm256_permutexvar_epi32(_msk, _mm256_castpd_si256(r()));
+    r=_mm256_castsi256_pd(ir);
+    return r;
+}
+
+#endif
 
 #endif // __AVX__
 

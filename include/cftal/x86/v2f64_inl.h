@@ -727,6 +727,58 @@ cftal::permute(const vec<double, 2>& l, const vec<double, 2>& r)
     return x86::perm_v2f64<_I0, _I1>(l(), r());
 }
 
+#if defined (__SSSE3__)
+inline
+__m128i
+cftal::fixed_lookup_table<2, double, int32_t, 2>::
+setup_msk(const vec<int32_t, 2>& idx)
+{
+#if defined (__AVX__)
+    // the selector bit is bit 1 not bit 0
+    vec<int32_t, 4> idx4(idx, idx);
+    idx4 += idx4;
+    __m128i t=x86::impl::vpmovzxdq::v(idx4());
+    return t;
+#else
+    vec<int32_t, 4> idx4(idx, idx);
+    idx4 <<= 3;
+    const __m128i u8u32 =
+        _mm_setr_epi8( 0, 0, 0, 0, 0, 0, 0, 0,
+                       4, 4, 4, 4, 4, 4, 4, 4);
+    __m128i m=_mm_shuffle_epi8(idx4(), u8u32);
+    const __m128i offs=
+        _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7,
+                       0, 1, 2, 3, 4, 5, 6, 7);
+    m = _mm_add_epi8(m, offs);
+    return m;
+#endif
+}
+
+inline
+cftal::fixed_lookup_table<2, double, int32_t, 2>::
+fixed_lookup_table(const vec<int32_t, 2>& idx)
+    : _msk(setup_msk(idx))
+{
+}
+
+inline
+cftal::v2f64
+cftal::fixed_lookup_table<2, double, int32_t, 2>::
+from(const double (&tbl)[2]) const
+{
+#if defined (__AVX__)
+    vec<double, 2> r=mem<vec<double, 2> >::load(tbl, 2);
+    return _mm_permutevar_pd(r(), _msk);
+#else
+    vec<double, 2> r=mem<vec<double, 2> >::load(tbl, 2);
+    __m128i ir = _mm_shuffle_epi8(_mm_castpd_si128(r()), _msk);
+    r = _mm_castsi128_pd(ir);
+#endif
+}
+
+
+#endif
+
 
 // Local variables:
 // mode: c++

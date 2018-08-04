@@ -177,6 +177,23 @@ namespace cftal {
 
     vec<float, 4>
     native_div(const vec<float, 4>& a, const vec<float, 4>& b);
+
+#if defined (__SSSE3__)
+    template <>
+    class fixed_lookup_table<4, float, int32_t, 4> {
+        // a msk
+        vec<int32_t, 4> _msk;
+        // setup function for _msk
+        static
+        vec<int32_t, 4>
+        setup_msk(const vec<int32_t, 4>& idx);
+    public:
+        fixed_lookup_table(const vec<int32_t, 4>& idx);
+        // the lookup function
+        vec<float, 4>
+        from(const float (&tbl) [4]) const;
+    };
+#endif
 }
 
 

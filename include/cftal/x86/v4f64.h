@@ -150,6 +150,21 @@ namespace cftal {
     vec<double, 4>
     permute(const vec<double, 4>& s0,
             const vec<double, 4>& s1);
+
+#if defined (__AVX2__)
+    template <>
+    class fixed_lookup_table<4, double, int32_t, 4> {
+    private:
+        __m256i _msk;
+        static
+        __m256i
+        setup_msk(vec<int32_t, 4> idx);
+    public:
+        fixed_lookup_table(vec<int32_t, 4> idx);
+        vec<double, 4>
+        from(const double (&tbl)[4]) const;
+    };
+#endif
 }
 
 #endif // __AVX__

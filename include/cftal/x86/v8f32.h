@@ -179,6 +179,34 @@ namespace cftal {
     vec<float, 8>
     native_div(const vec<float, 8>& a, const vec<float, 8>& b);
 
+#if defined (__AVX2__)
+    template <>
+    class fixed_lookup_table<4, float, int32_t, 8> {
+    private:
+        __m256i _msk;
+        static
+        __m256i
+        setup_msk(const vec<int32_t, 8>& idx);
+    public:
+        fixed_lookup_table(const vec<int32_t, 8>& idx);
+        vec<float, 8>
+        from(const float (&tbl)[4]) const;
+    };
+
+    template <>
+    class fixed_lookup_table<4, float, int32_t, 8> {
+    private:
+        __m256i _msk;
+        static
+        __m256i
+        setup_msk(const vec<int32_t, 8>& idx);
+    public:
+        fixed_lookup_table(const vec<int32_t, 8>& idx);
+        vec<float, 8>
+        from(const float (&tbl)[4]) const;
+    };
+
+#endif
 }
 
 #endif
