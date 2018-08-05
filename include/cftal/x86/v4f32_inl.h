@@ -798,7 +798,7 @@ from(const float* tbl) const
 #if defined (__AVX2__)
 inline
 cftal::fixed_lookup_table<8, float, int32_t, 4>::
-variable_lookup_table(const vec<int32_t, 4>& idx)
+fixed_lookup_table(const vec<int32_t, 4>& idx)
     : _msk(idx)
 {
 }
@@ -809,7 +809,7 @@ cftal::fixed_lookup_table<8, float, int32_t, 4>::
 from(const float* tbl) const
 {
     vec<float, 8> r=mem<vec<float, 8> >::load(tbl, 8);
-    __m256i m=_mm256_castsi128_si256(_msk())
+    __m256i m=_mm256_castsi128_si256(_msk());
     r=_mm256_permutevar8x32_ps(r(), m);
     return low_half(r);
 }
