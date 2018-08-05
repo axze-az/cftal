@@ -753,7 +753,7 @@ fixed_lookup_table(const vec<int32_t, 8>& idx)
 inline
 cftal::v8f32
 cftal::fixed_lookup_table<4, float, int32_t, 8>::
-from(const float (&tbl)[4]) const
+from(const float* tbl) const
 {
     vec<float, 4> rh=mem<vec<float, 4> >::load(tbl, 4);
     __m256 r=_mm256_castps128_ps256(rh());
@@ -779,7 +779,7 @@ fixed_lookup_table(const vec<int32_t, 8>& idx)
 inline
 cftal::v8f32
 cftal::fixed_lookup_table<8, float, int32_t, 8>::
-from(const float (&tbl)[8]) const
+from(const float* tbl) const
 {
     vec<float, 8> r=mem<vec<float, 8> >::load(tbl, 8);
     r=_mm256_permutevar8x32_ps(r(), _msk);

@@ -172,7 +172,7 @@ namespace cftal {
     public:
         fixed_lookup_table(const vec<int32_t, 4>& idx);
         vec<double, 4>
-        from(const double (&tbl)[4]) const;
+        from(const double* tbl) const;
     };
 #endif
 }

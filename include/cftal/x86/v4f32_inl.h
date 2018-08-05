@@ -759,11 +759,11 @@ setup_msk(const vec<int32_t, 4>& idx)
     vec<int32_t, 4> idx4 = idx<<2;
     const __m128i u8u32 =
         _mm_setr_epi8( 0, 0, 0, 0,  4,  4,  4,  4,
-                        8, 8, 8, 8, 12, 12, 12, 12);
+                       8, 8, 8, 8, 12, 12, 12, 12);
     __m128i m=_mm_shuffle_epi8(idx4(), u8u32);
     const __m128i offs=
         _mm_setr_epi8( 0, 1, 2, 3, 0, 1, 2, 3,
-                        0, 1, 2, 3, 0, 1, 2, 3);
+                       0, 1, 2, 3, 0, 1, 2, 3);
     m = _mm_add_epi8(m, offs);
     return m;
 #endif
@@ -779,11 +779,12 @@ fixed_lookup_table(const vec<int32_t, 4>& idx)
 inline
 cftal::v4f32
 cftal::fixed_lookup_table<4, float, int32_t, 4>::
-from(const float (&tbl)[4]) const
+from(const float* tbl) const
 {
 #if defined (__AVX__)
     vec<float, 4> r=mem<vec<float, 4> >::load(tbl, 4);
-    return _mm_permutevar_ps(r(), _msk());
+    r=_mm_permutevar_ps(r(), _msk());
+    return r;
 #else
     vec<float, 4> r=mem<vec<float, 4> >::load(tbl, 4);
     __m128i ir = _mm_shuffle_epi8(_mm_castps_si128(r()), _msk());
@@ -792,9 +793,28 @@ from(const float (&tbl)[4]) const
 #endif
 }
 
-
 #endif
 
+#if defined (__AVX2__)
+inline
+cftal::fixed_lookup_table<8, float, int32_t, 4>::
+variable_lookup_table(const vec<int32_t, 4>& idx)
+    : _msk(idx)
+{
+}
+
+inline
+cftal::vec<float, 4>
+cftal::fixed_lookup_table<8, float, int32_t, 4>::
+from(const float* tbl) const
+{
+    vec<float, 8> r=mem<vec<float, 8> >::load(tbl, 8);
+    __m256i m=_mm256_castsi128_si256(_msk())
+    r=_mm256_permutevar8x32_ps(r(), m);
+    return low_half(r);
+}
+
+#endif
 
 
 // Local variables:

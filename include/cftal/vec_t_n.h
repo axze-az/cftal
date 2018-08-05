@@ -455,13 +455,16 @@ namespace cftal {
     private:
         fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
         fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
+        static_assert(0==(_TABLE_LEN & (_TABLE_LEN-1)),
+                      "fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN> :"
+                      ": _TABLE_LEN is not a power of 2");
     public:
         // constructor, prepares table lookups into _T[_TABLE_LEN]
         fixed_lookup_table(const vec<_I, _VEC_LEN>& idx)
             : _lh(low_half(idx)), _hh(high_half(idx)) {}
         // perform the lookup using the prepared data
         vec<_T, _VEC_LEN>
-        from(const _T (&tbl)[_TABLE_LEN]) const {
+        from(const _T* tbl) const {
             vec<_T, _VEC_LEN/2> lh=_lh.from(tbl);
             vec<_T, _VEC_LEN/2> hh=_hh.from(tbl);
             return vec<_T, _VEC_LEN>(lh, hh);

@@ -751,7 +751,7 @@ fixed_lookup_table(const vec<int32_t, 2>& idx)
 inline
 cftal::v2f64
 cftal::fixed_lookup_table<2, double, int32_t, 2>::
-from(const double (&tbl)[2]) const
+from(const double* tbl) const
 {
 #if defined (__AVX__)
     vec<double, 2> r=mem<vec<double, 2> >::load(tbl, 2);
@@ -762,7 +762,6 @@ from(const double (&tbl)[2]) const
     r = _mm_castsi128_pd(ir);
 #endif
 }
-
 
 #endif
 

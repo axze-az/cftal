@@ -304,10 +304,10 @@ namespace cftal {
     public:
         fixed_lookup_table(const vec<_I, 1> idx) : _idx(idx()) {}
         vec<_T, 1>
-        from(const _T (&tbl)[_TABLE_LEN]) const {
+        from(const _T* tbl) const {
             vec<_T, 1> r=tbl[_idx];
             return r;
-        }
+        };
     };
 
     namespace op {
