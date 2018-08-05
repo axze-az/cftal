@@ -19,19 +19,6 @@
 
 namespace cftal {
 
-    namespace impl {
-#if defined (__AVX2__)
-        template <std::size_t _L>
-        struct lookup<_L, int32_t, double, 2> {
-            static
-            vec<double, 2>
-            v(const vec<int32_t, 2>& idx, const double* tbl) {
-                vec<int32_t, 4> i(idx, idx);
-                return _mm_i32gather_pd(tbl, i(), sizeof(double));
-            }
-        };
-#endif
-    }
     namespace op {
 
         template <>

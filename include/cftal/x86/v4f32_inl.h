@@ -732,7 +732,7 @@ cftal::native_div(const v4f32& b, const v4f32& a)
 #if defined (__AVX2__)
 inline
 cftal::variable_lookup_table<float, int32_t, 4>::
-variable_lookup_table(const vec<int32_t>& idx)
+variable_lookup_table(const vec<int32_t, 4>& idx)
     : _msk(idx)
 {
 }
@@ -740,7 +740,7 @@ variable_lookup_table(const vec<int32_t>& idx)
 inline
 cftal::vec<float, 4>
 cftal::variable_lookup_table<float, int32_t, 4>::
-from(const float* tbl)
+from(const float* tbl) const
 {
     return _mm_i32gather_ps(tbl, _msk(), sizeof(float));
 }

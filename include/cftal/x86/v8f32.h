@@ -185,9 +185,9 @@ namespace cftal {
     private:
         vec<int32_t, 8> _msk;
     public:
-        fixed_lookup_table(const vec<int32_t, 8>& idx);
+        variable_lookup_table(const vec<int32_t, 8>& idx);
         vec<float, 8>
-        variable_lookup_table(const float* tbl) const;
+        from(const float* tbl) const;
     };
 
     template <>

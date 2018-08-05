@@ -184,7 +184,7 @@ namespace cftal {
     private:
         vec<int32_t, 4> _msk;
     public:
-        variable_lookup_table(const vec<int32_t>& idx);
+        variable_lookup_table(const vec<int32_t, 4>& idx);
         vec<float, 4>
         from(const float* tbl) const;
     };
