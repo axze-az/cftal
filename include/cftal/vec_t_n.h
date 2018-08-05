@@ -434,7 +434,7 @@ namespace cftal {
         variable_lookup_table<_T, _I, _VEC_LEN/2> _hh;
     public:
         variable_lookup_table(const vec<_I, _VEC_LEN>& idx)
-            : _lh(low_half(idx)), _hh(low_half(idx)) {}
+            : _lh(low_half(idx)), _hh(high_half(idx)) {}
         vec<_T, _VEC_LEN>
         from(const _T* tbl) const {
             vec<_T, _VEC_LEN/2> lh=_lh.from(tbl);
@@ -446,7 +446,7 @@ namespace cftal {
     template <typename _T, typename _I, std::size_t _VEC_LEN>
     variable_lookup_table<_T, _I, _VEC_LEN>
     make_variable_lookup_table(const vec<_I, _VEC_LEN>& idx) {
-        return make_variable_lookup_table<_T, _I, _VEC_LEN>(idx);
+        return variable_lookup_table<_T, _I, _VEC_LEN>(idx);
     }
 
     template <std::size_t _TABLE_LEN, typename _T,
