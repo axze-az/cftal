@@ -737,14 +737,14 @@ from(const float* tbl) const
 
 inline
 __m256i
-cftal::fixed_lookup_table<4, float, int32_t, 8>::
+cftal::impl::fixed_lookup_table<4, float, int32_t, 8>::
 setup_msk(const vec<int32_t, 8>& idx)
 {
     return idx();
 }
 
 inline
-cftal::fixed_lookup_table<4, float, int32_t, 8>::
+cftal::impl::fixed_lookup_table<4, float, int32_t, 8>::
 fixed_lookup_table(const vec<int32_t, 8>& idx)
     : _msk(setup_msk(idx))
 {
@@ -752,8 +752,8 @@ fixed_lookup_table(const vec<int32_t, 8>& idx)
 
 inline
 cftal::v8f32
-cftal::fixed_lookup_table<4, float, int32_t, 8>::
-from(const float* tbl) const
+cftal::impl::fixed_lookup_table<4, float, int32_t, 8>::
+fromp(const float* tbl) const
 {
     vec<float, 4> rh=mem<vec<float, 4> >::load(tbl, 4);
     __m256 r=_mm256_castps128_ps256(rh());
@@ -763,14 +763,14 @@ from(const float* tbl) const
 
 inline
 __m256i
-cftal::fixed_lookup_table<8, float, int32_t, 8>::
+cftal::impl::fixed_lookup_table<8, float, int32_t, 8>::
 setup_msk(const vec<int32_t, 8>& idx)
 {
     return idx();
 }
 
 inline
-cftal::fixed_lookup_table<8, float, int32_t, 8>::
+cftal::impl::fixed_lookup_table<8, float, int32_t, 8>::
 fixed_lookup_table(const vec<int32_t, 8>& idx)
     : _msk(setup_msk(idx))
 {
@@ -778,8 +778,8 @@ fixed_lookup_table(const vec<int32_t, 8>& idx)
 
 inline
 cftal::v8f32
-cftal::fixed_lookup_table<8, float, int32_t, 8>::
-from(const float* tbl) const
+cftal::impl::fixed_lookup_table<8, float, int32_t, 8>::
+fromp(const float* tbl) const
 {
     vec<float, 8> r=mem<vec<float, 8> >::load(tbl, 8);
     r=_mm256_permutevar8x32_ps(r(), _msk);

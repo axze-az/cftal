@@ -17,7 +17,8 @@ namespace cftal {
         // an evaluator for lanczos approximations for the gamma
         // functions
         template <typename _T, typename _TBL,
-                  std::size_t _P_HIGH_PREC=0, std::size_t _Q_HIGH_PREC=0>
+                  std::size_t _P_HIGH_PREC=0,
+                  std::size_t _Q_HIGH_PREC=0>
         struct lanczos_rational : public _TBL {
             static
             _T at(_T x, _T* res_lo=nullptr) {
@@ -458,7 +459,7 @@ namespace cftal {
                 { 8.8094560547e+03f, -2.7760010198e-05f }
             };
             static constexpr
-            const d_real<float> pdef[]={
+            const d_real<float> pedf[]={
                 { 9.3462429941e-03f, 8.5766664604e-11f },
                 { 2.3918901384e-01f, 2.0178156923e-09f },
                 { 2.4486386776e+00f, -1.5180797064e-08f },

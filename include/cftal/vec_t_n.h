@@ -449,25 +449,46 @@ namespace cftal {
         return variable_lookup_table<_T, _I, _VEC_LEN>(idx);
     }
 
+    namespace impl {
+        // implementation class for fixed lookup tables without
+        // a safe interface
+        template <std::size_t _TABLE_LEN, typename _T,
+                  typename _I, std::size_t _VEC_LEN>
+        class fixed_lookup_table {
+        private:
+            fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
+            fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
+        public:
+            // constructor, prepares table lookups into _T[_TABLE_LEN]
+            fixed_lookup_table(const vec<_I, _VEC_LEN>& idx)
+                : _lh(low_half(idx)), _hh(high_half(idx)) {}
+            // perform the lookup using the prepared data
+            vec<_T, _VEC_LEN>
+            fromp(const _T* tbl) const {
+                vec<_T, _VEC_LEN/2> lh=_lh.fromp(tbl);
+                vec<_T, _VEC_LEN/2> hh=_hh.fromp(tbl);
+                return vec<_T, _VEC_LEN>(lh, hh);
+            }
+        };
+    }
+
+    // lookup table with a fixed length, delegates work to
+    // impl::fixed_lookup_table
     template <std::size_t _TABLE_LEN, typename _T,
               typename _I, std::size_t _VEC_LEN>
-    class fixed_lookup_table {
+    class fixed_lookup_table
+        : public impl::fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN> {
     private:
-        fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
-        fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
-        static_assert(0==(_TABLE_LEN & (_TABLE_LEN-1)),
-                      "fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN> :"
-                      ": _TABLE_LEN is not a power of 2");
+        using base_type=
+            impl::fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>;
     public:
         // constructor, prepares table lookups into _T[_TABLE_LEN]
         fixed_lookup_table(const vec<_I, _VEC_LEN>& idx)
-            : _lh(low_half(idx)), _hh(high_half(idx)) {}
+            : base_type(idx) {}
         // perform the lookup using the prepared data
         vec<_T, _VEC_LEN>
-        from(const _T* tbl) const {
-            vec<_T, _VEC_LEN/2> lh=_lh.from(tbl);
-            vec<_T, _VEC_LEN/2> hh=_hh.from(tbl);
-            return vec<_T, _VEC_LEN>(lh, hh);
+        from(const _T (&tbl)[_TABLE_LEN]) const {
+            return base_type::fromp(tbl);
         }
     };
 

@@ -162,18 +162,20 @@ namespace cftal {
         from(const double* tbl) const;
     };
 
-    template <>
-    class fixed_lookup_table<4, double, int32_t, 4> {
-    private:
-        __m256i _msk;
-        static
-        __m256i
-        setup_msk(const vec<int32_t, 4>& idx);
-    public:
-        fixed_lookup_table(const vec<int32_t, 4>& idx);
-        vec<double, 4>
-        from(const double* tbl) const;
-    };
+    namespace impl {
+        template <>
+        class fixed_lookup_table<4, double, int32_t, 4> {
+        private:
+            __m256i _msk;
+            static
+            __m256i
+            setup_msk(const vec<int32_t, 4>& idx);
+        public:
+            fixed_lookup_table(const vec<int32_t, 4>& idx);
+            vec<double, 4>
+            fromp(const double* tbl) const;
+        };
+    }
 #endif
 }
 

@@ -191,38 +191,41 @@ namespace cftal {
 #endif
 
 #if defined (__SSSE3__)
-    template <>
-    class fixed_lookup_table<4, float, int32_t, 4> {
-        // a msk
-        vec<int32_t, 4> _msk;
-        // setup function for _msk
-        static
-        vec<int32_t, 4>
-        setup_msk(const vec<int32_t, 4>& idx);
-    public:
-        fixed_lookup_table(const vec<int32_t, 4>& idx);
-        // the lookup function
-        vec<float, 4>
-        from(const float*) const;
-    };
+    namespace impl {
+        template <>
+        class fixed_lookup_table<4, float, int32_t, 4> {
+            // a msk
+            vec<int32_t, 4> _msk;
+            // setup function for _msk
+            static
+            vec<int32_t, 4>
+            setup_msk(const vec<int32_t, 4>& idx);
+        public:
+            fixed_lookup_table(const vec<int32_t, 4>& idx);
+            // the lookup function
+            vec<float, 4>
+            fromp(const float*) const;
+        };
+    }
 #endif
 
 #if defined (__AVX2__)
-    template <>
-    class fixed_lookup_table<8, float, int32_t, 4> {
-        // a msk
-        vec<int32_t, 4> _msk;
-        // setup function for _msk
-        static
-        vec<int32_t, 4>
-        setup_msk(const vec<int32_t, 4>& idx);
-    public:
-        fixed_lookup_table(const vec<int32_t, 4>& idx);
-        // the lookup function
-        vec<float, 4>
-        from(const float*) const;
-    };
-
+    namespace impl {
+        template <>
+        class fixed_lookup_table<8, float, int32_t, 4> {
+            // a msk
+            vec<int32_t, 4> _msk;
+            // setup function for _msk
+            static
+            vec<int32_t, 4>
+            setup_msk(const vec<int32_t, 4>& idx);
+        public:
+            fixed_lookup_table(const vec<int32_t, 4>& idx);
+            // the lookup function
+            vec<float, 4>
+            fromp(const float*) const;
+        };
+    }
 #endif
 
 }

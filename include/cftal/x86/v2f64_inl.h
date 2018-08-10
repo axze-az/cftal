@@ -717,7 +717,7 @@ cftal::permute(const vec<double, 2>& l, const vec<double, 2>& r)
 #if defined (__SSSE3__)
 inline
 __m128i
-cftal::fixed_lookup_table<2, double, int32_t, 2>::
+cftal::impl::fixed_lookup_table<2, double, int32_t, 2>::
 setup_msk(const vec<int32_t, 2>& idx)
 {
 #if defined (__AVX__)
@@ -742,7 +742,7 @@ setup_msk(const vec<int32_t, 2>& idx)
 }
 
 inline
-cftal::fixed_lookup_table<2, double, int32_t, 2>::
+cftal::impl::fixed_lookup_table<2, double, int32_t, 2>::
 fixed_lookup_table(const vec<int32_t, 2>& idx)
     : _msk(setup_msk(idx))
 {
@@ -750,8 +750,8 @@ fixed_lookup_table(const vec<int32_t, 2>& idx)
 
 inline
 cftal::v2f64
-cftal::fixed_lookup_table<2, double, int32_t, 2>::
-from(const double* tbl) const
+cftal::impl::fixed_lookup_table<2, double, int32_t, 2>::
+fromp(const double* tbl) const
 {
 #if defined (__AVX__)
     vec<double, 2> r=mem<vec<double, 2> >::load(tbl, 2);

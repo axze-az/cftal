@@ -53,5 +53,7 @@ constexpr const cftal::d_real<double>
 cftal::math::lanczos_table_g_5_59172_N6::qd[];
 constexpr const cftal::d_real<float>
 cftal::math::lanczos_table_g_5_59172_N6::pdf[];
+constexpr const cftal::d_real<float>
+cftal::math::lanczos_table_g_5_59172_N6::pedf[];
 constexpr const float
 cftal::math::lanczos_table_g_5_59172_N6::qf[];
