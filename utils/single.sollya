@@ -110,6 +110,25 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
                        postscriptfile, "pow-log-f32");
 // implementpoly(p, i, 0x1p-38, D, "log", "log.c");
 
+
+/* pow log with high precision */
+/* y= (x-1)/(x+1) */
+/* log(x) f64 */
+f= log((1+x)/(1-x));
+i= [0, (sqrt(2)-1)/(1+sqrt(2))];
+d = guessdegree(f, i, 0x1p-40);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13|];
+c = [|SG, 49, SG...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float pow_log_hp_c", "pow_log_hp", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x),
+                       i,
+                       postscriptfile, "pow-log-hp-f64");
+
+
 /* sin(x) f32 */
 i = [0x1p-58, pi/4];
 f = sin(x)/x;
