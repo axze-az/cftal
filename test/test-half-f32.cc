@@ -629,16 +629,20 @@ int main_sqrt(int argc, char** argv)
 int main(int argc, char** argv)
 {
     int r=0;
+#if 0
     r |= main_log(argc, argv);
     r |= main_log2(argc, argv);
     r |= main_log10(argc, argv);
+#endif
     r |= main_exp(argc, argv);
     r |= main_exp2(argc, argv);
+#if 0
     r |= main_exp10(argc, argv);
     r |= main_cos(argc, argv);
     r |= main_sin(argc, argv);
     r |= main_tan(argc, argv);
     r |= main_rsqrt(argc, argv);
     r |= main_sqrt(argc, argv);
+#endif
     return r;
 }

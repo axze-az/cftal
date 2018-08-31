@@ -121,10 +121,15 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
 __scale_exp_k(arg_t<vf_type> kf)
 {
+#if 1
+    vi_type ki= _T::cvt_f_to_i(kf);
+    vf_type rh= _T::insert_exp(_T::bias()+ki);
+#else
     vf_type kt=max(vf_type(-64.0f), kf);
     kt= min(vf_type(64.0f), kt);
     vi_type ki= _T::cvt_f_to_i(kt);
     vf_type rh= _T::insert_exp(_T::bias()+ki);
+#endif
     return rh;
 }
 
