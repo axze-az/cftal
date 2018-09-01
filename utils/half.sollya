@@ -19,6 +19,18 @@ write_approx_prec(p, f, i);
 write_coeffs(p, "const float exp_f16_c", "exp_f16", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-f16");
 
+/* half exp2 f32 */
+f = exp(x*log(2));
+i = [-0.5, 0.5];
+d = guessdegree(f, i, 0x1p-14);
+d;
+b = [|0, ..., 5|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float exp2_f16_c", "exp2_f16", b, c);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "exp2-f16");
+
 /* half log f32 */
 f= log((1+x)/(1-x));
 i= [0x1p-58, (sqrt(2)-1)/(1+sqrt(2))];
