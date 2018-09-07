@@ -30,10 +30,22 @@ int main(int argc, char** argv)
     std::cout << "testing tgamma" << std::endl;
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
+
+    // test also all integral values
+    std::vector<float> def_args=default_arguments<float>::values;
+    for (std::size_t i=1; i<36; ++i) {
+        auto di=static_cast<float>(i);
+        if (std::find(std::begin(def_args), std::end(def_args), di)==
+            std::end(def_args))
+            def_args.push_back(di);
+                        
+    }
+
     rc &= of_fp_func_up_to<
         float, _N, check_tgamma<float> >::v(st, d, speed_only,
                                             cmp_ulp<float>(ulp, us),
-                                            cnt, false);
+                                            cnt,
+                                            def_args);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

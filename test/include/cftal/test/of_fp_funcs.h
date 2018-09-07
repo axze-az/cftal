@@ -41,6 +41,13 @@ namespace cftal {
             std::make_pair(std::numeric_limits<_T>::lowest(),
                            std::numeric_limits<_T>::max());
 
+        // the default test argumens
+        template <typename _T>
+        struct default_arguments {
+            static
+            const std::vector<_T> values;
+        };
+
         // execution statistics
         struct exec_stats {
             // the tics for the vectors of length 1...2^tics.size()
@@ -59,6 +66,7 @@ namespace cftal {
         };
         std::ostream& operator<<(std::ostream& s, const exec_stats& st);
 
+        // output operator for pairs of vectors with the same length
         template <typename _I, typename _T, std::size_t _N>
         std::ostream&
         operator<<(std::ostream& s,
@@ -68,19 +76,20 @@ namespace cftal {
         // results as the full vector
         template <typename _T, std::size_t _N, typename _F>
         struct vec_parts {
-            // check for functions with one argument returning a single value
+            // check for functions with one argument returning a
+            // single value
             static
             bool
             v(const vec<_T, _N>& x, const vec<_T, _N>& fx,
               exec_stats& st);
-            // check for functions with one argument return a pair
+            // check for functions with one argument returning a pair
             static
             bool
             v(const vec<_T, _N>& x,
               const std::pair<vec<_T, _N>, vec<_T, _N> >& fx,
               exec_stats& st);
-            // check for functions with one argument and an
-            // additional result pointer
+            // check for functions with one argument and an additional
+            // result pointer
             template <typename _I>
             static
             bool
@@ -94,7 +103,7 @@ namespace cftal {
               const vec<_T, _N>& fx, exec_stats& st);
         };
 
-        // recursion stop
+        // specialization to stop recursion
         template <typename _T, typename _F>
         struct vec_parts<_T, 1, _F> {
             static
@@ -133,6 +142,17 @@ namespace cftal {
         template <typename _T, std::size_t _N, typename _F>
         struct of_fp_func {
 
+            // tv is a container with additional values to test
+            template <typename _CMP, typename _C>
+            static
+            bool
+            v(exec_stats& st,
+              func_domain<_T> domain,
+              bool speed_only,
+              _CMP cmp,
+              std::size_t cnt,
+              const _C& tv);
+
             template <typename _CMP=cmp_t<_T>>
             static
             bool
@@ -149,8 +169,26 @@ namespace cftal {
                    exec_stats& st, bool speed_only, _CMP cmp=_CMP());
         };
 
+        // test of vector function _F(vec<_T, _N>) up to length N
         template <typename _T, std::size_t _N, typename _F>
         struct of_fp_func_up_to {
+
+            // tv is a container with additional values to test
+            template <typename _CMP, typename _C>
+            static
+            bool
+            v(exec_stats& st,
+              func_domain<_T> domain,
+              bool speed_only,
+              _CMP cmp,
+              std::size_t cnt,
+              const _C& tv) {
+                bool r=of_fp_func<_T, _N, _F>::v(st, domain,
+                                                 speed_only, cmp, cnt,
+                                                 tv);
+                return r;
+            }
+
             template <typename _CMP=cmp_t<_T> >
             static
             bool
@@ -305,6 +343,99 @@ cftal::test::operator<<(std::ostream& s,
     s << vp.first << ' ' << vp.second;
     return s;
 }
+
+template <typename _T>
+const std::vector<_T>
+cftal::test::default_arguments<_T>::values={
+    _T(0.0),
+    _T(-0.0),
+    _T(0.5),
+    _T(1),
+    _T(2),
+    _T(7),
+    _T(8),
+    _T(10),
+    _T(10.25),
+    _T(10.5),
+    _T(10.75),
+    _T(11.0),
+    _T(11.25),
+    _T(11.5),
+    _T(11.75),
+    _T(12.0),
+    _T(19.5),
+    _T(20),
+    _T(20.5),
+    _T(35),
+    _T(40),
+    _T(45),
+    _T(57),
+    _T(60),
+    _T(63),
+    _T(79),
+    _T(80),
+    _T(81),
+    _T(100),
+    _T(100.25),
+    _T(100.5),
+    _T(100.75),
+    _T(101.0),
+    _T(M_E), _T(1/M_E),
+    _T(M_LOG2E),  _T(1/M_LOG2E),
+    _T(M_LOG10E), _T(1/M_LOG10E),
+    _T(M_LN2),  _T(1/M_LN2),
+    _T(M_LN10), _T(1/M_LN10),
+    _T(M_PI), _T(M_1_PI),
+    _T(M_PI_2), _T(M_2_PI),
+    _T(M_PI_4), _T(1/M_PI_4),
+    _T(M_2_SQRTPI), _T(1/M_2_SQRTPI),
+    _T(M_SQRT2), _T(M_SQRT1_2),
+    _T(M_SQRT2/2), _T(2/M_SQRT2),
+    // log functions
+    _T(std::log(3)/2),
+    // tan
+    _T(6.0/7.0*M_PI_4),
+    // atan
+    _T(7.0/16), _T(11.0/16), _T(19.0/16), _T(39.0/16),
+    // asinh
+    _T(0x1p28),
+    // acosh
+    _T(0x1p26),
+    // lgamma
+    _T(-2.747682668831582298e+00),
+    _T(-2.747682643214721665e+00),
+    _T(uint64_t(1ULL<<23)),
+    _T(uint64_t(1ULL<<52)),
+    _T(0x1.0p31),
+    _T(0x1.0p21),
+    _T(0x1.0p23),
+    _T(0x1.0p24),
+    _T(0x1.0p51),
+    _T(0x1.0p52),
+    std::numeric_limits<_T>::denorm_min(),
+    2*std::numeric_limits<_T>::denorm_min(),
+    4*std::numeric_limits<_T>::denorm_min(),
+    8*std::numeric_limits<_T>::denorm_min(),
+    16*std::numeric_limits<_T>::denorm_min(),
+    32*std::numeric_limits<_T>::denorm_min(),
+    64*std::numeric_limits<_T>::denorm_min(),
+    std::numeric_limits<_T>::min(),
+    2*std::numeric_limits<_T>::min(),
+    4*std::numeric_limits<_T>::min(),
+    8*std::numeric_limits<_T>::min(),
+    16*std::numeric_limits<_T>::min(),
+    32*std::numeric_limits<_T>::min(),
+    64*std::numeric_limits<_T>::min(),
+    std::numeric_limits<_T>::max(),
+    1.0/2.0*std::numeric_limits<_T>::max(),
+    1.0/4.0*std::numeric_limits<_T>::max(),
+    1.0/8.0*std::numeric_limits<_T>::max(),
+    1.0/16.0*std::numeric_limits<_T>::max(),
+    1.0/32.0*std::numeric_limits<_T>::max(),
+    1.0/64.0*std::numeric_limits<_T>::max(),
+    std::numeric_limits<_T>::infinity(),
+    std::numeric_limits<_T>::quiet_NaN()
+};
 
 template <typename _T, std::size_t _N, typename _F>
 bool
@@ -535,6 +666,78 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
 }
 
 template <typename _T, std::size_t _N, typename _F>
+template <typename _CMP, typename _C>
+bool
+cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
+                                       func_domain<_T> domain,
+                                       bool speed_only,
+                                       _CMP cmp, std::size_t cnt,
+                                       const _C& tv)
+{
+    bool r = true;
+    _T va[_N];
+    
+    for (auto b=std::begin(tv), e=std::end(tv);
+         b!=e; ++b) {
+        const auto& ai= *b;
+        std::fill(std::begin(va), std::end(va), ai);
+        r &=v(va, st, speed_only, cmp);
+        std::fill(std::begin(va), std::end(va), -ai);
+        r &=v(va, st, speed_only, cmp);
+    }
+    std::mt19937_64 rnd;
+    uniform_real_distribution<_T>
+        distrib(domain.first, domain.second);
+
+
+    std::cout << "[" << domain.first << ", " << domain.second << ")\n";
+    const uint32_t N0=72;
+    const uint32_t N1=4;
+    for (uint32_t l=0; l< N1; ++l) {
+        for (uint32_t j=0; j<N0; ++j) {
+            for (std::size_t i=0; i<cnt; ++i) {
+                for (std::size_t k=0; k<_N; ++k) {
+                    va[k] = distrib(rnd);
+                }
+                r &= v(va, st, speed_only, cmp);
+            }
+            std::cout << '.' << std::flush;
+        }
+        std::cout << std::endl;
+    }
+    _T minus1= std::max(_T(-1), domain.first);
+    _T plus1= std::min(_T(1), domain.second);
+    if (minus1 < plus1 && (minus1 != domain.first || plus1 != domain.second)) {
+        std::cout << std::endl;
+        _T nplus1=std::nextafter(plus1, _T(2)*plus1);
+        uniform_real_distribution<_T>
+            distrib1(minus1, nplus1);
+        std::cout << "[" << minus1 << ", " << nplus1 << ")\n";
+        for (uint32_t l=0; l< N1; ++l) {
+            for (uint32_t j=0; j<N0; ++j) {
+                for (std::size_t i=0; i<cnt; ++i) {
+                    for (std::size_t k=0; k<_N; ++k) {
+                        va[k] = distrib1(rnd);
+                    }
+                    r &= v(va, st, speed_only, cmp);
+                }
+                std::cout << '.' << std::flush;
+            }
+            std::cout << std::endl;
+        }
+    }
+    std::cout << std::endl;
+    if (r == true) {
+        std::cout << _F::fname() << ' '
+                  << __func__ << _N << " to v1 test passed " << std::endl;
+    } else {
+        std::cerr << _F::fname() << ' '
+                  << __func__ << _N << " to v1 test failed " << std::endl;
+    }
+    return r;
+}
+
+template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP>
 bool
 cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
@@ -543,10 +746,12 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
                                        _CMP cmp, std::size_t cnt,
                                        bool suppress_defaults)
 {
+#if 0
     bool r = true;
     _T va[_N];
-
+#endif
     if (suppress_defaults == false) {
+#if 0
         const _T inf_nan_args []= {
             _T(0.0),
             _T(-0.0),
@@ -635,9 +840,14 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
             1.0/32.0*std::numeric_limits<_T>::max(),
             1.0/64.0*std::numeric_limits<_T>::max(),
             std::numeric_limits<_T>::infinity(),
-            std::numeric_limits<_T>::quiet_NaN(),
+            std::numeric_limits<_T>::quiet_NaN()
         };
-
+#endif
+        return v(st, domain,
+                 speed_only,
+                 cmp, cnt,
+                 default_arguments<_T>::values);
+#if 0
         for (auto b=std::begin(inf_nan_args), e=std::end(inf_nan_args);
             b!=e; ++b) {
             const auto& ai= *b;
@@ -646,7 +856,12 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
             std::fill(std::begin(va), std::end(va), -ai);
             r &=v(va, st, speed_only, cmp);
         }
+#endif
     }
+#if 1
+    static const std::vector<_T> empty_def_args;
+    return v(st, domain, speed_only, cmp, cnt, empty_def_args);
+#else
     std::mt19937_64 rnd;
     uniform_real_distribution<_T>
         distrib(domain.first, domain.second);
@@ -697,7 +912,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
                   << __func__ << _N << " to v1 test failed " << std::endl;
     }
     return r;
-
+#endif
 }
 
 template <typename _T, std::size_t _N, typename _F>
