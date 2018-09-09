@@ -327,7 +327,7 @@ cftal::math::horner_n2(_X& ya, _X& yb, _X x,
     _X ra= _X(a[0]);
     _X rb= _X(b[0]);
 // #pragma GCC unroll 0
-//#pragma clang loop unroll(disable)
+// #pragma clang loop unroll(disable)
     for (std::size_t i=1; i<_N; ++i) {
         ra= horner(x, ra, a[i]);
         rb= horner(x, rb, b[i]);

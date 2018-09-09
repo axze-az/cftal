@@ -36,9 +36,19 @@ int main(int argc, char** argv)
     for (std::size_t i=1; i<36; ++i) {
         auto di=static_cast<float>(i);
         if (std::find(std::begin(def_args), std::end(def_args), di)==
-            std::end(def_args))
+            std::end(def_args)) {
             def_args.push_back(di);
-                        
+        }
+        auto dip=std::nextafter(di, std::numeric_limits<float>::infinity());
+        if (std::find(std::begin(def_args), std::end(def_args), dip)==
+            std::end(def_args)) {
+            def_args.push_back(dip);
+        }
+        auto dim=std::nextafter(di, -std::numeric_limits<float>::infinity());
+        if (std::find(std::begin(def_args), std::end(def_args), dip)==
+            std::end(def_args)) {
+            def_args.push_back(dim);
+        }
     }
 
     rc &= of_fp_func_up_to<
