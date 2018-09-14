@@ -1009,6 +1009,14 @@ typename cftal::math::elem_func_core<double, _T>::scale_result
 cftal::math::elem_func_core<double, _T>::
 __scale_exp_k(arg_t<vf_type> k)
 {
+#if 1
+    vi_type ki= _T::cvt_f_to_i(k);
+    vi_type kia= ki>>1;
+    vi_type kib= ki - kia;
+    vf_type rh= _T::insert_exp(_T::bias()+kia);
+    vf_type rl= _T::insert_exp(_T::bias()+kib);
+    return scale_result(rh, rl);
+#else
     // avoid subnormals
     vmf_type k_small= k < -1021.0;
     // and overflows
@@ -1021,6 +1029,7 @@ __scale_exp_k(arg_t<vf_type> k)
     vi2_type ki2 = _T::vi_to_vi2(ki);
     vf_type rh= _T::insert_exp(_T::bias()+ki2);
     return scale_result(rh, scale);
+#endif
 }
 
 template <typename _T>
