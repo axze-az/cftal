@@ -770,6 +770,38 @@ rsqrt_k(arg_t<vf_type> x)
     const double rsqrt_i1_left=+4.9218750000000000000000e-01;
     vf_type mm0half = 0.5*mm0;
     vf_type mm0s = mm0*mm0;
+
+#if 1    
+    static const double ci0_e[]={
+        rsqrt_i0_c7,
+        rsqrt_i0_c5,
+        rsqrt_i0_c3,
+        rsqrt_i0_c1
+    };
+    static const double ci0_o[]={
+        rsqrt_i0_c6,
+        rsqrt_i0_c4,
+        rsqrt_i0_c2,
+        rsqrt_i0_c0
+    };
+
+    static const double ci1_e[]={
+        rsqrt_i1_c7,
+        rsqrt_i1_c5,
+        rsqrt_i1_c3,
+        rsqrt_i1_c1
+    };
+    static const double ci1_o[]={
+        rsqrt_i1_c6,
+        rsqrt_i1_c4,
+        rsqrt_i1_c2,
+        rsqrt_i1_c0
+    };
+    vf_type mm_i0_e, mm_i0_o, mm_i1_e, mm_i1_o;
+    horner_n4(mm_i0_e, mm_i0_o, mm_i1_e, mm_i1_o,
+              mm0s,
+              ci0_e, ci0_o, ci1_e, ci1_o);
+#else
     vf_type mm_i0_e=horner(mm0s,
                            rsqrt_i0_c7,
                            rsqrt_i0_c5,
@@ -790,6 +822,7 @@ rsqrt_k(arg_t<vf_type> x)
                            rsqrt_i1_c4,
                            rsqrt_i1_c2,
                            rsqrt_i1_c0);
+#endif
     vf_type mm_i0= horner(mm0, mm_i0_e, mm_i0_o);
     vf_type mm_i1= horner(mm0, mm_i1_e, mm_i1_o);
     vf_type mm = _T::sel(mm0 <= rsqrt_i1_left, mm_i0, mm_i1);
