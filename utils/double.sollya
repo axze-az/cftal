@@ -401,26 +401,6 @@ write_coeffs(p, "const double acosh_c", "acosh", b, c);
 plot((p(x)-f(x))/f(x), i,
                        postscriptfile, "acosh-f64");
 
-/* erf(x) f64
-   erf(x) = 2/sqrt(pi) * { x - x^3/3 + x^5/10 - x^7/42 + ... }
-          = 2/sqrt(pi) * { x - x^3/P(x^2) }
-   erf(x)/(2/sqrt(pi)) = x - x^3/P(x^2)
-   x - erf(x)/(2/sqrt(pi)) = x^3/P(x^2);
-   (x - erf(x)/(2/sqrt(pi)))/x^3 = 1/P(x^2)
-*/
-t=erf(x)/(2/sqrt(pi));
-f = (x^3)/(x-t(x));
-i = [0x1p-58, 0.75];
-b = [|0, 2, 4, 6, 8, 10, 12, 14, 16, 18|];
-c = [|D...|];
-p = fpminimax(f, b, c, i, relative, floating);
-p;
-write_approx_prec(p, f, i);
-write_coeffs(p, "const double erf_i0_c", "erf_i0", b, c);
-write_coeff(2/sqrt(pi), "", "const double two_o_sqrt_pi", doubledouble);
-plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "erf_i0-f64");
-
 /* rsqrt f64 */
 f= 1.0/sqrt(x);
 i= [2^(-2), 2^(-1)-2^(-7)];
