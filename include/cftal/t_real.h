@@ -41,8 +41,11 @@ namespace cftal {
         t_real(const d_real<_U>& h, const _T& l=_U(0))
             : _h(h.h()), _m(h.l()), _l(l) {}
 
+        constexpr
         const _T& h() const { return _h; }
+        constexpr
         const _T& m() const { return _m; }
+        constexpr
         const _T& l() const { return _l; }
         _T& h() { return _h; }
         _T& m() { return _m; }
