@@ -30,6 +30,14 @@ namespace cftal {
     template <class _M, class _T>
     _T select_zero_or_val(const _M& m,
                           const _T& on_false);
+
+    // any_of
+    bool any_of(bool b);
+    // none_of
+    bool none_of(bool b);
+    // all_of
+    bool all_of(bool b);
+
 }
 
 template <typename _M, typename _T>
@@ -64,6 +72,27 @@ cftal::
 select_zero_or_val(const _M& m, const _T& on_false)
 {
     return select(m, _T(0), on_false);
+}
+
+inline
+bool
+cftal::any_of(bool b)
+{
+    return b;
+}
+
+inline
+bool
+cftal::all_of(bool b)
+{
+    return b;
+}
+
+inline
+bool
+cftal::none_of(bool b)
+{
+    return b==false;
 }
 
 // Local variables:

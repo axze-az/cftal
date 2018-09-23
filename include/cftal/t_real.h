@@ -425,6 +425,7 @@ namespace cftal {
 }
 
 template <typename _T>
+__attribute__((__always_inline__))
 inline
 void
 cftal::impl::t_real_ops<_T>::
