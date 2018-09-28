@@ -28,12 +28,36 @@ namespace cftal {
         constexpr
         fp_expansion(std::initializer_list<_E> l) : _e{} {
             const auto* p=std::begin(l);
-            const std::size_t len=std::min(_N, l.size());
+            const std::size_t ll=l.size();
+            const std::size_t len=_N < ll ? _N : ll;
             for (std::size_t i=0; i<len; ++i)
                 _e[i] = p[i];
-            for (std::size_t i=l.size(); i<_N; ++i)
+            for (std::size_t i=len; i<_N; ++i)
                 _e[i] = _T(0);
         }
+
+        template <std::size_t _M>
+        constexpr
+        explicit
+        fp_expansion(const fp_expansion<_T, _M>& r) : _e{} {
+            const std::size_t len=_N < _M ? _N : _M;
+            for (std::size_t i=0; i<len; ++i)
+                _e[i] = r[i];
+            for (std::size_t i=len; i<_N; ++i)
+                _e[i] = _T(0);
+        }
+
+        template <std::size_t _N0, std::size_t _N1>
+        constexpr
+        fp_expansion(const fp_expansion<_T, _N0>& r0,
+                     const fp_expansion<_T, _N1>& r1) : _e{} {
+            static_assert(_N == _N0 + _N1, "ooops");
+            for (std::size_t i=0; i<_N0; ++i)
+                _e[i] = r0[i];
+            for (std::size_t i=0; i<_N1; ++i)
+                _e[_N0+i] = r1[+i];
+        }
+
 
         constexpr
         const _T& operator[](std::size_t i) const {
@@ -571,41 +595,30 @@ cftal::sort_lanes(_T& r0, _T& r1, _T& r2, _T& r3,
                   _T& r4, _T& r5, _T& r6, _T& r7,
                   _CMP cmp)
 {
-    _T t0=r0, t1=r1, t2=r2, t3=r3, t4=r4, t5=r5, t6=r6, t7=r7;
+    exchange(r0, r4, cmp);
+    exchange(r1, r5, cmp);
+    exchange(r2, r6, cmp);
+    exchange(r3, r7, cmp);
 
-    exchange(t0, t4, cmp);
-    exchange(t1, t5, cmp);
-    exchange(t2, t6, cmp);
-    exchange(t3, t7, cmp);
+    exchange(r0, r2, cmp);
+    exchange(r1, r3, cmp);
+    exchange(r4, r6, cmp);
+    exchange(r5, r7, cmp);
 
-    exchange(t0, t2, cmp);
-    exchange(t1, t3, cmp);
-    exchange(t4, t6, cmp);
-    exchange(t5, t7, cmp);
+    exchange(r2, r4, cmp);
+    exchange(r3, r5, cmp);
+    exchange(r0, r1, cmp);
+    exchange(r6, r7, cmp);
 
-    exchange(t2, t4, cmp);
-    exchange(t3, t5, cmp);
-    exchange(t0, t1, cmp);
-    exchange(t6, t7, cmp);
+    exchange(r2, r3, cmp);
+    exchange(r4, r5, cmp);
 
-    exchange(t2, t3, cmp);
-    exchange(t4, t5, cmp);
+    exchange(r1, r4, cmp);
+    exchange(r3, r6, cmp);
 
-    exchange(t1, t4, cmp);
-    exchange(t3, t6, cmp);
-
-    exchange(t1, t2, cmp);
-    exchange(t3, t4, cmp);
-    exchange(t5, t6, cmp);
-
-    r0 = t0;
-    r1 = t1;
-    r2 = t2;
-    r3 = t3;
-    r4 = t4;
-    r5 = t5;
-    r6 = t6;
-    r7 = t7;
+    exchange(r1, r2, cmp);
+    exchange(r3, r4, cmp);
+    exchange(r5, r6, cmp);
 }
 
 // Local variables:

@@ -74,11 +74,11 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set (CMAKE_CXX_FLAGS_RELEASE
-            "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native")
+            "${CMAKE_CXX_FLAGS_RELEASE} -O2 -march=native")
         set (CMAKE_CXX_FLAGS_DEBUG
             "${CMAKE_CXX_FLAGS_DEBUG} -march=native")
         set (CMAKE_CXX_FLAGS_PROFILE
-            "${CMAKE_CXX_FLAGS_PROFILE} -O3 -march=native")
+            "${CMAKE_CXX_FLAGS_PROFILE} -O2 -march=native")
     endif()
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set (CMAKE_CXX_FLAGS_RELEASE

@@ -8,7 +8,7 @@
 #define __CFTAL_FP_EXPANSION_OPS_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/d_real.h>
+#include <cftal/t_real.h>
 #include <iosfwd>
 
 namespace cftal {
@@ -32,6 +32,10 @@ namespace cftal {
     template <typename _T>
     void
     normalize(fp_expansion<_T, 2>& r);
+
+    template <typename _T>
+    void
+    normalize(fp_expansion<_T, 3>& r);
 
     template <typename _T, std::size_t _N>
     void
@@ -64,7 +68,7 @@ vec_sum(fp_expansion<_T, _N>& r, std::size_t n)
     _T s;
     d_ops::add12(s, r[n-1], r[n-2], r[n-1]);
     if (n >2) {
-#pragma GCC unroll((1<<15))
+#pragma GCC unroll 1<<15
         for (std::size_t i= 2; i<n; ++i) {
             d_ops::add12(s, r[n-i], r[n-i-1], s);
         }
@@ -84,7 +88,7 @@ vec_sum(fp_expansion<_T, _N>& r)
                                  d_real_traits<_T>::fma>;
     _T s;
     d_ops::add12(s, r[_N-1], r[_N-2], r[_N-1]);
-#pragma GCC unroll((1<<15))
+#pragma GCC unroll 1<<15
     for (std::size_t i= 2; i<_N; ++i) {
         d_ops::add12(s, r[_N-i], r[_N-i-1], s);
     }
@@ -102,7 +106,7 @@ vec_sum_cond(fp_expansion<_T, _N>& r)
                                  d_real_traits<_T>::fma>;
     _T s;
     d_ops::add12cond(s, r[_N-1], r[_N-2], r[_N-1]);
-#pragma GCC unroll((1<<15))
+#pragma GCC unroll 1<<15
     for (std::size_t i= 2; i<_N; ++i) {
         d_ops::add12cond(s, r[_N-i], r[_N-i-1], s);
     }
@@ -121,7 +125,7 @@ vec_sum_err_branch(fp_expansion<_T, _N>& r)
     _T e=r[0], rt;
     bool sort_req=false;
 // #pragma clang loop unroll(enable)
-#pragma GCC unroll((1<<15))
+#pragma GCC unroll 1<<15
     for (std::size_t i=0; i<_N-1; ++i) {
         d_ops::add12(rt, e, e, r[i+1]);
         auto noerr = e == _T(0);
@@ -145,6 +149,17 @@ normalize(fp_expansion<_T, 2>& r)
     d_ops::add12(r[0], r[1], r[0], r[1]);
 }
 
+template <typename _T>
+__attribute__((__always_inline__))
+inline
+void
+cftal::
+normalize(fp_expansion<_T, 3>& r)
+{
+    using t_ops=impl::t_real_ops<_T>;
+    t_ops::renormalize3(r[0], r[1], r[2], r[0], r[1], r[2]);
+}
+
 template <typename _T, std::size_t _N>
 __attribute__((__always_inline__))
 inline
@@ -154,7 +169,7 @@ normalize(fp_expansion<_T, _N>& r)
 {
     vec_sum(r);
     auto srt=vec_sum_err_branch(r);
-    if (srt) {
+    if (likely(srt)) {
         sort_lanes(r, greater_than_mag<_T>());
     }
 }
@@ -180,7 +195,7 @@ normalize_random(fp_expansion<_T, _N>& r)
 {
     for (std::size_t i=2; i<_N; ++i)
         vec_sum(r, i);
-    auto srt=vec_sum_err_branch(r);
+    bool srt=vec_sum_err_branch(r);
     if (srt) {
         sort_lanes(r, greater_than_mag<_T>());
     }
@@ -194,20 +209,11 @@ cftal::
 add(const fp_expansion<_T, _N0>& a, const fp_expansion<_T, _N1>& b)
 {
     // static_assert(_M <= _N0+_N1, "constraint failed");
-    const std::size_t _N = _N0 + _N1;
-    fp_expansion<_T, _N> t;
-    for (std::size_t i=0; i<_N0; ++i)
-        t[i] = a[i];
-    for (std::size_t i=0; i<_N1; ++i)
-        t[i+_N0]=b[i];
+    const std::size_t _N= _N0 + _N1;
+    fp_expansion<_T, _N> t(a, b);
     sort_lanes(t, greater_than_mag<_T>());
     normalize(t);
-    fp_expansion<_T, _M> r;
-    const std::size_t _R=_N < _M ? _N : _M;
-#pragma GCC unroll(1<<15)
-    for (std::size_t i=0; i<_R; ++i)
-        r[i] = t[i];
-    return r;
+    return fp_expansion<_T, _M>(t);
 }
 
 // Local variables:

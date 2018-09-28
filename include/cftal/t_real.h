@@ -34,6 +34,17 @@ namespace cftal {
         fp_expansion(const fp_expansion<_U, 2>& r, const _U& l=_U(0))
             : _e{ _T(r[0]), _T(r[1]),_T(l)} {}
 
+        template <std::size_t _M>
+        constexpr
+        explicit
+        fp_expansion(const fp_expansion<_T, _M>& r) : _e{} {
+            const std::size_t len=3 < _M ? 3 : _M;
+            for (std::size_t i=0; i<len; ++i)
+                _e[i] = r[i];
+            for (std::size_t i=len; i<3; ++i)
+                _e[i] = _T(0);
+        }
+
         constexpr
         const _T& operator[](std::size_t i) const {
             return _e[i];
