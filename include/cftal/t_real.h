@@ -14,39 +14,37 @@
 namespace cftal {
 
     template <typename _T>
-    class t_real : private d_real<_T> {
-        _T _e2;
-        using base_type = d_real<_T>;
+    class fp_expansion<_T, 3> {
+        _T _e[3];
     public:
         using value_type = _T;
-        constexpr t_real(): base_type(), _e2() {}
+        constexpr fp_expansion(): _e{_T(0), _T(0), _T(0)} {}
         constexpr
-        t_real(_T v) : base_type(v),  _e2(0) {}
+        fp_expansion(_T v) : _e{v, _T(0), _T(0)} {}
         constexpr
-        t_real(_T v0, _T v1) : base_type(v0, v1), _e2(0) {}
+        fp_expansion(_T v0, _T v1) : _e{v0, v1, _T(0)} {}
         constexpr
-        t_real(_T v0, _T v1, _T v2) : base_type(v0, v1), _e2(v2) {}
+        fp_expansion(_T v0, _T v1, _T v2) : _e{v0, v1, v2} {}
         template <typename _U>
         constexpr
-        t_real(const t_real<_U>& r) : base_type(r.e0(), r.e1()), _e2(r.e2()) {}
+        fp_expansion(const fp_expansion<_U, 3>& r)
+            : _e{ _T(r[0]), _T(r[1]), _T(r[2])} {}
         template<typename _U>
         constexpr
-        t_real(const d_real<_U>& h, const _T& l=_U(0))
-        : base_type(h), _e2(l) {}
+        fp_expansion(const fp_expansion<_U, 2>& r, const _U& l=_U(0))
+            : _e{ _T(r[0]), _T(r[1]),_T(l)} {}
 
-        using base_type::e0;
-        using base_type::e1;
-        
         constexpr
-        const _T& h() const { return e0(); }
-        constexpr
-        const _T& m() const { return e1(); }
-        constexpr
-        const _T& l() const { return _e2; }
-        _T& h() { return e0(); }
-        _T& m() { return e1(); }
-        _T& l() { return _e2; }
+        const _T& operator[](std::size_t i) const {
+            return _e[i];
+        }
+        _T& operator[](std::size_t i) {
+            return _e[i];
+        }
     };
+
+    template <typename _T>
+    using t_real = fp_expansion<_T, 3>;
 
     template <typename _T>
     struct t_real_traits : public d_real_traits<_T> {};
@@ -216,6 +214,7 @@ namespace cftal {
         };
     }
 
+#if 0
     // comparison operators
     template <typename _T>
     typename t_real_traits<_T>::cmp_result_type
@@ -240,6 +239,7 @@ namespace cftal {
     template <typename _T>
     typename t_real_traits<_T>::cmp_result_type
     operator>=(const t_real<_T>& a, const t_real<_T>& b);
+#endif
 
     // unary minus
     template <typename _T>
@@ -814,14 +814,15 @@ recp(const _T& ah, const _T& am, const _T& al)
     return t_real<_T>(rh, rm, rl);
 }
 
+#if 0
 template <typename _T>
 inline
 typename cftal::t_real_traits<_T>::cmp_result_type
 cftal::operator<(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return (a.h() < b.h()) | ((a.h()==b.h()) &
-                              ((a.m() < b.m()) |
-                               ((a.m() == b.m()) & (a.l() < b.l()))));
+    return (a[0] < b[0]) | ((a[0]==b[0]) &
+                              ((a[1] < b[1]) |
+                               ((a[1] == b[1]) & (a[2] < b[2]))));
 }
 
 template <typename _T>
@@ -829,9 +830,9 @@ inline
 typename cftal::t_real_traits<_T>::cmp_result_type
 cftal::operator<=(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return (a.h() <= b.h()) | ((a.h()==b.h()) &
-                               ((a.m() <= b.m()) |
-                                ((a.m() == b.m()) & (a.l() <= b.l()))));
+    return (a[0] <= b[0]) | ((a[0]==b[0]) &
+                               ((a[1] <= b[1]) |
+                                ((a[1] == b[1]) & (a[2] <= b[2]))));
 }
 
 template <typename _T>
@@ -839,7 +840,7 @@ inline
 typename cftal::t_real_traits<_T>::cmp_result_type
 cftal::operator==(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return (a.h() == b.h()) & ((a.m() == b.m()) | (a.l() == b.l()));
+    return (a[0] == b[0]) & ((a[1] == b[1]) | (a[2] == b[2]));
 }
 
 template <typename _T>
@@ -847,7 +848,7 @@ inline
 typename cftal::t_real_traits<_T>::cmp_result_type
 cftal::operator!=(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return (a.h() != b.h()) | ((a.m() != b.m()) | (a.l() != b.l()));
+    return (a[0] != b[0]) | ((a[1] != b[1]) | (a[2] != b[2]));
 }
 
 template <typename _T>
@@ -855,9 +856,9 @@ inline
 typename cftal::t_real_traits<_T>::cmp_result_type
 cftal::operator>=(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return (a.h() >= b.h()) | ((a.h()==b.h()) &
-                               ((a.m() >= b.m()) |
-                                ((a.m() == b.m()) & (a.l() >= b.l()))));
+    return (a[0] >= b[0]) | ((a[0]==b[0]) &
+                               ((a[1] >= b[1]) |
+                                ((a[1] == b[1]) & (a[2] >= b[2]))));
 }
 
 template <typename _T>
@@ -865,17 +866,18 @@ inline
 typename cftal::t_real_traits<_T>::cmp_result_type
 cftal::operator>(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return (a.h() > b.h()) | ((a.h()==b.h()) &
-                              ((a.m() > b.m()) |
-                               ((a.m() == b.m()) & (a.l() > b.l()))));
+    return (a[0] > b[0]) | ((a[0]==b[0]) &
+                              ((a[1] > b[1]) |
+                               ((a[1] == b[1]) & (a[2] > b[2]))));
 }
+#endif
 
 template <typename _T>
 inline
 cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a)
 {
-    return t_real<_T>(-a.h(), -a.m(), -a.l());
+    return t_real<_T>(-a[0], -a[1], -a[2]);
 }
 
 template <typename _T>
@@ -892,7 +894,7 @@ cftal::t_real<_T>
 cftal::operator+(const _T& a, const t_real<_T>& b)
 {
     return impl::t_real_ops<_T>::add(a,
-                                     b.h(), b.m(), b.l());
+                                     b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -900,8 +902,8 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a.h(), a.l(),
-                                     b.h(), b.m(), b.l());
+    return impl::t_real_ops<_T>::add(a[0], a[1],
+                                     b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -909,8 +911,8 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a.h(), a.m(), a.l(),
-                                     b.h(), b.m(), b.l());
+    return impl::t_real_ops<_T>::add(a[0], a[1], a[2],
+                                     b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -918,8 +920,8 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(b.h(), b.l(),
-                                     a.h(), a.m(), a.l());
+    return impl::t_real_ops<_T>::add(b[0], b[1],
+                                     a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -928,7 +930,7 @@ cftal::t_real<_T>
 cftal::operator+(const t_real<_T>& a, const _T& b)
 {
     return impl::t_real_ops<_T>::add(b,
-                                     a.h(), a.m(), a.l());
+                                     a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -964,7 +966,7 @@ cftal::t_real<_T>
 cftal::operator-(const _T& a, const t_real<_T>& b)
 {
     return impl::t_real_ops<_T>::add(a,
-                                     -b.h(), -b.m(), -b.l());
+                                     -b[0], -b[1], -b[2]);
 }
 
 template <typename _T>
@@ -972,8 +974,8 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a.h(), a.l(),
-                                     -b.h(), -b.m(), -b.l());
+    return impl::t_real_ops<_T>::add(a[0], a[1],
+                                     -b[0], -b[1], -b[2]);
 }
 
 template <typename _T>
@@ -981,8 +983,8 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a.h(), a.m(), a.l(),
-                                     -b.h(), -b.m(), -b.l());
+    return impl::t_real_ops<_T>::add(a[0], a[1], a[2],
+                                     -b[0], -b[1], -b[2]);
 }
 
 template <typename _T>
@@ -990,8 +992,8 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(-b(), -b.l(),
-                                     a.h(), a.m(), a.l());
+    return impl::t_real_ops<_T>::add(-b[0], -b[1],
+                                     a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -1000,7 +1002,7 @@ cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a, const _T& b)
 {
     return impl::t_real_ops<_T>::add(-b,
-                                     a.h(), a.m(), a.l());
+                                     a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -1036,7 +1038,7 @@ cftal::t_real<_T>
 cftal::operator*(const _T& a, const t_real<_T>& b)
 {
     return impl::t_real_ops<_T>::mul(a,
-                                     b.h(), b.m(), b.l());
+                                     b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -1044,8 +1046,8 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::mul(a.h(), a.l(),
-                                     b.h(), b.m(), b.l());
+    return impl::t_real_ops<_T>::mul(a[0], a[1],
+                                     b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -1053,8 +1055,8 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::mul(a.h(), a.m(), a.l(),
-                                     b.h(), b.m(), b.l());
+    return impl::t_real_ops<_T>::mul(a[0], a[1], a[2],
+                                     b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -1062,8 +1064,8 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::mul(b.h(), b.l(),
-                                     a.h(), a.m(), a.l());
+    return impl::t_real_ops<_T>::mul(b[0], b[1],
+                                     a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -1072,7 +1074,7 @@ cftal::t_real<_T>
 cftal::operator*(const t_real<_T>& a, const _T& b)
 {
     return impl::t_real_ops<_T>::mul(b,
-                                     a.h(), a.m(), a.l());
+                                     a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -1107,7 +1109,7 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const _T& a, const t_real<_T>& b)
 {
-    return a * impl::t_real_ops<_T>::recp(b.h(), b.m(), b.l());
+    return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -1115,7 +1117,7 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return a * impl::t_real_ops<_T>::recp(b.h(), b.m(), b.l());
+    return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -1123,7 +1125,7 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return a * impl::t_real_ops<_T>::recp(b.h(), b.m(), b.l());
+    return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -1131,7 +1133,7 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return a * impl::t_real_ops<_T>::recp(b.h(), b.l(), _T(0));
+    return a * impl::t_real_ops<_T>::recp(b[0], b[2], _T(0));
 }
 
 template <typename _T>
@@ -1177,9 +1179,9 @@ cftal::select(const typename t_real_traits<_T>::cmp_result_type& m,
               const t_real<_T>& on_false)
 {
     using traits= t_real_traits<_T>;
-    return t_real<_T>(traits::sel(m, on_true.h(), on_false.h()),
-                      traits::sel(m, on_true.m(), on_false.m()),
-                      traits::sel(m, on_true.l(), on_false.l()));
+    return t_real<_T>(traits::sel(m, on_true[0], on_false[0]),
+                      traits::sel(m, on_true[1], on_false[1]),
+                      traits::sel(m, on_true[2], on_false[2]));
 }
 
 template <typename _T>
@@ -1219,7 +1221,7 @@ inline
 cftal::t_real<_T>
 cftal::mul_pwr2(const t_real<_T>& a, const _T& p)
 {
-    return t_real<_T>( a.h() * p, a.m() * p, a.l()*p);
+    return t_real<_T>( a[0] * p, a[1] * p, a[2]*p);
 }
 
 // Local variables:

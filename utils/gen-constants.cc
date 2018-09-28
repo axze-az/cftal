@@ -218,10 +218,10 @@ std::ostream&
 cftal::test::operator<<(std::ostream& s, const out_df<_T>& v)
 {
     const cftal::d_real<_T>& d=v._v;
-    s << pr_fp<_T>(d.h())
+    s << pr_fp<_T>(d[0])
       << std::setw(0)
       << ", " ;
-    s << pr_fp<_T>(d.l())
+    s << pr_fp<_T>(d[1])
       << std::setw(0);
     return s;
 }
@@ -231,13 +231,13 @@ std::ostream&
 cftal::test::operator<<(std::ostream& s, const out_tf<_T>& v)
 {
     const cftal::t_real<_T>& d=v._v;
-    s << pr_fp<_T>(d.h())
+    s << pr_fp<_T>(d[0])
       << std::setw(0)
       << ", " ;
-    s << pr_fp<_T>(d.m())
+    s << pr_fp<_T>(d[1])
       << std::setw(0)
       << ", ";
-    s << pr_fp<_T>(d.l())
+    s << pr_fp<_T>(d[2])
       << std::setw(0);
     return s;
 }
@@ -248,7 +248,7 @@ cftal::test::to_stream(d_real<_T>& d, const mpfr_real<_B>& v,
                        bool normalize)
 {
     d = d_real<_T>(v);
-    _T h=d.h(), l=d.l();
+    _T h=d[0], l=d[1];
     if (normalize && ((h*l)<0.0)) {
         if (h > 0) {
             while (l < 0.0) {

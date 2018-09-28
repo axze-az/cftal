@@ -187,7 +187,7 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type kf = rint(vf_type(xc * ctbl::m_1_ln2.h()));
+    vf_type kf = rint(vf_type(xc * ctbl::m_1_ln2[0]));
     vf_type xrh = (xc - kf*ctbl::m_ln2_cw[0]) -
         kf*ctbl::m_ln2_cw[1];
     auto y= __half_exp_k(xrh, kf);
@@ -244,7 +244,7 @@ cftal::math::half_func<float, _T>::half_exp2_k(arg_t<vf_type> xc)
     return y;
 #else
     using ctbl = impl::d_real_constants<d_real<float>, float>;
-    auto y= __half_exp_k(xrh*ctbl::m_ln2.h(), kf);
+    auto y= __half_exp_k(xrh*ctbl::m_ln2[0], kf);
     return y;
 #endif
 }
@@ -269,10 +269,10 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::half_exp10_k(arg_t<vf_type> xc)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type kf = rint(vf_type(xc * ctbl::m_1_lg2.h()));
+    vf_type kf = rint(vf_type(xc * ctbl::m_1_lg2[0]));
     vf_type xrh = (xc - kf*ctbl::m_lg2_cw[0]) -
         (kf*ctbl::m_lg2_cw[1]);
-    auto y= __half_exp_k(xrh*ctbl::m_ln10.h(), kf);
+    auto y= __half_exp_k(xrh*ctbl::m_ln10[0], kf);
     return y;
 }
 
@@ -327,7 +327,7 @@ cftal::math::half_func<float, _T>::half_log_k(arg_t<vf_type> xc)
                        log_f16_c3,
                        log_f16_c1)*s;
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    vf_type log_x = kf * ctbl::m_ln2.h() + y;
+    vf_type log_x = kf * ctbl::m_ln2[0] + y;
     return log_x;
 }
 
@@ -355,7 +355,7 @@ cftal::math::half_func<float, _T>::
 half_log2(arg_t<vf_type> d)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type x = half_log_k(d)*ctbl::m_1_ln2.h();
+    vf_type x = half_log_k(d)*ctbl::m_1_ln2[0];
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
     x = _T::sel(isinf(d), pinf, x);
@@ -375,7 +375,7 @@ half_log10(arg_t<vf_type> d)
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type l=half_log_k(d);
-    vf_type x=l * ctbl::m_1_ln10.h();
+    vf_type x=l * ctbl::m_1_ln10[0];
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
     x = _T::sel(isinf(d), pinf, x);
@@ -395,7 +395,7 @@ cftal::math::half_func<float, _T>::
 __half_reduce_trig_arg(vf_type& xrh, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    vf_type fn= rint(vf_type(x*ctbl::m_2_pi.h()));
+    vf_type fn= rint(vf_type(x*ctbl::m_2_pi[0]));
 #if 0
     const float m_pi_2_h=+1.5707963705063e+00f;
     const float m_pi_2_m=-4.3711388286738e-08f;

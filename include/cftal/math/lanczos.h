@@ -493,8 +493,8 @@ lanczos_rational_at(const _T& x,
                     const _C (&q)[_N2])
 {
     _T ph, pl;
-    ph = p[0].h();
-    pl = p[0].l();
+    ph = p[0][0];
+    pl = p[0][1];
     using d_ops=cftal::impl::d_real_ops<_T,
                                         d_real_traits<_T>::fma>;
 #pragma GCC unroll 0
@@ -502,7 +502,7 @@ lanczos_rational_at(const _T& x,
     for (std::size_t i=1; i< _N1; ++i) {
         d_ops::mul122(ph, pl, x, ph, pl);
         d_ops::add22cond(ph, pl,
-                         p[i].h(), p[i].l(),
+                         p[i][0], p[i][1],
                          ph, pl);
     }
     _T qh, ql;

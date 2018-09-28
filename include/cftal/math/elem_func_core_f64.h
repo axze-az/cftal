@@ -706,7 +706,7 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type y= vf_type(1.0/sqrt(x));
     // vf_type y= native_rsqrt(x);
 #if 0
-     y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y).h();
+     y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
 #else
     vf_type yh, yl;
     d_ops::mul12(yh, yl, x, y);
@@ -1282,7 +1282,7 @@ __reduce_exp_arg(vf_type& xrh,
                  arg_t<vf_type> x)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    kf = rint(vf_type(x * ctbl::m_1_ln2.h()));
+    kf = rint(vf_type(x * ctbl::m_1_ln2[0]));
     vf_type hi = x - kf * ctbl::m_ln2_cw[0];
     xrh = hi - kf * ctbl::m_ln2_cw[1];
     vf_type dx = hi-xrh;
@@ -1300,10 +1300,10 @@ __reduce_exp_arg(vf_type& xrh,
                  arg_t<vf_type> xl)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    kf = rint(vf_type(xh * ctbl::m_1_ln2.h()));
+    kf = rint(vf_type(xh * ctbl::m_1_ln2[0]));
     vf_type neg_kfln2h, neg_kfln2l;
     d_ops::mul122(neg_kfln2h, neg_kfln2l,
-                  kf, -ctbl::m_ln2.h(), -ctbl::m_ln2.l());
+                  kf, -ctbl::m_ln2[0], -ctbl::m_ln2[1]);
     d_ops::add22cond(xrh, xrl,
                      xh, xl,
                      neg_kfln2h, neg_kfln2l);
@@ -1386,7 +1386,7 @@ exp2_k(arg_t<vf_type> x)
     vf_type xr = x - kf;
     vf_type xrh, xrl;
     // for exp2 mul12 would be sufficient
-    d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type y=__exp_k<_EXP2_M1>(xrh, xrl, kf);
     return y;
 }
@@ -1409,7 +1409,7 @@ exp2_mx2_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     d_ops::add122cond(xrh, xrl, vf_type(-kf), x2h, x2l);
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
     using fc_t = math::func_constants<double>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
@@ -1428,7 +1428,7 @@ exp2_px2_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     d_ops::add122cond(xrh, xrl, -kf, x2h, x2l);
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
     using fc_t = math::func_constants<double>;
     y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
@@ -1443,15 +1443,15 @@ cftal::math::elem_func_core<double, _T>::
 exp10_k(arg_t<vf_type> x)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type kf = rint(vf_type(x * ctbl::m_1_lg2.h()));
+    vf_type kf = rint(vf_type(x * ctbl::m_1_lg2[0]));
     vf_type hi = x - kf * ctbl::m_lg2_cw[0];
     vf_type xr = hi - kf * ctbl::m_lg2_cw[1];
     vf_type dx= (hi-xr);
     vf_type cr = dx-kf * ctbl::m_lg2_cw[1];
     vf_type xrh, xrl;
     // for exp10 mul12 would be sufficient
-    d_ops::mul122(xrh, xrl, xr, ctbl::m_ln10.h(), ctbl::m_ln10.l());
-    xrl += cr * ctbl::m_ln10.h();
+    d_ops::mul122(xrh, xrl, xr, ctbl::m_ln10[0], ctbl::m_ln10[1]);
+    xrl += cr * ctbl::m_ln10[0];
     // do not normalize xrh, xrl
     // d_ops::add12(xrh, xrl, xrh, xrl);
     vf_type y=__exp_k<_EXP10_M1>(xrh, xrl, kf);
@@ -1473,15 +1473,15 @@ exp10_mx2_k(arg_t<vf_type> xc)
         x2l = -x2l;
     }
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2.h()));
+    vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2[0]));
     vf_type neg_kfln10h, neg_kfln10l;
     d_ops::mul122(neg_kfln10h, neg_kfln10l,
-                  kf, -ctbl::m_lg2.h(), -ctbl::m_lg2.l());
+                  kf, -ctbl::m_lg2[0], -ctbl::m_lg2[1]);
     vf_type xrh, xrl;
     d_ops::add22cond(xrh, xrl,
                      x2h, x2l,
                      neg_kfln10h, neg_kfln10l);
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10.h(), ctbl::m_ln10.l());
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
     using fc_t = math::func_constants<double>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp10_lo_zero(), y);
@@ -1498,15 +1498,15 @@ exp10_px2_k(arg_t<vf_type> xc)
     d_ops::sqr12(x2h, x2l, xc);
 
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2.h()));
+    vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2[0]));
     vf_type neg_kfln10h, neg_kfln10l;
     d_ops::mul122(neg_kfln10h, neg_kfln10l,
-                  kf, -ctbl::m_lg2.h(), -ctbl::m_lg2.l());
+                  kf, -ctbl::m_lg2[0], -ctbl::m_lg2[1]);
     vf_type xrh, xrl;
     d_ops::add22cond(xrh, xrl,
                      x2h, x2l,
                      neg_kfln10h, neg_kfln10l);
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10.h(), ctbl::m_ln10.l());
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
     using fc_t = math::func_constants<double>;
     y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
@@ -1708,7 +1708,7 @@ hyperbolic_k(arg_t<vf_type> xc)
     if (_F == hyperbolic_func::c_tanh) {
         dvf_type s(sinh_h, sinh_l), c(cosh_h, cosh_l);
         dvf_type t=d_ops::sloppy_div(s, c);
-        vf_type tanh_x=_T::sel(kf_le_35, t.h(), 1.0);
+        vf_type tanh_x=_T::sel(kf_le_35, t[0], 1.0);
         tanh_x = _T::sel(x < 0x1p-26, x, tanh_x);
         tanh_x = copysign(tanh_x, xc);
         r = tanh_x;
@@ -1890,7 +1890,7 @@ old_tanh_k(arg_t<vf_type> xc)
     // produce a faithfully rounded tanh:
     vf_type ep1l, ep1h=d_ops::quick_two_sum(e, vf_type(1.0), ep1l);
     dvf_type ep1(ep1h, ep1l);
-    vf_type tanh_x_gt_ln_3_2 = (vf_type(1.0) - vf_type(2.0)/ep1).h();
+    vf_type tanh_x_gt_ln_3_2 = (vf_type(1.0) - vf_type(2.0)/ep1)[0];
     // [0, 0.5625] : | p - f | <= 2^-52.046875
     // coefficients for tanh generated by sollya
     // x^2 : +0x9.999999999998p-3
@@ -2212,7 +2212,7 @@ cftal::math::elem_func_core<double, _T>::
 log_k(arg_t<vf_type> xc)
 {
     // return __pow_log_k<log_func::c_log_e,
-    //                   result_prec::high>(xc).h();
+    //                   result_prec::high>(xc)[0];
     return __log_k<log_func::c_log_e>(xc);
 }
 
@@ -2222,7 +2222,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log2_k(arg_t<vf_type> xc)
 {
-    // return __pow_log_k<log_func::c_log_2>(xc).h();
+    // return __pow_log_k<log_func::c_log_2>(xc)[0];
 /*
  * Return the base 2 logarithm of x.  See log.c for most comments.
  *
@@ -2239,7 +2239,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log10_k(arg_t<vf_type> xc)
 {
-    // return __pow_log_k<log_func::c_log_10>(xc).h();
+    // return __pow_log_k<log_func::c_log_10>(xc)[0];
 /*
  * Return the base 10 logarithm of x.  See log.c for most comments.
  *
@@ -2366,24 +2366,24 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
 {
     dvf_type ds(sh, sl);
     dvf_type ds2=sqr(ds);
-    vf_type s2= ds2.h();
+    vf_type s2= ds2[0];
     using ctbl = impl::d_real_constants<d_real<double>, double>;
 
     vf_type th, tl;
     if (_F == log_func::c_log_e) {
         d_ops::mul122(th, tl, kf,
-                      ctbl::m_ln2.h(), ctbl::m_ln2.l());
+                      ctbl::m_ln2[0], ctbl::m_ln2[1]);
     } else if (_F == log_func::c_log_2) {
-        d_ops::mul22(th, tl, ds.h(), ds.l(),
-                     ctbl::m_1_ln2.h(), ctbl::m_1_ln2.l());
+        d_ops::mul22(th, tl, ds[0], ds[1],
+                     ctbl::m_1_ln2[0], ctbl::m_1_ln2[1]);
     } else if (_F == log_func::c_log_10) {
-        d_ops::mul22(th, tl, ds.h(), ds.l(),
-                     ctbl::m_1_ln10.h(), ctbl::m_1_ln10.l());
+        d_ops::mul22(th, tl, ds[0], ds[1],
+                     ctbl::m_1_ln10[0], ctbl::m_1_ln10[1]);
     }
 
     vf_type s4=s2*s2;
     vf_type ph, pl;
-    vf_type s2l=ds2.l();
+    vf_type s2l=ds2[1];
     if (_P == result_prec::high) {
 #if 0
     // [0, 4.28932197391986846923828125e-2] : | p - f | <= 2^-92
@@ -2723,14 +2723,14 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
         // horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
     }
     if (_F == log_func::c_log_e) {
-        d_ops::mul22(ph, pl, ds.h(), ds.l(), ph, pl);
+        d_ops::mul22(ph, pl, ds[0], ds[1], ph, pl);
         d_ops::add22cond(ph, pl, th, tl, ph, pl);
     } else if (_F == log_func::c_log_2) {
         d_ops::mul22(ph, pl, th, tl, ph, pl);
         d_ops::add122cond(ph, pl, kf, ph, pl);
     } else if (_F == log_func::c_log_10) {
         vf_type kfh, kfl;
-        d_ops::mul122(kfh, kfl, kf, ctbl::m_lg2.h(), ctbl::m_lg2.l());
+        d_ops::mul122(kfh, kfl, kf, ctbl::m_lg2[0], ctbl::m_lg2[1]);
         d_ops::mul22(ph, pl, th, tl, ph, pl);
         d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
     }
@@ -2770,7 +2770,7 @@ __pow_log_k(arg_t<vf_type> xc)
     dvf_type ym= d_ops::add(xr, vf_type(-1.0));
     dvf_type yp= d_ops::add(xr, vf_type(+1.0));
     dvf_type ds= d_ops::sloppy_div(ym, yp);
-    return __pow_log_k<_F, _P>(ds.h(), ds.l(), kf);
+    return __pow_log_k<_F, _P>(ds[0], ds[1], kf);
 }
 
 template <typename _T>
@@ -2790,11 +2790,11 @@ __pow_log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
     xrl = _T::sel(c, xrl*2.0, xrl);
     kf = _T::sel(c, kf-1.0, kf);
     dvf_type ym;
-    d_ops::add122cond(ym.h(), ym.l(), -1.0, xrh, xrl);
+    d_ops::add122cond(ym[0], ym[1], -1.0, xrh, xrl);
     dvf_type yp;
-    d_ops::add122cond(yp.h(), yp.l(), +1.0, xrh, xrl);
+    d_ops::add122cond(yp[0], yp[1], +1.0, xrh, xrl);
     dvf_type ds= d_ops::sloppy_div(ym, yp);
-    return __pow_log_k<_F, _P>(ds.h(), ds.l(), kf);
+    return __pow_log_k<_F, _P>(ds[0], ds[1], kf);
 }
 
 template <typename _T>
@@ -2807,17 +2807,17 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     dvf_type ldx= __pow_log_k<log_func::c_log_2,
                               result_prec::normal>(abs_x);
     dvf_type yldx = y*ldx;
-    vf_type kf= rint(vf_type(yldx.h()));
+    vf_type kf= rint(vf_type(yldx[0]));
     dvf_type xrhl= yldx - kf;
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type xrh, xrl;
-    d_ops::mul22(xrh, xrl, xrhl.h(), xrhl.l(),
-                 ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    d_ops::mul22(xrh, xrl, xrhl[0], xrhl[1],
+                 ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type res=__pow_exp_k(xrh, xrl, kf);
     // std::cout << kf << std::endl;
     // std::cout << k << std::endl;
     using fc=func_constants<double>;
-    const vf_type& d= yldx.h();
+    const vf_type& d= yldx[0];
     const double exp2_hi_inf= fc::exp2_hi_inf();
     const double exp2_lo_zero= fc::exp2_lo_zero();
     res = _T::sel_zero_or_val(d <= exp2_lo_zero, res);
@@ -2837,13 +2837,13 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     dvf_type abs_x= select(xh > 0.0, dvf_type(xh, xl), dvf_type(-xh, -xl));
     dvf_type ldx=__pow_log_k2<log_func::c_log_2,
-                              result_prec::normal>(abs_x.h(), abs_x.l());
+                              result_prec::normal>(abs_x[0], abs_x[1]);
     dvf_type yldx = dvf_type(yh, yl)*ldx;
-    vf_type kf= rint(vf_type(yldx.h()));
+    vf_type kf= rint(vf_type(yldx[0]));
     dvf_type xrhl= yldx - kf;
     vf_type xrh, xrl;
-    d_ops::mul22(xrh, xrl, xrhl.h(), xrhl.l(),
-                 ctbl::m_ln2.h(), ctbl::m_ln2.l());
+    d_ops::mul22(xrh, xrl, xrhl[0], xrhl[1],
+                 ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type rl, rh=__pow_exp_poly_k(xrh, xrl, &rl);
     auto sc = __scale_exp_k(kf);
     return std::make_pair(dvf_type(rh, rl), sc);
@@ -2856,7 +2856,7 @@ cftal::math::elem_func_core<double, _T>::
 __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<double>, double>;
-    vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
+    vf_type fn= rint(vf_type(x* ctbl::m_2_pi[0]));
 
     const double large_arg=0x1p28;
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
@@ -2925,7 +2925,7 @@ reduce_trig_arg_k(arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<double>, double>;
 #if 1
-    vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
+    vf_type fn= rint(vf_type(x* ctbl::m_2_pi[0]));
     vf_type xrh, xrl;
     const double m_pi_2_h=+1.5707963267948965579990e+00;
     const double m_pi_2_m=+6.1232339957367660358688e-17;
@@ -2961,7 +2961,7 @@ reduce_trig_arg_k(arg_t<vf_type> x)
     const double large_arg=0x1p28;
 #else
     vf_type y0, y1;
-    vf_type fn= rint(vf_type(x* ctbl::m_2_pi.h()));
+    vf_type fn= rint(vf_type(x* ctbl::m_2_pi[0]));
     y0= d_ops::two_diff(x, fn* ctbl::m_pi_2_cw[0], y1);
     dvf_type d0(y0, y1);
     d0= d_ops::sub(d0, fn*ctbl::m_pi_2_cw[1]);
@@ -2982,8 +2982,8 @@ reduce_trig_arg_k(arg_t<vf_type> x)
         } ti;
         mem<vf_type>::store(tf._sc, x);
         mem<vi_type>::store(ti._sc, q);
-        mem<vf_type>::store(d0_l._sc, d0.l());
-        mem<vf_type>::store(d0_h._sc, d0.h());
+        mem<vf_type>::store(d0_l._sc, d0[1]);
+        mem<vf_type>::store(d0_h._sc, d0[0]);
         for (std::size_t i=0; i<N; ++i) {
             if (large_arg < std::fabs(tf._sc[i])) {
                 double y[2];
@@ -3476,7 +3476,7 @@ __tan_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl, arg_t<vi2_type> q)
     vmf_type x_large= xrh > large_arg;
     // for xh in [6/7*pi/4, pi/4] we replace xh with pi/4 - xh
     xrh = _T::sel(x_large,
-                  (ctbl::m_pi_4.h() - xrh) + (ctbl::m_pi_4.l() - xrl) , xrh);
+                  (ctbl::m_pi_4[0] - xrh) + (ctbl::m_pi_4[1] - xrl) , xrh);
     xrl = _T::sel(x_large, 0, xrl);
     vf_type z = xrh*xrh;
 
@@ -3957,11 +3957,11 @@ atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
 
     // default y>=0, x>=0,
     vf_type at= _T::sel(y_lt_0 & x_lt_0,
-                        (t - ctbl::m_pi.l()) - ctbl::m_pi.h(),
+                        (t - ctbl::m_pi[1]) - ctbl::m_pi[0],
                         t);
     at = _T::sel(y_lt_0 & (x_s>=0), -t, at);
     at = _T::sel((y_s >=0) & x_lt_0,
-                 ctbl::m_pi.h() - (t - ctbl::m_pi.l()),
+                 ctbl::m_pi[0] - (t - ctbl::m_pi[1]),
                  at);
     return at;
 }
@@ -4064,12 +4064,12 @@ asin_k(arg_t<vf_type> xc)
     vf_type r=asin_k_poly(xr);
     vf_type as0= x + x*r;
     // default: x>0.975
-    // vf_type as = ctbl::m_pi_2.h() - (2*(s+s*r) - ctbl::m_pi_2.l());
+    // vf_type as = ctbl::m_pi_2[0] - (2*(s+s*r) - ctbl::m_pi_2[1]);
     // x in [0, 1]
     vf_type f=_T::clear_low_word(s);
     vf_type c= (z-f*f)/(s+f);
-    vf_type as1= 0.5 * ctbl::m_pi_2.h() -
-                         (2*s*r - (ctbl::m_pi_2.l() -2 *c) - (0.5*ctbl::m_pi_2.h()-2*f));
+    vf_type as1= 0.5 * ctbl::m_pi_2[0] -
+                         (2*s*r - (ctbl::m_pi_2[1] -2 *c) - (0.5*ctbl::m_pi_2[0]-2*f));
     vf_type as=_T::sel(x_lt_1_2, as0, as1);
     as = copysign(as, xc);
     return as;
@@ -4118,10 +4118,10 @@ acos_k(arg_t<vf_type> xc)
 
     // x in [-0.5, 0.5]
     using ctbl=impl::d_real_constants<d_real<double>, double>;
-    vf_type ac = ctbl::m_pi_2.h() - (x - (ctbl::m_pi_2.l()-x*r));
+    vf_type ac = ctbl::m_pi_2[0] - (x - (ctbl::m_pi_2[1]-x*r));
     // x in [-1.0, -0.5]
-    vf_type wn = r*s - ctbl::m_pi_2.l();
-    vf_type ac1= 2*(ctbl::m_pi_2.h() - (s+wn));
+    vf_type wn = r*s - ctbl::m_pi_2[1];
+    vf_type ac1= 2*(ctbl::m_pi_2[0] - (s+wn));
     ac = _T::sel(x_lt_m_1_2, ac1, ac);
     // x in [0.5, 1.0]
     vf_type df= _T::clear_low_word(s);
@@ -4142,7 +4142,7 @@ asinh_k(arg_t<vf_type> xc)
     using ctbl=impl::d_real_constants<d_real<double>, double>;
 
     vmf_type x_gt_0x1p28 = x > 0x1p28;
-    vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p28, ctbl::m_ln2.h());
+    vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p28, ctbl::m_ln2[0]);
     vf_type t= x*x;
     vf_type log_arg=_T::sel(x_gt_0x1p28,
                             x,
@@ -4220,7 +4220,7 @@ acosh_k(arg_t<vf_type> xc)
     using ctbl=impl::d_real_constants<d_real<double>, double>;
 
     vmf_type x_gt_0x1p26 = x > 0x1p26;
-    vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p26, ctbl::m_ln2.h());
+    vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p26, ctbl::m_ln2[0]);
     // vf_type t= x*x;
     vf_type log_arg=_T::sel(x_gt_0x1p26,
                             x,
@@ -4286,7 +4286,7 @@ acosh_k(arg_t<vf_type> xc)
                       acosh_c2,
                       acosh_c1,
                       acosh_c0);
-    ys= (sqrt2xm1 * ys).h();
+    ys= (sqrt2xm1 * ys)[0];
     vf_type y= _T::sel(x < 2.0, ys, yl);
     return y;
 }

@@ -176,7 +176,7 @@ cftal::test::chebyshev::interpolate(const func_domain<_T>& d,
         for (std::size_t k=0; k<n; ++k) {
             sum += _DT(fx[k])*cos(M_PI*j*(k+0.5)/n);
         }
-        r[j]=(fac*sum).h();
+        r[j]=(fac*sum)[0];
     }
     return r;
 }

@@ -78,7 +78,7 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
     vf_type xrh, xrl;
     d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    d_ops::mul22(xrh, xrl, ctbl::m_pi.h(), ctbl::m_pi.l(), xrh, xrl);
+    d_ops::mul22(xrh, xrl, ctbl::m_pi[0], ctbl::m_pi[1], xrh, xrl);
     vi_type q= _T::cvt_f_to_i(fh);
     base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
 }
@@ -92,7 +92,7 @@ sinpi_cospi_k(arg_t<vf_type> xc, dvf_type* ps, dvf_type* pc)
     vf_type xrh, xrl;
     d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    d_ops::mul22(xrh, xrl, ctbl::m_pi.h(), ctbl::m_pi.l(), xrh, xrl);
+    d_ops::mul22(xrh, xrl, ctbl::m_pi[0], ctbl::m_pi[1], xrh, xrl);
     vi_type q= _T::cvt_f_to_i(fh);
     base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
 }
@@ -693,9 +693,9 @@ erfc_k(arg_t<vf_type> xc)
         // divide by x
         dvf_type t(i123h, i123l);
         dvf_type r = d_ops::sloppy_div(t, x);
-        dvf_type rs=base_type::__scale_exp_k(r.h(), r.l(), kf);
-        i123h = rs.h();
-        i123l = rs.l();
+        dvf_type rs=base_type::__scale_exp_k(r[0], r[1], kf);
+        i123h = rs[0];
+        i123l = rs[1];
     }
     vmf_type x_lt_0_00 = xc < 0.0f;
     vf_type ih= _T::sel(x_le_0_75, i0h, i123h);
@@ -732,20 +732,20 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     const std::size_t _N1=std::cend(lanczos_ratfunc::pdf)
         - std::cbegin(lanczos_ratfunc::pdf);
     vf_type ph, pl;
-    ph = lanczos_ratfunc::pdf[0].h();
-    pl = lanczos_ratfunc::pdf[0].l();
+    ph = lanczos_ratfunc::pdf[0][0];
+    pl = lanczos_ratfunc::pdf[0][1];
     for (std::size_t i=1; i< _N1; ++i) {
         d_ops::mul122(ph, pl, xa, ph, pl);
         d_ops::add22cond(ph, pl,
-                         lanczos_ratfunc::pdf[i].h(),
-                         lanczos_ratfunc::pdf[i].l(),
+                         lanczos_ratfunc::pdf[i][0],
+                         lanczos_ratfunc::pdf[i][1],
                          ph, pl);
     }
     vf_type qh, ql;
     horner_comp(qh, ql, xa, lanczos_ratfunc::qf);
     dvf_type p(ph, pl), q(qh, ql), pq=d_ops::sloppy_div(p, q);
 #endif
-    vf_type sum = pq.h(), sum_l= pq.l();
+    vf_type sum = pq[0], sum_l= pq[1];
     // base of the Lanczos exponential
     vf_type base, base_l;
     d_ops::add122cond(base, base_l, xa,
@@ -764,15 +764,15 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
         const dvf_type p=-ctbl::m_pi;
         dvf_type q=s * (xa *dvf_type(gh, gl));
         dvf_type g_n= d_ops::sloppy_div(p, q);
-        gh = _T::sel(x_lt_zero, g_n.h(), gh);
-        gl = _T::sel(x_lt_zero, g_n.l(), gl);
+        gh = _T::sel(x_lt_zero, g_n[0], gh);
+        gl = _T::sel(x_lt_zero, g_n[1], gl);
         zh = _T::sel(x_lt_zero, -zh, zh);
         zl = _T::sel(x_lt_zero, -zl, zl);
     }
     auto p_sc=base_type::pow_k2(base, base_l, 0.5*zh, 0.5*zl);
     const dvf_type& powh= p_sc.first;
-    d_ops::mul22(gh, gl, powh.h(), powh.l(), gh, gl);
-    d_ops::mul22(gh, gl, powh.h(), powh.l(), gh, gl);
+    d_ops::mul22(gh, gl, powh[0], powh[1], gh, gl);
+    d_ops::mul22(gh, gl, powh[0], powh[1], gh, gl);
     const auto& sc=p_sc.second;
     gh *= sc.f0();
     gh *= sc.f1();

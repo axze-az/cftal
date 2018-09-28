@@ -485,20 +485,20 @@ cftal::test::fpn_handle::operator=(const mpfr_t r)
 template <class _F>
 inline
 cftal::test::fpn_handle::fpn_handle(const d_real<_F>& d, std::size_t p)
-    : fpn_handle(d.h(), p)
+    : fpn_handle(d[0], p)
 {
-    fpn_handle t(d.l(), p);
+    fpn_handle t(d[1], p);
     mpfr_add(_v, _v, t(), MPFR_RNDN);
 }
 
 template <class _F>
 inline
 cftal::test::fpn_handle::fpn_handle(const t_real<_F>& d, std::size_t p)
-    : fpn_handle(d.h(), p)
+    : fpn_handle(d[0], p)
 {
-    fpn_handle m(d.m(), p);
+    fpn_handle m(d[1], p);
     mpfr_add(_v, _v, m(), MPFR_RNDN);
-    fpn_handle l(d.l(), p);
+    fpn_handle l(d[2], p);
     mpfr_add(_v, _v, l(), MPFR_RNDN);
 }
 

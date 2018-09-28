@@ -10,6 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/select.h>
 #include <cftal/std_types.h>
+#include <cftal/fp_expansion.h>
 #include <cmath>
 #include <type_traits>
 #include <limits>
@@ -173,28 +174,31 @@ namespace cftal {
 
     };
 
-    // floating point expansion of length 2, after normalization v= e0
-    // + e1 with ulp(e0) > |e1|
+
     template <typename _T>
-    class d_real {
-        _T _e0;
-        _T _e1;
+    class fp_expansion<_T, 2> {
+        _T _e[2];
     public:
         using value_type = _T;
-        constexpr d_real() : _e0(0), _e1(0) {}
+        constexpr fp_expansion() = default;
         template <typename _U>
-        constexpr d_real(const d_real<_U>& r) : _e0(r.e0()), _e1(r.e1()) {}
-        constexpr d_real(const _T& h, const _T& l) : _e0(h), _e1(l) {}
-        constexpr d_real(const _T& h) : _e0(h), _e1(_T(0)) {}
-        constexpr const _T& l() const { return _e1; }
-        _T& l() { return _e1; }
-        constexpr const _T& h() const { return _e0; }
-        _T& h() { return _e0; }
-        constexpr const _T& e0() const { return _e0; }
-        _T& e0() { return _e0; }
-        constexpr const _T& e1() const { return _e1; }
-        _T& e1() { return _e1; }
+        constexpr
+        fp_expansion(const fp_expansion<_U, 2>& r)
+            : _e{_T(r[0]), _T(r[1])} {}
+        constexpr fp_expansion(const _T& h, const _T& l) : _e{h, l} {}
+        constexpr fp_expansion(const _T& h) : _e{h, _T{0.0}} {}
+
+        constexpr
+        const _T& operator[](std::size_t i) const {
+            return _e[i];
+        }
+        _T& operator[](std::size_t i) {
+            return _e[i];
+        }
     };
+
+    template <typename _T>
+    using d_real = fp_expansion<_T, 2>;
 
     namespace impl {
 
@@ -560,6 +564,7 @@ namespace cftal {
 
     }
 
+#if 0
     // comparison operators
     template <typename _T>
     typename d_real_traits<_T>::cmp_result_type
@@ -584,7 +589,8 @@ namespace cftal {
     template <typename _T>
     typename d_real_traits<_T>::cmp_result_type
     operator>=(const d_real<_T>& a, const d_real<_T>& b);
-
+#endif
+//
     // unary minus
     template <typename _T>
     d_real<_T>
@@ -919,8 +925,8 @@ cftal::impl::d_real_ops_common<_T>::
 add(const d_real<_T>& a, const _T& b)
 {
     _T s1, s2;
-    s1 = two_sum(a.h(), b, s2);
-    s2+= a.l();
+    s1 = two_sum(a[0], b, s2);
+    s2+= a[1];
     s1 = quick_two_sum(s1, s2, s2);
     return d_real<_T>(s1, s2);
 }
@@ -932,8 +938,8 @@ cftal::impl::d_real_ops_common<_T>::
 ieee_add(const d_real<_T>& a, const d_real<_T>& b)
 {
     _T s1, s2, t1, t2;
-    s1 = two_sum(a.h(), b.h(), s2);
-    t1 = two_sum(a.l(), b.l(), t2);
+    s1 = two_sum(a[0], b[0], s2);
+    t1 = two_sum(a[1], b[1], t2);
     s2+= t1;
     s1 = quick_two_sum(s1, s2, s2);
     s2+= t2;
@@ -948,8 +954,8 @@ cftal::impl::d_real_ops_common<_T>::
 sloppy_add(const d_real<_T>& a, const d_real<_T>& b)
 {
     _T s, e;
-    s = two_sum(a.h(), b.h(), e);
-    e+= (a.l() + b.l());
+    s = two_sum(a[0], b[0], e);
+    e+= (a[1] + b[1]);
     s = quick_two_sum(s, e, e);
     return d_real<_T>(s, e);
 }
@@ -980,8 +986,8 @@ cftal::impl::d_real_ops_common<_T>::
 ieee_sub(const d_real<_T>& a, const d_real<_T>& b)
 {
     _T s1, s2, t1, t2;
-    s1 = two_diff(a.h(), b.h(), s2);
-    t1 = two_diff(a.l(), b.l(), t2);
+    s1 = two_diff(a[0], b[0], s2);
+    t1 = two_diff(a[1], b[1], t2);
     s2+= t1;
     s1 = quick_two_sum(s1, s2, s2);
     s2+= t2;
@@ -996,9 +1002,9 @@ cftal::impl::d_real_ops_common<_T>::
 sloppy_sub(const d_real<_T>& a, const d_real<_T>& b)
 {
     _T s, e;
-    s = two_diff(a.h(), b.h(), e);
-    e+= a.l();
-    e-= b.l();
+    s = two_diff(a[0], b[0], e);
+    e+= a[1];
+    e-= b[1];
     s= quick_two_sum(s, e, e);
     return d_real<_T>(s, e);
 }
@@ -1010,8 +1016,8 @@ cftal::impl::d_real_ops_common<_T>::
 sub(const d_real<_T>& a, const _T& b)
 {
     _T s1, s2;
-    s1 = two_diff(a.h(), b, s2);
-    s2+= a.l();
+    s1 = two_diff(a[0], b, s2);
+    s2+= a[1];
     s1 = quick_two_sum(s1, s2, s2);
     return d_real<_T>(s1, s2);
 }
@@ -1023,8 +1029,8 @@ cftal::impl::d_real_ops_common<_T>::
 sub(const _T& a, const d_real<_T>& b)
 {
     _T s1, s2;
-    s1 = two_diff(a, b.h(), s2);
-    s2-= b.l();
+    s1 = two_diff(a, b[0], s2);
+    s2-= b[1];
     s1 = quick_two_sum(s1, s2, s2);
     return d_real<_T>(s1, s2);
 }
@@ -1324,8 +1330,8 @@ cftal::d_real<_T>
 cftal::impl::d_real_ops_fma<_T, true>::
 mul(const d_real<_T>& x, const _T& y)
 {
-    _T cl1, ch= two_prod(x.h(), y, cl1);
-    _T cl3 = fma(x.l(), y, cl1);
+    _T cl1, ch= two_prod(x[0], y, cl1);
+    _T cl3 = fma(x[1], y, cl1);
     _T zl, zh= base_type::quick_two_sum(ch, cl3, zl);
     return d_real<_T>(zh, zl);
 }
@@ -1337,10 +1343,10 @@ cftal::impl::d_real_ops_fma<_T, true>::
 mul(const d_real<_T>& a, const _T& b)
 {
     _T p1, p2;
-    _T ph = a.h() * b;
-    _T pl = fms(a.h(), b, ph);
-    // pl = fma(a.h(), b.l(), pl);
-    pl = fma(a.l(), b, pl);
+    _T ph = a[0] * b;
+    _T pl = fms(a[0], b, ph);
+    // pl = fma(a[0], b[1], pl);
+    pl = fma(a[1], b, pl);
     p1 = ph + pl;
     p2 = (ph - p1);
     p2 += pl;
@@ -1355,8 +1361,8 @@ cftal::d_real<_T>
 cftal::impl::d_real_ops_fma<_T, false>::
 mul(const d_real<_T>& x, const _T& y)
 {
-    _T cl1, ch= two_prod(x.h(), y, cl1);
-    _T cl2 = x.l()*y;
+    _T cl1, ch= two_prod(x[0], y, cl1);
+    _T cl2 = x[1]*y;
     _T tl1, th= base_type::quick_two_sum(ch, cl2, tl1);
     _T tl2 = tl1 +cl1;
     _T zl, zh = base_type::quick_two_sum(th, tl2, zl);
@@ -1371,8 +1377,8 @@ cftal::impl::d_real_ops_fma<_T, false>::
 mul(const d_real<_T>& a, const _T& b)
 {
     _T p1, p2;
-    p1 = two_prod(a.h(), b, p2);
-    p2+= (a.l()*b);
+    p1 = two_prod(a[0], b, p2);
+    p2+= (a[1]*b);
     p1 = base_type::quick_two_sum(p1, p2, p2);
     return d_real<_T>(p1, p2);
 }
@@ -1385,10 +1391,10 @@ cftal::d_real<_T>
 cftal::impl::d_real_ops_fma<_T, true>::
 mul(const d_real<_T>& x, const d_real<_T>& y)
 {
-    _T cl1, ch = two_prod(x.h(), y.h(), cl1);
-    _T tl0= x.l()*y.l();
-    _T tl1= fma(x.h(), y.l(), tl0);
-    _T cl2= fma(x.l(), y.h(), tl1);
+    _T cl1, ch = two_prod(x[0], y[0], cl1);
+    _T tl0= x[1]*y[1];
+    _T tl1= fma(x[0], y[1], tl0);
+    _T cl2= fma(x[1], y[0], tl1);
     _T cl3= cl1 + cl2;
     _T zl, zh= base_type::quick_two_sum(ch, cl3, zl);
     return d_real<_T>(zh, zl);
@@ -1401,10 +1407,10 @@ cftal::impl::d_real_ops_fma<_T, true>::
 mul(const d_real<_T>& a, const d_real<_T>& b)
 {
     _T p1, p2;
-    _T ph = a.h() * b.h();
-    _T pl = fms(a.h(), b.h(), ph);
-    pl = fma(a.h(), b.l(), pl);
-    pl = fma(a.l(), b.h(), pl);
+    _T ph = a[0] * b[0];
+    _T pl = fms(a[0], b[0], ph);
+    pl = fma(a[0], b[1], pl);
+    pl = fma(a[1], b[0], pl);
     p1 = ph + pl;
     p2 = (ph - p1);
     p2 += pl;
@@ -1419,8 +1425,8 @@ cftal::impl::d_real_ops_fma<_T, false>::
 mul(const d_real<_T>& a, const d_real<_T>& b)
 {
     _T p1, p2;
-    p1 = two_prod(a.h(), b.h(), p2);
-    p2+= (a.h()*b.l() + a.l() * b.h());
+    p1 = two_prod(a[0], b[0], p2);
+    p2+= (a[0]*b[1] + a[1] * b[0]);
     p1 = base_type::quick_two_sum(p1, p2, p2);
     return d_real<_T>(p1, p2);
 }
@@ -1454,9 +1460,9 @@ cftal::impl::d_real_ops_fma<_T, true>::
 sqr(const d_real<_T>& a)
 {
     _T p1, p2, s1, s2;
-    p1 = a.h() * a.h();
-    p2 = fms(a.h(), a.h(), p1);
-    p2 = fma(_T(2*a.h()), a.l(), p2);
+    p1 = a[0] * a[0];
+    p2 = fms(a[0], a[0], p1);
+    p2 = fma(_T(2*a[0]), a[1], p2);
     s1 = p1 + p2;
     s2 = (p1 - s1);
     s2 += p2;
@@ -1470,9 +1476,9 @@ cftal::impl::d_real_ops_fma<_T, false>::
 sqr(const d_real<_T>& a)
 {
     _T p1, p2, s1, s2;
-    p1 = two_sqr(a.h(), p2);
-    p2 += 2.0 * a.h() * a.l();
-    p2 += a.l() * a.l();
+    p1 = two_sqr(a[0], p2);
+    p2 += 2.0 * a[0] * a[1];
+    p2 += a[1] * a[1];
     s1 = base_type::quick_two_sum(p1, p2, s2);
     return d_real<_T>(s1, s2);
 }
@@ -1614,11 +1620,11 @@ raw_ieee_div(const d_real<_T>&a, const d_real<_T>& b)
 {
     _T q1, q2, q3;
     d_real<_T> r(0);
-    q1 = a.h() / b.h();  /* approximate quotient */
+    q1 = a[0] / b[0];  /* approximate quotient */
     r = a - q1 * b;
-    q2 = r.h() / b.h();
+    q2 = r[0] / b[0];
     r -= (q2 * b);
-    q3 = r.h() / b.h();
+    q3 = r[0] / b[0];
     q1 = base_type::quick_two_sum(q1, q2, q2);
     r = d_real<_T>(q1, q2) + q3;
     return r;
@@ -1635,17 +1641,17 @@ scaled_div(const d_real<_T>&a, const d_real<_T>& b)
     using std::ldexp;
     using int_type = typename traits_t::int_type;
     int_type ea, eb;
-    _T sah=frexp(a.h(), &ea);
-    _T sbh=frexp(b.h(), &eb);
+    _T sah=frexp(a[0], &ea);
+    _T sbh=frexp(b[0], &eb);
     int_type nea=-ea;
-    _T sal=ldexp(a.l(), nea);
+    _T sal=ldexp(a[1], nea);
     int_type neb=-eb;
-    _T sbl=ldexp(b.l(), neb);
+    _T sbl=ldexp(b[1], neb);
     d_real<_T> as(sah, sal);
     d_real<_T> bs(sbh, sbl);
     d_real<_T> q0=raw_ieee_div(as, bs);
     int_type eq= ea - eb;
-    d_real<_T> q(ldexp(q0.h(), eq), ldexp(q0.l(), eq));
+    d_real<_T> q(ldexp(q0[0], eq), ldexp(q0[1], eq));
     return q;
 }
 
@@ -1660,8 +1666,8 @@ ieee_div(const d_real<_T>&a, const d_real<_T>& b)
 #else
     using std::abs;
     using traits_t=d_real_traits<_T>;
-    auto a_small = abs(a.h()) < traits_t::scale_div_threshold();
-    auto b_small = abs(b.h()) < traits_t::scale_div_threshold();
+    auto a_small = abs(a[0]) < traits_t::scale_div_threshold();
+    auto b_small = abs(b[0]) < traits_t::scale_div_threshold();
     d_real<_T> q;
     auto one_small = a_small | b_small;
     if (traits_t::any(one_small)) {
@@ -1693,12 +1699,12 @@ cftal::d_real<_T>
 cftal::impl::d_real_ops<_T, _FMA>::
 sloppy_div(const d_real<_T>&x, const d_real<_T>& y)
 {
-    _T th= x.h() / y.h();
+    _T th= x[0] / y[0];
     d_real<_T> r= y* th;
-    _T ph = x.h() - r.h();
-    _T dl = x.l() - r.l();
+    _T ph = x[0] - r[0];
+    _T dl = x[1] - r[1];
     _T d= ph + dl;
-    _T tl= d/y.h();
+    _T tl= d/y[0];
     _T zl, zh= base_type::quick_two_sum(th, tl, zl);
     return d_real<_T>(zh, zl);
 }
@@ -1712,16 +1718,16 @@ sloppy_div(const d_real<_T>&a, const d_real<_T>& b)
     _T s1, s2, q1, q2;
     d_real<_T> r;
     /* approximate quotient */
-    q1 = a.h() / b.h();
+    q1 = a[0] / b[0];
     /* compute  this - q1 * dd */
     r = b * q1;
-    s1 = base_type::two_diff(a.h(), r.h(), s2);
-    s2 -= r.l();
-    s2 += a.l();
+    s1 = base_type::two_diff(a[0], r[0], s2);
+    s2 -= r[1];
+    s2 += a[1];
     /* get next approximation */
-    q2 = (s1 + s2) / b.h();
+    q2 = (s1 + s2) / b[0];
     /* renormalize */
-    r.h() = base_type::quick_two_sum(q1, q2, r.l());
+    r[0] = base_type::quick_two_sum(q1, q2, r[1]);
     return r;
 }
 #endif
@@ -1735,16 +1741,16 @@ div(const d_real<_T>& a, const _T& b)
     _T q1, q2, p1, p2, s, e;
     d_real<_T> r;
     /* approximate quotient. */
-    q1 = a.h() / b;
+    q1 = a[0] / b;
     /* Compute  this - q1 * d */
     p1 = base_type::two_prod(q1, b, p2);
-    s = base_type::two_diff(a.h(), p1, e);
-    e += a.l();
+    s = base_type::two_diff(a[0], p1, e);
+    e += a[1];
     e -= p2;
     /* get next approximation. */
     q2 = (s + e) / b;
     /* renormalize */
-    r.h() = base_type::quick_two_sum(q1, q2, r.l());
+    r[0] = base_type::quick_two_sum(q1, q2, r[1]);
     return r;
 }
 
@@ -1854,14 +1860,14 @@ sqrt21(_T& rh, const _T& ah, const _T& al)
     rh = select(is_zero, _T(0), rh);
 }
 
-
+#if 0
 template <typename _T>
 inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator<(const d_real<_T>& a, const d_real<_T>& b)
 {
-    return (a.h() < b.h()) |
-        ((a.h()==b.h()) & (a.l() < b.l()));
+    return (a[0] < b[0]) |
+        ((a[0]==b[0]) & (a[1] < b[1]));
 }
 
 template <typename _T>
@@ -1869,8 +1875,8 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator<=(const d_real<_T>& a, const d_real<_T>& b)
 {
-    return (a.h() < b.h()) |
-        ((a.h()==b.h()) & (a.l() <= b.l()));
+    return (a[0] < b[0]) |
+        ((a[0]==b[0]) & (a[1] <= b[1]));
 }
 
 template <typename _T>
@@ -1878,7 +1884,7 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator==(const d_real<_T>& a, const d_real<_T>& b)
 {
-    return ((a.h()==b.h()) & (a.l() == b.l()));
+    return ((a[0]==b[0]) & (a[1] == b[1]));
 }
 
 template <typename _T>
@@ -1886,7 +1892,7 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator!=(const d_real<_T>& a, const d_real<_T>& b)
 {
-    return ((a.h()!=b.h()) | (a.l() != b.l()));
+    return ((a[0]!=b[0]) | (a[1] != b[1]));
 }
 
 template <typename _T>
@@ -1894,8 +1900,8 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator>=(const d_real<_T>& a, const d_real<_T>& b)
 {
-    return ((a.h()>b.h()) ||
-            ((a.h()==b.h()) & (a.l() >= b.l())));
+    return ((a[0]>b[0]) ||
+            ((a[0]==b[0]) & (a[1] >= b[1])));
 }
 
 template <typename _T>
@@ -1903,17 +1909,17 @@ inline
 typename cftal::d_real_traits<_T>::cmp_result_type
 cftal::operator>(const d_real<_T>& a, const d_real<_T>& b)
 {
-    return ((a.h()>b.h()) |
-            ((a.h()==b.h()) & (a.l() > b.l())));
+    return ((a[0]>b[0]) |
+            ((a[0]==b[0]) & (a[1] > b[1])));
 }
-
+#endif
 
 template <typename _T>
 inline
 cftal::d_real<_T>
 cftal::operator-(const d_real<_T>& a)
 {
-    return d_real<_T>(-a.h(), -a.l());
+    return d_real<_T>(-a[0], -a[1]);
 }
 
 template <typename _T>
@@ -2119,9 +2125,9 @@ cftal::abs(const d_real<_T>& a)
         a < d_real<_T>(0);
     d_real<_T> an(-a);
     _T hi_res = d_real_traits<_T>::sel(
-        a_lt_z, an.h(), a.h());
+        a_lt_z, an[0], a[0]);
     _T lo_res = d_real_traits<_T>::sel(
-        a_lt_z, an.l(), a.l());
+        a_lt_z, an[1], a[1]);
     return d_real<_T>(hi_res, lo_res);
 }
 
@@ -2130,7 +2136,7 @@ inline
 cftal::d_real<_T>
 cftal::rint(const d_real<_T>& a)
 {
-    _T hi= rint(a.h());
+    _T hi= rint(a[0]);
 
     // if rint(hi)==hi
     //      return (hi, rint(lo))
@@ -2143,19 +2149,19 @@ cftal::rint(const d_real<_T>& a)
 
     using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
 
-    // if hi == a.h()
-    _T lo_hi_int = rint(a.l());
+    // if hi == a[0]
+    _T lo_hi_int = rint(a[1]);
     _T hi_hi_int = impl_t::quick_two_sum(hi, lo_hi_int, lo_hi_int);
 
-    // hi != a.h()
+    // hi != a[0]
     _T lo_hi_no_int(0);
     _T hi_m1 = hi - 1.0;
     _T hi_hi_no_int = d_real_traits<_T>::sel(
-        (abs(_T(hi - a.h()))==_T(0.5)) & (a.l() < _T(0.0)),
+        (abs(_T(hi - a[0]))==_T(0.5)) & (a[1] < _T(0.0)),
         hi_m1, hi);
 
     typename d_real_traits<_T>::cmp_result_type hi_eq_ah=
-        hi == a.h();
+        hi == a[0];
 
     _T hi_res = d_real_traits<_T>::sel(
         hi_eq_ah, hi_hi_int, hi_hi_no_int);
@@ -2172,12 +2178,12 @@ cftal::floor(const d_real<_T>& a)
 {
     // if ah == floor(ah), return ah, floor(al)
     // else return floor(ah), 0
-    _T hi = floor(a.h());
+    _T hi = floor(a[0]);
     _T lo(0);
     using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
     typename d_real_traits<_T>::cmp_result_type r=
-        hi == a.h();
-    _T lo_hi_int = floor(a.l());
+        hi == a[0];
+    _T lo_hi_int = floor(a[1]);
     _T hi_hi_int = impl_t::quick_two_sum(hi, lo_hi_int, lo_hi_int);
 
     _T hi_res = d_real_traits<_T>::sel(
@@ -2194,12 +2200,12 @@ cftal::ceil(const d_real<_T>& a)
 {
     // if ah == ceil(ah), return ah, ceil(al)
     // else return ceil(ah), 0
-    _T hi = ceil(a.h());
+    _T hi = ceil(a[0]);
     _T lo(0);
     typename d_real_traits<_T>::cmp_result_type r=
-        hi == a.h();
+        hi == a[0];
     using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
-    _T lo_hi_int = ceil(a.l());
+    _T lo_hi_int = ceil(a[1]);
     _T hi_hi_int = impl_t::quick_two_sum(hi, lo_hi_int, lo_hi_int);
 
     _T hi_res = d_real_traits<_T>::sel(
@@ -2219,9 +2225,9 @@ cftal::trunc(const d_real<_T>& a)
     d_real<_T> a_floor(floor(a));
     d_real<_T> a_ceil(ceil(a));
     _T hi_res= d_real_traits<_T>::sel(
-        a_lt_z, a_ceil.h(), a_floor.h());
+        a_lt_z, a_ceil[0], a_floor[0]);
     _T lo_res= d_real_traits<_T>::sel(
-        a_lt_z, a_ceil.l(), a_floor.l());
+        a_lt_z, a_ceil[1], a_floor[1]);
     return d_real<_T>(hi_res, lo_res);
 }
 
@@ -2266,7 +2272,7 @@ inline
 cftal::d_real<_T>
 cftal::mul_pwr2(const d_real<_T> &a, const _T& b)
 {
-    return d_real<_T>(a.h() * b, a.l() * b);
+    return d_real<_T>(a[0] * b, a[1] * b);
 }
 
 template <typename _T>
@@ -2276,13 +2282,13 @@ cftal::sqrt(const d_real<_T>& a)
 {
     using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
     using std::sqrt;
-    _T ah= a.h();
+    _T ah= a[0];
     _T root(sqrt(ah));
     _T x= _T(1.0)/root;
     _T ax= ah * x;
     _T err, ax2= impl_t::two_sqr(ax, err);
     d_real<_T> a0(a - d_real<_T>(ax2, err));
-    _T a1(a0.h() * (x * _T(0.5)));
+    _T a1(a0[0] * (x * _T(0.5)));
     d_real<_T> res(impl_t::add(ax, a1));
     res = select(ah == _T(0), a, res);
     return res;
@@ -2294,8 +2300,8 @@ cftal::d_real<_T>
 cftal::select(const typename d_real_traits<_T>::cmp_result_type& m,
               const d_real<_T>& a, const d_real<_T>& b)
 {
-    _T h= select(m, a.h(), b.h());
-    _T l= select(m, a.l(), b.l());
+    _T h= select(m, a[0], b[0]);
+    _T l= select(m, a[1], b[1]);
     return d_real<_T>(h, l);
 }
 
