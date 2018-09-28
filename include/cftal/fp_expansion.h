@@ -29,8 +29,8 @@ namespace cftal {
         fp_expansion(std::initializer_list<_E> l) : _e{} {
             const auto* p=std::begin(l);
             const std::size_t len=std::min(_N, l.size());
-            for (std::size_t i=0; i<len; ++i, ++p)
-                _e[i] = *p;
+            for (std::size_t i=0; i<len; ++i)
+                _e[i] = p[i];
             for (std::size_t i=l.size(); i<_N; ++i)
                 _e[i] = _T(0);
         }
@@ -46,14 +46,7 @@ namespace cftal {
 
     template <typename _T, std::size_t _N>
     std::ostream&
-    operator<<(std::ostream& s, const fp_expansion<_T, _N>& e) {
-        for (std::size_t i=0; i<_N; ++i) {
-            if (i)
-                s << s.fill();
-            s << e[i];
-        }
-        return s;
-    }
+    operator<<(std::ostream& s, const fp_expansion<_T, _N>& e);
 
     template <typename _T, std::size_t _N>
     auto
@@ -185,6 +178,18 @@ namespace cftal {
     sort_lanes(_T& r0, _T& r1, _T& r2, _T& r3,
                _T& r4, _T& r5, _T& r6, _T& r7,
                _CMP cmp);
+}
+
+template <typename _T, std::size_t _N>
+std::ostream&
+cftal::operator<<(std::ostream& s, const fp_expansion<_T, _N>& e)
+{
+    for (std::size_t i=0; i<_N; ++i) {
+        if (i)
+            s << s.fill();
+        s << e[i];
+    }
+    return s;
 }
 
 template <typename _T, std::size_t _N>

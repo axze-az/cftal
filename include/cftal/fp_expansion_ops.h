@@ -64,6 +64,7 @@ vec_sum(fp_expansion<_T, _N>& r, std::size_t n)
     _T s;
     d_ops::add12(s, r[n-1], r[n-2], r[n-1]);
     if (n >2) {
+#pragma GCC unroll((1<<15))
         for (std::size_t i= 2; i<n; ++i) {
             d_ops::add12(s, r[n-i], r[n-i-1], s);
         }
@@ -83,6 +84,7 @@ vec_sum(fp_expansion<_T, _N>& r)
                                  d_real_traits<_T>::fma>;
     _T s;
     d_ops::add12(s, r[_N-1], r[_N-2], r[_N-1]);
+#pragma GCC unroll((1<<15))
     for (std::size_t i= 2; i<_N; ++i) {
         d_ops::add12(s, r[_N-i], r[_N-i-1], s);
     }
@@ -100,6 +102,7 @@ vec_sum_cond(fp_expansion<_T, _N>& r)
                                  d_real_traits<_T>::fma>;
     _T s;
     d_ops::add12cond(s, r[_N-1], r[_N-2], r[_N-1]);
+#pragma GCC unroll((1<<15))
     for (std::size_t i= 2; i<_N; ++i) {
         d_ops::add12cond(s, r[_N-i], r[_N-i-1], s);
     }
@@ -117,8 +120,8 @@ vec_sum_err_branch(fp_expansion<_T, _N>& r)
                                  d_real_traits<_T>::fma>;
     _T e=r[0], rt;
     bool sort_req=false;
-// #pragma GCC unroll(1<<16-1)
 // #pragma clang loop unroll(enable)
+#pragma GCC unroll((1<<15))
     for (std::size_t i=0; i<_N-1; ++i) {
         d_ops::add12(rt, e, e, r[i+1]);
         auto noerr = e == _T(0);
@@ -201,53 +204,10 @@ add(const fp_expansion<_T, _N0>& a, const fp_expansion<_T, _N1>& b)
     normalize(t);
     fp_expansion<_T, _M> r;
     const std::size_t _R=_N < _M ? _N : _M;
+#pragma GCC unroll(1<<15)
     for (std::size_t i=0; i<_R; ++i)
         r[i] = t[i];
     return r;
-}
-
-
-template <typename _T>
-__attribute__((__always_inline__))
-inline
-void
-cftal::
-vec_sum(_T& d0, _T& d1, _T& d2, _T& d3, _T& d4,
-        const _T& s0, const _T& s1,
-        const _T& s2, const _T& s3,
-        const _T& s4)
-{
-    using d_ops=impl::d_real_ops<_T,
-                                 d_real_traits<_T>::fma>;
-    _T s;
-    d_ops::add12(s, d4, s3, s4);
-    d_ops::add12(s, d3, s2, s);
-    d_ops::add12(s, d2, s1, s);
-    d_ops::add12(d0, d1, s0, s);
-}
-
-template <typename _T>
-__attribute__((__always_inline__))
-inline
-void
-cftal::
-vec_sum(_T& d0, _T& d1, _T& d2, _T& d3,
-        _T& d4, _T& d5, _T& d6, _T& d7,
-        const _T& s0, const _T& s1,
-        const _T& s2, const _T& s3,
-        const _T& s4, const _T& s5,
-        const _T& s6, const _T& s7)
-{
-    using d_ops=impl::d_real_ops<_T,
-                                 d_real_traits<_T>::fma>;
-    _T s;
-    d_ops::add12(s, d7, s6, s7);
-    d_ops::add12(s, d6, s5, s);
-    d_ops::add12(s, d5, s4, s);
-    d_ops::add12(s, d4, s3, s);
-    d_ops::add12(s, d3, s2, s);
-    d_ops::add12(s, d2, s1, s);
-    d_ops::add12(d0, d1, s0, s);
 }
 
 // Local variables:
