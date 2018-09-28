@@ -266,8 +266,9 @@ cftal::math::horner(_X x, const _C (&a)[_N])
 {
     static_assert(_N > 0, "invalid call to horner(x, array)");
     _X r= _X(a[0]);
+    const _C* pa=a;
     for (std::size_t i=1; i<_N; ++i) {
-        r= horner(x, r, a[i]);
+        r= horner(x, r, pa[i]);
     }
     return r;
 }
@@ -281,8 +282,9 @@ cftal::math::horner(d_real<_F> x, const d_real<_C> (&a)[_N])
         _N > 0,
         "invalid call to horner(d_real<_F>, d_real<_C>(&a)[])");
     d_real<_F> r=d_real<_F>(a[0]);
+    const d_real<_C>* pa=a;
     for (std::size_t i=1; i<_N; ++i) {
-        r=horner(x, r, d_real<_F>(a[i] ));
+        r=horner(x, r, d_real<_F>(pa[i] ));
     }
     return r;
 }
@@ -293,9 +295,10 @@ _F
 cftal::math::horner(_F x, const d_real<_C> (&a)[_N])
 {
     static_assert(_N > 0, "invalid call to horner(_F, d_real<_C>(&a)[])");
-    _F r= a[0].h();
+    const d_real<_C>* pa=a;
+    _F r= pa[0].h();
     for (std::size_t i=1; i<_N; ++i) {
-        r= horner(x, r, _F(a[i].h()));
+        r= horner(x, r, _F(pa[i].h()));
     }
     return r;
 }
@@ -350,13 +353,17 @@ cftal::math::horner_n4(_X& ya, _X& yb, _X& yc, _X& yd, _X x,
     _X rb= _X(b[0]);
     _X rc= _X(c[0]);
     _X rd= _X(d[0]);
+    const _C* pa=a;
+    const _C* pb=b;
+    const _C* pc=c;
+    const _C* pd=d;
 // #pragma GCC unroll 0
 //#pragma clang loop unroll(disable)
     for (std::size_t i=1; i<_N; ++i) {
-        ra= horner(x, ra, a[i]);
-        rb= horner(x, rb, b[i]);
-        rc= horner(x, rc, c[i]);
-        rd= horner(x, rd, d[i]);
+        ra= horner(x, ra, pa[i]);
+        rb= horner(x, rb, pb[i]);
+        rc= horner(x, rc, pc[i]);
+        rd= horner(x, rd, pd[i]);
     }
     ya = ra;
     yb = rb;
@@ -470,11 +477,12 @@ cftal::math::
 horner_comp(_X& y, _X& ye, _X x, const _C (&a)[_N])
 {
     static_assert(_N > 1, "at least 2 array elements required");
-    horner_comp_s0(y, ye, x, a[0], a[1]);
+    const _C* pa=a;
+    horner_comp_s0(y, ye, x, pa[0], pa[1]);
     // const _X _y=y;
     // const _X _ye=ye;
     for (std::size_t i=2; i < _N; ++i) {
-        horner_comp_si(y, ye, x, y, ye, a[i]);
+        horner_comp_si(y, ye, x, y, ye, pa[i]);
     }
 }
 
@@ -485,9 +493,10 @@ cftal::math::
 horner_comp_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
 {
     static_assert(_N > 0, "at least 1 array element required");
-    horner_comp_s0(y, ye, x, yi, a[0]);
+    const _C* pa=a;
+    horner_comp_s0(y, ye, x, yi, pa[0]);
     for (std::size_t i=1; i < _N; ++i) {
-        horner_comp_si(y, ye, x, y, ye, a[i]);
+        horner_comp_si(y, ye, x, y, ye, pa[i]);
     }
 }
 
@@ -570,11 +579,12 @@ cftal::math::
 horner_comp_quick(_X& y, _X& ye, _X x, const _C (&a)[_N])
 {
     static_assert(_N > 1, "at least 2 array elements required");
-    horner_comp_quick_s0(y, ye, x, a[0], a[1]);
+    const _C* pa=a;
+    horner_comp_quick_s0(y, ye, x, pa[0], pa[1]);
     // const _X _y=y;
     // const _X _ye=ye;
     for (std::size_t i=2; i < _N; ++i) {
-        horner_comp_quick_si(y, ye, x, y, ye, a[i]);
+        horner_comp_quick_si(y, ye, x, y, ye, pa[i]);
     }
 }
 
@@ -585,9 +595,10 @@ cftal::math::
 horner_comp_quick_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
 {
     static_assert(_N > 0, "at least 1 array element required");
-    horner_comp_quick_s0(y, ye, x, yi, a[0]);
+    const _C* pa=a;
+    horner_comp_quick_s0(y, ye, x, yi, pa[0]);
     for (std::size_t i=1; i < _N; ++i) {
-        horner_comp_quick_si(y, ye, x, y, ye, a[i]);
+        horner_comp_quick_si(y, ye, x, y, ye, pa[i]);
     }
 }
 
