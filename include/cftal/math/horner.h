@@ -326,11 +326,13 @@ cftal::math::horner_n2(_X& ya, _X& yb, _X x,
     static_assert(_N > 0, "invalid call to horner_n2(ya, yb, x, ca, cb)");
     _X ra= _X(a[0]);
     _X rb= _X(b[0]);
+    const _C* pa=a;
+    const _C* pb=b;
 // #pragma GCC unroll 0
 // #pragma clang loop unroll(disable)
     for (std::size_t i=1; i<_N; ++i) {
-        ra= horner(x, ra, a[i]);
-        rb= horner(x, rb, b[i]);
+        ra= horner(x, ra, pa[i]);
+        rb= horner(x, rb, pb[i]);
     }
     ya = ra;
     yb = rb;
