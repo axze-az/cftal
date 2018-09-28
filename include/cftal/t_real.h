@@ -14,42 +14,38 @@
 namespace cftal {
 
     template <typename _T>
-    class t_real {
-        _T _h;
-        _T _m;
-        _T _l;
+    class t_real : private d_real<_T> {
+        _T _e2;
+        using base_type = d_real<_T>;
     public:
         using value_type = _T;
+        constexpr t_real(): base_type(), _e2() {}
         constexpr
-        t_real()
-            : _h(0), _m(0), _l(0) {}
+        t_real(_T v) : base_type(v),  _e2(0) {}
         constexpr
-        t_real(_T v)
-            : _h(v), _m(0), _l(0) {}
+        t_real(_T v0, _T v1) : base_type(v0, v1), _e2(0) {}
         constexpr
-        t_real(_T v0, _T v1)
-            : _h(v0), _m(v1), _l(0) {}
-        constexpr
-        t_real(_T v0, _T v1, _T v2)
-            : _h(v0), _m(v1), _l(v2) {}
+        t_real(_T v0, _T v1, _T v2) : base_type(v0, v1), _e2(v2) {}
         template <typename _U>
         constexpr
-        t_real(const t_real<_U>& r)
-            : _h(r.h()), _m(r.m()), _l(r.l()) {}
+        t_real(const t_real<_U>& r) : base_type(r.e0(), r.e1()), _e2(r.e2()) {}
         template<typename _U>
         constexpr
         t_real(const d_real<_U>& h, const _T& l=_U(0))
-            : _h(h.h()), _m(h.l()), _l(l) {}
+        : base_type(h), _e2(l) {}
 
+        using base_type::e0;
+        using base_type::e1;
+        
         constexpr
-        const _T& h() const { return _h; }
+        const _T& h() const { return e0(); }
         constexpr
-        const _T& m() const { return _m; }
+        const _T& m() const { return e1(); }
         constexpr
-        const _T& l() const { return _l; }
-        _T& h() { return _h; }
-        _T& m() { return _m; }
-        _T& l() { return _l; }
+        const _T& l() const { return _e2; }
+        _T& h() { return e0(); }
+        _T& m() { return e1(); }
+        _T& l() { return _e2; }
     };
 
     template <typename _T>

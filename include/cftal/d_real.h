@@ -173,21 +173,27 @@ namespace cftal {
 
     };
 
+    // floating point expansion of length 2, after normalization v= e0
+    // + e1 with ulp(e0) > |e1|
     template <typename _T>
     class d_real {
-        _T _h;
-        _T _l;
+        _T _e0;
+        _T _e1;
     public:
         using value_type = _T;
-        constexpr d_real() : _h(0), _l(0) {}
+        constexpr d_real() : _e0(0), _e1(0) {}
         template <typename _U>
-        constexpr d_real(const d_real<_U>& r) : _h(r.h()), _l(r.l()) {}
-        constexpr d_real(const _T& h, const _T& l) : _h(h), _l(l) {}
-        constexpr d_real(const _T& h) : _h(h), _l(_T(0)) {}
-        constexpr const _T& l() const { return _l; }
-        _T& l() { return _l; }
-        constexpr const _T& h() const { return _h; }
-        _T& h() { return _h; }
+        constexpr d_real(const d_real<_U>& r) : _e0(r.e0()), _e1(r.e1()) {}
+        constexpr d_real(const _T& h, const _T& l) : _e0(h), _e1(l) {}
+        constexpr d_real(const _T& h) : _e0(h), _e1(_T(0)) {}
+        constexpr const _T& l() const { return _e1; }
+        _T& l() { return _e1; }
+        constexpr const _T& h() const { return _e0; }
+        _T& h() { return _e0; }
+        constexpr const _T& e0() const { return _e0; }
+        _T& e0() { return _e0; }
+        constexpr const _T& e1() const { return _e1; }
+        _T& e1() { return _e1; }
     };
 
     namespace impl {
