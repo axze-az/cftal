@@ -246,7 +246,7 @@ erf_k(arg_t<vf_type> xc)
 #if 1
         vf_type xx= x_i1*x_i1;
 #if 1
-        static const double c_i[]={
+        static const double c_i[] ={
             erf_i1_c21,
             erf_i1_c19,
             erf_i1_c17,
