@@ -511,7 +511,7 @@ cftal::test::fpn_handle::operator fp_expansion<double, _N>() const
 {
     fp_expansion<double, _N> r;
     fpn_handle t(*this);
-    double ri=t;
+    double ri=double(t);
     r[0] = ri;
     for (std::size_t i=1; i<_N; ++i) {
         fpn_handle ti(ri, prec());
@@ -535,7 +535,7 @@ cftal::test::fpn_handle::operator fp_expansion<float, _N>() const
 {
     fp_expansion<float, _N> r;
     fpn_handle t(*this);
-    float ri=t;
+    float ri=float(t);
     r[0] = ri;
     for (std::size_t i=1; i<_N; ++i) {
         fpn_handle ti(ri, prec());
