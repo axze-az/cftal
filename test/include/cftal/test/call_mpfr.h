@@ -111,20 +111,18 @@ namespace cftal {
             fpn_handle& operator=(const mpfr_t r);
             fpn_handle& operator=(const fpn_handle& r);
             fpn_handle& operator=(fpn_handle&& r);
-            template <class _F>
-            fpn_handle(const d_real<_F>& d, std::size_t prec);
-            template <class _F>
-            fpn_handle(const t_real<_F>& t, std::size_t prec);
+            template <class _F, std::size_t _N>
+            fpn_handle(const fp_expansion<_F, _N>& d, std::size_t prec);
             ~fpn_handle();
             mpfr_t& operator()() { return _v; };
             const mpfr_t& operator()() const { return _v; }
             mpfr_prec_t prec() const { return mpfr_get_prec(_v); }
             explicit operator double() const;
             explicit operator float() const;
-            explicit operator d_real<double>() const;
-            explicit operator t_real<double>() const;
-            explicit operator d_real<float>() const;
-            explicit operator t_real<float>() const;
+            template <std::size_t _N>
+            explicit operator fp_expansion<double, _N>() const;
+            template <std::size_t _N>
+            explicit operator fp_expansion<float, _N>() const;
         };
 
         bool
@@ -482,24 +480,16 @@ cftal::test::fpn_handle::operator=(const mpfr_t r)
 }
 
 
-template <class _F>
+template <class _F, std::size_t _N>
 inline
-cftal::test::fpn_handle::fpn_handle(const d_real<_F>& d, std::size_t p)
+cftal::test::fpn_handle::
+fpn_handle(const fp_expansion<_F, _N>& d, std::size_t p)
     : fpn_handle(d[0], p)
 {
-    fpn_handle t(d[1], p);
-    mpfr_add(_v, _v, t(), MPFR_RNDN);
-}
-
-template <class _F>
-inline
-cftal::test::fpn_handle::fpn_handle(const t_real<_F>& d, std::size_t p)
-    : fpn_handle(d[0], p)
-{
-    fpn_handle m(d[1], p);
-    mpfr_add(_v, _v, m(), MPFR_RNDN);
-    fpn_handle l(d[2], p);
-    mpfr_add(_v, _v, l(), MPFR_RNDN);
+    for (std::size_t i=1; i<_N; ++i) {
+        fpn_handle t(d[i], p);
+        mpfr_add(_v, _v, t(), MPFR_RNDN);
+    }
 }
 
 inline
@@ -515,29 +505,21 @@ cftal::test::fpn_handle::operator double() const
     return r;
 }
 
+template <std::size_t _N>
 inline
-cftal::test::fpn_handle::operator d_real<double>() const
+cftal::test::fpn_handle::operator fp_expansion<double, _N>() const
 {
-    double h=mpfr_get_d(_v, MPFR_RNDN);
-    fpn_handle th(h, prec());
-    fpn_handle tr(prec());
-    mpfr_sub(tr(), _v, th(), MPFR_RNDN);
-    double l=mpfr_get_d(tr(), MPFR_RNDN);
-    return d_real<double>(h, l);
-}
-
-inline
-cftal::test::fpn_handle::operator t_real<double>() const
-{
-    double h=mpfr_get_d(_v, MPFR_RNDN);
-    fpn_handle th(h, prec());
-    fpn_handle tr(prec());
-    mpfr_sub(tr(), _v, th(), MPFR_RNDN);
-    double m=mpfr_get_d(tr(), MPFR_RNDN);
-    fpn_handle tm(m, prec());
-    mpfr_sub(tr(), tr(), tm(), MPFR_RNDN);
-    double l=mpfr_get_d(tr(), MPFR_RNDN);
-    return t_real<double>(h, m, l);
+    fp_expansion<double, _N> r;
+    fpn_handle t(*this);
+    double ri=t;
+    r[0] = ri;
+    for (std::size_t i=1; i<_N; ++i) {
+        fpn_handle ti(ri, prec());
+        mpfr_sub(t(), t(), ti(), MPFR_RNDN);
+        ri=double(t);
+        r[i] = ri;
+    }
+    return r;
 }
 
 inline
@@ -547,29 +529,21 @@ cftal::test::fpn_handle::operator float() const
     return r;
 }
 
+template <std::size_t _N>
 inline
-cftal::test::fpn_handle::operator d_real<float>() const
+cftal::test::fpn_handle::operator fp_expansion<float, _N>() const
 {
-    float h=mpfr_get_flt(_v, MPFR_RNDN);
-    fpn_handle th(h, prec());
-    fpn_handle tr(prec());
-    mpfr_sub(tr(), _v, th(), MPFR_RNDN);
-    float l=mpfr_get_flt(tr(), MPFR_RNDN);
-    return d_real<float>(h, l);
-}
-
-inline
-cftal::test::fpn_handle::operator t_real<float>() const
-{
-    float h=mpfr_get_flt(_v, MPFR_RNDN);
-    fpn_handle th(h, prec());
-    fpn_handle tr(prec());
-    mpfr_sub(tr(), _v, th(), MPFR_RNDN);
-    float m=mpfr_get_flt(tr(), MPFR_RNDN);
-    fpn_handle tm(m, prec());
-    mpfr_sub(tr(), tr(), tm(), MPFR_RNDN);
-    float l=mpfr_get_flt(tr(), MPFR_RNDN);
-    return t_real<float>(h, m, l);
+    fp_expansion<float, _N> r;
+    fpn_handle t(*this);
+    float ri=t;
+    r[0] = ri;
+    for (std::size_t i=1; i<_N; ++i) {
+        fpn_handle ti(ri, prec());
+        mpfr_sub(t(), t(), ti(), MPFR_RNDN);
+        ri=float(t);
+        r[i] = ri;
+    }
+    return r;
 }
 
 inline
