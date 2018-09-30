@@ -37,7 +37,7 @@ cftal::test::operator<<(std::ostream& s, const exec_stats& st)
     for (std::size_t i=0; i<n; i=((i==0) ? 1: i*2)) {
         double t=st._tics[i];
         uint64_t ei=st._evals[i];
-        double tc=t/double(ei);
+        double tc=ei ? t/double(ei) : 0.0;
         double te=i ? tc/i : tc;
         s << "vec-len: " << std::setw(2) << i << " calls: "
           << std::setw(16) << ei << " tics/call: "
