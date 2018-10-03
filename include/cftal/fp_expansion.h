@@ -58,7 +58,6 @@ namespace cftal {
                 _e[_N0+i] = r1[+i];
         }
 
-
         constexpr
         const _T& operator[](std::size_t i) const {
             return _e[i];
