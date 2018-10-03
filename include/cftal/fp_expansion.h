@@ -41,10 +41,24 @@ namespace cftal {
         explicit
         fp_expansion(const fp_expansion<_T, _M>& r) {
             const std::size_t len=_N < _M ? _N : _M;
+#pragma GCC unroll 1<<15
             for (std::size_t i=0; i<len; ++i)
                 _e[i] = r[i];
+#pragma GCC unroll 1<<15
             for (std::size_t i=len; i<_N; ++i)
                 _e[i] = _T(0);
+        }
+
+        template <std::size_t _M>
+        fp_expansion& operator=(const fp_expansion<_T, _M>& r) {
+            const std::size_t len=_N < _M ? _N : _M;
+#pragma GCC unroll 1<<15
+            for (std::size_t i=0; i<len; ++i)
+                _e[i] = r[i];
+#pragma GCC unroll 1<<15
+            for (std::size_t i=len; i<_N; ++i)
+                _e[i] = _T(0);
+            return *this;
         }
 
         template <std::size_t _N0, std::size_t _N1>
