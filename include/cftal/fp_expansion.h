@@ -26,59 +26,22 @@ namespace cftal {
 
         template <typename _E>
         constexpr
-        fp_expansion(std::initializer_list<_E> l) {
-            const auto* p=std::begin(l);
-            const std::size_t ll=l.size();
-            const std::size_t len=_N < ll ? _N : ll;
-            for (std::size_t i=0; i<len; ++i)
-                _e[i] = p[i];
-            for (std::size_t i=len; i<_N; ++i)
-                _e[i] = _T(0);
-        }
+        fp_expansion(std::initializer_list<_E> l);
 
         template <std::size_t _M>
         constexpr
         explicit
-        fp_expansion(const fp_expansion<_T, _M>& r) {
-            const std::size_t len=_N < _M ? _N : _M;
-#pragma GCC unroll 1<<15
-            for (std::size_t i=0; i<len; ++i)
-                _e[i] = r[i];
-#pragma GCC unroll 1<<15
-            for (std::size_t i=len; i<_N; ++i)
-                _e[i] = _T(0);
-        }
+        fp_expansion(const fp_expansion<_T, _M>& r);
 
         template <std::size_t _M>
-        fp_expansion& operator=(const fp_expansion<_T, _M>& r) {
-            const std::size_t len=_N < _M ? _N : _M;
-#pragma GCC unroll 1<<15
-            for (std::size_t i=0; i<len; ++i)
-                _e[i] = r[i];
-#pragma GCC unroll 1<<15
-            for (std::size_t i=len; i<_N; ++i)
-                _e[i] = _T(0);
-            return *this;
-        }
-
-        template <std::size_t _N0, std::size_t _N1>
-        constexpr
-        fp_expansion(const fp_expansion<_T, _N0>& r0,
-                     const fp_expansion<_T, _N1>& r1) {
-            static_assert(_N == _N0 + _N1, "ooops");
-            for (std::size_t i=0; i<_N0; ++i)
-                _e[i] = r0[i];
-            for (std::size_t i=0; i<_N1; ++i)
-                _e[_N0+i] = r1[+i];
-        }
+        fp_expansion& operator=(const fp_expansion<_T, _M>& r);
 
         constexpr
-        const _T& operator[](std::size_t i) const {
-            return _e[i];
-        }
-        _T& operator[](std::size_t i) {
-            return _e[i];
-        }
+        const _T& operator[](std::size_t i) const;
+        _T& operator[](std::size_t i);
+
+        constexpr
+        const _T* data() const;
     };
 
     template <typename _T, std::size_t _N>
@@ -121,6 +84,83 @@ namespace cftal {
               const fp_expansion<_T, _N>& b)
         ->decltype(_T{}>_T{});
 
+}
+
+template <typename _T, std::size_t _N>
+template <typename _E>
+constexpr
+cftal::fp_expansion<_T, _N>::
+fp_expansion(std::initializer_list<_E> l)
+{
+    const auto* p=std::begin(l);
+    const std::size_t ll=l.size();
+    const std::size_t len=_N < ll ? _N : ll;
+#pragma GCC unroll 8
+    for (std::size_t i=0; i<len; ++i)
+        _e[i] = p[i];
+#pragma GCC unroll 8
+    for (std::size_t i=len; i<_N; ++i)
+        _e[i] = _T(0);
+}
+
+template <typename _T, std::size_t _N>
+template <std::size_t _M>
+constexpr
+cftal::fp_expansion<_T, _N>::
+fp_expansion(const fp_expansion<_T, _M>& r)
+{
+    const std::size_t len=_N < _M ? _N : _M;
+#pragma GCC unroll 8
+    for (std::size_t i=0; i<len; ++i)
+        _e[i] = r[i];
+#pragma GCC unroll 8
+    for (std::size_t i=len; i<_N; ++i)
+        _e[i] = _T(0);
+}
+
+template <typename _T, std::size_t _N>
+template <std::size_t _M>
+cftal::fp_expansion<_T, _N>&
+cftal::fp_expansion<_T, _N>::
+operator=(const fp_expansion<_T, _M>& r)
+{
+    const std::size_t len=_N < _M ? _N : _M;
+#pragma GCC unroll 8
+    for (std::size_t i=0; i<len; ++i)
+        _e[i] = r[i];
+#pragma GCC unroll 8
+    for (std::size_t i=len; i<_N; ++i)
+        _e[i] = _T(0);
+    return *this;
+}
+
+template <typename _T, std::size_t _N>
+inline
+constexpr
+const _T&
+cftal::fp_expansion<_T, _N>::
+operator[](std::size_t i) const
+{
+    return _e[i];
+}
+
+template <typename _T, std::size_t _N>
+inline
+_T&
+cftal::fp_expansion<_T, _N>::
+operator[](std::size_t i)
+{
+    return _e[i];
+}
+
+template <typename _T, std::size_t _N>
+inline
+constexpr
+const _T*
+cftal::fp_expansion<_T, _N>::
+data() const
+{
+    return _e;
 }
 
 template <typename _T, std::size_t _N>

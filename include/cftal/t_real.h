@@ -37,7 +37,7 @@ namespace cftal {
         template <std::size_t _M>
         constexpr
         explicit
-        fp_expansion(const fp_expansion<_T, _M>& r) : _e{} {
+        fp_expansion(const fp_expansion<_T, _M>& r) {
             const std::size_t len=3 < _M ? 3 : _M;
             for (std::size_t i=0; i<len; ++i)
                 _e[i] = r[i];
@@ -52,6 +52,9 @@ namespace cftal {
         _T& operator[](std::size_t i) {
             return _e[i];
         }
+
+        constexpr
+        const _T* data() const { return _e; }
     };
 
     template <typename _T>
