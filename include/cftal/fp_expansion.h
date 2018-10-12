@@ -42,6 +42,7 @@ namespace cftal {
 
         constexpr
         const _T* data() const;
+        _T* data();
     };
 
     template <typename _T, std::size_t _N>
@@ -159,6 +160,15 @@ constexpr
 const _T*
 cftal::fp_expansion<_T, _N>::
 data() const
+{
+    return _e;
+}
+
+template <typename _T, std::size_t _N>
+inline
+_T*
+cftal::fp_expansion<_T, _N>::
+data()
 {
     return _e;
 }
