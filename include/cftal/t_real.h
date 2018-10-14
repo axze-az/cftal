@@ -188,6 +188,24 @@ namespace cftal {
 
 
             static
+            void
+            div313(_T& rh, _T& rm, _T& rl,
+                   const _T& ah, const _T& am, const _T& al,
+                   const _T& bh);
+
+            static
+            void
+            div323(_T& rh, _T& rm, _T& rl,
+                   const _T& ah, const _T& am, const _T& al,
+                   const _T& bh, const _T& bl);
+
+            static
+            void
+            div33(_T& rh, _T& rm, _T& rl,
+                  const _T& ah, const _T& am, const _T& al,
+                  const _T& bh, const _T& bm, const _T& bl);
+
+            static
             t_real<_T>
             renormalize(const _T& rh, const _T& rm, const _T& rl);
 
@@ -532,6 +550,76 @@ mul33(_T& rh, _T& rm, _T& rl,
     add22cond(t21,t22,t2,t3,t4,t5) ;
     add22cond(rm ,rl ,t21,t22,t19,t20) ;
 }
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+div313(_T& rh, _T& rm, _T& rl,
+       const _T& ah, const _T& am, const _T& al,
+       const _T& b)
+{
+    _T q0 = ah / b;
+    _T r0, r1, r2, t0, t1;
+    // remainder a - q*b
+    mul12(t0, t1, -q0, b);
+    add233cond(r0, r1, r2, t0, t1, ah, am, al);
+    renormalize3(r0, r1, r2, r0, r1, r2);
+    // first correction
+    _T q1 = r0 / b;
+    mul12(t0, t1, -q1, b);
+    add233cond(r0, r1, r2, t0, t1, r0, r1, r2);
+    renormalize3(r0, r1, r2, r0, r1, r2);
+    // second correction
+    _T q2 = r0 / b;
+    renormalize3(rh, rm, rl, q0, q1, q2);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+div323(_T& rh, _T& rm, _T& rl,
+       const _T& ah, const _T& am, const _T& al,
+       const _T& bh, const _T& bl)
+{
+    _T q0 = ah / bh;
+    _T r0, r1, r2, t0, t1, t2;
+    // remainder a - q*b
+    mul123(t0, t1, t2, -q0, bh, bl);
+    add33cond(r0, r1, r2, t0, t1, t2, ah, am, al);
+    renormalize3(r0, r1, r2, r0, r1, r2);
+    // first correction
+    _T q1 = r0 / bh;
+    mul123(t0, t1, -q1, bh, bl);
+    add33cond(r0, r1, r2, t0, t1, t2, r0, r1, r2);
+    renormalize3(r0, r1, r2, r0, r1, r2);
+    // second correction
+    _T q2 = r0 / bh;
+    renormalize3(rh, rm, rl, q0, q1, q2);
+}
+
+template <typename _T>
+void
+cftal::impl::t_real_ops<_T>::
+div33(_T& rh, _T& rm, _T& rl,
+      const _T& ah, const _T& am, const _T& al,
+      const _T& bh, const _T& bm, const _T& bl)
+{
+    _T q0 = ah / bh;
+    _T r0, r1, r2, t0, t1, t2;
+    // remainder a - q*b
+    mul133(t0, t1, t2, -q0, bh, bl);
+    add33cond(r0, r1, r2, t0, t1, t2, ah, am, al);
+    renormalize3(r0, r1, r2, r0, r1, r2);
+    // first correction
+    _T q1 = r0 / bh;
+    mul133(t0, t1, t2, -q1, bh, bl);
+    add233cond(r0, r1, r2, t0, t1, t2, r0, r1, r2);
+    renormalize3(r0, r1, r2, r0, r1, r2);
+    // second correction
+    _T q2 = r0 / bh;
+    renormalize3(rh, rm, rl, q0, q1, q2);
+}
+
 
 template <typename _T>
 void
