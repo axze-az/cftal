@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     rc &= check_func_1<double, 4, check_tanh<double> >(v, ulp, 0, false);
     rc &= check_func_1<double, 8, check_tanh<double> >(v, ulp, 0, false);
 #endif
-    func_domain<double> d=std::make_pair(-25, 25);
+    func_domain<double> d=std::make_pair(-36.0, 36.0);
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
