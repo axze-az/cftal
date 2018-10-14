@@ -509,6 +509,13 @@ namespace cftal {
             // a/b
             static
             void
+            div212(_T& rh, _T& rl,
+                   const _T& ah, const _T& al,
+                   const _T& b);
+
+            // a/b
+            static
+            void
             div22(_T& rh, _T& rl,
                   const _T& ah, const _T& al,
                   const _T& bh, const _T& bl);
@@ -1571,6 +1578,25 @@ div12(_T& rh, _T& rl,
     rl = (_ch - rh) + _cl;
 }
 
+template <typename _T, bool _FMA>
+inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+div212(_T& rh, _T& rl,
+      const _T& xh, const _T& xl,
+      const _T& yh)
+{
+    // DWDivFP2
+    _T _t= xh / yh;
+    _T _rh, _rl;
+    mul12(_rh, _rl, _t,  yh);
+    _rh = xh - _rh;
+    _rl = xl - _rl;
+    _rh = _rh + _rl;
+    _rh = _rh / yh;
+    add12(rh, rl, _t, _rh);
+}
 
 template <typename _T, bool _FMA>
 inline
@@ -1581,6 +1607,17 @@ div22(_T& rh, _T& rl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
 {
+#if 1
+    // DWDivDW2
+    _T _t= xh / yh;
+    _T _rh, _rl;
+    mul122(_rh, _rl, _t, yh, yl);
+    _rh = xh - _rh;
+    _rl = xl - _rl;
+    _rh = _rh + _rl;
+    _rh = _rh /yh;
+    add12(rh, rl, _t, _rh);
+#else
     _T _ch = xh / yh;
     _T _uh, _ul;
     mul12(_uh, _ul, _ch, yh);
@@ -1591,6 +1628,7 @@ div22(_T& rh, _T& rl,
     _cl/= yh;
     rh = _ch + _cl;
     rl = (_ch - rh) + _cl;
+#endif
 }
 
 

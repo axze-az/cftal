@@ -547,9 +547,10 @@ erfc_k(arg_t<vf_type> xc)
         // multiply with e^(-x^2)
         d_ops::mul22(i123h, i123l, i123h, i123l, exh, exl);
         // divide by x
-        dvf_type t(i123h, i123l);
-        dvf_type r = d_ops::sloppy_div(t, x);
-        dvf_type rs=base_type::__scale_exp_k(r[0], r[1], kf);
+        // divide by x
+        vf_type rh, rl;
+        d_ops::div212(rh, rl, i123h, i123l, x);
+        dvf_type rs=base_type::__scale_exp_k(rh, rl, kf);
         i123h = rs[0];
         i123l = rs[1];
     }
@@ -600,7 +601,8 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
         using ctbl = impl::d_real_constants<d_real<float>, float>;
         const dvf_type p=-ctbl::m_pi;
         dvf_type q=s * (xa *dvf_type(gh, gl));
-        dvf_type g_n= d_ops::sloppy_div(p, q);
+        dvf_type g_n;
+        d_ops::div22(g_n[0], g_n[1], p[0], p[1], q[0], q[1]);
         gh = _T::sel(x_lt_zero, g_n[0], gh);
         gl = _T::sel(x_lt_zero, g_n[1], gl);
         zh = _T::sel(x_lt_zero, -zh, zh);

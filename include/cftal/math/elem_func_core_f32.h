@@ -869,8 +869,8 @@ cftal::math::elem_func_core<float, _T>::
 __scale_exp_k(arg_t<vf_type> yh, arg_t<vf_type> yl, arg_t<vf_type> k)
 {
     auto sc = __scale_exp_k(k);
-    vf_type ysh = (yh * sc.f0()) * sc.f0();
-    vf_type ysl = (yl * sc.f0()) * sc.f0();
+    vf_type ysh = (yh * sc.f0()) * sc.f1();
+    vf_type ysl = (yl * sc.f0()) * sc.f1();
     return dvf_type(ysh, ysl);
 }
 
@@ -986,6 +986,7 @@ exp_k(arg_t<vf_type> xc)
     vf_type y=__exp_k<_EXP_M1>(xrh, xrl, kf);
     return y;
 }
+
 template <typename _T>
 void
 cftal::math::elem_func_core<float, _T>::
@@ -1197,7 +1198,7 @@ hyperbolic_k(arg_t<vf_type> xc)
     auto kn= _T::sel(k>= 128, k-1, k);
 
     // filter out large arguments for tanh
-    vmf_type kf_le_13 = kf <= 13.0;
+    vmf_type kf_le_13 = kf <= 13.0f;
     bool any_of_kf_le_13 = any_of(kf_le_13);
     if (_F == hyperbolic_func::c_tanh) {
         if (!any_of_kf_le_13) {
@@ -1339,9 +1340,9 @@ hyperbolic_k(arg_t<vf_type> xc)
         r = cosh_x;
     }
     if (_F == hyperbolic_func::c_tanh) {
-        dvf_type s(sinh_h, sinh_l), c(cosh_h, cosh_l);
-        dvf_type t=d_ops::sloppy_div(s, c);
-        vf_type tanh_x=_T::sel(kf_le_13, t[0], 1.0);
+        vf_type qh, ql;
+        d_ops::div22(qh, ql, sinh_h, sinh_l, cosh_h, cosh_l);
+        vf_type tanh_x=_T::sel(kf_le_13, qh, 1.0f);
         tanh_x = _T::sel(x < 0x1p-13f, x, tanh_x);
         tanh_x = copysign(tanh_x, xc);
         r = tanh_x;
@@ -2012,12 +2013,14 @@ __pow_log_k(arg_t<vf_type> xc)
     hx = (hx&0x007fffff) + 0x3f3504f3;
     vf_type xr = _T::as_float(hx);
     vf_type kf = _T::cvt_i_to_f(k);
-
     // brute force:
-    dvf_type ym= d_ops::add(xr, vf_type(-1.0f));
-    dvf_type yp= d_ops::add(xr, vf_type(+1.0f));
-    dvf_type ds= d_ops::sloppy_div(ym, yp);
-    return __pow_log_k<_F, _P>(ds[0], ds[1], kf);
+    vf_type ymh, yml;
+    d_ops::add12cond(ymh, yml, xr, vf_type(-1.0f));
+    vf_type yph, ypl;
+    d_ops::add12cond(yph, ypl, xr, vf_type(+1.0f));
+    vf_type qh, ql;
+    d_ops::div22(qh, ql, ymh, yml, yph, ypl);
+    return __pow_log_k<_F, _P>(qh, ql, kf);
 }
 
 template <typename _T>
@@ -2036,12 +2039,13 @@ __pow_log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
     xrh = _T::sel(c, xrh*2.0f, xrh);
     xrl = _T::sel(c, xrl*2.0f, xrl);
     kf = _T::sel(c, kf-1.0f, kf);
-    dvf_type ym;
-    d_ops::add122cond(ym[0], ym[1], -1.0f, xrh, xrl);
-    dvf_type yp;
-    d_ops::add122cond(yp[0], yp[1], +1.0f, xrh, xrl);
-    dvf_type ds= d_ops::sloppy_div(ym, yp);
-    return __pow_log_k<_F, _P>(ds[0], ds[1], kf);
+    vf_type ymh, yml;
+    d_ops::add122cond(ymh, yml, -1.0f, xrh, xrl);
+    vf_type yph, ypl;
+    d_ops::add122cond(yph, ypl, +1.0f, xrh, xrl);
+    vf_type qh, ql;
+    d_ops::div22(qh, ql, ymh, yml, yph, ypl);
+    return __pow_log_k<_F, _P>(qh, ql, kf);
 }
 
 template <typename _T>

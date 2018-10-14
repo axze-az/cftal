@@ -508,8 +508,9 @@ lanczos_rational_at(const _T& x,
     }
     _T qh, ql;
     horner_comp(qh, ql, x, q);
-    d_real<_T> dp(ph, pl), dq(qh, ql), pq=d_ops::sloppy_div(dp, dq);
-    return pq;
+    _T pqh, pql;
+    d_ops::div22(pqh, pql, ph, pl, qh, ql);
+    return d_real<_T>(pqh, pql);
 }
 
 // local variables:
