@@ -140,7 +140,7 @@ write_coeff(x0, "", "const float erfc_i2_x0", single);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "erfc_i2-f32");
 
 i=[1/4.0, 1/10.0125];
-deg=13;
+deg=6;
 f=exp(1/x*1/x)*1/x*erfc(1/x);
 b=[|0, ..., deg|];
 c= [|49, SG...|];
