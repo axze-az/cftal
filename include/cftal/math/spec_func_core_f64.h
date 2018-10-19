@@ -229,31 +229,13 @@ erf_k(arg_t<vf_type> xc)
         const double erf_i1_x0=+1.0218466520309448242188e+00;
         vf_type x_i1 = x - erf_i1_x0;
         vf_type xx= x_i1*x_i1;
-        static const double c_i[] ={
-            erf_i1_c21,
-            erf_i1_c19,
-            erf_i1_c17,
-            erf_i1_c15,
-            erf_i1_c13,
-            erf_i1_c11,
-            erf_i1_c9,
-            erf_i1_c7,
-            erf_i1_c5
+        static const double c[]={
+            erf_i1_c21, erf_i1_c20, erf_i1_c19, erf_i1_c18, erf_i1_c17,
+            erf_i1_c16, erf_i1_c15, erf_i1_c14, erf_i1_c13, erf_i1_c12,
+            erf_i1_c11, erf_i1_c10, erf_i1_c9, erf_i1_c8, erf_i1_c7,
+            erf_i1_c6, erf_i1_c5,  erf_i1_c4
         };
-        static const double c_j[]={
-            erf_i1_c20,
-            erf_i1_c18,
-            erf_i1_c16,
-            erf_i1_c14,
-            erf_i1_c12,
-            erf_i1_c10,
-            erf_i1_c8,
-            erf_i1_c6,
-            erf_i1_c4
-        };
-        vf_type i, j;
-        horner_n2(i, j, xx, c_i, c_j);
-        vf_type y_i1= i*x_i1 + j;
+        vf_type y_i1= horner2(x_i1, xx, c);
         y_i1 = horner(x_i1, y_i1,
                       erf_i1_c3,
                       erf_i1_c2,
@@ -319,31 +301,13 @@ erf_k(arg_t<vf_type> xc)
         const double erf_i2_x0=+2.0348699092864990234375e+00;
         vf_type x_i2 = x - erf_i2_x0;
         vf_type xx= x_i2*x_i2;
-        static const double c_i[]={
-            erf_i2_c21,
-            erf_i2_c19,
-            erf_i2_c17,
-            erf_i2_c15,
-            erf_i2_c13,
-            erf_i2_c11,
-            erf_i2_c9,
-            erf_i2_c7,
-            erf_i2_c5
+        static const double c[]={
+            erf_i2_c21, erf_i2_c20, erf_i2_c19, erf_i2_c18, erf_i2_c17,
+            erf_i2_c16, erf_i2_c15, erf_i2_c14, erf_i2_c13, erf_i2_c12,
+            erf_i2_c11, erf_i2_c10, erf_i2_c9, erf_i2_c8, erf_i2_c7,
+            erf_i2_c6, erf_i2_c5,  erf_i2_c4
         };
-        static const double c_j[]={
-            erf_i2_c20,
-            erf_i2_c18,
-            erf_i2_c16,
-            erf_i2_c14,
-            erf_i2_c12,
-            erf_i2_c10,
-            erf_i2_c8,
-            erf_i2_c6,
-            erf_i2_c4
-        };
-        vf_type i, j;
-        horner_n2(i, j, xx, c_i, c_j);
-        vf_type y_i2= i*x_i2 + j;
+        vf_type y_i2=horner2(x_i2, xx, c);
         y_i2 = horner(x_i2, y_i2,
                       erf_i2_c3,
                       erf_i2_c2,
@@ -411,30 +375,13 @@ erf_k(arg_t<vf_type> xc)
 
         vf_type x_i3 = x - erf_i3_x0;
         vf_type xx= x_i3*x_i3;
-        static const double c_i[]={
-            erf_i3_c21,
-            erf_i3_c19,
-            erf_i3_c17,
-            erf_i3_c15,
-            erf_i3_c13,
-            erf_i3_c11,
-            erf_i3_c9,
-            erf_i3_c7,
-            erf_i3_c5        };
-        static const double c_j[]={
-            erf_i3_c20,
-            erf_i3_c18,
-            erf_i3_c16,
-            erf_i3_c14,
-            erf_i3_c12,
-            erf_i3_c10,
-            erf_i3_c8,
-            erf_i3_c6,
-            erf_i3_c4
+        static const double c[]={
+            erf_i3_c21, erf_i3_c20, erf_i3_c19, erf_i3_c18, erf_i3_c17,
+            erf_i3_c16, erf_i3_c15, erf_i3_c14, erf_i3_c13, erf_i3_c12,
+            erf_i3_c11, erf_i3_c10, erf_i3_c9, erf_i3_c8, erf_i3_c7,
+            erf_i3_c6, erf_i3_c5,  erf_i3_c4
         };
-        vf_type i, j;
-        horner_n2(i, j, xx, c_i, c_j);
-        vf_type y_i3= i*x_i3 + j;
+        vf_type y_i3=horner2(x_i3, xx, c);
         y_i3 = horner(x_i3, y_i3,
                       erf_i3_c3,
                       erf_i3_c2,
@@ -593,27 +540,14 @@ erfc_k(arg_t<vf_type> xc)
             vf_type i1h, i1l;
 
             vf_type x_i1_sqr= x_i1* x_i1;
-            static const double c_e[]={
-                erfc_i1_c21,
-                erfc_i1_c19,
-                erfc_i1_c17,
-                erfc_i1_c15,
-                erfc_i1_c13,
-                erfc_i1_c11,
-                erfc_i1_c9
+            static const double c[]={
+                erfc_i1_c21, erfc_i1_c20, erfc_i1_c19, erfc_i1_c18,
+                erfc_i1_c17, erfc_i1_c16, erfc_i1_c15, erfc_i1_c14,
+                erfc_i1_c13, erfc_i1_c12, erfc_i1_c11, erfc_i1_c10,
+                erfc_i1_c9,  erfc_i1_c8
             };
-            static const double c_o[]={
-                erfc_i1_c20,
-                erfc_i1_c18,
-                erfc_i1_c16,
-                erfc_i1_c14,
-                erfc_i1_c12,
-                erfc_i1_c10,
-                erfc_i1_c8
-            };
-            vf_type e, o;
-            horner_n2(e, o, x_i1_sqr, c_e, c_o);
-            i1h = horner(x_i1, e, o,
+            i1h=horner2(x_i1, x_i1_sqr, c);
+            i1h = horner(x_i1, i1h,
                          erfc_i1_c7, erfc_i1_c6,
                          erfc_i1_c5, erfc_i1_c4,
                          erfc_i1_c3, erfc_i1_c2, erfc_i1_c1);
@@ -678,33 +612,15 @@ erfc_k(arg_t<vf_type> xc)
             vf_type x_i2 = x - erfc_i2_x0;
             vf_type i2h, i2l;
             vf_type x_i2_sqr= x_i2* x_i2;
-            static const double c_e[]={
-                erfc_i2_c21,
-                erfc_i2_c19,
-                erfc_i2_c17,
-                erfc_i2_c15,
-                erfc_i2_c13,
-                erfc_i2_c11,
-                erfc_i2_c9,
-                erfc_i2_c7,
-                erfc_i2_c5,
-                erfc_i2_c3
+            static const double c[]={
+                erfc_i2_c21, erfc_i2_c20, erfc_i2_c19, erfc_i2_c18,
+                erfc_i2_c17, erfc_i2_c16, erfc_i2_c15, erfc_i2_c14,
+                erfc_i2_c13, erfc_i2_c12, erfc_i2_c11, erfc_i2_c10,
+                erfc_i2_c9, erfc_i2_c8, erfc_i2_c7, erfc_i2_c6,
+                erfc_i2_c5, erfc_i2_c4, erfc_i2_c3, erfc_i2_c2,
+                erfc_i2_c1
             };
-            static const double c_o[]={
-                erfc_i2_c20,
-                erfc_i2_c18,
-                erfc_i2_c16,
-                erfc_i2_c14,
-                erfc_i2_c12,
-                erfc_i2_c10,
-                erfc_i2_c8,
-                erfc_i2_c6,
-                erfc_i2_c4,
-                erfc_i2_c2
-            };
-            vf_type e, o;
-            horner_n2(e, o, x_i2_sqr, c_e, c_o);
-            i2h = horner(x_i2, e, o, erfc_i2_c1);
+            i2h = horner2(x_i2, x_i2_sqr, c);
             i2h *= x_i2;
             d_ops::add122cond(i2h, i2l, i2h, erfc_i2_c0h, erfc_i2_c0l);
             i123h = _T::sel(x_gt_2_75, i2h, i123h);
@@ -768,38 +684,17 @@ erfc_k(arg_t<vf_type> xc)
             vf_type inv_x=1.0/x;
             vf_type inv_x2= inv_x*inv_x;
 
-            static const double c_e[]={
-                erfc_i3_c25,
-                erfc_i3_c23,
-                erfc_i3_c21,
-                erfc_i3_c19,
-                erfc_i3_c17,
-                erfc_i3_c15,
-                erfc_i3_c13,
-                erfc_i3_c11,
-                erfc_i3_c9,
-                erfc_i3_c7,
-                erfc_i3_c5,
-                erfc_i3_c3
+            static const double c[]={
+                erfc_i3_c25, erfc_i3_c24, erfc_i3_c23, erfc_i3_c22,
+                erfc_i3_c21, erfc_i3_c20, erfc_i3_c19, erfc_i3_c18,
+                erfc_i3_c17, erfc_i3_c16, erfc_i3_c15, erfc_i3_c14,
+                erfc_i3_c13, erfc_i3_c12, erfc_i3_c11, erfc_i3_c10,
+                erfc_i3_c9, erfc_i3_c8, erfc_i3_c7, erfc_i3_c6,
+                erfc_i3_c5, erfc_i3_c4, erfc_i3_c3, erfc_i3_c2,
+                erfc_i3_c1
             };
-            static const double c_o[]={
-                erfc_i3_c24,
-                erfc_i3_c22,
-                erfc_i3_c20,
-                erfc_i3_c18,
-                erfc_i3_c16,
-                erfc_i3_c14,
-                erfc_i3_c12,
-                erfc_i3_c10,
-                erfc_i3_c8,
-                erfc_i3_c6,
-                erfc_i3_c4,
-                erfc_i3_c2
-            };
-            vf_type e, o;
-            horner_n2(e, o, inv_x2, c_e, c_o);
             vf_type i3h, i3l;
-            i3h = horner(inv_x, e, o, erfc_i3_c1);
+            i3h = horner2(inv_x, inv_x2, c);
             i3h *= inv_x;
             d_ops::add12cond(i3h, i3l, i3h, erfc_i3_c0);
             i123h = _T::sel(x_gt_6_00, i3h, i123h);

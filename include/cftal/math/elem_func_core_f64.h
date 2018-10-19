@@ -967,23 +967,14 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const double exp_c13=+1.6594686274338619941159e-10;
     vf_type x2=xrh*xrh;
 
-    static const double oc[]={
-        exp_c13,
-        exp_c11,
-        exp_c9,
-        exp_c7,
-        exp_c5
+    static const double c[]={
+        exp_c13, exp_c12, exp_c11, exp_c10, exp_c9,
+        exp_c8, exp_c7, exp_c6, exp_c5, exp_c4,
+        exp_c3
     };
-    static const double ec[]= {
-        exp_c12,
-        exp_c10,
-        exp_c8,
-        exp_c6,
-        exp_c4
-    };
-    vf_type o, e;
-    horner_n2(o, e, x2, oc, ec);
-    vf_type y=horner(xrh, o, e, exp_c3, exp_c2);
+    vf_type y=horner2(xrh, x2, c);
+    y=horner(xrh, y, exp_c2);
+
     y = y * x2;
     vf_type ye;
     d_ops::add12(y, ye, xrh, y);
@@ -2004,24 +1995,12 @@ __pow_exp_poly_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const double exp_c13=+1.6594686274338619941159e-10;
     vf_type xx=xrh*xrh;
 
-    static const double ci[]= {
-        exp_c13,
-        exp_c11,
-        exp_c9,
-        exp_c7,
-        exp_c5
+    static const double c[]= {
+        exp_c13, exp_c12, exp_c11, exp_c10, exp_c9,
+        exp_c8, exp_c7, exp_c6, exp_c5, exp_c4,
+        exp_c3
     };
-    static const double cj[]= {
-        exp_c12,
-        exp_c10,
-        exp_c8,
-        exp_c6,
-        exp_c4
-    };
-    vf_type i, j;
-    horner_n2(i, j, xx, ci, cj);
-
-    vf_type y=horner(xrh, i, j, exp_c3);
+    vf_type y=horner2(xrh, xx, c);
     vf_type ye;
     horner_comp_quick(y, ye, xrh, y, exp_c2, exp_c1);
     // calculate expm1/xrh for correction term
@@ -2116,21 +2095,15 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
         const double pow_log_hp_c21=+9.4020798414255354891189e-02;
         // x^23 : +0xd.1a5719e2afe2p-7
         const double pow_log_hp_c23=+1.0236634029331442841126e-01;
-        static const double cp1[]= {
-            pow_log_hp_c23,
-            pow_log_hp_c19,
-            pow_log_hp_c15,
-            pow_log_hp_c11
+
+        static const double c[]={
+            pow_log_hp_c23, pow_log_hp_c21,
+            pow_log_hp_c19, pow_log_hp_c17,
+            pow_log_hp_c15, pow_log_hp_c13,
+            pow_log_hp_c11, pow_log_hp_c9
         };
-        static const double cp2[]= {
-            pow_log_hp_c21,
-            pow_log_hp_c17,
-            pow_log_hp_c13,
-            pow_log_hp_c9
-        };
-        vf_type p1, p2;
-        horner_n2(p1, p2, s4, cp1, cp2);
-        vf_type p= horner(s2, p1, p2);
+        vf_type p=horner2(s2, s4, c);
+
         d_ops::mul122(ph, pl, p, s2, s2l);
         d_ops::add122(ph, pl, pow_log_hp_c7,ph, pl);
         d_ops::mul22(ph, pl, s2, s2l, ph, pl);
@@ -2162,22 +2135,14 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
         const double pow_log_c17=+1.2119677270450282535741e-01;
         // x^19 : +0xb.333e5bd067258p-7
         const double pow_log_c19=+8.7501330214586989231229e-02;
-        static const double cp1[]= {
-            pow_log_c19,
-            pow_log_c15,
-            pow_log_c11,
-            pow_log_c7
-        };
-        static const double cp2[]= {
-            pow_log_c17,
-            pow_log_c13,
-            pow_log_c9,
-            pow_log_c5
-        };
-        vf_type p1, p2;
-        horner_n2(p1, p2, s4, cp1, cp2);
-        vf_type p= horner(s2, p1, p2);
 
+        static const double c[]= {
+            pow_log_c19, pow_log_c17,
+            pow_log_c15, pow_log_c13,
+            pow_log_c11, pow_log_c9,
+            pow_log_c7, pow_log_c5
+        };
+        vf_type p= horner2(s2, s4, c);
         p= s2* p;
         d_ops::add12(ph, pl, pow_log_c3, p);
         d_ops::mul22(ph, pl, s2, s2l, ph, pl);
@@ -2476,19 +2441,10 @@ __sin_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     vf_type x3=x2*xh;
 
     vf_type x4=x2*x2;
-    static const double cpe[]= {
-        sin_c15,
-        sin_c11,
-        sin_c7
+    static const double c[]= {
+        sin_c17, sin_c15, sin_c13, sin_c11, sin_c9, sin_c7, sin_c5
     };
-    static const double cpo[]= {
-        sin_c17,
-        sin_c13,
-        sin_c9
-    };
-    vf_type pe, po;
-    horner_n2(pe, po, x4, cpe, cpo);
-    vf_type p=horner(x2, po, pe, sin_c5)*x3;
+    vf_type p=horner2(x2, x4, c)*x3;
     vf_type s= xh + (x3*sin_c3 + (x2*(p-xl*0.5) + xl));
     s = _T::sel(xh == 0.0, xh, s);
     return s;
@@ -2524,19 +2480,10 @@ __cos_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     //           =      w     +(1.0-      w)     -0.5*x^2  + (p-x*xl)
     vf_type x2=xh*xh;
     vf_type x4=x2*x2;
-    static const double cpe[]={
-        cos_c16,
-        cos_c12,
-        cos_c8
+    static const double ci[]={
+        cos_c16, cos_c14, cos_c12, cos_c10, cos_c8, cos_c6, cos_c4
     };
-    static const double cpo[]={
-        cos_c14,
-        cos_c10,
-        cos_c6
-    };
-    vf_type pe, po;
-    horner_n2(pe, po, x4, cpe, cpo);
-    vf_type p=horner(x2, pe, po, cos_c4);
+    vf_type p=horner2(x2, x4, ci);
     vf_type hx2=x2*0.5;
     vf_type w= 1.0 -hx2;
     vf_type c= w + (((1.0-w)-hx2) + (x4*p-xh*xl));
@@ -2639,6 +2586,10 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
             arg_t<vi2_type> q,
             vf_type* ps, vf_type* pc)
 {
+#if 0
+    vf_type s= __sin_k(xrh, xrl);
+    vf_type c= __cos_k(xrh, xrl);
+#else
     // [3.4694469519536141888238489627838134765625e-18, 0.785398185253143310546875] : | p - f | <= 2^-68.5625
     // coefficients for cos generated by sollya
     // x^4 : +0xa.aaaaaaaaaaaa8p-8
@@ -2709,7 +2660,7 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type hx2=x2*0.5;
     vf_type w= 1.0 -hx2;
     vf_type c= w + (((1.0-w)-hx2) + (x4*p_cos-xrh*xrl));
-
+#endif
     vmi2_type q_and_2(vi2_type(q & vi2_type(2))==vi2_type(2));
     vmf_type q_and_2_f(_T::vmi2_to_vmf(q_and_2));
     vmi2_type q_and_1(vi2_type(q & vi2_type(1))==vi2_type(1));

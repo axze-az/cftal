@@ -903,12 +903,10 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const float exp_c7=+1.9569355936e-04f;
 
     vf_type x2= xrh*xrh;
-
-    const float ci[]= {exp_c7, exp_c5, exp_c3};
-    const float cj[]= {exp_c6, exp_c4, exp_c2};
-    vf_type i, j;
-    horner_n2(i, j, x2, ci, cj);
-    vf_type y= horner(xrh, i, j);
+    static const float ci[]={
+        exp_c7, exp_c6, exp_c5, exp_c4, exp_c3, exp_c2
+    };
+    vf_type y= horner2(xrh, x2, ci);
     y = y* x2;
     vf_type ye;
     d_ops::add12(y, ye, xrh, y);
@@ -1849,13 +1847,11 @@ __pow_exp_poly_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const float exp_c7=+1.9569355936e-04f;
 
     vf_type xx= xrh*xrh;
-    vf_type i=horner(xx,
-                     exp_c7,
-                     exp_c5);
-    vf_type j=horner(xx,
-                     exp_c6,
-                     exp_c4);
-    vf_type y= horner(xrh, i, j, exp_c3);
+
+    static const float ci[]={
+        exp_c7, exp_c6, exp_c5, exp_c4, exp_c3
+    };
+    vf_type y=horner2(xrh, xx, ci);
     vf_type ye;
     horner_comp_quick(y, ye, xrh, y, exp_c2, exp_c1);
     // correction for errors in argument reduction
@@ -1936,17 +1932,11 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
         const float pow_log_hp_c11=+1.7981851101e-01f;
         // x^13 : +0xb.c3666p-6f
         const float pow_log_hp_c13=+1.8380126357e-01f;
-        static const float cp1[]= {
-            pow_log_hp_c13,
-            pow_log_hp_c9
+        static const float ci[]= {
+            pow_log_hp_c11, pow_log_hp_c13,
+            pow_log_hp_c9,  pow_log_hp_c7
         };
-        static const float cp2[]= {
-            pow_log_hp_c11,
-            pow_log_hp_c7
-        };
-        vf_type p1, p2;
-        horner_n2(p1, p2, s4, cp1, cp2);
-        vf_type p= horner(s2, p1, p2);
+        vf_type p= horner2(s2, s4, ci);
         vf_type s2l=ds2[1];
         d_ops::mul122(ph, pl, p, s2, s2l);
         d_ops::add122(ph, pl, pow_log_hp_c5, ph, pl);
@@ -1970,13 +1960,11 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
         // x^11 : +0xd.d007bp-5f
         const float pow_log_c11=+4.3164429069e-01f;
 
-        vf_type p1= horner(s4,
-                           pow_log_c11,
-                           pow_log_c7);
-        vf_type p2= horner(s4,
-                           pow_log_c9,
-                           pow_log_c5);
-        vf_type p= horner(s2, p1, p2);
+        static const float ci[]= {
+            pow_log_c11, pow_log_c9,
+            pow_log_c7,  pow_log_c5
+        };
+        vf_type p= horner2(s2, s4, ci);
         horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
     }
     if (_F == log_func::c_log_e) {
@@ -2931,7 +2919,6 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
     r *= scale;
     return r;
 }
-
 
 
 // Local Variables:

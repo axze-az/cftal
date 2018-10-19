@@ -251,6 +251,13 @@ namespace cftal {
             add212(_T& zh, _T& zl,
                    const _T& ah, const _T& al, const _T& b);
 
+            // return (zh, zl) = (ah, bl) + b
+            // with |ah| > b
+            static
+            void
+            add212cond(_T& zh, _T& zl,
+                       const _T& ah, const _T& al, const _T& b);
+
             // return (r,e) = a + b with |a| > |b|
             static
             _T
@@ -865,6 +872,20 @@ add212(_T& zh, _T& zl,
 {
     _T _t1, _t2, _t3;
     add12(_t1, _t2, ah, b);
+    _t3 = _t2 + al;
+    add12(zh, zl, _t1, _t3);
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops_common<_T>::
+add212cond(_T& zh, _T& zl,
+           const _T& ah, const _T& al, const _T& b)
+{
+    _T _t1, _t2, _t3;
+    add12cond(_t1, _t2, ah, b);
     _t3 = _t2 + al;
     add12(zh, zl, _t1, _t3);
 }

@@ -38,6 +38,11 @@ namespace cftal {
         _X
         horner(_X x, const _C (&a)[_N]);
 
+        // a_n in a[0], uses unrolling and assumes xx = x*x
+        template <typename _X, typename _C, std::size_t _N>
+        _X
+        horner2(_X x, _X xx, const _C (&a)[_N]);
+
         template <typename _F, typename _C, std::size_t _N>
         d_real<_F>
         horner(d_real<_F> x, const d_real<_C> (&a)[_N]);
@@ -269,6 +274,26 @@ cftal::math::horner(_X x, const _C (&a)[_N])
     const _C* pa=a;
     for (std::size_t i=1; i<_N; ++i) {
         r= horner(x, r, pa[i]);
+    }
+    return r;
+}
+
+template <typename _X, typename _C, std::size_t _N>
+_X
+cftal::math::horner2(_X x, _X xx, const _C (&a)[_N])
+{
+    static_assert(_N > 1, "invalid call to horner2(x, xx, array)");
+    const _C* pa=a;
+    _X r0= _X(pa[0]);
+    _X r1= _X(pa[1]);
+    const std::size_t _NE= _N & ~(std::size_t(1));
+    for (std::size_t i=2; i<_NE; i+=2) {
+        r0= horner(xx, r0, pa[i]);
+        r1= horner(xx, r1, pa[i+1]);
+    }
+    _X r = horner(x, r0, r1);
+    if (_N & 1) {
+        r = horner(x, r, pa[_N-1]);
     }
     return r;
 }
