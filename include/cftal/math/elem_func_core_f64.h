@@ -2741,20 +2741,13 @@ atan_k(arg_t<vf_type> xc)
     // x^22 : -0xe.efef0dee26fa8p-10
     const double atan_c22=-1.4587149834858851096819e-02;
 
+    static const double ci[]={
+        atan_c22, atan_c20, atan_c18, atan_c16,
+        atan_c14, atan_c12, atan_c10, atan_c8,
+        atan_c6, atan_c4, atan_c2, atan_c0
+    };
     vf_type t2=t*t;
-    vf_type p= t2 * horner(t2,
-                           atan_c22,
-                           atan_c20,
-                           atan_c18,
-                           atan_c16,
-                           atan_c14,
-                           atan_c12,
-                           atan_c10,
-                           atan_c8,
-                           atan_c6,
-                           atan_c4,
-                           atan_c2,
-                           atan_c0);
+    vf_type p= t2 * horner2(t2, vf_type(t2*t2), ci);
     vf_type at=  atan_hi - (t * p - atan_lo - t);
     at = copysign(at, xc);
     return at;
@@ -2821,20 +2814,22 @@ asin_k_poly(arg_t<vf_type> x2)
     // x^24 : +0xe.d339866978be8p-9
     const double asin_c24=+2.8955266626085929965173e-02;
 
-    vf_type r=x2*horner(x2,
-                        asin_c24,
-                        asin_c22,
-                        asin_c20,
-                        asin_c18,
-                        asin_c16,
-                        asin_c14,
-                        asin_c12,
-                        asin_c10,
-                        asin_c8,
-                        asin_c6,
-                        asin_c4,
-                        asin_c2,
-                        asin_c0);
+    static const double ci[]={
+        asin_c24,
+        asin_c22,
+        asin_c20,
+        asin_c18,
+        asin_c16,
+        asin_c14,
+        asin_c12,
+        asin_c10,
+        asin_c8,
+        asin_c6,
+        asin_c4,
+        asin_c2,
+        asin_c0
+    };
+    vf_type r=x2*horner2(x2, vf_type(x2*x2), ci);
     return r;
 }
 
@@ -3006,22 +3001,24 @@ asinh_k(arg_t<vf_type> xc)
     // x^28 : +0x9.73fd0c879255p-15
     const double asinh_c28=+2.8848510652019576736699e-04;
 
-    vf_type yss= x* horner(t,
-                           asinh_c28,
-                           asinh_c26,
-                           asinh_c24,
-                           asinh_c22,
-                           asinh_c20,
-                           asinh_c18,
-                           asinh_c16,
-                           asinh_c14,
-                           asinh_c12,
-                           asinh_c10,
-                           asinh_c8,
-                           asinh_c6,
-                           asinh_c4,
-                           asinh_c2,
-                           asinh_c0);
+    static const double ci[]={
+        asinh_c28,
+        asinh_c26,
+        asinh_c24,
+        asinh_c22,
+        asinh_c20,
+        asinh_c18,
+        asinh_c16,
+        asinh_c14,
+        asinh_c12,
+        asinh_c10,
+        asinh_c8,
+        asinh_c6,
+        asinh_c4,
+        asinh_c2,
+        asinh_c0
+    };
+    vf_type yss= x* horner2(t, vf_type(t*t), ci);
 
     ys = _T::sel(x<= M_SQRT2*0.5, yss, ys);
 
@@ -3088,24 +3085,28 @@ acosh_k(arg_t<vf_type> xc)
     const double acosh_c15=-2.5271917436897211509152e-08;
     // x^16 : +0xa.262fe8ff68a98p-32
     const double acosh_c16=+2.3630374462414833615335e-09;
-    vf_type ys=horner(xm1,
-                      acosh_c16,
-                      acosh_c15,
-                      acosh_c14,
-                      acosh_c13,
-                      acosh_c12,
-                      acosh_c11,
-                      acosh_c10,
-                      acosh_c9,
-                      acosh_c8,
-                      acosh_c7,
-                      acosh_c6,
-                      acosh_c5,
-                      acosh_c4,
-                      acosh_c3,
-                      acosh_c2,
-                      acosh_c1,
-                      acosh_c0);
+
+    static const double ci[]={
+        acosh_c16,
+        acosh_c15,
+        acosh_c14,
+        acosh_c13,
+        acosh_c12,
+        acosh_c11,
+        acosh_c10,
+        acosh_c9,
+        acosh_c8,
+        acosh_c7,
+        acosh_c6,
+        acosh_c5,
+        acosh_c4,
+        acosh_c3,
+        acosh_c2,
+        acosh_c1,
+        acosh_c0
+    };
+
+    vf_type ys=horner2(xm1, vf_type(xm1*xm1), ci);
     ys= (sqrt2xm1 * ys)[0];
     vf_type y= _T::sel(x < 2.0, ys, yl);
     return y;
@@ -3150,20 +3151,22 @@ atanh_k(arg_t<vf_type> xc)
     // x^24 : -0xf.5530a41a25ddp-8
     const double atanh_c24=-5.9893646301268657627936e-02;
     vf_type xx=x*x;
-    vf_type Q = horner(xx,
-                       atanh_c24,
-                       atanh_c22,
-                       atanh_c20,
-                       atanh_c18,
-                       atanh_c16,
-                       atanh_c14,
-                       atanh_c12,
-                       atanh_c10,
-                       atanh_c8,
-                       atanh_c6,
-                       atanh_c4,
-                       atanh_c2,
-                       atanh_c0);
+    static const double ci[]={
+        atanh_c24,
+        atanh_c22,
+        atanh_c20,
+        atanh_c18,
+        atanh_c16,
+        atanh_c14,
+        atanh_c12,
+        atanh_c10,
+        atanh_c8,
+        atanh_c6,
+        atanh_c4,
+        atanh_c2,
+        atanh_c0
+    };
+    vf_type Q = horner2(xx, vf_type(xx*xx), ci);
     vf_type ys= x + x*xx/(3.0 + xx * Q);
     vf_type log1p_arg= 2*(x/(1-x));
     vf_type yl= 0.5*log1p_k(log1p_arg);
