@@ -354,9 +354,41 @@ namespace cftal {
 
         template <std::size_t _B>
         mpfr_real<_B>
+        log2(const mpfr_real<_B>& a) {
+            mpfr_real<_B> r;
+            mpfr_log2(r(), a(), MPFR_RNDN);
+            return r;
+        }
+
+        template <std::size_t _B>
+        mpfr_real<_B>
         log10(const mpfr_real<_B>& a) {
             mpfr_real<_B> r;
             mpfr_log10(r(), a(), MPFR_RNDN);
+            return r;
+        }
+
+        template <std::size_t _B>
+        mpfr_real<_B>
+        sin(const mpfr_real<_B>& a) {
+            mpfr_real<_B> r;
+            mpfr_sin(r(), a(), MPFR_RNDN);
+            return r;
+        }
+
+        template <std::size_t _B>
+        mpfr_real<_B>
+        cos(const mpfr_real<_B>& a) {
+            mpfr_real<_B> r;
+            mpfr_cos(r(), a(), MPFR_RNDN);
+            return r;
+        }
+
+        template <std::size_t _B>
+        mpfr_real<_B>
+        erf(const mpfr_real<_B>& a) {
+            mpfr_real<_B> r;
+            mpfr_erf(r(), a(), MPFR_RNDN);
             return r;
         }
 
