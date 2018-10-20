@@ -316,8 +316,11 @@ lanczos_rational_at(const _T& x,
     }
     _T qh, ql;
     horner_comp(qh, ql, x, q);
-    _T pqh, pql;
-    d_ops::div22(pqh, pql, ph, pl, qh, ql);
+    _T inv_qh, inv_ql;
+    d_ops::rcp2(inv_qh, inv_ql, qh, ql);
+    _T pqh, pql; 
+    d_ops::mul22(pqh, pql, ph, pl, inv_qh, inv_ql);
+    // d_ops::div22(pqh, pql, ph, pl, qh, ql);
     return d_real<_T>(pqh, pql);
 }
 
