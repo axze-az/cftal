@@ -2196,15 +2196,11 @@ __tan_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl, arg_t<vi_type> q)
     vf_type xrh2;
     d_ops::sqr21(xrh2, xrh, xrl);
     vf_type xrh4=xrh2*xrh2;
-    vf_type e= horner(xrh4,
-                      tan_c15,
-                      tan_c11,
-                      tan_c7);
-    vf_type o= horner(xrh4,
-                      tan_c13,
-                      tan_c9,
-                      tan_c5);
-    vf_type t= horner(xrh2, e, o, tan_c3);
+    static const float ci[]={
+        tan_c15, tan_c13, tan_c11, tan_c9,
+        tan_c7, tan_c5, tan_c3
+    };
+    vf_type t= horner2(xrh2, xrh4, ci);
     vf_type th, tl;
     horner_comp_quick(th, tl, xrh2, t, tan_c1);
     d_ops::mul22(th, tl, xrh, xrl, th, tl);
@@ -2430,14 +2426,17 @@ atan_k(arg_t<vf_type> xc)
     // x^10 : -0xd.5110fp-8f
     const float atan_c10=-5.2018221468e-02f;
 
+    static const float ci[]={
+        atan_c10,
+        atan_c8,
+        atan_c6,
+        atan_c4,
+        atan_c2,
+        atan_c0
+    };
+
     vf_type t2=t*t;
-    vf_type p= t2 * horner(t2,
-                           atan_c10,
-                           atan_c8,
-                           atan_c6,
-                           atan_c4,
-                           atan_c2,
-                           atan_c0);
+    vf_type p= t2 * horner2(t2, vf_type(t2*t2), ci);
     vf_type at=  atan_hi - (t * p - atan_lo - t);
     at = copysign(at, xc);
     return at;
@@ -2491,14 +2490,17 @@ asin_k_poly(arg_t<vf_type> x2)
     const float asin_c10=+5.2187559195e-03f;
     // x^12 : +0x9.a0bp-8f
     const float asin_c12=+3.7608146667e-02f;
-    vf_type r=x2*horner(x2,
-                        asin_c12,
-                        asin_c10,
-                        asin_c8,
-                        asin_c6,
-                        asin_c4,
-                        asin_c2,
-                        asin_c0);
+
+    static const float ci[]={
+        asin_c12,
+        asin_c10,
+        asin_c8,
+        asin_c6,
+        asin_c4,
+        asin_c2,
+        asin_c0
+    };
+    vf_type r=x2*horner2(x2, vf_type(x2*x2), ci);
     return r;
 }
 
@@ -2609,16 +2611,16 @@ asinh_k(arg_t<vf_type> xc)
     // x^14 : -0xe.1b09dp-12f
     const float asinh_c14=-3.4437545110e-03f;
 
-    vf_type yss= x* horner(t,
-                           asinh_c14,
-                           asinh_c12,
-                           asinh_c10,
-                           asinh_c8,
-                           asinh_c6,
-                           asinh_c4,
-                           asinh_c2,
-                           asinh_c0);
-
+    static const float ci[]={
+        asinh_c14,
+        asinh_c12,
+        asinh_c10,
+        asinh_c8,
+        asinh_c6,
+        asinh_c4,
+    };
+    vf_type yss= horner2(t, vf_type(t*t), ci);
+    yss = x*horner(t, yss, asinh_c2, asinh_c0);
     ys = _T::sel(x<= M_SQRT2*0.5f, yss, ys);
 
     vf_type ash=_T::sel(x <= 2.0f, ys, yl);
@@ -2668,16 +2670,19 @@ acosh_k(arg_t<vf_type> xc)
     const float acosh_c7=-6.1187885876e-05f;
     // x^8 : +0x9.191f4p-20f
     const float acosh_c8=+8.6766558525e-06f;
-    vf_type ys=horner(xm1,
-                      acosh_c8,
-                      acosh_c7,
-                      acosh_c6,
-                      acosh_c5,
-                      acosh_c4,
-                      acosh_c3,
-                      acosh_c2,
-                      acosh_c1,
-                      acosh_c0);
+
+    static const float ci[]={
+        acosh_c8,
+        acosh_c7,
+        acosh_c6,
+        acosh_c5,
+        acosh_c4,
+        acosh_c3,
+        acosh_c2,
+        acosh_c1,
+        acosh_c0
+    };
+    vf_type ys=horner2(xm1, vf_type(xm1*xm1), ci);
     ys= (sqrt2xm1 * ys)[0];
     vf_type y= _T::sel(x < 2.0f, ys, yl);
     return y;
@@ -2710,14 +2715,16 @@ atanh_k(arg_t<vf_type> xc)
     // x^12 : -0xc.30ebcp-13f
     const float atanh_c12=-1.4881710522e-03f;
     vf_type xx=x*x;
-    vf_type Q = horner(xx,
-                       atanh_c12,
-                       atanh_c10,
-                       atanh_c8,
-                       atanh_c6,
-                       atanh_c4,
-                       atanh_c2,
-                       atanh_c0);
+    static const float ci[]={
+        atanh_c12,
+        atanh_c10,
+        atanh_c8,
+        atanh_c6,
+        atanh_c4,
+        atanh_c2,
+        atanh_c0
+    };
+    vf_type Q = horner2(xx, vf_type(xx*xx), ci);
     vf_type ys= x + x*xx/(3.0f + xx * Q);
     vf_type log1p_arg= 2.0f*(x/(1.0f-x));
     vf_type yl= 0.5f*log1p_k(log1p_arg);
