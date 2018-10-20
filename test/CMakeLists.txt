@@ -63,7 +63,6 @@ set (TEST_HDRS
     ./include/cftal/test/uniform_distribution.h
     ./include/cftal/test/check_cbrt.h
     ./include/cftal/test/mpfr_cache.h
-    ./include/cftal/test/chebyshev.h
     ./include/cftal/test/check_tanh.h
     ./include/cftal/test/check_sqrt.h
     ./include/cftal/test/of_vec.h
