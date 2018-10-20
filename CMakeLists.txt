@@ -153,11 +153,6 @@ add_subdirectory(utils)
 
 include_directories(test/include)
 
-# hackcftal
-set (HACKCFTAL_SRC hackcftal.cc)
-add_executable(hackcftal ${HACKCFTAL_SRC})
-target_link_libraries(hackcftal cftal-so)
-target_link_libraries(hackcftal cftal-test)
 
 # boost_lorenz
 set (BOOST_LORENZ_SRC boost_lorenz.cc)
