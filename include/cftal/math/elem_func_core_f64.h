@@ -3117,7 +3117,7 @@ cftal::math::elem_func_core<double, _T>::
 atanh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
-#if 1
+#if 0
     vf_type xph, xpl, xmh, xml;
     d_ops::add12(xph, xpl, 1.0, x);
     d_ops::add12(xmh, xml, 1.0, -x);
