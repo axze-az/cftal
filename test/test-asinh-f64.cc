@@ -28,7 +28,8 @@ int main(int argc, char** argv)
         -std::numeric_limits<double>::max(),
         std::numeric_limits<double>::max());
 #else
-    func_domain<double> d=std::make_pair(-10.0, 10.0);
+    func_domain<double> d=std::make_pair(M_SQRT2/2, 3.0);
+                                         // std::numeric_limits<double>::max());
 #endif
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);

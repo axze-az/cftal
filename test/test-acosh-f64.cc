@@ -47,7 +47,7 @@ int main(int argc, char** argv)
         std::numeric_limits<double>::max());
 #else
     func_domain<double> d=std::make_pair(
-        1, 2);
+        2, 3);
         // 1.54, std::numeric_limits<double>::max());
 #endif
     auto us=std::make_shared<ulp_stats>();
