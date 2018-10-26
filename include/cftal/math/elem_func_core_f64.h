@@ -2986,8 +2986,29 @@ cftal::math::elem_func_core<double, _T>::
 asinh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
+#if 1
+    vf_type x2h, x2l;
+    d_ops::sqr12(x2h, x2l, xc);
+    vf_type ah, al;
+    d_ops::add122cond(ah, al, 1.0, x2h, x2l);
+    d_ops::sqrt2(ah, al, ah, al);
+    d_ops::add212(ah, al, ah, al, x);
+    // asinh(x) = ln(x+ sqrt(x*x+1))
+    // x >> 1
+    // asinh(x) = ln(x+x) = ln(2*x) = ln(x) + ln(2)
     using ctbl=impl::d_real_constants<d_real<double>, double>;
-
+    auto x_is_large = x > 0x1p32;
+    ah = _T::sel(x_is_large, x, ah);
+    al = _T::sel(x_is_large, 0.0, al);
+    auto a=__pow_log_k2<log_func::c_log_e,result_prec::medium>(ah, al);
+    vf_type oh, ol;
+    oh = _T::sel_val_or_zero(x_is_large, ctbl::m_ln2[0]);
+    ol = _T::sel_val_or_zero(x_is_large, ctbl::m_ln2[1]);
+    // x >> 1: ln(x) > ln(2), otherwise oh == ol == 0.0
+    d_ops::add22(a[0], a[1], a[0], a[1], oh, ol);
+    vf_type ash=_T::sel(x < 0x1p-64, x, a[0]);
+#else
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
     vmf_type x_gt_0x1p28 = x > 0x1p28;
     vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p28, ctbl::m_ln2[0]);
     vf_type t= x*x;
@@ -3055,6 +3076,7 @@ asinh_k(arg_t<vf_type> xc)
     ys = _T::sel(x<= M_SQRT2*0.5, yss, ys);
 
     vf_type ash=_T::sel(x <= 2.0, ys, yl);
+#endif
     ash = copysign(ash, xc);
     return ash;
 }

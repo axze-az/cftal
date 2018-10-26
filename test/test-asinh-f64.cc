@@ -23,9 +23,13 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
+#if 1
     func_domain<double> d=std::make_pair(
         -std::numeric_limits<double>::max(),
         std::numeric_limits<double>::max());
+#else
+    func_domain<double> d=std::make_pair(-10.0, 10.0);
+#endif
     auto us=std::make_shared<ulp_stats>();
     exec_stats st(_N);
     rc &= of_fp_func_up_to<
