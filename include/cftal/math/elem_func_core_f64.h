@@ -1991,8 +1991,9 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
             pow_log_c11, pow_log_c9,
             pow_log_c7, pow_log_c5, pow_log_c3,
         };
-        vf_type p= horner2(s2, s4, c);
-        horner_comp_quick(ph, pl, s2, p, pow_log_c1);
+        vf_type p= horner2(s2, s4, c) *s2;
+        d_ops::add12(ph, pl, pow_log_c1, p);
+        // horner_comp_quick(ph, pl, s2, p, pow_log_c1);
     }
     if (_F == log_func::c_log_e) {
         d_ops::mul22(ph, pl, ds[0], ds[1], ph, pl);
