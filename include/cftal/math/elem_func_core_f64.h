@@ -929,7 +929,8 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // x^0 : +0x8p-3
     const double exp_c0=+1.0000000000000000000000e+00;
     // x^1 : +0x8p-3
-    // const double exp_c1=+1.0000000000000000000000e+00;
+    constexpr
+    const double exp_c1=+1.0000000000000000000000e+00;
     // x^2 : +0x8p-4
     const double exp_c2=+5.0000000000000000000000e-01;
     // x^3 : +0xa.aaaaaaaaaaaa8p-6
@@ -954,6 +955,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const double exp_c12=+2.0921639307947297714762e-09;
     // x^13 : +0xb.675e3aadcbc88p-36
     const double exp_c13=+1.6594686274338619941159e-10;
+    static_assert(exp_c1 == 1.0, "exp_c1 == 1.0 is expected");
     vf_type x2=xrh*xrh;
 
     static const double c[]={
