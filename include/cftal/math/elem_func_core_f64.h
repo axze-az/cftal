@@ -2793,8 +2793,21 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
 {
+#if 0
+    // atan(1/x) = M_PI_2 -atan(x) if x>0
+    // ax=abs(x)
+    // ay=abs(y)
+    // calculate at = atan( min(ax, ay)/max(ax, ay) )
+    // ax > ay: at = M_PI_2 - atan;
+
+    dvf_type dyx=d_ops::scaled_div(dvf_type(y), dvf_type(x));
+    dyx=abs(dyx);
+    vf_type t=atan_k(dyx[0]);
+    t += _T::sel(dyx[0] < 0x1p64, dyx[1]/(dyx[0]*dyx[0]+1.0), 0.0);
+#else
     vf_type yx=y/x;
     vf_type t=atan_k(abs(yx));
+#endif
     vf_type y_s = copysign(vf_type(1.0), y);
     vf_type x_s = copysign(vf_type(1.0), x);
 
