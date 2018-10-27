@@ -3153,10 +3153,10 @@ asinh_k(arg_t<vf_type> xc)
     }
     if (any_of(sel = x > asinh_i1_right)) {
         using ctbl=impl::d_real_constants<d_real<double>, double>;
-        vmf_type x_gt_0x1p28 = x > 0x1p28;
-        vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p28, ctbl::m_ln2[0]);
+        vmf_type x_huge = x > 0x1p53;
+        vf_type add_2_log=_T::sel_val_or_zero(x_huge, ctbl::m_ln2[0]);
         vf_type t= x*x;
-        vf_type log_arg=_T::sel(x_gt_0x1p28,
+        vf_type log_arg=_T::sel(x_huge,
                                 x,
                                 2.0 * x+ 1.0/(sqrt(vf_type(t+1.0))+x));
         vf_type yl= __log_k<log_func::c_log_e>(log_arg);
@@ -3330,10 +3330,10 @@ acosh_k(arg_t<vf_type> xc)
         y = _T::sel(sel, y_i1, y);
     }
     if (any_of(sel = x > acosh_i1_right)) {
-        vmf_type x_gt_0x1p26 = x > 0x1p26;
-        vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p26, ctbl::m_ln2[0]);
+        vmf_type x_huge = x > 0x1p53;
+        vf_type add_2_log=_T::sel_val_or_zero(x_huge, ctbl::m_ln2[0]);
         // vf_type t= x*x;
-        vf_type log_arg=_T::sel(x_gt_0x1p26,
+        vf_type log_arg=_T::sel(x_huge,
                                 x,
                                 2.0*x - 1.0/(x+sqrt(vf_type(x*x-1))));
         vf_type yl= __log_k<log_func::c_log_e>(log_arg);

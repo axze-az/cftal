@@ -14,6 +14,19 @@ int main(int argc, char** argv)
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+#if 0
+    cftal::v1f32 t=-2.834401250000000000e+06f;
+    std::pair<float, float> rp, rn;
+    float fp=call_mpfr::func(t(), mpfr_asinh, &rp);
+    float fn=call_mpfr::func(-t(), mpfr_asinh, &rn);
+
+    std::cout << fp << std::endl
+              << rp.first << std::endl
+              << rp.second << std::endl;
+    std::cout << fn << std::endl
+              << rn.first << std::endl
+              << rn.second << std::endl;
+#else
     const int ulp=1;
     const int _N=16;
     bool rc=true;
@@ -36,4 +49,5 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
+#endif
 }
