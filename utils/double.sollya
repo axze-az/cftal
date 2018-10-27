@@ -515,13 +515,12 @@ write_coeff(ir, "", "const double asinh_i1_right", double);
 write_coeff(x0, "", "const double asinh_i1_x0", double);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "asinh_i1-f64");
 
-
 /* acosh f64 */
 i = [0x1p-58, 1.0];
 f = acosh(1+x)/sqrt(2*x);
 d = guessdegree(f, i, 0x1p-60);
 d;
-b = [|1, ..., 16|];
+b = [|0, ..., 16|];
 c = [|D...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
@@ -530,7 +529,7 @@ plot((p(x)-f(x))/f(x), i,
                        postscriptfile, "acosh_i0-f64");
 
 il= 2.0;
-ir= 3.0;
+ir= 2.75;
 im= dirtyfindzeros(acosh(x)-(0.5*(acosh(il)+acosh(ir))), [il, ir])[0];
 im= round(im, 24, RN);
 i = [il-im, ir-im];
@@ -540,7 +539,7 @@ x0= im;
 f = acosh(x+x0);
 d = guessdegree(f, i, 0x1p-60);
 d;
-b = [|0, ..., 21|];
+b = [|0, ..., 18|];
 c = [|DD, D...|];
 p = fpminimax(f, b, c, i, relative, floating);
 p;
@@ -550,6 +549,28 @@ write_coeff(il, "", "const double acosh_i1_left", double);
 write_coeff(ir, "", "const double acosh_i1_right", double);
 write_coeff(x0, "", "const double acosh_i1_x0", double);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "acosh_i1-f64");
+
+il= 2.75;
+ir= 3.5;
+im= dirtyfindzeros(acosh(x)-(0.5*(acosh(il)+acosh(ir))), [il, ir])[0];
+im= round(im, 24, RN);
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = acosh(x+x0);
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, ..., 16|];
+c = [|DD, D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "const double acosh_i2_c", "acosh_i2", b, c);
+write_coeff(il, "", "const double acosh_i2_left", double);
+write_coeff(ir, "", "const double acosh_i2_right", double);
+write_coeff(x0, "", "const double acosh_i2_x0", double);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "acosh_i2-f64");
 
 /* atanh(x) piecewise polynomial approximations */
 i = [0, 0.5];

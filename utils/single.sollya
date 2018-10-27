@@ -212,34 +212,6 @@ write_coeffs(p, "const vf_type cbrt_c", "cbrt", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cbrt-f32");
 
-/* asinh(x) f32 */
-f = asinh(x)/x;
-i = [0x1p-58, sqrt(2)/2];
-d = guessdegree(f, i, 0x1p-28);
-d;
-b = [|0,2,4,6,8,10,12,14|];
-c = [|SG...|];
-p = fpminimax(f, b, c, i,
-              relative, floating);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type asinh_c", "asinh", b, c);
-plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "asinh-f32");
-
-/* atanh(x) f32 */
-f = atanh(x)/x;
-f = (x^3/(atanh(x)-x)-3)/x^2;
-i = [0x1p-58, 0.5];
-d = guessdegree(f, i, 0x1p-28);
-d;
-b = [|0,2,4,6,8,10,12|];
-c = [|SG...|];
-p = fpminimax(f, b, c, i,
-              relative, floating);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type atanh_c", "atanh", b, c);
-plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "atanh-f32");
 
 /* sinh(x) f32 for calculation over sinh(x+y) = ...*/
 f = sinh(x);
@@ -314,19 +286,6 @@ write_approx_prec(p, f, i);
 write_coeffs(p, "const vf_type tanh_c", "tanh", b, c);
 plot((p(x)-f(x))/f(x), i,
                        postscriptfile, "tanh-f32");
-
-/* acosh f32 */
-f = acosh(1+x)/sqrt(2*x);
-i = [0x1p-58, 1.0];
-d = guessdegree(f, i, 0x1p-28);
-d;
-b = [|0, ..., 8|];
-c = [|SG...|];
-p = fpminimax(f, b, c, i, relative, floating);
-write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type acosh_c", "acosh", b, c);
-plot((p(x)-f(x))/f(x), i,
-                       postscriptfile, "acosh-f32");
 
 /* rsqrt f32 */
 f= 1.0/sqrt(x);
@@ -449,6 +408,109 @@ write_coeffs(p, "const float cos_c", "cos", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cos-f32-ep");
 
+
+/* asinh(x) f32 */
+f = asinh(x);
+i = [0, sqrt(2)/2];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13, 15|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float asinh_i0_c", "asinh_i0", b, c);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "asinh_i0-f32");
+
+il= sqrt(2)/2;
+ir= 3.0;
+im= dirtyfindzeros(asinh(x)-(0.5*(asinh(il)+asinh(ir))), [il, ir])[0];
+im= round(im, 10, RN);
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = asinh(x+x0);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 15|];
+c = [|49, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "const float asinh_i1_c", "asinh_i1", b, c);
+write_coeff(il, "", "const float asinh_i1_left", single);
+write_coeff(ir, "", "const float asinh_i1_right", single);
+write_coeff(x0, "", "const float asinh_i1_x0", single);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "asinh_i1-f32");
+
+/* acosh f32 */
+i = [0x1p-30, 1.0];
+f = acosh(1+x)/sqrt(2*x);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 7|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float acosh_i0_c", "acosh_i0", b, c);
+plot((p(x)-f(x))/f(x), i,
+                       postscriptfile, "acosh_i0-f32");
+
+il= 2.0;
+ir= 3.5;
+im= dirtyfindzeros(acosh(x)-(0.5*(acosh(il)+acosh(ir))), [il, ir])[0];
+im= round(im, 10, RN);
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = acosh(x+x0);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 10|];
+c = [|49, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "const float acosh_i1_c", "acosh_i1", b, c);
+write_coeff(il, "", "const float acosh_i1_left", single);
+write_coeff(ir, "", "const float acosh_i1_right", single);
+write_coeff(x0, "", "const float acosh_i1_x0", single);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "acosh_i1-f32");
+
+/* atanh(x) piecewise polynomial approximations */
+i = [0, 0.5];
+f = atanh(x);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|1, 3, 5, 7, 9, 11, 13|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec(p, f, i);
+write_coeffs(p, "const float atanh_i0_c", "atanh_i0", b, c);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "atanh_i0-f32");
+
+il= 0.5;
+ir= /* sqrt(2)/2*/ 0.75;
+im= dirtyfindzeros(atanh(x)-(0.5*(atanh(il)+atanh(ir))), [il, ir])[0];
+im= round(im, 10, RN);
+i = [il-im, ir-im];
+i;
+im;
+x0= im;
+f = atanh(x+x0);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 9|];
+c = [|49, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+p;
+write_approx_prec_shift(p, f, i, im);
+write_coeffs(p, "const float atanh_i1_c", "atanh_i1", b, c);
+write_coeff(il, "", "const float atanh_i1_left", single);
+write_coeff(x0, "", "const float atanh_i1_x0", single);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "atanh_i1-f32");
 
 /*
  * Local variables:

@@ -12,7 +12,7 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const int ulp=2;
+    const int ulp=1;
     const int _N=8;
     bool rc=true;
     bool speed_only=false;
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
         std::numeric_limits<double>::max());
 #else
     func_domain<double> d=std::make_pair(
-        2, 3);
+        3.0, 12.0);
         // 1.54, std::numeric_limits<double>::max());
 #endif
     auto us=std::make_shared<ulp_stats>();
