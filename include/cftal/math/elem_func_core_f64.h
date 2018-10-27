@@ -3523,7 +3523,7 @@ atanh_k(arg_t<vf_type> xc)
         };
         vf_type x_i1 = x - atanh_i1_x0;
         vf_type x_i1_2= x_i1 * x_i1;
-        vf_type y_i1 = horner(x_i1, x_i1_2, c);
+        vf_type y_i1 = horner2(x_i1, x_i1_2, c);
         vf_type ye;
         horner_comp_quick(y_i1, ye, x_i1, y_i1, atanh_i1_c0h);
         y_i1 += vf_type(ye+atanh_i1_c0l);
