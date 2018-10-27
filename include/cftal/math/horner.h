@@ -38,10 +38,24 @@ namespace cftal {
         _X
         horner(_X x, const _C (&a)[_N]);
 
-        // a_n in a[0], uses unrolling and assumes xx = x*x
+        // a_n in a[0], xx = x*x
+        // computes the even and odd parts of the polynomial
+        // in parallel
         template <typename _X, typename _C, std::size_t _N>
         _X
-        horner2(_X x, _X xx, const _C (&a)[_N]);
+        horner2(_X x, _X x2, const _C (&a)[_N]);
+
+        // a_n in a[0], x3 = x*x*x, computes 3 parts of the
+        // polynomial in parallel
+        template <typename _X, typename _C, std::size_t _N>
+        _X
+        horner3(_X x, _X x3, const _C (&a)[_N]);
+
+        // a_n in a[0], x3 = x*x*x, computes 4 parts of the
+        // polynomial in parallel
+        template <typename _X, typename _C, std::size_t _N>
+        _X
+        horner4(_X x, _X x2, _X x4, const _C (&a)[_N]);
 
         template <typename _F, typename _C, std::size_t _N>
         d_real<_F>
@@ -280,16 +294,16 @@ cftal::math::horner(_X x, const _C (&a)[_N])
 
 template <typename _X, typename _C, std::size_t _N>
 _X
-cftal::math::horner2(_X x, _X xx, const _C (&a)[_N])
+cftal::math::horner2(_X x, _X x2, const _C (&a)[_N])
 {
-    static_assert(_N > 1, "invalid call to horner2(x, xx, array)");
+    static_assert(_N > 1, "invalid call to horner2(x, x2, array)");
     const _C* pa=a;
     _X r0= _X(pa[0]);
     _X r1= _X(pa[1]);
     const std::size_t _NE= _N & ~(std::size_t(1));
     for (std::size_t i=2; i<_NE; i+=2) {
-        r0= horner(xx, r0, pa[i]);
-        r1= horner(xx, r1, pa[i+1]);
+        r0= horner(x2, r0, pa[i]);
+        r1= horner(x2, r1, pa[i+1]);
     }
     _X r = horner(x, r0, r1);
     if (_N & 1) {
@@ -297,6 +311,74 @@ cftal::math::horner2(_X x, _X xx, const _C (&a)[_N])
     }
     return r;
 }
+
+template <typename _X, typename _C, std::size_t _N>
+_X
+cftal::math::horner3(_X x, _X x3, const _C (&a)[_N])
+{
+    static_assert(_N > 2, "invalid call to horner3(x, x2, array)");
+    const _C* pa=a;
+    _X r0= _X(pa[0]);
+    _X r1= _X(pa[1]);
+    _X r2= _X(pa[2]);
+    const std::size_t _NE= (_N / 3) * 3;
+    for (std::size_t i=3; i<_NE; i+=3) {
+        r0= horner(x3, r0, pa[i]);
+        r1= horner(x3, r1, pa[i+1]);
+        r2= horner(x3, r2, pa[i+2]);
+    }
+    _X r = horner(x, r0, r1, r2);
+    const std::size_t _NR= _N - _NE;
+    switch (_NR) {
+    case 2:
+        r = horner(x, r, pa[_N-2], pa[_N-1]);
+        break;
+    case 1:
+        r = horner(x, r, pa[_N-1]);
+        break;
+    default:
+        break;
+    }
+    return r;
+}
+
+template <typename _X, typename _C, std::size_t _N>
+_X
+cftal::math::horner4(_X x, _X x2, _X x4, const _C (&a)[_N])
+{
+    static_assert(_N > 3, "invalid call to horner4(x, x2, x4, array)");
+    const _C* pa=a;
+    _X r0= _X(pa[0]);
+    _X r1= _X(pa[1]);
+    _X r2= _X(pa[2]);
+    _X r3= _X(pa[3]);
+    const std::size_t _NE= _N & ~std::size_t(3);
+    for (std::size_t i=4; i<_NE; i+=4) {
+        r0= horner(x4, r0, pa[i]);
+        r1= horner(x4, r1, pa[i+1]);
+        r2= horner(x4, r2, pa[i+2]);
+        r3= horner(x4, r3, pa[i+3]);
+    }
+    _X r02 = horner(x2, r0, r2);
+    _X r13 = horner(x2, r1, r3);
+    _X r= horner(x, r02, r13);
+    const std::size_t _NR= _N & std::size_t(3);
+    if (_NR == 3) {
+        _X a = horner(x2, r, pa[_N-2]);
+        _X b = horner(x2, pa[_N-3], pa[_N-1]);
+        r = horner(x, a, b);
+    }
+    if (_NR == 2) {
+        _X a = horner(x2, r, pa[_N-1]);
+        r = horner(x, pa[_N-2], a);
+    }
+    if (_NR == 1) {
+        r = horner(x, r, pa[_N-1]);
+    }
+    return r;
+}
+
+
 
 template <typename _F, typename _C, std::size_t _N>
 __attribute__((optimize("no-unroll-loops")))
