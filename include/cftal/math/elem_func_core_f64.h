@@ -3320,7 +3320,7 @@ acosh_k(arg_t<vf_type> xc)
         };
         vf_type x_i1 = x - acosh_i1_x0;
         vf_type x_i1_2 = x_i1 * x_i1;
-        vf_type y_i1 = horner4(x_i1, x_i1_2, vf_type(x_i1_2*x_i1_2), c);
+        vf_type y_i1 = horner2(x_i1, x_i1_2, c);
         vf_type ye;
         horner_comp_quick(y_i1, ye, x_i1, y_i1, acosh_i1_c0h);
         y_i1 += vf_type(ye+acosh_i1_c0l);
@@ -3376,7 +3376,7 @@ acosh_k(arg_t<vf_type> xc)
         };
         vf_type x_i2 = x - acosh_i2_x0;
         vf_type x_i2_2 = x_i2*x_i2;
-        vf_type y_i2 = horner4(x_i2, x_i2_2, vf_type(x_i2_2*x_i2_2), c);
+        vf_type y_i2 = horner2(x_i2, x_i2_2, c);
         vf_type ye;
         horner_comp_quick(y_i2, ye, x_i2, y_i2, acosh_i2_c0h);
         y_i2 += vf_type(ye+acosh_i2_c0l);
@@ -3523,7 +3523,7 @@ atanh_k(arg_t<vf_type> xc)
         };
         vf_type x_i1 = x - atanh_i1_x0;
         vf_type x_i1_2= x_i1 * x_i1;
-        vf_type y_i1 = horner4(x_i1, x_i1_2, vf_type(x_i1_2*x_i1_2), c);
+        vf_type y_i1 = horner(x_i1, x_i1_2, c);
         vf_type ye;
         horner_comp_quick(y_i1, ye, x_i1, y_i1, atanh_i1_c0h);
         y_i1 += vf_type(ye+atanh_i1_c0l);

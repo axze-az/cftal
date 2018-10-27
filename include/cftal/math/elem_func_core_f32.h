@@ -2664,9 +2664,9 @@ asinh_k(arg_t<vf_type> xc)
         vf_type x_i1 = x - asinh_i1_x0;
         vf_type y_i1 = horner2(x_i1, vf_type(x_i1*x_i1), c);
         vf_type ye;
-        horner_comp(y_i1, ye, x_i1, y_i1,
-                    asinh_i1_c1,
-                    asinh_i1_c0h);
+        horner_comp_quick(y_i1, ye, x_i1, y_i1,
+                          asinh_i1_c1,
+                          asinh_i1_c0h);
         y_i1 += vf_type(ye+asinh_i1_c0l);
         y = _T::sel(sel, y_i1, y);
     }
