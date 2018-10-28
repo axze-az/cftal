@@ -99,6 +99,10 @@ namespace cftal {
             // lgamma(x) == +inf for x>=
             static constexpr double
             lgamma_hi_inf() { return 2.559983327851638715584478e+305; }
+
+            // atan(x) == M_PI/2 for x>=
+            static constexpr double
+            atan_equal_pi_2() { return 5.805358775541311000000000e+15; }
         };
 
         template <>

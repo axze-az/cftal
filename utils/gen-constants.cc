@@ -52,6 +52,13 @@ namespace cftal {
         };
 
         template <typename _T>
+        struct check_pi_half {
+            bool operator()(_T a) const {
+                return a == M_PI_2;
+            }
+        };
+
+        template <typename _T>
         struct check_max_denormal {
             bool operator() (_T a) const  {
                 return false;
@@ -683,6 +690,11 @@ int main(int argc, char** argv)
         dp=std::make_pair(1.0, std::numeric_limits<double>::max());
         gen_constant(dp, "const double rqsrt_", mpfr_rec_sqrt,
                      check_zero<double>(), "zero");
+
+
+        dp=std::make_pair(1.0, std::numeric_limits<double>::max());
+        gen_constant(dp, "const double atan_pi_2", mpfr_atan,
+                     check_pi_half<double>(), "equal");
 
         std::cout << "const double max_denormal= "
                   <<  sig_f64_msk::v.f64() << ";\n\n";
