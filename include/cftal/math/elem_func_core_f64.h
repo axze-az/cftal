@@ -2949,7 +2949,6 @@ atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
     // ay=abs(y)
     // calculate at = atan( min(ax, ay)/max(ax, ay) )
     // ay > ax: at = M_PI_2 - atan;
-    // using fc=func_constants<double>;
     vf_type ax=abs(x);
     vf_type ay=abs(y);
     vf_type p=min(ax, ay), q=max(ax, ay);
@@ -3001,10 +3000,10 @@ atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
     }
 
     // y < 0, x>=0: atan2(y, x) =  -atan(y/x)
-    at = _T::sel(y_lt_0 & (x_s>=0), -dat[0], at);
+    at = _T::sel(y_lt_0 & (x_s>=0.0), -dat[0], at);
 
     // y >= 0, x < 0: atan2(y, x) = PI - atan(y/x)
-    if (any_of(s= (y_s >=0) & x_lt_0)) {
+    if (any_of(s= (y_s >=0.0) & x_lt_0)) {
         vf_type pi_minus_at_h, pi_minus_at_l;
         d_ops::add22(pi_minus_at_h, pi_minus_at_l,
                     ctbl::m_pi[0], ctbl::m_pi[1],
