@@ -34,13 +34,17 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
 
-    func_domain<float> d1=std::make_pair(0.0, 20.0);
-    func_domain<float> d2=std::make_pair(0.0, 100.0);
+    func_domain<float> d1=std::make_pair(-100.0, 100.0);
     us= std::make_shared<ulp_stats>();
     rc &= of_fp_func_2_up_to<
-        float, _N, check_atan2<float> >::v(st, d1, d2, speed_only,
+        float, _N, check_atan2<float> >::v(st, d1, d1, speed_only,
                                            cmp_ulp<float>(ulp, us),
-                                           cnt);
+                                           cnt/2);
+    func_domain<float> d2=std::make_pair(-20.0, 20.0);
+    rc &= of_fp_func_2_up_to<
+        float, _N, check_atan2<float> >::v(st, d2, d2, speed_only,
+                                           cmp_ulp<float>(ulp, us),
+                                           cnt/2);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

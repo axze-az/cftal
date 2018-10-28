@@ -183,6 +183,9 @@ namespace cftal {
 
             static constexpr float
             lgamma_hi_inf() { return 4.085003425410169132208425e+36f; }
+
+            static constexpr float
+            atan_equal_pi_2() { return 6.291977600000000000000000e+07f; }
         };
 
         namespace impl {

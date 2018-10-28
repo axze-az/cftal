@@ -54,7 +54,7 @@ namespace cftal {
         template <typename _T>
         struct check_pi_half {
             bool operator()(_T a) const {
-                return a == M_PI_2;
+                return a == _T(M_PI_2);
             }
         };
 
@@ -691,7 +691,6 @@ int main(int argc, char** argv)
         gen_constant(dp, "const double rqsrt_", mpfr_rec_sqrt,
                      check_zero<double>(), "zero");
 
-
         dp=std::make_pair(1.0, std::numeric_limits<double>::max());
         gen_constant(dp, "const double atan_pi_2", mpfr_atan,
                      check_pi_half<double>(), "equal");
@@ -805,6 +804,10 @@ int main(int argc, char** argv)
         auto lngp=std::make_pair(174.0f, std::numeric_limits<float>::max());
         gen_constant(lngp, "const float lgamma_hi", mpfr_lngamma,
                      check_inf<float>(), "inf");
+
+        dp=std::make_pair(1.0f, std::numeric_limits<float>::max());
+        gen_constant(dp, "const double atan_pi_2", mpfr_atan,
+                     check_pi_half<float>(), "equal");
 
         std::cout << "const float max_denormal= "
                   <<  sig_f32_msk::v.f32() << ";\n\n";

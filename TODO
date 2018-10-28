@@ -1,4 +1,5 @@
 - permutation specializations for v4f64, v8f32, v8u32, v4u64
+- documentation!!!
 
 double
 fmod(double x, double y)
