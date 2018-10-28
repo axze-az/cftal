@@ -12,6 +12,188 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <lzma.h>
+
+#define USE_LZMA 0
+
+namespace cftal { namespace test { namespace lzma {
+
+    enum mode {
+        compress,
+        decompress
+    };
+
+    class handle {
+        lzma_stream _strm;
+        mode _m;
+        handle(const handle& h)=delete;
+        handle& operator=(const handle& h)=delete;
+    public:
+        handle(mode m);
+        ~handle();
+        handle(handle&& op);
+        handle& operator=(handle&& h);
+
+        template <typename _T>
+        void
+        load(std::ifstream& s, std::vector<_T>& v);
+
+        template <typename _T>
+        void
+        store(std::ofstream& s,
+              const std::vector<_T>& v);
+
+    };
+}}}
+
+cftal::test::lzma::handle::handle(mode m)
+    : _strm(LZMA_STREAM_INIT), _m(m)
+{
+    lzma_ret r= LZMA_OK;
+    if (m==mode::decompress) {
+        const std::size_t max_size=64*1024*1024;
+        r=lzma_stream_decoder(&_strm, max_size, LZMA_CONCATENATED);
+        if (r != LZMA_OK) {
+            throw std::runtime_error("decompress oops");
+        }
+    } else if (m==mode::compress) {
+#if 0
+        r=lzma_easy_encoder(&_strm, LZMA_PRESET_DEFAULT, LZMA_CHECK_CRC64);
+#else
+        lzma_mt mt= {0};
+        mt.preset = LZMA_PRESET_DEFAULT;
+        mt.check = LZMA_CHECK_CRC64;
+        mt.threads = std::min(std::max(1u, lzma_cputhreads()), 8u);
+        r=lzma_stream_encoder_mt(&_strm, &mt);
+#endif
+        if (r != LZMA_OK) {
+            throw std::runtime_error("compress oops");
+        }
+    } else {
+        throw std::runtime_error("oops");
+    }
+}
+
+cftal::test::lzma::handle::~handle()
+{
+    lzma_end(&_strm);
+}
+
+cftal::test::lzma::handle::handle(handle&& r)
+    : _strm(r._strm)
+{
+}
+
+cftal::test::lzma::handle&
+cftal::test::lzma::handle::operator=(handle&& r)
+{
+    std::swap(_strm, r._strm);
+    return *this;
+}
+
+template <typename _T>
+void
+cftal::test::lzma::handle::
+load(std::ifstream& f, std::vector<_T>& v)
+{
+    if (_m != mode::decompress)
+        throw std::runtime_error("load , oops");
+    
+    v.clear();
+    // 1 Mbyte input, 32 MByte output
+    std::vector<uint8_t> ibuf(sizeof(_T)*1024*1024, '\0');
+    std::vector<uint8_t> obuf(sizeof(_T)*1024*1024, '\0');
+    lzma_action action=LZMA_RUN;
+
+    _strm.next_out=obuf.data();
+    _strm.avail_out=obuf.size();
+    _strm.avail_in=0;
+    _strm.next_in=ibuf.data();
+
+    while (true) {
+        if (_strm.avail_in ==0 && !f.eof()) {
+            f.read(reinterpret_cast<char*>(ibuf.data()), ibuf.size());
+            std::size_t b=f.gcount();
+            _strm.avail_in=b;
+        }
+        if (f.eof()) {
+            action=LZMA_FINISH;
+        }
+        lzma_ret r=lzma_code(&_strm, action);
+        if (_strm.avail_out == 0 || r == LZMA_STREAM_END) {
+            std::size_t cnt=_strm.avail_out;
+            std::size_t bytes= obuf.size() - cnt;
+            std::size_t entries= bytes / sizeof(_T);
+            std::size_t o= entries*sizeof(_T);
+            if (o != bytes) {
+                throw std::runtime_error("compress error");
+            }
+            v.reserve(v.size() + entries);
+            // insert full entries
+            const _T* ps=reinterpret_cast<const _T*>(obuf.data());
+            for (std::size_t i=0; i<entries; ++i)
+                v.push_back(ps[i]);
+            // v.insert(v.cend(), ps, ps + entries);
+            // tail handling
+            for (std::size_t i=0, j=o; j<bytes; ++j) {
+                obuf[i] = obuf[j];
+            }
+        }
+        if (r != LZMA_OK)
+            break;
+    }
+    v.shrink_to_fit();
+    std::cout << "read " << v.size() << " entries" << std::endl;
+}
+
+template <typename _T>
+void
+cftal::test::lzma::handle::
+store(std::ofstream& f, const std::vector<_T>& v)
+{
+    if (_m != mode::compress)
+        throw std::runtime_error("store , oops");
+
+    const uint8_t* d=reinterpret_cast<const uint8_t*>(v.data());
+    const std::size_t total_bytes=v.size()*sizeof(_T);
+    std::vector<uint8_t> obuf(4*sizeof(_T), '\0');
+
+    lzma_action action = LZMA_RUN;
+
+    const std::size_t input_chunk=1*sizeof(_T);
+    std::size_t bytes = std::min(input_chunk, total_bytes);
+    _strm.next_in=d;
+    _strm.avail_in=bytes;
+    _strm.next_out=obuf.data();
+    _strm.avail_out=obuf.size();
+
+    while (true) {
+        if (_strm.avail_in == 0 && bytes < total_bytes) {
+            std::size_t c=std::min(input_chunk, total_bytes - bytes);
+            bytes += c;
+            _strm.avail_in= c;
+            _strm.next_in = d + bytes;
+        }
+        if (bytes == total_bytes) {
+            action=LZMA_FINISH;
+        }
+        lzma_ret ret = lzma_code(&_strm, action);
+        if (_strm.avail_out == 0 || ret == LZMA_STREAM_END) {
+            size_t write_size = obuf.size() - _strm.avail_out;
+            f.write(reinterpret_cast<const char*>(obuf.data()),
+                    write_size);
+            _strm.next_out = obuf.data();
+            _strm.avail_out = obuf.size();
+        }
+        if (ret != LZMA_OK) {
+            if (ret == LZMA_STREAM_END)
+                break;
+            std::cout << "error: " << ret << std::endl;
+            std::exit(3);
+        }
+    }
+    std::cout << "wrote " << v.size() << " entries" << std::endl;
+}
 
 namespace cftal { namespace test { namespace mpfr_cache {
 
@@ -38,6 +220,8 @@ namespace cftal { namespace test { namespace mpfr_cache {
         // save to to _file_name
         void
         store();
+
+        void dump();
 
         const std::size_t move_treshold= 1<<25;
     public:
@@ -152,6 +336,12 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::load()
     std::ifstream f(_file_name.c_str(), std::ios::binary | std::ios::in);
     if (!f.good())
         return;
+#if USE_LZMA>0
+    std::cout << "reading from " << _file_name << std::endl;
+    lzma::handle h(lzma::decompress);
+    h.load(f, _v);
+    dump();
+#else
     f.seekg(0, std::ios::end);
     std::ifstream::off_type s=f.tellg();
     f.seekg(0);
@@ -160,20 +350,49 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::load()
     using c_t = std::ifstream::char_type;
     std::cout << "reading from " << _file_name << std::endl;
     f.read(reinterpret_cast<c_t*>(_v.data()), s);
+    std::cout << "read " << _v.size() << " entries" << std::endl;
+#endif
 }
 
 template <typename _K, typename _R>
 void
 cftal::test::mpfr_cache::result_cache<_K, _R>::store()
 {
-    std::size_t vs=_v.size(), ms= _m.size(), s=vs+ms;
     move_map_to_vec();
+#if USE_LZMA==0
     if (_save == false)
         return;
+#endif
     std::ofstream f(_file_name.c_str(),
                     std::ios::binary | std::ios::trunc | std::ios::out);
+    if (!f.good())
+        return;
+#if USE_LZMA>0
+    dump();
+    std::cout << "writing " << _v.size()  << " entries to "
+              << _file_name << std::endl;
+    lzma::handle h(lzma::compress);
+    h.store(f, _v);
+#else
+    std::size_t vs=_v.size(), ms= _m.size(), s=vs+ms;
     using c_t = std::ifstream::char_type;
     f.write(reinterpret_cast<const c_t*>(_v.data()), s*sizeof(value_type));
+    std::cout << "wrote " << _v.size()  << " entries to "
+              << _file_name << std::endl;
+#endif
+}
+
+template <typename _K, typename _R>
+void
+cftal::test::mpfr_cache::result_cache<_K, _R>::dump()
+{
+#if USE_LZMA>1
+    for (std::size_t i=0; i<_v.size(); ++i) {
+        std::cout << _v[i].first << ' '
+                  << _v[i].second.first << ' '
+                  << _v[i].second.second << std::endl;
+    }
+#endif
 }
 
 template <typename _K, typename _R>
@@ -241,7 +460,11 @@ std::string
 cftal::test::mpfr_cache::
 file_name(const std::string& a, const std::string& t)
 {
+#if USE_LZMA>0
+    return a+ "-" + t + ".bin.xz";
+#else
     return a+ "-" + t + ".bin";
+#endif
 }
 
 const cftal::test::mpfr_cache::mpfr_result<double>*

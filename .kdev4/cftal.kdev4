@@ -115,7 +115,19 @@ Path=gcc
 Type=GCC
 
 [Launch]
-Launch Configurations=
+Launch Configurations=Launch Configuration 0
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=debug
+Configured Launchers=lldb
+Name=test-erfc-f32
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Configured from ProjectItem=cftal,test,test-erfc-f32
+Project Target=cftal,test,test-erfc-f32
+Working Directory=file:///home/axel/projects/cpplib/cftal/debug/test/
+isExecutable=false
 
 [MakeBuilder]
 Number Of Jobs=16
