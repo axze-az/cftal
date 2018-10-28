@@ -252,7 +252,7 @@ p = fpminimax(f, b, c, i,
 write_approx_prec(p, f, i);
 write_coeffs(p, "const double atan_i0_c", "atan_0", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
-                       postscriptfile, "atan-f64");
+                       postscriptfile, "atan_i0-f64");
 
 il= 0.375;
 ir= 1.0;
