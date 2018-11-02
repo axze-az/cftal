@@ -24,7 +24,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-        // mpfr_cache::use(mpfr_erf, "erf", 0.0f);
+        mpfr_cache::use(mpfr_erf, "erf", 0.0f);
     }
     func_domain<float> d=std::make_pair(-4.0f, 4.0f);
     auto us=std::make_shared<ulp_stats>();
