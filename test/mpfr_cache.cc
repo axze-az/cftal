@@ -14,7 +14,7 @@
 #include <iostream>
 #include <lzma.h>
 
-#define USE_LZMA 0
+#define USE_LZMA 1
 
 namespace cftal { namespace test { namespace lzma {
 
@@ -98,10 +98,9 @@ load(std::ifstream& f, std::vector<_T>& v)
 {
     if (_m != mode::decompress)
         throw std::runtime_error("load , oops");
-    
-    v.clear();
-    // 1 Mbyte input, 32 MByte output
-    std::vector<uint8_t> ibuf(sizeof(_T)*1024*1024, '\0');
+    // v.clear();
+    // 1 Mbyte input
+    std::vector<uint8_t> ibuf(sizeof(uint8_t)*1024*1024, '\0');
     std::vector<uint8_t> obuf(sizeof(_T)*1024*1024, '\0');
     lzma_action action=LZMA_RUN;
 
@@ -110,19 +109,21 @@ load(std::ifstream& f, std::vector<_T>& v)
     _strm.avail_in=0;
     _strm.next_in=ibuf.data();
 
-    while (true) {
+    lzma_ret r=LZMA_OK;
+    do {
         if (_strm.avail_in ==0 && !f.eof()) {
             f.read(reinterpret_cast<char*>(ibuf.data()), ibuf.size());
             std::size_t b=f.gcount();
             _strm.avail_in=b;
+            _strm.next_in=ibuf.data();
         }
         if (f.eof()) {
             action=LZMA_FINISH;
         }
-        lzma_ret r=lzma_code(&_strm, action);
-        if (_strm.avail_out == 0 || r == LZMA_STREAM_END) {
-            std::size_t cnt=_strm.avail_out;
-            std::size_t bytes= obuf.size() - cnt;
+        r=lzma_code(&_strm, action);
+        size_t oa= _strm.avail_out;
+        if (oa == 0 || r == LZMA_STREAM_END) {
+            std::size_t bytes= obuf.size() - oa;
             std::size_t entries= bytes / sizeof(_T);
             std::size_t o= entries*sizeof(_T);
             if (o != bytes) {
@@ -131,17 +132,12 @@ load(std::ifstream& f, std::vector<_T>& v)
             v.reserve(v.size() + entries);
             // insert full entries
             const _T* ps=reinterpret_cast<const _T*>(obuf.data());
-            for (std::size_t i=0; i<entries; ++i)
-                v.push_back(ps[i]);
-            // v.insert(v.cend(), ps, ps + entries);
-            // tail handling
-            for (std::size_t i=0, j=o; j<bytes; ++j) {
-                obuf[i] = obuf[j];
-            }
+            const _T* pe=ps + entries;
+            v.insert(v.cend(), ps, pe);
+            _strm.next_out=obuf.data();
+            _strm.avail_out=obuf.size();
         }
-        if (r != LZMA_OK)
-            break;
-    }
+    } while (r == LZMA_OK);
     v.shrink_to_fit();
     std::cout << "read " << v.size() << " entries" << std::endl;
 }
@@ -153,45 +149,27 @@ store(std::ofstream& f, const std::vector<_T>& v)
 {
     if (_m != mode::compress)
         throw std::runtime_error("store , oops");
-
     const uint8_t* d=reinterpret_cast<const uint8_t*>(v.data());
     const std::size_t total_bytes=v.size()*sizeof(_T);
-    std::vector<uint8_t> obuf(4*sizeof(_T), '\0');
+    std::vector<uint8_t> obuf(1024*1024*sizeof(uint8_t), '\0');
 
-    lzma_action action = LZMA_RUN;
-
-    const std::size_t input_chunk=1*sizeof(_T);
-    std::size_t bytes = std::min(input_chunk, total_bytes);
+    lzma_action action = LZMA_FINISH;
     _strm.next_in=d;
-    _strm.avail_in=bytes;
+    _strm.avail_in=total_bytes;
     _strm.next_out=obuf.data();
     _strm.avail_out=obuf.size();
 
-    while (true) {
-        if (_strm.avail_in == 0 && bytes < total_bytes) {
-            std::size_t c=std::min(input_chunk, total_bytes - bytes);
-            bytes += c;
-            _strm.avail_in= c;
-            _strm.next_in = d + bytes;
-        }
-        if (bytes == total_bytes) {
-            action=LZMA_FINISH;
-        }
-        lzma_ret ret = lzma_code(&_strm, action);
-        if (_strm.avail_out == 0 || ret == LZMA_STREAM_END) {
-            size_t write_size = obuf.size() - _strm.avail_out;
-            f.write(reinterpret_cast<const char*>(obuf.data()),
-                    write_size);
+    lzma_ret r= LZMA_OK;
+    do {
+        r = lzma_code(&_strm, action);
+        size_t oa=_strm.avail_out;
+        if (oa == 0 || r == LZMA_STREAM_END) {
+            size_t ws = obuf.size() - oa;
+            f.write(reinterpret_cast<const char*>(obuf.data()), ws);
             _strm.next_out = obuf.data();
             _strm.avail_out = obuf.size();
         }
-        if (ret != LZMA_OK) {
-            if (ret == LZMA_STREAM_END)
-                break;
-            std::cout << "error: " << ret << std::endl;
-            std::exit(3);
-        }
-    }
+    } while (r == LZMA_OK);
     std::cout << "wrote " << v.size() << " entries" << std::endl;
 }
 
@@ -324,7 +302,7 @@ move_map_to_vec()
     _m.clear();
     std::sort(std::begin(_v), std::end(_v),
               [](const value_type& a, const value_type& b)->bool {
-                  return a < b;
+                  return a.first < b.first;
               });
     _save = true;
 }
@@ -359,10 +337,8 @@ void
 cftal::test::mpfr_cache::result_cache<_K, _R>::store()
 {
     move_map_to_vec();
-#if USE_LZMA==0
     if (_save == false)
         return;
-#endif
     std::ofstream f(_file_name.c_str(),
                     std::ios::binary | std::ios::trunc | std::ios::out);
     if (!f.good())

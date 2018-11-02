@@ -24,7 +24,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-        // mpfr_cache::use(mpfr_exp, "exp", 0.0);
+        mpfr_cache::use(mpfr_exp, "exp", 0.0);
         std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
             append_filename(test_data_dir, "../../test/data/exp.testdata");

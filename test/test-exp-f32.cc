@@ -24,7 +24,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     } else {
-        // mpfr_cache::use(mpfr_exp, "exp", 0.0f);
+        mpfr_cache::use(mpfr_exp, "exp", 0.0f);
     }
     exec_stats st(_N);
     func_domain<float> d=std::make_pair(-104.0f, 89.0f);
