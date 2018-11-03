@@ -74,6 +74,7 @@ set (TEST_HDRS
     ./include/cftal/test/f32_f64.h
     ./include/cftal/test/check_exp2_mx2.h
     ./include/cftal/test/of_vec_v8.h
+    ./include/cftal/test/stream_save_fmt.h
 )
 
 find_package(Boost REQUIRED)
