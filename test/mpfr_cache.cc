@@ -5,6 +5,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 #include <cftal/test/mpfr_cache.h>
+#include <cftal/test/stream_save_fmt.h>
 #include <cftal/cast.h>
 #include <map>
 #include <vector>
@@ -14,41 +15,6 @@
 #include <iostream>
 #include <iomanip>
 #include <lzma.h>
-
-namespace cftal { namespace test {
-
-    template <typename _C>
-    class __save_fmt {
-        std::basic_ios<_C>* _p;
-        std::basic_ios<_C> _s;
-    public:
-        __save_fmt(const __save_fmt&) = delete;
-        __save_fmt& operator=(const __save_fmt&) = delete;
-
-        __save_fmt(std::basic_ios<_C>& s) : _p(&s), _s(nullptr)  {
-            _s.copyfmt(s);
-        }
-        __save_fmt(__save_fmt&& r) : _s(std::move(r._s)), _p(std::move(r._p)) {
-            r._p = nullptr;
-        }
-        __save_fmt& operator=(__save_fmt&& r) {
-            _s = std::move(r._s);
-            _p = r._p;
-            r._p = nullptr;
-        }
-        ~__save_fmt() {
-            if (_p != nullptr)
-                _p->copyfmt(_s);
-        }
-    };
-
-    template <typename _C>
-    __save_fmt<_C> save_fmt(std::basic_ios<_C>& s) {
-        return __save_fmt<_C>(s);
-    }
-
-}}
-
 
 namespace cftal { namespace test { namespace lzma {
 
@@ -143,8 +109,7 @@ load(std::ifstream& f, std::vector<_T>& v)
 
     lzma_ret r=LZMA_OK;
 
-    // guess the compression ratio: 0.25
-    auto fmt=save_fmt(std::cout);
+    auto fmt=stream_save_fmt(std::cout);
     std::cout << std::fixed << std::setprecision(2);
 
     enum state {
@@ -223,7 +188,7 @@ store(std::ofstream& f, const std::vector<_T>& v)
     lzma_ret r= LZMA_OK;
     double t=total_bytes + sizeof(entries);
     t = 100.0/double(t);
-    auto fmt=save_fmt(std::cout);
+    auto fmt=stream_save_fmt(std::cout);
     std::cout << std::fixed << std::setprecision(2);
 
     do {
