@@ -1009,10 +1009,16 @@ __reduce_exp_arg(vf_type& xrh,
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     kf = rint(vf_type(x * ctbl::m_1_ln2[0]));
+#if 0
+    d_ops::add12cond(xrh, xrl,
+                     x - kf * ctbl::m_ln2_cw[0],
+                     kf * (-ctbl::m_ln2_cw[1]));
+#else
     vf_type hi = x - kf * ctbl::m_ln2_cw[0];
     xrh = hi - kf * ctbl::m_ln2_cw[1];
     vf_type dx = hi-xrh;
     xrl = dx - kf * ctbl::m_ln2_cw[1];
+#endif
 }
 
 template <typename _T>
