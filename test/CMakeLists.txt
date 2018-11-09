@@ -1,6 +1,7 @@
 project(cftal-tests)
 
 set (TEST_SRCS
+  env_var.cc
   div.cc
   rcp_div_32.cc
   rcp_div_64.cc
@@ -75,6 +76,7 @@ set (TEST_HDRS
     ./include/cftal/test/check_exp2_mx2.h
     ./include/cftal/test/of_vec_v8.h
     ./include/cftal/test/stream_save_fmt.h
+    ./include/cftal/test/env_var.h
 )
 
 find_package(Boost REQUIRED)

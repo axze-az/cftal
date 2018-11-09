@@ -6,6 +6,7 @@
 //
 #include <cftal/test/mpfr_cache.h>
 #include <cftal/test/stream_save_fmt.h>
+#include <cftal/test/env_var.h>
 #include <cftal/cast.h>
 #include <map>
 #include <vector>
@@ -569,6 +570,9 @@ void
 cftal::test::mpfr_cache::
 use(f1_t f, const std::string& fn, double v)
 {
+    if (env_use_cache()==false)
+        return;
+
     f1_64_entries.insert(std::make_pair(f, f1_64_cache_entry(fn.c_str())));
     static_cast<void>(v);
 }
@@ -577,6 +581,9 @@ void
 cftal::test::mpfr_cache::
 use(f1_t f, const std::string& fn, float v)
 {
+    if (env_use_cache()==false)
+        return;
+
     f1_32_entries.insert(std::make_pair(f, f1_32_cache_entry(fn.c_str())));
     static_cast<void>(v);
 }

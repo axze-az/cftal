@@ -5,20 +5,21 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 #include "cftal/test/of_math_funcs.h"
+#include "cftal/test/env_var.h"
 #include <cftal/fenv.h>
 #include <cftal/constants.h>
 #include <experimental/filesystem>
 // #include <iostream>
-#include <cstdlib>
+// #include <cstdlib>
 #include <fstream>
 #include <sstream>
 
 std::size_t
 cftal::test::update_cnt(std::size_t cnt)
 {
-    const char* p= std::getenv("CFTAL_DEV");
-    if (p!=nullptr)
+    if (env_faster_tests()) {
         return cnt >> 4;
+    }
     return cnt;
 }
 
