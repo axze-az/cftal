@@ -980,11 +980,7 @@ exp_k(arg_t<vf_type> xc)
 {
     vf_type xrh, xrl, kf;
     __reduce_exp_arg(xrh, xrl, kf, xc);
-    vf_type y;
-    if (_EXP_M1==false)
-        y=__pow_exp_k(xrh, xrl, kf, nullptr);
-    else
-        y=__exp_k<_EXP_M1>(xrh, xrl, kf);
+    vf_type y=__exp_k<_EXP_M1>(xrh, xrl, kf);
     return y;
 }
 
