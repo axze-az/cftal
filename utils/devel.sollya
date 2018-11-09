@@ -7,6 +7,20 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
+/* a simple polynomial for higher precision exp f64 */
+f = exp(x);
+i = [-log(2)/2, log(2)/2];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, ..., 13|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double pow_exp_c", "exp", b, c);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "pow-exp-poly-f64");
+
+quit;
+
 /* cos(x) f64 */
 i = [0x1p-58, pi/4];
 f = cos(x);

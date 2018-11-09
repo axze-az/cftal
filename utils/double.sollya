@@ -63,6 +63,18 @@ write_coeffs(p, "const double exp_c", "exp", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-poly-f64");
 // implementpoly(p, i, 0x1p-53, DD, "exp_poly_k", "expn.c");
 
+/* a simple polynomial for higher precision exp f64 */
+f = exp(x);
+i = [-log(2)/2, log(2)/2];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|0, ..., 13|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double pow_exp_c", "exp", b, c);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "pow-exp-poly-f64");
+
 /* expm1(x) f64 */
 f= 6*((x*(exp(x)+1)/(exp(x)-1))-2)/(x^2);
 i = [0x1p-512, log(2)/2];

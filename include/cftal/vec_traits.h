@@ -110,6 +110,7 @@ namespace cftal {
             using hvf_type = vec<double, _N>;
             using vmf_type = typename vf_type::mask_type;
             using vi_type = vec<int32_t, _N>;
+            using vu_type = vec<uint32_t, _N>;
             using vmi_type = typename vi_type::mask_type;
 
             using dvf_type = d_real<vf_type>;

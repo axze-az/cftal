@@ -364,6 +364,14 @@ namespace cftal {
                 static __m128 v(__m128 a) {
                     return v(a, a);
                 }
+#if defined (__AVX__)
+                static __m256 v(__m256 a, __m256 b) {
+                    return _mm256_shuffle_ps(a, b, m);
+                }
+                static __m256 v(__m256 a) {
+                    return v(a, a);
+                }
+#endif
             };
 
             template <unsigned _P0, unsigned _P1,

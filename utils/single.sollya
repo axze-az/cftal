@@ -42,6 +42,18 @@ write_approx_prec(p, f, i);
 write_coeffs(p, "const vf_type exp_c", "exp", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-f32");
 
+/* a simple polynomial for higher precision exp f32 */
+f = exp(x);
+i = [-log(2)/2, log(2)/2];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|0, ..., 8|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float pow_exp_c", "pow_exp", b, c);
+plot((p(x)-f(x))/f(x), i, postscriptfile, "pow-exp-f32");
+
 /* expm1(x) f32 */
 f= 6*((x*(exp(x)+1)/(exp(x)-1))-2)/(x^2);
 p = fpminimax(f, [|2, 4 |], [|SG...|], [0x1p-512, log(2)/2], 1.0,
