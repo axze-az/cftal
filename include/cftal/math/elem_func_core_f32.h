@@ -897,9 +897,10 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 
     vf_type x2= xrh*xrh;
     static const float ci[]={
-        exp_c7, exp_c6, exp_c5, exp_c4, exp_c3, exp_c2
+        exp_c7, exp_c6, exp_c5, exp_c4, exp_c3
     };
     vf_type y= horner2(xrh, x2, ci);
+    y=horner(xrh, y, exp_c2);
     y = y* x2;
     vf_type ye;
     d_ops::add12(y, ye, xrh, y);
