@@ -460,6 +460,14 @@ namespace cftal {
             vi_type cvt_f_to_i(const vf_type& f) {
                 return cvt<vi_type>(f);
             }
+
+            static
+            vi2_type cvt_f_to_i2(const vf_type& f) {
+                vi_type t=cvt<vi_type>(f);
+                vi2_type r=combine_even_odd(t, t);
+                return r;
+            }
+
             // including rounding towards zero
             static
             vi_type cvt_rz_f_to_i(const vf_type& f) {
