@@ -83,12 +83,12 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -fexpensive-optimizations")
-        #set (CMAKE_CXX_FLAGS_RELEASE
-        #    "${CMAKE_CXX_FLAGS_RELEASE} -fsched-pressure")
-        #set (CMAKE_CXX_FLAGS_RELEASE
-        #    "${CMAKE_CXX_FLAGS_RELEASE} -fschedule-insns")
-        #set (CMAKE_CXX_FLAGS_RELEASE
-        #    "${CMAKE_CXX_FLAGS_RELEASE} -fschedule-insns2")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fsched-pressure")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fschedule-insns")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -fschedule-insns2")
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -finline-functions")
         #set (CMAKE_CXX_FLAGS_RELEASE
