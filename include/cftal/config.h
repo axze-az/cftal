@@ -27,7 +27,7 @@
 #endif
 
 #if defined (__clang__)
-#if defined (__FMA__)
+#if defined (__FMA__) || defined (__FMA4__)
 #define FP_FAST_FMA 1
 #define FP_FAST_FMAF 1
 #endif
