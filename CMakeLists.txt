@@ -51,7 +51,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # disable some warnings
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-infinite-recursion")
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffp-contract=on")
     endif()
     # release
     set (CMAKE_CXX_FLAGS_RELEASE
