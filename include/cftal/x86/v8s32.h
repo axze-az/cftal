@@ -56,7 +56,7 @@ namespace cftal {
     };
 
     template <>
-    struct is_vec_specialized<int32_t, 8> : public std::true_type {};
+    struct is_vec_specialized<vec<int32_t, 8> > : public std::true_type {};
 
     template <>
     struct mem< vec<int32_t, 8> > {

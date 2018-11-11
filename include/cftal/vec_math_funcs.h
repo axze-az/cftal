@@ -27,12 +27,12 @@ namespace cftal {
             constexpr bool
             fast() {
 #if 0
-                bool r=(is_vec_specialized<double, _N>::value);
+                bool r=(is_vec_specialized<vec<double, _N> >::value);
                 return r;
 #else
-                bool r=(is_vec_specialized<double, _N>::value ||
-                       (is_vec_specialized<double, _N/2>::value /* &&
-                        is_vec_specialized<int32_t, _N>::value*/));
+                bool r=(is_vec_specialized<vec<double, _N> >::value ||
+                       (is_vec_specialized<vec<double, _N/2> >::value /* &&
+                        is_vec_specialized<vec<int32_t, _N> >::value*/));
 #if defined (__tune_btver2__) || defined (__tune_bdver3__)
                 r &= _N > 2 ? false : true;
 #endif
@@ -46,9 +46,9 @@ namespace cftal {
             static
             constexpr bool
             fast() {
-                bool r=(is_vec_specialized<float, _N>::value ||
-                       (is_vec_specialized<float, _N/2>::value /*&&
-                        is_vec_specialized<int32_t, _N/2>::value */));
+                bool r=(is_vec_specialized<vec<float, _N> >::value ||
+                       (is_vec_specialized<vec<float, _N/2> >::value /*&&
+                        is_vec_specialized<vec<int32_t, _N/2> >::value */));
 #if defined (__SSE__)
                 // r &= _N != 2;
 #endif
