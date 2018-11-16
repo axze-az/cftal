@@ -23,7 +23,7 @@ int main(int argc, char** argv)
         speed_only=true;
         cnt *=8;
     }
-    exec_stats st(_N);
+    exec_stats<_N> st;
     func_domain<float> d=std::make_pair(-46.0f, 39.0f);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<

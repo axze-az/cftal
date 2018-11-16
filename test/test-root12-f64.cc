@@ -27,7 +27,7 @@ int main(int argc, char** argv)
                                           std::numeric_limits<double>::max());
     // dd=std::make_pair(0.125, 1.0);
     auto us=std::make_shared<ulp_stats>();
-    exec_stats d_st(_N);
+    exec_stats<_N> d_st;
     rc &= of_fp_func_up_to<
         double, _N, check_root12<double> >::v(d_st, dd, speed_only,
                                               cmp_ulp<double>(ulp, us),

@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     }
     func_domain<float> d=std::make_pair(-1.0f, 1.0f);
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         float, _N, check_atanh<float> >::v(st, d, speed_only,
                                            cmp_ulp<float>(ulp, us),

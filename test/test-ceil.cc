@@ -13,14 +13,14 @@ int main()
     std::cout << std::setprecision(18);
     std::cerr << std::setprecision(18);
     std::cout << "testing ceil vXf64" << std::endl;
-    exec_stats d_st(8);
+    exec_stats<8> d_st;
     bool rd=of_fp_func_up_to<
         double, 8, check_ceil<double> >::v(d_st);
     if (rd==false)
         std::cerr << "double test failed" << std::endl;
     std::cout << d_st << std::endl;
     std::cout << "testing ceil vXf32" << std::endl;
-    exec_stats f_st(16);
+    exec_stats<16> f_st;
     bool rf=of_fp_func_up_to<
         float, 16, check_ceil<float> >::v(f_st);
     if (rf==false)

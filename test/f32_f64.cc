@@ -35,6 +35,47 @@ float cftal::test::make_float(unsigned sgn, unsigned exp, uint32_t sig)
     return t._d;
 }
 
+void
+cftal::test::ulp_stats::
+inc(int32_t ulp, bool is_nan,
+    bool nan_not_calculated, bool nan_unexpected)
+{
+    ++_cnt;
+    uint32_t au= ulp != 0 ? 1 : 0;
+    _ulps += au;
+    if (is_nan)
+        ++_nans;
+    if (nan_not_calculated| nan_unexpected) {
+        if (nan_not_calculated)
+            ++_nans_not_calculated;
+        if (nan_unexpected)
+            ++_nans_unexpected;
+    } else {
+        int32_t aulp=std::abs(ulp);
+        int32_t rulp;
+        if (likely(aulp <= lin_max)) {
+            // std::numeric_limits<int32_t>::min() also lands here
+            rulp = ulp;
+        } else {
+            // round up/down to the next power of 2
+            uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1));
+            rulp= 1U << log2_u;
+            rulp= ulp < 0 ? -rulp : rulp;
+        }
+        std::scoped_lock<std::mutex> _lck(_mtx_devs);
+        _devs[rulp] += 1;
+    }
+}
+
+void
+cftal::test::ulp_stats::
+faithful(bool v)
+{
+    std::scoped_lock<std::mutex> _lck(_mtx_faithful);
+    _faithful.first = true;
+    if (_faithful.second == true)
+        _faithful.second =v;
+}
 
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const ulp_stats& us)

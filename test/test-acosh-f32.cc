@@ -33,7 +33,7 @@ int main(int argc, char** argv)
         // 1.54, std::numeric_limits<float>::max());
 #endif
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         float, _N, check_acosh<float> >::v(st, d,
                                            speed_only,

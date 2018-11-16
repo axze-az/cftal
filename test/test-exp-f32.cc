@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     } else {
         mpfr_cache::use(mpfr_exp, "exp", 0.0f);
     }
-    exec_stats st(_N);
+    exec_stats<_N> st;
     func_domain<float> d=std::make_pair(-104.0f, 89.0f);
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<

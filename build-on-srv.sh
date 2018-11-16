@@ -1,4 +1,4 @@
 #! /bin/sh
 
-ssh srv "cd projects/cpplib && svn update && cd cftal/build && nice -19 make -j16"
+ssh srv "cd projects/cpplib && svn update && cd cftal/gcc8 && nice -19 make -j16"
 

@@ -305,7 +305,7 @@ int main_exp(int argc, char** argv)
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
     d=std::make_pair(-16.5f, 10.4f);
-    exec_stats st(_N);
+    exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         ftype, _N, check_half_exp<ftype> >::v(st, d, speed_only,
@@ -336,7 +336,7 @@ int main_exp2(int argc, char** argv)
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
     d=std::make_pair(-24.5f, 15.1f);
-    exec_stats st(_N);
+    exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         ftype, _N, check_half_exp2<ftype> >::v(st, d, speed_only,
@@ -367,7 +367,7 @@ int main_exp10(int argc, char** argv)
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
     d=std::make_pair(-7.3f, 4.6f);
-    exec_stats st(_N);
+    exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         ftype, _N, check_half_exp10<ftype> >::v(st, d, speed_only,
@@ -401,7 +401,7 @@ int main_log(int argc, char** argv)
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
     d = std::make_pair(-0x1p-25f, 0x1.1p16f);
-    exec_stats st(_N);
+    exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         ftype, _N, check_half_log10<ftype> >::v(st, d, speed_only,
@@ -435,7 +435,7 @@ int main_log2(int argc, char** argv)
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
     d = std::make_pair(-0x1p-25f, 0x1.1p16f);
-    exec_stats st(_N);
+    exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         ftype, _N, check_half_log2<ftype> >::v(st, d, speed_only,
@@ -469,7 +469,7 @@ int main_log10(int argc, char** argv)
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
     d = std::make_pair(-0x1p-25f, 0x1.1p16f);
-    exec_stats st(_N);
+    exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         ftype, _N, check_half_log10<ftype> >::v(st, d, speed_only,
@@ -498,7 +498,7 @@ int main_sin(int argc, char** argv)
     }
     auto dp=std::make_pair(-0x1p16f, 0x1p16f);
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         float, _N, check_half_sin<float> >::v(st, dp, speed_only,
                                               cmp_ulp<float>(ulp, us),
@@ -526,7 +526,7 @@ int main_cos(int argc, char** argv)
     }
     auto dp=std::make_pair(-0x1p16f, 0x1p16f);
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         float, _N, check_half_cos<float> >::v(st, dp, speed_only,
                                               cmp_ulp<float>(ulp, us),
@@ -555,7 +555,7 @@ int main_tan(int argc, char** argv)
     auto dp=std::make_pair(-0x1p16f, 0x1p16f);
     // auto dp=std::make_pair(M_PI/2, M_PI/2);
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         float, _N, check_half_tan<float> >::v(st, dp, speed_only,
                                               cmp_ulp<float>(ulp, us),
@@ -585,7 +585,7 @@ int main_rsqrt(int argc, char** argv)
                                         // std::numeric_limits< float >::max()
                                         0x1p16f);
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         float, _N, check_rsqrt<float> >::v(st, d, speed_only,
                                            cmp_ulp<float>(ulp, us),
@@ -613,7 +613,7 @@ int main_sqrt(int argc, char** argv)
                                         // std::numeric_limits< float >::max()
                                         0x1p16f);
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         float, _N, check_sqrt<float> >::v(st, d, speed_only,
                                           cmp_ulp<float>(ulp, us),

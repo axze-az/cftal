@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     const double mx=27.25;
     func_domain<double> d=std::make_pair(-mx, mx);
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         double, _N, check_erfc<double> >::v(st, d, speed_only,
                                             cmp_ulp<double>(ulp, us),

@@ -14,12 +14,12 @@ int main()
     std::cerr << std::setprecision(18);
     std::cout << "testing rint vXf64" << std::endl;
     const int DN=8;
-    exec_stats d_st(DN);
+    exec_stats<DN> d_st;
     bool rd=of_fp_func_up_to<
         double, DN, check_rint<double> >::v(d_st);
     std::cout << d_st << std::endl;
 
-    exec_stats st2(DN);
+    exec_stats<DN> st2;
     auto dp2=std::make_pair(-0x1p34, 0x1p34);
     rd &= of_fp_func_up_to<
         double, DN, check_rint<double> >::v(st2, dp2);
@@ -28,7 +28,7 @@ int main()
         std::cerr << "double test failed" << std::endl;
 
     std::cout << "testing rint vXf32" << std::endl;
-    exec_stats f_st(16);
+    exec_stats<16> f_st;
     bool rf=of_fp_func_up_to<
         float, 16, check_rint<float> >::v(f_st);
     if (rf==false)

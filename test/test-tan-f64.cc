@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     auto dp=std::make_pair(-std::numeric_limits<double>::max(),
                            std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         double, _N, check_tan<double> >::v(st, dp, speed_only,
                                            cmp_ulp<double>(ulp, us),
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
 
-    exec_stats st2(_N);
+    exec_stats<_N> st2;
     auto dp2=std::make_pair(-0x1p28, 0x1p28);
     auto us2=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<

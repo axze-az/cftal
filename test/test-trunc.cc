@@ -16,7 +16,7 @@ int main()
 
     const int _DN=8;
     const int _FN=16;
-    exec_stats d_st(_DN);
+    exec_stats<_DN> d_st;
 
     bool rd=of_fp_func_up_to<
         double, _DN, cftal::test::check_trunc<double> >::v(d_st);
@@ -25,7 +25,7 @@ int main()
     std::cout << d_st << std::endl;
     std::cout << "testing trunc vXf32" << std::endl;
 
-    exec_stats f_st(_FN);
+    exec_stats<_FN> f_st;
     bool rf=cftal::test::of_fp_func_up_to<
         float, _FN, cftal::test::check_trunc<float> >::v(f_st);
     if (rf==false)

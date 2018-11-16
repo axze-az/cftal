@@ -14,7 +14,10 @@
 #include <cftal/select.h>
 #include <cftal/bitops.h>
 #include <iostream>
+#include <sstream>
 #include <map>
+#include <mutex>
+#include <atomic>
 
 namespace cftal {
     namespace test {
@@ -28,15 +31,17 @@ namespace cftal {
 
         struct ulp_stats {
             // count of operations with nonzero ulp
-            uint64_t _ulps;
+            std::atomic<uint64_t> _ulps;
             // count of nan
-            uint64_t _nans;
+            std::atomic<uint64_t> _nans;
             // count of unexpected nans
-            uint64_t _nans_unexpected;
+            std::atomic<uint64_t> _nans_unexpected;
             // count of not calculated nans
-            uint64_t _nans_not_calculated;
+            std::atomic<uint64_t> _nans_not_calculated;
             // operation count
-            uint64_t _cnt;
+            std::atomic<uint64_t> _cnt;
+            // mutex protecting _devs;
+            std::mutex _mtx_devs;
             // deviations of x ulp's n times, deviations larger/smaller
             // than lin_max are grouped together into ranges (2^(n-1), 2^n]
             // where 2^(n-1) < x <= 2^n if x positive ....
@@ -44,6 +49,8 @@ namespace cftal {
             static_assert((lin_max & (lin_max-1))==0,
                           "lin_max must be a power of 2");
             std::map<int32_t, uint64_t> _devs;
+            // mutex protecting _faithful
+            std::mutex _mtx_faithful;
             // faithfully rounded if first=true and second=true
             std::pair<bool, bool> _faithful;
             // constructor.
@@ -51,43 +58,19 @@ namespace cftal {
                 : _ulps(0), _nans(0),
                   _nans_unexpected(0),
                   _nans_not_calculated(0),
-                  _cnt(0), _faithful(false, true) {};
+                  _cnt(0),
+                  _mtx_devs(),
+                  _devs(),
+                  _mtx_faithful(),
+                  _faithful(false, true) {};
             // inrecrement the _ulps, ...
             void inc(int32_t ulp,
                      bool is_nan,
                      bool nan_not_calculated,
-                     bool nan_unexpected) {
-                ++_cnt;
-                uint32_t au= ulp != 0 ? 1 : 0;
-                _ulps += au;
-                if (is_nan)
-                    ++_nans;
-                if (nan_not_calculated| nan_unexpected) {
-                    if (nan_not_calculated)
-                        ++_nans_not_calculated;
-                    if (nan_unexpected)
-                        ++_nans_unexpected;
-                } else {
-                    int32_t aulp=std::abs(ulp);
-                    if (likely(aulp <= lin_max)) {
-                        // std::numeric_limits<int32_t>::min() also lands here
-                        _devs[ulp] += 1;
-                    } else {
-                        // round up/down to the next power of 2
-                        uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1));
-                        int32_t rulp= 1U << log2_u;
-                        rulp= ulp < 0 ? -rulp : rulp;
-                        _devs[rulp] += 1;
-                    }
-                }
-            }
+                     bool nan_unexpected);
 
             // set the faithful rounding values
-            void faithful(bool v) {
-                _faithful.first = true;
-                if (_faithful.second == true)
-                    _faithful.second =v;
-            }
+            void faithful(bool v);
         };
 
         std::ostream& operator<<(std::ostream& s, const ulp_stats& us);
@@ -304,17 +287,23 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
         const _T& ai= *b;
         if (cmp_elems(a0, ai)==false) {
             if (verbose) {
-                std::cerr << msg << " element " << i
-                          << " not equal to element 0 " << ai << " expected: "
-                          << a0 << std::endl;
+                std::ostringstream s;
+                s.copyfmt(std::cerr);
+                s << msg << " element " << i
+                  << " not equal to element 0 " << ai << " expected: "
+                  << a0 << std::endl;
+                std::cerr << s.str();
             }
             r = false;
         }
     }
     if (cmp(a0, expected) == false) {
         if (verbose) {
-            std::cerr << msg << " failed: " << a0 << " expected: "
-                      << expected << std::endl;
+            std::ostringstream s;
+            s.copyfmt(std::cerr);
+            s << msg << " failed: " << a0 << " expected: "
+              << expected << std::endl;
+            std::cerr << s.str();
         }
         r = false;
     }
@@ -342,8 +331,11 @@ bool cftal::test::check(const _T(&a)[_N],
         _T ai=*b;
         if (cmp(ai, ei) == false) {
             if (verbose) {
-                std::cerr << msg << " failed: " << ai << " expected: "
-                          << ei << std::endl;
+                std::ostringstream s;
+                s.copyfmt(std::cerr);
+                s << msg << " failed: " << ai << " expected: "
+                  << ei << std::endl;
+                std::cerr << s.str();
             }
             r = false;
         }
@@ -380,11 +372,14 @@ cftal::test::check(const std::pair<vec<_I, _N>, vec<_T, _N> >& vr,
         auto ri=std::make_pair(vir[i], vtr[i]);
         if (cmp(ri, exi) == false) {
             if (verbose) {
-                std::cerr << msg << " failed: "
-                          << ri.first << ' ' << ri.second
-                          << " expected: "
-                          << exi
-                          << std::endl;
+                std::ostringstream s;
+                s.copyfmt(std::cerr);
+                s << msg << " failed: "
+                  << ri.first << ' ' << ri.second
+                  << " expected: "
+                  << exi
+                  << std::endl;
+                std::cerr << s.str();
             }
             r = false;
         }

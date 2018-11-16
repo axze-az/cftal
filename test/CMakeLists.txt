@@ -77,6 +77,7 @@ set (TEST_HDRS
     ./include/cftal/test/of_vec_v8.h
     ./include/cftal/test/stream_save_fmt.h
     ./include/cftal/test/env_var.h
+    ./include/cftal/test/work_queue.h
 )
 
 find_package(Boost REQUIRED)
@@ -107,6 +108,7 @@ find_file(HDRLZMA lzma.h REQUIRED HINTS /usr/local/lib)
 if (HDRLZMA)
     message(${HDRLZMA})
 endif()
+find_package(Threads REQUIRED)
 #find_library(LIBSQLITE3 sqlite3 REQUIRED)
 #if (LIBSQLITE3)
 #    message(${LIBSQLITE3})
@@ -119,6 +121,7 @@ endif()
 function(target_add_mpfr_libs arg1)
     target_link_libraries(${arg1} ${LIBMPFR})
     target_link_libraries(${arg1} ${LIBGMP})
+    target_link_libraries(${arg1} Threads::Threads)
 endfunction()
 
 add_library(cftal-test SHARED ${TEST_SRCS})

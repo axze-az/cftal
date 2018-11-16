@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     }
     // func_domain<double> d=std::make_pair(-1.0, 1.0);
     func_domain<double> d=std::make_pair(-17.0, 310.0);
-    exec_stats st(_N);
+    exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
         double, _N, check_exp10m1<double> >::v(st, d, speed_only,

@@ -22,11 +22,11 @@ namespace cftal {
         bool test_f16_to_f32();
         bool test_f32_to_f16();
 
-        template <std::size_t _N>
-        bool test_cvt_f16_f32(exec_stats& st);
+        template <std::size_t _N, std::size_t _M>
+        bool test_cvt_f16_f32(exec_stats<_M>& st);
 
-        template <std::size_t _N>
-        bool test_cvt_f32_f16(exec_stats& st);
+        template <std::size_t _N, std::size_t _M>
+        bool test_cvt_f32_f16(exec_stats<_M>& st);
 
     }
 }
@@ -294,8 +294,8 @@ cftal::test::test_ref_cvt_f32_f16()
 #endif
 }
 
-template <std::size_t _N>
-bool cftal::test::test_cvt_f16_f32(exec_stats& st)
+template <std::size_t _N, std::size_t _M>
+bool cftal::test::test_cvt_f16_f32(exec_stats<_M>& st)
 {
     bool r=true;
     uint64_t t0, t1;
@@ -306,16 +306,16 @@ bool cftal::test::test_cvt_f16_f32(exec_stats& st)
             a[j] = i+j;
         vec<uint16_t, _N> d= mem<vec<uint16_t, _N> >::load(a, _N);
         vec<mf_f16_t, _N> df=as<vec<mf_f16_t, _N> >(d);
-        t0 = exec_stats::hr_timer();
+        t0 = exec_stats<_M>::hr_timer();
         vec<float, _N> t=cvt_f16_to_f32(df);
-        t1 = exec_stats::hr_timer();
+        t1 = exec_stats<_M>::hr_timer();
         st.insert(t0, t1, _N);
         float vr[_N];
         mem<vec<float, _N> >::store(vr, t);
         for (uint32_t j=0; j<_N; ++j) {
-            t0 = exec_stats::hr_timer();
+            t0 = exec_stats<_M>::hr_timer();
             float ref=ref_f16_to_f32(a[j]);
-            t1 = exec_stats::hr_timer();
+            t1 = exec_stats<_M>::hr_timer();
             st.insert(t0, t1, 0);
             float rt=vr[j];
             if ( ! ((ref==rt) || (std::isnan(ref) && std::isnan(rt))) ) {
@@ -335,8 +335,8 @@ bool cftal::test::test_cvt_f16_f32(exec_stats& st)
     return r;
 }
 
-template <std::size_t _N>
-bool cftal::test::test_cvt_f32_f16(exec_stats& st)
+template <std::size_t _N, std::size_t _M>
+bool cftal::test::test_cvt_f32_f16(exec_stats<_M>& st)
 {
     bool r=true;
     uint64_t t0, t1;
@@ -346,17 +346,17 @@ bool cftal::test::test_cvt_f32_f16(exec_stats& st)
             a[j] = i+j;
         vec<uint32_t, _N> du= mem<vec<uint32_t, _N> >::load(a, _N);
         vec<float, _N> d= as<vec<float, _N> >(du);
-        t0= exec_stats::hr_timer();
+        t0= exec_stats<_M>::hr_timer();
         vec<mf_f16_t, _N> t= cvt_f32_to_f16(d);
-        t1= exec_stats::hr_timer();
+        t1= exec_stats<_M>::hr_timer();
         st.insert(t0, t1, _N);
         mf_f16_t vr[_N];
         mem<vec<mf_f16_t, _N> >::store(vr, t);
         for (uint32_t j=0; j<_N; ++j) {
             float faj=as<float>(a[j]);
-            t0= exec_stats::hr_timer();
+            t0= exec_stats<_M>::hr_timer();
             mf_f16_t ref=mf_f16_t(ref_f32_to_f16(faj));
-            t1= exec_stats::hr_timer();
+            t1= exec_stats<_M>::hr_timer();
             st.insert(t0, t1, 0);
             mf_f16_t rt=vr[j];
             if (f16_eq(ref, rt) == false) {
@@ -401,7 +401,7 @@ int main(int argc, char** argv)
     // r &=cftal::test::test_ref_cvt_f32_f16();
     r &=cftal::test::test_f16_to_f32();
     r &=cftal::test::test_f32_to_f16();
-    cftal::test::exec_stats f16_f32(32);
+    cftal::test::exec_stats<32> f16_f32;
     r &= cftal::test::test_cvt_f16_f32<1>(f16_f32);
     r &= cftal::test::test_cvt_f16_f32<2>(f16_f32);
     r &= cftal::test::test_cvt_f16_f32<4>(f16_f32);
@@ -410,7 +410,7 @@ int main(int argc, char** argv)
     r &= cftal::test::test_cvt_f16_f32<32>(f16_f32);
     std::cout << "cvt f16 --> f32 " << f16_f32;
 
-    cftal::test::exec_stats f32_f16(32);
+    cftal::test::exec_stats<32> f32_f16;
     r &= cftal::test::test_cvt_f32_f16<1>(f32_f16);
     r &= cftal::test::test_cvt_f32_f16<2>(f32_f16);
     r &= cftal::test::test_cvt_f32_f16<4>(f32_f16);

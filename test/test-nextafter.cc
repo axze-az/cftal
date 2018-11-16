@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     func_domain<double> d=std::make_pair(-std::numeric_limits< double >::max(),
                                          std::numeric_limits< double >::max());
     std::cout << "testing nextafter vXf64" << std::endl;
-    exec_stats d_st(_N64);
+    exec_stats<_N64> d_st;
     bool rd= of_fp_func_2_up_to<
         double, _N64, check_nextafter<double> >::v(d_st, d, d,
                                                  speed_only,
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
     func_domain<double> f=std::make_pair(-std::numeric_limits<float>::max(),
                                          std::numeric_limits< float >::max());
-    exec_stats f_st(_N32);
+    exec_stats<_N32> f_st;
     bool rf= of_fp_func_2_up_to<
         float, _N32, check_nextafter<float> >::v(f_st, f, f,
                                                  speed_only,

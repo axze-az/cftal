@@ -64,7 +64,7 @@ int main(int argc, char** argv)
                            std::numeric_limits<double>::max());
     auto us_sin=std::make_shared<ulp_stats>();
     auto us_cos=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     struct cmp_ulp<std::pair<double, double> > cmp(ulp, us_sin, us_cos);
     rc &= of_fp_func_up_to<
         double, _N, check_sincos<double> >::v(st, dp, speed_only, cmp, cnt);
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
     auto dp2=std::make_pair(-0x1p28, 0x1p28);
     auto us_sin2=std::make_shared<ulp_stats>();
     auto us_cos2=std::make_shared<ulp_stats>();
-    exec_stats st2(_N);
+    exec_stats<_N> st2;
     struct cmp_ulp<std::pair<double, double> > cmp2(ulp, us_sin2, us_cos2);
     rc &= of_fp_func_up_to<
         double, _N, check_sincos<double> >::v(st, dp2, speed_only, cmp2, cnt);
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
     auto dp=std::make_pair(-std::numeric_limits<double>::max(),
                            std::numeric_limits<double>::max());
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         double, _N, check_sincos<double>::sin >::v(st, dp, speed_only,
                                                    cmp_ulp<double>(ulp, us),

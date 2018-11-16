@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     func_domain<float> d=std::make_pair(-45.0f, +35.5f);
     std::cout << "testing tgamma" << std::endl;
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
 
     // test also all integral values
     std::vector<float> def_args=default_arguments<float>::values;

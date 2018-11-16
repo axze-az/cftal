@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     func_domain<double> d=std::make_pair(-std::numeric_limits< double >::max(),
                                          std::numeric_limits< double >::max());
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_2_up_to<
         double, _N, check_atan2<double> >::v(st, d, d, speed_only,
                                              cmp_ulp<double>(ulp, us),

@@ -224,7 +224,7 @@ int main(int argc, char** argv)
     using ftype = double;
 
     func_domain<ftype> d=std::make_pair(-M_LN2/2, M_LN2/2);
-    exec_stats st(_N);
+    exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
 #if 0
     rc &= of_fp_func_up_to<

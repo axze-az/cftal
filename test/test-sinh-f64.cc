@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     // d=std::make_pair(1.0, 7.097827128933840867830440e+02);
 
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         double, _N, check_sinh<double> >::v(st, d, speed_only,
                                             cmp_ulp<double>(ulp, us),

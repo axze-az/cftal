@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     func_domain<float> d=std::make_pair(-std::numeric_limits< float >::max(),
                                          std::numeric_limits< float >::max());
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_2_up_to<
         float, _N, check_hypot<float> >::v(st, d, d, speed_only,
                                            cmp_ulp<float>(ulp2, us),
@@ -38,24 +38,24 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
-    st=exec_stats(_N);
+    exec_stats<_N> st1;
     us=std::make_shared<ulp_stats>();
     func_domain<float> d1=std::make_pair(-128.0f, 128.0f);
     func_domain<float> d2=std::make_pair(-128.0f, 128.0f);
     us= std::make_shared<ulp_stats>();
     rc &= of_fp_func_2_up_to<
-        float, _N, check_hypot<float> >::v(st, d1, d2, speed_only,
+        float, _N, check_hypot<float> >::v(st1, d1, d2, speed_only,
                                            cmp_ulp<float>(ulp, us),
                                            cnt, true);
     d1=std::make_pair(-10.0f, 10.0f);
     d2=std::make_pair(-10.0f, 10.0f);
     rc &= of_fp_func_2_up_to<
-        float, _N, check_hypot<float> >::v(st, d1, d2, speed_only,
+        float, _N, check_hypot<float> >::v(st1, d1, d2, speed_only,
                                            cmp_ulp<float>(ulp, us),
                                            cnt, true);
 
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
-    std::cout << st << std::endl;
+    std::cout << st1 << std::endl;
     return (rc == true) ? 0 : 1;
 }

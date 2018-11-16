@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     func_domain<float> df=std::make_pair(-std::numeric_limits<float>::max(),
                                           std::numeric_limits<float>::max());
     auto usf=std::make_shared<ulp_stats>();
-    exec_stats f_st(_N);
+    exec_stats<_N> f_st;
     rc &= of_fp_func_up_to<
         float, _N, check_cbrt<float> >::v(f_st, df, speed_only,
                                           cmp_ulp<float>(ulp, usf),

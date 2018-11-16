@@ -51,7 +51,7 @@ int main(int argc, char** argv)
         // 1.54, std::numeric_limits<double>::max());
 #endif
     auto us=std::make_shared<ulp_stats>();
-    exec_stats st(_N);
+    exec_stats<_N> st;
     rc &= of_fp_func_up_to<
         double, _N, check_acosh<double> >::v(st, d,
                                              speed_only,

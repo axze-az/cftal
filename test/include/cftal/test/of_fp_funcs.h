@@ -17,6 +17,9 @@
 #include <iomanip>
 #include <cmath>
 #include <utility>
+#include <future>
+#include <thread>
+#include <list>
 
 namespace cftal {
     namespace test {
@@ -49,27 +52,40 @@ namespace cftal {
         };
 
         // execution statistics
+        template <std::size_t _N>
         struct exec_stats {
+            struct alignas(64) data_type {
+                std::atomic<uint64_t> _v;
+                char _pad[64-sizeof(_v)];
+            };
             // the tics for the vectors of length 1...2^tics.size()
-            std::vector<uint64_t> _tics;
+            data_type _tics[_N+1];
             // number of function calls
-            std::vector<uint64_t> _evals;
+            data_type _evals[_N+1];
             // insert into _tics
-            void insert(uint64_t _tic_before, uint64_t tic_after,
-                        unsigned n);
+            void insert(uint64_t tics_before, uint64_t tics_after,
+                        unsigned n) {
+                uint64_t ta=std::max(tics_before, tics_after);
+                uint64_t tb=std::min(tics_before, tics_after);
+                uint64_t d=ta - tb;
+                _tics[n]._v += d;
+                ++(_evals[n]._v);
+            }
             // constructor
-            exec_stats(unsigned n)
-                : _tics(n+1, uint64_t(0)), _evals(n+1, uint64_t(0)) {}
+            exec_stats() {
+                for (std::size_t i=0; i<_N+1; ++i) {
+                    _tics[i]._v = 0;
+                    _evals[i]._v = 0;
+                }
+            }
             // timer function
             static
             uint64_t hr_timer() { return rdtsc(); }
         };
-        std::ostream& operator<<(std::ostream& s, const exec_stats& st);
+        template <std::size_t _N>
+        std::ostream&
+        operator<<(std::ostream& s, const exec_stats<_N>& st);
 
-        // merge two exec_stats 
-        void
-        merge_from(exec_stats& dst, const exec_stats& src)
-        
         // output operator for pairs of vectors with the same length
         template <typename _I, typename _T, std::size_t _N>
         std::ostream&
@@ -82,59 +98,65 @@ namespace cftal {
         struct vec_parts {
             // check for functions with one argument returning a
             // single value
+            template <std::size_t _M>
             static
             bool
             v(const vec<_T, _N>& x, const vec<_T, _N>& fx,
-              exec_stats& st);
+              exec_stats<_M>& st);
             // check for functions with one argument returning a pair
+            template <std::size_t _M>
             static
             bool
             v(const vec<_T, _N>& x,
               const std::pair<vec<_T, _N>, vec<_T, _N> >& fx,
-              exec_stats& st);
+              exec_stats<_M>& st);
             // check for functions with one argument and an additional
             // result pointer
-            template <typename _I>
+            template <typename _I, std::size_t _M>
             static
             bool
             v(const vec<_T, _N>& x,
               const std::pair<vec<_I, _N>, vec<_T, _N> >& fx,
-              exec_stats& st);
+              exec_stats<_M>& st);
             // check for functions with two arguments
+            template <std::size_t _M>
             static
             bool
             v(const vec<_T, _N>& x, const vec<_T, _N>& y,
-              const vec<_T, _N>& fx, exec_stats& st);
+              const vec<_T, _N>& fx, exec_stats<_M>& st);
         };
 
         // specialization to stop recursion
         template <typename _T, typename _F>
         struct vec_parts<_T, 1, _F> {
+            template <std::size_t _M>
             static
             bool
-            v(const vec<_T, 1>& x, const vec<_T, 1>& fx, exec_stats& st) {
+            v(const vec<_T, 1>& x, const vec<_T, 1>& fx,
+              exec_stats<_M>& st) {
                 static_cast<void>(x);
                 static_cast<void>(fx);
                 static_cast<void>(st);
                 return true;
             }
 
-            template <typename _I>
+            template <typename _I, std::size_t _M>
             static
             bool
             v(const vec<_T, 1>& x,
               const std::pair<vec<_I, 1>, vec<_T, 1> >& fx,
-              exec_stats& st) {
+              exec_stats<_M>& st) {
                 static_cast<void>(x);
                 static_cast<void>(fx);
                 static_cast<void>(st);
                 return true;
             }
 
+            template <std::size_t _M>
             static
             bool
             v(const vec<_T, 1>& x, const vec<_T, 1>& y,
-              const vec<_T, 1>& fx, exec_stats& st) {
+              const vec<_T, 1>& fx, exec_stats<_M>& st) {
                 static_cast<void>(x);
                 static_cast<void>(y);
                 static_cast<void>(fx);
@@ -150,7 +172,7 @@ namespace cftal {
             template <typename _CMP, typename _C>
             static
             bool
-            v(exec_stats& st,
+            v(exec_stats<_N>& st,
               func_domain<_T> domain,
               bool speed_only,
               _CMP cmp,
@@ -160,7 +182,7 @@ namespace cftal {
             template <typename _CMP=cmp_t<_T>>
             static
             bool
-            v(exec_stats& st,
+            v(exec_stats<_N>& st,
               func_domain<_T> domain = default_domain<_T>::value,
               bool speed_only = false,
               _CMP cmp=_CMP(),
@@ -169,8 +191,9 @@ namespace cftal {
 
             template <typename _CMP=cmp_t<_T> >
             static
-            bool v(const _T(&ai)[_N],
-                   exec_stats& st, bool speed_only, _CMP cmp=_CMP());
+            bool calc(const _T(&ai)[_N],
+                      exec_stats<_N>& st,
+                      bool speed_only, _CMP cmp=_CMP());
         };
 
         // test of vector function _F(vec<_T, _N>) up to length N
@@ -181,7 +204,7 @@ namespace cftal {
             template <typename _CMP, typename _C>
             static
             bool
-            v(exec_stats& st,
+            v(exec_stats<_N>& st,
               func_domain<_T> domain,
               bool speed_only,
               _CMP cmp,
@@ -196,7 +219,7 @@ namespace cftal {
             template <typename _CMP=cmp_t<_T> >
             static
             bool
-            v(exec_stats& st,
+            v(exec_stats<_N>& st,
               func_domain<_T> domain = default_domain<_T>::value,
               bool speed_only = false,
               _CMP cmp= _CMP(),
@@ -215,7 +238,7 @@ namespace cftal {
             template <typename _CMP=cmp_t<_T>>
             static
             bool
-            v(exec_stats& st,
+            v(exec_stats<_N>& st,
               func_domain<_T> domain_1 = default_domain<_T>::value,
               func_domain<_T> domain_2 = default_domain<_T>::value,
               bool speed_only = false,
@@ -225,8 +248,8 @@ namespace cftal {
 
             template <typename _CMP=cmp_t<_T> >
             static
-            bool v(const _T(&ai)[_N], const _T(&bi)[_N],
-                   exec_stats& st, bool speed_only, _CMP cmp=_CMP());
+            bool calc(const _T(&ai)[_N], const _T(&bi)[_N],
+                      exec_stats<_N>& st, bool speed_only, _CMP cmp=_CMP());
         };
 
         template <typename _T, std::size_t _N, typename _F>
@@ -234,7 +257,7 @@ namespace cftal {
             template <typename _CMP=cmp_t<_T> >
             static
             bool
-            v(exec_stats& st,
+            v(exec_stats<_N>& st,
               func_domain<_T> domain_1 = default_domain<_T>::value,
               func_domain<_T> domain_2 = default_domain<_T>::value,
               bool speed_only = false,
@@ -337,6 +360,33 @@ namespace cftal {
         };
 
     }
+}
+
+template <std::size_t _N>
+std::ostream&
+cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
+{
+    std::size_t n= _N + 1;
+    s << "execution statistics\n";
+    for (std::size_t i=0; i<n; i=((i==0) ? 1: i*2)) {
+        double t=st._tics[i]._v;
+        uint64_t ei=st._evals[i]._v;
+        double tc=ei ? t/double(ei) : 0.0;
+        double te=i ? tc/i : tc;
+        s << "vec-len: " << std::setw(2) << i << " calls: "
+          << std::setw(16) << ei << " tics/call: "
+          << std::setprecision(1)
+          << std::fixed
+          << std::setw(9)
+          << tc
+          << " tics/elem: "
+          << std::setw(7)
+          << te
+          << std::scientific
+          << std::setprecision(22)
+          << "\n";
+    }
+    return s;
 }
 
 template <typename _I, typename _T, std::size_t _N>
@@ -449,18 +499,19 @@ cftal::test::default_arguments<_T>::values={
 };
 
 template <typename _T, std::size_t _N, typename _F>
+template <std::size_t _M>
 bool
 cftal::test::vec_parts<_T, _N, _F>::
-v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
+v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats<_M>& st)
 {
     const int _N2=_N/2;
     vec<_T, _N2> xl=low_half(x);
     vec<_T, _N2> xh=high_half(x);
-    uint64_t t0= exec_stats::hr_timer();
+    uint64_t t0= exec_stats<_M>::hr_timer();
     vec<_T, _N2> fxl=_F::v(xl);
-    uint64_t t1= exec_stats::hr_timer();
+    uint64_t t1= exec_stats<_M>::hr_timer();
     vec<_T, _N2> fxh=_F::v(xh);
-    uint64_t t2 = exec_stats::hr_timer();
+    uint64_t t2 = exec_stats<_M>::hr_timer();
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
@@ -470,14 +521,16 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
     bool rc= all_of(vr);
     r &= rc;
     if (rc == false) {
-        std::cerr << std::hexfloat;
-        std::cerr << __FILE__ << ": " << __LINE__ << '\n';
-        std::cerr << "sub vector test " << _N << " failed.\n";
-        std::cerr << "x:    " << x << "\n";
-        std::cerr << "fx:   " << fx << "\n";
-        std::cerr << "fxlh: " << fxlh << "\n";
-        std::cerr << "vr: " << vr << "\n";
-        std::cerr << std::scientific;
+        std::ostringstream s;
+        s.copyfmt(std::cerr);
+        s << std::hexfloat;
+        s << __FILE__ << ": " << __LINE__ << '\n';
+        s << "sub vector test " << _N << " failed.\n";
+        s << "x:    " << x << "\n";
+        s << "fx:   " << fx << "\n";
+        s << "fxlh: " << fxlh << "\n";
+        s << "vr: " << vr << "\n";
+        std::cerr << s.str();
         std::exit(3);
     }
     st.insert(t0, t1, _N2);
@@ -486,20 +539,21 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& fx, exec_stats& st)
 }
 
 template <typename _T, std::size_t _N, typename _F>
+template <std::size_t _M>
 bool
 cftal::test::vec_parts<_T, _N, _F>::
 v(const vec<_T, _N>& x,
   const std::pair<vec<_T, _N>, vec<_T, _N> >& fx,
-  exec_stats& st)
+  exec_stats<_M>& st)
 {
     const int _N2=_N/2;
     vec<_T, _N2> xl=low_half(x);
     vec<_T, _N2> xh=high_half(x);
-    uint64_t t0= exec_stats::hr_timer();
+    uint64_t t0= exec_stats<_M>::hr_timer();
     auto fxl=_F::v(xl);
-    uint64_t t1= exec_stats::hr_timer();
+    uint64_t t1= exec_stats<_M>::hr_timer();
     auto fxh=_F::v(xh);
-    uint64_t t2 = exec_stats::hr_timer();
+    uint64_t t2 = exec_stats<_M>::hr_timer();
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
@@ -517,17 +571,19 @@ v(const vec<_T, _N>& x,
     r &= r1;
 
     if (r0 == false || r1==false) {
-        std::cerr << std::hexfloat;
-        std::cerr << __FILE__ << ": "<<  __LINE__ << '\n';
-        std::cerr << "sub vector test " << _N << " failed.\n";
-        std::cerr << "x:    " << x << "\n";
-        std::cerr << "fx.first:    " << fx.first << "\n";
-        std::cerr << "fx.second:   " << fx.second << "\n";
-        std::cerr << "fxlh.first:  " << fxlh0 << "\n";
-        std::cerr << "fxlh.second: " << fxlh1 << "\n";
-        std::cerr << "vr.first:    " << vr0 << "\n";
-        std::cerr << "vr.second:   " << vr1 << "\n";
-        std::cerr << std::scientific;
+        std::ostringstream s;
+        s.copyfmt(std::cerr);
+        s << std::hexfloat;
+        s << __FILE__ << ": "<<  __LINE__ << '\n';
+        s << "sub vector test " << _N << " failed.\n";
+        s << "x:    " << x << "\n";
+        s << "fx.first:    " << fx.first << "\n";
+        s << "fx.second:   " << fx.second << "\n";
+        s << "fxlh.first:  " << fxlh0 << "\n";
+        s << "fxlh.second: " << fxlh1 << "\n";
+        s << "vr.first:    " << vr0 << "\n";
+        s << "vr.second:   " << vr1 << "\n";
+        std::cerr << s.str();
         std::exit(3);
     }
     st.insert(t0, t1, _N2);
@@ -536,21 +592,21 @@ v(const vec<_T, _N>& x,
 }
 
 template <typename _T, std::size_t _N, typename _F>
-template <typename _I>
+template <typename _I, std::size_t _M>
 bool
 cftal::test::vec_parts<_T, _N, _F>::
 v(const vec<_T, _N>& x,
   const std::pair<vec<_I, _N>, vec<_T, _N> >& fx,
-  exec_stats& st)
+  exec_stats<_M>& st)
 {
     const int _N2=_N/2;
     vec<_T, _N2> xl=low_half(x);
     vec<_T, _N2> xh=high_half(x);
-    uint64_t t0= exec_stats::hr_timer();
+    uint64_t t0= exec_stats<_M>::hr_timer();
     auto fxl=_F::v(xl);
-    uint64_t t1= exec_stats::hr_timer();
+    uint64_t t1= exec_stats<_M>::hr_timer();
     auto fxh=_F::v(xh);
-    uint64_t t2 = exec_stats::hr_timer();
+    uint64_t t2 = exec_stats<_M>::hr_timer();
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, fxh, st);
@@ -565,16 +621,18 @@ v(const vec<_T, _N>& x,
     bool rc= all_of(vr);
     r &= rc;
     if (rc == false || ri==false) {
-        std::cerr << std::hexfloat;
-        std::cerr << __FILE__ << ": "<<  __LINE__ << '\n';
-        std::cerr << "sub vector test " << _N << " failed.\n";
-        std::cerr << "x:    " << x << "\n";
-        std::cerr << "fxi:   " << fx.first << "\n";
-        std::cerr << "fx:   " << fx.second << "\n";
-        std::cerr << "fxlhi: " << ifxlh << "\n";
-        std::cerr << "fxlh: " << fxlh << "\n";
-        std::cerr << "vr: " << vr << "\n";
-        std::cerr << std::scientific;
+        std::ostringstream s;
+        s.copyfmt(std::cerr);
+        s << std::hexfloat;
+        s << __FILE__ << ": "<<  __LINE__ << '\n';
+        s << "sub vector test " << _N << " failed.\n";
+        s << "x:    " << x << "\n";
+        s << "fxi:   " << fx.first << "\n";
+        s << "fx:   " << fx.second << "\n";
+        s << "fxlhi: " << ifxlh << "\n";
+        s << "fxlh: " << fxlh << "\n";
+        s << "vr: " << vr << "\n";
+        std::cerr << s.str();
         std::exit(3);
     }
     st.insert(t0, t1, _N2);
@@ -583,21 +641,22 @@ v(const vec<_T, _N>& x,
 }
 
 template <typename _T, std::size_t _N, typename _F>
+template <std::size_t _M>
 bool
 cftal::test::vec_parts<_T, _N, _F>::
 v(const vec<_T, _N>& x, const vec<_T, _N>& y,
-  const vec<_T, _N>& fx, exec_stats& st)
+  const vec<_T, _N>& fx, exec_stats<_M>& st)
 {
     const int _N2=_N/2;
     vec<_T, _N2> xl=low_half(x);
     vec<_T, _N2> xh=high_half(x);
     vec<_T, _N2> yl=low_half(y);
     vec<_T, _N2> yh=high_half(y);
-    uint64_t t0= exec_stats::hr_timer();
+    uint64_t t0= exec_stats<_M>::hr_timer();
     vec<_T, _N2> fxl=_F::v(xl, yl);
-    uint64_t t1= exec_stats::hr_timer();
+    uint64_t t1= exec_stats<_M>::hr_timer();
     vec<_T, _N2> fxh=_F::v(xh, yh);
-    uint64_t t2 = exec_stats::hr_timer();
+    uint64_t t2 = exec_stats<_M>::hr_timer();
     bool r=true;
     r &= vec_parts<_T, _N2, _F>::v(xl, yl, fxl, st);
     r &= vec_parts<_T, _N2, _F>::v(xh, yh, fxh, st);
@@ -607,13 +666,16 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& y,
     bool rc=all_of(vr);
     r &= rc;
     if (rc == false) {
-        std::cerr << __FILE__ << ": " << __LINE__ << '\n';
-        std::cerr << "sub vector test " << _N << " failed.\n";
-        std::cerr << "x:    " << x << "\n";
-        std::cerr << "y:    " << y << "\n";
-        std::cerr << "fx:   " << fx << "\n";
-        std::cerr << "fxlh: " << fxlh << "\n";
-        std::cerr << "vr: " << vr << "\n";
+        std::ostringstream s;
+        s.copyfmt(std::cerr);
+        s << __FILE__ << ": " << __LINE__ << '\n';
+        s << "sub vector test " << _N << " failed.\n";
+        s << "x:    " << x << "\n";
+        s << "y:    " << y << "\n";
+        s << "fx:   " << fx << "\n";
+        s << "fxlh: " << fxlh << "\n";
+        s << "vr: " << vr << "\n";
+        std::cerr << s.str();
         std::exit(3);
     }
     st.insert(t0, t1, _N2);
@@ -625,32 +687,31 @@ v(const vec<_T, _N>& x, const vec<_T, _N>& y,
 template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP>
 bool
-cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
-                                       exec_stats& st,
-                                       bool speed_only,
-                                       _CMP cmp)
+cftal::test::of_fp_func<_T, _N, _F>::
+calc(const _T(&a)[_N], exec_stats<_N>& st,
+     bool speed_only, _CMP cmp)
 {
     vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
-    uint64_t t0 = exec_stats::hr_timer();
+    uint64_t t0 = exec_stats<_N>::hr_timer();
     auto vr=_F::v(va);
-    uint64_t t1 = exec_stats::hr_timer();
+    uint64_t t1 = exec_stats<_N>::hr_timer();
     uint64_t t0i[_N], t1i[_N];
     // std::result_of<decltype(&F::r)(_T)>::type ri[_N];
     bool c;
     if (speed_only) {
         typename std::result_of<decltype(&_F::s)(_T)>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
-            t0i[i] = exec_stats::hr_timer();
+            t0i[i] = exec_stats<_N>::hr_timer();
             r[i] = _F::s(a[i]);
-            t1i[i]= exec_stats::hr_timer();
+            t1i[i]= exec_stats<_N>::hr_timer();
         }
         c= check(vr, r, _F::fname(), false, cmp);
     } else {
         typename std::result_of<decltype(&_F::r)(_T)>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
-            t0i[i] = exec_stats::hr_timer();
+            t0i[i] = exec_stats<_N>::hr_timer();
             r[i] = _F::r(a[i]);
-            t1i[i]= exec_stats::hr_timer();
+            t1i[i]= exec_stats<_N>::hr_timer();
         }
         c= check(vr, r, _F::fname(), true, cmp);
     }
@@ -666,12 +727,15 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
     else
         c &= cs;
     if (c == false) {
-        std::cerr << "va: " << va << std::endl;
-        std::cerr << "vr: " << vr << std::endl;
-        std::cerr << std::endl;
+        std::ostringstream s;
+        s.copyfmt(std::cerr);
+        s << "va: " << va << std::endl;
+        s << "vr: " << vr << std::endl;
+        s << std::endl;
         if (cs == false) {
-            std::cerr << "subvector test failed" << std::endl;
+            s << "subvector test failed" << std::endl;
         }
+        std::cerr << s.str();
     }
     return c;
 }
@@ -679,7 +743,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(const _T(&a)[_N],
 template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP, typename _C>
 bool
-cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
+cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                        func_domain<_T> domain,
                                        bool speed_only,
                                        _CMP cmp, std::size_t cnt,
@@ -687,14 +751,14 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
 {
     bool r = true;
     _T va[_N];
-    
+
     for (auto b=std::begin(tv), e=std::end(tv);
          b!=e; ++b) {
         const auto& ai= *b;
         std::fill(std::begin(va), std::end(va), ai);
-        r &=v(va, st, speed_only, cmp);
+        r &=calc(va, st, speed_only, cmp);
         std::fill(std::begin(va), std::end(va), -ai);
-        r &=v(va, st, speed_only, cmp);
+        r &=calc(va, st, speed_only, cmp);
     }
     std::mt19937_64 rnd;
     uniform_real_distribution<_T>
@@ -704,13 +768,114 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
     std::cout << "[" << domain.first << ", " << domain.second << ")\n";
     const uint32_t N0=72;
     const uint32_t N1=4;
+
+#if 1
+    const bool mt=speed_only == false;
+
+    std::list<std::future<bool> > v_res;
+
+    auto exec_or_queue=[](bool& r,
+                          std::list<std::future<bool> >& v_res,
+                          std::vector<_T[_N]> va,
+                          exec_stats<_N>& st,
+                          bool speed_only,
+                          _CMP cmp,
+                          bool mt)->void {
+        if (mt == false) {
+            for (size_t i=0; i<va.size(); ++i) {
+                r &= calc(va[i], st, speed_only, cmp);
+            }
+            return;
+        }
+        const size_t thrd_cnt=
+            std::max(std::thread::hardware_concurrency(), 1u);
+        while (v_res.size() > thrd_cnt) {
+            auto ri= std::move(v_res.front());
+            v_res.pop_front();
+            r &= ri.get();
+        }
+        auto ri=std::async(std::launch::async,
+                        [](std::vector<_T[_N]> v,
+                            exec_stats<_N>& st,
+                            bool speed_only,
+                            _CMP cmp)->bool {
+                                bool r=true;
+                                for (size_t i=0; i<v.size(); ++i) {
+                                    const _T (&a)[_N]=v[i];
+                                    r &= calc(a, st, speed_only, cmp);
+                                }
+                                return r;
+                        },
+                        std::move(va),
+                        std::ref(st),
+                        speed_only,
+                        cmp);
+        v_res.emplace_back(std::move(ri));
+    };
+
+    auto wait_for_completion=[](bool& r,
+                                std::list<std::future<bool> >& v_res) ->void {
+        while (v_res.size() > 0) {
+            auto ri= std::move(v_res.front());
+            v_res.pop_front();
+            r &= ri.get();
+        }
+    };
+
+    for (uint32_t l=0; l< N1; ++l) {
+        for (uint32_t j=0; j<N0; ++j) {
+            std::vector<_T[_N]> v_va(cnt);
+            for (std::size_t i=0; i<cnt; ++i) {
+                for (std::size_t k=0; k<_N; ++k) {
+                    v_va[i][k] = distrib(rnd);
+                }
+            }
+            exec_or_queue(r, v_res,
+                          std::move(v_va),
+                          st,
+                          speed_only,
+                          cmp,
+                          mt);
+            std::cout << '.' << std::flush;
+        }
+        std::cout << std::endl;
+    }
+    _T minus1= std::max(_T(-1), domain.first);
+    _T plus1= std::min(_T(1), domain.second);
+    if (minus1 < plus1 && (minus1 != domain.first || plus1 != domain.second)) {
+        std::cout << std::endl;
+        _T nplus1=std::nextafter(plus1, _T(2)*plus1);
+        uniform_real_distribution<_T>
+            distrib1(minus1, nplus1);
+        std::cout << "[" << minus1 << ", " << nplus1 << ")\n";
+        for (uint32_t l=0; l< N1; ++l) {
+            for (uint32_t j=0; j<N0; ++j) {
+                std::vector<_T[_N]> v_va(cnt);
+                for (std::size_t i=0; i<cnt; ++i) {
+                    for (std::size_t k=0; k<_N; ++k) {
+                        v_va[i][k] = distrib1(rnd);
+                    }
+                }
+                exec_or_queue(r, v_res,
+                              std::move(v_va),
+                              st,
+                              speed_only,
+                              cmp,
+                              mt);
+                std::cout << '.' << std::flush;
+            }
+            std::cout << std::endl;
+        }
+    }
+    wait_for_completion(r, v_res);
+#else
     for (uint32_t l=0; l< N1; ++l) {
         for (uint32_t j=0; j<N0; ++j) {
             for (std::size_t i=0; i<cnt; ++i) {
                 for (std::size_t k=0; k<_N; ++k) {
                     va[k] = distrib(rnd);
                 }
-                r &= v(va, st, speed_only, cmp);
+                r &= calc(va, st, speed_only, cmp);
             }
             std::cout << '.' << std::flush;
         }
@@ -730,13 +895,14 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
                     for (std::size_t k=0; k<_N; ++k) {
                         va[k] = distrib1(rnd);
                     }
-                    r &= v(va, st, speed_only, cmp);
+                    r &= calc(va, st, speed_only, cmp);
                 }
                 std::cout << '.' << std::flush;
             }
             std::cout << std::endl;
         }
     }
+#endif
     std::cout << std::endl;
     if (r == true) {
         std::cout << _F::fname() << ' '
@@ -751,7 +917,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
 template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP>
 bool
-cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats& st,
+cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                        func_domain<_T> domain,
                                        bool speed_only,
                                        _CMP cmp, std::size_t cnt,
@@ -771,29 +937,30 @@ template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP>
 bool
 cftal::test::of_fp_func_2<_T, _N, _F>::
-v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, bool speed_only, _CMP cmp)
+calc(const _T(&a)[_N], const _T(&b)[_N],
+     exec_stats<_N>& st, bool speed_only, _CMP cmp)
 {
     vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
     vec<_T, _N> vb=mem<vec<_T, _N> >::load(b);
-    uint64_t t0=exec_stats::hr_timer();
+    uint64_t t0=exec_stats<_N>::hr_timer();
     auto vr=_F::v(va, vb);
-    uint64_t t1=exec_stats::hr_timer();
+    uint64_t t1=exec_stats<_N>::hr_timer();
     uint64_t t0i[_N], t1i[_N];
     bool c;
     if (speed_only) {
         typename std::result_of<decltype(&_F::s)(_T, _T)>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
-            t0i[i]=exec_stats::hr_timer();
+            t0i[i]=exec_stats<_N>::hr_timer();
             r[i] = _F::s(a[i], b[i]);
-            t1i[i]=exec_stats::hr_timer();
+            t1i[i]=exec_stats<_N>::hr_timer();
         }
         c= check(vr, r, _F::fname(), false, cmp);
     } else {
         typename std::result_of<decltype(&_F::r)(_T, _T)>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
-            t0i[i]=exec_stats::hr_timer();
+            t0i[i]=exec_stats<_N>::hr_timer();
             r[i] = _F::r(a[i], b[i]);
-            t1i[i]=exec_stats::hr_timer();
+            t1i[i]=exec_stats<_N>::hr_timer();
         }
         c= check(vr, r, _F::fname(), true, cmp);
     }
@@ -808,13 +975,16 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, bool speed_only, _CMP cmp)
     else
         c &= cs;
     if (c == false) {
+        std::ostringstream s;
+        s.copyfmt(std::cerr);
         for (std::size_t i=0; i < _N; ++i) {
-            std::cerr << _F::fname() << "("
-                      << a[i] << ", " <<  b[i] << ") failed?.\n";
+            s << _F::fname() << "("
+              << a[i] << ", " <<  b[i] << ") failed?.\n";
         }
         if (cs == false) {
-            std::cerr << "subvector test failed" << std::endl;
+            s<< "subvector test failed" << std::endl;
         }
+        std::cerr << s.str();
     }
     return c;
 }
@@ -822,7 +992,7 @@ v(const _T(&a)[_N], const _T(&b)[_N], exec_stats& st, bool speed_only, _CMP cmp)
 template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP>
 bool
-cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
+cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats<_N>& st,
                                          func_domain<_T> domain_1,
                                          func_domain<_T> domain_2,
                                          bool speed_only,
@@ -854,13 +1024,13 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
                 _T bi= *bb;
                 std::fill(std::begin(va), std::end(va), ai);
                 std::fill(std::begin(vb), std::end(vb), bi);
-                r &= v(va, vb, st, speed_only, cmp);
+                r &= calc(va, vb, st, speed_only, cmp);
                 std::fill(std::begin(vb), std::end(vb), -bi);
-                r &= v(va, vb, st, speed_only, cmp);
+                r &= calc(va, vb, st, speed_only, cmp);
                 std::fill(std::begin(va), std::end(va), -ai);
-                r &= v(va, vb, st, speed_only, cmp);
+                r &= calc(va, vb, st, speed_only, cmp);
                 std::fill(std::begin(vb), std::end(vb), bi);
-                r &= v(va, vb, st, speed_only, cmp);
+                r &= calc(va, vb, st, speed_only, cmp);
             }
         }
     }
@@ -876,6 +1046,125 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
               << ")\n";
     const uint32_t N0=72;
     const uint32_t N1=4;
+
+#if 1
+    const bool mt=speed_only == false;
+
+    std::list<std::future<bool> > v_res;
+
+    auto exec_or_queue=[](bool& r,
+                          std::list<std::future<bool> >& v_res,
+                          std::vector<_T[_N]> va,
+                          std::vector<_T[_N]> vb,
+                          exec_stats<_N>& st,
+                          bool speed_only,
+                          _CMP cmp,
+                          bool mt)->void {
+        if (mt == false) {
+            for (size_t i=0; i<va.size(); ++i) {
+                r &= calc(va[i], vb[i], st, speed_only, cmp);
+            }
+            return;
+        }
+        const size_t thrd_cnt=
+            std::max(std::thread::hardware_concurrency(), 1u);
+        while (v_res.size() > thrd_cnt) {
+            auto ri= std::move(v_res.front());
+            v_res.pop_front();
+            r &= ri.get();
+        }
+        auto ri=std::async(std::launch::async,
+                        [](std::vector<_T[_N]> va,
+                           std::vector<_T[_N]> vb,
+                           exec_stats<_N>& st,
+                           bool speed_only,
+                           _CMP cmp)->bool {
+                                bool r=true;
+                                for (size_t i=0; i<va.size(); ++i) {
+                                    const _T (&a)[_N]=va[i];
+                                    const _T (&b)[_N]=vb[i];
+                                    r &= calc(a, b, st, speed_only, cmp);
+                                }
+                                return r;
+                        },
+                        std::move(va),
+                        std::move(vb),
+                        std::ref(st),
+                        speed_only,
+                        cmp);
+        v_res.emplace_back(std::move(ri));
+    };
+
+    auto wait_for_completion=[](bool& r,
+                                std::list<std::future<bool> >& v_res) ->void {
+        while (v_res.size() > 0) {
+            auto ri= std::move(v_res.front());
+            v_res.pop_front();
+            r &= ri.get();
+        }
+    };
+
+    for (uint32_t l=0; l< N1; ++l) {
+        for (uint32_t j=0; j< N0; ++j) {
+            std::vector<_T[_N]> v_va(cnt), v_vb(cnt);
+            for (std::size_t i=0; i<cnt; ++i) {
+                for (std::size_t k=0; k<_N; ++k) {
+                    v_va[i][k] = distrib1(rnd);
+                    v_vb[i][k] = distrib2(rnd);
+                }
+                // r &= calc(va, vb, st, speed_only, cmp);
+            }
+            exec_or_queue(r, v_res,
+                          std::move(v_va),
+                          std::move(v_vb),
+                          st,
+                          speed_only,
+                          cmp,
+                          mt);
+            std::cout << '.' << std::flush;
+        }
+        std::cout << std::endl;
+    }
+    _T a_minus1= std::max(_T(-1), domain_1.first);
+    _T a_plus1= std::min(_T(1), domain_1.second);
+    _T b_minus1= std::max(_T(-1), domain_2.first);
+    _T b_plus1= std::min(_T(1), domain_2.second);
+    if (a_minus1 < a_plus1 && b_minus1 < b_plus1) {
+        std::cout << std::endl;
+        _T a_nplus1=std::nextafter(a_plus1, _T(2)*a_plus1);
+        _T b_nplus1=std::nextafter(b_plus1, _T(2)*b_plus1);
+        uniform_real_distribution<_T>
+            distrib_1_1(a_minus1, a_nplus1);
+        uniform_real_distribution<_T>
+            distrib_1_2(b_minus1, b_nplus1);
+        std::cout << "[" << a_minus1 << ", " << a_nplus1
+                  << ") x [" << b_minus1 << ", " << b_nplus1
+                  << ")\n";
+        for (uint32_t l=0; l<N1; ++l) {
+            for (uint32_t j=0; j<N0; ++j) {
+                std::vector<_T[_N]> v_va(cnt), v_vb(cnt);
+                for (std::size_t i=0; i<cnt; ++i) {
+                    for (std::size_t k=0; k<_N; ++k) {
+                        v_va[i][k] = distrib_1_1(rnd);
+                        v_vb[i][k] = distrib_1_2(rnd);
+                    }
+                    // r &= calc(va, vb, st, speed_only, cmp);
+                }
+                exec_or_queue(r, v_res,
+                              std::move(v_va),
+                              std::move(v_vb),
+                              st,
+                              speed_only,
+                              cmp,
+                              mt);
+                std::cout << '.' << std::flush;
+            }
+            std::cout << std::endl;
+        }
+    }
+    wait_for_completion(r, v_res);
+
+#else
     for (uint32_t l=0; l< N1; ++l) {
         for (uint32_t j=0; j< N0; ++j) {
             for (std::size_t i=0; i<cnt; ++i) {
@@ -883,7 +1172,7 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
                     va[k] = distrib1(rnd);
                     vb[k] = distrib2(rnd);
                 }
-                r &= v(va, vb, st, speed_only, cmp);
+                r &= calc(va, vb, st, speed_only, cmp);
             }
             std::cout << '.' << std::flush;
         }
@@ -911,13 +1200,14 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats& st,
                         va[k] = distrib_1_1(rnd);
                         vb[k] = distrib_1_2(rnd);
                     }
-                    r &= v(va, vb, st, speed_only, cmp);
+                    r &= calc(va, vb, st, speed_only, cmp);
                 }
                 std::cout << '.' << std::flush;
             }
             std::cout << std::endl;
         }
     }
+#endif
     std::cout << std::endl;
     if (r == true) {
         std::cout << _F::fname() << ' '
