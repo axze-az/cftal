@@ -21,6 +21,14 @@ insert(uint64_t tics_before, uint64_t tics_after, unsigned n)
     _evals[n] += 1;
 }
 
+void
+cftal::test::merge(exec_stats& d, const exec_stats& s)
+{
+    size_t mt=std::max(d._tics.size(), s._tics.size());
+    d._tics.resize(mt);
+}
+
+
 #if 0
 cftal::uint64_t
 cftal::test::exec_stats::hr_timer()

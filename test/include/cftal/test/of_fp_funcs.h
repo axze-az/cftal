@@ -66,6 +66,10 @@ namespace cftal {
         };
         std::ostream& operator<<(std::ostream& s, const exec_stats& st);
 
+        // merge two exec_stats 
+        void
+        merge_from(exec_stats& dst, const exec_stats& src)
+        
         // output operator for pairs of vectors with the same length
         template <typename _I, typename _T, std::size_t _N>
         std::ostream&
