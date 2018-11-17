@@ -12,6 +12,7 @@
 #include <cftal/vec.h>
 #include <cftal/test/uniform_distribution.h>
 #include <cftal/test/f32_f64.h>
+#include <cftal/test/work_queue.h>
 #include <random>
 #include <iostream>
 #include <iomanip>
@@ -770,21 +771,95 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
     const uint32_t N1=4;
 
 #if 1
+#if 1
     const bool mt=speed_only == false;
 
+    using job_t = std::vector<_T[_N]>;
+
+    struct thread_data {
+        std::deque<bool> _vr;
+        std::vector<std::thread> _vt;
+        work_queue<job_t> _wq;
+        thread_data() : _vr(), _vt(),
+            _wq(std::max(std::thread::hardware_concurrency(), 1u)+2) {}
+    };
+
+    auto calc_vec=[](job_t va,
+                     exec_stats<_N>& st,
+                     bool speed_only,
+                     _CMP cmp)->bool {
+        bool r= true;
+        for (size_t i=0; i<va.size(); ++i) {
+            r &= calc(va[i], st, speed_only, cmp);
+        }
+        return r;
+    };
+    thread_data v_res;
+
+    auto thr_main=[calc_vec](work_queue<job_t>& wq,
+                             bool& r,
+                             exec_stats<_N>& st,
+                             bool speed_only,
+                             _CMP cmp)->void {
+        job_t va;
+        while (wq.read(va)==true) {
+            r &= calc_vec(std::move(va), st, speed_only, cmp);
+        }
+    };
+    auto exec_or_queue=
+        [calc_vec, thr_main](bool& r,
+                             thread_data& v_res,
+                             job_t va,
+                             exec_stats<_N>& st,
+                             bool speed_only,
+                             _CMP cmp,
+                             bool mt)->void {
+        if (mt == false) {
+            r &= calc_vec(std::move(va), st, speed_only, cmp);
+            return;
+        }
+        if (v_res._vt.empty()) {
+            const size_t max_thrd_cnt=
+                std::max(std::thread::hardware_concurrency(), 1u);
+            const size_t thrd_cnt = max_thrd_cnt>1 ? max_thrd_cnt - 1 : 1;
+            // setup
+            v_res._vr.resize(thrd_cnt, true);
+            for (std::size_t i=0; i<thrd_cnt; ++i) {
+                auto ti=std::thread(thr_main,
+                                    std::ref(v_res._wq),
+                                    std::ref(v_res._vr[i]),
+                                    std::ref(st),
+                                    speed_only,
+                                    cmp);
+                v_res._vt.emplace_back(std::move(ti));
+            }
+        }
+        v_res._wq.write(std::move(va));
+    };
+    auto wait_for_completion=[](bool& r,
+                                thread_data& v_res)->void {
+        if (v_res._vt.empty())
+            return;
+        v_res._wq.deactivate();
+        for (std::size_t i=0; i<v_res._vt.size(); ++i) {
+            v_res._vt[i].join();
+        }
+        for (bool b : v_res._vr) {
+            r &= b;
+        }
+    };
+#else
     std::list<std::future<bool> > v_res;
 
-    auto exec_or_queue=[](bool& r,
-                          std::list<std::future<bool> >& v_res,
-                          std::vector<_T[_N]> va,
-                          exec_stats<_N>& st,
-                          bool speed_only,
-                          _CMP cmp,
-                          bool mt)->void {
+    auto exec_or_queue=[calc_vec](bool& r,
+                                  std::list<std::future<bool> >& v_res,
+                                  std::vector<_T[_N]> va,
+                                  exec_stats<_N>& st,
+                                  bool speed_only,
+                                  _CMP cmp,
+                                  bool mt)->void {
         if (mt == false) {
-            for (size_t i=0; i<va.size(); ++i) {
-                r &= calc(va[i], st, speed_only, cmp);
-            }
+            r &= calc_vec(std::move(va), st, speed_only, cmp);
             return;
         }
         const size_t thrd_cnt=
@@ -795,21 +870,11 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
             r &= ri.get();
         }
         auto ri=std::async(std::launch::async,
-                        [](std::vector<_T[_N]> v,
-                            exec_stats<_N>& st,
-                            bool speed_only,
-                            _CMP cmp)->bool {
-                                bool r=true;
-                                for (size_t i=0; i<v.size(); ++i) {
-                                    const _T (&a)[_N]=v[i];
-                                    r &= calc(a, st, speed_only, cmp);
-                                }
-                                return r;
-                        },
-                        std::move(va),
-                        std::ref(st),
-                        speed_only,
-                        cmp);
+                           calc_vec,
+                           std::move(va),
+                           std::ref(st),
+                           speed_only,
+                           cmp);
         v_res.emplace_back(std::move(ri));
     };
 
@@ -821,7 +886,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
             r &= ri.get();
         }
     };
-
+#endif
     for (uint32_t l=0; l< N1; ++l) {
         for (uint32_t j=0; j<N0; ++j) {
             std::vector<_T[_N]> v_va(cnt);

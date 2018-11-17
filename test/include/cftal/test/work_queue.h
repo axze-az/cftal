@@ -25,13 +25,16 @@ namespace cftal {
             std::condition_variable _write_cv;
             std::deque<_T> _queue;
             std::size_t _max_entries;
-            bool _inactive;
+            bool _active;
+
+            work_queue(const work_queue&) = delete;
+            work_queue& operator=(const work_queue&) = delete;
         public:
             work_queue(std::size_t max_entries);
             ~work_queue();
 
             bool
-            write(_T v);
+            write(_T&& v);
 
             bool
             read(_T& v);
@@ -53,8 +56,9 @@ work_queue(std::size_t max_entries)
       _write_cv(),
       _queue(),
       _max_entries(max_entries),
-      _inactive(false)
+      _active(true)
 {
+    // std::cout << "created with " << _max_entries << std::endl;
 }
 
 template <typename _T>
@@ -68,19 +72,17 @@ cftal::test::work_queue<_T>::
 template <typename _T>
 bool
 cftal::test::work_queue<_T>::
-write(_T t)
+write(_T&& t)
 {
     bool rc=false;
     std::unique_lock<std::mutex> _lck(_mtx);
     ++_writers;
-    _read_cv.wait(_lck,
-                    [this]()->bool {
-                        this->_queue.size() == this->_max_entries &&
-                            this->_inactive==false;
-                    });
-    if (this->_inactive==false) {
-        _queue.emplace_back(t);
+    while (_active && _queue.size() == _max_entries)
+        _write_cv.wait(_lck);
+    if (this->_active==true) {
+        _queue.emplace_back(std::move(t));
         rc=true;
+        // std::cout << "data written" << std::endl;
     }
     --_writers;
     if (_readers)
@@ -96,15 +98,13 @@ read(_T& t)
     bool rc=false;
     std::unique_lock<std::mutex> _lck(_mtx);
     ++_readers;
-    _read_cv.wait(_lck,
-                    [this]()->bool {
-                        this->_queue.empty() &&
-                            this->_inactive==false;
-                    });
-    if (_queue.empty() == false) {
+    while (_active && _queue.empty())
+        _read_cv.wait(_lck);
+    if (!_queue.empty()) {
         t = std::move(_queue.front());
         _queue.pop_front();
         rc= true;
+        // std::cout << "data fetched" << std::endl;
     }
     --_readers;
     if (_writers)
@@ -118,12 +118,13 @@ cftal::test::work_queue<_T>::
 deactivate()
 {
     std::unique_lock<std::mutex> _lck(_mtx);
-    bool rc = _inactive == true ? false : true;
-    _inactive = true;
+    bool rc = _active == true ? true : false;
+    _active = false;
     if (_writers)
         _write_cv.notify_all();
     if (_readers)
         _read_cv.notify_all();
+    // std::cout << "deactivate" << std::endl;
     return rc;
 }
 
