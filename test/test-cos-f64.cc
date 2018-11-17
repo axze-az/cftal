@@ -16,20 +16,20 @@ int main(int argc, char** argv)
                         std::numeric_limits<double>::max())
     };
     const int shifts[]={0};
-    int r=program<check_cos<double>, 16, 1, 0x8000>(argc,
-                                                    argv,
-                                                    mpfr_cos,
-                                                    di,
-                                                    shifts);
+    int r=program<check_cos<double>, 8, 1, 0x8000>(argc,
+                                                   argv,
+                                                   mpfr_cos,
+                                                   di,
+                                                   shifts);
     const func_domain<double> di2[]={
         std::make_pair(-0x1p28, 0x1p28)
     };
-    r |=program<check_cos<double>, 16, 1, 0x8000>(argc,
-                                                  argv,
-                                                  mpfr_cos,
-                                                  di2,
-                                                  shifts,
-                                                  false);
+    r |=program<check_cos<double>, 8, 1, 0x8000>(argc,
+                                                 argv,
+                                                 mpfr_cos,
+                                                 di2,
+                                                 shifts,
+                                                 false);
     return r;
 #else
     std::cout << std::setprecision(18) << std::scientific;
