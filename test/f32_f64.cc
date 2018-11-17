@@ -40,16 +40,16 @@ cftal::test::ulp_stats::
 inc(int32_t ulp, bool is_nan,
     bool nan_not_calculated, bool nan_unexpected)
 {
-    ++_cnt;
+    _cnt += 1;
     uint32_t au= ulp != 0 ? 1 : 0;
     _ulps += au;
     if (is_nan)
-        ++_nans;
+        _nans += 1;
     if (nan_not_calculated| nan_unexpected) {
         if (nan_not_calculated)
-            ++_nans_not_calculated;
+            _nans_not_calculated += 1;
         if (nan_unexpected)
-            ++_nans_unexpected;
+            _nans_unexpected += 1;
     } else {
         int32_t aulp=std::abs(ulp);
         int32_t rulp;
