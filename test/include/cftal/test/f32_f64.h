@@ -13,6 +13,7 @@
 #include <cftal/mem.h>
 #include <cftal/select.h>
 #include <cftal/bitops.h>
+#include <cftal/test/spinlock.h>
 #include <iostream>
 #include <sstream>
 #include <map>
@@ -30,6 +31,9 @@ namespace cftal {
         float make_float(unsigned sgn, unsigned exp, uint32_t sig);
 
         struct ulp_stats {
+
+            using lock_type = spinlock;
+
             // count of operations with nonzero ulp
             std::atomic<uint64_t> _ulps;
             // count of nan
@@ -41,7 +45,7 @@ namespace cftal {
             // operation count
             std::atomic<uint64_t> _cnt;
             // mutex protecting _devs;
-            std::mutex _mtx_devs;
+            lock_type _mtx_devs;
             // deviations of x ulp's n times, deviations larger/smaller
             // than lin_max are grouped together into ranges (2^(n-1), 2^n]
             // where 2^(n-1) < x <= 2^n if x positive ....
@@ -50,7 +54,7 @@ namespace cftal {
                           "lin_max must be a power of 2");
             std::map<int32_t, uint64_t> _devs;
             // mutex protecting _faithful
-            std::mutex _mtx_faithful;
+            lock_type _mtx_faithful;
             // faithfully rounded if first=true and second=true
             std::pair<bool, bool> _faithful;
             // constructor.

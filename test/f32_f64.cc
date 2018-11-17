@@ -62,7 +62,7 @@ inc(int32_t ulp, bool is_nan,
             rulp= 1U << log2_u;
             rulp= ulp < 0 ? -rulp : rulp;
         }
-        std::scoped_lock<std::mutex> _lck(_mtx_devs);
+        std::scoped_lock<lock_type> _lck(_mtx_devs);
         _devs[rulp] += 1;
     }
 }
@@ -71,7 +71,7 @@ void
 cftal::test::ulp_stats::
 faithful(bool v)
 {
-    std::scoped_lock<std::mutex> _lck(_mtx_faithful);
+    std::scoped_lock<lock_type> _lck(_mtx_faithful);
     _faithful.first = true;
     if (_faithful.second == true)
         _faithful.second =v;
