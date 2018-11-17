@@ -4,14 +4,26 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/test/of_math_funcs.h"
+#include "cftal/test/program.h"
 #include "cftal/test/check_atanh.h"
-#include <iostream>
-#include <iomanip>
 
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+#if 1
+    const func_domain<double> di[]={
+        std::make_pair(-1.0, 1.0)
+    };
+    const int shifts[]= {
+        0,
+    };
+    int r=program<check_atanh<double>, 8, 1, 0x8000>(argc,
+                                                     argv,
+                                                     mpfr_atanh,
+                                                     di,
+                                                     shifts);
+    return r;
+#else
     const int ulp=1;
     const int _N=8;
     bool rc=true;
@@ -50,4 +62,5 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
+#endif
 }
