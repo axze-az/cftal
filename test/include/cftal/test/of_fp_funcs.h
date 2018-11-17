@@ -823,6 +823,8 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                 std::max(std::thread::hardware_concurrency(), 1u);
             // allow one core for generating the numbers
             const size_t thrd_cnt = max_thrd_cnt>1 ? max_thrd_cnt-1 : 1;
+            // favour througput
+            // const size_t thrd_cnt = max_thrd_cnt;
             // setup
             v_res._vr.resize(thrd_cnt, true);
             for (std::size_t i=0; i<thrd_cnt; ++i) {
@@ -1165,9 +1167,9 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats<_N>& st,
             const size_t max_thrd_cnt=
                 std::max(std::thread::hardware_concurrency(), 1u);
             // allow one core for generating the numbers
-            // const size_t thrd_cnt = max_thrd_cnt>1 ? max_thrd_cnt : 1;
+            const size_t thrd_cnt = max_thrd_cnt>1 ? max_thrd_cnt-1 : 1;
             // favour througput
-            const size_t thrd_cnt=max_thrd_cnt;
+            // const size_t thrd_cnt=max_thrd_cnt;
             // setup
             v_res._vr.resize(thrd_cnt, true);
             for (std::size_t i=0; i<thrd_cnt; ++i) {

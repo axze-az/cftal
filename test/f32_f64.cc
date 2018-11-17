@@ -71,10 +71,14 @@ void
 cftal::test::ulp_stats::
 faithful(bool v)
 {
+#if 1
+    _faithful &= (v==true ? 1 : 0);
+#else
     std::scoped_lock<lock_type> _lck(_mtx_faithful);
     _faithful.first = true;
     if (_faithful.second == true)
         _faithful.second =v;
+#endif
 }
 
 std::ostream&
@@ -136,10 +140,18 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats_to_stream& uss)
     } else {
         s << '\n';
     }
+#if 1
+    uint32_t t= us._faithful;
+    if ((t & 2)==0) {
+        s << "faithful: "
+          << (t & 1 ? "perhaps yes" : "no") << '\n';
+    }
+#else
     if (us._faithful.first) {
         s << "faithful: "
           << (us._faithful.second ? "perhaps yes" : "no") << '\n';
     }
+#endif
     return s;
 }
 

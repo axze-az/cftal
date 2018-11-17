@@ -30,22 +30,32 @@ namespace cftal {
         // significant
         float make_float(unsigned sgn, unsigned exp, uint32_t sig);
 
-        struct ulp_stats {
+        struct alignas(64) ulp_stats {
 
             using lock_type = spinlock;
 
             // count of operations with nonzero ulp
             std::atomic<uint64_t> _ulps;
+            char _pad0[64-sizeof(_ulps)];
             // count of nan
             std::atomic<uint64_t> _nans;
+            char _pad1[64-sizeof(_nans)];
             // count of unexpected nans
             std::atomic<uint64_t> _nans_unexpected;
+            char _pad2[64-sizeof(_nans_unexpected)];
             // count of not calculated nans
             std::atomic<uint64_t> _nans_not_calculated;
+            char _pad3[64-sizeof(_nans_not_calculated)];
             // operation count
             std::atomic<uint64_t> _cnt;
+            char _pad4[64-sizeof(_cnt)];
+            // faithul rounding: bit 0 true/false (1/0)
+            //                   bit 1 not tested/tested (1/0)
+            std::atomic<uint32_t> _faithful;
+            char _pad5[64-sizeof(_faithful)];
             // mutex protecting _devs;
             lock_type _mtx_devs;
+            char _pad6[64-sizeof(_mtx_devs)];
             // deviations of x ulp's n times, deviations larger/smaller
             // than lin_max are grouped together into ranges (2^(n-1), 2^n]
             // where 2^(n-1) < x <= 2^n if x positive ....
@@ -53,20 +63,15 @@ namespace cftal {
             static_assert((lin_max & (lin_max-1))==0,
                           "lin_max must be a power of 2");
             std::map<int32_t, uint64_t> _devs;
-            // mutex protecting _faithful
-            lock_type _mtx_faithful;
-            // faithfully rounded if first=true and second=true
-            std::pair<bool, bool> _faithful;
             // constructor.
             ulp_stats()
                 : _ulps(0), _nans(0),
                   _nans_unexpected(0),
                   _nans_not_calculated(0),
                   _cnt(0),
+                  _faithful(3),
                   _mtx_devs(),
-                  _devs(),
-                  _mtx_faithful(),
-                  _faithful(false, true) {};
+                  _devs() {};
             // inrecrement the _ulps, ...
             void inc(int32_t ulp,
                      bool is_nan,
