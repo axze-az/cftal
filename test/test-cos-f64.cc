@@ -4,14 +4,34 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/test/of_math_funcs.h"
+#include "cftal/test/program.h"
 #include "cftal/test/check_cos.h"
-#include <iostream>
-#include <iomanip>
 
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+#if 1
+    const func_domain<double> di[]={
+        std::make_pair(-std::numeric_limits<double>::max(),
+                        std::numeric_limits<double>::max())
+    };
+    const int shifts[]={0};
+    int r=program<check_cos<double>, 16, 1, 0x8000>(argc,
+                                                    argv,
+                                                    mpfr_cos,
+                                                    di,
+                                                    shifts);
+    const func_domain<double> di2[]={
+        std::make_pair(-0x1p28, 0x1p28)
+    };
+    r |=program<check_cos<double>, 16, 1, 0x8000>(argc,
+                                                  argv,
+                                                  mpfr_cos,
+                                                  di2,
+                                                  shifts,
+                                                  false);
+    return r;
+#else
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
@@ -61,4 +81,5 @@ int main(int argc, char** argv)
     std::cout << st2 << std::endl;
 
     return (rc == true) ? 0 : 1;
+#endif
 }
