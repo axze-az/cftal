@@ -11,6 +11,7 @@
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
 #include <cmath>
+#include <tuple>
 
 namespace cftal {
     namespace test {

@@ -19,27 +19,6 @@
 namespace cftal {
     namespace test {
 
-        struct pgm_args {
-            // speed test only
-            bool _speed_only;
-            // multi thread
-            bool _mt;
-            // use cache
-            bool _use_cache;
-            // data directory
-            std::string _data_dir;
-            // the count of tests to perform
-            std::size_t _cnt;
-            pgm_args(std::size_t c=0x80000)
-              : _speed_only(false), _mt(true), _use_cache(false),
-                _data_dir(), _cnt(c) {}
-        };
-
-        pgm_args
-        parse(int argc, const char** argv, std::size_t cnt);
-
-
-
         // divides cnt by 16 if CFTAL_DEV is set in the
         // environment
         std::size_t

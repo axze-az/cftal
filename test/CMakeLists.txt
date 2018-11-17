@@ -12,6 +12,7 @@ set (TEST_SRCS
   of_math_funcs.cc
   call_mpfr.cc
   mpfr_cache.cc
+  program.cc
 )
 include_directories(../..)
 include_directories(../include)
@@ -78,6 +79,8 @@ set (TEST_HDRS
     ./include/cftal/test/stream_save_fmt.h
     ./include/cftal/test/env_var.h
     ./include/cftal/test/work_queue.h
+    ./include/cftal/test/spinlock.h
+    ./include/cftal/test/program.h
 )
 
 find_package(Boost REQUIRED)
