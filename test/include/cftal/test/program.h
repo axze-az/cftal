@@ -49,7 +49,8 @@ namespace cftal {
         program(int argc, char** argv,
                 call_mpfr::f1_t func,
                 const func_domain<double> (&d)[_M],
-                const int (&count_shift)[_M]);
+                const int (&count_shift)[_M],
+                bool table_check=true);
 
         // f32 test program
         template <typename _CHECK,
@@ -72,7 +73,8 @@ int
 cftal::test::program(int argc, char** argv,
                      call_mpfr::f1_t func,
                      const func_domain<double> (&d)[_M],
-                     const int (&count_shift)[_M])
+                     const int (&count_shift)[_M],
+                     bool table_check)
 {
     pgm_args ags=parse(argc, argv, _CNT);
     std::cout << std::setprecision(18) << std::scientific;
@@ -85,21 +87,23 @@ cftal::test::program(int argc, char** argv,
         if (ags._use_cache==true) {
             mpfr_cache::use(func, _CHECK::fname(), ftype(0.0));
         }
-        try {
-            std::string fname=_CHECK::fname();
-            fname += ".testdata";
-            std::string td_file=append_filename(ags._data_dir, fname);
-            std::vector<func_arg_result<ftype> > v=
-                read_double_file(td_file, false);
-            rc &= check_func_1<ftype, 1, _CHECK >(v, _ULP, 0, false);
-            rc &= check_func_1<ftype, 2, _CHECK >(v, _ULP, 0, false);
-            rc &= check_func_1<ftype, 4, _CHECK >(v, _ULP, 0, false);
-            rc &= check_func_1<ftype, 8, _CHECK >(v, _ULP, 0, false);
-        }
-        catch (const std::exception& ex) {
-            std::cerr << ex.what() << std::endl;
-        }
-        catch (...) {
+        if (table_check) {
+            try {
+                std::string fname=_CHECK::fname();
+                fname += ".testdata";
+                std::string td_file=append_filename(ags._data_dir, fname);
+                std::vector<func_arg_result<ftype> > v=
+                    read_double_file(td_file, false);
+                rc &= check_func_1<ftype, 1, _CHECK >(v, _ULP, 0, false);
+                rc &= check_func_1<ftype, 2, _CHECK >(v, _ULP, 0, false);
+                rc &= check_func_1<ftype, 4, _CHECK >(v, _ULP, 0, false);
+                rc &= check_func_1<ftype, 8, _CHECK >(v, _ULP, 0, false);
+            }
+            catch (const std::exception& ex) {
+                std::cerr << ex.what() << std::endl;
+            }
+            catch (...) {
+            }
         }
     }
     auto us=std::make_shared<ulp_stats>();
