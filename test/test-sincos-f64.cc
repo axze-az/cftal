@@ -23,13 +23,8 @@ int main(int argc, char** argv)
         ags._cnt *=8;
     } else {
         // sin part
-        std::string test_data_dir = dirname(argv[0]);
         std::string test_data_file=
-            append_filename(test_data_dir, "../../test/data/sin.testdata");
-        if (argc > 1) {
-            test_data_dir = argv[1];
-            test_data_file = append_filename(test_data_dir, "sin.testdata");
-        }
+            append_filename(ags._data_dir, "sin.testdata");
         std::vector<func_arg_result<double> > v=
             read_double_file(test_data_file, false);
 
@@ -43,12 +38,8 @@ int main(int argc, char** argv)
                                                                   0, false);
         // cos part
         test_data_file=
-            append_filename(test_data_dir, "../../test/data/cos.testdata");
-        if (argc > 1) {
-            test_data_dir = argv[1];
-            test_data_file = append_filename(test_data_dir, "cos.testdata");
-        }
-        v=read_double_file(test_data_file, false);
+            append_filename(ags._data_dir, "cos.testdata");
+            v=read_double_file(test_data_file, false);
         rc &= check_func_1<double, 1, check_sincos<double>::cos >(v, ulp,
                                                                   0, false);
         rc &= check_func_1<double, 2, check_sincos<double>::cos >(v, ulp,

@@ -4,8 +4,7 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/test/of_math_funcs.h"
-#include <iomanip>
+#include "cftal/test/program.h"
 
 namespace cftal {
 
@@ -47,12 +46,11 @@ int main(int argc, char** argv)
     const int _N64=8;
     const int _N32=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x4000);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    } else {
+
+    pgm_args ags=parse(argc, argv, 0x8000);
+
+    if (ags._speed_only) {
+        ags._cnt *=8;
     }
 
     func_domain<double> d=std::make_pair(-std::numeric_limits< double >::max(),
@@ -61,9 +59,10 @@ int main(int argc, char** argv)
     exec_stats<_N64> d_st;
     bool rd= of_fp_func_2_up_to<
         double, _N64, check_nextafter<double> >::v(d_st, d, d,
-                                                 speed_only,
-                                                 cmp_t<double>(),
-                                                 cnt);
+                                                   ags._speed_only,
+                                                   ags._mt,
+                                                   cmp_t<double>(),
+                                                   ags._cnt);
     if (rd==false)
         std::cerr << "double test failed" << std::endl;
     std::cout << d_st << std::endl;
@@ -75,9 +74,10 @@ int main(int argc, char** argv)
     exec_stats<_N32> f_st;
     bool rf= of_fp_func_2_up_to<
         float, _N32, check_nextafter<float> >::v(f_st, f, f,
-                                                 speed_only,
+                                                 ags._speed_only,
+                                                 ags._mt,
                                                  cmp_t<float>(),
-                                                 cnt);
+                                                 ags._cnt);
     std::cout << f_st << std::endl;
     if (rf==false)
         std::cerr << "float test failed" << std::endl;
