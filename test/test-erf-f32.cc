@@ -9,8 +9,8 @@
 
 int main(int argc, char** argv)
 {
-    using namespace cftal::test;
 #if 1
+    using namespace cftal::test;
     const func_domain<float> di[]={
         std::make_pair(-4.0f, 4.0f)
     };
@@ -22,6 +22,7 @@ int main(int argc, char** argv)
                                                    shifts);
     return r;
 #else
+    using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
