@@ -15,11 +15,11 @@ namespace cftal {
     namespace test {
         class spinlock {
             std::atomic_flag _lck = ATOMIC_FLAG_INIT ;
+            void _lock();
         public:
             void lock() {
-                while (_lck.test_and_set(std::memory_order_acquire)) {
-                    std::this_thread::yield();
-                }
+                if (_lck.test_and_set(std::memory_order_acquire))
+                    _lock();
             }
             void unlock() {
                 _lck.clear(std::memory_order_release);

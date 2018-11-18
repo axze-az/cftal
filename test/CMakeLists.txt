@@ -12,6 +12,7 @@ set (TEST_SRCS
   of_math_funcs.cc
   call_mpfr.cc
   mpfr_cache.cc
+  spinlock.cc
   program.cc
 )
 include_directories(../..)

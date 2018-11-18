@@ -79,6 +79,12 @@ cftal::test::program(int argc, char** argv,
     pgm_args ags=parse(argc, argv, _CNT);
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+    std::cout << "f64 test of " << _CHECK::fname()
+              << " (" << (ags._mt ? "mt" : "st")
+              << (ags._speed_only ? ", speed only" : "")
+              << (ags._cnt == _CNT ? "" : ", fast")
+              << ')'
+              << std::endl;
     bool rc=true;
     using ftype = double;
     if (ags._speed_only == true) {
@@ -117,9 +123,11 @@ cftal::test::program(int argc, char** argv,
             cnt <<= sh;
         }
         rc &= of_fp_func_up_to<
-            ftype, _N, _CHECK>::v(st, d[i], ags._speed_only,
-                                   cmp_ulp<ftype>(_ULP, us),
-                                   cnt);
+            ftype, _N, _CHECK>::v(st, d[i],
+                                  ags._speed_only,
+                                  ags._mt,
+                                  cmp_ulp<ftype>(_ULP, us),
+                                  cnt);
     }
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
@@ -140,6 +148,12 @@ cftal::test::program(int argc, char** argv,
     pgm_args ags=parse(argc, argv, _CNT);
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+    std::cout << "f32 test of " << _CHECK::fname()
+              << " (" << (ags._mt ? "mt" : "st")
+              << (ags._speed_only ? ", speed only" : "")
+              << (ags._cnt == _CNT ? "" : ", fast")
+              << ')'
+              << std::endl;
     bool rc=true;
     using ftype = float;
     if (ags._speed_only == true) {
@@ -160,9 +174,11 @@ cftal::test::program(int argc, char** argv,
             cnt <<= sh;
         }
         rc &= of_fp_func_up_to<
-            ftype, _N, _CHECK>::v(st, d[i], ags._speed_only,
-                                   cmp_ulp<ftype>(_ULP, us),
-                                   cnt);
+            ftype, _N, _CHECK>::v(st, d[i],
+                                  ags._speed_only,
+                                  ags._mt,
+                                  cmp_ulp<ftype>(_ULP, us),
+                                  cnt);
     }
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;

@@ -239,7 +239,7 @@ namespace cftal {
                                                  suppress_defaults);
                 return r;
             }
-            
+
             template <typename _CMP=cmp_t<_T> >
             static
             bool
@@ -316,7 +316,7 @@ namespace cftal {
                          cmp, cnt,
                          suppress_defaults);
             }
-            
+
         };
 
         template <typename _T>
@@ -848,9 +848,11 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                              bool speed_only,
                              _CMP cmp)->void {
         job_t va;
+        bool rt=r;
         while (wq.read(va)==true) {
-            r &= calc_vec(std::move(va), st, speed_only, cmp);
+            rt &= calc_vec(std::move(va), st, speed_only, cmp);
         }
+        r = rt;
     };
     auto exec_or_queue=
         [calc_vec, thr_main](bool& r,
