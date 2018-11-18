@@ -4,13 +4,30 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/test/of_math_funcs.h"
+#include "cftal/test/program.h"
 #include "cftal/test/check_exp2.h"
-#include <iostream>
-#include <iomanip>
 
 int main(int argc, char** argv)
 {
+#if 1
+    using namespace cftal::test;
+
+    const double exp2_lo_den_nom= -1.022000000000000113686838e+03;
+    const func_domain<double> di[]={
+        std::make_pair(-1077.0, 1026.0),
+        std::make_pair(-1077.0, exp2_lo_den_nom)
+    };
+    const int shifts[]= {
+        0,
+        -3
+    };
+    int r=program<check_exp2<double>, 8, 1, 0x8000>(argc,
+                                                    argv,
+                                                    mpfr_exp2,
+                                                    di,
+                                                    shifts);
+    return r;
+#else
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -56,4 +73,5 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
+#endif
 }

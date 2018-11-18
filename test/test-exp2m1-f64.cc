@@ -4,13 +4,31 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/test/of_math_funcs.h"
+#include "cftal/test/program.h"
 #include "cftal/test/check_exp2m1.h"
-#include <iostream>
-#include <iomanip>
 
 int main(int argc, char** argv)
 {
+#if 1
+    using namespace cftal::test;
+
+    const func_domain<double> di[]={
+        std::make_pair(-57.0, 1026.0),
+        // check the denormal result range
+        std::make_pair(-0x1p-4, 0x1p-4)
+    };
+    const int shifts[]= {
+        0,
+        -2
+    };
+    int r=program<check_exp2m1<double>, 8, 1, 0x8000>(argc,
+                                                      argv,
+                                                      mpfr_ext::exp2m1,
+                                                      di,
+                                                      shifts);
+    return r;
+#else
+
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -60,4 +78,5 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
+#endif
 }
