@@ -4,13 +4,24 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/test/of_math_funcs.h"
+#include "cftal/test/program.h"
 #include "cftal/test/check_tanh.h"
-#include <iostream>
-#include <iomanip>
 
 int main(int argc, char** argv)
 {
+#if 1
+    using namespace cftal::test;
+    const func_domain<float> di[]={
+        std::make_pair(-14.0f, 14.0f)
+    };
+    const int shifts[]={0};
+    int r=program<check_tanh<float>, 16, 1, 0x8000>(argc,
+                                                    argv,
+                                                    mpfr_tanh,
+                                                    di,
+                                                    shifts);
+    return r;
+#else
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -34,4 +45,5 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
     return (rc == true) ? 0 : 1;
+#endif
 }

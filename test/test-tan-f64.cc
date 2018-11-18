@@ -4,13 +4,34 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/test/of_math_funcs.h"
+#include "cftal/test/program.h"
 #include "cftal/test/check_tan.h"
-#include <iostream>
-#include <iomanip>
 
 int main(int argc, char** argv)
 {
+#if 1
+    using namespace cftal::test;
+    const func_domain<double> di[]={
+        std::make_pair(-std::numeric_limits<double>::max(),
+                        std::numeric_limits<double>::max())
+    };
+    const int shifts[]={0};
+    int r=program<check_tan<double>, 8, 1, 0x8000>(argc,
+                                                   argv,
+                                                   mpfr_tan,
+                                                   di,
+                                                   shifts);
+    const func_domain<double> di2[]={
+        std::make_pair(-0x1p28, 0x1p28)
+    };
+    r |=program<check_tan<double>, 8, 1, 0x8000>(argc,
+                                                 argv,
+                                                 mpfr_tan,
+                                                 di2,
+                                                 shifts,
+                                                 false);
+    return r;
+#else
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -61,4 +82,5 @@ int main(int argc, char** argv)
     std::cout << st2 << std::endl;
 
     return (rc == true) ? 0 : 1;
+#endif
 }
