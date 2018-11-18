@@ -1030,7 +1030,7 @@ exp_px2_k(arg_t<vf_type> xc)
     using fc_t = math::func_constants<float>;
     vmf_type border_case = (x2h == fc_t::exp_hi_inf()) &
         (x2l < 0.0);
-    vf_type t= 0x1.02p-17f;
+    vf_type t= 0x1.01p-17f;
     x2h = _T::sel(border_case, x2h - t, x2h);
     x2l = _T::sel(border_case, x2l + t, x2l);
 
