@@ -176,6 +176,7 @@ namespace cftal {
             v(exec_stats<_N>& st,
               func_domain<_T> domain,
               bool speed_only,
+              bool mt,
               _CMP cmp,
               std::size_t cnt,
               const _C& tv);
@@ -184,8 +185,9 @@ namespace cftal {
             static
             bool
             v(exec_stats<_N>& st,
-              func_domain<_T> domain = default_domain<_T>::value,
-              bool speed_only = false,
+              func_domain<_T> domain,
+              bool speed_only,
+              bool mt,
               _CMP cmp=_CMP(),
               std::size_t cnt=default_cnt,
               bool suppress_defaults= false);
@@ -208,15 +210,36 @@ namespace cftal {
             v(exec_stats<_N>& st,
               func_domain<_T> domain,
               bool speed_only,
+              bool mt,
               _CMP cmp,
               std::size_t cnt,
               const _C& tv) {
                 bool r=of_fp_func<_T, _N, _F>::v(st, domain,
-                                                 speed_only, cmp, cnt,
+                                                 speed_only,
+                                                 mt,
+                                                 cmp, cnt,
                                                  tv);
                 return r;
             }
 
+            template <typename _CMP=cmp_t<_T> >
+            static
+            bool
+            v(exec_stats<_N>& st,
+              func_domain<_T> domain,
+              bool speed_only,
+              bool mt,
+              _CMP cmp,
+              std::size_t cnt,
+              bool suppress_defaults=false) {
+                bool r=of_fp_func<_T, _N, _F>::v(st, domain,
+                                                 speed_only,
+                                                 mt,
+                                                 cmp, cnt,
+                                                 suppress_defaults);
+                return r;
+            }
+            
             template <typename _CMP=cmp_t<_T> >
             static
             bool
@@ -226,10 +249,11 @@ namespace cftal {
               _CMP cmp= _CMP(),
               std::size_t cnt=default_cnt,
               bool suppress_defaults= false) {
-                bool r=of_fp_func<_T, _N, _F>::v(st, domain,
-                                                 speed_only, cmp, cnt,
-                                                 suppress_defaults);
-                return r;
+                return v(st, domain,
+                         speed_only,
+                         speed_only == false,
+                         cmp, cnt,
+                         suppress_defaults);
             }
         };
 
@@ -243,6 +267,7 @@ namespace cftal {
               func_domain<_T> domain_1 = default_domain<_T>::value,
               func_domain<_T> domain_2 = default_domain<_T>::value,
               bool speed_only = false,
+              bool mt = true,
               _CMP cmp=_CMP(),
               std::size_t cnt=default_cnt,
               bool suppress_defaults=false);
@@ -255,6 +280,26 @@ namespace cftal {
 
         template <typename _T, std::size_t _N, typename _F>
         struct of_fp_func_2_up_to {
+
+            template <typename _CMP=cmp_t<_T> >
+            static
+            bool
+            v(exec_stats<_N>& st,
+              func_domain<_T> domain_1,
+              func_domain<_T> domain_2,
+              bool speed_only,
+              bool mt,
+              _CMP cmp,
+              std::size_t cnt=default_cnt,
+              bool suppress_defaults=false) {
+                bool r=of_fp_func_2<_T, _N, _F>::v(st, domain_1, domain_2,
+                                                   speed_only,
+                                                   mt,
+                                                   cmp, cnt,
+                                                   suppress_defaults);
+                return r;
+            }
+
             template <typename _CMP=cmp_t<_T> >
             static
             bool
@@ -265,11 +310,13 @@ namespace cftal {
               _CMP cmp= _CMP(),
               std::size_t cnt=default_cnt,
               bool suppress_defaults=false) {
-                bool r=of_fp_func_2<_T, _N, _F>::v(st, domain_1, domain_2,
-                                                   speed_only, cmp, cnt,
-                                                   suppress_defaults);
-                return r;
+                return v(st, domain_1, domain_2,
+                         speed_only,
+                         speed_only==false,
+                         cmp, cnt,
+                         suppress_defaults);
             }
+            
         };
 
         template <typename _T>
@@ -747,6 +794,7 @@ bool
 cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                        func_domain<_T> domain,
                                        bool speed_only,
+                                       bool mt,
                                        _CMP cmp, std::size_t cnt,
                                        const _C& tv)
 {
@@ -772,8 +820,6 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
 
 #if 1
 #if 1
-    const bool mt=speed_only == false;
-
     using job_t = std::vector<_T[_N]>;
 
     struct thread_data {
@@ -988,15 +1034,18 @@ bool
 cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                        func_domain<_T> domain,
                                        bool speed_only,
+                                       bool mt,
                                        _CMP cmp, std::size_t cnt,
                                        bool suppress_defaults)
 {
     bool r;
     if (suppress_defaults == false) {
-        r=v(st, domain, speed_only, cmp, cnt, default_arguments<_T>::values);
+        r=v(st, domain, speed_only, mt, cmp, cnt,
+            default_arguments<_T>::values);
     } else {
         const std::vector<_T> empty_def_args;
-        r=v(st, domain, speed_only, cmp, cnt, empty_def_args);
+        r=v(st, domain, speed_only, mt, cmp, cnt,
+            empty_def_args);
     }
     return r;
 }
@@ -1064,6 +1113,7 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats<_N>& st,
                                          func_domain<_T> domain_1,
                                          func_domain<_T> domain_2,
                                          bool speed_only,
+                                         bool mt,
                                          _CMP cmp, std::size_t cnt,
                                          bool suppress_defaults)
 {
@@ -1117,8 +1167,6 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats<_N>& st,
 
 #if 1
 #if 1
-    const bool mt= true; // speed_only == false;
-
     using job_t = std::pair<std::vector<_T[_N]>, std::vector<_T[_N]> >;
 
     struct thread_data {
@@ -1197,7 +1245,6 @@ cftal::test::of_fp_func_2<_T, _N, _F>::v(exec_stats<_N>& st,
         }
     };
 #else
-    const bool mt=speed_only == false;
 
     std::list<std::future<bool> > v_res;
 

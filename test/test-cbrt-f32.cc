@@ -4,22 +4,26 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include <cmath>
-#include <cftal/vec.h>
-#include <cftal/math/func.h>
-#include <cftal/test/f32_f64.h>
-#include <cftal/test/of_math_funcs.h>
-#include <cftal/test/check_cbrt.h>
-#include <limits>
-#include <cstdint>
-#include <iostream>
-#include <iomanip>
-#include <cstring>
+#include "cftal/test/program.h"
+#include "cftal/test/check_cbrt.h"
 
 
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+#if 1
+    const func_domain<float> di[]={
+        std::make_pair(-std::numeric_limits<float>::max(),
+                        std::numeric_limits<float>::max())
+    };
+    const int shifts[]={0};
+    int r=program<check_cbrt<float>, 16, 1, 0x8000>(argc,
+                                                    argv,
+                                                    mpfr_cbrt,
+                                                    di,
+                                                    shifts);
+    return r;
+#else
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;
@@ -43,4 +47,5 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *usf << std::endl;
     std::cout << f_st << std::endl;
     return rc==true ? 0 : 1;
+#endif
 }

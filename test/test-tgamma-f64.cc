@@ -4,28 +4,28 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/test/of_math_funcs.h"
+#include "cftal/test/program.h"
 #include "cftal/test/check_tgamma.h"
-#include "cftal/test/mpfr_cache.h"
-#include <iostream>
-#include <iomanip>
 
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+
+    pgm_args ags=parse(argc, argv, 0x8000);
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    const int ulp=12;
-    const int _N=8;
-    bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x8000);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
+
+    if (ags._speed_only == true) {
+        ags._cnt *= 8;
     } else {
-        mpfr_cache::use(mpfr_gamma, "tgamma", 0.0);
+        if (ags._use_cache==true) {
+            mpfr_cache::use(mpfr_gamma, "tgamma", 0.0);
+        }
     }
+    const int ulp=12;
+    const int _N=16;
+    bool rc=true;
+
     func_domain<double> d=std::make_pair(-186.0, +172.0);
     std::cout << "testing tgamma" << std::endl;
     auto us=std::make_shared<ulp_stats>();
@@ -51,9 +51,12 @@ int main(int argc, char** argv)
     }
 
     rc &= of_fp_func_up_to<
-        double, _N, check_tgamma<double> >::v(st, d, speed_only,
+        double, _N, check_tgamma<double> >::v(st, d,
+                                              ags._speed_only,
+                                              ags._mt,
                                               cmp_ulp<double>(ulp, us),
-                                              cnt, def_args);
+                                              ags._cnt,
+                                              def_args);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;

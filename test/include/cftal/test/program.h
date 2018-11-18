@@ -171,5 +171,7 @@ cftal::test::program(int argc, char** argv,
 }
 
 
-
+// Local variables:
+// mode: c++
+// end:
 #endif // __CFTAL_TEST_PROGRAM_H__
