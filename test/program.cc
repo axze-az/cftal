@@ -13,6 +13,7 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
     using std::string_view;
     pgm_args args(cnt);
     int non_option_arg=0;
+    bool err=false;
     for (int i=1; i<argc; ++i) {
         string_view ai(argv[i]);
         if (ai == "--speed") {
@@ -30,17 +31,18 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
                 args._data_dir=std::string(ai.data(), ai.length());
                 ++non_option_arg;
             } else {
-                ++non_option_arg;
+                err=true;
             }
         }
     }
-    if (non_option_arg>1) {
+    if (non_option_arg>1 || err) {
         std::cerr << argv[0]
-                  << "[--fast] reduces the test count\n"
-                  << "[--speed] performs a speed test only\n"
-                  << "[--cache] use a file cache\n"
-                  << "[--mt] force multithreading\n"
-                  << "[--no-mt] disable multithreading\n"
+                  << " [--fast] [--speed] [--[no-]mt] [--cache]\n"
+                     "--fast  reduces the test count\n"
+                     "--speed performs a speed test only\n"
+                     "--mt    force multithreading\n"
+                     "--no-mt disable multithreading\n"
+                     "--cache use a file cache\n"
                   << std::flush;
         std::exit(3);
     }
