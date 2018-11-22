@@ -875,6 +875,8 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
             // const size_t thrd_cnt = max_thrd_cnt;
             // setup
             v_res._vr.resize(thrd_cnt, true);
+            // std::thread t0;
+            // bind_thread_to_cpu(t0, 0);
             for (std::size_t i=0; i<thrd_cnt; ++i) {
                 auto ti=std::thread(thr_main,
                                     std::ref(v_res._wq),
@@ -882,7 +884,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                     std::ref(st),
                                     speed_only,
                                     cmp);
-                bind_thread_to_cpu(ti, i+1);
+                // bind_thread_to_cpu(ti, i+1);
                 v_res._vt.emplace_back(std::move(ti));
             }
         }

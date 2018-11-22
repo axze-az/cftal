@@ -6,13 +6,14 @@
 //
 #include "cftal/test/spinlock.h"
 #include <thread>
+#include <chrono>
 
 #if defined (__linux__)
 #include <pthread.h>
 #endif
 
 void
-cftal::test::spinlock::_lock()
+cftal::test::impl::flag_spinlock::_lock()
 {
     do {
         std::this_thread::yield();
@@ -28,9 +29,23 @@ cftal::test::bind_thread_to_cpu(std::thread& tid, unsigned cpu)
     CPU_ZERO(&s);
     CPU_SET(cpu, &s);
     pthread_t t=tid.native_handle();
+    if (tid.get_id() == std::thread::id()) {
+        t = pthread_self();
+    }
     int r=pthread_setaffinity_np(t, sizeof(s), &s);
     return r==0;
 #else
     return true;
 #endif
 }
+
+void
+cftal::test::impl::char_spinlock::_lock()
+{
+    do {
+        do {
+            std::this_thread::yield();
+        } while (_lck.load() == LOCK);
+    } while (_lck.exchange(LOCK, std::memory_order_acquire) != FREE);
+}
+

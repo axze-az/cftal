@@ -13,21 +13,58 @@
 
 namespace cftal {
     namespace test {
+
+        namespace impl {
+
+            class flag_spinlock {
+                std::atomic_flag _lck = ATOMIC_FLAG_INIT ;
+                void _lock();
+            public:
+                void lock() {
+                    if (_lck.test_and_set(std::memory_order_acquire))
+                        _lock();
+                }
+                void unlock() {
+                    _lck.clear(std::memory_order_release);
+                }
+            };
+
+            class char_spinlock {
+                enum {
+                    FREE=0,
+                    LOCK=1
+                };
+                std::atomic_char _lck=FREE;
+                // static_assert(ATOMIC_CHAR_LOCK_FREE==2, "oops");
+                void _lock();
+            public:
+                void lock() {
+                    if (_lck.exchange(LOCK, std::memory_order_acquire)!= FREE)
+                        _lock();
+                }
+                void unlock() {
+                    _lck.store(FREE, std::memory_order_release);
+                }
+            };
+        }
+
         class spinlock {
-            std::atomic_flag _lck = ATOMIC_FLAG_INIT ;
-            void _lock();
+            using spinlock_t =
+                std::conditional_t<ATOMIC_CHAR_LOCK_FREE==2,
+                                   impl::char_spinlock,
+                                   impl::flag_spinlock>;
+            spinlock_t _lck;
         public:
-            void lock() {
-                if (_lck.test_and_set(std::memory_order_acquire))
-                    _lock();
-            }
-            void unlock() {
-                _lck.clear(std::memory_order_release);
-            }
+            void lock() { _lck.lock(); }
+            void unlock() { _lck.unlock(); }
         };
 
+        // use an unitialized thread to refer to the current
+        // thread
         bool
-        bind_thread_to_cpu(std::thread& tid::id, unsigned cpu);
+        bind_thread_to_cpu(std::thread& tid, unsigned cpu);
+
+
 
     }
 }
