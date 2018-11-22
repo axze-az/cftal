@@ -25,6 +25,10 @@ namespace cftal {
                 _lck.clear(std::memory_order_release);
             }
         };
+
+        bool
+        bind_thread_to_cpu(std::thread& tid::id, unsigned cpu);
+
     }
 }
 

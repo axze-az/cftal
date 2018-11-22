@@ -882,6 +882,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                     std::ref(st),
                                     speed_only,
                                     cmp);
+                bind_thread_to_cpu(ti, i+1);
                 v_res._vt.emplace_back(std::move(ti));
             }
         }
