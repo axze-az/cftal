@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     const func_domain<double> di[]={
         std::make_pair(-750.0, 710.0),
         // check the denormal result range
-        std::make_pair(-750, -7.083964185322641924358322e+02)
+        std::make_pair(-750.0, -7.083964185322641924358322e+02)
     };
     const int shifts[]= {
         0,
