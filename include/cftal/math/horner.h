@@ -82,6 +82,12 @@ namespace cftal {
         horner_n2(_X& ya, _X& yb, _X x,
                   const _C (&a)[_N], const _C (&b)[_N]);
 
+        // a_n in a[0], b_n in b[0]
+        template <typename _X, typename _C, std::size_t _N>
+        void
+        horner2_n2(_X& ya, _X& yb, _X x, _X x2,
+                   const _C (&a)[_N], const _C (&b)[_N]);
+
         // a_n in a[0], b_n in b[0], c_n in a[0], d_n in a[0]
         template <typename _X, typename _C, std::size_t _N>
         void
@@ -434,15 +440,45 @@ cftal::math::horner_n2(_X& ya, _X& yb, _X x,
                        const _C (&a)[_N], const _C (&b)[_N])
 {
     static_assert(_N > 0, "invalid call to horner_n2(ya, yb, x, ca, cb)");
-    _X ra= _X(a[0]);
-    _X rb= _X(b[0]);
     const _C* pa=a;
     const _C* pb=b;
+    _X ra= _X(pa[0]);
+    _X rb= _X(pb[0]);
 // #pragma GCC unroll 0
 // #pragma clang loop unroll(disable)
     for (std::size_t i=1; i<_N; ++i) {
         ra= horner(x, ra, pa[i]);
         rb= horner(x, rb, pb[i]);
+    }
+    ya = ra;
+    yb = rb;
+}
+
+template <typename _X, typename _C, std::size_t _N>
+void
+cftal::math::horner2_n2(_X& ya, _X& yb, _X x, _X x2,
+                        const _C (&a)[_N], const _C (&b)[_N])
+{
+    static_assert(_N > 1,
+                  "invalid call to horner2_n2(ya, yb, x, x2, array, array)");
+    const _C* pa=a;
+    const _C* pb=b;
+    _X r0a= _X(pa[0]);
+    _X r1a= _X(pa[1]);
+    _X r0b= _X(pb[0]);
+    _X r1b= _X(pb[1]);
+    const std::size_t _NE= _N & ~(std::size_t(1));
+    for (std::size_t i=2; i<_NE; i+=2) {
+        r0a= horner(x2, r0a, pa[i]);
+        r1a= horner(x2, r1a, pa[i+1]);
+        r0b= horner(x2, r0b, pb[i]);
+        r1b= horner(x2, r1b, pb[i+1]);
+    }
+    _X ra = horner(x, r0a, r1a);
+    _X rb = horner(x, r0b, r1b);
+    if (_N & 1) {
+        ra = horner(x, ra, pa[_N-1]);
+        rb = horner(x, rb, pb[_N-1]);
     }
     ya = ra;
     yb = rb;

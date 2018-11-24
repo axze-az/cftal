@@ -229,6 +229,7 @@ namespace cftal {
             using vmf_type = typename vec<double, _N>::mask_type;
             using vi_type = vec<int32_t, _N>;
             using vmi_type = typename vec<int32_t, _N>::mask_type;
+            using vu_type = vec<uint32_t, _N>;
             // integer vector with the same length as vf_type
             using vi2_type = vec<int32_t, 2*_N >;
             using vmi2_type = typename vec<int32_t, 2* _N>::mask_type;
