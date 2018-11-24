@@ -8,8 +8,8 @@
 #include <cftal/test/stream_save_fmt.h>
 #include <cftal/test/env_var.h>
 #include <cftal/cast.h>
-#include <cftal/test/spinlock.h>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <algorithm>
 #include <string>
@@ -17,9 +17,10 @@
 #include <iostream>
 #include <iomanip>
 #include <memory>
-#include <lzma.h>
-#include <mutex>
 #include <shared_mutex>
+#include <lzma.h>
+
+#define DEBUG_CACHE 0
 
 namespace cftal { namespace test { namespace lzma {
 
@@ -220,14 +221,14 @@ store(std::ofstream& f, const std::vector<_T>& v)
 
 namespace cftal { namespace test { namespace mpfr_cache {
 
-    // these object may be really large
+    // these objects may be really large
     template <typename _K, typename _R>
     class result_cache {
         using key_type = _K;
     public:
         using mapped_type = std::pair<_R, int32_t>;
     private:
-        using map_type = std::map<key_type, mapped_type>;
+        using map_type = std::unordered_map<key_type, mapped_type>;
         using value_type = std::pair<key_type, mapped_type>;
         using vec_type = std::vector<value_type>;
         vec_type _v;
@@ -345,6 +346,9 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::
 result_cache(const std::string& fn)
     : _file_name(fn), _save(false), _compress(false)
 {
+#if 1
+    _m.reserve(move_treshold);
+#endif
     load();
 }
 
@@ -381,7 +385,7 @@ move_map_to_vec()
     _m.clear();
     std::sort(std::begin(_v), std::end(_v),
               [](const value_type& a, const value_type& b)->bool {
-                  return a.first < b.first;
+                   return a.first < b.first;
               });
     _save = true;
 }
@@ -508,6 +512,11 @@ void
 cftal::test::mpfr_cache::result_cache<_K, _R>::
 insert(const value_type& v)
 {
+#if DEBUG_CACHE>0
+    if (find(v.first) == nullptr) {
+        std::cerr << "duplicate entry detected\n" << std::flush;
+    }
+#endif
     _m.insert(v);
     if (_m.size() >= move_treshold)
         move_map_to_vec();
