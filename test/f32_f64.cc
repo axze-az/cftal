@@ -62,7 +62,7 @@ inc(int32_t ulp, bool is_nan,
             rulp= 1U << log2_u;
             rulp= ulp < 0 ? -rulp : rulp;
         }
-        std::scoped_lock<lock_type> _lck(_mtx_devs);
+        std::lock_guard<lock_type> _lck(_mtx_devs);
         _devs[rulp] += 1;
     }
 }
@@ -74,7 +74,7 @@ faithful(bool v)
 #if 1
     _faithful &= (v==true ? 1 : 0);
 #else
-    std::scoped_lock<lock_type> _lck(_mtx_faithful);
+    std::lock_guard<lock_type> _lck(_mtx_faithful);
     _faithful.first = true;
     if (_faithful.second == true)
         _faithful.second =v;
