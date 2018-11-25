@@ -147,7 +147,6 @@ cftal::impl::_cvt_f32_to_f16(f32_t ff)
 }
 
 template <std::size_t _N>
-inline
 cftal::vec<cftal::mf_f16_t, _N>
 cftal::impl::_cvt_f32_to_f16(vec<f32_t, _N> ff)
 {
@@ -197,7 +196,6 @@ cftal::impl::_cvt_f32_to_f16(vec<f32_t, _N> ff)
 }
 
 template <std::size_t _N>
-inline
 cftal::vec<cftal::f32_t, _N>
 cftal::impl::_cvt_f16_to_f32(vec<mf_f16_t, _N> ff)
 {

@@ -640,7 +640,7 @@ namespace cftal {
          vec<_T, _N> >
     operator<<(const typename vec<_T, _N>::value_type& a,
                const vec<_T, _N>& b);
-    
+
     // vshl operator: v, expr
     template <typename _T, std::size_t _N,
               template <typename _T1, std::size_t _N1> class _OP,
@@ -768,7 +768,7 @@ namespace cftal {
     operator>>=(vec<_T, _N>& a,
                const expr<_OP<_T, _N>, _L, _R>& b);
 
-    
+
     // left shift v unsigned
     template <typename _T, std::size_t _N>
     expr<op:: shl<_T, _N>,
@@ -804,7 +804,7 @@ namespace cftal {
     template <typename _T, std::size_t _N>
     vec<_T, _N>&
     operator >>=(vec<_T, _N>& v, unsigned s);
-    
+
     // unary minus: v
     template <typename _T, std::size_t _N>
     expr<op:: neg<_T, _N>,
