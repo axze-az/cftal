@@ -355,6 +355,10 @@ namespace cftal { namespace test { namespace mpfr_cache {
         std::shared_ptr<lock_type> _p_mtx;
     public:
         pmutex() : _p_mtx(std::make_shared<lock_type>()) {}
+        pmutex(const pmutex&) = default;
+        pmutex(pmutex&&) = default;
+        pmutex& operator=(const pmutex&) = default;
+        pmutex& operator=(pmutex&&) = default;
         void lock() { _p_mtx->lock(); }
         void unlock() { _p_mtx->unlock(); }
         void lock_shared() { _p_mtx->lock_shared(); }
@@ -370,7 +374,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
               _m64(file_name(name, "f64")) {
         }
         f1_64_cache_entry(f1_64_cache_entry&& r)
-            : pmutex(std::move(pmutex(r))),
+            : pmutex(r),
              _name(std::move(r._name)),
              _m64(std::move(r._m64)) {
         }
@@ -389,7 +393,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
               _m32(file_name(name, "f32")) {
         }
         f1_32_cache_entry(f1_32_cache_entry&& r)
-            : pmutex(std::move(pmutex(r))),
+            : pmutex(r),
              _name(std::move(r._name)),
              _m32(std::move(r._m32)) {
         }
