@@ -221,6 +221,74 @@ store(std::ofstream& f, const std::vector<_T>& v)
 
 namespace cftal { namespace test { namespace mpfr_cache {
 
+
+    class packed_int64_t {
+        uint32_t _l;
+        uint32_t _h;
+    public:
+        packed_int64_t() = default;
+        packed_int64_t(const packed_int64_t&) = default;
+        packed_int64_t& operator=(const packed_int64_t&) = default;
+        packed_int64_t(int64_t v) : _l(uint32_t(v)), _h(uint32_t(v>>32)) {
+        }
+        operator int64_t() const {
+            uint64_t v(_h);
+            v <<= 32;
+            v |= _l;
+            return int64_t(v);
+        }
+    };
+
+    inline
+    bool
+    operator<(const packed_int64_t& a, const packed_int64_t& b) {
+        return int64_t(a) < int64_t(b);
+    }
+
+    inline
+    bool
+    operator<=(const packed_int64_t& a, const packed_int64_t& b) {
+        return int64_t(a) <= int64_t(b);
+    }
+
+    inline
+    bool
+    operator==(const packed_int64_t& a, const packed_int64_t& b) {
+        return int64_t(a) == int64_t(b);
+    }
+
+    inline
+    bool
+    operator!=(const packed_int64_t& a, const packed_int64_t& b) {
+        return int64_t(a) != int64_t(b);
+    }
+
+    inline
+    bool
+    operator>=(const packed_int64_t& a, const packed_int64_t& b) {
+        return int64_t(a) != int64_t(b);
+    }
+
+    inline
+    bool
+    operator>(const packed_int64_t& a, const packed_int64_t& b) {
+        return int64_t(a) > int64_t(b);
+    }
+}}}
+
+namespace std {
+
+    template <>
+    struct hash<cftal::test::mpfr_cache::packed_int64_t> {
+        std::size_t
+        operator()(const cftal::test::mpfr_cache::packed_int64_t& v) const {
+            return hash<int64_t>()(int64_t(v));
+        }
+    };
+
+}
+
+namespace cftal { namespace test { namespace mpfr_cache {
     // these objects may be really large
     template <typename _K, typename _R>
     class result_cache {
@@ -276,7 +344,7 @@ namespace cftal { namespace test { namespace mpfr_cache {
             const;
     };
 
-    using f1_f64_map = result_cache<int64_t, int64_t>;
+    using f1_f64_map = result_cache<packed_int64_t, packed_int64_t>;
     using f1_f32_map = result_cache<int32_t, int32_t>;
 
     static
@@ -497,12 +565,10 @@ find(const key_type& k)
         }
     }
     // map lookup if nothing was found
-    if (pr == nullptr) {
-        auto me=std::cend(_m);
-        auto mf=_m.find(k);
-        if (mf != me) {
-            pr = &mf->second;
-        }
+    auto me=std::cend(_m);
+    auto mf=_m.find(k);
+    if (mf != me) {
+        pr = &mf->second;
     }
     return pr;
 }
@@ -517,9 +583,11 @@ insert(const value_type& v)
         std::cerr << "duplicate entry detected\n" << std::flush;
     }
 #endif
-    _m.insert(v);
-    if (_m.size() >= move_treshold)
-        move_map_to_vec();
+    if (find(v.first) == nullptr) {
+        _m.insert(v);
+        if (_m.size() >= move_treshold)
+            move_map_to_vec();
+    }
 }
 
 template <typename _K, typename _R>
