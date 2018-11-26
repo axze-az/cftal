@@ -74,11 +74,15 @@ void
 cftal::math::spec_func_core<float, _T>::
 sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 {
-    vf_type fh= rint(vf_type(xc*2.0));
+    vf_type fh= rint(vf_type(xc*2.0f));
     vf_type xrh, xrl;
-    d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
+    xrh = xc - 0.5f * fh;
+    // poor mans fmod:
+    vf_type i= rint(vf_type(fh*1.0f/8.0f));
+    fh = fh - i*8.0f;
+    // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    d_ops::mul22(xrh, xrl, ctbl::m_pi[0], ctbl::m_pi[1], xrh, xrl);
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
     vi_type q= _T::cvt_f_to_i(fh);
     base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
 }
@@ -88,11 +92,15 @@ void
 cftal::math::spec_func_core<float, _T>::
 sinpi_cospi_k(arg_t<vf_type> xc, dvf_type* ps, dvf_type* pc)
 {
-    vf_type fh= rint(vf_type(xc*2.0));
+    vf_type fh= rint(vf_type(xc*2.0f));
     vf_type xrh, xrl;
-    d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
+    xrh = xc - 0.5f * fh;
+    // poor mans fmod:
+    vf_type i= rint(vf_type(fh*1.0f/8.0f));
+    fh = fh - i*8.0f;
+    // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    d_ops::mul22(xrh, xrl, ctbl::m_pi[0], ctbl::m_pi[1], xrh, xrl);
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
     vi_type q= _T::cvt_f_to_i(fh);
     base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
 }

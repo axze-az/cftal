@@ -81,9 +81,13 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 {
     vf_type fh= rint(vf_type(xc*2.0));
     vf_type xrh, xrl;
-    d_ops::add12cond(xrh, xrl, xc, fh*(-0.5));
+    xrh = xc - 0.5 * fh;
+    // poor mans fmod:
+    vf_type i= rint(vf_type(fh*1.0/8.0));
+    fh = fh - i*8.0;
+    // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul22(xrh, xrl, ctbl::m_pi[0], ctbl::m_pi[1], xrh, xrl);
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
     vi_type q0= _T::cvt_f_to_i(fh);
     vi2_type q=_T::vi_to_vi2(q0);
     base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
@@ -96,9 +100,13 @@ sinpi_cospi_k(arg_t<vf_type> xc, dvf_type* ps, dvf_type* pc)
 {
     vf_type fh= rint(vf_type(xc*2.0));
     vf_type xrh, xrl;
-    d_ops::add12cond(xrh, xrl, xc, fh*(-0.5));
+    xrh = xc - 0.5 * fh;
+    // poor mans fmod:
+    vf_type i= rint(vf_type(fh*1.0/8.0));
+    fh = fh - i*8.0;
+    // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul22(xrh, xrl, ctbl::m_pi[0], ctbl::m_pi[1], xrh, xrl);
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
     vi_type q0= _T::cvt_f_to_i(fh);
     vi2_type q=_T::vi_to_vi2(q0);
     base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
