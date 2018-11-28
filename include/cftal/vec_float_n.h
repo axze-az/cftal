@@ -895,7 +895,9 @@ namespace cftal {
     lgamma(arg_t<vec<float, 8> > d, vec<int32_t, 8>* signp);
 
     // no vec<float, 16>, way to slow
-    
+    vec<float, 16>
+    lgamma(arg_t<vec<float, 16> > d, vec<int32_t, 16>* signp);
+
     // ilogbp1
     vec<int32_t, 1>
     ilogbp1(arg_t<vec<float, 1> > v);
