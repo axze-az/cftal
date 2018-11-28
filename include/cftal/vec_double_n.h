@@ -798,10 +798,7 @@ namespace cftal {
     vec<double, 4>
     lgamma(arg_t<vec<double, 4> > d, vec<int32_t, 4>* signp);
 
-    vec<double, 8>
-    lgamma(arg_t<vec<double, 8> > d, vec<int32_t, 8>* signp);
-
-
+    
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
 
