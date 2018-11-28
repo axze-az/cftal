@@ -27,6 +27,8 @@ namespace cftal {
             using base_type = spec_func_core<_FLOAT_T, _TRAITS_T>;
             using vf_type = typename _TRAITS_T::vf_type;
             using vmf_type = typename _TRAITS_T::vmf_type;
+            using vi_type = typename _TRAITS_T::vi_type;
+            using vmi_type = typename _TRAITS_T::vmi_type;
 
             static
             vf_type
@@ -39,11 +41,16 @@ namespace cftal {
             static
             vf_type
             tgamma(arg_t<vf_type> x);
+
+            static
+            vf_type
+            lgamma(arg_t<vf_type> xc, vi_type* signp);
+
+            
         };
 
     }
 }
-
 
 template <typename _FLOAT_T, typename _TRAITS_T>
 typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
@@ -97,6 +104,38 @@ tgamma(arg_t<vf_type> xc)
     }
     r = _TRAITS_T::sel(isnan(xc), xc, r);
     return r;
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
+lgamma(arg_t<vf_type> xc, vi_type* signp)
+{
+    vmf_type x_lt_0 = xc < vf_type(0.0);
+    vi_type si;
+    vf_type lg=base_type::lgamma_k(xc, &si);
+
+    using fc= func_constants<_FLOAT_T>;
+    lg = _TRAITS_T::sel(xc >= fc::lgamma_hi_inf(), _TRAITS_T::pinf(), lg);
+    if (any_of(x_lt_0)) {
+        vmf_type is_int = xc == floor(xc);
+        vmf_type is_int_lt_0 = is_int & x_lt_0;
+        lg = _TRAITS_T::sel(is_int_lt_0, _TRAITS_T::pinf(), lg);
+        si = _TRAITS_T::sel(_TRAITS_T::vmf_to_vmi(is_int_lt_0), 1, si);
+    }
+    vmf_type t;
+    if (any_of(t=xc==vf_type(0.0))) {
+        lg = _TRAITS_T::sel(t, _TRAITS_T::pinf(), lg);
+        vmi_type ti=_TRAITS_T::vmf_to_vmi(t);
+        vf_type sgn=copysign(vf_type(1.0), xc);
+        vi_type ni=_TRAITS_T::cvt_f_to_i(sgn);
+        si = _TRAITS_T::sel(ti, ni, si);
+    }
+    lg = _TRAITS_T::sel(isnan(xc), xc, lg);
+    if (signp != nullptr) {
+        *signp = si;
+    }
+    return lg;
 }
 
 // Local Variables:

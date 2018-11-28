@@ -856,7 +856,7 @@ namespace cftal {
     vec<float, 16>
     erfc(arg_t<vec<float, 16> > d);
 
-    // tgamma, these functions are exact to +-7 ulp
+    // tgamma, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
     tgamma(const vec<float, _N>& x);
@@ -876,6 +876,26 @@ namespace cftal {
     vec<float, 16>
     tgamma(arg_t<vec<float, 16> > d);
 
+    // lgamma: these functions are exact to ??? ulp, perhaps to +-1
+    // ulp for non negative arguments
+    template <std::size_t _N>
+    vec<float, _N>
+    lgamma(const vec<float, _N>& x, vec<int32_t, _N>* signp);
+
+    vec<float, 1>
+    lgamma(arg_t<vec<float, 1> > d, vec<int32_t, 1>* signp);
+
+    vec<float, 2>
+    lgamma(arg_t<vec<float, 2> > d, vec<int32_t, 2>* signp);
+
+    vec<float, 4>
+    lgamma(arg_t<vec<float, 4> > d, vec<int32_t, 4>* signp);
+
+    vec<float, 8>
+    lgamma(arg_t<vec<float, 8> > d, vec<int32_t, 8>* signp);
+
+    // no vec<float, 16>, way to slow
+    
     // ilogbp1
     vec<int32_t, 1>
     ilogbp1(arg_t<vec<float, 1> > v);
@@ -1543,6 +1563,18 @@ cftal::vec<float, _N>
 cftal::tgamma(const vec<float, _N>& v)
 {
     vec<float, _N> r(tgamma(low_half(v)), tgamma(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::lgamma(const vec<float, _N>& v, vec<int32_t, _N>* signp)
+{
+    vec<int32_t, _N/2> sl, sh;
+    vec<float, _N> r(lgamma(low_half(v), &sl), lgamma(high_half(v), &sh));
+    if (signp)
+        *signp=vec<int32_t, _N>(sl, sh);
     return r;
 }
 

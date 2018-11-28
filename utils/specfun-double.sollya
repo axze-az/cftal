@@ -1,5 +1,20 @@
 #! /usr/bin/sollya
 execute("common.sollya");
+ext_lngamma = library("./libsollya_funcs.so");
+ext_tgamma = library("./libsollya_funcs.so");
+
+i0=[1.0+0x1p-512, 2.0-0x1p-512];
+f= ext_lngamma(x)/((x-1)*(x-2));
+b = [|0, ..., 27|];
+c = [|DD, DD, DD, D...|];
+d = guessdegree(f, i0, 0x1p-64);
+d;
+p = fpminimax(f, b, c, i0, relative, floating);
+write_approx_prec(p, f, i0);
+write_coeffs(p, "const double lngamma_i0_c", "lngamma", b, c);
+// write_coeff(exp(1), "", "const double e", doubledouble);
+plot((p(x)-f(x))/f(x), i0, postscriptfile, "tgamma_i0-f64");
+quit;
 
 /* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
 /* printexpansion(p-1.0); */

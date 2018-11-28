@@ -11,5 +11,6 @@
 
 // DEF_ELEM_FUNCS(cftal, v4f64, v4s32, double)
 DEF_SPEC_FUNCS(cftal, cftal, v4f64, v4s32, double)
+DEF_SLOW_SPEC_FUNCS(cftal, cftal, v4f64, v4s32, double)
 
 

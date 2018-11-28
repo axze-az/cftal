@@ -82,6 +82,7 @@ set (TEST_HDRS
     ./include/cftal/test/work_queue.h
     ./include/cftal/test/spinlock.h
     ./include/cftal/test/program.h
+    ./include/cftal/test/check_lgamma.h
 )
 
 find_package(Boost REQUIRED)
@@ -228,6 +229,7 @@ test_prog(test-root12-f64)
 test_prog(test-erf-f64)
 test_prog(test-erfc-f64)
 test_prog(test-tgamma-f64)
+test_prog(test-lgamma-f64)
 
 test_prog(test-sqrt-f32)
 test_prog(test-rsqrt-f32)
@@ -272,6 +274,7 @@ test_prog(test-root12-f32)
 test_prog(test-erf-f32)
 test_prog(test-erfc-f32)
 test_prog(test-tgamma-f32)
+test_prog(test-lgamma-f32)
 
 test_prog(test-half-f32)
 

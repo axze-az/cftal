@@ -749,7 +749,7 @@ namespace cftal {
     vec<double, 8>
     erf(arg_t<vec<double, 8> > d);
 
-    // erfc, these functions are exact to +-1 ulp but not faithfully rounded
+    // erfc, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     erfc(const vec<double, _N>& x);
@@ -766,7 +766,7 @@ namespace cftal {
     vec<double, 8>
     erfc(arg_t<vec<double, 8> > d);
 
-    // tgamma, these functions are exact to +-7 ulp
+    // tgamma, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
     tgamma(const vec<double, _N>& x);
@@ -783,6 +783,22 @@ namespace cftal {
     vec<double, 8>
     tgamma(arg_t<vec<double, 8> > d);
 
+    // lgamma: these functions are exact to ??? ulp, perhaps to +-1
+    // ulp for non negative arguments
+    template <std::size_t _N>
+    vec<double, _N>
+    lgamma(const vec<double, _N>& x, vec<int32_t, _N>* signp);
+
+    vec<double, 1>
+    lgamma(arg_t<vec<double, 1> > d, vec<int32_t, 1>* signp);
+
+    vec<double, 2>
+    lgamma(arg_t<vec<double, 2> > d, vec<int32_t, 2>* signp);
+
+    vec<double, 4>
+    lgamma(arg_t<vec<double, 4> > d, vec<int32_t, 4>* signp);
+
+    
 // TODO: --------------------------------------------------------------------
 // TODO: test for the functions below
 
@@ -1167,6 +1183,18 @@ cftal::vec<double, _N>
 cftal::tgamma(const vec<double, _N>& v)
 {
     vec<double, _N> r(tgamma(low_half(v)), tgamma(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::lgamma(const vec<double, _N>& v, vec<int32_t, _N>* signp)
+{
+    vec<int32_t, _N/2> sl, sh;
+    vec<double, _N> r(lgamma(low_half(v), &sl), lgamma(high_half(v), &sh));
+    if (signp)
+        *signp=vec<int32_t, _N>(sl, sh);
     return r;
 }
 
