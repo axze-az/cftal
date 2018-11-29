@@ -68,7 +68,7 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us_cos << std::endl;
     std::cout << st << std::endl;
 
-    auto dp2=std::make_pair(-0x1p28, 0x1p28);
+    auto dp2=std::make_pair(-0x1p45, 0x1p45);
     auto us_sin2=std::make_shared<ulp_stats>();
     auto us_cos2=std::make_shared<ulp_stats>();
     exec_stats<_N> st2;

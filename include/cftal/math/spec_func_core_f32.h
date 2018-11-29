@@ -100,7 +100,7 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
     vf_type xrh, xrl;
     xrh = xc - 0.5f * fh;
     // poor mans fmod:
-    fh = base_type::template _fmod<4>(fh);
+    // fh = base_type::template _fmod<4>(fh);
     // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<float>, float>;
     d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
@@ -117,7 +117,7 @@ sinpi_cospi_k(arg_t<vf_type> xc, dvf_type* ps, dvf_type* pc)
     vf_type xrh, xrl;
     xrh = xc - 0.5f * fh;
     // poor mans fmod:
-    fh = base_type::template _fmod<4>(fh);
+    // fh = base_type::template _fmod<4>(fh);
     // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<float>, float>;
     d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);

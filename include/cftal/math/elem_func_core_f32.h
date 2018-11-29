@@ -336,14 +336,6 @@ namespace cftal {
                               vf_type& __restrict xrl,
                               arg_t<vf_type> x);
 
-            // argument reduction for all trigonometric
-            // functions, reduction by %pi/2, the low bits
-            // of multiple of %pi/2 is returned in the
-            // second part of the return type
-            static
-            std::pair<dvf_type, vi_type>
-            reduce_trig_arg_k(arg_t<vf_type> x);
-
             // calculates sin(xh, xl) in [+0, pi/4]
             static
             vf_type
@@ -1953,15 +1945,15 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<float>, float>;
     vf_type fn= rint(vf_type(x* ctbl::m_2_pi[0]));
-    const float large_arg=0x1p18f;
+    constexpr const float large_arg=0x1p18f;
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
 
     xrh = x;
     xrl = 0.0;
     if (likely(!all_of(v_large_arg))) {
-        const float m_pi_2_h=+1.5707963705063e+00f;
-        const float m_pi_2_m=-4.3711388286738e-08f;
-        const float m_pi_2_l=-1.7151245100059e-15f;
+        constexpr const float m_pi_2_h=+1.5707963705063e+00f;
+        constexpr const float m_pi_2_m=-4.3711388286738e-08f;
+        constexpr const float m_pi_2_l=-1.7151245100059e-15f;
         vf_type f0, f1, f2, f3, f4;
         d_ops::mul12(f0, f1, fn, -m_pi_2_h);
         d_ops::mul12(f2, f3, fn, -m_pi_2_m);
@@ -1976,12 +1968,14 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         t = x + p0;
         xrh = t + p1;
         xrl = p1 - (xrh - t) + p2;
+        // not required because int32_t is large enough
+        // fn= _fmod<4>(fn);
     }
     vi_type q(_T::cvt_f_to_i(fn));
     if (unlikely(any_of(v_large_arg))) {
         // reduce the large arguments
-        constexpr std::size_t N=_T::NVF();
-        constexpr std::size_t NI=_T::NVI();
+        constexpr const std::size_t N=_T::NVF();
+        constexpr const std::size_t NI=_T::NVI();
         struct alignas(N*sizeof(float)) v_d {
             float _sc[N];
         } tf, d0_l, d0_h;
@@ -2008,69 +2002,6 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     return q;
 }
 
-template <typename _T>
-inline
-std::pair<typename cftal::math::elem_func_core<float, _T>::dvf_type,
-          typename cftal::math::elem_func_core<float, _T>::vi_type>
-cftal::math::elem_func_core<float, _T>::
-reduce_trig_arg_k(arg_t<vf_type> x)
-{
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-    vf_type fn= rint(vf_type(x* ctbl::m_2_pi[0]));
-    vf_type xrh, xrl;
-    const float m_pi_2_h=+1.5707963705063e+00f;
-    const float m_pi_2_m=-4.3711388286738e-08f;
-    const float m_pi_2_l=-1.7151245100059e-15f;
-
-    vf_type f0, f1, f2, f3, f4, f5;
-    d_ops::mul12(f0, f1, fn, -m_pi_2_h);
-    d_ops::mul12(f2, f3, fn, -m_pi_2_m);
-    d_ops::mul12(f4, f5, fn, -m_pi_2_l);
-    // normalize f0 - f5 into p0..p2
-    vf_type p0, p1, p2, t;
-    p0 = f0;
-    d_ops::add12(p1, t, f1, f2);
-    p2 = f4 + t + f3 + f5;
-    d_ops::add12(p0, p1, p0, p1);
-    d_ops::add12(p1, p2, p1, p2);
-    t = x + p0;
-    xrh = t + p1;
-    xrl = p1 - (xrh - t) + p2;
-    dvf_type d0(xrh, xrl);
-
-    vi_type q(_T::cvt_f_to_i(fn));
-    const float large_arg=0x1p18f;
-    vmf_type v_large_arg= vf_type(large_arg) < abs(x);
-    if (any_of(v_large_arg)) {
-        // reduce the large arguments
-        constexpr std::size_t N=_T::NVF();
-        constexpr std::size_t NI=_T::NVI();
-        struct alignas(N*sizeof(float)) v_d {
-            float _sc[N];
-        } tf, d0_l, d0_h;
-        struct alignas(NI*sizeof(int)) v_i {
-            int32_t _sc[NI];
-        } ti;
-        mem<vf_type>::store(tf._sc, x);
-        mem<vi_type>::store(ti._sc, q);
-        mem<vf_type>::store(d0_l._sc, d0[1]);
-        mem<vf_type>::store(d0_h._sc, d0[0]);
-        for (std::size_t i=0; i<N; ++i) {
-            if (large_arg < std::fabs(tf._sc[i])) {
-                float y[2];
-                // ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
-                ti._sc[i]=impl::__kernel_rem_pio2(y, tf._sc[i]);
-                d0_l._sc[i]= y[1];
-                d0_h._sc[i]= y[0];
-            }
-        }
-        vf_type rh(mem<vf_type>::load(d0_h._sc, N));
-        vf_type rl(mem<vf_type>::load(d0_l._sc, N));
-        d0 = dvf_type(rh, rl);
-        q = mem<vi_type>::load(ti._sc, NI);
-    }
-    return std::make_pair(d0, q);
-}
 
 template <typename _T>
 inline

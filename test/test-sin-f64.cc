@@ -22,7 +22,7 @@ int main(int argc, char** argv)
                                                    di,
                                                    shifts);
     const func_domain<double> di2[]={
-        std::make_pair(-0x1p28, 0x1p28)
+        std::make_pair(-0x1p45, 0x1p45)
     };
     r |=program<check_sin<double>, 8, 1, 0x8000>(argc,
                                                  argv,
