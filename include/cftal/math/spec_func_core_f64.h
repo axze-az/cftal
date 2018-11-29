@@ -86,11 +86,11 @@ namespace cftal {
             static
             reduced_small_gamma_args
             __lgamma_reduce_small_k(arg_t<vf_type> x);
-            
+
             static
             vf_type
             lgamma_k(arg_t<vf_type> xc, vi_type* signp);
-            
+
         };
 
     } // end math
@@ -105,8 +105,7 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
     vf_type xrh, xrl;
     xrh = xc - 0.5 * fh;
     // poor mans fmod:
-    vf_type i= rint(vf_type(fh*1.0/8.0));
-    fh = fh - i*8.0;
+    fh = base_type::template _fmod<4>(fh);
     // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
@@ -124,8 +123,9 @@ sinpi_cospi_k(arg_t<vf_type> xc, dvf_type* ps, dvf_type* pc)
     vf_type xrh, xrl;
     xrh = xc - 0.5 * fh;
     // poor mans fmod:
-    vf_type i= rint(vf_type(fh*1.0/8.0));
-    fh = fh - i*8.0;
+    // vf_type i= rint(vf_type(fh*1.0/8.0));
+    // fh = fh - i*8.0;
+    fh = base_type::template _fmod<4>(fh);
     // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
@@ -1070,7 +1070,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     constexpr const double x_large= 0x1p54;
 
     reduced_small_gamma_args sst;
-    
+
     // the reflection implementation below works only if the
     // reflection for really tiny values delegated to __lgamma_small_k
     static_assert(x_small_left < - x_tiny, "constraint violated");
@@ -1084,7 +1084,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         dvf_type log_a=select(sst._f[0]>0, sst._f, -sst._f);
         base_h = _T::sel(xa_in_small, log_a[0], base_h);
         base_l = _T::sel(xa_in_small, log_a[1], base_l);
-    }   
+    }
 
     using lanczos_ratfunc = lanczos_table_g_12_06815_N12;
     vmf_type xa_in_lanczos =

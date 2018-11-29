@@ -51,9 +51,10 @@ namespace cftal {
                 high
             };
 
+            template <unsigned _U>
             static
             vf_type
-            pow2i(arg_t<vi_type> d);
+            _fmod(arg_t<vf_type> v);
 
             // nextafter without nan handling
             static
@@ -429,23 +430,18 @@ namespace cftal {
 }
 
 template <typename _T>
+template <unsigned _U>
 inline
 typename
 cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-pow2i(arg_t<vi_type> vi)
+_fmod(arg_t<vf_type> v)
 {
-    vi_type e(vi + vi_type(_T::bias));
-    vf_type r(_T::insert_exp(e));
-    vmi_type mi;
-    vmf_type mf;
-    mi= (vi < vi_type(_T::e_min));
-    mf= _T::vmi_to_vmf(mi);
-    r= _T::sel_zero_or_val(mf, r);
-    mi= (vi > vi_type(_T::e_max));
-    mf= _T::vmi_to_vmf(mi);
-    vf_type inf(_T::pinf());
-    r= _T::sel(mf, vf_type(inf), r);
+    constexpr const float sd=1.0/_U;
+    constexpr const float su=_U;
+    vf_type i= rint(vf_type(v*sd));
+    vf_type d= i*su;
+    vf_type r= v - d;
     return r;
 }
 
