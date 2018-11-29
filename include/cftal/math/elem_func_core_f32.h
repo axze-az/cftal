@@ -437,11 +437,11 @@ cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 _fmod(arg_t<vf_type> v)
 {
-    constexpr const float sd=1.0/_U;
+    constexpr const float sd=1.0f/_U;
     constexpr const float su=_U;
+    constexpr const float nsu=-su;
     vf_type i= rint(vf_type(v*sd));
-    vf_type d= i*su;
-    vf_type r= v - d;
+    vf_type r= i*nsu + v;
     return r;
 }
 

@@ -468,9 +468,9 @@ _fmod(arg_t<vf_type> v)
 {
     constexpr const double sd=1.0/_U;
     constexpr const double su=_U;
+    constexpr const double nsu=-su;
     vf_type i= rint(vf_type(v*sd));
-    vf_type d= i*su;
-    vf_type r= v - d;
+    vf_type r= i*nsu + v;
     return r;
 }
 
