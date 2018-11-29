@@ -21,13 +21,7 @@ int main(int argc, char** argv)
     const int ulp_pos=2;
     const int _N=8;
     bool rc=true;
-    // std::size_t cnt=0;
-    // std::size_t cnt=update_cnt(0x800);
-    if (ags._speed_only) {
-        ags._cnt *=8;
-    } else {
-        // mpfr_cache::use(mpfr_gamma, "tgamma", 0.0);
-    }
+
     // func_domain<double> d=std::make_pair(-186.0, +172.0);
     // func_domain<double> d=std::make_pair(-0x1p-54, 0x1p-54);
     // func_domain<double> d=std::make_pair(-3.0, 3.0);

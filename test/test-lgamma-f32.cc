@@ -23,12 +23,6 @@ int main_lgamma(int argc, char** argv)
     const int _N=16;
     bool rc=true;
 
-    if (ags._speed_only) {
-        ags._cnt *=8;
-    } else {
-        // mpfr_cache::use(mpfr_gamma, "tgamma", 0.0);
-    }
-
     // func_domain<float> d=std::make_pair(-186.0, +172.0);
     // func_domain<float> d=std::make_pair(0.0f, 4.1e36f);
     // func_domain<float> d=std::make_pair(0.0, 0x1p-53);

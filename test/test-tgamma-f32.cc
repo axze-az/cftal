@@ -15,9 +15,7 @@ int main(int argc, char** argv)
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
-    if (ags._speed_only == true) {
-        ags._cnt *= 8;
-    } else {
+    if (ags._speed_only == false) {
         if (ags._use_cache==true) {
             mpfr_cache::use(mpfr_gamma, "tgamma", 0.0f);
         }

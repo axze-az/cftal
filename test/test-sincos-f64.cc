@@ -19,9 +19,7 @@ int main(int argc, char** argv)
     const int ulp=1;
     const int _N=8;
     bool rc=true;
-    if (ags._speed_only==true) {
-        ags._cnt *=8;
-    } else {
+    if (ags._speed_only==false) {
         // sin part
         std::string test_data_file=
             append_filename(ags._data_dir, "sin.testdata");

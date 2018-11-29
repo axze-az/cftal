@@ -4,7 +4,7 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "cftal/test/of_math_funcs.h"
+#include "cftal/test/program.h"
 #include <tuple>
 #include <iostream>
 #include <iomanip>
@@ -285,32 +285,28 @@ namespace cftal {
             const char* fname() { return "half_sqrt"; }
         };
     }
+
 }
 
-int main_exp(int argc, char** argv)
+int main_exp(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
     using ftype = float;
-    func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
-                                         std::numeric_limits<ftype>::max());
-    d=std::make_pair(-16.5f, 10.4f);
+    func_domain<ftype> d=std::make_pair(-16.5f, 10.4f);
     exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        ftype, _N, check_half_exp<ftype> >::v(st, d, speed_only,
+        ftype, _N, check_half_exp<ftype> >::v(st, d,
+                                              ags._speed_only,
+                                              ags._mt,
                                               cmp_ulp<ftype>(ulp, us),
-                                              cnt, true);
+                                              ags._cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -318,30 +314,25 @@ int main_exp(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
-int main_exp2(int argc, char** argv)
+int main_exp2(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
     using ftype = float;
-    func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
-                                         std::numeric_limits<ftype>::max());
-    d=std::make_pair(-24.5f, 15.1f);
+    func_domain<ftype> d=std::make_pair(-24.5f, 15.1f);
     exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        ftype, _N, check_half_exp2<ftype> >::v(st, d, speed_only,
+        ftype, _N, check_half_exp2<ftype> >::v(st, d,
+                                               ags._speed_only,
+                                               ags._mt,
                                                cmp_ulp<ftype>(ulp, us),
-                                               cnt, true);
+                                               ags._cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -349,30 +340,26 @@ int main_exp2(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
-int main_exp10(int argc, char** argv)
+int main_exp10(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
+
     using ftype = float;
-    func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
-                                         std::numeric_limits<ftype>::max());
-    d=std::make_pair(-7.3f, 4.6f);
+    func_domain<ftype> d=std::make_pair(-7.3f, 4.6f);
     exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        ftype, _N, check_half_exp10<ftype> >::v(st, d, speed_only,
+        ftype, _N, check_half_exp10<ftype> >::v(st, d,
+                                                ags._speed_only,
+                                                ags._mt,
                                                 cmp_ulp<ftype>(ulp, us),
-                                                cnt, true);
+                                                ags._cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -380,33 +367,28 @@ int main_exp10(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
-int main_log(int argc, char** argv)
+int main_log(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
-    using ftype = float;
 
-    // func_domain<double> d=std::make_pair(0.0,
-    //                                     std::numeric_limits< double >::max());
+    using ftype = float;
     func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
                                          std::numeric_limits<ftype>::max());
     d = std::make_pair(-0x1p-25f, 0x1.1p16f);
     exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        ftype, _N, check_half_log10<ftype> >::v(st, d, speed_only,
+        ftype, _N, check_half_log<ftype> >::v(st, d,
+                                              ags._speed_only,
+                                              ags._mt,
                                               cmp_ulp<ftype>(ulp, us),
-                                              cnt, false);
+                                              ags._cnt, true);;
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -414,20 +396,45 @@ int main_log(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
-int main_log2(int argc, char** argv)
+int main_log2(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
+
+    using ftype = float;
+
+    func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
+                                         std::numeric_limits<ftype>::max());
+    d = std::make_pair(-0x1p-25f, 0x1.1p16f);
+    exec_stats<_N> st;
+    auto us=std::make_shared<ulp_stats>();
+    rc &= of_fp_func_up_to<
+        ftype, _N, check_half_log2<ftype> >::v(st, d,
+                                               ags._speed_only,
+                                               ags._mt,
+                                               cmp_ulp<ftype>(ulp, us),
+                                               ags._cnt, true);
+    std::cout << "ulps: "
+              << std::fixed << std::setprecision(4)
+              << ulp_stats_to_stream(*us, true) << std::endl;
+    std::cout << st << std::endl;
+    return (rc == true) ? 0 : 1;
+}
+
+int main_log10(const cftal::test::pgm_args& ags)
+{
+    using namespace cftal::test;
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
+
+    const int ulp=8;
+    const int _N=16;
+    bool rc=true;
     using ftype = float;
 
     // func_domain<double> d=std::make_pair(0.0,
@@ -438,43 +445,11 @@ int main_log2(int argc, char** argv)
     exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
-        ftype, _N, check_half_log2<ftype> >::v(st, d, speed_only,
-                                              cmp_ulp<ftype>(ulp, us),
-                                              cnt, false);
-    std::cout << "ulps: "
-              << std::fixed << std::setprecision(4)
-              << ulp_stats_to_stream(*us, true) << std::endl;
-    std::cout << st << std::endl;
-    return (rc == true) ? 0 : 1;
-}
-
-int main_log10(int argc, char** argv)
-{
-    using namespace cftal::test;
-    std::cout << std::setprecision(18) << std::scientific;
-    std::cerr << std::setprecision(18) << std::scientific;
-    const int ulp=8;
-    const int _N=16;
-    bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
-    using ftype = float;
-
-    // func_domain<double> d=std::make_pair(0.0,
-    //                                     std::numeric_limits< double >::max());
-    func_domain<ftype> d=std::make_pair(-std::numeric_limits<ftype>::max(),
-                                         std::numeric_limits<ftype>::max());
-    d = std::make_pair(-0x1p-25f, 0x1.1p16f);
-    exec_stats<_N> st;
-    auto us=std::make_shared<ulp_stats>();
-    rc &= of_fp_func_up_to<
-        ftype, _N, check_half_log10<ftype> >::v(st, d, speed_only,
+        ftype, _N, check_half_log10<ftype> >::v(st, d,
+                                                ags._speed_only,
+                                                ags._mt,
                                                 cmp_ulp<ftype>(ulp, us),
-                                                cnt, false);
+                                                ags._cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -482,27 +457,28 @@ int main_log10(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
-int main_sin(int argc, char** argv)
+int main_sin(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
+
     auto dp=std::make_pair(-0x1p16f, 0x1p16f);
     auto us=std::make_shared<ulp_stats>();
+
+    using ftype = float;
+
     exec_stats<_N> st;
     rc &= of_fp_func_up_to<
-        float, _N, check_half_sin<float> >::v(st, dp, speed_only,
-                                              cmp_ulp<float>(ulp, us),
-                                              cnt, true);
+        ftype, _N, check_half_sin<ftype> >::v(st, dp,
+                                                ags._speed_only,
+                                                ags._mt,
+                                                cmp_ulp<ftype>(ulp, us),
+                                                ags._cnt, true);;
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -510,27 +486,25 @@ int main_sin(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
-int main_cos(int argc, char** argv)
+int main_cos(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
     auto dp=std::make_pair(-0x1p16f, 0x1p16f);
     auto us=std::make_shared<ulp_stats>();
+    using ftype =float;
     exec_stats<_N> st;
     rc &= of_fp_func_up_to<
-        float, _N, check_half_cos<float> >::v(st, dp, speed_only,
-                                              cmp_ulp<float>(ulp, us),
-                                              cnt, true);
+        ftype, _N, check_half_cos<ftype> >::v(st, dp,
+                                                ags._speed_only,
+                                                ags._mt,
+                                                cmp_ulp<ftype>(ulp, us),
+                                                ags._cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -538,28 +512,26 @@ int main_cos(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
-int main_tan(int argc, char** argv)
+int main_tan(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
     auto dp=std::make_pair(-0x1p16f, 0x1p16f);
     // auto dp=std::make_pair(M_PI/2, M_PI/2);
     auto us=std::make_shared<ulp_stats>();
+    using ftype=float;
     exec_stats<_N> st;
     rc &= of_fp_func_up_to<
-        float, _N, check_half_tan<float> >::v(st, dp, speed_only,
-                                              cmp_ulp<float>(ulp, us),
-                                              cnt, true);
+        ftype, _N, check_half_tan<ftype> >::v(st, dp,
+                                                ags._speed_only,
+                                                ags._mt,
+                                                cmp_ulp<ftype>(ulp, us),
+                                                ags._cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -567,29 +539,27 @@ int main_tan(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
-int main_rsqrt(int argc, char** argv)
+int main_rsqrt(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    std::cout << std::setprecision(10) << std::scientific;
-    std::cerr << std::setprecision(10) << std::scientific;
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
     func_domain<float> d=std::make_pair(-1.0e-38f,
                                         // std::numeric_limits< float >::max()
                                         0x1p16f);
+    using ftype = float;
     auto us=std::make_shared<ulp_stats>();
     exec_stats<_N> st;
     rc &= of_fp_func_up_to<
-        float, _N, check_rsqrt<float> >::v(st, d, speed_only,
-                                           cmp_ulp<float>(ulp, us),
-                                           cnt, true);
+        ftype, _N, check_rsqrt<ftype> >::v(st, d,
+                                                ags._speed_only,
+                                                ags._mt,
+                                                cmp_ulp<ftype>(ulp, us),
+                                                ags._cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -597,27 +567,27 @@ int main_rsqrt(int argc, char** argv)
     return (rc == true) ? 0 : 1;
 }
 
-int main_sqrt(int argc, char** argv)
+int main_sqrt(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
+    std::cout << std::setprecision(18) << std::scientific;
+    std::cerr << std::setprecision(18) << std::scientific;
+
     const int ulp=8;
     const int _N=16;
     bool rc=true;
-    bool speed_only=false;
-    std::size_t cnt=update_cnt(0x800);
-    if ((argc > 1) && (std::string(argv[1]) == "--speed")) {
-        speed_only=true;
-        cnt *=8;
-    }
     func_domain<float> d=std::make_pair(-1.0e-38f,
                                         // std::numeric_limits< float >::max()
                                         0x1p16f);
+    using ftype=float;
     auto us=std::make_shared<ulp_stats>();
     exec_stats<_N> st;
     rc &= of_fp_func_up_to<
-        float, _N, check_sqrt<float> >::v(st, d, speed_only,
-                                          cmp_ulp<float>(ulp, us),
-                                          cnt, true);
+        ftype, _N, check_sqrt<ftype> >::v(st, d,
+                                                ags._speed_only,
+                                                ags._mt,
+                                                cmp_ulp<ftype>(ulp, us),
+                                                ags._cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
@@ -629,16 +599,20 @@ int main_sqrt(int argc, char** argv)
 int main(int argc, char** argv)
 {
     int r=0;
-    r |= main_log(argc, argv);
-    r |= main_log2(argc, argv);
-    r |= main_log10(argc, argv);
-    r |= main_exp(argc, argv);
-    r |= main_exp2(argc, argv);
-    r |= main_exp10(argc, argv);
-    r |= main_cos(argc, argv);
-    r |= main_sin(argc, argv);
-    r |= main_tan(argc, argv);
-    r |= main_rsqrt(argc, argv);
-    r |= main_sqrt(argc, argv);
+
+    using namespace cftal::test;
+    pgm_args ags=parse(argc, argv, 0x800);
+
+    r |= main_log(ags);
+    r |= main_log2(ags);
+    r |= main_log10(ags);
+    r |= main_exp(ags);
+    r |= main_exp2(ags);
+    r |= main_exp10(ags);
+    r |= main_cos(ags);
+    r |= main_sin(ags);
+    r |= main_tan(ags);
+    r |= main_rsqrt(ags);
+    r |= main_sqrt(ags);
     return r;
 }

@@ -23,26 +23,6 @@ int main(int argc, char** argv)
     pgm_args ags=parse(argc, argv, 0x8000);
 
 
-    if (ags._speed_only) {
-        ags._cnt *=8;
-    } else {
-#if 0
-        std::string test_data_dir = dirname(argv[0]);
-        std::string test_data_file=
-            append_filename(test_data_dir, "../../test/data/pow.testdata");
-        if (argc > 1) {
-            test_data_dir = argv[1];
-            test_data_file = append_filename(test_data_dir, "pow.testdata");
-        }
-        std::vector<func_arg_result<double> > v=
-            read_double_file(test_data_file, true);
-        rc&= check_func_2<double, 1, check_pow<double> >(v, ulp, 0, false);
-        rc&= check_func_2<double, 2, check_pow<double> >(v, ulp, 0, false);
-        rc&= check_func_2<double, 4, check_pow<double> >(v, ulp, 0, false);
-        rc&= check_func_2<double, 8, check_pow<double> >(v, ulp, 0, false);
-#endif
-    }
-
     func_domain<float> d=std::make_pair(-std::numeric_limits<float>::max(),
                                          std::numeric_limits<float>::max());
     auto us=std::make_shared<ulp_stats>();

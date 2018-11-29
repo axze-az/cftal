@@ -49,10 +49,6 @@ int main(int argc, char** argv)
 
     pgm_args ags=parse(argc, argv, 0x8000);
 
-    if (ags._speed_only) {
-        ags._cnt *=8;
-    }
-
     func_domain<double> d=std::make_pair(-std::numeric_limits< double >::max(),
                                          std::numeric_limits< double >::max());
     std::cout << "testing nextafter vXf64" << std::endl;

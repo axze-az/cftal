@@ -24,17 +24,20 @@ int main(int argc, char** argv)
 
     pgm_args ags=parse(argc, argv, 0x8000);
 
-    if (ags._speed_only) {
-        ags._cnt *=8;
-    } else {
-        std::string test_data_file=
-            append_filename(ags._data_dir, "pow.testdata");
-        std::vector<func_arg_result<double> > v=
-            read_double_file(test_data_file, true);
-        rc&= check_func_2<double, 1, check_pow<double> >(v, ulp, 0, false);
-        rc&= check_func_2<double, 2, check_pow<double> >(v, ulp, 0, false);
-        rc&= check_func_2<double, 4, check_pow<double> >(v, ulp, 0, false);
-        rc&= check_func_2<double, 8, check_pow<double> >(v, ulp, 0, false);
+    if (ags._speed_only == false) {
+        try {
+            std::string test_data_file=
+                append_filename(ags._data_dir, "pow.testdata");
+            std::vector<func_arg_result<double> > v=
+                read_double_file(test_data_file, true);
+            rc&= check_func_2<double, 1, check_pow<double> >(v, ulp, 0, false);
+            rc&= check_func_2<double, 2, check_pow<double> >(v, ulp, 0, false);
+            rc&= check_func_2<double, 4, check_pow<double> >(v, ulp, 0, false);
+            rc&= check_func_2<double, 8, check_pow<double> >(v, ulp, 0, false);
+        }
+        catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }
     }
 
     func_domain<double> d=std::make_pair(-std::numeric_limits< double >::max(),

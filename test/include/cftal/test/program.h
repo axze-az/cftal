@@ -87,9 +87,7 @@ cftal::test::program(int argc, char** argv,
               << std::endl;
     bool rc=true;
     using ftype = double;
-    if (ags._speed_only == true) {
-        ags._cnt *= 8;
-    } else {
+    if (ags._speed_only == false){
         if (ags._use_cache==true) {
             mpfr_cache::use(func, _CHECK::fname(), ftype(0.0));
         }
@@ -156,9 +154,7 @@ cftal::test::program(int argc, char** argv,
               << std::endl;
     bool rc=true;
     using ftype = float;
-    if (ags._speed_only == true) {
-        ags._cnt *= 8;
-    } else {
+    if (ags._speed_only == false) {
         if (ags._use_cache==true) {
             mpfr_cache::use(func, _CHECK::fname(), ftype(0.0));
         }
