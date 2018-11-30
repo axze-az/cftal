@@ -14,7 +14,6 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
     pgm_args args(cnt);
     int non_option_arg=0;
     bool err=false;
-    bool fast=false;
 
     args._data_dir=dirname(argv[0]);
     args._data_dir += "/../../test/data";
@@ -25,7 +24,7 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
         if (ai == "--speed") {
             args._speed_only= true;
         } else if (ai == "--fast") {
-            fast = true;
+            args._fast = true;
         } else if (ai == "--cache") {
             args._use_cache=true;
         } else if (ai == "--mt") {
@@ -54,7 +53,7 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
     }
     if (args._speed_only)
         args._cnt <<= 3;
-    if (fast)
+    if (args._fast)
         args._cnt >>= 4;
     return args;
 }
