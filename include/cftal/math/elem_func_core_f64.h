@@ -2111,16 +2111,12 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     d_ops::mul22(xrh, xrl, xrh, xrl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type res=__pow_exp_k(xrh, xrl, kf);
-    // std::cout << kf << std::endl;
-    // std::cout << k << std::endl;
     using fc=func_constants<double>;
     const vf_type& d= yldx[0];
     const double exp2_hi_inf= fc::exp2_hi_inf();
     const double exp2_lo_zero= fc::exp2_lo_zero();
     res = _T::sel_zero_or_val(d <= exp2_lo_zero, res);
     res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
-    // res = _T::sel(d == 0.0, 1.0, res);
-    // res = _T::sel(d == 1.0, 2.0, res);
     return res;
 }
 
