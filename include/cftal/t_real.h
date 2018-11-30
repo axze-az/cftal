@@ -589,7 +589,7 @@ div323(_T& rh, _T& rm, _T& rl,
     renormalize3(r0, r1, r2, r0, r1, r2);
     // first correction
     _T q1 = r0 / bh;
-    mul123(t0, t1, -q1, bh, bl);
+    mul123(t0, t1, t2, -q1, bh, bl);
     add33cond(r0, r1, r2, t0, t1, t2, r0, r1, r2);
     renormalize3(r0, r1, r2, r0, r1, r2);
     // second correction

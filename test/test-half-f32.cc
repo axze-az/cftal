@@ -601,7 +601,7 @@ int main(int argc, char** argv)
     int r=0;
 
     using namespace cftal::test;
-    pgm_args ags=parse(argc, argv, 0x800);
+    pgm_args ags=parse(argc, argv, 0x1000);
     r |= main_log(ags);
     r |= main_log2(ags);
     r |= main_log10(ags);
