@@ -895,7 +895,7 @@ namespace cftal {
     lgamma(arg_t<vec<float, 8> > d, vec<int32_t, 8>* signp);
 
     // no vec<float, 16>, way to slow
-    
+
     // ilogbp1
     vec<int32_t, 1>
     ilogbp1(arg_t<vec<float, 1> > v);
@@ -2023,8 +2023,8 @@ cftal::vec<float, _N>
 cftal::half_math::
 cos(const vec<float, _N>& v)
 {
-    vec<float, _N> r(cos(low_half(v)),
-                     cos(high_half(v)));
+    vec<float, _N> r(half_math::cos(low_half(v)),
+                     half_math::cos(high_half(v)));
     return r;
 }
 
@@ -2040,8 +2040,8 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::exp(const vec<float, _N>& v)
 {
-    vec<float, _N> r(exp(low_half(v)),
-                     exp(high_half(v)));
+    vec<float, _N> r(half_math::exp(low_half(v)),
+                     half_math::exp(high_half(v)));
     return r;
 }
 
@@ -2049,8 +2049,8 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::exp2(const vec<float, _N>& v)
 {
-    vec<float, _N> r(exp2(low_half(v)),
-                     exp2(high_half(v)));
+    vec<float, _N> r(half_math::exp2(low_half(v)),
+                     half_math::exp2(high_half(v)));
     return r;
 }
 
@@ -2058,8 +2058,8 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::exp10(const vec<float, _N>& v)
 {
-    vec<float, _N> r(exp10(low_half(v)),
-                     exp10(high_half(v)));
+    vec<float, _N> r(half_math::exp10(low_half(v)),
+                     half_math::exp10(high_half(v)));
     return r;
 }
 
@@ -2067,8 +2067,8 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::log(const vec<float, _N>& v)
 {
-    vec<float, _N> r(log(low_half(v)),
-                     log(high_half(v)));
+    vec<float, _N> r(half_math::log(low_half(v)),
+                     half_math::log(high_half(v)));
     return r;
 }
 
@@ -2076,8 +2076,8 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::log2(const vec<float, _N>& v)
 {
-    vec<float, _N> r(log2(low_half(v)),
-                     log2(high_half(v)));
+    vec<float, _N> r(half_math::log2(low_half(v)),
+                     half_math::log2(high_half(v)));
     return r;
 }
 
@@ -2085,8 +2085,8 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::log10(const vec<float, _N>& v)
 {
-    vec<float, _N> r(log10(low_half(v)),
-                     log10(high_half(v)));
+    vec<float, _N> r(half_math::log10(low_half(v)),
+                     half_math::log10(high_half(v)));
     return r;
 }
 
@@ -2106,8 +2106,8 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::rsqrt(const vec<float, _N>& v)
 {
-    vec<float, _N> r(rsqrt(low_half(v)),
-                     rsqrt(high_half(v)));
+    vec<float, _N> r(half_math::rsqrt(low_half(v)),
+                     half_math::rsqrt(high_half(v)));
     return r;
 }
 
@@ -2115,8 +2115,8 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::sin(const vec<float, _N>& v)
 {
-    vec<float, _N> r(sin(low_half(v)),
-                     sin(high_half(v)));
+    vec<float, _N> r(half_math::sin(low_half(v)),
+                     half_math::sin(high_half(v)));
     return r;
 }
 
@@ -2125,8 +2125,8 @@ cftal::vec<float, _N>
 cftal::half_math::sqrt(const vec<float, _N>& v)
 {
     // return cftal::sqrt(v);
-    vec<float, _N> r(sqrt(low_half(v)),
-                     sqrt(high_half(v)));
+    vec<float, _N> r(half_math::sqrt(low_half(v)),
+                     half_math::sqrt(high_half(v)));
     return r;
 }
 
@@ -2134,8 +2134,8 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::tan(const vec<float, _N>& v)
 {
-    vec<float, _N> r(tan(low_half(v)),
-                     tan(high_half(v)));
+    vec<float, _N> r(half_math::tan(low_half(v)),
+                     half_math::tan(high_half(v)));
     return r;
 }
 

@@ -607,13 +607,13 @@ div33(_T& rh, _T& rm, _T& rl,
     _T q0 = ah / bh;
     _T r0, r1, r2, t0, t1, t2;
     // remainder a - q*b
-    mul133(t0, t1, t2, -q0, bh, bl);
+    mul133(t0, t1, t2, -q0, bh, bm, bl);
     add33cond(r0, r1, r2, t0, t1, t2, ah, am, al);
     renormalize3(r0, r1, r2, r0, r1, r2);
     // first correction
     _T q1 = r0 / bh;
-    mul133(t0, t1, t2, -q1, bh, bl);
-    add233cond(r0, r1, r2, t0, t1, t2, r0, r1, r2);
+    mul133(t0, t1, t2, -q1, bh, bm, bl);
+    add33cond(r0, r1, r2, t0, t1, t2, r0, r1, r2);
     renormalize3(r0, r1, r2, r0, r1, r2);
     // second correction
     _T q2 = r0 / bh;
@@ -1211,7 +1211,12 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const _T& a, const t_real<_T>& b)
 {
-    return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
+    // return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
+    t_real<_T> r;
+    impl::t_real_ops<_T>::div33(r[0], r[1], r[2],
+                                a[0], _T(0), _T(0),
+                                b[0], b[1], b[2]);
+    return r;
 }
 
 template <typename _T>
@@ -1219,7 +1224,12 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
+    // return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
+    t_real<_T> r;
+    impl::t_real_ops<_T>::div33(r[0], r[1], r[2],
+                                a[0], a[1], _T(0),
+                                b[0], b[1], b[2]);
+    return r;
 }
 
 template <typename _T>
@@ -1227,7 +1237,12 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
+    // return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
+    t_real<_T> r;
+    impl::t_real_ops<_T>::div33(r[0], r[1], r[2],
+                                a[0], a[1], a[2],
+                                b[0], b[1], b[2]);
+    return r;
 }
 
 template <typename _T>
@@ -1235,7 +1250,12 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return a * impl::t_real_ops<_T>::recp(b[0], b[2], _T(0));
+    // return a * impl::t_real_ops<_T>::recp(b[0], b[2], _T(0));
+    t_real<_T> r;
+    impl::t_real_ops<_T>::div323(r[0], r[1], r[2],
+                                 a[0], a[1], a[2],
+                                 b[0], b[1]);
+    return r;
 }
 
 template <typename _T>
@@ -1243,7 +1263,12 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const t_real<_T>& a, const _T& b)
 {
-    return a * impl::t_real_ops<_T>::recp(b, _T(0), _T(0));
+    // return a * impl::t_real_ops<_T>::recp(b, _T(0), _T(0));
+    t_real<_T> r;
+    impl::t_real_ops<_T>::div313(r[0], r[1], r[2],
+                                 a[0], a[1], a[2],
+                                 b);
+    return r;
 }
 
 template <typename _T>
