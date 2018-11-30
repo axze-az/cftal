@@ -65,7 +65,7 @@ namespace cftal {
             template <unsigned _U>
             static
             vf_type
-            _fmod(arg_t<vf_type> v);
+            __fmod(arg_t<vf_type> v);
 
             static
             vf_type
@@ -456,7 +456,7 @@ inline
 typename
 cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-_fmod(arg_t<vf_type> v)
+__fmod(arg_t<vf_type> v)
 {
     constexpr const double sd=1.0/_U;
     constexpr const double su=_U;
@@ -2175,7 +2175,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         t = x + p0;
         xrh = t + p1;
         xrl = p1 - (xrh - t) + p2;
-        fn = _fmod<4>(fn);
+        fn = __fmod<4>(fn);
     }
     vi_type q(_T::cvt_f_to_i(fn));
     if (any_of(v_large_arg)) {

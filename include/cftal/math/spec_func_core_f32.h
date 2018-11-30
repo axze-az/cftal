@@ -41,6 +41,12 @@ namespace cftal {
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;
 
+            static
+            vi_type
+            __reduce_trigpi_arg(vf_type& __restrict xrh,
+                                vf_type& __restrict xrl,
+                                arg_t<vf_type> x);
+
             // calculates sin(pi*x), cos(pi*x)
             static
             void
@@ -92,19 +98,25 @@ namespace cftal {
 }
 
 template <typename _T>
+typename cftal::math::spec_func_core<float, _T>::vi_type
+cftal::math::spec_func_core<float, _T>::
+__reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
+{
+    vf_type fh= rint(vf_type(xc*2.0f));
+    xrh = xc - 0.5f * fh;
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
+    vi_type q= _T::cvt_f_to_i(fh);
+    return q;
+}
+
+template <typename _T>
 void
 cftal::math::spec_func_core<float, _T>::
 sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 {
-    vf_type fh= rint(vf_type(xc*2.0f));
     vf_type xrh, xrl;
-    xrh = xc - 0.5f * fh;
-    // poor mans fmod:
-    // fh = base_type::template _fmod<4>(fh);
-    // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
-    vi_type q= _T::cvt_f_to_i(fh);
+    auto q=__reduce_trigpi_arg(xrh, xrl, xc);
     base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
 }
 
@@ -113,15 +125,8 @@ void
 cftal::math::spec_func_core<float, _T>::
 sinpi_cospi_k(arg_t<vf_type> xc, dvf_type* ps, dvf_type* pc)
 {
-    vf_type fh= rint(vf_type(xc*2.0f));
     vf_type xrh, xrl;
-    xrh = xc - 0.5f * fh;
-    // poor mans fmod:
-    // fh = base_type::template _fmod<4>(fh);
-    // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
-    vi_type q= _T::cvt_f_to_i(fh);
+    auto q=__reduce_trigpi_arg(xrh, xrl, xc);
     base_type::__sin_cos_k(xrh, xrl, q, ps, pc);
 }
 

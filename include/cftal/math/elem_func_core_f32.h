@@ -54,7 +54,7 @@ namespace cftal {
             template <unsigned _U>
             static
             vf_type
-            _fmod(arg_t<vf_type> v);
+            __fmod(arg_t<vf_type> v);
 
             // nextafter without nan handling
             static
@@ -427,7 +427,7 @@ inline
 typename
 cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-_fmod(arg_t<vf_type> v)
+__fmod(arg_t<vf_type> v)
 {
     constexpr const float sd=1.0f/_U;
     constexpr const float su=_U;
