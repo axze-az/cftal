@@ -1469,7 +1469,7 @@ __log_k(arg_t<vf_type> xc)
     vi_type k=_T::sel_val_or_zero(_T::vmf_to_vmi(is_denom), vi_type(-25));
     vi_type hx = _T::as_int(x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    hx += 0x3f800000 - 0x3f3504f3;;
+    hx += (0x3f800000 - 0x3f3504f3);
     k += (hx>>23) - _T::bias();
     hx = (hx&0x007fffff) + 0x3f3504f3;
     vf_type xr = _T::as_float(hx);
@@ -1846,7 +1846,7 @@ __pow_log_k(arg_t<vf_type> xc)
     vi_type k=_T::sel_val_or_zero(_T::vmf_to_vmi(is_denom), vi_type(-25));
     vi_type hx = _T::as_int(x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    hx += 0x3f800000 - 0x3f3504f3;;
+    hx += (0x3f800000 - 0x3f3504f3);
     k += (hx>>23) - _T::bias();
     hx = (hx&0x007fffff) + 0x3f3504f3;
     vf_type xr = _T::as_float(hx);
@@ -1896,11 +1896,14 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type abs_x= abs(x);
     dvf_type ldx= __pow_log_k<log_func::c_log_2,
                               result_prec::normal>(abs_x);
-    dvf_type yldx = y*ldx;
+    dvf_type yldx;
+    // yldx = y*ldx;
+    d_ops::mul122(yldx[0], yldx[1], y, ldx[0], ldx[1]);
     vf_type kf= rint(vf_type(yldx[0]));
-    dvf_type xrhl= yldx - kf;
     vf_type xrh, xrl;
-    d_ops::mul22(xrh, xrl, xrhl[0], xrhl[1],
+    // xrh, xrl = (yldx - kf)* log(2)
+    d_ops::add122cond(xrh, xrl, -kf, yldx[0], yldx[1]);
+    d_ops::mul22(xrh, xrl, xrh, xrl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type res=__pow_exp_k(xrh, xrl, kf);
     // std::cout << kf << std::endl;
@@ -1926,11 +1929,14 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     dvf_type abs_x= select(xh > 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
     dvf_type ldx=__pow_log_k2<log_func::c_log_2,
                               result_prec::normal>(abs_x[0], abs_x[1]);
-    dvf_type yldx = dvf_type(yh, yl)*ldx;
+    // yldx = y*ldx;
+    dvf_type yldx;
+    d_ops::mul22(yldx[0], yldx[1], yh, yl, ldx[0], ldx[1]);
     vf_type kf= rint(vf_type(yldx[0]));
-    dvf_type xrhl= yldx - kf;
     vf_type xrh, xrl;
-    d_ops::mul22(xrh, xrl, xrhl[0], xrhl[1],
+    // xrh, xrl = (yldx - kf)* log(2)
+    d_ops::add122cond(xrh, xrl, -kf, yldx[0], yldx[1]);
+    d_ops::mul22(xrh, xrl, xrh, xrl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type rl, rh=__pow_exp_poly_k(xrh, xrl, &rl);
     auto sc = __scale_exp_k(kf);
