@@ -183,8 +183,7 @@ namespace cftal {
         constexpr fp_expansion() = default;
         template <typename _U>
         constexpr
-        fp_expansion(const fp_expansion<_U, 2>& r)
-            : _e{_T(r[0]), _T(r[1])} {}
+        fp_expansion(const fp_expansion<_U, 2>& r) : _e{_T(r[0]), _T(r[1])} {}
         constexpr fp_expansion(const _T& h, const _T& l) : _e{h, l} {}
         constexpr fp_expansion(const _T& h) : _e{h, _T{0.0}} {}
 
@@ -391,8 +390,8 @@ namespace cftal {
             static
             void
             mul122(_T& rh, _T& rl,
-                  const _T& xh,
-                  const _T& yh, const _T& yl);
+                   const _T& xh,
+                   const _T& yh, const _T& yl);
 
             static
             void
@@ -460,8 +459,8 @@ namespace cftal {
             static
             void
             mul122(_T& rh, _T& rl,
-                  const _T& xh,
-                  const _T& yh, const _T& yl);
+                   const _T& xh,
+                   const _T& yh, const _T& yl);
 
             static
             void
@@ -509,17 +508,10 @@ namespace cftal {
 
             static
             void
-            muladd212cond(_T& rh, _T&rl,
-                          const _T& ch, const _T& cl,
-                          const _T& a,
-                          const _T& bh, const _T& bl);
-
-            static
-            void
             muladd22(_T& rh, _T&rl,
-                      const _T& ch, const _T& cl,
-                      const _T& ah, const _T& al,
-                      const _T& bh, const _T& bl);
+                     const _T& ch, const _T& cl,
+                     const _T& ah, const _T& al,
+                     const _T& bh, const _T& bl);
 
             // a/b
             static
@@ -1577,26 +1569,6 @@ muladd212(_T& rh, _T& rl,
     add12(rh, rl, _t3, _t8);
 }
 
-template <typename _T, bool _FMA>
-inline
-__attribute__((__always_inline__))
-void
-cftal::impl::d_real_ops<_T, _FMA>::
-muladd212cond(_T& rh, _T& rl,
-              const _T& ch, const _T& cl,
-              const _T& a,
-              const _T& bh, const _T& bl)
-{
-    _T _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8;
-    mul12(_t1, _t2, a, bh);
-    add12cond(_t3,_t4,ch,_t1);
-    _t5 = bl * a;
-    _t6 = cl + _t2;
-    _t7 = _t5 + _t6;
-    _t8 = _t7 + _t4;
-    add12(rh, rl, _t3, _t8);
-}
-
 
 template <typename _T, bool _FMA>
 inline
@@ -1646,8 +1618,8 @@ __attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops<_T, _FMA>::
 div212(_T& rh, _T& rl,
-      const _T& xh, const _T& xl,
-      const _T& yh)
+       const _T& xh, const _T& xl,
+       const _T& yh)
 {
     // DWDivFP2
     _T _t= xh / yh;
@@ -1780,7 +1752,7 @@ ieee_div(const d_real<_T>&a, const d_real<_T>& b)
 }
 #if 1
 /*
-@unpublished{joldes:hal-01351529,
+  @unpublished{joldes:hal-01351529,
   TITLE = {{Tight and rigourous error bounds for basic building blocks of double-word arithmetic}},
   AUTHOR = {Joldes, Mioara and Muller, Jean-Michel and Popescu, Valentina},
   URL = {https://hal.archives-ouvertes.fr/hal-01351529},

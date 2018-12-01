@@ -715,11 +715,11 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
         d_ops::add122(ph, pl, ci[i], ph, pl);
         d_ops::mul22(ph, pl, xh, xl, ph, pl);
     }
-    d_ops::add22cond(ph, pl, ph, pl, lngamma_i0_c2h, lngamma_i0_c2l);
+    d_ops::add22(ph, pl, ph, pl, lngamma_i0_c2h, lngamma_i0_c2l);
     d_ops::mul22(ph, pl, xh, xl, ph, pl);
-    d_ops::add22cond(ph, pl, ph, pl, lngamma_i0_c1h, lngamma_i0_c1l);
+    d_ops::add22(ph, pl, ph, pl, lngamma_i0_c1h, lngamma_i0_c1l);
     d_ops::mul22(ph, pl, xh, xl, ph, pl);
-    d_ops::add22cond(ph, pl, ph, pl, lngamma_i0_c0h, lngamma_i0_c0l);
+    d_ops::add22(ph, pl, ph, pl, lngamma_i0_c0h, lngamma_i0_c0l);
     vf_type xm1h, xm1l;
     d_ops::add212(xm1h, xm1l, xh, xl, -1.0);
     vf_type xm2h, xm2l;

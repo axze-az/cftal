@@ -13,8 +13,7 @@ p = fpminimax(f, b, c, i0, relative, floating);
 write_approx_prec(p, f, i0);
 write_coeffs(p, "const double lngamma_i0_c", "lngamma", b, c);
 // write_coeff(exp(1), "", "const double e", doubledouble);
-plot((p(x)-f(x))/f(x), i0, postscriptfile, "tgamma_i0-f64");
-quit;
+plot((p(x)-f(x))/f(x), i0, postscriptfile, "lgamma_i0-f64");
 
 /* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
 /* printexpansion(p-1.0); */
