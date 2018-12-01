@@ -309,16 +309,23 @@ lanczos_rational_at(const _T& x,
 #pragma clang loop unroll(disable)
 #pragma GCC unroll 0
     for (std::size_t i=1; i< _N1; ++i) {
+#if 0
+        d_ops::muladd212cond(ph, pl,
+                             pp[i][0], pp[i][1],
+                             x,
+                             ph, pl);
+#else
         d_ops::mul122(ph, pl, x, ph, pl);
         d_ops::add22cond(ph, pl,
                          pp[i][0], pp[i][1],
                          ph, pl);
+#endif
     }
     _T qh, ql;
     horner_comp(qh, ql, x, q);
     _T inv_qh, inv_ql;
     d_ops::rcp2(inv_qh, inv_ql, qh, ql);
-    _T pqh, pql; 
+    _T pqh, pql;
     d_ops::mul22(pqh, pql, ph, pl, inv_qh, inv_ql);
     // d_ops::div22(pqh, pql, ph, pl, qh, ql);
     return d_real<_T>(pqh, pql);

@@ -492,13 +492,20 @@ namespace cftal {
                    const _T& a,
                    const _T& bh, const _T& bl);
 
-            // a*b +c
+            // c+ a*b
             static
             void
             muladd212(_T& rh, _T&rl,
                       const _T& ch, const _T& cl,
                       const _T& a,
                       const _T& bh, const _T& bl);
+
+            static
+            void
+            muladd212cond(_T& rh, _T&rl,
+                          const _T& ch, const _T& cl,
+                          const _T& a,
+                          const _T& bh, const _T& bl);
 
             static
             void
@@ -1529,10 +1536,11 @@ mul122(_T& rh, _T& rl,
     _T tl2= tl1 + cl1;
     add12(rh, rl, th, tl2);
 #else
-    _T t1, t2, t3, t4;
+    _T t1, t2;
     mul12(t1,t2, a, bh);
-    t3 = a * bl;
-    t4 = t2 + t3;
+    // _T t3 = a * bl;
+    // allow fma here
+    _T t4 = a*bl + t2;
     add12(rh, rl, t1, t4);
 #endif
 }
@@ -1556,6 +1564,27 @@ muladd212(_T& rh, _T& rl,
     _t8 = _t7 + _t4;
     add12(rh, rl, _t3, _t8);
 }
+
+template <typename _T, bool _FMA>
+inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+muladd212cond(_T& rh, _T& rl,
+              const _T& ch, const _T& cl,
+              const _T& a,
+              const _T& bh, const _T& bl)
+{
+    _T _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8;
+    mul12(_t1, _t2, a, bh);
+    add12cond(_t3,_t4,ch,_t1);
+    _t5 = bl * a;
+    _t6 = cl + _t2;
+    _t7 = _t5 + _t6;
+    _t8 = _t7 + _t4;
+    add12(rh, rl, _t3, _t8);
+}
+
 
 template <typename _T, bool _FMA>
 inline
