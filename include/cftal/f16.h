@@ -15,7 +15,7 @@
 
 namespace cftal {
 
-    // memory format for f16_t types
+    // memory format for IEEE f16_t types
     using mf_f16_t = uint16_t;
     inline
     uint16_t read_bits(mf_f16_t v) {
