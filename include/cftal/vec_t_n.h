@@ -21,7 +21,7 @@
 namespace cftal {
 
     template <typename _T, std::size_t _N >
-    class /* alignas(const_min<128, sizeof(_T)*_N>::v)*/ vec {
+    class vec {
     public:
         // value type
         using value_type = _T;
