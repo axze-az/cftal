@@ -18,6 +18,8 @@
 
 namespace cftal {
 
+#define V4F32_SPECIALIZED 1
+
     template <>
     class vec<float, 4> : public x86::vreg<__m128> {
     public:

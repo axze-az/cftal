@@ -15,6 +15,8 @@
 
 namespace cftal {
 
+#define V4S64_SPECIALIZED 1
+
     template <>
     class vec<int64_t, 4> : public x86::vreg<__m256i> {
     public:

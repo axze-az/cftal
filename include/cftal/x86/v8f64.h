@@ -17,6 +17,8 @@ namespace cftal {
 
 #if defined (__AVX512F__)
 
+#define V8UF64_SPECIALIZED 1
+
     template <>
     class vec<double, 8> : public x86::vreg<__m512d> {
     public:

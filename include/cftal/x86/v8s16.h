@@ -14,6 +14,8 @@
 
 namespace cftal {
 
+#define V8S16_SPECIALIZED 1
+
     template <>
     class vec<int16_t, 8> : public x86::vreg<__m128i> {
     public:

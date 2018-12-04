@@ -16,6 +16,8 @@
 
 namespace cftal {
 
+#define V2F64_SPECIALIZED 1
+
     template <>
     class vec<double, 2> : public x86::vreg<__m128d> {
     public:
