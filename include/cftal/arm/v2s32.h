@@ -15,6 +15,8 @@
 
 namespace cftal {
 
+#define V2S32_SPECIALIZED 1
+
     template <>
     class vec<int32_t, 2> : public impl::vreg<int32x2_t> {
     public:

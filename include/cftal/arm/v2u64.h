@@ -15,6 +15,8 @@
 
 namespace cftal {
 
+#define V2U64_SPECIALIZED 1
+
     template <>
     class vec<uint64_t, 2> : public impl::vreg<uint64x2_t> {
     public:
