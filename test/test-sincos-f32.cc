@@ -18,9 +18,6 @@ int main(int argc, char** argv)
     const int ulp=1;
     const int _N=16;
     bool rc=true;
-    if (ags._speed_only) {
-        ags._cnt *=8;
-    }
 
     auto dp=std::make_pair(-std::numeric_limits<float>::max(),
                            std::numeric_limits<float>::max());
