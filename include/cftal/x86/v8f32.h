@@ -18,7 +18,7 @@
 
 namespace cftal {
 
-#define V8UF32_SPECIALIZED 1
+#define V8F32_SPECIALIZED 1
 
     template <>
     class vec<float, 8> : public x86::vreg<__m256> {
