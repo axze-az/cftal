@@ -17,6 +17,8 @@
 
 namespace cftal {
 
+    using std::fma;
+    
     template <class _T>
     _T fms(const _T& a, const _T& b, const _T& c) {
         return fma(a, b, -c);
