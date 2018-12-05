@@ -100,8 +100,6 @@ namespace cftal {
     nfms(const vec<float, 1>& a, const vec<float, 1>& b,
          const vec<float, 1>& c);
 
-
-
     // frexp
     template <std::size_t _N>
     vec<float, _N>
@@ -109,19 +107,6 @@ namespace cftal {
 
     vec<float, 1>
     frexp(arg_t<vec<float, 1> > a, vec<int32_t, 1>* e);
-
-    vec<float, 2>
-    frexp(arg_t<vec<float, 2> > x, vec<int32_t, 2>* e);
-
-    vec<float, 4>
-    frexp(arg_t<vec<float, 4> > x, vec<int32_t, 4>* e);
-
-    vec<float, 8>
-    frexp(arg_t<vec<float, 8> > x, vec<int32_t, 8>* e);
-
-    vec<float, 16>
-    frexp(arg_t<vec<float, 16> > x, vec<int32_t, 16>* e);
-
 
     // ldexp, 0 ulps
     template <std::size_t _N>
@@ -131,18 +116,6 @@ namespace cftal {
     vec<float, 1>
     ldexp(arg_t<vec<float, 1> > a, arg_t<vec<int32_t, 1> > e);
 
-    vec<float, 2>
-    ldexp(arg_t<vec<float, 2> > a, arg_t<vec<int32_t, 2> > e);
-
-    vec<float, 4>
-    ldexp(arg_t<vec<float, 4> > a, arg_t<vec<int32_t, 4> > e);
-
-    vec<float, 8>
-    ldexp(arg_t<vec<float, 8> > a, arg_t<vec<int32_t, 8> > e);
-
-    vec<float, 16>
-    ldexp(arg_t<vec<float, 16> > a, arg_t<vec<int32_t, 16> > e);
-
     // nextafter, 0 ulps
     template <std::size_t _N>
     vec<float, _N>
@@ -151,18 +124,6 @@ namespace cftal {
     vec<float, 1>
     nextafter(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
 
-    vec<float, 2>
-    nextafter(arg_t<vec<float, 2> > x, arg_t<vec<float, 2> > y);
-
-    vec<float, 4>
-    nextafter(arg_t<vec<float, 4> > x, arg_t<vec<float, 4> > y);
-
-    vec<float, 8>
-    nextafter(arg_t<vec<float, 8> > x, arg_t<vec<float, 8> > y);
-
-    vec<float, 16>
-    nextafter(arg_t<vec<float, 16> > x, arg_t<vec<float, 16> > y);
-
     // ilogb
     template <std::size_t _N>
     vec<int32_t, _N>
@@ -170,18 +131,6 @@ namespace cftal {
 
     vec<int32_t, 1>
     ilogb(arg_t<vec<float, 1> > a);
-
-    vec<int32_t, 2>
-    ilogb(arg_t<vec<float, 2> > a);
-
-    vec<int32_t, 4>
-    ilogb(arg_t<vec<float, 4> > a);
-
-    vec<int32_t, 8>
-    ilogb(arg_t<vec<float, 8> > a);
-
-    vec<int32_t, 16>
-    ilogb(arg_t<vec<float, 16> > a);
 
     // rint, overloads are inline
     template <std::size_t _N>
@@ -231,18 +180,6 @@ namespace cftal {
     vec<float, 1>
     rsqrt(arg_t<vec<float, 1> > v);
 
-    vec<float, 2>
-    rsqrt(arg_t<vec<float, 2> > v);
-
-    vec<float, 4>
-    rsqrt(arg_t<vec<float, 4> > v);
-
-    vec<float, 8>
-    rsqrt(arg_t<vec<float, 8> > v);
-
-    vec<float, 16>
-    rsqrt(arg_t<vec<float, 16> > v);
-
     // cbrt, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -250,18 +187,6 @@ namespace cftal {
 
     vec<float, 1>
     cbrt(arg_t<vec<float, 1> > v);
-
-    vec<float, 2>
-    cbrt(arg_t<vec<float, 2> > v);
-
-    vec<float, 4>
-    cbrt(arg_t<vec<float, 4> > v);
-
-    vec<float, 8>
-    cbrt(arg_t<vec<float, 8> > v);
-
-    vec<float, 16>
-    cbrt(arg_t<vec<float, 16> > v);
 
     // root12, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -271,18 +196,6 @@ namespace cftal {
     vec<float, 1>
     root12(arg_t<vec<float, 1> > v);
 
-    vec<float, 2>
-    root12(arg_t<vec<float, 2> > v);
-
-    vec<float, 4>
-    root12(arg_t<vec<float, 4> > v);
-
-    vec<float, 8>
-    root12(arg_t<vec<float, 8> > v);
-
-    vec<float, 16>
-    root12(arg_t<vec<float, 16> > v);
-
     // hypot, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -290,18 +203,6 @@ namespace cftal {
 
     vec<float, 1>
     hypot(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
-
-    vec<float, 2>
-    hypot(arg_t<vec<float, 2> > x, arg_t<vec<float, 2> > y);
-
-    vec<float, 4>
-    hypot(arg_t<vec<float, 4> > x, arg_t<vec<float, 4> > y);
-
-    vec<float, 8>
-    hypot(arg_t<vec<float, 8> > x, arg_t<vec<float, 8> > y);
-
-    vec<float, 16>
-    hypot(arg_t<vec<float, 16> > x, arg_t<vec<float, 16> > y);
 
     // exp, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -311,18 +212,6 @@ namespace cftal {
     vec<float, 1>
     exp(arg_t<vec<float, 1> > v);
 
-    vec<float, 2>
-    exp(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp(arg_t<vec<float, 16> > d);
-
     // expm1, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -330,18 +219,6 @@ namespace cftal {
 
     vec<float, 1>
     expm1(arg_t<vec<float, 1> > v);
-
-    vec<float, 2>
-    expm1(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    expm1(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    expm1(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    expm1(arg_t<vec<float, 16> > d);
 
     // exp2, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -351,18 +228,6 @@ namespace cftal {
     vec<float, 1>
     exp2(arg_t<vec<float, 1> > v);
 
-    vec<float, 2>
-    exp2(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp2(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp2(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp2(arg_t<vec<float, 16> > d);
-
     // exp2m1, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -370,18 +235,6 @@ namespace cftal {
 
     vec<float, 1>
     exp2m1(arg_t<vec<float, 1> > v);
-
-    vec<float, 2>
-    exp2m1(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp2m1(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp2m1(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp2m1(arg_t<vec<float, 16> > d);
 
     // exp10, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -391,18 +244,6 @@ namespace cftal {
     vec<float, 1>
     exp10(arg_t<vec<float, 1> > v);
 
-    vec<float, 2>
-    exp10(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp10(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp10(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp10(arg_t<vec<float, 16> > d);
-
     // exp10m1, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -410,18 +251,6 @@ namespace cftal {
 
     vec<float, 1>
     exp10m1(arg_t<vec<float, 1> > v);
-
-    vec<float, 2>
-    exp10m1(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp10m1(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp10m1(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp10m1(arg_t<vec<float, 16> > d);
 
     // sinh, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -431,18 +260,6 @@ namespace cftal {
     vec<float, 1>
     sinh(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    sinh(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    sinh(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    sinh(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    sinh(arg_t<vec<float, 16> > d);
-
     // cosh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -450,18 +267,6 @@ namespace cftal {
 
     vec<float, 1>
     cosh(arg_t<vec<float, 1> > d);
-
-    vec<float, 2>
-    cosh(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    cosh(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    cosh(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    cosh(arg_t<vec<float, 16> > d);
 
     // cosh, these functions are exact to XXX ulp
     template <std::size_t _N>
@@ -471,18 +276,6 @@ namespace cftal {
     vec<float, 1>
     tanh(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    tanh(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    tanh(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    tanh(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    tanh(arg_t<vec<float, 16> > d);
-
     // log, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -490,18 +283,6 @@ namespace cftal {
 
     vec<float, 1>
     log(arg_t<vec<float, 1> > v);
-
-    vec<float, 2>
-    log(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    log(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    log(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    log(arg_t<vec<float, 16> > d);
 
     // log1p, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -511,18 +292,6 @@ namespace cftal {
     vec<float, 1>
     log1p(arg_t<vec<float, 1> > v);
 
-    vec<float, 2>
-    log1p(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    log1p(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    log1p(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    log1p(arg_t<vec<float, 16> > d);
-
     // log10, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -530,18 +299,6 @@ namespace cftal {
 
     vec<float, 1>
     log10(arg_t<vec<float, 1> > v);
-
-    vec<float, 2>
-    log10(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    log10(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    log10(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    log10(arg_t<vec<float, 16> > d);
 
     // log2, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -551,18 +308,6 @@ namespace cftal {
     vec<float, 1>
     log2(arg_t<vec<float, 1> > v);
 
-    vec<float, 2>
-    log2(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    log2(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    log2(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    log2(arg_t<vec<float, 16> > d);
-
     // pow, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -570,18 +315,6 @@ namespace cftal {
 
     vec<float, 1>
     pow(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
-
-    vec<float, 2>
-    pow(arg_t<vec<float, 2> > b, arg_t<vec<float, 2> > e);
-
-    vec<float, 4>
-    pow(arg_t<vec<float, 4> > b, arg_t<vec<float, 4> > e);
-
-    vec<float, 8>
-    pow(arg_t<vec<float, 8> > b, arg_t<vec<float, 8> > e);
-
-    vec<float, 16>
-    pow(arg_t<vec<float, 16> > b, arg_t<vec<float, 16> > e);
 
     // atan, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -591,18 +324,6 @@ namespace cftal {
     vec<float, 1>
     atan(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    atan(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    atan(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    atan(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    atan(arg_t<vec<float, 16> > d);
-
     // asin, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -610,18 +331,6 @@ namespace cftal {
 
     vec<float, 1>
     asin(arg_t<vec<float, 1> > d);
-
-    vec<float, 2>
-    asin(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    asin(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    asin(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    asin(arg_t<vec<float, 16> > d);
 
     // acos, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -631,18 +340,6 @@ namespace cftal {
     vec<float, 1>
     acos(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    acos(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    acos(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    acos(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    acos(arg_t<vec<float, 16> > d);
-
     // atan2, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -650,18 +347,6 @@ namespace cftal {
 
     vec<float, 1>
     atan2(arg_t<vec<float, 1> > y, arg_t<vec<float, 1> > x);
-
-    vec<float, 2>
-    atan2(arg_t<vec<float, 2> > y, arg_t<vec<float, 2> > x);
-
-    vec<float, 4>
-    atan2(arg_t<vec<float, 4> > y, arg_t<vec<float, 4> > x);
-
-    vec<float, 8>
-    atan2(arg_t<vec<float, 8> > y, arg_t<vec<float, 8> > x);
-
-    vec<float, 16>
-    atan2(arg_t<vec<float, 16> > y, arg_t<vec<float, 16> > x);
 
     // sin, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -671,18 +356,6 @@ namespace cftal {
     vec<float, 1>
     sin(arg_t<vec<float, 1> > v);
 
-    vec<float, 2>
-    sin(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    sin(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    sin(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    sin(arg_t<vec<float, 16> > d);
-
     // cos, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -690,18 +363,6 @@ namespace cftal {
 
     vec<float, 1>
     cos(arg_t<vec<float, 1> > v);
-
-    vec<float, 2>
-    cos(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    cos(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    cos(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    cos(arg_t<vec<float, 16> > d);
 
     // sincos, these functions are exact to +-1 ulp
     template<std::size_t _N>
@@ -713,22 +374,6 @@ namespace cftal {
     sincos(arg_t<vec<float, 1> > x,
            vec<float, 1>* s, vec<float, 1>* c);
 
-    void
-    sincos(arg_t<vec<float, 2> > d,
-           vec<float, 2> * psin, vec<float, 2> * pcos);
-
-    void
-    sincos(arg_t<vec<float, 4> > d,
-           vec<float, 4> * psin, vec<float, 4> * pcos);
-
-    void
-    sincos(arg_t<vec<float, 8> > d,
-           vec<float, 8> * psin, vec<float, 8> * pcos);
-
-    void
-    sincos(arg_t<vec<float, 16> > d,
-           vec<float, 16> * psin, vec<float, 16> * pcos);
-
     // tan, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -736,18 +381,6 @@ namespace cftal {
 
     vec<float, 1>
     tan(arg_t<vec<float, 1> > v);
-
-    vec<float, 2>
-    tan(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    tan(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    tan(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    tan(arg_t<vec<float, 16> > d);
 
     // asinh, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -757,18 +390,6 @@ namespace cftal {
     vec<float, 1>
     asinh(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    asinh(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    asinh(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    asinh(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    asinh(arg_t<vec<float, 16> > d);
-
     // acosh, these functions are exact to +-2 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -776,18 +397,6 @@ namespace cftal {
 
     vec<float, 1>
     acosh(arg_t<vec<float, 1> > d);
-
-    vec<float, 2>
-    acosh(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    acosh(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    acosh(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    acosh(arg_t<vec<float, 16> > d);
 
     // atanh, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -797,18 +406,6 @@ namespace cftal {
     vec<float, 1>
     atanh(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    atanh(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    atanh(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    atanh(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    atanh(arg_t<vec<float, 16> > d);
-
     // erf, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -816,18 +413,6 @@ namespace cftal {
 
     vec<float, 1>
     erf(arg_t<vec<float, 1> > d);
-
-    vec<float, 2>
-    erf(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    erf(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    erf(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    erf(arg_t<vec<float, 16> > d);
 
     // erfc, these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -837,18 +422,6 @@ namespace cftal {
     vec<float, 1>
     erfc(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    erfc(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    erfc(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    erfc(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    erfc(arg_t<vec<float, 16> > d);
-
     // tgamma, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -856,18 +429,6 @@ namespace cftal {
 
     vec<float, 1>
     tgamma(arg_t<vec<float, 1> > d);
-
-    vec<float, 2>
-    tgamma(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    tgamma(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    tgamma(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    tgamma(arg_t<vec<float, 16> > d);
 
     // lgamma: these functions are exact to ??? ulp, perhaps to +-1
     // ulp for non negative arguments
@@ -878,32 +439,9 @@ namespace cftal {
     vec<float, 1>
     lgamma(arg_t<vec<float, 1> > d, vec<int32_t, 1>* signp);
 
-    vec<float, 2>
-    lgamma(arg_t<vec<float, 2> > d, vec<int32_t, 2>* signp);
-
-    vec<float, 4>
-    lgamma(arg_t<vec<float, 4> > d, vec<int32_t, 4>* signp);
-
-    vec<float, 8>
-    lgamma(arg_t<vec<float, 8> > d, vec<int32_t, 8>* signp);
-
-    // no vec<float, 16>, way to slow
-
     // ilogbp1
     vec<int32_t, 1>
     ilogbp1(arg_t<vec<float, 1> > v);
-
-    vec<int32_t, 2>
-    ilogbp1(arg_t<vec<float, 2> > v);
-
-    vec<int32_t, 4>
-    ilogbp1(arg_t<vec<float, 4> > v);
-
-    vec<int32_t, 8>
-    ilogbp1(arg_t<vec<float, 8> > v);
-
-    vec<int32_t, 16>
-    ilogbp1(arg_t<vec<float, 16> > v);
 
     // exp_mx2, calculates $ e^{-x^2} $ these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -913,18 +451,6 @@ namespace cftal {
     vec<float, 1>
     exp_mx2(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    exp_mx2(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp_mx2(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp_mx2(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp_mx2(arg_t<vec<float, 16> > d);
-
     // exp_px2, calculates $ e^{+x^2} $ these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -932,18 +458,6 @@ namespace cftal {
 
     vec<float, 1>
     exp_px2(arg_t<vec<float, 1> > d);
-
-    vec<float, 2>
-    exp_px2(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp_px2(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp_px2(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp_px2(arg_t<vec<float, 16> > d);
 
     // exp2_mx2, calculates $ 2^{-x^2} $ these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -953,18 +467,6 @@ namespace cftal {
     vec<float, 1>
     exp2_mx2(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    exp2_mx2(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp2_mx2(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp2_mx2(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp2_mx2(arg_t<vec<float, 16> > d);
-
     // exp2_px2, calculates $ 2^{+x^2} $ these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -972,18 +474,6 @@ namespace cftal {
 
     vec<float, 1>
     exp2_px2(arg_t<vec<float, 1> > d);
-
-    vec<float, 2>
-    exp2_px2(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp2_px2(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp2_px2(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp2_px2(arg_t<vec<float, 16> > d);
 
     // exp10_mx2, calculates $ 10^{-x^2} $ these functions are exact to +-1 ulp
     template <std::size_t _N>
@@ -993,18 +483,6 @@ namespace cftal {
     vec<float, 1>
     exp10_mx2(arg_t<vec<float, 1> > d);
 
-    vec<float, 2>
-    exp10_mx2(arg_t<vec<float, 2> > d);
-
-    vec<float, 4>
-    exp10_mx2(arg_t<vec<float, 4> > d);
-
-    vec<float, 8>
-    exp10_mx2(arg_t<vec<float, 8> > d);
-
-    vec<float, 16>
-    exp10_mx2(arg_t<vec<float, 16> > d);
-
     // exp10_px2, calculates $ 10^{+x^2} $ these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -1013,18 +491,549 @@ namespace cftal {
     vec<float, 1>
     exp10_px2(arg_t<vec<float, 1> > d);
 
+#if V2F32_FUNCS>0
+    vec<float, 2>
+    frexp(arg_t<vec<float, 2> > x, vec<int32_t, 2>* e);
+
+    vec<float, 2>
+    ldexp(arg_t<vec<float, 2> > a, arg_t<vec<int32_t, 2> > e);
+
+    vec<float, 2>
+    nextafter(arg_t<vec<float, 2> > x, arg_t<vec<float, 2> > y);
+
+    vec<int32_t, 2>
+    ilogb(arg_t<vec<float, 2> > a);
+
+    vec<int32_t, 2>
+    ilogbp1(arg_t<vec<float, 2> > v);
+
+    vec<float, 2>
+    rsqrt(arg_t<vec<float, 2> > v);
+
+    vec<float, 2>
+    cbrt(arg_t<vec<float, 2> > v);
+
+    vec<float, 2>
+    root12(arg_t<vec<float, 2> > v);
+
+    vec<float, 2>
+    hypot(arg_t<vec<float, 2> > x, arg_t<vec<float, 2> > y);
+
+    vec<float, 2>
+    exp(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    expm1(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    exp2(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    exp2m1(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    exp10(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    exp10m1(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    sinh(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    cosh(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    tanh(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    log(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    log1p(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    log10(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    log2(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    pow(arg_t<vec<float, 2> > b, arg_t<vec<float, 2> > e);
+
+    vec<float, 2>
+    atan(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    asin(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    acos(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    atan2(arg_t<vec<float, 2> > y, arg_t<vec<float, 2> > x);
+
+    vec<float, 2>
+    sin(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    cos(arg_t<vec<float, 2> > d);
+
+    void
+    sincos(arg_t<vec<float, 2> > d,
+           vec<float, 2> * psin, vec<float, 2> * pcos);
+
+    vec<float, 2>
+    tan(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    asinh(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    acosh(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    atanh(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    erf(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    erfc(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    tgamma(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    lgamma(arg_t<vec<float, 2> > d, vec<int32_t, 2>* signp);
+
+    vec<float, 2>
+    exp_mx2(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    exp_px2(arg_t<vec<float, 2> > d);
+    
+    vec<float, 2>
+    exp2_mx2(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    exp2_px2(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    exp10_mx2(arg_t<vec<float, 2> > d);
+
     vec<float, 2>
     exp10_px2(arg_t<vec<float, 2> > d);
 
+#endif
+
+#if V4F32_FUNCS>0
+    vec<float, 4>
+    frexp(arg_t<vec<float, 4> > x, vec<int32_t, 4>* e);
+
+    vec<float, 4>
+    ldexp(arg_t<vec<float, 4> > a, arg_t<vec<int32_t, 4> > e);
+
+    vec<float, 4>
+    nextafter(arg_t<vec<float, 4> > x, arg_t<vec<float, 4> > y);
+
+    vec<int32_t, 4>
+    ilogb(arg_t<vec<float, 4> > a);
+
+    vec<int32_t, 4>
+    ilogbp1(arg_t<vec<float, 4> > v);
+
+    vec<float, 4>
+    rsqrt(arg_t<vec<float, 4> > v);
+
+    vec<float, 4>
+    cbrt(arg_t<vec<float, 4> > v);
+
+    vec<float, 4>
+    root12(arg_t<vec<float, 4> > v);
+
+    vec<float, 4>
+    hypot(arg_t<vec<float, 4> > x, arg_t<vec<float, 4> > y);
+
+    vec<float, 4>
+    exp(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    expm1(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    exp2(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    exp2m1(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    exp10(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    exp10m1(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    sinh(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    cosh(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    tanh(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    log(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    log1p(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    log10(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    log2(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    pow(arg_t<vec<float, 4> > b, arg_t<vec<float, 4> > e);
+
+    vec<float, 4>
+    atan(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    asin(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    acos(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    atan2(arg_t<vec<float, 4> > y, arg_t<vec<float, 4> > x);
+
+    vec<float, 4>
+    sin(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    cos(arg_t<vec<float, 4> > d);
+
+    void
+    sincos(arg_t<vec<float, 4> > d,
+           vec<float, 4> * psin, vec<float, 4> * pcos);
+
+    vec<float, 4>
+    tan(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    asinh(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    acosh(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    atanh(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    erf(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    erfc(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    tgamma(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    lgamma(arg_t<vec<float, 4> > d, vec<int32_t, 4>* signp);
+
+    vec<float, 4>
+    exp_mx2(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    exp_px2(arg_t<vec<float, 4> > d);
+    
+    vec<float, 4>
+    exp2_mx2(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    exp2_px2(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    exp10_mx2(arg_t<vec<float, 4> > d);
+
     vec<float, 4>
     exp10_px2(arg_t<vec<float, 4> > d);
+#endif
+
+#if V8F32_FUNCS>0
+    vec<float, 8>
+    frexp(arg_t<vec<float, 8> > x, vec<int32_t, 8>* e);
+
+    vec<float, 8>
+    ldexp(arg_t<vec<float, 8> > a, arg_t<vec<int32_t, 8> > e);
+
+    vec<float, 8>
+    nextafter(arg_t<vec<float, 8> > x, arg_t<vec<float, 8> > y);
+
+    vec<int32_t, 8>
+    ilogb(arg_t<vec<float, 8> > a);
+
+    vec<int32_t, 8>
+    ilogbp1(arg_t<vec<float, 8> > v);
+
+    vec<float, 8>
+    rsqrt(arg_t<vec<float, 8> > v);
+
+    vec<float, 8>
+    cbrt(arg_t<vec<float, 8> > v);
+
+    vec<float, 8>
+    root12(arg_t<vec<float, 8> > v);
+
+    vec<float, 8>
+    hypot(arg_t<vec<float, 8> > x, arg_t<vec<float, 8> > y);
+
+    vec<float, 8>
+    exp(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    expm1(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    exp2(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    exp2m1(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    exp10(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    exp10m1(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    sinh(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    cosh(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    tanh(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    log(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    log1p(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    log10(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    log2(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    pow(arg_t<vec<float, 8> > b, arg_t<vec<float, 8> > e);
+
+    vec<float, 8>
+    atan(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    asin(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    acos(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    atan2(arg_t<vec<float, 8> > y, arg_t<vec<float, 8> > x);
+
+    vec<float, 8>
+    sin(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    cos(arg_t<vec<float, 8> > d);
+
+    void
+    sincos(arg_t<vec<float, 8> > d,
+           vec<float, 8> * psin, vec<float, 8> * pcos);
+
+    vec<float, 8>
+    tan(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    asinh(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    acosh(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    atanh(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    erf(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    erfc(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    tgamma(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    lgamma(arg_t<vec<float, 8> > d, vec<int32_t, 8>* signp);
+
+    vec<float, 8>
+    exp_mx2(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    exp_px2(arg_t<vec<float, 8> > d);
+    
+    vec<float, 8>
+    exp2_mx2(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    exp2_px2(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    exp10_mx2(arg_t<vec<float, 8> > d);
 
     vec<float, 8>
     exp10_px2(arg_t<vec<float, 8> > d);
+    
+#endif
+#if V16F32_FUNCS>0
+    vec<float, 16>
+    frexp(arg_t<vec<float, 16> > x, vec<int32_t, 16>* e);
+
+    vec<float, 16>
+    ldexp(arg_t<vec<float, 16> > a, arg_t<vec<int32_t, 16> > e);
+
+    vec<float, 16>
+    nextafter(arg_t<vec<float, 16> > x, arg_t<vec<float, 16> > y);
+
+    vec<int32_t, 16>
+    ilogb(arg_t<vec<float, 16> > a);
+
+    vec<int32_t, 16>
+    ilogbp1(arg_t<vec<float, 16> > v);
+
+    vec<float, 16>
+    rsqrt(arg_t<vec<float, 16> > v);
+
+    vec<float, 16>
+    cbrt(arg_t<vec<float, 16> > v);
+
+    vec<float, 16>
+    root12(arg_t<vec<float, 16> > v);
+
+    vec<float, 16>
+    hypot(arg_t<vec<float, 16> > x, arg_t<vec<float, 16> > y);
+
+    vec<float, 16>
+    exp(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    expm1(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    exp2(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    exp2m1(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    exp10(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    exp10m1(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    sinh(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    cosh(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    tanh(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    log(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    log1p(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    log10(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    log2(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    pow(arg_t<vec<float, 16> > b, arg_t<vec<float, 16> > e);
+
+    vec<float, 16>
+    atan(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    asin(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    acos(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    atan2(arg_t<vec<float, 16> > y, arg_t<vec<float, 16> > x);
+
+    vec<float, 16>
+    sin(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    cos(arg_t<vec<float, 16> > d);
+
+    void
+    sincos(arg_t<vec<float, 16> > d,
+           vec<float, 16> * psin, vec<float, 16> * pcos);
+
+    vec<float, 16>
+    tan(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    asinh(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    acosh(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    atanh(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    erf(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    erfc(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    tgamma(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    lgamma(arg_t<vec<float, 16> > d, vec<int32_t, 16>* signp);
+
+    vec<float, 16>
+    exp_mx2(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    exp_px2(arg_t<vec<float, 16> > d);
+    
+    vec<float, 16>
+    exp2_mx2(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    exp2_px2(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    exp10_mx2(arg_t<vec<float, 16> > d);
 
     vec<float, 16>
     exp10_px2(arg_t<vec<float, 16> > d);
-
+    
+#endif
+    
+    
     // approximates 1/sqrt(a)
     template <std::size_t _N>
     vec<float, _N>
@@ -1067,18 +1076,6 @@ namespace cftal {
         vec<float, 1>
         cos(arg_t<vec<float, 1> > v);
 
-        vec<float, 2>
-        cos(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        cos(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        cos(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        cos(arg_t<vec<float, 16> > v);
-
         template <std::size_t _N>
         vec<float, _N>
         divide(const vec<float, _N>& x, const vec<float, _N>& y);
@@ -1090,37 +1087,12 @@ namespace cftal {
         vec<float, 1>
         exp(arg_t<vec<float, 1> > v);
 
-        vec<float, 2>
-        exp(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        exp(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        exp(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        exp(arg_t<vec<float, 16> > v);
-
         template <std::size_t _N>
         vec<float, _N>
         exp2(const vec<float, _N>& v);
 
         vec<float, 1>
         exp2(arg_t<vec<float, 1> > v);
-
-        vec<float, 2>
-        exp2(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        exp2(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        exp2(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        exp2(arg_t<vec<float, 16> > v);
-
 
         template <std::size_t _N>
         vec<float, _N>
@@ -1129,38 +1101,12 @@ namespace cftal {
         vec<float, 1>
         exp10(arg_t<vec<float, 1> > v);
 
-        vec<float, 2>
-        exp10(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        exp10(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        exp10(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        exp10(arg_t<vec<float, 16> > v);
-
-
         template <std::size_t _N>
         vec<float, _N>
         log(const vec<float, _N>& v);
 
         vec<float, 1>
         log(arg_t<vec<float, 1> > v);
-
-        vec<float, 2>
-        log(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        log(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        log(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        log(arg_t<vec<float, 16> > v);
-
 
         template <std::size_t _N>
         vec<float, _N>
@@ -1169,44 +1115,12 @@ namespace cftal {
         vec<float, 1>
         log2(arg_t<vec<float, 1> > v);
 
-        vec<float, 2>
-        log2(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        log2(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        log2(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        log2(arg_t<vec<float, 16> > v);
-
-
         template <std::size_t _N>
         vec<float, _N>
         log10(const vec<float, _N>& v);
 
         vec<float, 1>
         log10(arg_t<vec<float, 1> > v);
-
-        vec<float, 2>
-        log10(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        log10(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        log10(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        log10(arg_t<vec<float, 16> > v);
-
-
-#if 0
-        template <std::size_t _N>
-        vec<float, _N>
-        powr(const vec<float, _N>& x, const vec<float, _N>& y);
-#endif
 
         template <std::size_t _N>
         vec<float, _N>
@@ -1219,37 +1133,12 @@ namespace cftal {
         vec<float, 1>
         rsqrt(arg_t<vec<float, 1> > v);
 
-        vec<float, 2>
-        rsqrt(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        rsqrt(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        rsqrt(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        rsqrt(arg_t<vec<float, 16> > v);
-
-
         template <std::size_t _N>
         vec<float, _N>
         sin(const vec<float, _N>& v);
 
         vec<float, 1>
         sin(arg_t<vec<float, 1> > v);
-
-        vec<float, 2>
-        sin(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        sin(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        sin(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        sin(arg_t<vec<float, 16> > v);
 
         template <std::size_t _N>
         vec<float, _N>
@@ -1258,18 +1147,6 @@ namespace cftal {
         vec<float, 1>
         sqrt(arg_t<vec<float, 1> > v);
 
-        vec<float, 2>
-        sqrt(arg_t<vec<float, 2> > v);
-
-        vec<float, 4>
-        sqrt(arg_t<vec<float, 4> > v);
-
-        vec<float, 8>
-        sqrt(arg_t<vec<float, 8> > v);
-
-        vec<float, 16>
-        sqrt(arg_t<vec<float, 16> > v);
-
         template <std::size_t _N>
         vec<float, _N>
         tan(const vec<float, _N>& v);
@@ -1277,17 +1154,142 @@ namespace cftal {
         vec<float, 1>
         tan(arg_t<vec<float, 1> > v);
 
+#if V2F32_FUNCS>0
+        vec<float, 2>
+        cos(arg_t<vec<float, 2> > v);
+
+        vec<float, 2>
+        exp(arg_t<vec<float, 2> > v);
+
+        vec<float, 2>
+        exp2(arg_t<vec<float, 2> > v);
+
+        vec<float, 2>
+        exp10(arg_t<vec<float, 2> > v);
+
+        vec<float, 2>
+        log(arg_t<vec<float, 2> > v);
+
+        vec<float, 2>
+        log2(arg_t<vec<float, 2> > v);
+
+        vec<float, 2>
+        log10(arg_t<vec<float, 2> > v);
+
+        vec<float, 2>
+        rsqrt(arg_t<vec<float, 2> > v);
+
+        vec<float, 2>
+        sin(arg_t<vec<float, 2> > v);
+
+        vec<float, 2>
+        sqrt(arg_t<vec<float, 2> > v);
+
         vec<float, 2>
         tan(arg_t<vec<float, 2> > v);
+#endif
+#if V4F32_FUNCS>0
+        vec<float, 4>
+        cos(arg_t<vec<float, 4> > v);
+
+        vec<float, 4>
+        exp(arg_t<vec<float, 4> > v);
+
+        vec<float, 4>
+        exp2(arg_t<vec<float, 4> > v);
+
+        vec<float, 4>
+        exp10(arg_t<vec<float, 4> > v);
+
+        vec<float, 4>
+        log(arg_t<vec<float, 4> > v);
+
+        vec<float, 4>
+        log2(arg_t<vec<float, 4> > v);
+
+        vec<float, 4>
+        log10(arg_t<vec<float, 4> > v);
+
+        vec<float, 4>
+        rsqrt(arg_t<vec<float, 4> > v);
+
+        vec<float, 4>
+        sin(arg_t<vec<float, 4> > v);
+
+        vec<float, 4>
+        sqrt(arg_t<vec<float, 4> > v);
 
         vec<float, 4>
         tan(arg_t<vec<float, 4> > v);
+#endif
+#if V8F32_FUNCS>0
+        vec<float, 8>
+        cos(arg_t<vec<float, 8> > v);
+
+        vec<float, 8>
+        exp(arg_t<vec<float, 8> > v);
+
+        vec<float, 8>
+        exp2(arg_t<vec<float, 8> > v);
+
+        vec<float, 8>
+        exp10(arg_t<vec<float, 8> > v);
+
+        vec<float, 8>
+        log(arg_t<vec<float, 8> > v);
+
+        vec<float, 8>
+        log2(arg_t<vec<float, 8> > v);
+
+        vec<float, 8>
+        log10(arg_t<vec<float, 8> > v);
+
+        vec<float, 8>
+        rsqrt(arg_t<vec<float, 8> > v);
+
+        vec<float, 8>
+        sin(arg_t<vec<float, 8> > v);
+
+        vec<float, 8>
+        sqrt(arg_t<vec<float, 8> > v);
 
         vec<float, 8>
         tan(arg_t<vec<float, 8> > v);
+#endif
+#if V16F32_FUNCS>0
+        vec<float, 16>
+        cos(arg_t<vec<float, 16> > v);
+
+        vec<float, 16>
+        exp(arg_t<vec<float, 16> > v);
+
+        vec<float, 16>
+        exp2(arg_t<vec<float, 16> > v);
+
+        vec<float, 16>
+        exp10(arg_t<vec<float, 16> > v);
+
+        vec<float, 16>
+        log(arg_t<vec<float, 16> > v);
+
+        vec<float, 16>
+        log2(arg_t<vec<float, 16> > v);
+
+        vec<float, 16>
+        log10(arg_t<vec<float, 16> > v);
+
+        vec<float, 16>
+        rsqrt(arg_t<vec<float, 16> > v);
+
+        vec<float, 16>
+        sin(arg_t<vec<float, 16> > v);
+
+        vec<float, 16>
+        sqrt(arg_t<vec<float, 16> > v);
 
         vec<float, 16>
         tan(arg_t<vec<float, 16> > v);
+#endif
 
     };
 }

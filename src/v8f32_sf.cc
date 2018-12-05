@@ -10,6 +10,6 @@
 #include "cftal/d_real.h"
 #include "vec_def_math_spec_funcs.h"
 
-// DEF_ELEM_FUNCS(cftal, v8f32, v8s32, float)
+#if V8F32_FUNCS>0
 DEF_SPEC_FUNCS(cftal, cftal, v8f32, v8s32, float)
-DEF_SLOW_SPEC_FUNCS(cftal, cftal, v8f32, v8s32, float)
+#endif

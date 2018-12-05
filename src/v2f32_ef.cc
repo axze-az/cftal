@@ -12,5 +12,6 @@
 #include <cmath>
 #include <limits>
 
+#if V2F32_FUNCS>0
 DEF_ELEM_FUNCS(cftal, cftal, v2f32, v2s32, float)
-// DEF_SPEC_FUNCS(cftal, v2f32, v2s32, float)
+#endif

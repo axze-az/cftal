@@ -9,6 +9,6 @@
 #include "cftal/vec_traits.h"
 #include "vec_def_math_spec_funcs.h"
 
-// DEF_ELEM_FUNCS(cftal, v4f32, v4s32, float)
+#if V4F32_FUNCS>0
 DEF_SPEC_FUNCS(cftal, cftal, v4f32, v4s32, float)
-DEF_SLOW_SPEC_FUNCS(cftal, cftal, v4f32, v4s32, float)
+#endif

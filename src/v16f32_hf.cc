@@ -10,4 +10,6 @@
 #include <cmath>
 #include <limits>
 
+#if V16F32_FUNCS>0
 DEF_HALF_FUNCS(cftal, cftal::half_math, v16f32, v16s32, float)
+#endif

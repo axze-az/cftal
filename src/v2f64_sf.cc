@@ -9,6 +9,6 @@
 #include "cftal/math/spec_func_core_f64.h"
 #include "vec_def_math_spec_funcs.h"
 
-// DEF_ELEM_FUNCS(cftal, v2f64, v2s32, double)
+#if V2F64_FUNCS>0
 DEF_SPEC_FUNCS(cftal, cftal, v2f64, v2s32, double)
-DEF_SLOW_SPEC_FUNCS(cftal, cftal, v2f64, v2s32, double)
+#endif
