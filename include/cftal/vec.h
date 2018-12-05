@@ -19,91 +19,13 @@
 #include <cftal/vec_mask.h>
 #include <cftal/vec_op.h>
 #include <cftal/vec_t_1.h>
-
-#if defined (__ARM_NEON) || defined (__ARM_NEON__)
-#include <cftal/arm/v2s32.h>
-#include <cftal/arm/v2u32.h>
-#include <cftal/arm/v2s64.h>
-#include <cftal/arm/v2u64.h>
-
-#include <cftal/arm/v2s32_inl.h>
-#include <cftal/arm/v2u32_inl.h>
-#include <cftal/arm/v2s64_inl.h>
-#include <cftal/arm/v2u64_inl.h>
-#endif
-
-#if defined (__SSE2__)
-// include 128 bit integer vector specializations
-#include <cftal/x86/v4s32.h>
-#include <cftal/x86/v4u32.h>
-#include <cftal/x86/v2s64.h>
-#include <cftal/x86/v2u64.h>
-#include <cftal/x86/v8s16.h>
-#include <cftal/x86/v8u16.h>
-// include 128 bit integer vector specializations implementations
-#include <cftal/x86/v4s32_inl.h>
-#include <cftal/x86/v4u32_inl.h>
-#include <cftal/x86/v2s64_inl.h>
-#include <cftal/x86/v2u64_inl.h>
-#include <cftal/x86/v8s16_inl.h>
-#include <cftal/x86/v8u16_inl.h>
-#endif
-#if defined (__AVX2__)
-// include 256 bit integer vector specializations
-#include <cftal/x86/v8s32.h>
-#include <cftal/x86/v8u32.h>
-#include <cftal/x86/v4s64.h>
-#include <cftal/x86/v4u64.h>
-// include 256 bit integer vector specializations implementations
-#include <cftal/x86/v8s32_inl.h>
-#include <cftal/x86/v8u32_inl.h>
-#include <cftal/x86/v4s64_inl.h>
-#include <cftal/x86/v4u64_inl.h>
-#endif
-
+#include <cftal/vec_spec.h>
 #include <cftal/vec_double_n.h>
 #include <cftal/vec_float_n.h>
 #include <cftal/vec_math_funcs.h>
-
 #include <cftal/vec_cvt.h>
 #include <cftal/vec_cast.h>
 #include <cftal/vec_misc.h>
-
-namespace cftal {
-#if 0
-    namespace debug {
-        template <typename _T>
-        union ubytes {
-            _T _t;
-            uint8_t _b[sizeof(_T)];
-            ubytes(const _T& t) : _t(t) {}
-        };
-
-        template <typename _T>
-        ubytes<_T> bytes(const _T& t) {
-            return ubytes<_T>(t);
-        }
-
-        template <typename _T>
-        inline
-        std::ostream& operator<<(std::ostream& s, const ubytes<_T>& b)
-        {
-            bool first=true;
-            for (std::size_t i=0; i<sizeof(_T); ++i) {
-                int32_t t=b._b[i];
-                if (first==false) {
-                    s << ' ';
-                }
-                s << t;
-                first = false;
-            }
-            return s;
-        }
-    };
-
-#endif
-
-}
 
 // Local variables:
 // mode: c++

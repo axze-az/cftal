@@ -8,25 +8,18 @@
 #define __CFTAL_VEC_FLOAT_N_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/vec_t_1.h>
+#include <cftal/vec_spec.h>
 #include <cftal/d_real.h>
 #include <cftal/vec_math_funcs.h>
 #include <cmath>
-#if defined (__ARM_NEON__) || defined (__ARM_NEON)
-#include <cftal/arm/v2f32.h>
-#endif
-#if defined (__SSE2__)
-#include <cftal/x86/v4f32.h>
-#endif
-#if defined (__AVX__)
-#include <cftal/x86/v8f32.h>
-#endif
-#if defined (__SSE2__)
-#include <cftal/x86/v4f32_inl.h>
-#endif
-#if defined (__AVX__)
-#include <cftal/x86/v8f32_inl.h>
-#endif
+
+#define V2F32_FUNCS 1
+#define V4F32_FUNCS \
+((V4F32_SPECIALIZED>0) || ((V2F32_SPECIALIZED>0) && (V2S32_SPECIALIZED>0)))
+#define V8F32_FUNCS \
+((V8F32_SPECIALIZED>0) || ((V4F32_SPECIALIZED>0) && (V4S32_SPECIALIZED>0)))
+#define V16F32_FUNCS \
+((V16F32_SPECIALIZED>0) || ((V8F32_SPECIALIZED>0) && (V8S32_SPECIALIZED>0)))
 
 namespace cftal {
 
