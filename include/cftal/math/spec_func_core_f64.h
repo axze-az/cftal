@@ -500,7 +500,7 @@ erfc_k(arg_t<vf_type> xc)
             erfc_i0_c5,
             erfc_i0_c3
         };
-        i0h = horner(x2h, ci0);
+        i0h = horner2(x2h, vf_type(x2h*x2h), ci0);
         horner_comp_quick(i0h, i0l, x2h, i0h, erfc_i0_c1);
         d_ops::mul122(i0h, i0l, x, i0h, i0l);
         d_ops::add122(i0h, i0l, erfc_i0_c0, i0h, i0l);
