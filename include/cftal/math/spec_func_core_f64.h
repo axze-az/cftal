@@ -764,6 +764,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
         dvf_type q;
         d_ops::mul122(q[0], q[1], xa, gh, gl);
         d_ops::mul22(q[0], q[1], q[0], q[1], s[0], s[1]);
+        // g_n = p / q;
         dvf_type g_n;
         d_ops::div22(g_n[0], g_n[1], p[0], p[1], q[0], q[1]);
         gh = _T::sel(x_lt_zero, g_n[0], gh);
