@@ -193,20 +193,15 @@ erf_k(arg_t<vf_type> xc)
             erf_i0_c13,
             erf_i0_c11,
             erf_i0_c9,
-            erf_i0_c7,
-            erf_i0_c5,
-            erf_i0_c3
+            erf_i0_c7
         };
-        vf_type y_i0= horner(xx, c_y_i0);
+        vf_type y_i0= horner2(xx, vf_type(xx*xx), c_y_i0);
+        y_i0 = horner(xx, y_i0, erf_i0_c5, erf_i0_c3);
         vf_type ye;
-        horner_comp(y_i0, ye, xx, y_i0,
-                    erf_i0_c1);
+        horner_comp_quick(y_i0, ye, xx, y_i0, erf_i0_c1);
         vf_type p_i;
         y_i0 = d_ops::two_prod(y_i0, x, p_i);
         ye = ye*x + p_i;
-        //
-        // impl::eft_poly_si(y_i0, ye, x, y_i0, ye,
-        //                   0.0);
         y_i0 += ye;
         y = y_i0;
     }
@@ -277,8 +272,7 @@ erf_k(arg_t<vf_type> xc)
                       erf_i1_c2,
                       erf_i1_c1);
         vf_type ye;
-        horner_comp(y_i1, ye, x_i1, y_i1,
-                    erf_i1_c0h);
+        horner_comp_quick(y_i1, ye, x_i1, y_i1, erf_i1_c0h);
         y_i1 += ye+erf_i1_c0l;
         y = _T::sel(x_in_i1, y_i1, y);
     };
@@ -349,8 +343,7 @@ erf_k(arg_t<vf_type> xc)
                       erf_i2_c2,
                       erf_i2_c1);
         vf_type ye;
-        horner_comp(y_i2, ye, x_i2, y_i2,
-                    erf_i2_c0h);
+        horner_comp_quick(y_i2, ye, x_i2, y_i2, erf_i2_c0h);
         y_i2 += ye+erf_i2_c0l;
         y = _T::sel(x_in_i2, y_i2, y);
     };
@@ -423,8 +416,7 @@ erf_k(arg_t<vf_type> xc)
                       erf_i3_c2,
                       erf_i3_c1);
         vf_type ye;
-        horner_comp(y_i3, ye, x_i3, y_i3,
-                    erf_i3_c0h);
+        horner_comp_quick(y_i3, ye, x_i3, y_i3, erf_i3_c0h);
         y_i3 += ye+erf_i3_c0l;
         y=_T::sel(x_in_i3, y_i3, y);
     };

@@ -168,7 +168,7 @@ erf_k(arg_t<vf_type> xc)
             erf_i0_c5,
             erf_i0_c3
         };
-        vf_type i0h= horner(xx, c_y_i0)* xx;
+        vf_type i0h= horner2(xx, vf_type(xx*xx), c_y_i0)* xx;
 
         vf_type i0l;
         d_ops::add212(i0h, i0l, erf_i0_c1h, erf_i0_c1l, i0h);
@@ -207,6 +207,7 @@ erf_k(arg_t<vf_type> xc)
         // x^ : +0xap-3f
         const float erf_i1_x0=+1.2500000000e+00f;
         vf_type x_i1 = x - erf_i1_x0;
+        vf_type x_i1_sqr = x_i1*x_i1;
 
         static const float c_i[]={
             erf_i1_c10,
@@ -216,11 +217,10 @@ erf_k(arg_t<vf_type> xc)
             erf_i1_c6,
             erf_i1_c5,
             erf_i1_c4,
-            erf_i1_c3,
-            erf_i1_c2,
-            erf_i1_c1
+            erf_i1_c3
         };
-        vf_type y_i1= horner(x_i1, c_i)*x_i1;
+        vf_type y_i1= horner2(x_i1, x_i1_sqr, c_i);
+        y_i1=horner(x_i1, y_i1, erf_i1_c2, erf_i1_c1)*x_i1;
         y_i1 += erf_i1_c0l;
         y_i1 += erf_i1_c0h;
         y = _T::sel(x_in_i1, y_i1, y);
