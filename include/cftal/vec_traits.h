@@ -44,8 +44,8 @@ namespace cftal {
               vec<double, _N>& l) {
             const double msk=
                 const_u64<0xf8000000U, 0xffffffffU>::v.f64();
-            vec<double, _N> th = a & msk;
-            vec<double, _N> tl = a - th;
+            const vec<double, _N> th = a & msk;
+            const vec<double, _N> tl = a - th;
             h = th;
             l = tl;
         }
@@ -85,8 +85,8 @@ namespace cftal {
               vec<float, _N>& l) {
             const float msk=
                 const_u32<0xfffff000U>::v.f32();
-            vec<float, _N> th = a & msk;
-            vec<float, _N> tl = a - th;
+            const vec<float, _N> th = a & msk;
+            const vec<float, _N> tl = a - th;
             h = th;
             l = tl;
         }
