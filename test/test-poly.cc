@@ -6,7 +6,6 @@
 //
 #include "cftal/test/of_math_funcs.h"
 #include "cftal/math/horner.h"
-#include "cftal/math/impl_estrin.h"
 #include "cftal/vec.h"
 #include "cftal/vec_traits.h"
 #include "cftal/test/call_mpfr.h"
@@ -110,28 +109,6 @@ namespace cftal {
             static
             const char* fname() { return "exp_f64 poly horner"; }
         };
-
-        struct check_exp_f64_estrin : public check_exp_f64_base {
-
-            template <std::size_t _N>
-            static
-            vec<double, _N>
-            v(const vec<double, _N>& x) {
-                using vf_type = vec<double, _N>;
-                vf_type y= math::impl::estrin(x,
-                                              c13, c12, c11, c10,
-                                              c9, c8, c7, c6, c5,
-                                              c4, c3);
-                y=math::horner(x, y, c2);
-                vf_type ye;
-                math::horner_comp_quick(y, ye, x, y, c1, c0);
-                return y+ ye;
-            }
-
-            static
-            const char* fname() { return "exp_f64 poly estrin"; }
-        };
-
     }
 }
 
@@ -238,27 +215,6 @@ int main(int argc, char** argv)
 #endif
     rc &= of_fp_func_up_to<
         ftype, _N, check_exp_f64_impl>::v(st, d, speed_only,
-                                          cmp_ulp<ftype>(ulp, us),
-                                          cnt, true);
-    std::cout << "ulps: "
-              << std::fixed << std::setprecision(4) << *us << std::endl;
-    std::cout << st << std::endl;
-
-#if 0
-    // deactivated, no new information
-    us=std::make_shared<ulp_stats>();
-    rc &= of_fp_func_up_to<
-        ftype, _N, check_exp_f64_horner>::v(st, d, speed_only,
-                                          cmp_ulp<ftype>(ulp, us),
-                                          cnt, true);
-    std::cout << "ulps: "
-              << std::fixed << std::setprecision(4) << *us << std::endl;
-    std::cout << st << std::endl;
-#endif
-
-    us=std::make_shared<ulp_stats>();
-    rc &= of_fp_func_up_to<
-        ftype, _N, check_exp_f64_estrin>::v(st, d, speed_only,
                                           cmp_ulp<ftype>(ulp, us),
                                           cnt, true);
     std::cout << "ulps: "

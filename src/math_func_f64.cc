@@ -140,7 +140,7 @@ __kernel_rem_pio2(double xr[2], double x, double xl)
 
     double xi[5];
     for (int i=0; i<4; ++i) {
-        xi[i]= int32_t(z);
+        xi[i]= __trunc(z);
         // z = (z - xi[i])*0x1p24;
         d_ops::add122cond(z, zl, -xi[i], z, zl);
         z*=0x1p24;

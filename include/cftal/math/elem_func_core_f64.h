@@ -26,7 +26,6 @@
 #include <cftal/math/func_traits_f64_s32.h>
 #include <cftal/math/misc.h>
 #include <cftal/math/horner.h>
-#include <cftal/math/impl_estrin.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
 
