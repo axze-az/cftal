@@ -121,15 +121,8 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
 __scale_exp_k(arg_t<vf_type> kf)
 {
-#if 1
     vi_type ki= _T::cvt_f_to_i(kf);
     vf_type rh= _T::insert_exp(_T::bias()+ki);
-#else
-    vf_type kt=max(vf_type(-64.0f), kf);
-    kt= min(vf_type(64.0f), kt);
-    vi_type ki= _T::cvt_f_to_i(kt);
-    vf_type rh= _T::insert_exp(_T::bias()+ki);
-#endif
     return rh;
 }
 
@@ -518,34 +511,8 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
 half_rsqrt(arg_t<vf_type> x)
 {
-#if 1
     vf_type y=native_rsqrt(x);
-    // ensure higher precision at the cost of one operation
-    // y = y + (0.5f*y) * (1.0f- y*(x * y));
-    // y= 0.5f*y *(3.0f - y*(y*x));
     return y;
-#else
-    vi_type yi = _T::as_int(x);
-    yi = ((0xbe6eb50c - yi) >> 1) & 0x7fffffff;
-    vf_type y= _T::as_float(yi);
-#if 1
-    vf_type xh=0.5f *x;
-    y= y *(1.5f - y*(y*xh));
-    y= y *(1.5f - y*(y*xh));
-    y = y + (0.5f*y) * (1.0f- y*(x * y));
-    return y;
-#else
-    vf_type xh= 0.5f *x;
-    y= y *(1.5f - y*y*xh);
-    y= y *(1.5f - y*y*xh);
-    y= y *(1.5f - y*y*xh);
-    // y= 0.5f * y *(3.0f - y*y*x);
-    // y= y + 0.5f * y * (1.0f - yi*y*x);
-    yi= _T::sel(x<0, _T::nan(), y);
-    yi= _T::sel(x!=x, x, y);
-    return yi;
-#endif
-#endif
 }
 
 template <typename _T>
@@ -554,7 +521,6 @@ cftal::math::half_func<float, _T>::
 half_sqrt(arg_t<vf_type> x)
 {
     return x*native_rsqrt(x);
-    // return sqrt(x);
 }
 
 // local variables:
