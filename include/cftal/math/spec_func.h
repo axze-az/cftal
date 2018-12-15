@@ -46,7 +46,7 @@ namespace cftal {
             vf_type
             lgamma(arg_t<vf_type> xc, vi_type* signp);
 
-            
+
         };
 
     }
@@ -59,8 +59,8 @@ erf(arg_t<vf_type> x)
 {
     vf_type r=base_type::erf_k(x);
     using fc=func_constants<_FLOAT_T>;
-    r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin(), -1.0, r);
-    r = _TRAITS_T::sel(x > fc::erf_lt_one_fin(), 1.0, r);
+    r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin(), vf_type(-1.0), r);
+    r = _TRAITS_T::sel(x > fc::erf_lt_one_fin(), vf_type(1.0), r);
     r = _TRAITS_T::sel(x == 0, x, r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
@@ -74,8 +74,8 @@ erfc(arg_t<vf_type> x)
     vf_type r=base_type::erfc_k(x);
     using fc=func_constants<_FLOAT_T>;
     r = _TRAITS_T::sel_zero_or_val(x > fc::erfc_gt_zero_fin(), r);
-    r = _TRAITS_T::sel(x < -fc::erfc_gt_zero_fin(), 2.0, r);
-    r = _TRAITS_T::sel(x == 0, 1.0, r);
+    r = _TRAITS_T::sel(x < -fc::erfc_gt_zero_fin(), vf_type(2.0), r);
+    r = _TRAITS_T::sel(x == 0, vf_type(1.0), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
 }
@@ -92,7 +92,9 @@ tgamma(arg_t<vf_type> xc)
     if (any_of(xc_lt_0)) {
         if (any_of(xc <= fc::tgamma_lo_zero())) {
             // tgamma(x) = -0 for -odd < x <= -even
-            vmf_type is_even=vf_type(floor(xc)*0.5) == floor(vf_type(xc*0.5));
+            const vf_type half(0.5);
+            vmf_type is_even=
+                vf_type(floor(xc)*half) == floor(vf_type(xc*half));
             vf_type n_r=_TRAITS_T::sel(is_even, vf_type(+0.0), vf_type(-0.0));
             // nan selection is not necessary
             r = _TRAITS_T::sel(xc <= fc::tgamma_lo_zero(), n_r, r);

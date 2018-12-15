@@ -28,8 +28,8 @@ namespace cftal {
     template <typename _T, std::size_t _N>
     constexpr init_list<_T>
     low_half(const init_list<_T>& l) {
-        std::size_t s = l.size();
-        std::size_t ns= (s < _N/2 ? s : _N/2);
+        const std::size_t s = l.size();
+        const std::size_t ns= (s < _N/2 ? s : _N/2);
         const _T* p= l.begin();
         return init_list<_T>(p, p+ ns);
     }
@@ -37,9 +37,10 @@ namespace cftal {
     template <typename _T, std::size_t _N>
     constexpr init_list<_T>
     high_half(const init_list<_T>& l) {
-        std::size_t s = l.size();
-        std::size_t ns= (s > _N/2 ? s - _N/2 : 0);
-        const _T* p= l.begin() + _N/2;
+        const std::size_t s = l.size();
+        const std::size_t offs= (s > _N/2 ? s - _N/2 : s - 1);
+        const std::size_t ns= (s > _N/2 ? s - _N/2 : 1);
+        const _T* p= l.begin() + offs;
         return init_list<_T>(p, p+ ns);
     }
 }
