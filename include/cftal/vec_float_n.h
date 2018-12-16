@@ -21,6 +21,13 @@
 #define V16F32_FUNCS                                                    \
     ((V16F32_SPECIALIZED>0) || ((V8F32_SPECIALIZED>0) && (V8S32_SPECIALIZED>0)))
 
+#define V4F32_SLOW_SPEC_FUNCS                                           \
+    ((V4F32_SPECIALIZED>0))
+#define V8F32_SLOW_SPEC_FUNCS                                           \
+    ((V8F32_SPECIALIZED>0))
+#define V16F32_SLOW_SPEC_FUNCS                                           \
+    ((V16F32_SPECIALIZED>0))
+
 namespace cftal {
 
     template <std::size_t _N>
@@ -612,7 +619,7 @@ namespace cftal {
 
     vec<float, 2>
     exp_px2(arg_t<vec<float, 2> > d);
-    
+
     vec<float, 2>
     exp2_mx2(arg_t<vec<float, 2> > d);
 
@@ -740,15 +747,17 @@ namespace cftal {
     vec<float, 4>
     tgamma(arg_t<vec<float, 4> > d);
 
+#if V4F32_SLOW_SPEC_FUNCS>0
     vec<float, 4>
     lgamma(arg_t<vec<float, 4> > d, vec<int32_t, 4>* signp);
+#endif
 
     vec<float, 4>
     exp_mx2(arg_t<vec<float, 4> > d);
 
     vec<float, 4>
     exp_px2(arg_t<vec<float, 4> > d);
-    
+
     vec<float, 4>
     exp2_mx2(arg_t<vec<float, 4> > d);
 
@@ -875,15 +884,17 @@ namespace cftal {
     vec<float, 8>
     tgamma(arg_t<vec<float, 8> > d);
 
+#if V8F32_SLOW_SPEC_FUNCS>0
     vec<float, 8>
     lgamma(arg_t<vec<float, 8> > d, vec<int32_t, 8>* signp);
+#endif
 
     vec<float, 8>
     exp_mx2(arg_t<vec<float, 8> > d);
 
     vec<float, 8>
     exp_px2(arg_t<vec<float, 8> > d);
-    
+
     vec<float, 8>
     exp2_mx2(arg_t<vec<float, 8> > d);
 
@@ -895,7 +906,7 @@ namespace cftal {
 
     vec<float, 8>
     exp10_px2(arg_t<vec<float, 8> > d);
-    
+
 #endif
 #if V16F32_FUNCS>0
     vec<float, 16>
@@ -1010,15 +1021,17 @@ namespace cftal {
     vec<float, 16>
     tgamma(arg_t<vec<float, 16> > d);
 
+#if V16F32_SLOW_SPEC_FUNCS>0
     vec<float, 16>
     lgamma(arg_t<vec<float, 16> > d, vec<int32_t, 16>* signp);
+#endif
 
     vec<float, 16>
     exp_mx2(arg_t<vec<float, 16> > d);
 
     vec<float, 16>
     exp_px2(arg_t<vec<float, 16> > d);
-    
+
     vec<float, 16>
     exp2_mx2(arg_t<vec<float, 16> > d);
 
@@ -1030,10 +1043,10 @@ namespace cftal {
 
     vec<float, 16>
     exp10_px2(arg_t<vec<float, 16> > d);
-    
+
 #endif
-    
-    
+
+
     // approximates 1/sqrt(a)
     template <std::size_t _N>
     vec<float, _N>

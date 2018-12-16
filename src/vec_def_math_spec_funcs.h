@@ -37,7 +37,9 @@
     {                                                           \
         DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
         return func_t::tgamma(d);                               \
-    }                                                           \
+    }
+
+#define DEF_SLOW_SPEC_FUNCS(nsr, ns, vec_float, vec_int, real_type)  \
     nsr::vec_float                                              \
     __attribute__((__flatten__))                                \
     ns::lgamma(arg<vec_float>::type d, vec_int * i)             \
@@ -45,7 +47,6 @@
         DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
         return func_t::lgamma(d, i);                            \
     }
-    
 
 // Local variables:
 // mode: c++

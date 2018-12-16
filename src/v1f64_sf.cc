@@ -10,3 +10,4 @@
 #include "vec_def_math_spec_funcs.h"
 
 DEF_SPEC_FUNCS(cftal, cftal, v1f64, v1s32, double)
+DEF_SLOW_SPEC_FUNCS(cftal, cftal, v1f64, v1s32, double)

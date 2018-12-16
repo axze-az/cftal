@@ -19,6 +19,11 @@
 #define V8F64_FUNCS                                                     \
     ((V8F64_SPECIALIZED>0) || ((V4F64_SPECIALIZED>0) && (V8S32_SPECIALIZED>0)))
 
+#define V4F64_SLOW_SPEC_FUNCS                                           \
+    ((V4F64_SPECIALIZED>0))
+#define V8F64_SLOW_SPEC_FUNCS                                           \
+    ((V8F64_SPECIALIZED>0))
+
 namespace cftal {
 
     template <std::size_t _N>
@@ -617,7 +622,7 @@ namespace cftal {
 
     vec<double, 2>
     exp_px2(arg_t<vec<double, 2> > d);
-    
+
     vec<double, 2>
     exp2_mx2(arg_t<vec<double, 2> > d);
 
@@ -745,15 +750,17 @@ namespace cftal {
     vec<double, 4>
     tgamma(arg_t<vec<double, 4> > d);
 
+#if V4F64_SLOW_SPEC_FUNCS>0
     vec<double, 4>
     lgamma(arg_t<vec<double, 4> > d, vec<int32_t, 4>* signp);
+#endif
 
     vec<double, 4>
     exp_mx2(arg_t<vec<double, 4> > d);
 
     vec<double, 4>
     exp_px2(arg_t<vec<double, 4> > d);
-    
+
     vec<double, 4>
     exp2_mx2(arg_t<vec<double, 4> > d);
 
@@ -880,15 +887,17 @@ namespace cftal {
     vec<double, 8>
     tgamma(arg_t<vec<double, 8> > d);
 
+#if V8F64_SLOW_SPEC_FUNCS>0
     vec<double, 8>
     lgamma(arg_t<vec<double, 8> > d, vec<int32_t, 8>* signp);
+#endif
 
     vec<double, 8>
     exp_mx2(arg_t<vec<double, 8> > d);
 
     vec<double, 8>
     exp_px2(arg_t<vec<double, 8> > d);
-    
+
     vec<double, 8>
     exp2_mx2(arg_t<vec<double, 8> > d);
 
@@ -899,8 +908,8 @@ namespace cftal {
     exp10_mx2(arg_t<vec<double, 8> > d);
 
     vec<double, 8>
-    exp10_px2(arg_t<vec<double, 8> > d);   
-#endif    
+    exp10_px2(arg_t<vec<double, 8> > d);
+#endif
 }
 
 template <std::size_t _N>

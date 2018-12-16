@@ -13,3 +13,4 @@
 #include <limits>
 
 DEF_SPEC_FUNCS(cftal, cftal, v1f32, v1s32, float)
+DEF_SLOW_SPEC_FUNCS(cftal, cftal, v1f32, v1s32, float)

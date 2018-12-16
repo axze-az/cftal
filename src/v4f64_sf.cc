@@ -12,5 +12,7 @@
 #if V4F64_FUNCS>0
 DEF_SPEC_FUNCS(cftal, cftal, v4f64, v4s32, double)
 #endif
-
+#if V4F64_SLOW_SPEC_FUNCS>0
+DEF_SLOW_SPEC_FUNCS(cftal, cftal, v4f64, v4s32, double)
+#endif
 
