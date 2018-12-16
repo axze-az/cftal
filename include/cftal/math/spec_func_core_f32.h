@@ -697,6 +697,7 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 
 
 template <typename _T>
+__attribute__((optimize("no-unroll-loops")))
 typename cftal::math::spec_func_core<float, _T>::reduced_small_gamma_args
 cftal::math::spec_func_core<float, _T>::
 __lgamma_reduce_small_k(arg_t<vf_type> xc)
