@@ -551,11 +551,16 @@ namespace cftal {
         struct cvt<v8f32, v8s32> {
             static v8f32 l(const v8s32& v) {
 #if defined (__AVX__)
+#if defined (__AVX2__)
+                __m256 f(_mm256_cvtepi32_ps(v()));
+                return f;
+#else
                 __m256i vv=_mm256_insertf128_si256(
                     _mm256_castsi128_si256(low_half(v)()),
                     high_half(v)(), 1);
                 __m256 f(_mm256_cvtepi32_ps(vv));
                 return f;
+#endif
 #else
                 v4f32 lh(cvt<v4f32, v4s32>::l(low_half(v)));
                 v4f32 hh(cvt<v4f32, v4s32>::l(high_half(v)));
@@ -569,9 +574,13 @@ namespace cftal {
             static v8s32 l(const v8f32& v) {
 #if defined(__AVX__)
                 __m256i vi=_mm256_cvtps_epi32(v());
+#if defined (__AVX2__)
+                return v8s32(vi);
+#else
                 __m128i hh(_mm256_extractf128_si256(vi, 1));
                 __m128i lh(_mm256_castsi256_si128(vi));
                 return v8s32(lh, hh);
+#endif
 #else
                 v4s32 lh(cvt<v4s32, v4f32>::l(low_half(v)));
                 v4s32 hh(cvt<v4s32, v4f32>::l(high_half(v)));
