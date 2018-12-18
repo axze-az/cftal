@@ -59,6 +59,8 @@ target_add_test_libs(gen-2-over-pi)
 
 add_executable(gen-fixpoint-div gen-fixpoint-div.cc)
 
+add_executable(gen-lanczos-tbl gen-lanczos-tbl.cc)
+
 #add_custom_target(sollya-scripts ALL)
 
 function(add_script script)

@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     func_domain<double> d1=std::make_pair(0.0, 2.6e305);
     // func_domain<double> d=std::make_pair(-7.0, -1.0);
     // func_domain<double> d=std::make_pair(0x1p-54, 1.0);
-    std::cout << "testing lgamma" << std::endl;
+    std::cout << "f64 testing lgamma" << std::endl;
     auto us=std::make_shared<ulp_stats>();
     exec_stats<_N> st;
     // test also all integral values
