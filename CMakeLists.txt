@@ -47,7 +47,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
     #never activate this
     #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math")
-    #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fverbose-asm")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fverbose-asm")
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # disable some warnings
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-infinite-recursion")
