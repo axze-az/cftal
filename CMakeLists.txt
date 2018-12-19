@@ -47,6 +47,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
     #never activate this
     #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math")
+    #setting -ffp-contract to off produces the same results with gcc and clang
+    #but the error count goes down with gcc 
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffp-contract=fast")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fverbose-asm")
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # disable some warnings
