@@ -2699,7 +2699,7 @@ __atan_0_1_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
         vf_type x2=xrh*xrh;
         vf_type y_i0_h=horner2(x2, vf_type(x2*x2), ci)*x2;
         vf_type y_i0_l;
-        d_ops::add12(y_i0_h, y_i0_l, xrh, y_i0_h*xrh);
+        d_ops::muladd12(y_i0_h, y_i0_l, xrh, y_i0_h, xrh);
         d_ops::add212(y_i0_h, y_i0_l, y_i0_h, y_i0_l, xrl);
         ah = _T::sel_val_or_zero(sel, y_i0_h);
         al = _T::sel_val_or_zero(sel, y_i0_l);
