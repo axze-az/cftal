@@ -1990,8 +1990,8 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
             pow_log_c7, pow_log_c5
         };
         vf_type p= horner2(s2, s4, c);
-        p= s2* p;
-        d_ops::add12(ph, pl, pow_log_c3, p);
+        // p= s2* p;
+        d_ops::muladd12(ph, pl, pow_log_c3, s2, p);
         d_ops::mul22(ph, pl, s2, s2l, ph, pl);
         d_ops::add122(ph, pl, pow_log_c1, ph, pl);
         // this does not work :-(
