@@ -251,7 +251,7 @@ cftal::math::elem_func<_FLOAT_T, _T>::
 nextafter(arg_t<vf_type> xc, arg_t<vf_type> yc)
 {
     vf_type r= base_type::nextafter_k(xc, yc);
-    r = _T::sel(isnan(xc) | isnan(yc), xc+yc, r);
+    r = _T::sel(isnan(xc) | isnan(yc), _T::nan(), r);
     return r;
 }
 
