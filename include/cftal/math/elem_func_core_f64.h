@@ -1338,26 +1338,32 @@ hyperbolic_k(arg_t<vf_type> xc)
     horner_n2(rsh, rch, xx, cs, cc);
 
     vf_type rsh_h, rsh_l;
+#if 1
+    d_ops::muladd12(rsh_h, rsh_l, xrh, vf_type(xx*xrh), rsh);
+#else
     rsh *= (xx*xrh);
     d_ops::add12(rsh_h, rsh_l, xrh, rsh);
+#endif
     // horner_comp_quick(rsh_h, rsh_l, xx, rsh, sinh_c1);
     // d_ops::mul122(rsh_h, rsh_l, xrh, rsh_h, rsh_l);
 
     vf_type rch_h, rch_l;
+#if 1
+    d_ops::muladd12(rch_h, rch_l, cosh_c0, rch, xx);
+#else
     rch *= xx;
     d_ops::add12(rch_h, rch_l, cosh_c0, rch);
+#endif
     // horner_comp_quick(rch_h, rch_l, xx, rch, cosh_c0);
-
     // correction of argument reduction errors:
     // cosh(x+y) \approx cosh(y) + sinh(y) x
     // sinh(x+y) \approx sinh(y) + cosh(y) x
-    vf_type rch_corr= rsh_h* xrl;
-    vf_type rsh_corr= rch_h* xrl;
-    rch_l += rch_corr;
+    // vf_type rch_corr= rsh_h* xrl;
+    // vf_type rsh_corr= rch_h* xrl;
+    rch_l = rsh_h * xrl + rch_l;
     d_ops::add12(rch_h, rch_l, rch_h, rch_l);
-    rsh_l += rsh_corr;
+    rsh_l = rch_h * xrl + rsh_l;
     d_ops::add12(rsh_h, rsh_l, rsh_h, rsh_l);
-
     // cosh(x + y) = cosh(x) cosh(y) + sinh(x)*sinh(y)
     // sinh(x + y) = sinh(x) cosh(y) + sinh(x)*cosh(y);
     // cosh(k * ln(2)) = 2^(k-1) + 2^(-k-1)
@@ -2574,11 +2580,10 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         sin_c17, sin_c15, sin_c13, sin_c11, sin_c9
     };
     horner_n2(ch, sh, xxh, c_cos, c_sin);
-    ch *= xxh;
-    sh = horner(xxh, sh, sin_c7)*xxh;
+    sh = horner(xxh, sh, sin_c7);
 
     vf_type cl;
-    d_ops::add12(ch, cl, cos_c6, ch);
+    d_ops::muladd12(ch, cl, cos_c6, ch, xxh);
     d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
     d_ops::add22(ch, cl, cos_c4h, cos_c4l, ch, cl);
     d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
@@ -2587,7 +2592,7 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     d_ops::add122(ch, cl, cos_c0, ch, cl);
 
     vf_type sl;
-    d_ops::add12(sh, sl, sin_c5, sh);
+    d_ops::muladd12(sh, sl, sin_c5, sh, xxh);
     d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
     d_ops::add22(sh, sl, sin_c3h, sin_c3l, sh, sl);
     d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
