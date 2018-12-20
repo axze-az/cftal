@@ -18,7 +18,7 @@
 namespace cftal {
 
     using std::fma;
-    
+
     template <class _T>
     _T fms(const _T& a, const _T& b, const _T& c) {
         return fma(a, b, -c);
@@ -384,6 +384,12 @@ namespace cftal {
             void
             mul12(_T& rh, _T& rl, const _T& u, const _T& v);
 
+            // return (rh, rl) = c+ a*b
+            // requires |c| > |a*b|
+            static
+            void
+            muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
+
             static
             void
             sqr22(_T& rh, _T& rl,
@@ -452,6 +458,12 @@ namespace cftal {
             static
             void
             mul12(_T& rh, _T& rl, const _T& u, const _T& v);
+
+            // return (rh, rl) = c+ a*b
+            // requires |c| > |a*b|
+            static
+            void
+            muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
 
             static
             void
@@ -1111,6 +1123,22 @@ inline
 __attribute__((__always_inline__))
 void
 cftal::impl::d_real_ops_fma<_T, true>::
+muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b)
+{
+    _T t0 = a;
+    _T t1 = b;
+    _T h= fma(t0, t1, c);
+    _T t2= h - c;
+    _T l= fms(t0, t1, t2);
+    rh = h;
+    rl = l;
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops_fma<_T, true>::
 rcp21(_T& rh, const _T& ah, const _T& al)
 {
     _T q0 = _T(1.0)/ah;
@@ -1213,6 +1241,17 @@ mul12(_T& rh, _T& rl, const _T& a, const _T& b)
     traits::split(b, b_h, b_l);
     rh=a*b;
     rl=((a_h*b_h-rh)+a_h*b_l+a_l*b_h)+a_l*b_l;
+}
+
+template <typename _T>
+inline
+__attribute__((always_inline))
+void
+cftal::impl::d_real_ops_fma<_T, false>::
+muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b)
+{
+    _T t0= a*b;
+    add12(rh, rl, c, t0);
 }
 
 template <typename _T>
