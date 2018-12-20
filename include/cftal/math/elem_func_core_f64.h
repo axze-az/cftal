@@ -968,7 +968,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type y=horner2(xrh, x2, c);
     y = horner(xrh, y, exp_c2);
     vf_type ye;
-#if 0
+#if 1
     vf_type t0=y;
     y = xrh + t0 * x2;
     vf_type t1 = y - xrh;
