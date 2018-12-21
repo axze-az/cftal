@@ -1,5 +1,5 @@
 [Buildset]
-BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
 
 [CMake]
 Build Directory Count=9
@@ -130,7 +130,7 @@ Working Directory=file:///home/axel/projects/cpplib/cftal/debug/test/
 isExecutable=false
 
 [MakeBuilder]
-Number Of Jobs=16
+Number Of Jobs=8
 Override Number Of Jobs=true
 
 [Project]

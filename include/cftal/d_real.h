@@ -1240,7 +1240,7 @@ mul12(_T& rh, _T& rl, const _T& a, const _T& b)
     traits::split(a, a_h, a_l);
     traits::split(b, b_h, b_l);
     rh=a*b;
-    rl=((a_h*b_h-rh)+a_h*b_l+a_l*b_h)+a_l*b_l;
+    rl=(((a_h*b_h-rh)+a_h*b_l)+a_l*b_h)+a_l*b_l;
 }
 
 template <typename _T>
@@ -1251,9 +1251,18 @@ cftal::impl::d_real_ops_fma<_T, false>::
 muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b)
 {
 #if 1
+#if 1
+    // look into horner_comp_quick_s0
+    _T ph, pl;
+    mul12(ph, pl, a, b);
+    _T tl;
+    add12(rh, tl, c, ph);
+    rl = pl + tl;
+#else
     _T ph, pl;
     mul12(ph, pl, a, b);
     add122(rh, rl, c, ph, pl);
+#endif
 #else
     // much faster, but produces larger deviations compared to
     // implementations with fast fma
