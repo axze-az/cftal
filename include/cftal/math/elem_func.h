@@ -426,7 +426,7 @@ sinh(arg_t<vf_type> x)
     const vf_type sinh_lo_inf= fc::sinh_lo_inf();
     res = _T::sel(x >= sinh_hi_inf, _T::pinf(), res);
     res = _T::sel(x <= sinh_lo_inf, _T::ninf(), res);
-    res = _T::sel_zero_or_val(x == 0.0, res);
+    // res = _T::sel_zero_or_val(x == 0.0, res);
     return res;
 }
 
@@ -451,11 +451,8 @@ cftal::math::elem_func<_FLOAT_T, _T>::
 tanh(arg_t<vf_type> x)
 {
     // using fc=func_constants<_FLOAT_T>;
-    // const vf_type cosh_hi_inf= fc::cosh_hi_inf;
     vf_type res=base_type::tanh_k(x);
-    // res = _T::sel(abs(x) >= cosh_hi_inf, _T::pinf(), res);
     res = _T::sel(isnan(x), x, res);
-    // res = _T::sel(isinf(x), copysign(1.0, x), res);
     return res;
 }
 
@@ -589,18 +586,6 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
     res = _T::sel((y==0.0) | (x==1.0), vf_type(1), res);
-#if 0
-    res = xisnan(result) ? INFINITY : res;
-    res *=  (x >= 0 ? 1 : (!yisint ? NAN : (yisodd ? -1 : 1)));
-
-    double efx = mulsign(xfabs(x) - 1, y);
-    if (xisinf(y)) res = efx < 0 ? 0.0 : (efx == 0 ? 1.0 : INFINITY);
-    if (xisinf(x) || x == 0) res = (yisodd ? sign(x) : 1) * ((x == 0 ? -y : y) < 0 ? 0 : INFINITY);
-    if (xisnan(x) || xisnan(y)) res = NAN;
-    if (y == 0 || x == 1) res = 1;
-
-    return res;
-#endif
     return res;
 }
 
@@ -736,8 +721,7 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
 {
     vf_type r= base_type::atan_k(x);
-    // r=copysign(r, x);
-    r=_TRAITS_T::sel(x==vf_type(0), x, r);
+    // r=_TRAITS_T::sel(x==vf_type(0), x, r);
     r=_TRAITS_T::sel(isinf(x), copysign(vf_type(M_PI/2), x) , r);
     r=_TRAITS_T::sel(isnan(x), x, r);
     return r;
@@ -749,13 +733,9 @@ typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 asin(arg_t<vf_type> x)
 {
-    // vf_type xt= (vf_type(1) - x)*(vf_type(1) + x);
-    // vf_type sqrt_xt= sqrt(xt);
-    // vf_type asin_x= x/(1+sqrt_xt);
-    // vf_type r=2.0*base_type::atan_k(asin_x);
     vf_type r=base_type::asin_k(x);
-    r = _TRAITS_T::sel(x == vf_type(-1), -M_PI/2, r);
-    r = _TRAITS_T::sel(x == vf_type(1), M_PI/2, r);
+    // r = _TRAITS_T::sel(x == vf_type(-1), -M_PI/2, r);
+    // r = _TRAITS_T::sel(x == vf_type(1), M_PI/2, r);
     r = _TRAITS_T::sel(x < vf_type(-1), -_TRAITS_T::nan(), r);
     r = _TRAITS_T::sel(x > vf_type(1), _TRAITS_T::nan(), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
@@ -769,9 +749,9 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 acos(arg_t<vf_type> x)
 {
     vf_type r=base_type::acos_k(x);
-    r = _TRAITS_T::sel(x == vf_type(-1), M_PI, r);
-    r = _TRAITS_T::sel_zero_or_val(x == vf_type(1), r);
-    r = _TRAITS_T::sel(x == vf_type(0), M_PI/2, r);
+    // r = _TRAITS_T::sel(x == vf_type(-1), M_PI, r);
+    // r = _TRAITS_T::sel_zero_or_val(x == vf_type(1), r);
+    // r = _TRAITS_T::sel(x == vf_type(0), M_PI/2, r);
     r = _TRAITS_T::sel(x < vf_type(-1), -_TRAITS_T::nan(), r);
     r = _TRAITS_T::sel(x > vf_type(1), _TRAITS_T::nan(), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
