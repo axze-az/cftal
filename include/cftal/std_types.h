@@ -25,6 +25,9 @@ namespace cftal {
     using f32_t = float;
     using f64_t = double;
 
+    using std::size_t;
+    using std::ptrdiff_t;
+    using ssize_t = ptrdiff_t;
 }
 
 // Local variables:
