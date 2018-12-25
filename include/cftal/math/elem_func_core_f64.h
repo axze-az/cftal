@@ -969,14 +969,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     y = horner(xrh, y, exp_c2);
     vf_type ye;
 #if 1
-#if 1
     d_ops::muladd12(y, ye, xrh, y, x2);
-#else
-    vf_type t0=y;
-    y = xrh + t0 * x2;
-    vf_type t1 = y - xrh;
-    ye = t0* x2 - t1;
-#endif
 #else
     y = y * x2;
     d_ops::add12(y, ye, xrh, y);
