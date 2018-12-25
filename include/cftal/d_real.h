@@ -1251,7 +1251,6 @@ cftal::impl::d_real_ops_fma<_T, false>::
 muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b)
 {
 #if 1
-#if 1
     // look into horner_comp_quick_s0
     _T ph, pl;
     mul12(ph, pl, a, b);
@@ -1262,12 +1261,6 @@ muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b)
     _T ph, pl;
     mul12(ph, pl, a, b);
     add122(rh, rl, c, ph, pl);
-#endif
-#else
-    // much faster, but produces larger deviations compared to
-    // implementations with fast fma
-    _T t0= a*b;
-    add12(rh, rl, c, t0);
 #endif
 }
 
