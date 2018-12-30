@@ -73,6 +73,10 @@ namespace cftal {
             static constexpr double
             sinh_lo_inf() { return -7.104758600739439771132311e+02; }
 
+            // tanh(x) == 1 for abs(x) >=
+            static constexpr double
+            tanh_one() { return 1.906154746539849753617091e+01; }
+
             // nextafter(log(x), -1) == +inf
             static constexpr double
             log_lo_fin() { return 4.940656458412465441765688e-324; }
@@ -162,6 +166,10 @@ namespace cftal {
             // sinh(x) == -inf for x <=
             static constexpr float
             sinh_lo_inf() { return -8.941599273681640625000000e+01f; }
+
+            // tanh(x) == 1 for abs(x) >=
+            static constexpr float
+            tanh_one() { return 9.010913848876953125000000e+00f; }
 
             static constexpr float
             log_lo_fin() { return 1.401298464324817070923730e-45f; }

@@ -1191,7 +1191,9 @@ hyperbolic_k(arg_t<vf_type> xc)
     vmf_type kf_le_13 = kf <= 13.0f;
     bool any_of_kf_le_13 = any_of(kf_le_13);
     if (_F == hyperbolic_func::c_tanh) {
-        if (!any_of_kf_le_13) {
+        using fc=func_constants<float>;
+        vmf_type tanh_large=x>=fc::tanh_one();
+        if (unlikely(all_of(tanh_large))) {
             vf_type tanh_x = copysign(vf_type(1.0), xc);
             return tanh_x;
         }

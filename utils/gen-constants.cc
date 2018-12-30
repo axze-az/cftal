@@ -709,6 +709,8 @@ int main(int argc, char** argv)
         gen_constant(dm, "const double atan_eq_x", mpfr_atan,
                      check_atan_eq_x<double>(), "m_0");
 
+        gen_constant(std::make_pair(1.0, 80.0), "const double tanh",
+                     mpfr_tanh, check_one<double>(), "one");
 
         double a[2];
         mpfr_real<512> ln2=2.0;
@@ -808,6 +810,9 @@ int main(int argc, char** argv)
         dp=std::make_pair(1.0f, std::numeric_limits<float>::max());
         gen_constant(dp, "const double atan_pi_2", mpfr_atan,
                      check_pi_half<float>(), "equal");
+
+        gen_constant(std::make_pair(1.0f, 80.0f), "const float tanh",
+                     mpfr_tanh, check_one<float>(), "one");
 
         std::cout << "const float max_denormal= "
                   <<  sig_f32_msk::v.f32() << ";\n\n";
