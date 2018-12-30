@@ -2,6 +2,9 @@
 execute("common.sollya");
 ext_lngamma = library("./libsollya_funcs.so");
 ext_tgamma = library("./libsollya_funcs.so");
+verbosity=2!;
+prec=512!;
+write("\n");
 
 i0=[1.0+0x1p-512, 2.0-0x1p-512];
 f= ext_lngamma(x)/((x-1)*(x-2));
@@ -17,9 +20,6 @@ quit;
 
 /* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
 /* printexpansion(p-1.0); */
-verbosity=2!;
-prec=512!;
-write("\n");
 
 /* erf(x) as polynomial between 0 and 0.75 */
 f = erf(x);

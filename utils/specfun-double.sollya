@@ -1,5 +1,9 @@
 #! /usr/bin/sollya
 execute("common.sollya");
+verbosity=2!;
+prec=1024!;
+write("\n");
+
 ext_lngamma = library("./libsollya_funcs.so");
 ext_tgamma = library("./libsollya_funcs.so");
 
@@ -17,9 +21,6 @@ plot((p(x)-f(x))/f(x), i0, postscriptfile, "lgamma_i0-f64");
 
 /* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
 /* printexpansion(p-1.0); */
-verbosity=2!;
-prec=1024!;
-write("\n");
 
 /* erf(x) f64
    erf(x) = 2/sqrt(pi) * { x - x^3/3 + x^5/10 - x^7/42 + ... }
