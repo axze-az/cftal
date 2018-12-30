@@ -393,6 +393,14 @@ namespace cftal {
         }
 
         template <std::size_t _B>
+        mpfr_real<_B>
+        tanh(const mpfr_real<_B>& a) {
+            mpfr_real<_B> r;
+            mpfr_tanh(r(), a(), MPFR_RNDN);
+            return r;
+        }
+
+        template <std::size_t _B>
         void
         load_pi(mpfr_real<_B>& r) {
             mpfr_const_pi(r(), MPFR_RNDN);
