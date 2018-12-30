@@ -1826,7 +1826,14 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
             pow_log_c7,  pow_log_c5
         };
         vf_type p= horner2(s2, s4, ci);
+#if 0
+        d_ops::muladd12(ph, pl, pow_log_c3, s2, p);
+        vf_type s2l=ds2[1];
+        d_ops::mul22(ph, pl, ph, pl, s2, s2l);
+        d_ops::add122(ph, pl, pow_log_c1, ph, pl);
+#else
         horner_comp_quick(ph, pl, s2, p, pow_log_c3, pow_log_c1);
+#endif
     }
     if (_F == log_func::c_log_e) {
         d_ops::mul22(ph, pl, ds[0], ds[1], ph, pl);
