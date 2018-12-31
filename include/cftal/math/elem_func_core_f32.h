@@ -645,10 +645,17 @@ rsqrt_k(arg_t<vf_type> x)
         th = y * xyh - 1.0;
         th = y * xyl + th;
     } else {
+        vf_type yxyh, yxyl;
+        d_ops::mul12(yxyh, yxyl, y, xyh);
         vf_type tl;
+        th = yxyh - 1.0;
+        tl = yxyl + y*xyl;
+        th += tl;
+#if 0
         d_ops::muladd12(th, tl, -1.0, y, xyh);
         tl = y * xyl + tl;
         th += tl;
+#endif
     }
     y = y + (-0.5*y) * th;
 #else
