@@ -686,9 +686,17 @@ rsqrt_k(arg_t<vf_type> x)
     // vf_type y= native_rsqrt(x);
     // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
     vf_type yh, yl;
+#if 1
+    d_ops::mul12(yh, yl, x, y);
+    vf_type t;
+    d_ops::muladd12(yh, t, -1.0, yh, y);
+    yl = y*yl + t;
+    yh = yh + yl;
+#else
     d_ops::mul12(yh, yl, x, y);
     d_ops::mul122(yh, yl, y, yh, yl);
     d_ops::add122(yh, yl, -1.0, yh, yl);
+#endif
     y = y + (-0.5*y)*yh;
     return y;
 }
