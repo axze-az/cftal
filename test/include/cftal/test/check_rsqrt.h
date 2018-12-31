@@ -33,7 +33,13 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return 1.0/std::sqrt(a);
+                if (a==std::numeric_limits<_T>::infinity()) {
+                    return _T(0.0);
+                }
+                if (a==0) {
+                    return std::numeric_limits<_T>::infinity();
+                }
+                return _T(1.0)/std::sqrt(a);
             }
             static
             const char* fname() { return "rsqrt"; }
