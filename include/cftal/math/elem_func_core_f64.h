@@ -691,11 +691,12 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type th;
     if (d_real_traits<vf_type>::fma == true) {
         th = y * xyh - 1.0;
-        th = xyl*y + th;
+        th = y * xyl + th;
     } else {
         vf_type tl;
         d_ops::muladd12(th, tl, -1.0, y, xyh);
-        th = xyl*y + th;
+        tl = y * xyl + tl;
+        th += tl;
     }
     y = y + (-0.5*y) * th;
 #else
