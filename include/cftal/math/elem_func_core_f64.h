@@ -685,11 +685,26 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type y= vf_type(1.0/sqrt(x));
     // vf_type y= native_rsqrt(x);
     // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
+#if 1
+    vf_type xyh, xyl;
+    d_ops::mul12(xyh, xyl, x, y);
+    vf_type th;
+    if (d_real_traits<vf_type>::fma == true) {
+        th = y * xyh - 1.0;
+        th = xyl*y + th;
+    } else {
+        vf_type tl;
+        d_ops::muladd12(th, tl, -1.0, y, xyh);
+        th = xyl*y + th;
+    }
+    y = y + (-0.5*y) * th;
+#else
     vf_type yh, yl;
     d_ops::mul12(yh, yl, x, y);
     d_ops::mul122(yh, yl, y, yh, yl);
     d_ops::add122(yh, yl, -1.0, yh, yl);
     y = y + (-0.5*y)*yh;
+#endif
     return y;
 }
 
