@@ -689,7 +689,7 @@ rsqrt_k(arg_t<vf_type> x)
 #if 1
     d_ops::mul12(yh, yl, x, y);
     vf_type t;
-    d_ops::muladd12(yh, t, -1.0, yh, y);
+    d_ops::muladd12(yh, t, -1.0, y, yh);
     yl = y*yl + t;
     yh = yh + yl;
 #else
