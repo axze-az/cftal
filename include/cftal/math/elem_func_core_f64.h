@@ -1337,6 +1337,27 @@ hyperbolic_k(arg_t<vf_type> xc)
 
     vf_type xx= xrh*xrh;
 
+#if 1
+    static const double cs[]= {
+        sinh_c13,
+        sinh_c11,
+        sinh_c9,
+        sinh_c7,
+        sinh_c5
+    };
+    static const double cc[]= {
+        cosh_c12,
+        cosh_c10,
+        cosh_c8,
+        cosh_c6,
+        cosh_c4
+    };
+    vf_type x4=xx*xx;
+    vf_type rsh=horner2(xx, x4, cs);
+    vf_type rch=horner2(xx, x4, cc);
+    rsh = horner(xx, rsh, sinh_c3);
+    rch = horner(xx, rch, cosh_c2);
+#else
     static const double cs[]= {
         sinh_c13,
         sinh_c11,
@@ -1355,24 +1376,14 @@ hyperbolic_k(arg_t<vf_type> xc)
     };
     vf_type rsh, rch;
     horner_n2(rsh, rch, xx, cs, cc);
-
-    vf_type rsh_h, rsh_l;
-#if 1
-    d_ops::muladd12(rsh_h, rsh_l, xrh, vf_type(xx*xrh), rsh);
-#else
-    rsh *= (xx*xrh);
-    d_ops::add12(rsh_h, rsh_l, xrh, rsh);
 #endif
+    vf_type rsh_h, rsh_l;
+    d_ops::muladd12(rsh_h, rsh_l, xrh, vf_type(xx*xrh), rsh);
     // horner_comp_quick(rsh_h, rsh_l, xx, rsh, sinh_c1);
     // d_ops::mul122(rsh_h, rsh_l, xrh, rsh_h, rsh_l);
 
     vf_type rch_h, rch_l;
-#if 1
     d_ops::muladd12(rch_h, rch_l, cosh_c0, rch, xx);
-#else
-    rch *= xx;
-    d_ops::add12(rch_h, rch_l, cosh_c0, rch);
-#endif
     // horner_comp_quick(rch_h, rch_l, xx, rch, cosh_c0);
     // correction of argument reduction errors:
     // cosh(x+y) \approx cosh(y) + sinh(y) x
