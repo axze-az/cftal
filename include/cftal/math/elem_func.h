@@ -276,10 +276,12 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 cbrt(arg_t<vf_type> x)
 {
+    __asm volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type r=base_type::cbrt_k(x);
     vmf_type is_zero_or_inf_or_nan=
         (x == vf_type(0)) | isinf(x) | isnan(x);
     r=_T::sel(is_zero_or_inf_or_nan, x, r);
+    __asm volatile("# LLVM-MCA-END\n\t");
     return r;
 }
 
@@ -317,6 +319,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 exp(arg_t<vf_type> d)
 {
+    __asm volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type res=base_type:: template exp_k<false>(d);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp_hi_inf= fc::exp_hi_inf();
@@ -325,6 +328,7 @@ exp(arg_t<vf_type> d)
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     // res = _T::sel(d == 0.0, 1.0, res);
     // res = _T::sel(d == 1.0, M_E, res);
+    __asm volatile("# LLVM-MCA-END\n\t");
     return res;
 }
 
