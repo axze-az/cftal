@@ -464,8 +464,12 @@ namespace cftal {
 
             static
             vi2_type cvt_f_to_i2(const vf_type& f) {
-                vi_type t=cvt<vi_type>(f);
-                vi2_type r=combine_even_odd(t, t);
+                // vi_type t=cvt<vi_type>(f);
+                // vi2_type r=combine_even_odd(t, t);
+                // the number is 2^52+2^51
+                vf_type fr=f + 0x1.8p52;
+                vi2_type r=as<vi2_type>(fr);
+                r=copy_even_to_odd(r);
                 return r;
             }
 
