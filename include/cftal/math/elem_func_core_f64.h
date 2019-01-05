@@ -1282,8 +1282,9 @@ hyperbolic_k(arg_t<vf_type> xc)
     vf_type xrh, xrl, kf;
     __reduce_exp_arg(xrh, xrl, kf, x);
     vf_type scale=_T::sel(kf >= 1024, 2.0, 1.0);
-    vi_type knh= _T::cvt_f_to_i(kf);
-    vi2_type kn=_T::vi_to_vi2(knh);
+    // vi_type knh= _T::cvt_f_to_i(kf);
+    // vi2_type kn=_T::vi_to_vi2(knh);
+    vi2_type kn=_T::cvt_f_to_i2(kf);
     kn= _T::sel(kn>= 1024, kn-1, kn);
 
     // filter out large arguments for tanh
