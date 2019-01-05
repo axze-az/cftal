@@ -276,12 +276,14 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 cbrt(arg_t<vf_type> x)
 {
-    __asm volatile("# LLVM-MCA-BEGIN\n\t");
+    // llvm-mca-7 -mtriple=x86_64-unknown-unknown -mcpu=skylake
+    // -iterations=1  --all-stats --all-views -timeline-max-cycles=1000
+    // __asm volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type r=base_type::cbrt_k(x);
     vmf_type is_zero_or_inf_or_nan=
         (x == vf_type(0)) | isinf(x) | isnan(x);
     r=_T::sel(is_zero_or_inf_or_nan, x, r);
-    __asm volatile("# LLVM-MCA-END\n\t");
+    // __asm volatile("# LLVM-MCA-END\n\t");
     return r;
 }
 
@@ -557,6 +559,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 pow(arg_t<vf_type> x, arg_t<vf_type> y)
 {
+    __asm volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type res=my_type::pow_k(x, y);
     // guess the result if the calculation failed
     vmf_type res_nan = isnan(res);
@@ -605,6 +608,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 
     return res;
 #endif
+    __asm volatile("# LLVM-MCA-END\n\t");
     return res;
 }
 
