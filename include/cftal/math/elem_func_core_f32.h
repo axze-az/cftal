@@ -955,10 +955,15 @@ __reduce_exp_arg(vf_type& xrh,
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     kf = rint(vf_type(x * ctbl::m_1_ln2[0]));
-#if 0
-    d_ops::add12cond(xrh, xrl,
-                     x - kf * ctbl::m_ln2_cw[0],
-                     kf * (-ctbl::m_ln2_cw[1]));
+#if 1
+    // x^ : +0xb.172p-4f
+    const float _ln2_h_cw=+6.9314575195e-01f;
+    // x^ : +0xb.fbe8ep-23f
+    const float _ln2_l_cw=+1.4286067653e-06f;
+    vf_type hi = x - kf * _ln2_h_cw;
+    xrh = hi - kf * _ln2_l_cw;
+    vf_type dx = hi-xrh;
+    xrl = dx - kf * _ln2_l_cw;
 #else
     vf_type hi = x - kf * ctbl::m_ln2_cw[0];
     xrh = hi - kf * ctbl::m_ln2_cw[1];

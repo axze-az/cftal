@@ -321,7 +321,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 exp(arg_t<vf_type> d)
 {
-    __asm volatile("# LLVM-MCA-BEGIN\n\t");
+    __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type res=base_type:: template exp_k<false>(d);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp_hi_inf= fc::exp_hi_inf();
@@ -330,7 +330,7 @@ exp(arg_t<vf_type> d)
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     // res = _T::sel(d == 0.0, 1.0, res);
     // res = _T::sel(d == 1.0, M_E, res);
-    __asm volatile("# LLVM-MCA-END\n\t");
+    __asm__ volatile("# LLVM-MCA-END\n\t");
     return res;
 }
 
@@ -559,7 +559,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 pow(arg_t<vf_type> x, arg_t<vf_type> y)
 {
-    __asm volatile("# LLVM-MCA-BEGIN\n\t");
+    __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type res=my_type::pow_k(x, y);
     // guess the result if the calculation failed
     vmf_type res_nan = isnan(res);
@@ -608,7 +608,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 
     return res;
 #endif
-    __asm volatile("# LLVM-MCA-END\n\t");
+    __asm__ volatile("# LLVM-MCA-END\n\t");
     return res;
 }
 
