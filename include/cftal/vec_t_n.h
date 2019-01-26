@@ -454,7 +454,21 @@ namespace cftal {
         // a safe interface
         template <std::size_t _TABLE_LEN, typename _T,
                   typename _I, std::size_t _VEC_LEN>
-        class fixed_lookup_table {
+        class fixed_lookup_table
+            : private variable_lookup_table<_T, _I, _VEC_LEN> {
+        private:
+        public:
+#if 1
+            using base_type=variable_lookup_table<_T, _I, _VEC_LEN>;
+            // constructor, prepares table lookups into _T[_TABLE_LEN]
+            fixed_lookup_table(const vec<_I, _VEC_LEN>& idx)
+                : base_type(idx) {}
+            // perform the lookup using the prepared data
+            vec<_T, _VEC_LEN>
+            fromp(const _T* tbl) const {
+                return base_type::from(tbl);
+            }
+#else
         private:
             fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
             fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
@@ -469,6 +483,7 @@ namespace cftal {
                 vec<_T, _VEC_LEN/2> hh=_hh.fromp(tbl);
                 return vec<_T, _VEC_LEN>(lh, hh);
             }
+#endif
         };
     }
 
