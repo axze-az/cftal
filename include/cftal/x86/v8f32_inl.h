@@ -719,7 +719,6 @@ cftal::native_div(const v8f32& b, const v8f32& a)
 }
 
 #if defined (__AVX2__)
-
 inline
 cftal::variable_lookup_table<float, int32_t, 8>::
 variable_lookup_table(const vec<int32_t, 8>& idx)
@@ -734,13 +733,19 @@ from(const float* tbl) const
 {
     return _mm256_i32gather_ps(tbl, _msk(), sizeof(float));
 }
+#endif
 
 inline
 __m256i
 cftal::impl::fixed_lookup_table<4, float, int32_t, 8>::
 setup_msk(const vec<int32_t, 8>& idx)
 {
+#if defined (__AVX2__)
     return idx();
+#else
+    __m256i i=_mm256_setr_m128i(low_half(idx)(), high_half(idx)());
+    return i;
+#endif
 }
 
 inline
@@ -755,12 +760,19 @@ cftal::v8f32
 cftal::impl::fixed_lookup_table<4, float, int32_t, 8>::
 fromp(const float* tbl) const
 {
+#if defined (__AVX2__)
     vec<float, 4> rh=mem<vec<float, 4> >::load(tbl, 4);
     __m256 r=_mm256_castps128_ps256(rh());
     r=_mm256_permutevar8x32_ps(r, _msk);
+#else
+    vec<float, 8> r=_mm256_broadcast_ps(
+        reinterpret_cast<const __m128*>(tbl));
+    r=_mm256_permutevar_ps(r(), _msk);
+#endif
     return r;
 }
 
+#if defined (__AVX2__)
 inline
 __m256i
 cftal::impl::fixed_lookup_table<8, float, int32_t, 8>::
@@ -785,7 +797,6 @@ fromp(const float* tbl) const
     r=_mm256_permutevar8x32_ps(r(), _msk);
     return r;
 }
-
 #endif
 
 #endif
