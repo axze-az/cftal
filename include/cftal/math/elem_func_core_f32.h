@@ -1202,7 +1202,8 @@ exp2_k(arg_t<vf_type> x)
     using ctbl = impl::d_real_constants<d_real<float>, float>;
 #if 1
     if (_EXP2_M1==false) {
-        static_assert(exp_data<float>::EXP_N == 32, "32 required");
+        static_assert(exp_data<float>::EXP_N == 32,
+                      "exp_data<float>::EXP_N == 32 expected");
         constexpr const int32_t _N=exp_data<float>::EXP_N;
         constexpr const float _ND=exp_data<float>::EXP_N;
         constexpr const float _1_ND=1.0f/exp_data<float>::EXP_N;

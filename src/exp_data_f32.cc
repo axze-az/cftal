@@ -7,6 +7,7 @@
 
 #include "cftal/math/func_data.h"
 
+template<>
 const
 cftal::math::exp_data<float>::table_t
 cftal::math::exp_data<float>::_tbl={
