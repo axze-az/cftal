@@ -1158,13 +1158,6 @@ __reduce_exp_arg(vf_type& xrh,
     static_assert(_N==32,
                   "_N must be 32");
     if (_N == 32) {
-        // x^ : +0xb.8aa3bp+2f
-        // const float _N_ln2=+4.6166240692e+01f;
-        // x^ : +0xb.17p-9f
-        // const float _ln2_h_N=+2.1659851074e-02f;
-        // x^ : +0x8.5fdf4p-23f
-        // const float _ln2_l_N=+9.9831822808e-07f;
-
         // x^ : +0xb.8aa3b295c17fp+2
         const double _N_ln2=+4.6166241308446828384149e+01;
         // x^ : +0xb.17217f7dp-9

@@ -21,9 +21,15 @@ write_approx_prec(p, f1, i);
 write_coeffs(p, "constexpr\n    const double exp_c", "exp", b, c);
 c1h=round(log(2)/N, 53-11-5, RN);
 c1l=log(2)/N-c1h;
-write_coeff(N/log(2), "", "const double _N_ln2", double);
-write_coeff(c1h, "", "const double _ln2_h_N", double);
-write_coeff(c1l, "", "const double _ln2_l_N", double);
+write_coeff(N/log(2), "", "const double _32_ln2", double);
+write_coeff(c1h, "", "const double _ln2_32_cw_h", double);
+write_coeff(c1l, "", "const double _ln2_32_cw_l", double);
+c1h=double(log(2)/N);
+c1l=log(2)/N-c1h;
+write_coeff(c1h, "", "const double _ln2_32_h", double);
+write_coeff(c1l, "", "const double _ln2_32_l", double);
+
+quit;
 
 /* exp(x) f64 */
 f = x*(exp(x)+1)/(exp(x)-1)-2;
