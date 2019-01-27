@@ -1262,13 +1262,35 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 exp2_k(arg_t<vf_type> x)
 {
-    vf_type kf= rint(vf_type(x));
+    vf_type y, kf, xrh, xrl;
     using ctbl = impl::d_real_constants<d_real<double>, double>;
+#if 1
+    if (_EXP2_M1==false) {
+        static_assert(exp_data<double>::EXP_N == 32, "32 required");
+        constexpr const int32_t _N=exp_data<double>::EXP_N;
+        constexpr const double _ND=exp_data<double>::EXP_N;
+        constexpr const double _1_ND=1.0/exp_data<double>::EXP_N;
+        kf= rint(vf_type(x*_ND));
+        vf_type xr= x- kf*_1_ND;
+        d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
+        vi_type k=_T::cvt_f_to_i(kf);
+        vi_type idx= k & (_N-1);
+        vi_type ki= k >> 5;
+        y=__exp_tbl_k(xrh, xrl, ki, idx);
+    } else {
+        kf= rint(vf_type(x));
+        vf_type xr = x - kf;
+        // for exp2 mul12 would be sufficient
+        d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
+        y=__exp_k<_EXP2_M1>(xrh, xrl, kf);
+    }
+#else
+    kf= rint(vf_type(x));
     vf_type xr = x - kf;
-    vf_type xrh, xrl;
     // for exp2 mul12 would be sufficient
     d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    vf_type y=__exp_k<_EXP2_M1>(xrh, xrl, kf);
+    y=__exp_k<_EXP2_M1>(xrh, xrl, kf);
+#endif
     return y;
 }
 
