@@ -205,10 +205,10 @@ write_df = proc(c) {
     d0 = double(c);
     d1 = single(d0);
     d2 = single(d0-d1);
-    if (d2 != 0) then 
+    if (d2 != 0) then
         write("_T( ", d1, "f, ", d2, "f)")
     else
-        write("_T( ", d1, "f, 0.0f)");    
+        write("_T( ", d1, "f, 0.0f)");
 };
 
 print_dd_poly = proc(p) {
@@ -424,6 +424,86 @@ write_approx_prec_shift = proc(p, f, i, il) {
 write_approx_prec = proc(p, f, i) {
     write_approx_prec_shift(p, f, i, 0);
 };
+
+/*
+    L: list with values,
+    prefix: prefix of the generated name
+    fmt: the format of the values
+*/
+write_coeff_table = proc(L, prefix, fmt) {
+    var len, i, v;
+    write("static const ");
+    match fmt with
+    double:
+    {
+        write("double");
+    }
+    single:
+    {
+        write("float");
+    }
+    default:
+    {
+        write("unknown");
+    };
+    len=length(L);
+    write(" ", prefix, "_tbl[", len , "]={\n");
+    for i from 0 to len-1 do {
+        v:= L[i];
+        if (i > 0) then {
+            write(",\n");
+        };
+        write("    // ", i, "\n");
+        match fmt with
+        double:
+        {
+            write("    // ");
+            write_d(v);
+            write("\n");
+            write("    ");
+            write_d_hex(v);
+        }
+        single:
+        {
+            write("    // ");
+            write_f(v);
+            write("\n");
+            write("    ");
+            write_f_hex(v);
+        }
+        default:
+        {
+            write(v);
+        };
+    };
+    write("\n};\n");
+};
+
+/* generate 2^i/n for i in [0, n) */
+exp_table = proc(n, fmt) {
+    var i, fxi, lh, ll, th, tl, ln2;
+    i=0;
+    ll=[||];
+    lh=[||];
+    ln2=log(2);
+    for i from 0 to n-1 do {
+        fxi = 2^(i/n);
+        match (fmt) with
+        double: {
+            th=double(fxi);
+            tl=double(fxi-th);
+        }
+        single: {
+            th=single(fxi);
+            tl=single(fxi-th);
+        };
+        lh=lh:.th;
+        ll=ll:.tl;
+    };
+    write_coeff_table(lh, "exp_fxi_h", fmt);
+    write_coeff_table(ll, "exp_fxi_l", fmt);
+};
+
 
 // Local variables:
 // mode: c++

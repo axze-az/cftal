@@ -3,9 +3,27 @@ execute("common.sollya");
 
 /* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
 /* printexpansion(p-1.0); */
-verbosity=2!;
+verbosity=1!;
 prec=2048!;
 write("\n");
+
+/* exp(x) f64 using tangs method */
+N = 32;
+f = exp(x);
+f1 = expm1(x);
+g=log(2)/2;
+i=[-g/N, g/N];
+exp_table(N, double);
+b = [|1, ..., 6|];
+c = [|D...|];
+p = fpminimax(f1, b, c, i, relative, floating);
+write_approx_prec(p, f1, i);
+write_coeffs(p, "constexpr\n    const double exp_c", "exp", b, c);
+c1h=round(log(2)/N, 53-11-5, RN);
+c1l=log(2)/N-c1h;
+write_coeff(N/log(2), "", "const double _N_ln2", double);
+write_coeff(c1h, "", "const double _ln2_h_N", double);
+write_coeff(c1l, "", "const double _ln2_l_N", double);
 
 /* exp(x) f64 */
 f = x*(exp(x)+1)/(exp(x)-1)-2;
