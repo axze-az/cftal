@@ -14,13 +14,29 @@ namespace cftal {
 
         // tables for exponential function
         template <typename _F>
-        struct exp_data {
+        struct exp_data {};
+
+        template <>
+        struct exp_data<float> {
             enum {
                 EXP_N=32
             };
             struct table_t {
-                const _F _exp_fxi_h_tbl[EXP_N];
-                const _F _exp_fxi_l_tbl[EXP_N];
+                const float _exp_fxi_h_tbl[EXP_N];
+                const float _exp_fxi_l_tbl[EXP_N];
+            };
+            static
+            const table_t _tbl;
+        };
+
+        template <>
+        struct exp_data<double> {
+            enum {
+                EXP_N=32
+            };
+            struct table_t {
+                const double _exp_fxi_h_tbl[EXP_N];
+                const double _exp_fxi_l_tbl[EXP_N];
             };
             static
             const table_t _tbl;
