@@ -50,7 +50,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     # setting -ffp-contract to off produces the same results with gcc and clang
     # but the error count goes down with gcc using the default of fast
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffp-contract=fast")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fverbose-asm")
+    #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fverbose-asm")
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # disable some warnings
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-infinite-recursion")
