@@ -1097,9 +1097,18 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         fh= _T::insert_exp(_T::bias()+kia);
         fl= _T::insert_exp(_T::bias()+kib);
     }
+#if 1
+    vf_type y, ye;
+    d_ops::muladd12(y, ye, xrh, p, x2);
+    vf_type yee= xrl + xrl * y;
+    ye += yee;
+    d_ops::mul22(y, ye, y, ye, th, tl);
+    d_ops::add22(y, ye, th, tl, y, ye);
+#else
     vf_type eh=xrh + (xrl + x2*p);
     vf_type t=th;
     vf_type y= th + (tl + t*eh);
+#endif
     y *= fh;
     y *= fl;
 
@@ -1187,9 +1196,15 @@ exp_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     vf_type y;
     if (_EXP_M1==false) {
+#if 0
+        vf_type kf;
+        __reduce_exp_arg(xrh, xrl, kf, xc);
+        y=__pow_exp_k(xrh, xrl, kf);
+#else
         vi_type idx, ki;
         __reduce_exp_arg<exp_data<double>::EXP_N>(xrh, xrl, idx, ki, xc);
         y=__exp_tbl_k(xrh, xrl, ki, idx);
+#endif
     } else {
         vf_type kf;
         __reduce_exp_arg(xrh, xrl, kf, xc);
@@ -2289,6 +2304,20 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     dvf_type yldx;
     // yldx = y*ldx;
     d_ops::mul122(yldx[0], yldx[1], y, ldx[0], ldx[1]);
+#if 0
+    constexpr const int32_t _N=exp_data<float>::EXP_N;
+    constexpr const float _ND=exp_data<float>::EXP_N;
+    constexpr const float _1_ND=1.0f/exp_data<float>::EXP_N;
+    vf_type kf= rint(vf_type(yldx[0]*_ND));
+    vf_type xrh, xrl;
+    d_ops::add122cond(xrh, xrl, -kf*_1_ND, yldx[0], yldx[1]);
+    d_ops::mul22(xrh, xrl, xrh, xrl,
+                 ctbl::m_ln2[0], ctbl::m_ln2[1]);
+    vi_type k=_T::cvt_f_to_i(kf);
+    vi_type idx= k & (_N-1);
+    vi_type ki= k >> 5;
+    vf_type res=__exp_tbl_k(xrh, xrl, ki, idx);
+#else
     vf_type kf= rint(vf_type(yldx[0]));
     vf_type xrh, xrl;
     // xrh, xrl = (yldx - kf)* log(2)
@@ -2296,6 +2325,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     d_ops::mul22(xrh, xrl, xrh, xrl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type res=__pow_exp_k(xrh, xrl, kf);
+#endif
     using fc=func_constants<double>;
     const vf_type& d= yldx[0];
     const double exp2_hi_inf= fc::exp2_hi_inf();
