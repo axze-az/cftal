@@ -28,7 +28,6 @@ c1h=double(log(2)/N);
 c1l=log(2)/N-c1h;
 write_coeff(c1h, "", "const double _ln2_32_h", double);
 write_coeff(c1l, "", "const double _ln2_32_l", double);
-
 quit;
 
 /* exp(x) f64 */
