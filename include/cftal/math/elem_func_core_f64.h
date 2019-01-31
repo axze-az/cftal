@@ -2304,7 +2304,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     dvf_type yldx;
     // yldx = y*ldx;
     d_ops::mul122(yldx[0], yldx[1], y, ldx[0], ldx[1]);
-#if 0
+#if 1
     constexpr const int32_t _N=exp_data<float>::EXP_N;
     constexpr const float _ND=exp_data<float>::EXP_N;
     constexpr const float _1_ND=1.0f/exp_data<float>::EXP_N;
