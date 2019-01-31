@@ -704,7 +704,7 @@ erfc_k(arg_t<vf_type> xc)
             i123l = _T::sel(x_gt_6_00, i3l, i123l);
         }
         // multiply with e^(-x^2)
-        d_ops::mul22(i123h, i123l, i123h, i123l, exh, exl);
+        d_ops::mul22(i123h, i123l, exh, exl, i123h, i123l);
         // divide by x
         vf_type rh, rl;
         d_ops::mul22(rh, rl, i123h, i123l, inv_x, inv_x_l);

@@ -1160,7 +1160,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 {
     vf_type y;
     if (expl == nullptr) {
-        vf_type y=__exp_tbl_k(xrh, xrl, idx, expl);
+        y=__exp_tbl_k(xrh, xrl, idx, expl);
         auto sc=__scale_exp_k(ki);
         y *= sc.f0();
         y *= sc.f1();
