@@ -19,11 +19,37 @@ c = [|SG...|];
 p = fpminimax(f1, b, c, i, relative, floating);
 write_approx_prec(p, f1, i);
 write_coeffs(p, "constexpr\n    const float exp_c", "exp", b, c);
+
+/* N/ln(2) */
+write_coeff(N/log(2), "", "const float _32_ln2", single);
+/* ln(2)/N Cody and Waite */
 c1h=round(log(2)/N, 24-7-5, RN);
 c1l=log(2)/N-c1h;
-write_coeff(N/log(2), "", "const float _N_ln2", single);
-write_coeff(c1h, "", "const float _ln2_h_N", single);
-write_coeff(c1l, "", "const float _ln2_l_N", single);
+write_coeff(c1h, "", "const float _ln2_32_cw_h", single);
+write_coeff(c1l, "", "const float _ln2_32_cw_l", single);
+/* ln(2)/N */
+c1h=single(log(2)/N);
+c1l=log(2)/N-c1h;
+write_coeff(c1h, "", "const float _ln2_32_h", single);
+write_coeff(c1l, "", "const float _ln2_32_l", single);
+
+/* log_10(x) = lg(10) */
+/* N/lg(2) */
+write_coeff(N/(log(2)/log(10)), "", "const float _32_lg2", single);
+/* lg(2)/N Cody and Waite */
+lg_2_N=log(2)/(log(10))/N;
+c1h=round(lg_2_N, 24-7-5, RN);
+c1l=lg_2_N-c1h;
+write_coeff(c1h, "", "const float _lg2_32_cw_h", single);
+write_coeff(c1l, "", "const float _lg2_32_cw_l", single);
+/* lg(2)/N */
+c1h=single(lg_2_N);
+c1l=lg_2_N-c1h;
+write_coeff(c1h, "", "const float _lg2_32_h", single);
+write_coeff(c1l, "", "const float _lg2_32_l", single);
+
+quit;
+
 
 /* exp(x) f32 */
 f= x*(exp(x)+1)/(exp(x)-1);

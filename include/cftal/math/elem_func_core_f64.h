@@ -140,7 +140,6 @@ namespace cftal {
                 constexpr const vf_type& f1() const { return _f1; }
             };
 
-
             // returns 2^k = r.f0()* r.f1() to avoid over and underflows
             static
             scale_result
@@ -218,6 +217,9 @@ namespace cftal {
                              arg_t<vf_type> xh,
                              arg_t<vf_type> xl);
 
+            // argument reduction for %e^(x)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
             static
             void
             __reduce_exp_arg(vf_type& __restrict xrh,
@@ -226,6 +228,9 @@ namespace cftal {
                              vi_type& __restrict ki,
                              arg_t<vf_type> x);
 
+            // argument reduction for %e^(xh+xl)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
             static
             void
             __reduce_exp_arg(vf_type& __restrict xrh,
@@ -257,6 +262,9 @@ namespace cftal {
             vf_type
             exp_px2_k(arg_t<vf_type> x);
 
+            // argument reduction for 2^(x)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
             static
             void
             __reduce_exp2_arg(vf_type& __restrict xrh,
@@ -265,6 +273,9 @@ namespace cftal {
                               vi_type& __restrict ki,
                               arg_t<vf_type> x);
 
+            // argument reduction for 2^(xh+xl)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
             static
             void
             __reduce_exp2_arg(vf_type& __restrict xrh,
@@ -290,6 +301,9 @@ namespace cftal {
             vf_type
             exp2_px2_k(arg_t<vf_type> x);
 
+            // argument reduction for 10^(x)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
             static
             void
             __reduce_exp10_arg(vf_type& __restrict xrh,
@@ -298,6 +312,9 @@ namespace cftal {
                                vi_type& __restrict ki,
                                arg_t<vf_type> x);
 
+            // argument reduction for 10^(xh+xl)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
             static
             void
             __reduce_exp10_arg(vf_type& __restrict xrh,

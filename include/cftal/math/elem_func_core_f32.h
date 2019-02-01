@@ -119,6 +119,11 @@ namespace cftal {
             // returns 2^k = r.f0()* r.f1() to avoid over and underflows
             static
             scale_result
+            __scale_exp_k(arg_t<vi_type> ki);
+
+            // returns 2^k = r.f0()* r.f1() to avoid over and underflows
+            static
+            scale_result
             __scale_exp_k(arg_t<vf_type> k);
 
             // scaling function for exponential functions
@@ -146,10 +151,26 @@ namespace cftal {
             __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                     arg_t<vf_type> k);
 
+            // arguments are the reduced xrh, xrl in
+            // [-log(2)/(2*N), log(2)/(2*N)], and the argument
+            // idx is the table index
+            // calculates %e^(xrh+xrl)*(2^idx/N)
             static
             vf_type
             __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-                        arg_t<vi_type> k, arg_t<vi_type> ki);
+                        arg_t<vi_type> idx,
+                        vf_type* expl=nullptr);
+
+            // arguments are the reduced xrh, xrl in
+            // [-log(2)/(2*N), log(2)/(2*N)], and the argument
+            // k as argument for __scale_exp_k
+            // ki is the table index
+            // calculates %e^(xrh+xrl)*(2^idx/N)*2^k
+            static
+            vf_type
+            __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+                        arg_t<vi_type> idx, arg_t<vi_type> ki,
+                        vf_type* expl=nullptr);
 
             // argument reduction for %e^x and %e^x-1
             // return 2^k * (xrh + xrl) with xrh in
@@ -172,10 +193,9 @@ namespace cftal {
                              arg_t<vf_type> xh,
                              arg_t<vf_type> xl);
 
-            // argument reduction for %e^(xh+xl)
+            // argument reduction for %e^(x)
             // return 2^k * (xrh + xrl) with xrh in
             // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
-            template <std::size_t _N>
             static
             void
             __reduce_exp_arg(vf_type& __restrict xrh,
@@ -183,6 +203,18 @@ namespace cftal {
                              vi_type& __restrict idx,
                              vi_type& __restrict ki,
                              arg_t<vf_type> x);
+
+            // argument reduction for %e^(xh+xl)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp_arg(vf_type& __restrict xrh,
+                             vf_type& __restrict xrl,
+                             vi_type& __restrict idx,
+                             vi_type& __restrict ki,
+                             arg_t<vf_type> xh,
+                             arg_t<vf_type> xl);
 
             // calculates %e^x-1 if exp_m1 == true %e^x otherwise
             template <bool _EXP_M1>
@@ -206,6 +238,29 @@ namespace cftal {
             vf_type
             exp_px2_k(arg_t<vf_type> x);
 
+            // argument reduction for 2^(x)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp2_arg(vf_type& __restrict xrh,
+                              vf_type& __restrict xrl,
+                              vi_type& __restrict idx,
+                              vi_type& __restrict ki,
+                              arg_t<vf_type> x);
+
+            // argument reduction for 2^(xh+xl)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp2_arg(vf_type& __restrict xrh,
+                              vf_type& __restrict xrl,
+                              vi_type& __restrict idx,
+                              vi_type& __restrict ki,
+                              arg_t<vf_type> xh,
+                              arg_t<vf_type> xl);
+
             // calculates 2^x-1 if exp_m1 == true 2^x otherwise
             template <bool _EXP2_M1>
             static
@@ -221,6 +276,29 @@ namespace cftal {
             static
             vf_type
             exp2_px2_k(arg_t<vf_type> x);
+
+            // argument reduction for 10^(x)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp10_arg(vf_type& __restrict xrh,
+                               vf_type& __restrict xrl,
+                               vi_type& __restrict idx,
+                               vi_type& __restrict ki,
+                               arg_t<vf_type> x);
+
+            // argument reduction for 10^(xh+xl)
+            // return 2^k * (xrh + xrl) with xrh in
+            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
+            static
+            void
+            __reduce_exp10_arg(vf_type& __restrict xrh,
+                               vf_type& __restrict xrl,
+                               vi_type& __restrict idx,
+                               vi_type& __restrict ki,
+                               arg_t<vf_type> xh,
+                               arg_t<vf_type> xl);
 
             // calculates 10^x-1 if exp_m1 == true 10^x otherwise
             template <bool _EXP10_M1>
@@ -862,14 +940,23 @@ inline
 __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::scale_result
 cftal::math::elem_func_core<float, _T>::
-__scale_exp_k(arg_t<vf_type> k)
+__scale_exp_k(arg_t<vi_type> ki)
 {
-    vi_type ki= _T::cvt_f_to_i(k);
     vi_type kia= ki>>1;
     vi_type kib= ki - kia;
     vf_type rh= _T::insert_exp(_T::bias()+kia);
     vf_type rl= _T::insert_exp(_T::bias()+kib);
     return scale_result(rh, rl);
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_core<float, _T>::scale_result
+cftal::math::elem_func_core<float, _T>::
+__scale_exp_k(arg_t<vf_type> k)
+{
+    return __scale_exp_k(_T::cvt_f_to_i(k));
 }
 
 template <typename _T>
@@ -967,7 +1054,8 @@ template <typename _T>
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-            arg_t<vi_type> ki, arg_t<vi_type> idx)
+            arg_t<vi_type> idx,
+            vf_type* expl)
 {
     // [-1.0830424726009368896484375e-2, 1.0830424726009368896484375e-2] : | p - f | <= 2^-32.65625
     // coefficients for exp generated by sollya
@@ -990,19 +1078,48 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type x2=xrh*xrh;
     vf_type p= horner(xrh, exp_c3, exp_c2);
 
-    vi_type kia= ki>>1;
-    vi_type kib= ki-kia;
-    vf_type fh=_T::insert_exp(_T::bias() + kia);
-    vf_type fl=_T::insert_exp(_T::bias() + kib);
-
-    vf_type eh=xrh + (xrl + (x2)*p);
-    vf_type t=th;
-    vf_type y= th + (tl + t*eh);
-    y *= fh;
-    y *= fl;
+    vf_type y;
+    if (expl != nullptr) {
+        vf_type ye;
+        d_ops::muladd12(y, ye, xrh, p, x2);
+        vf_type yee= xrl + xrl * y;
+        ye += yee;
+        d_ops::mul22(y, ye, y, ye, th, tl);
+        d_ops::add22(y, ye, th, tl, y, ye);
+        *expl = ye;
+    } else {
+        vf_type eh=xrh + (xrl + (x2)*p);
+        vf_type t=th;
+        y= th + (tl + t*eh);
+    }
     return y;
 }
 
+template <typename _T>
+typename cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+__exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+            arg_t<vi_type> idx, arg_t<vi_type> ki,
+            vf_type* expl)
+{
+    vf_type y;
+    if (expl == nullptr) {
+        y=__exp_tbl_k(xrh, xrl, idx, expl);
+        auto sc=__scale_exp_k(ki);
+        y *= sc.f0();
+        y *= sc.f1();
+    } else {
+        vf_type t;
+        y=__exp_tbl_k(xrh, xrl, idx, &t);
+        auto sc=__scale_exp_k(ki);
+        y *= sc.f0();
+        t *= sc.f0();
+        y *= sc.f1();
+        t *= sc.f1();
+        *expl=t;
+    }
+    return y;
+}
 
 template <typename _T>
 inline
@@ -1058,7 +1175,6 @@ __reduce_exp_arg(vf_type& xrh,
 }
 
 template <typename _T>
-template <std::size_t _N>
 void
 cftal::math::elem_func_core<float, _T>::
 __reduce_exp_arg(vf_type& xrh,
@@ -1067,52 +1183,53 @@ __reduce_exp_arg(vf_type& xrh,
                  vi_type& k,
                  arg_t<vf_type> x)
 {
-    static_assert(0==(_N & (_N -1)), "_N must be a power of two");
-    static_assert((_N==16) | (_N==32),
-                  "_N must be 16 or 32");
-    vf_type kf;
-    if (_N == 16) {
-        // x^ : +0xb.8aa3bp+1f
-        const float _N_ln2=+2.3083120346e+01f;
-        // x^ : +0xb.17p-8f
-        const float _ln2_h_N=+4.3319702148e-02f;
-        // x^ : +0x8.5fdf4p-22f
-        const float _ln2_l_N=+1.9966364562e-06f;
-        kf = rint(vf_type(x * _N_ln2));
-        vf_type hi = x - kf * _ln2_h_N;
-        xrh = hi - kf * _ln2_l_N;
-        vf_type dx = hi-xrh;
-        xrl = dx - kf * _ln2_l_N;
-        vi_type ki=_T::cvt_f_to_i(kf);
-        idx = ki & (_N-1);
-        k = ki >> 4;
-    }
-    if (_N == 32) {
-        // x^ : +0xb.8aa3bp+2f
-        // const float _N_ln2=+4.6166240692e+01f;
-        // x^ : +0xb.17p-9f
-        // const float _ln2_h_N=+2.1659851074e-02f;
-        // x^ : +0x8.5fdf4p-23f
-        // const float _ln2_l_N=+9.9831822808e-07f;
-
-        // x^ : +0xb.8aa3bp+2f
-        const float _N_ln2=+4.6166240692e+01f;
-        // x^ : +0xb.17p-9f
-        const float _ln2_h_N=+2.1659851074e-02f;
-        // x^ : +0x8.5fdf4p-23f
-        const float _ln2_l_N=+9.9831822808e-07f;
-
-        kf = rint(vf_type(x * _N_ln2));
-        vf_type hi = x - kf * _ln2_h_N;
-        xrh = hi - kf * _ln2_l_N;
-        vf_type dx = hi-xrh;
-        xrl = dx - kf * _ln2_l_N;
-        vi_type ki=_T::cvt_f_to_i(kf);
-        idx = ki & (_N-1);
-        k = ki >> 5;
-    }
+    static_assert(exp_data<float>::EXP_N==32,
+                 "exp_data<float>::EXP_N==32");
+    const int32_t _N=exp_data<float>::EXP_N;
+    const float _32_ln2=+4.6166240692e+01f;
+    // x^ : +0xb.17p-9f
+    const float _ln2_32_cw_h=+2.1659851074e-02f;
+    // x^ : +0x8.5fdf4p-23f
+    const float _ln2_32_cw_l=+9.9831822808e-07f;
+    vf_type kf = rint(vf_type(x * _32_ln2));
+    vf_type hi = x - kf * _ln2_32_cw_h;
+    xrh = hi - kf * _ln2_32_cw_l;
+    vf_type dx = hi-xrh;
+    xrl = dx - kf * _ln2_32_cw_l;
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & (_N-1);
+    k = ki >> 5;
 }
 
+template <typename _T>
+void
+cftal::math::elem_func_core<float, _T>::
+__reduce_exp_arg(vf_type& xrh,
+                 vf_type& xrl,
+                 vi_type& idx,
+                 vi_type& k,
+                 arg_t<vf_type> xh,
+                 arg_t<vf_type> xl)
+{
+    static_assert(exp_data<float>::EXP_N==32,
+                 "exp_data<float>::EXP_N==32");
+    const int32_t _N=exp_data<float>::EXP_N;
+    const float _32_ln2=+4.6166240692e+01f;
+   // x^ : +0xb.17218p-9f
+    const float _ln2_32_h=+2.1660849452e-02f;
+    // x^ : -0x8.2e308p-37f
+    const float _ln2_32_l=-5.9520444129e-11f;
+    vf_type kf = rint(vf_type(xh * _32_ln2));
+    vf_type neg_kfln2h, neg_kfln2l;
+    d_ops::mul122(neg_kfln2h, neg_kfln2l,
+                  kf, -_ln2_32_h, -_ln2_32_l);
+    d_ops::add22cond(xrh, xrl,
+                     xh, xl,
+                     neg_kfln2h, neg_kfln2l);
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & (_N-1);
+    k = ki >> 5;
+}
 
 template <typename _T>
 template <bool _EXP_M1>
@@ -1125,8 +1242,8 @@ exp_k(arg_t<vf_type> xc)
     vf_type y;
     if (_EXP_M1==false) {
         vi_type idx, ki;
-        __reduce_exp_arg<exp_data<float>::EXP_N>(xrh, xrl, idx, ki, xc);
-        y=__exp_tbl_k(xrh, xrl, ki, idx);
+        __reduce_exp_arg(xrh, xrl, idx, ki, xc);
+        y=__exp_tbl_k(xrh, xrl, idx, ki);
     } else {
         vf_type kf;
         __reduce_exp_arg(xrh, xrl, kf, xc);
@@ -1141,9 +1258,16 @@ cftal::math::elem_func_core<float, _T>::
 exp_k2(vf_type& eh, vf_type& el,
        arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
+#if 1
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, xh, xl);
+    eh=__exp_tbl_k(xrh, xrl, idx, ki, &el);
+#else
     vf_type xrh, xrl, kf;
     __reduce_exp_arg(xrh, xrl, kf, xh, xl);
-    eh=__pow_exp_k(xrh, xrl, kf, &el);
+    eh= __pow_exp_k(xrh, xrl, kf, &el);
+#endif
 }
 
 
@@ -1161,9 +1285,16 @@ exp_mx2_k(arg_t<vf_type> xc)
         x2h = -x2h;
         x2l = -x2l;
     }
+#if 1
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
+    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+#else
     vf_type xrh, xrl, kf;
     __reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp_lo_zero(), y);
     return y;
@@ -1184,11 +1315,66 @@ exp_px2_k(arg_t<vf_type> xc)
     x2h = _T::sel(border_case, x2h - t, x2h);
     x2l = _T::sel(border_case, x2l + t, x2l);
 
+#if 1
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
+    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+#else
     vf_type xrh, xrl, kf;
     __reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
+#endif
     y= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), y);
     return y;
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<float, _T>::
+__reduce_exp2_arg(vf_type& xrh,
+                  vf_type& xrl,
+                  vi_type& idx,
+                  vi_type& k,
+                  arg_t<vf_type> x)
+{
+    static_assert(exp_data<float>::EXP_N == 32,
+                  "exp_data<float>::EXP_N == 32 expected");
+    constexpr const int32_t _N=exp_data<float>::EXP_N;
+    constexpr const float _ND=exp_data<float>::EXP_N;
+    constexpr const float _1_ND=1.0f/exp_data<float>::EXP_N;
+    vf_type kf= rint(vf_type(x*_ND));
+    vf_type xr= x- kf*_1_ND;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx= ki & (_N-1);
+    k= ki >> 5;
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<float, _T>::
+__reduce_exp2_arg(vf_type& xrh,
+                  vf_type& xrl,
+                  vi_type& idx,
+                  vi_type& k,
+                  arg_t<vf_type> xh,
+                  arg_t<vf_type> xl)
+{
+    static_assert(exp_data<float>::EXP_N==32,
+                 "exp_data<float>::EXP_N==32");
+    constexpr const int32_t _N=exp_data<float>::EXP_N;
+    constexpr const double _ND=exp_data<float>::EXP_N;
+    constexpr const double _1_ND=1.0f/exp_data<float>::EXP_N;
+    vf_type kf= rint(vf_type(xh*_ND));
+    d_ops::add122cond(xrh, xrl, kf*(-_1_ND), xh, xl);
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    d_ops::mul22(xrh, xrl, xrh, xrl,
+                 ctbl::m_ln2[0], ctbl::m_ln2[1]);
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & (_N-1);
+    k = ki >> 5;
 }
 
 template <typename _T>
@@ -1202,20 +1388,11 @@ exp2_k(arg_t<vf_type> x)
     using ctbl = impl::d_real_constants<d_real<float>, float>;
 #if 1
     if (_EXP2_M1==false) {
-        static_assert(exp_data<float>::EXP_N == 32,
-                      "exp_data<float>::EXP_N == 32 expected");
-        constexpr const int32_t _N=exp_data<float>::EXP_N;
-        constexpr const float _ND=exp_data<float>::EXP_N;
-        constexpr const float _1_ND=1.0f/exp_data<float>::EXP_N;
-        kf= rint(vf_type(x*_ND));
-        vf_type xr= x- kf*_1_ND;
-        d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
-        vi_type k=_T::cvt_f_to_i(kf);
-        vi_type idx= k & (_N-1);
-        vi_type ki= k >> 5;
-        y=__exp_tbl_k(xrh, xrl, ki, idx);
+        vi_type idx, ki;
+        __reduce_exp2_arg(xrh, xrl, idx, ki, x);
+        y=__exp_tbl_k(xrh, xrl, idx, ki);
     } else {
-        kf= rint(vf_type(x));
+        vf_type kf= rint(vf_type(x));
         vf_type xr = x - kf;
         // for exp2 mul12 would be sufficient
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
@@ -1245,12 +1422,19 @@ exp2_mx2_k(arg_t<vf_type> xc)
         x2h = -x2h;
         x2l = -x2l;
     }
+#if 1
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
+    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+#else
     vf_type kf = rint(vf_type(x2h));
     vf_type xrh, xrl;
     d_ops::add122cond(xrh, xrl, -kf, x2h, x2l);
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
     return y;
@@ -1264,15 +1448,85 @@ exp2_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
+#if 1
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
+    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+#else
     vf_type kf = rint(vf_type(x2h));
     vf_type xrh, xrl;
     d_ops::add122cond(xrh, xrl, -kf, x2h, x2l);
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
     return y;
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<float, _T>::
+__reduce_exp10_arg(vf_type& xrh,
+                   vf_type& xrl,
+                   vi_type& idx,
+                   vi_type& k,
+                   arg_t<vf_type> x)
+{
+    static_assert(exp_data<float>::EXP_N == 32,
+                  "exp_data<float>::EXP_N == 32 expected");
+    constexpr const int32_t _N=exp_data<float>::EXP_N;
+
+    const float _32_lg2=+1.0630169678e+02f;
+    // x^ : +0x9.a2p-10f
+    const float _lg2_32_cw_h=+9.4070434570e-03f;
+    // x^ : +0x9.a84fcp-26f
+    const float _lg2_32_cw_l=+1.4390747083e-07f;
+    vf_type kf= rint(vf_type(x*_32_lg2));
+    vf_type hi = x - kf * _lg2_32_cw_h;
+    xrh = hi - kf * _lg2_32_cw_l;
+    vf_type dx= hi-xrh;
+    vf_type cr = dx- kf * _lg2_32_cw_l;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    d_ops::mul12(xrh, xrl, xrh, ctbl::m_ln10[0]);
+    xrl += cr * ctbl::m_ln10[0];
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx= ki & (_N-1);
+    k= ki >> 5;
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<float, _T>::
+__reduce_exp10_arg(vf_type& xrh,
+                   vf_type& xrl,
+                   vi_type& idx,
+                   vi_type& k,
+                   arg_t<vf_type> xh,
+                   arg_t<vf_type> xl)
+{
+    static_assert(exp_data<float>::EXP_N==32,
+                 "exp_data<float>::EXP_N==32");
+    constexpr const int32_t _N=exp_data<float>::EXP_N;
+    const float _32_lg2=+1.0630169678e+02f;
+    // x^ : +0x9.a209bp-10f
+    const float _lg2_32_h=+9.4071878120e-03f;
+    // x^ : -0xf.6086p-35f
+    const float _lg2_32_l=-4.4753090123e-10f;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type kf = rint(vf_type(xh*_32_lg2));
+    vf_type kf_lg_2_32_h, kf_lg_2_32_l;
+    d_ops::mul122(kf_lg_2_32_h, kf_lg_2_32_l,
+                  kf, -_lg2_32_h, -_lg2_32_l);
+    d_ops::add22cond(xrh, xrl,
+                     xh, xl,
+                     kf_lg_2_32_h, kf_lg_2_32_l);
+    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx= ki & (_N-1);
+    k= ki >> 5;
 }
 
 template <typename _T>
@@ -1282,6 +1536,28 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp10_k(arg_t<vf_type> x)
 {
+#if 1
+    vf_type y, xrh, xrl;
+    if (_EXP10_M1==false) {
+        vi_type idx, ki;
+        __reduce_exp10_arg(xrh, xrl, idx, ki, x);
+        y=__exp_tbl_k(xrh, xrl, idx, ki);
+    } else {
+        using ctbl = impl::d_real_constants<d_real<float>, float>;
+        vf_type kf = rint(vf_type(x * ctbl::m_1_lg2[0]));
+        vf_type hi = x - kf * ctbl::m_lg2_cw[0];
+        vf_type xr = hi - kf * ctbl::m_lg2_cw[1];
+        vf_type dx= (hi-xr);
+        vf_type cr = dx-kf * ctbl::m_lg2_cw[1];
+        // for exp10 mul12 would be sufficient
+        d_ops::mul122(xrh, xrl, xr, ctbl::m_ln10[0], ctbl::m_ln10[1]);
+        xrl += cr * ctbl::m_ln10[0];
+        // do not normalize xrh, xrl
+        // d_ops::add12(xrh, xrl, xrh, xrl);
+        y=__exp_k<_EXP10_M1>(xrh, xrl, kf);
+    }
+    return y;
+#else
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf = rint(vf_type(x * ctbl::m_1_lg2[0]));
     vf_type hi = x - kf * ctbl::m_lg2_cw[0];
@@ -1296,6 +1572,7 @@ exp10_k(arg_t<vf_type> x)
     // d_ops::add12(xrh, xrl, xrh, xrl);
     vf_type y=__exp_k<_EXP10_M1>(xrh, xrl, kf);
     return y;
+#endif
 }
 
 template <typename _T>
@@ -1312,6 +1589,12 @@ exp10_mx2_k(arg_t<vf_type> xc)
         x2h = -x2h;
         x2l = -x2l;
     }
+#if 1
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
+    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+#else
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2[0]));
     vf_type neg_kfln10h, neg_kfln10l;
@@ -1323,6 +1606,7 @@ exp10_mx2_k(arg_t<vf_type> xc)
                      neg_kfln10h, neg_kfln10l);
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp10_lo_zero(), y);
     return y;
@@ -1336,7 +1620,12 @@ exp10_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
-
+#if 1
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
+    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+#else
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2[0]));
     vf_type neg_kfln10h, neg_kfln10l;
@@ -1348,6 +1637,7 @@ exp10_px2_k(arg_t<vf_type> xc)
                      neg_kfln10h, neg_kfln10l);
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
     vf_type y= __exp_k<false>(xrh, xrl, kf);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
     return y;
@@ -2093,13 +2383,19 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type abs_x= abs(x);
     dvf_type ldx= __pow_log_k<log_func::c_log_2,
                               result_prec::normal>(abs_x);
     dvf_type yldx;
     // yldx = y*ldx;
     d_ops::mul122(yldx[0], yldx[1], y, ldx[0], ldx[1]);
+#if 1
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
+    vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
+#else
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf= rint(vf_type(yldx[0]));
     vf_type xrh, xrl;
     // xrh, xrl = (yldx - kf)* log(2)
@@ -2107,6 +2403,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     d_ops::mul22(xrh, xrl, xrh, xrl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type res=__pow_exp_k(xrh, xrl, kf);
+#endif
     using fc=func_constants<float>;
     const vf_type& d= yldx[0];
     const float exp2_hi_inf= fc::exp2_hi_inf();
@@ -2122,13 +2419,21 @@ cftal::math::elem_func_core<float, _T>::
 pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
     dvf_type abs_x= select(xh > 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
     dvf_type ldx=__pow_log_k2<log_func::c_log_2,
                               result_prec::normal>(abs_x[0], abs_x[1]);
     // yldx = y*ldx;
     dvf_type yldx;
     d_ops::mul22(yldx[0], yldx[1], yh, yl, ldx[0], ldx[1]);
+#if 1
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
+    vf_type rl;
+    vf_type rh=__exp_tbl_k(xrh, xrl, idx, &rl);
+    auto sc = __scale_exp_k(ki);
+#else
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf= rint(vf_type(yldx[0]));
     vf_type xrh, xrl;
     // xrh, xrl = (yldx - kf)* log(2)
@@ -2137,6 +2442,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vf_type rl, rh=__pow_exp_poly_k(xrh, xrl, &rl);
     auto sc = __scale_exp_k(kf);
+#endif
     return std::make_pair(dvf_type(rh, rl), sc);
 }
 

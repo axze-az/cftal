@@ -346,7 +346,7 @@ erfc_k(arg_t<vf_type> xc)
 
     vf_type i0h=0, i0l=0, i123h=0, i123l=0;
     vf_type x2h;
-    vf_type kf=0;
+    vi_type k=0;
     bool any_of_x_gt_0_75=any_of(x_gt_0_75);
     if (likely(any_of_x_gt_0_75)) {
         vf_type x2l;
@@ -358,8 +358,9 @@ erfc_k(arg_t<vf_type> xc)
             x2l = -x2l;
         }
         vf_type xrh, xrl;
-        base_type::__reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
-        exh= base_type::__pow_exp_poly_k(xrh, xrl, &exl);
+        vi_type idx;
+        base_type::__reduce_exp_arg(xrh, xrl, idx, k, x2h, x2l);
+        exh=base_type::__exp_tbl_k(xrh, xrl, idx, &exl);
         x2h = -x2h;
     } else {
         x2h = x*x;
@@ -542,9 +543,13 @@ erfc_k(arg_t<vf_type> xc)
         vf_type rh, rl;
         // d_ops::div212(rh, rl, i123h, i123l, x);
         d_ops::mul22(rh, rl, i123h, i123l, inv_x, inv_x_l);
-        dvf_type rs=base_type::__scale_exp_k(rh, rl, kf);
-        i123h = rs[0];
-        i123l = rs[1];
+        auto sc=base_type::__scale_exp_k(k);
+        rh *= sc.f0();
+        rl *= sc.f0();
+        rh *= sc.f1();
+        rl *= sc.f1();
+        i123h = rh;
+        i123l = rl;
     }
     vmf_type x_lt_0_00 = xc < 0.0f;
     vf_type ih= _T::sel(x_le_0_75, i0h, i123h);
