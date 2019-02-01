@@ -1392,7 +1392,7 @@ exp2_k(arg_t<vf_type> x)
         __reduce_exp2_arg(xrh, xrl, idx, ki, x);
         y=__exp_tbl_k(xrh, xrl, idx, ki);
     } else {
-        vf_type kf= rint(vf_type(x));
+        kf= rint(vf_type(x));
         vf_type xr = x - kf;
         // for exp2 mul12 would be sufficient
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
