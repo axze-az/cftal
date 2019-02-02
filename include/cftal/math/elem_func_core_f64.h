@@ -1960,7 +1960,32 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 tanh_k(arg_t<vf_type> x)
 {
+#if 1
+    vf_type xa=abs(x);
+    using fc=func_constants<double>;
+    vmf_type x_large=xa>=fc::tanh_one();
+    vf_type tanh_x=x;
+    if (!all_of(x_large)) {
+        vf_type xae=min(vf_type(2.0*xa), vf_type(2*fc::tanh_one()));
+        vf_type xrh, xrl;
+        vi_type idx, ki;
+        __reduce_exp_arg(xrh, xrl, idx, ki, xae);
+        vf_type exl;
+        vf_type ex=__exp_tbl_k(xrh, xrl, idx, ki, &exl);
+        vf_type exm1, exm1l;
+        d_ops::add122cond(exm1, exm1l, -1.0, ex, exl);
+        vf_type exp1, exp1l;
+        d_ops::add122cond(exp1, exp1l, 1.0, ex, exl);
+        vf_type tanh_x_l;
+        d_ops::div22(tanh_x, tanh_x_l, exm1, exm1l, exp1, exp1l);
+    }
+    tanh_x=_T::sel(x_large, 1.0, tanh_x);
+    tanh_x=copysign(tanh_x, x);
+    tanh_x = _T::sel(xa < 0x1p-26, x, tanh_x);
+    return tanh_x;
+#else
     return hyperbolic_k<hyperbolic_func::c_tanh>(x);
+#endif
 }
 
 template <typename _T>
