@@ -714,6 +714,24 @@ cftal::permute(const vec<double, 2>& l, const vec<double, 2>& r)
     return x86::perm_v2f64<_I0, _I1>(l(), r());
 }
 
+#if defined (__AVX2__)
+inline
+cftal::variable_lookup_table<double, int32_t, 2>::
+variable_lookup_table(const vec<int32_t, 2>& idx)
+    : _msk(idx, vec<int32_t,2>(0))
+{
+}
+
+inline
+cftal::vec<double, 2>
+cftal::variable_lookup_table<double, int32_t, 2>::
+from(const double* tbl) const
+{
+    return _mm_i32gather_pd(tbl, _msk(), sizeof(double));
+}
+#endif
+
+
 #if defined (__SSSE3__)
 inline
 __m128i

@@ -163,8 +163,10 @@ namespace cftal {
         vec<double, 4>
         from(const double* tbl) const;
     };
+#endif
 
     namespace impl {
+#if defined (__AVX2__)
         template <>
         class fixed_lookup_table<4, double, int32_t, 4> {
         private:
@@ -177,8 +179,8 @@ namespace cftal {
             vec<double, 4>
             fromp(const double* tbl) const;
         };
-    }
 #endif
+    }
 }
 
 #endif // __AVX__

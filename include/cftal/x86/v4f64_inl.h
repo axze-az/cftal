@@ -710,8 +710,9 @@ from(const double* tbl) const
 {
     return _mm256_i32gather_pd(tbl, _msk(), sizeof(double));
 }
+#endif
 
-
+#if defined (__AVX2__)
 inline
 __m256i
 cftal::impl::fixed_lookup_table<4, double, int32_t, 4>::
