@@ -1323,7 +1323,7 @@ exp_k(arg_t<vf_type> xc)
 #if 0
         vf_type kf;
         __reduce_exp_arg(xrh, xrl, kf, xc);
-        y=__pow_exp_k(xrh, xrl, kf);
+        y=__exp_k<_EXP_M1>(xrh, xrl, kf);
 #else
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xc);
