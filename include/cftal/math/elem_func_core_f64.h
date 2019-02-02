@@ -1221,12 +1221,27 @@ __reduce_exp_arg(vf_type& xrh,
                  vf_type& kf,
                  arg_t<vf_type> x)
 {
+#if 1
+    // 53-11, RN
+    // x^ : +0xb.8aa3b295c17fp-3
+    const double _1_ln2=+1.4426950408889633870047e+00;
+    // x^ : +0xb.17217f7d1cp-4
+    const double _ln2_cw_h=+6.9314718055989033018705e-01;
+    // x^ : +0xf.79abc9e3b398p-48
+    const double _ln2_cw_l=+5.4979230187083711552420e-14;
+    kf = rint(vf_type(x * _1_ln2));
+    vf_type hi = x - kf * _ln2_cw_h;
+    xrh = hi - kf * _ln2_cw_l;
+    vf_type dx = hi-xrh;
+    xrl = dx - kf * _ln2_cw_l;
+#else
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     kf = rint(vf_type(x * ctbl::m_1_ln2[0]));
     vf_type hi = x - kf * ctbl::m_ln2_cw[0];
     xrh = hi - kf * ctbl::m_ln2_cw[1];
     vf_type dx = hi-xrh;
     xrl = dx - kf * ctbl::m_ln2_cw[1];
+#endif
 }
 
 template <typename _T>
@@ -2103,6 +2118,11 @@ __log_k(arg_t<vf_type> xc)
     if (_LFUNC == log_func::c_log_e) {
         using ctbl=impl::d_real_constants<d_real<double>, double>;
         vf_type log_x=s*(hfsq+R);
+        // /* ln(2)/N Cody and Waite */
+        // c1h=round(log(2), 53-21, RD);
+        // c1l=log(2)-c1h;
+        // write_coeff(c1h, "", "const double _ln2_cw_h", double);
+        // write_coeff(c1l, "", "const double _ln2_cw_l", double);
         log_x += kf*ctbl::m_ln2_cw[1];
         log_x -= hfsq;
         log_x += f;
@@ -2616,7 +2636,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     d_ops::add122cond(xrh, xrl, -kf, yldx[0], yldx[1]);
     d_ops::mul22(xrh, xrl, xrh, xrl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    vf_type res=__pow_exp_k(xrh, xrl, kf);
+    vf_type res=__exp_k<false>(xrh, xrl, kf);
 #endif
     using fc=func_constants<double>;
     const vf_type& d= yldx[0];

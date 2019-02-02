@@ -7,6 +7,15 @@ verbosity=1!;
 prec=2048!;
 write("\n");
 
+/* N/ln(2) */
+write_coeff(1.0/log(2), "", "const double _1_ln2", double);
+/* ln(2)/N Cody and Waite */
+c1h=round(log(2), 53-21, RD);
+c1l=log(2)-c1h;
+write_coeff(c1h, "", "const double _ln2_cw_h", double);
+write_coeff(c1l, "", "const double _ln2_cw_l", double);
+quit;
+
 /* a simple polynomial for higher precision exp f64 */
 f = exp(x);
 i = [-log(2)/2, log(2)/2];
