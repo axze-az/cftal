@@ -1178,9 +1178,8 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         d_ops::add22(y, ye, th, tl, y, ye);
         *expl = ye;
     } else {
-        vf_type eh=xrh + (xrl + x2*p);
-        vf_type t=th;
-        y= th + (tl + t*eh);
+        vf_type eh=xrh + (xrl+x2*p);
+        y= th + (tl + th*eh);
     }
     return y;
 }
@@ -1221,27 +1220,13 @@ __reduce_exp_arg(vf_type& xrh,
                  vf_type& kf,
                  arg_t<vf_type> x)
 {
-#if 1
-    // 53-11, RN
-    // x^ : +0xb.8aa3b295c17fp-3
-    const double _1_ln2=+1.4426950408889633870047e+00;
-    // x^ : +0xb.17217f7d1cp-4
-    const double _ln2_cw_h=+6.9314718055989033018705e-01;
-    // x^ : +0xf.79abc9e3b398p-48
-    const double _ln2_cw_l=+5.4979230187083711552420e-14;
-    kf = rint(vf_type(x * _1_ln2));
-    vf_type hi = x - kf * _ln2_cw_h;
-    xrh = hi - kf * _ln2_cw_l;
-    vf_type dx = hi-xrh;
-    xrl = dx - kf * _ln2_cw_l;
-#else
+    // 53-21, RD
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     kf = rint(vf_type(x * ctbl::m_1_ln2[0]));
     vf_type hi = x - kf * ctbl::m_ln2_cw[0];
     xrh = hi - kf * ctbl::m_ln2_cw[1];
     vf_type dx = hi-xrh;
     xrl = dx - kf * ctbl::m_ln2_cw[1];
-#endif
 }
 
 template <typename _T>
