@@ -1960,7 +1960,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 tanh_k(arg_t<vf_type> x)
 {
-#if 1
+#if 0
     vf_type xa=abs(x);
     using fc=func_constants<double>;
     vmf_type x_large=xa>=fc::tanh_one();
