@@ -1159,7 +1159,6 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const auto& tbl=exp_data<double>::_tbl;
     vf_type th=lk.from(tbl._exp_fxi_h);
     vf_type tl=lk.from(tbl._exp_fxi_l);
-
     static_assert(exp_c1==1.0, "oops");
 
     vf_type x2=xrh*xrh;
@@ -1167,7 +1166,6 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         exp_c6, exp_c5, exp_c4, exp_c3, exp_c2
     };
     vf_type p= horner2(xrh, x2, ci);
-
     vf_type y;
     if (expl != nullptr) {
         vf_type ye;
@@ -2022,7 +2020,7 @@ sinh_k(arg_t<vf_type> xc)
         nyl *= nsc.f1();
 
         vf_type zh, zl;
-        d_ops::add22cond(zh, zl, yh, yl, -nyh, -nyl);
+        d_ops::add22(zh, zl, yh, yl, -nyh, -nyl);
         yh = _T::sel(k_ge_1_and_lt_36, zh, yh);
     }
 
