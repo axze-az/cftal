@@ -153,7 +153,7 @@ __half_exp_tbl_k(arg_t<vf_type> xrh,
     static_assert(exp_c1==1.0f, "oops");
     auto lk=make_variable_lookup_table<float>(idx);
     const auto& tbl=exp_data<float>::_tbl;
-    vf_type th=lk.from(tbl._exp_fxi_h_tbl);
+    vf_type th=lk.from(tbl._exp_fxi_h);
     vf_type x2=xrh*xrh;
     vf_type p= horner(xrh, exp_c3, exp_c2);
     vf_type sc=_T::insert_exp(_T::bias()+k);
