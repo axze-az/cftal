@@ -425,7 +425,7 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
 */
 f = x^3/(x-tanh(x))-3;
 i = [0x1p-512, 1/2+1/16];
-d = guessdegree(f, i, 0x1p-28);
+d = guessdegree(f, i, 0x1p-64);
 d;
 b = [| 2, 4, 6, 8, 10, 12|];
 c = [|D...|];
