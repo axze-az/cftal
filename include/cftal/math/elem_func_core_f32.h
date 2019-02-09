@@ -1241,9 +1241,15 @@ exp_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     vf_type y;
     if (_EXP_M1==false) {
+#if 0
+        vf_type kf;
+        __reduce_exp_arg(xrh, xrl, kf, xc);
+        y=__exp_k<_EXP_M1>(xrh, xrl, kf);
+#else
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xc);
         y=__exp_tbl_k(xrh, xrl, idx, ki);
+#endif
     } else {
         vf_type kf;
         __reduce_exp_arg(xrh, xrl, kf, xc);
