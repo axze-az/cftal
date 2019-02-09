@@ -1988,8 +1988,8 @@ sinh_k(arg_t<vf_type> xc)
     yh *= sc.f0();
     yh *= sc.f1();
 
-    vmf_type k_ge_1_and_lt_36=(x > M_LN2/2) & _T::vmi_to_vmf(k <36);
-    if (any_of(k_ge_1_and_lt_36)) {
+    vmf_type k_gt_ln2h_and_lt_36=(x > M_LN2/2) & _T::vmi_to_vmf(k <36);
+    if (any_of(k_gt_ln2h_and_lt_36)) {
         yl *= sc.f0();
         yl *= sc.f1();
 
@@ -2008,20 +2008,25 @@ sinh_k(arg_t<vf_type> xc)
         vf_type ntl = nlk.from(tbl._exp_fxi_l);
         vf_type nx2=nxrh*nxrh;
         vf_type np=horner2(nxrh, nx2, ci);
-        auto nsc=__scale_exp_k(nk);
+        
         vf_type neh= nxrh + (nxrl + nx2*np);
 
         vf_type nyh, nyl;
         d_ops::add12(nyh, nyl, nth, ntl + nth*neh);
-        nyh *= nsc.f0();
-        nyl *= nsc.f0();
 
-        nyh *= nsc.f1();
-        nyl *= nsc.f1();
+        // we know k < 36
+        // auto nsc=__scale_exp_k(nk);        
+        // nyh *= nsc.f0();
+        // nyl *= nsc.f0();
+        // nyh *= nsc.f1();
+        // nyl *= nsc.f1();
+        vf_type nsc=_T::insert_exp(_T::bias() + nk);
+        nyh *= nsc;
+        nyl *= nsc;
 
         vf_type zh, zl;
         d_ops::add22(zh, zl, yh, yl, -nyh, -nyl);
-        yh = _T::sel(k_ge_1_and_lt_36, zh, yh);
+        yh = _T::sel(k_gt_ln2h_and_lt_36, zh, yh);
     }
 
     vmf_type x_lt_ln_2= x <= M_LN2/2;
