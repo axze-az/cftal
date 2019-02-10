@@ -435,6 +435,32 @@ write_coeffs(p, "const double tanh_c", "tanh", b, c);
 plot((p(x)-f(x))/f(x), i,
                        postscriptfile, "tanh-f64");
 
+/* polynomial for sinh where (e^x-e^x) fails */
+f = sinh(x);
+i = [0x1p-512, log(2)/4];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|1, 3, 5, 7, 9|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double sinh_c", "sinh", b, c);
+write_coeff(sup(i), "", "constexpr\n    const double sinh_i0_right",
+            double);
+
+/* polynomial for tanh where (e^2x-1)(e^2x+1) fails */
+f = tanh(x);
+i = [0x1p-512, log(2)/32];
+d = guessdegree(f, i, 0x1p-64);
+d;
+b = [| 1, 3, 5, 7|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double tanh_c", "tanh", b, c);
+write_coeff(sup(i), "", "constexpr\n    const double tanh_i0_right",
+            double);
+
 /* rsqrt f64 */
 f= 1.0/sqrt(x);
 i= [2^(-2), 2^(-1)-2^(-7)];
