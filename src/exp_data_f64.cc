@@ -10,7 +10,7 @@ template<>
 const
 cftal::math::exp_data<double>::table_t
 cftal::math::exp_data<double>::_tbl={
-    // static const double exp_fxi_h_tbl[32]=
+    // static const double _2_pow_i_n_h[32]=
     {
         // 0
         // +1.0000000000000000000000e+00
@@ -109,7 +109,7 @@ cftal::math::exp_data<double>::_tbl={
         // +1.9571441241754001794106e+00
         +0xf.a83b2db722ap-3
     },
-    // static const double exp_fxi_l_tbl[32]=
+    // static const double _2_pow_i_n_l[32]=
     {
         // 0
         // +0.0000000000000000000000e+00

@@ -1071,8 +1071,8 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 
     auto lk=make_variable_lookup_table<float>(idx);
     const auto& tbl=exp_data<float>::_tbl;
-    vf_type th=lk.from(tbl._exp_fxi_h);
-    vf_type tl=lk.from(tbl._exp_fxi_l);
+    vf_type th=lk.from(tbl._2_pow_i_n_h);
+    vf_type tl=lk.from(tbl._2_pow_i_n_l);
     static_assert(exp_c1==1.0f, "oops");
 
     vf_type x2=xrh*xrh;

@@ -1157,8 +1157,8 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 
     auto lk=make_variable_lookup_table<double>(idx);
     const auto& tbl=exp_data<double>::_tbl;
-    vf_type th=lk.from(tbl._exp_fxi_h);
-    vf_type tl=lk.from(tbl._exp_fxi_l);
+    vf_type th=lk.from(tbl._2_pow_i_n_h);
+    vf_type tl=lk.from(tbl._2_pow_i_n_l);
     static_assert(exp_c1==1.0, "oops");
 
     vf_type x2=xrh*xrh;
@@ -1972,8 +1972,8 @@ sinh_k(arg_t<vf_type> xc)
 
     const auto& tbl=exp_data<double>::_tbl;
     auto lk=make_variable_lookup_table<double>(idx);
-    vf_type th = lk.from(tbl._exp_fxi_h);
-    vf_type tl = lk.from(tbl._exp_fxi_l);
+    vf_type th = lk.from(tbl._2_pow_i_n_h);
+    vf_type tl = lk.from(tbl._2_pow_i_n_l);
 
     vf_type x2=xrh*xrh;
     static const double ci[]={
@@ -2006,8 +2006,8 @@ sinh_k(arg_t<vf_type> xc)
         nk -= 1;
 
         auto nlk=make_variable_lookup_table<double>(nidx);
-        vf_type nth = nlk.from(tbl._exp_fxi_h);
-        vf_type ntl = nlk.from(tbl._exp_fxi_l);
+        vf_type nth = nlk.from(tbl._2_pow_i_n_h);
+        vf_type ntl = nlk.from(tbl._2_pow_i_n_l);
         vf_type nx2=nxrh*nxrh;
         vf_type np=horner2(nxrh, nx2, ci);
 
@@ -2101,8 +2101,8 @@ cosh_k(arg_t<vf_type> xc)
 
     const auto& tbl=exp_data<double>::_tbl;
     auto lk=make_variable_lookup_table<double>(idx);
-    vf_type th = lk.from(tbl._exp_fxi_h);
-    vf_type tl = lk.from(tbl._exp_fxi_l);
+    vf_type th = lk.from(tbl._2_pow_i_n_h);
+    vf_type tl = lk.from(tbl._2_pow_i_n_l);
 
     vf_type x2=xrh*xrh;
     static const double ci[]={
@@ -2133,8 +2133,8 @@ cosh_k(arg_t<vf_type> xc)
         nk -= 1;
 
         auto nlk=make_variable_lookup_table<double>(nidx);
-        vf_type nth = nlk.from(tbl._exp_fxi_h);
-        vf_type ntl = nlk.from(tbl._exp_fxi_l);
+        vf_type nth = nlk.from(tbl._2_pow_i_n_h);
+        vf_type ntl = nlk.from(tbl._2_pow_i_n_l);
         vf_type nx2=nxrh*nxrh;
         vf_type np=horner2(nxrh, nx2, ci);
 
@@ -2263,8 +2263,8 @@ tanh_k(arg_t<vf_type> xc)
 
         auto lk=make_variable_lookup_table<double>(idx);
         const auto& tbl=exp_data<double>::_tbl;
-        vf_type th=lk.from(tbl._exp_fxi_h);
-        vf_type tl=lk.from(tbl._exp_fxi_l);
+        vf_type th=lk.from(tbl._2_pow_i_n_h);
+        vf_type tl=lk.from(tbl._2_pow_i_n_l);
         static_assert(exp_c1==1.0, "oops");
 
         vf_type x2=xrh*xrh;

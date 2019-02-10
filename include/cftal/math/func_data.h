@@ -19,8 +19,10 @@ namespace cftal {
                 EXP_N=32
             };
             struct table_t {
-                const _F _exp_fxi_h[EXP_N];
-                const _F _exp_fxi_l[EXP_N];
+                // 2^(i/n) high part
+                const _F _2_pow_i_n_h[EXP_N];
+                // 2^(i/n) low part
+                const _F _2_pow_i_n_l[EXP_N];
             };
             static
             const table_t _tbl;

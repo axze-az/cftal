@@ -11,7 +11,7 @@ template<>
 const
 cftal::math::exp_data<float>::table_t
 cftal::math::exp_data<float>::_tbl={
-    // static const float exp_fxi_h_tbl[32]=
+    // static const float _2_pow_i_n_h[32]=
     {
         // 0
         // +1.0000000000e+00f
@@ -110,7 +110,7 @@ cftal::math::exp_data<float>::_tbl={
         // +1.9571441412e+00f
         +0xf.a83b3p-3f
     },
-    // static const float exp_fxi_l_tbl[32]=
+    // static const float _2_pow_i_n_l[32]=
     {
         // 0
         // +0.0000000000e+00f
