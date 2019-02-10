@@ -8,13 +8,13 @@
 #define __CFTAL_MATH_HALF_FUNC_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/config.h>
 #include <cftal/arg.h>
 #include <cftal/d_real.h>
 #include <cftal/math/elem_func_core_f32.h>
 
 namespace cftal {
     namespace math {
+
 
         // template, may be we need a specialization for double
         // later
@@ -204,14 +204,14 @@ cftal::math::half_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
     static_assert(exp_data<float>::EXP_N==32,
                  "exp_data<float>::EXP_N==32");
     const float _32_ln2=+4.6166240692e+01f;
-    const float _ln2_32_cw_h=+2.1659851074e-02f;
-    const float _ln2_32_cw_l=+9.9831822808e-07f;
     vf_type kf = rint(vf_type(xc * _32_ln2));
-    vf_type xrh = (xc - kf * _ln2_32_cw_h) -
-        (kf * _ln2_32_cw_l);
     vi_type ki=_T::cvt_f_to_i(kf);
     vi_type idx = ki & exp_data<float>::EXP_IDX_MASK;
     vi_type k = ki >> exp_data<float>::EXP_SHIFT;
+    const float _ln2_32_cw_h=+2.1659851074e-02f;
+    const float _ln2_32_cw_l=+9.9831822808e-07f;
+    vf_type xrh = (xc - kf * _ln2_32_cw_h) -
+        (kf * _ln2_32_cw_l);
     auto y=__half_exp_tbl_k(xrh, idx, k);
 #else
     using ctbl = impl::d_real_constants<d_real<float>, float>;
@@ -242,11 +242,26 @@ inline
 typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::half_exp2_k(arg_t<vf_type> xc)
 {
+#if 1
+    static_assert(exp_data<float>::EXP_N==32,
+                 "exp_data<float>::EXP_N==32");
+    const float _ND=exp_data<float>::EXP_N;
+    const float _1_ND=1.0f/exp_data<float>::EXP_N;
+    vf_type kf = rint(vf_type(xc * _ND));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    vi_type idx = ki & exp_data<float>::EXP_IDX_MASK;
+    vi_type k = ki >> exp_data<float>::EXP_SHIFT;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type xrh = xc - kf * _1_ND;
+    auto y=__half_exp_tbl_k(xrh*ctbl::m_ln2[0], idx, k);
+    return y;
+#else
     vf_type kf = rint(xc);
     vf_type xrh = xc - kf;
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     auto y= __half_exp_k(xrh*ctbl::m_ln2[0], kf);
     return y;
+#endif
 }
 
 template <typename _T>

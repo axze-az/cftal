@@ -606,10 +606,10 @@ int main(int argc, char** argv)
     r |= main_log(ags);
     r |= main_log2(ags);
     r |= main_log10(ags);
-#endif
     r |= main_exp(ags);
-#if 0
+#endif
     r |= main_exp2(ags);
+#if 0
     r |= main_exp10(ags);
     r |= main_cos(ags);
     r |= main_sin(ags);
