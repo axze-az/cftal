@@ -16,7 +16,9 @@ namespace cftal {
         template <typename _F>
         struct exp_data {
             enum {
-                EXP_N=32
+                EXP_N=32,
+                EXP_SHIFT=5,
+                EXP_IDX_MASK=EXP_N-1
             };
             struct table_t {
                 // 2^(i/n) high part

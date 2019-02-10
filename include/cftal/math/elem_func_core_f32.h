@@ -1185,7 +1185,6 @@ __reduce_exp_arg(vf_type& xrh,
 {
     static_assert(exp_data<float>::EXP_N==32,
                  "exp_data<float>::EXP_N==32");
-    const int32_t _N=exp_data<float>::EXP_N;
     const float _32_ln2=+4.6166240692e+01f;
     // x^ : +0xb.17p-9f
     const float _ln2_32_cw_h=+2.1659851074e-02f;
@@ -1197,8 +1196,8 @@ __reduce_exp_arg(vf_type& xrh,
     vf_type dx = hi-xrh;
     xrl = dx - kf * _ln2_32_cw_l;
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & (_N-1);
-    k = ki >> 5;
+    idx = ki & exp_data<float>::EXP_IDX_MASK;
+    k = ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1213,7 +1212,6 @@ __reduce_exp_arg(vf_type& xrh,
 {
     static_assert(exp_data<float>::EXP_N==32,
                  "exp_data<float>::EXP_N==32");
-    const int32_t _N=exp_data<float>::EXP_N;
     const float _32_ln2=+4.6166240692e+01f;
    // x^ : +0xb.17218p-9f
     const float _ln2_32_h=+2.1660849452e-02f;
@@ -1227,8 +1225,8 @@ __reduce_exp_arg(vf_type& xrh,
                      xh, xl,
                      neg_kfln2h, neg_kfln2l);
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & (_N-1);
-    k = ki >> 5;
+    idx = ki & exp_data<float>::EXP_IDX_MASK;
+    k = ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1346,7 +1344,6 @@ __reduce_exp2_arg(vf_type& xrh,
 {
     static_assert(exp_data<float>::EXP_N == 32,
                   "exp_data<float>::EXP_N == 32 expected");
-    constexpr const int32_t _N=exp_data<float>::EXP_N;
     constexpr const float _ND=exp_data<float>::EXP_N;
     constexpr const float _1_ND=1.0f/exp_data<float>::EXP_N;
     vf_type kf= rint(vf_type(x*_ND));
@@ -1354,8 +1351,8 @@ __reduce_exp2_arg(vf_type& xrh,
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx= ki & (_N-1);
-    k= ki >> 5;
+    idx= ki & exp_data<float>::EXP_IDX_MASK;
+    k= ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1370,7 +1367,6 @@ __reduce_exp2_arg(vf_type& xrh,
 {
     static_assert(exp_data<float>::EXP_N==32,
                  "exp_data<float>::EXP_N==32");
-    constexpr const int32_t _N=exp_data<float>::EXP_N;
     constexpr const double _ND=exp_data<float>::EXP_N;
     constexpr const double _1_ND=1.0f/exp_data<float>::EXP_N;
     vf_type kf= rint(vf_type(xh*_ND));
@@ -1379,8 +1375,8 @@ __reduce_exp2_arg(vf_type& xrh,
     d_ops::mul22(xrh, xrl, xrh, xrl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & (_N-1);
-    k = ki >> 5;
+    idx= ki & exp_data<float>::EXP_IDX_MASK;
+    k= ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1483,8 +1479,6 @@ __reduce_exp10_arg(vf_type& xrh,
 {
     static_assert(exp_data<float>::EXP_N == 32,
                   "exp_data<float>::EXP_N == 32 expected");
-    constexpr const int32_t _N=exp_data<float>::EXP_N;
-
     const float _32_lg2=+1.0630169678e+02f;
     // x^ : +0x9.a2p-10f
     const float _lg2_32_cw_h=+9.4070434570e-03f;
@@ -1499,8 +1493,8 @@ __reduce_exp10_arg(vf_type& xrh,
     d_ops::mul12(xrh, xrl, xrh, ctbl::m_ln10[0]);
     xrl += cr * ctbl::m_ln10[0];
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx= ki & (_N-1);
-    k= ki >> 5;
+    idx= ki & exp_data<float>::EXP_IDX_MASK;
+    k= ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1515,7 +1509,6 @@ __reduce_exp10_arg(vf_type& xrh,
 {
     static_assert(exp_data<float>::EXP_N==32,
                  "exp_data<float>::EXP_N==32");
-    constexpr const int32_t _N=exp_data<float>::EXP_N;
     const float _32_lg2=+1.0630169678e+02f;
     // x^ : +0x9.a209bp-10f
     const float _lg2_32_h=+9.4071878120e-03f;
@@ -1531,8 +1524,8 @@ __reduce_exp10_arg(vf_type& xrh,
                      kf_lg_2_32_h, kf_lg_2_32_l);
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx= ki & (_N-1);
-    k= ki >> 5;
+    idx= ki & exp_data<float>::EXP_IDX_MASK;
+    k= ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1741,10 +1734,11 @@ sinh_cosh_k(arg_t<vf_type> xc)
             // base_type::__reduce_exp_arg(nxrh, nxrl, nidx, nk, -x);
             nxrh = -xrh;
             nxrl = -xrl;
-            vi_type s=-((k0<<5)+idx);
-            nk= s>>5;
-            nidx= s & 31;
+            vi_type s=-((k0<<exp_data<float>::EXP_SHIFT)+idx);
+            nk= s >> exp_data<float>::EXP_SHIFT;
+            nidx= s & exp_data<float>::EXP_IDX_MASK;
             nk -= 1;
+
 
             auto nlk=make_variable_lookup_table<float>(nidx);
             vf_type nth = nlk.from(tbl._2_pow_i_n_h);

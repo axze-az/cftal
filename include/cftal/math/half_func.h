@@ -200,10 +200,9 @@ inline
 typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
 {
-#if 0
+#if 1
     static_assert(exp_data<float>::EXP_N==32,
                  "exp_data<float>::EXP_N==32");
-    const int32_t _N=exp_data<float>::EXP_N;
     const float _32_ln2=+4.6166240692e+01f;
     const float _ln2_32_cw_h=+2.1659851074e-02f;
     const float _ln2_32_cw_l=+9.9831822808e-07f;
@@ -211,8 +210,8 @@ cftal::math::half_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
     vf_type xrh = (xc - kf * _ln2_32_cw_h) -
         (kf * _ln2_32_cw_l);
     vi_type ki=_T::cvt_f_to_i(kf);
-    vi_type idx = ki & (_N-1);
-    vi_type k = ki >> 5;
+    vi_type idx = ki & exp_data<float>::EXP_IDX_MASK;
+    vi_type k = ki >> exp_data<float>::EXP_SHIFT;
     auto y=__half_exp_tbl_k(xrh, idx, k);
 #else
     using ctbl = impl::d_real_constants<d_real<float>, float>;
