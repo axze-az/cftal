@@ -1191,13 +1191,13 @@ __reduce_exp_arg(vf_type& xrh,
     // x^ : +0x8.5fdf4p-23f
     const float _ln2_32_cw_l=+9.9831822808e-07f;
     vf_type kf = rint(vf_type(x * _32_ln2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & exp_data<float>::EXP_IDX_MASK;
+    k = ki >> exp_data<float>::EXP_SHIFT;
     vf_type hi = x - kf * _ln2_32_cw_h;
     xrh = hi - kf * _ln2_32_cw_l;
     vf_type dx = hi-xrh;
     xrl = dx - kf * _ln2_32_cw_l;
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<float>::EXP_IDX_MASK;
-    k = ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1218,15 +1218,15 @@ __reduce_exp_arg(vf_type& xrh,
     // x^ : -0x8.2e308p-37f
     const float _ln2_32_l=-5.9520444129e-11f;
     vf_type kf = rint(vf_type(xh * _32_ln2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & exp_data<float>::EXP_IDX_MASK;
+    k = ki >> exp_data<float>::EXP_SHIFT;
     vf_type neg_kfln2h, neg_kfln2l;
     d_ops::mul122(neg_kfln2h, neg_kfln2l,
                   kf, -_ln2_32_h, -_ln2_32_l);
     d_ops::add22cond(xrh, xrl,
                      xh, xl,
                      neg_kfln2h, neg_kfln2l);
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<float>::EXP_IDX_MASK;
-    k = ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1347,12 +1347,12 @@ __reduce_exp2_arg(vf_type& xrh,
     constexpr const float _ND=exp_data<float>::EXP_N;
     constexpr const float _1_ND=1.0f/exp_data<float>::EXP_N;
     vf_type kf= rint(vf_type(x*_ND));
-    vf_type xr= x- kf*_1_ND;
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
     vi_type ki=_T::cvt_f_to_i(kf);
     idx= ki & exp_data<float>::EXP_IDX_MASK;
     k= ki >> exp_data<float>::EXP_SHIFT;
+    vf_type xr= x- kf*_1_ND;
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
 }
 
 template <typename _T>
@@ -1370,13 +1370,13 @@ __reduce_exp2_arg(vf_type& xrh,
     constexpr const double _ND=exp_data<float>::EXP_N;
     constexpr const double _1_ND=1.0f/exp_data<float>::EXP_N;
     vf_type kf= rint(vf_type(xh*_ND));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx= ki & exp_data<float>::EXP_IDX_MASK;
+    k= ki >> exp_data<float>::EXP_SHIFT;
     d_ops::add122cond(xrh, xrl, kf*(-_1_ND), xh, xl);
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     d_ops::mul22(xrh, xrl, xrh, xrl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx= ki & exp_data<float>::EXP_IDX_MASK;
-    k= ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1485,6 +1485,9 @@ __reduce_exp10_arg(vf_type& xrh,
     // x^ : +0x9.a84fcp-26f
     const float _lg2_32_cw_l=+1.4390747083e-07f;
     vf_type kf= rint(vf_type(x*_32_lg2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx= ki & exp_data<float>::EXP_IDX_MASK;
+    k= ki >> exp_data<float>::EXP_SHIFT;
     vf_type hi = x - kf * _lg2_32_cw_h;
     xrh = hi - kf * _lg2_32_cw_l;
     vf_type dx= hi-xrh;
@@ -1492,9 +1495,6 @@ __reduce_exp10_arg(vf_type& xrh,
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     d_ops::mul12(xrh, xrl, xrh, ctbl::m_ln10[0]);
     xrl += cr * ctbl::m_ln10[0];
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx= ki & exp_data<float>::EXP_IDX_MASK;
-    k= ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1516,6 +1516,9 @@ __reduce_exp10_arg(vf_type& xrh,
     const float _lg2_32_l=-4.4753090123e-10f;
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type kf = rint(vf_type(xh*_32_lg2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx= ki & exp_data<float>::EXP_IDX_MASK;
+    k= ki >> exp_data<float>::EXP_SHIFT;
     vf_type kf_lg_2_32_h, kf_lg_2_32_l;
     d_ops::mul122(kf_lg_2_32_h, kf_lg_2_32_l,
                   kf, -_lg2_32_h, -_lg2_32_l);
@@ -1523,9 +1526,6 @@ __reduce_exp10_arg(vf_type& xrh,
                      xh, xl,
                      kf_lg_2_32_h, kf_lg_2_32_l);
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx= ki & exp_data<float>::EXP_IDX_MASK;
-    k= ki >> exp_data<float>::EXP_SHIFT;
 }
 
 template <typename _T>

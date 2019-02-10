@@ -1266,13 +1266,13 @@ __reduce_exp_arg(vf_type& xrh,
     // x^ : +0xe.7bcd5e4f1d9dp-48
     const double _ln2_32_cw_l=+5.1456092446553382152435e-14;
     vf_type kf = rint(vf_type(x * _32_ln2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & exp_data<double>::EXP_IDX_MASK;
+    k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type hi = x - kf * _ln2_32_cw_h;
     xrh = hi - kf * _ln2_32_cw_l;
     vf_type dx = hi-xrh;
     xrl = dx - kf * _ln2_32_cw_l;
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<double>::EXP_IDX_MASK;
-    k = ki >> exp_data<double>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1294,15 +1294,15 @@ __reduce_exp_arg(vf_type& xrh,
     // x^ : +0xd.5e4f1d9cc01f8p-64
     const double _ln2_32_l=+7.2470212932696861200555e-19;
     vf_type kf = rint(vf_type(xh * _32_ln2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & exp_data<double>::EXP_IDX_MASK;
+    k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type neg_kfln2h, neg_kfln2l;
     d_ops::mul122(neg_kfln2h, neg_kfln2l,
                   kf, -_ln2_32_h, -_ln2_32_l);
     d_ops::add22cond(xrh, xrl,
                      xh, xl,
                      neg_kfln2h, neg_kfln2l);
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<double>::EXP_IDX_MASK;
-    k = ki >> exp_data<double>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1418,12 +1418,12 @@ __reduce_exp2_arg(vf_type& xrh,
     constexpr const double _ND=exp_data<double>::EXP_N;
     constexpr const double _1_ND=1.0/exp_data<double>::EXP_N;
     vf_type kf= rint(vf_type(x*_ND));
-    vf_type xr= x- kf*_1_ND;
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
     vi_type ki=_T::cvt_f_to_i(kf);
     idx = ki & exp_data<double>::EXP_IDX_MASK;
     k = ki >> exp_data<double>::EXP_SHIFT;
+    vf_type xr= x- kf*_1_ND;
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
 }
 
 template <typename _T>
@@ -1441,13 +1441,13 @@ __reduce_exp2_arg(vf_type& xrh,
     constexpr const double _ND=exp_data<double>::EXP_N;
     constexpr const double _1_ND=1.0/exp_data<double>::EXP_N;
     vf_type kf= rint(vf_type(xh*_ND));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & exp_data<double>::EXP_IDX_MASK;
+    k = ki >> exp_data<double>::EXP_SHIFT;
     d_ops::add122cond(xrh, xrl, kf*(-_1_ND), xh, xl);
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     d_ops::mul22(xrh, xrl, xrh, xrl,
                  ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<double>::EXP_IDX_MASK;
-    k = ki >> exp_data<double>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1556,6 +1556,9 @@ __reduce_exp10_arg(vf_type& xrh,
     // x^ : +0xf.3fde623e25668p-48
     const double _lg2_32_cw_l=+5.4177061261727666703574e-14;
     vf_type kf= rint(vf_type(x*_32_lg2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & exp_data<double>::EXP_IDX_MASK;
+    k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type hi = x - kf * _lg2_32_cw_h;
     xrh = hi - kf * _lg2_32_cw_l;
     vf_type dx= hi-xrh;
@@ -1563,9 +1566,6 @@ __reduce_exp10_arg(vf_type& xrh,
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     d_ops::mul12(xrh, xrl, xrh, ctbl::m_ln10[0]);
     xrl += cr * ctbl::m_ln10[0];
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<double>::EXP_IDX_MASK;
-    k = ki >> exp_data<double>::EXP_SHIFT;
 }
 
 template <typename _T>
@@ -1587,6 +1587,9 @@ __reduce_exp10_arg(vf_type& xrh,
     const double _lg2_32_l=-8.7616503993286574804144e-20;
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type kf = rint(vf_type(xh*_32_lg2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & exp_data<double>::EXP_IDX_MASK;
+    k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type kf_lg_2_32_h, kf_lg_2_32_l;
     d_ops::mul122(kf_lg_2_32_h, kf_lg_2_32_l,
                   kf, -_lg2_32_h, -_lg2_32_l);
@@ -1594,12 +1597,7 @@ __reduce_exp10_arg(vf_type& xrh,
                      xh, xl,
                      kf_lg_2_32_h, kf_lg_2_32_l);
     d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
-    vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<double>::EXP_IDX_MASK;
-    k = ki >> exp_data<double>::EXP_SHIFT;
 }
-
-
 
 template <typename _T>
 template <bool _EXP10_M1>
