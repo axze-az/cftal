@@ -155,8 +155,8 @@ __half_exp_tbl_k(arg_t<vf_type> xrh,
     const auto& tbl=exp_data<float>::_tbl;
     vf_type th=lk.from(tbl._2_pow_i_n_h);
     vf_type x2=xrh*xrh;
-    vf_type p= horner(xrh, exp_c3, exp_c2);
     vf_type sc=_T::insert_exp(_T::bias()+k);
+    vf_type p= horner(xrh, exp_c3, exp_c2);
     vf_type eh=xrh + x2*p;
     vf_type y= th + th*eh;
     y *=  sc;

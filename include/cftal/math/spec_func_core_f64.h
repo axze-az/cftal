@@ -453,7 +453,8 @@ erfc_k(arg_t<vf_type> xc)
         vf_type xrh, xrl;
         vi_type idx;
         base_type::__reduce_exp_arg(xrh, xrl, idx, k, x2h, x2l);
-        exh=base_type::__exp_tbl_k(xrh, xrl, idx, &exl);
+        exh=base_type::template __exp_tbl_k<
+            base_type::result_prec::high>(xrh, xrl, idx, &exl);
         x2h = -x2h;
     } else {
         x2h = x*x;
