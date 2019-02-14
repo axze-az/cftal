@@ -37,6 +37,14 @@ namespace cftal {
             vf_type
             __scale_exp_k(arg_t<vf_type> kf);
 
+
+            static
+            void
+            __reduce_exp_arg(vf_type& xrh,
+                             vi_type& idx,
+                             vi_type& k,
+                             arg_t<vf_type> x);
+
             static
             vf_type
             __half_exp_tbl_k(arg_t<vf_type> xrh,
@@ -133,6 +141,27 @@ __scale_exp_k(arg_t<vf_type> kf)
 }
 
 template <typename _T>
+void
+cftal::math::half_func<float, _T>::
+__reduce_exp_arg(vf_type& xrh,
+                 vi_type& idx,
+                 vi_type& k,
+                 arg_t<vf_type> xc)
+{
+    static_assert(exp_data<float>::EXP_N==32,
+                 "exp_data<float>::EXP_N==32");
+    const float _32_ln2=+4.6166240692e+01f;
+    vf_type kf = rint(vf_type(xc * _32_ln2));
+    vi_type ki=_T::cvt_f_to_i(kf);
+    idx = ki & exp_data<float>::EXP_IDX_MASK;
+    k = ki >> exp_data<float>::EXP_SHIFT;
+    const float _ln2_32_cw_h=+2.1659851074e-02f;
+    const float _ln2_32_cw_l=+9.9831822808e-07f;
+    xrh = (xc - kf * _ln2_32_cw_h) -
+        (kf * _ln2_32_cw_l);
+}
+
+template <typename _T>
 typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
 __half_exp_tbl_k(arg_t<vf_type> xrh,
@@ -154,11 +183,12 @@ __half_exp_tbl_k(arg_t<vf_type> xrh,
     auto lk=make_variable_lookup_table<float>(idx);
     const auto& tbl=exp_data<float>::_tbl;
     vf_type th=lk.from(tbl._2_pow_i_n_h);
+    // vf_type tl=lk.from(tbl._2_pow_i_n_l);
     vf_type x2=xrh*xrh;
     vf_type sc=_T::insert_exp(_T::bias()+k);
     vf_type p= horner(xrh, exp_c3, exp_c2);
     vf_type eh=xrh + x2*p;
-    vf_type y= th + th*eh;
+    vf_type y= th + (/* tl+*/ th*eh);
     y *=  sc;
     return y;
 }
@@ -201,17 +231,9 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
 {
 #if 1
-    static_assert(exp_data<float>::EXP_N==32,
-                 "exp_data<float>::EXP_N==32");
-    const float _32_ln2=+4.6166240692e+01f;
-    vf_type kf = rint(vf_type(xc * _32_ln2));
-    vi_type ki=_T::cvt_f_to_i(kf);
-    vi_type idx = ki & exp_data<float>::EXP_IDX_MASK;
-    vi_type k = ki >> exp_data<float>::EXP_SHIFT;
-    const float _ln2_32_cw_h=+2.1659851074e-02f;
-    const float _ln2_32_cw_l=+9.9831822808e-07f;
-    vf_type xrh = (xc - kf * _ln2_32_cw_h) -
-        (kf * _ln2_32_cw_l);
+    vf_type xrh;
+    vi_type idx, k;
+    __reduce_exp_arg(xrh, idx, k, xc);
     auto y=__half_exp_tbl_k(xrh, idx, k);
 #else
     using ctbl = impl::d_real_constants<d_real<float>, float>;

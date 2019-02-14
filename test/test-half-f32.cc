@@ -606,8 +606,8 @@ int main(int argc, char** argv)
     r |= main_log(ags);
     r |= main_log2(ags);
     r |= main_log10(ags);
-    r |= main_exp(ags);
 #endif
+    r |= main_exp(ags);
     r |= main_exp2(ags);
 #if 0
     r |= main_exp10(ags);
