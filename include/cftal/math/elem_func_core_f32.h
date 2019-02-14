@@ -1123,7 +1123,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         y *= sc.f1();
     } else {
         vf_type t;
-        y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, &t);
+        y=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &t);
         auto sc=__scale_exp_k(ki);
         y *= sc.f0();
         t *= sc.f0();
@@ -2416,7 +2416,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
     vf_type rl;
-    vf_type rh=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, &rl);
+    vf_type rh=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &rl);
     auto sc = __scale_exp_k(ki);
 #else
     using ctbl = impl::d_real_constants<d_real<float>, float>;
