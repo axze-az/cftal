@@ -2092,7 +2092,7 @@ cftal::math::elem_func_core<float, _T>::
 log_k(arg_t<vf_type> xc)
 {
     // return __pow_log_k<log_func::c_log_e,
-    //                   result_prec::high>(xc)[0];
+    //                   result_prec::normal>(xc)[0];
     return __log_k<log_func::c_log_e>(xc);
 }
 
@@ -2335,6 +2335,7 @@ __pow_log_k(arg_t<vf_type> xc)
     d_ops::add12cond(yph, ypl, xr, vf_type(+1.0f));
     vf_type qh, ql;
     d_ops::div22(qh, ql, ymh, yml, yph, ypl);
+
     return __pow_log_k<_F, _P>(qh, ql, kf);
 }
 
