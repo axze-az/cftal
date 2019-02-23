@@ -1105,67 +1105,84 @@ namespace cftal {
             extract(int32_t& i0, int32_t& i1, int32_t& i2, int32_t& i3,
                     __m128i idx);
 
-
-            template <class _T, std::size_t _SCALE>
+            // template for vgatherdpd
+            template <class _T, class _I>
             struct vgatherdpd {
-                static _T v(const double* base,
-                            __m128i idx);
-                static _T v(const _T& src,
-                            const double* base,
-                            __m128i idx,
-                            const _T& msk);
+                template <std::size_t _SCALE>
+                static _T
+                v(const double* base, const _I& idx);
+
+                template <std::size_t _SCALE>
+                static _T
+                v(const _T& src, const double* base,
+                  const _I& idx, const _T& msk);
             };
 
-            template <std::size_t _SCALE>
-            struct vgatherdpd<__m128d, _SCALE> {
-                static __m128d v(const double* base,
-                                 __m128i idx);
-                static __m128d v(__m128d src,
-                                 const double* base,
-                                 __m128i idx,
-                                 __m128d msk);
+            // specialization for __m128d, __m128i
+            template <>
+            struct vgatherdpd<__m128d, __m128i> {
+                template <std::size_t _SCALE>
+                static __m128d
+                v(const double* base, __m128i idx);
+
+                template <std::size_t _SCALE>
+                static __m128d
+                v(__m128d src, const double* base,
+                  __m128i idx, __m128d msk);
             };
 
-            template <class _T, class _I, std::size_t _SCALE>
+            // template for vgatherdps
+            template <class _T, class _I>
             struct vgatherdps {
-                static _T v(const float* base,
-                            const _I& idx);
-                static _T v(const _T& src,
-                            const float* base,
-                            const _I& idx,
-                            const _T& msk);
+                template <std::size_t _SCALE>
+                static _T
+                v(const float* base, const _I& idx);
+
+                template <std::size_t _SCALE>
+                static _T
+                v(const _T& src, const float* base,
+                  const _I& idx, const _T& msk);
             };
 
-            template <std::size_t _SCALE>
-            struct vgatherdps<__m128, __m128i, _SCALE> {
-                static __m128 v(const float* base,
-                                __m128i idx);
-                static __m128 v(__m128 src,
-                                const float* base,
-                                __m128i idx,
-                                __m128 msk);
+            // specialization for __m128, __m128i
+            template <>
+            struct vgatherdps<__m128, __m128i> {
+                template <std::size_t _SCALE>
+                static __m128
+                v(const float* base, __m128i idx);
+
+                template <std::size_t _SCALE>
+                static __m128
+                v(__m128 src, const float* base,
+                  __m128i idx, __m128 msk);
             };
 
 
 #if defined (__AVX__)
-            template <std::size_t _SCALE>
-            struct vgatherdpd<__m256d, _SCALE> {
-                static __m256d v(const double* base,
-                                 __m128i idx);
-                static __m256d v(__m256d src,
-                                 const double* base,
-                                 __m128i idx,
-                                 __m256d msk);
+            // specialization for __m256d, __m128i
+            template <>
+            struct vgatherdpd<__m256d, __m128i> {
+                template <std::size_t _SCALE>
+                static __m256d
+                v(const double* base, __m128i idx);
+
+                template <std::size_t _SCALE>
+                static __m256d
+                v(__m256d src, const double* base,
+                  __m128i idx, __m256d msk);
             };
 
-            template <std::size_t _SCALE>
-            struct vgatherdps<__m256, __m256i, _SCALE> {
+            // specialization for __m256, __m256i
+            template <>
+            struct vgatherdps<__m256, __m256i> {
+                template <std::size_t _SCALE>
                 static __m256 v(const float* base,
                                 __m256i idx);
-                static __m256 v(__m256 src,
-                                const float* base,
-                                __m256i idx,
-                                __m256 msk);
+
+                template <std::size_t _SCALE>
+                static __m256
+                v(__m256 src, const float* base,
+                  __m256i idx, __m256 msk);
             };
 #endif
 
@@ -1714,18 +1731,32 @@ extract(int32_t& i0, int32_t& i1, int32_t& i2, int32_t& i3,
 template <std::size_t _SCALE>
 inline
 __m128d
-cftal::x86::impl::vgatherdpd<__m128d, _SCALE>::v(const double* base,
-                                                 __m128i idx)
+cftal::x86::impl::vgatherdpd<__m128d, __m128i>::
+v(const double* base, __m128i idx)
 {
-    const int scale= _SCALE;
 #if defined (__AVX2__)
-    return _mm_i32gather_pd(base, idx, scale);
+    return _mm_i32gather_pd(base, idx, _SCALE);
 #else
     int32_t i0, i1;
     extract(i0, i1, idx);
-    double* p0=vsib_addr<scale>(base, i0);
-    double* p1=vsib_addr<scale>(base, i1);
+    const double* p0=vsib_addr<_SCALE>(base, i0);
+    const double* p1=vsib_addr<_SCALE>(base, i1);
     return _mm_setr_pd(*p0, *p1);
+#endif
+}
+
+template <std::size_t _SCALE>
+inline
+__m128d
+cftal::x86::impl::vgatherdpd<__m128d, __m128i>::
+v(__m128d src, const double* base, __m128i idx, __m128d msk)
+{
+#if defined (__AVX2__)
+    return _mm_mask_i32gather_pd(src, base, idx, msk, _SCALE);
+#else
+    __m128d l=v<_SCALE>(base, idx);
+    __m128d r=select_f64(msk, l, src);
+    return r;
 #endif
 }
 
@@ -1733,26 +1764,38 @@ template <std::size_t _SCALE>
 inline
 __m128
 cftal::x86::impl::
-vgatherdps<__m128, __m128i, _SCALE>::v(const float* base,
-                                       __m128i idx)
+vgatherdps<__m128, __m128i>::
+v(const float* base, __m128i idx)
 {
-    const int scale=_SCALE;
 #if defined (__AVX2__)
-    return _mm_i32gather_ps(base, idx, scale);
+    return _mm_i32gather_ps(base, idx, _SCALE);
 #else
-    const char* p= reinterpret_cast<const char*>(base);
-    const char* p0= p + extract_u32<0>(idx) * scale;
-    const char* p1= p + extract_u32<1>(idx) * scale;
-    const char* p2= p + extract_u32<2>(idx) * scale;
-    const char* p3= p + extract_u32<3>(idx) * scale;
-    float f0= *reinterpret_cast<const float*>(p0);
-    float f1= *reinterpret_cast<const float*>(p1);
-    float f2= *reinterpret_cast<const float*>(p2);
-    float f3= *reinterpret_cast<const float*>(p3);
-    return _mm_setr_ps(f0, f1, f2, f3);
+    int32_t i0, i1, i2, i3;
+    extract(i0, i1, i2, i3, idx);
+    const float* p0=vsib_addr<_SCALE>(base, i0);
+    const float* p1=vsib_addr<_SCALE>(base, i1);
+    const float* p2=vsib_addr<_SCALE>(base, i2);
+    const float* p3=vsib_addr<_SCALE>(base, i3);
+    return _mm_setr_ps(*p0, *p1, *p2, *p3);
 #endif
 }
 
+template <std::size_t _SCALE>
+inline
+__m128
+cftal::x86::impl::
+vgatherdps<__m128, __m128i>::
+v(__m128 src, const float* base, __m128i idx, __m128 msk)
+{
+    const int scale=_SCALE;
+#if defined (__AVX2__)
+    return _mm_mask_i32gather_ps(src, base, idx, msk, _SCALE);
+#else
+    __m128 l=v<_SCALE>(base, idx);
+    __m128 r=select_f32(msk, l, src);
+    return r;
+#endif
+}
 
 #if defined (__AVX__)
 
@@ -1760,34 +1803,71 @@ template <std::size_t _SCALE>
 inline
 __m256d
 cftal::x86::impl::
-vgatherdpd<__m256d, _SCALE>::v(const double* base,
-                               __m128i idx)
+vgatherdpd<__m256d, __m128i>::v(const double* base, __m128i idx)
 {
-    const int scale=_SCALE;
 #if defined (__AVX2__)
-    return _mm256_i32gather_pd(base, idx, scale);
+    return _mm256_i32gather_pd(base, idx, _SCALE);
 #else
     int32_t i0, i1, i2, i3;
     extract(i0, i1, i2, i3, idx);
-    double* p0=vsib_addr<scale>(base, i0);
-    double* p1=vsib_addr<scale>(base, i1);
-    double* p2=vsib_addr<scale>(base, i2);
-    double* p3=vsib_addr<scale>(base, i3);
+    const double* p0=vsib_addr<_SCALE>(base, i0);
+    const double* p1=vsib_addr<_SCALE>(base, i1);
+    const double* p2=vsib_addr<_SCALE>(base, i2);
+    const double* p3=vsib_addr<_SCALE>(base, i3);
     return _mm256_setr_pd(*p0, *p1, *p2, *p3);
 #endif
 }
-#endif
 
+template <std::size_t _SCALE>
+inline
+__m256d
+cftal::x86::impl::
+vgatherdpd<__m256d, __m128i>::
+v(__m256d src, const double* base, __m128i idx, __m256d msk)
+{
 #if defined (__AVX2__)
+    return _mm256_mask_i32gather_pd(src, base, idx, msk, _SCALE);
+#else
+    __m256d l=v<_SCALE>(base, idx);
+    __m256d r=select_f64(msk, l, src);
+    return r;
+#endif
+}
+
 template <std::size_t _SCALE>
 inline
 __m256
 cftal::x86::impl::
-vgatherdps<__m256, __m256i, _SCALE>::v(const float* base,
-                                       __m256i idx)
+vgatherdps<__m256, __m256i>::
+v(const float* base, __m256i idx)
 {
-    const int scale=_SCALE;
-    return _mm256_i32gather_ps(base, idx, scale);
+#if defined (__AVX2__)
+    return _mm256_i32gather_ps(base, idx, _SCALE);
+#else
+    __m128i idxh=_mm256_extracti128_si256(idx, 1);
+    __m128i idxl=_mm256_castsi256_si128(idx);
+    __m128 rh=v<_SCALE>(base, idxl);
+    __m128 rl=v<_SCALE>(base, idxh);
+    __m256 r=_mm256_castps128_ps256(rl);
+    r = _mm256_insertf128_ps(r, rh, 1);
+    return r;
+#endif
+}
+
+template <std::size_t _SCALE>
+inline
+__m256
+cftal::x86::impl::
+vgatherdps<__m256, __m256i>::
+v(__m256 src, const float* base, __m256i idx, __m256 msk)
+{
+#if defined (__AVX2__)
+    return _mm256_mask_i32gather_ps(src, base, idx, msk, _SCALE);
+#else
+    __m256 l=v<_SCALE>(base, idx);
+    __m256 r=select_f32(msk, l, src);
+    return r;
+#endif
 }
 
 #endif
