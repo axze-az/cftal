@@ -1093,6 +1093,18 @@ namespace cftal {
 #endif
             };
 
+            template <std::size_t _SCALE, typename _T>
+            const _T*
+            vsib_addr(const _T* base, int32_t idx);
+
+            void
+            extract(int32_t& i0, int32_t& i1,
+                    __m128i idx);
+
+            void
+            extract(int32_t& i0, int32_t& i1, int32_t& i2, int32_t& i3,
+                    __m128i idx);
+
 
             template <class _T, std::size_t _SCALE>
             struct vgatherdpd {
@@ -1652,6 +1664,53 @@ __m256i cftal::x86::impl::vpmullq::v(__m256i a, __m256i b)
 }
 #endif
 
+template <std::size_t _SCALE, typename _T>
+inline
+const _T*
+cftal::x86::impl::vsib_addr(const _T* p, int32_t idx)
+{
+    const char* pc=reinterpret_cast<const char*>(p);
+    const char* pi=pc + int64_t(idx)*_SCALE;
+    return reinterpret_cast<const _T*>(pi);
+}
+
+inline
+void
+cftal::x86::impl::
+extract(int32_t& i0, int32_t& i1,
+        __m128i idx)
+{
+#if defined (__i386__)
+    i0 = extract_u32<0>(idx);
+    i1 = extract_u32<1>(idx);
+#else
+    uint64_t u0=extract_u64<0>(idx);
+    i0 = u0;
+    i1 = int32_t(u0>>32);
+#endif
+}
+
+inline
+void
+cftal::x86::impl::
+extract(int32_t& i0, int32_t& i1, int32_t& i2, int32_t& i3,
+        __m128i idx)
+{
+#if defined (__i386__)
+    i0 = extract_u32<0>(idx);
+    i1 = extract_u32<1>(idx);
+    i2 = extract_u32<2>(idx);
+    i3 = extract_u32<3>(idx);
+#else
+    uint64_t u0=extract_u64<0>(idx);
+    uint64_t u1=extract_u64<1>(idx);
+    i0 = u0;
+    i1 = int32_t(u0>>32);
+    i2 = u1;
+    i3 = int32_t(u1>>32);
+#endif
+}
+
 template <std::size_t _SCALE>
 inline
 __m128d
@@ -1662,12 +1721,11 @@ cftal::x86::impl::vgatherdpd<__m128d, _SCALE>::v(const double* base,
 #if defined (__AVX2__)
     return _mm_i32gather_pd(base, idx, scale);
 #else
-    const char* p= reinterpret_cast<const char*>(base);
-    const char* p0= p + extract_u32<0>(idx) * scale;
-    const char* p1= p + extract_u32<1>(idx) * scale;
-    double d0= *reinterpret_cast<const double*>(p0);
-    double d1= *reinterpret_cast<const double*>(p1);
-    return _mm_set_pd(d1, d0);
+    int32_t i0, i1;
+    extract(i0, i1, idx);
+    double* p0=vsib_addr<scale>(base, i0);
+    double* p1=vsib_addr<scale>(base, i1);
+    return _mm_setr_pd(*p0, *p1);
 #endif
 }
 
@@ -1709,16 +1767,13 @@ vgatherdpd<__m256d, _SCALE>::v(const double* base,
 #if defined (__AVX2__)
     return _mm256_i32gather_pd(base, idx, scale);
 #else
-    const char* p= reinterpret_cast<const char*>(base);
-    const char* p0= p + extract_u32<0>(idx) * scale;
-    const char* p1= p + extract_u32<1>(idx) * scale;
-    const char* p2= p + extract_u32<2>(idx) * scale;
-    const char* p3= p + extract_u32<3>(idx) * scale;
-    double d0= *reinterpret_cast<const double*>(p0);
-    double d1= *reinterpret_cast<const double*>(p1);
-    double d2= *reinterpret_cast<const double*>(p2);
-    double d3= *reinterpret_cast<const double*>(p3);
-    return _mm256_set_pd(d3, d2, d1, d0);
+    int32_t i0, i1, i2, i3;
+    extract(i0, i1, i2, i3, idx);
+    double* p0=vsib_addr<scale>(base, i0);
+    double* p1=vsib_addr<scale>(base, i1);
+    double* p2=vsib_addr<scale>(base, i2);
+    double* p3=vsib_addr<scale>(base, i3);
+    return _mm256_setr_pd(*p0, *p1, *p2, *p3);
 #endif
 }
 #endif
