@@ -2488,15 +2488,18 @@ __pow_log_k(arg_t<vf_type> sh, arg_t<vf_type> sl, arg_t<vf_type> kf)
     }
     if (_F == log_func::c_log_e) {
         d_ops::mul22(ph, pl, ds[0], ds[1], ph, pl);
-        d_ops::add22cond(ph, pl, th, tl, ph, pl);
+        // | kf * ln2 | >= ph, pl if kf !=0
+        d_ops::add22(ph, pl, th, tl, ph, pl);
     } else if (_F == log_func::c_log_2) {
         d_ops::mul22(ph, pl, th, tl, ph, pl);
-        d_ops::add122cond(ph, pl, kf, ph, pl);
+        // | kf | >= ph, pl if kf !=0
+        d_ops::add122(ph, pl, kf, ph, pl);
     } else if (_F == log_func::c_log_10) {
         vf_type kfh, kfl;
         d_ops::mul122(kfh, kfl, kf, ctbl::m_lg2[0], ctbl::m_lg2[1]);
         d_ops::mul22(ph, pl, th, tl, ph, pl);
-        d_ops::add22cond(ph, pl, kfh, kfl, ph, pl);
+        // | kf * lg2| >= ph, pl if kf !=0
+        d_ops::add22(ph, pl, kfh, kfl, ph, pl);
     }
     return dvf_type(ph, pl);
 }
