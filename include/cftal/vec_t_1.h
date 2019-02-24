@@ -286,7 +286,7 @@ namespace cftal {
     class variable_lookup_table<_T, _I, 1> {
     private:
         // vec<_I, 1> m_idx;
-        typename std::make_unsigned<_I>::type _idx;
+        _I _idx;
     public:
         variable_lookup_table(const vec<_I, 1>& idx) : _idx(idx()) {}
         vec<_T, 1>
@@ -301,7 +301,7 @@ namespace cftal {
         class fixed_lookup_table<_TABLE_LEN, _T, _I, 1> {
         private:
             // vec<_I, 1> m_idx;
-            typename std::make_unsigned<_I>::type _idx;
+            _I _idx;
         public:
             fixed_lookup_table(const vec<_I, 1> idx) : _idx(idx()) {}
             vec<_T, 1>
