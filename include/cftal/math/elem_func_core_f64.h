@@ -2055,9 +2055,10 @@ __log_k(arg_t<vf_type> xc)
     vf_type xr = _T::combine_words(lx, hx);
 
     vf_type f = xr - 1.0;
-    vf_type hfsq = (0.5*f)*f;
-    vf_type s = f/(2.0+f);
+    // vf_type s = f/(2.0+f);
+    vf_type s = f/(xr + 1.0);
     vf_type z = s*s;
+    vf_type hfsq = (0.5*f)*f;
 
     vf_type R = log_k_poly(z);
     vf_type res;
@@ -2186,9 +2187,10 @@ log1p_k(arg_t<vf_type> xc)
     vf_type nu = _T::combine_words(lu, hu);
     vf_type f= nu -1.0;
 
-    vf_type hfsq = (0.5*f)*f;
-    vf_type s = f/(2.0+f);
+    // vf_type s = f/(2.0+f);
+    vf_type s = f/(nu + 1.0);
     vf_type z = s*s;
+    vf_type hfsq = (0.5*f)*f;
     vf_type R = log_k_poly(z);
 
     using ctbl=impl::d_real_constants<d_real<double>, double>;

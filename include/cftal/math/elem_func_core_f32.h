@@ -1945,9 +1945,10 @@ __log_k(arg_t<vf_type> xc)
     vf_type xr = _T::as_float(hx);
 
     vf_type f = xr - 1.0f;
-    vf_type hfsq = (0.5f *f)*f;
-    vf_type s = f/(2.0f+f);
+    // vf_type s = f/(2.0f+f);
+    vf_type s = f/(xr + 1.0f);
     vf_type z = s*s;
+    vf_type hfsq = (0.5f *f)*f;
 
     // split of the polynomial reduces precision
     vf_type R = log_k_poly(z);
@@ -2070,9 +2071,10 @@ log1p_k(arg_t<vf_type> xc)
     vf_type nu = _T::as_float(hu);
     vf_type f= nu -1.0f;
 
-    vf_type hfsq = 0.5f*f*f;
-    vf_type s = f/(2.0f+f);
+    // vf_type s = f/(2.0f+f);
+    vf_type s = f/(nu + 1.0f);
     vf_type z = s*s;
+    vf_type hfsq = 0.5f*f*f;
     vf_type R = log_k_poly(z);
 
     using ctbl=impl::d_real_constants<d_real<float>, float>;
@@ -2092,7 +2094,7 @@ cftal::math::elem_func_core<float, _T>::
 log_k(arg_t<vf_type> xc)
 {
     // return __pow_log_k<log_func::c_log_e,
-    //                   result_prec::normal>(xc)[0];
+    //                    result_prec::normal>(xc)[0];
     return __log_k<log_func::c_log_e>(xc);
 }
 
