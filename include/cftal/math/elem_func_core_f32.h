@@ -2093,8 +2093,8 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log_k(arg_t<vf_type> xc)
 {
-    return __pow_log_k<log_func::c_log_e,
-                        result_prec::normal>(xc)[0];
+    // return __pow_log_k<log_func::c_log_e,
+    //                    result_prec::normal>(xc)[0];
     return __log_k<log_func::c_log_e>(xc);
 }
 
