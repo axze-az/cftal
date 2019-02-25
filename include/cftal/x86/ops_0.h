@@ -1787,7 +1787,6 @@ cftal::x86::impl::
 vgatherdps<__m128, __m128i>::
 v(__m128 src, const float* base, __m128i idx, __m128 msk)
 {
-    const int scale=_SCALE;
 #if defined (__AVX2__)
     return _mm_mask_i32gather_ps(src, base, idx, msk, _SCALE);
 #else
