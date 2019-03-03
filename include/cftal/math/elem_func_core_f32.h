@@ -2728,9 +2728,9 @@ __pow_log_k(arg_t<vf_type> xc)
 #endif
     // brute force:
     vf_type ymh, yml;
-    d_ops::add12cond(ymh, yml, xr, vf_type(-1.0f));
+    d_ops::add12(ymh, yml, vf_type(-1.0f), xr);
     vf_type yph, ypl;
-    d_ops::add12cond(yph, ypl, xr, vf_type(+1.0f));
+    d_ops::add12(yph, ypl, vf_type(+1.0f), xr);
     vf_type qh, ql;
     d_ops::div22(qh, ql, ymh, yml, yph, ypl);
 
@@ -2762,9 +2762,9 @@ __pow_log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
     kf = _T::sel(c, kf-1.0f, kf);
 #endif
     vf_type ymh, yml;
-    d_ops::add122cond(ymh, yml, -1.0f, xrh, xrl);
+    d_ops::add122(ymh, yml, -1.0f, xrh, xrl);
     vf_type yph, ypl;
-    d_ops::add122cond(yph, ypl, +1.0f, xrh, xrl);
+    d_ops::add122(yph, ypl, +1.0f, xrh, xrl);
     vf_type qh, ql;
     d_ops::div22(qh, ql, ymh, yml, yph, ypl);
     return __pow_log_k<_F, _P>(qh, ql, kf);

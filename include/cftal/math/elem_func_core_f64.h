@@ -2480,24 +2480,8 @@ __log_k(arg_t<vf_type> xc)
  * compiler will convert from decimal to binary accurately enough
  * to produce the hexadecimal values shown.
  */
-#if 1
     vf_type xr, kf;
     __reduce_log_arg(xr, kf, xc);
-#else
-    using fc = func_constants<double>;
-    vmf_type is_denom=xc <= fc::max_denormal();
-    vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi2_type k=_T::sel_val_or_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
-    vi2_type lx, hx;
-    _T::extract_words(lx, hx, x);
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    hx += 0x3ff00000 - 0x3fe6a09e;
-    k += (hx>>20) - _T::bias();
-    vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
-    hx = (hx&0x000fffff) + 0x3fe6a09e;
-    vf_type xr = _T::combine_words(lx, hx);
-#endif
-
     vf_type f = xr - 1.0;
     // vf_type s = f/(2.0+f);
     vf_type s = f/(xr + 1.0);
@@ -2663,11 +2647,11 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log_k(arg_t<vf_type> xc)
 {
-    // return __pow_log_k<log_func::c_log_e,
-    //                    result_prec::high>(xc)[0];
 #if USE_TABLE_BASED_LOG>0
     return __log_tbl_k<log_func::c_log_e>(xc);
 #else
+    // return __pow_log_k<log_func::c_log_e,
+    //                    result_prec::normal>(xc)[0];
     return __log_k<log_func::c_log_e>(xc);
 #endif
 }
@@ -2689,6 +2673,8 @@ log2_k(arg_t<vf_type> xc)
 #if USE_TABLE_BASED_LOG>0
     return __log_tbl_k<log_func::c_log_2>(xc);
 #else
+    // return __pow_log_k<log_func::c_log_2,
+    //                    result_prec::normal>(xc)[0];
     return __log_k<log_func::c_log_2>(xc);
 #endif
 }
@@ -2997,11 +2983,11 @@ __pow_log_k(arg_t<vf_type> xc)
     vf_type xr = _T::combine_words(lx, hx);
     vf_type kf = _T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
 #endif
-    // brute force:
+    // brute force
     vf_type ymh, yml;
-    d_ops::add12cond(ymh, yml, xr, -1.0);
+    d_ops::add12(ymh, yml, -1.0, xr);
     vf_type yph, ypl;
-    d_ops::add12cond(yph, ypl, xr, +1.0);
+    d_ops::add12(yph, ypl, 1.0, xr);
     vf_type qh, ql;
     d_ops::div22(qh, ql, ymh, yml, yph, ypl);
     return __pow_log_k<_F, _P>(qh, ql, kf);
@@ -3032,9 +3018,9 @@ __pow_log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
     kf = _T::sel(c, kf-1.0, kf);
 #endif
     vf_type ymh, yml;
-    d_ops::add122cond(ymh, yml, -1.0, xrh, xrl);
+    d_ops::add122(ymh, yml, -1.0, xrh, xrl);
     vf_type yph, ypl;
-    d_ops::add122cond(yph, ypl, +1.0, xrh, xrl);
+    d_ops::add122(yph, ypl, +1.0, xrh, xrl);
     vf_type qh, ql;
     d_ops::div22(qh, ql, ymh, yml, yph, ypl);
     return __pow_log_k<_F, _P>(qh, ql, kf);
