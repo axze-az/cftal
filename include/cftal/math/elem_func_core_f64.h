@@ -2544,7 +2544,7 @@ __log_k(arg_t<vf_type> xc)
 
         vf_type log10_x = val_lo + val_hi;
         res =log10_x;
-    } else /* if (func == log_func::c_log_2)*/ {
+    } else if (_LFUNC == log_func::c_log_2) {
         const double
             ivln2hi = 1.44269504072144627571e+00; /* 0x3ff71547, 0x65200000 */
         const double
