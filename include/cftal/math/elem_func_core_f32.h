@@ -2778,10 +2778,10 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
 #if USE_TABLE_BASED_LOG>0
-    dvf_type ldx= __pow_log_tbl_k<log_func::c_log_2,
+    dvf_type ldx= __pow_log_tbl_k<log_func::c_log_e,
                                   result_prec::normal>(abs_x);
 #else
-    dvf_type ldx= __pow_log_k<log_func::c_log_2,
+    dvf_type ldx= __pow_log_k<log_func::c_log_e,
                               result_prec::normal>(abs_x);
 #endif
     dvf_type yldx;
@@ -2790,15 +2790,15 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 
     vf_type xrh, xrl;
     vi_type idx, ki;
-    __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
+    __reduce_exp_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
     vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
 
     using fc=func_constants<float>;
     const vf_type& d= yldx[0];
-    const float exp2_hi_inf= fc::exp2_hi_inf();
-    const float exp2_lo_zero= fc::exp2_lo_zero();
-    res = _T::sel_zero_or_val(d <= exp2_lo_zero, res);
-    res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
+    const float exp_hi_inf= fc::exp_hi_inf();
+    const float exp_lo_zero= fc::exp_lo_zero();
+    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
+    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     return res;
 }
 
@@ -2810,10 +2810,10 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
 {
     dvf_type abs_x= select(xh > 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
 #if USE_TABLE_BASED_LOG>0
-    dvf_type ldx=__pow_log_tbl_k2<log_func::c_log_2,
+    dvf_type ldx=__pow_log_tbl_k2<log_func::c_log_e,
                                   result_prec::normal>(abs_x[0], abs_x[1]);
 #else
-    dvf_type ldx=__pow_log_k2<log_func::c_log_2,
+    dvf_type ldx=__pow_log_k2<log_func::c_log_e,
                               result_prec::normal>(abs_x[0], abs_x[1]);
 #endif
     // yldx = y*ldx;
@@ -2822,7 +2822,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
 
     vf_type xrh, xrl;
     vi_type idx, ki;
-    __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
+    __reduce_exp_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
     vf_type rl;
     vf_type rh=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &rl);
     auto sc = __scale_exp_k(ki);
