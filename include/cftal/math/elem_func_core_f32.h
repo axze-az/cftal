@@ -2444,8 +2444,11 @@ log_k(arg_t<vf_type> xc)
 {
     // return __pow_log_k<log_func::c_log_e,
     //                    result_prec::normal>(xc)[0];
-    // return __log_k<log_func::c_log_e>(xc);
+#if USE_TABLE_BASED_LOG>0
     return __log_tbl_k<log_func::c_log_e>(xc);
+#else
+    return __log_k<log_func::c_log_e>(xc);
+#endif
 }
 
 template <typename _T>
@@ -2462,8 +2465,11 @@ log2_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
-    // return __log_k<log_func::c_log_2>(xc);
+#if USE_TABLE_BASED_LOG>0
     return __log_tbl_k<log_func::c_log_2>(xc);
+#else
+    return __log_k<log_func::c_log_2>(xc);
+#endif
 }
 
 template <typename _T>
@@ -2480,8 +2486,11 @@ log10_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
  */
-    // return __log_k<log_func::c_log_10>(xc);
+#if USE_TABLE_BASED_LOG>0
     return __log_tbl_k<log_func::c_log_10>(xc);
+#else
+    return __log_k<log_func::c_log_10>(xc);
+#endif
 }
 
 template <typename _T>
@@ -2728,8 +2737,13 @@ cftal::math::elem_func_core<float, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
+#if USE_TABLE_BASED_LOG>0
     dvf_type ldx= __pow_log_tbl_k<log_func::c_log_2,
                                   result_prec::normal>(abs_x);
+#else
+    dvf_type ldx= __pow_log_k<log_func::c_log_2,
+                              result_prec::normal>(abs_x);
+#endif
     dvf_type yldx;
     // yldx = y*ldx;
     d_ops::mul122(yldx[0], yldx[1], y, ldx[0], ldx[1]);
@@ -2755,29 +2769,23 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
     dvf_type abs_x= select(xh > 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
+#if USE_TABLE_BASED_LOG>0
     dvf_type ldx=__pow_log_tbl_k2<log_func::c_log_2,
                                   result_prec::normal>(abs_x[0], abs_x[1]);
+#else
+    dvf_type ldx=__pow_log_k2<log_func::c_log_2,
+                              result_prec::normal>(abs_x[0], abs_x[1]);
+#endif
     // yldx = y*ldx;
     dvf_type yldx;
     d_ops::mul22(yldx[0], yldx[1], yh, yl, ldx[0], ldx[1]);
-#if 1
+
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
     vf_type rl;
     vf_type rh=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &rl);
     auto sc = __scale_exp_k(ki);
-#else
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type kf= rint(vf_type(yldx[0]));
-    vf_type xrh, xrl;
-    // xrh, xrl = (yldx - kf)* log(2)
-    d_ops::add122cond(xrh, xrl, -kf, yldx[0], yldx[1]);
-    d_ops::mul22(xrh, xrl, xrh, xrl,
-                 ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    vf_type rl, rh=__pow_exp_poly_k(xrh, xrl, &rl);
-    auto sc = __scale_exp_k(kf);
-#endif
     return std::make_pair(dvf_type(rh, rl), sc);
 }
 
