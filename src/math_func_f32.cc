@@ -93,7 +93,7 @@ __kernel_rem_pio2(float xr[2], float x)
 
     float xi[3];
     for (int i=0; i<2; ++i) {
-        xi[i]= int32_t(z);
+        xi[i]= __trunc(z);
         z = (z - xi[i])*0x1p9f;
     }
     xi[2] = z;

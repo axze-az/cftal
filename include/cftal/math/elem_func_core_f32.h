@@ -2158,7 +2158,7 @@ __pow_log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
     vf_type lh;
     vf_type r, rl;
     d_ops::mul122(r, rl, inv_c, xr, xrl);
-    d_ops::add122cond(r, rl, -1.0f, r, rl);
+    d_ops::add122(r, rl, -1.0f, r, rl);
     return __pow_log_tbl_k<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
 }
 
@@ -2179,7 +2179,7 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     vf_type r, rl;
     if (d_real_traits<vf_type>::fma == true) {
         d_ops::mul12(r, rl, xr, inv_c);
-        d_ops::add122cond(r, rl, -1.0f, r, rl);
+        d_ops::add122(r, rl, -1.0f, r, rl);
         // r = xr * inv_c - 1.0;
     } else {
         vf_type ph, pl;
