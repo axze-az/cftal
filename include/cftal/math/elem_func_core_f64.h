@@ -410,6 +410,13 @@ namespace cftal {
             dvf_type
             __pow_log_tbl_k(arg_t<vf_type> xc);
 
+            // calculates log(xc) with higher precision
+            template <log_func _LFUNC, result_prec _P>
+            static
+            dvf_type
+            __pow_log_tbl_k2(arg_t<vf_type> xc,
+                             arg_t<vf_type> xl);
+
             // polynomial approximation of log(1+f) with
             // s = f/(2.0+f) and z = s*s;
             static
@@ -2307,6 +2314,28 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     return __pow_log_tbl_k<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
 }
 
+template <typename _T>
+template <typename cftal::math::elem_func_core<double, _T>::log_func _LFUNC,
+          typename cftal::math::elem_func_core<double, _T>::result_prec _P>
+inline
+typename cftal::math::elem_func_core<double, _T>::dvf_type
+cftal::math::elem_func_core<double, _T>::
+__pow_log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
+{
+    vf_type xr, kf, inv_c, log_c_h, log_c_l;
+    vi2_type k;
+    __reduce_log_arg<_LFUNC>(xr,
+                             inv_c, log_c_h, log_c_l,
+                             kf,
+                             xc,
+                             &k);
+    vf_type xrl = ldexp_k(xl, -k);
+    vf_type lh;
+    vf_type r, rl;
+    d_ops::mul122(r, rl, inv_c, xr, xrl);
+    d_ops::add122cond(r, rl, -1.0, r, rl);
+    return __pow_log_tbl_k<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
+}
 
 
 template <typename _T>

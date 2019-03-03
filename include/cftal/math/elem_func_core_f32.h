@@ -387,6 +387,12 @@ namespace cftal {
             dvf_type
             __pow_log_tbl_k(arg_t<vf_type> xc);
 
+            // calculates log(xc+xcl) with higher precision
+            template <log_func _LFUNC, result_prec _P>
+            static
+            dvf_type
+            __pow_log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl);
+
             // polynomial approximation of log(1+f) with
             // s = f/(2.0+f) and z = s*s;
             static
@@ -2131,6 +2137,29 @@ template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC,
 inline
 typename cftal::math::elem_func_core<float, _T>::dvf_type
 cftal::math::elem_func_core<float, _T>::
+__pow_log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
+{
+    vf_type xr, kf, inv_c, log_c_h, log_c_l;
+    vi_type k;
+    __reduce_log_arg<_LFUNC>(xr,
+                             inv_c, log_c_h, log_c_l,
+                             kf,
+                             xc,
+                             &k);
+    vf_type xrl = ldexp_k(xcl, -k);
+    vf_type lh;
+    vf_type r, rl;
+    d_ops::mul122(r, rl, inv_c, xr, xrl);
+    d_ops::add122cond(r, rl, -1.0f, r, rl);
+    return __pow_log_tbl_k<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
+}
+
+template <typename _T>
+template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC,
+          typename cftal::math::elem_func_core<float, _T>::result_prec _P>
+inline
+typename cftal::math::elem_func_core<float, _T>::dvf_type
+cftal::math::elem_func_core<float, _T>::
 __pow_log_tbl_k(arg_t<vf_type> xc)
 {
     vf_type xr, kf, inv_c, log_c_h, log_c_l;
@@ -2139,7 +2168,6 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
                              kf,
                              xc);
 
-    vf_type lh;
     vf_type r, rl;
     if (d_real_traits<vf_type>::fma == true) {
         d_ops::mul12(r, rl, xr, inv_c);
@@ -2727,8 +2755,8 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
     dvf_type abs_x= select(xh > 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
-    dvf_type ldx=__pow_log_k2<log_func::c_log_2,
-                              result_prec::normal>(abs_x[0], abs_x[1]);
+    dvf_type ldx=__pow_log_tbl_k2<log_func::c_log_2,
+                                  result_prec::normal>(abs_x[0], abs_x[1]);
     // yldx = y*ldx;
     dvf_type yldx;
     d_ops::mul22(yldx[0], yldx[1], yh, yl, ldx[0], ldx[1]);
