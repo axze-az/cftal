@@ -522,6 +522,99 @@ exp_table = proc(n, fmt) {
     */
 };
 
+log_around_1_table = proc(l, fmt) {
+    var i, lh, ll, linv, l2h, l2l, l10h, l10l, lc,
+        invci,
+        logi, logih, logil,
+        log2i, log2ih, log2il,
+        log10i, log10ih, log10il,
+        ci, cic, c0, c1, d, offs;
+    i=0;
+    ll=[||];
+    lh=[||];
+    linv=[||];
+    l2h=[||];
+    l2l=[||];
+    l10h=[||];
+    l10l=[||];
+    lc=[||];
+
+    n=2^l;
+    d = 2^(-l);
+
+    i = 0;
+    c0 = round(sqrt(2)/2, l+1, RD);
+    c1 = 2*c0;
+    offs = c0;
+    ci = c0 - d;
+
+    /* ci in [c0, c1) */
+    while (i < n/2) do {
+        if (ci < 1.0) then {
+            ci = ci + d;
+        } else {
+            ci = ci + 2*d;
+        };
+        cic = ci + 1/2*d;
+        match (fmt) with
+        double: {
+            printdouble(ci);
+            invci = round(1/cic, 18, RN);
+        }
+        single: {
+            printsingle(ci);
+            invci = round(1/cic, 7, RN);
+        };
+        logi = -log(invci);
+        log2i = -log2(invci);
+        log10i = -log10(invci);
+        match (fmt) with
+        double: {
+            logih=double(logi);
+            logil=double(logi-logih);
+            log2ih=double(log2i);
+            log2il=double(log2i-log2ih);
+            log10ih=double(log10i);
+            log10il=double(log10i-log10ih);
+        }
+        single: {
+            logih=single(logi);
+            logil=single(logi-logih);
+            log2ih=single(log2i);
+            log2il=single(log2i-log2ih);
+            log10ih=single(log10i);
+            log10il=single(log10i-log10ih);
+        };
+        lc=lc:.cic;
+        lh=lh:.logih;
+        ll=ll:.logil;
+        l2h=l2h:.log2ih;
+        l2l=l2l:.log2il;
+        l10h=l10h:.log10ih;
+        l10l=l10l:.log10il;
+        linv=linv:.invci;
+        i = i + 1;
+    };
+    write_coeff_table(lc, "c", fmt);
+    write_coeff_table(linv, "invc", fmt);
+    write_coeff_table(lh, "logc_h", fmt);
+    write_coeff_table(ll, "logc_l", fmt);
+    write_coeff_table(l2h, "log2c_h", fmt);
+    write_coeff_table(l2l, "log2c_l", fmt);
+    write_coeff_table(l10h, "log10c_h", fmt);
+    write_coeff_table(l10l, "log10c_l", fmt);
+    match (fmt) with
+    double: {
+        write("    constexpr\n    const int64_t offs=");
+        printdouble(offs);
+    }
+    single: {
+        write("    constexpr\n    const int32_t offs=");
+        printsingle(offs);
+    };
+    write(";\n");
+};
+
 
 // Local variables:
 // mode: c++

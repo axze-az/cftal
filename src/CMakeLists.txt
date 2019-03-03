@@ -11,6 +11,8 @@ set (CSRCS
     d_real.cc
     exp_data_f32.cc
     exp_data_f64.cc
+    log_data_f32.cc
+    log_data_f64.cc
     math_func_f64.cc
     math_func_f32.cc
     math_common.cc
@@ -123,6 +125,7 @@ SET (HDRS
     ../include/cftal/math/half_func.h
     ../include/cftal/math/func_traits_f64_s32.h
     ../include/cftal/math/lanczos.h
+    ../include/cftal/math/func_data.h
     ../include/cftal/math/impl_d_real_constants_f32.h
     ../include/cftal/vec_bit_n.h
     ../include/cftal/types.h

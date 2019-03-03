@@ -7,6 +7,45 @@ verbosity=1!;
 prec=1024!;
 write("\n");
 
+/* f32: table based logarithm */
+L=7;
+log_around_1_table(L, single);
+e_1_16=(exp(1)^(1/16))-1;
+ib=e_1_16;
+if (ib < 2*2^-L) then {
+    ib = 2*2^-L;
+};
+i=[-ib, ib];
+f=log1p(x);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|1, 2, 3, 4, 5, 6|];
+c = [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
+
+write_coeff(1-ib, "",
+            "constexpr\n    const float _one_m_delta", single);
+write_coeff(1+ib, "",
+            "constexpr\n    const float _one_p_delta", single);
+
+invln2=1.0/log(2);
+invln2hi=round(invln2, 12, RN);
+invln2lo=invln2-invln2hi;
+write_coeff(invln2hi, "",
+            "constexpr\n    const float invln2hi", single);
+write_coeff(invln2lo, "",
+            "constexpr\n    const float invln2lo", single);
+
+invln10=1.0/log(10);
+invln10hi=round(invln10, 12, RN);
+invln10lo=invln10-invln10hi;
+write_coeff(invln10hi, "",
+            "constexpr\n    const float invln10hi", single);
+write_coeff(invln10lo, "",
+            "constexpr\n    const float invln10lo", single);
+
 /* exp(x) f32 using tang's method */
 N = 32;
 f = exp(x);
