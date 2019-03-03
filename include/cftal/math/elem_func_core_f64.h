@@ -2603,7 +2603,8 @@ log_k(arg_t<vf_type> xc)
 {
     // return __pow_log_k<log_func::c_log_e,
     //                   result_prec::high>(xc)[0];
-    return __log_k<log_func::c_log_e>(xc);
+    // return __log_k<log_func::c_log_e>(xc);
+    return __log_tbl_k<log_func::c_log_e>(xc);
 }
 
 template <typename _T>
@@ -2620,7 +2621,8 @@ log2_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
-    return __log_k<log_func::c_log_2>(xc);
+    // return __log_k<log_func::c_log_2>(xc);
+    return __log_tbl_k<log_func::c_log_2>(xc);
 }
 
 template <typename _T>
@@ -2637,7 +2639,8 @@ log10_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
  */
-    return __log_k<log_func::c_log_10>(xc);
+    // return __log_k<log_func::c_log_10>(xc);
+    return __log_tbl_k<log_func::c_log_10>(xc);
 }
 
 template <typename _T>
@@ -2961,26 +2964,17 @@ cftal::math::elem_func_core<double, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
-    dvf_type ldx= __pow_log_k<log_func::c_log_2,
-                              result_prec::normal>(abs_x);
+    dvf_type ldx= __pow_log_tbl_k<log_func::c_log_2,
+                                  result_prec::normal>(abs_x);
     dvf_type yldx;
     // yldx = y*ldx;
     d_ops::mul122(yldx[0], yldx[1], y, ldx[0], ldx[1]);
-#if 1
+
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
     vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
-#else
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vf_type kf= rint(vf_type(yldx[0]));
-    vf_type xrh, xrl;
-    // xrh, xrl = (yldx - kf)* log(2)
-    d_ops::add122cond(xrh, xrl, -kf, yldx[0], yldx[1]);
-    d_ops::mul22(xrh, xrl, xrh, xrl,
-                 ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    vf_type res=__exp_k<false>(xrh, xrl, kf);
-#endif
+
     using fc=func_constants<double>;
     const vf_type& d= yldx[0];
     const double exp2_hi_inf= fc::exp2_hi_inf();
