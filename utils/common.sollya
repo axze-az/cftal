@@ -552,10 +552,11 @@ log_around_1_table = proc(l, fmt) {
     while (i < n/2) do {
         if (ci < 1.0) then {
             ci = ci + d;
+            cic = ci + 1/2*d;
         } else {
             ci = ci + 2*d;
+            cic = ci + d;
         };
-        cic = ci + 1/2*d;
         match (fmt) with
         double: {
             printdouble(ci);
