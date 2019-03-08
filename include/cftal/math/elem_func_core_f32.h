@@ -1905,7 +1905,7 @@ __reduce_log_arg(vf_type& xr,
 
 {
     constexpr
-    const bytes4 offs=0x3f350000;
+    const bytes4 offs=0x3f340000;
     using fc = func_constants<float>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p25f, xc);

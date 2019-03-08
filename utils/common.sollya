@@ -543,7 +543,7 @@ log_around_1_table = proc(l, fmt) {
     d = 2^(-l);
 
     i = 0;
-    c0 = round(sqrt(2)/2, l+1, RD);
+    c0 = round(sqrt(2)/2, l, RD);
     c1 = 2*c0;
     offs = c0;
     ci = c0 - d;

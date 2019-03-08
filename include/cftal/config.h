@@ -57,7 +57,7 @@
 #define __restrict
 #endif
 
-#define USE_TABLE_BASED_LOG 0
+#define USE_TABLE_BASED_LOG 1
 
 // Local variables:
 // mode: c++

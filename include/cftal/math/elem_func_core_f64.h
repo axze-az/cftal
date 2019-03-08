@@ -1992,7 +1992,7 @@ __reduce_log_arg(vf_type& xr,
                  vi2_type* pk)
 {
     constexpr
-    const bytes8 offs=0x3fe6a00000000000;
+    const bytes8 offs=0x3fe6800000000000;
     constexpr
     const bytes4 offs32=offs.s32h();
     using fc = func_constants<double>;
