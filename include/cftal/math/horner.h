@@ -298,6 +298,8 @@ cftal::math::horner(_X x, const _C (&a)[_N])
     static_assert(_N > 0, "invalid call to horner(x, array)");
     _X r= _X(a[0]);
     const _C* pa=a;
+#pragma GCC unroll 256
+#pragma clang loop unroll(full)
     for (std::size_t i=1; i<_N; ++i) {
         r= horner(x, r, pa[i]);
     }
@@ -313,6 +315,8 @@ cftal::math::horner2(_X x, _X x2, const _C (&a)[_N])
     _X r0= _X(pa[0]);
     _X r1= _X(pa[1]);
     const std::size_t _NE= _N & ~(std::size_t(1));
+#pragma GCC unroll 256
+#pragma clang loop unroll(full)
     for (std::size_t i=2; i<_NE; i+=2) {
         r0= horner(x2, r0, pa[i]);
         r1= horner(x2, r1, pa[i+1]);
@@ -325,6 +329,7 @@ cftal::math::horner2(_X x, _X x2, const _C (&a)[_N])
 }
 
 template <typename _X, typename _C, std::size_t _N>
+__attribute__((optimize("unroll-loops")))
 _X
 cftal::math::horner3(_X x, _X x3, const _C (&a)[_N])
 {
@@ -334,6 +339,8 @@ cftal::math::horner3(_X x, _X x3, const _C (&a)[_N])
     _X r1= _X(pa[1]);
     _X r2= _X(pa[2]);
     const std::size_t _NE= (_N / 3) * 3;
+#pragma GCC unroll 256
+#pragma clang loop unroll(full)
     for (std::size_t i=3; i<_NE; i+=3) {
         r0= horner(x3, r0, pa[i]);
         r1= horner(x3, r1, pa[i+1]);
@@ -365,6 +372,8 @@ cftal::math::horner4(_X x, _X x2, _X x4, const _C (&a)[_N])
     _X r2= _X(pa[2]);
     _X r3= _X(pa[3]);
     const std::size_t _NE= _N & ~std::size_t(3);
+#pragma GCC unroll 256
+#pragma clang loop unroll(full)
     for (std::size_t i=4; i<_NE; i+=4) {
         r0= horner(x4, r0, pa[i]);
         r1= horner(x4, r1, pa[i+1]);
