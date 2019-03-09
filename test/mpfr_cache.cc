@@ -669,10 +669,12 @@ cftal::test::mpfr_cache::update(double a, f1_t f,
     if (i== std::cend(f1_64_entries))
         return;
     f1_64_cache_entry* pe=&i->second;
-    std::lock_guard<f1_64_cache_entry> _lck(*pe);
-    int64_t ai= as<int64_t>(a);
-    int64_t ri= as<int64_t>(r._res);
-    pe->_m64.insert(std::make_pair(ai, std::make_pair(ri, r._mpfr_res)));
+    {
+        std::lock_guard<f1_64_cache_entry> _lck(*pe);
+        int64_t ai= as<int64_t>(a);
+        int64_t ri= as<int64_t>(r._res);
+        pe->_m64.insert(std::make_pair(ai, std::make_pair(ri, r._mpfr_res)));
+    }
 }
 
 void
@@ -683,10 +685,12 @@ cftal::test::mpfr_cache::update(float a, f1_t f,
     if (i== std::cend(f1_32_entries))
         return;
     f1_32_cache_entry* pe=&i->second;
-    std::lock_guard<f1_32_cache_entry> _lck(*pe);
-    int32_t ai= as<int32_t>(a);
-    int32_t ri= as<int32_t>(r._res);
-    pe->_m32.insert(std::make_pair(ai, std::make_pair(ri, r._mpfr_res)));
+    {
+        std::lock_guard<f1_32_cache_entry> _lck(*pe);
+        int32_t ai= as<int32_t>(a);
+        int32_t ri= as<int32_t>(r._res);
+        pe->_m32.insert(std::make_pair(ai, std::make_pair(ri, r._mpfr_res)));
+    }
 }
 
 void
