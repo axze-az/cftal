@@ -502,7 +502,6 @@ cftal::test::default_arguments<_T>::values={
     _T(M_SQRT2/2), _T(2/M_SQRT2),
     // log functions
     _T(std::log(3)/2),
-    _T(1.511064858685633098e-300),
     // tan
     _T(6.0/7.0*M_PI_4),
     // atan

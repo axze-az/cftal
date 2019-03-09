@@ -2125,11 +2125,19 @@ __log_tbl_k(arg_t<vf_type> xc)
     vf_type r2=r*r;
     vf_type p= horner4(r, r2, vf_type(r2*r2), ci);
     if (_LFUNC==log_func::c_log_e) {
+#if 1
+        vf_type t= log_c_l + kf * ctbl::m_ln2_cw[1];
+        lh = p*r2 + t;
+        lh += r;
+        lh += log_c_h;
+        lh += kf * ctbl::m_ln2_cw[0];
+#else
         lh= p*r2 + r;
         lh += log_c_l;
         lh += kf * ctbl::m_ln2_cw[1];
         lh += log_c_h;
         lh += kf * ctbl::m_ln2_cw[0];
+#endif
     } else if (_LFUNC==log_func::c_log_2) {
         // x^ : +0xb.8aa3b2p-3
         constexpr
