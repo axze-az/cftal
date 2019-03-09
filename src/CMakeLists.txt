@@ -11,8 +11,6 @@ set (CSRCS
     d_real.cc
     exp_data_f32.cc
     exp_data_f64.cc
-    log_data_f32.cc
-    log_data_f64.cc
     math_func_f64.cc
     math_func_f32.cc
     math_common.cc
