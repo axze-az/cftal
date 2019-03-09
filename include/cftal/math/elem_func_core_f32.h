@@ -2078,19 +2078,11 @@ log1p_k(arg_t<vf_type> xc)
  *
  *       See HP-15C Advanced Functions Handbook, p.193.
  */
-    // MSQRT2/2
-    constexpr
-    const bytes4 offs=0x3f3504f3;
-
     vf_type x=xc;
     vf_type u= 1+xc;
-    vi_type hu=_T::as_int(u);
-    hu += (0x3f800000 - offs.s32());
-    vi_type k=(hu >> 23) - _T::bias();
-    vf_type kf= _T::cvt_i_to_f(k);
-    /* reduce u into [sqrt(2)/2, sqrt(2)] */
-    hu = (hu&0x007fffff) + offs.s32();
-    vf_type nu = _T::as_float(hu);
+
+    vf_type nu, kf;
+    __reduce_log_arg(nu, kf, u);
     vf_type f= nu -1.0f;
 
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
@@ -2123,11 +2115,7 @@ log_k(arg_t<vf_type> xc)
 {
     // return __pow_log_k<log_func::c_log_e,
     //                    result_prec::normal>(xc)[0];
-#if USE_TABLE_BASED_LOG>0
-    return __log_tbl_k<log_func::c_log_e>(xc);
-#else
     return __log_k<log_func::c_log_e>(xc);
-#endif
 }
 
 template <typename _T>
@@ -2144,11 +2132,7 @@ log2_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
-#if USE_TABLE_BASED_LOG>0
-    return __log_tbl_k<log_func::c_log_2>(xc);
-#else
     return __log_k<log_func::c_log_2>(xc);
-#endif
 }
 
 template <typename _T>
@@ -2165,11 +2149,7 @@ log10_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
  */
-#if USE_TABLE_BASED_LOG>0
-    return __log_tbl_k<log_func::c_log_10>(xc);
-#else
     return __log_k<log_func::c_log_10>(xc);
-#endif
 }
 
 template <typename _T>
@@ -2429,13 +2409,8 @@ cftal::math::elem_func_core<float, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
-#if USE_TABLE_BASED_LOG>0
-    dvf_type ldx= __pow_log_tbl_k<log_func::c_log_e,
-                                  result_prec::normal>(abs_x);
-#else
     dvf_type ldx= __pow_log_k<log_func::c_log_e,
                               result_prec::normal>(abs_x);
-#endif
     dvf_type yldx;
     // yldx = y*ldx;
     d_ops::mul122(yldx[0], yldx[1], y, ldx[0], ldx[1]);
@@ -2461,13 +2436,8 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
     dvf_type abs_x= select(xh > 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
-#if USE_TABLE_BASED_LOG>0
-    dvf_type ldx=__pow_log_tbl_k2<log_func::c_log_e,
-                                  result_prec::normal>(abs_x[0], abs_x[1]);
-#else
     dvf_type ldx=__pow_log_k2<log_func::c_log_e,
                               result_prec::normal>(abs_x[0], abs_x[1]);
-#endif
     // yldx = y*ldx;
     dvf_type yldx;
     d_ops::mul22(yldx[0], yldx[1], yh, yl, ldx[0], ldx[1]);
