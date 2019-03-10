@@ -64,6 +64,7 @@
 #include <cftal/x86/v8f32.h>
 #include <cftal/x86/v4f64.h>
 #endif
+// floating point vector specialization implementations
 #if defined (__SSE2__)
 #include <cftal/x86/v4f32_inl.h>
 #endif
@@ -73,13 +74,10 @@
 #if defined (__AVX512F__)
 #include <cftal/x86/v8f64.h>
 #endif
-// floating point vector specialization implementations
 #if defined (__SSE2__)
-#include <cftal/x86/v4f32_inl.h>
 #include <cftal/x86/v2f64_inl.h>
 #endif
 #if defined (__AVX__)
-#include <cftal/x86/v8f32_inl.h>
 #include <cftal/x86/v4f64_inl.h>
 #endif
 #if defined (__AVX512F__)
