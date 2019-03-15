@@ -12,7 +12,6 @@
 #include <cftal/vec_t_n.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
-#include <cftal/x86/v2f32.h>
 #include <cftal/x86/v2f64.h>
 #include <cftal/x86/v4f64.h>
 #include <cftal/x86/v4s32.h>
@@ -112,14 +111,10 @@ namespace cftal {
     v4f32 min(const v4f32& a, const v4f32& b);
     v4f32 abs(const v4f32& a);
     v4f32 fabs(const v4f32& a);
-#if V2F32_SPECIALIZED == 0
     v2f32 sqrt(const v2f32& a);
-#endif
     v4f32 sqrt(const v4f32& a);
 
-#if V2F32_SPECIALIZED == 0
     v2f32 native_rsqrt(const v2f32& a);
-#endif
     v4f32 native_rsqrt(const v4f32& a);
 
     namespace x86 {
@@ -173,19 +168,13 @@ namespace cftal {
     permute(const vec<float, 4>& s0,
             const vec<float, 4>& s1);
 
-#if V2F32_SPECIALIZED == 0
     vec<float, 2>
     native_recip(const vec<float, 2>& b);
-#endif
-
     vec<float, 4>
     native_recip(const vec<float, 4>& b);
 
-#if V2F32_SPECIALIZED == 0
     vec<float, 2>
     native_div(const vec<float, 2>& a, const vec<float, 2>& b);
-#endif
-
     vec<float, 4>
     native_div(const vec<float, 4>& a, const vec<float, 4>& b);
 

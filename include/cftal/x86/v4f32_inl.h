@@ -410,14 +410,12 @@ cftal::v4f32 cftal::permute(const v4f32& a, const v4f32& b)
     return x86::perm_v4f32<_P0, _P1, _P2, _P3>(a(), b());
 }
 
-#if V2F32_SPECIALIZED == 0
 inline
 cftal::v2f32 cftal::sqrt(const v2f32& a)
 {
     v4f32 s=sqrt(v4f32(a, a));
     return low_half(s);
 }
-#endif
 
 inline
 cftal::v4f32 cftal::sqrt(const v4f32& a)
@@ -593,7 +591,6 @@ bool cftal::elements_equal(const v4f32& a)
     return all_of(rv);
 }
 
-#if V2F32_SPECIALIZED == 0
 inline
 cftal::v2f32
 cftal::native_rsqrt(const v2f32& xx)
@@ -602,7 +599,6 @@ cftal::native_rsqrt(const v2f32& xx)
     v4f32 y= native_rsqrt(x);
     return low_half(y);
 }
-#endif
 
 inline
 cftal::v4f32
@@ -700,7 +696,6 @@ cftal::v4f32 cftal::trunc(const v4f32& a)
     return x86::round(a, rounding_mode::towardzero);
 }
 
-#if V2F32_SPECIALIZED == 0
 inline
 cftal::v2f32
 cftal::native_recip(const v2f32& y)
@@ -708,7 +703,6 @@ cftal::native_recip(const v2f32& y)
     v4f32 y4(y, y);
     return low_half(native_recip(y4));
 }
-#endif
 
 inline
 cftal::v4f32
@@ -719,7 +713,6 @@ cftal::native_recip(const v4f32& a)
     return rcp;
 }
 
-#if V2F32_SPECIALIZED == 0
 inline
 cftal::v2f32
 cftal::native_div(const v2f32& b, const v2f32& a)
@@ -728,7 +721,6 @@ cftal::native_div(const v2f32& b, const v2f32& a)
     v4f32 a4(a, a);
     return low_half(native_div(b4, a4));
 }
-#endif
 
 inline
 cftal::v4f32
