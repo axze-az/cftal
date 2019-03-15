@@ -431,6 +431,8 @@ erfc_k(arg_t<vf_type> xc)
 {
     // erfc(-x) = 2 - erfc(x)
 
+#define USE_HORNER4 1
+
     vf_type x= abs(xc);
     vmf_type x_le_0_75 = x <= 0.75;
     vmf_type x_gt_0_75 = x > 0.75;
@@ -488,7 +490,25 @@ erfc_k(arg_t<vf_type> xc)
         const double erfc_i0_c21=-1.3637274483397783432589e-08;
         // x^23 : +0xc.6f15790af88ap-34
         const double erfc_i0_c23=+7.2374948063438535431235e-10;
-
+#if USE_HORNER4
+        static const double ci0[]={
+            erfc_i0_c23,
+            erfc_i0_c21,
+            erfc_i0_c19,
+            erfc_i0_c17,
+            erfc_i0_c15,
+            erfc_i0_c13,
+            erfc_i0_c11,
+            erfc_i0_c9,
+            erfc_i0_c7,
+            erfc_i0_c5
+            // erfc_i0_c3
+        };
+        vf_type x4h=x2h*x2h;
+        vf_type x8h=x4h*x4h;
+        i0h = horner4(x2h, x4h, x8h, ci0);
+        i0h = horner(x2h, i0h, erfc_i0_c3);
+#else
         static const double ci0[]={
             erfc_i0_c23,
             erfc_i0_c21,
@@ -502,7 +522,9 @@ erfc_k(arg_t<vf_type> xc)
             erfc_i0_c5,
             erfc_i0_c3
         };
-        i0h = horner2(x2h, vf_type(x2h*x2h), ci0);
+        vf_type x4h=x2h*x2h;
+        i0h = horner2(x2h, x4h, ci0);
+#endif
         horner_comp_quick(i0h, i0l, x2h, i0h, erfc_i0_c1);
         d_ops::mul122(i0h, i0l, x, i0h, i0l);
         d_ops::add122(i0h, i0l, erfc_i0_c0, i0h, i0l);
@@ -568,7 +590,22 @@ erfc_k(arg_t<vf_type> xc)
             const double erfc_i1_x0=+1.2189350128173828125000e+00;
             vf_type x_i1 = x - erfc_i1_x0;
             vf_type i1h, i1l;
-
+#if USE_HORNER4
+            vf_type x_i1_sqr= x_i1* x_i1;
+            static const double c[]={
+                erfc_i1_c21, erfc_i1_c20, erfc_i1_c19, erfc_i1_c18,
+                erfc_i1_c17, erfc_i1_c16, erfc_i1_c15, erfc_i1_c14,
+                erfc_i1_c13, erfc_i1_c12, erfc_i1_c11, erfc_i1_c10,
+                erfc_i1_c9,  erfc_i1_c8,
+                erfc_i1_c7
+            };
+            vf_type x_i1_q = x_i1_sqr* x_i1_sqr;
+            i1h=horner4(x_i1, x_i1_sqr, x_i1_q, c);
+            i1h = horner(x_i1, i1h,
+                         erfc_i1_c6, erfc_i1_c5, erfc_i1_c4,
+                         erfc_i1_c3, erfc_i1_c2, erfc_i1_c1);
+            i1h *= x_i1;
+#else
             vf_type x_i1_sqr= x_i1* x_i1;
             static const double c[]={
                 erfc_i1_c21, erfc_i1_c20, erfc_i1_c19, erfc_i1_c18,
@@ -582,6 +619,7 @@ erfc_k(arg_t<vf_type> xc)
                          erfc_i1_c5, erfc_i1_c4,
                          erfc_i1_c3, erfc_i1_c2, erfc_i1_c1);
             i1h *= x_i1;
+#endif
             d_ops::add122cond(i1h, i1l, i1h, erfc_i1_c0h, erfc_i1_c0l);
             i123h= i1h;
             i123l= i1l;
@@ -642,6 +680,18 @@ erfc_k(arg_t<vf_type> xc)
             vf_type x_i2 = x - erfc_i2_x0;
             vf_type i2h, i2l;
             vf_type x_i2_sqr= x_i2* x_i2;
+#if USE_HORNER4
+            vf_type x_i2_q = x_i2_sqr * x_i2_sqr;
+            static const double c[]={
+                erfc_i2_c21, erfc_i2_c20, erfc_i2_c19, erfc_i2_c18,
+                erfc_i2_c17, erfc_i2_c16, erfc_i2_c15, erfc_i2_c14,
+                erfc_i2_c13, erfc_i2_c12, erfc_i2_c11, erfc_i2_c10,
+                erfc_i2_c9, erfc_i2_c8, erfc_i2_c7, erfc_i2_c6,
+                erfc_i2_c5, erfc_i2_c4, erfc_i2_c3, erfc_i2_c2
+            };
+            i2h = horner4(x_i2, x_i2_sqr, x_i2_q, c);
+            i2h = horner(x_i2, i2h, erfc_i2_c1);
+#else
             static const double c[]={
                 erfc_i2_c21, erfc_i2_c20, erfc_i2_c19, erfc_i2_c18,
                 erfc_i2_c17, erfc_i2_c16, erfc_i2_c15, erfc_i2_c14,
@@ -651,6 +701,7 @@ erfc_k(arg_t<vf_type> xc)
                 erfc_i2_c1
             };
             i2h = horner2(x_i2, x_i2_sqr, c);
+#endif
             i2h *= x_i2;
             d_ops::add122cond(i2h, i2l, i2h, erfc_i2_c0h, erfc_i2_c0l);
             i123h = _T::sel(x_gt_2_75, i2h, i123h);
@@ -690,16 +741,27 @@ erfc_k(arg_t<vf_type> xc)
             // x^13 : +0xf.5604386f36c5p+1
             const double erfc_i3_c13=+3.0672003797820742931890e+01;
             vf_type inv_x2= inv_x*inv_x;
-
+            vf_type i3h, i3l;
+#if USE_HORNER4
             static const double c[]={
                 erfc_i3_c13, erfc_i3_c12, erfc_i3_c11, erfc_i3_c10,
                 erfc_i3_c9, erfc_i3_c8, erfc_i3_c7, erfc_i3_c6,
                 erfc_i3_c5, erfc_i3_c4, erfc_i3_c3, erfc_i3_c2,
                 erfc_i3_c1
             };
-            vf_type i3h, i3l;
+            vf_type inv_x4= inv_x2*inv_x2;
+            i3h = horner4(inv_x, inv_x2, inv_x4, c);
+            i3h *= inv_x;
+#else
+            static const double c[]={
+                erfc_i3_c13, erfc_i3_c12, erfc_i3_c11, erfc_i3_c10,
+                erfc_i3_c9, erfc_i3_c8, erfc_i3_c7, erfc_i3_c6,
+                erfc_i3_c5, erfc_i3_c4, erfc_i3_c3, erfc_i3_c2,
+                erfc_i3_c1
+            };
             i3h = horner2(inv_x, inv_x2, c);
             i3h *= inv_x;
+#endif
             d_ops::add12cond(i3h, i3l, i3h, erfc_i3_c0);
             i123h = _T::sel(x_gt_6_00, i3h, i123h);
             i123l = _T::sel(x_gt_6_00, i3l, i123l);
@@ -726,6 +788,7 @@ erfc_k(arg_t<vf_type> xc)
         ih = _T::sel(x_lt_0_00, nih, ih);
     }
     return ih;
+#undef USE_HORNER4
 }
 
 template <typename _T>
