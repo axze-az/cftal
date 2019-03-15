@@ -57,6 +57,10 @@
 #define __restrict
 #endif
 
+#if (defined (__GNUC__) || defined (__clang__)) && defined (__x86_64__)
+#define X86_64_SPECIALIZE_V2F32 1
+#endif
+
 // Local variables:
 // mode: c++
 // end:

@@ -57,6 +57,7 @@
 
 // floating point vector specializations
 #if defined (__SSE2__)
+#include <cftal/x86/v2f32.h>
 #include <cftal/x86/v4f32.h>
 #include <cftal/x86/v2f64.h>
 #endif
@@ -66,6 +67,7 @@
 #endif
 // floating point vector specialization implementations
 #if defined (__SSE2__)
+#include <cftal/x86/v2f32_inl.h>
 #include <cftal/x86/v4f32_inl.h>
 #endif
 #if defined (__AVX__)

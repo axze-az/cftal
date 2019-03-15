@@ -4,13 +4,16 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#if !defined (__CFTAL_X86_V4F32_INL__)
-#define __CFTAL_X86_V4F32_INL__ 1
+#if !defined (__CFTAL_X86_V2F32_INL__)
+#define __CFTAL_X86_V2F32_INL__ 1
 
 #include <cftal/config.h>
+
+#if X86_64_SPECIALIZE_V2F32 > 0
+
 #include <cftal/types.h>
 #include <cftal/constants.h>
-#include <cftal/x86/v4f32.h>
+#include <cftal/x86/v2f32.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
@@ -22,8 +25,8 @@ namespace cftal {
     namespace op {
 
         template <>
-        struct bit_not<float, 4> {
-            using full_type = vec<float, 4>;
+        struct bit_not<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a) {
@@ -35,8 +38,8 @@ namespace cftal {
 
 
         template <>
-        struct lt<float, 4> {
-            using full_type = vec<float, 4>;
+        struct lt<float, 2> {
+            using full_type = vec<float, 2>;
             using mask_type = typename full_type::mask_type;
             static
             mask_type
@@ -50,8 +53,8 @@ namespace cftal {
         };
 
         template <>
-        struct le<float, 4> {
-            using full_type = vec<float, 4>;
+        struct le<float, 2> {
+            using full_type = vec<float, 2>;
             using mask_type = typename full_type::mask_type;
             static
             mask_type
@@ -65,8 +68,8 @@ namespace cftal {
         };
 
         template <>
-        struct eq<float, 4> {
-            using full_type = vec<float, 4>;
+        struct eq<float, 2> {
+            using full_type = vec<float, 2>;
             using mask_type = typename full_type::mask_type;
             static
             mask_type
@@ -80,8 +83,8 @@ namespace cftal {
         };
 
         template <>
-        struct ne<float, 4> {
-            using full_type = vec<float, 4>;
+        struct ne<float, 2> {
+            using full_type = vec<float, 2>;
             using mask_type = typename full_type::mask_type;
             static
             mask_type
@@ -95,8 +98,8 @@ namespace cftal {
         };
 
         template <>
-        struct ge<float, 4> {
-            using full_type = vec<float, 4>;
+        struct ge<float, 2> {
+            using full_type = vec<float, 2>;
             using mask_type = typename full_type::mask_type;
             static
             mask_type
@@ -111,8 +114,8 @@ namespace cftal {
         };
 
         template <>
-        struct gt<float, 4> {
-            using full_type = vec<float, 4>;
+        struct gt<float, 2> {
+            using full_type = vec<float, 2>;
             using mask_type = typename full_type::mask_type;
             static
             mask_type
@@ -126,8 +129,8 @@ namespace cftal {
         };
 
         template <>
-        struct plus<float, 4> {
-            using full_type = vec<float, 4>;
+        struct plus<float, 2> {
+            using full_type = vec<float, 2>;
             static
             const full_type&
             v(const full_type& a) {
@@ -136,8 +139,8 @@ namespace cftal {
         };
 
         template <>
-        struct neg<float, 4> {
-            using full_type = vec<float, 4>;
+        struct neg<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a) {
@@ -147,8 +150,8 @@ namespace cftal {
         };
 
         template <>
-        struct add<float, 4> {
-            using full_type = vec<float, 4>;
+        struct add<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a, const full_type& b) {
@@ -157,8 +160,8 @@ namespace cftal {
         };
 
         template <>
-        struct sub<float, 4> {
-            using full_type = vec<float, 4>;
+        struct sub<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a, const full_type& b) {
@@ -167,8 +170,8 @@ namespace cftal {
         };
 
         template <>
-        struct mul<float, 4> {
-            using full_type = vec<float, 4>;
+        struct mul<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a, const full_type& b) {
@@ -177,8 +180,8 @@ namespace cftal {
         };
 
         template <>
-        struct div<float, 4> {
-            using full_type = vec<float, 4>;
+        struct div<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a, const full_type& b) {
@@ -187,8 +190,8 @@ namespace cftal {
         };
 
         template <>
-        struct fma<float, 4> {
-            using full_type = vec<float, 4>;
+        struct fma<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a, const full_type& b,
@@ -204,8 +207,8 @@ namespace cftal {
         };
 
         template <>
-        struct fms<float, 4> {
-            using full_type = vec<float, 4>;
+        struct fms<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a, const full_type& b,
@@ -221,8 +224,8 @@ namespace cftal {
         };
 
         template <>
-        struct fnma<float, 4> {
-            using full_type = vec<float, 4>;
+        struct fnma<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a, const full_type& b,
@@ -238,8 +241,8 @@ namespace cftal {
         };
 
         template <>
-        struct bit_or<float, 4> {
-            using full_type = vec<float, 4>;
+        struct bit_or<float, 2> {
+            using full_type = vec<float, 2>;
             static
             full_type
             v(const full_type& a, const full_type& b) {
@@ -248,8 +251,8 @@ namespace cftal {
         };
 
         template <>
-        struct bit_and<float, 4> {
-            using full_type = vec<float, 4>;
+        struct bit_and<float, 2> {
+            using full_type = vec<float, 2>;
 
             static
             full_type
@@ -259,8 +262,8 @@ namespace cftal {
         };
 
         template <>
-        struct bit_xor<float, 4> {
-            using full_type = vec<float, 4>;
+        struct bit_xor<float, 2> {
+            using full_type = vec<float, 2>;
 
             static
             full_type
@@ -274,30 +277,42 @@ namespace cftal {
 }
 
 inline
-cftal::vec<float, 4>::vec(float v)
-    : base_type(_mm_set1_ps(v))
+cftal::vec<float, 2>::vec(__m128 v)
+    : _v(_rep::_castps_f64(v))
 {
 }
 
 inline
-cftal::vec<float, 4>::
+__m128
+cftal::vec<float, 2>::operator()() const
+{
+    return _rep::_castf64_ps(_v._d);
+}
+
+inline
+cftal::vec<float, 2>::vec(float v)
+    : _v(v, v)
+{
+}
+
+inline
+cftal::vec<float, 2>::
 vec(std::initializer_list<float> l)
-    : vec(mem<vec<float, 4> >::load(l.begin(), l.size()))
+    : vec(mem<vec<float, 2> >::load(l.begin(), l.size()))
 {
 }
 
 inline
-cftal::vec<float, 4>::
+cftal::vec<float, 2>::
 vec(init_list<float> l)
-    : vec(mem<vec<float, 4> >::load(l.begin(), l.size()))
+    : vec(mem<vec<float, 2> >::load(l.begin(), l.size()))
 {
 }
 
 inline
-cftal::vec<float, 4>::
-vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
-    : vec{low_half(lh)(), high_half(lh)(),
-          low_half(hh)(), high_half(hh)()}
+cftal::vec<float, 2>::
+vec(const vec<float, 1>& lh, const vec<float, 1>& hh)
+    : _v(lh(), hh())
 {
 }
 
@@ -305,27 +320,20 @@ template <template <class _U, std::size_t _M> class _OP,
           class _L, class _R>
 inline
 cftal::
-vec<float, 4>::vec(const expr<_OP<float, 4>, _L, _R>& r)
+vec<float, 2>::vec(const expr<_OP<float, 2>, _L, _R>& r)
     : vec(eval(r))
 {
 }
 
 inline
-cftal::vec<float, 4>
-cftal::mem<cftal::vec<float, 4> >::load(const float* p, std::size_t s)
+cftal::vec<float, 2>
+cftal::mem<cftal::vec<float, 2> >::load(const float* p, std::size_t s)
 {
     __m128 v;
     switch (s) {
     default:
-    case 4:
-        v = _mm_loadu_ps(p);
-        break;
-    case 3:
-        v = _mm_setr_ps(p[0], p[1], p[2], p[2]);
-        break;
     case 2:
-        v = _mm_setr_ps(p[0], p[1], p[1], p[1]);
-
+        v = _mm_setr_ps(p[0], p[1], p[0], p[1]);
         break;
     case 1:
         v = _mm_setr_ps(p[0], p[0], p[0], p[0]);
@@ -339,121 +347,115 @@ cftal::mem<cftal::vec<float, 4> >::load(const float* p, std::size_t s)
 
 inline
 void
-cftal::mem<cftal::vec<float, 4>>::store(float* p, const vec<float, 4>& v)
+cftal::mem<cftal::vec<float, 2>>::store(float* p, const vec<float, 2>& v)
 {
-    _mm_storeu_ps(p, v());
+    auto pd=reinterpret_cast<double*>(p);
+    _mm_storel_pd(pd, _mm_castps_pd(v()));
 }
 
 inline
-cftal::vec<float, 2>
-cftal::low_half(const vec<float, 4>& v)
+cftal::vec<float, 1>
+cftal::low_half(const vec<float, 2>& v)
 {
-    return vec<float, 2>{extract<0>(v), extract<1>(v)};
+    return vec<float, 1>{extract<0>(v)};
 }
 
 inline
-cftal::vec<float, 2>
-cftal::high_half(const vec<float, 4>& v)
+cftal::vec<float, 1>
+cftal::high_half(const vec<float, 2>& v)
 {
-    return vec<float, 2>{extract<2>(v), extract<3>(v)};
+    return vec<float, 1>{extract<1>(v)};
 }
 
 template <std::size_t _I>
 float
-cftal::extract(const vec<float, 4>& v)
+cftal::extract(const vec<float, 2>& v)
 {
     return x86::extract_f32<_I>(v());
 }
 
 inline
-cftal::v4f32 cftal::select(const v4f32::mask_type& m,
-                           const v4f32& on_true,
-                           const v4f32& on_false)
+cftal::v2f32 cftal::select(const v2f32::mask_type& m,
+                           const v2f32& on_true,
+                           const v2f32& on_false)
 {
     return x86::select_f32(m(), on_true(), on_false());
 }
 
 inline
-cftal::v4f32
-cftal::select_val_or_zero(const v4f32::mask_type& m,
-                          const v4f32& on_true)
+cftal::v2f32
+cftal::select_val_or_zero(const v2f32::mask_type& m,
+                          const v2f32& on_true)
 {
     return _mm_and_ps(m(), on_true());
 }
 
 inline
-cftal::v4f32
-cftal::select_zero_or_val(const v4f32::mask_type& m,
-                          const v4f32& on_false)
+cftal::v2f32
+cftal::select_zero_or_val(const v2f32::mask_type& m,
+                          const v2f32& on_false)
 {
     return _mm_andnot_ps(m(), on_false());
 }
 
-template <bool _P0, bool _P1, bool _P2, bool _P3>
+template <bool _P0, bool _P1>
 inline
-cftal::v4f32 cftal::select(const v4f32& a, const v4f32& b)
+cftal::v2f32 cftal::select(const v2f32& a, const v2f32& b)
 {
-    return x86::select_f32<_P0, _P1, _P2, _P3> (a(), b());
+    return x86::select_f32<_P0, _P1, true, true> (a(), b());
 }
 
-template <int _P0, int _P1, int _P2, int _P3>
+template <int _P0, int _P1>
 inline
-cftal::v4f32 cftal::permute(const v4f32& a)
+cftal::v2f32 cftal::permute(const v2f32& a)
 {
-    return x86::perm_v4f32<_P0, _P1, _P2, _P3>(a());
+    return x86::perm_v4f32<_P0, _P1, 2, 3>(a());
 }
 
-template <int _P0, int _P1, int _P2, int _P3>
+template <int _P0, int _P1>
 inline
-cftal::v4f32 cftal::permute(const v4f32& a, const v4f32& b)
+cftal::v2f32 cftal::permute(const v2f32& a, const v2f32& b)
 {
-    return x86::perm_v4f32<_P0, _P1, _P2, _P3>(a(), b());
+    __m128 t=x86::impl::vshufps<0, 1, 0, 1>::v(a(), b());
+    return x86::perm_v4f32<_P0, _P1, _P0, _P1>(t);
+    // return x86::perm_v4f32<_P0, _P1, _P0, _P1>(a(), b());
 }
 
-#if V2F32_SPECIALIZED == 0
 inline
 cftal::v2f32 cftal::sqrt(const v2f32& a)
-{
-    v4f32 s=sqrt(v4f32(a, a));
-    return low_half(s);
-}
-#endif
-
-inline
-cftal::v4f32 cftal::sqrt(const v4f32& a)
 {
     return _mm_sqrt_ps(a());
 }
 
 inline
-cftal::v4f32 cftal::abs(const v4f32& a)
+cftal::v2f32 cftal::abs(const v2f32& a)
 {
-    const v4f32 msk(not_sign_f32_msk::v.f32());
+    const v2f32 msk(not_sign_f32_msk::v.f32());
     return _mm_and_ps(a(), msk());
 }
 
 inline
-cftal::v4f32 cftal::min(const v4f32& a, const v4f32& b)
+cftal::v2f32 cftal::min(const v2f32& a, const v2f32& b)
 {
     return _mm_min_ps(a(), b());
 }
 
 inline
-cftal::v4f32 cftal::max(const v4f32& a, const v4f32& b)
+cftal::v2f32 cftal::max(const v2f32& a, const v2f32& b)
 {
     return _mm_max_ps(a(), b());
 }
 
 
 inline
-cftal::v4f32 cftal::andnot(const v4f32& a, const v4f32& b)
+cftal::v2f32 cftal::andnot(const v2f32& a, const v2f32& b)
 {
     return _mm_andnot_ps(a(), b());
 }
 
 inline
-cftal::v4f32
-cftal::fma(const v4f32& a, const v4f32& b, const v4f32& c)
+cftal::v2f32
+cftal::fma(const v2f32& a, const v2f32& b, const v2f32& c)
 {
 #if defined (__FMA4__)
     return _mm_macc_ps(a(), b(), c());
@@ -466,8 +468,8 @@ cftal::fma(const v4f32& a, const v4f32& b, const v4f32& c)
 }
 
 inline
-cftal::v4f32
-cftal::fms(const v4f32& a, const v4f32& b, const v4f32& c)
+cftal::v2f32
+cftal::fms(const v2f32& a, const v2f32& b, const v2f32& c)
 {
 #if defined (__FMA4__)
     return _mm_msub_ps(a(), b(), c());
@@ -480,8 +482,8 @@ cftal::fms(const v4f32& a, const v4f32& b, const v4f32& c)
 }
 
 inline
-cftal::v4f32
-cftal::nfma(const v4f32& a, const v4f32& b, const v4f32& c)
+cftal::v2f32
+cftal::nfma(const v2f32& a, const v2f32& b, const v2f32& c)
 {
 #if defined (__FMA4__)
     return _mm_nmacc_ps(a(), b(), c());
@@ -494,8 +496,8 @@ cftal::nfma(const v4f32& a, const v4f32& b, const v4f32& c)
 }
 
 inline
-cftal::v4f32
-cftal::nfms(const v4f32& a, const v4f32& b, const v4f32& c)
+cftal::v2f32
+cftal::nfms(const v2f32& a, const v2f32& b, const v2f32& c)
 {
 #if defined (__FMA4__)
     return _mm_nmsub_ps(a(), b(), c());
@@ -509,22 +511,22 @@ cftal::nfms(const v4f32& a, const v4f32& b, const v4f32& c)
 
 #if 0
 inline
-cftal::v4f32
-cftal::mad(const v4f32& a, const v4f32& b, const v4f32& c)
+cftal::v2f32
+cftal::mad(const v2f32& a, const v2f32& b, const v2f32& c)
 {
     return a * b + c;
 }
 
 inline
-cftal::v4f32
-cftal::nmad(const v4f32& a, const v4f32& b, const v4f32& c)
+cftal::v2f32
+cftal::nmad(const v2f32& a, const v2f32& b, const v2f32& c)
 {
     return c -(a * b);
 }
 
 inline
-cftal::vec<float, 4>::mask_type
-cftal::isnan(const v4f32& x)
+cftal::vec<float, 2>::mask_type
+cftal::isnan(const v2f32& x)
 {
     // exponent = 0x7FF and significand !=0
     // x != x  if x == NAN
@@ -532,92 +534,81 @@ cftal::isnan(const v4f32& x)
 }
 
 inline
-cftal::vec<float, 4>::mask_type
-cftal::isinf(const v4f32& x)
+cftal::vec<float, 2>::mask_type
+cftal::isinf(const v2f32& x)
 {
-    v4f32 absx(abs(x));
-    return absx == v4f32(exp_32_msk::v._f32);
+    v2f32 absx(abs(x));
+    return absx == v2f32(exp_32_msk::v._f32);
 }
 #endif
 
 inline
-cftal::v4f32 cftal::copysign(const v4f32& x, const v4f32& y)
+cftal::v2f32 cftal::copysign(const v2f32& x, const v2f32& y)
 {
     // return abs(x) * sgn(y)
-    const v4f32 msk(not_sign_f32_msk::v.f32());
-    v4f32 abs_x(x & msk);
-    v4f32 sgn_y(andnot(msk, y));
+    const v2f32 msk(not_sign_f32_msk::v.f32());
+    v2f32 abs_x(x & msk);
+    v2f32 sgn_y(andnot(msk, y));
     return abs_x | sgn_y;
 }
 
 inline
-cftal::v4f32 cftal::mulsign(const v4f32& x, const v4f32& y)
+cftal::v2f32 cftal::mulsign(const v2f32& x, const v2f32& y)
 {
-    const v4f32 msk(sign_f32_msk::v.f32());
-    v4f32 sgn_y = y & msk;
+    const v2f32 msk(sign_f32_msk::v.f32());
+    v2f32 sgn_y = y & msk;
     return x ^ sgn_y;
 }
 
 #if !defined (__AVX512VL__)
 inline
-bool cftal::all_of(const v4f32::mask_type& a)
+bool cftal::all_of(const v2f32::mask_type& a)
 {
-    return x86::read_signs_f32(a()) == 0xf;
+    return (x86::read_signs_f32(a()) & 0x3) == 0x3;
 }
 
 inline
-bool cftal::any_of(const v4f32::mask_type& a)
+bool cftal::any_of(const v2f32::mask_type& a)
 {
-    return x86::read_signs_f32(a()) != 0;
+    return (x86::read_signs_f32(a()) & 0x3) != 0;
 }
 
 inline
-bool cftal::none_of(const v4f32::mask_type& a)
+bool cftal::none_of(const v2f32::mask_type& a)
 {
-    return x86::read_signs_f32(a()) == 0;
+    return (x86::read_signs_f32(a()) & 0x3) == 0;
 }
 #endif
 
 inline
-unsigned cftal::read_signs(const v4f32& a)
+unsigned cftal::read_signs(const v2f32& a)
 {
-    return x86::read_signs_f32(a());
+    return (x86::read_signs_f32(a()) & 0x3);
 }
 
 inline
-bool cftal::elements_equal(const v4f32& a)
+bool cftal::elements_equal(const v2f32& a)
 {
     float t0= extract<0>(a);
-    v4f32 cmp0(t0);
-    v4f32::mask_type rv(cmp0 == a);
+    v2f32 cmp0(t0);
+    v2f32::mask_type rv(cmp0 == a);
     return all_of(rv);
 }
 
-#if V2F32_SPECIALIZED == 0
 inline
 cftal::v2f32
-cftal::native_rsqrt(const v2f32& xx)
+cftal::native_rsqrt(const v2f32& x)
 {
-    v4f32 x(xx, xx);
-    v4f32 y= native_rsqrt(x);
-    return low_half(y);
-}
-#endif
-
-inline
-cftal::v4f32
-cftal::native_rsqrt(const v4f32& x)
-{
-    v4f32 y= _mm_rsqrt_ps(x());
+    v2f32 y= _mm_rsqrt_ps(x());
     y = y + (0.5f*y) * (1.0f- y*(x * y));
     // y= 0.5f*y *(3.0f - y*(y*x));
     return y;
 }
 
 inline
-cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
+cftal::v2f32 cftal::x86::round(const v2f32& a, const rounding_mode::type m)
 {
-    v4f32 r;
+    v2f32 r;
 #if defined (__SSE4_1__)
     switch (m) {
     case rounding_mode::nearest:
@@ -661,7 +652,7 @@ cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
         if (unlikely(mxcsr != rmxcsr))
             _mm_setcsr(rmxcsr);
     }
-    const v4f32 sgn_msk(sign_f32_msk::v.f32());
+    const v2f32 sgn_msk(sign_f32_msk::v.f32());
     // (127+23)<< 23 = 0x4B000000 = 2^23
     const __m128 magic= const_v4u32<0x4B000000, 0x4B000000,
                                     0x4B000000, 0x4B000000>::fv();
@@ -671,161 +662,53 @@ cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
     r = _mm_sub_ps(r(), sign_magic);
     if (mxcsr != rmxcsr)
         _mm_setcsr(mxcsr);
-    r = select(abs(a) > v4f32(magic), a, r);
+    r = select(abs(a) > v2f32(magic), a, r);
 #endif
     return r;
 }
 
 inline
-cftal::v4f32 cftal::rint(const v4f32& a)
+cftal::v2f32 cftal::rint(const v2f32& a)
 {
     return x86::round(a, rounding_mode::current);
 }
 
 inline
-cftal::v4f32 cftal::floor(const v4f32& a)
+cftal::v2f32 cftal::floor(const v2f32& a)
 {
     return x86::round(a, rounding_mode::downward);
 }
 
 inline
-cftal::v4f32 cftal::ceil(const v4f32& a)
+cftal::v2f32 cftal::ceil(const v2f32& a)
 {
     return x86::round(a, rounding_mode::upward);
 }
 
 inline
-cftal::v4f32 cftal::trunc(const v4f32& a)
+cftal::v2f32 cftal::trunc(const v2f32& a)
 {
     return x86::round(a, rounding_mode::towardzero);
 }
 
-#if V2F32_SPECIALIZED == 0
 inline
 cftal::v2f32
-cftal::native_recip(const v2f32& y)
+cftal::native_recip(const v2f32& a)
 {
-    v4f32 y4(y, y);
-    return low_half(native_recip(y4));
-}
-#endif
-
-inline
-cftal::v4f32
-cftal::native_recip(const v4f32& a)
-{
-    v4f32 rcp=_mm_rcp_ps(a());
+    v2f32 rcp=_mm_rcp_ps(a());
     rcp = rcp + rcp*(1-rcp*a);
     return rcp;
 }
 
-#if V2F32_SPECIALIZED == 0
 inline
 cftal::v2f32
 cftal::native_div(const v2f32& b, const v2f32& a)
 {
-    v4f32 b4(b, b);
-    v4f32 a4(a, a);
-    return low_half(native_div(b4, a4));
-}
-#endif
-
-inline
-cftal::v4f32
-cftal::native_div(const v4f32& b, const v4f32& a)
-{
     return native_recip(a) * b;
 }
-
-#if defined (__AVX2__)
-inline
-cftal::variable_lookup_table<float, int32_t, 4>::
-variable_lookup_table(const vec<int32_t, 4>& idx)
-    : _msk(idx)
-{
-}
-
-inline
-cftal::vec<float, 4>
-cftal::variable_lookup_table<float, int32_t, 4>::
-from(const float* tbl) const
-{
-    return _mm_i32gather_ps(tbl, _msk(), sizeof(float));
-}
-
 #endif
-
-#if defined (__SSSE3__)
-inline
-cftal::v4s32
-cftal::impl::fixed_lookup_table<4, float, int32_t, 4>::
-setup_msk(const vec<int32_t, 4>& idx)
-{
-#if defined (__AVX__)
-    return idx;
-#else
-    vec<int32_t, 4> idx4 = idx<<2;
-    const __m128i u8u32 =
-        _mm_setr_epi8( 0, 0, 0, 0,  4,  4,  4,  4,
-                       8, 8, 8, 8, 12, 12, 12, 12);
-    __m128i m=_mm_shuffle_epi8(idx4(), u8u32);
-    const __m128i offs=
-        _mm_setr_epi8( 0, 1, 2, 3, 0, 1, 2, 3,
-                       0, 1, 2, 3, 0, 1, 2, 3);
-    m = _mm_add_epi8(m, offs);
-    return m;
-#endif
-}
-
-inline
-cftal::impl::fixed_lookup_table<4, float, int32_t, 4>::
-fixed_lookup_table(const vec<int32_t, 4>& idx)
-    : _msk(setup_msk(idx))
-{
-}
-
-inline
-cftal::v4f32
-cftal::impl::fixed_lookup_table<4, float, int32_t, 4>::
-fromp(const float* tbl) const
-{
-#if defined (__AVX__)
-    vec<float, 4> r=mem<vec<float, 4> >::load(tbl, 4);
-    r=_mm_permutevar_ps(r(), _msk());
-    return r;
-#else
-    vec<float, 4> r=mem<vec<float, 4> >::load(tbl, 4);
-    __m128i ir = _mm_shuffle_epi8(_mm_castps_si128(r()), _msk());
-    r = _mm_castsi128_ps(ir);
-    return r;
-#endif
-}
-
-#endif
-
-#if defined (__AVX2__)
-inline
-cftal::impl::fixed_lookup_table<8, float, int32_t, 4>::
-fixed_lookup_table(const vec<int32_t, 4>& idx)
-    : _msk(idx)
-{
-}
-
-inline
-cftal::vec<float, 4>
-cftal::impl::fixed_lookup_table<8, float, int32_t, 4>::
-fromp(const float* tbl) const
-{
-    vec<float, 8> r=mem<vec<float, 8> >::load(tbl, 8);
-    __m256i m=_mm256_castsi128_si256(_msk());
-    r=_mm256_permutevar8x32_ps(r(), m);
-    return low_half(r);
-}
-
-#endif
-
 
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_X86_V4F32__
+#endif // __CFTAL_X86_V2f32_INL__
