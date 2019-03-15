@@ -431,7 +431,7 @@ erfc_k(arg_t<vf_type> xc)
 {
     // erfc(-x) = 2 - erfc(x)
 
-#define USE_HORNER4 1
+#define USE_HORNER4 0
 
     vf_type x= abs(xc);
     vmf_type x_le_0_75 = x <= 0.75;
