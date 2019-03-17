@@ -32,7 +32,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::cbrt(std::sqrt(std::sqrt(a)));
+                // return std::cbrt(std::sqrt(std::sqrt(a)));
+                return std::sqrt(std::sqrt(std::cbrt(a)));
                 // return std::pow(a, 1.0/12.0);
             }
             static
