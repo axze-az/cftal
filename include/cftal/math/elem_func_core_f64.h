@@ -2241,13 +2241,9 @@ log2_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
-#if USE_TABLE_BASED_LOG>0
-    return __log_tbl_k<log_func::c_log_2>(xc);
-#else
     // return __pow_log_k<log_func::c_log_2,
     //                    result_prec::normal>(xc)[0];
     return __log_k<log_func::c_log_2>(xc);
-#endif
 }
 
 template <typename _T>
