@@ -399,8 +399,6 @@ cftal::math::horner4(_X x, _X x2, _X x4, const _C (&a)[_N])
     return r;
 }
 
-
-
 template <typename _F, typename _C, std::size_t _N>
 __attribute__((optimize("no-unroll-loops")))
 cftal::d_real<_F>
@@ -559,6 +557,7 @@ horner_n4(_X& y0, _X& y1, _X& y2, _X& y3,
     horner_n4(y0, y1, y2, y3, x0, x1, x2, x3,
               y0, y1, y2, y3, cs...);
 }
+
 
 template <typename _X, typename _C1, typename _C0>
 inline

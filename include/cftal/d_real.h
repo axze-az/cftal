@@ -1239,8 +1239,27 @@ mul12(_T& rh, _T& rl, const _T& a, const _T& b)
     using traits=d_real_traits<_T>;
     traits::split(a, a_h, a_l);
     traits::split(b, b_h, b_l);
+#if 1
+#if 1
+    rh = a*b;
+    _T ahbh = a_h * b_h;
+    _T ahbl = a_h * b_l;
+    _T albh = a_l * b_h;
+    _T albl = a_l * b_l;
+    rl = (((ahbh - rh) + ahbl) + albh) + albl;
+#else
+    _T qahbl= a_h * b_l;
+    _T qalbh= a_l * b_h;
+    _T p = a_h * b_h;
+    _T r = a_l * b_l;
+    _T q = qahbl + qalbh;
+    rh = p + q;
+    rl = ((p - rh) + q) + r;
+#endif
+#else
     rh=a*b;
     rl=(((a_h*b_h-rh)+a_h*b_l)+a_l*b_h)+a_l*b_l;
+#endif
 }
 
 template <typename _T>

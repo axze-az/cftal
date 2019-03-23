@@ -382,24 +382,6 @@ namespace cftal {
             vf_type
             log10_k(arg_t<vf_type> x);
 
-            // arguments are the reduced xrh, xrl in
-            // [-log(2)/2, log(2)/2],
-            // calculates %e^(xrh+xrl)
-            static
-            vf_type
-            __pow_exp_poly_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-                             vf_type* exl=nullptr);
-
-            // arguments are the reduced xrh, xrl in
-            // [-log(2)/2, log(2)/2], and the arguments
-            // kf and k as argument for scale_exp_k
-            // calculates %e^(xrh+xrl)*2^k
-            static
-            vf_type
-            __pow_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-                        arg_t<vf_type> kf,
-                        vf_type* exl=nullptr);
-
             // log worker with enhanced precision, inputs are
             // sh, sl = (xr-1)/(xr+1) and kf with x= xr*2^kf
             template <log_func _F, result_prec _P>
@@ -1283,16 +1265,10 @@ cftal::math::elem_func_core<float, _T>::
 exp_k2(vf_type& eh, vf_type& el,
        arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
-#if 1
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp_arg(xrh, xrl, idx, ki, xh, xl);
     eh=__exp_tbl_k(xrh, xrl, idx, ki, &el);
-#else
-    vf_type xrh, xrl, kf;
-    __reduce_exp_arg(xrh, xrl, kf, xh, xl);
-    eh= __pow_exp_k(xrh, xrl, kf, &el);
-#endif
 }
 
 
@@ -1310,16 +1286,10 @@ exp_mx2_k(arg_t<vf_type> xc)
         x2h = -x2h;
         x2l = -x2l;
     }
-#if 1
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
     vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
-#else
-    vf_type xrh, xrl, kf;
-    __reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
-    vf_type y= __exp_k<false>(xrh, xrl, kf);
-#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp_lo_zero(), y);
     return y;
@@ -1340,16 +1310,10 @@ exp_px2_k(arg_t<vf_type> xc)
     x2h = _T::sel(border_case, x2h - t, x2h);
     x2l = _T::sel(border_case, x2l + t, x2l);
 
-#if 1
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
     vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
-#else
-    vf_type xrh, xrl, kf;
-    __reduce_exp_arg(xrh, xrl, kf, x2h, x2l);
-    vf_type y= __exp_k<false>(xrh, xrl, kf);
-#endif
     y= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), y);
     return y;
 }
@@ -1409,7 +1373,6 @@ exp2_k(arg_t<vf_type> x)
 {
     vf_type y, kf, xrh, xrl;
     using ctbl = impl::d_real_constants<d_real<float>, float>;
-#if 1
     if (_EXP2_M1==false) {
         vi_type idx, ki;
         __reduce_exp2_arg(xrh, xrl, idx, ki, x);
@@ -1421,13 +1384,6 @@ exp2_k(arg_t<vf_type> x)
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
         y=__exp_k<_EXP2_M1>(xrh, xrl, kf);
     }
-#else
-    kf= rint(vf_type(x));
-    vf_type xr = x - kf;
-    // for exp2 mul12 would be sufficient
-    d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    y=__exp_k<_EXP2_M1>(xrh, xrl, kf);
-#endif
     return y;
 }
 
@@ -1445,19 +1401,11 @@ exp2_mx2_k(arg_t<vf_type> xc)
         x2h = -x2h;
         x2l = -x2l;
     }
-#if 1
+
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
     vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
-#else
-    vf_type kf = rint(vf_type(x2h));
-    vf_type xrh, xrl;
-    d_ops::add122cond(xrh, xrl, -kf, x2h, x2l);
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    vf_type y= __exp_k<false>(xrh, xrl, kf);
-#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
     return y;
@@ -1471,19 +1419,12 @@ exp2_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
-#if 1
+
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
     vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
-#else
-    vf_type kf = rint(vf_type(x2h));
-    vf_type xrh, xrl;
-    d_ops::add122cond(xrh, xrl, -kf, x2h, x2l);
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    vf_type y= __exp_k<false>(xrh, xrl, kf);
-#endif
+
     using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
     return y;
@@ -1556,7 +1497,6 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp10_k(arg_t<vf_type> x)
 {
-#if 1
     vf_type y, xrh, xrl;
     if (_EXP10_M1==false) {
         vi_type idx, ki;
@@ -1577,22 +1517,6 @@ exp10_k(arg_t<vf_type> x)
         y=__exp_k<_EXP10_M1>(xrh, xrl, kf);
     }
     return y;
-#else
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type kf = rint(vf_type(x * ctbl::m_1_lg2[0]));
-    vf_type hi = x - kf * ctbl::m_lg2_cw[0];
-    vf_type xr = hi - kf * ctbl::m_lg2_cw[1];
-    vf_type dx= (hi-xr);
-    vf_type cr = dx-kf * ctbl::m_lg2_cw[1];
-    vf_type xrh, xrl;
-    // for exp10 mul12 would be sufficient
-    d_ops::mul122(xrh, xrl, xr, ctbl::m_ln10[0], ctbl::m_ln10[1]);
-    xrl += cr * ctbl::m_ln10[0];
-    // do not normalize xrh, xrl
-    // d_ops::add12(xrh, xrl, xrh, xrl);
-    vf_type y=__exp_k<_EXP10_M1>(xrh, xrl, kf);
-    return y;
-#endif
 }
 
 template <typename _T>
@@ -1609,24 +1533,12 @@ exp10_mx2_k(arg_t<vf_type> xc)
         x2h = -x2h;
         x2l = -x2l;
     }
-#if 1
+
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
     vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
-#else
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2[0]));
-    vf_type neg_kfln10h, neg_kfln10l;
-    d_ops::mul122(neg_kfln10h, neg_kfln10l,
-                  kf, -ctbl::m_lg2[0], -ctbl::m_lg2[1]);
-    vf_type xrh, xrl;
-    d_ops::add22cond(xrh, xrl,
-                     x2h, x2l,
-                     neg_kfln10h, neg_kfln10l);
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
-    vf_type y= __exp_k<false>(xrh, xrl, kf);
-#endif
+
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp10_lo_zero(), y);
     return y;
@@ -1640,24 +1552,12 @@ exp10_px2_k(arg_t<vf_type> xc)
 {
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
-#if 1
+
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
     vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
-#else
-    using ctbl = impl::d_real_constants<d_real<float>, float>;
-    vf_type kf = rint(vf_type(x2h*ctbl::m_1_lg2[0]));
-    vf_type neg_kfln10h, neg_kfln10l;
-    d_ops::mul122(neg_kfln10h, neg_kfln10l,
-                  kf, -ctbl::m_lg2[0], -ctbl::m_lg2[1]);
-    vf_type xrh, xrl;
-    d_ops::add22cond(xrh, xrl,
-                     x2h, x2l,
-                     neg_kfln10h, neg_kfln10l);
-    d_ops::mul22(xrh, xrl, xrh, xrl, ctbl::m_ln10[0], ctbl::m_ln10[1]);
-    vf_type y= __exp_k<false>(xrh, xrl, kf);
-#endif
+
     using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
     return y;
@@ -2152,84 +2052,6 @@ log10_k(arg_t<vf_type> xc)
     return __log_k<log_func::c_log_10>(xc);
 }
 
-template <typename _T>
-__attribute__((always_inline))
-inline
-typename cftal::math::elem_func_core<float, _T>::vf_type
-cftal::math::elem_func_core<float, _T>::
-__pow_exp_poly_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-                 vf_type* exl)
-{
-
-    // coefficients for pow_exp generated by sollya
-    // x^0 : +0x8p-3f
-    constexpr
-    const float pow_exp_c0=+1.0000000000e+00f;
-    // x^1 : +0x8p-3f
-    constexpr
-    const float pow_exp_c1=+1.0000000000e+00f;
-    // x^2 : +0x8p-4f
-    constexpr
-    const float pow_exp_c2=+5.0000000000e-01f;
-    // x^3 : +0xa.aaaabp-6f
-    constexpr
-    const float pow_exp_c3=+1.6666667163e-01f;
-    // x^4 : +0xa.aaaacp-8f
-    constexpr
-    const float pow_exp_c4=+4.1666671634e-02f;
-    // x^5 : +0x8.887f6p-10f
-    constexpr
-    const float pow_exp_c5=+8.3331968635e-03f;
-    // x^6 : +0xb.6078p-13f
-    constexpr
-    const float pow_exp_c6=+1.3887733221e-03f;
-    // x^7 : +0xd.13c49p-16f
-    constexpr
-    const float pow_exp_c7=+1.9954251184e-04f;
-    // x^8 : +0xd.59c5dp-19f
-    constexpr
-    const float pow_exp_c8=+2.5464391001e-05f;
-    vf_type xx= xrh*xrh;
-
-    static const float ci[]={
-        pow_exp_c8, pow_exp_c7, pow_exp_c6,
-        pow_exp_c5, pow_exp_c4, pow_exp_c3
-    };
-    vf_type y=horner2(xrh, xx, ci);
-    vf_type ye;
-    horner_comp_quick(y, ye, xrh, y, pow_exp_c2, pow_exp_c1);
-    // correction for errors in argument reduction
-    vf_type yl=y+ye;
-    horner_comp_quick_si(y, ye, xrh, y, ye, pow_exp_c0);
-    vf_type yee= xrl + xrl*xrh*yl;
-    ye += yee;
-    if (exl==nullptr) {
-        y += ye;
-    } else {
-        d_ops::add12(y, ye, y, ye);
-        *exl= ye;
-    }
-    return y;
-}
-
-template <typename _T>
-inline
-__attribute__((__always_inline__))
-typename cftal::math::elem_func_core<float, _T>::vf_type
-cftal::math::elem_func_core<float, _T>::
-__pow_exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-            arg_t<vf_type> kf,
-            vf_type* exl)
-{
-    vf_type y=__pow_exp_poly_k(xrh, xrl, exl);
-    auto sc= __scale_exp_k(kf);
-    y = (y* sc.f0()) * sc.f1();
-    if (exl != nullptr) {
-        vf_type ye=*exl;
-        *exl = (ye * sc.f0())* sc.f1();
-    }
-    return y;
-}
 
 template <typename _T>
 template <typename cftal::math::elem_func_core<float, _T>::log_func _F,
@@ -2342,22 +2164,8 @@ typename cftal::math::elem_func_core<float, _T>::dvf_type
 cftal::math::elem_func_core<float, _T>::
 __pow_log_k(arg_t<vf_type> xc)
 {
-#if 1
     vf_type xr, kf;
     __reduce_log_arg(xr, kf, xc);
-#else
-    using fc = func_constants<float>;
-    vmf_type is_denom=xc <= fc::max_denormal();
-    vf_type x=_T::sel(is_denom, xc*0x1p25f, xc);
-    vi_type k=_T::sel_val_or_zero(_T::vmf_to_vmi(is_denom), vi_type(-25));
-    vi_type hx = _T::as_int(x);
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    hx += (0x3f800000 - 0x3f3504f3);
-    k += (hx>>23) - _T::bias();
-    hx = (hx&0x007fffff) + 0x3f3504f3;
-    vf_type xr = _T::as_float(hx);
-    vf_type kf = _T::cvt_i_to_f(k);
-#endif
     // brute force:
     vf_type ymh, yml;
     d_ops::add12(ymh, yml, vf_type(-1.0f), xr);
@@ -2376,23 +2184,11 @@ typename cftal::math::elem_func_core<float, _T>::dvf_type
 cftal::math::elem_func_core<float, _T>::
 __pow_log_k2(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
-#if 1
     vf_type xrh, kf;
     vi_type k;
     __reduce_log_arg(xrh, kf, xh, &k);
     auto sc=__scale_exp_k(-k);
     vf_type xrl=(xl * sc.f0()) * sc.f1();
-#else
-    vf_type xrh;
-    auto k=__frexp_k(xrh, xh);
-    vf_type xrl=ldexp_k(xl, -k);
-
-    vmf_type c= xrh < M_SQRT2*0.5f;
-    vf_type kf = _T::cvt_i_to_f(k);
-    xrh = _T::sel(c, xrh*2.0f, xrh);
-    xrl = _T::sel(c, xrl*2.0f, xrl);
-    kf = _T::sel(c, kf-1.0f, kf);
-#endif
     vf_type ymh, yml;
     d_ops::add122(ymh, yml, -1.0f, xrh, xrl);
     vf_type yph, ypl;
@@ -3020,7 +2816,6 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
 {
-#if 1
     // atan(1/x) = M_PI_2 -atan(x) if x>0
     // ax=abs(x)
     // ay=abs(y)
@@ -3087,25 +2882,6 @@ atan2_k(arg_t<vf_type> y, arg_t<vf_type> x)
                     -dat[0], -dat[1]);
         at = _T::sel(s, pi_minus_at_h, at);
     }
-#else
-    vf_type yx=y/x;
-    vf_type t=atan_k(abs(yx));
-    vf_type y_s = copysign(vf_type(1.0f), y);
-    vf_type x_s = copysign(vf_type(1.0f), x);
-
-    vmf_type y_lt_0 = y_s < 0.0f;
-    vmf_type x_lt_0 = x_s < 0.0f;
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-
-    // default y>=0, x>=0,
-    vf_type at= _T::sel(y_lt_0 & x_lt_0,
-                        (t - ctbl::m_pi[1]) - ctbl::m_pi[0],
-                        t);
-    at = _T::sel(y_lt_0 & (x_s>=0), -t, at);
-    at = _T::sel((y_s >=0) & x_lt_0,
-                 ctbl::m_pi[0] - (t - ctbl::m_pi[1]),
-                 at);
-#endif
     return at;
 }
 
@@ -3219,7 +2995,7 @@ cftal::math::elem_func_core<float, _T>::
 asinh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
-#if 1
+
     vf_type y=0;
     vmf_type sel;
 
@@ -3328,56 +3104,6 @@ asinh_k(arg_t<vf_type> xc)
     // vf_type ys= log1p_k(log1p_arg);
     y = copysign(y, xc);
     return y;
-#else
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-
-    vmf_type x_gt_0x1p12 = x > 0x1p12;
-    vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p12, ctbl::m_ln2[0]);
-    vf_type t= x*x;
-    vf_type log_arg=_T::sel(x_gt_0x1p12,
-                            x,
-                            2.0f * x+ 1.0f/(sqrt(vf_type(t+1.0f))+x));
-    vf_type yl= __log_k<log_func::c_log_e>(log_arg);
-    yl += add_2_log;
-    // |x| < 2.0
-    vf_type log1p_arg= x+t/(1.0f+sqrt(vf_type(1.0f+t)));
-    vf_type ys= log1p_k(log1p_arg);
-
-    // [3.4694469519536141888238489627838134765625e-18, 0.707106769084930419921875] : | p - f | <= 2^-31.4921875
-    // coefficients for asinh generated by sollya
-    // x^0 : +0x8p-3f
-    const float asinh_c0=+1.0000000000e+00f;
-    // x^2 : -0xa.aaaa7p-6f
-    const float asinh_c2=-1.6666661203e-01f;
-    // x^4 : +0x9.9981ap-7f
-    const float asinh_c4=+7.4997141957e-02f;
-    // x^6 : -0xb.6a588p-8f
-    const float asinh_c6=-4.4591456652e-02f;
-    // x^8 : +0xf.538eap-9f
-    const float asinh_c8=+2.9934365302e-02f;
-    // x^10 : -0xa.597cap-9f
-    const float asinh_c10=-2.0213980228e-02f;
-    // x^12 : +0xb.807cfp-10f
-    const float asinh_c12=+1.1232330464e-02f;
-    // x^14 : -0xe.1b09dp-12f
-    const float asinh_c14=-3.4437545110e-03f;
-
-    static const float ci[]={
-        asinh_c14,
-        asinh_c12,
-        asinh_c10,
-        asinh_c8,
-        asinh_c6,
-        asinh_c4,
-    };
-    vf_type yss= horner2(t, vf_type(t*t), ci);
-    yss = x*horner(t, yss, asinh_c2, asinh_c0);
-    ys = _T::sel(x<= M_SQRT2*0.5f, yss, ys);
-
-    vf_type ash=_T::sel(x <= 2.0f, ys, yl);
-    ash = copysign(ash, xc);
-    return ash;
-#endif
 }
 
 template <typename _T>
@@ -3387,7 +3113,7 @@ cftal::math::elem_func_core<float, _T>::
 acosh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
-#if 1
+
     vf_type y=0.0f;
     vmf_type sel;
     const float acosh_i1_left=+2.0000000000e+00f;
@@ -3482,59 +3208,6 @@ acosh_k(arg_t<vf_type> xc)
         y= _T::sel(sel, yl, y);
     }
     return y;
-#else
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-
-    vmf_type x_gt_0x1p12 = x > 0x1p12;
-    vf_type add_2_log=_T::sel_val_or_zero(x_gt_0x1p12, ctbl::m_ln2[0]);
-    // vf_type t= x*x;
-    vf_type log_arg=_T::sel(x_gt_0x1p12,
-                            x,
-                            2.0f*x - 1.0f/(x+sqrt(vf_type(x*x-1.0f))));
-    vf_type yl= __log_k<log_func::c_log_e>(log_arg);
-    yl += add_2_log;
-
-    vf_type xm1l;
-    vf_type xm1=d_ops::two_diff(x, vf_type(1), xm1l);
-    dvf_type sqrt2xm1=sqrt(mul_pwr2(dvf_type(xm1, xm1l), vf_type(2)));
-    // acosh(x) = sqrt(2*x) * [1-1/12*x+3/160*x^2-5/896*x^3+ ...]
-    // [3.4694469519536141888238489627838134765625e-18, 1] : | p - f | <= 2^-33.984375
-    // coefficients for acosh generated by sollya
-    // x^0 : +0x8p-3f
-    const float acosh_c0=+1.0000000000e+00f;
-    // x^1 : -0xa.aaaaap-7f
-    const float acosh_c1=-8.3333328366e-02f;
-    // x^2 : +0x9.9995p-9f
-    const float acosh_c2=+1.8749862909e-02f;
-    // x^3 : -0xb.6cfaap-11f
-    const float acosh_c3=-5.5789547041e-03f;
-    // x^4 : +0xf.7ee77p-13f
-    const float acosh_c4=+1.8915672554e-03f;
-    // x^5 : -0xb.180dcp-14f
-    const float acosh_c5=-6.7712157033e-04f;
-    // x^6 : +0xf.188dp-16f
-    const float acosh_c6=+2.3034517653e-04f;
-    // x^7 : -0x8.051ffp-17f
-    const float acosh_c7=-6.1187885876e-05f;
-    // x^8 : +0x9.191f4p-20f
-    const float acosh_c8=+8.6766558525e-06f;
-
-    static const float ci[]={
-        acosh_c8,
-        acosh_c7,
-        acosh_c6,
-        acosh_c5,
-        acosh_c4,
-        acosh_c3,
-        acosh_c2,
-        acosh_c1,
-        acosh_c0
-    };
-    vf_type ys=horner2(xm1, vf_type(xm1*xm1), ci);
-    ys= (sqrt2xm1 * ys)[0];
-    vf_type y= _T::sel(x < 2.0f, ys, yl);
-    return y;
-#endif
 }
 
 template <typename _T>
@@ -3544,7 +3217,7 @@ cftal::math::elem_func_core<float, _T>::
 atanh_k(arg_t<vf_type> xc)
 {
     vf_type x=abs(xc);
-#if 1
+
     vf_type y=0.0;
     vmf_type sel;
     const float atanh_i1_left=+5.0000000000e-01f;
@@ -3624,43 +3297,6 @@ atanh_k(arg_t<vf_type> xc)
     }
     y = copysign(y, xc);
     return y;
-#else
-    // atanh(x) = x + 1/3*x^3 + 1/5*x^5
-    //          = x + x^3/(3+x^2*Q)
-    // [3.4694469519536141888238489627838134765625e-18, 0.5] : | p - f | <= 2^-24.3203125
-    // coefficients for atanh generated by sollya
-    // x^0 : -0xe.66666p-3f
-    const float atanh_c0=-1.7999999523e+00f;
-    // x^2 : -0xd.2a823p-6f
-    const float atanh_c2=-2.0571951568e-01f;
-    // x^4 : -0xd.6ffe8p-7f
-    const float atanh_c4=-1.0498028994e-01f;
-    // x^6 : -0x8.d7333p-7f
-    const float atanh_c6=-6.9067381322e-02f;
-    // x^8 : -0x8.cc5a3p-8f
-    const float atanh_c8=-3.4368168563e-02f;
-    // x^10 : -0x9.52b03p-7f
-    const float atanh_c10=-7.2835944593e-02f;
-    // x^12 : -0xc.30ebcp-13f
-    const float atanh_c12=-1.4881710522e-03f;
-    vf_type xx=x*x;
-    static const float ci[]={
-        atanh_c12,
-        atanh_c10,
-        atanh_c8,
-        atanh_c6,
-        atanh_c4,
-        atanh_c2,
-        atanh_c0
-    };
-    vf_type Q = horner2(xx, vf_type(xx*xx), ci);
-    vf_type ys= x + x*xx/(3.0f + xx * Q);
-    vf_type log1p_arg= 2.0f*(x/(1.0f-x));
-    vf_type yl= 0.5f*log1p_k(log1p_arg);
-    vf_type y=_T::sel(x<=0.5f, ys, yl);
-    y = copysign(y, xc);
-    return y;
-#endif
 }
 
 template <typename _T>
