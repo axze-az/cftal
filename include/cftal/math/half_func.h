@@ -230,7 +230,7 @@ inline
 typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
 {
-#if 1
+#if 0
     vf_type xrh;
     vi_type idx, k;
     __reduce_exp_arg(xrh, idx, k, xc);
@@ -264,7 +264,7 @@ inline
 typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::half_exp2_k(arg_t<vf_type> xc)
 {
-#if 1
+#if 0
     static_assert(exp_data<float>::EXP_N==32,
                  "exp_data<float>::EXP_N==32");
     const float _ND=exp_data<float>::EXP_N;
