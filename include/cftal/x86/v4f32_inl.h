@@ -709,7 +709,7 @@ cftal::v4f32
 cftal::native_recip(const v4f32& a)
 {
     v4f32 rcp=_mm_rcp_ps(a());
-    rcp = rcp + rcp*(1-rcp*a);
+    rcp = rcp + rcp*(1.0f-rcp*a);
     return rcp;
 }
 

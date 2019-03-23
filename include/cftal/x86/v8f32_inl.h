@@ -707,7 +707,7 @@ cftal::v8f32
 cftal::native_recip(const v8f32& a)
 {
     v8f32 rcp=_mm256_rcp_ps(a());
-    rcp = rcp + rcp*(1-rcp*a);
+    rcp = rcp + rcp*(1.0f-rcp*a);
     return rcp;
 }
 
