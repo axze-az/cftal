@@ -652,6 +652,8 @@ horner_comp_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
     static_assert(_N > 0, "at least 1 array element required");
     const _C* pa=a;
     horner_comp_s0(y, ye, x, yi, pa[0]);
+#pragma GCC unroll 256
+#pragma clang loop unroll(full)
     for (std::size_t i=1; i < _N; ++i) {
         horner_comp_si(y, ye, x, y, ye, pa[i]);
     }
@@ -760,6 +762,8 @@ horner_comp_quick_sn(_X& y, _X& ye, _X x, _X yi, const _C (&a)[_N])
     static_assert(_N > 0, "at least 1 array element required");
     const _C* pa=a;
     horner_comp_quick_s0(y, ye, x, yi, pa[0]);
+#pragma GCC unroll 256
+#pragma clang loop unroll(full)
     for (std::size_t i=1; i < _N; ++i) {
         horner_comp_quick_si(y, ye, x, y, ye, pa[i]);
     }
