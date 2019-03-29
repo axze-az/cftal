@@ -133,17 +133,17 @@ plot((p(x)-f(x))/f(x), p(x)-f(x), i,
      postscriptfile, "exp10-f32");
 
 /* log1p for log_hp implementation */
+f= log1p(x);
 ib=single(sqrt(2)/2);
 printsingle(ib);
 i= [ib-1, (ib*2)-1];
 d = guessdegree(f, i, 0x1p-28);
 d;
 b = [|1, ..., 13|];
-c = [|SG, SG...|];
+c = [|SG, SG, 49, SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
-quit;
 
 /* log1p for log implementation */
 f= log1p(x);
