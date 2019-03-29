@@ -162,6 +162,34 @@ write_coeff(log(10)*log(10), "", "const double log10sqr", double);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "exp10-f64");
 
+
+/* log1p for log_hp implementation */
+f= log1p(x);
+ib=round(sqrt(2)/2, 53-32, RD);
+printdouble(ib);
+i= [ib-1, (ib*2)-1];
+d = guessdegree(f, i, 0x1p-72);
+d;
+b = [|1, ..., 28|];
+c = [|D, D, DD, D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double log_c", "log", b, c);
+/* implementpoly(p, i, 0x1p-68, DD, "__log", "log.c"); */
+
+/* log1p for direct log implementation */
+f= log1p(x);
+ib=round(sqrt(2)/2, 53-32, RD);
+printdouble(ib);
+i= [ib-1, (ib*2)-1];
+d = guessdegree(f, i, 0x1p-60);
+d;
+b = [|1, ..., 23|];
+c = [|D, D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double log_c", "log", b, c);
+
 /* log(x) f64 */
 f= log((1+x)/(1-x))/x-2.0;
 i= [0x1p-58, (sqrt(2)-1)/(1+sqrt(2))];

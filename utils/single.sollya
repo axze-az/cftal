@@ -48,9 +48,6 @@ c1l=lg_2_N-c1h;
 write_coeff(c1h, "", "const float _lg2_32_h", single);
 write_coeff(c1l, "", "const float _lg2_32_l", single);
 
-quit;
-
-
 /* exp(x) f32 */
 f= x*(exp(x)+1)/(exp(x)-1);
 i = [0, log(2)/2];
@@ -134,6 +131,32 @@ write_coeff(log(10), "", "const vf_type log10", single);
 write_coeff(log(10)*log(10), "", "const vf_type log10sqr", single);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
      postscriptfile, "exp10-f32");
+
+/* log1p for log_hp implementation */
+ib=single(sqrt(2)/2);
+printsingle(ib);
+i= [ib-1, (ib*2)-1];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|1, ..., 13|];
+c = [|SG, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
+quit;
+
+/* log1p for log implementation */
+f= log1p(x);
+ib=single(sqrt(2)/2);
+printsingle(ib);
+i= [ib-1, (ib*2)-1];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|1, ..., 11|];
+c = [|SG, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
 
 /* log(x) f32 */
 f= log((1+x)/(1-x))/x-2.0;
