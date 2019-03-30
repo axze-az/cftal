@@ -71,12 +71,14 @@ typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
 erfc(arg_t<vf_type> x)
 {
+    __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type r=base_type::erfc_k(x);
     using fc=func_constants<_FLOAT_T>;
     r = _TRAITS_T::sel_zero_or_val(x > fc::erfc_gt_zero_fin(), r);
     r = _TRAITS_T::sel(x < -fc::erfc_gt_zero_fin(), vf_type(2.0), r);
     r = _TRAITS_T::sel(x == 0, vf_type(1.0), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
+    __asm__ volatile("# LLVM-MCA-END\n\t");
     return r;
 }
 
@@ -85,6 +87,7 @@ typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
 tgamma(arg_t<vf_type> xc)
 {
+    __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
     vmf_type xc_lt_0 = xc < vf_type(0.0);
     vf_type r= base_type::tgamma_k(xc, xc_lt_0);
     using fc= func_constants<_FLOAT_T>;
@@ -105,6 +108,7 @@ tgamma(arg_t<vf_type> xc)
         r = _TRAITS_T::sel(xc_lt_0_and_int_or_ninf, _TRAITS_T::nan(), r);
     }
     r = _TRAITS_T::sel(isnan(xc), xc, r);
+    __asm__ volatile("# LLVM-MCA-END\n\t");
     return r;
 }
 
