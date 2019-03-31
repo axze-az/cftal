@@ -35,6 +35,22 @@ plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "log-f16");
 
+/* log1p for log implementation */
+f= log1p(x)-x;
+ib=single(sqrt(2)/2);
+printsingle(ib);
+i= [ib-1, (ib*2)-1];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|2, ..., 9|];
+c = [|SG, SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
+f = log1p(x);
+p = x + p;
+b = 1.:b;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const float log_f16_c", "log", b, c);
+
 /* half sin(x) f32 */
 i = [0, pi/4];
 f = sin(x);
