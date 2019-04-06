@@ -1969,7 +1969,7 @@ __log_poly_k_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
     constexpr
     const double log_c23=+2.2098840825417579575296e-02;
 
-    static_assert(log_c1 == 1.0);
+    static_assert(log_c1 == 1.0, "constraint violated");
     static const double ci[]={
         log_c23, log_c22,
         log_c21, log_c20, log_c19, log_c18,
@@ -2000,10 +2000,16 @@ __log_poly_k(arg_t<vf_type> xc)
     vf_type lh;
 
     if (log_func::c_log_e == _LFUNC) {
+#if 1
+        vf_type ll;
+        d_ops::add12(lh, ll, kf*ctbl::m_ln2_cw[0], r);
+        lh+= (p*r2 +ll) + (kf * ctbl::m_ln2_cw[1]);
+#else
         vf_type t=kf * ctbl::m_ln2_cw[1];
         lh=p*r2 + t;
         lh += r;
         lh += kf * ctbl::m_ln2_cw[0];
+#endif
     } else if (_LFUNC==log_func::c_log_2) {
         // x^ : +0xb.8aa3b2p-3
         constexpr
