@@ -2003,7 +2003,7 @@ __log_poly_k(arg_t<vf_type> xc)
 #if 1
         vf_type ll;
         d_ops::add12(lh, ll, kf*ctbl::m_ln2_cw[0], r);
-        lh+= (p*r2 +ll) + (kf * ctbl::m_ln2_cw[1]);
+        lh+= (p*r2+ll) + kf * ctbl::m_ln2_cw[1];
 #else
         vf_type t=kf * ctbl::m_ln2_cw[1];
         lh=p*r2 + t;
@@ -2090,10 +2090,16 @@ __log1p_poly_k(arg_t<vf_type> xc)
     vf_type p=__log_poly_k_poly(r, r2);
 
     using ctbl=impl::d_real_constants<d_real<double>, double>;
+#if 1
+    vf_type lh, ll;
+    d_ops::add12(lh, ll, kf*ctbl::m_ln2_cw[0], r);
+    lh+= (p*r2+ll)+(c + kf * ctbl::m_ln2_cw[1]);
+#else
     vf_type t=c + kf * ctbl::m_ln2_cw[1];
     vf_type lh=p*r2 + t;
     lh += r;
     lh += kf * ctbl::m_ln2_cw[0];
+#endif
     return lh;
 }
 
