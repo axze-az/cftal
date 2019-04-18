@@ -62,8 +62,7 @@ namespace cftal {
         const half_type& lh() const;
         const half_type& hh() const;
 
-        template <template <class _U, std::size_t _M>
-                  class _OP,
+        template <template <class _U, std::size_t _M> class _OP,
                   class _L, class _R>
         vec(const expr<_OP<_T, _N>, _L, _R>& r);
     private:

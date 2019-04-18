@@ -321,9 +321,9 @@ namespace cftal {
     }
 
     // unary plus operator
-    template <class _T>
+    template <class _T, std::size_t _N>
     inline
-    const _T& operator+(const _T& v) {
+    const vec<_T, _N>& operator+(const vec<_T, _N>& v) {
         return v;
     }
 

@@ -84,4 +84,27 @@
 #include <cftal/x86/v8f64_inl.h>
 #endif
 
+namespace cftal {
+
+    template <typename _T>
+    constexpr
+    size_t max_vec_size_specialized();
+}
+
+template <typename _T>
+constexpr cftal::size_t
+cftal::max_vec_size_specialized()
+{
+    constexpr
+    const size_t r=
+        is_vec_specialized<vec<_T, 64> >::value==true ? 64 :
+        is_vec_specialized<vec<_T, 32> >::value==true ? 32 :
+        is_vec_specialized<vec<_T, 16> >::value==true ? 16 :
+        is_vec_specialized<vec<_T, 8> >::value==true ? 8 :
+        is_vec_specialized<vec<_T, 4> >::value==true ? 4 :
+        is_vec_specialized<vec<_T, 2> >::value==true ? 2 : 1;
+    return r;
+}
+
+
 #endif // __CFTAL_VEC_SPEC_H__
