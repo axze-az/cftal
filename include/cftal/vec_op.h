@@ -1817,7 +1817,7 @@ cftal::expr<cftal::op::vshl <_T, _N>,
             cftal::vec<_T, _N>,
             cftal::expr<_OP<_T, _N>, _L, _R> >
 cftal::operator<<(const vec<_T, _N>& a,
-                 const expr<_OP<_T, _N>, _L, _R>& b)
+                  const expr<_OP<_T, _N>, _L, _R>& b)
 {
     return expr<op::vshl<_T, _N>,
                 vec<_T, _N>,
@@ -2129,7 +2129,6 @@ cftal::operator+(const vec<_T, _N>& a,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2144,7 +2143,6 @@ cftal::operator+(const expr<_OP<_T, _N>, _L, _R>& a,
                 vec<_T, _N> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2158,7 +2156,6 @@ cftal::operator+(const typename vec<_T, _N>::value_type& a,
                 typename vec<_T, _N>::value_type,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
@@ -2190,7 +2187,6 @@ cftal::operator+(const expr<_OP1<_T, _N>, _L1, _R1>& a,
                 expr<_OP2<_T, _N>, _L2, _R2> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N>&
 cftal::operator+=(vec<_T, _N>& a,
@@ -2220,7 +2216,6 @@ cftal::operator+=(vec<_T, _N>& a,
     return a;
 }
 
-
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::sub <_T, _N>,
             cftal::vec<_T, _N>,
@@ -2231,7 +2226,6 @@ cftal::operator-(const vec<_T, _N>& a, const vec<_T, _N>& b)
                 vec<_T, _N>,
                 vec<_T, _N> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::sub <_T, _N>,
@@ -2244,7 +2238,6 @@ cftal::operator-(const typename vec<_T, _N>::value_type& a,
                 typename vec<_T, _N>::value_type,
                 vec<_T, _N> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::sub <_T, _N>,
@@ -2272,7 +2265,6 @@ cftal::operator-(const vec<_T, _N>& a,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2287,7 +2279,6 @@ cftal::operator-(const expr<_OP<_T, _N>, _L, _R>& a,
                 vec<_T, _N> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2301,7 +2292,6 @@ cftal::operator-(const typename vec<_T, _N>::value_type& a,
                 typename vec<_T, _N>::value_type,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
@@ -2333,7 +2323,6 @@ cftal::operator-(const expr<_OP1<_T, _N>, _L1, _R1>& a,
                 expr<_OP2<_T, _N>, _L2, _R2> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N>&
 cftal::operator-=(vec<_T, _N>& a,
@@ -2363,9 +2352,6 @@ cftal::operator-=(vec<_T, _N>& a,
     return a;
 }
 
-
-
-
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::mul <_T, _N>,
             cftal::vec<_T, _N>,
@@ -2376,7 +2362,6 @@ cftal::operator*(const vec<_T, _N>& a, const vec<_T, _N>& b)
                 vec<_T, _N>,
                 vec<_T, _N> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::mul <_T, _N>,
@@ -2389,7 +2374,6 @@ cftal::operator*(const typename vec<_T, _N>::value_type& a,
                 typename vec<_T, _N>::value_type,
                 vec<_T, _N> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::mul <_T, _N>,
@@ -2417,7 +2401,6 @@ cftal::operator*(const vec<_T, _N>& a,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2432,7 +2415,6 @@ cftal::operator*(const expr<_OP<_T, _N>, _L, _R>& a,
                 vec<_T, _N> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2446,7 +2428,6 @@ cftal::operator*(const typename vec<_T, _N>::value_type& a,
                 typename vec<_T, _N>::value_type,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
@@ -2507,8 +2488,6 @@ cftal::operator*=(vec<_T, _N>& a,
     return a;
 }
 
-
-
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::div <_T, _N>,
             cftal::vec<_T, _N>,
@@ -2519,7 +2498,6 @@ cftal::operator/(const vec<_T, _N>& a, const vec<_T, _N>& b)
                 vec<_T, _N>,
                 vec<_T, _N> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::div <_T, _N>,
@@ -2532,7 +2510,6 @@ cftal::operator/(const typename vec<_T, _N>::value_type& a,
                 typename vec<_T, _N>::value_type,
                 vec<_T, _N> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::div <_T, _N>,
@@ -2560,7 +2537,6 @@ cftal::operator/(const vec<_T, _N>& a,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2575,7 +2551,6 @@ cftal::operator/(const expr<_OP<_T, _N>, _L, _R>& a,
                 vec<_T, _N> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2589,7 +2564,6 @@ cftal::operator/(const typename vec<_T, _N>::value_type& a,
                 typename vec<_T, _N>::value_type,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
@@ -2661,7 +2635,6 @@ cftal::operator%(const vec<_T, _N>& a, const vec<_T, _N>& b)
                 vec<_T, _N> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::mod <_T, _N>,
             typename cftal::vec<_T, _N>::value_type,
@@ -2673,7 +2646,6 @@ cftal::operator%(const typename vec<_T, _N>::value_type& a,
                 typename vec<_T, _N>::value_type,
                 vec<_T, _N> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N>
 cftal::expr<cftal::op::mod <_T, _N>,
@@ -2701,7 +2673,6 @@ cftal::operator%(const vec<_T, _N>& a,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2716,7 +2687,6 @@ cftal::operator%(const expr<_OP<_T, _N>, _L, _R>& a,
                 vec<_T, _N> >(a, b);
 }
 
-
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
           class _L, class _R>
@@ -2730,7 +2700,6 @@ cftal::operator%(const typename vec<_T, _N>::value_type& a,
                 typename vec<_T, _N>::value_type,
                 expr<_OP<_T, _N>, _L, _R> >(a, b);
 }
-
 
 template <typename _T, std::size_t _N,
           template <typename _T1, std::size_t _N1> class _OP,
@@ -2790,7 +2759,6 @@ cftal::operator%=(vec<_T, _N>& a,
     a = a % b;
     return a;
 }
-
 
 // Local variables:
 // mode: c++
