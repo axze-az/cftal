@@ -105,12 +105,18 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     endif()
 endif()
 
+# C++20 ?
+option(CFTAL_USE_CXX2A "use C++2A" ON)
 # C++17 ?
 option(CFTAL_USE_CXX17 "use C++17" ON)
-if(CFTAL_USE_CXX17)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17")
+if (CFTAL_USE_CXX2A)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++2a")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
+    if(CFTAL_USE_CXX17)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++14")
+    endif()
 endif()
 
 option(CFTAL_USE_LTO "use link time optimizations" OFF)
