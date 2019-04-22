@@ -296,8 +296,8 @@ _X
 cftal::math::horner(_X x, const _C (&a)[_N])
 {
     static_assert(_N > 0, "invalid call to horner(x, array)");
-    _X r= _X(a[0]);
     const _C* pa=a;
+    _X r= _X(pa[0]);
 #pragma GCC unroll 256
 #pragma clang loop unroll(full)
     for (std::size_t i=1; i<_N; ++i) {
