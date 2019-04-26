@@ -2003,7 +2003,7 @@ __log_poly_k(arg_t<vf_type> xc)
 #if 1
         vf_type ll;
         d_ops::add12(lh, ll, kf*ctbl::m_ln2_cw[0], r);
-        lh+= p*r2 + (ll+kf * ctbl::m_ln2_cw[1]);
+        lh+= p*r2+(ll +kf * ctbl::m_ln2_cw[1]);
 #else
         vf_type t=kf * ctbl::m_ln2_cw[1];
         lh=p*r2 + t;
@@ -2017,6 +2017,28 @@ __log_poly_k(arg_t<vf_type> xc)
         // x^ : +0x9.5c17f0bbbe88p-31
         constexpr
         const double invln2lo=+4.3584687174185184386656e-09;
+#if 1
+        vf_type th, tl;
+        vf_type rh, rl;
+        if (d_real_traits<vf_type>::fma==true) {
+            rh = r * invln2hi;
+            vf_type rh_e= (r*invln2hi-rh);
+            rl = r * invln2lo + rh_e;
+            th = r2 * invln2hi;
+            vf_type th_e= r2*invln2hi-th;
+            tl = r2 * invln2lo + th_e;
+        } else {
+            d_real_traits<vf_type>::split(r, rh, rl);
+            rh = rh * invln2hi;
+            rl = (rl * invln2hi) + r* invln2lo;
+            d_real_traits<vf_type>::split(r2, th, tl);
+            th = th * invln2hi;
+            tl = (tl * invln2hi) + r2* invln2lo;
+        }
+        vf_type ll;
+        d_ops::add12(lh, ll, kf, rh);
+        lh += ((tl*p + rl) + th*p) + ll;
+#else
         vf_type r2p=p*r2;
         vf_type th, tl;
         vf_type rh, rl;
@@ -2043,6 +2065,7 @@ __log_poly_k(arg_t<vf_type> xc)
         lh = ((tl + rl) + th) + rh;
         lh += kf;
 #endif
+#endif
     } else if (_LFUNC==log_func::c_log_10) {
         // x^ : +0xd.e5bd8ap-5
         constexpr
@@ -2050,6 +2073,28 @@ __log_poly_k(arg_t<vf_type> xc)
         // x^ : +0x9.37287195355b8p-33
         constexpr
         const double invln10lo=+1.0728208431540585374533e-09;
+#if 1
+        vf_type th, tl;
+        vf_type rh, rl;
+        if (d_real_traits<vf_type>::fma==true) {
+            rh = r * invln10hi;
+            vf_type rh_e= r*invln10hi-rh;
+            rl = r * invln10lo + rh_e;
+            th = r2 * invln10hi;
+            vf_type th_e= r2*invln10hi-th;
+            tl = r2 * invln10lo + th_e;
+        } else {
+            d_real_traits<vf_type>::split(r, rh, rl);
+            rh = rh * invln10hi;
+            rl = rl * invln10hi + (r* invln10lo);
+            d_real_traits<vf_type>::split(r2, th, tl);
+            th = th * invln10hi;
+            tl = tl * invln10hi + (r2* invln10lo);
+        }
+        vf_type ll;
+        d_ops::add12(lh, ll, kf*ctbl::m_lg2_cw[0], rh);
+        lh+= (((tl*p + rl) + th*p)+ ll) + kf * ctbl::m_lg2_cw[1];
+#else
         vf_type r2p=p*r2;
         vf_type th, tl;
         vf_type rh, rl;
@@ -2077,6 +2122,7 @@ __log_poly_k(arg_t<vf_type> xc)
         lh = ((tl + rl) + th) + rh;
         lh += kf * ctbl::m_lg2_cw[1];
         lh += kf * ctbl::m_lg2_cw[0];
+#endif
 #endif
     }
     return lh;
@@ -2398,7 +2444,7 @@ log2_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
-    return __log_k<log_func::c_log_2>(xc);
+    return __log_poly_k<log_func::c_log_2>(xc);
 }
 
 template <typename _T>
@@ -2414,7 +2460,7 @@ log10_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
  */
-    return __log_k<log_func::c_log_10>(xc);
+    return __log_poly_k<log_func::c_log_10>(xc);
 }
 
 template <typename _T>
