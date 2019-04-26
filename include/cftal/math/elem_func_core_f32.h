@@ -1882,6 +1882,28 @@ __log_poly_k(arg_t<vf_type> xc)
         // x^ : -0xb.89ad4p-16f
         constexpr
         const float invln2lo=-1.7605285393e-04f;
+#if 1
+        vf_type th, tl;
+        vf_type rh, rl;
+        if (d_real_traits<vf_type>::fma==true) {
+            rh = r * invln2hi;
+            vf_type rh_e= (r*invln2hi-rh);
+            rl = r * invln2lo + rh_e;
+            th = r2 * invln2hi;
+            vf_type th_e= r2*invln2hi-th;
+            tl = r2 * invln2lo + th_e;
+        } else {
+            d_real_traits<vf_type>::split(r, rh, rl);
+            rh = rh * invln2hi;
+            rl = (rl * invln2hi) + r* invln2lo;
+            d_real_traits<vf_type>::split(r2, th, tl);
+            th = th * invln2hi;
+            tl = (tl * invln2hi) + r2* invln2lo;
+        }
+        vf_type ll;
+        d_ops::add12(lh, ll, kf, rh);
+        lh += ((tl*p + rl) + th*p) + ll;
+#else
         vf_type r2p=p*r2;
         vf_type th, tl;
         vf_type rh, rl;
@@ -1900,8 +1922,15 @@ __log_poly_k(arg_t<vf_type> xc)
             rh = rh * invln2hi;
             rl = (rl * invln2hi) + r* invln2lo;
         }
+#if 1
+        vf_type ll;
+        d_ops::add12(lh, ll, kf, rh);
+        lh += ((tl + rl) +ll) + th;
+#else
         lh = ((tl + rl) + th) + rh;
         lh += kf;
+#endif
+#endif
     } else if (_LFUNC==log_func::c_log_10) {
         // x^ : +0xd.e6p-5f
         constexpr
@@ -1909,27 +1938,57 @@ __log_poly_k(arg_t<vf_type> xc)
         // x^ : -0x8.4ead9p-18f
         constexpr
         const float invln10lo=-3.1689971365e-05f;
+#if 1
+        vf_type th, tl;
+        vf_type rh, rl;
+        if (d_real_traits<vf_type>::fma==true) {
+            rh = r * invln10hi;
+            vf_type rh_e= r*invln10hi-rh;
+            rl = r * invln10lo + rh_e;
+            th = r2 * invln10hi;
+            vf_type th_e= r2*invln10hi-th;
+            tl = r2 * invln10lo + th_e;
+        } else {
+            d_real_traits<vf_type>::split(r, rh, rl);
+            rh = rh * invln10hi;
+            rl = rl * invln10hi + (r* invln10lo);
+            d_real_traits<vf_type>::split(r2, th, tl);
+            th = th * invln10hi;
+            tl = tl * invln10hi + (r2* invln10lo);
+        }
+        vf_type ll;
+        d_ops::add12(lh, ll, kf*ctbl::m_lg2_cw[0], rh);
+        lh+= (((tl*p + rl) + th*p)+ ll) + kf * ctbl::m_lg2_cw[1];
+#else
         vf_type r2p=p*r2;
         vf_type th, tl;
         vf_type rh, rl;
         if (d_real_traits<vf_type>::fma==true) {
-            th = r2p * invln10hi;
-            vf_type th_e= r2p*invln10hi-th;
-            tl = r2p * invln10lo + th_e;
             rh = r * invln10hi;
             vf_type rh_e= r*invln10hi-rh;
             rl = r * invln10lo + rh_e;
+            th = r2p * invln10hi;
+            vf_type th_e= r2p*invln10hi-th;
+            tl = r2p * invln10lo + th_e;
         } else {
-            d_real_traits<vf_type>::split(r2p, th, tl);
-            th = th * invln10hi;
-            tl = tl * invln10hi + (r2p* invln10lo);
             d_real_traits<vf_type>::split(r, rh, rl);
             rh = rh * invln10hi;
             rl = rl * invln10hi + (r* invln10lo);
+            d_real_traits<vf_type>::split(r2p, th, tl);
+            th = th * invln10hi;
+            tl = tl * invln10hi + (r2p* invln10lo);
         }
+#if 1
+        vf_type ll;
+        d_ops::add12(lh, ll, kf*ctbl::m_lg2_cw[0], rh);
+        lh+= ((tl + rl) + th)+ (ll + kf * ctbl::m_lg2_cw[1]);
+
+#else
         lh = ((tl + rl) + th) + rh;
         lh += kf * ctbl::m_lg2_cw[1];
         lh += kf * ctbl::m_lg2_cw[0];
+#endif
+#endif
     }
     return lh;
 }
@@ -2233,7 +2292,7 @@ log2_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
-    return __log_k<log_func::c_log_2>(xc);
+    return __log_poly_k<log_func::c_log_2>(xc);
 }
 
 template <typename _T>
@@ -2249,7 +2308,7 @@ log10_k(arg_t<vf_type> xc)
  * as in log.c, then combine and scale in extra precision:
  *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
  */
-    return __log_k<log_func::c_log_10>(xc);
+    return __log_poly_k<log_func::c_log_10>(xc);
 }
 
 template <typename _T>
