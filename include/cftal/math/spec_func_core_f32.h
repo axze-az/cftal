@@ -5,7 +5,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 #if !defined (__CFTAL_MATH_SPEC_FUNC_CORE_F32_H__)
-#define __CFTAL_MATH_ELEM_SPEC_CORE_F32_H__ 1
+#define __CFTAL_MATH_SPEC_FUNC_CORE_F32_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
