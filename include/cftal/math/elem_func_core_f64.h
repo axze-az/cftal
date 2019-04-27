@@ -1121,9 +1121,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         exp_c10, exp_c9,  exp_c8, exp_c7,
         exp_c6, exp_c5, exp_c4, exp_c3
     };
-    vf_type x4=x2*x2;
-    vf_type y=horner4(xrh, x2, x4, c);
-    // vf_type y=horner2(xrh, x2, c);
+    vf_type y=horner2(xrh, x2, c);
     y = horner(xrh, y, exp_c2);
     vf_type ye;
 #if 1
