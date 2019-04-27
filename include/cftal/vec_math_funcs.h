@@ -76,13 +76,14 @@ cftal::impl::round_to_odd(const _F& xh, const _F& xl)
 {
     _I ih=as<_I>(xh);
     // select rounding direction in dependence of the sign of xh, xl
-    _I ihp= ih + 1;
-    _I ihm= ih - 1;
+    const _I one(1);
+    _I ihp= ih + one;
+    _I ihm= ih - one;
     _FM msk= (xl > _F(0.0)) ^ (xh < _F(0.0));
     _IM imsk=as<_IM>(msk);
     _I ir0 = select(msk, ihp, ihm);
     // check if xh is already odd
-    _IM i_xh_odd= (ih & 1) != _I(0);
+    _IM i_xh_odd= ((ih & one) != _I(0));
     _FM xh_odd= as<_FM>(i_xh_odd);
     _F r0= as<_I>(ir0);
     // check if xl zero
