@@ -18,6 +18,8 @@
 #endif
 
 #if defined (__GNUC__) || defined (__clang__)
+// clang++ -dM -E -x c++ -march=native /dev/null
+// g++-dM -E -x c++ -march=native /dev/null
 #define thread_local __thread
 #define likely(a) __builtin_expect(!!(a), 1)
 #define unlikely(a) __builtin_expect(!!(a), 0)
