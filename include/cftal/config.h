@@ -21,9 +21,7 @@
 #define thread_local __thread
 #define likely(a) __builtin_expect(!!(a), 1)
 #define unlikely(a) __builtin_expect(!!(a), 0)
-#if defined (__clang__)
-#define __builtin_assume_aligned(p, x) p
-#endif
+#define assume_aligned(p, x) __builtin_assume_aligned(p, x)
 #endif
 
 #if defined (__clang__)
@@ -47,6 +45,9 @@
 #define thread_local __declspec(thread)
 #endif
 
+#if !defined (assume_aligned)
+#define assume_aligned(p, x) p
+#endif
 #if !defined (likely)
 #define likely(a) a
 #endif
