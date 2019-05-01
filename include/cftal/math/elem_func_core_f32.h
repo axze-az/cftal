@@ -349,8 +349,8 @@ namespace cftal {
 
             static
             void
-            __reduce_log_arg(vf_type& xr,
-                             vf_type& kf,
+            __reduce_log_arg(vf_type& __restrict xr,
+                             vf_type& __restrict kf,
                              arg_t<vf_type> xc,
                              vi_type* pk=nullptr);
 
@@ -735,7 +735,6 @@ rsqrt_k(arg_t<vf_type> x)
 {
     vf_type y= vf_type(1.0/sqrt(x));
     // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
-#if 1
     vf_type xyh, xyl;
     d_ops::mul12(xyh, xyl, x, y);
     vf_type th;
@@ -749,20 +748,8 @@ rsqrt_k(arg_t<vf_type> x)
         th = yxyh - 1.0;
         tl = yxyl + y*xyl;
         th += tl;
-#if 0
-        d_ops::muladd12(th, tl, -1.0, y, xyh);
-        tl = y * xyl + tl;
-        th += tl;
-#endif
     }
     y = y + (-0.5*y) * th;
-#else
-    vf_type yh, yl;
-    d_ops::mul12(yh, yl, x, y);
-    d_ops::mul122(yh, yl, y, yh, yl);
-    d_ops::add122(yh, yl, -1.0, yh, yl);
-    y = y - (0.5*y)*yh;
-#endif
     return y;
 }
 
@@ -1850,16 +1837,9 @@ __log_poly_k(arg_t<vf_type> xc)
     vf_type lh;
 
     if (log_func::c_log_e == _LFUNC) {
-#if 1
         vf_type ll;
         d_ops::add12(lh, ll, kf*ctbl::m_ln2_cw[0], r);
         lh+= p*r2 + (ll+kf * ctbl::m_ln2_cw[1]);
-#else
-        vf_type t=kf * ctbl::m_ln2_cw[1];
-        lh=p*r2 + t;
-        lh += r;
-        lh += kf * ctbl::m_ln2_cw[0];
-#endif
     } else if (_LFUNC==log_func::c_log_2) {
         // x^ : +0xb.8bp-3f
         constexpr
@@ -1867,7 +1847,6 @@ __log_poly_k(arg_t<vf_type> xc)
         // x^ : -0xb.89ad4p-16f
         constexpr
         const float invln2lo=-1.7605285393e-04f;
-#if 1
         vf_type th, tl;
         vf_type rh, rl;
         if (d_real_traits<vf_type>::fma==true) {
@@ -1888,34 +1867,6 @@ __log_poly_k(arg_t<vf_type> xc)
         vf_type ll;
         d_ops::add12(lh, ll, kf, rh);
         lh += ((tl*p + rl) + th*p) + ll;
-#else
-        vf_type r2p=p*r2;
-        vf_type th, tl;
-        vf_type rh, rl;
-        if (d_real_traits<vf_type>::fma==true) {
-            th = r2p * invln2hi;
-            vf_type th_e= r2p*invln2hi-th;
-            tl = r2p * invln2lo + th_e;
-            rh = r * invln2hi;
-            vf_type rh_e= (r*invln2hi-rh);
-            rl = r * invln2lo + rh_e;
-        } else {
-            d_real_traits<vf_type>::split(r2p, th, tl);
-            th = th * invln2hi;
-            tl = (tl * invln2hi) + r2p* invln2lo;
-            d_real_traits<vf_type>::split(r, rh, rl);
-            rh = rh * invln2hi;
-            rl = (rl * invln2hi) + r* invln2lo;
-        }
-#if 1
-        vf_type ll;
-        d_ops::add12(lh, ll, kf, rh);
-        lh += ((tl + rl) +ll) + th;
-#else
-        lh = ((tl + rl) + th) + rh;
-        lh += kf;
-#endif
-#endif
     } else if (_LFUNC==log_func::c_log_10) {
         // x^ : +0xd.e6p-5f
         constexpr
@@ -1923,7 +1874,6 @@ __log_poly_k(arg_t<vf_type> xc)
         // x^ : -0x8.4ead9p-18f
         constexpr
         const float invln10lo=-3.1689971365e-05f;
-#if 1
         vf_type th, tl;
         vf_type rh, rl;
         if (d_real_traits<vf_type>::fma==true) {
@@ -1944,36 +1894,6 @@ __log_poly_k(arg_t<vf_type> xc)
         vf_type ll;
         d_ops::add12(lh, ll, kf*ctbl::m_lg2_cw[0], rh);
         lh+= (((tl*p + rl) + th*p)+ ll) + kf * ctbl::m_lg2_cw[1];
-#else
-        vf_type r2p=p*r2;
-        vf_type th, tl;
-        vf_type rh, rl;
-        if (d_real_traits<vf_type>::fma==true) {
-            rh = r * invln10hi;
-            vf_type rh_e= r*invln10hi-rh;
-            rl = r * invln10lo + rh_e;
-            th = r2p * invln10hi;
-            vf_type th_e= r2p*invln10hi-th;
-            tl = r2p * invln10lo + th_e;
-        } else {
-            d_real_traits<vf_type>::split(r, rh, rl);
-            rh = rh * invln10hi;
-            rl = rl * invln10hi + (r* invln10lo);
-            d_real_traits<vf_type>::split(r2p, th, tl);
-            th = th * invln10hi;
-            tl = tl * invln10hi + (r2p* invln10lo);
-        }
-#if 1
-        vf_type ll;
-        d_ops::add12(lh, ll, kf*ctbl::m_lg2_cw[0], rh);
-        lh+= ((tl + rl) + th)+ (ll + kf * ctbl::m_lg2_cw[1]);
-
-#else
-        lh = ((tl + rl) + th) + rh;
-        lh += kf * ctbl::m_lg2_cw[1];
-        lh += kf * ctbl::m_lg2_cw[0];
-#endif
-#endif
     }
     return lh;
 }
@@ -1998,16 +1918,9 @@ __log1p_poly_k(arg_t<vf_type> xc)
 
     vf_type p=__log_poly_k_poly(r, r2);
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-#if 1
     vf_type lh, ll;
     d_ops::add12(lh, ll, kf*ctbl::m_ln2_cw[0], r);
     lh+= p*r2+(c+(ll + kf * ctbl::m_ln2_cw[1]));
-#else
-    vf_type t=c+kf * ctbl::m_ln2_cw[1];
-    vf_type lh= (p*r2) + t;
-    lh += r;
-    lh += kf * ctbl::m_ln2_cw[0];
-#endif
     return lh;
 }
 
