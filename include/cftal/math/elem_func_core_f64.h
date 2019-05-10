@@ -2415,8 +2415,6 @@ __log_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
     return dvf_type(lh, ll);
 }
 
-
-
 template <typename _T>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
@@ -2441,7 +2439,6 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     return res;
 }
-
 
 template <typename _T>
 typename cftal::math::elem_func_core<double, _T>::pow_k2_result
@@ -2996,7 +2993,9 @@ __atan_0_1_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
             atan_i0_c7, atan_i0_c5, atan_i0_c3
         };
         vf_type x2=xrh*xrh;
-        vf_type y_i0_h=horner2(x2, vf_type(x2*x2), ci)*x2;
+        vf_type x4=x2*x2;
+        vf_type y_i0_h=horner2(x2, x4, ci)*x2;
+        // vf_type y_i0_h=horner4(x2, x4, vf_type(x4*x4) , ci)*x2;
         vf_type y_i0_l;
         d_ops::muladd12(y_i0_h, y_i0_l, xrh, y_i0_h, xrh);
         d_ops::add212(y_i0_h, y_i0_l, y_i0_h, y_i0_l, xrl);
@@ -3057,7 +3056,9 @@ __atan_0_1_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
         };
         vf_type x_i1_h, x_i1_l;
         d_ops::add122cond(x_i1_h, x_i1_l, -atan_i1_x0, xrh, xrl);
-        vf_type y_i1_h=horner2(x_i1_h, vf_type(x_i1_h*x_i1_h), ci);
+        vf_type x_i1_h2=x_i1_h*x_i1_h;
+        vf_type y_i1_h=horner2(x_i1_h, x_i1_h2, ci);
+        // vf_type y_i1_h=horner4(x_i1_h, x_i1_h2, vf_type(x_i1_h2*x_i1_h2), ci);
         vf_type y_i1_l;
         horner_comp_quick(y_i1_h, y_i1_l, x_i1_h, y_i1_h,
                           atan_i1_c1, atan_i1_c0h);
