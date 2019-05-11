@@ -28,7 +28,7 @@ namespace cftal {
     operator op (const typename vec<_T, _N>::value_type& a,     \
                  const vec<_T, _N>& b)
 
-        DECL_CMP_OPS(<);
+    DECL_CMP_OPS(<);
     DECL_CMP_OPS(<=);
     DECL_CMP_OPS(==);
     DECL_CMP_OPS(!=);
@@ -649,7 +649,7 @@ namespace cftal {
          vec<_T, _N>,
          expr<_OP<_T, _N>, _L, _R> >
     operator<<(const vec<_T, _N>& a,
-              const expr<_OP<_T, _N>, _L, _R>& b);
+               const expr<_OP<_T, _N>, _L, _R>& b);
 
     // vshl operator: expr, v
     template <typename _T, std::size_t _N,
@@ -659,7 +659,7 @@ namespace cftal {
          expr<_OP<_T, _N>, _L, _R>,
          vec<_T, _N> >
     operator<<(const expr<_OP<_T, _N>, _L, _R>& a,
-              const vec<_T, _N>& b);
+               const vec<_T, _N>& b);
 
     // vshl operator: value_type, expr
     template <typename _T, std::size_t _N,
@@ -681,13 +681,13 @@ namespace cftal {
          expr<_OP1<_T, _N>, _L1, _R1>,
          expr<_OP2<_T, _N>, _L2, _R2> >
     operator<<(const expr<_OP1<_T, _N>, _L1, _R1>& a,
-              const expr<_OP2<_T, _N>, _L2, _R2>& b);
+               const expr<_OP2<_T, _N>, _L2, _R2>& b);
 
     // self vshl operator: v, v
     template <typename _T, std::size_t _N>
     vec<_T, _N>&
     operator<<=(vec<_T, _N>& a,
-               const vec<_T, _N>& b);
+                const vec<_T, _N>& b);
 
     // self vshl operator: v, expr
     template <typename _T, std::size_t _N,
@@ -695,7 +695,7 @@ namespace cftal {
               class _L, class _R>
     vec<_T, _N>&
     operator<<=(vec<_T, _N>& a,
-               const expr<_OP<_T, _N>, _L, _R>& b);
+                const expr<_OP<_T, _N>, _L, _R>& b);
 
     // vshr operator: v, v
     template <typename _T, std::size_t _N>
@@ -710,7 +710,7 @@ namespace cftal {
          typename vec<_T, _N>::value_type,
          vec<_T, _N> >
     operator>>(const typename vec<_T, _N>::value_type& a,
-              const vec<_T, _N>& b);
+               const vec<_T, _N>& b);
 
     // vshr operator: v, expr
     template <typename _T, std::size_t _N,
@@ -720,7 +720,7 @@ namespace cftal {
          vec<_T, _N>,
          expr<_OP<_T, _N>, _L, _R> >
     operator>>(const vec<_T, _N>& a,
-              const expr<_OP<_T, _N>, _L, _R>& b);
+               const expr<_OP<_T, _N>, _L, _R>& b);
 
     // vshr operator: expr, v
     template <typename _T, std::size_t _N,
@@ -730,7 +730,7 @@ namespace cftal {
          expr<_OP<_T, _N>, _L, _R>,
          vec<_T, _N> >
     operator>>(const expr<_OP<_T, _N>, _L, _R>& a,
-              const vec<_T, _N>& b);
+               const vec<_T, _N>& b);
 
     // vshr operator: value_type, expr
     template <typename _T, std::size_t _N,
@@ -740,7 +740,7 @@ namespace cftal {
          typename vec<_T, _N>::value_type,
          expr<_OP<_T, _N>, _L, _R> >
     operator>>(const typename vec<_T, _N>::value_type& a,
-              const expr<_OP<_T, _N>, _L, _R>& b);
+               const expr<_OP<_T, _N>, _L, _R>& b);
 
     // vshr operator: expr, expr
     template <typename _T, std::size_t _N,
@@ -752,13 +752,13 @@ namespace cftal {
          expr<_OP1<_T, _N>, _L1, _R1>,
          expr<_OP2<_T, _N>, _L2, _R2> >
     operator>>(const expr<_OP1<_T, _N>, _L1, _R1>& a,
-              const expr<_OP2<_T, _N>, _L2, _R2>& b);
+               const expr<_OP2<_T, _N>, _L2, _R2>& b);
 
     // self vshr operator: v, v
     template <typename _T, std::size_t _N>
     vec<_T, _N>&
     operator>>=(vec<_T, _N>& a,
-               const vec<_T, _N>& b);
+                const vec<_T, _N>& b);
 
     // self vshr operator: v, expr
     template <typename _T, std::size_t _N,
@@ -766,7 +766,7 @@ namespace cftal {
               class _L, class _R>
     vec<_T, _N>&
     operator>>=(vec<_T, _N>& a,
-               const expr<_OP<_T, _N>, _L, _R>& b);
+                const expr<_OP<_T, _N>, _L, _R>& b);
 
 
     // left shift v unsigned
@@ -1883,7 +1883,7 @@ template <typename _T, std::size_t _N,
           class _L, class _R>
 cftal::vec<_T, _N>&
 cftal::operator<<=(vec<_T, _N>& a,
-                  const expr<_OP<_T, _N>, _L, _R>& b)
+                   const expr<_OP<_T, _N>, _L, _R>& b)
 {
     a = a << b;
     return a;
@@ -1920,7 +1920,7 @@ cftal::expr<cftal::op::vshr <_T, _N>,
             cftal::vec<_T, _N>,
             cftal::expr<_OP<_T, _N>, _L, _R> >
 cftal::operator>>(const vec<_T, _N>& a,
-                 const expr<_OP<_T, _N>, _L, _R>& b)
+                  const expr<_OP<_T, _N>, _L, _R>& b)
 {
     return expr<op::vshr<_T, _N>,
                 vec<_T, _N>,
@@ -1965,7 +1965,7 @@ cftal::expr<cftal::op::vshr <_T, _N>,
             cftal::expr<_OP1<_T, _N>, _L1, _R1>,
             cftal::expr<_OP2<_T, _N>, _L2, _R2> >
 cftal::operator>>(const expr<_OP1<_T, _N>, _L1, _R1>& a,
-                 const expr<_OP2<_T, _N>, _L2, _R2>& b)
+                  const expr<_OP2<_T, _N>, _L2, _R2>& b)
 {
     return expr<op::vshr<_T, _N>,
                 expr<_OP1<_T, _N>, _L1, _R1>,
@@ -1975,7 +1975,7 @@ cftal::operator>>(const expr<_OP1<_T, _N>, _L1, _R1>& a,
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N>&
 cftal::operator>>=(vec<_T, _N>& a,
-                  const vec<_T, _N>& b)
+                   const vec<_T, _N>& b)
 {
     a = a >> b;
     return a;
