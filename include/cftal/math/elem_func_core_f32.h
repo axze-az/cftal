@@ -354,21 +354,63 @@ namespace cftal {
                              arg_t<vf_type> xc,
                              vi_type* pk=nullptr);
 
+            // return 2^k * 1/inv_c * (1 + xr*inv_c) = xc
+            //        2^k * c * (1+xr/c) = xc
+            // log_c_h + log_c_l = -log(inv_c),
+            template <log_func _LFUNC>
+            static
+            void
+            __reduce_log_arg(vf_type& xr,
+                             vf_type& inv_c,
+                             vf_type& log_c_h,
+                             vf_type& log_c_l,
+                             vf_type& kf,
+                             arg_t<vf_type> x,
+                             vi_type* k=nullptr);
+
+
             // polynomial approximation of log1p(r), r2=r*r
             static
             vf_type
             __log_poly_k_poly(arg_t<vf_type> r,
                               arg_t<vf_type> r2);
 
-            template <log_func _F>
+
+            // standard log calculation
+            template <log_func _LFUNC>
             static
             vf_type
-            __log_poly_k(arg_t<vf_type> x);
+            __log_tbl_k(arg_t<vf_type> xc);
+
+            // calculates log/log2/log10
+            //        2^k * c * (1+xr/c) = xc
+            // (1 + xr/c) = r, rl
+            // log_c_h, log_c_l = log(c)
+            // with higher precision
+            template <log_func _LFUNC, result_prec _P>
+            static
+            dvf_type
+            __log_tbl_k2(arg_t<vf_type> r,
+                         arg_t<vf_type> rl,
+                         arg_t<vf_type> log_c_h,
+                         arg_t<vf_type> log_c_l,
+                         arg_t<vf_type> kf);
+
+            // calculates log(xc) with higher precision
+            template <log_func _LFUNC, result_prec _P>
+            static
+            dvf_type
+            __log_tbl_k12(arg_t<vf_type> xc);
+
+            // calculates log(xc+xcl) with higher precision
+            template <log_func _LFUNC, result_prec _P>
+            static
+            dvf_type
+            __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl);
 
             static
             vf_type
             __log1p_poly_k(arg_t<vf_type> x);
-
 
             static
             vf_type
@@ -386,30 +428,6 @@ namespace cftal {
             vf_type
             log10_k(arg_t<vf_type> x);
 
-            // high precision logarithm polynomial
-            // returns (log(1+r) - r)/r^2
-            static
-            dvf_type
-            __log1p_k12_poly(arg_t<vf_type> r,
-                             arg_t<vf_type> r2);
-
-            // high precision logarithm float --> float float
-            static
-            dvf_type
-            __log_k12(arg_t<vf_type> xc);
-
-            // high precision logarithm polynomial
-            // returns (log(1+r) - r)/r^2
-            static
-            dvf_type
-            __log1p_k2_poly(arg_t<vf_type> r,
-                            arg_t<vf_type> rl,
-                            arg_t<vf_type> r2);
-
-            // high precision logarithm
-            static
-            dvf_type
-            __log_k2(arg_t<vf_type> xc, arg_t<vf_type> xl);
 
             // calculation of x^y
             static
@@ -1769,6 +1787,75 @@ __reduce_log_arg(vf_type& xr,
 }
 
 template <typename _T>
+template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC>
+inline
+void
+cftal::math::elem_func_core<float, _T>::
+__reduce_log_arg(vf_type& xr,
+                 vf_type& inv_c,
+                 vf_type& log_c_h,
+                 vf_type& log_c_l,
+                 vf_type& kf,
+                 arg_t<vf_type> xc,
+                 vi_type* pk)
+
+{
+    constexpr
+    const bytes4 offs=0x3f340000;
+    using fc = func_constants<float>;
+    vmf_type is_denom=xc <= fc::max_denormal();
+    vf_type x=_T::sel(is_denom, xc*0x1p25f, xc);
+    vi_type k=_T::sel_val_or_zero(_T::vmf_to_vmi(is_denom), vi_type(-25));
+    vi_type hx = _T::as_int(x);
+    // reduce x into [offs, 2*offs]
+    hx += (0x3f800000 - offs.s32());
+    k += (hx>>23) - _T::bias();
+    vi_type m = (hx&0x007fffff);
+    hx = m + offs.s32();
+    vi_type idx=(m >> (23-log_data<float>::LOG_SHIFT));
+    xr = _T::as_float(hx);
+    auto lck=make_variable_lookup_table<float>(idx);
+    const auto& tbl=log_data<float>::_tbl;
+
+    inv_c =lck.from(tbl._inv_c);
+    switch (_LFUNC) {
+    case log_func::c_log_e:
+        log_c_h=lck.from(tbl._log_c_h);
+        log_c_l=lck.from(tbl._log_c_l);
+        break;
+    case log_func::c_log_2:
+        log_c_h=lck.from(tbl._log2_c_h);
+        log_c_l=lck.from(tbl._log2_c_l);
+        break;
+    case log_func::c_log_10:
+        log_c_h=lck.from(tbl._log10_c_h);
+        log_c_l=lck.from(tbl._log10_c_l);
+        break;
+    }
+#if 0
+    // this is done in the tables already:
+    // log(z)= log(ck*(1+xr/ck))= log(ck) + log(1+xr/ck);
+    // x^ : +0xe.f7d4bp-4f
+    constexpr
+    const float _one_m_delta=+9.3550556898e-01f;
+    // x^ : +0x8.8415bp-3f
+    constexpr
+    const float _one_p_delta=+1.0644944906e+00f;
+    // in this range we use the tables:
+    vmf_type xr_not_near_one=(xr < _one_m_delta) |
+        (xr > _one_p_delta);
+    /* 1/c == 1 around 1*/
+    inv_c = _T::sel(xr_not_near_one, inv_c, 1.0f);
+    /* log_c_h, log_c_l = 0.0 around 1 */
+    log_c_h = _T::sel_val_or_zero(xr_not_near_one, log_c_h);
+    log_c_l = _T::sel_val_or_zero(xr_not_near_one, log_c_l);
+#endif
+    kf=_T::cvt_i_to_f(k);
+    if (pk != nullptr)
+        *pk = k;
+}
+
+template <typename _T>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
@@ -1826,20 +1913,46 @@ template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-__log_poly_k(arg_t<vf_type> xc)
+__log_tbl_k(arg_t<vf_type> xc)
 {
-    vf_type xr, kf;
-    __reduce_log_arg(xr, kf, xc);
-    vf_type r=xr-1.0f;
-    vf_type r2=r*r;
-    vf_type p=__log_poly_k_poly(r, r2);
+    vf_type xr, inv_c, log_c_h, log_c_l, kf;
+    __reduce_log_arg<_LFUNC>(xr, inv_c, log_c_h, log_c_l, kf, xc);
+    vf_type r;
+    if (d_real_traits<vf_type>::fma == true) {
+        r = xr * inv_c - 1.0f;
+    } else {
+        vf_type ph, pl;
+        d_real_traits<vf_type>::split(xr, ph, pl);
+        ph *= inv_c;
+        pl *= inv_c;
+        r = (ph - 1.0f) + pl;
+    }
+    // [-1.5625e-2, 1.5625e-2] : | p - f | <= 2^-34.875
+    // coefficients for log generated by sollya
+    // x^1 : +0x8p-3f
+    constexpr
+    const float log_c1=+1.0000000000e+00f;
+    // x^2 : -0x8p-4f
+    constexpr
+    const float log_c2=-5.0000000000e-01f;
+    // x^3 : +0xa.abp-5f
+    constexpr
+    const float log_c3=+3.3337402344e-01f;
+    // x^4 : -0x8.0048bp-5f
+    constexpr
+    const float log_c4=-2.5003466010e-01f;
+    static_assert(log_c1 == 1.0f);
     using ctbl=impl::d_real_constants<d_real<float>, float>;
+    static const float ci[]={
+        log_c4, log_c3, log_c2
+    };
     vf_type lh;
-
-    if (log_func::c_log_e == _LFUNC) {
+    vf_type r2 = r * r;
+    vf_type p=horner2(r, r2, ci);
+    if (_LFUNC==log_func::c_log_e) {
         vf_type ll;
-        d_ops::add12(lh, ll, kf*ctbl::m_ln2_cw[0], r);
-        lh+= p*r2 + (ll+kf * ctbl::m_ln2_cw[1]);
+        d_ops::add12(lh, ll, kf * ctbl::m_ln2_cw[0], log_c_h);
+        lh += (p*r2 +r) + ((log_c_l + ll) + kf * ctbl::m_ln2_cw[1]);
     } else if (_LFUNC==log_func::c_log_2) {
         // x^ : +0xb.8bp-3f
         constexpr
@@ -1847,26 +1960,26 @@ __log_poly_k(arg_t<vf_type> xc)
         // x^ : -0xb.89ad4p-16f
         constexpr
         const float invln2lo=-1.7605285393e-04f;
-        vf_type th, tl;
+        vf_type ph, pl;
         vf_type rh, rl;
         if (d_real_traits<vf_type>::fma==true) {
+            ph = p * invln2hi;
+            vf_type ph_e= p*invln2hi-ph;
+            pl = p * invln2lo + ph_e;
             rh = r * invln2hi;
-            vf_type rh_e= (r*invln2hi-rh);
+            vf_type rh_e= r*invln2hi-rh;
             rl = r * invln2lo + rh_e;
-            th = r2 * invln2hi;
-            vf_type th_e= r2*invln2hi-th;
-            tl = r2 * invln2lo + th_e;
         } else {
+            d_real_traits<vf_type>::split(p, ph, pl);
+            ph = ph * invln2hi;
+            pl = (pl * invln2hi) + p* invln2lo;
             d_real_traits<vf_type>::split(r, rh, rl);
             rh = rh * invln2hi;
             rl = (rl * invln2hi) + r* invln2lo;
-            d_real_traits<vf_type>::split(r2, th, tl);
-            th = th * invln2hi;
-            tl = (tl * invln2hi) + r2* invln2lo;
         }
-        vf_type ll;
-        d_ops::add12(lh, ll, kf, rh);
-        lh += ((tl*p + rl) + th*p) + ll;
+        vf_type t;
+        d_ops::add12(lh, t, kf, log_c_h);
+        lh += ((pl*r2 + (log_c_l + rl + t)) + ph*r2) + rh;
     } else if (_LFUNC==log_func::c_log_10) {
         // x^ : +0xd.e6p-5f
         constexpr
@@ -1874,29 +1987,149 @@ __log_poly_k(arg_t<vf_type> xc)
         // x^ : -0x8.4ead9p-18f
         constexpr
         const float invln10lo=-3.1689971365e-05f;
-        vf_type th, tl;
+        vf_type ph, pl;
         vf_type rh, rl;
         if (d_real_traits<vf_type>::fma==true) {
+            ph = p * invln10hi;
+            vf_type ph_e= p*invln10hi-ph;
+            pl = p * invln10lo + ph_e;
             rh = r * invln10hi;
             vf_type rh_e= r*invln10hi-rh;
             rl = r * invln10lo + rh_e;
-            th = r2 * invln10hi;
-            vf_type th_e= r2*invln10hi-th;
-            tl = r2 * invln10lo + th_e;
         } else {
+            d_real_traits<vf_type>::split(p, ph, pl);
+            ph = ph * invln10hi;
+            pl = (pl * invln10hi) + p* invln10lo;
             d_real_traits<vf_type>::split(r, rh, rl);
             rh = rh * invln10hi;
-            rl = rl * invln10hi + (r* invln10lo);
-            d_real_traits<vf_type>::split(r2, th, tl);
-            th = th * invln10hi;
-            tl = tl * invln10hi + (r2* invln10lo);
+            rl = (rl * invln10hi) + r* invln10lo;
         }
-        vf_type ll;
-        d_ops::add12(lh, ll, kf*ctbl::m_lg2_cw[0], rh);
-        lh+= (((tl*p + rl) + th*p)+ ll) + kf * ctbl::m_lg2_cw[1];
+        vf_type t;
+        d_ops::add12(lh, t, kf*ctbl::m_lg2_cw[0], log_c_h);
+        lh += (((pl*r2 + rl+ t + log_c_l) + ph*r2) + rh) +
+            kf * ctbl::m_lg2_cw[1];
     }
     return lh;
 }
+
+template <typename _T>
+template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC,
+          typename cftal::math::elem_func_core<float, _T>::result_prec _P>
+inline
+typename cftal::math::elem_func_core<float, _T>::dvf_type
+cftal::math::elem_func_core<float, _T>::
+__log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
+             arg_t<vf_type> log_c_h, arg_t<vf_type> log_c_l,
+             arg_t<vf_type> kf)
+{
+    // [-1.5625e-2, 1.5625e-2] : | p - f | <= 2^-41.53125
+    // coefficients for log_hp generated by sollya
+    // x^1 : +0x8p-3f
+    constexpr
+    const float log_hp_c1=+1.0000000000e+00f;
+    // x^2 : -0x8p-4f
+    constexpr
+    const float log_hp_c2=-5.0000000000e-01f;
+    // x^3 : +0xa.aaaabp-5f
+    constexpr
+    const float log_hp_c3=+3.3333334327e-01f;
+    // x^4 : -0x8.004abp-5f
+    constexpr
+    const float log_hp_c4=-2.5003561378e-01f;
+    // x^5 : +0xc.cc8a7p-6f
+    constexpr
+    const float log_hp_c5=+1.9998417795e-01f;
+    static_assert(log_hp_c1 == 1.0f);
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    static const float ci[]={
+        log_hp_c5, log_hp_c4, log_hp_c3
+    };
+    vf_type p=horner(r, ci);
+    vf_type ph, pl;
+    horner_comp_quick(ph, pl, r, p, log_hp_c2, log_hp_c1);
+    vf_type lh, ll;
+    if (_LFUNC==log_func::c_log_e) {
+        d_ops::mul22(lh, ll, r, rl, ph, pl);
+        vf_type kh, kl;
+        d_ops::mul122(kh, kl, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
+        d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
+        // |kh, kl | >= log(2) or 0
+        d_ops::add22(lh, ll, kh, kl, lh, ll);
+    } else if (_LFUNC==log_func::c_log_2) {
+        vf_type r2, r2l;
+        d_ops::mul22(r2, r2l, r, rl,
+                     ctbl::m_1_ln2[0], ctbl::m_1_ln2[1]);
+        d_ops::mul22(lh, ll, r2, r2l, ph, pl);
+        d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
+        d_ops::add122(lh, ll, kf, lh, ll);
+    } else if (_LFUNC==log_func::c_log_10) {
+        vf_type r10, r10l;
+        d_ops::mul22(r10, r10l, r, rl,
+                     ctbl::m_1_ln10[0], ctbl::m_1_ln10[1]);
+        vf_type kh, kl;
+        d_ops::mul122(kh, kl, kf, ctbl::m_lg2[0], ctbl::m_lg2[1]);
+        d_ops::mul22(lh, ll, r10, r10l, ph, pl);
+        d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
+        d_ops::add22(lh, ll, kh, kl, lh, ll);
+    }
+    return dvf_type(lh, ll);
+}
+
+template <typename _T>
+template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC,
+          typename cftal::math::elem_func_core<float, _T>::result_prec _P>
+inline
+typename cftal::math::elem_func_core<float, _T>::dvf_type
+cftal::math::elem_func_core<float, _T>::
+__log_tbl_k12(arg_t<vf_type> xc)
+{
+    vf_type xr, kf, inv_c, log_c_h, log_c_l;
+    __reduce_log_arg<_LFUNC>(xr,
+                             inv_c, log_c_h, log_c_l,
+                             kf,
+                             xc);
+
+    vf_type r, rl;
+    if (d_real_traits<vf_type>::fma == true) {
+        d_ops::mul12(r, rl, xr, inv_c);
+        d_ops::add122(r, rl, -1.0f, r, rl);
+        // r = xr * inv_c - 1.0;
+    } else {
+        vf_type ph, pl;
+        d_real_traits<vf_type>::split(xr, ph, pl);
+        ph *= inv_c;
+        pl *= inv_c;
+        d_ops::add12(ph, pl, ph, pl);
+        // r = (ph - 1.0f) + pl;
+        d_ops::add122(r, rl, -1.0f, ph, pl);
+    }
+    return __log_tbl_k2<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
+}
+
+template <typename _T>
+template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC,
+          typename cftal::math::elem_func_core<float, _T>::result_prec _P>
+inline
+typename cftal::math::elem_func_core<float, _T>::dvf_type
+cftal::math::elem_func_core<float, _T>::
+__log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
+{
+    vf_type xr, kf, inv_c, log_c_h, log_c_l;
+    vi_type k;
+    __reduce_log_arg<_LFUNC>(xr,
+                             inv_c, log_c_h, log_c_l,
+                             kf,
+                             xc,
+                             &k);
+    vf_type xrl = ldexp_k(xcl, -k);
+    vf_type lh;
+    vf_type r, rl;
+    d_ops::mul122(r, rl, inv_c, xr, xrl);
+    d_ops::add122(r, rl, -1.0f, r, rl);
+    return __log_tbl_k2<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
+}
+
+
 
 template <typename _T>
 inline
@@ -1924,7 +2157,6 @@ __log1p_poly_k(arg_t<vf_type> xc)
     return lh;
 }
 
-
 template <typename _T>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
@@ -1940,7 +2172,7 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log_k(arg_t<vf_type> xc)
 {
-    return __log_poly_k<log_func::c_log_e>(xc);
+    return __log_tbl_k<log_func::c_log_e>(xc);
 }
 
 template <typename _T>
@@ -1949,7 +2181,7 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log2_k(arg_t<vf_type> xc)
 {
-    return __log_poly_k<log_func::c_log_2>(xc);
+    return __log_tbl_k<log_func::c_log_2>(xc);
 }
 
 template <typename _T>
@@ -1958,193 +2190,9 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log10_k(arg_t<vf_type> xc)
 {
-    return __log_poly_k<log_func::c_log_10>(xc);
+    return __log_tbl_k<log_func::c_log_10>(xc);
 }
 
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<float, _T>::dvf_type
-cftal::math::elem_func_core<float, _T>::
-__log1p_k12_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
-{
-    // [-0.292893230915069580078125, 0.41421353816986083984375] : | p - f | <= 2^-37.1875
-    // coefficients for log generated by sollya
-    // x^1 : +0x8p-3f
-    constexpr
-    const float log_c1=+1.0000000000e+00f;
-    // x^2 : -0x8p-4f
-    constexpr
-    const float log_c2=-5.0000000000e-01f;
-    // x^3 h: +0xa.aaaabp-5f
-    constexpr
-    const float log_c3h=+3.3333334327e-01f;
-    // x^3 l: -0xc.dd19p-32f
-    constexpr
-    const float log_c3l=-2.9950548708e-09f;
-    // x^4 : -0xf.ffffep-6f
-    constexpr
-    const float log_c4=-2.4999997020e-01f;
-    // x^5 : +0xc.ccc8ap-6f
-    constexpr
-    const float log_c5=+1.9999900460e-01f;
-    // x^6 : -0xa.aab26p-6f
-    constexpr
-    const float log_c6=-1.6666850448e-01f;
-    // x^7 : +0x9.2559bp-6f
-    constexpr
-    const float log_c7=+1.4290468395e-01f;
-    // x^8 : -0xf.ff8c7p-7f
-    constexpr
-    const float log_c8=-1.2498622388e-01f;
-    // x^9 : +0xe.18413p-7f
-    constexpr
-    const float log_c9=+1.1011519283e-01f;
-    // x^10 : -0xc.b228ap-7f
-    constexpr
-    const float log_c10=-9.9186971784e-02f;
-    // x^11 : +0xc.ccd37p-7f
-    constexpr
-    const float log_c11=+1.0000079125e-01f;
-    // x^12 : -0xc.aa0f4p-7f
-    constexpr
-    const float log_c12=-9.8939806223e-02f;
-    // x^13 : +0xd.d3ba8p-8f
-    constexpr
-    const float log_c13=+5.4011970758e-02f;
-    static_assert(log_c1 == 1.0);
-    static const double ci[]={
-        log_c13, log_c12, log_c11, log_c10,
-        log_c9, log_c8, log_c7, log_c6
-    };
-    vf_type r4=r2*r2;
-    vf_type p, pl;
-    p= horner4(r, r2, r4, ci);
-    p= horner(r, p, log_c5);
-    horner_comp_quick(p, pl, r, p, log_c4);
-    vf_type p_i, o_i;
-    d_ops::mul12(p, p_i, p, r);
-    d_ops::add212(p, o_i, log_c3h, log_c3l, p);
-    pl= pl*r + (p_i + o_i);
-    horner_comp_quick_si(p, pl, r, p, pl, log_c2);
-    return dvf_type(p, pl);
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<float, _T>::dvf_type
-cftal::math::elem_func_core<float, _T>::
-__log_k12(arg_t<vf_type> xc)
-{
-    vf_type xr, kf;
-    __reduce_log_arg(xr, kf, xc);
-    vf_type r=xr -1.0;
-    vf_type r2, r2l;
-    d_ops::sqr12(r2, r2l, r);
-    dvf_type p=__log1p_k12_poly(r, r2);
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-    vf_type lh, ll;
-
-    d_ops::mul22(lh, ll, r2, r2l, p[0], p[1]);
-    vf_type t0, t1;
-    d_ops::mul122(t0, t1, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    d_ops::add122(lh, ll, r, lh, ll);
-    d_ops::add22(lh, ll, t0, t1, lh, ll);
-    return dvf_type(lh, ll);
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<float, _T>::dvf_type
-cftal::math::elem_func_core<float, _T>::
-__log1p_k2_poly(arg_t<vf_type> r,  arg_t<vf_type> rl,
-                arg_t<vf_type> r2)
-{
-    // [-0.292893230915069580078125, 0.41421353816986083984375] : | p - f | <= 2^-37.1875
-    // coefficients for log generated by sollya
-    // x^1 : +0x8p-3f
-    constexpr
-    const float log_c1=+1.0000000000e+00f;
-    // x^2 : -0x8p-4f
-    constexpr
-    const float log_c2=-5.0000000000e-01f;
-    // x^3 h: +0xa.aaaabp-5f
-    constexpr
-    const float log_c3h=+3.3333334327e-01f;
-    // x^3 l: -0xc.dd19p-32f
-    constexpr
-    const float log_c3l=-2.9950548708e-09f;
-    // x^4 : -0xf.ffffep-6f
-    constexpr
-    const float log_c4=-2.4999997020e-01f;
-    // x^5 : +0xc.ccc8ap-6f
-    constexpr
-    const float log_c5=+1.9999900460e-01f;
-    // x^6 : -0xa.aab26p-6f
-    constexpr
-    const float log_c6=-1.6666850448e-01f;
-    // x^7 : +0x9.2559bp-6f
-    constexpr
-    const float log_c7=+1.4290468395e-01f;
-    // x^8 : -0xf.ff8c7p-7f
-    constexpr
-    const float log_c8=-1.2498622388e-01f;
-    // x^9 : +0xe.18413p-7f
-    constexpr
-    const float log_c9=+1.1011519283e-01f;
-    // x^10 : -0xc.b228ap-7f
-    constexpr
-    const float log_c10=-9.9186971784e-02f;
-    // x^11 : +0xc.ccd37p-7f
-    constexpr
-    const float log_c11=+1.0000079125e-01f;
-    // x^12 : -0xc.aa0f4p-7f
-    constexpr
-    const float log_c12=-9.8939806223e-02f;
-    // x^13 : +0xd.d3ba8p-8f
-    constexpr
-    const float log_c13=+5.4011970758e-02f;
-    static_assert(log_c1 == 1.0);
-    static const double ci[]={
-        log_c13, log_c12, log_c11, log_c10,
-        log_c9, log_c8, log_c7, log_c6
-    };
-    vf_type r4=r2*r2;
-    vf_type p, pl;
-    p= horner4(r, r2, r4, ci);
-    p= horner(r, p, log_c5);
-    horner_comp_quick(p, pl, r, p, log_c4);
-    d_ops::mul22(p, pl, r, rl, p, pl);
-    d_ops::add22(p, pl, log_c3h, log_c3l, p, pl);
-    d_ops::mul22(p, pl, r, rl, p, pl);
-    d_ops::add122(p, pl, log_c2, p, pl);
-    return dvf_type(p, pl);
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<float, _T>::dvf_type
-cftal::math::elem_func_core<float, _T>::
-__log_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
-{
-    vf_type xr, kf;
-    __reduce_log_arg(xr, kf, xc);
-    auto sc=__scale_exp_k(-kf);
-    vf_type xrl=(xl * sc.f0()) * sc.f1();
-
-    vf_type r, rl;
-    d_ops::add122(r, rl, -1.0f, xr, xrl);
-    vf_type r2, r2l;
-    d_ops::sqr22(r2, r2l, r, rl);
-    dvf_type p=__log1p_k2_poly(r, rl, r2);
-    using ctbl=impl::d_real_constants<d_real<float>, float>;
-    vf_type lh, ll;
-    d_ops::mul22(lh, ll, r2, r2l, p[0], p[1]);
-    vf_type t0, t1;
-    d_ops::mul122(t0, t1, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    d_ops::add22(lh, ll, r, rl, lh, ll);
-    d_ops::add22(lh, ll, t0, t1, lh, ll);
-    return dvf_type(lh, ll);
-}
 
 
 template <typename _T>
@@ -2154,7 +2202,8 @@ cftal::math::elem_func_core<float, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
-    dvf_type lnx= __log_k12(abs_x);
+    dvf_type lnx= __log_tbl_k12<log_func::c_log_e,
+                                result_prec::high>(abs_x);
     dvf_type ylnx;
     // yndx = y*lnx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
@@ -2180,7 +2229,8 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
     dvf_type abs_x= select(xh > 0.0f, dvf_type(xh, xl), dvf_type(-xh, -xl));
-    dvf_type lnx = __log_k2(abs_x[0], abs_x[1]);
+    dvf_type lnx = __log_tbl_k2<log_func::c_log_e,
+                                result_prec::high>(abs_x[0], abs_x[1]);
     // ylnx = y*lnx;
     dvf_type ylnx;
     d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
@@ -3042,7 +3092,7 @@ asinh_k(arg_t<vf_type> xc)
         vf_type log_arg=_T::sel(x_huge,
                                 x,
                                 2.0f * x+ 1.0f/(sqrt(vf_type(t+1.0f))+x));
-        vf_type yl= __log_poly_k<log_func::c_log_e>(log_arg);
+        vf_type yl= __log_tbl_k<log_func::c_log_e>(log_arg);
         yl += add_2_log;
         y = _T::sel(sel, yl, y);
     }
@@ -3150,7 +3200,7 @@ acosh_k(arg_t<vf_type> xc)
         vf_type log_arg=_T::sel(x_huge,
                                 x,
                                 2.0f*x - 1.0f/(x+sqrt(vf_type(x*x-1.0f))));
-        vf_type yl= __log_poly_k<log_func::c_log_e>(log_arg);
+        vf_type yl= __log_tbl_k<log_func::c_log_e>(log_arg);
         yl += add_2_log;
         y= _T::sel(sel, yl, y);
     }
