@@ -2338,14 +2338,11 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
                              xc,
                              &k);
     vf_type xrl = ldexp_k(xl, -k);
-    vf_type lh;
     vf_type r, rl;
     d_ops::mul122(r, rl, inv_c, xr, xrl);
     d_ops::add122(r, rl, -1.0, r, rl);
     return __log_tbl_k2<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
 }
-
-
 
 template <typename _T>
 inline
