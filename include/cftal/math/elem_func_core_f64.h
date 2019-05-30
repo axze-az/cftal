@@ -62,6 +62,12 @@ namespace cftal {
                 high
             };
 
+            template <typename _SCALAR_FUNC>
+            static
+            vf_type
+            call_scalar_func(arg_t<vf_type> x, _SCALAR_FUNC f);
+
+            // unsigned integer __fmod
             template <unsigned _U>
             static
             vf_type
@@ -572,6 +578,26 @@ namespace cftal {
 
     } // end math
 } // end cftal
+
+template <typename _T>
+template <typename _SCALAR_FUNC>
+inline
+typename
+cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+call_scalar_func(arg_t<vf_type> x, _SCALAR_FUNC f)
+{
+    constexpr const std::size_t _N=_T::NVF();
+    struct alignas(_N*sizeof(double)) v_x {
+        double _a[_N];
+    } ax, ar;
+    mem<vf_type>::store(ax._a, x);
+    for (std::size_t i=0; i<_N; ++i) {
+        ar._a[i] = f(ax._a[i]);
+    }
+    vf_type r=mem<vf_type>::load(ar._a, _N);
+    return r;
+}
 
 template <typename _T>
 template <unsigned _U>
