@@ -13,8 +13,8 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
 
-    const int ulp3=3;
-    const int ulp=2;
+    const int ulp3=1;
+    const int ulp=1;
     const int _N=16;
     bool rc=true;
     std::cout << std::setprecision(18) << std::scientific;
