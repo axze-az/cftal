@@ -2068,12 +2068,20 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
     const float log_hp_c5=+1.9998417795e-01f;
     static_assert(log_hp_c1 == 1.0f);
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    static const float ci[]={
-        log_hp_c5, log_hp_c4, log_hp_c3
-    };
-    vf_type p=horner(r, ci);
     vf_type ph, pl;
-    horner_comp_quick(ph, pl, r, p, log_hp_c2, log_hp_c1);
+    if (_P == result_prec::high) {
+        static const float ci[]={
+            log_hp_c5, log_hp_c4, log_hp_c3
+        };
+        vf_type p=horner(r, ci);
+        horner_comp_quick(ph, pl, r, p, log_hp_c2, log_hp_c1);
+    } else {
+        static const float ci[]={
+            log_hp_c5, log_hp_c4, log_hp_c3, log_hp_c2
+        };
+        vf_type p=horner(r, ci);
+        d_ops::muladd12(ph, pl, log_hp_c1, p, r);
+    }
     vf_type lh, ll;
     if (_LFUNC==log_func::c_log_e) {
         d_ops::mul22(lh, ll, r, rl, ph, pl);
@@ -2217,8 +2225,6 @@ log10_k(arg_t<vf_type> xc)
     return __log_tbl_k<log_func::c_log_10>(xc);
 }
 
-
-
 template <typename _T>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
@@ -2227,7 +2233,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
     dvf_type lnx= __log_tbl_k12<log_func::c_log_e,
-                                result_prec::high>(abs_x);
+                                result_prec::normal>(abs_x);
     dvf_type ylnx;
     // yndx = y*lnx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);

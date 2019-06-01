@@ -2276,16 +2276,28 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
     // x^11 : +0xb.59aaeefb5bf6p-8
     constexpr
     const double log_hp_c11=+4.4336970658477387052798e-02;
-    static const double ci[]={
-        log_hp_c11, log_hp_c10, log_hp_c9, log_hp_c8,
-        log_hp_c7, log_hp_c6, log_hp_c5, log_hp_c4
-    };
-    vf_type r2=r*r;
-    vf_type p=horner2(r, r2, ci);
+
     vf_type ph, pl;
-    horner_comp_quick(ph, pl, r, p,  log_hp_c3, log_hp_c2);
-    d_ops::mul22(ph, pl, r, rl, ph, pl);
-    d_ops::add122(ph, pl, log_hp_c1, ph, pl);
+    if (_P == result_prec::high ) {
+        static const double ci[]={
+            log_hp_c11, log_hp_c10, log_hp_c9, log_hp_c8,
+            log_hp_c7, log_hp_c6, log_hp_c5, log_hp_c4
+        };
+        vf_type r2=r*r;
+        vf_type p=horner2(r, r2, ci);
+        horner_comp_quick(ph, pl, r, p,  log_hp_c3, log_hp_c2);
+        d_ops::mul22(ph, pl, r, rl, ph, pl);
+        d_ops::add122(ph, pl, log_hp_c1, ph, pl);
+    } else {
+        static const double ci[]={
+            log_hp_c11, log_hp_c10, log_hp_c9, log_hp_c8,
+            log_hp_c7, log_hp_c6, log_hp_c5, log_hp_c4,
+            log_hp_c3, log_hp_c2
+        };
+        vf_type r2=r*r;
+        vf_type p=horner2(r, r2, ci);
+        d_ops::muladd12(ph, pl, log_hp_c1, p, r);
+    }
     vf_type lh, ll;
     using ctbl=impl::d_real_constants<d_real<double>, double>;
 
@@ -2315,7 +2327,6 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
     }
     return dvf_type(lh, ll);
 }
-
 
 template <typename _T>
 template <typename cftal::math::elem_func_core<double, _T>::log_func _LFUNC,
@@ -2456,7 +2467,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
     dvf_type lnx= __log_tbl_k12<log_func::c_log_e,
-                                result_prec::high>(abs_x);
+                                result_prec::normal>(abs_x);
     dvf_type ylnx;
     // yldx = y*ldx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
