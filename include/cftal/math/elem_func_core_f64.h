@@ -2343,19 +2343,19 @@ __log_tbl_k12(arg_t<vf_type> xc)
                              xc);
 
     vf_type r, rl;
+    // r = xr * inv_c - 1.0;
     if (d_real_traits<vf_type>::fma == true) {
         d_ops::mul12(r, rl, xr, inv_c);
-        d_ops::add122(r, rl, -1.0, r, rl);
-        // r = xr * inv_c - 1.0;
     } else {
-        vf_type ph, pl;
-        d_real_traits<vf_type>::split(xr, ph, pl);
-        ph *= inv_c;
-        pl *= inv_c;
-        d_ops::add12(ph, pl, ph, pl);
-        // r = (ph - 1.0f) + pl;
-        d_ops::add122(r, rl, -1.0, ph, pl);
+        // fast mul12 because inv_c has trailing zeros
+        vf_type th, tl;
+        d_real_traits<vf_type>::split(xr, th, tl);
+        r = xr * inv_c;
+        th *= inv_c;
+        tl *= inv_c;
+        rl = (th - r) + tl;
     }
+    d_ops::add122(r, rl, -1.0, r, rl);
     return __log_tbl_k2<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
 }
 
