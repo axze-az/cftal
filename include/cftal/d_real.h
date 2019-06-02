@@ -754,14 +754,6 @@ namespace cftal {
     template <typename _T>
     d_real<_T> max(const d_real<_T>& on_true,
                    const d_real<_T>& on_false);
-
-    d_real<double> str_to_d_double(const char* p, std::size_t n);
-    d_real<double> str_to_d_double(const char* p);
-    d_real<float> str_to_d_float(const char* p, std::size_t n);
-    d_real<float> str_to_d_float(const char* p);
-
-    d_real<double> operator "" _dd(const char* dd);
-    d_real<float> operator "" _df(const char* df);
 }
 
 
