@@ -15,6 +15,7 @@
 #include <cftal/math/func_traits_f32_s32.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/lanczos.h>
+#include <cftal/math/horner_idx.h>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -65,6 +66,10 @@ namespace cftal {
             static
             vf_type
             erfc_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            erfc_tbl_k(arg_t<vf_type> x);
 
             static
             vf_type
@@ -556,6 +561,68 @@ erfc_k(arg_t<vf_type> xc)
     vf_type ih= _T::sel(x_le_0_75, i0h, i123h);
     if (likely(any_of(x_lt_0_00))) {
         vf_type il= _T::sel(x_le_0_75, i0l, i123l);
+        vf_type nih, nil;
+        d_ops::add122(nih, nil, 2.0f, -ih, -il);
+        ih = _T::sel(x_lt_0_00, nih, ih);
+    }
+    return ih;
+}
+
+template <typename _T>
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+erfc_tbl_k(arg_t<vf_type> xc)
+{
+    // erfc(-x) = 2 - erfc(x)
+
+    vf_type x= abs(xc);
+
+    vf_type x2h, x2l;
+
+    if (d_real_traits<vf_type>::fma==true) {
+        d_ops::mul12(x2h, x2l, x, -x);
+    } else {
+        d_ops::sqr12(x2h, x2l, x);
+        x2h = -x2h;
+        x2l = -x2l;
+    }
+    vf_type xrh, xrl;
+    vi_type eidx, k;
+    base_type::__reduce_exp_arg(xrh, xrl, eidx, k, x2h, x2l);
+
+    using erfc_table=erfc_data<float>;
+
+    vf_type xi= rint(vf_type(x * erfc_table::SCALE));
+    vf_type xi0= xi*erfc_table::INV_SCALE;
+    vi_type idx= _T::cvt_f_to_i(xi);
+    idx = max(min(idx, vi_type(erfc_table::ENTRIES-1)), vi_type(0));
+
+    vf_type exl, exh=base_type::template __exp_tbl_k<
+        base_type::result_prec::medium>(xrh, xrl, eidx, &exl);
+
+    // vi_type idxs = idx * (erfc_table::ENTRIES + 2) = idx * 7
+    vi_type idx8= idx << 3;
+    vi_type idxs = idx8 - idx;
+    vf_type xr=x - xi0;
+    vf_type xr2=xr*xr;
+    auto lck=make_variable_lookup_table<float>(idxs);
+    const float* pt=erfc_table::_tbl;
+    vf_type i=horner2_idx<erfc_table::POLY_ORDER-1>(xr, xr2, lck, pt);
+    vf_type c1=lck.from(pt+erfc_table::POLY_ORDER-1);
+    i = horner(xr, i, c1);
+    vf_type c0h=lck.from(pt+erfc_table::POLY_ORDER);
+    vf_type c0l=lck.from(pt+erfc_table::POLY_ORDER+1);
+    i *= xr;
+    vf_type ih, il;
+    d_ops::add212cond(ih, il, c0h, c0l, i);
+    d_ops::mul22(ih, il, ih, il, exh, exl);
+    auto sc=base_type::__scale_exp_k(k);
+    ih *= sc.f0();
+    ih *= sc.f1();
+    vmf_type x_lt_0_00 = xc < 0.0f;
+    if (likely(any_of(x_lt_0_00))) {
+        il *= sc.f0();
+        il *= sc.f1();
         vf_type nih, nil;
         d_ops::add122(nih, nil, 2.0f, -ih, -il);
         ih = _T::sel(x_lt_0_00, nih, ih);

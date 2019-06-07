@@ -72,7 +72,7 @@ cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
 erfc(arg_t<vf_type> x)
 {
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
-    vf_type r=base_type::erfc_k(x);
+    vf_type r=base_type::erfc_tbl_k(x);
     using fc=func_constants<_FLOAT_T>;
     r = _TRAITS_T::sel_zero_or_val(x > fc::erfc_gt_zero_fin(), r);
     r = _TRAITS_T::sel(x < -fc::erfc_gt_zero_fin(), vf_type(2.0), r);

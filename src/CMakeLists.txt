@@ -13,6 +13,8 @@ set (CSRCS
     exp_data_f64.cc
     log_data_f32.cc
     log_data_f64.cc
+    erfc_data_f32.cc
+    erfc_data_f64.cc
     math_func_f64.cc
     math_func_f32.cc
     math_common.cc
@@ -116,6 +118,7 @@ SET (HDRS
     ../include/cftal/math/elem_func_core_f64.h
     ../include/cftal/math/spec_func.h
     ../include/cftal/math/horner.h
+    ../include/cftal/math/horner_idx.h
     ../include/cftal/math/elem_func_core_f32.h
     ../include/cftal/math/func_traits_f32_s32.h
     ../include/cftal/math/elem_func.h

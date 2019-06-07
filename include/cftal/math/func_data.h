@@ -74,6 +74,40 @@ namespace cftal {
 
         extern template struct log_data<double>;
 
+        // tables for complementary error function
+        template <typename _T>
+        struct erfc_data {};
+
+        template <>
+        struct erfc_data<double> {
+            constexpr static const double SCALE=8.0;
+            constexpr static const double INV_SCALE=1.0/8.0;
+            enum {
+                COUNT=219,
+                POLY_ORDER=10,
+                // c0 is stored as c0h + c0l
+                ENTRIES=COUNT*(POLY_ORDER+2)
+            };
+            static const double _tbl[ENTRIES];
+        };
+
+        template <>
+        struct erfc_data<float> {
+            constexpr static const float SCALE=8.0f;
+            constexpr static const float INV_SCALE=1.0f/8.0f;
+            enum {
+                COUNT=81,
+                POLY_ORDER=5,
+                // c0 is stored as c0h + c0l
+                ENTRIES=COUNT*(POLY_ORDER+2)
+            };
+            static const float _tbl[ENTRIES];
+        };
+
+        extern template struct erfc_data<float>;
+
+        extern template struct erfc_data<double>;
+
     }
 }
 

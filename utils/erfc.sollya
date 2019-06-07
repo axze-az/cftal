@@ -1,0 +1,116 @@
+#! /usr/bin/sollya
+execute("../cftal/utils/common.sollya");
+prec=1024!;
+
+erfc_table_f32 = proc(fmt) {
+    var x0, xe, d, f, o, i0, i1, d0, b, c, p,
+        rev_c, rev_b, i, ci;
+    xi = 0.0;
+    xe = 10.0;
+    i0=[-0.125*0.5, 0.125*0.5];
+    d=0.25*0.5;
+    c = [|49, SG, SG, SG, SG, SG|];
+    b = [|0, ..., 5|];
+    rev_c = revert(c);
+    rev_b = revert(b);
+    write("const float erfc_table[]={\n");
+    while (xi <= xe) do {
+        f=erfc(x+xi)*exp((x+xi)*(x+xi));
+        d0=guessdegree(f, i0, 0x1p-28);
+        p=fpminimax(f, b, c, i0, relative, floating);
+        write("    // ", xi, ": ");
+        write_approx_prec(p, f, i0);
+        j=0;
+        for i in rev_b
+        do {
+            ci = coeff(p, i);
+
+            match(rev_c[j]) with
+            single: {
+                write("    // x^ ", i , ": ");
+                write_f_hex(ci);
+                write(",\n");
+                write("    ");
+                write_f(ci);
+                write(",\n");
+            }
+            49: {
+                write("    // x^ ", i , ": ");
+                write_df_h_hex(ci);
+                write(",\n");
+                write("    ");
+                write_df_h(ci);
+                write(",\n");
+                write("    // x^ ", i , ": ");
+                write_df_l_hex(ci);
+                write(",\n");
+                write("    ");
+                write_df_l(ci);
+                write(",\n");
+            };
+
+            j = j + 1;
+        };
+        xi = xi+d;
+    };
+    write("}\n");
+};
+
+erfc_table = proc(fmt) {
+    var x0, xe, d, f, o, i0, i1, d0, b, c, p,
+        rev_c, rev_b, i, ci;
+    xi = 0.0;
+    xe = 27.25;
+    i0=[-0.125*0.5, 0.125*0.5];
+    d=0.25*0.5;
+    c = [|DD, D, D, D, D, D, D, D, D, D, D|];
+    b = [|0, ..., 10|];
+    rev_c = revert(c);
+    rev_b = revert(b);
+    write("const double erfc_table[]={\n");
+    while (xi <= xe) do {
+        f=erfc(x+xi)*exp((x+xi)*(x+xi));
+        d0=guessdegree(f, i0, 0x1p-64);
+        p=fpminimax(f, b, c, i0, relative, floating);
+        write("    // ", xi, ": ");
+        write_approx_prec(p, f, i0);
+        j=0;
+        for i in rev_b
+        do {
+            ci = coeff(p, i);
+
+            match(rev_c[j]) with
+            double: {
+                write("    // x^ ", i , ": ");
+                write_d_hex(ci);
+                write(",\n");
+                write("    ");
+                write_d(ci);
+                write(",\n");
+            }
+            doubledouble: {
+                write("    // x^ ", i , ": ");
+                write_dd_h_hex(ci);
+                write(",\n");
+                write("    ");
+                write_dd_h(ci);
+                write(",\n");
+                write("    // x^ ", i , ": ");
+                write_dd_l_hex(ci);
+                write(",\n");
+                write("    ");
+                write_dd_l(ci);
+                write(",\n");
+            };
+
+            j = j + 1;
+        };
+        xi = xi+d;
+    };
+    write("}\n");
+};
+
+erfc_table_f32(single);
+erfc_table(double);
+quit;
+
