@@ -1,6 +1,6 @@
 #! /usr/bin/sollya
-execute("../cftal/utils/common.sollya");
-prec=1024!;
+execute("common.sollya");
+prec=2048!;
 
 erfc_table_f32 = proc(fmt) {
     var x0, xe, d, f, o, i0, i1, d0, b, c, p,
