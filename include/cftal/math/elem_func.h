@@ -67,7 +67,7 @@ namespace cftal {
             using vi_type = typename _TRAITS_T::vi_type;
             using vmf_type = typename _TRAITS_T::vmf_type;
             using vmi_type = typename _TRAITS_T::vmi_type;
-            using dvf_type = d_real<vf_type>;
+            using vdf_type = typename _TRAITS_T::vdf_type;
         };
 
         // common implementation of base and elementary functions
@@ -81,7 +81,7 @@ namespace cftal {
             using vi_type = typename base_type::vi_type;
             using vmf_type = typename base_type::vmf_type;
             using vmi_type = typename base_type::vmi_type;
-            using dvf_type = typename base_type::dvf_type;
+            using vdf_type = typename base_type::vdf_type;
             using d_ops = typename base_type::d_ops;
 
             using base_type::frexp;

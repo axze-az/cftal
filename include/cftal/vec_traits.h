@@ -107,13 +107,13 @@ namespace cftal {
         template <std::size_t _N>
         struct vec_func_traits_f32 : public func_traits<float, int32_t> {
             using vf_type = vec<float, _N>;
-            using hvf_type = vec<double, _N>;
+            using vhf_type = vec<double, _N>;
             using vmf_type = typename vf_type::mask_type;
             using vi_type = vec<int32_t, _N>;
             using vu_type = vec<uint32_t, _N>;
             using vmi_type = typename vi_type::mask_type;
 
-            using dvf_type = d_real<vf_type>;
+            using vdf_type = d_real<vf_type>;
 
             static
             constexpr std::size_t NVF() {
@@ -237,7 +237,7 @@ namespace cftal {
             using vli_type = vec<int64_t, _N>;
             using vmli_type= typename vec<int64_t, _N>::mask_type;
 
-            using dvf_type = d_real<vf_type>;
+            using vdf_type = d_real<vf_type>;
 
             static
             constexpr std::size_t NVF() {

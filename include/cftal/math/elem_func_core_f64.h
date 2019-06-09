@@ -47,8 +47,7 @@ namespace cftal {
             using vmi_type = typename _T::vmi_type;
             using vmli_type = typename _T::vmli_type;
             using vmi2_type = typename _T::vmi2_type;
-
-            using dvf_type = d_real<vf_type>;
+            using vdf_type = typename _T::vdf_type;
 
             using d_ops=cftal::impl::
                 d_real_ops<vf_type, d_real_traits<vf_type>::fma>;
@@ -165,7 +164,7 @@ namespace cftal {
             // scaling function for exponential functions
             // returns yh*2^k, yl*2^k
             static
-            dvf_type
+            vdf_type
             __scale_exp_k(arg_t<vf_type> yh,
                           arg_t<vf_type> yl,
                           arg_t<vf_type> k);
@@ -429,7 +428,7 @@ namespace cftal {
             // with higher precision
             template <log_func _LFUNC, result_prec _P>
             static
-            dvf_type
+            vdf_type
             __log_tbl_k2(arg_t<vf_type> r,
                          arg_t<vf_type> rl,
                          arg_t<vf_type> log_c_h,
@@ -439,13 +438,13 @@ namespace cftal {
             // calculates log(xc) with higher precision
             template <log_func _LFUNC, result_prec _P>
             static
-            dvf_type
+            vdf_type
             __log_tbl_k12(arg_t<vf_type> xc);
 
             // calculates log(xc) with higher precision
             template <log_func _LFUNC, result_prec _P>
             static
-            dvf_type
+            vdf_type
             __log_tbl_k2(arg_t<vf_type> xc,
                          arg_t<vf_type> xl);
 
@@ -474,9 +473,9 @@ namespace cftal {
             vf_type
             pow_k(arg_t<vf_type> x, arg_t<vf_type> y);
 
-            // returns (xh+xl)^(yh+yl) * 2^(-sc) as dvf_type in first,
+            // returns (xh+xl)^(yh+yl) * 2^(-sc) as vdf_type in first,
             // sc in second
-            using pow_k2_result = std::pair<dvf_type, scale_result>;
+            using pow_k2_result = std::pair<vdf_type, scale_result>;
             static
             pow_k2_result
             pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
@@ -521,7 +520,7 @@ namespace cftal {
             void
             __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                         arg_t<vi2_type> q,
-                        dvf_type* ps, dvf_type *pc);
+                        vdf_type* ps, vdf_type *pc);
 
             // core sine, cosine calculation
             static
@@ -535,7 +534,7 @@ namespace cftal {
 
             // atan calculation for x in [0, 1]
             static
-            dvf_type
+            vdf_type
             __atan_0_1_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
 
             static
@@ -1076,14 +1075,14 @@ __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> k)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
-typename cftal::math::elem_func_core<double, _T>::dvf_type
+typename cftal::math::elem_func_core<double, _T>::vdf_type
 cftal::math::elem_func_core<double, _T>::
 __scale_exp_k(arg_t<vf_type> yh, arg_t<vf_type> yl, arg_t<vf_type> k)
 {
     auto sc = __scale_exp_k(k);
     vf_type ysh = (yh * sc.f0()) * sc.f1();
     vf_type ysl = (yl * sc.f0()) * sc.f1();
-    return dvf_type(ysh, ysl);
+    return vdf_type(ysh, ysl);
 }
 
 template <typename _T>
@@ -2235,7 +2234,7 @@ template <typename _T>
 template <typename cftal::math::elem_func_core<double, _T>::log_func _LFUNC,
           typename cftal::math::elem_func_core<double, _T>::result_prec _P>
 inline
-typename cftal::math::elem_func_core<double, _T>::dvf_type
+typename cftal::math::elem_func_core<double, _T>::vdf_type
 cftal::math::elem_func_core<double, _T>::
 __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
              arg_t<vf_type> log_c_h, arg_t<vf_type> log_c_l,
@@ -2325,14 +2324,14 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
         d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
         d_ops::add22(lh, ll, kh, kl, lh, ll);
     }
-    return dvf_type(lh, ll);
+    return vdf_type(lh, ll);
 }
 
 template <typename _T>
 template <typename cftal::math::elem_func_core<double, _T>::log_func _LFUNC,
           typename cftal::math::elem_func_core<double, _T>::result_prec _P>
 inline
-typename cftal::math::elem_func_core<double, _T>::dvf_type
+typename cftal::math::elem_func_core<double, _T>::vdf_type
 cftal::math::elem_func_core<double, _T>::
 __log_tbl_k12(arg_t<vf_type> xc)
 {
@@ -2363,7 +2362,7 @@ template <typename _T>
 template <typename cftal::math::elem_func_core<double, _T>::log_func _LFUNC,
           typename cftal::math::elem_func_core<double, _T>::result_prec _P>
 inline
-typename cftal::math::elem_func_core<double, _T>::dvf_type
+typename cftal::math::elem_func_core<double, _T>::vdf_type
 cftal::math::elem_func_core<double, _T>::
 __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
 {
@@ -2466,9 +2465,9 @@ cftal::math::elem_func_core<double, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
-    dvf_type lnx= __log_tbl_k12<log_func::c_log_e,
+    vdf_type lnx= __log_tbl_k12<log_func::c_log_e,
                                 result_prec::normal>(abs_x);
-    dvf_type ylnx;
+    vdf_type ylnx;
     // yldx = y*ldx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
     vf_type xrh, xrl;
@@ -2491,11 +2490,11 @@ cftal::math::elem_func_core<double, _T>::
 pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
-    dvf_type abs_x= select(xh > 0.0, dvf_type(xh, xl), dvf_type(-xh, -xl));
-    dvf_type lnx = __log_tbl_k2<log_func::c_log_e,
+    vdf_type abs_x= select(xh > 0.0, vdf_type(xh, xl), vdf_type(-xh, -xl));
+    vdf_type lnx = __log_tbl_k2<log_func::c_log_e,
                                 result_prec::high>(abs_x[0], abs_x[1]);
     // ylnx = y*lnx;
-    dvf_type ylnx;
+    vdf_type ylnx;
     d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
 
     vf_type xrh, xrl;
@@ -2504,7 +2503,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     vf_type rl;
     vf_type rh=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &rl);
     auto sc = __scale_exp_k(ki);
-    return std::make_pair(dvf_type(rh, rl), sc);
+    return std::make_pair(vdf_type(rh, rl), sc);
 }
 
 template <typename _T>
@@ -2849,7 +2848,7 @@ void
 cftal::math::elem_func_core<double, _T>::
 __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
             arg_t<vi2_type> q,
-            dvf_type* ps, dvf_type* pc)
+            vdf_type* ps, vdf_type* pc)
 {
     // [0, 0.785398185253143310546875] : | p - f | <= 2^-74.8125
     // coefficients for cos generated by sollya
@@ -2957,7 +2956,7 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         // swap signs
         rsh = _T::sel(q_and_2_f, -rsh, rsh);
         rsl = _T::sel(q_and_2_f, -rsl, rsl);
-        *ps = dvf_type(rsh, rsl);
+        *ps = vdf_type(rsh, rsl);
     }
     if (pc != nullptr) {
         vf_type rch(_T::sel(q_and_1_f, sh, ch));
@@ -2966,7 +2965,7 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         vmf_type mt = q_and_2_f ^ q_and_1_f;
         rch = _T::sel(mt, -rch, rch);
         rcl = _T::sel(mt, -rcl, rcl);
-        *pc= dvf_type(rch, rcl);
+        *pc= vdf_type(rch, rcl);
     }
 }
 
@@ -2995,7 +2994,7 @@ tan_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_core<double, _T>::dvf_type
+typename cftal::math::elem_func_core<double, _T>::vdf_type
 cftal::math::elem_func_core<double, _T>::
 __atan_0_1_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
@@ -3112,7 +3111,7 @@ __atan_0_1_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
         ah = _T::sel(sel, ah, y_i1_h);
         al = _T::sel(sel, al, y_i1_l);
     }
-    return dvf_type(ah, al);
+    return vdf_type(ah, al);
 }
 
 template <typename _T>

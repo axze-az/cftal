@@ -36,7 +36,7 @@ namespace cftal {
             using vi_type = typename _T::vi_type;
             using vmf_type = typename _T::vmf_type;
             using vmi_type = typename _T::vmi_type;
-            using dvf_type = d_real<vf_type>;
+            using vdf_type = typename _T::vdf_type;
 
 
             using d_ops=cftal::impl::d_real_ops<vf_type,
@@ -57,7 +57,7 @@ namespace cftal {
             static
             void
             sinpi_cospi_k(arg_t<vf_type> xc,
-                          dvf_type* ps, dvf_type *pc);
+                          vdf_type* ps, vdf_type *pc);
 
             static
             vf_type
@@ -77,16 +77,16 @@ namespace cftal {
 
             // calculates lngamma for x in [1, 2]
             static
-            dvf_type
+            vdf_type
             __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
 
             // returns _xr in the range [1, 2]
             // returns _f (including sign)= (x+N)(x+_N-1)...(x-1)(x-2)
             // lgamma(x) = lgamma(xr) * log(abs(_f))
             struct reduced_small_gamma_args {
-                dvf_type _xr, _f;
+                vdf_type _xr, _f;
                 reduced_small_gamma_args() : _xr(), _f() {};
-                reduced_small_gamma_args(const dvf_type& xr, const dvf_type& f)
+                reduced_small_gamma_args(const vdf_type& xr, const vdf_type& f)
                     : _xr(xr), _f(f) {};
             };
             static
@@ -128,7 +128,7 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
 template <typename _T>
 void
 cftal::math::spec_func_core<float, _T>::
-sinpi_cospi_k(arg_t<vf_type> xc, dvf_type* ps, dvf_type* pc)
+sinpi_cospi_k(arg_t<vf_type> xc, vdf_type* ps, vdf_type* pc)
 {
     vf_type xrh, xrl;
     auto q=__reduce_trigpi_arg(xrh, xrl, xc);
@@ -660,16 +660,16 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     base_type::exp_k2(gh, gl, -base, -base_l);
     d_ops::mul22(gh, gl, gh, gl, sum, sum_l);
     if (any_of(x_lt_zero)) {
-        dvf_type s;
+        vdf_type s;
         sinpi_cospi_k(xa, &s, nullptr);
         // vf_type r_n = -M_PI/(s * x0 * r);
         using ctbl = impl::d_real_constants<d_real<float>, float>;
-        const dvf_type p=-ctbl::m_pi;
-        // dvf_type q=s * (xa *dvf_type(gh, gl));
-        dvf_type q;
+        const vdf_type p=-ctbl::m_pi;
+        // vdf_type q=s * (xa *vdf_type(gh, gl));
+        vdf_type q;
         d_ops::mul122(q[0], q[1], xa, gh, gl);
         d_ops::mul22(q[0], q[1], q[0], q[1], s[0], s[1]);
-        dvf_type g_n;
+        vdf_type g_n;
         d_ops::div22(g_n[0], g_n[1], p[0], p[1], q[0], q[1]);
         gh = _T::sel(x_lt_zero, g_n[0], gh);
         gl = _T::sel(x_lt_zero, g_n[1], gl);
@@ -677,7 +677,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
         zl = _T::sel(x_lt_zero, -zl, zl);
     }
     auto p_sc=base_type::pow_k2(base, base_l, 0.5*zh, 0.5*zl);
-    const dvf_type& powh= p_sc.first;
+    const vdf_type& powh= p_sc.first;
     d_ops::mul22(gh, gl, powh[0], powh[1], gh, gl);
     d_ops::mul22(gh, gl, powh[0], powh[1], gh, gl);
     const auto& sc=p_sc.second;
@@ -691,7 +691,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
 
 template <typename _T>
 inline
-typename cftal::math::spec_func_core<float, _T>::dvf_type
+typename cftal::math::spec_func_core<float, _T>::vdf_type
 cftal::math::spec_func_core<float, _T>::
 __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
@@ -765,7 +765,7 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     vf_type th, tl;
     d_ops::mul22(th, tl, xm1h, xm1l, xm2h, xm2l);
     d_ops::mul22(th, tl, ph, pl, th, tl);
-    return dvf_type(th, tl);
+    return vdf_type(th, tl);
 }
 
 
@@ -775,8 +775,8 @@ typename cftal::math::spec_func_core<float, _T>::reduced_small_gamma_args
 cftal::math::spec_func_core<float, _T>::
 __lgamma_reduce_small_k(arg_t<vf_type> xc)
 {
-    dvf_type x=xc;
-    dvf_type f0=vf_type(1.0f);
+    vdf_type x=xc;
+    vdf_type f0=vf_type(1.0f);
     vf_type f1(1.0f);
     vmf_type t;
 
@@ -785,15 +785,15 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 
     if (any_of(t= x[0]>vf_type(ir))) {
         // x -= _T::sel(t, 1.0f, 0.0f);
-        // dvf_type p= select(t, x, dvf_type(1.0f));
+        // vdf_type p= select(t, x, vdf_type(1.0f));
         x -= _T::sel(t, 1.0f, 0.0f);
         f0[0]=_T::sel(t, x[0], 1.0f);
         while (any_of(t= x[0]>vf_type(ir))) {
             // x -= _T::sel(t, 1.0f, 0.0f);
-            // dvf_type p= select(t, x, dvf_type(1.0f));
+            // vdf_type p= select(t, x, vdf_type(1.0f));
             x -= _T::sel(t, 1.0f, 0.0f);
 #if 0
-            dvf_type p= select(t, x, dvf_type(1.0f));
+            vdf_type p= select(t, x, vdf_type(1.0f));
             f0 *= p;
 #else
             vf_type p= select(t, x[0], vf_type(1.0f));
@@ -817,12 +817,12 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
     }
 
     if (any_of(t= x[0]<vf_type(il))) {
-        dvf_type q0(_T::sel(t, x[0], 1.0f), vf_type(0.0f));
+        vdf_type q0(_T::sel(t, x[0], 1.0f), vf_type(0.0f));
         x += _T::sel(t, 1.0f, 0.0f);
         // see below
         while(any_of(t= x[0]<vf_type(-1.0f))) {
 #if 0
-            dvf_type q= select(t, x, dvf_type(1.0f));
+            vdf_type q= select(t, x, vdf_type(1.0f));
             q0 *= q;
 #else
             vf_type q= _T::sel(t, x[0], vf_type(1.0f));
@@ -846,7 +846,7 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
         }
         // the range between -1 and 1 must be handled more precise
         while(any_of(t= x[0]<vf_type(il))) {
-            dvf_type q= select(t, x, dvf_type(1.0f));
+            vdf_type q= select(t, x, vdf_type(1.0f));
             q0 *= q;
             x += _T::sel(t, 1.0f, 0.0f);
         }
@@ -882,7 +882,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     if (any_of(xa_in_small)) {
         vf_type xs=_T::sel(xa_in_small, xc, 1.5f);
         sst = __lgamma_reduce_small_k(xs);
-        dvf_type log_a=select(sst._f[0]>0, sst._f, -sst._f);
+        vdf_type log_a=select(sst._f[0]>0, sst._f, -sst._f);
         base_h = _T::sel(xa_in_small, log_a[0], base_h);
         base_l = _T::sel(xa_in_small, log_a[1], base_l);
     }
@@ -901,7 +901,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     // lb contains log(xa+g-0.5) for xa_in_lanczos
     // log(xa) for xa > x_large | xa < x_tiny
     // log(f) for xa < x_small & xa >= tiny
-    dvf_type lb= base_type::template
+    vdf_type lb= base_type::template
         __log_tbl_k2<base_type::log_func::c_log_e,
                      base_type::result_prec::high>(base_h, base_l);
     vf_type lgh=0.0f, lgl=0.0f;
@@ -925,7 +925,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         d_ops::add12cond(zh, zl, xa,  -0.5f);
 
         // g = z * log(base) + log(sum) - base;
-        dvf_type ls=base_type::template
+        vdf_type ls=base_type::template
             __log_tbl_k2<base_type::log_func::c_log_e,
                          base_type::result_prec::high>(sum_h, sum_l);
         vf_type th, tl;
@@ -936,7 +936,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         lgl = _T::sel(xa_in_lanczos, tl, lgl);
     }
     if (any_of(xa_in_small)) {
-        dvf_type lg12=__lgamma_1_2_k(sst._xr[0], sst._xr[1]);
+        vdf_type lg12=__lgamma_1_2_k(sst._xr[0], sst._xr[1]);
         vf_type th, tl;
         d_ops::add22cond(th, tl, lb[0], lb[1], lg12[0], lg12[1]);
         lgh = _T::sel(xa_in_small, th, lgh);
@@ -964,15 +964,15 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         t = x_lt_0 & xa_in_lanczos;
         if (any_of(t)) {
             // G(-z) = -pi/[sin(pi*z)*z * G(z)]
-            dvf_type s;
+            vdf_type s;
             sinpi_cospi_k(xa, &s, nullptr);
             using ctbl = impl::d_real_constants<d_real<float>, float>;
             // log(G(-z)) = log(pi) - log(z) - log(abs(sin(pi*z))-log(G(z))
             //            = log(pi) - log(abs(sin(pi*z)*z) - log(G(z))
             //            = log(pi) - [log(abs(sin(pi*z)*z) + log(G(z))]
-            dvf_type sa= select(s[0] < 0.0f, -s, s);
+            vdf_type sa= select(s[0] < 0.0f, -s, s);
             d_ops::mul122(sa[0], sa[1], xa, sa[0], sa[1]);
-            dvf_type lg_n=base_type::template
+            vdf_type lg_n=base_type::template
                 __log_tbl_k2<base_type::log_func::c_log_e,
                              base_type::result_prec::high>(sa[0], sa[1]);
             d_ops::add22cond(lg_n[0], lg_n[1],
