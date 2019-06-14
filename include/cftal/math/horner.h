@@ -248,11 +248,6 @@ namespace cftal {
                       const _C(&q)[_N2],
                       _X* ql=nullptr);
 
-
-        template <typename _X, typename _C>
-        _X
-        poly(_X x, _X x2, const _C(&a)[5]);
-
     }
 }
 
@@ -902,40 +897,6 @@ eval_rational(_X xc,
     return qq;
 }
 
-template <typename _X, typename _C>
-_X
-cftal::math::poly(_X x, _X x2,const _C(&pc)[5])
-{
-    const _C* p=pc;
-    const _C& a0=p[4];
-    const _C& a1=p[3];
-    const _C& a2=p[2];
-    const _C& a3=p[1];
-    const _C& a4=p[0];
-
-#if 0
-    // estrin:
-    // (((a0+(x*a1))+((x*x)*a2))+((x*(x*x))*(a3+(x*a4))))
-    _X t0= a0+x*a1;
-    _X t1= a3+x*a4;
-    _X x3= x*x2;
-    // ((t0+((x*x)*a2))+(x3*t1))
-    _X t2=t0+x2*a2;
-    // (t2 + x3*t1)
-    _X r=t2+x3*t1;
-    return r;
-#else
-    // (((a0+(x*a1))+((x*x)*a2))+((x*(x*x))*(a3+(x*a4))))
-    // ((t0+((x2)*a2))+(x3)*t1))
-    // (t2 + x3 * t1
-    _X t0=a0+x*a1;
-    _X x3=x*x2;
-    _X t1=a3+x*a4;
-    _X t2=t0 + x2*a2;
-    _X r= t2 + x3*t1;
-    return r;
-#endif
-}
 
 // local variables:
 // mode: c++
