@@ -456,12 +456,8 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 tanh(arg_t<vf_type> x)
 {
-    // using fc=func_constants<_FLOAT_T>;
-    // const vf_type cosh_hi_inf= fc::cosh_hi_inf;
     vf_type res=base_type::tanh_k(x);
-    // res = _T::sel(abs(x) >= cosh_hi_inf, _T::pinf(), res);
     res = _T::sel(isnan(x), x, res);
-    // res = _T::sel(isinf(x), copysign(1.0, x), res);
     return res;
 }
 
@@ -475,16 +471,10 @@ log(arg_t<vf_type> d)
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
     x = _T::sel(isinf(d), pinf, x);
-    // if (d < 0) x = NAN;
-    x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
+    // if ((d < 0)|isnan(d)) x = NAN;
+    x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
-    // NAN --> n_and_1
-    x = _T::sel(isnan(d), d, x);
-    // using fc= func_constants<_FLOAT_T>;
-    // const vf_type log_lo_fin= fc::log_lo_fin;
-    // const vf_type log_lo_val= fc::log_lo_val;
-    // x = _T::sel(d == log_lo_fin, log_lo_val, x);
     return x;
 }
 
@@ -506,12 +496,10 @@ log1p(arg_t<vf_type> d)
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
     x = _T::sel(isinf(d), pinf, x);
-    // if (d < -1.0) x = NAN;
-    x = _T::sel(d < vf_type(-1.0), vf_type(_T::nan()), x);
+    // if ((d < -1.0)|isnan(d)) x = NAN;
+    x = _T::sel((d < vf_type(-1.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == -1.0) x = -INFINITY;
     x = _T::sel(d == vf_type(-1.0), ninf, x);
-    // NAN --> n_and_1
-    x = _T::sel(isnan(d), d, x);
     return x;
 }
 
@@ -525,12 +513,10 @@ log10(arg_t<vf_type> d)
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
     x = _T::sel(isinf(d), pinf, x);
-    // if (d < 0) x = NAN;
-    x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
+    // if ((d < 0)|isnan(d)) x = NAN;
+    x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
-    // NAN --> n_and_1
-    x = _T::sel(isnan(d), d, x);
     return x;
 }
 
@@ -544,12 +530,10 @@ log2(arg_t<vf_type> d)
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
     x = _T::sel(isinf(d), pinf, x);
-    // if (d < 0) x = NAN;
-    x = _T::sel(d < vf_type(0.0), vf_type(_T::nan()), x);
+    // if ((d < 0)|isnan(d)) x = NAN;
+    x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
-    // NAN --> n_and_1
-    x = _T::sel(isnan(d), d, x);
     return x;
 }
 
@@ -744,7 +728,6 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
 {
     vf_type r= base_type::atan_k(x);
-    // r=copysign(r, x);
     r=_TRAITS_T::sel(x==vf_type(0), x, r);
     r=_TRAITS_T::sel(isinf(x), copysign(vf_type(M_PI/2), x) , r);
     r=_TRAITS_T::sel(isnan(x), x, r);
@@ -757,16 +740,11 @@ typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 asin(arg_t<vf_type> x)
 {
-    // vf_type xt= (vf_type(1) - x)*(vf_type(1) + x);
-    // vf_type sqrt_xt= sqrt(xt);
-    // vf_type asin_x= x/(1+sqrt_xt);
-    // vf_type r=2.0*base_type::atan_k(asin_x);
     vf_type r=base_type::asin_k(x);
     r = _TRAITS_T::sel(x == vf_type(-1), -M_PI/2, r);
     r = _TRAITS_T::sel(x == vf_type(1), M_PI/2, r);
     r = _TRAITS_T::sel(x < vf_type(-1), -_TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel(x > vf_type(1), _TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel(isnan(x), x, r);
+    r = _TRAITS_T::sel((x > vf_type(1))|isnan(x), _TRAITS_T::nan(), r);
     return r;
 }
 
@@ -781,8 +759,7 @@ acos(arg_t<vf_type> x)
     r = _TRAITS_T::sel_zero_or_val(x == vf_type(1), r);
     r = _TRAITS_T::sel(x == vf_type(0), M_PI/2, r);
     r = _TRAITS_T::sel(x < vf_type(-1), -_TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel(x > vf_type(1), _TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel(isnan(x), x, r);
+    r = _TRAITS_T::sel((x > vf_type(1))|isnan(x), _TRAITS_T::nan(), r);
     return r;
 }
 
@@ -793,8 +770,7 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 asinh(arg_t<vf_type> x)
 {
     vf_type r=base_type::asinh_k(x);
-    r = _TRAITS_T::sel(isinf(x), x, r);
-    r = _TRAITS_T::sel(isnan(x), x, r);
+    r = _TRAITS_T::sel(isinf(x)|isnan(x), x, r);
     return r;
 }
 
@@ -806,8 +782,7 @@ acosh(arg_t<vf_type> x)
 {
     vf_type r=base_type::acosh_k(x);
     r = _TRAITS_T::sel(x < 1.0, _TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel(x== _TRAITS_T::pinf(), x, r);
-    r = _TRAITS_T::sel(isnan(x), x, r);
+    r = _TRAITS_T::sel((x== _TRAITS_T::pinf())|isnan(x), x, r);
     return r;
 }
 
@@ -821,8 +796,7 @@ atanh(arg_t<vf_type> x)
     r = _TRAITS_T::sel(x == -1.0, _TRAITS_T::ninf(), r);
     r = _TRAITS_T::sel(x < -1.0, -_TRAITS_T::nan(), r);
     r = _TRAITS_T::sel(x == 1.0, _TRAITS_T::pinf(), r);
-    r = _TRAITS_T::sel(x >  1.0, _TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel(isnan(x), x, r);
+    r = _TRAITS_T::sel((x > 1.0)|isnan(x), _TRAITS_T::nan(), r);
     return r;
 }
 
