@@ -35,12 +35,16 @@ namespace cftal {
             _T _range;
             bool _use_int;
 
-            _T trunc_max_val(_T m) {
+            static
+            _T
+            trunc_max_val(_T m) {
                 const _T _max_val= std::sqrt(std::numeric_limits<_T>::max());
                 return std::min(m, _max_val);
             }
 
-            _T trunc_min_val(_T m) {
+            static
+            _T
+            trunc_min_val(_T m) {
                 const _T _min_val= -std::sqrt(std::numeric_limits<_T>::max());
                 return std::max(m, _min_val);
             }
