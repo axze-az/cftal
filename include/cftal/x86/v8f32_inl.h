@@ -649,7 +649,12 @@ cftal::v8f32
 cftal::native_rsqrt(const v8f32& x)
 {
     v8f32 y= _mm256_rsqrt_ps(x());
+#if 1
+    v8f32 xh=0.5f*x;
+    y= y *(1.5f - y*(y*xh));
+#else
     y = y + (0.5f*y) * (1.0f- y*(x * y));
+#endif
     // y= 0.5f*y *(3.0f - y*(y*x));
     return y;
 }

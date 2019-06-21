@@ -605,7 +605,12 @@ cftal::v4f32
 cftal::native_rsqrt(const v4f32& x)
 {
     v4f32 y= _mm_rsqrt_ps(x());
+#if 1
+    v4f32 xh=0.5f*x;
+    y= y *(1.5f - y*(y*xh));
+#else
     y = y + (0.5f*y) * (1.0f- y*(x * y));
+#endif
     // y= 0.5f*y *(3.0f - y*(y*x));
     return y;
 }
