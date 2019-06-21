@@ -54,6 +54,16 @@ namespace cftal {
     mat_mul_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3,
                 const _V4& a0, const _V4& a1, const _V4& a2, const _V4& a3,
                 const _V4& b0, const _V4& b1, const _V4& b2, const _V4& b3);
+
+    template <typename _T, size_t _N, typename _F>
+    vec<_T, _N>
+    call_scalar_func(const vec<_T, _N>& x, _F f);
+
+    template <typename _TR, typename _TX, typename _TY, size_t _N, typename _F>
+    vec<_TR, _N>
+    call_scalar_func(const vec<_TX, _N>& x,
+                     const vec<_TY, _N>& y,
+                     _F f);
 }
 
 template <typename _T, std::size_t _N>
@@ -110,48 +120,47 @@ cftal::select_branch(const vec<_T, 1>& m,
     return on_false();
 }
 
-#if 0
-template <typename _T, std::size_t _N, typename _X>
+template <typename _T, size_t _N, typename _F>
 cftal::vec<_T, _N>
-cftal::impl::lookup<_T, _N, _X, 0>::
-v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx, const _X* p)
+cftal::call_scalar_func(const vec<_T, _N>& x, _F f)
 {
-    typename vec<int32_t, _N>::mask_type idx_eq_0= idx == vec<int32_t, _N>(0);
-    typename vec<_T, _N>::mask_type f_idx_eq_0=
-        cvt_mask<typename vec<_T, _N>::mask_type::value_type, _N,
-                 typename vec<int32_t, _N>::mask_type::value_type, _N>::v(
-                     idx_eq_0);
-    vec<_T, _N> r_idx_eq_0(p[0]);
-    vec<_T, _N> r = select(f_idx_eq_0, r_idx_eq_0, def);
+    using vf_type = vec<_T, _N>;
+    struct alignas(_N*sizeof(_T)) v_x {
+        _T _a[_N];
+    } ax, ar;
+    mem<vf_type>::store(ax._a, x);
+    for (std::size_t i=0; i<_N; ++i) {
+        ar._a[i] = f(ax._a[i]);
+    }
+    vf_type r=mem<vf_type>::load(ar._a, _N);
     return r;
 }
 
-template <typename _T, std::size_t _N, typename _X, std::size_t _L>
-cftal::vec<_T, _N>
-cftal::impl::lookup<_T, _N, _X, _L>::
-v(const vec<_T, _N>& def, const vec<int32_t, _N>& idx, const _X* p)
+template <typename _TR, typename _TX, typename _TY, size_t _N, typename _F>
+cftal::vec<_TR, _N>
+cftal::call_scalar_func(const vec<_TX, _N>& x, const vec<_TY, _N>& y, _F f)
 {
-    const std::size_t _LM1= _L -1;
-    // lookup all lower values to zero:
-    vec<_T, _N> rl= lookup<_T, _N, _X, _LM1>::v(def, idx, p);
-    typename vec<int32_t, _N>::mask_type idx_eq_l= idx == vec<int32_t, _N>(_L);
-    typename vec<_T, _N>::mask_type f_idx_eq_l=
-        cvt_mask<typename vec<_T, _N>::mask_type::value_type, _N,
-                 typename vec<int32_t, _N>::mask_type::value_type, _N>::v(
-                     idx_eq_l);
-    vec<_T, _N> r_idx_eq_l(p[_L]);
-    vec<_T, _N> r= select(f_idx_eq_l, r_idx_eq_l, rl);
+    using vx_type = vec<_TX, _N>;
+    using vy_type = vec<_TY, _N>;
+    using vr_type = vec<_TR, _N>;
+    struct alignas(_N*sizeof(_TX)) v_x {
+        _TX _a[_N];
+    } ax;
+    struct alignas(_N*sizeof(_TY)) v_y {
+        _TY _a[_N];
+    } ay;
+    using vr_type = vec<_TR, _N>;
+    struct alignas(_N*sizeof(_TR)) v_r {
+        _TR _a[_N];
+    } ar;
+    mem<vx_type>::store(ax._a, x);
+    mem<vy_type>::store(ay._a, y);
+    for (std::size_t i=0; i<_N; ++i) {
+        ar._a[i] = f(ax._a[i], ay._a[i]);
+    }
+    vr_type r=mem<vr_type>::load(ar._a, _N);
     return r;
 }
-
-template <typename _T, std::size_t _N, typename _X, std::size_t _L>
-cftal::vec<_T, _N>
-cftal::lookup(const vec<_T, _N>& def, const vec<int32_t, _N>& idx,
-              const _X (&p)[_L])
-{
-    return impl::lookup<_T, _N, _X, _L-1>::v(def, idx, p);
-}
-#endif
 
 template <class _V4>
 inline
