@@ -265,8 +265,7 @@ rsqrt(arg_t<vf_type> x)
     // y=_T::sel(x == _T::pinf(), vf_type(0), y);
     y=_T::sel_val_or_zero(x != _T::pinf(), y);
     y=_T::sel(x == 0, _T::pinf(), y);
-    y=_T::sel(x < 0.0, _T::nan(), y);
-    y=_T::sel(isnan(x), x, y);
+    y=_T::sel((x < 0.0) | isnan(x), _T::nan(), y);
     return y;
 }
 
@@ -297,8 +296,7 @@ root12(arg_t<vf_type> x)
     y=_T::sel(x == _T::pinf(), _T::pinf(), y);
     // y=_T::sel(x == 0, 0.0, y);
     y=_T::sel_val_or_zero(x != 0, y);
-    y=_T::sel(x < 0.0, _T::nan(), y);
-    y=_T::sel(isnan(x), x, y);
+    y=_T::sel((x < 0.0)|isnan(x), _T::nan(), y);
     return y;
 }
 
@@ -319,106 +317,105 @@ template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
-exp(arg_t<vf_type> d)
+exp(arg_t<vf_type> x)
 {
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
-    vf_type res=base_type:: template exp_k<false>(d);
+    vf_type y=base_type:: template exp_k<false>(x);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp_hi_inf= fc::exp_hi_inf();
     const vf_type exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
-    // res = _T::sel(d == 0.0, 1.0, res);
-    // res = _T::sel(d == 1.0, M_E, res);
+    y = _T::sel_zero_or_val(x <= exp_lo_zero, y);
+    y = _T::sel(x >= exp_hi_inf, _T::pinf(), y);
+    // y = _T::sel(x == 0.0, 1.0, y);
+    // y = _T::sel(x == 1.0, M_E, y);
     __asm__ volatile("# LLVM-MCA-END\n\t");
-    return res;
+    return y;
 }
 
 template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
-exp2(arg_t<vf_type> d)
+exp2(arg_t<vf_type> x)
 {
-    vf_type res=base_type:: template exp2_k<false>(d);
+    vf_type y=base_type:: template exp2_k<false>(x);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp2_hi_inf= fc::exp2_hi_inf();
     const vf_type exp2_lo_zero= fc::exp2_lo_zero();
-    res = _T::sel_zero_or_val(d <= exp2_lo_zero, res);
-    res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
-    // res = _T::sel(d == 0.0, 1.0, res);
-    // res = _T::sel(d == 1.0, 2.0, res);
-    return res;
+    y = _T::sel_zero_or_val(x <= exp2_lo_zero, y);
+    y = _T::sel(x >= exp2_hi_inf, _T::pinf(), y);
+    // y = _T::sel(x == 0.0, 1.0, y);
+    // y = _T::sel(x == 1.0, 2.0, y);
+    return y;
 }
 
 template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
-exp10(arg_t<vf_type> d)
+exp10(arg_t<vf_type> x)
 {
-    vf_type res=base_type:: template exp10_k<false>(d);
+    vf_type y=base_type:: template exp10_k<false>(x);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp10_hi_inf=fc::exp10_hi_inf();
     const vf_type exp10_lo_zero=fc::exp10_lo_zero();
-    res = _T::sel_zero_or_val(d <= exp10_lo_zero, res);
-    res = _T::sel(d >= exp10_hi_inf, _T::pinf(), res);
-    // res = _T::sel(d == 0.0, 1.0, res);
-    // res = _T::sel(d == 1.0, 10.0, res);
-    return res;
+    y = _T::sel_zero_or_val(x <= exp10_lo_zero, y);
+    y = _T::sel(x >= exp10_hi_inf, _T::pinf(), y);
+    // y = _T::sel(d == 0.0, 1.0, y);
+    // y = _T::sel(d == 1.0, 10.0, y);
+    return y;
 }
 
 template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
-expm1(arg_t<vf_type> d)
+expm1(arg_t<vf_type> x)
 {
-    vf_type res = base_type:: template exp_k<true>(d);
+    vf_type y = base_type:: template exp_k<true>(x);
     using fc= func_constants<_FLOAT_T>;
     const vf_type expm1_hi_inf= fc::expm1_hi_inf();
     const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one();
-    res = _T::sel(d <= expm1_lo_minus_one, -1.0, res);
-    res = _T::sel(d >= expm1_hi_inf, _T::pinf(), res);
-    // res = _T::sel(d == 0.0, 0.0, res);
-    // res = _T::sel(d == 1.0, M_E-1.0, res);
-    return res;
+    y = _T::sel(x <= expm1_lo_minus_one, -1.0, y);
+    y = _T::sel(x >= expm1_hi_inf, _T::pinf(), y);
+    // y = _T::sel(d == 0.0, 0.0, y);
+    // y = _T::sel(d == 1.0, M_E-1.0, y);
+    return y;
 }
 
 template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
-exp2m1(arg_t<vf_type> d)
+exp2m1(arg_t<vf_type> x)
 {
-    vf_type res = base_type:: template exp2_k<true>(d);
+    vf_type y = base_type:: template exp2_k<true>(x);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp2m1_hi_inf= fc::exp2m1_hi_inf();
     const vf_type exp2m1_lo_minus_one= fc::exp2m1_lo_minus_one();
-    res = _T::sel(d <= exp2m1_lo_minus_one, -1.0, res);
-    res = _T::sel(d >= exp2m1_hi_inf, _T::pinf(), res);
-    // res = _T::sel(d == 0.0, 0.0, res);
-    // res = _T::sel(d == 1.0, 1.0, res);
-    return res;
+    y = _T::sel(x <= exp2m1_lo_minus_one, -1.0, y);
+    y = _T::sel(x >= exp2m1_hi_inf, _T::pinf(), y);
+    // y = _T::sel(x == 0.0, 0.0, y);
+    // y = _T::sel(x == 1.0, 1.0, y);
+    return y;
 }
 
 template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
-exp10m1(arg_t<vf_type> d)
+exp10m1(arg_t<vf_type> x)
 {
-    vf_type res = base_type:: template exp10_k<true>(d);
+    vf_type y = base_type:: template exp10_k<true>(x);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp10m1_hi_inf= fc::exp10m1_hi_inf();
     const vf_type exp10m1_lo_minus_one= fc::exp10m1_lo_minus_one();
-    res = _T::sel(d <= exp10m1_lo_minus_one, -1.0, res);
-    res = _T::sel(d >= exp10m1_hi_inf, _T::pinf(), res);
-    // res = _T::sel(d == 0.0, 0.0, res);
-    // res = _T::sel(d == 1.0, 9.0, res);
-    return res;
+    y = _T::sel(x <= exp10m1_lo_minus_one, -1.0, y);
+    y = _T::sel(x >= exp10m1_hi_inf, _T::pinf(), y);
+    // y = _T::sel(x == 0.0, 0.0, y);
+    // y = _T::sel(x == 1.0, 9.0, y);
+    return y;
 }
-
 
 template <typename _FLOAT_T, typename _T>
 inline
@@ -427,13 +424,13 @@ cftal::math::elem_func<_FLOAT_T, _T>::
 sinh(arg_t<vf_type> x)
 {
     using fc=func_constants<_FLOAT_T>;
-    vf_type res=base_type::sinh_k(x);
+    vf_type y=base_type::sinh_k(x);
     const vf_type sinh_hi_inf= fc::sinh_hi_inf();
     const vf_type sinh_lo_inf= fc::sinh_lo_inf();
-    res = _T::sel(x >= sinh_hi_inf, _T::pinf(), res);
-    res = _T::sel(x <= sinh_lo_inf, _T::ninf(), res);
-    res = _T::sel_zero_or_val(x == 0.0, res);
-    return res;
+    y = _T::sel(x >= sinh_hi_inf, _T::pinf(), y);
+    y = _T::sel(x <= sinh_lo_inf, _T::ninf(), y);
+    // y = _T::sel_zero_or_val(x == 0.0, y);
+    return y;
 }
 
 template <typename _FLOAT_T, typename _T>
