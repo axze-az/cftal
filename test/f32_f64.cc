@@ -174,7 +174,7 @@ cftal::test::distance(double a, double b)
     int64_t abs_bi = bi & ~(1ULL<<63);
     bool sgn_a = abs_ai != ai;
     bool sgn_b = abs_bi != bi;
-    int32_t d=0;
+    int64_t d=0;
     if ((sgn_a == sgn_b) || ((abs_ai|abs_bi) == 0)) {
         d= abs_bi - abs_ai;
     } else {
@@ -185,6 +185,11 @@ cftal::test::distance(double a, double b)
     // a > b negative sign
     if (sgn_b)
         d = -d;
+    // saturate d
+    static const auto d_min=int64_t(std::numeric_limits<int32_t>::min());
+    d = std::max(d, d_min);
+    static const auto d_max=int64_t(std::numeric_limits<int32_t>::max());
+    d = std::min(d, d_max);
     return d;
 }
 
@@ -252,8 +257,6 @@ namespace {
             return true;
         return a == b0 || a == b1 || a == b2;
     }
-
-
 }
 
 bool cftal::test::f_eq_ulp(double a, double b, uint32_t ulp, ulp_stats* us)
