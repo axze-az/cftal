@@ -780,21 +780,24 @@ rsqrt_k(arg_t<vf_type> x)
 {
     vf_type y= vf_type(1.0/sqrt(x));
     // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
+    // y = y + 0.5f * y * (1.0f - y*(y*xr));
+    //   = y - 0.5f * y * (y*(y*xr) - 1.0f);
     vf_type xyh, xyl;
     d_ops::mul12(xyh, xyl, x, y);
     vf_type th;
     if (d_real_traits<vf_type>::fma == true) {
-        th = y * xyh - 1.0;
+        th = y * xyh - 1.0f;
         th = y * xyl + th;
     } else {
         vf_type yxyh, yxyl;
         d_ops::mul12(yxyh, yxyl, y, xyh);
         vf_type tl;
-        th = yxyh - 1.0;
+        th = yxyh - 1.0f;
         tl = yxyl + y*xyl;
         th += tl;
     }
-    y = y + (-0.5*y) * th;
+    vf_type neg_half_y=-0.5f*y;
+    y = y + neg_half_y * th;
     return y;
 }
 

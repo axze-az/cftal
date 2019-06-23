@@ -648,13 +648,19 @@ inline
 cftal::v8f32
 cftal::native_rsqrt(const v8f32& x)
 {
-    v8f32 y= _mm256_rsqrt_ps(x());
+    const float large=0x1p124f;
+    const float small=0x1p-124f;
+    const float rsqrt_small= 0x1p62f;
+    auto x_small = x <= small;
+    v8f32 xr=select(x_small, v8f32(x*large), x);
+    v8f32 y= _mm256_rsqrt_ps(xr());
 #if 1
-    v8f32 xh=0.5f*x;
+    v8f32 xh=0.5f*xr;
     y= y *(1.5f - y*(y*xh));
 #else
     y = y + (0.5f*y) * (1.0f- y*(x * y));
 #endif
+    y = select(x_small, v8f32(y*rsqrt_small), y);
     // y= 0.5f*y *(3.0f - y*(y*x));
     return y;
 }

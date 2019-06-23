@@ -1972,13 +1972,19 @@ cftal::vec<float, 1>
 cftal::native_rsqrt(const vec<float, 1>& x)
 {
 #if defined (__SSE__)
-    v1f32 y= _mm_cvtss_f32(_mm_rsqrt_ps(_mm_set1_ps(x())));
+    const float large=0x1p124f;
+    const float small=0x1p-124f;
+    const float rsqrt_small= 0x1p62f;
+    auto x_small = x <= small;
+    v1f32 xr=select(x_small, v1f32(x*large), x);
+    v1f32 y= _mm_cvtss_f32(_mm_rsqrt_ps(_mm_set1_ps(xr())));
 #if 1
-    v1f32 xh=0.5f*x;
+    v1f32 xh=0.5f*xr;
     y= y *(1.5f - y*(y*xh));
 #else
     y = y + (0.5f*y) * (1.0f- y*(x * y));
 #endif
+    y = select(x_small, v1f32(y*rsqrt_small), y);
     // y= 0.5f*y *(3.0f - y*(y*x));
     return y;
 #else
