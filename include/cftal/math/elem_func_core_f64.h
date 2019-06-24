@@ -834,6 +834,8 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type y= vf_type(1.0/sqrt(x));
     // vf_type y= native_rsqrt(x);
     // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
+    // y = y + 0.5f * y * (1.0f - y*(y*x));
+    //   = y - 0.5f * y * (y*(y*x) - 1.0f);
     vf_type xyh, xyl;
     d_ops::mul12(xyh, xyl, x, y);
     vf_type th;
