@@ -605,9 +605,10 @@ cftal::v4f32
 cftal::native_rsqrt(const v4f32& x)
 {
     using vf_type = vec<float, 4>;
-    // scaling is only required for subnormal numbers
+    // scaling is only required for subnormal numbers, but performance
+    // on sandy bridge is much better if used for smaller numbers
     const float large = 0x1p64f;
-    const float small = 0x1p-125f;
+    const float small = 0x1p-96f;
     // const float rsqrt_large = 0x1p-32f;
     const float rsqrt_small = 0x1p32f;
     vf_type::mask_type x_small= x <= small;
