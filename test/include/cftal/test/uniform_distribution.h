@@ -100,6 +100,14 @@ namespace cftal {
                 return r;
             }
         };
+
+        template <>
+        class uniform_real_distribution<int32_t>
+            : public std::uniform_int_distribution<int32_t> {
+            using base_type=std::uniform_int_distribution<int32_t>;
+            using base_type::base_type;
+        };
+
     }
 }
 

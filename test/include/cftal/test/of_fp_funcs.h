@@ -527,26 +527,26 @@ cftal::test::default_arguments<_T>::values={
     _T(0x1.0p51),
     _T(0x1.0p52),
     std::numeric_limits<_T>::denorm_min(),
-    2*std::numeric_limits<_T>::denorm_min(),
-    4*std::numeric_limits<_T>::denorm_min(),
-    8*std::numeric_limits<_T>::denorm_min(),
-    16*std::numeric_limits<_T>::denorm_min(),
-    32*std::numeric_limits<_T>::denorm_min(),
-    64*std::numeric_limits<_T>::denorm_min(),
+    _T(2.0*std::numeric_limits<_T>::denorm_min()),
+    _T(4.0*std::numeric_limits<_T>::denorm_min()),
+    _T(8.0*std::numeric_limits<_T>::denorm_min()),
+    _T(16.0*std::numeric_limits<_T>::denorm_min()),
+    _T(32.0*std::numeric_limits<_T>::denorm_min()),
+    _T(64.0*std::numeric_limits<_T>::denorm_min()),
     std::numeric_limits<_T>::min(),
-    2*std::numeric_limits<_T>::min(),
-    4*std::numeric_limits<_T>::min(),
-    8*std::numeric_limits<_T>::min(),
-    16*std::numeric_limits<_T>::min(),
-    32*std::numeric_limits<_T>::min(),
-    64*std::numeric_limits<_T>::min(),
+    _T(2.0*std::numeric_limits<_T>::min()),
+    _T(4.0*std::numeric_limits<_T>::min()),
+    _T(8.0*std::numeric_limits<_T>::min()),
+    _T(16.0*std::numeric_limits<_T>::min()),
+    _T(32.0*std::numeric_limits<_T>::min()),
+    _T(64.0*std::numeric_limits<_T>::min()),
     std::numeric_limits<_T>::max(),
-    1.0/2.0*std::numeric_limits<_T>::max(),
-    1.0/4.0*std::numeric_limits<_T>::max(),
-    1.0/8.0*std::numeric_limits<_T>::max(),
-    1.0/16.0*std::numeric_limits<_T>::max(),
-    1.0/32.0*std::numeric_limits<_T>::max(),
-    1.0/64.0*std::numeric_limits<_T>::max(),
+    _T(1.0/2.0*std::numeric_limits<_T>::max()),
+    _T(1.0/4.0*std::numeric_limits<_T>::max()),
+    _T(1.0/8.0*std::numeric_limits<_T>::max()),
+    _T(1.0/16.0*std::numeric_limits<_T>::max()),
+    _T(1.0/32.0*std::numeric_limits<_T>::max()),
+    _T(1.0/64.0*std::numeric_limits<_T>::max()),
     std::numeric_limits<_T>::infinity(),
     std::numeric_limits<_T>::quiet_NaN()
 };
@@ -1096,7 +1096,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
     if (suppress_defaults == false) {
         const auto& inf_nan_args_1=default_arguments<_T1>::values;
         const auto& inf_nan_args_2=default_arguments<_T2>::values;
-        
+
         for (auto ab=std::begin(inf_nan_args_1), ae=std::end(inf_nan_args_1);
             ab != ae; ++ab) {
             _T1 ai=*ab;
