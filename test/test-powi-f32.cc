@@ -40,13 +40,13 @@ int main(int argc, char** argv)
     exec_stats<_N> st1;
     us=std::make_shared<ulp_stats>();
     func_domain<float> d1=std::make_pair(0.0f, 30.0f);
-    func_domain<int32_t> d2=std::make_pair(20, 20);
+    func_domain<int32_t> d2=std::make_pair(-20, 20);
     rc &= of_fp_func_2_up_to<
         float, _N, check_powi<float>, float, int32_t>::
             v(st1, d1, d2, ags._speed_only,
               ags._mt, cmp_ulp<float>(ulp, us), ags._cnt, true);
     d1=std::make_pair(0x1p-10f, 5.0f);
-    d2=std::make_pair(10, 10);
+    d2=std::make_pair(-10, 10);
     rc &= of_fp_func_2_up_to<
         float, _N, check_powi<float>, float, int32_t>::
             v(st1, d1, d2, ags._speed_only,
