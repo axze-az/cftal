@@ -448,7 +448,8 @@ namespace cftal {
             pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
                    arg_t<vf_type> yh, arg_t<vf_type> yl);
 
-            // calculation of x^e
+            // calculation of x^e or x^1/e
+            template <bool _CALC_ROOT>
             static
             vf_type
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
@@ -2281,6 +2282,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
 }
 
 template <typename _T>
+template <bool _CALC_ROOT>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
@@ -2296,7 +2298,17 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     d_ops::add12(yh, yl, yh, yl);
     vdf_type ylnx;
     // yndx = y*lnx;
-    d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
+    if (_CALC_ROOT==true) {
+#if 0
+        d_ops::div22(ylnx[0], ylnx[1], lnx[0], lnx[1], yh, yl);
+#else
+        vf_type rh, rl;
+        d_ops::rcp2(rh, rl, yh, yl);
+        d_ops::mul22(ylnx[0], ylnx[1], lnx[0], lnx[1], rh, rl);
+#endif
+    } else {
+        d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
+    }
 
     vf_type xrh, xrl;
     vi_type idx, ki;

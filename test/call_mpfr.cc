@@ -524,6 +524,35 @@ root12(mpfr_t res,
 
 int
 cftal::test::mpfr_ext::
+rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm)
+{
+    if ((n & 1)==0 && mpfr_cmp_si(x, 0L) < 0) {
+        mpfr_set_nan(y);
+        return 0;
+    }
+    int r;
+    if (n < 0) {
+        auto f=[n](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
+                   int64_t ni=n;
+                   int64_t ai=ni < 0 ? -ni : ni;
+                   fpn_handle rn(mpfr_get_prec(xx));
+                   int r=mpfr_rootn_ui(rn(), xx, ai, rm);
+                   if (ni >= 0) {
+                       mpfr_set(yy, rn(), rm);
+                   } else {
+                       r=mpfr_si_div(yy, 1L, rn(), rm);
+                   }
+                   return r;
+               };
+        r=call_ziv_func(y, x, rm, f);
+    } else {
+        r=mpfr_rootn_ui(y, x, n, rm);
+    }
+    return r;
+}
+
+int
+cftal::test::mpfr_ext::
 horner(mpfr_t res,
        const mpfr_t x,
        mpfr_rnd_t rm,

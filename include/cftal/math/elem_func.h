@@ -169,6 +169,10 @@ namespace cftal {
             static
             vf_type
             pow(arg_t<vf_type> xc, arg_t <vi_type> e);
+
+            static
+            vf_type
+            rootn(arg_t<vf_type> xc, arg_t <vi_type> yc);
             
             static
             void
@@ -605,7 +609,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 pow(arg_t<vf_type> x, arg_t<vi_type> e)
 {
-    vf_type res = base_type::powi_k(x, e);
+    vf_type res = base_type:: template powi_k<false>(x, e);
     vf_type y= cvt<vf_type>(e);
 
     vmi_type ei_is_odd= vi_type(e & vi_type(1))==vi_type(1);
@@ -627,6 +631,37 @@ pow(arg_t<vf_type> x, arg_t<vi_type> e)
     res = _T::sel(e_is_one, x, res);
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
     res = _T::sel((y==0.0) | (x==1.0), vf_type(1), res);
+    return res;
+}
+
+template <typename _FLOAT_T, typename _T>
+typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _T>::
+rootn(arg_t<vf_type> x, arg_t<vi_type> e)
+{
+    vf_type res = base_type:: template powi_k<true>(x, e);
+    res = copysign(res, x);
+    vmi_type ei_is_one= e==vi_type(1);
+    vmf_type e_is_one= _T::vmi_to_vmf(ei_is_one);
+    res = _T::sel(e_is_one, x, res);
+
+    vmi_type ei_is_even= vi_type(e & 1) == vi_type(0);
+    vmf_type e_is_even=_T::vmi_to_vmf(ei_is_even);
+    vmi_type ei_is_zero= e==vi_type(0);
+    vmf_type e_is_zero=_T::vmi_to_vmf(ei_is_zero);
+    vmi_type ei_is_pos= e>vi_type(0);
+    vmf_type e_is_pos= _T::vmi_to_vmf(ei_is_pos);
+    vmf_type x_zero=x==vf_type(0);
+    res = _T::sel(x_zero, copysign(vf_type(_T::pinf()), x), res);
+    res = _T::sel(x_zero & e_is_even, _T::pinf(), res);
+    res = _T::sel(x_zero & e_is_pos, x, res);
+    res = _T::sel(x_zero & e_is_pos & e_is_even, 0.0, res);
+    
+    vmf_type x_inf=isinf(x);
+    res = _T::sel(x_inf, copysign(vf_type(0.0), x), res);
+    res = _T::sel(x_inf & e_is_pos, x, res);
+
+    res = _T::sel(((x < 0) & e_is_even)|isnan(x)|e_is_zero, _T::nan(), res);
     return res;
 }
 

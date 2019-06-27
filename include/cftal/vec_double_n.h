@@ -334,6 +334,14 @@ namespace cftal {
     vec<double, 1>
     pow(arg_t<vec<double, 1> > x, arg_t<vec<int32_t, 1> > y);
     
+    // rootn, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    rootn(const vec<double, _N>& x, const vec<int32_t, _N>& y);
+
+    vec<double, 1>
+    rootn(arg_t<vec<double, 1> > x, arg_t<vec<int32_t, 1> > y);
+
     // atan, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -583,6 +591,9 @@ namespace cftal {
     pow(arg_t<vec<double, 2> > b, arg_t<vec<int32_t, 2> > e);
 
     vec<double, 2>
+    rootn(arg_t<vec<double, 2> > b, arg_t<vec<int32_t, 2> > n);
+
+    vec<double, 2>
     atan(arg_t<vec<double, 2> > d);
 
     vec<double, 2>
@@ -720,6 +731,9 @@ namespace cftal {
 
     vec<double, 4>
     pow(arg_t<vec<double, 4> > b, arg_t<vec<int32_t, 4> > e);
+
+    vec<double, 4>
+    rootn(arg_t<vec<double, 4> > b, arg_t<vec<int32_t, 4> > n);
 
     vec<double, 4>
     atan(arg_t<vec<double, 4> > d);
@@ -860,6 +874,9 @@ namespace cftal {
 
     vec<double, 8>
     pow(arg_t<vec<double, 8> > b, arg_t<vec<int32_t, 8> > e);
+
+    vec<double, 8>
+    rootn(arg_t<vec<double, 8> > b, arg_t<vec<int32_t, 8> > n);
 
     vec<double, 8>
     atan(arg_t<vec<double, 8> > d);
@@ -1396,6 +1413,16 @@ cftal::pow(const vec<double, _N>& x, const vec<int32_t, _N>& y)
 {
     vec<double, _N> r(pow(low_half(x), low_half(y)),
                       pow(high_half(x), high_half(y)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::rootn(const vec<double, _N>& x, const vec<int32_t, _N>& y)
+{
+    vec<double, _N> r(rootn(low_half(x), low_half(y)),
+                      rootn(high_half(x), high_half(y)));
     return r;
 }
 
