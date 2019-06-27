@@ -435,19 +435,23 @@ namespace cftal {
             vf_type
             log10_k(arg_t<vf_type> x);
 
-
             // calculation of x^y
             static
             vf_type
             pow_k(arg_t<vf_type> x, arg_t<vf_type> y);
 
-            // returns (xh+xl)^(yh+yl) * 2^(-sc) as vdf_type in first,
+            // returns (xh+xl)^(yh+yl) * 2^(sc) as vdf_type in first,
             // sc in second
             using pow_k2_result = std::pair<vdf_type, scale_result>;
             static
             pow_k2_result
             pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
                    arg_t<vf_type> yh, arg_t<vf_type> yl);
+
+            // calculation of x^e
+            static
+            vf_type
+            powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
 
             // argument reduction for all trigonometric functions,
             // reduction by %pi/2, the low bits of multiples of %pi/2
@@ -2274,6 +2278,38 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     vf_type rh=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &rl);
     auto sc = __scale_exp_k(ki);
     return std::make_pair(vdf_type(rh, rl), sc);
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
+{
+    vf_type abs_x= abs(x);
+    vdf_type lnx= __log_tbl_k12<log_func::c_log_e,
+                                result_prec::normal>(abs_x);
+
+    vi_type eh=e & 0xffff0000, el= e - eh;
+    vf_type yh=cvt<vf_type>(eh);
+    vf_type yl=cvt<vf_type>(el);
+    d_ops::add12(yh, yl, yh, yl);
+    vdf_type ylnx;
+    // yndx = y*lnx;
+    d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
+
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, ylnx[0], ylnx[1]);
+    vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
+
+    using fc=func_constants<float>;
+    const vf_type& d= ylnx[0];
+    const float exp_hi_inf= fc::exp_hi_inf();
+    const float exp_lo_zero= fc::exp_lo_zero();
+    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
+    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    return res;
 }
 
 template <typename _T>

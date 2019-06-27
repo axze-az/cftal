@@ -473,7 +473,7 @@ namespace cftal {
             vf_type
             pow_k(arg_t<vf_type> x, arg_t<vf_type> y);
 
-            // returns (xh+xl)^(yh+yl) * 2^(-sc) as vdf_type in first,
+            // returns (xh+xl)^(yh+yl) * 2^(sc) as vdf_type in first,
             // sc in second
             using pow_k2_result = std::pair<vdf_type, scale_result>;
             static
@@ -481,6 +481,11 @@ namespace cftal {
             pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
                    arg_t<vf_type> yh, arg_t<vf_type> yl);
 
+            // calculation of x^e
+            static
+            vf_type
+            powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
+            
             // argument reduction for all trigonometric functions,
             // reduction by %pi/2, the low bits of multiples of %pi/2
             // are returned in the value, the reduced argument is
@@ -1018,10 +1023,13 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm_a= _T::sel(mm0 < 0x1p-9, mm_i0, mm_i1);
     vf_type mm_b= _T::sel(mm0 < 0x1p-3, mm_i2, mm_i3);
     vf_type mm= _T::sel(mm0 < 0x1p-6, mm_a, mm_b);
-
+#if 0
+    mm = impl::root12::order4<double>(mm, mm0);
+    mm = impl::root12::order3<double>(mm, mm0);
+#else
     // only one division and much parallelism
     mm = impl::root12::householder8<double>(mm, mm0);
-
+#endif
     vf_type t= _T::insert_exp(e12_with_bias);
     mm *=t;
     // mm = copysign(mm, xc);
@@ -2506,6 +2514,35 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     vf_type rh=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &rl);
     auto sc = __scale_exp_k(ki);
     return std::make_pair(vdf_type(rh, rl), sc);
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
+{
+    vf_type abs_x= abs(x);
+    vdf_type lnx=__log_tbl_k12<log_func::c_log_e,
+                               result_prec::normal>(abs_x);
+    vf_type y=cvt<vf_type>(e);
+    vdf_type ylnx;
+    // yndx = y*lnx;
+    d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
+
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, ylnx[0], ylnx[1]);
+    vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
+
+    using fc=func_constants<double>;
+    const vf_type& d= ylnx[0];
+    const double exp_hi_inf= fc::exp_hi_inf();
+    const double exp_lo_zero= fc::exp_lo_zero();
+    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
+    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+
+    return res;
 }
 
 template <typename _T>

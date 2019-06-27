@@ -323,6 +323,14 @@ namespace cftal {
     vec<float, 1>
     pow(arg_t<vec<float, 1> > x, arg_t<vec<float, 1> > y);
 
+    // pow, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    pow(const vec<float, _N>& x, const vec<int32_t, _N>& y);
+
+    vec<float, 1>
+    pow(arg_t<vec<float, 1> > x, arg_t<vec<int32_t, 1> > y);
+
     // atan, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -569,6 +577,9 @@ namespace cftal {
     pow(arg_t<vec<float, 2> > b, arg_t<vec<float, 2> > e);
 
     vec<float, 2>
+    pow(arg_t<vec<float, 2> > b, arg_t<vec<int32_t, 2> > e);
+
+    vec<float, 2>
     atan(arg_t<vec<float, 2> > d);
 
     vec<float, 2>
@@ -703,6 +714,9 @@ namespace cftal {
 
     vec<float, 4>
     pow(arg_t<vec<float, 4> > b, arg_t<vec<float, 4> > e);
+
+    vec<float, 4>
+    pow(arg_t<vec<float, 4> > b, arg_t<vec<int32_t, 4> > e);
 
     vec<float, 4>
     atan(arg_t<vec<float, 4> > d);
@@ -842,6 +856,9 @@ namespace cftal {
     pow(arg_t<vec<float, 8> > b, arg_t<vec<float, 8> > e);
 
     vec<float, 8>
+    pow(arg_t<vec<float, 8> > b, arg_t<vec<int32_t, 8> > e);
+
+    vec<float, 8>
     atan(arg_t<vec<float, 8> > d);
 
     vec<float, 8>
@@ -977,6 +994,9 @@ namespace cftal {
 
     vec<float, 16>
     pow(arg_t<vec<float, 16> > b, arg_t<vec<float, 16> > e);
+
+    vec<float, 16>
+    pow(arg_t<vec<float, 16> > b, arg_t<vec<int32_t, 16> > e);
 
     vec<float, 16>
     atan(arg_t<vec<float, 16> > d);
@@ -1760,6 +1780,16 @@ template <std::size_t _N>
 inline
 cftal::vec<float, _N>
 cftal::pow(const vec<float, _N>& x, const vec<float, _N>& y)
+{
+    vec<float, _N> r(pow(low_half(x), low_half(y)),
+                     pow(high_half(x), high_half(y)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::pow(const vec<float, _N>& x, const vec<int32_t, _N>& y)
 {
     vec<float, _N> r(pow(low_half(x), low_half(y)),
                      pow(high_half(x), high_half(y)));

@@ -167,6 +167,10 @@ namespace cftal {
             pow(arg_t<vf_type> b, arg_t<vf_type> e);
 
             static
+            vf_type
+            pow(arg_t<vf_type> xc, arg_t <vi_type> e);
+            
+            static
             void
             sincos(arg_t<vf_type> vf, vf_type* psin, vf_type* pcos);
 
@@ -590,6 +594,37 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     return res;
 #endif
     __asm__ volatile("# LLVM-MCA-END\n\t");
+    return res;
+}
+
+template <typename _FLOAT_T, typename _T>
+typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _T>::
+pow(arg_t<vf_type> x, arg_t<vi_type> e)
+{
+    vf_type ax=abs(x);
+    vf_type res = base_type::powi_k(ax, e);
+    vf_type y= cvt<vf_type>(e);
+
+    vmi_type ei_is_odd= vi_type(e & vi_type(1))==vi_type(1);
+    vmf_type e_is_odd = _T::vmi_to_vmf(ei_is_odd);
+    // result is negative if x < 0 & y is odd
+    vf_type sgn_x= copysign(vf_type(1.0), x);
+    vmf_type res_neg = vmf_type(sgn_x < 0) & e_is_odd;
+    res = _T::sel(res_neg, -res, res);
+
+    vmf_type x_zero = x == 0.0;
+    vmf_type x_inf_or_zero= isinf(x) | x_zero;
+    vf_type t= _T::sel(x_zero, -y, y);
+    t= _T::sel_zero_or_val(t < 0.0, _T::pinf());
+    vf_type t1=_T::sel(e_is_odd, sgn_x, vf_type(1));
+    t1 *= t;
+    res = _T::sel(x_inf_or_zero, t1, res);
+    vmi_type ei_is_one = e==vi_type(1);
+    vmf_type e_is_one = _T::vmi_to_vmf(ei_is_one);
+    res = _T::sel(e_is_one, x, res);
+    res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
+    res = _T::sel((y==0.0) | (x==1.0), vf_type(1), res);
     return res;
 }
 
