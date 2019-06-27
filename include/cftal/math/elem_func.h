@@ -602,8 +602,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 pow(arg_t<vf_type> x, arg_t<vi_type> e)
 {
-    vf_type ax=abs(x);
-    vf_type res = base_type::powi_k(ax, e);
+    vf_type res = base_type::powi_k(x, e);
     vf_type y= cvt<vf_type>(e);
 
     vmi_type ei_is_odd= vi_type(e & vi_type(1))==vi_type(1);
