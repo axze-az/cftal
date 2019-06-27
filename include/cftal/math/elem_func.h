@@ -553,7 +553,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     res = _T::sel(res_nan, _T::pinf(), res);
     res = _T::sel_zero_or_val(res_nan & abs_x_lt_1 & y_gt_1, res);
     res = _T::sel_zero_or_val(res_nan & (~abs_x_lt_1) & (~y_gt_1), res);
-
+    
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=0.5 *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
@@ -570,6 +570,9 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     t = _T::sel_zero_or_val(efx < 0.0, t);
     res = _T::sel(y_inf, t, res);
 
+    // if y==1, res==x
+    res = _T::sel(y==vf_type(1.0), x, res);
+    
     vmf_type x_zero = x == 0.0;
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     t= _T::sel(x_zero, -y, y);
