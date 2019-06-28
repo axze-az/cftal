@@ -1230,29 +1230,52 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         std::cout << std::endl;
     }
     const bool is_T1_fp=std::is_floating_point<_T1>::value;
-    const bool is_T2_fp=std::is_floating_point<_T2>::value;
-    const bool one_fp_type=is_T1_fp | is_T2_fp;
     _T1 a_minus1= std::max(_T1(-1), domain_1.first);
     _T1 a_plus1= std::min(_T1(1), domain_1.second);
-    _T2 b_minus1= std::max(_T2(-1), domain_2.first);
-    _T2 b_plus1= std::min(_T2(1), domain_2.second);
-    if (one_fp_type && a_minus1 < a_plus1 && b_minus1 < b_plus1) {
+    if (is_T1_fp && a_minus1 < a_plus1 ) {
         std::cout << std::endl;
         _T1 a_nplus1=std::nextafter(a_plus1, _T1(2)*a_plus1);
-        _T2 b_nplus1=std::nextafter(b_plus1, _T2(2)*b_plus1);
-        if (is_T1_fp == false) {
-            a_minus1 = domain_1.first;
-            a_nplus1 = domain_1.second;
-        }
         uniform_real_distribution<_T1>
             distrib_1_1(a_minus1, a_nplus1);
-        if (is_T2_fp == false) {
-            b_minus1 = domain_2.first;
-            b_nplus1 = domain_2.second;
+        uniform_real_distribution<_T2>
+            distrib_1_2(domain_2.first, domain_2.second);
+        std::cout << "[" << a_minus1 << ", " << a_nplus1
+                    << ") x [" << domain_2.first << ", " << domain_2.second
+                    << ")\n";
+        for (uint32_t l=0; l<N1; ++l) {
+            for (uint32_t j=0; j<N0; ++j) {
+                std::vector<_T1[_N]> v_va(cnt);
+                std::vector<_T2[_N]> v_vb(cnt);
+                for (std::size_t i=0; i<cnt; ++i) {
+                    for (std::size_t k=0; k<_N; ++k) {
+                        v_va[i][k] = distrib_1_1(rnd);
+                        v_vb[i][k] = distrib_1_2(rnd);
+                    }
+                    // r &= calc(va, vb, st, speed_only, cmp);
+                }
+                job_t jb(std::move(v_va), std::move(v_vb));
+                exec_or_queue(r, v_res,
+                                std::move(jb),
+                                st,
+                                speed_only,
+                                cmp,
+                                mt);
+                std::cout << '.' << std::flush;
+            }
+            std::cout << std::endl;
         }
+    }
+    const bool is_T2_fp=std::is_floating_point<_T2>::value;
+    _T2 b_minus1= std::max(_T2(-1), domain_2.first);
+    _T2 b_plus1= std::min(_T2(1), domain_2.second);
+    if (is_T2_fp && b_minus1 < b_plus1 ) {
+        std::cout << std::endl;
+        _T1 b_nplus1=std::nextafter(b_plus1, _T2(2)*b_plus1);
+        uniform_real_distribution<_T1>
+            distrib_1_1(domain_1.first, domain_1.second);
         uniform_real_distribution<_T2>
             distrib_1_2(b_minus1, b_nplus1);
-        std::cout << "[" << a_minus1 << ", " << a_nplus1
+        std::cout << "[" << domain_1.first << ", " << domain_1.second
                     << ") x [" << b_minus1 << ", " << b_nplus1
                     << ")\n";
         for (uint32_t l=0; l<N1; ++l) {
