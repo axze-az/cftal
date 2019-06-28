@@ -486,7 +486,7 @@ namespace cftal {
             static
             vf_type
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
-            
+
             // argument reduction for all trigonometric functions,
             // reduction by %pi/2, the low bits of multiples of %pi/2
             // are returned in the value, the reduced argument is
@@ -2302,11 +2302,12 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
         static const double ci[]={
             log_hp_c11, log_hp_c10, log_hp_c9, log_hp_c8,
             log_hp_c7, log_hp_c6, log_hp_c5, log_hp_c4,
-            log_hp_c3, log_hp_c2
+            log_hp_c3
         };
         vf_type r2=r*r;
         vf_type p=horner2(r, r2, ci);
-        d_ops::muladd12(ph, pl, log_hp_c1, p, r);
+        horner_comp_quick(ph, pl, r, p, log_hp_c2, log_hp_c1);
+        // d_ops::muladd12(ph, pl, log_hp_c1, p, r);
     }
     vf_type lh, ll;
     using ctbl=impl::d_real_constants<d_real<double>, double>;
@@ -2476,22 +2477,21 @@ cftal::math::elem_func_core<double, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
-    vdf_type lnx= __log_tbl_k12<log_func::c_log_e,
+    vdf_type ldx= __log_tbl_k12<log_func::c_log_2,
                                 result_prec::normal>(abs_x);
-    vdf_type ylnx;
-    // yldx = y*ldx;
-    d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
+    vdf_type yldx;
+    d_ops::mul122(yldx[0], yldx[1], y, ldx[0], ldx[1]);
     vf_type xrh, xrl;
     vi_type idx, ki;
-    __reduce_exp_arg(xrh, xrl, idx, ki, ylnx[0], ylnx[1]);
+    __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
     vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
 
     using fc=func_constants<double>;
-    const vf_type& d= ylnx[0];
-    const double exp_hi_inf= fc::exp_hi_inf();
-    const double exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    const vf_type& d= yldx[0];
+    const double exp2_hi_inf= fc::exp2_hi_inf();
+    const double exp2_lo_zero= fc::exp2_lo_zero();
+    res = _T::sel_zero_or_val(d <= exp2_lo_zero, res);
+    res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
     return res;
 }
 
@@ -2502,15 +2502,14 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
     vdf_type abs_x= select(xh > 0.0, vdf_type(xh, xl), vdf_type(-xh, -xl));
-    vdf_type lnx = __log_tbl_k2<log_func::c_log_e,
+    vdf_type ldx = __log_tbl_k2<log_func::c_log_2,
                                 result_prec::high>(abs_x[0], abs_x[1]);
-    // ylnx = y*lnx;
-    vdf_type ylnx;
-    d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
+    vdf_type yldx;
+    d_ops::mul22(yldx[0], yldx[1], yh, yl, ldx[0], ldx[1]);
 
     vf_type xrh, xrl;
     vi_type idx, ki;
-    __reduce_exp_arg(xrh, xrl, idx, ki, ylnx[0], ylnx[1]);
+    __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
     vf_type rl;
     vf_type rh=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &rl);
     auto sc = __scale_exp_k(ki);
@@ -2525,30 +2524,29 @@ cftal::math::elem_func_core<double, _T>::
 powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
 {
     vf_type abs_x= abs(x);
-    vdf_type lnx=__log_tbl_k12<log_func::c_log_e,
+    vdf_type ldx=__log_tbl_k12<log_func::c_log_2,
                                result_prec::normal>(abs_x);
     vf_type y=cvt<vf_type>(e);
-    vdf_type ylnx;
-    // yndx = y*lnx;
+    vdf_type yldx;
     if (_CALC_ROOT==true) {
         vf_type rh, rl;
         d_ops::rcp12(rh, rl, y);
-        d_ops::mul22(ylnx[0], ylnx[1], lnx[0], lnx[1], rh, rl);
+        d_ops::mul22(yldx[0], yldx[1], ldx[0], ldx[1], rh, rl);
     } else {
-        d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
+        d_ops::mul122(yldx[0], yldx[1], y, ldx[0], ldx[1]);
     }
 
     vf_type xrh, xrl;
     vi_type idx, ki;
-    __reduce_exp_arg(xrh, xrl, idx, ki, ylnx[0], ylnx[1]);
+    __reduce_exp2_arg(xrh, xrl, idx, ki, yldx[0], yldx[1]);
     vf_type res=__exp_tbl_k(xrh, xrl, idx, ki);
 
     using fc=func_constants<double>;
-    const vf_type& d= ylnx[0];
-    const double exp_hi_inf= fc::exp_hi_inf();
-    const double exp_lo_zero= fc::exp_lo_zero();
-    res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
-    res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+    const vf_type& d= yldx[0];
+    const double exp2_hi_inf= fc::exp2_hi_inf();
+    const double exp2_lo_zero= fc::exp2_lo_zero();
+    res = _T::sel_zero_or_val(d <= exp2_lo_zero, res);
+    res = _T::sel(d >= exp2_hi_inf, _T::pinf(), res);
 
     return res;
 }
