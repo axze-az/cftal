@@ -1240,8 +1240,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         uniform_real_distribution<_T2>
             distrib_1_2(domain_2.first, domain_2.second);
         std::cout << "[" << a_minus1 << ", " << a_nplus1
-                    << ") x [" << domain_2.first << ", " << domain_2.second
-                    << ")\n";
+                  << ") x [" << domain_2.first << ", " << domain_2.second
+                  << ")\n";
         for (uint32_t l=0; l<N1; ++l) {
             for (uint32_t j=0; j<N0; ++j) {
                 std::vector<_T1[_N]> v_va(cnt);
@@ -1276,8 +1276,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         uniform_real_distribution<_T2>
             distrib_1_2(b_minus1, b_nplus1);
         std::cout << "[" << domain_1.first << ", " << domain_1.second
-                    << ") x [" << b_minus1 << ", " << b_nplus1
-                    << ")\n";
+                  << ") x [" << b_minus1 << ", " << b_nplus1
+                  << ")\n";
         for (uint32_t l=0; l<N1; ++l) {
             for (uint32_t j=0; j<N0; ++j) {
                 std::vector<_T1[_N]> v_va(cnt);
@@ -1310,8 +1310,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         uniform_real_distribution<_T2>
             distrib_1_2(b_minus1, b_nplus1);
         std::cout << "[" << a_minus1 << ", " << a_nplus1
-                    << ") x [" << b_minus1 << ", " << b_nplus1
-                    << ")\n";
+                  << ") x [" << b_minus1 << ", " << b_nplus1
+                  << ")\n";
         for (uint32_t l=0; l<N1; ++l) {
             for (uint32_t j=0; j<N0; ++j) {
                 std::vector<_T1[_N]> v_va(cnt);
