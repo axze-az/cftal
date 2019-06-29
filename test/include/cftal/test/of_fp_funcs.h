@@ -1298,7 +1298,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                                 mt);
                 std::cout << '.' << std::flush;
             }
-          cc  std::cout << std::endl;
+            std::cout << std::endl;
         }
     }
     if (is_T2_fp && is_T1_fp && a_minus1 < a_plus1 && b_minus1 < b_plus1 ) {
