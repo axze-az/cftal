@@ -173,7 +173,7 @@ namespace cftal {
             static
             vf_type
             rootn(arg_t<vf_type> xc, arg_t <vi_type> yc);
-            
+
             static
             void
             sincos(arg_t<vf_type> vf, vf_type* psin, vf_type* pcos);
@@ -557,7 +557,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     res = _T::sel(res_nan, _T::pinf(), res);
     res = _T::sel_zero_or_val(res_nan & abs_x_lt_1 & y_gt_1, res);
     res = _T::sel_zero_or_val(res_nan & (~abs_x_lt_1) & (~y_gt_1), res);
-    
+
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=0.5 *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
@@ -576,7 +576,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 
     // if y==1, res==x
     res = _T::sel(y==vf_type(1.0), x, res);
-    
+
     vmf_type x_zero = x == 0.0;
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     t= _T::sel(x_zero, -y, y);
@@ -656,7 +656,7 @@ rootn(arg_t<vf_type> x, arg_t<vi_type> e)
     res = _T::sel(x_zero & e_is_even, _T::pinf(), res);
     res = _T::sel(x_zero & e_is_pos, x, res);
     res = _T::sel(x_zero & e_is_pos & e_is_even, 0.0, res);
-    
+
     vmf_type x_inf=isinf(x);
     res = _T::sel(x_inf, copysign(vf_type(0.0), x), res);
     res = _T::sel(x_inf & e_is_pos, x, res);
