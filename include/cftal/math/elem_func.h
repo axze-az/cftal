@@ -710,6 +710,7 @@ tan(arg_t<vf_type> d)
     t = _TRAITS_T::sel(isinf(d) | isnan(d),
                        copysign(vf_type(_TRAITS_T::nan()), d),
                        t);
+    t = _TRAITS_T::sel(d==vf_type(0), d, t);
     return t;
 }
 
