@@ -767,8 +767,8 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
         r = _T::sel(y_gt_z & x_zero, +M_PI/2, r);
         //  atan2(y<0, 0) = -Pi/2
         r = _T::sel(y_lt_z & x_zero, -M_PI/2, r);
-        //  atan2(y, +Inf) = 0
-        r = _T::sel_zero_or_val(x_p_inf, r);
+        //  atan2(y, +Inf) = copysign(0, y);
+        r = _T::sel(x_p_inf, copysign(vf_type(0), y), r);
         //  atan2(y>0, -Inf) = +Pi
         r = _T::sel(y_gt_z & x_n_inf, M_PI, r);
         //  atan2(y<0, -Inf) = -Pi
