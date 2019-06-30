@@ -502,6 +502,7 @@ log1p(arg_t<vf_type> d)
     x = _T::sel((d < vf_type(-1.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == -1.0) x = -INFINITY;
     x = _T::sel(d == vf_type(-1.0), ninf, x);
+    x = _T::sel(d == vf_type(0.0), d, x);
     return x;
 }
 
