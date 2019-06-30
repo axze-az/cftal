@@ -152,6 +152,7 @@ function(test_prog arg1)
     add_test(NAME ${arg1} COMMAND ${arg1})
 endfunction()
 
+test_prog(test-tools)
 
 test_prog(test-dint8)
 test_prog(test-duint8)
