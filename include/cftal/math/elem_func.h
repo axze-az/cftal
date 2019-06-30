@@ -386,8 +386,7 @@ expm1(arg_t<vf_type> x)
     const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one();
     y = _T::sel(x <= expm1_lo_minus_one, -1.0, y);
     y = _T::sel(x >= expm1_hi_inf, _T::pinf(), y);
-    // y = _T::sel(d == 0.0, 0.0, y);
-    // y = _T::sel(d == 1.0, M_E-1.0, y);
+    y = _T::sel(x == 0.0, x, y);
     return y;
 }
 
@@ -403,8 +402,7 @@ exp2m1(arg_t<vf_type> x)
     const vf_type exp2m1_lo_minus_one= fc::exp2m1_lo_minus_one();
     y = _T::sel(x <= exp2m1_lo_minus_one, -1.0, y);
     y = _T::sel(x >= exp2m1_hi_inf, _T::pinf(), y);
-    // y = _T::sel(x == 0.0, 0.0, y);
-    // y = _T::sel(x == 1.0, 1.0, y);
+    y = _T::sel(x == 0.0, x, y);
     return y;
 }
 
@@ -420,8 +418,7 @@ exp10m1(arg_t<vf_type> x)
     const vf_type exp10m1_lo_minus_one= fc::exp10m1_lo_minus_one();
     y = _T::sel(x <= exp10m1_lo_minus_one, -1.0, y);
     y = _T::sel(x >= exp10m1_hi_inf, _T::pinf(), y);
-    // y = _T::sel(x == 0.0, 0.0, y);
-    // y = _T::sel(x == 1.0, 9.0, y);
+    y = _T::sel(x == 0.0, x, y);
     return y;
 }
 
@@ -437,7 +434,7 @@ sinh(arg_t<vf_type> x)
     const vf_type sinh_lo_inf= fc::sinh_lo_inf();
     y = _T::sel(x >= sinh_hi_inf, _T::pinf(), y);
     y = _T::sel(x <= sinh_lo_inf, _T::ninf(), y);
-    // y = _T::sel_zero_or_val(x == 0.0, y);
+    // y = _T::sel(x == 0.0, x, y);
     return y;
 }
 
@@ -673,6 +670,9 @@ sincos(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
 {
     if ((psin!=nullptr) || (pcos!=nullptr)) {
         base_type::sin_cos_k(d, psin, pcos);
+        if (psin!=nullptr) {
+            *psin = _TRAITS_T::sel(d==vf_type(0), d, *psin);
+        }
     }
 }
 
@@ -684,6 +684,7 @@ sin(arg_t<vf_type> d)
 {
     vf_type s;
     base_type::sin_cos_k(d, &s, nullptr);
+    s = _TRAITS_T::sel(d==vf_type(0), d, s);
     return s;
 }
 

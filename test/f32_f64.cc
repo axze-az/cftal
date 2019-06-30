@@ -157,12 +157,16 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats_to_stream& uss)
 
 bool cftal::test::f_eq(double a, double b)
 {
-    return (a == b) || ((a != a) && (b != b));
+    return ((a != 0.0) && (a == b)) || ((a != a) && (b != b)) ||
+        ((a==0.0) && (a==b) &&
+         (std::copysign(1.0, a) == std::copysign(1.0, b)));
 }
 
 bool cftal::test::f_eq(float a, float b)
 {
-    return (a == b) || ((a != a) && (b != b));
+    return ((a !=0.0f) && (a == b)) || ((a != a) && (b != b)) ||
+        ((a==b) && (a==0.0f) &&
+         (std::copysign(1.0f, a) == std::copysign(1.0f, b)));
 }
 
 cftal::int32_t
@@ -185,6 +189,20 @@ cftal::test::distance(double a, double b)
     // a > b negative sign
     if (sgn_b)
         d = -d;
+    // +-0 gives 2
+    if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0)) {
+        if (sgn_a)
+            d=+2;
+        else
+            d=-2;
+    }
+    // +-Inf gives min max
+    if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0x7FF0'0000'0000'0000L)) {
+        if (sgn_a)
+            d=std::numeric_limits<int32_t>::max();
+        else
+            d=std::numeric_limits<int32_t>::min();
+    }
     // saturate d
     static const auto d_min=int64_t(std::numeric_limits<int32_t>::min());
     d = std::max(d, d_min);
@@ -213,6 +231,19 @@ cftal::test::distance(float a, float b)
     // a > b negative sign
     if (sgn_b)
         d = -d;
+    if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0)) {
+        if (sgn_a)
+            d=+2;
+        else
+            d=-2;
+    }
+    // +-Inf gives min max
+    if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0x7F800000)) {
+        if (sgn_a)
+            d=std::numeric_limits<int32_t>::max();
+        else
+            d=std::numeric_limits<int32_t>::min();
+    }
     return d;
 }
 
@@ -222,7 +253,7 @@ namespace {
     int32_t get_ulp(_T a, _T b)
     {
         int32_t u=0;
-        if (a != b) {
+        if (a != b ||(a==_T(0)) || (b==_T(0))) {
             u = cftal::test::distance(a, b);
         }
         return u;
