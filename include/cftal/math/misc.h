@@ -263,6 +263,7 @@ cftal::math::impl::root12::pow12(_T x)
     _T t;
     // compensated product with first multiplication unrolled
     d_ops::sqr12(x12h, x12l, x);
+#pragma GCC unroll 32
     for (int i=0; i<10; ++i) {
         d_ops::mul12(x12h, t, x12h, x);
         x12l = x12l * x + t;

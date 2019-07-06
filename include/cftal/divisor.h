@@ -21,7 +21,7 @@ namespace cftal {
         _V _rec;
         _D _d;
     public:
-                explicit
+        explicit
         divisor(const _D& dd) : _rec(_V(_D(1)/dd)), _d(dd) {}
         const _D& d() const { return _d; }
         _V divide(const _V& n) const { return n * _rec; }
