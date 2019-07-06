@@ -24,6 +24,9 @@ namespace cftal {
         constexpr
         fp_expansion() = default;
 
+        constexpr
+        fp_expansion(const _T& h);
+        
         template <typename _E>
         constexpr
         fp_expansion(std::initializer_list<_E> l);
@@ -85,6 +88,16 @@ namespace cftal {
               const fp_expansion<_T, _N>& b)
         ->decltype(_T{}>_T{});
 
+}
+
+template <typename _T, std::size_t _N>
+constexpr
+cftal::fp_expansion<_T, _N>::
+fp_expansion(const _T& r)
+{
+    _e[0]=r;
+    for (std::size_t i=1; i<_N; ++i)
+        _e[i] = _T(0);
 }
 
 template <typename _T, std::size_t _N>

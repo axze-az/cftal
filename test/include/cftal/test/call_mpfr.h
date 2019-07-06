@@ -244,6 +244,9 @@ namespace cftal {
             mpfr_real(const d_real<_F>& d) : fpn_handle(d, _B) {}
             template <class _F>
             mpfr_real(const t_real<_F>& t) : fpn_handle(t, _B) {}
+            template <class _F, std::size_t _N>
+            mpfr_real(const fp_expansion<_F, _N>& t)
+                : fpn_handle(t, _B) {}
         };
 
         template <std::size_t _B>
