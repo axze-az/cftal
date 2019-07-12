@@ -1,6 +1,13 @@
 - permutation specializations for v4f64, v8f32, v8u32, v4u64
 - documentation!!!
 
+- lower precision functions 8, 4 ulps?
+  4 ulps allow 2 errornous bits: 51, 22 bits precision
+  8 ulps allow 3 errornous bits  50, 20 bits precision
+  what about 48 bit precision for double?
+
+- exp can be probably not be much faster
+
 double
 fmod(double x, double y)
 {
