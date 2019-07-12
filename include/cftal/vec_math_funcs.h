@@ -14,53 +14,8 @@
 namespace cftal {
 
     namespace impl {
-
-        template <typename _T, std::size_t _N>
-        struct is_vec_math_func {
-            static
-            constexpr bool
-            fast() { return false; }
-        };
-
-        template <std::size_t _N>
-        struct is_vec_math_func<double, _N> {
-            static
-            constexpr bool
-            fast() {
-#if 0
-                bool r=(is_vec_specialized<vec<double, _N> >::value);
-                return r;
-#else
-                bool r=(is_vec_specialized<vec<double, _N> >::value ||
-                       (is_vec_specialized<vec<double, _N/2> >::value /* &&
-                        is_vec_specialized<vec<int32_t, _N> >::value*/));
-#if defined (__tune_btver2__) || defined (__tune_bdver3__)
-                r &= _N > 2 ? false : true;
-#endif
-                return r;
-#endif
-            }
-        };
-
-        template <std::size_t _N>
-        struct is_vec_math_func<float, _N> {
-            static
-            constexpr bool
-            fast() {
-                bool r=(is_vec_specialized<vec<float, _N> >::value ||
-                       (is_vec_specialized<vec<float, _N/2> >::value /*&&
-                        is_vec_specialized<vec<int32_t, _N/2> >::value */));
-#if defined (__SSE__)
-                // r &= _N != 2;
-#endif
-#if defined (__tune_btver2__) || defined (__tune_bdver3__)
-                r &= _N > 4 ? false : true;
-#endif
-                return r;
-            }
-        };
-
     }
+
 }
 
 // Local variables:
