@@ -127,7 +127,6 @@ cftal::impl::_cvt_bf16_to_f32(const vec<mf_bf16_t, _N>& v)
     return r;
 }
 
-
 template <std::size_t _N>
 inline
 cftal::vec<cftal::mf_bf16_t, _N>

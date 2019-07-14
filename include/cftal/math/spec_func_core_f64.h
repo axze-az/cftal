@@ -203,7 +203,7 @@ erf_k(arg_t<vf_type> xc)
         vf_type ye;
         horner_comp_quick(y_i0, ye, xx, y_i0, erf_i0_c1);
         vf_type p_i;
-        y_i0 = d_ops::two_prod(y_i0, x, p_i);
+        d_ops::mul12(y_i0, p_i, y_i0, x);
         ye = ye*x + p_i;
         y_i0 += ye;
         y = y_i0;
@@ -1125,7 +1125,7 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
             x += _T::sel(t, 1.0, 0.0);
         }
         // f0 /= q0;
-        f0 = d_ops::sloppy_div(f0, q0);
+        d_ops::div22(f0[0], f0[1], f0[0], f0[1], q0[0], q0[1]);
     }
     return reduced_small_gamma_args{x, f0};
 }

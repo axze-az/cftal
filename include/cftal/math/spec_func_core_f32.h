@@ -851,7 +851,8 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
             x += _T::sel(t, 1.0f, 0.0f);
         }
         // f0 /= q0;
-        f0 = d_ops::sloppy_div(f0, q0);
+        d_ops::div22(f0[0], f0[1], f0[0], f0[1], q0[0], q0[1]);
+        // f0 = d_ops::sloppy_div(f0, q0);
     }
     return reduced_small_gamma_args{x, f0};
 }
