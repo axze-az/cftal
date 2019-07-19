@@ -297,7 +297,8 @@ namespace cftal {
             using base_type::add122;
 
             static
-            _T xfma(const _T& a, const _T& b, const _T& c);
+            _T
+            xfma(const _T& a, const _T& b, const _T& c);
 
             static
             void
@@ -354,7 +355,8 @@ namespace cftal {
             using base_type::add122;
 
             static
-            _T xfma(const _T& a, const _T& b, const _T& c);
+            _T
+            xfma(const _T& a, const _T& b, const _T& c);
 
             static
             void
@@ -444,6 +446,13 @@ namespace cftal {
             div212(_T& rh, _T& rl,
                    const _T& ah, const _T& al,
                    const _T& b);
+
+            // a/b
+            static
+            void
+            div122(_T& rh, _T& rl,
+                  const _T& ah,
+                   const _T& bh, const _T& bl);
 
             // a/b
             static
@@ -777,6 +786,7 @@ add122cond(_T& zh, _T& zl,
     _t3 = _t2 + (bl);
     add12(zh, zl,_t1,_t3);
 }
+
 
 template <typename _T>
 inline
@@ -1165,6 +1175,25 @@ div212(_T& rh, _T& rl,
     _rl = xl - _rl;
     _rh = _rh + _rl;
     _rh = _rh / yh;
+    add12(rh, rl, _t, _rh);
+}
+
+template <typename _T, bool _FMA>
+inline
+__attribute__((__always_inline__))
+void
+cftal::impl::d_real_ops<_T, _FMA>::
+div122(_T& rh, _T& rl,
+       const _T& xh,
+       const _T& yh, const _T& yl)
+{
+    // DWDivDW2
+    _T _t= xh / yh;
+    _T _rh, _rl;
+    mul122(_rh, _rl, _t, yh, yl);
+    _rh = xh - _rh;
+    _rh = _rh + _rl;
+    _rh = _rh /yh;
     add12(rh, rl, _t, _rh);
 }
 
@@ -1570,7 +1599,8 @@ cftal::operator/(const d_real<_T>& a, const _T& b)
 {
     using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
-    impl_t::div212(h, l, a[0], a[1], b);
+    // impl_t::div212(h, l, a[0], a[1], b);
+    impl_t::scaled_div22(h, l, a[0], a[1], b, _T(0));
     return d_real<_T>(h, l);
 }
 

@@ -371,164 +371,166 @@ equal to $e$.
 
 \paragraph{argument reduction for exp(x) and expm1(x)}
 
-    The input argument is split into
-    \begin{equation}
-        x = k \times \log{(2)} + r_h + r_l, \;
-        |r_h +r_l| \le \frac{1}{2} \log{(2)}
-    \end{equation}
-    whith $r = r_h + r_l$.
-    After the determination of
-    \[
-        k = x \times \frac{1}{\log{(2)}}
-    \]
-    the values $r_h$ and $r_l$ can be calculated as
-    \[
-       \begin{aligned}
-       hi &= x - k \times LN2_{HI} \\
-       r_h &= hi - k \times LN2_{LO} \\
-       dx & = hi - r_h \\
-       r_l &= dx - k \times LN2_{LO}
-       \end{aligned}
-    \]
-    where $LN2_{HI}$ and $LN2_{LO}$ are Cody and Waite constants for $\log(2)$
-    and the expressions are organized to allow utilization of fma operations.
+The input argument is split into
+\begin{equation}
+  x = k \times \log{(2)} + r_h + r_l, \;
+  |r_h +r_l| \le \frac{1}{2} \log{(2)}
+\end{equation}
+whith $r = r_h + r_l$.
+After the determination of
+\[
+k = x \times \frac{1}{\log{(2)}}
+\]
+the values $r_h$ and $r_l$ can be calculated as
+\[
+\begin{aligned}
+  hi &= x - k \times LN2_{HI} \\
+  r_h &= hi - k \times LN2_{LO} \\
+  dx & = hi - r_h \\
+  r_l &= dx - k \times LN2_{LO}
+\end{aligned}
+\]
+where $LN2_{HI}$ and $LN2_{LO}$ are Cody and Waite constants for $\log(2)$
+and the expressions are organized to allow utilization of fma operations.
 
 \paragraph{argument reduction for exp2(x) and exp2m1(x)}
 
-    The calculations of exp2(x) and exp2m1(x) use the
-    identity
-    \begin{equation}
-        2^x + C = e^{x \times \log{(2)}} + C
-    \end{equation}
-    for the reduced arguments.
-    The reduced argument $ r_0 $ satisfies
-    \begin{equation}
-        x = k + r_0, \;
-        |r_0| \le \frac{1}{2}
-    \end{equation}
-    After the determination of
-    \[
-        k = \text{rint}(x)
-    \]
-    the value $r_0$ is calculated as
-    \[
-       r_0 = x - k
-    \]
-    and then scaled
-    \[
-       (r_h, r_l) = r_0 - k \times (LN2_{HI}, LN2_{LO})
-    \]
-    to allow the calculation of $ 2^x + C $ as $ 2^k \times e^{r_h+ rl} + C$.
-    The constants $LN2_{HI}$ and $LN2_{LO}$ are the two parts of a double double number for $\log{(2)}$.
+The calculations of exp2(x) and exp2m1(x) use the
+identity
+\begin{equation}
+  2^x + C = e^{x \times \log{(2)}} + C
+\end{equation}
+for the reduced arguments.
+The reduced argument $ r_0 $ satisfies
+\begin{equation}
+  x = k + r_0, \;
+  |r_0| \le \frac{1}{2}
+\end{equation}
+After the determination of
+\[
+k = \text{rint}(x)
+\]
+the value $r_0$ is calculated as
+\[
+r_0 = x - k
+\]
+and then scaled
+\[
+(r_h, r_l) = r_0 - k \times (LN2_{HI}, LN2_{LO})
+\]
+to allow the calculation of $ 2^x + C $ as $ 2^k \times e^{r_h+ rl} + C$.
+The constants $LN2_{HI}$ and $LN2_{LO}$ are the two parts of a double double number for $\log{(2)}$.
 
 \paragraph{argument reduction for exp10(x) and expm10m1(x)}
 
-    The calculations of exp10(x) and exp10m1(x) use the
-    identity
-    \begin{equation}
-        10^x + C = e^{x \times \log{(10)}} + C
-    \end{equation}
-    for the reduced arguments. A  double double pair $ r_0= r_{0h} + r_{0l} $ is constructed which satisfies
-    \begin{equation}
-        x = k \times \log_{10}{(2)} + r_{0h} + r_{0l}, \;
-        |xr_h +xr_l| \le \frac{1}{2} \log_{10}{(2)}
-    \end{equation}
-    After the determination of
-    \[
-        k = x \times \frac{1}{\log_{10}{(2)}}
-    \]
-    the values $r_{0h}$ and $r_{0l}$ can be calculated as
-    \[
-       \begin{aligned}
-       hi &= x - k \times LG2_{HI} \\
-       r_{0h} &= hi - k \times LG2_{LO} \\
-       dx & = hi - r_{0h} \\
-       r_{0l} &= dx - k \times LG2_{LO}
-       \end{aligned}
-    \]
-    where $LG2_{HI}$ and $LG2_{LO}$ are Cody and Waite constants for
-    $\log_{10}{(2)}$
-    and the expressions are organized to allow utilization of fma operations.
-    The reduced argument is then scaled
-    \[
-        \begin{aligned}
-        (r_h, r_l) &= r_{0h} - k \times (LN10_{HI}, LN10_{LO}) \\
-        r_l &= r_l + r_{0l} \times LN10_{HI}
-        \end{aligned}
-    \]
-    to allow the calculation of $ 10^x + C $ as $ 2^k * e^{r_h+ rl} + C$.
-    The constants $LN10_{HI}$ and $LN10_{LO}$ are the two parts of a double double number for $\log(10)$.
+The calculations of exp10(x) and exp10m1(x) use the
+identity
+\begin{equation}
+  10^x + C = e^{x \times \log{(10)}} + C
+\end{equation}
+for the reduced arguments. A  double double pair $ r_0= r_{0h} + r_{0l} $ is constructed which satisfies
+\begin{equation}
+  x = k \times \log_{10}{(2)} + r_{0h} + r_{0l}, \;
+  |xr_h +xr_l| \le \frac{1}{2} \log_{10}{(2)}
+\end{equation}
+After the determination of
+\[
+k = x \times \frac{1}{\log_{10}{(2)}}
+\]
+the values $r_{0h}$ and $r_{0l}$ can be calculated as
+\[
+\begin{aligned}
+  hi &= x - k \times LG2_{HI} \\
+  r_{0h} &= hi - k \times LG2_{LO} \\
+  dx & = hi - r_{0h} \\
+  r_{0l} &= dx - k \times LG2_{LO}
+\end{aligned}
+\]
+where $LG2_{HI}$ and $LG2_{LO}$ are Cody and Waite constants for
+$\log_{10}{(2)}$
+and the expressions are organized to allow utilization of fma operations.
+The reduced argument is then scaled
+\[
+\begin{aligned}
+  (r_h, r_l) &= r_{0h} - k \times (LN10_{HI}, LN10_{LO}) \\
+  r_l &= r_l + r_{0l} \times LN10_{HI}
+\end{aligned}
+\]
+to allow the calculation of $ 10^x + C $ as $ 2^k * e^{r_h+ rl} + C$.
+The constants $LN10_{HI}$ and $LN10_{LO}$ are the two parts of a
+double double number for $\log(10)$.
 
 
 \paragraph{approximation of $e^r$ in [$-\log(2)/2, \log(2)/2$]}
 
-    The function $y = e^r$ is approximated as
-    \begin{equation}
-        y = \sum_{i=0}^{N}c_i r_h^i
-    \end{equation}
-    with $N=13$ for binary64 operands and $N=7$ for binary32 operands.
-    The summations with index 0 and 1 are done in higher precision
-    using an error free transformation of the horner's scheme
-    (also known as Compensated Horner Scheme), see \cite{Graillat05compensatedhorner}) to achieve
-    faithful rounded results.
-    %
-    Using the identity for the exponential function
-    \[
-        \begin{aligned}
-        e^{r_h+r_l} - 1 &=
-            e^{r_h} \times e^{r_l} - 1 \\
-                        &=
-            e^{r_h} \times \big( 1+ r_l + \frac{r_l^2}{2} + \dots \big) - 1 \\
-                        &=
-            e^{r_h} -1 + \big( e^{r_h} \times r_l +
-                                e^{r_h} \times \frac{r_l^2}{2} +
-                                \dots
-                         \big) \\
-                        &=
-            e^{r_h} -1 + \big( r_l + (e^{r_h}-1) \times r_l +
-                                e^{r_h} \times \frac{r_l^2}{2} +
-                                \dots
-                         \big) \\
-        \end{aligned}
-    \]
-    and supressing all terms with higher powers of $r_l$ as 1 one yields
-    \begin{equation}
-        \begin{aligned}
-        e^{r_h+r_l} - 1 & \approx
-            (e^{r_h} -1) + (r_l + (e^{r_h}-1) \times r_l)
-        \end{aligned}
-    \end{equation}
-    as error correction formula.
+The function $y = e^r$ is approximated as
+\begin{equation}
+  y = \sum_{i=0}^{N}c_i r_h^i
+\end{equation}
+with $N=13$ for binary64 operands and $N=7$ for binary32 operands.
+The summations with index 0 and 1 are done in higher precision
+using an error free transformation of the horner's scheme
+(also known as Compensated Horner Scheme), see \cite{Graillat05compensatedhorner}) to achieve
+faithful rounded results.
+%
+Using the identity for the exponential function
+\[
+\begin{aligned}
+  e^{r_h+r_l} - 1 &=
+  e^{r_h} \times e^{r_l} - 1 \\
+  &=
+  e^{r_h} \times \big( 1+ r_l + \frac{r_l^2}{2} + \dots \big) - 1 \\
+  &=
+  e^{r_h} -1 + \big( e^{r_h} \times r_l +
+  e^{r_h} \times \frac{r_l^2}{2} +
+  \dots
+  \big) \\
+  &=
+  e^{r_h} -1 + \big( r_l + (e^{r_h}-1) \times r_l +
+  e^{r_h} \times \frac{r_l^2}{2} +
+  \dots
+  \big) \\
+\end{aligned}
+\]
+and supressing all terms with higher powers of $r_l$ as 1 one yields
+\begin{equation}
+  \begin{aligned}
+    e^{r_h+r_l} - 1 & \approx
+    (e^{r_h} -1) + (r_l + (e^{r_h}-1) \times r_l)
+  \end{aligned}
+\end{equation}
+as error correction formula.
 
 \paragraph{reconstruction}
-    The reconstruction of all functions like $b^x$ is done as
-    \begin{equation}
-        e ^ x = 2^k * e^{(r_h + r_l)}
-    \end{equation}
-    with special care for border cases of k.\\[10pt]
-    %
-    The reconstruction phase of all functions similiar to $b^x-1$ uses
-    with $ s  = \frac{1}{2} k $ the formulaes
-    \begin{equation}
-        \begin{aligned}
-            (e^{\frac{x_h}{2}}-\frac{1}{2}, e^{\frac{x_l}{2}}-\frac{1}{2})
-                &=
-                    2^s \times (e^{r_h},e^{r_l}) - \frac{1}{2}\\
-                &=
-                    (0.5 \times 2^k) \times (e^{r_h},e^{r_l}) - \frac{1}{2}
-        \end{aligned}
-    \end{equation}
-    calculated in multiple precision. The two parts of
+
+The reconstruction of all functions like $b^x$ is done as
+\begin{equation}
+  e ^ x = 2^k * e^{(r_h + r_l)}
+\end{equation}
+with special care for border cases of k.\\[10pt]
+%
+The reconstruction phase of all functions similiar to $b^x-1$ uses
+with $ s  = \frac{1}{2} k $ the formulaes
+\begin{equation}
+  \begin{aligned}
+    (e^{\frac{x_h}{2}}-\frac{1}{2}, e^{\frac{x_l}{2}}-\frac{1}{2})
+    &=
+    2^s \times (e^{r_h},e^{r_l}) - \frac{1}{2}\\
+    &=
+    (0.5 \times 2^k) \times (e^{r_h},e^{r_l}) - \frac{1}{2}
+  \end{aligned}
+\end{equation}
+calculated in multiple precision. The two parts of
     $ e^{\frac{x}{2}} - \frac{1}{2} $ are then combined
-    \begin{equation}
-        \begin{aligned}
-        t &= 2 \times ( e^{\frac{x_h}{2}} -\frac{1}{2} ) \\
-        e ^ x -1 &= t + 2 \times (e^{\frac{x_l}{2}} -\frac{1}{2})
-        \end{aligned}
-    \end{equation}
-    into the final result. This rather complicated approach avoids the
-    handling of different cases for k, especially overflows during the
-    calculation.
+\begin{equation}
+  \begin{aligned}
+    t &= 2 \times ( e^{\frac{x_h}{2}} -\frac{1}{2} ) \\
+    e ^ x -1 &= t + 2 \times (e^{\frac{x_l}{2}} -\frac{1}{2})
+  \end{aligned}
+\end{equation}
+into the final result. This rather complicated approach avoids the
+handling of different cases for k, especially overflows during the
+calculation.
 
 \subsubsection{hyperbolic functions}
 

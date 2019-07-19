@@ -40,7 +40,7 @@ namespace cftal {
 
         template <template <typename _T> class _X, typename _T>
         struct check_x_real_traits;
-
+        
         template <>
         struct check_x_real_traits<d_real, double> {
             static
