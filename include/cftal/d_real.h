@@ -496,33 +496,6 @@ namespace cftal {
 
     }
 
-#if 0
-    // comparison operators
-    template <typename _T>
-    typename d_real_traits<_T>::cmp_result_type
-    operator<(const d_real<_T>& a, const d_real<_T>& b);
-
-    template <typename _T>
-    typename d_real_traits<_T>::cmp_result_type
-    operator<=(const d_real<_T>& a, const d_real<_T>& b);
-
-    template <typename _T>
-    typename d_real_traits<_T>::cmp_result_type
-    operator==(const d_real<_T>& a, const d_real<_T>& b);
-
-    template <typename _T>
-    typename d_real_traits<_T>::cmp_result_type
-    operator!=(const d_real<_T>& a, const d_real<_T>& b);
-
-    template <typename _T>
-    typename d_real_traits<_T>::cmp_result_type
-    operator>(const d_real<_T>& a, const d_real<_T>& b);
-
-    template <typename _T>
-    typename d_real_traits<_T>::cmp_result_type
-    operator>=(const d_real<_T>& a, const d_real<_T>& b);
-#endif
-//
     // unary minus
     template <typename _T>
     d_real<_T>
@@ -1375,59 +1348,6 @@ sqrt21(_T& rh, const _T& ah, const _T& al)
     rh = select(is_zero, _T(0), rh);
 }
 
-#if 0
-template <typename _T>
-inline
-typename cftal::d_real_traits<_T>::cmp_result_type
-cftal::operator<(const d_real<_T>& a, const d_real<_T>& b)
-{
-    return (a[0] < b[0]) |
-        ((a[0]==b[0]) & (a[1] < b[1]));
-}
-
-template <typename _T>
-inline
-typename cftal::d_real_traits<_T>::cmp_result_type
-cftal::operator<=(const d_real<_T>& a, const d_real<_T>& b)
-{
-    return (a[0] < b[0]) |
-        ((a[0]==b[0]) & (a[1] <= b[1]));
-}
-
-template <typename _T>
-inline
-typename cftal::d_real_traits<_T>::cmp_result_type
-cftal::operator==(const d_real<_T>& a, const d_real<_T>& b)
-{
-    return ((a[0]==b[0]) & (a[1] == b[1]));
-}
-
-template <typename _T>
-inline
-typename cftal::d_real_traits<_T>::cmp_result_type
-cftal::operator!=(const d_real<_T>& a, const d_real<_T>& b)
-{
-    return ((a[0]!=b[0]) | (a[1] != b[1]));
-}
-
-template <typename _T>
-inline
-typename cftal::d_real_traits<_T>::cmp_result_type
-cftal::operator>=(const d_real<_T>& a, const d_real<_T>& b)
-{
-    return ((a[0]>b[0]) ||
-            ((a[0]==b[0]) & (a[1] >= b[1])));
-}
-
-template <typename _T>
-inline
-typename cftal::d_real_traits<_T>::cmp_result_type
-cftal::operator>(const d_real<_T>& a, const d_real<_T>& b)
-{
-    return ((a[0]>b[0]) |
-            ((a[0]==b[0]) & (a[1] > b[1])));
-}
-#endif
 
 template <typename _T>
 inline

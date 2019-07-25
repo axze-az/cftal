@@ -2170,18 +2170,6 @@ cftal::half_math::log10(const vec<float, _N>& v)
     return r;
 }
 
-#if 0
-template <std::size_t _N>
-cftal::vec<float, _N>
-cftal::half_math::
-powr(const vec<float, _N>& x, const vec<float, _N>& y)
-{
-    vec<float, _N> r(powr(low_half(x), low_half(y)),
-                     powr(high_half(x), high_half(y)));
-    return r;
-}
-#endif
-
 template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::half_math::rsqrt(const vec<float, _N>& v)

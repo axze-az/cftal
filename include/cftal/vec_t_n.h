@@ -38,11 +38,6 @@ namespace cftal {
         vec(vec&& r) = default;
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
-
-#if 0
-        template <typename _U>
-        explicit vec(const vec<_U, _N>& r);
-#endif
         vec(const _T& v);
         vec(std::initializer_list<_T> l);
         vec(init_list<_T> l);
@@ -610,16 +605,6 @@ namespace std {
 
 }
 
-#if 0
-template <class _T, std::size_t _N>
-template <class _U>
-inline
-cftal::vec<_T, _N>::vec(const vec<_U, _N>& r)
-    : _l(low_half(r)), _h(high_half(r))
-{
-
-}
-#endif
 
 template <class _T, std::size_t _N>
 inline

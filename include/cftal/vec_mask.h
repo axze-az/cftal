@@ -95,24 +95,6 @@ namespace cftal {
     } // namespace impl
 
 
-#if 0
-    template <typename _T, std::size_t _N>
-    impl::zero_mask<_T, _N>
-    zero_or_update(vec<_T, _N>& r,
-                   const typename vec<_T, _N>::mask_type& m)
-    {
-        return impl::zero_mask<_T, _N>(r, m);
-    }
-
-    template <typename _T, std::size_t _N>
-    impl::merge_mask<_T, _N>
-    keep_or_update(vec<_T, _N>& r,
-                   const typename vec<_T, _N>::mask_type& m)
-    {
-        return impl::merge_mask<_T, _N>(r, m);
-    }
-#endif
-
     template <class _T, std::size_t _N>
     impl::keep_result<_T, _N>
     keep(vec<_T, _N>& v)
