@@ -161,7 +161,7 @@ sd_i(uint64_t u0, uint64_t u1, uint64_t d, uint64_t inv, uint64_t& rem)
     r += corr_r;
     q1 -= corr_q1;
 #endif
-    if (unlikely(r >= d)) {
+    if (__unlikely(r >= d)) {
         ++q1;
         r -= d;
     }
@@ -187,7 +187,7 @@ d_i(uint64_t u0, uint64_t u1, uint64_t v, uint64_t inv, unsigned l_z)
               : "cc");
     u0 <<= l_z;
 #else
-    if (likely(l_z!=0)) {
+    if (__likely(l_z!=0)) {
         uint64_t s2, s1, s0;
         unsigned neg_shift = 64 - l_z;
         s0 = u0 << l_z;
@@ -202,7 +202,7 @@ d_i(uint64_t u0, uint64_t u1, uint64_t v, uint64_t inv, unsigned l_z)
     }
 #endif
     uint64_t q1(0), q0(0), r(u1);
-    if (likely(u2 != 0 || u1>=v)) {
+    if (__likely(u2 != 0 || u1>=v)) {
         q1=sd_i(u1, u2, v, inv, r);
     }
     q0=sd_i(u0, r, v, inv, r);

@@ -703,7 +703,7 @@ cftal::v2f64 cftal::arm::round(const v2f64& a, const rounding_mode::type m)
         default:
             break; // keep the compiler happy
         }
-        if (unlikely(mxcsr != rmxcsr))
+        if (__unlikely(mxcsr != rmxcsr))
             _mm_setcsr(rmxcsr);
     }
     const __m128 sgn_msk= v_sign_v4f64_msk::fv();

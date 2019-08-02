@@ -2546,7 +2546,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 
     xrh = x;
     xrl = 0.0;
-    if (likely(!all_of(v_large_arg))) {
+    if (__likely(!all_of(v_large_arg))) {
         constexpr const double m_pi_2_h=+1.5707963267948965579990e+00;
         constexpr const double m_pi_2_m=+6.1232339957367660358688e-17;
         constexpr const double m_pi_2_l=-1.4973849048591698329435e-33;

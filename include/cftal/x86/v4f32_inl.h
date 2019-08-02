@@ -666,7 +666,7 @@ cftal::v4f32 cftal::x86::round(const v4f32& a, const rounding_mode::type m)
         default:
             break; // keep the compiler happy
         }
-        if (unlikely(mxcsr != rmxcsr))
+        if (__unlikely(mxcsr != rmxcsr))
             _mm_setcsr(rmxcsr);
     }
     const v4f32 sgn_msk(sign_f32_msk::v.f32());

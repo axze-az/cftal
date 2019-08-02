@@ -20,10 +20,10 @@
 #if defined (__GNUC__) || defined (__clang__)
 // clang++ -dM -E -x c++ -march=native /dev/null
 // g++-dM -E -x c++ -march=native /dev/null
-#define thread_local __thread
-#define likely(a) __builtin_expect(!!(a), 1)
-#define unlikely(a) __builtin_expect(!!(a), 0)
-#define assume_aligned(p, x) __builtin_assume_aligned(p, x)
+#define __thread_local __thread
+#define __likely(a) __builtin_expect(!!(a), 1)
+#define __unlikely(a) __builtin_expect(!!(a), 0)
+#define __assume_aligned(p, x) __builtin_assume_aligned(p, x)
 #endif
 
 #if defined (__clang__)
@@ -44,17 +44,17 @@
 #endif
 
 #if defined (_MSC_VER)
-#define thread_local __declspec(thread)
+#define __thread_local __declspec(thread)
 #endif
 
-#if !defined (assume_aligned)
-#define assume_aligned(p, x) p
+#if !defined (__assume_aligned)
+#define __assume_aligned(p, x) p
 #endif
-#if !defined (likely)
-#define likely(a) a
+#if !defined (__likely)
+#define __likely(a) a
 #endif
-#if !defined (unlikely)
-#define unlikely(a) a
+#if !defined (__unlikely)
+#define __unlikely(a) a
 #endif
 #if !defined(__GNUC__) && !defined (__CLANG__)
 #define __restrict

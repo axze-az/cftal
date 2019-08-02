@@ -53,7 +53,7 @@ inc(int32_t ulp, bool is_nan,
     } else {
         int32_t aulp=std::abs(ulp);
         int32_t rulp;
-        if (likely(aulp <= lin_max)) {
+        if (__likely(aulp <= lin_max)) {
             // std::numeric_limits<int32_t>::min() also lands here
             rulp = ulp;
         } else {

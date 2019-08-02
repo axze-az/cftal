@@ -128,7 +128,7 @@ sd_i(uint32_t u0, uint32_t u1, uint32_t d, uint32_t inv, uint32_t& rem)
         r += d;
     }
 #endif
-    if (unlikely(r >= d)) {
+    if (__unlikely(r >= d)) {
         ++q1;
         r -= d;
     }
@@ -143,7 +143,7 @@ d_i(uint32_t u0, uint32_t u1, uint32_t nv, uint32_t inv, unsigned l_z)
 {
     unsigned neg_shift = 32 - l_z;
     uint32_t u2(0);
-    if (likely(l_z)!=0) {
+    if (__likely(l_z)!=0) {
         uint64_t s2, s1, s0;
         uint64_t s0_s1((uint64_t(u1)<<32)|u0);
         s0_s1 <<= l_z;

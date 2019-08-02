@@ -100,7 +100,7 @@ namespace cftal {
                 268435456.0;
             cmp_result_type is_big(std::fabs(a) > split_threshold);
             double temp;
-            if (unlikely(any(is_big))) {
+            if (__unlikely(any(is_big))) {
                 a*=split_scale_down;
                 temp = split_val*a;
                 hi=temp-(temp-a);
@@ -152,7 +152,7 @@ namespace cftal {
             const float split_scale_up = 16384.0f;
             cmp_result_type is_big(std::fabs(a) > split_threshold);
             float temp;
-            if (unlikely(any(is_big))) {
+            if (__unlikely(any(is_big))) {
                 a*=split_scale_down;
                 temp = split_val*a;
                 hi=temp-(temp-a);
@@ -1066,7 +1066,7 @@ xfma(const _T& a, const _T& b, const _T& c)
     mul12(ph, pl, a, b);
     _T rh, rl;
     base_type::add122cond(rh, rl, c, ph, pl);
-    return rh + rl;
+    return rh;
 }
 
 template <typename _T, bool _FMA>

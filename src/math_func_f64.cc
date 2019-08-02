@@ -11,6 +11,7 @@
 #include <cftal/types.h>
 #include <cftal/cast.h>
 #include <cftal/d_real.h>
+#include <cstring>
 
 /*
  * ====================================================
@@ -317,6 +318,10 @@ __kernel_rem_pio2(double* x,
 
     int32_t jz,jx,jv,jp,jk,carry,n,iq[20],i,j,k,m,q0,ih;
     double z,fw,f[20],fq[20],q[20];
+
+    std::memset(f, 0, sizeof(f));
+    std::memset(fq, 0, sizeof(fq));
+    std::memset(q, 0, sizeof(q));
 
     /* initialize jk*/
     jk = init_jk_f64[prec];

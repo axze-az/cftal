@@ -641,7 +641,7 @@ cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
         default:
             break; // keep the compiler happy
         }
-        if (unlikely(mxcsr != rmxcsr))
+        if (__unlikely(mxcsr != rmxcsr))
             _mm_setcsr(rmxcsr);
     }
     // (1023+52)<<(52-32) 0x43300000 = 2^52
@@ -656,7 +656,7 @@ cftal::v2f64 cftal::x86::round(const v2f64& a, rounding_mode::type m)
     res = _mm_sub_pd(res, smagic);
     // into res
     res = _mm_or_pd(res, sa);
-    if (unlikely(mxcsr != rmxcsr))
+    if (__unlikely(mxcsr != rmxcsr))
         _mm_setcsr(mxcsr);
     v2f64 r= res;
     v2f64 aa(_mm_and_pd(a(), not_sgn_mask()));

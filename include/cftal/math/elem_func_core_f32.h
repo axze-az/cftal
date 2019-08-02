@@ -2335,7 +2335,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 
     xrh = x;
     xrl = 0.0;
-    if (likely(!all_of(v_large_arg))) {
+    if (__likely(!all_of(v_large_arg))) {
         constexpr const float m_pi_2_h=+1.5707963705063e+00f;
         constexpr const float m_pi_2_m=-4.3711388286738e-08f;
         constexpr const float m_pi_2_l=-1.7151245100059e-15f;
@@ -2357,7 +2357,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         // fn= _fmod<4>(fn);
     }
     vi_type q(_T::cvt_f_to_i(fn));
-    if (unlikely(any_of(v_large_arg))) {
+    if (__unlikely(any_of(v_large_arg))) {
         // reduce the large arguments
         constexpr const std::size_t N=_T::NVF();
         constexpr const std::size_t NI=_T::NVI();
