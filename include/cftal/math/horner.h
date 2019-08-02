@@ -160,7 +160,7 @@ namespace cftal {
                     const _C (&a)[_N]);
 
         // compensated horner scheme using a coefficient array
-        // return ((_X * (yi) + a[0])*x)+...)+a[_N-1]
+        // return ((_x * (yi) + a[0])*x)+...)+a[_N-1]
         // assumes nothing about the coefficients
         template <typename _X, typename _C, std::size_t _N>
         void
@@ -216,7 +216,7 @@ namespace cftal {
                           const _C (&a)[_N]);
 
         // compensated horner scheme using a coefficient array
-        // return ((_X * (y+ye) + a[0])*x)+...)+a[_N-1]
+        // return ((x * (yi) + a[0])*x)+...)+a[_N-1]
         // assumes |x*a[0]| < |a[1]|, |x*a[1]| < |a[2]| ..
         template <typename _X, typename _C, std::size_t _N>
         void

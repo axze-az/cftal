@@ -675,8 +675,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
         r = _T::sel(f_is_near_z, r_u, r);
     }
     // handle special cases:
-    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)),
-                x, r);
+    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)), x, r);
     return r;
 }
 
@@ -765,7 +764,6 @@ frexp_k(arg_t<vf_type> x, vi2_type* ve)
     }
     return frc;
 }
-
 
 template <typename _T>
 inline
@@ -2004,22 +2002,6 @@ __reduce_log_arg(vf_type& xr,
         break;
     }
     // log(z)= log(ck*(1+xr/ck))= log(ck) + log(1+xr/ck);
-#if 0
-    // x^ : +0xe.f7d4a882cb128p-4
-    constexpr
-    const double _one_m_delta=+9.3550554108214056814319e-01;
-    // x^ : +0x8.8415abbe9a768p-3
-    constexpr
-    const double _one_p_delta=+1.0644944589178593208345e+00;
-    // in this range we use the tables:
-    vmf_type xr_not_near_one=(xr < _one_m_delta) |
-        (xr > _one_p_delta);
-    /* 1/c == 1 around 1*/
-    inv_c = _T::sel(xr_not_near_one, inv_c, 1.0);
-    /* log_c_h, log_c_l = 0.0 around 1 */
-    log_c_h = _T::sel_val_or_zero(xr_not_near_one, log_c_h);
-    log_c_l = _T::sel_val_or_zero(xr_not_near_one, log_c_l);
-#endif
 }
 
 template <typename _T>
@@ -2114,7 +2096,6 @@ __log_poly_k_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
     p = horner(r, p, log_c2);
     return p;
 }
-
 
 template <typename _T>
 template <typename cftal::math::elem_func_core<double, _T>::log_func _LFUNC>
@@ -2616,7 +2597,6 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     vi2_type q2=_T::vi_to_vi2(q);
     return q2;
 }
-
 
 template <typename _T>
 inline

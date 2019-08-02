@@ -247,6 +247,8 @@ one of the 2 interval borders.
     \hline
     fmax & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
     \hline
+    nextafter & $\pm$ 0 & n/a  & $\pm$ 0 & n/a \\
+    \hline
 \end{tabular}\\[10pt]
 All these functions behave as their counterparts in the std namespace.
 
@@ -266,12 +268,18 @@ All these functions behave as their counterparts in the std namespace.
     \hline
     hypot & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
-    pow & $\pm$ 1?? & ??  & $\pm$ 1?? & ?? \\
+    rootn & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    powi & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    pow & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
 \end{tabular}\\[10pt]
 The sqrt function uses the hardware instruction provided by modern processors.
-The precision of the pow function in more common areas, for instance in
-$(0, 100), (0, 100)$ is better than mentioned in the table.
+The function $ rootn(x, n) $ calculates $ \sqrt[n]{x} $,
+the function $ powi(x, i) $ calculates $ x^i $, where $i$ is an integer. 
+%The precision of the pow function in more common areas, for instance in
+%$(0, 100), (0, 100)$ is better than mentioned in the table.
 
 \subsubsection{elementary functions}
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
