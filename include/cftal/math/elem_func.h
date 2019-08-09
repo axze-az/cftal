@@ -561,7 +561,8 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
 
     vf_type res_fac= _T::sel(y_is_odd, vf_type(-1), vf_type(1));
-    res_fac = _T::sel(~y_is_int, _T::nan(), res_fac);
+    // res_fac = _T::sel(~y_is_int, _T::nan(), res_fac);
+    res_fac = _T::sel(y_is_int, res_fac, _T::nan());
     res_fac = _T::sel(x >= 0, vf_type(1), res_fac);
     res *= res_fac;
 
