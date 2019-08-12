@@ -1093,6 +1093,11 @@ namespace cftal {
 #endif
             };
 
+#if defined (__AVX__)
+            struct vpermilps {
+            };
+#endif
+
             template <std::size_t _SCALE, typename _T>
             const _T*
             vsib_addr(const _T* base, int32_t idx);
