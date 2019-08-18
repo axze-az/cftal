@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 #if 1
     using namespace cftal::test;
     const func_domain<float> di[]={
-        std::make_pair(-0.0001f,
+        std::make_pair(0.0f,
                        std::numeric_limits< float >::max())
     };
     const int shifts[]={0};
