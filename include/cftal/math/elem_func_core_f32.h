@@ -2242,8 +2242,8 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vdf_type ylnx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
     vmf_type rnan=isnan(ylnx[0]);
-    ylnx[0] = _T::sel_zero_or_val(rnan, ylnx[0]);
-    ylnx[1] = _T::sel_zero_or_val(rnan, ylnx[1]);
+    // ylnx[0] = _T::sel_zero_or_val(rnan, ylnx[0]);
+    // ylnx[1] = _T::sel_zero_or_val(rnan, ylnx[1]);
 #else
     vdf_type ylnx;
     // yndx = y*lnx;
