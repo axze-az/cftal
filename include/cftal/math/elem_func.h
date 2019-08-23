@@ -549,13 +549,14 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type res=my_type::pow_k(x, y);
     // guess the result if the calculation failed
+#if 0
     vmf_type res_nan = isnan(res);
     vmf_type abs_x_lt_1 = abs(x) < 1.0;
     vmf_type y_gt_1 = y > 1.0;
     res = _T::sel(res_nan, _T::pinf(), res);
     res = _T::sel_zero_or_val(res_nan & abs_x_lt_1 & y_gt_1, res);
     res = _T::sel_zero_or_val(res_nan & (~abs_x_lt_1) & (~y_gt_1), res);
-
+#endif
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=0.5 *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);

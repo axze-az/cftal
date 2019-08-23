@@ -2453,8 +2453,29 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type abs_x= abs(x);
     vdf_type lnx= __log_tbl_k12<log_func::c_log_e,
                                 result_prec::normal>(abs_x);
+#if 1
+#if 1
     vdf_type ylnx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
+    vmf_type rnan=isnan(ylnx[0]);
+    ylnx[0] = _T::sel(rnan, 1.0, ylnx[0]);
+    ylnx[1] = _T::sel_zero_or_val(rnan, ylnx[1]);
+#else
+    vdf_type slnx;
+    vi2_type elnx=__frexp_k(slnx[0], lnx[0]);
+    vf_type sy;
+    vi2_type ey=__frexp_k(sy, y);
+    slnx[1]=ldexp_k(lnx[1], -elnx);
+    vdf_type ylnx;
+    d_ops::mul122(ylnx[0], ylnx[1], sy, slnx[0], slnx[1]);
+    vi2_type e=ey+elnx;
+    ylnx[0]=ldexp_k(ylnx[0], e);
+    ylnx[1]=ldexp_k(ylnx[1], e);
+#endif
+#else
+    vdf_type ylnx;
+    d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
+#endif
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp_arg(xrh, xrl, idx, ki, ylnx[0], ylnx[1]);
@@ -2466,6 +2487,16 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     const double exp_lo_zero= fc::exp_lo_zero();
     res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
+#if 1
+    // guess the result if the calculation failed
+    vmf_type abs_x_lt_1 = abs_x < 1.0;
+    vmf_type y_gt_1 = y > 1.0;
+    res = _T::sel(rnan, _T::pinf(), res);
+    res = _T::sel_zero_or_val(rnan &
+                              ((abs_x_lt_1 & y_gt_1) |
+                               ((~abs_x_lt_1) & (~y_gt_1))),
+                              res);
+#endif
     return res;
 }
 
