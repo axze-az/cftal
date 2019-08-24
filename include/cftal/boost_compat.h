@@ -18,7 +18,7 @@ namespace boost {
             template <typename _T, std::size_t _N>
             struct vector_space_norm_inf<cftal::vec<_T, _N> > {
                 using result_type = _T;
-                result_type operator()(const cftal::vec<_T, _N>& v)         const {
+                result_type operator()(const cftal::vec<_T, _N>& v) const {
                     cftal::vec<_T, _N> va= abs(v);
                     return cftal::max_element(va);
                 }
