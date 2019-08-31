@@ -719,7 +719,7 @@ namespace cftal {
             struct perm1_v8f32<-1, 0, -1, 1, -1, 4, -1, 5>
                 : public fixed_arg_1<__m256, make_zero_v8f32,
                                      vunpcklps> {};
-            
+
             template <>
             struct perm1_v8f32<2, 2, 3, 3, 6, 6, 7, 7>
                 : public vunpckhps {};
@@ -728,12 +728,12 @@ namespace cftal {
             struct perm1_v8f32<2, -1, 3, -1, 6, -1, 7, -1>
                 : public fixed_arg_2<__m256, make_zero_v8f32,
                                      vunpckhps> {};
-            
+
             template <>
             struct perm1_v8f32<-1, 2, -1, 3, -1, 6, -1, 7>
                 : public fixed_arg_1<__m256, make_zero_v8f32,
                                      vunpckhps> {};
-            
+
             template <>
             struct perm1_v8f32<0, 1, 0, 1, 4, 5, 4, 5>
                 : public exec_f64<vunpcklpd> {};
@@ -741,11 +741,11 @@ namespace cftal {
             template <>
             struct perm1_v8f32<2, 3, 2, 3, 6, 7, 6, 7>
                 : public exec_f64<vunpckhpd> {};
-            
+
             template <>
             struct perm2_v8f32<0, 8, 1, 9, 4, 12, 5, 13>
                 : public vunpcklps {};
-            
+
             template <>
             struct perm2_v8f32<2, 10, 3, 11, 6, 14, 7, 15>
                 : public vunpckhps {};
@@ -757,7 +757,7 @@ namespace cftal {
             template <>
             struct perm1_v8f32<2, 3, 10, 11, 6, 7, 14, 15>
                 : public exec_f64<vunpckhpd> {};
-            
+
 #endif
 #if defined (__AVX2__)
             // generic permutation of one u64 vector
@@ -841,7 +841,7 @@ namespace cftal {
             template <>
             struct perm2_v8u32<2, 10, 3, 11, 6, 14, 7, 15>
                 : public vpunpckhdq {};
-            
+
 #endif
 #if defined (__AVX512F__)
             // generic permutation of one v8f64 vector
@@ -1104,28 +1104,30 @@ __m128 cftal::x86::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
                            _P2 & ~4, _P3 &~4>::v(b);
     }
 
+    const bool sm0 = _P0 < 4;
+    const bool sm1 = _P1 < 4;
+    const bool sm2 = _P2 < 4;
+    const bool sm3 = _P3 < 4;
+
+    const bool z0 = _P0 < 0;
+    const bool z1 = _P1 < 0;
+    const bool z2 = _P2 < 0;
+    const bool z3 = _P3 < 0;
+
     if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
         // selecting without shuffling or zeroing
-        const bool sm0 = _P0 < 4;
-        const bool sm1 = _P1 < 4;
-        const bool sm2 = _P2 < 4;
-        const bool sm3 = _P3 < 4;
         return select_v4f32<sm0, sm1, sm2, sm3>::v(a, b);
     }
     // Use AMD XOP instruction PPERM here later
     if ((((m1 & ~0x4444) ^ 0x3210) & m2) == 0) {
         // selecting and zeroing, not shuffling
-        const bool sm0 = _P0 < 4;
-        const bool sm1 = _P1 < 4;
-        const bool sm2 = _P2 < 4;
-        const bool sm3 = _P3 < 4;
         __m128 t = select_v4f32<sm0, sm1, sm2, sm3>::v(a, b);
         // zero
         const __m128 zm = const_v4u32<
-            (_P0 < 0 ? 0 : uint32_t(-1)),
-            (_P1 < 0 ? 0 : uint32_t(-1)),
-            (_P2 < 0 ? 0 : uint32_t(-1)),
-            (_P3 < 0 ? 0 : uint32_t(-1))>::fv();
+            (z0 ? 0 : uint32_t(-1)),
+            (z1 ? 0 : uint32_t(-1)),
+            (z2 ? 0 : uint32_t(-1)),
+            (z3 ? 0 : uint32_t(-1))>::fv();
         return  _mm_and_ps(t, zm);
     }
     if (((m1 & 0x4400)==0x4400) && ((m1 & 0x0044)==0x00)) {
@@ -1135,10 +1137,10 @@ __m128 cftal::x86::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
         if ( m2 != 0xFFFF) {
             // zero
             const __m128 zm = const_v4u32<
-                (_P0 < 0 ? 0 : uint32_t(-1)),
-                (_P1 < 0 ? 0 : uint32_t(-1)),
-                (_P2 < 0 ? 0 : uint32_t(-1)),
-                (_P3 < 0 ? 0 : uint32_t(-1))>::fv();
+                (z0 ? 0 : uint32_t(-1)),
+                (z1 ? 0 : uint32_t(-1)),
+                (z2 ? 0 : uint32_t(-1)),
+                (z3 ? 0 : uint32_t(-1))>::fv();
             return  _mm_and_ps(t, zm);
         }
         return t;
@@ -1150,28 +1152,29 @@ __m128 cftal::x86::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
         if ( m2 != 0xFFFF) {
             // zero
             const __m128 zm = const_v4u32<
-                (_P0 < 0 ? 0 : uint32_t(-1)),
-                (_P1 < 0 ? 0 : uint32_t(-1)),
-                (_P2 < 0 ? 0 : uint32_t(-1)),
-                (_P3 < 0 ? 0 : uint32_t(-1))>::fv();
+                (z0 ? 0 : uint32_t(-1)),
+                (z1 ? 0 : uint32_t(-1)),
+                (z2 ? 0 : uint32_t(-1)),
+                (z3 ? 0 : uint32_t(-1))>::fv();
             return  _mm_and_ps(t, zm);
         }
         return t;
     }
     // general case
+    const int zz= m2 == 0xFFFF ? 0 : -1;
     // select all elements to clear or from 1st vector
-    const int ma0 = _P0 < 4 ? _P0 : -1;
-    const int ma1 = _P1 < 4 ? _P1 : -1;
-    const int ma2 = _P2 < 4 ? _P2 : -1;
-    const int ma3 = _P3 < 4 ? _P3 : -1;
-    __m128 a1 = perm1_v4f32<ma0, ma1, ma2, ma3>::v(a);
+    const int ma0 = sm0 ? _P0 : zz;
+    const int ma1 = sm1 ? _P1 : zz;
+    const int ma2 = sm2 ? _P2 : zz;
+    const int ma3 = sm3 ? _P3 : zz;
+    __m128 ta = perm1_v4f32<ma0, ma1, ma2, ma3>::v(a);
     // select all elements from second vector
-    const int mb0 = _P0 > 3 ? (_P0-4) : -1;
-    const int mb1 = _P1 > 3 ? (_P1-4) : -1;
-    const int mb2 = _P2 > 3 ? (_P2-4) : -1;
-    const int mb3 = _P3 > 3 ? (_P3-4) : -1;
-    __m128 b1 = perm1_v4f32<mb0, mb1, mb2, mb3>::v(b);
-    return  _mm_or_ps(a1,b1);
+    const int mb0 = sm0 ? 0 : (_P0-4);
+    const int mb1 = sm1 ? 0 : (_P1-4);
+    const int mb2 = sm2 ? 0 : (_P2-4);
+    const int mb3 = sm3 ? 0 : (_P3-4);
+    __m128 tb = perm1_v4f32<mb0, mb1, mb2, mb3>::v(b);
+    return  select_v4f32<sm0, sm1, sm2, sm3>::v(ta, tb);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -1279,6 +1282,16 @@ __m128i cftal::x86::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i 
     // Mask to zero out negative indexes
     const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
 
+    const bool sm0 = _P0 < 4;
+    const bool sm1 = _P1 < 4;
+    const bool sm2 = _P2 < 4;
+    const bool sm3 = _P3 < 4;
+
+    const bool z0 = _P0 < 0;
+    const bool z1 = _P1 < 0;
+    const bool z2 = _P2 < 0;
+    const bool z3 = _P3 < 0;
+
     if ((m1 & 0x4444 & m2) == 0) {
         // no elements from b
         return perm1_v4u32<_P0,_P1,_P2,_P3>::v(a);
@@ -1290,26 +1303,18 @@ __m128i cftal::x86::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i 
     }
     if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
         // selecting without shuffling or zeroing
-        const bool sm0 = _P0 < 4;
-        const bool sm1 = _P1 < 4;
-        const bool sm2 = _P2 < 4;
-        const bool sm3 = _P3 < 4;
         return select_v4u32<sm0, sm1, sm2, sm3>::v(a, b);
     }
     // Use AMD XOP instruction PPERM here later
     if ((((m1 & ~0x4444) ^ 0x3210) & m2) == 0) {
         // selecting and zeroing, not shuffling
-        const bool sm0 = _P0 < 4;
-        const bool sm1 = _P1 < 4;
-        const bool sm2 = _P2 < 4;
-        const bool sm3 = _P3 < 4;
         __m128i t = select_v4u32<sm0, sm1, sm2, sm3>::v(a, b);
         // zero
         const __m128i zm = const_v4u32<
-            uint32_t(_P0 < 0 ? 0 : -1),
-            uint32_t(_P1 < 0 ? 0 : -1),
-            uint32_t(_P2 < 0 ? 0 : -1),
-            uint32_t(_P3 < 0 ? 0 : -1)>::iv();
+            uint32_t(z0 ? 0 : -1),
+            uint32_t(z1 ? 0 : -1),
+            uint32_t(z2 ? 0 : -1),
+            uint32_t(z3 ? 0 : -1)>::iv();
         return  _mm_and_si128(t, zm);
     }
     if (((m1 & 0x4400)==0x4400) && ((m1 & 0x0044)==0x00)) {
@@ -1320,10 +1325,10 @@ __m128i cftal::x86::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i 
         if ( m2 != 0xFFFF) {
             // zero
             const __m128i zm = const_v4u32<
-                uint32_t(_P0 < 0 ? 0 : -1),
-                uint32_t(_P1 < 0 ? 0 : -1),
-                uint32_t(_P2 < 0 ? 0 : -1),
-                uint32_t(_P3 < 0 ? 0 : -1)>::iv();
+                uint32_t(z0 ? 0 : -1),
+                uint32_t(z1 ? 0 : -1),
+                uint32_t(z2 ? 0 : -1),
+                uint32_t(z3 ? 0 : -1)>::iv();
             return  _mm_and_si128(t, zm);
         }
         return t;
@@ -1336,28 +1341,29 @@ __m128i cftal::x86::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i 
         if ( m2 != 0xFFFF) {
             // zero
             const __m128i zm = const_v4u32<
-                uint32_t(_P0 < 0 ? 0 : -1),
-                uint32_t(_P1 < 0 ? 0 : -1),
-                uint32_t(_P2 < 0 ? 0 : -1),
-                uint32_t(_P3 < 0 ? 0 : -1)>::iv();
+                uint32_t(z0 ? 0 : -1),
+                uint32_t(z1 ? 0 : -1),
+                uint32_t(z2 ? 0 : -1),
+                uint32_t(z3 ? 0 : -1)>::iv();
             return  _mm_and_si128(t, zm);
         }
         return t;
     }
     // general case
+    const int zz= m2 == 0xFFFF ? 0 : -1;
     // select all elements to clear or from 1st vector
-    const int ma0 = _P0 < 4 ? _P0 : -1;
-    const int ma1 = _P1 < 4 ? _P1 : -1;
-    const int ma2 = _P2 < 4 ? _P2 : -1;
-    const int ma3 = _P3 < 4 ? _P3 : -1;
-    __m128i a1 = perm1_v4u32<ma0, ma1, ma2, ma3>::v(a);
+    const int ma0 = sm0 ? _P0 : zz;
+    const int ma1 = sm1 ? _P1 : zz;
+    const int ma2 = sm2 ? _P2 : zz;
+    const int ma3 = sm3 ? _P3 : zz;
+    __m128i ta = perm1_v4u32<ma0, ma1, ma2, ma3>::v(a);
     // select all elements from second vector
-    const int mb0 = _P0 > 3 ? (_P0-4) : -1;
-    const int mb1 = _P1 > 3 ? (_P1-4) : -1;
-    const int mb2 = _P2 > 3 ? (_P2-4) : -1;
-    const int mb3 = _P3 > 3 ? (_P3-4) : -1;
-    __m128i b1 = perm1_v4u32<mb0, mb1, mb2, mb3>::v(b);
-    return _mm_or_si128(a1,b1);
+    const int mb0 = sm0 ? 0 : (_P0-4);
+    const int mb1 = sm1 ? 0 : (_P1-4);
+    const int mb2 = sm2 ? 0 : (_P2-4);
+    const int mb3 = sm3 ? 0 : (_P3-4);
+    __m128i tb = perm1_v4u32<mb0, mb1, mb2, mb3>::v(b);
+    return  select_v4u32<sm0, sm1, sm2, sm3>::v(ta, tb);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -1835,27 +1841,29 @@ __m256d cftal::x86::impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d 
         return perm1_v4f64< _P0 & ~4, _P1 & ~4,
                             _P2 & ~4, _P3 & ~4>::v(b);
     }
+    const bool sm0 = _P0 < 4;
+    const bool sm1 = _P1 < 4;
+    const bool sm2 = _P2 < 4;
+    const bool sm3 = _P3 < 4;
     if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
         // selecting without shuffling or zeroing
-        const bool sm0 = _P0 < 4;
-        const bool sm1 = _P1 < 4;
-        const bool sm2 = _P2 < 4;
-        const bool sm3 = _P3 < 4;
         return select_v4f64<sm0, sm1, sm2, sm3>::v(a, b);
     }
+    // general case
+    const int zz= m2 == 0xFFFF ? 0 : -1;
     // select all elements to clear or from 1st vector
-    const int ma0 = _P0 < 4 ? _P0 : -1;
-    const int ma1 = _P1 < 4 ? _P1 : -1;
-    const int ma2 = _P2 < 4 ? _P2 : -1;
-    const int ma3 = _P3 < 4 ? _P3 : -1;
-    __m256d a1 = perm1_v4f64<ma0, ma1, ma2, ma3>::v(a);
+    const int ma0 = sm0 ? _P0 : zz;
+    const int ma1 = sm1 ? _P1 : zz;
+    const int ma2 = sm2 ? _P2 : zz;
+    const int ma3 = sm3 ? _P3 : zz;
+    __m256d ta = perm1_v4f64<ma0, ma1, ma2, ma3>::v(a);
     // select all elements from second vector
-    const int mb0 = _P0 > 3 ? (_P0-4) : -1;
-    const int mb1 = _P1 > 3 ? (_P1-4) : -1;
-    const int mb2 = _P2 > 3 ? (_P2-4) : -1;
-    const int mb3 = _P3 > 3 ? (_P3-4) : -1;
-    __m256d b1 = perm1_v4f64<mb0, mb1, mb2, mb3>::v(b);
-    return  _mm256_or_pd(a1,b1);
+    const int mb0 = sm0 ? 0 : (_P0-4);
+    const int mb1 = sm1 ? 0 : (_P1-4);
+    const int mb2 = sm2 ? 0 : (_P2-4);
+    const int mb3 = sm3 ? 0 : (_P3-4);
+    __m256d tb = perm1_v4f64<mb0, mb1, mb2, mb3>::v(b);
+    return select_v4f64<sm0, sm1, sm2, sm3>::v(ta, tb);
 }
 
 
@@ -2015,45 +2023,46 @@ __m256 cftal::x86::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
                            _P4 & ~8, _P5 & ~8,
                            _P6 & ~8, _P7 & ~8>::v(b);
     }
+    const bool sm0 = _P0 < 8;
+    const bool sm1 = _P1 < 8;
+    const bool sm2 = _P2 < 8;
+    const bool sm3 = _P3 < 8;
+    const bool sm4 = _P4 < 8;
+    const bool sm5 = _P5 < 8;
+    const bool sm6 = _P6 < 8;
+    const bool sm7 = _P7 < 8;
     if (((m1 & ~0x88888888) ^ 0x76543210) == 0 && m2 == 0xFFFFFFFF) {
         // selecting without shuffling or zeroing
-        const bool sm0 = _P0 < 8;
-        const bool sm1 = _P1 < 8;
-        const bool sm2 = _P2 < 8;
-        const bool sm3 = _P3 < 8;
-        const bool sm4 = _P4 < 8;
-        const bool sm5 = _P5 < 8;
-        const bool sm6 = _P6 < 8;
-        const bool sm7 = _P7 < 8;
         return select_v8f32<sm0, sm1, sm2, sm3,
                             sm4, sm5, sm6, sm7>::v(a, b);
     }
 
+    const int zz= m2 == 0xFFFFFFFF ? 0 : -1;
     // select all elements to clear or from 1st vector
-    const int ma0 = _P0 < 8 ? _P0 : -1;
-    const int ma1 = _P1 < 8 ? _P1 : -1;
-    const int ma2 = _P2 < 8 ? _P2 : -1;
-    const int ma3 = _P3 < 8 ? _P3 : -1;
-    const int ma4 = _P4 < 8 ? _P4 : -1;
-    const int ma5 = _P5 < 8 ? _P5 : -1;
-    const int ma6 = _P6 < 8 ? _P6 : -1;
-    const int ma7 = _P7 < 8 ? _P7 : -1;
+    const int ma0 = sm0 ? _P0 : zz;
+    const int ma1 = sm1 ? _P1 : zz;
+    const int ma2 = sm2 ? _P2 : zz;
+    const int ma3 = sm3 ? _P3 : zz;
+    const int ma4 = sm4 ? _P4 : zz;
+    const int ma5 = sm5 ? _P5 : zz;
+    const int ma6 = sm6 ? _P6 : zz;
+    const int ma7 = sm7 ? _P7 : zz;
     __m256 a1 = perm1_v8f32<ma0, ma1, ma2, ma3,
                             ma4, ma5, ma6, ma7>::v(a);
     // select all elements from second vector
-    const int mb0 = _P0 > 7 ? (_P0-8) : -1;
-    const int mb1 = _P1 > 7 ? (_P1-8) : -1;
-    const int mb2 = _P2 > 7 ? (_P2-8) : -1;
-    const int mb3 = _P3 > 7 ? (_P3-8) : -1;
-    const int mb4 = _P4 > 7 ? (_P4-8) : -1;
-    const int mb5 = _P5 > 7 ? (_P5-8) : -1;
-    const int mb6 = _P6 > 7 ? (_P6-8) : -1;
-    const int mb7 = _P7 > 7 ? (_P7-8) : -1;
+    const int mb0 = sm0 ? 0: (_P0-8);
+    const int mb1 = sm1 ? 0: (_P1-8);
+    const int mb2 = sm2 ? 0: (_P2-8);
+    const int mb3 = sm3 ? 0: (_P3-8);
+    const int mb4 = sm4 ? 0: (_P4-8);
+    const int mb5 = sm5 ? 0: (_P5-8);
+    const int mb6 = sm6 ? 0: (_P6-8);
+    const int mb7 = sm7 ? 0: (_P7-8);
     __m256 b1 = perm1_v8f32<mb0, mb1, mb2, mb3,
                             mb4, mb5, mb6, mb7>::v(b);
-    return  _mm256_or_ps(a1 ,b1);
+    return  select_v8f32<sm0, sm1, sm2, sm3,
+                         sm4, sm5, sm6, sm7>::v(a1 ,b1);
 }
-
 
 #endif
 #if defined (__AVX2__)
@@ -2138,29 +2147,30 @@ __m256i cftal::x86::impl::perm2_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i 
         return perm1_v4u64< _P0 & ~4, _P1 & ~4,
                             _P2 & ~4, _P3 & ~4>::v(b);
     }
+    // selecting without shuffling or zeroing
+    const bool sm0 = _P0 < 4;
+    const bool sm1 = _P1 < 4;
+    const bool sm2 = _P2 < 4;
+    const bool sm3 = _P3 < 4;
     if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
-        // selecting without shuffling or zeroing
-        const bool sm0 = _P0 < 4;
-        const bool sm1 = _P1 < 4;
-        const bool sm2 = _P2 < 4;
-        const bool sm3 = _P3 < 4;
         return select_v4u64<sm0, sm1, sm2, sm3>::v(a, b);
     }
+    // general case
+    const int zz= m2 == 0xFFFF ? 0 : -1;
     // select all elements to clear or from 1st vector
-    const int ma0 = _P0 < 4 ? _P0 : -1;
-    const int ma1 = _P1 < 4 ? _P1 : -1;
-    const int ma2 = _P2 < 4 ? _P2 : -1;
-    const int ma3 = _P3 < 4 ? _P3 : -1;
-    __m256i a1 = perm1_v4u64<ma0, ma1, ma2, ma3>::v(a);
+    const int ma0 = sm0 ? _P0 : zz;
+    const int ma1 = sm1 ? _P1 : zz;
+    const int ma2 = sm2 ? _P2 : zz;
+    const int ma3 = sm3 ? _P3 : zz;
+    __m256i ta = perm1_v4u64<ma0, ma1, ma2, ma3>::v(a);
     // select all elements from second vector
-    const int mb0 = _P0 > 3 ? (_P0-4) : -1;
-    const int mb1 = _P1 > 3 ? (_P1-4) : -1;
-    const int mb2 = _P2 > 3 ? (_P2-4) : -1;
-    const int mb3 = _P3 > 3 ? (_P3-4) : -1;
-    __m256i b1 = perm1_v4u64<mb0, mb1, mb2, mb3>::v(b);
-    return  _mm256_or_si256(a1,b1);
+    const int mb0 = sm0 ? 0 : (_P0-4);
+    const int mb1 = sm1 ? 0 : (_P1-4);
+    const int mb2 = sm2 ? 0 : (_P2-4);
+    const int mb3 = sm3 ? 0 : (_P3-4);
+    __m256i tb = perm1_v4u64<mb0, mb1, mb2, mb3>::v(b);
+    return  select_v4u64<sm0, sm1, sm2, sm3>::v(ta, tb);
 }
-
 
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
@@ -2273,43 +2283,45 @@ cftal::x86::impl::perm2_v8u32<_P0, _P1, _P2, _P3,
                            _P4 & ~8, _P5 & ~8,
                            _P6 & ~8, _P7 & ~8>::v(b);
     }
+    const bool sm0 = _P0 < 8;
+    const bool sm1 = _P1 < 8;
+    const bool sm2 = _P2 < 8;
+    const bool sm3 = _P3 < 8;
+    const bool sm4 = _P4 < 8;
+    const bool sm5 = _P5 < 8;
+    const bool sm6 = _P6 < 8;
+    const bool sm7 = _P7 < 8;
     if (((m1 & ~0x88888888) ^ 0x76543210) == 0 && m2 == 0xFFFFFFFF) {
         // selecting without shuffling or zeroing
-        const bool sm0 = _P0 < 8;
-        const bool sm1 = _P1 < 8;
-        const bool sm2 = _P2 < 8;
-        const bool sm3 = _P3 < 8;
-        const bool sm4 = _P4 < 8;
-        const bool sm5 = _P5 < 8;
-        const bool sm6 = _P6 < 8;
-        const bool sm7 = _P7 < 8;
         return select_v8u32<sm0, sm1, sm2, sm3,
                             sm4, sm5, sm6, sm7>::v(a, b);
     }
 
+    const int zz= m2 == 0xFFFFFFFF ? 0 : -1;
     // select all elements to clear or from 1st vector
-    const int ma0 = _P0 < 8 ? _P0 : -1;
-    const int ma1 = _P1 < 8 ? _P1 : -1;
-    const int ma2 = _P2 < 8 ? _P2 : -1;
-    const int ma3 = _P3 < 8 ? _P3 : -1;
-    const int ma4 = _P4 < 8 ? _P4 : -1;
-    const int ma5 = _P5 < 8 ? _P5 : -1;
-    const int ma6 = _P6 < 8 ? _P6 : -1;
-    const int ma7 = _P7 < 8 ? _P7 : -1;
+    const int ma0 = sm0 ? _P0 : zz;
+    const int ma1 = sm1 ? _P1 : zz;
+    const int ma2 = sm2 ? _P2 : zz;
+    const int ma3 = sm3 ? _P3 : zz;
+    const int ma4 = sm4 ? _P4 : zz;
+    const int ma5 = sm5 ? _P5 : zz;
+    const int ma6 = sm6 ? _P6 : zz;
+    const int ma7 = sm7 ? _P7 : zz;
     __m256i a1 = perm1_v8u32<ma0, ma1, ma2, ma3,
                              ma4, ma5, ma6, ma7>::v(a);
     // select all elements from second vector
-    const int mb0 = _P0 > 7 ? (_P0-8) : -1;
-    const int mb1 = _P1 > 7 ? (_P1-8) : -1;
-    const int mb2 = _P2 > 7 ? (_P2-8) : -1;
-    const int mb3 = _P3 > 7 ? (_P3-8) : -1;
-    const int mb4 = _P4 > 7 ? (_P4-8) : -1;
-    const int mb5 = _P5 > 7 ? (_P5-8) : -1;
-    const int mb6 = _P6 > 7 ? (_P6-8) : -1;
-    const int mb7 = _P7 > 7 ? (_P7-8) : -1;
+    const int mb0 = sm0 ? 0: (_P0-8);
+    const int mb1 = sm1 ? 0: (_P1-8);
+    const int mb2 = sm2 ? 0: (_P2-8);
+    const int mb3 = sm3 ? 0: (_P3-8);
+    const int mb4 = sm4 ? 0: (_P4-8);
+    const int mb5 = sm5 ? 0: (_P5-8);
+    const int mb6 = sm6 ? 0: (_P6-8);
+    const int mb7 = sm7 ? 0: (_P7-8);
     __m256i b1 = perm1_v8u32<mb0, mb1, mb2, mb3,
                              mb4, mb5, mb6, mb7>::v(b);
-    return  _mm256_or_si256(a1 ,b1);
+    return select_v8u32<sm0, sm1, sm2, sm3,
+                         sm4, sm5, sm6, sm7>::v(a1 ,b1);
 }
 
 #endif
@@ -2337,9 +2349,9 @@ perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
         ((_P5 >= 0 ? (1<<5) : 0)) |
         ((_P6 >= 0 ? (1<<6) : 0)) |
         ((_P7 >= 0 ? (1<<7) : 0));
-        
+
     if (((m1 ^ 0x76543210) & m2) == 0) {
-        // no shuffling: 
+        // no shuffling:
         return _mm512_maskz_mov_pd(zm, a);
     }
     // full permute:
