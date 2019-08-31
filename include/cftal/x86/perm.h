@@ -550,6 +550,9 @@ namespace cftal {
             struct perm1_v4f64<-1,-1,-1,-1>
                 : public make_zero_v4f64 {};
             template <>
+            struct perm1_v4f64<0, 0, 0, 0>
+                : public vbroadcastsd<__m256d> {};
+            template <>
             struct perm1_v4f64<0, 1, 2, 3>
                 : public select_arg_1<__m256d> {};
             template <>
@@ -701,6 +704,10 @@ namespace cftal {
             template <>
             struct perm1_v8f32<-1, -1, -1, -1, -1, -1, -1, -1>
                 : public make_zero_v8f32 {};
+
+            template <>
+            struct perm1_v8f32<0, 0, 0, 0, 0, 0, 0, 0>
+                : public vbroadcastsd<__m256> {};
 
             template <>
             struct perm1_v8f32<0, 1, 2, 3, 4, 5, 6, 7>
