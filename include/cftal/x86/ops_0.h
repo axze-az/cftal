@@ -683,12 +683,11 @@ namespace cftal {
                     return _mm256_sll_epi64(a, shift);
                 }
                 static __m256i v(__m256i a, unsigned shift) {
-                __m128i sh= _mm_cvtsi32_si128(shift);
-                return v(a, sh);
+                    __m128i sh= _mm_cvtsi32_si128(shift);
+                    return v(a, sh);
                 }
 #endif
             };
-
 
             template <unsigned _P>
             struct vpsllq_const : public vpsllq {
@@ -1114,7 +1113,7 @@ namespace cftal {
                 static
                 __m128d v(__m128d a) {
 #if defined (__AVX2__)
-                    return _mm_broadcastsd_pd(a);
+                    return _mm_movedup_pd(a);
 #else
                     return vpermilpd<0, 0>::v(a);
 #endif
