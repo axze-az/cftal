@@ -135,6 +135,7 @@ SET (HDRS
     ../include/cftal/constants.h
     ../include/cftal/impl/vreg.h
     ../include/cftal/impl/divide.h
+    ../include/cftal/impl/masks.h
     ../include/cftal/select.h
     ../include/cftal/fp_expansion.h
     ../include/cftal/vec_traits.h

@@ -13,6 +13,7 @@
 #include <cftal/init_list.h>
 #include <cftal/arg.h>
 #include <cftal/mem.h>
+#include <cftal/impl/masks.h>
 #include <type_traits>
 #include <iosfwd>
 #include <algorithm>
@@ -989,19 +990,35 @@ cftal::permute(const vec<_T, 2>& v)
 template <int32_t _I0, int32_t _I1, typename _T>
 inline
 cftal::vec<_T, 2>
-cftal::permute(const vec<_T, 2>& v0, const vec<_T, 2>& v1)
+cftal::permute(const vec<_T, 2>& a, const vec<_T, 2>& b)
 {
-    // select elements from v0
-    const int32_t i0= _I0 < 2 ? _I0 : -1;
-    const int32_t i1= _I1 < 2 ? _I1 : -1;
-    vec<_T, 2> ri = permute<i0, i1>(v0);
-    // select elements from v1
-    const int32_t j0= _I0 >= 2 ? _I0-2 : -1;
-    const int32_t j1= _I1 >= 2 ? _I1-2 : -1;
-    vec<_T, 2> rj = permute<j0, j1>(v1);
-    // combine result sets:
-    vec<_T, 2> r( ri | rj);
-    return r;
+    // Combine all the indexes into a single bitfield, with 4 bits
+    // for each
+    const int m1 = impl::pos_msk_2<_I0, _I1, 3>::m;
+    // Mask to zero out negative indexes
+    const int m2 = impl::zero_msk_2<_I0, _I1>::m;
+    if ((m1 & 0x022 & m2) == 0) {
+        // no elements from b, only elements from a and
+        // possibly zero
+        return permute<_I0, _I1>(a);
+    }
+    if (((m1^0x0022) & 0x0022 & m2) == 0) {
+        // no elements from a, only elements from b and
+        // possibly zero
+        return permute<_I0 & ~2, _I1 & ~2>(b);
+    }
+    const bool sm0 = _I0 < 2;
+    const bool sm1 = _I1 < 2;
+    const int zz= m2 == 0x00FF ? 0 : -1;
+    // select all elements to clear or from 1st vector
+    const int ma0 = sm0 ? _I0 : zz;
+    const int ma1 = sm1 ? _I1 : zz;
+    vec<_T, 2> ta = permute<ma0, ma1>(a);
+    // select all elements from second vector
+    const int mb0 = sm0 ? 0 : (_I0-2);
+    const int mb1 = sm1 ? 0 : (_I1-2);
+    vec<_T, 2> tb = permute<mb0, mb1>(b);
+    return  select<sm0, sm1>(ta, tb);
 }
 
 template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
@@ -1013,9 +1030,9 @@ cftal::permute(const vec<_T, 4>& v)
     const vec<_T, 2> lv= low_half(v);
     const vec<_T, 2> hv= high_half(v);
     // low half of the result vector
-    vec<_T, 2> lr = permute<_I0, _I1>(lv, hv);
+    vec<_T, 2> lr = permute<_I0 & ~4, _I1 & ~4>(lv, hv);
     // high half of the result vector
-    vec<_T, 2> hr = permute<_I2, _I3>(lv, hv);
+    vec<_T, 2> hr = permute<_I2 & ~4, _I3 & ~4>(lv, hv);
     return vec<_T, 4>(lr, hr);
 }
 
@@ -1023,23 +1040,48 @@ template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
           typename _T>
 inline
 cftal::vec<_T, 4>
-cftal::permute(const vec<_T, 4>& v0, const vec<_T, 4>& v1)
+cftal::permute(const vec<_T, 4>& a, const vec<_T, 4>& b)
 {
-    // select elements from v0
-    const int32_t i0= _I0 < 4 ? _I0 : -1;
-    const int32_t i1= _I1 < 4 ? _I1 : -1;
-    const int32_t i2= _I2 < 4 ? _I2 : -1;
-    const int32_t i3= _I3 < 4 ? _I3 : -1;
-    vec<_T, 4> ri = permute<i0, i1, i2, i3>(v0);
-    // select elements from v1
-    const int32_t j0= _I0 >= 4 ? _I0-4 : -1;
-    const int32_t j1= _I1 >= 4 ? _I1-4 : -1;
-    const int32_t j2= _I2 >= 4 ? _I2-4 : -1;
-    const int32_t j3= _I3 >= 4 ? _I3-4 : -1;
-    vec<_T, 4> rj = permute<j0, j1, j2, j3>(v1);
-    // combine result sets:
-    vec<_T, 4> r( ri | rj);
-    return r;
+    // Combine all the indexes into a single bitfield, with 4 bits
+    // for each
+    const int m1 = impl::pos_msk_4<_I0, _I1, _I2, _I3, 7>::m;
+    // Mask to zero out negative indexes
+    const int m2 = impl::zero_msk_4<_I0, _I1, _I2, _I3>::m;
+
+    if ((m1 & 0x4444 & m2) == 0) {
+        // no elements from b
+        return permute<_I0 & ~4, _I1 & ~4 ,
+                       _I2 & ~4, _I3 & ~4>(a);
+    }
+    if (((m1^0x4444) & 0x4444 & m2) == 0) {
+        // no elements from a
+        return permute<_I0 & ~4, _I1 & ~4,
+                       _I2 & ~4, _I3 & ~4>(b);
+    }
+    const bool sm0 = _I0 < 4;
+    const bool sm1 = _I1 < 4;
+    const bool sm2 = _I2 < 4;
+    const bool sm3 = _I3 < 4;
+
+    if (((m1 & ~0x4444) ^ 0x3210) == 0 && m2 == 0xFFFF) {
+        // selecting without shuffling or zeroing
+        return select<sm0, sm1, sm2, sm3>(a, b);
+    }
+    // general case
+    const int zz= m2 == 0xFFFF ? 0 : -1;
+    // select all elements to clear or from 1st vector
+    const int ma0 = sm0 ? _I0 : zz;
+    const int ma1 = sm1 ? _I1 : zz;
+    const int ma2 = sm2 ? _I2 : zz;
+    const int ma3 = sm3 ? _I3 : zz;
+    vec<_T, 4> ta = permute<ma0, ma1, ma2, ma3>(a);
+    // select all elements from second vector
+    const int mb0 = sm0 ? 0 : (_I0-4);
+    const int mb1 = sm1 ? 0 : (_I1-4);
+    const int mb2 = sm2 ? 0 : (_I2-4);
+    const int mb3 = sm3 ? 0 : (_I3-4);
+    vec<_T, 4> tb = permute<mb0, mb1, mb2, mb3>(b);
+    return  select<sm0, sm1, sm2, sm3>(ta, tb);
 }
 
 template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
@@ -1052,9 +1094,9 @@ cftal::permute(const vec<_T, 8>& v)
     const vec<_T, 4> lv= low_half(v);
     const vec<_T, 4> hv= high_half(v);
     // low half of the result vector
-    vec<_T, 4> lr = permute<_I0, _I1, _I2, _I3>(lv, hv);
+    vec<_T, 4> lr = permute<_I0 & ~8, _I1 & ~8, _I2 & ~8, _I3 & ~8>(lv, hv);
     // high half of the result vector
-    vec<_T, 4> hr = permute<_I4, _I5, _I6, _I7>(lv, hv);
+    vec<_T, 4> hr = permute<_I4 & ~8, _I5 & ~8, _I6 & ~8, _I7 & ~8>(lv, hv);
     return vec<_T, 8>(lr, hr);
 }
 
@@ -1063,31 +1105,68 @@ template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
           typename _T>
 inline
 cftal::vec<_T, 8>
-cftal::permute(const vec<_T, 8>& v0, const vec<_T, 8>& v1)
+cftal::permute(const vec<_T, 8>& a, const vec<_T, 8>& b)
 {
-    // select elements from v0
-    const int32_t i0= _I0 < 8 ? _I0 : -1;
-    const int32_t i1= _I1 < 8 ? _I1 : -1;
-    const int32_t i2= _I2 < 8 ? _I2 : -1;
-    const int32_t i3= _I3 < 8 ? _I3 : -1;
-    const int32_t i4= _I4 < 8 ? _I4 : -1;
-    const int32_t i5= _I5 < 8 ? _I5 : -1;
-    const int32_t i6= _I6 < 8 ? _I6 : -1;
-    const int32_t i7= _I7 < 8 ? _I7 : -1;
-    vec<_T, 8> ri = permute<i0, i1, i2, i3, i4, i5, i6, i7>(v0);
-    // select elements from v1
-    const int32_t j0= _I0 >= 8 ? _I0-8 : -1;
-    const int32_t j1= _I1 >= 8 ? _I1-8 : -1;
-    const int32_t j2= _I2 >= 8 ? _I2-8 : -1;
-    const int32_t j3= _I3 >= 8 ? _I3-8 : -1;
-    const int32_t j4= _I4 >= 8 ? _I4-8 : -1;
-    const int32_t j5= _I5 >= 8 ? _I5-8 : -1;
-    const int32_t j6= _I6 >= 8 ? _I6-8 : -1;
-    const int32_t j7= _I7 >= 8 ? _I7-8 : -1;
-    vec<_T, 8> rj = permute<j0, j1, j2, j3, j4, j5, j6, j7>(v1);
-    // combine result sets:
-    vec<_T, 8> r( ri | rj);
-    return r;
+    // Combine all the indexes into a single bitfield, with 4 bits
+    // for each
+    const unsigned m1 =
+        impl::pos_msk_8<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7, 15>::m;
+    // Mask to zero out negative indexes
+    const unsigned m2 =
+        impl::zero_msk_8<_I0, _I1, _I2, _I3, _I4, _I5, _I6, _I7>::m;
+
+    if ((m1 & 0x88888888 & m2) == 0) {
+        // no elements from b
+        return permute<_I0 & ~8, _I1 & ~8, _I2 & ~8, _I3 & ~8,
+                       _I4 & ~8, _I5 & ~8, _I6 & ~8, _I7 & ~8>(a);
+    }
+    if (((m1^0x88888888) & 0x88888888 & m2) == 0) {
+        // no elements from a
+        return permute<_I0 & ~8, _I1 & ~8,
+                       _I2 & ~8, _I3 & ~8,
+                       _I4 & ~8, _I5 & ~8,
+                       _I6 & ~8, _I7 & ~8>(b);
+    }
+
+    const bool sm0 = _I0 < 8;
+    const bool sm1 = _I1 < 8;
+    const bool sm2 = _I2 < 8;
+    const bool sm3 = _I3 < 8;
+    const bool sm4 = _I4 < 8;
+    const bool sm5 = _I5 < 8;
+    const bool sm6 = _I6 < 8;
+    const bool sm7 = _I7 < 8;
+    if (((m1 & ~0x88888888) ^ 0x76543210) == 0 && m2 == 0xFFFFFFFF) {
+        // selecting without shuffling or zeroing
+        return select<sm0, sm1, sm2, sm3,
+                      sm4, sm5, sm6, sm7>(a, b);
+    }
+
+    const int zz= m2 == 0xFFFFFFFF ? 0 : -1;
+    // select all elements to clear or from 1st vector
+    const int ma0 = sm0 ? _I0 : zz;
+    const int ma1 = sm1 ? _I1 : zz;
+    const int ma2 = sm2 ? _I2 : zz;
+    const int ma3 = sm3 ? _I3 : zz;
+    const int ma4 = sm4 ? _I4 : zz;
+    const int ma5 = sm5 ? _I5 : zz;
+    const int ma6 = sm6 ? _I6 : zz;
+    const int ma7 = sm7 ? _I7 : zz;
+    vec<_T, 8> ta = permute<ma0, ma1, ma2, ma3,
+                            ma4, ma5, ma6, ma7>(a);
+    // select all elements from second vector
+    const int mb0 = sm0 ? 0: (_I0-8);
+    const int mb1 = sm1 ? 0: (_I1-8);
+    const int mb2 = sm2 ? 0: (_I2-8);
+    const int mb3 = sm3 ? 0: (_I3-8);
+    const int mb4 = sm4 ? 0: (_I4-8);
+    const int mb5 = sm5 ? 0: (_I5-8);
+    const int mb6 = sm6 ? 0: (_I6-8);
+    const int mb7 = sm7 ? 0: (_I7-8);
+    vec<_T, 8> tb = permute<mb0, mb1, mb2, mb3,
+                            mb4, mb5, mb6, mb7>(b);
+    return select<sm0, sm1, sm2, sm3,
+                  sm4, sm5, sm6, sm7>(ta ,tb);
 }
 
 template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
