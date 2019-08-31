@@ -1028,120 +1028,6 @@ namespace cftal {
             };
 
 #if defined (__AVX__)
-            template <unsigned _P0, unsigned _P1,
-                      unsigned _P2, unsigned _P3>
-            struct vpermilps {
-                static __m128 v(__m128 a) {
-                    constexpr int _p0=_P0;
-                    constexpr int _p1=_P1;
-                    constexpr int _p2=_P2;
-                    constexpr int _p3=_P3;
-                    const int m=shuffle4<_p0, _p1, _p2, _p3>::val;
-                    return _mm_permute_ps(a, m & 0xff);
-                }
-                static __m256 v(__m256 a) {
-                    constexpr int _p0=_P0;
-                    constexpr int _p1=_P1;
-                    constexpr int _p2=_P2;
-                    constexpr int _p3=_P3;
-                    const int m=shuffle4<_p0, _p1, _p2, _p3>::val;
-                    return _mm256_permute_ps(a, m & 0xff);
-                }
-            };
-
-            template <unsigned _P0, unsigned _P1>
-            struct vpermilpd {
-                static __m128d v(__m128d a) {
-                    constexpr int _p0=_P0;
-                    constexpr int _p1=_P1;
-                    const int m=shuffle2<_p0, _p1>::val;
-                    return _mm_permute_pd(a, m & 0xff);
-                }
-                static __m256d v(__m256d a) {
-                    constexpr int _p0=_P0;
-                    constexpr int _p1=_P1;
-                    const int m=shuffle2<_p0, _p1>::val;
-                    return _mm256_permute_pd(a, m & 0xff);
-                }
-            };
-
-            template <typename _V>
-            struct vbroadcastss {
-            };
-
-            template <>
-            struct vbroadcastss<__m128> {
-                static
-                __m128 v(__m128 a) {
-#if defined (__AVX2__)
-                    return _mm_broadcastss_ps(a);
-#else
-                    return vpermilps<0, 0, 0, 0>::v(a);
-#endif
-                }
-                static
-                __m128 v(float f) {
-                    return _mm_setr_ps(f, f, f, f);
-                }
-            };
-
-            template <>
-            struct vbroadcastss<__m256> {
-                static
-                __m256 v(__m128 a) {
-#if defined (__AVX2__)
-                    return _mm256_broadcastss_ps(a);
-#else
-                    __m128 sl=vpermilps<0, 0, 0, 0>::v(a);
-                    __m256 s=_mm256_castps128_ps256(sl);
-                    __m256 r=_mm256_insertf128_ps(s, sl, 1);
-                    return r;
-#endif
-                }
-                static
-                __m256 v(float f) {
-                    return _mm256_setr_ps(f, f, f, f, f, f, f, f);
-                }
-            };
-
-            template <typename _V>
-            struct vbroadcastsd {
-            };
-
-            template <>
-            struct vbroadcastsd<__m128d> {
-                static
-                __m128d v(__m128d a) {
-#if defined (__AVX2__)
-                    return _mm_movedup_pd(a);
-#else
-                    return vpermilpd<0, 0>::v(a);
-#endif
-                }
-                static
-                __m128d v(double d) {
-                    return _mm_setr_pd(d, d);
-                }
-            };
-
-            template <>
-            struct vbroadcastsd<__m256d> {
-                static
-                __m256d v(__m128d a) {
-#if defined (__AVX2__)
-                    return _mm256_broadcastsd_pd(a);
-#else
-                    __m128d sl=vpermilpd<0, 0>::v(a);
-                    __m256d s=_mm256_castpd128_pd256(sl);
-                    __m256d r=_mm256_insertf128_pd(s, sl, 1);
-                    return r;
-#endif
-                }
-                static
-                __m256d v(double d) {
-                    return _mm256_setr_pd(d, d, d, d);
-                }
-            };
 
 #endif
 
@@ -1324,6 +1210,120 @@ namespace cftal {
                 }
             };
 
+           template <unsigned _P0, unsigned _P1,
+                      unsigned _P2, unsigned _P3>
+            struct vpermilps {
+                static __m128 v(__m128 a) {
+                    constexpr int _p0=_P0;
+                    constexpr int _p1=_P1;
+                    constexpr int _p2=_P2;
+                    constexpr int _p3=_P3;
+                    const int m=shuffle4<_p0, _p1, _p2, _p3>::val;
+                    return _mm_permute_ps(a, m & 0xff);
+                }
+                static __m256 v(__m256 a) {
+                    constexpr int _p0=_P0;
+                    constexpr int _p1=_P1;
+                    constexpr int _p2=_P2;
+                    constexpr int _p3=_P3;
+                    const int m=shuffle4<_p0, _p1, _p2, _p3>::val;
+                    return _mm256_permute_ps(a, m & 0xff);
+                }
+            };
+
+            template <unsigned _P0, unsigned _P1>
+            struct vpermilpd {
+                static __m128d v(__m128d a) {
+                    constexpr int _p0=_P0;
+                    constexpr int _p1=_P1;
+                    const int m=shuffle2<_p0, _p1>::val;
+                    return _mm_permute_pd(a, m & 0xff);
+                }
+                static __m256d v(__m256d a) {
+                    constexpr int _p0=_P0;
+                    constexpr int _p1=_P1;
+                    const int m=shuffle2<_p0, _p1>::val;
+                    return _mm256_permute_pd(a, m & 0xff);
+                }
+            };
+
+            template <typename _V>
+            struct vbroadcastss {
+            };
+
+            template <>
+            struct vbroadcastss<__m128> {
+                static
+                __m128 v(__m128 a) {
+#if defined (__AVX2__)
+                    return _mm_broadcastss_ps(a);
+#else
+                    return vpermilps<0, 0, 0, 0>::v(a);
+#endif
+                }
+                static
+                __m128 v(float f) {
+                    return _mm_setr_ps(f, f, f, f);
+                }
+            };
+
+            template <>
+            struct vbroadcastss<__m256> {
+                static
+                __m256 v(__m128 a) {
+#if defined (__AVX2__)
+                    return _mm256_broadcastss_ps(a);
+#else
+                    __m128 sl=vpermilps<0, 0, 0, 0>::v(a);
+                    __m256 s=_mm256_castps128_ps256(sl);
+                    __m256 r=vinsertf128<1>::v(s, sl);
+                    return r;
+#endif
+                }
+                static
+                __m256 v(float f) {
+                    return _mm256_setr_ps(f, f, f, f, f, f, f, f);
+                }
+            };
+
+            template <typename _V>
+            struct vbroadcastsd {
+            };
+
+            template <>
+            struct vbroadcastsd<__m128d> {
+                static
+                __m128d v(__m128d a) {
+#if defined (__AVX2__)
+                    return _mm_movedup_pd(a);
+#else
+                    return vpermilpd<0, 0>::v(a);
+#endif
+                }
+                static
+                __m128d v(double d) {
+                    return _mm_setr_pd(d, d);
+                }
+            };
+
+            template <>
+            struct vbroadcastsd<__m256d> {
+                static
+                __m256d v(__m128d a) {
+#if defined (__AVX2__)
+                    return _mm256_broadcastsd_pd(a);
+#else
+                    __m128d sl=vpermilpd<0, 0>::v(a);
+                    __m256d s=_mm256_castpd128_pd256(sl);
+                    __m256d r=vinsertf128<1>::v(s, sl);
+                    return r;
+#endif
+                }
+                static
+                __m256d v(double d) {
+                    return _mm256_setr_pd(d, d, d, d);
+                }
+            };
 #endif
         }
     }
