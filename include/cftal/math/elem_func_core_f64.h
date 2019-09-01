@@ -97,10 +97,6 @@ namespace cftal {
             // elements of e
             static
             vf_type
-            frexp_k(arg_t<vf_type> x, vi2_type* e);
-
-            static
-            vf_type
             frexp(arg_t<vf_type> x, vi_type* e);
 
             // the exponents are returned in the odd numbered
@@ -730,7 +726,7 @@ template <typename _T>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
-frexp_k(arg_t<vf_type> x, vi2_type* ve)
+frexp(arg_t<vf_type> x, vi_type* ve)
 {
     vf_type xs=x;
     using fc=func_constants<double>;
@@ -756,25 +752,11 @@ frexp_k(arg_t<vf_type> x, vi2_type* ve)
         vmi2_type i_inz=_T::vmf_to_vmi2(f_inz);
         e -= vi2_type(_T::bias()-1);
         e= _T::sel_zero_or_val(i_inz, e);
-        *ve= e;
+        *ve= _T::vi2_odd_to_vi(e);
     }
     return frc;
 }
 
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<double, _T>::vf_type
-cftal::math::elem_func_core<double, _T>::
-frexp(arg_t<vf_type> x, vi_type* ve)
-{
-    vi2_type e;
-    vi2_type* pe = ve != nullptr ? &e : nullptr;
-    vf_type r=frexp_k(x, pe);
-    if (ve) {
-        *ve=_T::vi2_odd_to_vi(e);
-    }
-    return r;
-}
 
 template <typename _T>
 inline
