@@ -260,6 +260,20 @@ namespace cftal {
     vec<_T, 16>
     sort_even_odd(const vec<_T, 16>& v);
 
+    // helper function for even_elements, odd_elements: returns even
+    // elements in high half, odd elements in low half
+    template <typename _T>
+    vec<_T, 4>
+    sort_odd_even(const vec<_T, 4>& v);
+
+    template <typename _T>
+    vec<_T, 8>
+    sort_odd_even(const vec<_T, 8>& v);
+
+    template <typename _T>
+    vec<_T, 16>
+    sort_odd_even(const vec<_T, 16>& v);
+
     // return the even elements 0, 2, ... of v
     template <typename _T, std::size_t _N>
     vec<_T, _N/2>
@@ -1265,6 +1279,28 @@ cftal::sort_even_odd(const vec<_T, 16>& v)
                    1, 3, 5, 7, 9, 11, 13, 15>(v);
 }
 
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::sort_odd_even(const vec<_T, 4>& v)
+{
+    return permute<1, 3, 0, 2>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::sort_odd_even(const vec<_T, 8>& v)
+{
+    return permute<1, 3, 5, 7, 0, 2, 4, 6>(v);
+}
+
+template <typename _T>
+cftal::vec<_T, 16>
+cftal::sort_odd_even(const vec<_T, 16>& v)
+{
+    return permute<1, 3, 5, 7, 9, 11, 13, 15,
+                   0, 2, 4, 6, 8, 10, 12, 14>(v);
+}
+
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N/2>
 cftal::even_elements(const vec<_T, _N>& v)
@@ -1301,7 +1337,6 @@ cftal::even_elements(const vec<_T, 2>& v)
     return low_half(v);
 }
 
-
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N/2>
 cftal::odd_elements(const vec<_T, _N>& v)
@@ -1314,21 +1349,21 @@ template <typename _T>
 cftal::vec<_T, 8>
 cftal::odd_elements(const vec<_T, 16>& v)
 {
-    return high_half(sort_even_odd(v));
+    return low_half(sort_odd_even(v));
 }
 
 template <typename _T>
 cftal::vec<_T, 4>
 cftal::odd_elements(const vec<_T, 8>& v)
 {
-    return high_half(sort_even_odd(v));
+    return low_half(sort_odd_even(v));
 }
 
 template <typename _T>
 cftal::vec<_T, 2>
 cftal::odd_elements(const vec<_T, 4>& v)
 {
-    return high_half(sort_even_odd(v));
+    return low_half(sort_odd_even(v));
 }
 
 template <typename _T>
