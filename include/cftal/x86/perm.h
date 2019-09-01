@@ -641,11 +641,23 @@ namespace cftal {
             template <>
             struct perm2_v4f64< 0, 4, 1, 5> {
                 static __m256d v(__m256d a, __m256d b) {
+#if 1
+                    __m128d al=_mm256_castpd256_pd128(a);
+                    __m128d bl=_mm256_castpd256_pd128(b);
+                    // 0 4
+                    __m128d rl=vunpcklpd::v(al, bl);
+                    // 1 5
+                    __m128d rh=vunpckhpd::v(al, bl);
+                    __m256d r=_mm256_castpd128_pd256(rl);
+                    r = vinsertf128<1>::v(r, rh);
+                    return r;
+#else
                     // 0 4 2 6
                     __m256d t0= vunpcklpd::v(a, b);
                     // 1 5 3 7
                     __m256d t1= vunpckhpd::v(a, b);
                     __m256d r= vperm2f128<0, 2>::v(t0, t1);
+#endif
                     return r;
                 }
             };
@@ -653,12 +665,24 @@ namespace cftal {
             template <>
             struct perm2_v4f64< 4, 0, 5, 1> {
                 static __m256d v(__m256d a, __m256d b) {
+#if 1
+                    __m128d al=_mm256_castpd256_pd128(a);
+                    __m128d bl=_mm256_castpd256_pd128(b);
+                    // 4 0
+                    __m128d rl=vunpcklpd::v(bl, al);
+                    // 5 1
+                    __m128d rh=vunpckhpd::v(bl, al);
+                    __m256d r=_mm256_castpd128_pd256(rl);
+                    r = vinsertf128<1>::v(r, rh);
+                    return r;
+#else
                     // 4 0 6 2
                     __m256d t0= vunpcklpd::v(b, a);
                     // 5 1 7 3
                     __m256d t1= vunpckhpd::v(b, a);
                     __m256d r= vperm2f128<0, 2>::v(t0, t1);
                     return r;
+#endif
                 }
             };
 
