@@ -328,6 +328,17 @@ cftal::math::elem_func<_FLOAT_T, _T>::
 exp(arg_t<vf_type> x)
 {
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
+#if 0
+    using fc= func_constants<_FLOAT_T>;
+    const vf_type exp_hi_inf= fc::exp_hi_inf();
+    const vf_type exp_lo_zero= fc::exp_lo_zero();
+    vmf_type x_l = x >= exp_hi_inf;
+    vmf_type x_s = x <= exp_lo_zero;
+    vf_type xf=_T::sel_zero_or_val(x_l | x_s, x);
+    vf_type y=base_type:: template exp_k<false>(xf);
+    y = _T::sel_zero_or_val(x <= exp_lo_zero, y);
+    y = _T::sel(x >= exp_hi_inf, _T::pinf(), y);
+#else
     vf_type y=base_type:: template exp_k<false>(x);
     using fc= func_constants<_FLOAT_T>;
     const vf_type exp_hi_inf= fc::exp_hi_inf();
@@ -336,6 +347,7 @@ exp(arg_t<vf_type> x)
     y = _T::sel(x >= exp_hi_inf, _T::pinf(), y);
     // y = _T::sel(x == 0.0, 1.0, y);
     // y = _T::sel(x == 1.0, M_E, y);
+#endif
     __asm__ volatile("# LLVM-MCA-END\n\t");
     return y;
 }

@@ -42,7 +42,7 @@ namespace cftal {
             __sincos(double a) {
                 double s, c;
                 ::sincos(a, &s, &c);
-                return std::pair<double, double>(s, c);
+                return std::make_pair(s, c);
             }
 
 
@@ -51,7 +51,7 @@ namespace cftal {
             __sincos(float a) {
                 float s, c;
                 ::sincosf(a, &s, &c);
-                return std::pair<float, float>(s, c);
+                return std::make_pair(s, c);
             }
 
             static
