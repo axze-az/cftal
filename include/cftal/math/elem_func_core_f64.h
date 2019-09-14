@@ -1872,9 +1872,9 @@ tanh_k(arg_t<vf_type> xc)
         exl *= sc;
 
         vf_type exm1, exm1l;
-        d_ops::add122cond(exm1, exm1l, -1.0, ex, exl);
+        d_ops::add212(exm1, exm1l, ex, exl, -1.0);
         vf_type exp1, exp1l;
-        d_ops::add122cond(exp1, exp1l, 1.0, ex, exl);
+        d_ops::add212(exp1, exp1l, ex, exl, 1.0);
         vf_type tanh_h, tanh_l;
         d_ops::div22(tanh_h, tanh_l, exm1, exm1l, exp1, exp1l);
         tanh_x = _T::sel(x_medium, tanh_h, tanh_x);
