@@ -820,7 +820,7 @@ erfc_tbl_k(arg_t<vf_type> xc)
     vf_type xi= rint(vf_type(x * erfc_table::SCALE));
     vf_type xi0= xi*erfc_table::INV_SCALE;
     vi_type idx= _T::cvt_f_to_i(xi);
-    idx = max(min(idx, vi_type(erfc_table::ENTRIES-1)), vi_type(0));
+    idx = max(min(idx, vi_type(erfc_table::COUNT-1)), vi_type(0));
 
     vf_type exl, exh=base_type::template __exp_tbl_k<
         base_type::result_prec::medium>(xrh, xrl, eidx, &exl);
