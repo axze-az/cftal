@@ -2,9 +2,9 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
 
 [CMake]
-Build Directory Count=10
+Build Directory Count=9
 Current Build Directory Index=0
-Current Build Directory Index-Host System=9
+Current Build Directory Index-Host System=8
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -70,16 +70,6 @@ Extra Arguments=
 Install Directory=file:///usr/local
 
 [CMake][CMake Build Directory 7]
-Build Directory Path=/home/axel/projects/cpplib/cftal/gcc8
-Build Type=release
-CMake Binary=/usr/bin/cmake
-CMake Executable=/usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=/usr/local
-Runtime=Host System
-
-[CMake][CMake Build Directory 8]
 Build Directory Path=/home/axel/projects/cpplib/cftal/clang
 Build Type=release
 CMake Binary=/usr/bin/cmake
@@ -89,7 +79,7 @@ Extra Arguments=
 Install Directory=/usr/local
 Runtime=Host System
 
-[CMake][CMake Build Directory 9]
+[CMake][CMake Build Directory 8]
 Build Directory Path=/home/axel/projects/cpplib/cftal/gcc9
 Build Type=release
 CMake Binary=/usr/bin/cmake
@@ -106,6 +96,7 @@ checkPerformance=true
 checkPortability=true
 checkStyle=true
 checkUnusedFunction=true
+extraParameters=--language=c++ --std=c++20
 forceCheck=true
 inconclusiveAnalysis=true
 useSystemIncludes=true
