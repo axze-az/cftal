@@ -96,11 +96,6 @@ namespace cftal {
             vi_type
             ilogb(arg_t<vf_type> vf);
 
-            // calculates 1/sqrt(x)
-            static
-            vf_type
-            rsqrt_k(arg_t<vf_type> x);
-
             // calculates x^(1/3)
             static
             vf_type
@@ -772,35 +767,6 @@ ilogb(arg_t<vf_type> d)
     mi = _T::vmf_to_vmi(mf);
     e = _T::sel(mi, vi_type(FP_ILOGBNAN), e);
     return e;
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<float, _T>::vf_type
-cftal::math::elem_func_core<float, _T>::
-rsqrt_k(arg_t<vf_type> x)
-{
-    vf_type y= vf_type(1.0/sqrt(x));
-    // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
-    // y = y + 0.5f * y * (1.0f - y*(y*x));
-    //   = y - 0.5f * y * (y*(y*x) - 1.0f);
-    vf_type xyh, xyl;
-    d_ops::mul12(xyh, xyl, x, y);
-    vf_type th;
-    if (d_real_traits<vf_type>::fma == true) {
-        th = y * xyh - 1.0f;
-        th = y * xyl + th;
-    } else {
-        vf_type yxyh, yxyl;
-        d_ops::mul12(yxyh, yxyl, y, xyh);
-        vf_type tl;
-        th = yxyh - 1.0f;
-        tl = yxyl + y*xyl;
-        th += tl;
-    }
-    vf_type neg_half_y=-0.5f*y;
-    y = y + neg_half_y * th;
-    return y;
 }
 
 template <typename _T>
@@ -1779,9 +1745,9 @@ tanh_k(arg_t<vf_type> xc)
         exl *= sc;
 
         vf_type exm1, exm1l;
-        d_ops::add212cond(exm1, exm1l, ex, exl, -1.0f);
+        d_ops::add212(exm1, exm1l, ex, exl, -1.0f);
         vf_type exp1, exp1l;
-        d_ops::add212cond(exp1, exp1l, ex, exl, 1.0f);
+        d_ops::add212(exp1, exp1l, ex, exl, 1.0f);
         vf_type tanh_h, tanh_l;
         d_ops::div22(tanh_h, tanh_l, exm1, exm1l, exp1, exp1l);
         tanh_x = _T::sel(x_medium, tanh_h, tanh_x);

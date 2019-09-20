@@ -89,6 +89,11 @@ namespace cftal {
             using base_type::ilogb;
             using base_type::ilogbp1;
 
+            // calculates 1/sqrt(x)
+            static
+            vf_type
+            rsqrt_k(arg_t<vf_type> x);
+            
             static
             vf_type
             nextafter(arg_t<vf_type> xc, arg_t<vf_type> yc);
@@ -267,9 +272,41 @@ template <typename _FLOAT_T, typename _T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
+rsqrt_k(arg_t<vf_type> x)
+{
+    constexpr
+    const _FLOAT_T one=_FLOAT_T(1.0);
+    vf_type y= vf_type(one/sqrt(x));
+    // vf_type y= native_rsqrt(x);
+    // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
+    // y = y + 0.5 * y * (1.0 - y*(y*x));
+    //   = y - 0.5 * y * (y*(y*x) - 1.0);
+    vf_type xyh, xyl;
+    d_ops::mul12(xyh, xyl, x, y);
+    vf_type th;
+    if (d_real_traits<vf_type>::fma == true) {
+        th = y * xyh - one;
+        th = y * xyl + th;
+    } else {
+        vf_type yxyh, yxyl;
+        d_ops::mul12(yxyh, yxyl, y, xyh);
+        vf_type tl;
+        th = yxyh - one;
+        tl = yxyl + y*xyl;
+        th += tl;
+    }
+    y = y + (_FLOAT_T(-0.5)*y) * th;
+    return y;
+}
+
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _T>::
 rsqrt(arg_t<vf_type> x)
 {
-    vf_type y= base_type::rsqrt_k(x);
+    vf_type y= rsqrt_k(x);
     // y=_T::sel(x == _T::pinf(), vf_type(0), y);
     y=_T::sel_val_or_zero(x != _T::pinf(), y);
     y=_T::sel(x == 0, _T::pinf(), y);

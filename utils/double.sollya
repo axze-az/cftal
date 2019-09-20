@@ -476,7 +476,7 @@ write_coeffs(p, "constexpr\n    const double sinh_c", "sinh", b, c);
 write_coeff(sup(i), "", "constexpr\n    const double sinh_i0_right",
             double);
 
-/* polynomial for tanh where (e^2x-1)(e^2x+1) fails */
+/* polynomial for tanh where (e^(2x)-1)/(e^(2x)+1) fails */
 f = tanh(x);
 i = [0x1p-512, log(2)/32];
 d = guessdegree(f, i, 0x1p-64);

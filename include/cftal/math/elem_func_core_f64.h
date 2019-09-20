@@ -113,11 +113,6 @@ namespace cftal {
             vi_type
             ilogb(arg_t<vf_type> x);
 
-            // calculates 1/sqrt(x)
-            static
-            vf_type
-            rsqrt_k(arg_t<vf_type> x);
-
             // calculates x^(1/3)
             static
             vf_type
@@ -805,35 +800,6 @@ ilogb(arg_t<vf_type> d)
     mi = _T::vmf_to_vmi2(mf);
     e = _T::sel(mi, vi2_type(FP_ILOGBNAN), e);
     return _T::vi2_odd_to_vi(e);
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<double, _T>::vf_type
-cftal::math::elem_func_core<double, _T>::
-rsqrt_k(arg_t<vf_type> x)
-{
-    vf_type y= vf_type(1.0/sqrt(x));
-    // vf_type y= native_rsqrt(x);
-    // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
-    // y = y + 0.5f * y * (1.0f - y*(y*x));
-    //   = y - 0.5f * y * (y*(y*x) - 1.0f);
-    vf_type xyh, xyl;
-    d_ops::mul12(xyh, xyl, x, y);
-    vf_type th;
-    if (d_real_traits<vf_type>::fma == true) {
-        th = y * xyh - 1.0;
-        th = y * xyl + th;
-    } else {
-        vf_type yxyh, yxyl;
-        d_ops::mul12(yxyh, yxyl, y, xyh);
-        vf_type tl;
-        th = yxyh - 1.0;
-        tl = yxyl + y*xyl;
-        th += tl;
-    }
-    y = y + (-0.5*y) * th;
-    return y;
 }
 
 template <typename _T>
