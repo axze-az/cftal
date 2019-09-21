@@ -2,7 +2,7 @@
 execute("common.sollya");
 prec=2048!;
 
-erfc_table_f32 = proc(fmt) {
+erfc_table_f32 = proc() {
     var x0, xe, d, f, o, i0, i1, d0, b, c, p,
         rev_c, rev_b, i, ci;
     xi = 0.0;
@@ -56,7 +56,7 @@ erfc_table_f32 = proc(fmt) {
     write("}\n");
 };
 
-erfc_table = proc(fmt) {
+erfc_table_f64 = proc() {
     var x0, xe, d, f, o, i0, i1, d0, b, c, p,
         rev_c, rev_b, i, ci;
     xi = 0.0;
@@ -110,7 +110,7 @@ erfc_table = proc(fmt) {
     write("}\n");
 };
 
-erfc_table_f32(single);
-erfc_table(double);
+erfc_table_f32();
+erfc_table_f64();
 quit;
 
