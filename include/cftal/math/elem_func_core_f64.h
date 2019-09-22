@@ -1827,22 +1827,35 @@ tanh_k(arg_t<vf_type> xc)
     }
     vmf_type x_medium=(xa > tanh_i0_right) & (xa<fc::tanh_one());
     if (any_of(x_medium)) {
+        // tanh(x) = (exp(2*x)-1)/(exp(2*x)+1)
+        // with exp(2*x) = 2^k*exp(xr)
+        // tanh(x) = (2^k*exp(xr)-1)/(2^k*exp(xr)+1)
+        //         = (exp(xr)-2^(-k))/(exp(xr)+2^(-k))
         vf_type xae=min(vf_type(2.0*xa), vf_type(2.0*fc::tanh_one()));
         vf_type xrh, xrl;
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xae);
         vf_type ex, exl;
         ex=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &exl);
+#if 1
+        vf_type _two_pow_m_k=_T::insert_exp(_T::bias() - ki);
+        vf_type exp1, exp1l;
+        d_ops::add212(exp1, exp1l, ex, exl, _two_pow_m_k);
+        vf_type exm1, exm1l;
+        d_ops::add212(exm1, exm1l, ex, exl, -_two_pow_m_k);
+        vf_type tanh_h, tanh_l;
+        d_ops::div22(tanh_h, tanh_l, exm1, exm1l, exp1, exp1l);
+#else
         auto sc=_T::insert_exp(_T::bias() + ki);
         ex  *= sc;
         exl *= sc;
-
         vf_type exm1, exm1l;
         d_ops::add212(exm1, exm1l, ex, exl, -1.0);
         vf_type exp1, exp1l;
         d_ops::add212(exp1, exp1l, ex, exl, 1.0);
         vf_type tanh_h, tanh_l;
         d_ops::div22(tanh_h, tanh_l, exm1, exm1l, exp1, exp1l);
+#endif
         tanh_x = _T::sel(x_medium, tanh_h, tanh_x);
     }
     tanh_x=copysign(tanh_x, xc);
