@@ -1828,16 +1828,16 @@ tanh_k(arg_t<vf_type> xc)
     vmf_type x_medium=(xa > tanh_i0_right) & (xa<fc::tanh_one());
     if (any_of(x_medium)) {
         // tanh(x) = (exp(2*x)-1)/(exp(2*x)+1)
-        // with exp(2*x) = 2^k*exp(xr)
-        // tanh(x) = (2^k*exp(xr)-1)/(2^k*exp(xr)+1)
-        //         = (exp(xr)-2^(-k))/(exp(xr)+2^(-k))
         vf_type xae=min(vf_type(2.0*xa), vf_type(2.0*fc::tanh_one()));
         vf_type xrh, xrl;
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xae);
         vf_type ex, exl;
         ex=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &exl);
-#if 1
+#if 0
+        // with exp(2*x) = 2^k*exp(xr)
+        // tanh(x) = (2^k*exp(xr)-1)/(2^k*exp(xr)+1)
+        //         = (exp(xr)-2^(-k))/(exp(xr)+2^(-k))
         vf_type _two_pow_m_k=_T::insert_exp(_T::bias() - ki);
         vf_type exp1, exp1l;
         d_ops::add212(exp1, exp1l, ex, exl, _two_pow_m_k);
