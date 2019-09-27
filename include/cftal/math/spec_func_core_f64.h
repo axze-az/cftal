@@ -123,7 +123,6 @@ __reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
     return q;
 }
 
-
 template <typename _T>
 void
 cftal::math::spec_func_core<double, _T>::

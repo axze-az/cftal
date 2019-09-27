@@ -752,7 +752,6 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     return frc;
 }
 
-
 template <typename _T>
 inline
 typename cftal::math::elem_func_core<double, _T>::vi2_type
@@ -850,11 +849,10 @@ cbrt_k(arg_t<vf_type> xc)
     const double cbrt_c2=-1.3859252552410810110928e+00;
     // x^3 : +0x9.79975a0a1a7ap-4
     const double cbrt_c3=+5.9218535586992837593812e-01;
-    vf_type mm = horner(mm0,
-                        cbrt_c3,
-                        cbrt_c2,
-                        cbrt_c1,
-                        cbrt_c0);
+    static const double ci[]={
+        cbrt_c3, cbrt_c2, cbrt_c1, cbrt_c0
+    };
+    vf_type mm = horner(mm0, ci);
     // one step of order 3
     mm = impl::root3::order3<double>(mm, mm0);
     // round mm to 17 bits == int(53/3)
@@ -887,6 +885,7 @@ root12_k(arg_t<vf_type> xc)
     vi2_type e12_with_bias = (((e+v_bias_12)*fac_1_12)>>shift_1_12);
     vi2_type e12 =e12_with_bias - v_bias;
     // r is always in [0, 1, 11] because of the round down
+    // vi2_type r = e - ((e12<<3) + (e12<<2));
     vi2_type r = e - e12 *12;
 
     // correction of mm0 in dependence of r
@@ -1180,7 +1179,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         d_ops::muladd12(y, ye, xrh, p, x2);
         vf_type yee= xrl + xrl * y;
         ye += yee;
-        d_ops::mul22(y, ye, y, ye, th, tl);
+        d_ops::mul22(y, ye, th, tl, y, ye);
         d_ops::add22(y, ye, th, tl, y, ye);
         if (expl != nullptr)
             *expl = ye;
@@ -1344,9 +1343,27 @@ exp_k(arg_t<vf_type> xc)
         y=__exp_tbl_k(xrh, xrl, idx, ki);
 #endif
     } else {
+#if 0
+        vi_type idx, ki;
+        __reduce_exp_arg(xrh, xrl, idx, ki, xc);
+        vf_type ye;
+        y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, &ye);
+        // 2^kf = 2*2^s ; s = kf/2
+        auto sc=__scale_exp_k(ki);
+        vf_type scale=(0.5 * sc.f0()) * sc.f1();
+        // e^x-1 = 2*(y * 2^s - 0.5)
+        y  *= scale;
+        vf_type t;
+        d_ops::add12cond(y, t, -0.5, y);
+        ye = 2.0 * (ye * scale + t);
+        y = 2.0*y + ye;
+        // x small, required for handling of subnormal numbers
+        y = _T::sel((abs(xc) < 0x1p-54), xrh, y);
+#else
         vf_type kf;
         __reduce_exp_arg(xrh, xrl, kf, xc);
         y=__exp_k<_EXP_M1>(xrh, xrl, kf);
+#endif
     }
     return y;
 }
