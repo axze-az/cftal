@@ -67,7 +67,7 @@ namespace cftal {
                   _use_int((trunc_min_val(amin) != amin) ||
                            (trunc_max_val(amax) != amax)) {
             }
-
+            
             // switch off fma to get the same random numbers
             // on machines with and without fma
             template <class _G>
