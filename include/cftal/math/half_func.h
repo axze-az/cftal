@@ -188,11 +188,14 @@ __half_exp_tbl_k(arg_t<vf_type> xrh,
     vf_type th=lk.from(tbl._2_pow_i_n_h);
     // vf_type tl=lk.from(tbl._2_pow_i_n_l);
     vf_type x2=xrh*xrh;
-    vf_type sc=_T::insert_exp(_T::bias()+k);
     vf_type p= horner(xrh, exp_c3, exp_c2);
     vf_type eh=xrh + x2*p;
     vf_type y= th + (/* tl+*/ th*eh);
-    y *=  sc;
+    vi_type yi= _T::as_int(y);
+    yi += (k<<23);
+    y = _T::as_float(yi);
+    // vf_type sc=_T::insert_exp(_T::bias()+k);
+    // y *=  sc;
     return y;
 }
 
@@ -224,7 +227,14 @@ __half_exp_k(arg_t<vf_type> xrh,
     vf_type xrh2=xrh*xrh;
     vf_type y=horner2(xrh, xrh2, c)*xrh2 + xrh;
     y+= exp_f16_c0;
+#if 1
+    vi_type k=_T::cvt_f_to_i(kf);
+    vi_type yi= _T::as_int(y);
+    yi += (k<<23);
+    y = _T::as_float(yi);
+#else
     y*= __scale_exp_k(kf);
+#endif
     return y;
 }
 
