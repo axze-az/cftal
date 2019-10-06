@@ -277,7 +277,7 @@ All these functions behave as their counterparts in the std namespace.
 \end{tabular}\\[10pt]
 The sqrt function uses the hardware instruction provided by modern processors.
 The function $ rootn(x, n) $ calculates $ \sqrt[n]{x} $,
-the function $ powi(x, i) $ calculates $ x^i $, where $i$ is an integer. 
+the function $ powi(x, n) $ calculates $ x^n $, where $n$ is an integer. 
 %The precision of the pow function in more common areas, for instance in
 %$(0, 100), (0, 100)$ is better than mentioned in the table.
 
@@ -329,13 +329,13 @@ the function $ powi(x, i) $ calculates $ x^i $, where $i$ is an integer.
     \hline
     atan & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
-    atan2 & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    atan2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline \hline
-    asinh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    asinh & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
-    acosh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    acosh & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
-    atanh & $\pm$ 1 & n  & $\pm$ 1 & n \\
+    atanh & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
 \end{tabular}\\[10pt]
 The functions exp2m1 and exp10m1 calculate $2^x-1$ and $10^x-1$ respectively.
@@ -359,6 +359,36 @@ The functions exp2m1 and exp10m1 calculate $2^x-1$ and $10^x-1$ respectively.
     lgamma & $\pm$ 2? & n  & $\pm$ 2? & n \\
     \hline
 \end{tabular}\\[10pt]
+
+\subsubsection{additional elementary functions}
+\begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
+    \hline
+     &
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
+    \hline
+    function & $\Delta$ulp & (prob.) faithfully &
+          $\Delta$ulp & (prob.) faithfully \\
+    \hline
+    exp\_mx2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    exp\_mx2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    exp2\_mx2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    exp2\_mx2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    exp10\_mx2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    exp10\_mx2 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    root12 & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+\end{tabular}\\[10pt]
+The function exp\_mx2 calculates $ e^{-x^2}$, exp\_px2 calculates
+$e^{x^2}$, the functions exp2\_mx2, exp2\_mx2, exp10\_mx2 and exp10\_mx2
+calculate $ 2^{-x^2}$, $ 2^{x^2}$,  $ 10^{-x^2}$ and $ 10^{x^2}$.
+
 
 \subsection{Algorithms}
 In the subsections below the notation $ lg(x) = \log_{10}(x)$,
