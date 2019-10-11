@@ -525,6 +525,23 @@ namespace cftal {
             vf_type
             tan_k(arg_t<vf_type> x);
 
+            static
+            vi2_type
+            __reduce_trigpi_arg(vf_type& __restrict xrh,
+                                vf_type& __restrict xrl,
+                                arg_t<vf_type> x);
+
+            // calculates sin(pi*x), cos(pi*x)
+            static
+            void
+            sinpi_cospi_k(arg_t<vf_type> xc,
+                          vf_type* ps, vf_type *pc);
+
+            // tan(pi*x) calculation
+            static
+            vf_type
+            tanpi_k(arg_t<vf_type> x);
+
             // atan calculation for x in [0, 1]
             static
             vdf_type
@@ -2846,6 +2863,7 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type p_cos = horner(x2, p_cos_a, p_cos_b, cos_c4);
 
     vf_type s= xrh + (x3*sin_c3 + (x2*(p_sin-xrl*0.5) + xrl));
+    // is this useless? :
     s = _T::sel(xrh == 0.0, xrh, s);
     vf_type hx2=x2*0.5;
     vf_type w= 1.0 -hx2;
@@ -3016,6 +3034,52 @@ tan_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     auto q= __reduce_trig_arg(xrh, xrl, xc);
     vf_type t=__tan_k(xrh, xrl, q);
+    return t;
+}
+
+template <typename _T>
+typename cftal::math::elem_func_core<double, _T>::vi2_type
+cftal::math::elem_func_core<double, _T>::
+__reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
+{
+    vf_type fh= rint(vf_type(xc*2.0));
+    xrh = xc - 0.5 * fh;
+    // poor mans fmod:
+    fh = __fmod<4>(fh);
+    // d_ops::add12cond(xrh, xrl, xc, fh*(-0.5f));
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
+    vi_type q0= _T::cvt_f_to_i(fh);
+    vi2_type q=_T::vi_to_vi2(q0);
+    return q;
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<double, _T>::
+sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
+{
+    vf_type xrh, xrl;
+    auto q=__reduce_trigpi_arg(xrh, xrl, xc);
+    __sin_cos_k(xrh, xrl, q, ps, pc);
+    if (ps != nullptr) {
+        vf_type s=*ps;
+        *ps=_T::sel(rint(xc)==xc, copysign(vf_type(0.0), xc), s);
+    }
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+tanpi_k(arg_t<vf_type> xc)
+{
+    vf_type xrh, xrl;
+    auto q= __reduce_trigpi_arg(xrh, xrl, xc);
+    vf_type t=__tan_k(xrh, xrl, q);
+    t = _T::sel(rint(vf_type(2.0*xc))==vf_type(2.0*xc),
+                copysign(vf_type(_T::pinf()), xc), t);
+    t = _T::sel(rint(xc)==xc, copysign(vf_type(0.0), xc), t);
     return t;
 }
 

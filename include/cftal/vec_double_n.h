@@ -408,6 +408,40 @@ namespace cftal {
     vec<double, 1>
     tan(arg_t<vec<double, 1> > v);
 
+    // sinpi, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    sinpi(const vec<double, _N>& v);
+
+    vec<double, 1>
+    sinpi(arg_t<vec<double, 1> > v);
+
+    // cospi, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    cospi(const vec<double, _N>& v);
+
+    vec<double, 1>
+    cospi(arg_t<vec<double, 1> > v);
+
+    // sinpicospi, these functions are exact to +-1 ulp
+    template<std::size_t _N>
+    void
+    sinpicospi(const vec<double, _N>& x,
+               vec<double, _N>* s, vec<double, _N>* c);
+
+    void
+    sinpicospi(arg_t<vec<double, 1> > x,
+               vec<double, 1>* s, vec<double, 1>* c);
+
+    // tanpi, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    tanpi(const vec<double, _N>& v);
+
+    vec<double, 1>
+    tanpi(arg_t<vec<double, 1> > v);
+    
     // asinh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -619,6 +653,19 @@ namespace cftal {
     tan(arg_t<vec<double, 2> > d);
 
     vec<double, 2>
+    sinpi(arg_t<vec<double, 2> > d);
+
+    vec<double, 2>
+    cospi(arg_t<vec<double, 2> > d);
+
+    void
+    sinpicospi(arg_t<vec<double, 2> > d,
+               vec<double, 2> * psin, vec<double, 2> * pcos);
+
+    vec<double, 2>
+    tanpi(arg_t<vec<double, 2> > d);
+    
+    vec<double, 2>
     asinh(arg_t<vec<double, 2> > d);
 
     vec<double, 2>
@@ -761,6 +808,19 @@ namespace cftal {
     tan(arg_t<vec<double, 4> > d);
 
     vec<double, 4>
+    sinpi(arg_t<vec<double, 4> > d);
+
+    vec<double, 4>
+    cospi(arg_t<vec<double, 4> > d);
+
+    void
+    sinpicospi(arg_t<vec<double, 4> > d,
+               vec<double, 4> * psin, vec<double, 4> * pcos);
+
+    vec<double, 4>
+    tanpi(arg_t<vec<double, 4> > d);
+    
+    vec<double, 4>
     asinh(arg_t<vec<double, 4> > d);
 
     vec<double, 4>
@@ -902,6 +962,19 @@ namespace cftal {
 
     vec<double, 8>
     tan(arg_t<vec<double, 8> > d);
+
+    vec<double, 8>
+    sinpi(arg_t<vec<double, 8> > d);
+
+    vec<double, 8>
+    cospi(arg_t<vec<double, 8> > d);
+
+    void
+    sinpicospi(arg_t<vec<double, 8> > d,
+               vec<double, 8> * psin, vec<double, 8> * pcos);
+
+    vec<double, 8>
+    tanpi(arg_t<vec<double, 8> > d);
 
     vec<double, 8>
     asinh(arg_t<vec<double, 8> > d);
@@ -1157,6 +1230,52 @@ cftal::vec<double, _N>
 cftal::tan(const vec<double, _N>& v)
 {
     vec<double, _N> r(tan(low_half(v)), tan(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::sinpi(const vec<double, _N>& v)
+{
+    vec<double, _N> r(sinpi(low_half(v)), sinpi(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::cospi(const vec<double, _N>& v)
+{
+    vec<double, _N> r(cospi(low_half(v)), cospi(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+void
+cftal::sinpicospi(const vec<double, _N>& v,
+                  vec<double, _N>* s, vec<double, _N>* c)
+{
+    if (s != nullptr && c != nullptr) {
+        vec<double, _N/2> sl, sh, cl, ch;
+        sinpicospi(low_half(v), &sl, &cl);
+        sinpicospi(high_half(v), &sh, &ch);
+        *s= vec<double, _N>(sl, sh);
+        *c= vec<double, _N>(cl, ch);
+    } else if (s != nullptr) {
+        *s = sinpi(v);
+    } else if (c != nullptr) {
+        *c = cospi(v);
+    }
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::tanpi(const vec<double, _N>& v)
+{
+    vec<double, _N> r(tanpi(low_half(v)), tanpi(high_half(v)));
     return r;
 }
 

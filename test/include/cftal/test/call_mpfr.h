@@ -185,12 +185,15 @@ namespace cftal {
             // return exp2m1 with res precision bits
             int
             exp2m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
             // return exp10m1 with res precision bits
             int
             exp10m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
             // return exp(x*x) with res precision bits
             int
             exp_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
             // return exp(-x*x) with res precision bits
             int
             exp_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
@@ -198,6 +201,7 @@ namespace cftal {
             // return 2^(x*x) with res precision bits
             int
             exp2_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
             // return 2^(-x*x) with res precision bits
             int
             exp2_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
@@ -205,6 +209,7 @@ namespace cftal {
             // return 10^(x*x) with res precision bits
             int
             exp10_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
             // return 10^(-x*x) with res precision bits
             int
             exp10_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
@@ -213,6 +218,19 @@ namespace cftal {
             int
             root12(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
+            // return sin(pi* x)
+            int
+            sinpi(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
+            // return cos(pi* x)
+            int
+            cospi(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
+            // return tan(pi* x)
+            int
+            tanpi(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+            
+            
             // x ^ (1/n), n may be negative
             int
             rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm);

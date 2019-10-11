@@ -405,6 +405,40 @@ namespace cftal {
     vec<float, 1>
     tan(arg_t<vec<float, 1> > v);
 
+    // sin, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    sinpi(const vec<float, _N>& v);
+
+    vec<float, 1>
+    sinpi(arg_t<vec<float, 1> > v);
+
+    // cos, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    cospi(const vec<float, _N>& v);
+
+    vec<float, 1>
+    cospi(arg_t<vec<float, 1> > v);
+
+    // sincos, these functions are exact to +-1 ulp
+    template<std::size_t _N>
+    void
+    sinpicospi(const vec<float, _N>& x,
+               vec<float, _N>* s, vec<float, _N>* c);
+
+    void
+    sinpicospi(arg_t<vec<float, 1> > x,
+               vec<float, 1>* s, vec<float, 1>* c);
+
+    // tan, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    tanpi(const vec<float, _N>& v);
+
+    vec<float, 1>
+    tanpi(arg_t<vec<float, 1> > v);
+
     // asinh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -616,6 +650,19 @@ namespace cftal {
     tan(arg_t<vec<float, 2> > d);
 
     vec<float, 2>
+    sinpi(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    cospi(arg_t<vec<float, 2> > d);
+
+    void
+    sinpicospi(arg_t<vec<float, 2> > d,
+               vec<float, 2> * psin, vec<float, 2> * pcos);
+
+    vec<float, 2>
+    tanpi(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
     asinh(arg_t<vec<float, 2> > d);
 
     vec<float, 2>
@@ -756,6 +803,19 @@ namespace cftal {
 
     vec<float, 4>
     tan(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    sinpi(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    cospi(arg_t<vec<float, 4> > d);
+
+    void
+    sinpicospi(arg_t<vec<float, 4> > d,
+               vec<float, 4> * psin, vec<float, 4> * pcos);
+
+    vec<float, 4>
+    tanpi(arg_t<vec<float, 4> > d);
 
     vec<float, 4>
     asinh(arg_t<vec<float, 4> > d);
@@ -901,6 +961,19 @@ namespace cftal {
     tan(arg_t<vec<float, 8> > d);
 
     vec<float, 8>
+    sinpi(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
+    cospi(arg_t<vec<float, 8> > d);
+
+    void
+    sinpicospi(arg_t<vec<float, 8> > d,
+               vec<float, 8> * psin, vec<float, 8> * pcos);
+
+    vec<float, 8>
+    tanpi(arg_t<vec<float, 8> > d);
+
+    vec<float, 8>
     asinh(arg_t<vec<float, 8> > d);
 
     vec<float, 8>
@@ -1042,6 +1115,19 @@ namespace cftal {
 
     vec<float, 16>
     tan(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    sinpi(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    cospi(arg_t<vec<float, 16> > d);
+
+    void
+    sinpicospi(arg_t<vec<float, 16> > d,
+               vec<float, 16> * psin, vec<float, 16> * pcos);
+
+    vec<float, 16>
+    tanpi(arg_t<vec<float, 16> > d);
 
     vec<float, 16>
     asinh(arg_t<vec<float, 16> > d);
@@ -1557,6 +1643,52 @@ cftal::vec<float, _N>
 cftal::tan(const vec<float, _N>& v)
 {
     vec<float, _N> r(tan(low_half(v)), tan(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::sinpi(const vec<float, _N>& v)
+{
+    vec<float, _N> r(sinpi(low_half(v)), sinpi(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::cospi(const vec<float, _N>& v)
+{
+    vec<float, _N> r(cospi(low_half(v)), cospi(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+void
+cftal::sinpicospi(const vec<float, _N>& v,
+                  vec<float, _N>* s, vec<float, _N>* c)
+{
+    if (s != nullptr && c != nullptr) {
+        vec<float, _N/2> sl, sh, cl, ch;
+        sinpicospi(low_half(v), &sl, &cl);
+        sinpicospi(high_half(v), &sh, &ch);
+        *s= vec<float, _N>(sl, sh);
+        *c= vec<float, _N>(cl, ch);
+    } else if (s != nullptr) {
+        *s = sinpi(v);
+    } else if (c != nullptr) {
+        *c = cospi(v);
+    }
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::tanpi(const vec<float, _N>& v)
+{
+    vec<float, _N> r(tanpi(low_half(v)), tanpi(high_half(v)));
     return r;
 }
 

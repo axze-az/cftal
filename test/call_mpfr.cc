@@ -9,6 +9,8 @@
 #include <mutex>
 #include <cstdarg>
 #include <vector>
+#include <iostream>
+#include <iomanip>
 
 #define DEBUG_EXP2M1 0
 #define DEBUG_EXPXM1 (DEBUG_EXP2M1)
@@ -547,6 +549,114 @@ rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm)
         r=call_ziv_func(y, x, rm, f);
     } else {
         r=mpfr_rootn_ui(y, x, n, rm);
+    }
+    return r;
+}
+
+int
+cftal::test::mpfr_ext::
+sinpi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
+{
+    int r=-1;
+    if (mpfr_nan_p(x)) {
+        r=mpfr_set(y, x, rm);
+    } else if (mpfr_inf_p(x)) {
+        mpfr_set_nan(y);
+        r=0;
+    } else {
+        fpn_handle xi(mpfr_get_prec(x));
+        mpfr_rint_roundeven(xi(), x, MPFR_RNDN);
+        if (mpfr_equal_p(xi(), x)) {
+            fpn_handle z(0.0, mpfr_get_prec(y));
+            r=mpfr_copysign(y, z(), x, rm);
+        } else {
+            auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
+                       fpn_handle xxpi(mpfr_get_prec(xx));
+                       fpn_handle pi(mpfr_get_prec(xx)*2);
+                       mpfr_const_pi(pi(), MPFR_RNDN);
+                       mpfr_mul(xxpi(), xx, pi(), MPFR_RNDN);
+                       int r=mpfr_sin(yy, xxpi(), rm);
+                       return r;
+                   };
+            r=call_ziv_func(y, x, rm, f);
+        }
+    }
+    return r;
+}
+
+int
+cftal::test::mpfr_ext::
+cospi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
+{
+    int r=-1;
+    if (mpfr_nan_p(x)) {
+        r=mpfr_set(y, x, rm);
+    } else if (mpfr_inf_p(x)) {
+        mpfr_set_nan(y);
+        r=0;
+    } else {
+        // x * 2 ==rint(x*2) -> copysign(inf, x);
+        auto e=mpfr_get_exp(x);
+        fpn_handle x2(x);
+        mpfr_set_exp(x2(), e+1);
+        fpn_handle xi2(mpfr_get_prec(x));
+        mpfr_rint_roundeven(xi2(), x2(), MPFR_RNDN);
+        if (mpfr_equal_p(xi2(), x2())) {
+            fpn_handle o(1.0, mpfr_get_prec(y));
+            r=mpfr_set(y, o(), rm);
+        } else {
+            auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
+                       fpn_handle xxpi(mpfr_get_prec(xx));
+                       fpn_handle pi(mpfr_get_prec(xx));
+                       mpfr_const_pi(pi(), MPFR_RNDN);
+                       mpfr_mul(xxpi(), xx, pi(), MPFR_RNDN);
+                       int r=mpfr_cos(yy, xxpi(), rm);
+                       return r;
+                   };
+            r=call_ziv_func(y, x, rm, f);
+        }
+    }
+    return r;
+}
+
+int
+cftal::test::mpfr_ext::
+tanpi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
+{
+    int r=-1;
+    if (mpfr_nan_p(x)) {
+        r=mpfr_set(y, x, rm);
+    } else if (mpfr_inf_p(x)) {
+        mpfr_set_nan(y);
+        r=0;
+    } else {
+        // x * 2 ==rint(x*2) -> copysign(inf, x);
+        auto e=mpfr_get_exp(x);
+        fpn_handle x2(x);
+        mpfr_set_exp(x2(), e+1);
+        fpn_handle xi2(mpfr_get_prec(x));
+        mpfr_rint_roundeven(xi2(), x2(), MPFR_RNDN);
+        // x == rint(x) -> copysign(0, x);
+        fpn_handle xi(mpfr_get_prec(x));
+        mpfr_rint_roundeven(xi(), x, MPFR_RNDN);
+        if (mpfr_equal_p(xi(), x)) {
+            fpn_handle z(0.0, mpfr_get_prec(y));
+            r=mpfr_copysign(y, z(), x, rm);
+        } else if (mpfr_equal_p(xi2(), x2())) {
+            fpn_handle inf(mpfr_get_prec(y));
+            mpfr_set_inf(inf(), MPFR_RNDN);
+            r=mpfr_copysign(y, inf(), x, rm);
+        } else {
+            auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
+                       fpn_handle xxpi(mpfr_get_prec(xx));
+                       fpn_handle pi(mpfr_get_prec(xx)*2);
+                       mpfr_const_pi(pi(), MPFR_RNDN);
+                       mpfr_mul(xxpi(), xx, pi(), MPFR_RNDN);
+                       int r=mpfr_tan(yy, xxpi(), rm);
+                       return r;
+                   };
+            r=call_ziv_func(y, x, rm, f);
+        }
     }
     return r;
 }

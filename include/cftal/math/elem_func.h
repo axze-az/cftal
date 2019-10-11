@@ -196,6 +196,22 @@ namespace cftal {
             tan(arg_t<vf_type> vf);
 
             static
+            void
+            sinpicospi(arg_t<vf_type> vf, vf_type* psin, vf_type* pcos);
+
+            static
+            vf_type
+            sinpi(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            cospi(arg_t<vf_type> vf);
+
+            static
+            vf_type
+            tanpi(arg_t<vf_type> vf);
+            
+            static
             vf_type
             atan2(arg_t<vf_type> x, arg_t<vf_type> y);
 
@@ -758,6 +774,59 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 tan(arg_t<vf_type> d)
 {
     vf_type t=base_type::tan_k(d);
+    t = _TRAITS_T::sel(isinf(d) | isnan(d),
+                       copysign(vf_type(_TRAITS_T::nan()), d),
+                       t);
+    t = _TRAITS_T::sel(d==vf_type(0), d, t);
+    return t;
+}
+
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+inline
+void
+cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
+sinpicospi(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
+{
+    if ((psin!=nullptr) || (pcos!=nullptr)) {
+        base_type::sinpi_cospi_k(d, psin, pcos);
+        if (psin!=nullptr) {
+            *psin = _TRAITS_T::sel(d==vf_type(0), d, *psin);
+        }
+    }
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+inline
+typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
+sinpi(arg_t<vf_type> d)
+{
+    vf_type s;
+    base_type::sinpi_cospi_k(d, &s, nullptr);
+    // s = _TRAITS_T::sel(d==vf_type(0), d, s);
+    s = _TRAITS_T::sel(isinf(d), _TRAITS_T::nan(), s);
+    return s;
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+inline
+typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
+cospi(arg_t<vf_type> d)
+{
+    vf_type c;
+    base_type::sinpi_cospi_k(d, nullptr, &c);
+    return c;
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+inline
+typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
+tanpi(arg_t<vf_type> d)
+{
+    vf_type t=base_type::tanpi_k(d);
     t = _TRAITS_T::sel(isinf(d) | isnan(d),
                        copysign(vf_type(_TRAITS_T::nan()), d),
                        t);

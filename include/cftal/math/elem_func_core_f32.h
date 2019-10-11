@@ -497,6 +497,23 @@ namespace cftal {
             vf_type
             tan_k(arg_t<vf_type> x);
 
+            static
+            vi_type
+            __reduce_trigpi_arg(vf_type& __restrict xrh,
+                                vf_type& __restrict xrl,
+                                arg_t<vf_type> x);
+
+            // calculates sin(pi*x), cos(pi*x)
+            static
+            void
+            sinpi_cospi_k(arg_t<vf_type> xc,
+                          vf_type* ps, vf_type *pc);
+
+            // tan(pi*x) calculation
+            static
+            vf_type
+            tanpi_k(arg_t<vf_type> x);
+            
             // atan calculation for x in [0, 1]
             static
             vdf_type
@@ -2684,6 +2701,46 @@ tan_k(arg_t<vf_type> xc)
 {
     vf_type xrh, xrl;
     auto q= __reduce_trig_arg(xrh, xrl, xc);
+    vf_type t=__tan_k(xrh, xrl, q);
+    return t;
+}
+
+template <typename _T>
+typename cftal::math::elem_func_core<float, _T>::vi_type
+cftal::math::elem_func_core<float, _T>::
+__reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
+{
+    vf_type fh= rint(vf_type(xc*2.0f));
+    xrh = xc - 0.5f * fh;
+    // no need for fmod<4>(fh) here because |int(fh)| < |max integer|
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
+    vi_type q= _T::cvt_f_to_i(fh);
+    return q;
+}
+
+template <typename _T>
+void
+cftal::math::elem_func_core<float, _T>::
+sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
+{
+    vf_type xrh, xrl;
+    auto q=__reduce_trigpi_arg(xrh, xrl, xc);
+    __sin_cos_k(xrh, xrl, q, ps, pc);
+    if (ps != nullptr) {
+        vf_type s=*ps;
+        *ps=_T::sel(rint(xc)==xc, copysign(vf_type(0.0f), xc), s);
+    }
+}
+
+template <typename _T>
+__attribute__((flatten))
+typename cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+tanpi_k(arg_t<vf_type> xc)
+{
+    vf_type xrh, xrl;
+    auto q= __reduce_trigpi_arg(xrh, xrl, xc);
     vf_type t=__tan_k(xrh, xrl, q);
     return t;
 }

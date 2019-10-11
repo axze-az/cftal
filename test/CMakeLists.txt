@@ -83,6 +83,10 @@ set (TEST_HDRS
     ./include/cftal/test/spinlock.h
     ./include/cftal/test/program.h
     ./include/cftal/test/check_lgamma.h
+    ./include/cftal/test/check_sinpi.h
+    ./include/cftal/test/check_cospi.h
+    ./include/cftal/test/check_tanpi.h
+    ./include/cftal/test/check_sinpicospi.h
 )
 
 find_package(Boost REQUIRED)
@@ -215,6 +219,13 @@ test_prog(test-sin-f64)
 test_prog(test-cos-f64)
 test_prog(test-sincos-f64)
 test_prog(test-tan-f64)
+
+test_prog(test-sinpi-f64)
+test_prog(test-cospi-f64)
+#test_prog(test-sinpicospi-f64)
+test_prog(test-tanpi-f64)
+
+
 test_prog(test-atan-f64)
 test_prog(test-atan2-f64)
 test_prog(test-asin-f64)
