@@ -93,7 +93,7 @@ namespace cftal {
             static
             vf_type
             rsqrt_k(arg_t<vf_type> x);
-            
+
             static
             vf_type
             nextafter(arg_t<vf_type> xc, arg_t<vf_type> yc);
@@ -210,7 +210,7 @@ namespace cftal {
             static
             vf_type
             tanpi(arg_t<vf_type> vf);
-            
+
             static
             vf_type
             atan2(arg_t<vf_type> x, arg_t<vf_type> y);
@@ -817,6 +817,7 @@ cospi(arg_t<vf_type> d)
 {
     vf_type c;
     base_type::sinpi_cospi_k(d, nullptr, &c);
+    c = _TRAITS_T::sel(isinf(d), _TRAITS_T::nan(), c);
     return c;
 }
 
@@ -830,7 +831,7 @@ tanpi(arg_t<vf_type> d)
     t = _TRAITS_T::sel(isinf(d) | isnan(d),
                        copysign(vf_type(_TRAITS_T::nan()), d),
                        t);
-    t = _TRAITS_T::sel(d==vf_type(0), d, t);
+    // t = _TRAITS_T::sel(d==vf_type(0), d, t);
     return t;
 }
 

@@ -3066,6 +3066,14 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
         vf_type s=*ps;
         *ps=_T::sel(rint(xc)==xc, copysign(vf_type(0.0), xc), s);
     }
+    if (pc != nullptr) {
+        vf_type c=*pc;
+        vf_type xi=rint(xc);
+        vmf_type is_half=(xi != xc) &
+                         (rint(vf_type(xc*2.0))==vf_type(xc*2.0));
+        c=_T::sel(is_half, 0.0, c);
+        *pc=_T::sel((xi==xc) & (abs(xc)>0x1p54), 1.0, c);
+    }
 }
 
 template <typename _T>

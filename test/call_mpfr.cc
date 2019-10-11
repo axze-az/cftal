@@ -564,9 +564,7 @@ sinpi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
         mpfr_set_nan(y);
         r=0;
     } else {
-        fpn_handle xi(mpfr_get_prec(x));
-        mpfr_rint_roundeven(xi(), x, MPFR_RNDN);
-        if (mpfr_equal_p(xi(), x)) {
+        if (mpfr_integer_p(x)) {
             fpn_handle z(0.0, mpfr_get_prec(y));
             r=mpfr_copysign(y, z(), x, rm);
         } else {
@@ -595,14 +593,11 @@ cospi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
         mpfr_set_nan(y);
         r=0;
     } else {
-        // x * 2 ==rint(x*2) -> copysign(inf, x);
         auto e=mpfr_get_exp(x);
         fpn_handle x2(x);
         mpfr_set_exp(x2(), e+1);
-        fpn_handle xi2(mpfr_get_prec(x));
-        mpfr_rint_roundeven(xi2(), x2(), MPFR_RNDN);
-        if (mpfr_equal_p(xi2(), x2())) {
-            fpn_handle o(1.0, mpfr_get_prec(y));
+        if (mpfr_integer_p(x2())  && !mpfr_integer_p(x)) {
+            fpn_handle o(0.0, mpfr_get_prec(y));
             r=mpfr_set(y, o(), rm);
         } else {
             auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
@@ -634,15 +629,11 @@ tanpi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
         auto e=mpfr_get_exp(x);
         fpn_handle x2(x);
         mpfr_set_exp(x2(), e+1);
-        fpn_handle xi2(mpfr_get_prec(x));
-        mpfr_rint_roundeven(xi2(), x2(), MPFR_RNDN);
         // x == rint(x) -> copysign(0, x);
-        fpn_handle xi(mpfr_get_prec(x));
-        mpfr_rint_roundeven(xi(), x, MPFR_RNDN);
-        if (mpfr_equal_p(xi(), x)) {
+        if (mpfr_integer_p(x)) {
             fpn_handle z(0.0, mpfr_get_prec(y));
             r=mpfr_copysign(y, z(), x, rm);
-        } else if (mpfr_equal_p(xi2(), x2())) {
+        } else if (mpfr_integer_p(x2())) {
             fpn_handle inf(mpfr_get_prec(y));
             mpfr_set_inf(inf(), MPFR_RNDN);
             r=mpfr_copysign(y, inf(), x, rm);
