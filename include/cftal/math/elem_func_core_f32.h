@@ -513,7 +513,7 @@ namespace cftal {
             static
             vf_type
             tanpi_k(arg_t<vf_type> x);
-            
+
             // atan calculation for x in [0, 1]
             static
             vdf_type
@@ -2731,6 +2731,14 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
         vf_type s=*ps;
         *ps=_T::sel(rint(xc)==xc, copysign(vf_type(0.0f), xc), s);
     }
+    if (pc != nullptr) {
+        vf_type c=*pc;
+        vf_type xi=rint(xc);
+        vmf_type is_half=(xi != xc) &
+                         (rint(vf_type(xc*2.0f))==vf_type(xc*2.0f));
+        c=_T::sel(is_half, 0.0f, c);
+        *pc=_T::sel((xi==xc) & (abs(xc)>=0x1p25f), 1.0, c);
+    }
 }
 
 template <typename _T>
@@ -2742,6 +2750,9 @@ tanpi_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     auto q= __reduce_trigpi_arg(xrh, xrl, xc);
     vf_type t=__tan_k(xrh, xrl, q);
+    t = _T::sel(rint(vf_type(2.0f*xc))==vf_type(2.0f*xc),
+                copysign(vf_type(_T::pinf()), xc), t);
+    t = _T::sel(rint(xc)==xc, copysign(vf_type(0.0f), xc), t);
     return t;
 }
 

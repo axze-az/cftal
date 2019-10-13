@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     const func_domain<double> di[]={
-        std::make_pair(-0x1p54, 0x1p54)
+        std::make_pair(-0x1.5p54, 0x1.5p54)
     };
     const int shifts[]={0};
     int r=program<check_cospi<double>, 8, 1, 0x8000>(argc,

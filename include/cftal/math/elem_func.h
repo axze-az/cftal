@@ -804,8 +804,9 @@ sinpi(arg_t<vf_type> d)
 {
     vf_type s;
     base_type::sinpi_cospi_k(d, &s, nullptr);
-    // s = _TRAITS_T::sel(d==vf_type(0), d, s);
-    s = _TRAITS_T::sel(isinf(d), _TRAITS_T::nan(), s);
+    s = _TRAITS_T::sel(isinf(d) | isnan(d),
+                       copysign(vf_type(_TRAITS_T::nan()), d),
+                       s);
     return s;
 }
 
@@ -817,7 +818,9 @@ cospi(arg_t<vf_type> d)
 {
     vf_type c;
     base_type::sinpi_cospi_k(d, nullptr, &c);
-    c = _TRAITS_T::sel(isinf(d), _TRAITS_T::nan(), c);
+    c = _TRAITS_T::sel(isinf(d) | isnan(d),
+                       vf_type(_TRAITS_T::nan()),
+                       c);
     return c;
 }
 
@@ -831,7 +834,6 @@ tanpi(arg_t<vf_type> d)
     t = _TRAITS_T::sel(isinf(d) | isnan(d),
                        copysign(vf_type(_TRAITS_T::nan()), d),
                        t);
-    // t = _TRAITS_T::sel(d==vf_type(0), d, t);
     return t;
 }
 

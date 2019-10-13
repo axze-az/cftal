@@ -3072,7 +3072,7 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
         vmf_type is_half=(xi != xc) &
                          (rint(vf_type(xc*2.0))==vf_type(xc*2.0));
         c=_T::sel(is_half, 0.0, c);
-        *pc=_T::sel((xi==xc) & (abs(xc)>0x1p54), 1.0, c);
+        *pc=_T::sel((xi==xc) & (abs(xc)>=0x1p54), 1.0, c);
     }
 }
 
