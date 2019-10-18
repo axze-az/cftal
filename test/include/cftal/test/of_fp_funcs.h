@@ -45,7 +45,7 @@ namespace cftal {
             std::make_pair(std::numeric_limits<_T>::lowest(),
                            std::numeric_limits<_T>::max());
 
-        // the default test argumens
+        // the default additional arguments to test
         template <typename _T>
         struct default_arguments {
             static
@@ -59,11 +59,11 @@ namespace cftal {
                 std::atomic<uint64_t> _v;
                 char _pad[64-sizeof(_v)];
             };
-            // the tics for the vectors of length 1...2^tics.size()
+            // the tics for the vectors of length [0, _N]
             data_type _tics[_N+1];
             // number of function calls
             data_type _evals[_N+1];
-            // insert into _tics
+            // insert into _tics and increment evals[n]
             void insert(uint64_t tics_before, uint64_t tics_after,
                         unsigned n) {
                 uint64_t ta=std::max(tics_before, tics_after);
@@ -79,10 +79,11 @@ namespace cftal {
                     _evals[i]._v = 0;
                 }
             }
-            // timer function
+            // high resolution timer function
             static
             uint64_t hr_timer() { return rdtsc(); }
         };
+        // output operator for exec_stats
         template <std::size_t _N>
         std::ostream&
         operator<<(std::ostream& s, const exec_stats<_N>& st);
@@ -379,7 +380,7 @@ namespace cftal {
             r(const _T& v) {
                 return std::ceil(v);
             }
-                        static
+            static
             _T
             s(const _T& v) {
                 return r(v);

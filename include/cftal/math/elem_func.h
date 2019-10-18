@@ -781,7 +781,6 @@ tan(arg_t<vf_type> d)
     return t;
 }
 
-
 template <typename _FLOAT_T, typename _TRAITS_T>
 inline
 void
@@ -789,9 +788,17 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 sinpicospi(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
 {
     if ((psin!=nullptr) || (pcos!=nullptr)) {
+        vmf_type inf_nan=isinf(d) | isnan(d);
         base_type::sinpi_cospi_k(d, psin, pcos);
         if (psin!=nullptr) {
-            *psin = _TRAITS_T::sel(d==vf_type(0), d, *psin);
+            *psin= _TRAITS_T::sel(inf_nan,
+                                  copysign(vf_type(_TRAITS_T::nan()), d),
+                                  *psin);
+        }
+        if (pcos!=nullptr) {
+            *pcos= _TRAITS_T::sel(inf_nan,
+                                  vf_type(_TRAITS_T::nan()),
+                                  *pcos);
         }
     }
 }

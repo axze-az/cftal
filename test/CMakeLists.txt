@@ -222,9 +222,8 @@ test_prog(test-tan-f64)
 
 test_prog(test-sinpi-f64)
 test_prog(test-cospi-f64)
-#test_prog(test-sinpicospi-f64)
+test_prog(test-sinpicospi-f64)
 test_prog(test-tanpi-f64)
-
 
 test_prog(test-atan-f64)
 test_prog(test-atan2-f64)
@@ -273,6 +272,12 @@ test_prog(test-sin-f32)
 test_prog(test-cos-f32)
 test_prog(test-sincos-f32)
 test_prog(test-tan-f32)
+
+test_prog(test-sinpi-f32)
+test_prog(test-cospi-f32)
+test_prog(test-sinpicospi-f32)
+test_prog(test-tanpi-f32)
+
 test_prog(test-atan-f32)
 test_prog(test-atan2-f32)
 test_prog(test-asin-f32)
