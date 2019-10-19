@@ -30,7 +30,7 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-                std::pair<_T, _T> r, i0, i1;
+                std::pair<_T, _T> i0, i1;
                 _T v0=call_mpfr::func(a, mpfr_ext::sinpi, &i0);
                 _T v1=call_mpfr::func(a, mpfr_ext::cospi, &i1);
                 auto r0=std::make_tuple(v0, i0.first, i0.second);
