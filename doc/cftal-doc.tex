@@ -356,9 +356,10 @@ The functions exp2m1 and exp10m1 calculate $2^x-1$ and $10^x-1$ respectively.
     \hline
     tgamma & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
-    lgamma & $\pm$ 2? & n  & $\pm$ 2? & n \\
+    lgamma & $\pm$ 100? & n  & $\pm$ 100? & n \\
     \hline
 \end{tabular}\\[10pt]
+The function lgamma is probably faithfully rounded for non negative arguments.
 
 \subsubsection{additional elementary functions}
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
@@ -384,11 +385,24 @@ The functions exp2m1 and exp10m1 calculate $2^x-1$ and $10^x-1$ respectively.
     \hline
     root12 & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
+    sincos & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    sinpi & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    cospi & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    tanpi & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    sinpicospi & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
 \end{tabular}\\[10pt]
 The function exp\_mx2 calculates $ e^{-x^2}$, exp\_px2 calculates
-$e^{x^2}$, the functions exp2\_mx2, exp2\_mx2, exp10\_mx2 and exp10\_mx2
-calculate $ 2^{-x^2}$, $ 2^{x^2}$,  $ 10^{-x^2}$ and $ 10^{x^2}$.
-
+$e^{x^2}$, the functions exp2\_mx2, exp2\_mx2, exp10\_mx2 and
+exp10\_mx2 calculate $ 2^{-x^2}$, $ 2^{x^2}$, $ 10^{-x^2}$ and $
+10^{x^2}$.  The functions sinpi, cospi and tanpi calculate $\sin(\pi *
+x) $, $\cos(\pi * x) $ and $\tan(\pi * x) $ respectivly.  The function
+sincos returns sinus and cosinus of its argument, sinpicos returns
+sinpi and cospi.
 
 \subsection{Algorithms}
 In the subsections below the notation $ lg(x) = \log_{10}(x)$,
@@ -543,9 +557,14 @@ as error correction formula.
 
 The reconstruction of all functions like $b^x$ is done as
 \begin{equation}
-  e ^ x = 2^k * e^{(r_h + r_l)}
+  \begin{aligned}
+    e ^ x & = & 2^k * e^{(r_h + r_l)} \\
+          & = & 2^{k/2 + (k - k/2)} * e^{(r_h + r_l)} \\
+          & = & 2^{k/2} * 2^{(k - k/2)} * e^{(r_h + r_l)}
+  \end{aligned}
 \end{equation}
-with special care for border cases of k.\\[10pt]
+The split of $k$ into $k/2$ and $k-k/2$ avoids the handling of
+border cases for the maximum exponent and subnormal results.\\[10pt]
 %
 The reconstruction phase of all functions similiar to $b^x-1$ uses
 with $ s  = \frac{1}{2} k $ the formulaes

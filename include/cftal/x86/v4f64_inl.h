@@ -188,18 +188,6 @@ namespace cftal {
             }
         };
 
-#if 0
-        template <>
-        struct mod<double, 4> {
-            using full_type = vec<double, 4>;
-            static
-            full_type
-            v(const full_type& a, const full_type& b) {
-                return full_type(a() % b());
-            }
-        };
-#endif
-
         template <>
         struct fma<double, 4> {
             using full_type = vec<double, 4>;
@@ -283,27 +271,6 @@ namespace cftal {
             }
         };
 
-#if 0
-        template <>
-        struct shl<double, 4> {
-            using full_type = vec<double, 4>;
-            static
-            full_type
-            v(const full_type& a, unsigned s) {
-                return _mm_slli_epi32(a(), s);
-            }
-        };
-
-        template <>
-        struct shr<double, 4> {
-            using full_type = vec<double, 4>;
-            static
-            full_type
-            v(const full_type& a, unsigned s) {
-                return _mm_srli_epi32(a(), s);
-            }
-        };
-#endif
 
     }
 #endif // __AVX__
