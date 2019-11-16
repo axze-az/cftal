@@ -1907,7 +1907,8 @@ __reduce_log_arg(vf_type& xr,
     // round(sqrt(2)/2, 53-32, RD);
     // 0.70710659027099609375
     constexpr
-    const bytes8 offs=0x3fe6a09e00000000;
+    const bytes8 offs=int64_t(0x3fe6a09e00000000LL);
+
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
@@ -1944,7 +1945,7 @@ __reduce_log_arg(vf_type& xr,
                  arg_t<vf_type> xc)
 {
     constexpr
-    const bytes8 offs=0x3fe6800000000000;
+    const bytes8 offs=int64_t(0x3fe6800000000000LL);
 
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();

@@ -14,12 +14,21 @@
 namespace cftal {
     namespace math {
 
+        // calculation of a lanczos rational
         template <typename _T, typename _C,
                   std::size_t _N1, std::size_t _N2>
         d_real<_T>
         lanczos_rational_at(const _T& x,
                             const d_real<_C>(&p)[_N1],
                             const _C (&q)[_N2]);
+
+        // calculation of a lanczos rational
+        template <typename _T, typename _C,
+                  std::size_t _N1, std::size_t _N2>
+        _T
+        lanczos_rational_at(const _T& x,
+                            const _C(&p)[_N1],
+                            const _C(&q)[_N2]);
 
         // lanczos table for double
         struct lanczos_table_g_12_06815_N12 {
@@ -331,6 +340,23 @@ lanczos_rational_at(const _T& x,
     // d_ops::div22(pqh, pql, ph, pl, qh, ql);
     return d_real<_T>(pqh, pql);
 }
+
+// calculation of a lanczos rational
+template <typename _T, typename _C,
+            std::size_t _N1, std::size_t _N2>
+__attribute__((__always_inline__))
+_T
+cftal::math::
+lanczos_rational_at(const _T& x,
+                    const _C(&p)[_N1],
+                    const _C(&q)[_N2])
+{
+    _T rp=horner(x, p);
+    _T rq=horner(x, q);
+    _T r=rp/rq;
+    return r;
+}
+
 
 // local variables:
 // mode: c++
