@@ -1912,14 +1912,16 @@ __reduce_log_arg(vf_type& xr,
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi2_type k=_T::sel_val_or_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
+    vi2_type k=_T::sel(_T::vmf_to_vmi2(is_denom),
+                       vi2_type(-54-_T::bias()),
+                       vi2_type(-_T::bias()));
 #if 1
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
     h += (0x3ff0000000000000LL - offs.s64());
     vi2_type h2=as<vi2_type>(h);
-    k += (h2>>20) - _T::bias();
     h = (h&0x000fffffffffffffLL) + offs.s64();
+    k += (h2>>20);
     xr = as<vf_type>(h);
     ki=k;
 #else
@@ -1929,7 +1931,7 @@ __reduce_log_arg(vf_type& xr,
     _T::extract_words(lx, hx, x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     hx += 0x3ff00000 - offs32.s32();
-    k += (hx>>20) - _T::bias();
+    k += (hx>>20);
     hx = (hx&0x000fffff) + offs32.s32();
     xr = _T::combine_words(lx, hx);
     ki=k;
@@ -1950,18 +1952,20 @@ __reduce_log_arg(vf_type& xr,
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi2_type k=_T::sel_val_or_zero(_T::vmf_to_vmi2(is_denom), vi2_type(-54));
+    vi2_type k=_T::sel(_T::vmf_to_vmi2(is_denom),
+                       vi2_type(-54-_T::bias()),
+                       vi2_type(-_T::bias()));
 #if 1
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
     h += (0x3ff0000000000000LL - offs.s64());
     vi2_type h2=as<vi2_type>(h);
-    k += (h2>>20) - _T::bias();
     h &= 0x000fffffffffffffLL;
     vi2_type m=as<vi2_type>(h);
     vi2_type idx2=m >> (20 - log_data<double>::LOG_SHIFT);
     idx=_T::vi2_odd_to_vi(idx2);
     h +=offs.s64();
+    k += (h2>>20);
     xr = as<vf_type>(h);
     ki=k;
 #else
@@ -1971,7 +1975,7 @@ __reduce_log_arg(vf_type& xr,
     const bytes4 offs32=offs.s32h();
     /* reduce x into [offs, 2*offs] */
     hx += 0x3ff00000 - offs32.s32();
-    k += (hx>>20) - _T::bias();
+    k += (hx>>20);
     vi2_type m=(hx&0x000fffff);
     vi2_type idx2=m >> (20 - log_data<double>::LOG_SHIFT);
     idx=_T::vi2_odd_to_vi(idx2);
