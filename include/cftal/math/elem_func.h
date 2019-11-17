@@ -611,6 +611,12 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 pow(arg_t<vf_type> x, arg_t<vf_type> y)
 {
+#if 0
+    const auto f=[](_FLOAT_T xx, _FLOAT_T yy)->_FLOAT_T {
+                     return std::pow(xx, yy);
+                 };
+    return base_type::call_scalar_func(x, y, f);
+#else
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type res=my_type::pow_k(x, y);
     // guess the result if the calculation failed
@@ -667,6 +673,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 #endif
     __asm__ volatile("# LLVM-MCA-END\n\t");
     return res;
+#endif
 }
 
 template <typename _FLOAT_T, typename _T>

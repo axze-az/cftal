@@ -60,6 +60,14 @@ namespace cftal {
             vf_type
             call_scalar_func(arg_t<vf_type> x, _SCALAR_FUNC f);
 
+            // call a scalar function on x
+            template <typename _SCALAR_FUNC>
+            static
+            vf_type
+            call_scalar_func(arg_t<vf_type> x,
+                             arg_t<vf_type> y,
+                             _SCALAR_FUNC f);
+
             // unsigned integer __fmod
             template <unsigned _U>
             static
@@ -573,6 +581,27 @@ call_scalar_func(arg_t<vf_type> x, _SCALAR_FUNC f)
     mem<vf_type>::store(ax._a, x);
     for (std::size_t i=0; i<_N; ++i) {
         ar._a[i] = f(ax._a[i]);
+    }
+    vf_type r=mem<vf_type>::load(ar._a, _N);
+    return r;
+}
+
+template <typename _T>
+template <typename _SCALAR_FUNC>
+inline
+typename
+cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+call_scalar_func(arg_t<vf_type> x, arg_t<vf_type> y, _SCALAR_FUNC f)
+{
+    constexpr const std::size_t _N=_T::NVF();
+    struct alignas(_N*sizeof(float)) v_x {
+        float _a[_N];
+    } ax, ay, ar;
+    mem<vf_type>::store(ax._a, x);
+    mem<vf_type>::store(ay._a, y);
+    for (std::size_t i=0; i<_N; ++i) {
+        ar._a[i] = f(ax._a[i], ay._a[i]);
     }
     vf_type r=mem<vf_type>::load(ar._a, _N);
     return r;
