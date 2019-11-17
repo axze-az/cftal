@@ -611,6 +611,29 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 pow(arg_t<vf_type> x, arg_t<vf_type> y)
 {
+// Pow returns x**y, the base-x exponential of y.
+// Special cases are (in order):
+// Pow(x, ±0) = 1 for any x
+// Pow(1, y) = 1 for any y
+// Pow(x, 1) = x for any x
+// Pow(NaN, y) = NaN
+// Pow(x, NaN) = NaN
+// Pow(±0, y) = ±Inf for y an odd integer < 0
+// Pow(±0, -Inf) = +Inf
+// Pow(±0, +Inf) = +0
+// Pow(±0, y) = +Inf for finite y < 0 and not an odd integer
+// Pow(±0, y) = ±0 for y an odd integer > 0
+// Pow(±0, y) = +0 for finite y > 0 and not an odd integer
+// Pow(-1, ±Inf) = 1
+// Pow(x, +Inf) = +Inf for |x| > 1
+// Pow(x, -Inf) = +0 for |x| > 1
+// Pow(x, +Inf) = +0 for |x| < 1
+// Pow(x, -Inf) = +Inf for |x| < 1
+// Pow(+Inf, y) = +Inf for y > 0
+// Pow(+Inf, y) = +0 for y < 0
+// Pow(-Inf, y) = Pow(-0, -y)
+// Pow(x, y) = NaN for finite x < 0 and finite non-integer y
+
 #if 0
     const auto f=[](_FLOAT_T xx, _FLOAT_T yy)->_FLOAT_T {
                      return std::pow(xx, yy);
@@ -619,7 +642,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 #else
     // domain of pow: (x > 0) || (x == 0 && y > 0) ||
     //                (x < 0 && y is an integer)
-    
+
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type res=my_type::pow_k(x, y);
     // guess the result if the calculation failed
