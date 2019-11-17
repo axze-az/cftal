@@ -617,6 +617,9 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
                  };
     return base_type::call_scalar_func(x, y, f);
 #else
+    // domain of pow: (x > 0) || (x == 0 && y > 0) ||
+    //                (x < 0 && y is an integer)
+    
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type res=my_type::pow_k(x, y);
     // guess the result if the calculation failed
