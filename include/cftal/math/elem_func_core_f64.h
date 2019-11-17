@@ -2320,7 +2320,8 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
             log_hp_c7, log_hp_c6, log_hp_c5, log_hp_c4
         };
         vf_type r2=r*r;
-        vf_type p=horner2(r, r2, ci);
+        // vf_type p=horner2(r, r2, ci);
+        vf_type p=horner4(r, r2, vf_type(r2*r2), ci);
         horner_comp_quick(ph, pl, r, p, log_hp_c3, log_hp_c2);
         d_ops::mul22(ph, pl, r, rl, ph, pl);
         d_ops::add122(ph, pl, log_hp_c1, ph, pl);
@@ -2331,7 +2332,8 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
             log_hp_c3
         };
         vf_type r2=r*r;
-        vf_type p=horner2(r, r2, ci);
+        //vf_type p=horner2(r, r2, ci);
+        vf_type p=horner4(r, r2, vf_type(r2*r2), ci);
         horner_comp_quick(ph, pl, r, p, log_hp_c2, log_hp_c1);
         // d_ops::muladd12(ph, pl, log_hp_c1, p, r);
     }
