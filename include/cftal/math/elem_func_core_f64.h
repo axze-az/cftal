@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/d_real.h>
 #include <cftal/t_real.h>
+#include <cftal/cast.h>
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f64_s32.h>
@@ -29,6 +30,7 @@
 #include <cftal/math/horner.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
 #include <cftal/mem.h>
+#include <cftal/vec_t_n.h>
 
 // #include <iostream>
 
@@ -153,6 +155,10 @@ namespace cftal {
             static
             scale_result
             __scale_exp_k(arg_t<vf_type> k);
+
+            static
+            vf_type
+            __scale_exp_k(arg_t<vf_type> y, arg_t<vi_type> ki);
 
             // scaling function for exponential functions
             // returns y*2^k
@@ -1063,6 +1069,28 @@ inline
 __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
+__scale_exp_k(arg_t<vf_type> y, arg_t<vi_type> k)
+{
+    const vi_type zz=0;
+    const int _N2= _T::NVI()*2;
+    const vi2_type bias=load_even_odd<_N2>(int32_t(0), _T::bias());
+    vi2_type k2= combine_even_odd(zz, k);
+    vi2_type ka= k2 >> 1;
+    vi2_type kb= k2 - ka;
+    ka <<= 20;
+    kb += bias;
+    kb <<= 20;
+    vi2_type yi=as<vi2_type>(y) + ka;
+    vf_type s1= as<vf_type>(kb);
+    vf_type r=as<vf_type>(yi) * s1;
+    return r;
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
 __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> k)
 {
     auto sc=__scale_exp_k(k);
@@ -1255,9 +1283,13 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type y;
     if (expl == nullptr) {
         y=__exp_tbl_k<result_prec::normal>(xrh, xrl, idx, expl);
+#if 1
+        y=__scale_exp_k(y, ki);
+#else
         auto sc=__scale_exp_k(ki);
         y *= sc.f0();
         y *= sc.f1();
+#endif
     } else {
         vf_type t;
         y=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &t);
