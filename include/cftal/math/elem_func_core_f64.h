@@ -1310,28 +1310,13 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type y;
     if (expl == nullptr) {
         y=__exp_tbl_k<result_prec::normal>(xrh, xrl, idx, expl);
-#if 1
         y=__scale_exp_k(y, ki);
-#else
-        auto sc=__scale_exp_k(ki);
-        y *= sc.f0();
-        y *= sc.f1();
-#endif
     } else {
         vf_type t;
         y=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &t);
-#if 1
         vdf_type r=__scale_exp_k(y, t, ki);
         y=r[0];
         *expl=r[1];
-#else
-        auto sc=__scale_exp_k(ki);
-        y *= sc.f0();
-        t *= sc.f0();
-        y *= sc.f1();
-        t *= sc.f1();
-#endif
-        *expl=t;
     }
     return y;
 }
