@@ -156,9 +156,16 @@ namespace cftal {
             scale_result
             __scale_exp_k(arg_t<vf_type> k);
 
+            // returns y*2^ki
             static
             vf_type
             __scale_exp_k(arg_t<vf_type> y, arg_t<vi_type> ki);
+
+            // returns y*2^ki, yl*2^ki
+            static
+            vdf_type
+            __scale_exp_k(arg_t<vf_type> y, arg_t<vf_type> yl,
+                          arg_t<vi_type> ki);
 
             // scaling function for exponential functions
             // returns y*2^k
@@ -1089,13 +1096,36 @@ __scale_exp_k(arg_t<vf_type> y, arg_t<vi_type> k)
 template <typename _T>
 inline
 __attribute__((__always_inline__))
+typename cftal::math::elem_func_core<double, _T>::vdf_type
+cftal::math::elem_func_core<double, _T>::
+__scale_exp_k(arg_t<vf_type> y,  arg_t<vf_type> yl,
+              arg_t<vi_type> k)
+{
+    const vi_type zz=0;
+    const int _N2= _T::NVI()*2;
+    const vi2_type bias=load_even_odd<_N2>(int32_t(0), _T::bias());
+    vi2_type k2= combine_even_odd(zz, k);
+    vi2_type ka= k2 >> 1;
+    vi2_type kb= k2 - ka;
+    ka <<= 20;
+    kb += bias;
+    kb <<= 20;
+    vi2_type yi=as<vi2_type>(y) + ka;
+    vi2_type yil=as<vi2_type>(yl) + ka;
+    vf_type s1= as<vf_type>(kb);
+    vf_type rh=as<vf_type>(yi) * s1;
+    vf_type rl=as<vf_type>(yil) * s1;
+    return vdf_type(rh, rl);
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 __scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> k)
 {
-    auto sc=__scale_exp_k(k);
-    vf_type ys = (ym * sc.f0()) * sc.f1();
-    return ys;
+    return __scale_exp_k(ym, _T::cvt_f_to_i(k));
 }
 
 template <typename _T>
@@ -1105,10 +1135,7 @@ typename cftal::math::elem_func_core<double, _T>::vdf_type
 cftal::math::elem_func_core<double, _T>::
 __scale_exp_k(arg_t<vf_type> yh, arg_t<vf_type> yl, arg_t<vf_type> k)
 {
-    auto sc = __scale_exp_k(k);
-    vf_type ysh = (yh * sc.f0()) * sc.f1();
-    vf_type ysl = (yl * sc.f0()) * sc.f1();
-    return vdf_type(ysh, ysl);
+    return __scale_exp_k(yh, yl, _T::cvt_f_to_i(k));
 }
 
 template <typename _T>
@@ -1293,11 +1320,17 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     } else {
         vf_type t;
         y=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &t);
+#if 1
+        vdf_type r=__scale_exp_k(y, t, ki);
+        y=r[0];
+        *expl=r[1];
+#else
         auto sc=__scale_exp_k(ki);
         y *= sc.f0();
         t *= sc.f0();
         y *= sc.f1();
         t *= sc.f1();
+#endif
         *expl=t;
     }
     return y;
