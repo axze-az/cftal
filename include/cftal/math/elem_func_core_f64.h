@@ -2575,9 +2575,10 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
 #if 1
-    vf_type t1= kf* ctbl::m_ln2_cw[0] + log_c_h;
+    vf_type t1, t;
+    d_ops::add12(t1, t, kf* ctbl::m_ln2_cw[0], log_c_h);
     vf_type t2= t1 + r;
-    vf_type l1= kf* ctbl::m_ln2_cw[1] + log_c_l;
+    vf_type l1= kf* ctbl::m_ln2_cw[1] + t + log_c_l;
     vf_type l2= t1 - t2 + r;
 
     vf_type ar=log_c2 * r;
