@@ -2597,8 +2597,7 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
         l3 = rl* (ar + arh);
         l4 = t2 - h + arh2;
     }
-    p = r3*p;
-    vf_type l=l1+l2+l3+l4+p;
+    vf_type l=(l1+l2+l3+l4)+r3*p;
     vf_type lh= h + l;
     vf_type ll= h - lh + l;
 #else
