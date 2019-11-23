@@ -2302,7 +2302,7 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
         log_hp_c5, log_hp_c4, log_hp_c3
     };
     vf_type r2=r*r;
-    vf_type p=horner(r, ci);
+    vf_type p=horner2(r, r2, ci);
 
     // thanks to the glibc folks for the lesson:
     vf_type t1, t;
