@@ -1052,19 +1052,14 @@ cftal::math::elem_func_core<float, _T>::
 __scale_exp_k(arg_t<vf_type> y,  arg_t<vf_type> yl,
               arg_t<vi_type> k)
 {
-    vi_type ka= k >> 1;
-    vi_type kb= k - ka;
-    ka <<= 23;
-    kb += _T::bias();
-    kb <<= 23;
-    vi_type yi=as<vi_type>(y) + ka;
-    vi_type yil=as<vi_type>(yl) + ka;
-    vf_type s1= as<vf_type>(kb);
-    vf_type rh=as<vf_type>(yi) * s1;
-    vf_type rl=as<vf_type>(yil) * s1;
+    // use floating point operations here because yl may underflow
+    auto sc=__scale_exp_k(k);
+    vf_type rh= y*sc.f0();
+    vf_type rl= yl*sc.f0();
+    rh *= sc.f1();
+    rl *= sc.f1();
     return vdf_type(rh, rl);
 }
-
 
 template <typename _T>
 inline

@@ -1109,20 +1109,12 @@ cftal::math::elem_func_core<double, _T>::
 __scale_exp_k(arg_t<vf_type> y,  arg_t<vf_type> yl,
               arg_t<vi_type> k)
 {
-    const vi_type zz=0;
-    const int _N2= _T::NVI()*2;
-    const vi2_type bias=load_even_odd<_N2>(int32_t(0), _T::bias());
-    vi2_type k2= combine_even_odd(zz, k);
-    vi2_type ka= k2 >> 1;
-    vi2_type kb= k2 - ka;
-    ka <<= 20;
-    kb += bias;
-    kb <<= 20;
-    vi2_type yi=as<vi2_type>(y) + ka;
-    vi2_type yil=as<vi2_type>(yl) + ka;
-    vf_type s1= as<vf_type>(kb);
-    vf_type rh=as<vf_type>(yi) * s1;
-    vf_type rl=as<vf_type>(yil) * s1;
+    // use floating point operations here because yl may underflow
+    auto sc=__scale_exp_k(k);
+    vf_type rh= y*sc.f0();
+    vf_type rl= yl*sc.f0();
+    rh *= sc.f1();
+    rl *= sc.f1();
     return vdf_type(rh, rl);
 }
 
