@@ -4,9 +4,10 @@ prec=2048!;
 // i/(k-1);
 
 log_around_1_table = proc(l, fmt) {
-    var i, lh, ll, linv, l2h, l2l, l10h, l10l, lc,
-        invci,
+    var i, lh, ll, linv, l2h, l2l, l10h, l10l, lc, lpinv, lplh, lpll,
+        invci, pinvci,
         logi, logih, logil,
+        plogi, plogih, plogil,
         log2i, log2ih, log2il,
         log10i, log10ih, log10il,
         ci, cic, c0, c1, d, offs,
@@ -20,6 +21,9 @@ log_around_1_table = proc(l, fmt) {
     l10h=[||];
     l10l=[||];
     lc=[||];
+    lpinv=[||];
+    lplh=[||];
+    lpll=[||];
 
     n=2^l;
     d = 2^(-l);
@@ -45,10 +49,12 @@ log_around_1_table = proc(l, fmt) {
         match (fmt) with
         double: {
             printdouble(ci);
+            pinvci = round(1/cic, l, RN);
             invci = round(1/cic, 27-4, RN);
         }
         single: {
             printsingle(ci);
+            pinvci = round(1/cic, l, RN);
             invci = round(1/cic, 12-3, RN);
         };
         if (ci < 1.0) then {
@@ -63,6 +69,7 @@ log_around_1_table = proc(l, fmt) {
             };
         };
         logi = -log(invci);
+        plogi = -log(pinvci);
         log2i = -log2(invci);
         log10i = -log10(invci);
         match (fmt) with
@@ -73,6 +80,8 @@ log_around_1_table = proc(l, fmt) {
             log2il=double(log2i-log2ih);
             log10ih=double(log10i);
             log10il=double(log10i-log10ih);
+            plogih=double(plogi);
+            plogil=double(plogi-plogih);
         }
         single: {
             logih=single(logi);
@@ -81,6 +90,8 @@ log_around_1_table = proc(l, fmt) {
             log2il=single(log2i-log2ih);
             log10ih=single(log10i);
             log10il=single(log10i-log10ih);
+            plogih=single(plogi);
+            plogil=single(plogi-plogih);
         };
         lc=lc:.ci;
         lh=lh:.logih;
@@ -90,6 +101,9 @@ log_around_1_table = proc(l, fmt) {
         l10h=l10h:.log10ih;
         l10l=l10l:.log10il;
         linv=linv:.invci;
+        lpinv=lpinv:.pinvci;
+        lplh=lplh:.plogih;
+        lpll=lpll:.plogil;
         i = i + 1;
     };
     write_coeff_table(lc, "c", fmt);
@@ -100,6 +114,9 @@ log_around_1_table = proc(l, fmt) {
     write_coeff_table(l2l, "log2c_l", fmt);
     write_coeff_table(l10h, "log10c_h", fmt);
     write_coeff_table(l10l, "log10c_l", fmt);
+    write_coeff_table(lpinv, "p_invc", fmt);
+    write_coeff_table(lplh, "p_logc_h", fmt);
+    write_coeff_table(lpll, "p_logc_l", fmt);
     match (fmt) with
     double: {
         write("    constexpr\n    const int64_t offs=");
@@ -113,6 +130,7 @@ log_around_1_table = proc(l, fmt) {
 };
 
 /* f32: table based logarithm */
+/*
 L=7;
 log_around_1_table(L, single);
 e_1_128=exp(1/128);
@@ -159,7 +177,7 @@ write_coeff(invln10hi, "",
             "constexpr\n    const float invln10hi", single);
 write_coeff(invln10lo, "",
             "constexpr\n    const float invln10lo", single);
-
+*/
 /* f64: table based logarithm */
 L=7;
 log_around_1_table(L, double);
