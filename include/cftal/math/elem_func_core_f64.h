@@ -2514,7 +2514,6 @@ typename cftal::math::elem_func_core<double, _T>::vdf_type
 cftal::math::elem_func_core<double, _T>::
 __pow_log_tbl_k(arg_t<vf_type> xc)
 {
-
     vf_type xr, inv_c, log_c_h, log_c_l;
     vi2_type ki;
     vi_type idx;
@@ -2574,11 +2573,13 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     };
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
-#if 1
+
+    // thanks to the glibc folks for the lesson:
     vf_type t1, t;
     d_ops::add12(t1, t, kf* ctbl::m_ln2_cw[0], log_c_h);
     vf_type t2= t1 + r;
     vf_type l1= kf* ctbl::m_ln2_cw[1] + t + log_c_l;
+    // error of t2:
     vf_type l2= t1 - t2 + r;
 
     vf_type ar=log_c2 * r;
@@ -2588,7 +2589,9 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     vf_type h, l3, l4;
     if (d_real_traits<vf_type>::fma == true) {
         h = t2 + ar2;
+        // error of ar2
         l3 = ar* r - ar2;
+        // error of h:
         l4 = t2 - h + ar2;
     } else {
         vf_type arh= log_c2 * rh;
@@ -2600,16 +2603,6 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     vf_type l=(l1+l2+l3+l4)+r3*p;
     vf_type lh= h + l;
     vf_type ll= h - lh + l;
-#else
-    // vf_type p=horner4(r, r2, vf_type(r2*r2), ci);
-    vf_type lh, ll;
-    horner_comp_quick(lh, ll, r, p, log_c2, log_c1);
-    d_ops::mul122(lh, ll, r, lh, ll);
-    vf_type kh=kf*ctbl::m_ln2_cw[0];
-    d_ops::add122(lh, ll, log_c_h, lh, ll+log_c_l);
-    // |kh, kl | >= log(2) or 0
-    d_ops::add122(lh, ll, kh, lh, ll+kf*ctbl::m_ln2_cw[1]);
-#endif
     return vdf_type(lh, ll);
 }
 
@@ -2782,8 +2775,12 @@ cftal::math::elem_func_core<double, _T>::
 powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
 {
     vf_type abs_x= abs(x);
+#if 0
     vdf_type lnx=__log_tbl_k12<log_func::c_log_e,
                                result_prec::normal>(abs_x);
+#else
+    vdf_type lnx=__pow_log_tbl_k(abs_x);
+#endif
     vf_type y=cvt<vf_type>(e);
     vdf_type ylnx;
     if (_CALC_ROOT==true) {
