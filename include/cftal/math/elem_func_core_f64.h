@@ -402,7 +402,7 @@ namespace cftal {
             __log_poly_k_poly(arg_t<vf_type> r,
                               arg_t<vf_type> r2);
 
-
+            // argument reduction for table based logarithm
             static
             void
             __reduce_log_arg(vf_type& __restrict xr,

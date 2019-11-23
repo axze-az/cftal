@@ -130,7 +130,6 @@ log_around_1_table = proc(l, fmt) {
 };
 
 /* f32: table based logarithm */
-/*
 L=7;
 log_around_1_table(L, single);
 e_1_128=exp(1/128);
@@ -177,7 +176,7 @@ write_coeff(invln10hi, "",
             "constexpr\n    const float invln10hi", single);
 write_coeff(invln10lo, "",
             "constexpr\n    const float invln10lo", single);
-*/
+
 /* f64: table based logarithm */
 L=7;
 log_around_1_table(L, double);
