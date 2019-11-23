@@ -2557,14 +2557,15 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
 
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     vf_type r;
+    vf_type rh, rl;
     if (d_real_traits<vf_type>::fma == true) {
         r = xr * inv_c - 1.0;
     } else {
-        vf_type ph, pl;
-        d_real_traits<vf_type>::split(xr, ph, pl);
-        ph *= inv_c;
-        pl *= inv_c;
-        r = (ph - 1.0) + pl;
+        d_real_traits<vf_type>::split(xr, rh, rl);
+        rh *= inv_c;
+        rl *= inv_c;
+        rh -= 1.0;
+        r = rh + rl;
     }
     static_assert(log_c1 == 1.0);
     static const double ci[]={
@@ -2573,21 +2574,41 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     };
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
+#if 1
+    vf_type t1= kf* ctbl::m_ln2_cw[0] + log_c_h;
+    vf_type t2= t1 + r;
+    vf_type l1= kf* ctbl::m_ln2_cw[1] + log_c_l;
+    vf_type l2= t1 - t2 + r;
+
+    vf_type ar=log_c2 * r;
+    vf_type ar2=r*ar;
+    vf_type r3=r*r2;
+
+    vf_type h, l3, l4;
+    if (d_real_traits<vf_type>::fma == true) {
+        h = t2 + ar2;
+        l3 = ar* r - ar2;
+        l4 = t2 - h + ar2;
+    } else {
+        vf_type arh= log_c2 * rh;
+        vf_type arh2= rh * arh;
+        h = t2+ arh2;
+        l3 = rl* (ar + arh);
+        l4 = t2 - h + arh2;
+    }
+    p = r3*p;
+    vf_type l=l1+l2+l3+l4+p;
+    vf_type lh= h + l;
+    vf_type ll= h - lh + l;
+#else
     // vf_type p=horner4(r, r2, vf_type(r2*r2), ci);
     vf_type lh, ll;
     horner_comp_quick(lh, ll, r, p, log_c2, log_c1);
     d_ops::mul122(lh, ll, r, lh, ll);
-#if 1
     vf_type kh=kf*ctbl::m_ln2_cw[0];
     d_ops::add122(lh, ll, log_c_h, lh, ll+log_c_l);
     // |kh, kl | >= log(2) or 0
     d_ops::add122(lh, ll, kh, lh, ll+kf*ctbl::m_ln2_cw[1]);
-#else
-    vf_type kh, kl;
-    d_ops::mul122(kh, kl, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-    d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
-    // |kh, kl | >= log(2) or 0
-    d_ops::add22(lh, ll, kh, kl, lh, ll);
 #endif
     return vdf_type(lh, ll);
 }
