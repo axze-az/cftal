@@ -2578,11 +2578,10 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     horner_comp_quick(lh, ll, r, p, log_c2, log_c1);
     d_ops::mul122(lh, ll, r, lh, ll);
 #if 1
-    vf_type kh, kl;
-    d_ops::add12(kh, kl, kf*ctbl::m_ln2_cw[0], kf*ctbl::m_ln2_cw[1]);
+    vf_type kh=kf*ctbl::m_ln2_cw[0];
     d_ops::add122(lh, ll, log_c_h, lh, ll+log_c_l);
     // |kh, kl | >= log(2) or 0
-    d_ops::add122(lh, ll, kh, lh, ll+kl);
+    d_ops::add122(lh, ll, kh, lh, ll+kf*ctbl::m_ln2_cw[1]);
 #else
     vf_type kh, kl;
     d_ops::mul122(kh, kl, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
