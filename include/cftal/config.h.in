@@ -7,9 +7,12 @@
 #if !defined (__CFTAL_CONFIG_H__)
 #define __CFTAL_CONFIG_H__ 1
 
-#define __CFTAL_MAJOR__ 0
-#define __CFTAL_MINOR__ 7
-#define __CFTAL_PATCHLEVEL__ 0
+#define __CFTAL_MAJOR__ @CFTAL_VERSION_MAJ@
+#define __CFTAL_MINOR__ @CFTAL_VERSION_MIN@
+#define __CFTAL_PATCHLEVEL__ @CFTAL_VERSION_PLV@
+
+// configuration options
+#define __CFTAL_CFG_USE_VF64_FOR_VF32__ @CFTAL_CFG_USE_VF64_FOR_VF32@
 
 #if defined (__ARM_NEON)
 #if !defined (__ARM_NEON__)

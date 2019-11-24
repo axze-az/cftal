@@ -155,15 +155,31 @@ if (CFTAL_DOXYGEN)
     cmake_policy(POP)
 endif()
 
+set(CFTAL_CFG_USE_VF64_FOR_VF32 0)
+option(CFTAL_CONFIG_USE_VF64_FOR_VF32
+       "use double precision vectors in float vector functions" ON)
+#message("CFTAL_CONFIG_USE_VF64_FOR_VF32: ${CFTAL_CONFIG_USE_VF64_FOR_VF32}")
+if (CFTAL_CONFIG_USE_VF64_FOR_VF32)
+    message("using double precision vectors in float functions")
+    set(CFTAL_CFG_USE_VF64_FOR_VF32 1)
+else()
+    message("not using double precision vectors in float functions")
+endif()
+
 include_directories(include)
+include_directories(test/include)
+
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/include)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/include/cftal)
+include_directories(${PROJECT_BINARY_DIR}/include)
+
+configure_file("include/cftal/config.h.in"
+               "${PROJECT_BINARY_DIR}/include/cftal/config.h")
 
 add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(test)
 add_subdirectory(utils)
-
-include_directories(test/include)
-
 
 # boost_lorenz
 set (BOOST_LORENZ_SRC boost_lorenz.cc)

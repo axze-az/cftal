@@ -11,7 +11,11 @@
 #include <cftal/types.h>
 #include <cftal/cast.h>
 
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+#define USE_FLOAT_KERNEL_REM_PIO2 0
+#else
 #define USE_FLOAT_KERNEL_REM_PIO2 1
+#endif
 
 /*
  * ====================================================
