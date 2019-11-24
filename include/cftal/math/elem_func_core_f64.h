@@ -2642,7 +2642,12 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log_k(arg_t<vf_type> xc)
 {
+#if 1
     return __log_tbl_k<log_func::c_log_e>(xc);
+#else
+    auto t=__pow_log_tbl_k(xc);
+    return t[0];
+#endif
 }
 
 template <typename _T>
