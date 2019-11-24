@@ -14,10 +14,17 @@
 #include <cmath>
 
 #define V2F64_FUNCS 1
+#if 0
 #define V4F64_FUNCS                                                     \
     ((V4F64_SPECIALIZED>0) || ((V2F64_SPECIALIZED>0) && (V4S32_SPECIALIZED>0)))
 #define V8F64_FUNCS                                                     \
     ((V8F64_SPECIALIZED>0) || ((V4F64_SPECIALIZED>0) && (V8S32_SPECIALIZED>0)))
+#else
+#define V4F64_FUNCS                                                     \
+    ((V4F64_SPECIALIZED>0) || ((V2F64_SPECIALIZED>0)))
+#define V8F64_FUNCS                                                     \
+    ((V8F64_SPECIALIZED>0) || ((V4F64_SPECIALIZED>0)))
+#endif
 
 #define V4F64_SLOW_SPEC_FUNCS                                           \
     ((V4F64_SPECIALIZED>0))
@@ -333,7 +340,7 @@ namespace cftal {
 
     vec<double, 1>
     pow(arg_t<vec<double, 1> > x, arg_t<vec<int32_t, 1> > y);
-    
+
     // rootn, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -441,7 +448,7 @@ namespace cftal {
 
     vec<double, 1>
     tanpi(arg_t<vec<double, 1> > v);
-    
+
     // asinh, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -664,7 +671,7 @@ namespace cftal {
 
     vec<double, 2>
     tanpi(arg_t<vec<double, 2> > d);
-    
+
     vec<double, 2>
     asinh(arg_t<vec<double, 2> > d);
 
@@ -819,7 +826,7 @@ namespace cftal {
 
     vec<double, 4>
     tanpi(arg_t<vec<double, 4> > d);
-    
+
     vec<double, 4>
     asinh(arg_t<vec<double, 4> > d);
 

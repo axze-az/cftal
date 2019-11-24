@@ -14,12 +14,21 @@
 #include <cmath>
 
 #define V2F32_FUNCS 1
+#if 0
 #define V4F32_FUNCS                                                     \
     ((V4F32_SPECIALIZED>0) || ((V2F32_SPECIALIZED>0) && (V2S32_SPECIALIZED>0)))
 #define V8F32_FUNCS                                                     \
     ((V8F32_SPECIALIZED>0) || ((V4F32_SPECIALIZED>0) && (V4S32_SPECIALIZED>0)))
 #define V16F32_FUNCS                                                    \
     ((V16F32_SPECIALIZED>0) || ((V8F32_SPECIALIZED>0) && (V8S32_SPECIALIZED>0)))
+#else
+#define V4F32_FUNCS                                                     \
+    ((V4F32_SPECIALIZED>0) || ((V2F32_SPECIALIZED>0)))
+#define V8F32_FUNCS                                                     \
+    ((V8F32_SPECIALIZED>0) || ((V4F32_SPECIALIZED>0)))
+#define V16F32_FUNCS                                                    \
+    ((V16F32_SPECIALIZED>0) || ((V8F32_SPECIALIZED>0)))
+#endif
 
 #define V4F32_SLOW_SPEC_FUNCS                                           \
     ((V4F32_SPECIALIZED>0))
@@ -338,7 +347,7 @@ namespace cftal {
 
     vec<float, 1>
     rootn(arg_t<vec<float, 1> > x, arg_t<vec<int32_t, 1> > y);
-    
+
     // atan, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
