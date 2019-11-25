@@ -2293,6 +2293,7 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     constexpr
     const float log_hp_c5=+1.9998417795e-01f;
     static_assert(log_hp_c1 == 1.0f);
+    static_assert(log_hp_c2 ==-0.5f);
     static const double ci[]={
         log_hp_c5, log_hp_c4, log_hp_c3
     };
@@ -2306,7 +2307,7 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     vf_type l1= kf* ctbl::m_ln2_cw[1] + t + log_c_l;
     // error of t2:
     vf_type l2= t1 - t2 + r;
-
+    // exact because |log_c2| is a power of 2:
     vf_type ar=log_hp_c2 * r;
     vf_type ar2=r*ar;
     vf_type r3=r*r2;

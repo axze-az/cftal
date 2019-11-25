@@ -2559,6 +2559,7 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
         r = rh + rl;
     }
     static_assert(log_c1 == 1.0);
+    static_assert(log_c2 ==-0.5);
     static const double ci[]={
         log_c9, log_c8, log_c7, log_c6,
         log_c5, log_c4, log_c3
@@ -2573,7 +2574,7 @@ __pow_log_tbl_k(arg_t<vf_type> xc)
     vf_type l1= kf* ctbl::m_ln2_cw[1] + t + log_c_l;
     // error of t2:
     vf_type l2= t1 - t2 + r;
-
+    // exact because |log_c2| is a power of 2:
     vf_type ar=log_c2 * r;
     vf_type ar2=r*ar;
     vf_type r3=r*r2;
@@ -2642,7 +2643,7 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log_k(arg_t<vf_type> xc)
 {
-#if 1
+#if 0
     return __log_tbl_k<log_func::c_log_e>(xc);
 #else
     auto t=__pow_log_tbl_k(xc);
