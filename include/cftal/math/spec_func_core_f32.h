@@ -43,7 +43,7 @@ namespace cftal {
                                                 d_real_traits<vf_type>::fma>;
 
             using base_type::sinpi_cospi_k;
-            
+
             static
             void
             sinpi_cospi_k(arg_t<vf_type> xc,
@@ -870,8 +870,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     // log(xa) for xa > x_large | xa < x_tiny
     // log(f) for xa < x_small & xa >= tiny
     vdf_type lb= base_type::template
-        __log_tbl_k2<base_type::log_func::c_log_e,
-                     base_type::result_prec::high>(base_h, base_l);
+        __log_tbl_k2<base_type::result_prec::high>(base_h, base_l);
     vf_type lgh=0.0f, lgl=0.0f;
     vmf_type xa_in_large = (xa >= x_large);
     if (any_of(xa_in_large)) {
@@ -894,8 +893,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
 
         // g = z * log(base) + log(sum) - base;
         vdf_type ls=base_type::template
-            __log_tbl_k2<base_type::log_func::c_log_e,
-                         base_type::result_prec::high>(sum_h, sum_l);
+            __log_tbl_k2<base_type::result_prec::high>(sum_h, sum_l);
         vf_type th, tl;
         d_ops::mul22(th, tl, zh, zl, lb[0], lb[1]);
         d_ops::add22cond(th, tl, th, tl, -base_h, -base_l);
@@ -941,8 +939,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
             vdf_type sa= select(s[0] < 0.0f, -s, s);
             d_ops::mul122(sa[0], sa[1], xa, sa[0], sa[1]);
             vdf_type lg_n=base_type::template
-                __log_tbl_k2<base_type::log_func::c_log_e,
-                             base_type::result_prec::high>(sa[0], sa[1]);
+                __log_tbl_k2<base_type::result_prec::high>(sa[0], sa[1]);
             d_ops::add22cond(lg_n[0], lg_n[1],
                              lg_n[0], lg_n[1],
                              lgh, lgl);

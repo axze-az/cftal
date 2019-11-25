@@ -408,12 +408,12 @@ namespace cftal {
             vf_type
             __log_tbl_k(arg_t<vf_type> xc);
 
-            // calculates log/log2/log10
+            // calculates log
             //        2^k * c * (1+xr/c) = xc
             // (1 + xr/c) = r, rl
             // log_c_h, log_c_l = log(c)
             // with higher precision
-            template <log_func _LFUNC, result_prec _P>
+            template <result_prec _P>
             static
             vdf_type
             __log_tbl_k2(arg_t<vf_type> r,
@@ -423,24 +423,16 @@ namespace cftal {
                          arg_t<vf_type> kf);
 
 
-            // calculates log(xc) with higher precision
-            template <log_func _LFUNC, result_prec _P>
-            static
-            vdf_type
-            __log_tbl_k12(arg_t<vf_type> xc);
-
             // calculates log(xc+xcl) with higher precision
-            template <log_func _LFUNC, result_prec _P>
+            template <result_prec _P>
             static
             vdf_type
             __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl);
 
-            // calculates log(xc) for pow functions
-            // does not produce correct result around 1
-            // because exp(log(1+x))==1 if |x| is small
+            // calculates log(xc) with higher precision
             static
             vdf_type
-            __pow_log_tbl_k(arg_t<vf_type> xc);
+            __log_tbl_k12(arg_t<vf_type> xc);
 
             static
             vf_type
@@ -2122,8 +2114,7 @@ __log_tbl_k(arg_t<vf_type> xc)
 }
 
 template <typename _T>
-template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC,
-          typename cftal::math::elem_func_core<float, _T>::result_prec _P>
+template <typename cftal::math::elem_func_core<float, _T>::result_prec _P>
 inline
 typename cftal::math::elem_func_core<float, _T>::vdf_type
 cftal::math::elem_func_core<float, _T>::
@@ -2165,68 +2156,17 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
         d_ops::muladd12(ph, pl, log_hp_c1, p, r);
     }
     vf_type lh, ll;
-    if (_LFUNC==log_func::c_log_e) {
-        d_ops::mul22(lh, ll, r, rl, ph, pl);
-        vf_type kh, kl;
-        d_ops::mul122(kh, kl, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-        d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
-        // |kh, kl | >= log(2) or 0
-        d_ops::add22(lh, ll, kh, kl, lh, ll);
-    } else if (_LFUNC==log_func::c_log_2) {
-        vf_type r2, r2l;
-        d_ops::mul22(r2, r2l, r, rl,
-                     ctbl::m_1_ln2[0], ctbl::m_1_ln2[1]);
-        d_ops::mul22(lh, ll, r2, r2l, ph, pl);
-        d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
-        d_ops::add122(lh, ll, kf, lh, ll);
-    } else if (_LFUNC==log_func::c_log_10) {
-        vf_type r10, r10l;
-        d_ops::mul22(r10, r10l, r, rl,
-                     ctbl::m_1_ln10[0], ctbl::m_1_ln10[1]);
-        vf_type kh, kl;
-        d_ops::mul122(kh, kl, kf, ctbl::m_lg2[0], ctbl::m_lg2[1]);
-        d_ops::mul22(lh, ll, r10, r10l, ph, pl);
-        d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
-        d_ops::add22(lh, ll, kh, kl, lh, ll);
-    }
+    d_ops::mul22(lh, ll, r, rl, ph, pl);
+    vf_type kh, kl;
+    d_ops::mul122(kh, kl, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
+    d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
+    // |kh, kl | >= log(2) or 0
+    d_ops::add22(lh, ll, kh, kl, lh, ll);
     return vdf_type(lh, ll);
 }
 
 template <typename _T>
-template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC,
-          typename cftal::math::elem_func_core<float, _T>::result_prec _P>
-inline
-typename cftal::math::elem_func_core<float, _T>::vdf_type
-cftal::math::elem_func_core<float, _T>::
-__log_tbl_k12(arg_t<vf_type> xc)
-{
-    vf_type xr, inv_c, log_c_h, log_c_l;
-    vi_type ki;
-    __reduce_log_arg<_LFUNC>(xr,
-                             inv_c, log_c_h, log_c_l,
-                             ki,
-                             xc);
-    vf_type r, rl;
-    // r = xr * inv_c - 1.0;
-    if (d_real_traits<vf_type>::fma == true) {
-        d_ops::mul12(r, rl, xr, inv_c);
-    } else {
-        // fast mul12 because inv_c has trailing zeros
-        vf_type th, tl;
-        d_real_traits<vf_type>::split(xr, th, tl);
-        r = xr * inv_c;
-        th *= inv_c;
-        tl *= inv_c;
-        rl = (th -r) + tl;
-    }
-    d_ops::add122(r, rl, -1.0f, r, rl);
-    vf_type kf=_T::cvt_i_to_f(ki);
-    return __log_tbl_k2<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
-}
-
-template <typename _T>
-template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC,
-          typename cftal::math::elem_func_core<float, _T>::result_prec _P>
+template <typename cftal::math::elem_func_core<float, _T>::result_prec _P>
 inline
 typename cftal::math::elem_func_core<float, _T>::vdf_type
 cftal::math::elem_func_core<float, _T>::
@@ -2234,7 +2174,7 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
 {
     vf_type xr, inv_c, log_c_h, log_c_l;
     vi_type ki;
-    __reduce_log_arg<_LFUNC>(xr,
+    __reduce_log_arg<log_func::c_log_e>(xr,
                              inv_c, log_c_h, log_c_l,
                              ki,
                              xc);
@@ -2243,14 +2183,14 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
     d_ops::mul122(r, rl, inv_c, xr, xrl);
     d_ops::add122(r, rl, -1.0f, r, rl);
     vf_type kf=_T::cvt_i_to_f(ki);
-    return __log_tbl_k2<_LFUNC, _P>(r, rl, log_c_h, log_c_l, kf);
+    return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
 }
 
 template <typename _T>
 inline
 typename cftal::math::elem_func_core<float, _T>::vdf_type
 cftal::math::elem_func_core<float, _T>::
-__pow_log_tbl_k(arg_t<vf_type> xc)
+__log_tbl_k12(arg_t<vf_type> xc)
 {
     vf_type xr, inv_c, log_c_h, log_c_l;
     vi_type ki;
@@ -2403,23 +2343,12 @@ cftal::math::elem_func_core<float, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type abs_x= abs(x);
-#if 0
-    vdf_type lnx= __log_tbl_k12<log_func::c_log_e,
-                                result_prec::normal>(abs_x);
-#else
-    vdf_type lnx= __pow_log_tbl_k(abs_x);
-#endif
-#if 1
+    vdf_type lnx= __log_tbl_k12(abs_x);
     vdf_type ylnx;
     d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
     vmf_type rnan=isnan(ylnx[0]);
     // ylnx[0] = _T::sel_zero_or_val(rnan, ylnx[0]);
     // ylnx[1] = _T::sel_zero_or_val(rnan, ylnx[1]);
-#else
-    vdf_type ylnx;
-    // yndx = y*lnx;
-    d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
-#endif
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp_arg(xrh, xrl, idx, ki, ylnx[0], ylnx[1]);
@@ -2431,7 +2360,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     const float exp_lo_zero= fc::exp_lo_zero();
     res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
-#if 1
+
     // guess the result if the calculation failed
     vmf_type abs_x_lt_1 = abs_x < 1.0;
     vmf_type y_gt_1 = y > 1.0;
@@ -2440,7 +2369,6 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
                               ((abs_x_lt_1 & y_gt_1) |
                                ((~abs_x_lt_1) & (~y_gt_1))),
                               res);
-#endif
     return res;
 }
 
@@ -2451,8 +2379,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
     vdf_type abs_x= select(xh > 0.0f, vdf_type(xh, xl), vdf_type(-xh, -xl));
-    vdf_type lnx = __log_tbl_k2<log_func::c_log_e,
-                                result_prec::high>(abs_x[0], abs_x[1]);
+    vdf_type lnx = __log_tbl_k2<result_prec::high>(abs_x[0], abs_x[1]);
     vdf_type ylnx;
     d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
 
@@ -2473,25 +2400,16 @@ cftal::math::elem_func_core<float, _T>::
 powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
 {
     vf_type abs_x= abs(x);
-#if 0
-    vdf_type lnx= __log_tbl_k12<log_func::c_log_e,
-                                result_prec::normal>(abs_x);
-#else
-    vdf_type lnx= __pow_log_tbl_k(abs_x);
-#endif
+    vdf_type lnx= __log_tbl_k12(abs_x);
     vi_type eh=e & 0xffff0000, el= e - eh;
     vf_type yh=cvt<vf_type>(eh);
     vf_type yl=cvt<vf_type>(el);
     d_ops::add12(yh, yl, yh, yl);
     vdf_type ylnx;
     if (_CALC_ROOT==true) {
-#if 0
-        d_ops::div22(ylnx[0], ylnx[1], lnx[0], lnx[1], yh, yl);
-#else
         vf_type rh, rl;
         d_ops::rcp2(rh, rl, yh, yl);
         d_ops::mul22(ylnx[0], ylnx[1], lnx[0], lnx[1], rh, rl);
-#endif
     } else {
         d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
     }
