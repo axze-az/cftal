@@ -349,6 +349,56 @@ namespace cftal {
     vec<_T, 2>
     combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o);
 
+    // combine zero e and o int 0, o0, 0, o1, ..
+    template <typename _T, std::size_t _N>
+    vec<_T, 2*_N>
+    combine_zeroeven_odd(const vec<_T, _N>& o);
+
+    // combine zero e and o int 0, o0, 0, o1, ..
+    template <typename _T>
+    vec<_T, 16>
+    combine_zeroeven_odd(const vec<_T, 8>& o);
+
+    // combine e and o into 0, o0, 0, o1, ..
+    template <typename _T>
+    vec<_T, 8>
+    combine_zeroeven_odd(const vec<_T, 4>& o);
+
+    // combine e and o into 0, o0, 0, o1, ..
+    template <typename _T>
+    vec<_T, 4>
+    combine_zeroeven_odd(const vec<_T, 2>& o);
+
+    // combine e and o into 0, o0
+    template <typename _T>
+    vec<_T, 2>
+    combine_zeroeven_odd(const vec<_T, 1>& o);
+
+    // combine e and zero o int e0, 0, e1, 0, ...
+    template <typename _T, std::size_t _N>
+    vec<_T, 2*_N>
+    combine_even_zeroodd(const vec<_T, _N>& o);
+
+    // combine e and zero o int e0, 0, e1, 0, ..
+    template <typename _T>
+    vec<_T, 16>
+    combine_even_zeroodd(const vec<_T, 8>& o);
+
+    // combine e and zero o int e0, 0, e1, 0, ..
+    template <typename _T>
+    vec<_T, 8>
+    combine_even_zeroodd(const vec<_T, 4>& o);
+
+    // combine e and zero o int e0, 0, e1, 0, ..
+    template <typename _T>
+    vec<_T, 4>
+    combine_zeroeven_odd(const vec<_T, 2>& o);
+
+    // combine e and zero o int e0, 0, e1, 0, ..
+    template <typename _T>
+    vec<_T, 2>
+    combine_even_zeroodd(const vec<_T, 1>& o);
+
     // select even elements from e and odd elements from o
     // e0 o1 e2 o3 e4 o5 ..
     template <typename _T, std::size_t _N>
@@ -440,7 +490,7 @@ namespace cftal {
             }
         };
     }
-    
+
     // load a vector alternating with e and o at positions 2*i and 2*i+1
     template <size_t _N, typename _T>
     vec<_T, _N>
@@ -1446,6 +1496,91 @@ cftal::vec<_T, 2>
 cftal::combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o)
 {
     return vec<_T, 2>(e, o);
+}
+
+
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N*2>
+cftal::combine_zeroeven_odd(const vec<_T, _N>& o)
+{
+    return vec<_T, _N*2>(combine_zeroeven_odd(low_half(o)),
+                         combine_zeroeven_odd(high_half(o)));
+}
+
+template <typename _T>
+cftal::vec<_T, 16>
+cftal::combine_zeroeven_odd(const vec<_T, 8>& o)
+{
+    vec<_T, 8> lh= permute<-1, 0, -1, 1, -1, 2, -1, 3>(o);
+    vec<_T, 8> hh= permute<-1, 4, -1, 5, -1, 6, -1, 7>(o);
+    return vec<_T, 16>(lh, hh);
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::combine_zeroeven_odd(const vec<_T, 4>& o)
+{
+    vec<_T, 4> lh= permute<-1, 0, -1, 1>(o);
+    vec<_T, 4> hh= permute<-1, 2, -1, 3>(o);
+    return vec<_T, 8>(lh, hh);
+}
+
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::combine_zeroeven_odd(const vec<_T, 2>& o)
+{
+    vec<_T, 2> lh= permute<-1, 0>(o);
+    vec<_T, 2> hh= permute<-1, 1>(o);
+    return vec<_T, 4>(lh, hh);
+}
+
+template <typename _T>
+cftal::vec<_T, 2>
+cftal::combine_zeroeven_odd(const vec<_T, 1>& o)
+{
+    return vec<_T, 2>(_T(0), o());
+}
+
+template <typename _T, std::size_t _N>
+cftal::vec<_T, _N*2>
+cftal::combine_even_zeroodd(const vec<_T, _N>& e)
+{
+    return vec<_T, _N*2>(combine_even_zeroodd(low_half(e)),
+                         combine_even_zeroodd(high_half(e)));
+}
+
+template <typename _T>
+cftal::vec<_T, 16>
+cftal::combine_even_zeroodd(const vec<_T, 8>& e)
+{
+    vec<_T, 8> lh= permute<0, -1, 1, -1, 2, -1, 3, -1>(e);
+    vec<_T, 8> hh= permute<4, -1, 5, -1, 6, -1, 7, -1>(e);
+    return vec<_T, 16>(lh, hh);
+}
+
+template <typename _T>
+cftal::vec<_T, 8>
+cftal::combine_even_zeroodd(const vec<_T, 4>& e)
+{
+    vec<_T, 4> lh= permute<0, -1, 1, -1>(e);
+    vec<_T, 4> hh= permute<2, -1, 3, -1>(e);
+    return vec<_T, 8>(lh, hh);
+}
+
+template <typename _T>
+cftal::vec<_T, 4>
+cftal::combine_even_zeroodd(const vec<_T, 2>& e)
+{
+    vec<_T, 2> lh= permute<0, -1>(e);
+    vec<_T, 2> hh= permute<1, -1>(e);
+    return vec<_T, 4>(lh, hh);
+}
+
+template <typename _T>
+cftal::vec<_T, 2>
+cftal::combine_even_zeroodd(const vec<_T, 1>& e)
+{
+    return vec<_T, 2>(e(), _T(0));
 }
 
 template <typename _T, std::size_t _N>
