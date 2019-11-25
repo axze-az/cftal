@@ -2427,7 +2427,7 @@ typename cftal::math::elem_func_core<double, _T>::vdf_type
 cftal::math::elem_func_core<double, _T>::
 __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
 {
-#if 
+#if 1
     vf_type xrh, inv_c, log_c_h, log_c_l;
     vi2_type ki;
     vi_type idx;
@@ -2440,7 +2440,7 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
     vf_type xrl = ldexp_k(xl, -ki);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r, rl;
-#if 1    
+#if 1
     if (d_real_traits<vf_type>::fma == true) {
         r = xrh * inv_c - 1.0;
         rl = xrl * inv_c;
