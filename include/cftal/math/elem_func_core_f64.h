@@ -2440,7 +2440,6 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
     vf_type xrl = ldexp_k(xl, -ki);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r, rl;
-#if 1
     if (d_real_traits<vf_type>::fma == true) {
         r = xrh * inv_c - 1.0;
         rl = xrl * inv_c;
@@ -2454,10 +2453,6 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
         rl = xrl * inv_c;
     }
     d_ops::add12cond(r, rl, r, rl);
-#else
-    d_ops::mul122(r, rl, inv_c, xrh, xrl);
-    d_ops::add122(r, rl, -1.0, r, rl);
-#endif
     return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
 #else
     vf_type xr, inv_c, log_c_h, log_c_l;

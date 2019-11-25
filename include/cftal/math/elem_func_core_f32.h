@@ -2172,6 +2172,34 @@ typename cftal::math::elem_func_core<float, _T>::vdf_type
 cftal::math::elem_func_core<float, _T>::
 __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
 {
+#if 1
+    vf_type xrh, inv_c, log_c_h, log_c_l;
+    vi_type ki;
+    vi_type idx;
+    __reduce_log_arg(xrh, idx, ki, xc);
+    auto lck=make_variable_lookup_table<float>(idx);
+    const auto& tbl=log_data<float>::_tbl;
+    inv_c =lck.from(tbl._p_inv_c);
+    log_c_h=lck.from(tbl._p_log_c_h);
+    log_c_l=lck.from(tbl._p_log_c_l);
+    vf_type xrl = ldexp_k(xcl, -ki);
+    vf_type kf=_T::cvt_i_to_f(ki);
+    vf_type r, rl;
+    if (d_real_traits<vf_type>::fma == true) {
+        r = xrh * inv_c - 1.0f;
+        rl = xrl * inv_c;
+    } else {
+        vf_type xrhh, xrhl;
+        d_real_traits<vf_type>::split(xrh, xrhh, xrhl);
+        xrhh *= inv_c;
+        xrhl *= inv_c;
+        xrhh -= 1.0f;
+        r = xrhh + xrhl;
+        rl = xrl * inv_c;
+    }
+    d_ops::add12cond(r, rl, r, rl);
+    return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
+#else
     vf_type xr, inv_c, log_c_h, log_c_l;
     vi_type ki;
     __reduce_log_arg<log_func::c_log_e>(xr,
@@ -2184,6 +2212,7 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
     d_ops::add122(r, rl, -1.0f, r, rl);
     vf_type kf=_T::cvt_i_to_f(ki);
     return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
+#endif
 }
 
 template <typename _T>
