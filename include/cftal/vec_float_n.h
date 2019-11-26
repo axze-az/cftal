@@ -33,9 +33,9 @@
 #define V4F32_SLOW_SPEC_FUNCS                                           \
     ((V4F32_SPECIALIZED>0))
 #define V8F32_SLOW_SPEC_FUNCS                                           \
-    ((V8F32_SPECIALIZED>0)
+    ((V8F32_SPECIALIZED>0))
 #define V16F32_SLOW_SPEC_FUNCS                                           \
-    ((V16F32_SPECIALIZED>0)
+    ((V16F32_SPECIALIZED>0))
 
 namespace cftal {
 
