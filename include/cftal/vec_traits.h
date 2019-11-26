@@ -265,8 +265,7 @@ namespace cftal {
             static
             vf_type insert_exp(const vi_type& e) {
                 vi_type ep(e << 20);
-                const vi_type z(0);
-                vec<int32_t, _N*2> ir(combine_even_odd(z, ep));
+                vec<int32_t, _N*2> ir(combine_zeroeven_odd(ep));
                 vf_type r= as<vf_type>(ir);
                 // r &= vf_type(exp_f64_msk::v.f64());
                 return r;

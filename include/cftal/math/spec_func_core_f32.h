@@ -37,7 +37,9 @@ namespace cftal {
             using vmf_type = typename _T::vmf_type;
             using vmi_type = typename _T::vmi_type;
             using vdf_type = typename _T::vdf_type;
-
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+            using vhf_type = typename _T::vhf_type;
+#endif
 
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;
@@ -612,9 +614,17 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     vf_type xa=abs(x);
     using lanczos_ratfunc=lanczos_table_g_5_59172_N6;
 
+#if 0 // __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+    vhf_type xad=cvt<vhf_type>(xa);
+    vhf_type pqd=lanczos_rational_at(xad,
+                                     lanczos_ratfunc::p,
+                                     lanczos_ratfunc::q);
+    vdf_type pq=base_type::cvt_to_vdf(pqd);
+#else
     auto pq=lanczos_rational_at(xa,
                                 lanczos_ratfunc::pdf,
                                 lanczos_ratfunc::qf);
+#endif
     vf_type sum = pq[0], sum_l= pq[1];
     // base of the Lanczos exponential
     vf_type base, base_l;

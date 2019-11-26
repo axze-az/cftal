@@ -841,10 +841,10 @@ namespace cftal {
     vec<float, 4>
     erfc(arg_t<vec<float, 4> > d);
 
+#if V4F32_SLOW_SPEC_FUNCS>0
     vec<float, 4>
     tgamma(arg_t<vec<float, 4> > d);
 
-#if V4F32_SLOW_SPEC_FUNCS>0
     vec<float, 4>
     lgamma(arg_t<vec<float, 4> > d, vec<int32_t, 4>* signp);
 #endif
@@ -997,10 +997,10 @@ namespace cftal {
     vec<float, 8>
     erfc(arg_t<vec<float, 8> > d);
 
+#if V8F32_SLOW_SPEC_FUNCS>0
     vec<float, 8>
     tgamma(arg_t<vec<float, 8> > d);
 
-#if V8F32_SLOW_SPEC_FUNCS>0
     vec<float, 8>
     lgamma(arg_t<vec<float, 8> > d, vec<int32_t, 8>* signp);
 #endif
@@ -1153,10 +1153,10 @@ namespace cftal {
     vec<float, 16>
     erfc(arg_t<vec<float, 16> > d);
 
+#if V16F32_SLOW_SPEC_FUNCS>0
     vec<float, 16>
     tgamma(arg_t<vec<float, 16> > d);
 
-#if V16F32_SLOW_SPEC_FUNCS>0
     vec<float, 16>
     lgamma(arg_t<vec<float, 16> > d, vec<int32_t, 16>* signp);
 #endif

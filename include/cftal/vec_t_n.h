@@ -351,7 +351,7 @@ namespace cftal {
 
     // combine zero e and o int 0, o0, 0, o1, ..
     template <typename _T, std::size_t _N>
-    vec<_T, 2*_N>
+    vec<_T, _N*2>
     combine_zeroeven_odd(const vec<_T, _N>& o);
 
     // combine zero e and o int 0, o0, 0, o1, ..
@@ -376,7 +376,7 @@ namespace cftal {
 
     // combine e and zero o int e0, 0, e1, 0, ...
     template <typename _T, std::size_t _N>
-    vec<_T, 2*_N>
+    vec<_T, _N*2>
     combine_even_zeroodd(const vec<_T, _N>& o);
 
     // combine e and zero o int e0, 0, e1, 0, ..
@@ -392,7 +392,7 @@ namespace cftal {
     // combine e and zero o int e0, 0, e1, 0, ..
     template <typename _T>
     vec<_T, 4>
-    combine_zeroeven_odd(const vec<_T, 2>& o);
+    combine_even_zeroodd(const vec<_T, 2>& o);
 
     // combine e and zero o int e0, 0, e1, 0, ..
     template <typename _T>
@@ -1497,7 +1497,6 @@ cftal::combine_even_odd(const vec<_T, 1>& e, const vec<_T, 1>& o)
 {
     return vec<_T, 2>(e, o);
 }
-
 
 template <typename _T, std::size_t _N>
 cftal::vec<_T, _N*2>

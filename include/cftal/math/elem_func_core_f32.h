@@ -43,6 +43,9 @@ namespace cftal {
             using vmf_type = typename _T::vmf_type;
             using vmi_type = typename _T::vmi_type;
             using vdf_type = typename _T::vdf_type;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+            using vhf_type = typename _T::vhf_type;
+#endif
 
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;
@@ -68,6 +71,22 @@ namespace cftal {
                              arg_t<vf_type> y,
                              _SCALAR_FUNC f);
 
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+            // convert to vhf_type i.e vec<float> --> vec<double>
+            static
+            vhf_type
+            cvt_to_vhf(arg_t<vf_type> x);
+
+            // convert to vhf_type i.e vec<float> hi, lo --> vec<double>
+            static
+            vhf_type
+            cvt_to_vhf(arg_t<vf_type> xh, arg_t<vf_type> xl);
+
+            // convert to vdf_type i.e. vec<double> --> d_real<vec<float> >
+            static
+            vdf_type
+            cvt_to_vdf(arg_t<vhf_type> x);
+#endif
             // unsigned integer __fmod
             template <unsigned _U>
             static
@@ -625,6 +644,42 @@ call_scalar_func(arg_t<vf_type> x, arg_t<vf_type> y, _SCALAR_FUNC f)
     vf_type r=mem<vf_type>::load(ar._a, _N);
     return r;
 }
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+template <typename _T>
+inline
+typename
+cftal::math::elem_func_core<float, _T>::vhf_type
+cftal::math::elem_func_core<float, _T>::
+cvt_to_vhf(arg_t<vf_type> x)
+{
+    return cvt<vhf_type>(x);
+}
+
+template <typename _T>
+inline
+typename
+cftal::math::elem_func_core<float, _T>::vhf_type
+cftal::math::elem_func_core<float, _T>::
+cvt_to_vhf(arg_t<vf_type> xh, arg_t<vf_type> xl)
+{
+    return cvt<vhf_type>(xl) + cvt<vhf_type>(xl);
+}
+
+template <typename _T>
+inline
+typename
+cftal::math::elem_func_core<float, _T>::vdf_type
+cftal::math::elem_func_core<float, _T>::
+cvt_to_vdf(arg_t<vhf_type> x)
+{
+    vf_type xh=cvt<vf_type>(x);
+    vhf_type xhd=cvt<vhf_type>(xh);
+    vhf_type xld=x-xhd;
+    vf_type xl=cvt<vf_type>(xld);
+    return vdf_type(xh, xl);
+}
+#endif
 
 template <typename _T>
 template <unsigned _U>

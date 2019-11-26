@@ -842,10 +842,10 @@ namespace cftal {
     vec<double, 4>
     erfc(arg_t<vec<double, 4> > d);
 
+#if V4F64_SLOW_SPEC_FUNCS>0
     vec<double, 4>
     tgamma(arg_t<vec<double, 4> > d);
 
-#if V4F64_SLOW_SPEC_FUNCS>0
     vec<double, 4>
     lgamma(arg_t<vec<double, 4> > d, vec<int32_t, 4>* signp);
 #endif
@@ -998,10 +998,10 @@ namespace cftal {
     vec<double, 8>
     erfc(arg_t<vec<double, 8> > d);
 
+#if V8F64_SLOW_SPEC_FUNCS>0
     vec<double, 8>
     tgamma(arg_t<vec<double, 8> > d);
 
-#if V8F64_SLOW_SPEC_FUNCS>0
     vec<double, 8>
     lgamma(arg_t<vec<double, 8> > d, vec<int32_t, 8>* signp);
 #endif
