@@ -14,7 +14,7 @@
 #include <cmath>
 
 #define V2F64_FUNCS 1
-#if 1
+#if 0
 #define V4F64_FUNCS                                                     \
     ((V4F64_SPECIALIZED>0) || ((V2F64_SPECIALIZED>0) && (V4S32_SPECIALIZED>0)))
 #define V8F64_FUNCS                                                     \
