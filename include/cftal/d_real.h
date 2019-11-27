@@ -314,16 +314,24 @@ namespace cftal {
             void
             muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
 
+            // mul122 without normalization
             static
             void
-            sqr22(_T& rh, _T& rl,
-                  const _T& xh, const _T& xl);
+            unorm_mul122(_T& rh, _T& rl,
+                         const _T& xh,
+                         const _T& yh, const _T& yl);
 
             static
             void
             mul122(_T& rh, _T& rl,
                    const _T& xh,
                    const _T& yh, const _T& yl);
+
+            static
+            void
+            sqr22(_T& rh, _T& rl,
+                  const _T& xh, const _T& xl);
+
 
             static
             void
@@ -372,16 +380,23 @@ namespace cftal {
             void
             muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
 
+            // mul122 without normalization
             static
             void
-            sqr22(_T& rh, _T& rl,
-                  const _T& xh, const _T& xl);
+            unorm_mul122(_T& rh, _T& rl,
+                         const _T& xh,
+                         const _T& yh, const _T& yl);
 
             static
             void
             mul122(_T& rh, _T& rl,
                    const _T& xh,
                    const _T& yh, const _T& yl);
+
+            static
+            void
+            sqr22(_T& rh, _T& rl,
+                  const _T& xh, const _T& xl);
 
             static
             void
@@ -846,6 +861,35 @@ rcp21(_T& rh, const _T& ah, const _T& al)
     rh = fma(q0, t, q0);
 }
 
+
+template <typename _T>
+inline
+__attribute__((always_inline))
+void
+cftal::impl::d_real_ops_fma<_T, true>::
+unorm_mul122(_T& rh, _T& rl,
+             const _T& a,
+             const _T& bh, const _T& bl)
+{
+    _T tl;
+    mul12(rh, tl, a, bh);
+    rl = fma(a, bl, tl);
+}
+
+template <typename _T>
+inline
+__attribute__((always_inline))
+void
+cftal::impl::d_real_ops_fma<_T, true>::
+mul122(_T& rh, _T& rl,
+       const _T& a,
+       const _T& bh, const _T& bl)
+{
+    _T t1, t2;
+    unorm_mul122(t1, t2, a, bh, bl);
+    add12(rh, rl, t1, t2);
+}
+
 template <typename _T>
 inline
 __attribute__((__always_inline__))
@@ -861,21 +905,6 @@ sqr22(_T& pzh, _T& pzl,
     pzh = ph + pl;
     pzl = ph - pzh;
     pzl+= pl;
-}
-
-template <typename _T>
-inline
-__attribute__((always_inline))
-void
-cftal::impl::d_real_ops_fma<_T, true>::
-mul122(_T& rh, _T& rl,
-       const _T& a,
-       const _T& bh, const _T& bl)
-{
-    _T t1, t2;
-    mul12(t1,t2, a, bh);
-    _T t3 = fma(a, bl, t2);
-    add12(rh, rl, t1, t3);
 }
 
 template <typename _T>
@@ -1008,14 +1037,14 @@ inline
 __attribute__((always_inline))
 void
 cftal::impl::d_real_ops_fma<_T, false>::
-sqr21(_T& pzh,
-      const _T& xh, const _T& xl)
+unorm_mul122(_T& rh, _T& rl,
+             const _T& a,
+             const _T& bh, const _T& bl)
 {
-    _T p1, p2;
-    sqr12(p1, p2, xh);
-    _T xhl= xh*xl;
-    p2+= (xhl + xhl);
-    pzh= p1+p2;
+    _T tl;
+    mul12(rh, tl, a, bh);
+    _T pl = a*bl;
+    rl = pl + tl;
 }
 
 template <typename _T>
@@ -1027,11 +1056,25 @@ mul122(_T& rh, _T& rl,
        const _T& a,
        const _T& bh, const _T& bl)
 {
+
     _T t1, t2;
-    mul12(t1,t2, a, bh);
-    _T t3 = a*bl;
-    t3 = t3 + t2;
-    add12(rh, rl, t1, t3);
+    unorm_mul122(t1, t2, a, bh, bl);
+    add12(rh, rl, t1, t2);
+}
+
+template <typename _T>
+inline
+__attribute__((always_inline))
+void
+cftal::impl::d_real_ops_fma<_T, false>::
+sqr21(_T& pzh,
+      const _T& xh, const _T& xl)
+{
+    _T p1, p2;
+    sqr12(p1, p2, xh);
+    _T xhl= xh*xl;
+    p2+= (xhl + xhl);
+    pzh= p1+p2;
 }
 
 template <typename _T>
