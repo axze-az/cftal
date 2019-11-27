@@ -13,7 +13,7 @@ int main(int argc, char**argv)
 {
     // creation of the f32 part of lanczos tables
     using namespace cftal::math;
-    using lanczos_ratfunc=lanczos_table_g_5_59172_N6;
+    using lanczos_ratfunc=lanczos_table_g_4_35169_N5;
     std::cout << std::scientific;
 
     auto make_df32=[](double d) ->std::pair<float, float> {

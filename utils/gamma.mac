@@ -343,8 +343,10 @@ create_lanczos_rational(g, n) :=
         print_d_poly_coeffs("q", rat(l_denom))
     );
 
+/*
 t(g, n) := create_lanczos_rational(g, n);
 ratprint: false;
+*/
 
 /* (from boost) for double precision */
 /*
@@ -353,32 +355,19 @@ print_lanczos_ratfunc(
         1000000000000000000000000000,
         13);
 */
-/* we use this for float precision */
-/*
-print_lanczos_ratfunc(
-        5,
-        7);
-*/
-
-/* we use this for double precision, error 1.1197702118472231e-019 */
+/* we used this for double precision, error 1.1197702118472231e-019 */
 /*
 print_lanczos_ratfunc(
         12068153090775013/
         1000000000000000,
         12);
 */
-/* we use this for float precision, error 1.242916896389048e-010 */
+/* we used this for single precision, error 1.242916896389048e-010 */
 /*
 print_lanczos_ratfunc(
         55917193591594696/
         10000000000000000,
         6);
-*/
-/*
-print_lanczos_ratfunc(
-        55917193591594696/
-        10000000000000000,
-        7);
 */
 /* we use this for double precision, error 6.3147961332742783e-018 */
 /*
@@ -387,3 +376,8 @@ print_lanczos_ratfunc(
         1000000000000000,
         11);
 */
+/* we use this for single precision, error 4.9816087871575021e-009 */
+print_lanczos_ratfunc(
+        4351694330573082/
+        1000000000000000,
+        5);

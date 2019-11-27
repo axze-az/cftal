@@ -30,7 +30,7 @@ namespace cftal {
                             const _C(&p)[_N1],
                             const _C(&q)[_N2]);
 
-        // lanczos table for double
+        // lanczos table for double, not used
         struct lanczos_table_g_12_06815_N12 {
             static constexpr
             double g() {
@@ -186,8 +186,7 @@ namespace cftal {
             };
         };
 
-
-        // lanczos table for float
+        // lanczos table for float, not used
         struct lanczos_table_g_5_59172_N6 {
             static constexpr
             double g() {
@@ -394,6 +393,106 @@ namespace cftal {
             };
         };
 
+        // lanczos table for float
+        struct lanczos_table_g_4_35169_N5 {
+            static constexpr
+            double g() {
+                return +4.3516943305730819702148e+00;
+            }
+            static constexpr
+            double g_l() {
+                return +2.9785156250000000000342e-17;
+            }
+            static constexpr
+            double gm0_5() {
+                return +3.8516943305730819702148e+00;
+            }
+            static constexpr
+            double gm0_5_l() {
+                return +2.9785156250000000000342e-17;
+            }
+            static constexpr
+            double exp_minus_gm0_5_h() {
+                return +2.1243712057565491968525e-02;
+            }
+            static constexpr
+            double exp_minus_gm0_5_l() {
+                return +1.1678894220000000000006e-18;
+            }
+            static constexpr
+            const double p[]={
+                +2.5066282851359193983853e+00, // 4
+                +3.8669641557894443906207e+01, // 3
+                +2.2368963390537291502369e+02, // 2
+                +5.7504301631454700327595e+02, // 1
+                +5.5430239062940745498054e+02  // 0
+            };
+            static constexpr
+            const double q[]={
+                +1.0000000000000000000000e+00, // 4
+                +6.0000000000000000000000e+00, // 3
+                +1.1000000000000000000000e+01, // 2
+                +6.0000000000000000000000e+00, // 1
+                +0.0000000000000000000000e+00  // 0
+            };
+            static constexpr
+            const d_real<double> pd[]={
+                {+2.5066282851359193983853e+00, -1.4386361349600000000127e-16}, // 4
+                {+3.8669641557894443906207e+01, -3.1862923974699999999993e-15}, // 3
+                {+2.2368963390537291502369e+02, +6.9682633233740000001718e-15}, // 2
+                {+5.7504301631454700327595e+02, +5.4938602473891000001085e-14}, // 1
+                {+5.5430239062940745498054e+02, -2.0356668284519000000637e-14}  // 0
+            };
+            static constexpr
+            const d_real<double> qd[]={
+                {+1.0000000000000000000000e+00, +0.0000000000000000000000e+00}, // 4
+                {+6.0000000000000000000000e+00, +0.0000000000000000000000e+00}, // 3
+                {+1.1000000000000000000000e+01, +0.0000000000000000000000e+00}, // 2
+                {+6.0000000000000000000000e+00, +0.0000000000000000000000e+00}, // 1
+                {+0.0000000000000000000000e+00, +0.0000000000000000000000e+00}  // 0
+            };
+            static constexpr
+            const d_real<double> ped[]={
+                {+3.2297811929219565063587e-02, +2.5523372809999999999165e-18}, // 4
+                {+4.9825688867126349812509e-01, -1.7292132799000000000530e-17}, // 3
+                {+2.8822325867913680674803e+00, -3.1763008602999999999492e-17}, // 2
+                {+7.4094078097947013716862e+00, +2.9115928386500000000305e-16}, // 1
+                {+7.1421656216947386752736e+00, +2.7467653356400000000558e-16}  // 0
+            };
+
+            static constexpr
+            float gm0_5f() {
+                return 3.8516943455e+00f;
+            }
+            static constexpr
+            float gm0_5f_l() {
+                return -1.4901161194e-08f;
+            }
+            static constexpr
+            const d_real<float> pdf[]={
+                { 2.5066282749e+00f, 1.0218316859e-08f },
+                { 3.8669643402e+01f, -1.8442051442e-06f },
+                { 2.2368963623e+02f, -2.3250959202e-06f },
+                { 5.7504302979e+02f, -1.3470609701e-05f },
+                { 5.5430236816e+02f, 2.2465344955e-05f }
+            };
+            static constexpr
+            const d_real<float> pedf[]={
+                { 3.2297812402e-02f, -4.7302883832e-10f },
+                { 4.9825689197e-01f, -3.2946025907e-09f },
+                { 2.8822326660e+00f, -7.9224257377e-08f },
+                { 7.4094076157e+00f, 1.9413307939e-07f },
+                { 7.1421656609e+00f, -3.9163417398e-08f }
+            };
+            static constexpr
+            const float qf[]={
+                1.0000000000e+00f,
+                6.0000000000e+00f,
+                1.1000000000e+01f,
+                6.0000000000e+00f,
+                0.0000000000e+00f
+            };
+        };
     }
 }
 
@@ -454,7 +553,7 @@ lanczos_rational_at(const _T& x,
 
 // calculation of a lanczos rational
 template <typename _T, typename _C,
-            std::size_t _N1, std::size_t _N2>
+          std::size_t _N1, std::size_t _N2>
 inline
 __attribute__((optimize("no-unroll-loops")))
 __attribute__((__always_inline__))
