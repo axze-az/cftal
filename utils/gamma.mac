@@ -374,7 +374,16 @@ print_lanczos_ratfunc(
         10000000000000000,
         6);
 */
+/*
 print_lanczos_ratfunc(
         55917193591594696/
         10000000000000000,
         7);
+*/
+/* we use this for double precision, error 6.3147961332742783e-018 */
+/*
+print_lanczos_ratfunc(
+        10909898534417152/
+        1000000000000000,
+        11);
+*/

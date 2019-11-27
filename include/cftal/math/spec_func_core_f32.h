@@ -851,7 +851,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     reduced_small_gamma_args sst;
 
     // the reflection implementation below works only if the
-    // reflection for really tiny values delegated to __lgamma_small_k
+    // reflection for really tiny values is delegated to __lgamma_small_k
     static_assert(x_small_left < - x_tiny, "constraint violated");
     vmf_type xa_in_small =
         ((xc >= x_small_left) & (xc <= x_small_right) & (xa >= x_tiny));
