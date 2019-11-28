@@ -244,7 +244,7 @@ func(int32_t* ip, float a, f1i_t f, std::pair<float, float>* ulp1i)
         int32_t i;
         mpfr_set_flt(ai, a, MPFR_RNDN);
         int mpres=f(r, &i, ai, MPFR_RNDN);
-        double dr=mpfr_get_d(r, MPFR_RNDN);
+        float dr=mpfr_get_flt(r, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = std::make_pair(dr, i);
         mpfr_cache::update(a, f, c);
@@ -252,7 +252,7 @@ func(int32_t* ip, float a, f1i_t f, std::pair<float, float>* ulp1i)
     if (ip != nullptr) {
         *ip = c._res.second;
     }
-    double dr=c._res.first;
+    float dr=c._res.first;
     int mpres=c._mpfr_res;
 #endif
     if (ulp1i != nullptr) {
