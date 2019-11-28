@@ -29,7 +29,7 @@ func(double a, f1_t f, std::pair<double, double>* ulp1i)
     int mpres=f(r, ai, MPFR_RNDN);
     double dr=mpfr_get_d(r, MPFR_RNDN);
 #else
-    mpfr_cache::mpfr_result<double> c;
+    mpfr_cache::f1_mpfr_result<double> c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
         MPFR_DECL_INIT(ai, 53);
@@ -136,7 +136,7 @@ func(float a, f1_t f, std::pair<float, float>* ulp1i)
     int mpres=f(r, ai, MPFR_RNDN);
     float dr=mpfr_get_flt(r, MPFR_RNDN);
 #else
-    mpfr_cache::mpfr_result<float> c;
+    mpfr_cache::f1_mpfr_result<float> c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
         MPFR_DECL_INIT(ai, 24);

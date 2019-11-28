@@ -294,7 +294,8 @@ namespace cftal { namespace test { namespace mpfr_cache {
     class result_cache {
         using key_type = _K;
     public:
-        using mapped_type = std::pair<_R, int32_t>;
+        // using mapped_type = std::pair<_R, int32_t>;
+        using mapped_type = _R;
     private:
         using map_type = std::unordered_map<key_type, mapped_type>;
         using value_type = std::pair<key_type, mapped_type>;
@@ -344,8 +345,10 @@ namespace cftal { namespace test { namespace mpfr_cache {
             const;
     };
 
-    using f1_f64_map = result_cache<packed_int64_t, packed_int64_t>;
-    using f1_f32_map = result_cache<int32_t, int32_t>;
+    using f1_f64_map = result_cache<packed_int64_t,
+                                    std::pair<packed_int64_t, int32_t> >;
+    using f1_f32_map = result_cache<int32_t,
+                                    std::pair<int32_t, int32_t> >;
 
     static
     std::string file_name(const std::string& a, const std::string& t);
@@ -488,6 +491,11 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::load()
             std::cout << "reading " << us
                       << " entries" << std::endl;
             std::streamsize bytes=us*sizeof(value_type);
+#if DEBUG_CACHE > 0
+            std::cout << "value_type " << sizeof(value_type)
+                      << " bytes." << std::endl;
+            std::cout << "reading " << bytes << " bytes." << std::endl;
+#endif
             f.read(reinterpret_cast<c_t*>(_v.data()), bytes);
             if (f.gcount() != bytes) {
                 std::cout << "read failed\n";
@@ -621,11 +629,11 @@ file_name(const std::string& a, const std::string& t)
     return a+ "-" + t + ".bin";
 }
 
-const cftal::test::mpfr_cache::mpfr_result<double>*
+const cftal::test::mpfr_cache::f1_mpfr_result<double>*
 cftal::test::mpfr_cache::result(double a, f1_t f,
-                                mpfr_result<double>& r)
+                                f1_mpfr_result<double>& r)
 {
-    mpfr_result<double>* p=nullptr;
+    f1_mpfr_result<double>* p=nullptr;
     auto i= f1_64_entries.find(f);
     if (i== std::cend(f1_64_entries))
         return p;
@@ -641,11 +649,11 @@ cftal::test::mpfr_cache::result(double a, f1_t f,
     return &r;
 }
 
-const cftal::test::mpfr_cache::mpfr_result<float>*
+const cftal::test::mpfr_cache::f1_mpfr_result<float>*
 cftal::test::mpfr_cache::result(float a, f1_t f,
-                                mpfr_result<float>& r)
+                                f1_mpfr_result<float>& r)
 {
-    mpfr_result<float>* p=nullptr;
+    f1_mpfr_result<float>* p=nullptr;
     auto i= f1_32_entries.find(f);
     if (i== std::cend(f1_32_entries))
         return p;
@@ -663,7 +671,7 @@ cftal::test::mpfr_cache::result(float a, f1_t f,
 
 void
 cftal::test::mpfr_cache::update(double a, f1_t f,
-                                const mpfr_result<double>& r)
+                                const f1_mpfr_result<double>& r)
 {
     auto i= f1_64_entries.find(f);
     if (i== std::cend(f1_64_entries))
@@ -679,7 +687,7 @@ cftal::test::mpfr_cache::update(double a, f1_t f,
 
 void
 cftal::test::mpfr_cache::update(float a, f1_t f,
-                                const mpfr_result<float>& r)
+                                const f1_mpfr_result<float>& r)
 {
     auto i= f1_32_entries.find(f);
     if (i== std::cend(f1_32_entries))
