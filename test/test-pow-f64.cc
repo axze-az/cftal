@@ -25,6 +25,15 @@ int main(int argc, char** argv)
     pgm_args ags=parse(argc, argv, 0x8000);
 
     if (ags._speed_only == false) {
+        if (ags._cnt * _N < 0x8000 * 8) {
+            if (ags._use_cache==true) {
+                mpfr_cache::use(mpfr_pow,
+                                check_pow<double>::fname(), 0.0);
+            }
+        } else {
+            std::cout << "not using cache because of size constraints"
+                      << std::endl;
+        }
         try {
             std::string test_data_file=
                 append_filename(ags._data_dir, "pow.testdata");

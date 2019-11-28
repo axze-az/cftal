@@ -19,11 +19,15 @@ namespace cftal {
             using call_mpfr::f1_t;
             using call_mpfr::f2_t;
 
-            template <typename _T>
-            struct f1_mpfr_result {
+            template <typename _T, typename _TAG>
+            struct mpfr_result {
                 _T _res;
                 int _mpfr_res;
             };
+
+            struct f1_tag {};
+            template <typename _T>
+            using f1_mpfr_result = mpfr_result<_T, f1_tag>;
 
             // returns nullptr if nothing was found
             const f1_mpfr_result<double>*
@@ -44,6 +48,34 @@ namespace cftal {
             // enable caching for f in func-name-f32.bin
             void
             use(f1_t f, const std::string& func_name, float v);
+
+            struct f2_tag {};
+            template <typename _T>
+            using f2_mpfr_result = mpfr_result<_T, f2_tag>;
+
+            // returns nullptr if nothing was found
+            const f2_mpfr_result<double>*
+            result(double a, double b, f2_t f,
+                   f2_mpfr_result<double>& spc);
+            // update the data base if f is cached
+            void
+            update(double a, double b, f2_t f,
+                   const f2_mpfr_result<double>& r);
+            // enable caching for f in func-name-f64_2.bin
+            void
+            use(f2_t f, const std::string& func_name, double v);
+
+            // returns nullptr if nothing was found
+            const f2_mpfr_result<float>*
+            result(float a, float b, f2_t f,
+                   f2_mpfr_result<float>& spc);
+            // update the data base if f is cached
+            void
+            update(float a, float b, f2_t f,
+                   const f2_mpfr_result<float>& r);
+            // enable caching for f in func-name-f64_2.bin
+            void
+            use(f2_t f, const std::string& func_name, float v);
 
         }
     }
