@@ -14,6 +14,11 @@ int main(int argc, char** argv)
     using namespace cftal::test;
 
     pgm_args ags=parse(argc, argv, 0x8000);
+    if (ags._speed_only == false) {
+        if (ags._use_cache==true) {
+            mpfr_cache::use(mpfr_lgamma, "lgamma", 0.0);
+        }
+    }
 
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;

@@ -371,6 +371,15 @@ namespace cftal { namespace test { namespace mpfr_cache {
     using f2_f32_map = result_cache<hashable_pair<int32_t>,
                                     std::pair<int32_t, int32_t> >;
 
+    using f1i_f64_map = result_cache<packed_int64_t,
+                                     std::tuple<packed_int64_t,
+                                                int32_t,
+                                                int32_t> >;
+    using f1i_f32_map = result_cache<int32_t,
+                                     std::tuple<int32_t,
+                                                int32_t,
+                                                int32_t> >;
+
     std::string file_name(const std::string& a, const std::string& t);
 
     class pmutex {
@@ -479,6 +488,52 @@ namespace cftal { namespace test { namespace mpfr_cache {
     using f2_32_cache_map=std::map<f2_t, f2_32_cache_entry>;
     extern f2_32_cache_map f2_32_entries;
     extern std::mutex f2_32_mtx;
+
+    struct f1i_64_cache_entry : private pmutex {
+        std::string _name;
+        f1i_f64_map _m64;
+        explicit
+        f1i_64_cache_entry(const std::string& name)
+            : _name(name),
+              _m64(file_name(name, "i_f64")) {
+        }
+        f1i_64_cache_entry(f1i_64_cache_entry&& r)
+            : pmutex(r),
+             _name(std::move(r._name)),
+             _m64(std::move(r._m64)) {
+        }
+        using pmutex::lock;
+        using pmutex::unlock;
+        using pmutex::lock_shared;
+        using pmutex::unlock_shared;
+    };
+
+    using f1i_64_cache_map=std::map<f1i_t, f1i_64_cache_entry>;
+    extern f1i_64_cache_map f1i_64_entries;
+    extern std::mutex f1i_64_mtx;
+
+    struct f1i_32_cache_entry : private pmutex {
+        std::string _name;
+        f1i_f32_map _m32;
+        explicit
+        f1i_32_cache_entry(const std::string& name)
+            : _name(name),
+              _m32(file_name(name, "i_f32")) {
+        }
+        f1i_32_cache_entry(f1i_32_cache_entry&& r)
+            : pmutex(r),
+             _name(std::move(r._name)),
+             _m32(std::move(r._m32)) {
+        }
+        using pmutex::lock;
+        using pmutex::unlock;
+        using pmutex::lock_shared;
+        using pmutex::unlock_shared;
+    };
+
+    using f1i_32_cache_map=std::map<f1i_t, f1i_32_cache_entry>;
+    extern f1i_32_cache_map f1i_32_entries;
+    extern std::mutex f1i_32_mtx;
 
 }}}
 
@@ -629,8 +684,9 @@ find(const key_type& k)
     // vector lookup
     const mapped_type* pr=nullptr;
     auto ve= std::cend(_v);
+    mapped_type m;
     auto vf= std::upper_bound(std::cbegin(_v), ve,
-                              value_type(k, std::make_pair(0.0, 0)),
+                              value_type(k, m),
                               [](const value_type& a,
                                  const value_type& b)->bool {
                                 return a.first < b.first;
@@ -697,6 +753,16 @@ cftal::test::mpfr_cache::f2_64_entries;
 std::mutex
 cftal::test::mpfr_cache::f2_64_mtx;
 
+cftal::test::mpfr_cache::f1i_32_cache_map
+cftal::test::mpfr_cache::f1i_32_entries;
+std::mutex
+cftal::test::mpfr_cache::f1i_32_mtx;
+
+cftal::test::mpfr_cache::f1i_64_cache_map
+cftal::test::mpfr_cache::f1i_64_entries;
+std::mutex
+cftal::test::mpfr_cache::f1i_64_mtx;
+
 std::string
 cftal::test::mpfr_cache::
 file_name(const std::string& a, const std::string& t)
@@ -705,8 +771,8 @@ file_name(const std::string& a, const std::string& t)
 }
 
 const cftal::test::mpfr_cache::f1_mpfr_result<double>*
-cftal::test::mpfr_cache::result(double a, f1_t f,
-                                f1_mpfr_result<double>& r)
+cftal::test::mpfr_cache::
+result(double a, f1_t f, f1_mpfr_result<double>& r)
 {
     f1_mpfr_result<double>* p=nullptr;
     auto i= f1_64_entries.find(f);
@@ -725,8 +791,8 @@ cftal::test::mpfr_cache::result(double a, f1_t f,
 }
 
 const cftal::test::mpfr_cache::f1_mpfr_result<float>*
-cftal::test::mpfr_cache::result(float a, f1_t f,
-                                f1_mpfr_result<float>& r)
+cftal::test::mpfr_cache::
+result(float a, f1_t f, f1_mpfr_result<float>& r)
 {
     f1_mpfr_result<float>* p=nullptr;
     auto i= f1_32_entries.find(f);
@@ -745,8 +811,8 @@ cftal::test::mpfr_cache::result(float a, f1_t f,
 }
 
 const cftal::test::mpfr_cache::f2_mpfr_result<double>*
-cftal::test::mpfr_cache::result(double a, double b, f2_t f,
-                                f2_mpfr_result<double>& r)
+cftal::test::mpfr_cache::
+result(double a, double b, f2_t f, f2_mpfr_result<double>& r)
 {
     f2_mpfr_result<double>* p=nullptr;
     auto i= f2_64_entries.find(f);
@@ -767,8 +833,8 @@ cftal::test::mpfr_cache::result(double a, double b, f2_t f,
 }
 
 const cftal::test::mpfr_cache::f2_mpfr_result<float>*
-cftal::test::mpfr_cache::result(float a, float b, f2_t f,
-                                f2_mpfr_result<float>& r)
+cftal::test::mpfr_cache::
+result(float a, float b, f2_t f, f2_mpfr_result<float>& r)
 {
     f2_mpfr_result<float>* p=nullptr;
     auto i= f2_32_entries.find(f);
@@ -785,6 +851,48 @@ cftal::test::mpfr_cache::result(float a, float b, f2_t f,
     float rd= as<float>(pi->first);
     r._res = rd;
     r._mpfr_res = pi->second;
+    return &r;
+}
+
+const cftal::test::mpfr_cache::f1i_mpfr_result<std::pair<double, int32_t> >*
+cftal::test::mpfr_cache::
+result(double a, f1i_t f, f1i_mpfr_result<std::pair<double, int32_t> >& r)
+{
+    f1i_mpfr_result<std::pair<double, int32_t> >* p=nullptr;
+    auto i= f1i_64_entries.find(f);
+    if (i== std::cend(f1i_64_entries))
+        return p;
+    f1i_64_cache_entry* pe=&i->second;
+    std::shared_lock<f1i_64_cache_entry> _lck(*pe);
+    int64_t ai= as<int64_t>(a);
+    auto pi=pe->_m64.find(ai);
+    if (pi == nullptr)
+        return p;
+    double rd= as<double>(std::get<0>(*pi));
+    int32_t ri= std::get<1>(*pi);
+    r._res = std::make_pair(rd, ri);
+    r._mpfr_res = std::get<2>(*pi);
+    return &r;
+}
+
+const cftal::test::mpfr_cache::f1i_mpfr_result<std::pair<float, int32_t> >*
+cftal::test::mpfr_cache::
+result(float a, f1i_t f, f1i_mpfr_result<std::pair<float, int32_t> >& r)
+{
+    f1i_mpfr_result<std::pair<float, int32_t> >* p=nullptr;
+    auto i= f1i_32_entries.find(f);
+    if (i== std::cend(f1i_32_entries))
+        return p;
+    f1i_32_cache_entry* pe=&i->second;
+    std::shared_lock<f1i_32_cache_entry> _lck(*pe);
+    int32_t ai= as<int32_t>(a);
+    auto pi=pe->_m32.find(ai);
+    if (pi == nullptr)
+        return p;
+    float rd= as<float>(std::get<0>(*pi));
+    int32_t ri= std::get<1>(*pi);
+    r._res = std::make_pair(rd, ri);
+    r._mpfr_res = std::get<2>(*pi);
     return &r;
 }
 
@@ -858,6 +966,44 @@ cftal::test::mpfr_cache::update(float a, float b, f2_t f,
 
 void
 cftal::test::mpfr_cache::
+update(double a, f1i_t f,
+       const f1i_mpfr_result<std::pair<double, int32_t> >& r)
+{
+    auto i= f1i_64_entries.find(f);
+    if (i== std::cend(f1i_64_entries))
+        return;
+    f1i_64_cache_entry* pe=&i->second;
+    {
+        std::lock_guard<f1i_64_cache_entry> _lck(*pe);
+        int64_t ai= as<int64_t>(a);
+        int64_t ri= as<int64_t>(r._res.first);
+        int32_t rii= r._res.second;
+        pe->_m64.insert(std::make_pair(ai,
+                                       std::make_tuple(ri, rii, r._mpfr_res)));
+    }
+}
+
+void
+cftal::test::mpfr_cache::
+update(float a, f1i_t f,
+       const f1i_mpfr_result<std::pair<float, int32_t> >& r)
+{
+    auto i= f1i_32_entries.find(f);
+    if (i== std::cend(f1i_32_entries))
+        return;
+    f1i_32_cache_entry* pe=&i->second;
+    {
+        std::lock_guard<f1i_32_cache_entry> _lck(*pe);
+        int32_t ai= as<int32_t>(a);
+        int32_t ri= as<int32_t>(r._res.first);
+        int32_t rii= r._res.second;
+        pe->_m32.insert(std::make_pair(ai,
+                                       std::make_tuple(ri, rii, r._mpfr_res)));
+    }
+}
+
+void
+cftal::test::mpfr_cache::
 use(f1_t f, const std::string& fn, double v)
 {
     // if (env_use_cache()==false)
@@ -897,5 +1043,27 @@ use(f2_t f, const std::string& fn, float v)
     //    return;
     auto e=std::make_pair(f, f2_32_cache_entry(fn.c_str()));
     f2_32_entries.emplace(std::move(e));
+    static_cast<void>(v);
+}
+
+void
+cftal::test::mpfr_cache::
+use(f1i_t f, const std::string& fn, double v)
+{
+    // if (env_use_cache()==false)
+    //    return;
+    auto e=std::make_pair(f, f1i_64_cache_entry(fn.c_str()));
+    f1i_64_entries.emplace(std::move(e));
+    static_cast<void>(v);
+}
+
+void
+cftal::test::mpfr_cache::
+use(f1i_t f, const std::string& fn, float v)
+{
+    // if (env_use_cache()==false)
+    //    return;
+    auto e=std::make_pair(f, f1i_32_cache_entry(fn.c_str()));
+    f1i_32_entries.emplace(std::move(e));
     static_cast<void>(v);
 }
