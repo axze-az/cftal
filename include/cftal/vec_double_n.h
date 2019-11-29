@@ -1051,7 +1051,7 @@ cftal::rnte_last_bits(const vec<double, _N>& v)
     vi_t lbit= i & bk;
     const vi_t vz=z;
     typename vi_t::mask_type sel_zero_offs= (rbits == br) & (lbit==vz);
-    vi_t offs=select(sel_zero_offs, vz, vi_t(br));
+    vi_t offs=select_zero_or_val(sel_zero_offs, vi_t(br));
     i += offs;
     i &= mask;
     vec<double, _N> r=as<vec<double, _N> >(i);
