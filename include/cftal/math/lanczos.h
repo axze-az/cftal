@@ -506,60 +506,41 @@ lanczos_rational_at(const _T& x,
                     const d_real<_C>(&p)[_N1],
                     const _C (&q)[_N2])
 {
-    _T ph, pl;
-    _T qh, ql;
     using d_ops=cftal::impl::d_real_ops<_T, d_real_traits<_T>::fma>;
     const d_real<_C>* pp=p;
-    const _C* pq=q;
-    ph = pp[0][0];
-    pl = pp[0][1];
-    if (_N1 == _N2) {
-        qh = pq[0];
-        ql = _T(0);
+    _T ph = pp[0][0];
+    _T pl = pp[0][1];
 #pragma clang loop unroll(disable)
 #pragma GCC unroll 0
-        for (std::size_t i=1; i< _N1; ++i) {
-            // compensated horner step with higher precision coefficients
-            _T pp_i, po_i;
-            d_ops::mul12(ph, pp_i, ph, x);
-            _T qp_i, qo_i;
-            d_ops::mul12(qh, qp_i, qh, x);
-            d_ops::add12cond(ph, po_i, ph, pp[i][0]);
-            d_ops::add12cond(qh, qo_i, qh, pq[i]);
-            pl = pl*x + (pp_i + po_i + pp[i][1]);
-            ql = ql*x + (qp_i + qo_i);
-        }
-    } else {
-#pragma clang loop unroll(disable)
-#pragma GCC unroll 0
-        for (std::size_t i=1; i< _N1; ++i) {
+    for (std::size_t i=1; i< _N1; ++i) {
 #if 1
-            // compensated horner step with higher precision coefficients
-            _T p_i, o_i;
-            d_ops::mul12(ph, p_i, ph, x);
-            d_ops::add12cond(ph, o_i, ph, pp[i][0]);
-            pl = pl*x + (p_i + o_i + pp[i][1]);
+        // compensated horner step with higher precision coefficients
+        _T p_i, o_i;
+        d_ops::mul12(ph, p_i, ph, x);
+        d_ops::add12cond(ph, o_i, ph, pp[i][0]);
+        pl = pl*x + (p_i + o_i + pp[i][1]);
 #else
-            d_ops::mul122(ph, pl, x, ph, pl);
-            d_ops::add22cond(ph, pl,
-                            pp[i][0], pp[i][1],
-                            ph, pl);
+        d_ops::mul122(ph, pl, x, ph, pl);
+        d_ops::add22cond(ph, pl,
+                        pp[i][0], pp[i][1],
+                        ph, pl);
 #endif
-        }
-        if (__likely(q[_N2-1] == _C(0))) {
-            horner_comp_s0(qh, ql, x, pq[0], pq[1]);
+    }
+    _T qh, ql;
+    if (__likely(q[_N2-1] == _C(0))) {
+        const _C* pq=q;
+        horner_comp_s0(qh, ql, x, pq[0], pq[1]);
 #pragma clang loop unroll(disable)
 #pragma GCC unroll 0
-            for (std::size_t i=2; i< _N2-1; ++i) {
-                horner_comp_si(qh, ql, x, qh, ql, pq[i]);
-            }
-            // last step is without addition
-            _T p_i;
-            d_ops::mul12(qh, p_i, qh, x);
-            ql = ql * x + p_i;
-        } else {
-            horner_comp(qh, ql, x, q);
+        for (std::size_t i=2; i< _N2-1; ++i) {
+            horner_comp_si(qh, ql, x, qh, ql, pq[i]);
         }
+        // last step is without addition
+        _T p_i;
+        d_ops::mul12(qh, p_i, qh, x);
+        ql = ql * x + p_i;
+    } else {
+        horner_comp(qh, ql, x, q);
     }
     _T inv_qh, inv_ql;
     d_ops::rcp2(inv_qh, inv_ql, qh, ql);
