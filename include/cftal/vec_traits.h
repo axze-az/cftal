@@ -395,7 +395,10 @@ namespace cftal {
             using vmi_type = typename vi_type::mask_type;
 
             using vdf_type = d_real<vf_type>;
-
+            
+            using vhf_traits = func_traits<vec<double, _N>,
+                                           vec<int32_t, _N> >;
+            
             static
             constexpr std::size_t NVF() {
                 return _N;
