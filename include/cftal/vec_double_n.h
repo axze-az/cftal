@@ -33,6 +33,11 @@
 
 namespace cftal {
 
+    // round the last _BITS to nearest, ties to even
+    template <std::size_t _BITS, std::size_t _N>
+    vec<double, _N>
+    rnte_last_bits(const vec<double, _N>& n);
+
     template <std::size_t _N>
     vec<double, _N>
     abs(const vec<double, _N>& v);
@@ -1024,6 +1029,33 @@ namespace cftal {
     vec<double, 8>
     exp10_px2(arg_t<vec<double, 8> > d);
 #endif
+}
+
+template <std::size_t _BITS, std::size_t _N>
+cftal::vec<double, _N>
+cftal::rnte_last_bits(const vec<double, _N>& v)
+{
+    static_assert(_BITS>0 && _BITS < 53);
+    using vi_t = vec<int64_t, _N>;
+    constexpr const int64_t z=0LL;
+    // first bit to round away:
+    constexpr const int64_t br= (1LL << (_BITS-1));
+    // last bit to keep
+    constexpr const int64_t bk= (1LL << (_BITS));
+    // mask of the bits to round away:
+    constexpr const int64_t trailing_mask= bk-1L;
+    // mask of the bits to keep
+    constexpr const int64_t mask=~trailing_mask;
+    vi_t i=as<vi_t>(v);
+    vi_t rbits=i & trailing_mask;
+    vi_t lbit= i & bk;
+    const vi_t vz=z;
+    typename vi_t::mask_type sel_zero_offs= (rbits == br) & (lbit==vz);
+    vi_t offs=select(sel_zero_offs, vz, vi_t(br));
+    i += offs;
+    i &= mask;
+    vec<double, _N> r=as<vec<double, _N> >(i);
+    return r;
 }
 
 template <std::size_t _N>
