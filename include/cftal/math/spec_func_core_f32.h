@@ -16,6 +16,11 @@
 #include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/lanczos.h>
 #include <cftal/math/horner_idx.h>
+#if  __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+#include <cftal/math/spec_func_core_f64.h>
+#include <cftal/math/func_traits_f64_s32.h>
+#include <cftal/math/impl_d_real_constants_f64.h>
+#endif
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -614,18 +619,62 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     vf_type xa=abs(x);
     // using lanczos_ratfunc=lanczos_table_g_5_59172_N6;
     using lanczos_ratfunc=lanczos_table_g_4_35169_N5;
-
-#if 0 // __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-    vhf_type xad=cvt<vhf_type>(xa);
+#if  __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type xad=abs(xd);
     vhf_type pqd=lanczos_rational_at(xad,
                                      lanczos_ratfunc::p,
                                      lanczos_ratfunc::q);
-    vdf_type pq=base_type::cvt_to_vdf(pqd);
+    vhf_type sum = pqd;
+    vhf_type base = xad + lanczos_ratfunc::gm0_5();
+    vhf_type z = xad - 0.5;
+
+    using f64_core = spec_func_core<double, typename _T::vhf_traits>;
+    vhf_type g = f64_core::template exp_k<false>(-base);
+    g = g * sum;
+    if (any_of(x_lt_zero)) {
+        vhf_type s;
+        f64_core::sinpi_cospi_k(xad, &s, nullptr);
+        using ctbl = impl::d_real_constants<d_real<double>, double>;
+        vhf_type q = xad * g;
+        const vhf_type p= -ctbl::m_pi[0];
+        q = q * s;
+        // auto qh=base_type::cvt_to_vdf(q);
+        // q = base_type::cvt_to_vhf(qh[0], qh[1]);
+        vhf_type gn= p/q;
+        auto x_lt_z= xd < 0.0;
+        g = _T::vhf_traits::sel(x_lt_z, gn, g);
+        z = _T::vhf_traits::sel(x_lt_z, -z, z);
+    }
+#if 1
+    auto abase = abs(base);
+    d_real<vhf_type> lnx= f64_core::__log_tbl_k12(abase);
+    using dd_ops=typename f64_core::d_ops;
+    d_real<vhf_type> ylnx;
+    dd_ops::unorm_mul122(ylnx[0], ylnx[1], z, lnx[0], lnx[1]);
+    vhf_type xrh, xrl;
+    vi_type idx, ki;
+    f64_core::__reduce_exp_arg(xrh, xrl, idx, ki, ylnx[0], ylnx[1]);
+    vhf_type p=f64_core::template
+        __exp_tbl_k<f64_core::result_prec::normal>(xrh, xrl, idx);
+    // multiplication before scaling:
+    g *= p;
+    // scale at the end after the conversion
+    vf_type gh=cvt<vf_type>(g);
+    auto sc=base_type::__scale_exp_k(ki);
+    gh *= sc.f0();
+    gh *= sc.f1();
+#else
+    auto p=f64_core::pow_k(base, z);
+    g *= p;
+    vf_type gh=cvt<vf_type>(g);
+#endif
+    // p = rnte_last_bits<53-48>(p);
+    // g = rnte_last_bits<53-48>(g);
 #else
     auto pq=lanczos_rational_at(xa,
                                 lanczos_ratfunc::pdf,
                                 lanczos_ratfunc::qf);
-#endif
     vf_type sum = pq[0], sum_l= pq[1];
     // base of the Lanczos exponential
     vf_type base, base_l;
@@ -633,7 +682,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
                       lanczos_ratfunc::gm0_5f(),
                       lanczos_ratfunc::gm0_5f_l());
     vf_type zh, zl;
-    d_ops::add12cond(zh, zl, xa,  -0.5);
+    d_ops::add12cond(zh, zl, xa,  -0.5f);
     vf_type gh, gl;
     base_type::exp_k2(gh, gl, -base, -base_l);
     d_ops::mul22(gh, gl, gh, gl, sum, sum_l);
@@ -663,6 +712,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     gh *= sc.f1();
     gh *= sc.f0();
     gh *= sc.f1();
+#endif
     gh = _T::sel(xa < 0x1p-24f, 1.0f/x, gh);
     return gh;
 }
