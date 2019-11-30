@@ -42,15 +42,18 @@ namespace cftal {
             using vmf_type = typename _T::vmf_type;
             using vmi_type = typename _T::vmi_type;
             using vdf_type = typename _T::vdf_type;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-            using vhf_type = typename _T::vhf_type;
-#endif
 
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+            using vhf_type = typename _T::vhf_type;
+            using f64_traits = typename _T::vhf_traits;
+            using f64_core = spec_func_core<double, f64_traits>;
+            using dd_ops=cftal::impl::d_real_ops<vhf_type,
+                                                 d_real_traits<vhf_type>::fma>;
+#endif
 
             using base_type::sinpi_cospi_k;
-
             static
             void
             sinpi_cospi_k(arg_t<vf_type> xc,
@@ -629,7 +632,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     vhf_type base = xad + lanczos_ratfunc::gm0_5();
     vhf_type z = xad - 0.5;
 
-    using f64_core = spec_func_core<double, typename _T::vhf_traits>;
+    // using f64_core = spec_func_core<double, typename _T::vhf_traits>;
     vhf_type g = f64_core::template exp_k<false>(-base);
     g = g * sum;
     if (any_of(x_lt_zero)) {
@@ -776,9 +779,9 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     d_ops::mul22(ph, pl, xh, xl, ph, pl);
     d_ops::add22(ph, pl, ph, pl, lngamma_i0_c0h, lngamma_i0_c0l);
     vf_type xm1h, xm1l;
-    d_ops::add212(xm1h, xm1l, xh, xl, -1.0);
+    d_ops::add212(xm1h, xm1l, xh, xl, -1.0f);
     vf_type xm2h, xm2l;
-    d_ops::add122(xm2h, xm2l, -2.0, xh, xl);
+    d_ops::add122(xm2h, xm2l, -2.0f, xh, xl);
     vf_type th, tl;
     d_ops::mul22(th, tl, xm1h, xm1l, xm2h, xm2l);
     d_ops::mul22(th, tl, ph, pl, th, tl);
