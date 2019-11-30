@@ -869,6 +869,14 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
         zh = _T::sel(x_lt_zero, -zh, zh);
         zl = _T::sel(x_lt_zero, -zl, zl);
     }
+#if 1
+    auto p_sc=base_type::pow_k2(base, base_l, zh, zl);
+    const vdf_type& powh= p_sc.first;
+    d_ops::mul22(gh, gl, powh[0], powh[1], gh, gl);
+    const auto& sc=p_sc.second;
+    gh *= sc.f0();
+    gh *= sc.f1();
+#else
     auto p_sc=base_type::pow_k2(base, base_l, 0.5*zh, 0.5*zl);
     const vdf_type& powh= p_sc.first;
     d_ops::mul22(gh, gl, powh[0], powh[1], gh, gl);
@@ -878,6 +886,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     gh *= sc.f1();
     gh *= sc.f0();
     gh *= sc.f1();
+#endif
     gh = _T::sel(xa < 0x1p-54, 1.0/x, gh);
     return gh;
 }
