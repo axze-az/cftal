@@ -622,7 +622,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     vf_type xa=abs(x);
     // using lanczos_ratfunc=lanczos_table_g_5_59172_N6;
     using lanczos_ratfunc=lanczos_table_g_4_35169_N5;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+#if 0 // __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
     vhf_type xd=cvt<vhf_type>(x);
     vhf_type xad=abs(xd);
     vhf_type pqd=lanczos_rational_at(xad,

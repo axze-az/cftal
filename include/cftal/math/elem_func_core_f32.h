@@ -2486,7 +2486,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
        arg_t<vf_type> yh, arg_t<vf_type> yl)
 {
     vdf_type abs_x= select(xh > 0.0f, vdf_type(xh, xl), vdf_type(-xh, -xl));
-    vdf_type lnx = __log_tbl_k2<result_prec::high>(abs_x[0], abs_x[1]);
+    vdf_type lnx = __log_tbl_k2<result_prec::normal>(abs_x[0], abs_x[1]);
     vdf_type ylnx;
     d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
 
