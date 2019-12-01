@@ -1018,18 +1018,22 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 
     if (any_of(t= x[0]>vf_type(ir))) {
         // x -= _T::sel(t, 1.0, 0.0);
-        // vdf_type p= select(t, x, vdf_type(1.0));
-        x -= _T::sel(t, 1.0, 0.0);
+        // x>= 2, if t
+        d_ops::add212(x[0], x[1],
+                      x[0], x[1],
+                      _T::sel_val_or_zero(t, -1.0));
         f0[0]=_T::sel(t, x[0], 1.0);
         while (any_of(t= x[0]>vf_type(ir))) {
             // x -= _T::sel(t, 1.0, 0.0);
-            // vdf_type p= select(t, x, vdf_type(1.0));
-            x -= _T::sel(t, 1.0, 0.0);
+            // x>=2, if t
+            d_ops::add212(x[0], x[1],
+                          x[0], x[1],
+                          _T::sel_val_or_zero(t, -1.0));
 #if 0
             vdf_type p= select(t, x, vdf_type(1.0));
             f0 *= p;
 #else
-            vf_type p= select(t, x[0], vf_type(1.0));
+            vf_type p= _T::sel(t, x[0], vf_type(1.0));
             // f *= p;
             // d_ops::mul122(f0[0], f0[1], p, f0[0], f0[1]);
             // compensated product:
@@ -1051,7 +1055,11 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 
     if (any_of(t= x[0]<vf_type(il))) {
         vdf_type q0(_T::sel(t, x[0], 1.0), vf_type(0.0));
-        x += _T::sel(t, 1.0, 0.0);
+        // x += _T::sel(t, 1.0, 0.0);
+        // nothing known about x
+        d_ops::add122cond(x[0], x[1],
+                          _T::sel_val_or_zero(t, 1.0),
+                          x[0], x[1]);
         // see below
         while(any_of(t= x[0]<vf_type(-1.0))) {
 #if 0
@@ -1065,7 +1073,11 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
             d_ops::mul12(q0[0], pl, q0[0], q);
             q0[1] = q0[1] * q + pl;
 #endif
-            x += _T::sel(t, 1.0, 0.0);
+            // x += _T::sel(t, 1.0, 0.0);
+            // x < -1.0
+            d_ops::add212(x[0], x[1],
+                          x[0], x[1],
+                          _T::sel_val_or_zero(t, 1.0));
 #if 0
             // avoid overflows in q0
             if (any_of(t=abs(q0[0]) > 0x1p500)) {
@@ -1081,7 +1093,11 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
         while(any_of(t= x[0]<vf_type(il))) {
             vdf_type q= select(t, x, vdf_type(1.0));
             q0 *= q;
-            x += _T::sel(t, 1.0, 0.0);
+            // x += _T::sel(t, 1.0, 0.0);
+            // |x| <= 1.0
+            d_ops::add122(x[0], x[1],
+                          _T::sel_val_or_zero(t, 1.0),
+                          x[0], x[1]);
         }
         // f0 /= q0;
         d_ops::div22(f0[0], f0[1], f0[0], f0[1], q0[0], q0[1]);
@@ -1096,9 +1112,14 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
 {
     vf_type xa=abs(xc);
     constexpr const double x_tiny= 0x1p-54;
+#if 1
     constexpr const double x_small_delta = 6.0;
     constexpr const double x_small_left  = 1.0-x_small_delta;
     constexpr const double x_small_right = 2.0+x_small_delta;
+#else
+    constexpr const double x_small_left  = 1.0-4.0;
+    constexpr const double x_small_right = 2.0+1.0;
+#endif
     constexpr const double x_large= 0x1p54;
 
     reduced_small_gamma_args sst;
