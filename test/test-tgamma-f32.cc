@@ -29,23 +29,38 @@ int main(int argc, char** argv)
     auto us=std::make_shared<ulp_stats>();
     exec_stats<_N> st;
 
-    // test also all integral values
+    // test also some integral and integral-1/2 values
     std::vector<float> def_args=default_arguments<float>::values;
-    for (std::size_t i=1; i<36; ++i) {
+    for (std::size_t i=1; i<37; ++i) {
         auto di=static_cast<float>(i);
+        auto dih=di-0.5f;
         if (std::find(std::begin(def_args), std::end(def_args), di)==
             std::end(def_args)) {
             def_args.push_back(di);
         }
+        if (std::find(std::begin(def_args), std::end(def_args), dih)==
+            std::end(def_args)) {
+            def_args.push_back(dih);
+        }
         auto dip=std::nextafter(di, std::numeric_limits<float>::infinity());
+        auto dihp=std::nextafter(dih, std::numeric_limits<float>::infinity());
         if (std::find(std::begin(def_args), std::end(def_args), dip)==
             std::end(def_args)) {
             def_args.push_back(dip);
         }
+        if (std::find(std::begin(def_args), std::end(def_args), dihp)==
+            std::end(def_args)) {
+            def_args.push_back(dihp);
+        }
         auto dim=std::nextafter(di, -std::numeric_limits<float>::infinity());
-        if (std::find(std::begin(def_args), std::end(def_args), dip)==
+        auto dihm=std::nextafter(dih, -std::numeric_limits<float>::infinity());
+        if (std::find(std::begin(def_args), std::end(def_args), dim)==
             std::end(def_args)) {
             def_args.push_back(dim);
+        }
+        if (std::find(std::begin(def_args), std::end(def_args), dihm)==
+            std::end(def_args)) {
+            def_args.push_back(dihm);
         }
     }
 

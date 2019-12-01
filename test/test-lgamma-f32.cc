@@ -34,23 +34,38 @@ int main(int argc, char** argv)
     func_domain<float> d1=std::make_pair(0.0f, 4.1e36f);
     std::cout << "f32 testing lgamma" << std::endl;
 
-    // test also all integral values
+    // test also some integral and integral-1/2 values
     std::vector<float> def_args=default_arguments<float>::values;
-    for (std::size_t i=1; i<36; ++i) {
+    for (std::size_t i=1; i<1025; ++i) {
         auto di=static_cast<float>(i);
+        auto dih=di-0.5f;
         if (std::find(std::begin(def_args), std::end(def_args), di)==
             std::end(def_args)) {
             def_args.push_back(di);
         }
+        if (std::find(std::begin(def_args), std::end(def_args), dih)==
+            std::end(def_args)) {
+            def_args.push_back(dih);
+        }
         auto dip=std::nextafter(di, std::numeric_limits<float>::infinity());
+        auto dihp=std::nextafter(dih, std::numeric_limits<float>::infinity());
         if (std::find(std::begin(def_args), std::end(def_args), dip)==
             std::end(def_args)) {
             def_args.push_back(dip);
         }
+        if (std::find(std::begin(def_args), std::end(def_args), dihp)==
+            std::end(def_args)) {
+            def_args.push_back(dihp);
+        }
         auto dim=std::nextafter(di, -std::numeric_limits<float>::infinity());
-        if (std::find(std::begin(def_args), std::end(def_args), dip)==
+        auto dihm=std::nextafter(dih, -std::numeric_limits<float>::infinity());
+        if (std::find(std::begin(def_args), std::end(def_args), dim)==
             std::end(def_args)) {
             def_args.push_back(dim);
+        }
+        if (std::find(std::begin(def_args), std::end(def_args), dihm)==
+            std::end(def_args)) {
+            def_args.push_back(dihm);
         }
     }
     using test_t=of_fp_func_up_to<float, _N, check_lgamma<float> >;
@@ -71,12 +86,18 @@ int main(int argc, char** argv)
 
     exec_stats<_N> stp;
     us = std::make_shared<ulp_stats>();
+    std::vector<float> p_def_args;
+    std::copy_if(std::cbegin(def_args), std::cend(def_args),
+                 std::back_inserter(p_def_args),
+                 [](float v)->bool {
+                     return v>=0.0f;
+                 });
     rc &= test_t::v(stp, d1,
                     ags._speed_only,
                     ags._mt,
                     cmp_i_ulp<int32_t, float>(ulp_pos, us),
                     ags._cnt >> 1,
-                    true);
+                    p_def_args);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << stp << std::endl;
