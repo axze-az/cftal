@@ -765,7 +765,7 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
         lngamma_i0_c3
     };
     vf_type ph, pl;
-    d_ops::mul122(ph, pl, ci[0], xh, xl);
+    d_ops::unorm_mul122(ph, pl, ci[0], xh, xl);
     const std::size_t N=std::distance(std::cbegin(ci), std::cend(ci));
 #pragma GCC unroll 0
 #pragma clang loop unroll(disable)
