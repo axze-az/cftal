@@ -1117,8 +1117,8 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     constexpr const double x_small_left  = 1.0-x_small_delta;
     constexpr const double x_small_right = 2.0+x_small_delta;
 #else
-    constexpr const double x_small_left  = 1.0-4.0;
-    constexpr const double x_small_right = 2.0+1.0;
+    constexpr const double x_small_left  = 1.0-9.0;
+    constexpr const double x_small_right = 2.0+6.0;
 #endif
     constexpr const double x_large= 0x1p54;
 
