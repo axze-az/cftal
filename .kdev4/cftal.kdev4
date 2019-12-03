@@ -104,10 +104,10 @@ useSystemIncludes=true
 [CustomDefinesAndIncludes][ProjectPath0]
 Path=.
 parseAmbiguousAsCPP=true
-parserArguments=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=c++1z
+parserArguments=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=c++2a
 parserArgumentsC=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=gnu11
 parserArgumentsCuda=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=c++14
-parserArgumentsOpenCL=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -cl-std=CL1.1
+parserArgumentsOpenCL=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -cl-std=CL2.0
 
 [CustomDefinesAndIncludes][ProjectPath0][Compiler]
 Name=GCC
@@ -146,3 +146,4 @@ text/x-chdr=kdevastyle||1TBS
 text/x-csharp=kdevastyle||1TBS
 text/x-csrc=kdevastyle||1TBS
 text/x-java=kdevastyle||1TBS
+text/x-objcsrc=kdevcustomscript||GNU_indent_GNU

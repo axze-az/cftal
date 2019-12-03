@@ -6,7 +6,7 @@ verbosity=2!;
 prec=512!;
 write("\n");
 
-i0=[1.0+0x1p-1024, 2.0-0x1p-1024];
+i0=[1.0+0x1p-256, 2.0-0x1p-256];
 f= ext_lngamma(x)/((x-1)*(x-2));
 b = [|0, ..., 15|];
 c = [|49, 49, 49, 49, 49, 49, SG... |];
@@ -16,10 +16,9 @@ p = fpminimax(f, b, c, i0, relative, floating);
 write_approx_prec(p, f, i0);
 write_coeffs(p, "const float lngamma_i0_c", "lngamma", b, c);
 plot((p(x)-f(x))/f(x), i0, postscriptfile, "tgamma_i0-f32");
-quit;
 
 /* for f64 usage in f32 functions: */
-i0=[1.0+0x1p-1024, 2.0-0x1p-1024];
+i0=[1.0+0x1p-256, 2.0-0x1p-256];
 f= ext_lngamma(x)/((x-1)*(x-2));
 b = [|0, ..., 15|];
 c = [|D, D...|];
@@ -29,7 +28,7 @@ p = fpminimax(f, b, c, i0, relative, floating);
 write_approx_prec(p, f, i0);
 write_coeffs(p, "const double lngamma_i0_c", "lngamma", b, c);
 plot((p(x)-f(x))/f(x), i0, postscriptfile, "tgamma_i0-f32");
-
+quit;
 
 
 /* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
