@@ -22,14 +22,16 @@ int main(int argc, char** argv)
 
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
-    const int ulp=1<<24;
+    const int ulp=4;
     const int ulp_pos=2;
     const int _N=16;
     bool rc=true;
 
     // func_domain<float> d=std::make_pair(-186.0, +172.0);
     // func_domain<float> d=std::make_pair(0.0f, 4.1e36f);
-    // func_domain<float> d=std::make_pair(0.0, 0x1p-53);
+    // func_domain<float> d=std::make_pair(-5.0f, 8.0f);
+    // func_domain<float> d=std::make_pair(-8.0f, -5.0f);
+    // func_domain<float> d=std::make_pair(0x1p25f, 4.1e36f);
     func_domain<float> d=std::make_pair(-0x1p24f, 4.1e36f);
     func_domain<float> d1=std::make_pair(0.0f, 4.1e36f);
     std::cout << "f32 testing lgamma" << std::endl;
@@ -81,6 +83,7 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << st << std::endl;
 
+
     static_cast<void>(d1);
     static_cast<void>(ulp_pos);
 
@@ -101,6 +104,5 @@ int main(int argc, char** argv)
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4) << *us << std::endl;
     std::cout << stp << std::endl;
-
     return (rc == true) ? 0 : 1;
 }
