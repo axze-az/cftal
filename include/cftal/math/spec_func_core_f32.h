@@ -1083,7 +1083,7 @@ typename cftal::math::spec_func_core<float, _T>::vf_type
 cftal::math::spec_func_core<float, _T>::
 lgamma_k(arg_t<vf_type> xc, vi_type* signp)
 {
-#if 0 // __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
     vhf_type x=cvt<vhf_type>(xc);
     vhf_type xa=abs(x);
     constexpr const float x_tiny= 0x1p-25;
