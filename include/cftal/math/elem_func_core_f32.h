@@ -2217,7 +2217,9 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
             log_hp_c5, log_hp_c4, log_hp_c3
         };
         vf_type p=horner(r, ci);
-        horner_comp_quick(ph, pl, r, p, log_hp_c2, log_hp_c1);
+        horner_comp_quick(ph, pl, r, p, log_hp_c2);
+        d_ops::mul22(ph, pl, r, rl, ph, pl);
+        d_ops::add122(ph, pl, log_hp_c1, ph, pl);
     } else {
         static const float ci[]={
             log_hp_c5, log_hp_c4, log_hp_c3, log_hp_c2

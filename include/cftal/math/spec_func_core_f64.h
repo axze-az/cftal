@@ -74,9 +74,8 @@ namespace cftal {
 
             // returns _xr in the range [1, 2]
             // returns _f (including sign)= (x+N)(x+_N-1)...(x-1)(x-2)
-            // returns _inv_f as -1.0 if f must be inverted or 1.0
-            // if no
-            // lgamma(x) = lgamma(xr) * log(abs(_f))
+            // returns _inv_f as true if f must be inverted or false if not
+            // lgamma(x) = lgamma(xr) +- log(abs(_f))
             struct reduced_small_gamma_args {
                 vdf_type _xr, _f;
                 vmf_type _inv_f;
@@ -1028,7 +1027,7 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 {
     vdf_type x=xc;
     vdf_type f0=vf_type(1.0);
-    vf_type f1(1.0);
+    // vf_type f1(1.0);
     vmf_type t;
 
     const double il=1.0;
