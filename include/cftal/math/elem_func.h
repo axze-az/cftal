@@ -382,15 +382,10 @@ exp(arg_t<vf_type> x)
 {
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
 #if 0
-    using fc= func_constants<_FLOAT_T>;
-    const vf_type exp_hi_inf= fc::exp_hi_inf();
-    const vf_type exp_lo_zero= fc::exp_lo_zero();
-    vmf_type x_l = x >= exp_hi_inf;
-    vmf_type x_s = x <= exp_lo_zero;
-    vf_type xf=_T::sel_zero_or_val(x_l | x_s, x);
-    vf_type y=base_type:: template exp_k<false>(xf);
-    y = _T::sel_zero_or_val(x <= exp_lo_zero, y);
-    y = _T::sel(x >= exp_hi_inf, _T::pinf(), y);
+    auto f=[](_FLOAT_T d)->_FLOAT_T {
+        return std::exp(d);
+    };
+    vf_type y= base_type::call_scalar_func(x, f);
 #else
     vf_type y=base_type:: template exp_k<false>(x);
     using fc= func_constants<_FLOAT_T>;
@@ -534,6 +529,12 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 log(arg_t<vf_type> d)
 {
+#if 0
+    auto f=[](_FLOAT_T xx)->_FLOAT_T {
+        return std::log(xx);
+    };
+    vf_type x= base_type::call_scalar_func(d, f);
+#else
     vf_type x = base_type::log_k(d);
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
@@ -542,6 +543,7 @@ log(arg_t<vf_type> d)
     x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == vf_type(0.0), ninf, x);
+#endif
     return x;
 }
 
