@@ -1200,8 +1200,8 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     constexpr const float x_small_left  = 1.0f-x_small_delta;
     constexpr const float x_small_right = 2.0f+x_small_delta;
 #else
-    constexpr const float x_small_left  = 1.0f-6.0f;
-    constexpr const float x_small_right = 2.0f+2.0f;
+    constexpr const float x_small_left  = 1.0f-1.25f;
+    constexpr const float x_small_right = 2.0f+1.0f;
 #endif
     constexpr const float x_large= 0x1p25f;
 
