@@ -39,10 +39,22 @@ namespace cftal {
             }
 
             static
+            float
+            __lgamma(const float& a, int32_t* sgn) {
+                return ::lgammaf_r(a, sgn);
+            }
+
+            static
+            double
+            __lgamma(const double& a, int32_t* sgn) {
+                return ::lgamma_r(a, sgn);
+            }
+
+            static
             auto
             s(const _T& a) {
                 int32_t sgn;
-                _T r=::lgamma_r(a, &sgn);
+                _T r=__lgamma(a, &sgn);
                 return std::make_pair(sgn, r);
             }
 
