@@ -74,12 +74,17 @@ namespace cftal {
 
             // returns _xr in the range [1, 2]
             // returns _f (including sign)= (x+N)(x+_N-1)...(x-1)(x-2)
+            // returns _inv_f as -1.0 if f must be inverted or 1.0
+            // if no
             // lgamma(x) = lgamma(xr) * log(abs(_f))
             struct reduced_small_gamma_args {
                 vdf_type _xr, _f;
-                reduced_small_gamma_args() : _xr(), _f() {};
-                reduced_small_gamma_args(const vdf_type& xr, const vdf_type& f)
-                    : _xr(xr), _f(f) {};
+                vmf_type _inv_f;
+                reduced_small_gamma_args() : _xr(), _f(), _inv_f() {}
+                reduced_small_gamma_args(const vdf_type& xr,
+                                         const vdf_type& f,
+                                         const vmf_type& inv_f)
+                    : _xr(xr), _f(f), _inv_f(inv_f) {}
             };
             static
             reduced_small_gamma_args
@@ -986,7 +991,7 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 #pragma GCC unroll 0
 #pragma clang loop unroll(disable)
     for (std::size_t i=1; i<N0; ++i) {
-        d_ops::add122cond(ph, pl, pci[i], ph, pl);
+        d_ops::add122(ph, pl, pci[i], ph, pl);
         d_ops::mul22(ph, pl, xh, xl, ph, pl);
     }
     static const d_real<double> dci[]={
@@ -1001,10 +1006,10 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 #pragma clang loop unroll(disable)
 #pragma GCC unroll 0
     for (std::size_t i=0; i<N1; ++i) {
-        d_ops::add22cond(ph, pl, pdci[i][0], pdci[i][1], ph, pl);
+        d_ops::add22(ph, pl, pdci[i][0], pdci[i][1], ph, pl);
         d_ops::mul22(ph, pl, xh, xl, ph, pl);
     }
-    d_ops::add22(ph, pl, ph, pl, lngamma_i0_c0h, lngamma_i0_c0l);
+    d_ops::add22cond(ph, pl, ph, pl, lngamma_i0_c0h, lngamma_i0_c0l);
     vf_type xm1h, xm1l;
     d_ops::add212(xm1h, xm1l, xh, xl, -1.0);
     vf_type xm2h, xm2l;
@@ -1066,8 +1071,12 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
         }
     }
 
-    if (any_of(t= x[0]<vf_type(il))) {
-        vdf_type q0(_T::sel(t, x[0], 1.0), vf_type(0.0));
+    t= x[0]<vf_type(il);
+    vmf_type inv_f= t;
+    if (any_of(t)) {
+        vdf_type& q0=f0;
+        q0[0] = _T::sel(t, x[0], q0[0]);
+        q0[1] = _T::sel(t, 0.0, q0[1]);
         // x += _T::sel(t, 1.0, 0.0);
         // nothing known about x
         d_ops::add122cond(x[0], x[1],
@@ -1075,7 +1084,7 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
                           x[0], x[1]);
         // see below
         while(any_of(t= x[0]<vf_type(-1.0))) {
-#if 0
+#if 1
             vdf_type q= select(t, x, vdf_type(1.0));
             q0 *= q;
 #else
@@ -1113,9 +1122,9 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
                           x[0], x[1]);
         }
         // f0 /= q0;
-        d_ops::div22(f0[0], f0[1], f0[0], f0[1], q0[0], q0[1]);
+        // d_ops::div22(f0[0], f0[1], f0[0], f0[1], q0[0], q0[1]);
     }
-    return reduced_small_gamma_args{x, f0};
+    return reduced_small_gamma_args{x, f0, inv_f};
 }
 
 template <typename _T>
@@ -1203,7 +1212,10 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     if (any_of(xa_in_small)) {
         vdf_type lg12=__lgamma_1_2_k(sst._xr[0], sst._xr[1]);
         vf_type th, tl;
-        d_ops::add22cond(th, tl, lb[0], lb[1], lg12[0], lg12[1]);
+        // log(1/lb) = -log(lb):
+        th = _T::sel(sst._inv_f, -lb[0], lb[0]);
+        tl = _T::sel(sst._inv_f, -lb[1], lb[1]);
+        d_ops::add22cond(th, tl, th, tl, lg12[0], lg12[1]);
         lgh = _T::sel(xa_in_small, th, lgh);
         lgl = _T::sel(xa_in_small, tl, lgl);
     }
