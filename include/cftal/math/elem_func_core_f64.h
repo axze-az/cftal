@@ -915,8 +915,8 @@ cbrt_k(arg_t<vf_type> xc)
     // one step of order 3
     mm = impl::root3::order3<double>(mm, mm0);
     // round mm to 17 bits == int(53/3)
-    mm = rint(vf_type(mm*0x1p17))*0x1p-17;
-    // mm = rnte_last_bits<53-17>(mm);
+    // mm = rint(vf_type(mm*0x1p17))*0x1p-17;
+    mm = round_nearest_to_even_last<53-53/3>::bits(mm);
     mm = impl::root3::order5<double>(mm, mm0);
     // no denormal results are possible
     // vf_type t= _T::insert_exp(_T::bias()+e3c);

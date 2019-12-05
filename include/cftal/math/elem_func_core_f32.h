@@ -940,7 +940,8 @@ cbrt_k(arg_t<vf_type> xc)
     mm = impl::root3::order3<float>(mm, mm0);
 
     // round mm to 8 bits = int(24)/3
-    mm = rint(vf_type(mm*0x1p8f))*0x1p-8f;
+    // mm = rint(vf_type(mm*0x1p8f))*0x1p-8f;
+    mm=round_nearest_to_even_last<24-24/3>::bits(mm);
     // second iteration
     mm = impl::root3::order5<float>(mm, mm0);
     // no denormal results are possible
