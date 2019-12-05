@@ -1049,26 +1049,26 @@ cftal::round_nearest_to_even_last<_BITS>::bits(const vec<double, _N>& v)
     constexpr const int64_t bk= (1LL << (_BITS));
     // mask of the bits to round away:
     constexpr const int64_t trailing_mask= bk-1L;
-    constexpr const int64_t rounding_mask= bk| trailing_mask;
     // mask of the bits to keep
     constexpr const int64_t mask=~trailing_mask;
     vi_t i=as<vi_t>(v);
-#if 1
+#if 0
+    constexpr const int64_t rounding_mask= bk| trailing_mask;
     constexpr const int64_t inc_rne=br|bk;
     const vi_t v_bk = bk;
     vi_t ir= i & rounding_mask;
     vi_t it= i & trailing_mask;
     vmi_t to_inc= (ir == inc_rne) | (it > br);
-    i &= mask;
     vi_t inc= select_val_or_zero(to_inc, v_bk);
     i += inc;
+    i &= mask;
 #else
-    constexpr const int64_t z=0LL;
     vi_t rbits=i & trailing_mask;
     vi_t lbit= i & bk;
-    const vi_t vz=z;
-    typename vi_t::mask_type sel_zero_offs= (rbits == br) & (lbit==vz);
-    vi_t offs=select_zero_or_val(sel_zero_offs, vi_t(br));
+    const vi_t vz=0LL;
+    const vi_t v_br=br;
+    vmi_t sel_zero_offs= (rbits == v_br) & (lbit==vz);
+    vi_t offs=select_zero_or_val(sel_zero_offs, v_br);
     i += offs;
     i &= mask;
 #endif
