@@ -34,9 +34,13 @@
 namespace cftal {
 
     // round the last _BITS to nearest, ties to even
-    template <std::size_t _BITS, std::size_t _N>
-    vec<double, _N>
-    rnte_last_bits(const vec<double, _N>& n);
+    template <std::size_t _BITS>
+    struct round_nearest_to_even_last {
+        template <std::size_t _N>
+        static
+        vec<double, _N>
+        bits(const vec<double, _N>& n);
+    };
 
     template <std::size_t _N>
     vec<double, _N>
@@ -1031,22 +1035,35 @@ namespace cftal {
 #endif
 }
 
-template <std::size_t _BITS, std::size_t _N>
+template <std::size_t _BITS>
+template <std::size_t _N>
 cftal::vec<double, _N>
-cftal::rnte_last_bits(const vec<double, _N>& v)
+cftal::round_nearest_to_even_last<_BITS>::bits(const vec<double, _N>& v)
 {
     static_assert(_BITS>0 && _BITS < 53);
     using vi_t = vec<int64_t, _N>;
-    constexpr const int64_t z=0LL;
+    using vmi_t = typename vec<int64_t, _N>::mask_type;
     // first bit to round away:
     constexpr const int64_t br= (1LL << (_BITS-1));
     // last bit to keep
     constexpr const int64_t bk= (1LL << (_BITS));
     // mask of the bits to round away:
     constexpr const int64_t trailing_mask= bk-1L;
+    constexpr const int64_t rounding_mask= bk| trailing_mask;
     // mask of the bits to keep
     constexpr const int64_t mask=~trailing_mask;
     vi_t i=as<vi_t>(v);
+#if 1
+    constexpr const int64_t inc_rne=br|bk;
+    const vi_t v_bk = bk;
+    vi_t ir= i & rounding_mask;
+    vi_t it= i & trailing_mask;
+    vmi_t to_inc= (ir == inc_rne) | (it > br);
+    i &= mask;
+    vi_t inc= select_val_or_zero(to_inc, v_bk);
+    i += inc;
+#else
+    constexpr const int64_t z=0LL;
     vi_t rbits=i & trailing_mask;
     vi_t lbit= i & bk;
     const vi_t vz=z;
@@ -1054,6 +1071,7 @@ cftal::rnte_last_bits(const vec<double, _N>& v)
     vi_t offs=select_zero_or_val(sel_zero_offs, vi_t(br));
     i += offs;
     i &= mask;
+#endif
     vec<double, _N> r=as<vec<double, _N> >(i);
     return r;
 }
