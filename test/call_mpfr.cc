@@ -228,8 +228,8 @@ func(float a, f1_t f, std::pair<float, float>* ulp1i)
         MPFR_DECL_INIT(r, 24);
         mpfr_set_flt(ai, a, MPFR_RNDN);
         int mpres=f(r, ai, MPFR_RNDN);
-        float dr=mpfr_get_flt(r, MPFR_RNDN);
         mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
+        float dr=mpfr_get_flt(r, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = dr;
         mpfr_cache::update(a, f, c);
