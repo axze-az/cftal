@@ -62,7 +62,7 @@ namespace cftal {
             double
             func(double a, int ib, f2fi_t f,
                  std::pair<double, double>* ulp1i= nullptr);
-            
+
             // call f(a, i), returns also the interval
             // containing the unrounded result
             double
@@ -218,6 +218,10 @@ namespace cftal {
             int
             root12(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
+            // return true if x is an half integer
+            bool
+            is_half_integer(const mpfr_t x);
+
             // return sin(pi* x)
             int
             sinpi(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
@@ -229,12 +233,12 @@ namespace cftal {
             // return tan(pi* x)
             int
             tanpi(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-            
-            
+
+
             // x ^ (1/n), n may be negative
             int
             rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm);
-            
+
             // returns c_n*x^n + .. c_1*x^1 + c_0, nullptr as last argument
             int
             horner(mpfr_t res,

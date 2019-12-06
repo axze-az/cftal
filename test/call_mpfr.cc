@@ -19,6 +19,37 @@
 #include <iomanip>
 #endif
 
+namespace {
+    constexpr mpfr_exp_t double_emin=-1022-(53-1)+1;
+    constexpr mpfr_exp_t double_emax=1023+1;
+
+    constexpr mpfr_exp_t float_emin=-126-(24-1)+1;
+    constexpr mpfr_exp_t float_emax=127+1;
+
+    struct set_emin_emax {
+        mpfr_exp_t _emin;
+        mpfr_exp_t _emax;
+        set_emin_emax(mpfr_exp_t emin, mpfr_exp_t emax)
+            : _emin(mpfr_get_emin()), _emax(mpfr_get_emax()) {
+            mpfr_set_emin(emin);
+            mpfr_set_emax(emax);
+        }
+        ~set_emin_emax() {
+            mpfr_set_emin(_emin);
+            mpfr_set_emax(_emax);
+        }
+    };
+
+    struct double_emin_emax : public set_emin_emax {
+        double_emin_emax() : set_emin_emax(double_emin, double_emax) {}
+    };
+
+    struct float_emin_emax : public set_emin_emax {
+        float_emin_emax() : set_emin_emax(float_emin, float_emax) {}
+    };
+
+}
+
 double
 cftal::test::call_mpfr::
 func(double a, f1_t f, std::pair<double, double>* ulp1i)
@@ -32,10 +63,12 @@ func(double a, f1_t f, std::pair<double, double>* ulp1i)
     mpfr_cache::f1_mpfr_result<double> c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
+        double_emin_emax g;
         MPFR_DECL_INIT(ai, 53);
         MPFR_DECL_INIT(r, 53);
         mpfr_set_d(ai, a, MPFR_RNDN);
         int mpres=f(r, ai, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
         double dr=mpfr_get_d(r, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = dr;
@@ -56,24 +89,29 @@ func(double a, f1p_t f,
      std::pair<double, double>* ulp1i0,
      std::pair<double, double>* ulp1i1)
 {
+    double_emin_emax g;
     MPFR_DECL_INIT(ai, 53);
     MPFR_DECL_INIT(r0, 53);
     MPFR_DECL_INIT(r1, 53);
     mpfr_set_d(ai, a, MPFR_RNDN);
     int i01=f(r0, r1, ai, MPFR_RNDN);
+
+    int i0 = i01 & 3;
+    i0 = i0 > 1 ? -1 : i0;
+    i0=mpfr_subnormalize(r0, i0, MPFR_RNDN);
+    int i1 = (i01 >> 2) & 3;
+    i1 = i1 > 1 ? -1 : i1;
+    i1=mpfr_subnormalize(r1, i1, MPFR_RNDN);
+
     double d0, d1;
     d0 = mpfr_get_d(r0, MPFR_RNDN);
     d1 = mpfr_get_d(r1, MPFR_RNDN);
 
     if (ulp1i0 != nullptr) {
-        int i0 = i01 & 3;
-        int t= i0 > 1 ? -1 : i0;
-        *ulp1i0= ulp1_interval(d0, t);
+        *ulp1i0= ulp1_interval(d0, i0);
     }
     if (ulp1i1 != nullptr) {
-        int i1 = (i01>>2) & 3;
-        int t= i1 > 1 ? -1 : i1;
-        *ulp1i1= ulp1_interval(d1, t);
+        *ulp1i1= ulp1_interval(d1, i1);
     }
     return std::make_pair(d0, d1);
 }
@@ -92,11 +130,13 @@ func(int32_t* ip, double a, f1i_t f, std::pair<double, double>* ulp1i)
     mpfr_cache::f1i_mpfr_result<std::pair<double, int32_t> > c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
+        double_emin_emax g;
         MPFR_DECL_INIT(ai, 53);
         MPFR_DECL_INIT(r, 53);
         int32_t i;
         mpfr_set_d(ai, a, MPFR_RNDN);
         int mpres=f(r, &i, ai, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
         double dr=mpfr_get_d(r, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = std::make_pair(dr, i);
@@ -130,12 +170,14 @@ func(double a, double b, f2_t f, std::pair<double, double>* ulp1i)
     mpfr_cache::f2_mpfr_result<double> c;
     auto pf= mpfr_cache::result(a, b, f, c);
     if (pf == nullptr) {
+        double_emin_emax g;
         MPFR_DECL_INIT(ai, 53);
         MPFR_DECL_INIT(bi, 53);
         MPFR_DECL_INIT(r, 53);
         mpfr_set_d(ai, a, MPFR_RNDN);
         mpfr_set_d(bi, b, MPFR_RNDN);
         int mpres=f(r, ai, bi, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
         double dr=mpfr_get_d(r, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = dr;
@@ -154,10 +196,12 @@ double
 cftal::test::call_mpfr::
 func(double a, int32_t ib, f2fi_t f, std::pair<double, double>* ulp1i)
 {
+    double_emin_emax g;
     MPFR_DECL_INIT(ai, 53);
     MPFR_DECL_INIT(r, 53);
     mpfr_set_d(ai, a, GMP_RNDN);
     int mpres=f(r, ai, ib, GMP_RNDN);
+    mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
     double dr=mpfr_get_d(r, GMP_RNDN);
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
@@ -179,11 +223,13 @@ func(float a, f1_t f, std::pair<float, float>* ulp1i)
     mpfr_cache::f1_mpfr_result<float> c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
+        float_emin_emax g;
         MPFR_DECL_INIT(ai, 24);
         MPFR_DECL_INIT(r, 24);
         mpfr_set_flt(ai, a, MPFR_RNDN);
         int mpres=f(r, ai, MPFR_RNDN);
         float dr=mpfr_get_flt(r, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = dr;
         mpfr_cache::update(a, f, c);
@@ -203,24 +249,29 @@ func(float a, f1p_t f,
      std::pair<float, float>* ulp1i0,
      std::pair<float, float>* ulp1i1)
 {
+    float_emin_emax g;
     MPFR_DECL_INIT(ai, 24);
     MPFR_DECL_INIT(r0, 24);
     MPFR_DECL_INIT(r1, 24);
     mpfr_set_flt(ai, a, MPFR_RNDN);
     int i01=f(r0, r1, ai, MPFR_RNDN);
+
+    int i0 = i01 & 3;
+    i0 = i0 > 1 ? -1 : i0;
+    i0=mpfr_subnormalize(r0, i0, MPFR_RNDN);
+    int i1 = (i01 >> 2) & 3;
+    i1 = i1 > 1 ? -1 : i1;
+    i1=mpfr_subnormalize(r1, i1, MPFR_RNDN);
+
     float d0, d1;
     d0 = mpfr_get_flt(r0, MPFR_RNDN);
     d1 = mpfr_get_flt(r1, MPFR_RNDN);
 
     if (ulp1i0 != nullptr) {
-        int i0 = i01 & 3;
-        int t= i0 > 1 ? -1 : i0;
-        *ulp1i0= ulp1_interval(d0, t);
+        *ulp1i0= ulp1_interval(d0, i0);
     }
     if (ulp1i1 != nullptr) {
-        int i1 = (i01>>2) & 3;
-        int t= i1 > 1 ? -1 : i1;
-        *ulp1i1= ulp1_interval(d1, t);
+        *ulp1i1= ulp1_interval(d1, i1);
     }
     return std::make_pair(d0, d1);
 }
@@ -239,11 +290,13 @@ func(int32_t* ip, float a, f1i_t f, std::pair<float, float>* ulp1i)
     mpfr_cache::f1i_mpfr_result<std::pair<float, int32_t> > c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
+        float_emin_emax g;
         MPFR_DECL_INIT(ai, 24);
         MPFR_DECL_INIT(r, 24);
         int32_t i;
         mpfr_set_flt(ai, a, MPFR_RNDN);
         int mpres=f(r, &i, ai, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
         float dr=mpfr_get_flt(r, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = std::make_pair(dr, i);
@@ -277,12 +330,14 @@ func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
     mpfr_cache::f2_mpfr_result<float> c;
     auto pf= mpfr_cache::result(a, b, f, c);
     if (pf == nullptr) {
+        float_emin_emax g;
         MPFR_DECL_INIT(ai, 24);
         MPFR_DECL_INIT(bi, 24);
         MPFR_DECL_INIT(r, 24);
         mpfr_set_flt(ai, a, MPFR_RNDN);
         mpfr_set_flt(bi, b, MPFR_RNDN);
         int mpres=f(r, ai, bi, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
         float dr=mpfr_get_flt(r, MPFR_RNDN);
         c._mpfr_res= mpres;
         c._res = dr;
@@ -301,10 +356,12 @@ float
 cftal::test::call_mpfr::
 func(float a, int ib, f2fi_t f, std::pair<float, float>* ulp1i)
 {
+    float_emin_emax g;
     MPFR_DECL_INIT(ai, 24);
     MPFR_DECL_INIT(r, 24);
     mpfr_set_d(ai, a, GMP_RNDN);
     int mpres=f(r, ai, ib, GMP_RNDN);
+    mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
     float dr=mpfr_get_flt(r, GMP_RNDN);
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
@@ -649,17 +706,35 @@ sinpi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
             r=mpfr_copysign(y, z(), x, rm);
         } else {
             auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
+                       mpfr_exp_t emax=mpfr_get_emax();
+                       mpfr_exp_t nemax=mpfr_get_emax_max();
+                       nemax = std::min(emax<<2, nemax);
+                       mpfr_set_emax(nemax);
                        fpn_handle xxpi(mpfr_get_prec(xx));
                        fpn_handle pi(mpfr_get_prec(xx)*2);
                        mpfr_const_pi(pi(), MPFR_RNDN);
                        mpfr_mul(xxpi(), xx, pi(), MPFR_RNDN);
                        int r=mpfr_sin(yy, xxpi(), rm);
+                       mpfr_set_emax(emax);
                        return r;
                    };
             r=call_ziv_func(y, x, rm, f);
         }
     }
     return r;
+}
+
+bool
+cftal::test::mpfr_ext::
+is_half_integer(const mpfr_t x)
+{
+    if (mpfr_integer_p(x))
+        return false;
+    fpn_handle ax(mpfr_get_prec(x));
+    mpfr_abs(ax(), x, MPFR_RNDN);
+    fpn_handle axmh(mpfr_get_prec(x));
+    mpfr_sub_d(axmh(), ax(), 0.5, MPFR_RNDN);
+    return mpfr_integer_p(axmh());
 }
 
 int
@@ -673,19 +748,21 @@ cospi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
         mpfr_set_nan(y);
         r=0;
     } else {
-        auto e=mpfr_get_exp(x);
-        fpn_handle x2(x);
-        mpfr_set_exp(x2(), e+1);
-        if (mpfr_integer_p(x2())  && !mpfr_integer_p(x)) {
+        if (is_half_integer(x)) {
             fpn_handle o(0.0, mpfr_get_prec(y));
             r=mpfr_set(y, o(), rm);
         } else {
             auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
+                       mpfr_exp_t emax=mpfr_get_emax();
+                       mpfr_exp_t nemax=mpfr_get_emax_max();
+                       nemax = std::min(emax<<2, nemax);
+                       mpfr_set_emax(nemax);
                        fpn_handle xxpi(mpfr_get_prec(xx));
                        fpn_handle pi(mpfr_get_prec(xx));
                        mpfr_const_pi(pi(), MPFR_RNDN);
                        mpfr_mul(xxpi(), xx, pi(), MPFR_RNDN);
                        int r=mpfr_cos(yy, xxpi(), rm);
+                       mpfr_set_emax(emax);
                        return r;
                    };
             r=call_ziv_func(y, x, rm, f);
@@ -706,24 +783,26 @@ tanpi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
         r=0;
     } else {
         // x * 2 ==rint(x*2) -> copysign(inf, x);
-        auto e=mpfr_get_exp(x);
-        fpn_handle x2(x);
-        mpfr_set_exp(x2(), e+1);
         // x == rint(x) -> copysign(0, x);
         if (mpfr_integer_p(x)) {
             fpn_handle z(0.0, mpfr_get_prec(y));
             r=mpfr_copysign(y, z(), x, rm);
-        } else if (mpfr_integer_p(x2())) {
+        } else if (is_half_integer(x)) {
             fpn_handle inf(mpfr_get_prec(y));
             mpfr_set_inf(inf(), MPFR_RNDN);
             r=mpfr_copysign(y, inf(), x, rm);
         } else {
             auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
+                       mpfr_exp_t emax=mpfr_get_emax();
+                       mpfr_exp_t nemax=mpfr_get_emax_max();
+                       nemax = std::min(emax<<2, nemax);
+                       mpfr_set_emax(nemax);
                        fpn_handle xxpi(mpfr_get_prec(xx));
                        fpn_handle pi(mpfr_get_prec(xx)*2);
                        mpfr_const_pi(pi(), MPFR_RNDN);
                        mpfr_mul(xxpi(), xx, pi(), MPFR_RNDN);
                        int r=mpfr_tan(yy, xxpi(), rm);
+                       mpfr_set_emax(emax);
                        return r;
                    };
             r=call_ziv_func(y, x, rm, f);
