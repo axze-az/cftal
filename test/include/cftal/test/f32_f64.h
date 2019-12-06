@@ -312,6 +312,9 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
             s.copyfmt(std::cerr);
             s << msg << " failed: " << a0 << " expected: "
               << expected << std::endl;
+            s << std::hexfloat;
+            s << msg << " failed: " << a0 << " expected: "
+              << expected << std::endl;
             std::cerr << s.str();
         }
         r = false;
@@ -342,6 +345,9 @@ bool cftal::test::check(const _T(&a)[_N],
             if (verbose) {
                 std::ostringstream s;
                 s.copyfmt(std::cerr);
+                s << msg << " failed: " << ai << " expected: "
+                  << ei << std::endl;
+                s << std::hexfloat;
                 s << msg << " failed: " << ai << " expected: "
                   << ei << std::endl;
                 std::cerr << s.str();
@@ -383,6 +389,12 @@ cftal::test::check(const std::pair<vec<_I, _N>, vec<_T, _N> >& vr,
             if (verbose) {
                 std::ostringstream s;
                 s.copyfmt(std::cerr);
+                s << msg << " failed: "
+                  << ri.first << ' ' << ri.second
+                  << " expected: "
+                  << exi
+                  << std::endl;
+                s << std::hexfloat;
                 s << msg << " failed: "
                   << ri.first << ' ' << ri.second
                   << " expected: "
