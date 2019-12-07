@@ -1205,8 +1205,40 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         exp_c6, exp_c5, exp_c4, exp_c3
     };
     vf_type y=horner2(xrh, x2, c);
-    y = horner(xrh, y, exp_c2);
     vf_type ye;
+#if 1
+    vf_type c2r=exp_c2*xrh;
+    vf_type c2r2, e0;
+    d_ops::mul12(c2r2, e0, c2r, xrh);
+    // y = 1 + (xrh + xrl) + c2r2 + (x*x2*p) + c2r2 + xrl* expm1
+    vf_type p=y;
+    vf_type e1;
+    d_ops::add12(y, e1, c2r2, xrh*x2*p);
+    vf_type e2;
+    d_ops::add12(y, e2, xrh, y);
+    vf_type e3=xrl + xrl*y;
+    vf_type e4;
+    d_ops::add12(y, e4, exp_c0, y);
+    // d_ops::add12(y, ye, y, e0+e1+e2+e3+e4);
+    ye=e0+e1+e2+e3+e4;
+    if (_EXP_M1 == false) {
+        y += (ye);
+        y = __scale_exp_k(y, kf);
+    } else {
+        // 2^kf = 2*2^s ; s = kf/2
+        vf_type scale = __scale_exp_k(vf_type(0.5), kf);
+        // e^x-1 = 2*(y * 2^s - 0.5)
+        y  *= scale;
+        vf_type t;
+        d_ops::add12cond(y, t, -0.5, y);
+        ye = 2.0 * (ye * scale + t);
+        y = 2.0*y + ye;
+        // x small, required for handling of subnormal numbers
+        y = _T::sel((abs(xrh) < 0x1p-54) & (kf==0.0), xrh, y);
+    }
+    return y;
+#else
+    y = horner(xrh, y, exp_c2);
 #if 1
     d_ops::muladd12(y, ye, xrh, y, x2);
 #else
@@ -1236,6 +1268,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         y = _T::sel((abs(xrh) < 0x1p-54) & (kf==0.0), xrh, y);
     }
     return y;
+#endif
 }
 
 template <typename _T>
@@ -1481,7 +1514,7 @@ exp_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     vf_type y;
     if (_EXP_M1==false) {
-#if 0
+#if 1
         vf_type kf;
         __reduce_exp_arg(xrh, xrl, kf, xc);
         y=__exp_k<_EXP_M1>(xrh, xrl, kf);
@@ -1491,7 +1524,7 @@ exp_k(arg_t<vf_type> xc)
         y=__exp_tbl_k(xrh, xrl, idx, ki);
 #endif
     } else {
-#if 1
+#if 0
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xc);
         y=__expm1_tbl_k(xrh, xrl, idx, ki, xc);
