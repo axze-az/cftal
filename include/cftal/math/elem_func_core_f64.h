@@ -1328,8 +1328,9 @@ __expm1_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type ye;
     vf_type y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, &ye);
     // 2^kf = 2*2^s ; s = kf/2
-    auto sc=__scale_exp_k(ki);
-    vf_type scale=(0.5 * sc.f0()) * sc.f1();
+    // auto sc=__scale_exp_k(ki);
+    // vf_type scale=(0.5 * sc.f0()) * sc.f1();
+    vf_type scale=__scale_exp_k(0.5, ki);
     // e^x-1 = 2*(y * 2^s - 0.5)
     y  *= scale;
     vf_type t;
