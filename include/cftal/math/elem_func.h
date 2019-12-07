@@ -446,7 +446,6 @@ expm1(arg_t<vf_type> x)
     const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one();
     y = _T::sel(x <= expm1_lo_minus_one, -1.0, y);
     y = _T::sel(x >= expm1_hi_inf, _T::pinf(), y);
-    y = _T::sel(x == 0.0, x, y);
     return y;
 }
 
@@ -462,7 +461,6 @@ exp2m1(arg_t<vf_type> x)
     const vf_type exp2m1_lo_minus_one= fc::exp2m1_lo_minus_one();
     y = _T::sel(x <= exp2m1_lo_minus_one, -1.0, y);
     y = _T::sel(x >= exp2m1_hi_inf, _T::pinf(), y);
-    y = _T::sel(x == 0.0, x, y);
     return y;
 }
 
@@ -478,7 +476,6 @@ exp10m1(arg_t<vf_type> x)
     const vf_type exp10m1_lo_minus_one= fc::exp10m1_lo_minus_one();
     y = _T::sel(x <= exp10m1_lo_minus_one, -1.0, y);
     y = _T::sel(x >= exp10m1_hi_inf, _T::pinf(), y);
-    y = _T::sel(x == 0.0, x, y);
     return y;
 }
 

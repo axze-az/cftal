@@ -207,6 +207,18 @@ namespace cftal {
             // [-log(2)/(2*N), log(2)/(2*N)], and the argument
             // k as argument for __scale_exp_k
             // ki is the table index
+            // x the not reduced argument
+            // calculates %e^(xrh+xrl)*(2^idx/N)*2^k - 1
+            static
+            vf_type
+            __expm1_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+                          arg_t<vi_type> idx, arg_t<vi_type> ki,
+                          arg_t<vf_type> x);
+
+            // arguments are the reduced xrh, xrl in
+            // [-log(2)/(2*N), log(2)/(2*N)], and the argument
+            // ki as argument for __scale_exp_k
+            // idx is the table index
             // calculates %e^(xrh+xrl)*(2^idx/N)*2^k
             static
             vf_type
@@ -1269,27 +1281,63 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type y;
 
     if (_P == result_prec::high) {
+#if 1
+        vf_type eh, e0;
+        d_ops::mul12(eh, e0, th, xrh);
+        vf_type e1= th * (xrl+x2*p);
+        vf_type e2;
+        d_ops::add12(y, e2, th, eh);
+        vf_type ye=tl+tl*xrh+e0+e1+e2;
+        d_ops::add12(y, ye, y, ye);
+#else
         vf_type ye;
         d_ops::muladd12(y, ye, xrh, p, x2);
         vf_type yee= xrl + xrl * y;
         ye += yee;
         d_ops::mul22(y, ye, th, tl, y, ye);
         d_ops::add22(y, ye, th, tl, y, ye);
+#endif
         if (expl != nullptr)
             *expl = ye;
     } else {
         vf_type eh=xrh + (xrl+x2*p);
+        vf_type el=tl + tl*xrh;
         if (_P == result_prec::medium) {
             vf_type ye;
-            d_ops::add12(y, ye, th, tl + th*eh);
+            d_ops::add12(y, ye, th, el + th*eh);
             if (expl != nullptr)
                 *expl = ye;
         } else if (_P == result_prec::normal) {
-            y= th + (tl + th*eh);
+            y= th + (el + th*eh);
             if (expl != nullptr)
                 *expl = 0.0;
         }
     }
+    return y;
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+__expm1_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
+              arg_t<vi_type> idx, arg_t<vi_type> ki,
+              arg_t<vf_type> x)
+{
+    vf_type ye;
+    vf_type y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, &ye);
+    // 2^kf = 2*2^s ; s = kf/2
+    auto sc=__scale_exp_k(ki);
+    vf_type scale=(0.5 * sc.f0()) * sc.f1();
+    // e^x-1 = 2*(y * 2^s - 0.5)
+    y  *= scale;
+    vf_type t;
+    d_ops::add12cond(y, t, -0.5, y);
+    ye = 2.0 * (ye * scale + t);
+    y = 2.0*y + ye;
+    // x small, required for handling of subnormal numbers
+    y = _T::sel((abs(x) < 0x1p-54), x, y);
     return y;
 }
 
@@ -1442,26 +1490,15 @@ exp_k(arg_t<vf_type> xc)
         y=__exp_tbl_k(xrh, xrl, idx, ki);
 #endif
     } else {
-#if 0
+#if 1
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xc);
-        vf_type ye;
-        y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, &ye);
-        // 2^kf = 2*2^s ; s = kf/2
-        auto sc=__scale_exp_k(ki);
-        vf_type scale=(0.5 * sc.f0()) * sc.f1();
-        // e^x-1 = 2*(y * 2^s - 0.5)
-        y  *= scale;
-        vf_type t;
-        d_ops::add12cond(y, t, -0.5, y);
-        ye = 2.0 * (ye * scale + t);
-        y = 2.0*y + ye;
-        // x small, required for handling of subnormal numbers
-        y = _T::sel((abs(xc) < 0x1p-54), xrh, y);
+        y=__expm1_tbl_k(xrh, xrl, idx, ki, xc);
 #else
         vf_type kf;
         __reduce_exp_arg(xrh, xrl, kf, xc);
         y=__exp_k<_EXP_M1>(xrh, xrl, kf);
+        y = _T::sel(xc == 0.0, xc, y);
 #endif
     }
     return y;
@@ -1541,7 +1578,8 @@ __reduce_exp2_arg(vf_type& xrh,
     k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type xr= x- kf*_1_ND;
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
+    d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
+    // d_ops::mul12(xrh, xrl, xr, ctbl::m_ln2[0]);
 }
 
 template <typename _T>
@@ -1582,11 +1620,18 @@ exp2_k(arg_t<vf_type> x)
         __reduce_exp2_arg(xrh, xrl, idx, ki, x);
         y=__exp_tbl_k(xrh, xrl, idx, ki);
     } else {
+#if 1
+        vi_type idx, ki;
+        __reduce_exp2_arg(xrh, xrl, idx, ki, x);
+        y=__expm1_tbl_k(xrh, xrl, idx, ki, x*ctbl::m_ln2[0]);
+#else
         vf_type kf= rint(vf_type(x));
         vf_type xr = x - kf;
         // for exp2 mul12 would be sufficient
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
         y=__exp_k<_EXP2_M1>(xrh, xrl, kf);
+        y = _T::sel(xc == 0.0, xc, y);
+#endif
     }
     return y;
 }
@@ -1660,7 +1705,7 @@ __reduce_exp10_arg(vf_type& xrh,
     vf_type dx= hi-xrh;
     vf_type cr = dx- kf * _lg2_32_cw_l;
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    d_ops::mul12(xrh, xrl, xrh, ctbl::m_ln10[0]);
+    d_ops::mul122(xrh, xrl, xrh, ctbl::m_ln10[0], ctbl::m_ln10[1]);
     xrl += cr * ctbl::m_ln10[0];
 }
 
@@ -1714,6 +1759,11 @@ exp10_k(arg_t<vf_type> x)
         y=__exp_tbl_k(xrh, xrl, idx, ki);
     } else {
         using ctbl = impl::d_real_constants<d_real<double>, double>;
+#if 1
+        vi_type idx, ki;
+        __reduce_exp10_arg(xrh, xrl, idx, ki, x);
+        y=__expm1_tbl_k(xrh, xrl, idx, ki, x*ctbl::m_ln10[0]);
+#else
         vf_type kf = rint(vf_type(x * ctbl::m_1_lg2[0]));
         vf_type hi = x - kf * ctbl::m_lg2_cw[0];
         vf_type xr = hi - kf * ctbl::m_lg2_cw[1];
@@ -1725,6 +1775,8 @@ exp10_k(arg_t<vf_type> x)
         // do not normalize xrh, xrl
         // d_ops::add12(xrh, xrl, xrh, xrl);
         y=__exp_k<_EXP10_M1>(xrh, xrl, kf);
+        y = _T::sel(xc == 0.0, xc, y);
+#endif
     }
     return y;
 }
