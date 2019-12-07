@@ -1296,16 +1296,17 @@ __expm1_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type ye;
     vf_type y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, &ye);
     // 2^kf = 2*2^s ; s = kf/2
-    auto sc=__scale_exp_k(ki);
-    vf_type scale=(0.5 * sc.f0()) * sc.f1();
+    // auto sc=__scale_exp_k(ki);
+    // vf_type scale=(0.5 * sc.f0()) * sc.f1();
+    vf_type scale=__scale_exp_k(0.5f, ki);
     // e^x-1 = 2*(y * 2^s - 0.5)
     y  *= scale;
     vf_type t;
-    d_ops::add12cond(y, t, -0.5, y);
+    d_ops::add12cond(y, t, -0.5f, y);
     ye = 2.0 * (ye * scale + t);
     y = 2.0*y + ye;
     // x small, required for handling of subnormal numbers
-    y = _T::sel((abs(x) < 0x1p-54), x, y);
+    y = _T::sel((abs(x) < 0x1p-25f), x, y);
     return y;
 }
 
