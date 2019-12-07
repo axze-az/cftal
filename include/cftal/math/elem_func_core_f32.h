@@ -1255,7 +1255,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         vf_type e1= th * (xrl+x2*p);
         vf_type e2;
         d_ops::add12(y, e2, th, eh);
-        vf_type ye=tl+tl*xrh+e0+e1+e2;
+        vf_type ye=e0 + e1 + e2 + tl + tl*xrh;
         d_ops::add12(y, ye, y, ye);
 #else
         vf_type ye;
