@@ -247,7 +247,7 @@ namespace cftal {
             __exp_tbl_k(arg_t<vhf_type> xr,
                         arg_t<vi_type> idx);
             // calculates 2^k*%e^xr for xr in [-log(2)/(2*N),
-            // log(2)/(2*N)], idx is the table index, 
+            // log(2)/(2*N)], idx is the table index,
             static
             vhf_type
             __exp_tbl_k(arg_t<vhf_type> xr,
