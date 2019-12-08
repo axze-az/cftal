@@ -688,6 +688,15 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     f64_core::__reduce_exp_arg(xrh, xrl, idx, ki, ylnx);
     vhf_type p=f64_core::template
         __exp_tbl_k<f64_core::result_prec::normal>(xrh, xrl, idx);
+#if 1
+    vi_type ep(ki << 20);
+    typename f64_traits::vi2_type ir=combine_zeroeven_odd(ep);
+    typename f64_traits::vi2_type pi=as<
+        typename f64_traits::vi2_type>(p) + ir;
+    p = as<vhf_type>(pi);
+    g*= p;
+    vf_type gh=cvt<vf_type>(g);
+#else
     auto sc=base_type::__scale_exp_k(ki);
     // multiplication before scaling:
     g *= p;
@@ -695,6 +704,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     vf_type gh=cvt<vf_type>(g);
     gh *= sc.f0();
     gh *= sc.f1();
+#endif
 #else
     auto pq=lanczos_rational_at(xa,
                                 lanczos_ratfunc::pdf,
