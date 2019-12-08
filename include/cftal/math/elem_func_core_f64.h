@@ -1216,6 +1216,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     d_ops::add12(y, e1, c2r2, xrh*x2*p);
     vf_type e2;
     d_ops::add12(y, e2, xrh, y);
+    // y+eX = expm1(xrh), calculate correction:
     vf_type e3=xrl + xrl*y;
     vf_type e4;
     d_ops::add12(y, e4, exp_c0, y);
