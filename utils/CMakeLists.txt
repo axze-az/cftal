@@ -82,6 +82,7 @@ endfunction()
 
 add_script(common.sollya)
 add_script(single.sollya)
+add_script(single-using-double.sollya)
 add_script(double.sollya)
 add_script(specfun-double.sollya)
 add_script(specfun-single.sollya)

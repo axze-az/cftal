@@ -1,0 +1,29 @@
+#! /usr/bin/sollya
+execute("common.sollya");
+
+/* implementpoly(p, [-log(2)/512, log(2)/512], 1e-30, DD, "exp_p", "exp.c"); */
+/* printexpansion(p-1.0); */
+verbosity=1!;
+prec=2048!;
+write("\n");
+
+/* exp(x) f32/f64 using tang's method */
+N = 32;
+f = exp(x);
+f1 = expm1(x);
+g=log(2)/2;
+i=[-g/N, g/N];
+// exp_table(N, single);
+b = [|2, ..., 3|];
+c = [|D...|];
+p = fpminimax(f1, b, c, i, relative, floating, x);
+b = [|1|]@b;
+write_approx_prec(p, f1, i);
+write_coeffs(p, "constexpr\n    const double exp_c", "exp", b, c);
+
+
+/*
+ * Local variables:
+ * mode: c++
+ * end:
+ */

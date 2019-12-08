@@ -386,9 +386,6 @@ namespace cftal {
         template <std::size_t _N>
         struct vec_func_traits_f32 : public func_traits<float, int32_t> {
             using vf_type = vec<float, _N>;
-            using vhf_type = vec<double, _N>;
-            using vi2_type = vec<int32_t, 2* _N>;
-            using vli_type = vec<int64_t, _N>;
             using vmf_type = typename vf_type::mask_type;
             using vi_type = vec<int32_t, _N>;
             using vu_type = vec<uint32_t, _N>;
@@ -487,22 +484,6 @@ namespace cftal {
                 return as<vf_type>(i);
             }
 
-            static
-            void
-            extract_words(vi2_type& low_word, vi2_type& high_word,
-                          const vhf_type& x) {
-                vi2_type di=as<vi2_type>(x);
-                low_word = di;
-                high_word = di;
-            }
-
-            static
-            vhf_type
-            combine_words(const vi2_type& l, const vi2_type& h) {
-                vi2_type t= select_even_odd(l, h);
-                vhf_type r=as<vhf_type>(t);
-                return r;
-            }
         };
 
         template <std::size_t _N>

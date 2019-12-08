@@ -18,8 +18,6 @@
 #include <cftal/math/horner_idx.h>
 #if  __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
 #include <cftal/math/spec_func_core_f64.h>
-#include <cftal/math/func_traits_f64_s32.h>
-#include <cftal/math/impl_d_real_constants_f64.h>
 #endif
 #include <type_traits>
 #include <limits>
@@ -46,12 +44,13 @@ namespace cftal {
             using d_ops=cftal::impl::d_real_ops<vf_type,
                                                 d_real_traits<vf_type>::fma>;
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-            using vhf_type = typename _T::vhf_type;
             using f64_traits = typename _T::vhf_traits;
-            using f64_core = spec_func_core<double, f64_traits>;
-            using dd_ops=cftal::impl::d_real_ops<vhf_type,
-                                                 d_real_traits<vhf_type>::fma>;
+            using vhf_type = typename f64_traits::vf_type;
             using vmhf_type = typename f64_traits::vmf_type;
+            using vi2_type = typename f64_traits::vi2_type;
+            using vmi2_type = typename f64_traits::vmi2_type;
+
+            using f64_core = spec_func_core<double, f64_traits>;
 #endif
 
             using base_type::sinpi_cospi_k;
