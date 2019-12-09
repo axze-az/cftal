@@ -1477,7 +1477,7 @@ exp_k(arg_t<vf_type> xc)
         y=__exp_tbl_k(xrh, xrl, idx, ki);
 #endif
     } else {
-#if 0
+#if 1
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xc);
         y=__expm1_tbl_k(xrh, xrl, idx, ki, xc);

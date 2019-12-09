@@ -341,8 +341,8 @@ namespace cftal {
             __reduce_exp_arg(vhf_type& xr,
                              vi_type& idx,
                              vi_type& k,
-                             arg_t<vf_type> x);
-
+                             arg_t<vhf_type> x);
+#if 0
             // argument reduction for %e^(x)
             // return 2^k * (xr) with xr in
             // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
@@ -352,6 +352,13 @@ namespace cftal {
                              vi_type& idx,
                              vi_type& k,
                              arg_t<vhf_type> x);
+#endif
+            // calculates %e^x-1 if exp_m1 == true %e^x otherwise
+            template <bool _EXP_M1>
+            static
+            vhf_type
+            exp_k(arg_t<vhf_type> x);
+
 #endif
             // calculates %e^x-1 if exp_m1 == true %e^x otherwise
             template <bool _EXP_M1>
@@ -1655,11 +1662,11 @@ void
 cftal::math::elem_func_core<float, _T>::
 __reduce_exp_arg(vhf_type& xr,
                  vhf_type& kf,
-                 arg_t<vhf_type> x)
+                 arg_t<vhf_type> xd)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    kf= rint(vhf_type(x * ctbl::m_1_ln2[0]));
-    xr= x - kf * ctbl::m_ln2[0];
+    kf= rint(vhf_type(xd * ctbl::m_1_ln2[0]));
+    xr= xd - kf * ctbl::m_ln2[0];
 }
 
 template <typename _T>
@@ -1668,11 +1675,9 @@ cftal::math::elem_func_core<float, _T>::
 __reduce_exp_arg(vhf_type& xr,
                  vi_type& idx,
                  vi_type& k,
-                 arg_t<vf_type> x)
+                 arg_t<vhf_type> xd)
 {
     using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vhf_type xd= cvt<vhf_type>(x);
-
     static_assert(exp_data<double>::EXP_N==32,
                  "exp_data<double>::EXP_N==32");
     // N
@@ -1688,6 +1693,7 @@ __reduce_exp_arg(vhf_type& xr,
     k = ki >> exp_data<double>::EXP_SHIFT;
 }
 
+#if 0
 template <typename _T>
 void
 cftal::math::elem_func_core<float, _T>::
@@ -1697,6 +1703,29 @@ __reduce_exp_arg(vhf_type& xr,
                  arg_t<vhf_type> x)
 {
     return f64_core::__reduce_exp_arg(xr, idx, k, x);
+}
+#endif
+
+template <typename _T>
+template <bool _EXP_M1>
+inline
+typename cftal::math::elem_func_core<float, _T>::vhf_type
+cftal::math::elem_func_core<float, _T>::
+exp_k(arg_t<vhf_type> xc)
+{
+    vhf_type yd;
+    if (_EXP_M1==false) {
+        vi_type idx, ki;
+        vhf_type xrd;
+        __reduce_exp_arg(xrd, idx, ki, xc);
+        yd=__exp_tbl_k(xrd, idx, ki);
+    } else {
+        vhf_type xr, kf;
+        vhf_type x=cvt<vhf_type>(xc);
+        __reduce_exp_arg(xr, kf, x);
+        yd=__exp_k<_EXP_M1>(xr, kf, x);
+    }
+    return yd;
 }
 
 #endif
@@ -1710,18 +1739,7 @@ exp_k(arg_t<vf_type> xc)
 {
     vf_type y;
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-    vhf_type yd;
-    if (_EXP_M1==false) {
-        vi_type idx, ki;
-        vhf_type xrd;
-        __reduce_exp_arg(xrd, idx, ki, xc);
-        yd=__exp_tbl_k(xrd, idx, ki);
-    } else {
-        vhf_type xr, kf;
-        vhf_type x=cvt<vhf_type>(xc);
-        __reduce_exp_arg(xr, kf, x);
-        yd=__exp_k<_EXP_M1>(xr, kf, x);
-    }
+    vhf_type yd=exp_k<_EXP_M1>(cvt<vhf_type>(xc));
     y=cvt<vf_type>(yd);
 #else
     // float vector only code
