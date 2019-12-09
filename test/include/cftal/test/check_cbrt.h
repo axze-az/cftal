@@ -22,6 +22,7 @@ namespace cftal {
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
                 return cbrt(a);
+                // return rootn(a, vec<int32_t, _N>(3));
             }
 
             static

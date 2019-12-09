@@ -22,6 +22,7 @@ namespace cftal {
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
                 return rsqrt(a);
+                // return rootn(a, vec<int32_t, _N>(-2));
             }
             static
             std::tuple<_T, _T, _T>
