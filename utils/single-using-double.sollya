@@ -21,6 +21,18 @@ b = [|1|]@b;
 write_approx_prec(p, f1, i);
 write_coeffs(p, "constexpr\n    const double exp_c", "exp", b, c);
 
+/* a simple polynomial for exp f32/f64 */
+f = exp(x);
+i = [-log(2)/2, log(2)/2];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|2, ..., 7|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating, 1.0+x);
+b = [|0, 1|]@b;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double exp_c", "exp", b, c);
+
 
 /*
  * Local variables:
