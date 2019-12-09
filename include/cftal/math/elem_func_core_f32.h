@@ -1920,7 +1920,7 @@ exp2_k(arg_t<vf_type> x)
     vhf_type yd=exp_k<_EXP2_M1>(xd);
     y=cvt<vf_type>(yd);
 #else
-    vf_type y, xrh, xrl;
+    vf_type xrh, xrl;
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     if (_EXP2_M1==false) {
         vi_type idx, ki;
@@ -1971,7 +1971,7 @@ exp2_mx2_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
-    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
 #endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
