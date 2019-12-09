@@ -1788,6 +1788,14 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp_mx2_k(arg_t<vf_type> xc)
 {
+    vf_type y;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    vhf_type xd=cvt<vhf_type>(xc);
+    vhf_type x2d=-xd*xd;
+    vhf_type yd=exp_k<false>(x2d);
+    vf_type x2h=cvt<vf_type>(x2d);
+    y=cvt<vf_type>(yd);
+#else
     vf_type x2h, x2l;
     if (d_real_traits<vf_type>::fma==true) {
         d_ops::mul12(x2h, x2l, xc, -xc);
@@ -1799,7 +1807,8 @@ exp_mx2_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
-    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp_lo_zero(), y);
     return y;
@@ -1811,9 +1820,18 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp_px2_k(arg_t<vf_type> xc)
 {
+    vf_type y;
+    using fc_t = math::func_constants<float>;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    vhf_type xd=cvt<vhf_type>(xc);
+    vhf_type x2d=xd*xd;
+    vhf_type yd=exp_k<false>(x2d);
+    vf_type x2h=cvt<vf_type>(x2d);
+    y=cvt<vf_type>(yd);
+    y= _T::sel(x2h > fc_t::exp_hi_inf(), _T::pinf(), y);
+#else
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
-    using fc_t = math::func_constants<float>;
     vmf_type border_case = (x2h == fc_t::exp_hi_inf()) &
         (x2l < 0.0);
     vf_type t= 0x1.01p-17f;
@@ -1823,8 +1841,9 @@ exp_px2_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
-    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
     y= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), y);
+#endif
     return y;
 }
 
@@ -1882,6 +1901,14 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp2_k(arg_t<vf_type> x)
 {
+    vf_type y;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vhf_type xd=cvt<vhf_type>(x);
+    xd *= ctbl::m_ln2[0];
+    vhf_type yd=exp_k<_EXP2_M1>(xd);
+    y=cvt<vf_type>(yd);
+#else
     vf_type y, xrh, xrl;
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     if (_EXP2_M1==false) {
@@ -1901,6 +1928,7 @@ exp2_k(arg_t<vf_type> x)
         y=__exp_k<_EXP2_M1>(xrh, xrl, kf, x*ctbl::m_ln2[0]);
 #endif
     }
+#endif
     return y;
 }
 
@@ -1910,6 +1938,16 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp2_mx2_k(arg_t<vf_type> xc)
 {
+    vf_type y;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vhf_type x2d=cvt<vhf_type>(xc);
+    x2d *= -x2d;
+    vf_type x2h=cvt<vf_type>(x2d);
+    x2d *= ctbl::m_ln2[0];
+    vhf_type yd=exp_k<false>(x2d);
+    y=cvt<vf_type>(yd);
+#else
     vf_type x2h, x2l;
     if (d_real_traits<vf_type>::fma==true) {
         d_ops::mul12(x2h, x2l, xc, -xc);
@@ -1923,6 +1961,7 @@ exp2_mx2_k(arg_t<vf_type> xc)
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
     vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
     return y;
@@ -1934,14 +1973,24 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp2_px2_k(arg_t<vf_type> xc)
 {
+    vf_type y;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vhf_type x2d=cvt<vhf_type>(xc);
+    x2d *= x2d;
+    vf_type x2h=cvt<vf_type>(x2d);
+    x2d *= ctbl::m_ln2[0];
+    vhf_type yd=exp_k<false>(x2d);
+    y=cvt<vf_type>(yd);
+#else
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
 
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
-    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
-
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
     return y;
@@ -2019,7 +2068,15 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp10_k(arg_t<vf_type> x)
 {
-    vf_type y, xrh, xrl;
+    vf_type y;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vhf_type xd=cvt<vhf_type>(x);
+    xd *= ctbl::m_ln10[0];
+    vhf_type yd=exp_k<_EXP10_M1>(xd);
+    y=cvt<vf_type>(yd);
+#else
+    vf_type xrh, xrl;
     if (_EXP10_M1==false) {
         vi_type idx, ki;
         __reduce_exp10_arg(xrh, xrl, idx, ki, x);
@@ -2044,6 +2101,7 @@ exp10_k(arg_t<vf_type> x)
         y=__exp_k<_EXP10_M1>(xrh, xrl, kf, x*ctbl::m_ln10[0]);
 #endif
     }
+#endif
     return y;
 }
 
@@ -2053,6 +2111,16 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp10_mx2_k(arg_t<vf_type> xc)
 {
+    vf_type y;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vhf_type x2d=cvt<vhf_type>(xc);
+    x2d *= -x2d;
+    vf_type x2h=cvt<vf_type>(x2d);
+    x2d *= ctbl::m_ln10[0];
+    vhf_type yd=exp_k<false>(x2d);
+    y=cvt<vf_type>(yd);
+#else
     vf_type x2h, x2l;
     if (d_real_traits<vf_type>::fma==true) {
         d_ops::mul12(x2h, x2l, xc, -xc);
@@ -2065,8 +2133,8 @@ exp10_mx2_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
-    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
-
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp10_lo_zero(), y);
     return y;
@@ -2078,14 +2146,24 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 exp10_px2_k(arg_t<vf_type> xc)
 {
+    vf_type y;
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vhf_type x2d=cvt<vhf_type>(xc);
+    x2d *= x2d;
+    vf_type x2h=cvt<vf_type>(x2d);
+    x2d *= ctbl::m_ln10[0];
+    vhf_type yd=exp_k<false>(x2d);
+    y=cvt<vf_type>(yd);
+#else
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
 
     vf_type xrh, xrl;
     vi_type idx, ki;
     __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
-    vf_type y=__exp_tbl_k(xrh, xrl, idx, ki);
-
+    y=__exp_tbl_k(xrh, xrl, idx, ki);
+#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
     return y;
