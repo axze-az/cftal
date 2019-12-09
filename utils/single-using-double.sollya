@@ -33,6 +33,34 @@ b = [|0, 1|]@b;
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const double exp_c", "exp", b, c);
 
+/* f32: table based logarithm */
+L=7;
+e_1_128=exp(1/128);
+ir = round(e_1_128, L, RU)-1;
+il = round(1-(e_1_128-1), L, RD)-1;
+if ( ir < 2*2^-L ) then {
+    ir = 2*2^-L;
+};
+if ( il > 2*2^-L ) then {
+    il = -2*2^-L;
+};
+i=[il, ir];
+f=log1p(x);
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|2, ..., 4|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating, x);
+b = [|0, 1|]@b;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double log_c", "log", b, c);
+
+b = [|2, ..., 5|];
+p = fpminimax(f, b, c, i, relative, floating, x);
+b = [|1|]@b;
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double log_hp_c", "log_hp", b, c);
+
 
 /*
  * Local variables:
