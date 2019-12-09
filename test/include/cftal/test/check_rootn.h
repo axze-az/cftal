@@ -36,7 +36,8 @@ namespace cftal {
             _T
             s(const _T& a, const int32_t& b) {
                 double db=1.0/double(b);
-                return std::pow(a, db);
+                _T tb=_T(db);
+                return std::pow(a, tb);
             }
 
             static

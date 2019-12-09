@@ -22,14 +22,14 @@ int main(int argc, char** argv)
 
     pgm_args ags=parse(argc, argv, 0x8000);
     if (ags._speed_only == false) {
-        if (ags._cnt*_N < 0x8000*16) {
-            if (ags._use_cache==true) {
+        if (ags._use_cache==true) {
+            if (ags._cnt*_N < 0x8000*16) {
                 mpfr_cache::use(mpfr_pow,
                                 check_pow<float>::fname(), 0.0f);
+            } else {
+                std::cout << "not using cache because of size constraints"
+                          << std::endl;
             }
-        } else {
-            std::cout << "not using cache because of size constraints"
-                      << std::endl;
         }
     }
     func_domain<float> d=std::make_pair(-std::numeric_limits<float>::max(),

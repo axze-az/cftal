@@ -29,10 +29,10 @@ int main(int argc, char** argv)
             if (ags._use_cache==true) {
                 mpfr_cache::use(mpfr_pow,
                                 check_pow<double>::fname(), 0.0);
+            } else {
+                std::cout << "not using cache because of size constraints"
+                          << std::endl;
             }
-        } else {
-            std::cout << "not using cache because of size constraints"
-                      << std::endl;
         }
         try {
             std::string test_data_file=
