@@ -1275,13 +1275,33 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type tl=lk.from(tbl._2_pow_i_n_l);
     static_assert(exp_c1==1.0, "oops");
 
+#if 1
+    // vf_type eh=xrh + (xrl+x2*x2*p4+x2*p2);
+    // vf_type el=tl + tl*xrh;
+    // y= th + (el + th*eh);
+    vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
     vf_type x2=xrh*xrh;
+    vf_type p2=horner(xrh, exp_c3, exp_c2);
+    vf_type x4=x2*x2;
+    vf_type y;
+    vf_type eh, e0;
+    d_ops::mul12(eh, e0, th, xrh);
+    vf_type e1= th * (xrl+x4*p4+x2*p2);
+    vf_type e2;
+    d_ops::add12(y, e2, th, eh);
+    vf_type ye=e0 + e1 + e2 + tl + tl*xrh;
+    if (expl != nullptr) {
+        d_ops::add12(y, ye, y, ye);
+        *expl = ye;
+    } else {
+        y+= ye;
+    }
+#else
     static const double ci[]={
         exp_c6, exp_c5, exp_c4, exp_c3, exp_c2
     };
     vf_type p= horner2(xrh, x2, ci);
     vf_type y;
-
     if (_P == result_prec::high) {
 #if 1
         vf_type eh, e0;
@@ -1315,6 +1335,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
                 *expl = 0.0;
         }
     }
+#endif
     return y;
 }
 
