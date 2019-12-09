@@ -29,6 +29,7 @@
 #include <cftal/math/horner.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
 #if  __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+#include <cftal/vec_cvt.h>
 #include <cftal/math/elem_func_core_f64.h>
 #include <cftal/math/func_traits_f64_s32.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
@@ -161,41 +162,41 @@ namespace cftal {
             // returns 2^k = r.f0()* r.f1() to avoid over and underflows
             static
             scale_result
-            __scale_exp_k(arg_t<vi_type> ki);
+            __two_pow(arg_t<vi_type> ki);
 
             // returns 2^k = r.f0()* r.f1() to avoid over and underflows
             static
             scale_result
-            __scale_exp_k(arg_t<vf_type> k);
+            __two_pow(arg_t<vf_type> k);
 
             // returns y*2^ki
             static
             vf_type
-            __scale_exp_k(arg_t<vf_type> y, arg_t<vi_type> ki);
+            __mul_two_pow(arg_t<vf_type> y, arg_t<vi_type> ki);
 
             // returns y*2^ki, yl*2^ki
             static
             vdf_type
-            __scale_exp_k(arg_t<vf_type> y, arg_t<vf_type> yl,
+            __mul_two_pow(arg_t<vf_type> y, arg_t<vf_type> yl,
                           arg_t<vi_type> ki);
 
             // scaling function for exponential functions
             // returns y*2^k
             static
             vf_type
-            __scale_exp_k(arg_t<vf_type> y, arg_t<vf_type> k);
+            __mul_two_pow(arg_t<vf_type> y, arg_t<vf_type> k);
 
             // scaling function for exponential functions
             // returns yh*2^k, yl*2^k
             static
             vdf_type
-            __scale_exp_k(arg_t<vf_type> yh,
+            __mul_two_pow(arg_t<vf_type> yh,
                           arg_t<vf_type> yl,
                           arg_t<vf_type> k);
 
             // arguments are the reduced xrh, xrl in
             // [-log(2)/2, log(2)/2], and the argument
-            // k as argument for __scale_exp_k
+            // k as argument for __mul_two_pow
             // x is the unreduced argument
             // calculates %e^(xrh+xrl)*2^k - 1 if exp_m1 is true,
             // %e^(xrh+xrl)*2^k otherwise
@@ -218,7 +219,7 @@ namespace cftal {
 
             // arguments are the reduced xrh, xrl in
             // [-log(2)/(2*N), log(2)/(2*N)], and the argument
-            // k as argument for __scale_exp_k
+            // k as argument for __mul_two_pow
             // ki is the table index
             // x the not reduced argument
             // calculates %e^(xrh+xrl)*(2^idx/N)*2^k - 1
@@ -230,7 +231,7 @@ namespace cftal {
 
             // arguments are the reduced xrh, xrl in
             // [-log(2)/(2*N), log(2)/(2*N)], and the argument
-            // ki as argument for __scale_exp_k
+            // ki as argument for __mul_two_pow
             // idx is the table index
             // calculates %e^(xrh+xrl)*(2^idx/N)*2^ki
             static
@@ -1126,7 +1127,7 @@ inline
 __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::scale_result
 cftal::math::elem_func_core<float, _T>::
-__scale_exp_k(arg_t<vi_type> ki)
+__two_pow(arg_t<vi_type> ki)
 {
     vi_type kia= ki>>1;
     vi_type kib= ki - kia;
@@ -1140,7 +1141,7 @@ inline
 __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-__scale_exp_k(arg_t<vf_type> y, arg_t<vi_type> k)
+__mul_two_pow(arg_t<vf_type> y, arg_t<vi_type> k)
 {
     vi_type ka= k >> 1;
     vi_type kb= k - ka;
@@ -1158,11 +1159,11 @@ inline
 __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vdf_type
 cftal::math::elem_func_core<float, _T>::
-__scale_exp_k(arg_t<vf_type> y,  arg_t<vf_type> yl,
+__mul_two_pow(arg_t<vf_type> y,  arg_t<vf_type> yl,
               arg_t<vi_type> k)
 {
     // use floating point operations here because yl may underflow
-    auto sc=__scale_exp_k(k);
+    auto sc=__two_pow(k);
     vf_type rh= y*sc.f0();
     vf_type rl= yl*sc.f0();
     rh *= sc.f1();
@@ -1175,9 +1176,9 @@ inline
 __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::scale_result
 cftal::math::elem_func_core<float, _T>::
-__scale_exp_k(arg_t<vf_type> k)
+__two_pow(arg_t<vf_type> k)
 {
-    return __scale_exp_k(_T::cvt_f_to_i(k));
+    return __two_pow(_T::cvt_f_to_i(k));
 }
 
 template <typename _T>
@@ -1185,9 +1186,9 @@ inline
 __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-__scale_exp_k(arg_t<vf_type> ym, arg_t<vf_type> k)
+__mul_two_pow(arg_t<vf_type> ym, arg_t<vf_type> k)
 {
-    return __scale_exp_k(ym, _T::cvt_f_to_i(k));
+    return __mul_two_pow(ym, _T::cvt_f_to_i(k));
 }
 
 template <typename _T>
@@ -1195,9 +1196,9 @@ inline
 __attribute__((__always_inline__))
 typename cftal::math::elem_func_core<float, _T>::vdf_type
 cftal::math::elem_func_core<float, _T>::
-__scale_exp_k(arg_t<vf_type> yh, arg_t<vf_type> yl, arg_t<vf_type> k)
+__mul_two_pow(arg_t<vf_type> yh, arg_t<vf_type> yl, arg_t<vf_type> k)
 {
-    return __scale_exp_k(yh, yl, _T::cvt_f_to_i(k));
+    return __mul_two_pow(yh, yl, _T::cvt_f_to_i(k));
 }
 
 template <typename _T>
@@ -1260,10 +1261,10 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type ye=e0+e1+e2+e3+e4;
     if (_EXP_M1 == false) {
         y += (ye);
-        y = __scale_exp_k(y, kf);
+        y = __mul_two_pow(y, kf);
     } else {
         // 2^kf = 2*2^s ; s = kf/2
-        vf_type scale = __scale_exp_k(vf_type(0.5f), kf);
+        vf_type scale = __mul_two_pow(vf_type(0.5f), kf);
         // e^x-1 = 2*(y * 2^s - 0.5)
         y  *= scale;
         vf_type t;
@@ -1303,41 +1304,27 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     static_assert(exp_c1==1.0f, "oops");
 
     vf_type x2=xrh*xrh;
-    vf_type p= horner(xrh, exp_c3, exp_c2);
-
+    vf_type p2=horner(xrh, exp_c3, exp_c2);
+    vf_type xrlp=xrl+x2*p2;
     vf_type y;
-
-    if (_P == result_prec::high) {
-#if 1
+    if (_P == result_prec::normal) {
+        vf_type eh=xrh + xrlp;
+        vf_type el=tl + tl*xrh;
+        y= th + (el + th*eh);
+        if (expl!=nullptr)
+            *expl=0.0;
+    } else {
         vf_type eh, e0;
         d_ops::mul12(eh, e0, th, xrh);
-        vf_type e1= th * (xrl+x2*p);
+        vf_type e1= th * xrlp;
         vf_type e2;
         d_ops::add12(y, e2, th, eh);
         vf_type ye=e0 + e1 + e2 + tl + tl*xrh;
-        d_ops::add12(y, ye, y, ye);
-#else
-        vf_type ye;
-        d_ops::muladd12(y, ye, xrh, p, x2);
-        vf_type yee= xrl + xrl * y;
-        ye += yee;
-        d_ops::mul22(y, ye, y, ye, th, tl);
-        d_ops::add22(y, ye, th, tl, y, ye);
-#endif
-        if (expl != nullptr)
+        if (expl != nullptr) {
+            d_ops::add12(y, ye, y, ye);
             *expl = ye;
-    } else {
-        vf_type eh=xrh + (xrl+x2*p);
-        vf_type el=tl + tl*xrh;
-        if (_P == result_prec::medium) {
-            vf_type ye;
-            d_ops::add12(y, ye, th, el + th*eh);
-            if (expl != nullptr)
-                *expl = ye;
-        } else if (_P == result_prec::normal) {
-            y= th + (el + th*eh);
-            if (expl != nullptr)
-                *expl = 0.0;
+        } else {
+            y+= ye;
         }
     }
     return y;
@@ -1355,9 +1342,9 @@ __expm1_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type ye;
     vf_type y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, &ye);
     // 2^kf = 2*2^s ; s = kf/2
-    // auto sc=__scale_exp_k(ki);
+    // auto sc=__two_pow(ki);
     // vf_type scale=(0.5 * sc.f0()) * sc.f1();
-    vf_type scale=__scale_exp_k(0.5f, ki);
+    vf_type scale=__mul_two_pow(0.5f, ki);
     // e^x-1 = 2*(y * 2^s - 0.5)
     y  *= scale;
     vf_type t;
@@ -1378,12 +1365,12 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 {
     vf_type y;
     if (expl == nullptr) {
-        y=__exp_tbl_k<result_prec::normal>(xrh, xrl, idx, expl);
-        y= __scale_exp_k(y, ki);
+        y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, expl);
+        y= __mul_two_pow(y, ki);
     } else {
         vf_type t;
         y=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &t);
-        auto sc=__scale_exp_k(y, t, ki);
+        auto sc=__mul_two_pow(y, t, ki);
         y=sc[0];
         *expl=sc[1];
     }
@@ -2014,7 +2001,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
         vf_type yh, yl;
         yh = __exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &yl);
 
-        auto sc=__scale_exp_k(k);
+        auto sc=__two_pow(k);
         yh *= sc.f0();
         yh *= sc.f1();
 
@@ -2042,7 +2029,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
             vf_type nyh, nyl;
             nyh = __exp_tbl_k<result_prec::medium>(nxrh, nxrl, nidx, &nyl);
             // we know k < 14
-            // auto nsc=__scale_exp_k(nk);
+            // auto nsc=__two_pow(nk);
             // nyh *= nsc.f0();
             // nyl *= nsc.f0();
             // nyh *= nsc.f1();
@@ -2726,7 +2713,7 @@ pow_k2(arg_t<vf_type> xh, arg_t<vf_type> xl,
     __reduce_exp_arg(xrh, xrl, idx, ki, ylnx[0], ylnx[1]);
     vf_type rl;
     vf_type rh=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &rl);
-    auto sc = __scale_exp_k(ki);
+    auto sc = __two_pow(ki);
     return std::make_pair(vdf_type(rh, rl), sc);
 }
 

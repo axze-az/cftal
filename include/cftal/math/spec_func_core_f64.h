@@ -808,7 +808,7 @@ erfc_tbl_k(arg_t<vf_type> xc)
     vf_type ih, il;
     d_ops::add212cond(ih, il, c0h, c0l, i);
     d_ops::mul22(ih, il, ih, il, exh, exl);
-    auto sc=base_type::__scale_exp_k(k);
+    auto sc=base_type::__two_pow(k);
     ih *= sc.f0();
     ih *= sc.f1();
     vmf_type x_lt_0_00 = xc < 0.0;
