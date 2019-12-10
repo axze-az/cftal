@@ -782,7 +782,6 @@ __frexp_k(vf_type& m, arg_t<vf_type> x)
     const int32_t neg_bias_p_1_m_54=neg_bias_p_1 - 54;
     vi2_type e=_T::sel(_T::vmf_to_vmi2(is_denom),
                        neg_bias_p_1_m_54, neg_bias_p_1);
-#if 1
     vi2_type ix=as<vi2_type>(xn);
     e += ((ix>>20) & _T::e_mask());
     vli_type mx=as<vli_type>(xn);
@@ -791,14 +790,6 @@ __frexp_k(vf_type& m, arg_t<vf_type> x)
     mx &= clear_exp_msk;
     mx |= half;
     m=as<vf_type>(mx);
-#else
-    vi2_type lx, hx;
-    _T::extract_words(lx, hx, xn);
-    /* reduce x into [0.5, 1.0) */
-    e +=  ((hx>>20) & _T::e_mask());
-    hx = (hx&0x800fffff) | vi2_type(0x3fe00000);
-    m = _T::combine_words(lx, hx);
-#endif
     return e;
 }
 
@@ -808,33 +799,30 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 frexp(arg_t<vf_type> x, vi_type* ve)
 {
-    vf_type xs=x;
-    using fc=func_constants<double>;
+    using fc = func_constants<double>;
     vmf_type is_denom= abs(x) <= fc::max_denormal();
-    // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
-    vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
-    vi2_type eo= _T::sel_val_or_zero(i_is_denom, vi2_type(-54));
-    // extract mantissa
-    vi2_type lo_word, hi_word;
-    _T::extract_words(lo_word, hi_word, xs);
-    // exponent:
-    vi2_type e=((hi_word >> 20) & _T::e_mask()) + eo;
-    // insert exponent
-    hi_word = (hi_word & vi2_type(0x800fffff)) | vi2_type(0x3fe00000);
-    // combine low and high word
-    vf_type frc(_T::combine_words(lo_word, hi_word));
+    vf_type xn=_T::sel(is_denom, x*0x1p54, x);
+    const int32_t neg_bias_p_1=-_T::bias()+1;
+    const int32_t neg_bias_p_1_m_54=neg_bias_p_1 - 54;
+    vli_type mx=as<vli_type>(xn);
+    const int64_t clear_exp_msk=0x800fffffffffffffLL;
+    const int64_t half=0x3fe0000000000000LL;
+    mx &= clear_exp_msk;
+    mx |= half;
+    vf_type m=as<vf_type>(mx);
     // inf, nan, zero
     vmf_type f_inz=isinf(x) | isnan(x) | (x==vf_type(0.0));
-    frc = _T::sel(f_inz, x, frc);
+    m = _T::sel(f_inz, x, m);
     if (ve != nullptr) {
-        // remove bias from e
+        vi2_type e=_T::sel(_T::vmf_to_vmi2(is_denom),
+                           neg_bias_p_1_m_54, neg_bias_p_1);
+        vi2_type ix=as<vi2_type>(xn);
+        e += ((ix>>20) & _T::e_mask());
         vmi2_type i_inz=_T::vmf_to_vmi2(f_inz);
-        e -= vi2_type(_T::bias()-1);
-        e= _T::sel_zero_or_val(i_inz, e);
-        *ve= _T::vi2_odd_to_vi(e);
+        e = _T::sel_zero_or_val(i_inz, e);
+        *ve=_T::vi2_odd_to_vi(e);
     }
-    return frc;
+    return m;
 }
 
 template <typename _T>
