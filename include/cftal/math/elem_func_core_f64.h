@@ -974,7 +974,7 @@ root12_k(arg_t<vf_type> xc)
 
     const vli_type msk64=0xFFFFFFFF00000000LL;
     const vi2_type msk=as<vi2_type>(msk64);
-    // do a division by 3, round to - infinity:
+    // do a division by 12, round to - infinity:
     vi2_type e12= (e*fac_1_12)>>shift_1_12;
     // r is always in [0, 1, 11] because of the round down
     // vi2_type r = e - ((e12<<3) + (e12<<2));
