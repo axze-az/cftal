@@ -28,6 +28,12 @@ namespace cftal {
 
         namespace impl {
 
+            // xn contains the power of x required
+            template <typename _C, typename _T, size_t _N>
+            _T
+            householder_step(_T xn, _T x, _T y,
+                             const _C(&p)[_N],
+                             const _C(&q)[_N]);
 
             // helper functions for different root3 iteration steps
             struct root3 {
@@ -119,6 +125,11 @@ namespace cftal {
                 template <typename _C, typename _T>
                 static
                 _T
+                order15(_T x, _T y);
+
+                template <typename _C, typename _T>
+                static
+                _T
                 householder3(_T x, _T y);
 
                 template <typename _C, typename _T>
@@ -165,6 +176,26 @@ namespace cftal {
     }
 }
 
+template <typename _C, typename _T, cftal::size_t _N>
+_T
+cftal::math::impl::
+householder_step(_T xn, _T x, _T y, const _C(&pa)[_N], const _C(&qa)[_N])
+{
+    static_assert(_N>1, "_N must be greater than one");
+    const _C* pp=pa;
+    const _C* pq=qa;
+    _T yi=y;
+    _T p=horner(xn, pp[0], pp[1]*yi);
+    _T q=horner(xn, pq[0], pq[1]*yi);
+    for (size_t i=2; i<_N; ++i) {
+        yi *= y;
+        _T pi=pp[i] * yi;
+        _T qi=pq[i] * yi;
+        p=horner(xn, p, pi);
+        q=horner(xn, q, qi);
+    }
+    return x + x * p/q;    
+}
 
 template <typename _C, typename _T>
 _T
@@ -405,7 +436,7 @@ cftal::math::impl::root12::order9(_T x, _T y)
     _T x12=pow12(x);
     _T z = (y-x12)/x12;
     _T d= z* horner(z,
-                    _C(4134346117.0/495338913792.0),
+                    _C(-4134346117.0/495338913792.0),
                     _C(49811399.0/5159780352.0),
                     _C(-4910983.0/429981696.0),
                     _C(83237.0/5971968.0),
@@ -426,7 +457,34 @@ cftal::math::impl::root12::order10(_T x, _T y)
     _T z = (y-x12)/x12;
     _T d= z* horner(z,
                     _C(392762881115.0/53496602689536.0),
-                    _C(4134346117.0/495338913792.0),
+                    _C(-4134346117.0/495338913792.0),
+                    _C(49811399.0/5159780352.0),
+                    _C(-4910983.0/429981696.0),
+                    _C(83237.0/5971968.0),
+                    _C(-8855.0/497664.0),
+                    _C(253.0/10368.0),
+                    _C(-11.0/288.0),
+                    _C(1.0/12.0));
+    _T xn= x + x*d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root12::order15(_T x, _T y)
+{
+    // _T x12=powu<_T, 12>::v(x);
+    _T x12=pow12(x);
+    // _T z = (y-x12)/x12;
+    _T z=y/x12-1.0;
+    _T d= z* horner(z,
+                    _C(-2901323299518379285/638959998741245853696.0),
+                    _C(131027503849217129.0/26623333280885243904.0),
+                    _C(-11911591259019739.0/2218611106740436992.0),
+                    _C(90928177549769.0/15407021574586368.0),
+                    _C(-8405125655861.0/1283918464548864.0),
+                    _C(392762881115.0/53496602689536.0),
+                    _C(-4134346117.0/495338913792.0),
                     _C(49811399.0/5159780352.0),
                     _C(-4910983.0/429981696.0),
                     _C(83237.0/5971968.0),
@@ -569,6 +627,31 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root12::householder8(_T x, _T y)
 {
+#if 1
+    constexpr static const _C p[]={
+        _C(-3536.0),
+        _C(-194376.0),
+        _C(-1089088.0),
+        _C(-545688.0),
+        _C(1210352.0),
+        _C(584584.0),
+        _C(37664.0),
+        _C(88.0)
+    };
+    constexpr static const _C q[]={
+        _C(8398.0),
+        _C(800943.0),
+        _C(8525660.0),
+        _C(21126105.0),
+        _C(14604590.0),
+        _C(2628769.0),
+        _C(81224.0),
+        _C(55.0)
+    };
+    _T x12=pow12(x);
+    _T r=householder_step(x12, x, y, p, q);
+    return r;
+#else
     _T x12=pow12(x);
     _T y1=y;
     _T y2=y*y;
@@ -595,8 +678,9 @@ cftal::math::impl::root12::householder8(_T x, _T y)
                      _C(2628769.0)*y5,
                      _C(81224.0)*y6,
                      _C(55.0)*y7);
-    _T xn = x + num/denom;
+    _T xn = x + num/denom;    
     return xn;
+#endif    
 }
 
 template <typename _C, typename _T>
@@ -680,7 +764,11 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root12::householder16(_T x, _T y)
 {
-    _T x12=pow12(x);
+    _T x2=x*x;
+    _T x4=x2*x2;
+    _T x6=x4*x2;
+    _T x12=x6*x6;
+    // _T x12=pow12(x);
     _T y1=y;
     _T y2=y*y;
     _T y3=y2*y;
