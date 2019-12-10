@@ -183,7 +183,7 @@ householder_step(_T xn, _T x, _T y, const _C(&pa)[_N], const _C(&qa)[_N])
     _T p=horner(xn, pp[0], pp[1]*yi);
     _T q=horner(xn, pq[0], pq[1]*yi);
 #pragma clang loop unroll(disable)
-#pragma GCC unroll 0    
+#pragma GCC unroll 0
     for (size_t i=2; i<_N; ++i) {
         yi *= y;
         _T pi=pp[i] * yi;
@@ -484,7 +484,7 @@ cftal::math::impl::root12::householder3(_T x, _T y)
         _C(+1.8200000000000000000000e+02), // 24
         _C(+5.7200000000000000000000e+02), // 12
         _C(+1.1000000000000000000000e+02)  // 0
-    };    
+    };
     _T x12=pow12(x);
     _T r=householder_step(x12, x, y, p, q);
     return r;
