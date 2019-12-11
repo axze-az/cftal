@@ -977,8 +977,8 @@ root12_k(arg_t<vf_type> xc)
     // do a division by 12, round to - infinity:
     vi2_type e12= (e*fac_1_12)>>shift_1_12;
     // r is always in [0, 1, 11] because of the round down
-    // vi2_type r = e - ((e12<<3) + (e12<<2));
-    vi2_type r = e - e12 *12;
+    vi2_type r = e - ((e12<<3) + (e12<<2));
+    // vi2_type r = e - e12 *12;
     // if we have a positive remainder we have to correct
     // the final exponent:
     vmi2_type r_gt_z = r > 0;
