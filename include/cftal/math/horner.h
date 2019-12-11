@@ -560,7 +560,7 @@ __attribute__((always_inline))
 void
 cftal::math::horner_comp_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 {
-    using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
     // y = d_ops::two_prod(c1, x, p_i);
     // y = d_ops::two_sum(y, c0, o_i);
@@ -575,7 +575,7 @@ __attribute__((always_inline))
 void
 cftal::math::horner_comp_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 {
-    using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
     // y = d_ops::two_prod(c1h, x, p_i);
     // y = d_ops::two_sum(y, c0, o_i);
@@ -662,7 +662,7 @@ void
 cftal::math::
 horner_comp_quick_s0(_X& y, _X& ye, _X x, _C1 c1, _C0 c0)
 {
-    using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
 #if 1
     d_ops::muladd12(y, ye, c0, x, c1);
 #else
@@ -680,7 +680,7 @@ void
 cftal::math::
 horner_comp_quick_si(_X& y, _X& ye, _X x, _C1 c1h, _C1 c1l, _C0 c0)
 {
-    using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
 #if 1
     _X t1;
     d_ops::muladd12(y, t1, c0, x, c1h);
@@ -881,7 +881,7 @@ eval_rational(_X xc,
         }
     }
     _X qq;
-    using d_ops=cftal::impl::d_real_ops<_X, d_real_traits<_X>::fma>;
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
     if (_N1HP|_N2HP) {
         _X ql;
         d_ops::div22(qq, ql, n, n_l, d, d_l);

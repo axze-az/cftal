@@ -137,7 +137,7 @@ __kernel_rem_pio2(double xr[2], double x, double xl)
     zl = x < 0.0 ? -zl : zl;
 #endif
     using d_traits= d_real_traits<double>;
-    using d_ops = cftal::impl::d_real_ops<double, d_traits::fma>;
+    using d_ops = d_real_ops<double, d_traits::fma>;
 
     double xi[5];
     for (int i=0; i<4; ++i) {

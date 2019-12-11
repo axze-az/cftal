@@ -24,8 +24,7 @@
 namespace cftal {
     namespace math {
 
-
-        // specialization of elem_func_core for double and different
+        // specialization of spec_func_core for double and different
         // traits
         template <typename _T>
         struct spec_func_core<double, _T>
@@ -42,8 +41,7 @@ namespace cftal {
 
             using my_type = spec_func_core<double, _T>;
 
-            using d_ops=cftal::impl::d_real_ops<vf_type,
-                                                d_real_traits<vf_type>::fma>;
+            using d_ops=typename base_type::d_ops;
 
             using base_type::sinpi_cospi_k;
             static

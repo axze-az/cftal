@@ -205,311 +205,307 @@ namespace cftal {
     template <typename _T>
     using d_real = fp_expansion<_T, 2>;
 
-    namespace impl {
+    template <class _T>
+    struct d_real_ops_common {
 
-        template <class _T>
-        struct d_real_ops_common {
+        // return s + r = a + b
+        // with |a| > |b|
+        static
+        void
+        add12(_T& s, _T& r, const _T& a, const _T& b);
 
-            // return s + r = a + b
-            // with |a| > |b|
-            static
-            void
-            add12(_T& s, _T& r, const _T& a, const _T& b);
+        // return s + r = a + b
+        static
+        void
+        add12cond(_T& s, _T& r, const _T& a, const _T& b);
 
-            // return s + r = a + b
-            static
-            void
-            add12cond(_T& s, _T& r, const _T& a, const _T& b);
+        // return (zh, zl) = (xh, xl) + (yh, yl)
+        // |xh| > |yh|
+        static
+        void
+        add22(_T& zh, _T& zl,
+                const _T& xh, const _T& xl,
+                const _T& yh, const _T& yl);
 
-            // return (zh, zl) = (xh, xl) + (yh, yl)
-            // |xh| > |yh|
-            static
-            void
-            add22(_T& zh, _T& zl,
-                  const _T& xh, const _T& xl,
-                  const _T& yh, const _T& yl);
+        // return (zh, zl) = (xh, xl) + (yh, yl)
+        // |xh| > |yh|
+        static
+        void
+        add22hp(_T& zh, _T& zl,
+                const _T& xh, const _T& xl,
+                const _T& yh, const _T& yl);
 
-            // return (zh, zl) = (xh, xl) + (yh, yl)
-            // |xh| > |yh|
-            static
-            void
-            add22hp(_T& zh, _T& zl,
+        // return (zh, zl) = (xh, xl) + (yh, yl)
+        static
+        void
+        add22cond(_T& zh, _T& zl,
                     const _T& xh, const _T& xl,
                     const _T& yh, const _T& yl);
 
-            // return (zh, zl) = (xh, xl) + (yh, yl)
-            static
-            void
-            add22cond(_T& zh, _T& zl,
-                      const _T& xh, const _T& xl,
-                      const _T& yh, const _T& yl);
+        // return (zh, zl) = (xh, xl) + (yh, yl)
+        static
+        void
+        add22condhp(_T& zh, _T& zl,
+                    const _T& xh, const _T& xl,
+                    const _T& yh, const _T& yl);
 
-            // return (zh, zl) = (xh, xl) + (yh, yl)
-            static
-            void
-            add22condhp(_T& zh, _T& zl,
-                        const _T& xh, const _T& xl,
+        // return (zh, zl) = a + (bh, bl)
+        // with |a| > |bh|
+        static
+        void
+        add122(_T& zh, _T& zl,
+                const _T& a, const _T& bh, const _T& bl);
+
+        // return (zh, zl) = a + (bh, bl)
+        static
+        void
+        add122cond(_T& zh, _T& zl,
+                    const _T& a, const _T& bh, const _T& bl);
+
+        // return (zh, zl) = (ah, bl) + b
+        // with |ah| > b
+        static
+        void
+        add212(_T& zh, _T& zl,
+                const _T& ah, const _T& al, const _T& b);
+
+        // return (zh, zl) = (ah, bl) + b
+        // with |ah| > b
+        static
+        void
+        add212cond(_T& zh, _T& zl,
+                    const _T& ah, const _T& al, const _T& b);
+
+    };
+
+    template <class _T, bool _FMA>
+    struct d_real_ops_fma : public d_real_ops_common<_T> {
+    };
+
+    // specialization using no fma
+    template <class _T>
+    struct d_real_ops_fma<_T, false> : public d_real_ops_common<_T> {
+        using base_type=d_real_ops_common<_T>;
+        using my_type=d_real_ops_fma<_T, false>;
+
+        using base_type::add12;
+        using base_type::add12cond;
+        using base_type::add22;
+        using base_type::add22cond;
+        using base_type::add122;
+
+        static
+        _T
+        xfma(const _T& a, const _T& b, const _T& c);
+
+        static
+        void
+        sqr12(_T& rh, _T& rl, const _T& u);
+
+        static
+        void
+        mul12(_T& rh, _T& rl, const _T& u, const _T& v);
+
+        // return (rh, rl) = c+ a*b
+        // requires |c| > |a*b|
+        static
+        void
+        muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
+
+        // mul122 without normalization
+        static
+        void
+        unorm_mul122(_T& rh, _T& rl,
+                        const _T& xh,
                         const _T& yh, const _T& yl);
 
-            // return (zh, zl) = a + (bh, bl)
-            // with |a| > |bh|
-            static
-            void
-            add122(_T& zh, _T& zl,
-                   const _T& a, const _T& bh, const _T& bl);
+        static
+        void
+        mul122(_T& rh, _T& rl,
+                const _T& xh,
+                const _T& yh, const _T& yl);
 
-            // return (zh, zl) = a + (bh, bl)
-            static
-            void
-            add122cond(_T& zh, _T& zl,
-                       const _T& a, const _T& bh, const _T& bl);
-
-            // return (zh, zl) = (ah, bl) + b
-            // with |ah| > b
-            static
-            void
-            add212(_T& zh, _T& zl,
-                   const _T& ah, const _T& al, const _T& b);
-
-            // return (zh, zl) = (ah, bl) + b
-            // with |ah| > b
-            static
-            void
-            add212cond(_T& zh, _T& zl,
-                       const _T& ah, const _T& al, const _T& b);
-
-        };
-
-        template <class _T, bool _FMA>
-        struct d_real_ops_fma : public d_real_ops_common<_T> {
-        };
-
-        // specialization using no fma
-        template <class _T>
-        struct d_real_ops_fma<_T, false> : public d_real_ops_common<_T> {
-            using base_type=d_real_ops_common<_T>;
-            using my_type=d_real_ops_fma<_T, false>;
-
-            using base_type::add12;
-            using base_type::add12cond;
-            using base_type::add22;
-            using base_type::add22cond;
-            using base_type::add122;
-
-            static
-            _T
-            xfma(const _T& a, const _T& b, const _T& c);
-
-            static
-            void
-            sqr12(_T& rh, _T& rl, const _T& u);
-
-            static
-            void
-            mul12(_T& rh, _T& rl, const _T& u, const _T& v);
-
-            // return (rh, rl) = c+ a*b
-            // requires |c| > |a*b|
-            static
-            void
-            muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
-
-            // mul122 without normalization
-            static
-            void
-            unorm_mul122(_T& rh, _T& rl,
-                         const _T& xh,
-                         const _T& yh, const _T& yl);
-
-            static
-            void
-            mul122(_T& rh, _T& rl,
-                   const _T& xh,
-                   const _T& yh, const _T& yl);
-
-            static
-            void
-            sqr22(_T& rh, _T& rl,
-                  const _T& xh, const _T& xl);
+        static
+        void
+        sqr22(_T& rh, _T& rl,
+                const _T& xh, const _T& xl);
 
 
-            static
-            void
-            mul22(_T& rh, _T& rl,
-                  const _T& xh, const _T& xl,
-                  const _T& yh, const _T& yl);
+        static
+        void
+        mul22(_T& rh, _T& rl,
+                const _T& xh, const _T& xl,
+                const _T& yh, const _T& yl);
 
-            static
-            void
-            rcp21(_T& r,
-                  const _T& ah, const _T& al);
+        static
+        void
+        rcp21(_T& r,
+                const _T& ah, const _T& al);
 
-            static
-            void
-            sqr21(_T& rh,
-                  const _T& xh, const _T& xl);
-        };
+        static
+        void
+        sqr21(_T& rh,
+                const _T& xh, const _T& xl);
+    };
 
-        // specialization using fma
-        template <class _T>
-        struct d_real_ops_fma<_T, true> : public d_real_ops_common<_T> {
-            using base_type=d_real_ops_common<_T>;
-            using my_type=d_real_ops_fma<_T, true>;
+    // specialization using fma
+    template <class _T>
+    struct d_real_ops_fma<_T, true> : public d_real_ops_common<_T> {
+        using base_type=d_real_ops_common<_T>;
+        using my_type=d_real_ops_fma<_T, true>;
 
-            using base_type::add12;
-            using base_type::add12cond;
-            using base_type::add22;
-            using base_type::add22cond;
-            using base_type::add122;
+        using base_type::add12;
+        using base_type::add12cond;
+        using base_type::add22;
+        using base_type::add22cond;
+        using base_type::add122;
 
-            static
-            _T
-            xfma(const _T& a, const _T& b, const _T& c);
+        static
+        _T
+        xfma(const _T& a, const _T& b, const _T& c);
 
-            static
-            void
-            sqr12(_T& rh, _T& rl, const _T& u);
+        static
+        void
+        sqr12(_T& rh, _T& rl, const _T& u);
 
-            static
-            void
-            mul12(_T& rh, _T& rl, const _T& u, const _T& v);
+        static
+        void
+        mul12(_T& rh, _T& rl, const _T& u, const _T& v);
 
-            // return (rh, rl) = c+ a*b
-            // requires |c| > |a*b|
-            static
-            void
-            muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
+        // return (rh, rl) = c+ a*b
+        // requires |c| > |a*b|
+        static
+        void
+        muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
 
-            // mul122 without normalization
-            static
-            void
-            unorm_mul122(_T& rh, _T& rl,
-                         const _T& xh,
-                         const _T& yh, const _T& yl);
+        // mul122 without normalization
+        static
+        void
+        unorm_mul122(_T& rh, _T& rl,
+                        const _T& xh,
+                        const _T& yh, const _T& yl);
 
-            static
-            void
-            mul122(_T& rh, _T& rl,
-                   const _T& xh,
-                   const _T& yh, const _T& yl);
+        static
+        void
+        mul122(_T& rh, _T& rl,
+                const _T& xh,
+                const _T& yh, const _T& yl);
 
-            static
-            void
-            sqr22(_T& rh, _T& rl,
-                  const _T& xh, const _T& xl);
+        static
+        void
+        sqr22(_T& rh, _T& rl,
+                const _T& xh, const _T& xl);
 
-            static
-            void
-            mul22(_T& rh, _T& rl,
-                  const _T& xh, const _T& xl,
-                  const _T& yh, const _T& yl);
+        static
+        void
+        mul22(_T& rh, _T& rl,
+                const _T& xh, const _T& xl,
+                const _T& yh, const _T& yl);
 
-            static
-            void
-            rcp21(_T& r,
-                  const _T& ah, const _T& al);
+        static
+        void
+        rcp21(_T& r,
+                const _T& ah, const _T& al);
 
-            // return (ah,al)^2
-            static
-            void
-            sqr21(_T& r,
-                  const _T& ah, const _T& al);
-        };
+        // return (ah,al)^2
+        static
+        void
+        sqr21(_T& r,
+                const _T& ah, const _T& al);
+    };
 
 
-        template <class _T, bool _FMA>
-        struct d_real_ops : public d_real_ops_fma<_T, _FMA> {
-            using base_type=d_real_ops_fma<_T, _FMA>;
-            using my_type=d_real_ops<_T, _FMA>;
+    template <class _T, bool _FMA>
+    struct d_real_ops : public d_real_ops_fma<_T, _FMA> {
+        using base_type=d_real_ops_fma<_T, _FMA>;
+        using my_type=d_real_ops<_T, _FMA>;
 
-            using base_type::add12;
-            using base_type::add12cond;
-            using base_type::add22;
-            using base_type::add22cond;
-            using base_type::mul12;
-            using base_type::mul122;
-            using base_type::mul22;
-            using base_type::add122;
-            using base_type::add212;
-            using base_type::rcp21;
-            using base_type::sqr12;
+        using base_type::add12;
+        using base_type::add12cond;
+        using base_type::add22;
+        using base_type::add22cond;
+        using base_type::mul12;
+        using base_type::mul122;
+        using base_type::mul22;
+        using base_type::add122;
+        using base_type::add212;
+        using base_type::rcp21;
+        using base_type::sqr12;
 
-            // c+ a*b
-            static
-            void
-            muladd212(_T& rh, _T&rl,
-                      const _T& ch, const _T& cl,
-                      const _T& a,
-                      const _T& bh, const _T& bl);
+        // c+ a*b
+        static
+        void
+        muladd212(_T& rh, _T&rl,
+                    const _T& ch, const _T& cl,
+                    const _T& a,
+                    const _T& bh, const _T& bl);
 
-            static
-            void
-            muladd22(_T& rh, _T&rl,
-                     const _T& ch, const _T& cl,
-                     const _T& ah, const _T& al,
-                     const _T& bh, const _T& bl);
+        static
+        void
+        muladd22(_T& rh, _T&rl,
+                    const _T& ch, const _T& cl,
+                    const _T& ah, const _T& al,
+                    const _T& bh, const _T& bl);
 
-            // a/b
-            static
-            void
-            div12(_T& rh, _T& rl,
-                  const _T& a, const _T& b);
+        // a/b
+        static
+        void
+        div12(_T& rh, _T& rl,
+                const _T& a, const _T& b);
 
-            // a/b
-            static
-            void
-            div212(_T& rh, _T& rl,
-                   const _T& ah, const _T& al,
-                   const _T& b);
+        // a/b
+        static
+        void
+        div212(_T& rh, _T& rl,
+                const _T& ah, const _T& al,
+                const _T& b);
 
-            // a/b
-            static
-            void
-            div122(_T& rh, _T& rl,
-                  const _T& ah,
-                   const _T& bh, const _T& bl);
+        // a/b
+        static
+        void
+        div122(_T& rh, _T& rl,
+                const _T& ah,
+                const _T& bh, const _T& bl);
 
-            // a/b
-            static
-            void
-            div22(_T& rh, _T& rl,
-                  const _T& ah, const _T& al,
-                  const _T& bh, const _T& bl);
+        // a/b
+        static
+        void
+        div22(_T& rh, _T& rl,
+                const _T& ah, const _T& al,
+                const _T& bh, const _T& bl);
 
-            static
-            void
-            __scaled_div22(_T& rh, _T& rl,
-                           const _T& ah, const _T& al,
-                           const _T& bh, const _T& bl);
+        static
+        void
+        __scaled_div22(_T& rh, _T& rl,
+                        const _T& ah, const _T& al,
+                        const _T& bh, const _T& bl);
 
-            static
-            void
-            scaled_div22(_T& rh, _T& rl,
-                         const _T& ah, const _T& al,
-                         const _T& bh, const _T& bl);
+        static
+        void
+        scaled_div22(_T& rh, _T& rl,
+                        const _T& ah, const _T& al,
+                        const _T& bh, const _T& bl);
 
-            static
-            void
-            rcp12(_T& rh,  _T& rl,
-                  const _T& a);
+        static
+        void
+        rcp12(_T& rh,  _T& rl,
+                const _T& a);
 
-            static
-            void
-            rcp2(_T& rh,  _T& rl,
-                 const _T& ah, const _T& al);
+        static
+        void
+        rcp2(_T& rh,  _T& rl,
+                const _T& ah, const _T& al);
 
-            static
-            void
-            sqrt2(_T& rh, _T& rl,
-                  const _T& ah, const _T& al);
+        static
+        void
+        sqrt2(_T& rh, _T& rl,
+                const _T& ah, const _T& al);
 
-            static
-            void
-            sqrt21(_T& rh,
-                   const _T& ah, const _T& al);
-        };
-
-    }
+        static
+        void
+        sqrt21(_T& rh,
+                const _T& ah, const _T& al);
+    };
 
     // unary minus
     template <typename _T>
@@ -647,7 +643,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add12(_T& s, _T& r, const _T& a, const _T& b)
 {
     _T _a = a;
@@ -661,7 +657,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add12cond(_T& s, _T& r, const _T& a, const _T& b)
 {
     _T _a= a;
@@ -678,7 +674,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add22(_T& zh, _T& zl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
@@ -694,7 +690,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add22hp(_T& zh, _T& zl,
         const _T& xh, const _T& xl,
         const _T& yh, const _T& yl)
@@ -714,7 +710,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add22cond(_T& zh, _T& zl,
           const _T& xh, const _T& xl,
           const _T& yh, const _T& yl)
@@ -731,7 +727,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add22condhp(_T& zh, _T& zl,
             const _T& xh, const _T& xl,
            const _T& yh, const _T& yl)
@@ -751,7 +747,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add122(_T& zh, _T& zl,
        const _T& a, const _T& bh, const _T& bl)
 {
@@ -765,7 +761,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add122cond(_T& zh, _T& zl,
            const _T& a, const _T& bh, const _T& bl)
 {
@@ -775,12 +771,11 @@ add122cond(_T& zh, _T& zl,
     add12(zh, zl,_t1,_t3);
 }
 
-
 template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add212(_T& zh, _T& zl,
        const _T& ah, const _T& al, const _T& b)
 {
@@ -794,7 +789,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_common<_T>::
+cftal::d_real_ops_common<_T>::
 add212cond(_T& zh, _T& zl,
            const _T& ah, const _T& al, const _T& b)
 {
@@ -804,12 +799,11 @@ add212cond(_T& zh, _T& zl,
     add12(zh, zl, _t1, _t3);
 }
 
-
 template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 sqr12(_T& rh, _T& rl, const _T& u)
 {
     _T h = u * u;
@@ -822,7 +816,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 mul12(_T& rh, _T& rl, const _T& u, const _T& v)
 {
     _T h = u * v;
@@ -835,7 +829,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b)
 {
     _T t0 = a;
@@ -851,7 +845,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 rcp21(_T& rh, const _T& ah, const _T& al)
 {
     _T q0 = _T(1.0)/ah;
@@ -861,12 +855,11 @@ rcp21(_T& rh, const _T& ah, const _T& al)
     rh = fma(q0, t, q0);
 }
 
-
 template <typename _T>
 inline
 __attribute__((always_inline))
 void
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 unorm_mul122(_T& rh, _T& rl,
              const _T& a,
              const _T& bh, const _T& bl)
@@ -880,7 +873,7 @@ template <typename _T>
 inline
 __attribute__((always_inline))
 void
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 mul122(_T& rh, _T& rl,
        const _T& a,
        const _T& bh, const _T& bl)
@@ -894,7 +887,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 sqr22(_T& pzh, _T& pzl,
       const _T& xh, const _T& xl)
 {
@@ -911,7 +904,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 mul22(_T& pzh, _T& pzl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
@@ -929,7 +922,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 sqr21(_T& pzh,
       const _T& xh, const _T& xl)
 {
@@ -944,7 +937,7 @@ template <typename _T>
 inline
 __attribute__((always_inline))
 void
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 sqr12(_T& rh, _T& rl, const _T& a)
 {
     _T a_h, a_l;
@@ -959,7 +952,7 @@ template <typename _T>
 inline
 __attribute__((always_inline))
 void
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 mul12(_T& rh, _T& rl, const _T& a, const _T& b)
 {
     _T a_h, a_l, b_h, b_l;
@@ -983,7 +976,7 @@ template <typename _T>
 inline
 __attribute__((always_inline))
 void
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b)
 {
 #if 1
@@ -1004,7 +997,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 rcp21(_T& rh, const _T& ah, const _T& al)
 {
     using traits=d_real_traits<_T>;
@@ -1021,7 +1014,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 sqr22(_T& pzh, _T& pzl,
       const _T& xh, const _T& xl)
 {
@@ -1036,7 +1029,7 @@ template <typename _T>
 inline
 __attribute__((always_inline))
 void
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 unorm_mul122(_T& rh, _T& rl,
              const _T& a,
              const _T& bh, const _T& bl)
@@ -1051,7 +1044,7 @@ template <typename _T>
 inline
 __attribute__((always_inline))
 void
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 mul122(_T& rh, _T& rl,
        const _T& a,
        const _T& bh, const _T& bl)
@@ -1066,7 +1059,7 @@ template <typename _T>
 inline
 __attribute__((always_inline))
 void
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 sqr21(_T& pzh,
       const _T& xh, const _T& xl)
 {
@@ -1081,7 +1074,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 mul22(_T& pzh, _T& pzl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
@@ -1094,7 +1087,7 @@ mul22(_T& pzh, _T& pzl,
 
 template <typename _T>
 _T
-cftal::impl::d_real_ops_fma<_T, true>::
+cftal::d_real_ops_fma<_T, true>::
 xfma(const _T& a, const _T& b, const _T& c)
 {
     return fma(a, b, c);
@@ -1102,7 +1095,7 @@ xfma(const _T& a, const _T& b, const _T& c)
 
 template <typename _T>
 _T
-cftal::impl::d_real_ops_fma<_T, false>::
+cftal::d_real_ops_fma<_T, false>::
 xfma(const _T& a, const _T& b, const _T& c)
 {
     _T pl, ph;
@@ -1116,7 +1109,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 muladd212(_T& rh, _T& rl,
           const _T& ch, const _T& cl,
           const _T& a,
@@ -1136,7 +1129,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 muladd22(_T& rh, _T& rl,
          const _T& ch, const _T& cl,
          const _T& ah, const _T& al,
@@ -1159,7 +1152,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 div12(_T& rh, _T& rl,
       const _T& xh,
       const _T& yh)
@@ -1178,7 +1171,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 div212(_T& rh, _T& rl,
        const _T& xh, const _T& xl,
        const _T& yh)
@@ -1198,7 +1191,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 div122(_T& rh, _T& rl,
        const _T& xh,
        const _T& yh, const _T& yl)
@@ -1231,7 +1224,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 div22(_T& rh, _T& rl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
@@ -1250,7 +1243,7 @@ div22(_T& rh, _T& rl,
 template <typename _T, bool _FMA>
 inline
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 __scaled_div22(_T& rh, _T& rl,
                const _T& ah, const _T& al,
                const _T& bh, const _T& bl)
@@ -1276,7 +1269,7 @@ __scaled_div22(_T& rh, _T& rl,
 template <typename _T, bool _FMA>
 inline
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 scaled_div22(_T& rh, _T& rl,
              const _T& ah, const _T& al,
              const _T& bh, const _T& bl)
@@ -1298,7 +1291,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 rcp12(_T& rh, _T& rl, const _T& a)
 {
     // v4f32 rcp=_mm_rcp_ps(a());
@@ -1319,7 +1312,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 rcp2(_T& rh, _T& rl, const _T& ah, const _T& al)
 {
     // v4f32 rcp=_mm_rcp_ps(a());
@@ -1340,7 +1333,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 sqrt2(_T& rh, _T& rl, const _T& ah, const _T& al)
 {
     using std::sqrt;
@@ -1368,7 +1361,7 @@ template <typename _T, bool _FMA>
 inline
 __attribute__((__always_inline__))
 void
-cftal::impl::d_real_ops<_T, _FMA>::
+cftal::d_real_ops<_T, _FMA>::
 sqrt21(_T& rh, const _T& ah, const _T& al)
 {
     using std::sqrt;
@@ -1413,7 +1406,7 @@ inline
 cftal::d_real<_T>
 cftal::operator+(const d_real<_T>& a, const _T& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     impl_t::add122cond(h, l, b, a[0], a[1]);
     return d_real<_T>(h, l);
@@ -1432,7 +1425,7 @@ inline
 cftal::d_real<_T>
 cftal::operator+(const d_real<_T>& a, const d_real<_T>& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     impl_t::add22condhp(h, l, a[0], a[1], b[0], b[1]);
     return d_real<_T>(h, l);
@@ -1461,7 +1454,7 @@ inline
 cftal::d_real<_T>
 cftal::operator-(const d_real<_T>& a, const _T& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     impl_t::add122cond(h, l, -b, a[0], a[1]);
     return d_real<_T>(h, l);
@@ -1472,7 +1465,7 @@ inline
 cftal::d_real<_T>
 cftal::operator-(const _T& a, const d_real<_T>& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     impl_t::add122cond(h, l, -a[0], -a[1], b);
     return d_real<_T>(h, l);
@@ -1483,7 +1476,7 @@ inline
 cftal::d_real<_T>
 cftal::operator-(const d_real<_T>& a, const d_real<_T>& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     impl_t::add22condhp(h, l, a[0], a[1], -b[0], -b[1]);
     return d_real<_T>(h, l);
@@ -1512,7 +1505,7 @@ inline
 cftal::d_real<_T>
 cftal::operator*(const d_real<_T>& a, const _T& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     impl_t::mul122(h, l, b, a[0], a[1]);
     return d_real<_T>(h, l);
@@ -1531,7 +1524,7 @@ inline
 cftal::d_real<_T>
 cftal::operator*(const d_real<_T>& a, const d_real<_T>& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     impl_t::mul22(h, l, a[0], a[1], b[0], b[1]);
     return d_real<_T>(h, l);
@@ -1560,7 +1553,7 @@ inline
 cftal::d_real<_T>
 cftal::operator/(const d_real<_T>& a, const _T& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     // impl_t::div212(h, l, a[0], a[1], b);
     impl_t::scaled_div22(h, l, a[0], a[1], b, _T(0));
@@ -1572,7 +1565,7 @@ inline
 cftal::d_real<_T>
 cftal::operator/(const _T& a, const d_real<_T>& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     impl_t::scaled_div22(h, l, a, _T(0), b[0], b[1]);
     return d_real<_T>(h, l);
@@ -1583,7 +1576,7 @@ inline
 cftal::d_real<_T>
 cftal::operator/(const d_real<_T>& a, const d_real<_T>& b)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T h, l;
     impl_t::scaled_div22(h, l, a[0], a[1], b[0], b[1]);
     return d_real<_T>(h, l);
@@ -1646,7 +1639,7 @@ cftal::rint(const d_real<_T>& a)
     //          return (hi, 0)
     // _T lo;
 
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
 
     // if hi == a[0]
     _T lo_hi_int = rint(a[1]);
@@ -1679,7 +1672,7 @@ cftal::floor(const d_real<_T>& a)
     // else return floor(ah), 0
     _T hi = floor(a[0]);
     _T lo(0);
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     typename d_real_traits<_T>::cmp_result_type r=
         hi == a[0];
     _T lo_hi_int = floor(a[1]);
@@ -1703,7 +1696,7 @@ cftal::ceil(const d_real<_T>& a)
     _T lo(0);
     typename d_real_traits<_T>::cmp_result_type r=
         hi == a[0];
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T lo_hi_int = ceil(a[1]);
     _T hi_hi_int = impl_t::quick_two_sum(hi, lo_hi_int, lo_hi_int);
 
@@ -1762,7 +1755,7 @@ inline
 cftal::d_real<_T>
 cftal::sqr(const d_real<_T>& a)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     return impl_t::sqr(a);
 }
 
@@ -1779,7 +1772,7 @@ inline
 cftal::d_real<_T>
 cftal::sqrt(const d_real<_T>& a)
 {
-    using impl_t=impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     using std::sqrt;
     _T ah= a[0];
     _T root(sqrt(ah));

@@ -58,9 +58,8 @@ namespace cftal {
 
             using f64_core = elem_func_core<double, f64_traits>;
 #endif
-
-            using d_ops=cftal::impl::d_real_ops<vf_type,
-                                                d_real_traits<vf_type>::fma>;
+            using d_ops=d_real_ops<vf_type,
+                                   d_real_traits<vf_type>::fma>;
             using t_ops=cftal::impl::t_real_ops<vf_type>;
 
             enum result_prec {

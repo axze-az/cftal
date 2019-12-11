@@ -41,8 +41,7 @@ namespace cftal {
             using vmi_type = typename _T::vmi_type;
             using vdf_type = typename _T::vdf_type;
 
-            using d_ops=cftal::impl::d_real_ops<vf_type,
-                                                d_real_traits<vf_type>::fma>;
+            using d_ops= typename base_type::d_ops;
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
             using f64_traits = typename _T::vhf_traits;
             using vhf_type = typename f64_traits::vf_type;

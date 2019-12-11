@@ -275,7 +275,7 @@ cftal::math::impl::root12::pow12(_T x)
 {
     // _T x12=powu<_T, 12>::v(x);
 #if 0
-    using d_ops=cftal::impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using d_ops=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T x2h, x2l;
     d_ops::sqr12(x2h, x2l, x);
     _T x3h, x3l;
@@ -287,7 +287,7 @@ cftal::math::impl::root12::pow12(_T x)
     return x12h;
 #else
     // same as above but without normalizations:
-    using d_ops=cftal::impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using d_ops=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T x2h, x2l;
     // x^2
     d_ops::sqr12(x2h, x2l, x);

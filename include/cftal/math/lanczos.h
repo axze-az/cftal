@@ -506,7 +506,7 @@ lanczos_rational_at(const _T& x,
                     const d_real<_C>(&p)[_N1],
                     const _C (&q)[_N2])
 {
-    using d_ops=cftal::impl::d_real_ops<_T, d_real_traits<_T>::fma>;
+    using d_ops=d_real_ops<_T, d_real_traits<_T>::fma>;
     const d_real<_C>* pp=p;
     _T ph = pp[0][0];
     _T pl = pp[0][1];
