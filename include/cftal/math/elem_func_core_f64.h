@@ -938,7 +938,7 @@ cbrt_k(arg_t<vf_type> xc)
     static const double ci[]={
         cbrt_c3, cbrt_c2, cbrt_c1, cbrt_c0
     };
-    vf_type mm = horner(mm0, ci);
+    vf_type mm = horner2(mm0, vf_type(mm0*mm0), ci);
     // one step of order 3
     mm = impl::root3::order3<double>(mm, mm0);
     // round mm to 17 bits == int(53/3)
