@@ -54,7 +54,7 @@ namespace cftal {
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
 
-            using t_ops=cftal::impl::t_real_ops<vf_type>;
+            using t_ops=cftal::t_real_ops<vf_type>;
 
 
             enum result_prec {

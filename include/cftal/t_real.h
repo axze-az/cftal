@@ -63,189 +63,186 @@ namespace cftal {
     template <typename _T>
     struct t_real_traits : public d_real_traits<_T> {};
 
-    namespace impl {
-        template <typename _T>
-        struct t_real_ops
-            : public d_real_ops<_T, d_real_traits<_T>::fma > {
+    template <typename _T>
+    struct t_real_ops
+        : public d_real_ops<_T, d_real_traits<_T>::fma > {
 
-            using traits_t = d_real_traits<_T>;
+        using traits_t = d_real_traits<_T>;
 
-            using base_type = d_real_ops<_T, d_real_traits<_T>::fma>;
+        using base_type = d_real_ops<_T, d_real_traits<_T>::fma>;
 
-            using base_type::add12;
-            using base_type::add12cond;
-            using base_type::add22cond;
-            using base_type::mul12;
-            using base_type::mul22;
-            using base_type::mul122;
-            using base_type::div22;
+        using base_type::add12;
+        using base_type::add12cond;
+        using base_type::add22cond;
+        using base_type::mul12;
+        using base_type::mul22;
+        using base_type::mul122;
+        using base_type::div22;
 
-            static
-            void
-            renormalize3(_T& rh, _T& rm, _T& rl,
-                         const _T& ah, const _T& am, const _T& al);
+        static
+        void
+        renormalize3(_T& rh, _T& rm, _T& rl,
+                        const _T& ah, const _T& am, const _T& al);
 
-            static
-            void
-            mul23(_T& rh, _T& rm, _T& rl,
-                  const _T& ah, const _T& al,
-                  const _T& bh, const _T& bl);
+        static
+        void
+        mul23(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& al,
+                const _T& bh, const _T& bl);
 
-            static
-            void
-            mul133(_T& rh, _T& rm, _T& rl,
-                   const _T& a,
-                   const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            void
-            mul233(_T& rh, _T& rm, _T& rl,
-                   const _T& ah, const _T& al,
-                   const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            void
-            mul33(_T& rh, _T& rm, _T& rl,
-                  const _T& ah, const _T& am, const _T& al,
-                  const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            void
-            add123(_T& rh, _T& rm, _T& rl,
-                   const _T& a,
-                   const _T& bh, const _T& bl);
-
-            static
-            void
-            add123cond(_T& rh, _T& rm, _T& rl,
-                       const _T& a,
-                       const _T& bh, const _T& bl);
-
-            static
-            void
-            add213(_T& rh, _T& rm, _T& rl,
-                   const _T& ah, const _T& al,
-                   const _T& b);
-
-            static
-            void
-            add213cond(_T& rh, _T& rm, _T& rl,
-                       const _T& ah, const _T& al,
-                       const _T& b);
-
-            static
-            void
-            add23(_T& rh, _T& rm, _T& rl,
-                  const _T& ah, const _T& al,
-                  const _T& bh, const _T& bl);
-
-            static
-            void
-            add23cond(_T& rh, _T& rm, _T& rl,
-                      const _T& ah, const _T& al,
-                      const _T& bh, const _T& bl);
-
-            static
-            void
-            add33(_T& rh, _T& rm, _T& rl,
-                  const _T& ah, const _T& am, const _T& al,
-                  const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            void
-            add33cond(_T& rh, _T& rm, _T& rl,
-                      const _T& ah, const _T& am, const _T& al,
-                      const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            void
-            add233(_T& rh, _T& rm, _T& rl,
-                  const _T& ah, const _T& al,
-                  const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            void
-            add233cond(_T& rh, _T& rm, _T& rl,
-                       const _T& ah, const _T& al,
-                       const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            void
-            add133(_T& rh, _T& rm, _T& rl,
-                   const _T& a,
-                   const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            void
-            add133cond(_T& rh, _T& rm, _T& rl,
-                       const _T& a,
-                       const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            void
-            recp3(_T& rh, _T& rm, _T& rl,
-                  const _T& dh, const _T& dm, const _T& dl);
-
-
-            static
-            void
-            div313(_T& rh, _T& rm, _T& rl,
-                   const _T& ah, const _T& am, const _T& al,
-                   const _T& bh);
-
-            static
-            void
-            div323(_T& rh, _T& rm, _T& rl,
-                   const _T& ah, const _T& am, const _T& al,
-                   const _T& bh, const _T& bl);
-
-            static
-            void
-            div33(_T& rh, _T& rm, _T& rl,
-                  const _T& ah, const _T& am, const _T& al,
-                  const _T& bh, const _T& bm, const _T& bl);
-
-            static
-            t_real<_T>
-            renormalize(const _T& rh, const _T& rm, const _T& rl);
-
-            static
-            t_real<_T>
-            add(const _T& a,
+        static
+        void
+        mul133(_T& rh, _T& rm, _T& rl,
+                const _T& a,
                 const _T& bh, const _T& bm, const _T& bl);
 
-            static
-            t_real<_T>
-            add(const _T& ah, const _T& al,
+        static
+        void
+        mul233(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& al,
                 const _T& bh, const _T& bm, const _T& bl);
 
-            static
-            t_real<_T>
-            add(const _T& ah, const _T& am, const _T& al,
+        static
+        void
+        mul33(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& am, const _T& al,
                 const _T& bh, const _T& bm, const _T& bl);
 
-            static
-            t_real<_T>
-            mul(const _T& a,
+        static
+        void
+        add123(_T& rh, _T& rm, _T& rl,
+                const _T& a,
+                const _T& bh, const _T& bl);
+
+        static
+        void
+        add123cond(_T& rh, _T& rm, _T& rl,
+                    const _T& a,
+                    const _T& bh, const _T& bl);
+
+        static
+        void
+        add213(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& al,
+                const _T& b);
+
+        static
+        void
+        add213cond(_T& rh, _T& rm, _T& rl,
+                    const _T& ah, const _T& al,
+                    const _T& b);
+
+        static
+        void
+        add23(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& al,
+                const _T& bh, const _T& bl);
+
+        static
+        void
+        add23cond(_T& rh, _T& rm, _T& rl,
+                    const _T& ah, const _T& al,
+                    const _T& bh, const _T& bl);
+
+        static
+        void
+        add33(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& am, const _T& al,
                 const _T& bh, const _T& bm, const _T& bl);
 
-            static
-            t_real<_T>
-            mul(const _T& ah, const _T& al,
+        static
+        void
+        add33cond(_T& rh, _T& rm, _T& rl,
+                    const _T& ah, const _T& am, const _T& al,
+                    const _T& bh, const _T& bm, const _T& bl);
+
+        static
+        void
+        add233(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& al,
                 const _T& bh, const _T& bm, const _T& bl);
 
-            static
-            t_real<_T>
-            mul(const _T& ah, const _T& am, const _T& al,
+        static
+        void
+        add233cond(_T& rh, _T& rm, _T& rl,
+                    const _T& ah, const _T& al,
+                    const _T& bh, const _T& bm, const _T& bl);
+
+        static
+        void
+        add133(_T& rh, _T& rm, _T& rl,
+                const _T& a,
                 const _T& bh, const _T& bm, const _T& bl);
 
-            static
-            t_real<_T>
-            recp(const _T& ah, const _T& am, const _T& al);
+        static
+        void
+        add133cond(_T& rh, _T& rm, _T& rl,
+                    const _T& a,
+                    const _T& bh, const _T& bm, const _T& bl);
 
-        };
-    }
+        static
+        void
+        recp3(_T& rh, _T& rm, _T& rl,
+                const _T& dh, const _T& dm, const _T& dl);
 
+
+        static
+        void
+        div313(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& am, const _T& al,
+                const _T& bh);
+
+        static
+        void
+        div323(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& am, const _T& al,
+                const _T& bh, const _T& bl);
+
+        static
+        void
+        div33(_T& rh, _T& rm, _T& rl,
+                const _T& ah, const _T& am, const _T& al,
+                const _T& bh, const _T& bm, const _T& bl);
+
+        static
+        t_real<_T>
+        renormalize(const _T& rh, const _T& rm, const _T& rl);
+
+        static
+        t_real<_T>
+        add(const _T& a,
+            const _T& bh, const _T& bm, const _T& bl);
+
+        static
+        t_real<_T>
+        add(const _T& ah, const _T& al,
+            const _T& bh, const _T& bm, const _T& bl);
+
+        static
+        t_real<_T>
+        add(const _T& ah, const _T& am, const _T& al,
+            const _T& bh, const _T& bm, const _T& bl);
+
+        static
+        t_real<_T>
+        mul(const _T& a,
+            const _T& bh, const _T& bm, const _T& bl);
+
+        static
+        t_real<_T>
+        mul(const _T& ah, const _T& al,
+            const _T& bh, const _T& bm, const _T& bl);
+
+        static
+        t_real<_T>
+        mul(const _T& ah, const _T& am, const _T& al,
+            const _T& bh, const _T& bm, const _T& bl);
+
+        static
+        t_real<_T>
+        recp(const _T& ah, const _T& am, const _T& al);
+
+    };
 
     // unary minus
     template <typename _T>
@@ -430,7 +427,7 @@ template <typename _T>
 __attribute__((__always_inline__))
 inline
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 renormalize3(_T& rh, _T& rm, _T& rl,
              const _T& ah, const _T& am, const _T& al)
 {
@@ -442,7 +439,7 @@ renormalize3(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 mul23(_T& rh, _T& rm, _T& rl,
       const _T& ah, const _T& al,
       const _T& bh, const _T& bl)
@@ -459,7 +456,7 @@ mul23(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 mul133(_T& rh, _T& rm, _T& rl,
        const _T& a,
        const _T& bh, const _T& bm, const _T& bl)
@@ -476,7 +473,7 @@ mul133(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 mul233(_T& rh, _T& rm, _T& rl,
        const _T& ah, const _T& al,
        const _T& bh, const _T& bm, const _T& bl)
@@ -498,7 +495,7 @@ mul233(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 mul33(_T& rh, _T& rm, _T& rl,
       const _T& ah, const _T& am, const _T& al,
       const _T& bh, const _T& bm, const _T& bl)
@@ -527,7 +524,7 @@ mul33(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 div313(_T& rh, _T& rm, _T& rl,
        const _T& ah, const _T& am, const _T& al,
        const _T& b)
@@ -550,7 +547,7 @@ div313(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 div323(_T& rh, _T& rm, _T& rl,
        const _T& ah, const _T& am, const _T& al,
        const _T& bh, const _T& bl)
@@ -573,7 +570,7 @@ div323(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 div33(_T& rh, _T& rm, _T& rl,
       const _T& ah, const _T& am, const _T& al,
       const _T& bh, const _T& bm, const _T& bl)
@@ -597,7 +594,7 @@ div33(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 recp3(_T& rh, _T& rm, _T& rl,
       const _T& dh, const _T& dm, const _T& dl)
 {
@@ -629,7 +626,7 @@ recp3(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add123(_T& rh, _T& rm, _T& rl, const _T& a, const _T& bh, const _T& bl)
 {
     _T t1;
@@ -639,7 +636,7 @@ add123(_T& rh, _T& rm, _T& rl, const _T& a, const _T& bh, const _T& bl)
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add123cond(_T& rh, _T& rm, _T& rl, const _T& a, const _T& bh, const _T& bl)
 {
     _T t1;
@@ -649,7 +646,7 @@ add123cond(_T& rh, _T& rm, _T& rl, const _T& a, const _T& bh, const _T& bl)
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add213(_T& rh, _T& rm, _T& rl, const _T& ah, const _T& al, const _T& b)
 {
     _T t1;
@@ -659,7 +656,7 @@ add213(_T& rh, _T& rm, _T& rl, const _T& ah, const _T& al, const _T& b)
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add213cond(_T& rh, _T& rm, _T& rl, const _T& ah, const _T& al, const _T& b)
 {
     _T t1;
@@ -669,7 +666,7 @@ add213cond(_T& rh, _T& rm, _T& rl, const _T& ah, const _T& al, const _T& b)
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add23(_T& rh, _T& rm, _T& rl,
       const _T& ah, const _T& al,
       const _T& bh, const _T& bl)
@@ -684,7 +681,7 @@ add23(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add23cond(_T& rh, _T& rm, _T& rl,
            const _T& ah, const _T& al,
            const _T& bh, const _T& bl)
@@ -699,7 +696,7 @@ add23cond(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add33(_T& rh, _T& rm, _T& rl,
       const _T& ah, const _T& am, const _T& al,
       const _T& bh, const _T& bm, const _T& bl)
@@ -716,7 +713,7 @@ add33(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add33cond(_T& rh, _T& rm, _T& rl,
           const _T& ah, const _T& am, const _T& al,
           const _T& bh, const _T& bm, const _T& bl)
@@ -733,7 +730,7 @@ add33cond(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add233(_T& rh, _T& rm, _T& rl,
        const _T& ah, const _T& al,
        const _T& bh, const _T& bm, const _T& bl)
@@ -749,7 +746,7 @@ add233(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add233cond(_T& rh, _T& rm, _T& rl,
            const _T& ah, const _T& al,
            const _T& bh, const _T& bm, const _T& bl)
@@ -765,7 +762,7 @@ add233cond(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add133(_T& rh, _T& rm, _T& rl,
        const _T& a,
        const _T& bh, const _T& bm, const _T& bl)
@@ -779,7 +776,7 @@ add133(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 void
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add133cond(_T& rh, _T& rm, _T& rl,
            const _T& a,
            const _T& bh, const _T& bm, const _T& bl)
@@ -793,7 +790,7 @@ add133cond(_T& rh, _T& rm, _T& rl,
 
 template <typename _T>
 cftal::t_real<_T>
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 renormalize(const _T& ah, const _T& am, const _T& al)
 {
     _T rh, rm, rl;
@@ -804,7 +801,7 @@ renormalize(const _T& ah, const _T& am, const _T& al)
 
 template <typename _T>
 cftal::t_real<_T>
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add(const _T& a,
     const _T& bh, const _T& bm, const _T& bl)
 {
@@ -817,7 +814,7 @@ add(const _T& a,
 
 template <typename _T>
 cftal::t_real<_T>
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add(const _T& ah, const _T& al,
     const _T& bh, const _T& bm, const _T& bl)
 {
@@ -830,7 +827,7 @@ add(const _T& ah, const _T& al,
 
 template <typename _T>
 cftal::t_real<_T>
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 add(const _T& ah, const _T& am, const _T& al,
     const _T& bh, const _T& bm, const _T& bl)
 {
@@ -843,7 +840,7 @@ add(const _T& ah, const _T& am, const _T& al,
 
 template <typename _T>
 cftal::t_real<_T>
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 mul(const _T& a,
     const _T& bh, const _T& bm, const _T& bl)
 {
@@ -856,7 +853,7 @@ mul(const _T& a,
 
 template <typename _T>
 cftal::t_real<_T>
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 mul(const _T& ah, const _T& al,
     const _T& bh, const _T& bm, const _T& bl)
 {
@@ -869,7 +866,7 @@ mul(const _T& ah, const _T& al,
 
 template <typename _T>
 cftal::t_real<_T>
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 mul(const _T& ah, const _T& am, const _T& al,
     const _T& bh, const _T& bm, const _T& bl)
 {
@@ -882,7 +879,7 @@ mul(const _T& ah, const _T& am, const _T& al,
 
 template <typename _T>
 cftal::t_real<_T>
-cftal::impl::t_real_ops<_T>::
+cftal::t_real_ops<_T>::
 recp(const _T& ah, const _T& am, const _T& al)
 {
     _T rh, rm, rl;
@@ -912,7 +909,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const _T& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a,
+    return t_real_ops<_T>::add(a,
                                      b[0], b[1], b[2]);
 }
 
@@ -921,7 +918,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a[0], a[1],
+    return t_real_ops<_T>::add(a[0], a[1],
                                      b[0], b[1], b[2]);
 }
 
@@ -930,7 +927,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a[0], a[1], a[2],
+    return t_real_ops<_T>::add(a[0], a[1], a[2],
                                      b[0], b[1], b[2]);
 }
 
@@ -939,7 +936,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(b[0], b[1],
+    return t_real_ops<_T>::add(b[0], b[1],
                                      a[0], a[1], a[2]);
 }
 
@@ -948,7 +945,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const t_real<_T>& a, const _T& b)
 {
-    return impl::t_real_ops<_T>::add(b,
+    return t_real_ops<_T>::add(b,
                                      a[0], a[1], a[2]);
 }
 
@@ -984,7 +981,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const _T& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a,
+    return t_real_ops<_T>::add(a,
                                      -b[0], -b[1], -b[2]);
 }
 
@@ -993,7 +990,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a[0], a[1],
+    return t_real_ops<_T>::add(a[0], a[1],
                                      -b[0], -b[1], -b[2]);
 }
 
@@ -1002,7 +999,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(a[0], a[1], a[2],
+    return t_real_ops<_T>::add(a[0], a[1], a[2],
                                      -b[0], -b[1], -b[2]);
 }
 
@@ -1011,7 +1008,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::add(-b[0], -b[1],
+    return t_real_ops<_T>::add(-b[0], -b[1],
                                      a[0], a[1], a[2]);
 }
 
@@ -1020,7 +1017,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a, const _T& b)
 {
-    return impl::t_real_ops<_T>::add(-b,
+    return t_real_ops<_T>::add(-b,
                                      a[0], a[1], a[2]);
 }
 
@@ -1056,7 +1053,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const _T& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::mul(a,
+    return t_real_ops<_T>::mul(a,
                                      b[0], b[1], b[2]);
 }
 
@@ -1065,7 +1062,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::mul(a[0], a[1],
+    return t_real_ops<_T>::mul(a[0], a[1],
                                      b[0], b[1], b[2]);
 }
 
@@ -1074,7 +1071,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::mul(a[0], a[1], a[2],
+    return t_real_ops<_T>::mul(a[0], a[1], a[2],
                                      b[0], b[1], b[2]);
 }
 
@@ -1083,7 +1080,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return impl::t_real_ops<_T>::mul(b[0], b[1],
+    return t_real_ops<_T>::mul(b[0], b[1],
                                      a[0], a[1], a[2]);
 }
 
@@ -1092,7 +1089,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const t_real<_T>& a, const _T& b)
 {
-    return impl::t_real_ops<_T>::mul(b,
+    return t_real_ops<_T>::mul(b,
                                      a[0], a[1], a[2]);
 }
 
@@ -1128,9 +1125,9 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const _T& a, const t_real<_T>& b)
 {
-    // return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
+    // return a * t_real_ops<_T>::recp(b[0], b[1], b[2]);
     t_real<_T> r;
-    impl::t_real_ops<_T>::div33(r[0], r[1], r[2],
+    t_real_ops<_T>::div33(r[0], r[1], r[2],
                                 a[0], _T(0), _T(0),
                                 b[0], b[1], b[2]);
     return r;
@@ -1141,9 +1138,9 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const d_real<_T>& a, const t_real<_T>& b)
 {
-    // return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
+    // return a * t_real_ops<_T>::recp(b[0], b[1], b[2]);
     t_real<_T> r;
-    impl::t_real_ops<_T>::div33(r[0], r[1], r[2],
+    t_real_ops<_T>::div33(r[0], r[1], r[2],
                                 a[0], a[1], _T(0),
                                 b[0], b[1], b[2]);
     return r;
@@ -1154,9 +1151,9 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const t_real<_T>& a, const t_real<_T>& b)
 {
-    // return a * impl::t_real_ops<_T>::recp(b[0], b[1], b[2]);
+    // return a * t_real_ops<_T>::recp(b[0], b[1], b[2]);
     t_real<_T> r;
-    impl::t_real_ops<_T>::div33(r[0], r[1], r[2],
+    t_real_ops<_T>::div33(r[0], r[1], r[2],
                                 a[0], a[1], a[2],
                                 b[0], b[1], b[2]);
     return r;
@@ -1167,9 +1164,9 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const t_real<_T>& a, const d_real<_T>& b)
 {
-    // return a * impl::t_real_ops<_T>::recp(b[0], b[2], _T(0));
+    // return a * t_real_ops<_T>::recp(b[0], b[2], _T(0));
     t_real<_T> r;
-    impl::t_real_ops<_T>::div323(r[0], r[1], r[2],
+    t_real_ops<_T>::div323(r[0], r[1], r[2],
                                  a[0], a[1], a[2],
                                  b[0], b[1]);
     return r;
@@ -1180,9 +1177,9 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const t_real<_T>& a, const _T& b)
 {
-    // return a * impl::t_real_ops<_T>::recp(b, _T(0), _T(0));
+    // return a * t_real_ops<_T>::recp(b, _T(0), _T(0));
     t_real<_T> r;
-    impl::t_real_ops<_T>::div313(r[0], r[1], r[2],
+    t_real_ops<_T>::div313(r[0], r[1], r[2],
                                  a[0], a[1], a[2],
                                  b);
     return r;
