@@ -325,11 +325,22 @@ namespace cftal {
                 const _T& xh,
                 const _T& yh, const _T& yl);
 
+
+        static
+        void
+        unorm_sqr22(_T& rh, _T& rl,
+                    const _T& xh, const _T& xl);
+
         static
         void
         sqr22(_T& rh, _T& rl,
-                const _T& xh, const _T& xl);
+              const _T& xh, const _T& xl);
 
+        static
+        void
+        unorm_mul22(_T& rh, _T& rl,
+                    const _T& xh, const _T& xl,
+                    const _T& yh, const _T& yl);
 
         static
         void
@@ -393,8 +404,19 @@ namespace cftal {
 
         static
         void
+        unorm_sqr22(_T& rh, _T& rl,
+                    const _T& xh, const _T& xl);
+
+        static
+        void
         sqr22(_T& rh, _T& rl,
                 const _T& xh, const _T& xl);
+
+        static
+        void
+        unorm_mul22(_T& rh, _T& rl,
+                    const _T& xh, const _T& xl,
+                    const _T& yh, const _T& yl);
 
         static
         void
@@ -405,7 +427,7 @@ namespace cftal {
         static
         void
         rcp21(_T& r,
-                const _T& ah, const _T& al);
+              const _T& ah, const _T& al);
 
         // return (ah,al)^2
         static
@@ -888,9 +910,33 @@ inline
 __attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, true>::
+unorm_sqr22(_T& pzh, _T& pzl,
+            const _T& xh, const _T& xl)
+{
+    _T ph = xh * xh;
+    _T pl = fms(xh, xh, ph);
+    _T xl2= _T(2.0)*xl;
+    pl = fma(xh, xl2, pl);
+    pzh = ph;
+    pzl = pl;
+    // pzh = ph + pl;
+    // pzl = ph - pzh;
+    // pzl+= pl;
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+void
+cftal::d_real_ops_fma<_T, true>::
 sqr22(_T& pzh, _T& pzl,
       const _T& xh, const _T& xl)
 {
+#if 1
+    _T ph, pl;
+    unorm_sqr22(ph, pl, xh, xl);
+    add12(pzh, pzl, ph, pl);
+#else
     _T ph = xh * xh;
     _T pl = fms(xh, xh, ph);
     _T xl2= _T(2.0)*xl;
@@ -898,6 +944,27 @@ sqr22(_T& pzh, _T& pzl,
     pzh = ph + pl;
     pzl = ph - pzh;
     pzl+= pl;
+#endif
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+void
+cftal::d_real_ops_fma<_T, true>::
+unorm_mul22(_T& pzh, _T& pzl,
+            const _T& xh, const _T& xl,
+            const _T& yh, const _T& yl)
+{
+    _T ph = xh * yh;
+    _T pl = fms(xh, yh, ph);
+    pl = fma(xh, yl, pl);
+    pl = fma(xl, yh, pl);
+    pzh = ph;
+    pzl = pl;
+    // pzh = ph + pl;
+    // pzl = ph - pzh;
+    // pzl+= pl;
 }
 
 template <typename _T>
@@ -909,6 +976,11 @@ mul22(_T& pzh, _T& pzl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
 {
+#if 1
+    _T ph, pl;
+    unorm_mul22(ph, pl, xh, xl, yh, yl);
+    add12(pzh, pzl, ph, pl);
+#else
     _T ph = xh * yh;
     _T pl = fms(xh, yh, ph);
     pl = fma(xh, yl, pl);
@@ -916,6 +988,7 @@ mul22(_T& pzh, _T& pzl,
     pzh = ph + pl;
     pzl = ph - pzh;
     pzl+= pl;
+#endif
 }
 
 template <typename _T>
@@ -926,11 +999,17 @@ cftal::d_real_ops_fma<_T, true>::
 sqr21(_T& pzh,
       const _T& xh, const _T& xl)
 {
+#if 1
+    _T ph, pl;
+    unorm_sqr22(ph, pl, xh, xl);
+    pzh = ph + pl;
+#else
     _T ph = xh * xh;
     _T pl = fms(xh, xh, ph);
     _T xl2= _T(2.0)*xl;
     pl = fma(xh, xl2, pl);
     pzh = ph + pl;
+#endif
 }
 
 template <typename _T>
@@ -1015,14 +1094,38 @@ inline
 __attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, false>::
-sqr22(_T& pzh, _T& pzl,
-      const _T& xh, const _T& xl)
+unorm_sqr22(_T& pzh, _T& pzl,
+            const _T& xh, const _T& xl)
 {
     _T p1, p2;
     sqr12(p1, p2, xh);
     _T xhl= xh*xl;
     p2+= (xhl + xhl);
+    pzh = p1;
+    pzl = p2;
+    // add12(pzh, pzl, p1, p2);
+}
+
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+void
+cftal::d_real_ops_fma<_T, false>::
+sqr22(_T& pzh, _T& pzl,
+      const _T& xh, const _T& xl)
+{
+#if 1
+    _T ph, pl;
+    unorm_sqr22(ph, pl, xh, xl);
+    add12(pzh, pzl, ph, pl);
+#else
+    _T p1, p2;
+    sqr12(p1, p2, xh);
+    _T xhl= xh*xl;
+    p2+= (xhl + xhl);
     add12(pzh, pzl, p1, p2);
+#endif
 }
 
 template <typename _T>
@@ -1063,11 +1166,34 @@ cftal::d_real_ops_fma<_T, false>::
 sqr21(_T& pzh,
       const _T& xh, const _T& xl)
 {
+#if 1
+    _T ph, pl;
+    unorm_sqr22(ph, pl, xh, xl);
+    pzh = ph + pl;
+#else
     _T p1, p2;
     sqr12(p1, p2, xh);
     _T xhl= xh*xl;
     p2+= (xhl + xhl);
     pzh= p1+p2;
+#endif
+}
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+void
+cftal::d_real_ops_fma<_T, false>::
+unorm_mul22(_T& pzh, _T& pzl,
+            const _T& xh, const _T& xl,
+            const _T& yh, const _T& yl)
+{
+    _T p1, p2;
+    mul12(p1, p2, xh, yh);
+    p2+= (xh*yl + xl * yh);
+    pzh = p1;
+    pzl = p2;
+    // add12(pzh, pzl, p1, p2);
 }
 
 template <typename _T>
@@ -1079,10 +1205,16 @@ mul22(_T& pzh, _T& pzl,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
 {
+#if 1
+    _T ph, pl;
+    unorm_mul22(ph, pl, xh, xl, yh, yl);
+    add12(pzh, pzl, ph, pl);
+#else
     _T p1, p2;
     mul12(p1, p2, xh, yh);
     p2+= (xh*yl + xl * yh);
     add12(pzh, pzl, p1, p2);
+#endif
 }
 
 template <typename _T>
