@@ -26,7 +26,7 @@ namespace cftal {
 
         constexpr
         fp_expansion(const _T& h);
-        
+
         template <typename _E>
         constexpr
         fp_expansion(std::initializer_list<_E> l);
