@@ -1932,7 +1932,8 @@ sinh_cosh_k(arg_t<vf_type> xc)
             nyl *= nsc;
 
             vf_type zh, zl;
-            d_ops::add22(zh, zl, yh, yl, nyh, nyl);
+            d_ops::add12(zh, zl, yh, nyh);
+            zh += (zl + yl + nyl);
             yh = _T::sel(x_medium, zh, yh);
         }
         if (_F == hyperbolic_func::c_sinh) {
