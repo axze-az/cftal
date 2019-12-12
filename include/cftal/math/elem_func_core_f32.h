@@ -2248,12 +2248,22 @@ sinh_cosh_k(arg_t<vf_type> xc)
         yh *= sc.f0();
         yh *= sc.f1();
 
-        vmf_type x_medium;
+#if 1
+        // fpprec: 32
+        // bfloat(rhs(solve(2^-30*%e^x=%e^(-x), x)[2]));
+        constexpr const float
+        x_medium_max = 1.0397207708399179641258481821873e1;
+        vmf_type x_medium= x <= x_medium_max;
         if (_F == hyperbolic_func::c_sinh)
-            x_medium = (x > sinh_i0_right) & _T::vmi_to_vmf(k <14);
-        else
-            x_medium = _T::vmi_to_vmf(k <14);
-
+            x_medium &= (x > sinh_i0_right);
+#else
+        // bfloat(rhs(solve(2^15*%e^(log(2)/2) = %e^x, x)[1]));
+        // 15 because of k-1 above:
+        const int k_max= 14;
+        vmf_type x_medium= _T::vmi_to_vmf(k <k_max);
+        if (_F == hyperbolic_func::c_sinh)
+            x_medium &= (x > sinh_i0_right);
+#endif
         if (any_of(x_medium)) {
             // perform the scaling also for the low part
             yl *= sc.f0();
@@ -2854,7 +2864,7 @@ __log_tbl_k12(arg_t<vf_type> xc)
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
 
-    // thanks to the glibc folks for the lesson:
+    // thanks to the glibc developers for the lesson:
     vf_type t1, t;
     d_ops::add12(t1, t, kf* ctbl::m_ln2_cw[0], log_c_h);
     vf_type t2= t1 + r;
