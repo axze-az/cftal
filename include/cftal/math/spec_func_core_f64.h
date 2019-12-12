@@ -989,7 +989,7 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 #pragma clang loop unroll(disable)
     for (std::size_t i=1; i<N0; ++i) {
         d_ops::add122(ph, pl, pci[i], ph, pl);
-        d_ops::mul22(ph, pl, xh, xl, ph, pl);
+        d_ops::unorm_mul22(ph, pl, xh, xl, ph, pl);
     }
     static const d_real<double> dci[]={
         {lngamma_i0_c4h, lngamma_i0_c4l},
@@ -1004,7 +1004,7 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
 #pragma GCC unroll 0
     for (std::size_t i=0; i<N1; ++i) {
         d_ops::add22(ph, pl, pdci[i][0], pdci[i][1], ph, pl);
-        d_ops::mul22(ph, pl, xh, xl, ph, pl);
+        d_ops::unorm_mul22(ph, pl, xh, xl, ph, pl);
     }
     d_ops::add22cond(ph, pl, ph, pl, lngamma_i0_c0h, lngamma_i0_c0l);
     vf_type xm1h, xm1l;
