@@ -121,8 +121,7 @@ template <std::size_t _N>
 cftal::vec<float, _N>
 cftal::impl::_cvt_bf16_to_f32(const vec<mf_bf16_t, _N>& v)
 {
-    const vec<mf_bf16_t, _N> z(0);
-    auto v2=combine_even_odd(z, v);
+    auto v2=combine_zeroeven_odd(v);
     auto r=as<vec<float, _N> >(v2);
     return r;
 }
