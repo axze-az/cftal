@@ -1928,15 +1928,11 @@ sinh_cosh_k(arg_t<vf_type> xc)
             vf_type nyh, nyl;
             nyh = __exp_tbl_k<result_prec::medium>(nxrh, nxrl, nidx, &nyl);
             // we know k < 36
-            // auto nsc=__two_pow(nk);
-            // nyh *= nsc.f0();
-            // nyl *= nsc.f0();
-            // nyh *= nsc.f1();
-            // nyl *= nsc.f1();
-            vf_type nsc=_T::insert_exp(_T::bias() + nk);
-
-            if (_F == hyperbolic_func::c_sinh)
-                nsc = -nsc;
+            // create the scaling factor, produce a negative sign
+            // for sinh because we want to subtract %e^-x
+            const int32_t bias_with_sgn=
+                _F == hyperbolic_func::c_sinh ? _T::bias()+2048 : _T::bias();
+            vf_type nsc=_T::insert_exp(bias_with_sgn + nk);
             nyh *= nsc;
             nyl *= nsc;
 
