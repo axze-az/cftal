@@ -19,7 +19,7 @@
 #include <iomanip>
 #endif
 
-namespace {
+namespace cftal::test::call_mpfr {
     constexpr mpfr_exp_t double_emin=-1022-(53-1)+1;
     constexpr mpfr_exp_t double_emax=1023+1;
 

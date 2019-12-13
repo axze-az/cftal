@@ -542,11 +542,14 @@ lanczos_rational_at(const _T& x,
     } else {
         horner_comp(qh, ql, x, q);
     }
+    _T pqh, pql;
+#if 1
     _T inv_qh, inv_ql;
     d_ops::rcp2(inv_qh, inv_ql, qh, ql);
-    _T pqh, pql;
     d_ops::mul22(pqh, pql, ph, pl, inv_qh, inv_ql);
-    // d_ops::div22(pqh, pql, ph, pl, qh, ql);
+#else
+    d_ops::div22(pqh, pql, ph, pl, qh, ql);
+#endif
     return d_real<_T>(pqh, pql);
 }
 
