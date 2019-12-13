@@ -2787,7 +2787,7 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
         r = xrhh + xrhl;
         rl = xrl * inv_c;
     }
-    d_ops::add12cond(r, rl, r, rl);
+    d_ops::add12(r, rl, r, rl);
     return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
 #else
     vf_type xr, inv_c, log_c_h, log_c_l;
