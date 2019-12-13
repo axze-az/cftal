@@ -157,7 +157,7 @@ endif()
 
 set(CFTAL_CFG_USE_VF64_FOR_VF32 0)
 option(CFTAL_CONFIG_USE_VF64_FOR_VF32
-       "use double precision vectors in float vector functions" ON)
+       "use double precision vectors in float vector functions" OFF)
 #message("CFTAL_CONFIG_USE_VF64_FOR_VF32: ${CFTAL_CONFIG_USE_VF64_FOR_VF32}")
 if (CFTAL_CONFIG_USE_VF64_FOR_VF32)
     message("using double precision vectors in float functions")
