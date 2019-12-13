@@ -266,8 +266,9 @@ cftal::test::check_x_real<_X, _T, _R>::ops()
         rc &= ops(*std::next(b), *b);
     }
     std::mt19937 rnd;
+    // avoid underflows if we test higher fp expansions
     _T l0= std::ldexp(1.0,
-                      std::numeric_limits<_T>::min_exponent/3);
+                      std::numeric_limits<_T>::min_exponent/5);
     uniform_real_distribution<_T>
         distrib(l0,
                 std::numeric_limits<_T>::max());
