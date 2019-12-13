@@ -203,18 +203,6 @@ namespace cftal {
 
             // arguments are the reduced xrh, xrl in
             // [-log(2)/(2*N), log(2)/(2*N)], and the argument
-            // k as argument for __mul_two_pow
-            // ki is the table index
-            // x the not reduced argument
-            // calculates %e^(xrh+xrl)*(2^idx/N)*2^k - 1
-            static
-            vf_type
-            __expm1_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-                          arg_t<vi_type> idx, arg_t<vi_type> ki,
-                          arg_t<vf_type> x);
-
-            // arguments are the reduced xrh, xrl in
-            // [-log(2)/(2*N), log(2)/(2*N)], and the argument
             // ki as argument for __mul_two_pow
             // idx is the table index
             // calculates %e^(xrh+xrl)*(2^idx/N)*2^k
@@ -1327,32 +1315,6 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 }
 
 template <typename _T>
-inline
-__attribute__((__always_inline__))
-typename cftal::math::elem_func_core<double, _T>::vf_type
-cftal::math::elem_func_core<double, _T>::
-__expm1_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
-              arg_t<vi_type> idx, arg_t<vi_type> ki,
-              arg_t<vf_type> x)
-{
-    vf_type ye;
-    vf_type y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, &ye);
-    // 2^kf = 2*2^s ; s = kf/2
-    // auto sc=__mul_two_pow(ki);
-    // vf_type scale=(0.5 * sc.f0()) * sc.f1();
-    vf_type scale=__mul_two_pow(0.5, ki);
-    // e^x-1 = 2*(y * 2^s - 0.5)
-    y  *= scale;
-    vf_type t;
-    d_ops::add12cond(y, t, -0.5, y);
-    ye = 2.0 * (ye * scale + t);
-    y = 2.0*y + ye;
-    // x small, required for handling of subnormal numbers
-    y = _T::sel((abs(x) < 0x1p-54), x, y);
-    return y;
-}
-
-template <typename _T>
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
@@ -1501,15 +1463,9 @@ exp_k(arg_t<vf_type> xc)
         y=__exp_tbl_k(xrh, xrl, idx, ki);
 #endif
     } else {
-#if 1
-        vi_type idx, ki;
-        __reduce_exp_arg(xrh, xrl, idx, ki, xc);
-        y=__expm1_tbl_k(xrh, xrl, idx, ki, xc);
-#else
         vf_type kf;
         __reduce_exp_arg(xrh, xrl, kf, xc);
         y=__exp_k<_EXP_M1>(xrh, xrl, kf, xc);
-#endif
     }
     return y;
 }
