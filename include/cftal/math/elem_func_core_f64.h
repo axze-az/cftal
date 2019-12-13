@@ -1361,7 +1361,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 {
     vf_type y;
     if (expl == nullptr) {
-        y=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, nullptr);
+        y=__exp_tbl_k<result_prec::normal>(xrh, xrl, idx, nullptr);
         y=__mul_two_pow(y, ki);
     } else {
         vf_type t;
