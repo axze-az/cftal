@@ -1410,10 +1410,10 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     } else {
         vf_type eh, e0;
         d_ops::mul12(eh, e0, th, xrh);
-        vf_type e1= th * xrlp;
+        vf_type ye= e0 + th * xrlp;
         vf_type e2;
         d_ops::add12(y, e2, th, eh);
-        vf_type ye=e0 + e1 + e2 + tl + tl*xrh;
+        ye=ye + tl + e2 + tl*xrh;
         if (expl != nullptr) {
             d_ops::add12(y, ye, y, ye);
             *expl = ye;
@@ -1459,7 +1459,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 {
     vf_type y;
     if (expl == nullptr) {
-        y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, expl);
+        y=__exp_tbl_k<result_prec::high>(xrh, xrl, idx, nullptr);
         y= __mul_two_pow(y, ki);
     } else {
         vf_type t;

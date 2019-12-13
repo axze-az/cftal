@@ -1315,7 +1315,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         vf_type ye= e0 + th * xrlp;
         vf_type e2;
         d_ops::add12(y, e2, th, eh);
-        ye= ye + e2 + tl + tl*xrh;
+        ye= ye + tl + e2 + tl*xrh;
         if (expl != nullptr) {
             d_ops::add12(y, ye, y, ye);
             *expl = ye;
