@@ -660,7 +660,6 @@ namespace cftal {
                    const d_real<_T>& on_false);
 }
 
-
 template <typename _T>
 inline
 __attribute__((__always_inline__))
@@ -1106,7 +1105,6 @@ unorm_sqr22(_T& pzh, _T& pzl,
     // add12(pzh, pzl, p1, p2);
 }
 
-
 template <typename _T>
 inline
 __attribute__((__always_inline__))
@@ -1152,7 +1150,6 @@ mul122(_T& rh, _T& rl,
        const _T& a,
        const _T& bh, const _T& bl)
 {
-
     _T t1, t2;
     unorm_mul122(t1, t2, a, bh, bl);
     add12(rh, rl, t1, t2);
@@ -1417,7 +1414,6 @@ scaled_div22(_T& rh, _T& rl,
         div22(rh, rl, ah, al, bh, bl);
     }
 }
-
 
 template <typename _T, bool _FMA>
 inline
