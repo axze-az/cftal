@@ -1034,16 +1034,24 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
     if (any_of(t= x[0]>vf_type(ir))) {
         // x -= _T::sel(t, 1.0, 0.0);
         // x>= 2, if t
+#if 1
+        x[0] += _T::sel_val_or_zero(t, -1.0);
+#else
         d_ops::add212(x[0], x[1],
                       x[0], x[1],
                       _T::sel_val_or_zero(t, -1.0));
+#endif
         f0[0]=_T::sel(t, x[0], 1.0);
         while (any_of(t= x[0]>vf_type(ir))) {
             // x -= _T::sel(t, 1.0, 0.0);
             // x>=2, if t
+#if 1
+            x[0] += _T::sel_val_or_zero(t, -1.0);
+#else
             d_ops::add212(x[0], x[1],
                           x[0], x[1],
                           _T::sel_val_or_zero(t, -1.0));
+#endif
 #if 0
             vdf_type p= select(t, x, vdf_type(1.0));
             f0 *= p;
@@ -1094,9 +1102,14 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 #endif
             // x += _T::sel(t, 1.0, 0.0);
             // x < -1.0
+#if 1
+            // works because we do not loose bits here
+            x[0] += _T::sel_val_or_zero(t, 1.0);
+#else
             d_ops::add212(x[0], x[1],
                           x[0], x[1],
                           _T::sel_val_or_zero(t, 1.0));
+#endif
 #if 0
             // avoid overflows in q0
             if (any_of(t=abs(q0[0]) > 0x1p500)) {
