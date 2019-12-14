@@ -2485,8 +2485,15 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
     inv_c =lck.from(tbl._p_inv_c);
     log_c_h=lck.from(tbl._p_log_c_h);
     log_c_l=lck.from(tbl._p_log_c_l);
+#if 0
     vf_type xrl = ldexp_k(xl, -ki);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
+#else
+    vi_type kii=_T::vi2_odd_to_vi(ki);
+    auto sc=__two_pow(-kii);
+    vf_type xrl = xl * sc.f0() * sc.f1();
+    vf_type kf=_T::cvt_i_to_f(kii);
+#endif
     vf_type r, rl;
     if (d_real_traits<vf_type>::fma == true) {
         r = xrh * inv_c - 1.0;
