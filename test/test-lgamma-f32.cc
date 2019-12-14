@@ -38,7 +38,6 @@ int main(int argc, char** argv)
 
     // test also some integral and integral-1/2 values
     std::vector<float> def_args=default_arguments<float>::values;
-    def_args.push_back(-2.457021951675415039e+00);
     for (std::size_t i=1; i<1025; ++i) {
         auto di=static_cast<float>(i);
         auto dih=di-0.5f;

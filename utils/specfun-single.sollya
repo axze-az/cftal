@@ -9,7 +9,7 @@ write("\n");
 i0=[1.0+0x1p-256, 2.0-0x1p-256];
 f= ext_lngamma(x)/((x-1)*(x-2));
 b = [|0, ..., 15|];
-c = [|49, 49, 49, 49, 49, 49, SG... |];
+c = [|49, 49, 49, 49, 49, 49, 49, SG... |];
 d = guessdegree(f, i0, 0x1p-30);
 d;
 p = fpminimax(f, b, c, i0, relative, floating);
