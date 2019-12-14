@@ -1088,7 +1088,7 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
                           _T::sel_val_or_zero(t, 1.0),
                           x[0], x[1]);
         // see below
-        while(any_of(t= x[0]<vf_type(-1.0))) {
+        while (any_of(t= x[0]<vf_type(-1.0))) {
 #if 0
             vdf_type q= select(t, x, vdf_type(1.0));
             q0 *= q;
@@ -1122,14 +1122,14 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 #endif
         }
         // the range between -1 and 1 must be handled more precise
-        while(any_of(t= x[0]<vf_type(il))) {
+        while (any_of(t= x[0]<vf_type(il))) {
             vdf_type q= select(t, x, vdf_type(1.0));
             q0 *= q;
             // x += _T::sel(t, 1.0, 0.0);
             // |x| <= 1.0
             d_ops::add122(x[0], x[1],
-                          _T::sel_val_or_zero(t, 1.0),
-                          x[0], x[1]);
+                        _T::sel_val_or_zero(t, 1.0),
+                        x[0], x[1]);
         }
         // f0 /= q0;
         // d_ops::div22(f0[0], f0[1], f0[0], f0[1], q0[0], q0[1]);
