@@ -1006,7 +1006,7 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
         d_ops::add22(ph, pl, pdci[i][0], pdci[i][1], ph, pl);
         d_ops::unorm_mul22(ph, pl, xh, xl, ph, pl);
     }
-    d_ops::add22cond(ph, pl, ph, pl, lngamma_i0_c0h, lngamma_i0_c0l);
+    d_ops::add22(ph, pl, lngamma_i0_c0h, lngamma_i0_c0l, ph, pl);
     vf_type xm1h, xm1l;
     d_ops::add212(xm1h, xm1l, xh, xl, -1.0);
     vf_type xm2h, xm2l;
@@ -1081,7 +1081,7 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
                           x[0], x[1]);
         // see below
         while(any_of(t= x[0]<vf_type(-1.0))) {
-#if 1
+#if 0
             vdf_type q= select(t, x, vdf_type(1.0));
             q0 *= q;
 #else
