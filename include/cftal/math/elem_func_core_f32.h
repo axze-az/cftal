@@ -1389,24 +1389,28 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type xrlp=xrl+x2*p2;
     vf_type y;
-    if (_P == result_prec::normal) {
-        vf_type eh=xrh + xrlp;
-        vf_type el=tl + tl*xrh;
-        y= th + (el + th*eh);
-        if (expl!=nullptr)
-            *expl=0.0;
-    } else {
+    if (_P == result_prec::high) {
         vf_type eh, e0;
         d_ops::mul12(eh, e0, th, xrh);
         vf_type ye= e0 + th * xrlp;
         vf_type e2;
         d_ops::add12(y, e2, th, eh);
-        ye=ye + tl + e2 + tl*xrh;
+        ye= ye + tl + e2 + tl*xrh;
         if (expl != nullptr) {
             d_ops::add12(y, ye, y, ye);
             *expl = ye;
         } else {
             y+= ye;
+        }
+    } else {
+        vf_type eh=xrh + xrlp;
+        vf_type el=tl + tl*xrh;
+        vf_type ye=el + th*eh;
+        if (expl!=nullptr) {
+            d_ops::add12(y, ye, th, ye);
+            *expl=ye;
+        } else {
+            y= th + ye;
         }
     }
     return y;
