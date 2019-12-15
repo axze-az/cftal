@@ -167,8 +167,9 @@ cftal::math::impl::__scalbn(double x, int32_t ex)
 {
     using traits_t = cftal::math::func_traits<v1f64, v1s32>;
     using func_t = cftal::math::elem_func<double, traits_t>;
-    return func_t::ldexp(x, ex)();
-    // return std::ldexp(x, ex);
+    v1s32 vex=ex;
+    return func_t::__mul_two_pow(x, vex)();
+    // return func_t::ldexp(x, ex)();
 }
 
 inline

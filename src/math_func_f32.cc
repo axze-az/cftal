@@ -10,6 +10,7 @@
 #include <cftal/math/elem_func_core_f32.h>
 #include <cftal/types.h>
 #include <cftal/cast.h>
+#include <cstring>
 
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
 #define USE_FLOAT_KERNEL_REM_PIO2 0
@@ -137,7 +138,8 @@ cftal::math::impl::__scalbn(float x, int32_t ex)
 {
     using traits_t = cftal::math::func_traits<v1f32, v1s32>;
     using func_t = cftal::math::elem_func<float, traits_t>;
-    return func_t::ldexp(x, ex)();
+    v1s32 vex=ex;
+    return func_t::__mul_two_pow(x, vex)();
 }
 
 inline
@@ -288,6 +290,9 @@ __kernel_rem_pio2(float* x,
     int32_t jz,jx,jv,jp,jk,carry,n,iq[20],i,j,k,m,q0,ih;
     float z,fw,f[20],fq[20],q[20];
 
+    std::memset(f, 0, sizeof(f));
+    std::memset(fq, 0, sizeof(fq));
+    std::memset(q, 0, sizeof(q));
     /* initialize jk*/
     jk = init_jk_f32[prec];
     jp = jk;
