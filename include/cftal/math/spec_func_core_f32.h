@@ -1037,7 +1037,16 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 #endif
         }
         // the range between -1 and 1 must be handled more precise
-        while (any_of(t= x[0]<vf_type(il))) {
+        if (any_of(t= x[0]<vf_type(0.0f))) {
+            vf_type qh= _T::sel(t, x[0], vf_type(1.0f));
+            vf_type ql= _T::sel_val_or_zero(t, x[1]);
+            d_ops::mul22(q0[0], q0[1], q0[0], q0[1], qh, ql);
+            // |x| <= 1.0
+            d_ops::add122(x[0], x[1],
+                        _T::sel_val_or_zero(t, 1.0f),
+                        x[0], x[1]);
+        }
+        if (any_of(t= x[0]<vf_type(il))) {
             vf_type qh= _T::sel(t, x[0], vf_type(1.0f));
             vf_type ql= _T::sel_val_or_zero(t, x[1]);
             d_ops::mul22(q0[0], q0[1], q0[0], q0[1], qh, ql);

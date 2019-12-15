@@ -985,8 +985,8 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     const double* pci=ci;
     d_ops::unorm_mul122(ph, pl, pci[0], xh, xl);
     const std::size_t N0=std::distance(std::cbegin(ci), std::cend(ci));
-#pragma GCC unroll 0
 #pragma clang loop unroll(disable)
+#pragma GCC unroll 0
     for (std::size_t i=1; i<N0; ++i) {
         d_ops::add122(ph, pl, pci[i], ph, pl);
         d_ops::unorm_mul22(ph, pl, xh, xl, ph, pl);
@@ -1081,7 +1081,16 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 #endif
         }
         // the range between -1 and 1 must be handled more precise
-        while (any_of(t= x[0]<vf_type(il))) {
+        if (any_of(t= x[0]<vf_type(0.0))) {
+            vf_type qh= _T::sel(t, x[0], vf_type(1.0));
+            vf_type ql= _T::sel_val_or_zero(t, x[1]);
+            d_ops::mul22(q0[0], q0[1], q0[0], q0[1], qh, ql);
+            // |x| <= 1.0
+            d_ops::add122(x[0], x[1],
+                          _T::sel_val_or_zero(t, 1.0),
+                          x[0], x[1]);
+        }
+        if (any_of(t= x[0]<vf_type(il))) {
             vf_type qh= _T::sel(t, x[0], vf_type(1.0));
             vf_type ql= _T::sel_val_or_zero(t, x[1]);
             d_ops::mul22(q0[0], q0[1], q0[0], q0[1], qh, ql);
