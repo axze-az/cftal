@@ -54,12 +54,6 @@ double
 cftal::test::call_mpfr::
 func(double a, f1_t f, std::pair<double, double>* ulp1i)
 {
-#if 0
-    MPFR_DECL_INIT(r, 53);
-    mpfr_set_d(ai, a, MPFR_RNDN);
-    int mpres=f(r, ai, MPFR_RNDN);
-    double dr=mpfr_get_d(r, MPFR_RNDN);
-#else
     mpfr_cache::f1_mpfr_result<double> c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
@@ -76,7 +70,6 @@ func(double a, f1_t f, std::pair<double, double>* ulp1i)
     }
     double dr=c._res;
     int mpres=c._mpfr_res;
-#endif
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }
@@ -120,13 +113,6 @@ double
 cftal::test::call_mpfr::
 func(int32_t* ip, double a, f1i_t f, std::pair<double, double>* ulp1i)
 {
-#if 0
-    MPFR_DECL_INIT(ai, 53);
-    MPFR_DECL_INIT(r, 53);
-    mpfr_set_d(ai, a, MPFR_RNDN);
-    int mpres=f(r, ip, ai, MPFR_RNDN);
-    double dr=mpfr_get_d(r, MPFR_RNDN);
-#else
     mpfr_cache::f1i_mpfr_result<std::pair<double, int32_t> > c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
@@ -147,7 +133,6 @@ func(int32_t* ip, double a, f1i_t f, std::pair<double, double>* ulp1i)
     }
     double dr=c._res.first;
     int mpres=c._mpfr_res;
-#endif
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }
@@ -158,15 +143,6 @@ double
 cftal::test::call_mpfr::
 func(double a, double b, f2_t f, std::pair<double, double>* ulp1i)
 {
-#if 0
-    MPFR_DECL_INIT(ai, 53);
-    MPFR_DECL_INIT(bi, 53);
-    MPFR_DECL_INIT(r, 53);
-    mpfr_set_d(ai, a, MPFR_RNDN);
-    mpfr_set_d(bi, b, MPFR_RNDN);
-    int mpres=f(r, ai, bi, MPFR_RNDN);
-    double dr=mpfr_get_d(r, MPFR_RNDN);
-#else
     mpfr_cache::f2_mpfr_result<double> c;
     auto pf= mpfr_cache::result(a, b, f, c);
     if (pf == nullptr) {
@@ -185,7 +161,6 @@ func(double a, double b, f2_t f, std::pair<double, double>* ulp1i)
     }
     double dr=c._res;
     int mpres=c._mpfr_res;
-#endif
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }
@@ -213,13 +188,6 @@ float
 cftal::test::call_mpfr::
 func(float a, f1_t f, std::pair<float, float>* ulp1i)
 {
-#if 0
-    MPFR_DECL_INIT(ai, 24);
-    MPFR_DECL_INIT(r, 24);
-    mpfr_set_flt(ai, a, MPFR_RNDN);
-    int mpres=f(r, ai, MPFR_RNDN);
-    float dr=mpfr_get_flt(r, MPFR_RNDN);
-#else
     mpfr_cache::f1_mpfr_result<float> c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
@@ -236,7 +204,6 @@ func(float a, f1_t f, std::pair<float, float>* ulp1i)
     }
     float dr=c._res;
     int mpres=c._mpfr_res;
-#endif
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }
@@ -280,13 +247,6 @@ float
 cftal::test::call_mpfr::
 func(int32_t* ip, float a, f1i_t f, std::pair<float, float>* ulp1i)
 {
-#if 0
-    MPFR_DECL_INIT(ai, 24);
-    MPFR_DECL_INIT(r, 24);
-    mpfr_set_flt(ai, a, MPFR_RNDN);
-    int mpres=f(r, ip, ai, MPFR_RNDN);
-    float dr=mpfr_get_flt(r, MPFR_RNDN);
-#else
     mpfr_cache::f1i_mpfr_result<std::pair<float, int32_t> > c;
     auto pf= mpfr_cache::result(a, f, c);
     if (pf == nullptr) {
@@ -307,7 +267,6 @@ func(int32_t* ip, float a, f1i_t f, std::pair<float, float>* ulp1i)
     }
     float dr=c._res.first;
     int mpres=c._mpfr_res;
-#endif
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }
@@ -318,15 +277,6 @@ float
 cftal::test::call_mpfr::
 func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
 {
-#if 0
-    MPFR_DECL_INIT(ai, 24);
-    MPFR_DECL_INIT(bi, 24);
-    MPFR_DECL_INIT(r, 24);
-    mpfr_set_flt(ai, a, MPFR_RNDN);
-    mpfr_set_flt(bi, b, MPFR_RNDN);
-    int mpres=f(r, ai, bi, MPFR_RNDN);
-    float dr=mpfr_get_flt(r, MPFR_RNDN);
-#else
     mpfr_cache::f2_mpfr_result<float> c;
     auto pf= mpfr_cache::result(a, b, f, c);
     if (pf == nullptr) {
@@ -345,7 +295,6 @@ func(float a, float b, f2_t f, std::pair<float, float>* ulp1i)
     }
     float dr=c._res;
     int mpres=c._mpfr_res;
-#endif
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }
@@ -466,7 +415,6 @@ int
 cftal::test::mpfr_ext::
 exp2m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
 {
-#if 1
     auto f=[](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
         fpn_handle xln2(mpfr_get_prec(xx));
         fpn_handle ln2(mpfr_get_prec(xx));
@@ -477,61 +425,12 @@ exp2m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
     };
     int r= call_ziv_func(res, src, rm, f);
     return r;
-#else
-    mpfr_prec_t tgt_prec=mpfr_get_prec(res);
-    fpn_handle t(tgt_prec);
-    fpn_handle u(tgt_prec);
-    int inexact_exp2 = ~0;
-    int inexact_exp2m1_1 = ~0;
-    int inexact_exp2m1_2 = ~0;
-#if DEBUG_EXP2M1>0
-    double tt=mpfr_get_d(src, MPFR_RNDN);
-    std::cout << "exp2m1 of " << tt << std::endl;
-#endif
-    mpfr_prec_t prec_inc=16;
-    switch (tgt_prec) {
-    case 24:
-        prec_inc=16;
-        mpfr_set_prec(t(), 32);
-        break;
-    case 53:
-        prec_inc=32;
-        mpfr_set_prec(t(), 64);
-        break;
-    default:
-        break;
-    }
-    do {
-#if DEBUG_EXP2M1>0
-        if (t.prec()>64)
-            std::cout << "using precision " << t.prec() << std::endl;
-#endif
-        inexact_exp2= mpfr_exp2(t(), src, MPFR_RNDD);
-        inexact_exp2m1_1 = mpfr_sub_ui(res, t(), 1, rm);
-        if (inexact_exp2 == 0) {
-            break;
-        }
-        // round up exp2 to the next larger number
-        mpfr_nextabove(t());
-        // and repeat the subtraction
-        inexact_exp2m1_2 = mpfr_sub_ui(u(), t(), 1, rm);
-        mpfr_set_prec(t(), t.prec()+prec_inc);
-    } while (!mpfr_equal_or_nan(u(), res) &&
-             ((inexact_exp2m1_1 >= 0 && inexact_exp2m1_2 <=0) ||
-             (inexact_exp2m1_1 <= 0 && inexact_exp2m1_2 >=0)));
-#if DEBUG_EXP2M1>0
-    tt= mpfr_get_d(res, MPFR_RNDN);
-    std::cout << "result is " << tt << std::endl;
-#endif
-    return inexact_exp2m1_1;
-#endif
 }
 
 int
 cftal::test::mpfr_ext::
 exp10m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
 {
-#if 1
     auto f=[](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
         fpn_handle xln10(mpfr_get_prec(xx));
         fpn_handle ln10(mpfr_get_prec(xx));
@@ -541,42 +440,6 @@ exp10m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
         return r;
     };
     return call_ziv_func(res, src, rm, f);
-#else
-    mpfr_prec_t tgt_prec=mpfr_get_prec(res);
-    fpn_handle t(tgt_prec);
-    fpn_handle u(tgt_prec);
-    int inexact_exp10 = ~0;
-    int inexact_exp10m1_1 = ~0;
-    int inexact_exp10m1_2 = ~0;
-    mpfr_prec_t prec_inc=16;
-    switch (tgt_prec) {
-    case 24:
-        prec_inc=16;
-        mpfr_set_prec(t(), 32);
-        break;
-    case 53:
-        prec_inc=32;
-        mpfr_set_prec(t(), 64);
-        break;
-    default:
-        break;
-    }
-    do {
-        inexact_exp10= mpfr_exp10(t(), src, MPFR_RNDD);
-        inexact_exp10m1_1 = mpfr_sub_ui(res, t(), 1, rm);
-        if (inexact_exp10 == 0) {
-            break;
-        }
-        // round up exp10 to the next larger number
-        mpfr_nextabove(t());
-        // and repeat the subtraction
-        inexact_exp10m1_2 = mpfr_sub_ui(u(), t(), 1, rm);
-        mpfr_set_prec(t(), t.prec()+prec_inc);
-    } while (!mpfr_equal_or_nan(u(), res) &&
-             ((inexact_exp10m1_1 >= 0 && inexact_exp10m1_2 <=0) ||
-             (inexact_exp10m1_1 <= 0 && inexact_exp10m1_2 >=0)));
-    return inexact_exp10m1_1;
-#endif
 }
 
 int
