@@ -26,9 +26,6 @@ namespace cftal {
     namespace test {
         int mpfi_from_mpfr(mpfi_t i, const fpn_handle& v, int mpfr_result);
 
-        const double h=0x1p-64;
-        const double h2 __attribute__((used)) = h*h;
-
         template <typename _T>
         void
         approx_dy_dx(fpn_handle& r,
@@ -53,17 +50,21 @@ cftal::test::approx_dy_dx(fpn_handle& r,
                           mpfr_rnd_t rm)
 {
     // df/dx ~ [f(x+h) - f(x-h)] / 2h
-    fpn_handle d(x.prec());
-    mpfr_set_d(d(), h, MPFR_RNDN);
-    fpn_handle dx(x.prec());
-    mpfr_set_d(dx(), 2.0*h, MPFR_RNDN);
-    fpn_handle x_l(x), x_r(x);
-    mpfr_sub(x_l(), x_l(), d(), MPFR_RNDN);
-    mpfr_add(x_r(), x_r(), d(), MPFR_RNDN);
-    fpn_handle y_l(x.prec()), y_r(x.prec());
+    const mpfr_prec_t prec=x.prec();
+    // h = 2^-prec
+    fpn_handle d(prec);
+    const mpfr_exp_t eh=-int64_t(prec);
+    mpfr_set_si_2exp(d(), 1L, eh, MPFR_RNDN);
+    // 2h: 2*(2^-prec)
+    fpn_handle dx(prec);
+    mpfr_set_si_2exp(dx(), 2L, eh, MPFR_RNDN);
+    fpn_handle x_l(2*prec), x_r(2*prec);
+    mpfr_sub(x_l(), x(), d(), MPFR_RNDN);
+    mpfr_add(x_r(), x(), d(), MPFR_RNDN);
+    fpn_handle y_l(2*prec), y_r(2*prec);
     f(y_l, x_l, MPFR_RNDN);
     f(y_r, x_r, MPFR_RNDN);
-    fpn_handle dy(2*x.prec());
+    fpn_handle dy(2*prec);
     mpfr_sub(dy(), y_r(), y_l(), MPFR_RNDN);
     mpfr_div(r(), dy(), dx(), rm);
 #if 0
@@ -88,19 +89,24 @@ cftal::test::approx_d2y_dx2(fpn_handle& r,
                             mpfr_rnd_t rm)
 {
     // d2f/dx2 ~ [f(x+h) - 2*f(x) + f(x-h)] / h^2
-    fpn_handle d(x.prec());
-    mpfr_set_d(d(), h, MPFR_RNDN);
-    fpn_handle dx2(x.prec());
-    mpfr_set_d(dx2(), h2, MPFR_RNDN);
-    fpn_handle x_l(x), x_r(x);
-    mpfr_sub(x_l(), x_l(), d(), MPFR_RNDN);
-    mpfr_add(x_r(), x_r(), d(), MPFR_RNDN);
-    fpn_handle y_l(x.prec()), y_r(x.prec()), y(x.prec());
+    const mpfr_prec_t prec=x.prec();
+    // h = 2^-prec
+    fpn_handle d(prec);
+    const mpfr_exp_t eh= -int64_t(prec);
+    mpfr_set_si_2exp(d(), 1L, eh, MPFR_RNDN);
+    // h^2 = h*h = 2^(-2*prec)
+    const mpfr_exp_t eh2= 2*eh;
+    fpn_handle dx2(prec);
+    mpfr_set_si_2exp(dx2(), 1L, eh2, MPFR_RNDN);
+    fpn_handle x_l(2*prec), x_r(2*prec);
+    mpfr_sub(x_l(), x(), d(), MPFR_RNDN);
+    mpfr_add(x_r(), x(), d(), MPFR_RNDN);
+    fpn_handle y_l(2*prec), y_r(2*prec), y(2*prec);
     f(y_l, x_l, MPFR_RNDN);
     f(y, x, MPFR_RNDN);
     f(y_r, x_r, MPFR_RNDN);
-    fpn_handle t(2*x.prec());
-    fpn_handle y2(x.prec());
+    fpn_handle t(2*prec);
+    fpn_handle y2(2* prec);
     mpfr_mul_2si(y2(), y(), 1, MPFR_RNDN);
     mpfr_sub(t(), y_r(), y2(), MPFR_RNDN);
     mpfr_add(t(), t(), y_l(), MPFR_RNDN);
