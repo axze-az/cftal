@@ -713,7 +713,7 @@ cftal::test::mpfr_cache::result_cache<_K, _R>::
 insert(const value_type& v)
 {
 #if DEBUG_CACHE>0
-    if (find(v.first) == nullptr) {
+    if (find(v.first) != nullptr) {
         std::cerr << "duplicate entry detected\n" << std::flush;
     }
 #endif
@@ -905,7 +905,7 @@ cftal::test::mpfr_cache::update(double a, f1_t f,
         return;
     f1_64_cache_entry* pe=&i->second;
     {
-        std::lock_guard<f1_64_cache_entry> _lck(*pe);
+        std::unique_lock<f1_64_cache_entry> _lck(*pe);
         int64_t ai= as<int64_t>(a);
         int64_t ri= as<int64_t>(r._res);
         pe->_m64.insert(std::make_pair(ai, std::make_pair(ri, r._mpfr_res)));
@@ -921,7 +921,7 @@ cftal::test::mpfr_cache::update(float a, f1_t f,
         return;
     f1_32_cache_entry* pe=&i->second;
     {
-        std::lock_guard<f1_32_cache_entry> _lck(*pe);
+        std::unique_lock<f1_32_cache_entry> _lck(*pe);
         int32_t ai= as<int32_t>(a);
         int32_t ri= as<int32_t>(r._res);
         pe->_m32.insert(std::make_pair(ai, std::make_pair(ri, r._mpfr_res)));
@@ -937,7 +937,7 @@ cftal::test::mpfr_cache::update(double a, double b, f2_t f,
         return;
     f2_64_cache_entry* pe=&i->second;
     {
-        std::lock_guard<f2_64_cache_entry> _lck(*pe);
+        std::unique_lock<f2_64_cache_entry> _lck(*pe);
         int64_t ai= as<int64_t>(a);
         int64_t bi= as<int64_t>(b);
         hashable_pair<packed_int64_t> aibi(ai, bi);
@@ -955,7 +955,7 @@ cftal::test::mpfr_cache::update(float a, float b, f2_t f,
         return;
     f2_32_cache_entry* pe=&i->second;
     {
-        std::lock_guard<f2_32_cache_entry> _lck(*pe);
+        std::unique_lock<f2_32_cache_entry> _lck(*pe);
         int32_t ai= as<int32_t>(a);
         int32_t bi= as<int32_t>(b);
         hashable_pair<int32_t> aibi(ai, bi);
@@ -974,7 +974,7 @@ update(double a, f1i_t f,
         return;
     f1i_64_cache_entry* pe=&i->second;
     {
-        std::lock_guard<f1i_64_cache_entry> _lck(*pe);
+        std::unique_lock<f1i_64_cache_entry> _lck(*pe);
         int64_t ai= as<int64_t>(a);
         int64_t ri= as<int64_t>(r._res.first);
         int32_t rii= r._res.second;
@@ -993,7 +993,7 @@ update(float a, f1i_t f,
         return;
     f1i_32_cache_entry* pe=&i->second;
     {
-        std::lock_guard<f1i_32_cache_entry> _lck(*pe);
+        std::unique_lock<f1i_32_cache_entry> _lck(*pe);
         int32_t ai= as<int32_t>(a);
         int32_t ri= as<int32_t>(r._res.first);
         int32_t rii= r._res.second;
