@@ -346,8 +346,9 @@ cftal::mem<cftal::vec<float, 8> >::load(const float* p, std::size_t s)
 
         break;
     case 1:
-        v = _mm256_setr_ps(p[0], p[0], p[0], p[0],
-                           p[0], p[0], p[0], p[0]);
+        v = _mm256_broadcast_ss(p);
+        // v = _mm256_setr_ps(p[0], p[0], p[0], p[0],
+        //                    p[0], p[0], p[0], p[0]);
         break;
     case 0:
         v = _mm256_setr_ps(0.0f, 0.0f, 0.0f, 0.0f,

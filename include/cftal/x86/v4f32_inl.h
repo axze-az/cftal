@@ -325,10 +325,13 @@ cftal::mem<cftal::vec<float, 4> >::load(const float* p, std::size_t s)
         break;
     case 2:
         v = _mm_setr_ps(p[0], p[1], p[1], p[1]);
-
         break;
     case 1:
+#if defined (__AVX__)
+        v = _mm_broadcast_ss(p);
+#else
         v = _mm_setr_ps(p[0], p[0], p[0], p[0]);
+#endif
         break;
     case 0:
         v = _mm_setr_ps(0, 0, 0, 0);

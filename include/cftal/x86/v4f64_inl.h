@@ -333,7 +333,8 @@ cftal::mem<cftal::vec<double, 4> >::load(const double* p, std::size_t s)
         v = _mm256_setr_pd(p[0], p[1], p[1], p[1]);
         break;
     case 1:
-        v = _mm256_setr_pd(p[0], p[0], p[0], p[0]);
+        // v = _mm256_setr_pd(p[0], p[0], p[0], p[0]);
+        v = _mm256_broadcast_sd(p);
         break;
     case 0:
         v = _mm256_setr_pd(0, 0, 0, 0);

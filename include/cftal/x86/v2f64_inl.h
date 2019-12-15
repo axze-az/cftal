@@ -320,7 +320,11 @@ cftal::mem<cftal::vec<double, 2>>::load(const double* p, std::size_t s)
         v = _mm_loadu_pd(p);
         break;
     case 1:
+#if defined (__SSE3__)
+        v = _mm_loaddup_pd(p);
+#else
         v = _mm_setr_pd(p[0], p[0]);
+#endif
         break;
     case 0:
         v = _mm_setr_pd(0, 0);
