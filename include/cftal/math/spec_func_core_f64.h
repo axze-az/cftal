@@ -1032,38 +1032,14 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
     const double ir=2.0;
 
     if (any_of(t= x[0]>vf_type(ir))) {
-        // x -= _T::sel(t, 1.0, 0.0);
         // x>= 2, if t
-#if 1
         x[0] += _T::sel_val_or_zero(t, -1.0);
-#else
-        d_ops::add212(x[0], x[1],
-                      x[0], x[1],
-                      _T::sel_val_or_zero(t, -1.0));
-#endif
-        f0[0]=_T::sel(t, x[0], 1.0);
+        f0[0]=_T::sel(t, x[0], f0[0]);
         while (any_of(t= x[0]>vf_type(ir))) {
-            // x -= _T::sel(t, 1.0, 0.0);
             // x>=2, if t
-#if 1
             x[0] += _T::sel_val_or_zero(t, -1.0);
-#else
-            d_ops::add212(x[0], x[1],
-                          x[0], x[1],
-                          _T::sel_val_or_zero(t, -1.0));
-#endif
-#if 0
-            vdf_type p= select(t, x, vdf_type(1.0));
-            f0 *= p;
-#else
             vf_type p= _T::sel(t, x[0], vf_type(1.0));
-            // f *= p;
-            // d_ops::mul122(f0[0], f0[1], p, f0[0], f0[1]);
-            // compensated product:
-            vf_type pl;
-            d_ops::mul12(f0[0], pl, f0[0], p);
-            f0[1] = f0[1] * p + pl;
-#endif
+            d_ops::unorm_mul122(f0[0], f0[1], p, f0[0], f0[1]);
 #if 0
             // avoid overflows in f0
             if (any_of(t=f0[0] > 0x1p500)) {
@@ -1081,35 +1057,18 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
     if (any_of(t)) {
         vdf_type& q0=f0;
         q0[0] = _T::sel(t, x[0], q0[0]);
-        q0[1] = _T::sel(t, 0.0, q0[1]);
-        // x += _T::sel(t, 1.0, 0.0);
+        q0[1] = _T::sel_zero_or_val(t, q0[1]);
         // nothing known about x
         d_ops::add122cond(x[0], x[1],
                           _T::sel_val_or_zero(t, 1.0),
                           x[0], x[1]);
         // see below
         while (any_of(t= x[0]<vf_type(-1.0))) {
-#if 0
-            vdf_type q= select(t, x, vdf_type(1.0));
-            q0 *= q;
-#else
             vf_type q= _T::sel(t, x[0], vf_type(1.0));
-            // q0 *= q;
-            // d_ops::mul122(q0[0], q0[1], q, q0[0], q0[1]);
-            vf_type pl;
-            d_ops::mul12(q0[0], pl, q0[0], q);
-            q0[1] = q0[1] * q + pl;
-#endif
-            // x += _T::sel(t, 1.0, 0.0);
-            // x < -1.0
-#if 1
+            d_ops::unorm_mul122(q0[0], q0[1], q, q0[0], q0[1]);
             // works because we do not loose bits here
+            // x < -1.0
             x[0] += _T::sel_val_or_zero(t, 1.0);
-#else
-            d_ops::add212(x[0], x[1],
-                          x[0], x[1],
-                          _T::sel_val_or_zero(t, 1.0));
-#endif
 #if 0
             // avoid overflows in q0
             if (any_of(t=abs(q0[0]) > 0x1p500)) {
@@ -1123,9 +1082,9 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
         }
         // the range between -1 and 1 must be handled more precise
         while (any_of(t= x[0]<vf_type(il))) {
-            vdf_type q= select(t, x, vdf_type(1.0));
-            q0 *= q;
-            // x += _T::sel(t, 1.0, 0.0);
+            vf_type qh= _T::sel(t, x[0], vf_type(1.0));
+            vf_type ql= _T::sel_val_or_zero(t, x[1]);
+            d_ops::mul22(q0[0], q0[1], q0[0], q0[1], qh, ql);
             // |x| <= 1.0
             d_ops::add122(x[0], x[1],
                         _T::sel_val_or_zero(t, 1.0),
