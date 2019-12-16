@@ -82,6 +82,71 @@ write_df_l_hex = proc(c) {
     write_f_hex(dl);
 };
 
+
+write_td_h = proc(c) {
+    write_d(c);
+};
+
+write_td_h_hex = proc(c) {
+    write_d_hex(c);
+};
+
+write_td_m = proc(c) {
+    write_dd_l(c);
+};
+
+write_td_m_hex = proc(c) {
+    write_dd_l(c);
+};
+
+write_td_l = proc(c) {
+    var dh, dm, dl;
+    dh = c;
+    dm = dh - double(dh);
+    dl = dm - double(dm);
+    write_d(dl);
+};
+
+write_td_l_hex = proc(c) {
+    var dh, dm, dl;
+    dh = c;
+    dm = dh - double(dh);
+    dl = dm - double(dm);
+    write_d_hex(dl);
+};
+
+write_tf_h = proc(c) {
+   write_f(c);
+};
+
+write_tf_h_hex = proc(c) {
+   write_f_hex(c);
+};
+
+write_tf_m = proc(c) {
+    write_df_l(c);
+};
+
+write_tf_m_hex = proc(c) {
+    write_df_l_hex(c);
+};
+
+write_tf_l = proc(c) {
+    var dh, dm, dl;
+    dh = c;
+    dm = dh - single(dh);
+    dl = dm - single(dm);
+    write_f(dl);
+};
+
+write_tf_l_hex = proc(c) {
+    var dh, dm, dl;
+    dh = c;
+    dm = dh - single(dh);
+    dl = dm - single(dm);
+    write_f_hex(dl);
+};
+
 write_coeff = proc(c, i, pfx, fmt) {
     var dd, t, tdd;
     dd=display;
@@ -109,6 +174,27 @@ write_coeff = proc(c, i, pfx, fmt) {
          write("\n");
          write("    ", pfx, i, "l=");
          write_dd_l(c);
+         write(";\n");
+     }
+    tripledouble:
+    {
+         write("    // x^", i, " h: ");
+         write_td_h_hex(c);
+         write("\n");
+         write("    ", pfx, i, "h=");
+         write_td_h(c);
+         write(";\n");
+         write("    // x^", i, " m: ");
+         write_td_m_hex(c);
+         write("\n");
+         write("    ", pfx, i, "m=");
+         write_td_m(c);
+         write(";\n");
+         write("    // x^", i, " l: ");
+         write_td_l_hex(c);
+         write("\n");
+         write("    ", pfx, i, "l=");
+         write_td_l(c);
          write(";\n");
      }
      single:
@@ -148,6 +234,27 @@ write_coeff = proc(c, i, pfx, fmt) {
          write("\n");
          write("    ", pfx, i, "l=");
          write_df_l(c);
+         write(";\n");
+     }
+     74:
+     {
+         write("    // x^", i, " h: ");
+         write_tf_h_hex(c);
+         write("\n");
+         write("    ", pfx, i, "h=");
+         write_tf_h(c);
+         write(";\n");
+         write("    // x^", i, " m: ");
+         write_tf_m_hex(c);
+         write("\n");
+         write("    ", pfx, i, "m=");
+         write_tf_m(c);
+         write(";\n");
+         write("    // x^", i, " l: ");
+         write_tf_l_hex(c);
+         write("\n");
+         write("    ", pfx, i, "l=");
+         write_tf_l(c);
          write(";\n");
      }
      default:
