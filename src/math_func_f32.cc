@@ -139,7 +139,7 @@ cftal::math::impl::__scalbn(float x, int32_t ex)
     using traits_t = cftal::math::func_traits<v1f32, v1s32>;
     using func_t = cftal::math::elem_func<float, traits_t>;
     v1s32 vex=ex;
-    return func_t::__mul_two_pow(x, vex)();
+    return func_t::__mul_two_pow(v1f32(x), vex)();
 }
 
 inline
