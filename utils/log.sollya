@@ -151,7 +151,7 @@ p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
 
-b = [|1, ..., 5|];
+b = [|1, ..., 6|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float log_hp_c", "log_hp", b, c);
