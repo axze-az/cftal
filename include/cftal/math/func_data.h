@@ -121,6 +121,29 @@ namespace cftal {
 
         extern template struct erfc_data<double>;
 
+
+        template <typename _F>
+        struct lngamma_data {};
+
+        template <>
+        struct lngamma_data<double> {
+            constexpr static const double SCALE=32.0;
+            constexpr static const double INV_SCALE=1.0/32.0;
+            enum {
+                COUNT=33,
+                POLY_ORDER=10,
+                // c0, c1, c2, c3 are stored as cXh, cXl
+                // i.e we have (10+1+4) entries per
+                // interval, c0h, c0l are stored last
+                DD_COEFFS=4,
+                ELEMS_PER_INTERVAL=(POLY_ORDER+1)+DD_COEFFS,
+                ENTRIES = COUNT * ELEMS_PER_INTERVAL
+            };
+            static const double _12_tbl[ENTRIES];
+        };
+
+        extern template struct lngamma_data<double>;
+
     }
 }
 
