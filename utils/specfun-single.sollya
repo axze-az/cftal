@@ -2,9 +2,75 @@
 execute("common.sollya");
 ext_lngamma = library("./libsollya_funcs.so");
 ext_tgamma = library("./libsollya_funcs.so");
-verbosity=2!;
+verbosity=1!;
 prec=512!;
 write("\n");
+
+lngamma_12_table_f32 = proc()
+{
+    var xi, xe, d, f, i0, b, b12, rev_b, c, c12, rev_c, p, j, ci;
+    d=1/32;
+    xi=1.0;
+    xe=2.0;
+    b = [|0, ..., 5|];
+    b12=[|1, ..., 5|];
+    c = [|49, 49, 49, SG, SG, SG|];
+    c12=    [|49, 49, SG, SG, SG|];
+    i0= [-d/2, d/2];
+    rev_c = revert(c);
+    rev_b = revert(b);
+    write("const float lngamma_12_table[]={\n");
+    while (xi <= xe) do {
+        f= ext_lngamma(_x_+xi);
+        if (xi == 1.0) then {
+            i0=[0, d/2];
+            p=fpminimax(f, b12, c12, i0, relative, floating);
+            p=p+0;
+        } else if (xi==2.0) then {
+            i0=[-d/2, 0];
+            p=fpminimax(f, b12, c12, i0, relative, floating);
+            p=p+0;
+        } else {
+            i0= [-d/2, d/2];
+            p=fpminimax(f, b, c, i0, floating, floating);
+        };
+        write("    // ", xi, ": ");
+        write_approx_prec(p, f, i0);
+        j=0;
+        for i in rev_b
+        do {
+            ci = coeff(p, i);
+            match(rev_c[j]) with
+            single: {
+                write("    // x^ ", i , ": ");
+                write_f_hex(ci);
+                write(",\n");
+                write("    ");
+                write_f(ci);
+                write(",\n");
+            }
+            49: {
+                write("    // x^ ", i , ": ");
+                write_df_h_hex(ci);
+                write(",\n");
+                write("    ");
+                write_df_h(ci);
+                write(",\n");
+                write("    // x^ ", i , ": ");
+                write_df_l_hex(ci);
+                write(",\n");
+                write("    ");
+                write_df_l(ci);
+                write(",\n");
+            };
+
+            j = j + 1;
+        };
+        xi = xi + d;
+    };
+    write("};\n");
+};
+lngamma_12_table_f32();
 
 i0=[1.0+0x1p-256, 2.0-0x1p-256];
 f= ext_lngamma(x)/((x-1)*(x-2));
