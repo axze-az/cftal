@@ -70,7 +70,7 @@ namespace cftal {
             vdf_type
             __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
 
-            // calculates lngamma for x in [1, 2) using tables
+            // calculates lngamma for x in [1, 2] using tables
             static
             vdf_type
             __lgamma_1_2_tbl_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
@@ -1082,11 +1082,11 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
     const double il=1.0;
     const double ir=2.0;
 
-    if (any_of(t= x[0]>=vf_type(ir))) {
+    if (any_of(t= x[0]>vf_type(ir))) {
         // x>= 2, if t
         x[0] += _T::sel_val_or_zero(t, -1.0);
         f0[0]=_T::sel(t, x[0], f0[0]);
-        while (any_of(t= x[0]>=vf_type(ir))) {
+        while (any_of(t= x[0]>vf_type(ir))) {
             // x>=2, if t
             x[0] += _T::sel_val_or_zero(t, -1.0);
             vf_type p= _T::sel(t, x[0], vf_type(1.0));

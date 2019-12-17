@@ -15,9 +15,10 @@ set (CSRCS
     log_data_f64.cc
     erfc_data_f32.cc
     erfc_data_f64.cc
+    lngamma_data_f32.cc
     lngamma_data_f64.cc
-    math_func_f64.cc
     math_func_f32.cc
+    math_func_f64.cc
     math_common.cc
     lanczos.cc
     x86_ops_1.cc

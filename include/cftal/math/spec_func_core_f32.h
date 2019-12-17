@@ -103,6 +103,11 @@ namespace cftal {
             vdf_type
             __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
 
+            // calculates lngamma for x in [1, 2] using tables
+            static
+            vdf_type
+            __lgamma_1_2_tbl_k(arg_t<vf_type> xh, arg_t<vf_type> xl);
+
             // returns _xr in the range [1, 2]
             // returns _f (including sign)= (x+N)(x+_N-1)...(x-1)(x-2)
             // returns _inv_f as true if f must be inverted or false if not
@@ -974,6 +979,47 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     return vdf_type(th, tl);
 }
 
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vdf_type
+cftal::math::spec_func_core<float, _T>::
+__lgamma_1_2_tbl_k(arg_t<vf_type> xch, arg_t<vf_type> xcl)
+{
+    using lng_tbl=lngamma_data<float>;
+
+    constexpr
+    const float xi0=1.0f;
+    vf_type fidx=rint(vf_type((xch-xi0)*lng_tbl::SCALE));
+    vf_type x0=xi0+fidx*lng_tbl::INV_SCALE;
+    vi_type idx= _T::cvt_f_to_i(fidx);
+    vf_type ph, pl, cih, cil;
+    vi_type idxs = idx*lng_tbl::ELEMS_PER_INTERVAL;
+    auto lck=make_variable_lookup_table<float>(idxs);
+
+    vf_type xh, xl;
+    d_ops::add122(xh, xl, -x0, xch, xcl);
+    const float* pt=lng_tbl::_12_tbl;
+    cih=lck.from(pt);
+    d_ops::unorm_mul122(ph, pl, cih, xh, xl);
+    for (int i=1; i<lng_tbl::ELEMS_PER_INTERVAL-lng_tbl::DD_COEFFS*2; ++i) {
+        cih=lck.from(pt+i);
+        d_ops::add122(ph, pl, cih, ph, pl);
+        d_ops::unorm_mul22(ph, pl, ph, pl, xh, xl);
+    }
+    for (int i=lng_tbl::ELEMS_PER_INTERVAL-lng_tbl::DD_COEFFS*2;
+         i<lng_tbl::ELEMS_PER_INTERVAL-2; i+=2) {
+        cih=lck.from(pt+i);
+        cil=lck.from(pt+i+1);
+        d_ops::add22(ph, pl, cih, cil, ph, pl);
+        d_ops::unorm_mul22(ph, pl, ph, pl, xh, xl);
+    }
+    cih=lck.from(pt+lng_tbl::ELEMS_PER_INTERVAL-2);
+    cil=lck.from(pt+lng_tbl::ELEMS_PER_INTERVAL-1);
+    // cih+cil >= ph+pl or have at least the same exponent
+    // because it is the value in the middle of the interval
+    d_ops::add22(ph, pl, cih, cil, ph, pl);
+    return vdf_type(ph, pl);
+}
 
 template <typename _T>
 __attribute__((optimize("no-unroll-loops")))
@@ -1257,7 +1303,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         lgl = _T::sel(xa_in_lanczos, tl, lgl);
     }
     if (any_of(xa_in_small)) {
-        vdf_type lg12=__lgamma_1_2_k(sst._xr[0], sst._xr[1]);
+        vdf_type lg12=__lgamma_1_2_tbl_k(sst._xr[0], sst._xr[1]);
         vf_type th, tl;
         // log(1/lb) = -log(lb):
         th = _T::sel(sst._inv_f, -lb[0], lb[0]);

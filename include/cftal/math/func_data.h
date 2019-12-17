@@ -132,17 +132,35 @@ namespace cftal {
             enum {
                 COUNT=33,
                 POLY_ORDER=10,
-                // c0, c1, c2, c3 are stored as cXh, cXl
-                // i.e we have (10+1+4) entries per
-                // interval, c0h, c0l are stored last
                 DD_COEFFS=4,
+                // c0, c1, c2, c3 are stored as cXh, cXl
+                // i.e we have (POLY_ORDER+1+DD_COEFFS) entries per
+                // interval, c0h, c0l are stored last
                 ELEMS_PER_INTERVAL=(POLY_ORDER+1)+DD_COEFFS,
                 ENTRIES = COUNT * ELEMS_PER_INTERVAL
             };
             static const double _12_tbl[ENTRIES];
         };
 
+        template <>
+        struct lngamma_data<float> {
+            constexpr static const double SCALE=32.0f;
+            constexpr static const double INV_SCALE=1.0/32.0f;
+            enum {
+                COUNT=33,
+                POLY_ORDER=5,
+                DD_COEFFS=3,
+                // c0, c1 ...are stored as cXh, cXl
+                // i.e we have (POLY_ORDER+1+DD_COEFFS) entries per
+                // interval, c0h, c0l are stored last
+                ELEMS_PER_INTERVAL=(POLY_ORDER+1)+DD_COEFFS,
+                ENTRIES = COUNT * ELEMS_PER_INTERVAL
+            };
+            static const float _12_tbl[ENTRIES];
+        };
+
         extern template struct lngamma_data<double>;
+        extern template struct lngamma_data<float>;
 
     }
 }
