@@ -2681,7 +2681,7 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
         };
         vf_type p=horner(r, ci);
         horner_comp_quick(ph, pl, r, p, log_hp_c2);
-        d_ops::mul22(ph, pl, r, rl, ph, pl);
+        d_ops::unorm_mul22(ph, pl, r, rl, ph, pl);
         d_ops::add122(ph, pl, log_hp_c1, ph, pl);
     } else {
         // [-1.5625e-2, 1.5625e-2] : | p - f | <= 2^-34.875
@@ -2706,7 +2706,7 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
         d_ops::muladd12(ph, pl, log_c1, p, r);
     }
     vf_type lh, ll;
-    d_ops::mul22(lh, ll, r, rl, ph, pl);
+    d_ops::unorm_mul22(lh, ll, r, rl, ph, pl);
     vf_type kh, kl;
 #if 1
     d_ops::unorm_mul122(kh, kl, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
