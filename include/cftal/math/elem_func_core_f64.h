@@ -3226,18 +3226,18 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 
     vf_type cl;
     d_ops::muladd12(ch, cl, cos_c6, ch, xxh);
-    d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
+    d_ops::unorm_mul22(ch, cl, ch, cl, xxh, xxl);
     d_ops::add22(ch, cl, cos_c4h, cos_c4l, ch, cl);
-    d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
+    d_ops::unorm_mul22(ch, cl, ch, cl, xxh, xxl);
     d_ops::add122(ch, cl, cos_c2, ch, cl);
-    d_ops::mul22(ch, cl, ch, cl, xxh, xxl);
+    d_ops::unorm_mul22(ch, cl, ch, cl, xxh, xxl);
     d_ops::add122(ch, cl, cos_c0, ch, cl);
 
     vf_type sl;
     d_ops::muladd12(sh, sl, sin_c5, sh, xxh);
-    d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
+    d_ops::unorm_mul22(sh, sl, sh, sl, xxh, xxl);
     d_ops::add22(sh, sl, sin_c3h, sin_c3l, sh, sl);
-    d_ops::mul22(sh, sl, sh, sl, xxh, xxl);
+    d_ops::unorm_mul22(sh, sl, sh, sl, xxh, xxl);
     d_ops::add122(sh, sl, sin_c1, sh, sl);
     d_ops::mul22(sh, sl, sh, sl, xrh, xrl);
 
@@ -4082,7 +4082,8 @@ acosh_k(arg_t<vf_type> xc)
         vf_type ysl;
         horner_comp_quick(ys, ysl, xm1h, ys, acosh_i0_c0);
         vf_type t;
-        d_ops::mul22(ys, t, ys, ysl, sqrt2xm1h, sqrt2xm1l);
+        d_ops::unorm_mul22(ys, t, ys, ysl, sqrt2xm1h, sqrt2xm1l);
+        ys += t;
         y= _T::sel(sel, ys, y);
     }
     if (any_of(sel= (x > acosh_i1_left) & (x<=acosh_i1_right))) {

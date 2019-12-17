@@ -1296,7 +1296,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         vdf_type ls=base_type::template
             __log_tbl_k2<base_type::result_prec::high>(sum_h, sum_l);
         vf_type th, tl;
-        d_ops::mul22(th, tl, zh, zl, lb[0], lb[1]);
+        d_ops::unorm_mul22(th, tl, zh, zl, lb[0], lb[1]);
         d_ops::add22cond(th, tl, th, tl, -base_h, -base_l);
         d_ops::add22cond(th, tl, th, tl, ls[0], ls[1]);
         lgh = _T::sel(xa_in_lanczos, th, lgh);
