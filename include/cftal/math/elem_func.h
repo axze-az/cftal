@@ -654,36 +654,41 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     res = _T::sel_zero_or_val(res_nan & (~abs_x_lt_1) & (~y_gt_1), res);
 #endif
     vmf_type y_is_int = rint(y) == y;
-    vf_type y_half=0.5 *y;
+    vf_type y_half=_FLOAT_T(0.5) *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
 
     vf_type res_fac= _T::sel(y_is_odd, vf_type(-1), vf_type(1));
     // res_fac = _T::sel(~y_is_int, _T::nan(), res_fac);
     res_fac = _T::sel(y_is_int, res_fac, _T::nan());
-    res_fac = _T::sel(x >= 0, vf_type(1), res_fac);
+    res_fac = _T::sel(x >= _FLOAT_T(0), vf_type(1), res_fac);
     res *= res_fac;
 
-    vf_type efx= (abs(x) -1) * _T::sel(y<0, vf_type(-1), vf_type(1));
+    // vf_type efx= (abs(x) -1) * _T::sel(y<0, vf_type(-1), vf_type(1));
+    vf_type efx = mulsign(vf_type(abs(x)-_FLOAT_T(1)), y);
 
     vmf_type y_inf= isinf(y);
-    vf_type t= _T::sel(efx==0.0, vf_type(1), _T::pinf());
-    t = _T::sel_zero_or_val(efx < 0.0, t);
+    vf_type t= _T::sel(efx==_FLOAT_T(0), vf_type(1), _T::pinf());
+    t = _T::sel_zero_or_val(efx < _FLOAT_T(0), t);
     res = _T::sel(y_inf, t, res);
 
     // if y==1, res==x
-    res = _T::sel(y==vf_type(1.0), x, res);
+    res = _T::sel(y==_FLOAT_T(1), x, res);
 
-    vmf_type x_zero = x == 0.0;
+    vmf_type x_zero = x == _FLOAT_T(0);
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     t= _T::sel(x_zero, -y, y);
-    t= _T::sel_zero_or_val(t < 0.0, _T::pinf());
+    t= _T::sel_zero_or_val(t < _FLOAT_T(0), _T::pinf());
+#if 1
+    t = _T::sel(y_is_odd, mulsign(t, x), t);
+    res = _T::sel(x_inf_or_zero, t, res);
+#else
     vf_type sgn_x= copysign(vf_type(1), x);
     vf_type t1=_T::sel(y_is_odd, sgn_x, vf_type(1));
     t1 *= t;
     res = _T::sel(x_inf_or_zero, t1, res);
-
+#endif
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
-    res = _T::sel((y==0.0) | (x==1.0), vf_type(1), res);
+    res = _T::sel((y==_FLOAT_T(0)) | (x==_FLOAT_T(1)), vf_type(1), res);
 #if 0
     res = xisnan(result) ? INFINITY : res;
     res *=  (x >= 0 ? 1 : (!yisint ? NAN : (yisodd ? -1 : 1)));
