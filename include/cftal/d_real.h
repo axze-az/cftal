@@ -647,9 +647,22 @@ namespace cftal {
     d_real<_T> sqrt(const d_real<_T>& a);
 
     template <typename _T>
-    d_real<_T> select(const typename d_real_traits<_T>::cmp_result_type& m,
-                      const d_real<_T>& on_true,
-                      const d_real<_T>& on_false);
+    d_real<_T>
+    select(const typename d_real_traits<_T>::cmp_result_type& m,
+           const d_real<_T>& on_true,
+           const d_real<_T>& on_false);
+
+    template <typename _T>
+    d_real<_T>
+    select(const typename d_real_traits<_T>::cmp_result_type& m,
+           const _T& on_true,
+           const d_real<_T>& on_false);
+
+    template <typename _T>
+    d_real<_T>
+    select(const typename d_real_traits<_T>::cmp_result_type& m,
+           const d_real<_T>& on_true,
+           const _T& on_false);
 
     template <typename _T>
     d_real<_T> min(const d_real<_T>& on_true,
@@ -1922,6 +1935,28 @@ cftal::select(const typename d_real_traits<_T>::cmp_result_type& m,
 {
     _T h= select(m, a[0], b[0]);
     _T l= select(m, a[1], b[1]);
+    return d_real<_T>(h, l);
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::select(const typename d_real_traits<_T>::cmp_result_type& m,
+              const _T& a, const d_real<_T>& b)
+{
+    _T h= select(m, a, b[0]);
+    _T l= select_zero_or_val(m, b[1]);
+    return d_real<_T>(h, l);
+}
+
+template <typename _T>
+inline
+cftal::d_real<_T>
+cftal::select(const typename d_real_traits<_T>::cmp_result_type& m,
+              const d_real<_T>& a, const _T& b)
+{
+    _T h= select(m, a[0], b);
+    _T l= select_val_or_zero(m, a[1]);
     return d_real<_T>(h, l);
 }
 
