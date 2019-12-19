@@ -1784,7 +1784,8 @@ cftal::rint(const d_real<_T>& a)
 
     // if hi == a[0]
     _T lo_hi_int = rint(a[1]);
-    _T hi_hi_int = impl_t::quick_two_sum(hi, lo_hi_int, lo_hi_int);
+    _T hi_hi_int;
+    impl_t::add12(hi_hi_int, lo_hi_int, hi, lo_hi_int);
 
     // hi != a[0]
     _T lo_hi_no_int(0);
@@ -1817,7 +1818,8 @@ cftal::floor(const d_real<_T>& a)
     typename d_real_traits<_T>::cmp_result_type r=
         hi == a[0];
     _T lo_hi_int = floor(a[1]);
-    _T hi_hi_int = impl_t::quick_two_sum(hi, lo_hi_int, lo_hi_int);
+    _T hi_hi_int;
+    impl_t::add12(hi_hi_int, lo_hi_int, hi, lo_hi_int);
 
     _T hi_res = d_real_traits<_T>::sel(
         r, hi_hi_int, hi);
@@ -1839,7 +1841,8 @@ cftal::ceil(const d_real<_T>& a)
         hi == a[0];
     using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
     _T lo_hi_int = ceil(a[1]);
-    _T hi_hi_int = impl_t::quick_two_sum(hi, lo_hi_int, lo_hi_int);
+    _T hi_hi_int;
+    impl_t::add12(hi_hi_int, lo_hi_int, hi, lo_hi_int);
 
     _T hi_res = d_real_traits<_T>::sel(
         r, hi_hi_int, hi);
@@ -1854,7 +1857,7 @@ cftal::d_real<_T>
 cftal::trunc(const d_real<_T>& a)
 {
     typename d_real_traits<_T>::cmp_result_type a_lt_z=
-        a < d_real<_T>(0);
+        a[0] < _T(0);
     d_real<_T> a_floor(floor(a));
     d_real<_T> a_ceil(ceil(a));
     _T hi_res= d_real_traits<_T>::sel(
@@ -1897,7 +1900,9 @@ cftal::d_real<_T>
 cftal::sqr(const d_real<_T>& a)
 {
     using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
-    return impl_t::sqr(a);
+    _T h, l;
+    impl_t::sqr2(h, l, a[0], a[1]);
+    return d_real<_T>(h, l);
 }
 
 template <typename _T>
@@ -1914,17 +1919,9 @@ cftal::d_real<_T>
 cftal::sqrt(const d_real<_T>& a)
 {
     using impl_t=d_real_ops<_T, d_real_traits<_T>::fma>;
-    using std::sqrt;
-    _T ah= a[0];
-    _T root(sqrt(ah));
-    _T x= _T(1.0)/root;
-    _T ax= ah * x;
-    _T err, ax2= impl_t::two_sqr(ax, err);
-    d_real<_T> a0(a - d_real<_T>(ax2, err));
-    _T a1(a0[0] * (x * _T(0.5)));
-    d_real<_T> res(impl_t::add(ax, a1));
-    res = select(ah == _T(0), a, res);
-    return res;
+    _T h, l;
+    impl_t::sqrt2(h, l, a[0], a[1]);
+    return d_real<_T>(h, l);
 }
 
 template <typename _T>
