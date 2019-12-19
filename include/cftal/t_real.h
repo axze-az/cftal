@@ -54,7 +54,12 @@ namespace cftal {
         }
 
         constexpr
-        const _T* data() const { return _e; }
+        const _T* data() const {
+            return _e;
+        }
+        _T* data() {
+            return _e;
+        }
     };
 
     template <typename _T>

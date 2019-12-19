@@ -200,6 +200,13 @@ namespace cftal {
         _T& operator[](std::size_t i) {
             return _e[i];
         }
+        constexpr
+        const _T* data() const {
+            return _e;
+        }
+        _T* data() {
+            return _e;
+        }
     };
 
     template <typename _T>
