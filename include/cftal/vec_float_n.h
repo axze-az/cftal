@@ -1490,7 +1490,6 @@ cftal::mulsign(const vec<float, _N>& x, const vec<float, _N>& y)
     return v_t(x ^ sgn_y);
 }
 
-
 template <std::size_t _N>
 inline
 cftal::vec<float, _N>
