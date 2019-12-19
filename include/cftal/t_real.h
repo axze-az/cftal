@@ -390,6 +390,7 @@ namespace cftal {
 
     template <typename _T>
     t_real<_T> abs(const t_real<_T>& r);
+#if 0
     template <typename _T>
     t_real<_T> rint(const t_real<_T>& r);
     template <typename _T>
@@ -398,16 +399,16 @@ namespace cftal {
     t_real<_T> ceil(const t_real<_T>& r);
     template <typename _T>
     t_real<_T> trunc(const t_real<_T>& r);
-
     template <typename _T>
     t_real<_T> powi(const t_real<_T>& r, int e);
 
     template <typename _T>
+    t_real<_T> sqrt(const t_real<_T>& a);
+#endif
+    template <typename _T>
     t_real<_T> sqr(const t_real<_T>& r);
     template <typename _T>
     t_real<_T> mul_pwr2(const t_real<_T>& a, const _T& b);
-    template <typename _T>
-    t_real<_T> sqrt(const t_real<_T>& a);
 
     template <typename _T>
     t_real<_T> select(const typename t_real_traits<_T>::cmp_result_type& m,
@@ -909,8 +910,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const _T& a, const t_real<_T>& b)
 {
-    return t_real_ops<_T>::add(a,
-                                     b[0], b[1], b[2]);
+    return t_real_ops<_T>::add(a, b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -918,8 +918,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return t_real_ops<_T>::add(a[0], a[1],
-                                     b[0], b[1], b[2]);
+    return t_real_ops<_T>::add(a[0], a[1], b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -927,8 +926,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return t_real_ops<_T>::add(a[0], a[1], a[2],
-                                     b[0], b[1], b[2]);
+    return t_real_ops<_T>::add(a[0], a[1], a[2], b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -936,8 +934,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return t_real_ops<_T>::add(b[0], b[1],
-                                     a[0], a[1], a[2]);
+    return t_real_ops<_T>::add(b[0], b[1], a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -945,8 +942,7 @@ inline
 cftal::t_real<_T>
 cftal::operator+(const t_real<_T>& a, const _T& b)
 {
-    return t_real_ops<_T>::add(b,
-                                     a[0], a[1], a[2]);
+    return t_real_ops<_T>::add(b, a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -981,8 +977,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const _T& a, const t_real<_T>& b)
 {
-    return t_real_ops<_T>::add(a,
-                                     -b[0], -b[1], -b[2]);
+    return t_real_ops<_T>::add(a, -b[0], -b[1], -b[2]);
 }
 
 template <typename _T>
@@ -990,8 +985,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return t_real_ops<_T>::add(a[0], a[1],
-                                     -b[0], -b[1], -b[2]);
+    return t_real_ops<_T>::add(a[0], a[1], -b[0], -b[1], -b[2]);
 }
 
 template <typename _T>
@@ -999,8 +993,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return t_real_ops<_T>::add(a[0], a[1], a[2],
-                                     -b[0], -b[1], -b[2]);
+    return t_real_ops<_T>::add(a[0], a[1], a[2], -b[0], -b[1], -b[2]);
 }
 
 template <typename _T>
@@ -1008,8 +1001,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return t_real_ops<_T>::add(-b[0], -b[1],
-                                     a[0], a[1], a[2]);
+    return t_real_ops<_T>::add(-b[0], -b[1], a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -1017,8 +1009,7 @@ inline
 cftal::t_real<_T>
 cftal::operator-(const t_real<_T>& a, const _T& b)
 {
-    return t_real_ops<_T>::add(-b,
-                                     a[0], a[1], a[2]);
+    return t_real_ops<_T>::add(-b, a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -1053,8 +1044,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const _T& a, const t_real<_T>& b)
 {
-    return t_real_ops<_T>::mul(a,
-                                     b[0], b[1], b[2]);
+    return t_real_ops<_T>::mul(a, b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -1062,8 +1052,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const d_real<_T>& a, const t_real<_T>& b)
 {
-    return t_real_ops<_T>::mul(a[0], a[1],
-                                     b[0], b[1], b[2]);
+    return t_real_ops<_T>::mul(a[0], a[1], b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -1071,8 +1060,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const t_real<_T>& a, const t_real<_T>& b)
 {
-    return t_real_ops<_T>::mul(a[0], a[1], a[2],
-                                     b[0], b[1], b[2]);
+    return t_real_ops<_T>::mul(a[0], a[1], a[2], b[0], b[1], b[2]);
 }
 
 template <typename _T>
@@ -1080,8 +1068,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const t_real<_T>& a, const d_real<_T>& b)
 {
-    return t_real_ops<_T>::mul(b[0], b[1],
-                                     a[0], a[1], a[2]);
+    return t_real_ops<_T>::mul(b[0], b[1], a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -1089,8 +1076,7 @@ inline
 cftal::t_real<_T>
 cftal::operator*(const t_real<_T>& a, const _T& b)
 {
-    return t_real_ops<_T>::mul(b,
-                                     a[0], a[1], a[2]);
+    return t_real_ops<_T>::mul(b, a[0], a[1], a[2]);
 }
 
 template <typename _T>
@@ -1125,11 +1111,10 @@ inline
 cftal::t_real<_T>
 cftal::operator/(const _T& a, const t_real<_T>& b)
 {
-    // return a * t_real_ops<_T>::recp(b[0], b[1], b[2]);
     t_real<_T> r;
     t_real_ops<_T>::div33(r[0], r[1], r[2],
-                                a[0], _T(0), _T(0),
-                                b[0], b[1], b[2]);
+                          a[0], _T(0), _T(0),
+                          b[0], b[1], b[2]);
     return r;
 }
 
@@ -1141,8 +1126,8 @@ cftal::operator/(const d_real<_T>& a, const t_real<_T>& b)
     // return a * t_real_ops<_T>::recp(b[0], b[1], b[2]);
     t_real<_T> r;
     t_real_ops<_T>::div33(r[0], r[1], r[2],
-                                a[0], a[1], _T(0),
-                                b[0], b[1], b[2]);
+                          a[0], a[1], _T(0),
+                          b[0], b[1], b[2]);
     return r;
 }
 
@@ -1154,8 +1139,8 @@ cftal::operator/(const t_real<_T>& a, const t_real<_T>& b)
     // return a * t_real_ops<_T>::recp(b[0], b[1], b[2]);
     t_real<_T> r;
     t_real_ops<_T>::div33(r[0], r[1], r[2],
-                                a[0], a[1], a[2],
-                                b[0], b[1], b[2]);
+                          a[0], a[1], a[2],
+                          b[0], b[1], b[2]);
     return r;
 }
 
@@ -1167,8 +1152,8 @@ cftal::operator/(const t_real<_T>& a, const d_real<_T>& b)
     // return a * t_real_ops<_T>::recp(b[0], b[2], _T(0));
     t_real<_T> r;
     t_real_ops<_T>::div323(r[0], r[1], r[2],
-                                 a[0], a[1], a[2],
-                                 b[0], b[1]);
+                           a[0], a[1], a[2],
+                           b[0], b[1]);
     return r;
 }
 
@@ -1180,8 +1165,8 @@ cftal::operator/(const t_real<_T>& a, const _T& b)
     // return a * t_real_ops<_T>::recp(b, _T(0), _T(0));
     t_real<_T> r;
     t_real_ops<_T>::div313(r[0], r[1], r[2],
-                                 a[0], a[1], a[2],
-                                 b);
+                           a[0], a[1], a[2],
+                           b);
     return r;
 }
 
@@ -1246,7 +1231,7 @@ inline
 cftal::t_real<_T>
 cftal::abs(const t_real<_T>& a)
 {
-    return select(a < t_real<_T>(0), -a, a);
+    return select(a[0] < _T(0), -a, a);
 }
 
 template <typename _T>
