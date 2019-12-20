@@ -231,8 +231,8 @@ namespace cftal {
         static
         void
         add22(_T& zh, _T& zl,
-                const _T& xh, const _T& xl,
-                const _T& yh, const _T& yl);
+              const _T& xh, const _T& xl,
+              const _T& yh, const _T& yl);
 
         // return (zh, zl) = (xh, xl) + (yh, yl)
         // |xh| > |yh|
@@ -246,8 +246,8 @@ namespace cftal {
         static
         void
         add22cond(_T& zh, _T& zl,
-                    const _T& xh, const _T& xl,
-                    const _T& yh, const _T& yl);
+                  const _T& xh, const _T& xl,
+                  const _T& yh, const _T& yl);
 
         // return (zh, zl) = (xh, xl) + (yh, yl)
         static
@@ -261,27 +261,27 @@ namespace cftal {
         static
         void
         add122(_T& zh, _T& zl,
-                const _T& a, const _T& bh, const _T& bl);
+               const _T& a, const _T& bh, const _T& bl);
 
         // return (zh, zl) = a + (bh, bl)
         static
         void
         add122cond(_T& zh, _T& zl,
-                    const _T& a, const _T& bh, const _T& bl);
+                   const _T& a, const _T& bh, const _T& bl);
 
         // return (zh, zl) = (ah, bl) + b
         // with |ah| > b
         static
         void
         add212(_T& zh, _T& zl,
-                const _T& ah, const _T& al, const _T& b);
+               const _T& ah, const _T& al, const _T& b);
 
         // return (zh, zl) = (ah, bl) + b
         // with |ah| > b
         static
         void
         add212cond(_T& zh, _T& zl,
-                    const _T& ah, const _T& al, const _T& b);
+                   const _T& ah, const _T& al, const _T& b);
 
     };
 
@@ -323,14 +323,14 @@ namespace cftal {
         static
         void
         unorm_mul122(_T& rh, _T& rl,
-                        const _T& xh,
-                        const _T& yh, const _T& yl);
+                     const _T& xh,
+                     const _T& yh, const _T& yl);
 
         static
         void
         mul122(_T& rh, _T& rl,
-                const _T& xh,
-                const _T& yh, const _T& yl);
+               const _T& xh,
+               const _T& yh, const _T& yl);
 
 
         static
@@ -352,18 +352,18 @@ namespace cftal {
         static
         void
         mul22(_T& rh, _T& rl,
-                const _T& xh, const _T& xl,
-                const _T& yh, const _T& yl);
+              const _T& xh, const _T& xl,
+              const _T& yh, const _T& yl);
 
         static
         void
         rcp21(_T& r,
-                const _T& ah, const _T& al);
+              const _T& ah, const _T& al);
 
         static
         void
         sqr21(_T& rh,
-                const _T& xh, const _T& xl);
+              const _T& xh, const _T& xl);
     };
 
     // specialization using fma
@@ -400,14 +400,14 @@ namespace cftal {
         static
         void
         unorm_mul122(_T& rh, _T& rl,
-                        const _T& xh,
-                        const _T& yh, const _T& yl);
+                     const _T& xh,
+                     const _T& yh, const _T& yl);
 
         static
         void
         mul122(_T& rh, _T& rl,
-                const _T& xh,
-                const _T& yh, const _T& yl);
+               const _T& xh,
+               const _T& yh, const _T& yl);
 
         static
         void
@@ -417,7 +417,7 @@ namespace cftal {
         static
         void
         sqr22(_T& rh, _T& rl,
-                const _T& xh, const _T& xl);
+              const _T& xh, const _T& xl);
 
         static
         void
@@ -428,8 +428,8 @@ namespace cftal {
         static
         void
         mul22(_T& rh, _T& rl,
-                const _T& xh, const _T& xl,
-                const _T& yh, const _T& yl);
+              const _T& xh, const _T& xl,
+              const _T& yh, const _T& yl);
 
         static
         void
@@ -440,7 +440,7 @@ namespace cftal {
         static
         void
         sqr21(_T& r,
-                const _T& ah, const _T& al);
+              const _T& ah, const _T& al);
     };
 
 
@@ -465,75 +465,75 @@ namespace cftal {
         static
         void
         muladd212(_T& rh, _T&rl,
-                    const _T& ch, const _T& cl,
-                    const _T& a,
-                    const _T& bh, const _T& bl);
+                  const _T& ch, const _T& cl,
+                  const _T& a,
+                  const _T& bh, const _T& bl);
 
         static
         void
         muladd22(_T& rh, _T&rl,
-                    const _T& ch, const _T& cl,
-                    const _T& ah, const _T& al,
-                    const _T& bh, const _T& bl);
+                 const _T& ch, const _T& cl,
+                 const _T& ah, const _T& al,
+                 const _T& bh, const _T& bl);
 
         // a/b
         static
         void
         div12(_T& rh, _T& rl,
-                const _T& a, const _T& b);
+              const _T& a, const _T& b);
 
         // a/b
         static
         void
         div212(_T& rh, _T& rl,
-                const _T& ah, const _T& al,
-                const _T& b);
+               const _T& ah, const _T& al,
+               const _T& b);
 
         // a/b
         static
         void
         div122(_T& rh, _T& rl,
-                const _T& ah,
-                const _T& bh, const _T& bl);
+               const _T& ah,
+               const _T& bh, const _T& bl);
 
         // a/b
         static
         void
         div22(_T& rh, _T& rl,
-                const _T& ah, const _T& al,
-                const _T& bh, const _T& bl);
+              const _T& ah, const _T& al,
+              const _T& bh, const _T& bl);
 
         static
         void
         __scaled_div22(_T& rh, _T& rl,
-                        const _T& ah, const _T& al,
-                        const _T& bh, const _T& bl);
+                       const _T& ah, const _T& al,
+                       const _T& bh, const _T& bl);
 
         static
         void
         scaled_div22(_T& rh, _T& rl,
-                        const _T& ah, const _T& al,
-                        const _T& bh, const _T& bl);
+                     const _T& ah, const _T& al,
+                     const _T& bh, const _T& bl);
 
         static
         void
         rcp12(_T& rh,  _T& rl,
-                const _T& a);
+              const _T& a);
 
         static
         void
         rcp2(_T& rh,  _T& rl,
-                const _T& ah, const _T& al);
+             const _T& ah, const _T& al);
 
         static
         void
         sqrt2(_T& rh, _T& rl,
-                const _T& ah, const _T& al);
+              const _T& ah, const _T& al);
 
         static
         void
         sqrt21(_T& rh,
-                const _T& ah, const _T& al);
+               const _T& ah, const _T& al);
     };
 
     // unary minus
@@ -771,7 +771,7 @@ void
 cftal::d_real_ops_common<_T>::
 add22condhp(_T& zh, _T& zl,
             const _T& xh, const _T& xl,
-           const _T& yh, const _T& yl)
+            const _T& yh, const _T& yl)
 {
     _T sh, sl;
     add12cond(sh, sl, xh, yh);
