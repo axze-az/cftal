@@ -87,127 +87,127 @@ namespace cftal {
         static
         void
         renormalize3(_T& rh, _T& rm, _T& rl,
-                        const _T& ah, const _T& am, const _T& al);
+                     const _T& ah, const _T& am, const _T& al);
 
         static
         void
         mul23(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& al,
-                const _T& bh, const _T& bl);
+              const _T& ah, const _T& al,
+              const _T& bh, const _T& bl);
 
         static
         void
         mul133(_T& rh, _T& rm, _T& rl,
-                const _T& a,
-                const _T& bh, const _T& bm, const _T& bl);
+               const _T& a,
+               const _T& bh, const _T& bm, const _T& bl);
 
         static
         void
         mul233(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& al,
-                const _T& bh, const _T& bm, const _T& bl);
+               const _T& ah, const _T& al,
+               const _T& bh, const _T& bm, const _T& bl);
 
         static
         void
         mul33(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& am, const _T& al,
-                const _T& bh, const _T& bm, const _T& bl);
+              const _T& ah, const _T& am, const _T& al,
+              const _T& bh, const _T& bm, const _T& bl);
 
         static
         void
         add123(_T& rh, _T& rm, _T& rl,
-                const _T& a,
-                const _T& bh, const _T& bl);
+               const _T& a,
+               const _T& bh, const _T& bl);
 
         static
         void
         add123cond(_T& rh, _T& rm, _T& rl,
-                    const _T& a,
-                    const _T& bh, const _T& bl);
+                   const _T& a,
+                   const _T& bh, const _T& bl);
 
         static
         void
         add213(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& al,
-                const _T& b);
+               const _T& ah, const _T& al,
+               const _T& b);
 
         static
         void
         add213cond(_T& rh, _T& rm, _T& rl,
-                    const _T& ah, const _T& al,
-                    const _T& b);
+                   const _T& ah, const _T& al,
+                   const _T& b);
 
         static
         void
         add23(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& al,
-                const _T& bh, const _T& bl);
+              const _T& ah, const _T& al,
+              const _T& bh, const _T& bl);
 
         static
         void
         add23cond(_T& rh, _T& rm, _T& rl,
-                    const _T& ah, const _T& al,
-                    const _T& bh, const _T& bl);
+                  const _T& ah, const _T& al,
+                  const _T& bh, const _T& bl);
 
         static
         void
         add33(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& am, const _T& al,
-                const _T& bh, const _T& bm, const _T& bl);
+              const _T& ah, const _T& am, const _T& al,
+              const _T& bh, const _T& bm, const _T& bl);
 
         static
         void
         add33cond(_T& rh, _T& rm, _T& rl,
-                    const _T& ah, const _T& am, const _T& al,
-                    const _T& bh, const _T& bm, const _T& bl);
+                  const _T& ah, const _T& am, const _T& al,
+                  const _T& bh, const _T& bm, const _T& bl);
 
         static
         void
         add233(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& al,
-                const _T& bh, const _T& bm, const _T& bl);
+               const _T& ah, const _T& al,
+               const _T& bh, const _T& bm, const _T& bl);
 
         static
         void
         add233cond(_T& rh, _T& rm, _T& rl,
-                    const _T& ah, const _T& al,
-                    const _T& bh, const _T& bm, const _T& bl);
+                   const _T& ah, const _T& al,
+                   const _T& bh, const _T& bm, const _T& bl);
 
         static
         void
         add133(_T& rh, _T& rm, _T& rl,
-                const _T& a,
-                const _T& bh, const _T& bm, const _T& bl);
+               const _T& a,
+               const _T& bh, const _T& bm, const _T& bl);
 
         static
         void
         add133cond(_T& rh, _T& rm, _T& rl,
-                    const _T& a,
-                    const _T& bh, const _T& bm, const _T& bl);
+                   const _T& a,
+                   const _T& bh, const _T& bm, const _T& bl);
 
         static
         void
         recp3(_T& rh, _T& rm, _T& rl,
-                const _T& dh, const _T& dm, const _T& dl);
+              const _T& dh, const _T& dm, const _T& dl);
 
 
         static
         void
         div313(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& am, const _T& al,
-                const _T& bh);
+               const _T& ah, const _T& am, const _T& al,
+               const _T& bh);
 
         static
         void
         div323(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& am, const _T& al,
-                const _T& bh, const _T& bl);
+               const _T& ah, const _T& am, const _T& al,
+               const _T& bh, const _T& bl);
 
         static
         void
         div33(_T& rh, _T& rm, _T& rl,
-                const _T& ah, const _T& am, const _T& al,
-                const _T& bh, const _T& bm, const _T& bl);
+              const _T& ah, const _T& am, const _T& al,
+              const _T& bh, const _T& bm, const _T& bl);
 
         static
         t_real<_T>
@@ -689,8 +689,8 @@ template <typename _T>
 void
 cftal::t_real_ops<_T>::
 add23cond(_T& rh, _T& rm, _T& rl,
-           const _T& ah, const _T& al,
-           const _T& bh, const _T& bl)
+          const _T& ah, const _T& al,
+          const _T& bh, const _T& bl)
 {
     _T t1, t2, t3, t4, t5, t6;
     add12cond(rh, t1, ah, bh);
