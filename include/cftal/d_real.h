@@ -74,7 +74,7 @@ namespace cftal {
         }
 
         // return true if any in b is true
-        static bool any(const cmp_result_type& b) {
+        static bool any_of_v(const cmp_result_type& b) {
             return b;
         }
         // select an value
@@ -100,7 +100,7 @@ namespace cftal {
                 268435456.0;
             cmp_result_type is_big(std::fabs(a) > split_threshold);
             double temp;
-            if (__unlikely(any(is_big))) {
+            if (__unlikely(any_of_v(is_big))) {
                 a*=split_scale_down;
                 temp = split_val*a;
                 hi=temp-(temp-a);
@@ -131,7 +131,7 @@ namespace cftal {
         // corresponding integer type for ldexp, frexp
         using int_type = int32_t;
 
-        static bool any(const cmp_result_type& b) {
+        static bool any_of_v(const cmp_result_type& b) {
             return b;
         }
         static float sel(const cmp_result_type& s,
@@ -152,7 +152,7 @@ namespace cftal {
             const float split_scale_up = 16384.0f;
             cmp_result_type is_big(std::fabs(a) > split_threshold);
             float temp;
-            if (__unlikely(any(is_big))) {
+            if (__unlikely(any_of_v(is_big))) {
                 a*=split_scale_down;
                 temp = split_val*a;
                 hi=temp-(temp-a);
@@ -1428,7 +1428,7 @@ scaled_div22(_T& rh, _T& rl,
     auto a_small = abs(ah) < traits_t::scale_div_threshold();
     auto b_small = abs(bh) < traits_t::scale_div_threshold();
     auto one_small = a_small | b_small;
-    if (traits_t::any(one_small)) {
+    if (traits_t::any_of_v(one_small)) {
         __scaled_div22(rh, rl, ah, al, bh, bl);
     } else {
         div22(rh, rl, ah, al, bh, bl);

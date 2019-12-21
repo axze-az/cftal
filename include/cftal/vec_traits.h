@@ -24,11 +24,22 @@ namespace cftal {
     struct d_real_traits<vec<double, _N> > : public has_fma<double> {
         using cmp_result_type = typename vec<double, _N>::mask_type;
         using int_type = vec<int32_t, _N>;
+
         static
-        bool any(const cmp_result_type& b) {
+        bool any_of_v(const cmp_result_type& b) {
             return any_of(b);
         }
 
+        static
+        bool all_of_v(const cmp_result_type& b) {
+            return all_of(b);
+        }
+
+        static
+        bool none_of_v(const cmp_result_type& b) {
+            return none_of(b);
+        }
+        
         static
         vec<double, _N>
         sel (const cmp_result_type& s,
@@ -66,15 +77,25 @@ namespace cftal {
         using int_type = vec<int32_t, _N>;
 
         static
-        bool any(const cmp_result_type& b) {
+        bool any_of_v(const cmp_result_type& b) {
             return any_of(b);
         }
 
         static
+        bool all_of_v(const cmp_result_type& b) {
+            return all_of(b);
+        }
+
+        static
+        bool none_of_v(const cmp_result_type& b) {
+            return none_of(b);
+        }
+        
+        static
         vec<float, _N>
-        sel (const cmp_result_type& s,
-             const vec<float, _N>& on_true,
-             const vec<float, _N>& on_false) {
+        sel(const cmp_result_type& s,
+            const vec<float, _N>& on_true,
+            const vec<float, _N>& on_false) {
             return select(s, on_true, on_false);
         }
 
@@ -102,20 +123,6 @@ namespace cftal {
     };
 
     namespace math {
-
-
-
-        // template <std::size_t _N>
-        // vec<int32_t, _N>
-        // even_elements(vec<double, _N> v);
-
-        // template <std::size_t _N>
-        // vec<int32_t, _N>
-        // odd_elements(vec<double, _N> v);
-
-        // template <typename _T, std::size_t _N>
-        // vec<_T, _N * 2>
-        // combine_even_odd(vec<_T, _N> e, vec<_T, _N> o);
 
         template <std::size_t _N>
         struct vec_func_traits_f64
@@ -175,6 +182,51 @@ namespace cftal {
                     cvt_mask<typename vmf_type::value_type, _N,
                              typename vmi2_type::value_type, 2*_N>::v(mf);
             };
+
+            static
+            bool any_of_v(const vmf_type& b) {
+                return any_of(b);
+            }
+
+            static
+            bool all_of_v(const vmf_type& b) {
+                return all_of(b);
+            }
+
+            static
+            bool none_of_v(const vmf_type& b) {
+                return none_of(b);
+            }
+
+            static
+            bool any_of_v(const vmi_type& b) {
+                return any_of(b);
+            }
+
+            static
+            bool all_of_v(const vmi_type& b) {
+                return all_of(b);
+            }
+
+            static
+            bool none_of_v(const vmi_type& b) {
+                return none_of(b);
+            }
+            
+            static
+            bool any_of_v(const vmi2_type& b) {
+                return any_of(b);
+            }
+
+            static
+            bool all_of_v(const vmi2_type& b) {
+                return all_of(b);
+            }
+
+            static
+            bool none_of_v(const vmi2_type& b) {
+                return none_of(b);
+            }
 
             static
             vi_type sel(const vmi_type& msk,
@@ -414,6 +466,37 @@ namespace cftal {
             vmi_type vmf_to_vmi(const vmf_type& mf) {
                 return as<vmi_type>(mf);
             }
+
+            static
+            bool any_of_v(const vmf_type& b) {
+                return any_of(b);
+            }
+
+            static
+            bool all_of_v(const vmf_type& b) {
+                return all_of(b);
+            }
+
+            static
+            bool none_of_v(const vmf_type& b) {
+                return none_of(b);
+            }
+
+            static
+            bool any_of_v(const vmi_type& b) {
+                return any_of(b);
+            }
+
+            static
+            bool all_of_v(const vmi_type& b) {
+                return all_of(b);
+            }
+
+            static
+            bool none_of_v(const vmi_type& b) {
+                return none_of(b);
+            }
+
             static
             vi_type sel(const vmi_type& msk,
                         const vi_type& t, const vi_type& f) {

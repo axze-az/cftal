@@ -52,6 +52,22 @@ namespace cftal {
             vmi_type vmf_to_vmi(const vmf_type& mf) {
                 return mf;
             }
+
+            static
+            bool any_of_v(const vmf_type& b) {
+                return any_of(b);
+            }
+
+            static
+            bool all_of_v(const vmf_type& b) {
+                return all_of(b);
+            }
+
+            static
+            bool none_of_v(const vmf_type& b) {
+                return none_of(b);
+            }
+
             static
             vi_type sel(const vmi_type& msk,
                         const vi_type& t, const vi_type& f) {
