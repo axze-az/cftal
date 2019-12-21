@@ -667,7 +667,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     // using f64_core = spec_func_core<double, typename _T::vhf_traits>;
     vhf_type g = f64_core::template exp_k<false>(-base);
     g = g * sum;
-    if (_T::vhf_traits::any_of_v(x_lt_zero)) {
+    if (_T::any_of_v(x_lt_zero)) {
         vhf_type s;
         f64_core::sinpi_cospi_k(xad, &s, nullptr);
         using ctbl = impl::d_real_constants<d_real<double>, double>;
@@ -1156,7 +1156,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         __log_tbl_k<f64_core::log_func::c_log_e>(base);
     vhf_type lg=0.0;
     vmhf_type xa_in_large = (xa >= x_large);
-    if (_T::any_of_v(xa_in_large)) {
+    if (_T::vhf_traits::any_of_v(xa_in_large)) {
         // log(gamma(x)) = xa * (log(xa) - 1.0), xa >> 1
         vhf_type t=(lb -1.0)*xa;
         lg = f64_traits::sel(xa_in_large, t, lg);
@@ -1187,13 +1187,13 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     // reflection part
     vi_type sgn=1;
     vmhf_type x_lt_0 = x < 0.0;
-    if (_T::any_of_v(x_lt_0)) {
+    if (_T::vhf_traits::any_of_v(x_lt_0)) {
         // tiny
         vmhf_type t= x_lt_0 & xa_in_tiny;
         sgn = _T::sel(f64_traits::vmf_to_vmi(t), -1, sgn);
         // small
         t = x_lt_0 & xa_in_small;
-        if (_T::any_of_v(t)) {
+        if (_T::vhf_traits::any_of_v(t)) {
             vhf_type sgn_g=copysign(vhf_type(1.0), sst._f);
             vi_type si= f64_traits::cvt_f_to_i(sgn_g);
             sgn=_T::sel(f64_traits::vmf_to_vmi(t), si, sgn);
