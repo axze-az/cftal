@@ -152,7 +152,7 @@ printsingle(ib);
 i= [ib-1, (ib*2)-1];
 d = guessdegree(f, i, 0x1p-28);
 d;
-b = [|1, ..., 11|];
+b = [|1, ..., 12|];
 c = [|SG, SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
