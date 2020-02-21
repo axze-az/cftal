@@ -45,6 +45,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-attributes")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
+    # reduce size if possible
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdata-sections")
     # never activate this
     #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math")
     # setting -ffp-contract to off produces the same results with gcc and clang
