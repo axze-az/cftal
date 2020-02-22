@@ -2225,8 +2225,12 @@ __log_poly_k_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
         log_c9, log_c8, log_c7, log_c6,
         log_c5, log_c4, log_c3
     };
+#if 0
+    vf_type p= horner2(r, r2, ci);
+#else
     vf_type r4=r2*r2;
     vf_type p= horner4(r, r2, r4, ci);
+#endif
     return p;
 }
 
