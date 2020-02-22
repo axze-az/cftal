@@ -394,7 +394,8 @@ namespace cftal {
                              vi2_type& __restrict ki,
                              arg_t<vf_type> xc);
 
-            // polynomial approximation of log1p(r), r2=r*r
+            // polynomial approximation of (log1p(r)-(x-0.5*x^2))/x^3, 
+            // r2=r*r
             static
             vf_type
             __log_poly_k_poly(arg_t<vf_type> r,
@@ -408,6 +409,7 @@ namespace cftal {
                              vi2_type& __restrict ki,
                              arg_t<vf_type> x);
 
+            
             // return 2^k * 1/inv_c * (1 + xr*inv_c) = xc
             //        2^k * c * (1+xr/c) = xc
             // log_c_h + log_c_l = -log(inv_c),
@@ -420,6 +422,10 @@ namespace cftal {
                              vf_type& __restrict log_c_l,
                              vi2_type& __restrict ki,
                              arg_t<vf_type> x);
+
+            static
+            vf_type
+            __log_poly_k(arg_t<vf_type> r);
 
             // standard log calculation
             template <log_func _LFUNC>
@@ -453,7 +459,7 @@ namespace cftal {
             vdf_type
             __log_tbl_k12(arg_t<vf_type> xc);
 
-            // polynomial for log1p
+            // log1p usign polynomial
             static
             vf_type
             __log1p_poly_k(arg_t<vf_type> x);
@@ -2225,6 +2231,35 @@ __log_poly_k_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
 }
 
 template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+__log_poly_k(arg_t<vf_type> xc)
+{
+    vf_type xr;
+    vi2_type ki;
+    __reduce_log_arg(xr, ki, xc);
+    vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
+    vf_type r=xr-1.0;
+    vf_type r2=r*r;
+    vf_type p= __log_poly_k_poly(r, r2);
+    // log(x) = kf*ln2 + r + r2*c2 + r3*p
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+    vf_type l, e;
+    d_ops::add12(l, e, kf* ctbl::m_ln2_cw[0], r);
+    vf_type rc2=-0.5 * r;
+    vf_type r2c2, ei;
+    d_ops::mul12(r2c2, ei, rc2, r);
+    e += ei;
+    d_ops::add12(l, ei, l, r2c2);
+    e += ei;
+    d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
+    e += ei;
+    vf_type ll=e + r2*(r*p);
+    return l+ll;
+}
+    
+template <typename _T>
 template <typename cftal::math::elem_func_core<double, _T>::log_func _LFUNC>
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
@@ -2697,7 +2732,8 @@ cftal::math::elem_func_core<double, _T>::
 log_k(arg_t<vf_type> xc)
 {
 #if 1
-    return __log_tbl_k<log_func::c_log_e>(xc);
+    // return __log_tbl_k<log_func::c_log_e>(xc);
+    return __log_poly_k(xc);
 #else
     auto t=__log_tbl_k12(xc);
     return t[0];
