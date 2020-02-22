@@ -2732,8 +2732,7 @@ cftal::math::elem_func_core<double, _T>::
 log_k(arg_t<vf_type> xc)
 {
 #if 1
-    // return __log_tbl_k<log_func::c_log_e>(xc);
-    return __log_poly_k(xc);
+    return __log_tbl_k<log_func::c_log_e>(xc);
 #else
     auto t=__log_tbl_k12(xc);
     return t[0];
