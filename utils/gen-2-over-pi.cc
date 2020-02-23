@@ -4,9 +4,9 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
+#include <iostream>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/cast.h>
-#include <iostream>
 #include <iomanip>
 
 namespace cftal {

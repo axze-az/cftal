@@ -4,12 +4,12 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
+#include <iostream>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/mpfr_cache.h>
 #include <mutex>
 #include <cstdarg>
 #include <vector>
-#include <iostream>
 #include <iomanip>
 
 #define DEBUG_EXP2M1 0

@@ -9,6 +9,7 @@
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
+#include <iostream>
 #include <cftal/test/call_mpfr.h>
 #include <string>
 

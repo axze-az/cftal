@@ -9,7 +9,6 @@
 
 #include <cftal/config.h>
 #include <initializer_list>
-#include <iterator>
 #include <iosfwd>
 
 namespace cftal {

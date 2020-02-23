@@ -9,8 +9,8 @@
 #define __gmp_const const
 #include <mpfi.h>
 #include <sollya.h>
-#include "cftal/test/call_mpfr.h"
 #include <iostream>
+#include "cftal/test/call_mpfr.h"
 #include <iomanip>
 #include <vector>
 

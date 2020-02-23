@@ -4,13 +4,13 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
+#include <iostream>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/of_fp_funcs.h>
 #include <cftal/test/pr_fp.h>
 #include <cftal/math/elem_func_core_f64.h>
 #include <cftal/math/elem_func_core_f32.h>
 #include <cmath>
-#include <iostream>
 #include <iomanip>
 #include <limits>
 
