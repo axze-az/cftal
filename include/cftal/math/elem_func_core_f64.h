@@ -20,7 +20,6 @@
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
-#include <cftal/t_real.h>
 #include <cftal/cast.h>
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
@@ -53,7 +52,6 @@ namespace cftal {
 
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
-            using t_ops=t_real_ops<vf_type>;
 
             enum result_prec {
                 medium,

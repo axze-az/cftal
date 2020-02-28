@@ -20,7 +20,6 @@
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
-#include <cftal/t_real.h>
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f32_s32.h>
@@ -60,7 +59,6 @@ namespace cftal {
 #endif
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
-            using t_ops=t_real_ops<vf_type>;
 
             enum result_prec {
                 normal,
@@ -509,6 +507,9 @@ namespace cftal {
             __log_poly_k_poly(arg_t<vf_type> r,
                               arg_t<vf_type> r2);
 
+            static
+            vf_type
+            __log_poly_k(arg_t<vf_type> r);
 
             // standard log calculation
             template <log_func _LFUNC>
@@ -2526,6 +2527,7 @@ __log_poly_k_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
     constexpr
     const float log_c11=+6.7610226572e-02f;
     static_assert(log_c1==1.0f, "constraint violated");
+    static_assert(log_c2==-0.5f, "constraint violated");
     static const float ci[]={
         log_c11, log_c10,
         log_c9, log_c8, log_c7, log_c6,
@@ -2533,8 +2535,36 @@ __log_poly_k_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
     };
     vf_type r4=r2*r2;
     vf_type p= horner4(r, r2, r4, ci);
-    p=horner(r, p, log_c2);
     return p;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+__log_poly_k(arg_t<vf_type> xc)
+{
+    vf_type xr;
+    vi_type ki;
+    __reduce_log_arg(xr, ki, xc);
+    vf_type kf=_T::cvt_i_to_f(ki);
+    vf_type r=xr-1.0f;
+    vf_type r2=r*r;
+    vf_type p= __log_poly_k_poly(r, r2);
+    // log(x) = kf*ln2 + r + r2*c2 + r3*p
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    vf_type l, e;
+    d_ops::add12(l, e, kf* ctbl::m_ln2_cw[0], r);
+    vf_type rc2=-0.5f * r;
+    vf_type r2c2, ei;
+    d_ops::mul12(r2c2, ei, rc2, r);
+    e += ei;
+    d_ops::add12(l, ei, l, r2c2);
+    e += ei;
+    d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
+    e += ei;
+    vf_type ll=e + r2*(r*p);
+    return l+ll;
 }
 
 template <typename _T>
@@ -2973,19 +3003,48 @@ __log1p_poly_k(arg_t<vf_type> xc)
     __reduce_log_arg(xr, ki, u);
     vf_type kf=_T::cvt_i_to_f(ki);
     vf_type r=xr-1.0f;
+
+#if 1
     vf_type r2=r*r;
+    vf_type p=__log_poly_k_poly(r, r2);
+    // log(x) = kf*ln2 + r + r2*c2 + r3*p
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    vf_type l, e;
+    d_ops::add12(l, e, kf* ctbl::m_ln2_cw[0], r);
+    vf_type rc2=-0.5f * r;
+    vf_type r2c2, ei;
+    d_ops::mul12(r2c2, ei, rc2, r);
+    e += ei;
+    d_ops::add12(l, ei, l, r2c2);
+    e += ei;
+    d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
+    e += ei;
 
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0f), 1.0f-(u-x), x-(u-1.0f));
     c_k_2 /= u;
     vf_type c = _T::sel_val_or_zero(kf < vf_type(25.0f), c_k_2);
 
+    d_ops::add12(l, ei, l, c);
+    e += ei;
+    vf_type ll=e + r2*(r*p);
+    return l+ll;
+#else
+    vf_type r2=r*r;
     vf_type p=__log_poly_k_poly(r, r2);
+    p = horner(r, p, -0.5f);
+    
+    /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
+    vf_type c_k_2 = _T::sel(kf >= vf_type(2.0f), 1.0f-(u-x), x-(u-1.0f));
+    c_k_2 /= u;
+    vf_type c = _T::sel_val_or_zero(kf < vf_type(25.0f), c_k_2);
+
     using ctbl=impl::d_real_constants<d_real<float>, float>;
     vf_type lh, ll;
     d_ops::add12(lh, ll, kf*ctbl::m_ln2_cw[0], r);
     lh+= p*r2+(c+(ll + kf * ctbl::m_ln2_cw[1]));
     return lh;
+#endif
 }
 
 template <typename _T>
@@ -3007,6 +3066,7 @@ log_k(arg_t<vf_type> xc)
     return __log_tbl_k_d<log_func::c_log_e>(xc);
 #else
     return __log_tbl_k<log_func::c_log_e>(xc);
+    // return __log_poly_k(xc);
 #endif
 }
 
