@@ -392,7 +392,7 @@ namespace cftal {
                              vi2_type& __restrict ki,
                              arg_t<vf_type> xc);
 
-            // polynomial approximation of (log1p(r)-(x-0.5*x^2))/x^3, 
+            // polynomial approximation of (log1p(r)-(x-0.5*x^2))/x^3,
             // r2=r*r
             static
             vf_type
@@ -407,7 +407,7 @@ namespace cftal {
                              vi2_type& __restrict ki,
                              arg_t<vf_type> x);
 
-            
+
             // return 2^k * 1/inv_c * (1 + xr*inv_c) = xc
             //        2^k * c * (1+xr/c) = xc
             // log_c_h + log_c_l = -log(inv_c),
@@ -1438,13 +1438,8 @@ __reduce_exp_arg(vf_type& xrh,
     idx = ki & exp_data<double>::EXP_IDX_MASK;
     k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type neg_kfln2h, neg_kfln2l;
-#if 1
     d_ops::unorm_mul122(neg_kfln2h, neg_kfln2l,
                         kf, -_ln2_32_h, -_ln2_32_l);
-#else
-    d_ops::mul122(neg_kfln2h, neg_kfln2l,
-                  kf, -_ln2_32_h, -_ln2_32_l);
-#endif
     d_ops::add22cond(xrh, xrl,
                      xh, xl,
                      neg_kfln2h, neg_kfln2l);
@@ -1705,13 +1700,8 @@ __reduce_exp10_arg(vf_type& xrh,
     idx = ki & exp_data<double>::EXP_IDX_MASK;
     k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type kf_lg_2_32_h, kf_lg_2_32_l;
-#if 1
     d_ops::unorm_mul122(kf_lg_2_32_h, kf_lg_2_32_l,
                         kf, -_lg2_32_h, -_lg2_32_l);
-#else
-    d_ops::mul122(kf_lg_2_32_h, kf_lg_2_32_l,
-                  kf, -_lg2_32_h, -_lg2_32_l);
-#endif
     d_ops::add22cond(xrh, xrl,
                      xh, xl,
                      kf_lg_2_32_h, kf_lg_2_32_l);
@@ -2260,7 +2250,7 @@ __log_poly_k(arg_t<vf_type> xc)
     vf_type ll=e + r2*(r*p);
     return l+ll;
 }
-    
+
 template <typename _T>
 template <typename cftal::math::elem_func_core<double, _T>::log_func _LFUNC>
 inline
@@ -2493,11 +2483,7 @@ __log_tbl_k2(arg_t<vf_type> r, arg_t<vf_type> rl,
 
     d_ops::unorm_mul22(lh, ll, r, rl, ph, pl);
     vf_type kh, kl;
-#if 1
     d_ops::unorm_mul122(kh, kl, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-#else
-    d_ops::mul122(kh, kl, kf, ctbl::m_ln2[0], ctbl::m_ln2[1]);
-#endif
     d_ops::add22(lh, ll, log_c_h, log_c_l, lh, ll);
     // |kh, kl | >= log(2) or 0
     d_ops::add22(lh, ll, kh, kl, lh, ll);
@@ -2704,7 +2690,7 @@ __log1p_poly_k(arg_t<vf_type> xc)
     vf_type r2=r*r;
     vf_type p=__log_poly_k_poly(r, r2);
     p = horner(r, p, -0.5);
-    
+
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-x), x-(u-1.0));
     c_k_2 /= u;
@@ -2784,11 +2770,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vdf_type lnx= __log_tbl_k12(abs_x);
 
     vdf_type ylnx;
-#if 1
     d_ops::unorm_mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
-#else
-    d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
-#endif
     vmf_type rnan=isnan(ylnx[0]);
     // ylnx[0] = _T::sel_zero_or_val(rnan, ylnx[0]);
     // ylnx[1] = _T::sel_zero_or_val(rnan, ylnx[1]);
@@ -2850,11 +2832,7 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
         d_ops::rcp12(rh, rl, y);
         d_ops::mul22(ylnx[0], ylnx[1], lnx[0], lnx[1], rh, rl);
     } else {
-#if 1
         d_ops::unorm_mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
-#else
-        d_ops::mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
-#endif
     }
 
     vf_type xrh, xrl;
