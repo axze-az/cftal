@@ -1540,7 +1540,6 @@ __reduce_exp_arg(vf_type& xrh,
 {
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     kf = rint(vf_type(x * ctbl::m_1_ln2[0]));
-#if 1
     // l1h=round(log(2), 24-9, RN);
     // l1l=log(2)-l1h;
     // write_coeff(l1h, "", "const float _ln2_h_cw", single);
@@ -1549,17 +1548,10 @@ __reduce_exp_arg(vf_type& xrh,
     const float _ln2_h_cw=+6.9314575195e-01f;
     // x^ : +0xb.fbe8ep-23f
     const float _ln2_l_cw=+1.4286067653e-06f;
-
     vf_type hi = x - kf * _ln2_h_cw;
     xrh = hi - kf * _ln2_l_cw;
     vf_type dx = hi-xrh;
     xrl = dx - kf * _ln2_l_cw;
-#else
-    vf_type hi = x - kf * ctbl::m_ln2_cw[0];
-    xrh = hi - kf * ctbl::m_ln2_cw[1];
-    vf_type dx = hi-xrh;
-    xrl = dx - kf * ctbl::m_ln2_cw[1];
-#endif
 }
 
 template <typename _T>
@@ -2180,7 +2172,6 @@ sinh_cosh_k(arg_t<vf_type> xc)
         yh *= sc.f0();
         yh *= sc.f1();
 
-#if 1
         // fpprec: 32
         // bfloat(rhs(solve(2^-30*%e^x=%e^(-x), x)[2]));
         constexpr const float
@@ -2188,14 +2179,6 @@ sinh_cosh_k(arg_t<vf_type> xc)
         vmf_type x_medium= x <= x_medium_max;
         if (_F == hyperbolic_func::c_sinh)
             x_medium &= (x > sinh_i0_right);
-#else
-        // bfloat(rhs(solve(2^15*%e^(log(2)/2) = %e^x, x)[1]));
-        // 15 because of k-1 above:
-        const int k_max= 14;
-        vmf_type x_medium= _T::vmi_to_vmf(k <k_max);
-        if (_F == hyperbolic_func::c_sinh)
-            x_medium &= (x > sinh_i0_right);
-#endif
         if (_T::any_of_v(x_medium)) {
             // perform the scaling also for the low part
             yl *= sc.f0();
@@ -2433,7 +2416,6 @@ __reduce_log_arg(vhf_type& xr, vhf_type& inv_c, vhf_type& log_c,
                  arg_t<vf_type> xc)
 
 {
-#if 1
     constexpr
     const bytes4 offs=0x3f340000;
     using fc = func_constants<float>;
@@ -2465,7 +2447,6 @@ __reduce_log_arg(vhf_type& xr, vhf_type& inv_c, vhf_type& log_c,
         break;
     }
     ki = k;
-#endif
 }
 
 #endif
@@ -2737,7 +2718,6 @@ typename cftal::math::elem_func_core<float, _T>::vdf_type
 cftal::math::elem_func_core<float, _T>::
 __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
 {
-#if 1
     vf_type xrh, inv_c, log_c_h, log_c_l;
     vi_type ki;
     vi_type idx;
@@ -2747,14 +2727,9 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
     inv_c =lck.from(tbl._p_inv_c);
     log_c_h=lck.from(tbl._p_log_c_h);
     log_c_l=lck.from(tbl._p_log_c_l);
-#if 0
-    vf_type xrl = ldexp_k(xcl, -ki);
-    vf_type kf=_T::cvt_i_to_f(ki);
-#else
     auto sc=__two_pow(-ki);
     vf_type xrl = xcl * sc.f0() * sc.f1();
     vf_type kf=_T::cvt_i_to_f(ki);
-#endif
     vf_type r, rl;
     if (d_real_traits<vf_type>::fma == true) {
         r = xrh * inv_c - 1.0f;
@@ -2770,20 +2745,6 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
     }
     d_ops::add12cond(r, rl, r, rl);
     return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
-#else
-    vf_type xr, inv_c, log_c_h, log_c_l;
-    vi_type ki;
-    __reduce_log_arg<log_func::c_log_e>(xr,
-                             inv_c, log_c_h, log_c_l,
-                             ki,
-                             xc);
-    vf_type xrl = ldexp_k(xcl, -ki);
-    vf_type r, rl;
-    d_ops::mul122(r, rl, inv_c, xr, xrl);
-    d_ops::add122(r, rl, -1.0f, r, rl);
-    vf_type kf=_T::cvt_i_to_f(ki);
-    return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
-#endif
 }
 
 template <typename _T>

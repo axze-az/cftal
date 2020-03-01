@@ -1375,13 +1375,8 @@ __reduce_exp_arg(vf_type& xrh,
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     kf = rint(vf_type(xh * ctbl::m_1_ln2[0]));
     vf_type neg_kfln2h, neg_kfln2l;
-#if 1
     d_ops::unorm_mul122(neg_kfln2h, neg_kfln2l,
                         kf, -ctbl::m_ln2[0], -ctbl::m_ln2[1]);
-#else
-    d_ops::mul122(neg_kfln2h, neg_kfln2l,
-                  kf, -ctbl::m_ln2[0], -ctbl::m_ln2[1]);
-#endif
     d_ops::add22cond(xrh, xrl,
                      xh, xl,
                      neg_kfln2h, neg_kfln2l);
@@ -1848,7 +1843,6 @@ sinh_cosh_k(arg_t<vf_type> xc)
         auto sc=__two_pow(k);
         yh *= sc.f0();
         yh *= sc.f1();
-#if 1
         // fpprec: 32
         // bfloat(rhs(solve(2^-70*%e^x=%e^(-x), x)[2]));
         constexpr const double
@@ -1856,14 +1850,6 @@ sinh_cosh_k(arg_t<vf_type> xc)
         vmf_type x_medium= x <= x_medium_max;
         if (_F == hyperbolic_func::c_sinh)
             x_medium &= (x > sinh_i0_right);
-#else
-        // bfloat(rhs(solve(2^37*%e^(log(2)/2) = %e^x, x)[1]));
-        // 36 because of k-1 above:
-        const int k_max= 36;
-        vmf_type x_medium= _T::vmi_to_vmf(k <k_max);
-        if (_F == hyperbolic_func::c_sinh)
-            x_medium &= (x > sinh_i0_right);
-#endif
         if (_T::any_of_v(x_medium)) {
             // perform the scaling also for the low part
             yl *= sc.f0();
@@ -2022,7 +2008,6 @@ __reduce_log_arg(vf_type& xr,
     vi2_type k=_T::sel(_T::vmf_to_vmi2(is_denom),
                        vi2_type(-54-_T::bias()),
                        vi2_type(-_T::bias()));
-#if 1
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
     h += (0x3ff0000000000000LL - offs.s64());
@@ -2031,18 +2016,6 @@ __reduce_log_arg(vf_type& xr,
     k += (h2>>20);
     xr = as<vf_type>(h);
     ki=k;
-#else
-    constexpr
-    const bytes4 offs32=offs.s32h();
-    vi2_type lx, hx;
-    _T::extract_words(lx, hx, x);
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    hx += 0x3ff00000 - offs32.s32();
-    k += (hx>>20);
-    hx = (hx&0x000fffff) + offs32.s32();
-    xr = _T::combine_words(lx, hx);
-    ki=k;
-#endif
 }
 
 template <typename _T>
@@ -2062,7 +2035,7 @@ __reduce_log_arg(vf_type& xr,
     vi2_type k=_T::sel(_T::vmf_to_vmi2(is_denom),
                        vi2_type(-54-_T::bias()),
                        vi2_type(-_T::bias()));
-#if 1
+
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
     h += (0x3ff0000000000000LL - offs.s64());
@@ -2075,21 +2048,6 @@ __reduce_log_arg(vf_type& xr,
     k += (h2>>20);
     xr = as<vf_type>(h);
     ki=k;
-#else
-    vi2_type lx, hx;
-    _T::extract_words(lx, hx, x);
-    constexpr
-    const bytes4 offs32=offs.s32h();
-    /* reduce x into [offs, 2*offs] */
-    hx += 0x3ff00000 - offs32.s32();
-    k += (hx>>20);
-    vi2_type m=(hx&0x000fffff);
-    vi2_type idx2=m >> (20 - log_data<double>::LOG_SHIFT);
-    idx=_T::vi2_odd_to_vi(idx2);
-    hx = m + offs32.s32();
-    xr = _T::combine_words(lx, hx);
-    ki = k;
-#endif
 }
 
 template <typename _T>
@@ -2498,7 +2456,6 @@ typename cftal::math::elem_func_core<double, _T>::vdf_type
 cftal::math::elem_func_core<double, _T>::
 __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
 {
-#if 1
     vf_type xrh, inv_c, log_c_h, log_c_l;
     vi2_type ki;
     vi_type idx;
@@ -2508,15 +2465,10 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
     inv_c =lck.from(tbl._p_inv_c);
     log_c_h=lck.from(tbl._p_log_c_h);
     log_c_l=lck.from(tbl._p_log_c_l);
-#if 0
-    vf_type xrl = ldexp_k(xl, -ki);
-    vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
-#else
     vi_type kii=_T::vi2_odd_to_vi(ki);
     auto sc=__two_pow(-kii);
     vf_type xrl = xl * sc.f0() * sc.f1();
     vf_type kf=_T::cvt_i_to_f(kii);
-#endif
     vf_type r, rl;
     if (d_real_traits<vf_type>::fma == true) {
         r = xrh * inv_c - 1.0;
@@ -2532,20 +2484,6 @@ __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
     }
     d_ops::add12cond(r, rl, r, rl);
     return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
-#else
-    vf_type xr, inv_c, log_c_h, log_c_l;
-    vi2_type k;
-    __reduce_log_arg<log_func::c_log_e>(xr,
-                             inv_c, log_c_h, log_c_l,
-                             k,
-                             xc);
-    vf_type xrl = ldexp_k(xl, -k);
-    vf_type r, rl;
-    d_ops::mul122(r, rl, inv_c, xr, xrl);
-    d_ops::add122(r, rl, -1.0, r, rl);
-    vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(k));
-    return __log_tbl_k2<_P>(r, rl, log_c_h, log_c_l, kf);
-#endif
 }
 
 template <typename _T>
