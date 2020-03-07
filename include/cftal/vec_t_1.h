@@ -20,7 +20,7 @@
 
 namespace cftal {
 
-
+    // vec<_T, 1> specialization
     template <typename _T>
     class vec<_T, 1> {
     public:

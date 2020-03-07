@@ -39,6 +39,7 @@ namespace cftal {
 
     namespace op {
 
+        // base class for binary operator classes
         template <template <class _T,
                             std::size_t _N> class _OP,
                   typename _T, std::size_t _N,
@@ -58,6 +59,7 @@ namespace cftal {
             }
         };
 
+        // base class for comparison operations
         template <template <class _T,
                             std::size_t _N> class _OP,
                   typename _T, std::size_t _N>
@@ -66,12 +68,14 @@ namespace cftal {
                         typename vec<_T, _N>::mask_type > {
         };
 
+        // base class for binary operations
         template <template <class _T, std::size_t _N> class _OP,
                   typename _T, std::size_t _N>
         struct bin :
             public base<_OP, _T, _N, vec<_T, _N> > {
         };
 
+        // base class for unary operations
         template <template <class _T, std::size_t _N> class _OP,
                   typename _T, std::size_t _N>
         struct unary {
@@ -85,6 +89,7 @@ namespace cftal {
             }
         };
 
+        // base class for ternary operations
         template <template <class _T, std::size_t _N> class _OP,
                   typename _T, std::size_t _N>
         struct ternary {
@@ -168,7 +173,7 @@ namespace cftal {
         template <typename _T, std::size_t _N>
         struct bit_not : public unary<bit_not, _T, _N> {};
 
-        // shift operators
+        // scalar shift left operator
         template <typename _T, std::size_t _N>
         struct shl : public bin<shl, _T, _N> {
             using full_type = vec<_T, _N>;
@@ -181,6 +186,7 @@ namespace cftal {
             }
         };
 
+        // scalar shift right operator
         template <typename _T, std::size_t _N>
         struct shr : public bin<shr, _T, _N> {
             using full_type = vec<_T, _N>;
@@ -193,9 +199,11 @@ namespace cftal {
             }
         };
 
+        // vector shift left operator
         template <typename _T, std::size_t _N>
         struct vshl : public bin<vshl, _T, _N> {};
 
+        // vector shift righta operator
         template <typename _T, std::size_t _N>
         struct vshr : public bin<vshr, _T, _N> {};
 
@@ -284,6 +292,7 @@ namespace cftal {
 #endif
     }
 
+    // evaluation of 
     // a + -b = a - b
     template <typename _T, std::size_t _N,
               class _L, class _R>
@@ -296,6 +305,7 @@ namespace cftal {
                                   eval(e._r._l));
     }
 
+    // evaluation of 
     // -a + b = b - a
     template <typename _T, std::size_t _N,
               class _L, class _R>
@@ -308,6 +318,7 @@ namespace cftal {
                                   eval(e._l));
     }
 
+    // evaluation of 
     // a - -b = a + b
     template <typename _T, std::size_t _N,
               class _L, class _R>

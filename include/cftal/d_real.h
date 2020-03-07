@@ -1532,7 +1532,6 @@ sqrt21(_T& rh, const _T& ah, const _T& al)
     rh = select(is_zero, _T(0), rh);
 }
 
-
 template <typename _T>
 inline
 cftal::d_real<_T>

@@ -21,6 +21,7 @@
 
 namespace cftal {
 
+    // short vector template
     template <typename _T, std::size_t _N >
     class vec {
     public:

@@ -13,12 +13,15 @@
 
 namespace cftal {
 
+    // horizontal add 
     template <typename _T, std::size_t _N>
     _T hadd(const vec<_T, _N>& n);
 
+    // horizontal add 
     template <typename _T>
     _T hadd(const vec<_T, 1>& n);
 
+    // execut on_true or on_false in dependence of m
     template <typename _T, std::size_t _N,
               typename _ON_TRUE, typename _ON_FALSE>
     auto
@@ -26,17 +29,31 @@ namespace cftal {
                   _ON_TRUE on_true, _ON_FALSE on_false)
         -> typename std::result_of<_ON_TRUE()>::type;
 
+    // execut on_true or on_false in dependence of m
     template <typename _T, typename _ON_TRUE, typename _ON_FALSE>
     auto
     select_branch(const vec<_T, 1>& m,
                   _ON_TRUE on_true, _ON_FALSE on_false)
         -> typename std::result_of<_ON_TRUE()>::type;
 
+    // execute a scalar function f(x) on every element of x
+    template <typename _T, size_t _N, typename _F>
+    vec<_T, _N>
+    call_scalar_func(const vec<_T, _N>& x, _F f);
 
+    // execute a scalar function f(x, y) on every element of x, y
+    template <typename _TR, typename _TX, typename _TY, size_t _N, typename _F>
+    vec<_TR, _N>
+    call_scalar_func(const vec<_TX, _N>& x,
+                     const vec<_TY, _N>& y,
+                     _F f);
+
+    // transpose a 4x4 matrix
     template <class _V4>
     void
     transpose_4x4(_V4& r0, _V4& r1, _V4& r2, _V4& r3);
 
+    // transpose a 8x8 matrix
     template <class _V8>
     void
     transpose_8x8(_V8& r0, _V8& r1, _V8& r2, _V8& r3,
@@ -48,6 +65,7 @@ namespace cftal {
     mat_mul_1x4(_V4& r0,
                 const _T* a0,
                 const _V4& b0, const _V4& b1, const _V4& b2, const _V4& b3);
+
     // r0-r3, a0-a3, b0-b3 rows/columns of a 4x4 matrix
     template <class _V4>
     void
@@ -55,15 +73,6 @@ namespace cftal {
                 const _V4& a0, const _V4& a1, const _V4& a2, const _V4& a3,
                 const _V4& b0, const _V4& b1, const _V4& b2, const _V4& b3);
 
-    template <typename _T, size_t _N, typename _F>
-    vec<_T, _N>
-    call_scalar_func(const vec<_T, _N>& x, _F f);
-
-    template <typename _TR, typename _TX, typename _TY, size_t _N, typename _F>
-    vec<_TR, _N>
-    call_scalar_func(const vec<_TX, _N>& x,
-                     const vec<_TY, _N>& y,
-                     _F f);
 }
 
 template <typename _T, std::size_t _N>

@@ -1584,17 +1584,11 @@ exp2_k(arg_t<vf_type> x)
         __reduce_exp2_arg(xrh, xrl, idx, ki, x);
         y=__exp_tbl_k(xrh, xrl, idx, ki);
     } else {
-#if 0
-        vi_type idx, ki;
-        __reduce_exp2_arg(xrh, xrl, idx, ki, x);
-        y=__expm1_tbl_k(xrh, xrl, idx, ki, x*ctbl::m_ln2[0]);
-#else
         vf_type kf= rint(vf_type(x));
         vf_type xr = x - kf;
         // for exp2 mul12 would be sufficient
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
         y=__exp_k<_EXP2_M1>(xrh, xrl, kf, x*ctbl::m_ln2[0]);
-#endif
     }
     return y;
 }
@@ -1717,11 +1711,6 @@ exp10_k(arg_t<vf_type> x)
         y=__exp_tbl_k(xrh, xrl, idx, ki);
     } else {
         using ctbl = impl::d_real_constants<d_real<double>, double>;
-#if 0
-        vi_type idx, ki;
-        __reduce_exp10_arg(xrh, xrl, idx, ki, x);
-        y=__expm1_tbl_k(xrh, xrl, idx, ki, x*ctbl::m_ln10[0]);
-#else
         vf_type kf = rint(vf_type(x * ctbl::m_1_lg2[0]));
         vf_type hi = x - kf * ctbl::m_lg2_cw[0];
         vf_type xr = hi - kf * ctbl::m_lg2_cw[1];
@@ -1733,7 +1722,6 @@ exp10_k(arg_t<vf_type> x)
         // do not normalize xrh, xrl
         // d_ops::add12(xrh, xrl, xrh, xrl);
         y=__exp_k<_EXP10_M1>(xrh, xrl, kf, x*ctbl::m_ln10[0]);
-#endif
     }
     return y;
 }

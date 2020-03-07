@@ -84,6 +84,7 @@ namespace cftal {
         using base_type::mul122;
         using base_type::div22;
 
+        // requires |ah| >= |am| >= |al| && |ah| >= |(am + al)|
         static
         void
         renormalize3(_T& rh, _T& rm, _T& rl,
