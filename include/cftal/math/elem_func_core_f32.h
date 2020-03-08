@@ -3703,8 +3703,8 @@ atan_k(arg_t<vf_type> xc)
         if (_T::any_of_v(x_gt_1)) {
             vf_type th, tl;
             d_ops::add22(th, tl,
-                        ctbl::m_pi_2[0], ctbl::m_pi_2[1],
-                        -dat[0], -dat[1]);
+                         ctbl::m_pi_2[0], ctbl::m_pi_2[1],
+                         -dat[0], -dat[1]);
             dat[0] = _T::sel(x_gt_1, th, dat[0]);
         }
         at = _T::sel(calc_at, dat[0], at);
