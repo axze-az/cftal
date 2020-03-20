@@ -239,7 +239,8 @@ namespace cftal {
             int
             rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm);
 
-            // returns c_n*x^n + .. c_1*x^1 + c_0, nullptr as last argument
+            // returns c_n*x^n + .. c_1*x^1 + c_0, nullptr as last
+            // argument
             int
             horner(mpfr_t res,
                    const mpfr_t x,
@@ -253,7 +254,8 @@ namespace cftal {
             // int F(mfpr_t y, const mpfr_t x, mpfr_rnd_t rm)
             template <typename _F>
             int
-            call_ziv_func(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm, _F f);
+            call_ziv_func(mpfr_t y, const mpfr_t x,
+                          mpfr_rnd_t rm, _F f);
         }
 
         template <std::size_t _B>
