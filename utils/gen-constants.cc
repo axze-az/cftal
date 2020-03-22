@@ -712,6 +712,12 @@ int main(int argc, char** argv)
         gen_constant(std::make_pair(1.0, 80.0), "const double tanh",
                      mpfr_tanh, check_one<double>(), "one");
 
+        gen_constant(std::make_pair(1.0, 1024.0), "const double sig",
+                     mpfr_ext::sig, check_one<double>(), "one");
+
+        gen_constant(std::make_pair(-1024.0, -1.0), "const double sig",
+                     mpfr_ext::sig, check_zero<double>(), "zero");
+
         double a[2];
         mpfr_real<512> ln2=2.0;
         ln2=log(ln2);
@@ -813,6 +819,12 @@ int main(int argc, char** argv)
 
         gen_constant(std::make_pair(1.0f, 80.0f), "const float tanh",
                      mpfr_tanh, check_one<float>(), "one");
+
+        gen_constant(std::make_pair(1.0f, 1024.0f), "const float sig",
+                     mpfr_ext::sig, check_one<float>(), "one");
+
+        gen_constant(std::make_pair(-1024.0f, -1.0f), "const float sig",
+                     mpfr_ext::sig, check_zero<float>(), "zero");
 
         std::cout << "const float max_denormal= "
                   <<  sig_f32_msk::v.f32() << ";\n\n";

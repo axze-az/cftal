@@ -1142,8 +1142,8 @@ sig(arg_t<vf_type> x)
     vf_type r = _TRAITS_T::sel(xm, rh, eh);
     r = _TRAITS_T::sel(x_not_hi, r, _FLOAT_T(1.0));
     constexpr
-    const _FLOAT_T exp_lo_zero= fc::exp_lo_zero();
-    r = _TRAITS_T::sel(x<= exp_lo_zero, _FLOAT_T(0.0), r);
+    const _FLOAT_T neg_exp_hi_inf= -fc::exp_hi_inf();
+    r = _TRAITS_T::sel(x<= neg_exp_hi_inf, _FLOAT_T(0.0), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
 }
