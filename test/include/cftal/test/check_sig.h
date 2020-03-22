@@ -40,8 +40,9 @@ namespace cftal {
                 using fc=cftal::math::func_constants<_T>;
                 if (a >= fc::sig_hi_one()) {
                     return _T(1.0);
-                }
-                if (a < fc::sig_le_eq_exp()) {
+                } else if (a <= -fc::exp_hi_inf()) {
+                    return _T(0.0);
+                } else if (a < fc::sig_le_eq_exp()) {
                     return std::exp(a);
                 }
                 return _T(1.0)/(_T(2.0)+std::expm1(-a));
