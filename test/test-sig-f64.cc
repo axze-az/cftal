@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 #if 0
     using namespace cftal::test;
     const func_domain<double> di[]={
-        std::make_pair(-760.0, +50.0)
+        std::make_pair(-710.0, +39.0)
     };
     const int shifts[]={0};
     int r=program<check_sig<double>,
@@ -41,9 +41,7 @@ int main(int argc, char** argv)
         }
     }
 
-    // auto d = std::make_pair(-744.0, +50.0);
-    auto d = std::make_pair(-760.0, +50.0);
-    // auto d = std::make_pair(0.0, +50.0);
+    auto d = std::make_pair(-710.0, +39.0);
     exec_stats<_N> st;
     auto us=std::make_shared<ulp_stats>();
     rc &= of_fp_func_up_to<
