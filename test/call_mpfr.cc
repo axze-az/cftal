@@ -674,6 +674,23 @@ tanpi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
     return r;
 }
 
+int cftal::test::mpfr_ext::
+sig(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
+{
+    auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
+        fpn_handle one(1.0, mpfr_get_prec(xx));
+        fpn_handle nx(mpfr_get_prec(xx));
+        mpfr_neg(nx(), xx, MPFR_RNDN);
+        fpn_handle exp_nx(mpfr_get_prec(xx));
+        mpfr_exp(exp_nx(), nx(), MPFR_RNDN);
+        fpn_handle t(mpfr_get_prec(xx));
+        mpfr_add(t(), one(), exp_nx(), MPFR_RNDN);
+        return mpfr_div(yy, one(), t(), rm);
+    };
+    int r=call_ziv_func(res, x, rm, f);
+    return r;
+}
+
 int
 cftal::test::mpfr_ext::
 horner(mpfr_t res,

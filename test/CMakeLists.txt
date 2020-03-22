@@ -87,6 +87,7 @@ set (TEST_HDRS
     ./include/cftal/test/check_cospi.h
     ./include/cftal/test/check_tanpi.h
     ./include/cftal/test/check_sinpicospi.h
+    ./include/cftal/test/check_sig.h
 )
 
 find_package(Boost REQUIRED)
@@ -236,6 +237,7 @@ test_prog(test-exp2_mx2-f64)
 test_prog(test-exp2_px2-f64)
 test_prog(test-exp10_mx2-f64)
 test_prog(test-exp10_px2-f64)
+test_prog(test-sig-f64)
 
 test_prog(test-root12-f64)
 
@@ -289,6 +291,7 @@ test_prog(test-exp2_mx2-f32)
 test_prog(test-exp2_px2-f32)
 test_prog(test-exp10_mx2-f32)
 test_prog(test-exp10_px2-f32)
+test_prog(test-sig-f32)
 
 test_prog(test-root12-f32)
 

@@ -107,6 +107,16 @@ namespace cftal {
             // atan(x) == M_PI/2 for x>=
             static constexpr double
             atan_equal_pi_2() { return 5.805358775541311000000000e+15; }
+
+            static constexpr double
+            sig_hi_one() {
+                // log(0x1p55);
+                return 38.123094930796992017947766680199711244152507389814;
+            }
+            static constexpr double
+            sig_le_eq_exp() {
+                return -sig_hi_one();
+            }
         };
 
         template <>
@@ -194,6 +204,16 @@ namespace cftal {
 
             static constexpr float
             atan_equal_pi_2() { return 6.291977600000000000000000e+07f; }
+
+            static constexpr float
+            sig_hi_one() {
+                // log(0x1p26)
+                return 18.0218257904052734375;
+            }
+            static constexpr float
+            sig_le_eq_exp() {
+                return -sig_hi_one();
+            }
         };
 
         namespace impl {

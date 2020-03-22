@@ -557,6 +557,15 @@ namespace cftal {
     vec<float, 1>
     exp10_px2(arg_t<vec<float, 1> > d);
 
+    // logistic or sigmoid function
+    // sig(x) = 1/(1+exp(-x)
+    template <std::size_t _N>
+    vec<float, _N>
+    sig(const vec<float, _N>& x);
+
+    vec<float, 1>
+    sig(arg_t<vec<float, 1> > x);
+
 #if V2F32_FUNCS>0
     vec<float, 2>
     frexp(arg_t<vec<float, 2> > x, vec<int32_t, 2>* e);
@@ -709,6 +718,9 @@ namespace cftal {
 
     vec<float, 2>
     exp10_px2(arg_t<vec<float, 2> > d);
+
+    vec<float, 2>
+    sig(arg_t<vec<float, 2> > x);
 
 #endif
 
@@ -866,6 +878,10 @@ namespace cftal {
 
     vec<float, 4>
     exp10_px2(arg_t<vec<float, 4> > d);
+
+    vec<float, 4>
+    sig(arg_t<vec<float, 4> > x);
+
 #endif
 
 #if V8F32_FUNCS>0
@@ -1023,6 +1039,9 @@ namespace cftal {
     vec<float, 8>
     exp10_px2(arg_t<vec<float, 8> > d);
 
+    vec<float, 8>
+    sig(arg_t<vec<float, 8> > x);
+
 #endif
 #if V16F32_FUNCS>0
     vec<float, 16>
@@ -1178,6 +1197,9 @@ namespace cftal {
 
     vec<float, 16>
     exp10_px2(arg_t<vec<float, 16> > d);
+
+    vec<float, 16>
+    sig(arg_t<vec<float, 16> > x);
 
 #endif
 
@@ -2155,6 +2177,16 @@ cftal::exp10_px2(const vec<float, _N>& x)
 {
     return vec<float, _N>(exp10_px2(low_half(x)),
                           exp10_px2(high_half(x)));
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::sig(const vec<float, _N>& x)
+{
+    vec<float, _N> r(sig(low_half(x)),
+                     sig(high_half(x)));
+    return r;
 }
 
 template <std::size_t _N>

@@ -218,6 +218,10 @@ namespace cftal {
             int
             root12(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
+            // x ^ (1/n), n may be negative
+            int
+            rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm);
+
             // return true if x is an half integer
             bool
             is_half_integer(const mpfr_t x);
@@ -234,10 +238,9 @@ namespace cftal {
             int
             tanpi(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
-
-            // x ^ (1/n), n may be negative
+            // 1/(1+exp(-x))
             int
-            rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm);
+            sig(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
             // returns c_n*x^n + .. c_1*x^1 + c_0, nullptr as last
             // argument

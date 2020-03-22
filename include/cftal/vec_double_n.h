@@ -569,6 +569,13 @@ namespace cftal {
     vec<double, 1>
     exp10_px2(arg_t<vec<double, 1> > d);
 
+    template <std::size_t _N>
+    vec<double, _N>
+    sig(const vec<double, _N>& x);
+
+    vec<double, 1>
+    sig(arg_t<vec<double, 1> > x);
+
 #if V2F64_FUNCS>0
     vec<double, 2>
     frexp(arg_t<vec<double, 2> > x, vec<int32_t, 2>* e);
@@ -721,6 +728,9 @@ namespace cftal {
 
     vec<double, 2>
     exp10_px2(arg_t<vec<double, 2> > d);
+
+    vec<double, 2>
+    sig(arg_t<vec<double, 2> > x);
 
 #endif
 
@@ -878,6 +888,10 @@ namespace cftal {
 
     vec<double, 4>
     exp10_px2(arg_t<vec<double, 4> > d);
+
+    vec<double, 4>
+    sig(arg_t<vec<double, 4> > x);
+
 #endif
 
 #if V8F64_FUNCS>0
@@ -1034,6 +1048,10 @@ namespace cftal {
 
     vec<double, 8>
     exp10_px2(arg_t<vec<double, 8> > d);
+
+    vec<double, 8>
+    sig(arg_t<vec<double, 8> > x);
+
 #endif
 }
 
@@ -1800,6 +1818,15 @@ cftal::exp10_px2(const vec<double, _N>& x)
 {
     return vec<double, _N>(exp10_px2(low_half(x)),
                            exp10_px2(high_half(x)));
+}
+
+template <std::size_t _N>
+cftal::vec<double, _N>
+cftal::sig(const vec<double, _N>& x)
+{
+    vec<double, _N> r(sig(low_half(x)),
+                      sig(high_half(x)));
+    return r;
 }
 
 // local variables:
