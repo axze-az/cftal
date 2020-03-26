@@ -558,7 +558,7 @@ namespace cftal {
     exp10_px2(arg_t<vec<float, 1> > d);
 
     // logistic or sigmoid function
-    // sig(x) = 1/(1+exp(-x)
+    // sig(x) = 1/(1+exp(-x))
     template <std::size_t _N>
     vec<float, _N>
     sig(const vec<float, _N>& x);

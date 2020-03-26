@@ -569,6 +569,7 @@ namespace cftal {
     vec<double, 1>
     exp10_px2(arg_t<vec<double, 1> > d);
 
+    // sig, calculates 1/(1+exp(-x))
     template <std::size_t _N>
     vec<double, _N>
     sig(const vec<double, _N>& x);
