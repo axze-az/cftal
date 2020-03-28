@@ -1942,6 +1942,7 @@ tanh_k(arg_t<vf_type> xc)
     }
     vmf_type x_medium=(xa > tanh_i0_right) & (xa<fc::tanh_one());
     if (_T::any_of_v(x_medium)) {
+#if 1
         // tanh(x) = (exp(2*x)-1)/(exp(2*x)+1)
         vf_type xae=min(vf_type(2.0*xa), vf_type(2.0*fc::tanh_one()));
         vf_type xrh, xrl;
@@ -1959,6 +1960,27 @@ tanh_k(arg_t<vf_type> xc)
         vf_type tanh_h, tanh_l;
         d_ops::div22(tanh_h, tanh_l, exm1, exm1l, exp1, exp1l);
         tanh_x = _T::sel(x_medium, tanh_h, tanh_x);
+#else
+        // tanh(x) = 1 - 2/(exp(2*x)+1)
+        vf_type xae=min(vf_type(2.0*xa), vf_type(2.0*fc::tanh_one()));
+        vf_type xrh, xrl;
+        vi_type idx, ki;
+        __reduce_exp_arg(xrh, xrl, idx, ki, xae);
+        vf_type ex, exl;
+        ex=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &exl);
+        auto sc=_T::insert_exp(_T::bias() + ki);
+        ex  *= sc;
+        exl *= sc;
+        vf_type exp1, exp1l;
+        d_ops::add212(exp1, exp1l, ex, exl, 1.0);
+        vf_type rexp1, rexp1l;
+        d_ops::rcp2(rexp1, rexp1l, exp1, exp1l);
+        vf_type tanh_h, tanh_l;
+        // d_ops::add122(tanh_h, tanh_l, -0.5, rexp1, rexp1l);
+        d_ops::add12(tanh_h, tanh_l, -0.5, rexp1);
+        tanh_h += (tanh_l + rexp1l);
+        tanh_x = _T::sel(x_medium, -2.0*tanh_h, tanh_x);
+#endif
     }
     tanh_x=copysign(tanh_x, xc);
     return tanh_x;
