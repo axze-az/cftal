@@ -193,9 +193,11 @@ namespace cftal {
               std::size_t cnt=default_cnt,
               bool suppress_defaults= false);
 
+            using array_t = std::array<_T, _N>;
+            
             template <typename _CMP=cmp_t<_T> >
             static
-            bool calc(const _T(&ai)[_N],
+            bool calc(const array_t& ai,
                       exec_stats<_N>& st,
                       bool speed_only, _CMP cmp=_CMP());
         };
@@ -274,9 +276,12 @@ namespace cftal {
               std::size_t cnt=default_cnt,
               bool suppress_defaults=false);
 
+            using array_1_t = std::array<_T1, _N>;
+            using array_2_t = std::array<_T2, _N>;
+            
             template <typename _CMP=cmp_t<_T> >
             static
-            bool calc(const _T1(&ai)[_N], const _T2(&bi)[_N],
+            bool calc(const array_1_t& ai, const array_2_t& bi,
                       exec_stats<_N>& st, bool speed_only, _CMP cmp=_CMP());
         };
 
@@ -743,10 +748,10 @@ template <typename _T, std::size_t _N, typename _F>
 template <typename _CMP>
 bool
 cftal::test::of_fp_func<_T, _N, _F>::
-calc(const _T(&a)[_N], exec_stats<_N>& st,
+calc(const array_t& a, exec_stats<_N>& st,
      bool speed_only, _CMP cmp)
 {
-    vec<_T, _N> va=mem<vec<_T, _N> >::load(a);
+    vec<_T, _N> va=mem<vec<_T, _N> >::load(a.data());
     uint64_t t0 = exec_stats<_N>::hr_timer();
     auto vr=_F::v(va);
     uint64_t t1 = exec_stats<_N>::hr_timer();
@@ -806,7 +811,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                        const _C& tv)
 {
     bool r = true;
-    _T va[_N];
+    array_t va;
 
     for (auto b=std::begin(tv), e=std::end(tv);
          b!=e; ++b) {
@@ -826,7 +831,8 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
     const uint32_t N1=4;
 
 #if 1
-    using job_t = std::vector<_T[_N]>;
+    using vec_t = array_t;
+    using job_t = std::vector<vec_t>;
 
     struct thread_data {
         std::deque<bool> _vr;
@@ -910,7 +916,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
     };
     for (uint32_t l=0; l< N1; ++l) {
         for (uint32_t j=0; j<N0; ++j) {
-            std::vector<_T[_N]> v_va(cnt);
+            std::vector<array_t> v_va(cnt);
             for (std::size_t i=0; i<cnt; ++i) {
                 for (std::size_t k=0; k<_N; ++k) {
                     v_va[i][k] = distrib(rnd);
@@ -936,7 +942,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
         std::cout << "[" << minus1 << ", " << nplus1 << ")\n";
         for (uint32_t l=0; l< N1; ++l) {
             for (uint32_t j=0; j<N0; ++j) {
-                std::vector<_T[_N]> v_va(cnt);
+                std::vector<array_t> v_va(cnt);
                 for (std::size_t i=0; i<cnt; ++i) {
                     for (std::size_t k=0; k<_N; ++k) {
                         v_va[i][k] = distrib1(rnd);
@@ -1027,11 +1033,11 @@ template <typename _T, std::size_t _N, typename _F,
 template <typename _CMP>
 bool
 cftal::test::of_fp_func_2<_T, _N, _F, _T1, _T2>::
-calc(const _T1(&a)[_N], const _T2(&b)[_N],
+calc(const array_1_t& a, const array_2_t& b,
      exec_stats<_N>& st, bool speed_only, _CMP cmp)
 {
-    vec<_T1, _N> va=mem<vec<_T1, _N> >::load(a);
-    vec<_T2, _N> vb=mem<vec<_T2, _N> >::load(b);
+    vec<_T1, _N> va=mem<vec<_T1, _N> >::load(a.data());
+    vec<_T2, _N> vb=mem<vec<_T2, _N> >::load(b.data());
     uint64_t t0=exec_stats<_N>::hr_timer();
     auto vr=_F::v(va, vb);
     uint64_t t1=exec_stats<_N>::hr_timer();
@@ -1093,8 +1099,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                                       bool suppress_defaults)
 {
     bool r = true;
-    _T1 va[_N];
-    _T2 vb[_N];
+    array_1_t va;
+    array_2_t vb;
     if (suppress_defaults == false) {
         const auto& inf_nan_args_1=default_arguments<_T1>::values;
         const auto& inf_nan_args_2=default_arguments<_T2>::values;
@@ -1132,7 +1138,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
     const uint32_t N1=4;
 
 #if 1
-    using job_t = std::pair<std::vector<_T1[_N]>, std::vector<_T2[_N]> >;
+    using job_t = std::pair<std::vector<array_1_t>,
+                            std::vector<array_2_t> >;
 
     struct thread_data {
         std::deque<bool> _vr;
@@ -1211,8 +1218,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
     };
     for (uint32_t l=0; l< N1; ++l) {
         for (uint32_t j=0; j< N0; ++j) {
-            std::vector<_T1[_N]> v_va(cnt);
-            std::vector<_T2[_N]> v_vb(cnt);
+            std::vector<array_1_t> v_va(cnt);
+            std::vector<array_2_t> v_vb(cnt);
             for (std::size_t i=0; i<cnt; ++i) {
                 for (std::size_t k=0; k<_N; ++k) {
                     v_va[i][k] = distrib1(rnd);
@@ -1247,8 +1254,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                   << ")\n";
         for (uint32_t l=0; l<N1; ++l) {
             for (uint32_t j=0; j<N0; ++j) {
-                std::vector<_T1[_N]> v_va(cnt);
-                std::vector<_T2[_N]> v_vb(cnt);
+                std::vector<array_1_t> v_va(cnt);
+                std::vector<array_2_t> v_vb(cnt);
                 for (std::size_t i=0; i<cnt; ++i) {
                     for (std::size_t k=0; k<_N; ++k) {
                         v_va[i][k] = distrib_1_1(rnd);
@@ -1284,8 +1291,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                   << ")\n";
         for (uint32_t l=0; l<N1; ++l) {
             for (uint32_t j=0; j<N0; ++j) {
-                std::vector<_T1[_N]> v_va(cnt);
-                std::vector<_T2[_N]> v_vb(cnt);
+                std::vector<array_1_t> v_va(cnt);
+                std::vector<array_2_t> v_vb(cnt);
                 for (std::size_t i=0; i<cnt; ++i) {
                     for (std::size_t k=0; k<_N; ++k) {
                         v_va[i][k] = distrib_1_1(rnd);
@@ -1320,8 +1327,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                   << ")\n";
         for (uint32_t l=0; l<N1; ++l) {
             for (uint32_t j=0; j<N0; ++j) {
-                std::vector<_T1[_N]> v_va(cnt);
-                std::vector<_T2[_N]> v_vb(cnt);
+                std::vector<array_1_t> v_va(cnt);
+                std::vector<array_2_t> v_vb(cnt);
                 for (std::size_t i=0; i<cnt; ++i) {
                     for (std::size_t k=0; k<_N; ++k) {
                         v_va[i][k] = distrib_1_1(rnd);
