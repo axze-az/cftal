@@ -82,7 +82,7 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native")
         set (CMAKE_CXX_FLAGS_DEBUG
-            "${CMAKE_CXX_FLAGS_DEBUG} -march=native")
+            "${CMAKE_CXX_FLAGS_DEBUG} -Og -march=native")
         set (CMAKE_CXX_FLAGS_PROFILE
             "${CMAKE_CXX_FLAGS_PROFILE} -O3 -march=native")
     endif()
