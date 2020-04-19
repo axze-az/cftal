@@ -469,7 +469,6 @@ cftal::math::impl::root12::order10(_T x, _T y)
     return xn;
 }
 
-
 template <typename _C, typename _T>
 _T
 cftal::math::impl::root12::householder3(_T x, _T y)

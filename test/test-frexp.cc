@@ -167,5 +167,5 @@ int main()
     std::cout << "testing frexp v8f32" << std::endl;
     rc &= cftal::test::check_frexp_f32<cftal::v8f32,
                                        cftal::v8s32>();
-    return rc=true ? 0 : 1;
+    return rc==true ? 0 : 1;
 }

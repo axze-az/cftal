@@ -122,7 +122,7 @@ load(std::ifstream& f, std::vector<_T>& v)
         header, payload
     };
     state st=header;
-    uint64_t entries;
+    uint64_t entries=0;
 
     std::streamsize opos=f.tellg();
     f.seekg(0, std::ios::end);
