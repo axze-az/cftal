@@ -1047,21 +1047,11 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm_a= _T::sel(mm0 < 0x1p-9, mm_i0, mm_i1);
     vf_type mm_b= _T::sel(mm0 < 0x1p-3, mm_i2, mm_i3);
     vf_type mm= _T::sel(mm0 < 0x1p-6, mm_a, mm_b);
-#if 0
-    mm = round_nearest_to_even_last<53-53/12>::bits(mm);
-    mm = impl::root12::householder16<double>(mm, mm0);
-#else
     // only one division and much parallelism
     mm = impl::root12::householder8<double>(mm, mm0);
-#endif
-#if 1
     vi2_type e12c_exp=(e12c<<20) & msk;
     vi2_type mmi=as<vi2_type>(mm) + e12c_exp;
     mm=as<vf_type>(mmi);
-#else
-    vf_type t= _T::insert_exp(e12_with_bias);
-    mm *=t;
-#endif
     // mm = copysign(mm, xc);
     return mm;
 }
@@ -1942,9 +1932,8 @@ tanh_k(arg_t<vf_type> xc)
     }
     vmf_type x_medium=(xa > tanh_i0_right) & (xa<fc::tanh_one());
     if (_T::any_of_v(x_medium)) {
-#if 1
         // tanh(x) = (exp(2*x)-1)/(exp(2*x)+1)
-        vf_type xae=min(vf_type(2.0*xa), vf_type(2.0*fc::tanh_one()));
+        vf_type xae=min(vf_type(xa+xa), vf_type(2.0*fc::tanh_one()));
         vf_type xrh, xrl;
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xae);
@@ -1960,27 +1949,6 @@ tanh_k(arg_t<vf_type> xc)
         vf_type tanh_h, tanh_l;
         d_ops::div22(tanh_h, tanh_l, exm1, exm1l, exp1, exp1l);
         tanh_x = _T::sel(x_medium, tanh_h, tanh_x);
-#else
-        // tanh(x) = 1 - 2/(exp(2*x)+1)
-        vf_type xae=min(vf_type(2.0*xa), vf_type(2.0*fc::tanh_one()));
-        vf_type xrh, xrl;
-        vi_type idx, ki;
-        __reduce_exp_arg(xrh, xrl, idx, ki, xae);
-        vf_type ex, exl;
-        ex=__exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &exl);
-        auto sc=_T::insert_exp(_T::bias() + ki);
-        ex  *= sc;
-        exl *= sc;
-        vf_type exp1, exp1l;
-        d_ops::add212(exp1, exp1l, ex, exl, 1.0);
-        vf_type rexp1, rexp1l;
-        d_ops::rcp2(rexp1, rexp1l, exp1, exp1l);
-        vf_type tanh_h, tanh_l;
-        // d_ops::add122(tanh_h, tanh_l, -0.5, rexp1, rexp1l);
-        d_ops::add12(tanh_h, tanh_l, -0.5, rexp1);
-        tanh_h += (tanh_l + rexp1l);
-        tanh_x = _T::sel(x_medium, -2.0*tanh_h, tanh_x);
-#endif
     }
     tanh_x=copysign(tanh_x, xc);
     return tanh_x;
@@ -2168,12 +2136,8 @@ __log_poly_k_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
         log_c9, log_c8, log_c7, log_c6,
         log_c5, log_c4, log_c3
     };
-#if 0
-    vf_type p= horner2(r, r2, ci);
-#else
     vf_type r4=r2*r2;
     vf_type p= horner4(r, r2, r4, ci);
-#endif
     return p;
 }
 
