@@ -2262,7 +2262,7 @@ tanh_k(arg_t<vf_type> xc)
     }
     vmf_type x_medium=(xa > tanh_i0_right) & (xa<fc::tanh_one());
     if (_T::any_of_v(x_medium)) {
-        vf_type xae=min(vf_type(2.0f*xa), vf_type(2.0f*fc::tanh_one()));
+        vf_type xae=min(vf_type(xa+xa), vf_type(2.0f*fc::tanh_one()));
         vf_type xrh, xrl;
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xae);
