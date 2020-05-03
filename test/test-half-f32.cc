@@ -602,13 +602,10 @@ int main(int argc, char** argv)
 
     using namespace cftal::test;
     pgm_args ags=parse(argc, argv, 0x1000);
-#if 0
     r |= main_log(ags);
     r |= main_log2(ags);
     r |= main_log10(ags);
-#endif
     r |= main_exp(ags);
-#if 0
     r |= main_exp2(ags);
     r |= main_exp10(ags);
     r |= main_cos(ags);
@@ -616,6 +613,5 @@ int main(int argc, char** argv)
     r |= main_tan(ags);
     r |= main_rsqrt(ags);
     r |= main_sqrt(ags);
-#endif
     return r;
 }
