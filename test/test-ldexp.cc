@@ -132,7 +132,7 @@ int main()
     if (rd==false)
         std::cerr << "double test failed" << std::endl;
     std::cout << "testing ldexp vXf32" << std::endl;
-    bool rf=cftal::test::check_ldexp_up_to<float, 8>::v();
+    bool rf=cftal::test::check_ldexp_up_to<float, 16>::v();
     if (rf==false)
         std::cerr<< "float test failed" << std::endl;
     bool rc = rd && rf;
