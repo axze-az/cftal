@@ -879,16 +879,10 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
             return;
         }
         if (v_res._vt.empty()) {
-            const size_t max_thrd_cnt=
-                std::max(std::thread::hardware_concurrency(), 1u);
-            // allow one core for generating the numbers
-            const size_t thrd_cnt = max_thrd_cnt>1 ? max_thrd_cnt-1 : 1;
-            // favour througput
-            // const size_t thrd_cnt = max_thrd_cnt;
+            const size_t thrd_cnt=
+                std::max(std::thread::hardware_concurrency(), 2u)-1u;
             // setup
             v_res._vr.resize(thrd_cnt, true);
-            // std::thread t0;
-            // bind_thread_to_cpu(t0, 0);
             for (std::size_t i=0; i<thrd_cnt; ++i) {
                 auto ti=std::thread(thr_main,
                                     std::ref(v_res._wq),
@@ -896,7 +890,6 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                     std::ref(st),
                                     speed_only,
                                     cmp);
-                // bind_thread_to_cpu(ti, i+1);
                 v_res._vt.emplace_back(std::move(ti));
             }
         }
@@ -1184,12 +1177,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
             return;
         }
         if (v_res._vt.empty()) {
-            const size_t max_thrd_cnt=
-                std::max(std::thread::hardware_concurrency(), 1u);
-            // allow one core for generating the numbers
-            const size_t thrd_cnt = max_thrd_cnt>1 ? max_thrd_cnt-1 : 1;
-            // favour througput
-            // const size_t thrd_cnt=max_thrd_cnt;
+            const size_t thrd_cnt=
+                std::max(std::thread::hardware_concurrency(), 2u)-1u;
             // setup
             v_res._vr.resize(thrd_cnt, true);
             for (std::size_t i=0; i<thrd_cnt; ++i) {

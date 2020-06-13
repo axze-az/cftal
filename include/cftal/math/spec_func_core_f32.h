@@ -558,7 +558,7 @@ erfc_k(arg_t<vf_type> xc)
         vf_type rh, rl;
         // d_ops::div212(rh, rl, i123h, i123l, x);
         d_ops::mul22(rh, rl, i123h, i123l, inv_x, inv_x_l);
-        auto sc=base_type::__scale_exp_k(k);
+        auto sc=base_type::__two_pow(k);
         rh *= sc.f0();
         rl *= sc.f0();
         rh *= sc.f1();
