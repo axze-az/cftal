@@ -118,27 +118,6 @@ typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
 lgamma(arg_t<vf_type> xc, vi_type* signp)
 {
-#if 0
-    constexpr const std::size_t _N=_TRAITS_T::NVF();
-    struct alignas(_N*sizeof(_FLOAT_T)) v_x {
-        _FLOAT_T _a[_N];
-    } ax, ar;
-    struct alignas(_N*sizeof(int32_t)) v_i {
-        int32_t _a[_N];
-    } ir;
-    mem<vf_type>::store(ax._a, xc);
-    for (std::size_t i=0; i<_N; ++i) {
-        if (sizeof(_FLOAT_T)==4) {
-            ar._a[i] = ::lgammaf_r(ax._a[i], &ir._a[i]);
-        } else {
-            ar._a[i] = ::lgamma_r(ax._a[i], &ir._a[i]);
-        }
-    }
-    vf_type r=mem<vf_type>::load(ar._a, _N);
-    vi_type i=mem<vi_type>::load(ir._a, _N);
-    *signp=i;
-    return r;
-#else
     vmf_type x_lt_0 = xc < vf_type(0.0);
     vi_type si;
     vf_type lg=base_type::lgamma_k(xc, &si);
@@ -164,7 +143,6 @@ lgamma(arg_t<vf_type> xc, vi_type* signp)
         *signp = si;
     }
     return lg;
-#endif
 }
 
 // Local Variables:
