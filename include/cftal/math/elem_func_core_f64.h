@@ -1047,8 +1047,15 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm_a= _T::sel(mm0 < 0x1p-9, mm_i0, mm_i1);
     vf_type mm_b= _T::sel(mm0 < 0x1p-3, mm_i2, mm_i3);
     vf_type mm= _T::sel(mm0 < 0x1p-6, mm_a, mm_b);
+#if 0
+    mm = impl::root12::order3<double>(mm, mm0);    
+    mm = impl::root12::order5<double>(mm, mm0);    
+    // mm = round_nearest_to_even_last<53-5>::bits(mm);
+    // mm = impl::root12::order3<double>(mm, mm0);    
+#else
     // only one division and much parallelism
     mm = impl::root12::householder8<double>(mm, mm0);
+#endif
     vi2_type e12c_exp=(e12c<<20) & msk;
     vi2_type mmi=as<vi2_type>(mm) + e12c_exp;
     mm=as<vf_type>(mmi);
@@ -2728,7 +2735,7 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     if (_CALC_ROOT==true) {
         vf_type rh, rl;
         d_ops::rcp12(rh, rl, y);
-        d_ops::mul22(ylnx[0], ylnx[1], lnx[0], lnx[1], rh, rl);
+        d_ops::unorm_mul22(ylnx[0], ylnx[1], lnx[0], lnx[1], rh, rl);
     } else {
         d_ops::unorm_mul122(ylnx[0], ylnx[1], y, lnx[0], lnx[1]);
     }

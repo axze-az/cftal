@@ -3138,7 +3138,7 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     if (_CALC_ROOT==true) {
         vf_type rh, rl;
         d_ops::rcp2(rh, rl, yh, yl);
-        d_ops::mul22(ylnx[0], ylnx[1], lnx[0], lnx[1], rh, rl);
+        d_ops::unorm_mul22(ylnx[0], ylnx[1], lnx[0], lnx[1], rh, rl);
     } else {
         d_ops::mul22(ylnx[0], ylnx[1], yh, yl, lnx[0], lnx[1]);
     }
