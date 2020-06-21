@@ -48,7 +48,7 @@ write_coeff(c1l, "", "constexpr\n    const double _ln2_"@SN@"_l", double);
 
 /* log_10(x) = lg(10) */
 /* N/lg(2) */
-write_coeff(N/(log(2)/log(10)), "", "const double _"@SN@"_lg2", double);
+write_coeff(N/(log(2)/log(10)), "", "constexpr\n    const double _"@SN@"_lg2", double);
 /* lg(2)/N Cody and Waite */
 lg_2_N=log(2)/(log(10))/N;
 c1h=round(lg_2_N, 53-11-SHIFT, RN);
