@@ -1813,7 +1813,7 @@ __reduce_exp2_arg(vf_type& xrh,
     static_assert(exp_data<float>::EXP_N == 32,
                   "exp_data<float>::EXP_N == 32 expected");
     constexpr const float _ND=exp_data<float>::EXP_N;
-    constexpr const float _1_ND=1.0f/exp_data<float>::EXP_N;
+    constexpr const float _1_ND=1.0f/float(exp_data<float>::EXP_N);
     vf_type kf= rint(vf_type(x*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
     idx= ki & exp_data<float>::EXP_IDX_MASK;
@@ -1836,8 +1836,8 @@ __reduce_exp2_arg(vf_type& xrh,
 {
     static_assert(exp_data<float>::EXP_N==32,
                  "exp_data<float>::EXP_N==32");
-    constexpr const double _ND=exp_data<float>::EXP_N;
-    constexpr const double _1_ND=1.0f/exp_data<float>::EXP_N;
+    constexpr const float _ND=exp_data<float>::EXP_N;
+    constexpr const float _1_ND=1.0f/float(exp_data<float>::EXP_N);
     vf_type kf= rint(vf_type(xh*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
     idx= ki & exp_data<float>::EXP_IDX_MASK;

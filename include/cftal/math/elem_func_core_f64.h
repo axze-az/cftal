@@ -1286,8 +1286,8 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type th=lk.from(tbl._2_pow_i_n_h);
     vf_type tl=lk.from(tbl._2_pow_i_n_l);
     static_assert(exp_c1==1.0, "oops");
-
-    vf_type x2=xrh*xrh;
+    
+    vf_type x2=xrh*xrh;        
     vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type xrlp = xrl + x2 * (x2*p4 + p2);
@@ -1532,7 +1532,7 @@ __reduce_exp2_arg(vf_type& xrh,
     static_assert(exp_data<double>::EXP_N == 32,
                   "exp_data<double>::EXP_N == 32 expected");
     constexpr const double _ND=exp_data<double>::EXP_N;
-    constexpr const double _1_ND=1.0/exp_data<double>::EXP_N;
+    constexpr const double _1_ND=1.0/double(exp_data<double>::EXP_N);
     vf_type kf= rint(vf_type(x*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
     idx = ki & exp_data<double>::EXP_IDX_MASK;
@@ -1556,7 +1556,7 @@ __reduce_exp2_arg(vf_type& xrh,
     static_assert(exp_data<double>::EXP_N==32,
                  "exp_data<double>::EXP_N==32");
     constexpr const double _ND=exp_data<double>::EXP_N;
-    constexpr const double _1_ND=1.0/exp_data<double>::EXP_N;
+    constexpr const double _1_ND=1.0/double(exp_data<double>::EXP_N);
     vf_type kf= rint(vf_type(xh*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
     idx = ki & exp_data<double>::EXP_IDX_MASK;
