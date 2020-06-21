@@ -9,43 +9,57 @@ write("\n");
 
 /* exp(x) f64 using tangs method */
 N = 32;
+SN= "32";
+SHIFT=5;
 f = exp(x);
 f1 = expm1(x);
 g=log(2)/2;
 i=[-g/N, g/N];
 exp_table(N, double);
-b = [|1, ..., 6|];
+match (N)  with
+128: {
+    b = [|1, ..., 5|];
+}
+64: { 
+    b = [|1, ..., 6|];
+}
+32: { 
+    b = [|1, ..., 6|];
+}
+default: {
+    b = [|1, ..., 7|];
+};
 c = [|D...|];
 p = fpminimax(f1, b, c, i, relative, floating);
 write_approx_prec(p, f1, i);
 write_coeffs(p, "constexpr\n    const double exp_c", "exp", b, c);
 /* N/ln(2) */
-write_coeff(N/log(2), "", "const double _32_ln2", double);
+write_coeff(N/log(2), "", "constexpr\n    const double _"@SN@"_ln2", double);
 /* ln(2)/N Cody and Waite */
-c1h=round(log(2)/N, 53-11-5, RN);
+c1h=round(log(2)/N, 53-11-SHIFT, RN);
 c1l=log(2)/N-c1h;
-write_coeff(c1h, "", "const double _ln2_32_cw_h", double);
-write_coeff(c1l, "", "const double _ln2_32_cw_l", double);
+write_coeff(c1h, "", "constexpr\n    const double _ln2_"@SN@"_cw_h", double);
+write_coeff(c1l, "", "constexpr\n    const double _ln2_"@SN@"_cw_l", double);
 /* ln(2)/N */
 c1h=double(log(2)/N);
 c1l=log(2)/N-c1h;
-write_coeff(c1h, "", "const double _ln2_32_h", double);
-write_coeff(c1l, "", "const double _ln2_32_l", double);
+write_coeff(c1h, "", "constexpr\n    const double _ln2_"@SN@"_h", double);
+write_coeff(c1l, "", "constexpr\n    const double _ln2_"@SN@"_l", double);
 
 /* log_10(x) = lg(10) */
 /* N/lg(2) */
-write_coeff(N/(log(2)/log(10)), "", "const double _32_lg2", double);
+write_coeff(N/(log(2)/log(10)), "", "const double _"@SN@"_lg2", double);
 /* lg(2)/N Cody and Waite */
 lg_2_N=log(2)/(log(10))/N;
-c1h=round(lg_2_N, 53-11-5, RN);
+c1h=round(lg_2_N, 53-11-SHIFT, RN);
 c1l=lg_2_N-c1h;
-write_coeff(c1h, "", "const double _lg2_32_cw_h", double);
-write_coeff(c1l, "", "const double _lg2_32_cw_l", double);
+write_coeff(c1h, "", "constexpr\n    const double _lg2_"@SN@"_cw_h", double);
+write_coeff(c1l, "", "constexpr\n    const double _lg2_"@SN@"_cw_l", double);
 /* lg(2)/N */
 c1h=double(lg_2_N);
 c1l=lg_2_N-c1h;
-write_coeff(c1h, "", "const double _lg2_32_h", double);
-write_coeff(c1l, "", "const double _lg2_32_l", double);
+write_coeff(c1h, "", "constexpr\n    const double _lg2_"@SN@"_h", double);
+write_coeff(c1l, "", "constexpr\n    const double _lg2_"@SN@"_l", double);
 
 quit;
 
