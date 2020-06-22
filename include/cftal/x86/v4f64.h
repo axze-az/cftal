@@ -14,6 +14,7 @@
 #include <cftal/vec_t_n.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/v2f64.h>
+#include <cftal/x86/v4s32.h>
 
 namespace cftal {
 

@@ -1280,13 +1280,13 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // x^6 : +0xb.60b246a6f9c4p-13
     constexpr
     const double exp_c6=+1.3888818695868294234019e-03;
+    static_assert(exp_c1==1.0, "oops");
 
     auto lk=make_variable_lookup_table<double>(idx);
     const auto& tbl=exp_data<double>::_tbl;
+    vf_type tl=lk.from(tbl._2_pow_i_n_l);   
     vf_type th=lk.from(tbl._2_pow_i_n_h);
-    vf_type tl=lk.from(tbl._2_pow_i_n_l);
-    static_assert(exp_c1==1.0, "oops");
-    
+
     vf_type x2=xrh*xrh;        
     vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
     vf_type p2=horner(xrh, exp_c3, exp_c2);

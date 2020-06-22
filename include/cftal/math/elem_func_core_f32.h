@@ -1379,13 +1379,17 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // x^3 : +0xa.aaac9p-6f
     constexpr
     const float exp_c3=+1.6666711867e-01f;
-
-    auto lk=make_variable_lookup_table<float>(idx);
-    const auto& tbl=exp_data<float>::_tbl;
-    vf_type th=lk.from(tbl._2_pow_i_n_h);
-    vf_type tl=lk.from(tbl._2_pow_i_n_l);
     static_assert(exp_c1==1.0f, "oops");
 
+#if 0
+    auto lk=make_fixed_lookup_table<exp_data<float>::EXP_N, float>(idx);
+#else        
+    auto lk=make_variable_lookup_table<float>(idx);
+#endif
+    const auto& tbl=exp_data<float>::_tbl;
+    vf_type tl=lk.from(tbl._2_pow_i_n_l);
+    vf_type th=lk.from(tbl._2_pow_i_n_h);
+    
     vf_type x2=xrh*xrh;
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type xrlp=xrl+x2*p2;
