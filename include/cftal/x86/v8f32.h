@@ -15,7 +15,6 @@
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
 #include <cftal/x86/v4f32.h>
-#include <cftal/x86/v8s32.h>
 
 namespace cftal {
 
@@ -222,7 +221,7 @@ namespace cftal {
             vec<float, 8>
             fromp(const float* tbl) const;
         };
-        
+
         template <>
         class fixed_lookup_table<32, float, int32_t, 8> {
         private:
