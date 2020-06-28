@@ -16,6 +16,7 @@
 #include <cftal/constants.h>
 #include <cftal/mem.h>
 #include <cftal/math/func_constants.h>
+#include <cftal/math/horner.h>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -298,6 +299,12 @@ rsqrt_k(arg_t<vf_type> x)
     constexpr
     const _FLOAT_T one=_FLOAT_T(1.0);
     vf_type y= vf_type(one/sqrt(x));
+#if 0
+    // use this code if f32 should not produce any error in the test:
+    vf_type z = y*(y*x) - one;
+    y = y + y*z*horner(z, _FLOAT_T(3.0/8.0), _FLOAT_T(-0.5));    
+#endif
+    // y = y + _FLOAT_T(0.5) * y * (_FLOAT_T(1.0) - y*(y*x));
     // vf_type y= native_rsqrt(x);
     // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
     // y = y + 0.5 * y * (1.0 - y*(y*x));
