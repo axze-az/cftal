@@ -303,7 +303,7 @@ rsqrt_k(arg_t<vf_type> x)
     // use this code if f32 should not produce any error in the tests if
     // your processor supports fma
     vf_type z = y*(y*x) - one;
-    y = y + y*z*horner(z, _FLOAT_T(3.0/8.0), _FLOAT_T(-0.5));
+    y = y + y*(z*horner(z, _FLOAT_T(3.0/8.0), _FLOAT_T(-0.5)));
 #endif
     // y = y + _FLOAT_T(0.5) * y * (_FLOAT_T(1.0) - y*(y*x));
     // vf_type y= native_rsqrt(x);
