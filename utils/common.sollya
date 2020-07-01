@@ -588,35 +588,43 @@ write_coeff_table = proc(L, prefix, fmt) {
 
 /* generate 2^i/n for i in [0, n) */
 exp_table = proc(n, fmt) {
-    var i, fxi, lh, lm, ll, th, tm, tl;
+    var i, fxi, lh, ll, lf, th, tl, f;
     i=0;
     lh=[||];
-    lm=[||];
     ll=[||];
+    lf=[||];
     for i from 0 to n-1 do {
         fxi = 2^(i/n);
         match (fmt) with
         double: {
             th=double(fxi);
             fxi = fxi - th;
-            tm=double(fxi);
-            fxi = fxi - tm;
             tl=double(fxi);
+            if (th != 0) then {
+                f = fxi/th;
+                f = double(f);
+            } else {
+                f = 0.0;
+            };
         }
         single: {
             th=single(fxi);
             fxi= fxi - th;
-            tm=single(fxi);
-            fxi= fxi - tm;
             tl=single(fxi);
+            if (th != 0) then {
+                f = fxi/th;
+                f = single(f);
+            } else {
+                f = 0.0;
+            };
         };
         lh=lh:.th;
-        lm=lm:.tm;
         ll=ll:.tl;
+        lf=lf:.f;
     };
     write_coeff_table(lh, "_2_pow_i_n_h", fmt);
-    write_coeff_table(lm, "_2_pow_i_n_m", fmt);
     write_coeff_table(ll, "_2_pow_i_n_l", fmt);
+    write_coeff_table(lf, "_2_pow_i_f", fmt);
 };
 
 // Local variables:

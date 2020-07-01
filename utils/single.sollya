@@ -48,6 +48,8 @@ c1l=lg_2_N-c1h;
 write_coeff(c1h, "", "const float _lg2_32_h", single);
 write_coeff(c1l, "", "const float _lg2_32_l", single);
 
+quit;
+
 /* exp(x) f32 */
 f= x*(exp(x)+1)/(exp(x)-1);
 i = [0, log(2)/2];
