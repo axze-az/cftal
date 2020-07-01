@@ -624,7 +624,7 @@ exp_table = proc(n, fmt) {
     };
     write_coeff_table(lh, "_2_pow_i_n_h", fmt);
     write_coeff_table(ll, "_2_pow_i_n_l", fmt);
-    write_coeff_table(lf, "_2_pow_i_f", fmt);
+    write_coeff_table(lf, "_2_pow_i_n_f", fmt);
 };
 
 // Local variables:

@@ -25,6 +25,8 @@ namespace cftal {
                 const _F _2_pow_i_n_h[EXP_N];
                 // 2^(i/n) low part
                 const _F _2_pow_i_n_l[EXP_N];
+                // 2^(i/n) = H + L = H*(1+F)
+                const _F _2_pow_i_n_f[EXP_N];
             };
             static
             const table_t _tbl;
