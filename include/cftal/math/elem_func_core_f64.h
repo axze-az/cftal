@@ -1048,10 +1048,10 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm_b= _T::sel(mm0 < 0x1p-3, mm_i2, mm_i3);
     vf_type mm= _T::sel(mm0 < 0x1p-6, mm_a, mm_b);
 #if 0
-    mm = impl::root12::order3<double>(mm, mm0);    
-    mm = impl::root12::order5<double>(mm, mm0);    
+    mm = impl::root12::order3<double>(mm, mm0);
+    mm = impl::root12::order5<double>(mm, mm0);
     // mm = round_nearest_to_even_last<53-5>::bits(mm);
-    // mm = impl::root12::order3<double>(mm, mm0);    
+    // mm = impl::root12::order3<double>(mm, mm0);
 #else
     // only one division and much parallelism
     mm = impl::root12::householder8<double>(mm, mm0);
@@ -1287,11 +1287,17 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 #if 1
     vf_type tf=lk.from(tbl._2_pow_i_n_f);
     vf_type th=lk.from(tbl._2_pow_i_n_h);
-    
-    vf_type x2=xrh*xrh;        
+
+    vf_type x2=xrh*xrh;
+#if 0
+    vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
+    vf_type p2=horner(xrh, exp_c3, exp_c2);
+    vf_type xrlp = (xrl + x2 * p2) + x2*(x2*p4);
+#else
     vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type xrlp = xrl + x2 * (x2*p4 + p2);
+#endif
     vf_type y;
     vf_type eh=xrh + (xrlp + tf);
     if (expl!=nullptr) {
@@ -1302,11 +1308,11 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         y= th + th*eh;
     }
     return y;
-#else      
-    vf_type tl=lk.from(tbl._2_pow_i_n_l);   
+#else
+    vf_type tl=lk.from(tbl._2_pow_i_n_l);
     vf_type th=lk.from(tbl._2_pow_i_n_h);
 
-    vf_type x2=xrh*xrh;        
+    vf_type x2=xrh*xrh;
     vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type xrlp = xrl + x2 * (x2*p4 + p2);
@@ -1336,7 +1342,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         }
     }
     return y;
-#endif    
+#endif
 }
 
 template <typename _T>
