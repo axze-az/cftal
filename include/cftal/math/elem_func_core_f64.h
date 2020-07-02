@@ -1282,24 +1282,18 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const double exp_c6=+1.3888818695868294234019e-03;
     static_assert(exp_c1==1.0, "oops");
 
+#if 1
+    vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
+    vf_type x2=xrh*xrh;
+    vf_type p2=horner(xrh, exp_c3, exp_c2);
+    vf_type x4=x2*x2;
+    vf_type xrlp = (xrl + x2 * p2) + x4*p4;
     auto lk=make_variable_lookup_table<double>(idx);
     const auto& tbl=exp_data<double>::_tbl;
-#if 1
     vf_type tf=lk.from(tbl._2_pow_i_n_f);
     vf_type th=lk.from(tbl._2_pow_i_n_h);
-
-    vf_type x2=xrh*xrh;
-#if 0
-    vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
-    vf_type p2=horner(xrh, exp_c3, exp_c2);
-    vf_type xrlp = (xrl + x2 * p2) + x2*(x2*p4);
-#else
-    vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
-    vf_type p2=horner(xrh, exp_c3, exp_c2);
-    vf_type xrlp = xrl + x2 * (x2*p4 + p2);
-#endif
-    vf_type y;
     vf_type eh=xrh + (xrlp + tf);
+    vf_type y;
     if (expl!=nullptr) {
         vf_type ye;
         d_ops::muladd12(y, ye, th, th, eh);
@@ -1309,11 +1303,13 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     }
     return y;
 #else
+    auto lk=make_variable_lookup_table<double>(idx);
+    const auto& tbl=exp_data<double>::_tbl;
     vf_type tl=lk.from(tbl._2_pow_i_n_l);
     vf_type th=lk.from(tbl._2_pow_i_n_h);
 
-    vf_type x2=xrh*xrh;
     vf_type p4=horner(xrh, exp_c6, exp_c5, exp_c4);
+    vf_type x2=xrh*xrh;
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type xrlp = xrl + x2 * (x2*p4 + p2);
     vf_type y;
