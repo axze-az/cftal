@@ -1381,7 +1381,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     const float exp_c3=+1.6666711867e-01f;
     static_assert(exp_c1==1.0f, "oops");
 
-#if 1    
+#if 1
     vf_type x2=xrh*xrh;
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type xrlp=xrl+x2*p2;
@@ -1396,15 +1396,36 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         d_ops::muladd12(y, ye, th, th, eh);
         *expl=ye;
     } else {
-        y= th + th*eh;
+        if (d_real_traits<vf_type>::fma==true) {
+            y= th + th*eh;
+        } else {
+#if 1
+            y= th + th*eh;
+#else
+            // y = d_ops::xfma(th, eh, th);
+            // we know |th| >= |th*eh|
+            vf_type ehh, ehl;
+            d_real_traits<vf_type>::split(eh, ehh, ehl);
+            vf_type thh, thl;
+            d_real_traits<vf_type>::split(th, thh, thl);
+            vf_type hh= ehh* thh;
+            vf_type hl= ehh* thl;
+            vf_type lh= ehl* thh;
+            vf_type ll= ehl* thl;
+            vf_type yh, yl;
+            d_ops::add12(yh, yl, th, hh);
+            yl += ll + lh + hl;
+            y = yh + yl;
+#endif
+        }
     }
     return y;
-#else    
+#else
     auto lk=make_variable_lookup_table<float>(idx);
     const auto& tbl=exp_data<float>::_tbl;
     vf_type tl=lk.from(tbl._2_pow_i_n_l);
     vf_type th=lk.from(tbl._2_pow_i_n_h);
-    
+
     vf_type x2=xrh*xrh;
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type xrlp=xrl+x2*p2;
