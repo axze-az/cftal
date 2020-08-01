@@ -1309,12 +1309,12 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type x2=xrh*xrh;
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type x4=x2*x2;
-    vf_type xrlp = (xrl + x2 * p2) + x4*p4;
+    vf_type xrlp = (xrl + x4 * p4) + x2*p2;
     auto lk=make_variable_lookup_table<double>(idx);
     const auto& tbl=exp_data<double>::_tbl;
     vf_type tf=lk.from(tbl._2_pow_i_n_f);
     vf_type th=lk.from(tbl._2_pow_i_n_h);
-    vf_type eh=xrh + (xrlp + tf);
+    vf_type eh=xrh + (xrlp + (tf /*+xrl*xrh*/));
     vf_type y;
     if (expl!=nullptr) {
         vf_type ye;
