@@ -33,8 +33,12 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
+#if 0
+		return std::exp2(a)-1;
+#else
                 const _T ln2=M_LN2;
                 return std::expm1(a*ln2);
+#endif
             }
             static
             const char* fname() { return "exp2m1"; }

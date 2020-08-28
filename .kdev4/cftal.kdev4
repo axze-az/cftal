@@ -121,6 +121,7 @@ Type=GCC
 Launch Configurations=
 
 [MakeBuilder]
+Additional Options=-s
 Number Of Jobs=8
 
 [Project]
