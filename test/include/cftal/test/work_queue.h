@@ -4,8 +4,8 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#if !defined (__CFTAL_TEST_WORKQUEUE_H__)
-#define __CFTAL_TEST_WORKQUEUE_H__ 1
+#if !defined (__CFTAL_TEST_WORK_QUEUE_H__)
+#define __CFTAL_TEST_WORK_QUEUE_H__ 1
 
 #include <cftal/config.h>
 #include <thread>
@@ -131,4 +131,4 @@ deactivate()
 // Local variables:
 // mode: c++
 // end:
-#endif // __CFTAL_TEST_WORKQUEUE_H__
+#endif // __CFTAL_TEST_WORK_QUEUE_H__
