@@ -44,6 +44,7 @@ namespace cftal {
             using d_ops=typename base_type::d_ops;
 
             using base_type::sinpi_cospi_k;
+
             static
             void
             sinpi_cospi_k(arg_t<vf_type> xc,
