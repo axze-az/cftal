@@ -548,7 +548,8 @@ log(arg_t<vf_type> d)
     vf_type x = base_type::log_k(d);
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
-    x = _T::sel(isinf(d), pinf, x);
+    // x = _T::sel(isinf(d), pinf, x);
+    x = _T::sel(d == pinf, pinf, x);
     // if ((d < 0)|isnan(d)) x = NAN;
     x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
@@ -574,7 +575,7 @@ log1p(arg_t<vf_type> d)
     // }
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
-    x = _T::sel(isinf(d), pinf, x);
+    x = _T::sel(d==pinf, pinf, x);
     // if ((d < -1.0)|isnan(d)) x = NAN;
     x = _T::sel((d < vf_type(-1.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == -1.0) x = -INFINITY;
@@ -592,7 +593,7 @@ log10(arg_t<vf_type> d)
     vf_type x=base_type::log10_k(d);
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
-    x = _T::sel(isinf(d), pinf, x);
+    x = _T::sel(d==pinf, pinf, x);
     // if ((d < 0)|isnan(d)) x = NAN;
     x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
@@ -609,7 +610,7 @@ log2(arg_t<vf_type> d)
     vf_type x=base_type::log2_k(d);
     const vf_type pinf(_T::pinf());
     const vf_type ninf(_T::ninf());
-    x = _T::sel(isinf(d), pinf, x);
+    x = _T::sel(d==pinf, pinf, x);
     // if ((d < 0)|isnan(d)) x = NAN;
     x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
