@@ -71,7 +71,7 @@ Install Directory=file:///usr/local
 
 [CMake][CMake Build Directory 7]
 Build Directory Path=/home/axel/projects/cpplib/cftal/gcc10
-Build Type=release\n
+Build Type=release
 CMake Binary=/usr/bin/cmake
 CMake Executable=/usr/bin/cmake
 Environment Profile=

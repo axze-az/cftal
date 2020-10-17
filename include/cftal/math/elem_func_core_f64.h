@@ -53,6 +53,14 @@ namespace cftal {
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
 
+	    struct alignas(alignof(vf_type)) vf_array  {
+		double _a[_T::NVF()];
+	    };
+
+	    struct alignas(alignof(vi_type)) vi_array  {
+		int32_t _a[_T::NVI()];
+	    };
+	    
             enum result_prec {
                 medium,
                 normal,
@@ -619,11 +627,9 @@ cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 call_scalar_func(arg_t<vf_type> x, _SCALAR_FUNC f)
 {
-    constexpr const std::size_t _N=_T::NVF();
-    struct alignas(_N*sizeof(double)) v_x {
-        double _a[_N];
-    } ax, ar;
+    vf_array ax, ar;
     mem<vf_type>::store(ax._a, x);
+    constexpr std::size_t _N = _T::NVF();
     for (std::size_t i=0; i<_N; ++i) {
         ar._a[i] = f(ax._a[i]);
     }
@@ -639,12 +645,10 @@ cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 call_scalar_func(arg_t<vf_type> x, arg_t<vf_type> y, _SCALAR_FUNC f)
 {
-    constexpr const std::size_t _N=_T::NVF();
-    struct alignas(_N*sizeof(double)) v_x {
-        double _a[_N];
-    } ax, ay, ar;
+    vf_array ax, ay, ar;
     mem<vf_type>::store(ax._a, x);
     mem<vf_type>::store(ay._a, y);
+    constexpr std::size_t _N = _T::NVF();
     for (std::size_t i=0; i<_N; ++i) {
         ar._a[i] = f(ax._a[i], ay._a[i]);
     }
@@ -2879,30 +2883,27 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     vi_type q(_T::cvt_f_to_i(fn));
     if (_T::any_of_v(v_large_arg)) {
         // reduce the large arguments
-        constexpr const std::size_t N=_T::NVF();
-        constexpr const std::size_t NI=_T::NVI();
-        struct alignas(N*sizeof(double)) v_d {
-            double _sc[N];
-        } tf, d0_l, d0_h;
-        struct alignas(NI*sizeof(int)) v_i {
-            int32_t _sc[NI];
-        } ti;
-        mem<vf_type>::store(tf._sc, x);
-        mem<vi_type>::store(ti._sc, q);
-        mem<vf_type>::store(d0_l._sc, xrl);
-        mem<vf_type>::store(d0_h._sc, xrh);
+	vf_array tf, d0_l, d0_h;
+        vi_array ti;
+        mem<vf_type>::store(tf._a, x);
+        mem<vi_type>::store(ti._a, q);
+        mem<vf_type>::store(d0_l._a, xrl);
+        mem<vf_type>::store(d0_h._a, xrh);
+	constexpr std::size_t N = _T::NVF();
+	constexpr std::size_t NI = _T::NVI();
+	static_assert(NI >= N, "constraint violated");
         for (std::size_t i=0; i<N; ++i) {
-            if (large_arg < std::fabs(tf._sc[i])) {
+            if (large_arg < std::fabs(tf._a[i])) {
                 double y[2];
-                // ti._sc[i]=impl::__ieee754_rem_pio2(tf._sc[i], y);
-                ti._sc[i]=impl::__kernel_rem_pio2(y, tf._sc[i]);
-                d0_l._sc[i]= y[1];
-                d0_h._sc[i]= y[0];
+                // ti._sc[i]=impl::__ieee754_rem_pio2(tf._a[i], y);
+                ti._a[i]=impl::__kernel_rem_pio2(y, tf._a[i]);
+                d0_l._a[i]= y[1];
+                d0_h._a[i]= y[0];
             }
         }
-        xrh = mem<vf_type>::load(d0_h._sc, N);
-        xrl = mem<vf_type>::load(d0_l._sc, N);
-        q = mem<vi_type>::load(ti._sc, NI);
+        xrh = mem<vf_type>::load(d0_h._a, N);
+        xrl = mem<vf_type>::load(d0_l._a, N);
+        q = mem<vi_type>::load(ti._a, NI);
     }
     vi2_type q2=_T::vi_to_vi2(q);
     return q2;
