@@ -3301,7 +3301,6 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         for (std::size_t i=0; i<N; ++i) {
             if (large_arg < std::fabs(tf._a[i])) {
                 float y[2];
-                // ti._a[i]=impl::__ieee754_rem_pio2(tf._a[i], y);
                 ti._a[i]=impl::__kernel_rem_pio2(y, tf._a[i]);
                 d0_l._a[i]= y[1];
                 d0_h._a[i]= y[0];
