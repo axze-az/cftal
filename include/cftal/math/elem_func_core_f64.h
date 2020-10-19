@@ -53,13 +53,13 @@ namespace cftal {
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
 
-	    struct alignas(alignof(vf_type)) vf_array  {
-		double _a[_T::NVF()];
-	    };
+            struct alignas(alignof(vf_type)) vf_array  {
+                double _a[_T::NVF()];
+            };
 
-	    struct alignas(alignof(vi_type)) vi_array  {
-		int32_t _a[_T::NVI()];
-	    };
+            struct alignas(alignof(vi_type)) vi_array  {
+                int32_t _a[_T::NVI()];
+            };
 	    
             enum result_prec {
                 medium,
