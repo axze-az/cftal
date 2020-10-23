@@ -12,6 +12,8 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+    cpu_times_to_stdout tt;
+
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     const int ulp=1;

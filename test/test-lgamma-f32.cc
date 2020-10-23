@@ -12,6 +12,7 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+    cpu_times_to_stdout tt;
 
     pgm_args ags=parse(argc, argv, 0x8000);
     if (ags._speed_only == false) {

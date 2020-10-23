@@ -25,10 +25,20 @@ namespace cftal {
         operator<<(std::ostream& s, const struct cpu_times& t);
 
         class cpu_timer {
-            cpu_times _at_start;
+            int64_t _time_at_start;
+
+            static
+            int64_t now();
         public:
             cpu_timer();
             cpu_times elapsed() const;
+        };
+
+        class cpu_times_to_stdout {
+            cpu_timer _tmr;
+        public:
+            cpu_times_to_stdout();
+            ~cpu_times_to_stdout();
         };
         
     }

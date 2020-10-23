@@ -11,6 +11,7 @@
 #include <cftal/test/of_math_funcs.h>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/mpfr_cache.h>
+#include <cftal/test/cpu_times.h>
 #include <string>
 #include <vector>
 #include <memory>
@@ -79,6 +80,7 @@ cftal::test::program(int argc, char** argv,
                      const int (&count_shift)[_M],
                      bool table_check)
 {
+    cpu_times_to_stdout tt;
     pgm_args ags=parse(argc, argv, _CNT);
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
@@ -146,6 +148,7 @@ cftal::test::program(int argc, char** argv,
                      const func_domain<float> (&d)[_M],
                      const int (&count_shift)[_M])
 {
+    cpu_times_to_stdout tt;
     pgm_args ags=parse(argc, argv, _CNT);
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
