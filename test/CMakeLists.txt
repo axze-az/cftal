@@ -14,6 +14,7 @@ set (TEST_SRCS
   mpfr_cache.cc
   spinlock.cc
   program.cc
+  cpu_times.cc
 )
 include_directories(../..)
 include_directories(../include)
@@ -88,6 +89,7 @@ set (TEST_HDRS
     ./include/cftal/test/check_tanpi.h
     ./include/cftal/test/check_sinpicospi.h
     ./include/cftal/test/check_sig.h
+    ./include/cftal/test/cpu_times.h
 )
 
 find_package(Boost REQUIRED)
