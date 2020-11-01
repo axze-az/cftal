@@ -34,9 +34,21 @@ namespace cftal {
         horner(_X x, const _C& c);
 
         // a_n in a[0]
+        template <std::size_t _N, typename _X, typename _C>
+        _X
+        horner(_X x, const _C*);
+
+        // a_n in a[0]
         template <typename _X, typename _C, std::size_t _N>
         _X
         horner(_X x, const _C (&a)[_N]);
+
+        // a_n in a[0], xx = x*x
+        // computes the even and odd parts of the polynomial
+        // in parallel
+        template <std::size_t _N, typename _X, typename _C>
+        _X
+        horner2(_X x, _X x2, const _C* pa);
 
         // a_n in a[0], xx = x*x
         // computes the even and odd parts of the polynomial
@@ -47,9 +59,21 @@ namespace cftal {
 
         // a_n in a[0], x3 = x*x*x, computes 3 parts of the
         // polynomial in parallel
+        template <std::size_t _N, typename _X, typename _C>
+        _X
+        horner3(_X x, _X x3, const _C* pa);
+
+        // a_n in a[0], x3 = x*x*x, computes 3 parts of the
+        // polynomial in parallel
         template <typename _X, typename _C, std::size_t _N>
         _X
         horner3(_X x, _X x3, const _C (&a)[_N]);
+
+        // a_n in a[0], x3 = x*x*x, computes 4 parts of the
+        // polynomial in parallel
+        template <std::size_t _N, typename _X, typename _C>
+        _X
+        horner4(_X x, _X x2, _X x4, const _C* pa);
 
         // a_n in a[0], x3 = x*x*x, computes 4 parts of the
         // polynomial in parallel
@@ -286,12 +310,11 @@ cftal::math::horner(_X x, const _C& c)
     return r;
 }
 
-template <typename _X, typename _C, std::size_t _N>
+template <std::size_t _N, typename _X, typename _C>
 _X
-cftal::math::horner(_X x, const _C (&a)[_N])
+cftal::math::horner(_X x, const _C* pa)
 {
-    static_assert(_N > 0, "invalid call to horner(x, array)");
-    const _C* pa=a;
+    static_assert(_N > 0, "invalid call to horner(x, ptr)");
     _X r= _X(pa[0]);
 #pragma GCC unroll 256
 #pragma clang loop unroll(full)
@@ -303,10 +326,18 @@ cftal::math::horner(_X x, const _C (&a)[_N])
 
 template <typename _X, typename _C, std::size_t _N>
 _X
-cftal::math::horner2(_X x, _X x2, const _C (&a)[_N])
+cftal::math::horner(_X x, const _C (&a)[_N])
 {
-    static_assert(_N > 1, "invalid call to horner2(x, x2, array)");
+    static_assert(_N > 0, "invalid call to horner(x, array)");
     const _C* pa=a;
+    return horner<_N>(x, pa);
+}
+
+template <std::size_t _N, typename _X, typename _C>
+_X
+cftal::math::horner2(_X x, _X x2, const _C* pa)
+{
+    static_assert(_N > 1, "invalid call to horner2(x, x2, ptr)");
     _X r0= _X(pa[0]);
     _X r1= _X(pa[1]);
     const std::size_t _NE= _N & ~(std::size_t(1));
@@ -324,12 +355,21 @@ cftal::math::horner2(_X x, _X x2, const _C (&a)[_N])
 }
 
 template <typename _X, typename _C, std::size_t _N>
+_X
+cftal::math::horner2(_X x, _X x2, const _C (&a)[_N])
+{
+    static_assert(_N > 1, "invalid call to horner2(x, x2, array)");
+    const _C* pa=a;
+    return horner2<_N>(x, x2, pa);
+}
+
+
+template <std::size_t _N, typename _X, typename _C>
 __attribute__((optimize("unroll-loops")))
 _X
-cftal::math::horner3(_X x, _X x3, const _C (&a)[_N])
+cftal::math::horner3(_X x, _X x3, const _C* pa)
 {
-    static_assert(_N > 2, "invalid call to horner3(x, x2, array)");
-    const _C* pa=a;
+    static_assert(_N > 2, "invalid call to horner3(x, x2, ptr)");
     _X r0= _X(pa[0]);
     _X r1= _X(pa[1]);
     _X r2= _X(pa[2]);
@@ -355,13 +395,22 @@ cftal::math::horner3(_X x, _X x3, const _C (&a)[_N])
     }
     return r;
 }
-
+    
 template <typename _X, typename _C, std::size_t _N>
+__attribute__((optimize("unroll-loops")))
 _X
-cftal::math::horner4(_X x, _X x2, _X x4, const _C (&a)[_N])
+cftal::math::horner3(_X x, _X x3, const _C (&a)[_N])
 {
-    static_assert(_N > 3, "invalid call to horner4(x, x2, x4, array)");
+    static_assert(_N > 2, "invalid call to horner3(x, x2, array)");
     const _C* pa=a;
+    return horner3<_N>(x, x3, pa);
+}
+
+template <std::size_t _N, typename _X, typename _C>
+_X
+cftal::math::horner4(_X x, _X x2, _X x4, const _C* pa)
+{
+    static_assert(_N > 3, "invalid call to horner4(x, x2, x4, ptr)");
     _X r0= _X(pa[0]);
     _X r1= _X(pa[1]);
     _X r2= _X(pa[2]);
@@ -394,6 +443,15 @@ cftal::math::horner4(_X x, _X x2, _X x4, const _C (&a)[_N])
     return r;
 }
 
+template <typename _X, typename _C, std::size_t _N>
+_X
+cftal::math::horner4(_X x, _X x2, _X x4, const _C (&a)[_N])
+{
+    static_assert(_N > 3, "invalid call to horner4(x, x2, x4, array)");
+    const _C* pa=a;
+    return horner4<_N>(x, x2, x4, pa);
+}
+ 
 template <typename _F, typename _C, std::size_t _N>
 __attribute__((optimize("no-unroll-loops")))
 cftal::d_real<_F>
