@@ -9,18 +9,17 @@
 
 int main(int argc, char** argv)
 {
-#if 0
+#if 1
     using namespace cftal::test;
     const func_domain<double> di[]={
         std::make_pair(-710.0, +39.0)
     };
     const int shifts[]={0};
-    int r=program<check_sig<double>,
-                  8, 1, 0x8000>(argc,
-                                argv,
-                                mpfr_ext::sig,
-                                di,
-                                shifts);
+    int r=program<check_sig<double>, 8, 1, 0x8000>(argc,
+                                                   argv,
+                                                   mpfr_ext::sig,
+                                                   di,
+                                                   shifts);
     return r;
 #else
     using namespace cftal::test;

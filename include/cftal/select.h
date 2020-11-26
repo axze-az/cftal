@@ -83,16 +83,16 @@ cftal::any_of(bool b)
 
 inline
 bool
-cftal::all_of(bool b)
+cftal::none_of(bool b)
 {
-    return b;
+    return b==false;
 }
 
 inline
 bool
-cftal::none_of(bool b)
+cftal::all_of(bool b)
 {
-    return b==false;
+    return b;
 }
 
 // Local variables:
