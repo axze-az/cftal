@@ -880,7 +880,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
         }
         if (v_res._vt.empty()) {
             const size_t thrd_cnt=
-                std::max(std::thread::hardware_concurrency(), 2u)-1u;
+                std::max(std::thread::hardware_concurrency(), 1u);
             // setup
             v_res._vr.resize(thrd_cnt, true);
             for (std::size_t i=0; i<thrd_cnt; ++i) {
@@ -1178,7 +1178,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         }
         if (v_res._vt.empty()) {
             const size_t thrd_cnt=
-                std::max(std::thread::hardware_concurrency(), 2u)-1u;
+                std::max(std::thread::hardware_concurrency(), 1u);
             // setup
             v_res._vr.resize(thrd_cnt, true);
             for (std::size_t i=0; i<thrd_cnt; ++i) {
