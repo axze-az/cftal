@@ -26,22 +26,9 @@ namespace cftal {
             static
             auto
             r(const _T& a) {
-#if 1
                 std::pair<_T, _T> i;
                 _T v=call_mpfr::func(a, mpfr_ext::exp10_mx2, &i);
                 return std::make_tuple(v, i.first, i.second);
-#else
-                const std::size_t _N=sizeof(_T)*8;
-                using mp_t=mpfr_real<2*_N>;
-                mp_t x=a;
-                x *= x;
-                x = -x;
-                mp_t mr;
-                int mpres=mpfr_exp10(mr(), x(), GMP_RNDN);
-                _T r=mpfr_get_d(mr(), GMP_RNDN);
-                std::pair<_T, _T> i= call_mpfr::ulp1_interval(r, mpres);
-                return std::make_tuple(r, i.first, i.second);
-#endif
             }
             static
             _T
