@@ -396,21 +396,7 @@ namespace cftal {
 
     template <typename _T>
     t_real<_T> abs(const t_real<_T>& r);
-#if 0
-    template <typename _T>
-    t_real<_T> rint(const t_real<_T>& r);
-    template <typename _T>
-    t_real<_T> floor(const t_real<_T>& r);
-    template <typename _T>
-    t_real<_T> ceil(const t_real<_T>& r);
-    template <typename _T>
-    t_real<_T> trunc(const t_real<_T>& r);
-    template <typename _T>
-    t_real<_T> powi(const t_real<_T>& r, int e);
 
-    template <typename _T>
-    t_real<_T> sqrt(const t_real<_T>& a);
-#endif
     template <typename _T>
     t_real<_T> sqr(const t_real<_T>& r);
     template <typename _T>
