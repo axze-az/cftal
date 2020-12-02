@@ -365,15 +365,6 @@ namespace cftal {
             }
         };
 
-#if 0
-        template <>
-        struct cvt<v4f32, v2s32> {
-            static v4f32 l(const v2s32& s) {
-                return _mm_cvtepi32_ps(s());
-            }
-        };
-#endif
-
         template <>
         struct cvt<v4s32, v4f32> {
             static v4s32 l(const v4f32& s) {
