@@ -324,13 +324,7 @@ cftal::math::impl::root12::nr(_T x, _T y)
     _T x11=x;
     for (int i=0; i<10;++i)
         x11*=x;
-#if 0
-    using d_ops=cftal::impl::
-        d_real_ops<_T, d_real_traits<_T>::fma>;
-    _T xn = x - _C(1.0/12.0) * d_ops::xfma(-1.0/x11, y, x);
-#else
     _T xn = x - _C(1.0/12.0) * (x - y/x11);
-#endif
 #endif
     return xn;
 }

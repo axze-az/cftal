@@ -526,21 +526,6 @@ inline
 std::pair<cftal::v8s32, cftal::v8s32>
 cftal::mul_lo_hi(const v8s32& x, const v8s32& y)
 {
-#if 0
-    // p0l p0h p2l p2h
-    v4s32 e= _mm_mul_epi32(x(), y());
-    // p1l p1h p3l p3h
-    v4s32 o= _mm_mul_epi32(x86::impl::vpshufd<1, 0, 3, 2>::v(x()),
-                           x86::impl::vpshufd<1, 0, 3, 2>::v(y()));
-    // p0l p1l p0h p1h
-    v4s32 t0= permute<0, 4, 1, 5>(e, o);
-    // p2l p3l p2h p3h
-    v4s32 t1= permute<2, 6, 3, 7>(e, o);
-    // p0h p1h p2h p3h
-    v4s32 h = permute<2, 3, 6, 7>(t0, t1);
-    v4s32 l = permute<0, 1, 4, 5>(t0, t1);
-    return std::make_pair(l, h);
-#endif
     // p0l p0h p2l p2h p4l p4h p6l p6h
     v8s32 e= _mm256_mul_epi32(x(), y());
     // p1l p1h p3l p3h p5l p5h p7l p7h

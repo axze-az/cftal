@@ -129,12 +129,6 @@ namespace cftal {
     v8f32 andnot(const v8f32& a, const v8f32& b);
     v8f32 copysign(const v8f32& x, const v8f32& y);
     v8f32 mulsign(const v8f32& x, const v8f32& y);
-#if 0
-    v8f32::mask_type isinf(const v8f32& x);
-    v8f32::mask_type isnan(const v8f32& x);
-    v8f32::mask_type isfinite(const v8f32& x);
-#endif
-
 
     // a*b +c
     v8f32 fma(const v8f32& a, const v8f32& b, const v8f32& c);
@@ -144,13 +138,6 @@ namespace cftal {
     v8f32 nfma(const v8f32& a, const v8f32& b, const v8f32& c);
     // -(a*b) - c
     v8f32 nfms(const v8f32& a, const v8f32& b, const v8f32& c);
-
-#if 0
-    // a*b +c with rounding or not
-    v8f32 mad(const v8f32& a, const v8f32& b, const v8f32& c);
-    // -(a*b) +c with rounding or not
-    v8f32 nmad(const v8f32& a, const v8f32& b, const v8f32& c);
-#endif
 
     template <bool _P0, bool _P1,
               bool _P2, bool _P3,

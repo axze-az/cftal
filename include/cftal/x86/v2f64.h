@@ -137,13 +137,6 @@ namespace cftal {
     // -(a*b) - c
     v2f64 nfms(const v2f64& a, const v2f64& b, const v2f64& c);
 
-#if 0
-    // a*b +c with rounding or not
-    v2f64 mad(const v2f64& a, const v2f64& b, const v2f64& c);
-    // -(a*b) +c with rounding or not
-    v2f64 nmad(const v2f64& a, const v2f64& b, const v2f64& c);
-#endif
-
     template <bool _P0, bool _P1>
     vec<double, 2>
     select(const vec<double, 2>& on_true,

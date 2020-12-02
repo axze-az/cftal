@@ -494,22 +494,6 @@ cftal::nfms(const v2f64& a, const v2f64& b, const v2f64& c)
 #endif
 }
 
-#if 0
-inline
-cftal::v2f64
-cftal::mad(const v2f64& a, const v2f64& b, const v2f64& c)
-{
-    return a * b + c;
-}
-
-inline
-cftal::v2f64
-cftal::nmad(const v2f64& a, const v2f64& b, const v2f64& c)
-{
-    return c -(a * b);
-}
-#endif
-
 inline
 cftal::v2f64 cftal::copysign(const v2f64& x, const v2f64& y)
 {

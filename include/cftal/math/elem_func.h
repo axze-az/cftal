@@ -658,15 +658,6 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
 
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type res=my_type::pow_k(x, y);
-    // guess the result if the calculation failed
-#if 0
-    vmf_type res_nan = isnan(res);
-    vmf_type abs_x_lt_1 = abs(x) < 1.0;
-    vmf_type y_gt_1 = y > 1.0;
-    res = _T::sel(res_nan, _T::pinf(), res);
-    res = _T::sel_zero_or_val(res_nan & abs_x_lt_1 & y_gt_1, res);
-    res = _T::sel_zero_or_val(res_nan & (~abs_x_lt_1) & (~y_gt_1), res);
-#endif
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=_FLOAT_T(0.5) *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
@@ -692,29 +683,10 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     t= _T::sel(x_zero, -y, y);
     t= _T::sel_zero_or_val(t < _FLOAT_T(0), _T::pinf());
-#if 1
     t = _T::sel(y_is_odd, mulsign(t, x), t);
     res = _T::sel(x_inf_or_zero, t, res);
-#else
-    vf_type sgn_x= copysign(vf_type(1), x);
-    vf_type t1=_T::sel(y_is_odd, sgn_x, vf_type(1));
-    t1 *= t;
-    res = _T::sel(x_inf_or_zero, t1, res);
-#endif
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
     res = _T::sel((y==_FLOAT_T(0)) | (x==_FLOAT_T(1)), vf_type(1), res);
-#if 0
-    res = xisnan(result) ? INFINITY : res;
-    res *=  (x >= 0 ? 1 : (!yisint ? NAN : (yisodd ? -1 : 1)));
-
-    double efx = mulsign(xfabs(x) - 1, y);
-    if (xisinf(y)) res = efx < 0 ? 0.0 : (efx == 0 ? 1.0 : INFINITY);
-    if (xisinf(x) || x == 0) res = (yisodd ? sign(x) : 1) * ((x == 0 ? -y : y) < 0 ? 0 : INFINITY);
-    if (xisnan(x) || xisnan(y)) res = NAN;
-    if (y == 0 || x == 1) res = 1;
-
-    return res;
-#endif
     __asm__ volatile("# LLVM-MCA-END\n\t");
     return res;
 #endif

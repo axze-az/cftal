@@ -114,46 +114,6 @@ namespace cftal {
 
 #endif
 
-#if 0
-    vec<double, 8>
-    cbrt(arg<vec<double, 8> >::type v);
-
-    v8f64 frexp(arg<v8f64>::type x, v4s32* e);
-    // v8f64 pow2i(arg<v4s32>::type e);
-    v8f64 ldexp(arg<v8f64>::type d, arg<v8s32>::type e);
-    v8s32 ilogbp1(arg<v8f64>::type v);
-    v8s32 ilogb(arg<v8f64>::type v);
-    v8f64 atan2(arg<v8f64>::type y, arg<v8f64>::type x);
-    v8f64 asin(arg<v8f64>::type d);
-    v8f64 acos(arg<v8f64>::type d);
-
-    v8f64 atan(arg<v8f64>::type d);
-    std::pair<v8f64, v8f64> sincos(arg<v8f64>::type d);
-
-    v8f64 exp(arg<v8f64>::type d);
-    v8f64 expm1(arg<v8f64>::type d);
-    v8f64 log(arg<v8f64>::type d);
-    v8f64 pow(arg<v8f64>::type b, arg<v8f64>::type e);
-    void sincos(arg<v8f64>::type d, v8f64* psin, v8f64* pcos);
-    v8f64 sin(arg<v8f64>::type d);
-    v8f64 cos(arg<v8f64>::type d);
-    v8f64 tan(arg<v8f64>::type d);
-    v8f64 cot(arg<v8f64>::type d);
-    v8f64 atan2(arg<v8f64>::type x, arg<v8f64>::type y);
-
-    void native_sincos(arg<v8f64>::type d, v8f64* psin, v8f64* pcos);
-    v8f64 native_exp(arg<v8f64>::type d);
-    v8f64 native_log(arg<v8f64>::type d);
-    v8f64 native_sin(arg<v8f64>::type d);
-    v8f64 native_cos(arg<v8f64>::type d);
-    v8f64 native_tan(arg<v8f64>::type d);
-    v8f64 native_cot(arg<v8f64>::type d);
-    v8f64 cosh(arg<v8f64>::type d);
-    v8f64 sinh(arg<v8f64>::type d);
-
-    v8f64 pow(arg<v8f64>::type x, arg<v8f64>::type y);
-#endif
-
 #if defined (__AVX512F__)
     // a*b +c
     v8f64 fma(const v8f64& a, const v8f64& b, const v8f64& c);
@@ -322,18 +282,6 @@ namespace cftal {
                 return _mm512_div_pd(a(), b());
             }
         };
-
-#if 0
-        template <>
-        struct mod<double, 8> {
-            using full_type = vec<double, 8>;
-            static
-            full_type
-            v(const full_type& a, const full_type& b) {
-                return full_type(a() % b());
-            }
-        };
-#endif
 
         template <>
         struct fma<double, 8> {
@@ -646,38 +594,6 @@ cftal::nfms(const v8f64& a, const v8f64& b, const v8f64& c)
 #endif
 }
 
-#if 0
-inline
-cftal::v8f64
-cftal::mad(const v8f64& a, const v8f64& b, const v8f64& c)
-{
-    return a * b + c;
-}
-
-inline
-cftal::v8f64
-cftal::nmad(const v8f64& a, const v8f64& b, const v8f64& c)
-{
-    return c -(a * b);
-}
-
-inline
-cftal::vec<double, 8>::mask_type
-cftal::isnan(const v8f64& x)
-{
-    // exponent = 0x7FF and significand !=0
-    // x != x  if x == NAN
-    return x != x;
-}
-
-inline
-cftal::vec<double, 8>::mask_type
-cftal::isinf(const v8f64& x)
-{
-    v8f64 absx(abs(x));
-    return absx == v8f64(exp_f64_msk::v._f64);
-}
-#endif
 
 inline
 cftal::v8f64 cftal::copysign(const v8f64& x, const v8f64& y)

@@ -164,18 +164,6 @@ namespace cftal {
             }
         };
 
-#if 0
-        template <>
-        struct mod<double, 8> {
-            using full_type = vec<double, 8>;
-            static
-            full_type
-            v(const full_type& a, const full_type& b) {
-                return full_type(a() % b());
-            }
-        };
-#endif
-
         template <>
         struct fma<double, 8> {
             using full_type = vec<double, 8>;
@@ -487,38 +475,6 @@ cftal::nfms(const v8f64& a, const v8f64& b, const v8f64& c)
 #endif
 }
 
-#if 0
-inline
-cftal::v8f64
-cftal::mad(const v8f64& a, const v8f64& b, const v8f64& c)
-{
-    return a * b + c;
-}
-
-inline
-cftal::v8f64
-cftal::nmad(const v8f64& a, const v8f64& b, const v8f64& c)
-{
-    return c -(a * b);
-}
-
-inline
-cftal::vec<double, 8>::mask_type
-cftal::isnan(const v8f64& x)
-{
-    // exponent = 0x7FF and significand !=0
-    // x != x  if x == NAN
-    return x != x;
-}
-
-inline
-cftal::vec<double, 8>::mask_type
-cftal::isinf(const v8f64& x)
-{
-    v8f64 absx(abs(x));
-    return absx == v8f64(exp_f64_msk::v._f64);
-}
-#endif
 
 inline
 cftal::v8f64 cftal::copysign(const v8f64& x, const v8f64& y)

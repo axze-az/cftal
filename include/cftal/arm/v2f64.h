@@ -120,13 +120,6 @@ namespace cftal {
     // -(a*b) - c
     v2f64 nfms(const v2f64& a, const v2f64& b, const v2f64& c);
 
-#if 0
-    // a*b +c with rounding or not
-    v2f64 mad(const v2f64& a, const v2f64& b, const v2f64& c);
-    // -(a*b) +c with rounding or not
-    v2f64 nmad(const v2f64& a, const v2f64& b, const v2f64& c);
-#endif
-
     template <bool _P0, bool _P1>
     vec<double, 2>
     select(const vec<double, 2>& on_true,
@@ -300,18 +293,6 @@ namespace cftal {
 #endif
             }
         };
-
-#if 0
-        template <>
-        struct mod<double, 2> {
-            using full_type = vec<double, 2>;
-            static
-            full_type
-            v(const full_type& a, const full_type& b) {
-                return full_type(a() % b());
-            }
-        };
-#endif
 
         template <>
         struct fma<double, 2> {
@@ -607,22 +588,6 @@ cftal::nfms(const v2f64& a, const v2f64& b, const v2f64& c)
     return -(a*b) - c;
 }
 
-#if 0
-inline
-cftal::v2f64
-cftal::mad(const v2f64& a, const v2f64& b, const v2f64& c)
-{
-    return a * b + c;
-}
-
-inline
-cftal::v2f64
-cftal::nmad(const v2f64& a, const v2f64& b, const v2f64& c)
-{
-    return c -(a * b);
-}
-#endif
-
 inline
 cftal::v2f64 cftal::copysign(const v2f64& x, const v2f64& y)
 {
@@ -681,42 +646,6 @@ cftal::v2f64 cftal::arm::round(const v2f64& a, const rounding_mode::type m)
     }
 #else
 #pragma message("implement me")
-#if 0
-    uint32_t mxcsr=0;
-    uint32_t rmxcsr=0;
-    if (m != rounding_mode::current) {
-        mxcsr = _mm_getcsr();
-        rmxcsr= mxcsr;
-        rmxcsr &= ~(3<<13);
-        switch (m) {
-        case rounding_mode::nearest: //0
-            break;
-        case rounding_mode::downward:
-            rmxcsr |= (1<<13);
-            break;
-        case rounding_mode::upward:
-            rmxcsr |= (2<<13);
-            break;
-        case rounding_mode::towardzero:
-            rmxcsr |= (3<<13);
-            break;
-        default:
-            break; // keep the compiler happy
-        }
-        if (__unlikely(mxcsr != rmxcsr))
-            _mm_setcsr(rmxcsr);
-    }
-    const __m128 sgn_msk= v_sign_v4f64_msk::fv();
-    // (127+23)<< 23 = 0x4B000000 = 2^23
-    const __m128 magic= const_v4u32<0x4B000000, 0x4B000000,
-                                    0x4B000000, 0x4B000000>::fv();
-    __m128 sign = _mm_and_ps(a(), sgn_msk);
-    __m128 sign_magic = _mm_or_ps(magic, sign);
-    r= _mm_add_ps(a(), sign_magic);
-    r = _mm_sub_ps(a(), sign_magic);
-    if (mxcsr != rmxcsr)
-        _mm_setcsr(mxcsr);
-#endif
     //
 #endif
     return r;

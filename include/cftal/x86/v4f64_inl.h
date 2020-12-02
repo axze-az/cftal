@@ -470,39 +470,6 @@ cftal::nfms(const v4f64& a, const v4f64& b, const v4f64& c)
 #endif
 }
 
-#if 0
-inline
-cftal::v4f64
-cftal::mad(const v4f64& a, const v4f64& b, const v4f64& c)
-{
-    return a * b + c;
-}
-
-inline
-cftal::v4f64
-cftal::nmad(const v4f64& a, const v4f64& b, const v4f64& c)
-{
-    return c -(a * b);
-}
-
-inline
-cftal::vec<double, 4>::mask_type
-cftal::isnan(const v4f64& x)
-{
-    // exponent = 0x7FF and significand !=0
-    // x != x  if x == NAN
-    return x != x;
-}
-
-inline
-cftal::vec<double, 4>::mask_type
-cftal::isinf(const v4f64& x)
-{
-    v4f64 absx(abs(x));
-    return absx == v4f64(exp_f64_msk::v.f64());
-}
-#endif
-
 inline
 cftal::v4f64 cftal::copysign(const v4f64& x, const v4f64& y)
 {

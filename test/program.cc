@@ -18,7 +18,6 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
     args._data_dir=dirname(argv[0]);
     args._data_dir += "/../../test/data";
 
-
     for (int i=1; i<argc; ++i) {
         string_view ai(argv[i]);
         if (ai == "--speed") {

@@ -525,38 +525,6 @@ cftal::nfms(const v8f32& a, const v8f32& b, const v8f32& c)
 #endif
 }
 
-#if 0
-inline
-cftal::v8f32
-cftal::mad(const v8f32& a, const v8f32& b, const v8f32& c)
-{
-    return a * b + c;
-}
-
-inline
-cftal::v8f32
-cftal::nmad(const v8f32& a, const v8f32& b, const v8f32& c)
-{
-    return c -(a * b);
-}
-
-inline
-cftal::vec<float, 8>::mask_type
-cftal::isnan(const v8f32& x)
-{
-    // exponent = 0x7FF and significand !=0
-    // x != x  if x == NAN
-    return x != x;
-}
-
-inline
-cftal::vec<float, 8>::mask_type
-cftal::isinf(const v8f32& x)
-{
-    v8f32 absx(abs(x));
-    return absx == v8f32(exp_32_msk::v._f32);
-}
-#endif
 
 inline
 cftal::v8f32 cftal::copysign(const v8f32& x, const v8f32& y)
