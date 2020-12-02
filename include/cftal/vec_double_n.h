@@ -1082,17 +1082,6 @@ cftal::round_nearest_to_even_last<_BITS>::bits(const vec<_T, _N>& v)
     // mask of the bits to keep
     constexpr const int_type mask=~trailing_mask;
     vi_t i=as<vi_t>(v);
-#if 0
-    constexpr const int_type rounding_mask= bk| trailing_mask;
-    constexpr const int_type inc_rne=br|bk;
-    const vi_t v_bk = bk;
-    vi_t ir= i & rounding_mask;
-    vi_t it= i & trailing_mask;
-    vmi_t to_inc= (ir == inc_rne) | (it > br);
-    vi_t inc= select_val_or_zero(to_inc, v_bk);
-    i += inc;
-    i &= mask;
-#else
     vi_t rbits=i & trailing_mask;
     vi_t lbit= i & bk;
     const vi_t v_z=0LL;
@@ -1101,7 +1090,6 @@ cftal::round_nearest_to_even_last<_BITS>::bits(const vec<_T, _N>& v)
     vi_t offs=select_zero_or_val(sel_zero_offs, v_br);
     i += offs;
     i &= mask;
-#endif
     vec<_T, _N> r=as<vec<_T, _N> >(i);
     return r;
 }
