@@ -411,7 +411,7 @@ namespace cftal {
 
             static
             vi2_type cvt_f_to_i2(const vf_type& f) {
-#if 0
+#if 1
                 vi_type t=cvt<vi_type>(f);
                 vi2_type r=combine_even_odd(t, t);
 #else
