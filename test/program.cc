@@ -24,6 +24,10 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
             args._speed_only= true;
         } else if (ai == "--fast") {
             args._fast = true;
+            args._slow = false;
+        } else if (ai == "--slow") {
+            args._slow = true;
+            args._fast = false;
         } else if (ai == "--cache") {
             args._use_cache=true;
         } else if (ai == "--mt") {
@@ -43,6 +47,7 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
         std::cerr << argv[0]
                   << " [--fast] [--speed] [--[no-]mt] [--cache]\n"
                      "--fast  reduces the test count\n"
+                     "--slow  increases the test count\n"
                      "--speed performs a speed test only\n"
                      "--mt    force multithreading\n"
                      "--no-mt disable multithreading\n"
@@ -51,6 +56,8 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
         std::exit(3);
     }
     if (args._speed_only)
+        args._cnt <<= 3;
+    if (args._slow)
         args._cnt <<= 3;
     if (args._fast)
         args._cnt >>= 4;

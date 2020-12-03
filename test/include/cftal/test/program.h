@@ -30,6 +30,8 @@ namespace cftal {
             bool _use_cache;
             // fast
             bool _fast;
+            // slow
+            bool _slow;
             // data directory
             std::string _data_dir;
             // the count of tests to perform
@@ -37,6 +39,7 @@ namespace cftal {
             pgm_args(std::size_t c=0x80000)
               : _speed_only(false), _mt(true),
                 _use_cache(false), _fast(false),
+                _slow(false),
                 _data_dir("../test/data/"),
                 _cnt(c) {}
         };
@@ -88,6 +91,7 @@ cftal::test::program(int argc, char** argv,
               << " (" << (ags._mt ? "mt" : "st")
               << (ags._speed_only ? ", speed only" : "")
               << (ags._fast ? ", fast" : "" )
+              << (ags._slow ? ", slow" : "" )
               << ')'
               << std::endl;
     bool rc=true;
@@ -156,6 +160,7 @@ cftal::test::program(int argc, char** argv,
               << " (" << (ags._mt ? "mt" : "st")
               << (ags._speed_only ? ", speed only" : "")
               << (ags._fast ? ", fast" : "")
+              << (ags._slow ? ", slow" : "" )
               << ')'
               << std::endl;
     bool rc=true;
