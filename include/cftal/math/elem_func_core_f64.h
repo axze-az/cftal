@@ -4326,11 +4326,10 @@ asinh_k(arg_t<vf_type> xc)
         using ctbl=impl::d_real_constants<d_real<double>, double>;
         vmf_type x_huge = x > 0x1p53;
         vf_type add_2_log=_T::sel_val_or_zero(x_huge, ctbl::m_ln2[0]);
-        vf_type t= x*x;
         vf_type log_arg=_T::sel(x_huge,
                                 x,
-                                2.0 * x+ 1.0/(sqrt(vf_type(t+1.0))+x));
-        vf_type yl= __log_tbl_k<log_func::c_log_e>(log_arg);
+                                2.0 * x+ 1.0/(sqrt(vf_type(x*x+1.0))+x));
+        vf_type yl= log_k(log_arg);
         yl += add_2_log;
         y = _T::sel(sel, yl, y);
     }
@@ -4600,7 +4599,7 @@ acosh_k(arg_t<vf_type> xc)
         vf_type log_arg=_T::sel(x_huge,
                                 x,
                                 2.0*x - 1.0/(x+sqrt(vf_type(x*x-1))));
-        vf_type yl= __log_tbl_k<log_func::c_log_e>(log_arg);
+        vf_type yl= log_k(log_arg);
         yl += add_2_log;
         y= _T::sel(sel, yl, y);
     }
