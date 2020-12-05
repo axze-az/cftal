@@ -1260,7 +1260,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     d_ops::add12(y, e4, exp_c0, y);
     // d_ops::add12(y, ye, y, e0+e1+e2+e3+e4);
     vf_type ye=e0+e1+e2+e3+e4;
-    if (_EXP_M1 == false) {
+    if (_EXP_M1 == false) {        
         y += (ye);
         y = __mul_two_pow(y, kf);
     } else {
@@ -2730,6 +2730,51 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log2_k(arg_t<vf_type> xc)
 {
+#if 1
+    vf_type xr;
+    vi2_type ki;
+    __reduce_log_arg(xr, ki, xc);
+    vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
+    vf_type r=xr-1.0;
+    vf_type r2=r*r;
+    vf_type p= __log_poly_k_poly(r, r2);
+    // log2(x) = kf + (r + r2*c2 + r3*p)/ln2;
+    vf_type rc2=-0.5 * r;
+    vf_type l, e;
+    d_ops::mul12(l, e, rc2, r);
+    vf_type ei;
+    d_ops::add12(l, ei, r, l);
+    vf_type ll=ei + r2*(r*p);
+    ll += e;
+
+    // x^ : +0xb.8aa3b2p-3
+    constexpr
+    const double invln2hi=+1.4426950365304946899414e+00;
+    // x^ : +0x9.5c17f0bbbe88p-31
+    constexpr
+    const double invln2lo=+4.3584687174185184386656e-09;  
+    vf_type l0, l1;
+    vf_type l2, l3;
+    if (d_real_traits<vf_type>::fma==true) {
+        l0 = l * invln2hi;
+        vf_type l0_e= l*invln2hi-l0;
+        l1 = l * invln2lo + l0_e;
+        l2 = ll * invln2hi;
+        vf_type l2_e= ll*invln2hi-l2;
+        l3 = ll * invln2lo + l2_e;
+    } else {
+        d_real_traits<vf_type>::split(l, l0, l1);
+        l0 = l0 * invln2hi;
+        l1 = (l1 * invln2hi) + l* invln2lo;
+        d_real_traits<vf_type>::split(ll, l2, l3);
+        l2 = l2 * invln2hi;
+        l3 = (l3 * invln2hi) + ll* invln2lo;
+    }
+    vf_type res, t;
+    d_ops::add12(res, t, kf, l0);
+    res += t +(l1+l2+l3);
+    return res;   
+#else
 /*
  * Return the base 2 logarithm of x.  See log.c for most comments.
  *
@@ -2738,6 +2783,7 @@ log2_k(arg_t<vf_type> xc)
  *    log2(x) = (f - f*f/2 + r)/log(2) + k
  */
     return __log_tbl_k<log_func::c_log_2>(xc);
+#endif
 }
 
 template <typename _T>
@@ -2746,6 +2792,54 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log10_k(arg_t<vf_type> xc)
 {
+#if 1
+    vf_type xr;
+    vi2_type ki;
+    __reduce_log_arg(xr, ki, xc);
+    vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
+    vf_type r=xr-1.0;
+    vf_type r2=r*r;
+    vf_type p= __log_poly_k_poly(r, r2);
+    // log2(x) = kf + (r + r2*c2 + r3*p)/ln2;
+    vf_type rc2=-0.5 * r;
+    vf_type l, e;
+    d_ops::mul12(l, e, rc2, r);
+    vf_type ei;
+    d_ops::add12(l, ei, r, l);
+    vf_type rp=r*p;
+    vf_type ll=(ei + r2*(rp));
+    ll += e;
+    
+    // x^ : +0xd.e5bd8ap-5
+    constexpr
+    const double invln10hi=+4.3429448083043098449707e-01;
+    // x^ : +0x9.37287195355b8p-33
+    constexpr
+    const double invln10lo=+1.0728208431540585374533e-09;
+    
+    vf_type l0, l1;
+    vf_type l2, l3;
+    if (d_real_traits<vf_type>::fma==true) {
+        l0 = l * invln10hi;
+        vf_type l0_e= l*invln10hi-l0;
+        l1 = l * invln10lo + l0_e;
+        l2 = ll * invln10hi;
+        vf_type l2_e= ll*invln10hi-l2;
+        l3 = ll * invln10lo + l2_e;
+    } else {
+        d_real_traits<vf_type>::split(l, l0, l1);
+        l0 = l0 * invln10hi;
+        l1 = (l1 * invln10hi) + l* invln10lo;
+        d_real_traits<vf_type>::split(ll, l2, l3);
+        l2 = l2 * invln10hi;
+        l3 = (l3 * invln10hi) + ll* invln10lo;
+    }
+    using ctbl=impl::d_real_constants<d_real<double>, double>;   
+    vf_type res, t;
+    d_ops::add12(res, t, kf*ctbl::m_lg2_cw[0], l0);
+    res += (t +(l1+l2+l3)) + kf * ctbl::m_lg2_cw[1];
+    return res;   
+#else
 /*
  * Return the base 10 logarithm of x.  See log.c for most comments.
  *
@@ -2754,6 +2848,7 @@ log10_k(arg_t<vf_type> xc)
  *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
  */
     return __log_tbl_k<log_func::c_log_10>(xc);
+#endif
 }
 
 

@@ -3099,7 +3099,53 @@ log2_k(arg_t<vf_type> xc)
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
     return __log_tbl_k_d<log_func::c_log_2>(xc);
 #else
+#if 1
+    vf_type xr;
+    vi_type ki;
+    __reduce_log_arg(xr, ki, xc);
+    vf_type kf=_T::cvt_i_to_f(ki);
+    vf_type r=xr-1.0;
+    vf_type r2=r*r;
+    vf_type p= __log_poly_k_poly(r, r2);
+    // log2(x) = kf + (r + r2*c2 + r3*p)/ln2;
+    vf_type rc2=-0.5 * r;
+    vf_type l, e;
+    d_ops::mul12(l, e, rc2, r);
+    vf_type ei;
+    d_ops::add12(l, ei, r, l);
+    vf_type ll=ei + r2*(r*p);
+    ll += e;
+
+    // x^ : +0xb.8bp-3f
+    constexpr
+    const float invln2hi=+1.4428710938e+00f;
+    // x^ : -0xb.89ad4p-16f
+    constexpr
+    const float invln2lo=-1.7605285393e-04f;
+    vf_type l0, l1;
+    vf_type l2, l3;
+    if (d_real_traits<vf_type>::fma==true) {
+        l0 = l * invln2hi;
+        vf_type l0_e= l*invln2hi-l0;
+        l1 = l * invln2lo + l0_e;
+        l2 = ll * invln2hi;
+        vf_type l2_e= ll*invln2hi-l2;
+        l3 = ll * invln2lo + l2_e;
+    } else {
+        d_real_traits<vf_type>::split(l, l0, l1);
+        l0 = l0 * invln2hi;
+        l1 = (l1 * invln2hi) + l* invln2lo;
+        d_real_traits<vf_type>::split(ll, l2, l3);
+        l2 = l2 * invln2hi;
+        l3 = (l3 * invln2hi) + ll* invln2lo;
+    }
+    vf_type res, t;
+    d_ops::add12(res, t, kf, l0);
+    res += t +(l1+l2+l3);
+    return res;   
+#else    
     return __log_tbl_k<log_func::c_log_2>(xc);
+#endif
 #endif
 }
 
@@ -3112,7 +3158,56 @@ log10_k(arg_t<vf_type> xc)
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
     return __log_tbl_k_d<log_func::c_log_10>(xc);
 #else
+#if 1
+    vf_type xr;
+    vi_type ki;
+    __reduce_log_arg(xr, ki, xc);
+    vf_type kf=_T::cvt_i_to_f(ki);
+    vf_type r=xr-1.0;
+    vf_type r2=r*r;
+    vf_type p= __log_poly_k_poly(r, r2);
+    // log2(x) = kf + (r + r2*c2 + r3*p)/ln2;
+    vf_type rc2=-0.5 * r;
+    vf_type l, e;
+    d_ops::mul12(l, e, rc2, r);
+    vf_type ei;
+    d_ops::add12(l, ei, r, l);
+    vf_type rp=r*p;
+    vf_type ll=(ei + r2*(rp));
+    ll += e;
+    
+    // x^ : +0xd.e6p-5f
+    constexpr
+    const float invln10hi=+4.3432617188e-01f;
+    // x^ : -0x8.4ead9p-18f
+    constexpr
+    const float invln10lo=-3.1689971365e-05f;
+
+    vf_type l0, l1;
+    vf_type l2, l3;
+    if (d_real_traits<vf_type>::fma==true) {
+        l0 = l * invln10hi;
+        vf_type l0_e= l*invln10hi-l0;
+        l1 = l * invln10lo + l0_e;
+        l2 = ll * invln10hi;
+        vf_type l2_e= ll*invln10hi-l2;
+        l3 = ll * invln10lo + l2_e;
+    } else {
+        d_real_traits<vf_type>::split(l, l0, l1);
+        l0 = l0 * invln10hi;
+        l1 = (l1 * invln10hi) + l* invln10lo;
+        d_real_traits<vf_type>::split(ll, l2, l3);
+        l2 = l2 * invln10hi;
+        l3 = (l3 * invln10hi) + ll* invln10lo;
+    }
+    using ctbl=impl::d_real_constants<d_real<float>, float>;   
+    vf_type res, t;
+    d_ops::add12(res, t, kf*ctbl::m_lg2_cw[0], l0);
+    res += (t +(l1+l2+l3)) + kf * ctbl::m_lg2_cw[1];
+    return res;       
+#else
     return __log_tbl_k<log_func::c_log_10>(xc);
+#endif
 #endif
 }
 
