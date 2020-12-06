@@ -392,12 +392,11 @@ namespace cftal {
             };
 
             // log argument reduction for log1p
-            // returns xr ~ [sqrt(2), sqrt(2)] and kf, pk
-            // with x = xr * 2^kf, kf == *pk
+            // returns xr ~ [sqrt(2), sqrt(2)] and ki
+            // with xc = xr * 2^ki
             static
-            void
+            vi2_type
             __reduce_log_arg(vf_type& __restrict xr,
-                             vi2_type& __restrict ki,
                              arg_t<vf_type> xc);
 
             // polynomial approximation of (log1p(r)-(x-0.5*x^2))/x^3,
@@ -2043,10 +2042,9 @@ tanh_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-void
+cftal::math::elem_func_core<double, _T>::vi2_type
 cftal::math::elem_func_core<double, _T>::
 __reduce_log_arg(vf_type& xr,
-                 vi2_type& ki,
                  arg_t<vf_type> xc)
 {
     // round(sqrt(2)/2, 53-32, RD);
@@ -2067,7 +2065,7 @@ __reduce_log_arg(vf_type& xr,
     h = (h&0x000fffffffffffffLL) + offs.s64();
     k += (h2>>20);
     xr = as<vf_type>(h);
-    ki=k;
+    return k;
 }
 
 template <typename _T>
@@ -2240,8 +2238,7 @@ cftal::math::elem_func_core<double, _T>::
 __log_poly_k(arg_t<vf_type> xc)
 {
     vf_type xr;
-    vi2_type ki;
-    __reduce_log_arg(xr, ki, xc);
+    vi2_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r=xr-1.0;
     vf_type r2=r*r;
@@ -2652,8 +2649,7 @@ __log1p_poly_k(arg_t<vf_type> xc)
     vf_type x=xc;
     vf_type u=1.0+xc;
     vf_type xr;
-    vi2_type ki;
-    __reduce_log_arg(xr, ki, u);
+    vi2_type ki=__reduce_log_arg(xr, u);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r=xr-1.0;
 
@@ -2732,8 +2728,7 @@ log2_k(arg_t<vf_type> xc)
 {
 #if 1
     vf_type xr;
-    vi2_type ki;
-    __reduce_log_arg(xr, ki, xc);
+    vi2_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r=xr-1.0;
     vf_type r2=r*r;
@@ -2794,8 +2789,7 @@ log10_k(arg_t<vf_type> xc)
 {
 #if 1
     vf_type xr;
-    vi2_type ki;
-    __reduce_log_arg(xr, ki, xc);
+    vi2_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r=xr-1.0;
     vf_type r2=r*r;

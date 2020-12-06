@@ -472,10 +472,10 @@ namespace cftal {
                 c_log_10
             };
 
+            // return xr * 2^ki = xc
             static
-            void
+            vi_type
             __reduce_log_arg(vf_type& __restrict xr,
-                             vi_type& __restrict ki,
                              arg_t<vf_type> xc);
 
             // argument reduction for table based logarithm
@@ -2365,10 +2365,9 @@ tanh_k(arg_t<vf_type> xc)
 
 
 template <typename _T>
-void
+cftal::math::elem_func_core<float, _T>::vi_type
 cftal::math::elem_func_core<float, _T>::
 __reduce_log_arg(vf_type& xr,
-                 vi_type& ki,
                  arg_t<vf_type> xc)
 {
     // MSQRT2/2
@@ -2387,7 +2386,7 @@ __reduce_log_arg(vf_type& xr,
     k += (hx>>23);
     hx = (hx&0x007fffff) + offs.s32();
     xr = _T::as_float(hx);
-    ki = k;
+    return k;
 }
 
 template <typename _T>
@@ -2583,8 +2582,7 @@ cftal::math::elem_func_core<float, _T>::
 __log_poly_k(arg_t<vf_type> xc)
 {
     vf_type xr;
-    vi_type ki;
-    __reduce_log_arg(xr, ki, xc);
+    vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
     vf_type r=xr-1.0f;
     vf_type r2=r*r;
@@ -3019,8 +3017,7 @@ __log1p_poly_k(arg_t<vf_type> xc)
     vf_type x=xc;
     vf_type u=1.0f+xc;
     vf_type xr;
-    vi_type ki;
-    __reduce_log_arg(xr, ki, u);
+    vi_type ki=__reduce_log_arg(xr, u);
     vf_type kf=_T::cvt_i_to_f(ki);
     vf_type r=xr-1.0f;
 
@@ -3101,8 +3098,7 @@ log2_k(arg_t<vf_type> xc)
 #else
 #if 1
     vf_type xr;
-    vi_type ki;
-    __reduce_log_arg(xr, ki, xc);
+    vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
     vf_type r=xr-1.0;
     vf_type r2=r*r;
@@ -3160,8 +3156,7 @@ log10_k(arg_t<vf_type> xc)
 #else
 #if 1
     vf_type xr;
-    vi_type ki;
-    __reduce_log_arg(xr, ki, xc);
+    vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
     vf_type r=xr-1.0;
     vf_type r2=r*r;
