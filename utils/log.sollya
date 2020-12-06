@@ -106,14 +106,15 @@ log_around_1_table = proc(l, fmt) {
         lpll=lpll:.plogil;
         i = i + 1;
     };
+    
     write_coeff_table(lc, "c", fmt);
-    write_coeff_table(linv, "invc", fmt);
-    write_coeff_table(lh, "logc_h", fmt);
-    write_coeff_table(ll, "logc_l", fmt);
-    write_coeff_table(l2h, "log2c_h", fmt);
-    write_coeff_table(l2l, "log2c_l", fmt);
-    write_coeff_table(l10h, "log10c_h", fmt);
-    write_coeff_table(l10l, "log10c_l", fmt);
+    // write_coeff_table(linv, "invc", fmt);
+    // write_coeff_table(lh, "logc_h", fmt);
+    // write_coeff_table(ll, "logc_l", fmt);
+    // write_coeff_table(l2h, "log2c_h", fmt);
+    // write_coeff_table(l2l, "log2c_l", fmt);
+    // write_coeff_table(l10h, "log10c_h", fmt);
+    // write_coeff_table(l10l, "log10c_l", fmt);
     write_coeff_table(lpinv, "p_invc", fmt);
     write_coeff_table(lplh, "p_logc_h", fmt);
     write_coeff_table(lpll, "p_logc_l", fmt);

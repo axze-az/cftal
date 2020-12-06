@@ -357,19 +357,6 @@ namespace cftal {
                 static __m128i v(__m128i a, __m128i b);
             };
 
-#if 0
-            // TODO: implementation missing
-            // permutation of the high half of one uint16_t vector
-            template <int _P4, int _P5, int _P6, int _P7>
-            struct perm1_v8u16<0, 1, 2, 3, _P4, _P5, _P6, _P7> {
-                static __m128i v(__m128i a);
-            };
-            // permutation of the low half of one uint16_t vector
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct perm1_v8u16<_P0, _P1, _P2, _P3, 4, 5, 6, 7> {
-                static __m128i v(__m128i a);
-            };
-#endif
             // specialisations of permutations of one uint16_t
             // vector
             template <>
@@ -1443,17 +1430,6 @@ __m128i cftal::x86::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"    
-#if 0
-    const bool pair0 = (_P0 < 0 && _P1 < 0) ||
-                              ((_P0 & 1)==0 && _P0>= 0 && _P0 == _P1-1);
-    const bool pair1 = (_P2 < 0 && _P3 < 0) ||
-                              ((_P2 & 1)==0 && _P2>= 0 && _P2 == _P3-1);
-    const bool pair2 = (_P4 < 0 && _P5 < 0) ||
-                              ((_P4 & 1)==0 && _P4>= 0 && _P4 == _P5-1);
-    const bool pair3 = (_P6 < 0 && _P7 < 0) ||
-                              ((_P6 & 1)==0 && _P6>= 0 && _P6 == _P7-1);
-    const bool pairs= pair0 && pair1 && pair2 && pair3;
-#else
     const int me= pos_msk_4<_P0, _P2, _P4, _P6, 7>::m;
     const int mo= pos_msk_4<_P1, _P3, _P5, _P7, 7>::m;
     const int mez= zero_msk_4<_P0, _P2, _P4, _P6>::m;
@@ -1462,7 +1438,6 @@ __m128i cftal::x86::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
         ((me & 0x1111) & mez) ==0 &&
         ((mo - me) & mez) == (0x1111 & mez) &&
         (moz == mez);
-#endif
     if (pairs) {
         // special cases like all -1 are done in perm1_u2
         const int _p0 = (_P0 < 0 ? -1 : _P0>>1);
@@ -1701,17 +1676,6 @@ __m128i cftal::x86::impl::perm2_v8u16<_P0, _P1, _P2, _P3,
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
-#if 0
-    const bool pair0 = (_P0 < 0 && _P1 < 0) ||
-                              ((_P0 & 1)==0 && _P0>= 0 && _P0 == _P1-1);
-    const bool pair1 = (_P2 < 0 && _P3 < 0) ||
-                              ((_P2 & 1)==0 && _P2>= 0 && _P2 == _P3-1);
-    const bool pair2 = (_P4 < 0 && _P5 < 0) ||
-                              ((_P4 & 1)==0 && _P4>= 0 && _P4 == _P5-1);
-    const bool pair3 = (_P6 < 0 && _P7 < 0) ||
-                              ((_P6 & 1)==0 && _P6>= 0 && _P6 == _P7-1);
-    const bool pairs= pair0 && pair1 && pair2 && pair3;
-#else
     const int me= pos_msk_4<_P0, _P2, _P4, _P6, 7>::m;
     const int mo= pos_msk_4<_P1, _P3, _P5, _P7, 7>::m;
     const int mez= zero_msk_4<_P0, _P2, _P4, _P6>::m;
@@ -1720,7 +1684,6 @@ __m128i cftal::x86::impl::perm2_v8u16<_P0, _P1, _P2, _P3,
         ((me & 0x1111) & mez) ==0 &&
         ((mo - me) & mez) == (0x1111 & mez) &&
         (moz == mez);
-#endif
     if (pairs) {
         // special cases like all -1 are done in perm2_v4u32
         const int _p0 = (_P0 < 0 ? -1 : _P0>>1);
@@ -2202,14 +2165,6 @@ __m256i cftal::x86::impl::perm1_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a)
         return  _mm256_and_si256(a, zm);
     }
     __m256i res;
-#if 0
-    if ( (((m1 & 0x22) & m2) == 0) &&
-         (((m1 & 0x2200) & m2) == (0x2200 & m2))) {
-        // low from low src, high from high src
-        const int sel= csel4<_P0, _P1, _P2, _P3>::val;
-        res= _mm256_permute_pd(a, sel);
-    } else {}
-#endif
     if ( ((m1 & m2) == (0x1032 & m2)) ) {
         res= _mm256_permute2x128_si256(a, a, 0x01);
     } else if ( ((m1 & m2) == (0x3232 & m2)) ) {
@@ -2334,17 +2289,6 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
     }
     // in lane permutation
     __m256i res;
-#if 0
-    if ( (((m1 & 0x4444) & m2) == 0) &&
-         (((m1 & 0x4444000) & m2) == (0x44440000 & m2))) {
-        // low from low src, high from high src
-        const __m256i p= const_v8u32<_P0 & 3, _P1 & 3,
-                                     _P2 & 3, _P3 & 3,
-                                     _P4 & 3, _P5 & 3,
-                                     _P6 & 3, _P7 & 3>::iv();
-        res= _mm256_permutevar_epi32(a, p);
-    } else {}
-#endif
     if ( ((m1 & m2) == (0x32107654 & m2)) ) {
         res= _mm256_permute2f128_si256(a, a, 0x01);
     } else if ( ((m1 & m2) == (0x76547654 & m2)) ) {

@@ -46,26 +46,12 @@ namespace cftal {
 
         // tables for logarithms
         template <typename _T>
-        struct log_data {
+        struct pow_log_data {
             enum {
                 LOG_N=64,
                 LOG_SHIFT=6
             };
             struct table_t {
-                // 1/c for logarithm calculations
-                const _T _inv_c[LOG_N];
-                // log(c) high part
-                const _T _log_c_h[LOG_N];
-                // log(c) low part
-                const _T _log_c_l[LOG_N];
-                // log2(c) high part
-                const _T _log2_c_h[LOG_N];
-                // log2(c) low part
-                const _T _log2_c_l[LOG_N];
-                // log10(c) high part
-                const _T _log10_c_h[LOG_N];
-                // log10(c) low part
-                const _T _log10_c_l[LOG_N];
                 // 1/c for logarithm calculations in pow function
                 const _T _p_inv_c[LOG_N];
                 // log(c) for pow function high part
@@ -79,15 +65,15 @@ namespace cftal {
 
         // the float tables
         template<>
-        const log_data<float>::table_t log_data<float>::_tbl;
+        const pow_log_data<float>::table_t pow_log_data<float>::_tbl;
 
         // the double tables
         template<>
-        const log_data<double>::table_t log_data<double>::_tbl;
+        const pow_log_data<double>::table_t pow_log_data<double>::_tbl;
 
-        extern template struct log_data<float>;
+        extern template struct pow_log_data<float>;
 
-        extern template struct log_data<double>;
+        extern template struct pow_log_data<double>;
 
         // tables for complementary error function
         template <typename _T>
