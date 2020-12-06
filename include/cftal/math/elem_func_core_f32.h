@@ -480,10 +480,9 @@ namespace cftal {
 
             // argument reduction for table based logarithm
             static
-            void
+            vi_type
             __reduce_log_arg(vf_type& __restrict xr,
                              vi_type& __restrict idx,
-                             vi_type& __restrict ki,
                              arg_t<vf_type> x);
 
             // return 2^k * 1/inv_c * (1 + xr*inv_c) = xc
@@ -2391,11 +2390,10 @@ __reduce_log_arg(vf_type& xr,
 
 template <typename _T>
 inline
-void
+cftal::math::elem_func_core<float, _T>::vi_type
 cftal::math::elem_func_core<float, _T>::
 __reduce_log_arg(vf_type& xr,
                  vi_type& idx,
-                 vi_type& ki,
                  arg_t<vf_type> xc)
 
 {
@@ -2415,7 +2413,7 @@ __reduce_log_arg(vf_type& xr,
     hx = m + offs.s32();
     idx=(m >> (23-log_data<float>::LOG_SHIFT));
     xr = _T::as_float(hx);
-    ki = k;
+    return k;
 }
 
 template <typename _T>
@@ -2431,7 +2429,7 @@ __reduce_log_arg(vf_type& xr,
                  arg_t<vf_type> xc)
 {
     vi_type idx;
-    __reduce_log_arg(xr, idx, ki, xc);
+    ki=__reduce_log_arg(xr, idx, xc);
     auto lck=make_variable_lookup_table<float>(idx);
     const auto& tbl=log_data<float>::_tbl;
 
@@ -2792,9 +2790,8 @@ cftal::math::elem_func_core<float, _T>::
 __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xcl)
 {
     vf_type xrh, inv_c, log_c_h, log_c_l;
-    vi_type ki;
     vi_type idx;
-    __reduce_log_arg(xrh, idx, ki, xc);
+    vi_type ki=__reduce_log_arg(xrh, idx, xc);
     auto lck=make_variable_lookup_table<float>(idx);
     const auto& tbl=log_data<float>::_tbl;
     inv_c =lck.from(tbl._p_inv_c);
@@ -2827,9 +2824,8 @@ cftal::math::elem_func_core<float, _T>::
 __log_tbl_k12(arg_t<vf_type> xc)
 {
     vf_type xr, inv_c, log_c_h, log_c_l;
-    vi_type ki;
     vi_type idx;
-    __reduce_log_arg(xr, idx, ki, xc);
+    vi_type ki=__reduce_log_arg(xr, idx, xc);
     auto lck=make_variable_lookup_table<float>(idx);
     const auto& tbl=log_data<float>::_tbl;
     inv_c =lck.from(tbl._p_inv_c);

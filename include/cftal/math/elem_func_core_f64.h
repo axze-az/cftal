@@ -408,10 +408,9 @@ namespace cftal {
 
             // argument reduction for table based logarithm
             static
-            void
+            vi2_type
             __reduce_log_arg(vf_type& __restrict xr,
                              vi_type& __restrict idx,
-                             vi2_type& __restrict ki,
                              arg_t<vf_type> x);
 
 
@@ -2069,11 +2068,10 @@ __reduce_log_arg(vf_type& xr,
 }
 
 template <typename _T>
-void
+cftal::math::elem_func_core<double, _T>::vi2_type
 cftal::math::elem_func_core<double, _T>::
 __reduce_log_arg(vf_type& xr,
                  vi_type& idx,
-                 vi2_type& ki,
                  arg_t<vf_type> xc)
 {
     constexpr
@@ -2097,7 +2095,7 @@ __reduce_log_arg(vf_type& xr,
     h +=offs.s64();
     k += (h2>>20);
     xr = as<vf_type>(h);
-    ki=k;
+    return k;
 }
 
 template <typename _T>
@@ -2112,7 +2110,7 @@ __reduce_log_arg(vf_type& xr,
                  arg_t<vf_type> xc)
 {
     vi_type idx;
-    __reduce_log_arg(xr, idx, ki, xc);
+    ki=__reduce_log_arg(xr, idx, xc);
     auto lck=make_variable_lookup_table<double>(idx);
     const auto& tbl=log_data<double>::_tbl;
     inv_c =lck.from(tbl._inv_c);
@@ -2511,9 +2509,8 @@ cftal::math::elem_func_core<double, _T>::
 __log_tbl_k2(arg_t<vf_type> xc, arg_t<vf_type> xl)
 {
     vf_type xrh, inv_c, log_c_h, log_c_l;
-    vi2_type ki;
     vi_type idx;
-    __reduce_log_arg(xrh, idx, ki, xc);
+    vi2_type ki=__reduce_log_arg(xrh, idx, xc);
     auto lck=make_variable_lookup_table<double>(idx);
     const auto& tbl=log_data<double>::_tbl;
     inv_c =lck.from(tbl._p_inv_c);
@@ -2547,9 +2544,8 @@ cftal::math::elem_func_core<double, _T>::
 __log_tbl_k12(arg_t<vf_type> xc)
 {
     vf_type xr, inv_c, log_c_h, log_c_l;
-    vi2_type ki;
     vi_type idx;
-    __reduce_log_arg(xr, idx, ki, xc);
+    vi2_type ki=__reduce_log_arg(xr, idx, xc);
     auto lck=make_variable_lookup_table<double>(idx);
     const auto& tbl=log_data<double>::_tbl;
     inv_c =lck.from(tbl._p_inv_c);
