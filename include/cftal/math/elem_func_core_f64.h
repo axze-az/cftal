@@ -1208,15 +1208,16 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     constexpr
     const double exp_c13=+1.6594686274338619941159e-10;
     static_assert(exp_c1 == 1.0, "exp_c1 == 1.0 is expected");
-    static_assert(exp_c2 == 0.5, "exp_c1 == 0.5 is expected");
-    vf_type x2=xrh*xrh;
-
+    static_assert(exp_c2 == 0.5, "exp_c2 == 0.5 is expected");
+    
     constexpr
     static const double c[]={
         exp_c13, exp_c12, exp_c11,
         exp_c10, exp_c9,  exp_c8, exp_c7,
         exp_c6, exp_c5, exp_c4, exp_c3
     };
+
+    vf_type x2=xrh*xrh;
     vf_type p=horner2(xrh, x2, c);
     vf_type y;
     // y = 1 + (xrh + xrl) + c2r2 + (x*x2*p) + xrl + xrl* expm1
@@ -1224,7 +1225,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type c2r2, e0;
     d_ops::mul12(c2r2, e0, c2r, xrh);
     vf_type e1;
-    d_ops::add12(y, e1, c2r2, xrh*x2*p);
+    d_ops::add12(y, e1, c2r2, x2*(xrh*p));
     vf_type e2;
     d_ops::add12(y, e2, xrh, y);
     // y+eX = expm1(xrh), calculate correction:
@@ -1233,6 +1234,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     d_ops::add12(y, e4, exp_c0, y);
     // d_ops::add12(y, ye, y, e0+e1+e2+e3+e4);
     vf_type ye=e0+e1+e2+e3+e4;
+
     if (_EXP_M1 == false) {        
         y += (ye);
         y = __mul_two_pow(y, kf);

@@ -1316,7 +1316,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     constexpr
     const float exp_c7=+1.9569355936e-04f;
     static_assert(exp_c1 == 1.0f, "exp_c1 == 1.0f is expected");
-    static_assert(exp_c2 == 0.5f, "exp_c1 == 0.5f is expected");
+    static_assert(exp_c2 == 0.5f, "exp_c2 == 0.5f is expected");
 
     vf_type x2= xrh*xrh;
     constexpr
@@ -1331,7 +1331,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type c2r2, e0;
     d_ops::mul12(c2r2, e0, c2r, xrh);
     vf_type e1;
-    d_ops::add12(y, e1, c2r2, xrh*x2*p);
+    d_ops::add12(y, e1, c2r2, x2*(xrh*p));
     vf_type e2;
     d_ops::add12(y, e2, xrh, y);
     vf_type e3=xrl + xrl*y;
