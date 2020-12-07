@@ -2182,21 +2182,29 @@ __log_poly_k(arg_t<vf_type> xc)
     vi2_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r=xr-1.0;
-    vf_type r2=r*r;
-    vf_type p= __log_poly_k_poly(r, r2);
+
     // log(x) = kf*ln2 + r + r2*c2 + r3*p
+    vf_type r2, r2l;
+    d_ops::sqr12(r2, r2l, r);
+    vf_type p= __log_poly_k_poly(r, r2);
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     vf_type l, e;
     d_ops::add12(l, e, kf* ctbl::m_ln2_cw[0], r);
-    vf_type rc2=-0.5 * r;
-    vf_type r2c2, ei;
-    d_ops::mul12(r2c2, ei, rc2, r);
-    e += ei;
+    constexpr const double log_c2 = -0.5;
+    e += log_c2*r2l;
+    vf_type r2c2=log_c2 * r2;
+    vf_type ei;
     d_ops::add12(l, ei, l, r2c2);
     e += ei;
     d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
-    e += ei;
+    e += ei;    
+#if 0 
+    d_ops::add12(l, ei, l, r2*(r*p));
+    e += ei;    
+    vf_type ll=e;
+#else
     vf_type ll=e + r2*(r*p);
+#endif    
     return l+ll;
 }
 
@@ -2466,20 +2474,21 @@ __log1p_poly_k(arg_t<vf_type> xc)
     vf_type r=xr-1.0;
 
 #if 1
-    vf_type r2=r*r;
-    vf_type p=__log_poly_k_poly(r, r2);
     // log(x) = kf*ln2 + r + r2*c2 + r3*p
+    vf_type r2, r2l;
+    d_ops::sqr12(r2, r2l, r);
+    vf_type p= __log_poly_k_poly(r, r2);
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     vf_type l, e;
     d_ops::add12(l, e, kf* ctbl::m_ln2_cw[0], r);
-    vf_type rc2=-0.5 * r;
-    vf_type r2c2, ei;
-    d_ops::mul12(r2c2, ei, rc2, r);
-    e += ei;
+    constexpr const double log_c2 = -0.5;
+    e += log_c2*r2l;
+    vf_type r2c2=log_c2 * r2;
+    vf_type ei;
     d_ops::add12(l, ei, l, r2c2);
     e += ei;
     d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
-    e += ei;
+    e += ei;        
 
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-x), x-(u-1.0));
@@ -2543,16 +2552,16 @@ log2_k(arg_t<vf_type> xc)
     vi2_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r=xr-1.0;
-    vf_type r2=r*r;
-    vf_type p= __log_poly_k_poly(r, r2);
+
     // log2(x) = kf + (r + r2*c2 + r3*p)/ln2;
-    vf_type rc2=-0.5 * r;
-    vf_type l, e;
-    d_ops::mul12(l, e, rc2, r);
+    vf_type r2, r2l;
+    d_ops::sqr12(r2, r2l, r);
+    vf_type p= __log_poly_k_poly(r, r2);
+    constexpr const double log_c2=-0.5;
+    vf_type l= log_c2*r2;
     vf_type ei;
     d_ops::add12(l, ei, r, l);
-    vf_type ll=ei + r2*(r*p);
-    ll += e;
+    vf_type ll=(ei + log_c2*r2l) + r2*(r*p);
 
     // x^ : +0xb.8aa3b2p-3
     constexpr
@@ -2604,18 +2613,17 @@ log10_k(arg_t<vf_type> xc)
     vi2_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r=xr-1.0;
-    vf_type r2=r*r;
+
+    // log10(x) = kf*lg(2) + (r + r2*c2 + r3*p)/ln10;
+    vf_type r2, r2l;
+    d_ops::sqr12(r2, r2l, r);
     vf_type p= __log_poly_k_poly(r, r2);
-    // log2(x) = kf + (r + r2*c2 + r3*p)/ln2;
-    vf_type rc2=-0.5 * r;
-    vf_type l, e;
-    d_ops::mul12(l, e, rc2, r);
+    constexpr const double log_c2=-0.5;
+    vf_type l= log_c2*r2;
     vf_type ei;
     d_ops::add12(l, ei, r, l);
-    vf_type rp=r*p;
-    vf_type ll=(ei + r2*(rp));
-    ll += e;
-    
+    vf_type ll=(ei + log_c2*r2l) + r2*(r*p);    
+
     // x^ : +0xd.e5bd8ap-5
     constexpr
     const double invln10hi=+4.3429448083043098449707e-01;
