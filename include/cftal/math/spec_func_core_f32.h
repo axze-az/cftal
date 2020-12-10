@@ -50,6 +50,7 @@ namespace cftal {
             using vmi2_type = typename f64_traits::vmi2_type;
 
             using f64_core = spec_func_core<double, f64_traits>;
+            using base_type::log_func;
 #endif
 
             using base_type::sinpi_cospi_k;
@@ -683,8 +684,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     }
     auto abase = abs(base);
 
-    vhf_type lnx=f64_core::template
-        __log_tbl_k<f64_core::log_func::c_log_e>(abase);
+    vhf_type lnx=f64_core::log_k(abase);
     vhf_type ylnx=lnx*z;
     vhf_type xrh, xrl;
     vi_type idx, ki;
@@ -1152,8 +1152,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     // lb contains log(xa+g-0.5) for xa_in_lanczos
     // log(xa) for xa > x_large | xa < x_tiny
     // log(f) for xa < x_small & xa >= tiny
-    vhf_type lb= f64_core::template
-        __log_tbl_k<f64_core::log_func::c_log_e>(base);
+    vhf_type lb= f64_core::log_k(base);
     vhf_type lg=0.0;
     vmhf_type xa_in_large = (xa >= x_large);
     if (_T::vhf_traits::any_of_v(xa_in_large)) {
@@ -1169,8 +1168,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         vhf_type sum = pq;
         vhf_type z= xa - 0.5;
         // g = z * log(base) + log(sum) - base;
-        vhf_type ls=f64_core::template
-            __log_tbl_k<f64_core::log_func::c_log_e>(sum);
+        vhf_type ls=f64_core::log_k(sum);
         vhf_type t= (z * lb) - base + ls;
         lg = f64_traits::sel(xa_in_lanczos, t, lg);
     }
@@ -1210,8 +1208,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
             //            = log(pi) - [log(abs(sin(pi*z)*z) + log(G(z))]
             vhf_type sa= abs(s);
             sa *= xa;
-            vhf_type lg_n=f64_core::template
-                __log_tbl_k<f64_core::log_func::c_log_e>(sa);
+            vhf_type lg_n=f64_core::log_k(sa);
             lg_n += lg;
             lg_n = ctbl::m_ln_pi[0] - lg_n;
             lg = f64_traits::sel(t, lg_n, lg);
