@@ -2688,9 +2688,6 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 __log_tbl_k_d(arg_t<vf_type> xc)
 {
-#if 1
-    return cvt<vf_type>(__log_tbl_k12_d<_LFUNC>(xc));
-#else
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type r;
@@ -2698,12 +2695,12 @@ __log_tbl_k_d(arg_t<vf_type> xc)
     
     vf_type r2= r*r;
     vhf_type rd= cvt<vhf_type>(r);
-    vhf_type kf=cvt<vhf_type>(ki);
+    vhf_type r2d=rd*rd;
     vf_type p = __log_poly_k_poly(r, r2);
     vhf_type pd= cvt<vhf_type>(p);
-    vhf_type r2d=rd*rd;
 
     vhf_type ll=(rd - 0.5 * r2d) + r2d* (rd*pd);
+    vhf_type kf=cvt<vhf_type>(ki);
     vhf_type lh;
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     if (_LFUNC==log_func::c_log_e) {
@@ -2714,7 +2711,6 @@ __log_tbl_k_d(arg_t<vf_type> xc)
         lh = kf * ctbl::m_lg2[0] + ll * ctbl::m_1_ln10[0];
     }
     return cvt<vf_type>(lh);
-#endif
 }
 
 template <typename _T>
@@ -2865,12 +2861,8 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log_k(arg_t<vf_type> xc)
 {
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-    return __log_tbl_k_d<log_func::c_log_e>(xc);
-#else
     // return __log_tbl_k<log_func::c_log_e>(xc);
     return __log_poly_k(xc);
-#endif
 }
 
 template <typename _T>
@@ -2879,10 +2871,6 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log2_k(arg_t<vf_type> xc)
 {
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-    return __log_tbl_k_d<log_func::c_log_2>(xc);
-#else
-#if 1
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
@@ -2925,10 +2913,6 @@ log2_k(arg_t<vf_type> xc)
     d_ops::add12(res, t, kf, l0);
     res += t +(l1+l2+l3);
     return res;   
-#else    
-    return __log_tbl_k<log_func::c_log_2>(xc);
-#endif
-#endif
 }
 
 template <typename _T>
@@ -2937,10 +2921,6 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log10_k(arg_t<vf_type> xc)
 {
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-    return __log_tbl_k_d<log_func::c_log_10>(xc);
-#else
-#if 1
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
@@ -2985,10 +2965,6 @@ log10_k(arg_t<vf_type> xc)
     d_ops::add12(res, t, kf*ctbl::m_lg2_cw[0], l0);
     res += (t +(l1+l2+l3)) + kf * ctbl::m_lg2_cw[1];
     return res;       
-#else
-    return __log_tbl_k<log_func::c_log_10>(xc);
-#endif
-#endif
 }
 
 template <typename _T>
