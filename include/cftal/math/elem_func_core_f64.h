@@ -2018,7 +2018,7 @@ tanh_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-cftal::math::elem_func_core<double, _T>::vi2_type
+typename cftal::math::elem_func_core<double, _T>::vi2_type
 cftal::math::elem_func_core<double, _T>::
 __reduce_log_arg(vf_type& xr,
                  arg_t<vf_type> xc)
@@ -2045,7 +2045,7 @@ __reduce_log_arg(vf_type& xr,
 }
 
 template <typename _T>
-cftal::math::elem_func_core<double, _T>::vi2_type
+typename cftal::math::elem_func_core<double, _T>::vi2_type
 cftal::math::elem_func_core<double, _T>::
 __reduce_log_arg(vf_type& xr,
                  vi_type& idx,
@@ -2799,15 +2799,15 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     vi_type q(_T::cvt_f_to_i(fn));
     if (_T::any_of_v(v_large_arg)) {
         // reduce the large arguments
-	vf_array tf, d0_l, d0_h;
+        vf_array tf, d0_l, d0_h;
         vi_array ti;
         mem<vf_type>::store(tf._a, x);
         mem<vi_type>::store(ti._a, q);
         mem<vf_type>::store(d0_l._a, xrl);
         mem<vf_type>::store(d0_h._a, xrh);
-	constexpr std::size_t N = _T::NVF();
-	constexpr std::size_t NI = _T::NVI();
-	static_assert(NI >= N, "constraint violated");
+        constexpr std::size_t N = _T::NVF();
+        constexpr std::size_t NI = _T::NVI();
+        static_assert(NI >= N, "constraint violated");
         for (std::size_t i=0; i<N; ++i) {
             if (large_arg < std::fabs(tf._a[i])) {
                 double y[2];
