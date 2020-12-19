@@ -3144,15 +3144,15 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     vi_type q(_T::cvt_f_to_i(fn));
     if (__unlikely(_T::any_of_v(v_large_arg))) {
         // reduce the large arguments
-	vf_array tf, d0_l, d0_h;
-	vi_array ti;
+        vf_array tf, d0_l, d0_h;
+        vi_array ti;
         mem<vf_type>::store(tf._a, x);
         mem<vi_type>::store(ti._a, q);
         mem<vf_type>::store(d0_l._a, xrl);
         mem<vf_type>::store(d0_h._a, xrh);
-	constexpr std::size_t N = _T::NVF();
-	constexpr std::size_t NI = _T::NVI();
-	static_assert(NI >= N, "constraint violated");
+        constexpr std::size_t N = _T::NVF();
+        constexpr std::size_t NI = _T::NVI();
+        static_assert(NI >= N, "constraint violated");
         for (std::size_t i=0; i<N; ++i) {
             if (large_arg < std::fabs(tf._a[i])) {
                 float y[2];

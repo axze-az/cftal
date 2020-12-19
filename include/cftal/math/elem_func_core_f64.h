@@ -2158,12 +2158,11 @@ __log_poly_k_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
     static_assert(log_c2 ==-0.5, "constraint violated");
     constexpr
     static const double ci[]={
-        log_c23, log_c22,
-        log_c21, log_c20, log_c19, log_c18,
-        log_c17, log_c16, log_c15, log_c14,
-        log_c13, log_c12, log_c11, log_c10,
-        log_c9, log_c8, log_c7, log_c6,
-        log_c5, log_c4, log_c3
+        log_c23, log_c22, log_c21, log_c20, log_c19, 
+        log_c18, log_c17, log_c16, log_c15, log_c14, 
+        log_c13, log_c12, log_c11, log_c10, log_c9, 
+        log_c8, log_c7, log_c6, log_c5, log_c4, 
+        log_c3
     };
 #if 0
     vf_type p= horner2(r, r2, ci);
@@ -2535,7 +2534,6 @@ cftal::math::elem_func_core<double, _T>::
 log_k(arg_t<vf_type> xc)
 {
 #if 1
-    // return __log_tbl_k<log_func::c_log_e>(xc);
     return __log_poly_k(xc);
 #else
     auto t=__log_tbl_k12(xc);
@@ -2549,7 +2547,6 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log2_k(arg_t<vf_type> xc)
 {
-#if 1
     vf_type xr;
     vi2_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
@@ -2592,16 +2589,6 @@ log2_k(arg_t<vf_type> xc)
     d_ops::add12(res, t, kf, l0);
     res += t +(l1+l2+l3);
     return res;   
-#else
-/*
- * Return the base 2 logarithm of x.  See log.c for most comments.
- *
- * Reduce x to 2^k (1+f) and calculate r = log(1+f) - f + f*f/2
- * as in log.c, then combine and scale in extra precision:
- *    log2(x) = (f - f*f/2 + r)/log(2) + k
- */
-    return __log_tbl_k<log_func::c_log_2>(xc);
-#endif
 }
 
 template <typename _T>
@@ -2610,7 +2597,6 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 log10_k(arg_t<vf_type> xc)
 {
-#if 1
     vf_type xr;
     vi2_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
@@ -2655,18 +2641,7 @@ log10_k(arg_t<vf_type> xc)
     d_ops::add12(res, t, kf*ctbl::m_lg2_cw[0], l0);
     res += (t +(l1+l2+l3)) + kf * ctbl::m_lg2_cw[1];
     return res;   
-#else
-/*
- * Return the base 10 logarithm of x.  See log.c for most comments.
- *
- * Reduce x to 2^k (1+f) and calculate r = log(1+f) - f + f*f/2
- * as in log.c, then combine and scale in extra precision:
- *    log10(x) = (f - f*f/2 + r)/log(10) + k*log10(2)
- */
-    return __log_tbl_k<log_func::c_log_10>(xc);
-#endif
 }
-
 
 template <typename _T>
 inline
