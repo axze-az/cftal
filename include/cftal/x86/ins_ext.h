@@ -86,7 +86,7 @@ inline
 double cftal::x86::extract_f64(__m128d v)
 {
     const bool cond = _IDX < 2;
-    static_assert (cond, "cftal::x86::extract_f64 _IDX < 2");
+    static_assert(cond, "cftal::x86::extract_f64 _IDX < 2");
     double r;
     switch (_IDX) {
     case 0:
@@ -104,7 +104,7 @@ inline
 __m128d cftal::x86::insert_f64(__m128d v, double d)
 {
     const bool cond = _IDX < 2;
-    static_assert (cond, "cftal::x86::insert_f64 _IDX < 2");
+    static_assert(cond, "cftal::x86::insert_f64 _IDX < 2");
     double vv;
     __m128d r;
     switch (_IDX) {
@@ -125,7 +125,7 @@ inline
 float cftal::x86::extract_f32(__m128 v)
 {
     const bool cond = _IDX < 4;
-    static_assert (cond, "cftal::x86::extract_f32 _IDX < 4");
+    static_assert(cond, "cftal::x86::extract_f32 _IDX < 4");
     float r;
     switch (_IDX) {
     case 0:
@@ -153,7 +153,7 @@ inline
 __m128 cftal::x86::insert_f32(__m128 v, float f)
 {
     const bool cond = _IDX < 4;
-    static_assert (cond, "cftal::x86::insert_f32 _IDX < 4");
+    static_assert(cond, "cftal::x86::insert_f32 _IDX < 4");
     __m128 r, t;
     t = _mm_set1_ps(f);
     switch (_IDX) {
@@ -177,7 +177,7 @@ template <unsigned _IDX>
 inline
 uint8_t cftal::x86::extract_u8(__m128i v) {
     const bool cond = _IDX < 16;
-    static_assert (cond, "cftal::x86::extract_u8 _IDX < 16");
+    static_assert(cond, "cftal::x86::extract_u8 _IDX < 16");
 #if defined (__SSE4_1__)
     return _mm_extract_epi8(v, _IDX);
 #else
@@ -195,7 +195,7 @@ inline
 __m128i cftal::x86::insert_u8(__m128i v, uint8_t i)
 {
     const bool cond = _IDX < 16;
-    static_assert (cond, "cftal::x86::insert_u8 _IDX < 16");
+    static_assert(cond, "cftal::x86::insert_u8 _IDX < 16");
 #if defined (__SSE4_1__)
     return _mm_insert_epi8(v, i, _IDX);
 #else
@@ -216,7 +216,7 @@ template <unsigned _IDX>
 inline
 uint16_t cftal::x86::extract_u16(__m128i v) {
     const bool cond = _IDX < 8;
-    static_assert (cond, "cftal::x86::extract_u16 _IDX < 8");
+    static_assert(cond, "cftal::x86::extract_u16 _IDX < 8");
     return _mm_extract_epi16(v, _IDX);
 }
 
@@ -225,7 +225,7 @@ inline
 __m128i cftal::x86::insert_u16(__m128i v, uint16_t i)
 {
     const bool cond = _IDX < 16;
-    static_assert (cond, "cftal::x86::insert_u16 _IDX < 16");
+    static_assert(cond, "cftal::x86::insert_u16 _IDX < 16");
     return _mm_insert_epi16(v, i, _IDX);
 }
 
@@ -234,7 +234,7 @@ inline
 uint32_t cftal::x86::extract_u32(__m128i v)
 {
     const bool cond = _IDX < 4;
-    static_assert (cond, "cftal::x86::extract_u32 _IDX < 4");
+    static_assert(cond, "cftal::x86::extract_u32 _IDX < 4");
     uint32_t r;
     if (_IDX==0) {
         r = _mm_cvtsi128_si32(v);
@@ -254,7 +254,7 @@ inline
 __m128i cftal::x86::insert_u32(__m128i v, uint32_t i)
 {
     const bool cond = _IDX < 4;
-    static_assert (cond, "cftal::x86::insert_u32 _IDX < 4");
+    static_assert(cond, "cftal::x86::insert_u32 _IDX < 4");
 #if defined (__SSE4_1__)
     return _mm_insert_epi32(v, i, _IDX);
 #else
@@ -285,7 +285,7 @@ template <unsigned _IDX>
 inline
 uint64_t cftal::x86::extract_u64(__m128i v) {
     const bool cond = _IDX < 2;
-    static_assert (cond, "cftal::x86::extract_u64 _IDX < 2");
+    static_assert(cond, "cftal::x86::extract_u64 _IDX < 2");
     uint64_t r;
 #if defined (__x86_64__)
     // 64 bit code
@@ -331,7 +331,7 @@ inline
 __m128i cftal::x86::insert_u64(__m128i v, uint64_t i)
 {
     const bool cond = _IDX < 2;
-    static_assert (cond, "cftal::x86::insert_u64_IDX < 2");
+    static_assert(cond, "cftal::x86::insert_u64_IDX < 2");
     __m128i r;
 #if defined (__SSE4_1__)
     // SSE4.1
@@ -371,7 +371,7 @@ inline
 float cftal::x86::extract_f32(__m256 v)
 {
     const bool cond = _IDX < 8;
-    static_assert (cond, "cftal::x86::extract_f32 _IDX < 8");
+    static_assert(cond, "cftal::x86::extract_f32 _IDX < 8");
     __m128 vv;
     if (_IDX<4) {
         vv = as<__m128>(v);
@@ -386,7 +386,7 @@ inline
 __m256 cftal::x86::insert_f32(__m256 v, float d)
 {
     const bool cond = _IDX < 8;
-    static_assert (cond, "cftal::x86::insert_f32 _IDX < 4");
+    static_assert(cond, "cftal::x86::insert_f32 _IDX < 4");
     __m256 r = v;
     __m256 vv;
     vv = _mm256_set1_ps(d);
@@ -424,7 +424,7 @@ inline
 double cftal::x86::extract_f64(__m256d v)
 {
     const bool cond = _IDX < 4;
-    static_assert (cond, "cftal::x86::extract_f64 _IDX < 4");
+    static_assert(cond, "cftal::x86::extract_f64 _IDX < 4");
     __m128d vv;
     if (_IDX<2) {
         vv = as<__m128d>(v);
@@ -439,7 +439,7 @@ inline
 __m256d cftal::x86::insert_f64(__m256d v, double d)
 {
     const bool cond = _IDX < 4;
-    static_assert (cond, "cftal::x86::insert_f64 _IDX < 4");
+    static_assert(cond, "cftal::x86::insert_f64 _IDX < 4");
     __m256d r = v;
     __m256d vv;
     vv = _mm256_set1_pd(d);
@@ -467,7 +467,7 @@ inline
 cftal::uint32_t cftal::x86::extract_u32(__m256i v)
 {
     const bool cond = _IDX < 8;
-    static_assert (cond, "cftal::x86::extract_u32 _IDX < 8");
+    static_assert(cond, "cftal::x86::extract_u32 _IDX < 8");
     __m128i vv;
     if (_IDX<4) {
         vv = as<__m128i>(v);
@@ -483,7 +483,7 @@ inline
 __m256i cftal::x86::insert_u32(__m256i v, uint32_t d)
 {
     const bool cond = _IDX < 8;
-    static_assert (cond, "cftal::x86::insert_u32 _IDX < 4");
+    static_assert(cond, "cftal::x86::insert_u32 _IDX < 4");
     __m256i r = v;
     __m256i vv;
     vv = _mm256_set1_epi32(d);
@@ -521,7 +521,7 @@ inline
 uint64_t cftal::x86::extract_u64(__m256i v)
 {
     const bool cond = _IDX < 4;
-    static_assert (cond, "cftal::x86::extract_u64 _IDX < 4");
+    static_assert(cond, "cftal::x86::extract_u64 _IDX < 4");
     __m128i vv;
     if (_IDX<2) {
         vv = as<__m128i>(v);
@@ -536,7 +536,7 @@ inline
 __m256i cftal::x86::insert_u64(__m256i v, uint64_t d)
 {
     const bool cond = _IDX < 4;
-    static_assert (cond, "cftal::x86::insert_u64 _IDX < 4");
+    static_assert(cond, "cftal::x86::insert_u64 _IDX < 4");
     __m256i r = v;
     __m256i vv;
     vv = _mm256_set1_epi64x(d);
