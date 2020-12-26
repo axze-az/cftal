@@ -31,8 +31,6 @@
 #include <cftal/mem.h>
 #include <cftal/vec_t_n.h>
 
-// #include <iostream>
-
 namespace cftal {
     namespace math {
 
