@@ -543,7 +543,7 @@ lanczos_rational_at(const _T& x,
         horner_comp(qh, ql, x, q);
     }
     _T pqh, pql;
-#if 1
+#if 0
     _T inv_qh, inv_ql;
     d_ops::rcp2(inv_qh, inv_ql, qh, ql);
     d_ops::mul22(pqh, pql, ph, pl, inv_qh, inv_ql);
