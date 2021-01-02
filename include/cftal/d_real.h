@@ -176,7 +176,6 @@ namespace cftal {
 
     };
 
-
     template <typename _T>
     class fp_expansion<_T, 2> {
         _T _e[2];
@@ -277,7 +276,6 @@ namespace cftal {
                const _T& ah, const _T& al, const _T& b);
 
         // return (zh, zl) = (ah, bl) + b
-        // with |ah| > b
         static
         void
         add212cond(_T& zh, _T& zl,
