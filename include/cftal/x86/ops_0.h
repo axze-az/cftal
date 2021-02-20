@@ -1367,9 +1367,51 @@ namespace cftal {
                 
                 static
                 __m256i v(int32_t i) {
-                    return _mm256_setr_epi32(i, i, i, i,i, i, i, i);
+                    return _mm256_setr_epi32(i, i, i, i, i, i, i, i);
                 }
             };            
+            
+            template <typename _V>
+            struct vbroadcastq {
+            };
+            
+            template <>
+            struct vbroadcastq<__m128i> {
+                static
+                __m128i v(__m128i a) {                   
+                    return vpshufd<0, 1, 0, 1>::v(a);
+                }
+                static
+                __m128i v(int64_t i) {
+                    return _mm_set_epi64x(i, i);
+                }
+            };
+            
+            template <>
+            struct vbroadcastq<__m256i> {
+                static
+                __m256i v(__m128i a) {
+#if defined (__AVX2__)
+                    return _mm256_broadcastq_epi64(a);
+#else
+                    __m128i b=vbroadcastq<__m128i>::v(a);
+                    __m256d s=_mm256_castpd128_pd256(sl);
+                    __m256d r=vinsertf128<1>::v(s, sl);
+                    return r;
+#endif                    
+                }
+
+                static
+                __m256i v(__m256i a) {
+                    return v(_mm256_castsi256_si128(a));
+                }
+                
+                static
+                __m256i v(int64_t i) {
+                    return _mm256_set_epi64x(i, i, i, i);
+                }
+            };            
+            
 #endif
         }
     }
