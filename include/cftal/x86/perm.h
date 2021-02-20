@@ -813,6 +813,10 @@ namespace cftal {
                 : public select_arg_1<__m256i> {};
                 
             template <>
+            struct perm1_v4u64<0, 0, 0, 0>
+                : public vbroadcastq<__m256i> {};
+
+            template <>
             struct perm1_v4u64<0, 0, 2, 2>
                 : public vpunpcklqdq {};
 
