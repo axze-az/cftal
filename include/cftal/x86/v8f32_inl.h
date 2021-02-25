@@ -34,7 +34,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct lt<float, 8> {
             using full_type = vec<float, 8>;
@@ -524,7 +523,6 @@ cftal::nfms(const v8f32& a, const v8f32& b, const v8f32& c)
     return -(a*b) - c;
 #endif
 }
-
 
 inline
 cftal::v8f32 cftal::copysign(const v8f32& x, const v8f32& y)

@@ -29,7 +29,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct lt<uint16_t, 8> {
             using full_type = vec<uint16_t, 8>;

@@ -21,7 +21,6 @@
 
 namespace cftal {
 
-
     namespace op {
 
         template <>
@@ -35,7 +34,6 @@ namespace cftal {
                 return _mm512_xor_pd(a(), all_set());
             }
         };
-
 
         template <>
         struct lt<double, 8> {

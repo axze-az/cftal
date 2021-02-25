@@ -29,7 +29,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct lt<uint32_t, 8> {
             using full_type = vec<uint32_t, 8>;
@@ -409,8 +408,8 @@ cftal::mem<cftal::vec<uint32_t, 8> >::load(const uint32_t* p, std::size_t s)
 
 inline
 void
-cftal::mem<cftal::vec<uint32_t, 8> >::store(uint32_t* p,
-                                            const vec<uint32_t, 8>& v)
+cftal::mem<cftal::vec<uint32_t, 8> >::
+store(uint32_t* p, const vec<uint32_t, 8>& v)
 {
     _mm256_storeu_si256(reinterpret_cast<__m256i*>(p), v());
 }
@@ -534,8 +533,6 @@ cftal::mul_lo_hi(const v8u32& x, const v8u32& y)
                      7, 7+8>(e, o);
     return std::make_pair(l, h);
 }
-
-
 
 // Local variables:
 // mode: c++

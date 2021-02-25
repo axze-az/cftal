@@ -33,7 +33,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct lt<double, 2> {
             using full_type = vec<double, 2>;
@@ -659,7 +658,6 @@ cftal::permute(const vec<double, 2>& v)
     return x86::perm_v2f64<_I0, _I1>(v());
 }
 
-
 template <int _I0, int _I1>
 inline
 cftal::vec<double, 2>
@@ -684,7 +682,6 @@ from(const double* tbl) const
     return _mm_i32gather_pd(tbl, _msk(), sizeof(double));
 }
 #endif
-
 
 #if defined (__SSSE3__)
 inline
