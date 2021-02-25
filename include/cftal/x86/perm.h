@@ -954,10 +954,12 @@ template <int _P0, int _P1>
 inline
 __m128d cftal::x86::impl::perm1_v2f64<_P0, _P1>::v(__m128d a)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif    
     const int m1 = pos_msk_2<_P0, _P1, 1>::m;
     const int m2 = zero_msk_2<_P0, _P1>::m;
     // is shuffling needed
@@ -999,18 +1001,22 @@ __m128d cftal::x86::impl::perm1_v2f64<_P0, _P1>::v(__m128d a)
     }
     // trivial case: do n
     return a;
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
+#endif
 }
 
 template <int _P0, int _P1>
 inline
 __m128d cftal::x86::impl::perm2_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
     const int m1 = pos_msk_2<_P0, _P1, 3>::m;
@@ -1033,17 +1039,21 @@ __m128d cftal::x86::impl::perm2_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
     }
     // first element from b, second element from a
     return vshufpd<uint32_t(_P0), uint32_t(_P1)>::v(b, a);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
 __m128 cftal::x86::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 3>::m;
     const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
 
@@ -1125,17 +1135,21 @@ __m128 cftal::x86::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
     const __m128 zm= const_v4u32<z0, z1, z2, z3>::fv();
     return  _mm_and_ps(t,zm);
 #endif
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
 __m128 cftal::x86::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
     const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 7>::m;
@@ -1223,17 +1237,21 @@ __m128 cftal::x86::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
     const int mb3 = sm3 ? 0 : (_P3-4);
     __m128 tb = perm1_v4f32<mb0, mb1, mb2, mb3>::v(b);
     return  select_v4f32<sm0, sm1, sm2, sm3>::v(ta, tb);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop    
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
 __m128i cftal::x86::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 3>::m;
     const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
     const bool do_shuffle = ((m1 ^ 0x3210) & m2) !=0;
@@ -1325,17 +1343,21 @@ __m128i cftal::x86::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
     // zero with AND mask
     return  _mm_and_si128(t,zm);
 #endif
+#if 0
 #pragma GCC diagnostic pop    
 #pragma clang diagnostic pop   
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
 __m128i cftal::x86::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
     const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 7>::m;
@@ -1424,8 +1446,10 @@ __m128i cftal::x86::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i 
     const int mb3 = sm3 ? 0 : (_P3-4);
     __m128i tb = perm1_v4u32<mb0, mb1, mb2, mb3>::v(b);
     return  select_v4u32<sm0, sm1, sm2, sm3>::v(ta, tb);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop    
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -1434,10 +1458,12 @@ inline
 __m128i cftal::x86::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
                                       _P4, _P5, _P6, _P7>::v(__m128i a)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"    
+#endif
     const int me= pos_msk_4<_P0, _P2, _P4, _P6, 7>::m;
     const int mo= pos_msk_4<_P1, _P3, _P5, _P7, 7>::m;
     const int mez= zero_msk_4<_P0, _P2, _P4, _P6>::m;
@@ -1670,8 +1696,10 @@ __m128i cftal::x86::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
     }
     return r;
 #endif
+#if 0
 #pragma GCC diagnostic pop    
 #pragma clang diagnostic pop       
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -1680,10 +1708,12 @@ inline
 __m128i cftal::x86::impl::perm2_v8u16<_P0, _P1, _P2, _P3,
                                       _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     const int me= pos_msk_4<_P0, _P2, _P4, _P6, 7>::m;
     const int mo= pos_msk_4<_P1, _P3, _P5, _P7, 7>::m;
     const int mez= zero_msk_4<_P0, _P2, _P4, _P6>::m;
@@ -1767,8 +1797,10 @@ __m128i cftal::x86::impl::perm2_v8u16<_P0, _P1, _P2, _P3,
     const int mb7 = _P7 > 7 ? (_P7-8) : -1;
     __m128i b1 = perm1_v8u16<mb0, mb1, mb2, mb3, mb4, mb5, mb6, mb7>::v(b);
     return _mm_or_si128(a1,b1);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop    
+#endif
 }
 
 #if defined (__AVX__)
@@ -1776,10 +1808,12 @@ __m128i cftal::x86::impl::perm2_v8u16<_P0, _P1, _P2, _P3,
 template <int _P0, int _P1, int _P2, int _P3>
 __m256d cftal::x86::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 3>::m;
     const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
 
@@ -1875,17 +1909,21 @@ __m256d cftal::x86::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
         res = _mm256_and_pd(res, zm);
     }
     return res;
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop    
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
 __m256d cftal::x86::impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
     const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 7>::m;
@@ -1924,8 +1962,10 @@ __m256d cftal::x86::impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d 
     const int mb3 = sm3 ? 0 : (_P3-4);
     __m256d tb = perm1_v4f64<mb0, mb1, mb2, mb3>::v(b);
     return select_v4f64<sm0, sm1, sm2, sm3>::v(ta, tb);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop    
+#endif
 }
 
 
@@ -1935,10 +1975,12 @@ inline
 __m256 cftal::x86::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
                                      _P4, _P5, _P6, _P7>::v(__m256 a)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     const int me= pos_msk_4<_P0, _P2, _P4, _P6, 7>::m;
     const int mo= pos_msk_4<_P1, _P3, _P5, _P7, 7>::m;
     const int mez= zero_msk_4<_P0, _P2, _P4, _P6>::m;
@@ -2064,8 +2106,10 @@ __m256 cftal::x86::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
         res = _mm256_and_ps(res, zm);
     }
     return res;
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop    
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -2073,10 +2117,12 @@ template <int _P0, int _P1, int _P2, int _P3,
 __m256 cftal::x86::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
                                      _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
     const unsigned m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
@@ -2134,8 +2180,10 @@ __m256 cftal::x86::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
                             mb4, mb5, mb6, mb7>::v(b);
     return  select_v8f32<sm0, sm1, sm2, sm3,
                          sm4, sm5, sm6, sm7>::v(a1 ,b1);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop                         
+#endif
 }
 
 #endif
@@ -2143,10 +2191,12 @@ __m256 cftal::x86::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
 template <int _P0, int _P1, int _P2, int _P3>
 __m256i cftal::x86::impl::perm1_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 3>::m;
     const int m2 = zero_msk_4<_P0, _P1, _P2, _P3>::m;
 
@@ -2197,17 +2247,21 @@ __m256i cftal::x86::impl::perm1_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a)
         res = _mm256_and_si256(res, zm);
     }
     return res;
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop    
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
 __m256i cftal::x86::impl::perm2_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i b)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
     const int m1 = pos_msk_4<_P0, _P1, _P2, _P3, 7>::m;
@@ -2246,8 +2300,10 @@ __m256i cftal::x86::impl::perm2_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i 
     const int mb3 = sm3 ? 0 : (_P3-4);
     __m256i tb = perm1_v4u64<mb0, mb1, mb2, mb3>::v(b);
     return  select_v4u64<sm0, sm1, sm2, sm3>::v(ta, tb);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop    
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -2257,10 +2313,12 @@ __m256i
 cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
                               _P4, _P5, _P6, _P7>::v(__m256i a)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     const int me= pos_msk_4<_P0, _P2, _P4, _P6, 7>::m;
     const int mo= pos_msk_4<_P1, _P3, _P5, _P7, 7>::m;
     const int mez= zero_msk_4<_P0, _P2, _P4, _P6>::m;
@@ -2328,8 +2386,10 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
         res = _mm256_and_si256(res, zm);
     }
     return res;
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop    
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -2338,10 +2398,12 @@ __m256i
 cftal::x86::impl::perm2_v8u32<_P0, _P1, _P2, _P3,
                               _P4, _P5, _P6, _P7>::v(__m256i a, __m256i b)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
     const unsigned m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
@@ -2399,8 +2461,10 @@ cftal::x86::impl::perm2_v8u32<_P0, _P1, _P2, _P3,
                              mb4, mb5, mb6, mb7>::v(b);
     return select_v8u32<sm0, sm1, sm2, sm3,
                          sm4, sm5, sm6, sm7>::v(a1 ,b1);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
+#endif
 }
 
 #endif
@@ -2412,10 +2476,12 @@ __m512d
 cftal::x86::impl::
 perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
     const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
     const bool do_zero= m2 != 0xFFFFFFFF;
@@ -2451,8 +2517,10 @@ perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
         return _mm512_maskz_permutexvar_pd(zm, pperm, a);
     }
     return _mm512_permutexvar_pd(pperm, a);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
+#endif
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -2462,10 +2530,12 @@ __m512d
 cftal::x86::impl::
 perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
 {
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
     const unsigned m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
@@ -2520,8 +2590,10 @@ perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
         return _mm512_maskz_permutex2var_pd(a, zm, pperm, b);
     }
     return _mm512_permutex2var_pd(a, pperm, b);
+#if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
+#endif
 }
 #endif
 
