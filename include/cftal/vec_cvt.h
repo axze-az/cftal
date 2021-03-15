@@ -183,6 +183,7 @@ namespace cftal {
     namespace impl {
 
         // convert according to current rounding mode
+        // to _D from _S
         template <typename _D, typename _S>
         struct cvt {
             static
@@ -192,6 +193,7 @@ namespace cftal {
         };
 
         // convert with truncation (i.e. round to zero)
+        // to _D from _S
         template <typename _D, typename _S>
         struct cvt_rz {
             static
@@ -200,6 +202,8 @@ namespace cftal {
             _D h(const _S& s);
         };
 
+        // conversion from vector<_S, _N>  to vector<_D, _N>
+        // using truncation, i.e. round towards zero
         template <typename _D, typename _S, std::size_t _N>
         struct cvt_rz<vec<_D, _N>, vec<_S, _N> >  {
             static const std::size_t _NHALF = _N/2;
@@ -219,6 +223,8 @@ namespace cftal {
             }
         };
 
+        // conversion from vector<_S, 1>  to vector<_D, 1>
+        // using truncation, i.e. round towards zero
         template <typename _D, typename _S>
         struct cvt_rz<vec<_D, 1>, vec<_S, 1> > {
             static
@@ -233,6 +239,8 @@ namespace cftal {
             }
         };
 
+        // conversion from vector<_S, _N>  to vector<_D, _N>
+        // using the current rounding mode
         template <typename _D, typename _S, std::size_t _N>
         struct cvt<vec<_D, _N>, vec<_S, _N> > {
             static const std::size_t _NHALF = _N/2;
@@ -258,6 +266,7 @@ namespace cftal {
             : public cvt_rz<vec<_D, 1>, vec<_S, 1> > {};
 
         // narrowing specializations
+        // conversion from vector<double, 1>  to vector<int32_t, 1>
         template <>
         struct cvt<vec<int32_t, 1>, vec<double, 1> > {
             static
@@ -273,6 +282,8 @@ namespace cftal {
             }
         };
 
+        // narrowing specializations
+        // conversion from vector<float, 1>  to vector<int32_t, 1>
         template<>
         struct cvt<vec<int32_t, 1>, vec<float, 1> > {
             static
@@ -287,7 +298,6 @@ namespace cftal {
                 return l(s);
             }
         };
-
 
 #if defined (__SSE2__)
         template <>
