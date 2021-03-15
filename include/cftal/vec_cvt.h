@@ -403,51 +403,28 @@ namespace cftal {
             }
         };
 
+#if defined (__AVX__)        
         template <>
         struct cvt<v4s32, v4f64> {
             static v4s32 l(const v4f64& s) {
-#if !defined (__AVX__)
-                v2f64 sl= low_half(s);
-                v2f64 sh= high_half(s);
-                v4s32 il= cvt<v4s32, v2f64>::l(sl);
-                v4s32 ih= cvt<v4s32, v2f64>::l(sh);
-                return v4s32(permute<0, 1, 4, 5>(il, ih));
-#else
                 return _mm256_cvtpd_epi32(s());
-#endif
             }
         };
 
         template <>
         struct cvt_rz<v4s32, v4f64> {
             static v4s32 l(const v4f64& s) {
-#if !defined (__AVX__)
-                v2f64 sl= low_half(s);
-                v2f64 sh= high_half(s);
-                v4s32 il= cvt_rz<v4s32, v2f64>::l(sl);
-                v4s32 ih= cvt_rz<v4s32, v2f64>::l(sh);
-                return v4s32(permute<0, 1, 4, 5>(il, ih));
-#else
                 return _mm256_cvttpd_epi32(s());
-#endif
             }
         };
 
         template <>
         struct cvt<v4f64, v4s32> {
             static v4f64 l(const v4s32&s) {
-#if !defined (__AVX__)
-                v2f64 fl= cvt<v2f64, v4s32>::l(s);
-                v4s32 sh= permute<2, 3, 2, 3>(s);
-                v2f64 fh= cvt<v2f64, v4s32>::l(sh);
-                return v4f64(fl, fh);
-#else
                 return _mm256_cvtepi32_pd(s());
-#endif
             }
         };
 
-#if defined (__AVX__)
         template <>
         struct cvt<v8f32, v8s32> {
             static v8f32 l(const v8s32& v) {
@@ -463,9 +440,7 @@ namespace cftal {
 #endif
             }
         };
-#endif
 
-#if defined(__AVX__)
         template <>
         struct cvt<v8s32, v8f32> {
             static v8s32 l(const v8f32& v) {
@@ -479,18 +454,14 @@ namespace cftal {
 #endif
             }
         };
-#endif
 
-#if defined (__AVX__)
         template <>
         struct cvt<v4f32, v4f64> {
             static v4f32 l(const v4f64& s) {
                 return _mm256_cvtpd_ps(s());
             }
         };
-#endif
 
-#if defined (__AVX__)
         template <>
         struct cvt<v4f64, v4f32> {
             static v4f64 l(const v4f32& s) {
@@ -507,8 +478,6 @@ namespace cftal {
             static v4f64 h(const v8f32& a) {
                 return cvt<v4f64, v4f32>::l(high_half(a));
             }
-
-
         };
 
         template <>
