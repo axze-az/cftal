@@ -302,21 +302,51 @@ namespace cftal {
 #if defined (__SSE2__)
         template <>
         struct cvt<v4f32, v2f64> {
-            static v4f32 l(const v2f64& d) {
-                return _mm_cvtpd_ps(d());
+            static v4f32 l(const v2f64& s) {
+                return _mm_cvtpd_ps(s());
             }
         };
 
         template <>
         struct cvt<v2f64, v4f32> {
-            static v2f64 l(const v4f32& d) {
-                return _mm_cvtps_pd(d());
+            static v2f64 l(const v4f32& s) {
+                return _mm_cvtps_pd(s());
             }
-            static v2f64 h(const v4f32& d) {
-                return l(permute<2,3,0,1>(d));
+            static v2f64 h(const v4f32& s) {
+                return l(permute<2,3,0,1>(s));
             }
         };
-#if 1
+        
+        template <>
+        struct cvt<v2f32, v2f64> {
+            static v2f32 l(const v2f64& s) {
+                return low_half(cvt<v4f32, v2f64>::l(s));
+            }
+        };
+        
+        template <>
+        struct cvt<v2f64, v2f32> {
+            static v2f64 l(const v2f32& s) {
+                return cvt<v2f64, v4f32>::l(v4f32(s, s));
+            }
+        };
+             
+        template <>
+        struct cvt<v4s32, v2f64> {
+            static v4s32 l(const v2f64& d) {
+                v4s32 r=_mm_cvtpd_epi32(d());
+                return r;
+            }
+        };
+
+        template <>
+        struct cvt_rz<v4s32, v2f64> {
+            static v4s32 l(const v2f64& d) {
+                v4s32 r=_mm_cvttpd_epi32(d());
+                return r;
+            }
+        };
+        
         template <>
         struct cvt<v2s32, v2f64> {
             static v2s32 l(const v2f64& d) {
@@ -340,23 +370,7 @@ namespace cftal {
                 return _mm_cvtepi32_pd(t());
             };
         };
-#endif
 
-        template <>
-        struct cvt<v4s32, v2f64> {
-            static v4s32 l(const v2f64& d) {
-                v4s32 r=_mm_cvtpd_epi32(d());
-                return r;
-            }
-        };
-
-        template <>
-        struct cvt_rz<v4s32, v2f64> {
-            static v4s32 l(const v2f64& d) {
-                v4s32 r=_mm_cvttpd_epi32(d());
-                return r;
-            }
-        };
 
         template <>
         struct cvt<v2f64, v4s32> {
@@ -433,10 +447,10 @@ namespace cftal {
             }
         };
 
+#if defined (__AVX__)
         template <>
         struct cvt<v8f32, v8s32> {
             static v8f32 l(const v8s32& v) {
-#if defined (__AVX__)
 #if defined (__AVX2__)
                 __m256 f(_mm256_cvtepi32_ps(v()));
                 return f;
@@ -447,18 +461,14 @@ namespace cftal {
                 __m256 f(_mm256_cvtepi32_ps(vv));
                 return f;
 #endif
-#else
-                v4f32 lh(cvt<v4f32, v4s32>::l(low_half(v)));
-                v4f32 hh(cvt<v4f32, v4s32>::l(high_half(v)));
-                return v8f32(lh, hh);
-#endif
             }
         };
+#endif
 
+#if defined(__AVX__)
         template <>
         struct cvt<v8s32, v8f32> {
             static v8s32 l(const v8f32& v) {
-#if defined(__AVX__)
                 __m256i vi=_mm256_cvtps_epi32(v());
 #if defined (__AVX2__)
                 return v8s32(vi);
@@ -467,42 +477,27 @@ namespace cftal {
                 __m128i lh(_mm256_castsi256_si128(vi));
                 return v8s32(lh, hh);
 #endif
-#else
-                v4s32 lh(cvt<v4s32, v4f32>::l(low_half(v)));
-                v4s32 hh(cvt<v4s32, v4f32>::l(high_half(v)));
-                return v8s32(lh, hh);
-#endif
             }
         };
+#endif
 
-
+#if defined (__AVX__)
         template <>
         struct cvt<v4f32, v4f64> {
             static v4f32 l(const v4f64& s) {
-#if defined (__AVX__)
                 return _mm256_cvtpd_ps(s());
-#else
-                v4f32 lh(cvt<v4f32, v2f64>::l(low_half(s)));
-                v4f32 hh(cvt<v4f32, v2f64>::l(high_half(s)));
-                v4f32 r(permute<0, 1, 4, 5>(lh, hh));
-                return r;
-#endif
             }
         };
+#endif
 
-
+#if defined (__AVX__)
         template <>
         struct cvt<v4f64, v4f32> {
             static v4f64 l(const v4f32& s) {
-#if defined (__AVX__)
                 return _mm256_cvtps_pd(s());
-#else
-                v2f64 lh(cvt<v2f64, v4f32>::l(s));
-                v2f64 hh(cvt<v2f64, v4f32>::h(s));
-                return v4f64(lh, hh);
-#endif
             }
         };
+#endif
 
         template <>
         struct cvt<v4f64, v8f32> {
