@@ -299,6 +299,40 @@ namespace cftal {
             }
         };
 
+        // narrowing specializations
+        // conversion from vector<double, 1>  to vector<int32_t, 1>
+        template <>
+        struct cvt<vec<int64_t, 1>, vec<double, 1> > {
+            static
+            vec<int64_t, 1>
+            l(const vec<double, 1>& s) {
+                return vec<int64_t, 1>(
+                    static_cast<int64_t>(std::rint(s())));
+            }
+            static
+            vec<int64_t, 1>
+            h(const vec<double, 1>& s) {
+                return l(s);
+            }
+        };
+
+        // narrowing specializations
+        // conversion from vector<float, 1>  to vector<int64_t, 1>
+        template<>
+        struct cvt<vec<int64_t, 1>, vec<float, 1> > {
+            static
+            vec<int64_t, 1>
+            l(const vec<float, 1>& s) {
+                return vec<int64_t, 1>(
+                    static_cast<int64_t>(std::rintf(s())));
+            }
+            static
+            vec<int64_t, 1>
+            h(const vec<float, 1>& s) {
+                return l(s);
+            }
+        };
+        
 #if defined (__SSE2__)
         template <>
         struct cvt<v4f32, v2f64> {
