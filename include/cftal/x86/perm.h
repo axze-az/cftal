@@ -577,6 +577,7 @@ namespace cftal {
             // specialization of permutations of two double
             // vectors
             template <>
+            
             struct perm2_v4f64<-1,-1,-1,-1>
                 : public make_zero_v4f64 {};
             template <>
@@ -718,7 +719,7 @@ namespace cftal {
 
             template <>
             struct perm1_v8f32<0, 0, 0, 0, 0, 0, 0, 0>
-                : public vbroadcastsd<__m256> {};
+                : public vbroadcastss<__m256> {};
 
             template <>
             struct perm1_v8f32<0, 1, 2, 3, 4, 5, 6, 7>
@@ -761,6 +762,18 @@ namespace cftal {
                 : public exec_f64<vunpckhpd> {};
 
             template <>
+            struct perm2_v8f32<-1, -1, -1, -1, -1, -1, -1, -1> 
+                : public make_zero_v8f32{};
+
+            template <>
+            struct perm2_v8f32<0, 1, 2, 3, 4, 5, 6, 7> 
+                : public select_arg_1<__m256> {};
+                
+            template <>
+            struct perm2_v8f32<8, 9, 10, 11, 12, 13, 14, 15> 
+                : public select_arg_2<__m256> {};
+
+            template <>
             struct perm2_v8f32<0, 8, 1, 9, 4, 12, 5, 13>
                 : public vunpcklps {};
 
@@ -773,9 +786,25 @@ namespace cftal {
                 : public exec_f64<vunpcklpd> {};
 
             template <>
-            struct perm1_v8f32<2, 3, 10, 11, 6, 7, 14, 15>
+            struct perm2_v8f32<2, 3, 10, 11, 6, 7, 14, 15>
                 : public exec_f64<vunpckhpd> {};
 
+            template <>
+            struct perm2_v8f32<0, 1, 2, 3, 8, 9, 10, 11>
+                : public vinsertf128<1> {};
+                
+            template <>
+            struct perm2_v8f32<0, 1, 2, 3, 12, 13, 14, 15>
+                : public vperm2f128<0, 3> {};
+                
+            template <>
+            struct perm2_v8f32<4, 5, 6, 7, 8, 9, 10, 11>
+                : public vperm2f128<1, 2> {};
+                
+            template <>
+            struct perm2_v8f32<4, 5, 6, 7, 12, 13, 14, 15>
+                : public vperm2f128<1, 3> {};
+                
 #endif
 #if defined (__AVX2__)
             // generic permutation of one u64 vector
@@ -790,19 +819,6 @@ namespace cftal {
                 static __m256i v(__m256i a, __m256i b);
             };
 
-            // generic permutation of one u32 vector
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm1_v8u32 {
-                static __m256i v(__m256i a);
-            };
-
-            // generic permutation of two u32 vectors
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm2_v8u32 {
-                static __m256i v(__m256i a, __m256i b);
-            };
 
             template <>
             struct perm1_v4u64<-1,-1,-1,-1>
@@ -832,6 +848,21 @@ namespace cftal {
             struct perm1_v4u64<-1, 0, -1, 2>
                 : public fixed_arg_1<__m256i, make_zero_int256,
                                      vpunpcklqdq> {};
+
+                                     
+            // generic permutation of one u32 vector
+            template <int _P0, int _P1, int _P2, int _P3,
+                      int _P4, int _P5, int _P6, int _P7>
+            struct perm1_v8u32 {
+                static __m256i v(__m256i a);
+            };
+
+            // generic permutation of two u32 vectors
+            template <int _P0, int _P1, int _P2, int _P3,
+                      int _P4, int _P5, int _P6, int _P7>
+            struct perm2_v8u32 {
+                static __m256i v(__m256i a, __m256i b);
+            };
 
             template <>
             struct perm1_v8u32<-1, -1, -1, -1, -1, -1, -1, -1>

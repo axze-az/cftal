@@ -1280,6 +1280,12 @@ namespace cftal {
                     return r;
 #endif
                 }
+                
+                static
+                __m256 v(__m256 a) {
+                    return v(_mm256_castps256_ps128(a));
+                }
+                
                 static
                 __m256 v(float f) {
                     return _mm256_setr_ps(f, f, f, f, f, f, f, f);
