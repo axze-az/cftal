@@ -882,6 +882,10 @@ namespace cftal {
             template <>
             struct perm1_v8u32<2, 3, 2, 3, 6, 7, 6, 7>
                 : public vpunpckhqdq {};
+                
+            template <>
+            struct perm1_v8u32<0, -1, 1, -1, 2, -1, 3, -1>
+                : public vpmovzxdq {};                        
 
             template <>
             struct perm2_v8u32<0, 1, 8, 9, 4, 5, 12, 13>

@@ -376,7 +376,7 @@ namespace cftal {
             struct splat_v4f32 : public vshufps<_P, _P, _P, _P> {};
 
             template <unsigned _P>
-            struct splat_u64
+            struct splat_v2u64
                 : public vpshufd<2*_P,2*_P+1, 2*_P,2*_P+1> {};
 
             template <unsigned _P>
@@ -610,6 +610,15 @@ namespace cftal {
                                               _mm_setzero_si128());
 #endif
                 }
+#if defined (__AVX2__)
+                static __m256i v(__m256i a, __m256i b) {
+                    static_cast<void>(b);
+                    return v(a);
+                }
+                static __m256i v(__m256i a) {                    
+                    return _mm256_cvtepu32_epi64(_mm256_castsi256_si128(a));
+                }
+#endif
             };
 
             struct vpsllw {
