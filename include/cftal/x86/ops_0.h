@@ -68,7 +68,16 @@ namespace cftal {
                     return v(a, a);
                 }
             };
-
+            
+#if 0            
+            template <class _T, class _OP>
+            struct dup_arg {
+                static _T v(_T a) {
+                    return _OP::v(a, a);
+                }
+            };
+#endif
+            
             template <class _INT_OP>
             struct exec_int {
                 // float: cast to int, exec, cast back

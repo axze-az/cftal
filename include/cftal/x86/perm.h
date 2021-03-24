@@ -760,7 +760,19 @@ namespace cftal {
             template <>
             struct perm1_v8f32<2, 3, 2, 3, 6, 7, 6, 7>
                 : public exec_f64<vunpckhpd> {};
+                
+            template <>
+            struct perm1_v8f32<0, 1, 2, 3, 0, 1, 2, 3>
+                : public vinsertf128<1> {};
+                
+            template <>
+            struct perm1_v8f32<4, 5, 6, 7, 0, 1, 2, 3>
+                : public vperm2f128<1, 0> {};
 
+            template <>
+            struct perm1_v8f32<4, 5, 6, 7, 4, 5, 6, 7>
+                : public vperm2f128<1, 1> {};
+                
             template <>
             struct perm2_v8f32<-1, -1, -1, -1, -1, -1, -1, -1> 
                 : public make_zero_v8f32{};
@@ -849,6 +861,22 @@ namespace cftal {
                 : public fixed_arg_1<__m256i, make_zero_int256,
                                      vpunpcklqdq> {};
 
+            template <>
+            struct perm2_v4u64<0, 1, 4, 5>
+                : public vinsertf128<1> {};
+                
+            template <>
+            struct perm2_v4u64<0, 1, 6, 7>
+                : public vperm2f128<0, 3> {};
+                
+            template <>
+            struct perm2_v4u64<2, 3, 4, 5>
+                : public vperm2f128<1, 2> {};
+                
+            template <>
+            struct perm2_v4u64<2, 3, 6, 7>
+                : public vperm2f128<1, 3> {};
+                             
                                      
             // generic permutation of one u32 vector
             template <int _P0, int _P1, int _P2, int _P3,
@@ -903,6 +931,22 @@ namespace cftal {
             struct perm2_v8u32<2, 10, 3, 11, 6, 14, 7, 15>
                 : public vpunpckhdq {};
 
+            template <>
+            struct perm2_v8u32<0, 1, 2, 3, 8, 9, 10, 11>
+                : public vinsertf128<1> {};
+                
+            template <>
+            struct perm2_v8u32<0, 1, 2, 3, 12, 13, 14, 15>
+                : public vperm2f128<0, 3> {};
+                
+            template <>
+            struct perm2_v8u32<4, 5, 6, 7, 8, 9, 10, 11>
+                : public vperm2f128<1, 2> {};
+                
+            template <>
+            struct perm2_v8u32<4, 5, 6, 7, 12, 13, 14, 15>
+                : public vperm2f128<1, 3> {};
+                
 #endif
 #if defined (__AVX512F__)
             // generic permutation of one v8f64 vector
