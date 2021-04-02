@@ -87,16 +87,16 @@ namespace cftal {
         static
         void split(double a, double& hi, double& lo) {
             // 2^996 = 2^{1023-28+1}
-            const double split_threshold=
+            constexpr const double split_threshold=
                 6.69692879491417e+299;
             // 2^27 + 1
-            const double split_val =
+            constexpr const double split_val =
                 134217729.0;
             // 2^-28
-            const double split_scale_down=
+            constexpr const double split_scale_down=
                 3.7252902984619140625e-09;
             // 2^28
-            const double split_scale_up =
+            constexpr const double split_scale_up =
                 268435456.0;
             cmp_result_type is_big(std::fabs(a) > split_threshold);
             double temp;
@@ -143,13 +143,13 @@ namespace cftal {
         static
         void split(float a, float& hi, float& lo) {
             // 2^13 + 1
-            const float split_val=8193.0f;
+            constexpr const float split_val=8193.0f;
             // 2^115 = 2^{127-14+1}
-            const float split_threshold= 4.15383749e+34f;
+            constexpr const float split_threshold= 4.15383749e+34f;
             // 2^-14
-            const float split_scale_down = 1.0f/16384.0f;
+            constexpr const float split_scale_down = 1.0f/16384.0f;
             // 2^14
-            const float split_scale_up = 16384.0f;
+            constexpr const float split_scale_up = 16384.0f;
             cmp_result_type is_big(std::fabs(a) > split_threshold);
             float temp;
             if (__unlikely(any_of_v(is_big))) {
@@ -932,7 +932,8 @@ unorm_sqr22(_T& pzh, _T& pzl,
 {
     _T ph = xh * xh;
     _T pl = fms(xh, xh, ph);
-    _T xl2= _T(2.0)*xl;
+    // _T xl2= _T(2.0)*xl;
+    _T xl2 = xl+xl;
     pl = fma(xh, xl2, pl);
     pzh = ph;
     pzl = pl;
