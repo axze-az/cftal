@@ -964,6 +964,24 @@ namespace cftal {
             };
 #endif
 
+            // generic permutation of one v16u8 vector
+            template <int _P00, int _P01, int _P02, int _P03,
+                      int _P04, int _P05, int _P06, int _P07,
+                      int _P08, int _P09, int _P10, int _P11,
+                      int _P12, int _P13, int _P14, int _P15>
+            struct perm1_v16u8 {
+                static __m128i v(__m128i a);
+            };
+
+            // generic permutation of one v16u8 vector
+            template <int _P00, int _P01, int _P02, int _P03,
+                      int _P04, int _P05, int _P06, int _P07,
+                      int _P08, int _P09, int _P10, int _P11,
+                      int _P12, int _P13, int _P14, int _P15>
+            struct perm2_v16u8 {
+                static __m128i v(__m128i a, __m128i b);
+            };
+            
         }
 
         template <int _P0, int _P1>
@@ -1026,6 +1044,20 @@ namespace cftal {
                   int _P4, int _P5, int _P6, int _P7>
         __m512d perm_v8f64(__m512d a, __m512d b);
 #endif
+
+        // generic permutation of one v16u8 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        __m128i perm_v16u8(__m128i a);
+
+        // generic permutation of one v16u8 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        __m128i perm_v16u8(__m128i a, __m128i b);
     }
 }
 
@@ -2676,6 +2708,114 @@ perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
 }
 #endif
 
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+inline
+__m128i
+cftal::x86::impl::
+perm1_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+v(__m128i a)
+{
+#ifdef __SSSE3__
+    constexpr const uint8_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
+    constexpr const uint8_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
+    constexpr const uint8_t c02 = (_P02 < 0) ? -1 : _P02 & 15;
+    constexpr const uint8_t c03 = (_P03 < 0) ? -1 : _P03 & 15;
+    constexpr const uint8_t c04 = (_P04 < 0) ? -1 : _P04 & 15;
+    constexpr const uint8_t c05 = (_P05 < 0) ? -1 : _P05 & 15;
+    constexpr const uint8_t c06 = (_P06 < 0) ? -1 : _P06 & 15;
+    constexpr const uint8_t c07 = (_P07 < 0) ? -1 : _P07 & 15;
+    constexpr const uint8_t c08 = (_P08 < 0) ? -1 : _P08 & 15;
+    constexpr const uint8_t c09 = (_P09 < 0) ? -1 : _P09 & 15;
+    constexpr const uint8_t c10 = (_P10 < 0) ? -1 : _P10 & 15;
+    constexpr const uint8_t c11 = (_P11 < 0) ? -1 : _P11 & 15;
+    constexpr const uint8_t c12 = (_P12 < 0) ? -1 : _P12 & 15;
+    constexpr const uint8_t c13 = (_P13 < 0) ? -1 : _P13 & 15;
+    constexpr const uint8_t c14 = (_P14 < 0) ? -1 : _P14 & 15;
+    constexpr const uint8_t c15 = (_P15 < 0) ? -1 : _P15 & 15;
+    const __m128i msk=const_v16u8<c00, c01, c02, c03,
+                                  c04, c05, c06, c07,
+                                  c08, c09, c10, c11,
+                                  c12, c13, c14, c15>::iv();
+    return _mm_shuffle_epi8(a, msk);
+#else
+#endif
+}
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+inline
+__m128i
+cftal::x86::impl::
+perm2_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+v(__m128i a, __m128i b)
+{
+    constexpr const bool sm00 = _P00 < 16;
+    constexpr const bool sm01 = _P01 < 16;
+    constexpr const bool sm02 = _P02 < 16;
+    constexpr const bool sm03 = _P03 < 16;
+    constexpr const bool sm04 = _P04 < 16;
+    constexpr const bool sm05 = _P05 < 16;
+    constexpr const bool sm06 = _P06 < 16;
+    constexpr const bool sm07 = _P07 < 16;
+    constexpr const bool sm08 = _P08 < 16;
+    constexpr const bool sm09 = _P09 < 16;
+    constexpr const bool sm10 = _P10 < 16;
+    constexpr const bool sm11 = _P11 < 16;
+    constexpr const bool sm12 = _P12 < 16;
+    constexpr const bool sm13 = _P13 < 16;
+    constexpr const bool sm14 = _P14 < 16;
+    constexpr const bool sm15 = _P15 < 16;
+    // select all elements to clear or from first vector
+    constexpr const int ma00 = sm00 ? ((_P00 < 0) ? -1 : _P00 & 15) : -1;
+    constexpr const int ma01 = sm01 ? ((_P01 < 0) ? -1 : _P01 & 15) : -1;
+    constexpr const int ma02 = sm02 ? ((_P02 < 0) ? -1 : _P02 & 15) : -1;
+    constexpr const int ma03 = sm03 ? ((_P03 < 0) ? -1 : _P03 & 15) : -1;
+    constexpr const int ma04 = sm04 ? ((_P04 < 0) ? -1 : _P04 & 15) : -1;
+    constexpr const int ma05 = sm05 ? ((_P05 < 0) ? -1 : _P05 & 15) : -1;
+    constexpr const int ma06 = sm06 ? ((_P06 < 0) ? -1 : _P06 & 15) : -1;
+    constexpr const int ma07 = sm07 ? ((_P07 < 0) ? -1 : _P07 & 15) : -1;
+    constexpr const int ma08 = sm08 ? ((_P08 < 0) ? -1 : _P08 & 15) : -1;
+    constexpr const int ma09 = sm09 ? ((_P09 < 0) ? -1 : _P09 & 15) : -1;
+    constexpr const int ma10 = sm10 ? ((_P10 < 0) ? -1 : _P10 & 15) : -1;
+    constexpr const int ma11 = sm11 ? ((_P11 < 0) ? -1 : _P11 & 15) : -1;
+    constexpr const int ma12 = sm12 ? ((_P12 < 0) ? -1 : _P12 & 15) : -1;
+    constexpr const int ma13 = sm13 ? ((_P13 < 0) ? -1 : _P13 & 15) : -1;
+    constexpr const int ma14 = sm14 ? ((_P14 < 0) ? -1 : _P14 & 15) : -1;
+    constexpr const int ma15 = sm15 ? ((_P15 < 0) ? -1 : _P15 & 15) : -1;
+    __m128i ma=perm1_v16u8<ma00, ma01, ma02, ma03,
+                           ma04, ma05, ma06, ma07,
+                           ma08, ma09, ma10, ma11,
+                           ma12, ma13, ma14, ma15>::v(a);
+    constexpr const int mb00 = sm00 ? -1 : _P00-16;
+    constexpr const int mb01 = sm01 ? -1 : _P01-16;
+    constexpr const int mb02 = sm02 ? -1 : _P02-16;
+    constexpr const int mb03 = sm03 ? -1 : _P03-16;
+    constexpr const int mb04 = sm04 ? -1 : _P04-16;
+    constexpr const int mb05 = sm05 ? -1 : _P05-16;
+    constexpr const int mb06 = sm06 ? -1 : _P06-16;
+    constexpr const int mb07 = sm07 ? -1 : _P07-16;
+    constexpr const int mb08 = sm08 ? -1 : _P08-16;
+    constexpr const int mb09 = sm09 ? -1 : _P09-16;
+    constexpr const int mb10 = sm10 ? -1 : _P10-16;
+    constexpr const int mb11 = sm11 ? -1 : _P11-16;
+    constexpr const int mb12 = sm12 ? -1 : _P12-16;
+    constexpr const int mb13 = sm13 ? -1 : _P13-16;
+    constexpr const int mb14 = sm14 ? -1 : _P14-16;
+    constexpr const int mb15 = sm15 ? -1 : _P15-16;
+    __m128i mb=perm1_v16u8<mb00, mb01, mb02, mb03,
+                           mb04, mb05, mb06, mb07,
+                           mb08, mb09, mb10, mb11,
+                           mb12, mb13, mb14, mb15>::v(b);
+    return _mm_or_si128(ma, mb);
+}
+
 template <int _P0, int _P1>
 inline
 __m128d cftal::x86::perm_v2f64(__m128d a)
@@ -2693,9 +2833,9 @@ inline
 __m128d cftal::x86::perm_v2f64(__m128d a, __m128d b)
 {
     static_assert(_P0 < 4,
-                  "cftal::x86::perm_f64(a, b) : _P0 < 4");
+                  "cftal::x86::perm_v2f64(a, b) : _P0 < 4");
     static_assert(_P1 < 4,
-                  "cftal::x86::perm_f64(a, b) : _P1 < 4");
+                  "cftal::x86::perm_v2f64(a, b) : _P1 < 4");
     return impl::perm2_v2f64<_P0, _P1>::v(a, b);
 }
 
@@ -2720,13 +2860,13 @@ inline
 __m256d cftal::x86::perm_v4f64(__m256d a, __m256d b)
 {
     static_assert(_P0 < 8,
-                  "cftal::x86::perm_f64(a, b) : _P0 < 8");
+                  "cftal::x86::perm_v4f64(a, b) : _P0 < 8");
     static_assert(_P1 < 8,
-                  "cftal::x86::perm_f64(a, b) : _P1 < 8");
+                  "cftal::x86::perm_v4f64(a, b) : _P1 < 8");
     static_assert(_P2 < 8,
-                  "cftal::x86::perm_f64(a, b) : _P2 < 8");
+                  "cftal::x86::perm_v4f64(a, b) : _P2 < 8");
     static_assert(_P3 < 8,
-                  "cftal::x86::perm_f64(a, b) : _P3 < 8");
+                  "cftal::x86::perm_v4f64(a, b) : _P3 < 8");
     return impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(a, b);
 }
 
@@ -2737,21 +2877,21 @@ template <int _P0, int _P1, int _P2, int _P3,
 __m512d cftal::x86::perm_v8f64(__m512d a)
 {
     static_assert(_P0 < 8,
-                  "cftal::x86::perm_f64(a) : _P0 < 8");
+                  "cftal::x86::perm_v8f64(a) : _P0 < 8");
     static_assert(_P1 < 8,
-                  "cftal::x86::perm_f64(a) : _P1 < 8");
+                  "cftal::x86::perm_v8f64(a) : _P1 < 8");
     static_assert(_P2 < 8,
-                  "cftal::x86::perm_f64(a) : _P2 < 8");
+                  "cftal::x86::perm_v8f64(a) : _P2 < 8");
     static_assert(_P3 < 8,
-                  "cftal::x86::perm_f64(a) : _P3 < 8");
+                  "cftal::x86::perm_v8f64(a) : _P3 < 8");
     static_assert(_P4 < 8,
-                  "cftal::x86::perm_f64(a) : _P4 < 8");
+                  "cftal::x86::perm_v8f64(a) : _P4 < 8");
     static_assert(_P5 < 8,
-                  "cftal::x86::perm_f64(a) : _P5 < 8");
+                  "cftal::x86::perm_v8f64(a) : _P5 < 8");
     static_assert(_P6 < 8,
-                  "cftal::x86::perm_f64(a) : _P6 < 8");
+                  "cftal::x86::perm_v8f64(a) : _P6 < 8");
     static_assert(_P7 < 8,
-                  "cftal::x86::perm_f64(a) : _P7 < 8");
+                  "cftal::x86::perm_v8f64(a) : _P7 < 8");
     return impl::perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
 }
 
@@ -2761,21 +2901,21 @@ inline
 __m512d cftal::x86::perm_v8f64(__m512d a, __m512d b)
 {
     static_assert(_P0 < 16,
-                  "cftal::x86::perm_f64(a, b) : _P0 < 16");
+                  "cftal::x86::perm_v8f64(a, b) : _P0 < 16");
     static_assert(_P1 < 16,
-                  "cftal::x86::perm_f64(a, b) : _P1 < 16");
+                  "cftal::x86::perm_v8f64(a, b) : _P1 < 16");
     static_assert(_P2 < 16,
-                  "cftal::x86::perm_f64(a, b) : _P2 < 16");
+                  "cftal::x86::perm_v8f64(a, b) : _P2 < 16");
     static_assert(_P3 < 16,
-                  "cftal::x86::perm_f64(a, b) : _P3 < 16");
+                  "cftal::x86::perm_v8f64(a, b) : _P3 < 16");
     static_assert(_P4 < 16,
-                  "cftal::x86::perm_f64(a, b) : _P4 < 16");
+                  "cftal::x86::perm_v8f64(a, b) : _P4 < 16");
     static_assert(_P5 < 16,
-                  "cftal::x86::perm_f64(a, b) : _P5 < 16");
+                  "cftal::x86::perm_v8f64(a, b) : _P5 < 16");
     static_assert(_P6 < 16,
-                  "cftal::x86::perm_f64(a, b) : _P6 < 16");
+                  "cftal::x86::perm_v8f64(a, b) : _P6 < 16");
     static_assert(_P7 < 16,
-                  "cftal::x86::perm_f64(a, b) : _P7 < 16");
+                  "cftal::x86::perm_v8f64(a, b) : _P7 < 16");
     return impl::perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
 }
 #endif
@@ -2800,13 +2940,13 @@ inline
 __m128 cftal::x86::perm_v4f32(__m128 a, __m128 b)
 {
     static_assert(_P0 < 8,
-                  "cftal::x86::perm_f32(a, b) : _P0 < 8");
+                  "cftal::x86::perm_v4f32(a, b) : _P0 < 8");
     static_assert(_P1 < 8,
-                  "cftal::x86::perm_f32(a, b) : _P1 < 8");
+                  "cftal::x86::perm_v4f32(a, b) : _P1 < 8");
     static_assert(_P2 < 8,
-                  "cftal::x86::perm_f32(a, b) : _P2 < 8");
+                  "cftal::x86::perm_v4f32(a, b) : _P2 < 8");
     static_assert(_P3 < 8,
-                  "cftal::x86::perm_f32(a, b) : _P3 < 8");
+                  "cftal::x86::perm_v4f32(a, b) : _P3 < 8");
     return impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(a, b);
 }
 
@@ -2816,21 +2956,21 @@ template <int _P0, int _P1, int _P2, int _P3,
 __m256 cftal::x86::perm_v8f32(__m256 a)
 {
     static_assert(_P0 < 8,
-                  "cftal::x86::perm_f32(a) : _P0 < 8");
+                  "cftal::x86::perm_v8f32(a) : _P0 < 8");
     static_assert(_P1 < 8,
-                  "cftal::x86::perm_f32(a) : _P1 < 8");
+                  "cftal::x86::perm_v8f32(a) : _P1 < 8");
     static_assert(_P2 < 8,
-                  "cftal::x86::perm_f32(a) : _P2 < 8");
+                  "cftal::x86::perm_v8f32(a) : _P2 < 8");
     static_assert(_P3 < 8,
-                  "cftal::x86::perm_f32(a) : _P3 < 8");
+                  "cftal::x86::perm_v8f32(a) : _P3 < 8");
     static_assert(_P4 < 8,
-                  "cftal::x86::perm_f32(a) : _P4 < 8");
+                  "cftal::x86::perm_v8f32(a) : _P4 < 8");
     static_assert(_P5 < 8,
-                  "cftal::x86::perm_f32(a) : _P5 < 8");
+                  "cftal::x86::perm_v8f32(a) : _P5 < 8");
     static_assert(_P6 < 8,
-                  "cftal::x86::perm_f32(a) : _P6 < 8");
+                  "cftal::x86::perm_v8f32(a) : _P6 < 8");
     static_assert(_P7 < 8,
-                  "cftal::x86::perm_f32(a) : _P7 < 8");
+                  "cftal::x86::perm_v8f32(a) : _P7 < 8");
     return impl::perm1_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
 }
 
@@ -2840,25 +2980,113 @@ inline
 __m256 cftal::x86::perm_v8f32(__m256 a, __m256 b)
 {
     static_assert(_P0 < 16,
-                  "cftal::x86::perm_f32(a, b) : _P0 < 16");
+                  "cftal::x86::perm_v8f32(a, b) : _P0 < 16");
     static_assert(_P1 < 16,
-                  "cftal::x86::perm_f32(a, b) : _P1 < 16");
+                  "cftal::x86::perm_v8f32(a, b) : _P1 < 16");
     static_assert(_P2 < 16,
-                  "cftal::x86::perm_f32(a, b) : _P2 < 16");
+                  "cftal::x86::perm_v8f32(a, b) : _P2 < 16");
     static_assert(_P3 < 16,
-                  "cftal::x86::perm_f32(a, b) : _P3 < 16");
+                  "cftal::x86::perm_v8f32(a, b) : _P3 < 16");
     static_assert(_P4 < 16,
-                  "cftal::x86::perm_f32(a, b) : _P4 < 16");
+                  "cftal::x86::perm_v8f32(a, b) : _P4 < 16");
     static_assert(_P5 < 16,
-                  "cftal::x86::perm_f32(a, b) : _P5 < 16");
+                  "cftal::x86::perm_v8f32(a, b) : _P5 < 16");
     static_assert(_P6 < 16,
-                  "cftal::x86::perm_f32(a, b) : _P6 < 16");
+                  "cftal::x86::perm_v8f32(a, b) : _P6 < 16");
     static_assert(_P7 < 16,
-                  "cftal::x86::perm_f32(a, b) : _P7 < 16");
+                  "cftal::x86::perm_v8f32(a, b) : _P7 < 16");
     return impl::perm2_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
 }
 
 #endif
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+__m128i cftal::x86::perm_v16u8(__m128i a)
+{
+    static_assert(_P00 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P00 < 16");
+    static_assert(_P01 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P01 < 16");
+    static_assert(_P02 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P02 < 16");
+    static_assert(_P03 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P03 < 16");
+    static_assert(_P04 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P04 < 16");
+    static_assert(_P05 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P05 < 16");
+    static_assert(_P06 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P06 < 16");
+    static_assert(_P07 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P07 < 16");
+    static_assert(_P08 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P08 < 16");
+    static_assert(_P09 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P09 < 16");
+    static_assert(_P10 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P10 < 16");
+    static_assert(_P11 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P11 < 16");
+    static_assert(_P12 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P12 < 16");
+    static_assert(_P13 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P13 < 16");
+    static_assert(_P14 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P14 < 16");
+    static_assert(_P15 < 16,
+                  "cftal::x86::perm_v16u8(a) : _P15 < 16");
+    return impl::perm1_v16u8<_P00, _P01, _P02, _P03,
+                             _P04, _P05, _P06, _P07,
+                             _P08, _P09, _P10, _P11,
+                             _P12, _P13, _P14, _P15>::v(a);
+}
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+__m128i cftal::x86::perm_v16u8(__m128i a, __m128i b)
+{
+    static_assert(_P00 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P00 < 32");
+    static_assert(_P01 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P01 < 32");
+    static_assert(_P02 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P02 < 32");
+    static_assert(_P03 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P03 < 32");
+    static_assert(_P04 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P04 < 32");
+    static_assert(_P05 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P05 < 32");
+    static_assert(_P06 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P06 < 32");
+    static_assert(_P07 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P07 < 32");
+    static_assert(_P08 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P08 < 32");
+    static_assert(_P09 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P09 < 32");
+    static_assert(_P10 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P10 < 32");
+    static_assert(_P11 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P11 < 32");
+    static_assert(_P12 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P12 < 32");
+    static_assert(_P13 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P13 < 32");
+    static_assert(_P14 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P14 < 32");
+    static_assert(_P15 < 32,
+                  "cftal::x86::perm_v16u8(a, b) : _P15 < 32");
+    return impl::perm2_v16u8<_P00, _P01, _P02, _P03,
+                             _P04, _P05, _P06, _P07,
+                             _P08, _P09, _P10, _P11,
+                             _P12, _P13, _P14, _P15>::v(a, b);
+}
 
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
@@ -2866,21 +3094,21 @@ inline
 __m128i cftal::x86::perm_v8u16(__m128i a)
 {
     static_assert(_P0 < 8,
-                  "cftal::x86::perm_u16(a) : _P0 < 8");
+                  "cftal::x86::perm_v8u16(a) : _P0 < 8");
     static_assert(_P1 < 8,
-                  "cftal::x86::perm_u16(a) : _P1 < 8");
+                  "cftal::x86::perm_v8u16(a) : _P1 < 8");
     static_assert(_P2 < 8,
-                  "cftal::x86::perm_u16(a) : _P2 < 8");
+                  "cftal::x86::perm_v8u16(a) : _P2 < 8");
     static_assert(_P3 < 8,
-                  "cftal::x86::perm_u16(a) : _P3 < 8");
+                  "cftal::x86::perm_v8u16(a) : _P3 < 8");
     static_assert(_P4 < 8,
-                  "cftal::x86::perm_u16(a) : _P4 < 8");
+                  "cftal::x86::perm_v8u16(a) : _P4 < 8");
     static_assert(_P5 < 8,
-                  "cftal::x86::perm_u16(a) : _P5 < 8");
+                  "cftal::x86::perm_v8u16(a) : _P5 < 8");
     static_assert(_P6 < 8,
-                  "cftal::x86::perm_u16(a) : _P6 < 8");
+                  "cftal::x86::perm_v8u16(a) : _P6 < 8");
     static_assert(_P7 < 8,
-                  "cftal::x86::perm_u16(a) : _P7 < 8");
+                  "cftal::x86::perm_v8u16(a) : _P7 < 8");
     return impl::perm1_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
 }
 
@@ -2890,21 +3118,21 @@ inline
 __m128i cftal::x86::perm_v8u16(__m128i a, __m128i b)
 {
     static_assert(_P0 < 16,
-                  "cftal::x86::perm_u16(a, b) : _P0 < 16");
+                  "cftal::x86::perm_v8u16(a, b) : _P0 < 16");
     static_assert(_P1 < 16,
-                  "cftal::x86::perm_u16(a, b) : _P1 < 16");
+                  "cftal::x86::perm_v8u16(a, b) : _P1 < 16");
     static_assert(_P2 < 16,
-                  "cftal::x86::perm_u16(a, b) : _P2 < 16");
+                  "cftal::x86::perm_v8u16(a, b) : _P2 < 16");
     static_assert(_P3 < 16,
-                  "cftal::x86::perm_u16(a, b) : _P3 < 16");
+                  "cftal::x86::perm_v8u16(a, b) : _P3 < 16");
     static_assert(_P4 < 16,
-                  "cftal::x86::perm_u16(a, b) : _P4 < 16");
+                  "cftal::x86::perm_v8u16(a, b) : _P4 < 16");
     static_assert(_P5 < 16,
-                  "cftal::x86::perm_u16(a, b) : _P5 < 16");
+                  "cftal::x86::perm_v8u16(a, b) : _P5 < 16");
     static_assert(_P6 < 16,
-                  "cftal::x86::perm_u16(a, b) : _P6 < 16");
+                  "cftal::x86::perm_v8u16(a, b) : _P6 < 16");
     static_assert(_P7 < 16,
-                  "cftal::x86::perm_u16(a, b) : _P7 < 16");
+                  "cftal::x86::perm_v8u16(a, b) : _P7 < 16");
     return impl::perm2_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
 }
 
@@ -2913,13 +3141,13 @@ inline
 __m128i cftal::x86::perm_v4u32(__m128i a)
 {
     static_assert(_P0 < 4,
-                  "cftal::x86::perm_u32(a) : _P0 < 4");
+                  "cftal::x86::perm_v4u32(a) : _P0 < 4");
     static_assert(_P1 < 4,
-                  "cftal::x86::perm_u32(a) : _P1 < 4");
+                  "cftal::x86::perm_v4u32(a) : _P1 < 4");
     static_assert(_P2 < 4,
-                  "cftal::x86::perm_u32(a) : _P2 < 4");
+                  "cftal::x86::perm_v4u32(a) : _P2 < 4");
     static_assert(_P3 < 4,
-                  "cftal::x86::perm_u32(a) : _P3 < 4");
+                  "cftal::x86::perm_v4u32(a) : _P3 < 4");
     return impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(a);
 }
 
@@ -2928,13 +3156,13 @@ inline
 __m128i cftal::x86::perm_v4u32(__m128i a, __m128i b)
 {
     static_assert(_P0 < 8,
-                  "cftal::x86::perm_u32(a, b) : _P0 < 8");
+                  "cftal::x86::perm_v4u32(a, b) : _P0 < 8");
     static_assert(_P1 < 8,
-                  "cftal::x86::perm_u32(a, b) : _P1 < 8");
+                  "cftal::x86::perm_v4u32(a, b) : _P1 < 8");
     static_assert(_P2 < 8,
-                  "cftal::x86::perm_u32(a, b) : _P2 < 8");
+                  "cftal::x86::perm_v4u32(a, b) : _P2 < 8");
     static_assert(_P3 < 8,
-                  "cftal::x86::perm_u32(a, b) : _P3 < 8");
+                  "cftal::x86::perm_v4u32(a, b) : _P3 < 8");
 #if defined (__AVX2__)
     __m256i t=_mm256_inserti128_si256(_mm256_castsi128_si256(a), b, 1);
     __m256i r=impl::perm1_v8u32<_P0, _P1, _P2, _P3, 4, 5, 6, 7>::v(t);
@@ -2950,21 +3178,21 @@ template <int _P0, int _P1, int _P2, int _P3,
 __m256i cftal::x86::perm_v8u32(__m256i a)
 {
     static_assert(_P0 < 8,
-                  "cftal::x86::perm_u32(a) : _P0 < 8");
+                  "cftal::x86::perm_v8u32(a) : _P0 < 8");
     static_assert(_P1 < 8,
-                  "cftal::x86::perm_u32(a) : _P1 < 8");
+                  "cftal::x86::perm_v8u32(a) : _P1 < 8");
     static_assert(_P2 < 8,
-                  "cftal::x86::perm_u32(a) : _P2 < 8");
+                  "cftal::x86::perm_v8u32(a) : _P2 < 8");
     static_assert(_P3 < 8,
-                  "cftal::x86::perm_u32(a) : _P3 < 8");
+                  "cftal::x86::perm_v8u32(a) : _P3 < 8");
     static_assert(_P4 < 8,
-                  "cftal::x86::perm_u32(a) : _P4 < 8");
+                  "cftal::x86::perm_v8u32(a) : _P4 < 8");
     static_assert(_P5 < 8,
-                  "cftal::x86::perm_u32(a) : _P5 < 8");
+                  "cftal::x86::perm_v8u32(a) : _P5 < 8");
     static_assert(_P6 < 8,
-                  "cftal::x86::perm_u32(a) : _P6 < 8");
+                  "cftal::x86::perm_v8u32(a) : _P6 < 8");
     static_assert(_P7 < 8,
-                  "cftal::x86::perm_u32(a) : _P7 < 8");
+                  "cftal::x86::perm_v8u32(a) : _P7 < 8");
     return impl::perm1_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
 }
 
@@ -2974,21 +3202,21 @@ inline
 __m256i cftal::x86::perm_v8u32(__m256i a, __m256i b)
 {
     static_assert(_P0 < 16,
-                  "cftal::x86::perm_u32(a, b) : _P0 < 16");
+                  "cftal::x86::perm_v8u32(a, b) : _P0 < 16");
     static_assert(_P1 < 16,
-                  "cftal::x86::perm_u32(a, b) : _P1 < 16");
+                  "cftal::x86::perm_v8u32(a, b) : _P1 < 16");
     static_assert(_P2 < 16,
-                  "cftal::x86::perm_u32(a, b) : _P2 < 16");
+                  "cftal::x86::perm_v8u32(a, b) : _P2 < 16");
     static_assert(_P3 < 16,
-                  "cftal::x86::perm_u32(a, b) : _P3 < 16");
+                  "cftal::x86::perm_v8u32(a, b) : _P3 < 16");
     static_assert(_P4 < 16,
-                  "cftal::x86::perm_u32(a, b) : _P4 < 16");
+                  "cftal::x86::perm_v8u32(a, b) : _P4 < 16");
     static_assert(_P5 < 16,
-                  "cftal::x86::perm_u32(a, b) : _P5 < 16");
+                  "cftal::x86::perm_v8u32(a, b) : _P5 < 16");
     static_assert(_P6 < 16,
-                  "cftal::x86::perm_u32(a, b) : _P6 < 16");
+                  "cftal::x86::perm_v8u32(a, b) : _P6 < 16");
     static_assert(_P7 < 16,
-                  "cftal::x86::perm_u32(a, b) : _P7 < 16");
+                  "cftal::x86::perm_v8u32(a, b) : _P7 < 16");
     return impl::perm2_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
 }
 #endif
@@ -2998,9 +3226,9 @@ inline
 __m128i cftal::x86::perm_v2u64(__m128i a)
 {
     static_assert(_P0 < 2,
-                  "cftal::x86::perm_u64(a) : _P0 < 2");
+                  "cftal::x86::perm_v2u64(a) : _P0 < 2");
     static_assert(_P1 < 2,
-                  "cftal::x86::perm_u64(a) : _P1 < 2");
+                  "cftal::x86::perm_v2u64(a) : _P1 < 2");
     const int p0 = _P0 < 0 ? -1 : _P0 * 2;
     const int p1 = _P0 < 0 ? -1 : _P0 * 2 +1;
     const int p2 = _P1 < 0 ? -1 : _P1 * 2;
@@ -3013,9 +3241,9 @@ inline
 __m128i cftal::x86::perm_v2u64(__m128i a, __m128i b)
 {
     static_assert(_P0 < 4,
-                  "cftal::x86::perm_u64(a, b) : _P0 < 4");
+                  "cftal::x86::perm_v2u64(a, b) : _P0 < 4");
     static_assert(_P1 < 4,
-                  "cftal::x86::perm_u64(a, b) : _P1 < 4");
+                  "cftal::x86::perm_v2u64(a, b) : _P1 < 4");
     const int p0 = _P0 < 0 ? -1 : _P0 * 2;
     const int p1 = _P0 < 0 ? -1 : _P0 * 2 +1;
     const int p2 = _P1 < 0 ? -1 : _P1 * 2;
@@ -3035,13 +3263,13 @@ inline
 __m256i cftal::x86::perm_v4u64(__m256i a)
 {
     static_assert(_P0 < 4,
-                  "cftal::x86::perm_u64(a) : _P0 < 4");
+                  "cftal::x86::perm_v4u64(a) : _P0 < 4");
     static_assert(_P1 < 4,
-                  "cftal::x86::perm_u64(a) : _P1 < 4");
+                  "cftal::x86::perm_v4u64(a) : _P1 < 4");
     static_assert(_P2 < 4,
-                  "cftal::x86::perm_u64(a) : _P2 < 4");
+                  "cftal::x86::perm_v4u64(a) : _P2 < 4");
     static_assert(_P3 < 4,
-                  "cftal::x86::perm_u64(a) : _P3 < 4");
+                  "cftal::x86::perm_v4u64(a) : _P3 < 4");
     return impl::perm1_v4u64<_P0, _P1, _P2, _P3>::v(a);
 }
 
@@ -3050,13 +3278,13 @@ inline
 __m256i cftal::x86::perm_v4u64(__m256i a, __m256i b)
 {
     static_assert(_P0 < 8,
-                  "cftal::x86::perm_u64(a, b) : _P0 < 8");
+                  "cftal::x86::perm_v4u64(a, b) : _P0 < 8");
     static_assert(_P1 < 8,
-                  "cftal::x86::perm_u64(a, b) : _P1 < 8");
+                  "cftal::x86::perm_v4u64(a, b) : _P1 < 8");
     static_assert(_P2 < 8,
-                  "cftal::x86::perm_u64(a, b) : _P2 < 8");
+                  "cftal::x86::perm_v4u64(a, b) : _P2 < 8");
     static_assert(_P3 < 8,
-                  "cftal::x86::perm_u64(a, b) : _P3 < 8");
+                  "cftal::x86::perm_v4u64(a, b) : _P3 < 8");
     return impl::perm2_v4u64<_P0, _P1, _P2, _P3>::v(a, b);
 }
 #endif
