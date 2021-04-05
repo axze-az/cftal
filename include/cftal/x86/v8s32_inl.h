@@ -473,11 +473,7 @@ cftal::v8s32 cftal::select(const v8s32::mask_type& m,
                            const v8s32& on_true,
                            const v8s32& on_false)
 {
-#if defined (__AVX512VL__)
     return x86::select_u32(m(), on_true(), on_false());
-#else
-    return x86::select(m(), on_true(), on_false());
-#endif
 }
 
 inline

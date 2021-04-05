@@ -475,7 +475,7 @@ cftal::v8u16 cftal::select(const v8u16::mask_type& m,
                            const v8u16& on_true,
                            const v8u16& on_false)
 {
-    return x86::select(m(), on_true(), on_false());
+    return x86::select_u16(m(), on_true(), on_false());
 }
 
 inline

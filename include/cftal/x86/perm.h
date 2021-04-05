@@ -2719,7 +2719,6 @@ perm1_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m128i a)
 {
-#ifdef __SSSE3__
     constexpr const uint8_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
     constexpr const uint8_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
     constexpr const uint8_t c02 = (_P02 < 0) ? -1 : _P02 & 15;
@@ -2740,9 +2739,7 @@ v(__m128i a)
                                   c04, c05, c06, c07,
                                   c08, c09, c10, c11,
                                   c12, c13, c14, c15>::iv();
-    return _mm_shuffle_epi8(a, msk);
-#else
-#endif
+    return vpshufb::v(a, msk);
 }
 
 template <int _P00, int _P01, int _P02, int _P03,

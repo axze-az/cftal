@@ -456,11 +456,7 @@ cftal::v2s64 cftal::select(const v2s64::mask_type& m,
                            const v2s64& on_true,
                            const v2s64& on_false)
 {
-#if defined (__AVX512VL__)
     return x86::select_u64(m(), on_true(), on_false());
-#else
-    return x86::select(m(), on_true(), on_false());
-#endif
 }
 
 inline

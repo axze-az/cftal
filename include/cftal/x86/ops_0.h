@@ -590,6 +590,17 @@ namespace cftal {
                 }
 #endif
             };
+            
+            
+            struct vpshufb {
+                static __m128i v(__m128i a, __m128i msk);
+#if defined (__AVX2__)                
+                static __m256i v(__m256i a, __m256i msk) {
+                    return _mm256_shuffle_epi8(a, msk);
+                }
+#endif                
+            };
+            
 
             struct vpmovzxwd {
                 static __m128i v(__m128i a, __m128i b) {
@@ -1439,6 +1450,27 @@ namespace cftal {
 #endif
         }
     }
+}
+
+inline
+__m128i cftal::x86::impl::vpshufb::v(__m128i a, __m128i msk)
+{
+#if defined (__SSSE3__)
+    return _mm_shuffle_epi8(a, msk);
+#else
+    union {
+        __m128i _v;
+        uint8_t _a[16];
+    } s, m, d;
+    _mm_store_si128(&s._v, a);
+    _mm_store_si128(&m._v, msk);
+    for (int i=0; i<16; ++i) {        
+        uint8_t mi=m._a[i];
+        d._a[i] =  mi == 0x80 ? 0 : s._a[mi & 15];
+    }
+    __m128i r=_mm_load_si128(&d._v);
+    return r;
+#endif
 }
 
 inline
