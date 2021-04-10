@@ -49,13 +49,9 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__SSE4_1__)
                 // a<= b: a == min(a, b);
                 __m128i min_ab = _mm_min_epu8(b(), a());
                 return _mm_cmpeq_epi8(a(), min_ab);
-#else
-                return ~(a > b);
-#endif
             }
         };
 
@@ -88,13 +84,9 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__SSE4_1__)
                 // a>= b: a == max(a, b);
                 __m128i max_ab = _mm_max_epu8(b(), a());
                 return _mm_cmpeq_epi8(a(), max_ab);
-#else
-                return ~(a < b);
-#endif
             }
         };
 
@@ -163,7 +155,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::impl::vpmullw::v(a(), b());
+                return x86::impl::vpmullb::v(a(), b());
             }
         };
 
@@ -266,7 +258,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return _mm_slli_epi16(a(), s);
+                return x86::impl::vpsllb::v(a(), s);
             }
         };
 
@@ -276,7 +268,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return _mm_srli_epi16(a(), s);
+                return x86::impl::vpsrab::v(a(), s);
             }
         };
 
@@ -514,23 +506,13 @@ bool cftal::none_of(const vec<uint8_t, 16>::mask_type& v)
 inline
 cftal::v16u8 cftal::max(const v16u8& a, const v16u8& b)
 {
-#if defined (__SSE4_1__)
     return _mm_max_epu8(a(), b());
-#else
-    v16u8::mask_type _gt(a > b);
-    return select(_gt, a, b);
-#endif
 }
 
 inline
 cftal::v16u8 cftal::min(const v16u8& a, const v16u8& b)
 {
-#if defined (__SSE4_1__)
     return _mm_min_epu8(a(), b());
-#else
-    v16u8::mask_type _lt(a < b);
-    return select(_lt, a, b);
-#endif
 }
 
 inline

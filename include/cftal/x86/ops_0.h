@@ -641,6 +641,10 @@ namespace cftal {
 #endif
             };
 
+            struct vpsllb {
+                static __m128i v(__m128i a, unsigned shift);
+            };
+            
             struct vpsllw {
                 static __m128i v(__m128i a, __m128i shift) {
                     return _mm_sll_epi16(a, shift);
@@ -743,7 +747,12 @@ namespace cftal {
                     return _mm_add_epi64(a, a);
                 }
             };
-
+            
+            struct vpsrlb {
+                static __m128i v(__m128i a, unsigned shift);
+            };
+            
+            
             struct vpsrlw {
                 static __m128i v(__m128i a, __m128i shift) {
                     return _mm_srl_epi16(a, shift);
@@ -819,6 +828,11 @@ namespace cftal {
             template <>
             struct vpsrlq_const<0> : public select_arg_1<__m128i> {};
 
+            struct vpsrab {
+                static __m128i v(__m128i a, unsigned shift);
+            };
+            
+            
             struct vpsraw {
                 static __m128i v(__m128i a, __m128i shift) {
                     return _mm_sra_epi16(a, shift);
@@ -996,6 +1010,14 @@ namespace cftal {
 #endif
             };
 
+            struct vpmullb {
+                static 
+                __m128i v(__m128i a, __m128i b);
+#if defined (__AVX2__)
+                // static 
+                // __m256i v(__m256i a, __m256i b);
+#endif                
+            };
 
             struct vpmullw {
                 static __m128i v(__m128i a, __m128i b) {
@@ -1474,6 +1496,60 @@ __m128i cftal::x86::impl::vpshufb::v(__m128i a, __m128i msk)
 }
 
 inline
+__m128i cftal::x86::impl::vpsllb::v(__m128i a, unsigned shift)
+{
+    const __m128i odd_mask = const_v16u8<0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff>::iv();
+    const __m128i even_mask = const_v16u8<0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00>::iv();                                       
+    __m128i re = _mm_slli_epi16(a, shift);    
+    re = _mm_and_si128(re, even_mask);
+    __m128i ro = _mm_and_si128(a, odd_mask);
+    ro = _mm_slli_epi16(a, shift);
+    __m128i r= _mm_or_si128(re, ro);
+    return r;
+}
+
+inline
+__m128i cftal::x86::impl::vpsrlb::v(__m128i a, unsigned shift)
+{
+    const __m128i odd_mask = const_v16u8<0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff>::iv();
+    const __m128i even_mask = const_v16u8<0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00>::iv();                                       
+    __m128i ro = _mm_srli_epi16(a, shift);    
+    ro = _mm_and_si128(ro, odd_mask);
+    __m128i re = _mm_and_si128(a, even_mask);
+    re = _mm_srli_epi16(a, shift);
+    __m128i r= _mm_or_si128(re, ro);
+    return r;
+}
+
+inline
+__m128i cftal::x86::impl::vpsrab::v(__m128i a, unsigned shift)
+{
+    const __m128i odd_mask = const_v16u8<0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff>::iv();
+    __m128i ro = _mm_srai_epi16(a, shift);    
+    ro = _mm_and_si128(ro, odd_mask);
+    __m128i re = _mm_slli_epi16(a, 8);
+    re =_mm_srai_epi16(a, shift);
+    re =_mm_srli_epi16(a, 8);
+    __m128i r= _mm_or_si128(re, ro);
+    return r;
+}
+
+inline
 __m128i cftal::x86::impl::vpsraq::v(__m128i a, unsigned shift)
 {
     // signed right shift from unsigned right shift
@@ -1733,6 +1809,21 @@ __m128i cftal::x86::impl::vpsraq_const<_S>::v(__m128i a)
     }
     return r;
 }
+
+inline
+__m128i cftal::x86::impl::vpmullb::v(__m128i a, __m128i b)
+{
+    __m128i oa=_mm_srli_epi16(a, 8);
+    __m128i ob=_mm_srli_epi16(b, 8);
+    __m128i pe=_mm_mullo_epi16(a, b);
+    __m128i po=_mm_mullo_epi16(oa, ob);
+    __m128i r= select_u8<true, false, true, false, 
+                         true, false, true, false,
+                         true, false, true, false, 
+                         true, false, true, false>(pe, po);
+    return r;
+}
+
 
 inline
 __m128i cftal::x86::impl::vpmulld::lh(__m128i a, __m128i b)

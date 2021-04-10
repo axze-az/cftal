@@ -572,10 +572,10 @@ select_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
     const uint8_t p13 = _P13 ? -1 : 0;
     const uint8_t p14 = _P14 ? -1 : 0;
     const uint8_t p15 = _P15 ? -1 : 0;
-    constexpr const __m128i msk=const_v16u8<p00, p01, p02, p03,
-                                            p04, p05, p06, p07,
-                                            p08, p09, p10, p11,
-                                            p12, p13, p14, p15>::iv();
+    const __m128i msk=const_v16u8<p00, p01, p02, p03,
+                                  p04, p05, p06, p07,
+                                  p08, p09, p10, p11,
+                                  p12, p13, p14, p15>::iv();
 #if defined (__SSE4_1__)
     return _mm_blendv_epi8(b, a, msk);
 #else
@@ -595,10 +595,10 @@ select_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
     const uint8_t n13 = _P13 ? -1 : -1;
     const uint8_t n14 = _P14 ? -1 : -1;
     const uint8_t n15 = _P15 ? -1 : -1;
-    constexpr const __m128i compl_msk=const_v16u8<n00, n01, n02, n03,
-                                                  n04, n05, n06, n07,
-                                                  n08, n09, n10, n11,
-                                                  n12, n13, n14, n15>::iv();
+    const __m128i compl_msk=const_v16u8<n00, n01, n02, n03,
+                                        n04, n05, n06, n07,
+                                        n08, n09, n10, n11,
+                                        n12, n13, n14, n15>::iv();
     a = _mm_and_si128(a, msk);
     b = _mm_and_si128(b, compl_msk);
     return _mm_or_si128(a, b);

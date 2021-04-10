@@ -152,7 +152,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::impl::vpmullw::v(a(), b());
+                return x86::impl::vpmullb::v(a(), b());
             }
         };
 
@@ -255,7 +255,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return _mm_slli_epi16(a(), s);
+                return x86::impl::vpsllb::v(a(), s);
             }
         };
 
@@ -265,7 +265,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return _mm_srai_epi16(a(), s);
+                return x86::impl::vpsrab::v(a(), s);
             }
         };
 
@@ -526,7 +526,7 @@ inline
 cftal::v16s8 cftal::abs(const v16s8& a)
 {
 #if defined (__SSSE3__)
-    return _mm_sign_epi8(a(), a());
+    return _mm_abs_epi8(a());
 #else
     v16s8 sgn= a >> 7;
     // invert if negative
