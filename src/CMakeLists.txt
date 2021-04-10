@@ -111,6 +111,10 @@ SET (HDRS
     ../include/cftal/x86/v8f32_inl.h
     ../include/cftal/x86/v8u32_inl.h
     ../include/cftal/x86/v8f32.h
+    ../include/cftal/x86/v16s8.h
+    ../include/cftal/x86/v16s8_inl.h
+    ../include/cftal/x86/v16u8.h
+    ../include/cftal/x86/v16u8_inl.h
     ../include/cftal/vec_t_1.h
     ../include/cftal/init_list.h
     ../include/cftal/expr.h

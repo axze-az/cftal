@@ -9,6 +9,7 @@
 
 #include <cftal/fenv.h>
 #include <cftal/constants.h>
+#include <cftal/x86/const.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_0.h>
 
@@ -126,6 +127,10 @@ namespace cftal {
         uint32_t read_signs_f64(__mmask8 i);
 #endif
 
+        // check the sign bits of v16s8
+        bool all_of_s8(__m128i a);
+        bool any_of_s8(__m128i a);
+        bool none_of_s8(__m128i a);
         // check the sign bits of v8s16
         bool all_of_s16(__m128i a);
         bool any_of_s16(__m128i a);
@@ -140,6 +145,10 @@ namespace cftal {
         bool none_of_s64(__m128i a);
 
 #if defined (__AVX2__)
+        // check the sign bits of v16s16
+        bool all_of_s8(__m256i a);
+        bool any_of_s8(__m256i a);
+        bool none_of_s8(__m256i a);
         // check the sign bits of v16s16
         bool all_of_s16(__m256i a);
         bool any_of_s16(__m256i a);
@@ -392,6 +401,42 @@ cftal::uint32_t cftal::x86::read_signs_f64(__mmask8 a)
 #endif
 
 inline
+bool cftal::x86::all_of_s8(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v16s8_msk::iv();
+    // test if (~a & msk) are all zero
+    return _mm_testc_si128(a, msk);
+#else
+    return compress_mask_u8(a) == 0xffff;
+#endif
+}
+
+inline
+bool cftal::x86::none_of_s8(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v16s8_msk::iv();
+    // test if (a & msk) are all zero
+    return _mm_testz_si128(a, msk);
+#else
+    return compress_mask_u8(a) == 0x0000;
+#endif
+}
+
+inline
+bool cftal::x86::any_of_s8(__m128i a)
+{
+#if defined (__SSE4_1__)
+    const __m128i msk=  v_sign_v16s8_msk::iv();
+    // test if (a & msk) are all zero
+    return !_mm_testz_si128(a, msk);
+#else
+    return compress_mask_u8(a) != 0x0000;
+#endif
+}
+
+inline
 bool cftal::x86::all_of_s16(__m128i a)
 {
 #if defined (__SSE4_1__)
@@ -501,6 +546,31 @@ bool cftal::x86::any_of_s64(__m128i a)
 }
 
 #if defined (__AVX2__)
+
+inline
+bool cftal::x86::all_of_s8(__m256i a)
+{
+    const __m256i msk= _mm256_set1_epi32(sign_s8_msk::v.u32());
+    // test if (~a & msk) are all zero
+    return _mm256_testc_si256(a, msk);
+}
+
+inline
+bool cftal::x86::none_of_s8(__m256i a)
+{
+    const __m256i msk= _mm256_set1_epi32(sign_s8_msk::v.u32());
+    // test if (a & msk) are all zero
+    return _mm256_testz_si256(a, msk);
+}
+
+inline
+bool cftal::x86::any_of_s8(__m256i a)
+{
+    const __m256i msk= _mm256_set1_epi32(sign_s8_msk::v.u32());
+    // test if (a & msk) are all zero
+    return !_mm256_testz_si256(a, msk);
+}
+
 
 inline
 bool cftal::x86::all_of_s16(__m256i a)

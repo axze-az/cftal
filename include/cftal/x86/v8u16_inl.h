@@ -10,7 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/x86/v8u16.h>
-#include <cftal/x86/v4s32.h>
+#include <cftal/x86/v8s16.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/ops_1.h>
 

@@ -116,6 +116,24 @@ namespace cftal {
             struct select_v4f32<1,1,1,1> : public select_arg_1<__m128> {
             };
 
+            // general case u8
+            template <bool _P00, bool _P01, bool _P02, bool _P03,
+                      bool _P04, bool _P05, bool _P06, bool _P07,
+                      bool _P08, bool _P09, bool _P10, bool _P11,
+                      bool _P12, bool _P13, bool _P14, bool _P15>
+            struct select_v16u8 {
+                static __m128i v(__m128i a, __m128i b);
+            };
+            // u8 specialisations
+            template <>
+            struct select_v16u8<0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0> :
+                public select_arg_2<__m128i> {
+            };
+            template <>
+            struct select_v16u8<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1> :
+                public select_arg_1<__m128i> {
+            };
+            
             // general case u16
             template <bool _P0, bool _P1, bool _P2, bool _P3,
                       bool _P4, bool _P5, bool _P6, bool _P7>
@@ -131,7 +149,7 @@ namespace cftal {
             struct select_v8u16<1,1,1,1,1,1,1,1> :
                 public select_arg_1<__m128i> {
             };
-
+                       
             // general case u32, implementation on top of u16
             // therefore no additional specializations
             template <bool _P0, bool _P1, bool _P2, bool _P3>
@@ -218,6 +236,12 @@ namespace cftal {
 
         template <bool _P0, bool _P1, bool _P2, bool _P3>
         __m128 select_f32(__m128 a, __m128 b);
+
+        template <bool _P00, bool _P01, bool _P02, bool _P03,
+                  bool _P04, bool _P05, bool _P06, bool _P07,
+                  bool _P08, bool _P09, bool _P10, bool _P11,
+                  bool _P12, bool _P13, bool _P14, bool _P15>
+        __m128i select_u8(__m128i a, __m128i b);
 
         template <bool _P0, bool _P1, bool _P2, bool _P3,
                   bool _P4, bool _P5, bool _P6, bool _P7>
@@ -523,6 +547,65 @@ cftal::x86::impl::select_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
 #endif
 }
 
+template<bool _P00, bool _P01, bool _P02, bool _P03,
+         bool _P04, bool _P05, bool _P06, bool _P07,
+         bool _P08, bool _P09, bool _P10, bool _P11,
+         bool _P12, bool _P13, bool _P14, bool _P15>
+inline __m128i
+cftal::x86::impl::
+select_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::v(__m128i a, __m128i b)
+{        
+    const uint8_t p00 = _P00 ? -1 : 0;
+    const uint8_t p01 = _P01 ? -1 : 0;
+    const uint8_t p02 = _P02 ? -1 : 0;
+    const uint8_t p03 = _P03 ? -1 : 0;
+    const uint8_t p04 = _P04 ? -1 : 0;
+    const uint8_t p05 = _P05 ? -1 : 0;
+    const uint8_t p06 = _P06 ? -1 : 0;
+    const uint8_t p07 = _P07 ? -1 : 0;
+    const uint8_t p08 = _P08 ? -1 : 0;
+    const uint8_t p09 = _P09 ? -1 : 0;
+    const uint8_t p10 = _P10 ? -1 : 0;
+    const uint8_t p11 = _P11 ? -1 : 0;
+    const uint8_t p12 = _P12 ? -1 : 0;
+    const uint8_t p13 = _P13 ? -1 : 0;
+    const uint8_t p14 = _P14 ? -1 : 0;
+    const uint8_t p15 = _P15 ? -1 : 0;
+    constexpr const __m128i msk=const_v16u8<p00, p01, p02, p03,
+                                            p04, p05, p06, p07,
+                                            p08, p09, p10, p11,
+                                            p12, p13, p14, p15>::iv();
+#if defined (__SSE4_1__)
+    return _mm_blendv_epi8(b, a, msk);
+#else
+    const uint8_t n00 = _P00 ? -1 : -1;
+    const uint8_t n01 = _P01 ? -1 : -1;
+    const uint8_t n02 = _P02 ? -1 : -1;
+    const uint8_t n03 = _P03 ? -1 : -1;
+    const uint8_t n04 = _P04 ? -1 : -1;
+    const uint8_t n05 = _P05 ? -1 : -1;
+    const uint8_t n06 = _P06 ? -1 : -1;
+    const uint8_t n07 = _P07 ? -1 : -1;
+    const uint8_t n08 = _P08 ? -1 : -1;
+    const uint8_t n09 = _P09 ? -1 : -1;
+    const uint8_t n10 = _P10 ? -1 : -1;
+    const uint8_t n11 = _P11 ? -1 : -1;
+    const uint8_t n12 = _P12 ? -1 : -1;
+    const uint8_t n13 = _P13 ? -1 : -1;
+    const uint8_t n14 = _P14 ? -1 : -1;
+    const uint8_t n15 = _P15 ? -1 : -1;
+    constexpr const __m128i compl_msk=const_v16u8<n00, n01, n02, n03,
+                                                  n04, n05, n06, n07,
+                                                  n08, n09, n10, n11,
+                                                  n12, n13, n14, n15>::iv();
+    a = _mm_and_si128(a, msk);
+    b = _mm_and_si128(b, compl_msk);
+    return _mm_or_si128(a, b);
+#endif
+}
+
+
 template<bool _P0, bool _P1, bool _P2, bool _P3,
          bool _P4, bool _P5, bool _P6, bool _P7>
 inline __m128i
@@ -637,6 +720,19 @@ inline
 __m128i cftal::x86::select_u32(__m128i a, __m128i b)
 {
     return impl::select_v4u32<_P0, _P1, _P2, _P3>::v(a, b);
+}
+
+template<bool _P00, bool _P01, bool _P02, bool _P03,
+         bool _P04, bool _P05, bool _P06, bool _P07,
+         bool _P08, bool _P09, bool _P10, bool _P11,
+         bool _P12, bool _P13, bool _P14, bool _P15>
+inline
+__m128i cftal::x86::select_u8(__m128i a, __m128i b)
+{
+    return impl::select_v16u8<_P00, _P01, _P02, _P03,
+                              _P04, _P05, _P06, _P07,
+                              _P08, _P09, _P10, _P11,
+                              _P12, _P13, _P14, _P15>::v(a, b);
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3,

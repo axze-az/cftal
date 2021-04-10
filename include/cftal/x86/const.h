@@ -174,6 +174,18 @@ namespace cftal {
         }
 
         // (u)int16_t constants
+        typedef const_v8u16<0x8080, 0x8080,
+                            0x8080, 0x8090,
+                            0x8080, 0x8090,
+                            0x8080, 0x8080> v_sign_v16s8_msk;
+
+        typedef const_v8u16<0x7f7f, 0x7f7f,
+                            0x7f7f, 0x7f7f,
+                            0x7f7f, 0x7f7f,
+                            0x7f7f, 0x7f7f> v_not_sign_v16s8_msk;
+        const int sign_v16s8_msk = 0xFFFF;
+
+        // (u)int16_t constants
         typedef const_v8u16<0x8000, 0x8000,
                             0x8000, 0x8000,
                             0x8000, 0x8000,

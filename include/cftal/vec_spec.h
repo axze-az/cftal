@@ -29,6 +29,8 @@
 #include <cftal/x86/v2u64.h>
 #include <cftal/x86/v8s16.h>
 #include <cftal/x86/v8u16.h>
+#include <cftal/x86/v16s8.h>
+#include <cftal/x86/v16u8.h>
 // include 128 bit integer vector specializations implementations
 #include <cftal/x86/v4s32_inl.h>
 #include <cftal/x86/v4u32_inl.h>
@@ -36,6 +38,8 @@
 #include <cftal/x86/v2u64_inl.h>
 #include <cftal/x86/v8s16_inl.h>
 #include <cftal/x86/v8u16_inl.h>
+#include <cftal/x86/v16s8_inl.h>
+#include <cftal/x86/v16u8_inl.h>
 #endif
 #if defined (__AVX2__)
 // include 256 bit integer vector specializations

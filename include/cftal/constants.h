@@ -69,8 +69,16 @@ namespace cftal {
         constexpr int32_t s32() const { return int32_t(_u32); }
         constexpr uint16_t u16l() const { return _u32; }
         constexpr uint16_t u16h() const { return _u32>>16; }
+        constexpr uint8_t u8ll() const { return _u32; }
+        constexpr uint8_t u8lh() const { return _u32>>8; }
+        constexpr uint8_t u8hl() const { return _u32>>16; }
+        constexpr uint8_t u8hh() const { return _u32>>24; }
         constexpr int16_t s16l() const { return _u32; }
         constexpr int16_t s16h() const { return _u32 >>16; }
+        constexpr int8_t s8ll() const { return _u32; }
+        constexpr int8_t s8lh() const { return _u32>>8; }
+        constexpr int8_t s8hl() const { return _u32>>16; }
+        constexpr int8_t s8hh() const { return _u32>>24; }
     };
 
     // compile time 4 byte union
@@ -105,6 +113,9 @@ namespace cftal {
     template <uint16_t _N>
     const bytes2 const_u16<_N>::v{_N};
 
+    using sign_s8_msk = const_u32<0x80808080>;
+    using not_sign_s8_msk = const_u32<0x7f7f7f7f>;
+    
     using sign_s16_msk = const_u32<0x80008000>;
     using not_sign_s16_msk = const_u32<0x7fff7fff>;
 
