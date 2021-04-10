@@ -269,28 +269,6 @@ namespace cftal {
             }
         };
 
-#if defined (__AVX2__)
-        template <>
-        struct vshl<int8_t, 16> {
-            using full_type = vec<int8_t, 16>;
-            static
-            full_type
-            v(const full_type& a, const full_type& s) {
-                return x86::impl::vpsllvw::v(a(), s());
-            }
-        };
-
-        template <>
-        struct vshr<int8_t, 16> {
-            using full_type = vec<int8_t, 16>;
-            static
-            full_type
-            v(const full_type& a, const full_type& s) {
-                return x86::impl::vpsravw::v(a(), s());
-            }
-        };
-#endif
-
     }
 
 }
