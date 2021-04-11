@@ -1817,10 +1817,19 @@ __m128i cftal::x86::impl::vpmullb::v(__m128i a, __m128i b)
     __m128i ob=_mm_srli_epi16(b, 8);
     __m128i pe=_mm_mullo_epi16(a, b);
     __m128i po=_mm_mullo_epi16(oa, ob);
+    po=_mm_slli_epi16(po, 8);    
+    const __m128i even_mask = const_v16u8<0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00>::iv();                                       
+    pe=_mm_and_si128(pe, even_mask);
+    __m128i r= _mm_or_si128(po, pe);
+#if 0    
     __m128i r= select_u8<true, false, true, false, 
                          true, false, true, false,
                          true, false, true, false, 
                          true, false, true, false>(pe, po);
+#endif
     return r;
 }
 

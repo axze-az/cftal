@@ -292,6 +292,14 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
     auto e0= std::begin(a);
     const _T& a0= *e0;
     const cmp_t<_T> cmp_elems;
+    
+    using out_t = typename 
+        std::conditional<std::is_same<int8_t, _T>::value || 
+                         std::is_same<uint8_t, _T>::value,
+                         typename std::conditional<std::is_signed<_T>::value, 
+                                                   int, unsigned>::type,
+                         _T>::type;
+    
     for (auto b=std::next(e0), e= std::end(a); b!=e; ++b, ++i) {
         const _T& ai= *b;
         if (cmp_elems(a0, ai)==false) {
@@ -299,8 +307,8 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
                 std::ostringstream s;
                 s.copyfmt(std::cerr);
                 s << msg << " element " << i
-                  << " not equal to element 0 " << ai << " expected: "
-                  << a0 << std::endl;
+                  << " not equal to element 0 " << out_t(ai) << " expected: "
+                  << out_t(a0) << std::endl;
                 std::cerr << s.str();
             }
             r = false;
@@ -310,11 +318,11 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
         if (verbose) {
             std::ostringstream s;
             s.copyfmt(std::cerr);
-            s << msg << " failed: " << a0 << " expected: "
-              << expected << std::endl;
+            s << msg << " failed: " << out_t(a0) << " expected: "
+              << out_t(expected) << std::endl;
             s << std::hexfloat;
-            s << msg << " failed: " << a0 << " expected: "
-              << expected << std::endl;
+            s << msg << " failed: " << out_t(a0) << " expected: "
+              << out_t(expected) << std::endl;
             std::cerr << s.str();
         }
         r = false;
@@ -336,6 +344,18 @@ bool cftal::test::check(const _T(&a)[_N],
                         const _R(&expected)[_N] , _MSG msg,
                         bool verbose, _CMP cmp)
 {
+    using out_t = typename 
+        std::conditional<std::is_same<int8_t, _T>::value || 
+                         std::is_same<uint8_t, _T>::value,
+                         typename std::conditional<std::is_signed<_T>::value, 
+                                                   int, unsigned>::type,
+                         _T>::type;
+    using out_ex_t = typename 
+        std::conditional<std::is_same<int8_t, _R>::value || 
+                         std::is_same<uint8_t, _R>::value,
+                         typename std::conditional<std::is_signed<_R>::value, 
+                                                   int, unsigned>::type,
+                         _R>::type;
     bool r=true;
     auto ex=std::cbegin(expected);
     for (auto b=std::cbegin(a), e=std::cend(a); b != e; ++b, ++ex) {
@@ -345,11 +365,11 @@ bool cftal::test::check(const _T(&a)[_N],
             if (verbose) {
                 std::ostringstream s;
                 s.copyfmt(std::cerr);
-                s << msg << " failed: " << ai << " expected: "
-                  << ei << std::endl;
+                s << msg << " failed: " << out_t(ai) << " expected: "
+                  << out_ex_t(ei) << std::endl;
                 s << std::hexfloat;
-                s << msg << " failed: " << ai << " expected: "
-                  << ei << std::endl;
+                s << msg << " failed: " << out_t(ai) << " expected: "
+                  << out_ex_t(ei) << std::endl;
                 std::cerr << s.str();
             }
             r = false;
@@ -413,6 +433,12 @@ template <class _T, std::size_t _N>
 bool
 cftal::test::check_cmp(const _T(&a)[_N], bool expected , const char* msg)
 {
+    using out_t = typename 
+        std::conditional<std::is_same<int8_t, _T>::value || 
+                         std::is_same<uint8_t, _T>::value,
+                         typename std::conditional<std::is_signed<_T>::value, 
+                                                   int, unsigned>::type,
+                         _T>::type;
     bool r=true;
     std::size_t i=0;
     const cmp_t<_T> cmp;
@@ -421,8 +447,8 @@ cftal::test::check_cmp(const _T(&a)[_N], bool expected , const char* msg)
         const _T& ai= *b;
         if (cmp(ai, expect) == false) {
             std::cerr << msg << " element " << i
-                      << " failed: " << ai << " expected: "
-                      << expected << std::endl;
+                      << " failed: " << out_t(ai) << " expected: "
+                      << out_t(expect) << std::endl;
             r = false;
         }
     }
@@ -443,7 +469,7 @@ cftal::test::check_cmp(const double(&a)[_N], bool expected , const char* msg)
         if (cmp(aii, expect) == false) {
             std::cerr << msg << " element " << i
                       << " failed: " << ai << " expected: "
-                      << expected << std::endl;
+                      << expect << std::endl;
             r = false;
         }
     }
@@ -464,7 +490,7 @@ cftal::test::check_cmp(const float(&a)[_N], bool expected , const char* msg)
         if (cmp(aii, expect) == false) {
             std::cerr << msg << " element " << i
                       << " failed: " << ai << " expected: "
-                      << expected << std::endl;
+                      << expect << std::endl;
             r = false;
         }
     }
@@ -485,7 +511,7 @@ cftal::test::check_cmp(const bit(&a)[_N], bool expected , const char* msg)
         if (cmp(aii, expect) == false) {
             std::cerr << msg << " element " << i
                       << " failed: " << ai << " expected: "
-                      << expected << std::endl;
+                      << expect << std::endl;
             r = false;
         }
     }

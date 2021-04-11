@@ -162,7 +162,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::div_s16::v(a(), b());
+                return x86::div_s8::v(a(), b());
             }
         };
 
@@ -281,7 +281,7 @@ cftal::vec<cftal::int8_t, 16>::vec(const vec<uint8_t, 16>& v)
 
 inline
 cftal::vec<cftal::int8_t, 16>::vec(int8_t v)
-    : base_type(_mm_setr_epi16(v, v, v, v, v, v, v, v))
+    : base_type(_mm_setr_epi8(v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v))
 {
 }
 

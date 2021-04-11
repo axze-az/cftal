@@ -120,7 +120,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
 #if defined (__SSSE3__)
-                const full_type sgn(sign_s16_msk::v.u16l());
+                const full_type sgn(sign_s8_msk::v.u8ll());
                 return _mm_sign_epi8(a(), sgn());
 #else
                 const full_type zero(0);
@@ -165,7 +165,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::div_u16::v(a(), b());
+                return x86::div_u8::v(a(), b());
             }
         };
 

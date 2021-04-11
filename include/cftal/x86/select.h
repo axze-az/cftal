@@ -579,22 +579,22 @@ select_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
 #if defined (__SSE4_1__)
     return _mm_blendv_epi8(b, a, msk);
 #else
-    const uint8_t n00 = _P00 ? -1 : -1;
-    const uint8_t n01 = _P01 ? -1 : -1;
-    const uint8_t n02 = _P02 ? -1 : -1;
-    const uint8_t n03 = _P03 ? -1 : -1;
-    const uint8_t n04 = _P04 ? -1 : -1;
-    const uint8_t n05 = _P05 ? -1 : -1;
-    const uint8_t n06 = _P06 ? -1 : -1;
-    const uint8_t n07 = _P07 ? -1 : -1;
-    const uint8_t n08 = _P08 ? -1 : -1;
-    const uint8_t n09 = _P09 ? -1 : -1;
-    const uint8_t n10 = _P10 ? -1 : -1;
-    const uint8_t n11 = _P11 ? -1 : -1;
-    const uint8_t n12 = _P12 ? -1 : -1;
-    const uint8_t n13 = _P13 ? -1 : -1;
-    const uint8_t n14 = _P14 ? -1 : -1;
-    const uint8_t n15 = _P15 ? -1 : -1;
+    const uint8_t n00 = _P00 ? 0 : -1;
+    const uint8_t n01 = _P01 ? 0 : -1;
+    const uint8_t n02 = _P02 ? 0 : -1;
+    const uint8_t n03 = _P03 ? 0 : -1;
+    const uint8_t n04 = _P04 ? 0 : -1;
+    const uint8_t n05 = _P05 ? 0 : -1;
+    const uint8_t n06 = _P06 ? 0 : -1;
+    const uint8_t n07 = _P07 ? 0 : -1;
+    const uint8_t n08 = _P08 ? 0 : -1;
+    const uint8_t n09 = _P09 ? 0 : -1;
+    const uint8_t n10 = _P10 ? 0 : -1;
+    const uint8_t n11 = _P11 ? 0 : -1;
+    const uint8_t n12 = _P12 ? 0 : -1;
+    const uint8_t n13 = _P13 ? 0 : -1;
+    const uint8_t n14 = _P14 ? 0 : -1;
+    const uint8_t n15 = _P15 ? 0 : -1;
     const __m128i compl_msk=const_v16u8<n00, n01, n02, n03,
                                         n04, n05, n06, n07,
                                         n08, n09, n10, n11,
