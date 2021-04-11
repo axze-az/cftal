@@ -1824,12 +1824,6 @@ __m128i cftal::x86::impl::vpmullb::v(__m128i a, __m128i b)
                                           0xff, 0x00, 0xff, 0x00>::iv();                                       
     pe=_mm_and_si128(pe, even_mask);
     __m128i r= _mm_or_si128(po, pe);
-#if 0    
-    __m128i r= select_u8<true, false, true, false, 
-                         true, false, true, false,
-                         true, false, true, false, 
-                         true, false, true, false>(pe, po);
-#endif
     return r;
 }
 
