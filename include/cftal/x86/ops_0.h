@@ -68,8 +68,8 @@ namespace cftal {
                     return v(a, a);
                 }
             };
-            
-#if 0            
+
+#if 0
             template <class _T, class _OP>
             struct dup_arg {
                 static _T v(_T a) {
@@ -77,7 +77,7 @@ namespace cftal {
                 }
             };
 #endif
-            
+
             template <class _INT_OP>
             struct exec_int {
                 // float: cast to int, exec, cast back
@@ -590,17 +590,17 @@ namespace cftal {
                 }
 #endif
             };
-            
-            
+
+
             struct vpshufb {
                 static __m128i v(__m128i a, __m128i msk);
-#if defined (__AVX2__)                
+#if defined (__AVX2__)
                 static __m256i v(__m256i a, __m256i msk) {
                     return _mm256_shuffle_epi8(a, msk);
                 }
-#endif                
+#endif
             };
-            
+
 
             struct vpmovzxwd {
                 static __m128i v(__m128i a, __m128i b) {
@@ -635,7 +635,7 @@ namespace cftal {
                     static_cast<void>(b);
                     return v(a);
                 }
-                static __m256i v(__m256i a) {                    
+                static __m256i v(__m256i a) {
                     return _mm256_cvtepu32_epi64(_mm256_castsi256_si128(a));
                 }
 #endif
@@ -644,7 +644,7 @@ namespace cftal {
             struct vpsllb {
                 static __m128i v(__m128i a, unsigned shift);
             };
-            
+
             struct vpsllw {
                 static __m128i v(__m128i a, __m128i shift) {
                     return _mm_sll_epi16(a, shift);
@@ -747,12 +747,12 @@ namespace cftal {
                     return _mm_add_epi64(a, a);
                 }
             };
-            
+
             struct vpsrlb {
                 static __m128i v(__m128i a, unsigned shift);
             };
-            
-            
+
+
             struct vpsrlw {
                 static __m128i v(__m128i a, __m128i shift) {
                     return _mm_srl_epi16(a, shift);
@@ -831,8 +831,8 @@ namespace cftal {
             struct vpsrab {
                 static __m128i v(__m128i a, unsigned shift);
             };
-            
-            
+
+
             struct vpsraw {
                 static __m128i v(__m128i a, __m128i shift) {
                     return _mm_sra_epi16(a, shift);
@@ -1011,12 +1011,12 @@ namespace cftal {
             };
 
             struct vpmullb {
-                static 
+                static
                 __m128i v(__m128i a, __m128i b);
 #if defined (__AVX2__)
-                // static 
+                // static
                 // __m256i v(__m256i a, __m256i b);
-#endif                
+#endif
             };
 
             struct vpmullw {
@@ -1331,12 +1331,12 @@ namespace cftal {
                     return r;
 #endif
                 }
-                
+
                 static
                 __m256 v(__m256 a) {
                     return v(_mm256_castps256_ps128(a));
                 }
-                
+
                 static
                 __m256 v(float f) {
                     return _mm256_setr_ps(f, f, f, f, f, f, f, f);
@@ -1380,21 +1380,21 @@ namespace cftal {
                 __m256d v(__m256d a) {
                     return v(_mm256_castpd256_pd128(a));
                 }
-                
+
                 static
                 __m256d v(double d) {
                     return _mm256_setr_pd(d, d, d, d);
                 }
             };
-            
+
             template <typename _V>
             struct vbroadcastd {
             };
-            
+
             template <>
             struct vbroadcastd<__m128i> {
                 static
-                __m128i v(__m128i a) {                   
+                __m128i v(__m128i a) {
                     return vpshufd<0, 0, 0, 0>::v(a);
                 }
                 static
@@ -1402,7 +1402,7 @@ namespace cftal {
                     return _mm_setr_epi32(i, i, i, i);
                 }
             };
-            
+
             template <>
             struct vbroadcastd<__m256i> {
                 static
@@ -1414,28 +1414,28 @@ namespace cftal {
                     __m256d s=_mm256_castpd128_pd256(sl);
                     __m256d r=vinsertf128<1>::v(s, sl);
                     return r;
-#endif                    
+#endif
                 }
 
                 static
                 __m256i v(__m256i a) {
                     return v(_mm256_castsi256_si128(a));
                 }
-                
+
                 static
                 __m256i v(int32_t i) {
                     return _mm256_setr_epi32(i, i, i, i, i, i, i, i);
                 }
-            };            
-            
+            };
+
             template <typename _V>
             struct vbroadcastq {
             };
-            
+
             template <>
             struct vbroadcastq<__m128i> {
                 static
-                __m128i v(__m128i a) {                   
+                __m128i v(__m128i a) {
                     return vpshufd<0, 1, 0, 1>::v(a);
                 }
                 static
@@ -1443,7 +1443,7 @@ namespace cftal {
                     return _mm_set_epi64x(i, i);
                 }
             };
-            
+
             template <>
             struct vbroadcastq<__m256i> {
                 static
@@ -1455,20 +1455,20 @@ namespace cftal {
                     __m256d s=_mm256_castpd128_pd256(sl);
                     __m256d r=vinsertf128<1>::v(s, sl);
                     return r;
-#endif                    
+#endif
                 }
 
                 static
                 __m256i v(__m256i a) {
                     return v(_mm256_castsi256_si128(a));
                 }
-                
+
                 static
                 __m256i v(int64_t i) {
                     return _mm256_set_epi64x(i, i, i, i);
                 }
-            };            
-            
+            };
+
 #endif
         }
     }
@@ -1486,7 +1486,7 @@ __m128i cftal::x86::impl::vpshufb::v(__m128i a, __m128i msk)
     } s, m, d;
     _mm_store_si128(&s._v, a);
     _mm_store_si128(&m._v, msk);
-    for (int i=0; i<16; ++i) {        
+    for (int i=0; i<16; ++i) {
         uint8_t mi=m._a[i];
         d._a[i] =  mi == 0x80 ? 0 : s._a[mi & 15];
     }
@@ -1505,8 +1505,8 @@ __m128i cftal::x86::impl::vpsllb::v(__m128i a, unsigned shift)
     const __m128i even_mask = const_v16u8<0xff, 0x00, 0xff, 0x00,
                                           0xff, 0x00, 0xff, 0x00,
                                           0xff, 0x00, 0xff, 0x00,
-                                          0xff, 0x00, 0xff, 0x00>::iv();                                       
-    __m128i re = _mm_slli_epi16(a, shift);    
+                                          0xff, 0x00, 0xff, 0x00>::iv();
+    __m128i re = _mm_slli_epi16(a, shift);
     re = _mm_and_si128(re, even_mask);
     __m128i ro = _mm_and_si128(a, odd_mask);
     ro = _mm_slli_epi16(ro, shift);
@@ -1524,8 +1524,8 @@ __m128i cftal::x86::impl::vpsrlb::v(__m128i a, unsigned shift)
     const __m128i even_mask = const_v16u8<0xff, 0x00, 0xff, 0x00,
                                           0xff, 0x00, 0xff, 0x00,
                                           0xff, 0x00, 0xff, 0x00,
-                                          0xff, 0x00, 0xff, 0x00>::iv();                                       
-    __m128i ro = _mm_srli_epi16(a, shift);    
+                                          0xff, 0x00, 0xff, 0x00>::iv();
+    __m128i ro = _mm_srli_epi16(a, shift);
     ro = _mm_and_si128(ro, odd_mask);
     __m128i re = _mm_and_si128(a, even_mask);
     re = _mm_srli_epi16(a, shift);
@@ -1540,7 +1540,7 @@ __m128i cftal::x86::impl::vpsrab::v(__m128i a, unsigned shift)
                                          0x00, 0xff, 0x00, 0xff,
                                          0x00, 0xff, 0x00, 0xff,
                                          0x00, 0xff, 0x00, 0xff>::iv();
-    __m128i ro = _mm_srai_epi16(a, shift);    
+    __m128i ro = _mm_srai_epi16(a, shift);
     ro = _mm_and_si128(ro, odd_mask);
     __m128i re = _mm_slli_epi16(a, 8);
     re =_mm_srai_epi16(a, shift);
@@ -1817,11 +1817,11 @@ __m128i cftal::x86::impl::vpmullb::v(__m128i a, __m128i b)
     __m128i ob=_mm_srli_epi16(b, 8);
     __m128i pe=_mm_mullo_epi16(a, b);
     __m128i po=_mm_mullo_epi16(oa, ob);
-    po=_mm_slli_epi16(po, 8);    
+    po=_mm_slli_epi16(po, 8);
     const __m128i even_mask = const_v16u8<0xff, 0x00, 0xff, 0x00,
                                           0xff, 0x00, 0xff, 0x00,
                                           0xff, 0x00, 0xff, 0x00,
-                                          0xff, 0x00, 0xff, 0x00>::iv();                                       
+                                          0xff, 0x00, 0xff, 0x00>::iv();
     pe=_mm_and_si128(pe, even_mask);
     __m128i r= _mm_or_si128(po, pe);
     return r;
