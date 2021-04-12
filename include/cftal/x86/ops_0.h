@@ -1528,7 +1528,7 @@ __m128i cftal::x86::impl::vpsrlb::v(__m128i a, unsigned shift)
     __m128i ro = _mm_srli_epi16(a, shift);
     ro = _mm_and_si128(ro, odd_mask);
     __m128i re = _mm_and_si128(a, even_mask);
-    re = _mm_srli_epi16(a, shift);
+    re = _mm_srli_epi16(re, shift);
     __m128i r= _mm_or_si128(re, ro);
     return r;
 }
@@ -1543,8 +1543,8 @@ __m128i cftal::x86::impl::vpsrab::v(__m128i a, unsigned shift)
     __m128i ro = _mm_srai_epi16(a, shift);
     ro = _mm_and_si128(ro, odd_mask);
     __m128i re = _mm_slli_epi16(a, 8);
-    re =_mm_srai_epi16(a, shift);
-    re =_mm_srli_epi16(a, 8);
+    re =_mm_srai_epi16(re, shift);
+    re =_mm_srli_epi16(re, 8);
     __m128i r= _mm_or_si128(re, ro);
     return r;
 }
