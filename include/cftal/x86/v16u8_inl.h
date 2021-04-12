@@ -268,7 +268,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return x86::impl::vpsrab::v(a(), s);
+                return x86::impl::vpsrlb::v(a(), s);
             }
         };
 
