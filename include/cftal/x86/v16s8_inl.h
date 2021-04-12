@@ -579,10 +579,31 @@ cftal::v16s8 cftal::permute(const v16s8& a, const v16s8& b)
 
 inline
 std::pair<cftal::v16s8, cftal::v16s8>
-cftal::mul_lo_hi(const v16s8& a, const v16s8& b)
+cftal::mul_lo_hi(const v16s8& x, const v16s8& y)
 {
-    v16s8 h(x86::impl::vpmulhw::v(a(), b()));
-    v16s8 l(a*b);
+    __m128i ox=_mm_srai_epi16(x(), 8);
+    __m128i oy=_mm_srai_epi16(y(), 8);
+    __m128i po=_mm_mullo_epi16(ox, oy);
+    
+    const __m128i even_mask = x86::const_v16u8<0xff, 0x00, 0xff, 0x00,
+                                               0xff, 0x00, 0xff, 0x00,
+                                               0xff, 0x00, 0xff, 0x00,
+                                               0xff, 0x00, 0xff, 0x00>::iv();
+    __m128i ex=_mm_srai_epi16(_mm_slli_epi16(x(), 8), 8);
+    __m128i ey=_mm_srai_epi16(_mm_slli_epi16(y(), 8), 8);
+    __m128i pe=_mm_mullo_epi16(ex, ey);
+    // combine low part of the products
+    __m128i pol=_mm_slli_epi16(po, 8);
+    __m128i pel=_mm_and_si128(pe, even_mask);
+    __m128i l=_mm_or_si128(pol, pel);
+    // combine high part of the products
+    const __m128i odd_mask = x86::const_v16u8<0x00, 0xff, 0x00, 0xff,
+                                              0x00, 0xff, 0x00, 0xff,
+                                              0x00, 0xff, 0x00, 0xff,
+                                              0x00, 0xff, 0x00, 0xff>::iv();
+    __m128i poh=_mm_and_si128(po, odd_mask);
+    __m128i peh=_mm_srli_epi16(pe, 8);
+    __m128i h=_mm_or_si128(poh, peh);
     return std::make_pair(l, h);
 }
 
