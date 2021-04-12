@@ -1509,7 +1509,7 @@ __m128i cftal::x86::impl::vpsllb::v(__m128i a, unsigned shift)
     __m128i re = _mm_slli_epi16(a, shift);    
     re = _mm_and_si128(re, even_mask);
     __m128i ro = _mm_and_si128(a, odd_mask);
-    ro = _mm_slli_epi16(a, shift);
+    ro = _mm_slli_epi16(ro, shift);
     __m128i r= _mm_or_si128(re, ro);
     return r;
 }
