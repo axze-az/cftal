@@ -572,7 +572,7 @@ cftal::mul_lo_hi(const v16u8& x, const v16u8& y)
     __m128i ey=_mm_and_si128(y(), even_mask);
     __m128i pe=_mm_mullo_epi16(ex, ey);
     // combine low part of the products
-    __m128i pol=_mm_srli_epi16(po, 8);
+    __m128i pol=_mm_slli_epi16(po, 8);
     __m128i pel=_mm_and_si128(pe, even_mask);
     __m128i l=_mm_or_si128(pol, pel);
     // combine high part of the products
