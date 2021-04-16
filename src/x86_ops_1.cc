@@ -66,6 +66,32 @@ __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
 #else
 __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 {
+#if defined (__AVX2__)
+    __m256i xe=_mm256_cvtepu16_epi32(x);
+    __m256i ye=_mm256_cvtepu16_epi32(y);
+    __m256 xf=_mm256_cvtepi32_ps(xe);
+    __m256 yf=_mm256_cvtepi32_ps(ye);
+    __m256 qf=_mm256_div_ps(xf, yf);
+    __m256i qi=_mm256_cvttps_epi32(qf);
+    const __m256i msk= 
+        _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13, 
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                         0, 1, 4, 5, 8, 9, 12, 13, 
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);        
+    qi= impl::vpshufb::v(qi, msk);
+    qi= impl::perm1_v8u32<0, 1, 4, 5, 0, 1, 4, 5>::v(qi);
+    __m128i q=_mm256_castsi256_si128(qi);
+    // set quotient to -1 where divisor is zero
+    __m128i eqz= _mm_cmpeq_epi16(y, impl::make_zero_int::v());
+    q = _mm_or_si128(q, eqz);
+    if (rem!=nullptr) {
+        // multiply back and subtract
+        __m128i xt = _mm_mullo_epi16(q, y);
+        __m128i yt = _mm_sub_epi16(x, xt);
+        _mm_store_si128(rem, yt);
+    }
+    return q;
+#else    
     __m128i xt = impl::vpsrld_const<16>::v(x);
     __m128i yt = impl::vpsrld_const<16>::v(y);
     __m128 xf= _mm_cvtepi32_ps(xt);
@@ -93,10 +119,37 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
         _mm_store_si128(rem, yt);
     }
     return q;
+#endif    
 }
 
 __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
 {
+#if defined (__AVX2__)
+    __m256i xe=_mm256_cvtepi16_epi32(x);
+    __m256i ye=_mm256_cvtepi16_epi32(y);
+    __m256 xf=_mm256_cvtepi32_ps(xe);
+    __m256 yf=_mm256_cvtepi32_ps(ye);
+    __m256 qf=_mm256_div_ps(xf, yf);
+    __m256i qi=_mm256_cvttps_epi32(qf);   
+    const __m256i msk= 
+        _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13, 
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                         0, 1, 4, 5, 8, 9, 12, 13, 
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);        
+    qi= impl::vpshufb::v(qi, msk);
+    qi= impl::perm1_v8u32<0, 1, 4, 5, 0, 1, 4, 5>::v(qi);
+    __m128i q=_mm256_castsi256_si128(qi);
+    // set quotient to -1 where divisor is zero
+    __m128i eqz= _mm_cmpeq_epi16(y, impl::make_zero_int::v());
+    q = _mm_or_si128(q, eqz);
+    if (rem!=nullptr) {
+        // multiply back and subtract
+        __m128i xt = _mm_mullo_epi16(q, y);
+        __m128i yt = _mm_sub_epi16(x, xt);
+        _mm_store_si128(rem, yt);
+    }
+    return q;
+#else    
     // shift even elements to odd positions
     __m128i xe = impl::vpslld_const<16>::v(x);
     __m128i ye = impl::vpslld_const<16>::v(y);
@@ -134,6 +187,7 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
         _mm_store_si128(rem, yt);
     }
     return q;
+#endif    
 }
 
 __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
