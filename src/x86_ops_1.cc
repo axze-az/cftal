@@ -277,7 +277,7 @@ __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
     __m128i ys = _mm_add_epi32(y, v_sign_v4s32_msk::iv());
     // generate dp fp constant: 2^31
     const int _2_pow_31_fp_h= (1023+31)<<20;
-    __m128d _2_pow_31 =
+    const __m128d _2_pow_31 =
         const_v4u32<0, _2_pow_31_fp_h, 0, _2_pow_31_fp_h>::dv();
     // convert low halves to double
     __m128d xt = _mm_cvtepi32_pd(xs);
@@ -338,7 +338,7 @@ __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
     __m128i ys = _mm_add_epi32(y, v_sign_v4s32_msk::iv());
     // generate dp fp constant: 2^31
     const int _2_pow_31_fp_h= (1023+31)<<20;
-    __m128d _2_pow_31 =
+    const __m128d _2_pow_31 =
         const_v4u32<0, _2_pow_31_fp_h, 0, _2_pow_31_fp_h>::dv();
     // convert low halves to double
     __m128d xt = _mm_cvtepi32_pd(xs);
