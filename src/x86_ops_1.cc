@@ -272,6 +272,38 @@ __m256i cftal::x86::div_s32::v(__m256i x, __m256i y, __m256i* rem)
 
 __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 {
+#if defined (__AVX2__)
+    // add 2^31
+    __m128i xs = _mm_add_epi32(x, v_sign_v4s32_msk::iv());
+    __m128i ys = _mm_add_epi32(y, v_sign_v4s32_msk::iv());
+    // generate dp fp constant: 2^31
+    const int _2_pow_31_fp_h= (1023+31)<<20;
+    const __m256d _2_pow_31 =
+        const_v8u32<0, _2_pow_31_fp_h, 0, _2_pow_31_fp_h,
+                    0, _2_pow_31_fp_h, 0, _2_pow_31_fp_h>::dv();
+    // convert low halves to double
+    __m256d xt = _mm256_cvtepi32_pd(xs);
+    __m256d yt = _mm256_cvtepi32_pd(ys);
+    // add 2^31
+    xt = _mm256_add_pd(xt, _2_pow_31);
+    yt = _mm256_add_pd(yt, _2_pow_31);
+    __m256d q = _mm256_div_pd(xt, yt);
+    // convert back to uint32
+    // compare against 2^31
+    __m256d hm= _mm256_cmp_pd(_2_pow_31, q, _CMP_LE_OS);
+    __m256d corr= _mm256_and_pd(hm, _2_pow_31);
+    // subtract 2^31 where necessary
+    q = _mm256_sub_pd(q, corr);
+    // convert
+    __m256i xm= as<__m256i>(hm);
+    const __m256i xm_perm= const_v8u32<1, 3, 5, 7, 0, 2, 4, 6>::iv();
+    xm=_mm256_permutevar8x32_epi32(xm, xm_perm);    
+    // correct too large values later
+    __m128i qi=_mm256_cvttpd_epi32(q);
+    __m128i xml = as<__m128i>(xm);
+    xml=_mm_slli_epi32(xml, 31);
+    qi = _mm_xor_si128(qi, xml);
+#else
     // add 2^31
     __m128i xs = _mm_add_epi32(x, v_sign_v4s32_msk::iv());
     __m128i ys = _mm_add_epi32(y, v_sign_v4s32_msk::iv());
@@ -318,6 +350,7 @@ __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
     __m128i qih= _mm_cvttpd_epi32(q);
     __m128i qi= _mm_unpacklo_epi64(qil, qih);
     qi = _mm_xor_si128(qi, xm);
+#endif    
     // set quotient to -1 where y==0
     __m128i eqz= _mm_cmpeq_epi32(y, impl::make_zero_int::v());
     qi = _mm_or_si128(qi, eqz);
