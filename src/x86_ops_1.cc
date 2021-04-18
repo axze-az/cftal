@@ -64,6 +64,98 @@ __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
 }
 
 #else
+
+template <unsigned pos>
+__m128i cftal::x86::div_u8::pos(__m128i x, __m128i y)
+{
+    const __m128i msk4=const_v4u32<0xff, 0xff, 0xff, 0xff>::iv();
+    __m128i xi=x, yi=y;
+    if (pos > 0) {
+        xi=_mm_srli_epi32(xi, 8*pos);
+        yi=_mm_srli_epi32(yi, 8*pos);
+    }
+    if (pos < 3) {
+        xi= _mm_and_si128(xi, msk4);
+        yi= _mm_and_si128(yi, msk4);
+    }
+    __m128 xfi=_mm_cvtepi32_ps(xi);
+    __m128 yfi=_mm_cvtepi32_ps(yi);
+    __m128 qfi=_mm_div_ps(xfi, yfi);
+    __m128i qi=_mm_cvttps_epi32(qfi);
+    if (pos < 3) {
+        qi=_mm_and_si128(qi, msk4);
+    }
+    if (pos > 0) {
+        qi=_mm_slli_epi32(qi, 8*pos);
+    }
+    return qi;
+}
+
+__m128i cftal::x86::div_u8::v(__m128i x, __m128i y, __m128i* rem)
+{
+    __m128i q=pos<0>(x, y);
+    __m128i qi=pos<1>(x, y);
+    q=_mm_or_si128(q, qi);
+    qi =pos<2>(x, y);
+    q=_mm_or_si128(q, qi);
+    qi =pos<3>(x, y);
+    q=_mm_or_si128(q, qi);
+    __m128i eqz= _mm_cmpeq_epi8(y, impl::make_zero_int::v());
+    q = _mm_or_si128(q, eqz);
+    if (rem!=nullptr) {
+        // multiply back and subtract
+        __m128i xt = impl::vpmullb::v(q, y);
+        __m128i yt = _mm_sub_epi8(x, xt);
+        _mm_store_si128(rem, yt);
+    }
+    return q;    
+}
+
+template <unsigned pos>
+__m128i cftal::x86::div_s8::pos(__m128i x, __m128i y)
+{
+    const __m128i msk4=const_v4u32<0xff, 0xff, 0xff, 0xff>::iv();
+    __m128i xi=x, yi=y;
+    if (pos < 3) {
+        xi=_mm_slli_epi32(xi, 8*(3-pos));
+        yi=_mm_slli_epi32(yi, 8*(3-pos));
+    }    
+    xi=_mm_srai_epi32(xi, 8*3);
+    yi=_mm_srai_epi32(yi, 8*3);
+    __m128 xfi=_mm_cvtepi32_ps(xi);
+    __m128 yfi=_mm_cvtepi32_ps(yi);
+    __m128 qfi=_mm_div_ps(xfi, yfi);
+    __m128i qi=_mm_cvttps_epi32(qfi);
+    if (pos < 3) {
+        qi=_mm_and_si128(qi, msk4);
+    }
+    if (pos > 0) {
+        qi=_mm_slli_epi32(qi, 8*pos);
+    }
+    return qi;
+}
+
+__m128i cftal::x86::div_s8::v(__m128i x, __m128i y, __m128i* rem)
+{
+    __m128i q=pos<0>(x, y);
+    __m128i qi=pos<1>(x, y);
+    q=_mm_or_si128(q, qi);
+    qi =pos<2>(x, y);
+    q=_mm_or_si128(q, qi);
+    qi =pos<3>(x, y);
+    q=_mm_or_si128(q, qi);
+    __m128i eqz= _mm_cmpeq_epi8(y, impl::make_zero_int::v());
+    q = _mm_or_si128(q, eqz);
+    if (rem!=nullptr) {
+        // multiply back and subtract
+        __m128i xt = impl::vpmullb::v(q, y);
+        __m128i yt = _mm_sub_epi8(x, xt);
+        _mm_store_si128(rem, yt);
+    }
+    return q;    
+}
+
+
 __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 {
 #if defined (__AVX2__)

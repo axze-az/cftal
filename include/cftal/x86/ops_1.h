@@ -24,11 +24,23 @@ namespace cftal {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
         };
-
+       
         struct div_u8 : public div_ref<uint8_t, 16> {
+        private:            
+            template <unsigned pos>
+            static __m128i pos(__m128i x, __m128i y);
+        public:    
+            static __m128i v(__m128i a, __m128i b,
+                             __m128i* rem=nullptr);
         };
         
         struct div_s8 : public div_ref<int8_t, 16> {
+        private:
+            template <unsigned pos>
+            static __m128i pos(__m128i x, __m128i y);
+        public:
+            static __m128i v(__m128i a, __m128i b,
+                             __m128i* rem=nullptr);
         };
         
         struct div_u16 : public div_ref<uint16_t, 8> {
