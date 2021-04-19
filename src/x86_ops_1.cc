@@ -762,11 +762,17 @@ __m128i cftal::x86::div_s64::v(__m128i x, __m128i y, __m128i* rem)
 }
 #endif
 
+#endif // __SSE2__
 #if 0
 extern "C" double cvt_u32_double(uint32_t t);
 extern "C" double cvt_u64_double(uint64_t t);
 extern "C" uint64_t cvt_double_uint64(double x);
 extern "C" uint32_t cvt_double_uint32(double x);
+extern "C" uint32_t cvt_float_u32(float x);
+extern "C" int32_t cvt_float_i32(float x);
+extern "C" float cvt_u32_float(uint32_t x);
+extern "C" float cvt_i32_float(int32_t x);
+
 
 double cvt_u32_double(uint32_t t)
 {
@@ -789,5 +795,24 @@ uint32_t cvt_double_uint32(double x)
 {
     return uint32_t(x);
 }
-#endif
+
+uint32_t cvt_float_u32(float x)
+{
+    return uint32_t(x);
+}
+
+int32_t cvt_float_i32(float x)
+{
+    return int32_t(x);
+}
+
+float cvt_u32_float(uint32_t x)
+{
+    return float(x);
+}
+
+float cvt_i32_float(int32_t x)
+{
+    return float(x);
+}
 #endif
