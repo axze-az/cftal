@@ -9,12 +9,17 @@
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
+#include <type_traits>
 
 namespace cftal {
 
     template <typename _T>
     struct arg {
-        using type = const _T&;
+        // using type = const _T&;
+        using type= typename 
+            std::conditional<(sizeof(_T) > sizeof(double)), 
+                            const _T&,
+                            _T>::type;
     };
 
     template <typename _T>
