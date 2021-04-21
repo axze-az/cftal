@@ -114,7 +114,6 @@ __m128i cftal::x86::div_u8::v(__m128i x, __m128i y, __m128i* rem)
 template <unsigned pos>
 __m128i cftal::x86::div_s8::pos(__m128i x, __m128i y)
 {
-    const __m128i msk4=const_v4u32<0xff, 0xff, 0xff, 0xff>::iv();
     __m128i xi=x, yi=y;
     if (pos < 3) {
         xi=_mm_slli_epi32(xi, 8*(3-pos));
@@ -127,6 +126,7 @@ __m128i cftal::x86::div_s8::pos(__m128i x, __m128i y)
     __m128 qfi=_mm_div_ps(xfi, yfi);
     __m128i qi=_mm_cvttps_epi32(qfi);
     if (pos < 3) {
+        const __m128i msk4=const_v4u32<0xff, 0xff, 0xff, 0xff>::iv();
         qi=_mm_and_si128(qi, msk4);
     }
     if (pos > 0) {
