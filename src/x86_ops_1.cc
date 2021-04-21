@@ -155,7 +155,6 @@ __m128i cftal::x86::div_s8::v(__m128i x, __m128i y, __m128i* rem)
     return q;    
 }
 
-
 __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 {
 #if defined (__AVX2__)
@@ -455,7 +454,6 @@ __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
     return qi;
 }
 
-
 __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
 {
     // add 2^31
@@ -672,8 +670,6 @@ __m256i cftal::x86::div_s64::v(__m256i x, __m256i y, __m256i* rem)
 }
 
 #endif
-
-
 #else
 
 namespace {
