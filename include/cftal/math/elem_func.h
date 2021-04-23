@@ -351,6 +351,7 @@ cbrt(arg_t<vf_type> x)
 {
     // llvm-mca-7 -mtriple=x86_64-unknown-unknown -mcpu=skylake
     // -iterations=1  --all-stats --all-views -timeline-max-cycles=1000
+    // xy.s
     // __asm volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type r=base_type::cbrt_k(x);
     vmf_type is_zero_or_inf_or_nan=
