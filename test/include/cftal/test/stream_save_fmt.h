@@ -28,7 +28,7 @@ namespace cftal {
                     _s.copyfmt(s);
                 }
                 stream_save_fmt(stream_save_fmt&& r)
-                    : _s(std::move(r._s)), _p(std::move(r._p)) {
+                    : _p(std::move(r._p)), _s(std::move(r._s)) {
                     r._p = nullptr;
                 }
                 stream_save_fmt& operator=(stream_save_fmt&& r) {
