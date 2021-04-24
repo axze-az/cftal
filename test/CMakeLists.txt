@@ -10,6 +10,7 @@ set (TEST_SRCS
   f32_f64.cc
   of_fp_funcs.cc
   of_math_funcs.cc
+  of_vec.cc
   call_mpfr.cc
   mpfr_cache.cc
   spinlock.cc

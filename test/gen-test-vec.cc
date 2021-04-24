@@ -108,7 +108,7 @@ cftal::test::gen_v2(const std::string& name_base)
                     ((i1!=0) ? 1 : 3)}
               << "};\n";
             f << indent 
-              << "rc &= check_val(r, id, \"select_v2\");\n";
+              << "rc &= check_val(r, id, msg_select_v2);\n";
         }
     }
     f << indent << "return rc;\n"
@@ -130,7 +130,7 @@ cftal::test::gen_v2(const std::string& name_base)
               << idx{i0, i1}
               << "};\n";
             f << indent
-              << "rc &= check_val(r, id, \"perm1_v2\");\n";
+              << "rc &= check_val(r, id, msg_perm1_v2);\n";
         }
     }
     f << indent << "return rc;\n"
@@ -153,7 +153,7 @@ cftal::test::gen_v2(const std::string& name_base)
               << idx{i0, i1}
               << "};\n";
             f << indent
-              << "rc &= check_val(r, id, \"perm2_v2\");\n";
+              << "rc &= check_val(r, id, msg_perm2_v2);\n";
         }
     }
     f << indent << "return rc;\n"
@@ -195,7 +195,7 @@ cftal::test::gen_v4(const std::string& name_base)
                             }
                     << "};\n";
                     f << indent 
-                      << "rc &= check_val(r, id, \"select_v4\");\n";
+                      << "rc &= check_val(r, id, msg_select_v4);\n";
                 }
             }
         }
@@ -221,7 +221,7 @@ cftal::test::gen_v4(const std::string& name_base)
                       << idx{i0, i1, i2, i3}
                     << "};\n";
                     f << indent
-                      << "rc &= check_val(r, id, \"perm1_v4\");\n";
+                      << "rc &= check_val(r, id, msg_perm1_v4);\n";
                 }
             }
         }
@@ -248,7 +248,7 @@ cftal::test::gen_v4(const std::string& name_base)
                       << idx{i0, i1, i2, i3}
                     << "};\n";
                     f << indent
-                      << "rc &= check_val(r, id, \"perm2_v4\");\n";
+                      << "rc &= check_val(r, id, msg_perm2_v4);\n";
                 }
             }
         }
@@ -300,7 +300,7 @@ cftal::test::gen_v8(const std::string& name_base)
                                             }
                                     << "};\n";
                                     f << indent 
-                                      << "rc &= check_val(r, id, \"select_v8\");\n";
+                                      << "rc &= check_val(r, id, msg_select_v8);\n";
                                 }
                             }
                         }
@@ -338,7 +338,7 @@ cftal::test::gen_v8(const std::string& name_base)
           << id
         << "};\n";
         f << indent
-          << "rc &= check_val(r, id, \"perm1_v8\");\n";
+          << "rc &= check_val(r, id, msg_perm1_v8);\n";
     }
 #if 0
     for (int i0=-1; i0<8; ++i0) {
@@ -393,7 +393,7 @@ cftal::test::gen_v8(const std::string& name_base)
           << id
         << "};\n";
         f << indent
-          << "rc &= check_val(r, id, \"perm2_v8\");\n";
+          << "rc &= check_val(r, id, msg_perm2_v8);\n";
     }
 #if 0
     for (int i0=-1; i0<16; ++i0) {
