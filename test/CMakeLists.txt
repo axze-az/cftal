@@ -91,6 +91,7 @@ set (TEST_HDRS
     ./include/cftal/test/check_sinpicospi.h
     ./include/cftal/test/check_sig.h
     ./include/cftal/test/cpu_times.h
+    ./include/cftal/test/of_vec_v16.h
 )
 
 find_package(Boost REQUIRED)
@@ -322,6 +323,8 @@ if (CFTAL_FULL_TEST)
   test_prog(test-v8f32)
   test_prog(test-v8s32)
   test_prog(test-v8u32)
+  test_prog(test-v16s8)
+  test_prog(test-v16u8)
 endif()
 
 #add_executable(dev-func dev-func.cc)

@@ -574,7 +574,7 @@ cftal::v16s8 cftal::permute(const v16s8& a, const v16s8& b)
     return x86::perm_v16u8<_P00, _P01, _P02, _P03, 
                            _P04, _P05, _P06, _P07,
                            _P08, _P09, _P10, _P11, 
-                           _P12, _P13, _P14, _P15>(a());
+                           _P12, _P13, _P14, _P15>(a(), b());
 }
 
 inline
