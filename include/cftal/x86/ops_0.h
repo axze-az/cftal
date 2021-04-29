@@ -1411,9 +1411,11 @@ namespace cftal {
                     return _mm256_broadcastd_epi32(a);
 #else
                     __m128i b=vbroadcastd<__m128i>::v(a);
-                    __m256d s=_mm256_castpd128_pd256(sl);
-                    __m256d r=vinsertf128<1>::v(s, sl);
-                    return r;
+                    __m128d bd=_mm_castsi128_pd(b);
+                    __m256d s=_mm256_castpd128_pd256(bd);
+                    __m256d r=vinsertf128<1>::v(s, bd);
+                    __m256i ri=_mm256_castpd_si256(r);
+                    return ri;
 #endif
                 }
 
@@ -1452,9 +1454,11 @@ namespace cftal {
                     return _mm256_broadcastq_epi64(a);
 #else
                     __m128i b=vbroadcastq<__m128i>::v(a);
-                    __m256d s=_mm256_castpd128_pd256(sl);
-                    __m256d r=vinsertf128<1>::v(s, sl);
-                    return r;
+                    __m128d bd=_mm_castsi128_pd(b);
+                    __m256d s=_mm256_castpd128_pd256(bd);
+                    __m256d r=vinsertf128<1>::v(s, bd);
+                    __m256i ri=_mm256_castpd_si256(r);
+                    return ri;
 #endif
                 }
 
