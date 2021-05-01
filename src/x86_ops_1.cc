@@ -589,11 +589,19 @@ namespace {
     inline
     _T do_div(_T x, _T y, _T* rem)
     {
-        _T q = cftal::impl::divide(x, y);
-        bool y_not_zero{y != _T{0}};
+#if 0        
+        _T q = cftal::impl::divide(x, y);        
         if (rem!= nullptr) {
+            bool y_not_zero{y != _T{0}};
             *rem = y_not_zero ? x % y : x;
         }
+#else
+        _T q=cftal::impl::divide(x, y);
+        if (rem != nullptr) {
+            bool y_not_zero{y != _T{0}};
+            *rem = y_not_zero ? cftal::remainder(x, y, q) : x;
+        }
+#endif
         return q;
     }
 
