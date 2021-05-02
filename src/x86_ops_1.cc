@@ -243,17 +243,17 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
     xf = _mm_cvtepi32_ps(xt);
     yf = _mm_cvtepi32_ps(yt);
 #if USE_RCP_PS>0
-    xf=_mm256_add_ps(xf, offs);
-    rcp=_mm256_rcp_ps(yf);
+    xf=_mm_add_ps(xf, offs);
+    rcp=_mm_rcp_ps(yf);
 #if defined (__FMA__)
-    r=_mm256_fnmadd_ps(rcp, yf, _mm256_set1_ps(1.0f));
-    rcp=_mm256_fmadd_ps(rcp, r, rcp);
+    r=_mm_fnmadd_ps(rcp, yf, _mm_set1_ps(1.0f));
+    rcp=_mm_fmadd_ps(rcp, r, rcp);
 #else
-    r=_mm256_sub_ps(_mm256_set1_ps(1.0f),
-                    _mm256_mul_ps(rcp, yf));
-    rcp=_mm256_add_ps(_mm256_mul_ps(rcp, r), rcp);
+    r=_mm_sub_ps(_mm_set1_ps(1.0f),
+                 _mm_mul_ps(rcp, yf));
+    rcp=_mm_add_ps(_mm_mul_ps(rcp, r), rcp);
 #endif    
-    qf=_mm256_mul_ps(rcp, xf);    
+    qf=_mm_mul_ps(rcp, xf);    
 #else    
     qf = _mm_div_ps(xf, yf);
 #endif    
@@ -330,7 +330,7 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     __m128 xf= _mm_cvtepi32_ps(xt);
     __m128 yf= _mm_cvtepi32_ps(yt);
 #if USE_RCP_PS>0
-    __m128 offs=_mm128_and_ps(xf, _mm_set1_ps(-0.0f));
+    __m128 offs=_mm_and_ps(xf, _mm_set1_ps(-0.0f));
     offs=_mm_or_ps(offs, _mm_set1_ps(0.5f));   
     xf=_mm_add_ps(xf, offs);
     __m128 rcp=_mm_rcp_ps(yf);
@@ -351,19 +351,19 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     xf = _mm_cvtepi32_ps(xe);
     yf = _mm_cvtepi32_ps(ye);
 #if USE_RCP_PS>0
-    __m128 offs=_mm128_and_ps(xf, _mm_set1_ps(-0.0f));
+    offs=_mm_and_ps(xf, _mm_set1_ps(-0.0f));
     offs=_mm_or_ps(offs, _mm_set1_ps(0.5f));   
-    xf=_mm256_add_ps(xf, offs);
-    rcp=_mm256_rcp_ps(yf);
+    xf=_mm_add_ps(xf, offs);
+    rcp=_mm_rcp_ps(yf);
 #if defined (__FMA__)
-    r=_mm256_fnmadd_ps(rcp, yf, _mm256_set1_ps(1.0f));
-    rcp=_mm256_fmadd_ps(rcp, r, rcp);
+    r=_mm_fnmadd_ps(rcp, yf, _mm_set1_ps(1.0f));
+    rcp=_mm_fmadd_ps(rcp, r, rcp);
 #else
-    r=_mm256_sub_ps(_mm256_set1_ps(1.0f),
-                    _mm256_mul_ps(rcp, yf));
-    rcp=_mm256_add_ps(_mm256_mul_ps(rcp, r), rcp);
+    r=_mm_sub_ps(_mm_set1_ps(1.0f),
+                    _mm_mul_ps(rcp, yf));
+    rcp=_mm_add_ps(_mm_mul_ps(rcp, r), rcp);
 #endif    
-    qf=_mm256_mul_ps(rcp, xf);    
+    qf=_mm_mul_ps(rcp, xf);    
 #else    
     qf = _mm_div_ps(xf, yf);
 #endif       
