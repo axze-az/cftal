@@ -65,6 +65,8 @@ __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
 
 #else
 
+#define USE_RCP_PS 1
+
 template <unsigned pos>
 __m128i cftal::x86::div_u8::pos(__m128i x, __m128i y)
 {
@@ -80,7 +82,14 @@ __m128i cftal::x86::div_u8::pos(__m128i x, __m128i y)
     }
     __m128 xfi=_mm_cvtepi32_ps(xi);
     __m128 yfi=_mm_cvtepi32_ps(yi);
+#if USE_RCP_PS>0
+    __m128 offs=_mm_set1_ps(0.5f);
+    xfi=_mm_add_ps(xfi, offs);
+    __m128 rcp=_mm_rcp_ps(yfi);
+    __m128 qfi=_mm_mul_ps(rcp, xfi);
+#else    
     __m128 qfi=_mm_div_ps(xfi, yfi);
+#endif
     __m128i qi=_mm_cvttps_epi32(qfi);
     if (pos < 3) {
         qi=_mm_and_si128(qi, msk4);
@@ -123,7 +132,15 @@ __m128i cftal::x86::div_s8::pos(__m128i x, __m128i y)
     yi=_mm_srai_epi32(yi, 8*3);
     __m128 xfi=_mm_cvtepi32_ps(xi);
     __m128 yfi=_mm_cvtepi32_ps(yi);
+#if USE_RCP_PS>0
+    __m128 offs=_mm_and_ps(xfi, v_sign_v4f32_msk::fv());
+    offs=_mm_or_ps(offs, _mm_set1_ps(0.5f));
+    xfi=_mm_add_ps(xfi, offs);
+    __m128 rcp=_mm_rcp_ps(yfi);
+    __m128 qfi=_mm_mul_ps(rcp, xfi);
+#else    
     __m128 qfi=_mm_div_ps(xfi, yfi);
+#endif
     __m128i qi=_mm_cvttps_epi32(qfi);
     if (pos < 3) {
         const __m128i msk4=const_v4u32<0xff, 0xff, 0xff, 0xff>::iv();
@@ -162,7 +179,22 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
     __m256i ye=_mm256_cvtepu16_epi32(y);
     __m256 xf=_mm256_cvtepi32_ps(xe);
     __m256 yf=_mm256_cvtepi32_ps(ye);
+#if USE_RCP_PS>0
+    __m256 offs=_mm256_set1_ps(0.5f);
+    xf=_mm256_add_ps(xf, offs);
+    __m256 rcp=_mm256_rcp_ps(yf);
+#if defined (__FMA__)
+    __m256 r=_mm256_fnmadd_ps(rcp, yf, _mm256_set1_ps(1.0f));
+    rcp=_mm256_fmadd_ps(rcp, r, rcp);
+#else
+    __m256 r=_mm256_sub_ps(_mm256_set1_ps(1.0f),
+                           _mm256_mul_ps(rcp, yf));
+    rcp=_mm256_add_ps(_mm256_mul_ps(rcp, r), rcp);
+#endif    
+    __m256 qf=_mm256_mul_ps(rcp, xf);    
+#else    
     __m256 qf=_mm256_div_ps(xf, yf);
+#endif    
     __m256i qi=_mm256_cvttps_epi32(qf);
     const __m256i msk= 
         _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13, 
@@ -187,7 +219,22 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
     __m128i yt = impl::vpsrld_const<16>::v(y);
     __m128 xf= _mm_cvtepi32_ps(xt);
     __m128 yf= _mm_cvtepi32_ps(yt);
+#if USE_RCP_PS>0
+    __m128 offs=_mm_set1_ps(0.5f);
+    xf=_mm_add_ps(xf, offs);
+    __m128 rcp=_mm_rcp_ps(yf);
+#if defined (__FMA__)
+    __m128 r=_mm_fnmadd_ps(rcp, yf, _mm_set1_ps(1.0f));
+    rcp=_mm_fmadd_ps(rcp, r, rcp);
+#else
+    __m128 r=_mm_sub_ps(_mm_set1_ps(1.0f),
+                        _mm_mul_ps(rcp, yf));
+    rcp=_mm_add_ps(_mm_mul_ps(rcp, r), rcp);
+#endif    
+    __m128 qf=_mm_mul_ps(rcp, xf);    
+#else    
     __m128 qf= _mm_div_ps(xf, yf);
+#endif    
     __m128i qo= _mm_cvttps_epi32(qf);
     const __m128i me= const_v8u16<uint16_t(-1), 0, uint16_t(-1), 0,
                                   uint16_t(-1), 0, uint16_t(-1), 0>::iv();
@@ -195,7 +242,21 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
     yt = _mm_and_si128(y, me);
     xf = _mm_cvtepi32_ps(xt);
     yf = _mm_cvtepi32_ps(yt);
+#if USE_RCP_PS>0
+    xf=_mm256_add_ps(xf, offs);
+    rcp=_mm256_rcp_ps(yf);
+#if defined (__FMA__)
+    r=_mm256_fnmadd_ps(rcp, yf, _mm256_set1_ps(1.0f));
+    rcp=_mm256_fmadd_ps(rcp, r, rcp);
+#else
+    r=_mm256_sub_ps(_mm256_set1_ps(1.0f),
+                    _mm256_mul_ps(rcp, yf));
+    rcp=_mm256_add_ps(_mm256_mul_ps(rcp, r), rcp);
+#endif    
+    qf=_mm256_mul_ps(rcp, xf);    
+#else    
     qf = _mm_div_ps(xf, yf);
+#endif    
     __m128i q = _mm_cvttps_epi32(qf);
     qo = impl::vpslld_const<16>::v(qo);
     q = _mm_and_si128(q, me);
@@ -220,7 +281,23 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     __m256i ye=_mm256_cvtepi16_epi32(y);
     __m256 xf=_mm256_cvtepi32_ps(xe);
     __m256 yf=_mm256_cvtepi32_ps(ye);
+#if USE_RCP_PS>0
+    __m256 offs=_mm256_and_ps(xf, _mm256_set1_ps(-0.0f));
+    offs=_mm256_or_ps(offs, _mm256_set1_ps(0.5f));
+    xf=_mm256_add_ps(xf, offs);
+    __m256 rcp=_mm256_rcp_ps(yf);
+#if defined (__FMA__)
+    __m256 r=_mm256_fnmadd_ps(rcp, yf, _mm256_set1_ps(1.0f));
+    rcp=_mm256_fmadd_ps(rcp, r, rcp);
+#else
+    __m256 r=_mm256_sub_ps(_mm256_set1_ps(1.0f),
+                           _mm256_mul_ps(rcp, yf));
+    rcp=_mm256_add_ps(_mm256_mul_ps(rcp, r), rcp);
+#endif    
+    __m256 qf=_mm256_mul_ps(rcp, xf);    
+#else    
     __m256 qf=_mm256_div_ps(xf, yf);
+#endif    
     __m256i qi=_mm256_cvttps_epi32(qf);   
     const __m256i msk= 
         _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13, 
@@ -252,12 +329,44 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     ye = impl::vpsrad_const<16>::v(ye);
     __m128 xf= _mm_cvtepi32_ps(xt);
     __m128 yf= _mm_cvtepi32_ps(yt);
+#if USE_RCP_PS>0
+    __m128 offs=_mm128_and_ps(xf, _mm_set1_ps(-0.0f));
+    offs=_mm_or_ps(offs, _mm_set1_ps(0.5f));   
+    xf=_mm_add_ps(xf, offs);
+    __m128 rcp=_mm_rcp_ps(yf);
+#if defined (__FMA__)
+    __m128 r=_mm_fnmadd_ps(rcp, yf, _mm_set1_ps(1.0f));
+    rcp=_mm_fmadd_ps(rcp, r, rcp);
+#else
+    __m128 r=_mm_sub_ps(_mm_set1_ps(1.0f),
+                        _mm_mul_ps(rcp, yf));
+    rcp=_mm_add_ps(_mm_mul_ps(rcp, r), rcp);
+#endif    
+    __m128 qf=_mm_mul_ps(rcp, xf);    
+#else    
     __m128 qf= _mm_div_ps(xf, yf);
+#endif    
     // odd results.
     __m128i qo= _mm_cvttps_epi32(qf);
     xf = _mm_cvtepi32_ps(xe);
     yf = _mm_cvtepi32_ps(ye);
+#if USE_RCP_PS>0
+    __m128 offs=_mm128_and_ps(xf, _mm_set1_ps(-0.0f));
+    offs=_mm_or_ps(offs, _mm_set1_ps(0.5f));   
+    xf=_mm256_add_ps(xf, offs);
+    rcp=_mm256_rcp_ps(yf);
+#if defined (__FMA__)
+    r=_mm256_fnmadd_ps(rcp, yf, _mm256_set1_ps(1.0f));
+    rcp=_mm256_fmadd_ps(rcp, r, rcp);
+#else
+    r=_mm256_sub_ps(_mm256_set1_ps(1.0f),
+                    _mm256_mul_ps(rcp, yf));
+    rcp=_mm256_add_ps(_mm256_mul_ps(rcp, r), rcp);
+#endif    
+    qf=_mm256_mul_ps(rcp, xf);    
+#else    
     qf = _mm_div_ps(xf, yf);
+#endif       
     // even results
     __m128i q = _mm_cvttps_epi32(qf);
     // shift left odd results
@@ -589,44 +698,35 @@ namespace {
     inline
     _T do_div(_T x, _T y, _T* rem)
     {
-#if 0        
-        _T q = cftal::impl::divide(x, y);        
-        if (rem!= nullptr) {
-            bool y_not_zero{y != _T{0}};
-            *rem = y_not_zero ? x % y : x;
-        }
-#else
         _T q=cftal::impl::divide(x, y);
         if (rem != nullptr) {
             bool y_not_zero{y != _T{0}};
             *rem = y_not_zero ? cftal::remainder(x, y, q) : x;
         }
-#endif
         return q;
     }
 
-    template <class _R, class _T>
+    template <class _R, unsigned _IDX, class _T>
     inline
-    _R* rem_ptr(_T* rem, unsigned id)
+    _R* rem_ptr(_T* rem)
     {
         union {
             _T* _t;
             _R* _r;
         } h;
         h._t = rem;
-        return (h._r == nullptr) ? nullptr : h._r + id;
-    }
-
+        return (h._r == nullptr) ? nullptr : h._r + _IDX;
+    }   
 }
 
 __m128i cftal::x86::div_u64::v(__m128i x, __m128i y, __m128i* rem)
-{
+{    
     uint64_t q0 = do_div<uint64_t>(extract_u64<0>(x),
                                    extract_u64<0>(y),
-                                   rem_ptr<uint64_t>(rem, 0));
+                                   rem_ptr<uint64_t, 0>(rem));
     uint64_t q1 = do_div<uint64_t>(extract_u64<1>(x),
                                    extract_u64<1>(y),
-                                   rem_ptr<uint64_t>(rem, 1));
+                                   rem_ptr<uint64_t, 1>(rem));
     return _mm_set_epi64x(q1, q0);
 }
 
@@ -634,10 +734,10 @@ __m128i cftal::x86::div_s64::v(__m128i x, __m128i y, __m128i* rem)
 {
     int64_t q0 = do_div<int64_t>(extract_u64<0>(x),
                                  extract_u64<0>(y),
-                                 rem_ptr<int64_t>(rem, 0));
+                                 rem_ptr<int64_t, 0>(rem));
     int64_t q1 = do_div<int64_t>(extract_u64<1>(x),
                                  extract_u64<1>(y),
-                                 rem_ptr<int64_t>(rem, 1));
+                                 rem_ptr<int64_t, 1>(rem));
     return _mm_set_epi64x(q1, q0);
 }
 
@@ -647,16 +747,16 @@ __m256i cftal::x86::div_u64::v(__m256i x, __m256i y, __m256i* rem)
 {
     uint64_t q0 = do_div<uint64_t>(extract_u64<0>(x),
                                    extract_u64<0>(y),
-                                   rem_ptr<uint64_t>(rem, 0));
+                                   rem_ptr<uint64_t, 0>(rem));
     uint64_t q1 = do_div<uint64_t>(extract_u64<1>(x),
                                    extract_u64<1>(y),
-                                   rem_ptr<uint64_t>(rem, 1));
+                                   rem_ptr<uint64_t, 1>(rem));
     uint64_t q2 = do_div<uint64_t>(extract_u64<2>(x),
                                    extract_u64<2>(y),
-                                   rem_ptr<uint64_t>(rem, 2));
+                                   rem_ptr<uint64_t, 2>(rem));
     uint64_t q3 = do_div<uint64_t>(extract_u64<3>(x),
                                    extract_u64<3>(y),
-                                   rem_ptr<uint64_t>(rem, 3));
+                                   rem_ptr<uint64_t, 3>(rem));
     return _mm256_set_epi64x(q3, q2, q1, q0);
 }
 
@@ -664,16 +764,16 @@ __m256i cftal::x86::div_s64::v(__m256i x, __m256i y, __m256i* rem)
 {
     int64_t q0 = do_div<int64_t>(extract_u64<0>(x),
                                  extract_u64<0>(y),
-                                 rem_ptr<int64_t>(rem, 0));
+                                 rem_ptr<int64_t, 0>(rem));
     int64_t q1 = do_div<int64_t>(extract_u64<1>(x),
                                  extract_u64<1>(y),
-                                 rem_ptr<int64_t>(rem, 1));
+                                 rem_ptr<int64_t, 1>(rem));
     int64_t q2 = do_div<int64_t>(extract_u64<2>(x),
                                  extract_u64<2>(y),
-                                 rem_ptr<int64_t>(rem, 2));
+                                 rem_ptr<int64_t, 2>(rem));
     int64_t q3 = do_div<int64_t>(extract_u64<3>(x),
                                  extract_u64<3>(y),
-                                 rem_ptr<int64_t>(rem, 3));
+                                 rem_ptr<int64_t, 3>(rem));
     return _mm256_set_epi64x(q3, q2, q1, q0);
 }
 

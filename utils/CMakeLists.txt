@@ -63,6 +63,8 @@ add_executable(gen-fixpoint-div gen-fixpoint-div.cc)
 
 add_executable(gen-lanczos-tbl gen-lanczos-tbl.cc)
 
+add_executable(check-div-x8-x16 check-div-x8-x16)
+
 #add_custom_target(sollya-scripts ALL)
 
 function(add_script script)
