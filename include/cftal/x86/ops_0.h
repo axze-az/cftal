@@ -956,6 +956,24 @@ namespace cftal {
             };
 #endif
 
+            
+#if !defined (__AVX2__)
+            // helper class for vpsllvd, vpsrlvd and vpsravd
+            struct vpsxxvd {
+                // perform element _IDX of a, s
+                template <uint8_t _IDX, 
+                          typename _SINGLE_SHIFT>
+                static
+                __m128i vi(__m128i a, __m128i s);
+                // perform all elements
+                template <typename _SINGLE_SHIFT>
+                static
+                __m128i v(__m128i a, __m128i s);
+                
+            };
+#endif
+
+            
             struct vpsllvd {
                 static __m128i v(__m128i a, __m128i s);
 #if defined (__AVX2__)
@@ -992,7 +1010,6 @@ namespace cftal {
 #endif
             };
 
-
             struct vpsrlvq {
                 static __m128i v(__m128i a, __m128i s);
 #if defined (__AVX2__)
@@ -1001,7 +1018,6 @@ namespace cftal {
                 }
 #endif
             };
-
 
             struct vpsravq {
                 static __m128i v(__m128i a, __m128i s);
@@ -1486,13 +1502,15 @@ __m128i cftal::x86::impl::vpshufb::v(__m128i a, __m128i msk)
 #else
     union {
         __m128i _v;
-        uint8_t _a[16];
+        int8_t _a[16];
     } s, m, d;
     _mm_store_si128(&s._v, a);
     _mm_store_si128(&m._v, msk);
     for (int i=0; i<16; ++i) {
-        uint8_t mi=m._a[i];
-        d._a[i] =  mi == 0x80 ? 0 : s._a[mi & 15];
+        int8_t mi=m._a[i];
+        int8_t offs=mi & 15;
+        int8_t msk=~(mi>>7);
+        d._a[i] =  s._a[offs] & msk;
     }
     __m128i r=_mm_load_si128(&d._v);
     return r;
@@ -1633,29 +1651,66 @@ __m128i cftal::x86::impl::vpsravw::v(__m128i a, __m128i s)
 }
 #endif
 
+
+#if !defined (__AVX2__)
+template <cftal::uint8_t _IDX, typename _SINGLE_SHIFT>
+inline
+__m128i cftal::x86::impl::vpsxxvd::vi(__m128i a, __m128i s)
+{
+    __m128i si= s;
+    if (_IDX == 0) {
+        const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
+        si = _mm_and_si128(si, msk);
+    } else {
+#if defined (__SSSE3__)
+        constexpr const uint8_t c00 = _IDX*4 + 0;
+        constexpr const uint8_t c01 = _IDX*4 + 1;
+        constexpr const uint8_t c02 = _IDX*4 + 2;
+        constexpr const uint8_t c03 = _IDX*4 + 3;
+        constexpr const uint8_t cxx = -1;
+        const __m128i msk=const_v16u8<c00, c01, c02, c03,
+                                      cxx, cxx, cxx, cxx,
+                                      cxx, cxx, cxx, cxx,
+                                      cxx, cxx, cxx, cxx>::iv();
+        si=vpshufb::v(si, msk);                                        
+#else
+        si = vpshufd<_IDX, IDX, _IDX, _IDX>::v(si);
+        const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
+        si = _mm_and_si128(si, msk)
+#endif        
+    }
+    constexpr const uint32_t m0= _IDX==0 ? -1 : 0;
+    constexpr const uint32_t m1= _IDX==1 ? -1 : 0;
+    constexpr const uint32_t m2= _IDX==2 ? -1 : 0;
+    constexpr const uint32_t m3= _IDX==3 ? -1 : 0;
+    const __m128i amsk= const_v4u32<m0, m1, m2, m3>::iv();
+    __m128i r=_mm_and_si128(a, amsk);
+    r = _SINGLE_SHIFT::v(r, si);
+    return r;
+}
+
+template <typename _SINGLE_SHIFT>
+inline
+__m128i cftal::x86::impl::vpsxxvd::v(__m128i a, __m128i s)
+{
+    __m128i r=vi<0, _SINGLE_SHIFT>(a, s);
+    __m128i ri=vi<1, _SINGLE_SHIFT>(a, s);
+    r=_mm_or_si128(r, ri);
+    ri=vi<2, _SINGLE_SHIFT>(a, s);
+    r=_mm_or_si128(r, ri);
+    ri=vi<3, _SINGLE_SHIFT>(a, s);
+    r=_mm_or_si128(r, ri);    
+    return r;
+}
+#endif
+
 inline
 __m128i cftal::x86::impl::vpsllvd::v(__m128i a, __m128i s)
 {
 #if defined (__AVX2__)
     return _mm_sllv_epi32(a, s);
 #else
-    __m128i s0 = s;
-    __m128i s1 = vpshufd<1, 1, 1, 1>::v(s);
-    __m128i s2 = vpshufd<2, 2, 2, 2>::v(s);
-    __m128i s3 = vpshufd<3, 3, 3, 3>::v(s);
-    const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
-    s0 = _mm_and_si128(s0, msk);
-    s1 = _mm_and_si128(s1, msk);
-    s2 = _mm_and_si128(s2, msk);
-    s3 = _mm_and_si128(s3, msk);
-    __m128i r  = vpslld::v(a, s0);
-    __m128i r1 = vpslld::v(a, s1);
-    __m128i r2 = vpslld::v(a, s2);
-    __m128i r3 = vpslld::v(a, s3);
-    r = select_u32<true, false, true, true>(r, r1);
-    r = select_u32<true, true, false, true>(r, r2);
-    r = select_u32<true, true, true, false>(r, r3);
-    return r;
+    return vpsxxvd::v<vpslld>(a, s);
 #endif
 }
 
@@ -1665,23 +1720,7 @@ __m128i cftal::x86::impl::vpsrlvd::v(__m128i a, __m128i s)
 #if defined (__AVX2__)
     return _mm_srlv_epi32(a, s);
 #else
-    __m128i s0 = s;
-    __m128i s1 = vpshufd<1, 1, 1, 1>::v(s);
-    __m128i s2 = vpshufd<2, 2, 2, 2>::v(s);
-    __m128i s3 = vpshufd<3, 3, 3, 3>::v(s);
-    const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
-    s0 = _mm_and_si128(s0, msk);
-    s1 = _mm_and_si128(s1, msk);
-    s2 = _mm_and_si128(s2, msk);
-    s3 = _mm_and_si128(s3, msk);
-    __m128i r  = vpsrld::v(a, s0);
-    __m128i r1 = vpsrld::v(a, s1);
-    __m128i r2 = vpsrld::v(a, s2);
-    __m128i r3 = vpsrld::v(a, s3);
-    r = select_u32<true, false, true, true>(r, r1);
-    r = select_u32<true, true, false, true>(r, r2);
-    r = select_u32<true, true, true, false>(r, r3);
-    return r;
+    return vpsxxvd::v<vpsrld>(a, s);
 #endif
 }
 
@@ -1691,23 +1730,7 @@ __m128i cftal::x86::impl::vpsravd::v(__m128i a, __m128i s)
 #if defined (__AVX2__)
     return _mm_srav_epi32(a, s);
 #else
-    __m128i s0 = s;
-    __m128i s1 = vpshufd<1, 1, 1, 1>::v(s);
-    __m128i s2 = vpshufd<2, 2, 2, 2>::v(s);
-    __m128i s3 = vpshufd<3, 3, 3, 3>::v(s);
-    const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
-    s0 = _mm_and_si128(s0, msk);
-    s1 = _mm_and_si128(s1, msk);
-    s2 = _mm_and_si128(s2, msk);
-    s3 = _mm_and_si128(s3, msk);
-    __m128i r  = vpsrad::v(a, s0);
-    __m128i r1 = vpsrad::v(a, s1);
-    __m128i r2 = vpsrad::v(a, s2);
-    __m128i r3 = vpsrad::v(a, s3);
-    r = select_u32<true, false, true, true>(r, r1);
-    r = select_u32<true, true, false, true>(r, r2);
-    r = select_u32<true, true, true, false>(r, r3);
-    return r;
+    return vpsxxvd::v<vpsrad>(a, s);
 #endif
 }
 
