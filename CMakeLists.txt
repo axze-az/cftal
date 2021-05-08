@@ -77,15 +77,19 @@ endif()
 
 message(${CMAKE_CXX_COMPILER_ID})
 #message(${CMAKE_LIBRARY_ARCHITECTURE})
+# CFTAL_LINUX_ARCH
+if (NOT DEFINED CFTAL_LINUX_ARCH)
+    set(CFTAL_LINUX_ARCH "native")
+endif()
 if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set (CMAKE_CXX_FLAGS_RELEASE
-            "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native")
+            "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=${CFTAL_LINUX_ARCH}")
         set (CMAKE_CXX_FLAGS_DEBUG
-            "${CMAKE_CXX_FLAGS_DEBUG} -Og -march=native")
+            "${CMAKE_CXX_FLAGS_DEBUG} -Og -march=${CFTAL_LINUX_ARCH}")
         set (CMAKE_CXX_FLAGS_PROFILE
-            "${CMAKE_CXX_FLAGS_PROFILE} -O3 -march=native")
+            "${CMAKE_CXX_FLAGS_PROFILE} -O3 -march=${CFTAL_LINUX_ARCH}")
         #set (CMAKE_CXX_FLAGS_RELEASE
         #    "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=x86-64-v3")
         #set (CMAKE_CXX_FLAGS_DEBUG
