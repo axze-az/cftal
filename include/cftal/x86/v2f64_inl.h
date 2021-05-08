@@ -729,6 +729,7 @@ fromp(const double* tbl) const
     vec<double, 2> r=mem<vec<double, 2> >::load(tbl, 2);
     __m128i ir = _mm_shuffle_epi8(_mm_castpd_si128(r()), _msk);
     r = _mm_castsi128_pd(ir);
+    return r;
 #endif
 }
 
