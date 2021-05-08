@@ -12,6 +12,8 @@
 
 namespace cftal {
     namespace impl {
+        
+        // 4 bit position mask with 2 elements
         template <int _P0, int _P1, int _MSK>
         struct pos_msk_2 {
             enum {
@@ -21,6 +23,7 @@ namespace cftal {
             };
         };
 
+        // 4 bit zero mask with 2 elements
         template <int _P0, int _P1>
         struct zero_msk_2 {
             enum {
@@ -30,6 +33,7 @@ namespace cftal {
             };
         };
 
+        // 4 bit position mask with 4 elements
         template <int _P0, int _P1, int _P2, int _P3, int _MSK>
         struct pos_msk_4 {
             enum {
@@ -41,6 +45,7 @@ namespace cftal {
             };
         };
 
+        // 4 bit zero mask with 4 elements
         template <int _P0, int _P1, int _P2, int _P3>
         struct zero_msk_4 {
             enum {
@@ -52,9 +57,10 @@ namespace cftal {
             };
         };
 
+        // 4 bit position mask with 8 elements
         template <int _P0, int _P1, int _P2, int _P3,
-                    int _P4, int _P5, int _P6, int _P7,
-                    int _MSK>
+                  int _P4, int _P5, int _P6, int _P7,
+                  int _MSK>
         struct pos_msk_8 {
             enum {
                 m =
@@ -69,8 +75,9 @@ namespace cftal {
             };
         };
 
+        // 4 bit zero mask with 8 elements
         template <int _P0, int _P1, int _P2, int _P3,
-                    int _P4, int _P5, int _P6, int _P7>
+                  int _P4, int _P5, int _P6, int _P7>
         struct zero_msk_8 {
             enum {
                 m =
