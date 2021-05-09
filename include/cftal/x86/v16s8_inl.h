@@ -48,8 +48,14 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__SSE4_1__)                
                 __m128i min_ab = _mm_min_epi8(b(), a());
                 return _mm_cmpeq_epi8(a(), min_ab);
+#else
+                mask_type b_gt_a(lt<int8_t, 16>::v(b(), a()));
+                const mask_type all_set(uint8_t(-1));
+                return _mm_xor_si128(b_gt_a(), all_set());                
+#endif                
             }
         };
 
@@ -83,9 +89,14 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__SSE4_1__)                
                 // a>= b: a == max(a, b);
                 __m128i max_ab = _mm_max_epi8(b(), a());
                 return _mm_cmpeq_epi8(a(), max_ab);
+#else
+                mask_type a_lt_b( lt<int8_t, 16>::v(a(), b()));
+                return bit_not<int8_t, 16>::v(a_lt_b);                
+#endif
             }
         };
 
