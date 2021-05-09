@@ -78,9 +78,7 @@ endif()
 message(${CMAKE_CXX_COMPILER_ID})
 #message(${CMAKE_LIBRARY_ARCHITECTURE})
 # CFTAL_GCC_ARCH
-if (NOT DEFINED CFTAL_GCC_ARCH)
-    set(CFTAL_GCC_ARCH "native" CACHE STRING "argument for gcc -march=")
-endif()
+set(CFTAL_GCC_ARCH "native" CACHE STRING "argument for gcc -march=")
 if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
