@@ -1674,9 +1674,9 @@ __m128i cftal::x86::impl::vpsxxvd::vi(__m128i a, __m128i s)
                                       cxx, cxx, cxx, cxx>::iv();
         si=vpshufb::v(si, msk);                                        
 #else
-        si = vpshufd<_IDX, IDX, _IDX, _IDX>::v(si);
+        si = vpshufd<_IDX, _IDX, _IDX, _IDX>::v(si);
         const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
-        si = _mm_and_si128(si, msk)
+        si = _mm_and_si128(si, msk);
 #endif        
     }
     constexpr const uint32_t m0= _IDX==0 ? -1 : 0;
