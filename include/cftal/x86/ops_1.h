@@ -256,11 +256,11 @@ cftal::x86::compress_mask_u16(__m128i a)
     __m128i sa=_mm_srai_epi16(a, 15);
     const __m128i msk = _mm_setr_epi16( 1, 2, 4, 8, 16, 32, 64, 128);
     sa = _mm_and_si128(sa, msk);
-    // combine the bits from the upper 4 element with the bit from the
+    // combine the bits from the upper 4 elements with the bits from the
     // lower
     __m128i t= impl::vpshufd<2, 3, 2, 3>::v(sa);
     sa = _mm_or_si128(sa, t);
-    // combine the bits from [0-1] with [2-3]
+    // combine the bits from uin16_t [0-1] with [2-3]
     t = impl::vpshuflw<2, 3, 2, 3>::v(sa);
     sa = _mm_or_si128(sa, t);
     // combine the bits from the [0] and [1]
