@@ -697,6 +697,12 @@ namespace std {
                                >::type, _N>;
     };
 
+    // is this really a good idea?
+    template <typename _T, std::size_t _N>
+    struct numeric_limits<cftal::vec<_T, _N> > : public
+        numeric_limits<typename cftal::vec<_T, _N>::value_type> {
+    };
+    
 }
 
 
