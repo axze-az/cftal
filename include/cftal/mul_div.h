@@ -10,9 +10,9 @@
 #include <cftal/config.h>
 #include <cftal/bitops.h>
 #include <cftal/select.h>
+#include <cftal/type_traits.h>
 #include <iosfwd>
 #include <utility>
-#include <type_traits>
 
 namespace cftal {
 
@@ -22,18 +22,18 @@ namespace cftal {
 
     // return low part in first, high part in second of a*b
     template <class _T>
-    std::enable_if_t<std::is_integral<_T>::value, std::pair<_T, _T> >
+    std::enable_if_t<is_integral<_T>::value, std::pair<_T, _T> >
     mul_lo_hi(const _T& a, const _T& b);
     // return high part of a*b
     template <class _T>
-    std::enable_if_t<std::is_integral<_T>::value, _T>
+    std::enable_if_t<is_integral<_T>::value, _T>
     mul_hi(const _T& a, const _T& b);
 
     namespace impl {
 
         template <class _U>
         struct umul_lo_hi {
-            static_assert(std::is_integral<_U>::value, "_U must be integral");
+            static_assert(is_integral<_U>::value, "_U must be integral");
             // returns low part in first, high part in second
             std::pair<_U, _U> operator()(const _U& a, const _U& b)
                 const;
@@ -41,7 +41,7 @@ namespace cftal {
 
         template <class _S>
         struct smul_lo_hi {
-            static_assert(std::is_integral<_S>::value, "_S must be integral");
+            static_assert(is_integral<_S>::value, "_S must be integral");
             // returns low part in first, high part in second
             std::pair<_S, _S> operator()(const _S& a, const _S& b)
                 const;
@@ -169,7 +169,7 @@ namespace cftal {
         udiv_result<_U>
         make_udiv_result(const _U& q0, const _U& q1, const _U& r)
         {
-            static_assert(std::is_integral<_U>::value, "_U must be integral");
+            static_assert(is_integral<_U>::value, "_U must be integral");
             return udiv_result<_U>(q0, q1, r);
         }
 
@@ -177,7 +177,7 @@ namespace cftal {
         template <class _U, class _UHALF=_U>
         class udiv_2by1_base {
         public:
-            static_assert(std::is_integral<_U>::value, "_U must be integral");
+            static_assert(is_integral<_U>::value, "_U must be integral");
             static
             udiv_result<_U>
             d(const _U& u0, const _U& u1, const _U& v);
@@ -430,7 +430,7 @@ cftal::impl::smul_lo_hi<_S>::operator()(const _S& x, const _S& y)
     enum {
         N = sizeof(_S)* 8
     };
-    typedef typename std::make_unsigned<_S>::type _U;
+    typedef typename make_unsigned<_S>::type _U;
     _U xu(x);
     _U yu(y);
     umul_lo_hi<_U> m;
@@ -553,10 +553,10 @@ _V cftal::remainder(const _V& n, const _V& d, const _V& q)
 
 template <class _T>
 inline
-std::enable_if_t<std::is_integral<_T>::value, std::pair<_T, _T> >
+std::enable_if_t<cftal::is_integral<_T>::value, std::pair<_T, _T> >
 cftal::mul_lo_hi(const _T& x, const _T& y)
 {
-    static_assert(std::is_integral<_T>::value,
+    static_assert(is_integral<_T>::value,
                   "_T must be an integral type");
     typedef typename std::conditional<std::is_signed<_T>::value,
                                       impl::smul_lo_hi<_T>,
@@ -568,7 +568,7 @@ cftal::mul_lo_hi(const _T& x, const _T& y)
 
 template <class _T>
 inline
-std::enable_if_t<std::is_integral<_T>::value, _T>
+std::enable_if_t<cftal::is_integral<_T>::value, _T>
 cftal::mul_hi(const _T& x, const _T& y)
 {
     return mul_lo_hi(x, y).second;

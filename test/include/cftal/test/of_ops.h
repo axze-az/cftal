@@ -13,7 +13,7 @@
 #include <cftal/test/f32_f64.h>
 #include <iostream>
 #include <sstream>
-#include <type_traits>
+#include <cftal/type_traits.h>
 #include <random>
 #include <limits>
 

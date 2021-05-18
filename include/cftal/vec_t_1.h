@@ -12,7 +12,7 @@
 #include <cftal/vec_bit_n.h>
 #include <cftal/mul_div.h>
 #include <cftal/impl/divide.h>
-#include <type_traits>
+#include <cftal/type_traits.h>
 #include <cmath>
 
 #define USE_TYPE_AS_MASK 1

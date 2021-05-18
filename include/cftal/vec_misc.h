@@ -9,7 +9,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
-#include <type_traits>
+#include <cftal/type_traits.h>
 
 namespace cftal {
 

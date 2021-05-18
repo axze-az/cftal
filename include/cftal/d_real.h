@@ -12,7 +12,7 @@
 #include <cftal/std_types.h>
 #include <cftal/fp_expansion.h>
 #include <cmath>
-#include <type_traits>
+#include <cftal/type_traits.h>
 #include <limits>
 
 namespace cftal {

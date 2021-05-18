@@ -9,7 +9,7 @@
 
 #include <cftal/config.h>
 #include <cftal/mul_div.h>
-#include <type_traits>
+#include <cftal/type_traits.h>
 
 namespace cftal {
 
@@ -448,44 +448,41 @@ namespace cftal {
     duint<uint64_t> operator*(const uint64_t& a,
                               const duint<uint64_t>& b);
 #endif
-}
-
-namespace std {
 
     template <class _T>
-    struct is_signed<cftal::duint<_T> >
+    struct is_signed<duint<_T> >
         : public is_signed<_T> { };
     template <class _T>
-    struct is_unsigned<cftal::duint<_T> >
+    struct is_unsigned<duint<_T> >
         : public is_unsigned<_T> { };
     template <class _T>
-    struct make_signed<cftal::duint<_T> > {
-        typedef cftal::dint<_T> type;
+    struct make_signed<duint<_T> > {
+        typedef dint<_T> type;
     };
     template <class _T>
-    struct make_unsigned<cftal::duint<_T> > {
-        typedef cftal::duint<_T> type;
+    struct make_unsigned<duint<_T> > {
+        typedef duint<_T> type;
     };
     template <class _T>
-    struct is_integral<cftal::duint<_T> >
+    struct is_integral<duint<_T> >
         : public is_integral<_T> {};
 
     template <class _T>
-    struct is_signed<cftal::dint<_T> >
+    struct is_signed<dint<_T> >
         : public is_signed<_T> { };
     template <class _T>
-    struct is_unsigned<cftal::dint<_T> >
+    struct is_unsigned<dint<_T> >
         : public is_unsigned<_T> { };
     template <class _T>
-    struct make_signed<cftal::dint<_T> > {
-        typedef cftal::dint<_T> type;
+    struct make_signed<dint<_T> > {
+        typedef dint<_T> type;
     };
     template <class _T>
-    struct make_unsigned<cftal::dint<_T> > {
-        typedef cftal::duint<_T> type;
+    struct make_unsigned<dint<_T> > {
+        typedef duint<_T> type;
     };
     template <class _T>
-    struct is_integral<cftal::dint<_T> >
+    struct is_integral<dint<_T> >
         : public is_integral<_T> {};
 }
 

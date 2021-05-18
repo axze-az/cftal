@@ -10,7 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/select.h>
 #include <cftal/cast.h>
-#include <type_traits>
+#include <cftal/type_traits.h>
 #include <utility>
 
 namespace cftal {

@@ -11,7 +11,7 @@
 #include <cftal/mul_div.h>
 #include <cftal/types.h>
 #include <algorithm>
-#include <type_traits>
+#include <cftal/type_traits.h>
 
 namespace cftal {
 

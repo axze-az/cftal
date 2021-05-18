@@ -10,7 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/constants.h>
 #include <random>
-#include <type_traits>
+#include <cftal/type_traits.h>
 
 namespace cftal {
     namespace test {

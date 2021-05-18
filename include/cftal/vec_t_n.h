@@ -14,7 +14,7 @@
 #include <cftal/arg.h>
 #include <cftal/mem.h>
 #include <cftal/impl/masks.h>
-#include <type_traits>
+#include <cftal/type_traits.h>
 #include <iosfwd>
 #include <algorithm>
 
@@ -669,40 +669,45 @@ namespace cftal {
 
     template <typename _T, std::size_t _N>
     std::ostream& operator<<(std::ostream& s, const vec<_T, _N>& v);
+    
+    template <typename _T, std::size_t _N>
+    struct is_floating_point< vec<_T, _N> > : public
+        is_floating_point<typename vec<_T, _N>::value_type> {
+    };   
+    
+    template <typename _T, std::size_t _N>
+    struct is_signed< vec<_T, _N> > : public
+        is_signed<typename vec<_T, _N>::value_type> {
+    };
+
+    template <typename _T, std::size_t _N>
+    struct is_unsigned<vec<_T, _N> > : public
+        is_unsigned<typename vec<_T, _N>::value_type> {
+    };
+
+    template <typename _T, std::size_t _N>
+    struct make_unsigned< vec<_T, _N> > {
+        using type = vec<typename std::make_unsigned<
+                                    typename vec<_T, _N>::value_type
+                                    >::type, _N>;
+    };
+
+    template <typename _T, std::size_t _N>
+    struct make_signed< vec<_T, _N> > {
+        using type = vec<typename std::make_signed<
+                                    typename vec<_T, _N>::value_type
+                               >::type, _N>;
+    };
+    
 }
 
 namespace std {
-
-    template <typename _T, std::size_t _N>
-    struct is_signed< cftal::vec<_T, _N> > : public
-        is_signed<typename cftal::vec<_T, _N>::value_type> {
-    };
-
-    template <typename _T, std::size_t _N>
-    struct is_unsigned<cftal::vec<_T, _N> > : public
-        is_unsigned<typename cftal::vec<_T, _N>::value_type> {
-    };
-
-    template <typename _T, std::size_t _N>
-    struct make_unsigned< cftal::vec<_T, _N> > {
-        using type = cftal::vec<typename std::make_unsigned<
-                                    typename cftal::vec<_T, _N>::value_type
-                               >::type, _N>;
-    };
-
-    template <typename _T, std::size_t _N>
-    struct make_signed< cftal::vec<_T, _N> > {
-        using type = cftal::vec<typename std::make_signed<
-                                    typename cftal::vec<_T, _N>::value_type
-                               >::type, _N>;
-    };
-
+    
     // is this really a good idea?
     template <typename _T, std::size_t _N>
     struct numeric_limits<cftal::vec<_T, _N> > : public
         numeric_limits<typename cftal::vec<_T, _N>::value_type> {
     };
-    
 }
 
 

@@ -10,7 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec_t_n.h>
-#include <type_traits>
+#include <cftal/type_traits.h>
 #include <iostream>
 
 namespace cftal {

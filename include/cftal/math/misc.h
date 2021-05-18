@@ -17,7 +17,7 @@
 #include <cftal/mem.h>
 #include <cftal/math/func_constants.h>
 #include <cftal/math/horner.h>
-#include <type_traits>
+#include <cftal/type_traits.h>
 #include <limits>
 #include <utility>
 #include <stdexcept>

@@ -8,7 +8,7 @@
 #define __CFTAL_TEST_DINT8_H__ 1
 
 #include <cftal/d_int.h>
-#include <type_traits>
+#include <cftal/type_traits.h>
 #include <functional>
 #include <iostream>
 #include <iomanip>

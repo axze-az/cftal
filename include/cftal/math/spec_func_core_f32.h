@@ -19,7 +19,7 @@
 #if  __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
 #include <cftal/math/spec_func_core_f64.h>
 #endif
-#include <type_traits>
+#include <cftal/type_traits.h>
 #include <limits>
 #include <utility>
 
