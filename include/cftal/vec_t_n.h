@@ -669,6 +669,11 @@ namespace cftal {
 
     template <typename _T, std::size_t _N>
     std::ostream& operator<<(std::ostream& s, const vec<_T, _N>& v);
+
+    template <typename _T, std::size_t _N>
+    struct is_integral< vec<_T, _N> > : public
+        is_integral<typename vec<_T, _N>::value_type> {
+    };   
     
     template <typename _T, std::size_t _N>
     struct is_floating_point< vec<_T, _N> > : public
