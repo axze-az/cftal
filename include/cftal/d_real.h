@@ -1,4 +1,4 @@
-//
+// //
 // Copyright Axel Zeuner 2010-2021. Use, modification and
 // distribution is subject to the Boost Software License, Version
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
@@ -8,8 +8,8 @@
 #define __CFTAL_D_REAL_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/select.h>
 #include <cftal/std_types.h>
+#include <cftal/select.h>
 #include <cftal/fp_expansion.h>
 #include <cmath>
 #include <cftal/type_traits.h>
@@ -652,7 +652,9 @@ namespace cftal {
     d_real<_T> sqrt(const d_real<_T>& a);
 
     template <typename _T>
-    d_real<_T>
+    std::enable_if_t<!std::is_same_v<typename d_real_traits<_T>::cmp_result_type, 
+                                     bool>,
+                     d_real<_T> >
     select(const typename d_real_traits<_T>::cmp_result_type& m,
            const d_real<_T>& on_true,
            const d_real<_T>& on_false);
@@ -1931,7 +1933,10 @@ cftal::sqrt(const d_real<_T>& a)
 
 template <typename _T>
 inline
-cftal::d_real<_T>
+std::enable_if_t<
+    !std::is_same_v<typename cftal::d_real_traits<_T>::cmp_result_type,
+                    bool>,
+    cftal::d_real<_T> >
 cftal::select(const typename d_real_traits<_T>::cmp_result_type& m,
               const d_real<_T>& a, const d_real<_T>& b)
 {

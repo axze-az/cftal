@@ -9,7 +9,7 @@
 
 #include <cftal/config.h>
 #include <initializer_list>
-#include <iosfwd>
+#include <iostream>
 
 namespace cftal {
 

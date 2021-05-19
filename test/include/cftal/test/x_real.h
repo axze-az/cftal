@@ -9,8 +9,8 @@
 
 #include <cftal/config.h>
 #include <cftal/test/uniform_distribution.h>
-#include <cftal/test/f32_f64.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/f32_f64.h>
 #include <random>
 #include <iostream>
 
@@ -30,7 +30,7 @@ namespace cftal {
 
             static
             bool
-            ops(_X<_T> a0, _X<_T> a1);
+            ops(const _X<_T>& a0, const _X<_T>& a1);
 
             static bool ops();
 
@@ -173,12 +173,14 @@ check(_X<_T> res, _R expected, const char* msg)
 template <template <typename _T> class _X, class _T, class _R>
 bool
 cftal::test::check_x_real<_X, _T, _R>::
-ops(_X<_T> a0, _X<_T> b0)
+ops(const _X<_T>& a0, const _X<_T>& b0)
 {
     _R a = make_ref(a0);
     _R b = make_ref(b0);
     _R r;
-    _X<_T> va=a0, vb=b0, vr;
+    const _X<_T> va=a0; 
+    const _X<_T> vb=b0;
+    _X<_T> vr;
     bool rc=true;
 
     r = -a;
@@ -223,14 +225,16 @@ ops(_X<_T> a0, _X<_T> b0)
         rc &= check(vr, r, "a/=b");
     }
 
-    r = std::max(a, b);
+    using std::max;
+    r = max(a, b);
     vr = max(va, vb);
     rc &= check(vr, r, "max");
 
-    r = std::min(a, b);
+    using std::min;
+    r = min(a, b);
     vr = min(va, vb);
     rc &= check(vr, r, "min");
-
+    
     r = a > _R(0.0) ? a : -a;
     vr = abs(va);
     rc &= check(vr, r, "abs");
@@ -262,8 +266,10 @@ cftal::test::check_x_real<_X, _T, _R>::ops()
 
     bool rc =true;
     for (auto b=std::begin(operands), e=std::end(operands); b!=e; b+=2) {
-        rc &= ops(*b, *std::next(b));
-        rc &= ops(*std::next(b), *b);
+        _X<_T> b0=*b;
+        _X<_T> b1=*std::next(b);
+        rc &= ops(b0, b1);
+        rc &= ops(b1, b0);
     }
     std::mt19937 rnd;
     // avoid underflows if we test higher fp expansions

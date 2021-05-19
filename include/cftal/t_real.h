@@ -403,9 +403,13 @@ namespace cftal {
     t_real<_T> mul_pwr2(const t_real<_T>& a, const _T& b);
 
     template <typename _T>
-    t_real<_T> select(const typename t_real_traits<_T>::cmp_result_type& m,
-                      const t_real<_T>& on_true,
-                      const t_real<_T>& on_false);
+    std::enable_if_t<
+        !std::is_same_v<typename cftal::t_real_traits<_T>::cmp_result_type,
+                        bool>,
+        t_real<_T> >
+    select(const typename t_real_traits<_T>::cmp_result_type& m,
+           const t_real<_T>& on_true,
+           const t_real<_T>& on_false);
 
     template <typename _T>
     t_real<_T> min(const t_real<_T>& on_true,
@@ -1191,7 +1195,10 @@ cftal::operator/=(t_real<_T>& a, const t_real<_T>& b)
 
 template <typename _T>
 inline
-cftal::t_real<_T>
+std::enable_if_t<
+    !std::is_same_v<typename cftal::t_real_traits<_T>::cmp_result_type,
+                    bool>,
+    cftal::t_real<_T> >
 cftal::select(const typename t_real_traits<_T>::cmp_result_type& m,
               const t_real<_T>& on_true,
               const t_real<_T>& on_false)

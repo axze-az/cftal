@@ -81,7 +81,7 @@ Runtime=Host System
 
 [CMake][CMake Build Directory 8]
 Build Directory Path=/home/axel/projects/cpplib/cftal/clang
-Build Type=release\n
+Build Type=release
 CMake Binary=/usr/bin/cmake
 CMake Executable=/usr/bin/cmake
 Environment Profile=
