@@ -8,8 +8,6 @@
 #define __CFTAL_MATH_SPEC_FUNC_CORE_F32_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/d_real.h>
-#include <cftal/std_types.h>
 #include <cftal/math/spec_func.h>
 #include <cftal/math/elem_func_core_f32.h>
 #include <cftal/math/func_traits_f32_s32.h>
@@ -19,7 +17,6 @@
 #if  __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
 #include <cftal/math/spec_func_core_f64.h>
 #endif
-#include <cftal/type_traits.h>
 #include <limits>
 #include <utility>
 

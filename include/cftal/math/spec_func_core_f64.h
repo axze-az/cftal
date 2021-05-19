@@ -8,9 +8,6 @@
 #define __CFTAL_MATH_SPEC_FUNC_CORE_F64_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/d_real.h>
-#include <cftal/t_real.h>
-#include <cftal/std_types.h>
 #include <cftal/math/spec_func.h>
 #include <cftal/math/elem_func_core_f64.h>
 #include <cftal/math/func_traits_f64_s32.h>

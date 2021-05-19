@@ -9,18 +9,9 @@
 
 #include <cftal/config.h>
 #include <cftal/arg.h>
-#include <cftal/d_real.h>
-#include <cftal/t_real.h>
-#include <cftal/std_types.h>
-#include <cftal/divisor.h>
-#include <cftal/constants.h>
 #include <cftal/mem.h>
 #include <cftal/math/func_constants.h>
-#include <cftal/math/horner.h>
 #include <cftal/type_traits.h>
-#include <limits>
-#include <utility>
-#include <stdexcept>
 
 namespace cftal {
 
