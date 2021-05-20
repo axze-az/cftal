@@ -531,6 +531,20 @@ cftal::mul_lo_hi(const v8s16& a, const v8s16& b)
     return std::make_pair(l, h);
 }
 
+inline
+cftal::vec<cftal::int16_t, 8>
+cftal::sat_add(const vec<int16_t, 8>& a, const vec<int16_t, 8>& b)
+{
+    return _mm_adds_epi16(a(), b());
+}
+
+inline
+cftal::vec<cftal::int16_t, 8>
+cftal::sat_sub(const vec<int16_t, 8>& a, const vec<int16_t, 8>& b)
+{
+    return _mm_subs_epi16(a(), b());
+}
+
 // Local variables:
 // mode: c++
 // end:

@@ -9,6 +9,7 @@
 
 #include <cftal/config.h>
 #include <cftal/types.h>
+#include <cftal/type_traits.h>
 #include <cftal/vec_spec.h>
 
 namespace cftal {
@@ -18,14 +19,34 @@ namespace cftal {
 
     // returns linear interpolation between a and b
     template <typename _T, typename _T1, std::size_t _N>
-    std::enable_if_t<std::is_floating_point_v<_T>, vec<_T, _N> >
+    std::enable_if_t<cftal::is_floating_point_v<_T>, vec<_T, _N> >
     lerp(_T1 a, _T1 b, const vec<_T, _N>& t);
 
+    // signed saturated addition
+    template <typename _I>
+    std::enable_if_t<cftal::is_signed_v<_I> && cftal::is_integral_v<_I>, _I>
+    sat_add(_I a, _I b);
+    
+    // unsigned saturated addition
+    template <typename _U>
+    std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
+    sat_add(_U a, _U b);
+ 
+    // signed saturated subtraction
+    template <typename _I>
+    std::enable_if_t<cftal::is_signed_v<_I> && cftal::is_integral_v<_I>, _I>
+    sat_sub(_I a, _I b);
+    
+    // unsigned saturated subtraction
+    template <typename _U>
+    std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
+    sat_sub(_U a, _U b);
+    
 }
 
 template <typename _T, typename _T1, std::size_t _N>
 inline
-std::enable_if_t<std::is_floating_point_v<_T>, cftal::vec<_T, _N> >
+std::enable_if_t<cftal::is_floating_point_v<_T>, cftal::vec<_T, _N> >
 cftal::lerp(_T1 a, _T1 b, const vec<_T, _N>& t)
 {
     vec<_T, _N> va=a;
@@ -53,6 +74,79 @@ cftal::lerp(_T1 a, _T1 b, const vec<_T, _N>& t)
     r = select(nan_res, tnan, r);
     return r;
 }
+
+// signed saturated addition
+template <typename _I>
+std::enable_if_t<cftal::is_signed_v<_I> && cftal::is_integral_v<_I>, _I>
+cftal::sat_add(_I a, _I b) 
+{
+    _I r= a +b;
+    const _I v_max=std::numeric_limits<_I>::max();
+    const _I v_min=std::numeric_limits<_I>::min();
+    // if ((b > 0) && (a > int8_t(v_max - b))) {
+    //     r = v_max;
+    // } 
+    _I v_max_minus_b=v_max - b;
+    r = select((b > _I(0)) & (a > v_max_minus_b), v_max, r);
+    // if ((b < 0) && (a < int8_t(v_min - b))) {
+    //     r = v_min;
+    // }
+    _I v_min_minus_b=v_min - b;
+    r = select((b<_I(0)) & (a < v_min_minus_b), v_min, r);        
+    return r;
+}
+
+// unsigned saturated addition
+template <typename _U>
+std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
+cftal::sat_add(_U a, _U b) 
+{
+    _U r= a +b;
+    const _U v_max=std::numeric_limits<_U>::max();
+    // if (a > uint8_t(v_max - b)) {
+    //     r = v_max;
+    // } 
+    _U v_max_minus_b=v_max - b;
+    r = select(a > v_max_minus_b, v_max, r);
+    return r;
+}   
+
+// signed saturated subtraction
+template <typename _I>
+std::enable_if_t<cftal::is_signed_v<_I> && cftal::is_integral_v<_I>, _I>
+cftal::sat_sub(_I a, _I b) 
+{
+    _I r= a - b;
+    const _I v_max=std::numeric_limits<_I>::max();
+    const _I v_min=std::numeric_limits<_I>::min();
+    // if ((b < 0) && (a > int8_t(v_max + b))) {
+    //    r = v_max;
+    // }
+    _I v_max_plus_b=v_max + b;
+    r = select((b<_I(0)) & (a > v_max_plus_b), v_max, r);
+    // if ((b > 0) && (a < int8_t(v_min + b))) {
+    //    r = v_min;
+    // } 
+    _I v_min_plus_b=v_min + b;
+    r = select((b>_I(0)) & (a < v_min_plus_b), v_min, r);
+    return r;
+}
+
+// unsigned saturated subtraction
+template <typename _U>
+std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
+cftal::sat_sub(_U a, _U b) 
+{
+    _U r= a - b;
+    const _U v_min=std::numeric_limits<_U>::min();
+    // if (a < uint8_t(v_min + b)) {
+    //    r = v_min;
+    // } 
+    _U v_min_plus_b=v_min + b;
+    r = select(a < v_min_plus_b, v_min, r);
+    return r;
+}
+
 
 // Local variables:
 // mode: c++

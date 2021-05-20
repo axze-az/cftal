@@ -110,6 +110,13 @@ namespace cftal {
     std::pair<vec<uint8_t, 16>, vec<uint8_t, 16> >
     mul_lo_hi(const vec<uint8_t, 16>& a,
               const vec<uint8_t, 16>& b);
+
+    vec<uint8_t, 16>
+    sat_add(const vec<uint8_t, 16>& a, const vec<uint8_t, 16>& b);
+    
+    vec<uint8_t, 16>
+    sat_sub(const vec<uint8_t, 16>& a, const vec<uint8_t, 16>& b);
+    
 }
 
 
