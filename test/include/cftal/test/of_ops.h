@@ -11,9 +11,9 @@
 #include <cftal/select.h>
 #include <cftal/test/uniform_distribution.h>
 #include <cftal/test/f32_f64.h>
+#include <cftal/type_traits.h>
 #include <iostream>
 #include <sstream>
-#include <cftal/type_traits.h>
 #include <random>
 #include <limits>
 
@@ -281,11 +281,11 @@ cftal::test::of_ops<_T, _N>::v(_T ai, _T bi)
     rc &= check(vr, r, "min");
 
     const bool is_signed =
-        std::is_signed<_T>::value || std::is_floating_point<_T>::value;
+        cftal::is_signed<_T>::value || cftal::is_floating_point<_T>::value;
     rc &= of_signed_ops< _T, _N, is_signed>::v(a, b);
 
     const bool is_integral =
-        std::is_integral<_T>::value;
+        cftal::is_integral<_T>::value;
     rc &= of_integral_ops<_T, _N, is_integral>::v(a, b);
 
     bool br;
@@ -385,7 +385,7 @@ cftal::test::of_ops<_T, _N>::v()
     std::mt19937 rnd;
 
     using distrib_type= typename std::conditional<
-        std::is_floating_point<_T>::value,
+        cftal::is_floating_point<_T>::value,
         uniform_real_distribution<_T>,
         std::uniform_int_distribution<_T> >::type;
     distrib_type

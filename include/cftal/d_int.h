@@ -16,7 +16,7 @@ namespace cftal {
     // double unsigned integer
     template <typename _T>
     class duint {
-        static_assert(std::is_unsigned<_T>::value, "_T must be unsigned");
+        static_assert(is_unsigned<_T>::value, "_T must be unsigned");
     public:
         using type = _T;
         enum {
@@ -223,7 +223,7 @@ namespace cftal {
     // double signed integer
     template <typename _T>
     class dint : public duint<typename std::make_unsigned<_T>::type> {
-        static_assert(std::is_signed<_T>::value, "_T must be signed");
+        static_assert(is_signed<_T>::value, "_T must be signed");
     public:
         using type = _T;
         using utype = typename std::make_unsigned<_T>::type;

@@ -22,11 +22,11 @@ namespace cftal {
 
     // return low part in first, high part in second of a*b
     template <class _T>
-    std::enable_if_t<is_integral<_T>::value, std::pair<_T, _T> >
+    std::enable_if_t<cftal::is_integral<_T>::value, std::pair<_T, _T> >
     mul_lo_hi(const _T& a, const _T& b);
     // return high part of a*b
     template <class _T>
-    std::enable_if_t<is_integral<_T>::value, _T>
+    std::enable_if_t<cftal::is_integral<_T>::value, _T>
     mul_hi(const _T& a, const _T& b);
 
     namespace impl {
@@ -558,7 +558,7 @@ cftal::mul_lo_hi(const _T& x, const _T& y)
 {
     static_assert(is_integral<_T>::value,
                   "_T must be an integral type");
-    typedef typename std::conditional<std::is_signed<_T>::value,
+    typedef typename std::conditional<cftal::is_signed<_T>::value,
                                       impl::smul_lo_hi<_T>,
                                       impl::umul_lo_hi<_T> >::type
         mul_type;

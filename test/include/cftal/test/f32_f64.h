@@ -296,7 +296,7 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
     using out_t = typename 
         std::conditional<std::is_same<int8_t, _T>::value || 
                          std::is_same<uint8_t, _T>::value,
-                         typename std::conditional<std::is_signed<_T>::value, 
+                         typename std::conditional<cftal::is_signed<_T>::value, 
                                                    int, unsigned>::type,
                          _T>::type;
     
@@ -347,13 +347,13 @@ bool cftal::test::check(const _T(&a)[_N],
     using out_t = typename 
         std::conditional<std::is_same<int8_t, _T>::value || 
                          std::is_same<uint8_t, _T>::value,
-                         typename std::conditional<std::is_signed<_T>::value, 
+                         typename std::conditional<cftal::is_signed<_T>::value, 
                                                    int, unsigned>::type,
                          _T>::type;
     using out_ex_t = typename 
         std::conditional<std::is_same<int8_t, _R>::value || 
                          std::is_same<uint8_t, _R>::value,
-                         typename std::conditional<std::is_signed<_R>::value, 
+                         typename std::conditional<cftal::is_signed<_R>::value, 
                                                    int, unsigned>::type,
                          _R>::type;
     bool r=true;
@@ -436,7 +436,7 @@ cftal::test::check_cmp(const _T(&a)[_N], bool expected , const char* msg)
     using out_t = typename 
         std::conditional<std::is_same<int8_t, _T>::value || 
                          std::is_same<uint8_t, _T>::value,
-                         typename std::conditional<std::is_signed<_T>::value, 
+                         typename std::conditional<cftal::is_signed<_T>::value, 
                                                    int, unsigned>::type,
                          _T>::type;
     bool r=true;

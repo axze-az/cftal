@@ -149,7 +149,7 @@ namespace cftal {
     // return the low and the high part of a
     // multiplication for integer types
     template <typename _T, std::size_t _N>
-    std::enable_if_t<std::is_integral<_T>::value,
+    std::enable_if_t<cftal::is_integral<_T>::value,
                      std::pair<vec<_T, _N>, vec<_T, _N> > >
     mul_lo_hi(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
@@ -604,8 +604,8 @@ namespace cftal {
 
     // absolute value for signed integers
     template <typename _T, std::size_t _N>
-    std::enable_if_t< std::is_signed<_T>::value &&
-                      !std::is_floating_point<_T>::value,
+    std::enable_if_t< cftal::is_signed<_T>::value &&
+                      !cftal::is_floating_point<_T>::value,
                       vec<_T, _N> >
     abs(const vec<_T, _N>& v);
 
@@ -621,25 +621,25 @@ namespace cftal {
 
     // floating point minimum with nan and signed 0.0 handling
     template <typename _T, std::size_t _N>
-    std::enable_if_t<std::is_floating_point<_T>::value,
+    std::enable_if_t<cftal::is_floating_point<_T>::value,
                      vec<_T, _N> >
     fmin(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
     // floating point maximum with nan and signed 0.0 handling
     template <typename _T, std::size_t _N>
-    std::enable_if_t<std::is_floating_point<_T>::value,
+    std::enable_if_t<cftal::is_floating_point<_T>::value,
                      vec<_T, _N> >
     fmax(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
     // fdim: max(x-y, 0)
     template <typename _T, std::size_t _N>
-    std::enable_if_t<std::is_floating_point<_T>::value,
+    std::enable_if_t<cftal::is_floating_point<_T>::value,
                      vec<_T, _N> >
     fdim(const vec<_T, _N>& a, const vec<_T, _N>& b);
 
     // modf
     template <typename _T, std::size_t _N>
-    std::enable_if_t<std::is_floating_point<_T>::value,
+    std::enable_if_t<cftal::is_floating_point<_T>::value,
                      vec<_T, _N> >
     modf(const vec<_T, _N>& x, vec<_T, _N>* iptr);
 
@@ -837,7 +837,7 @@ cftal::none_of(const vec<_T, _N>& v)
 
 template <class _T, std::size_t _N>
 inline
-std::enable_if_t<std::is_integral<_T>::value,
+std::enable_if_t<cftal::is_integral<_T>::value,
                  std::pair<cftal::vec<_T, _N>, cftal::vec<_T, _N> > >
 cftal::mul_lo_hi(const vec<_T, _N>& a, const vec<_T, _N>& b)
 {
@@ -967,8 +967,8 @@ cftal::elements_equal(const vec<_T, 1>& v)
 
 template <typename _T, std::size_t _N>
 inline
-std::enable_if_t<std::is_signed<_T>::value &&
-                 !std::is_floating_point<_T>::value,
+std::enable_if_t<cftal::is_signed<_T>::value &&
+                 !cftal::is_floating_point<_T>::value,
                  cftal::vec<_T, _N> >
 cftal::abs(const vec<_T, _N>& v)
 {
@@ -995,7 +995,7 @@ cftal::max(const vec<_T, _N>& a, const vec<_T, _N>& b)
 
 template <typename _T, std::size_t _N>
 inline
-std::enable_if_t<std::is_floating_point<_T>::value,
+std::enable_if_t<cftal::is_floating_point<_T>::value,
                  cftal::vec<_T, _N> >
 cftal::fmin(const vec<_T, _N>& a, const vec<_T, _N>& b)
 {
@@ -1016,7 +1016,7 @@ cftal::fmin(const vec<_T, _N>& a, const vec<_T, _N>& b)
 
 template <typename _T, std::size_t _N>
 inline
-std::enable_if_t<std::is_floating_point<_T>::value,
+std::enable_if_t<cftal::is_floating_point<_T>::value,
                  cftal::vec<_T, _N> >
 cftal::fmax(const vec<_T, _N>& a, const vec<_T, _N>& b)
 {
@@ -1037,7 +1037,7 @@ cftal::fmax(const vec<_T, _N>& a, const vec<_T, _N>& b)
 
 template <typename _T, std::size_t _N>
 inline
-std::enable_if_t<std::is_floating_point<_T>::value,
+std::enable_if_t<cftal::is_floating_point<_T>::value,
                  cftal::vec<_T, _N> >
 cftal::fdim(const vec<_T, _N>& a, const vec<_T, _N>& b)
 {
@@ -1050,7 +1050,7 @@ cftal::fdim(const vec<_T, _N>& a, const vec<_T, _N>& b)
 
 template <typename _T, std::size_t _N>
 inline
-std::enable_if_t<std::is_floating_point<_T>::value,
+std::enable_if_t<cftal::is_floating_point<_T>::value,
                  cftal::vec<_T, _N> >
 cftal::modf(const vec<_T, _N>& x, vec<_T, _N>* iptr)
 {

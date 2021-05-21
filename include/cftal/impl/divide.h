@@ -18,11 +18,11 @@ namespace cftal {
     namespace impl {
 
         template <class _T>
-        std::enable_if_t<std::is_integral<_T>::value, _T>
+        std::enable_if_t<cftal::is_integral<_T>::value, _T>
         divide(const _T& a, const _T& b);
 
         template <class _T>
-        std::enable_if_t<std::is_integral<_T>::value==false, _T>
+        std::enable_if_t<cftal::is_integral<_T>::value==false, _T>
         divide(const _T& a, const _T& b);
 
         // _T unsigned integer type or vector of unsigned integer
@@ -43,7 +43,7 @@ namespace cftal {
 }
 
 template <class _T>
-std::enable_if_t<std::is_integral<_T>::value, _T>
+std::enable_if_t<cftal::is_integral<_T>::value, _T>
 cftal::impl::divide(const _T& a, const _T& b)
 {
     if (b == _T(0))
@@ -52,7 +52,7 @@ cftal::impl::divide(const _T& a, const _T& b)
 }
 
 template <class _T>
-std::enable_if_t<std::is_integral<_T>::value==false, _T>
+std::enable_if_t<cftal::is_integral<_T>::value==false, _T>
 cftal::impl::divide(const _T& a, const _T& b)
 {
     return a/b;
