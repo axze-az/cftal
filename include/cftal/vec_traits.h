@@ -177,10 +177,10 @@ namespace cftal {
 
             static
             vmf_type
-            vmi2_to_vmf(const vmi2_type& mf) {
+            vmi2_to_vmf(const vmi2_type& mi) {
                 return
                     cvt_mask<typename vmf_type::value_type, _N,
-                             typename vmi2_type::value_type, 2*_N>::v(mf);
+                             typename vmi2_type::value_type, 2*_N>::v(mi);
             };
 
             static
