@@ -289,7 +289,7 @@ namespace cftal {
             }
 
             static
-            vf_type insert_exp(const vi2_type& e) {
+            vf_type insert_exp_vi2(const vi2_type& e) {
                 vi2_type ep(e << 20);
                 vf_type r= as<vf_type>(ep);
                 r &= vf_type(exp_f64_msk::v.f64());
@@ -317,7 +317,7 @@ namespace cftal {
             static
             vf_type insert_exp(const vi_type& e) {
                 vi_type ep(e << 20);
-                vec<int32_t, _N*2> ir(combine_zeroeven_odd(ep));
+                vi2_type ir(combine_zeroeven_odd(ep));
                 vf_type r= as<vf_type>(ir);
                 // r &= vf_type(exp_f64_msk::v.f64());
                 return r;
@@ -327,7 +327,7 @@ namespace cftal {
             vi_type extract_exp(const vf_type& d) {
                 const vf_type msk(exp_f64_msk::v.f64());
                 vf_type m(d & msk);
-                vec<int32_t, _N*2> di= as<vec<int32_t, _N*2> >(m);
+                vi2_type di= as<vi2_type>(m);
                 vi_type r= odd_elements(di);
                 r >>= 20;
                 return r;
@@ -335,13 +335,13 @@ namespace cftal {
 
             static
             vi_type extract_high_word(const vf_type& d) {
-                vec<int32_t, _N*2> di=as<vec<int32_t, _N*2> >(d);
+                vi2_type di=as<vi2_type>(d);
                 return odd_elements(di);
             }
 
             static
             vi_type extract_low_word(const vf_type& d) {
-                vec<int32_t, _N*2> di=as<vec<int32_t, _N*2> >(d);
+                vi2_type di=as<vi2_type>(d);
                 return even_elements(di);
             }
 
@@ -349,15 +349,15 @@ namespace cftal {
             void
             extract_words(vi_type& low_word, vi_type& high_word,
                           const vf_type& d) {
-                vec<int32_t, _N*2> di=as<vec<int32_t, _N*2> >(d);
+                vi2_type di=as<vi2_type>(d);
                 low_word=even_elements(di);
                 high_word=odd_elements(di);
             }
 
             static
             void
-            extract_words(vi2_type& low_word, vi2_type& high_word,
-                          const vf_type& x) {
+            extract_words_vi2(vi2_type& low_word, vi2_type& high_word,
+                              const vf_type& x) {
                 vi2_type di=as<vi2_type>(x);
                 low_word = di;
                 high_word = di;
@@ -366,14 +366,14 @@ namespace cftal {
             static
             vf_type
             combine_words(const vi_type& l, const vi_type& h) {
-                vec<int32_t, _N*2> vi= combine_even_odd(l, h);
+                vi2_type vi= combine_even_odd(l, h);
                 vf_type r= as<vf_type>(vi);
                 return r;
             }
 
             static
             vf_type
-            combine_words(const vi2_type& l, const vi2_type& h) {
+            combine_words_vi2(const vi2_type& l, const vi2_type& h) {
                 vi2_type t= select_even_odd(l, h);
                 vf_type r=as<vf_type>(t);
                 return r;

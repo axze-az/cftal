@@ -658,7 +658,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
     vi2_type eo= _T::sel_val_or_zero(i_is_denom, vi2_type(-54));
     // split mantissa
     vi2_type ml, mh;
-    _T::extract_words(ml, mh, xs);
+    _T::extract_words_vi2(ml, mh, xs);
     vi2_type xe=((mh>>20) & _T::e_mask()) + eo;
 
     // determine the exponent of the result
@@ -676,7 +676,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
 
     // high part of mantissa for normal results:
     vi2_type mhn= mh | ((re & vi2_type(_T::e_mask())) << 20);
-    vf_type r= _T::combine_words(ml, mhn);
+    vf_type r= _T::combine_words_vi2(ml, mhn);
 
     // overflow handling
     vmi2_type i_is_inf = re > vi2_type(0x7fe);
@@ -689,10 +689,10 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
     if (_T::any_of_v(i_is_near_z)) {
         // create m*0x1.0p-1022
         vi2_type mhu= mh | vi2_type(1<<20);
-        vf_type r_u= _T::combine_words(ml, mhu);
+        vf_type r_u= _T::combine_words_vi2(ml, mhu);
         // create a scaling factor, but avoid overflows
         vi2_type ue= max(vi2_type(re + (_T::bias()-1)), vi2_type(1));
-        vf_type s_u= _T::insert_exp(ue);
+        vf_type s_u= _T::insert_exp_vi2(ue);
         r_u *= s_u;
         vmf_type f_is_near_z = _T::vmi2_to_vmf(i_is_near_z);
         r = _T::sel(f_is_near_z, r_u, r);
@@ -805,7 +805,7 @@ ilogbp1_k(arg_t<vf_type> x)
     vi2_type eo= _T::sel_val_or_zero(i_is_denom, vi2_type(-54));
     // reinterpret as integer
     vi2_type hi_word, lo_word;
-    _T::extract_words(lo_word, hi_word, xs);
+    _T::extract_words_vi2(lo_word, hi_word, xs);
     // exponent:
     vi2_type e=((hi_word >> 20) & _T::e_mask()) + eo - vi2_type(_T::bias()-1);
     return e;
@@ -1077,8 +1077,8 @@ __two_pow(arg_t<vi_type> ki)
         vi2_type ki2= _T::vi_to_vi2(ki);
         vi2_type kia= ki2>>1;
         vi2_type kib= ki2 - kia;
-        rh= _T::insert_exp(_T::bias()+kia);
-        rl= _T::insert_exp(_T::bias()+kib);
+        rh= _T::insert_exp_vi2(_T::bias()+kia);
+        rl= _T::insert_exp_vi2(_T::bias()+kib);
     }
     return scale_result(rh, rl);
 }
