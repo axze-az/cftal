@@ -329,8 +329,8 @@ rsqrt(arg_t<vf_type> x)
     vf_type y= rsqrt_k(x);
     // y=_T::sel(x == _T::pinf(), vf_type(0), y);
     y=_T::sel_val_or_zero(x != _T::pinf(), y);
-    y=_T::sel(x == 0, _T::pinf(), y);
-    y=_T::sel((x < 0.0) | isnan(x), _T::nan(), y);
+    y=_T::sel(x == _FLOAT_T(0.0), _T::pinf(), y);
+    y=_T::sel((x < _FLOAT_T(0.0)) | isnan(x), _T::nan(), y);
     return y;
 }
 
@@ -346,7 +346,7 @@ cbrt(arg_t<vf_type> x)
     // __asm volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type r=base_type::cbrt_k(x);
     vmf_type is_zero_or_inf_or_nan=
-        (x == vf_type(0)) | isinf(x) | isnan(x);
+        (x == _FLOAT_T(0.0)) | isinf(x) | isnan(x);
     r=_T::sel(is_zero_or_inf_or_nan, x, r);
     // __asm volatile("# LLVM-MCA-END\n\t");
     return r;
@@ -361,8 +361,8 @@ root12(arg_t<vf_type> x)
     vf_type y= base_type::root12_k(x);
     y=_T::sel(x == _T::pinf(), _T::pinf(), y);
     // y=_T::sel(x == 0, 0.0, y);
-    y=_T::sel_val_or_zero(x != 0, y);
-    y=_T::sel((x < 0.0)|isnan(x), _T::nan(), y);
+    y=_T::sel_val_or_zero(x != _FLOAT_T(0), y);
+    y=_T::sel((x < _FLOAT_T(0.0))|isnan(x), _T::nan(), y);
     return y;
 }
 
@@ -394,8 +394,8 @@ exp(arg_t<vf_type> x)
 #else
     vf_type y=base_type:: template exp_k<false>(x);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type exp_hi_inf= fc::exp_hi_inf();
-    const vf_type exp_lo_zero= fc::exp_lo_zero();
+    const _FLOAT_T exp_hi_inf= fc::exp_hi_inf();
+    const _FLOAT_T exp_lo_zero= fc::exp_lo_zero();
     y = _T::sel_zero_or_val(x <= exp_lo_zero, y);
     y = _T::sel(x >= exp_hi_inf, _T::pinf(), y);
     // y = _T::sel(x == 0.0, 1.0, y);
@@ -413,8 +413,8 @@ exp2(arg_t<vf_type> x)
 {
     vf_type y=base_type:: template exp2_k<false>(x);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type exp2_hi_inf= fc::exp2_hi_inf();
-    const vf_type exp2_lo_zero= fc::exp2_lo_zero();
+    const _FLOAT_T exp2_hi_inf= fc::exp2_hi_inf();
+    const _FLOAT_T exp2_lo_zero= fc::exp2_lo_zero();
     y = _T::sel_zero_or_val(x <= exp2_lo_zero, y);
     y = _T::sel(x >= exp2_hi_inf, _T::pinf(), y);
     // y = _T::sel(x == 0.0, 1.0, y);
@@ -430,8 +430,8 @@ exp10(arg_t<vf_type> x)
 {
     vf_type y=base_type:: template exp10_k<false>(x);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type exp10_hi_inf=fc::exp10_hi_inf();
-    const vf_type exp10_lo_zero=fc::exp10_lo_zero();
+    const _FLOAT_T exp10_hi_inf=fc::exp10_hi_inf();
+    const _FLOAT_T exp10_lo_zero=fc::exp10_lo_zero();
     y = _T::sel_zero_or_val(x <= exp10_lo_zero, y);
     y = _T::sel(x >= exp10_hi_inf, _T::pinf(), y);
     // y = _T::sel(d == 0.0, 1.0, y);
@@ -447,9 +447,9 @@ expm1(arg_t<vf_type> x)
 {
     vf_type y = base_type:: template exp_k<true>(x);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type expm1_hi_inf= fc::expm1_hi_inf();
-    const vf_type expm1_lo_minus_one= fc::expm1_lo_minus_one();
-    y = _T::sel(x <= expm1_lo_minus_one, -1.0, y);
+    const _FLOAT_T expm1_hi_inf= fc::expm1_hi_inf();
+    const _FLOAT_T expm1_lo_minus_one= fc::expm1_lo_minus_one();
+    y = _T::sel(x <= expm1_lo_minus_one, _FLOAT_T(-1.0), y);
     y = _T::sel(x >= expm1_hi_inf, _T::pinf(), y);
     return y;
 }
@@ -462,9 +462,9 @@ exp2m1(arg_t<vf_type> x)
 {
     vf_type y = base_type:: template exp2_k<true>(x);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type exp2m1_hi_inf= fc::exp2m1_hi_inf();
-    const vf_type exp2m1_lo_minus_one= fc::exp2m1_lo_minus_one();
-    y = _T::sel(x <= exp2m1_lo_minus_one, -1.0, y);
+    const _FLOAT_T exp2m1_hi_inf= fc::exp2m1_hi_inf();
+    const _FLOAT_T exp2m1_lo_minus_one= fc::exp2m1_lo_minus_one();
+    y = _T::sel(x <= exp2m1_lo_minus_one, _FLOAT_T(-1.0), y);
     y = _T::sel(x >= exp2m1_hi_inf, _T::pinf(), y);
     return y;
 }
@@ -477,9 +477,9 @@ exp10m1(arg_t<vf_type> x)
 {
     vf_type y = base_type:: template exp10_k<true>(x);
     using fc= func_constants<_FLOAT_T>;
-    const vf_type exp10m1_hi_inf= fc::exp10m1_hi_inf();
-    const vf_type exp10m1_lo_minus_one= fc::exp10m1_lo_minus_one();
-    y = _T::sel(x <= exp10m1_lo_minus_one, -1.0, y);
+    const _FLOAT_T exp10m1_hi_inf= fc::exp10m1_hi_inf();
+    const _FLOAT_T exp10m1_lo_minus_one= fc::exp10m1_lo_minus_one();
+    y = _T::sel(x <= exp10m1_lo_minus_one, _FLOAT_T(-1.0), y);
     y = _T::sel(x >= exp10m1_hi_inf, _T::pinf(), y);
     return y;
 }
@@ -492,8 +492,8 @@ sinh(arg_t<vf_type> x)
 {
     using fc=func_constants<_FLOAT_T>;
     vf_type y=base_type::sinh_k(x);
-    const vf_type sinh_hi_inf= fc::sinh_hi_inf();
-    const vf_type sinh_lo_inf= fc::sinh_lo_inf();
+    const _FLOAT_T sinh_hi_inf= fc::sinh_hi_inf();
+    const _FLOAT_T sinh_lo_inf= fc::sinh_lo_inf();
     y = _T::sel(x >= sinh_hi_inf, _T::pinf(), y);
     y = _T::sel(x <= sinh_lo_inf, _T::ninf(), y);
     // y = _T::sel(x == 0.0, x, y);
@@ -507,7 +507,7 @@ cftal::math::elem_func<_FLOAT_T, _T>::
 cosh(arg_t<vf_type> x)
 {
     using fc=func_constants<_FLOAT_T>;
-    const vf_type cosh_hi_inf= fc::cosh_hi_inf();
+    const _FLOAT_T cosh_hi_inf= fc::cosh_hi_inf();
     vf_type res=base_type::cosh_k(x);
     res = _T::sel(abs(x) >= cosh_hi_inf, _T::pinf(), res);
     // res = _T::sel(x == 0.0, 1.0, res);
@@ -538,14 +538,14 @@ log(arg_t<vf_type> d)
     vf_type x= base_type::call_scalar_func(d, f);
 #else
     vf_type x = base_type::log_k(d);
-    const vf_type pinf(_T::pinf());
-    const vf_type ninf(_T::ninf());
+    const _FLOAT_T pinf=_T::pinf();
+    const _FLOAT_T ninf=_T::ninf();
     // x = _T::sel(isinf(d), pinf, x);
     x = _T::sel(d == pinf, pinf, x);
     // if ((d < 0)|isnan(d)) x = NAN;
-    x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
+    x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), _T::nan(), x);
     // if (d == 0) x = -INFINITY;
-    x = _T::sel(d == vf_type(0.0), ninf, x);
+    x = _T::sel(d == _FLOAT_T(0.0), ninf, x);
 #endif
     return x;
 }
@@ -565,14 +565,14 @@ log1p(arg_t<vf_type> d)
     //    else
     //        return log(u)*x/(u-1.);
     // }
-    const vf_type pinf(_T::pinf());
-    const vf_type ninf(_T::ninf());
+    const _FLOAT_T pinf=_T::pinf();
+    const _FLOAT_T ninf=_T::ninf();
     x = _T::sel(d==pinf, pinf, x);
     // if ((d < -1.0)|isnan(d)) x = NAN;
-    x = _T::sel((d < vf_type(-1.0))|isnan(d), vf_type(_T::nan()), x);
+    x = _T::sel((d < _FLOAT_T(-1.0))|isnan(d), _T::nan(), x);
     // if (d == -1.0) x = -INFINITY;
-    x = _T::sel(d == vf_type(-1.0), ninf, x);
-    x = _T::sel(d == vf_type(0.0), d, x);
+    x = _T::sel(d == _FLOAT_T(-1.0), ninf, x);
+    x = _T::sel(d == _FLOAT_T(0.0), d, x);
     return x;
 }
 
@@ -583,13 +583,13 @@ cftal::math::elem_func<_FLOAT_T, _T>::
 log10(arg_t<vf_type> d)
 {
     vf_type x=base_type::log10_k(d);
-    const vf_type pinf(_T::pinf());
-    const vf_type ninf(_T::ninf());
+    const _FLOAT_T pinf=_T::pinf();
+    const _FLOAT_T ninf=_T::ninf();
     x = _T::sel(d==pinf, pinf, x);
     // if ((d < 0)|isnan(d)) x = NAN;
-    x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
+    x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
-    x = _T::sel(d == vf_type(0.0), ninf, x);
+    x = _T::sel(d == _FLOAT_T(0.0), ninf, x);
     return x;
 }
 
@@ -600,13 +600,13 @@ cftal::math::elem_func<_FLOAT_T, _T>::
 log2(arg_t<vf_type> d)
 {
     vf_type x=base_type::log2_k(d);
-    const vf_type pinf(_T::pinf());
-    const vf_type ninf(_T::ninf());
+    const _FLOAT_T pinf=_T::pinf();
+    const _FLOAT_T ninf=_T::ninf();
     x = _T::sel(d==pinf, pinf, x);
     // if ((d < 0)|isnan(d)) x = NAN;
-    x = _T::sel((d < vf_type(0.0))|isnan(d), vf_type(_T::nan()), x);
+    x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
-    x = _T::sel(d == vf_type(0.0), ninf, x);
+    x = _T::sel(d == _FLOAT_T(0.0), ninf, x);
     return x;
 }
 
@@ -654,17 +654,17 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type y_half=_FLOAT_T(0.5) *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
 
-    vf_type res_fac= _T::sel(y_is_odd, vf_type(-1), vf_type(1));
+    vf_type res_fac= _T::sel(y_is_odd, _FLOAT_T(-1), _FLOAT_T(1));
     // res_fac = _T::sel(~y_is_int, _T::nan(), res_fac);
     res_fac = _T::sel(y_is_int, res_fac, _T::nan());
-    res_fac = _T::sel(x >= _FLOAT_T(0), vf_type(1), res_fac);
+    res_fac = _T::sel(x >= _FLOAT_T(0), _FLOAT_T(1), res_fac);
     res *= res_fac;
 
     // vf_type efx= (abs(x) -1) * _T::sel(y<0, vf_type(-1), vf_type(1));
     vf_type efx = mulsign(vf_type(abs(x)-_FLOAT_T(1)), y);
 
     vmf_type y_inf= isinf(y);
-    vf_type t= _T::sel(efx==_FLOAT_T(0), vf_type(1), _T::pinf());
+    vf_type t= _T::sel(efx==_FLOAT_T(0), _FLOAT_T(1), _T::pinf());
     t = _T::sel_zero_or_val(efx < _FLOAT_T(0), t);
     res = _T::sel(y_inf, t, res);
 
@@ -678,7 +678,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     t = _T::sel(y_is_odd, mulsign(t, x), t);
     res = _T::sel(x_inf_or_zero, t, res);
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
-    res = _T::sel((y==_FLOAT_T(0)) | (x==_FLOAT_T(1)), vf_type(1), res);
+    res = _T::sel((y==_FLOAT_T(0)) | (x==_FLOAT_T(1)), _FLOAT_T(1), res);
     __asm__ volatile("# LLVM-MCA-END\n\t");
     return res;
 #endif
@@ -692,25 +692,25 @@ pow(arg_t<vf_type> x, arg_t<vi_type> e)
     vf_type res = base_type:: template powi_k<false>(x, e);
     vf_type y= cvt<vf_type>(e);
 
-    vmi_type ei_is_odd= vi_type(e & vi_type(1))==vi_type(1);
+    vmi_type ei_is_odd= vi_type(e & 1)==vi_type(1);
     vmf_type e_is_odd = _T::vmi_to_vmf(ei_is_odd);
     // result is negative if x < 0 & y is odd
-    vf_type sgn_x= copysign(vf_type(1.0), x);
-    vmf_type res_neg = vmf_type(sgn_x < 0) & e_is_odd;
+    vf_type sgn_x= copysign(_FLOAT_T(1.0), x);
+    vmf_type res_neg = vmf_type(sgn_x < _FLOAT_T(0)) & e_is_odd;
     res = _T::sel(res_neg, -res, res);
 
-    vmf_type x_zero = x == 0.0;
+    vmf_type x_zero = x == _FLOAT_T(0.0);
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     vf_type t= _T::sel(x_zero, -y, y);
-    t= _T::sel_zero_or_val(t < 0.0, _T::pinf());
+    t= _T::sel_zero_or_val(t < _FLOAT_T(0.0), _T::pinf());
     vf_type t1=_T::sel(e_is_odd, sgn_x, vf_type(1));
     t1 *= t;
     res = _T::sel(x_inf_or_zero, t1, res);
-    vmi_type ei_is_one = e==vi_type(1);
+    vmi_type ei_is_one = e==1;
     vmf_type e_is_one = _T::vmi_to_vmf(ei_is_one);
     res = _T::sel(e_is_one, x, res);
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
-    res = _T::sel((y==0.0) | (x==1.0), vf_type(1), res);
+    res = _T::sel((y==_FLOAT_T(0.0)) | (x==_FLOAT_T(1.0)), _FLOAT_T(1), res);
     return res;
 }
 
@@ -721,21 +721,21 @@ rootn(arg_t<vf_type> x, arg_t<vi_type> e)
 {
     vf_type res = base_type:: template powi_k<true>(x, e);
     res = copysign(res, x);
-    vmi_type ei_is_one= e==vi_type(1);
+    vmi_type ei_is_one= e==1;
     vmf_type e_is_one= _T::vmi_to_vmf(ei_is_one);
     res = _T::sel(e_is_one, x, res);
 
-    vmi_type ei_is_even= vi_type(e & 1) == vi_type(0);
+    vmi_type ei_is_even= vi_type(e & 1) == 0;
     vmf_type e_is_even=_T::vmi_to_vmf(ei_is_even);
-    vmi_type ei_is_zero= e==vi_type(0);
+    vmi_type ei_is_zero= e==0;
     vmf_type e_is_zero=_T::vmi_to_vmf(ei_is_zero);
-    vmi_type ei_is_pos= e>vi_type(0);
+    vmi_type ei_is_pos= e>0;
     vmf_type e_is_pos= _T::vmi_to_vmf(ei_is_pos);
-    vmf_type x_zero=x==vf_type(0);
-    res = _T::sel(x_zero, copysign(vf_type(_T::pinf()), x), res);
+    vmf_type x_zero=x==0;
+    res = _T::sel(x_zero, copysign(_T::pinf(), x), res);
     res = _T::sel(x_zero & e_is_even, _T::pinf(), res);
     res = _T::sel(x_zero & e_is_pos, x, res);
-    res = _T::sel(x_zero & e_is_pos & e_is_even, 0.0, res);
+    res = _T::sel(x_zero & e_is_pos & e_is_even, _FLOAT_T(0.0), res);
 
     vmf_type x_inf=isinf(x);
     res = _T::sel(x_inf, copysign(vf_type(0.0), x), res);
@@ -754,7 +754,7 @@ sincos(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
     if ((psin!=nullptr) || (pcos!=nullptr)) {
         base_type::sin_cos_k(d, psin, pcos);
         if (psin!=nullptr) {
-            *psin = _TRAITS_T::sel(d==vf_type(0), d, *psin);
+            *psin = _TRAITS_T::sel(d==_FLOAT_T(0), d, *psin);
         }
     }
 }
@@ -767,7 +767,7 @@ sin(arg_t<vf_type> d)
 {
     vf_type s;
     base_type::sin_cos_k(d, &s, nullptr);
-    s = _TRAITS_T::sel(d==vf_type(0), d, s);
+    s = _TRAITS_T::sel(d==_FLOAT_T(0), d, s);
     return s;
 }
 
@@ -790,9 +790,9 @@ tan(arg_t<vf_type> d)
 {
     vf_type t=base_type::tan_k(d);
     t = _TRAITS_T::sel(isinf(d) | isnan(d),
-                       copysign(vf_type(_TRAITS_T::nan()), d),
+                       copysign(_TRAITS_T::nan(), d),
                        t);
-    t = _TRAITS_T::sel(d==vf_type(0), d, t);
+    t = _TRAITS_T::sel(d==_FLOAT_T(0), d, t);
     return t;
 }
 
@@ -807,12 +807,12 @@ sinpicospi(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
         base_type::sinpi_cospi_k(d, psin, pcos);
         if (psin!=nullptr) {
             *psin= _TRAITS_T::sel(inf_nan,
-                                  copysign(vf_type(_TRAITS_T::nan()), d),
+                                  copysign(_TRAITS_T::nan(), d),
                                   *psin);
         }
         if (pcos!=nullptr) {
             *pcos= _TRAITS_T::sel(inf_nan,
-                                  vf_type(_TRAITS_T::nan()),
+                                  _TRAITS_T::nan(),
                                   *pcos);
         }
     }
@@ -827,7 +827,7 @@ sinpi(arg_t<vf_type> d)
     vf_type s;
     base_type::sinpi_cospi_k(d, &s, nullptr);
     s = _TRAITS_T::sel(isinf(d) | isnan(d),
-                       copysign(vf_type(_TRAITS_T::nan()), d),
+                       copysign(_TRAITS_T::nan(), d),
                        s);
     return s;
 }
@@ -841,7 +841,7 @@ cospi(arg_t<vf_type> d)
     vf_type c;
     base_type::sinpi_cospi_k(d, nullptr, &c);
     c = _TRAITS_T::sel(isinf(d) | isnan(d),
-                       vf_type(_TRAITS_T::nan()),
+                       _TRAITS_T::nan(),
                        c);
     return c;
 }
@@ -854,7 +854,7 @@ tanpi(arg_t<vf_type> d)
 {
     vf_type t=base_type::tanpi_k(d);
     t = _TRAITS_T::sel(isinf(d) | isnan(d),
-                       copysign(vf_type(_TRAITS_T::nan()), d),
+                       copysign(_TRAITS_T::nan(), d),
                        t);
     return t;
 }
@@ -869,35 +869,35 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 
     using _T = _TRAITS_T;
 
-    vmf_type y_zero = y==vf_type(0);
+    vmf_type y_zero = y==_FLOAT_T(0);
     vmf_type x_inf = isinf(x);
     vmf_type y_inf = isinf(y);
-    vmf_type x_zero = x==vf_type(0);
+    vmf_type x_zero = x==_FLOAT_T(0);
     vmf_type x_nan = isnan(x);
     vmf_type y_nan = isnan(y);
 
     vmf_type special = y_zero | x_inf | y_inf | x_zero | x_nan | y_nan;
 
     if (_T::any_of_v(special)) {
-        vf_type y_sgn = copysign(vf_type(1), y);
-        vmf_type y_p= y_sgn == vf_type(1.0);
-        vmf_type y_n= y_sgn == vf_type(-1.0);
+        vf_type y_sgn =  copysign(_FLOAT_T(1), y);
+        vmf_type y_p= y_sgn == _FLOAT_T(1.0);
+        vmf_type y_n= y_sgn == _FLOAT_T(-1.0);
         vmf_type y_p_zero = y_p & y_zero;
         vmf_type y_n_zero = y_n & y_zero;
-        vmf_type y_gt_z = y>vf_type(0);
-        vmf_type y_lt_z = y<vf_type(0);
+        vmf_type y_gt_z = y>_FLOAT_T(0);
+        vmf_type y_lt_z = y<_FLOAT_T(0);
         vmf_type y_p_inf = y_inf & y_p;
         vmf_type y_n_inf = y_inf & y_n;
 
-        vf_type x_sgn = copysign(vf_type(1), x);
-        vmf_type x_p= x_sgn == vf_type(1.0);
-        vmf_type x_n= x_sgn == vf_type(-1.0);
+        vf_type x_sgn = copysign(_FLOAT_T(1), x);
+        vmf_type x_p= x_sgn == _FLOAT_T(1.0);
+        vmf_type x_n= x_sgn == _FLOAT_T(-1.0);
         vmf_type x_p_zero = x_p & x_zero;
         vmf_type x_n_zero = x_n & x_zero;
         vmf_type x_p_inf = x_p & x_inf;
         vmf_type x_n_inf = x_n & x_inf;
-        vmf_type x_gt_z = x>vf_type(0);
-        vmf_type x_lt_z = x<vf_type(0);
+        vmf_type x_gt_z = x>_FLOAT_T(0);
+        vmf_type x_lt_z = x<_FLOAT_T(0);
         vmf_type x_ge_p_z = x_p_zero | x_gt_z;
         vmf_type x_le_n_z = x_n_zero | x_lt_z;
 
@@ -914,7 +914,7 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
         //  atan2(y<0, 0) = -Pi/2
         r = _T::sel(y_lt_z & x_zero, -M_PI/2, r);
         //  atan2(y, +Inf) = copysign(0, y);
-        r = _T::sel(x_p_inf, copysign(vf_type(0), y), r);
+        r = _T::sel(x_p_inf, copysign(_FLOAT_T(0), y), r);
         //  atan2(y>0, -Inf) = +Pi
         r = _T::sel(y_gt_z & x_n_inf, M_PI, r);
         //  atan2(y<0, -Inf) = -Pi
@@ -945,8 +945,8 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
 {
     vf_type r= base_type::atan_k(x);
-    r=_TRAITS_T::sel(x==vf_type(0), x, r);
-    r=_TRAITS_T::sel(isinf(x), copysign(vf_type(M_PI/2), x) , r);
+    r=_TRAITS_T::sel(x==_FLOAT_T(0), x, r);
+    r=_TRAITS_T::sel(isinf(x), copysign(_FLOAT_T(M_PI/2), x) , r);
     r=_TRAITS_T::sel(isnan(x), x, r);
     return r;
 }
@@ -958,10 +958,10 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 asin(arg_t<vf_type> x)
 {
     vf_type r=base_type::asin_k(x);
-    r = _TRAITS_T::sel(x == vf_type(-1), -M_PI/2, r);
-    r = _TRAITS_T::sel(x == vf_type(1), M_PI/2, r);
-    r = _TRAITS_T::sel(x < vf_type(-1), -_TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel((x > vf_type(1))|isnan(x), _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(-1), -M_PI/2, r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(1), M_PI/2, r);
+    r = _TRAITS_T::sel(x < _FLOAT_T(-1), -_TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel((x > _FLOAT_T(1))|isnan(x), _TRAITS_T::nan(), r);
     return r;
 }
 
@@ -972,11 +972,11 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 acos(arg_t<vf_type> x)
 {
     vf_type r=base_type::acos_k(x);
-    r = _TRAITS_T::sel(x == vf_type(-1), M_PI, r);
-    r = _TRAITS_T::sel_zero_or_val(x == vf_type(1), r);
-    r = _TRAITS_T::sel(x == vf_type(0), M_PI/2, r);
-    r = _TRAITS_T::sel(x < vf_type(-1), -_TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel((x > vf_type(1))|isnan(x), _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(-1), M_PI, r);
+    r = _TRAITS_T::sel_zero_or_val(x == _FLOAT_T(1), r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(0), M_PI/2, r);
+    r = _TRAITS_T::sel(x < _FLOAT_T(-1), -_TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel((x > _FLOAT_T(1))|isnan(x), _TRAITS_T::nan(), r);
     return r;
 }
 
@@ -998,7 +998,7 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 acosh(arg_t<vf_type> x)
 {
     vf_type r=base_type::acosh_k(x);
-    r = _TRAITS_T::sel(x < 1.0, _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x < _FLOAT_T(1.0), _TRAITS_T::nan(), r);
     r = _TRAITS_T::sel((x== _TRAITS_T::pinf())|isnan(x), x, r);
     return r;
 }
@@ -1010,10 +1010,10 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atanh(arg_t<vf_type> x)
 {
     vf_type r=base_type::atanh_k(x);
-    r = _TRAITS_T::sel(x == -1.0, _TRAITS_T::ninf(), r);
-    r = _TRAITS_T::sel(x < -1.0, -_TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel(x == 1.0, _TRAITS_T::pinf(), r);
-    r = _TRAITS_T::sel((x > 1.0)|isnan(x), _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(-1.0), _TRAITS_T::ninf(), r);
+    r = _TRAITS_T::sel(x < _FLOAT_T(-1.0), -_TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(1.0), _TRAITS_T::pinf(), r);
+    r = _TRAITS_T::sel((x > _FLOAT_T(1.0))|isnan(x), _TRAITS_T::nan(), r);
     return r;
 }
 

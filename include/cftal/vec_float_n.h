@@ -54,6 +54,14 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<float, _N>
+    copysign(const float& x, const vec<float, _N>& y);
+
+    template <std::size_t _N>
+    vec<float, _N>
+    copysign(const vec<float, _N>& x, const float& y);
+    
+    template <std::size_t _N>
+    vec<float, _N>
     mulsign(const vec<float, _N>& x, const vec<float, _N>& y);
 
     // return a*b +c with or without fma
@@ -1499,6 +1507,22 @@ cftal::copysign(const vec<float, _N>& x, const vec<float, _N>& y)
     v_t sgn_y(andnot(v_t(msk), y));
 #endif
     return v_t(abs_x | sgn_y);
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::copysign(const float& x, const vec<float, _N>& y)
+{
+    return copysign(vec<float, _N>(x), y);
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::copysign(const vec<float, _N>& x, const float& y)
+{
+    return copysign(x, vec<float, _N>(y));
 }
 
 template <std::size_t _N>
