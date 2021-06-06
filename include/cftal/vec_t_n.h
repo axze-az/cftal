@@ -475,31 +475,6 @@ namespace cftal {
     vec<_T, 2>
     copy_even_to_odd(const vec<_T, 2>& v);
 
-    namespace impl {
-
-        template <size_t _N, typename _T>
-        struct load_even_odd {
-            static
-            vec<_T, _N> v(const _T& e, const _T& o) {
-                vec<_T, _N/2> l= load_even_odd<_N/2, _T>::v(e, o);
-                return vec<_T, _N>(l, l);
-            }
-        };
-
-        template <typename _T>
-        struct load_even_odd<2, _T> {
-            static
-            vec<_T, 2> v(const _T& e, const _T& o) {
-                return vec<_T, 2>{e, o};
-            }
-        };
-    }
-
-    // load a vector alternating with e and o at positions 2*i and 2*i+1
-    template <size_t _N, typename _T>
-    vec<_T, _N>
-    load_even_odd(const _T& e, const _T& o);
-
     // checks if all elements in v are equal
     template <typename _T, std::size_t _N>
     bool
@@ -928,14 +903,6 @@ cftal::select(const vec<_T, 16>& a, const vec<_T, 16>& b)
                                                        low_half(b)),
         select<_I8, _I9, _IA, _IB, _IC, _ID, _IE, _IF>(high_half(a),
                                                        high_half(b)));
-}
-
-template <std::size_t _N, typename _T>
-inline
-cftal::vec<_T, _N>
-cftal::load_even_odd(const _T& e, const _T& o)
-{
-    return impl::load_even_odd<_N, _T>::v(e, o);
 }
 
 template <class _T, std::size_t _N>

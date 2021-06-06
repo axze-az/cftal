@@ -1101,8 +1101,7 @@ cftal::math::elem_func_core<double, _T>::
 __mul_two_pow(arg_t<vf_type> y, arg_t<vi_type> k)
 {
     const vi_type zz=0;
-    const int _N2= _T::NVI()*2;
-    const vi2_type bias=load_even_odd<_N2>(int32_t(0), _T::bias());
+    const vi2_type bias=as<vi2_type>(vli_type(uint64_t(_T::bias())<<32));
     vi2_type k2= combine_even_odd(zz, k);
     vi2_type ka= k2 >> 1;
     vi2_type kb= k2 - ka;
