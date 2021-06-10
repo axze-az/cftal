@@ -898,7 +898,7 @@ rcp21(_T& rh, const _T& ah, const _T& al)
 
 template <typename _T>
 inline
-__attribute__((always_inline))
+__attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, true>::
 unorm_mul122(_T& rh, _T& rl,
@@ -912,7 +912,7 @@ unorm_mul122(_T& rh, _T& rl,
 
 template <typename _T>
 inline
-__attribute__((always_inline))
+__attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, true>::
 mul122(_T& rh, _T& rl,
@@ -1034,7 +1034,7 @@ sqr21(_T& pzh,
 
 template <typename _T>
 inline
-__attribute__((always_inline))
+__attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, false>::
 sqr12(_T& rh, _T& rl, const _T& a)
@@ -1049,7 +1049,7 @@ sqr12(_T& rh, _T& rl, const _T& a)
 
 template <typename _T>
 inline
-__attribute__((always_inline))
+__attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, false>::
 mul12(_T& rh, _T& rl, const _T& a, const _T& b)
@@ -1073,7 +1073,7 @@ mul12(_T& rh, _T& rl, const _T& a, const _T& b)
 
 template <typename _T>
 inline
-__attribute__((always_inline))
+__attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, false>::
 muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b)
@@ -1149,7 +1149,7 @@ sqr22(_T& pzh, _T& pzl,
 
 template <typename _T>
 inline
-__attribute__((always_inline))
+__attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, false>::
 unorm_mul122(_T& rh, _T& rl,
@@ -1164,7 +1164,7 @@ unorm_mul122(_T& rh, _T& rl,
 
 template <typename _T>
 inline
-__attribute__((always_inline))
+__attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, false>::
 mul122(_T& rh, _T& rl,
@@ -1178,7 +1178,7 @@ mul122(_T& rh, _T& rl,
 
 template <typename _T>
 inline
-__attribute__((always_inline))
+__attribute__((__always_inline__))
 void
 cftal::d_real_ops_fma<_T, false>::
 sqr21(_T& pzh,

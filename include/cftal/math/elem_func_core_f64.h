@@ -1153,7 +1153,7 @@ __mul_two_pow(arg_t<vf_type> yh, arg_t<vf_type> yl, arg_t<vf_type> k)
 
 template <typename _T>
 template <bool _EXP_M1>
-__attribute__((always_inline))
+__attribute__((__always_inline__))
 inline
 typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
