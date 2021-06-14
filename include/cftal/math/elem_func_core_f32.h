@@ -1312,6 +1312,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // x^7 : +0xc.d3317p-16f
     constexpr
     const float exp_c7=+1.9569355936e-04f;
+    static_assert(exp_c0 == 1.0f, "exp_c0 == 1.0f is expected");
     static_assert(exp_c1 == 1.0f, "exp_c1 == 1.0f is expected");
     static_assert(exp_c2 == 0.5f, "exp_c2 == 0.5f is expected");
 

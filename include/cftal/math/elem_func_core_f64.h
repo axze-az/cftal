@@ -1204,6 +1204,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     // x^13 : +0xb.675e3aadcbc88p-36
     constexpr
     const double exp_c13=+1.6594686274338619941159e-10;
+    static_assert(exp_c0 == 1.0, "exp_c0 == 1.0 is expected");
     static_assert(exp_c1 == 1.0, "exp_c1 == 1.0 is expected");
     static_assert(exp_c2 == 0.5, "exp_c2 == 0.5 is expected");
     
