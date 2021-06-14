@@ -17,54 +17,54 @@ namespace cftal {
 #if defined (__SSE2__)
 
         template <>
-        struct cast<v2f64, v4s32> {
+        struct cast_bits<v2f64, v4s32> {
             static
             v2f64 v(const v4s32& s) {
-                return v2f64(cast<__m128d, __m128i>::v(s()));
+                return v2f64(cast_bits<__m128d, __m128i>::v(s()));
             }
         };
 
         template <>
-        struct cast<v2f64, v4u32> {
+        struct cast_bits<v2f64, v4u32> {
             static
             v2f64 v(const v4s32& s) {
-                return v2f64(cast<__m128d, __m128i>::v(s()));
+                return v2f64(cast_bits<__m128d, __m128i>::v(s()));
             }
         };
 #endif
 #if defined (__AVX__)
 #if !defined (__AVX2__)
         template <>
-        struct cast<v4f64, v8s32> {
+        struct cast_bits<v4f64, v8s32> {
             static
             v4f64 v(const v8s32& s) {
-                return v4f64(cast<v2f64, v4s32>::v(low_half(s)),
-                             cast<v2f64, v4s32>::v(high_half(s)));
+                return v4f64(cast_bits<v2f64, v4s32>::v(low_half(s)),
+                             cast_bits<v2f64, v4s32>::v(high_half(s)));
             }
         };
 
         template <>
-        struct cast<v4f64, v8u32> {
+        struct cast_bits<v4f64, v8u32> {
             static
             v4f64 v(const v8u32& s) {
-                return v4f64(cast<v2f64, v4u32>::v(low_half(s)),
-                             cast<v2f64, v4u32>::v(high_half(s)));
+                return v4f64(cast_bits<v2f64, v4u32>::v(low_half(s)),
+                             cast_bits<v2f64, v4u32>::v(high_half(s)));
             }
         };
 #else
         template <>
-        struct cast<v4f64, v8s32> {
+        struct cast_bits<v4f64, v8s32> {
             static
             v4f64 v(const v8s32& s) {
-                return v4f64(cast<__m256d, __m256i>::v(s()));
+                return v4f64(cast_bits<__m256d, __m256i>::v(s()));
             }
         };
 
         template <>
-        struct cast<v4f64, v8u32> {
+        struct cast_bits<v4f64, v8u32> {
             static
             v4f64 v(const v8s32& s) {
-                return v4f64(cast<__m256d, __m256i>::v(s()));
+                return v4f64(cast_bits<__m256d, __m256i>::v(s()));
             }
         };
 

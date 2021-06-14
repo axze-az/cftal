@@ -12,15 +12,21 @@
 namespace cftal {
 
     // as: reinterpret cast to _D from _S, name similiar to opencl
-    // forwarder function to impl::cast<_D, _S>
+    // forwarder function to impl::cast_bits<_D, _S>::v
     template <typename _D, typename _S>
     _D as(const _S& s);
+
+    // bit_cast: reinterpret cast to _D from _S, name similiar 
+    // std::bit_cast
+    // forwarder function to impl::cast_bits<_D, _S>::v
+    template <typename _D, typename _S>
+    _D bit_cast(const _S& s);
     
     namespace impl {
 
         // generic working class for cftal::as
         template <typename _D, typename _S>
-        struct cast {
+        struct cast_bits {
 
             union ds {
                 _D _d;
@@ -36,7 +42,7 @@ namespace cftal {
 
         // specialization for cftal::as<_T, _T>
         template <typename _SD>
-        struct cast<_SD, _SD> {
+        struct cast_bits<_SD, _SD> {
             static 
             constexpr
             const _SD& v(const _SD& r) {
@@ -52,7 +58,15 @@ inline
 _D
 cftal::as(const _S& s)
 {
-    return impl::cast<_D, _S>::v(s);
+    return impl::cast_bits<_D, _S>::v(s);
+}
+
+template <typename _D, typename _S>
+inline
+_D
+cftal::bit_cast(const _S& s)
+{
+    return impl::cast_bits<_D, _S>::v(s);
 }
 
 
