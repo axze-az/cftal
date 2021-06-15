@@ -6,7 +6,7 @@
 //
 #include <iostream>
 #include <cftal/test/call_mpfr.h>
-#include <cftal/cast.h>
+#include <cftal/as.h>
 #include <iomanip>
 
 namespace cftal {

@@ -10,7 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/x86/intrin.h>
 #include <cftal/x86/select.h>
-#include <cftal/x86/cast.h>
+#include <cftal/x86/cast_bits.h>
 
 namespace cftal {
     namespace x86 {

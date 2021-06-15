@@ -9,7 +9,7 @@
 #include <cftal/math/elem_func.h>
 #include <cftal/math/elem_func_core_f64.h>
 #include <cftal/types.h>
-#include <cftal/cast.h>
+#include <cftal/as.h>
 #include <cftal/d_real.h>
 #include <cstring>
 

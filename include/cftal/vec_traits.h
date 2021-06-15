@@ -15,7 +15,7 @@
 #include <cftal/vec_cvt.h>
 #include <cftal/constants.h>
 #include <cftal/d_real.h>
-#include <cftal/x86/cast.h>
+#include <cftal/x86/cast_bits.h>
 #include <cftal/d_real.h>
 
 namespace cftal {

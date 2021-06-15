@@ -4,11 +4,11 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#if !defined (__CFTAL_X86_CAST_H__)
-#define __CFTAL_X86_CAST_H__ 1
+#if !defined (__CFTAL_X86_CAST_BITS_H__)
+#define __CFTAL_X86_CAST_BITS_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/cast.h>
+#include <cftal/as.h>
 #if defined (__SSE2__)
 #include <cftal/x86/intrin.h>
 #endif

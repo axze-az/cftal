@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <cftal/config.h>
 #include <cftal/x86/intrin.h>
-#include <cftal/cast.h>
+#include <cftal/as.h>
 
 namespace cftal {
     namespace test {

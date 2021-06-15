@@ -5,7 +5,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 #include "cftal/test/f32_f64.h"
-#include "cftal/cast.h"
+#include "cftal/as.h"
 #include <cmath>
 #include <iomanip>
 

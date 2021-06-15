@@ -7,7 +7,7 @@
 #include <cftal/test/mpfr_cache.h>
 #include <cftal/test/stream_save_fmt.h>
 #include <cftal/test/env_var.h>
-#include <cftal/cast.h>
+#include <cftal/as.h>
 #include <map>
 #include <unordered_map>
 #include <vector>

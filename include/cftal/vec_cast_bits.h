@@ -4,12 +4,12 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#if !defined (__CFTAL_VEC_CAST_H__)
-#define __CFTAL_VEC_CAST_H__ 1
+#if !defined (__CFTAL_VEC_CAST_BITS_H__)
+#define __CFTAL_VEC_CAST_BITS_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
-#include <cftal/x86/cast.h>
+#include <cftal/x86/cast_bits.h>
 
 namespace cftal {
 

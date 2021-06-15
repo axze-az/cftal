@@ -68,7 +68,7 @@ SET (HDRS
     ../include/cftal/vec_misc.h
     ../include/cftal/d_real.h
     ../include/cftal/fenv.h
-    ../include/cftal/cast.h
+    ../include/cftal/as.h
     ../include/cftal/vec_mask.h
     ../include/cftal/t_real.h
     ../include/cftal/x86/const.h
@@ -79,7 +79,7 @@ SET (HDRS
     ../include/cftal/x86/v8s32_inl.h
     ../include/cftal/x86/v4s64.h
     ../include/cftal/x86/v4u32_inl.h
-    ../include/cftal/x86/cast.h
+    ../include/cftal/x86/cast_bits.h
     ../include/cftal/x86/vreg.h
     ../include/cftal/x86/vec_bit.h
     ../include/cftal/x86/ops_1.h
@@ -165,7 +165,7 @@ SET (HDRS
     ../include/cftal/vec_t_n.h
     ../include/cftal/mul_div.h
     ../include/cftal/d_int.h
-    ../include/cftal/vec_cast.h
+    ../include/cftal/vec_cast_bits.h
     ../include/cftal/boost_compat.h
     ../include/cftal/divisor.h
     ../include/cftal/config.h

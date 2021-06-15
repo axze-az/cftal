@@ -9,7 +9,7 @@
 
 
 #include <cftal/vec.h>
-#include <cftal/cast.h>
+#include <cftal/as.h>
 #include <utility>
 
 namespace cftal {

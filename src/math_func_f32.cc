@@ -9,7 +9,7 @@
 #include <cftal/math/elem_func.h>
 #include <cftal/math/elem_func_core_f32.h>
 #include <cftal/types.h>
-#include <cftal/cast.h>
+#include <cftal/as.h>
 #include <cstring>
 
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0

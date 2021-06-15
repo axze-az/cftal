@@ -10,7 +10,7 @@
 #include <cftal/x86/intrin.h>
 #include <cftal/x86/const.h>
 #include <cftal/x86/select.h>
-#include <cftal/x86/cast.h>
+#include <cftal/x86/cast_bits.h>
 #include <cftal/x86/ins_ext.h>
 #include <cftal/impl/masks.h>
 
