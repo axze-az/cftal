@@ -16,11 +16,9 @@ namespace cftal {
     namespace x86 {
 
         // select bitwise
-        uint32_t select(uint32_t msk,
-                        uint32_t on_one, uint32_t on_zero);
+        uint32_t select(uint32_t msk, uint32_t on_one, uint32_t on_zero);
         // select bitwise
-        uint64_t select(uint64_t msk,
-                        uint64_t on_one, uint64_t on_zero);
+        uint64_t select(uint64_t msk, uint64_t on_one, uint64_t on_zero);
         // select bytes
         // __SSE2__: bitwise
         // __SSE4_1__: on sign bit of int8_t
