@@ -74,9 +74,9 @@ namespace cftal {
 #else
                 // a == b : a_h == b_h && a_l == b_l
                 __m128i r= _mm_cmpeq_epi32(a(), b());
-                __m128i c32s = x86::impl::vpsllq_const<32>::v(r);
+                __m128i c32s = x86::vpsllq_const<32>::v(r);
                 r = _mm_and_si128(r, c32s);
-                return x86::impl::vpshufd<1, 1, 3, 3>::v(r);
+                return x86::vpshufd<1, 1, 3, 3>::v(r);
 #endif
 #endif
             }
@@ -141,10 +141,10 @@ namespace cftal {
                 // only elements 1, 3 are valid:
                 __m128i c2_and_c3 =
                     _mm_and_si128(c2,
-                                  x86::impl::vpshufd<0, 0, 2, 2>::v(c1c3));
+                                  x86::vpshufd<0, 0, 2, 2>::v(c1c3));
                 // only elements 1, 3 are valid.
                 __m128i r = _mm_or_si128(c1c3, c2_and_c3);
-                r = x86::impl::vpshufd< 1, 1, 3, 3>::v(r);
+                r = x86::vpshufd< 1, 1, 3, 3>::v(r);
                 return r;
 #endif
 #endif
@@ -199,7 +199,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::impl::vpmullq::v(a(), b());
+                return x86::vpmullq::v(a(), b());
             }
         };
 
@@ -302,7 +302,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return x86::impl::vpsllq::v(a(), s);
+                return x86::vpsllq::v(a(), s);
             }
         };
 
@@ -312,7 +312,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return x86::impl::vpsrlq::v(a(), s);
+                return x86::vpsrlq::v(a(), s);
             }
         };
 
@@ -322,7 +322,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& s) {
-                return x86::impl::vpsllvq::v(a(), s());
+                return x86::vpsllvq::v(a(), s());
             }
         };
 
@@ -332,7 +332,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& s) {
-                return x86::impl::vpsrlvq::v(a(), s());
+                return x86::vpsrlvq::v(a(), s());
             }
         };
 

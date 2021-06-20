@@ -187,7 +187,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::impl::vpmulld::v(a(), b());
+                return x86::vpmulld::v(a(), b());
             }
         };
 
@@ -311,7 +311,7 @@ namespace cftal {
             full_type
             v(const full_type& a, const full_type& s) {
                 // return _mm_sllv_epi32(a(), s());
-                return x86::impl::vpsllvd::v(a(), s());
+                return x86::vpsllvd::v(a(), s());
             }
         };
 
@@ -321,7 +321,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& s) {
-                return x86::impl::vpsrlvd::v(a(), s());
+                return x86::vpsrlvd::v(a(), s());
             }
         };
 
@@ -520,8 +520,8 @@ cftal::mul_lo_hi(const v4u32& x, const v4u32& y)
     // p0l p0h p2l p2h
     v4u32 e= _mm_mul_epu32(x(), y());
     // p1l p1h p3l p3h
-    v4u32 o= _mm_mul_epu32(x86::impl::vpshufd<1, 0, 3, 2>::v(x()),
-                           x86::impl::vpshufd<1, 0, 3, 2>::v(y()));
+    v4u32 o= _mm_mul_epu32(x86::vpshufd<1, 0, 3, 2>::v(x()),
+                           x86::vpshufd<1, 0, 3, 2>::v(y()));
     // p0l p1l p0h p1h
     v4u32 t0= permute<0, 4, 1, 5>(e, o);
     // p2l p3l p2h p3h

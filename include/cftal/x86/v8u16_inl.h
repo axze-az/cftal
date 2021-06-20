@@ -163,7 +163,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::impl::vpmullw::v(a(), b());
+                return x86::vpmullw::v(a(), b());
             }
         };
 
@@ -287,7 +287,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& s) {
-                return x86::impl::vpsllvw::v(a(), s());
+                return x86::vpsllvw::v(a(), s());
             }
         };
 
@@ -297,7 +297,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& s) {
-                return x86::impl::vpsrlvw::v(a(), s());
+                return x86::vpsrlvw::v(a(), s());
             }
         };
 #endif
@@ -524,7 +524,7 @@ std::pair<cftal::v8u16, cftal::v8u16>
 cftal::mul_lo_hi(const v8u16& x, const v8u16& y)
 {
     v8u16 l= x*y;
-    v8u16 h= x86::impl::vpmulhuw::v(x(), y());
+    v8u16 h= x86::vpmulhuw::v(x(), y());
     return std::make_pair(l, h);
 }
 

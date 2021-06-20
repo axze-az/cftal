@@ -16,974 +16,970 @@ namespace cftal {
 
     namespace x86 {
 
-        namespace impl {
+        // generic permutation of one double vector
+        template <int _P0, int _P1>
+        struct perm1_v2f64 {
+            static __m128d v(__m128d a);
+        };
 
-            // generic permutation of one double vector
-            template <int _P0, int _P1>
-            struct perm1_v2f64 {
-                static __m128d v(__m128d a);
-            };
+        // generic permutation of two double vectors
+        template <int _P0, int _P1>
+        struct perm2_v2f64 {
+            static __m128d v(__m128d a, __m128d b);
+        };
 
-            // generic permutation of two double vectors
-            template <int _P0, int _P1>
-            struct perm2_v2f64 {
-                static __m128d v(__m128d a, __m128d b);
-            };
+        // specializations for perm1_v2f64
+        template <>
+        struct perm1_v2f64<-1,-1> : public make_zero_v2f64 {};
+        template <>
+        struct perm1_v2f64< 0, 1> : public select_arg_1<__m128d> {};
+        template <>
+        struct perm1_v2f64< 1, 1> : public vunpckhpd {};
+        template <>
+        struct perm1_v2f64< 0, 0> : public vunpcklpd {};
+        template <>
+        struct perm1_v2f64<-1, 0>
+            : public exec_int< vpslldq<8> > {};
+        template <>
+        struct perm1_v2f64< 1,-1>
+            : public exec_int< vpsrldq<8> > {};
 
-            // specializations for perm1_v2f64
-            template <>
-            struct perm1_v2f64<-1,-1> : public make_zero_v2f64 {};
-            template <>
-            struct perm1_v2f64< 0, 1> : public select_arg_1<__m128d> {};
-            template <>
-            struct perm1_v2f64< 1, 1> : public vunpckhpd {};
-            template <>
-            struct perm1_v2f64< 0, 0> : public vunpcklpd {};
-            template <>
-            struct perm1_v2f64<-1, 0>
-                : public exec_int< vpslldq<8> > {};
-            template <>
-            struct perm1_v2f64< 1,-1>
-                : public exec_int< vpsrldq<8> > {};
+        // specializations for perm2_v2f64
+        template <>
+        struct perm2_v2f64<-1,-1> : public make_zero_v2f64 {};
+        template <>
+        struct perm2_v2f64<0,1> : public select_arg_1<__m128d> {};
+        template <>
+        struct perm2_v2f64<2,3> : public select_arg_2<__m128d> {};
+        template <>
+        struct perm2_v2f64<0,2> : public vunpcklpd {};
+        template <>
+        struct perm2_v2f64<2,0> :
+            public swap_ab<__m128d, vunpcklpd> {};
+        template <>
+        struct perm2_v2f64<1,3> : public vunpckhpd {};
+        template <>
+        struct perm2_v2f64<3,1> :
+            public swap_ab<__m128d, vunpckhpd> {};
 
-            // specializations for perm2_v2f64
-            template <>
-            struct perm2_v2f64<-1,-1> : public make_zero_v2f64 {};
-            template <>
-            struct perm2_v2f64<0,1> : public select_arg_1<__m128d> {};
-            template <>
-            struct perm2_v2f64<2,3> : public select_arg_2<__m128d> {};
-            template <>
-            struct perm2_v2f64<0,2> : public vunpcklpd {};
-            template <>
-            struct perm2_v2f64<2,0> :
-                public swap_ab<__m128d, vunpcklpd> {};
-            template <>
-            struct perm2_v2f64<1,3> : public vunpckhpd {};
-            template <>
-            struct perm2_v2f64<3,1> :
-                public swap_ab<__m128d, vunpckhpd> {};
+        // generic permutation of one float vector
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct perm1_v4f32 {
+            static __m128 v(__m128 a);
+        };
 
-            // generic permutation of one float vector
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct perm1_v4f32 {
-                static __m128 v(__m128 a);
-            };
+        // generic permutation of two float vectors
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct perm2_v4f32 {
+            static __m128 v(__m128 a, __m128 b);
+        };
 
-            // generic permutation of two float vectors
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct perm2_v4f32 {
-                static __m128 v(__m128 a, __m128 b);
-            };
+        // specializations for perm1_v4f32
+        template <>
+        struct perm1_v4f32<-1,-1,-1,-1> : public make_zero_v4f32 {};
+        template <>
+        struct perm1_v4f32<0,1,2,3> : public select_arg_1<__m128> {};
+        template <>
+        struct perm1_v4f32<0,1,0,1> : public exec_f64<vunpcklpd> {};
+        template <>
+        struct perm1_v4f32<2,3,2,3> : public exec_f64<vunpckhpd> {};
+        template <>
+        struct perm1_v4f32<0,0,1,1> : public vunpcklps {};
+        template <>
+        struct perm1_v4f32<2,2,3,3> : public vunpckhps {};
 
-            // specializations for perm1_v4f32
-            template <>
-            struct perm1_v4f32<-1,-1,-1,-1> : public make_zero_v4f32 {};
-            template <>
-            struct perm1_v4f32<0,1,2,3> : public select_arg_1<__m128> {};
-            template <>
-            struct perm1_v4f32<0,1,0,1> : public exec_f64<vunpcklpd> {};
-            template <>
-            struct perm1_v4f32<2,3,2,3> : public exec_f64<vunpckhpd> {};
-            template <>
-            struct perm1_v4f32<0,0,1,1> : public vunpcklps {};
-            template <>
-            struct perm1_v4f32<2,2,3,3> : public vunpckhps {};
+        template <>
+        struct perm1_v4f32< 0,-1, 1,-1>
+            : public fixed_arg_2<__m128, make_zero_v4f32,
+                                 vunpcklps> {};
+        template <>
+        struct perm1_v4f32< 2,-1, 3,-1>
+            : public fixed_arg_2<__m128, make_zero_v4f32,
+                                 vunpckhps> {};
+        template <>
+        struct perm1_v4f32<-1, 0, -1, 1>
+            : public fixed_arg_1<__m128, make_zero_v4f32,
+                                 vunpcklps> {};
+        template <>
+        struct perm1_v4f32<-1, 2, -1, 3>
+            : public fixed_arg_1<__m128, make_zero_v4f32,
+                                 vunpckhps> {};
+        template <>
+        struct perm1_v4f32< 0, 1,-1,-1>
+            : public fixed_arg_2<__m128, make_zero_v4f32,
+                                 exec_f64<vunpcklpd> > {};
+        template <>
+        struct perm1_v4f32<-1,-1, 2, 3>
+            : public fixed_arg_1<__m128, make_zero_v4f32,
+                                 exec_f64<vunpckhpd> > {};
+        template <>
+        struct perm1_v4f32<0, 0, 0, 0> : public splat_v4f32<0> {};
+        template <>
+        struct perm1_v4f32<1, 1, 1, 1> : public splat_v4f32<1> {};
+        template <>
+        struct perm1_v4f32<2, 2, 2, 2> : public splat_v4f32<2> {};
+        template <>
+        struct perm1_v4f32<3, 3, 3, 3> : public splat_v4f32<3> {};
 
-            template <>
-            struct perm1_v4f32< 0,-1, 1,-1>
-                : public fixed_arg_2<__m128, make_zero_v4f32,
-                                     vunpcklps> {};
-            template <>
-            struct perm1_v4f32< 2,-1, 3,-1>
-                : public fixed_arg_2<__m128, make_zero_v4f32,
-                                     vunpckhps> {};
-            template <>
-            struct perm1_v4f32<-1, 0, -1, 1>
-                : public fixed_arg_1<__m128, make_zero_v4f32,
-                                     vunpcklps> {};
-            template <>
-            struct perm1_v4f32<-1, 2, -1, 3>
-                : public fixed_arg_1<__m128, make_zero_v4f32,
-                                     vunpckhps> {};
-            template <>
-            struct perm1_v4f32< 0, 1,-1,-1>
-                : public fixed_arg_2<__m128, make_zero_v4f32,
-                                     exec_f64<vunpcklpd> > {};
-            template <>
-            struct perm1_v4f32<-1,-1, 2, 3>
-                : public fixed_arg_1<__m128, make_zero_v4f32,
-                                     exec_f64<vunpckhpd> > {};
-            template <>
-            struct perm1_v4f32<0, 0, 0, 0> : public splat_v4f32<0> {};
-            template <>
-            struct perm1_v4f32<1, 1, 1, 1> : public splat_v4f32<1> {};
-            template <>
-            struct perm1_v4f32<2, 2, 2, 2> : public splat_v4f32<2> {};
-            template <>
-            struct perm1_v4f32<3, 3, 3, 3> : public splat_v4f32<3> {};
+        template <>
+        struct perm1_v4f32<-1, 0, 1, 2>
+            : public exec_int< vpslldq<4> > {};
+        template <>
+        struct perm1_v4f32<-1,-1, 0, 1>
+            : public exec_int< vpslldq<8> > {};
+        template <>
+        struct perm1_v4f32<-1,-1,-1, 0>
+            : public exec_int< vpslldq<12> > {};
+        template <>
+        struct perm1_v4f32< 1, 2, 3,-1>
+            : public exec_int< vpsrldq<4> > {};
+        template <>
+        struct perm1_v4f32< 2, 3,-1,-1>
+            : public exec_int< vpsrldq<8> > {};
+        template <>
+        struct perm1_v4f32< 3,-1,-1,-1>
+            : public exec_int< vpsrldq<12> > {};
+        template <>
+        struct perm1_v4f32<-1, 0,-1, 2>
+            : public exec_int< vpsllq_const<32> > {};
+        template <>
+        struct perm1_v4f32< 1,-1, 3,-1>
+            : public exec_int< vpsrlq_const<32> > {};
 
-            template <>
-            struct perm1_v4f32<-1, 0, 1, 2>
-                : public exec_int< vpslldq<4> > {};
-            template <>
-            struct perm1_v4f32<-1,-1, 0, 1>
-                : public exec_int< vpslldq<8> > {};
-            template <>
-            struct perm1_v4f32<-1,-1,-1, 0>
-                : public exec_int< vpslldq<12> > {};
-            template <>
-            struct perm1_v4f32< 1, 2, 3,-1>
-                : public exec_int< vpsrldq<4> > {};
-            template <>
-            struct perm1_v4f32< 2, 3,-1,-1>
-                : public exec_int< vpsrldq<8> > {};
-            template <>
-            struct perm1_v4f32< 3,-1,-1,-1>
-                : public exec_int< vpsrldq<12> > {};
-            template <>
-            struct perm1_v4f32<-1, 0,-1, 2>
-                : public exec_int< vpsllq_const<32> > {};
-            template <>
-            struct perm1_v4f32< 1,-1, 3,-1>
-                : public exec_int< vpsrlq_const<32> > {};
+        // specializations for perm2_v4f32
+        template <>
+        struct perm2_v4f32<-1,-1,-1,-1> : public make_zero_v4f32 {};
+        template <>
+        struct perm2_v4f32<0,1,2,3> : public select_arg_1<__m128> {};
+        template <>
+        struct perm2_v4f32<4,5,6,7> : public select_arg_2<__m128> {};
 
-            // specializations for perm2_v4f32
-            template <>
-            struct perm2_v4f32<-1,-1,-1,-1> : public make_zero_v4f32 {};
-            template <>
-            struct perm2_v4f32<0,1,2,3> : public select_arg_1<__m128> {};
-            template <>
-            struct perm2_v4f32<4,5,6,7> : public select_arg_2<__m128> {};
+        template <>
+        struct perm2_v4f32<0,1,0,1> :
+            public use_arg_1<__m128, exec_f64<vunpcklpd> > {};
+        template <>
+        struct perm2_v4f32<4,5,4,5> :
+            public use_arg_2<__m128, exec_f64<vunpcklpd> > {};
 
-            template <>
-            struct perm2_v4f32<0,1,0,1> :
-                public use_arg_1<__m128, exec_f64<vunpcklpd> > {};
-            template <>
-            struct perm2_v4f32<4,5,4,5> :
-                public use_arg_2<__m128, exec_f64<vunpcklpd> > {};
+        template <>
+        struct perm2_v4f32<2,3,2,3> :
+            public use_arg_1<__m128, exec_f64<vunpckhpd> > {};
+        template <>
+        struct perm2_v4f32<6,7,6,7> :
+            public use_arg_2<__m128, exec_f64<vunpckhpd> > {};
 
-            template <>
-            struct perm2_v4f32<2,3,2,3> :
-                public use_arg_1<__m128, exec_f64<vunpckhpd> > {};
-            template <>
-            struct perm2_v4f32<6,7,6,7> :
-                public use_arg_2<__m128, exec_f64<vunpckhpd> > {};
+        template <>
+        struct perm2_v4f32<0,0,1,1> :
+            public use_arg_1<__m128, vunpcklps> {};
+        template <>
+        struct perm2_v4f32<4,4,5,5> :
+            public use_arg_2<__m128, vunpcklps> {};
 
-            template <>
-            struct perm2_v4f32<0,0,1,1> :
-                public use_arg_1<__m128, vunpcklps> {};
-            template <>
-            struct perm2_v4f32<4,4,5,5> :
-                public use_arg_2<__m128, vunpcklps> {};
+        template <>
+        struct perm2_v4f32<2,2,3,3> :
+            public use_arg_1<__m128, vunpckhps> {};
+        template <>
+        struct perm2_v4f32<6,6,7,7> :
+            public use_arg_2<__m128, vunpckhps> {};
 
-            template <>
-            struct perm2_v4f32<2,2,3,3> :
-                public use_arg_1<__m128, vunpckhps> {};
-            template <>
-            struct perm2_v4f32<6,6,7,7> :
-                public use_arg_2<__m128, vunpckhps> {};
+        template <>
+        struct perm2_v4f32<0,4,1,5> : public vunpcklps {};
+        template <>
+        struct perm2_v4f32<4,0,5,1>
+            : public swap_ab<__m128, vunpcklps> {};
+        template <>
+        struct perm2_v4f32<2,6,3,7> : public vunpckhps {};
+        template <>
+        struct perm2_v4f32<6,2,7,3>
+            : public swap_ab<__m128, vunpckhps> {};
 
-            template <>
-            struct perm2_v4f32<0,4,1,5> : public vunpcklps {};
-            template <>
-            struct perm2_v4f32<4,0,5,1>
-                : public swap_ab<__m128, vunpcklps> {};
-            template <>
-            struct perm2_v4f32<2,6,3,7> : public vunpckhps {};
-            template <>
-            struct perm2_v4f32<6,2,7,3>
-                : public swap_ab<__m128, vunpckhps> {};
+        template <>
+        struct perm2_v4f32<0,1,4,5> : public exec_f64<vunpcklpd> {};
+        template <>
+        struct perm2_v4f32<4,5,0,1>
+            : public swap_ab<__m128, exec_f64<vunpcklpd> > {};
 
-            template <>
-            struct perm2_v4f32<0,1,4,5> : public exec_f64<vunpcklpd> {};
-            template <>
-            struct perm2_v4f32<4,5,0,1>
-                : public swap_ab<__m128, exec_f64<vunpcklpd> > {};
+        template <>
+        struct perm2_v4f32<2,3,6,7> : public exec_f64<vunpckhpd> {};
+        template <>
+        struct perm2_v4f32<6,7,2,3>
+            : public swap_ab<__m128, exec_f64<vunpckhpd> > {};
 
-            template <>
-            struct perm2_v4f32<2,3,6,7> : public exec_f64<vunpckhpd> {};
-            template <>
-            struct perm2_v4f32<6,7,2,3>
-                : public swap_ab<__m128, exec_f64<vunpckhpd> > {};
+        // generic permutation of one uint32_t vector
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct perm1_v4u32 {
+            static __m128i v(__m128i a);
+        };
 
-            // generic permutation of one uint32_t vector
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct perm1_v4u32 {
-                static __m128i v(__m128i a);
-            };
+        // generic permutation of two uint32_t vectors
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct perm2_v4u32 {
+            static __m128i v(__m128i a, __m128i b);
+        };
 
-            // generic permutation of two uint32_t vectors
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct perm2_v4u32 {
-                static __m128i v(__m128i a, __m128i b);
-            };
+        // specializations for one uint32_t vector
+        template <>
+        struct perm1_v4u32<-1,-1,-1,-1> : public make_zero_int {};
+        template <>
+        struct perm1_v4u32<0,1,2,3> : public select_arg_1<__m128i> {};
+        template <>
+        struct perm1_v4u32<0,1,0,1> : public vpunpcklqdq {};
+        template <>
+        struct perm1_v4u32<2,3,2,3> : public vpunpckhqdq {};
+        template <>
+        struct perm1_v4u32<0,0,1,1> : public vpunpckldq {};
+        template <>
+        struct perm1_v4u32<2,2,3,3> : public vpunpckhdq {};
 
-            // specializations for one uint32_t vector
-            template <>
-            struct perm1_v4u32<-1,-1,-1,-1> : public make_zero_int {};
-            template <>
-            struct perm1_v4u32<0,1,2,3> : public select_arg_1<__m128i> {};
-            template <>
-            struct perm1_v4u32<0,1,0,1> : public vpunpcklqdq {};
-            template <>
-            struct perm1_v4u32<2,3,2,3> : public vpunpckhqdq {};
-            template <>
-            struct perm1_v4u32<0,0,1,1> : public vpunpckldq {};
-            template <>
-            struct perm1_v4u32<2,2,3,3> : public vpunpckhdq {};
+        template <>
+        struct perm1_v4u32< 0,-1, 1,-1> : public vpmovzxdq {};
+        template <>
+        struct perm1_v4u32< 2,-1, 3,-1>
+            : public fixed_arg_2<__m128i, make_zero_int,
+                                 vpunpckhdq> {};
+        template <>
+        struct perm1_v4u32<-1, 0,-1, 1>
+            : public fixed_arg_1<__m128i, make_zero_int,
+                                 vpunpckldq> {};
+        template <>
+        struct perm1_v4u32<-1, 2,-1, 3>
+            : public fixed_arg_1<__m128i, make_zero_int,
+                                 vpunpckhdq> {};
+        template <>
+        struct perm1_v4u32< 0, 1,-1,-1>
+            : public fixed_arg_2<__m128i, make_zero_int,
+                                 vpunpcklqdq> {};
+        template <>
+        struct perm1_v4u32<-1,-1, 2, 3>
+            : public fixed_arg_1<__m128i, make_zero_int,
+                                 vpunpckhqdq> {};
+        template <>
+        struct perm1_v4u32< 0, 0, 0, 0> : public splat_v4u32<0> {};
+        template <>
+        struct perm1_v4u32< 1, 1, 1, 1> : public splat_v4u32<1> {};
+        template <>
+        struct perm1_v4u32< 2, 2, 2, 2> : public splat_v4u32<2> {};
+        template <>
+        struct perm1_v4u32< 3, 3, 3, 3> : public splat_v4u32<3> {};
 
-            template <>
-            struct perm1_v4u32< 0,-1, 1,-1> : public vpmovzxdq {};
-            template <>
-            struct perm1_v4u32< 2,-1, 3,-1>
-                : public fixed_arg_2<__m128i, make_zero_int,
-                                     vpunpckhdq> {};
-            template <>
-            struct perm1_v4u32<-1, 0,-1, 1>
-                : public fixed_arg_1<__m128i, make_zero_int,
-                                     vpunpckldq> {};
-            template <>
-            struct perm1_v4u32<-1, 2,-1, 3>
-                : public fixed_arg_1<__m128i, make_zero_int,
-                                     vpunpckhdq> {};
-            template <>
-            struct perm1_v4u32< 0, 1,-1,-1>
-                : public fixed_arg_2<__m128i, make_zero_int,
-                                     vpunpcklqdq> {};
-            template <>
-            struct perm1_v4u32<-1,-1, 2, 3>
-                : public fixed_arg_1<__m128i, make_zero_int,
-                                     vpunpckhqdq> {};
-            template <>
-            struct perm1_v4u32< 0, 0, 0, 0> : public splat_v4u32<0> {};
-            template <>
-            struct perm1_v4u32< 1, 1, 1, 1> : public splat_v4u32<1> {};
-            template <>
-            struct perm1_v4u32< 2, 2, 2, 2> : public splat_v4u32<2> {};
-            template <>
-            struct perm1_v4u32< 3, 3, 3, 3> : public splat_v4u32<3> {};
+        template <>
+        struct perm1_v4u32<-1, 0, 1, 2> : public vpslldq<4> {};
+        template <>
+        struct perm1_v4u32<-1,-1, 0, 1> : public vpslldq<8> {};
+        template <>
+        struct perm1_v4u32<-1,-1,-1, 0> : public vpslldq<12> {};
 
-            template <>
-            struct perm1_v4u32<-1, 0, 1, 2> : public vpslldq<4> {};
-            template <>
-            struct perm1_v4u32<-1,-1, 0, 1> : public vpslldq<8> {};
-            template <>
-            struct perm1_v4u32<-1,-1,-1, 0> : public vpslldq<12> {};
+        template <>
+        struct perm1_v4u32< 1, 2, 3,-1> : public vpsrldq<4> {};
+        template <>
+        struct perm1_v4u32< 2, 3,-1,-1> : public vpsrldq<8> {};
+        template <>
+        struct perm1_v4u32< 3,-1,-1,-1> : public vpsrldq<12> {};
 
-            template <>
-            struct perm1_v4u32< 1, 2, 3,-1> : public vpsrldq<4> {};
-            template <>
-            struct perm1_v4u32< 2, 3,-1,-1> : public vpsrldq<8> {};
-            template <>
-            struct perm1_v4u32< 3,-1,-1,-1> : public vpsrldq<12> {};
-
-            template <>
-            struct perm1_v4u32<-1, 0,-1, 2> : public vpsllq_const<32> {};
-            template <>
-            struct perm1_v4u32< 1,-1, 3,-1> : public vpsrlq_const<32> {};
+        template <>
+        struct perm1_v4u32<-1, 0,-1, 2> : public vpsllq_const<32> {};
+        template <>
+        struct perm1_v4u32< 1,-1, 3,-1> : public vpsrlq_const<32> {};
 
 
-            // specializations for two uint32_t vectors.
-            template <>
-            struct perm2_v4u32<-1,-1,-1,-1> : public make_zero_int {};
-            template <>
-            struct perm2_v4u32<0,1,2,3> : public select_arg_1<__m128i> {};
-            template <>
-            struct perm2_v4u32<4,5,6,7> : public select_arg_2<__m128i> {};
+        // specializations for two uint32_t vectors.
+        template <>
+        struct perm2_v4u32<-1,-1,-1,-1> : public make_zero_int {};
+        template <>
+        struct perm2_v4u32<0,1,2,3> : public select_arg_1<__m128i> {};
+        template <>
+        struct perm2_v4u32<4,5,6,7> : public select_arg_2<__m128i> {};
 
-            template <>
-            struct perm2_v4u32<0,1,0,1> :
-                public use_arg_1<__m128i, vpunpcklqdq> {};
-            template <>
-            struct perm2_v4u32<4,5,4,5> :
-                public use_arg_2<__m128i, vpunpcklqdq> {};
+        template <>
+        struct perm2_v4u32<0,1,0,1> :
+            public use_arg_1<__m128i, vpunpcklqdq> {};
+        template <>
+        struct perm2_v4u32<4,5,4,5> :
+            public use_arg_2<__m128i, vpunpcklqdq> {};
 
-            template <>
-            struct perm2_v4u32<2,3,2,3> :
-                public use_arg_1<__m128i, vpunpckhqdq> {};
-            template <>
-            struct perm2_v4u32<6,7,6,7> :
-                public use_arg_2<__m128i, vpunpckhqdq> {};
+        template <>
+        struct perm2_v4u32<2,3,2,3> :
+            public use_arg_1<__m128i, vpunpckhqdq> {};
+        template <>
+        struct perm2_v4u32<6,7,6,7> :
+            public use_arg_2<__m128i, vpunpckhqdq> {};
 
-            template <>
-            struct perm2_v4u32<0,0,1,1> :
-                public use_arg_1<__m128i, vpunpckldq> {};
-            template <>
-            struct perm2_v4u32<4,4,5,5> :
-                public use_arg_2<__m128i, vpunpckldq> {};
+        template <>
+        struct perm2_v4u32<0,0,1,1> :
+            public use_arg_1<__m128i, vpunpckldq> {};
+        template <>
+        struct perm2_v4u32<4,4,5,5> :
+            public use_arg_2<__m128i, vpunpckldq> {};
 
-            template <>
-            struct perm2_v4u32<2,2,3,3> :
-                public use_arg_1<__m128i, vpunpckhdq> {};
-            template <>
-            struct perm2_v4u32<6,6,7,7> :
-                public use_arg_2<__m128i, vpunpckhdq> {};
+        template <>
+        struct perm2_v4u32<2,2,3,3> :
+            public use_arg_1<__m128i, vpunpckhdq> {};
+        template <>
+        struct perm2_v4u32<6,6,7,7> :
+            public use_arg_2<__m128i, vpunpckhdq> {};
 
-            template <>
-            struct perm2_v4u32<0,4,1,5> : public vpunpckldq {};
-            template <>
-            struct perm2_v4u32<4,0,5,1>
-                : public swap_ab<__m128i, vpunpckldq> {};
-            template <>
-            struct perm2_v4u32<2,6,3,7> : public vpunpckhdq {};
-            template <>
-            struct perm2_v4u32<6,2,7,3>
-                : public swap_ab<__m128i, vpunpckhdq> {};
+        template <>
+        struct perm2_v4u32<0,4,1,5> : public vpunpckldq {};
+        template <>
+        struct perm2_v4u32<4,0,5,1>
+            : public swap_ab<__m128i, vpunpckldq> {};
+        template <>
+        struct perm2_v4u32<2,6,3,7> : public vpunpckhdq {};
+        template <>
+        struct perm2_v4u32<6,2,7,3>
+            : public swap_ab<__m128i, vpunpckhdq> {};
 
-            template <>
-            struct perm2_v4u32<0,1,4,5> : public vpunpcklqdq {};
-            template <>
-            struct perm2_v4u32<4,5,0,1>
-                : public swap_ab<__m128i, vpunpcklqdq> {};
+        template <>
+        struct perm2_v4u32<0,1,4,5> : public vpunpcklqdq {};
+        template <>
+        struct perm2_v4u32<4,5,0,1>
+            : public swap_ab<__m128i, vpunpcklqdq> {};
 
-            template <>
-            struct perm2_v4u32<2,3,6,7> : public vpunpckhqdq {};
-            template <>
-            struct perm2_v4u32<6,7,2,3>
-                : public swap_ab<__m128i, vpunpckhqdq> {};
+        template <>
+        struct perm2_v4u32<2,3,6,7> : public vpunpckhqdq {};
+        template <>
+        struct perm2_v4u32<6,7,2,3>
+            : public swap_ab<__m128i, vpunpckhqdq> {};
 
-            // generic permutation of one uint16_t vector
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm1_v8u16 {
-                static __m128i v(__m128i a);
-            };
+        // generic permutation of one uint16_t vector
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        struct perm1_v8u16 {
+            static __m128i v(__m128i a);
+        };
 
-            // generic permutation of two uint16_t vectors
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm2_v8u16 {
-                static __m128i v(__m128i a, __m128i b);
-            };
+        // generic permutation of two uint16_t vectors
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        struct perm2_v8u16 {
+            static __m128i v(__m128i a, __m128i b);
+        };
 
-            // specialisations of permutations of one uint16_t
-            // vector
-            template <>
-            struct perm1_v8u16<-1,-1,-1,-1,-1,-1,-1,-1>
-                : public make_zero_int {};
-            template <>
-            struct perm1_v8u16< 0, 1, 2, 3, 4, 5, 6, 7>
-                : public select_arg_1<__m128i> {};
-            template <>
-            struct perm1_v8u16< 0, 0, 1, 1, 2, 2, 3, 3>
-                : public vpunpcklwd {};
-            template <>
-            struct perm1_v8u16< 4, 4, 5, 5, 6, 6, 7, 7>
-                : public vpunpckhwd {};
-            template <>
-            struct perm1_v8u16< 0, 1, 0, 1, 2, 3, 2, 3>
-                : public vpunpckldq {};
-            template <>
-            struct perm1_v8u16< 4, 5, 4, 5, 6, 7, 6, 7>
-                : public vpunpckhdq {};
-            template <>
-            struct perm1_v8u16< 0, 1, 2, 3, 0, 1, 2, 3>
-                : public vpunpcklqdq {};
-            template <>
-            struct perm1_v8u16< 4, 5, 6, 7, 4, 5, 6, 7>
-                : public vpunpckhqdq {};
-            template <>
-            struct perm1_v8u16< 0,-1, 1,-1, 2,-1, 3,-1>
-                : public vpmovzxwd {};
-            template <>
-            struct perm1_v8u16< 4,-1, 5,-1, 6,-1, 7,-1>
-                : public fixed_arg_2<__m128i, make_zero_int,
-                                     vpunpckhwd> {};
-            template <>
-            struct perm1_v8u16<-1, 0,-1, 1,-1, 2, -1, 3>
-                : public fixed_arg_1<__m128i, make_zero_int,
-                                     vpunpcklwd> {};
-            template <>
-            struct perm1_v8u16<-1, 4,-1, 5,-1, 6, -1, 7>
-                : public fixed_arg_1<__m128i, make_zero_int,
-                                     vpunpckhwd> {};
-            template <>
-            struct perm1_v8u16<0, 0, 0, 0, 0, 0, 0, 0>
-                : public splat_v8u16<0> {};
-            template <>
-            struct perm1_v8u16<1, 1, 1, 1, 1, 1, 1, 1>
-                : public splat_v8u16<1> {};
-            template <>
-            struct perm1_v8u16<2, 2, 2, 2, 2, 2, 2, 2>
-                : public splat_v8u16<2> {};
-            template <>
-            struct perm1_v8u16<3, 3, 3, 3, 3, 3, 3, 3>
-                : public splat_v8u16<3> {};
-            template <>
-            struct perm1_v8u16<4, 4, 4, 4, 4, 4, 4, 4>
-                : public splat_v8u16<4> {};
-            template <>
-            struct perm1_v8u16<5, 5, 5, 5, 5, 5, 5, 5>
-                : public splat_v8u16<5> {};
-            template <>
-            struct perm1_v8u16<6, 6, 6, 6, 6, 6, 6, 6>
-                : public splat_v8u16<6> {};
-            template <>
-            struct perm1_v8u16<7, 7, 7, 7, 7, 7, 7, 7>
-                : public splat_v8u16<7> {};
-            template <>
-            struct perm1_v8u16<-1, 0, 1, 2, 3, 4, 5, 6>
-                : public vpslldq<2> {};
-            template <>
-            struct perm1_v8u16<-1, -1, 0, 1, 2, 3, 4, 5>
-                : public vpslldq<4> {};
-            template <>
-            struct perm1_v8u16<-1,-1,-1, 0, 1, 2, 3, 4>
-                : public vpslldq<6> {};
-            template <>
-            struct perm1_v8u16<-1,-1,-1,-1, 0, 1, 2, 3>
-                : public vpslldq<8> {};
-            template <>
-            struct perm1_v8u16<-1,-1,-1,-1,-1, 0, 1, 2>
-                : public vpslldq<10> {};
-            template <>
-            struct perm1_v8u16<-1,-1,-1,-1,-1,-1, 0, 1>
-                : public vpslldq<12> {};
-            template <>
-            struct perm1_v8u16<-1,-1,-1,-1,-1,-1,-1, 0>
-                : public vpslldq<14> {};
-            template <>
-            struct perm1_v8u16< 1, 2, 3, 4, 5, 6, 7,-1>
-                : public vpsrldq<2> {};
-            template <>
-            struct perm1_v8u16< 2, 3, 4, 5, 6, 7,-1,-1>
-                : public vpsrldq<4> {};
-            template <>
-            struct perm1_v8u16< 3, 4, 5, 6, 7,-1,-1,-1>
-                : public vpsrldq<6> {};
-            template <>
-            struct perm1_v8u16< 4, 5, 6, 7,-1,-1,-1,-1>
-                : public vpsrldq<8> {};
-            template <>
-            struct perm1_v8u16< 5, 6, 7,-1,-1,-1,-1,-1>
-                : public vpsrldq<10> {};
-            template <>
-            struct perm1_v8u16< 6, 7,-1,-1,-1,-1,-1,-1>
-                : public vpsrldq<12> {};
-            template <>
-            struct perm1_v8u16< 7,-1,-1,-1,-1,-1,-1,-1>
-                : public vpsrldq<14> {};
+        // specialisations of permutations of one uint16_t
+        // vector
+        template <>
+        struct perm1_v8u16<-1,-1,-1,-1,-1,-1,-1,-1>
+            : public make_zero_int {};
+        template <>
+        struct perm1_v8u16< 0, 1, 2, 3, 4, 5, 6, 7>
+            : public select_arg_1<__m128i> {};
+        template <>
+        struct perm1_v8u16< 0, 0, 1, 1, 2, 2, 3, 3>
+            : public vpunpcklwd {};
+        template <>
+        struct perm1_v8u16< 4, 4, 5, 5, 6, 6, 7, 7>
+            : public vpunpckhwd {};
+        template <>
+        struct perm1_v8u16< 0, 1, 0, 1, 2, 3, 2, 3>
+            : public vpunpckldq {};
+        template <>
+        struct perm1_v8u16< 4, 5, 4, 5, 6, 7, 6, 7>
+            : public vpunpckhdq {};
+        template <>
+        struct perm1_v8u16< 0, 1, 2, 3, 0, 1, 2, 3>
+            : public vpunpcklqdq {};
+        template <>
+        struct perm1_v8u16< 4, 5, 6, 7, 4, 5, 6, 7>
+            : public vpunpckhqdq {};
+        template <>
+        struct perm1_v8u16< 0,-1, 1,-1, 2,-1, 3,-1>
+            : public vpmovzxwd {};
+        template <>
+        struct perm1_v8u16< 4,-1, 5,-1, 6,-1, 7,-1>
+            : public fixed_arg_2<__m128i, make_zero_int,
+                                 vpunpckhwd> {};
+        template <>
+        struct perm1_v8u16<-1, 0,-1, 1,-1, 2, -1, 3>
+            : public fixed_arg_1<__m128i, make_zero_int,
+                                 vpunpcklwd> {};
+        template <>
+        struct perm1_v8u16<-1, 4,-1, 5,-1, 6, -1, 7>
+            : public fixed_arg_1<__m128i, make_zero_int,
+                                 vpunpckhwd> {};
+        template <>
+        struct perm1_v8u16<0, 0, 0, 0, 0, 0, 0, 0>
+            : public splat_v8u16<0> {};
+        template <>
+        struct perm1_v8u16<1, 1, 1, 1, 1, 1, 1, 1>
+            : public splat_v8u16<1> {};
+        template <>
+        struct perm1_v8u16<2, 2, 2, 2, 2, 2, 2, 2>
+            : public splat_v8u16<2> {};
+        template <>
+        struct perm1_v8u16<3, 3, 3, 3, 3, 3, 3, 3>
+            : public splat_v8u16<3> {};
+        template <>
+        struct perm1_v8u16<4, 4, 4, 4, 4, 4, 4, 4>
+            : public splat_v8u16<4> {};
+        template <>
+        struct perm1_v8u16<5, 5, 5, 5, 5, 5, 5, 5>
+            : public splat_v8u16<5> {};
+        template <>
+        struct perm1_v8u16<6, 6, 6, 6, 6, 6, 6, 6>
+            : public splat_v8u16<6> {};
+        template <>
+        struct perm1_v8u16<7, 7, 7, 7, 7, 7, 7, 7>
+            : public splat_v8u16<7> {};
+        template <>
+        struct perm1_v8u16<-1, 0, 1, 2, 3, 4, 5, 6>
+            : public vpslldq<2> {};
+        template <>
+        struct perm1_v8u16<-1, -1, 0, 1, 2, 3, 4, 5>
+            : public vpslldq<4> {};
+        template <>
+        struct perm1_v8u16<-1,-1,-1, 0, 1, 2, 3, 4>
+            : public vpslldq<6> {};
+        template <>
+        struct perm1_v8u16<-1,-1,-1,-1, 0, 1, 2, 3>
+            : public vpslldq<8> {};
+        template <>
+        struct perm1_v8u16<-1,-1,-1,-1,-1, 0, 1, 2>
+            : public vpslldq<10> {};
+        template <>
+        struct perm1_v8u16<-1,-1,-1,-1,-1,-1, 0, 1>
+            : public vpslldq<12> {};
+        template <>
+        struct perm1_v8u16<-1,-1,-1,-1,-1,-1,-1, 0>
+            : public vpslldq<14> {};
+        template <>
+        struct perm1_v8u16< 1, 2, 3, 4, 5, 6, 7,-1>
+            : public vpsrldq<2> {};
+        template <>
+        struct perm1_v8u16< 2, 3, 4, 5, 6, 7,-1,-1>
+            : public vpsrldq<4> {};
+        template <>
+        struct perm1_v8u16< 3, 4, 5, 6, 7,-1,-1,-1>
+            : public vpsrldq<6> {};
+        template <>
+        struct perm1_v8u16< 4, 5, 6, 7,-1,-1,-1,-1>
+            : public vpsrldq<8> {};
+        template <>
+        struct perm1_v8u16< 5, 6, 7,-1,-1,-1,-1,-1>
+            : public vpsrldq<10> {};
+        template <>
+        struct perm1_v8u16< 6, 7,-1,-1,-1,-1,-1,-1>
+            : public vpsrldq<12> {};
+        template <>
+        struct perm1_v8u16< 7,-1,-1,-1,-1,-1,-1,-1>
+            : public vpsrldq<14> {};
 
-            template <>
-            struct perm1_v8u16<-1, 0,-1, 2,-1, 4,-1, 6>
-                : public vpslld_const<16> {};
-            template <>
-            struct perm1_v8u16< 1,-1, 3,-1, 5,-1, 7,-1>
-                : public vpsrld_const<16> {};
+        template <>
+        struct perm1_v8u16<-1, 0,-1, 2,-1, 4,-1, 6>
+            : public vpslld_const<16> {};
+        template <>
+        struct perm1_v8u16< 1,-1, 3,-1, 5,-1, 7,-1>
+            : public vpsrld_const<16> {};
 
-            template <>
-            struct perm1_v8u16<-1, 0, 1, 2,-1, 4, 5, 6>
-                : public vpsllq_const<16> {};
-            template <>
-            struct perm1_v8u16<-1,-1, 0, 1,-1,-1, 4, 5>
-                : public vpsllq_const<32> {};
-            template <>
-            struct perm1_v8u16<-1,-1,-1, 0,-1,-1,-1, 4>
-                : public vpsllq_const<48> {};
+        template <>
+        struct perm1_v8u16<-1, 0, 1, 2,-1, 4, 5, 6>
+            : public vpsllq_const<16> {};
+        template <>
+        struct perm1_v8u16<-1,-1, 0, 1,-1,-1, 4, 5>
+            : public vpsllq_const<32> {};
+        template <>
+        struct perm1_v8u16<-1,-1,-1, 0,-1,-1,-1, 4>
+            : public vpsllq_const<48> {};
 
-            template <>
-            struct perm1_v8u16< 1, 2, 3,-1, 5, 6, 7,-1>
-                : public vpsrlq_const<16> {};
-            template <>
-            struct perm1_v8u16< 2, 3,-1,-1, 6, 7,-1,-1>
-                : public vpsrlq_const<32> {};
-            template <>
-            struct perm1_v8u16< 3,-1,-1,-1, 7,-1,-1,-1>
-                : public vpsrlq_const<48> {};
+        template <>
+        struct perm1_v8u16< 1, 2, 3,-1, 5, 6, 7,-1>
+            : public vpsrlq_const<16> {};
+        template <>
+        struct perm1_v8u16< 2, 3,-1,-1, 6, 7,-1,-1>
+            : public vpsrlq_const<32> {};
+        template <>
+        struct perm1_v8u16< 3,-1,-1,-1, 7,-1,-1,-1>
+            : public vpsrlq_const<48> {};
 
-            // specialisations for two uint16_t vectors
-            template <>
-            struct perm2_v8u16< 0, 8, 1, 9, 2,10, 3,11>
-                : public vpunpcklwd {};
-            template <>
-            struct perm2_v8u16< 8, 0, 9, 1,10, 2,11, 3>
-                : public swap_ab<__m128i, vpunpcklwd> {};
-            template <>
-            struct perm2_v8u16< 4,12, 5,13, 6,14, 7,15>
-                : public vpunpckhwd {};
-            template <>
-            struct perm2_v8u16<12, 4,13, 5,14, 6,15, 7>
-                : public swap_ab<__m128i, vpunpckhwd> {};
-            template <>
-            struct perm2_v8u16< 0, 1, 2, 3, 8, 9,10,11>
-                : public vpunpcklqdq {};
-            template <>
-            struct perm2_v8u16< 8, 9,10,11, 0, 1, 2, 3>
-                : public swap_ab<__m128i, vpunpcklqdq> {};
-            template <>
-            struct perm2_v8u16< 4, 5, 6, 7,12,13,14,15>
-                : public vpunpckhqdq {};
-            template <>
-            struct perm2_v8u16<12,13,14,15, 4, 5, 6, 7>
-                : public swap_ab<__m128i, vpunpckhqdq> {};
+        // specialisations for two uint16_t vectors
+        template <>
+        struct perm2_v8u16< 0, 8, 1, 9, 2,10, 3,11>
+            : public vpunpcklwd {};
+        template <>
+        struct perm2_v8u16< 8, 0, 9, 1,10, 2,11, 3>
+            : public swap_ab<__m128i, vpunpcklwd> {};
+        template <>
+        struct perm2_v8u16< 4,12, 5,13, 6,14, 7,15>
+            : public vpunpckhwd {};
+        template <>
+        struct perm2_v8u16<12, 4,13, 5,14, 6,15, 7>
+            : public swap_ab<__m128i, vpunpckhwd> {};
+        template <>
+        struct perm2_v8u16< 0, 1, 2, 3, 8, 9,10,11>
+            : public vpunpcklqdq {};
+        template <>
+        struct perm2_v8u16< 8, 9,10,11, 0, 1, 2, 3>
+            : public swap_ab<__m128i, vpunpcklqdq> {};
+        template <>
+        struct perm2_v8u16< 4, 5, 6, 7,12,13,14,15>
+            : public vpunpckhqdq {};
+        template <>
+        struct perm2_v8u16<12,13,14,15, 4, 5, 6, 7>
+            : public swap_ab<__m128i, vpunpckhqdq> {};
 
 #if defined (__AVX__)
-            // generic permutation of one double vector
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct perm1_v4f64 {
-                static __m256d v(__m256d a);
-            };
+        // generic permutation of one double vector
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct perm1_v4f64 {
+            static __m256d v(__m256d a);
+        };
 
-            // generic permutation of two double vectors
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct perm2_v4f64 {
-                static __m256d v(__m256d a, __m256d b);
-            };
+        // generic permutation of two double vectors
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct perm2_v4f64 {
+            static __m256d v(__m256d a, __m256d b);
+        };
 
-            // specialization of permutations of one double
-            // vector
-            template <>
-            struct perm1_v4f64<-1,-1,-1,-1>
-                : public make_zero_v4f64 {};
-            template <>
-            struct perm1_v4f64<0, 0, 0, 0>
-                : public vbroadcastsd<__m256d> {};
-            template <>
-            struct perm1_v4f64<0, 1, 2, 3>
-                : public select_arg_1<__m256d> {};
-            template <>
-            struct perm1_v4f64<0, 0, 2, 2>
-                : public vunpcklpd {};
-            template <>
-            struct perm1_v4f64<0,-1, 2,-1>
-                : public fixed_arg_2<__m256d, make_zero_v4f64,
-                                     vunpcklpd> {};
-            template <>
-            struct perm1_v4f64<-1, 0,-1, 2>
-                : public fixed_arg_1<__m256d, make_zero_v4f64,
-                                     vunpcklpd> {};
-            template <>
-            struct perm1_v4f64<1, 1, 3, 3>
-                : public vunpckhpd {};
-            template <>
-            struct perm1_v4f64<1,-1, 3,-1>
-                : public fixed_arg_2<__m256d, make_zero_v4f64,
-                                     vunpckhpd> {};
-            template <>
-            struct perm1_v4f64<-1, 1, -1, 3>
-                : public fixed_arg_1<__m256d, make_zero_v4f64,
-                                     vunpckhpd> {};
-            template <>
-            struct perm1_v4f64<0, 1, 0, 1>
-                : public vinsertf128<1> {};
-            template <>
-            struct perm1_v4f64<2, 3, 0, 1>
-                : public vperm2f128<1, 0> {};
-            template <>
-            struct perm1_v4f64<2, 3, 2, 3>
-                : public vperm2f128<1, 1> {};
+        // specialization of permutations of one double
+        // vector
+        template <>
+        struct perm1_v4f64<-1,-1,-1,-1>
+            : public make_zero_v4f64 {};
+        template <>
+        struct perm1_v4f64<0, 0, 0, 0>
+            : public vbroadcastsd<__m256d> {};
+        template <>
+        struct perm1_v4f64<0, 1, 2, 3>
+            : public select_arg_1<__m256d> {};
+        template <>
+        struct perm1_v4f64<0, 0, 2, 2>
+            : public vunpcklpd {};
+        template <>
+        struct perm1_v4f64<0,-1, 2,-1>
+            : public fixed_arg_2<__m256d, make_zero_v4f64,
+                                 vunpcklpd> {};
+        template <>
+        struct perm1_v4f64<-1, 0,-1, 2>
+            : public fixed_arg_1<__m256d, make_zero_v4f64,
+                                 vunpcklpd> {};
+        template <>
+        struct perm1_v4f64<1, 1, 3, 3>
+            : public vunpckhpd {};
+        template <>
+        struct perm1_v4f64<1,-1, 3,-1>
+            : public fixed_arg_2<__m256d, make_zero_v4f64,
+                                 vunpckhpd> {};
+        template <>
+        struct perm1_v4f64<-1, 1, -1, 3>
+            : public fixed_arg_1<__m256d, make_zero_v4f64,
+                                 vunpckhpd> {};
+        template <>
+        struct perm1_v4f64<0, 1, 0, 1>
+            : public vinsertf128<1> {};
+        template <>
+        struct perm1_v4f64<2, 3, 0, 1>
+            : public vperm2f128<1, 0> {};
+        template <>
+        struct perm1_v4f64<2, 3, 2, 3>
+            : public vperm2f128<1, 1> {};
 
-            // specialization of permutations of two double
-            // vectors
-            template <>
+        // specialization of permutations of two double
+        // vectors
+        template <>
             
-            struct perm2_v4f64<-1,-1,-1,-1>
-                : public make_zero_v4f64 {};
-            template <>
-            struct perm2_v4f64< 0, 1, 2, 3>
-                : public select_arg_1<__m256d> {};
-            template <>
-            struct perm2_v4f64< 4, 5, 6, 7>
-                : public select_arg_2<__m256d> {};
+        struct perm2_v4f64<-1,-1,-1,-1>
+            : public make_zero_v4f64 {};
+        template <>
+        struct perm2_v4f64< 0, 1, 2, 3>
+            : public select_arg_1<__m256d> {};
+        template <>
+        struct perm2_v4f64< 4, 5, 6, 7>
+            : public select_arg_2<__m256d> {};
 
-            template <>
-            struct perm2_v4f64< 0, 4, 2, 6>
-                : public vunpcklpd {};
-            template <>
-            struct perm2_v4f64< 4, 0, 6, 2>
-                : public swap_ab<__m256d, vunpcklpd> {};
+        template <>
+        struct perm2_v4f64< 0, 4, 2, 6>
+            : public vunpcklpd {};
+        template <>
+        struct perm2_v4f64< 4, 0, 6, 2>
+            : public swap_ab<__m256d, vunpcklpd> {};
 
-            template <>
-            struct perm2_v4f64< 1, 5, 3, 7>
-                : public vunpckhpd {};
-            template <>
-            struct perm2_v4f64< 5, 1, 7, 3>
-                : public swap_ab<__m256d, vunpckhpd> {};
+        template <>
+        struct perm2_v4f64< 1, 5, 3, 7>
+            : public vunpckhpd {};
+        template <>
+        struct perm2_v4f64< 5, 1, 7, 3>
+            : public swap_ab<__m256d, vunpckhpd> {};
 
-            template <>
-            struct perm2_v4f64< 0, 1, 4, 5>
-                : public vinsertf128<1> {};
-            template <>
-            struct perm2_v4f64< 0, 1, 6, 7>
-                : public vperm2f128<0, 3> {};
-            template <>
-            struct perm2_v4f64< 2, 3, 4, 5>
-                : public vperm2f128<1, 2> {};
-            template <>
-            struct perm2_v4f64< 2, 3, 6, 7>
-                : public vperm2f128<1, 3> {};
-            template <>
-            struct perm2_v4f64< 4, 5, 0, 1>
-                : public swap_ab<__m256d, vinsertf128<1> > {};
-            template <>
-            struct perm2_v4f64< 4, 5, 2, 3>
-                : public vperm2f128<2, 1> {};
-            template <>
-            struct perm2_v4f64< 6, 7, 0, 1>
-                : public vperm2f128<3, 0> {};
-            template <>
-            struct perm2_v4f64< 6, 7, 2, 3>
-                : public vperm2f128<3, 1> {};
+        template <>
+        struct perm2_v4f64< 0, 1, 4, 5>
+            : public vinsertf128<1> {};
+        template <>
+        struct perm2_v4f64< 0, 1, 6, 7>
+            : public vperm2f128<0, 3> {};
+        template <>
+        struct perm2_v4f64< 2, 3, 4, 5>
+            : public vperm2f128<1, 2> {};
+        template <>
+        struct perm2_v4f64< 2, 3, 6, 7>
+            : public vperm2f128<1, 3> {};
+        template <>
+        struct perm2_v4f64< 4, 5, 0, 1>
+            : public swap_ab<__m256d, vinsertf128<1> > {};
+        template <>
+        struct perm2_v4f64< 4, 5, 2, 3>
+            : public vperm2f128<2, 1> {};
+        template <>
+        struct perm2_v4f64< 6, 7, 0, 1>
+            : public vperm2f128<3, 0> {};
+        template <>
+        struct perm2_v4f64< 6, 7, 2, 3>
+            : public vperm2f128<3, 1> {};
 
-            template <>
-            struct perm2_v4f64< 0, 4, 1, 5> {
-                static __m256d v(__m256d a, __m256d b) {
+        template <>
+        struct perm2_v4f64< 0, 4, 1, 5> {
+            static __m256d v(__m256d a, __m256d b) {
 #if 1
-                    __m128d al=_mm256_castpd256_pd128(a);
-                    __m128d bl=_mm256_castpd256_pd128(b);
-                    // 0 4
-                    __m128d rl=vunpcklpd::v(al, bl);
-                    // 1 5
-                    __m128d rh=vunpckhpd::v(al, bl);
-                    __m256d r=_mm256_castpd128_pd256(rl);
-                    r = vinsertf128<1>::v(r, rh);
-                    return r;
+                __m128d al=_mm256_castpd256_pd128(a);
+                __m128d bl=_mm256_castpd256_pd128(b);
+                // 0 4
+                __m128d rl=vunpcklpd::v(al, bl);
+                // 1 5
+                __m128d rh=vunpckhpd::v(al, bl);
+                __m256d r=_mm256_castpd128_pd256(rl);
+                r = vinsertf128<1>::v(r, rh);
+                return r;
 #else
-                    // 0 4 2 6
-                    __m256d t0= vunpcklpd::v(a, b);
-                    // 1 5 3 7
-                    __m256d t1= vunpckhpd::v(a, b);
-                    __m256d r= vperm2f128<0, 2>::v(t0, t1);
+                // 0 4 2 6
+                __m256d t0= vunpcklpd::v(a, b);
+                // 1 5 3 7
+                __m256d t1= vunpckhpd::v(a, b);
+                __m256d r= vperm2f128<0, 2>::v(t0, t1);
 #endif
-                    return r;
-                }
-            };
+                return r;
+            }
+        };
 
-            template <>
-            struct perm2_v4f64< 4, 0, 5, 1> {
-                static __m256d v(__m256d a, __m256d b) {
+        template <>
+        struct perm2_v4f64< 4, 0, 5, 1> {
+            static __m256d v(__m256d a, __m256d b) {
 #if 1
-                    __m128d al=_mm256_castpd256_pd128(a);
-                    __m128d bl=_mm256_castpd256_pd128(b);
-                    // 4 0
-                    __m128d rl=vunpcklpd::v(bl, al);
-                    // 5 1
-                    __m128d rh=vunpckhpd::v(bl, al);
-                    __m256d r=_mm256_castpd128_pd256(rl);
-                    r = vinsertf128<1>::v(r, rh);
-                    return r;
+                __m128d al=_mm256_castpd256_pd128(a);
+                __m128d bl=_mm256_castpd256_pd128(b);
+                // 4 0
+                __m128d rl=vunpcklpd::v(bl, al);
+                // 5 1
+                __m128d rh=vunpckhpd::v(bl, al);
+                __m256d r=_mm256_castpd128_pd256(rl);
+                r = vinsertf128<1>::v(r, rh);
+                return r;
 #else
-                    // 4 0 6 2
-                    __m256d t0= vunpcklpd::v(b, a);
-                    // 5 1 7 3
-                    __m256d t1= vunpckhpd::v(b, a);
-                    __m256d r= vperm2f128<0, 2>::v(t0, t1);
-                    return r;
+                // 4 0 6 2
+                __m256d t0= vunpcklpd::v(b, a);
+                // 5 1 7 3
+                __m256d t1= vunpckhpd::v(b, a);
+                __m256d r= vperm2f128<0, 2>::v(t0, t1);
+                return r;
 #endif
-                }
-            };
+            }
+        };
 
-            template <>
-            struct perm2_v4f64< 2, 6, 3, 7> {
-                static __m256d v(__m256d a, __m256d b) {
-                    // 0 4 2 6
-                    __m256d t0= vunpcklpd::v(a, b);
-                    // 1 5 3 7
-                    __m256d t1= vunpckhpd::v(a, b);
-                    __m256d r= vperm2f128<1, 3>::v(t0, t1);
-                    return r;
-                }
-            };
+        template <>
+        struct perm2_v4f64< 2, 6, 3, 7> {
+            static __m256d v(__m256d a, __m256d b) {
+                // 0 4 2 6
+                __m256d t0= vunpcklpd::v(a, b);
+                // 1 5 3 7
+                __m256d t1= vunpckhpd::v(a, b);
+                __m256d r= vperm2f128<1, 3>::v(t0, t1);
+                return r;
+            }
+        };
 
-            template <>
-            struct perm2_v4f64< 6, 2, 7, 3> {
-                static __m256d v(__m256d a, __m256d b) {
-                    // 4 0 6 2
-                    __m256d t0= vunpcklpd::v(b, a);
-                    // 5 1 7 3
-                    __m256d t1= vunpckhpd::v(b, a);
-                    __m256d r= vperm2f128<1, 3>::v(t0, t1);
-                    return r;
-                }
-            };
+        template <>
+        struct perm2_v4f64< 6, 2, 7, 3> {
+            static __m256d v(__m256d a, __m256d b) {
+                // 4 0 6 2
+                __m256d t0= vunpcklpd::v(b, a);
+                // 5 1 7 3
+                __m256d t1= vunpckhpd::v(b, a);
+                __m256d r= vperm2f128<1, 3>::v(t0, t1);
+                return r;
+            }
+        };
 
-            // generic permutation of one float vector
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm1_v8f32 {
-                static __m256 v(__m256 a);
-            };
+        // generic permutation of one float vector
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        struct perm1_v8f32 {
+            static __m256 v(__m256 a);
+        };
 
 
-            // generic permutation of two float vectors
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm2_v8f32 {
-                static __m256 v(__m256 a, __m256 b);
-            };
+        // generic permutation of two float vectors
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        struct perm2_v8f32 {
+            static __m256 v(__m256 a, __m256 b);
+        };
 
-            template <>
-            struct perm1_v8f32<-1, -1, -1, -1, -1, -1, -1, -1>
-                : public make_zero_v8f32 {};
+        template <>
+        struct perm1_v8f32<-1, -1, -1, -1, -1, -1, -1, -1>
+            : public make_zero_v8f32 {};
 
-            template <>
-            struct perm1_v8f32<0, 0, 0, 0, 0, 0, 0, 0>
-                : public vbroadcastss<__m256> {};
+        template <>
+        struct perm1_v8f32<0, 0, 0, 0, 0, 0, 0, 0>
+            : public vbroadcastss<__m256> {};
 
-            template <>
-            struct perm1_v8f32<0, 1, 2, 3, 4, 5, 6, 7>
-                : public select_arg_1<__m256> {};
+        template <>
+        struct perm1_v8f32<0, 1, 2, 3, 4, 5, 6, 7>
+            : public select_arg_1<__m256> {};
 
-            template <>
-            struct perm1_v8f32<0, 0, 1, 1, 4, 4, 5, 5>
-                : public vunpcklps {};
+        template <>
+        struct perm1_v8f32<0, 0, 1, 1, 4, 4, 5, 5>
+            : public vunpcklps {};
 
-            template <>
-            struct perm1_v8f32<0, -1, 1, -1, 4, -1, 5, -1>
-                : public fixed_arg_2<__m256, make_zero_v8f32,
-                                     vunpcklps> {};
+        template <>
+        struct perm1_v8f32<0, -1, 1, -1, 4, -1, 5, -1>
+            : public fixed_arg_2<__m256, make_zero_v8f32,
+                                 vunpcklps> {};
 
-            template <>
-            struct perm1_v8f32<-1, 0, -1, 1, -1, 4, -1, 5>
-                : public fixed_arg_1<__m256, make_zero_v8f32,
-                                     vunpcklps> {};
+        template <>
+        struct perm1_v8f32<-1, 0, -1, 1, -1, 4, -1, 5>
+            : public fixed_arg_1<__m256, make_zero_v8f32,
+                                 vunpcklps> {};
 
-            template <>
-            struct perm1_v8f32<2, 2, 3, 3, 6, 6, 7, 7>
-                : public vunpckhps {};
+        template <>
+        struct perm1_v8f32<2, 2, 3, 3, 6, 6, 7, 7>
+            : public vunpckhps {};
 
-            template <>
-            struct perm1_v8f32<2, -1, 3, -1, 6, -1, 7, -1>
-                : public fixed_arg_2<__m256, make_zero_v8f32,
-                                     vunpckhps> {};
+        template <>
+        struct perm1_v8f32<2, -1, 3, -1, 6, -1, 7, -1>
+            : public fixed_arg_2<__m256, make_zero_v8f32,
+                                 vunpckhps> {};
 
-            template <>
-            struct perm1_v8f32<-1, 2, -1, 3, -1, 6, -1, 7>
-                : public fixed_arg_1<__m256, make_zero_v8f32,
-                                     vunpckhps> {};
+        template <>
+        struct perm1_v8f32<-1, 2, -1, 3, -1, 6, -1, 7>
+            : public fixed_arg_1<__m256, make_zero_v8f32,
+                                 vunpckhps> {};
 
-            template <>
-            struct perm1_v8f32<0, 1, 0, 1, 4, 5, 4, 5>
-                : public exec_f64<vunpcklpd> {};
+        template <>
+        struct perm1_v8f32<0, 1, 0, 1, 4, 5, 4, 5>
+            : public exec_f64<vunpcklpd> {};
 
-            template <>
-            struct perm1_v8f32<2, 3, 2, 3, 6, 7, 6, 7>
-                : public exec_f64<vunpckhpd> {};
+        template <>
+        struct perm1_v8f32<2, 3, 2, 3, 6, 7, 6, 7>
+            : public exec_f64<vunpckhpd> {};
                 
-            template <>
-            struct perm1_v8f32<0, 1, 2, 3, 0, 1, 2, 3>
-                : public vinsertf128<1> {};
+        template <>
+        struct perm1_v8f32<0, 1, 2, 3, 0, 1, 2, 3>
+            : public vinsertf128<1> {};
                 
-            template <>
-            struct perm1_v8f32<4, 5, 6, 7, 0, 1, 2, 3>
-                : public vperm2f128<1, 0> {};
+        template <>
+        struct perm1_v8f32<4, 5, 6, 7, 0, 1, 2, 3>
+            : public vperm2f128<1, 0> {};
 
-            template <>
-            struct perm1_v8f32<4, 5, 6, 7, 4, 5, 6, 7>
-                : public vperm2f128<1, 1> {};
+        template <>
+        struct perm1_v8f32<4, 5, 6, 7, 4, 5, 6, 7>
+            : public vperm2f128<1, 1> {};
                 
-            template <>
-            struct perm2_v8f32<-1, -1, -1, -1, -1, -1, -1, -1> 
-                : public make_zero_v8f32{};
+        template <>
+        struct perm2_v8f32<-1, -1, -1, -1, -1, -1, -1, -1> 
+            : public make_zero_v8f32{};
 
-            template <>
-            struct perm2_v8f32<0, 1, 2, 3, 4, 5, 6, 7> 
-                : public select_arg_1<__m256> {};
+        template <>
+        struct perm2_v8f32<0, 1, 2, 3, 4, 5, 6, 7> 
+            : public select_arg_1<__m256> {};
                 
-            template <>
-            struct perm2_v8f32<8, 9, 10, 11, 12, 13, 14, 15> 
-                : public select_arg_2<__m256> {};
+        template <>
+        struct perm2_v8f32<8, 9, 10, 11, 12, 13, 14, 15> 
+            : public select_arg_2<__m256> {};
 
-            template <>
-            struct perm2_v8f32<0, 8, 1, 9, 4, 12, 5, 13>
-                : public vunpcklps {};
+        template <>
+        struct perm2_v8f32<0, 8, 1, 9, 4, 12, 5, 13>
+            : public vunpcklps {};
 
-            template <>
-            struct perm2_v8f32<2, 10, 3, 11, 6, 14, 7, 15>
-                : public vunpckhps {};
+        template <>
+        struct perm2_v8f32<2, 10, 3, 11, 6, 14, 7, 15>
+            : public vunpckhps {};
 
-            template <>
-            struct perm2_v8f32<0, 1, 8, 9, 4, 5, 12, 13>
-                : public exec_f64<vunpcklpd> {};
+        template <>
+        struct perm2_v8f32<0, 1, 8, 9, 4, 5, 12, 13>
+            : public exec_f64<vunpcklpd> {};
 
-            template <>
-            struct perm2_v8f32<2, 3, 10, 11, 6, 7, 14, 15>
-                : public exec_f64<vunpckhpd> {};
+        template <>
+        struct perm2_v8f32<2, 3, 10, 11, 6, 7, 14, 15>
+            : public exec_f64<vunpckhpd> {};
 
-            template <>
-            struct perm2_v8f32<0, 1, 2, 3, 8, 9, 10, 11>
-                : public vinsertf128<1> {};
+        template <>
+        struct perm2_v8f32<0, 1, 2, 3, 8, 9, 10, 11>
+            : public vinsertf128<1> {};
                 
-            template <>
-            struct perm2_v8f32<0, 1, 2, 3, 12, 13, 14, 15>
-                : public vperm2f128<0, 3> {};
+        template <>
+        struct perm2_v8f32<0, 1, 2, 3, 12, 13, 14, 15>
+            : public vperm2f128<0, 3> {};
                 
-            template <>
-            struct perm2_v8f32<4, 5, 6, 7, 8, 9, 10, 11>
-                : public vperm2f128<1, 2> {};
+        template <>
+        struct perm2_v8f32<4, 5, 6, 7, 8, 9, 10, 11>
+            : public vperm2f128<1, 2> {};
                 
-            template <>
-            struct perm2_v8f32<4, 5, 6, 7, 12, 13, 14, 15>
-                : public vperm2f128<1, 3> {};
+        template <>
+        struct perm2_v8f32<4, 5, 6, 7, 12, 13, 14, 15>
+            : public vperm2f128<1, 3> {};
                 
 #endif
 #if defined (__AVX2__)
-            // generic permutation of one u64 vector
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct perm1_v4u64 {
-                static __m256i v(__m256i a);
-            };
+        // generic permutation of one u64 vector
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct perm1_v4u64 {
+            static __m256i v(__m256i a);
+        };
 
-            // generic permutation of two u64 vectors
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct perm2_v4u64 {
-                static __m256i v(__m256i a, __m256i b);
-            };
+        // generic permutation of two u64 vectors
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct perm2_v4u64 {
+            static __m256i v(__m256i a, __m256i b);
+        };
 
 
-            template <>
-            struct perm1_v4u64<-1,-1,-1,-1>
-                : public make_zero_int256 {};
+        template <>
+        struct perm1_v4u64<-1,-1,-1,-1>
+            : public make_zero_int256 {};
 
-            template <>
-            struct perm1_v4u64<0, 1, 2, 3>
-                : public select_arg_1<__m256i> {};
+        template <>
+        struct perm1_v4u64<0, 1, 2, 3>
+            : public select_arg_1<__m256i> {};
                 
-            template <>
-            struct perm1_v4u64<0, 0, 0, 0>
-                : public vbroadcastq<__m256i> {};
+        template <>
+        struct perm1_v4u64<0, 0, 0, 0>
+            : public vbroadcastq<__m256i> {};
 
-            template <>
-            struct perm1_v4u64<0, 0, 2, 2>
-                : public vpunpcklqdq {};
+        template <>
+        struct perm1_v4u64<0, 0, 2, 2>
+            : public vpunpcklqdq {};
 
-            template <>
-            struct perm1_v4u64<1, 1, 3, 3>
-                : public vpunpckhqdq {};
+        template <>
+        struct perm1_v4u64<1, 1, 3, 3>
+            : public vpunpckhqdq {};
 
-            template <>
-            struct perm1_v4u64<0, -1, 2, -1>
-                : public fixed_arg_2<__m256i, make_zero_int256,
-                                     vpunpcklqdq> {};
-            template <>
-            struct perm1_v4u64<-1, 0, -1, 2>
-                : public fixed_arg_1<__m256i, make_zero_int256,
-                                     vpunpcklqdq> {};
+        template <>
+        struct perm1_v4u64<0, -1, 2, -1>
+            : public fixed_arg_2<__m256i, make_zero_int256,
+                                 vpunpcklqdq> {};
+        template <>
+        struct perm1_v4u64<-1, 0, -1, 2>
+            : public fixed_arg_1<__m256i, make_zero_int256,
+                                 vpunpcklqdq> {};
 
-            template <>
-            struct perm2_v4u64<0, 1, 4, 5>
-                : public vinsertf128<1> {};
+        template <>
+        struct perm2_v4u64<0, 1, 4, 5>
+            : public vinsertf128<1> {};
                 
-            template <>
-            struct perm2_v4u64<0, 1, 6, 7>
-                : public vperm2f128<0, 3> {};
+        template <>
+        struct perm2_v4u64<0, 1, 6, 7>
+            : public vperm2f128<0, 3> {};
                 
-            template <>
-            struct perm2_v4u64<2, 3, 4, 5>
-                : public vperm2f128<1, 2> {};
+        template <>
+        struct perm2_v4u64<2, 3, 4, 5>
+            : public vperm2f128<1, 2> {};
                 
-            template <>
-            struct perm2_v4u64<2, 3, 6, 7>
-                : public vperm2f128<1, 3> {};
+        template <>
+        struct perm2_v4u64<2, 3, 6, 7>
+            : public vperm2f128<1, 3> {};
                              
                                      
-            // generic permutation of one u32 vector
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm1_v8u32 {
-                static __m256i v(__m256i a);
-            };
+        // generic permutation of one u32 vector
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        struct perm1_v8u32 {
+            static __m256i v(__m256i a);
+        };
 
-            // generic permutation of two u32 vectors
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm2_v8u32 {
-                static __m256i v(__m256i a, __m256i b);
-            };
+        // generic permutation of two u32 vectors
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        struct perm2_v8u32 {
+            static __m256i v(__m256i a, __m256i b);
+        };
 
-            template <>
-            struct perm1_v8u32<-1, -1, -1, -1, -1, -1, -1, -1>
-                : public make_zero_int256 {};
-            template <>
-            struct perm1_v8u32<0, 1, 2, 3, 4, 5, 6, 7>
-                : public select_arg_1<__m256i> {};
+        template <>
+        struct perm1_v8u32<-1, -1, -1, -1, -1, -1, -1, -1>
+            : public make_zero_int256 {};
+        template <>
+        struct perm1_v8u32<0, 1, 2, 3, 4, 5, 6, 7>
+            : public select_arg_1<__m256i> {};
 
-            template <>
-            struct perm1_v8u32<0, 0, 0, 0, 0, 0, 0, 0>
-                : public vbroadcastd<__m256i> {};
+        template <>
+        struct perm1_v8u32<0, 0, 0, 0, 0, 0, 0, 0>
+            : public vbroadcastd<__m256i> {};
                 
-            template <>
-            struct perm1_v8u32<0, 1, 0, 1, 4, 5, 4, 5>
-                : public vpunpcklqdq {};
+        template <>
+        struct perm1_v8u32<0, 1, 0, 1, 4, 5, 4, 5>
+            : public vpunpcklqdq {};
 
-            template <>
-            struct perm1_v8u32<2, 3, 2, 3, 6, 7, 6, 7>
-                : public vpunpckhqdq {};
+        template <>
+        struct perm1_v8u32<2, 3, 2, 3, 6, 7, 6, 7>
+            : public vpunpckhqdq {};
                 
-            template <>
-            struct perm1_v8u32<0, -1, 1, -1, 2, -1, 3, -1>
-                : public vpmovzxdq {};                        
+        template <>
+        struct perm1_v8u32<0, -1, 1, -1, 2, -1, 3, -1>
+            : public vpmovzxdq {};                        
 
-            template <>
-            struct perm2_v8u32<0, 1, 8, 9, 4, 5, 12, 13>
-                : public vpunpcklqdq {};
+        template <>
+        struct perm2_v8u32<0, 1, 8, 9, 4, 5, 12, 13>
+            : public vpunpcklqdq {};
 
-            template <>
-            struct perm2_v8u32<2, 3, 10, 11, 6, 7, 14, 15>
-                : public vpunpckhqdq {};
+        template <>
+        struct perm2_v8u32<2, 3, 10, 11, 6, 7, 14, 15>
+            : public vpunpckhqdq {};
 
-            template <>
-            struct perm2_v8u32<0, 8, 1, 9, 4, 12, 5, 13>
-                : public vpunpckldq {};
+        template <>
+        struct perm2_v8u32<0, 8, 1, 9, 4, 12, 5, 13>
+            : public vpunpckldq {};
 
-            template <>
-            struct perm2_v8u32<2, 10, 3, 11, 6, 14, 7, 15>
-                : public vpunpckhdq {};
+        template <>
+        struct perm2_v8u32<2, 10, 3, 11, 6, 14, 7, 15>
+            : public vpunpckhdq {};
 
-            template <>
-            struct perm2_v8u32<0, 1, 2, 3, 8, 9, 10, 11>
-                : public vinsertf128<1> {};
+        template <>
+        struct perm2_v8u32<0, 1, 2, 3, 8, 9, 10, 11>
+            : public vinsertf128<1> {};
                 
-            template <>
-            struct perm2_v8u32<0, 1, 2, 3, 12, 13, 14, 15>
-                : public vperm2f128<0, 3> {};
+        template <>
+        struct perm2_v8u32<0, 1, 2, 3, 12, 13, 14, 15>
+            : public vperm2f128<0, 3> {};
                 
-            template <>
-            struct perm2_v8u32<4, 5, 6, 7, 8, 9, 10, 11>
-                : public vperm2f128<1, 2> {};
+        template <>
+        struct perm2_v8u32<4, 5, 6, 7, 8, 9, 10, 11>
+            : public vperm2f128<1, 2> {};
                 
-            template <>
-            struct perm2_v8u32<4, 5, 6, 7, 12, 13, 14, 15>
-                : public vperm2f128<1, 3> {};
+        template <>
+        struct perm2_v8u32<4, 5, 6, 7, 12, 13, 14, 15>
+            : public vperm2f128<1, 3> {};
                 
 #endif
 #if defined (__AVX512F__)
-            // generic permutation of one v8f64 vector
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm1_v8f64 {
-                static __m512d v(__m512d a);
-            };
+        // generic permutation of one v8f64 vector
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        struct perm1_v8f64 {
+            static __m512d v(__m512d a);
+        };
 
-            // generic permutation of two v8f64 vectors
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct perm2_v8f64 {
-                static __m512d v(__m512d a, __m512d b);
-            };
+        // generic permutation of two v8f64 vectors
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        struct perm2_v8f64 {
+            static __m512d v(__m512d a, __m512d b);
+        };
 #endif
 
-            // generic permutation of one v16u8 vector
-            template <int _P00, int _P01, int _P02, int _P03,
-                      int _P04, int _P05, int _P06, int _P07,
-                      int _P08, int _P09, int _P10, int _P11,
-                      int _P12, int _P13, int _P14, int _P15>
-            struct perm1_v16u8 {
-                static __m128i v(__m128i a);
-            };
+        // generic permutation of one v16u8 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        struct perm1_v16u8 {
+            static __m128i v(__m128i a);
+        };
 
-            // generic permutation of one v16u8 vector
-            template <int _P00, int _P01, int _P02, int _P03,
-                      int _P04, int _P05, int _P06, int _P07,
-                      int _P08, int _P09, int _P10, int _P11,
-                      int _P12, int _P13, int _P14, int _P15>
-            struct perm2_v16u8 {
-                static __m128i v(__m128i a, __m128i b);
-            };
+        // generic permutation of one v16u8 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        struct perm2_v16u8 {
+            static __m128i v(__m128i a, __m128i b);
+        };
             
-        }
-
         template <int _P0, int _P1>
         __m128d perm_v2f64(__m128d a);
         template <int _P0, int _P1>
@@ -1063,7 +1059,7 @@ namespace cftal {
 
 template <int _P0, int _P1>
 inline
-__m128d cftal::x86::impl::perm1_v2f64<_P0, _P1>::v(__m128d a)
+__m128d cftal::x86::perm1_v2f64<_P0, _P1>::v(__m128d a)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -1120,7 +1116,7 @@ __m128d cftal::x86::impl::perm1_v2f64<_P0, _P1>::v(__m128d a)
 
 template <int _P0, int _P1>
 inline
-__m128d cftal::x86::impl::perm2_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
+__m128d cftal::x86::perm2_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -1157,7 +1153,7 @@ __m128d cftal::x86::impl::perm2_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
-__m128 cftal::x86::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
+__m128 cftal::x86::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -1253,7 +1249,7 @@ __m128 cftal::x86::impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a)
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
-__m128 cftal::x86::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
+__m128 cftal::x86::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -1355,7 +1351,7 @@ __m128 cftal::x86::impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
-__m128i cftal::x86::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
+__m128i cftal::x86::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -1461,7 +1457,7 @@ __m128i cftal::x86::impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
-__m128i cftal::x86::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
+__m128i cftal::x86::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -1566,8 +1562,8 @@ __m128i cftal::x86::impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i 
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
-__m128i cftal::x86::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
-                                      _P4, _P5, _P6, _P7>::v(__m128i a)
+__m128i cftal::x86::perm1_v8u16<_P0, _P1, _P2, _P3,
+                                _P4, _P5, _P6, _P7>::v(__m128i a)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -1816,8 +1812,8 @@ __m128i cftal::x86::impl::perm1_v8u16<_P0, _P1, _P2, _P3,
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
-__m128i cftal::x86::impl::perm2_v8u16<_P0, _P1, _P2, _P3,
-                                      _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
+__m128i cftal::x86::perm2_v8u16<_P0, _P1, _P2, _P3,
+                                _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -1917,7 +1913,7 @@ __m128i cftal::x86::impl::perm2_v8u16<_P0, _P1, _P2, _P3,
 #if defined (__AVX__)
 
 template <int _P0, int _P1, int _P2, int _P3>
-__m256d cftal::x86::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
+__m256d cftal::x86::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -2027,7 +2023,7 @@ __m256d cftal::x86::impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
-__m256d cftal::x86::impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
+__m256d cftal::x86::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -2083,8 +2079,8 @@ __m256d cftal::x86::impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d 
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
-__m256 cftal::x86::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
-                                     _P4, _P5, _P6, _P7>::v(__m256 a)
+__m256 cftal::x86::perm1_v8f32<_P0, _P1, _P2, _P3,
+                               _P4, _P5, _P6, _P7>::v(__m256 a)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -2225,8 +2221,8 @@ __m256 cftal::x86::impl::perm1_v8f32<_P0, _P1, _P2, _P3,
 
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
-__m256 cftal::x86::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
-                                     _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
+__m256 cftal::x86::perm2_v8f32<_P0, _P1, _P2, _P3,
+                               _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -2300,7 +2296,7 @@ __m256 cftal::x86::impl::perm2_v8f32<_P0, _P1, _P2, _P3,
 #endif
 #if defined (__AVX2__)
 template <int _P0, int _P1, int _P2, int _P3>
-__m256i cftal::x86::impl::perm1_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a)
+__m256i cftal::x86::perm1_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -2365,7 +2361,7 @@ __m256i cftal::x86::impl::perm1_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a)
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
-__m256i cftal::x86::impl::perm2_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i b)
+__m256i cftal::x86::perm2_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i b)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -2421,8 +2417,8 @@ template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
 __m256i
-cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
-                              _P4, _P5, _P6, _P7>::v(__m256i a)
+cftal::x86::perm1_v8u32<_P0, _P1, _P2, _P3,
+                        _P4, _P5, _P6, _P7>::v(__m256i a)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -2506,8 +2502,8 @@ cftal::x86::impl::perm1_v8u32<_P0, _P1, _P2, _P3,
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 __m256i
-cftal::x86::impl::perm2_v8u32<_P0, _P1, _P2, _P3,
-                              _P4, _P5, _P6, _P7>::v(__m256i a, __m256i b)
+cftal::x86::perm2_v8u32<_P0, _P1, _P2, _P3,
+                        _P4, _P5, _P6, _P7>::v(__m256i a, __m256i b)
 {
 #if 0
 #pragma GCC diagnostic push
@@ -2571,7 +2567,7 @@ cftal::x86::impl::perm2_v8u32<_P0, _P1, _P2, _P3,
     __m256i b1 = perm1_v8u32<mb0, mb1, mb2, mb3,
                              mb4, mb5, mb6, mb7>::v(b);
     return select_v8u32<sm0, sm1, sm2, sm3,
-                         sm4, sm5, sm6, sm7>::v(a1 ,b1);
+                        sm4, sm5, sm6, sm7>::v(a1 ,b1);
 #if 0
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
@@ -2584,7 +2580,7 @@ template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
 __m512d
-cftal::x86::impl::
+cftal::x86::
 perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
 {
 #if 0
@@ -2638,7 +2634,7 @@ template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
 __m512d
-cftal::x86::impl::
+cftal::x86::
 perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
 {
 #if 0
@@ -2714,7 +2710,7 @@ template <int _P00, int _P01, int _P02, int _P03,
           int _P12, int _P13, int _P14, int _P15>
 inline
 __m128i
-cftal::x86::impl::
+cftal::x86::
 perm1_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m128i a)
@@ -2748,7 +2744,7 @@ template <int _P00, int _P01, int _P02, int _P03,
           int _P12, int _P13, int _P14, int _P15>
 inline
 __m128i
-cftal::x86::impl::
+cftal::x86::
 perm2_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m128i a, __m128i b)
@@ -2821,7 +2817,7 @@ __m128d cftal::x86::perm_v2f64(__m128d a)
                   "cftal::x86::perm_v2f64(a) : _P0 < 2");
     static_assert(_P1 < 2,
                   "cftal::x86::perm_v2f64(a) : _P1 < 2");
-    return impl::perm1_v2f64<_P0, _P1>::v(a);
+    return perm1_v2f64<_P0, _P1>::v(a);
 }
 
 
@@ -2833,7 +2829,7 @@ __m128d cftal::x86::perm_v2f64(__m128d a, __m128d b)
                   "cftal::x86::perm_v2f64(a, b) : _P0 < 4");
     static_assert(_P1 < 4,
                   "cftal::x86::perm_v2f64(a, b) : _P1 < 4");
-    return impl::perm2_v2f64<_P0, _P1>::v(a, b);
+    return perm2_v2f64<_P0, _P1>::v(a, b);
 }
 
 #if defined (__AVX__)
@@ -2849,7 +2845,7 @@ __m256d cftal::x86::perm_v4f64(__m256d a)
                   "cftal::x86::perm_v4f64(a) : _P2 < 4");
     static_assert(_P3 < 4,
                   "cftal::x86::perm_v4f64(a) : _P3 < 4");
-    return impl::perm1_v4f64<_P0, _P1, _P2, _P3>::v(a);
+    return perm1_v4f64<_P0, _P1, _P2, _P3>::v(a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -2864,7 +2860,7 @@ __m256d cftal::x86::perm_v4f64(__m256d a, __m256d b)
                   "cftal::x86::perm_v4f64(a, b) : _P2 < 8");
     static_assert(_P3 < 8,
                   "cftal::x86::perm_v4f64(a, b) : _P3 < 8");
-    return impl::perm2_v4f64<_P0, _P1, _P2, _P3>::v(a, b);
+    return perm2_v4f64<_P0, _P1, _P2, _P3>::v(a, b);
 }
 
 #endif
@@ -2889,7 +2885,7 @@ __m512d cftal::x86::perm_v8f64(__m512d a)
                   "cftal::x86::perm_v8f64(a) : _P6 < 8");
     static_assert(_P7 < 8,
                   "cftal::x86::perm_v8f64(a) : _P7 < 8");
-    return impl::perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
+    return perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -2913,7 +2909,7 @@ __m512d cftal::x86::perm_v8f64(__m512d a, __m512d b)
                   "cftal::x86::perm_v8f64(a, b) : _P6 < 16");
     static_assert(_P7 < 16,
                   "cftal::x86::perm_v8f64(a, b) : _P7 < 16");
-    return impl::perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
+    return perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
 }
 #endif
 
@@ -2929,7 +2925,7 @@ __m128 cftal::x86::perm_v4f32(__m128 a)
                   "cftal::x86::perm_v4f32(a) : _P2 < 4");
     static_assert(_P3 < 4,
                   "cftal::x86::perm_v4f32(a) : _P3 < 4");
-    return impl::perm1_v4f32<_P0, _P1, _P2, _P3>::v(a);
+    return perm1_v4f32<_P0, _P1, _P2, _P3>::v(a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -2944,7 +2940,7 @@ __m128 cftal::x86::perm_v4f32(__m128 a, __m128 b)
                   "cftal::x86::perm_v4f32(a, b) : _P2 < 8");
     static_assert(_P3 < 8,
                   "cftal::x86::perm_v4f32(a, b) : _P3 < 8");
-    return impl::perm2_v4f32<_P0, _P1, _P2, _P3>::v(a, b);
+    return perm2_v4f32<_P0, _P1, _P2, _P3>::v(a, b);
 }
 
 #if defined (__AVX__)
@@ -2968,7 +2964,7 @@ __m256 cftal::x86::perm_v8f32(__m256 a)
                   "cftal::x86::perm_v8f32(a) : _P6 < 8");
     static_assert(_P7 < 8,
                   "cftal::x86::perm_v8f32(a) : _P7 < 8");
-    return impl::perm1_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
+    return perm1_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -2992,7 +2988,7 @@ __m256 cftal::x86::perm_v8f32(__m256 a, __m256 b)
                   "cftal::x86::perm_v8f32(a, b) : _P6 < 16");
     static_assert(_P7 < 16,
                   "cftal::x86::perm_v8f32(a, b) : _P7 < 16");
-    return impl::perm2_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
+    return perm2_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
 }
 
 #endif
@@ -3035,10 +3031,10 @@ __m128i cftal::x86::perm_v16u8(__m128i a)
                   "cftal::x86::perm_v16u8(a) : _P14 < 16");
     static_assert(_P15 < 16,
                   "cftal::x86::perm_v16u8(a) : _P15 < 16");
-    return impl::perm1_v16u8<_P00, _P01, _P02, _P03,
-                             _P04, _P05, _P06, _P07,
-                             _P08, _P09, _P10, _P11,
-                             _P12, _P13, _P14, _P15>::v(a);
+    return perm1_v16u8<_P00, _P01, _P02, _P03,
+                       _P04, _P05, _P06, _P07,
+                       _P08, _P09, _P10, _P11,
+                       _P12, _P13, _P14, _P15>::v(a);
 }
 
 template <int _P00, int _P01, int _P02, int _P03,
@@ -3079,10 +3075,10 @@ __m128i cftal::x86::perm_v16u8(__m128i a, __m128i b)
                   "cftal::x86::perm_v16u8(a, b) : _P14 < 32");
     static_assert(_P15 < 32,
                   "cftal::x86::perm_v16u8(a, b) : _P15 < 32");
-    return impl::perm2_v16u8<_P00, _P01, _P02, _P03,
-                             _P04, _P05, _P06, _P07,
-                             _P08, _P09, _P10, _P11,
-                             _P12, _P13, _P14, _P15>::v(a, b);
+    return perm2_v16u8<_P00, _P01, _P02, _P03,
+                       _P04, _P05, _P06, _P07,
+                       _P08, _P09, _P10, _P11,
+                       _P12, _P13, _P14, _P15>::v(a, b);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -3106,7 +3102,7 @@ __m128i cftal::x86::perm_v8u16(__m128i a)
                   "cftal::x86::perm_v8u16(a) : _P6 < 8");
     static_assert(_P7 < 8,
                   "cftal::x86::perm_v8u16(a) : _P7 < 8");
-    return impl::perm1_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
+    return perm1_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -3130,7 +3126,7 @@ __m128i cftal::x86::perm_v8u16(__m128i a, __m128i b)
                   "cftal::x86::perm_v8u16(a, b) : _P6 < 16");
     static_assert(_P7 < 16,
                   "cftal::x86::perm_v8u16(a, b) : _P7 < 16");
-    return impl::perm2_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
+    return perm2_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -3145,7 +3141,7 @@ __m128i cftal::x86::perm_v4u32(__m128i a)
                   "cftal::x86::perm_v4u32(a) : _P2 < 4");
     static_assert(_P3 < 4,
                   "cftal::x86::perm_v4u32(a) : _P3 < 4");
-    return impl::perm1_v4u32<_P0, _P1, _P2, _P3>::v(a);
+    return perm1_v4u32<_P0, _P1, _P2, _P3>::v(a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -3162,10 +3158,10 @@ __m128i cftal::x86::perm_v4u32(__m128i a, __m128i b)
                   "cftal::x86::perm_v4u32(a, b) : _P3 < 8");
 #if defined (__AVX2__)
     __m256i t=_mm256_inserti128_si256(_mm256_castsi128_si256(a), b, 1);
-    __m256i r=impl::perm1_v8u32<_P0, _P1, _P2, _P3, 4, 5, 6, 7>::v(t);
+    __m256i r=perm1_v8u32<_P0, _P1, _P2, _P3, 4, 5, 6, 7>::v(t);
     return _mm256_castsi256_si128(r);
 #else
-    return impl::perm2_v4u32<_P0, _P1, _P2, _P3>::v(a, b);
+    return perm2_v4u32<_P0, _P1, _P2, _P3>::v(a, b);
 #endif
 }
 
@@ -3190,7 +3186,7 @@ __m256i cftal::x86::perm_v8u32(__m256i a)
                   "cftal::x86::perm_v8u32(a) : _P6 < 8");
     static_assert(_P7 < 8,
                   "cftal::x86::perm_v8u32(a) : _P7 < 8");
-    return impl::perm1_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
+    return perm1_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -3214,7 +3210,7 @@ __m256i cftal::x86::perm_v8u32(__m256i a, __m256i b)
                   "cftal::x86::perm_v8u32(a, b) : _P6 < 16");
     static_assert(_P7 < 16,
                   "cftal::x86::perm_v8u32(a, b) : _P7 < 16");
-    return impl::perm2_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
+    return perm2_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
 }
 #endif
 
@@ -3230,7 +3226,7 @@ __m128i cftal::x86::perm_v2u64(__m128i a)
     const int p1 = _P0 < 0 ? -1 : _P0 * 2 +1;
     const int p2 = _P1 < 0 ? -1 : _P1 * 2;
     const int p3 = _P1 < 0 ? -1 : _P1 * 2 +1;
-    return impl::perm1_v4u32<p0, p1, p2, p3>::v(a);
+    return perm1_v4u32<p0, p1, p2, p3>::v(a);
 }
 
 template <int _P0, int _P1>
@@ -3247,10 +3243,10 @@ __m128i cftal::x86::perm_v2u64(__m128i a, __m128i b)
     const int p3 = _P1 < 0 ? -1 : _P1 * 2 +1;
 #if defined (__AVX2__)
     __m256i t=_mm256_inserti128_si256(_mm256_castsi128_si256(a), b, 1);
-    __m256i r=impl::perm1_v8u32<p0, p1, p2, p3, 4, 5, 6, 7>::v(t);
+    __m256i r=perm1_v8u32<p0, p1, p2, p3, 4, 5, 6, 7>::v(t);
     return _mm256_castsi256_si128(r);
 #else
-    return impl::perm2_v4u32<p0, p1, p2, p3>::v(a, b);
+    return perm2_v4u32<p0, p1, p2, p3>::v(a, b);
 #endif
 }
 
@@ -3267,7 +3263,7 @@ __m256i cftal::x86::perm_v4u64(__m256i a)
                   "cftal::x86::perm_v4u64(a) : _P2 < 4");
     static_assert(_P3 < 4,
                   "cftal::x86::perm_v4u64(a) : _P3 < 4");
-    return impl::perm1_v4u64<_P0, _P1, _P2, _P3>::v(a);
+    return perm1_v4u64<_P0, _P1, _P2, _P3>::v(a);
 }
 
 template <int _P0, int _P1, int _P2, int _P3>
@@ -3282,7 +3278,7 @@ __m256i cftal::x86::perm_v4u64(__m256i a, __m256i b)
                   "cftal::x86::perm_v4u64(a, b) : _P2 < 8");
     static_assert(_P3 < 8,
                   "cftal::x86::perm_v4u64(a, b) : _P3 < 8");
-    return impl::perm2_v4u64<_P0, _P1, _P2, _P3>::v(a, b);
+    return perm2_v4u64<_P0, _P1, _P2, _P3>::v(a, b);
 }
 #endif
 

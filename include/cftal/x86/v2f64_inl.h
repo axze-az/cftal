@@ -693,7 +693,7 @@ setup_msk(const vec<int32_t, 2>& idx)
     // the selector bit is bit 1 not bit 0
     vec<int32_t, 4> idx4(idx, idx);
     idx4 += idx4;
-    __m128i t=x86::impl::vpmovzxdq::v(idx4());
+    __m128i t=x86::vpmovzxdq::v(idx4());
     return t;
 #else
     vec<int32_t, 4> idx4(idx, idx);

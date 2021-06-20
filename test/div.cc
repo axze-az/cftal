@@ -77,7 +77,7 @@ bool cftal::test::check_div_16(const char* msg)
                     value_type(j + 5),
                     value_type(j + 6),
                     value_type(j + 7)};
-            __m128i __r_ref = x86::impl::make_zero_int::v();
+            __m128i __r_ref = x86::make_zero_int::v();
             _T q_ref, q_div, q_cdiv;
             _T r_ref, r_div, r_cdiv;
             tcur[div_type::REF] = cftal::rdtsc();
@@ -156,7 +156,7 @@ check_div_32_one_rnd(typename _T::value_type ii,
         typename _T::value_type j2= rnd.next();
         typename _T::value_type j3= rnd.next();
         _T u={j0, j1, j2, j3};
-        __m128i __r_ref = x86::impl::make_zero_int::v();
+        __m128i __r_ref = x86::make_zero_int::v();
         _T q_ref, q_div, q_cdiv;
         _T r_ref, r_div, r_cdiv;
         tcur[div_type::REF] = cftal::rdtsc();
@@ -283,7 +283,7 @@ check_div_64_one_rnd(typename _T::value_type ii,
         typename _T::value_type j0= rnd.next();
         typename _T::value_type j1= rnd.next();
         _T u={j0, j1};
-        __m128i __r_ref = x86::impl::make_zero_int::v();
+        __m128i __r_ref = x86::make_zero_int::v();
         _T q_ref, q_div, q_cdiv;
         _T r_ref, r_div, r_cdiv;
         tcur[div_type::REF] = cftal::rdtsc();

@@ -707,7 +707,7 @@ inline __m128i cftal::x86::popcnt_u8(__m128i a)
 inline __m128i cftal::x86::popcnt_u16(__m128i a)
 {
 #if defined (__SSSE3__)
-    const __m128i msk= x86::v_uint8_0x01::iv();
+    const __m128i msk= v_uint8_0x01::iv();
     return _mm_maddubs_epi16(popcnt_u8(a), msk);
 #else
     a = popcnt_u8(a);
@@ -720,20 +720,20 @@ inline __m128i cftal::x86::popcnt_u16(__m128i a)
 
 inline __m128i cftal::x86::popcnt_u32(__m128i a)
 {
-    const __m128i msk= x86::v_uint16_0x0001::iv();
+    const __m128i msk= v_uint16_0x0001::iv();
     return _mm_madd_epi16(popcnt_u16(a), msk);
 }
 
 inline __m128i cftal::x86::popcnt_u64(__m128i a)
 {
     a= popcnt_u8(a);
-    return _mm_sad_epu8(a, x86::impl::make_zero_int::v());
+    return _mm_sad_epu8(a, make_zero_int::v());
 }
 
 inline int cftal::x86::popcnt_u128(__m128i a)
 {
     a= popcnt_u64(a);
-    const int sm= x86::impl::shuffle4<2,3,1,0>::val;
+    const int sm= shuffle4<2,3,1,0>::val;
     __m128i t= _mm_shuffle_epi32(a, sm & 0xff);
     t = _mm_add_epi32(t, a);
     return _mm_cvtsi128_si32(t);
@@ -745,27 +745,27 @@ inline __m128i cftal::x86::bitrev_u8(__m128i a)
     // bitrev algorithm
     // swap odd and even bits
     // v = ((v >> 1) & 0x55555555) | ((v & 0x55555555) << 1);
-    const __m128i c55= x86::v_uint8_0x55::iv();
-    __m128i t= x86::impl::vpsrlw_const<1>::v(a);
+    const __m128i c55= v_uint8_0x55::iv();
+    __m128i t= vpsrlw_const<1>::v(a);
     a = _mm_and_si128(a, c55);
     t = _mm_and_si128(t, c55);
-    a = x86::impl::vpsllw_const<1>::v(a);
+    a = vpsllw_const<1>::v(a);
     a = _mm_or_si128(a, t);
     // swap consecutive pairs
     // v = ((v >> 2) & 0x33333333) | ((v & 0x33333333) << 2);
-    const __m128i c33= x86::v_uint8_0x33::iv();
-    t = x86::impl::vpsrlw_const<2>::v(a);
+    const __m128i c33= v_uint8_0x33::iv();
+    t = vpsrlw_const<2>::v(a);
     a = _mm_and_si128(a, c33);
     t = _mm_and_si128(t, c33);
-    a = x86::impl::vpsllw_const<2>::v(a);
+    a = vpsllw_const<2>::v(a);
     a = _mm_or_si128(a, t);
     // swap nibbles ...
     // v = ((v >> 4) & 0x0F0F0F0F) | ((v & 0x0F0F0F0F) << 4);
-    const __m128i c0f= x86::v_uint8_0x0f::iv();
-    t = x86::impl::vpsrlw_const<4>::v(a);
+    const __m128i c0f= v_uint8_0x0f::iv();
+    t = vpsrlw_const<4>::v(a);
     a = _mm_and_si128(a, c0f);
     t = _mm_and_si128(t, c0f);
-    a = x86::impl::vpsllw_const<4>::v(a);
+    a = vpsllw_const<4>::v(a);
     a = _mm_or_si128(a, t);
     return a;
     // swap bytes
@@ -778,16 +778,16 @@ inline __m128i cftal::x86::bitrev_u16(__m128i a)
 {
     // AMD XOP: use pperm
 #if defined (__SSSE3__)
-    const __m128i msk = x86::const_v16u8< 1, 0, 3, 2, 5, 4, 7, 6,
-                                          9, 8,11,10,13,12,15,14>::iv();
+    const __m128i msk = const_v16u8< 1, 0, 3, 2, 5, 4, 7, 6,
+                                     9, 8,11,10,13,12,15,14>::iv();
     a = bitrev_u8(a);
     return _mm_shuffle_epi8(a, msk);
 #else
     // swap bytes
     // v = ((v >> 8) & 0x00FF00FF) | ((v & 0x00FF00FF) << 8);
     a = bitrev_u8(a);
-    __m128i t= impl::vpsrlw_const<8>::v(a);
-    a = impl::vpsllw_const<8>::v(a);
+    __m128i t= vpsrlw_const<8>::v(a);
+    a = vpsllw_const<8>::v(a);
     return _mm_or_si128(a, t);
 #endif
 }
@@ -804,8 +804,8 @@ inline __m128i cftal::x86::bitrev_u32(__m128i a)
     a = bitrev_u16(a);
     // swap 2-byte long pairs
     // v = ( v >> 16             ) | ( v               << 16);
-    __m128i t= impl::vpsrld_const<16>::v(a);
-    a= impl::vpslld_const<16>::v(a);
+    __m128i t= vpsrld_const<16>::v(a);
+    a= vpslld_const<16>::v(a);
     return _mm_or_si128(a, t);
 #endif
 }
@@ -813,7 +813,7 @@ inline __m128i cftal::x86::bitrev_u32(__m128i a)
 inline __m128i cftal::x86::bitrev_u64(__m128i a)
 {
     // AMD XOP: use pperm
-#if defined (__SSS3__)
+#if defined (__SSSE3__)
     const __m128i msk = const_v16u8<7, 6, 5, 4, 3, 2, 1, 0,
                                     15,14,13,12,11,10,9, 8>::iv();
     a = bitrev_u8(a);
@@ -822,7 +822,7 @@ inline __m128i cftal::x86::bitrev_u64(__m128i a)
     // swap unsigned pairs
     // v = ( v >> 32             ) | ( v               << 32);
     a = bitrev_u32(a);
-    return x86::impl::vpshufd<1, 0, 3, 2>::v(a);
+    return vpshufd<1, 0, 3, 2>::v(a);
 #endif
 }
 

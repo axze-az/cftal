@@ -169,7 +169,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::impl::vpmullq::v(a(), b());
+                return x86::vpmullq::v(a(), b());
             }
         };
 
@@ -272,7 +272,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return x86::impl::vpsllq::v(a(), s);
+                return x86::vpsllq::v(a(), s);
             }
         };
 
@@ -282,7 +282,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, unsigned s) {
-                return x86::impl::vpsrlq::v(a(), s);
+                return x86::vpsrlq::v(a(), s);
             }
         };
 
@@ -293,7 +293,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& s) {
-                return x86::impl::vpsllvq::v(a(), s());
+                return x86::vpsllvq::v(a(), s());
             }
         };
 
@@ -303,7 +303,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& s) {
-                return x86::impl::vpsrlvq::v(a(), s());
+                return x86::vpsrlvq::v(a(), s());
             }
         };
 #endif

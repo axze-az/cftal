@@ -177,7 +177,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                return x86::impl::vpmulld::v(a(), b());
+                return x86::vpmulld::v(a(), b());
             }
         };
 
@@ -525,8 +525,8 @@ cftal::mul_lo_hi(const v8s32& x, const v8s32& y)
     v8s32 e= _mm256_mul_epi32(x(), y());
     // p1l p1h p3l p3h p5l p5h p7l p7h
     v8s32 o= _mm256_mul_epi32(
-        x86::impl::vpshufd<1, 0, 3, 2>::v(x()),
-        x86::impl::vpshufd<1, 0, 3, 2>::v(y()));
+        x86::vpshufd<1, 0, 3, 2>::v(x()),
+        x86::vpshufd<1, 0, 3, 2>::v(y()));
     // --------------------------------------
     v8s32 l= permute<0, 0+8,
                      2, 2+8,

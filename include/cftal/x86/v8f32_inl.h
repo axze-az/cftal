@@ -295,7 +295,7 @@ vec(init_list<float> l)
 inline
 cftal::vec<float, 8>::
 vec(const vec<float, 4>& lh, const vec<float, 4>& hh)
-    : base_type(x86::impl::vinsertf128<1>::v(as<__m256>(lh()),
+    : base_type(x86::vinsertf128<1>::v(as<__m256>(lh()),
                                              hh()))
 {
 }

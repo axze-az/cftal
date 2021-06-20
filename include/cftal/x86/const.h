@@ -111,67 +111,64 @@ namespace cftal {
 #endif
         };
 
-        namespace impl {
-
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct shuffle4 {
-                enum {
-                    val =
-                    (((_P3 & 3) << 6) |
-                     ((_P2 & 3) << 4) |
-                     ((_P1 & 3) << 2) |
-                     ((_P0 & 3) << 0))
-                };
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct shuffle4 {
+            enum {
+                val =
+                (((_P3 & 3) << 6) |
+                    ((_P2 & 3) << 4) |
+                    ((_P1 & 3) << 2) |
+                    ((_P0 & 3) << 0))
             };
+        };
 
-            template <int _P0, int _P1>
-            struct shuffle2 {
-                enum {
-                    val =
-                    (((_P0 & 1) << 0) |
-                     ((_P1 & 1) << 1))
-                };
+        template <int _P0, int _P1>
+        struct shuffle2 {
+            enum {
+                val =
+                (((_P0 & 1) << 0) |
+                    ((_P1 & 1) << 1))
             };
+        };
 
-            // template for constant selects/blends with 2 elements
-            template <int _P0, int _P1>
-            struct csel2 {
-                enum {
-                    val=
-                    (((_P1 & 1) << 1) |
-                     ( _P0 & 1))
-                };
+        // template for constant selects/blends with 2 elements
+        template <int _P0, int _P1>
+        struct csel2 {
+            enum {
+                val=
+                (((_P1 & 1) << 1) |
+                    ( _P0 & 1))
             };
+        };
 
-            // template for constant selects/blends with 4 elements
-            template <int _P0, int _P1, int _P2, int _P3>
-            struct csel4 {
-                enum {
-                    val =
-                    (((_P3 & 1) << 3) |
-                     ((_P2 & 1) << 2) |
-                     ((_P1 & 1) << 1) |
-                     ( _P0 & 1))
-                };
+        // template for constant selects/blends with 4 elements
+        template <int _P0, int _P1, int _P2, int _P3>
+        struct csel4 {
+            enum {
+                val =
+                (((_P3 & 1) << 3) |
+                    ((_P2 & 1) << 2) |
+                    ((_P1 & 1) << 1) |
+                    ( _P0 & 1))
             };
+        };
 
-            // template for constant selects/blends with 8 elements
-            template <int _P0, int _P1, int _P2, int _P3,
-                      int _P4, int _P5, int _P6, int _P7>
-            struct csel8 {
-                enum {
-                    val =
-                    (((_P7 & 1) << 7) |
-                     ((_P6 & 1) << 6) |
-                     ((_P5 & 1) << 5) |
-                     ((_P4 & 1) << 4) |
-                     ((_P3 & 1) << 3) |
-                     ((_P2 & 1) << 2) |
-                     ((_P1 & 1) << 1) |
-                     ((_P0 & 1) << 0))
-                };
+        // template for constant selects/blends with 8 elements
+        template <int _P0, int _P1, int _P2, int _P3,
+                    int _P4, int _P5, int _P6, int _P7>
+        struct csel8 {
+            enum {
+                val =
+                (((_P7 & 1) << 7) |
+                    ((_P6 & 1) << 6) |
+                    ((_P5 & 1) << 5) |
+                    ((_P4 & 1) << 4) |
+                    ((_P3 & 1) << 3) |
+                    ((_P2 & 1) << 2) |
+                    ((_P1 & 1) << 1) |
+                    ((_P0 & 1) << 0))
             };
-        }
+        };
 
         // (u)int16_t constants
         typedef const_v8u16<0x8080, 0x8080,
