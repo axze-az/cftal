@@ -122,12 +122,12 @@ namespace cftal {
         };
         // u8 specialisations
         template <>
-        struct select_v16u8<0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0> :
-            public select_arg_2<__m128i> {
+        struct select_v16u8<0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0> 
+            : public select_arg_2<__m128i> {
         };
         template <>
-        struct select_v16u8<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1> :
-            public select_arg_1<__m128i> {
+        struct select_v16u8<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1> 
+            : public select_arg_1<__m128i> {
         };
             
         // general case u16
