@@ -63,9 +63,11 @@ add_executable(gen-fixpoint-div gen-fixpoint-div.cc)
 
 add_executable(gen-lanczos-tbl gen-lanczos-tbl.cc)
 
-add_executable(check-div-x8-x16 check-div-x8-x16)
+add_executable(check-div-x8-x16 check-div-x8-x16.cc)
 
-add_executable(check-sat-add-sub check-sat-add-sub)
+add_executable(check-sat-add-sub check-sat-add-sub.cc)
+
+add_executable(check-average check-average.cc)
 
 #add_custom_target(sollya-scripts ALL)
 

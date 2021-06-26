@@ -116,6 +116,10 @@ namespace cftal {
     
     vec<int8_t, 16>
     sat_sub(const vec<int8_t, 16>& a, const vec<int8_t, 16>& b);
+
+    vec<int8_t, 16>
+    average(const vec<int8_t, 16>& a, const vec<int8_t, 16>& b);
+    
 }
 
 // Local variables:

@@ -176,6 +176,7 @@ namespace cftal {
         struct select_v4f64<1,1,1,1> :
             public select_arg_1<__m256d> {
         };
+        
         // select v8f32
         template <bool _P0, bool _P1, bool _P2, bool _P3,
                   bool _P4, bool _P5, bool _P6, bool _P7>

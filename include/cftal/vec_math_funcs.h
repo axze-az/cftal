@@ -20,34 +20,39 @@ namespace cftal {
     // returns linear interpolation between a and b
     template <typename _T, typename _T1, std::size_t _N>
     std::enable_if_t<cftal::is_floating_point_v<_T>, vec<_T, _N> >
-    lerp(_T1 a, _T1 b, const vec<_T, _N>& t);
+    lerp(const _T1& a, const _T1& b, const vec<_T, _N>& t);
 
     // signed saturated addition
     template <typename _I>
     std::enable_if_t<cftal::is_signed_v<_I> && cftal::is_integral_v<_I>, _I>
-    sat_add(_I a, _I b);
+    sat_add(const _I& a, const _I& b);
     
     // unsigned saturated addition
     template <typename _U>
     std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
-    sat_add(_U a, _U b);
+    sat_add(const _U& a, const _U& b);
  
     // signed saturated subtraction
     template <typename _I>
     std::enable_if_t<cftal::is_signed_v<_I> && cftal::is_integral_v<_I>, _I>
-    sat_sub(_I a, _I b);
+    sat_sub(const _I& a, const _I& b);
     
     // unsigned saturated subtraction
     template <typename _U>
     std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
-    sat_sub(_U a, _U b);
+    sat_sub(const _U& a, const _U& b);
+
+    // (unsigned) integer average: (a+b+1)/2
+    template <typename _T>
+    std::enable_if_t<cftal::is_integral_v<_T>, _T>
+    average(const _T& a, const _T& b);
     
 }
 
 template <typename _T, typename _T1, std::size_t _N>
 inline
 std::enable_if_t<cftal::is_floating_point_v<_T>, cftal::vec<_T, _N> >
-cftal::lerp(_T1 a, _T1 b, const vec<_T, _N>& t)
+cftal::lerp(const _T1& a, const _T1& b, const vec<_T, _N>& t)
 {
     vec<_T, _N> va=a;
     vec<_T, _N> vb=b;
@@ -78,7 +83,7 @@ cftal::lerp(_T1 a, _T1 b, const vec<_T, _N>& t)
 // signed saturated addition
 template <typename _I>
 std::enable_if_t<cftal::is_signed_v<_I> && cftal::is_integral_v<_I>, _I>
-cftal::sat_add(_I a, _I b) 
+cftal::sat_add(const _I& a, const _I& b) 
 {
     _I r= a +b;
     const _I v_max=std::numeric_limits<_I>::max();
@@ -99,7 +104,7 @@ cftal::sat_add(_I a, _I b)
 // unsigned saturated addition
 template <typename _U>
 std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
-cftal::sat_add(_U a, _U b) 
+cftal::sat_add(const _U& a, const _U& b) 
 {
     _U r= a +b;
     const _U v_max=std::numeric_limits<_U>::max();
@@ -114,7 +119,7 @@ cftal::sat_add(_U a, _U b)
 // signed saturated subtraction
 template <typename _I>
 std::enable_if_t<cftal::is_signed_v<_I> && cftal::is_integral_v<_I>, _I>
-cftal::sat_sub(_I a, _I b) 
+cftal::sat_sub(const _I& a, const _I& b) 
 {
     _I r= a - b;
     const _I v_max=std::numeric_limits<_I>::max();
@@ -135,7 +140,7 @@ cftal::sat_sub(_I a, _I b)
 // unsigned saturated subtraction
 template <typename _U>
 std::enable_if_t<cftal::is_unsigned_v<_U> && cftal::is_integral_v<_U>, _U>
-cftal::sat_sub(_U a, _U b) 
+cftal::sat_sub(const _U& a, const _U&  b) 
 {
     _U r= a - b;
     const _U v_min=std::numeric_limits<_U>::min();
@@ -145,6 +150,15 @@ cftal::sat_sub(_U a, _U b)
     _U v_min_plus_b=v_min + b;
     r = select(a < v_min_plus_b, v_min, r);
     return r;
+}
+
+// (unsigned) integer average
+template <typename _T>
+std::enable_if_t<cftal::is_integral_v<_T>, _T>
+cftal::average(const _T& a, const _T&  b) 
+{
+    // return (a >> 1) + (b >> 1) + (((a & 1) + (b & 1) + 1) >> 1);
+    return (a & b) + (((a^b)+1)>>1);    
 }
 
 

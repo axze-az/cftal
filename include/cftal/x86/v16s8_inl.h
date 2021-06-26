@@ -632,6 +632,12 @@ cftal::sat_sub(const vec<int8_t, 16>& a, const vec<int8_t, 16>& b)
     return _mm_subs_epi8(a(), b());
 }
 
+inline
+cftal::vec<cftal::int8_t, 16>
+cftal::average(const vec<int8_t, 16>& a, const vec<int8_t, 16>& b)
+{
+    return x86::pavgsb::v(a(), b());
+}
 
 // Local variables:
 // mode: c++
