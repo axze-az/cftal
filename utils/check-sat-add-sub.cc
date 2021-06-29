@@ -43,7 +43,7 @@ cftal::test::test_sat_add_sub_ui8()
             vec<int8_t, 16> vi8=i, vj8=j, va=_mm_adds_epi8(vi8(), vj8());
             // using v_t=vec<int8_t, 1>;
             // v_t vr=sat_add(v_t(i8), v_t(j8));
-            int8_t ra=_mm_extract_epi8(va(), 0);
+            int8_t ra=_mm_extract_epi16(va(), 0) & 0xFF;
             if (a != ra) {
                 std::cout << "i8 adds: " << i << " " << j << " " 
                           << int(ra) << " " << int(a) << std::endl;
@@ -51,7 +51,7 @@ cftal::test::test_sat_add_sub_ui8()
             }    
             int8_t s=sat_sub(i8, j8);
             vec<int8_t, 16> vs=_mm_subs_epi8(vi8(), vj8());
-            int8_t rs=_mm_extract_epi8(vs(), 0);
+            int8_t rs=_mm_extract_epi16(vs(), 0) & 0xFF;
             if (s != rs) {
                 std::cout << "i8 subs: " << i << " " << j << " " 
                           << int(rs) << " " << int(s) << std::endl;
@@ -67,7 +67,7 @@ cftal::test::test_sat_add_sub_ui8()
             uint8_t i8=i, j8=j;
             uint8_t a=sat_add(i8, j8);
             vec<uint8_t, 16> vi8=i, vj8=j, va=_mm_adds_epu8(vi8(), vj8());
-            uint8_t ra=_mm_extract_epi8(va(), 0);
+            uint8_t ra=_mm_extract_epi16(va(), 0) & 0xFF;
             if (a != ra) {
                 std::cout << "u8 adds: " << i << " " << j << " " 
                           << int(ra) << " " << int(a) << std::endl;
@@ -75,7 +75,7 @@ cftal::test::test_sat_add_sub_ui8()
             }    
             uint8_t s=sat_sub(i8, j8);
             vec<uint8_t, 16> vs=_mm_subs_epu8(vi8(), vj8());
-            uint8_t rs=_mm_extract_epi8(vs(), 0);
+            uint8_t rs=_mm_extract_epi16(vs(), 0) & 0xFF;
             if (s != rs) {
                 std::cout << "u8 subs: " << i << " " << j << " " 
                           << int(rs) << " " << int(s) << std::endl;

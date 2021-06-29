@@ -264,7 +264,6 @@ namespace cftal {
                   bool _P4, bool _P5, bool _P6, bool _P7>
         __m256i select_u32(__m256i a, __m256i b);
 #endif
-
     }
 }
 
