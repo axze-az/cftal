@@ -224,6 +224,48 @@ namespace cftal {
         struct select_v8u32<1,1,1,1,1,1,1,1> :
             public select_arg_1<__m256i> {
         };
+        
+        // generic case v16u16
+        template <bool _P00, bool _P01, bool _P02, bool _P03,
+                  bool _P04, bool _P05, bool _P06, bool _P07,
+                  bool _P08, bool _P09, bool _P10, bool _P11,
+                  bool _P12, bool _P13, bool _P14, bool _P15>
+        struct select_v16u16 {
+            static __m256i v(__m256i a, __m256i b);
+        };
+        // v8u32 specializations
+        template <>
+        struct select_v16u16<0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0> :
+            public select_arg_2<__m256i> {
+        };
+        template <>
+        struct select_v16u16<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1> :
+            public select_arg_1<__m256i> {
+        };
+        
+        // generic case v32u8
+        template <bool _P00, bool _P01, bool _P02, bool _P03,
+                  bool _P04, bool _P05, bool _P06, bool _P07,
+                  bool _P08, bool _P09, bool _P10, bool _P11,
+                  bool _P12, bool _P13, bool _P14, bool _P15,
+                  bool _P16, bool _P17, bool _P18, bool _P19,
+                  bool _P20, bool _P21, bool _P22, bool _P23,
+                  bool _P24, bool _P25, bool _P26, bool _P27,
+                  bool _P28, bool _P29, bool _P30, bool _P31>
+        struct select_v32u8 {
+            static __m256i v(__m256i a, __m256i b);
+        };
+        // v32u8s
+        template <>
+        struct select_v32u8<0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0> :
+            public select_arg_2<__m256i> {
+        };
+        template <>
+        struct select_v32u8<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                            1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1> :
+            public select_arg_1<__m256i> {
+        };        
 #endif
 
 
@@ -263,6 +305,20 @@ namespace cftal {
         template <bool _P0, bool _P1, bool _P2, bool _P3,
                   bool _P4, bool _P5, bool _P6, bool _P7>
         __m256i select_u32(__m256i a, __m256i b);
+        template <bool _P00, bool _P01, bool _P02, bool _P03,
+                  bool _P04, bool _P05, bool _P06, bool _P07,
+                  bool _P08, bool _P09, bool _P10, bool _P11,
+                  bool _P12, bool _P13, bool _P14, bool _P15>
+        __m256i select_u16(__m256i a, __m256i b);
+        template <bool _P00, bool _P01, bool _P02, bool _P03,
+                  bool _P04, bool _P05, bool _P06, bool _P07,
+                  bool _P08, bool _P09, bool _P10, bool _P11,
+                  bool _P12, bool _P13, bool _P14, bool _P15,
+                  bool _P16, bool _P17, bool _P18, bool _P19,
+                  bool _P20, bool _P21, bool _P22, bool _P23,
+                  bool _P24, bool _P25, bool _P26, bool _P27,
+                  bool _P28, bool _P29, bool _P30, bool _P31>
+        __m256i select_u8(__m256i a, __m256i b);        
 #endif
     }
 }
@@ -669,6 +725,93 @@ select_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256i a, __m256i b)
     return _mm256_blend_epi32(b, a, sm & 0xff);
 }
 
+template <bool _P00, bool _P01, bool _P02, bool _P03,
+          bool _P04, bool _P05, bool _P06, bool _P07,
+          bool _P08, bool _P09, bool _P10, bool _P11,
+          bool _P12, bool _P13, bool _P14, bool _P15>
+inline __m256i            
+cftal::x86::
+select_v16u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+              _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+v(__m256i a, __m256i b)
+{
+    constexpr const uint16_t p00 = _P00 ? -1 : 0;
+    constexpr const uint16_t p01 = _P01 ? -1 : 0;
+    constexpr const uint16_t p02 = _P02 ? -1 : 0;
+    constexpr const uint16_t p03 = _P03 ? -1 : 0;
+    constexpr const uint16_t p04 = _P04 ? -1 : 0;
+    constexpr const uint16_t p05 = _P05 ? -1 : 0;
+    constexpr const uint16_t p06 = _P06 ? -1 : 0;
+    constexpr const uint16_t p07 = _P07 ? -1 : 0;
+    constexpr const uint16_t p08 = _P08 ? -1 : 0;
+    constexpr const uint16_t p09 = _P09 ? -1 : 0;
+    constexpr const uint16_t p10 = _P10 ? -1 : 0;
+    constexpr const uint16_t p11 = _P11 ? -1 : 0;
+    constexpr const uint16_t p12 = _P12 ? -1 : 0;
+    constexpr const uint16_t p13 = _P13 ? -1 : 0;
+    constexpr const uint16_t p14 = _P14 ? -1 : 0;
+    constexpr const uint16_t p15 = _P15 ? -1 : 0;
+    const __m256i msk=_mm256_setr_epi16(p00, p01, p02, p03, p04, p05, p06, p07,
+                                        p08, p09, p10, p11, p12, p13, p14, p15);
+    return select_u16(msk, a, b);
+}
+
+template <bool _P00, bool _P01, bool _P02, bool _P03,
+          bool _P04, bool _P05, bool _P06, bool _P07,
+          bool _P08, bool _P09, bool _P10, bool _P11,
+          bool _P12, bool _P13, bool _P14, bool _P15,
+          bool _P16, bool _P17, bool _P18, bool _P19,
+          bool _P20, bool _P21, bool _P22, bool _P23,
+          bool _P24, bool _P25, bool _P26, bool _P27,
+          bool _P28, bool _P29, bool _P30, bool _P31>
+inline __m256i            
+cftal::x86::
+select_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+             _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+             _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::
+v(__m256i a, __m256i b)
+{
+    constexpr const uint8_t p00 = _P00 ? -1 : 0;
+    constexpr const uint8_t p01 = _P01 ? -1 : 0;
+    constexpr const uint8_t p02 = _P02 ? -1 : 0;
+    constexpr const uint8_t p03 = _P03 ? -1 : 0;
+    constexpr const uint8_t p04 = _P04 ? -1 : 0;
+    constexpr const uint8_t p05 = _P05 ? -1 : 0;
+    constexpr const uint8_t p06 = _P06 ? -1 : 0;
+    constexpr const uint8_t p07 = _P07 ? -1 : 0;
+    constexpr const uint8_t p08 = _P08 ? -1 : 0;
+    constexpr const uint8_t p09 = _P09 ? -1 : 0;
+    constexpr const uint8_t p10 = _P10 ? -1 : 0;
+    constexpr const uint8_t p11 = _P11 ? -1 : 0;
+    constexpr const uint8_t p12 = _P12 ? -1 : 0;
+    constexpr const uint8_t p13 = _P13 ? -1 : 0;
+    constexpr const uint8_t p14 = _P14 ? -1 : 0;
+    constexpr const uint8_t p15 = _P15 ? -1 : 0;
+    constexpr const uint8_t p16 = _P16 ? -1 : 0;
+    constexpr const uint8_t p17 = _P17 ? -1 : 0;
+    constexpr const uint8_t p18 = _P18 ? -1 : 0;
+    constexpr const uint8_t p19 = _P19 ? -1 : 0;
+    constexpr const uint8_t p20 = _P20 ? -1 : 0;
+    constexpr const uint8_t p21 = _P21 ? -1 : 0;
+    constexpr const uint8_t p22 = _P22 ? -1 : 0;
+    constexpr const uint8_t p23 = _P23 ? -1 : 0;
+    constexpr const uint8_t p24 = _P24 ? -1 : 0;
+    constexpr const uint8_t p25 = _P25 ? -1 : 0;
+    constexpr const uint8_t p26 = _P26 ? -1 : 0;
+    constexpr const uint8_t p27 = _P27 ? -1 : 0;
+    constexpr const uint8_t p28 = _P28 ? -1 : 0;
+    constexpr const uint8_t p29 = _P29 ? -1 : 0;
+    constexpr const uint8_t p30 = _P30 ? -1 : 0;
+    constexpr const uint8_t p31 = _P31 ? -1 : 0;
+    const __m256i msk=_mm256_setr_epi8(p00, p01, p02, p03, p04, p05, p06, p07,
+                                       p08, p09, p10, p11, p12, p13, p14, p15,
+                                       p16, p17, p18, p19, p20, p21, p22, p23,
+                                       p24, p25, p26, p27, p28, p29, p30, p31);
+    return select_u8(msk, a, b);
+}
+
+
 #endif
 
 
@@ -770,6 +913,40 @@ __m256i cftal::x86::select_u32(__m256i a, __m256i b)
 {
     return select_v8u32<_P0, _P1, _P2, _P3,
                         _P4, _P5, _P6, _P7>::v(a, b);
+}
+
+template<bool _P00, bool _P01, bool _P02, bool _P03,
+         bool _P04, bool _P05, bool _P06, bool _P07,
+         bool _P08, bool _P09, bool _P10, bool _P11,
+         bool _P12, bool _P13, bool _P14, bool _P15>
+inline
+__m256i cftal::x86::select_u16(__m256i a, __m256i b)
+{
+    return select_v16u16<_P00, _P01, _P02, _P03,
+                         _P04, _P05, _P06, _P07,
+                         _P08, _P09, _P10, _P11,
+                         _P12, _P13, _P14, _P15>::v(a, b);
+}
+
+template<bool _P00, bool _P01, bool _P02, bool _P03,
+         bool _P04, bool _P05, bool _P06, bool _P07,
+         bool _P08, bool _P09, bool _P10, bool _P11,
+         bool _P12, bool _P13, bool _P14, bool _P15,
+         bool _P16, bool _P17, bool _P18, bool _P19,
+         bool _P20, bool _P21, bool _P22, bool _P23,
+         bool _P24, bool _P25, bool _P26, bool _P27,
+         bool _P28, bool _P29, bool _P30, bool _P31>
+inline
+__m256i cftal::x86::select_u8(__m256i a, __m256i b)
+{
+    return select_v32u8<_P00, _P01, _P02, _P03, 
+                        _P04, _P05, _P06, _P07,
+                        _P08, _P09, _P10, _P11, 
+                        _P12, _P13, _P14, _P15,
+                        _P16, _P17, _P18, _P19, 
+                        _P20, _P21, _P22, _P23,
+                        _P24, _P25, _P26, _P27, 
+                        _P28, _P29, _P30, _P31>::v(a, b);
 }
 
 #endif
