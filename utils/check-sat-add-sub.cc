@@ -114,7 +114,7 @@ cftal::test::test_sat_add_sub_ui16()
             }
         }        
     }    
-    std::cout << "int16_t: checking saturated addition and subtraction" << std::endl;    
+    std::cout << "uint16_t: checking saturated addition and subtraction" << std::endl;    
     for (int i=std::numeric_limits<uint16_t>::min(); 
          i <= std::numeric_limits<uint16_t>::max(); ++i) {
         for (int j=std::numeric_limits<uint16_t>::min();
