@@ -302,14 +302,17 @@ namespace cftal {
 #if defined (__AVX2__)
         template <bool _P0, bool _P1, bool _P2, bool _P3>
         __m256i select_u64(__m256i a, __m256i b);
+        
         template <bool _P0, bool _P1, bool _P2, bool _P3,
                   bool _P4, bool _P5, bool _P6, bool _P7>
         __m256i select_u32(__m256i a, __m256i b);
+        
         template <bool _P00, bool _P01, bool _P02, bool _P03,
                   bool _P04, bool _P05, bool _P06, bool _P07,
                   bool _P08, bool _P09, bool _P10, bool _P11,
                   bool _P12, bool _P13, bool _P14, bool _P15>
         __m256i select_u16(__m256i a, __m256i b);
+        
         template <bool _P00, bool _P01, bool _P02, bool _P03,
                   bool _P04, bool _P05, bool _P06, bool _P07,
                   bool _P08, bool _P09, bool _P10, bool _P11,
@@ -735,6 +738,18 @@ select_v16u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
               _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m256i a, __m256i b)
 {
+    // low lane and high lane are equal ?
+    if (_P00 == _P08 && _P01 == _P09 && _P02 == _P10 && _P03 == _P11 &&
+        _P04 == _P12 && _P05 == _P13 && _P06 == _P14 && _P07 == _P15) {        
+        enum { sm=csel8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07>::val };
+        return _mm256_blend_epi16(b, a, sm);
+    } 
+    // consecutive pairs are equal ?
+    if (_P00 == _P01 && _P02 == _P03 && _P04 == _P05 && _P06 == _P07 &&
+        _P08 == _P09 && _P10 == _P11 && _P12 == _P13 && _P14 == _P15) {        
+        return select_v8u32<_P00, _P02, _P04, _P06, 
+                            _P08, _P10, _P12, _P14>::v(a, b);
+    }    
     constexpr const uint16_t p00 = _P00 ? -1 : 0;
     constexpr const uint16_t p01 = _P01 ? -1 : 0;
     constexpr const uint16_t p02 = _P02 ? -1 : 0;
@@ -772,6 +787,16 @@ select_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
              _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::
 v(__m256i a, __m256i b)
 {
+    // consecutive pairs are equal ?
+    if (_P00 == _P01 && _P02 == _P03 && _P04 == _P05 && _P06 == _P07 &&
+        _P08 == _P09 && _P10 == _P11 && _P12 == _P13 && _P14 == _P15 && 
+        _P16 == _P17 && _P18 == _P19 && _P20 == _P21 && _P22 == _P23 &&
+        _P24 == _P25 && _P26 == _P27 && _P28 == _P29 && _P30 == _P31) {        
+        return select_v16u16<_P00, _P02, _P04, _P06, 
+                             _P08, _P10, _P12, _P14,
+                             _P16, _P18, _P20, _P22,
+                             _P24, _P26, _P28, _P30>::v(a, b);
+    }    
     constexpr const uint8_t p00 = _P00 ? -1 : 0;
     constexpr const uint8_t p01 = _P01 ? -1 : 0;
     constexpr const uint8_t p02 = _P02 ? -1 : 0;
