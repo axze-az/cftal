@@ -112,6 +112,36 @@ namespace cftal {
         struct select_v4f32<1,1,1,1> : public select_arg_1<__m128> {
         };
 
+        // general case u64, implementation on top of u16
+        // therefore no additional specializations
+        template <bool _P0, bool _P1>
+        struct select_v2u64 {
+            static __m128i v(__m128i a, __m128i b);
+        };
+
+        // general case u32, implementation on top of u16
+        // therefore no additional specializations
+        template <bool _P0, bool _P1, bool _P2, bool _P3>
+        struct select_v4u32 {
+            static __m128i v(__m128i a, __m128i b);
+        };
+
+        // general case u16
+        template <bool _P0, bool _P1, bool _P2, bool _P3,
+                  bool _P4, bool _P5, bool _P6, bool _P7>
+        struct select_v8u16 {
+            static __m128i v(__m128i a, __m128i b);
+        };
+        // u16 specialisations
+        template <>
+        struct select_v8u16<0,0,0,0,0,0,0,0> :
+            public select_arg_2<__m128i> {
+        };
+        template <>
+        struct select_v8u16<1,1,1,1,1,1,1,1> :
+            public select_arg_1<__m128i> {
+        };
+        
         // general case u8
         template <bool _P00, bool _P01, bool _P02, bool _P03,
                   bool _P04, bool _P05, bool _P06, bool _P07,
@@ -129,37 +159,8 @@ namespace cftal {
         struct select_v16u8<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1> 
             : public select_arg_1<__m128i> {
         };
-            
-        // general case u16
-        template <bool _P0, bool _P1, bool _P2, bool _P3,
-                  bool _P4, bool _P5, bool _P6, bool _P7>
-        struct select_v8u16 {
-            static __m128i v(__m128i a, __m128i b);
-        };
-        // u16 specialisations
-        template <>
-        struct select_v8u16<0,0,0,0,0,0,0,0> :
-            public select_arg_2<__m128i> {
-        };
-        template <>
-        struct select_v8u16<1,1,1,1,1,1,1,1> :
-            public select_arg_1<__m128i> {
-        };
+
                        
-        // general case u32, implementation on top of u16
-        // therefore no additional specializations
-        template <bool _P0, bool _P1, bool _P2, bool _P3>
-        struct select_v4u32 {
-            static __m128i v(__m128i a, __m128i b);
-        };
-
-        // general case u64, implementation on top of u16
-        // therefore no additional specializations
-        template <bool _P0, bool _P1>
-        struct select_v2u64 {
-            static __m128i v(__m128i a, __m128i b);
-        };
-
 #if defined (__AVX__)
         // select v4f64
         template <bool _P0, bool _P1,
@@ -601,6 +602,48 @@ cftal::x86::select_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
 #endif
 }
 
+template<bool _P0, bool _P1>
+inline __m128i
+cftal::x86::
+select_v2u64<_P0, _P1>::v(__m128i a, __m128i b)
+{
+    return select_v8u16<_P0, _P0, _P0, _P0, _P1, _P1, _P1, _P1>::v(a, b);
+}
+
+template<bool _P0, bool _P1, bool _P2, bool _P3>
+inline __m128i
+cftal::x86::
+select_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
+{
+    return select_v8u16<_P0, _P0, _P1, _P1, _P2, _P2, _P3, _P3>::v(a, b);
+}
+
+template<bool _P0, bool _P1, bool _P2, bool _P3,
+         bool _P4, bool _P5, bool _P6, bool _P7>
+inline __m128i
+cftal::x86::
+select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
+{
+#if defined (__SSE4_1__)
+    enum { sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val };
+    return _mm_blend_epi16(b, a, sm);
+#else
+    typedef const_v8u16<
+        uint16_t(_P0 ? -1 : 0), uint16_t(_P1 ? -1 : 0),
+        uint16_t(_P2 ? -1 : 0), uint16_t(_P3 ? -1 : 0),
+        uint16_t(_P4 ? -1 : 0), uint16_t(_P5 ? -1 : 0),
+        uint16_t(_P6 ? -1 : 0), uint16_t(_P7 ? -1 : 0)> mask_type;
+    typedef const_v8u16<
+        uint16_t(_P0 ? 0 : -1), uint16_t(_P1 ? 0 : -1),
+        uint16_t(_P2 ? 0 : -1), uint16_t(_P3 ? 0 : -1),
+        uint16_t(_P4 ? 0 : -1), uint16_t(_P5 ? 0 : -1),
+        uint16_t(_P6 ? 0 : -1), uint16_t(_P7 ? 0 : -1)> compl_mask_type;
+    a = _mm_and_si128(a, mask_type::iv());
+    b = _mm_and_si128(b, compl_mask_type::iv());
+    return _mm_or_si128(a, b);
+#endif
+}
+
 template<bool _P00, bool _P01, bool _P02, bool _P03,
          bool _P04, bool _P05, bool _P06, bool _P07,
          bool _P08, bool _P09, bool _P10, bool _P11,
@@ -609,7 +652,13 @@ inline __m128i
 cftal::x86::
 select_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
              _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::v(__m128i a, __m128i b)
-{        
+{ 
+    // consecutive pairs are equal ?
+    if (_P00 == _P01 && _P02 == _P03 && _P04 == _P05 && _P06 == _P07 &&
+        _P08 == _P09 && _P10 == _P11 && _P12 == _P13 && _P14 == _P15) {        
+        return select_v8u16<_P00, _P02, _P04, _P06, 
+                            _P08, _P10, _P12, _P14>::v(a, b);
+    }        
     const uint8_t p00 = _P00 ? -1 : 0;
     const uint8_t p01 = _P01 ? -1 : 0;
     const uint8_t p02 = _P02 ? -1 : 0;
@@ -655,33 +704,6 @@ select_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                                         n12, n13, n14, n15>::iv();
     a = _mm_and_si128(a, msk);
     b = _mm_and_si128(b, compl_msk);
-    return _mm_or_si128(a, b);
-#endif
-}
-
-
-template<bool _P0, bool _P1, bool _P2, bool _P3,
-         bool _P4, bool _P5, bool _P6, bool _P7>
-inline __m128i
-cftal::x86::
-select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
-{
-#if defined (__SSE4_1__)
-    enum { sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val };
-    return _mm_blend_epi16(b, a, sm);
-#else
-    typedef const_v8u16<
-        uint16_t(_P0 ? -1 : 0), uint16_t(_P1 ? -1 : 0),
-        uint16_t(_P2 ? -1 : 0), uint16_t(_P3 ? -1 : 0),
-        uint16_t(_P4 ? -1 : 0), uint16_t(_P5 ? -1 : 0),
-        uint16_t(_P6 ? -1 : 0), uint16_t(_P7 ? -1 : 0)> mask_type;
-    typedef const_v8u16<
-        uint16_t(_P0 ? 0 : -1), uint16_t(_P1 ? 0 : -1),
-        uint16_t(_P2 ? 0 : -1), uint16_t(_P3 ? 0 : -1),
-        uint16_t(_P4 ? 0 : -1), uint16_t(_P5 ? 0 : -1),
-        uint16_t(_P6 ? 0 : -1), uint16_t(_P7 ? 0 : -1)> compl_mask_type;
-    a = _mm_and_si128(a, mask_type::iv());
-    b = _mm_and_si128(b, compl_mask_type::iv());
     return _mm_or_si128(a, b);
 #endif
 }
@@ -741,7 +763,9 @@ v(__m256i a, __m256i b)
     // low lane and high lane are equal ?
     if (_P00 == _P08 && _P01 == _P09 && _P02 == _P10 && _P03 == _P11 &&
         _P04 == _P12 && _P05 == _P13 && _P06 == _P14 && _P07 == _P15) {        
-        enum { sm=csel8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07>::val };
+        enum { 
+            sm=csel8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07>::val             
+        };
         return _mm256_blend_epi16(b, a, sm);
     } 
     // consecutive pairs are equal ?
@@ -839,23 +863,6 @@ v(__m256i a, __m256i b)
 
 #endif
 
-
-
-template<bool _P0, bool _P1, bool _P2, bool _P3>
-inline __m128i
-cftal::x86::
-select_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
-{
-    return select_v8u16<_P0, _P0, _P1, _P1, _P2, _P2, _P3, _P3>::v(a, b);
-}
-
-template<bool _P0, bool _P1>
-inline __m128i
-cftal::x86::
-select_v2u64<_P0, _P1>::v(__m128i a, __m128i b)
-{
-    return select_v8u16<_P0, _P0, _P0, _P0, _P1, _P1, _P1, _P1>::v(a, b);
-}
 
 template <bool _P0, bool _P1>
 inline
