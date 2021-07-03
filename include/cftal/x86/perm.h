@@ -281,7 +281,6 @@ namespace cftal {
         template <>
         struct perm1_v4u32< 1,-1, 3,-1> : public vpsrlq_const<32> {};
 
-
         // specializations for two uint32_t vectors.
         template <>
         struct perm2_v4u32<-1,-1,-1,-1> : public make_zero_int {};
@@ -901,6 +900,26 @@ namespace cftal {
         struct perm1_v8u32<0, 0, 0, 0, 0, 0, 0, 0>
             : public vbroadcastd<__m256i> {};
                 
+        template <>
+        struct perm1_v8u32<-1, 0, 1, 2,-1, 4, 5, 6> 
+        : public vpslldq<4> {};
+        template <>
+        struct perm1_v8u32<-1,-1, 0, 1,-1,-1, 4, 5> : 
+            public vpslldq<8> {};
+        template <>
+        struct perm1_v8u32<-1,-1,-1, 0,-1,-1,-1, 4> : 
+            public vpslldq<12> {};
+
+        template <>
+        struct perm1_v8u32< 1, 2, 3,-1, 5, 6, 7,-1> 
+            : public vpsrldq<4> {};
+        template <>
+        struct perm1_v8u32< 2, 3,-1,-1, 6, 7,-1,-1> 
+            : public vpsrldq<8> {};
+        template <>
+        struct perm1_v8u32< 3,-1,-1,-1, 7,-1,-1,-1> 
+            : public vpsrldq<12> {};           
+            
         template <>
         struct perm1_v8u32<0, 1, 0, 1, 4, 5, 4, 5>
             : public vpunpcklqdq {};

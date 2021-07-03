@@ -916,7 +916,14 @@ namespace cftal {
                 if (_P>15)
                     return make_zero_int::v();
                 return _mm_slli_si128(a, _P);
-            }
+            }            
+#if defined (__AVX2__)
+            static __m256i v(__m256i a) {
+                if (_P>15)
+                    return _mm256_set1_epi32(0);
+                return _mm256_slli_si256(a, _P);
+            }            
+#endif
         };
         template <>
         struct vpslldq<0> : public select_arg_1<__m128i> {};
@@ -928,6 +935,13 @@ namespace cftal {
                     return make_zero_int::v();
                 return _mm_srli_si128(a, _P);
             }
+#if defined (__AVX2__)
+            static __m256i v(__m256i a) {
+                if (_P>15)
+                    return _mm256_set1_epi32(0);
+                return _mm256_srli_si256(a, _P);
+            }            
+#endif
         };
         template <>
         struct vpsrldq<0> : public select_arg_1<__m128i> {};
