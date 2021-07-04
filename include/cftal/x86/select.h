@@ -81,6 +81,7 @@ namespace cftal {
             static _T v(_T a);
             static _T v(_T a, _T b);
         };
+        
         template <typename _T>
         struct select_arg_2 {
             static _T v(_T a, _T b);

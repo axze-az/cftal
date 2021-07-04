@@ -925,9 +925,16 @@ namespace cftal {
             }            
 #endif
         };
+
+#if defined (__AVX2__)
+        template <>
+        struct vpslldq<0> 
+            : public select_arg_1<__m256i>,
+              public select_arg_1<__m128i> {};
+#else        
         template <>
         struct vpslldq<0> : public select_arg_1<__m128i> {};
-
+#endif
         template <unsigned _P>
         struct vpsrldq {
             static __m128i v(__m128i a) {
@@ -943,8 +950,16 @@ namespace cftal {
             }            
 #endif
         };
+        
+#if defined (__AVX2__)
+        template <>
+        struct vpsrldq<0> 
+            : public select_arg_1<__m256i>,
+              public select_arg_1<__m128i> {};
+#else        
         template <>
         struct vpsrldq<0> : public select_arg_1<__m128i> {};
+#endif        
 
 #if defined (__AVX2__)
 
