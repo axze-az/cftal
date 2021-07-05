@@ -571,15 +571,13 @@ cftal::x86::select_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
     const int sm=csel2<_P0, _P1>::val;
     return _mm_blend_pd(b, a, sm & 3);
 #else
+    constexpr const uint32_t m1=-1;
     typedef const_v4u32<
-        (_P0 ? uint32_t(-1) : 0), (_P0 ? uint32_t(-1) : 0),
-        (_P1 ? uint32_t(-1) : 0), (_P1 ? uint32_t(-1) : 0)> mask_type;
-    typedef const_v4u32<
-        (_P0 ? 0 : uint32_t(-1)), (_P0 ? 0 : uint32_t(-1)),
-        (_P1 ? 0 : uint32_t(-1)), (_P1 ? 0 : uint32_t(-1))> compl_mask_type;
-    a = _mm_and_pd(a, mask_type::dv());
-    b = _mm_and_pd(b, compl_mask_type::dv());
-    return _mm_or_pd(a, b);
+        (_P0 ? m1 : 0), (_P0 ? m1 : 0),
+        (_P1 ? m1 : 0), (_P1 ? m1 : 0)> mask_type;
+    __m128d am = _mm_and_pd(mask_type::dv(), a);
+    __m128d bm = _mm_andnot_pd(mask_type::dv(), b);
+    return _mm_or_pd(am, bm);
 #endif
 }
 
@@ -591,15 +589,13 @@ cftal::x86::select_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
     const int sm=csel4<_P0, _P1, _P2, _P3>::val;
     return _mm_blend_ps(b, a, sm & 0xf);
 #else
+    constexpr const uint32_t m1=-1;
     typedef const_v4u32<
-        (_P0 ? uint32_t(-1) : 0), (_P1 ? uint32_t(-1) : 0),
-        (_P2 ? uint32_t(-1) : 0), (_P3 ? uint32_t(-1) : 0)> mask_type;
-    typedef const_v4u32<
-        (_P0 ? 0 : uint32_t(-1)), (_P1 ? 0 : uint32_t(-1)),
-        (_P2 ? 0 : uint32_t(-1)), (_P3 ? 0 : uint32_t(-1))> compl_mask_type;
-    a = _mm_and_ps(a, mask_type::fv());
-    b = _mm_and_ps(b, compl_mask_type::fv());
-    return _mm_or_ps(a, b);
+        (_P0 ? m1 : 0), (_P1 ? m1 : 0),
+        (_P2 ? m1 : 0), (_P3 ? m1 : 0)> mask_type;
+    __m128 am = _mm_and_ps(mask_type::fv(), a);
+    __m128 bm = _mm_andnot_ps(mask_type::fv(), b);
+    return _mm_or_ps(am, bm);
 #endif
 }
 
@@ -628,20 +624,15 @@ select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
 #if defined (__SSE4_1__)
     enum { sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val };
     return _mm_blend_epi16(b, a, sm);
-#else
+#else    
     typedef const_v8u16<
         uint16_t(_P0 ? -1 : 0), uint16_t(_P1 ? -1 : 0),
         uint16_t(_P2 ? -1 : 0), uint16_t(_P3 ? -1 : 0),
         uint16_t(_P4 ? -1 : 0), uint16_t(_P5 ? -1 : 0),
         uint16_t(_P6 ? -1 : 0), uint16_t(_P7 ? -1 : 0)> mask_type;
-    typedef const_v8u16<
-        uint16_t(_P0 ? 0 : -1), uint16_t(_P1 ? 0 : -1),
-        uint16_t(_P2 ? 0 : -1), uint16_t(_P3 ? 0 : -1),
-        uint16_t(_P4 ? 0 : -1), uint16_t(_P5 ? 0 : -1),
-        uint16_t(_P6 ? 0 : -1), uint16_t(_P7 ? 0 : -1)> compl_mask_type;
-    a = _mm_and_si128(a, mask_type::iv());
-    b = _mm_and_si128(b, compl_mask_type::iv());
-    return _mm_or_si128(a, b);
+    __m128i am = _mm_and_si128(mask_type::iv(), a);
+    __m128i bm = _mm_andnot_si128(mask_type::iv(), b);
+    return _mm_or_si128(am, bm);
 #endif
 }
 
@@ -683,29 +674,9 @@ select_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
 #if defined (__SSE4_1__)
     return _mm_blendv_epi8(b, a, msk);
 #else
-    const uint8_t n00 = _P00 ? 0 : -1;
-    const uint8_t n01 = _P01 ? 0 : -1;
-    const uint8_t n02 = _P02 ? 0 : -1;
-    const uint8_t n03 = _P03 ? 0 : -1;
-    const uint8_t n04 = _P04 ? 0 : -1;
-    const uint8_t n05 = _P05 ? 0 : -1;
-    const uint8_t n06 = _P06 ? 0 : -1;
-    const uint8_t n07 = _P07 ? 0 : -1;
-    const uint8_t n08 = _P08 ? 0 : -1;
-    const uint8_t n09 = _P09 ? 0 : -1;
-    const uint8_t n10 = _P10 ? 0 : -1;
-    const uint8_t n11 = _P11 ? 0 : -1;
-    const uint8_t n12 = _P12 ? 0 : -1;
-    const uint8_t n13 = _P13 ? 0 : -1;
-    const uint8_t n14 = _P14 ? 0 : -1;
-    const uint8_t n15 = _P15 ? 0 : -1;
-    const __m128i compl_msk=const_v16u8<n00, n01, n02, n03,
-                                        n04, n05, n06, n07,
-                                        n08, n09, n10, n11,
-                                        n12, n13, n14, n15>::iv();
-    a = _mm_and_si128(a, msk);
-    b = _mm_and_si128(b, compl_msk);
-    return _mm_or_si128(a, b);
+    __m128i am = _mm_and_si128(msk, a);
+    __m128i bm = _mm_andnot_si128(msk, b);
+    return _mm_or_si128(am, bm);
 #endif
 }
 
