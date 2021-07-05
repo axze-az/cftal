@@ -828,7 +828,6 @@ namespace cftal {
             static __m256i v(__m256i a, __m256i b);
         };
 
-
         template <>
         struct perm1_v4u64<-1,-1,-1,-1>
             : public make_zero_int256 {};
@@ -874,7 +873,6 @@ namespace cftal {
         struct perm2_v4u64<2, 3, 6, 7>
             : public vperm2f128<1, 3> {};
                              
-                                     
         // generic permutation of one u32 vector
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
