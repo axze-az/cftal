@@ -879,10 +879,10 @@ namespace cftal {
 
         template <>
         struct perm2_v4u64< 0, 4, 2, 6>
-            : public vpunpckhqdq {};
+            : public vpunpcklqdq {};
         template <>
         struct perm2_v4u64< 4, 0, 6, 2>
-            : public swap_ab<__m256i, vpunpckhqdq> {};
+            : public swap_ab<__m256i, vpunpcklqdq> {};
 
         template <>
         struct perm2_v4u64< 1, 5, 3, 7>
