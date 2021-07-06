@@ -849,6 +849,16 @@ namespace cftal {
             : public vpunpckhqdq {};
 
         template <>
+        struct perm1_v4u64<0, 1, 0, 1>
+            : public vinsertf128<1> {};
+        template <>
+        struct perm1_v4u64<2, 3, 0, 1>
+            : public vperm2f128<1, 0> {};
+        template <>
+        struct perm1_v4u64<2, 3, 2, 3>
+            : public vperm2f128<1, 1> {};            
+            
+        template <>
         struct perm1_v4u64<0, -1, 2, -1>
             : public fixed_arg_2<__m256i, make_zero_int256,
                                  vpunpcklqdq> {};
@@ -858,20 +868,53 @@ namespace cftal {
                                  vpunpcklqdq> {};
 
         template <>
-        struct perm2_v4u64<0, 1, 4, 5>
+        struct perm2_v4u64<-1,-1,-1,-1>
+            : public make_zero_int256 {};
+        template <>
+        struct perm2_v4u64< 0, 1, 2, 3>
+            : public select_arg_1<__m256i> {};
+        template <>
+        struct perm2_v4u64< 4, 5, 6, 7>
+            : public select_arg_2<__m256i> {};
+
+        template <>
+        struct perm2_v4u64< 0, 4, 2, 6>
+            : public vpunpckhqdq {};
+        template <>
+        struct perm2_v4u64< 4, 0, 6, 2>
+            : public swap_ab<__m256, vpunpckhqdq> {};
+
+        template <>
+        struct perm2_v4u64< 1, 5, 3, 7>
+            : public vpunpckhqdq {};
+        template <>
+        struct perm2_v4u64< 5, 1, 7, 3>
+            : public swap_ab<__m256, vpunpckhqdq> {};
+                                 
+        template <>
+        struct perm2_v4u64< 0, 1, 4, 5>
             : public vinsertf128<1> {};
-                
         template <>
-        struct perm2_v4u64<0, 1, 6, 7>
+        struct perm2_v4u64< 0, 1, 6, 7>
             : public vperm2f128<0, 3> {};
-                
         template <>
-        struct perm2_v4u64<2, 3, 4, 5>
+        struct perm2_v4u64< 2, 3, 4, 5>
             : public vperm2f128<1, 2> {};
-                
         template <>
-        struct perm2_v4u64<2, 3, 6, 7>
+        struct perm2_v4u64< 2, 3, 6, 7>
             : public vperm2f128<1, 3> {};
+        template <>
+        struct perm2_v4u64< 4, 5, 0, 1>
+            : public swap_ab<__m256i, vinsertf128<1> > {};
+        template <>
+        struct perm2_v4u64< 4, 5, 2, 3>
+            : public vperm2f128<2, 1> {};
+        template <>
+        struct perm2_v4u64< 6, 7, 0, 1>
+            : public vperm2f128<3, 0> {};
+        template <>
+        struct perm2_v4u64< 6, 7, 2, 3>
+            : public vperm2f128<3, 1> {};
                              
         // generic permutation of one u32 vector
         template <int _P0, int _P1, int _P2, int _P3,
@@ -929,6 +972,10 @@ namespace cftal {
         template <>
         struct perm1_v8u32<0, -1, 1, -1, 2, -1, 3, -1>
             : public vpmovzxdq {};                        
+            
+        template <>
+        struct perm1_v8u32<0, 1, 2, 3,  0, 1, 2, 3>
+            : public vinsertf128<1> {};            
 
         template <>
         struct perm2_v8u32<0, 1, 8, 9, 4, 5, 12, 13>
