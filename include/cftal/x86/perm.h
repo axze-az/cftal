@@ -882,14 +882,14 @@ namespace cftal {
             : public vpunpckhqdq {};
         template <>
         struct perm2_v4u64< 4, 0, 6, 2>
-            : public swap_ab<__m256, vpunpckhqdq> {};
+            : public swap_ab<__m256i, vpunpckhqdq> {};
 
         template <>
         struct perm2_v4u64< 1, 5, 3, 7>
             : public vpunpckhqdq {};
         template <>
         struct perm2_v4u64< 5, 1, 7, 3>
-            : public swap_ab<__m256, vpunpckhqdq> {};
+            : public swap_ab<__m256i, vpunpckhqdq> {};
                                  
         template <>
         struct perm2_v4u64< 0, 1, 4, 5>
