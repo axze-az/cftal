@@ -457,7 +457,7 @@ __m256i cftal::x86::div_s32::v(__m256i x, __m256i y, __m256i* rem)
     t = _mm256_div_pd(xf, yf);
     __m128i rh = _mm256_cvttpd_epi32(t);
 
-    __m256i q= _mm256_insertf128_si256(_mm256_castsi128_si256(rl), rh, 1);
+    __m256i q= _mm256_inserti128_si256(_mm256_castsi128_si256(rl), rh, 1);
     // set quotient to -1 where divisor is zero
     __m256i eqz = _mm256_cmpeq_epi32(y, _mm256_setzero_si256());
     q = _mm256_or_si256(q, eqz);

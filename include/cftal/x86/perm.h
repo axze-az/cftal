@@ -2527,11 +2527,11 @@ cftal::x86::perm1_v8u32<_P0, _P1, _P2, _P3,
     // in lane permutation
     __m256i res;
     if ( ((m1 & m2) == (0x32107654 & m2)) ) {
-        res= _mm256_permute2f128_si256(a, a, 0x01);
+        res= _mm256_permute2x128_si256(a, a, 0x01);
     } else if ( ((m1 & m2) == (0x76547654 & m2)) ) {
-        res= _mm256_permute2f128_si256(a, a, 0x11);
+        res= _mm256_permute2x128_si256(a, a, 0x11);
     } else if ( ((m1 & m2) == (0x32103210 & m2)) ) {
-        res= _mm256_insertf128_si256(a,
+        res= _mm256_inserti128_si256(a,
                                      _mm256_castsi256_si128(a),
                                      1);
     } else {

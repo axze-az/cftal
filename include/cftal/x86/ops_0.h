@@ -1337,7 +1337,11 @@ namespace cftal {
                 return v(a, a);
             }
             static __m256i v(__m256i a, __m128i b) {
+#if defined (__AVX2__)
+                return _mm256_inserti128_si256(a, b, _P);
+#else                
                 return _mm256_insertf128_si256(a, b, _P);
+#endif                
             }
             static __m256i v(__m256i a, __m256i b) {
                 return v(a, _mm256_castsi256_si128(b));
@@ -1364,7 +1368,11 @@ namespace cftal {
                 return v(a, a);
             }
             static __m256i v(__m256i a, __m256i b) {
+#if defined (__AVX2__)
+                return _mm256_permute2x128_si256(a, b, imm8);
+#else
                 return _mm256_permute2f128_si256(a, b, imm8);
+#endif                
             }
             static __m256i v(__m256i a) {
                 return v(a, a);
