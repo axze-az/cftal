@@ -1118,7 +1118,6 @@ sig(arg_t<vf_type> x)
     return r;
 }
 
-
 // Local Variables:
 // mode: c++
 // end:
