@@ -1071,7 +1071,6 @@ exp10_px2(arg_t<vf_type> x)
     return base_type::exp10_px2_k(x);
 }
 
-
 template <typename _FLOAT_T, typename _TRAITS_T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
@@ -1089,8 +1088,7 @@ sig(arg_t<vf_type> x)
     // log(0x1p23)
     // const float xh=15.9423847198486328125f;
     // const float xl=-xh;
-    constexpr
-    const _FLOAT_T lgf_lo_eq_exp= fc::sig_le_eq_exp();
+    constexpr const _FLOAT_T lgf_lo_eq_exp= fc::sig_le_eq_exp();
     vmf_type xm= x>lgf_lo_eq_exp;
     vf_type xe= _TRAITS_T::sel(xm, -x, x);
     vf_type xrh, xrl;
@@ -1114,8 +1112,7 @@ sig(arg_t<vf_type> x)
     d_ops::rcp21(rh, rh, rl);
     vf_type r = _TRAITS_T::sel(xm, rh, eh);
     r = _TRAITS_T::sel(x_not_hi, r, _FLOAT_T(1.0));
-    constexpr
-    const _FLOAT_T neg_exp_hi_inf= -fc::exp_hi_inf();
+    constexpr const _FLOAT_T neg_exp_hi_inf= -fc::exp_hi_inf();
     r = _TRAITS_T::sel(x<= neg_exp_hi_inf, _FLOAT_T(0.0), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     return r;
