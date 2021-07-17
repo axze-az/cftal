@@ -26,25 +26,29 @@ namespace cftal::test::call_mpfr {
     constexpr mpfr_exp_t float_emin=-126-(24-1)+1;
     constexpr mpfr_exp_t float_emax=127+1;
 
-    struct set_emin_emax {
+    class set_emin_emax {
         mpfr_exp_t _emin;
         mpfr_exp_t _emax;
+    protected:
         set_emin_emax(mpfr_exp_t emin, mpfr_exp_t emax)
             : _emin(mpfr_get_emin()), _emax(mpfr_get_emax()) {
             mpfr_set_emin(emin);
             mpfr_set_emax(emax);
         }
+    public:
         ~set_emin_emax() {
             mpfr_set_emin(_emin);
             mpfr_set_emax(_emax);
         }
     };
 
-    struct double_emin_emax : public set_emin_emax {
+    class double_emin_emax : public set_emin_emax {
+    public:
         double_emin_emax() : set_emin_emax(double_emin, double_emax) {}
     };
 
-    struct float_emin_emax : public set_emin_emax {
+    class float_emin_emax : public set_emin_emax {
+    public:
         float_emin_emax() : set_emin_emax(float_emin, float_emax) {}
     };
 
@@ -318,39 +322,35 @@ func(float a, int ib, f2fi_t f, std::pair<float, float>* ulp1i)
     return dr;
 }
 
-namespace cftal {
-    namespace test {
-        namespace mpfr_ext {
+namespace cftal::test::mpfr_ext {
 
-            template <typename _F>
-            class cbase {
-            private:
-                fpn_handle _v;
-                std::mutex _v_mtx;
-            public:
-                cbase();
-                int
-                load(mpfr_t y, mpfr_rnd_t rm);
-            };
+    template <typename _F>
+    class cbase {
+    private:
+        fpn_handle _v;
+        std::mutex _v_mtx;
+    public:
+        cbase();
+        int
+        load(mpfr_t y, mpfr_rnd_t rm);
+    };
 
 
-            struct calc_log10 {
-                int
-                operator()(mpfr_t y, mpfr_rnd_t rm)
-                    const;
-            };
+    struct calc_log10 {
+        int
+        operator()(mpfr_t y, mpfr_rnd_t rm)
+            const;
+    };
 
-            static cbase<calc_log10> const_log10;
+    static cbase<calc_log10> const_log10;
 
-            struct calc_log2 {
-                int
-                operator()(mpfr_t y, mpfr_rnd_t rm)
-                    const;
-            };
+    struct calc_log2 {
+        int
+        operator()(mpfr_t y, mpfr_rnd_t rm)
+            const;
+    };
 
-            static cbase<calc_log2> const_log2;
-        }
-    }
+    static cbase<calc_log2> const_log2;
 }
 
 template <typename _F>
