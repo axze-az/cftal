@@ -317,7 +317,7 @@ write_coeffs(p, "constexpr\n    const float cbrt_c", "cbrt", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cbrt-f32");
 
-/* cbrt(x) f32 
+/* cbrt(x) f32, original code
 i = [2^-3, 1];
 f = (x)^(1/3);
 b= [|0,...,1|];

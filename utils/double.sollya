@@ -389,6 +389,20 @@ plot((p(x)-f(x))/f(x), p(x)-f(x), i,
 /* cbrt(x) f64 */
 i = [2^-3, 1];
 f = (x)^(1/3);
+d = guessdegree(f, i, 0x1p-24);
+d;
+b= [|0,...,16|];
+c= [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double cbrt_c", "cbrt", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "cbrt-f64");
+                       
+/* cbrt(x) f64 old code
+i = [2^-3, 1];
+f = (x)^(1/3);
 d = guessdegree(f, i, 0x1p-7);
 d;
 b= [|0,...,3|];
@@ -399,6 +413,7 @@ write_approx_prec(p, f, i);
 write_coeffs(p, "const double cbrt_c", "cbrt", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cbrt-f64");
+*/
 
 /* sinh(x) f64 for calculation over sinh(x+y) = ...*/
 f = sinh(x);
