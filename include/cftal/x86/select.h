@@ -643,7 +643,8 @@ template<bool _P00, bool _P01, bool _P02, bool _P03,
 inline __m128i
 cftal::x86::
 select_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::v(__m128i a, __m128i b)
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+v(__m128i a, __m128i b)
 { 
     // consecutive pairs are equal ?
     if (_P00 == _P01 && _P02 == _P03 && _P04 == _P05 && _P06 == _P07 &&
