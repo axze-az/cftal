@@ -1109,7 +1109,7 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm= _T::sel(mm0 < 0x1p-6, mm_a, mm_b);
 #if 0
     mm = impl::root12::order3<double>(mm, mm0);
-    mm = impl::root12::order5<double>(mm, mm0);
+    mm = impl::root12::order4<double>(mm, mm0);
     // mm = round_nearest_to_even_last<53-5>::bits(mm);
     // mm = impl::root12::order3<double>(mm, mm0);
 #else
