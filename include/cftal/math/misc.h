@@ -66,6 +66,12 @@ namespace cftal {
                 static
                 _T
                 order5(_T y, _T x);
+
+                // x^3 = y
+                template <typename _C, typename _T>
+                static
+                _T
+                order6(_T y, _T x);
             };
 
             // helper functions for different root12 iteration steps
@@ -259,6 +265,22 @@ cftal::math::impl::root3::order5(_T x, _T y)
     _T x3= x*x*x;
     _T z= (y -x3)/x3;
     _T d= z*horner(z,
+                   _C(-10.0/243.0),
+                   _C(5.0/81.0),
+                   _C(-1.0/9.0),
+                   _C(1.0/3.0));
+    _T xn= x + x*d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root3::order6(_T x, _T y)
+{
+    _T x3= x*x*x;
+    _T z= (y -x3)/x3;
+    _T d= z*horner(z,
+                   _C(22.0/729.0),
                    _C(-10.0/243.0),
                    _C(5.0/81.0),
                    _C(-1.0/9.0),
