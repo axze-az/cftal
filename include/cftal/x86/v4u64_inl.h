@@ -24,7 +24,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                full_type all_set(0xffffffffffffffffULL);
+                const full_type all_set(0xffffffffffffffffULL);
                 return _mm256_xor_si256(a(), all_set());
             }
         };
