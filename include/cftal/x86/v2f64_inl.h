@@ -27,8 +27,8 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const bytes8 all_ones{-1, -1};
-                full_type all_set(all_ones.f64());
+                constexpr const bytes8 all_ones{-1, -1};
+                const full_type all_set(all_ones.f64());
                 return _mm_xor_pd(a(), all_set());
             }
         };
