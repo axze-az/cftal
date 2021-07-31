@@ -430,8 +430,12 @@ cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
         uint64_t ei=st._evals[i]._v;
         double tc=ei ? t/double(ei) : 0.0;
         double te=i ? tc/i : tc;
-        s << "vec-len: " << std::setw(2) << i << " calls: "
-          << std::setw(16) << ei << " tics/call: "
+        if (i==0) {
+            s << "reference:  calls: ";
+        } else {
+            s << "vec-len: " << std::setw(2) << i << " calls: ";
+        }
+        s << std::setw(16) << ei << " tics/call: "
           << std::setprecision(1)
           << std::fixed
           << std::setw(9)
@@ -441,7 +445,7 @@ cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
           << te
           << std::scientific
           << std::setprecision(22)
-          << "\n";
+          << '\n';
     }
     return s;
 }
