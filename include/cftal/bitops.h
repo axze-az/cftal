@@ -182,8 +182,15 @@ cftal::uint16_t cftal::bitrev(uint16_t x)
     x = ((x >> 2) & 0x33333333) | ((x & 0x33333333) << 2);
     // swap nibbles ...
     x = ((x >> 4) & 0x0F0F0F0F) | ((x & 0x0F0F0F0F) << 4);
+#if defined (__amd64) || defined (__i386__) 
+    uint32_t x32 = x;
+    x32 = _bswap(x32);
+    x32 >>= 16;
+    x = uint16_t(x32);
+#else
     // swap bytes
     x = ((x >> 8) & 0x00FF00FF) | ((x & 0x00FF00FF) << 8);
+#endif    
     return x;
 }
 
@@ -196,10 +203,14 @@ cftal::uint32_t cftal::bitrev(uint32_t x)
     x = ((x >> 2) & 0x33333333) | ((x & 0x33333333) << 2);
     // swap nibbles ...
     x = ((x >> 4) & 0x0F0F0F0F) | ((x & 0x0F0F0F0F) << 4);
+#if defined (__amd64) || defined (__i386__) 
+    x = _bswap(x);
+#else    
     // swap bytes
     x = ((x >> 8) & 0x00FF00FF) | ((x & 0x00FF00FF) << 8);
     // swap 2-byte elements
     x = ( x >> 16             ) | ( x               << 16);
+#endif    
     return x;
 }
 
@@ -209,20 +220,24 @@ cftal::uint64_t cftal::bitrev(uint64_t x)
     const uint64_t c5555 = 0x5555555555555555ULL;
     const uint64_t c3333 = 0x3333333333333333ULL;
     const uint64_t c0f0f = 0x0f0f0f0f0f0f0f0fULL;
-    const uint64_t c00ff = 0x00ff00ff00ff00ffULL;
-    const uint64_t cffff = 0x0000ffff0000ffffULL;
     // swap odd and even bits
     x = ((x >> 1) & c5555) | ((x & c5555) << 1);
     // swap consecutive pairs
     x = ((x >> 2) & c3333) | ((x & c3333) << 2);
     // swap nibbles ...
     x = ((x >> 4) & c0f0f) | ((x & c0f0f) << 4);
+#if defined (__amd64)
+    x = _bswap64(x);
+#else    
+    const uint64_t c00ff = 0x00ff00ff00ff00ffULL;
+    const uint64_t cffff = 0x0000ffff0000ffffULL;
     // swap bytes
     x = ((x >> 8) & c00ff) | ((x & c00ff) << 8);
     // swap 2-byte elements
     x = ((x >>16) & cffff) | ((x & cffff) <<16);
     // swap 4-byte elements
     x = ((x >>32)        ) | ( x          <<32);
+#endif    
     return x;
 }
 
