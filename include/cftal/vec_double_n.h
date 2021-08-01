@@ -33,28 +33,6 @@
 
 namespace cftal {
 
-    // round the last _BITS to nearest, ties to even
-    template <std::size_t _BITS>
-    struct round_nearest_to_even_last {
-
-        template <typename _T, std::size_t _N>
-        static
-        vec<_T, _N>
-        bits(const vec<_T, _N>& n);
-
-    };
-    
-    // round the last _BITS to zero
-    template <std::size_t _BITS>
-    struct round_to_zero_last {
-
-        template <typename _T, std::size_t _N>
-        static
-        vec<_T, _N>
-        bits(const vec<_T, _N>& n);
-
-    };
-    
 
     template <std::size_t _N>
     vec<double, _N>
@@ -1076,71 +1054,6 @@ namespace cftal {
 #endif
 }
 
-template <std::size_t _BITS>
-template <typename _T, std::size_t _N>
-cftal::vec<_T, _N>
-cftal::round_nearest_to_even_last<_BITS>::bits(const vec<_T, _N>& v)
-{
-    static_assert(_BITS>0 && _BITS < sizeof(_T)*8);
-
-    using int_type =
-        std::conditional_t<
-            std::is_same_v<_T, double>,
-                           int64_t,
-                           std::conditional_t<std::is_same_v<_T, float>,
-                                              int32_t,
-                                              _T> >;
-
-    using vi_t = vec<int_type, _N>;
-    using vmi_t = typename vec<int_type, _N>::mask_type;
-    // first bit to round away:
-    constexpr const int_type br= (1LL << (_BITS-1));
-    // last bit to keep
-    constexpr const int_type bk= (1LL << (_BITS));
-    // mask of the bits to round away:
-    constexpr const int_type trailing_mask= bk-1L;
-    // mask of the bits to keep
-    constexpr const int_type mask=~trailing_mask;
-    vi_t i=as<vi_t>(v);
-    vi_t rbits=i & trailing_mask;
-    vi_t lbit= i & bk;
-    const vi_t v_z=0LL;
-    const vi_t v_br=br;
-    vmi_t sel_zero_offs= (rbits == v_br) & (lbit==v_z);
-    vi_t offs=select_zero_or_val(sel_zero_offs, v_br);
-    i += offs;
-    i &= mask;
-    vec<_T, _N> r=as<vec<_T, _N> >(i);
-    return r;
-}
-
-template <std::size_t _BITS>
-template <typename _T, std::size_t _N>
-cftal::vec<_T, _N>
-cftal::round_to_zero_last<_BITS>::bits(const vec<_T, _N>& v)
-{
-    static_assert(_BITS>0 && _BITS < sizeof(_T)*8);
-
-    using int_type =
-        std::conditional_t<
-            std::is_same_v<_T, double>,
-                           int64_t,
-                           std::conditional_t<std::is_same_v<_T, float>,
-                                              int32_t,
-                                              _T> >;
-
-    using vi_t = vec<int_type, _N>;
-    // last bit to keep
-    constexpr const int_type bk= (1LL << (_BITS));
-    // mask of the bits to round away:
-    constexpr const int_type trailing_mask= bk-1L;
-    // mask of the bits to keep
-    constexpr const int_type mask=~trailing_mask;
-    vi_t i=as<vi_t>(v);
-    i &= mask;
-    vec<_T, _N> r=as<vec<_T, _N> >(i);
-    return r;
-}
 
 template <std::size_t _N>
 inline
