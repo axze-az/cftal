@@ -598,4 +598,3 @@ cftal::math::pow_log_data<double>::_tbl={
 };
 
 template struct cftal::math::pow_log_data<double>;
-

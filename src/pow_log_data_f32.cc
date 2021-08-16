@@ -597,5 +597,4 @@ cftal::math::pow_log_data<float>::_tbl={
 }
 };
 
-
 template struct cftal::math::pow_log_data<float>;
