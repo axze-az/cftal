@@ -19,24 +19,29 @@ namespace cftal {
 
     using std::fma;
 
+    // return a*b -c
     template <class _T>
     _T fms(const _T& a, const _T& b, const _T& c) {
         return fma(a, b, -c);
     }
 
+    // return -(a*b) + c = c - a*b;
     template <class _T>
     _T nfma(const _T& a, const _T& b, const _T& c) {
         return fma(-a, b, c);
     }
 
+    // return -(a*b) - c = -c - a*b
     template <class _T>
     _T nfms(const _T& a, const _T& b, const _T& c) {
         return fma(-a, b, -c);
     }
 
+    // traits structure for d_real class
     template <typename _T>
     struct d_real_traits {};
 
+    // helper call defining the existance of fused multiply and and
     template <typename _T>
     struct has_fma {};
 
@@ -60,6 +65,7 @@ namespace cftal {
 #endif
     };
 
+    // d_real_traits specialization for double
     template <>
     struct d_real_traits<double> : public has_fma<double> {
         constexpr d_real_traits<double>() = default;
@@ -84,6 +90,7 @@ namespace cftal {
             return s ? on_true : on_false;
         }
 
+        // veltkamp split of a double
         static
         void split(double a, double& hi, double& lo) {
             // 2^996 = 2^{1023-28+1}
@@ -123,6 +130,7 @@ namespace cftal {
 
     };
 
+    // d_real_traits specialization for float
     template <>
     struct d_real_traits<float> : public has_fma<float> {
         constexpr d_real_traits<float>() = default;
@@ -140,6 +148,7 @@ namespace cftal {
             return s ? on_true : on_false;
         }
 
+        // veltkamp split of a float
         static
         void split(float a, float& hi, float& lo) {
             // 2^13 + 1
@@ -652,7 +661,7 @@ namespace cftal {
     d_real<_T> sqrt(const d_real<_T>& a);
 
     template <typename _T>
-    std::enable_if_t<!std::is_same_v<typename d_real_traits<_T>::cmp_result_type, 
+    std::enable_if_t<!std::is_same_v<typename d_real_traits<_T>::cmp_result_type,
                                      bool>,
                      d_real<_T> >
     select(const typename d_real_traits<_T>::cmp_result_type& m,
