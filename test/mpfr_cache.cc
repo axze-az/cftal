@@ -17,6 +17,7 @@
 #include <iostream>
 #include <iomanip>
 #include <memory>
+#include <mutex>
 #include <shared_mutex>
 #include <lzma.h>
 
