@@ -2,9 +2,9 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
 
 [CMake]
-Build Directory Count=9
+Build Directory Count=4
 Current Build Directory Index=0
-Current Build Directory Index-Host System=7
+Current Build Directory Index-Host System=3
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -28,59 +28,17 @@ Install Directory=/usr/local
 Runtime=Host System
 
 [CMake][CMake Build Directory 2]
-Build Directory Path=file:///home/axel/projects/cpplib/cftal/profile
-Build Type=profile
-CMake Binary=file:///usr/bin/cmake
+Build Directory Path=/home/axel/projects/cpplib/cftal/clang
+Build Type=release
+CMake Binary=/usr/bin/cmake
+CMake Executable=/usr/bin/cmake
 Environment Profile=
 Extra Arguments=
-Install Directory=file:///usr/local
+Install Directory=/usr/local
+Runtime=Host System
 
 [CMake][CMake Build Directory 3]
-Build Directory Path=file:///home/axel/projects/cpplib/cftal/arm-build
-Build Type=release
-CMake Binary=file:///usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=file:///usr/local
-
-[CMake][CMake Build Directory 4]
-Build Directory Path=file:///home/axel/projects/cpplib/cftal/build-clang
-Build Type=release
-CMake Binary=/usr/bin/cmake
-CMake Executable=/usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=/usr/local
-Runtime=Host System
-
-[CMake][CMake Build Directory 5]
-Build Directory Path=file:///home/axel/projects/cpplib/cftal/aarch64-build
-Build Type=release
-CMake Binary=file:///usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=file:///usr/local
-
-[CMake][CMake Build Directory 6]
-Build Directory Path=file:///home/axel/projects/cpplib/cftal/aarch64-debug
-Build Type=debug
-CMake Binary=file:///usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=file:///usr/local
-
-[CMake][CMake Build Directory 7]
-Build Directory Path=/home/axel/projects/cpplib/cftal/gcc10
-Build Type=release
-CMake Binary=/usr/bin/cmake
-CMake Executable=/usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=/usr/local
-Runtime=Host System
-
-[CMake][CMake Build Directory 8]
-Build Directory Path=/home/axel/projects/cpplib/cftal/clang
+Build Directory Path=/home/axel/projects/cpplib/cftal/gcc11
 Build Type=release
 CMake Binary=/usr/bin/cmake
 CMake Executable=/usr/bin/cmake
