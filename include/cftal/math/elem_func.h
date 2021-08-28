@@ -11,6 +11,7 @@
 #include <cftal/arg.h>
 #include <cftal/mem.h>
 #include <cftal/math/func_constants.h>
+#include <cftal/math/horner.h>
 #include <cftal/type_traits.h>
 
 namespace cftal {

@@ -509,13 +509,22 @@ namespace cftal {
         div22(_T& rh, _T& rl,
               const _T& ah, const _T& al,
               const _T& bh, const _T& bl);
-
+        
+        // a/b
+        static
+        void
+        div21(_T& r, 
+              const _T& ah, const _T& al,
+              const _T& bh, const _T& bl);        
+        
+        // function for a/b with scaling
         static
         void
         __scaled_div22(_T& rh, _T& rl,
                        const _T& ah, const _T& al,
                        const _T& bh, const _T& bl);
 
+        // a/b with scaling 
         static
         void
         scaled_div22(_T& rh, _T& rl,
@@ -1397,6 +1406,26 @@ div22(_T& rh, _T& rl,
     _rh = _rh + _rl;
     _rh = _rh /yh;
     add12(rh, rl, _t, _rh);
+}
+
+template <typename _T, bool _FMA>
+inline
+__attribute__((__always_inline__))
+void
+cftal::d_real_ops<_T, _FMA>::
+div21(_T& r, 
+      const _T& xh, const _T& xl,
+      const _T& yh, const _T& yl)
+{
+    // DWDivDW2
+    _T _t= xh / yh;
+    _T _rh, _rl;
+    mul122(_rh, _rl, _t, yh, yl);
+    _rh = xh - _rh;
+    _rl = xl - _rl;
+    _rh = _rh + _rl;
+    _rh = _rh /yh;
+    r = _t + _rh;
 }
 
 template <typename _T, bool _FMA>
