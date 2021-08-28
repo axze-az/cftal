@@ -941,10 +941,11 @@ eval_rational(_X xc,
     _X qq;
     using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
     if (_N1HP|_N2HP) {
-        if (pql != nullptr)
+        if (pql != nullptr) {
             d_ops::div22(qq, *pql, n, n_l, d, d_l);
-        else
+        } else {
             d_ops::div21(qq, n, n_l, d, d_l);
+        }
     } else {
         if (pql != nullptr) {
             d_ops::div12(qq, *pql, n, d);
