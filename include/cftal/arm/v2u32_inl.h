@@ -222,7 +222,6 @@ namespace cftal {
         template <>
         struct bit_and<uint32_t, 2> {
             using full_type = vec<uint32_t, 2>;
-
             static
             full_type
             v(const full_type& a, const full_type& b) {
@@ -233,7 +232,6 @@ namespace cftal {
         template <>
         struct bit_xor<uint32_t, 2> {
             using full_type = vec<uint32_t, 2>;
-
             static
             full_type
             v(const full_type& a, const full_type& b) {
