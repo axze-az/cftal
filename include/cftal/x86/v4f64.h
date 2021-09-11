@@ -167,7 +167,7 @@ namespace cftal {
 #endif
 
     namespace impl {
-#if defined (__AVX2__)
+#if defined (__AVX2__)       
         template <>
         class fixed_lookup_table<4, double, int32_t, 4> {
         private:

@@ -163,8 +163,8 @@ namespace cftal {
     };
 #endif
     
-#if defined (__SSSE3__)
     namespace impl {
+#if defined (__SSSE3__)
         template <>
         class fixed_lookup_table<2, double, int32_t, 2> {
         private:
@@ -177,8 +177,22 @@ namespace cftal {
             vec<double, 2>
             fromp(const double* tbl) const;
         };
-    }
+#endif     
+#if defined (__AVX2__)
+        template <>
+        class fixed_lookup_table<4, double, int32_t, 2> {
+        private:
+            __m128i _msk;
+            static
+            __m128i
+            setup_msk(const vec<int32_t, 2>& idx);
+        public:
+            fixed_lookup_table(const vec<int32_t, 2>& idx);
+            vec<double, 2>
+            fromp(const double* tbl) const;
+        };        
 #endif
+    }
 }
 
 

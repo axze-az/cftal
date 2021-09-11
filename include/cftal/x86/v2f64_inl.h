@@ -733,6 +733,42 @@ fromp(const double* tbl) const
 
 #endif
 
+#if defined (__AVX2__)
+inline
+__m128i
+cftal::impl::fixed_lookup_table<4, double, int32_t, 2>::
+setup_msk(const vec<int32_t, 2>& idx)
+{
+    vec<int32_t, 4> t(idx, idx);
+    t += t;
+    t=permute<0, 0, 1, 1>(t);
+    const __m128i offs=_mm_setr_epi32(0, 1, 0, 1);
+    __m128i r=_mm_add_epi32(t(), offs);
+    return r;
+}
+
+inline
+cftal::impl::fixed_lookup_table<4, double, int32_t, 2>::
+fixed_lookup_table(const vec<int32_t, 2>& idx)
+    : _msk(setup_msk(idx))
+{
+}
+
+inline
+cftal::vec<double, 2>
+cftal::impl::fixed_lookup_table<4, double, int32_t, 2>::
+fromp(const double* tbl) const
+{
+    vec<double, 2> r=mem<vec<double, 2> >::load(tbl, 2);
+    __m256i ir=_mm256_permutevar8x32_epi32(
+        _mm256_castsi128_si256(_mm_castpd_si128(r())), 
+        _mm256_castsi128_si256(_msk));
+    r=_mm256_castpd256_pd128(_mm256_castsi256_pd(ir));
+    return r;
+}
+
+#endif
+
 
 // Local variables:
 // mode: c++
