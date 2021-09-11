@@ -649,6 +649,45 @@ from(const double* tbl) const
 }
 #endif
 
+inline
+__m256i
+cftal::impl::fixed_lookup_table<2, double, int32_t, 4>::
+setup_msk(const vec<int32_t, 4>& idx)
+{
+    // the selector bit is bit 1 not bit 0
+    vec<int32_t, 4> idx2=idx+idx;
+#if defined (__AVX2__)
+    __m256i t=x86::vpmovzxdq::v(
+        _mm256_castsi128_si256(idx2()));
+    return t;
+#else
+    __m128i l=x86::vpmovzxdq::v(idx2);
+    __m128i h=x86::vpmovzxdq::v(permute<2, 3, 0, 1>(idx2));
+    __m256 t=x86::vinsertf128<1>::v(
+        _mm256_castsi128_si256(l), h);
+    return t;
+#endif
+}
+
+inline
+cftal::impl::fixed_lookup_table<2, double, int32_t, 4>::
+fixed_lookup_table(const vec<int32_t, 4>& idx)
+    : _msk(setup_msk(idx))
+{
+}
+
+inline
+cftal::v4f64
+cftal::impl::fixed_lookup_table<2, double, int32_t, 4>::
+fromp(const double* tbl) const
+{
+    vec<double, 2> r=mem<vec<double, 2> >::load(tbl, 2);
+    __m128d rn=r();
+    __m256d r2=x86::vinsertf128<1>::v(
+        _mm256_castpd128_pd256(rn), rn);
+    return _mm256_permutevar_pd(r2, _msk);
+}
+
 #if defined (__AVX2__)
 inline
 __m256i
