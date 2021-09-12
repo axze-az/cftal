@@ -759,11 +759,11 @@ cftal::vec<double, 2>
 cftal::impl::fixed_lookup_table<4, double, int32_t, 2>::
 fromp(const double* tbl) const
 {
-    vec<double, 2> r=mem<vec<double, 2> >::load(tbl, 2);
+    vec<double, 4> m=mem<vec<double, 4> >::load(tbl, 4);
     __m256i ir=_mm256_permutevar8x32_epi32(
-        _mm256_castsi128_si256(_mm_castpd_si128(r())), 
+        _mm256_castpd_si256(m()), 
         _mm256_castsi128_si256(_msk));
-    r=_mm256_castpd256_pd128(_mm256_castsi256_pd(ir));
+    vec<double, 2> r=_mm256_castpd256_pd128(_mm256_castsi256_pd(ir));
     return r;
 }
 
