@@ -661,9 +661,10 @@ setup_msk(const vec<int32_t, 4>& idx)
         _mm256_castsi128_si256(idx2()));
     return t;
 #else
-    __m128i l=x86::vpmovzxdq::v(idx2);
-    __m128i h=x86::vpmovzxdq::v(permute<2, 3, 0, 1>(idx2));
-    __m256 t=x86::vinsertf128<1>::v(
+    __m128i l=x86::vpmovzxdq::v(idx2());
+    vec<int32_t, 4> idx2perm=permute<2, 3, 0, 1>(idx2);
+    __m128i h=x86::vpmovzxdq::v(idx2perm());
+    __m256i t=x86::vinsertf128<1>::v(
         _mm256_castsi128_si256(l), h);
     return t;
 #endif
