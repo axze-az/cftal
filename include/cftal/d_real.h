@@ -19,19 +19,19 @@ namespace cftal {
 
     using std::fma;
 
-    // return a*b -c
+    // fused multiply and subtract. return a*b -c
     template <class _T>
     _T fms(const _T& a, const _T& b, const _T& c) {
         return fma(a, b, -c);
     }
 
-    // return -(a*b) + c = c - a*b;
+    // negated fused multipy and add. return -(a*b) + c = c - a*b;
     template <class _T>
     _T nfma(const _T& a, const _T& b, const _T& c) {
         return fma(-a, b, c);
     }
 
-    // return -(a*b) - c = -c - a*b
+    // negated fused multipy and add. return -(a*b) - c = -c - a*b
     template <class _T>
     _T nfms(const _T& a, const _T& b, const _T& c) {
         return fma(-a, b, -c);
@@ -45,7 +45,7 @@ namespace cftal {
     template <typename _T>
     struct has_fma {};
 
-    // fma ?
+    // fma available specialized for double
     template <>
     struct has_fma<double> {
 #if defined (FP_FAST_FMA) && (FP_FAST_FMA > 0)
@@ -55,7 +55,7 @@ namespace cftal {
 #endif
     };
 
-    // fma ?
+    // fma available specialized for float 
     template <>
     struct has_fma<float> {
 #if defined (FP_FAST_FMAF) && (FP_FAST_FMAF > 0)
@@ -185,6 +185,7 @@ namespace cftal {
 
     };
 
+    // specialization of a fp_expansion with 2 elements
     template <typename _T>
     class fp_expansion<_T, 2> {
         _T _e[2];
@@ -217,9 +218,12 @@ namespace cftal {
         }
     };
 
+    // the double real class template
     template <typename _T>
     using d_real = fp_expansion<_T, 2>;
 
+    // basic operations for double real class independent 
+    // of fused multiply and add
     template <class _T>
     struct d_real_ops_common {
 
@@ -292,11 +296,14 @@ namespace cftal {
 
     };
 
+    // fused muliply and add dependent operations for double
+    // real arithmetic
     template <class _T, bool _FMA>
     struct d_real_ops_fma : public d_real_ops_common<_T> {
     };
 
-    // specialization using no fma
+    // fused muliply and add dependent operations for double
+    // real arithmetic, specialization using no fma
     template <class _T>
     struct d_real_ops_fma<_T, false> : public d_real_ops_common<_T> {
         using base_type=d_real_ops_common<_T>;
@@ -373,7 +380,8 @@ namespace cftal {
               const _T& xh, const _T& xl);
     };
 
-    // specialization using fma
+    // fused muliply and add dependent operations for double
+    // real arithmetic, specialization using fma
     template <class _T>
     struct d_real_ops_fma<_T, true> : public d_real_ops_common<_T> {
         using base_type=d_real_ops_common<_T>;
@@ -450,7 +458,7 @@ namespace cftal {
               const _T& ah, const _T& al);
     };
 
-
+    // operation class for double real operations
     template <class _T, bool _FMA>
     struct d_real_ops : public d_real_ops_fma<_T, _FMA> {
         using base_type=d_real_ops_fma<_T, _FMA>;
