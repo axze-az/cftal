@@ -365,7 +365,6 @@ cftal::math::horner2(_X x, _X x2, const _C (&a)[_N])
 
 
 template <std::size_t _N, typename _X, typename _C>
-__attribute__((optimize("unroll-loops")))
 _X
 cftal::math::horner3(_X x, _X x3, const _C* pa)
 {
@@ -395,9 +394,8 @@ cftal::math::horner3(_X x, _X x3, const _C* pa)
     }
     return r;
 }
-    
+
 template <typename _X, typename _C, std::size_t _N>
-__attribute__((optimize("unroll-loops")))
 _X
 cftal::math::horner3(_X x, _X x3, const _C (&a)[_N])
 {
@@ -451,7 +449,7 @@ cftal::math::horner4(_X x, _X x2, _X x4, const _C (&a)[_N])
     const _C* pa=a;
     return horner4<_N>(x, x2, x4, pa);
 }
- 
+
 template <typename _F, typename _C, std::size_t _N>
 __attribute__((optimize("no-unroll-loops")))
 cftal::d_real<_F>
