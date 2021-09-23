@@ -13,6 +13,9 @@
 
 namespace cftal {
 
+    // description of an argument - all things greater than
+    // a double are transferred by constant reference and by
+    // value otherwise.
     template <typename _T>
     struct arg {
         // using type = const _T&;
@@ -22,42 +25,55 @@ namespace cftal {
                             _T>::type;
     };
 
+    // abbreviation for typename arg::type
     template <typename _T>
     using arg_t = typename arg<_T>::type;
 
+    // specialization of arg<> for char
     template <>
     struct arg<char> { using type= char; };
-
+    
+    // specialization of arg<> for wchar_t
     template <>
     struct arg<wchar_t> { using type= wchar_t; };
 
+    // specialization of arg<> for uint8_t/unsigned char
     template <>
     struct arg<uint8_t> { using type= uint8_t; };
 
+    // specialization of arg<> for int8_t/signed char
     template <>
     struct arg<int8_t> { using type= int8_t; };
 
+    // specialization of arg<> for uint16_t
     template <>
     struct arg<uint16_t> { using type= uint16_t; };
 
+    // specialization of arg<> for int16_t
     template <>
     struct arg<int16_t> { using type= int16_t; };
 
+    // specialization of arg<> for uint32_t
     template <>
     struct arg<uint32_t> { using type= uint32_t; };
 
+    // specialization of arg<> for int32_t
     template <>
-    struct arg<int32_t> { using type= uint32_t; };
+    struct arg<int32_t> { using type= int32_t; };
 
+    // specialization of arg<> for uint64_t
     template <>
     struct arg<uint64_t> { using type= uint64_t; };
 
+    // specialization of arg<> for int64_t
     template <>
-    struct arg<int64_t> { using type= uint64_t; };
+    struct arg<int64_t> { using type= int64_t; };
 
+    // specialization of arg<> for float
     template <>
     struct arg<float> { using type= float; };
 
+    // specialization of arg<> for double
     template <>
     struct arg<double> { using type= double; };
 
