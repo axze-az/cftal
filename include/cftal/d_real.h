@@ -315,14 +315,18 @@ namespace cftal {
         using base_type::add22cond;
         using base_type::add122;
 
+        // fused multiply and add emulation without error, 
+        // underflow and overflow handling
         static
         _T
         xfma(const _T& a, const _T& b, const _T& c);
 
+        // error compensated square: u^2 = rh + rl
         static
         void
         sqr12(_T& rh, _T& rl, const _T& u);
 
+        // error compensated mulitpliction u*v = rh + rl
         static
         void
         mul12(_T& rh, _T& rl, const _T& u, const _T& v);
@@ -333,47 +337,56 @@ namespace cftal {
         void
         muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
 
-        // mul122 without normalization
+        // multiplication (rh, rl) = xh * (yh, yl)
+        // without final normalization
         static
         void
         unorm_mul122(_T& rh, _T& rl,
                      const _T& xh,
                      const _T& yh, const _T& yl);
 
+        // multiplication (rh, rl) = xh * (yh, yl)
         static
         void
         mul122(_T& rh, _T& rl,
                const _T& xh,
                const _T& yh, const _T& yl);
 
-
+        // square (rh, rl) = (xh, xl)^2
+        // without final normalization
         static
         void
         unorm_sqr22(_T& rh, _T& rl,
                     const _T& xh, const _T& xl);
 
+        // square (rh, rl) = (xh, xl)^2
         static
         void
         sqr22(_T& rh, _T& rl,
               const _T& xh, const _T& xl);
 
+        // multiplication (rh, rl) = (xh, xl) * (yh, yl)
+        // without final normalization
         static
         void
         unorm_mul22(_T& rh, _T& rl,
                     const _T& xh, const _T& xl,
                     const _T& yh, const _T& yl);
 
+        // multiplication (rh, rl) = (xh, xl) * (yh, yl)
         static
         void
         mul22(_T& rh, _T& rl,
               const _T& xh, const _T& xl,
               const _T& yh, const _T& yl);
 
+        // reciprocal r = 1/(ah, al)
         static
         void
         rcp21(_T& r,
               const _T& ah, const _T& al);
 
+        // square r = (ah, al)^2
         static
         void
         sqr21(_T& rh,
@@ -393,14 +406,17 @@ namespace cftal {
         using base_type::add22cond;
         using base_type::add122;
 
+        // direct call to fma
         static
         _T
         xfma(const _T& a, const _T& b, const _T& c);
 
+        // error compensated square: u^2 = rh + rl
         static
         void
         sqr12(_T& rh, _T& rl, const _T& u);
 
+        // error compensated mulitpliction u*v = rh + rl
         static
         void
         mul12(_T& rh, _T& rl, const _T& u, const _T& v);
@@ -411,41 +427,50 @@ namespace cftal {
         void
         muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b);
 
-        // mul122 without normalization
+        // multiplication (rh, rl) = xh * (yh, yl)
+        // without final normalization
         static
         void
         unorm_mul122(_T& rh, _T& rl,
                      const _T& xh,
                      const _T& yh, const _T& yl);
 
+        // multiplication (rh, rl) = xh * (yh, yl)
         static
         void
         mul122(_T& rh, _T& rl,
                const _T& xh,
                const _T& yh, const _T& yl);
 
+        // square (rh, rl) = (xh, xl)^2
+        // without final normalization
         static
         void
         unorm_sqr22(_T& rh, _T& rl,
                     const _T& xh, const _T& xl);
 
+        // square (rh, rl) = (xh, xl)^2
         static
         void
         sqr22(_T& rh, _T& rl,
               const _T& xh, const _T& xl);
 
+        // multiplication (rh, rl) = (xh, xl) * (yh, yl)
+        // without final normalization
         static
         void
         unorm_mul22(_T& rh, _T& rl,
                     const _T& xh, const _T& xl,
                     const _T& yh, const _T& yl);
 
+        // multiplication (rh, rl) = (xh, xl) * (yh, yl)
         static
         void
         mul22(_T& rh, _T& rl,
               const _T& xh, const _T& xl,
               const _T& yh, const _T& yl);
 
+        // reciprocal r = 1/(ah, al)
         static
         void
         rcp21(_T& r,
@@ -484,6 +509,7 @@ namespace cftal {
                   const _T& a,
                   const _T& bh, const _T& bl);
 
+        // c+ a*b
         static
         void
         muladd22(_T& rh, _T&rl,
@@ -539,21 +565,25 @@ namespace cftal {
                      const _T& ah, const _T& al,
                      const _T& bh, const _T& bl);
 
+        // reciprocal (rh, rl) = 1/a
         static
         void
         rcp12(_T& rh,  _T& rl,
               const _T& a);
 
+        // reciprocal (rh, rl) = 1/(ah, al)
         static
         void
         rcp2(_T& rh,  _T& rl,
              const _T& ah, const _T& al);
 
+        // square root (rh, rl) = sqrt((ah, al))
         static
         void
         sqrt2(_T& rh, _T& rl,
               const _T& ah, const _T& al);
 
+        // square root rh = sqrt((ah, al))
         static
         void
         sqrt21(_T& rh,
