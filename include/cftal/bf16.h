@@ -91,9 +91,15 @@ template <std::size_t _N>
 cftal::vec<cftal::mf_bf16_t, _N>
 cftal::impl::_cvt_f32_to_bf16(const vec<float, _N>& v)
 {
+#if 1
+    using vf_type = vec<float, _N>;
+    vf_type vne=round_nearest_to_even_last<16>::bits(v);
+    typename vf_type::mask_type infnan=isinf(v)|isnan(v);
+    vne = select(infnan, v, vne);
+    auto t=as<vec<cftal::mf_bf16_t, 2*_N> >(vne);    
+#else
     using vi2_type= vec<int32_t, _N>;
     using vmi2_type = typename vec<int32_t, _N>::mask_type;
-
     vi2_type i= as<vi2_type>(v);
     // normal case: round the mantissa only
     const int32_t bias=0x7fff;
@@ -102,8 +108,8 @@ cftal::impl::_cvt_f32_to_bf16(const vec<float, _N>& v)
     // keep nans
     auto is_nan= isnan(v);
     in = select(as<vmi2_type>(is_nan), i, in);
-
     auto t=as<vec<cftal::mf_bf16_t, 2*_N> >(in);
+#endif
     auto r=odd_elements(t);
     return r;
 }
