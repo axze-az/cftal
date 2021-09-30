@@ -851,8 +851,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
         r = _T::sel(f_is_near_z, r_u, r);
     }
     // handle special cases:
-    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)),
-                x, r);
+    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)), x, r);
     return r;
 }
 
