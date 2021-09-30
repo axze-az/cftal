@@ -231,6 +231,7 @@ cftal::test::distance(float a, float b)
     // a > b negative sign
     if (sgn_b)
         d = -d;
+    // +-0 gives 2
     if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0)) {
         if (sgn_a)
             d=+2;
