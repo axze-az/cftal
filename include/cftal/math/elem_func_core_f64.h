@@ -3184,7 +3184,7 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
 
     vf_type s= xrh + (x3*sin_c3 + (x2*(p_sin-xrl*0.5) + xrl));
     // is this useless? :
-    s = _T::sel(xrh == 0.0, xrh, s);
+    // s = _T::sel(xrh == 0.0, xrh, s);
     vf_type hx2=x2*0.5;
     vf_type w= 1.0 -hx2;
     vf_type c= w + (((1.0-w)-hx2) + (x4*p_cos-xrh*xrl));
