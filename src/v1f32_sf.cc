@@ -5,8 +5,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 #include "cftal/vec.h"
+#include "cftal/math/vec_func_traits.h"
 #include "cftal/math/spec_func_core_f32.h"
-#include "cftal/vec_traits.h"
 #include "vec_def_math_spec_funcs.h"
 
 DEF_SPEC_FUNCS(cftal, cftal, v1f32, v1s32, float)

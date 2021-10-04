@@ -4,8 +4,8 @@
 // 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#if !defined (__CFTAL_VEC_TRAITS_H__)
-#define __CFTAL_VEC_TRAITS_H__ 1
+#if !defined (__CFTAL_MATH_VEC_FUNC_TRAITS_H__)
+#define __CFTAL_MATH_VEC_FUNC_TRAITS_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
@@ -16,7 +16,6 @@
 #include <cftal/vec_cvt.h>
 #include <cftal/constants.h>
 #include <cftal/x86/cast_bits.h>
-#include <cftal/d_real.h>
 
 namespace cftal {
 
