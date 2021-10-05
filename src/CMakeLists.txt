@@ -136,6 +136,7 @@ SET (HDRS
     ../include/cftal/math/lanczos.h
     ../include/cftal/math/func_data.h
     ../include/cftal/math/impl_d_real_constants_f32.h
+    ../include/cftal/math/vec_func_traits.h
     ../include/cftal/vec_bit_n.h
     ../include/cftal/types.h
     ../include/cftal/constants.h
@@ -144,7 +145,7 @@ SET (HDRS
     ../include/cftal/impl/masks.h
     ../include/cftal/select.h
     ../include/cftal/fp_expansion.h
-    ../include/cftal/vec_traits.h
+    ../include/cftal/vec_d_real_traits.h
     ../include/cftal/arm/v2u64_inl.h
     ../include/cftal/arm/v2f32.h
     ../include/cftal/arm/v2s32.h
