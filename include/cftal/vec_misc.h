@@ -21,7 +21,7 @@ namespace cftal {
     template <typename _T>
     _T hadd(const vec<_T, 1>& n);
 
-    // execut on_true or on_false in dependence of m
+    // execute on_true or on_false in dependence of m
     template <typename _T, std::size_t _N,
               typename _ON_TRUE, typename _ON_FALSE>
     auto
@@ -29,7 +29,7 @@ namespace cftal {
                   _ON_TRUE on_true, _ON_FALSE on_false)
         -> typename std::result_of<_ON_TRUE()>::type;
 
-    // execut on_true or on_false in dependence of m
+    // execute on_true or on_false in dependence of m
     template <typename _T, typename _ON_TRUE, typename _ON_FALSE>
     auto
     select_branch(const vec<_T, 1>& m,
