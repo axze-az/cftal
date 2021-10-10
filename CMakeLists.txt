@@ -186,7 +186,6 @@ if (CFTAL_CONFIG_USE_LARGE_TABLES)
     set(CFTAL_CFG_USE_LARGE_TABLES 1)
 else()
     message("not using large tables for log and exp functions")
-    set(CFTAL_CFG_USE_LARGE_TABLES 0)
 endif()
 
 include_directories(include)
