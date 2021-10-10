@@ -13,6 +13,7 @@
 
 // configuration options
 #define __CFTAL_CFG_USE_VF64_FOR_VF32__ @CFTAL_CFG_USE_VF64_FOR_VF32@
+#define __CFTAL_CFG_USE_LARGE_TABLES @CFTAL_CFG_USE_LARGE_TABLES@
 
 #if defined (__ARM_NEON)
 #if !defined (__ARM_NEON__)
