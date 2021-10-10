@@ -178,16 +178,6 @@ else()
     message("not using double precision vectors in float functions")
 endif()
 
-set(CFTAL_CFG_USE_LARGE_TABLES 0)
-option(CFTAL_CONFIG_USE_LARGE_TABLES
-       "use large tables for log and exp functions" ON)
-if (CFTAL_CONFIG_USE_LARGE_TABLES)
-    message("using large tables for log and exp functions")
-    set(CFTAL_CFG_USE_LARGE_TABLES 1)
-else()
-    message("not using large tables for log and exp functions")
-endif()
-
 include_directories(include)
 include_directories(test/include)
 

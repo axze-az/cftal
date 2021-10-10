@@ -32,38 +32,13 @@ namespace cftal {
             const table_t _tbl;
         };
 
-        // tables for exponential function
-        template <>
-        struct exp_data<double> {
-            enum {
-#if __CFTAL_CFG_USE_LARGE_TABLES__ > 0
-                EXP_N=128,
-                EXP_SHIFT=7,
-#else                
-                EXP_N=32,
-                EXP_SHIFT=5,
-#endif                
-                EXP_IDX_MASK=EXP_N-1
-            };
-            struct table_t {
-                // 2^(i/n) = H + L = H*(1+F), F
-                const double _2_pow_i_n_f[EXP_N];
-                // 2^(i/n) high part
-                const double _2_pow_i_n_h[EXP_N];
-                // 2^(i/n) low part
-                const double _2_pow_i_n_l[EXP_N];
-            };
-            static
-            const table_t _tbl;
-        };
-        
         // the float tables
         template<>
         const exp_data<float>::table_t exp_data<float>::_tbl;
 
         // the double tables
-        // template<>
-        // const exp_data<double>::table_t exp_data<double>::_tbl;
+        template<>
+        const exp_data<double>::table_t exp_data<double>::_tbl;
 
         extern template struct exp_data<float>;
 

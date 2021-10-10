@@ -8,14 +8,9 @@ prec=2048!;
 write("\n");
 
 /* exp(x) f64 using tangs method */
-// use 32 for small tables
-// N = 32;
-// SN= "32";
-// SHIFT=5;
-// use 128 for large tables
-N = 128;
-SN = "128";
-SHIFT = 7;
+N = 32;
+SN= "32";
+SHIFT=5;
 f = exp(x);
 f1 = expm1(x);
 g=log(2)/2;
