@@ -82,7 +82,7 @@ namespace cftal {
             using base_type::ilogb;
             using base_type::ilogbp1;
 
-            // calculates 1/sqrt(x)
+            // calculates 1/sqrt(x) without error handling
             static
             vf_type
             rsqrt_k(arg_t<vf_type> x);
@@ -91,83 +91,108 @@ namespace cftal {
             vf_type
             nextafter(arg_t<vf_type> xc, arg_t<vf_type> yc);
 
+            // reciprocal square root with full error handling
             static
             vf_type
             rsqrt(arg_t<vf_type> vf);
 
-            // calls cbrt_k
+            // calls cbrt_k (cubic root) and performs error handling
             static
             vf_type
             cbrt(arg_t<vf_type> vf);
-
+            
+            // call rcbrt_k (reciprocal cubic root) and performs 
+            // error handling
+            static
+            vf_type
+            rcbrt(arg_t<vf_type> vf);
+            
+            // call roo12_k (12. root) and performs error handling
             static
             vf_type
             root12(arg_t<vf_type> vf);
 
+            // call hypot_k and performs error handling
             static
             vf_type
             hypot(arg_t<vf_type> xc, arg_t<vf_type> yc);
 
+            // exponential function with error handling
             static
             vf_type
             exp(arg_t<vf_type> vf);
 
+            // exp2 (2^x) function with error handling
             static
             vf_type
             exp2(arg_t<vf_type> vf);
 
+            // exp10 (10^x) function with error handling
             static
             vf_type
             exp10(arg_t<vf_type> vf);
 
+            // exponential function minus 1 with error handling
             static
             vf_type
             expm1(arg_t<vf_type> vf);
 
+            // 2^x-1 function with error handling
             static
             vf_type
             exp2m1(arg_t<vf_type> vf);
 
+            // 10^x-1 function with error handling
             static
             vf_type
             exp10m1(arg_t<vf_type> vf);
 
+            // sinus hyperbolicus with error handling
             static
             vf_type
             sinh(arg_t<vf_type> vf);
 
+            // cosinus hyperbolicus with error handling
             static
             vf_type
             cosh(arg_t<vf_type> vf);
 
+            // tangens hyperbolicus with error handling
             static
             vf_type
             tanh(arg_t<vf_type> vf);
 
+            // logarithmus function with error handling
             static
             vf_type
             log(arg_t<vf_type> vf);
 
+            // logarithmus of 1+x function with error handling
             static
             vf_type
             log1p(arg_t<vf_type> vf);
 
+            // base 10 logarithmus function with error handling
             static
             vf_type
             log10(arg_t<vf_type> vf);
 
+            // base 2 logarithmus function with error handling
             static
             vf_type
             log2(arg_t<vf_type> vf);
 
+            // power function with error handling
             static
             vf_type
             pow(arg_t<vf_type> b, arg_t<vf_type> e);
 
+            // power function with error handling
             static
             vf_type
             pow(arg_t<vf_type> xc, arg_t <vi_type> e);
 
+            // n-th root function with error handling
             static
             vf_type
             rootn(arg_t<vf_type> xc, arg_t <vi_type> yc);
@@ -351,6 +376,24 @@ cbrt(arg_t<vf_type> x)
     r=_T::sel(is_zero_or_inf_or_nan, x, r);
     // __asm volatile("# LLVM-MCA-END\n\t");
     return r;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _T>::
+rcbrt(arg_t<vf_type> x)
+{
+    // llvm-mca-7 -mtriple=x86_64-unknown-unknown -mcpu=skylake
+    // -iterations=1  --all-stats --all-views -timeline-max-cycles=1000
+    // xy.s
+    // __asm volatile("# LLVM-MCA-BEGIN\n\t");
+    vf_type y=base_type::rcbrt_k(x);
+    y=_T::sel_val_or_zero(x != _T::pinf(), y);
+    y=_T::sel(x == _FLOAT_T(0.0), _T::pinf(), y);
+    y=_T::sel(isnan(x), x, y);
+    // __asm volatile("# LLVM-MCA-END\n\t");
+    return y;
 }
 
 template <typename _FLOAT_T, typename _T>
