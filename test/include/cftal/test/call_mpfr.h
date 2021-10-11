@@ -214,10 +214,15 @@ namespace cftal {
             int
             exp10_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
+            // return x^-(1/3)
+            int
+            rcbrt(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
+
             // return x^(1/12)
             int
             root12(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
+            
             // x ^ (1/n), n may be negative
             int
             rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm);
