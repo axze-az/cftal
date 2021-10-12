@@ -67,6 +67,7 @@ set (TEST_HDRS
     ./include/cftal/test/check_cos.h
     ./include/cftal/test/uniform_distribution.h
     ./include/cftal/test/check_cbrt.h
+    ./include/cftal/test/check_rcbrt.h
     ./include/cftal/test/mpfr_cache.h
     ./include/cftal/test/check_tanh.h
     ./include/cftal/test/check_sqrt.h
@@ -201,6 +202,7 @@ test_prog(test-poly)
 test_prog(test-sqrt-f64)
 test_prog(test-rsqrt-f64)
 test_prog(test-cbrt-f64)
+test_prog(test-rcbrt-f64)
 test_prog(test-hypot-f64)
 test_prog(test-exp-f64)
 test_prog(test-expm1-f64)
@@ -255,6 +257,7 @@ test_prog(test-lgamma-f64)
 test_prog(test-sqrt-f32)
 test_prog(test-rsqrt-f32)
 test_prog(test-cbrt-f32)
+test_prog(test-rcbrt-f32)
 test_prog(test-hypot-f32)
 test_prog(test-exp-f32)
 test_prog(test-expm1-f32)

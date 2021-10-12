@@ -212,6 +212,14 @@ namespace cftal {
     vec<float, 1>
     cbrt(arg_t<vec<float, 1> > v);
 
+    // rcbrt, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<float, _N>
+    rcbrt(const vec<float, _N>& v);
+
+    vec<float, 1>
+    rcbrt(arg_t<vec<float, 1> > v);
+
     // root12, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<float, _N>
@@ -597,6 +605,9 @@ namespace cftal {
     cbrt(arg_t<vec<float, 2> > v);
 
     vec<float, 2>
+    rcbrt(arg_t<vec<float, 2> > v);
+
+    vec<float, 2>
     root12(arg_t<vec<float, 2> > v);
 
     vec<float, 2>
@@ -753,6 +764,9 @@ namespace cftal {
 
     vec<float, 4>
     cbrt(arg_t<vec<float, 4> > v);
+
+    vec<float, 4>
+    rcbrt(arg_t<vec<float, 4> > v);
 
     vec<float, 4>
     root12(arg_t<vec<float, 4> > v);
@@ -915,6 +929,9 @@ namespace cftal {
     cbrt(arg_t<vec<float, 8> > v);
 
     vec<float, 8>
+    rcbrt(arg_t<vec<float, 8> > v);
+
+    vec<float, 8>
     root12(arg_t<vec<float, 8> > v);
 
     vec<float, 8>
@@ -1072,6 +1089,9 @@ namespace cftal {
 
     vec<float, 16>
     cbrt(arg_t<vec<float, 16> > v);
+
+    vec<float, 16>
+    rcbrt(arg_t<vec<float, 16> > v);
 
     vec<float, 16>
     root12(arg_t<vec<float, 16> > v);
@@ -1843,6 +1863,15 @@ cftal::vec<float, _N>
 cftal::cbrt(const vec<float, _N>& v)
 {
     vec<float, _N> r(cbrt(low_half(v)), cbrt(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::rcbrt(const vec<float, _N>& v)
+{
+    vec<float, _N> r(rcbrt(low_half(v)), rcbrt(high_half(v)));
     return r;
 }
 

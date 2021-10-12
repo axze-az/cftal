@@ -415,6 +415,22 @@ plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cbrt-f64");
 */
 
+/* rcbrt(x) f64 */
+i = [2^-3, 1];
+f = (x)^-(1/3);
+d = guessdegree(f, i, 0x1p-24);
+d;
+b= [|0,...,16|];
+c= [|D...|];
+p = fpminimax(f, b, c, i,
+              relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double rcbrt_c", "rcbrt", b, c);
+plot((p(x)-f(x))/f(x), p(x)-f(x), i,
+                       postscriptfile, "rcbrt-f64");
+                      
+
+
 /* sinh(x) f64 for calculation over sinh(x+y) = ...*/
 f = sinh(x);
 i = [0x1p-512, log(2)/2];
