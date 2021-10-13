@@ -267,6 +267,8 @@ All these functions behave as their counterparts in the std namespace.
     \hline
     cbrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
+    rcbrt & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
     hypot & $\pm$ 1 & y  & $\pm$ 1 & y \\
     \hline
     rootn & $\pm$ 1 & y  & $\pm$ 1 & y \\
@@ -277,7 +279,9 @@ All these functions behave as their counterparts in the std namespace.
     \hline
 \end{tabular}\\[10pt]
 The sqrt function uses the hardware instruction provided by modern processors.
-The function $ rootn(x, n) $ calculates $ \sqrt[n]{x} $,
+The function $ rsqrt(x) $ calculates $ \frac{1}{\sqrt{x}}$, the function
+$ rcbrt(x) $ $ \frac{1}{\sqrt[3]{x}}$.
+The function $ rootn(x, n) $ calculates $ \sqrt[n]{x} $ and
 the function $ powi(x, n) $ calculates $ x^n $, where $n$ is an integer.
 %The precision of the pow function in more common areas, for instance in
 %$(0, 100), (0, 100)$ is better than mentioned in the table.
