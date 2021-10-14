@@ -77,6 +77,12 @@ namespace cftal {
             // helper functions for different reciprocal root3 iteration
             // steps
             struct rootm3 {
+                template <typename _T>
+                // calculate x^3*y - 1.0 
+                static
+                _T
+                calc_z(_T y, _T x);
+                
                 // x^3 = y
                 template <typename _C, typename _T>
                 static
@@ -316,13 +322,36 @@ cftal::math::impl::root3::order6(_T x, _T y)
     return xn;
 }
 
+template <typename _T>
+_T
+cftal::math::impl::rootm3::calc_z(_T x, _T y)
+{
+    _T x3= x*x*x;
+    // _T z= y*x3 -_C(1.0);
+    using traits_t= d_real_traits<_T>;
+    using d_ops = d_real_ops<_T, traits_t::fma>;
+    const _T minus_one(-1.0);
+    _T z;
+    if constexpr (traits_t::fma) {
+        z = y * x3 + minus_one;
+    } else {
+#if 1
+        _T yx3h, yx3l;
+        d_ops::mul12(yx3h, yx3l, y, x3);
+        z = yx3h + minus_one;
+        z += yx3l;
+#else
+        z= d_ops::xfma(y, x3, minus_one);
+#endif        
+    }
+    return z;
+}
 
 template <typename _C, typename _T>
 _T
 cftal::math::impl::rootm3::order3(_T x, _T y)
 {
-    _T x3= x*x*x;
-    _T z= y*x3 -_C(1.0);
+    _T z= calc_z(x, y);
     _T d= z*horner(z,
                    _C(2.0/9.0),
                    _C(-1.0/3.0));
@@ -334,8 +363,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::rootm3::order4(_T x, _T y)
 {
-    _T x3= x*x*x;
-    _T z= y*x3 -_C(1.0);
+    _T z= calc_z(x, y);
     _T d= z*horner(z,
                    _C(-14.0/81.0),
                    _C(2.0/9.0),
@@ -348,11 +376,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::rootm3::order5(_T x, _T y)
 {
-    _T x3= x*x*x;
-    using d_ops = d_real_ops<_T,
-                             d_real_traits<_T>::fma>;
-    // _T z= y*x3 -_C(1.0);
-    _T z= d_ops::xfma(y, x3, _C(-1.0));
+    _T z= calc_z(x, y);
     _T d= z*horner(z,
                    _C(35.0/243.0),
                    _C(-14.0/81.0),
@@ -366,8 +390,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::rootm3::order6(_T x, _T y)
 {
-    _T x3= x*x*x;
-    _T z= y*x3 -_C(1.0);
+    _T z= calc_z(x, y);
     _T d= z*horner(z,
                    _C(-91.0/729.0),
                    _C(35.0/243.0),
