@@ -49,23 +49,29 @@ namespace cftal {
                 _T
                 halley(_T y, _T x);
 
+                // calculate z = (y -x^3)/x^3;
+                template <typename _T>
+                static
+                _T
+                calc_z(_T x, _T y);
+                
                 // x^3 = y
                 template <typename _C, typename _T>
                 static
                 _T
-                order3(_T y, _T x);
+                order3(_T x, _T y);
 
                 // x^3 = y
                 template <typename _C, typename _T>
                 static
                 _T
-                order4(_T y, _T x);
+                order4(_T x, _T y);
 
                 // x^3 = y
                 template <typename _C, typename _T>
                 static
                 _T
-                order5(_T y, _T x);
+                order5(_T x, _T y);
 
                 // x^3 = y
                 template <typename _C, typename _T>
@@ -251,13 +257,21 @@ cftal::math::impl::root3::halley(_T x, _T y)
     return xn;
 }
 
+template <typename _T>
+_T
+cftal::math::impl::root3::calc_z(_T x, _T y)
+{
+    _T x3= x*x*x;
+    _T z= (y -x3)/x3;
+    return z;
+}
+
 template <typename _C, typename _T>
 _T
 cftal::math::impl::root3::order3(_T x, _T y)
 {
-#if 1
-    _T x3= x*x*x;
-    _T z= (y -x3)/x3;
+#if 0
+    _T z= calc_z(x, y);
     _T d= z*horner(z,
                    _C(-1.0/9.0),
                    _C(1.0/3.0));
@@ -276,8 +290,7 @@ _T
 cftal::math::impl::root3::order4(_T x, _T y)
 {
 #if 1
-    _T x3= x*x*x;
-    _T z= (y -x3)/x3;
+    _T z= calc_z(x, y);
     _T d= z*horner(z,
                    _C(5.0/81.0),
                    _C(-1.0/9.0),
@@ -295,8 +308,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root3::order5(_T x, _T y)
 {
-    _T x3= x*x*x;
-    _T z= (y -x3)/x3;
+    _T z= calc_z(x, y);
     _T d= z*horner(z,
                    _C(-10.0/243.0),
                    _C(5.0/81.0),
@@ -310,8 +322,7 @@ template <typename _C, typename _T>
 _T
 cftal::math::impl::root3::order6(_T x, _T y)
 {
-    _T x3= x*x*x;
-    _T z= (y -x3)/x3;
+    _T z= calc_z(x, y);
     _T d= z*horner(z,
                    _C(22.0/729.0),
                    _C(-10.0/243.0),
