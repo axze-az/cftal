@@ -313,6 +313,38 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 rsqrt_k(arg_t<vf_type> x)
 {
+#if 0
+    constexpr
+    const _FLOAT_T one=_FLOAT_T(1.0);
+    vf_type scale=1.0;
+    vf_type factor=1.0;
+    // avoid overflows    
+#if 0  
+    vmf_type x_small= x < 0x1p-450;
+    scale = _T::sel(x_small, 0x1p350, scale);
+    factor= _T::sel(x_small, 0x1p700, factor);
+#else
+    vmf_type x_small= x < 0x1p-60f;
+    scale = _T::sel(x_small, 0x1p40f, scale);
+    factor= _T::sel(x_small, 0x1p80f, factor);
+#endif
+    vf_type xr=x*factor;
+    vf_type y=vf_type(one/sqrt(xr));
+    constexpr const size_t N =sizeof(_FLOAT_T) == 8 ? 53 :24;
+    y=round_nearest_to_even_last<N-N/2+1>::bits(y);
+    // y=round_nearest_to_even_last<N-N/2>::bits(y);
+    vf_type z = ((y*y)*xr) - one;
+    constexpr static const _FLOAT_T ci[]={
+        _FLOAT_T(-63/256.0),
+        _FLOAT_T(35.0/128.0),
+        _FLOAT_T(-5.0/16.0),
+        _FLOAT_T(3.0/8.0),
+        _FLOAT_T(-0.5)
+    };
+    y = y + y*(z*horner(z, ci));
+    y *= scale;
+    return y;
+#else
     constexpr
     const _FLOAT_T one=_FLOAT_T(1.0);
     vf_type y= vf_type(one/sqrt(x));
@@ -343,6 +375,7 @@ rsqrt_k(arg_t<vf_type> x)
     }
     y = y + (_FLOAT_T(-0.5)*y) * th;
     return y;
+#endif
 }
 
 
