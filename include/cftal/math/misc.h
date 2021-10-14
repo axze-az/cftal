@@ -349,7 +349,10 @@ _T
 cftal::math::impl::rootm3::order5(_T x, _T y)
 {
     _T x3= x*x*x;
-    _T z= y*x3 -_C(1.0);
+    using d_ops = d_real_ops<_T,
+                             d_real_traits<_T>::fma>;
+    // _T z= y*x3 -_C(1.0);
+    _T z= d_ops::xfma(y, x3, _C(-1.0));
     _T d= z*horner(z,
                    _C(35.0/243.0),
                    _C(-14.0/81.0),
