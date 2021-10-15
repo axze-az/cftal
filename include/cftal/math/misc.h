@@ -34,9 +34,36 @@ namespace cftal {
             householder_step(_T xn, _T x, _T y,
                              const _C(&p)[_N],
                              const _C(&q)[_N]);
+            
+            // helper functions for different reciprocal root  2 iterations
+            struct root_r2 {
+                // calculate x^2*y - 1.0 
+                template <typename _T> 
+                static
+                _T
+                calc_z(_T y, _T x);
+                
+                // x^-2 = y
+                template <typename _C, typename _T>
+                static
+                _T
+                order3(_T x, _T y);
 
-            // helper functions for different root3 iteration steps
-            struct root3 {
+                // x^-2 = y
+                template <typename _C, typename _T>
+                static
+                _T
+                order4(_T x, _T y);
+
+                // x^-2 = y
+                template <typename _C, typename _T>
+                static
+                _T
+                order5(_T x, _T y);                
+            };
+
+            // helper functions for different root 3 iteration steps
+            struct root_3 {
                 // x^3 = y
                 template <typename _C, typename _T>
                 static
@@ -82,31 +109,31 @@ namespace cftal {
 
             // helper functions for different reciprocal root3 iteration
             // steps
-            struct rootm3 {
+            struct root_r3 {
                 template <typename _T>
                 // calculate x^3*y - 1.0 
                 static
                 _T
                 calc_z(_T y, _T x);
                 
-                // x^3 = y
+                // x^-3 = y
                 template <typename _C, typename _T>
                 static
                 _T
                 order3(_T y, _T x);
 
-                // x^3 = y
+                // x^-3 = y
                 template <typename _C, typename _T>
                 static
                 _T
                 order4(_T y, _T x);
 
-                // x^3 = y
+                // x^-3 = y
                 template <typename _C, typename _T>
                 static
                 _T
                 order5(_T y, _T x);
-                // x^3 = y
+                // x^-3 = y
                 template <typename _C, typename _T>
                 static
                 _T
@@ -114,7 +141,7 @@ namespace cftal {
             };
             
             // helper functions for different root12 iteration steps
-            struct root12 {
+            struct root_12 {
                 // calculate x^12
                 template <typename _T>
                 static
@@ -239,9 +266,79 @@ householder_step(_T xn, _T x, _T y, const _C(&pa)[_N], const _C(&qa)[_N])
     return x + x * p/q;
 }
 
+template <typename _T>
+_T
+cftal::math::impl::root_r2::calc_z(_T x, _T y)
+{
+    _T x2= x*x;
+    // _T z= y*x2 -_C(1.0);
+    using traits_t= d_real_traits<_T>;
+    using d_ops = d_real_ops<_T, traits_t::fma>;
+    const _T minus_one(-1.0);
+    _T z;
+    if constexpr (traits_t::fma) {
+        z = y * x2 + minus_one;
+    } else {
+#if 1
+        _T yx2h, yx2l;
+        d_ops::mul12(yx2h, yx2l, y, x2);
+        z = yx2h + minus_one;
+        z += yx2l;
+#else
+        z= d_ops::xfma(y, x2, minus_one);
+#endif        
+    }
+    return z;
+}
+
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root3::nr(_T x, _T y)
+cftal::math::impl::root_r2::order3(_T x, _T y)
+{
+    _T z= calc_z(x, y);
+    _T d= z*horner(z,
+                   // _C(-63/256.0),
+                   // _C(35.0/128.0),
+                   // _C(-5.0/16.0),
+                   _C(3.0/8.0),
+                   _C(-0.5));
+    _T xn= x+ x*d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root_r2::order4(_T x, _T y)
+{
+    _T z= calc_z(x, y);
+    _T d= z*horner(z,
+                   // _C(-63/256.0),
+                   // _C(35.0/128.0),
+                   _C(-5.0/16.0),
+                   _C(3.0/8.0),
+                   _C(-0.5));
+    _T xn= x + x*d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root_r2::order5(_T x, _T y)
+{
+    _T z= calc_z(x, y);
+    _T d= z*horner(z,
+                   // _C(-63/256.0),
+                   _C(35.0/128.0),
+                   _C(-5.0/16.0),
+                   _C(3.0/8.0),
+                   _C(-0.5));
+    _T xn= x + x*d;
+    return xn;
+}
+
+template <typename _C, typename _T>
+_T
+cftal::math::impl::root_3::nr(_T x, _T y)
 {
     _T d= _C(1.0/3.0) * (y/(x*x) - x);
     _T xn= x + d;
@@ -250,7 +347,7 @@ cftal::math::impl::root3::nr(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root3::halley(_T x, _T y)
+cftal::math::impl::root_3::halley(_T x, _T y)
 {
     _T s=x*x*x;
     _T xn = x -(s - y) * x/(_C(2.0)*s+y);
@@ -259,7 +356,7 @@ cftal::math::impl::root3::halley(_T x, _T y)
 
 template <typename _T>
 _T
-cftal::math::impl::root3::calc_z(_T x, _T y)
+cftal::math::impl::root_3::calc_z(_T x, _T y)
 {
     _T x3= x*x*x;
     _T z= (y -x3)/x3;
@@ -268,9 +365,9 @@ cftal::math::impl::root3::calc_z(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root3::order3(_T x, _T y)
+cftal::math::impl::root_3::order3(_T x, _T y)
 {
-#if 0
+#if 1
     _T z= calc_z(x, y);
     _T d= z*horner(z,
                    _C(-1.0/9.0),
@@ -287,7 +384,7 @@ cftal::math::impl::root3::order3(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root3::order4(_T x, _T y)
+cftal::math::impl::root_3::order4(_T x, _T y)
 {
 #if 1
     _T z= calc_z(x, y);
@@ -306,7 +403,7 @@ cftal::math::impl::root3::order4(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root3::order5(_T x, _T y)
+cftal::math::impl::root_3::order5(_T x, _T y)
 {
     _T z= calc_z(x, y);
     _T d= z*horner(z,
@@ -320,7 +417,7 @@ cftal::math::impl::root3::order5(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root3::order6(_T x, _T y)
+cftal::math::impl::root_3::order6(_T x, _T y)
 {
     _T z= calc_z(x, y);
     _T d= z*horner(z,
@@ -335,7 +432,7 @@ cftal::math::impl::root3::order6(_T x, _T y)
 
 template <typename _T>
 _T
-cftal::math::impl::rootm3::calc_z(_T x, _T y)
+cftal::math::impl::root_r3::calc_z(_T x, _T y)
 {
     _T x3= x*x*x;
     // _T z= y*x3 -_C(1.0);
@@ -360,7 +457,7 @@ cftal::math::impl::rootm3::calc_z(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::rootm3::order3(_T x, _T y)
+cftal::math::impl::root_r3::order3(_T x, _T y)
 {
     _T z= calc_z(x, y);
     _T d= z*horner(z,
@@ -372,7 +469,7 @@ cftal::math::impl::rootm3::order3(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::rootm3::order4(_T x, _T y)
+cftal::math::impl::root_r3::order4(_T x, _T y)
 {
     _T z= calc_z(x, y);
     _T d= z*horner(z,
@@ -385,7 +482,7 @@ cftal::math::impl::rootm3::order4(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::rootm3::order5(_T x, _T y)
+cftal::math::impl::root_r3::order5(_T x, _T y)
 {
     _T z= calc_z(x, y);
     _T d= z*horner(z,
@@ -399,7 +496,7 @@ cftal::math::impl::rootm3::order5(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::rootm3::order6(_T x, _T y)
+cftal::math::impl::root_r3::order6(_T x, _T y)
 {
     _T z= calc_z(x, y);
     _T d= z*horner(z,
@@ -417,7 +514,7 @@ template <typename _T>
 inline
 __attribute__((__always_inline__))
 _T
-cftal::math::impl::root12::pow12(_T x)
+cftal::math::impl::root_12::pow12(_T x)
 {
     // _T x12=powu<_T, 12>::v(x);
 #if 0
@@ -458,7 +555,7 @@ cftal::math::impl::root12::pow12(_T x)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::nr(_T x, _T y)
+cftal::math::impl::root_12::nr(_T x, _T y)
 {
 #if 1
     _T x12=pow12(x);
@@ -477,7 +574,7 @@ cftal::math::impl::root12::nr(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::halley(_T x, _T y)
+cftal::math::impl::root_12::halley(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
     _T x12=pow12(x);
@@ -489,7 +586,7 @@ cftal::math::impl::root12::halley(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::order3(_T x, _T y)
+cftal::math::impl::root_12::order3(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
     _T x12=pow12(x);
@@ -503,7 +600,7 @@ cftal::math::impl::root12::order3(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::order4(_T x, _T y)
+cftal::math::impl::root_12::order4(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
     _T x12=pow12(x);
@@ -518,7 +615,7 @@ cftal::math::impl::root12::order4(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::order5(_T x, _T y)
+cftal::math::impl::root_12::order5(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
     _T x12=pow12(x);
@@ -537,7 +634,7 @@ cftal::math::impl::root12::order5(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::order6(_T x, _T y)
+cftal::math::impl::root_12::order6(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
     _T x12=pow12(x);
@@ -554,7 +651,7 @@ cftal::math::impl::root12::order6(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::order8(_T x, _T y)
+cftal::math::impl::root_12::order8(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
     _T x12=pow12(x);
@@ -577,7 +674,7 @@ cftal::math::impl::root12::order8(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::order9(_T x, _T y)
+cftal::math::impl::root_12::order9(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
     _T x12=pow12(x);
@@ -597,7 +694,7 @@ cftal::math::impl::root12::order9(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::order10(_T x, _T y)
+cftal::math::impl::root_12::order10(_T x, _T y)
 {
     // _T x12=powu<_T, 12>::v(x);
     _T x12=pow12(x);
@@ -618,7 +715,7 @@ cftal::math::impl::root12::order10(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::householder3(_T x, _T y)
+cftal::math::impl::root_12::householder3(_T x, _T y)
 {
     static constexpr const _C p[]={
         _C(-3.9000000000000000000000e+01), // 24
@@ -640,7 +737,7 @@ template <typename _C, typename _T>
 inline
 __attribute__((__always_inline__))
 _T
-cftal::math::impl::root12::householder4(_T x, _T y)
+cftal::math::impl::root_12::householder4(_T x, _T y)
 {
     static constexpr const _C p[]={
         _C(-3.6400000000000000000000e+02), // 36
@@ -663,7 +760,7 @@ template <typename _C, typename _T>
 inline
 __attribute__((__always_inline__))
 _T
-cftal::math::impl::root12::householder5(_T x, _T y)
+cftal::math::impl::root_12::householder5(_T x, _T y)
 {
     static constexpr const _C p[]={
         _C(-4.5500000000000000000000e+02), // 48
@@ -686,7 +783,7 @@ cftal::math::impl::root12::householder5(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::householder6(_T x, _T y)
+cftal::math::impl::root_12::householder6(_T x, _T y)
 {
     static constexpr const _C p[]={
         _C(-1.0920000000000000000000e+03), // 60
@@ -711,7 +808,7 @@ cftal::math::impl::root12::householder6(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::householder7(_T x, _T y)
+cftal::math::impl::root_12::householder7(_T x, _T y)
 {
     static constexpr const _C p[]={
         _C(-3.0940000000000000000000e+03), // 72
@@ -738,7 +835,7 @@ cftal::math::impl::root12::householder7(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::householder8(_T x, _T y)
+cftal::math::impl::root_12::householder8(_T x, _T y)
 {
     static constexpr const _C p[]={
         _C(-3.5360000000000000000000e+03), // 84
@@ -767,7 +864,7 @@ cftal::math::impl::root12::householder8(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::householder9(_T x, _T y)
+cftal::math::impl::root_12::householder9(_T x, _T y)
 {
     static constexpr const _C p[]={
         _C(-7.5582000000000000000000e+04), // 96
@@ -798,7 +895,7 @@ cftal::math::impl::root12::householder9(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::householder10(_T x, _T y)
+cftal::math::impl::root_12::householder10(_T x, _T y)
 {
     static constexpr const _C p[]={
         _C(-8.3980000000000000000000e+04), // 108
@@ -831,7 +928,7 @@ cftal::math::impl::root12::householder10(_T x, _T y)
 
 template <typename _C, typename _T>
 _T
-cftal::math::impl::root12::householder16(_T x, _T y)
+cftal::math::impl::root_12::householder16(_T x, _T y)
 {
     static constexpr const _C p[]={
         _C(-7.7261600000000000000000e+06), // 168

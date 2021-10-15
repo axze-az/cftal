@@ -983,7 +983,7 @@ cbrt_k(arg_t<vf_type> xc)
     // round mm to 17 bits == int(53/3)
     // mm = rint(vf_type(mm*0x1p17))*0x1p-17;
     mm = round_nearest_to_even_last<53-53/3>::bits(mm);
-    mm = impl::root3::order5<double>(mm, mm0);
+    mm = impl::root_3::order5<double>(mm, mm0);
     // no denormal results are possible
 #if 1
     vi2_type e3c_exp=(e3c<<20) & msk;
@@ -1112,7 +1112,7 @@ rcbrt_k(arg_t<vf_type> xc)
     // round mm to 17 bits == int(53/3)
     // mm = rint(vf_type(mm*0x1p17))*0x1p-17;
     mm = round_nearest_to_even_last<53-53/3>::bits(mm);
-    mm = impl::rootm3::order5<double>(mm, mm0);
+    mm = impl::root_r3::order5<double>(mm, mm0);
     // no denormal results are possible
 #if 1
     vi2_type e3c_exp=(e3c<<20) & msk;
@@ -1269,7 +1269,7 @@ root12_k(arg_t<vf_type> xc)
     // mm = impl::root12::order3<double>(mm, mm0);
 #else
     // only one division and much parallelism
-    mm = impl::root12::householder8<double>(mm, mm0);
+    mm = impl::root_12::householder8<double>(mm, mm0);
 #endif
     vi2_type e12c_exp=(e12c<<20) & msk;
     vi2_type mmi=as<vi2_type>(mm) + e12c_exp;

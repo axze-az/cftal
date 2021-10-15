@@ -1064,12 +1064,12 @@ cbrt_k(arg_t<vf_type> xc)
                         cbrt_c1,
                         cbrt_c0);
     // 1st iteration
-    mm = impl::root3::order3<float>(mm, mm0);
+    mm = impl::root_3::order3<float>(mm, mm0);
 #endif                        
     // round mm to 8 bits = int(24/3)
     mm=round_nearest_to_even_last<24-24/3>::bits(mm);
     // second iteration
-    mm = impl::root3::order5<float>(mm, mm0);
+    mm = impl::root_3::order5<float>(mm, mm0);
     // no denormal results are possible
 #if 1
     vi_type e3c_exp=(e3c<<23);
@@ -1167,7 +1167,7 @@ rcbrt_k(arg_t<vf_type> xc)
     // round mm to 8 bits = int(24/3)
     mm=round_nearest_to_even_last<24-24/3>::bits(mm);
     // second iteration
-    mm = impl::rootm3::order5<float>(mm, mm0);
+    mm = impl::root_r3::order5<float>(mm, mm0);
     // no denormal results are possible
 #if 1
     vi_type e3c_exp=(e3c<<23);
@@ -1295,7 +1295,7 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm_b= _T::sel(mm0 < 0x1p-3f, mm_i2, mm_i3);
     vf_type mm= _T::sel(mm0 < 0x1p-6f, mm_a, mm_b);
 
-    mm = impl::root12::householder4<float>(mm, mm0);
+    mm = impl::root_12::householder4<float>(mm, mm0);
     vi_type e12c_exp=(e12c<<23);
     vi_type mmi=as<vi_type>(mm) + e12c_exp;
     mm=as<vf_type>(mmi);
