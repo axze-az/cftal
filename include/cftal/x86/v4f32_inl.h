@@ -10,6 +10,8 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/constants.h>
+#include <cftal/vec_d_real_traits.h>
+#include <cftal/math/misc.h>
 #include <cftal/x86/v4f32.h>
 #include <cftal/x86/perm.h>
 #include <cftal/x86/vreg.h>
@@ -581,12 +583,17 @@ cftal::native_rsqrt(const v4f32& x)
     const float rsqrt_small = 0x1p32f;
     vf_type::mask_type x_small= x <= small;
     vf_type s = select(x_small, vf_type(rsqrt_small), vf_type(1.0f));
-    vf_type xr = select(x_small, vf_type(x*large), x);
+    vf_type xr = select(x_small, vf_type(x*large), x);    
     vf_type y= _mm_rsqrt_ps(xr());
+#if 1
+    y = math::impl::root_r2::order5<float>(y, xr);
+    y *= s;
+#else
     vf_type xh=0.5f*xr;
     vf_type yf=y*s;
     y= yf *(1.5f - y*(y*xh));
     // y= 0.5f*y *(3.0f - y*(y*x));
+#endif
     return y;
 }
 

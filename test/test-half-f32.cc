@@ -604,6 +604,7 @@ int main(int argc, char** argv)
     cpu_times_to_stdout tt;
 
     pgm_args ags=parse(argc, argv, 0x1000);
+#if 0    
     r |= main_log(ags);
     r |= main_log2(ags);
     r |= main_log10(ags);
@@ -613,6 +614,7 @@ int main(int argc, char** argv)
     r |= main_cos(ags);
     r |= main_sin(ags);
     r |= main_tan(ags);
+#endif
     r |= main_rsqrt(ags);
     r |= main_sqrt(ags);
     return r;

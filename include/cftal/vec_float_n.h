@@ -10,6 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/vec_spec.h>
 #include <cftal/d_real.h>
+#include <cftal/vec_d_real_traits.h>
 #include <cftal/vec_math_funcs.h>
 #include <cmath>
 
@@ -2268,12 +2269,17 @@ cftal::native_rsqrt(const vec<float, 1>& x)
     vf_type s = select(x_small, vf_type(rsqrt_small), vf_type(1.0f));
     vf_type xr = select(x_small, vf_type(x*large), x);
     vf_type y= _mm_cvtss_f32(_mm_rsqrt_ps(_mm_set1_ps(xr())));
+#if 1
+    y = math::impl::root_r2::order5<float>(y, xr);
+    y *= s;
+#else
     vf_type xh=0.5f*xr;
     vf_type yf=y*s;
     y= yf *(1.5f - y*(y*xh));
     // y= 0.5f*y *(3.0f - y*(y*x));
+#endif
     return y;
-#else
+#else // non __SSE__ code
     vec<float, 1> r(1.0f/sqrt(x));
     return r;
 #endif
