@@ -2269,7 +2269,7 @@ cftal::native_rsqrt(const vec<float, 1>& x)
     vf_type s = select(x_small, vf_type(rsqrt_small), vf_type(1.0f));
     vf_type xr = select(x_small, vf_type(x*large), x);
     vf_type y= _mm_cvtss_f32(_mm_rsqrt_ps(_mm_set1_ps(xr())));
-#if 1
+#if 0
     y = math::impl::root_r2::order5<float>(y, xr);
     y *= s;
 #else
