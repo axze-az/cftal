@@ -608,7 +608,7 @@ half_tan(arg_t<vf_type> x)
     vmi_type qm1= vi_type(q & vi_type(1)) == vi_type(1);
     vmf_type fqm1= _T::vmi_to_vmf(qm1);
 
-    vf_type ct=-native_recip(t);
+    vf_type ct=-1.0f/t;
     t = _T::sel(fqm1, ct, t);
     return t;
 }
@@ -618,7 +618,7 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
 half_rsqrt(arg_t<vf_type> x)
 {
-    vf_type y=native_rsqrt(x);
+    vf_type y=1.0f/sqrt(x);
     return y;
 }
 
@@ -627,7 +627,7 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
 half_sqrt(arg_t<vf_type> x)
 {
-    return x*native_rsqrt(x);
+    return sqrt(x);
 }
 
 // local variables:

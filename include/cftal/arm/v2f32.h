@@ -97,7 +97,6 @@ namespace cftal {
     v2f32 cbrt(arg<v2f32>::type a);
 
     v2f32 rsqrt(const v2f32& a);
-    v2f32 native_rsqrt(const v2f32& a);
 
     namespace arm {
         v2f32 round(const v2f32& v, rounding_mode::type m);

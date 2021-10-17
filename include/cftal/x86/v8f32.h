@@ -115,8 +115,6 @@ namespace cftal {
     v8f32 fabs(const v8f32& a);
     v8f32 sqrt(const v8f32& a);
 
-    v8f32 native_rsqrt(const v8f32& a);
-
     namespace x86 {
         v8f32 round(const v8f32& v, rounding_mode::type m);
     }
@@ -161,13 +159,6 @@ namespace cftal {
     vec<float, 8>
     permute(const vec<float, 8>& s0,
             const vec<float, 8>& s1);
-
-    vec<float, 8>
-    native_recip(const vec<float, 8>& a);
-
-    vec<float, 8>
-    native_div(const vec<float, 8>& a, const vec<float, 8>& b);
-
 
 #if defined (__AVX2__)
     template <>

@@ -113,9 +113,6 @@ namespace cftal {
     v2f32 sqrt(const v2f32& a);
     v4f32 sqrt(const v4f32& a);
 
-    v2f32 native_rsqrt(const v2f32& a);
-    v4f32 native_rsqrt(const v4f32& a);
-
     namespace x86 {
         v4f32 round(const v4f32& v, rounding_mode::type m);
     }
@@ -154,16 +151,6 @@ namespace cftal {
     vec<float, 4>
     permute(const vec<float, 4>& s0,
             const vec<float, 4>& s1);
-
-    vec<float, 2>
-    native_recip(const vec<float, 2>& b);
-    vec<float, 4>
-    native_recip(const vec<float, 4>& b);
-
-    vec<float, 2>
-    native_div(const vec<float, 2>& a, const vec<float, 2>& b);
-    vec<float, 4>
-    native_div(const vec<float, 4>& a, const vec<float, 4>& b);
 
 #if defined (__AVX2__)
     template <>

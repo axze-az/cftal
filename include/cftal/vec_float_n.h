@@ -1232,34 +1232,6 @@ namespace cftal {
 
 #endif
 
-
-    // approximates 1/sqrt(a)
-    template <std::size_t _N>
-    vec<float, _N>
-    native_rsqrt(const vec<float, _N>& a);
-
-    // approximates 1/sqrt(a)
-    vec<float, 1>
-    native_rsqrt(const vec<float, 1>& b);
-
-    // approximates 1/a
-    template <std::size_t _N>
-    vec<float, _N>
-    native_recip(const vec<float, _N>& a);
-
-    // approximates 1/a
-    vec<float, 1>
-    native_recip(const vec<float, 1>& b);
-
-    // approximates a/b
-    template <std::size_t _N>
-    vec<float, _N>
-    native_div(const vec<float, _N>& a, const vec<float, _N>& b);
-
-    // approximates a/b
-    vec<float, 1>
-    native_div(const vec<float, 1>& a, const vec<float, 1>& b);
-
     // namespace for functions with reduced range and precision
     // similiar to opencl c++ 2.0
     namespace half_math {
@@ -2243,91 +2215,6 @@ cftal::sig(const vec<float, _N>& x)
     return r;
 }
 
-template <std::size_t _N>
-inline
-cftal::vec<float, _N>
-cftal::native_rsqrt(const vec<float, _N>& v)
-{
-    vec<float, _N> r(native_rsqrt(low_half(v)),
-                     native_rsqrt(high_half(v)));
-    return r;
-}
-
-inline
-cftal::vec<float, 1>
-cftal::native_rsqrt(const vec<float, 1>& x)
-{
-#if defined (__SSE__)
-    using vf_type = vec<float, 1>;
-    // scaling is only required for subnormal numbers, but performance
-    // on sandy bridge is much better if used for smaller numbers
-    const float large = 0x1p64f;
-    const float small = 0x1p-96f;
-    // const float rsqrt_large = 0x1p-32f;
-    const float rsqrt_small = 0x1p32f;
-    vf_type::mask_type x_small= x <= small;
-    vf_type s = select(x_small, vf_type(rsqrt_small), vf_type(1.0f));
-    vf_type xr = select(x_small, vf_type(x*large), x);
-    vf_type y= _mm_cvtss_f32(_mm_rsqrt_ps(_mm_set1_ps(xr())));
-#if 0
-    y = math::impl::root_r2::order5<float>(y, xr);
-    y *= s;
-#else
-    vf_type xh=0.5f*xr;
-    vf_type yf=y*s;
-    y= yf *(1.5f - y*(y*xh));
-    // y= 0.5f*y *(3.0f - y*(y*x));
-#endif
-    return y;
-#else // non __SSE__ code
-    vec<float, 1> r(1.0f/sqrt(x));
-    return r;
-#endif
-}
-
-
-template <std::size_t _N>
-inline
-cftal::vec<float, _N>
-cftal::native_recip(const vec<float, _N>& v)
-{
-    vec<float, _N> r(native_recip(low_half(v)),
-                     native_recip(high_half(v)));
-    return r;
-}
-
-inline
-cftal::vec<float, 1>
-cftal::native_recip(const vec<float, 1>& a)
-{
-#if defined (__SSE__)
-    v1f32 rcp=_mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(a())));
-    rcp = rcp + rcp*(1-rcp*a);
-    return rcp;
-#else
-    return 1.0f/a();
-#endif
-}
-
-template <std::size_t _N>
-cftal::vec<float, _N>
-cftal::native_div(const vec<float, _N>& a, const vec<float, _N>& b)
-{
-    vec<float, _N> r(native_div(low_half(a), low_half(b)),
-                     native_div(high_half(a), high_half(b)));
-    return r;
-}
-
-inline
-cftal::vec<float, 1>
-cftal::native_div(const vec<float, 1>& b, const vec<float, 1>& a)
-{
-#if defined (__SSE__)
-    return native_recip(a) * b;
-#else
-    return b / a;
-#endif
-}
 
 template <std::size_t _N>
 cftal::vec<float, _N>
@@ -2344,7 +2231,7 @@ cftal::vec<float, _N>
 cftal::half_math::
 divide(const vec<float, _N>& x, const vec<float, _N>& y)
 {
-    return native_div(x, y);
+    return x/y;
 }
 
 template <std::size_t _N>

@@ -578,33 +578,6 @@ bool cftal::elements_equal(const v8f32& a)
 }
 
 inline
-cftal::v8f32
-cftal::native_rsqrt(const v8f32& x)
-{
-    using vf_type = vec<float, 8>;
-    // scaling is only required for subnormal numbers, but performance
-    // on sandy bridge is much better if used for smaller numbers
-    const float large = 0x1p64f;
-    const float small = 0x1p-96f;
-    // const float rsqrt_large = 0x1p-32f;
-    const float rsqrt_small = 0x1p32f;
-    vf_type::mask_type x_small= x <= small;
-    vf_type s = select(x_small, vf_type(rsqrt_small), vf_type(1.0f));
-    vf_type xr = select(x_small, vf_type(x*large), x);
-    vf_type y= _mm256_rsqrt_ps(xr());
-#if 0
-    y = math::impl::root_r2::order5<float>(y, xr);
-    y *= s;
-#else
-    vf_type xh=0.5f*xr;
-    vf_type yf=y*s;
-    y= yf *(1.5f - y*(y*xh));
-    // y= 0.5f*y *(3.0f - y*(y*x));
-#endif    
-    return y;
-}
-
-inline
 cftal::v8f32 cftal::x86::round(const v8f32& a, const rounding_mode::type m)
 {
     v8f32 r;
@@ -650,22 +623,6 @@ inline
 cftal::v8f32 cftal::trunc(const v8f32& a)
 {
     return x86::round(a, rounding_mode::towardzero);
-}
-
-inline
-cftal::v8f32
-cftal::native_recip(const v8f32& a)
-{
-    v8f32 rcp=_mm256_rcp_ps(a());
-    rcp = rcp + rcp*(1.0f-rcp*a);
-    return rcp;
-}
-
-inline
-cftal::v8f32
-cftal::native_div(const v8f32& b, const v8f32& a)
-{
-    return native_recip(a) * b;
 }
 
 #if defined (__AVX2__)
