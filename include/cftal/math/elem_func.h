@@ -100,13 +100,13 @@ namespace cftal {
             static
             vf_type
             cbrt(arg_t<vf_type> vf);
-            
-            // call rcbrt_k (reciprocal cubic root) and performs 
+
+            // call rcbrt_k (reciprocal cubic root) and performs
             // error handling
             static
             vf_type
             rcbrt(arg_t<vf_type> vf);
-            
+
             // call roo12_k (12. root) and performs error handling
             static
             vf_type
@@ -322,26 +322,7 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type z = y*(y*x) - one;
     y = y + y*(z*horner(z, _FLOAT_T(3.0/8.0), _FLOAT_T(-0.5)));
 #endif
-    // y = y + _FLOAT_T(0.5) * y * (_FLOAT_T(1.0) - y*(y*x));
-    // vf_type y= native_rsqrt(x);
-    // y = y + 0.5* y * (vf_type(1) - d_ops::mul(x, y)*y)[0];
-    // y = y + 0.5 * y * (1.0 - y*(y*x));
-    //   = y - 0.5 * y * (y*(y*x) - 1.0);
-    vf_type xyh, xyl;
-    d_ops::mul12(xyh, xyl, x, y);
-    vf_type th;
-    if (d_real_traits<vf_type>::fma == true) {
-        th = y * xyh - one;
-        th = y * xyl + th;
-    } else {
-        vf_type yxyh, yxyl;
-        d_ops::mul12(yxyh, yxyl, y, xyh);
-        vf_type tl;
-        th = yxyh - one;
-        tl = yxyl + y*xyl;
-        th += tl;
-    }
-    y = y + (_FLOAT_T(-0.5)*y) * th;
+    y = impl::root_r2::order2<float, true>(y, x);
     return y;
 }
 
