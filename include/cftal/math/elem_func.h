@@ -322,7 +322,7 @@ rsqrt_k(arg_t<vf_type> x)
     vf_type z = y*(y*x) - one;
     y = y + y*(z*horner(z, _FLOAT_T(3.0/8.0), _FLOAT_T(-0.5)));
 #endif
-    y = impl::root_r2::order2<float, true>(y, x);
+    y = impl::root_r2::order2<_FLOAT_T, true>(y, x);
     return y;
 }
 
