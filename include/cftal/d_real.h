@@ -1368,7 +1368,7 @@ muladd22(_T& rh, _T& rl,
     auto _t7 = _t2 + cl;
     auto _t8 = _t4 + _t7;
     auto _t9 = _t5 + _t6;
-    auto _t10 = _t8 + _t9;
+    _T _t10 = _t8 + _t9;
     add12(rh, rl, _t3, _t10);
 }
 
@@ -1402,11 +1402,9 @@ div212(_T& rh, _T& rl,
     _T _t= xh / yh;
     _T _rh, _rl;
     mul12(_rh, _rl, _t,  yh);
-    _rh = xh - _rh;
-    _rl = xl - _rl;
-    _rh = _rh + _rl;
-    _rh = _rh / yh;
-    add12(rh, rl, _t, _rh);
+    auto _u = xl - _rl;
+    _T _v = ((xh - _rh) + _u) /yh;
+    add12(rh, rl, _t, _v);
 }
 
 template <typename _T, bool _FMA>
@@ -1422,10 +1420,8 @@ div122(_T& rh, _T& rl,
     _T _t= xh / yh;
     _T _rh, _rl;
     mul122(_rh, _rl, _t, yh, yl);
-    _rh = xh - _rh;
-    _rh = _rh + _rl;
-    _rh = _rh /yh;
-    add12(rh, rl, _t, _rh);
+    _T _v = ((xh - _rh) - _rl)/yh;
+    add12(rh, rl, _t, _v);
 }
 
 /*
@@ -1455,11 +1451,9 @@ div22(_T& rh, _T& rl,
     _T _t= xh / yh;
     _T _rh, _rl;
     mul122(_rh, _rl, _t, yh, yl);
-    _rh = xh - _rh;
-    _rl = xl - _rl;
-    _rh = _rh + _rl;
-    _rh = _rh /yh;
-    add12(rh, rl, _t, _rh);
+    auto _u = xl - _rl;
+    _T _v = ((xh - _rh) + _u)/ yh;
+    add12(rh, rl, _t, _v);
 }
 
 template <typename _T, bool _FMA>
@@ -1475,11 +1469,9 @@ div21(_T& r,
     _T _t= xh / yh;
     _T _rh, _rl;
     mul122(_rh, _rl, _t, yh, yl);
-    _rh = xh - _rh;
-    _rl = xl - _rl;
-    _rh = _rh + _rl;
-    _rh = _rh /yh;
-    r = _t + _rh;
+    auto _u = xl - _rl;
+    _T _v = ((xh - _rh) + _u)/ yh;
+    r = _t + _v;
 }
 
 template <typename _T, bool _FMA>
