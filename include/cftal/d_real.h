@@ -1338,13 +1338,14 @@ muladd212(_T& rh, _T& rl,
           const _T& a,
           const _T& bh, const _T& bl)
 {
-    _T _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8;
+    _T _t1, _t2;
     mul12(_t1, _t2, a, bh);
+    _T _t3, _t4;
     add12(_t3,_t4,ch,_t1);
-    _t5 = bl * a;
-    _t6 = cl + _t2;
-    _t7 = _t5 + _t6;
-    _t8 = _t7 + _t4;
+    auto _t5 = bl * a;
+    auto _t6 = cl + _t2;
+    auto _t7 = _t5 + _t6;
+    _T _t8 = _t7 + _t4;
     add12(rh, rl, _t3, _t8);
 }
 
@@ -1358,16 +1359,16 @@ muladd22(_T& rh, _T& rl,
          const _T& ah, const _T& al,
          const _T& bh, const _T& bl)
 {
-    double _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8;
-    double _t9, _t10;
+    _T _t1, _t2;
     mul12(_t1, _t2, ah, bh);
+    _T _t3, _t4;
     add12(_t3, _t4, ch, _t1);
-    _t5 = ah * bl;
-    _t6 = al * bh;
-    _t7 = _t2 + cl;
-    _t8 = _t4 + _t7;
-    _t9 = _t5 + _t6;
-    _t10 = _t8 + _t9;
+    auto _t5 = ah * bl;
+    auto _t6 = al * bh;
+    auto _t7 = _t2 + cl;
+    auto _t8 = _t4 + _t7;
+    auto _t9 = _t5 + _t6;
+    auto _t10 = _t8 + _t9;
     add12(rh, rl, _t3, _t10);
 }
 
@@ -1383,9 +1384,7 @@ div12(_T& rh, _T& rl,
     _T _ch = xh / yh;
     _T _uh, _ul;
     mul12(_uh, _ul, _ch, yh);
-    _T _cl = xh - _uh;
-    _cl-= _ul;
-    _cl/= yh;
+    auto _cl = ((xh - _uh) - _ul)/yh;
     rh = _ch + _cl;
     rl = (_ch - rh) + _cl;
 }
