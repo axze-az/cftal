@@ -867,9 +867,9 @@ cftal::d_real_ops_common<_T>::
 add122(_T& zh, _T& zl,
        const _T& a, const _T& bh, const _T& bl)
 {
-    _T _t1, _t2, _t3;
+    _T _t1, _t2;
     add12(_t1,_t2, a, bh);
-    _t3 = _t2 + (bl);
+    _T _t3 = _t2 + (bl);
     add12(zh, zl,_t1,_t3);
 }
 
@@ -881,9 +881,9 @@ cftal::d_real_ops_common<_T>::
 add122cond(_T& zh, _T& zl,
            const _T& a, const _T& bh, const _T& bl)
 {
-    _T _t1, _t2, _t3;
+    _T _t1, _t2;
     add12cond(_t1,_t2, a, bh);
-    _t3 = _t2 + (bl);
+    _T _t3 = _t2 + (bl);
     add12(zh, zl,_t1,_t3);
 }
 
@@ -895,9 +895,9 @@ cftal::d_real_ops_common<_T>::
 add212(_T& zh, _T& zl,
        const _T& ah, const _T& al, const _T& b)
 {
-    _T _t1, _t2, _t3;
+    _T _t1, _t2;
     add12(_t1, _t2, ah, b);
-    _t3 = _t2 + al;
+    _T _t3 = _t2 + al;
     add12(zh, zl, _t1, _t3);
 }
 
@@ -909,9 +909,9 @@ cftal::d_real_ops_common<_T>::
 add212cond(_T& zh, _T& zl,
            const _T& ah, const _T& al, const _T& b)
 {
-    _T _t1, _t2, _t3;
+    _T _t1, _t2;
     add12cond(_t1, _t2, ah, b);
-    _t3 = _t2 + al;
+    _T _t3 = _t2 + al;
     add12(zh, zl, _t1, _t3);
 }
 
@@ -948,11 +948,9 @@ void
 cftal::d_real_ops_fma<_T, true>::
 muladd12(_T& rh, _T& rl, const _T& c, const _T& a, const _T& b)
 {
-    _T t0 = a;
-    _T t1 = b;
-    _T h= fma(t0, t1, c);
-    _T t2= h - c;
-    _T l= fms(t0, t1, t2);
+    _T h= fma(a, b, c);
+    _T t= h - c;
+    _T l= fms(a, b, t);
     rh = h;
     rl = l;
 }
