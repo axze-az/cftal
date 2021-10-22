@@ -743,11 +743,19 @@ void
 cftal::d_real_ops_common<_T>::
 add12(_T& s, _T& r, const _T& a, const _T& b)
 {
+#if 1
+    _T _s = a + b;
+    auto t = _s - a;
+    _T _r = b - t;
+    s = _s;
+    r = _r;
+#else
     _T _a = a;
     _T _b = b;
     s = _a + _b;
     _T t0 = s - _a;
     r = _b - t0;
+#endif    
 }
 
 template <typename _T>
@@ -757,6 +765,16 @@ void
 cftal::d_real_ops_common<_T>::
 add12cond(_T& s, _T& r, const _T& a, const _T& b)
 {
+#if 1
+    _T _s = a + b;
+    auto u1 = _s - a;
+    auto u2 = _s - u1;
+    auto u3 = b - u1;
+    auto u4 = a - u2;
+    _T _r = u4 + u3;
+    s = _s;
+    r = _r;
+#else    
     _T _a= a;
     _T _b= b;
     s = _a + _b;
@@ -765,6 +783,7 @@ add12cond(_T& s, _T& r, const _T& a, const _T& b)
     _T _u3 = _b - _u1;
     _T _u4 = _a - _u2;
     r = _u4 + _u3;
+#endif    
 }
 
 template <typename _T>
@@ -1116,10 +1135,10 @@ mul12(_T& rh, _T& rl, const _T& a, const _T& b)
     traits::split(b, b_h, b_l);
 #if 1
     rh = a*b;
-    _T ahbh = a_h * b_h;
-    _T ahbl = a_h * b_l;
-    _T albh = a_l * b_h;
-    _T albl = a_l * b_l;
+    auto ahbh = a_h * b_h;
+    auto ahbl = a_h * b_l;
+    auto albh = a_l * b_h;
+    auto albl = a_l * b_l;
     rl = (((ahbh - rh) + ahbl) + albh) + albl;
 #else
     rh=a*b;
