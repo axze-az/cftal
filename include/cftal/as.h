@@ -27,7 +27,12 @@ namespace cftal {
         // generic working class for cftal::as
         template <typename _D, typename _S>
         struct cast_bits {
-
+#if 1
+            static _D v(const _S& s) {
+                const _D& ds=reinterpret_cast<const _D&>(s);
+                return ds;
+            }
+#else
             union ds {
                 _D _d;
                 _S _s;
@@ -38,6 +43,7 @@ namespace cftal {
                 ds c{s};
                 return c._d;
             }
+#endif            
         };
 
         // specialization for cftal::as<_T, _T>
