@@ -13,6 +13,7 @@
 #include <cftal/math/func_constants.h>
 #include <cftal/math/horner.h>
 #include <cftal/type_traits.h>
+#include <cftal/math/misc.h>
 
 namespace cftal {
 
