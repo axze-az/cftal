@@ -498,7 +498,6 @@ namespace cftal {
 
 template <typename _T, typename _C, std::size_t _N1, std::size_t _N2>
 inline
-__attribute__((optimize("no-unroll-loops")))
 __attribute__((__always_inline__))
 cftal::d_real<_T>
 cftal::math::
@@ -557,7 +556,6 @@ lanczos_rational_at(const _T& x,
 template <typename _T, typename _C,
           std::size_t _N1, std::size_t _N2>
 inline
-__attribute__((optimize("no-unroll-loops")))
 __attribute__((__always_inline__))
 _T
 cftal::math::

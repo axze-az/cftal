@@ -813,7 +813,6 @@ __lgamma_1_2_k(arg_t<vhf_type> x)
 }
 
 template <typename _T>
-__attribute__((optimize("no-unroll-loops")))
 typename cftal::math::spec_func_core<float, _T>::reduced_small_gamma_args_vhf
 cftal::math::spec_func_core<float, _T>::
 __lgamma_reduce_small_k(arg_t<vhf_type> xc)
@@ -1019,7 +1018,6 @@ __lgamma_1_2_tbl_k(arg_t<vf_type> xch, arg_t<vf_type> xcl)
 }
 
 template <typename _T>
-__attribute__((optimize("no-unroll-loops")))
 typename cftal::math::spec_func_core<float, _T>::reduced_small_gamma_args
 cftal::math::spec_func_core<float, _T>::
 __lgamma_reduce_small_k(arg_t<vf_type> xc)
