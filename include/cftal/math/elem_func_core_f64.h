@@ -857,8 +857,7 @@ cbrt_k(arg_t<vf_type> xc)
     vf_type xp=abs(xc);
     vf_type mm0;
     auto e=__frexp_k(mm0, xp);
-    const vli_type msk64=0xFFFFFFFF00000000LL;
-    const vi2_type msk=as<vi2_type>(msk64);
+    const int64_t msk64=0xFFFFFFFF00000000LL;
     // do a division by 3, round to - infinity:
     vi2_type e3 = (((e)*fac_1_3)>>shift_1_3) /* -(e>>31) */;
     vi2_type r = e - e3 - (e3<<1);
@@ -883,7 +882,8 @@ cbrt_k(arg_t<vf_type> xc)
 #if 1
     vi2_type rc= r + _T::sel_val_or_zero(r_gt_z, -3);
     rc <<= 20;
-    vi2_type rc_exp= rc & msk;
+    vli_type rc_l=as<vli_type>(rc) & msk64;
+    vi2_type rc_exp=as<vi2_type>(rc_l);
     // correction of the exponent of mm0:
     vi2_type mm0i=as<vi2_type>(mm0) + rc_exp;
     mm0=as<vf_type>(mm0i);
@@ -986,7 +986,9 @@ cbrt_k(arg_t<vf_type> xc)
     mm = impl::root_3::order5<double>(mm, mm0);
     // no denormal results are possible
 #if 1
-    vi2_type e3c_exp=(e3c<<20) & msk;
+    vi2_type e3c_exp=(e3c<<20);
+    vli_type e3c_exp_l=as<vli_type>(e3c_exp) & msk64;
+    e3c_exp= as<vi2_type>(e3c_exp_l);
     vi2_type mmi=as<vi2_type>(mm) + e3c_exp;
     mm=as<vf_type>(mmi);
 #else
@@ -1010,8 +1012,7 @@ rcbrt_k(arg_t<vf_type> xc)
     vf_type xp=abs(xc);
     vf_type mm0;
     auto e=__frexp_k(mm0, xp);
-    const vli_type msk64=0xFFFFFFFF00000000LL;
-    const vi2_type msk=as<vi2_type>(msk64);
+    const int64_t msk64=0xFFFFFFFF00000000LL;
     // do a division by 3, round to - infinity:
     vi2_type e3 = (((e)*fac_1_3)>>shift_1_3) /* -(e>>31) */;
     vi2_type r = e - e3 - (e3<<1);
@@ -1036,7 +1037,8 @@ rcbrt_k(arg_t<vf_type> xc)
 #if 1
     vi2_type rc= r + _T::sel_val_or_zero(r_gt_z, -3);
     rc <<= 20;
-    vi2_type rc_exp= rc & msk;
+    vli_type rc_l=as<vli_type>(rc) & msk64;
+    vi2_type rc_exp=as<vi2_type>(rc_l);
     // correction of the exponent of mm0:
     vi2_type mm0i=as<vi2_type>(mm0) + rc_exp;
     mm0=as<vf_type>(mm0i);
@@ -1115,7 +1117,9 @@ rcbrt_k(arg_t<vf_type> xc)
     mm = impl::root_r3::order5<double>(mm, mm0);
     // no denormal results are possible
 #if 1
-    vi2_type e3c_exp=(e3c<<20) & msk;
+    vi2_type e3c_exp=(e3c<<20);
+    vli_type e3c_exp_l=as<vli_type>(e3c_exp) & msk64;
+    e3c_exp= as<vi2_type>(e3c_exp_l);
     vi2_type mmi=as<vi2_type>(mm) - e3c_exp;
     mm=as<vf_type>(mmi);
 #else  
