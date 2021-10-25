@@ -1145,8 +1145,7 @@ root12_k(arg_t<vf_type> xc)
     vf_type mm0;
     auto e=__frexp_k(mm0, xp);
 
-    const vli_type msk64=0xFFFFFFFF00000000LL;
-    const vi2_type msk=as<vi2_type>(msk64);
+    const int64_t msk64=0xFFFFFFFF00000000LL;
     // do a division by 12, round to - infinity:
     vi2_type e12= (e*fac_1_12)>>shift_1_12;
     // r is always in [0, 1, 11] because of the round down
@@ -1173,7 +1172,9 @@ root12_k(arg_t<vf_type> xc)
     // -1   0.5     -1           -4
     // -2   0.25    -2           -5
     vi2_type rc= r + _T::sel_val_or_zero(r_gt_z, -12);
-    vi2_type rc_exp= (rc << 20) & msk;
+    rc <<= 20;
+    vli_type rc_l= as<vli_type>(rc) & msk64;
+    vi2_type rc_exp= as<vi2_type>(rc_l);
     // correction of the exponent of mm0:
     vi2_type mm0i=as<vi2_type>(mm0) + rc_exp;
     mm0=as<vf_type>(mm0i);
@@ -1275,7 +1276,9 @@ root12_k(arg_t<vf_type> xc)
     // only one division and much parallelism
     mm = impl::root_12::householder8<double>(mm, mm0);
 #endif
-    vi2_type e12c_exp=(e12c<<20) & msk;
+    vi2_type e12c_exp=(e12c<<20);
+    vli_type e12c_exp_l=as<vli_type>(e12c_exp) & msk64;
+    e12c_exp= as<vi2_type>(e12c_exp_l);    
     vi2_type mmi=as<vi2_type>(mm) + e12c_exp;
     mm=as<vf_type>(mmi);
     // mm = copysign(mm, xc);
