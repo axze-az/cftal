@@ -520,13 +520,13 @@ namespace cftal {
             __log_tbl_k12(arg_t<vf_type> xc);
 
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-            
+
             enum log_func {
                 c_log_e,
                 c_log_2,
                 c_log_10
             };
-            
+
             template <log_func _LFUNC>
             static
             vf_type
@@ -1065,9 +1065,9 @@ cbrt_k(arg_t<vf_type> xc)
                         cbrt_c0);
     // 1st iteration
     mm = impl::root_3::order3<float>(mm, mm0);
-#endif                        
+#endif
     // round mm to 8 bits = int(24/3)
-    mm=round_nearest_to_even_last<24-24/3>::bits(mm);
+    mm=round_to_nearest_even_last_bits<24-24/3>(mm);
     // second iteration
     mm = impl::root_3::order5<float>(mm, mm0);
     // no denormal results are possible
@@ -1165,7 +1165,7 @@ rcbrt_k(arg_t<vf_type> xc)
     vf_type mm02=mm0*mm0;
     vf_type mm = horner2(mm0, mm02, ci);
     // round mm to 8 bits = int(24/3)
-    mm=round_nearest_to_even_last<24-24/3>::bits(mm);
+    mm=round_to_nearest_even_last_bits<24-24/3>(mm);
     // second iteration
     mm = impl::root_r3::order5<float>(mm, mm0);
     // no denormal results are possible
@@ -2498,7 +2498,7 @@ __reduce_log_arg(vf_type& xr,
 
 template <typename _T>
 inline
-typename 
+typename
 cftal::math::elem_func_core<float, _T>::vi_type
 cftal::math::elem_func_core<float, _T>::
 __reduce_log_arg(vf_type& xr,
@@ -2576,7 +2576,7 @@ __log_poly_k_poly(arg_t<vf_type> r, arg_t<vf_type> r2)
     };
 #if 1
     vf_type p= horner2(r, r2, ci);
-#else    
+#else
     vf_type r4=r2*r2;
     vf_type p= horner4(r, r2, r4, ci);
 #endif
@@ -2608,14 +2608,14 @@ __log_poly_k(arg_t<vf_type> xc)
     d_ops::add12(l, ei, l, r2c2);
     e += ei;
     d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
-    e += ei;    
-#if 0 
+    e += ei;
+#if 0
     d_ops::add12(l, ei, l, r2*(r*p));
-    e += ei;    
+    e += ei;
     vf_type ll=e;
 #else
     vf_type ll=e + r2*(r*p);
-#endif    
+#endif
     return l+ll;
 }
 
@@ -2827,7 +2827,7 @@ __log_tbl_k_d(arg_t<vf_type> xc)
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type r;
     r = xr - 1.0f;
-    
+
     vf_type r2= r*r;
     vhf_type rd= cvt<vhf_type>(r);
     vhf_type r2d=rd*rd;
@@ -2907,9 +2907,9 @@ __log_tbl_k12_d(arg_t<vf_type> xc)
     };
     vhf_type rd= cvt<vhf_type>(r);
     vhf_type r2d=rd*rd;
-    vhf_type kf=cvt<vhf_type>(ki);    
-    vhf_type pd=horner2(rd, r2d, ci);    
-    
+    vhf_type kf=cvt<vhf_type>(ki);
+    vhf_type pd=horner2(rd, r2d, ci);
+
     vhf_type ll=rd + r2d*pd;
     vhf_type lh;
     using ctbl=impl::d_real_constants<d_real<double>, double>;
@@ -2952,7 +2952,7 @@ __log1p_poly_k(arg_t<vf_type> xc)
     d_ops::add12(l, ei, l, r2c2);
     e += ei;
     d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
-    e += ei;        
+    e += ei;
 
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0f), 1.0f-(u-x), x-(u-1.0f));
@@ -3010,7 +3010,7 @@ log2_k(arg_t<vf_type> xc)
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
     vf_type r=xr-1.0;
-    
+
     // log2(x) = kf + (r + r2*c2 + r3*p)/ln2;
     vf_type r2, r2l;
     d_ops::sqr12(r2, r2l, r);
@@ -3047,7 +3047,7 @@ log2_k(arg_t<vf_type> xc)
     vf_type res, t;
     d_ops::add12(res, t, kf, l0);
     res += t +(l1+l2+l3);
-    return res;   
+    return res;
 }
 
 template <typename _T>
@@ -3060,7 +3060,7 @@ log10_k(arg_t<vf_type> xc)
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
     vf_type r=xr-1.0;
-   
+
     // log10(x) = kf*lg(2) + (r + r2*c2 + r3*p)/ln10;
     vf_type r2, r2l;
     d_ops::sqr12(r2, r2l, r);
@@ -3069,8 +3069,8 @@ log10_k(arg_t<vf_type> xc)
     vf_type l= log_c2*r2;
     vf_type ei;
     d_ops::add12(l, ei, r, l);
-    vf_type ll=(ei + log_c2*r2l) + r2*(r*p);    
-    
+    vf_type ll=(ei + log_c2*r2l) + r2*(r*p);
+
     // x^ : +0xd.e6p-5f
     constexpr
     const float invln10hi=+4.3432617188e-01f;
@@ -3095,11 +3095,11 @@ log10_k(arg_t<vf_type> xc)
         l2 = l2 * invln10hi;
         l3 = (l3 * invln10hi) + ll* invln10lo;
     }
-    using ctbl=impl::d_real_constants<d_real<float>, float>;   
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
     vf_type res, t;
     d_ops::add12(res, t, kf*ctbl::m_lg2_cw[0], l0);
     res += (t +(l1+l2+l3)) + kf * ctbl::m_lg2_cw[1];
-    return res;       
+    return res;
 }
 
 template <typename _T>

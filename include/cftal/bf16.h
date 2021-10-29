@@ -93,10 +93,10 @@ cftal::impl::_cvt_f32_to_bf16(const vec<float, _N>& v)
 {
 #if 1
     using vf_type = vec<float, _N>;
-    vf_type vne=round_nearest_to_even_last<16>::bits(v);
+    vf_type vne=round_to_nearest_even_last_bits<16>(v);
     typename vf_type::mask_type infnan=isinf(v)|isnan(v);
     vne = select(infnan, v, vne);
-    auto t=as<vec<cftal::mf_bf16_t, 2*_N> >(vne);    
+    auto t=as<vec<cftal::mf_bf16_t, 2*_N> >(vne);
 #else
     using vi2_type= vec<int32_t, _N>;
     using vmi2_type = typename vec<int32_t, _N>::mask_type;
