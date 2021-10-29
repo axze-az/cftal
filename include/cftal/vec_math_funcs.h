@@ -213,9 +213,9 @@ cftal::impl::round_to_nearest_even_last_bits(const _VEC_FLOAT& v)
     vi_t i=as<vi_t>(v);
     vi_t rbits=i & trailing_mask;
     vi_t lbit= i & bk;
-    const vi_t v_z=0LL;
+    constexpr const int_type z=0LL;
     const vi_t v_br=br;
-    vmi_t sel_zero_offs= (rbits == v_br) & (lbit==v_z);
+    vmi_t sel_zero_offs= (rbits == v_br) & (lbit==z);
     vi_t offs=select_zero_or_val(sel_zero_offs, v_br);
     i += offs;
     i &= mask;
