@@ -47,6 +47,23 @@ namespace cftal {
     std::enable_if_t<cftal::is_integral_v<_T>, _T>
     average(const _T& a, const _T& b);
     
+    
+    namespace impl {
+        // round the last _BITS to nearest, ties to even
+        template <typename _FLOAT, typename _VEC_FLOAT, 
+                  typename _VEC_INT, typename _INT,
+                  std::size_t _BITS>
+        _VEC_FLOAT
+        round_to_nearest_even_last_bits(const _VEC_FLOAT& v); 
+    
+        // round the last _BITS to zero
+        template <typename _FLOAT, typename _VEC_FLOAT, 
+                  typename _VEC_INT, typename _INT,
+                  std::size_t _BITS>
+        _VEC_FLOAT
+        round_to_zero_last_bits(const _VEC_FLOAT& v); 
+    }
+    
     // round the last _BITS to nearest, ties to even
     template <std::size_t _BITS>
     struct round_nearest_to_even_last {
