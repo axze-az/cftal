@@ -568,7 +568,7 @@ inline __m128d
 cftal::x86::select_v2f64<_P0, _P1>::v(__m128d a, __m128d b)
 {
 #if defined (__SSE4_1__)
-    const int sm=csel2<_P0, _P1>::val;
+    constexpr const int sm=csel2<_P0, _P1>::val;
     return _mm_blend_pd(b, a, sm & 3);
 #else
     constexpr const uint32_t m1=-1;
@@ -586,7 +586,7 @@ inline __m128
 cftal::x86::select_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
 {
 #if defined (__SSE4_1__)
-    const int sm=csel4<_P0, _P1, _P2, _P3>::val;
+    constexpr const int sm=csel4<_P0, _P1, _P2, _P3>::val;
     return _mm_blend_ps(b, a, sm & 0xf);
 #else
     constexpr const uint32_t m1=-1;
@@ -652,26 +652,26 @@ v(__m128i a, __m128i b)
         return select_v8u16<_P00, _P02, _P04, _P06, 
                             _P08, _P10, _P12, _P14>::v(a, b);
     }        
-    const uint8_t p00 = _P00 ? -1 : 0;
-    const uint8_t p01 = _P01 ? -1 : 0;
-    const uint8_t p02 = _P02 ? -1 : 0;
-    const uint8_t p03 = _P03 ? -1 : 0;
-    const uint8_t p04 = _P04 ? -1 : 0;
-    const uint8_t p05 = _P05 ? -1 : 0;
-    const uint8_t p06 = _P06 ? -1 : 0;
-    const uint8_t p07 = _P07 ? -1 : 0;
-    const uint8_t p08 = _P08 ? -1 : 0;
-    const uint8_t p09 = _P09 ? -1 : 0;
-    const uint8_t p10 = _P10 ? -1 : 0;
-    const uint8_t p11 = _P11 ? -1 : 0;
-    const uint8_t p12 = _P12 ? -1 : 0;
-    const uint8_t p13 = _P13 ? -1 : 0;
-    const uint8_t p14 = _P14 ? -1 : 0;
-    const uint8_t p15 = _P15 ? -1 : 0;
-    const __m128i msk=const_v16u8<p00, p01, p02, p03,
-                                  p04, p05, p06, p07,
-                                  p08, p09, p10, p11,
-                                  p12, p13, p14, p15>::iv();
+    constexpr const uint8_t p00 = _P00 ? -1 : 0;
+    constexpr const uint8_t p01 = _P01 ? -1 : 0;
+    constexpr const uint8_t p02 = _P02 ? -1 : 0;
+    constexpr const uint8_t p03 = _P03 ? -1 : 0;
+    constexpr const uint8_t p04 = _P04 ? -1 : 0;
+    constexpr const uint8_t p05 = _P05 ? -1 : 0;
+    constexpr const uint8_t p06 = _P06 ? -1 : 0;
+    constexpr const uint8_t p07 = _P07 ? -1 : 0;
+    constexpr const uint8_t p08 = _P08 ? -1 : 0;
+    constexpr const uint8_t p09 = _P09 ? -1 : 0;
+    constexpr const uint8_t p10 = _P10 ? -1 : 0;
+    constexpr const uint8_t p11 = _P11 ? -1 : 0;
+    constexpr const uint8_t p12 = _P12 ? -1 : 0;
+    constexpr const uint8_t p13 = _P13 ? -1 : 0;
+    constexpr const uint8_t p14 = _P14 ? -1 : 0;
+    constexpr const uint8_t p15 = _P15 ? -1 : 0;
+    constexpr const __m128i msk=const_v16u8<p00, p01, p02, p03,
+                                            p04, p05, p06, p07,
+                                            p08, p09, p10, p11,
+                                            p12, p13, p14, p15>::iv();
 #if defined (__SSE4_1__)
     return _mm_blendv_epi8(b, a, msk);
 #else
@@ -686,7 +686,7 @@ template <bool _P0, bool _P1, bool _P2, bool _P3>
 inline __m256d
 cftal::x86::select_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
 {
-    const int sm=csel4<_P0, _P1, _P2, _P3>::val;
+    constexpr const int sm=csel4<_P0, _P1, _P2, _P3>::val;
     return _mm256_blend_pd(b, a, sm & 0x0f);
 }
 
@@ -696,7 +696,7 @@ inline __m256
 cftal::x86::
 select_v8f32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256 a, __m256 b)
 {
-    const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
+    constexpr const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
     return _mm256_blend_ps(b, a, sm & 0xff);
 }
 #endif
@@ -708,7 +708,7 @@ inline __m256i
 cftal::x86::
 select_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i b)
 {
-    const int sm=csel8<_P0, _P0, _P1, _P1, _P2, _P2, _P3, _P3>::val;
+    constexpr const int sm=csel8<_P0, _P0, _P1, _P1, _P2, _P2, _P3, _P3>::val;
     return _mm256_blend_epi32(b, a, sm & 0xff);
 }
 
@@ -719,7 +719,7 @@ inline __m256i
 cftal::x86::
 select_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m256i a, __m256i b)
 {
-    const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
+    constexpr const int sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val;
     return _mm256_blend_epi32(b, a, sm & 0xff);
 }
 
