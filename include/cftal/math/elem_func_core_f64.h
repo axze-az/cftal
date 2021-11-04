@@ -729,10 +729,12 @@ nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc)
     vli_type ux_inc= ux + 1;
     vli_type ux_dec= ux - 1;
     // decrement required if ax > ay or (ux^uy & sgn) != 0
+    constexpr const int64_t z=0;    
     vmli_type opp_sgn=
-        vli_type((ux^uy) & sign_f64_msk::v.s64()) != vli_type(0LL);
+        vli_type((ux^uy) & sign_f64_msk::v.s64()) != z;
+    constexpr const int64_t one=1;
     vli_type r= _T::sel((ax > ay) | opp_sgn, ux_dec, ux_inc);
-    vli_type r0= _T::sel(ay == 0, uy, (uy & sign_f64_msk::v.s64()) | 1LL);
+    vli_type r0= _T::sel(ay == 0, uy, (uy & sign_f64_msk::v.s64()) | one);
     r = _T::sel(ax == 0, r0, r);
     r = _T::sel(ux == uy, uy, r);
     vf_type rf=_T::as_vf(r);
@@ -1669,8 +1671,8 @@ __reduce_exp_arg(vf_type& xrh,
     const double _ln2_32_cw_l=+5.1456092446553382152435e-14;
     vf_type kf = rint(vf_type(x * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<double>::EXP_IDX_MASK;
-    k = ki >> exp_data<double>::EXP_SHIFT;
+    idx = ki & int32_t(exp_data<double>::EXP_IDX_MASK);
+    k = ki >> int32_t(exp_data<double>::EXP_SHIFT);
     vf_type hi = x - kf * _ln2_32_cw_h;
     xrh = hi - kf * _ln2_32_cw_l;
     vf_type dx = hi-xrh;
@@ -2260,9 +2262,11 @@ __reduce_log_arg(vf_type& xr,
                        vi2_type(-_T::bias()));
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
-    h += (0x3ff0000000000000LL - offs.s64());
+    constexpr const int64_t one=0x3ff0000000000000LL;
+    h += (one - offs.s64());
     vi2_type h2=as<vi2_type>(h);
-    h = (h&0x000fffffffffffffLL) + offs.s64();
+    constexpr const int64_t msk=0x000fffffffffffffLL;
+    h = (h & msk) + offs.s64();
     k += (h2>>20);
     xr = as<vf_type>(h);
     return k;
@@ -2287,9 +2291,11 @@ __reduce_log_arg(vf_type& xr,
 
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
-    h += (0x3ff0000000000000LL - offs.s64());
+    constexpr const int64_t one=0x3ff0000000000000LL;
+    h += (one - offs.s64());
     vi2_type h2=as<vi2_type>(h);
-    h &= 0x000fffffffffffffLL;
+    constexpr const int64_t msk=0x000fffffffffffffLL;
+    h &= msk;
     vi2_type m=as<vi2_type>(h);
     vi2_type idx2=m >> (20 - pow_log_data<double>::LOG_SHIFT);
     idx=_T::vi2_odd_to_vi(idx2);
