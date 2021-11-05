@@ -25,7 +25,7 @@ namespace cftal {
         template <std::size_t _N,
                   typename _X, typename _LCK, typename _C>
         _X
-        horner_idx(_X x, const _LCK& lck, const _C* tbl);
+        horner_idx(const _X& x, const _LCK& lck, const _C* tbl);
 
         // data layout of tbl[]:
         // /* idx == 0 */ a_{n-1}, a_{n-2}, ... a_1, a_0,
@@ -35,7 +35,8 @@ namespace cftal {
         template <std::size_t _N,
                   typename _X, typename _LCK, typename _C>
         _X
-        horner2_idx(_X x, _X x2, const _LCK& lck, const _C* tbl);
+        horner2_idx(const _X& x, const _X& x2,
+                    const _LCK& lck, const _C* tbl);
 
         // data layout of tbl[]:
         // /* idx == 0 */ a_{n-1}, a_{n-2}, ... a_1, a_0,
@@ -45,7 +46,8 @@ namespace cftal {
         template <std::size_t _N,
                   typename _X, typename _LCK, typename _C>
         _X
-        horner4_idx(_X x, _X x2, _X x4, const _LCK& lck, const _C* tbl);
+        horner4_idx(const _X& x, const _X& x2, const _X& x4,
+                    const _LCK& lck, const _C* tbl);
     }
 }
 
@@ -54,7 +56,8 @@ template <std::size_t _N, typename _X, typename _LCK, typename _C>
 inline
 _X
 cftal::math::
-horner_idx(_X x, const _LCK& lck, const _C* tbl)
+horner_idx(const _X& x,
+           const _LCK& lck, const _C* tbl)
 {
     _X c0 = lck.from(tbl+0);
     _X r=c0;
@@ -71,7 +74,8 @@ template <std::size_t _N, typename _X, typename _LCK, typename _C>
 inline
 _X
 cftal::math::
-horner2_idx(_X x, _X x2, const _LCK& lck, const _C* tbl)
+horner2_idx(const _X& x, const _X& x2,
+            const _LCK& lck, const _C* tbl)
 {
     static_assert(_N > 1,
                   "invalid call to horner2_idx(x, x2, lookup, array)");
@@ -100,7 +104,8 @@ template <std::size_t _N, typename _X, typename _LCK, typename _C>
 inline
 _X
 cftal::math::
-horner4_idx(_X x, _X x2, _X x4, const _LCK& lck, const _C* tbl)
+horner4_idx(const _X& x, const _X& x2, const _X& x4,
+            const _LCK& lck, const _C* tbl)
 {
     static_assert(_N > 3,
                   "invalid call to horner4_idx(x, x2, x4, lookup, array)");
