@@ -491,12 +491,12 @@ namespace cftal {
     elements_equal(const vec<_T, 1>& v);
 
     template <typename _T, typename _I, std::size_t _VEC_LEN>
-    class variable_lookup_table {
+    class variable_vec_lookup_table {
     private:
-        variable_lookup_table<_T, _I, _VEC_LEN/2> _lh;
-        variable_lookup_table<_T, _I, _VEC_LEN/2> _hh;
+        variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _lh;
+        variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _hh;
     public:
-        variable_lookup_table(const vec<_I, _VEC_LEN>& idx)
+        variable_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
             : _lh(low_half(idx)), _hh(high_half(idx)) {}
         vec<_T, _VEC_LEN>
         from(const _T* tbl) const {
@@ -507,9 +507,9 @@ namespace cftal {
     };
 
     template <typename _T, typename _I, std::size_t _VEC_LEN>
-    variable_lookup_table<_T, _I, _VEC_LEN>
+    variable_vec_lookup_table<_T, _I, _VEC_LEN>
     make_variable_lookup_table(const vec<_I, _VEC_LEN>& idx) {
-        return variable_lookup_table<_T, _I, _VEC_LEN>(idx);
+        return variable_vec_lookup_table<_T, _I, _VEC_LEN>(idx);
     }
 
     namespace impl {
@@ -517,14 +517,14 @@ namespace cftal {
         // a safe interface
         template <std::size_t _TABLE_LEN, typename _T,
                   typename _I, std::size_t _VEC_LEN>
-        class fixed_lookup_table
-            : private variable_lookup_table<_T, _I, _VEC_LEN> {
+        class fixed_vec_lookup_table
+            : private variable_vec_lookup_table<_T, _I, _VEC_LEN> {
         private:
         public:
 #if 1
-            using base_type=variable_lookup_table<_T, _I, _VEC_LEN>;
+            using base_type=variable_vec_lookup_table<_T, _I, _VEC_LEN>;
             // constructor, prepares table lookups into _T[_TABLE_LEN]
-            fixed_lookup_table(const vec<_I, _VEC_LEN>& idx)
+            fixed_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
                 : base_type(idx) {}
             // perform the lookup using the prepared data
             vec<_T, _VEC_LEN>
@@ -533,11 +533,11 @@ namespace cftal {
             }
 #else
         private:
-            fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
-            fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
+            fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
+            fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
         public:
             // constructor, prepares table lookups into _T[_TABLE_LEN]
-            fixed_lookup_table(const vec<_I, _VEC_LEN>& idx)
+            fixed_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
                 : _lh(low_half(idx)), _hh(high_half(idx)) {}
             // perform the lookup using the prepared data
             vec<_T, _VEC_LEN>
@@ -551,17 +551,17 @@ namespace cftal {
     }
 
     // lookup table with a fixed length, delegates work to
-    // impl::fixed_lookup_table
+    // impl::fixed_vec_lookup_table
     template <std::size_t _TABLE_LEN, typename _T,
               typename _I, std::size_t _VEC_LEN>
-    class fixed_lookup_table
-        : public impl::fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN> {
+    class fixed_vec_lookup_table
+        : public impl::fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN> {
     private:
         using base_type=
-            impl::fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>;
+            impl::fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>;
     public:
         // constructor, prepares table lookups into _T[_TABLE_LEN]
-        fixed_lookup_table(const vec<_I, _VEC_LEN>& idx)
+        fixed_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
             : base_type(idx) {}
         // perform the lookup using the prepared data
         vec<_T, _VEC_LEN>
@@ -572,9 +572,9 @@ namespace cftal {
 
     template <std::size_t _TABLE_LEN, typename _T,
               typename _I, std::size_t _VEC_LEN>
-    fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>
+    fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>
     make_fixed_lookup_table(const vec<_I, _VEC_LEN>& idx) {
-        return fixed_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>(idx);
+        return fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>(idx);
     }
 
     // absolute value for signed integers

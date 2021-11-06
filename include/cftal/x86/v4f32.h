@@ -154,11 +154,11 @@ namespace cftal {
 
 #if defined (__AVX2__)
     template <>
-    class variable_lookup_table<float, int32_t, 4> {
+    class variable_vec_lookup_table<float, int32_t, 4> {
     private:
         vec<int32_t, 4> _msk;
     public:
-        variable_lookup_table(const vec<int32_t, 4>& idx);
+        variable_vec_lookup_table(const vec<int32_t, 4>& idx);
         vec<float, 4>
         from(const float* tbl) const;
     };
@@ -167,7 +167,7 @@ namespace cftal {
 #if defined (__SSSE3__)
     namespace impl {
         template <>
-        class fixed_lookup_table<4, float, int32_t, 4> {
+        class fixed_vec_lookup_table<4, float, int32_t, 4> {
             // a msk
             vec<int32_t, 4> _msk;
             // setup function for _msk
@@ -175,7 +175,7 @@ namespace cftal {
             vec<int32_t, 4>
             setup_msk(const vec<int32_t, 4>& idx);
         public:
-            fixed_lookup_table(const vec<int32_t, 4>& idx);
+            fixed_vec_lookup_table(const vec<int32_t, 4>& idx);
             // the lookup function
             vec<float, 4>
             fromp(const float*) const;
@@ -186,7 +186,7 @@ namespace cftal {
 #if defined (__AVX2__)
     namespace impl {
         template <>
-        class fixed_lookup_table<8, float, int32_t, 4> {
+        class fixed_vec_lookup_table<8, float, int32_t, 4> {
             // a msk
             vec<int32_t, 4> _msk;
             // setup function for _msk
@@ -194,7 +194,7 @@ namespace cftal {
             vec<int32_t, 4>
             setup_msk(const vec<int32_t, 4>& idx);
         public:
-            fixed_lookup_table(const vec<int32_t, 4>& idx);
+            fixed_vec_lookup_table(const vec<int32_t, 4>& idx);
             // the lookup function
             vec<float, 4>
             fromp(const float*) const;

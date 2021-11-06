@@ -627,15 +627,15 @@ cftal::v8f32 cftal::trunc(const v8f32& a)
 
 #if defined (__AVX2__)
 inline
-cftal::variable_lookup_table<float, int32_t, 8>::
-variable_lookup_table(const vec<int32_t, 8>& idx)
+cftal::variable_vec_lookup_table<float, int32_t, 8>::
+variable_vec_lookup_table(const vec<int32_t, 8>& idx)
     : _msk(idx)
 {
 }
 
 inline
 cftal::v8f32
-cftal::variable_lookup_table<float, int32_t, 8>::
+cftal::variable_vec_lookup_table<float, int32_t, 8>::
 from(const float* tbl) const
 {
     return _mm256_i32gather_ps(tbl, _msk(), sizeof(float));
@@ -644,7 +644,7 @@ from(const float* tbl) const
 
 inline
 __m256i
-cftal::impl::fixed_lookup_table<4, float, int32_t, 8>::
+cftal::impl::fixed_vec_lookup_table<4, float, int32_t, 8>::
 setup_msk(const vec<int32_t, 8>& idx)
 {
 #if defined (__AVX2__)
@@ -656,15 +656,15 @@ setup_msk(const vec<int32_t, 8>& idx)
 }
 
 inline
-cftal::impl::fixed_lookup_table<4, float, int32_t, 8>::
-fixed_lookup_table(const vec<int32_t, 8>& idx)
+cftal::impl::fixed_vec_lookup_table<4, float, int32_t, 8>::
+fixed_vec_lookup_table(const vec<int32_t, 8>& idx)
     : _msk(setup_msk(idx))
 {
 }
 
 inline
 cftal::v8f32
-cftal::impl::fixed_lookup_table<4, float, int32_t, 8>::
+cftal::impl::fixed_vec_lookup_table<4, float, int32_t, 8>::
 fromp(const float* tbl) const
 {
 #if defined (__AVX2__)
@@ -682,22 +682,22 @@ fromp(const float* tbl) const
 #if defined (__AVX2__)
 inline
 __m256i
-cftal::impl::fixed_lookup_table<8, float, int32_t, 8>::
+cftal::impl::fixed_vec_lookup_table<8, float, int32_t, 8>::
 setup_msk(const vec<int32_t, 8>& idx)
 {
     return idx();
 }
 
 inline
-cftal::impl::fixed_lookup_table<8, float, int32_t, 8>::
-fixed_lookup_table(const vec<int32_t, 8>& idx)
+cftal::impl::fixed_vec_lookup_table<8, float, int32_t, 8>::
+fixed_vec_lookup_table(const vec<int32_t, 8>& idx)
     : _msk(setup_msk(idx))
 {
 }
 
 inline
 cftal::v8f32
-cftal::impl::fixed_lookup_table<8, float, int32_t, 8>::
+cftal::impl::fixed_vec_lookup_table<8, float, int32_t, 8>::
 fromp(const float* tbl) const
 {
     vec<float, 8> r=mem<vec<float, 8> >::load(tbl, 8);
@@ -706,8 +706,8 @@ fromp(const float* tbl) const
 }
 
 inline
-cftal::impl::fixed_lookup_table<32, float, int32_t, 8>::
-fixed_lookup_table(const vec<int32_t, 8>& idx)
+cftal::impl::fixed_vec_lookup_table<32, float, int32_t, 8>::
+fixed_vec_lookup_table(const vec<int32_t, 8>& idx)
     : _msk(idx()),
       _idx_gt_7(_mm256_cmpgt_epi32(idx(), _mm256_set1_epi32(7))),
       _idx_gt_15(_mm256_cmpgt_epi32(idx(), _mm256_set1_epi32(15))),
@@ -717,7 +717,7 @@ fixed_lookup_table(const vec<int32_t, 8>& idx)
 
 inline
 cftal::v8f32
-cftal::impl::fixed_lookup_table<32, float, int32_t, 8>::
+cftal::impl::fixed_vec_lookup_table<32, float, int32_t, 8>::
 fromp(const float* tbl) const
 {
     vec<float, 8> r0=mem<vec<float, 8> >::load(tbl, 8);

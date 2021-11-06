@@ -729,7 +729,7 @@ nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc)
     vli_type ux_inc= ux + 1;
     vli_type ux_dec= ux - 1;
     // decrement required if ax > ay or (ux^uy & sgn) != 0
-    constexpr const int64_t z=0;    
+    constexpr const int64_t z=0;
     vmli_type opp_sgn=
         vli_type((ux^uy) & sign_f64_msk::v.s64()) != z;
     constexpr const int64_t one=1;

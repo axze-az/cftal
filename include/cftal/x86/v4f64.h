@@ -156,11 +156,11 @@ namespace cftal {
 
 #if defined (__AVX2__)
     template <>
-    class variable_lookup_table<double, int32_t, 4> {
+    class variable_vec_lookup_table<double, int32_t, 4> {
     private:
         vec<int32_t, 4> _msk;
     public:
-        variable_lookup_table(const vec<int32_t, 4>& idx);
+        variable_vec_lookup_table(const vec<int32_t, 4>& idx);
         vec<double, 4>
         from(const double* tbl) const;
     };
@@ -169,28 +169,28 @@ namespace cftal {
     namespace impl {
 
         template <>
-        class fixed_lookup_table<2, double, int32_t, 4> {
+        class fixed_vec_lookup_table<2, double, int32_t, 4> {
         private:
             __m256i _msk;
             static
             __m256i
             setup_msk(const vec<int32_t, 4>& idx);
         public:
-            fixed_lookup_table(const vec<int32_t, 4>& idx);
+            fixed_vec_lookup_table(const vec<int32_t, 4>& idx);
             vec<double, 4>
             fromp(const double* tbl) const;
         };        
         
 #if defined (__AVX2__)       
         template <>
-        class fixed_lookup_table<4, double, int32_t, 4> {
+        class fixed_vec_lookup_table<4, double, int32_t, 4> {
         private:
             __m256i _msk;
             static
             __m256i
             setup_msk(const vec<int32_t, 4>& idx);
         public:
-            fixed_lookup_table(const vec<int32_t, 4>& idx);
+            fixed_vec_lookup_table(const vec<int32_t, 4>& idx);
             vec<double, 4>
             fromp(const double* tbl) const;
         };

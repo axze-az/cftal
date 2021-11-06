@@ -666,15 +666,15 @@ cftal::permute(const vec<double, 2>& l, const vec<double, 2>& r)
 
 #if defined (__AVX2__)
 inline
-cftal::variable_lookup_table<double, int32_t, 2>::
-variable_lookup_table(const vec<int32_t, 2>& idx)
+cftal::variable_vec_lookup_table<double, int32_t, 2>::
+variable_vec_lookup_table(const vec<int32_t, 2>& idx)
     : _msk(idx, vec<int32_t,2>(0))
 {
 }
 
 inline
 cftal::vec<double, 2>
-cftal::variable_lookup_table<double, int32_t, 2>::
+cftal::variable_vec_lookup_table<double, int32_t, 2>::
 from(const double* tbl) const
 {
     return _mm_i32gather_pd(tbl, _msk(), sizeof(double));
@@ -684,7 +684,7 @@ from(const double* tbl) const
 #if defined (__SSSE3__)
 inline
 __m128i
-cftal::impl::fixed_lookup_table<2, double, int32_t, 2>::
+cftal::impl::fixed_vec_lookup_table<2, double, int32_t, 2>::
 setup_msk(const vec<int32_t, 2>& idx)
 {
 #if defined (__AVX__)
@@ -709,15 +709,15 @@ setup_msk(const vec<int32_t, 2>& idx)
 }
 
 inline
-cftal::impl::fixed_lookup_table<2, double, int32_t, 2>::
-fixed_lookup_table(const vec<int32_t, 2>& idx)
+cftal::impl::fixed_vec_lookup_table<2, double, int32_t, 2>::
+fixed_vec_lookup_table(const vec<int32_t, 2>& idx)
     : _msk(setup_msk(idx))
 {
 }
 
 inline
 cftal::v2f64
-cftal::impl::fixed_lookup_table<2, double, int32_t, 2>::
+cftal::impl::fixed_vec_lookup_table<2, double, int32_t, 2>::
 fromp(const double* tbl) const
 {
 #if defined (__AVX__)
@@ -736,7 +736,7 @@ fromp(const double* tbl) const
 #if defined (__AVX2__)
 inline
 __m128i
-cftal::impl::fixed_lookup_table<4, double, int32_t, 2>::
+cftal::impl::fixed_vec_lookup_table<4, double, int32_t, 2>::
 setup_msk(const vec<int32_t, 2>& idx)
 {
     vec<int32_t, 4> t(idx, idx);
@@ -748,15 +748,15 @@ setup_msk(const vec<int32_t, 2>& idx)
 }
 
 inline
-cftal::impl::fixed_lookup_table<4, double, int32_t, 2>::
-fixed_lookup_table(const vec<int32_t, 2>& idx)
+cftal::impl::fixed_vec_lookup_table<4, double, int32_t, 2>::
+fixed_vec_lookup_table(const vec<int32_t, 2>& idx)
     : _msk(setup_msk(idx))
 {
 }
 
 inline
 cftal::vec<double, 2>
-cftal::impl::fixed_lookup_table<4, double, int32_t, 2>::
+cftal::impl::fixed_vec_lookup_table<4, double, int32_t, 2>::
 fromp(const double* tbl) const
 {
     vec<double, 4> m=mem<vec<double, 4> >::load(tbl, 4);

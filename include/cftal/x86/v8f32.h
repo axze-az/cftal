@@ -162,11 +162,11 @@ namespace cftal {
 
 #if defined (__AVX2__)
     template <>
-    class variable_lookup_table<float, int32_t, 8> {
+    class variable_vec_lookup_table<float, int32_t, 8> {
     private:
         vec<int32_t, 8> _msk;
     public:
-        variable_lookup_table(const vec<int32_t, 8>& idx);
+        variable_vec_lookup_table(const vec<int32_t, 8>& idx);
         vec<float, 8>
         from(const float* tbl) const;
     };
@@ -174,41 +174,41 @@ namespace cftal {
 
     namespace impl {
         template <>
-        class fixed_lookup_table<4, float, int32_t, 8> {
+        class fixed_vec_lookup_table<4, float, int32_t, 8> {
         private:
             __m256i _msk;
             static
             __m256i
             setup_msk(const vec<int32_t, 8>& idx);
         public:
-            fixed_lookup_table(const vec<int32_t, 8>& idx);
+            fixed_vec_lookup_table(const vec<int32_t, 8>& idx);
             vec<float, 8>
             fromp(const float* tbl) const;
         };
 
 #if defined (__AVX2__)
         template <>
-        class fixed_lookup_table<8, float, int32_t, 8> {
+        class fixed_vec_lookup_table<8, float, int32_t, 8> {
         private:
             __m256i _msk;
             static
             __m256i
             setup_msk(const vec<int32_t, 8>& idx);
         public:
-            fixed_lookup_table(const vec<int32_t, 8>& idx);
+            fixed_vec_lookup_table(const vec<int32_t, 8>& idx);
             vec<float, 8>
             fromp(const float* tbl) const;
         };
 
         template <>
-        class fixed_lookup_table<32, float, int32_t, 8> {
+        class fixed_vec_lookup_table<32, float, int32_t, 8> {
         private:
             __m256i _msk;
             __m256i _idx_gt_7;
             __m256i _idx_gt_15;
             __m256i _idx_gt_23;
         public:
-            fixed_lookup_table(const vec<int32_t, 8>& idx);
+            fixed_vec_lookup_table(const vec<int32_t, 8>& idx);
             vec<float, 8>
             fromp(const float* tbl) const;
         };
