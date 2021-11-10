@@ -51,33 +51,25 @@ namespace cftal {
             static
             vmf_type
             vmi_to_vmf(const vmi_type& mi) {
-                return
-                    cvt_mask<typename vmf_type::value_type, _N,
-                             typename vmi_type::value_type, _N>::v(mi);
+                return cvt_mask<vmf_type, vmi_type>::v(mi);
             }
 
             static
             vmi_type
             vmf_to_vmi(const vmf_type& mf) {
-                return
-                    cvt_mask<typename vmi_type::value_type, _N,
-                             typename vmf_type::value_type, _N>::v(mf);
+                return cvt_mask<vmi_type, vmf_type>::v(mf);
             }
 
             static
             vmi2_type
             vmf_to_vmi2(const vmf_type& mf) {
-                return
-                    cvt_mask<typename vmi2_type::value_type, 2 * _N,
-                             typename vmf_type::value_type, _N>::v(mf);
+                return cvt_mask<vmi2_type, vmf_type>::v(mf);
             };
 
             static
             vmf_type
             vmi2_to_vmf(const vmi2_type& mi) {
-                return
-                    cvt_mask<typename vmf_type::value_type, _N,
-                             typename vmi2_type::value_type, 2*_N>::v(mi);
+                return cvt_mask<vmf_type, vmi2_type>::v(mi);
             };
 
             static

@@ -18,26 +18,24 @@ namespace cftal {
 
     }
 
-
-    template <typename _D, std::size_t _DN,
-              typename _S, std::size_t _SN>
-    struct cvt_mask {
+    // convert a mask from type S to D, no default implementation
+    template <typename _D, typename _S>
+    struct cvt_mask {        
         static
-        vec<_D, _DN>
-        v(const vec<_S, _SN>& v);
+        _D v(const _S& s);
     };
-
-    template <typename _T, std::size_t _N>
-    struct cvt_mask<_T, _N, _T, _N> {
+        
+    template <typename _DS>
+    struct cvt_mask<_DS, _DS> {
         static
-        vec<_T, _N>
-        v(const vec<_T, _N>& v) {
-            return v;
+        const _DS& 
+        v(const _DS& s) {
+            return s;
         }
     };
 
     template <>
-    struct cvt_mask<int32_t, 2, bit, 1> {
+    struct cvt_mask<vec<int32_t, 2>, vec<bit, 1> > {
         static
         vec<int32_t, 2>
         v(const vec<bit, 1>& v) {
@@ -47,7 +45,7 @@ namespace cftal {
     };
 
     template <>
-    struct cvt_mask<bit, 1, int32_t, 2> {
+    struct cvt_mask<vec<bit, 1>, vec<int32_t, 2> > {
         static
         vec<bit, 1>
         v(const vec<int32_t, 2>& m) {
@@ -58,7 +56,7 @@ namespace cftal {
     };
 
     template <>
-    struct cvt_mask<int32_t, 1, bit, 1> {
+    struct cvt_mask<vec<int32_t, 1> , vec<bit, 1> > {
         static
         vec<int32_t, 1>
         v(const vec<bit, 1>& v) {
@@ -68,7 +66,7 @@ namespace cftal {
     };
 
     template <>
-    struct cvt_mask<bit, 1, int32_t, 1> {
+    struct cvt_mask<vec<bit, 1>, vec<int32_t, 1> > {
         static
         vec<bit, 1>
         v(const vec<int32_t, 1>& m) {
@@ -78,7 +76,7 @@ namespace cftal {
     };
 
     template <>
-    struct cvt_mask<int32_t, 2, bool, 1> {
+    struct cvt_mask<vec<int32_t, 2>, vec<bool, 1> >{
         static
         vec<int32_t, 2>
         v(const vec<bool, 1>& v) {
@@ -88,7 +86,7 @@ namespace cftal {
     };
 
     template <>
-    struct cvt_mask<bool, 1, int32_t, 2> {
+    struct cvt_mask<vec<bool, 1>, vec<int32_t, 2> > {
         static
         vec<bool, 1>
         v(const vec<int32_t, 2>& m) {
@@ -99,7 +97,7 @@ namespace cftal {
     };
 
     template <>
-    struct cvt_mask<int32_t, 1, bool, 1> {
+    struct cvt_mask<vec<int32_t, 1>, vec<bool, 1> >{
         static
         vec<int32_t, 1>
         v(const vec<bool, 1>& v) {
@@ -109,7 +107,7 @@ namespace cftal {
     };
 
     template <>
-    struct cvt_mask<bool, 1, int32_t, 1> {
+    struct cvt_mask<vec<bool, 1>, vec<int32_t, 1> > {
         static
         vec<bool, 1>
         v(const vec<int32_t, 1>& m) {
@@ -120,7 +118,7 @@ namespace cftal {
 
 
     template <std::size_t _N>
-    struct cvt_mask<int32_t, _N, float, _N> {
+    struct cvt_mask<vec<int32_t, _N>, vec<float, _N> >{
         static
         vec<int32_t, _N>
         v(const vec<float, _N>& m) {
@@ -129,7 +127,7 @@ namespace cftal {
     };
 
     template <std::size_t _N>
-    struct cvt_mask<float, _N, int32_t, _N> {
+    struct cvt_mask<vec<float, _N>, vec<int32_t, _N> > {
         static
         vec<float, _N>
         v(const vec<int32_t, _N>& m) {
@@ -138,7 +136,7 @@ namespace cftal {
     };
 
     template <std::size_t _N>
-    struct cvt_mask<int32_t, _N, double, _N> {
+    struct cvt_mask<vec<int32_t, _N>, vec<double, _N> >{
         static
         vec<int32_t, _N>
         v(const vec<double, _N>& m) {
@@ -148,7 +146,7 @@ namespace cftal {
     };
 
     template <std::size_t _N>
-    struct cvt_mask<double, _N, int32_t, _N> {
+    struct cvt_mask<vec<double, _N>, vec<int32_t, _N> >{
         static
         vec<double, _N>
         v(const vec<int32_t, _N>& m) {
@@ -159,7 +157,7 @@ namespace cftal {
 
 
     template <std::size_t _N2, std::size_t _N>
-    struct cvt_mask<int32_t, _N2, double, _N> {
+    struct cvt_mask<vec<int32_t, _N2>, vec<double, _N> > {
         static_assert(_N2 == 2*_N, "invalid parameter pair");
         static
         vec<int32_t, _N2>
@@ -170,7 +168,7 @@ namespace cftal {
     };
 
     template <std::size_t _N, std::size_t _N2>
-    struct cvt_mask<double, _N, int32_t, _N2> {
+    struct cvt_mask<vec<double, _N>, vec<int32_t, _N2> > {
         static_assert(_N2 == 2*_N, "invalid parameter pair");
         static
         vec<double, _N>
@@ -178,7 +176,6 @@ namespace cftal {
             return as<vec<double, _N> >(m);
         }
     };
-
 
     namespace impl {
 
