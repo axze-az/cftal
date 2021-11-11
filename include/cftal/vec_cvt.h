@@ -193,9 +193,7 @@ namespace cftal {
         template <typename _D, typename _S>
         struct cvt {
             static
-            _D l(const _S& s);
-            static
-            _D h(const _S& s);
+            _D v(const _S& s);
         };
 
         // convert with truncation (i.e. round to zero)
@@ -203,9 +201,7 @@ namespace cftal {
         template <typename _D, typename _S>
         struct cvt_rz {
             static
-            _D l(const _S& s);
-            static
-            _D h(const _S& s);
+            _D v(const _S& s);
         };
 
         // conversion from vector<_S, _N>  to vector<_D, _N>
@@ -217,15 +213,10 @@ namespace cftal {
                 cvt_rz<vec<_D, _NHALF>, vec<_S, _NHALF> >;
             static
             vec<_D, _N>
-            l(const vec<_S, _N>& s) {
-                vec<_D, _NHALF> v0= cvt_rz_half_t::l(low_half(s));
-                vec<_D, _NHALF> v1= cvt_rz_half_t::l(high_half(s));
+            v(const vec<_S, _N>& s) {
+                vec<_D, _NHALF> v0= cvt_rz_half_t::v(low_half(s));
+                vec<_D, _NHALF> v1= cvt_rz_half_t::v(high_half(s));
                 return vec<_D, _N>(v0, v1);
-            }
-            static
-            vec<_D, _N>
-            h(const vec<_S, _N>& s) {
-                return l(s);
             }
         };
 
@@ -235,13 +226,8 @@ namespace cftal {
         struct cvt_rz<vec<_D, 1>, vec<_S, 1> > {
             static
             vec<_D, 1>
-            l(const vec<_S, 1>& s) {
+            v(const vec<_S, 1>& s) {
                 return vec<_D, 1>(static_cast<_D>(s()));
-            }
-            static
-            vec<_D, 1>
-            h(const vec<_D, 1>& s) {
-                return l(s);
             }
         };
 
@@ -254,15 +240,10 @@ namespace cftal {
                 cvt<vec<_D, _NHALF>, vec<_S, _NHALF> >;
             static
             vec<_D, _N>
-            l(const vec<_S, _N>& s) {
-                vec<_D, _NHALF> v0= cvt_half_t::l(low_half(s));
-                vec<_D, _NHALF> v1= cvt_half_t::l(high_half(s));
+            v(const vec<_S, _N>& s) {
+                vec<_D, _NHALF> v0= cvt_half_t::v(low_half(s));
+                vec<_D, _NHALF> v1= cvt_half_t::v(high_half(s));
                 return vec<_D, _N>(v0, v1);
-            }
-            static
-            vec<_D, _N>
-            h(const vec<_S, _N>& s) {
-                return l(s);
             }
         };
 
@@ -277,14 +258,9 @@ namespace cftal {
         struct cvt<vec<int32_t, 1>, vec<double, 1> > {
             static
             vec<int32_t, 1>
-            l(const vec<double, 1>& s) {
+            v(const vec<double, 1>& s) {
                 return vec<int32_t, 1>(
                     static_cast<int32_t>(std::rint(s())));
-            }
-            static
-            vec<int32_t, 1>
-            h(const vec<double, 1>& s) {
-                return l(s);
             }
         };
 
@@ -294,14 +270,9 @@ namespace cftal {
         struct cvt<vec<int32_t, 1>, vec<float, 1> > {
             static
             vec<int32_t, 1>
-            l(const vec<float, 1>& s) {
+            v(const vec<float, 1>& s) {
                 return vec<int32_t, 1>(
                     static_cast<int32_t>(std::rintf(s())));
-            }
-            static
-            vec<int32_t, 1>
-            h(const vec<float, 1>& s) {
-                return l(s);
             }
         };
 
@@ -311,14 +282,9 @@ namespace cftal {
         struct cvt<vec<int64_t, 1>, vec<double, 1> > {
             static
             vec<int64_t, 1>
-            l(const vec<double, 1>& s) {
+            v(const vec<double, 1>& s) {
                 return vec<int64_t, 1>(
                     static_cast<int64_t>(std::rint(s())));
-            }
-            static
-            vec<int64_t, 1>
-            h(const vec<double, 1>& s) {
-                return l(s);
             }
         };
 
@@ -328,52 +294,44 @@ namespace cftal {
         struct cvt<vec<int64_t, 1>, vec<float, 1> > {
             static
             vec<int64_t, 1>
-            l(const vec<float, 1>& s) {
+            v(const vec<float, 1>& s) {
                 return vec<int64_t, 1>(
                     static_cast<int64_t>(std::rintf(s())));
-            }
-            static
-            vec<int64_t, 1>
-            h(const vec<float, 1>& s) {
-                return l(s);
             }
         };
         
 #if defined (__SSE2__)
         template <>
         struct cvt<v4f32, v2f64> {
-            static v4f32 l(const v2f64& s) {
+            static v4f32 v(const v2f64& s) {
                 return _mm_cvtpd_ps(s());
             }
         };
 
         template <>
         struct cvt<v2f64, v4f32> {
-            static v2f64 l(const v4f32& s) {
+            static v2f64 v(const v4f32& s) {
                 return _mm_cvtps_pd(s());
-            }
-            static v2f64 h(const v4f32& s) {
-                return l(permute<2,3,0,1>(s));
             }
         };
         
         template <>
         struct cvt<v2f32, v2f64> {
-            static v2f32 l(const v2f64& s) {
-                return low_half(cvt<v4f32, v2f64>::l(s));
+            static v2f32 v(const v2f64& s) {
+                return low_half(cvt<v4f32, v2f64>::v(s));
             }
         };
         
         template <>
         struct cvt<v2f64, v2f32> {
-            static v2f64 l(const v2f32& s) {
-                return cvt<v2f64, v4f32>::l(v4f32(s, s));
+            static v2f64 v(const v2f32& s) {
+                return cvt<v2f64, v4f32>::v(v4f32(s, s));
             }
         };
              
         template <>
         struct cvt<v4s32, v2f64> {
-            static v4s32 l(const v2f64& d) {
+            static v4s32 v(const v2f64& d) {
                 v4s32 r=_mm_cvtpd_epi32(d());
                 return r;
             }
@@ -381,7 +339,7 @@ namespace cftal {
 
         template <>
         struct cvt_rz<v4s32, v2f64> {
-            static v4s32 l(const v2f64& d) {
+            static v4s32 v(const v2f64& d) {
                 v4s32 r=_mm_cvttpd_epi32(d());
                 return r;
             }
@@ -389,7 +347,7 @@ namespace cftal {
         
         template <>
         struct cvt<v2s32, v2f64> {
-            static v2s32 l(const v2f64& d) {
+            static v2s32 v(const v2f64& d) {
                 v4s32 r=_mm_cvtpd_epi32(d());
                 return low_half(r);
             }
@@ -397,7 +355,7 @@ namespace cftal {
 
         template <>
         struct cvt_rz<v2s32, v2f64> {
-            static v2s32 l(const v2f64& d) {
+            static v2s32 v(const v2f64& d) {
                 v4s32 r=_mm_cvttpd_epi32(d());
                 return low_half(r);
             }
@@ -405,7 +363,7 @@ namespace cftal {
 
         template <>
         struct cvt<v2f64, v2s32> {
-            static v2f64 l(const v2s32& d) {
+            static v2f64 v(const v2s32& d) {
                 v4s32 t(d, d);
                 return _mm_cvtepi32_pd(t());
             };
@@ -414,31 +372,28 @@ namespace cftal {
 
         template <>
         struct cvt<v2f64, v4s32> {
-            static v2f64 l(const v4s32& d) {
+            static v2f64 v(const v4s32& d) {
                 return _mm_cvtepi32_pd(d());
             };
-            static v2f64 h(const v4s32& d) {
-                return l(permute<2,3,0,1>(d));
-            }
         };
 
         template <>
         struct cvt<v4f32, v4s32> {
-            static v4f32 l(const v4s32& s) {
+            static v4f32 v(const v4s32& s) {
                 return _mm_cvtepi32_ps(s());
             }
         };
 
         template <>
         struct cvt<v4s32, v4f32> {
-            static v4s32 l(const v4f32& s) {
+            static v4s32 v(const v4f32& s) {
                 return _mm_cvtps_epi32(s());
             }
         };
 
         template <>
         struct cvt_rz<v4s32, v4f32> {
-            static v4s32 l(const v4f32& s) {
+            static v4s32 v(const v4f32& s) {
                 return _mm_cvttps_epi32(s());
             }
         };
@@ -446,7 +401,7 @@ namespace cftal {
 #if defined (__SSE4_1__)
         template <>
         struct cvt<v2s64, vec<int16_t, 2> > {
-            static v2s64 l(const vec<int16_t, 2>& s) {
+            static v2s64 v(const vec<int16_t, 2>& s) {
                 vec<int16_t, 4> t0(s, s);
                 vec<int16_t, 8> t1(t0, t0);
                 return _mm_cvtepi16_epi64(t1());
@@ -455,7 +410,7 @@ namespace cftal {
 
         template <>
         struct cvt<v2s64, vec<uint16_t, 2> > {
-            static v2s64 l(const vec<uint16_t, 2>& s) {
+            static v2s64 v(const vec<uint16_t, 2>& s) {
                 vec<uint16_t, 4> t0(s, s);
                 vec<uint16_t, 8> t1(t0, t0);
                 return _mm_cvtepu16_epi64(t1());
@@ -464,7 +419,7 @@ namespace cftal {
 
         template <>
         struct cvt<v2u64, vec<uint16_t, 2> > {
-            static v2u64 l(const vec<uint16_t, 2>& s) {
+            static v2u64 v(const vec<uint16_t, 2>& s) {
                 vec<uint16_t, 4> t0(s, s);
                 vec<uint16_t, 8> t1(t0, t0);
                 return _mm_cvtepu16_epi64(t1());
@@ -473,7 +428,7 @@ namespace cftal {
 
         template <>
         struct cvt<v2s64, vec<int32_t, 2> > {
-            static v2s64 l(const vec<int32_t, 2>& s) {
+            static v2s64 v(const vec<int32_t, 2>& s) {
                 vec<int32_t, 4> t(s, s);
                 return _mm_cvtepi32_epi64(t());
             }            
@@ -481,7 +436,7 @@ namespace cftal {
 
         template <>
         struct cvt<v2s64, vec<uint32_t, 2> > {
-            static v2s64 l(const vec<uint32_t, 2>& s) {
+            static v2s64 v(const vec<uint32_t, 2>& s) {
                 vec<uint32_t, 4> t(s, s);
                 return _mm_cvtepu32_epi64(t());
             }            
@@ -489,7 +444,7 @@ namespace cftal {
 
         template <>
         struct cvt<v2u64, vec<uint32_t, 2> > {
-            static v2u64 l(const vec<uint32_t, 2>& s) {
+            static v2u64 v(const vec<uint32_t, 2>& s) {
                 vec<uint32_t, 4> t(s, s);
                 return _mm_cvtepu32_epi64(t());
             }            
@@ -497,7 +452,7 @@ namespace cftal {
         
         template <>
         struct cvt<v4s32, vec<int16_t, 4> > {
-            static v4s32 l(const vec<int16_t, 4>& s) {
+            static v4s32 v(const vec<int16_t, 4>& s) {
                 vec<int16_t, 8> t1(s, s);
                 return _mm_cvtepi16_epi32(t1());
             }            
@@ -505,7 +460,7 @@ namespace cftal {
 
         template <>
         struct cvt<v4s32, vec<uint16_t, 4> > {
-            static v4s32 l(const vec<uint16_t, 4>& s) {
+            static v4s32 v(const vec<uint16_t, 4>& s) {
                 vec<uint16_t, 8> t1(s, s);
                 return _mm_cvtepu16_epi32(t1());
             }            
@@ -513,7 +468,7 @@ namespace cftal {
 
         template <>
         struct cvt<v4u32, vec<uint16_t, 4> > {
-            static v4u32 l(const vec<uint16_t, 4>& s) {
+            static v4u32 v(const vec<uint16_t, 4>& s) {
                 vec<uint16_t, 8> t1(s, s);
                 return _mm_cvtepu16_epi32(t1());
             }            
@@ -522,28 +477,28 @@ namespace cftal {
 #if defined (__AVX__)        
         template <>
         struct cvt<v4s32, v4f64> {
-            static v4s32 l(const v4f64& s) {
+            static v4s32 v(const v4f64& s) {
                 return _mm256_cvtpd_epi32(s());
             }
         };
 
         template <>
         struct cvt_rz<v4s32, v4f64> {
-            static v4s32 l(const v4f64& s) {
+            static v4s32 v(const v4f64& s) {
                 return _mm256_cvttpd_epi32(s());
             }
         };
 
         template <>
         struct cvt<v4f64, v4s32> {
-            static v4f64 l(const v4s32&s) {
+            static v4f64 v(const v4s32&s) {
                 return _mm256_cvtepi32_pd(s());
             }
         };
 
         template <>
         struct cvt<v8f32, v8s32> {
-            static v8f32 l(const v8s32& v) {
+            static v8f32 v(const v8s32& v) {
 #if defined (__AVX2__)
                 __m256 f(_mm256_cvtepi32_ps(v()));
                 return f;
@@ -559,7 +514,7 @@ namespace cftal {
 
         template <>
         struct cvt<v8s32, v8f32> {
-            static v8s32 l(const v8f32& v) {
+            static v8s32 v(const v8f32& v) {
                 __m256i vi=_mm256_cvtps_epi32(v());
 #if defined (__AVX2__)
                 return v8s32(vi);
@@ -573,14 +528,14 @@ namespace cftal {
 
         template <>
         struct cvt<v4f32, v4f64> {
-            static v4f32 l(const v4f64& s) {
+            static v4f32 v(const v4f64& s) {
                 return _mm256_cvtpd_ps(s());
             }
         };
 
         template <>
         struct cvt<v4f64, v4f32> {
-            static v4f64 l(const v4f32& s) {
+            static v4f64 v(const v4f32& s) {
                 return _mm256_cvtps_pd(s());
             }
         };
@@ -588,7 +543,7 @@ namespace cftal {
 #if defined (__AVX2__)
         template <>
         struct cvt<v4s64, vec<int16_t, 4> > {
-            static v4s64 l(const vec<int16_t, 4>& s) {
+            static v4s64 v(const vec<int16_t, 4>& s) {
                 vec<int16_t, 8> t(s, s);
                 return _mm256_cvtepi16_epi64(t());
             }            
@@ -596,7 +551,7 @@ namespace cftal {
 
         template <>
         struct cvt<v4s64, vec<uint16_t, 4> > {
-            static v4s64 l(const vec<uint16_t, 4>& s) {
+            static v4s64 v(const vec<uint16_t, 4>& s) {
                 vec<uint16_t, 8> t(s, s);
                 return _mm256_cvtepu16_epi64(t());
             }            
@@ -604,7 +559,7 @@ namespace cftal {
 
         template <>
         struct cvt<v4u64, vec<uint16_t, 4> > {
-            static v4u64 l(const vec<uint16_t, 4>& s) {
+            static v4u64 v(const vec<uint16_t, 4>& s) {
                 vec<uint16_t, 8> t(s, s);
                 return _mm256_cvtepu16_epi64(t());
             }            
@@ -612,42 +567,42 @@ namespace cftal {
 
         template <>
         struct cvt<v4s64, vec<int32_t, 4> > {
-            static v4s64 l(const vec<int32_t, 4>& s) {
+            static v4s64 v(const vec<int32_t, 4>& s) {
                 return _mm256_cvtepi32_epi64(s());
             }            
         };
 
         template <>
         struct cvt<v4s64, vec<uint32_t, 4> > {
-            static v4s64 l(const vec<uint32_t, 4>& s) {
+            static v4s64 v(const vec<uint32_t, 4>& s) {
                 return _mm256_cvtepu32_epi64(s());
             }            
         };
 
         template <>
         struct cvt<v4u64, vec<uint32_t, 4> > {
-            static v4u64 l(const vec<uint32_t, 4>& s) {
+            static v4u64 v(const vec<uint32_t, 4>& s) {
                 return _mm256_cvtepu32_epi64(s());
             }            
         };
         
         template <>
         struct cvt<v8s32, vec<int16_t, 8> > {
-            static v8s32 l(const vec<int16_t, 8>& s) {
+            static v8s32 v(const vec<int16_t, 8>& s) {
                 return _mm256_cvtepi16_epi32(s());
             }            
         };
 
         template <>
         struct cvt<v8s32, vec<uint16_t, 8> > {
-            static v8s32 l(const vec<uint16_t, 8>& s) {
+            static v8s32 v(const vec<uint16_t, 8>& s) {
                 return _mm256_cvtepu16_epi32(s());
             }            
         };
 
         template <>
         struct cvt<v8u32, vec<uint16_t, 8> > {
-            static v8u32 l(const vec<uint16_t, 8>& s) {
+            static v8u32 v(const vec<uint16_t, 8>& s) {
                 return _mm256_cvtepu16_epi32(s());
             }            
         };
@@ -656,106 +611,40 @@ namespace cftal {
         
         template <>
         struct cvt<v4f64, v8f32> {
-            static v4f64 l(const v8f32& a) {
-                return cvt<v4f64, v4f32>::l(low_half(a));
-            }
-            static v4f64 h(const v8f32& a) {
-                return cvt<v4f64, v4f32>::l(high_half(a));
+            static v4f64 v(const v8f32& a) {
+                return cvt<v4f64, v4f32>::v(low_half(a));
             }
         };
 
         template <>
         struct cvt<v8f32, v4f64> {
-            static v8f32 l(const v4f64& a) {
-                return v8f32(cvt<v4f32, v4f64>::l(a),
-                             v4f32(0.0f));
+            static v8f32 v(const v4f64& a) {
+                return v8f32(cvt<v4f32, v4f64>::v(a), v4f32(0.0f));
             }
         };
 #endif // __SSE2__
     }
 
     template <class _D, class _S>
-    _D cvt_lo(const _S& s);
-    template <class _D, class _S>
-    _D cvt_hi(const _S& s);
-    template <class _D, class _S>
     _D cvt(const _S& s);
 
-    v4f32 cvt_f32(const v2f64& l, const v2f64& h);
-    v8f32 cvt_f32(const v4f64& l, const v4f64& h);
-
-    template <class _D, class _S>
-    std::pair<_D, _D> cvt_widen(const _S& s);
-
-    template <class _D, class _S>
-    _D cvt_rz_lo(const _S& s);
-    template <class _D, class _S>
-    _D cvt_rz_hi(const _S& s);
     template <class _D, class _S>
     _D cvt_rz(const _S& s);
-    template <class _D, class _S>
-    std::pair<_D, _D> cvt_rz_widen(const _S& s);
 
-}
-
-template <class _D, class _S>
-inline
-_D cftal::cvt_lo(const _S& s)
-{
-    return impl::cvt<_D, _S>::l(s);
-}
-
-template <class _D, class _S>
-inline
-_D cftal::cvt_hi(const _S& s)
-{
-    return impl::cvt<_D, _S>::h(s);
 }
 
 template <class _D, class _S>
 inline
 _D cftal::cvt(const _S& s)
 {
-    return impl::cvt<_D, _S>::l(s);
-}
-
-template <class _D, class _S>
-inline
-std::pair<_D, _D> cftal::cvt_widen(const _S& s)
-{
-    _D l=cvt_lo<_D>(s);
-    _D h=cvt_hi<_D>(s);
-    return std::make_pair(l, h);
-}
-
-template <class _D, class _S>
-inline
-_D cftal::cvt_rz_lo(const _S& s)
-{
-    return impl::cvt_rz<_D, _S>::l(s);
-}
-
-template <class _D, class _S>
-inline
-_D cftal::cvt_rz_hi(const _S& s)
-{
-    return impl::cvt_rz<_D, _S>::h(s);
+    return impl::cvt<_D, _S>::v(s);
 }
 
 template <class _D, class _S>
 inline
 _D cftal::cvt_rz(const _S& s)
 {
-    return impl::cvt_rz<_D, _S>::l(s);
-}
-
-template <class _D, class _S>
-inline
-std::pair<_D, _D> cftal::cvt_rz_widen(const _S& s)
-{
-    _D l=cvt_rz_lo<_D>(s);
-    _D h=cvt_rz_hi<_D>(s);
-    return std::make_pair(l, h);
+    return impl::cvt_rz<_D, _S>::v(s);
 }
 
 // Local variables:
