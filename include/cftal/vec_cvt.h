@@ -252,7 +252,6 @@ namespace cftal {
         struct cvt<vec<_D, 1>, vec<_S, 1> >
             : public cvt_rz<vec<_D, 1>, vec<_S, 1> > {};
 
-        // narrowing specializations
         // conversion from vector<double, 1>  to vector<int32_t, 1>
         template <>
         struct cvt<vec<int32_t, 1>, vec<double, 1> > {
@@ -264,7 +263,6 @@ namespace cftal {
             }
         };
 
-        // narrowing specializations
         // conversion from vector<float, 1>  to vector<int32_t, 1>
         template<>
         struct cvt<vec<int32_t, 1>, vec<float, 1> > {
@@ -276,8 +274,7 @@ namespace cftal {
             }
         };
 
-        // narrowing specializations
-        // conversion from vector<double, 1>  to vector<int32_t, 1>
+        // conversion from vector<double, 1>  to vector<int64_t, 1>
         template <>
         struct cvt<vec<int64_t, 1>, vec<double, 1> > {
             static
@@ -288,7 +285,6 @@ namespace cftal {
             }
         };
 
-        // narrowing specializations
         // conversion from vector<float, 1>  to vector<int64_t, 1>
         template<>
         struct cvt<vec<int64_t, 1>, vec<float, 1> > {
@@ -473,7 +469,7 @@ namespace cftal {
                 return _mm_cvtepu16_epi32(t1());
             }            
         };
-#endif              
+#endif  // __SSE4_1__            
 #if defined (__AVX__)        
         template <>
         struct cvt<v4s32, v4f64> {
@@ -539,7 +535,7 @@ namespace cftal {
                 return _mm256_cvtps_pd(s());
             }
         };
-#endif
+#endif // __AVX__
 #if defined (__AVX2__)
         template <>
         struct cvt<v4s64, vec<int16_t, 4> > {
@@ -606,7 +602,7 @@ namespace cftal {
                 return _mm256_cvtepu16_epi32(s());
             }            
         };
-#endif              
+#endif // __AVX2__           
         
         
         template <>
