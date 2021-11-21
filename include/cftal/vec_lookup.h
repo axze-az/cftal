@@ -37,6 +37,24 @@ namespace cftal {
     namespace impl {
         // implementation class for fixed lookup tables without
         // a safe interface
+#if 1
+        template <std::size_t _TABLE_LEN, typename _T,
+                  typename _I, std::size_t _VEC_LEN>
+        class fixed_vec_lookup_table {
+        private:
+            fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
+            fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
+        public:
+            fixed_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
+                : _lh(low_half(idx)), _hh(high_half(idx)) {}
+            vec<_T, _VEC_LEN>
+            fromp(const _T* tbl) const {
+                vec<_T, _VEC_LEN/2> lh=_lh.fromp(tbl);
+                vec<_T, _VEC_LEN/2> hh=_hh.fromp(tbl);
+                return vec<_T, _VEC_LEN>(lh, hh);
+            }
+        };
+#else
         template <std::size_t _TABLE_LEN, typename _T,
                   typename _I, std::size_t _VEC_LEN>
         class fixed_vec_lookup_table
@@ -53,6 +71,7 @@ namespace cftal {
                 return base_type::from(tbl);
             }
         };
+#endif
     }
 
     // lookup table with a fixed length, delegates work to
