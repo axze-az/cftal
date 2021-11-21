@@ -95,7 +95,7 @@ namespace cftal {
     using v16f32= vec<float, 16>;
 
     using v16s8= vec<int8_t, 16>;
-    using v16u8= vec<uint8_t, 16>;   
+    using v16u8= vec<uint8_t, 16>;
 
     using v8s16 = vec<int16_t, 8>;
     using v8u16 = vec<uint16_t, 8>;
@@ -490,93 +490,6 @@ namespace cftal {
     bool
     elements_equal(const vec<_T, 1>& v);
 
-    template <typename _T, typename _I, std::size_t _VEC_LEN>
-    class variable_vec_lookup_table {
-    private:
-        variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _lh;
-        variable_vec_lookup_table<_T, _I, _VEC_LEN/2> _hh;
-    public:
-        variable_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
-            : _lh(low_half(idx)), _hh(high_half(idx)) {}
-        vec<_T, _VEC_LEN>
-        from(const _T* tbl) const {
-            vec<_T, _VEC_LEN/2> lh=_lh.from(tbl);
-            vec<_T, _VEC_LEN/2> hh=_hh.from(tbl);
-            return vec<_T, _VEC_LEN>(lh, hh);
-        }
-    };
-
-    template <typename _T, typename _I, std::size_t _VEC_LEN>
-    variable_vec_lookup_table<_T, _I, _VEC_LEN>
-    make_variable_lookup_table(const vec<_I, _VEC_LEN>& idx) {
-        return variable_vec_lookup_table<_T, _I, _VEC_LEN>(idx);
-    }
-
-    namespace impl {
-        // implementation class for fixed lookup tables without
-        // a safe interface
-        template <std::size_t _TABLE_LEN, typename _T,
-                  typename _I, std::size_t _VEC_LEN>
-        class fixed_vec_lookup_table
-            : private variable_vec_lookup_table<_T, _I, _VEC_LEN> {
-        private:
-        public:
-#if 1
-            using base_type=variable_vec_lookup_table<_T, _I, _VEC_LEN>;
-            // constructor, prepares table lookups into _T[_TABLE_LEN]
-            fixed_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
-                : base_type(idx) {}
-            // perform the lookup using the prepared data
-            vec<_T, _VEC_LEN>
-            fromp(const _T* tbl) const {
-                return base_type::from(tbl);
-            }
-#else
-        private:
-            fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _lh;
-            fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN/2> _hh;
-        public:
-            // constructor, prepares table lookups into _T[_TABLE_LEN]
-            fixed_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
-                : _lh(low_half(idx)), _hh(high_half(idx)) {}
-            // perform the lookup using the prepared data
-            vec<_T, _VEC_LEN>
-            fromp(const _T* tbl) const {
-                vec<_T, _VEC_LEN/2> lh=_lh.fromp(tbl);
-                vec<_T, _VEC_LEN/2> hh=_hh.fromp(tbl);
-                return vec<_T, _VEC_LEN>(lh, hh);
-            }
-#endif
-        };
-    }
-
-    // lookup table with a fixed length, delegates work to
-    // impl::fixed_vec_lookup_table
-    template <std::size_t _TABLE_LEN, typename _T,
-              typename _I, std::size_t _VEC_LEN>
-    class fixed_vec_lookup_table
-        : public impl::fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN> {
-    private:
-        using base_type=
-            impl::fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>;
-    public:
-        // constructor, prepares table lookups into _T[_TABLE_LEN]
-        fixed_vec_lookup_table(const vec<_I, _VEC_LEN>& idx)
-            : base_type(idx) {}
-        // perform the lookup using the prepared data
-        vec<_T, _VEC_LEN>
-        from(const _T (&tbl)[_TABLE_LEN]) const {
-            return base_type::fromp(tbl);
-        }
-    };
-
-    template <std::size_t _TABLE_LEN, typename _T,
-              typename _I, std::size_t _VEC_LEN>
-    fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>
-    make_fixed_lookup_table(const vec<_I, _VEC_LEN>& idx) {
-        return fixed_vec_lookup_table<_TABLE_LEN, _T, _I, _VEC_LEN>(idx);
-    }
-
     // absolute value for signed integers
     template <typename _T, std::size_t _N>
     std::enable_if_t< cftal::is_signed<_T>::value &&
@@ -648,13 +561,13 @@ namespace cftal {
     template <typename _T, std::size_t _N>
     struct is_integral< vec<_T, _N> > : public
         is_integral<typename vec<_T, _N>::value_type> {
-    };   
-    
+    };
+
     template <typename _T, std::size_t _N>
     struct is_floating_point< vec<_T, _N> > : public
         is_floating_point<typename vec<_T, _N>::value_type> {
-    };   
-    
+    };
+
     template <typename _T, std::size_t _N>
     struct is_signed< vec<_T, _N> > : public
         is_signed<typename vec<_T, _N>::value_type> {
@@ -678,11 +591,11 @@ namespace cftal {
                                     typename vec<_T, _N>::value_type
                                >::type, _N>;
     };
-    
+
 }
 
 namespace std {
-    
+
     // is this really a good idea?
     template <typename _T, std::size_t _N>
     struct numeric_limits<cftal::vec<_T, _N> > : public

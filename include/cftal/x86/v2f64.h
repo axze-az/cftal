@@ -10,6 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec_t_n.h>
+#include <cftal/vec_lookup.h>
 #include <cftal/x86/vec_bit.h>
 #include <cftal/x86/v4s32.h>
 #include <cftal/x86/vreg.h>
@@ -162,7 +163,7 @@ namespace cftal {
         from(const double* tbl) const;
     };
 #endif
-    
+
     namespace impl {
 #if defined (__SSSE3__)
         template <>
@@ -177,7 +178,7 @@ namespace cftal {
             vec<double, 2>
             fromp(const double* tbl) const;
         };
-#endif     
+#endif
 #if defined (__AVX2__)
         template <>
         class fixed_vec_lookup_table<4, double, int32_t, 2> {
@@ -190,7 +191,7 @@ namespace cftal {
             fixed_vec_lookup_table(const vec<int32_t, 2>& idx);
             vec<double, 2>
             fromp(const double* tbl) const;
-        };        
+        };
 #endif
     }
 }

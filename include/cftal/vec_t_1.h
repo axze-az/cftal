@@ -9,6 +9,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec_op.h>
+#include <cftal/vec_lookup.h>
 #include <cftal/vec_bit_n.h>
 #include <cftal/mul_div.h>
 #include <cftal/impl/divide.h>

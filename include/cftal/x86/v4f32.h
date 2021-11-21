@@ -10,6 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/vec_t_n.h>
+#include <cftal/vec_lookup.h>
 #include <cftal/x86/vreg.h>
 #include <cftal/x86/vec_bit.h>
 #include <cftal/x86/v2f64.h>
