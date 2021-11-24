@@ -453,7 +453,7 @@ recompute:
 
 /* initial value for jk */
 const int
-cftal::math::impl::init_jk_f32[] = {3, 6, 7, 9};
+cftal::math::impl::init_jk_f32[] = {3, 7, 8, 9};
 
 const cftal::int16_t cftal::math::impl::two_over_pi_b9[176]={
     0x145, 0x1e6, 0x01b, 0x0e4, 0x1c8, 0x105, 0x094, 0x1fc,
