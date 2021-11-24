@@ -370,7 +370,7 @@ recompute:
 
             for(i=jz+1;i<=jz+k;i++) {   /* add q[jz+1] to q[jz+k] */
                 f[jx+i] = float(two_over_pi_b9[jv+i]);
-                for(j=0,fw=0.0;j<=jx;j++) fw += x[j]*f[jx+i-j];
+                for(j=0,fw=0.0f;j<=jx;j++) fw += x[j]*f[jx+i-j];
                 q[i] = fw;
             }
             jz += k;
