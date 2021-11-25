@@ -59,24 +59,8 @@ namespace {
     
 }
 
-cftal::int64_t
-cftal::test::cpu_timer::now()
-{
-    int64_t r=0;
-    timespec ts;
-    if (clock_gettime(CLOCK_REALTIME, &ts)==0) {
-        r=to_int(ts);
-    }
-    return r;
-}
-
-cftal::test::cpu_timer::cpu_timer()
-    : _time_at_start{now()}
-{
-}
-
 cftal::test::cpu_times
-cftal::test::cpu_timer::elapsed() const
+cftal::test::cpu_timer::now()
 {
     rusage usg;
     std::memset(&usg, 0, sizeof(usg));
@@ -85,7 +69,25 @@ cftal::test::cpu_timer::elapsed() const
         r._user= to_int(usg.ru_utime);
         r._sys= to_int(usg.ru_stime);
     }
-    r._elapsed= now() - _time_at_start;
+    timespec ts;
+    if (clock_gettime(CLOCK_REALTIME, &ts)==0) {
+        r._elapsed=to_int(ts);
+    } 
+    return r;
+}
+
+cftal::test::cpu_timer::cpu_timer()
+    : _cputimes_at_start{now()}
+{
+}
+
+cftal::test::cpu_times
+cftal::test::cpu_timer::elapsed() const
+{
+    cpu_times r=now();
+    r._user -= _cputimes_at_start._user;
+    r._sys -= _cputimes_at_start._sys;
+    r._elapsed -= _cputimes_at_start._elapsed;
     return r;
 }
 
