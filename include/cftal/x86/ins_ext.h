@@ -15,29 +15,41 @@
 namespace cftal {
     namespace x86 {
 
-        // extract/insert double
-        template <unsigned _IDX>
-        double extract_f64(__m128d r);
-        template <unsigned _IDX>
-        __m128d insert_f64(__m128d r, double v);
-
         // extract/insert float
         template <unsigned _IDX>
         float extract_f32(__m128 r);
         template <unsigned _IDX>
         __m128 insert_f32(__m128 r, float v);
 
+        float extract_f32(__m128 r, size_t i);
+        __m128 insert_f32(__m128 r, float v, size_t i);
+        
+        // extract/insert double
+        template <unsigned _IDX>
+        double extract_f64(__m128d r);
+        template <unsigned _IDX>
+        __m128d insert_f64(__m128d r, double v);
+
+        double extract_f64(__m128d r, size_t i);
+        __m128d insert_f64(__m128d r, double v, size_t i);
+        
         // extract/insert uint8_t
         template <unsigned _IDX>
         uint8_t extract_u8(__m128i v);
         template <unsigned _IDX>
         __m128i insert_u8(__m128i r, uint8_t v);
 
+        uint8_t extract_u8(__m128i r, size_t i);
+        __m128i insert_u8(__m128i r, uint8_t v, size_t i);
+        
         // extract/insert uint16_t
         template <unsigned _IDX>
         uint16_t extract_u16(__m128i v);
         template <unsigned _IDX>
         __m128i insert_u16(__m128i r, uint16_t v);
+
+        uint16_t extract_u16(__m128i r, size_t i);
+        __m128i insert_u16(__m128i r, uint16_t v, size_t i);
 
         // extract/insert uint32_t
         template <unsigned _IDX>
@@ -45,11 +57,17 @@ namespace cftal {
         template <unsigned _IDX>
         __m128i insert_u32(__m128i r, uint32_t v);
 
+        uint32_t extract_u32(__m128i r, size_t i);
+        __m128i insert_u32(__m128i r, uint32_t v, size_t i);
+
         // extract/insert uint64_t
         template <unsigned _IDX>
         uint64_t extract_u64(__m128i v);
         template <unsigned _IDX>
         __m128i insert_u64(__m128i r, uint64_t v);
+
+        uint64_t extract_u64(__m128i r, size_t i);
+        __m128i insert_u64(__m128i r, uint64_t v, size_t i);
 
 #if defined (__AVX__)
         // extract insert f32
@@ -58,11 +76,17 @@ namespace cftal {
         template <unsigned _IDX>
         __m256 insert_f32(__m256 r, float v);
 
+        float extract_f32(__m256 r, size_t i);
+        __m256 insert_f32(__m256 r, float v, size_t i);
+
         // extract insert f64
         template <unsigned _IDX>
         double extract_f64(__m256d r);
         template <unsigned _IDX>
         __m256d insert_f64(__m256d r, double v);
+
+        double extract_f64(__m256d r, size_t i);
+        __m256d insert_f64(__m256d r, double v, size_t i);
 #endif
 #if defined (__AVX2__)        
         // extract/insert uint32_t
@@ -71,54 +95,21 @@ namespace cftal {
         template <unsigned _IDX>
         __m256i insert_u32(__m256i r, uint32_t v);
 
+        uint32_t extract_u32(__m256i r, size_t i);
+        __m256i insert_u32(__m256i r, uint32_t v, size_t i);
+
         // extract/insert uint64_t
         template <unsigned _IDX>
         uint64_t extract_u64(__m256i v);
         template <unsigned _IDX>
         __m256i insert_u64(__m256i r, uint64_t v);
+
+        uint64_t extract_u64(__m256i r, size_t i);
+        __m256i insert_u64(__m256i r, uint64_t v, size_t i);
 #endif
-
     }
 }
 
-template <unsigned _IDX>
-inline
-double cftal::x86::extract_f64(__m128d v)
-{
-    const bool cond = _IDX < 2;
-    static_assert(cond, "cftal::x86::extract_f64 _IDX < 2");
-    double r;
-    switch (_IDX) {
-    case 0:
-        r = _mm_cvtsd_f64(v);
-        break;
-    case 1:
-        r = _mm_cvtsd_f64(_mm_unpackhi_pd(v, v));
-        break;
-    }
-    return r;
-}
-
-template <unsigned _IDX>
-inline
-__m128d cftal::x86::insert_f64(__m128d v, double d)
-{
-    const bool cond = _IDX < 2;
-    static_assert(cond, "cftal::x86::insert_f64 _IDX < 2");
-    double vv;
-    __m128d r;
-    switch (_IDX) {
-    case 0:
-        vv = extract_f64<1>(v);
-        r = _mm_set_pd(vv, d);
-        break;
-    case 1:
-        vv = extract_f64<0>(v);
-        r = _mm_set_pd(d, vv);
-        break;
-    }
-    return r;
-}
 
 template <unsigned _IDX>
 inline
@@ -173,6 +164,129 @@ __m128 cftal::x86::insert_f32(__m128 v, float f)
     return r;
 }
 
+inline
+float cftal::x86::extract_f32(__m128 v, size_t i)
+{
+#if defined (__SSSE3__)
+    int32_t ii= ((int32_t(i) & 3) * 0x04040404) + 0x03020100;
+    __m128i msk=_mm_set1_epi32(ii);
+    __m128i ri= _mm_shuffle_epi8(as<__m128i>(v), msk);
+    return _mm_cvtss_f32(as<__m128>(ri));
+#else
+    float r;
+    switch (i & 3) {
+    case 0:
+        r=extract<0>(v);
+        break;
+    case 1:
+        r=extract<1>(v);
+        break;
+    case 2:
+        r=extract<2>(v);
+        break;
+    case 3:
+        r=extract<3>(v);
+        break;
+    }
+#endif    
+}
+
+inline
+__m128 cftal::x86::insert_f32(__m128 v, float f, size_t i)
+{
+    union v_t {
+        const int32_t _u32[4];
+        const __m128i _iv;
+    };    
+    constexpr static const v_t msks[4]= {
+        {{-1, 0, 0, 0}},
+        {{0, -1, 0, 0}},
+        {{0, 0, -1, 0}},
+        {{0, 0, 0, -1}}
+    };
+    __m128 vf=_mm_set1_ps(f);
+    const __m128 msk=as<__m128>(msks[i&3]._iv);
+    return select_f32(msk, vf, v);    
+}
+
+template <unsigned _IDX>
+inline
+double cftal::x86::extract_f64(__m128d v)
+{
+    const bool cond = _IDX < 2;
+    static_assert(cond, "cftal::x86::extract_f64 _IDX < 2");
+    double r;
+    switch (_IDX) {
+    case 0:
+        r = _mm_cvtsd_f64(v);
+        break;
+    case 1:
+        r = _mm_cvtsd_f64(_mm_unpackhi_pd(v, v));
+        break;
+    }
+    return r;
+}
+
+template <unsigned _IDX>
+inline
+__m128d cftal::x86::insert_f64(__m128d v, double d)
+{
+    const bool cond = _IDX < 2;
+    static_assert(cond, "cftal::x86::insert_f64 _IDX < 2");
+    double vv;
+    __m128d r;
+    switch (_IDX) {
+    case 0:
+        vv = extract_f64<1>(v);
+        r = _mm_set_pd(vv, d);
+        break;
+    case 1:
+        vv = extract_f64<0>(v);
+        r = _mm_set_pd(d, vv);
+        break;
+    }
+    return r;
+}
+
+inline
+double cftal::x86::extract_f64(__m128d v, size_t i)
+{
+#if defined (__SSSE3__)
+    int64_t ii= ((int64_t(i) & 1) * 0x0808080808080808LL) + 
+        0x0706050403020100LL;
+    __m128i msk=_mm_set1_epi64x(ii);
+    __m128i ri= _mm_shuffle_epi8(as<__m128i>(v), msk);
+    return _mm_cvtsd_f64(as<__m128d>(ri));
+#else
+    double r;
+    switch (i & 1) {
+    case 0:
+        r=extract<0>(v);
+        break;
+    case 1:
+        r=extract<1>(v);
+        break;
+    }
+#endif    
+}
+
+inline
+__m128d cftal::x86::insert_f64(__m128d v, double d, size_t i)
+{
+    union v_t {
+        const int64_t _u64[2];
+        const __m128i _iv;
+    };    
+    constexpr static const v_t msks[2]= {
+        {{-1, 0}},
+        {{0, -1}}
+    };
+    __m128d vf=_mm_set1_pd(d);
+    const __m128d msk=as<__m128d>(msks[i&1]._iv);
+    return select_f64(msk, vf, v);    
+}
+
+
 template <unsigned _IDX>
 inline
 uint8_t cftal::x86::extract_u8(__m128i v) {
@@ -212,6 +326,100 @@ __m128i cftal::x86::insert_u8(__m128i v, uint8_t i)
 #endif
 }
 
+inline
+std::uint8_t cftal::x86::extract_u8(__m128i v, size_t i)
+{
+#if defined (__SSSE3__)
+    int32_t ii= (int32_t(i) & 15);
+    __m128i msk=_mm_set1_epi32(ii);
+    __m128i ri= _mm_shuffle_epi8(v, msk);
+    return _mm_cvtsi128_si32(ri) & 0xf;
+#else
+    uint8_t r;
+    switch (i & 0xf) {
+    case 0:
+        r=extract<0>(v);
+        break;
+    case 1:
+        r=extract<1>(v);
+        break;
+    case 2:
+        r=extract<2>(v);
+        break;
+    case 3:
+        r=extract<3>(v);
+        break;
+    case 4:
+        r=extract<4>(v);
+        break;
+    case 5:
+        r=extract<5>(v);
+        break;
+    case 6:
+        r=extract<6>(v);
+        break;
+    case 7:
+        r=extract<7>(v);
+        break;
+    case 8:
+        r=extract<8>(v);
+        break;
+    case 9:
+        r=extract<9>(v);
+        break;
+    case 10:
+        r=extract<10>(v);
+        break;
+    case 11:
+        r=extract<11>(v);
+        break;
+    case 12:
+        r=extract<12>(v);
+        break;
+    case 13:
+        r=extract<13>(v);
+        break;
+    case 14:
+        r=extract<14>(v);
+        break;
+    case 15:
+        r=extract<15>(v);
+        break;
+    }
+#endif    
+}
+
+inline
+__m128i 
+cftal::x86::insert_u8(__m128i v, uint8_t f, size_t i)
+{
+    union v_t {
+        const int8_t _u8[16];
+        const __m128i _iv;
+    };    
+    constexpr static const v_t msks[16]= {
+        {{-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1}}
+    };
+    __m128i vf=_mm_set1_epi16(f);
+    const __m128i msk=msks[i&7]._iv;
+    return select_u8(msk, vf, v);    
+}
+
 template <unsigned _IDX>
 inline
 uint16_t cftal::x86::extract_u16(__m128i v) {
@@ -228,6 +436,69 @@ __m128i cftal::x86::insert_u16(__m128i v, uint16_t i)
     static_assert(cond, "cftal::x86::insert_u16 _IDX < 16");
     return _mm_insert_epi16(v, i, _IDX);
 }
+
+inline
+std::uint16_t cftal::x86::extract_u16(__m128i v, size_t i)
+{
+#if defined (__SSSE3__)
+    int32_t ii= ((int32_t(i) & 7) * 0x0202) + 0x100;
+    __m128i msk=_mm_set1_epi32(ii);
+    __m128i ri= _mm_shuffle_epi8(v, msk);
+    return _mm_cvtsi128_si32(ri) & 0xff;
+#else
+    uint32_t r;
+    switch (i & 7) {
+    case 0:
+        r=extract<0>(v);
+        break;
+    case 1:
+        r=extract<1>(v);
+        break;
+    case 2:
+        r=extract<2>(v);
+        break;
+    case 3:
+        r=extract<3>(v);
+        break;
+    case 4:
+        r=extract<4>(v);
+        break;
+    case 5:
+        r=extract<5>(v);
+        break;
+    case 6:
+        r=extract<6>(v);
+        break;
+    case 7:
+        r=extract<7>(v);
+        break;
+    }
+#endif    
+}
+
+inline
+__m128i 
+cftal::x86::insert_u16(__m128i v, uint16_t f, size_t i)
+{
+    union v_t {
+        const int16_t _u16[8];
+        const __m128i _iv;
+    };    
+    constexpr static const v_t msks[8]= {
+        {{-1, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, -1, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, -1, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, -1, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, -1, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, -1, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, -1, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, -1}}
+    };
+    __m128i vf=_mm_set1_epi16(f);
+    const __m128i msk=msks[i&7]._iv;
+    return select_u16(msk, vf, v);    
+}
+
 
 template <unsigned _IDX>
 inline
@@ -279,6 +550,52 @@ __m128i cftal::x86::insert_u32(__m128i v, uint32_t i)
     }
     return r;
 #endif
+}
+
+inline
+std::uint32_t cftal::x86::extract_u32(__m128i v, size_t i)
+{
+#if defined (__SSSE3__)
+    int32_t ii= ((int32_t(i) & 3) * 0x04040404) + 0x03020100;
+    __m128i msk=_mm_set1_epi32(ii);
+    __m128i ri= _mm_shuffle_epi8(v, msk);
+    return _mm_cvtsi128_si32(ri);
+#else
+    uint32_t r;
+    switch (i & 3) {
+    case 0:
+        r=extract<0>(v);
+        break;
+    case 1:
+        r=extract<1>(v);
+        break;
+    case 2:
+        r=extract<2>(v);
+        break;
+    case 3:
+        r=extract<3>(v);
+        break;
+    }
+#endif    
+}
+
+inline
+__m128i 
+cftal::x86::insert_u32(__m128i v, uint32_t f, size_t i)
+{
+    union v_t {
+        const int32_t _u32[4];
+        const __m128i _iv;
+    };    
+    constexpr static const v_t msks[4]= {
+        {{-1, 0, 0, 0}},
+        {{0, -1, 0, 0}},
+        {{0, 0, -1, 0}},
+        {{0, 0, 0, -1}}
+    };
+    __m128i vf=_mm_set1_epi32(f);
+    const __m128i msk=msks[i&3]._iv;
+    return select_u32(msk, vf, v);    
 }
 
 template <unsigned _IDX>
@@ -364,6 +681,45 @@ __m128i cftal::x86::insert_u64(__m128i v, uint64_t i)
     return r;
 }
 
+inline
+std::uint64_t cftal::x86::extract_u64(__m128i v, size_t i)
+{
+#if defined (__SSSE3__)
+    int64_t ii= ((int64_t(i) & 1) * 0x0808080808080808LL) + 
+        0x0706050403020100LL;
+    __m128i msk=_mm_set1_epi64x(ii);
+    __m128i ri= _mm_shuffle_epi8(v, msk);
+    return _mm_cvtsi128_si64(ri);
+#else
+    uint64_t r;
+    switch (i & 1) {
+    case 0:
+        r=extract<0>(v);
+        break;
+    case 1:
+        r=extract<1>(v);
+        break;
+    }
+#endif    
+}
+
+inline
+__m128i cftal::x86::insert_u64(__m128i v, uint64_t d, size_t i)
+{
+    union v_t {
+        const int64_t _u64[2];
+        const __m128i _iv;
+    };    
+    constexpr static const v_t msks[2]= {
+        {{-1, 0}},
+        {{0, -1}}
+    };
+    __m128i vf=_mm_set1_epi64x(d);
+    const __m128i msk=msks[i&1]._iv;
+    return select_u64(msk, vf, v);    
+}
+
+
 #if defined (__AVX__)
 
 template <unsigned _IDX>
@@ -419,6 +775,47 @@ __m256 cftal::x86::insert_f32(__m256 v, float d)
     return r;
 }
 
+inline
+float cftal::x86::extract_f32(__m256 v, size_t i)
+{
+#if defined (__AVX2__)
+    const __m256i msk= _mm256_set1_epi32( i & 7);
+    __m256 r=_mm256_permutevar8x32_ps(v, msk);
+    __m128 rh=_mm256_castps256_ps128(r);
+    return _mm_cvtss_f32(rh);
+#else
+    __m128 vv;
+    if (i<4) {
+        vv = as<__m128>(v);
+    } else {
+        vv = _mm256_extractf128_ps(v, 1);
+    }
+    return extract_f32(vv, i);
+#endif    
+}
+
+inline
+__m256 cftal::x86::insert_f32(__m256 v, float f, size_t i)
+{
+    union v_t {
+        const int32_t _u32[8];
+        const __m256i _iv;
+    };    
+    constexpr static const v_t msks[8]= {
+        {{-1, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, -1, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, -1, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, -1, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, -1, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, -1, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, -1, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, -1}}
+    };
+    __m256 vf=_mm256_set1_ps(f);
+    const __m256 msk=as<__m256>(msks[i&7]._iv);
+    return select_f32(msk, vf, v);    
+}
+
 template <unsigned _IDX>
 inline
 double cftal::x86::extract_f64(__m256d v)
@@ -459,6 +856,45 @@ __m256d cftal::x86::insert_f64(__m256d v, double d)
     }
     return r;
 }
+
+inline
+double cftal::x86::extract_f64(__m256d v, size_t i)
+{
+#if defined (__AVX2__)
+    size_t ii= ((i & 3) * 0x20000002) + 0x10000000;
+    const __m256i msk= _mm256_set1_epi64x(ii);
+    __m256 r=_mm256_permutevar8x32_ps(_mm256_castpd_ps(v), msk);
+    __m128 rh=_mm256_castps256_ps128(r);
+    return _mm_cvtsd_f64(as<__m128d>(rh));
+#else
+    __m128d vv;
+    if (i<4) {
+        vv = as<__m128d>(v);
+    } else {
+        vv = _mm256_extractf128_pd(v, 1);
+    }
+    return extract_f32(vv, i);
+#endif    
+}
+
+inline
+__m256d cftal::x86::insert_f64(__m256d v, double d, size_t i)
+{
+    union v_t {
+        const int64_t _u64[4];
+        const __m256i _iv;
+    };    
+    constexpr static const v_t msks[4]= {
+        {{-1, 0, 0, 0}},
+        {{0, -1, 0, 0}},
+        {{0, 0, -1, 0}},
+        {{0, 0, 0, -1}}
+    };
+    __m256d vf=_mm256_set1_pd(d);
+    const __m256d msk=as<__m256d>(msks[i&3]._iv);
+    return select_f64(msk, vf, v);    
+}
+
 #endif
 
 #if defined (__AVX2__)
@@ -516,6 +952,47 @@ __m256i cftal::x86::insert_u32(__m256i v, uint32_t d)
     return r;
 }
 
+inline
+std::uint32_t cftal::x86::extract_u32(__m256i v, size_t i)
+{
+#if defined (__AVX2__)
+    const __m256i msk= _mm256_set1_epi32( i & 7);
+    __m256i r=_mm256_permutevar8x32_epi32(v, msk);
+    __m128i rh=_mm256_castsi256_si128(r);
+    return _mm_cvtsi128_si32(rh);
+#else
+    __m128i vv;
+    if (i<4) {
+        vv = as<__m128i>(v);
+    } else {
+        vv = _mm256_extractsi128_si256(v, 1);
+    }
+    return extract_u32(vv, i);
+#endif
+}
+
+inline
+__m256i cftal::x86::insert_u32(__m256i v, uint32_t f, size_t i)
+{
+    union v_t {
+        const int32_t _u32[8];
+        const __m256i _iv;
+    };    
+    constexpr static const v_t msks[8]= {
+        {{-1, 0, 0, 0, 0, 0, 0, 0}},
+        {{0, -1, 0, 0, 0, 0, 0, 0}},
+        {{0, 0, -1, 0, 0, 0, 0, 0}},
+        {{0, 0, 0, -1, 0, 0, 0, 0}},
+        {{0, 0, 0, 0, -1, 0, 0, 0}},
+        {{0, 0, 0, 0, 0, -1, 0, 0}},
+        {{0, 0, 0, 0, 0, 0, -1, 0}},
+        {{0, 0, 0, 0, 0, 0, 0, -1}}
+    };
+    __m256i vf=_mm256_set1_epi32(f);
+    const __m256i msk=msks[i&7]._iv;
+    return select_u32(msk, vf, v);    
+}
+
 template <unsigned _IDX>
 inline
 uint64_t cftal::x86::extract_u64(__m256i v)
@@ -556,6 +1033,45 @@ __m256i cftal::x86::insert_u64(__m256i v, uint64_t d)
     }
     return r;
 }
+
+inline
+std::uint64_t cftal::x86::extract_u64(__m256i v, size_t i)
+{
+#if defined (__AVX2__)
+    size_t ii= ((i & 3) * 0x20000002) + 0x10000000;
+    const __m256i msk= _mm256_set1_epi64x( ii);
+    __m256i r=_mm256_permutevar8x32_epi32(v, msk);
+    __m128i rh=_mm256_castsi256_si128(r);
+    return _mm_cvtsi128_si64(rh);
+#else
+    __m128i vv;
+    if (i<4) {
+        vv = as<__m128i>(v);
+    } else {
+        vv = _mm256_extractsi128_si256(v, 1);
+    }
+    return extract_u32(vv, i);
+#endif    
+}
+
+inline
+__m256i cftal::x86::insert_u64(__m256i v, uint64_t d, size_t i)
+{
+    union v_t {
+        const int64_t _u64[4];
+        const __m256i _iv;
+    };    
+    constexpr static const v_t msks[4]= {
+        {{-1, 0, 0, 0}},
+        {{0, -1, 0, 0}},
+        {{0, 0, -1, 0}},
+        {{0, 0, 0, -1}}
+    };
+    __m256i vf=_mm256_set1_epi64x(d);
+    const __m256i msk=msks[i&3]._iv;
+    return select_u64(msk, vf, v);    
+}
+
 
 #endif
 

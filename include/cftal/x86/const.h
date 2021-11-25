@@ -19,8 +19,8 @@ namespace cftal {
         template <class _V, class _E, int _EN>
         struct vecunion {
             union u_t {
-                _V _v;
                 _E _e[_EN];
+                _V _v;
             };
         };
 
