@@ -132,10 +132,22 @@ namespace cftal {
     const typename vec<_T, _N>::half_type&
     high_half(const vec<_T, _N>& v);
 
-    // extract one element from a vector
+    // extract one element at pos _I from a vector
     template <std::size_t _I, typename _T, std::size_t _N>
     _T extract(const vec<_T, _N>& v);
 
+    // extract one element at pos i from a vector
+    template <typename _T, std::size_t _N>
+    _T extract(const vec<_T, _N>& v, size_t i);
+    
+    // insert one element vi at pos _I into a vector
+    template <std::size_t _I, typename _T, std::size_t _N>
+    void insert(vec<_T, _N>& v, const _T& vi);    
+
+    // insert one element vi at pos _I into a vector
+    template <typename _T, std::size_t _N>
+    void insert(vec<_T, _N>& v, const _T& vi, size_t i);    
+    
     // test if all elements lt 0 / have their MSB set
     template <typename _T, std::size_t _N>
     bool all_of(const vec<_T, _N>& v);
@@ -689,15 +701,63 @@ inline
 _T
 cftal::extract(const vec<_T, _N>& v)
 {
-    // static_assert(_I < _N, "invalid offset in extract(vec<_T, _N>)");
-    _T r;
-    if (_I < _N/2) {
-        r = extract<_I>(low_half(v));
-    } else {
-        r = extract< _I ? (_I-_N/2) : 0 >(high_half(v));
-    }
-    return r;
+    static_assert(_I < _N, "invalid offset in extract(vec<_T, _N>)");
+    constexpr const size_t _NH = _N/2;
+    constexpr const bool lo = _I < _NH;
+    constexpr size_t _II = lo ? _I  : _I-_NH;
+    const vec<_T, _NH> vh= lo ? low_half(v) : high_half(v);
+    return extract<_II>(vh);
 }
+
+template <class _T, std::size_t _N>
+inline
+_T
+cftal::extract(const vec<_T, _N>& v, size_t i)
+{
+    constexpr const size_t _NH = _N/2;
+    const bool lo = i < _NH;
+    const size_t ii = lo ? i  : i -_NH;
+    const vec<_T, _NH> vh= lo ? low_half(v) : high_half(v);
+    return extract(vh, ii);
+}
+
+template <std::size_t _I, class _T, std::size_t _N>
+inline
+void
+cftal::insert(vec<_T, _N>& v, const _T& vi)
+{
+    static_assert(_I < _N, "invalid offset in extract(vec<_T, _N>)");
+    constexpr const size_t _NH = _N/2;
+    constexpr const bool lo = _I < _NH;
+    constexpr size_t _II = lo ? _I  : _I-_NH;
+    vec<_T, _N> lh=low_half(v);
+    vec<_T, _N> hh=high_half(v);    
+    if (lo) {
+        insert<_II>(lh, vi);
+    } else {
+        insert<_II>(hh, vi);
+    }
+    v = vec<_T, _N>(lh, hh);
+}
+
+template <class _T, std::size_t _N>
+inline
+void
+cftal::insert(vec<_T, _N>& v, const _T& vi, size_t i)
+{
+    constexpr const size_t _NH = _N/2;
+    const bool lo = i < _NH;
+    const size_t ii = lo ? i  : i-_NH;
+    vec<_T, _N> lh=low_half(v);
+    vec<_T, _N> hh=high_half(v);    
+    if (lo) {
+        insert(lh, vi, ii);
+    } else {
+        insert(hh, vi, ii);
+    }
+    v = vec<_T, _N>(lh, hh);
+}
+
 
 template <class _T, std::size_t _N>
 inline

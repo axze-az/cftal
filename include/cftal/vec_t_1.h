@@ -252,6 +252,15 @@ namespace cftal {
     _T extract(const vec<_T, 1>& v);
 
     template <typename _T>
+    _T extract(const vec<_T, 1>& v, size_t i);
+    
+    template <std::size_t _I, typename _T>
+    void insert(vec<_T, 1>& v, const _T& vi);
+    
+    template <typename _T>
+    void insert(vec<_T, 1>& v, const _T& vi, size_t i);
+
+    template <typename _T>
     vec<_T, 1>
     select(const typename vec<_T, 1>::mask_type& m,
            const vec<_T, 1>& on_true,
@@ -883,10 +892,36 @@ inline
 _T
 cftal::extract(const vec<_T, 1>& v)
 {
-    // static_assert(_I ==0, "invalid offset in extract()");
+    static_assert(_I ==0, "invalid offset in extract()");
     return v();
 }
 
+template <class _T>
+inline
+_T
+cftal::extract(const vec<_T, 1>& v, size_t i)
+{
+    static_cast<void>(i);
+    return v();
+}
+
+template <std::size_t _I, class _T>
+inline
+void
+cftal::insert(vec<_T, 1>& v, const _T& vi)
+{
+    static_assert(_I ==0, "invalid offset in insert()");
+    v = vi;
+}
+
+template <class _T>
+inline
+void
+cftal::insert(const vec<_T, 1>& v, const _T& vi, size_t i)
+{
+    static_cast<void>(i);
+    v = vi;    
+}
 
 template <class _T>
 inline
