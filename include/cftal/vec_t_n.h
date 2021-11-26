@@ -122,6 +122,10 @@ namespace cftal {
     using v8s64 = vec<int64_t, 8>;
     using v8u64 = vec<uint64_t, 8>;
 
+    // return the size of the vector
+    template <typename _T, std::size_t _N>
+    constexpr size_t size(const vec<_T, _N>& v);
+
     // return the lower half of the vector
     template <typename _T, std::size_t _N>
     const typename vec<_T, _N>::half_type&
@@ -678,6 +682,15 @@ const typename cftal::vec<_T, _N>::half_type&
 cftal::vec<_T, _N>::hh() const
 {
     return _v.second;
+}
+
+template <typename _T, std::size_t _N>
+inline
+constexpr cftal::size_t
+cftal::size(const vec<_T, _N>& v)
+{
+    static_cast<void>(v);
+    return _N;
 }
 
 template <class _T, std::size_t _N>

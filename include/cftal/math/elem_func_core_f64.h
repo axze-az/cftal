@@ -3005,8 +3005,8 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     if (_T::any_of_v(v_large_arg)) {
         // reduce the large arguments
 #if 1
-        constexpr std::size_t N = _T::NVF();
-        for (std::size_t i=0; i<N; ++i) {
+        size_t N = size(x);
+        for (size_t i=0; i<N; ++i) {
             typename vf_type::value_type xi=extract(x, i);
             if (large_arg < std::fabs(xi)) {
                 double y[2];
