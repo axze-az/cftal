@@ -186,7 +186,8 @@ float cftal::x86::extract_f32(__m128 v, size_t i)
 {
 #if defined (__SSSE3__)
     int32_t ii= ((int32_t(i) & 3) * 0x04040404) + 0x03020100;
-    __m128i msk=_mm_set1_epi32(ii);
+    // __m128i msk=_mm_set1_epi32(ii);
+    __m128i msk=_mm_cvtsi32_si128(ii);
     __m128i ri= _mm_shuffle_epi8(as<__m128i>(v), msk);
     return _mm_cvtss_f32(as<__m128>(ri));
 #else
@@ -261,7 +262,8 @@ double cftal::x86::extract_f64(__m128d v, size_t i)
 #if defined (__SSSE3__)
     int64_t ii= ((int64_t(i) & 1) * 0x0808080808080808LL) +
         0x0706050403020100LL;
-    __m128i msk=_mm_set1_epi64x(ii);
+    // __m128i msk=_mm_set1_epi64x(ii);
+    __m128i msk=_mm_cvtsi64_si128(ii);        
     __m128i ri= _mm_shuffle_epi8(as<__m128i>(v), msk);
     return _mm_cvtsd_f64(as<__m128d>(ri));
 #else
@@ -329,7 +331,8 @@ std::uint8_t cftal::x86::extract_u8(__m128i v, size_t i)
 {
 #if defined (__SSSE3__)
     int32_t ii= (int32_t(i) & 15);
-    __m128i msk=_mm_set1_epi32(ii);
+    // __m128i msk=_mm_set1_epi32(ii);
+    __m128i msk=_mm_cvtsi32_si128(ii);
     __m128i ri= _mm_shuffle_epi8(v, msk);
     return _mm_cvtsi128_si32(ri) & 0xf;
 #else
@@ -418,7 +421,8 @@ std::uint16_t cftal::x86::extract_u16(__m128i v, size_t i)
 {
 #if defined (__SSSE3__)
     int32_t ii= ((int32_t(i) & 7) * 0x0202) + 0x100;
-    __m128i msk=_mm_set1_epi32(ii);
+    // __m128i msk=_mm_set1_epi32(ii);
+    __m128i msk=_mm_cvtsi32_si128(ii);
     __m128i ri= _mm_shuffle_epi8(v, msk);
     return _mm_cvtsi128_si32(ri) & 0xff;
 #else
@@ -518,7 +522,8 @@ std::uint32_t cftal::x86::extract_u32(__m128i v, size_t i)
 {
 #if defined (__SSSE3__)
     int32_t ii= ((int32_t(i) & 3) * 0x04040404) + 0x03020100;
-    __m128i msk=_mm_set1_epi32(ii);
+    // __m128i msk=_mm_set1_epi32(ii);
+    __m128i msk=_mm_cvtsi32_si128(ii);
     __m128i ri= _mm_shuffle_epi8(v, msk);
     return _mm_cvtsi128_si32(ri);
 #else
@@ -638,7 +643,8 @@ std::uint64_t cftal::x86::extract_u64(__m128i v, size_t i)
 #if defined (__SSSE3__)
     int64_t ii= ((int64_t(i) & 1) * 0x0808080808080808LL) +
         0x0706050403020100LL;
-    __m128i msk=_mm_set1_epi64x(ii);
+    // __m128i msk=_mm_set1_epi64x(ii);
+    __m128i msk=_mm_cvtsi64_si128(ii);
     __m128i ri= _mm_shuffle_epi8(v, msk);
     return _mm_cvtsi128_si64(ri);
 #else
@@ -721,7 +727,8 @@ inline
 float cftal::x86::extract_f32(__m256 v, size_t i)
 {
 #if defined (__AVX2__)
-    const __m256i msk= _mm256_set1_epi32( i & 7);
+    // const __m256i msk= _mm256_set1_epi32( i & 7);
+    const __m256i msk=_mm256_castsi128_si256(_mm_cvtsi32_si128(i & 7));
     __m256 r=_mm256_permutevar8x32_ps(v, msk);
     __m128 rh=_mm256_castps256_ps128(r);
     return _mm_cvtss_f32(rh);
@@ -790,7 +797,8 @@ double cftal::x86::extract_f64(__m256d v, size_t i)
 {
 #if defined (__AVX2__)
     size_t ii= ((i & 3) * 0x200000002LL) + 0x100000000LL;
-    const __m256i msk= _mm256_set1_epi64x(ii);
+    // const __m256i msk= _mm256_set1_epi64x(ii);
+    const __m256i msk=_mm256_castsi128_si256(_mm_cvtsi64_si128(ii));
     __m256 r=_mm256_permutevar8x32_ps(_mm256_castpd_ps(v), msk);
     __m128 rh=_mm256_castps256_ps128(r);
     return _mm_cvtsd_f64(as<__m128d>(rh));
@@ -874,7 +882,8 @@ inline
 std::uint32_t cftal::x86::extract_u32(__m256i v, size_t i)
 {
 #if defined (__AVX2__)
-    const __m256i msk= _mm256_set1_epi32( i & 7);
+    // const __m256i msk= _mm256_set1_epi32( i & 7);
+    const __m256i msk=_mm256_castsi128_si256(_mm_cvtsi32_si128(i & 7));
     __m256i r=_mm256_permutevar8x32_epi32(v, msk);
     __m128i rh=_mm256_castsi256_si128(r);
     return _mm_cvtsi128_si32(rh);
@@ -943,7 +952,8 @@ std::uint64_t cftal::x86::extract_u64(__m256i v, size_t i)
 {
 #if defined (__AVX2__)
     size_t ii= ((i & 3) * 0x200000002LL) + 0x100000000LL;
-    const __m256i msk= _mm256_set1_epi64x( ii);
+    // const __m256i msk= _mm256_set1_epi64x( ii);
+    const __m256i msk=_mm256_castsi128_si256(_mm_cvtsi64_si128(ii));
     __m256i r=_mm256_permutevar8x32_epi32(v, msk);
     __m128i rh=_mm256_castsi256_si128(r);
     return _mm_cvtsi128_si64(rh);
