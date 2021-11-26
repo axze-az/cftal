@@ -15,23 +15,25 @@ namespace cftal {
 
     namespace x86 {
 
-        // union of all mixed types
-        template <class _V, class _E, int _EN>
-        struct vecunion {
-            union u_t {
-                _E _e[_EN];
-                _V _v;
-            };
+        // union of mixed types
+        template <typename _SCALAR, size_t _SN,
+                  typename _VF32, typename _VF64, typename _VI>
+        union vecunion {
+            // array of scalars
+            _SCALAR _s[_SN];
+            // f32 vector
+            _VF32 _vf;
+            // f64 vector
+            _VF64 _vd;
+            // integer vector
+            _VI _vi;
         };
 
         // static constants consisting of 4 uint32_t
         template <uint32_t _P0, uint32_t _P1,
                   uint32_t _P2, uint32_t _P3>
         class const_v4u32 {
-            union u_t {
-                const uint32_t _u32[4];
-                const __m128i _iv;
-            };
+            using u_t = vecunion<uint32_t, 4, __m128, __m128d, __m128i>;
             static __attribute__((__aligned__(16),
                                   __visibility__("hidden")))
             const u_t _msk;
@@ -47,10 +49,7 @@ namespace cftal {
                   uint16_t _P4, uint16_t _P5,
                   uint16_t _P6, uint16_t _P7>
         class const_v8u16 {
-            union u_t {
-                const uint16_t _u16[8];
-                const __m128i _iv;
-            };
+            using u_t = vecunion<uint16_t, 8, __m128, __m128d, __m128i>;
             static __attribute__((__aligned__(16),
                                   __visibility__("hidden")))
             const u_t _msk;
@@ -70,10 +69,7 @@ namespace cftal {
                   uint8_t _P12, uint8_t _P13,
                   uint8_t _P14, uint8_t _P15>
         class const_v16u8 {
-            union u_t {
-                const uint8_t _u8[16];
-                const __m128i _iv;
-            };
+            using u_t = vecunion<uint8_t, 16, __m128, __m128d, __m128i>;
             static __attribute__((__aligned__(16),
                                   __visibility__("hidden")))
             const u_t _msk;
@@ -83,33 +79,23 @@ namespace cftal {
             static constexpr __m128d dv();
         };
 
+#if defined (__AVX__)
         // static constants consisting of 8 uint32_t
         template <uint32_t _P0, uint32_t _P1,
                   uint32_t _P2, uint32_t _P3,
                   uint32_t _P4, uint32_t _P5,
                   uint32_t _P6, uint32_t _P7>
         class const_v8u32 {
-            union u_t {
-                const uint32_t _u32[8];
-#if defined (__AVX__)
-                const __m256i _iv;
-                const __m256 _fv;
-                const __m256d _dv;
-#endif
-                const __m128i _vm128i[2];
-                const __m128d _vm128d[2];
-                const __m128 _vm128[2];
-            };
+            using u_t = vecunion<uint32_t, 8, __m256, __m256d, __m256i>;
             static __attribute__((__aligned__(32),
                                   __visibility__("hidden")))
             const u_t _msk;
         public:
-#if defined (__AVX__)
             static constexpr __m256i iv();
             static constexpr __m256 fv();
             static constexpr __m256d dv();
-#endif
         };
+#endif
 
         template <int _P0, int _P1, int _P2, int _P3>
         struct shuffle4 {
@@ -222,7 +208,7 @@ namespace cftal {
                             0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff> v_not_sign_v8f32_msk;
-        
+
         typedef const_v8u32<0x80000000, 0x80000000,
                             0x80000000, 0x80000000,
                             0x80000000, 0x80000000,
@@ -308,7 +294,7 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
 inline
 constexpr __m128i cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::iv()
 {
-    return _msk._iv;
+    return _msk._vi;
 }
 
 template <cftal::uint32_t _P0, cftal::uint32_t _P1,
@@ -316,7 +302,7 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
 inline
 constexpr __m128 cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::fv()
 {
-    return _mm_castsi128_ps(iv());
+    return  _msk._vf;
 }
 
 template <cftal::uint32_t _P0, cftal::uint32_t _P1,
@@ -324,7 +310,7 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
 inline
 constexpr __m128d cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::dv()
 {
-    return _mm_castsi128_pd(iv());
+    return _msk._vd;
 }
 
 template <cftal::uint16_t _P0, cftal::uint16_t _P1,
@@ -346,7 +332,7 @@ inline
 constexpr __m128i
 cftal::x86::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
 {
-    return _msk._iv;
+    return _msk._vi;
 }
 
 template <cftal::uint16_t _P0, cftal::uint16_t _P1,
@@ -357,7 +343,7 @@ inline
 constexpr __m128
 cftal::x86::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
 {
-    return _mm_castsi128_ps(iv());
+    return _msk._vf;
 }
 
 template <cftal::uint16_t _P0, cftal::uint16_t _P1,
@@ -368,7 +354,7 @@ inline
 constexpr __m128d
 cftal::x86::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
-    return _mm_castsi128_pd(iv());
+    return _msk._vd;
 }
 
 template <cftal::uint8_t _P00, cftal::uint8_t _P01,
@@ -402,7 +388,7 @@ constexpr __m128i
 cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                         _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
 {
-    return _msk._iv;
+    return _msk._vi;
 }
 
 template <cftal::uint8_t _P00, cftal::uint8_t _P01,
@@ -418,7 +404,7 @@ constexpr __m128
 cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                         _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
 {
-    return _mm_castsi128_ps(iv());
+    return _msk._vf;
 }
 
 template <cftal::uint8_t _P00, cftal::uint8_t _P01,
@@ -434,7 +420,7 @@ constexpr __m128d
 cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                         _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
 {
-    return _mm_castsi128_pd(iv());
+    return _msk._vd;
 }
 
 
@@ -458,7 +444,7 @@ inline
 constexpr __m256i
 cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
 {
-    return _msk._iv;
+    return _msk._vi;
 }
 
 template <cftal::uint32_t _P0, cftal::uint32_t _P1,
@@ -469,7 +455,7 @@ inline
 constexpr __m256
 cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
 {
-    return _msk._fv;
+    return _msk._vf;
 }
 
 template <cftal::uint32_t _P0, cftal::uint32_t _P1,
@@ -480,7 +466,7 @@ inline
 constexpr __m256d
 cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
-    return _msk._dv;
+    return _msk._vd;
 }
 
 #endif // __AVX__

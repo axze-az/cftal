@@ -24,16 +24,16 @@ namespace cftal {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
         };
-       
+
         struct div_u8 : public div_ref<uint8_t, 16> {
-        private:            
+        private:
             template <unsigned pos>
             static __m128i pos(__m128i x, __m128i y);
-        public:    
+        public:
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
         };
-        
+
         struct div_s8 : public div_ref<int8_t, 16> {
         private:
             template <unsigned pos>
@@ -42,7 +42,7 @@ namespace cftal {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
         };
-        
+
         struct div_u16 : public div_ref<uint16_t, 8> {
             static __m128i v(__m128i a, __m128i b,
                              __m128i* rem=nullptr);
@@ -199,21 +199,21 @@ namespace cftal {
 template <class _E, unsigned _EN>
 __m128i cftal::x86::div_ref<_E, _EN>::ref(__m128i a, __m128i b, __m128i* rem)
 {
-    typename vecunion<__m128i, _E, _EN>::u_t ca, cb, cq, cr;
-    _mm_store_si128(&ca._v, a);
-    _mm_store_si128(&cb._v, b);
+    vecunion<_E, _EN, __m128, __m128d, __m128i> ca, cb, cq, cr;
+    _mm_store_si128(&ca._vi, a);
+    _mm_store_si128(&cb._vi, b);
     for (unsigned i=0; i<_EN; ++i) {
-        if (cb._e[i] != _E(0) ) {
-            cq._e[i] = ca._e[i] / cb._e[i];
-            cr._e[i] = ca._e[i] % cb._e[i];
+        if (cb._s[i] != _E(0) ) {
+            cq._s[i] = ca._s[i] / cb._s[i];
+            cr._s[i] = ca._s[i] % cb._s[i];
         } else {
-            cq._e[i] = _E(-1);
-            cr._e[i] = ca._e[i];
+            cq._s[i] = _E(-1);
+            cr._s[i] = ca._s[i];
         }
     }
     if (rem != nullptr)
-        _mm_store_si128(rem, _mm_load_si128(&cr._v));
-    return _mm_load_si128(&cq._v);
+        _mm_store_si128(rem, _mm_load_si128(&cr._vi));
+    return _mm_load_si128(&cq._vi);
 }
 
 template <class _E, unsigned _EN>
