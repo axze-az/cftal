@@ -417,6 +417,36 @@ cftal::high_half(const vec<int16_t, 8>& v)
     return as<vec<int16_t, 4> >(h);
 }
 
+template <cftal::size_t _I>
+inline
+cftal::int16_t
+cftal::extract(const vec<int16_t, 8>& v)
+{
+    return x86::extract_u16<_I>(v());
+}
+
+inline
+cftal::int16_t
+cftal::extract(const vec<int16_t, 8>& v, size_t i)
+{
+    return x86::extract_u16(v(), i);
+}
+
+template <cftal::size_t _I>
+inline
+void
+cftal::insert(vec<int16_t, 8>& v, const int16_t& vi)
+{
+    v= x86::insert_u16<_I>(v(), vi);
+}
+
+inline
+void
+cftal::insert(vec<int16_t, 8>& v, const int16_t& vi, size_t i)
+{
+    v= x86::insert_u16(v(), vi, i);
+}
+
 inline
 bool cftal::all_of(const vec<int16_t, 8>::mask_type& v)
 {

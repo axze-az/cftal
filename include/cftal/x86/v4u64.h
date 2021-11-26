@@ -70,6 +70,20 @@ namespace cftal {
     vec<uint64_t, 2>
     high_half(const vec<uint64_t, 4>& v);
 
+    template <size_t _I>
+    uint64_t
+    extract(const vec<uint64_t, 4>& v);
+
+    uint64_t
+    extract(const vec<uint64_t, 4>& v, size_t i);
+
+    template <size_t _I>
+    void
+    insert(vec<uint64_t, 4>& v, const uint64_t& vi);
+
+    void
+    insert(vec<uint64_t, 4>& v, const uint64_t& vi, size_t i);
+
 #if !defined (__AVX512VL__)
     bool
     all_of(const vec<uint64_t, 4>::mask_type& v);

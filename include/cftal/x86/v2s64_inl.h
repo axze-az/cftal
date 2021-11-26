@@ -416,8 +416,37 @@ inline
 cftal::vec<int64_t, 1>
 cftal::high_half(const vec<int64_t, 2>& v)
 {
-    vec<int64_t, 2> h= permute<1, 0>(v);
-    return as<vec<int64_t,1> >(h);
+    return x86::extract_u64<1>(v());
+}
+
+template <cftal::size_t _I>
+inline
+cftal::int64_t
+cftal::extract(const vec<int64_t, 2>& v)
+{
+    return x86::extract_u64<_I>(v());
+}
+
+inline
+cftal::int64_t
+cftal::extract(const vec<int64_t, 2>& v, size_t i)
+{
+    return x86::extract_u64(v(), i);
+}
+
+template <cftal::size_t _I>
+inline
+void
+cftal::insert(vec<int64_t, 2>& v, const int64_t& vi)
+{
+    v= x86::insert_u64<_I>(v(), vi);
+}
+
+inline
+void
+cftal::insert(vec<int64_t, 2>& v, const int64_t& vi, size_t i)
+{
+    v= x86::insert_u64(v(), vi, i);
 }
 
 inline

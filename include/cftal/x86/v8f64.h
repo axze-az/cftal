@@ -69,6 +69,20 @@ namespace cftal {
     vec<double, 4>
     high_half(const vec<double, 8>& s);
 
+    template <size_t _I>
+    double
+    extract(const vec<double, 8>& v);
+
+    double
+    extract(const vec<double, 8>& v, size_t i);
+
+    template <size_t _I>
+    void
+    insert(vec<double, 8>& v, const double& vi);
+
+    void
+    insert(vec<double, 8>& v, const double& vi, size_t i);
+
     template <std::size_t _I>
     double
     extract(const vec<double, 8>& s);

@@ -71,6 +71,20 @@ namespace cftal {
     vec<double, 1>
     high_half(const vec<double, 2>& s);
 
+    template <size_t _I>
+    double
+    extract(const vec<double, 2>& v);
+
+    double
+    extract(const vec<double, 2>& v, size_t i);
+
+    template <size_t _I>
+    void
+    insert(vec<double, 2>& v, const double& vi);
+
+    void
+    insert(vec<double, 2>& v, const double& vi, size_t i);
+
 #if !defined (__AVX512VL__)
     bool
     any_of(const vec<double, 2>::mask_type& s);

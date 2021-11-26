@@ -63,6 +63,20 @@ namespace cftal {
     vec<uint16_t, 4> low_half(const vec<uint16_t, 8>& a);
     vec<uint16_t, 4> high_half(const vec<uint16_t, 8>& a);
 
+    template <size_t _I>
+    uint16_t
+    extract(const vec<uint16_t, 8>& v);
+
+    uint16_t
+    extract(const vec<uint16_t, 8>& v, size_t i);
+
+    template <size_t _I>
+    void
+    insert(vec<uint16_t, 8>& v, const uint16_t& vi);
+
+    void
+    insert(vec<uint16_t, 8>& v, const uint16_t& vi, size_t i);
+
     bool
     all_of(const vec<uint16_t, 8>::mask_type& v);
     bool
@@ -104,13 +118,13 @@ namespace cftal {
     std::pair<vec<uint16_t, 8>, vec<uint16_t, 8> >
     mul_lo_hi(const vec<uint16_t, 8>& a,
               const vec<uint16_t, 8>& b);
-    
+
     vec<uint16_t, 8>
     sat_add(const vec<uint16_t, 8>& a, const vec<uint16_t, 8>& b);
-    
+
     vec<uint16_t, 8>
     sat_sub(const vec<uint16_t, 8>& a, const vec<uint16_t, 8>& b);
-    
+
     vec<uint16_t, 8>
     average(const vec<uint16_t, 8>& a, const vec<uint16_t, 8>& b);
 }

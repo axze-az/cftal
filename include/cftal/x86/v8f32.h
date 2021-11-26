@@ -75,9 +75,19 @@ namespace cftal {
     vec<float, 4>
     high_half(const vec<float, 8>& s);
 
-    template <std::size_t _I>
+    template <size_t _I>
     float
-    extract(const vec<float, 8>& s);
+    extract(const vec<float, 8>& v);
+
+    float
+    extract(const vec<float, 8>& v, size_t i);
+
+    template <size_t _I>
+    void
+    insert(vec<float, 8>& v, const float& vi);
+
+    void
+    insert(vec<float, 8>& v, const float& vi, size_t i);
 
     vec<float, 8>
     select(const vec<float, 8>::mask_type& msk,

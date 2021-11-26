@@ -341,98 +341,98 @@ cftal::mem<cftal::vec<uint8_t, 16> >::load(const uint8_t* p, std::size_t s)
         v = _mm_loadu_si128(reinterpret_cast<const __m128i*>(p));
         break;
     case 15:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[6], p[7],
                           p[8], p[9], p[10], p[11],
                           p[12], p[13], p[14], p[14]);
         break;
     case 14:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[6], p[7],
                           p[8], p[9], p[10], p[11],
                           p[12], p[13], p[13], p[13]);
         break;
     case 13:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[6], p[7],
                           p[8], p[9], p[10], p[11],
                           p[12], p[12], p[12], p[12]);
         break;
     case 12:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[6], p[7],
                           p[8], p[9], p[10], p[11],
                           p[11], p[11], p[11], p[11]);
         break;
     case 11:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[6], p[7],
                           p[8], p[9], p[10], p[10],
                           p[10], p[10], p[10], p[10]);
         break;
     case 10:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[6], p[7],
                           p[8], p[9], p[9], p[9],
                           p[9], p[9], p[9], p[9]);
         break;
     case 9:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[6], p[7],
                           p[8], p[8], p[8], p[8],
                           p[8], p[8], p[8], p[8]);
         break;
     case 8:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[6], p[7],
                           p[7], p[7], p[7], p[7],
                           p[7], p[7], p[7], p[7]);
         break;
     case 7:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[6], p[6],
                           p[6], p[6], p[6], p[6],
                           p[6], p[6], p[6], p[6]);
         break;
     case 6:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[5], p[5], p[5],
                           p[5], p[5], p[5], p[5],
                           p[5], p[5], p[5], p[5]);
         break;
     case 5:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[4], p[4], p[4], p[4],
                           p[4], p[4], p[4], p[4],
                           p[4], p[4], p[4], p[4]);
         break;
     case 4:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[3],
                           p[3], p[3], p[3], p[3],
                           p[3], p[3], p[3], p[3],
                           p[3], p[3], p[3], p[3]);
         break;
     case 3:
-        v = _mm_setr_epi8(p[0], p[1], p[2], p[2],                           
+        v = _mm_setr_epi8(p[0], p[1], p[2], p[2],
                           p[2], p[2], p[2], p[2],
                           p[2], p[2], p[2], p[2],
                           p[2], p[2], p[2], p[2]);
         break;
     case 2:
-        v = _mm_setr_epi8(p[0], p[1], p[1], p[1],                           
+        v = _mm_setr_epi8(p[0], p[1], p[1], p[1],
                           p[1], p[1], p[1], p[1],
                           p[1], p[1], p[1], p[1],
                           p[1], p[1], p[1], p[1]);
         break;
     case 1:
-        v = _mm_setr_epi8(p[0], p[0], p[0], p[0],                           
+        v = _mm_setr_epi8(p[0], p[0], p[0], p[0],
                           p[0], p[0], p[0], p[0],
                           p[0], p[0], p[0], p[0],
                           p[0], p[0], p[0], p[0]);
         break;
     case 0:
         v = _mm_setr_epi32(0, 0, 0, 0);
-        break;        
+        break;
     }
     return v;
 }
@@ -456,9 +456,39 @@ inline
 cftal::vec<uint8_t, 8>
 cftal::high_half(const vec<uint8_t, 16>& v)
 {
-    vec<uint8_t, 16> h=permute<8, 9, 10, 11, 12, 13, 14, 15, 
+    vec<uint8_t, 16> h=permute<8, 9, 10, 11, 12, 13, 14, 15,
                                0, 1, 2, 3, 4, 5, 6, 7>(v);
     return as<vec<uint8_t, 8> >(h);
+}
+
+template <cftal::size_t _I>
+inline
+cftal::uint8_t
+cftal::extract(const vec<uint8_t, 16>& v)
+{
+    return x86::extract_u8<_I>(v());
+}
+
+inline
+cftal::uint8_t
+cftal::extract(const vec<uint8_t, 16>& v, size_t i)
+{
+    return x86::extract_u8(v(), i);
+}
+
+template <cftal::size_t _I>
+inline
+void
+cftal::insert(vec<uint8_t, 16>& v, const uint8_t& vi)
+{
+    v = x86::insert_u8<_I>(v(), vi);
+}
+
+inline
+void
+cftal::insert(vec<uint8_t, 16>& v, const uint8_t& vi, size_t i)
+{
+    v = x86::insert_u8(v(), vi, i);
 }
 
 inline
@@ -522,9 +552,9 @@ template <bool _P00, bool _P01, bool _P02, bool _P03,
 inline
 cftal::v16u8 cftal::select(const v16u8& a, const v16u8& b)
 {
-    return x86::select_u8<_P00, _P01, _P02, _P03, 
+    return x86::select_u8<_P00, _P01, _P02, _P03,
                           _P04, _P05, _P06, _P07,
-                          _P08, _P09, _P10, _P11, 
+                          _P08, _P09, _P10, _P11,
                           _P12, _P13, _P14, _P15> (a(), b());
 }
 
@@ -535,9 +565,9 @@ template <int32_t _P00, int32_t _P01, int32_t _P02, int32_t _P03,
 inline
 cftal::v16u8 cftal::permute(const v16u8& a)
 {
-    return x86::perm_v16u8<_P00, _P01, _P02, _P03, 
+    return x86::perm_v16u8<_P00, _P01, _P02, _P03,
                            _P04, _P05, _P06, _P07,
-                           _P08, _P09, _P10, _P11, 
+                           _P08, _P09, _P10, _P11,
                            _P12, _P13, _P14, _P15>(a());
 }
 
@@ -548,9 +578,9 @@ template <int32_t _P00, int32_t _P01, int32_t _P02, int32_t _P03,
 inline
 cftal::v16u8 cftal::permute(const v16u8& a, const v16u8& b)
 {
-    return x86::perm_v16u8<_P00, _P01, _P02, _P03, 
+    return x86::perm_v16u8<_P00, _P01, _P02, _P03,
                            _P04, _P05, _P06, _P07,
-                           _P08, _P09, _P10, _P11, 
+                           _P08, _P09, _P10, _P11,
                            _P12, _P13, _P14, _P15>(a(), b());
 }
 
@@ -561,7 +591,7 @@ cftal::mul_lo_hi(const v16u8& x, const v16u8& y)
     __m128i ox=_mm_srli_epi16(x(), 8);
     __m128i oy=_mm_srli_epi16(y(), 8);
     __m128i po=_mm_mullo_epi16(ox, oy);
-    
+
     const __m128i even_mask = x86::const_v16u8<0xff, 0x00, 0xff, 0x00,
                                                0xff, 0x00, 0xff, 0x00,
                                                0xff, 0x00, 0xff, 0x00,

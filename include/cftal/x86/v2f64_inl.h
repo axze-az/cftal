@@ -352,10 +352,33 @@ cftal::high_half(const v2f64& v)
 }
 
 template <std::size_t _I>
+inline
 double
 cftal::extract(const vec<double, 2>& v)
 {
     return x86::extract_f64<_I>(v());
+}
+
+inline
+double
+cftal::extract(const vec<double, 2>& v, size_t i)
+{
+    return x86::extract_f64(v(), i);
+}
+
+template <size_t _I>
+inline
+void
+cftal::insert(vec<double, 2>& v, const double& vi)
+{
+    v= x86::insert_f64<_I>(v(), vi);
+}
+
+inline
+void
+cftal::insert(vec<double, 2>& v, const double& vi, size_t i)
+{
+    v= x86::insert_f64(v(), vi, i);
 }
 
 inline
@@ -761,7 +784,7 @@ fromp(const double* tbl) const
 {
     vec<double, 4> m=mem<vec<double, 4> >::load(tbl, 4);
     __m256i ir=_mm256_permutevar8x32_epi32(
-        _mm256_castpd_si256(m()), 
+        _mm256_castpd_si256(m()),
         _mm256_castsi128_si256(_msk));
     vec<double, 2> r=_mm256_castpd256_pd128(_mm256_castsi256_pd(ir));
     return r;

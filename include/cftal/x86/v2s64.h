@@ -71,6 +71,19 @@ namespace cftal {
     vec<int64_t, 1>
     high_half(const vec<int64_t, 2>& v);
 
+    template <size_t _I>
+    int64_t
+    extract(const vec<int64_t, 2>& v);
+
+    int64_t
+    extract(const vec<int64_t, 2>& v, size_t i);
+
+    template <size_t _I>
+    void
+    insert(vec<int64_t, 2>& v, const int64_t& vi);
+
+    void
+    insert(vec<int64_t, 2>& v, const int64_t& vi, size_t i);
 
     v2s64 max(const v2s64& a, const v2s64& b);
     v2s64 min(const v2s64& a, const v2s64& b);

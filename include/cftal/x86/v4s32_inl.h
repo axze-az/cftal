@@ -425,6 +425,37 @@ cftal::high_half(const vec<int32_t, 4>& v)
     return low_half(h);
 }
 
+template <cftal::size_t _I>
+inline
+cftal::int32_t
+cftal::extract(const vec<int32_t, 4>& v)
+{
+    return x86::extract_u32<_I>(v());
+}
+
+inline
+cftal::int32_t
+cftal::extract(const vec<int32_t, 4>& v, size_t i)
+{
+    return x86::extract_u32(v(), i);
+}
+
+template <cftal::size_t _I>
+inline
+void
+cftal::insert(vec<int32_t, 4>& v, const int32_t& vi)
+{
+    v= x86::insert_u32<_I>(v(), vi);
+}
+
+inline
+void
+cftal::insert(vec<int32_t, 4>& v, const int32_t& vi, size_t i)
+{
+    v= x86::insert_u32(v(), vi, i);
+}
+
+
 #if !defined (__AVX512VL__)
 inline
 bool cftal::all_of(const vec<int32_t, 4>::mask_type& v)

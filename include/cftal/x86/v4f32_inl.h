@@ -360,11 +360,34 @@ cftal::high_half(const vec<float, 4>& v)
     return vec<float, 2>{extract<2>(v), extract<3>(v)};
 }
 
-template <std::size_t _I>
+template <cftal::size_t _I>
+inline
 float
 cftal::extract(const vec<float, 4>& v)
 {
     return x86::extract_f32<_I>(v());
+}
+
+inline
+float
+cftal::extract(const vec<float, 4>& v, size_t i)
+{
+    return x86::extract_f32(v(), i);
+}
+
+template <cftal::size_t _I>
+inline
+void
+cftal::insert(vec<float, 4>& v, const float& vi)
+{
+    v= x86::insert_f32<_I>(v(), vi);
+}
+
+inline
+void
+cftal::insert(vec<float, 4>& v, const float& vi, size_t i)
+{
+    v= x86::insert_f32(v(), vi, i);
 }
 
 inline

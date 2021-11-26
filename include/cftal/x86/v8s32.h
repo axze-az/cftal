@@ -71,6 +71,20 @@ namespace cftal {
     v4s32 low_half(const v8s32& a);
     v4s32 high_half(const v8s32& a);
 
+    template <size_t _I>
+    int32_t
+    extract(const vec<int32_t, 8>& v);
+
+    int32_t
+    extract(const vec<int32_t, 8>& v, size_t i);
+
+    template <size_t _I>
+    void
+    insert(vec<int32_t, 8>& v, const int32_t& vi);
+
+    void
+    insert(vec<int32_t, 8>& v, const int32_t& vi, size_t i);
+
 #if !defined (__AVX512VL__)
     bool
     all_of(const vec<int32_t, 8>::mask_type& v);

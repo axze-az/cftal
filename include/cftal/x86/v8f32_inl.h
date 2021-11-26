@@ -378,11 +378,34 @@ cftal::high_half(const cftal::vec<float, 8>& v)
     return _mm256_extractf128_ps(v(), 1);
 }
 
-template <std::size_t _I>
+template <cftal::size_t _I>
+inline
 float
 cftal::extract(const vec<float, 8>& v)
 {
     return x86::extract_f32<_I>(v());
+}
+
+inline
+float
+cftal::extract(const vec<float, 8>& v, size_t i)
+{
+    return x86::extract_f32(v(), i);
+}
+
+template <cftal::size_t _I>
+inline
+void
+cftal::insert(vec<float, 8>& v, const float& vi)
+{
+    v= x86::insert_f32<_I>(v(), vi);
+}
+
+inline
+void
+cftal::insert(vec<float, 8>& v, const float& vi, size_t i)
+{
+    v= x86::insert_f32(v(), vi, i);
 }
 
 inline
@@ -732,7 +755,7 @@ fromp(const float* tbl) const
     __m256i r1i=_mm256_castps_si256(r1());
     __m256i r2i=_mm256_castps_si256(r2());
     __m256i r3i=_mm256_castps_si256(r3());
-    
+
     __m256i r01i=x86::select_u32(_idx_gt_7, r1i, r0i);
     __m256i r23i=x86::select_u32(_idx_gt_23, r3i, r2i);
     __m256i ri=x86::select_u32(_idx_gt_15, r23i, r01i);

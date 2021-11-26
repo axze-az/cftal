@@ -424,6 +424,35 @@ cftal::high_half(const vec<uint64_t, 2>& v)
     return as<vec<uint64_t,1> >(h);
 }
 
+template <cftal::size_t _I>
+inline
+cftal::uint64_t
+cftal::extract(const vec<uint64_t, 2>& v)
+{
+    return x86::extract_u64<_I>(v());
+}
+
+inline
+cftal::uint64_t
+cftal::extract(const vec<uint64_t, 2>& v, size_t i)
+{
+    return x86::extract_u64(v(), i);
+}
+
+template <cftal::size_t _I>
+inline
+void
+cftal::insert(vec<uint64_t, 2>& v, const uint64_t& vi)
+{
+    v= x86::insert_u64<_I>(v(), vi);
+}
+
+inline
+void
+cftal::insert(vec<uint64_t, 2>& v, const uint64_t& vi, size_t i)
+{
+    v= x86::insert_u64(v(), vi, i);
+}
 
 inline
 cftal::v2u64 cftal::max(const v2u64& a, const v2u64& b)
