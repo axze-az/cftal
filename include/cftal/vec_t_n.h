@@ -139,15 +139,15 @@ namespace cftal {
     // extract one element at pos i from a vector
     template <typename _T, std::size_t _N>
     _T extract(const vec<_T, _N>& v, size_t i);
-    
+
     // insert one element vi at pos _I into a vector
     template <std::size_t _I, typename _T, std::size_t _N>
-    void insert(vec<_T, _N>& v, const _T& vi);    
+    void insert(vec<_T, _N>& v, const _T& vi);
 
     // insert one element vi at pos _I into a vector
     template <typename _T, std::size_t _N>
-    void insert(vec<_T, _N>& v, const _T& vi, size_t i);    
-    
+    void insert(vec<_T, _N>& v, const _T& vi, size_t i);
+
     // test if all elements lt 0 / have their MSB set
     template <typename _T, std::size_t _N>
     bool all_of(const vec<_T, _N>& v);
@@ -730,8 +730,8 @@ cftal::insert(vec<_T, _N>& v, const _T& vi)
     constexpr const size_t _NH = _N/2;
     constexpr const bool lo = _I < _NH;
     constexpr size_t _II = lo ? _I  : _I-_NH;
-    vec<_T, _N> lh=low_half(v);
-    vec<_T, _N> hh=high_half(v);    
+    vec<_T, _NH> lh=low_half(v);
+    vec<_T, _NH> hh=high_half(v);
     if (lo) {
         insert<_II>(lh, vi);
     } else {
@@ -748,8 +748,8 @@ cftal::insert(vec<_T, _N>& v, const _T& vi, size_t i)
     constexpr const size_t _NH = _N/2;
     const bool lo = i < _NH;
     const size_t ii = lo ? i  : i-_NH;
-    vec<_T, _N> lh=low_half(v);
-    vec<_T, _N> hh=high_half(v);    
+    vec<_T, _NH> lh=low_half(v);
+    vec<_T, _NH> hh=high_half(v);
     if (lo) {
         insert(lh, vi, ii);
     } else {
@@ -757,7 +757,6 @@ cftal::insert(vec<_T, _N>& v, const _T& vi, size_t i)
     }
     v = vec<_T, _N>(lh, hh);
 }
-
 
 template <class _T, std::size_t _N>
 inline

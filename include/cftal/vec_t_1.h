@@ -253,10 +253,10 @@ namespace cftal {
 
     template <typename _T>
     _T extract(const vec<_T, 1>& v, size_t i);
-    
+
     template <std::size_t _I, typename _T>
     void insert(vec<_T, 1>& v, const _T& vi);
-    
+
     template <typename _T>
     void insert(vec<_T, 1>& v, const _T& vi, size_t i);
 
@@ -917,10 +917,10 @@ cftal::insert(vec<_T, 1>& v, const _T& vi)
 template <class _T>
 inline
 void
-cftal::insert(const vec<_T, 1>& v, const _T& vi, size_t i)
+cftal::insert(vec<_T, 1>& v, const _T& vi, size_t i)
 {
     static_cast<void>(i);
-    v = vi;    
+    v = vi;
 }
 
 template <class _T>

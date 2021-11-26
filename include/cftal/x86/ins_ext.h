@@ -285,7 +285,6 @@ __m128d cftal::x86::insert_f64(__m128d v, double d, size_t i)
     return select_f64(msk, vf, v);
 }
 
-
 template <unsigned _IDX>
 inline
 uint8_t cftal::x86::extract_u8(__m128i v) {
@@ -790,7 +789,7 @@ inline
 double cftal::x86::extract_f64(__m256d v, size_t i)
 {
 #if defined (__AVX2__)
-    size_t ii= ((i & 3) * 0x20000002) + 0x10000000;
+    size_t ii= ((i & 3) * 0x200000002LL) + 0x100000000LL;
     const __m256i msk= _mm256_set1_epi64x(ii);
     __m256 r=_mm256_permutevar8x32_ps(_mm256_castpd_ps(v), msk);
     __m128 rh=_mm256_castps256_ps128(r);
@@ -943,7 +942,7 @@ inline
 std::uint64_t cftal::x86::extract_u64(__m256i v, size_t i)
 {
 #if defined (__AVX2__)
-    size_t ii= ((i & 3) * 0x20000002) + 0x10000000;
+    size_t ii= ((i & 3) * 0x200000002LL) + 0x100000000LL;
     const __m256i msk= _mm256_set1_epi64x( ii);
     __m256i r=_mm256_permutevar8x32_epi32(v, msk);
     __m128i rh=_mm256_castsi256_si128(r);

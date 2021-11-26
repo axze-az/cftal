@@ -3004,6 +3004,20 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     vi_type q(_T::cvt_f_to_i(fn));
     if (_T::any_of_v(v_large_arg)) {
         // reduce the large arguments
+#if 1
+        constexpr std::size_t N = _T::NVF();
+        for (std::size_t i=0; i<N; ++i) {
+            typename vf_type::value_type xi=extract(x, i);
+            if (large_arg < std::fabs(xi)) {
+                double y[2];
+                typename vi_type::value_type qi=
+                    impl::__kernel_rem_pio2(y, xi);
+                insert(q, qi, i);
+                insert(xrh, y[0], i);
+                insert(xrl, y[1], i);
+            }
+        }
+#else
         vf_array tf, d0_l, d0_h;
         vi_array ti;
         mem<vf_type>::store(tf._a, x);
@@ -3024,6 +3038,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         xrh = mem<vf_type>::load(d0_h._a, N);
         xrl = mem<vf_type>::load(d0_l._a, N);
         q = mem<vi_type>::load(ti._a, NI);
+#endif
     }
     vi2_type q2=_T::vi_to_vi2(q);
     return q2;
