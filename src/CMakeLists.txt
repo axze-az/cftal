@@ -22,6 +22,7 @@ set (CSRCS
     math_common.cc
     lanczos.cc
     x86_ops_1.cc
+    x86_ins_ext.cc
     vec_traits.cc
     # vec <f16_t, _N>
     vXf16.cc
