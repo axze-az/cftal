@@ -194,18 +194,19 @@ float cftal::x86::extract_f32(__m128 v, size_t i)
     float r;
     switch (i & 3) {
     case 0:
-        r=extract<0>(v);
+        r=extract_f32<0>(v);
         break;
     case 1:
-        r=extract<1>(v);
+        r=extract_f32<1>(v);
         break;
     case 2:
-        r=extract<2>(v);
+        r=extract_f32<2>(v);
         break;
     case 3:
-        r=extract<3>(v);
+        r=extract_f32<3>(v);
         break;
     }
+    return r;
 #endif
 }
 
@@ -270,12 +271,13 @@ double cftal::x86::extract_f64(__m128d v, size_t i)
     double r;
     switch (i & 1) {
     case 0:
-        r=extract<0>(v);
+        r=extract_f64<0>(v);
         break;
     case 1:
-        r=extract<1>(v);
+        r=extract_f64<1>(v);
         break;
     }
+    return r;
 #endif
 }
 
@@ -339,54 +341,55 @@ std::uint8_t cftal::x86::extract_u8(__m128i v, size_t i)
     uint8_t r;
     switch (i & 0xf) {
     case 0:
-        r=extract<0>(v);
+        r=extract_u8<0>(v);
         break;
     case 1:
-        r=extract<1>(v);
+        r=extract_u8<1>(v);
         break;
     case 2:
-        r=extract<2>(v);
+        r=extract_u8<2>(v);
         break;
     case 3:
-        r=extract<3>(v);
+        r=extract_u8<3>(v);
         break;
     case 4:
-        r=extract<4>(v);
+        r=extract_u8<4>(v);
         break;
     case 5:
-        r=extract<5>(v);
+        r=extract_u8<5>(v);
         break;
     case 6:
-        r=extract<6>(v);
+        r=extract_u8<6>(v);
         break;
     case 7:
-        r=extract<7>(v);
+        r=extract_u8<7>(v);
         break;
     case 8:
-        r=extract<8>(v);
+        r=extract_u8<8>(v);
         break;
     case 9:
-        r=extract<9>(v);
+        r=extract_u8<9>(v);
         break;
     case 10:
-        r=extract<10>(v);
+        r=extract_u8<10>(v);
         break;
     case 11:
-        r=extract<11>(v);
+        r=extract_u8<11>(v);
         break;
     case 12:
-        r=extract<12>(v);
+        r=extract_u8<12>(v);
         break;
     case 13:
-        r=extract<13>(v);
+        r=extract_u8<13>(v);
         break;
     case 14:
-        r=extract<14>(v);
+        r=extract_u8<14>(v);
         break;
     case 15:
-        r=extract<15>(v);
+        r=extract_u8<15>(v);
         break;
     }
+    return r;
 #endif
 }
 
@@ -429,30 +432,31 @@ std::uint16_t cftal::x86::extract_u16(__m128i v, size_t i)
     uint32_t r;
     switch (i & 7) {
     case 0:
-        r=extract<0>(v);
+        r=extract_u16<0>(v);
         break;
     case 1:
-        r=extract<1>(v);
+        r=extract_u16<1>(v);
         break;
     case 2:
-        r=extract<2>(v);
+        r=extract_u16<2>(v);
         break;
     case 3:
-        r=extract<3>(v);
+        r=extract_u16<3>(v);
         break;
     case 4:
-        r=extract<4>(v);
+        r=extract_u16<4>(v);
         break;
     case 5:
-        r=extract<5>(v);
+        r=extract_u16<5>(v);
         break;
     case 6:
-        r=extract<6>(v);
+        r=extract_u16<6>(v);
         break;
     case 7:
-        r=extract<7>(v);
+        r=extract_u16<7>(v);
         break;
     }
+    return r;
 #endif
 }
 
@@ -530,18 +534,19 @@ std::uint32_t cftal::x86::extract_u32(__m128i v, size_t i)
     uint32_t r;
     switch (i & 3) {
     case 0:
-        r=extract<0>(v);
+        r=extract_u32<0>(v);
         break;
     case 1:
-        r=extract<1>(v);
+        r=extract_u32<1>(v);
         break;
     case 2:
-        r=extract<2>(v);
+        r=extract_u32<2>(v);
         break;
     case 3:
-        r=extract<3>(v);
+        r=extract_u32<3>(v);
         break;
     }
+    return r;
 #endif
 }
 
@@ -651,12 +656,13 @@ std::uint64_t cftal::x86::extract_u64(__m128i v, size_t i)
     uint64_t r;
     switch (i & 1) {
     case 0:
-        r=extract<0>(v);
+        r=extract_u64<0>(v);
         break;
     case 1:
-        r=extract<1>(v);
+        r=extract_u64<1>(v);
         break;
     }
+    return r;
 #endif
 }
 

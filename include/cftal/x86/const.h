@@ -204,6 +204,7 @@ namespace cftal {
         typedef v_sign_v4s32_msk v_sign_v4f32_msk;
         typedef v_not_sign_v4s32_msk v_not_sign_f32_msk;
 
+#if defined (__AVX__)        
         typedef const_v8u32<0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff,
@@ -214,15 +215,17 @@ namespace cftal {
                             0x80000000, 0x80000000,
                             0x80000000, 0x80000000> v_sign_v8f32_msk;
         using v_sign_v8s32_msk = v_sign_v8f32_msk;
+#endif        
 
         typedef const_v4u32<0x7f800000, 0x7f800000,
                             0x7f800000, 0x7f800000> v_exp_f32_msk;
 
+#if defined (__AVX__)                            
         typedef const_v8u32<0x7f800000, 0x7f800000,
                             0x7f800000, 0x7f800000,
                             0x7f800000, 0x7f800000,
                             0x7f800000, 0x7f800000> v_exp_v8f32_msk;
-
+#endif
         typedef const_v4u32<0x807fffff, 0x807fffff,
                             0x807fffff, 0x807fffff> v_not_exp_f32_msk;
         typedef const_v4u32<0x007fffff, 0x007fffff,
@@ -235,6 +238,7 @@ namespace cftal {
         typedef v_sign_v2s64_msk v_sign_v2f64_msk;
         typedef v_not_sign_v2s64_msk v_not_sign_v2f64_msk;
 
+#if defined (__AVX__)                            
         typedef const_v8u32<0x00000000, 0x80000000,
                             0x00000000, 0x80000000,
                             0x00000000, 0x80000000,
@@ -251,7 +255,8 @@ namespace cftal {
                             0x00000000,0x7ff00000,
                             0x00000000,0x7ff00000,
                             0x00000000,0x7ff00000> v_exp_v4f64_msk;
-
+#endif
+                            
         typedef const_v4u32<0x00000000,0x7ff00000,
                             0x00000000,0x7ff00000> v_exp_v2f64_msk;
         typedef const_v4u32<0xffffffff,0x800fffff,
