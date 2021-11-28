@@ -10,6 +10,8 @@
 #include <cftal/config.h>
 #include <cftal/std_types.h>
 #include <cftal/select.h>
+#include <cftal/as.h>
+#include <cftal/constants.h>
 #include <cftal/fp_expansion.h>
 #include <cmath>
 #include <cftal/type_traits.h>
@@ -55,7 +57,7 @@ namespace cftal {
 #endif
     };
 
-    // fma available specialized for float 
+    // fma available specialized for float
     template <>
     struct has_fma<float> {
 #if defined (FP_FAST_FMAF) && (FP_FAST_FMAF > 0)
@@ -90,9 +92,20 @@ namespace cftal {
             return s ? on_true : on_false;
         }
 
-        // veltkamp split of a double
         static
         void split(double a, double& hi, double& lo) {
+            constexpr const uint64_t msk=
+                const_u64<0xf8000000U, 0xffffffffU>::v.u64();
+            uint64_t ai=as<uint64_t>(a) & msk;
+            double th = as<double>(ai);
+            double tl = a - th;
+            hi = th;
+            lo = tl;
+        }
+
+        // veltkamp split of a double
+        static
+        void veltkamp_split(double a, double& hi, double& lo) {
             // 2^996 = 2^{1023-28+1}
             constexpr const double split_threshold=
                 6.69692879491417e+299;
@@ -106,7 +119,7 @@ namespace cftal {
             constexpr const double split_scale_up =
                 268435456.0;
             cmp_result_type is_big(std::fabs(a) > split_threshold);
-            double temp;
+            volatile double temp;
             if (__unlikely(any_of_v(is_big))) {
                 a*=split_scale_down;
                 temp = split_val*a;
@@ -222,7 +235,7 @@ namespace cftal {
     template <typename _T>
     using d_real = fp_expansion<_T, 2>;
 
-    // basic operations for double real class independent 
+    // basic operations for double real class independent
     // of fused multiply and add
     template <class _T>
     struct d_real_ops_common {
@@ -315,7 +328,7 @@ namespace cftal {
         using base_type::add22cond;
         using base_type::add122;
 
-        // fused multiply and add emulation without error, 
+        // fused multiply and add emulation without error,
         // underflow and overflow handling
         static
         _T
@@ -543,14 +556,14 @@ namespace cftal {
         div22(_T& rh, _T& rl,
               const _T& ah, const _T& al,
               const _T& bh, const _T& bl);
-        
+
         // a/b
         static
         void
-        div21(_T& r, 
+        div21(_T& r,
               const _T& ah, const _T& al,
-              const _T& bh, const _T& bl);        
-        
+              const _T& bh, const _T& bl);
+
         // function for a/b with scaling
         static
         void
@@ -558,7 +571,7 @@ namespace cftal {
                        const _T& ah, const _T& al,
                        const _T& bh, const _T& bl);
 
-        // a/b with scaling 
+        // a/b with scaling
         static
         void
         scaled_div22(_T& rh, _T& rl,
@@ -755,7 +768,7 @@ add12(_T& s, _T& r, const _T& a, const _T& b)
     s = _a + _b;
     _T t0 = s - _a;
     r = _b - t0;
-#endif    
+#endif
 }
 
 template <typename _T>
@@ -774,7 +787,7 @@ add12cond(_T& s, _T& r, const _T& a, const _T& b)
     _T _r = u4 + u3;
     s = _s;
     r = _r;
-#else    
+#else
     _T _a= a;
     _T _b= b;
     s = _a + _b;
@@ -783,7 +796,7 @@ add12cond(_T& s, _T& r, const _T& a, const _T& b)
     _T _u3 = _b - _u1;
     _T _u4 = _a - _u2;
     r = _u4 + _u3;
-#endif    
+#endif
 }
 
 template <typename _T>
@@ -1461,7 +1474,7 @@ inline
 __attribute__((__always_inline__))
 void
 cftal::d_real_ops<_T, _FMA>::
-div21(_T& r, 
+div21(_T& r,
       const _T& xh, const _T& xl,
       const _T& yh, const _T& yl)
 {
