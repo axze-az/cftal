@@ -166,12 +166,29 @@ void
 cftal::math::impl::payne_hanek_pio2<double>::
 process_part(double& ipart, double& rh, double& rl, double x)
 {
+#define DUMP_VALS 0
+
+#if DUMP_VALS > 0
+    std::cout << std::hexfloat;
+    std::cout << "x= " << x*0x1p600 << std::endl;
+#endif
     int32_t k = (as<uint64_t>(x) >> 52) & 2047;
+#if DUMP_VALS > 0
+    std::cout << "exp with bias= " << k << std::endl;
+    std::cout << "exp= " << k - bias_f64 << std::endl;
+    std::cout << "orig exp with bias= " << k + 600 << std::endl;
+    std::cout << "orig exp= " << k + 600 - bias_f64 << std::endl;
+#endif
     k = (k-exp_shift_down_f64)/bits_per_elem_f64;
     using std::max;
     k = max(k, 0);
     const int64_t scale_i = as<int64_t>(scale_up_f64());
     double scale = as<double>(scale_i - (int64_t(k*bits_per_elem_f64)<<52));
+#if DUMP_VALS > 0
+    std::cout << "index= " << k << std::endl;
+    std::cout << "scale= " << scale << std::endl << std::endl;
+#endif
+#undef DUMP_VALS
     double p[elem_count_f64];
     for (uint32_t i=0; i<elem_count_f64; ++i) {
         p[i] = x*two_over_pi_b24_dbl[k+i]*scale;
@@ -260,9 +277,9 @@ rem(double xr[2], double x)
 
     // d_traits::veltkamp_split(x, x1, x2);
     double x1= round_to_nearest_even_last_bits<27>(x);
-    double x2= x - x1;
     double ipart, mh, ml;
     process_part(ipart, mh, ml, x1);
+    double x2= x - x1;
     process_and_add_part(ipart, mh, ml, x2);
     // multiply mh, ml with pi/2
     using c_t = d_real_constants<d_real<double>, double>;
@@ -284,9 +301,9 @@ rem(double xr[2], double xh, double xl)
     xl*=scale_down_f64();
     // d_traits::veltkamp_split(x, x1, x2);
     double x1= round_to_nearest_even_last_bits<27>(xh);
-    double x2= xh - x1;
     double ipart, mh, ml;
     process_part(ipart, mh, ml, x1);
+    double x2= xh - x1;
     process_and_add_part(ipart, mh, ml, x2);
     double x3= round_to_nearest_even_last_bits<27>(xl);
     process_and_add_part(ipart, mh, ml, x3);
