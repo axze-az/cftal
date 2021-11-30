@@ -10,6 +10,7 @@
 #include <cftal/config.h>
 #include <cftal/arg.h>
 #include <cftal/mem.h>
+#include <cftal/math/func_traits.h>
 #include <cftal/math/func_constants.h>
 #include <cftal/math/horner.h>
 #include <cftal/type_traits.h>
@@ -44,13 +45,6 @@ namespace cftal {
                               int nx,
                               int prec);
         }
-
-        // helper for func_core and func_common.
-        // contains conversion functions between _FLOAT_T
-        // _INT_T, extraction and insertion of integer
-        // exponents, bias ...
-        template <typename _FLOAT_T, typename _INT_T>
-        struct func_traits;
 
         // core implementation of elementary and base
         // functions exports exp_k, exp2_k ...

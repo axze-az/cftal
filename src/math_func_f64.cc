@@ -81,23 +81,33 @@ namespace cftal {
                 using d_traits = d_real_traits<double>;
                 using d_ops = d_real_ops<double, d_traits::fma>;
 
-                // exponent range for scale down is 600, 601
+                // scale down factor for x
                 constexpr static double scale_down_f64() {
-                    return 0x1p-600;
+                    return 0x1p-512;
                 }
+                // 2 to the negative power of 2/pi bits per double element
+                // in the table
                 constexpr static const double scale_step_f64() {
                     return 0x1p-24;
                 }
+                // idx equal to zero: scale= scale_step_f64()/scale_down_f64();
+                // i.e. for scale_down = 1.0 0x1p-24;
                 constexpr static double scale_up_f64() {
                     return 1.0/scale_down_f64()*scale_step_f64();
                 }
                 // number of 2/pi bits per double element in the table
                 constexpr
                 static const int32_t bits_per_elem_f64=24;
-                // -log_2(scale_down_f64) - 150 (150=6*25)
+                // exp_shift_down C is determined by
+                // (with scale_down 0x1p-600)
+                // (((x_e - 600) + 1023) - C)/24 = (x_e - 27)/24
+                // ==> C = -600 + 1023 + 27 = 450
+                // (with scale_down 0x1p-512)
+                // (((x_e - 512) + 1023) - C)/24 = (x_e - 27)/24
+                // ==> C = -512 + 1023 + 27 = 538
                 constexpr
-                static const int32_t exp_shift_down_f64=450;
-                // number of 24 bit chunks use
+                static const int32_t exp_shift_down_f64=538;
+                // number of 24 bit chunks to use
                 constexpr
                 static const int32_t elem_count_f64=6;
 
@@ -166,34 +176,44 @@ void
 cftal::math::impl::payne_hanek_pio2<double>::
 process_part(double& ipart, double& rh, double& rl, double x)
 {
-#define DUMP_VALS 0
+#if 0
+    // scaling must be done before splitting of the numbers
+    // exp_shift_down C is determined by (with scale 0x1p-600)
+    // (((x_e - 600) + 1023) - C)/24 = (x_e - 27)/24
+    // ==> C = -600 + 1023 - 27 = 450
+    double xu=x*0x1p512;
+    int kk= ((as<uint64_t>(xu) >> 52) & 2047)- bias_f64;
+    int idx = std::max((kk-27)/24, 0);
+    int exp= (idx+1)*bits_per_elem_f64;
+    double scale= as<double>(int64_t(bias_f64-exp)<<52);
+    scale *= 0x1p512;
+    double p[elem_count_f64];
+    for (uint32_t i=0; i<elem_count_f64; ++i) {
+        p[i] = (x*two_over_pi_b24_dbl[idx+i])*scale;
+        scale *= scale_step_f64();
+    }
 
-#if DUMP_VALS > 0
-    std::cout << std::hexfloat;
-    std::cout << "x= " << x*0x1p600 << std::endl;
-#endif
+#else
     int32_t k = (as<uint64_t>(x) >> 52) & 2047;
-#if DUMP_VALS > 0
-    std::cout << "exp with bias= " << k << std::endl;
-    std::cout << "exp= " << k - bias_f64 << std::endl;
-    std::cout << "orig exp with bias= " << k + 600 << std::endl;
-    std::cout << "orig exp= " << k + 600 - bias_f64 << std::endl;
-#endif
+#if 1
+    const int32_t shift_1_24= 0x12;
+    const int32_t fac_1_24= 0x2aab;
+    int32_t ks=k-exp_shift_down_f64;
+    k= (ks*fac_1_24)>> shift_1_24;
+#else
     k = (k-exp_shift_down_f64)/bits_per_elem_f64;
+#endif
     using std::max;
     k = max(k, 0);
     const int64_t scale_i = as<int64_t>(scale_up_f64());
     double scale = as<double>(scale_i - (int64_t(k*bits_per_elem_f64)<<52));
-#if DUMP_VALS > 0
-    std::cout << "index= " << k << std::endl;
-    std::cout << "scale= " << scale << std::endl << std::endl;
-#endif
-#undef DUMP_VALS
+
     double p[elem_count_f64];
     for (uint32_t i=0; i<elem_count_f64; ++i) {
         p[i] = x*two_over_pi_b24_dbl[k+i]*scale;
         scale *= scale_step_f64();
     }
+#endif
     // ip contains the integer parts of pi[i]
     double ip=__rint(p[0]);
     p[0] -= ip;
@@ -274,7 +294,6 @@ cftal::math::impl::payne_hanek_pio2<double>::
 rem(double xr[2], double x)
 {
     x*=scale_down_f64();
-
     // d_traits::veltkamp_split(x, x1, x2);
     double x1= round_to_nearest_even_last_bits<27>(x);
     double ipart, mh, ml;
@@ -288,7 +307,7 @@ rem(double xr[2], double x)
     d_ops::add12(mh, ml, th, tl);
     xr[0]=mh;
     xr[1]=ml;
-    // return last three bits of the integer part
+    // return last 2 bits of the integer part
     return ((int)ipart)&3;
 }
 
@@ -316,7 +335,7 @@ rem(double xr[2], double xh, double xl)
     d_ops::add12(mh, ml, th, tl);
     xr[0]=mh;
     xr[1]=ml;
-    // return last three bits of the integer part
+    // return last 2 bits of the integer part
     return ((int)ipart)&3;
 }
 
@@ -1089,3 +1108,14 @@ const double cftal::math::impl::two_over_pi_b24_dbl[948]={
     0x7b7b89, 0x483d38, 0x96b03c, 0xc79cb1, 0xd0825d, 0x88edb7,
     0xd38339, 0x0c6e66, 0xe912dc, 0x112034, 0x0de782, 0xa0fee6
 };
+
+#if 0
+int main()
+{
+    for (int i=0; i<1024; ++i) {
+        double t=std::ldexp(1.0, i);
+        double y[2];
+        cftal::math::impl::payne_hanek_pio2<double>::rem(y, t);
+    }
+}
+#endif

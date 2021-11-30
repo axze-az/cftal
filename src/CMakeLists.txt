@@ -20,6 +20,7 @@ set (CSRCS
     math_func_f32.cc
     math_func_f64.cc
     math_common.cc
+    payne_hanek.cc
     lanczos.cc
     x86_ops_1.cc
     x86_ins_ext.cc
