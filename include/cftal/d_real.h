@@ -94,7 +94,7 @@ namespace cftal {
 
         static
         void split(double a, double& hi, double& lo) {
-            constexpr const uint64_t msk=
+            const uint64_t msk=
                 const_u64<0xf8000000U, 0xffffffffU>::v.u64();
             uint64_t ai=as<uint64_t>(a) & msk;
             double th = as<double>(ai);

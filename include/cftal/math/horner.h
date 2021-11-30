@@ -280,7 +280,7 @@ namespace cftal {
                   typename _C,
                   std::size_t _N1, std::size_t _N2>
         _X
-        eval_rational(_X xc,
+        eval_rational(const _X& xc,
                       const _C(&p)[_N1],
                       const _C(&q)[_N2]);
         // evaluation of a rational function using _N1HP and _N2HP
