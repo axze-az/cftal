@@ -258,6 +258,63 @@ namespace cftal::math {
         int
         rem(float& xrh, float& xrl, float xh, float xl);
     };
+
+    // vectorized f64 implementation
+    template<typename _T>
+    struct payne_hanek_pi_over_2<float, _T>
+        : public payne_hanek_pi_over_2<float, void> {
+
+        using vf_type = typename _T::vf_type;
+        using vi_type = typename _T::vi_type;
+        using vmf_type = typename _T::vmf_type;
+        using vmi_type = typename _T::vmi_type;
+        using vdf_type = typename _T::vdf_type;
+
+        using d_ops=d_real_ops<vf_type,
+                                d_real_traits<vf_type>::fma>;
+        using d_traits = d_real_traits<vf_type>;
+
+    private:
+        // round to multiples of 1
+        static
+        vf_type
+        __rint(arg_t<vf_type> x);
+
+        // round to multiples of 4
+        static
+        vf_type
+        __r4int(arg_t<vf_type> x);
+
+        // performs the partial calculation of x * 2/pi
+        // x may not have not more than 26 mantissa bits
+        // including the hidden bit
+        static
+        void
+        process_part(vf_type& ipa,
+                     vf_type& rh,
+                     vf_type& rl,
+                     arg_t<vf_type> x);
+        // performs the partial calculation of x*2/pi
+        // and add the results to ipart, rh, rl
+        // x may not have not more than 26 mantissa bits
+        // including the hidden bit
+        static
+        void
+        process_and_add_part(vf_type& ipa,
+                             vf_type& rh,
+                             vf_type& rl,
+                             arg_t<vf_type> x);
+    public:
+        static
+        vi_type
+        rem(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x);
+
+        static
+        vi_type
+        rem(vf_type& xrh, vf_type& xrl,
+            arg_t<vf_type> xh, arg_t<vf_type> xl);
+    };
+
 }
 
 template <typename _T>
@@ -315,7 +372,7 @@ process_part(vf_type& ipa,
     // ip contains the integer parts of pi[i]
     vf_type ip=__rint(p[0]);
     p[0] -= ip;
-    for (uint32_t i=1; i<elem_count_f64/2; ++i) {
+    for (uint32_t i=1; i<3; ++i) {
         vf_type ii= __rint(p[i]);
         ip += ii;
         p[i] -= ii;
@@ -434,6 +491,185 @@ rem(vf_type& xrh, vf_type& xrl,
     process_and_add_part(ipart, mh, ml, x4);
     // multiply mh, ml with pi/2
     using c_t = impl::d_real_constants<d_real<double>, double>;
+    vf_type th, tl;
+    d_ops::unorm_mul22(th, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
+    d_ops::add12(mh, ml, th, tl);
+    xrh=mh;
+    xrl=ml;
+    // return last 2 bits of the integer part
+    vi_type i=_T::cvt_f_to_i(ipart) & 3;
+    return i;
+}
+
+template <typename _T>
+inline
+typename cftal::math::payne_hanek_pi_over_2<float, _T>::vf_type
+cftal::math::payne_hanek_pi_over_2<float, _T>::
+__rint(arg_t<vf_type> x)
+{
+    using std::rint;
+    return rint(x);
+}
+
+template <typename _T>
+inline
+typename cftal::math::payne_hanek_pi_over_2<float, _T>::vf_type
+cftal::math::payne_hanek_pi_over_2<float, _T>::
+__r4int(arg_t<vf_type> x)
+{
+    constexpr const float rint_magic=(0x1p23f + 0x1p22f)*4;
+    return (x + rint_magic) - rint_magic;
+}
+
+template <typename _T>
+void
+cftal::math::payne_hanek_pi_over_2<float, _T>::
+process_part(vf_type& ipa,
+             vf_type& rh,
+             vf_type& rl,
+             arg_t<vf_type> x)
+{
+    vi_type k=(as<vi_type>(x) >> 23) & 255;
+    // divide k -exp_shift_down_f32 by 9
+    const int32_t shift_1_9= 0xe;
+    const int32_t fac_1_9= 0x71d;
+    vi_type ks=k-exp_shift_down_f32;
+    k= (ks*fac_1_9)>> shift_1_9;
+    using std::max;
+    k = max(k, vi_type(0));
+    const int32_t scale_i = as<int32_t>(scale_up_f32());
+    vf_type scale = as<float>(scale_i - ((k*bits_per_elem_f32)<<23));
+
+    auto lck=make_variable_lookup_table<float>(k);
+    vf_type p[elem_count_f32];
+    for (uint32_t i=0; i<elem_count_f32; ++i) {
+        vf_type pi_bits=lck.from(two_over_pi_b9_flt+i);
+        p[i] = x*pi_bits*scale;
+        scale *= scale_step_f32();
+    }
+
+    // ip contains the integer parts of pi[i]
+    vf_type ip=__rint(p[0]);
+    p[0] -= ip;
+    for (uint32_t i=1; i<3; ++i) {
+        vf_type ii= __rint(p[i]);
+        ip += ii;
+        p[i] -= ii;
+    }
+    // ph, pl: compensated sum of p[i]
+    vf_type ph = p[elem_count_f32-1];
+    for (uint32_t i=1; i<elem_count_f32; ++i) {
+        ph += p[(elem_count_f32-1)-i];
+    }
+    vf_type pl = p[0] - ph;
+    for (uint32_t i=1; i<elem_count_f32; ++i) {
+        pl += p[i];
+    }
+    // subtract integer part from ph, pl
+    vf_type ii=__rint(ph);
+    ip+=ii;
+    ph-=ii;
+    d_ops::add12(ph, pl, ph, pl);
+    // remove multiple of 4 from sum
+    ii = __r4int(ip);
+    ip -= ii;
+    ipa = ip;
+    rh = ph;
+    rl = pl;
+}
+
+template <typename _T>
+void
+cftal::math::payne_hanek_pi_over_2<float, _T>::
+process_and_add_part(vf_type& ipa,
+                     vf_type& rh,
+                     vf_type& rl,
+                     arg_t<vf_type> x)
+{
+    vf_type ipart = ipa;
+    vf_type m1h = rh;
+    vf_type m1l = rl;
+    vf_type ipart2, m2h, m2l;
+    process_part(ipart2, m2h, m2l, x);
+    ipart += ipart2;
+    vf_type mh, ml;
+    d_ops::add12cond(mh, ml, m1h, m2h);
+    // if (mh > 0.5)
+    //    {mh-=1.0; ipart+=1.0;}
+    // else if (mh < -0.5)
+    //    {mh+=1.0; ipart-=1.0;}
+    auto mh_gt_half = mh > 0.5f;
+    auto mh_lt_mhalf = mh < -0.5f;
+#if 0
+    auto mh_m_1 = mh - 1.0f;
+    auto ipart_p_1 = ipart + 1.0f;
+    auto mh_p_1 = mh + 1.0f;
+    auto ipart_m_1 = ipart - 1.0f;
+    mh = _T::sel(mh_gt_half, mh_m_1, mh);
+    ipart = _T::sel(mh_gt_half, ipart_p_1, ipart);
+    mh = _T::sel(mh_lt_mhalf, mh_p_1, mh);
+    ipart = _T::sel(mh_lt_mhalf, ipart_m_1, ipart);
+#else
+    vf_type mh_corr = _T::sel_val_or_zero(mh_gt_half, -1.0f);
+    vf_type ipart_corr= _T::sel_val_or_zero(mh_gt_half, +1.0f);
+    mh_corr = _T::sel(mh_lt_mhalf, +1.0f, mh_corr);
+    ipart_corr= _T::sel(mh_lt_mhalf, -1.0f, ipart_corr);
+    mh += mh_corr;
+    ipart += ipart_corr;
+#endif
+    // add mh, ml, m2h, m2l into th, tl
+    vf_type th=mh+(ml+m1l+m2l);
+    vf_type tl=((mh-th)+ml)+(m1l+m2l);
+    ipa=ipart;
+    rh = th;
+    rl = tl;
+}
+
+template <typename _T>
+typename cftal::math::payne_hanek_pi_over_2<float, _T>::vi_type
+cftal::math::payne_hanek_pi_over_2<float, _T>::
+rem(vf_type& xrh, vf_type& xrl,
+    arg_t<vf_type> x)
+{
+    vf_type xs=x*scale_down_f32();
+    // d_traits::veltkamp_split(x, x1, x2);
+    vf_type x1= round_to_nearest_even_last_bits<12>(xs);
+    vf_type ipart, mh, ml;
+    process_part(ipart, mh, ml, x1);
+    vf_type x2= xs - x1;
+    process_and_add_part(ipart, mh, ml, x2);
+    // multiply mh, ml with pi/2
+    using c_t = impl::d_real_constants<d_real<float>, float>;
+    vf_type th, tl;
+    d_ops::unorm_mul22(th, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
+    d_ops::add12(mh, ml, th, tl);
+    xrh=mh;
+    xrl=ml;
+    // return last 2 bits of the integer part
+    vi_type i=_T::cvt_f_to_i(ipart) & 3;
+    return i;
+}
+
+template <typename _T>
+typename cftal::math::payne_hanek_pi_over_2<float, _T>::vi_type
+cftal::math::payne_hanek_pi_over_2<float, _T>::
+rem(vf_type& xrh, vf_type& xrl,
+    arg_t<vf_type> xh, arg_t<vf_type> xl)
+{
+    vf_type xhs=xh*scale_down_f32();
+    // d_traits::veltkamp_split(x, x1, x2);
+    vf_type x1= round_to_nearest_even_last_bits<12>(xhs);
+    vf_type ipart, mh, ml;
+    process_part(ipart, mh, ml, x1);
+    vf_type x2= xhs - x1;
+    process_and_add_part(ipart, mh, ml, x2);
+    vf_type xls=xl=scale_down_f32();
+    vf_type x3= round_to_nearest_even_last_bits<12>(xls);
+    process_and_add_part(ipart, mh, ml, x3);
+    vf_type x4= xls - x3;
+    process_and_add_part(ipart, mh, ml, x4);
+    // multiply mh, ml with pi/2
+    using c_t = impl::d_real_constants<d_real<float>, float>;
     vf_type th, tl;
     d_ops::unorm_mul22(th, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
     d_ops::add12(mh, ml, th, tl);
