@@ -28,7 +28,6 @@ two_over_pi_b24_dbl[96]={
     0x433b15, 0xc614b5, 0x9d19c3, 0xc2c4ad, 0x414d2c, 0x5d000c,
 };
 
-
 inline
 double
 cftal::math::payne_hanek_pi_over_2<double, void>::
@@ -103,7 +102,7 @@ process_part(double& ipart, double& rh, double& rl, double x)
     // ip contains the integer parts of pi[i]
     double ip=__rint(p[0]);
     p[0] -= ip;
-    for (uint32_t i=1; i<elem_count_f64/2; ++i) {
+    for (uint32_t i=1; i<3; ++i) {
         double ii= __rint(p[i]);
         ip += ii;
         p[i] -= ii;
@@ -215,6 +214,210 @@ rem(double& xrh, double& xrl, double xh, double xl)
     // multiply mh, ml with pi/2
     using c_t = impl::d_real_constants<d_real<double>, double>;
     double th, tl;
+    d_ops::unorm_mul22(th, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
+    d_ops::add12(mh, ml, th, tl);
+    xrh=mh;
+    xrl=ml;
+    // return last 2 bits of the integer part
+    return ((int)ipart)&3;
+}
+
+const float
+cftal::math::payne_hanek_pi_over_2_base<float>::
+two_over_pi_b9_flt[36]={
+    0x145, 0x1e6, 0x01b, 0x0e4, 0x1c8, 0x105, 0x094, 0x1fc,
+    0x04e, 0x15f, 0x08f, 0x153, 0x09b, 0x170, 0x06d, 0x162,
+    0x12b, 0x064, 0x1e2, 0x039, 0x008, 0x07f, 0x128, 0x163,
+    0x157, 0x17a, 0x1de, 0x056, 0x036, 0x1c9, 0x037, 0x03a,
+    0x084, 0x137, 0x097, 0x000
+};
+
+inline
+float
+cftal::math::payne_hanek_pi_over_2<float, void>::
+__rint(float x)
+{
+#if defined (__SSE4_2__)
+    const int rm=_MM_FROUND_TO_NEAREST_INT|_MM_FROUND_NO_EXC;
+    return _mm_cvtss_f32(_mm_round_ps(_mm_set_ss(x), rm));
+#else
+    constexpr const float rint_magic=0x1p23f + 0x1p22f;
+    return (x + rint_magic) - rint_magic;
+#endif
+}
+
+inline
+float
+cftal::math::payne_hanek_pi_over_2<float, void>::
+__r4int(float x)
+{
+#if 0 // defined (__SSE4_2__)
+    const int rm=_MM_FROUND_TO_NEAREST_INT|_MM_FROUND_NO_EXC;
+    return _mm_cvtsd_f32(_mm_round_pd(_mm_set_sd(x*0.25), rm))*4.0;
+#else
+    constexpr const float rint_magic=(0x1p23f + 0x1p22f)*4;
+    return (x + rint_magic) - rint_magic;
+#endif
+}
+
+inline
+void
+cftal::math::payne_hanek_pi_over_2<float, void>::
+process_part(float& ipart, float& rh, float& rl, float x)
+{
+#if 0
+    // scaling must be done before splitting of the numbers
+    // exp_shift_down C is determined by (with scale 0x1p-600)
+    // (((x_e - 600) + 1023) - C)/24 = (x_e - 27)/24
+    // ==> C = -600 + 1023 - 27 = 450
+    float xu=x*0x1p512;
+    int kk= ((as<uint64_t>(xu) >> 52) & 2047)- bias_f32;
+    int idx = std::max((kk-27)/24, 0);
+    int exp= (idx+1)*bits_per_elem_f32;
+    float scale= as<float>(int64_t(bias_f32-exp)<<52);
+    scale *= 0x1p512;
+    float p[elem_count_f32];
+    for (uint32_t i=0; i<elem_count_f32; ++i) {
+        p[i] = (x*two_over_pi_b24_dbl[idx+i])*scale;
+        scale *= scale_step_f32();
+    }
+
+#else
+    int32_t k = (as<uint32_t>(x) >> 23) & 255;
+#if 0
+    const int32_t shift_1_24= 0x12;
+    const int32_t fac_1_24= 0x2aab;
+    int32_t ks=k-exp_shift_down_f32;
+    k= (ks*fac_1_24)>> shift_1_24;
+#else
+    k = (k-exp_shift_down_f32)/bits_per_elem_f32;
+#endif
+    using std::max;
+    k = max(k, 0);
+    const int32_t scale_i = as<int32_t>(scale_up_f32());
+    float scale = as<float>(scale_i - ((k*bits_per_elem_f32)<<23));
+
+    float p[elem_count_f32];
+    for (uint32_t i=0; i<elem_count_f32; ++i) {
+        p[i] = x*two_over_pi_b9_flt[k+i]*scale;
+        scale *= scale_step_f32();
+    }
+#endif
+    // ip contains the integer parts of pi[i]
+    float ip=__rint(p[0]);
+    p[0] -= ip;
+    for (uint32_t i=1; i<3; ++i) {
+        float ii= __rint(p[i]);
+        ip += ii;
+        p[i] -= ii;
+    }
+    // ph, pl: compensated sum of p[i]
+    float ph = p[elem_count_f32-1];
+    for (uint32_t i=1; i<elem_count_f32; ++i) {
+        ph += p[(elem_count_f32-1)-i];
+    }
+    float pl = p[0] - ph;
+    for (uint32_t i=1; i<elem_count_f32; ++i) {
+        pl += p[i];
+    }
+    // subtract integer part from ph, pl
+    float ii=__rint(ph);
+    ip+=ii;
+    ph-=ii;
+    d_ops::add12(ph, pl, ph, pl);
+    // remove multiple of 4 from sum
+    ii = __r4int(ip);
+    ip -= ii;
+    ipart = ip;
+    rh = ph;
+    rl = pl;
+}
+
+inline
+void
+cftal::math::payne_hanek_pi_over_2<float, void>::
+process_and_add_part(float& ipa, float& rh, float& rl, float x)
+{
+    float ipart = ipa;
+    float m1h = rh;
+    float m1l = rl;
+    float ipart2, m2h, m2l;
+    process_part(ipart2, m2h, m2l, x);
+    ipart += ipart2;
+    float mh, ml;
+    d_ops::add12cond(mh, ml, m1h, m2h);
+    // if (mh > 0.5)
+    //    {mh-=1.0; ipart+=1.0;}
+    // else if (mh < -0.5)
+    //    {mh+=1.0; ipart-=1.0;}
+    auto mh_gt_half = mh > 0.5f;
+    auto mh_lt_mhalf = mh < -0.5f;
+#if 0
+    auto mh_m_1 = mh - 1.0f;
+    auto ipart_p_1 = ipart + 1.0f;
+    auto mh_p_1 = mh + 1.0f;
+    auto ipart_m_1 = ipart - 1.0f;
+    mh = select(mh_gt_half, mh_m_1, mh);
+    ipart = select(mh_gt_half, ipart_p_1, ipart);
+    mh = select(mh_lt_mhalf, mh_p_1, mh);
+    ipart = select(mh_lt_mhalf, ipart_m_1, ipart);
+#else
+    float mh_corr = select(mh_gt_half, -1.0f, 0.0f);
+    float ipart_corr= select(mh_gt_half, +1.0f, 0.0f);
+    mh_corr = select(mh_lt_mhalf, +1.0f, mh_corr);
+    ipart_corr= select(mh_lt_mhalf, -1.0f, ipart_corr);
+    mh += mh_corr;
+    ipart += ipart_corr;
+#endif
+    // add mh, ml, m2h, m2l into th, tl
+    float th=mh+(ml+m1l+m2l);
+    float tl=((mh-th)+ml)+(m1l+m2l);
+    ipa=ipart;
+    rh = th;
+    rl = tl;
+}
+
+int
+cftal::math::payne_hanek_pi_over_2<float, void>::
+rem(float& xrh, float& xrl, float x)
+{
+    x*=scale_down_f32();
+    // d_traits::veltkamp_split(x, x1, x2);
+    float x1= round_to_nearest_even_last_bits<12>(x);
+    float ipart, mh, ml;
+    process_part(ipart, mh, ml, x1);
+    float x2= x - x1;
+    process_and_add_part(ipart, mh, ml, x2);
+    // multiply mh, ml with pi/2
+    using c_t = impl::d_real_constants<d_real<float>, float>;
+    float th, tl;
+    d_ops::unorm_mul22(th, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
+    d_ops::add12(mh, ml, th, tl);
+    xrh=mh;
+    xrl=ml;
+    // return last 2 bits of the integer part
+    return ((int)ipart)&3;
+}
+
+int
+cftal::math::payne_hanek_pi_over_2<float, void>::
+rem(float& xrh, float& xrl, float xh, float xl)
+{
+    xh*=scale_down_f32();
+    xl*=scale_down_f32();
+    // d_traits::veltkamp_split(x, x1, x2);
+    float x1= round_to_nearest_even_last_bits<12>(xh);
+    float ipart, mh, ml;
+    process_part(ipart, mh, ml, x1);
+    float x2= xh - x1;
+    process_and_add_part(ipart, mh, ml, x2);
+    float x3= round_to_nearest_even_last_bits<12>(xl);
+    process_and_add_part(ipart, mh, ml, x3);
+    float x4= xl - x3;
+    process_and_add_part(ipart, mh, ml, x4);
+    // multiply mh, ml with pi/2
+    using c_t = impl::d_real_constants<d_real<float>, float>;
+    float th, tl;
     d_ops::unorm_mul22(th, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
     d_ops::add12(mh, ml, th, tl);
     xrh=mh;

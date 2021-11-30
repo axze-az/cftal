@@ -88,9 +88,9 @@ namespace cftal::math {
         static
         void
         process_part(double& ipart,
-                        double& rh,
-                        double& rl,
-                        double x);
+                     double& rh,
+                     double& rl,
+                     double x);
         // performs the partial calculation of x*2/pi
         // and add the results to ipart, rh, rl
         // x may not have not more than 26 mantissa bits
@@ -98,9 +98,9 @@ namespace cftal::math {
         static
         void
         process_and_add_part(double& ipart,
-                                double& rh,
-                                double& rl,
-                                double x);
+                             double& rh,
+                             double& rl,
+                             double x);
     public:
         static
         int
@@ -170,6 +170,94 @@ namespace cftal::math {
         rem(vf_type& xrh, vf_type& xrl,
             arg_t<vf_type> xh, arg_t<vf_type> xl);
     };
+
+    template <>
+    struct payne_hanek_pi_over_2_base<float> {
+        // bits of 2/(M_PI) in 9 bit chunks as double, i.e.
+        // offset 0: bit [0, 9)*2^(1*9)
+        // offset 1: bit [9, 18)*2^(2*18)
+        // offset 2: bit [18, 27)*2^(3*27)
+        // number of elements is determined by 255/8+6=34,
+        // rounded up to the next multiple of six
+        static
+        const float
+        two_over_pi_b9_flt[36];
+    };
+
+    // scalar f64 implementation
+    template <>
+    struct payne_hanek_pi_over_2<float, void>
+        : public payne_hanek_pi_over_2_base<float> {
+        using d_traits = d_real_traits<float>;
+        using d_ops = d_real_ops<float, d_traits::fma>;
+
+        // scale down factor for x
+        constexpr static float scale_down_f32() {
+            return 0x1p-64f;
+        }
+        // 2 to the negative power of 2/pi bits per double element
+        // in the table
+        constexpr static const float scale_step_f32() {
+            return 0x1p-9f;
+        }
+        // idx equal to zero: scale= scale_step_f32()/scale_down_f32();
+        // i.e. for scale_down = 1.0 0x1p-9;
+        constexpr static float scale_up_f32() {
+            return 1.0f/scale_down_f32()*scale_step_f32();
+        }
+        // number of 2/pi bits per double element in the table
+        constexpr
+        static const int32_t bits_per_elem_f32=9;
+        // exp_shift_down C is determined by
+        // (with scale_down 0x1p-64f)
+        // (((x_e - 64) + 127) - C)/9 = (x_e - 13)/9
+        // ==> C = -64 + 127 + 13 = 76
+        // (with scale_down 0x1p-64f)
+        // (((x_e - 64) + 127) - C)/9 = (x_e - 13)/9
+        // ==> C = -70 + 127 + 13 = 70
+        constexpr
+        static const int32_t exp_shift_down_f32=76;
+        // number of 24 bit chunks to use
+        constexpr
+        static const int32_t elem_count_f32=8;
+
+    private:
+        // round x to the next multiple of 1
+        static
+        float
+        __rint(float x);
+        // round x to the next multiple of 4
+        static
+        float
+        __r4int(float x);
+        // performs the partial calculation of x * 2/pi
+        // x may not have not more than 26 mantissa bits
+        // including the hidden bit
+        static
+        void
+        process_part(float& ipart,
+                     float& rh,
+                     float& rl,
+                     float x);
+        // performs the partial calculation of x*2/pi
+        // and add the results to ipart, rh, rl
+        // x may not have not more than 26 mantissa bits
+        // including the hidden bit
+        static
+        void
+        process_and_add_part(float& ipart,
+                             float& rh,
+                             float& rl,
+                             float x);
+    public:
+        static
+        int
+        rem(float& xrh, float& xrl, float x);
+
+        static
+        int
+        rem(float& xrh, float& xrl, float xh, float xl);
+    };
 }
 
 template <typename _T>
@@ -218,7 +306,7 @@ process_part(vf_type& ipa,
 
     auto lck=make_variable_lookup_table<double>(k);
     vf_type p[elem_count_f64];
-    for (uint32_t i=0; i<elem_count_f64; ++i) {
+    for (uint32_t i=0; i<3; ++i) {
         vf_type pi_bits=lck.from(two_over_pi_b24_dbl+i);
         p[i] = x*pi_bits*scale;
         scale *= scale_step_f64();

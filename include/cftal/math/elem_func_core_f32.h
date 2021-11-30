@@ -27,6 +27,7 @@
 #include <cftal/math/misc.h>
 #include <cftal/math/horner.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
+#include <cftal/math/payne_hanek.h>
 #if  __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
 #include <cftal/vec_cvt.h>
 #include <cftal/math/elem_func_core_f64.h>
@@ -3279,6 +3280,30 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     vi_type q(_T::cvt_f_to_i(fn));
     if (__unlikely(_T::any_of_v(v_large_arg))) {
 #if 1
+#if 0
+        vf_type xrhl, xrll;
+        // mask out not required values to avoid subnormals
+        vf_type xl=_T::sel_val_or_zero(v_large_arg, x);
+        vi_type ql=payne_hanek_pi_over_2<float, _T>::rem(xrhl, xrll, xl);
+        q = _T::sel(_T::vmf_to_vmi(v_large_arg), ql, q);
+        xrh = _T::sel(v_large_arg, xrhl, xrh);
+        xrl = _T::sel(v_large_arg, xrll, xrl);
+#else
+        size_t N = size(x);
+        for (size_t i=0; i<N; ++i) {
+            typename vf_type::value_type xi=extract(x, i);
+            if (large_arg < std::fabs(xi)) {
+                float xrhi, xrli;
+                typename vi_type::value_type qi=
+                    payne_hanek_pi_over_2<float, void>::rem(xrhi, xrli, xi);
+                insert(q, qi, i);
+                insert(xrh, xrhi, i);
+                insert(xrl, xrli, i);
+            }
+        }
+#endif
+#else
+#if 1
         size_t N = size(x);
         for (size_t i=0; i<N; ++i) {
             typename vf_type::value_type xi=extract(x, i);
@@ -3313,6 +3338,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         xrh=mem<vf_type>::load(d0_h._a, N);
         xrl=mem<vf_type>::load(d0_l._a, N);
         q = mem<vi_type>::load(ti._a, NI);
+#endif
 #endif
     }
     return q;
