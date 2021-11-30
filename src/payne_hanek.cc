@@ -284,11 +284,11 @@ process_part(float& ipart, float& rh, float& rl, float x)
 
 #else
     int32_t k = (as<uint32_t>(x) >> 23) & 255;
-#if 0
-    const int32_t shift_1_24= 0x12;
-    const int32_t fac_1_24= 0x2aab;
+#if 1
+    const int32_t shift_1_9= 0xe;
+    const int32_t fac_1_9= 0x71d;
     int32_t ks=k-exp_shift_down_f32;
-    k= (ks*fac_1_24)>> shift_1_24;
+    k= (ks*fac_1_9)>> shift_1_9;
 #else
     k = (k-exp_shift_down_f32)/bits_per_elem_f32;
 #endif

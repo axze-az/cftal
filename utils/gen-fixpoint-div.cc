@@ -15,14 +15,14 @@ int main(int argc, char** argv)
     // 1/3 = x/2^16
     // x=2^16/3;
 
-    const int32_t divisor=24;
-    const int32_t shift_1_d=18;
+    const int32_t divisor=9;
+    const int32_t shift_1_d=14;
     const int32_t fac_1_d=((1<<shift_1_d)+(divisor-1))/divisor;
-#if 1
+#if 0
     const int32_t bias=1023;
     const int32_t bits=53;
 #else
-    const int32_t bias=126;
+    const int32_t bias=127;
     const int32_t bits=24;
 #endif
 
