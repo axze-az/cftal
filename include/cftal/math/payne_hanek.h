@@ -363,7 +363,7 @@ process_part(vf_type& ipa,
 
     auto lck=make_variable_lookup_table<double>(k);
     vf_type p[elem_count_f64];
-    for (uint32_t i=0; i<3; ++i) {
+    for (uint32_t i=0; i<elem_count_f64; ++i) {
         vf_type pi_bits=lck.from(two_over_pi_b24_dbl+i);
         p[i] = x*pi_bits*scale;
         scale *= scale_step_f64();
