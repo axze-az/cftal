@@ -3280,7 +3280,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     vi_type q(_T::cvt_f_to_i(fn));
     if (__unlikely(_T::any_of_v(v_large_arg))) {
 #if 1
-#if 0
+#if 1
         vf_type xrhl, xrll;
         // mask out not required values to avoid subnormals
         vf_type xl=_T::sel_val_or_zero(v_large_arg, x);
