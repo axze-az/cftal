@@ -3280,7 +3280,6 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     vi_type q(_T::cvt_f_to_i(fn));
     if (__unlikely(_T::any_of_v(v_large_arg))) {
 #if 1
-#if 1
         vf_type xrhl, xrll;
         // mask out not required values to avoid subnormals
         vf_type xl=_T::sel_val_or_zero(v_large_arg, x);
@@ -3301,44 +3300,6 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
                 insert(xrl, xrli, i);
             }
         }
-#endif
-#else
-#if 1
-        size_t N = size(x);
-        for (size_t i=0; i<N; ++i) {
-            typename vf_type::value_type xi=extract(x, i);
-            if (large_arg < std::fabs(xi)) {
-                float y[2];
-                typename vi_type::value_type qi=
-                    impl::__kernel_rem_pio2(y, xi);
-                insert(q, qi, i);
-                insert(xrh, y[0], i);
-                insert(xrl, y[1], i);
-            }
-        }
-#else
-        // reduce the large arguments
-        vf_array tf, d0_l, d0_h;
-        vi_array ti;
-        mem<vf_type>::store(tf._a, x);
-        mem<vi_type>::store(ti._a, q);
-        mem<vf_type>::store(d0_l._a, xrl);
-        mem<vf_type>::store(d0_h._a, xrh);
-        constexpr std::size_t N = _T::NVF();
-        constexpr std::size_t NI = _T::NVI();
-        static_assert(NI >= N, "constraint violated");
-        for (std::size_t i=0; i<N; ++i) {
-            if (large_arg < std::fabs(tf._a[i])) {
-                float y[2];
-                ti._a[i]=impl::__kernel_rem_pio2(y, tf._a[i]);
-                d0_l._a[i]= y[1];
-                d0_h._a[i]= y[0];
-            }
-        }
-        xrh=mem<vf_type>::load(d0_h._a, N);
-        xrl=mem<vf_type>::load(d0_l._a, N);
-        q = mem<vi_type>::load(ti._a, NI);
-#endif
 #endif
     }
     return q;
