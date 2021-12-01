@@ -283,7 +283,7 @@ process_part(float& ipart, float& rh, float& rl, float x)
     }
 
 #else
-    int32_t k = (as<uint32_t>(x) >> 23) & 255;
+    int32_t k = (as<int32_t>(x) >> 23) & 255;
 #if 1
     const int32_t shift_1_9= 0xe;
     const int32_t fac_1_9= 0x71d;
