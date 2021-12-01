@@ -16,12 +16,12 @@ namespace cftal {
     template <typename _D, typename _S>
     _D as(const _S& s);
 
-    // bit_cast: reinterpret cast to _D from _S, name similiar 
+    // bit_cast: reinterpret cast to _D from _S, name similiar
     // std::bit_cast
     // forwarder function to impl::cast_bits<_D, _S>::v
     template <typename _D, typename _S>
     _D bit_cast(const _S& s);
-    
+
     namespace impl {
 
         // generic working class for cftal::as
@@ -43,20 +43,20 @@ namespace cftal {
                 ds c{s};
                 return c._d;
             }
-#endif            
+#endif
         };
 
         // specialization for cftal::as<_T, _T>
         template <typename _SD>
         struct cast_bits<_SD, _SD> {
-            static 
+            static
             constexpr
             const _SD& v(const _SD& r) {
                 return r;
             }
         };
     }
-    
+
 }
 
 template <typename _D, typename _S>
