@@ -529,22 +529,25 @@ process_part(vf_type& ipa,
              vf_type& rl,
              arg_t<vf_type> x)
 {
-    vi_type k=(as<vi_type>(x) >> 23) & 255;
-    // divide k -exp_shift_down_f32 by 9
+    vi_type k = (as<vi_type>(x) >> 23) & 255;
+#if 1
     const int32_t shift_1_9= 0xe;
     const int32_t fac_1_9= 0x71d;
     vi_type ks=k-exp_shift_down_f32;
     k= (ks*fac_1_9)>> shift_1_9;
+#else
+    k = (k-exp_shift_down_f32)/bits_per_elem_f32;
+#endif
     using std::max;
     k = max(k, vi_type(0));
     const int32_t scale_i = as<int32_t>(scale_up_f32());
-    vf_type scale = as<float>(scale_i - ((k*bits_per_elem_f32)<<23));
+    ks = scale_i - ((k*bits_per_elem_f32)<<23);
+    vf_type scale = as<vf_type>(ks);
 
-    auto lck=make_variable_lookup_table<float>(k);
     vf_type p[elem_count_f32];
+    auto lck=make_variable_lookup_table<float>(k);
     for (uint32_t i=0; i<elem_count_f32; ++i) {
-        vf_type pi_bits=lck.from(two_over_pi_b9_flt+i);
-        p[i] = x*pi_bits*scale;
+        p[i] = x*lck.from(two_over_pi_b9_flt+i)*scale;
         scale *= scale_step_f32();
     }
 
@@ -663,7 +666,7 @@ rem(vf_type& xrh, vf_type& xrl,
     process_part(ipart, mh, ml, x1);
     vf_type x2= xhs - x1;
     process_and_add_part(ipart, mh, ml, x2);
-    vf_type xls=xl=scale_down_f32();
+    vf_type xls=xl*scale_down_f32();
     vf_type x3= round_to_nearest_even_last_bits<12>(xls);
     process_and_add_part(ipart, mh, ml, x3);
     vf_type x4= xls - x3;
