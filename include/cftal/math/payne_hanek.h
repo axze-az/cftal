@@ -249,6 +249,31 @@ namespace cftal::math {
                              float& rh,
                              float& rl,
                              float x);
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+
+        static
+        double
+        __rint(double x);
+
+        static
+        double
+        __r4int(double x);
+
+        // performs the partial calculation of x*2/pi
+        static
+        void
+        process_part(double& ipart,
+                     double& r,
+                     float x);
+
+        // performs the partial calculation of x*2/pi
+        // and add the results to ipart, r
+        static
+        void
+        process_and_add_part(double& ipart,
+                             double& rl,
+                             float x);
+#endif
     public:
         static
         int

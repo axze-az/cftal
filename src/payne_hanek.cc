@@ -377,10 +377,155 @@ process_and_add_part(float& ipa, float& rh, float& rl, float x)
     rl = tl;
 }
 
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+inline
+double
+cftal::math::payne_hanek_pi_over_2<float, void>::
+__rint(double x)
+{
+#if defined (__SSE4_2__)
+    const int rm=_MM_FROUND_TO_NEAREST_INT|_MM_FROUND_NO_EXC;
+    return _mm_cvtsd_f64(_mm_round_pd(_mm_set_sd(x), rm));
+#else
+    constexpr const double rint_magic=0x1p52 + 0x1p51;
+    return (x + rint_magic) - rint_magic;
+#endif
+}
+
+inline
+double
+cftal::math::payne_hanek_pi_over_2<float, void>::
+__r4int(double x)
+{
+    constexpr const double rint_magic=(0x1p52 + 0x1p51)*4;
+    return (x + rint_magic) - rint_magic;
+}
+
+
+inline
+void
+cftal::math::payne_hanek_pi_over_2<float, void>::
+process_part(double& ipart, double& r, float x)
+{
+    constexpr const double scale_down_f64 = 0x1p0;
+    constexpr const double scale_step_f64 = 0x1p-24;
+    constexpr const double scale_up_f64 =
+        1.0/scale_down_f64 * scale_step_f64;
+    constexpr const int bits_per_elem_f64=24;
+    // exp_shift_down C is determined by
+    // (with scale_down 0x1p0)
+    // note: we use the float bias here
+    // (((x_e - 0) + 127) - C)/24 = (x_e - 27)/24
+    // ==> C = -0 + 127 + 27 = 154
+    constexpr const int exp_shift_down_f64=154;
+    // number of 24 bit chunks to use:  72 bits
+    constexpr const int elem_count_f64=4;
+
+    int32_t k = (as<uint32_t>(x) >> 23) & 255;
+
+#if 1
+    const int32_t shift_1_24= 0x12;
+    const int32_t fac_1_24= 0x2aab;
+    int32_t ks=k-exp_shift_down_f64;
+    k= (ks*fac_1_24)>> shift_1_24;
+#else
+    k = (k-exp_shift_down_f64)/bits_per_elem_f64;
+#endif
+    double xd=double(x);
+    using std::max;
+    k = max(k, 0);
+    const int64_t scale_i = as<int64_t>(scale_up_f64);
+    double scale = as<double>(scale_i - (int64_t(k*bits_per_elem_f64)<<52));
+    double p[elem_count_f64];
+    const double *pibits=
+        payne_hanek_pi_over_2_base<double>::two_over_pi_b24_dbl;
+    for (uint32_t i=0; i<elem_count_f64; ++i) {
+        p[i] = xd*pibits[k+i]*scale;
+        scale *= scale_step_f64;
+    }
+    // ip contains the integer parts of pi[i]
+    double ip=__rint(p[0]);
+    p[0] -= ip;
+    for (uint32_t i=1; i<elem_count_f64; ++i) {
+        double ii= __rint(p[i]);
+        ip += ii;
+        p[i] -= ii;
+    }
+    // ps  sum of p[i]
+    double ps = p[elem_count_f64-1];
+    for (uint32_t i=1; i<elem_count_f64; ++i) {
+        ps += p[(elem_count_f64-1)-i];
+    }
+    // subtract integer part from ps
+    double ii=__rint(ps);
+    ip += ii;
+    ps -= ii;
+    // remove multiple of 4 from integer part
+    ii = __r4int(ip);
+    ip -= ii;
+    ipart = ip;
+    r = ps;
+}
+
+inline
+void
+cftal::math::payne_hanek_pi_over_2<float, void>::
+process_and_add_part(double& ipa, double& r, float x)
+{
+    double ipart = ipa;
+    double m1 = r;
+    double ipart2, m2;
+    process_part(ipart2, m2, x);
+    ipart += ipart2;
+    double m= m1 + m2;
+    // if (m > 0.5)
+    //    {m-=1.0; ipart+=1.0;}
+    // else if (m < -0.5)
+    //    {m+=1.0; ipart-=1.0;}
+    auto m_gt_half = m > 0.5;
+    auto m_lt_mhalf = m < -0.5;
+#if 0
+    auto m_m_1 = m - 1.0;
+    auto ipart_p_1 = ipart + 1.0;
+    auto m_p_1 = m + 1.0;
+    auto ipart_m_1 = ipart - 1.0;
+    m = select(m_gt_half, m_m_1, m);
+    ipart = select(m_gt_half, ipart_p_1, ipart);
+    m = select(m_lt_mhalf, m_p_1, m);
+    ipart = select(m_lt_mhalf, ipart_m_1, ipart);
+#else
+    double m_corr = select(m_gt_half, -1.0, 0.0);
+    double ipart_corr= select(m_gt_half, +1.0, 0.0);
+    m_corr = select(m_lt_mhalf, +1.0, m_corr);
+    ipart_corr= select(m_lt_mhalf, -1.0, ipart_corr);
+    m += m_corr;
+    ipart += ipart_corr;
+#endif
+    ipa=ipart;
+    r = m;
+}
+
+
+#endif
+
 int
 cftal::math::payne_hanek_pi_over_2<float, void>::
 rem(float& xrh, float& xrl, float x)
 {
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+    double ipart, m;
+    process_part(ipart, m, x);
+    // multiply m with pi/2
+    using c_t = impl::d_real_constants<d_real<double>, double>;
+    double t= m * c_t::m_pi_2[0];
+    float th=float(t);
+    double dth=double(th);
+    double dtl=t-dth;
+    float tl=float(dtl);
+    xrh=th;
+    xrl=tl;
+#else
     x*=scale_down_f32();
     // d_traits::veltkamp_split(x, x1, x2);
     float x1= round_to_nearest_even_last_bits<12>(x);
@@ -395,6 +540,7 @@ rem(float& xrh, float& xrl, float x)
     d_ops::add12(mh, ml, th, tl);
     xrh=mh;
     xrl=ml;
+#endif
     // return last 2 bits of the integer part
     return ((int)ipart)&3;
 }
