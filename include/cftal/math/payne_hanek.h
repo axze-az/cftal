@@ -815,7 +815,6 @@ process_and_add_part(vhf_type& ipa, vhf_type& r,
     r = m;
 }
 
-
 #endif
 
 template <typename _T>
