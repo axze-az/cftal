@@ -420,7 +420,7 @@ process_part(double& ipart, double& r, float x)
     // ==> C = -0 + 127 + 27 = 154
     constexpr const int exp_shift_down_f64=154;
     // number of 24 bit chunks to use:  72 bits
-    constexpr const int elem_count_f64=4;
+    constexpr const int elem_count_f64=5;
 
     int32_t k = (as<uint32_t>(x) >> 23) & 255;
 
