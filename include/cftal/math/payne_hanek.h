@@ -173,7 +173,7 @@ namespace cftal::math {
 
     template <>
     struct payne_hanek_pi_over_2_base<float> {
-        // bits of 2/(M_PI) in 9 bit chunks as double, i.e.
+        // bits of 2/(M_PI) in 9 bit chunks as float, i.e.
         // offset 0: bit [0, 9)*2^(1*9)
         // offset 1: bit [9, 18)*2^(2*18)
         // offset 2: bit [18, 27)*2^(3*27)
@@ -231,7 +231,7 @@ namespace cftal::math {
         float
         __r4int(float x);
         // performs the partial calculation of x * 2/pi
-        // x may not have not more than 26 mantissa bits
+        // x may not have not more than 12 mantissa bits
         // including the hidden bit
         static
         void
@@ -241,7 +241,7 @@ namespace cftal::math {
                      float x);
         // performs the partial calculation of x*2/pi
         // and add the results to ipart, rh, rl
-        // x may not have not more than 26 mantissa bits
+        // x may not have not more than 12 mantissa bits
         // including the hidden bit
         static
         void
@@ -286,7 +286,7 @@ namespace cftal::math {
         __r4int(arg_t<vf_type> x);
 
         // performs the partial calculation of x * 2/pi
-        // x may not have not more than 26 mantissa bits
+        // x may not have not more than 12 mantissa bits
         // including the hidden bit
         static
         void
@@ -296,7 +296,7 @@ namespace cftal::math {
                      arg_t<vf_type> x);
         // performs the partial calculation of x*2/pi
         // and add the results to ipart, rh, rl
-        // x may not have not more than 26 mantissa bits
+        // x may not have not more than 12 mantissa bits
         // including the hidden bit
         static
         void
@@ -391,7 +391,7 @@ process_part(vf_type& ipa,
     ip+=ii;
     ph-=ii;
     d_ops::add12(ph, pl, ph, pl);
-    // remove multiple of 4 from sum
+    // remove multiple of 4 from integer part
     ii = __r4int(ip);
     ip -= ii;
     ipa = ip;
@@ -573,7 +573,7 @@ process_part(vf_type& ipa,
     ip+=ii;
     ph-=ii;
     d_ops::add12(ph, pl, ph, pl);
-    // remove multiple of 4 from sum
+    // remove multiple of 4 from integer part
     ii = __r4int(ip);
     ip -= ii;
     ipa = ip;

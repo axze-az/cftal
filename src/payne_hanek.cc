@@ -121,7 +121,7 @@ process_part(double& ipart, double& rh, double& rl, double x)
     ip+=ii;
     ph-=ii;
     d_ops::add12(ph, pl, ph, pl);
-    // remove multiple of 4 from sum
+    // remove multiple of 4 from integer part
     ii = __r4int(ip);
     ip -= ii;
     ipart = ip;
@@ -325,7 +325,7 @@ process_part(float& ipart, float& rh, float& rl, float x)
     ip+=ii;
     ph-=ii;
     d_ops::add12(ph, pl, ph, pl);
-    // remove multiple of 4 from sum
+    // remove multiple of 4 from integer part
     ii = __r4int(ip);
     ip -= ii;
     ipart = ip;
