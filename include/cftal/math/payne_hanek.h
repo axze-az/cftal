@@ -717,11 +717,12 @@ process_part(vhf_type& ipart, vhf_type& r,
     constexpr const int bits_per_elem_f64=24;
     // exp_shift_down C is determined by
     // (with scale_down 0x1p0)
-    // note: we use the float bias here
-    // (((x_e - 0) + 127) - C)/24 = (x_e - 27)/24
-    // ==> C = -0 + 127 + 27 = 154
-    constexpr const int exp_shift_down_f64=154;
-    // number of 24 bit chunks to use:  96 bits
+    // note: we use the float bias here and use the
+    // fact, that a float mantissa has only 24 bits
+    // (((x_e - 0) + 127) - C)/24 = (x_e - 25)/24
+    // ==> C = -0 + 127 + 25 = 152
+    constexpr const int exp_shift_down_f64=152;
+    // number of 24 bit chunks to use
     constexpr const int elem_count_f64=5;
 
     vi_type k = (as<vi_type>(x) >> 23) & 255;
