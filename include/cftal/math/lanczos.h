@@ -509,8 +509,8 @@ lanczos_rational_at(const _T& x,
     const d_real<_C>* pp=p;
     _T ph = pp[0][0];
     _T pl = pp[0][1];
-#pragma clang loop unroll(disable)
-#pragma GCC unroll 0
+#pragma clang unroll(1)
+#pragma GCC unroll 1
     for (std::size_t i=1; i< _N1; ++i) {
 #if 1
         // compensated horner step with higher precision coefficients
@@ -529,8 +529,8 @@ lanczos_rational_at(const _T& x,
     if (__likely(q[_N2-1] == _C(0))) {
         const _C* pq=q;
         horner_comp_s0(qh, ql, x, pq[0], pq[1]);
-#pragma clang loop unroll(disable)
-#pragma GCC unroll 0
+#pragma clang unroll(1)
+#pragma GCC unroll 1
         for (std::size_t i=2; i< _N2-1; ++i) {
             horner_comp_si(qh, ql, x, qh, ql, pq[i]);
         }

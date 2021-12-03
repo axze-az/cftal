@@ -62,7 +62,7 @@ horner_idx(const _X& x,
     _X c0 = lck.from(tbl+0);
     _X r=c0;
 #pragma GCC unroll 256
-#pragma clang loop unroll(full)
+#pragma clang unroll(256)
     for (std::size_t i=1; i<_N; ++i) {
         _X ci=lck.from(tbl+i);
         r = horner(x, r, ci);
@@ -85,7 +85,7 @@ horner2_idx(const _X& x, const _X& x2,
     _X r1= c1;
     const std::size_t _NE= _N & ~std::size_t(1);
 #pragma GCC unroll 256
-#pragma clang loop unroll(full)
+#pragma clang unroll(256)
     for (std::size_t i=2; i<_NE; i+=2) {
         _X ci=lck.from(tbl+i);
         _X cip1=lck.from(tbl+i+1);
@@ -119,7 +119,7 @@ horner4_idx(const _X& x, const _X& x2, const _X& x4,
     _X r3= c3;
     const std::size_t _NE= _N & ~std::size_t(3);
 #pragma GCC unroll 256
-#pragma clang loop unroll(full)
+#pragma clang unroll(256)
     for (std::size_t i=4; i<_NE; i+=4) {
         _X ci=lck.from(tbl+i);
         _X cip1=lck.from(tbl+i+1);

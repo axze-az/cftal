@@ -266,8 +266,8 @@ householder_step(_T xn, _T x, _T y, const _C(&pa)[_N], const _C(&qa)[_N])
     _T yi=y;
     _T p=horner(xn, pp[0], pp[1]*yi);
     _T q=horner(xn, pq[0], pq[1]*yi);
-#pragma clang loop unroll(disable)
-#pragma GCC unroll 0
+#pragma GCC unroll 1
+#pragma clang unroll(1)
     for (size_t i=2; i<_N; ++i) {
         yi *= y;
         _T pi=pp[i] * yi;

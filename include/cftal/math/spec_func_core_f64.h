@@ -818,7 +818,7 @@ erfc_tbl_k(arg_t<vf_type> xc)
     if (__likely(_T::any_of_v(x_lt_0_00))) {
         il *= sc.f0();
         il *= sc.f1();
-        vf_type nih, nil;        
+        vf_type nih, nil;
         d_ops::add122(nih, nil, 2.0, -ih, -il);
         ih = _T::sel(x_lt_0_00, nih, ih);
     }
@@ -990,8 +990,8 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     const double* pci=ci;
     d_ops::unorm_mul122(ph, pl, pci[0], xh, xl);
     const std::size_t N0=std::distance(std::cbegin(ci), std::cend(ci));
-#pragma clang loop unroll(disable)
-#pragma GCC unroll 0
+#pragma clang unroll(1)
+#pragma GCC unroll 1
     for (std::size_t i=1; i<N0; ++i) {
         d_ops::add122(ph, pl, pci[i], ph, pl);
         d_ops::unorm_mul22(ph, pl, xh, xl, ph, pl);
@@ -1005,8 +1005,8 @@ __lgamma_1_2_k(arg_t<vf_type> xh, arg_t<vf_type> xl)
     constexpr
     const std::size_t N1=std::distance(std::cbegin(dci), std::cend(dci));
     const d_real<double>* pdci=dci;
-#pragma clang loop unroll(disable)
-#pragma GCC unroll 0
+#pragma clang unroll(1)
+#pragma GCC unroll 1
     for (std::size_t i=0; i<N1; ++i) {
         vf_type ch=mem<vf_type>::load(&(pdci[i][0]), 1);
         vf_type cl=mem<vf_type>::load(&(pdci[i][1]), 1);

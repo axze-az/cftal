@@ -347,7 +347,7 @@ horner(const _X& x, const _C* pa)
     static_assert(_N > 0, "invalid call to horner(x, ptr)");
     _X r= _X(pa[0]);
 #pragma GCC unroll 256
-#pragma clang loop unroll(full)
+#pragma clang unroll(256)
     for (std::size_t i=1; i<_N; ++i) {
         r= horner(x, r, pa[i]);
     }
@@ -374,7 +374,7 @@ horner2(const _X& x, const _X& x2, const _C* pa)
     _X r1= _X(pa[1]);
     const std::size_t _NE= _N & ~(std::size_t(1));
 #pragma GCC unroll 256
-#pragma clang loop unroll(full)
+#pragma clang unroll(256)
     for (std::size_t i=2; i<_NE; i+=2) {
         r0= horner(x2, r0, pa[i]);
         r1= horner(x2, r1, pa[i+1]);
@@ -408,7 +408,7 @@ horner3(const _X& x, const _X& x3, const _C* pa)
     _X r2= _X(pa[2]);
     const std::size_t _NE= (_N / 3) * 3;
 #pragma GCC unroll 256
-#pragma clang loop unroll(full)
+#pragma clang unroll(256)
     for (std::size_t i=3; i<_NE; i+=3) {
         r0= horner(x3, r0, pa[i]);
         r1= horner(x3, r1, pa[i+1]);
@@ -451,7 +451,7 @@ horner4(const _X& x, const _X& x2, const _X& x4, const _C* pa)
     _X r3= _X(pa[3]);
     const std::size_t _NE= _N & ~std::size_t(3);
 #pragma GCC unroll 256
-#pragma clang loop unroll(full)
+#pragma clang unroll(256)
     for (std::size_t i=4; i<_NE; i+=4) {
         r0= horner(x4, r0, pa[i]);
         r1= horner(x4, r1, pa[i+1]);
@@ -549,8 +549,6 @@ horner_n2(_X& ya, _X& yb,
     const _C* pb=b;
     _X ra= _X(pa[0]);
     _X rb= _X(pb[0]);
-// #pragma GCC unroll 0
-// #pragma clang loop unroll(disable)
     for (std::size_t i=1; i<_N; ++i) {
         ra= horner(x, ra, pa[i]);
         rb= horner(x, rb, pb[i]);
@@ -609,8 +607,6 @@ horner_n4(_X& ya, _X& yb, _X& yc, _X& yd,
     const _C* pb=b;
     const _C* pc=c;
     const _C* pd=d;
-// #pragma GCC unroll 0
-//#pragma clang loop unroll(disable)
     for (std::size_t i=1; i<_N; ++i) {
         ra= horner(x, ra, pa[i]);
         rb= horner(x, rb, pb[i]);
@@ -769,7 +765,7 @@ horner_comp_sn(_X& y, _X& ye,
     const _C* pa=a;
     horner_comp_s0(y, ye, x, yi, pa[0]);
 #pragma GCC unroll 256
-#pragma clang loop unroll(full)
+#pragma clang unroll(256)
     for (std::size_t i=1; i < _N; ++i) {
         horner_comp_si(y, ye, x, y, ye, pa[i]);
     }
@@ -890,7 +886,7 @@ horner_comp_quick_sn(_X& y, _X& ye,
     const _C* pa=a;
     horner_comp_quick_s0(y, ye, x, yi, pa[0]);
 #pragma GCC unroll 256
-#pragma clang loop unroll(full)
+#pragma clang unroll(256)
     for (std::size_t i=1; i < _N; ++i) {
         horner_comp_quick_si(y, ye, x, y, ye, pa[i]);
     }
