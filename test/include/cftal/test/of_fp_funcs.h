@@ -194,7 +194,7 @@ namespace cftal {
               bool suppress_defaults= false);
 
             using array_t = std::array<_T, _N>;
-            
+
             template <typename _CMP=cmp_t<_T> >
             static
             bool calc(const array_t& ai,
@@ -278,7 +278,7 @@ namespace cftal {
 
             using array_1_t = std::array<_T1, _N>;
             using array_2_t = std::array<_T2, _N>;
-            
+
             template <typename _CMP=cmp_t<_T> >
             static
             bool calc(const array_1_t& ai, const array_2_t& bi,
@@ -529,6 +529,8 @@ cftal::test::default_arguments<_T>::values={
     _T(-2.747682668831582298e+00),
     _T(-2.747682643214721665e+00),
     _T(-2.457021951675415039e+00),
+    // payne hanek f32, sin + tan
+    _T(6.183343135562321573e+29),
     _T(uint64_t(1ULL<<23)),
     _T(uint64_t(1ULL<<52)),
     _T(0x1.0p31),

@@ -329,11 +329,13 @@ namespace cftal::math {
                              vf_type& rh,
                              vf_type& rl,
                              arg_t<vf_type> x);
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
 
         using f64_traits = typename _T::vhf_traits;
         using vhf_type = typename f64_traits::vf_type;
         using vmhf_type = typename f64_traits::vmf_type;
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+
 
         static
         vhf_type
@@ -840,16 +842,33 @@ rem(vf_type& xrh, vf_type& xrl,
 #else
     vf_type xs=x*scale_down_f32();
     // d_traits::veltkamp_split(x, x1, x2);
-    vf_type x1= round_to_nearest_even_last_bits<12>(xs);
+    vf_type x1= round_to_nearest_even_last_bits<16>(xs);
     vf_type ipart, mh, ml;
     process_part(ipart, mh, ml, x1);
-    vf_type x2= xs - x1;
+    vf_type xt= xs - x1;
+    vf_type x2= round_to_nearest_even_last_bits<16>(xt);
     process_and_add_part(ipart, mh, ml, x2);
+    vf_type x3= xt - x2;
+    process_and_add_part(ipart, mh, ml, x3);
     // multiply mh, ml with pi/2
+#if 0
+    vhf_type th=cvt<vhf_type>(mh);
+    vhf_type tl=cvt<vhf_type>(ml);
+    vhf_type m=th + tl;
+    using c_t = impl::d_real_constants<d_real<double>, double>;
+    vhf_type p= m * c_t::m_pi_2[0];
+    vf_type t=cvt<vf_type>(p);
+    th= cvt<vhf_type>(t);
+    tl= p - th;
+    mh = t;
+    t= cvt<vf_type>(tl);
+    ml = t;
+#else
     using c_t = impl::d_real_constants<d_real<float>, float>;
     vf_type th, tl;
     d_ops::unorm_mul22(th, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
     d_ops::add12(mh, ml, th, tl);
+#endif
     xrh=mh;
     xrl=ml;
     // return last 2 bits of the integer part
