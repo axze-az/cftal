@@ -223,30 +223,6 @@ rem(double& xrh, double& xrl, double xh, double xl)
 }
 
 inline
-double
-cftal::math::payne_hanek_pi_over_2<float, void>::
-__rint(double x)
-{
-#if defined (__SSE4_2__)
-    const int rm=_MM_FROUND_TO_NEAREST_INT|_MM_FROUND_NO_EXC;
-    return _mm_cvtsd_f64(_mm_round_pd(_mm_set_sd(x), rm));
-#else
-    constexpr const double rint_magic=0x1p52 + 0x1p51;
-    return (x + rint_magic) - rint_magic;
-#endif
-}
-
-inline
-double
-cftal::math::payne_hanek_pi_over_2<float, void>::
-__r4int(double x)
-{
-    constexpr const double rint_magic=(0x1p52 + 0x1p51)*4;
-    return (x + rint_magic) - rint_magic;
-}
-
-
-inline
 void
 cftal::math::payne_hanek_pi_over_2<float, void>::
 process_part(double& ipart, double& r, float x)

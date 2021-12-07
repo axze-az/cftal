@@ -69,7 +69,7 @@ namespace cftal::math {
         constexpr
         static const int32_t elem_count_f64=6;
 
-    private:
+    protected:
         // round x to the next multiple of 1
         static
         double
@@ -78,6 +78,7 @@ namespace cftal::math {
         static
         double
         __r4int(double x);
+    private:
         // performs the partial calculation of x * 2/pi
         // x may not have not more than 26 mantissa bits
         // including the hidden bit
@@ -170,15 +171,7 @@ namespace cftal::math {
     // scalar f64 implementation
     template <>
     struct payne_hanek_pi_over_2<float, void>
-        : public payne_hanek_pi_over_2_base {
-
-        static
-        double
-        __rint(double x);
-
-        static
-        double
-        __r4int(double x);
+        : public payne_hanek_pi_over_2<double, void> {
 
         // performs the partial calculation of x*2/pi
         static
