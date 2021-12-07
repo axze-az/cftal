@@ -17,11 +17,7 @@
 
 namespace cftal::math {
 
-    template <typename _T>
-    struct payne_hanek_pi_over_2_base {};
-
-    template <>
-    struct payne_hanek_pi_over_2_base<double> {
+    struct payne_hanek_pi_over_2_base {
         // bits of 2/(M_PI) in 24 bit chunks as double, i.e.
         // offset 0: bit [0, 24)*2^(1*24)
         // offset 1: bit [24, 48)*2^(2*24)
@@ -39,7 +35,7 @@ namespace cftal::math {
     // scalar f64 implementation
     template <>
     struct payne_hanek_pi_over_2<double, void>
-        : public payne_hanek_pi_over_2_base<double> {
+        : public payne_hanek_pi_over_2_base {
         using d_traits = d_real_traits<double>;
         using d_ops = d_real_ops<double, d_traits::fma>;
 
@@ -171,85 +167,10 @@ namespace cftal::math {
             arg_t<vf_type> xh, arg_t<vf_type> xl);
     };
 
-    template <>
-    struct payne_hanek_pi_over_2_base<float> {
-        // bits of 2/(M_PI) in 9 bit chunks as float, i.e.
-        // offset 0: bit [0, 9)*2^(1*9)
-        // offset 1: bit [9, 18)*2^(2*18)
-        // offset 2: bit [18, 27)*2^(3*27)
-        // number of elements is determined by 255/8+6=34,
-        // rounded up to the next multiple of six
-        static
-        const float
-        two_over_pi_b9_flt[36];
-    };
-
     // scalar f64 implementation
     template <>
     struct payne_hanek_pi_over_2<float, void>
-        : public payne_hanek_pi_over_2_base<float> {
-        using d_traits = d_real_traits<float>;
-        using d_ops = d_real_ops<float, d_traits::fma>;
-
-        // scale down factor for x
-        constexpr static float scale_down_f32() {
-            return 0x1p-64f;
-        }
-        // 2 to the negative power of 2/pi bits per double element
-        // in the table
-        constexpr static const float scale_step_f32() {
-            return 0x1p-9f;
-        }
-        // idx equal to zero: scale= scale_step_f32()/scale_down_f32();
-        // i.e. for scale_down = 1.0 0x1p-9;
-        constexpr static float scale_up_f32() {
-            return 1.0f/scale_down_f32()*scale_step_f32();
-        }
-        // number of 2/pi bits per double element in the table
-        constexpr
-        static const int32_t bits_per_elem_f32=9;
-        // exp_shift_down C is determined by
-        // (with scale_down 0x1p-64f)
-        // (((x_e - 64) + 127) - C)/9 = (x_e - 13)/9
-        // ==> C = -64 + 127 + 13 = 76
-        // (with scale_down 0x1p-64f)
-        // (((x_e - 64) + 127) - C)/9 = (x_e - 13)/9
-        // ==> C = -70 + 127 + 13 = 70
-        constexpr
-        static const int32_t exp_shift_down_f32=76;
-        // number of 24 bit chunks to use
-        constexpr
-        static const int32_t elem_count_f32=8;
-
-    private:
-        // round x to the next multiple of 1
-        static
-        float
-        __rint(float x);
-        // round x to the next multiple of 4
-        static
-        float
-        __r4int(float x);
-        // performs the partial calculation of x * 2/pi
-        // x may not have not more than 12 mantissa bits
-        // including the hidden bit
-        static
-        void
-        process_part(float& ipart,
-                     float& rh,
-                     float& rl,
-                     float x);
-        // performs the partial calculation of x*2/pi
-        // and add the results to ipart, rh, rl
-        // x may not have not more than 12 mantissa bits
-        // including the hidden bit
-        static
-        void
-        process_and_add_part(float& ipart,
-                             float& rh,
-                             float& rl,
-                             float x);
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
+        : public payne_hanek_pi_over_2_base {
 
         static
         double
@@ -273,7 +194,6 @@ namespace cftal::math {
         process_and_add_part(double& ipart,
                              double& rl,
                              float x);
-#endif
     public:
         static
         int
@@ -291,51 +211,10 @@ namespace cftal::math {
 
         using vf_type = typename _T::vf_type;
         using vi_type = typename _T::vi_type;
-        using vmf_type = typename _T::vmf_type;
-        using vmi_type = typename _T::vmi_type;
-        using vdf_type = typename _T::vdf_type;
-
-        using d_ops=d_real_ops<vf_type,
-                                d_real_traits<vf_type>::fma>;
-        using d_traits = d_real_traits<vf_type>;
-
-    private:
-        // round to multiples of 1
-        static
-        vf_type
-        __rint(arg_t<vf_type> x);
-
-        // round to multiples of 4
-        static
-        vf_type
-        __r4int(arg_t<vf_type> x);
-
-        // performs the partial calculation of x * 2/pi
-        // x may not have not more than 12 mantissa bits
-        // including the hidden bit
-        static
-        void
-        process_part(vf_type& ipa,
-                     vf_type& rh,
-                     vf_type& rl,
-                     arg_t<vf_type> x);
-        // performs the partial calculation of x*2/pi
-        // and add the results to ipart, rh, rl
-        // x may not have not more than 12 mantissa bits
-        // including the hidden bit
-        static
-        void
-        process_and_add_part(vf_type& ipa,
-                             vf_type& rh,
-                             vf_type& rl,
-                             arg_t<vf_type> x);
 
         using f64_traits = typename _T::vhf_traits;
         using vhf_type = typename f64_traits::vf_type;
         using vmhf_type = typename f64_traits::vmf_type;
-
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-
 
         static
         vhf_type
@@ -359,7 +238,6 @@ namespace cftal::math {
         process_and_add_part(vhf_type& ipart,
                              vhf_type& r,
                              arg_t<vf_type> x);
-#endif
     public:
         static
         vi_type
@@ -559,134 +437,6 @@ rem(vf_type& xrh, vf_type& xrl,
 
 template <typename _T>
 inline
-typename cftal::math::payne_hanek_pi_over_2<float, _T>::vf_type
-cftal::math::payne_hanek_pi_over_2<float, _T>::
-__rint(arg_t<vf_type> x)
-{
-    using std::rint;
-    return rint(x);
-}
-
-template <typename _T>
-inline
-typename cftal::math::payne_hanek_pi_over_2<float, _T>::vf_type
-cftal::math::payne_hanek_pi_over_2<float, _T>::
-__r4int(arg_t<vf_type> x)
-{
-    constexpr const float rint_magic=(0x1p23f + 0x1p22f)*4;
-    return (x + rint_magic) - rint_magic;
-}
-
-template <typename _T>
-void
-cftal::math::payne_hanek_pi_over_2<float, _T>::
-process_part(vf_type& ipa,
-             vf_type& rh,
-             vf_type& rl,
-             arg_t<vf_type> x)
-{
-    vi_type k = (as<vi_type>(x) >> 23) & 255;
-#if 1
-    const int32_t shift_1_9= 0xe;
-    const int32_t fac_1_9= 0x71d;
-    vi_type ks=k-exp_shift_down_f32;
-    k= (ks*fac_1_9)>> shift_1_9;
-#else
-    k = (k-exp_shift_down_f32)/bits_per_elem_f32;
-#endif
-    using std::max;
-    k = max(k, vi_type(0));
-    const int32_t scale_i = as<int32_t>(scale_up_f32());
-    ks = scale_i - ((k*bits_per_elem_f32)<<23);
-    vf_type scale = as<vf_type>(ks);
-
-    vf_type p[elem_count_f32];
-    auto lck=make_variable_lookup_table<float>(k);
-    for (uint32_t i=0; i<elem_count_f32; ++i) {
-        p[i] = x*lck.from(two_over_pi_b9_flt+i)*scale;
-        scale *= scale_step_f32();
-    }
-
-    // ip contains the integer parts of pi[i]
-    vf_type ip=__rint(p[0]);
-    p[0] -= ip;
-    for (uint32_t i=1; i<3; ++i) {
-        vf_type ii= __rint(p[i]);
-        ip += ii;
-        p[i] -= ii;
-    }
-    // ph, pl: compensated sum of p[i]
-    vf_type ph = p[elem_count_f32-1];
-    for (uint32_t i=1; i<elem_count_f32; ++i) {
-        ph += p[(elem_count_f32-1)-i];
-    }
-    vf_type pl = p[0] - ph;
-    for (uint32_t i=1; i<elem_count_f32; ++i) {
-        pl += p[i];
-    }
-    // subtract integer part from ph, pl
-    vf_type ii=__rint(ph);
-    ip+=ii;
-    ph-=ii;
-    d_ops::add12(ph, pl, ph, pl);
-    // remove multiple of 4 from integer part
-    ii = __r4int(ip);
-    ip -= ii;
-    ipa = ip;
-    rh = ph;
-    rl = pl;
-}
-
-template <typename _T>
-void
-cftal::math::payne_hanek_pi_over_2<float, _T>::
-process_and_add_part(vf_type& ipa,
-                     vf_type& rh,
-                     vf_type& rl,
-                     arg_t<vf_type> x)
-{
-    vf_type ipart = ipa;
-    vf_type m1h = rh;
-    vf_type m1l = rl;
-    vf_type ipart2, m2h, m2l;
-    process_part(ipart2, m2h, m2l, x);
-    ipart += ipart2;
-    vf_type mh, ml;
-    d_ops::add12cond(mh, ml, m1h, m2h);
-    // if (mh > 0.5)
-    //    {mh-=1.0; ipart+=1.0;}
-    // else if (mh < -0.5)
-    //    {mh+=1.0; ipart-=1.0;}
-    auto mh_gt_half = mh > 0.5f;
-    auto mh_lt_mhalf = mh < -0.5f;
-#if 0
-    auto mh_m_1 = mh - 1.0f;
-    auto ipart_p_1 = ipart + 1.0f;
-    auto mh_p_1 = mh + 1.0f;
-    auto ipart_m_1 = ipart - 1.0f;
-    mh = _T::sel(mh_gt_half, mh_m_1, mh);
-    ipart = _T::sel(mh_gt_half, ipart_p_1, ipart);
-    mh = _T::sel(mh_lt_mhalf, mh_p_1, mh);
-    ipart = _T::sel(mh_lt_mhalf, ipart_m_1, ipart);
-#else
-    vf_type mh_corr = _T::sel_val_or_zero(mh_gt_half, -1.0f);
-    vf_type ipart_corr= _T::sel_val_or_zero(mh_gt_half, +1.0f);
-    mh_corr = _T::sel(mh_lt_mhalf, +1.0f, mh_corr);
-    ipart_corr= _T::sel(mh_lt_mhalf, -1.0f, ipart_corr);
-    mh += mh_corr;
-    ipart += ipart_corr;
-#endif
-    // add mh, ml, m2h, m2l into th, tl
-    vf_type th=mh+(ml+m1l+m2l);
-    vf_type tl=((mh-th)+ml)+(m1l+m2l);
-    ipa=ipart;
-    rh = th;
-    rl = tl;
-}
-
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-template <typename _T>
-inline
 typename cftal::math::payne_hanek_pi_over_2<float, _T>::vhf_type
 cftal::math::payne_hanek_pi_over_2<float, _T>::
 __rint(arg_t<vhf_type> x)
@@ -716,13 +466,11 @@ process_part(vhf_type& ipart, vhf_type& r,
     constexpr const double scale_step_f64 = 0x1p-24;
     constexpr const double scale_up_f64 =
         1.0/scale_down_f64 * scale_step_f64;
-    constexpr const int bits_per_elem_f64=24;
+    // bits per element
+    constexpr const int32_t bits_per_elem_f64=24;
     // exp_shift_down C is determined by
     // (with scale_down 0x1p0)
-    // note: we use the float bias here and use the
-    // fact, that a float mantissa has only 24 bits
     // (((x_e - 0) + 127) - C)/24 = (x_e - 25)/24
-    // ==> C = -0 + 127 + 25 = 152
     constexpr const int exp_shift_down_f64=152;
     // number of 24 bit chunks to use
     constexpr const int elem_count_f64=5;
@@ -746,8 +494,7 @@ process_part(vhf_type& ipart, vhf_type& r,
     vhf_type scale=f64_traits::combine_words(sl, sh);
 
     auto lck=make_variable_lookup_table<double>(k);
-    const double *pibits=
-        payne_hanek_pi_over_2_base<double>::two_over_pi_b24_dbl;
+    const double *pibits=two_over_pi_b24_dbl;
     vhf_type p[elem_count_f64];
     for (uint32_t i=0; i<elem_count_f64; ++i) {
         vhf_type pibitsi=lck.from(pibits+i);
@@ -757,7 +504,7 @@ process_part(vhf_type& ipart, vhf_type& r,
     // ip contains the integer parts of pi[i]
     vhf_type ip=__rint(p[0]);
     p[0] -= ip;
-    for (uint32_t i=1; i<elem_count_f64; ++i) {
+    for (uint32_t i=1; i<3; ++i) {
         vhf_type ii= __rint(p[i]);
         ip += ii;
         p[i] -= ii;
@@ -818,7 +565,6 @@ process_and_add_part(vhf_type& ipa, vhf_type& r,
     r = m;
 }
 
-#endif
 
 template <typename _T>
 typename cftal::math::payne_hanek_pi_over_2<float, _T>::vi_type
@@ -826,7 +572,6 @@ cftal::math::payne_hanek_pi_over_2<float, _T>::
 rem(vf_type& xrh, vf_type& xrl,
     arg_t<vf_type> x)
 {
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
     vhf_type ipart, m;
     process_part(ipart, m, x);
     // multiply m with pi/2
@@ -839,41 +584,6 @@ rem(vf_type& xrh, vf_type& xrl,
     xrh=th;
     xrl=tl;
     vi_type i= f64_traits::cvt_f_to_i(ipart) & 3;
-#else
-    vf_type xs=x*scale_down_f32();
-    // d_traits::veltkamp_split(x, x1, x2);
-    vf_type x1= round_to_nearest_even_last_bits<16>(xs);
-    vf_type ipart, mh, ml;
-    process_part(ipart, mh, ml, x1);
-    vf_type xt= xs - x1;
-    vf_type x2= round_to_nearest_even_last_bits<16>(xt);
-    process_and_add_part(ipart, mh, ml, x2);
-    vf_type x3= xt - x2;
-    process_and_add_part(ipart, mh, ml, x3);
-    // multiply mh, ml with pi/2
-#if 0
-    vhf_type th=cvt<vhf_type>(mh);
-    vhf_type tl=cvt<vhf_type>(ml);
-    vhf_type m=th + tl;
-    using c_t = impl::d_real_constants<d_real<double>, double>;
-    vhf_type p= m * c_t::m_pi_2[0];
-    vf_type t=cvt<vf_type>(p);
-    th= cvt<vhf_type>(t);
-    tl= p - th;
-    mh = t;
-    t= cvt<vf_type>(tl);
-    ml = t;
-#else
-    using c_t = impl::d_real_constants<d_real<float>, float>;
-    vf_type th, tl;
-    d_ops::unorm_mul22(th, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
-    d_ops::add12(mh, ml, th, tl);
-#endif
-    xrh=mh;
-    xrl=ml;
-    // return last 2 bits of the integer part
-    vi_type i=_T::cvt_f_to_i(ipart) & 3;
-#endif
     return i;
 }
 
@@ -883,27 +593,19 @@ cftal::math::payne_hanek_pi_over_2<float, _T>::
 rem(vf_type& xrh, vf_type& xrl,
     arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
-    vf_type xhs=xh*scale_down_f32();
-    // d_traits::veltkamp_split(x, x1, x2);
-    vf_type x1= round_to_nearest_even_last_bits<12>(xhs);
-    vf_type ipart, mh, ml;
-    process_part(ipart, mh, ml, x1);
-    vf_type x2= xhs - x1;
-    process_and_add_part(ipart, mh, ml, x2);
-    vf_type xls=xl*scale_down_f32();
-    vf_type x3= round_to_nearest_even_last_bits<12>(xls);
-    process_and_add_part(ipart, mh, ml, x3);
-    vf_type x4= xls - x3;
-    process_and_add_part(ipart, mh, ml, x4);
-    // multiply mh, ml with pi/2
-    using c_t = impl::d_real_constants<d_real<float>, float>;
-    vf_type th, tl;
-    d_ops::unorm_mul22(th, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
-    d_ops::add12(mh, ml, th, tl);
-    xrh=mh;
-    xrl=ml;
-    // return last 2 bits of the integer part
-    vi_type i=_T::cvt_f_to_i(ipart) & 3;
+    vhf_type ipart, m;
+    process_part(ipart, m, xh);
+    process_and_add_part(ipart, m, xl);
+    // multiply m with pi/2
+    using c_t = impl::d_real_constants<d_real<double>, double>;
+    vhf_type t= m * c_t::m_pi_2[0];
+    vf_type th=cvt<vf_type>(t);
+    vhf_type dth=cvt<vhf_type>(th);
+    vhf_type dtl=t-dth;
+    vf_type tl=cvt<vf_type>(dtl);
+    xrh=th;
+    xrl=tl;
+    vi_type i= f64_traits::cvt_f_to_i(ipart) & 3;
     return i;
 }
 
