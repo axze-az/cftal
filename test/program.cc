@@ -7,6 +7,17 @@
 #include "cftal/test/program.h"
 #include <cstdlib>
 
+std::ostream&
+cftal::test::operator<<(std::ostream& s, const pgm_args& ags)
+{
+    s << '(' << (ags._mt ? "mt" : "st")
+      << (ags._speed_only ? ", speed only" : "")
+      << (ags._fast ? ", fast" : "" )
+      << (ags._slow ? ", slow" : "" )
+      << ')';
+    return s;
+}
+
 cftal::test::pgm_args
 cftal::test::parse(int argc, char** argv, std::size_t cnt)
 {

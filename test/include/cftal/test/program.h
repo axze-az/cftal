@@ -44,6 +44,9 @@ namespace cftal {
                 _cnt(c) {}
         };
 
+        std::ostream&
+        operator<<(std::ostream& s, const pgm_args& ags);
+
         pgm_args
         parse(int argc, char** argv, std::size_t cnt);
 
@@ -88,12 +91,7 @@ cftal::test::program(int argc, char** argv,
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     std::cout << "f64 test of " << _CHECK::fname()
-              << " (" << (ags._mt ? "mt" : "st")
-              << (ags._speed_only ? ", speed only" : "")
-              << (ags._fast ? ", fast" : "" )
-              << (ags._slow ? ", slow" : "" )
-              << ')'
-              << std::endl;
+              << ' ' << ags << std::endl;
     bool rc=true;
     using ftype = double;
     if (ags._speed_only == false){
@@ -157,12 +155,7 @@ cftal::test::program(int argc, char** argv,
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
     std::cout << "f32 test of " << _CHECK::fname()
-              << " (" << (ags._mt ? "mt" : "st")
-              << (ags._speed_only ? ", speed only" : "")
-              << (ags._fast ? ", fast" : "")
-              << (ags._slow ? ", slow" : "" )
-              << ')'
-              << std::endl;
+              << ' ' << ags << std::endl;;
     bool rc=true;
     using ftype = float;
     if (ags._speed_only == false) {
