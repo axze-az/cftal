@@ -374,19 +374,6 @@ cftal::round_to_zero_last_bits(const vec<_T, _N>& v)
     return impl::round_to_zero_last_bits<vec<_T, _N>, _T,
                                          vec<int_type, _N>, int_type,
                                          _BITS>(v);
-#if 0
-    using vi_t = vec<int_type, _N>;
-    // last bit to keep
-    constexpr const int_type bk= (1LL << (_BITS));
-    // mask of the bits to round away:
-    constexpr const int_type trailing_mask= bk-1L;
-    // mask of the bits to keep
-    constexpr const int_type mask=~trailing_mask;
-    vi_t i=as<vi_t>(v);
-    i &= mask;
-    vec<_T, _N> r=as<vec<_T, _N> >(i);
-    return r;
-#endif
 }
 
 template <std::size_t _BITS>
