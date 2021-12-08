@@ -14,6 +14,7 @@
 #include <cftal/math/func_constants.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
+#include <cftal/vec_math_funcs.h>
 
 namespace cftal::math {
 
@@ -138,7 +139,11 @@ namespace cftal::math {
         vf_type
         __r4int(arg_t<vf_type> x);
 
-        // performs the partial calculation of x * 2/pi
+        // performs the partial calculation of x * 2/pi and
+        // returns the result in ipa, rh, rl
+        // where ipa is the remainder mod 4 of the integer
+        // part of the product, rh, rl are the high and low
+        // mantissa bits
         // x may not have not more than 26 mantissa bits
         // including the hidden bit
         static
@@ -148,7 +153,7 @@ namespace cftal::math {
                      vf_type& rl,
                      arg_t<vf_type> x);
         // performs the partial calculation of x*2/pi
-        // and add the results to ipart, rh, rl
+        // via process_part and add the results to ipa, rh, rl
         // x may not have not more than 26 mantissa bits
         // including the hidden bit
         static
@@ -168,7 +173,7 @@ namespace cftal::math {
             arg_t<vf_type> xh, arg_t<vf_type> xl);
     };
 
-    // scalar f64 implementation
+    // scalar f32 implementation using f64
     template <>
     struct payne_hanek_pi_over_2<float, void>
         : public payne_hanek_pi_over_2<double, void> {
@@ -197,7 +202,7 @@ namespace cftal::math {
         rem(float& xrh, float& xrl, float xh, float xl);
     };
 
-    // vectorized f64 implementation
+    // vectorized f32 implementation using f64
     template<typename _T>
     struct payne_hanek_pi_over_2<float, _T>
         : public payne_hanek_pi_over_2<float, void> {
@@ -570,12 +575,7 @@ rem(vf_type& xrh, vf_type& xrl,
     // multiply m with pi/2
     using c_t = impl::d_real_constants<d_real<double>, double>;
     vhf_type t= m * c_t::m_pi_2[0];
-    vf_type th=cvt<vf_type>(t);
-    vhf_type dth=cvt<vhf_type>(th);
-    vhf_type dtl=t-dth;
-    vf_type tl=cvt<vf_type>(dtl);
-    xrh=th;
-    xrl=tl;
+    cftal::impl::split(t, xrh, xrl);
     vi_type i= f64_traits::cvt_f_to_i(ipart) & 3;
     return i;
 }
@@ -592,12 +592,7 @@ rem(vf_type& xrh, vf_type& xrl,
     // multiply m with pi/2
     using c_t = impl::d_real_constants<d_real<double>, double>;
     vhf_type t= m * c_t::m_pi_2[0];
-    vf_type th=cvt<vf_type>(t);
-    vhf_type dth=cvt<vhf_type>(th);
-    vhf_type dtl=t-dth;
-    vf_type tl=cvt<vf_type>(dtl);
-    xrh=th;
-    xrl=tl;
+    cftal::impl::split(t, xrh, xrl);
     vi_type i= f64_traits::cvt_f_to_i(ipart) & 3;
     return i;
 }
