@@ -45,7 +45,7 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
     }
     if (non_option_arg>1 || err) {
         std::cerr << argv[0]
-                  << " [--fast] [--speed] [--[no-]mt] [--cache]\n"
+                  << " [--fast|--slow] [--speed] [--[no-]mt] [--cache]\n"
                      "--fast  reduces the test count\n"
                      "--slow  increases the test count\n"
                      "--speed performs a speed test only\n"
