@@ -92,31 +92,26 @@ namespace cftal {
     float
     round_to_zero_last_bits(const float& v);
 
-    namespace impl {
+    template <size_t _N>
+    void
+    split_f64_to_f32pair(const vec<double, _N>& s,
+                         vec<float, _N>& h, vec<float, _N>& l);
 
-        template <size_t _N>
-        void
-        split(const vec<double, _N>& s,
-              vec<float, _N>& h, vec<float, _N>& l);
+    template <size_t _N>
+    void
+    split_f64_to_f32pair_rne_hi(const vec<double, _N>& s,
+                                vec<float, _N>& h, vec<float, _N>& l);
 
-        template <size_t _N>
-        d_real<vec<float, _N> >
-        split(const vec<double, _N>& s);
+    template <size_t _N>
+    void
+    split_f64_to_f32pair_rz_hi(const vec<double, _N>& s,
+                               vec<float, _N>& h, vec<float, _N>& l);
 
-        template <size_t _N>
-        d_real<vec<float, _N> >
-        split_rne_hi(const vec<double, _N>& s);
-
-        template <size_t _N>
-        d_real<vec<float, _N> >
-        split_rz_hi(const vec<double, _N>& s);
-
-        template <size_t _N>
-        vec<double, _N>
-        combine(arg_t<vec<float, _N> > h, arg_t<vec<float, _N> > l);
-
-    }
+    template <size_t _N>
+    vec<double, _N>
+    combine_f32pair_to_f64(const vec<float, _N>& h, const vec<float, _N>& l);
 }
+
 
 template <typename _T, typename _T1, std::size_t _N>
 inline
@@ -398,9 +393,9 @@ cftal::round_to_zero_last_bits(const float& x)
 
 template <cftal::size_t _N>
 void
-cftal::impl::
-split(const vec<double, _N>& s,
-      vec<float, _N>& h, vec<float, _N>& l)
+cftal::
+split_f64_to_f32pair(const vec<double, _N>& s,
+                     vec<float, _N>& h, vec<float, _N>& l)
 {
     using vf_type = vec<float, _N>;
     using vhf_type = vec<double, _N>;
@@ -411,51 +406,45 @@ split(const vec<double, _N>& s,
     l = cftal::cvt<vf_type>(dl);
 }
 
-template <cftal::size_t _N>
-cftal::d_real<cftal::vec<float, _N> >
-cftal::impl::split(const vec<double, _N>& s)
-{
-    using vf_type = vec<float, _N>;
-    vf_type h, l;
-    split(s, h, l);
-    return d_real<vf_type>(h, l);
-}
 
 template <cftal::size_t _N>
-cftal::d_real<cftal::vec<float, _N> >
-cftal::impl::split_rne_hi(const vec<double, _N>& s)
+void cftal::
+split_f64_to_f32pair_rne_hi(const vec<double, _N>& s,
+                            vec<float, _N>& h, vec<float, _N>& l)
 {
     using vf_type = vec<float, _N>;
     using vhf_type = vec<double, _N>;
     vhf_type dh= round_to_nearest_even_last_bits<29>(s);
     vhf_type dl = s - dh;
-    vf_type h = cftal::cvt<vf_type>(dh);
-    vf_type l = cftal::cvt<vf_type>(dl);
-    return d_real<vf_type>(h, l);
+    h = cftal::cvt<vf_type>(dh);
+    l = cftal::cvt<vf_type>(dl);
 }
 
 template <cftal::size_t _N>
-cftal::d_real<cftal::vec<float, _N> >
-cftal::impl::split_rz_hi(const vec<double, _N>& s)
+void cftal::
+split_f64_to_f32pair_rz_hi(const vec<double, _N>& s,
+                           vec<float, _N>& h, vec<float, _N>& l)
 {
     using vf_type = vec<float, _N>;
     using vhf_type = vec<double, _N>;
     vhf_type dh= round_to_zero_last_bits<29>(s);
     vhf_type dl = s - dh;
-    vf_type h = cftal::cvt<vf_type>(dh);
-    vf_type l = cftal::cvt<vf_type>(dl);
-    return d_real<vf_type>(h, l);
+    h = cftal::cvt<vf_type>(dh);
+    l = cftal::cvt<vf_type>(dl);
 }
 
 template <cftal::size_t _N>
 cftal::vec<double, _N>
-cftal::impl::combine(arg_t<vec<float, _N> > h, arg_t<vec<float, _N> > l)
+cftal::
+combine_f32pair_to_f64(const vec<float, _N>& h, const vec<float, _N>& l)
 {
     using vhf_type = vec<float, _N>;
     vhf_type dh= cftal::cvt<vhf_type>(h);
     vhf_type dl = cftal::cvt<vhf_type>(l);
     return dh + dl;
 }
+
+
 
 // Local variables:
 // mode: c++

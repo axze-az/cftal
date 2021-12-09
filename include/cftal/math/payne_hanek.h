@@ -575,7 +575,7 @@ rem(vf_type& xrh, vf_type& xrl,
     // multiply m with pi/2
     using c_t = impl::d_real_constants<d_real<double>, double>;
     vhf_type t= m * c_t::m_pi_2[0];
-    cftal::impl::split(t, xrh, xrl);
+    split_f64_to_f32pair(t, xrh, xrl);
     vi_type i= f64_traits::cvt_f_to_i(ipart) & 3;
     return i;
 }
@@ -592,7 +592,7 @@ rem(vf_type& xrh, vf_type& xrl,
     // multiply m with pi/2
     using c_t = impl::d_real_constants<d_real<double>, double>;
     vhf_type t= m * c_t::m_pi_2[0];
-    cftal::impl::split(t, xrh, xrl);
+    split_f64_to_f32pair(t, xrh, xrl);
     vi_type i= f64_traits::cvt_f_to_i(ipart) & 3;
     return i;
 }
