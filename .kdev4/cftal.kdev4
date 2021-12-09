@@ -1,11 +1,12 @@
 [Buildset]
-BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 
 [CMake]
 Build Directory Count=5
 Current Build Directory Index=0
 Current Build Directory Index-Host System=3
 ProjectRootRelative=./
+Temporary Build Directory Index=3
 
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/build
@@ -91,7 +92,6 @@ Launch Configurations=
 [MakeBuilder]
 Additional Options=-s
 Number Of Jobs=8
-Override Number Of Jobs=true
 
 [Project]
 VersionControlSupport=kdevsubversion

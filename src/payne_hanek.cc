@@ -334,12 +334,7 @@ rem(float& xrh, float& xrl, float x)
     // multiply m with pi/2
     using c_t = impl::d_real_constants<d_real<double>, double>;
     double t= m * c_t::m_pi_2[0];
-    float th=float(t);
-    double dth=double(th);
-    double dtl=t-dth;
-    float tl=float(dtl);
-    xrh=th;
-    xrl=tl;
+    split_f64_to_f32pair(t, xrh, xrl);
     // return last 2 bits of the integer part
     return ((int)ipart)&3;
 }
@@ -354,12 +349,7 @@ rem(float& xrh, float& xrl, float xh, float xl)
     // multiply m with pi/2
     using c_t = impl::d_real_constants<d_real<double>, double>;
     double t= m * c_t::m_pi_2[0];
-    float th=float(t);
-    double dth=double(th);
-    double dtl=t-dth;
-    float tl=float(dtl);
-    xrh=th;
-    xrl=tl;
+    split_f64_to_f32pair(t, xrh, xrl);
     // return last 2 bits of the integer part
     return ((int)ipart)&3;
 }

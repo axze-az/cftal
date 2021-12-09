@@ -92,6 +92,10 @@ namespace cftal {
     float
     round_to_zero_last_bits(const float& v);
 
+    void
+    split_f64_to_f32pair(const double& s,
+                         float& h, float& l);
+
     template <size_t _N>
     void
     split_f64_to_f32pair(const vec<double, _N>& s,
@@ -106,6 +110,9 @@ namespace cftal {
     void
     split_f64_to_f32pair_rz_hi(const vec<double, _N>& s,
                                vec<float, _N>& h, vec<float, _N>& l);
+
+    double
+    combine_f32pair_to_f64(const float& h, const float& l);
 
     template <size_t _N>
     vec<double, _N>
@@ -391,6 +398,19 @@ cftal::round_to_zero_last_bits(const float& x)
                                          _BITS>(x);
 }
 
+inline
+void
+cftal::
+split_f64_to_f32pair(const double& s,
+                     float& h, float& l)
+{
+    float th = float(s);
+    double dh= float(th);
+    double dl = s - dh;
+    h = th;
+    l = float(dl);
+}
+
 template <cftal::size_t _N>
 void
 cftal::
@@ -431,6 +451,16 @@ split_f64_to_f32pair_rz_hi(const vec<double, _N>& s,
     vhf_type dl = s - dh;
     h = cftal::cvt<vf_type>(dh);
     l = cftal::cvt<vf_type>(dl);
+}
+
+inline
+double
+cftal::
+combine_f32pair_to_f64(const float& h, const float& l)
+{
+    double dh= double(h);
+    double dl =double(l);
+    return dh + dl;
 }
 
 template <cftal::size_t _N>
