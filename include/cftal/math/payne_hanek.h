@@ -28,6 +28,14 @@ namespace cftal::math {
         static
         const double
         two_over_pi_b24_dbl[96];
+
+        // bits of 2/(M_PI) in 24 bit chunks as double, i.e.
+        // offset 0: bit [0, 24)
+        // offset 1: bit [24, 48)
+        // offset 2: bit [48, 62)
+        static
+        const double
+        two_over_pi_b24_unscaled_dbl[18];
     };
 
     template <typename _T, typename _TRAITS>
@@ -460,20 +468,14 @@ cftal::math::payne_hanek_pi_over_2<float, _T>::
 process_part(vhf_type& ipart, vhf_type& r,
              arg_t<vf_type> x)
 {
-    constexpr const double scale_down_f64 = 0x1p0;
-    constexpr const double scale_step_f64 = 0x1p-24;
-    constexpr const double scale_up_f64 =
-        1.0/scale_down_f64 * scale_step_f64;
 #if 0
     constexpr const int elem_count_f64=8;
     vhf_type xd=cvt<vhf_type>(x);
-    vhf_type scale=scale_up_f64;
-    const double *pibits=two_over_pi_b24_dbl;
+    const double *pibits=two_over_pi_b24_unscaled_dbl;
     vhf_type p[elem_count_f64];
     for (uint32_t i=0; i<elem_count_f64; ++i) {
         vhf_type pibitsi=pibits[i];
-        p[i] = xd*pibitsi*scale;
-        scale *= scale_step_f64;
+        p[i] = xd*pibitsi;
     }
     // ip contains the integer parts of pi[i]
     vhf_type ip=__rint(p[0]);
@@ -503,14 +505,13 @@ process_part(vhf_type& ipart, vhf_type& r,
     r = ps;
 #else
     // bits per element
-    constexpr const int32_t bits_per_elem_f64=24;
+    // constexpr const int32_t bits_per_elem_f64=24;
     // exp_shift_down C is determined by
     // (with scale_down 0x1p0)
     // (((x_e - 0) + 127) - C)/24 = (x_e - 25)/24
     constexpr const int exp_shift_down_f64=152;
     // number of 24 bit chunks to use
     constexpr const int elem_count_f64=5;
-
     vi_type k = (as<vi_type>(x) >> 23) & 255;
 #if 1
     const int32_t shift_1_24= 0x12;
@@ -523,19 +524,12 @@ process_part(vhf_type& ipart, vhf_type& r,
     vhf_type xd=cvt<vhf_type>(x);
     using std::max;
     k = max(k, vi_type(0));
-    const vhf_type scale0 = scale_up_f64;
-    vi_type sl, sh;
-    f64_traits::extract_words(sl, sh, scale0);
-    sh -= (k*bits_per_elem_f64)<<20;
-    vhf_type scale=f64_traits::combine_words(sl, sh);
-
     auto lck=make_variable_lookup_table<double>(k);
-    const double *pibits=two_over_pi_b24_dbl;
+    const double *pibits=two_over_pi_b24_unscaled_dbl;
     vhf_type p[elem_count_f64];
     for (uint32_t i=0; i<elem_count_f64; ++i) {
         vhf_type pibitsi=lck.from(pibits+i);
-        p[i] = xd*pibitsi*scale;
-        scale *= scale_step_f64;
+        p[i] = xd*pibitsi;
     }
     // ip contains the integer parts of pi[i]
     vhf_type ip=__rint(p[0]);
