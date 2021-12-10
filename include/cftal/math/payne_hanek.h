@@ -464,6 +464,44 @@ process_part(vhf_type& ipart, vhf_type& r,
     constexpr const double scale_step_f64 = 0x1p-24;
     constexpr const double scale_up_f64 =
         1.0/scale_down_f64 * scale_step_f64;
+#if 0
+    constexpr const int elem_count_f64=8;
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type scale=scale_up_f64;
+    const double *pibits=two_over_pi_b24_dbl;
+    vhf_type p[elem_count_f64];
+    for (uint32_t i=0; i<elem_count_f64; ++i) {
+        vhf_type pibitsi=pibits[i];
+        p[i] = xd*pibitsi*scale;
+        scale *= scale_step_f64;
+    }
+    // ip contains the integer parts of pi[i]
+    vhf_type ip=__rint(p[0]);
+    p[0] -= ip;
+    vhf_type ti = __r4int(ip);
+    ip -= ti;
+    for (uint32_t i=1; i<elem_count_f64-3; ++i) {
+        vhf_type ii= __rint(p[i]);
+        ip += ii;
+        p[i] -= ii;
+        vhf_type ti = __r4int(ip);
+        ip -= ti;
+    }
+    // ps  sum of p[i]
+    vhf_type ps = p[elem_count_f64-1];
+    for (uint32_t i=1; i<elem_count_f64; ++i) {
+        ps += p[(elem_count_f64-1)-i];
+    }
+    // subtract integer part from ps
+    vhf_type ii=__rint(ps);
+    ip += ii;
+    ps -= ii;
+    // remove multiple of 4 from integer part
+    ii = __r4int(ip);
+    ip -= ii;
+    ipart = ip;
+    r = ps;
+#else
     // bits per element
     constexpr const int32_t bits_per_elem_f64=24;
     // exp_shift_down C is determined by
@@ -521,6 +559,7 @@ process_part(vhf_type& ipart, vhf_type& r,
     ip -= ii;
     ipart = ip;
     r = ps;
+#endif
 }
 
 template <typename _T>
