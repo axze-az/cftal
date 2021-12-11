@@ -815,7 +815,7 @@ double cftal::x86::extract_f64(__m256d v, size_t i)
     } else {
         vv = _mm256_extractf128_pd(v, 1);
     }
-    return extract_f32(vv, i);
+    return extract_f64(vv, i&1);
 #endif
 }
 
