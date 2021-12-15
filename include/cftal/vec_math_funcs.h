@@ -315,29 +315,6 @@ cftal::round_to_nearest_even_last_bits(const  vec<_T, _N>& v)
                                                  int_type,
                                                  vmi_type,
                                                  _BITS>(v);
-#if 0
-    using vi_t = vec<int_type, _N>;
-    using vmi_t = typename vec<int_type, _N>::mask_type;
-    // first bit to round away:
-    constexpr const int_type br= (1LL << (_BITS-1));
-    // last bit to keep
-    constexpr const int_type bk= (1LL << (_BITS));
-    // mask of the bits to round away:
-    constexpr const int_type trailing_mask= bk-1L;
-    // mask of the bits to keep
-    constexpr const int_type mask=~trailing_mask;
-    vi_t i=as<vi_t>(v);
-    vi_t rbits=i & trailing_mask;
-    vi_t lbit= i & bk;
-    const vi_t v_z=0LL;
-    const vi_t v_br=br;
-    vmi_t sel_zero_offs= (rbits == v_br) & (lbit==v_z);
-    vi_t offs=select_zero_or_val(sel_zero_offs, v_br);
-    i += offs;
-    i &= mask;
-    vec<_T, _N> r=as<vec<_T, _N> >(i);
-    return r;
-#endif
 }
 
 template <std::size_t _BITS>
@@ -425,7 +402,6 @@ split_f64_to_f32pair(const vec<double, _N>& s,
     h = th;
     l = cftal::cvt<vf_type>(dl);
 }
-
 
 template <cftal::size_t _N>
 void cftal::
