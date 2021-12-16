@@ -294,7 +294,8 @@ process_part(vf_type& ipa,
     using std::max;
     k = max(k, vi_type(0));
     // const int64_t scale_i = as<int64_t>(scale_up_f64());
-    // vf_type scale = as<vf_type>(scale_i - (int64_t(k*bits_per_elem_f64)<<52));
+    // vf_type scale = as<vf_type>(scale_i -
+    //     (int64_t(k*bits_per_elem_f64)<<52));
     const vf_type scale0 = scale_up_f64();
     vi_type sl, sh;
     _T::extract_words(sl, sh, scale0);
@@ -478,16 +479,28 @@ process_part(vhf_type& ipart, vhf_type& r,
         p[i] = xd*pibitsi;
     }
     // ip contains the integer parts of pi[i]
+#if 0    
     vhf_type ip=__rint(p[0]);
     p[0] -= ip;
     vhf_type ti = __r4int(ip);
     ip -= ti;
+#else
+    vhf_type ip0=__rint(p[0]);
+    vhf_type ip=ip0 - __r4int(p[0]);
+    p[0] -= ip0;
+#endif
     for (uint32_t i=1; i<elem_count_f64-3; ++i) {
         vhf_type ii= __rint(p[i]);
+#if 0
         ip += ii;
         p[i] -= ii;
         vhf_type ti = __r4int(ip);
         ip -= ti;
+#else
+        vhf_type ij=__r4int(p[i]);
+        ip += ii - ij;
+        p[i] -= ii;
+#endif
     }
     // ps  sum of p[i]
     vhf_type ps = p[elem_count_f64-1];
