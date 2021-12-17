@@ -470,7 +470,7 @@ process_part(vhf_type& ipart, vhf_type& r,
              arg_t<vf_type> x)
 {
 #if 0
-    constexpr const int elem_count_f64=8;
+    constexpr const int elem_count_f64=9;
     vhf_type xd=cvt<vhf_type>(x);
     const double *pibits=two_over_pi_b24_unscaled_dbl;
     vhf_type p[elem_count_f64];
@@ -478,29 +478,16 @@ process_part(vhf_type& ipart, vhf_type& r,
         vhf_type pibitsi=pibits[i];
         p[i] = xd*pibitsi;
     }
-    // ip contains the integer parts of pi[i]
-#if 0    
-    vhf_type ip=__rint(p[0]);
-    p[0] -= ip;
-    vhf_type ti = __r4int(ip);
-    ip -= ti;
-#else
+    // ip contains remainders of the integer parts of pi[i]
+    vhf_type ip4=__r4int(p[0]);
     vhf_type ip0=__rint(p[0]);
-    vhf_type ip=ip0 - __r4int(p[0]);
     p[0] -= ip0;
-#endif
+    vhf_type ip= ip0 - ip4;
     for (uint32_t i=1; i<elem_count_f64-3; ++i) {
-        vhf_type ii= __rint(p[i]);
-#if 0
-        ip += ii;
-        p[i] -= ii;
-        vhf_type ti = __r4int(ip);
-        ip -= ti;
-#else
-        vhf_type ij=__r4int(p[i]);
-        ip += ii - ij;
-        p[i] -= ii;
-#endif
+        ip4=__r4int(p[i]);
+        ip0= __rint(p[i]);
+        p[i] -= ip0;
+        ip += ip0 - ip4;
     }
     // ps  sum of p[i]
     vhf_type ps = p[elem_count_f64-1];
@@ -511,9 +498,11 @@ process_part(vhf_type& ipart, vhf_type& r,
     vhf_type ii=__rint(ps);
     ip += ii;
     ps -= ii;
+#if 0
     // remove multiple of 4 from integer part
     ii = __r4int(ip);
     ip -= ii;
+#endif
     ipart = ip;
     r = ps;
 #else
