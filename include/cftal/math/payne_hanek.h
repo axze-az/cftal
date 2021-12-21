@@ -470,6 +470,8 @@ process_part(vhf_type& ipart, vhf_type& r,
              arg_t<vf_type> x)
 {
 #if 0
+    // this code is faster on machines with slow lookups,
+    // on x86 on pre haswell hardware
     constexpr const int elem_count_f64=9;
     vhf_type xd=cvt<vhf_type>(x);
     const double *pibits=two_over_pi_b24_unscaled_dbl;
