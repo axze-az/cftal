@@ -9,23 +9,8 @@ do
     ll=`cat $i| wc -l`
     ll=$(($ll-$offset))
 cat >/tmp/$$ <<EOF
-//
-// Copyright Axel Zeuner 2010-2021. Use, modification and
-// distribution is subject to the Boost Software License, Version
-// 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
-//
-EOF
-    tail -n $ll $i >>/tmp/$$
-    mv /tmp/$$ $i
-done
-#rm /tmp/$$
-
-gen_gpl()
-{
-cat >/tmp/$$ <<EOF
 // 
-// Copyright (C) 2010-2022 Axel Zeuner
+// Copyright (C) 2010-2021 Axel Zeuner
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -41,5 +26,8 @@ cat >/tmp/$$ <<EOF
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA  
 //
-EOF 
-}
+EOF
+    tail -n $ll $i >>/tmp/$$
+    mv /tmp/$$ $i
+done
+#rm /tmp/$$
