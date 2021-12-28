@@ -2,16 +2,16 @@
 #set -e
 set -x
 files=`find . \( -name '*.h' -o -name '*.cc' \)`
-offset=6
+offset=17
 
 for i in $files
 do
     ll=`cat $i| wc -l`
     ll=$(($ll-$offset))
 cat >/tmp/$$ <<EOF
-// 
-// Copyright (C) 2010-2021 Axel Zeuner
-// 
+//
+// Copyright (C) 2010-2022 Axel Zeuner
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
@@ -24,7 +24,7 @@ cat >/tmp/$$ <<EOF
 //
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA  
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
 EOF
     tail -n $ll $i >>/tmp/$$
