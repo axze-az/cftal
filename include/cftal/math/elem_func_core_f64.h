@@ -1,6 +1,6 @@
-// 
+//
 // Copyright (C) 2010-2021 Axel Zeuner
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA  
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
 #if !defined (__CFTAL_MATH_ELEM_FUNC_CORE_F64_H__)
 #define __CFTAL_MATH_ELEM_FUNC_CORE_F64_H__ 1
@@ -62,14 +62,6 @@ namespace cftal {
 
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
-
-            struct alignas(alignof(vf_type)) vf_array  {
-                double _a[_T::NVF()];
-            };
-
-            struct alignas(alignof(vi_type)) vi_array  {
-                int32_t _a[_T::NVI()];
-            };
 
             enum result_prec {
                 medium,
@@ -615,13 +607,14 @@ cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 call_scalar_func(arg_t<vf_type> x, _SCALAR_FUNC f)
 {
-    vf_array ax, ar;
-    mem<vf_type>::store(ax._a, x);
-    constexpr std::size_t _N = _T::NVF();
+    using std::size;
+    const std::size_t _N = size(x);
+    vf_type r;
     for (std::size_t i=0; i<_N; ++i) {
-        ar._a[i] = f(ax._a[i]);
+        double xi=extract(x, i);
+        double ri=f(xi);
+        insert(r, ri, i);
     }
-    vf_type r=mem<vf_type>::load(ar._a, _N);
     return r;
 }
 
@@ -633,14 +626,15 @@ cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 call_scalar_func(arg_t<vf_type> x, arg_t<vf_type> y, _SCALAR_FUNC f)
 {
-    vf_array ax, ay, ar;
-    mem<vf_type>::store(ax._a, x);
-    mem<vf_type>::store(ay._a, y);
-    constexpr std::size_t _N = _T::NVF();
+    using std::size;
+    const std::size_t _N = size(x);
+    vf_type r;
     for (std::size_t i=0; i<_N; ++i) {
-        ar._a[i] = f(ax._a[i], ay._a[i]);
+        double xi=extract(x, i);
+        double yi=extract(y, i);
+        double ri=f(xi, yi);
+        insert(r, ri, i);
     }
-    vf_type r=mem<vf_type>::load(ar._a, _N);
     return r;
 }
 

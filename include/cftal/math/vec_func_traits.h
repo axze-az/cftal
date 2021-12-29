@@ -1,6 +1,6 @@
-// 
+//
 // Copyright (C) 2010-2021 Axel Zeuner
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA  
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
 #if !defined (__CFTAL_MATH_VEC_FUNC_TRAITS_H__)
 #define __CFTAL_MATH_VEC_FUNC_TRAITS_H__ 1
@@ -48,16 +48,6 @@ namespace cftal {
             using vmli_type= typename vec<int64_t, _N>::mask_type;
 
             using vdf_type = d_real<vf_type>;
-
-            static
-            constexpr std::size_t NVF() {
-                return _N;
-            }
-
-            static
-            constexpr std::size_t NVI() {
-                return _N;
-            }
 
             static
             vmf_type
@@ -112,7 +102,7 @@ namespace cftal {
             bool none_of_v(const vmi_type& b) {
                 return none_of(b);
             }
-            
+
             static
             bool any_of_v(const vmi2_type& b) {
                 return any_of(b);
@@ -344,19 +334,9 @@ namespace cftal {
             using vmi_type = typename vi_type::mask_type;
 
             using vdf_type = d_real<vf_type>;
-            
+
             using vhf_traits = func_traits<vec<double, _N>,
                                            vec<int32_t, _N> >;
-            
-            static
-            constexpr std::size_t NVF() {
-                return _N;
-            }
-
-            static
-            constexpr std::size_t NVI() {
-                return _N;
-            }
 
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
