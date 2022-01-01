@@ -393,7 +393,7 @@ split_f64_to_f32pair(const double& s,
                      float& h, float& l)
 {
     float th = float(s);
-    double dh= float(th);
+    double dh = float(th);
     double dl = s - dh;
     h = th;
     l = float(dl);
@@ -407,11 +407,11 @@ split_f64_to_f32pair(const vec<double, _N>& s,
 {
     using vf_type = vec<float, _N>;
     using vhf_type = vec<double, _N>;
-    vf_type th = cftal::cvt<vf_type>(s);
-    vhf_type dh= cftal::cvt<vhf_type>(th);
+    vf_type th = cvt<vf_type>(s);
+    vhf_type dh = cvt<vhf_type>(th);
     vhf_type dl = s - dh;
     h = th;
-    l = cftal::cvt<vf_type>(dl);
+    l = cvt<vf_type>(dl);
 }
 
 template <cftal::size_t _N>
@@ -421,10 +421,10 @@ split_f64_to_f32pair_rne_hi(const vec<double, _N>& s,
 {
     using vf_type = vec<float, _N>;
     using vhf_type = vec<double, _N>;
-    vhf_type dh= round_to_nearest_even_last_bits<29>(s);
+    vhf_type dh = round_to_nearest_even_last_bits<29>(s);
     vhf_type dl = s - dh;
-    h = cftal::cvt<vf_type>(dh);
-    l = cftal::cvt<vf_type>(dl);
+    h = cvt<vf_type>(dh);
+    l = cvt<vf_type>(dl);
 }
 
 template <cftal::size_t _N>
@@ -434,10 +434,10 @@ split_f64_to_f32pair_rz_hi(const vec<double, _N>& s,
 {
     using vf_type = vec<float, _N>;
     using vhf_type = vec<double, _N>;
-    vhf_type dh= round_to_zero_last_bits<29>(s);
+    vhf_type dh = round_to_zero_last_bits<29>(s);
     vhf_type dl = s - dh;
-    h = cftal::cvt<vf_type>(dh);
-    l = cftal::cvt<vf_type>(dl);
+    h = cvt<vf_type>(dh);
+    l = cvt<vf_type>(dl);
 }
 
 inline
@@ -445,8 +445,8 @@ double
 cftal::
 combine_f32pair_to_f64(const float& h, const float& l)
 {
-    double dh= double(h);
-    double dl =double(l);
+    double dh = double(h);
+    double dl = double(l);
     return dh + dl;
 }
 
@@ -456,8 +456,8 @@ cftal::
 combine_f32pair_to_f64(const vec<float, _N>& h, const vec<float, _N>& l)
 {
     using vhf_type = vec<float, _N>;
-    vhf_type dh= cftal::cvt<vhf_type>(h);
-    vhf_type dl = cftal::cvt<vhf_type>(l);
+    vhf_type dh = cvt<vhf_type>(h);
+    vhf_type dl = cvt<vhf_type>(l);
     return dh + dl;
 }
 
