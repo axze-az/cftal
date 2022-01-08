@@ -2703,7 +2703,6 @@ typename cftal::math::elem_func_core<double, _T>::vf_type
 cftal::math::elem_func_core<double, _T>::
 __log1p_poly_k(arg_t<vf_type> xc)
 {
-    vf_type x=xc;
     vf_type u=1.0+xc;
     vf_type xr;
     vi2_type ki=__reduce_log_arg(xr, u);
@@ -2726,14 +2725,14 @@ __log1p_poly_k(arg_t<vf_type> xc)
     e += ei;
     d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
     e += ei;
-
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
-    vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-x), x-(u-1.0));
+    vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-xc), xc-(u-1.0));
     c_k_2 /= u;
     vf_type c = _T::sel_val_or_zero(kf < vf_type(54.0), c_k_2);
 
     d_ops::add12(l, ei, l, c);
     e += ei;
+
     vf_type ll=e + r2*(r*p);
     return l+ll;
 #else
@@ -2742,7 +2741,7 @@ __log1p_poly_k(arg_t<vf_type> xc)
     p = horner(r, p, -0.5);
 
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
-    vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-x), x-(u-1.0));
+    vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-xc), xc-(u-1.0));
     c_k_2 /= u;
     vf_type c = _T::sel_val_or_zero(kf < vf_type(54.0), c_k_2);
 
@@ -2985,7 +2984,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     constexpr const double large_arg=0x1p45;
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
 
-    xrh = x;
+    xrh = 0.0;
     xrl = 0.0;
     if (__likely(!_T::all_of_v(v_large_arg))) {
         constexpr const double m_pi_2_h=+1.5707963267948965579990e+00;
