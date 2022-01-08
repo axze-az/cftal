@@ -3259,8 +3259,8 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
     constexpr const float large_arg=0x1p18f;
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
 
-    xrh = x;
-    xrl = 0.0;
+    xrh = 0.0f;
+    xrl = 0.0f;
     if (__likely(!_T::all_of_v(v_large_arg))) {
         constexpr const float m_pi_2_h=+1.5707963705063e+00f;
         constexpr const float m_pi_2_m=-4.3711388286738e-08f;
