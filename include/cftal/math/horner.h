@@ -407,7 +407,6 @@ horner2(const _X& x, const _X& x2, const _C (&a)[_N])
     return horner2<_N>(x, x2, pa);
 }
 
-
 template <std::size_t _N, typename _X, typename _C>
 _X
 cftal::math::
@@ -630,7 +629,6 @@ horner_n4(_X& ya, _X& yb, _X& yc, _X& yd,
     yd = rd;
 }
 
-
 template <typename _X, typename _C1, typename _C0>
 void
 cftal::math::
@@ -668,7 +666,6 @@ horner_n4(_X& y0, _X& y1, _X& y2, _X& y3,
               y0, y1, y2, y3, cs...);
 }
 
-
 template <typename _X, typename _C1, typename _C0>
 inline
 __attribute__((__always_inline__))
@@ -680,8 +677,6 @@ horner_comp_s0(_X& y, _X& ye,
 {
     using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
-    // y = d_ops::two_prod(c1, x, p_i);
-    // y = d_ops::two_sum(y, c0, o_i);
     d_ops::mul12(y, p_i, c1, x);
     d_ops::add12cond(y, o_i, c0, y);
     ye= (p_i + o_i);
@@ -698,8 +693,6 @@ horner_comp_si(_X& y, _X& ye,
 {
     using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
     _X p_i, o_i;
-    // y = d_ops::two_prod(c1h, x, p_i);
-    // y = d_ops::two_sum(y, c0, o_i);
     d_ops::mul12(y, p_i, c1h, x);
     d_ops::add12cond(y, o_i, c0, y);
     ye= c1l*x + (p_i + o_i);
@@ -717,8 +710,6 @@ horner_comp_si(_X& y, _X& ye,
                const _CNM1& cnm1, _CS ... cs)
 {
     horner_comp_si(y, ye, x, cnh, cnl, cnm1);
-    // const _X _y=y;
-    // const _X _ye=ye;
     horner_comp_si(y, ye, x, y, ye, cs...);
 }
 
@@ -745,8 +736,6 @@ horner_comp(_X& y, _X& ye,
             const _CN& cn, const _CNM1& cnm1, _CS ... cs)
 {
     horner_comp_s0(y, ye, x, cn, cnm1);
-    // const _X _y=y;
-    // const _X _ye=ye;
     horner_comp_si(y, ye, x, y, ye, cs...);
 }
 
@@ -759,8 +748,6 @@ horner_comp(_X& y, _X& ye,
     static_assert(_N > 1, "at least 2 array elements required");
     const _C* pa=a;
     horner_comp_s0(y, ye, x, pa[0], pa[1]);
-    // const _X _y=y;
-    // const _X _ye=ye;
     for (std::size_t i=2; i < _N; ++i) {
         horner_comp_si(y, ye, x, y, ye, pa[i]);
     }
@@ -781,7 +768,6 @@ horner_comp_sn(_X& y, _X& ye,
         horner_comp_si(y, ye, x, y, ye, pa[i]);
     }
 }
-
 
 template <typename _X, typename _C1, typename _C0>
 inline
@@ -837,8 +823,6 @@ horner_comp_quick_si(_X& y, _X& ye,
                      const _CNM1& cnm1, _CS ... cs)
 {
     horner_comp_quick_si(y, ye, x, cnh, cnl, cnm1);
-    // const _X _y=y;
-    // const _X _ye=ye;
     horner_comp_quick_si(y, ye, x, y, ye, cs...);
 }
 
@@ -866,8 +850,6 @@ horner_comp_quick(_X& y, _X& ye,
                   const _CN& cn, const _CNM1& cnm1, _CS ... cs)
 {
     horner_comp_quick_s0(y, ye, x, cn, cnm1);
-    // const _X _y=y;
-    // const _X _ye=ye;
     horner_comp_quick_si(y, ye, x, y, ye, cs...);
 }
 
@@ -880,8 +862,6 @@ horner_comp_quick(_X& y, _X& ye,
     static_assert(_N > 1, "at least 2 array elements required");
     const _C* pa=a;
     horner_comp_quick_s0(y, ye, x, pa[0], pa[1]);
-    // const _X _y=y;
-    // const _X _ye=ye;
     for (std::size_t i=2; i < _N; ++i) {
         horner_comp_quick_si(y, ye, x, y, ye, pa[i]);
     }
@@ -1035,7 +1015,6 @@ eval_rational(const _X& xc,
     }
     return qq;
 }
-
 
 // local variables:
 // mode: c++
