@@ -463,6 +463,7 @@ __half_reduce_trig_arg(vf_type& xrh, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<float>, float>;
     vf_type fn= rint(vf_type(x*ctbl::m_2_pi[0]));
+    // conversion to double vectors does not make the code faster
     // seven bit chunks of %pi/2
     // x^ : +0xc.ap-3f
     const float pi_2_0=+1.5781250000e+00f;
