@@ -141,24 +141,24 @@ namespace cftal {
     duint<_T> operator>>(const duint<_T>& a, int s);
 
     template <typename _T>
-    duint<_T>& operator|=(duint<_T>& , const duint<_T>& b);
+    duint<_T>& operator|=(duint<_T>& a, const duint<_T>& b);
     template <typename _T>
-    duint<_T>& operator|=(duint<_T>& , const _T& b);
+    duint<_T>& operator|=(duint<_T>& a, const _T& b);
 
     template <typename _T>
-    duint<_T>& operator&=(duint<_T>& , const duint<_T>& b);
+    duint<_T>& operator&=(duint<_T>& a, const duint<_T>& b);
     template <typename _T>
-    duint<_T>& operator&=(duint<_T>& , const _T& b);
+    duint<_T>& operator&=(duint<_T>& a, const _T& b);
 
     template <typename _T>
-    duint<_T>& operator^=(duint<_T>& , const duint<_T>& b);
+    duint<_T>& operator^=(duint<_T>& a, const duint<_T>& b);
     template <typename _T>
-    duint<_T>& operator^=(duint<_T>& , const _T& b);
+    duint<_T>& operator^=(duint<_T>& a, const _T& b);
 
     template <typename _T>
-    duint<_T>& operator+=(duint<_T>& , const duint<_T>& b);
+    duint<_T>& operator+=(duint<_T>& a, const duint<_T>& b);
     template <typename _T>
-    duint<_T>& operator+=(duint<_T>& , const _T& b);
+    duint<_T>& operator+=(duint<_T>& a, const _T& b);
 
     template <typename _T>
     duint<_T>& operator-=(duint<_T>& a, const duint<_T>& b);
@@ -347,24 +347,24 @@ namespace cftal {
     dint<_T> operator>>(const dint<_T>& a, int s);
 
     template <typename _T>
-    dint<_T>& operator|=(dint<_T>& , const dint<_T>& b);
+    dint<_T>& operator|=(dint<_T>& a, const dint<_T>& b);
     template <typename _T>
-    dint<_T>& operator|=(dint<_T>& , const _T& b);
+    dint<_T>& operator|=(dint<_T>& a, const _T& b);
 
     template <typename _T>
-    dint<_T>& operator&=(dint<_T>& , const dint<_T>& b);
+    dint<_T>& operator&=(dint<_T>& a, const dint<_T>& b);
     template <typename _T>
-    dint<_T>& operator&=(dint<_T>& , const _T& b);
+    dint<_T>& operator&=(dint<_T>& a, const _T& b);
 
     template <typename _T>
-    dint<_T>& operator^=(dint<_T>& , const dint<_T>& b);
+    dint<_T>& operator^=(dint<_T>& a, const dint<_T>& b);
     template <typename _T>
-    dint<_T>& operator^=(dint<_T>& , const _T& b);
+    dint<_T>& operator^=(dint<_T>& a, const _T& b);
 
     template <typename _T>
-    dint<_T>& operator+=(dint<_T>& , const dint<_T>& b);
+    dint<_T>& operator+=(dint<_T>& a, const dint<_T>& b);
     template <typename _T>
-    dint<_T>& operator+=(dint<_T>& , const _T& b);
+    dint<_T>& operator+=(dint<_T>& a, const _T& b);
 
     template <typename _T>
     dint<_T>& operator-=(dint<_T>& a, const dint<_T>& b);
