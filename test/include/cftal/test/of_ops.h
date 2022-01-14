@@ -128,7 +128,8 @@ cftal::test::of_signed_ops<_T, _N, true>::v(_T ai, _T bi)
     bool rc=true;
     _T a=ai, b=bi, r;
     vec<_T, _N> va(a), vb(b), vr;
-    r = std::abs(a);
+    using std::abs;
+    r = abs(a);
     vr = abs(va);
     rc &= check(vr, r, "abs");
     return rc;
@@ -143,7 +144,7 @@ cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
     _T a=ai, b=bi, r;
 
     using v_t = vec<_T, _N>;
-    
+
     v_t va(a), vb(b), vr;
 
     // mul_lo_hi
