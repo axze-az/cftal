@@ -34,11 +34,17 @@ namespace cftal {
             using int_type = typename
                 std::conditional<std::is_same<_T, double>::value,
                                  uint64_t,
-                                 uint32_t>::type;
+                                 typename std::conditional<
+                                    std::is_same<_T, float>::value,
+                                    uint32_t, uint16_t>::type
+                                 >::type;
             using bytesx = typename
                 std::conditional<std::is_same<_T, double>::value,
                                  bytes8,
-                                 bytes4>::type;
+                                 typename std::conditional<
+                                    std::is_same<_T, float>::value,
+                                    bytes4, bytes2>::type
+                                 >::type;
 
             std::uniform_int_distribution<int_type> _i_dist;
             _T _min;
@@ -78,7 +84,7 @@ namespace cftal {
                   _use_int((trunc_min_val(amin) != amin) ||
                            (trunc_max_val(amax) != amax)) {
             }
-            
+
             // switch off fma to get the same random numbers
             // on machines with and without fma
             template <class _G>
@@ -93,7 +99,8 @@ namespace cftal {
                         int_type i=_i_dist(g);
                         bytesx t(i);
                         r = make_fp(t);
-                        if (std::isnan(r))
+                        using std::isnan;
+                        if (isnan(r))
                             continue;
                         if (r>=_max)
                             continue;
