@@ -27,7 +27,7 @@
 
 namespace cftal {
 
-    namespace op {
+    namespace op_4_vec {
 
         template <>
         struct bit_not<int32_t, 2> {

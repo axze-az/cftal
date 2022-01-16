@@ -33,7 +33,7 @@
 
 namespace cftal {
 
-    namespace op {
+    namespace op_4_vec {
 
         template <>
         struct bit_not<float, 8> {

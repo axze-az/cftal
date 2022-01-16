@@ -143,7 +143,7 @@ namespace cftal {
     permute(const vec<double, 2>& s0,
             const vec<double, 2>& s1);
 
-    namespace op {
+    namespace op_4_vec {
 
         template <>
         struct bit_not<double, 2> {

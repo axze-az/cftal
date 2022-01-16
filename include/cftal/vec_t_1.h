@@ -329,7 +329,7 @@ namespace cftal {
         };
     }
 
-    namespace op {
+    namespace op_4_vec {
         template <typename _T>
         struct lt<_T, 1> {
             using full_type = vec<_T, 1>;
