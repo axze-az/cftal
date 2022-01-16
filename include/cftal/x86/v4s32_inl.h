@@ -28,10 +28,10 @@
 
 namespace cftal {
 
-    namespace op_4_vec {
+    namespace op {
 
         template <>
-        struct bit_not<int32_t, 4> {
+        struct bit_not<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -43,7 +43,7 @@ namespace cftal {
 
 
         template <>
-        struct lt<int32_t, 4> {
+        struct lt<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             using mask_type = typename full_type::mask_type;
             static
@@ -58,7 +58,7 @@ namespace cftal {
         };
 
         template <>
-        struct le<int32_t, 4> {
+        struct le<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             using mask_type = typename full_type::mask_type;
             static
@@ -72,7 +72,7 @@ namespace cftal {
                 __m128i min_ab = _mm_min_epi32(b(), a());
                 return _mm_cmpeq_epi32(a(), min_ab);
 #else
-                mask_type b_gt_a(lt<int32_t, 4>::v(b(), a()));
+                mask_type b_gt_a(lt<vec<int32_t, 4>>::v(b(), a()));
                 const mask_type all_set(uint32_t(-1));
                 return _mm_xor_si128(b_gt_a(), all_set());
 #endif
@@ -81,7 +81,7 @@ namespace cftal {
         };
 
         template <>
-        struct eq<int32_t, 4> {
+        struct eq<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             using mask_type = typename full_type::mask_type;
             static
@@ -96,7 +96,7 @@ namespace cftal {
         };
 
         template <>
-        struct ne<int32_t, 4> {
+        struct ne<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             using mask_type = typename full_type::mask_type;
             static
@@ -105,14 +105,14 @@ namespace cftal {
 #if defined (__AVX512VL__)
                 return _mm_cmp_epi32_mask(a(), b(), _CMP_UNORD_Q & 7);
 #else
-                mask_type a_eq_b(eq<int32_t, 4>::v(a, b));
-                return bit_not<int32_t, 4>::v(a_eq_b);
+                mask_type a_eq_b(eq<vec<int32_t, 4>>::v(a, b));
+                return bit_not<vec<int32_t, 4>>::v(a_eq_b);
 #endif
             }
         };
 
         template <>
-        struct ge<int32_t, 4> {
+        struct ge<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             using mask_type = typename full_type::mask_type;
             static
@@ -126,15 +126,15 @@ namespace cftal {
                 __m128i max_ab = _mm_max_epi32(b(), a());
                 return _mm_cmpeq_epi32(a(), max_ab);
 #else
-                mask_type a_lt_b( lt<int32_t, 4>::v(a(), b()));
-                return bit_not<int32_t, 4>::v(a_lt_b);
+                mask_type a_lt_b( lt<vec<int32_t, 4>>::v(a(), b()));
+                return bit_not<vec<int32_t, 4>>::v(a_lt_b);
 #endif
 #endif
             }
         };
 
         template <>
-        struct gt<int32_t, 4> {
+        struct gt<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             using mask_type = typename full_type::mask_type;
             static
@@ -149,7 +149,7 @@ namespace cftal {
         };
 
         template <>
-        struct plus<int32_t, 4> {
+        struct plus<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             const full_type&
@@ -159,7 +159,7 @@ namespace cftal {
         };
 
         template <>
-        struct neg<int32_t, 4> {
+        struct neg<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -175,7 +175,7 @@ namespace cftal {
         };
 
         template <>
-        struct add<int32_t, 4> {
+        struct add<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -185,7 +185,7 @@ namespace cftal {
         };
 
         template <>
-        struct sub<int32_t, 4> {
+        struct sub<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -195,7 +195,7 @@ namespace cftal {
         };
 
         template <>
-        struct mul<int32_t, 4> {
+        struct mul<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -205,7 +205,7 @@ namespace cftal {
         };
 
         template <>
-        struct div<int32_t, 4> {
+        struct div<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -215,43 +215,43 @@ namespace cftal {
         };
 
         template <>
-        struct mod<int32_t, 4> {
+        struct mod<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
             v(const full_type& a, const full_type& b) {
-                v4s32 q(a/b);
+                v4s32 q=div<full_type>::v(a, b);
                 v4s32 r(remainder(a, b, q));
                 return r;
             }
         };
 
         template <>
-        struct fma<int32_t, 4> {
+        struct fma<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                return add<int32_t, 4>::v(
-                    mul<int32_t, 4>::v(a(), b()), c());
+                return add<vec<int32_t, 4>>::v(
+                    mul<vec<int32_t, 4>>::v(a(), b()), c());
             }
         };
 
         template <>
-        struct fms<int32_t, 4> {
+        struct fms<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
             v(const full_type& a, const full_type& b,
               const full_type& c) {
-                return sub<int32_t, 4>::v(
-                    mul<int32_t, 4>::v(a , b), c);
+                return sub<vec<int32_t, 4>>::v(
+                    mul<vec<int32_t, 4>>::v(a , b), c);
             }
         };
 
         template <>
-        struct fnma<int32_t, 4> {
+        struct fnma<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -259,14 +259,14 @@ namespace cftal {
               const full_type& c) {
                 // return full_type(c() - a() * b());
                 // return full_type(std::fma(-a(), b(), c()));
-                return sub<int32_t, 4>::v(
-                    c, mul<int32_t, 4>::v(a, b));
+                return sub<vec<int32_t, 4>>::v(
+                    c, mul<vec<int32_t, 4>>::v(a, b));
 
             }
         };
 
         template <>
-        struct bit_or<int32_t, 4> {
+        struct bit_or<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -276,7 +276,7 @@ namespace cftal {
         };
 
         template <>
-        struct bit_and<int32_t, 4> {
+        struct bit_and<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -286,7 +286,7 @@ namespace cftal {
         };
 
         template <>
-        struct bit_xor<int32_t, 4> {
+        struct bit_xor<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -296,7 +296,7 @@ namespace cftal {
         };
 
         template <>
-        struct shl<int32_t, 4> {
+        struct shl<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -306,7 +306,7 @@ namespace cftal {
         };
 
         template <>
-        struct shr<int32_t, 4> {
+        struct shr<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -316,7 +316,7 @@ namespace cftal {
         };
 
         template <>
-        struct vshl<int32_t, 4> {
+        struct vshl<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -326,7 +326,7 @@ namespace cftal {
         };
 
         template <>
-        struct vshr<int32_t, 4> {
+        struct vshr<vec<int32_t, 4>> {
             using full_type = vec<int32_t, 4>;
             static
             full_type
@@ -374,11 +374,11 @@ vec(init_list<int32_t> l)
 {
 }
 
-template <template <class _U, std::size_t _M> class _OP,
+template <template <class _U> class _OP,
           class _L, class _R>
 inline
 cftal::
-vec<cftal::int32_t, 4>::vec(const expr<_OP<int32_t, 4>, _L, _R>& r)
+vec<cftal::int32_t, 4>::vec(const expr<_OP<vec<int32_t, 4> >, _L, _R>& r)
     : vec(eval(r))
 {
 }

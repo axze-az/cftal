@@ -58,10 +58,9 @@ namespace cftal {
         vec(const vec<double, 2>& lh, const vec<double, 2>& hh);
 
         // expression template constructor
-        template <template <class _U, std::size_t _M>
-                  class _OP,
+        template <template <class _U> class _OP,
                   class _L, class _R>
-        vec(const expr<_OP<double, 4>, _L, _R>& r);
+        vec(const expr<_OP<vec<double, 4> >, _L, _R>& r);
     };
 
     template <>

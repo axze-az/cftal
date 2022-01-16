@@ -33,10 +33,10 @@
 
 namespace cftal {
 
-    namespace op_4_vec {
+    namespace op {
 
         template <>
-        struct bit_not<float, 8> {
+        struct bit_not<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -48,7 +48,7 @@ namespace cftal {
         };
 
         template <>
-        struct lt<float, 8> {
+        struct lt<vec<float, 8>> {
             using full_type = vec<float, 8>;
             using mask_type = typename full_type::mask_type;
             static
@@ -63,7 +63,7 @@ namespace cftal {
         };
 
         template <>
-        struct le<float, 8> {
+        struct le<vec<float, 8>> {
             using full_type = vec<float, 8>;
             using mask_type = typename full_type::mask_type;
             static
@@ -78,7 +78,7 @@ namespace cftal {
         };
 
         template <>
-        struct eq<float, 8> {
+        struct eq<vec<float, 8>> {
             using full_type = vec<float, 8>;
             using mask_type = typename full_type::mask_type;
             static
@@ -93,7 +93,7 @@ namespace cftal {
         };
 
         template <>
-        struct ne<float, 8> {
+        struct ne<vec<float, 8>> {
             using full_type = vec<float, 8>;
             using mask_type = typename full_type::mask_type;
             static
@@ -108,7 +108,7 @@ namespace cftal {
         };
 
         template <>
-        struct ge<float, 8> {
+        struct ge<vec<float, 8>> {
             using full_type = vec<float, 8>;
             using mask_type = typename full_type::mask_type;
             static
@@ -123,7 +123,7 @@ namespace cftal {
         };
 
         template <>
-        struct gt<float, 8> {
+        struct gt<vec<float, 8>> {
             using full_type = vec<float, 8>;
             using mask_type = typename full_type::mask_type;
             static
@@ -138,7 +138,7 @@ namespace cftal {
         };
 
         template <>
-        struct plus<float, 8> {
+        struct plus<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             const full_type&
@@ -148,7 +148,7 @@ namespace cftal {
         };
 
         template <>
-        struct neg<float, 8> {
+        struct neg<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -159,7 +159,7 @@ namespace cftal {
         };
 
         template <>
-        struct add<float, 8> {
+        struct add<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -169,7 +169,7 @@ namespace cftal {
         };
 
         template <>
-        struct sub<float, 8> {
+        struct sub<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -179,7 +179,7 @@ namespace cftal {
         };
 
         template <>
-        struct mul<float, 8> {
+        struct mul<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -189,7 +189,7 @@ namespace cftal {
         };
 
         template <>
-        struct div<float, 8> {
+        struct div<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -200,7 +200,7 @@ namespace cftal {
 
 
         template <>
-        struct fma<float, 8> {
+        struct fma<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -217,7 +217,7 @@ namespace cftal {
         };
 
         template <>
-        struct fms<float, 8> {
+        struct fms<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -234,7 +234,7 @@ namespace cftal {
         };
 
         template <>
-        struct fnma<float, 8> {
+        struct fnma<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -251,7 +251,7 @@ namespace cftal {
         };
 
         template <>
-        struct bit_or<float, 8> {
+        struct bit_or<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -261,7 +261,7 @@ namespace cftal {
         };
 
         template <>
-        struct bit_and<float, 8> {
+        struct bit_and<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -271,7 +271,7 @@ namespace cftal {
         };
 
         template <>
-        struct bit_xor<float, 8> {
+        struct bit_xor<vec<float, 8>> {
             using full_type = vec<float, 8>;
             static
             full_type
@@ -311,11 +311,11 @@ vec(const vec<float, 4>& lh, const vec<float, 4>& hh)
 {
 }
 
-template <template <class _U, std::size_t _M> class _OP,
+template <template <class _U> class _OP,
           class _L, class _R>
 inline
 cftal::
-vec<float, 8>::vec(const expr<_OP<float, 8>, _L, _R>& r)
+vec<float, 8>::vec(const expr<_OP<vec<float, 8> >, _L, _R>& r)
     : vec(eval(r))
 {
 }

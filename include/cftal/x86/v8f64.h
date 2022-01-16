@@ -52,10 +52,9 @@ namespace cftal {
         vec(const vec<double, 4>& lh, const vec<double, 4>& hh);
 
         // expression template constructor
-        template <template <class _U, std::size_t _M>
-                  class _OP,
+        template <template <class _U> class _OP,
                   class _L, class _R>
-        vec(const expr<_OP<double, 8>, _L, _R>& r);
+        vec(const expr<_OP<vec<double, 8> >, _L, _R>& r);
     };
 
     template <>
@@ -166,7 +165,7 @@ namespace cftal {
     permute(const vec<double, 8>& s0,
             const vec<double, 8>& s1);
 
-    namespace op_4_vec {
+    namespace op {
 
         template <>
         struct bit_not<double, 8> {

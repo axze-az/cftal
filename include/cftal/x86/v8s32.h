@@ -57,10 +57,9 @@ namespace cftal {
         // allow construction from vec<int32_t, 16>
         vec(init_list<int32_t> l);
         // expression template constructor
-        template <template <class _U, std::size_t _M>
-                  class _OP,
+        template <template <class _U> class _OP,
                   class _L, class _R>
-        vec(const expr<_OP<int32_t, 8>, _L, _R>& r);
+        vec(const expr<_OP<vec<int32_t, 8> >, _L, _R>& r);
     };
 
     template <>

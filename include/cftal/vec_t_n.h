@@ -70,9 +70,9 @@ namespace cftal {
         const half_type& lh() const;
         const half_type& hh() const;
 
-        template <template <class _U, std::size_t _M> class _OP,
+        template <template <class _U> class _OP,
                   class _L, class _R>
-        vec(const expr<_OP<_T, _N>, _L, _R>& r);
+        vec(const expr<_OP<vec<_T, _N> >, _L, _R>& r);
     private:
         static_assert(0==(_N & (_N-1)),
                       "vec<_T, _N>: _N is not a power of 2");
@@ -662,11 +662,10 @@ cftal::vec<_T, _N>::vec(const half_type& l,
 }
 
 template <typename _T, std::size_t _N>
-template <template <class _U, std::size_t _M>
-          class _OP,
+template <template <class _U> class _OP,
           class _L, class _R>
 inline
-cftal::vec<_T, _N>::vec(const expr<_OP<_T, _N>, _L, _R>& r)
+cftal::vec<_T, _N>::vec(const expr<_OP<vec<_T, _N> >, _L, _R>& r)
     : vec(eval(r))
 {
 }

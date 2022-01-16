@@ -49,10 +49,9 @@ namespace cftal {
         // allow construction from two halfes
         vec(const vec<uint8_t, 8>& lh, const vec<uint8_t, 8>& hh);
         // expression template constructor
-        template <template <class _U, std::size_t _M>
-                  class _OP,
+        template <template <class _U> class _OP,
                   class _L, class _R>
-        vec(const expr<_OP<uint8_t, 16>, _L, _R>& r);
+        vec(const expr<_OP<vec<uint8_t, 16> >, _L, _R>& r);
     };
 
     template <>
