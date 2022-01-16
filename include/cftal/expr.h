@@ -61,6 +61,102 @@ namespace cftal {
         return _OP::v(eval(e._l));
     }
 
+    // namespace containing the operations for the operators
+    namespace op {
+        // template class for the different operations
+        // these operation class must export a static member function v
+        // returning and taking the right arguments.
+        // neg: (unary minus) static _T v(const _T&)
+        // common comparison operations
+
+        template <typename _T>
+        struct lt {};
+
+        template <typename _T>
+        struct le {};
+
+        template <typename _T>
+        struct eq {};
+
+        template <typename _T>
+        struct ne {};
+
+        template <typename _T>
+        struct ge {};
+
+        template <typename _T>
+        struct gt {};
+
+        // arithmetic operations
+        // +a
+        template <typename _T>
+        struct plus {};
+        // -a
+        template <typename _T>
+        struct neg {};
+        // a + b
+        template <typename _T>
+        struct add {};
+        // a - b
+        template <typename _T>
+        struct sub {};
+        // a * b
+        template <typename _T>
+        struct mul {};
+        // a / b
+        template <typename _T>
+        struct div {};
+        // a % b
+        template <typename _T>
+        struct mod {};
+
+        // a*b + c
+        template <typename _T>
+        struct fma {};
+        // a*b -c
+        template <typename _T>
+        struct fms {};
+        // -a*b +c = (c-a*b)
+        template <typename _T>
+        struct fnma {};
+
+        // bitwise logical operations
+        template <typename _T>
+        struct bit_or {};
+
+        template <typename _T>
+        struct bit_and {};
+
+        template <typename _T>
+        struct bit_xor {};
+
+        template <typename _T>
+        struct bit_not  {};
+
+        // scalar shift left operator
+        template <typename _T>
+        struct shl {};
+        // scalar shift right operator
+        template <typename _T>
+        struct shr { };
+        // vector shift left operator
+        template <typename _T>
+        struct vshl {};
+        // vector shift right operator
+        template <typename _T>
+        struct vshr {};
+
+        // logical operations
+        template <typename _T>
+        struct log_or {};
+
+        template <typename _T>
+        struct log_and {};
+
+        template <typename _T>
+        struct log_not  {};
+
+    }
 }
 
 // Local variables:

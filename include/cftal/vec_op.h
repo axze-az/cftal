@@ -213,7 +213,7 @@ namespace cftal {
         template <typename _T, std::size_t _N>
         struct vshl : public bin<vshl, _T, _N> {};
 
-        // vector shift righta operator
+        // vector shift right operator
         template <typename _T, std::size_t _N>
         struct vshr : public bin<vshr, _T, _N> {};
 
