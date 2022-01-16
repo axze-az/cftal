@@ -66,8 +66,8 @@ namespace cftal {
         // template class for the different operations
         // these operation class must export a static member function v
         // returning and taking the right arguments.
-        // neg: (unary minus) static _T v(const _T&)
-        // common comparison operations
+        // the return type of v must be exported as full_type
+        // neg: (unary minus) static _T v(const _T&); using full_type=_T;
 
         template <typename _T>
         struct lt {};
