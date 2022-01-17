@@ -359,6 +359,8 @@ cftal::test::of_ops<_T, _N>::v(_T ai, _T bi)
     vr = cftal::select(vcr, va, vb);
     rc &= check(vr, r, "select after >");
 
+    if (rc == false)
+        std::exit(3);
     return rc;
 }
 
