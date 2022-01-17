@@ -88,7 +88,8 @@ namespace cftal {
         };
 
         template <class _T>
-        _T do_div(_T u, _T v) {
+        typename std::enable_if<is_integral<_T>::value, _T>::type
+        do_div(_T u, _T v) {
             if (v==0)
                 return ~_T(0);
             return u/v;
@@ -359,8 +360,13 @@ cftal::test::of_ops<_T, _N>::v(_T ai, _T bi)
     vr = cftal::select(vcr, va, vb);
     rc &= check(vr, r, "select after >");
 
-    if (rc == false)
+    if (rc == false) {
+        std::cerr << "va: "  << va << '\n'
+                  << "vb: " << vb << '\n'
+                  << "a:  " << a << '\n'
+                  << "b:  " << b << '\n';
         std::exit(3);
+    }
     return rc;
 }
 

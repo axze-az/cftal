@@ -195,14 +195,14 @@ namespace cftal {
         // check a[_N] against expected
         template <class _T, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
-        bool check(const _T(&a)[_N], _T expected, _MSG msg,
+        bool check(const _T(&a)[_N], const _T& expected, _MSG msg,
                    bool verbose=true,
                    _CMP cmp = _CMP());
 
         // check a against expected
         template <class _T, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
-        bool check(vec<_T, _N> a, _T expected, _MSG msg,
+        bool check(const vec<_T, _N>& a, const _T& expected, _MSG msg,
                    bool verbose=true,
                    _CMP cmp= _CMP());
 
@@ -216,7 +216,7 @@ namespace cftal {
         // check a against expected[_N]
         template <class _T, class _R, std::size_t _N, typename _MSG,
                   typename _CMP = cmp_t<_T> >
-        bool check(vec<_T, _N> a,
+        bool check(const vec<_T, _N>& a,
                    const _R(&expected)[_N] , _MSG msg,
                    bool verbose=true,
                    _CMP cmp = _CMP());
@@ -250,15 +250,15 @@ namespace cftal {
         // check a against expected, a contains the result of
         // a comparison
         template <class _T, std::size_t _N>
-        bool check_cmp(vec<_T, _N> a, bool expected, const char* msg);
+        bool check_cmp(const vec<_T, _N>& a, bool expected, const char* msg);
 
         // error [abs of difference] between a0 and a1
         template <class _T>
-        _T abs_err(_T a0, _T a1);
+        _T abs_err(const _T& a0, const _T& a1);
 
         // relative error [abs of difference] between a0 and a1
         template <class _T>
-        _T rel_err(_T a0, _T a1);
+        _T rel_err(const _T& a0, const _T& a1);
 
     }
 }
@@ -295,7 +295,8 @@ operator<<(std::ostream& s,
 
 
 template <class _T, std::size_t _N, typename _MSG, typename _CMP>
-bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
+bool cftal::test::check(const _T(&a)[_N],
+                        const _T& expected , _MSG msg,
                         bool verbose, _CMP cmp)
 {
     bool r=true;
@@ -303,14 +304,14 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
     auto e0= std::begin(a);
     const _T& a0= *e0;
     const cmp_t<_T> cmp_elems;
-    
-    using out_t = typename 
-        std::conditional<std::is_same<int8_t, _T>::value || 
+
+    using out_t = typename
+        std::conditional<std::is_same<int8_t, _T>::value ||
                          std::is_same<uint8_t, _T>::value,
-                         typename std::conditional<cftal::is_signed<_T>::value, 
+                         typename std::conditional<cftal::is_signed<_T>::value,
                                                    int, unsigned>::type,
                          _T>::type;
-    
+
     for (auto b=std::next(e0), e= std::end(a); b!=e; ++b, ++i) {
         const _T& ai= *b;
         if (cmp_elems(a0, ai)==false) {
@@ -342,7 +343,8 @@ bool cftal::test::check(const _T(&a)[_N], _T expected , _MSG msg,
 }
 
 template <class _T, std::size_t _N, typename _MSG, typename _CMP>
-bool cftal::test::check(vec<_T, _N> vr, _T expected, _MSG msg,
+bool cftal::test::check(const vec<_T, _N>& vr,
+                        const _T& expected, _MSG msg,
                         bool verbose, _CMP cmp)
 {
     _T vsr[_N];
@@ -355,16 +357,16 @@ bool cftal::test::check(const _T(&a)[_N],
                         const _R(&expected)[_N] , _MSG msg,
                         bool verbose, _CMP cmp)
 {
-    using out_t = typename 
-        std::conditional<std::is_same<int8_t, _T>::value || 
+    using out_t = typename
+        std::conditional<std::is_same<int8_t, _T>::value ||
                          std::is_same<uint8_t, _T>::value,
-                         typename std::conditional<cftal::is_signed<_T>::value, 
+                         typename std::conditional<cftal::is_signed<_T>::value,
                                                    int, unsigned>::type,
                          _T>::type;
-    using out_ex_t = typename 
-        std::conditional<std::is_same<int8_t, _R>::value || 
+    using out_ex_t = typename
+        std::conditional<std::is_same<int8_t, _R>::value ||
                          std::is_same<uint8_t, _R>::value,
-                         typename std::conditional<cftal::is_signed<_R>::value, 
+                         typename std::conditional<cftal::is_signed<_R>::value,
                                                    int, unsigned>::type,
                          _R>::type;
     bool r=true;
@@ -390,7 +392,7 @@ bool cftal::test::check(const _T(&a)[_N],
 }
 
 template <class _T, class _R, std::size_t _N, typename _MSG, typename _CMP>
-bool cftal::test::check(vec<_T, _N> vr,
+bool cftal::test::check(const vec<_T, _N>& vr,
                         const _R(&expected)[_N], _MSG msg,
                         bool verbose, _CMP cmp)
 {
@@ -444,10 +446,10 @@ template <class _T, std::size_t _N>
 bool
 cftal::test::check_cmp(const _T(&a)[_N], bool expected , const char* msg)
 {
-    using out_t = typename 
-        std::conditional<std::is_same<int8_t, _T>::value || 
+    using out_t = typename
+        std::conditional<std::is_same<int8_t, _T>::value ||
                          std::is_same<uint8_t, _T>::value,
-                         typename std::conditional<cftal::is_signed<_T>::value, 
+                         typename std::conditional<cftal::is_signed<_T>::value,
                                                    int, unsigned>::type,
                          _T>::type;
     bool r=true;
@@ -531,7 +533,7 @@ cftal::test::check_cmp(const bit(&a)[_N], bool expected , const char* msg)
 
 template <class _T, std::size_t _N>
 bool
-cftal::test::check_cmp(vec<_T, _N> vr, bool expected, const char* msg)
+cftal::test::check_cmp(const vec<_T, _N>& vr, bool expected, const char* msg)
 {
     _T vsr[_N];
     mem< vec<_T, _N> >::store(vsr, vr);
@@ -541,7 +543,7 @@ cftal::test::check_cmp(vec<_T, _N> vr, bool expected, const char* msg)
 
 template <class _T>
 _T
-cftal::test::abs_err(_T a0, _T a1)
+cftal::test::abs_err(const _T& a0, const _T& a1)
 {
     _T d= a0 - a1;
     return select(d > _T(0.0), d , -d);
@@ -549,7 +551,7 @@ cftal::test::abs_err(_T a0, _T a1)
 
 template <class _T>
 _T
-cftal::test::rel_err(_T a0, _T a1)
+cftal::test::rel_err(const _T& a0, const _T& a1)
 {
     return abs_err(a0, a1)/(_T(0.5) * (a0 + a1));
 }

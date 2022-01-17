@@ -345,7 +345,6 @@ cftal::cvt_f16_to_f32(const vec<mf_f16_t, 1>& s)
     return r;
 }
 
-
 inline
 cftal::vec<cftal::f32_t, 2>
 cftal::cvt_f16_to_f32(const vec<mf_f16_t, 2>& s)
@@ -387,7 +386,6 @@ cftal::cvt_f16_to_f32(const vec<mf_f16_t, 8>& s)
 #endif
     return r;
 }
-
 
 // Local variables:
 // mode: c++
