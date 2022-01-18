@@ -22,11 +22,15 @@
 
 namespace cftal {
 
+    // expression traits define how we store _T operands in expr
+    // objects, defaults to constant by value
     template <typename _T>
     struct expr_traits {
         using type = const _T;
     };
 
+    // expression class consisting of an operation and a left
+    // and a right operand
     template <class _OP, class _L, class _R>
     struct expr {
         typename expr_traits<_L>::type _l;
@@ -34,12 +38,15 @@ namespace cftal {
         constexpr expr(const _L& l, const _R& r) : _l(l), _r(r) {}
     };
 
+    // expression class specialized an operation and a left
+    // operand, i.e. for an unary operation
     template <class _OP, class _L>
     struct expr<_OP, _L, void> {
         typename expr_traits<_L>::type _l;
         constexpr expr(const _L& l) : _l(l) {}
     };
 
+    // evaluation of an arbitrary type
     template <typename _T>
     inline
     const _T&
@@ -47,6 +54,9 @@ namespace cftal {
         return v;
     }
 
+    // evaluation of expr<_OP, _L, _R> as
+    // _OP::v(eval(e._l), eval(e._r)), i.e. as operation on the
+    // evaluated left and right branches of the expression tree
     template <class _OP, class _L, class _R>
     inline
     typename _OP::full_type
@@ -54,6 +64,9 @@ namespace cftal {
         return _OP::v(eval(e._l), eval(e._r));
     }
 
+    // evaluation of expr<_OP, _L, void> as
+    // _OP::v(eval(e._l)), i.e. as operation on the
+    // evaluated left branch of the expression tree
     template <class _OP, class _L>
     inline
     typename _OP::full_type
@@ -61,13 +74,18 @@ namespace cftal {
         return _OP::v(eval(e._l));
     }
 
-    // namespace containing the operations for the operators
+    // namespace op containing operation classes for operators returning
+    // expression of operator classes and left and right operands
+    // the default classes defines only the structure of the template
+    // with one class/typename arguments
     namespace op {
         // template class for the different operations
         // these operation class must export a static member function v
-        // returning and taking the right arguments.
-        // the return type of v must be exported as full_type
+        // returning and taking the right arguments, the return type of v
+        // must be exported as full_type
         // neg: (unary minus) static _T v(const _T&); using full_type=_T;
+        // these classes or only defined here to allow later specialization
+        // for different _T
 
         template <typename _T>
         struct lt {};
