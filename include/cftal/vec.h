@@ -38,6 +38,7 @@
 #include <cftal/vec_cvt.h>
 #include <cftal/vec_cast_bits.h>
 #include <cftal/vec_misc.h>
+#include <cftal/f16.h>
 
 // Local variables:
 // mode: c++

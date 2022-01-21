@@ -23,7 +23,6 @@
 #include <cftal/constants.h>
 #include <cftal/vec.h>
 
-
 namespace cftal {
 
     // memory format for IEEE f16_t types
