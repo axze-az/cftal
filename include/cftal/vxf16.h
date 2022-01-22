@@ -101,6 +101,12 @@ namespace cftal {
         vec(const expr<_OP<vec<f16_t, _N>>, _L, _R>& r) : vec(eval(r)) {}
     };
 
+    using v1f16 = vec<f16_t, 1>;
+    using v2f16 = vec<f16_t, 2>;
+    using v4f16 = vec<f16_t, 4>;
+    using v8f16 = vec<f16_t, 8>;
+    using v16f16 = vec<f16_t, 16>;
+
     template <>
     struct mem< vec<f16_t, 1> > {
         static
