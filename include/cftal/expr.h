@@ -87,21 +87,22 @@ namespace cftal {
         // these classes or only defined here to allow later specialization
         // for different _T
 
+        // <
         template <typename _T>
         struct lt {};
-
+        // <=
         template <typename _T>
         struct le {};
-
+        // ==
         template <typename _T>
         struct eq {};
-
+        // !=
         template <typename _T>
         struct ne {};
-
+        // >=
         template <typename _T>
         struct ge {};
-
+        // >
         template <typename _T>
         struct gt {};
 
