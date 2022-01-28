@@ -46,7 +46,7 @@ namespace cftal {
         constexpr expr(const _L& l) : _l(l) {}
     };
 
-    // evaluation of an arbitrary type
+    // evaluation of an arbitrary type, returns the argument
     template <typename _T>
     inline
     const _T&
