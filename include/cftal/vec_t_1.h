@@ -114,17 +114,20 @@ namespace cftal {
             static
             bool
             any(const vec<_T, 1>& v) {
-                return std::signbit(v()) != 0;
+                using std::signbit;
+                return signbit(v()) != 0;
             }
             static
             bool
             all(const vec<_T, 1>& v) {
-                return std::signbit(v()) != 0;
+                using std::signbit;
+                return signbit(v()) != 0;
             }
             static
             bool
             none(const vec<_T, 1>& v) {
-                return std::signbit(v()) == 0;
+                using std::signbit;
+                return signbit(v()) == 0;
             }
         };
 
