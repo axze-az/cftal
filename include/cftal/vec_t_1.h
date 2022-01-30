@@ -26,6 +26,7 @@
 #include <cftal/impl/divide.h>
 #include <cftal/type_traits.h>
 #include <cmath>
+#include <cstring>
 
 #define USE_TYPE_AS_MASK 1
 #define USE_BOOL_AS_MASK 0
@@ -133,11 +134,32 @@ namespace cftal {
 
         template <typename _T>
         struct bool_to_mask {
+            struct fall_back_t {
+                constexpr static const size_t BYTES=sizeof(_T);
+                int8_t _v[BYTES];
+                fall_back_t(int t) {
+                    int f= t != 0 ? -1 : 0;
+                    std::memset(_v, f, BYTES);
+                }
+            };
+            using int_type = std::conditional_t<
+                sizeof(_T)==8, int64_t,
+                    std::conditional_t<
+                    sizeof(_T)==4, int32_t,
+                        std::conditional_t<
+                            sizeof(_T)==2, int16_t,
+                            std::conditional_t<
+                                sizeof(_T)==1, int8_t, fall_back_t
+                            >
+                        >
+                    >
+                >;
             static
             _T
             v(bool t) {
-                using utype = typename std::make_unsigned<_T>::type;
-                return t ? ~utype(0) : utype(0);
+                int h = t ? -1 : 0;
+                int_type r(h);
+                return as<_T>(r);
             }
         };
 
