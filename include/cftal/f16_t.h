@@ -809,7 +809,7 @@ bool cftal::isinf(const f16_t& v)
 {
     const mf_f16_t& vi= v();
     mf_f16_t abs_vi= vi & not_sign_f16_msk;
-    return abs_vi > exp_f16_msk;
+    return abs_vi == exp_f16_msk;
 }
 
 inline
