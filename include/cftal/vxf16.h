@@ -394,7 +394,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct plus<vec<f16_t, 1>> {
             using full_type = vec<f16_t, 1>;
@@ -405,7 +404,6 @@ namespace cftal {
             }
         };
 
-
         template <size_t _N>
         struct plus<vec<f16_t, _N>> {
             using full_type = vec<f16_t, _N>;
@@ -415,7 +413,6 @@ namespace cftal {
                 return a;
             }
         };
-
 
         template <>
         struct neg<vec<f16_t, 1>> {
@@ -441,7 +438,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct add<vec<f16_t, 1>> {
             using full_type = vec<f16_t, 1>;
@@ -455,7 +451,6 @@ namespace cftal {
             }
         };
 
-
         template <size_t _N>
         struct add<vec<f16_t, _N>> {
             using full_type = vec<f16_t, _N>;
@@ -468,7 +463,6 @@ namespace cftal {
                 return full_type::cvt_from_rep(cvt_f32_to_f16(fr));
             }
         };
-
 
         template <>
         struct sub<vec<f16_t, 1>> {
@@ -496,7 +490,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct mul<vec<f16_t, 1>> {
             using full_type = vec<f16_t, 1>;
@@ -509,7 +502,6 @@ namespace cftal {
                 return full_type::cvt_from_rep(cvt_f32_to_f16(fr));
             }
         };
-
 
         template <size_t _N>
         struct mul<vec<f16_t, _N>> {
@@ -524,7 +516,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct div<vec<f16_t, 1>> {
             using full_type = vec<f16_t, 1>;
@@ -538,7 +529,6 @@ namespace cftal {
             }
         };
 
-
         template <size_t _N>
         struct div<vec<f16_t, _N>> {
             using full_type = vec<f16_t, _N>;
@@ -551,7 +541,6 @@ namespace cftal {
                 return full_type::cvt_from_rep(cvt_f32_to_f16(fr));
             }
         };
-
 
         template <>
         struct fma<vec<f16_t, 1>> {
@@ -567,7 +556,6 @@ namespace cftal {
             }
         };
 
-
         template <size_t _N>
         struct fma<vec<f16_t, _N>> {
             using full_type = vec<f16_t, _N>;
@@ -581,7 +569,6 @@ namespace cftal {
                 return full_type::cvt_from_rep(cvt_f32_to_f16(fr));
             }
         };
-
 
         template <>
         struct fms<vec<f16_t, 1>> {
@@ -597,7 +584,6 @@ namespace cftal {
             }
         };
 
-
         template <size_t _N>
         struct fms<vec<f16_t, _N>> {
             using full_type = vec<f16_t, _N>;
@@ -611,7 +597,6 @@ namespace cftal {
                 return full_type::cvt_from_rep(cvt_f32_to_f16(fr));
             }
         };
-
 
         template <>
         struct fnma<vec<f16_t, 1>> {
@@ -627,7 +612,6 @@ namespace cftal {
             }
         };
 
-
         template <size_t _N>
         struct fnma<vec<f16_t, _N>> {
             using full_type = vec<f16_t, _N>;
@@ -642,7 +626,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct bit_or<vec<f16_t, 1>> {
             using full_type = vec<f16_t, 1>;
@@ -654,7 +637,6 @@ namespace cftal {
                 return full_type::cvt_from_rep(r);
             }
         };
-
 
         template <size_t _N>
         struct bit_or<vec<f16_t, _N>> {
@@ -668,7 +650,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct bit_and<vec<f16_t, 1>> {
             using full_type = vec<f16_t, 1>;
@@ -680,7 +661,6 @@ namespace cftal {
                 return full_type::cvt_from_rep(r);
             }
         };
-
 
         template <size_t _N>
         struct bit_and<vec<f16_t, _N>> {
@@ -694,7 +674,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct bit_xor<vec<f16_t, 1>> {
             using full_type = vec<f16_t, 1>;
@@ -706,7 +685,6 @@ namespace cftal {
                 return full_type::cvt_from_rep(r);
             }
         };
-
 
         template <size_t _N>
         struct bit_xor<vec<f16_t, _N>> {
@@ -720,7 +698,6 @@ namespace cftal {
             }
         };
 
-
         template <>
         struct bit_not<vec<f16_t, 1>> {
             using full_type = vec<f16_t, 1>;
@@ -732,7 +709,6 @@ namespace cftal {
                 return full_type::cvt_from_rep(r);
             }
         };
-
 
         template <size_t _N>
         struct bit_not<vec<f16_t, _N>> {
