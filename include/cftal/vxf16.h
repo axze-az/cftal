@@ -812,7 +812,6 @@ cftal::abs(const vec<f16_t, _N>& a)
     return vec<f16_t, _N>::cvt_from_rep(t);
 }
 
-// max
 inline
 cftal::vec<cftal::f16_t, 1>
 cftal::max(const vec<f16_t, 1>& a, const vec<f16_t, 1>& b)
@@ -821,7 +820,6 @@ cftal::max(const vec<f16_t, 1>& a, const vec<f16_t, 1>& b)
     return vec<f16_t, 1>::cvt_from_rep(cvt_f32_to_f16(f32_max));
 }
 
-// max
 template <size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::max(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
@@ -830,7 +828,6 @@ cftal::max(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
     return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(f32_max));
 }
 
-// min
 inline
 cftal::vec<cftal::f16_t, 1>
 cftal::min(const vec<f16_t, 1>& a, const vec<f16_t, 1>& b)
@@ -839,7 +836,6 @@ cftal::min(const vec<f16_t, 1>& a, const vec<f16_t, 1>& b)
     return vec<f16_t, 1>::cvt_from_rep(cvt_f32_to_f16(f32_min));
 }
 
-// min
 template <size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::min(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
@@ -848,7 +844,6 @@ cftal::min(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
     return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(f32_min));
 }
 
-// select
 inline
 cftal::vec<cftal::f16_t, 1>
 cftal::
@@ -860,7 +855,6 @@ select(const typename vec<f16_t, 1>::mask_type& m ,
     return vec<f16_t, 1>::mask_type::cvt_from_rep(r);
 }
 
-// select
 template <size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::
