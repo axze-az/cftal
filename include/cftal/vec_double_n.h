@@ -65,7 +65,7 @@ namespace cftal {
     template <std::size_t _N>
     vec<double, _N>
     copysign(const vec<double, _N>& x, const double& y);
-    
+
     template <std::size_t _N>
     vec<double, _N>
     mulsign(const vec<double, _N>& x, const vec<double, _N>& y);
@@ -1191,9 +1191,12 @@ inline
 typename cftal::vec<double, _N>::mask_type
 cftal::isfinite(const vec<double, _N>& x)
 {
-    return ~(isinf(x) | isnan(x));
+    // uses the fact that nan < x returns false
+    vec<double, _N> absx(abs(x));
+    const float vm=exp_f64_msk::v.f64();
+    return absx < vm;
+    // return ~(isinf(x) | isnan(x));
 }
-
 
 template <std::size_t _N>
 inline
