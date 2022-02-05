@@ -721,7 +721,11 @@ namespace cftal {
                 return full_type::cvt_from_rep(r);
             }
         };
-    }
+    } // end namespace op
+
+    // vector math functions for vxf16
+
+
 }
 
 template <std::size_t _N>
