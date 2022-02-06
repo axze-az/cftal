@@ -56,12 +56,12 @@ cftal::int64_t cftal::rdtsc()
 #if defined (__x86_64__)
     uint64_t a, d;
     __asm__ __volatile__("lfence;\n\t" // NO fences during devel
-                        "rdtsc" :"=a"(a), "=d"(d) ::"memory");
+                         "rdtsc" :"=a"(a), "=d"(d) ::"memory");
     return (d<<32) | a;
 #elif defined (__i386__)
     uint64_t a;
     __asm__ __volatile__("lfence;\n\t"
-                        "rdtsc" :"=A"(a)::"memory");
+                         "rdtsc" :"=A"(a)::"memory");
     return a;
 #elif defined (_M_AMD64) && defined (_MSC_VER)
 	__mm_lfence();
@@ -71,7 +71,7 @@ cftal::int64_t cftal::rdtsc()
     uint64_t final_tsc;
     /* Read PMCCNTR synchronized*/
     __asm__ __volatile__("isb sy\n\t"
-                        "mrc p15, 0, %0, c9, c13, 0\n\t"
+                         "mrc p15, 0, %0, c9, c13, 0\n\t"
                          : "=r"(tsc));
     /* 1 tick = 64 clocks */
     final_tsc = ((uint64_t)tsc) << 6;
@@ -193,7 +193,7 @@ cftal::uint16_t cftal::bitrev(uint16_t x)
     x = ((x >> 2) & 0x33333333) | ((x & 0x33333333) << 2);
     // swap nibbles ...
     x = ((x >> 4) & 0x0F0F0F0F) | ((x & 0x0F0F0F0F) << 4);
-#if defined (__amd64) || defined (__i386__) 
+#if defined (__amd64) || defined (__i386__)
     uint32_t x32 = x;
     x32 = _bswap(x32);
     x32 >>= 16;
@@ -201,7 +201,7 @@ cftal::uint16_t cftal::bitrev(uint16_t x)
 #else
     // swap bytes
     x = ((x >> 8) & 0x00FF00FF) | ((x & 0x00FF00FF) << 8);
-#endif    
+#endif
     return x;
 }
 
@@ -214,14 +214,14 @@ cftal::uint32_t cftal::bitrev(uint32_t x)
     x = ((x >> 2) & 0x33333333) | ((x & 0x33333333) << 2);
     // swap nibbles ...
     x = ((x >> 4) & 0x0F0F0F0F) | ((x & 0x0F0F0F0F) << 4);
-#if defined (__amd64) || defined (__i386__) 
+#if defined (__amd64) || defined (__i386__)
     x = _bswap(x);
-#else    
+#else
     // swap bytes
     x = ((x >> 8) & 0x00FF00FF) | ((x & 0x00FF00FF) << 8);
     // swap 2-byte elements
     x = ( x >> 16             ) | ( x               << 16);
-#endif    
+#endif
     return x;
 }
 
@@ -239,7 +239,7 @@ cftal::uint64_t cftal::bitrev(uint64_t x)
     x = ((x >> 4) & c0f0f) | ((x & c0f0f) << 4);
 #if defined (__amd64)
     x = _bswap64(x);
-#else    
+#else
     const uint64_t c00ff = 0x00ff00ff00ff00ffULL;
     const uint64_t cffff = 0x0000ffff0000ffffULL;
     // swap bytes
@@ -248,7 +248,7 @@ cftal::uint64_t cftal::bitrev(uint64_t x)
     x = ((x >>16) & cffff) | ((x & cffff) <<16);
     // swap 4-byte elements
     x = ((x >>32)        ) | ( x          <<32);
-#endif    
+#endif
     return x;
 }
 
