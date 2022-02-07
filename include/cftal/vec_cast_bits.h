@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+// <cftal/as.h> is included by:
 #include <cftal/x86/cast_bits.h>
 
 namespace cftal {
