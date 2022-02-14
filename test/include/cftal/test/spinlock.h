@@ -75,8 +75,6 @@ namespace cftal {
         bool
         bind_thread_to_cpu(std::thread& tid, unsigned cpu);
 
-
-
     }
 }
 
