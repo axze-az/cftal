@@ -76,12 +76,12 @@ namespace cftal {
             data_type _evals[_N+1];
             // insert into _tics and increment evals[n]
             void insert(uint64_t tics_before, uint64_t tics_after,
-                        unsigned n) {
+                        unsigned idx) {
                 uint64_t ta=std::max(tics_before, tics_after);
                 uint64_t tb=std::min(tics_before, tics_after);
                 uint64_t d=ta - tb;
-                _tics[n]._v += d;
-                ++(_evals[n]._v);
+                _tics[idx]._v += d;
+                ++(_evals[idx]._v);
             }
             // constructor
             exec_stats() {
