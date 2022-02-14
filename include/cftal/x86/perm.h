@@ -585,7 +585,7 @@ namespace cftal {
         // specialization of permutations of two double
         // vectors
         template <>
-            
+
         struct perm2_v4f64<-1,-1,-1,-1>
             : public make_zero_v4f64 {};
         template <>
@@ -768,11 +768,11 @@ namespace cftal {
         template <>
         struct perm1_v8f32<2, 3, 2, 3, 6, 7, 6, 7>
             : public exec_f64<vunpckhpd> {};
-                
+
         template <>
         struct perm1_v8f32<0, 1, 2, 3, 0, 1, 2, 3>
             : public vinsertf128<1> {};
-                
+
         template <>
         struct perm1_v8f32<4, 5, 6, 7, 0, 1, 2, 3>
             : public vperm2f128<1, 0> {};
@@ -780,17 +780,17 @@ namespace cftal {
         template <>
         struct perm1_v8f32<4, 5, 6, 7, 4, 5, 6, 7>
             : public vperm2f128<1, 1> {};
-                
+
         template <>
-        struct perm2_v8f32<-1, -1, -1, -1, -1, -1, -1, -1> 
+        struct perm2_v8f32<-1, -1, -1, -1, -1, -1, -1, -1>
             : public make_zero_v8f32{};
 
         template <>
-        struct perm2_v8f32<0, 1, 2, 3, 4, 5, 6, 7> 
+        struct perm2_v8f32<0, 1, 2, 3, 4, 5, 6, 7>
             : public select_arg_1<__m256> {};
-                
+
         template <>
-        struct perm2_v8f32<8, 9, 10, 11, 12, 13, 14, 15> 
+        struct perm2_v8f32<8, 9, 10, 11, 12, 13, 14, 15>
             : public select_arg_2<__m256> {};
 
         template <>
@@ -812,19 +812,19 @@ namespace cftal {
         template <>
         struct perm2_v8f32<0, 1, 2, 3, 8, 9, 10, 11>
             : public vinsertf128<1> {};
-                
+
         template <>
         struct perm2_v8f32<0, 1, 2, 3, 12, 13, 14, 15>
             : public vperm2f128<0, 3> {};
-                
+
         template <>
         struct perm2_v8f32<4, 5, 6, 7, 8, 9, 10, 11>
             : public vperm2f128<1, 2> {};
-                
+
         template <>
         struct perm2_v8f32<4, 5, 6, 7, 12, 13, 14, 15>
             : public vperm2f128<1, 3> {};
-                
+
 #endif
 #if defined (__AVX2__)
         // generic permutation of one u64 vector
@@ -846,7 +846,7 @@ namespace cftal {
         template <>
         struct perm1_v4u64<0, 1, 2, 3>
             : public select_arg_1<__m256i> {};
-                
+
         template <>
         struct perm1_v4u64<0, 0, 0, 0>
             : public vbroadcastq<__m256i> {};
@@ -867,8 +867,8 @@ namespace cftal {
             : public vperm2f128<1, 0> {};
         template <>
         struct perm1_v4u64<2, 3, 2, 3>
-            : public vperm2f128<1, 1> {};            
-            
+            : public vperm2f128<1, 1> {};
+
         template <>
         struct perm1_v4u64<0, -1, 2, -1>
             : public fixed_arg_2<__m256i, make_zero_int256,
@@ -901,7 +901,7 @@ namespace cftal {
         template <>
         struct perm2_v4u64< 5, 1, 7, 3>
             : public swap_ab<__m256i, vpunpckhqdq> {};
-                                 
+
         template <>
         struct perm2_v4u64< 0, 1, 4, 5>
             : public vinsertf128<1> {};
@@ -926,7 +926,7 @@ namespace cftal {
         template <>
         struct perm2_v4u64< 6, 7, 2, 3>
             : public vperm2f128<3, 1> {};
-                             
+
         // generic permutation of one u32 vector
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
@@ -951,27 +951,27 @@ namespace cftal {
         template <>
         struct perm1_v8u32<0, 0, 0, 0, 0, 0, 0, 0>
             : public vbroadcastd<__m256i> {};
-                
+
         template <>
-        struct perm1_v8u32<-1, 0, 1, 2,-1, 4, 5, 6> 
+        struct perm1_v8u32<-1, 0, 1, 2,-1, 4, 5, 6>
         : public vpslldq<4> {};
         template <>
-        struct perm1_v8u32<-1,-1, 0, 1,-1,-1, 4, 5> : 
+        struct perm1_v8u32<-1,-1, 0, 1,-1,-1, 4, 5> :
             public vpslldq<8> {};
         template <>
-        struct perm1_v8u32<-1,-1,-1, 0,-1,-1,-1, 4> : 
+        struct perm1_v8u32<-1,-1,-1, 0,-1,-1,-1, 4> :
             public vpslldq<12> {};
 
         template <>
-        struct perm1_v8u32< 1, 2, 3,-1, 5, 6, 7,-1> 
+        struct perm1_v8u32< 1, 2, 3,-1, 5, 6, 7,-1>
             : public vpsrldq<4> {};
         template <>
-        struct perm1_v8u32< 2, 3,-1,-1, 6, 7,-1,-1> 
+        struct perm1_v8u32< 2, 3,-1,-1, 6, 7,-1,-1>
             : public vpsrldq<8> {};
         template <>
-        struct perm1_v8u32< 3,-1,-1,-1, 7,-1,-1,-1> 
-            : public vpsrldq<12> {};           
-            
+        struct perm1_v8u32< 3,-1,-1,-1, 7,-1,-1,-1>
+            : public vpsrldq<12> {};
+
         template <>
         struct perm1_v8u32<0, 1, 0, 1, 4, 5, 4, 5>
             : public vpunpcklqdq {};
@@ -979,14 +979,14 @@ namespace cftal {
         template <>
         struct perm1_v8u32<2, 3, 2, 3, 6, 7, 6, 7>
             : public vpunpckhqdq {};
-                
+
         template <>
         struct perm1_v8u32<0, -1, 1, -1, 2, -1, 3, -1>
-            : public vpmovzxdq {};                        
-            
+            : public vpmovzxdq {};
+
         template <>
         struct perm1_v8u32<0, 1, 2, 3,  0, 1, 2, 3>
-            : public vinsertf128<1> {};            
+            : public vinsertf128<1> {};
 
         template <>
         struct perm2_v8u32<0, 1, 8, 9, 4, 5, 12, 13>
@@ -1007,19 +1007,19 @@ namespace cftal {
         template <>
         struct perm2_v8u32<0, 1, 2, 3, 8, 9, 10, 11>
             : public vinsertf128<1> {};
-                
+
         template <>
         struct perm2_v8u32<0, 1, 2, 3, 12, 13, 14, 15>
             : public vperm2f128<0, 3> {};
-                
+
         template <>
         struct perm2_v8u32<4, 5, 6, 7, 8, 9, 10, 11>
             : public vperm2f128<1, 2> {};
-                
+
         template <>
         struct perm2_v8u32<4, 5, 6, 7, 12, 13, 14, 15>
             : public vperm2f128<1, 3> {};
-                
+
 #endif
 #if defined (__AVX512F__)
         // generic permutation of one v8f64 vector
@@ -1054,7 +1054,7 @@ namespace cftal {
         struct perm2_v16u8 {
             static __m128i v(__m128i a, __m128i b);
         };
-            
+
         template <int _P0, int _P1>
         __m128d perm_v2f64(__m128d a);
         template <int _P0, int _P1>
@@ -1141,7 +1141,7 @@ __m128d cftal::x86::perm1_v2f64<_P0, _P1>::v(__m128d a)
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
-#endif    
+#endif
     const int m1 = pos_msk_2<_P0, _P1, 1>::m;
     const int m2 = zero_msk_2<_P0, _P1>::m;
     // is shuffling needed
@@ -1421,7 +1421,7 @@ __m128 cftal::x86::perm2_v4f32<_P0, _P1, _P2, _P3>::v(__m128 a, __m128 b)
     return  select_v4f32<sm0, sm1, sm2, sm3>::v(ta, tb);
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop    
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -1526,8 +1526,8 @@ __m128i cftal::x86::perm1_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a)
     return  _mm_and_si128(t,zm);
 #endif
 #if 0
-#pragma GCC diagnostic pop    
-#pragma clang diagnostic pop   
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -1630,7 +1630,7 @@ __m128i cftal::x86::perm2_v4u32<_P0, _P1, _P2, _P3>::v(__m128i a, __m128i b)
     return  select_v4u32<sm0, sm1, sm2, sm3>::v(ta, tb);
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop    
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -1644,7 +1644,7 @@ __m128i cftal::x86::perm1_v8u16<_P0, _P1, _P2, _P3,
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wtautological-compare"    
+#pragma clang diagnostic ignored "-Wtautological-compare"
 #endif
     const int me= pos_msk_4<_P0, _P2, _P4, _P6, 7>::m;
     const int mo= pos_msk_4<_P1, _P3, _P5, _P7, 7>::m;
@@ -1879,8 +1879,8 @@ __m128i cftal::x86::perm1_v8u16<_P0, _P1, _P2, _P3,
     return r;
 #endif
 #if 0
-#pragma GCC diagnostic pop    
-#pragma clang diagnostic pop       
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -1981,7 +1981,7 @@ __m128i cftal::x86::perm2_v8u16<_P0, _P1, _P2, _P3,
     return _mm_or_si128(a1,b1);
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop    
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -2093,7 +2093,7 @@ __m256d cftal::x86::perm1_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a)
     return res;
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop    
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -2146,7 +2146,7 @@ __m256d cftal::x86::perm2_v4f64<_P0, _P1, _P2, _P3>::v(__m256d a, __m256d b)
     return select_v4f64<sm0, sm1, sm2, sm3>::v(ta, tb);
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop    
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -2290,7 +2290,7 @@ __m256 cftal::x86::perm1_v8f32<_P0, _P1, _P2, _P3,
     return res;
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop    
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -2364,7 +2364,7 @@ __m256 cftal::x86::perm2_v8f32<_P0, _P1, _P2, _P3,
                          sm4, sm5, sm6, sm7>::v(a1 ,b1);
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop                         
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -2431,7 +2431,7 @@ __m256i cftal::x86::perm1_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a)
     return res;
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop    
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -2484,7 +2484,7 @@ __m256i cftal::x86::perm2_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i b)
     return  select_v4u64<sm0, sm1, sm2, sm3>::v(ta, tb);
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop    
+#pragma clang diagnostic pop
 #endif
 }
 
@@ -2570,7 +2570,7 @@ cftal::x86::perm1_v8u32<_P0, _P1, _P2, _P3,
     return res;
 #if 0
 #pragma GCC diagnostic pop
-#pragma clang diagnostic pop    
+#pragma clang diagnostic pop
 #endif
 }
 
