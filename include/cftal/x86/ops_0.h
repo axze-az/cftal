@@ -225,7 +225,6 @@ namespace cftal {
 #endif
         };
 
-
         struct make_zero_v2f64 {
             static __m128d v() {
                 return _mm_setzero_pd();
@@ -298,7 +297,6 @@ namespace cftal {
                 return v(a, a);
             }
         };
-
 
         template <unsigned _P0, unsigned _P1,
                   unsigned _P2, unsigned _P3>
@@ -759,7 +757,6 @@ namespace cftal {
             static __m128i v(__m128i a, unsigned shift);
         };
 
-
         struct vpsrlw {
             static __m128i v(__m128i a, __m128i shift) {
                 return _mm_srl_epi16(a, shift);
@@ -839,7 +836,6 @@ namespace cftal {
             static __m128i v(__m128i a, unsigned shift);
         };
 
-
         struct vpsraw {
             static __m128i v(__m128i a, __m128i shift) {
                 return _mm_sra_epi16(a, shift);
@@ -894,7 +890,6 @@ namespace cftal {
                 unsigned sh= _mm_cvtsi128_si32(shift);
                 return v(a, sh);
             }
-
 #if defined (__AVX2__)
             static __m256i v(__m256i a, unsigned shift);
             static __m256i v(__m256i a, __m128i shift) {
@@ -902,7 +897,6 @@ namespace cftal {
                 return v(a, sh);
             }
 #endif
-
         };
 
         template <unsigned _P>
@@ -927,22 +921,22 @@ namespace cftal {
                 if (_P>15)
                     return make_zero_int::v();
                 return _mm_slli_si128(a, _P);
-            }            
+            }
 #if defined (__AVX2__)
             static __m256i v(__m256i a) {
                 if (_P>15)
                     return _mm256_set1_epi32(0);
                 return _mm256_slli_si256(a, _P);
-            }            
+            }
 #endif
         };
 
 #if defined (__AVX2__)
         template <>
-        struct vpslldq<0> 
+        struct vpslldq<0>
             : public select_arg_1<__m256i>,
               public select_arg_1<__m128i> {};
-#else        
+#else
         template <>
         struct vpslldq<0> : public select_arg_1<__m128i> {};
 #endif
@@ -958,22 +952,21 @@ namespace cftal {
                 if (_P>15)
                     return _mm256_set1_epi32(0);
                 return _mm256_srli_si256(a, _P);
-            }            
+            }
 #endif
         };
-        
+
 #if defined (__AVX2__)
         template <>
-        struct vpsrldq<0> 
+        struct vpsrldq<0>
             : public select_arg_1<__m256i>,
               public select_arg_1<__m128i> {};
-#else        
+#else
         template <>
         struct vpsrldq<0> : public select_arg_1<__m128i> {};
-#endif        
+#endif
 
 #if defined (__AVX2__)
-
         struct vpsxxvw {
             // select uint16_t with the number 0, 2, 4, 6, 8, 10, 12, 14
             static __m128i v(__m256i rt);
@@ -992,12 +985,11 @@ namespace cftal {
         };
 #endif
 
-            
 #if !defined (__AVX2__)
         // helper class for vpsllvd, vpsrlvd and vpsravd
         struct vpsxxvd {
             // perform element _IDX of a, s
-            template <uint8_t _IDX, 
+            template <uint8_t _IDX,
                       typename _SINGLE_SHIFT>
             static
             __m128i vi(__m128i a, __m128i s);
@@ -1005,11 +997,10 @@ namespace cftal {
             template <typename _SINGLE_SHIFT>
             static
             __m128i v(__m128i a, __m128i s);
-                
+
         };
 #endif
 
-            
         struct vpsllvd {
             static __m128i v(__m128i a, __m128i s);
 #if defined (__AVX2__)
@@ -1129,7 +1120,7 @@ namespace cftal {
             static __m256i v(__m256i a, __m256i b);
 #endif
         };
-        
+
         struct pavgb {
             static
             __m128i v(__m128i a, __m128i b) {
@@ -1142,7 +1133,7 @@ namespace cftal {
             }
 #endif
         };
-                
+
         struct pavgsb {
             static
             __m128i v(__m128i a, __m128i b) {
@@ -1178,8 +1169,7 @@ namespace cftal {
             }
 #endif
         };
-        
-        
+
         struct pavgsw {
             static
             __m128i v(__m128i a, __m128i b) {
@@ -1267,7 +1257,6 @@ namespace cftal {
               __m128i idx, __m128 msk);
         };
 
-
 #if defined (__AVX__)
         // specialization for __m256d, __m128i
         template <>
@@ -1350,9 +1339,9 @@ namespace cftal {
             static __m256i v(__m256i a, __m128i b) {
 #if defined (__AVX2__)
                 return _mm256_inserti128_si256(a, b, _P);
-#else                
+#else
                 return _mm256_insertf128_si256(a, b, _P);
-#endif                
+#endif
             }
             static __m256i v(__m256i a, __m256i b) {
                 return v(a, _mm256_castsi256_si128(b));
@@ -1383,7 +1372,7 @@ namespace cftal {
                 return _mm256_permute2x128_si256(a, b, imm8);
 #else
                 return _mm256_permute2f128_si256(a, b, imm8);
-#endif                
+#endif
             }
             static __m256i v(__m256i a) {
                 return v(a, a);
@@ -1601,7 +1590,6 @@ namespace cftal {
                 return _mm256_set_epi64x(i, i, i, i);
             }
         };
-
 #endif
     } // namespace x86
 } // namespace cftal
@@ -1763,7 +1751,6 @@ __m128i cftal::x86::vpsravw::v(__m128i a, __m128i s)
 }
 #endif
 
-
 #if !defined (__AVX2__)
 template <cftal::uint8_t _IDX, typename _SINGLE_SHIFT>
 inline
@@ -1784,12 +1771,12 @@ __m128i cftal::x86::vpsxxvd::vi(__m128i a, __m128i s)
                                       cxx, cxx, cxx, cxx,
                                       cxx, cxx, cxx, cxx,
                                       cxx, cxx, cxx, cxx>::iv();
-        si=vpshufb::v(si, msk);                                        
+        si=vpshufb::v(si, msk);
 #else
         si = vpshufd<_IDX, _IDX, _IDX, _IDX>::v(si);
         const __m128i msk= const_v4u32<uint32_t(-1), 0, 0, 0>::iv();
         si = _mm_and_si128(si, msk);
-#endif        
+#endif
     }
     constexpr const uint32_t m0= _IDX==0 ? -1 : 0;
     constexpr const uint32_t m1= _IDX==1 ? -1 : 0;
@@ -1811,7 +1798,7 @@ __m128i cftal::x86::vpsxxvd::v(__m128i a, __m128i s)
     ri=vi<2, _SINGLE_SHIFT>(a, s);
     r=_mm_or_si128(r, ri);
     ri=vi<3, _SINGLE_SHIFT>(a, s);
-    r=_mm_or_si128(r, ri);    
+    r=_mm_or_si128(r, ri);
     return r;
 }
 #endif
@@ -1905,7 +1892,6 @@ __m256i cftal::x86::vpsravq::v(__m256i a, __m256i sh)
 
 #endif
 
-
 template <unsigned _S>
 inline
 __m128i cftal::x86::vpsraq_const<_S>::v(__m128i a)
@@ -1965,7 +1951,6 @@ __m128i cftal::x86::vpmullb::v(__m128i a, __m128i b)
     __m128i r= _mm_or_si128(po, pe);
     return r;
 }
-
 
 inline
 __m128i cftal::x86::vpmulld::lh(__m128i a, __m128i b)
@@ -2226,7 +2211,6 @@ v(__m128 src, const float* base, __m128i idx, __m128 msk)
 }
 
 #if defined (__AVX__)
-
 template <std::size_t _SCALE>
 inline
 __m256d
@@ -2299,7 +2283,6 @@ v(__m256 src, const float* base, __m256i idx, __m256 msk)
 }
 
 #endif
-
 
 // Local variables:
 // mode: c++
