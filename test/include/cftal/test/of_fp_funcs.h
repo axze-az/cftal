@@ -24,6 +24,7 @@
 #include <cftal/test/uniform_distribution.h>
 #include <cftal/test/f32_f64.h>
 #include <cftal/test/work_queue.h>
+#include <cftal/test/exec_stats.h>
 #include <random>
 #include <iostream>
 #include <iomanip>
@@ -62,42 +63,6 @@ namespace cftal {
             static
             const std::vector<_T> values;
         };
-
-        // execution statistics
-        template <std::size_t _N>
-        struct exec_stats {
-            struct alignas(64) data_type {
-                std::atomic<uint64_t> _v;
-                char _pad[64-sizeof(_v)];
-            };
-            // the tics for the vectors of length [0, _N]
-            data_type _tics[_N+1];
-            // number of function calls
-            data_type _evals[_N+1];
-            // insert into _tics and increment evals[n]
-            void insert(uint64_t tics_before, uint64_t tics_after,
-                        unsigned idx) {
-                uint64_t ta=std::max(tics_before, tics_after);
-                uint64_t tb=std::min(tics_before, tics_after);
-                uint64_t d=ta - tb;
-                _tics[idx]._v += d;
-                ++(_evals[idx]._v);
-            }
-            // constructor
-            exec_stats() {
-                for (std::size_t i=0; i<_N+1; ++i) {
-                    _tics[i]._v = 0;
-                    _evals[i]._v = 0;
-                }
-            }
-            // high resolution timer function
-            static
-            uint64_t hr_timer() { return rdtsc(); }
-        };
-        // output operator for exec_stats
-        template <std::size_t _N>
-        std::ostream&
-        operator<<(std::ostream& s, const exec_stats<_N>& st);
 
         // output operator for pairs of vectors with the same length
         template <typename _I, typename _T, std::size_t _N>
@@ -428,37 +393,6 @@ namespace cftal {
         };
 
     }
-}
-
-template <std::size_t _N>
-std::ostream&
-cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
-{
-    std::size_t n= _N + 1;
-    s << "execution statistics\n";
-    for (std::size_t i=0; i<n; i=((i==0) ? 1: i*2)) {
-        double t=st._tics[i]._v;
-        uint64_t ei=st._evals[i]._v;
-        double tc=ei ? t/double(ei) : 0.0;
-        double te=i ? tc/i : tc;
-        if (i==0) {
-            s << "reference:  calls: ";
-        } else {
-            s << "vec-len: " << std::setw(2) << i << " calls: ";
-        }
-        s << std::setw(16) << ei << " tics/call: "
-          << std::setprecision(1)
-          << std::fixed
-          << std::setw(9)
-          << tc
-          << " tics/elem: "
-          << std::setw(7)
-          << te
-          << std::scientific
-          << std::setprecision(22)
-          << '\n';
-    }
-    return s;
 }
 
 template <typename _I, typename _T, std::size_t _N>
