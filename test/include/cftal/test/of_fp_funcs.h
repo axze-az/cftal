@@ -25,6 +25,7 @@
 #include <cftal/test/f32_f64.h>
 #include <cftal/test/work_queue.h>
 #include <cftal/test/exec_stats.h>
+#include <cftal/test/func_domain.h>
 #include <random>
 #include <iostream>
 #include <iomanip>
@@ -36,10 +37,6 @@
 
 namespace cftal {
     namespace test {
-
-        // domain of a functions
-        template <typename _T>
-        using func_domain = std::pair<_T, _T>;
 
         // the default domain
         template <typename _T>
