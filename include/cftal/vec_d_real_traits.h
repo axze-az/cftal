@@ -67,10 +67,10 @@ namespace cftal {
 
         constexpr
         static
-        vec<double, _N>
+        double
         scale_div_threshold() {
             // -1022 + 53
-            return vec<double, _N>(0x1.p-969);
+            return 0x1.p-969;
         }
 
     };
@@ -118,7 +118,7 @@ namespace cftal {
 
         constexpr
         static
-        vec<float, _N>
+        float
         scale_div_threshold() {
             // -126 + 24
             return 0x1.p-102f;
