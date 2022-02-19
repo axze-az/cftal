@@ -22,7 +22,6 @@
 #include <cftal/config.h>
 #include <cftal/types.h>
 #include <cftal/constants.h>
-#include <cftal/vec_d_real_traits.h>
 #include <cftal/math/misc.h>
 #include <cftal/x86/v8f32.h>
 #include <cftal/x86/perm.h>
