@@ -43,7 +43,7 @@ namespace cftal {
         bool none_of_v(const cmp_result_type& b) {
             return none_of(b);
         }
-        
+
         static
         vec<double, _N>
         sel (const cmp_result_type& s,
@@ -94,7 +94,7 @@ namespace cftal {
         bool none_of_v(const cmp_result_type& b) {
             return none_of(b);
         }
-        
+
         static
         vec<float, _N>
         sel(const cmp_result_type& s,
