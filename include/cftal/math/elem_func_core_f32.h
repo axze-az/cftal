@@ -1774,8 +1774,8 @@ __reduce_exp_arg(vf_type& xrh,
     const float _ln2_32_cw_l=+9.9831822808e-07f;
     vf_type kf = rint(vf_type(x * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<float>::EXP_IDX_MASK;
-    k = ki >> exp_data<float>::EXP_SHIFT;
+    idx = ki & int32_t(exp_data<float>::EXP_IDX_MASK);
+    k = ki >> int32_t(exp_data<float>::EXP_SHIFT);
     vf_type hi = x - kf * _ln2_32_cw_h;
     xrh = hi - kf * _ln2_32_cw_l;
     vf_type dx = hi-xrh;
@@ -1804,8 +1804,8 @@ __reduce_exp_arg(vf_type& xrh,
     const float _ln2_32_l=-5.9520444129e-11f;
     vf_type kf = rint(vf_type(xh * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<float>::EXP_IDX_MASK;
-    k = ki >> exp_data<float>::EXP_SHIFT;
+    idx = ki & int32_t(exp_data<float>::EXP_IDX_MASK);
+    k = ki >> int32_t(exp_data<float>::EXP_SHIFT);
     vf_type neg_kfln2h, neg_kfln2l;
     d_ops::unorm_mul122(neg_kfln2h, neg_kfln2l,
                         kf, -_ln2_32_h, -_ln2_32_l);

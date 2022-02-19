@@ -1708,8 +1708,8 @@ __reduce_exp_arg(vf_type& xrh,
     const double _ln2_32_l=+7.2470212932696861200555e-19;
     vf_type kf = rint(vf_type(xh * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
-    idx = ki & exp_data<double>::EXP_IDX_MASK;
-    k = ki >> exp_data<double>::EXP_SHIFT;
+    idx = ki & int32_t(exp_data<double>::EXP_IDX_MASK);
+    k = ki >> int32_t(exp_data<double>::EXP_SHIFT);
     vf_type neg_kfln2h, neg_kfln2l;
     d_ops::unorm_mul122(neg_kfln2h, neg_kfln2l,
                         kf, -_ln2_32_h, -_ln2_32_l);
