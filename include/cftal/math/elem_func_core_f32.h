@@ -3154,8 +3154,8 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
 
     // guess the result if the calculation failed
-    vmf_type abs_x_lt_1 = abs_x < 1.0;
-    vmf_type y_gt_1 = y > 1.0;
+    vmf_type abs_x_lt_1 = abs_x < 1.0f;
+    vmf_type y_gt_1 = y > 1.0f;
     res = _T::sel(rnan, _T::pinf(), res);
     res = _T::sel_zero_or_val(rnan &
                               ((abs_x_lt_1 & y_gt_1) |

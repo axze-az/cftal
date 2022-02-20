@@ -415,9 +415,10 @@ namespace cftal {
 
             static
             vi_type extract_exp(const vf_type& d) {
-                vi_type e= as<vi_type>(d);
+                const vf_type msk(exp_f32_msk::v.f32());
+                vf_type m(d & msk);
+                vi_type e= as<vi_type>(m);
                 e >>= 23;
-                e &= vi_type(e_mask);
                 return e;
             }
 
