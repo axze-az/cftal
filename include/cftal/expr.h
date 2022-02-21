@@ -46,6 +46,20 @@ namespace cftal {
         constexpr expr(const _L& l) : _l(l) {}
     };
 
+    // helper function for creation of expressions
+    template <class _OP, class _L, class _R>
+    expr<_OP, _L, _R>
+    make_expr(const _L& l, const _R& r) {
+        return expr<_OP, _L, _R>(l, r);
+    }
+
+    // helper function for creation of expressions
+    template <class _OP, class _L>
+    expr<_OP, _L, void>
+    make_expr(const _L& l) {
+        return expr<_OP, _L, void>(l);
+    }
+
     // evaluation of an arbitrary type, returns the argument
     template <typename _T>
     inline
