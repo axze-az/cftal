@@ -182,7 +182,7 @@ namespace cftal {
             vf_type insert_exp_vi2(const vi2_type& e) {
                 vi2_type ep(e << 20);
                 vf_type r= as<vf_type>(ep);
-                r &= vf_type(exp_f64_msk::v.f64());
+                r &= exp_f64_msk::v.f64();
                 return r;
             }
 
