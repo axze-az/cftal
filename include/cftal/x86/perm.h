@@ -2781,7 +2781,48 @@ cftal::x86::perm2_v8u32<_P0, _P1, _P2, _P3,
 #endif
 }
 
-#endif
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15,
+          int _P16, int _P17, int _P18, int _P19,
+          int _P20, int _P21, int _P22, int _P23,
+          int _P24, int _P25, int _P26, int _P27,
+          int _P28, int _P29, int _P30, int _P31>
+inline
+__m256i
+cftal::x86::
+perm1_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+            _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+            _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::
+v(__m256i a)
+{
+    return a;
+}
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15,
+          int _P16, int _P17, int _P18, int _P19,
+          int _P20, int _P21, int _P22, int _P23,
+          int _P24, int _P25, int _P26, int _P27,
+          int _P28, int _P29, int _P30, int _P31>
+inline
+__m256i
+cftal::x86::
+perm2_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+            _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+            _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::
+v(__m256i a, __m256i b)
+{
+    return a;
+}
+
+
+#endif // __AVX2__
 #if defined (__AVX512F__)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
