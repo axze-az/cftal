@@ -1038,7 +1038,33 @@ namespace cftal {
         struct perm2_v8u32<4, 5, 6, 7, 12, 13, 14, 15>
             : public vperm2f128<1, 3> {};
 
-#endif
+        // generic permutation of one v32u8 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15,
+                  int _P16, int _P17, int _P18, int _P19,
+                  int _P20, int _P21, int _P22, int _P23,
+                  int _P24, int _P25, int _P26, int _P27,
+                  int _P28, int _P29, int _P30, int _P31>
+        struct perm1_v32u8 {
+            static __m256i v(__m256i a);
+        };
+
+        // generic permutation of one v16u8 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15,
+                  int _P16, int _P17, int _P18, int _P19,
+                  int _P20, int _P21, int _P22, int _P23,
+                  int _P24, int _P25, int _P26, int _P27,
+                  int _P28, int _P29, int _P30, int _P31>
+        struct perm2_v32u8 {
+            static __m256i v(__m256i a, __m256i b);
+        };
+
+#endif // __AVX2__
 #if defined (__AVX512F__)
         // generic permutation of one v8f64 vector
         template <int _P0, int _P1, int _P2, int _P3,
