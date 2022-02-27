@@ -2809,17 +2809,17 @@ v(__m256i a)
         _UP24=_P24, _UP25=_P25, _UP26=_P26, _UP27=_P27,
         _UP28=_P28, _UP29=_P29, _UP30=_P30, _UP31=_P31;
 
-    constexpr const int lh_in_lane=
+    constexpr const int lh_from_lo_lane=
         (_P00 < 16) && (_P01 < 16) && (_P02 < 16) && (_P03 < 16) &&
         (_P04 < 16) && (_P05 < 16) && (_P06 < 16) && (_P07 < 16) &&
         (_P08 < 16) && (_P09 < 16) && (_P10 < 16) && (_P11 < 16) &&
         (_P12 < 16) && (_P13 < 16) && (_P14 < 16) && (_P15 < 16);
-    constexpr const int hh_in_lane=
+    constexpr const int hh_from_hi_lane=
         (_UP16 > 15) && (_UP17 > 15) && (_UP18 > 15) && (_UP19 > 15) &&
         (_UP20 > 15) && (_UP21 > 15) && (_UP22 > 15) && (_UP23 > 15) &&
         (_UP24 > 15) && (_UP25 > 15) && (_UP26 > 15) && (_UP27 > 15) &&
         (_UP28 > 15) && (_UP29 > 15) && (_UP30 > 15) && (_UP31 > 15);
-    if (lh_in_lane && hh_in_lane) {
+    if (lh_from_lo_lane && hh_from_hi_lane) {
         const __m256i msk=_mm256_setr_epi8(
             _P00<0 ? -1 : _P00, _P01<0 ? -1 : _P01,
             _P02<0 ? -1 : _P02, _P03<0 ? -1 : _P03,
@@ -2840,8 +2840,39 @@ v(__m256i a)
         return vpshufb::v(a, msk);
     }
     // swap lo and high half
-    const int sh4=shuffle4<2, 3, 0, 1>::val;
+    constexpr const int sh4=shuffle4<2, 3, 0, 1>::val;
     const __m256i as=_mm256_permute4x64_epi64(a, sh4);
+
+    constexpr const int lh_from_hi_lane=
+        (_UP00 > 15) && (_UP01 > 15) && (_UP02 > 15) && (_UP03 > 15) &&
+        (_UP04 > 15) && (_UP05 > 15) && (_UP06 > 15) && (_UP07 > 15) &&
+        (_UP08 > 15) && (_UP09 > 15) && (_UP10 > 15) && (_UP11 > 15) &&
+        (_UP12 > 15) && (_UP13 > 15) && (_UP14 > 15) && (_UP15 > 15);
+    constexpr const int hh_from_lo_lane=
+        (_P16 < 16) && (_P17 < 16) && (_P18 < 16) && (_P19 < 16) &&
+        (_P20 < 16) && (_P21 < 16) && (_P22 < 16) && (_P23 < 16) &&
+        (_P24 < 16) && (_P25 < 16) && (_P26 < 16) && (_P27 < 16) &&
+        (_P28 < 16) && (_P29 < 16) && (_P30 < 16) && (_P31 < 16);
+    if (lh_from_hi_lane && hh_from_lo_lane) {
+        const __m256i msk=_mm256_setr_epi8(
+            _P00<0 ? -1 : _P00-16, _P01<0 ? -1 : _P01-16,
+            _P02<0 ? -1 : _P02-16, _P03<0 ? -1 : _P03-16,
+            _P04<0 ? -1 : _P04-16, _P05<0 ? -1 : _P05-16,
+            _P06<0 ? -1 : _P06-16, _P07<0 ? -1 : _P07-16,
+            _P08<0 ? -1 : _P08-16, _P09<0 ? -1 : _P09-16,
+            _P10<0 ? -1 : _P10-16, _P11<0 ? -1 : _P11-16,
+            _P12<0 ? -1 : _P12-16, _P13<0 ? -1 : _P13-16,
+            _P14<0 ? -1 : _P14-16, _P15<0 ? -1 : _P15-16,
+            _P16<0 ? -1 : _P16, _P17<0 ? -1 : _P17,
+            _P18<0 ? -1 : _P18, _P19<0 ? -1 : _P19,
+            _P20<0 ? -1 : _P20, _P21<0 ? -1 : _P21,
+            _P22<0 ? -1 : _P22, _P23<0 ? -1 : _P23,
+            _P24<0 ? -1 : _P24, _P25<0 ? -1 : _P25,
+            _P26<0 ? -1 : _P26, _P27<0 ? -1 : _P27,
+            _P28<0 ? -1 : _P28, _P29<0 ? -1 : _P29,
+            _P30<0 ? -1 : _P30, _P31<0 ? -1 : _P31);
+        return vpshufb::v(as, msk);
+    }
     // shuffle the original values
     const __m256i msk=_mm256_setr_epi8(
         _UP00 > 15 ? -1 : _UP00, _UP01 > 15 ? -1 : _UP01,
