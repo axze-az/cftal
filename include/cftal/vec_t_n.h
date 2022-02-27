@@ -259,7 +259,7 @@ namespace cftal {
     vec<_T, 8>
     permute(const vec<_T, 8>& v0, const vec<_T, 8>& v1);
 
-    // fixed permutation of one vector of length 8
+    // fixed permutation of one vector of length 16
     template <int32_t _I0, int32_t _I1, int32_t _I2, int32_t _I3,
               int32_t _I4, int32_t _I5, int32_t _I6, int32_t _I7,
               int32_t _I8, int32_t _I9, int32_t _IA, int32_t _IB,
