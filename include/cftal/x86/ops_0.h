@@ -1057,8 +1057,8 @@ namespace cftal {
             static
             __m128i v(__m128i a, __m128i b);
 #if defined (__AVX2__)
-            // static
-            // __m256i v(__m256i a, __m256i b);
+            static
+            __m256i v(__m256i a, __m256i b);
 #endif
         };
 
@@ -1951,6 +1951,29 @@ __m128i cftal::x86::vpmullb::v(__m128i a, __m128i b)
     __m128i r= _mm_or_si128(po, pe);
     return r;
 }
+
+#if defined (__AVX2__)
+inline
+__m256i cftal::x86::vpmullb::v(__m256i a, __m256i b)
+{
+    __m256i oa=_mm256_srli_epi16(a, 8);
+    __m256i ob=_mm256_srli_epi16(b, 8);
+    __m256i pe=_mm256_mullo_epi16(a, b);
+    __m256i po=_mm256_mullo_epi16(oa, ob);
+    po=_mm256_slli_epi16(po, 8);
+    const __m256i even_mask = const_v32u8<0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00>::iv();
+    pe=_mm256_and_si256(pe, even_mask);
+    __m256i r= _mm256_or_si256(po, pe);
+    return r;
+}
+#endif
 
 inline
 __m128i cftal::x86::vpmulld::lh(__m128i a, __m128i b)
