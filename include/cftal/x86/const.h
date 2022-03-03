@@ -106,6 +106,35 @@ namespace cftal {
             static constexpr __m256 fv();
             static constexpr __m256d dv();
         };
+
+        // static constants consisting of 32 uint8_t
+        template <uint8_t _P00, uint8_t _P01,
+                  uint8_t _P02, uint8_t _P03,
+                  uint8_t _P04, uint8_t _P05,
+                  uint8_t _P06, uint8_t _P07,
+                  uint8_t _P08, uint8_t _P09,
+                  uint8_t _P10, uint8_t _P11,
+                  uint8_t _P12, uint8_t _P13,
+                  uint8_t _P14, uint8_t _P15,
+                  uint8_t _P16, uint8_t _P17,
+                  uint8_t _P18, uint8_t _P19,
+                  uint8_t _P20, uint8_t _P21,
+                  uint8_t _P22, uint8_t _P23,
+                  uint8_t _P24, uint8_t _P25,
+                  uint8_t _P26, uint8_t _P27,
+                  uint8_t _P28, uint8_t _P29,
+                  uint8_t _P30, uint8_t _P31>
+        class const_v32u8 {
+            using u_t = vecunion<uint8_t, 32, __m256, __m256d, __m256i>;
+            static __attribute__((__aligned__(32),
+                                  __visibility__("hidden")))
+            const u_t _msk;
+        public:
+            static constexpr __m256i iv();
+            static constexpr __m256 fv();
+            static constexpr __m256d dv();
+        };
+
 #endif
 
         template <int _P0, int _P1, int _P2, int _P3>
@@ -215,7 +244,7 @@ namespace cftal {
         typedef v_sign_v4s32_msk v_sign_v4f32_msk;
         typedef v_not_sign_v4s32_msk v_not_sign_f32_msk;
 
-#if defined (__AVX__)        
+#if defined (__AVX__)
         typedef const_v8u32<0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff,
                             0x7fffffff, 0x7fffffff,
@@ -226,12 +255,12 @@ namespace cftal {
                             0x80000000, 0x80000000,
                             0x80000000, 0x80000000> v_sign_v8f32_msk;
         using v_sign_v8s32_msk = v_sign_v8f32_msk;
-#endif        
+#endif
 
         typedef const_v4u32<0x7f800000, 0x7f800000,
                             0x7f800000, 0x7f800000> v_exp_f32_msk;
 
-#if defined (__AVX__)                            
+#if defined (__AVX__)
         typedef const_v8u32<0x7f800000, 0x7f800000,
                             0x7f800000, 0x7f800000,
                             0x7f800000, 0x7f800000,
@@ -249,7 +278,7 @@ namespace cftal {
         typedef v_sign_v2s64_msk v_sign_v2f64_msk;
         typedef v_not_sign_v2s64_msk v_not_sign_v2f64_msk;
 
-#if defined (__AVX__)                            
+#if defined (__AVX__)
         typedef const_v8u32<0x00000000, 0x80000000,
                             0x00000000, 0x80000000,
                             0x00000000, 0x80000000,
@@ -267,7 +296,7 @@ namespace cftal {
                             0x00000000,0x7ff00000,
                             0x00000000,0x7ff00000> v_exp_v4f64_msk;
 #endif
-                            
+
         typedef const_v4u32<0x00000000,0x7ff00000,
                             0x00000000,0x7ff00000> v_exp_v2f64_msk;
         typedef const_v4u32<0xffffffff,0x800fffff,
@@ -484,6 +513,91 @@ cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
     return _msk._vd;
 }
+
+template <uint8_t _P00, uint8_t _P01, uint8_t _P02, uint8_t _P03,
+          uint8_t _P04, uint8_t _P05, uint8_t _P06, uint8_t _P07,
+          uint8_t _P08, uint8_t _P09, uint8_t _P10, uint8_t _P11,
+          uint8_t _P12, uint8_t _P13, uint8_t _P14, uint8_t _P15,
+          uint8_t _P16, uint8_t _P17, uint8_t _P18, uint8_t _P19,
+          uint8_t _P20, uint8_t _P21, uint8_t _P22, uint8_t _P23,
+          uint8_t _P24, uint8_t _P25, uint8_t _P26, uint8_t _P27,
+          uint8_t _P28, uint8_t _P29, uint8_t _P30, uint8_t _P31>
+const typename
+cftal::x86::
+const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+            _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+            _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::u_t
+cftal::x86::
+const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+            _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+            _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::_msk= {{
+        _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+        _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+        _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31
+    }
+};
+
+
+template <uint8_t _P00, uint8_t _P01, uint8_t _P02, uint8_t _P03,
+          uint8_t _P04, uint8_t _P05, uint8_t _P06, uint8_t _P07,
+          uint8_t _P08, uint8_t _P09, uint8_t _P10, uint8_t _P11,
+          uint8_t _P12, uint8_t _P13, uint8_t _P14, uint8_t _P15,
+          uint8_t _P16, uint8_t _P17, uint8_t _P18, uint8_t _P19,
+          uint8_t _P20, uint8_t _P21, uint8_t _P22, uint8_t _P23,
+          uint8_t _P24, uint8_t _P25, uint8_t _P26, uint8_t _P27,
+          uint8_t _P28, uint8_t _P29, uint8_t _P30, uint8_t _P31>
+inline
+constexpr __m256i
+cftal::x86::
+const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+            _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+            _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::iv()
+{
+    return _msk._vi;
+}
+
+template <uint8_t _P00, uint8_t _P01, uint8_t _P02, uint8_t _P03,
+          uint8_t _P04, uint8_t _P05, uint8_t _P06, uint8_t _P07,
+          uint8_t _P08, uint8_t _P09, uint8_t _P10, uint8_t _P11,
+          uint8_t _P12, uint8_t _P13, uint8_t _P14, uint8_t _P15,
+          uint8_t _P16, uint8_t _P17, uint8_t _P18, uint8_t _P19,
+          uint8_t _P20, uint8_t _P21, uint8_t _P22, uint8_t _P23,
+          uint8_t _P24, uint8_t _P25, uint8_t _P26, uint8_t _P27,
+          uint8_t _P28, uint8_t _P29, uint8_t _P30, uint8_t _P31>
+inline
+constexpr __m256
+cftal::x86::
+const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+            _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+            _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::fv()
+{
+    return _msk._vf;
+}
+
+template <uint8_t _P00, uint8_t _P01, uint8_t _P02, uint8_t _P03,
+          uint8_t _P04, uint8_t _P05, uint8_t _P06, uint8_t _P07,
+          uint8_t _P08, uint8_t _P09, uint8_t _P10, uint8_t _P11,
+          uint8_t _P12, uint8_t _P13, uint8_t _P14, uint8_t _P15,
+          uint8_t _P16, uint8_t _P17, uint8_t _P18, uint8_t _P19,
+          uint8_t _P20, uint8_t _P21, uint8_t _P22, uint8_t _P23,
+          uint8_t _P24, uint8_t _P25, uint8_t _P26, uint8_t _P27,
+          uint8_t _P28, uint8_t _P29, uint8_t _P30, uint8_t _P31>
+inline
+constexpr __m256d
+cftal::x86::
+const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+            _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+            _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::dv()
+{
+    return _msk._vd;
+}
+
 
 #endif // __AVX__
 
