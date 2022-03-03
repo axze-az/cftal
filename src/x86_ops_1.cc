@@ -98,7 +98,7 @@ __m128i cftal::x86::div_u8::pos(__m128i x, __m128i y)
     xfi=_mm_add_ps(xfi, offs);
     __m128 rcp=_mm_rcp_ps(yfi);
     __m128 qfi=_mm_mul_ps(rcp, xfi);
-#else    
+#else
     __m128 qfi=_mm_div_ps(xfi, yfi);
 #endif
     __m128i qi=_mm_cvttps_epi32(qfi);
@@ -128,8 +128,66 @@ __m128i cftal::x86::div_u8::v(__m128i x, __m128i y, __m128i* rem)
         __m128i yt = _mm_sub_epi8(x, xt);
         _mm_store_si128(rem, yt);
     }
-    return q;    
+    return q;
 }
+
+#if defined (__AVX2__)
+template <unsigned pos>
+__m256i cftal::x86::div_u8::pos(__m256i x, __m256i y)
+{
+    const __m256i msk4=const_v8u32<0xff, 0xff, 0xff, 0xff,
+                                   0xff, 0xff, 0xff, 0xff>::iv();
+    __m256i xi=x, yi=y;
+    if (pos > 0) {
+        xi=_mm256_srli_epi32(xi, 8*pos);
+        yi=_mm256_srli_epi32(yi, 8*pos);
+    }
+    if (pos < 3) {
+        xi= _mm256_and_si256(xi, msk4);
+        yi= _mm256_and_si256(yi, msk4);
+    }
+    __m256 xfi=_mm256_cvtepi32_ps(xi);
+    __m256 yfi=_mm256_cvtepi32_ps(yi);
+#if USE_RCP_PS>0
+    __m256 offs=_mm256_set1_ps(0.5f);
+    xfi=_mm256_add_ps(xfi, offs);
+    __m256 rcp=_mm256_rcp_ps(yfi);
+    __m256 qfi=_mm256_mul_ps(rcp, xfi);
+#else
+    __m256 qfi=_mm_div_ps(xfi, yfi);
+#endif
+    __m256i qi=_mm256_cvttps_epi32(qfi);
+    if (pos < 3) {
+        qi=_mm256_and_si256(qi, msk4);
+    }
+    if (pos > 0) {
+        qi=_mm256_slli_epi32(qi, 8*pos);
+    }
+    return qi;
+}
+
+__m256i
+cftal::x86::div_u8::v(__m256i x, __m256i y, __m256i* rem)
+{
+    __m256i q=pos<0>(x, y);
+    __m256i qi=pos<1>(x, y);
+    q=_mm256_or_si256(q, qi);
+    qi =pos<2>(x, y);
+    q=_mm256_or_si256(q, qi);
+    qi =pos<3>(x, y);
+    q=_mm256_or_si256(q, qi);
+    __m256i eqz= _mm256_cmpeq_epi8(y, make_zero_int256::v());
+    q = _mm256_or_si256(q, eqz);
+    if (rem!=nullptr) {
+        // multiply back and subtract
+        __m256i xt = vpmullb::v(q, y);
+        __m256i yt = _mm256_sub_epi8(x, xt);
+        _mm256_store_si256(rem, yt);
+    }
+    return q;
+}
+
+#endif
 
 template <unsigned pos>
 __m128i cftal::x86::div_s8::pos(__m128i x, __m128i y)
@@ -138,7 +196,7 @@ __m128i cftal::x86::div_s8::pos(__m128i x, __m128i y)
     if (pos < 3) {
         xi=_mm_slli_epi32(xi, 8*(3-pos));
         yi=_mm_slli_epi32(yi, 8*(3-pos));
-    }    
+    }
     xi=_mm_srai_epi32(xi, 8*3);
     yi=_mm_srai_epi32(yi, 8*3);
     __m128 xfi=_mm_cvtepi32_ps(xi);
@@ -149,7 +207,7 @@ __m128i cftal::x86::div_s8::pos(__m128i x, __m128i y)
     xfi=_mm_add_ps(xfi, offs);
     __m128 rcp=_mm_rcp_ps(yfi);
     __m128 qfi=_mm_mul_ps(rcp, xfi);
-#else    
+#else
     __m128 qfi=_mm_div_ps(xfi, yfi);
 #endif
     __m128i qi=_mm_cvttps_epi32(qfi);
@@ -180,8 +238,64 @@ __m128i cftal::x86::div_s8::v(__m128i x, __m128i y, __m128i* rem)
         __m128i yt = _mm_sub_epi8(x, xt);
         _mm_store_si128(rem, yt);
     }
-    return q;    
+    return q;
 }
+
+
+#if defined (__AVX2__)
+template <unsigned pos>
+__m256i cftal::x86::div_s8::pos(__m256i x, __m256i y)
+{
+    __m256i xi=x, yi=y;
+    if (pos < 3) {
+        xi=_mm256_slli_epi32(xi, 8*(3-pos));
+        yi=_mm256_slli_epi32(yi, 8*(3-pos));
+    }
+    xi=_mm256_srai_epi32(xi, 8*3);
+    yi=_mm256_srai_epi32(yi, 8*3);
+    __m256 xfi=_mm256_cvtepi32_ps(xi);
+    __m256 yfi=_mm256_cvtepi32_ps(yi);
+#if USE_RCP_PS>0
+    __m256 offs=_mm256_and_ps(xfi, v_sign_v8f32_msk::fv());
+    offs=_mm256_or_ps(offs, _mm256_set1_ps(0.5f));
+    xfi=_mm256_add_ps(xfi, offs);
+    __m256 rcp=_mm256_rcp_ps(yfi);
+    __m256 qfi=_mm256_mul_ps(rcp, xfi);
+#else
+    __m256 qfi=_mm256_div_ps(xfi, yfi);
+#endif
+    __m256i qi=_mm256_cvttps_epi32(qfi);
+    if (pos < 3) {
+        const __m256i msk4=const_v8u32<0xff, 0xff, 0xff, 0xff,
+                                       0xff, 0xff, 0xff, 0xff>::iv();
+        qi=_mm256_and_si256(qi, msk4);
+    }
+    if (pos > 0) {
+        qi=_mm256_slli_epi32(qi, 8*pos);
+    }
+    return qi;
+}
+
+__m256i cftal::x86::div_s8::v(__m256i x, __m256i y, __m256i* rem)
+{
+    __m256i q=pos<0>(x, y);
+    __m256i qi=pos<1>(x, y);
+    q=_mm256_or_si256(q, qi);
+    qi =pos<2>(x, y);
+    q=_mm256_or_si256(q, qi);
+    qi =pos<3>(x, y);
+    q=_mm256_or_si256(q, qi);
+    __m256i eqz= _mm256_cmpeq_epi8(y, make_zero_int256::v());
+    q = _mm256_or_si256(q, eqz);
+    if (rem!=nullptr) {
+        // multiply back and subtract
+        __m256i xt = vpmullb::v(q, y);
+        __m256i yt = _mm256_sub_epi8(x, xt);
+        _mm256_store_si256(rem, yt);
+    }
+    return q;
+}
+#endif
 
 __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 {
@@ -201,17 +315,17 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
     __m256 r=_mm256_sub_ps(_mm256_set1_ps(1.0f),
                            _mm256_mul_ps(rcp, yf));
     rcp=_mm256_add_ps(_mm256_mul_ps(rcp, r), rcp);
-#endif    
-    __m256 qf=_mm256_mul_ps(rcp, xf);    
-#else    
+#endif
+    __m256 qf=_mm256_mul_ps(rcp, xf);
+#else
     __m256 qf=_mm256_div_ps(xf, yf);
-#endif    
+#endif
     __m256i qi=_mm256_cvttps_epi32(qf);
-    const __m256i msk= 
-        _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13, 
+    const __m256i msk=
+        _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13,
                          0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                         0, 1, 4, 5, 8, 9, 12, 13, 
-                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);        
+                         0, 1, 4, 5, 8, 9, 12, 13,
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
     qi= vpshufb::v(qi, msk);
     qi= perm1_v8u32<0, 1, 4, 5, 0, 1, 4, 5>::v(qi);
     __m128i q=_mm256_castsi256_si128(qi);
@@ -225,7 +339,7 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
         _mm_store_si128(rem, yt);
     }
     return q;
-#else    
+#else
     __m128i xt = vpsrld_const<16>::v(x);
     __m128i yt = vpsrld_const<16>::v(y);
     __m128 xf= _mm_cvtepi32_ps(xt);
@@ -241,11 +355,11 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
     __m128 r=_mm_sub_ps(_mm_set1_ps(1.0f),
                         _mm_mul_ps(rcp, yf));
     rcp=_mm_add_ps(_mm_mul_ps(rcp, r), rcp);
-#endif    
-    __m128 qf=_mm_mul_ps(rcp, xf);    
-#else    
+#endif
+    __m128 qf=_mm_mul_ps(rcp, xf);
+#else
     __m128 qf= _mm_div_ps(xf, yf);
-#endif    
+#endif
     __m128i qo= _mm_cvttps_epi32(qf);
     const __m128i me= const_v8u16<uint16_t(-1), 0, uint16_t(-1), 0,
                                   uint16_t(-1), 0, uint16_t(-1), 0>::iv();
@@ -263,11 +377,11 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
     r=_mm_sub_ps(_mm_set1_ps(1.0f),
                  _mm_mul_ps(rcp, yf));
     rcp=_mm_add_ps(_mm_mul_ps(rcp, r), rcp);
-#endif    
-    qf=_mm_mul_ps(rcp, xf);    
-#else    
+#endif
+    qf=_mm_mul_ps(rcp, xf);
+#else
     qf = _mm_div_ps(xf, yf);
-#endif    
+#endif
     __m128i q = _mm_cvttps_epi32(qf);
     qo = vpslld_const<16>::v(qo);
     q = _mm_and_si128(q, me);
@@ -282,7 +396,7 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
         _mm_store_si128(rem, yt);
     }
     return q;
-#endif    
+#endif
 }
 
 __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
@@ -304,17 +418,17 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     __m256 r=_mm256_sub_ps(_mm256_set1_ps(1.0f),
                            _mm256_mul_ps(rcp, yf));
     rcp=_mm256_add_ps(_mm256_mul_ps(rcp, r), rcp);
-#endif    
-    __m256 qf=_mm256_mul_ps(rcp, xf);    
-#else    
+#endif
+    __m256 qf=_mm256_mul_ps(rcp, xf);
+#else
     __m256 qf=_mm256_div_ps(xf, yf);
-#endif    
-    __m256i qi=_mm256_cvttps_epi32(qf);   
-    const __m256i msk= 
-        _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13, 
+#endif
+    __m256i qi=_mm256_cvttps_epi32(qf);
+    const __m256i msk=
+        _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13,
                          0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                         0, 1, 4, 5, 8, 9, 12, 13, 
-                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);        
+                         0, 1, 4, 5, 8, 9, 12, 13,
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
     qi= vpshufb::v(qi, msk);
     qi= perm1_v8u32<0, 1, 4, 5, 0, 1, 4, 5>::v(qi);
     __m128i q=_mm256_castsi256_si128(qi);
@@ -328,7 +442,7 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
         _mm_store_si128(rem, yt);
     }
     return q;
-#else    
+#else
     // shift even elements to odd positions
     __m128i xe = vpslld_const<16>::v(x);
     __m128i ye = vpslld_const<16>::v(y);
@@ -342,7 +456,7 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     __m128 yf= _mm_cvtepi32_ps(yt);
 #if USE_RCP_PS>0
     __m128 offs=_mm_and_ps(xf, _mm_set1_ps(-0.0f));
-    offs=_mm_or_ps(offs, _mm_set1_ps(0.5f));   
+    offs=_mm_or_ps(offs, _mm_set1_ps(0.5f));
     xf=_mm_add_ps(xf, offs);
     __m128 rcp=_mm_rcp_ps(yf);
 #if defined (__FMA__)
@@ -352,18 +466,18 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     __m128 r=_mm_sub_ps(_mm_set1_ps(1.0f),
                         _mm_mul_ps(rcp, yf));
     rcp=_mm_add_ps(_mm_mul_ps(rcp, r), rcp);
-#endif    
-    __m128 qf=_mm_mul_ps(rcp, xf);    
-#else    
+#endif
+    __m128 qf=_mm_mul_ps(rcp, xf);
+#else
     __m128 qf= _mm_div_ps(xf, yf);
-#endif    
+#endif
     // odd results.
     __m128i qo= _mm_cvttps_epi32(qf);
     xf = _mm_cvtepi32_ps(xe);
     yf = _mm_cvtepi32_ps(ye);
 #if USE_RCP_PS>0
     offs=_mm_and_ps(xf, _mm_set1_ps(-0.0f));
-    offs=_mm_or_ps(offs, _mm_set1_ps(0.5f));   
+    offs=_mm_or_ps(offs, _mm_set1_ps(0.5f));
     xf=_mm_add_ps(xf, offs);
     rcp=_mm_rcp_ps(yf);
 #if defined (__FMA__)
@@ -373,11 +487,11 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     r=_mm_sub_ps(_mm_set1_ps(1.0f),
                     _mm_mul_ps(rcp, yf));
     rcp=_mm_add_ps(_mm_mul_ps(rcp, r), rcp);
-#endif    
-    qf=_mm_mul_ps(rcp, xf);    
-#else    
+#endif
+    qf=_mm_mul_ps(rcp, xf);
+#else
     qf = _mm_div_ps(xf, yf);
-#endif       
+#endif
     // even results
     __m128i q = _mm_cvttps_epi32(qf);
     // shift left odd results
@@ -398,7 +512,7 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
         _mm_store_si128(rem, yt);
     }
     return q;
-#endif    
+#endif
 }
 
 __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
@@ -508,7 +622,7 @@ __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
     // convert
     __m256i xm= as<__m256i>(hm);
     const __m256i xm_perm= const_v8u32<1, 3, 5, 7, 0, 2, 4, 6>::iv();
-    xm=_mm256_permutevar8x32_epi32(xm, xm_perm);    
+    xm=_mm256_permutevar8x32_epi32(xm, xm_perm);
     // correct too large values later
     __m128i qi=_mm256_cvttpd_epi32(q);
     __m128i xml = as<__m128i>(xm);
@@ -561,7 +675,7 @@ __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
     __m128i qih= _mm_cvttpd_epi32(q);
     __m128i qi= _mm_unpacklo_epi64(qil, qih);
     qi = _mm_xor_si128(qi, xm);
-#endif    
+#endif
     // set quotient to -1 where y==0
     __m128i eqz= _mm_cmpeq_epi32(y, make_zero_int::v());
     qi = _mm_or_si128(qi, eqz);
@@ -727,11 +841,11 @@ namespace {
         } h;
         h._t = rem;
         return (h._r == nullptr) ? nullptr : h._r + _IDX;
-    }   
+    }
 }
 
 __m128i cftal::x86::div_u64::v(__m128i x, __m128i y, __m128i* rem)
-{    
+{
     uint64_t q0 = do_div<uint64_t>(extract_u64<0>(x),
                                    extract_u64<0>(y),
                                    rem_ptr<uint64_t, 0>(rem));
