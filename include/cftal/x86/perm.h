@@ -2828,6 +2828,7 @@ v(__m256i a)
         (_P20 < 16) && (_P21 < 16) && (_P22 < 16) && (_P23 < 16) &&
         (_P24 < 16) && (_P25 < 16) && (_P26 < 16) && (_P27 < 16) &&
         (_P28 < 16) && (_P29 < 16) && (_P30 < 16) && (_P31 < 16);
+
     if (lh_from_lo_lane && hh_from_hi_lane) {
         const __m256i msk=_mm256_setr_epi8(
             _P00<0 ? -1 : _P00, _P01<0 ? -1 : _P01,
@@ -2872,7 +2873,7 @@ v(__m256i a)
         return vpshufb::v(as, msk);
     }
     if (lh_from_lo_lane && hh_from_lo_lane) {
-        // swap lo and high half
+        // distribute the low 128bits to high 128bits
         constexpr const int sh4=shuffle4<0, 1, 0, 1>::val;
         const __m256i as=_mm256_permute4x64_epi64(a, sh4);
         const __m256i msk=_mm256_setr_epi8(
@@ -2895,7 +2896,7 @@ v(__m256i a)
         return vpshufb::v(as, msk);
     }
     if (lh_from_hi_lane && hh_from_hi_lane) {
-        // swap lo and high half
+        // distribute the high 128bits to low 128bits
         constexpr const int sh4=shuffle4<2, 3, 2, 3>::val;
         const __m256i as=_mm256_permute4x64_epi64(a, sh4);
         const __m256i msk=_mm256_setr_epi8(
