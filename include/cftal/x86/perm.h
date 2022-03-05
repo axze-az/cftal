@@ -2828,7 +2828,65 @@ v(__m256i a)
         (_P20 < 16) && (_P21 < 16) && (_P22 < 16) && (_P23 < 16) &&
         (_P24 < 16) && (_P25 < 16) && (_P26 < 16) && (_P27 < 16) &&
         (_P28 < 16) && (_P29 < 16) && (_P30 < 16) && (_P31 < 16);
+    constexpr const bool zero_elements=
+        (_P00 < 0) || (_P01 < 0) || (_P02 < 0) || (_P03 < 0) ||
+        (_P04 < 0) || (_P05 < 0) || (_P06 < 0) || (_P07 < 0) ||
+        (_P08 < 0) || (_P09 < 0) || (_P10 < 0) || (_P11 < 0) ||
+        (_P12 < 0) || (_P13 < 0) || (_P14 < 0) || (_P15 < 0) ||
+        (_P16 < 0) || (_P17 < 0) || (_P18 < 0) || (_P19 < 0) ||
+        (_P20 < 0) || (_P21 < 0) || (_P22 < 0) || (_P23 < 0) ||
+        (_P24 < 0) || (_P25 < 0) || (_P26 < 0) || (_P27 < 0) ||
+        (_P28 < 0) || (_P29 < 0) || (_P30 < 0) || (_P31 < 0);
 
+    using impl::idx_pair;
+    using u16_00_t=idx_pair<_P00, _P01>;
+    using u16_01_t=idx_pair<_P02, _P03>;
+    using u16_02_t=idx_pair<_P04, _P05>;
+    using u16_03_t=idx_pair<_P06, _P07>;
+    using u16_04_t=idx_pair<_P08, _P09>;
+    using u16_05_t=idx_pair<_P10, _P11>;
+    using u16_06_t=idx_pair<_P12, _P13>;
+    using u16_07_t=idx_pair<_P14, _P15>;
+    using u16_08_t=idx_pair<_P16, _P17>;
+    using u16_09_t=idx_pair<_P18, _P19>;
+    using u16_10_t=idx_pair<_P20, _P21>;
+    using u16_11_t=idx_pair<_P22, _P23>;
+    using u16_12_t=idx_pair<_P24, _P25>;
+    using u16_13_t=idx_pair<_P26, _P27>;
+    using u16_14_t=idx_pair<_P28, _P29>;
+    using u16_15_t=idx_pair<_P30, _P31>;
+
+    constexpr const bool u16_perm=
+        u16_00_t::is_valid && u16_01_t::is_valid &&
+        u16_02_t::is_valid && u16_03_t::is_valid &&
+        u16_04_t::is_valid && u16_05_t::is_valid &&
+        u16_06_t::is_valid && u16_07_t::is_valid &&
+        u16_08_t::is_valid && u16_09_t::is_valid &&
+        u16_10_t::is_valid && u16_11_t::is_valid &&
+        u16_12_t::is_valid && u16_13_t::is_valid &&
+        u16_14_t::is_valid && u16_15_t::is_valid;
+
+    using u32_0_t=idx_pair<u16_00_t::idx, u16_01_t::idx>;
+    using u32_1_t=idx_pair<u16_02_t::idx, u16_03_t::idx>;
+    using u32_2_t=idx_pair<u16_04_t::idx, u16_05_t::idx>;
+    using u32_3_t=idx_pair<u16_06_t::idx, u16_07_t::idx>;
+    using u32_4_t=idx_pair<u16_08_t::idx, u16_09_t::idx>;
+    using u32_5_t=idx_pair<u16_10_t::idx, u16_11_t::idx>;
+    using u32_6_t=idx_pair<u16_12_t::idx, u16_13_t::idx>;
+    using u32_7_t=idx_pair<u16_14_t::idx, u16_15_t::idx>;
+
+    constexpr const bool u32_perm= u16_perm &&
+        u32_0_t::is_valid && u32_1_t::is_valid &&
+        u32_2_t::is_valid && u32_3_t::is_valid &&
+        u32_4_t::is_valid && u32_5_t::is_valid &&
+        u32_6_t::is_valid && u32_7_t::is_valid;
+
+    if (u32_perm && zero_elements==false) {
+        return perm1_v8u32<u32_0_t::idx, u32_1_t::idx,
+                           u32_2_t::idx, u32_3_t::idx,
+                           u32_4_t::idx, u32_4_t::idx,
+                           u32_6_t::idx, u32_7_t::idx>::v(a);
+    }
     if (lh_from_lo_lane && hh_from_hi_lane) {
         const __m256i msk=_mm256_setr_epi8(
             _P00<0 ? -1 : _P00, _P01<0 ? -1 : _P01,
@@ -2848,6 +2906,36 @@ v(__m256i a)
             _P28<0 ? -1 : _P28-16, _P29<0 ? -1 : _P29-16,
             _P30<0 ? -1 : _P30-16, _P31<0 ? -1 : _P31-16);
         return vpshufb::v(a, msk);
+    }
+    if (u32_perm) {
+        constexpr const int u32_0= u32_0_t::idx < 0 ? 0 : u32_0_t::idx;
+        constexpr const int u32_1= u32_1_t::idx < 0 ? 1 : u32_1_t::idx;
+        constexpr const int u32_2= u32_2_t::idx < 0 ? 2 : u32_2_t::idx;
+        constexpr const int u32_3= u32_3_t::idx < 0 ? 3 : u32_3_t::idx;
+        constexpr const int u32_4= u32_4_t::idx < 0 ? 4 : u32_4_t::idx;
+        constexpr const int u32_5= u32_5_t::idx < 0 ? 5 : u32_5_t::idx;
+        constexpr const int u32_6= u32_6_t::idx < 0 ? 6 : u32_6_t::idx;
+        constexpr const int u32_7= u32_7_t::idx < 0 ? 7 : u32_7_t::idx;
+        const __m256i ap=perm1_v8u32<u32_0, u32_1, u32_2, u32_3,
+                                     u32_4, u32_5, u32_6, u32_7>::v(a);
+        const __m256i msk=_mm256_setr_epi8(
+            _P00<0 ? 0 : 0xff, _P01<0 ? 0 : 0xff,
+            _P02<0 ? 0 : 0xff, _P03<0 ? 0 : 0xff,
+            _P04<0 ? 0 : 0xff, _P05<0 ? 0 : 0xff,
+            _P06<0 ? 0 : 0xff, _P07<0 ? 0 : 0xff,
+            _P08<0 ? 0 : 0xff, _P09<0 ? 0 : 0xff,
+            _P10<0 ? 0 : 0xff, _P11<0 ? 0 : 0xff,
+            _P12<0 ? 0 : 0xff, _P13<0 ? 0 : 0xff,
+            _P14<0 ? 0 : 0xff, _P15<0 ? 0 : 0xff,
+            _P16<0 ? 0 : 0xff, _P17<0 ? 0 : 0xff,
+            _P18<0 ? 0 : 0xff, _P19<0 ? 0 : 0xff,
+            _P20<0 ? 0 : 0xff, _P21<0 ? 0 : 0xff,
+            _P22<0 ? 0 : 0xff, _P23<0 ? 0 : 0xff,
+            _P24<0 ? 0 : 0xff, _P25<0 ? 0 : 0xff,
+            _P26<0 ? 0 : 0xff, _P27<0 ? 0 : 0xff,
+            _P28<0 ? 0 : 0xff, _P29<0 ? 0 : 0xff,
+            _P30<0 ? 0 : 0xff, _P31<0 ? 0 : 0xff);
+        return _mm256_and_si256(ap, msk);
     }
     if (lh_from_hi_lane && hh_from_lo_lane) {
         // swap lo and high half
@@ -2918,7 +3006,6 @@ v(__m256i a)
             _P30<0 ? -1 : _P30-16, _P31<0 ? -1 : _P31-16);
         return vpshufb::v(as, msk);
     }
-
     // swap lo and high half
     constexpr const int sh4=shuffle4<2, 3, 0, 1>::val;
     const __m256i as=_mm256_permute4x64_epi64(a, sh4);
