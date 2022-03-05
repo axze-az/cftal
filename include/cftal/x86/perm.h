@@ -1156,6 +1156,28 @@ namespace cftal {
                   int _P08, int _P09, int _P10, int _P11,
                   int _P12, int _P13, int _P14, int _P15>
         __m128i perm_v16u8(__m128i a, __m128i b);
+
+#if defined (__AVX2__)
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15,
+                  int _P16, int _P17, int _P18, int _P19,
+                  int _P20, int _P21, int _P22, int _P23,
+                  int _P24, int _P25, int _P26, int _P27,
+                  int _P28, int _P29, int _P30, int _P31>
+        __m256i perm_v32u8(__m256i a);
+
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15,
+                  int _P16, int _P17, int _P18, int _P19,
+                  int _P20, int _P21, int _P22, int _P23,
+                  int _P24, int _P25, int _P26, int _P27,
+                  int _P28, int _P29, int _P30, int _P31>
+        __m256i perm_v32u8(__m256i a, __m256i b);
+#endif
     }
 }
 
@@ -3563,6 +3585,169 @@ __m128i cftal::x86::perm_v16u8(__m128i a, __m128i b)
                        _P08, _P09, _P10, _P11,
                        _P12, _P13, _P14, _P15>::v(a, b);
 }
+
+#if defined (__AVX2__)
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15,
+          int _P16, int _P17, int _P18, int _P19,
+          int _P20, int _P21, int _P22, int _P23,
+          int _P24, int _P25, int _P26, int _P27,
+          int _P28, int _P29, int _P30, int _P31>
+__m256i cftal::x86::perm_v32u8(__m256i a)
+{
+    static_assert(_P00 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P00 < 32");
+    static_assert(_P01 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P01 < 32");
+    static_assert(_P02 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P02 < 32");
+    static_assert(_P03 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P03 < 32");
+    static_assert(_P04 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P04 < 32");
+    static_assert(_P05 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P05 < 32");
+    static_assert(_P06 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P06 < 32");
+    static_assert(_P07 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P07 < 32");
+    static_assert(_P08 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P08 < 32");
+    static_assert(_P09 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P09 < 32");
+    static_assert(_P10 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P10 < 32");
+    static_assert(_P11 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P11 < 32");
+    static_assert(_P12 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P12 < 32");
+    static_assert(_P13 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P13 < 32");
+    static_assert(_P14 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P14 < 32");
+    static_assert(_P15 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P15 < 32");
+    static_assert(_P16 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P16 < 32");
+    static_assert(_P17 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P17 < 32");
+    static_assert(_P18 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P18 < 32");
+    static_assert(_P19 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P19 < 32");
+    static_assert(_P20 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P20 < 32");
+    static_assert(_P21 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P21 < 32");
+    static_assert(_P22 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P22 < 32");
+    static_assert(_P23 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P23 < 32");
+    static_assert(_P24 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P24 < 32");
+    static_assert(_P25 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P25 < 32");
+    static_assert(_P26 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P26 < 32");
+    static_assert(_P27 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P27 < 32");
+    static_assert(_P28 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P28 < 32");
+    static_assert(_P29 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P29 < 32");
+    static_assert(_P30 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P30 < 32");
+    static_assert(_P31 < 32,
+                  "cftal::x86::perm_v32u8(a) : _P31 < 32");
+    return perm1_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+                       _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+                       _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+                       _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::v(a);
+}
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15,
+          int _P16, int _P17, int _P18, int _P19,
+          int _P20, int _P21, int _P22, int _P23,
+          int _P24, int _P25, int _P26, int _P27,
+          int _P28, int _P29, int _P30, int _P31>
+__m256i cftal::x86::perm_v32u8(__m256i a, __m256i b)
+{
+    static_assert(_P00 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P00 < 64");
+    static_assert(_P01 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P01 < 64");
+    static_assert(_P02 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P02 < 64");
+    static_assert(_P03 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P03 < 64");
+    static_assert(_P04 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P04 < 64");
+    static_assert(_P05 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P05 < 64");
+    static_assert(_P06 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P06 < 64");
+    static_assert(_P07 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P07 < 64");
+    static_assert(_P08 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P08 < 64");
+    static_assert(_P09 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P09 < 64");
+    static_assert(_P10 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P10 < 64");
+    static_assert(_P11 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P11 < 64");
+    static_assert(_P12 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P12 < 64");
+    static_assert(_P13 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P13 < 64");
+    static_assert(_P14 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P14 < 64");
+    static_assert(_P15 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P15 < 64");
+    static_assert(_P16 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P16 < 64");
+    static_assert(_P17 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P17 < 64");
+    static_assert(_P18 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P18 < 64");
+    static_assert(_P19 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P19 < 64");
+    static_assert(_P20 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P20 < 64");
+    static_assert(_P21 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P21 < 64");
+    static_assert(_P22 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P22 < 64");
+    static_assert(_P23 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P23 < 64");
+    static_assert(_P24 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P24 < 64");
+    static_assert(_P25 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P25 < 64");
+    static_assert(_P26 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P26 < 64");
+    static_assert(_P27 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P27 < 64");
+    static_assert(_P28 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P28 < 64");
+    static_assert(_P29 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P29 < 64");
+    static_assert(_P30 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P30 < 64");
+    static_assert(_P31 < 64,
+                  "cftal::x86::perm_v32u8(a, b) : _P31 < 64");
+    return perm2_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+                       _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
+                       _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
+                       _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>::v(a, b);
+}
+
+#endif
 
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
