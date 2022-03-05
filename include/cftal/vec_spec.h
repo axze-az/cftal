@@ -22,31 +22,31 @@
 #include <cftal/vec_t_1.h>
 
 #if defined (__ARM_NEON) || defined (__ARM_NEON__)
-#include <cftal/arm/v2s32.h>
-#include <cftal/arm/v2u32.h>
 #include <cftal/arm/v2s64.h>
 #include <cftal/arm/v2u64.h>
-#include <cftal/arm/v2s32_inl.h>
-#include <cftal/arm/v2u32_inl.h>
+#include <cftal/arm/v2s32.h>
+#include <cftal/arm/v2u32.h>
 #include <cftal/arm/v2s64_inl.h>
 #include <cftal/arm/v2u64_inl.h>
+#include <cftal/arm/v2s32_inl.h>
+#include <cftal/arm/v2u32_inl.h>
 #endif
 
 #if defined (__SSE2__)
 // include 128 bit integer vector specializations
-#include <cftal/x86/v4s32.h>
-#include <cftal/x86/v4u32.h>
 #include <cftal/x86/v2s64.h>
 #include <cftal/x86/v2u64.h>
+#include <cftal/x86/v4s32.h>
+#include <cftal/x86/v4u32.h>
 #include <cftal/x86/v8s16.h>
 #include <cftal/x86/v8u16.h>
 #include <cftal/x86/v16s8.h>
 #include <cftal/x86/v16u8.h>
 // include 128 bit integer vector specializations implementations
-#include <cftal/x86/v4s32_inl.h>
-#include <cftal/x86/v4u32_inl.h>
 #include <cftal/x86/v2s64_inl.h>
 #include <cftal/x86/v2u64_inl.h>
+#include <cftal/x86/v4s32_inl.h>
+#include <cftal/x86/v4u32_inl.h>
 #include <cftal/x86/v8s16_inl.h>
 #include <cftal/x86/v8u16_inl.h>
 #include <cftal/x86/v16s8_inl.h>
@@ -54,15 +54,15 @@
 #endif
 #if defined (__AVX2__)
 // include 256 bit integer vector specializations
-#include <cftal/x86/v8s32.h>
-#include <cftal/x86/v8u32.h>
 #include <cftal/x86/v4s64.h>
 #include <cftal/x86/v4u64.h>
+#include <cftal/x86/v8s32.h>
+#include <cftal/x86/v8u32.h>
 // include 256 bit integer vector specializations implementations
-#include <cftal/x86/v8s32_inl.h>
-#include <cftal/x86/v8u32_inl.h>
 #include <cftal/x86/v4s64_inl.h>
 #include <cftal/x86/v4u64_inl.h>
+#include <cftal/x86/v8s32_inl.h>
+#include <cftal/x86/v8u32_inl.h>
 #endif
 
 #if defined (__ARM_NEON__) || defined (__ARM_NEON)
@@ -82,20 +82,14 @@
 // floating point vector specialization implementations
 #if defined (__SSE2__)
 #include <cftal/x86/v4f32_inl.h>
-#endif
-#if defined (__AVX__)
-#include <cftal/x86/v8f32_inl.h>
-#endif
-#if defined (__AVX512F__)
-#include <cftal/x86/v8f64.h>
-#endif
-#if defined (__SSE2__)
 #include <cftal/x86/v2f64_inl.h>
 #endif
 #if defined (__AVX__)
+#include <cftal/x86/v8f32_inl.h>
 #include <cftal/x86/v4f64_inl.h>
 #endif
 #if defined (__AVX512F__)
+#include <cftal/x86/v8f64.h>
 #include <cftal/x86/v8f64_inl.h>
 #endif
 
@@ -120,6 +114,5 @@ cftal::max_vec_size_specialized()
         is_vec_specialized<vec<_T, 2> >::value==true ? 2 : 1;
     return r;
 }
-
 
 #endif // __CFTAL_VEC_SPEC_H__

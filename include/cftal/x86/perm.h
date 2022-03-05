@@ -1051,7 +1051,7 @@ namespace cftal {
             static __m256i v(__m256i a);
         };
 
-        // generic permutation of one v16u8 vector
+        // generic permutation of two v32u8 vectors
         template <int _P00, int _P01, int _P02, int _P03,
                   int _P04, int _P05, int _P06, int _P07,
                   int _P08, int _P09, int _P10, int _P11,
