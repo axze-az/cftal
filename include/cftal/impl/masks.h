@@ -23,7 +23,7 @@
 
 namespace cftal {
     namespace impl {
-        
+
         // 4 bit position mask with 2 elements
         template <int _P0, int _P1, int _MSK>
         struct pos_msk_2 {
@@ -102,6 +102,22 @@ namespace cftal {
                     ((_P7 <0 ? 0 : 0xF) <<28))
             };
         };
+
+        template <int _P0, int _P1>
+        struct idx_pair {
+            // idx for pairs
+            constexpr static const int idx=
+                (_P0 < 0 ? (_P1<0 ? -1 : _P1>>1): _P0>>1);
+            // are _P0 and _P1 are an PAIR?
+            constexpr static const bool is_valid=
+                ((_P0 < 0) && (_P1 < 0)) ||
+                ((_P0 < 0) && ((_P1 & 1)==1)) ||
+                (((_P0 & 1)==0) && (_P1 < 0)) ||
+                (((_P0 & 1)==0) && (_P1 == _P0 + 1));
+            constexpr static const bool has_zero=
+                (_P0 < 0) || (_P1 < 0);
+        };
+
     }
 }
 
