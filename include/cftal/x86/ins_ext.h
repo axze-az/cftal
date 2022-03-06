@@ -117,6 +117,15 @@ namespace cftal {
         __m256d insert_f64(__m256d r, double v, size_t i);
 #endif
 #if defined (__AVX2__)
+        // extract/insert uint8_t
+        template <unsigned _IDX>
+        uint8_t extract_u8(__m256i v);
+        template <unsigned _IDX>
+        __m256i insert_u8(__m256i r, uint8_t v);
+
+        uint8_t extract_u8(__m256i r, size_t i);
+        __m256i insert_u8(__m256i r, uint8_t v, size_t i);
+
         // extract/insert uint32_t
         template <unsigned _IDX>
         uint32_t extract_u32(__m256i v);
@@ -134,6 +143,8 @@ namespace cftal {
 
         uint64_t extract_u64(__m256i r, size_t i);
         __m256i insert_u64(__m256i r, uint64_t v, size_t i);
+
+
 #endif
     }
 }
@@ -275,7 +286,7 @@ double cftal::x86::extract_f64(__m128d v, size_t i)
     int64_t ii= ((int64_t(i) & 1) * 0x0808080808080808LL) +
         0x0706050403020100LL;
     // __m128i msk=_mm_set1_epi64x(ii);
-    __m128i msk=_mm_cvtsi64_si128(ii);        
+    __m128i msk=_mm_cvtsi64_si128(ii);
     __m128i ri= _mm_shuffle_epi8(as<__m128i>(v), msk);
     return _mm_cvtsd_f64(as<__m128d>(ri));
 #else
@@ -841,6 +852,55 @@ __m256d cftal::x86::insert_f64(__m256d v, double d, size_t i)
 #endif
 
 #if defined (__AVX2__)
+
+template <unsigned _IDX>
+inline
+cftal::uint8_t cftal::x86::extract_u8(__m256i v)
+{
+    const bool cond = _IDX < 32;
+    static_assert(cond, "cftal::x86::extract_u32 _IDX < 32");
+    __m128i vv;
+    if (_IDX<16) {
+        vv = as<__m128i>(v);
+    } else {
+        vv = _mm256_extracti128_si256(v, 1);
+    }
+    return extract_u8<_IDX&0xf>(vv);
+}
+
+template <unsigned _IDX>
+inline
+__m256i cftal::x86::insert_u8(__m256i v, uint8_t d)
+{
+    const bool cond = _IDX < 32;
+    static_assert(cond, "cftal::x86::insert_u32 _IDX < 32");
+    return insert_u8(v, d, _IDX);
+}
+
+inline
+std::uint8_t cftal::x86::extract_u8(__m256i v, size_t i)
+{
+    __m128i vv;
+    if (i<4) {
+        vv = as<__m128i>(v);
+    } else {
+        vv = _mm256_extracti128_si256(v, 1);
+    }
+    return extract_u8(vv, i);
+}
+
+inline
+__m256i cftal::x86::insert_u8(__m256i v, uint8_t f, size_t i)
+{
+    __m256i vf=_mm256_set1_epi32(f);
+    using u_v32x8 = vecunion<int8_t, 32, __m256, __m256d, __m256i>;
+    u_v32x8  umsk;
+    _mm256_storeu_si256(&umsk._vi, _mm256_set1_epi32(0));
+    umsk._s[i&0x1f]= 0xff;
+    const __m256i msk=umsk._vi;
+    return select_u8(msk, vf, v);
+}
+
 template <unsigned _IDX>
 inline
 cftal::uint32_t cftal::x86::extract_u32(__m256i v)

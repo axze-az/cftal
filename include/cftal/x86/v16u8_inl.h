@@ -73,7 +73,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return _mm_cmpeq_epi16(a(), b());
+                return _mm_cmpeq_epi8(a(), b());
             }
         };
 
@@ -110,7 +110,7 @@ namespace cftal {
             v(const full_type& a, const full_type& b) {
                 v16u8 ta(a ^ full_type(sign_s8_msk::v.u8ll()));
                 v16u8 tb(b ^ full_type(sign_s8_msk::v.u8ll()));
-                return _mm_cmpgt_epi16(ta(), tb());
+                return _mm_cmpgt_epi8(ta(), tb());
             }
         };
 
@@ -537,7 +537,7 @@ cftal::v16u8 cftal::select(const v16u8::mask_type& m,
                            const v16u8& on_true,
                            const v16u8& on_false)
 {
-    return x86::select_u16(m(), on_true(), on_false());
+    return x86::select_u8(m(), on_true(), on_false());
 }
 
 inline

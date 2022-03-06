@@ -648,6 +648,9 @@ namespace cftal {
 
         struct vpsllb {
             static __m128i v(__m128i a, unsigned shift);
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, unsigned shift);
+#endif
         };
 
         struct vpsllw {
@@ -755,6 +758,9 @@ namespace cftal {
 
         struct vpsrlb {
             static __m128i v(__m128i a, unsigned shift);
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, unsigned shift);
+#endif
         };
 
         struct vpsrlw {
@@ -834,6 +840,9 @@ namespace cftal {
 
         struct vpsrab {
             static __m128i v(__m128i a, unsigned shift);
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, unsigned shift);
+#endif
         };
 
         struct vpsraw {
@@ -1600,19 +1609,16 @@ __m128i cftal::x86::vpshufb::v(__m128i a, __m128i msk)
 #if defined (__SSSE3__)
     return _mm_shuffle_epi8(a, msk);
 #else
-    union {
-        __m128i _v;
-        int8_t _a[16];
-    } s, m, d;
-    _mm_store_si128(&s._v, a);
-    _mm_store_si128(&m._v, msk);
+    vecunion <int8_t, 16, __m128, __m128d, __m128i> s, m, d;
+    _mm_store_si128(&s._vi, a);
+    _mm_store_si128(&m._vi, msk);
     for (int i=0; i<16; ++i) {
-        int8_t mi=m._a[i];
+        int8_t mi=m._s[i];
         int8_t offs=mi & 15;
         int8_t msk=~(mi>>7);
-        d._a[i] =  s._a[offs] & msk;
+        d._s[i] =  s._s[offs] & msk;
     }
-    __m128i r=_mm_load_si128(&d._v);
+    __m128i r=_mm_load_si128(&d._vi);
     return r;
 #endif
 }
@@ -1636,6 +1642,35 @@ __m128i cftal::x86::vpsllb::v(__m128i a, unsigned shift)
     return r;
 }
 
+#if defined (__AVX2__)
+inline
+__m256i cftal::x86::vpsllb::v(__m256i a, unsigned shift)
+{
+    const __m256i odd_mask = const_v32u8<0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff>::iv();
+    const __m256i even_mask = const_v32u8<0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00>::iv();
+    __m256i re = _mm256_slli_epi16(a, shift);
+    re = _mm256_and_si256(re, even_mask);
+    __m256i ro = _mm256_and_si256(a, odd_mask);
+    ro = _mm256_slli_epi16(ro, shift);
+    __m256i r= _mm256_or_si256(re, ro);
+    return r;
+}
+#endif
+
 inline
 __m128i cftal::x86::vpsrlb::v(__m128i a, unsigned shift)
 {
@@ -1655,6 +1690,35 @@ __m128i cftal::x86::vpsrlb::v(__m128i a, unsigned shift)
     return r;
 }
 
+#if defined (__AVX2__)
+inline
+__m256i cftal::x86::vpsrlb::v(__m256i a, unsigned shift)
+{
+    const __m256i odd_mask = const_v32u8<0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff>::iv();
+    const __m256i even_mask = const_v32u8<0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00,
+                                          0xff, 0x00, 0xff, 0x00>::iv();
+    __m256i ro = _mm256_srli_epi16(a, shift);
+    ro = _mm256_and_si256(ro, odd_mask);
+    __m256i re = _mm256_and_si256(a, even_mask);
+    re = _mm256_srli_epi16(re, shift);
+    __m256i r= _mm256_or_si256(re, ro);
+    return r;
+}
+#endif
+
 inline
 __m128i cftal::x86::vpsrab::v(__m128i a, unsigned shift)
 {
@@ -1670,6 +1734,28 @@ __m128i cftal::x86::vpsrab::v(__m128i a, unsigned shift)
     __m128i r= _mm_or_si128(re, ro);
     return r;
 }
+
+#if defined (__AVX2__)
+inline
+__m256i cftal::x86::vpsrab::v(__m256i a, unsigned shift)
+{
+    const __m256i odd_mask = const_v32u8<0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff,
+                                         0x00, 0xff, 0x00, 0xff>::iv();
+    __m256i ro = _mm256_srai_epi16(a, shift);
+    ro = _mm256_and_si256(ro, odd_mask);
+    __m256i re = _mm256_slli_epi16(a, 8);
+    re =_mm256_srai_epi16(re, shift);
+    re =_mm256_srli_epi16(re, 8);
+    __m256i r= _mm256_or_si256(re, ro);
+    return r;
+}
+#endif
 
 inline
 __m128i cftal::x86::vpsraq::v(__m128i a, unsigned shift)
