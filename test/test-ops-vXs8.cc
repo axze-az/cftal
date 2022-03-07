@@ -20,7 +20,7 @@
 int main()
 {
     std::cout << "testing vXs8" << std::endl;
-    bool rc=cftal::test::of_ops_up_to<int8_t, 32>::v();
+    bool rc=cftal::test::of_ops_up_to<int8_t, 64>::v();
     if (rc==false)
         std::cerr << "int8_t test failed" << std::endl;
     return rc==true ? 0 : 1;
