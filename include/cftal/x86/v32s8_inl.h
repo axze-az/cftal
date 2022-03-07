@@ -539,10 +539,10 @@ cftal::mul_lo_hi(const v32s8& x, const v32s8& y)
                                                0xff, 0x00, 0xff, 0x00,
                                                0xff, 0x00, 0xff, 0x00,
                                                0xff, 0x00, 0xff, 0x00,
-                                               0x00, 0xff, 0x00, 0xff,
-                                               0x00, 0xff, 0x00, 0xff,
-                                               0x00, 0xff, 0x00, 0xff,
-                                               0x00, 0xff, 0x00, 0xff>::iv();
+                                               0xff, 0x00, 0xff, 0x00,
+                                               0xff, 0x00, 0xff, 0x00,
+                                               0xff, 0x00, 0xff, 0x00,
+                                               0xff, 0x00, 0xff, 0x00>::iv();
     __m256i ex=_mm256_srai_epi16(_mm256_slli_epi16(x(), 8), 8);
     __m256i ey=_mm256_srai_epi16(_mm256_slli_epi16(y(), 8), 8);
     __m256i pe=_mm256_mullo_epi16(ex, ey);
