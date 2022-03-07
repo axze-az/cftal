@@ -181,7 +181,7 @@ cftal::test::of_integral_ops<_T, _N, true>::v(_T ai, _T bi)
     _T ss[_N], sr[_N], sref[_N];
     for (std::size_t i=0; i<sizeof(_T)*8; i+= _N) {
         for (std::size_t j=0; j<_N; ++j) {
-            std::size_t val= std::min(i+j, sizeof(_T)*8);
+            std::size_t val= (i+j) & ((sizeof(_T)*8)-1);
             ss[j] = val;
         }
         v_t s= mem<v_t>::load(ss, _N);
