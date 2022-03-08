@@ -126,6 +126,15 @@ namespace cftal {
         uint8_t extract_u8(__m256i r, size_t i);
         __m256i insert_u8(__m256i r, uint8_t v, size_t i);
 
+        // extract/insert uint16_t
+        template <unsigned _IDX>
+        uint16_t extract_u16(__m256i v);
+        template <unsigned _IDX>
+        __m256i insert_u16(__m256i r, uint16_t v);
+
+        uint16_t extract_u16(__m256i r, size_t i);
+        __m256i insert_u16(__m256i r, uint16_t v, size_t i);
+
         // extract/insert uint32_t
         template <unsigned _IDX>
         uint32_t extract_u32(__m256i v);
@@ -858,14 +867,14 @@ inline
 cftal::uint8_t cftal::x86::extract_u8(__m256i v)
 {
     const bool cond = _IDX < 32;
-    static_assert(cond, "cftal::x86::extract_u32 _IDX < 32");
+    static_assert(cond, "cftal::x86::extract_u8 _IDX < 32");
     __m128i vv;
     if (_IDX<16) {
         vv = as<__m128i>(v);
     } else {
         vv = _mm256_extracti128_si256(v, 1);
     }
-    return extract_u8<_IDX&0xf>(vv);
+    return extract_u8<_IDX & 0xf>(vv);
 }
 
 template <unsigned _IDX>
@@ -873,7 +882,7 @@ inline
 __m256i cftal::x86::insert_u8(__m256i v, uint8_t d)
 {
     const bool cond = _IDX < 32;
-    static_assert(cond, "cftal::x86::insert_u32 _IDX < 32");
+    static_assert(cond, "cftal::x86::insert_u8 _IDX < 32");
     return insert_u8(v, d, _IDX);
 }
 
@@ -881,24 +890,68 @@ inline
 std::uint8_t cftal::x86::extract_u8(__m256i v, size_t i)
 {
     __m128i vv;
-    if (i<4) {
+    if (i<16) {
         vv = as<__m128i>(v);
     } else {
         vv = _mm256_extracti128_si256(v, 1);
     }
-    return extract_u8(vv, i);
+    return extract_u8(vv, i & 0xf);
 }
 
 inline
 __m256i cftal::x86::insert_u8(__m256i v, uint8_t f, size_t i)
 {
-    __m256i vf=_mm256_set1_epi32(f);
     using u_v32x8 = vecunion<int8_t, 32, __m256, __m256d, __m256i>;
-    u_v32x8  umsk;
-    _mm256_storeu_si256(&umsk._vi, _mm256_set1_epi32(0));
-    umsk._s[i&0x1f]= 0xff;
-    const __m256i msk=umsk._vi;
-    return select_u8(msk, vf, v);
+    u_v32x8 vm;
+    _mm256_storeu_si256(&vm._vi, v);
+    vm._s[i & 0x1f]= f;
+    return vm._vi;
+}
+
+template <unsigned _IDX>
+inline
+cftal::uint16_t cftal::x86::extract_u16(__m256i v)
+{
+    const bool cond = _IDX < 16;
+    static_assert(cond, "cftal::x86::extract_u16 _IDX < 16");
+    __m128i vv;
+    if (_IDX<8) {
+        vv = as<__m128i>(v);
+    } else {
+        vv = _mm256_extracti128_si256(v, 1);
+    }
+    return extract_u16<_IDX & 0x7>(vv);
+}
+
+template <unsigned _IDX>
+inline
+__m256i cftal::x86::insert_u16(__m256i v, uint16_t d)
+{
+    const bool cond = _IDX < 16;
+    static_assert(cond, "cftal::x86::insert_u16 _IDX < 16");
+    return insert_u16(v, d, _IDX);
+}
+
+inline
+std::uint16_t cftal::x86::extract_u16(__m256i v, size_t i)
+{
+    __m128i vv;
+    if (i<8) {
+        vv = as<__m128i>(v);
+    } else {
+        vv = _mm256_extracti128_si256(v, 1);
+    }
+    return extract_u16(vv, i & 0x7);
+}
+
+inline
+__m256i cftal::x86::insert_u16(__m256i v, uint16_t f, size_t i)
+{
+    using u_v16x16 = vecunion<int16_t, 32, __m256, __m256d, __m256i>;
+    u_v16x16  vm;
+    _mm256_storeu_si256(&vm._vi, v);
+    vm._s[i & 0xf]= f;
+    return vm._vi;
 }
 
 template <unsigned _IDX>
