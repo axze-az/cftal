@@ -1133,6 +1133,21 @@ namespace cftal {
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m256i perm_v8u32(__m256i a, __m256i b);
+
+        // generic permutation of one v16u16 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        __m256i perm_v16u16(__m256i a);
+
+        // generic permutation of one v16u16 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        __m256i perm_v16u16(__m256i a, __m256i b);
+
 #endif
 #if defined (__AVX512F__)
         template <int _P0, int _P1, int _P2, int _P3,
@@ -3587,6 +3602,103 @@ __m128i cftal::x86::perm_v16u8(__m128i a, __m128i b)
 }
 
 #if defined (__AVX2__)
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+__m256i cftal::x86::perm_v16u16(__m256i a)
+{
+    static_assert(_P00 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P00 < 16");
+    static_assert(_P01 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P01 < 16");
+    static_assert(_P02 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P02 < 16");
+    static_assert(_P03 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P03 < 16");
+    static_assert(_P04 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P04 < 16");
+    static_assert(_P05 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P05 < 16");
+    static_assert(_P06 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P06 < 16");
+    static_assert(_P07 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P07 < 16");
+    static_assert(_P08 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P08 < 16");
+    static_assert(_P09 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P09 < 16");
+    static_assert(_P10 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P10 < 16");
+    static_assert(_P11 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P11 < 16");
+    static_assert(_P12 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P12 < 16");
+    static_assert(_P13 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P13 < 16");
+    static_assert(_P14 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P14 < 16");
+    static_assert(_P15 < 16,
+                  "cftal::x86::perm_v16u16(a) : _P15 < 16");
+    return perm1_v32u8<_P00*2, _P00*2+1, _P01*2, _P01*2+1,
+                       _P02*2, _P02*2+1, _P03*2, _P03*2+1,
+                       _P04*2, _P04*2+1, _P05*2, _P05*2+1,
+                       _P06*2, _P06*2+1, _P07*2, _P07*2+1,
+                       _P08*2, _P08*2+1, _P09*2, _P09*2+1,
+                       _P10*2, _P10*2+1, _P11*2, _P11*2+1,
+                       _P12*2, _P12*2+1, _P13*2, _P13*2+1,
+                       _P14*2, _P14*2+1, _P15*2, _P15*2+1>::v(a);
+}
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+__m256i cftal::x86::perm_v16u16(__m256i a, __m256i b)
+{
+    static_assert(_P00 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P00 < 32");
+    static_assert(_P01 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P01 < 32");
+    static_assert(_P02 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P02 < 32");
+    static_assert(_P03 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P03 < 32");
+    static_assert(_P04 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P04 < 32");
+    static_assert(_P05 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P05 < 32");
+    static_assert(_P06 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P06 < 32");
+    static_assert(_P07 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P07 < 32");
+    static_assert(_P08 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P08 < 32");
+    static_assert(_P09 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P09 < 32");
+    static_assert(_P10 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P10 < 32");
+    static_assert(_P11 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P11 < 32");
+    static_assert(_P12 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P12 < 32");
+    static_assert(_P13 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P13 < 32");
+    static_assert(_P14 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P14 < 32");
+    static_assert(_P15 < 32,
+                  "cftal::x86::perm_v16u16(a, b) : _P15 < 32");
+    return perm2_v32u8<_P00*2, _P00*2+1, _P01*2, _P01*2+1,
+                       _P02*2, _P02*2+1, _P03*2, _P03*2+1,
+                       _P04*2, _P04*2+1, _P05*2, _P05*2+1,
+                       _P06*2, _P06*2+1, _P07*2, _P07*2+1,
+                       _P08*2, _P08*2+1, _P09*2, _P09*2+1,
+                       _P10*2, _P10*2+1, _P11*2, _P11*2+1,
+                       _P12*2, _P12*2+1, _P13*2, _P13*2+1,
+                       _P14*2, _P14*2+1, _P15*2, _P15*2+1>::v(a, b);
+}
+
 template <int _P00, int _P01, int _P02, int _P03,
           int _P04, int _P05, int _P06, int _P07,
           int _P08, int _P09, int _P10, int _P11,
