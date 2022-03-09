@@ -399,6 +399,24 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 #endif
 }
 
+#if defined (__AVX2__)
+__m256i cftal::x86::div_u16::v(__m256i x, __m256i y, __m256i* rem)
+{
+    __m128i lx=_mm256_castsi256_si128(x);
+    __m128i ly=_mm256_castsi256_si128(y);
+    __m128i* pl= rem == nullptr ?
+        nullptr : reinterpret_cast<__m128i*>(rem);
+    __m128i rl=v(lx, ly, pl);
+    __m128i hx=_mm256_extracti128_si256(x, 1);
+    __m128i hy=_mm256_extracti128_si256(y, 1);
+    __m128i* ph= rem == nullptr ?
+        nullptr : reinterpret_cast<__m128i*>(rem) + 1;
+    __m128i rh=v(hx, hy, ph);
+    return _mm256_setr_m128i(rl, rh);
+}
+#endif
+
+
 __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
 {
 #if defined (__AVX2__)
@@ -514,6 +532,23 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
     return q;
 #endif
 }
+
+#if defined (__AVX2__)
+__m256i cftal::x86::div_s16::v(__m256i x, __m256i y, __m256i* rem)
+{
+    __m128i lx=_mm256_castsi256_si128(x);
+    __m128i ly=_mm256_castsi256_si128(y);
+    __m128i* pl= rem == nullptr ?
+        nullptr : reinterpret_cast<__m128i*>(rem);
+    __m128i rl=v(lx, ly, pl);
+    __m128i hx=_mm256_extracti128_si256(x, 1);
+    __m128i hy=_mm256_extracti128_si256(y, 1);
+    __m128i* ph= rem == nullptr ?
+        nullptr : reinterpret_cast<__m128i*>(rem) + 1;
+    __m128i rh=v(hx, hy, ph);
+    return _mm256_setr_m128i(rl, rh);
+}
+#endif
 
 __m128i cftal::x86::div_s32::v(__m128i x, __m128i y, __m128i* rem)
 {

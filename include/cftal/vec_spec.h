@@ -58,6 +58,8 @@
 #include <cftal/x86/v4u64.h>
 #include <cftal/x86/v8s32.h>
 #include <cftal/x86/v8u32.h>
+#include <cftal/x86/v16s16.h>
+#include <cftal/x86/v16u16.h>
 #include <cftal/x86/v32s8.h>
 #include <cftal/x86/v32u8.h>
 // include 256 bit integer vector specializations implementations
@@ -65,6 +67,8 @@
 #include <cftal/x86/v4u64_inl.h>
 #include <cftal/x86/v8s32_inl.h>
 #include <cftal/x86/v8u32_inl.h>
+#include <cftal/x86/v16s16_inl.h>
+#include <cftal/x86/v16u16_inl.h>
 #include <cftal/x86/v32s8_inl.h>
 #include <cftal/x86/v32u8_inl.h>
 #endif

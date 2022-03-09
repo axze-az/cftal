@@ -983,14 +983,17 @@ namespace cftal {
 
         struct vpsllvw {
             static __m128i v(__m128i a, __m128i s);
+            static __m256i v(__m256i a, __m256i s);
         };
 
         struct vpsrlvw {
             static __m128i v(__m128i a, __m128i s);
+            static __m256i v(__m256i a, __m256i s);
         };
 
         struct vpsravw {
             static __m128i v(__m128i a, __m128i s);
+            static __m256i v(__m256i a, __m256i s);
         };
 #endif
 
@@ -1815,6 +1818,18 @@ __m128i cftal::x86::vpsllvw::v(__m128i a, __m128i s)
 }
 
 inline
+__m256i cftal::x86::vpsllvw::v(__m256i a, __m256i s)
+{
+    __m128i al=_mm256_castsi256_si128(a);
+    __m128i sl=_mm256_castsi256_si128(s);
+    __m128i rl=v(al, sl);
+    __m128i ah=_mm256_extracti128_si256(a, 1);
+    __m128i sh=_mm256_extracti128_si256(s, 1);
+    __m128i rh=v(ah, sh);
+    return _mm256_setr_m128i(rl, rh);
+}
+
+inline
 __m128i cftal::x86::vpsrlvw::v(__m128i a, __m128i s)
 {
     // zero extension
@@ -1823,6 +1838,18 @@ __m128i cftal::x86::vpsrlvw::v(__m128i a, __m128i s)
     __m256i rt=_mm256_srlv_epi32(at, st);
     __m128i r=vpsxxvw::v(rt);
     return r;
+}
+
+inline
+__m256i cftal::x86::vpsrlvw::v(__m256i a, __m256i s)
+{
+    __m128i al=_mm256_castsi256_si128(a);
+    __m128i sl=_mm256_castsi256_si128(s);
+    __m128i rl=v(al, sl);
+    __m128i ah=_mm256_extracti128_si256(a, 1);
+    __m128i sh=_mm256_extracti128_si256(s, 1);
+    __m128i rh=v(ah, sh);
+    return _mm256_setr_m128i(rl, rh);
 }
 
 inline
@@ -1835,6 +1862,19 @@ __m128i cftal::x86::vpsravw::v(__m128i a, __m128i s)
     __m128i r=vpsxxvw::v(rt);
     return r;
 }
+
+inline
+__m256i cftal::x86::vpsravw::v(__m256i a, __m256i s)
+{
+    __m128i al=_mm256_castsi256_si128(a);
+    __m128i sl=_mm256_castsi256_si128(s);
+    __m128i rl=v(al, sl);
+    __m128i ah=_mm256_extracti128_si256(a, 1);
+    __m128i sh=_mm256_extracti128_si256(s, 1);
+    __m128i rh=v(ah, sh);
+    return _mm256_setr_m128i(rl, rh);
+}
+
 #endif
 
 #if !defined (__AVX2__)
