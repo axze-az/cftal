@@ -1820,6 +1820,24 @@ __m128i cftal::x86::vpsllvw::v(__m128i a, __m128i s)
 inline
 __m256i cftal::x86::vpsllvw::v(__m256i a, __m256i s)
 {
+#if 1
+    __m256i so=_mm256_srli_epi32(s, 16);
+    const __m256i odd_mask=const_v8u32<0xffff0000, 0xffff0000,
+                                       0xffff0000, 0xffff0000,
+                                       0xffff0000, 0xffff0000,
+                                       0xffff0000, 0xffff0000>::iv();
+    __m256i ao=_mm256_and_si256(a, odd_mask);
+    __m256i ro=_mm256_sllv_epi32(ao, so);
+    const __m256i even_mask=const_v8u32<0x0000ffff, 0x0000ffff,
+                                        0x0000ffff, 0x0000ffff,
+                                        0x0000ffff, 0x0000ffff,
+                                        0x0000ffff, 0x0000ffff>::iv();
+    __m256i se=_mm256_and_si256(s, even_mask);
+    __m256i re=_mm256_sllv_epi32(a, se);
+    re = _mm256_and_si256(re, even_mask);
+    __m256i r=_mm256_or_si256(ro, re);
+    return r;
+#else
     __m128i al=_mm256_castsi256_si128(a);
     __m128i sl=_mm256_castsi256_si128(s);
     __m128i rl=v(al, sl);
@@ -1827,6 +1845,7 @@ __m256i cftal::x86::vpsllvw::v(__m256i a, __m256i s)
     __m128i sh=_mm256_extracti128_si256(s, 1);
     __m128i rh=v(ah, sh);
     return _mm256_setr_m128i(rl, rh);
+#endif
 }
 
 inline
@@ -1843,6 +1862,24 @@ __m128i cftal::x86::vpsrlvw::v(__m128i a, __m128i s)
 inline
 __m256i cftal::x86::vpsrlvw::v(__m256i a, __m256i s)
 {
+#if 1
+    __m256i so=_mm256_srli_epi32(s, 16);
+    const __m256i odd_mask=const_v8u32<0xffff0000, 0xffff0000,
+                                       0xffff0000, 0xffff0000,
+                                       0xffff0000, 0xffff0000,
+                                       0xffff0000, 0xffff0000>::iv();
+    __m256i ro=_mm256_srlv_epi32(a, so);
+    ro= _mm256_and_si256(ro, odd_mask);
+    const __m256i even_mask=const_v8u32<0x0000ffff, 0x0000ffff,
+                                        0x0000ffff, 0x0000ffff,
+                                        0x0000ffff, 0x0000ffff,
+                                        0x0000ffff, 0x0000ffff>::iv();
+    __m256i se=_mm256_and_si256(s, even_mask);
+    __m256i ae=_mm256_and_si256(a, even_mask);
+    __m256i re=_mm256_srlv_epi32(ae, se);
+    __m256i r=_mm256_or_si256(ro, re);
+    return r;
+#else
     __m128i al=_mm256_castsi256_si128(a);
     __m128i sl=_mm256_castsi256_si128(s);
     __m128i rl=v(al, sl);
@@ -1850,6 +1887,7 @@ __m256i cftal::x86::vpsrlvw::v(__m256i a, __m256i s)
     __m128i sh=_mm256_extracti128_si256(s, 1);
     __m128i rh=v(ah, sh);
     return _mm256_setr_m128i(rl, rh);
+#endif
 }
 
 inline
@@ -1866,6 +1904,26 @@ __m128i cftal::x86::vpsravw::v(__m128i a, __m128i s)
 inline
 __m256i cftal::x86::vpsravw::v(__m256i a, __m256i s)
 {
+#if 1
+    __m256i so=_mm256_srli_epi32(s, 16);
+    const __m256i odd_mask=const_v8u32<0xffff0000, 0xffff0000,
+                                       0xffff0000, 0xffff0000,
+                                       0xffff0000, 0xffff0000,
+                                       0xffff0000, 0xffff0000>::iv();
+    __m256i ro=_mm256_srav_epi32(a, so);
+    ro= _mm256_and_si256(ro, odd_mask);
+    const __m256i even_mask=const_v8u32<0x0000ffff, 0x0000ffff,
+                                        0x0000ffff, 0x0000ffff,
+                                        0x0000ffff, 0x0000ffff,
+                                        0x0000ffff, 0x0000ffff>::iv();
+    __m256i se=_mm256_and_si256(s, even_mask);
+    __m256i ae=_mm256_slli_epi32(a, 16);
+    __m256i re=_mm256_srav_epi32(ae, se);
+    re = _mm256_srli_epi32(re, 16);
+    __m256i r=_mm256_or_si256(ro, re);
+    return r;
+#else
+
     __m128i al=_mm256_castsi256_si128(a);
     __m128i sl=_mm256_castsi256_si128(s);
     __m128i rl=v(al, sl);
@@ -1873,6 +1931,7 @@ __m256i cftal::x86::vpsravw::v(__m256i a, __m256i s)
     __m128i sh=_mm256_extracti128_si256(s, 1);
     __m128i rh=v(ah, sh);
     return _mm256_setr_m128i(rl, rh);
+#endif
 }
 
 #endif
