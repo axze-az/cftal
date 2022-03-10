@@ -365,7 +365,7 @@ cftal::mem<cftal::vec<uint16_t, 16> >::load(const uint16_t* p, std::size_t s)
 {
     __m256i v;
     switch (s) {
-    case 32:
+    case 16:
         v = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p));
         break;
     case 0:
