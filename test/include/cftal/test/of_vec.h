@@ -36,7 +36,7 @@ namespace cftal {
         template <typename _T, std::size_t _N>
         std::ostream& operator<<(std::ostream& s,
                                  const vec_arr<_T, _N>& v);
-        
+
         // returns a vector filled with 1..N
         // or a vector filled with N+1..2N
         template <typename _T, std::size_t _N>
@@ -55,17 +55,17 @@ namespace cftal {
         // tests of vec<_T, 2>
         template <class _T>
         bool check_select_v2();
-        
+
         template <class _T>
         bool check_perm1_v2();
-        
+
         template <class _T>
         bool check_perm2_v2();
-        
+
         extern const char* msg_select_v2;
         extern const char* msg_perm1_v2;
         extern const char* msg_perm2_v2;
-        
+
         // tests of vec<_T, 4>
         template <class _T>
         bool check_select_v4();
@@ -79,7 +79,7 @@ namespace cftal {
         extern const char* msg_select_v4;
         extern const char* msg_perm1_v4;
         extern const char* msg_perm2_v4;
-        
+
         // tests of vec<_T, 8>
         template <class _T>
         bool check_select_v8();
@@ -89,11 +89,11 @@ namespace cftal {
 
         template <class _T>
         bool check_perm2_v8();
-        
+
         extern const char* msg_select_v8;
         extern const char* msg_perm1_v8;
-        extern const char* msg_perm2_v8;        
-        
+        extern const char* msg_perm2_v8;
+
         // tests of vec<_T, 16>
         template <class _T>
         bool check_select_v16();
@@ -106,8 +106,8 @@ namespace cftal {
 
         extern const char* msg_select_v16;
         extern const char* msg_perm1_v16;
-        extern const char* msg_perm2_v16;        
-        
+        extern const char* msg_perm2_v16;
+
         // combine the tests for v2xxx
         template <class _T>
         bool check_v2();
@@ -132,7 +132,7 @@ namespace cftal {
                   int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         bool perm2_v8();
-                      
+
         // test one permutation for vec<_T, 16>
         template <class _T,
                   int _P00, int _P01, int _P02, int _P03,
@@ -282,11 +282,11 @@ template <class _T,
 bool cftal::test::perm1_v16()
 {
     vec<_T, 16> a = load_vals<_T, 16>(false);
-    vec<_T, 16> r= permute<_P00, _P01, _P02, _P03, 
+    vec<_T, 16> r= permute<_P00, _P01, _P02, _P03,
                            _P04, _P05, _P06, _P07,
                            _P08, _P09, _P10, _P11,
                            _P12, _P13, _P14, _P15>(a);
-    idx id= idx{_P00, _P01, _P02, _P03, 
+    idx id= idx{_P00, _P01, _P02, _P03,
                 _P04, _P05, _P06, _P07,
                 _P08, _P09, _P10, _P11,
                 _P12, _P13, _P14, _P15};
@@ -303,11 +303,11 @@ bool cftal::test::perm2_v16()
 {
     vec<_T, 16> a = load_vals<_T, 16>(false);
     vec<_T, 16> b = load_vals<_T, 16>(true);
-    vec<_T, 16> r= permute<_P00, _P01, _P02, _P03, 
+    vec<_T, 16> r= permute<_P00, _P01, _P02, _P03,
                            _P04, _P05, _P06, _P07,
                            _P08, _P09, _P10, _P11,
                            _P12, _P13, _P14, _P15>(a, b);
-    idx id= idx{_P00, _P01, _P02, _P03, 
+    idx id= idx{_P00, _P01, _P02, _P03,
                 _P04, _P05, _P06, _P07,
                 _P08, _P09, _P10, _P11,
                 _P12, _P13, _P14, _P15};
