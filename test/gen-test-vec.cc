@@ -54,6 +54,7 @@ namespace cftal {
         void gen_v4(const std::string& name_base);
         void gen_v8(const std::string& name_base);
         void gen_v16(const std::string& name_base);
+        void gen_v32(const std::string& name_base);
     }
 }
 
@@ -119,7 +120,7 @@ cftal::test::gen_v2(const std::string& name_base)
               << idx{((i0!=0) ? 0 : 2),
                     ((i1!=0) ? 1 : 3)}
               << "};\n";
-            f << indent 
+            f << indent
               << "rc &= check_val(r, id, msg_select_v2);\n";
         }
     }
@@ -206,7 +207,7 @@ cftal::test::gen_v4(const std::string& name_base)
                               ((i3!=0) ? 3 : 7)
                             }
                     << "};\n";
-                    f << indent 
+                    f << indent
                       << "rc &= check_val(r, id, msg_select_v4);\n";
                 }
             }
@@ -311,7 +312,7 @@ cftal::test::gen_v8(const std::string& name_base)
                                             ((i7!=0) ? 7 : 15)
                                             }
                                     << "};\n";
-                                    f << indent 
+                                    f << indent
                                       << "rc &= check_val(r, id, msg_select_v8);\n";
                                 }
                             }
@@ -458,12 +459,12 @@ cftal::test::gen_v16(const std::string& name_base)
       << indent << "vec<_T, 16> r;\n"
       << indent << "idx id{-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};\n\n";
     std::set<idx> indices;
-    std::mt19937 rnd;      
+    std::mt19937 rnd;
 #if 1
     const int SELECT_TEST_CASES= 4096;
     std::uniform_int_distribution<> d_0_1(0, 1);
     while (indices.size() < SELECT_TEST_CASES) {
-        idx id{ d_0_1(rnd) != 0 ? 0 : 16, 
+        idx id{ d_0_1(rnd) != 0 ? 0 : 16,
                 d_0_1(rnd) != 0 ? 1 : 17,
                 d_0_1(rnd) != 0 ? 2 : 18,
                 d_0_1(rnd) != 0 ? 3 : 19,
@@ -481,20 +482,20 @@ cftal::test::gen_v16(const std::string& name_base)
                 d_0_1(rnd) != 0 ? 15 : 31 };
         idx idt{
             id[0] < 16 ? 1 : 0,
-            id[1] < 16 ? 1 : 0, 
-            id[2] < 16 ? 1 : 0, 
-            id[3] < 16 ? 1 : 0, 
-            id[4] < 16 ? 1 : 0, 
-            id[5] < 16 ? 1 : 0, 
-            id[6] < 16 ? 1 : 0, 
-            id[7] < 16 ? 1 : 0, 
-            id[8] < 16 ? 1 : 0, 
-            id[9] < 16 ? 1 : 0, 
-            id[10] < 16 ? 1 : 0, 
-            id[11] < 16 ? 1 : 0, 
-            id[12] < 16 ? 1 : 0, 
-            id[13] < 16 ? 1 : 0, 
-            id[14] < 16 ? 1 : 0, 
+            id[1] < 16 ? 1 : 0,
+            id[2] < 16 ? 1 : 0,
+            id[3] < 16 ? 1 : 0,
+            id[4] < 16 ? 1 : 0,
+            id[5] < 16 ? 1 : 0,
+            id[6] < 16 ? 1 : 0,
+            id[7] < 16 ? 1 : 0,
+            id[8] < 16 ? 1 : 0,
+            id[9] < 16 ? 1 : 0,
+            id[10] < 16 ? 1 : 0,
+            id[11] < 16 ? 1 : 0,
+            id[12] < 16 ? 1 : 0,
+            id[13] < 16 ? 1 : 0,
+            id[14] < 16 ? 1 : 0,
             id[15] < 16 ? 1 : 0
         };
         auto p= indices.insert(id);
@@ -507,9 +508,9 @@ cftal::test::gen_v16(const std::string& name_base)
         << "};\n";
         f << indent
           << "rc &= check_val(r, id, msg_select_v16);\n";
-    }  
+    }
     indices.clear();
-#else      
+#else
     for (int i00=0; i00<2; ++i00) {
         for (int i01=0; i01<2; ++i01) {
             for (int i02=0; i02<2; ++i02) {
@@ -531,7 +532,7 @@ cftal::test::gen_v16(const std::string& name_base)
                                              i08,i09,i10,i11,i12,i13,i14,i15,
                                     } << ">(a,b);\n";
                                     f << indent << "id= idx{"
-                                      << idx{ 
+                                      << idx{
                                             ((i00!=0) ? 0 : 16),
                                             ((i01!=0) ? 1 : 17),
                                             ((i02!=0) ? 2 : 18),
@@ -550,7 +551,7 @@ cftal::test::gen_v16(const std::string& name_base)
                                             ((i15!=0) ? 15 : 31)
                                             }
                                     << "};\n";
-                                    f << indent 
+                                    f << indent
                                       << "rc &= check_val(r, id, msg_select_v16);\n";
                                 }}}}}}}}
                                 }
@@ -561,7 +562,7 @@ cftal::test::gen_v16(const std::string& name_base)
             }
         }
     }
-#endif    
+#endif
     f << indent << "return rc;\n"
       << "}\n\n";
 
@@ -687,7 +688,206 @@ cftal::test::gen_v16(const std::string& name_base)
       << "#endif\n";
 }
 
+void
+cftal::test::gen_v32(const std::string& name_base)
+{
+    std::string fname(name_base + "_v16.h");
+    std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
 
+    f << "#if !defined __CFTAL_TEST_VEC_32_H__\n"
+      << "#define __CFTAL_TEST_VEC_32_H__ 1\n\n"
+      << "#include <cftal/test/of_vec.h>\n\n"
+      << "template <class _T>\n"
+      << "bool cftal::test::check_select_v32()\n"
+      << "{\n"
+      << indent << "bool rc(true);\n"
+      << indent << "vec<_T, 32> a = load_vals<_T, 32>(false);\n"
+      << indent << "vec<_T, 32> b = load_vals<_T, 32>(true);\n"
+      << indent << "vec<_T, 32> r;\n"
+      << indent << "idx id{-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,\n"
+      << indent<< "        -2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};"
+      << "\n\n";
+
+    std::set<idx> indices;
+    std::mt19937 rnd;
+
+    const int SELECT_TEST_CASES= 4096;
+    std::uniform_int_distribution<> d_0_1(0, 1);
+    while (indices.size() < SELECT_TEST_CASES) {
+        idx id{ d_0_1(rnd) != 0 ? 0 : 32,
+                d_0_1(rnd) != 0 ? 1 : 33,
+                d_0_1(rnd) != 0 ? 2 : 34,
+                d_0_1(rnd) != 0 ? 3 : 35,
+                d_0_1(rnd) != 0 ? 4 : 36,
+                d_0_1(rnd) != 0 ? 5 : 37,
+                d_0_1(rnd) != 0 ? 6 : 38,
+                d_0_1(rnd) != 0 ? 7 : 39,
+                d_0_1(rnd) != 0 ? 8 : 40,
+                d_0_1(rnd) != 0 ? 9 : 41,
+                d_0_1(rnd) != 0 ? 10 : 42,
+                d_0_1(rnd) != 0 ? 11 : 43,
+                d_0_1(rnd) != 0 ? 12 : 44,
+                d_0_1(rnd) != 0 ? 13 : 45,
+                d_0_1(rnd) != 0 ? 14 : 46,
+                d_0_1(rnd) != 0 ? 15 : 47,
+                d_0_1(rnd) != 0 ? 16 : 48,
+                d_0_1(rnd) != 0 ? 17 : 49,
+                d_0_1(rnd) != 0 ? 18 : 50,
+                d_0_1(rnd) != 0 ? 19 : 51,
+                d_0_1(rnd) != 0 ? 20 : 52,
+                d_0_1(rnd) != 0 ? 21 : 53,
+                d_0_1(rnd) != 0 ? 22 : 54,
+                d_0_1(rnd) != 0 ? 23 : 55,
+                d_0_1(rnd) != 0 ? 24 : 56,
+                d_0_1(rnd) != 0 ? 25 : 57,
+                d_0_1(rnd) != 0 ? 26 : 58,
+                d_0_1(rnd) != 0 ? 27 : 59,
+                d_0_1(rnd) != 0 ? 28 : 60,
+                d_0_1(rnd) != 0 ? 29 : 61,
+                d_0_1(rnd) != 0 ? 31 : 62,
+                d_0_1(rnd) != 0 ? 31 : 63
+        };
+        idx idt{
+            id[0] < 32 ? 1 : 0,
+            id[1] < 32 ? 1 : 0,
+            id[2] < 32 ? 1 : 0,
+            id[3] < 32 ? 1 : 0,
+            id[4] < 32 ? 1 : 0,
+            id[5] < 32 ? 1 : 0,
+            id[6] < 32 ? 1 : 0,
+            id[7] < 32 ? 1 : 0,
+            id[8] < 32 ? 1 : 0,
+            id[9] < 32 ? 1 : 0,
+            id[10] < 32 ? 1 : 0,
+            id[11] < 32 ? 1 : 0,
+            id[12] < 32 ? 1 : 0,
+            id[13] < 32 ? 1 : 0,
+            id[14] < 32 ? 1 : 0,
+            id[15] < 32 ? 1 : 0,
+            id[16] < 32 ? 1 : 0,
+            id[17] < 32 ? 1 : 0,
+            id[18] < 32 ? 1 : 0,
+            id[19] < 32 ? 1 : 0,
+            id[20] < 32 ? 1 : 0,
+            id[21] < 32 ? 1 : 0,
+            id[22] < 32 ? 1 : 0,
+            id[23] < 32 ? 1 : 0,
+            id[24] < 32 ? 1 : 0,
+            id[25] < 32 ? 1 : 0,
+            id[26] < 32 ? 1 : 0,
+            id[27] < 32 ? 1 : 0,
+            id[28] < 32 ? 1 : 0,
+            id[29] < 32 ? 1 : 0,
+            id[30] < 32 ? 1 : 0,
+            id[31] < 32 ? 1 : 0
+        };
+        auto p= indices.insert(id);
+        if (p.second == false)
+            continue;
+        f << indent << "r=select<"
+          << idt << ">(a, b);\n";
+        f << indent << "id= idx{"
+          << id
+        << "};\n";
+        f << indent
+          << "rc &= check_val(r, id, msg_select_v32);\n";
+    }
+    indices.clear();
+    f << indent << "return rc;\n"
+      << "}\n\n";
+
+    // perm1 v32
+    f << "template <class _T>\n"
+      << "bool cftal::test::check_perm1_v32()\n"
+      << "{\n"
+      << indent << "bool rc(true);\n"
+      << indent << "vec<_T, 32> a = load_vals<_T, 32>(false);\n"
+      << indent << "vec<_T, 32> r;\n"
+      << indent << "idx id{-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,\n"
+      << indent<< "        -2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};"
+      << "\n\n";
+    const int TEST_CASES= 4096;
+    std::uniform_int_distribution<> d_m1_31(-1, 31);
+    while (indices.size() < TEST_CASES) {
+        idx id{ d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd),
+                d_m1_31(rnd), d_m1_31(rnd)};
+        auto p= indices.insert(id);
+        if (p.second == false)
+            continue;
+        f << indent << "r=permute<"
+          << id << ">(a);\n";
+        f << indent << "id= idx{"
+          << id
+        << "};\n";
+        f << indent
+          << "rc &= check_val(r, id, msg_perm1_v32);\n";
+    }
+    f << indent << "return rc;\n"
+      << "}\n\n";
+
+    std::uniform_int_distribution<> d_m1_63(-1, 63);
+    indices.clear();
+    // perm2 v8
+    f << "template <class _T>\n"
+      << "bool cftal::test::check_perm2_v32()\n"
+      << "{\n"
+      << indent << "bool rc(true);\n"
+      << indent << "vec<_T, 32> a = load_vals<_T, 32>(false);\n"
+      << indent << "vec<_T, 32> b = load_vals<_T, 32>(true);\n"
+      << indent << "vec<_T, 32> r;\n"
+      << indent << "idx id{-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,\n"
+      << indent<< "        -2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};"
+      << "\n\n";
+    while (indices.size() < TEST_CASES) {
+        idx id{ d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd),
+                d_m1_63(rnd), d_m1_63(rnd)
+        };
+        auto p= indices.insert(id);
+        if (p.second == false)
+            continue;
+        f << indent << "r=permute<"
+          << id << ">(a, b);\n";
+        f << indent << "id= idx{"
+          << id
+        << "};\n";
+        f << indent
+          << "rc &= check_val(r, id, msg_perm2_v32);\n";
+    }
+    f << indent << "return rc;\n"
+      << "}\n\n"
+      << "// Local variables:\n"
+      << "// mode: c++\n"
+      << "// end:\n"
+      << "#endif\n";
+}
 
 int main()
 {
@@ -695,5 +895,6 @@ int main()
     cftal::test::gen_v4("of_vec");
     cftal::test::gen_v8("of_vec");
     cftal::test::gen_v16("of_vec");
+    cftal::test::gen_v32("of_vec");
     return 0;
 }
