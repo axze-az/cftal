@@ -3135,18 +3135,7 @@ v(__m256i a, __m256i b)
         (_UP24 > 31) && (_UP25 > 31) && (_UP26 > 31) && (_UP27 > 31) &&
         (_UP28 > 31) && (_UP29 > 31) && (_UP30 > 31) && (_UP31 > 31);
 
-    using perm1_t=perm1_v32u8<
-        _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
-        _P16, _P17, _P18, _P19, _P20, _P21, _P22, _P23,
-        _P24, _P25, _P26, _P27, _P28, _P29, _P30, _P31>;
-    if (a_only) {
-        return perm1_t::v(a);
-    }
-    if (b_only) {
-        return perm1_t::v(b);
-    }
-
+    // elements to select from vector a or zero
     constexpr const int32_t
         a00 = _P00 > 31 ? -1 : _P00, a01 = _P01 > 31 ? -1 : _P01,
         a02 = _P02 > 31 ? -1 : _P02, a03 = _P03 > 31 ? -1 : _P03,
@@ -3165,6 +3154,7 @@ v(__m256i a, __m256i b)
         a28 = _P28 > 31 ? -1 : _P28, a29 = _P29 > 31 ? -1 : _P29,
         a30 = _P30 > 31 ? -1 : _P30, a31 = _P31 > 31 ? -1 : _P31;
 
+    // elements to select from vector b or zero
     constexpr const int32_t
         b00 = _P00 < 32 ? -1 : _P00-32, b01 = _P01 < 32 ? -1 : _P01-32,
         b02 = _P02 < 32 ? -1 : _P02-32, b03 = _P03 < 32 ? -1 : _P03-32,
@@ -3183,6 +3173,22 @@ v(__m256i a, __m256i b)
         b28 = _P28 < 32 ? -1 : _P28-32, b29 = _P29 < 32 ? -1 : _P29-32,
         b30 = _P30 < 32 ? -1 : _P30-32, b31 = _P31 < 32 ? -1 : _P31-32;
 
+    if (a_only) {
+        const __m256i ap=perm1_v32u8<
+            a00, a01, a02, a03, a04, a05, a06, a07,
+            a08, a09, a10, a11, a12, a13, a14, a15,
+            a16, a17, a18, a19, a20, a21, a22, a23,
+            a24, a25, a26, a27, a28, a29, a30, a31>::v(a);
+        return ap;
+    }
+    if (b_only) {
+        const __m256i bp=perm1_v32u8<
+            b00, b01, b02, b03, b04, b05, b06, b07,
+            b08, b09, b10, b11, b12, b13, b14, b15,
+            b16, b17, b18, b19, b20, b21, b22, b23,
+            b24, b25, b26, b27, b28, b29, b30, b31>::v(b);
+        return bp;
+    }
     const __m256i ap=perm1_v32u8<
         a00, a01, a02, a03, a04, a05, a06, a07,
         a08, a09, a10, a11, a12, a13, a14, a15,
