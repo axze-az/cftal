@@ -2921,7 +2921,7 @@ v(__m256i a)
     if (u32_perm && zero_elements==false) {
         return perm1_v8u32<u32_0_t::idx, u32_1_t::idx,
                            u32_2_t::idx, u32_3_t::idx,
-                           u32_4_t::idx, u32_4_t::idx,
+                           u32_4_t::idx, u32_5_t::idx,
                            u32_6_t::idx, u32_7_t::idx>::v(a);
     }
     if (lh_from_lo_lane && hh_from_hi_lane) {
