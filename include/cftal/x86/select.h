@@ -92,7 +92,7 @@ namespace cftal {
             static _T v(_T a);
             static _T v(_T a, _T b);
         };
-        
+
         template <typename _T>
         struct select_arg_2 {
             static _T v(_T a, _T b);
@@ -153,7 +153,7 @@ namespace cftal {
         struct select_v8u16<1,1,1,1,1,1,1,1> :
             public select_arg_1<__m128i> {
         };
-        
+
         // general case u8
         template <bool _P00, bool _P01, bool _P02, bool _P03,
                   bool _P04, bool _P05, bool _P06, bool _P07,
@@ -164,15 +164,15 @@ namespace cftal {
         };
         // u8 specialisations
         template <>
-        struct select_v16u8<0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0> 
+        struct select_v16u8<0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0>
             : public select_arg_2<__m128i> {
         };
         template <>
-        struct select_v16u8<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1> 
+        struct select_v16u8<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1>
             : public select_arg_1<__m128i> {
         };
 
-                       
+
 #if defined (__AVX__)
         // select v4f64
         template <bool _P0, bool _P1,
@@ -189,7 +189,7 @@ namespace cftal {
         struct select_v4f64<1,1,1,1> :
             public select_arg_1<__m256d> {
         };
-        
+
         // select v8f32
         template <bool _P0, bool _P1, bool _P2, bool _P3,
                   bool _P4, bool _P5, bool _P6, bool _P7>
@@ -237,7 +237,7 @@ namespace cftal {
         struct select_v8u32<1,1,1,1,1,1,1,1> :
             public select_arg_1<__m256i> {
         };
-        
+
         // generic case v16u16
         template <bool _P00, bool _P01, bool _P02, bool _P03,
                   bool _P04, bool _P05, bool _P06, bool _P07,
@@ -255,7 +255,7 @@ namespace cftal {
         struct select_v16u16<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1> :
             public select_arg_1<__m256i> {
         };
-        
+
         // generic case v32u8
         template <bool _P00, bool _P01, bool _P02, bool _P03,
                   bool _P04, bool _P05, bool _P06, bool _P07,
@@ -278,7 +278,7 @@ namespace cftal {
         struct select_v32u8<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                             1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1> :
             public select_arg_1<__m256i> {
-        };        
+        };
 #endif
 
 
@@ -315,17 +315,17 @@ namespace cftal {
 #if defined (__AVX2__)
         template <bool _P0, bool _P1, bool _P2, bool _P3>
         __m256i select_u64(__m256i a, __m256i b);
-        
+
         template <bool _P0, bool _P1, bool _P2, bool _P3,
                   bool _P4, bool _P5, bool _P6, bool _P7>
         __m256i select_u32(__m256i a, __m256i b);
-        
+
         template <bool _P00, bool _P01, bool _P02, bool _P03,
                   bool _P04, bool _P05, bool _P06, bool _P07,
                   bool _P08, bool _P09, bool _P10, bool _P11,
                   bool _P12, bool _P13, bool _P14, bool _P15>
         __m256i select_u16(__m256i a, __m256i b);
-        
+
         template <bool _P00, bool _P01, bool _P02, bool _P03,
                   bool _P04, bool _P05, bool _P06, bool _P07,
                   bool _P08, bool _P09, bool _P10, bool _P11,
@@ -334,7 +334,7 @@ namespace cftal {
                   bool _P20, bool _P21, bool _P22, bool _P23,
                   bool _P24, bool _P25, bool _P26, bool _P27,
                   bool _P28, bool _P29, bool _P30, bool _P31>
-        __m256i select_u8(__m256i a, __m256i b);        
+        __m256i select_u8(__m256i a, __m256i b);
 #endif
     }
 }
@@ -635,7 +635,7 @@ select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
 #if defined (__SSE4_1__)
     enum { sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val };
     return _mm_blend_epi16(b, a, sm);
-#else    
+#else
     typedef const_v8u16<
         uint16_t(_P0 ? -1 : 0), uint16_t(_P1 ? -1 : 0),
         uint16_t(_P2 ? -1 : 0), uint16_t(_P3 ? -1 : 0),
@@ -656,13 +656,13 @@ cftal::x86::
 select_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
              _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m128i a, __m128i b)
-{ 
+{
     // consecutive pairs are equal ?
     if (_P00 == _P01 && _P02 == _P03 && _P04 == _P05 && _P06 == _P07 &&
-        _P08 == _P09 && _P10 == _P11 && _P12 == _P13 && _P14 == _P15) {        
-        return select_v8u16<_P00, _P02, _P04, _P06, 
+        _P08 == _P09 && _P10 == _P11 && _P12 == _P13 && _P14 == _P15) {
+        return select_v8u16<_P00, _P02, _P04, _P06,
                             _P08, _P10, _P12, _P14>::v(a, b);
-    }        
+    }
     constexpr const uint8_t p00 = _P00 ? -1 : 0;
     constexpr const uint8_t p01 = _P01 ? -1 : 0;
     constexpr const uint8_t p02 = _P02 ? -1 : 0;
@@ -679,10 +679,10 @@ v(__m128i a, __m128i b)
     constexpr const uint8_t p13 = _P13 ? -1 : 0;
     constexpr const uint8_t p14 = _P14 ? -1 : 0;
     constexpr const uint8_t p15 = _P15 ? -1 : 0;
-    constexpr const __m128i msk=const_v16u8<p00, p01, p02, p03,
-                                            p04, p05, p06, p07,
-                                            p08, p09, p10, p11,
-                                            p12, p13, p14, p15>::iv();
+    const __m128i msk=const_v16u8<p00, p01, p02, p03,
+                                  p04, p05, p06, p07,
+                                  p08, p09, p10, p11,
+                                  p12, p13, p14, p15>::iv();
 #if defined (__SSE4_1__)
     return _mm_blendv_epi8(b, a, msk);
 #else
@@ -738,7 +738,7 @@ template <bool _P00, bool _P01, bool _P02, bool _P03,
           bool _P04, bool _P05, bool _P06, bool _P07,
           bool _P08, bool _P09, bool _P10, bool _P11,
           bool _P12, bool _P13, bool _P14, bool _P15>
-inline __m256i            
+inline __m256i
 cftal::x86::
 select_v16u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
               _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
@@ -746,18 +746,18 @@ v(__m256i a, __m256i b)
 {
     // low lane and high lane are equal ?
     if (_P00 == _P08 && _P01 == _P09 && _P02 == _P10 && _P03 == _P11 &&
-        _P04 == _P12 && _P05 == _P13 && _P06 == _P14 && _P07 == _P15) {        
-        enum { 
-            sm=csel8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07>::val             
+        _P04 == _P12 && _P05 == _P13 && _P06 == _P14 && _P07 == _P15) {
+        enum {
+            sm=csel8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07>::val
         };
         return _mm256_blend_epi16(b, a, sm);
-    } 
+    }
     // consecutive pairs are equal ?
     if (_P00 == _P01 && _P02 == _P03 && _P04 == _P05 && _P06 == _P07 &&
-        _P08 == _P09 && _P10 == _P11 && _P12 == _P13 && _P14 == _P15) {        
-        return select_v8u32<_P00, _P02, _P04, _P06, 
+        _P08 == _P09 && _P10 == _P11 && _P12 == _P13 && _P14 == _P15) {
+        return select_v8u32<_P00, _P02, _P04, _P06,
                             _P08, _P10, _P12, _P14>::v(a, b);
-    }    
+    }
     constexpr const uint16_t p00 = _P00 ? -1 : 0;
     constexpr const uint16_t p01 = _P01 ? -1 : 0;
     constexpr const uint16_t p02 = _P02 ? -1 : 0;
@@ -787,7 +787,7 @@ template <bool _P00, bool _P01, bool _P02, bool _P03,
           bool _P20, bool _P21, bool _P22, bool _P23,
           bool _P24, bool _P25, bool _P26, bool _P27,
           bool _P28, bool _P29, bool _P30, bool _P31>
-inline __m256i            
+inline __m256i
 cftal::x86::
 select_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
              _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
@@ -797,14 +797,14 @@ v(__m256i a, __m256i b)
 {
     // consecutive pairs are equal ?
     if (_P00 == _P01 && _P02 == _P03 && _P04 == _P05 && _P06 == _P07 &&
-        _P08 == _P09 && _P10 == _P11 && _P12 == _P13 && _P14 == _P15 && 
+        _P08 == _P09 && _P10 == _P11 && _P12 == _P13 && _P14 == _P15 &&
         _P16 == _P17 && _P18 == _P19 && _P20 == _P21 && _P22 == _P23 &&
-        _P24 == _P25 && _P26 == _P27 && _P28 == _P29 && _P30 == _P31) {        
-        return select_v16u16<_P00, _P02, _P04, _P06, 
+        _P24 == _P25 && _P26 == _P27 && _P28 == _P29 && _P30 == _P31) {
+        return select_v16u16<_P00, _P02, _P04, _P06,
                              _P08, _P10, _P12, _P14,
                              _P16, _P18, _P20, _P22,
                              _P24, _P26, _P28, _P30>::v(a, b);
-    }    
+    }
     constexpr const uint8_t p00 = _P00 ? -1 : 0;
     constexpr const uint8_t p01 = _P01 ? -1 : 0;
     constexpr const uint8_t p02 = _P02 ? -1 : 0;
@@ -955,13 +955,13 @@ template<bool _P00, bool _P01, bool _P02, bool _P03,
 inline
 __m256i cftal::x86::select_u8(__m256i a, __m256i b)
 {
-    return select_v32u8<_P00, _P01, _P02, _P03, 
+    return select_v32u8<_P00, _P01, _P02, _P03,
                         _P04, _P05, _P06, _P07,
-                        _P08, _P09, _P10, _P11, 
+                        _P08, _P09, _P10, _P11,
                         _P12, _P13, _P14, _P15,
-                        _P16, _P17, _P18, _P19, 
+                        _P16, _P17, _P18, _P19,
                         _P20, _P21, _P22, _P23,
-                        _P24, _P25, _P26, _P27, 
+                        _P24, _P25, _P26, _P27,
                         _P28, _P29, _P30, _P31>::v(a, b);
 }
 

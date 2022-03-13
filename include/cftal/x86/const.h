@@ -49,9 +49,9 @@ namespace cftal {
                                   __visibility__("hidden")))
             const u_t _msk;
         public:
-            static constexpr __m128i iv();
-            static constexpr __m128 fv();
-            static constexpr __m128d dv();
+            static const __m128i& iv();
+            static const __m128& fv();
+            static const __m128d& dv();
         };
 
         // static constants consisting of 8 uint16_t
@@ -65,9 +65,9 @@ namespace cftal {
                                   __visibility__("hidden")))
             const u_t _msk;
         public:
-            static constexpr __m128i iv();
-            static constexpr __m128 fv();
-            static constexpr __m128d dv();
+            static const __m128i& iv();
+            static const __m128& fv();
+            static const __m128d& dv();
         };
 
         // static constants consisting of 16 uint8_t
@@ -85,9 +85,9 @@ namespace cftal {
                                   __visibility__("hidden")))
             const u_t _msk;
         public:
-            static constexpr __m128i iv();
-            static constexpr __m128 fv();
-            static constexpr __m128d dv();
+            static const __m128i& iv();
+            static const __m128& fv();
+            static const __m128d& dv();
         };
 
 #if defined (__AVX__)
@@ -102,9 +102,9 @@ namespace cftal {
                                   __visibility__("hidden")))
             const u_t _msk;
         public:
-            static constexpr __m256i iv();
-            static constexpr __m256 fv();
-            static constexpr __m256d dv();
+            static const __m256i& iv();
+            static const __m256& fv();
+            static const __m256d& dv();
         };
 
         // static constants consisting of 32 uint8_t
@@ -130,9 +130,9 @@ namespace cftal {
                                   __visibility__("hidden")))
             const u_t _msk;
         public:
-            static constexpr __m256i iv();
-            static constexpr __m256 fv();
-            static constexpr __m256d dv();
+            static const __m256i& iv();
+            static const __m256& fv();
+            static const __m256d& dv();
         };
 
 #endif
@@ -337,7 +337,8 @@ cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::_msk= {{
 template <cftal::uint32_t _P0, cftal::uint32_t _P1,
           cftal::uint32_t _P2, cftal::uint32_t _P3>
 inline
-constexpr __m128i cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::iv()
+const __m128i&
+cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::iv()
 {
     return _msk._vi;
 }
@@ -345,7 +346,8 @@ constexpr __m128i cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::iv()
 template <cftal::uint32_t _P0, cftal::uint32_t _P1,
           cftal::uint32_t _P2, cftal::uint32_t _P3>
 inline
-constexpr __m128 cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::fv()
+const __m128&
+cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::fv()
 {
     return  _msk._vf;
 }
@@ -353,7 +355,8 @@ constexpr __m128 cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::fv()
 template <cftal::uint32_t _P0, cftal::uint32_t _P1,
           cftal::uint32_t _P2, cftal::uint32_t _P3>
 inline
-constexpr __m128d cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::dv()
+const __m128d&
+cftal::x86::const_v4u32<_P0, _P1, _P2, _P3>::dv()
 {
     return _msk._vd;
 }
@@ -374,7 +377,7 @@ template <cftal::uint16_t _P0, cftal::uint16_t _P1,
           cftal::uint16_t _P4, cftal::uint16_t _P5,
           cftal::uint16_t _P6, cftal::uint16_t _P7>
 inline
-constexpr __m128i
+const __m128i&
 cftal::x86::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
 {
     return _msk._vi;
@@ -385,7 +388,7 @@ template <cftal::uint16_t _P0, cftal::uint16_t _P1,
           cftal::uint16_t _P4, cftal::uint16_t _P5,
           cftal::uint16_t _P6, cftal::uint16_t _P7>
 inline
-constexpr __m128
+const __m128&
 cftal::x86::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
 {
     return _msk._vf;
@@ -396,7 +399,7 @@ template <cftal::uint16_t _P0, cftal::uint16_t _P1,
           cftal::uint16_t _P4, cftal::uint16_t _P5,
           cftal::uint16_t _P6, cftal::uint16_t _P7>
 inline
-constexpr __m128d
+const __m128d&
 cftal::x86::const_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
     return _msk._vd;
@@ -429,7 +432,7 @@ template <cftal::uint8_t _P00, cftal::uint8_t _P01,
           cftal::uint8_t _P12, cftal::uint8_t _P13,
           cftal::uint8_t _P14, cftal::uint8_t _P15>
 inline
-constexpr __m128i
+const __m128i&
 cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                         _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
 {
@@ -445,7 +448,7 @@ template <cftal::uint8_t _P00, cftal::uint8_t _P01,
           cftal::uint8_t _P12, cftal::uint8_t _P13,
           cftal::uint8_t _P14, cftal::uint8_t _P15>
 inline
-constexpr __m128
+const __m128&
 cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                         _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
 {
@@ -461,7 +464,7 @@ template <cftal::uint8_t _P00, cftal::uint8_t _P01,
           cftal::uint8_t _P12, cftal::uint8_t _P13,
           cftal::uint8_t _P14, cftal::uint8_t _P15>
 inline
-constexpr __m128d
+const __m128d&
 cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
                         _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
 {
@@ -486,7 +489,7 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
           cftal::uint32_t _P4, cftal::uint32_t _P5,
           cftal::uint32_t _P6, cftal::uint32_t _P7>
 inline
-constexpr __m256i
+const __m256i&
 cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
 {
     return _msk._vi;
@@ -497,7 +500,7 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
           cftal::uint32_t _P4, cftal::uint32_t _P5,
           cftal::uint32_t _P6, cftal::uint32_t _P7>
 inline
-constexpr __m256
+const __m256&
 cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
 {
     return _msk._vf;
@@ -508,7 +511,7 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
           cftal::uint32_t _P4, cftal::uint32_t _P5,
           cftal::uint32_t _P6, cftal::uint32_t _P7>
 inline
-constexpr __m256d
+const __m256d&
 cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
 {
     return _msk._vd;
@@ -540,7 +543,6 @@ const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
     }
 };
 
-
 template <uint8_t _P00, uint8_t _P01, uint8_t _P02, uint8_t _P03,
           uint8_t _P04, uint8_t _P05, uint8_t _P06, uint8_t _P07,
           uint8_t _P08, uint8_t _P09, uint8_t _P10, uint8_t _P11,
@@ -550,7 +552,7 @@ template <uint8_t _P00, uint8_t _P01, uint8_t _P02, uint8_t _P03,
           uint8_t _P24, uint8_t _P25, uint8_t _P26, uint8_t _P27,
           uint8_t _P28, uint8_t _P29, uint8_t _P30, uint8_t _P31>
 inline
-constexpr __m256i
+const __m256i&
 cftal::x86::
 const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
@@ -569,7 +571,7 @@ template <uint8_t _P00, uint8_t _P01, uint8_t _P02, uint8_t _P03,
           uint8_t _P24, uint8_t _P25, uint8_t _P26, uint8_t _P27,
           uint8_t _P28, uint8_t _P29, uint8_t _P30, uint8_t _P31>
 inline
-constexpr __m256
+const __m256&
 cftal::x86::
 const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,
@@ -588,7 +590,7 @@ template <uint8_t _P00, uint8_t _P01, uint8_t _P02, uint8_t _P03,
           uint8_t _P24, uint8_t _P25, uint8_t _P26, uint8_t _P27,
           uint8_t _P28, uint8_t _P29, uint8_t _P30, uint8_t _P31>
 inline
-constexpr __m256d
+const __m256d&
 cftal::x86::
 const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15,

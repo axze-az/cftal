@@ -15,6 +15,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
+#if !defined __CFTAL_TEST_VEC_16_H__
+#define __CFTAL_TEST_VEC_16_H__ 1
+
+#include <cftal/test/of_vec.h>
+
+template <class _T>
 bool cftal::test::check_select_v16()
 {
     bool rc(true);

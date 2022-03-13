@@ -691,7 +691,7 @@ cftal::test::gen_v16(const std::string& name_base)
 void
 cftal::test::gen_v32(const std::string& name_base)
 {
-    std::string fname(name_base + "_v16.h");
+    std::string fname(name_base + "_v32.h");
     std::ofstream f(fname.c_str(), std::ios::out | std::ios::trunc);
 
     f << "#if !defined __CFTAL_TEST_VEC_32_H__\n"
@@ -705,7 +705,7 @@ cftal::test::gen_v32(const std::string& name_base)
       << indent << "vec<_T, 32> b = load_vals<_T, 32>(true);\n"
       << indent << "vec<_T, 32> r;\n"
       << indent << "idx id{-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,\n"
-      << indent<< "        -2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};"
+      << indent << "       -2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};"
       << "\n\n";
 
     std::set<idx> indices;
@@ -804,7 +804,7 @@ cftal::test::gen_v32(const std::string& name_base)
       << indent << "vec<_T, 32> a = load_vals<_T, 32>(false);\n"
       << indent << "vec<_T, 32> r;\n"
       << indent << "idx id{-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,\n"
-      << indent<< "        -2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};"
+      << indent << "       -2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};"
       << "\n\n";
     const int TEST_CASES= 4096;
     std::uniform_int_distribution<> d_m1_31(-1, 31);
@@ -850,7 +850,7 @@ cftal::test::gen_v32(const std::string& name_base)
       << indent << "vec<_T, 32> b = load_vals<_T, 32>(true);\n"
       << indent << "vec<_T, 32> r;\n"
       << indent << "idx id{-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,\n"
-      << indent<< "        -2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};"
+      << indent << "       -2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2};"
       << "\n\n";
     while (indices.size() < TEST_CASES) {
         idx id{ d_m1_63(rnd), d_m1_63(rnd),
