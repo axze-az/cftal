@@ -197,10 +197,17 @@ template <typename _T, std::size_t _N>
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const vec_arr<_T, _N>& v)
 {
+    using out_t = std::conditional_t<
+                    std::is_same_v<_T, int8_t>,
+                    int32_t,
+                    std::conditional_t<
+                        std::is_same_v<_T, uint8_t>,
+                        uint32_t,
+                        _T>>;
     for (std::size_t i=0; i< _N; ++i) {
         if (i)
             s << "; ";
-        s << v._va[i];
+        s << out_t(v._va[i]);
     }
     return s;
 }
