@@ -744,7 +744,7 @@ cftal::test::gen_v32(const std::string& name_base)
                 d_0_1(rnd) != 0 ? 27 : 59,
                 d_0_1(rnd) != 0 ? 28 : 60,
                 d_0_1(rnd) != 0 ? 29 : 61,
-                d_0_1(rnd) != 0 ? 31 : 62,
+                d_0_1(rnd) != 0 ? 30 : 62,
                 d_0_1(rnd) != 0 ? 31 : 63
         };
         idx idt{
