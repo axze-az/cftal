@@ -2060,6 +2060,66 @@ perm1_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m128i a)
 {
+    constexpr const bool zero_elements=
+        (_P00 < 0) || (_P01 < 0) || (_P02 < 0) || (_P03 < 0) ||
+        (_P04 < 0) || (_P05 < 0) || (_P06 < 0) || (_P07 < 0) ||
+        (_P08 < 0) || (_P09 < 0) || (_P10 < 0) || (_P11 < 0) ||
+        (_P12 < 0) || (_P13 < 0) || (_P14 < 0) || (_P15 < 0);
+    constexpr const bool no_perm=
+        (_P00<0 || _P00==0) && (_P01<0 || _P01==1) &&
+        (_P02<0 || _P02==2) && (_P03<0 || _P03==3) &&
+        (_P04<0 || _P04==4) && (_P05<0 || _P05==5) &&
+        (_P06<0 || _P06==6) && (_P07<0 || _P07==7) &&
+        (_P08<0 || _P08==8) && (_P09<0 || _P09==9) &&
+        (_P10<0 || _P10==10) && (_P11<0 || _P11==11) &&
+        (_P12<0 || _P12==12) && (_P13<0 || _P13==13) &&
+        (_P14<0 || _P14==14) && (_P15<0 || _P15==15);
+
+    using impl::idx_pair;
+    using u16_00_t=idx_pair<_P00, _P01>;
+    using u16_01_t=idx_pair<_P02, _P03>;
+    using u16_02_t=idx_pair<_P04, _P05>;
+    using u16_03_t=idx_pair<_P06, _P07>;
+    using u16_04_t=idx_pair<_P08, _P09>;
+    using u16_05_t=idx_pair<_P10, _P11>;
+    using u16_06_t=idx_pair<_P12, _P13>;
+    using u16_07_t=idx_pair<_P14, _P15>;
+
+    constexpr const bool u16_perm=
+        u16_00_t::is_valid && u16_01_t::is_valid &&
+        u16_02_t::is_valid && u16_03_t::is_valid &&
+        u16_04_t::is_valid && u16_05_t::is_valid &&
+        u16_06_t::is_valid && u16_07_t::is_valid;
+
+    using u32_0_t=idx_pair<u16_00_t::idx, u16_01_t::idx>;
+    using u32_1_t=idx_pair<u16_02_t::idx, u16_03_t::idx>;
+    using u32_2_t=idx_pair<u16_04_t::idx, u16_05_t::idx>;
+    using u32_3_t=idx_pair<u16_06_t::idx, u16_07_t::idx>;
+
+    constexpr const bool u32_perm= u16_perm &&
+        u32_0_t::is_valid && u32_1_t::is_valid &&
+        u32_2_t::is_valid && u32_3_t::is_valid;
+
+    if (no_perm) {
+        if (zero_elements==false)
+            return a;
+        const __m128i msk=_mm_setr_epi8(
+            _P00<0 ? 0 : 0xff, _P01<0 ? 0 : 0xff,
+            _P02<0 ? 0 : 0xff, _P03<0 ? 0 : 0xff,
+            _P04<0 ? 0 : 0xff, _P05<0 ? 0 : 0xff,
+            _P06<0 ? 0 : 0xff, _P07<0 ? 0 : 0xff,
+            _P08<0 ? 0 : 0xff, _P09<0 ? 0 : 0xff,
+            _P10<0 ? 0 : 0xff, _P11<0 ? 0 : 0xff,
+            _P12<0 ? 0 : 0xff, _P13<0 ? 0 : 0xff,
+            _P14<0 ? 0 : 0xff, _P15<0 ? 0 : 0xff);
+        return _mm_and_si128(a, msk);
+    }
+
+    if (u32_perm && zero_elements==false) {
+        return perm1_v4u32<u32_0_t::idx, u32_1_t::idx,
+                           u32_2_t::idx, u32_3_t::idx>::v(a);
+    }
+
     constexpr const uint8_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
     constexpr const uint8_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
     constexpr const uint8_t c02 = (_P02 < 0) ? -1 : _P02 & 15;
@@ -2094,64 +2154,118 @@ perm2_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
 v(__m128i a, __m128i b)
 {
-    constexpr const bool sm00 = _P00 < 16;
-    constexpr const bool sm01 = _P01 < 16;
-    constexpr const bool sm02 = _P02 < 16;
-    constexpr const bool sm03 = _P03 < 16;
-    constexpr const bool sm04 = _P04 < 16;
-    constexpr const bool sm05 = _P05 < 16;
-    constexpr const bool sm06 = _P06 < 16;
-    constexpr const bool sm07 = _P07 < 16;
-    constexpr const bool sm08 = _P08 < 16;
-    constexpr const bool sm09 = _P09 < 16;
-    constexpr const bool sm10 = _P10 < 16;
-    constexpr const bool sm11 = _P11 < 16;
-    constexpr const bool sm12 = _P12 < 16;
-    constexpr const bool sm13 = _P13 < 16;
-    constexpr const bool sm14 = _P14 < 16;
-    constexpr const bool sm15 = _P15 < 16;
-    // select all elements to clear or from first vector
-    constexpr const int ma00 = sm00 ? ((_P00 < 0) ? -1 : _P00 & 15) : -1;
-    constexpr const int ma01 = sm01 ? ((_P01 < 0) ? -1 : _P01 & 15) : -1;
-    constexpr const int ma02 = sm02 ? ((_P02 < 0) ? -1 : _P02 & 15) : -1;
-    constexpr const int ma03 = sm03 ? ((_P03 < 0) ? -1 : _P03 & 15) : -1;
-    constexpr const int ma04 = sm04 ? ((_P04 < 0) ? -1 : _P04 & 15) : -1;
-    constexpr const int ma05 = sm05 ? ((_P05 < 0) ? -1 : _P05 & 15) : -1;
-    constexpr const int ma06 = sm06 ? ((_P06 < 0) ? -1 : _P06 & 15) : -1;
-    constexpr const int ma07 = sm07 ? ((_P07 < 0) ? -1 : _P07 & 15) : -1;
-    constexpr const int ma08 = sm08 ? ((_P08 < 0) ? -1 : _P08 & 15) : -1;
-    constexpr const int ma09 = sm09 ? ((_P09 < 0) ? -1 : _P09 & 15) : -1;
-    constexpr const int ma10 = sm10 ? ((_P10 < 0) ? -1 : _P10 & 15) : -1;
-    constexpr const int ma11 = sm11 ? ((_P11 < 0) ? -1 : _P11 & 15) : -1;
-    constexpr const int ma12 = sm12 ? ((_P12 < 0) ? -1 : _P12 & 15) : -1;
-    constexpr const int ma13 = sm13 ? ((_P13 < 0) ? -1 : _P13 & 15) : -1;
-    constexpr const int ma14 = sm14 ? ((_P14 < 0) ? -1 : _P14 & 15) : -1;
-    constexpr const int ma15 = sm15 ? ((_P15 < 0) ? -1 : _P15 & 15) : -1;
-    __m128i ma=perm1_v16u8<ma00, ma01, ma02, ma03,
-                           ma04, ma05, ma06, ma07,
-                           ma08, ma09, ma10, ma11,
-                           ma12, ma13, ma14, ma15>::v(a);
-    constexpr const int mb00 = sm00 ? -1 : _P00-16;
-    constexpr const int mb01 = sm01 ? -1 : _P01-16;
-    constexpr const int mb02 = sm02 ? -1 : _P02-16;
-    constexpr const int mb03 = sm03 ? -1 : _P03-16;
-    constexpr const int mb04 = sm04 ? -1 : _P04-16;
-    constexpr const int mb05 = sm05 ? -1 : _P05-16;
-    constexpr const int mb06 = sm06 ? -1 : _P06-16;
-    constexpr const int mb07 = sm07 ? -1 : _P07-16;
-    constexpr const int mb08 = sm08 ? -1 : _P08-16;
-    constexpr const int mb09 = sm09 ? -1 : _P09-16;
-    constexpr const int mb10 = sm10 ? -1 : _P10-16;
-    constexpr const int mb11 = sm11 ? -1 : _P11-16;
-    constexpr const int mb12 = sm12 ? -1 : _P12-16;
-    constexpr const int mb13 = sm13 ? -1 : _P13-16;
-    constexpr const int mb14 = sm14 ? -1 : _P14-16;
-    constexpr const int mb15 = sm15 ? -1 : _P15-16;
-    __m128i mb=perm1_v16u8<mb00, mb01, mb02, mb03,
-                           mb04, mb05, mb06, mb07,
-                           mb08, mb09, mb10, mb11,
-                           mb12, mb13, mb14, mb15>::v(b);
-    return _mm_or_si128(ma, mb);
+    constexpr const uint32_t
+        _UP00=_P00, _UP01=_P01, _UP02=_P02, _UP03=_P03,
+        _UP04=_P04, _UP05=_P05, _UP06=_P06, _UP07=_P07,
+        _UP08=_P08, _UP09=_P09, _UP10=_P10, _UP11=_P11,
+        _UP12=_P12, _UP13=_P13, _UP14=_P14, _UP15=_P15;
+
+    constexpr const bool a_only=
+        (_P00 < 16) && (_P01 < 16) && (_P02 < 16) && (_P03 < 16) &&
+        (_P04 < 16) && (_P05 < 16) && (_P06 < 16) && (_P07 < 16) &&
+        (_P08 < 16) && (_P09 < 16) && (_P10 < 16) && (_P11 < 16) &&
+        (_P12 < 16) && (_P13 < 16) && (_P14 < 16) && (_P15 < 16);
+    constexpr const bool b_only=
+        (_UP00 > 15) && (_UP01 > 15) && (_UP02 > 15) && (_UP03 > 15) &&
+        (_UP04 > 15) && (_UP05 > 15) && (_UP06 > 15) && (_UP07 > 15) &&
+        (_UP08 > 15) && (_UP09 > 15) && (_UP10 > 15) && (_UP11 > 15) &&
+        (_UP12 > 15) && (_UP13 > 15) && (_UP14 > 15) && (_UP15 > 15);
+
+    constexpr const bool zero_elements=
+        (_P00 < 0) || (_P01 < 0) || (_P02 < 0) || (_P03 < 0) ||
+        (_P04 < 0) || (_P05 < 0) || (_P06 < 0) || (_P07 < 0) ||
+        (_P08 < 0) || (_P09 < 0) || (_P10 < 0) || (_P11 < 0) ||
+        (_P12 < 0) || (_P13 < 0) || (_P14 < 0) || (_P15 < 0);
+
+    // elements to select from vector a or zero
+    constexpr const int32_t
+        a00 = _P00 > 15 ? -1 : _P00, a01 = _P01 > 15 ? -1 : _P01,
+        a02 = _P02 > 15 ? -1 : _P02, a03 = _P03 > 15 ? -1 : _P03,
+        a04 = _P04 > 15 ? -1 : _P04, a05 = _P05 > 15 ? -1 : _P05,
+        a06 = _P06 > 15 ? -1 : _P06, a07 = _P07 > 15 ? -1 : _P07,
+        a08 = _P08 > 15 ? -1 : _P08, a09 = _P09 > 15 ? -1 : _P09,
+        a10 = _P10 > 15 ? -1 : _P10, a11 = _P11 > 15 ? -1 : _P11,
+        a12 = _P12 > 15 ? -1 : _P12, a13 = _P13 > 15 ? -1 : _P13,
+        a14 = _P14 > 15 ? -1 : _P14, a15 = _P15 > 15 ? -1 : _P15;
+
+    // elements to select from vector b or zero
+    constexpr const int16_t
+        b00 = _P00 < 16 ? -1 : _P00-16, b01 = _P01 < 16 ? -1 : _P01-16,
+        b02 = _P02 < 16 ? -1 : _P02-16, b03 = _P03 < 16 ? -1 : _P03-16,
+        b04 = _P04 < 16 ? -1 : _P04-16, b05 = _P05 < 16 ? -1 : _P05-16,
+        b06 = _P06 < 16 ? -1 : _P06-16, b07 = _P07 < 16 ? -1 : _P07-16,
+        b08 = _P08 < 16 ? -1 : _P08-16, b09 = _P09 < 16 ? -1 : _P09-16,
+        b10 = _P10 < 16 ? -1 : _P10-16, b11 = _P11 < 16 ? -1 : _P11-16,
+        b12 = _P12 < 16 ? -1 : _P12-16, b13 = _P13 < 16 ? -1 : _P13-16,
+        b14 = _P14 < 16 ? -1 : _P14-16, b15 = _P15 < 16 ? -1 : _P15-16;
+
+    constexpr const bool no_perm=
+        (_P00<0 || _P00==0 || _P00==16) &&
+        (_P01<0 || _P01==1 || _P01==17) &&
+        (_P02<0 || _P02==2 || _P02==18) &&
+        (_P03<0 || _P03==3 || _P03==19) &&
+        (_P04<0 || _P04==4 || _P04==20) &&
+        (_P05<0 || _P05==5 || _P05==21) &&
+        (_P06<0 || _P06==6 || _P06==22) &&
+        (_P07<0 || _P07==7 || _P07==23) &&
+        (_P08<0 || _P08==8 || _P08==24) &&
+        (_P09<0 || _P09==9 || _P09==25) &&
+        (_P10<0 || _P10==10 || _P10==26) &&
+        (_P11<0 || _P11==11 || _P11==27) &&
+        (_P12<0 || _P12==12 || _P12==28) &&
+        (_P13<0 || _P13==13 || _P13==29) &&
+        (_P14<0 || _P14==14 || _P14==30) &&
+        (_P15<0 || _P15==15 || _P15==31);
+
+    if (a_only) {
+        const __m128i ap=perm1_v16u8<
+            a00, a01, a02, a03, a04, a05, a06, a07,
+            a08, a09, a10, a11, a12, a13, a14, a15>::v(a);
+        return ap;
+    }
+    if (b_only) {
+        const __m128i bp=perm1_v16u8<
+            b00, b01, b02, b03, b04, b05, b06, b07,
+            b08, b09, b10, b11, b12, b13, b14, b15>::v(b);
+        return bp;
+    }
+    if (no_perm) {
+        constexpr const bool
+            s00 = _P00 < 16 ? true: false, s01 = _P01 < 16 ? true: false,
+            s02 = _P02 < 16 ? true: false, s03 = _P03 < 16 ? true: false,
+            s04 = _P04 < 16 ? true: false, s05 = _P05 < 16 ? true: false,
+            s06 = _P06 < 16 ? true: false, s07 = _P07 < 16 ? true: false,
+            s08 = _P08 < 16 ? true: false, s09 = _P09 < 16 ? true: false,
+            s10 = _P10 < 16 ? true: false, s11 = _P11 < 16 ? true: false,
+            s12 = _P12 < 16 ? true: false, s13 = _P13 < 16 ? true: false,
+            s14 = _P14 < 16 ? true: false, s15 = _P15 < 16 ? true: false;
+        const __m128i rs=select_v16u8<
+            s00, s01, s02, s03, s04, s05, s06, s07,
+            s08, s09, s10, s11, s12, s13, s14, s15>::v(a, b);
+        if (zero_elements==false)
+            return rs;
+        constexpr const uint8_t
+            z00 = _P00 < 0 ? 0x00: 0xff, z01 = _P01 < 0 ? 0x00: 0xff,
+            z02 = _P02 < 0 ? 0x00: 0xff, z03 = _P03 < 0 ? 0x00: 0xff,
+            z04 = _P04 < 0 ? 0x00: 0xff, z05 = _P05 < 0 ? 0x00: 0xff,
+            z06 = _P06 < 0 ? 0x00: 0xff, z07 = _P07 < 0 ? 0x00: 0xff,
+            z08 = _P08 < 0 ? 0x00: 0xff, z09 = _P09 < 0 ? 0x00: 0xff,
+            z10 = _P10 < 0 ? 0x00: 0xff, z11 = _P11 < 0 ? 0x00: 0xff,
+            z12 = _P12 < 0 ? 0x00: 0xff, z13 = _P13 < 0 ? 0x00: 0xff,
+            z14 = _P14 < 0 ? 0x00: 0xff, z15 = _P15 < 0 ? 0x00: 0xff;
+        const __m128i zm=_mm_setr_epi8(
+            z00, z01, z02, z03, z04, z05, z06, z07,
+            z08, z09, z10, z11, z12, z13, z14, z15);
+        return _mm_and_si128(rs, zm);
+    }
+    const __m128i ap=perm1_v16u8<
+        a00, a01, a02, a03, a04, a05, a06, a07,
+        a08, a09, a10, a11, a12, a13, a14, a15>::v(a);
+    const __m128i bp=perm1_v16u8<
+        b00, b01, b02, b03, b04, b05, b06, b07,
+        b08, b09, b10, b11, b12, b13, b14, b15>::v(b);
+    const __m128i r=_mm_or_si128(ap, bp);
+    return r;
 }
 
 #if defined (__AVX__)
