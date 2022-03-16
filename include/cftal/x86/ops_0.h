@@ -598,6 +598,40 @@ namespace cftal {
 #endif
         };
 
+        struct vpunpcklbw {
+            static __m128i v(__m128i a, __m128i b) {
+                return _mm_unpacklo_epi8(a, b);
+            }
+            static __m128i v(__m128i a) {
+                return v(a, a);
+            }
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, __m256i b) {
+                return _mm256_unpacklo_epi8(a, b);
+            }
+            static __m256i v(__m256i a) {
+                return v(a, a);
+            }
+#endif
+        };
+
+        struct vpunpckhbw {
+            static __m128i v(__m128i a, __m128i b) {
+                return _mm_unpackhi_epi8(a, b);
+            }
+            static __m128i v(__m128i a) {
+                return v(a, a);
+            }
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, __m256i b) {
+                return _mm256_unpackhi_epi8(a, b);
+            }
+            static __m256i v(__m256i a) {
+                return v(a, a);
+            }
+#endif
+        };
+
         struct vpshufb {
             static __m128i v(__m128i a, __m128i msk);
 #if defined (__AVX2__)
