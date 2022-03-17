@@ -440,6 +440,9 @@ namespace cftal {
 
     std::ostream& operator<<(std::ostream& s, const f16_t& v);
     std::istream& operator>>(std::istream& s, f16_t& v);
+
+
+    // math functions for f16_t are missing
 }
 
 
