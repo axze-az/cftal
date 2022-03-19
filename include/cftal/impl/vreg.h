@@ -43,24 +43,24 @@ namespace cftal {
     }
 }
 
-template <class _X>
+template <class _R>
 inline
 constexpr
-cftal::impl::vreg<_X>::vreg(_X x) : _v(x)
+cftal::impl::vreg<_R>::vreg(_R x) : _v(x)
 {
 }
 
-template <class _X>
+template <class _R>
 inline
 constexpr
-_X cftal::impl::vreg<_X>::operator()() const
+_R cftal::impl::vreg<_R>::operator()() const
 {
     return _v;
 }
 
-template <class _X>
+template <class _R>
 inline
-_X& cftal::impl::vreg<_X>::operator()()
+_R& cftal::impl::vreg<_R>::operator()()
 {
     return _v;
 }
