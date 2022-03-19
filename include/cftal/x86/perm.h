@@ -1090,6 +1090,32 @@ namespace cftal {
                            28, 28, 29, 29, 30, 30, 31, 31>
             : public vpunpckhbw {};
 
+        // specializations of perm2_v32u8
+        template <>
+        struct perm2_v32u8< 0, 32,  1, 33,  2, 34,  3, 35,
+                            4, 36,  5, 37,  6, 38,  7, 39,
+                           16, 48, 17, 49, 18, 50, 19, 51,
+                           20, 52, 21, 53, 22, 54, 23, 55>
+            : public vpunpcklbw {};
+        template <>
+        struct perm1_v32u8<32,  0, 33,  1, 34,  2, 35,  3,
+                           36,  4, 37,  5, 38,  6, 39,  7,
+                           48, 16, 49, 17, 50, 18, 51, 19,
+                           52, 20, 53, 21, 54, 22, 55, 23>
+            : public swap_ab<__m256i, vpunpcklbw> {};
+        template <>
+        struct perm2_v32u8< 8, 40,  9, 41, 10, 42, 11, 43,
+                           12, 44, 13, 45, 14, 46, 15, 47,
+                           24, 56, 25, 57, 26, 58, 27, 59,
+                           28, 60, 29, 61, 30, 62, 31, 63>
+            : public vpunpckhbw {};
+        template <>
+        struct perm2_v32u8<40,  8, 41,  9, 42, 10, 43, 11,
+                           44, 12, 45, 13, 46, 14, 47, 15,
+                           56, 24, 57, 25, 58, 26, 59, 27,
+                           60, 28, 61, 29, 62, 30, 63, 31>
+            : public swap_ab<__m256i, vpunpckhbw> {};
+
 #endif // __AVX2__
 #if defined (__AVX512F__)
         // generic permutation of one v8f64 vector
