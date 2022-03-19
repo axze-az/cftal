@@ -422,7 +422,7 @@ template <class _T,
 bool cftal::test::perm2_v32()
 {
     vec<_T, 32> a = load_vals<_T, 32>(false);
-    vec<_T, 32> b = load_vals<_T, 32>(false);
+    vec<_T, 32> b = load_vals<_T, 32>(true);
     vec<_T, 32> r= permute<_P00, _P01, _P02, _P03,
                            _P04, _P05, _P06, _P07,
                            _P08, _P09, _P10, _P11,
