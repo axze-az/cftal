@@ -959,6 +959,7 @@ namespace cftal {
             static __m256i v(__m256i a, __m256i b);
         };
 
+        // perm1_v8u32 specializations
         template <>
         struct perm1_v8u32<-1, -1, -1, -1, -1, -1, -1, -1>
             : public make_zero_int256 {};
@@ -1006,21 +1007,38 @@ namespace cftal {
         struct perm1_v8u32<0, 1, 2, 3,  0, 1, 2, 3>
             : public vinsertf128<1> {};
 
+        // perm2_v8u32 specialisations
         template <>
         struct perm2_v8u32<0, 1, 8, 9, 4, 5, 12, 13>
             : public vpunpcklqdq {};
+
+        template <>
+        struct perm2_v8u32<8, 9, 0, 1, 12, 13, 4, 5>
+            : public swap_ab<__m256i, vpunpcklqdq> {};
 
         template <>
         struct perm2_v8u32<2, 3, 10, 11, 6, 7, 14, 15>
             : public vpunpckhqdq {};
 
         template <>
+        struct perm2_v8u32<10, 11, 2, 3, 14, 15, 6, 7>
+            : public swap_ab<__m256i, vpunpckhqdq> {};
+
+        template <>
         struct perm2_v8u32<0, 8, 1, 9, 4, 12, 5, 13>
             : public vpunpckldq {};
 
         template <>
+        struct perm2_v8u32<8, 0, 9, 1, 12, 4, 13, 5>
+            : public swap_ab<__m256i, vpunpckldq> {};
+
+        template <>
         struct perm2_v8u32<2, 10, 3, 11, 6, 14, 7, 15>
             : public vpunpckhdq {};
+
+        template <>
+        struct perm2_v8u32<10, 2, 11, 3, 14, 6, 15, 7>
+            : public swap_ab<__m256i, vpunpckhdq> {};
 
         template <>
         struct perm2_v8u32<0, 1, 2, 3, 8, 9, 10, 11>
