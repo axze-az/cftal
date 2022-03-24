@@ -682,7 +682,6 @@ cftal::duint<_T> cftal::operator^(const _T& a, const duint<_T>& b)
     return b ^ a;
 }
 
-
 template <typename _T>
 cftal::duint<_T> cftal::operator+(const duint<_T>& a, const duint<_T>& b)
 {
