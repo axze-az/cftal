@@ -76,8 +76,8 @@ namespace cftal {
     private:
         static_assert(0==(_N & (_N-1)),
                       "vec<_T, _N>: _N is not a power of 2");
-        static_assert(_N > 0 && _N <= 64,
-                      "_N must be element of [1, 64]");
+        // static_assert(_N > 0 && _N <= 64,
+        //              "_N must be element of [1, 64]");
         pair_type _v;
     };
 
