@@ -35,7 +35,7 @@ namespace cftal {
             v(const vec<_T, _N>& a) {
                 return expm1(a);
             }
-            
+
             static
             auto
             r(const _T& a) {
@@ -44,13 +44,13 @@ namespace cftal {
                 return std::make_tuple(v, i.first, i.second);
                 // return call_mpfr::func(a, mpfr_expm1)
             }
-            
+
             static
             _T
             s(const _T& a) {
                 return std::expm1(a);
             }
-            
+
             static
             const char* fname() { return "expm1"; }
         };
