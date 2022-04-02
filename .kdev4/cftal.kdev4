@@ -90,7 +90,8 @@ Launch Configurations=
 
 [MakeBuilder]
 Additional Options=-s
-Number Of Jobs=8
+Number Of Jobs=4
+Override Number Of Jobs=true
 
 [Project]
 VersionControlSupport=kdevsubversion
