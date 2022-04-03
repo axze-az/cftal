@@ -108,6 +108,11 @@ namespace cftal {
             vdf_type
             cvt_to_vdf(arg_t<vhf_type> x);
 
+            // convert to vf vec<double> --> vec<float>
+            static
+            vf_type
+            cvt_to_vf(arg_t<vhf_type> x);
+
 #endif
             // unsigned integer __fmod
             template <unsigned _U>
@@ -766,6 +771,18 @@ cvt_to_vdf(arg_t<vhf_type> x)
     vf_type xl=cvt<vf_type>(xld);
     return vdf_type(xh, xl);
 }
+
+template <typename _T>
+inline
+typename
+cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+cvt_to_vf(arg_t<vhf_type> x)
+{
+    vf_type xf=cvt<vf_type>(x);
+    return xf;
+}
+
 #endif
 
 template <typename _T>
