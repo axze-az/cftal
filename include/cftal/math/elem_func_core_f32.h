@@ -755,7 +755,7 @@ cftal::math::elem_func_core<float, _T>::vhf_type
 cftal::math::elem_func_core<float, _T>::
 cvt_to_vhf(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
-    return cvt<vhf_type>(xl) + cvt<vhf_type>(xl);
+    return cvt_to_vhf(xh) + cvt_to_vhf(xl);
 }
 
 template <typename _T>
@@ -765,10 +765,10 @@ cftal::math::elem_func_core<float, _T>::vdf_type
 cftal::math::elem_func_core<float, _T>::
 cvt_to_vdf(arg_t<vhf_type> x)
 {
-    vf_type xh=cvt<vf_type>(x);
-    vhf_type xhd=cvt<vhf_type>(xh);
+    vf_type xh=cvt_to_vf(x);
+    vhf_type xhd=cvt_to_vhf(xh);
     vhf_type xld=x-xhd;
-    vf_type xl=cvt<vf_type>(xld);
+    vf_type xl=cvt_to_vf(xld);
     return vdf_type(xh, xl);
 }
 
@@ -1884,9 +1884,8 @@ exp_k(arg_t<vhf_type> xc)
         yd=__exp_tbl_k(xrd, idx, ki);
     } else {
         vhf_type xr, kf;
-        vhf_type x=cvt<vhf_type>(xc);
-        __reduce_exp_arg(xr, kf, x);
-        yd=__exp_k<_EXP_M1>(xr, kf, x);
+        __reduce_exp_arg(xr, kf, xc);
+        yd=__exp_k<_EXP_M1>(xr, kf, xc);
     }
     return yd;
 }
