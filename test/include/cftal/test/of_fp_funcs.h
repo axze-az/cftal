@@ -34,6 +34,7 @@
 #include <future>
 #include <thread>
 #include <list>
+#include <array>
 
 namespace cftal {
     namespace test {
