@@ -93,11 +93,6 @@ namespace cftal {
                              _SCALAR_FUNC f);
 
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-            // convert to vhf_type i.e vec<float> --> vec<double>
-            static
-            vhf_type
-            cvt_to_vhf(arg_t<vf_type> x);
-
             // convert to vhf_type i.e vec<float> hi, lo --> vec<double>
             static
             vhf_type
@@ -107,11 +102,6 @@ namespace cftal {
             static
             vdf_type
             cvt_to_vdf(arg_t<vhf_type> x);
-
-            // convert to vf vec<double> --> vec<float>
-            static
-            vf_type
-            cvt_to_vf(arg_t<vhf_type> x);
 
 #endif
             // unsigned integer __fmod
@@ -738,15 +728,6 @@ call_scalar_func(arg_t<vf_type> x, arg_t<vf_type> y, _SCALAR_FUNC f)
 }
 
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-template <typename _T>
-inline
-typename
-cftal::math::elem_func_core<float, _T>::vhf_type
-cftal::math::elem_func_core<float, _T>::
-cvt_to_vhf(arg_t<vf_type> x)
-{
-    return cvt<vhf_type>(x);
-}
 
 template <typename _T>
 inline
@@ -755,7 +736,7 @@ cftal::math::elem_func_core<float, _T>::vhf_type
 cftal::math::elem_func_core<float, _T>::
 cvt_to_vhf(arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
-    return cvt_to_vhf(xh) + cvt_to_vhf(xl);
+    return cvt<vhf_type>(xh) + cvt<vhf_type>(xl);
 }
 
 template <typename _T>
@@ -765,22 +746,11 @@ cftal::math::elem_func_core<float, _T>::vdf_type
 cftal::math::elem_func_core<float, _T>::
 cvt_to_vdf(arg_t<vhf_type> x)
 {
-    vf_type xh=cvt_to_vf(x);
-    vhf_type xhd=cvt_to_vhf(xh);
+    vf_type xh=cvt<vf_type>(x);
+    vhf_type xhd=cvt<vhf_type>(xh);
     vhf_type xld=x-xhd;
-    vf_type xl=cvt_to_vf(xld);
+    vf_type xl=cvt<vf_type>(xld);
     return vdf_type(xh, xl);
-}
-
-template <typename _T>
-inline
-typename
-cftal::math::elem_func_core<float, _T>::vf_type
-cftal::math::elem_func_core<float, _T>::
-cvt_to_vf(arg_t<vhf_type> x)
-{
-    vf_type xf=cvt<vf_type>(x);
-    return xf;
 }
 
 #endif
