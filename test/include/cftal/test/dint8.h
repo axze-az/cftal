@@ -33,10 +33,7 @@ namespace cftal {
         };
 
         template <>
-        struct mul_half<uint16_t>
-            : public std::binary_function<uint16_t,
-                                          uint16_t,
-                                          uint16_t> {
+        struct mul_half<uint16_t> {
             uint16_t operator()(uint16_t a, uint16_t b)
                 const {
                 return a * (b & 0xFF);
@@ -44,10 +41,7 @@ namespace cftal {
         };
 
         template <>
-        struct mul_half<duint<uint8_t> >
-            : public std::binary_function<duint<uint8_t>,
-                                          duint<uint8_t>,
-                                          duint<uint8_t> > {
+        struct mul_half<duint<uint8_t> > {
             duint<uint8_t> operator()(const duint<uint8_t>& a,
                                       const duint<uint8_t>& b)
                 const {
@@ -57,10 +51,7 @@ namespace cftal {
         };
 
         template <>
-        struct mul_half<int16_t>
-            : public std::binary_function<int16_t,
-                                          int16_t,
-                                          int16_t> {
+        struct mul_half<int16_t> {
             uint16_t operator()(int16_t a, int16_t b)
                 const {
                 int8_t d= b;
@@ -69,10 +60,7 @@ namespace cftal {
         };
 
         template <>
-        struct mul_half<dint<int8_t> >
-            : public std::binary_function<dint<int8_t>,
-                                          dint<int8_t>,
-                                          dint<int8_t> > {
+        struct mul_half<dint<int8_t> > {
             duint<uint8_t> operator()(const dint<int8_t>& a,
                                       const dint<int8_t>& b)
                 const {
@@ -86,10 +74,7 @@ namespace cftal {
         };
 
         template <>
-        struct div_half<uint16_t>
-            : public std::binary_function<uint16_t,
-                                          uint16_t,
-                                          uint16_t> {
+        struct div_half<uint16_t> {
             uint16_t operator()(uint16_t a, uint16_t b)
                 const {
                 return a / (b & 0xFF);
@@ -97,10 +82,7 @@ namespace cftal {
         };
 
         template <>
-        struct div_half<duint<uint8_t> >
-            : public std::binary_function<duint<uint8_t>,
-                                          duint<uint8_t>,
-                                          duint<uint8_t> > {
+        struct div_half<duint<uint8_t> > {
             duint<uint8_t> operator()(const duint<uint8_t>& a,
                                       const duint<uint8_t>& b)
                 const {
@@ -110,10 +92,7 @@ namespace cftal {
         };
 
         template <>
-        struct div_half<int16_t>
-            : public std::binary_function<int16_t,
-                                          int16_t,
-                                          int16_t> {
+        struct div_half<int16_t> {
             uint16_t operator()(int16_t a, int16_t b)
                 const {
                 int8_t d= b;
@@ -122,10 +101,7 @@ namespace cftal {
         };
 
         template <>
-        struct div_half<dint<int8_t> >
-            : public std::binary_function<dint<int8_t>,
-                                          dint<int8_t>,
-                                          dint<int8_t> > {
+        struct div_half<dint<int8_t> > {
             duint<uint8_t> operator()(const dint<int8_t>& a,
                                       const dint<int8_t>& b)
                 const {
