@@ -33,7 +33,20 @@ b = [|0, 1|]@b;
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const double exp_c", "exp", b, c);
 
-/* log1p for log implementation */
+/* log1p for log implementation with 29 bits precision */
+f= log1p(x);
+ib=single(sqrt(2)/2);
+printsingle(ib);
+i= [ib-1, (ib*2)-1];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|1, ..., 10|];
+c = [|D, D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double log_c", "log", b, c);
+
+/* log1p for log implementation with 34 bits precision */
 f= log1p(x);
 ib=single(sqrt(2)/2);
 printsingle(ib);

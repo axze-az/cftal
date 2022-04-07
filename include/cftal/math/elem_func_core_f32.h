@@ -529,13 +529,13 @@ namespace cftal {
             template <log_func _LFUNC>
             static
             vf_type
-            __log_tbl_k_d(arg_t<vf_type> xc);
+            __log_k_d(arg_t<vf_type> xc);
 
 
             template <log_func _LFUNC>
             static
             vhf_type
-            __log_tbl_k12_d(arg_t<vf_type> xc);
+            __log_k12_d(arg_t<vf_type> xc);
 #endif
             static
             vf_type
@@ -2813,7 +2813,7 @@ template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-__log_tbl_k_d(arg_t<vf_type> xc)
+__log_k_d(arg_t<vf_type> xc)
 {
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
@@ -2845,7 +2845,7 @@ template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC>
 inline
 typename cftal::math::elem_func_core<float, _T>::vhf_type
 cftal::math::elem_func_core<float, _T>::
-__log_tbl_k12_d(arg_t<vf_type> xc)
+__log_k12_d(arg_t<vf_type> xc)
 {
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
@@ -3102,7 +3102,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
     vhf_type yd=cvt<vhf_type>(y);
-    vhf_type ylnx=yd*__log_tbl_k12_d<log_func::c_log_e>(abs(x));
+    vhf_type ylnx=yd*__log_k12_d<log_func::c_log_e>(abs(x));
     vi_type idx, ki;
     vhf_type xrd;
     __reduce_exp_arg(xrd, idx, ki, ylnx);
@@ -3179,7 +3179,7 @@ cftal::math::elem_func_core<float, _T>::
 powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
 {
 #if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    vhf_type lnx=__log_tbl_k12_d<log_func::c_log_e>(abs(x));
+    vhf_type lnx=__log_k12_d<log_func::c_log_e>(abs(x));
     vhf_type yd=cvt<vhf_type>(e);
     vhf_type ylnx;
     if (_CALC_ROOT==true) {
