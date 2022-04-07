@@ -3048,6 +3048,9 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log2_k(arg_t<vf_type> xc)
 {
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    return __log_k_d<log_func::c_log_2>(xc);
+#else
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
@@ -3090,6 +3093,7 @@ log2_k(arg_t<vf_type> xc)
     d_ops::add12(res, t, kf, l0);
     res += t +(l1+l2+l3);
     return res;
+#endif
 }
 
 template <typename _T>
@@ -3098,6 +3102,9 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log10_k(arg_t<vf_type> xc)
 {
+#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
+    return __log_k_d<log_func::c_log_10>(xc);
+#else
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
@@ -3142,6 +3149,7 @@ log10_k(arg_t<vf_type> xc)
     d_ops::add12(res, t, kf*ctbl::m_lg2_cw[0], l0);
     res += (t +(l1+l2+l3)) + kf * ctbl::m_lg2_cw[1];
     return res;
+#endif
 }
 
 template <typename _T>
