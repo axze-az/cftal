@@ -730,8 +730,13 @@ cftal::impl::fixed_vec_lookup_table<4, double, int32_t, 4>::
 setup_msk(const vec<int32_t, 4>& idx)
 {
     vec<int32_t, 4> i2=idx+idx;
+#if 1
+    vec<int32_t, 8> t(_mm256_castsi128_si256(i2()));
+    t=permute<0, 0, 1, 1, 2, 2, 3, 3>(t);
+#else
     vec<int32_t, 8> t(i2, i2);
     t=permute<0, 0, 1, 1, 6, 6, 7, 7>(t);
+#endif
     const __m256i offs=_mm256_setr_epi32(0, 1, 0, 1, 0, 1, 0, 1);
     __m256i r=_mm256_add_epi32(t(), offs);
     return r;
