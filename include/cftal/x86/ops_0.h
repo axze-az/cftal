@@ -654,6 +654,15 @@ namespace cftal {
                                           _mm_setzero_si128());
 #endif
             }
+#if defined (__AVX2__)
+            static __m256i v(__m256i a, __m256i b) {
+                static_cast<void>(b);
+                return v(a);
+            }
+            static __m256i v(__m256i a) {
+                return _mm256_cvtepu16_epi32(_mm256_castsi256_si128(a));
+            }
+#endif
         };
 
         struct vpmovzxdq {
