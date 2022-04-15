@@ -35,8 +35,10 @@ namespace cftal {
         struct pgm_args {
             // speed test only
             bool _speed_only;
-            // multi thread
-            bool _mt;
+            // multi thread: thread count, 0 means no mt, 1 one worker thread
+            // the thread count is maximized with the number of logical cores
+            // in the test programs
+            uint32_t _mt;
             // use cache
             bool _use_cache;
             // fast
@@ -48,7 +50,8 @@ namespace cftal {
             // the count of tests to perform
             std::size_t _cnt;
             pgm_args(std::size_t c=0x80000)
-              : _speed_only(false), _mt(true),
+              : _speed_only(false),
+                _mt(std::numeric_limits<uint32_t>::max()),
                 _use_cache(false), _fast(false),
                 _slow(false),
                 _data_dir("../test/data/"),

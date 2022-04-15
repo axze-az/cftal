@@ -21,7 +21,7 @@
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const pgm_args& ags)
 {
-    s << '(' << (ags._mt ? "mt" : "st")
+    s << '(' << (ags._mt>0 ? "mt" : "st")
       << (ags._speed_only ? ", speed only" : "")
       << (ags._fast ? ", fast" : "" )
       << (ags._slow ? ", slow" : "" )
@@ -41,20 +41,34 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
     args._data_dir += "/../../test/data";
 
     for (int i=1; i<argc; ++i) {
-        string_view ai(argv[i]);
-        if (ai == "--speed") {
+        string_view argi(argv[i]);
+        string_view::size_type eq_pos=argi.find('=');
+        string_view ai(argi.substr(0, eq_pos));
+        if (argi == "--speed") {
             args._speed_only= true;
-        } else if (ai == "--fast") {
+        } else if (argi == "--fast") {
             args._fast = true;
             args._slow = false;
-        } else if (ai == "--slow") {
+        } else if (argi == "--slow") {
             args._slow = true;
             args._fast = false;
-        } else if (ai == "--cache") {
+        } else if (argi == "--cache") {
             args._use_cache=true;
         } else if (ai == "--mt") {
-            args._mt = true;
-        } else if (ai == "--no-mt") {
+            if (argi.length()>eq_pos) {
+                string_view pl=argi.substr(eq_pos+1);
+                std::istringstream is(std::string(pl.data(), pl.length()));
+                uint32_t tc=0;
+                is >> tc;
+                if (is.fail() || !is.eof()) {
+                    err=true;
+                } else {
+                    args._mt=tc;
+                }
+            } else {
+                args._mt=std::numeric_limits<uint32_t>::max();
+            }
+        } else if (argi == "--no-mt") {
             args._mt = false;
         } else {
             if (ai[0] != '-') {
@@ -68,12 +82,12 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
     if (non_option_arg>1 || err) {
         std::cerr << argv[0]
                   << " [--fast|--slow] [--speed] [--[no-]mt] [--cache]\n"
-                     "--fast  reduces the test count\n"
-                     "--slow  increases the test count\n"
-                     "--speed performs a speed test only\n"
-                     "--mt    force multithreading\n"
-                     "--no-mt disable multithreading\n"
-                     "--cache use a file cache\n"
+                     "--fast   reduces the test count\n"
+                     "--slow   increases the test count\n"
+                     "--speed  performs a speed test only\n"
+                     "--mt[=X] force multithreading with X threads\n"
+                     "--no-mt  disable multithreading\n"
+                     "--cache  use a file cache\n"
                   << std::flush;
         std::exit(3);
     }

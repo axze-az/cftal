@@ -151,7 +151,7 @@ namespace cftal {
             v(exec_stats<_N>& st,
               func_domain<_T> domain,
               bool speed_only,
-              bool mt,
+              uint32_t thread_cnt,
               _CMP cmp,
               std::size_t cnt,
               const _C& tv);
@@ -162,7 +162,7 @@ namespace cftal {
             v(exec_stats<_N>& st,
               func_domain<_T> domain,
               bool speed_only,
-              bool mt,
+              uint32_t thread_cnt,
               _CMP cmp=_CMP(),
               std::size_t cnt=default_cnt,
               bool suppress_defaults= false);
@@ -187,13 +187,13 @@ namespace cftal {
             v(exec_stats<_N>& st,
               func_domain<_T> domain,
               bool speed_only,
-              bool mt,
+              uint32_t thread_cnt,
               _CMP cmp,
               std::size_t cnt,
               const _C& tv) {
                 bool r=of_fp_func<_T, _N, _F>::v(st, domain,
                                                  speed_only,
-                                                 mt,
+                                                 thread_cnt,
                                                  cmp, cnt,
                                                  tv);
                 return r;
@@ -205,13 +205,13 @@ namespace cftal {
             v(exec_stats<_N>& st,
               func_domain<_T> domain,
               bool speed_only,
-              bool mt,
+              uint32_t thread_cnt,
               _CMP cmp,
               std::size_t cnt,
               bool suppress_defaults=false) {
                 bool r=of_fp_func<_T, _N, _F>::v(st, domain,
                                                  speed_only,
-                                                 mt,
+                                                 thread_cnt,
                                                  cmp, cnt,
                                                  suppress_defaults);
                 return r;
@@ -226,9 +226,11 @@ namespace cftal {
               _CMP cmp= _CMP(),
               std::size_t cnt=default_cnt,
               bool suppress_defaults= false) {
+                uint32_t thread_cnt= speed_only ?
+                    0 : std::numeric_limits<uint32_t>::max();
                 return v(st, domain,
                          speed_only,
-                         speed_only == false,
+                         thread_cnt,
                          cmp, cnt,
                          suppress_defaults);
             }
@@ -245,7 +247,7 @@ namespace cftal {
               func_domain<_T1> domain_1 = default_domain<_T1>::value,
               func_domain<_T2> domain_2 = default_domain<_T2>::value,
               bool speed_only = false,
-              bool mt = true,
+              uint32_t thread_cnt=std::numeric_limits<uint32_t>::max(),
               _CMP cmp=_CMP(),
               std::size_t cnt=default_cnt,
               bool suppress_defaults=false);
@@ -270,14 +272,14 @@ namespace cftal {
               func_domain<_T1> domain_1,
               func_domain<_T2> domain_2,
               bool speed_only,
-              bool mt,
+              uint32_t thread_cnt,
               _CMP cmp,
               std::size_t cnt=default_cnt,
               bool suppress_defaults=false) {
                 bool r=of_fp_func_2<_T, _N, _F, _T1, _T2>::
                     v(st, domain_1, domain_2,
                       speed_only,
-                      mt,
+                      thread_cnt,
                       cmp, cnt,
                       suppress_defaults);
                 return r;
@@ -293,9 +295,11 @@ namespace cftal {
               _CMP cmp= _CMP(),
               std::size_t cnt=default_cnt,
               bool suppress_defaults=false) {
+                uint32_t thread_cnt= speed_only ?
+                    0 : std::numeric_limits<uint32_t>::max();
                 return v(st, domain_1, domain_2,
                          speed_only,
-                         speed_only==false,
+                         thread_cnt,
                          cmp, cnt,
                          suppress_defaults);
             }
@@ -758,10 +762,11 @@ bool
 cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                        func_domain<_T> domain,
                                        bool speed_only,
-                                       bool mt,
+                                       uint32_t thread_cnt,
                                        _CMP cmp, std::size_t cnt,
                                        const _C& tv)
 {
+    // std::cout << "using " << thread_cnt << " worker threads\n";
     bool r = true;
     array_t va;
 
@@ -825,14 +830,15 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                              exec_stats<_N>& st,
                              bool speed_only,
                              _CMP cmp,
-                             bool mt)->void {
-        if (mt == false) {
+                             uint32_t thread_cnt)->void {
+        if (thread_cnt == 0) {
             r &= calc_vec(std::move(va), st, speed_only, cmp);
             return;
         }
         if (v_res._vt.empty()) {
-            const size_t thrd_cnt=
+            const uint32_t max_thrd_cnt=
                 std::max(std::thread::hardware_concurrency(), 1u);
+            uint32_t thrd_cnt=std::min(max_thrd_cnt, thread_cnt);
             // setup
             v_res._vr.resize(thrd_cnt, true);
             for (std::size_t i=0; i<thrd_cnt; ++i) {
@@ -872,7 +878,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                           st,
                           speed_only,
                           cmp,
-                          mt);
+                          thread_cnt);
             std::cout << '.' << std::flush;
         }
         std::cout << std::endl;
@@ -898,7 +904,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                               st,
                               speed_only,
                               cmp,
-                              mt);
+                              thread_cnt);
                 std::cout << '.' << std::flush;
             }
             std::cout << std::endl;
@@ -957,17 +963,17 @@ bool
 cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                        func_domain<_T> domain,
                                        bool speed_only,
-                                       bool mt,
+                                       uint32_t thread_cnt,
                                        _CMP cmp, std::size_t cnt,
                                        bool suppress_defaults)
 {
     bool r;
     if (suppress_defaults == false) {
-        r=v(st, domain, speed_only, mt, cmp, cnt,
+        r=v(st, domain, speed_only, thread_cnt, cmp, cnt,
             default_arguments<_T>::values);
     } else {
         const std::vector<_T> empty_def_args;
-        r=v(st, domain, speed_only, mt, cmp, cnt,
+        r=v(st, domain, speed_only, thread_cnt, cmp, cnt,
             empty_def_args);
     }
     return r;
@@ -1039,7 +1045,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                                       func_domain<_T1> domain_1,
                                       func_domain<_T2> domain_2,
                                       bool speed_only,
-                                      bool mt,
+                                      uint32_t thread_cnt,
                                       _CMP cmp, std::size_t cnt,
                                       bool suppress_defaults)
 {
@@ -1123,14 +1129,15 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                              exec_stats<_N>& st,
                              bool speed_only,
                              _CMP cmp,
-                             bool mt)->void {
-        if (mt == false) {
+                             uint32_t thread_cnt)->void {
+        if (thread_cnt == 0) {
             r &= calc_vec(std::move(va), st, speed_only, cmp);
             return;
         }
         if (v_res._vt.empty()) {
-            const size_t thrd_cnt=
+            const uint32_t max_thrd_cnt=
                 std::max(std::thread::hardware_concurrency(), 1u);
+            uint32_t thrd_cnt=std::min(max_thrd_cnt, thread_cnt);
             // setup
             v_res._vr.resize(thrd_cnt, true);
             for (std::size_t i=0; i<thrd_cnt; ++i) {
@@ -1174,7 +1181,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                           st,
                           speed_only,
                           cmp,
-                          mt);
+                          thread_cnt);
             std::cout << '.' << std::flush;
         }
         std::cout << std::endl;
@@ -1210,7 +1217,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                                 st,
                                 speed_only,
                                 cmp,
-                                mt);
+                                thread_cnt);
                 std::cout << '.' << std::flush;
             }
             std::cout << std::endl;
@@ -1247,7 +1254,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                                 st,
                                 speed_only,
                                 cmp,
-                                mt);
+                                thread_cnt);
                 std::cout << '.' << std::flush;
             }
             std::cout << std::endl;
@@ -1283,7 +1290,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
                                 st,
                                 speed_only,
                                 cmp,
-                                mt);
+                                thread_cnt);
                 std::cout << '.' << std::flush;
             }
             std::cout << std::endl;
