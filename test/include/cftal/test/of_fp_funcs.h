@@ -766,7 +766,6 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
                                        _CMP cmp, std::size_t cnt,
                                        const _C& tv)
 {
-    // std::cout << "using " << thread_cnt << " worker threads\n";
     bool r = true;
     array_t va;
 
