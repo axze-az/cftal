@@ -69,9 +69,9 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
                 args._mt=std::numeric_limits<uint32_t>::max();
             }
         } else if (argi == "--no-mt") {
-            args._mt = false;
+            args._mt = 0;
         } else {
-            if (ai[0] != '-') {
+            if (argi[0] != '-') {
                 args._data_dir=std::string(ai.data(), ai.length());
                 ++non_option_arg;
             } else {

@@ -29,11 +29,17 @@ namespace cftal {
 
         // execution statistics
         template <std::size_t _N>
-        struct exec_stats {
+        struct alignas(64) exec_stats {
+#if 1
+            struct data_type {
+                uint64_t _v;
+            };
+#else
             struct alignas(64) data_type {
                 std::atomic<uint64_t> _v;
                 char _pad[64-sizeof(_v)];
             };
+#endif
             // the tics for the vectors of length [0, _N]
             data_type _tics[_N+1];
             // number of function calls
@@ -41,8 +47,13 @@ namespace cftal {
             // insert into _tics and increment evals[n]
             void insert(uint64_t tics_before, uint64_t tics_after,
                         unsigned idx) {
-                uint64_t ta=std::max(tics_before, tics_after);
-                uint64_t tb=std::min(tics_before, tics_after);
+                uint64_t ta=tics_after;
+                uint64_t tb=tics_before;
+                // if (ta < tb) {
+                //     ta = 0 - tics_before + tics_after;
+                //     tb = 0;
+                //     // ta - tb --> tics_after - tics_before
+                // }
                 uint64_t d=ta - tb;
                 _tics[idx]._v += d;
                 ++(_evals[idx]._v);
@@ -58,6 +69,11 @@ namespace cftal {
             static
             uint64_t hr_timer() { return rdtsc(); }
         };
+
+        template <std::size_t _N>
+        void
+        add_to(exec_stats<_N>& a, const exec_stats<_N>& b);
+
         // output operator for exec_stats
         template <std::size_t _N>
         std::ostream&
@@ -94,6 +110,17 @@ cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
           << '\n';
     }
     return s;
+}
+
+template <std::size_t _N>
+void
+cftal::test::
+add_to(exec_stats<_N>& res, const exec_stats<_N>& src)
+{
+    for (std::size_t i=0; i<_N+1; ++i) {
+        res._tics[i]._v += src._tics[i]._v;
+        res._evals[i]._v += src._evals[i]._v;
+    }
 }
 
 // Local variables:

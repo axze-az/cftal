@@ -1,4 +1,4 @@
-//
+// //
 // Copyright (C) 2010-2022 Axel Zeuner
 //
 // This library is free software; you can redistribute it and/or
@@ -781,7 +781,6 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
     uniform_real_distribution<_T>
         distrib(domain.first, domain.second);
 
-
     std::cout << "[" << domain.first << ", " << domain.second << ")\n";
     const uint32_t N0=72;
     const uint32_t N1=4;
@@ -793,6 +792,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
     struct thread_data {
         std::deque<bool> _vr;
         std::vector<std::thread> _vt;
+        std::vector<exec_stats<_N> > _vst;
         work_queue<job_t> _wq;
         thread_data() : _vr(), _vt(),
             _wq(std::max(std::thread::hardware_concurrency(), 1u)+2) {}
@@ -840,11 +840,12 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
             uint32_t thrd_cnt=std::min(max_thrd_cnt, thread_cnt);
             // setup
             v_res._vr.resize(thrd_cnt, true);
+            v_res._vst.resize(thrd_cnt);
             for (std::size_t i=0; i<thrd_cnt; ++i) {
                 auto ti=std::thread(thr_main,
                                     std::ref(v_res._wq),
                                     std::ref(v_res._vr[i]),
-                                    std::ref(st),
+                                    std::ref(v_res._vst[i]),
                                     speed_only,
                                     cmp);
                 v_res._vt.emplace_back(std::move(ti));
@@ -853,6 +854,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
         v_res._wq.write(std::move(va));
     };
     auto wait_for_completion=[](bool& r,
+                                exec_stats<_N>& st,
                                 thread_data& v_res)->void {
         if (v_res._vt.empty())
             return;
@@ -862,6 +864,9 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
         }
         for (bool b : v_res._vr) {
             r &= b;
+        }
+        for (const exec_stats<_N>& sti : v_res._vst) {
+            add_to(st, sti);
         }
     };
     for (uint32_t l=0; l< N1; ++l) {
@@ -909,7 +914,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
             std::cout << std::endl;
         }
     }
-    wait_for_completion(r, v_res);
+    wait_for_completion(r, st, v_res);
 #else
     for (uint32_t l=0; l< N1; ++l) {
         for (uint32_t j=0; j<N0; ++j) {
@@ -1094,6 +1099,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
     struct thread_data {
         std::deque<bool> _vr;
         std::vector<std::thread> _vt;
+        std::vector<exec_stats<_N> > _vst;
         work_queue<job_t> _wq;
         thread_data() : _vr(), _vt(),
             _wq(std::max(std::thread::hardware_concurrency(), 1u)+2) {}
@@ -1139,11 +1145,12 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
             uint32_t thrd_cnt=std::min(max_thrd_cnt, thread_cnt);
             // setup
             v_res._vr.resize(thrd_cnt, true);
+            v_res._vst.resize(thrd_cnt);
             for (std::size_t i=0; i<thrd_cnt; ++i) {
                 auto ti=std::thread(thr_main,
                                     std::ref(v_res._wq),
                                     std::ref(v_res._vr[i]),
-                                    std::ref(st),
+                                    std::ref(v_res._vst[i]),
                                     speed_only,
                                     cmp);
                 v_res._vt.emplace_back(std::move(ti));
@@ -1152,6 +1159,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         v_res._wq.write(std::move(va));
     };
     auto wait_for_completion=[](bool& r,
+                                exec_stats<_N>& st,
                                 thread_data& v_res)->void {
         if (v_res._vt.empty())
             return;
@@ -1161,6 +1169,9 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         }
         for (bool b : v_res._vr) {
             r &= b;
+        }
+        for (const exec_stats<_N>& sti : v_res._vst) {
+            add_to(st, sti);
         }
     };
     for (uint32_t l=0; l< N1; ++l) {
@@ -1295,7 +1306,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
             std::cout << std::endl;
         }
     }
-    wait_for_completion(r, v_res);
+    wait_for_completion(r, st, v_res);
 #else
     for (uint32_t l=0; l< N1; ++l) {
         for (uint32_t j=0; j< N0; ++j) {
