@@ -866,7 +866,7 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
             r &= b;
         }
         for (const exec_stats<_N>& sti : v_res._vst) {
-            add_to(st, sti);
+            st += sti;
         }
     };
     for (uint32_t l=0; l< N1; ++l) {
@@ -1171,7 +1171,7 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
             r &= b;
         }
         for (const exec_stats<_N>& sti : v_res._vst) {
-            add_to(st, sti);
+            st += sti;
         }
     };
     for (uint32_t l=0; l< N1; ++l) {

@@ -71,8 +71,8 @@ namespace cftal {
         };
 
         template <std::size_t _N>
-        void
-        add_to(exec_stats<_N>& a, const exec_stats<_N>& b);
+        exec_stats<_N>&
+        operator+=(exec_stats<_N>& a, const exec_stats<_N>& b);
 
         // output operator for exec_stats
         template <std::size_t _N>
@@ -113,14 +113,15 @@ cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
 }
 
 template <std::size_t _N>
-void
+cftal::test::exec_stats<_N>&
 cftal::test::
-add_to(exec_stats<_N>& res, const exec_stats<_N>& src)
+operator+=(exec_stats<_N>& res, const exec_stats<_N>& src)
 {
     for (std::size_t i=0; i<_N+1; ++i) {
         res._tics[i]._v += src._tics[i]._v;
         res._evals[i]._v += src._evals[i]._v;
     }
+    return res;
 }
 
 // Local variables:
