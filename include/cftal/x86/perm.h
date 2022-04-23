@@ -1107,6 +1107,18 @@ namespace cftal {
                            24, 24, 25, 25, 26, 26, 27, 27,
                            28, 28, 29, 29, 30, 30, 31, 31>
             : public vpunpckhbw {};
+        template <>
+        struct perm1_v32u8< 0, -1,  1, -1,  2, -1,  3, -1,
+                            4, -1,  5, -1,  6, -1,  7, -1,
+                            8, -1,  9, -1, 10, -1, 11, -1,
+                           12, -1, 13, -1, 14, -1, 15, -1>
+            : public vpmovzxbw {};
+        template <>
+        struct perm1_v32u8< 0,  1, -1, -1,  2,  3, -1, -1,
+                            4,  5, -1, -1,  6,  7, -1, -1,
+                            8,  9, -1, -1, 10, 11, -1, -1,
+                           12, 13, -1, -1, 14, 15, -1, -1>
+            : public vpmovzxwd {};
 
         // specializations of perm2_v32u8
         template <>
