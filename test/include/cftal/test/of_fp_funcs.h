@@ -1,4 +1,4 @@
-// //
+//
 // Copyright (C) 2010-2022 Axel Zeuner
 //
 // This library is free software; you can redistribute it and/or
@@ -712,10 +712,10 @@ calc(const array_t& a, exec_stats<_N>& st,
     auto vr=_F::v(va);
     uint64_t t1 = exec_stats<_N>::hr_timer();
     uint64_t t0i[_N], t1i[_N];
-    // std::result_of<decltype(&F::r)(_T)>::type ri[_N];
     bool c;
     if (speed_only) {
-        typename std::result_of<decltype(&_F::s)(_T)>::type r[_N];
+        // typename std::result_of<decltype(&_F::s)(_T)>::type r[_N];
+	typename std::invoke_result<decltype(&_F::s), _T>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i] = exec_stats<_N>::hr_timer();
             r[i] = _F::s(a[i]);
@@ -723,7 +723,8 @@ calc(const array_t& a, exec_stats<_N>& st,
         }
         c= check(vr, r, _F::fname(), false, cmp);
     } else {
-        typename std::result_of<decltype(&_F::r)(_T)>::type r[_N];
+        // typename std::result_of<decltype(&_F::r)(_T)>::type r[_N];
+        typename std::invoke_result<decltype(&_F::r),_T>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i] = exec_stats<_N>::hr_timer();
             r[i] = _F::r(a[i]);
@@ -999,7 +1000,8 @@ calc(const array_1_t& a, const array_2_t& b,
     uint64_t t0i[_N], t1i[_N];
     bool c;
     if (speed_only) {
-        typename std::result_of<decltype(&_F::s)(_T, _T)>::type r[_N];
+        // typename std::result_of<decltype(&_F::s)(_T, _T)>::type r[_N];
+	typename std::invoke_result<decltype(&_F::s),_T, _T>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i]=exec_stats<_N>::hr_timer();
             r[i] = _F::s(a[i], b[i]);
@@ -1007,7 +1009,8 @@ calc(const array_1_t& a, const array_2_t& b,
         }
         c= check(vr, r, _F::fname(), false, cmp);
     } else {
-        typename std::result_of<decltype(&_F::r)(_T, _T)>::type r[_N];
+        // typename std::result_of<decltype(&_F::r)(_T, _T)>::type r[_N];
+	typename std::invoke_result<decltype(&_F::r), _T, _T>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i]=exec_stats<_N>::hr_timer();
             r[i] = _F::r(a[i], b[i]);
