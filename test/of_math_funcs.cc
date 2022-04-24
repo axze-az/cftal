@@ -19,7 +19,7 @@
 #include "cftal/test/env_var.h"
 #include <cftal/fenv.h>
 #include <cftal/constants.h>
-#include <experimental/filesystem>
+#include <filesystem>
 // #include <iostream>
 // #include <cstdlib>
 #include <string_view>
@@ -39,7 +39,7 @@ cftal::test::update_cnt(std::size_t cnt)
 std::string
 cftal::test::dirname(const std::string& fn)
 {
-    using namespace std::experimental::filesystem;
+    using namespace std::filesystem;
     path pfn(fn);
     path dn(pfn.remove_filename());
     return dn;
@@ -48,7 +48,7 @@ cftal::test::dirname(const std::string& fn)
 std::string
 cftal::test::append_filename(const std::string& dn, const std::string& fn)
 {
-    using namespace std::experimental::filesystem;
+    using namespace std::filesystem;
     path pdn(dn);
     path pfn(fn);
     path pnfn = pdn / pfn;
@@ -58,7 +58,7 @@ cftal::test::append_filename(const std::string& dn, const std::string& fn)
 std::string
 cftal::test::filename_from_argv(const char* argv, const std::string& fn)
 {
-    using namespace std::experimental::filesystem;
+    using namespace std::filesystem;
     path pargv(argv);
     path pdn(pargv.remove_filename());
     path pfn(fn);
