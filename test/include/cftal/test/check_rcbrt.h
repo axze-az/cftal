@@ -33,7 +33,7 @@ namespace cftal {
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
                 return rcbrt(a);
-                // return rootn(a, vec<int32_t, _N>(3));
+                // return rootn(a, vec<int32_t, _N>(-3));
             }
 
             static
@@ -42,7 +42,6 @@ namespace cftal {
                 std::pair<_T, _T> i;
                 _T v=call_mpfr::func(a, mpfr_ext::rcbrt, &i);
                 return std::make_tuple(v, i.first, i.second);
-                // return call_mpfr::func(a, mpfr_cbrt);
             }
             static
             _T
