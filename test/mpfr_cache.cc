@@ -18,6 +18,7 @@
 #include <cftal/test/mpfr_cache.h>
 #include <cftal/test/stream_save_fmt.h>
 #include <cftal/test/env_var.h>
+#include <cftal/test/spinlock.h>
 #include <cftal/as.h>
 #include <map>
 #include <unordered_map>
@@ -403,10 +404,17 @@ namespace cftal { namespace test { namespace mpfr_cache {
         pmutex(pmutex&&) = default;
         pmutex& operator=(const pmutex&) = default;
         pmutex& operator=(pmutex&&) = default;
+#if 0
+        void lock() { _p_mtx->lock(); }
+        void unlock() { _p_mtx->unlock(); }
+        void lock_shared() { _p_mtx->lock(); }
+        void unlock_shared() { _p_mtx->unlock(); }
+#else
         void lock() { _p_mtx->lock(); }
         void unlock() { _p_mtx->unlock(); }
         void lock_shared() { _p_mtx->lock_shared(); }
         void unlock_shared() { _p_mtx->unlock_shared(); }
+#endif
     };
 
     struct f1_64_cache_entry : private pmutex {
