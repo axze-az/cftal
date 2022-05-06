@@ -256,7 +256,7 @@ inline
 typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
 {
-#if 1
+#if 0
     vf_type xrh;
     vi_type idx, k;
     __reduce_exp_arg(xrh, idx, k, xc);
