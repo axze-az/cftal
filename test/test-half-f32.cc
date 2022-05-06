@@ -615,6 +615,7 @@ int main(int argc, char** argv)
     cpu_times_to_stdout tt;
 
     pgm_args ags=parse(argc, argv, 0x1000);
+#if 1
     r |= main_log(ags);
     r |= main_log2(ags);
     r |= main_log10(ags);
@@ -626,5 +627,8 @@ int main(int argc, char** argv)
     r |= main_tan(ags);
     r |= main_rsqrt(ags);
     r |= main_sqrt(ags);
+#else
+    r |= main_exp(ags);
+#endif
     return r;
 }
