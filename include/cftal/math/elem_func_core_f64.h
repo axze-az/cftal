@@ -1675,8 +1675,14 @@ __reduce_exp_arg(vf_type& xrh,
     // x^ : +0xe.7bcd5e4f1d9dp-48
     constexpr
     const double _ln2_32_cw_l=+5.1456092446553382152435e-14;
+#if 0
     vf_type kf = rint(vf_type(x * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type x32ln2=x*_32_ln2;
+    vf_type kf= rint(x32ln2);
+    vi_type ki=_T::cvt_f_to_i(x32ln2);
+#endif
     idx = ki & int32_t(exp_data<double>::EXP_IDX_MASK);
     k = ki >> int32_t(exp_data<double>::EXP_SHIFT);
     vf_type hi = x - kf * _ln2_32_cw_h;
