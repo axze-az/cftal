@@ -1795,8 +1795,14 @@ __reduce_exp_arg(vf_type& xrh,
     // x^ : -0x8.2e308p-37f
     constexpr
     const float _ln2_32_l=-5.9520444129e-11f;
+#if 0
     vf_type kf = rint(vf_type(xh * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xh32ln2=xh*_32_ln2;
+    vf_type kf= rint(xh32ln2);
+    vi_type ki=_T::cvt_f_to_i(xh32ln2);
+#endif
     idx = ki & int32_t(exp_data<float>::EXP_IDX_MASK);
     k = ki >> int32_t(exp_data<float>::EXP_SHIFT);
     vf_type neg_kfln2h, neg_kfln2l;
@@ -1991,8 +1997,14 @@ __reduce_exp2_arg(vf_type& xrh,
                   "exp_data<float>::EXP_N == 32 expected");
     constexpr const float _ND=exp_data<float>::EXP_N;
     constexpr const float _1_ND=1.0f/float(exp_data<float>::EXP_N);
+#if 0
     vf_type kf= rint(vf_type(x*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xnd=x*_ND;
+    vf_type kf= rint(xnd);
+    vi_type ki=_T::cvt_f_to_i(xnd);
+#endif
     idx= ki & exp_data<float>::EXP_IDX_MASK;
     k= ki >> exp_data<float>::EXP_SHIFT;
     vf_type xr= x- kf*_1_ND;
@@ -2015,8 +2027,14 @@ __reduce_exp2_arg(vf_type& xrh,
                  "exp_data<float>::EXP_N==32");
     constexpr const float _ND=exp_data<float>::EXP_N;
     constexpr const float _1_ND=1.0f/float(exp_data<float>::EXP_N);
+#if 0
     vf_type kf= rint(vf_type(xh*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xhnd=xh*_ND;
+    vf_type kf= rint(xhnd);
+    vi_type ki=_T::cvt_f_to_i(xhnd);
+#endif
     idx= ki & exp_data<float>::EXP_IDX_MASK;
     k= ki >> exp_data<float>::EXP_SHIFT;
     d_ops::add122cond(xrh, xrl, kf*(-_1_ND), xh, xl);
@@ -2140,8 +2158,14 @@ __reduce_exp10_arg(vf_type& xrh,
     // x^ : +0x9.a84fcp-26f
     constexpr
     const float _lg2_32_cw_l=+1.4390747083e-07f;
+#if 0
     vf_type kf= rint(vf_type(x*_32_lg2));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type x32lg2=x*_32_lg2;
+    vf_type kf= rint(x32lg2);
+    vi_type ki=_T::cvt_f_to_i(x32lg2);
+#endif
     idx= ki & exp_data<float>::EXP_IDX_MASK;
     k= ki >> exp_data<float>::EXP_SHIFT;
     vf_type hi = x - kf * _lg2_32_cw_h;
@@ -2174,8 +2198,14 @@ __reduce_exp10_arg(vf_type& xrh,
     constexpr
     const float _lg2_32_l=-4.4753090123e-10f;
     using ctbl = impl::d_real_constants<d_real<float>, float>;
+#if 0
     vf_type kf = rint(vf_type(xh*_32_lg2));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xh32lg2=xh*_32_lg2;
+    vf_type kf= rint(xh32lg2);
+    vi_type ki=_T::cvt_f_to_i(xh32lg2);
+#endif
     idx= ki & exp_data<float>::EXP_IDX_MASK;
     k= ki >> exp_data<float>::EXP_SHIFT;
     vf_type kf_lg_2_32_h, kf_lg_2_32_l;

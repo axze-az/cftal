@@ -1712,8 +1712,14 @@ __reduce_exp_arg(vf_type& xrh,
     // x^ : +0xd.5e4f1d9cc01f8p-64
     constexpr
     const double _ln2_32_l=+7.2470212932696861200555e-19;
+#if 0
     vf_type kf = rint(vf_type(xh * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xh32ln2=xh * _32_ln2;
+    vf_type kf = rint(xh32ln2);
+    vi_type ki=_T::cvt_f_to_i(xh32ln2);
+#endif
     idx = ki & int32_t(exp_data<double>::EXP_IDX_MASK);
     k = ki >> int32_t(exp_data<double>::EXP_SHIFT);
     vf_type neg_kfln2h, neg_kfln2l;
@@ -1820,8 +1826,14 @@ __reduce_exp2_arg(vf_type& xrh,
                   "exp_data<double>::EXP_N == 32 expected");
     constexpr const double _ND=exp_data<double>::EXP_N;
     constexpr const double _1_ND=1.0/double(exp_data<double>::EXP_N);
+#if 0    
     vf_type kf= rint(vf_type(x*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xnd=x*_ND;
+    vf_type kf= rint(xnd);
+    vi_type ki=_T::cvt_f_to_i(xnd);
+#endif
     idx = ki & exp_data<double>::EXP_IDX_MASK;
     k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type xr= x- kf*_1_ND;
@@ -1844,8 +1856,14 @@ __reduce_exp2_arg(vf_type& xrh,
                  "exp_data<double>::EXP_N==32");
     constexpr const double _ND=exp_data<double>::EXP_N;
     constexpr const double _1_ND=1.0/double(exp_data<double>::EXP_N);
+#if 0
     vf_type kf= rint(vf_type(xh*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xhnd=xh*_ND;
+    vf_type kf= rint(xhnd);
+    vi_type ki=_T::cvt_f_to_i(xhnd);
+#endif
     idx = ki & exp_data<double>::EXP_IDX_MASK;
     k = ki >> exp_data<double>::EXP_SHIFT;
     d_ops::add122cond(xrh, xrl, kf*(-_1_ND), xh, xl);
@@ -1940,8 +1958,14 @@ __reduce_exp10_arg(vf_type& xrh,
     // x^ : +0xf.3fde623e25668p-48
     constexpr
     const double _lg2_32_cw_l=+5.4177061261727666703574e-14;
+#if 0
     vf_type kf= rint(vf_type(x*_32_lg2));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type x32lg2=x*_32_lg2;
+    vf_type kf= rint(x32lg2);
+    vi_type ki=_T::cvt_f_to_i(x32lg2);
+#endif
     idx = ki & exp_data<double>::EXP_IDX_MASK;
     k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type hi = x - kf * _lg2_32_cw_h;
@@ -1974,8 +1998,14 @@ __reduce_exp10_arg(vf_type& xrh,
     constexpr
     const double _lg2_32_l=-8.7616503993286574804144e-20;
     using ctbl = impl::d_real_constants<d_real<double>, double>;
+#if 0
     vf_type kf = rint(vf_type(xh*_32_lg2));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xh32lg2=xh*_32_lg2;
+    vf_type kf= rint(xh32lg2);
+    vi_type ki=_T::cvt_f_to_i(xh32lg2);
+#endif
     idx = ki & exp_data<double>::EXP_IDX_MASK;
     k = ki >> exp_data<double>::EXP_SHIFT;
     vf_type kf_lg_2_32_h, kf_lg_2_32_l;

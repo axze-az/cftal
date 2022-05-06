@@ -609,10 +609,16 @@ erfc_tbl_k(arg_t<vf_type> xc)
     base_type::__reduce_exp_arg(xrh, xrl, eidx, k, x2h, x2l);
 
     using erfc_table=erfc_data<float>;
-
+#if 0
     vf_type xi= rint(vf_type(x * erfc_table::SCALE));
     vf_type xi0= xi*erfc_table::INV_SCALE;
     vi_type idx= _T::cvt_f_to_i(xi);
+#else
+    vf_type xscale=x * erfc_table::SCALE;
+    vf_type xi= rint(xscale);
+    vi_type idx= _T::cvt_f_to_i(xscale);    
+    vf_type xi0= xi*erfc_table::INV_SCALE;
+#endif
     idx = max(min(idx, vi_type(erfc_table::COUNT-1)), vi_type(0));
 
     vf_type exl, exh=base_type::template __exp_tbl_k<
@@ -996,9 +1002,16 @@ __lgamma_1_2_tbl_k(arg_t<vf_type> xch, arg_t<vf_type> xcl)
 
     constexpr
     const float xi0=1.0f;
+#if 0
     vf_type fidx=rint(vf_type((xch-xi0)*lng_tbl::SCALE));
     vf_type x0=xi0+fidx*lng_tbl::INV_SCALE;
     vi_type idx= _T::cvt_f_to_i(fidx);
+#else
+    vf_type dxscale=(xch-xi0)*lng_tbl::SCALE;
+    vf_type fidx=rint(dxscale);
+    vi_type idx= _T::cvt_f_to_i(dxscale);
+    vf_type x0=xi0+fidx*lng_tbl::INV_SCALE;
+#endif
     vf_type ph, pl, cih, cil;
     vi_type idxs = idx*lng_tbl::ELEMS_PER_INTERVAL;
     auto lck=make_variable_lookup_table<float>(idxs);
