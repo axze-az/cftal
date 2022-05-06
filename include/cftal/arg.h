@@ -30,8 +30,8 @@ namespace cftal {
     template <typename _T>
     struct arg {
         // using type = const _T&;
-        using type= typename 
-            std::conditional<(sizeof(_T) > sizeof(double)), 
+        using type= typename
+            std::conditional<(sizeof(_T) > sizeof(double)),
                             const _T&,
                             _T>::type;
     };
@@ -43,7 +43,7 @@ namespace cftal {
     // specialization of arg<> for char
     template <>
     struct arg<char> { using type= char; };
-    
+
     // specialization of arg<> for wchar_t
     template <>
     struct arg<wchar_t> { using type= wchar_t; };
