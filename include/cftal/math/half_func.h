@@ -161,8 +161,14 @@ __reduce_exp_arg(vf_type& xrh,
     static_assert(exp_data<float>::EXP_N==32,
                  "exp_data<float>::EXP_N==32");
     const float _32_ln2=+4.6166240692e+01f;
+#if 0
     vf_type kf = rint(vf_type(xc * _32_ln2));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type x32ln2=xc*_32_ln2;
+    vf_type kf = rint(x32ln2);
+    vi_type ki=_T::cvt_f_to_i(x32ln2);
+#endif
     idx = ki & exp_data<float>::EXP_IDX_MASK;
     k = ki >> exp_data<float>::EXP_SHIFT;
     const float _ln2_32_cw_h=+2.1659851074e-02f;
@@ -250,7 +256,7 @@ inline
 typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::half_exp_k(arg_t<vf_type> xc)
 {
-#if 0
+#if 1
     vf_type xrh;
     vi_type idx, k;
     __reduce_exp_arg(xrh, idx, k, xc);
@@ -289,8 +295,14 @@ cftal::math::half_func<float, _T>::half_exp2_k(arg_t<vf_type> xc)
                  "exp_data<float>::EXP_N==32");
     const float _ND=exp_data<float>::EXP_N;
     const float _1_ND=1.0f/exp_data<float>::EXP_N;
+#if 0
     vf_type kf = rint(vf_type(xc * _ND));
     vi_type ki=_T::cvt_f_to_i(kf);
+#else
+    vf_type xnd=xc * _ND;
+    vf_type kf = rint(xnd);
+    vi_type ki=_T::cvt_f_to_i(xnd);
+#endif
     vi_type idx = ki & exp_data<float>::EXP_IDX_MASK;
     vi_type k = ki >> exp_data<float>::EXP_SHIFT;
     using ctbl = impl::d_real_constants<d_real<float>, float>;
