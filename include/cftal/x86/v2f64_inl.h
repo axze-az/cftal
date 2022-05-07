@@ -698,7 +698,7 @@ cftal::permute(const vec<double, 2>& l, const vec<double, 2>& r)
     return x86::perm_v2f64<_I0, _I1>(l(), r());
 }
 
-#if defined (__AVX2__)
+#if 0 // defined (__AVX2__)
 inline
 cftal::variable_vec_lookup_table<double, int32_t, 2>::
 variable_vec_lookup_table(const vec<int32_t, 2>& idx)
