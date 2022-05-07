@@ -711,7 +711,8 @@ cftal::vec<double, 2>
 cftal::variable_vec_lookup_table<double, int32_t, 2>::
 from(const double* tbl) const
 {
-    return _mm_i32gather_pd(tbl, _msk(), sizeof(double));
+    // return _mm_i32gather_pd(tbl, _msk(), sizeof(double));
+    return x86::vgatherdpd<__m128d, __m128i>::v<sizeof(double)>(tbl, _msk());
 }
 #endif
 

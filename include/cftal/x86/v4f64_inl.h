@@ -673,13 +673,7 @@ cftal::vec<double, 4>
 cftal::variable_vec_lookup_table<double, int32_t, 4>::
 from(const double* tbl) const
 {
-#if 1
-    return _mm256_i32gather_pd(tbl, _msk(), sizeof(double));
-#else
-    const vec<double, 4> z=0.0;
-    const vec<double, 4>::mask_type zez=z==z;
-    return _mm256_mask_i32gather_pd(z(), tbl, _msk(), zez(), sizeof(double));
-#endif
+    return x86::vgatherdpd<__m256d, __m128i>::v<sizeof(double)>(tbl, _msk());
 }
 #endif
 
