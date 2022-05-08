@@ -17,12 +17,28 @@
 //
 #include "cftal/test/program.h"
 #include <cstdlib>
+#include <thread>
+
+cftal::test::pgm_args::pgm_args(std::size_t c)
+    : _speed_only(false),
+      _mt(std::thread::hardware_concurrency()),
+      _use_cache(false), _fast(false),
+      _slow(false),
+      _data_dir("../test/data/"),
+      _cnt(c)
+{
+}
 
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const pgm_args& ags)
 {
-    s << '(' << (ags._mt>0 ? "mt" : "st")
-      << (ags._speed_only ? ", speed only" : "")
+    s << '(';
+    if (ags._mt>0) {
+	s << "mt=" << ags._mt;
+    } else {
+	s << "st";
+    }
+    s << (ags._speed_only ? ", speed only" : "")
       << (ags._fast ? ", fast" : "" )
       << (ags._slow ? ", slow" : "" )
       << ')';
@@ -65,9 +81,7 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
                 } else {
                     args._mt=tc;
                 }
-            } else {
-                args._mt=std::numeric_limits<uint32_t>::max();
-            }
+            } // else use default value
         } else if (argi == "--no-mt") {
             args._mt = 0;
         } else {
@@ -99,4 +113,3 @@ cftal::test::parse(int argc, char** argv, std::size_t cnt)
         args._cnt >>= 4;
     return args;
 }
-

@@ -49,14 +49,8 @@ namespace cftal {
             std::string _data_dir;
             // the count of tests to perform
             std::size_t _cnt;
-            pgm_args(std::size_t c=0x80000)
-              : _speed_only(false),
-                _mt(std::numeric_limits<uint32_t>::max()),
-                _use_cache(false), _fast(false),
-                _slow(false),
-                _data_dir("../test/data/"),
-                _cnt(c) {}
-        };
+            pgm_args(std::size_t c=0x80000);
+	};
 
         std::ostream&
         operator<<(std::ostream& s, const pgm_args& ags);
