@@ -17,7 +17,7 @@
 //
 #include <iostream>
 #include <cmath>
-#if defined (__clang__)
+#if 0 // defined (__clang__)
 
 int main()
 {
@@ -161,9 +161,8 @@ int main()
     using stepper= runge_kutta_dopri5<point3d, double,
                                       point3d, double,
                                       vector_space_algebra>;
-    int steps = integrate_adaptive(make_controlled<stepper>(abs_err, rel_err),
-                                   lorenz, x,
-                                   0.0, end_p, 0.1);
+    auto s0=make_controlled<stepper>(abs_err, rel_err);
+    int steps = integrate_adaptive(s0, lorenz, x, 0.0, end_p, 0.1);
 
     std::cout << std::scientific << std::setprecision(12);
 
@@ -176,10 +175,8 @@ int main()
     using vec_stepper=runge_kutta_dopri5<cftal::v4f64, double,
                                          cftal::v4f64, double,
                                          vector_space_algebra>;
-
-    int stepsv = integrate_adaptive(
-        make_controlled<vec_stepper>(abs_err, rel_err),
-        lorenzv, xv, 0.0, end_p, 0.1);
+    auto s1=make_controlled<vec_stepper>(abs_err, rel_err);
+    int stepsv = integrate_adaptive(s1, lorenzv, xv, 0.0, end_p, 0.1);
 
     std::cout << xv << std::endl;
     std::cout << "steps: " << stepsv << std::endl;
@@ -190,11 +187,8 @@ int main()
     using vec_stepper2=runge_kutta_fehlberg78<cftal::v4f64, double,
                                               cftal::v4f64, double,
                                               vector_space_algebra>;
-
-    int stepsv2 = integrate_adaptive(
-        make_controlled<vec_stepper2>(abs_err, rel_err),
-        lorenzv, xv2,
-        0.0, end_p, 0.1);
+    auto s2=make_controlled<vec_stepper2>(abs_err, rel_err);
+    int stepsv2 = integrate_adaptive(s2, lorenzv, xv2, 0.0, end_p, 0.1);
 
     std::cout << xv2 << std::endl;
     std::cout << "steps: " << stepsv2 << std::endl;
@@ -206,9 +200,8 @@ int main()
                                        std::array<double, 3>, double,
                                        array_algebra>;
 
-    int stepsa = integrate_adaptive(
-        make_controlled<a_stepper>(abs_err, rel_err),
-        lorenza, xa, 0.0, end_p, 0.1);
+    auto s3=make_controlled<a_stepper>(abs_err, rel_err);
+    int stepsa = integrate_adaptive(s3, lorenza, xa, 0.0, end_p, 0.1);
 
     for(const auto& v: xa) {
         std::cout << v << ' ';
