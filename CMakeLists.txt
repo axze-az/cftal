@@ -79,7 +79,8 @@ endif()
 message(${CMAKE_CXX_COMPILER_ID})
 #message(${CMAKE_LIBRARY_ARCHITECTURE})
 # CFTAL_GCC_ARCH
-set(CFTAL_GCC_ARCH "native" CACHE STRING "argument for gcc -march=")
+set(CFTAL_GCC_ARCH "native" CACHE STRING "argument for gcc option -march=")
+set(CFTAL_GCC_TUNE "skylake" CACHE STRING "argument for gcc option -mtune=")
 if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -89,6 +90,12 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
             "${CMAKE_CXX_FLAGS_DEBUG} -Og -march=${CFTAL_GCC_ARCH}")
         set (CMAKE_CXX_FLAGS_PROFILE
             "${CMAKE_CXX_FLAGS_PROFILE} -O3 -march=${CFTAL_GCC_ARCH}")
+        set (CMAKE_CXX_FLAGS_RELEASE
+            "${CMAKE_CXX_FLAGS_RELEASE} -O3 -mtune=${CFTAL_GCC_TUNE}")
+        set (CMAKE_CXX_FLAGS_DEBUG
+            "${CMAKE_CXX_FLAGS_DEBUG} -Og -mtune=${CFTAL_GCC_TUNE}")
+        set (CMAKE_CXX_FLAGS_PROFILE
+            "${CMAKE_CXX_FLAGS_PROFILE} -O3 -mtune=${CFTAL_GCC_TUNE}")
         #set (CMAKE_CXX_FLAGS_RELEASE
         #    "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=x86-64-v3")
         #set (CMAKE_CXX_FLAGS_DEBUG
