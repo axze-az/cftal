@@ -2,10 +2,11 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 
 [CMake]
-Build Directory Count=5
+Build Directory Count=6
 Current Build Directory Index=0
 Current Build Directory Index-Host System=3
 ProjectRootRelative=./
+Temporary Build Directory Index=5
 
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/axel/projects/cpplib/cftal/build
@@ -56,6 +57,15 @@ Environment Profile=
 Extra Arguments=
 Install Directory=/usr/local
 Runtime=Host System
+
+[CMake][CMake Build Directory 5]
+Build Directory Path=/home/axel/projects/cpplib/cftal/gcc12
+Build Type=release
+CMake Binary=/usr/bin/cmake
+CMake Executable=/usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=/usr/local
 
 [Cppcheck]
 checkConfig=true

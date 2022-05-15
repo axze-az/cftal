@@ -24,6 +24,9 @@ namespace cftal {
     namespace test {
         void
         gen_2_over_pi_bits(std::ostream& s);
+
+        void
+        gen_2_over_pi_tables(std::ostream& s);
     }
 }
 
@@ -142,8 +145,51 @@ cftal::test::gen_2_over_pi_bits(std::ostream& s)
     s << std::dec;
 }
 
+void
+cftal::test::gen_2_over_pi_tables(std::ostream& s)
+{
+    const std::size_t bits=16384*16;
+    using mpr_t =mpfr_real<bits>;
+    mpr_t pi;
+    mpr_t two(2.0);
+    mpfr_const_pi(pi(), MPFR_RNDN);
+    mpr_t two_over_pi = two/pi;
+    const int max_exp=1024;
+    const int elems_per_exp=3;
+    s << "const double\n"
+      << "cftal::math::payne_hanek_pi_over_2_base::rempi_table_dbl["
+      << max_exp*4 << "]={\n";
+    s << std::scientific << std::setprecision(22);
+    for (int i=0; i < max_exp; ++i) {
+        if (i) {
+            s << ",\n";
+        }
+        mpr_t pa;
+        mpr_t two_pow_i;
+        mpr_t two_pow_minus_i;
+        int r=i>512+128 ? i-128 : i;
+        s  << "    " "// " << i <<  " scaled by "
+           << "2^" << (r==i ? 0: 128) << '\n';
+        mpfr_set_ui_2exp(two_pow_i(), 1, i, MPFR_RNDN);
+        mpfr_set_ui_2exp(two_pow_minus_i(), 1, -r, MPFR_RNDN);
+        pa = (two_pow_i/two_over_pi);
+        mpfr_frac(pa(), pa(), MPFR_RNDN);
+        pa *=two_pow_minus_i;
+        for (int j=0; j < elems_per_exp; ++j) {
+            double di=mpfr_get_d(pa(), MPFR_RNDN);
+            s << "    " << di;
+            mpr_t r(di);
+            pa -= r;
+            if (j< elems_per_exp-1)
+                s << ",\n";
+        }
+    }
+    s << "\n};\n";
+}
+
 int main()
 {
     cftal::test::gen_2_over_pi_bits(std::cout);
+    cftal::test::gen_2_over_pi_tables(std::cout);
     return 0;
 }
