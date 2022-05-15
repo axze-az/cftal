@@ -436,7 +436,7 @@ rem(vf_type& xrh, vf_type& xrl,
     process_part(ipart, mh, ml, x1);
     vf_type x2= xhs - x1;
     process_and_add_part(ipart, mh, ml, x2);
-    vf_type xls=xl=scale_down_f64();
+    vf_type xls=xl*scale_down_f64();
     vf_type x3= round_to_nearest_even_last_bits<27>(xls);
     process_and_add_part(ipart, mh, ml, x3);
     vf_type x4= xls - x3;
