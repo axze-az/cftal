@@ -3335,13 +3335,15 @@ cftal::math::elem_func_core<float, _T>::
 __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    vf_type fn= rint(vf_type(x* ctbl::m_2_pi[0]));
     constexpr const float large_arg=0x1p18f;
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
 
     xrh = 0.0f;
     xrl = 0.0f;
+    vi_type q=0;
     if (__likely(!_T::all_of_v(v_large_arg))) {
+        vf_type x_2_pi=x* ctbl::m_2_pi[0];
+        vf_type fn= rint(x_2_pi);
         constexpr const float m_pi_2_h=+1.5707963705063e+00f;
         constexpr const float m_pi_2_m=-4.3711388286738e-08f;
         constexpr const float m_pi_2_l=-1.7151245100059e-15f;
@@ -3361,8 +3363,8 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         xrl = p1 - (xrh - t) + p2;
         // not required because int32_t is large enough
         // fn= _fmod<4>(fn);
+        q=_T::cvt_f_to_i(x_2_pi);
     }
-    vi_type q(_T::cvt_f_to_i(fn));
     if (__unlikely(_T::any_of_v(v_large_arg))) {
 #if 1
         vf_type xrhl, xrll;

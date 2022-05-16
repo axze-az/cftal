@@ -1826,7 +1826,7 @@ __reduce_exp2_arg(vf_type& xrh,
                   "exp_data<double>::EXP_N == 32 expected");
     constexpr const double _ND=exp_data<double>::EXP_N;
     constexpr const double _1_ND=1.0/double(exp_data<double>::EXP_N);
-#if 0    
+#if 0
     vf_type kf= rint(vf_type(x*_ND));
     vi_type ki=_T::cvt_f_to_i(kf);
 #else
@@ -3015,14 +3015,16 @@ cftal::math::elem_func_core<double, _T>::
 __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
 {
     using ctbl=impl::d_real_constants<d_real<double>, double>;
-    vf_type fn= rint(vf_type(x* ctbl::m_2_pi[0]));
 
     constexpr const double large_arg=0x1p45;
     vmf_type v_large_arg= vf_type(large_arg) < abs(x);
 
     xrh = 0.0;
     xrl = 0.0;
+    vi_type q=0;
     if (__likely(!_T::all_of_v(v_large_arg))) {
+        vf_type x_2_pi=x* ctbl::m_2_pi[0];
+        vf_type fn= rint(x_2_pi);
         constexpr const double m_pi_2_h=+1.5707963267948965579990e+00;
         constexpr const double m_pi_2_m=+6.1232339957367660358688e-17;
         constexpr const double m_pi_2_l=-1.4973849048591698329435e-33;
@@ -3041,8 +3043,8 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         xrh = t + p1;
         xrl = p1 - (xrh - t) + p2;
         fn = __fmod<4>(fn);
+        q=_T::cvt_f_to_i(fn);
     }
-    vi_type q(_T::cvt_f_to_i(fn));
     if (_T::any_of_v(v_large_arg)) {
         // reduce the large arguments
 #if 1
