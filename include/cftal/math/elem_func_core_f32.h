@@ -1474,7 +1474,9 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         y  *= scale;
         vf_type t;
         d_ops::add12cond(y, t, -0.5f, y);
-        ye = 2.0f * (ye * scale + t);
+        // ye = 2.0f * (ye * scale + t);
+        ye = (ye * scale + t);
+        ye += ye;
         y = 2.0f*y + ye;
         // x small, required for handling of subnormal numbers
         y = _T::sel((abs(x) < 0x1p-25f), x, y);
@@ -2475,7 +2477,8 @@ tanh_k(arg_t<vf_type> xc)
     }
     vmf_type x_medium=(xa > tanh_i0_right) & (xa<fc::tanh_one());
     if (__likely(_T::any_of_v(x_medium))) {
-        vf_type xae=min(vf_type(xa+xa), vf_type(2.0f*fc::tanh_one()));
+        constexpr const float tmax=2.0*fc::tanh_one();
+        vf_type xae=min(vf_type(xa+xa), vf_type(tmax));
         vf_type xrh, xrl;
         vi_type idx, ki;
         __reduce_exp_arg(xrh, xrl, idx, ki, xae);
@@ -4354,7 +4357,7 @@ acosh_k(arg_t<vf_type> xc)
         vf_type xm1h, xm1l;
         d_ops::add12(xm1h, xm1l, x, -1.0f);
         vf_type sqrt2xm1h, sqrt2xm1l;
-        d_ops::sqrt2(sqrt2xm1h, sqrt2xm1l, 2.0f*xm1h, 2.0f*xm1l);
+        d_ops::sqrt2(sqrt2xm1h, sqrt2xm1l, xm1h+xm1h, xm1l*xm1l);
         // acosh(x) = sqrt(2*x) * [1-1/12*x+3/160*x^2-5/896*x^3+ ...]
 
         // [9.31322574615478515625e-10, 1] : | p - f | <= 2^-31.4921875
