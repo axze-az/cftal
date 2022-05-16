@@ -3577,7 +3577,7 @@ typename cftal::math::elem_func_core<double, _T>::vi2_type
 cftal::math::elem_func_core<double, _T>::
 __reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
 {
-    vf_type fh= rint(vf_type(xc*2.0));
+    vf_type fh= rint(vf_type(xc+xc));
     xrh = xc - 0.5 * fh;
     // poor mans fmod:
     fh = __fmod<4>(fh);

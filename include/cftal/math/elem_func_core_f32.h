@@ -3751,7 +3751,7 @@ typename cftal::math::elem_func_core<float, _T>::vi_type
 cftal::math::elem_func_core<float, _T>::
 __reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
 {
-    vf_type xt2=xc*2.0f;
+    vf_type xt2=xc+xc;
     vf_type fh= rint(xt2);
     xrh = xc - 0.5f * fh;
     // no need for fmod<4>(fh) here because |int(fh)| < |max integer|
