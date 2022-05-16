@@ -3604,8 +3604,8 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
     if (pc != nullptr) {
         vf_type c=*pc;
         vf_type xi=rint(xc);
-        vmf_type is_half=(xi != xc) &
-                         (rint(vf_type(xc*2.0))==vf_type(xc*2.0));
+        vf_type xc2=xc+xc;
+        vmf_type is_half=(xi != xc) & (rint(xc2)==xc2);
         c=_T::sel(is_half, 0.0, c);
         *pc=_T::sel((xi==xc) & (abs(xc)>=0x1p54), 1.0, c);
     }
@@ -3620,7 +3620,8 @@ tanpi_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     auto q= __reduce_trigpi_arg(xrh, xrl, xc);
     vf_type t=__tan_k(xrh, xrl, q);
-    t = _T::sel(rint(vf_type(2.0*xc))==vf_type(2.0*xc),
+    vf_type xc2=xc+xc;
+    t = _T::sel(rint(xc2)==xc2,
                 copysign(vf_type(_T::pinf()), xc), t);
     t = _T::sel(rint(xc)==xc, copysign(vf_type(0.0), xc), t);
     return t;
