@@ -3751,12 +3751,13 @@ typename cftal::math::elem_func_core<float, _T>::vi_type
 cftal::math::elem_func_core<float, _T>::
 __reduce_trigpi_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> xc)
 {
-    vf_type fh= rint(vf_type(xc*2.0f));
+    vf_type xt2=xc*2.0f;
+    vf_type fh= rint(xt2);
     xrh = xc - 0.5f * fh;
     // no need for fmod<4>(fh) here because |int(fh)| < |max integer|
     using ctbl=impl::d_real_constants<d_real<float>, float>;
     d_ops::mul122(xrh, xrl, xrh, ctbl::m_pi[0], ctbl::m_pi[1]);
-    vi_type q= _T::cvt_f_to_i(fh);
+    vi_type q= _T::cvt_f_to_i(xt2);
     return q;
 }
 
