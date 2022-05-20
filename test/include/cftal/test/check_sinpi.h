@@ -47,6 +47,7 @@ namespace cftal {
             s(const _T& a) {
                 return std::sin(a*M_PI);
             }
+
             static
             const char* fname() { return "sinpi"; }
         };
