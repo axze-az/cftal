@@ -2,9 +2,9 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
 
 [CMake]
-Build Directory Count=6
+Build Directory Count=7
 Current Build Directory Index=0
-Current Build Directory Index-Host System=5
+Current Build Directory Index-Host System=6
 ProjectRootRelative=./
 Temporary Build Directory Index=5
 
@@ -68,6 +68,16 @@ Extra Arguments=
 Install Directory=/usr/local
 Runtime=Host System
 
+[CMake][CMake Build Directory 6]
+Build Directory Path=/home/axel/projects/cpplib/cftal/distcc
+Build Type=release
+CMake Binary=/usr/bin/cmake
+CMake Executable=/usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=/usr/local
+Runtime=Host System
+
 [Cppcheck]
 checkConfig=true
 checkInformation=true
@@ -101,7 +111,7 @@ Launch Configurations=
 
 [MakeBuilder]
 Additional Options=-s
-Number Of Jobs=4
+Number Of Jobs=12
 Override Number Of Jobs=true
 
 [Project]
