@@ -73,7 +73,6 @@ lngamma_12_table_f64 = proc()
 };
 
 lngamma_12_table_f64();
-quit;
 
 i0=[1.0+0x1p-512, 2.0-0x1p-512];
 f= ext_lngamma(x)/((x-1)*(x-2));
