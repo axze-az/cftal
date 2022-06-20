@@ -284,6 +284,175 @@ namespace cftal {
                              const _X& x, const _X& yi,
                              const _C (&a)[_N]);
 
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // setup step, assumes nothing about |x*c1| and |c0|
+        template <typename _X, typename _C1, typename _C0>
+        void
+        horner_comp_dpc_s0(_X& y, _X& ye,
+                           const _X& x,
+                           const _C1& c1h, const _C1& c1l,
+                           const _C0& c0h, const _C0& c0l);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // setup step, assumes nothing about |x*yp| and |c0|
+        template <typename _X, typename _C0>
+        void
+        horner_comp_dpc_s0(_X& y, _X& ye,
+                           const _X& x,
+                           const _X& yp,
+                           const _C0& c0h, const _C0& c0l);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // next step, assumes nothing about |x*c1| and |c0|
+        template <typename _X, typename _C1, typename _C0>
+        void
+        horner_comp_dpc_si(_X& y, _X& ye,
+                           const _X& x,
+                           const _C1& c1h, const _C1& c1l,
+                           const _C0& c0h, const _C0& c0l);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // recursive next steps,
+        // assumes nothing about |x*c_N| and |c_N-1|
+        template <typename _X, typename _CN, typename _CNM1,
+                  typename ... _CS>
+        void
+        horner_comp_dpc_si(_X& y, _X& ye,
+                           const _X& x,
+                           const _CN& cnh, const _CN& cnl,
+                           const _CNM1& cnm1h, const _CNM1& cnm1l,
+                           _CS... cs);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // overload for degree 1
+        // assumes nothing about |x*c_1| and |c_0|
+        template <typename _X, typename _CN, typename _CNM1>
+        void
+        horner_comp_dpc(_X& y, _X& ye,
+                        const _X& x,
+                        const _CN& c1h, const _CN& c1l,
+                        const _CNM1& c0h, const _CNM1& c0l);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // assumes nothing about x*c_N and c_N-1
+        template <typename _X, typename _CN, typename _CNM1,
+                  typename ... _CS>
+        void
+        horner_comp_dpc(_X& y, _X& ye,
+                        const _X& x,
+                        const _CN& cnh, const _CN& cnl,
+                        const _CNM1& cnm1h, const _CNM1& cnm1l,
+                        _CS... cs);
+
+        // compensated horner scheme with double precision coefficients
+        // using a coefficient array containing a_i_h, a_i_l,
+        // assumes nothing about the coefficients
+        template <typename _X, typename _C, std::size_t _N>
+        void
+        horner_comp_dpc(_X& y, _X& ye,
+                        const _X& x,
+                        const _C (&a)[_N*2]);
+
+        // compensated horner scheme with double precision coefficients
+        // using a coefficient array
+        // return ((_x * (yi) + a[0])*x)+...)+a[_N-1]
+        // assumes nothing about the coefficients
+        template <typename _X, typename _C, std::size_t _N>
+        void
+        horner_comp_dpc_sn(_X& y, _X& ye,
+                           const _X& x,  const _X& yi,
+                           const _C (&a)[_N*2]);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // setup step, assumes |x*c1| < |c0|
+        template <typename _X, typename _C1, typename _C0>
+        void
+        horner_comp_quick_dpc_s0(_X& y, _X& ye,
+                                 const _X& x,
+                                 const _C1& c1h, const _C1& c1l,
+                                 const _C0& c0h, const _C0& c0l);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // setup step, assumes |x*y| < |c0|
+        template <typename _X, typename _C0>
+        void
+        horner_comp_quick_dpc_s0(_X& y, _X& ye,
+                                 const _X& x,
+                                 const _X& yp,
+                                 const _C0& c0h, const _C0& c0l);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // next step, assumes |x*c1| < |c0|
+        template <typename _X, typename _C1, typename _C0>
+        void
+        horner_comp_quick_dpc_si(_X& y, _X& ye,
+                                 const _X& x,
+                                 const _C1& c1h, const _C1& c1l,
+                                 const _C0& c0h, const _C0& c0l);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // recursive next steps,
+        // assumes |x*c_N| < |c_N-1|
+        template <typename _X, typename _CN, typename _CNM1,
+                  typename ... _CS>
+        void
+        horner_comp_quick_dpc_si(_X& y, _X& ye,
+                                 const _X& x,
+                                 const _CN& cnh, const _CN& cnl,
+                                 const _CNM1& cnm1h, const _CNM1& cnm1l,
+                                 _CS... cs);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // overload for degree 1
+        // assumes  |x*c_1| < |c_0|
+        template <typename _X, typename _CN, typename _CNM1>
+        void
+        horner_comp_quick_dpc(_X& y, _X& ye,
+                              const _X& x,
+                              const _CN& c1h, const _CN& c1l,
+                              const _CNM1& c0h, const _CNM1& c0l);
+
+        // compensated horner scheme with double precision coefficients
+        // error free transformation of evaluation of polynomials
+        // assumes |x*c_N| < |c_N-1|, |x*c_N_1| < |c_N-2| ..
+        template <typename _X, typename _CN, typename _CNM1,
+                  typename ... _CS>
+        void
+        horner_comp_quick_dpc(_X& y, _X& ye,
+                              const _X& x,
+                              const _CN& cnh, const _CN& cnl,
+                              const _CNM1& cnm1h, const _CNM1& cnm1l,
+                              _CS... cs);
+
+        // compensated horner scheme with double precision coefficients
+        // using a coefficient array
+        // assumes |x*a[0]| < |a[1]|, |x*a[1]| < |a[2]| ..
+        template <typename _X, typename _C, std::size_t _N>
+        void
+        horner_comp_quick_dpc(_X& y, _X& ye,
+                              const _X& x,
+                              const _C (&a)[_N*2]);
+
+        // compensated horner scheme with double precision coefficients
+        // using a coefficient array
+        // return ((x * (yi) + a[0])*x)+...)+a[_N-1]
+        // assumes |x*a[0]| < |a[1]|, |x*a[1]| < |a[2]| ..
+        template <typename _X, typename _C, std::size_t _N>
+        void
+        horner_comp_quick_dpc_sn(_X& y, _X& ye,
+                                 const _X& x, const _X& yi,
+                                 const _C (&a)[_N*2]);
         // evaluation of a rational function
         // the parameters with the highest order are stored in p[0]
         // and q[0] as in the horner functions
@@ -880,6 +1049,278 @@ horner_comp_quick_sn(_X& y, _X& ye,
 #pragma clang unroll(256)
     for (std::size_t i=1; i < _N; ++i) {
         horner_comp_quick_si(y, ye, x, y, ye, pa[i]);
+    }
+}
+
+template <typename _X, typename _C1, typename _C0>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_dpc_s0(_X& y, _X& ye,
+                   const _X& x,
+                   const _C1& c1h, const _C1& c1l,
+                   const _C0& c0h, const _C0& c0l)
+{
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
+    _X p_i, o_i;
+    d_ops::mul12(y, p_i, c1h, x);
+    d_ops::add12cond(y, o_i, c0h, y);
+    ye= c1l*x + (p_i + o_i + c0l);
+}
+
+template <typename _X, typename _C0>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_dpc_s0(_X& y, _X& ye,
+                   const _X& x,
+                   const _X& yp,
+                   const _C0& c0h, const _C0& c0l)
+{
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
+    _X p_i, o_i;
+    d_ops::mul12(y, p_i, yp, x);
+    d_ops::add12cond(y, o_i, c0h, y);
+    ye= (p_i + o_i + c0l);
+}
+
+template <typename _X, typename _C1, typename _C0>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_dpc_si(_X& y, _X& ye,
+                   const _X& x,
+                   const _C1& c1h, const _C1& c1l,
+                   const _C0& c0h, const _C0& c0l)
+{
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
+    _X p_i, o_i;
+    d_ops::mul12(y, p_i, c1h, x);
+    d_ops::add12cond(y, o_i, c0h, y);
+    ye= c1l*x + (p_i + o_i + c0l);
+}
+
+template <typename _X,
+          typename _CN, typename _CNM1, typename ... _CS>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_dpc_si(_X& y, _X& ye,
+                   const _X& x,
+                   const _CN& cnh, const _CN& cnl,
+                   const _CNM1& cnm1h, const _CNM1& cnm1l,
+                   _CS ... cs)
+{
+    horner_comp_dpc_si(y, ye, x, cnh, cnl, cnm1h, cnm1l);
+    horner_comp_dpc_si(y, ye, x, y, ye, cs...);
+}
+
+template <typename _X, typename _CN, typename _CNM1>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_dpc(_X& y, _X& ye,
+                const _X& x,
+                const _CN& c1h, const _CN& c1l,
+                const _CNM1& c0h, const _CNM1& c0l)
+{
+    horner_comp_dpc_s0(y, ye, x, c1h, c1l, c0h, c0l);
+}
+
+template <typename _X,
+          typename _CN, typename _CNM1, typename ... _CS>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_dpc(_X& y, _X& ye,
+                const _X& x,
+                const _CN& cnh, const _CN& cnl,
+                const _CNM1& cnm1h, const _CNM1& cnm1l,
+                _CS ... cs)
+{
+    horner_comp_dpc_s0(y, ye, x, cnh, cnl, cnm1h, cnm1l);
+    horner_comp_dpc_si(y, ye, x, y, ye, cs...);
+}
+
+template <typename _X, typename _C, std::size_t _N>
+void
+cftal::math::
+horner_comp_dpc(_X& y, _X& ye,
+                const _X& x, const _C (&a)[_N*2])
+{
+    static_assert(_N > 1, "at least 4 array elements required");
+    const _C* pa=a;
+    horner_comp_dpc_s0(y, ye, x, pa[0], pa[1], pa[2], pa[3]);
+    for (std::size_t i=2; i < _N; ++i) {
+        horner_comp_dpc_si(y, ye, x, y, ye, pa[2*i], pa[2*i+1]);
+    }
+}
+
+template <typename _X, typename _C, std::size_t _N>
+void
+cftal::math::
+horner_comp_dpc_sn(_X& y, _X& ye,
+                   const _X& x,
+                   const _X& yi,
+                   const _C (&a)[_N*2])
+{
+    static_assert(_N > 0, "at least 2 array elements required");
+    const _C* pa=a;
+    horner_comp_s0(y, ye, x, yi, pa[0], pa[1]);
+#pragma GCC unroll 256
+#pragma clang unroll(256)
+    for (std::size_t i=1; i < _N; ++i) {
+        horner_comp_dpc_si(y, ye, x, y, ye, pa[2*i], pa[2*i+1]);
+    }
+}
+
+template <typename _X, typename _C1, typename _C0>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_quick_dpc_s0(_X& y, _X& ye,
+                         const _X& x,
+                         const _C1& c1h, const _C1& c1l,
+                         const _C0& c0h, const _C0& c0l)
+{
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
+#if 1
+    _X t1;
+    d_ops::muladd12(y, t1, c0h, x, c1h);
+    ye = (x*c1l) + (t1 + c0l);
+#else
+    _X p_i, o_i;
+    d_ops::mul12(y, p_i, c1h, x);
+    d_ops::add12(y, o_i, c0h, y);
+    ye= c1l*x+(p_i + o_i + c0l);
+#endif
+}
+
+template <typename _X, typename _C0>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_quick_dpc_s0(_X& y, _X& ye,
+                         const _X& x,
+                         const _X& yp,
+                         const _C0& c0h, const _C0& c0l)
+{
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
+#if 1
+    _X t1;
+    d_ops::muladd12(y, t1, c0h, x, yp);
+    ye = (t1 + c0l);
+#else
+    _X p_i, o_i;
+    d_ops::mul12(y, p_i, yp, x);
+    d_ops::add12(y, o_i, c0h, y);
+    ye= (p_i + o_i + c0l);
+#endif
+}
+
+template <typename _X, typename _C1, typename _C0>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_quick_dpc_si(_X& y, _X& ye,
+                         const _X& x,
+                         const _C1& c1h, const _C1& c1l,
+                         const _C0& c0h, const _C0& c0l)
+{
+    using d_ops=d_real_ops<_X, d_real_traits<_X>::fma>;
+#if 1
+    _X t1;
+    d_ops::muladd12(y, t1, c0h, x, c1h);
+    ye = (x*c1l) + (t1+c0l);
+#else
+    _X p_i, o_i;
+    d_ops::mul12(y, p_i, c1h, x);
+    d_ops::add12(y, o_i, c0h, y);
+    ye= c1l*x + (p_i + o_i+c0l);
+#endif
+}
+
+template <typename _X,
+          typename _CN, typename _CNM1, typename ... _CS>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_quick_dpc_si(_X& y, _X& ye,
+                         const _X& x,
+                         const _CN& cnh, const _CN& cnl,
+                         const _CNM1& cnm1h, const _CNM1& cnm1l,
+                         _CS ... cs)
+{
+    horner_comp_quick_dpc_si(y, ye, x, cnh, cnl, cnm1h, cnm1l);
+    horner_comp_quick_dpc_si(y, ye, x, y, ye, cs...);
+}
+
+template <typename _X, typename _CN, typename _CNM1>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_quick_dpc(_X& y, _X& ye,
+                      const _X& x,
+                      const _CN& c1h, const _CN& c1l,
+                      const _CNM1& c0h, const _CNM1& c0l)
+{
+    horner_comp_quick_dpc_s0(y, ye, x, c1h, c1l, c0h, c0l);
+}
+
+template <typename _X,
+          typename _CN, typename _CNM1, typename ... _CS>
+inline
+__attribute__((__always_inline__))
+void
+cftal::math::
+horner_comp_quick_dpc(_X& y, _X& ye,
+                      const _X& x,
+                      const _CN& cnh, const _CN& cnl,
+                      const _CNM1& cnm1h, const _CNM1& cnm1l,
+                      _CS ... cs)
+{
+    horner_comp_quick_dpc_s0(y, ye, x, cnh, cnl, cnm1h, cnm1l);
+    horner_comp_quick_dpc_si(y, ye, x, y, ye, cs...);
+}
+
+template <typename _X, typename _C, std::size_t _N>
+void
+cftal::math::
+horner_comp_quick_dpc(_X& y, _X& ye,
+                      const _X& x, const _C (&a)[_N*2])
+{
+    static_assert(_N > 1, "at least 4 array elements required");
+    const _C* pa=a;
+    horner_comp_quick_dpc_s0(y, ye, x, pa[0], pa[1], pa[2], pa[3]);
+    for (std::size_t i=2; i < _N; ++i) {
+        horner_comp_quick_dpc_si(y, ye, x, y, ye, pa[2*i], pa[2*i+1]);
+    }
+}
+
+template <typename _X, typename _C, std::size_t _N>
+void
+cftal::math::
+horner_comp_quick_dpc_sn(_X& y, _X& ye,
+                         const _X& x, const _X& yi, const _C (&a)[_N])
+{
+    static_assert(_N > 0, "at least 2 array elements required");
+    const _C* pa=a;
+    horner_comp_quick_s0(y, ye, x, yi, pa[0], pa[1]);
+#pragma GCC unroll 256
+#pragma clang unroll(256)
+    for (std::size_t i=1; i < _N; ++i) {
+        horner_comp_quick_dpc_si(y, ye, x, y, ye, pa[2*i], pa[2*i+1]);
     }
 }
 
