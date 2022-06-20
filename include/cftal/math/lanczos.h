@@ -524,11 +524,15 @@ lanczos_rational_at(const _T& x,
 #pragma GCC unroll 1
     for (std::size_t i=1; i< _N1; ++i) {
 #if 1
+#if 1
+        horner_comp_dpc_si(ph, pl, x, ph, pl, pp[i][0], pp[i][1]);
+#else
         // compensated horner step with higher precision coefficients
         _T p_i, o_i;
         d_ops::mul12(ph, p_i, ph, x);
         d_ops::add12cond(ph, o_i, ph, pp[i][0]);
         pl = pl*x + (p_i + o_i + pp[i][1]);
+#endif
 #else
         d_ops::mul122(ph, pl, x, ph, pl);
         d_ops::add22cond(ph, pl,
