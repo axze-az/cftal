@@ -1,3 +1,5 @@
+- fixed_vec_lookup_table specializations for v4f32 and v8f32 for table length
+  2
 - permutation specializations for v4f64, v8f32, v8u32, v4u64
 - documentation!!!
 
