@@ -803,7 +803,7 @@ erfc_tbl_k(arg_t<vf_type> xc)
 #else
     vf_type xscale=x * erfc_table::SCALE;
     vf_type xi= rint(xscale);
-    vi_type idx= _T::cvt_f_to_i(xscale);    
+    vi_type idx= _T::cvt_f_to_i(xscale);
     vf_type xi0= xi*erfc_table::INV_SCALE;
 #endif
     idx = max(min(idx, vi_type(erfc_table::COUNT-1)), vi_type(0));
