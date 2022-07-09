@@ -455,7 +455,7 @@ cftal::vec<double, _N>
 cftal::
 combine_f32pair_to_f64(const vec<float, _N>& h, const vec<float, _N>& l)
 {
-    using vhf_type = vec<float, _N>;
+    using vhf_type = vec<double, _N>;
     vhf_type dh = cvt<vhf_type>(h);
     vhf_type dl = cvt<vhf_type>(l);
     return dh + dl;
