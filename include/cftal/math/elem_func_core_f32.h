@@ -3701,6 +3701,13 @@ __sin_cos_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     d_ops::add122(sh, sl, sin_c1, sh, sl);
     d_ops::mul22(sh, sl, sh, sl, xrh, xrl);
 
+    // vmf_type xrh_eq_0 = xrh == 0.0f;
+    // sh = _T::sel(xrh_eq_0, xrh, sh);
+    // sl = _T::sel(xrh_eq_0, 0.0f, sl);
+    vmf_type xrh_tiny = abs(xrh) < 0x1p-24f;
+    sh = _T::sel(xrh_tiny, xrh, sh);
+    sl = _T::sel(xrh_tiny, xrl, sl);
+
     vmi_type q_and_2(vi_type(q & vi_type(2))==vi_type(2));
     vmf_type q_and_2_f(_T::vmi_to_vmf(q_and_2));
     vmi_type q_and_1(vi_type(q & vi_type(1))==vi_type(1));
