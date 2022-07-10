@@ -35,6 +35,7 @@ namespace cftal {
         using cftal::impl::pos_msk_8;
         using cftal::impl::zero_msk_8;
 
+
         template <class _T, class _OP>
         struct swap_ab {
             static _T v(_T a, _T b) {

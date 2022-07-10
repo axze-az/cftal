@@ -20,17 +20,61 @@
 
 #include <cftal/config.h>
 #include <fenv.h>
+#if defined (__SSE__)
+#include <cftal/std_types.h>
+#include <cftal/x86/intrin.h>
+#endif
 
 namespace cftal {
     struct rounding_mode {
         enum type {
-            nearest = 0, 
+            nearest = 0,
             downward = 1,
             upward = 2,
             towardzero = 3,
             current = 4
         };
     };
+
+    // switch on flush to zero and denormals are zero of intel
+    // processors until the destructor is called
+    class scoped_ftz_daz_mode {
+#if defined (__SSE__)
+        uint32_t _csr;
+#endif
+    public:
+        scoped_ftz_daz_mode();
+        ~scoped_ftz_daz_mode();
+        scoped_ftz_daz_mode(const scoped_ftz_daz_mode&)=delete;
+        scoped_ftz_daz_mode(scoped_ftz_daz_mode&&)=delete;
+        scoped_ftz_daz_mode&
+        operator=(const scoped_ftz_daz_mode&)=delete;
+        scoped_ftz_daz_mode&
+        operator=(scoped_ftz_daz_mode&&)=delete;
+    };
+}
+
+inline
+cftal::scoped_ftz_daz_mode::scoped_ftz_daz_mode()
+#if defined (__SSE__)
+    : _csr(_mm_getcsr())
+#endif
+{
+#if defined (__SSE__)
+    constexpr const uint32_t _MM_DAZ_MASK=1<<6;
+    uint32_t ncsr=_csr | _MM_FLUSH_ZERO_MASK | _MM_DAZ_MASK;
+    if (ncsr != _csr)
+        _mm_setcsr(ncsr);
+#endif
+}
+
+inline
+cftal::scoped_ftz_daz_mode::~scoped_ftz_daz_mode()
+{
+#if defined (__SSE__)
+    if (_mm_getcsr()!=_csr)
+        _mm_setcsr(_csr);
+#endif
 }
 
 // Local variables:
