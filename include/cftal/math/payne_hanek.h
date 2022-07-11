@@ -262,6 +262,10 @@ namespace cftal::math {
 
         static
         vi_type
+        rem3(vf_type& xrh, vf_type& xrm, vf_type& xrl, arg_t<vf_type> x);
+
+        static
+        vi_type
         rem(vf_type& xrh, vf_type& xrl,
             arg_t<vf_type> xh, arg_t<vf_type> xl);
     };
@@ -627,6 +631,31 @@ rem(vf_type& xrh, vf_type& xrl,
     vi_type i= f64_traits::cvt_f_to_i(ipart) & 3;
     return i;
 }
+
+template <typename _T>
+typename cftal::math::payne_hanek_pi_over_2<float, _T>::vi_type
+cftal::math::payne_hanek_pi_over_2<float, _T>::
+rem3(vf_type& xrh, vf_type& xrm, vf_type& xrl,
+     arg_t<vf_type> x)
+{
+    vhf_type ipart, m;
+    process_part(ipart, m, x);
+    // multiply m with pi/2
+    using c_t = impl::d_real_constants<d_real<double>, double>;
+    using vhf_traits = d_real_traits<vhf_type>;
+    using vhf_ops = d_real_ops<vhf_type, vhf_traits::fma>;
+    vhf_type th, tl;
+    vhf_ops::mul12(th, tl,  m,  c_t::m_pi_2[0]);
+    xrh = cvt<vf_type>(th);
+    th -= cvt<vhf_type>(xrh);
+    th += tl;
+    xrm = cvt<vf_type>(th);
+    th -= cvt<vhf_type>(xrm);
+    xrl = cvt<vf_type>(th);
+    vi_type i= f64_traits::cvt_f_to_i(ipart) & 3;
+    return i;
+}
+
 
 template <typename _T>
 typename cftal::math::payne_hanek_pi_over_2<float, _T>::vi_type

@@ -103,6 +103,11 @@ namespace cftal {
 
         static
         void
+        renormalize32(_T& rh, _T& rl,
+                      const _T& ah, const _T& am, const _T& al);
+
+        static
+        void
         mul23(_T& rh, _T& rm, _T& rl,
               const _T& ah, const _T& al,
               const _T& bh, const _T& bl);
@@ -443,6 +448,20 @@ renormalize3(_T& rh, _T& rm, _T& rl,
     add12(_t1h, _t1l, am, al);
     add12(rh, _t2l, ah, _t1h);
     add12(rm, rl, _t2l, _t1l);
+}
+
+template <typename _T>
+__attribute__((__always_inline__))
+inline
+void
+cftal::t_real_ops<_T>::
+renormalize32(_T& rh, _T& rl,
+             const _T& ah, const _T& am, const _T& al)
+{
+    _T _t1h, _t1l, _t2l;
+    add12(_t1h, _t1l, am, al);
+    add12(rh, _t2l, ah, _t1h);
+    rl = _t2l + _t1l;
 }
 
 template <typename _T>
