@@ -188,6 +188,10 @@ namespace cftal::math {
 
         static
         vi_type
+        rem3(vf_type& xrh, vf_type& xrm, vf_type& xrl, arg_t<vf_type> x);
+
+        static
+        vi_type
         rem(vf_type& xrh, vf_type& xrl,
             arg_t<vf_type> xh, arg_t<vf_type> xl);
     };
@@ -426,6 +430,31 @@ rem(vf_type& xrh, vf_type& xrl,
     vi_type i=_T::cvt_f_to_i(ipart) & 3;
     return i;
 }
+
+template <typename _T>
+typename cftal::math::payne_hanek_pi_over_2<double, _T>::vi_type
+cftal::math::payne_hanek_pi_over_2<double, _T>::
+rem3(vf_type& xrh, vf_type& xrm, vf_type& xrl,
+     arg_t<vf_type> x)
+{
+    vf_type xs=x*scale_down_f64();
+    // d_traits::veltkamp_split(x, x1, x2);
+    vf_type x1= round_to_nearest_even_last_bits<27>(xs);
+    vf_type ipart, mh, ml;
+    process_part(ipart, mh, ml, x1);
+    vf_type x2= xs - x1;
+    process_and_add_part(ipart, mh, ml, x2);
+    // multiply mh, ml with pi/2
+    using c_t = impl::d_real_constants<d_real<double>, double>;
+    using t_ops = t_real_ops<vf_type>;
+    vf_type th, tm, tl;
+    t_ops::mul223(th, tm, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
+    t_ops::renormalize3(xrh, xrm, xrl, th, tm, tl);
+    // return last 2 bits of the integer part
+    vi_type i=_T::cvt_f_to_i(ipart) & 3;
+    return i;
+}
+
 
 template <typename _T>
 typename cftal::math::payne_hanek_pi_over_2<double, _T>::vi_type
