@@ -448,7 +448,7 @@ rem3(vf_type& xrh, vf_type& xrm, vf_type& xrl,
     using c_t = impl::d_real_constants<d_real<double>, double>;
     using t_ops = t_real_ops<vf_type>;
     vf_type th, tm, tl;
-    t_ops::mul223(th, tm, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
+    t_ops::mul23(th, tm, tl, mh, ml, c_t::m_pi_2[0], c_t::m_pi_2[1]);
     t_ops::renormalize3(xrh, xrm, xrl, th, tm, tl);
     // return last 2 bits of the integer part
     vi_type i=_T::cvt_f_to_i(ipart) & 3;
