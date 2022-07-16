@@ -96,7 +96,7 @@ write_td_m = proc(c) {
 };
 
 write_td_m_hex = proc(c) {
-    write_dd_l(c);
+    write_dd_l_hex(c);
 };
 
 write_td_l = proc(c) {
