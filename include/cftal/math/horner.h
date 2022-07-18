@@ -1312,7 +1312,7 @@ template <typename _X, typename _C, std::size_t _N>
 void
 cftal::math::
 horner_comp_quick_dpc_sn(_X& y, _X& ye,
-                         const _X& x, const _X& yi, const _C (&a)[_N])
+                         const _X& x, const _X& yi, const _C (&a)[_N*2])
 {
     static_assert(_N > 0, "at least 2 array elements required");
     const _C* pa=a;
