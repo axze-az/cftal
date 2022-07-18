@@ -1,0 +1,207 @@
+/* #! */
+
+/* p(m,n) := (-1)^m * */
+
+nm(n, m) := product(4*n^2 - (2*i-1)^2, i, 1, m)/(2^(2*m)*(m!));
+
+p(n, k) := sum(((-1)^m)*nm(n,2*m)/((2*x)^(2*m)), m, 0, k);
+r(n, k) := 1/p(n, k);
+q(n, k) := sum(((-1)^m)*nm(n,2*m+1)/((2*x)^(2*m+1)), m, 0, k);
+
+b(n, k) := sqrt((p(n,k)^2) + (q(n,k)^2));
+
+t_mue_n(mue, n) :=
+    block([tt, tnm1],
+        tt : 1,
+        if is(n > 0) then (
+           tnm1 : t_mue_n(mue, n-1),
+           tt : tnm1 * (mue - (2*n-1)^2)/4 * (2*n-1)/(2*n)
+        ),
+        tt
+     );
+
+t_nue_n(nue, n) := t_mue_n(4*nue^2, n);
+
+s_mue_n(mue, n) :=
+    block([sn, snunm1, j],
+        sn : 1,
+        if is(n > 0) then (
+           sn : t_mue_n(mue, n),
+           for j : 1 thru n-1 do (
+               snunm1 : s_mue_n(mue, n-j),
+               sn : sn + t_mue_n(mue, j) * snunm1
+           )
+        ),
+        sn : -sn,
+        sn : fullratsimp(rat(sn)),
+        sn
+    );
+
+ci_mue_n(mue, n) :=
+    block([ci /*, mue*/ ],
+        /* mue : 4*nu*nu, */
+        ci : s_mue_n(mue, n)/(2*n-1),
+        ci
+    );
+
+alpha_mue_n(mue, n, x) :=
+    block([alpha],
+        alpha : -s_mue_n(mue, n)/(2*n-1)/x^(2*n-1),
+        alpha
+    );
+
+alpha_nue_n(nue, n, x) :=
+    block([alpha, mue],
+        mue : 4*nue^2,
+        alpha : alpha_mue_n(mue, n, x),
+        alpha
+    );
+
+alpha(nue, k, x) :=
+    block([al, mue],
+        mue : 4*nue^2,
+        al : sum(alpha_mue_n(mue, m, x), m, 1, k),
+        al
+    );
+
+/* modulo function times pi*x/2 */
+beta_square_mue(mue, k, x) :=
+    block([bs],
+        bs : 1 + sum(t_mue_n(mue, m)/(x^(2*m)), m, 1, k),
+        bs
+    );
+
+beta_square(nue, k, x) := beta_square_mue(4*nue^2, k, x);
+
+beta_square_coeffs(nue, k) :=
+    block([r, bs, i, ci],
+        r : [],
+        bs : beta_square(nue, k, 1/x),
+        bs : rat(bs),
+        for i : 0 thru k do (
+            ci : coeff(bs, x, i),
+            r : append(r, [ci])
+        ),
+        r
+    );
+
+beta_coeffs(nue, k) :=
+    block([r, bsi, i, eq, ri, l, iml, a0, a1],
+        bsi : beta_square_coeffs(nue, k),
+        r : [],
+        /* use the cauhcy product for
+           sum(bsi_i*x_i)= sum(r_i*x_i)*sum(r_i*x_i)
+           to get the root of beta square using a coefficent comparison for
+           the different powers of x
+           bsi_j = sum_{k=0}^j(b_k * b_[j-k}
+           and solve the equation system starting with index 0
+        */
+        for i : 0 thru k do (
+            kill(ri),
+            eq : bsi[i+1],
+            for l : 0 thru i do (
+                iml : i-l,
+                /* printf(true, "i: ~d l:~d iml:~d ~%", i, l, iml), */
+                if is(l=i) then (
+                    a0 : ri
+                ) else (
+                    a0 : r[l+1]
+                ),
+                if is(iml=i) then (
+                    a1 : ri
+                ) else (
+                    a1 : r[iml+1]
+                ),
+                eq : eq - a0*a1
+            ),
+            /* printf(true, "~a~%", eq), */
+            ri : solve(eq = 0, ri),
+            /* printf(true, "~a~%", ri), */
+            if is(i=0) then
+                r : endcons(abs(rhs(ri[1])), r)
+            else
+                r : endcons(rhs(ri[1]), r)
+        ),
+        r
+    );
+
+fmt_double(f) :=
+    block([os, s],
+        /* write f into a file */
+        os : openw("/tmp/i.mac"),
+        s: printf(false, "~40,27,3h", bfloat(f)),
+        s : ssubst("e", "b", s),
+        printf(os, "~a", s),
+        close(os),
+        system("/usr/bin/printf %+.22e `cat /tmp/i.mac` >/tmp/o.mac"),
+        /* result from the output file */
+        os : openr("/tmp/o.mac"),
+        s : readline(os),
+        close(os),
+        system("rm /tmp/i.mac"),
+        system("rm /tmp/o.mac"),
+        s
+    );
+
+make_doubledouble(f) :=
+    block([l, bf, fh, fl],
+        bf : bfloat(f),
+        fh : float(bf),
+        fl : bf - fh,
+        fl : float(fl),
+        l : [fh, fl]
+    );
+
+print_double(pfx, f) :=
+    block([],
+        printf(true, "constexpr~%const double ~a=~a;~%", pfx, fmt_double(f))
+    );
+
+print_doubledouble(pfx, f) :=
+    block([ll],
+        ll : make_doubledouble(f),
+        print_double(concat(pfx, "_h"), ll[1]),
+        print_double(concat(pfx, "_l"), ll[2])
+    );
+
+print_alpha_coeffs(nue, n) :=
+    block([i, pfx, ai, old_fpprec],
+        old_fpprec : fpprec,
+        fpprec : 64,
+        for i : 1 thru n/2 do (
+            pfx : printf(false, "a~d_c~d", nue, 2*(i-1)+1),
+            ai : alpha_nue_n(nue, i, 1),
+            if is(bfloat(ai)=bfloat(float(ai))) then (
+                print_double(pfx, ai)
+            ) else (
+                print_doubledouble(pfx, ai)
+            )
+        ),
+        fpprec : old_fpprec,
+        nil
+    );
+
+print_beta_coeffs(nue, n) :=
+    block([i, pfx, bi, bl],
+        bl : beta_coeffs(nue, n),
+        for i : 0 thru n do (
+            bi : bl[i+1],
+            if not is(bi=0) then (
+                pfx : printf(false, "b~d_c~d", nue, i),
+                print_double(pfx, bi)
+            )
+        ),
+        nil
+    );
+
+printf(true, "// coefficients for j0/y0 phase function~%");
+print_alpha_coeffs(0, 16);
+printf(true, "// ~%");
+printf(true, "// coefficients for j0/y0 modulo function~%");
+print_beta_coeffs(0, 16);
+printf(true, "// ~%");
+printf(true, "// coefficients for j1/y1 phase function~%");
+print_alpha_coeffs(1, 16);
+printf(true, "// ~%");
+printf(true, "// coefficients for j1/y1 modulo function~%");
+print_beta_coeffs(1, 16);

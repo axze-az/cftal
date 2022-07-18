@@ -39,7 +39,7 @@ if (LIBSOLLYA)
   target_link_libraries(sollya_funcs ${LIBMPFR})
   target_link_libraries(sollya_funcs ${LIBGMP})
 endif()
-  
+
 function(target_add_mpfr_libs arg1)
     target_link_libraries(${arg1} ${LIBMPFR})
     target_link_libraries(${arg1} ${LIBGMP})
@@ -68,6 +68,9 @@ add_executable(check-div-x8-x16 check-div-x8-x16.cc)
 add_executable(check-sat-add-sub check-sat-add-sub.cc)
 
 add_executable(check-average check-average.cc)
+
+add_executable(gen-j01y01-data gen-j01y01-data.cc)
+target_add_test_libs(gen-j01y01-data)
 
 #add_custom_target(sollya-scripts ALL)
 
@@ -99,3 +102,6 @@ add_script(erfc.sollya)
 add_script(half.sollya)
 add_script(devel.sollya)
 add_script(gamma.mac)
+add_script(bessel-f32.sollya)
+add_script(bessel-f64.sollya)
+add_script(bessel.mac)

@@ -1,0 +1,627 @@
+#! /usr/bin/sollya
+execute("../../../cftal/utils/common.sollya");
+prec=1024!;
+verbosity=1!;
+// i/(k-1);
+
+points=1000;
+L=0.0;
+R=64.0;
+ext_j0 = library("./libsollya_funcs.so");
+ext_j1 = library("./libsollya_funcs.so");
+ext_y0 = library("./libsollya_funcs.so");
+ext_y1 = library("./libsollya_funcs.so");
+ext_euler_gamma=libraryconstant("./libsollya_funcs.so");
+
+gen_j01y01_asymp = proc() {
+    var sqrt_two_over_pi, pi_4, pi_2, j, t;
+    sqrt_two_over_pi=sqrt(2/pi);
+    write_coeff(sqrt_two_over_pi,
+                "", "constexpr\n    const float sqrt_two_over_pi_", 49);
+    one_sqrt2=1/sqrt(2);
+    write_coeff(one_sqrt2,
+                "", "constexpr\n    const float one_sqrt2_", 49);
+    pi_4 = pi/4;
+    for j from 0 to 2 do {
+        t = single(pi_4);
+        pi_4 = pi_4 - t;
+        write_coeff(t,
+                    "", "constexpr\n    const float pi_4_"@j, single);
+    };
+
+    pi_2 = pi/2;
+    for j from 0 to 2 do {
+        t = single(pi_2);
+        pi_2 = pi_2 - t;
+        write_coeff(t,
+                    "", "constexpr\n    const float pi_2_"@j, single);
+    };
+};
+
+gen_y1_singular = proc () {
+    var zl, i, f, c, b, f, p, j, t, th, tl;
+
+    i=[0x1p-150, 0.75];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y1_i0_r", single);
+    //
+    // approximate y1 below the first zero as
+    // y1(x) = 2/pi*(f(x) + (j1(x) * log(x) - 1/x));
+    // pi/2 * y1(x) = f(x) + (log(x)* j1(x)-1/x);
+    // f(x) = pi/2*y1(x) - (log(x)* j1(x)-1/x);
+    // f(x) = pi/2*y1(x) -  log(x)* j1(x)+1/x;
+    f=ext_j1(x);
+    write("    // "); guessdegree(f, i, 0x1p-29);
+    c = [|SG, SG... |];
+    b = [|1, 3, 5, 7|];
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float j1z", "j1", b, c);
+
+    f=pi/2*ext_y1(x) - log(x)* ext_j1(x)+1/x;
+    write("    // "); guessdegree(f, i, 0x1p-29);
+    c = [|49, SG... |];
+    b = [|1, 3, 5, 7|];
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y1r", "y1_r", b, c);
+
+    // approximate the other intervals until 4.75
+    f=ext_y1(x);
+    zl=dirtyfindzeros(f(x), [0,4.75]);
+    zl=zl@dirtyfindzeros(diff(f(x)), [0, 4.75]);
+    zl=sort(zl);
+    for j from 0 to length(zl)-1 do {
+        write("    // ", single(zl[j]), "\n");
+    };
+    i=[0.75, 1.25];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y1_i1_r", single);
+    write("    // ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    c = [|49, SG... |];
+    b = [|0, ..., 10|];
+    t = 1.0;
+    f = ext_y1(x+t);
+    i = i-t;
+    write("    // shifted ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y1_i1_", "y1_i1", b, c);
+    write_coeff(t, "", "constexpr\n    const float y1_i1_x0", single);
+    i=[1.25, 2.0];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y1_i2_r", single);
+    write("    // ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    b = [|0, ..., 10|];
+    t = 0.5*(inf(i)+sup(i));
+    f = ext_y1(x+t);
+    i = i-t;
+    write("    // shifted ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y1_i2_", "y1_i2", b, c);
+    write_coeff(t, "", "constexpr\n    const float y1_i2_x0", single);
+    i=[2.0, 3.25];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y1_i3_r", single);
+    write("    // ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    b = [|1, ..., 9|];
+    // use the first root as interval center
+    t = zl[0];
+    f = ext_y1(x+t);
+    i = i-t;
+    write("    // shifted ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y1_i3_", "y1_i3", b, c);
+    write_coeff(t, "", "constexpr\n    const float y1_i3_x0", 74);
+    i=[3.25, 4.75];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y1_i4_r", single);
+    b = [|0, ..., 10|];
+    write("    // ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    // use the second extremum as center of the interval
+    t = zl[1];
+    f = ext_y1(x+t);
+    i = i-t;
+    write("    // shifted ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y1_i4_", "y1_i4", b, c);
+    write_coeff(t, "", "constexpr\n    const float y1_i4_x0", 74);
+};
+
+gen_y0_singular = proc () {
+    var log_half_plus_euler_gamma, zl, i, f, c, b, f, p, j, t, th, tl;
+
+    i=[0x1p-128, 0.75];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y0_i0_r", single);
+
+    log_half_plus_euler_gamma=ext_euler_gamma + log(0.5);
+    write_coeff(log_half_plus_euler_gamma,
+                "", "constexpr\n    const float log_half_plus_euler_gamma_",
+                49);
+    //
+    // approximate y0 below the first zero as
+    // y0(x) = 2/pi*(f(x) + (log(0.5*x) + euler_gamma) * j0(x));
+    // pi/2 * y0(x) = f(x) + (log(0.5*x) + euler_gamma) * j0(x);
+    // f(x) = pi/2*y0(x) - (log(0.5*x) + euler_gamma) * j0(x);
+    // f(x) = pi/2*y0(x) - (log(x) + log(0.5) + euler_gamma) * j0(x);
+    // f(x) = pi/2*y0(x) - (log(x) + log_half_plus_euler_gamma) * j0(x);
+    //
+
+    f=ext_j0(x);
+    write("    // "); guessdegree(f, i, 0x1p-29);
+    c = [|SG, SG... |];
+    b = [|0, 2, 4, 6, 8|];
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float j0z", "j0", b, c);
+
+    f=pi/2*ext_y0(x) - (log(x)+ log_half_plus_euler_gamma) * ext_j0(x);
+    write("    // "); guessdegree(f, i, 0x1p-29);
+    c = [|SG, SG... |];
+    b = [|2, 4, 6, 8|];
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y0r", "y0_r", b, c);
+
+    // now approximate the other intervals [0.75, 4.75]
+
+    f=ext_y0(x);
+    zl=dirtyfindzeros(f(x), [0,4.75]);
+    zl=zl@dirtyfindzeros(diff(f(x)), [0, 4.75]);
+    zl=sort(zl);
+    for j from 0 to length(zl)-1 do {
+        write("    // ", single(zl[j]), "\n");
+    };
+    i=[0.75, 1.25];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y0_i1_r", single);
+    write("    // ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    c = [|49, SG... |];
+    b = [|1, ..., 10|];
+    t = zl[0];
+    f = ext_y0(x+t);
+    i = i-t;
+    write("    // shifted ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y0_i1_", "y0_i1", b, c);
+    write_coeff(t, "", "constexpr\n    const float y0_i1_x0", 74);
+    i=[1.25, 2.0];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y0_i2_r", single);
+    write("    // ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    b = [|0, ..., 9|];
+    t = 0.5*(inf(i)+sup(i));
+    f = ext_y0(x+t);
+    i = i-t;
+    write("    // shifted ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y0_i2_", "y0_i2", b, c);
+    write_coeff(t, "", "constexpr\n    const float y0_i2_x0", single);
+    i=[2.0, 3.25];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y0_i3_r", single);
+    write("    // ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    b = [|0, ..., 9|];
+    t = 0.5*(inf(i)+sup(i));
+    f = ext_y0(x+t);
+    i = i-t;
+    write("    // shifted ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y0_i3_", "y0_i3", b, c);
+    write_coeff(t, "", "constexpr\n    const float y0_i3_x0", single);
+    i=[3.25, 4.75];
+    write_coeff(sup(i),
+                "", "constexpr\n    const float y0_i4_r", single);
+    b = [|1, ..., 9|];
+    write("    // ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    // use the second root as center of the interval
+    t = zl[2];
+    f = ext_y0(x+t);
+    i = i-t;
+    write("    // shifted ", single(i), " "); guessdegree(f, i, 0x1p-29);
+    p=fpminimax(f, b, c, i, relative, floating);
+    write_approx_prec(p, f, i);
+    write_coeffs(p, "constexpr\n    const float y0_i4_", "y0_i4", b, c);
+    write_coeff(t, "", "constexpr\n    const float y0_i4_x0", 74);
+};
+
+float = proc(t) {
+    var r;
+    r = single(t);
+    return r;
+};
+
+sort_unique = proc(sl) {
+    var t, r, i, le, ce;
+    r=[||];
+    if (length(sl) > 1) then {
+        t=sort(sl);
+        r=r:.t[0];
+        // write("// inserting ", single(t[0]), "\n");
+        for j from 1 to length(t)-1 do {
+            le=r[length(r)-1];
+            ce=t[j];
+            if (ce != le) then {
+                // write(&& "inserting ", single(ce), "\n");
+                r=r:.ce;
+            };
+        };
+    } else {
+        r=sl;
+    };
+    return r;
+};
+
+/* j0 data with zero's and extremas as interval centers */
+gen_j0_list_ze = proc(l, r) {
+    var zl, f, df, fx, i, b, c, b0, c0, p, t, j, k, bl, cl, el, icl, li, ri,
+        tt, h, l;
+    // bl interval border list
+    // zl zero list
+    // el extrema list
+    // icl interval center list
+    // cl coefficient list contains right interval border, negative of interval
+    // center (x offset) high, medium, low,
+    // c8, c7 .., c3, c2, c1h, c1l, c0h, c0l
+    f=ext_j0(x);
+    df=diff(f(x));
+    zl=dirtyfindzeros(f(x), [l, r]);
+    el=dirtyfindzeros(df(x), [l, r]);
+    icl=zl@el;
+    icl=sort_unique(icl);
+    bl=[||];
+    cl=[||];
+    c = [|49, 49, SG, SG, SG...|];
+    b = [|0, ..., 8|];
+    c0= [|49, SG, SG, SG...|];
+    b0= [|1, ..., 8|];
+    for j from 0 to length(icl)-2 do {
+        t=icl[j];
+        if (j==0) then {
+            li=icl[j];
+            ri=(icl[j] + icl[j+1])*0.5;
+        } else {
+            li=(icl[j-1] + icl[j])*0.5;
+            ri=(icl[j] + icl[j+1])*0.5;
+        };
+        i = [li, ri];
+        write("// interval: ", single(i));
+        i = [li-t, ri-t];
+        write(" shifted: ", single(i));
+        // i;
+        f=ext_j0(x+t);
+        fx = abs(ext_j0(t));
+        if (fx < 1e-8) then {
+            write(" (zero) ");
+            guessdegree(f, i, 0x1p-29);
+            p=fpminimax(f, b0, c0, i, relative, floating);
+        } else {
+            write(" (extremum) ");
+            guessdegree(f, i, 0x1p-29);
+            p=fpminimax(f, b, c, i, relative, floating);
+        };
+        // insert the right interval border into cl
+        cl = cl:.ri;
+        // insert the negative of the interval center
+        tt=-t;
+        for k from 0 to 2 do {
+            h = single(tt);
+            tt=tt-h;
+            cl = cl:.h;
+        };
+        for k from degree(p) to 0 by -1 do {
+            if (k <= 1) then {
+                tt = coeff(p, k);
+                h = single(tt);
+                tt = tt - h;
+                l = single(tt);
+                cl = cl:.h;
+                cl = cl:.l;
+            } else {
+               cl = cl:.single(coeff(p, k));
+            };
+        };
+        bl = bl:.ri;
+        // p;
+        write_approx_prec(p, f, i);
+    };
+    write_coeff(bl[length(bl)-1], "", "const float max_small_j0", single);
+    write_coeff_table(bl, "_j0_intervals", single);
+    bl=[||];
+    for j from 0 to length(icl)-1 do {
+        var tt, h, l;
+        tt = -icl[j];
+        h = single(tt);
+        tt = tt - h;
+        l = single(tt);
+        bl= bl:.h;
+        bl= bl:.l;
+    };
+    write_coeff_table(bl, "_j0_neg_centers", single);
+    write_coeff_table(cl, "_j0_coeffs", single);
+};
+
+/* j1 data with zero's and extremas as interval centers */
+gen_j1_list_ze = proc(l, r) {
+    var zl, f, df, fx, i, b, c, b0, c0, p, t, j, k, bl, cl, el, icl, li, ri,
+        tt, h, l;
+    // bl interval border list
+    // zl zero list
+    // el extrema list
+    // icl interval center list
+    // cl coefficient list contains right interval border, negative of interval
+    // center (x offset) high, medium, low,
+    // c8, c7 .., c3, c2, c1h, c1l, c0h, c0l
+    f=ext_j1(x);
+    df=diff(f(x));
+    zl=dirtyfindzeros(f(x), [l, r]);
+    el=dirtyfindzeros(df(x), [l, r]);
+    icl=zl@el;
+    icl=sort_unique(icl);
+    bl=[||];
+    cl=[||];
+    c = [|49, 49, SG, SG, SG...|];
+    b = [|0, ..., 8|];
+    c0= [|49, SG, SG, SG...|];
+    b0= [|1, ..., 8|];
+    for j from 0 to length(icl)-2 do {
+        t=icl[j];
+        if (j==0) then {
+            li=icl[j];
+            ri=(icl[j] + icl[j+1])*0.5;
+        } else {
+            li=(icl[j-1] + icl[j])*0.5;
+            ri=(icl[j] + icl[j+1])*0.5;
+        };
+        i = [li, ri];
+        write("// interval: ", single(i));
+        i = [li-t, ri-t];
+        write(" shifted: ", single(i));
+        // i;
+        f=ext_j1(x+t);
+        fx = abs(ext_j1(t));
+        if (fx < 1e-8) then {
+            write(" (zero) ");
+            guessdegree(f, i, 0x1p-29);
+            p=fpminimax(f, b0, c0, i, relative, floating);
+        } else {
+            write(" (extremum) ");
+            guessdegree(f, i, 0x1p-29);
+            p=fpminimax(f, b, c, i, relative, floating);
+        };
+        // insert the right interval border into cl
+        cl = cl:.ri;
+        // insert the negative of the interval center
+        tt=-t;
+        for k from 0 to 2 do {
+            h = single(tt);
+            tt=tt-h;
+            cl = cl:.h;
+        };
+        for k from degree(p) to 0 by -1 do {
+            if (k <= 1) then {
+                tt = coeff(p, k);
+                h = single(tt);
+                tt = tt - h;
+                l = single(tt);
+                cl = cl:.h;
+                cl = cl:.l;
+            } else {
+               cl = cl:.single(coeff(p, k));
+            };
+        };
+        bl = bl:.ri;
+        // p;
+        write_approx_prec(p, f, i);
+    };
+    write_coeff(bl[length(bl)-1], "", "const single max_small_j1", single);
+    write_coeff_table(bl, "_j1_intervals", single);
+    bl=[||];
+    for j from 0 to length(icl)-1 do {
+        var tt, h, l;
+        tt = -icl[j];
+        h = single(tt);
+        tt = tt - h;
+        l = single(tt);
+        bl= bl:.h;
+        bl= bl:.l;
+    };
+    write_coeff_table(bl, "_j1_neg_centers", single);
+    write_coeff_table(cl, "_j1_coeffs", single);
+};
+
+
+/* y0 data with zero's and extremas as interval centers */
+gen_y0_list_ze = proc(l, r) {
+    var zl, f, df, fx, i, b, c, b0, c0, p, t, j, k, bl, cl, el, icl, li, ri,
+        tt, h, l;
+    // bl interval border list
+    // zl zero list
+    // el extrema list
+    // icl interval center list
+    // cl coefficient list contains right interval border, negative of interval
+    // center (x offset) high, medium, low,
+    // c8, c7 .., c3, c2, c1h, c1l, c0h, c0l
+    f=ext_y0(x);
+    df=diff(f(x));
+    zl=dirtyfindzeros(f(x), [l, r]);
+    el=dirtyfindzeros(df(x), [l, r]);
+    icl=zl@el;
+    icl=sort_unique(icl);
+    bl=[||];
+    cl=[||];
+    c = [|49, 49, SG, SG, SG...|];
+    b = [|0, ..., 8|];
+    c0= [|49, SG, SG, SG...|];
+    b0= [|1, ..., 8|];
+    for j from 0 to length(icl)-2 do {
+        t=icl[j];
+        if (j==0) then {
+            li=0.75;
+            ri=(icl[j] + icl[j+1])*0.5;
+        } else {
+            li=(icl[j-1] + icl[j])*0.5;
+            ri=(icl[j] + icl[j+1])*0.5;
+        };
+        i = [li, ri];
+        write("// interval: ", single(i));
+        i = [li-t, ri-t];
+        write(" shifted: ", single(i));
+        // i;
+        f=ext_y0(x+t);
+        fx = abs(ext_y0(t));
+        if (fx < 1e-8) then {
+            write(" (zero) ");
+            guessdegree(f, i, 0x1p-29);
+            p=fpminimax(f, b0, c0, i, relative, floating);
+        } else {
+            write(" (extremum) ");
+            guessdegree(f, i, 0x1p-29);
+            p=fpminimax(f, b, c, i, relative, floating);
+        };
+        // insert the right interval border into cl
+        cl = cl:.ri;
+        // insert the negative of the interval center
+        tt=-t;
+        for k from 0 to 2 do {
+            h = single(tt);
+            tt=tt-h;
+            cl = cl:.h;
+        };
+        for k from degree(p) to 0 by -1 do {
+            if (k <= 1) then {
+                tt = coeff(p, k);
+                h = single(tt);
+                tt = tt - h;
+                l = single(tt);
+                cl = cl:.h;
+                cl = cl:.l;
+            } else {
+               cl = cl:.single(coeff(p, k));
+            };
+        };
+        bl = bl:.ri;
+        // p;
+        write_approx_prec(p, f, i);
+    };
+    write_coeff(bl[length(bl)-1], "", "const float max_small_y0", single);
+    write_coeff_table(bl, "_y0_intervals", single);
+    bl=[||];
+    for j from 0 to length(icl)-1 do {
+        var tt, h, l;
+        tt = -icl[j];
+        h = single(tt);
+        tt = tt - h;
+        l = single(tt);
+        bl= bl:.h;
+        bl= bl:.l;
+    };
+    write_coeff_table(bl, "_y0_neg_centers", single);
+    write_coeff_table(cl, "_y0_coeffs", single);
+};
+
+/* y1 data with zero's and extremas as interval centers */
+gen_y1_list_ze = proc(l, r) {
+    var zl, f, df, fx, i, b, c, b0, c0, p, t, j, k, bl, cl, el, icl, li, ri,
+        tt, h, l;
+    // bl interval border list
+    // zl zero list
+    // el extrema list
+    // icl interval center list
+    // cl coefficient list contains right interval border, negative of interval
+    // center (x offset) high, medium, low,
+    // c8, c7 .., c3, c2, c1h, c1l, c0h, c0l
+    f=ext_y1(x);
+    df=diff(f(x));
+    zl=dirtyfindzeros(f(x), [l, r]);
+    el=dirtyfindzeros(df(x), [l, r]);
+    icl=zl@el;
+    // insert artificially an zero at 1.0
+    icl=icl:.1.0;
+    icl=sort_unique(icl);
+    bl=[||];
+    cl=[||];
+    c = [|49, 49, SG, SG, SG...|];
+    b = [|0, ..., 8|];
+    c0= [|49, SG, SG, SG...|];
+    b0= [|1, ..., 8|];
+    for j from 0 to length(icl)-2 do {
+        t=icl[j];
+        if (j==0) then {
+            li=0.75;
+            ri=(icl[j] + icl[j+1])*0.5;
+        } else {
+            li=(icl[j-1] + icl[j])*0.5;
+            ri=(icl[j] + icl[j+1])*0.5;
+        };
+        i = [li, ri];
+        write("// interval: ", single(i));
+        i = [li-t, ri-t];
+        write(" shifted: ", single(i));
+        // i;
+        f=ext_y1(x+t);
+        fx = abs(ext_y1(t));
+        if (fx < 1e-8) then {
+            write(" (zero) ");
+            guessdegree(f, i, 0x1p-29);
+            p=fpminimax(f, b0, c0, i, relative, floating);
+        } else {
+            write(" (extremum) ");
+            guessdegree(f, i, 0x1p-29);
+            p=fpminimax(f, b, c, i, relative, floating);
+        };
+        // insert the right interval border into cl
+        cl = cl:.ri;
+        // insert the negative of the interval center
+        tt=-t;
+        for k from 0 to 2 do {
+            h = single(tt);
+            tt=tt-h;
+            cl = cl:.h;
+        };
+        for k from degree(p) to 0 by -1 do {
+            if (k <= 1) then {
+                tt = coeff(p, k);
+                h = single(tt);
+                tt = tt - h;
+                l = single(tt);
+                cl = cl:.h;
+                cl = cl:.l;
+            } else {
+               cl = cl:.single(coeff(p, k));
+            };
+        };
+        bl = bl:.ri;
+        // p;
+        write_approx_prec(p, f, i);
+    };
+    write_coeff(bl[length(bl)-1], "", "const float max_small_y1", single);
+    write_coeff_table(bl, "_y1_intervals", single);
+    bl=[||];
+    for j from 0 to length(icl)-1 do {
+        var tt, h, l;
+        tt = -icl[j];
+        h = single(tt);
+        tt = tt - h;
+        l = single(tt);
+        bl= bl:.h;
+        bl= bl:.l;
+    };
+    write_coeff_table(bl, "_y1_neg_centers", single);
+    write_coeff_table(cl, "_y1_coeffs", single);
+};
+
+// gen_j01y01_asymp();
+// gen_j0_list_ze(L, R);
+// gen_j1_list_ze(L, R);
+// gen_y0_list_ze(L, R);
+// gen_y1_list_ze(L, R);
+// gen_y0_singular();
+// gen_y1_singular();

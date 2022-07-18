@@ -33,6 +33,21 @@ int ext_tgamma(mpfi_t rop, mpfi_t op, int n);
 extern "C"
 int ext_lngamma(mpfi_t rop, mpfi_t op, int n);
 
+extern "C"
+int ext_j0(mpfi_t rop, mpfi_t op, int n);
+
+extern "C"
+int ext_j1(mpfi_t rop, mpfi_t op, int n);
+
+extern "C"
+int ext_y0(mpfi_t rop, mpfi_t op, int n);
+
+extern "C"
+int ext_y1(mpfi_t rop, mpfi_t op, int n);
+
+extern "C"
+void ext_euler_gamma(mpfr_t res, mp_prec_t prec);
+
 namespace cftal {
     namespace test {
         int mpfi_from_mpfr(mpfi_t i, const fpn_handle& v, int mpfr_result);
@@ -271,4 +286,217 @@ int ext_lngamma(mpfi_t y, mpfi_t x, int f_n)
         break;
     }}
     return res;
+}
+
+int ext_j0(mpfi_t y, mpfi_t x, int f_n)
+{
+    using cftal::test::fpn_handle;
+    int res=0;
+    mpfr_prec_t p_y=mpfi_get_prec(y);
+    mpfr_prec_t p_x=mpfi_get_prec(x);
+    fpn_handle y_l(p_y), y_r(p_y), x_l(p_x), x_r(p_x);
+    mpfi_get_left(x_l(), x);
+    mpfi_get_right(x_r(), x);
+
+    auto f=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        mpfr_j0(y(), x(), rm);
+    };
+    auto f1=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        // d/dx j0 = -j1
+        fpn_handle ny(y);
+        mpfr_j1(ny(), x(), rm);
+        mpfr_neg(y(), ny(), MPFR_RNDN);
+    };
+    auto f2=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        // d2/dx2 j0 = -(j0-j2)/2 = (j2-j0)/2
+        fpn_handle j0(y), j2(y);
+        mpfr_j0(j0(), x(), MPFR_RNDN);
+        mpfr_jn(j2(), 2, x(), MPFR_RNDN);
+        fpn_handle t(y);
+        mpfr_sub(t(), j2(), j0(), rm);
+        mpfr_mul_2si(y(), t(), -1, MPFR_RNDN);
+    };
+
+    switch (f_n) {
+    case 0:
+        f(y_l, x_l, MPFR_RNDD);
+        f(y_r, x_r, MPFR_RNDU);
+        break;
+    case 1:
+        f1(y_l, x_l, MPFR_RNDD);
+        f1(y_r, x_r, MPFR_RNDU);
+        break;
+    case 2:
+        f2(y_l, x_l, MPFR_RNDD);
+        f2(y_r, x_r, MPFR_RNDU);
+        break;
+    default:
+        break;
+    }
+    mpfi_interv_fr(y, y_l(), y_r());
+    mpfi_revert_if_needed(y);
+    return res;
+}
+
+int ext_j1(mpfi_t y, mpfi_t x, int f_n)
+{
+    using cftal::test::fpn_handle;
+    int res=0;
+    mpfr_prec_t p_y=mpfi_get_prec(y);
+    mpfr_prec_t p_x=mpfi_get_prec(x);
+    fpn_handle y_l(p_y), y_r(p_y), x_l(p_x), x_r(p_x);
+    mpfi_get_left(x_l(), x);
+    mpfi_get_right(x_r(), x);
+
+    auto f=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        mpfr_j1(y(), x(), rm);
+    };
+    auto f1=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        // d/dx j1 = (j0-j2)/2
+        fpn_handle j0(y), j2(y);
+        mpfr_j0(j0(), x(), MPFR_RNDN);
+        mpfr_jn(j2(), 2, x(), MPFR_RNDN);
+        fpn_handle t(y);
+        mpfr_sub(t(), j0(), j2(), rm);
+        mpfr_mul_2si(y(), t(), -1, MPFR_RNDN);
+    };
+    auto f2=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        // d2/dx2 j1 = (j3-3*j1)/4
+        fpn_handle j3(y), j1(y);
+        mpfr_j1(j1(), x(), MPFR_RNDN);
+        mpfr_jn(j3(), 3, x(), MPFR_RNDN);
+        fpn_handle t(3.0, y.prec());
+        mpfr_mul(t(), j1(), t(), MPFR_RNDN);
+        mpfr_sub(t(), j3(), t(), rm);
+        // y = t*2^-2 = t/4
+        mpfr_mul_2si(y(), t(), -2, MPFR_RNDN);
+    };
+    switch (f_n) {
+    case 0:
+        f(y_l, x_l, MPFR_RNDD);
+        f(y_r, x_r, MPFR_RNDU);
+        break;
+    case 1:
+        f1(y_l, x_l, MPFR_RNDD);
+        f1(y_r, x_r, MPFR_RNDU);
+        break;
+    case 2:
+        f2(y_l, x_l, MPFR_RNDD);
+        f2(y_r, x_r, MPFR_RNDU);
+        break;
+    default:
+        break;
+    }
+    mpfi_interv_fr(y, y_l(), y_r());
+    mpfi_revert_if_needed(y);
+    return res;
+}
+
+int ext_y0(mpfi_t y, mpfi_t x, int f_n)
+{
+    using cftal::test::fpn_handle;
+    int res=0;
+    mpfr_prec_t p_y=mpfi_get_prec(y);
+    mpfr_prec_t p_x=mpfi_get_prec(x);
+    fpn_handle y_l(p_y), y_r(p_y), x_l(p_x), x_r(p_x);
+    mpfi_get_left(x_l(), x);
+    mpfi_get_right(x_r(), x);
+
+    auto f=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        mpfr_y0(y(), x(), rm);
+    };
+    auto f1=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        // d/dx j0 = -y1
+        fpn_handle ny(y);
+        mpfr_y1(ny(), x(), rm);
+        mpfr_neg(y(), ny(), MPFR_RNDN);
+    };
+    auto f2=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        // d2/dx2 y0 = -(y0-y2)/2 = (y2-y0)/2
+        fpn_handle y0(y), y2(y);
+        mpfr_y0(y0(), x(), MPFR_RNDN);
+        mpfr_yn(y2(), 2, x(), MPFR_RNDN);
+        fpn_handle t(y);
+        mpfr_sub(t(), y2(), y0(), rm);
+        mpfr_mul_2si(y(), t(), -1, MPFR_RNDN);
+    };
+    switch (f_n) {
+    case 0:
+        f(y_l, x_l, MPFR_RNDD);
+        f(y_r, x_r, MPFR_RNDU);
+        break;
+    case 1:
+        f1(y_l, x_l, MPFR_RNDD);
+        f1(y_r, x_r, MPFR_RNDU);
+        break;
+    case 2:
+        f2(y_l, x_l, MPFR_RNDD);
+        f2(y_r, x_r, MPFR_RNDU);
+        break;
+    default:
+        break;
+    }
+    mpfi_interv_fr(y, y_l(), y_r());
+    mpfi_revert_if_needed(y);
+    return res;
+}
+
+int ext_y1(mpfi_t y, mpfi_t x, int f_n)
+{
+    using cftal::test::fpn_handle;
+    int res=0;
+    mpfr_prec_t p_y=mpfi_get_prec(y);
+    mpfr_prec_t p_x=mpfi_get_prec(x);
+    fpn_handle y_l(p_y), y_r(p_y), x_l(p_x), x_r(p_x);
+    mpfi_get_left(x_l(), x);
+    mpfi_get_right(x_r(), x);
+
+    auto f=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        mpfr_y1(y(), x(), rm);
+    };
+    auto f1=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        // d/dx y1 = (y0-y2)/2
+        fpn_handle y0(y), y2(y);
+        mpfr_y0(y0(), x(), MPFR_RNDN);
+        mpfr_yn(y2(), 2, x(), MPFR_RNDN);
+        fpn_handle t(y);
+        mpfr_sub(t(), y0(), y2(), rm);
+        mpfr_mul_2si(y(), t(), -1, MPFR_RNDN);
+    };
+    auto f2=[](fpn_handle& y, const fpn_handle& x, mpfr_rnd_t rm)->void {
+        // d2/dx2 y1 = (y3-3*y1)/4
+        fpn_handle y3(y), y1(y);
+        mpfr_y1(y1(), x(), MPFR_RNDN);
+        mpfr_yn(y3(), 3, x(), MPFR_RNDN);
+        fpn_handle t(3.0, y.prec());
+        mpfr_mul(t(), y1(), t(), MPFR_RNDN);
+        mpfr_sub(t(), y3(), t(), rm);
+        // y = t*2^-2 = t/4
+        mpfr_mul_2si(y(), t(), -2, MPFR_RNDN);
+    };
+    switch (f_n) {
+    case 0:
+        f(y_l, x_l, MPFR_RNDD);
+        f(y_r, x_r, MPFR_RNDU);
+        break;
+    case 1:
+        f1(y_l, x_l, MPFR_RNDD);
+        f1(y_r, x_r, MPFR_RNDU);
+        break;
+    case 2:
+        f2(y_l, x_l, MPFR_RNDD);
+        f2(y_r, x_r, MPFR_RNDU);
+        break;
+    default:
+        break;
+    }
+    mpfi_interv_fr(y, y_l(), y_r());
+    mpfi_revert_if_needed(y);
+    return res;
+}
+
+void ext_euler_gamma(mpfr_t res, mp_prec_t prec)
+{
+    mpfr_set_prec(res, prec);
+    mpfr_const_euler(res, GMP_RNDN);
 }
