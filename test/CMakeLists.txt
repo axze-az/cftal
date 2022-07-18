@@ -93,6 +93,10 @@ set (TEST_HDRS
     ./include/cftal/test/check_sig.h
     ./include/cftal/test/cpu_times.h
     ./include/cftal/test/of_vec_v16.h
+    ./include/cftal/test/check_j0.h
+    ./include/cftal/test/check_j1.h
+    ./include/cftal/test/check_y0.h
+    ./include/cftal/test/check_y1.h
 )
 
 find_package(Boost REQUIRED)
@@ -254,6 +258,10 @@ test_prog(test-erf-f64)
 test_prog(test-erfc-f64)
 test_prog(test-tgamma-f64)
 test_prog(test-lgamma-f64)
+test_prog(test-j0-f64)
+test_prog(test-j1-f64)
+test_prog(test-y0-f64)
+test_prog(test-y1-f64)
 
 test_prog(test-sqrt-f32)
 test_prog(test-rsqrt-f32)
@@ -309,6 +317,10 @@ test_prog(test-erf-f32)
 test_prog(test-erfc-f32)
 test_prog(test-tgamma-f32)
 test_prog(test-lgamma-f32)
+test_prog(test-j0-f32)
+test_prog(test-j1-f32)
+test_prog(test-y0-f32)
+test_prog(test-y1-f32)
 
 test_prog(test-half-f32)
 

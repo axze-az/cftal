@@ -40,6 +40,38 @@
     {                                                           \
         DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
         return func_t::erfc(d);                                 \
+    }                                                           \
+                                                                \
+    nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
+    ns::j0(arg<vec_float>::type d)                              \
+    {                                                           \
+        DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
+        return func_t::j0(d);                                   \
+    }                                                           \
+                                                                \
+    nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
+    ns::j1(arg<vec_float>::type d)                              \
+    {                                                           \
+        DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
+        return func_t::j1(d);                                   \
+    }                                                           \
+                                                                \
+    nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
+    ns::y0(arg<vec_float>::type d)                              \
+    {                                                           \
+        DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
+        return func_t::y0(d);                                   \
+    }                                                           \
+                                                                \
+    nsr::vec_float                                              \
+    __attribute__((__flatten__))                                \
+    ns::y1(arg<vec_float>::type d)                              \
+    {                                                           \
+        DEF_TRAITS_SFUNC(vec_float, vec_int, real_type);        \
+        return func_t::y1(d);                                   \
     }
 
 

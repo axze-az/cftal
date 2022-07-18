@@ -107,6 +107,104 @@ namespace cftal {
             vf_type
             lgamma_k(arg_t<vf_type> xc, vi_type* signp);
 
+            static
+            vi2_type
+            __reduce_trig_arg(vf_type& xrh, vf_type& xrm, vf_type& xrl,
+                              arg_t<vf_type> x);
+
+            // works only in the interval [-3/2*pi/2, 3/2*pi/2]
+            static
+            vi2_type
+            __reduce_trig_arg_tiny(vf_type& xrh, vf_type& xrl,
+                                   arg_t<vf_type> xh,
+                                   arg_t<vf_type> xl);
+            using
+            base_type::__reduce_trig_arg;
+
+            static
+            vdf_type
+            rsqrt12_k(arg_t<vf_type> x);
+
+            static
+            void
+            __check_tbl_idx(arg_t<vi_type> idx,
+                            arg_t<vf_type> xb,
+                            const double* t,
+                            int32_t span);
+
+            // handle small arguments up to ~128
+            static
+            vf_type
+            __j01y01_small_tbl_k(arg_t<vf_type> xc,
+                                 const double tb[j01y01_data<double>::ENTRIES],
+                                 double max_small_x);
+
+            // handle the interval [0, 4.75]
+            static
+            vf_type
+            __y0_singular_k(arg_t<vf_type> xc);
+
+            // xr2 square of reciprocal
+            // xr reciprocal
+            static
+            vdf_type
+            __j0y0_phase_corr_k(arg_t<vf_type> xr2h,
+                                arg_t<vf_type> xr2l,
+                                arg_t<vf_type> xrh,
+                                arg_t<vf_type> xrl);
+
+            // xr2 square of reciprocal
+            static
+            vdf_type
+            __j0y0_amplitude_corr_k(arg_t<vf_type> xr2,
+                                    arg_t<vf_type> xr2l);
+
+            // handle the interval [0, 4.75]
+            static
+            vf_type
+            __y1_singular_k(arg_t<vf_type> xc);
+
+            // xr2 square of reciprocal
+            // xr reciprocal
+            static
+            vdf_type
+            __j1y1_phase_corr_k(arg_t<vf_type> xr2h,
+                                arg_t<vf_type> xr2l,
+                                arg_t<vf_type> xrh,
+                                arg_t<vf_type> xrl);
+
+            // xr2 square of reciprocal
+            static
+            vdf_type
+            __j1y1_amplitude_corr_k(arg_t<vf_type> xr2,
+                                    arg_t<vf_type> xr2l);
+
+            // handle large arguments greater than ~128 to inf
+            // calc_y01 select the calculation of y0/y1 or j0/j1
+            // calc_j01 selects j0/y0 or j1/y1
+            static
+            vf_type
+            __j01y01_large_phase_amplitude_k(arg_t<vf_type> xc,
+                                             bool calc_y01,
+                                             bool calc_jy1);
+
+
+            static
+            vf_type
+            j0_k(arg_t<vf_type> xc);
+
+            static
+            vf_type
+            j1_k(arg_t<vf_type> xc);
+
+            static
+            vf_type
+            y0_k(arg_t<vf_type> xc);
+
+            static
+            vf_type
+            y1_k(arg_t<vf_type> xc);
+
         };
 
     } // end math
@@ -1320,6 +1418,1606 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     return lgh;
 }
 
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<double, _T>::vdf_type
+cftal::math::spec_func_core<double, _T>::
+rsqrt12_k(arg_t<vf_type> xc)
+{
+    vf_type y=1.0/sqrt(xc);
+    vf_type z=impl::root_r2::calc_z<double, true>(y, xc);
+    vf_type d=-0.5*z;
+    vf_type yh, yl;
+    d_ops::add12(yh, yl, y, y*d);
+    // d_ops::muladd12(yh, yl, y, d, y);
+    return vdf_type(yh, yl);
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<double, _T>::vi2_type
+cftal::math::spec_func_core<double, _T>::
+__reduce_trig_arg(vf_type& xrh, vf_type& xrm, vf_type& xrl,
+                  arg_t<vf_type> x)
+{
+#if 0
+    auto q=payne_hanek_pi_over_2<double, _T>::rem3(xrh, xrm, xrl, x);
+    vi2_type q2=_T::vi_to_vi2(q);
+    return q2;
+#else
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+
+    constexpr const double large_arg=0x1p45;
+    vmf_type v_large_arg= vf_type(large_arg) < abs(x);
+    xrh = 0.0;
+    xrm = 0.0;
+    xrl = 0.0;
+    vi_type q=0;
+    if (__likely(!_T::all_of_v(v_large_arg))) {
+        vf_type x_2_pi=x* ctbl::m_2_pi[0];
+        vf_type fn= rint(x_2_pi);
+        constexpr const double m_pi_2_h=+1.5707963267948965579990e+00;
+        constexpr const double m_pi_2_m=+6.1232339957367660358688e-17;
+        constexpr const double m_pi_2_l=-1.4973849048591698329435e-33;
+        vf_type f0, f1, f2, f3, f4;
+        d_ops::mul12(f0, f1, fn, -m_pi_2_h);
+        d_ops::mul12(f2, f3, fn, -m_pi_2_m);
+        f4 = fn * -m_pi_2_l;
+        // normalize f0 - f4 into p0..p2
+        vf_type p0, p1, p2, t;
+        p0 = f0;
+        d_ops::add12(p1, t, f1, f2);
+        p2 = f4 + t + f3;
+        d_ops::add12(p0, p1, p0, p1);
+        d_ops::add12(p1, p2, p1, p2);
+        vf_type t0, t1, t2;
+        using t_ops=t_real_ops<vf_type>;
+        t_ops::add133cond(t0, t1, t2, x, p0, p1, p2);
+        t_ops::renormalize3(xrh, xrm, xrl, t0, t1, t2);
+        fn = base_type::template __fmod<4>(fn);
+        q=_T::cvt_f_to_i(fn);
+    }
+    if (_T::any_of_v(v_large_arg)) {
+        // reduce the large arguments
+        vf_type xrhl, xrml, xrll;
+        // mask out not required values to avoid subnormals
+        vf_type xl=_T::sel_val_or_zero(v_large_arg, x);
+        vi_type ql=payne_hanek_pi_over_2<double, _T>::
+            rem3(xrhl, xrml, xrll, xl);
+        q = _T::sel(_T::vmf_to_vmi(v_large_arg), ql, q);
+        xrh = _T::sel(v_large_arg, xrhl, xrh);
+        xrm = _T::sel(v_large_arg, xrml, xrm);
+        xrl = _T::sel(v_large_arg, xrll, xrl);
+    }
+    vi2_type q2=_T::vi_to_vi2(q);
+    return q2;
+#endif
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<double, _T>::vi2_type
+cftal::math::spec_func_core<double, _T>::
+__reduce_trig_arg_tiny(vf_type& xrh, vf_type& xrl,
+                        arg_t<vf_type> x, arg_t<vf_type> xl)
+{
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type x_2_pi=x* ctbl::m_2_pi[0];
+    vf_type fn= rint(x_2_pi);
+    // x^ : +0xc.90fdaa22168cp-3
+    constexpr
+    const double pi_2_0=+1.5707963267948965579990e+00;
+    // x^ : +0x8.d313198a2e038p-57
+    constexpr
+    const double pi_2_1=+6.1232339957367660358688e-17;
+    // x^ : -0xf.8cbb5bf6c7dep-113
+    constexpr
+    const double pi_2_2=-1.4973849048591698329435e-33;
+    constexpr
+    static const double ci[]={
+        -pi_2_0, -pi_2_1, -pi_2_2
+    };
+    vf_type sh=x, sl=xl;
+    for (auto b=std::cbegin(ci), e=std::cend(ci); b!=e; ++b) {
+#if 1
+        const double m_pi_2=*b;
+        d_ops::add122cond(sh, sl, m_pi_2*fn, sh, sl);
+#else
+        vf_type th, tl;
+        const double m_pi_2=*b;
+        d_ops::mul12(th, tl, fn, m_pi_2);
+        d_ops::add22cond(sh, sl, sh, sl, th, tl);
+#endif
+    }
+    xrh = sh;
+    xrl = sl;
+    // works only up to 2^31
+    vi_type q=_T::cvt_f_to_i(x_2_pi);
+    vi2_type q2=_T::vi_to_vi2(q);
+    return q2;
+}
+
+template <typename _T>
+void
+cftal::math::spec_func_core<double, _T>::
+__check_tbl_idx(arg_t<vi_type> idx, arg_t<vf_type> xb,
+                const double* t, int32_t span)
+{
+#if 1
+    static_cast<void>(idx);
+    static_cast<void>(xb);
+    static_cast<void>(t);
+    static_cast<void>(span);
+#else
+    for (uint32_t i=0; i<size(idx); ++i) {
+        double xi=extract(xb, i);
+        int32_t idxi=extract(idx, i);
+        int32_t idxm1=idxi-span;
+        if (idxm1 > 0) {
+            double xl= t[idxm1];
+            if (xl > xi) {
+                std::cerr << std::setprecision(22) << xi
+                          << " has too large idx " << idxi
+                          << " xl= "
+                          << xl << std::endl;
+            }
+        }
+        double xr=t[idxi];
+        if (xr < xi) {
+            std::cerr << std::setprecision(22) << xi
+                        << " has too small idx " << idxi
+                        << " xr= "
+                        << xr << std::endl;
+        }
+    }
+#endif
+}
+
+template <typename _T>
+typename cftal::math::spec_func_core<double, _T>::vf_type
+cftal::math::spec_func_core<double, _T>::
+__j01y01_small_tbl_k(arg_t<vf_type> xc,
+                     const double tb[j01y01_data<double>::ENTRIES],
+                     double max_small_x)
+{
+    using tbl_t=j01y01_data<double>;
+    using ctbl=impl::d_real_constants<d_real<double>, double>;
+    vf_type xb=min(xc, vf_type(max_small_x));
+    vf_type xb_idx=xb*ctbl::m_2_pi[0];
+    vi_type idx=cvt_rz<vi_type>(xb_idx);
+    idx *= tbl_t::ELEMS;
+    auto lk=make_variable_lookup_table<double>(idx);
+    vf_type xr_i0=lk.from(tb);
+    vi_type i0=idx;
+    vi_type i1=idx+tbl_t::ELEMS;
+    i1 = min(i1, vi_type(tbl_t::ELEMS*(tbl_t::INTERVALS-1)));
+    vmf_type xb_in_i1= xb > xr_i0;
+    vmi_type sel_i1 = _T::vmf_to_vmi(xb_in_i1);
+    idx=_T::sel(sel_i1, i1, i0);
+    // and update the lookup table
+    __check_tbl_idx(idx, xb, tb, tbl_t::ELEMS);
+    lk=make_variable_lookup_table<double>(idx);
+    // read the negative interval centers
+    const vf_type x0h=lk.from(tb + tbl_t::NEG_X_OFFS_H);
+    const vf_type x0m=lk.from(tb + tbl_t::NEG_X_OFFS_M);
+    const vf_type x0l=lk.from(tb + tbl_t::NEG_X_OFFS_L);
+    vf_type xrh, xrl;
+    d_ops::add122cond(xrh, xrl, xb, x0h, x0m);
+    d_ops::add122cond(xrh, xrl, x0l, xrh, xrl);
+
+    vf_type xr2=xrh*xrh;
+    // produce a polynomial of order POLY_ORD-3
+    vf_type p=horner2_idx<tbl_t::POLY_ORD-3>(
+        xrh, xr2, lk, tb+tbl_t::NEG_X_OFFS_L+1);
+    vf_type rh, rl;
+    vf_type c3=lk.from(tb+tbl_t::C3);
+    vf_type c2=lk.from(tb+tbl_t::C2);
+    vf_type c1h=lk.from(tb+tbl_t::C1H);
+    vf_type c1l=lk.from(tb+tbl_t::C1L);
+    vf_type c0h=lk.from(tb+tbl_t::C0H);
+    vf_type c0l=lk.from(tb+tbl_t::C0L);
+    horner_comp_quick(rh, rl, xrh, p, c3, c2);
+    horner_comp_quick_dpc_si(rh, rl, xrh, rh, rl, c1h, c1l);
+    d_ops::unorm_mul22(rh, rl, rh, rl, xrh, xrl);
+    d_ops::add22(rh, rl, c0h, c0l, rh, rl);
+    return rh;
+}
+
+template <typename _T>
+typename cftal::math::spec_func_core<double, _T>::vf_type
+cftal::math::spec_func_core<double, _T>::
+__y0_singular_k(arg_t<vf_type> xc)
+{
+    vf_type r;
+    // x^ : +0xcp-4
+    constexpr
+    const double y0_i0_r=+7.5000000000000000000000e-01;
+    static_cast<void>(y0_i0_r);
+    if (_T::any_of_v(xc < y0_i0_r)) {
+        // x^ h: -0xe.d6d80a2a0f59p-7
+        constexpr
+        const double log_half_plus_euler_gamma_h=-1.1593151565841244843291e-01;
+        // x^ l: -0xd.f04ae82e05408p-65
+        constexpr
+        const double log_half_plus_euler_gamma_l=-3.7780767526472776010095e-19;
+        // [12;12]
+        // [0, 0.75] : | p - f | <= 2^-67.28125
+        // coefficients for j0 generated by sollya
+        // x^0 : +0x8p-3
+        constexpr
+        const double j0z0=+1.0000000000000000000000e+00;
+        // x^2 : -0x8p-5
+        constexpr
+        const double j0z2=-2.5000000000000000000000e-01;
+        // x^4 : +0xf.fffffffffffd8p-10
+        constexpr
+        const double j0z4=+1.5624999999999991326383e-02;
+        // x^6 : -0xe.38e38e38dc518p-15
+        constexpr
+        const double j0z6=-4.3402777777757690523194e-04;
+        // x^8 : +0xe.38e38e29151dp-21
+        constexpr
+        const double j0z8=+6.7816840260229131759221e-06;
+        // x^10 : -0x9.1a2b2b3d586fp-27
+        constexpr
+        const double j0z10=-6.7816832700464963835905e-08;
+        // x^12 : +0x8.172f5d59658a8p-34
+        constexpr
+        const double j0z12=+4.7093295009877648625093e-10;
+        // x^14 : -0xa.7aa5c2f9c32f8p-42
+        constexpr
+        const double j0z14=-2.3826696227953901635238e-12;
+        // [12;12]
+        // [0, 0.75] : | p - f | <= 2^-64.71875
+        // coefficients for y0_r generated by sollya
+        // x^2 : +0x8p-5
+        constexpr
+        const double y0r2=+2.5000000000000000000000e-01;
+        // x^4 : -0xb.ffffffffffffp-9
+        constexpr
+        const double y0r4=-2.3437499999999993061106e-02;
+        // x^6 : +0xd.097b425ecc558p-14
+        constexpr
+        const double y0r6=+7.9571759259235619234779e-04;
+        // x^8 : -0xe.d097b419c8958p-20
+        constexpr
+        const double y0r8=-1.4128508388507550461491e-05;
+        // x^10 : +0xa.6446a1aee02d8p-26
+        constexpr
+        const double y0r10=+1.5484843779055184565981e-07;
+        // x^12 : -0x9.e9364465c5268p-33
+        constexpr
+        const double y0r12=-1.1537904270715571440907e-09;
+        // x^14 : +0xd.975c37852daap-41
+        constexpr
+        const double y0r14=+6.1805853273914269608914e-12;
+
+
+        constexpr static const double j0coeffs[]={
+            j0z14, j0z12, j0z10, j0z8, j0z6, j0z4//, j0z2
+        };
+        vf_type x2=xc*xc;
+        vf_type j0p=horner(x2, j0coeffs)/*x2*/;
+        vf_type j0h, j0l;
+        horner_comp_quick(j0h, j0l, x2, j0p, j0z2, j0z0);
+        // d_ops::add12(j0h, j0l, j0z0, j0p);
+        constexpr static const double y0rcoeffs[]={
+            y0r14, y0r12, y0r10, y0r8, y0r6, y0r4
+        };
+        vf_type y0rp=horner(x2, y0rcoeffs);
+        vf_type y0rh, y0rl;
+        horner_comp_quick(y0rh, y0rl, x2, y0rp, y0r2);
+        d_ops::mul122(y0rh, y0rl, x2, y0rh, y0rl);
+        vdf_type ln_x=base_type::__log_tbl_k12(xc);
+
+        // y0(x) = 2/pi*(f(x) + (log(0.5*x) + euler_gamma) * j0(x));
+        // y0(x) = 2/pi*(f(x) + (log(x) + log(0.5)+euler_gamma) * j0(x));
+        using ctbl=impl::d_real_constants<d_real<double>, double>;
+        vf_type y0h, y0l;
+        // |log(3/4) ~ -0.28| > |log_half_plus_euler_gamma_h|
+        d_ops::add22(y0h, y0l,
+                     ln_x[0], ln_x[1],
+                     log_half_plus_euler_gamma_h,
+                     log_half_plus_euler_gamma_l);
+        d_ops::unorm_mul22(y0h, y0l, j0h, j0l, y0h, y0l);
+        d_ops::add22cond(y0h, y0l, y0rh, y0rl, y0h, y0l);
+        d_ops::unorm_mul22(y0h, y0l, y0h, y0l, ctbl::m_2_pi[0], ctbl::m_2_pi[1]);
+        r = y0h + y0l;
+    }
+    constexpr
+    const double y0_i1_r=+1.2500000000000000000000e+00;
+    vmf_type msk=(xc >= y0_i0_r)  & (xc < y0_i1_r);
+    if (_T::any_of_v(msk)) {
+        // [0.75;1.25] [20;20]
+        // shifted [-0.14357696473598480224609375;0.35642302036285400390625] [20;20]
+        // [-0.14357696473598480224609375, 0.35642302036285400390625] : | p - f | <= 2^-67.46875
+        // coefficients for y0_i1 generated by sollya
+        // x^1 h: +0xe.121b8c225c45p-4
+        constexpr
+        const double y0_i1_1h=+8.7942080249719478679538e-01;
+        // x^1 l: -0x9.1453a92468e9p-59
+        constexpr
+        const double y0_i1_1l=-1.5750251035955136174859e-17;
+        // x^2 : -0xf.bf1c5236b881p-5
+        constexpr
+        const double y0_i1_2=-4.9207893426297755201659e-01;
+        // x^3 : +0xe.1d899c579f4cp-6
+        constexpr
+        const double y0_i1_3=+2.2055282848167645504134e-01;
+        // x^4 : -0xe.78c735259c56p-6
+        constexpr
+        const double y0_i1_4=-2.2612171354416454871483e-01;
+        // x^5 : +0xe.034043614a538p-6
+        constexpr
+        const double y0_i1_5=+2.1894842701036518195501e-01;
+        // x^6 : -0xd.1cb5402cf15d8p-6
+        constexpr
+        const double y0_i1_6=-2.0487719790596323199416e-01;
+        // x^7 : +0xc.a125c987c5ae8p-6
+        constexpr
+        const double y0_i1_7=+1.9733566933345061955585e-01;
+        // x^8 : -0xc.69ada40b7f8fp-6
+        constexpr
+        const double y0_i1_8=-1.9395009059916729077244e-01;
+        // x^9 : +0xc.60468198c368p-6
+        constexpr
+        const double y0_i1_9=+1.9337618499689890327886e-01;
+        // x^10 : -0xc.7bf199cbb4ff8p-6
+        constexpr
+        const double y0_i1_10=-1.9506492632974922751821e-01;
+        // x^11 : +0xc.b6f524b460768p-6
+        constexpr
+        const double y0_i1_11=+1.9866684517319957437032e-01;
+        // x^12 : -0xd.0db783b83f008p-6
+        constexpr
+        const double y0_i1_12=-2.0396221030476627267269e-01;
+        // x^13 : +0xd.7e0bc24bb3f5p-6
+        constexpr
+        const double y0_i1_13=+2.1081823324385534634828e-01;
+        // x^14 : -0xe.06a6783ed7018p-6
+        constexpr
+        const double y0_i1_14=-2.1915590040894991630260e-01;
+        // x^15 : +0xe.a897072fcf0dp-6
+        constexpr
+        const double y0_i1_15=+2.2903991414862973075017e-01;
+        // x^16 : -0xf.6dc33627d93d8p-6
+        constexpr
+        const double y0_i1_16=-2.4107437409056217680892e-01;
+        // x^17 : +0x8.2c72fbff3be3p-5
+        constexpr
+        const double y0_i1_17=+2.5542592256703888775604e-01;
+        // x^18 : -0x8.6febd257ce1e8p-5
+        constexpr
+        const double y0_i1_18=-2.6366225321402564363282e-01;
+        // x^19 : +0xf.38e440a4019d8p-6
+        constexpr
+        const double y0_i1_19=+2.3784738838733140986470e-01;
+        // x^20 : -0x9.d81b250b2f76p-6
+        constexpr
+        const double y0_i1_20=-1.5381506555126323032567e-01;
+        // x^21 : +0xc.c1ffdda798478p-8
+        constexpr
+        const double y0_i1_21=+4.9835197081479092051648e-02;
+        // x^ h: +0xe.4c175c6a0bf5p-4
+        constexpr
+        const double y0_i1_x0h=+8.9357696627916749498866e-01;
+        // x^ m: +0xf.54e9381a3fc18p-59
+        constexpr
+        const double y0_i1_x0m=+2.6596231539720384869752e-17;
+        // x^ l: -0x9.617a6b74cd0f8p-115
+        constexpr
+        const double y0_i1_x0l=-2.2583392482023257066498e-34;
+
+        constexpr static const double ci[]={
+            y0_i1_21, y0_i1_20, y0_i1_19, y0_i1_18, y0_i1_17, y0_i1_16,
+            y0_i1_15, y0_i1_14, y0_i1_13, y0_i1_12, y0_i1_11, y0_i1_10,
+            y0_i1_9, y0_i1_8, y0_i1_7, y0_i1_6, y0_i1_5, y0_i1_4, y0_i1_3
+        };
+        vf_type xrh, xrl;
+        d_ops::add122cond(xrh, xrl, xc, -y0_i1_x0h, -y0_i1_x0m);
+        d_ops::add122cond(xrh, xrl, -y0_i1_x0l, xrh, xrl);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y0_i1_2);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y0_i1_1h, y0_i1_1l);
+        d_ops::unorm_mul22(ph, pl, ph, pl, xrh, xrl);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0x8p-2
+    constexpr
+    const double y0_i2_r=+2.0000000000000000000000e+00;
+    msk=(xc >= y0_i1_r)  & (xc < y0_i2_r);
+    if (_T::any_of_v(msk)) {
+        // [1.25;2] [16;16]
+        // shifted [-0.375;0.375] [19;19]
+        // [-0.375, 0.375] : | p - f | <= 2^-60.28125
+        // coefficients for y0_i2 generated by sollya
+        // x^0 h: +0xd.b9b15216ec7f8p-5
+        constexpr
+        const double y0_i2_0h=+4.2891756089319693634465e-01;
+        // x^0 l: +0xc.cee7758a8623p-59
+        constexpr
+        const double y0_i2_0l=+2.2218718681350609206379e-17;
+        // x^1 : +0xa.9d3d9f86fdb88p-5
+        constexpr
+        const double y0_i2_1=+3.3169442327191861474844e-01;
+        // x^2 : -0xa.20eb9f0d9cefp-5
+        constexpr
+        const double y0_i2_2=-3.1651860299180423208298e-01;
+        // x^3 : +0xf.a82911df78bb8p-9
+        constexpr
+        const double y0_i2_3=+3.0579837257151489676721e-02;
+        // x^4 : -0x9.b8e5382fbb6fp-11
+        constexpr
+        const double y0_i2_4=-4.7471912166352197431918e-03;
+        // x^5 : +0xa.ccdd4c1530aap-10
+        constexpr
+        const double y0_i2_5=+1.0547120827411639309990e-02;
+        // x^6 : -0xc.09ab803655dd8p-11
+        constexpr
+        const double y0_i2_6=-5.8778189184449059975779e-03;
+        // x^7 : +0xb.f49b5265e01fp-12
+        constexpr
+        const double y0_i2_7=+2.9188220272473855074202e-03;
+        // x^8 : -0xc.f6fbcdd78c528p-13
+        constexpr
+        const double y0_i2_8=-1.5826147125479830563705e-03;
+        // x^9 : +0xe.57b3165fc1298p-14
+        constexpr
+        const double y0_i2_9=+8.7540139201897971318184e-04;
+        // x^10 : -0xf.f70905134a21p-15
+        constexpr
+        const double y0_i2_10=-4.8721256657763636638975e-04;
+        // x^11 : +0x8.f61897fee8cd8p-15
+        constexpr
+        const double y0_i2_11=+2.7347756257902763139464e-04;
+        // x^12 : -0xa.224554cace108p-16
+        constexpr
+        const double y0_i2_12=-1.5463059097983822905327e-04;
+        // x^13 : +0xb.83d83940fb5e8p-17
+        constexpr
+        const double y0_i2_13=+8.7852615822082765905006e-05;
+        // x^14 : -0xd.41f33d1be9bcp-18
+        constexpr
+        const double y0_i2_14=-5.0573798286913018620176e-05;
+        // x^15 : +0xf.b9099a3c03498p-19
+        constexpr
+        const double y0_i2_15=+2.9988866371516582752131e-05;
+        // x^16 : -0x8.1e10594de5bc8p-19
+        constexpr
+        const double y0_i2_16=-1.5482782294416977966972e-05;
+        // x^17 : +0xc.d8e411c30f04p-21
+        constexpr
+        const double y0_i2_17=+6.1260366738323418262131e-06;
+        // x^18 : -0xa.466c2f55fe498p-20
+        constexpr
+        const double y0_i2_18=-9.7990877825345343901100e-06;
+        // x^19 : +0x9.539313f8a33bp-20
+        constexpr
+        const double y0_i2_19=+8.8944082092007590342308e-06;
+        // x^20 : +0xf.d88b9527ccf2p-22
+        constexpr
+        const double y0_i2_20=+3.7779521613212945012035e-06;
+        // x^ : +0xdp-3
+        constexpr
+        const double y0_i2_x0=+1.6250000000000000000000e+00;
+
+        constexpr static const double ci[]={
+            y0_i2_20, y0_i2_19, y0_i2_18, y0_i2_17, y0_i2_16,
+            y0_i2_15, y0_i2_14, y0_i2_13, y0_i2_12, y0_i2_11, y0_i2_10,
+            y0_i2_9, y0_i2_8, y0_i2_7, y0_i2_6, y0_i2_5, y0_i2_4, y0_i2_3
+        };
+        vf_type xrh, xrl;
+        d_ops::add12cond(xrh, xrl, xc, -y0_i2_x0);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y0_i2_2, y0_i2_1);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y0_i2_0h, y0_i2_0l);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0xdp-2
+    constexpr
+    const double y0_i3_r=+3.2500000000000000000000e+00;
+    msk=(xc >= y0_i2_r)  & (xc < y0_i3_r);
+    if (_T::any_of_v(msk)) {
+        // [2;3.25] [16;16]
+        // shifted [-0.625;0.625] [19;19]
+        // [-0.625, 0.625] : | p - f | <= 2^-62.09375
+        // coefficients for y0_i3 generated by sollya
+        // x^0 h: +0xf.3f71832453958p-5
+        constexpr
+        const double y0_i3_0h=+4.7649455655720157620792e-01;
+        // x^0 l: -0x8.1ead77a6db14p-62
+        constexpr
+        const double y0_i3_0l=-1.7607084198413380645893e-18;
+        // x^1 : -0xc.b3fdef0f137e8p-6
+        constexpr
+        const double y0_i3_1=-1.9848583551020473891846e-01;
+        // x^2 : -0xc.d404310912ebp-6
+        constexpr
+        const double y0_i3_2=-2.0044045246713321217769e-01;
+        // x^3 : +0xd.c16fd3a76bbcp-8
+        constexpr
+        const double y0_i3_3=+5.3732861684166743909685e-02;
+        // x^4 : +0xf.abfd48b0f5a38p-11
+        constexpr
+        const double y0_i3_4=+7.6522624786957210360483e-03;
+        // x^5 : -0x9.d65c3fe674158p-13
+        constexpr
+        const double y0_i3_5=-1.2008477926444087718200e-03;
+        // x^6 : -0x9.1cc5605e87e2p-14
+        constexpr
+        const double y0_i3_6=-5.5617594760137183465543e-04;
+        // x^7 : +0x9.3a1838e7a4458p-16
+        constexpr
+        const double y0_i3_7=+1.4079181064958023301102e-04;
+        // x^8 : -0xf.1d7a5f0af47ep-19
+        constexpr
+        const double y0_i3_8=-2.8829857801928614516838e-05;
+        // x^9 : +0xb.459f04036ee98p-20
+        constexpr
+        const double y0_i3_9=+1.0749776493719942577708e-05;
+        // x^10 : -0x8.4eadce497c7a8p-21
+        constexpr
+        const double y0_i3_10=-3.9612481909630230749353e-06;
+        // x^11 : +0xb.86a3d6bd0e4dp-23
+        constexpr
+        const double y0_i3_11=+1.3739988186394175969306e-06;
+        // x^12 : -0x8.112abed20d168p-24
+        constexpr
+        const double y0_i3_12=-4.8083415585335915438606e-07;
+        // x^13 : +0xb.6661825bace7p-26
+        constexpr
+        const double y0_i3_13=+1.6987212557327338514996e-07;
+        // x^14 : -0x8.17773bdc019b8p-27
+        constexpr
+        const double y0_i3_14=-6.0287588192497810673542e-08;
+        // x^15 : +0xb.a5ebd1df328fp-29
+        constexpr
+        const double y0_i3_15=+2.1696332050054635600370e-08;
+        // x^16 : -0x8.6cd676154da3p-30
+        constexpr
+        const double y0_i3_16=-7.8465299859340416241355e-09;
+        // x^17 : +0xa.ccc13d1016e68p-32
+        constexpr
+        const double y0_i3_17=+2.5145298768576495072879e-09;
+        // x^18 : -0xd.f3bf65586b568p-34
+        constexpr
+        const double y0_i3_18=-8.1212138869839136598263e-10;
+        // x^19 : +0x9.74db07eb1e32p-34
+        constexpr
+        const double y0_i3_19=+5.5043883311910698324971e-10;
+        // x^20 : -0x8.7bae5fdc512bp-35
+        constexpr
+        const double y0_i3_20=-2.4689156250779901466718e-10;
+        // x^ : +0xa.8p-2
+        constexpr
+        const double y0_i3_x0=+2.6250000000000000000000e+00;
+
+        constexpr static const double ci[]={
+            y0_i3_20, y0_i3_19, y0_i3_18, y0_i3_17, y0_i3_16,
+            y0_i3_15, y0_i3_14, y0_i3_13, y0_i3_12, y0_i3_11, y0_i3_10,
+            y0_i3_9, y0_i3_8, y0_i3_7, y0_i3_6, y0_i3_5, y0_i3_4, y0_i3_3
+        };
+        vf_type xrh, xrl;
+        d_ops::add12cond(xrh, xrl, xc, -y0_i3_x0);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y0_i3_2, y0_i3_1);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y0_i3_0h, y0_i3_0l);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0x9.8p-1
+    constexpr
+    const double y0_i4_r=+4.7500000000000000000000e+00;
+    msk=(xc >= y0_i3_r)  & (xc <= y0_i4_r);
+    if (_T::any_of_v(msk)) {
+        // [3.25;4.75] [15;15]
+        // shifted [-0.70767843723297119140625;0.79232156276702880859375] [17;17]
+        // [-0.70767843723297119140625, 0.79232156276702880859375] : | p - f | <= 2^-65.90625
+        // coefficients for y0_i4 generated by sollya
+        // x^1 h: -0xc.e1a12b509506p-5
+        constexpr
+        const double y0_i4_1h=-4.0254267177502423002977e-01;
+        // x^1 l: -0xd.211fe559ae0ap-61
+        constexpr
+        const double y0_i4_1l=-5.6939665408019283511565e-18;
+        // x^2 : +0xd.04e49481b3f78p-8
+        constexpr
+        const double y0_i4_2=+5.0855909592158236864901e-02;
+        // x^3 : +0xe.fb6acdfa875e8p-8
+        constexpr
+        const double y0_i4_3=+5.8523822105170243690342e-02;
+        // x^4 : -0xe.08b7ee2cc0b3p-11
+        constexpr
+        const double y0_i4_4=-6.8525666771111822667129e-03;
+        // x^5 : -0x8.f195e277c543p-12
+        constexpr
+        const double y0_i4_5=-2.1835188740493864309467e-03;
+        // x^6 : +0xc.cc13b28c52018p-16
+        constexpr
+        const double y0_i4_6=+1.9526940245498400155165e-04;
+        // x^7 : +0xd.5960ff677f57p-18
+        constexpr
+        const double y0_i4_7=+5.0922913807036548363393e-05;
+        // x^8 : -0xa.431b90c02effp-21
+        constexpr
+        const double y0_i4_8=-4.8933693719481284313500e-06;
+        // x^9 : -0x9.d90b445712c6p-25
+        constexpr
+        const double y0_i4_9=-2.9348814994302012224166e-07;
+        // x^10 : -0xb.bb79383ea69fp-29
+        constexpr
+        const double y0_i4_10=-2.1853145986653325763315e-08;
+        // x^11 : +0xa.29758e12dc438p-29
+        constexpr
+        const double y0_i4_11=+1.8928106867840794536847e-08;
+        // x^12 : -0xf.b5b8b0b7144ap-32
+        constexpr
+        const double y0_i4_12=-3.6577343475612441665157e-09;
+        // x^13 : +0xd.2cf27da5cfc9p-34
+        constexpr
+        const double y0_i4_13=+7.6691940870018196440261e-10;
+        // x^14 : -0xc.a1e3b6a586308p-36
+        constexpr
+        const double y0_i4_14=-1.8382533572296433588247e-10;
+        // x^15 : +0xc.456e1f0c44e68p-38
+        constexpr
+        const double y0_i4_15=+4.4642407619530769083865e-11;
+        // x^16 : -0xf.1da2286079588p-40
+        constexpr
+        const double y0_i4_16=-1.3747699613737514555825e-11;
+        // x^17 : +0xb.57c0a8a446eb8p-42
+        constexpr
+        const double y0_i4_17=+2.5790503717255544684247e-12;
+        // x^18 : +0xf.2dc3613056c6p-43
+        constexpr
+        const double y0_i4_18=+1.7256255099223973945683e-12;
+        // x^19 : +0xf.d4b9cc81c474p-47
+        constexpr
+        const double y0_i4_19=+1.1248573674676210591891e-13;
+        // x^20 : -0xd.4e94bcd218188p-44
+        constexpr
+        const double y0_i4_20=-7.5641293366122783112802e-13;
+        // x^ h: +0xf.d4a9a6cc2b4ep-2
+        constexpr
+        const double y0_i4_x0h=+3.9576784193148579760191e+00;
+        // x^ m: -0xf.83573c021c27p-57
+        constexpr
+        const double y0_i4_x0m=-1.0764340697562706032789e-16;
+        // x^ l: +0xd.016973bceb52p-112
+        constexpr
+        const double y0_i4_x0l=+2.5047711399617118050168e-33;
+
+        constexpr static const double ci[]={
+            y0_i4_20, y0_i4_19, y0_i4_18, y0_i4_17, y0_i4_16,
+            y0_i4_15, y0_i4_14, y0_i4_13, y0_i4_12, y0_i4_11, y0_i4_10,
+            y0_i4_9, y0_i4_8, y0_i4_7, y0_i4_6, y0_i4_5, y0_i4_4, y0_i4_3
+        };
+        vf_type xrh, xrl;
+        d_ops::add122cond(xrh, xrl, xc, -y0_i4_x0h, -y0_i4_x0m);
+        d_ops::add122cond(xrh, xrl, -y0_i4_x0l, xrh, xrl);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y0_i4_2);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y0_i4_1h, y0_i4_1l);
+        d_ops::unorm_mul22(ph, pl, ph, pl, xrh, xrl);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<double, _T>::vdf_type
+cftal::math::spec_func_core<double, _T>::
+__j0y0_phase_corr_k(arg_t<vf_type> xr2h,
+                    arg_t<vf_type> xr2l,
+                    arg_t<vf_type> xrh,
+                    arg_t<vf_type> xrl)
+{
+    constexpr
+    const double a0_c1=-1.2500000000000000000000e-01;
+    constexpr
+    const double a0_c3_h=+6.5104166666666671292596e-02;
+    constexpr
+    const double a0_c3_l=-4.6259292689999999998733e-18;
+    constexpr
+    const double a0_c5_h=-2.0957031249999999444888e-01;
+    constexpr
+    const double a0_c5_l=-5.5511151230000000001060e-18;
+    constexpr
+    const double a0_c7_h=+1.6380658830915177937015e+00;
+    constexpr
+    const double a0_c7_l=+6.3441315693000000002756e-17;
+    constexpr
+    const double a0_c9_h=-2.3475127749972873658635e+01;
+    constexpr
+    const double a0_c9_l=+3.9474596431099999998990e-16;
+    constexpr
+    const double a0_c11_h=+5.3564051951061594536441e+02;
+    constexpr
+    const double a0_c11_l=+1.0335167065600999999650e-14;
+    constexpr
+    const double a0_c13_h=-1.7837279688947477552574e+04;
+    constexpr
+    const double a0_c13_l=+1.6790671417346369999700e-12;
+    constexpr
+    const double a0_c15_h=+8.1673784219107672106475e+05;
+    constexpr
+    const double a0_c15_l=-3.8805107275644936000081e-11;
+
+    static_cast<void>(a0_c5_l);
+    static_cast<void>(a0_c7_l);
+    static_cast<void>(a0_c9_l);
+    static_cast<void>(a0_c11_l);
+    static_cast<void>(a0_c13_l);
+    static_cast<void>(a0_c15_h);
+    static_cast<void>(a0_c15_l);
+    constexpr const static double ci[]={
+        /* a0_c15, */ a0_c13_h, a0_c11_h, a0_c9_h, a0_c7_h
+    };
+    vf_type p=horner(xr2h, ci);
+    vf_type ph, pl;
+    horner_comp_quick_dpc_s0(ph, pl, xr2h, p, a0_c5_h, a0_c5_l);
+    horner_comp_quick_dpc_si(ph, pl, xr2h, ph, pl, a0_c3_h, a0_c3_l);
+
+    d_ops::mul22(ph, pl, xr2h, xr2l, ph, pl);
+    d_ops::add122(ph, pl, a0_c1, ph, pl);
+    d_ops::mul22(ph, pl, xrh, xrl, ph, pl);
+    return vdf_type(ph, pl);
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<double, _T>::vdf_type
+cftal::math::spec_func_core<double, _T>::
+__j0y0_amplitude_corr_k(arg_t<vf_type> xr2h, arg_t<vf_type> xr2l)
+{
+    constexpr
+    const double b0_c0=+1.0000000000000000000000e+00;
+    constexpr
+    const double b0_c2=-6.2500000000000000000000e-02;
+    constexpr
+    const double b0_c4=+1.0351562500000000000000e-01;
+    constexpr
+    const double b0_c6=-5.4284667968750000000000e-01;
+    constexpr
+    const double b0_c8=+5.8486995697021479999160e+00;
+    constexpr
+    const double b0_c10=-1.0688679397106169999959e+02;
+    constexpr
+    const double b0_c12=+2.9681429378427570000554e+03;
+    constexpr
+    const double b0_c14=-1.1653847969683609999691e+05;
+    // constexpr
+    // const double b0_c16=+6.1484514628788009999880e+06;
+    constexpr const static double ci[]={
+        /* b0_c16, */ b0_c14, b0_c12, b0_c10, b0_c8, b0_c6, b0_c4, b0_c2
+    };
+    vf_type beta=horner2(xr2h, vf_type(xr2h*xr2h),ci);
+    static_cast<void>(xr2l);
+    vf_type bh, bl;
+    d_ops::mul122(bh, bl, beta, xr2h, xr2l);
+    d_ops::add122(bh, bl, b0_c0, bh, bl);
+    return vdf_type(bh, bl);
+}
+
+template <typename _T>
+typename cftal::math::spec_func_core<double, _T>::vf_type
+cftal::math::spec_func_core<double, _T>::
+__y1_singular_k(arg_t<vf_type> xc)
+{
+    vf_type r=0;
+    // x^ : +0xcp-4
+    constexpr
+    const double y1_i0_r=+7.5000000000000000000000e-01;
+    if (_T::any_of_v(xc < y1_i0_r)) {
+        // [12;12]
+        // [0, 0.75] : | p - f | <= 2^-72.6875
+        // coefficients for j1 generated by sollya
+        // x^1 : +0x8p-4
+        constexpr
+        const double j1z1=+5.0000000000000000000000e-01;
+        // x^3 : -0x8p-7
+        constexpr
+        const double j1z3=-6.2500000000000000000000e-02;
+        // x^5 : +0xa.aaaaaaaaaaaap-12
+        constexpr
+        const double j1z5=+2.6041666666666660884255e-03;
+        // x^7 : -0xe.38e38e38dfe5p-18
+        constexpr
+        const double j1z7=-5.4253472222209520492604e-05;
+        // x^9 : +0xb.60b60b5905bdp-24
+        constexpr
+        const double j1z9=+6.7816840267107568686518e-07;
+        // x^11 : -0xc.22e4404c151d8p-31
+        constexpr
+        const double j1z11=-5.6514029094566818030946e-09;
+        // x^13 : +0x9.3f15e0bb5c6ep-38
+        constexpr
+        const double j1z13=+3.3638307576017311882757e-11;
+        // x^15 : -0xa.7cd4eb9f1d2cp-46
+        constexpr
+        const double j1z15=-1.4903809965601590510453e-13;
+        // [13;13]
+        // [0, 0.75] : | p - f | <= 2^-68.625
+        // coefficients for y1_r generated by sollya
+        // x^1 h: -0x9.dadb014541ebp-5
+        constexpr
+        const double y1r1h=-3.0796575782920621033867e-01;
+        // x^1 l: -0x8.19b86f675d59p-59
+        constexpr
+        const double y1r1l=-1.4052076355591673554272e-17;
+        // x^3 : +0xa.ed6d80a2a0f58p-7
+        constexpr
+        const double y1r3=+8.5370719728650776292334e-02;
+        // x^5 : -0x9.81d7394ff96f8p-11
+        constexpr
+        const double y1r5=-4.6421827664715189717959e-03;
+        // x^7 : +0xe.c0157bd2b4cdp-17
+        constexpr
+        const double y1r7=+1.1253607036590951837908e-04;
+        // x^9 : -0xd.148c10de03818p-23
+        constexpr
+        const double y1r9=-1.5592887682717630693836e-06;
+        // x^11 : +0xf.1094a3125a438p-30
+        constexpr
+        const double y1r11=+1.4030158538940729858144e-08;
+        // x^13 : -0xc.31416e34db5e8p-37
+        constexpr
+        const double y1r13=-8.8711419376389649799246e-11;
+        // x^15 : +0xe.72e6ca92d43c8p-45
+        constexpr
+        const double y1r15=+4.1066056427919538175287e-13;
+
+        // y1(x) = 2/pi*(f(x) + (j1(x) * log(x) - 1/x));
+        // y1(x) = 2/pi*(scale_down * f(x) +
+        //               j1(x) * scale_down * log(x)
+        //               -1,0/x/scale_down)*scale_up;
+        // y1(x) = 2/pi*(scale_down * f(x) +
+        //               j1(x) * scale_down * log(x)
+        //               -1,0/(x*scale_up))*scale_up
+        // scaling is required near zero to avoid nans
+        // in the calculation of the sum
+        const double scale_down=0x1p-54;
+        const double scale_up=0x1p54;
+
+        constexpr static const double j1coeffs[]={
+            j1z15, j1z13, j1z11, j1z9, j1z7, j1z5
+        };
+        vf_type x2=xc*xc;
+        vf_type j1p=horner(x2, j1coeffs);
+        vf_type j1h, j1l;
+        horner_comp_quick(j1h, j1l, x2, j1p, j1z3, j1z1);
+        vf_type t;
+        d_ops::mul12(j1h, t, j1h, xc);
+        j1l= j1l*xc + t;
+
+        constexpr static const double y1rcoeffs[]={
+            y1r15, y1r13, y1r11, y1r9, y1r7, y1r5, y1r3
+        };
+        vf_type y1rp=horner(x2, y1rcoeffs);
+        vf_type y1rh, y1rl;
+        horner_comp_quick_dpc_s0(y1rh, y1rl, x2, y1rp, y1r1h, y1r1l);
+        d_ops::mul122(y1rh, y1rl, xc, y1rh, y1rl);
+
+        y1rh *= scale_down;
+        y1rl *= scale_down;
+
+        vdf_type ln_x=base_type::__log_tbl_k12(xc);
+        ln_x[0] *=scale_down;
+        ln_x[1] *=scale_down;
+
+        vf_type y1h, y1l;
+        vdf_type neg_inv_x;
+        d_ops::rcp12(neg_inv_x[0], neg_inv_x[1], -(xc*scale_up));
+        d_ops::unorm_mul22(y1h, y1l, j1h, j1l, ln_x[0], ln_x[1]);
+        d_ops::add22cond(y1h, y1l, y1h, y1l, neg_inv_x[0], neg_inv_x[1]);
+        d_ops::add22cond(y1h, y1l, y1h, y1l, y1rh, y1rl);
+        using ctbl=impl::d_real_constants<d_real<double>, double>;
+        d_ops::unorm_mul22(y1h, y1l, y1h, y1l, ctbl::m_2_pi[0], ctbl::m_2_pi[1]);
+        r = (y1h + y1l)*scale_up;
+    }
+    // x^ : +0xap-3
+    constexpr
+    const double y1_i1_r=+1.2500000000000000000000e+00;
+    vmf_type msk=(xc >= y1_i0_r)  & (xc < y1_i1_r);
+    if (_T::any_of_v(msk)) {
+        // [0.75;1.25] [21;21]
+        // shifted [-0.25;0.25] [21;21]
+        // [-0.25, 0.25] : | p - f | <= 2^-61.40625
+        // coefficients for y1_i1 generated by sollya
+        // x^0 h: -0xc.7fd903eb35cap-4
+        constexpr
+        const double y1_i1_0h=-7.8121282130028868451177e-01;
+        // x^0 l: -0x9.3c009b9794c5p-58
+        constexpr
+        const double y1_i1_0l=-3.2038206372641654932001e-17;
+        // x^1 : +0xd.e959265a6b58p-4
+        constexpr
+        const double y1_i1_1=+8.6946978551596565409909e-01;
+        // x^2 : -0xd.e959265a6b578p-5
+        constexpr
+        const double y1_i1_2=-4.3473489275798277153839e-01;
+        // x^3 : +0x8.cdbb636c8b518p-4
+        constexpr
+        const double y1_i1_3=+5.5022753560543369300007e-01;
+        // x^4 : -0x9.f682d1496a348p-4
+        constexpr
+        const double y1_i1_4=-6.2268335106513206245182e-01;
+        // x^5 : +0x9.fc89384272d5p-4
+        constexpr
+        const double y1_i1_5=+6.2415430046455822044038e-01;
+        // x^6 : -0xa.056caac1c0b4p-4
+        constexpr
+        const double y1_i1_6=-6.2632433606999615705035e-01;
+        // x^7 : +0xa.116d235acdcf8p-4
+        constexpr
+        const double y1_i1_7=+6.2925447283202007309200e-01;
+        // x^8 : -0xa.18e057e7acefp-4
+        constexpr
+        const double y1_i1_8=-6.3107332551845352064390e-01;
+        // x^9 : +0xa.1dccb2e2b0468p-4
+        constexpr
+        const double y1_i1_9=+6.3227529408597293869576e-01;
+        // x^10 : -0xa.214bd391aefap-4
+        constexpr
+        const double y1_i1_10=-6.3312895435495741836007e-01;
+        // x^11 : +0xa.23dedd813e828p-4
+        constexpr
+        const double y1_i1_11=+6.3375746274314848083264e-01;
+        // x^12 : -0xa.25d30eb1ea6ep-4
+        constexpr
+        const double y1_i1_12=-6.3423448314884067755770e-01;
+        // x^13 : +0xa.2712c98a542p-4
+        constexpr
+        const double y1_i1_13=+6.3453940130899155747102e-01;
+        // x^14 : -0xa.27b1bd89e8f3p-4
+        constexpr
+        const double y1_i1_14=-6.3469099081572433185272e-01;
+        // x^15 : +0xa.2d6512d3f60e8p-4
+        constexpr
+        const double y1_i1_15=+6.3608271937062321743639e-01;
+        // x^16 : -0xa.38f69d16adf2p-4
+        constexpr
+        const double y1_i1_16=-6.3890706408244257730189e-01;
+        // x^17 : +0xa.0090b1d551eb8p-4
+        constexpr
+        const double y1_i1_17=+6.2513799158215987983311e-01;
+        // x^18 : -0x9.7f5b74ebd163p-4
+        constexpr
+        const double y1_i1_18=-5.9359307930306992595604e-01;
+        // x^19 : +0xb.01cebfef856fp-4
+        constexpr
+        const double y1_i1_19=+6.8794131255011925496490e-01;
+        // x^20 : -0xe.7191d41c65d78p-4
+        constexpr
+        const double y1_i1_20=-9.0272696357566484248736e-01;
+        // x^21 : +0xa.0ac12f9943b18p-4
+        constexpr
+        const double y1_i1_21=+6.2762564271200138588114e-01;
+        // x^ : +0x8p-3
+        constexpr
+        const double y1_i1_x0=+1.0000000000000000000000e+00;
+
+        constexpr static const double ci[]={
+            y1_i1_21, y1_i1_20, y1_i1_19, y1_i1_18, y1_i1_17, y1_i1_16,
+            y1_i1_15, y1_i1_14, y1_i1_13, y1_i1_12, y1_i1_11, y1_i1_10,
+            y1_i1_9, y1_i1_8, y1_i1_7, y1_i1_6, y1_i1_5, y1_i1_4, y1_i1_3
+        };
+        // sterbenz lemma: subtraction is exact
+        vf_type xrh=xc - y1_i1_x0;
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y1_i1_2, y1_i1_1);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y1_i1_0h, y1_i1_0l);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0x8p-2
+    constexpr
+    const double y1_i2_r=+2.0000000000000000000000e+00;
+    msk=(xc >= y1_i1_r)  & (xc < y1_i2_r);
+    if (_T::any_of_v(msk)) {
+        // [-0.375, 0.375] : | p - f | <= 2^-60.0625
+        // coefficients for y1_i2 generated by sollya
+        // x^0 h: -0xa.9d3d9f86fdb88p-5
+        constexpr
+        const double y1_i2_0h=-3.3169442327191861474844e-01;
+        // x^0 l: -0xf.d0bd9329b54b8p-59
+        constexpr
+        const double y1_i2_0l=-2.7435332968517539628414e-17;
+        // x^1 : +0xa.20eb9f0d9cefp-4
+        constexpr
+        const double y1_i2_1=+6.3303720598360846416597e-01;
+        // x^2 : -0xb.be1ecd67974c8p-7
+        constexpr
+        const double y1_i2_2=-9.1739511771431372921803e-02;
+        // x^3 : +0x9.b8e5382fc5fb8p-9
+        constexpr
+        const double y1_i2_3=+1.8988764866559617455755e-02;
+        // x^4 : -0xd.80149f1e9cd78p-8
+        constexpr
+        const double y1_i2_4=-5.2735604140809903828124e-02;
+        // x^5 : +0x9.0740a024aeba8p-8
+        constexpr
+        const double y1_i2_5=+3.5266913506968679270503e-02;
+        // x^6 : -0xa.7607e5eed8d88p-9
+        constexpr
+        const double y1_i2_6=-2.0431753938667977094079e-02;
+        // x^7 : +0xc.f6fbd269a0868p-10
+        constexpr
+        const double y1_i2_7=+1.2660917966429008699181e-02;
+        // x^8 : -0x8.1155543d71358p-10
+        constexpr
+        const double y1_i2_8=-7.8786213556309627609187e-03;
+        // x^9 : +0x9.fa645b7f84c5p-11
+        constexpr
+        const double y1_i2_9=+4.8721161292085788524497e-03;
+        // x^10 : -0xc.52320152b49p-12
+        constexpr
+        const double y1_i2_10=-3.0080750777134040996330e-03;
+        // x^11 : +0xf.33cedd189a638p-13
+        constexpr
+        const double y1_i2_11=+1.8557586961549952988410e-03;
+        // x^12 : -0x9.5fa281259d09p-13
+        constexpr
+        const double y1_i2_12=-1.1442350307110421732404e-03;
+        // x^13 : +0xb.904f5e84fcb2p-14
+        constexpr
+        const double y1_i2_13=+7.0579291248388771953803e-04;
+        // x^14 : -0xe.3c2f2a8eec56p-15
+        constexpr
+        const double y1_i2_14=-4.3442061461663561243440e-04;
+        // x^15 : +0x8.9aa0fed98158p-15
+        constexpr
+        const double y1_i2_15=+2.6257382496556579826175e-04;
+        // x^16 : -0xa.d4b4493c90fp-16
+        constexpr
+        const double y1_i2_16=-1.6526605144152797105539e-04;
+        // x^17 : +0x8.609243072517p-16
+        constexpr
+        const double y1_i2_17=+1.2782641263393970448500e-04;
+        // x^18 : -0xf.be2c9045272cp-18
+        constexpr
+        const double y1_i2_18=-6.0054273551515726780464e-05;
+        // x^19 : -0xa.62403da7326p-18
+        constexpr
+        const double y1_i2_19=-3.9611025761840303743844e-05;
+        // x^20 : -0x8.2b00193d6155p-18
+        constexpr
+        const double y1_i2_20=-3.1158333795193907220407e-05;
+        // x^21 : +0xf.43932b828a76p-17
+        constexpr
+        const double y1_i2_21=+1.1645480640705738835036e-04;
+        // x^ : +0xdp-3
+        constexpr
+        const double y1_i2_x0=+1.6250000000000000000000e+00;
+        constexpr static const double ci[]={
+            y1_i2_21, y1_i2_20, y1_i2_19, y1_i2_18, y1_i2_17, y1_i2_16,
+            y1_i2_15, y1_i2_14, y1_i2_13, y1_i2_12, y1_i2_11, y1_i2_10,
+            y1_i2_9, y1_i2_8, y1_i2_7, y1_i2_6, y1_i2_5, y1_i2_4, y1_i2_3
+        };
+        // sterbenz lemma: subtraction is exact
+        vf_type xrh=xc - y1_i2_x0;
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y1_i2_2, y1_i2_1);
+        horner_comp_dpc_si(ph, pl, xrh, ph, pl, y1_i2_0h, y1_i2_0l);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    constexpr
+    const double y1_i3_r=+3.2500000000000000000000e+00;
+    msk=(xc >= y1_i2_r)  & (xc < y1_i3_r);
+    if (_T::any_of_v(msk)) {
+        // [2;3.25] [16;16]
+        // shifted [-0.1971413195133209228515625;1.05285871028900146484375] [20;20]
+        // [-0.1971413195133209228515625, 1.05285871028900146484375] : | p - f | <= 2^-63.40625
+        // coefficients for y1_i3 generated by sollya
+        // x^1 h: +0x8.5524221780a58p-4
+        constexpr
+        const double y1_i3_1h=+5.2078641240226752895381e-01;
+        // x^1 l: -0xa.3f98a4843638p-59
+        constexpr
+        const double y1_i3_1l=-1.7778179782286171101554e-17;
+        // x^2 : -0xf.2b7c110bdc79p-7
+        constexpr
+        const double y1_i3_2=-1.1851454574909661698889e-01;
+        // x^3 : -0x8.6957a74991c7p-8
+        constexpr
+        const double y1_i3_3=-3.2857397405286467573227e-02;
+        // x^4 : -0x9.d36f61b943a4p-11
+        constexpr
+        const double y1_i3_4=-4.7978116701033537983001e-03;
+        // x^5 : +0xf.338e3e88d56a8p-11
+        constexpr
+        const double y1_i3_5=+7.4225533327118746809714e-03;
+        // x^6 : -0xa.a14ee2d556618p-12
+        constexpr
+        const double y1_i3_6=-2.5952416884443565113505e-03;
+        // x^7 : +0x8.bd5a57dda1de8p-13
+        constexpr
+        const double y1_i3_7=+1.0668530002713027139000e-03;
+        // x^8 : -0x8.596c3a1e3318p-14
+        constexpr
+        const double y1_i3_8=-5.0960129781003025983832e-04;
+        // x^9 : +0xf.753dc0cfe942p-16
+        constexpr
+        const double y1_i3_9=+2.3586995740711516351268e-04;
+        // x^10 : -0xe.1fd7a760b5ad8p-17
+        constexpr
+        const double y1_i3_10=-1.0776050084030984281807e-04;
+        // x^11 : +0xc.e8c5e09bae36p-18
+        constexpr
+        const double y1_i3_11=+4.9244954563647979272831e-05;
+        // x^12 : -0xb.cae6891415858p-19
+        constexpr
+        const double y1_i3_12=-2.2492561706537047915662e-05;
+        // x^13 : +0xa.c292a3fd892bp-20
+        constexpr
+        const double y1_i3_13=+1.0261583383360986493999e-05;
+        // x^14 : -0x9.c6377972542cp-21
+        constexpr
+        const double y1_i3_14=-4.6607417927645218721187e-06;
+        // x^15 : +0x8.b450329400a48p-22
+        constexpr
+        const double y1_i3_15=+2.0752784533063789490948e-06;
+        // x^16 : -0xe.9591e1e8c913p-24
+        constexpr
+        const double y1_i3_16=-8.6928947208277715606717e-07;
+        // x^17 : +0xa.a91ff585df5p-25
+        constexpr
+        const double y1_i3_17=+3.1771194656993402875237e-07;
+        // x^18 : -0xc.326583773c178p-27
+        constexpr
+        const double y1_i3_18=-9.0873699439058287753613e-08;
+        // x^19 : +0x9.5544a6c24a0b8p-29
+        constexpr
+        const double y1_i3_19=+1.7384213930487206294822e-08;
+        // x^20 : -0xd.eff6801ae60a8p-33
+        constexpr
+        const double y1_i3_20=-1.6225216733020176261084e-09;
+        // x^ h: +0x8.c9df6a6ff9218p-2
+        constexpr
+        const double y1_i3_x0h=+2.1971413260310170834089e+00;
+        // x^ m: -0xd.e8f28690cdfe8p-58
+        constexpr
+        const double y1_i3_x0m=-4.8259835876454965669631e-17;
+        // x^ l: -0xf.555e7499dfb2p-117
+        constexpr
+        const double y1_i3_x0l=-9.2284980904770750532002e-35;
+
+        constexpr static const double ci[]={
+            y1_i3_20, y1_i3_19, y1_i3_18, y1_i3_17, y1_i3_16,
+            y1_i3_15, y1_i3_14, y1_i3_13, y1_i3_12, y1_i3_11, y1_i3_10,
+            y1_i3_9, y1_i3_8, y1_i3_7, y1_i3_6, y1_i3_5, y1_i3_4
+        };
+        vf_type xrh, xrl;
+        d_ops::add122cond(xrh, xrl, xc, -y1_i3_x0h, -y1_i3_x0m);
+        d_ops::add122cond(xrh, xrl, -y1_i3_x0l, xrh, xrl);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y1_i3_3, y1_i3_2);
+        horner_comp_dpc_si(ph, pl, xrh, ph, pl, y1_i3_1h, y1_i3_1l);
+        d_ops::unorm_mul22(ph, pl, ph, pl, xrh, xrl);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0x9.8p-1
+    constexpr
+    const double y1_i4_r=+4.7500000000000000000000e+00;
+    msk=(xc >= y1_i3_r)  & (xc <= y1_i4_r);
+    if (_T::any_of_v(msk)) {
+        // [3.25;4.75] [15;15]
+        // shifted [-0.4330228269100189208984375;1.06697714328765869140625] [18;18]
+        // [-0.4330228269100189208984375, 1.06697714328765869140625] : | p - f | <= 2^-64.125
+        // coefficients for y1_i4 generated by sollya
+        // x^0 h: +0xd.55da008f6995p-5
+        constexpr
+        const double y1_i4_0h=+4.1672992810645104189149e-01;
+        // x^0 l: +0xe.3c42e1b096bp-62
+        constexpr
+        const double y1_i4_0l=+3.0868093524486725474324e-18;
+        // x^1 : +0x8.96ec971d2b59p-29
+        constexpr
+        const double y1_i4_1=+1.5999279136418596308008e-08;
+        // x^2 : -0xc.5a2dd7e9cde5p-6
+        constexpr
+        const double y1_i4_2=-1.9300409398348811196300e-01;
+        // x^3 : +0xf.0a382a5fad6f8p-10
+        constexpr
+        const double y1_i4_3=+1.4687421404159404711431e-02;
+        // x^4 : +0xc.62d79154197cp-10
+        constexpr
+        const double y1_i4_4=+1.2095802540920783108014e-02;
+        // x^5 : -0x8.99fd06c019c48p-14
+        constexpr
+        const double y1_i4_5=-5.2499494177170411435968e-04;
+        // x^6 : -0xd.fc57cf848d458p-15
+        constexpr
+        const double y1_i4_6=-4.2681014659643666487795e-04;
+        // x^7 : +0x9.0eb25d902b63p-18
+        constexpr
+        const double y1_i4_7=+3.4551273884781500962508e-05;
+        // x^8 : +0xa.2696530413308p-23
+        constexpr
+        const double y1_i4_8=+1.2100614626996119782906e-06;
+        // x^9 : +0x8.a61d31e3e6938p-23
+        constexpr
+        const double y1_i4_9=+1.0310271952834928524786e-06;
+        // x^10 : -0xd.c7789a8f81cf8p-25
+        constexpr
+        const double y1_i4_10=-4.1065168432043908409109e-07;
+        // x^11 : +0xd.4315027edb6a8p-27
+        constexpr
+        const double y1_i4_11=+9.8809892932443476132034e-08;
+        // x^12 : -0xd.fc55741d65998p-29
+        constexpr
+        const double y1_i4_12=-2.6050356995414196360304e-08;
+        // x^13 : +0xf.7b4458df5993p-31
+        constexpr
+        const double y1_i4_13=+7.2091406420188448608650e-09;
+        // x^14 : -0x8.6e3ebec7b3858p-32
+        constexpr
+        const double y1_i4_14=-1.9629124822795750224572e-09;
+        // x^15 : +0x9.5a2980db3322p-34
+        constexpr
+        const double y1_i4_15=+5.4436944138622550132294e-10;
+        // x^16 : -0xc.0ca692207ffa8p-36
+        constexpr
+        const double y1_i4_16=-1.7534208991607721816191e-10;
+        // x^17 : +0x8.d4fecf37dd4c8p-37
+        constexpr
+        const double y1_i4_17=+6.4261352844116474578262e-11;
+        // x^18 : -0xe.a0c7175df6a4p-40
+        constexpr
+        const double y1_i4_18=-1.3304122959932861281662e-11;
+        // x^19 : -0xc.02a51c355a218p-41
+        constexpr
+        const double y1_i4_19=-5.4616666064009058862486e-12;
+        // x^20 : +0x9.ecae020cd1ae8p-41
+        constexpr
+        const double y1_i4_20=+4.5131537951832963771427e-12;
+        // x^21 : -0xf.f1ff9e4ee8e78p-44
+        constexpr
+        const double y1_i4_21=-9.0638574631142475031700e-13;
+        // x^ h: +0xe.bb6a5535be5c8p-2
+        constexpr
+        const double y1_i4_x0h=+3.6830228151371469103026e+00;
+        // x^ m: +0x8.ec9ef46b6cf4p-56
+        constexpr
+        const double y1_i4_x0m=+1.2384954807844144259185e-16;
+        // x^ l: -0xd.5b63f12dd3c6p-111
+        constexpr
+        const double y1_i4_x0l=-5.1449268442928228436045e-33;
+
+        constexpr static const double ci[]={
+            y1_i4_21, y1_i4_20, y1_i4_19, y1_i4_18, y1_i4_17, y1_i4_16,
+            y1_i4_15, y1_i4_14, y1_i4_13, y1_i4_12, y1_i4_11, y1_i4_10,
+            y1_i4_9, y1_i4_8, y1_i4_7, y1_i4_6, y1_i4_5
+        };
+        vf_type xrh, xrl;
+        d_ops::add122cond(xrh, xrl, xc, -y1_i4_x0h, -y1_i4_x0m);
+        d_ops::add122cond(xrh, xrl, -y1_i4_x0l, xrh, xrl);
+
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp(ph, pl, xrh, p, y1_i4_4, y1_i4_3, y1_i4_2, y1_i4_1);
+        d_ops::unorm_mul22(ph, pl, xrh, xrl, ph, pl);
+        d_ops::add22(ph, pl, y1_i4_0h, y1_i4_0l, ph, pl);
+        r = _T::sel(msk, ph, r);
+    }
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<double, _T>::vdf_type
+cftal::math::spec_func_core<double, _T>::
+__j1y1_phase_corr_k(arg_t<vf_type> xr2h,
+                    arg_t<vf_type> xr2l,
+                    arg_t<vf_type> xrh,
+                    arg_t<vf_type> xrl)
+{
+    constexpr
+    const double a1_c1=+3.7500000000000000000000e-01;
+    constexpr
+    const double a1_c3=-1.6406250000000000000000e-01;
+    constexpr
+    const double a1_c5_h=+3.7089843750000001110223e-01;
+    constexpr
+    const double a1_c5_l=-1.1102230246000000000212e-17;
+    constexpr
+    const double a1_c7_h=-2.3693978445870533811046e+00;
+    constexpr
+    const double a1_c7_l=-1.9032394707900000000225e-16;
+    constexpr
+    const double a1_c9=+3.0624011993408203125000e+01;
+    constexpr
+    const double a1_c11_h=-6.5918522182377898843697e+02;
+    constexpr
+    const double a1_c11_l=-3.1005501196804000000324e-14;
+    constexpr
+    const double a1_c13_h=+2.1156314045527808048064e+04;
+    constexpr
+    const double a1_c13_l=-1.3992226181121969999522e-12;
+    constexpr
+    const double a1_c15_h=-9.4434660954805475194007e+05;
+    constexpr
+    const double a1_c15_l=+2.3283064365386964000079e-11;
+
+    static_cast<void>(a1_c5_l);
+    static_cast<void>(a1_c7_l);
+    static_cast<void>(a1_c11_l);
+    static_cast<void>(a1_c13_l);
+    static_cast<void>(a1_c15_h);
+    static_cast<void>(a1_c15_l);
+    constexpr const static double ci[]={
+        /* a0_c15, */ a1_c13_h, a1_c11_h, a1_c9, a1_c7_h
+    };
+    vf_type p=horner(xr2h, ci);
+    vf_type ph, pl;
+    horner_comp_quick_dpc_s0(ph, pl, xr2h, p, a1_c5_h, a1_c5_l);
+    horner_comp_quick_si(ph, pl, xr2h, ph, pl, a1_c3);
+
+    d_ops::mul22(ph, pl, xr2h, xr2l, ph, pl);
+    d_ops::add122(ph, pl, a1_c1, ph, pl);
+    d_ops::mul22(ph, pl, xrh, xrl, ph, pl);
+    return vdf_type(ph, pl);
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<double, _T>::vdf_type
+cftal::math::spec_func_core<double, _T>::
+__j1y1_amplitude_corr_k(arg_t<vf_type> xr2h, arg_t<vf_type> xr2l)
+{
+    constexpr
+    const double b1_c0=+1.0000000000000000000000e+00;
+    constexpr
+    const double b1_c2=+1.8750000000000000000000e-01;
+    constexpr
+    const double b1_c4=-1.9335937500000000000000e-01;
+    constexpr
+    const double b1_c6=+8.0529785156250000000000e-01;
+    constexpr
+    const double b1_c8=-7.7399539947509770000840e+00;
+    constexpr
+    const double b1_c10=+1.3276182425022130000059e+02;
+    constexpr
+    const double b1_c12=-3.5433036653660240000718e+03;
+    constexpr
+    const double b1_c14=+1.3539422856918089999567e+05;
+    // constexpr
+    // const double b1_c16=-7.0031415747524329999578e+06;
+    constexpr const static double ci[]={
+        /* b1_c16, */ b1_c14, b1_c12, b1_c10, b1_c8, b1_c6, b1_c4, b1_c2
+    };
+    vf_type beta=horner2(xr2h, vf_type(xr2h*xr2h), ci);
+    static_cast<void>(xr2l);
+    vf_type bh, bl;
+    d_ops::mul122(bh, bl, beta, xr2h, xr2l);
+    d_ops::add122(bh, bl, b1_c0, bh, bl);
+    return vdf_type(bh, bl);
+}
+
+template <typename _T>
+typename cftal::math::spec_func_core<double, _T>::vf_type
+cftal::math::spec_func_core<double, _T>::
+__j01y01_large_phase_amplitude_k(arg_t<vf_type> xc,
+                                 bool calc_yn,
+                                 bool calc_jy1)
+{
+    scoped_ftz_daz_mode ftz_daz_mode;
+
+    vf_type rec_x_h, rec_x_l;
+    d_ops::div12(rec_x_h, rec_x_l, 1.0, xc);
+    vf_type xr2h, xr2l;
+    d_ops::sqr22(xr2h, xr2l, rec_x_h, rec_x_l);
+
+    // x^ : +0xc.c42299ea1b288p-4
+    constexpr
+    const double sqrt_two_over_pi_h=+7.9788456080286540572644e-01;
+    // x^ : -0xe.5e069875fe8a8p-58
+    constexpr
+    const double sqrt_two_over_pi_l=-4.9846544045554600887898e-17;
+    // select amplitude correction for j0/y0 or j1/y1
+    vdf_type amp_cor= calc_jy1 == false ?
+        __j0y0_amplitude_corr_k(xr2h, xr2l) :
+        __j1y1_amplitude_corr_k(xr2h, xr2l);
+
+    auto rsqrt_xc=rsqrt12_k(xc);
+    vf_type amph, ampl;
+    d_ops::mul22(amph, ampl,
+                 amp_cor[0], amp_cor[1], rsqrt_xc[0], rsqrt_xc[1]);
+    d_ops::mul22(amph, ampl, amph, ampl,
+                 sqrt_two_over_pi_h, sqrt_two_over_pi_l);
+
+    vf_type xrh, xrm, xrl;
+    vi2_type q=__reduce_trig_arg(xrh, xrm, xrl, xc);
+
+    vf_type xsh, xsl;
+    // x^ : +0xc.90fdaa22168cp-4
+    constexpr
+    const double pi_4_0=+7.8539816339744827899949e-01;
+    // x^ : +0x8.d313198a2e038p-58
+    constexpr
+    const double pi_4_1=+3.0616169978683830179344e-17;
+    // x^ : -0xf.8cbb5bf6c7dep-114
+    constexpr
+    const double pi_4_2=-7.4869245242958491647175e-34;
+    using t_ops=t_real_ops<vf_type>;
+    // if x >= 0 subtract pi/4
+    // if x < 0 add pi/4 and subtract -1 from q
+    vmf_type is_x_lt_z = xrh < 0.0;
+    vmi2_type i_is_x_lt_z = _T::vmf_to_vmi2(is_x_lt_z);
+    vf_type d0=_T::sel(is_x_lt_z, pi_4_0, -pi_4_0);
+    vf_type d1=_T::sel(is_x_lt_z, pi_4_1, -pi_4_1);
+    vf_type d2=_T::sel(is_x_lt_z, pi_4_2, -pi_4_2);
+    q = _T::sel(i_is_x_lt_z, q - 1, q);
+    t_ops::add33cond(xrh, xrm, xrl,
+                     xrh, xrm, xrl,
+                     d0, d1, d2);
+    // select phase  correction for j0/y0 or j1/y1
+    vdf_type phase_cor= calc_jy1 == false ?
+        __j0y0_phase_corr_k(xr2h, xr2l, rec_x_h, rec_x_l) :
+        __j1y1_phase_corr_k(xr2h, xr2l, rec_x_h, rec_x_l);
+    t_ops::add233cond(xrh, xrm, xrl, phase_cor[0], phase_cor[1],
+                      xrh, xrm, xrl);
+    t_ops::renormalize32(xsh, xsl, xrh, xrm, xrl);
+    // perform argument reduction on xsh, xsl again
+    vf_type xh, xl;
+    auto q2=__reduce_trig_arg_tiny(xh, xl, xsh, xsl);
+    if (calc_jy1 == false) {
+        q2 += q;
+    } else {
+        // -1 for the subtraction of only pi/4 above, i.e. q2 is 1 too large
+        q2 += q-1;
+    }
+    // q2 &= 3;
+
+    vdf_type phase;
+    // select sinus or cosinus for y0/1 or j0/1 calculation
+    vdf_type* psin = calc_yn ? &phase : nullptr;
+    vdf_type* pcos = calc_yn ? nullptr : &phase;
+    base_type::__sin_cos_k(xh, xl, q2, psin, pcos);
+
+    vf_type rh, rl;
+    d_ops::mul22(rh, rl, phase[0], phase[1], amph, ampl);
+    return rh;
+}
+
+
+template <typename _T>
+typename cftal::math::spec_func_core<double, _T>::vf_type
+cftal::math::spec_func_core<double, _T>::
+j0_k(arg_t<vf_type> xc)
+{
+    vf_type xa=abs(xc);
+    vf_type r;
+    const double small_threshold=j01y01_data<double>::_max_small_j0;
+    const vmf_type xa_small = xa <= small_threshold;
+    bool any_small;
+    if ((any_small=_T::any_of_v(xa_small))==true) {
+        r= __j01y01_small_tbl_k(xa,
+                                j01y01_data<double>::_j0_coeffs,
+                                j01y01_data<double>::_max_small_j0);
+    }
+    if (!_T::all_of_v(xa_small)) {
+        vf_type rl= __j01y01_large_phase_amplitude_k(xa, false, false);
+        if (any_small) {
+            r = _T::sel(xa_small, r, rl);
+        } else {
+            r = rl;
+        }
+    }
+    return r;
+}
+
+template <typename _T>
+typename cftal::math::spec_func_core<double, _T>::vf_type
+cftal::math::spec_func_core<double, _T>::
+j1_k(arg_t<vf_type> xc)
+{
+    vf_type xa=abs(xc);
+    vf_type r;
+    const double small_threshold=j01y01_data<double>::_max_small_j1;
+    const vmf_type xa_small = xa <= small_threshold;
+    bool any_small;
+    if ((any_small=_T::any_of_v(xa_small))==true) {
+        r= __j01y01_small_tbl_k(xa,
+                                j01y01_data<double>::_j1_coeffs,
+                                j01y01_data<double>::_max_small_j1);
+    }
+    if (!_T::all_of_v(xa_small)) {
+        vf_type rl= __j01y01_large_phase_amplitude_k(xa, false, true);
+        if (any_small) {
+            r = _T::sel(xa_small, r, rl);
+        } else {
+            r = rl;
+        }
+    }
+    // r=r*copysign(1.0, xc);
+    r = mulsign(r, xc);
+    return r;
+}
+
+template <typename _T>
+typename cftal::math::spec_func_core<double, _T>::vf_type
+cftal::math::spec_func_core<double, _T>::
+y0_k(arg_t<vf_type> xc)
+{
+    vf_type xa=abs(xc);
+    vf_type r;
+    const double small_threshold=j01y01_data<double>::_max_small_y0;
+    const double singular_threshold=4.75;
+    bool select_required=false;
+    if (_T::any_of_v(xa <= singular_threshold)==true) {
+        r=__y0_singular_k(xa);
+        select_required=true;
+    }
+    vmf_type msk_xa_small=(xa > singular_threshold) &
+                          (xa <= small_threshold);
+    if (_T::any_of_v(msk_xa_small)==true) {
+        vf_type rs= __j01y01_small_tbl_k(xa,
+                                         j01y01_data<double>::_y0_coeffs,
+                                         j01y01_data<double>::_max_small_y0);
+        if (select_required==false) {
+            r=rs;
+            select_required=true;
+        } else {
+            r=_T::sel(msk_xa_small, rs, r);
+        }
+    }
+    vmf_type msk_xa_large= xa > small_threshold;
+    if (_T::any_of_v(msk_xa_large)) {
+        vf_type rl= __j01y01_large_phase_amplitude_k(xa, true, false);
+        if (select_required==false) {
+            r = rl;
+        } else {
+            r = _T::sel(msk_xa_large, rl, r);
+        }
+    }
+    return r;
+}
+
+template <typename _T>
+typename cftal::math::spec_func_core<double, _T>::vf_type
+cftal::math::spec_func_core<double, _T>::
+y1_k(arg_t<vf_type> xc)
+{
+    vf_type xa=abs(xc);
+    vf_type r;
+    const double small_threshold=j01y01_data<double>::_max_small_y1;
+    const double singular_threshold=4.75;
+    bool select_required=false;
+    if (_T::any_of_v(xa <= singular_threshold)==true) {
+        r=__y1_singular_k(xa);
+        select_required=true;
+    }
+    vmf_type msk_xa_small=(xa > singular_threshold) &
+                          (xa <= small_threshold);
+    if (_T::any_of_v(msk_xa_small)==true) {
+        vf_type rs= __j01y01_small_tbl_k(xa,
+                                         j01y01_data<double>::_y1_coeffs,
+                                         j01y01_data<double>::_max_small_y1);
+        if (select_required==false) {
+            r=rs;
+            select_required=true;
+        } else {
+            r=_T::sel(msk_xa_small, rs, r);
+        }
+    }
+    vmf_type msk_xa_large= xa > small_threshold;
+    if (_T::any_of_v(msk_xa_large)) {
+        vf_type rl= __j01y01_large_phase_amplitude_k(xa, true, true);
+        if (select_required==false) {
+            r = rl;
+        } else {
+            r = _T::sel(msk_xa_large, rl, r);
+        }
+    }
+    return r;
+}
 
 // Local Variables:
 // mode: c++

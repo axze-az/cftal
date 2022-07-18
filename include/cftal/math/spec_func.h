@@ -57,7 +57,21 @@ namespace cftal {
             vf_type
             lgamma(arg_t<vf_type> xc, vi_type* signp);
 
+            static
+            vf_type
+            j0(arg_t<vf_type> xc);
 
+            static
+            vf_type
+            j1(arg_t<vf_type> xc);
+
+            static
+            vf_type
+            y0(arg_t<vf_type> xc);
+
+            static
+            vf_type
+            y1(arg_t<vf_type> xc);
         };
 
     }
@@ -155,6 +169,69 @@ lgamma(arg_t<vf_type> xc, vi_type* signp)
     }
     return lg;
 }
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
+j0(arg_t<vf_type> xc)
+{
+#if 0
+    auto f=[](_FLOAT_T xx)->_FLOAT_T {
+        return ::j0(xx);
+    };
+    vf_type y= base_type::call_scalar_func(xc, f);
+#else
+    vf_type y=base_type::j0_k(xc);
+    y = _TRAITS_T::sel(isnan(xc), xc, y);
+    y = _TRAITS_T::sel_zero_or_val(isinf(xc), y);
+#endif
+    return y;
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
+j1(arg_t<vf_type> xc)
+{
+    vf_type y=base_type::j1_k(xc);
+    y = _TRAITS_T::sel(isnan(xc), xc, y);
+    y = _TRAITS_T::sel_zero_or_val(isinf(xc), y);
+    return y;
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
+y0(arg_t<vf_type> xc)
+{
+#if 0
+    auto f=[](_FLOAT_T xx)->_FLOAT_T {
+        return ::y0(xx);
+    };
+    vf_type y= base_type::call_scalar_func(xc, f);
+#else
+    vf_type y=base_type::y0_k(xc);
+    y = _TRAITS_T::sel(isnan(xc), xc, y);
+    y = _TRAITS_T::sel_zero_or_val(isinf(xc), y);
+    y = _TRAITS_T::sel(xc < 0, _TRAITS_T::nan(), y);
+    y = _TRAITS_T::sel(xc == 0, -_TRAITS_T::pinf(), y);
+#endif
+    return y;
+}
+
+template <typename _FLOAT_T, typename _TRAITS_T>
+typename cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::vf_type
+cftal::math::spec_func<_FLOAT_T, _TRAITS_T>::
+y1(arg_t<vf_type> xc)
+{
+    vf_type y=base_type::y1_k(xc);
+    y = _TRAITS_T::sel(isnan(xc), xc, y);
+    y = _TRAITS_T::sel_zero_or_val(isinf(xc), y);
+    y = _TRAITS_T::sel(xc < 0, _TRAITS_T::nan(), y);
+    y = _TRAITS_T::sel(xc == 0, -_TRAITS_T::pinf(), y);
+    return y;
+}
+
 
 // Local Variables:
 // mode: c++

@@ -17,6 +17,14 @@ set (CSRCS
     erfc_data_f64.cc
     lngamma_data_f32.cc
     lngamma_data_f64.cc
+    j0_data_f64.cc
+    y0_data_f64.cc
+    j1_data_f64.cc
+    y1_data_f64.cc
+    j0_data_f32.cc
+    y0_data_f32.cc
+    j1_data_f32.cc
+    y1_data_f32.cc
     math_func_f32.cc
     math_func_f64.cc
     math_common.cc

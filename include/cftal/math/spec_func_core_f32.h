@@ -138,6 +138,100 @@ namespace cftal {
             vf_type
             lgamma_k(arg_t<vf_type> xc, vi_type* signp);
 
+            static
+            vdf_type
+            rsqrt12_k(arg_t<vf_type> xc);
+
+            static
+            void
+            __check_tbl_idx(arg_t<vi_type> idx,
+                            arg_t<vf_type> xb,
+                            const float* t,
+                            int32_t span);
+
+            // handle small arguments up to ~64
+            static
+            vf_type
+            __j01y01_small_tbl_k(arg_t<vf_type> xc,
+                                 const float tb[j01y01_data<float>::ENTRIES],
+                                 float max_small_x);
+
+            static
+            vi_type
+            __reduce_trig_arg(vf_type& xrh, vf_type& xrm, vf_type& xrl,
+                              arg_t<vf_type> x);
+
+            static
+            vi_type
+            __reduce_trig_arg_tiny(vf_type& xrh, vf_type& xrl,
+                                   arg_t<vf_type> xh,
+                                   arg_t<vf_type> xl);
+
+            // handle the interval [0, 4.75]
+            static
+            vf_type
+            __y0_singular_k(arg_t<vf_type> xc);
+
+            // xr2 square of reciprocal
+            // xr reciprocal
+            static
+            vdf_type
+            __j0y0_phase_corr_k(arg_t<vf_type> xr2h,
+                                arg_t<vf_type> xr2l,
+                                arg_t<vf_type> xrh,
+                                arg_t<vf_type> xrl);
+
+            // xr2 square of reciprocal
+            static
+            vdf_type
+            __j0y0_amplitude_corr_k(arg_t<vf_type> xr2,
+                                    arg_t<vf_type> xr2l);
+
+            // handle the interval [0, 4.75]
+            static
+            vf_type
+            __y1_singular_k(arg_t<vf_type> xc);
+
+            // xr2 square of reciprocal
+            // xr reciprocal
+            static
+            vdf_type
+            __j1y1_phase_corr_k(arg_t<vf_type> xr2h,
+                                arg_t<vf_type> xr2l,
+                                arg_t<vf_type> xrh,
+                                arg_t<vf_type> xrl);
+
+            // xr2 square of reciprocal
+            static
+            vdf_type
+            __j1y1_amplitude_corr_k(arg_t<vf_type> xr2,
+                                    arg_t<vf_type> xr2l);
+
+
+            // handle large arguments greater than ~128 to inf
+            // calc_y01 select the calculation of y0/y1 or j0/j1
+            // calc_j01 selects j0/y0 or j1/y1
+            static
+            vf_type
+            __j01y01_large_phase_amplitude_k(arg_t<vf_type> xc,
+                                             bool calc_y01,
+                                             bool calc_jy1);
+
+            static
+            vf_type
+            j0_k(arg_t<vf_type> xc);
+
+            static
+            vf_type
+            j1_k(arg_t<vf_type> xc);
+
+            static
+            vf_type
+            y0_k(arg_t<vf_type> xc);
+
+            static
+            vf_type
+            y1_k(arg_t<vf_type> xc);
         };
 
     }
@@ -616,7 +710,7 @@ erfc_tbl_k(arg_t<vf_type> xc)
 #else
     vf_type xscale=x * erfc_table::SCALE;
     vf_type xi= rint(xscale);
-    vi_type idx= _T::cvt_f_to_i(xscale);    
+    vi_type idx= _T::cvt_f_to_i(xscale);
     vf_type xi0= xi*erfc_table::INV_SCALE;
 #endif
     idx = max(min(idx, vi_type(erfc_table::COUNT-1)), vi_type(0));
@@ -1377,6 +1471,1298 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         *signp = sgn;
     return lgh;
 #endif
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vdf_type
+cftal::math::spec_func_core<float, _T>::
+rsqrt12_k(arg_t<vf_type> xc)
+{
+    vf_type y=1.0f/sqrt(xc);
+    vf_type z=impl::root_r2::calc_z<float, true>(y, xc);
+    vf_type d=-0.5f*z;
+    vf_type yh, yl;
+    d_ops::add12(yh, yl, y, y*d);
+    // d_ops::muladd12(yh, yl, y, y, d);
+    return vdf_type(yh, yl);
+}
+
+template <typename _T>
+void
+cftal::math::spec_func_core<float, _T>::
+__check_tbl_idx(arg_t<vi_type> idx, arg_t<vf_type> xb,
+                const float* t, int32_t span)
+{
+#if 1
+    static_cast<void>(idx);
+    static_cast<void>(xb);
+    static_cast<void>(t);
+    static_cast<void>(span);
+#else
+    for (uint32_t i=0; i<size(idx); ++i) {
+        float xi=extract(xb, i);
+        int32_t idxi=extract(idx, i);
+        int32_t idxm1=idxi-span;
+        if (float > 0) {
+            float xl= t[idxm1];
+            if (xl > xi) {
+                std::cerr << std::setprecision(22) << xi
+                          << " has too large idx " << idxi
+                          << " xl= "
+                          << xl << std::endl;
+            }
+        }
+        float xr=t[idxi];
+        if (xr < xi) {
+            std::cerr << std::setprecision(22) << xi
+                        << " has too small idx " << idxi
+                        << " xr= "
+                        << xr << std::endl;
+        }
+    }
+#endif
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+__j01y01_small_tbl_k(arg_t<vf_type> xc,
+                     const float tb[j01y01_data<float>::ENTRIES],
+                     float max_small_x)
+{
+    using tbl_t=j01y01_data<float>;
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    vf_type xb=min(xc, vf_type(max_small_x));
+    vf_type xb_idx=xb*ctbl::m_2_pi[0];
+    vi_type idx=cvt_rz<vi_type>(xb_idx);
+    idx *= tbl_t::ELEMS;
+    auto lk=make_variable_lookup_table<float>(idx);
+    vf_type xr_i0=lk.from(tb);
+    vi_type i0=idx;
+    vi_type i1=idx+tbl_t::ELEMS;
+    i1 = min(i1, vi_type(tbl_t::ELEMS*(tbl_t::INTERVALS-1)));
+    vmf_type xb_in_i1= xb > xr_i0;
+    vmi_type sel_i1 = _T::vmf_to_vmi(xb_in_i1);
+    idx=_T::sel(sel_i1, i1, i0);
+    // and update the lookup table
+    __check_tbl_idx(idx, xb, tb, tbl_t::ELEMS);
+    lk=make_variable_lookup_table<float>(idx);
+    // read the negative interval centers
+    const vf_type x0h=lk.from(tb + tbl_t::NEG_X_OFFS_H);
+    const vf_type x0m=lk.from(tb + tbl_t::NEG_X_OFFS_M);
+    const vf_type x0l=lk.from(tb + tbl_t::NEG_X_OFFS_L);
+    vf_type xrh, xrl;
+    d_ops::add122cond(xrh, xrl, xb, x0h, x0m);
+    d_ops::add122cond(xrh, xrl, x0l, xrh, xrl);
+
+    vf_type xr2=xrh*xrh;
+    // produce a polynomial of order POLY_ORD-3
+    vf_type p=horner2_idx<tbl_t::POLY_ORD-3>(
+        xrh, xr2, lk, tb+tbl_t::NEG_X_OFFS_L+1);
+    vf_type rh, rl;
+    vf_type c3=lk.from(tb+tbl_t::C3);
+    vf_type c2=lk.from(tb+tbl_t::C2);
+    vf_type c1h=lk.from(tb+tbl_t::C1H);
+    vf_type c1l=lk.from(tb+tbl_t::C1L);
+    vf_type c0h=lk.from(tb+tbl_t::C0H);
+    vf_type c0l=lk.from(tb+tbl_t::C0L);
+    horner_comp_quick(rh, rl, xrh, p, c3, c2);
+    horner_comp_quick_dpc_si(rh, rl, xrh, rh, rl, c1h, c1l);
+    d_ops::unorm_mul22(rh, rl, rh, rl, xrh, xrl);
+    d_ops::add22(rh, rl, c0h, c0l, rh, rl);
+    return rh;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vi_type
+cftal::math::spec_func_core<float, _T>::
+__reduce_trig_arg(vf_type& xrh, vf_type& xrm, vf_type& xrl,
+                  arg_t<vf_type> x)
+{
+#if 0
+    return payne_hanek_pi_over_2<float, _T>::rem3(xrh, xrm, xrl, x);
+#else
+    using ctbl=impl::d_real_constants<d_real<float>, float>;
+    constexpr const float large_arg=0x1p18f;
+    vmf_type v_large_arg= vf_type(large_arg) < abs(x);
+
+    xrh = 0.0f;
+    xrm = 0.0f;
+    xrl = 0.0f;
+    vi_type q=0;
+    if (__likely(!_T::all_of_v(v_large_arg))) {
+        vf_type x_2_pi=x* ctbl::m_2_pi[0];
+        vf_type fn= rint(x_2_pi);
+        constexpr const float m_pi_2_h=+1.5707963705063e+00f;
+        constexpr const float m_pi_2_m=-4.3711388286738e-08f;
+        constexpr const float m_pi_2_l=-1.7151245100059e-15f;
+        vf_type f0, f1, f2, f3, f4;
+        d_ops::mul12(f0, f1, fn, -m_pi_2_h);
+        d_ops::mul12(f2, f3, fn, -m_pi_2_m);
+        f4 = fn * -m_pi_2_l;
+        // normalize f0 - f4 into p0..p2
+        vf_type p0, p1, p2, t;
+        p0 = f0;
+        d_ops::add12(p1, t, f1, f2);
+        p2 = f4 + t + f3;
+        d_ops::add12(p0, p1, p0, p1);
+        d_ops::add12(p1, p2, p1, p2);
+        vf_type t0, t1, t2;
+        using t_ops=t_real_ops<vf_type>;
+        t_ops::add133cond(t0, t1, t2, x, p0, p1, p2);
+        t_ops::renormalize3(xrh, xrm, xrl, t0, t1, t2);
+        // fn = base_type::template __fmod<4>(fn);
+        q=_T::cvt_f_to_i(fn);
+    }
+    if (_T::any_of_v(v_large_arg)) {
+        // reduce the large arguments
+        vf_type xrhl, xrml, xrll;
+        // mask out not required values to avoid subnormals
+        vf_type xl=_T::sel_val_or_zero(v_large_arg, x);
+        vi_type ql=payne_hanek_pi_over_2<float, _T>::
+            rem3(xrhl, xrml, xrll, xl);
+        q = _T::sel(_T::vmf_to_vmi(v_large_arg), ql, q);
+        xrh = _T::sel(v_large_arg, xrhl, xrh);
+        xrm = _T::sel(v_large_arg, xrml, xrm);
+        xrl = _T::sel(v_large_arg, xrll, xrl);
+    }
+    return q;
+#endif
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vi_type
+cftal::math::spec_func_core<float, _T>::
+__reduce_trig_arg_tiny(vf_type& xrh, vf_type& xrl,
+                        arg_t<vf_type> x, arg_t<vf_type> xl)
+{
+    // x^ : +0xc.90fdbp-3f
+    constexpr
+    const float pi_2_0=+1.5707963705e+00f;
+    // x^ : -0xb.bbd2ep-28f
+    constexpr
+    const float pi_2_1=-4.3711388287e-08f;
+    // x^ : -0xf.72cedp-53f
+    constexpr
+    const float pi_2_2=-1.7151245100e-15f;
+    constexpr
+    static const float ci[]={
+        -pi_2_0, -pi_2_1, -pi_2_2
+    };
+    using ctbl = impl::d_real_constants<d_real<float>, float>;
+    vf_type x_2_pi=x* ctbl::m_2_pi[0];
+    vf_type fn= rint(x_2_pi);
+    vf_type sh=x, sl=xl;
+    for (auto b=std::cbegin(ci), e=std::cend(ci); b!=e; ++b) {
+#if 1
+        const float m_pi_2=*b;
+        d_ops::add122cond(sh, sl, m_pi_2*fn, sh, sl);
+#else
+        vf_type th, tl;
+        const float m_pi_2=*b;
+        d_ops::mul12(th, tl, fn, m_pi_2);
+        d_ops::add22cond(sh, sl, sh, sl, th, tl);
+#endif
+    }
+    xrh = sh;
+    xrl = sl;
+    // works only up to 2^31
+    vi_type q=_T::cvt_f_to_i(x_2_pi);
+    return q;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+__y0_singular_k(arg_t<vf_type> xc)
+{
+    vf_type r;
+    // x^ : +0xcp-4
+    constexpr
+    const float y0_i0_r=+7.5000000000e-01f;
+    if (_T::any_of_v(xc < y0_i0_r)) {
+        // x^ h: -0xe.d6d81p-7f
+        constexpr
+        const float log_half_plus_euler_gamma_h=-1.1593151838e-01f;
+        // x^ l: +0xb.abe15p-32f
+        constexpr
+        const float log_half_plus_euler_gamma_l=+2.7174611450e-09f;
+        // [6;6]
+        // [2.93873587705571876992184134305561419454666389193021880377187926569604314863681793212890625e-39, 0.75] : | p - f | <= 2^-35.9375
+        // coefficients for j0 generated by sollya
+        // x^0 : +0x8p-3f
+        constexpr
+        const float j0z0=+1.0000000000e+00f;
+        // x^2 : -0x8p-5f
+        constexpr
+        const float j0z2=-2.5000000000e-01f;
+        // x^4 : +0xf.ffffcp-10f
+        constexpr
+        const float j0z4=+1.5624996275e-02f;
+        // x^6 : -0xe.38a05p-15f
+        constexpr
+        const float j0z6=-4.3399646529e-04f;
+        // x^8 : +0xe.0d003p-21f
+        constexpr
+        const float j0z8=+6.6999359660e-06f;
+        // [6;6]
+        // [2.93873587705571876992184134305561419454666389193021880377187926569604314863681793212890625e-39, 0.75] : | p - f | <= 2^-33.75
+        // coefficients for y0_r generated by sollya
+        // x^2 : +0x8p-5f
+        constexpr
+        const float y0r2=+2.5000000000e-01f;
+        // x^4 : -0xb.ffffdp-9f
+        constexpr
+        const float y0r4=-2.3437494412e-02f;
+        // x^6 : +0xd.093dfp-14f
+        constexpr
+        const float y0r6=+7.9566048225e-04f;
+        // x^8 : -0xe.a2fb1p-20f
+        constexpr
+        const float y0r8=-1.3958590898e-05f;
+
+        constexpr static const float j0coeffs[]={
+            j0z8, j0z6, j0z4//, j0z2
+        };
+        vf_type x2=xc*xc;
+        vf_type j0p=horner(x2, j0coeffs)/*x2*/;
+        vf_type j0h, j0l;
+        horner_comp_quick(j0h, j0l, x2, j0p, j0z2, j0z0);
+        // d_ops::add12(j0h, j0l, j0z0, j0p);
+        constexpr static const float y0rcoeffs[]={
+            y0r8, y0r6, y0r4
+        };
+        vf_type y0rp=horner(x2, y0rcoeffs);
+        vf_type y0rh, y0rl;
+        horner_comp_quick(y0rh, y0rl, x2, y0rp, y0r2);
+        d_ops::mul122(y0rh, y0rl, x2, y0rh, y0rl);
+        vdf_type ln_x=base_type::__log_tbl_k12(xc);
+
+        // y0(x) = 2/pi*(f(x) + (log(0.5*x) + euler_gamma) * j0(x));
+        // y0(x) = 2/pi*(f(x) + (log(x) + log(0.5)+euler_gamma) * j0(x));
+        using ctbl=impl::d_real_constants<d_real<float>, float>;
+        vf_type y0h, y0l;
+        // |log(3/4) ~ -0.28| > |log_half_plus_euler_gamma_h|
+        d_ops::add22(y0h, y0l,
+                     ln_x[0], ln_x[1],
+                     log_half_plus_euler_gamma_h,
+                     log_half_plus_euler_gamma_l);
+        d_ops::unorm_mul22(y0h, y0l, j0h, j0l, y0h, y0l);
+        d_ops::add22cond(y0h, y0l, y0rh, y0rl, y0h, y0l);
+        d_ops::unorm_mul22(y0h, y0l, y0h, y0l, ctbl::m_2_pi[0], ctbl::m_2_pi[1]);
+        r = y0h + y0l;
+    }
+    // x^ : +0xap-3f
+    constexpr
+    const float y0_i1_r=+1.2500000000e+00f;
+    vmf_type msk=(xc >= y0_i0_r)  & (xc < y0_i1_r);
+    if (_T::any_of_v(msk)) {
+        // [0.75;1.25] [8;8]
+        // shifted [-0.14357696473598480224609375;0.35642302036285400390625] [8;8]
+        // [-0.14357696473598480224609375, 0.35642302036285400390625] : | p - f | <= 2^-33.6875
+        // coefficients for y0_i1 generated by sollya
+        // x^1 h: +0xe.121b9p-4f
+        constexpr
+        const float y0_i1_1h=+8.7942081690e-01f;
+        // x^1 l: -0xf.95e24p-30f
+        constexpr
+        const float y0_i1_1l=-1.4515112667e-08f;
+        // x^2 : -0xf.bf1c5p-5f
+        constexpr
+        const float y0_i1_2=-4.9207893014e-01f;
+        // x^3 : +0xe.1d8ap-6f
+        constexpr
+        const float y0_i1_3=+2.2055292130e-01f;
+        // x^4 : -0xe.78c6dp-6f
+        constexpr
+        const float y0_i1_4=-2.2612161934e-01f;
+        // x^5 : +0xe.02ff8p-6f
+        constexpr
+        const float y0_i1_5=+2.1893298626e-01f;
+        // x^6 : -0xd.1d145p-6f
+        constexpr
+        const float y0_i1_6=-2.0489986241e-01f;
+        // x^7 : +0xc.b27p-6f
+        constexpr
+        const float y0_i1_7=+1.9839096069e-01f;
+        // x^8 : -0xc.8853bp-6f
+        constexpr
+        const float y0_i1_8=-1.9582073390e-01f;
+        // x^9 : +0xa.ff492p-6f
+        constexpr
+        const float y0_i1_9=+1.7183139920e-01f;
+        // x^10 : -0xb.31079p-7f
+        constexpr
+        const float y0_i1_10=-8.7433762848e-02f;
+        // x^ h: +0xe.4c176p-4f
+        constexpr
+        const float y0_i1_x0h=+8.9357697964e-01f;
+        // x^ m: -0xe.57d03p-30f
+        constexpr
+        const float y0_i1_x0m=-1.3357978723e-08f;
+        // x^ l: +0x8.f54e9p-55f
+        constexpr
+        const float y0_i1_x0l=+2.4864083066e-16f;
+
+        constexpr static const float ci[]={
+            y0_i1_10, y0_i1_9, y0_i1_8, y0_i1_7,
+            y0_i1_6, y0_i1_5, y0_i1_4, y0_i1_3
+        };
+        vf_type xrh, xrl;
+        d_ops::add122cond(xrh, xrl, xc, -y0_i1_x0h, -y0_i1_x0m);
+        d_ops::add122cond(xrh, xrl, -y0_i1_x0l, xrh, xrl);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y0_i1_2);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y0_i1_1h, y0_i1_1l);
+        d_ops::unorm_mul22(ph, pl, ph, pl, xrh, xrl);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0x8p-2f
+    constexpr
+    const float y0_i2_r=+2.0000000000e+00f;
+    msk=(xc >= y0_i1_r)  & (xc < y0_i2_r);
+    if (_T::any_of_v(msk)) {
+        // [1.25;2] [7;7]
+        // shifted [-0.375;0.375] [8;8]
+        // [-0.375, 0.375] : | p - f | <= 2^-33.09375
+        // coefficients for y0_i2 generated by sollya
+        // x^0 h: +0xd.b9b15p-5f
+        constexpr
+        const float y0_i2_0h=+4.2891755700e-01f;
+        // x^0 l: +0x8.23bcap-31f
+        constexpr
+        const float y0_i2_0l=+3.7902951888e-09f;
+        // x^1 : +0xa.9d3dap-5f
+        constexpr
+        const float y0_i2_1=+3.3169442415e-01f;
+        // x^2 : -0xa.20eb9p-5f
+        constexpr
+        const float y0_i2_2=-3.1651857495e-01f;
+        // x^3 : +0xf.a8264p-9f
+        constexpr
+        const float y0_i2_3=+3.0579753220e-02f;
+        // x^4 : -0x9.b9a0dp-11f
+        constexpr
+        const float y0_i2_4=-4.7485888936e-03f;
+        // x^5 : +0xa.cd7fep-10f
+        constexpr
+        const float y0_i2_5=+1.0549543425e-02f;
+        // x^6 : -0xb.fc4fp-11f
+        constexpr
+        const float y0_i2_6=-5.8523342013e-03f;
+        // x^7 : +0xb.d5f04p-12f
+        constexpr
+        const float y0_i2_7=+2.8895745054e-03f;
+        // x^8 : -0xe.89919p-13f
+        constexpr
+        const float y0_i2_8=-1.7745821970e-03f;
+        // x^9 : +0x8.6e6a6p-13f
+        constexpr
+        const float y0_i2_9=+1.0292127263e-03f;
+        // x^ : +0xdp-3f
+        constexpr
+        const float y0_i2_x0=+1.6250000000e+00f;
+        constexpr static const float ci[]={
+            y0_i2_9, y0_i2_8, y0_i2_7, y0_i2_6, y0_i2_5, y0_i2_4, y0_i2_3
+        };
+        vf_type xrh, xrl;
+        d_ops::add12cond(xrh, xrl, xc, -y0_i2_x0);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y0_i2_2, y0_i2_1);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y0_i2_0h, y0_i2_0l);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0xdp-2f
+    constexpr
+    const float y0_i3_r=+3.2500000000e+00f;
+    msk=(xc >= y0_i2_r)  & (xc < y0_i3_r);
+    if (_T::any_of_v(msk)) {
+        // [2;3.25] [7;7]
+        // shifted [-0.625;0.625] [8;8]
+        // [-0.625, 0.625] : | p - f | <= 2^-32.296875
+        // coefficients for y0_i3 generated by sollya
+        // x^0 h: +0xf.3f718p-5f
+        constexpr
+        const float y0_i3_0h=+4.7649455070e-01f;
+        // x^0 l: +0xc.32b36p-31f
+        constexpr
+        const float y0_i3_0l=+5.6801594539e-09f;
+        // x^1 : -0xc.b3fdfp-6f
+        constexpr
+        const float y0_i3_1=-1.9848583639e-01f;
+        // x^2 : -0xc.d4042p-6f
+        constexpr
+        const float y0_i3_2=-2.0044043660e-01f;
+        // x^3 : +0xd.c1702p-8f
+        constexpr
+        const float y0_i3_3=+5.3732879460e-02f;
+        // x^4 : +0xf.abd91p-11f
+        constexpr
+        const float y0_i3_4=+7.6519926079e-03f;
+        // x^5 : -0x9.d6899p-13f
+        constexpr
+        const float y0_i3_5=-1.2009321945e-03f;
+        // x^6 : -0x9.15a22p-14f
+        constexpr
+        const float y0_i3_6=-5.5447418708e-04f;
+        // x^7 : +0x9.392cdp-16f
+        constexpr
+        const float y0_i3_7=+1.4073700004e-04f;
+        // x^8 : -0x8.baa66p-18f
+        constexpr
+        const float y0_i3_8=-3.3298878407e-05f;
+        // x^9 : +0xc.50bc1p-20f
+        constexpr
+        const float y0_i3_9=+1.1744851690e-05f;
+        // x^ : +0xa.8p-2f
+        constexpr
+        const float y0_i3_x0=+2.6250000000e+00f;
+
+        constexpr static const float ci[]={
+            y0_i3_9, y0_i3_8, y0_i3_7, y0_i3_6, y0_i3_5, y0_i3_4, y0_i3_3
+        };
+        vf_type xrh, xrl;
+        d_ops::add12cond(xrh, xrl, xc, -y0_i3_x0);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y0_i3_2, y0_i3_1);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y0_i3_0h, y0_i3_0l);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0x9.8p-1f
+    constexpr
+    const float y0_i4_r=+4.7500000000e+00f;
+    msk=(xc >= y0_i3_r)  & (xc <= y0_i4_r);
+    if (_T::any_of_v(msk)) {
+        // [3.25;4.75] [7;7]
+        // shifted [-0.70767843723297119140625;0.79232156276702880859375] [8;8]
+        // [-0.70767843723297119140625, 0.79232156276702880859375] : | p - f | <= 2^-34.53125
+        // coefficients for y0_i4 generated by sollya
+        // x^1 h: -0xc.e1a13p-5f
+        constexpr
+        const float y0_i4_1h=-4.0254268050e-01f;
+        // x^1 l: +0x9.5f9a5p-30f
+        constexpr
+        const float y0_i4_1l=+8.7297040707e-09f;
+        // x^2 : +0xd.04e49p-8f
+        constexpr
+        const float y0_i4_2=+5.0855908543e-02f;
+        // x^3 : +0xe.fb6adp-8f
+        constexpr
+        const float y0_i4_3=+5.8523822576e-02f;
+        // x^4 : -0xe.08b68p-11f
+        constexpr
+        const float y0_i4_4=-6.8525560200e-03f;
+        // x^5 : -0x8.f197cp-12f
+        constexpr
+        const float y0_i4_5=-2.1835258231e-03f;
+        // x^6 : +0xc.cb9a6p-16f
+        constexpr
+        const float y0_i4_6=+1.9524115487e-04f;
+        // x^7 : +0xd.5af4dp-18f
+        constexpr
+        const float y0_i4_7=+5.0946418924e-05f;
+        // x^8 : -0xa.3d6dp-21f
+        constexpr
+        const float y0_i4_8=-4.8827860155e-06f;
+        // x^9 : -0xa.50e3dp-25f
+        constexpr
+        const float y0_i4_9=-3.0744004675e-07f;
+        // x^ h: +0xf.d4a9ap-2f
+        constexpr
+        const float y0_i4_x0h=+3.9576783180e+00f;
+        // x^ m: +0xd.9856ap-27f
+        constexpr
+        const float y0_i4_x0m=+1.0129117811e-07f;
+        // x^ l: -0x8.7c1acp-52f
+        constexpr
+        const float y0_i4_x0l=-1.8840003274e-15f;
+
+        constexpr static const float ci[]={
+            y0_i4_9, y0_i4_8, y0_i4_7, y0_i4_6, y0_i4_5, y0_i4_4, y0_i4_3
+        };
+        vf_type xrh, xrl;
+        d_ops::add122cond(xrh, xrl, xc, -y0_i4_x0h, -y0_i4_x0m);
+        d_ops::add122cond(xrh, xrl, -y0_i4_x0l, xrh, xrl);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y0_i4_2);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y0_i4_1h, y0_i4_1l);
+        d_ops::unorm_mul22(ph, pl, ph, pl, xrh, xrl);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vdf_type
+cftal::math::spec_func_core<float, _T>::
+__j0y0_phase_corr_k(arg_t<vf_type> xr2h,
+                    arg_t<vf_type> xr2l,
+                    arg_t<vf_type> xrh,
+                    arg_t<vf_type> xrl)
+{
+    constexpr
+    const float a0_c1=-1.2500000000e-01f;
+    constexpr
+    const float a0_c3_h=+6.5104164183e-02f;
+    constexpr
+    const float a0_c3_l=+2.4835269397e-09f;
+    constexpr
+    const float a0_c5_h=-2.0957031846e-01f;
+    constexpr
+    const float a0_c5_l=+5.9604645664e-09f;
+    constexpr
+    const float a0_c7_h=+1.6380659342e+00f;
+    constexpr
+    const float a0_c7_l=-5.1089696029e-08f;
+    constexpr
+    const float a0_c9_h=-2.3475128174e+01f;
+    constexpr
+    const float a0_c9_l=+4.2385525489e-07f;
+    constexpr
+    const float a0_c11_h=+5.3564050293e+02f;
+    constexpr
+    const float a0_c11_l=+1.6580928786e-05f;
+    constexpr
+    const float a0_c13_h=-1.7837279297e+04f;
+    constexpr
+    const float a0_c13_l=-3.9207248483e-04f;
+    constexpr
+    const float a0_c15_h=+8.1673781250e+05f;
+    constexpr
+    const float a0_c15_l=+2.9691075906e-02f;
+
+    static_cast<void>(a0_c3_l);
+    static_cast<void>(a0_c5_l);
+    static_cast<void>(a0_c7_l);
+    static_cast<void>(a0_c9_l);
+    static_cast<void>(a0_c11_h);
+    static_cast<void>(a0_c11_l);
+    static_cast<void>(a0_c13_h);
+    static_cast<void>(a0_c13_l);
+    static_cast<void>(a0_c15_h);
+    static_cast<void>(a0_c15_l);
+    constexpr const static float ci[]={
+        /* a0_c15, a0_c13_h, a0_c11_h,*/ a0_c9_h, a0_c7_h, a0_c5_h
+    };
+    vf_type p=horner(xr2h, ci);
+    vf_type ph, pl;
+    horner_comp_quick_dpc_s0(ph, pl, xr2h, p, a0_c3_h, a0_c3_l);
+
+    d_ops::mul22(ph, pl, xr2h, xr2l, ph, pl);
+    d_ops::add122cond(ph, pl, a0_c1, ph, pl);
+    d_ops::mul22(ph, pl, xrh, xrl, ph, pl);
+    return vdf_type(ph, pl);
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vdf_type
+cftal::math::spec_func_core<float, _T>::
+__j0y0_amplitude_corr_k(arg_t<vf_type> xr2h, arg_t<vf_type> xr2l)
+{
+    constexpr
+    const float b0_c0=+1.0000000000e+00f;
+    constexpr
+    const float b0_c2=-6.2500000000e-02f;
+    constexpr
+    const float b0_c4=+1.0351562500e-01f;
+    constexpr
+    const float b0_c6=-5.4284667969e-01f;
+    constexpr
+    const float b0_c8=+5.8486995697e+00f;
+    constexpr
+    const float b0_c10=-1.0688679504e+02f;
+    constexpr
+    const float b0_c12=+2.9681428223e+03f;
+    constexpr
+    const float b0_c14=-1.1653847656e+05f;
+    static_cast<void>(b0_c6);
+    static_cast<void>(b0_c8);
+    static_cast<void>(b0_c10);
+    static_cast<void>(b0_c12);
+    static_cast<void>(b0_c14);
+    constexpr const static float ci[]={
+        /* b0_c14, b0_c12, b0_c10, b0_c8,*/ b0_c6, b0_c4, b0_c2
+    };
+    vf_type beta=horner(xr2h, ci);
+    static_cast<void>(xr2l);
+    vf_type bh, bl;
+    d_ops::mul122(bh, bl, beta, xr2h, xr2l);
+    d_ops::add122(bh, bl, b0_c0, bh, bl);
+    return vdf_type(bh, bl);
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+__y1_singular_k(arg_t<vf_type> xc)
+{
+    vf_type r=0;
+    // x^ : +0xcp-4f
+    constexpr
+    const float y1_i0_r=+7.5000000000e-01f;
+    if (_T::any_of_v(xc < y1_i0_r)) {
+        // [6;6]
+        // [0, 0.75] : | p - f | <= 2^-31.0625
+        // coefficients for j1 generated by sollya
+        // x^1 : +0x8p-4f
+        constexpr
+        const float j1z1=+5.0000000000e-01f;
+        // x^3 : -0xf.ffffap-8f
+        constexpr
+        const float j1z3=-6.2499977648e-02f;
+        // x^5 : +0xa.aa6a7p-12f
+        constexpr
+        const float j1z5=+2.6039273944e-03f;
+        // x^7 : -0xe.07d37p-18f
+        constexpr
+        const float j1z7=-5.3522377129e-05f;
+        // [6;7]
+        // [0, 0.75] : | p - f | <= 2^-30.2265625
+        // coefficients for y1_r generated by sollya
+        // x^1 h: -0x9.dadbp-5f
+        constexpr
+        const float y1r1h=-3.0796575546e-01f;
+        // x^1 l: -0x8.0b02p-33f
+        constexpr
+        const float y1r1l=-9.3632834819e-10f;
+        // x^3 : +0xa.ed6cep-7f
+        constexpr
+        const float y1r3=+8.5370644927e-02f;
+        // x^5 : -0x9.81819p-11f
+        constexpr
+        const float y1r5=-4.6415445395e-03f;
+        // x^7 : +0xe.8497cp-17f
+        constexpr
+        const float y1r7=+1.1076309602e-04f;
+
+
+        // y1(x) = 2/pi*(f(x) + (j1(x) * log(x) - 1/x));
+        // y1(x) = 2/pi*(scale_down * f(x) +
+        //               j1(x) * scale_down * log(x)
+        //               -1,0/x/scale_down)*scale_up;
+        // y1(x) = 2/pi*(scale_down * f(x) +
+        //               j1(x) * scale_down * log(x)
+        //               -1,0/(x*scale_up))*scale_up
+        // scaling is required near zero to avoid nans
+        // in the calculation of the sum
+        const float scale_down=0x1p-25f;
+        const float scale_up=0x1p25f;
+
+        constexpr static const float j1coeffs[]={
+            j1z7, j1z5
+        };
+        vf_type x2=xc*xc;
+        vf_type j1p=horner(x2, j1coeffs);
+        vf_type j1h, j1l;
+        horner_comp_quick(j1h, j1l, x2, j1p, j1z3, j1z1);
+        vf_type t;
+        d_ops::mul12(j1h, t, j1h, xc);
+        j1l= j1l*xc + t;
+
+        constexpr static const float y1rcoeffs[]={
+            y1r7, y1r5, y1r3
+        };
+        vf_type y1rp=horner(x2, y1rcoeffs);
+        vf_type y1rh, y1rl;
+        horner_comp_quick_dpc_s0(y1rh, y1rl, x2, y1rp, y1r1h, y1r1l);
+        d_ops::mul122(y1rh, y1rl, xc, y1rh, y1rl);
+
+        y1rh *= scale_down;
+        y1rl *= scale_down;
+
+        vdf_type ln_x=base_type::__log_tbl_k12(xc);
+        ln_x[0] *=scale_down;
+        ln_x[1] *=scale_down;
+
+        vf_type y1h, y1l;
+        vdf_type neg_inv_x;
+        d_ops::rcp12(neg_inv_x[0], neg_inv_x[1], -(xc*scale_up));
+        d_ops::unorm_mul22(y1h, y1l, j1h, j1l, ln_x[0], ln_x[1]);
+        d_ops::add22cond(y1h, y1l, y1h, y1l, neg_inv_x[0], neg_inv_x[1]);
+        d_ops::add22cond(y1h, y1l, y1h, y1l, y1rh, y1rl);
+        using ctbl=impl::d_real_constants<d_real<float>, float>;
+        d_ops::unorm_mul22(y1h, y1l, y1h, y1l, ctbl::m_2_pi[0], ctbl::m_2_pi[1]);
+        r = (y1h + y1l)*scale_up;
+    }
+    // x^ : +0xap-3f
+    constexpr
+    const float y1_i1_r=+1.2500000000e+00f;
+    vmf_type msk=(xc >= y1_i0_r)  & (xc < y1_i1_r);
+    if (_T::any_of_v(msk)) {
+        // [0.75;1.25] [9;9]
+        // shifted [-0.25;0.25] [9;9]
+        // [-0.25, 0.25] : | p - f | <= 2^-29.6640625
+        // coefficients for y1_i1 generated by sollya
+        // x^0 h: -0xc.7fd9p-4f
+        constexpr
+        const float y1_i1_0h=-7.8121280670e-01f;
+        // x^0 l: -0xf.a8622p-30f
+        constexpr
+        const float y1_i1_0l=-1.4582413499e-08f;
+        // x^1 : +0xd.e9593p-4f
+        constexpr
+        const float y1_i1_1=+8.6946982145e-01f;
+        // x^2 : -0xd.e9595p-5f
+        constexpr
+        const float y1_i1_2=-4.3473497033e-01f;
+        // x^3 : +0x8.cdb43p-4f
+        constexpr
+        const float y1_i1_3=+5.5022066832e-01f;
+        // x^4 : -0x9.f6756p-4f
+        constexpr
+        const float y1_i1_4=-6.2267053127e-01f;
+        // x^5 : +0x9.fe4fp-4f
+        constexpr
+        const float y1_i1_5=+6.2458705902e-01f;
+        // x^6 : -0xa.08558p-4f
+        constexpr
+        const float y1_i1_6=-6.2703466415e-01f;
+        // x^7 : +0x9.e062fp-4f
+        constexpr
+        const float y1_i1_7=+6.1728185415e-01f;
+        // x^8 : -0x9.d29d2p-4f
+        constexpr
+        const float y1_i1_8=-6.1391937733e-01f;
+        // x^9 : +0xc.7f587p-4f
+        constexpr
+        const float y1_i1_9=+7.8109019995e-01f;
+        // x^10 : -0xd.0c854p-4f
+        constexpr
+        const float y1_i1_10=-8.1555676460e-01f;
+        // x^ : +0x8p-3f
+        constexpr
+        const float y1_i1_x0=+1.0000000000e+00f;
+
+        constexpr static const float ci[]={
+            y1_i1_10, y1_i1_9, y1_i1_8, y1_i1_7,
+            y1_i1_6, y1_i1_5, y1_i1_4, y1_i1_3
+        };
+        // sterbenz lemma: subtraction is exact
+        vf_type xrh=xc - y1_i1_x0;
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y1_i1_2, y1_i1_1);
+        horner_comp_quick_dpc_si(ph, pl, xrh, ph, pl, y1_i1_0h, y1_i1_0l);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0x8p-2f
+    constexpr
+    const float y1_i2_r=+2.0000000000e+00f;
+    msk=(xc >= y1_i1_r)  & (xc < y1_i2_r);
+    if (_T::any_of_v(msk)) {
+        // [1.25;2] [7;7]
+        // shifted [-0.375;0.375] [9;9]
+        // [-0.375, 0.375] : | p - f | <= 2^-32.453125
+        // coefficients for y1_i2 generated by sollya
+        // x^0 h: -0xa.9d3dap-5f
+        constexpr
+        const float y1_i2_0h=-3.3169442415e-01f;
+        // x^0 l: +0xe.cc2bp-34f
+        constexpr
+        const float y1_i2_0l=+8.6132967425e-10f;
+        // x^1 : +0xa.20ebap-4f
+        constexpr
+        const float y1_i2_1=+6.3303720951e-01f;
+        // x^2 : -0xb.be1edp-7f
+        constexpr
+        const float y1_i2_2=-9.1739512980e-02f;
+        // x^3 : +0x9.b8d9fp-9f
+        constexpr
+        const float y1_i2_3=+1.8988428637e-02f;
+        // x^4 : -0xd.80113p-8f
+        constexpr
+        const float y1_i2_4=-5.2735399455e-02f;
+        // x^5 : +0x9.07f0ap-8f
+        constexpr
+        const float y1_i2_5=+3.5277403891e-02f;
+        // x^6 : -0xa.76ecp-9f
+        constexpr
+        const float y1_i2_6=-2.0438551903e-02f;
+        // x^7 : +0xc.d185fp-10f
+        constexpr
+        const float y1_i2_7=+1.2518017553e-02f;
+        // x^8 : -0xf.f241dp-11f
+        constexpr
+        const float y1_i2_8=-7.7862874605e-03f;
+        // x^9 : +0xb.c42f1p-11f
+        constexpr
+        const float y1_i2_9=+5.7452847250e-03f;
+        // x^10 : -0xe.9603cp-12f
+        constexpr
+        const float y1_i2_10=-3.5610338673e-03f;
+        // x^ : +0xdp-3f
+        constexpr
+        const float y1_i2_x0=+1.6250000000e+00f;
+        constexpr static const float ci[]={
+            y1_i2_10, y1_i2_9, y1_i2_8, y1_i2_7,
+            y1_i2_6, y1_i2_5, y1_i2_4, y1_i2_3
+        };
+        // sterbenz lemma: subtraction is exact
+        vf_type xrh=xc - y1_i2_x0;
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y1_i2_2, y1_i2_1);
+        horner_comp_dpc_si(ph, pl, xrh, ph, pl, y1_i2_0h, y1_i2_0l);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0xdp-2f
+    constexpr
+    const float y1_i3_r=+3.2500000000e+00f;
+    msk=(xc >= y1_i2_r)  & (xc < y1_i3_r);
+    if (_T::any_of_v(msk)) {
+        // [2;3.25] [7;7]
+        // shifted [-0.1971413195133209228515625;1.05285871028900146484375] [9;9]
+        // [-0.1971413195133209228515625, 1.05285871028900146484375] : | p - f | <= 2^-29.8671875
+        // coefficients for y1_i3 generated by sollya
+        // x^1 h: +0x8.55242p-4f
+        constexpr
+        const float y1_i3_1h=+5.2078640461e-01f;
+        // x^1 l: +0xf.71d3cp-31f
+        constexpr
+        const float y1_i3_1l=+7.1919696865e-09f;
+        // x^2 : -0xf.2b7bep-7f
+        constexpr
+        const float y1_i3_2=-1.1851452291e-01f;
+        // x^3 : -0x8.69563p-8f
+        constexpr
+        const float y1_i3_3=-3.2857310027e-02f;
+        // x^4 : -0x9.d45b8p-11f
+        constexpr
+        const float y1_i3_4=-4.7995708883e-03f;
+        // x^5 : +0xf.34af9p-11f
+        constexpr
+        const float y1_i3_5=+7.4247089215e-03f;
+        // x^6 : -0xa.869e2p-12f
+        constexpr
+        const float y1_i3_6=-2.5697876699e-03f;
+        // x^7 : +0xf.b6befp-14f
+        constexpr
+        const float y1_i3_7=+9.5909734955e-04f;
+        // x^8 : -0xa.7de95p-15f
+        constexpr
+        const float y1_i3_8=-3.2018558704e-04f;
+        // x^9 : +0xe.3b5ddp-18f
+        constexpr
+        const float y1_i3_9=+5.4290390835e-05f;
+        // x^ h: +0x8.c9df7p-2f
+        constexpr
+        const float y1_i3_x0h=+2.1971414089e+00f;
+        // x^ m: -0xb.200dcp-27f
+        constexpr
+        const float y1_i3_x0m=-8.2889272335e-08f;
+        // x^ l: +0xb.90b87p-53f
+        constexpr
+        const float y1_i3_x0l=+1.2840078215e-15f;
+        constexpr static const float ci[]={
+            y1_i3_9, y1_i3_8, y1_i3_7, y1_i3_6, y1_i3_5, y1_i3_4
+        };
+        vf_type xrh, xrl;
+        d_ops::add122cond(xrh, xrl, xc, -y1_i3_x0h, -y1_i3_x0m);
+        d_ops::add122cond(xrh, xrl, -y1_i3_x0l, xrh, xrl);
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp_quick(ph, pl, xrh, p, y1_i3_3, y1_i3_2);
+        horner_comp_dpc_si(ph, pl, xrh, ph, pl, y1_i3_1h, y1_i3_1l);
+        d_ops::unorm_mul22(ph, pl, ph, pl, xrh, xrl);
+        r = _T::sel(msk, ph+pl, r);
+    }
+    // x^ : +0x9.8p-1f
+    constexpr
+    const float y1_i4_r=+4.7500000000e+00f;
+    msk=(xc >= y1_i3_r)  & (xc <= y1_i4_r);
+    if (_T::any_of_v(msk)) {
+        // [3.25;4.75] [8;8]
+        // shifted [-0.4330228269100189208984375;1.06697714328765869140625] [7;8]
+        // [-0.4330228269100189208984375, 1.06697714328765869140625] : | p - f | <= 2^-32.890625
+        // coefficients for y1_i4 generated by sollya
+        // x^0 h: +0xd.55dap-5f
+        constexpr
+        const float y1_i4_0h=+4.1672992706e-01f;
+        // x^0 l: +0xa.0865p-33f
+        constexpr
+        const float y1_i4_0l=+1.1679706091e-09f;
+        // x^1 : +0x8.ace9dp-29f
+        constexpr
+        const float y1_i4_1=+1.6159271254e-08f;
+        // x^2 : -0xc.5a2dep-6f
+        constexpr
+        const float y1_i4_2=-1.9300410151e-01f;
+        // x^3 : +0xf.0a383p-10f
+        constexpr
+        const float y1_i4_3=+1.4687421732e-02f;
+        // x^4 : +0xc.62dd6p-10f
+        constexpr
+        const float y1_i4_4=+1.2095889077e-02f;
+        // x^5 : -0x8.9a472p-14f
+        constexpr
+        const float y1_i4_5=-5.2506395150e-04f;
+        // x^6 : -0xd.fef5cp-15f
+        constexpr
+        const float y1_i4_6=-4.2712211143e-04f;
+        // x^7 : +0x9.2d22ap-18f
+        constexpr
+        const float y1_i4_7=+3.5004843085e-05f;
+        // x^8 : +0xb.6eb6dp-23f
+        constexpr
+        const float y1_i4_8=+1.3628574607e-06f;
+        // x^9 : +0xe.7d8d7p-25f
+        constexpr
+        const float y1_i4_9=+4.3184874698e-07f;
+        // x^10 : -0xa.37781p-28f
+        constexpr
+        const float y1_i4_10=-3.8060083085e-08f;
+        // x^ h: +0xe.bb6a5p-2f
+        constexpr
+        const float y1_i4_x0h=+3.6830227375e+00f;
+        // x^ m: +0xa.6b7ccp-27f
+        constexpr
+        const float y1_i4_x0m=+7.7634098261e-08f;
+        // x^ l: -0xd.71361p-52f
+        constexpr
+        const float y1_i4_x0l=-2.9847749113e-15f;
+
+        constexpr static const float ci[]={
+            y1_i4_10, y1_i4_9, y1_i4_8, y1_i4_7, y1_i4_6, y1_i4_5
+        };
+        vf_type xrh, xrl;
+        d_ops::add122cond(xrh, xrl, xc, -y1_i4_x0h, -y1_i4_x0m);
+        d_ops::add122cond(xrh, xrl, -y1_i4_x0l, xrh, xrl);
+
+        vf_type p=horner2(xrh, vf_type(xrh*xrh), ci);
+        vf_type ph, pl;
+        horner_comp(ph, pl, xrh, p, y1_i4_4, y1_i4_3, y1_i4_2, y1_i4_1);
+        d_ops::unorm_mul22(ph, pl, xrh, xrl, ph, pl);
+        d_ops::add22(ph, pl, y1_i4_0h, y1_i4_0l, ph, pl);
+        r = _T::sel(msk, ph, r);
+    }
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vdf_type
+cftal::math::spec_func_core<float, _T>::
+__j1y1_phase_corr_k(arg_t<vf_type> xr2h,
+                    arg_t<vf_type> xr2l,
+                    arg_t<vf_type> xrh,
+                    arg_t<vf_type> xrl)
+{
+    constexpr
+    const float a1_c1=+3.7500000000e-01f;
+    constexpr
+    const float a1_c3=-1.6406250000e-01f;
+    constexpr
+    const float a1_c5_h=+3.7089842558e-01f;
+    constexpr
+    const float a1_c5_l=+1.1920929133e-08f;
+    constexpr
+    const float a1_c7_h=-2.3693978786e+00f;
+    constexpr
+    const float a1_c7_l=+3.4059798537e-08f;
+    constexpr
+    const float a1_c9=+3.0624011993e+01f;
+    constexpr
+    const float a1_c11_h=-6.5918524170e+02f;
+    constexpr
+    const float a1_c11_l=+1.9875440557e-05f;
+    constexpr
+    const float a1_c13_h=+2.1156314453e+04f;
+    constexpr
+    const float a1_c13_l=-4.0759719559e-04f;
+    constexpr
+    const float a1_c15_h=-9.4434662500e+05f;
+    constexpr
+    const float a1_c15_l=+1.5451945364e-02f;
+
+    static_cast<void>(a1_c5_l);
+    static_cast<void>(a1_c7_l);
+    static_cast<void>(a1_c11_h);
+    static_cast<void>(a1_c11_l);
+    static_cast<void>(a1_c13_h);
+    static_cast<void>(a1_c13_l);
+    static_cast<void>(a1_c15_h);
+    static_cast<void>(a1_c15_l);
+    constexpr const static float ci[]={
+        /* a1_c15_h, a1_c13_h, a1_c11_h,*/ a1_c9, a1_c7_h, a1_c5_h
+    };
+    vf_type p=horner(xr2h, ci);
+    vf_type ph, pl;
+    horner_comp_quick(ph, pl, xr2h, p, a1_c3);
+
+    d_ops::mul22(ph, pl, xr2h, xr2l, ph, pl);
+    d_ops::add122(ph, pl, a1_c1, ph, pl);
+    d_ops::mul22(ph, pl, xrh, xrl, ph, pl);
+    return vdf_type(ph, pl);
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vdf_type
+cftal::math::spec_func_core<float, _T>::
+__j1y1_amplitude_corr_k(arg_t<vf_type> xr2h, arg_t<vf_type> xr2l)
+{
+    constexpr
+    const float b1_c0=+1.0000000000e+00f;
+    constexpr
+    const float b1_c2=+1.8750000000e-01f;
+    constexpr
+    const float b1_c4=-1.9335937500e-01f;
+    constexpr
+    const float b1_c6=+8.0529785156e-01f;
+    constexpr
+    const float b1_c8=-7.7399539948e+00f;
+    constexpr
+    const float b1_c10=+1.3276182556e+02f;
+    constexpr
+    const float b1_c12=-3.5433037109e+03f;
+    constexpr
+    const float b1_c14=+1.3539423438e+05f;
+    static_cast<void>(b1_c6);
+    static_cast<void>(b1_c8);
+    static_cast<void>(b1_c10);
+    static_cast<void>(b1_c12);
+    static_cast<void>(b1_c14);
+    constexpr const static float ci[]={
+        /* b1_c14, b1_c12, b1_c10, b1_c8,*/ b1_c6, b1_c4, b1_c2
+    };
+    vf_type beta=horner(xr2h, ci);
+    static_cast<void>(xr2l);
+    vf_type bh, bl;
+    d_ops::mul122(bh, bl, beta, xr2h, xr2l);
+    d_ops::add122(bh, bl, b1_c0, bh, bl);
+    return vdf_type(bh, bl);
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+__j01y01_large_phase_amplitude_k(arg_t<vf_type> xc,
+                                 bool calc_yn,
+                                 bool calc_jy1)
+{
+    scoped_ftz_daz_mode ftz_mode;
+
+    vf_type rec_x_h, rec_x_l;
+    d_ops::div12(rec_x_h, rec_x_l, 1.0, xc);
+    vf_type xr2h, xr2l;
+    d_ops::sqr22(xr2h, xr2l, rec_x_h, rec_x_l);
+
+    // x^ h: +0xc.c422ap-4f
+    constexpr
+    const float sqrt_two_over_pi_h=+7.9788458347e-01f;
+    // x^ l: -0xc.2bc9bp-29f
+    constexpr
+    const float sqrt_two_over_pi_l=-2.2670340272e-08f;
+    // select amplitude correction for j0/y0 or j1/y1
+    vdf_type amp_cor= calc_jy1 == false ?
+        __j0y0_amplitude_corr_k(xr2h, xr2l) :
+        __j1y1_amplitude_corr_k(xr2h, xr2l);
+    auto rsqrt_xc=rsqrt12_k(xc);
+    vf_type amph, ampl;
+    d_ops::mul22(amph, ampl,
+                 amp_cor[0], amp_cor[1], rsqrt_xc[0], rsqrt_xc[1]);
+    d_ops::mul22(amph, ampl, amph, ampl,
+                 sqrt_two_over_pi_h, sqrt_two_over_pi_l);
+
+    vf_type xrh, xrm, xrl;
+    vi_type q=__reduce_trig_arg(xrh, xrm, xrl, xc);
+    vf_type xsh, xsl;
+    // x^ : +0xc.90fdbp-4f
+    constexpr
+    const float pi_4_0=+7.8539818525e-01f;
+    // x^ : -0xb.bbd2ep-29f
+    constexpr
+    const float pi_4_1=-2.1855694143e-08f;
+    // x^ : -0xf.72cedp-54f
+    constexpr
+    const float pi_4_2=-8.5756225500e-16f;
+    using t_ops=t_real_ops<vf_type>;
+    // if x >= 0 subtract pi/4
+    // if x < 0 add pi/4 and subtract -1 from q
+    vmf_type is_x_lt_z = xrh < 0.0;
+    vmi_type i_is_x_lt_z = _T::vmf_to_vmi(is_x_lt_z);
+    vf_type d0=_T::sel(is_x_lt_z, pi_4_0, -pi_4_0);
+    vf_type d1=_T::sel(is_x_lt_z, pi_4_1, -pi_4_1);
+    vf_type d2=_T::sel(is_x_lt_z, pi_4_2, -pi_4_2);
+    q = _T::sel(i_is_x_lt_z, q - 1, q);
+    t_ops::add33cond(xrh, xrm, xrl,
+                     xrh, xrm, xrl,
+                     d0, d1, d2);
+    // select phase  correction for j0/y0 or j1/y1
+    vdf_type phase_cor= calc_jy1 == false ?
+        __j0y0_phase_corr_k(xr2h, xr2l, rec_x_h, rec_x_l) :
+        __j1y1_phase_corr_k(xr2h, xr2l, rec_x_h, rec_x_l);
+    t_ops::add233cond(xrh, xrm, xrl, phase_cor[0], phase_cor[1],
+                      xrh, xrm, xrl);
+    t_ops::renormalize32(xsh, xsl, xrh, xrm, xrl);
+    // perform argument reduction on xsh, xsl again
+    vf_type xh, xl;
+    auto q2=__reduce_trig_arg_tiny(xh, xl, xsh, xsl);
+    if (calc_jy1 == false) {
+        q2 += q;
+    } else {
+        // -1 for the subtraction of only pi/4 above, i.e. q2 is 1 too large
+        q2 += q-1;
+    }
+    // q2 &= 3;
+
+    vdf_type phase;
+    // select sinus or cosinus for y0/1 or j0/1 calculation
+    vdf_type* psin = calc_yn ? &phase : nullptr;
+    vdf_type* pcos = calc_yn ? nullptr : &phase;
+    base_type::__sin_cos_k(xh, xl, q2, psin, pcos);
+
+    vf_type rh, rl;
+    d_ops::mul22(rh, rl, phase[0], phase[1], amph, ampl);
+    return rh;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+j0_k(arg_t<vf_type> xc)
+{
+    vf_type xa=abs(xc);
+    vf_type r;
+    const float small_threshold=j01y01_data<float>::_max_small_j0;
+    const vmf_type xa_small = xa <= small_threshold;
+    bool any_small;
+    if ((any_small=_T::any_of_v(xa_small))==true) {
+        r= __j01y01_small_tbl_k(xa,
+                                j01y01_data<float>::_j0_coeffs,
+                                j01y01_data<float>::_max_small_j0);
+    }
+    if (!_T::all_of_v(xa_small)) {
+        vf_type rl= __j01y01_large_phase_amplitude_k(xa, false, false);
+        if (any_small) {
+            r = _T::sel(xa_small, r, rl);
+        } else {
+            r = rl;
+        }
+    }
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+j1_k(arg_t<vf_type> xc)
+{
+    vf_type xa=abs(xc);
+    vf_type r;
+    const float small_threshold=j01y01_data<float>::_max_small_j1;
+    const vmf_type xa_small = xa <= small_threshold;
+    bool any_small;
+    if ((any_small=_T::any_of_v(xa_small))==true) {
+        r= __j01y01_small_tbl_k(xa,
+                                j01y01_data<float>::_j1_coeffs,
+                                j01y01_data<float>::_max_small_j1);
+    }
+    if (!_T::all_of_v(xa_small)) {
+        vf_type rl= __j01y01_large_phase_amplitude_k(xa, false, true);
+        if (any_small) {
+            r = _T::sel(xa_small, r, rl);
+        } else {
+            r = rl;
+        }
+    }
+    r = mulsign(r, xc);
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+y0_k(arg_t<vf_type> xc)
+{
+    vf_type xa=abs(xc);
+    vf_type r;
+    const float small_threshold=j01y01_data<float>::_max_small_y0;
+    const float singular_threshold=4.75f;
+    bool select_required=false;
+    if (_T::any_of_v(xa <= singular_threshold)==true) {
+        r=__y0_singular_k(xa);
+        select_required=true;
+    }
+    vmf_type msk_xa_small=(xa > singular_threshold) &
+                          (xa <= small_threshold);
+    if (_T::any_of_v(msk_xa_small)==true) {
+        vf_type rs= __j01y01_small_tbl_k(xa,
+                                         j01y01_data<float>::_y0_coeffs,
+                                         j01y01_data<float>::_max_small_y0);
+        if (select_required==false) {
+            r=rs;
+            select_required=true;
+        } else {
+            r=_T::sel(msk_xa_small, rs, r);
+        }
+    }
+    vmf_type msk_xa_large= xa > small_threshold;
+    if (_T::any_of_v(msk_xa_large)) {
+        vf_type rl= __j01y01_large_phase_amplitude_k(xa, true, false);
+        if (select_required==false) {
+            r = rl;
+        } else {
+            r = _T::sel(msk_xa_large, rl, r);
+        }
+    }
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::spec_func_core<float, _T>::vf_type
+cftal::math::spec_func_core<float, _T>::
+y1_k(arg_t<vf_type> xc)
+{
+    vf_type xa=abs(xc);
+    vf_type r;
+    const float small_threshold=j01y01_data<float>::_max_small_y1;
+    const float singular_threshold=4.75f;
+    bool select_required=false;
+    if (_T::any_of_v(xa <= singular_threshold)==true) {
+        r=__y1_singular_k(xa);
+        select_required=true;
+    }
+    vmf_type msk_xa_small=(xa > singular_threshold) &
+                          (xa <= small_threshold);
+    if (_T::any_of_v(msk_xa_small)==true) {
+        vf_type rs= __j01y01_small_tbl_k(xa,
+                                         j01y01_data<float>::_y1_coeffs,
+                                         j01y01_data<float>::_max_small_y1);
+        if (select_required==false) {
+            r=rs;
+            select_required=true;
+        } else {
+            r=_T::sel(msk_xa_small, rs, r);
+        }
+    }
+    vmf_type msk_xa_large= xa > small_threshold;
+    if (_T::any_of_v(msk_xa_large)) {
+        vf_type rl= __j01y01_large_phase_amplitude_k(xa, true, true);
+        if (select_required==false) {
+            r = rl;
+        } else {
+            r = _T::sel(msk_xa_large, rl, r);
+        }
+    }
+    return r;
 }
 
 // Local Variables:

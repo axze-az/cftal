@@ -161,6 +161,93 @@ namespace cftal {
         extern template struct lngamma_data<double>;
         extern template struct lngamma_data<float>;
 
+        template <typename _T>
+        struct j01y01_data {};
+
+        template <>
+        struct j01y01_data<double> {
+            enum {
+                IVAL_XR,
+                NEG_X_OFFS_H,
+                NEG_X_OFFS_M,
+                NEG_X_OFFS_L,
+                C16,
+                C15,
+                C14,
+                C13,
+                C12,
+                C11,
+                C10,
+                C9,
+                C8,
+                C7,
+                C6,
+                C5,
+                C4,
+                C3,
+                C2,
+                C1H,
+                C1L,
+                C0H,
+                C0L,
+                ELEMS,
+                INTERVALS=80,
+                POLY_ORD=16,
+                ENTRIES=INTERVALS*ELEMS
+            };
+            static const double _max_small_j0;
+            static const double _j0_coeffs[ENTRIES];
+
+            static const double _max_small_j1;
+            static const double _j1_coeffs[ENTRIES];
+
+            static const double _max_small_y0;
+            static const double _y0_coeffs[ENTRIES];
+
+            static const double _max_small_y1;
+            static const double _y1_coeffs[ENTRIES];
+        };
+
+        extern template struct j01y01_data<double>;
+
+        template <>
+        struct j01y01_data<float> {
+            enum {
+                IVAL_XR,
+                NEG_X_OFFS_H,
+                NEG_X_OFFS_M,
+                NEG_X_OFFS_L,
+                C8,
+                C7,
+                C6,
+                C5,
+                C4,
+                C3,
+                C2,
+                C1H,
+                C1L,
+                C0H,
+                C0L,
+                ELEMS,
+                INTERVALS=40,
+                POLY_ORD=8,
+                ENTRIES=INTERVALS*ELEMS
+            };
+            static const float _max_small_j0;
+            static const float _j0_coeffs[ENTRIES];
+
+            static const float _max_small_j1;
+            static const float _j1_coeffs[ENTRIES];
+
+            static const float _max_small_y0;
+            static const float _y0_coeffs[ENTRIES];
+
+            static const float _max_small_y1;
+            static const float _y1_coeffs[ENTRIES];
+        };
+
+        extern template struct j01y01_data<float>;
+
     }
 }
 

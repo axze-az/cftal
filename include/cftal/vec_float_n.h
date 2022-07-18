@@ -533,6 +533,38 @@ namespace cftal {
     vec<float, 1>
     lgamma(arg_t<vec<float, 1> > d, vec<int32_t, 1>* signp);
 
+    // j0
+    template <std::size_t _N>
+    vec<float, _N>
+    j0(const vec<float, _N>& x);
+
+    vec<float, 1>
+    j0(arg_t<vec<float, 1> > x);
+
+    // j1
+    template <std::size_t _N>
+    vec<float, _N>
+    j1(const vec<float, _N>& x);
+
+    vec<float, 1>
+    j1(arg_t<vec<float, 1> > x);
+
+    // y0
+    template <std::size_t _N>
+    vec<float, _N>
+    y0(const vec<float, _N>& x);
+
+    vec<float, 1>
+    y0(arg_t<vec<float, 1> > x);
+
+    // y1
+    template <std::size_t _N>
+    vec<float, _N>
+    y1(const vec<float, _N>& x);
+
+    vec<float, 1>
+    y1(arg_t<vec<float, 1> > x);
+
     // ilogbp1
     vec<int32_t, 1>
     ilogbp1(arg_t<vec<float, 1> > v);
@@ -733,6 +765,18 @@ namespace cftal {
     lgamma(arg_t<vec<float, 2> > d, vec<int32_t, 2>* signp);
 
     vec<float, 2>
+    j0(arg_t<vec<float, 2> > x);
+
+    vec<float, 2>
+    j1(arg_t<vec<float, 2> > x);
+
+    vec<float, 2>
+    y0(arg_t<vec<float, 2> > x);
+
+    vec<float, 2>
+    y1(arg_t<vec<float, 2> > x);
+
+    vec<float, 2>
     exp_mx2(arg_t<vec<float, 2> > d);
 
     vec<float, 2>
@@ -894,6 +938,18 @@ namespace cftal {
     vec<float, 4>
     lgamma(arg_t<vec<float, 4> > d, vec<int32_t, 4>* signp);
 #endif
+
+    vec<float, 4>
+    j0(arg_t<vec<float, 4> > x);
+
+    vec<float, 4>
+    j1(arg_t<vec<float, 4> > x);
+
+    vec<float, 4>
+    y0(arg_t<vec<float, 4> > x);
+
+    vec<float, 4>
+    y1(arg_t<vec<float, 4> > x);
 
     vec<float, 4>
     exp_mx2(arg_t<vec<float, 4> > d);
@@ -1059,6 +1115,18 @@ namespace cftal {
 #endif
 
     vec<float, 8>
+    j0(arg_t<vec<float, 8> > x);
+
+    vec<float, 8>
+    j1(arg_t<vec<float, 8> > x);
+
+    vec<float, 8>
+    y0(arg_t<vec<float, 8> > x);
+
+    vec<float, 8>
+    y1(arg_t<vec<float, 8> > x);
+
+    vec<float, 8>
     exp_mx2(arg_t<vec<float, 8> > d);
 
     vec<float, 8>
@@ -1219,6 +1287,17 @@ namespace cftal {
     vec<float, 16>
     lgamma(arg_t<vec<float, 16> > d, vec<int32_t, 16>* signp);
 #endif
+    vec<float, 16>
+    j0(arg_t<vec<float, 16> > x);
+
+    vec<float, 16>
+    j1(arg_t<vec<float, 16> > x);
+
+    vec<float, 16>
+    y0(arg_t<vec<float, 16> > x);
+
+    vec<float, 16>
+    y1(arg_t<vec<float, 16> > x);
 
     vec<float, 16>
     exp_mx2(arg_t<vec<float, 16> > d);
@@ -1817,6 +1896,46 @@ cftal::lgamma(const vec<float, _N>& v, vec<int32_t, _N>* signp)
     vec<float, _N> r(lgamma(low_half(v), &sl), lgamma(high_half(v), &sh));
     if (signp)
         *signp=vec<int32_t, _N>(sl, sh);
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::j0(const vec<float, _N>& x)
+{
+    vec<float, _N> r(j0(low_half(x)),
+                     j0(high_half(x)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::j1(const vec<float, _N>& x)
+{
+    vec<float, _N> r(j1(low_half(x)),
+                     j1(high_half(x)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::y0(const vec<float, _N>& x)
+{
+    vec<float, _N> r(y0(low_half(x)),
+                     y0(high_half(x)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::y1(const vec<float, _N>& x)
+{
+    vec<float, _N> r(y1(low_half(x)),
+                     y1(high_half(x)));
     return r;
 }
 
