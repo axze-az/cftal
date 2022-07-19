@@ -634,6 +634,7 @@ namespace cftal {
         };
 
         struct vpshufb {
+            static __m128i emul(__m128i a, __m128i msk);
             static __m128i v(__m128i a, __m128i msk);
 #if defined (__AVX2__)
             static __m256i v(__m256i a, __m256i msk) {
@@ -1675,10 +1676,29 @@ namespace cftal {
 } // namespace cftal
 
 inline
-__m128i cftal::x86::vpshufb::v(__m128i a, __m128i msk)
+__m128i cftal::x86::vpshufb::emul(__m128i a, __m128i msk)
 {
-#if defined (__SSSE3__)
-    return _mm_shuffle_epi8(a, msk);
+#if 1
+    vecunion <uint8_t, 16, __m128, __m128d, __m128i> res, offs, src;
+    _mm_store_si128(&src._vi, a);
+    // create the mask of elements to keep, i.e. all elements >-1
+    __m128i minus_1=_mm_cmpeq_epi8(msk, msk);
+    __m128i vkm=_mm_cmpgt_epi8(msk, minus_1);
+    _mm_store_si128(&res._vi, vkm);
+    // maximize the offsets with 0xf/15
+    const __m128i m15=_mm_set1_epi8(0x0f);
+    __m128i voffs=_mm_and_si128(msk, m15);
+    _mm_store_si128(&offs._vi, voffs);
+#pragma GCC unroll 1
+#pragma clang unroll(1)
+    for (int i=0; i<16; ++i) {
+        if (res._s[i]!=0) {
+            uint32_t offs_i= offs._s[i];
+            res._s[i] = src._s[offs_i];
+        }
+    }
+    __m128i r=_mm_load_si128(&res._vi);
+    return r;
 #else
     vecunion <int8_t, 16, __m128, __m128d, __m128i> s, m, d;
     _mm_store_si128(&s._vi, a);
@@ -1690,7 +1710,17 @@ __m128i cftal::x86::vpshufb::v(__m128i a, __m128i msk)
         d._s[i] =  s._s[offs] & msk;
     }
     __m128i r=_mm_load_si128(&d._vi);
+#endif
     return r;
+}
+
+inline
+__m128i cftal::x86::vpshufb::v(__m128i a, __m128i msk)
+{
+#if defined (__SSSE3__)
+    return _mm_shuffle_epi8(a, msk);
+#else
+    return emul(a, msk);
 #endif
 }
 

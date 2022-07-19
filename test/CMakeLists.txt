@@ -168,6 +168,7 @@ endfunction()
 
 test_prog(test-tools)
 
+test_prog(test-x86)
 test_prog(test-dint8)
 test_prog(test-duint8)
 test_prog(test-d_real)
