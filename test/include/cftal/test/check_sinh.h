@@ -42,11 +42,13 @@ namespace cftal {
                 return std::make_tuple(v, i.first, i.second);
                 // return call_mpfr::func(a, mpfr_sinh);
             }
+
             static
             _T
             s(const _T& a) {
                 return std::sinh(a);
             }
+
             static
             const char* fname() { return "sinh"; }
         };
