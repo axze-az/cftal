@@ -345,27 +345,6 @@ the function $ powi(x, n) $ calculates $ x^n $, where $n$ is an integer.
 \end{tabular}\\[10pt]
 The functions exp2m1 and exp10m1 calculate $2^x-1$ and $10^x-1$ respectively.
 
-\subsubsection{special functions}
-\begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
-    \hline
-     &
-    \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
-    \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
-    \hline
-    function & $\Delta$ulp & (prob.) faithfully &
-          $\Delta$ulp & (prob.) faithfully \\
-    \hline
-    erf & $\pm$ 1 & y  & $\pm$ 1 & y \\
-    \hline
-    erfc & $\pm$ 1 & y  & $\pm$ 1 & y \\
-    \hline
-    tgamma & $\pm$ 1 & y  & $\pm$ 1 & y \\
-    \hline
-    lgamma & $\pm$ 100? & n  & $\pm$ 100? & n \\
-    \hline
-\end{tabular}\\[10pt]
-The function lgamma is probably faithfully rounded for non negative arguments.
-
 \subsubsection{additional elementary functions}
 \begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
     \hline
@@ -413,6 +392,35 @@ The functions sinpi, cospi and tanpi calculate $\sin(\pi *
 x) $, $\cos(\pi * x) $ and $\tan(\pi * x) $ respectivly.  The function
 sincos returns sinus and cosinus of its argument, sinpicospi returns
 sinpi and cospi.
+
+\subsubsection{special functions}
+\begin{tabular}{ | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} | p{2.0cm} |}
+    \hline
+     &
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary64}} &
+    \multicolumn{2}{| p{4.0cm} |} {\center{binary32}} \\
+    \hline
+    function & $\Delta$ulp & (prob.) faithfully &
+          $\Delta$ulp & (prob.) faithfully \\
+    \hline
+    erf & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    erfc & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    tgamma & $\pm$ 1 & y  & $\pm$ 1 & y \\
+    \hline
+    lgamma & $\pm$ 100? & n  & $\pm$ 100? & n \\
+    \hline
+    j0 & $\pm$ 1? & y?  & $\pm$ 1? & y? \\
+    \hline
+    j1 & $\pm$ 1? & y?  & $\pm$ 1? & y? \\
+    \hline
+    y0 & $\pm$ 1? & y?  & $\pm$ 1? & y? \\
+    \hline
+    y1 & $\pm$ 1? & y?  & $\pm$ 1? & y? \\
+    \hline
+\end{tabular}\\[10pt]
+The function lgamma is probably faithfully rounded for non negative arguments.
 
 \if 0
 
