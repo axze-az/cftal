@@ -286,7 +286,7 @@ householder_step(_T xn, _T x, _T y, const _C(&pa)[_N], const _C(&qa)[_N])
         p=horner(xn, p, pi);
         q=horner(xn, q, qi);
     }
-    return x + x * p/q;
+    return x + x * (p/q);
 }
 
 template <typename _C, bool _HIGH_PREC, typename _T>
