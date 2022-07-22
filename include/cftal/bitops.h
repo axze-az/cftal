@@ -20,7 +20,8 @@
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
-#if defined (__x86_64__) || defined (__i386__)
+#if defined (__x86_64__) || defined (__i386__) || \
+    (defined (_M_AMD64) && defined (_MSC_VER))
 #include <cftal/x86/intrin.h>
 #endif
 
