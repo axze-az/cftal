@@ -47,6 +47,12 @@
 #endif
 #endif
 
+#if 1
+#if defined (__AVX512F__)
+#error "AVX512 support is not yet implemented"
+#endif
+#endif
+
 #if !defined (__GNUC__) && !defined(__clang__) || (IN_KDEVELOP_PARSER>0)
 #define alignas(X)
 #define __SSSE3__
