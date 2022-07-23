@@ -47,7 +47,8 @@
 #endif
 #endif
 
-#if 1
+#define __CFTAL_CFG_ENABLE_AVX512__ @CFTAL_CFG_ENABLE_AVX512@
+#if __CFTAL_CFG_ENABLE_AVX512__ > 0
 #if defined (__AVX512F__)
 #error "AVX512 support is not yet implemented"
 #endif

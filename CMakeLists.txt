@@ -186,6 +186,16 @@ else()
     message("not using double precision vectors in float functions")
 endif()
 
+set(CFTAL_CFG_ENABLE_AVX512 0)
+option(CFTAL_CONFIG_ENABLE_AVX512
+       "allow usage of AVX512XX" OFF)
+if (CFTAL_CONFIG_ENABLE_AVX512)
+    message("using avx512")
+    set(CFTAL_CFG_ENABLE_AVX512 1)
+else()
+    message("not using avx512")
+endif()
+
 include_directories(include)
 include_directories(test/include)
 
