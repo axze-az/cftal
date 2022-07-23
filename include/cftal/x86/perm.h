@@ -3680,7 +3680,7 @@ perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
                           _P6 & 15, 0,
                           _P7 & 15, 0);
     if (zm != 0) {
-        return _mm512_maskz_permutex2var_pd(a, zm, pperm, b);
+        return _mm512_maskz_permutex2var_pd(zm, a, pperm, b);
     }
     return _mm512_permutex2var_pd(a, pperm, b);
 #if 0
