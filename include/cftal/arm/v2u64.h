@@ -75,7 +75,7 @@ namespace cftal {
     vec<uint64_t, 1>
     high_half(const vec<uint64_t, 2>& v);
 
-#if !defined (__AVX512VL__)
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
     bool
     all_of(const vec<uint64_t, 2>::mask_type& v);
     bool

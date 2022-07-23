@@ -29,7 +29,7 @@ namespace cftal {
 
         struct _indent {
             unsigned _i;
-			explicit
+            explicit
             _indent(unsigned i=4) : _i{i} {}
         };
         static _indent indent;

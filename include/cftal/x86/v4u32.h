@@ -33,7 +33,7 @@ namespace cftal {
     public:
         using base_type = x86::vreg<__m128i>;
         using value_type = uint32_t;
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         using mask_value_type = bit;
 #else
         using mask_value_type = uint32_t;
@@ -93,7 +93,7 @@ namespace cftal {
     void
     insert(vec<uint32_t, 4>& v, const uint32_t& vi, size_t i);
 
-#if !defined (__AVX512VL__)
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
     bool
     all_of(const vec<uint32_t, 4>::mask_type& v);
     bool

@@ -25,8 +25,8 @@
 
 namespace cftal {
 
-#if defined (__AVX512F__)    
-#if defined (__AVX512VL__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+#if defined (__AVX512VL__)  && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
     // struct bit { enum val { _0 =0, _1 = 1 }; };
     template <>
     class vec<bit, 2> : public x86::vreg<__mmask8> {
@@ -66,7 +66,7 @@ namespace cftal {
             : base_type((l() & 0x3) | (__mmask8(h() & 0x3) << 2)) {}
     };
 #endif
-    
+
     template <>
     class vec<bit, 8> : public x86::vreg<__mmask8> {
     public:
@@ -86,7 +86,7 @@ namespace cftal {
             : base_type((l() & 0xf) | (__mmask8(h() & 0xf) << 4)) {}
     };
 
-#if defined (__AVX512VL__)    
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
     template <>
     class vec<bit, 16> : public x86::vreg<__mmask16> {
     public:
@@ -107,7 +107,8 @@ namespace cftal {
     };
 #endif
 
-#if defined (__AVX512VL__) && defined (__AVX512BW__)    
+#if defined (__AVX512VL__) && defined (__AVX512BW__)  \
+    && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
     template <>
     class vec<bit, 32> : public x86::vreg<__mmask32> {
     public:
@@ -146,7 +147,7 @@ namespace cftal {
             : base_type((l() & 0xffffffff) |
                         (__mmask64(h() & 0xffffffff) << 32)) {}
     };
-#endif    
+#endif
 #endif
 }
 

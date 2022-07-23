@@ -1174,7 +1174,7 @@ namespace cftal {
                            60, 61, 28, 29, 62, 63, 30, 31>
             : public swap_ab<__m256i, vpunpckhwd> {};
 #endif // __AVX2__
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         // generic permutation of one v8f64 vector
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
@@ -1258,7 +1258,7 @@ namespace cftal {
         __m256i perm_v16u16(__m256i a, __m256i b);
 
 #endif
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m512d perm_v8f64(__m512d a);
@@ -3561,7 +3561,7 @@ v(__m256i a, __m256i b)
 
 
 #endif // __AVX2__
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
@@ -3746,7 +3746,7 @@ __m256d cftal::x86::perm_v4f64(__m256d a, __m256d b)
 }
 
 #endif
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 __m512d cftal::x86::perm_v8f64(__m512d a)

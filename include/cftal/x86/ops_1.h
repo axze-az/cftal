@@ -175,7 +175,7 @@ namespace cftal {
         // read the sign bits of all elements into a bit mask
         uint32_t read_signs_s64(__m256i i);
 #endif
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         // return the mask itself
         uint32_t read_signs_f64(__mmask8 i);
 #endif
@@ -445,7 +445,7 @@ cftal::uint32_t cftal::x86::read_signs_s64(__m256i a)
 }
 
 #endif
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 inline
 cftal::uint32_t cftal::x86::read_signs_f64(__mmask8 a)
 {

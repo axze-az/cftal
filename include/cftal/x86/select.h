@@ -66,13 +66,13 @@ namespace cftal {
         __m256i select_u32(__m256i msk, __m256i on_one, __m256i on_zero);
         __m256i select_u64(__m256i msk, __m256i on_one, __m256i on_zero);
 #endif
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         __m512d select_f64(__mmask8 msk, __m512d on_one, __m512d on_zero);
         __m512 select_f32(__mmask16 msk, __m512 on_one, __m512 on_zero);
         __m512i select_u64(__mmask8 msk, __m512i on_one, __m512i on_zero);
         __m512i select_u32(__mmask16 msk, __m512i on_one, __m512i on_zero);
 #endif
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         __m128d select_f64(__mmask8 msk, __m128d on_one, __m128d on_zero);
         __m256d select_f64(__mmask8 msk, __m256d on_one, __m256d on_zero);
 
@@ -459,7 +459,7 @@ cftal::x86::select_u64(__m256i msk, __m256i on_one, __m256i on_zero)
 
 #endif
 
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 inline
 __m512d
 cftal::x86::select_f64(__mmask8 msk, __m512d on_one, __m512d on_zero)
@@ -491,7 +491,7 @@ cftal::x86::select_u32(__mmask16 msk, __m512i on_one, __m512i on_zero)
 
 #endif
 
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 inline
 __m128d
 cftal::x86::select_f64(__mmask8 msk, __m128d on_one, __m128d on_zero)

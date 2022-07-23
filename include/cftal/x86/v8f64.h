@@ -26,7 +26,7 @@
 
 namespace cftal {
 
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 
 #define V8F64_SPECIALIZED 1
 
@@ -138,7 +138,7 @@ namespace cftal {
 
 #endif
 
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
     // a*b +c
     v8f64 fma(const v8f64& a, const v8f64& b, const v8f64& c);
     // a*b -c
@@ -414,7 +414,7 @@ namespace cftal {
 #endif // __AVX__
 }
 
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 
 inline
 cftal::vec<double, 8>::vec(double v)

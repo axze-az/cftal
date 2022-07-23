@@ -37,7 +37,7 @@ namespace cftal {
         using base_type = x86::vreg<__m128>;
 
         using value_type = float;
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         using mask_value_type = bit;
 #else
         using mask_value_type = float;
@@ -110,7 +110,7 @@ namespace cftal {
     select_zero_or_val(const vec<float, 4>::mask_type& msk,
                        const vec<float, 4>& on_false);
 
-#if !defined (__AVX512VL__)
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     bool
     all_of(const vec<float, 4>::mask_type& a);
 

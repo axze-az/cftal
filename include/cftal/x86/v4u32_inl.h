@@ -47,7 +47,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmp_epu32_mask(a(), b(), _CMP_LT_OS & 7);
 #else
                 v4u32 ta(a ^ full_type(sign_s32_msk::v.u32()));
@@ -64,7 +64,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmp_epu32_mask(a(), b(), _CMP_LE_OS & 7);
 #else
 #if defined (__SSE4_1__)
@@ -466,7 +466,7 @@ cftal::insert(vec<uint32_t, 4>& v, const uint32_t& vi, size_t i)
 }
 
 
-#if !defined (__AVX512VL__)
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
 inline
 bool cftal::all_of(const vec<uint32_t, 4>::mask_type& v)
 {

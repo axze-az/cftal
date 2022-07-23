@@ -28,7 +28,7 @@
 #include <cftal/x86/v4f64.h>
 #include <cftal/x86/ops_1.h>
 
-#if defined (__AVX512F__)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 
 namespace cftal {
 

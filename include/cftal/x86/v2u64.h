@@ -34,7 +34,7 @@ namespace cftal {
         using base_type = x86::vreg<__m128i>;
 
         using value_type = uint64_t;
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         using mask_value_type = bit;
 #else
         using mask_value_type = uint64_t;
@@ -128,7 +128,7 @@ namespace cftal {
     mul_lo_hi(const vec<uint64_t, 2>& a,
               const vec<uint64_t, 2>& b);
 
-#if !defined (__AVX512VL__)
+#if !defined (__AVX512VL__)  || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     bool
     all_of(const vec<uint64_t, 2>::mask_type& v);
     bool

@@ -48,7 +48,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm256_cmplt_epi32_mask(a(), b());
 #else
                 return _mm256_cmpgt_epi32(b(), a());
@@ -63,7 +63,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm256_cmple_epi32_mask(a(), b());
 #else
                 // a <= b: a == min(a, b);
@@ -80,7 +80,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm256_cmpeq_epi32_mask(a(), b());
 #else
                 return _mm256_cmpeq_epi32(a(), b());
@@ -95,7 +95,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm256_cmpneq_epi32_mask(a(), b());
 #else
                 mask_type a_eq_b(eq<vec<int32_t, 8>>::v(a, b));
@@ -111,7 +111,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm256_cmpge_epi32_mask(a(), b());
 #else
                 // a >= b: a == max(a, b);
@@ -128,7 +128,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm256_cmpgt_epi32_mask(a(), b());
 #else
                 return _mm256_cmpgt_epi32(a(), b());
@@ -470,7 +470,7 @@ cftal::insert(vec<int32_t, 8>& v, const int32_t& vi, size_t i)
 }
 
 
-#if !defined (__AVX512VL__)
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
 inline
 bool cftal::all_of(const vec<int32_t, 8>::mask_type& v)
 {

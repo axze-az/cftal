@@ -47,7 +47,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmplt_epu64_mask(a(), b());
 #else
                 return b > a;
@@ -62,7 +62,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmple_epu64_mask(a(), b());
 #else
                 return ~(a > b);
@@ -77,7 +77,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmpeq_epu64_mask(a(), b());
 #else
 #if defined (__SSE4_1__)
@@ -100,7 +100,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmpneq_epu64_mask(a(), b());
 #else
                 return ~(a==b);
@@ -115,7 +115,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmpge_epu64_mask(a(), b());
 #else
                 return ~(a < b);
@@ -130,7 +130,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-#if defined (__AVX512VL__)
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmpgt_epu64_mask(a(), b());
 #else
 #if defined (__SSE4_2__)
@@ -559,7 +559,7 @@ cftal::mul_lo_hi(const v2u64& x, const v2u64& y)
     return std::make_pair(xl_yl, xh_yh);
 }
 
-#if !defined (__AVX512VL__)
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
 inline
 bool cftal::all_of(const vec<uint64_t, 2>::mask_type& v)
 {
