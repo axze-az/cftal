@@ -723,7 +723,6 @@ select_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a, __m256i b)
     return _mm256_blend_epi32(b, a, sm & 0xff);
 }
 
-
 template<bool _P0, bool _P1, bool _P2, bool _P3,
          bool _P4, bool _P5, bool _P6, bool _P7>
 inline __m256i
@@ -843,10 +842,7 @@ v(__m256i a, __m256i b)
                                        p24, p25, p26, p27, p28, p29, p30, p31);
     return select_u8(msk, a, b);
 }
-
-
 #endif
-
 
 template <bool _P0, bool _P1>
 inline
