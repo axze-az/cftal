@@ -726,7 +726,7 @@ calc(const array_t& a, exec_stats<_N>& st,
     bool c;
     if (speed_only) {
         // typename std::result_of<decltype(&_F::s)(_T)>::type r[_N];
-	typename std::invoke_result<decltype(&_F::s), _T>::type r[_N];
+        typename std::invoke_result<decltype(&_F::s), _T>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i] = exec_stats<_N>::hr_timer();
             r[i] = _F::s(a[i]);
@@ -750,10 +750,11 @@ calc(const array_t& a, exec_stats<_N>& st,
     // std::cout << std::setprecision(18) << a << std::endl;
     bool cs= vec_parts<_T, _N, _F>::v(va, vr, st);
     // do only a subvector test if speed_only==true
-    if (speed_only)
+    if (speed_only) {
         c= cs;
-    else
+    } else {
         c &= cs;
+    }
     if (c == false) {
         std::ostringstream s;
         s.copyfmt(std::cerr);
@@ -1012,7 +1013,7 @@ calc(const array_1_t& a, const array_2_t& b,
     bool c;
     if (speed_only) {
         // typename std::result_of<decltype(&_F::s)(_T, _T)>::type r[_N];
-	typename std::invoke_result<decltype(&_F::s),_T, _T>::type r[_N];
+        typename std::invoke_result<decltype(&_F::s),_T, _T>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i]=exec_stats<_N>::hr_timer();
             r[i] = _F::s(a[i], b[i]);
@@ -1021,7 +1022,7 @@ calc(const array_1_t& a, const array_2_t& b,
         c= check(vr, r, _F::fname(), false, cmp);
     } else {
         // typename std::result_of<decltype(&_F::r)(_T, _T)>::type r[_N];
-	typename std::invoke_result<decltype(&_F::r), _T, _T>::type r[_N];
+        typename std::invoke_result<decltype(&_F::r), _T, _T>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i]=exec_stats<_N>::hr_timer();
             r[i] = _F::r(a[i], b[i]);
@@ -1035,10 +1036,11 @@ calc(const array_1_t& a, const array_2_t& b,
     st.insert(t0, t1, _N);
     bool cs= vec_parts<_T, _N, _F>::v(va, vb, vr, st);
     // do only the subvector test if speed_only==true
-    if (speed_only)
+    if (speed_only) {
         c= cs;
-    else
+    } else {
         c &= cs;
+    }
     if (c == false) {
         std::ostringstream s;
         s.copyfmt(std::cerr);
