@@ -272,6 +272,30 @@ bool cftal::test::strided_loads()
         rc=false;
     }
 
+    std::cout << std::setprecision(3) << std::scientific;
+    std::cout << "checking flexible strided loads without offset\n";
+    for (int i=0; i<=16; ++i) {
+        r=v8f32{0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}*float(i);
+        if (cmp(load_strided<v8f32>(p, i), r)==false) {
+            std::cout << "load_strided<v8f32>(p, " << i
+                      << ") failed, expected result\n"
+                      << r << '\n';
+            rc=false;
+        }
+    }
+    std::cout << std::setprecision(3) << std::scientific;
+    std::cout << "checking flexible strided loads with offset\n";
+    for (int i=0; i<=16; ++i) {
+        r=v8f32{0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}*float(i) +
+            float(i+1);
+        if (cmp(load_strided<v8f32>(p, i, i+1), r)==false) {
+            std::cout << "load_strided<v8f32>(p, " << i
+                      << ", " << i+1 << ") failed, expected result\n"
+                      << r << '\n';
+            rc=false;
+        }
+    }
+
     std::cout << "strided load test";
     if (rc==true) {
         std::cout << " passed";
