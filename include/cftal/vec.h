@@ -30,6 +30,7 @@
 #include <cftal/vec_mask.h>
 #include <cftal/vec_op.h>
 #include <cftal/vec_lookup.h>
+#include <cftal/vec_strided_load.h>
 #include <cftal/vec_t_1.h>
 #include <cftal/vec_spec.h>
 #include <cftal/vec_double_n.h>
