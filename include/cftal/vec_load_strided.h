@@ -183,10 +183,10 @@ namespace cftal {
                 } idx;
                 constexpr const auto n=static_cast<_IDX_TYPE>(_N);
                 for (_IDX_TYPE i=0; i<n; ++i) {
-                    idx._s[i]=offset + stride * i;
+                    idx._s[i]=stride * i;
                 }
                 auto lck=make_variable_lookup_table<_T>(idx._v);
-                return lck.from(p);
+                return lck.from(p+offset);
 	    }
         };
     }
