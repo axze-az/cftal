@@ -24,20 +24,20 @@
 namespace cftal {
 
     namespace impl {
-	
+
         // strided loader for _V objects, requires specialization for
         // vector classes
         template <typename _V, ssize_t _STRIDE=1, ssize_t _INIT=0,
                   typename _IDX_TYPE=int32_t>
         struct strided_loader {
-#if 0	    
+#if 0
 	    // implementation for scalars
 	    static
 	    _V
 	    v(const _V* p) {
 		return p[_INIT];
 	    }
-#endif	    
+#endif
         };
 
     }
@@ -52,7 +52,7 @@ namespace cftal {
     load_strided(const _T* p) {
         return impl::strided_loader<_V, _STRIDE, _INIT, _IDX_TYPE>::v(p);
     }
-    
+
     namespace impl {
 
 	// helper classes for strided loader for vec<_T, _N> objects
