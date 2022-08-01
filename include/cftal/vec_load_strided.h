@@ -56,9 +56,7 @@ namespace cftal {
     template <typename _V, int32_t _STRIDE=1, ssize_t _OFFSET=0,
               typename _T>
     _V
-    load_strided(const _T* src) {
-        return load_strided<_V>(src, _STRIDE, _OFFSET);
-    }
+    load_strided(const _T* src);
 
     namespace impl {
 
@@ -106,6 +104,13 @@ _VEC
 cftal::load_strided(const _T* src, int64_t stride, ssize_t offset)
 {
     return impl::load_strided<_VEC, int64_t>::from(src, stride, offset);
+}
+
+template <typename _V, int32_t _STRIDE=1, ssize_t _OFFSET, typename _T>
+_V
+cftal::load_strided(const _T* src)
+{
+    return load_strided<_V>(src, _STRIDE, _OFFSET);
 }
 
 template <typename _T, typename _I, size_t _N>
