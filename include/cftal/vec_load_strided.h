@@ -25,173 +25,140 @@ namespace cftal {
 
     namespace impl {
 
-        // strided loader for _V objects, requires specialization for
-        // vector classes
-        template <typename _V, ssize_t _STRIDE=1, ssize_t _OFFSET=0,
-                  typename _IDX_TYPE=int32_t>
-        struct strided_loader {
-#if 0
-	    // implementation for scalars
-	    static
-	    _V
-	    v(const _V* p) {
-		return p[_OFFSET];
-	    }
-#endif
+        // struct using a vector of indices to load a vector
+        template <typename _VEC, typename _INDEX_VEC>
+        struct load_indices {
         };
 
-        // flexible strided loader for _V objects, requires specialization for
-        // vector classes
-        template <typename _V, typename _IDX_TYPE>
-        struct flexible_strided_loader {
-#if 0
-	    // implementation for scalars
-	    static
-	    _V
-	    v(const _V* p, _IDX_TYPE stride, _IDX_TYPE offset) {
-		return p[_OFFSET];
-	    }
-#endif
+        // struct using a stride to load a vector
+        template <typename _VEC, typename _STRIDE_TYPE>
+        struct load_strided {
         };
-
     }
+
+    template <typename _VEC, typename _T, typename _INDEX_VEC>
+    _VEC
+    load_indices(const _T* src, const _INDEX_VEC& indices,
+                 ssize_t offset=0);
+
+    template <typename _VEC, typename _T>
+    _VEC
+    load_strided(const _T* src, int32_t stride, ssize_t offset=0);
+
+    template <typename _VEC, typename _T>
+    _VEC
+    load_strided(const _T* src, int64_t stride, ssize_t offset=0);
 
     // load an object of type _V with _STRIDE and _OFFSET from p
     // using indices of type _IDX_TYPE resulting in an object
     // containing the elements i=0..._N
     // _V[i] = p[_OFFSET + i * _STRIDE]
-    template <typename _V, ssize_t _STRIDE=1, ssize_t _OFFSET=0,
-              typename _IDX_TYPE=int32_t, typename _T>
+    template <typename _V, int32_t _STRIDE=1, ssize_t _OFFSET=0,
+              typename _T>
     _V
-    load_strided(const _T* p) {
-        return impl::strided_loader<_V, _STRIDE, _OFFSET, _IDX_TYPE>::v(p);
-    }
-
-    // load an object of type _V with stride and offset from p
-    // using indices of type _IDX_TYPE resulting in an object
-    // containing the elements i=0..._N
-    // _V[i] = p[offset + i * stride]
-    // PLEASE NOTE: this may be not very efficient
-    template <typename _V, typename _IDX_TYPE=int32_t, typename _T>
-    _V
-    load_strided(const _T* p, _IDX_TYPE stride, _IDX_TYPE offset=0) {
-        using int_type=std::make_signed_t<_IDX_TYPE>;
-        int_type s=stride, o=offset;
-        return impl::flexible_strided_loader<_V, int_type>::v(p, s, o);
+    load_strided(const _T* src) {
+        return load_strided<_V>(src, _STRIDE, _OFFSET);
     }
 
     namespace impl {
 
-	// helper classes for strided loader for vec<_T, _N> objects
-
-        // helper class for initializing arrays
-        template <typename _T, size_t _I, ssize_t _STRIDE, ssize_t _OFFSET>
-        struct init_index_data {
-            void
-            operator()(_T* v) {
-                constexpr size_t i=_I-1;
-                init_index_data<_T, i, _STRIDE, _OFFSET>()(v);
-                v[i] = _T(_STRIDE * i + _OFFSET);
-            }
-        };
-
-        // helper class for initializing arrays, first element with idx 0
-        template <typename _T, ssize_t _STRIDE, ssize_t _OFFSET>
-        struct init_index_data<_T, 1, _STRIDE, _OFFSET> {
-            void
-            operator()(_T* v) {
-                v[0] = _T(_OFFSET);
-            }
-        };
-
-        // class containing an initialized array with
-        // v[i] = _STRIDE*i + _OFFSET
-        template <typename _T, size_t _N, ssize_t _STRIDE, ssize_t _OFFSET>
-        struct alignas(64) index_data {
-            _T _v[_N];
-            index_data() : _v() {
-                init_index_data<_T, _N, _STRIDE, _OFFSET>()(_v);
-            }
-        };
-
-        // template wrapper around a static initialized array with
-        // v[i] = _STRIDE*i + _OFFSET
-        template <typename _T, size_t _N, ssize_t _STRIDE, ssize_t _OFFSET>
-        struct index_array {
-            static const index_data<_T, _N, _STRIDE, _OFFSET> _v;
-        };
-
-        template <typename _T, size_t _N, ssize_t _STRIDE, ssize_t _OFFSET>
-        const index_data<_T, _N, _STRIDE, _OFFSET>
-        index_array<_T, _N, _STRIDE, _OFFSET>::_v{};
-
-        template <typename _T, size_t _N, ssize_t _STRIDE=1, ssize_t _OFFSET=0>
-        vec<_T, _N>
-        load_indices(){
-            const _T* s=impl::index_array<_T, _N, _STRIDE, _OFFSET>::_v._v;
-            return mem<vec<_T, _N> >::load(s, _N);
-        }
-
-        // strided loader specialization of vec<_T, _N>
-        template <typename _T, size_t _N, ssize_t _STRIDE, ssize_t _OFFSET,
-                  typename _IDX_TYPE>
-        struct strided_loader<vec<_T, _N>, _STRIDE, _OFFSET, _IDX_TYPE> {
+        template <typename _T, typename _I, size_t _N>
+        struct load_indices<vec<_T, _N>, vec<_I, _N> > {
             static
             vec<_T, _N>
-            v(const _T* p) {
-                vec<_IDX_TYPE, _N> idx=
-                    load_indices<_IDX_TYPE, _N, _STRIDE, _OFFSET>();
-                auto lck=make_variable_lookup_table<_T>(idx);
-                return lck.from(p);
-            }
+            from(const _T* src, const vec<_I, _N>& iv, ssize_t offset);
         };
 
-        // strided loader specialization of vec<_T, _N> for stride 0
-        // i.e. scalar load at offset INIT
-        template <typename _T, size_t _N, ssize_t _OFFSET,
-                  typename _IDX_TYPE>
-        struct strided_loader<vec<_T, _N>, 0, _OFFSET, _IDX_TYPE> {
+
+        template <typename _T, size_t _N, typename _STRIDE_TYPE>
+        struct load_strided<vec<_T, _N>, _STRIDE_TYPE> {
+            struct alignas(128) data {
+                static constexpr size_t _NN=16+1;
+                // stores the strides from 0 to _NN-1
+                _STRIDE_TYPE _v[_NN*_N];
+                data();
+            };
+            static const data _dta;
             static
             vec<_T, _N>
-            v(const _T* p) {
-                _T v=p[_OFFSET];
-                return vec<_T, _N>(v);
-            }
+            from(const _T* src, const _STRIDE_TYPE& s, ssize_t offset);
         };
 
-        // strided loader specialization of vec<_T, _N> for stride 1
-        // i.e. vector load at offset _OFFSET
-        template <typename _T, size_t _N, ssize_t _OFFSET,
-                  typename _IDX_TYPE>
-        struct strided_loader<vec<_T, _N>, 1, _OFFSET, _IDX_TYPE> {
-            static
-            vec<_T, _N>
-            v(const _T* p) {
-                return mem<vec<_T, _N> >::load(p+_OFFSET, _N);
-            }
-        };
-
-        // flexible strided loader for vec<_T, _N> objects
-        template <typename _T, size_t _N, typename _IDX_TYPE>
-        struct flexible_strided_loader<vec<_T, _N>, _IDX_TYPE> {
-	    static
-	    vec<_T, _N>
-	    v(const _T* p, _IDX_TYPE stride, _IDX_TYPE offset) {
-                union {
-                    _IDX_TYPE _s[_N];
-                    vec<_IDX_TYPE, _N> _v;
-                } idx;
-                constexpr const auto n=static_cast<_IDX_TYPE>(_N);
-                for (_IDX_TYPE i=0; i<n; ++i) {
-                    idx._s[i]=stride * i;
-                }
-                auto lck=make_variable_lookup_table<_T>(idx._v);
-                return lck.from(p+offset);
-	    }
-        };
     }
-
 }
+
+template <typename _VEC, typename _T, typename _INDEX_VEC>
+_VEC
+cftal::load_indices(const _T* src, const _INDEX_VEC& indices, ssize_t offset)
+{
+    return impl::load_indices<_VEC, _INDEX_VEC>::from(src, indices, offset);
+}
+
+template <typename _VEC, typename _T>
+_VEC
+cftal::load_strided(const _T* src, int32_t stride, ssize_t offset)
+{
+    return impl::load_strided<_VEC, int32_t>::from(src, stride, offset);
+}
+
+template <typename _VEC, typename _T>
+_VEC
+cftal::load_strided(const _T* src, int64_t stride, ssize_t offset)
+{
+    return impl::load_strided<_VEC, int64_t>::from(src, stride, offset);
+}
+
+template <typename _T, typename _I, size_t _N>
+cftal::vec<_T, _N>
+cftal::impl::load_indices<cftal::vec<_T, _N>, cftal::vec<_I, _N> >::
+from(const _T* src, const vec<_I, _N>& iv, ssize_t offset)
+{
+    auto lck=make_variable_lookup_table<_T>(iv);
+    return lck.from(src+offset);
+}
+
+template <typename _T, size_t _N, typename _STRIDE_TYPE>
+cftal::impl::load_strided<cftal::vec<_T, _N>, _STRIDE_TYPE>::data::data()
+{
+    for (size_t s=0, o=0; s <_NN; ++s) {
+        for (size_t i=0; i<_N; ++i, ++o) {
+            _v[o] = _STRIDE_TYPE(s)* _STRIDE_TYPE(i);
+        }
+    }
+}
+
+template <typename _T, size_t _N, typename _STRIDE_TYPE>
+const typename cftal::impl::load_strided<cftal::vec<_T, _N>, _STRIDE_TYPE>::data
+cftal::impl::load_strided<cftal::vec<_T, _N>, _STRIDE_TYPE>::_dta{};
+
+template <typename _T, size_t _N, typename _STRIDE_TYPE>
+cftal::vec<_T, _N>
+cftal::impl::load_strided<cftal::vec<_T, _N>, _STRIDE_TYPE>::
+from(const _T* src, const _STRIDE_TYPE& s, ssize_t offset)
+{
+    using v_t = vec<_T, _N>;
+    using vi_t =vec<_STRIDE_TYPE, _N>;
+    using u_t=std::make_unsigned_t<_STRIDE_TYPE>;
+    if (u_t(s) < data::_NN) {
+        // scalar load for stride 0
+        if (s == 0) {
+            _T v=src[offset];
+            return vec<_T, _N>(v);
+        }
+        // standard vector load for stride 1
+        if (s == 1) {
+            return mem<vec<_T, _N> >::load(src+offset, _N);
+        }
+        // use direct index load for 2 ... NN-1
+        auto iv=mem<vi_t>::load(_dta._v + s * _N);
+        return load_indices<v_t, vi_t>::from(src, iv, offset);
+    }
+    // load index 1 with 0, 1, 2, 3, 4, ... _N-1
+    auto iv=mem<vi_t>::load(_dta._v + 1 * _N);
+    iv *= s;
+    return load_indices<v_t, vi_t>::from(src, iv, offset);
+}
+
 
 /*
  * Local variables:
