@@ -106,7 +106,7 @@ cftal::load_strided(const _T* src, int64_t stride, ssize_t offset)
     return impl::load_strided<_VEC, int64_t>::from(src, stride, offset);
 }
 
-template <typename _V, int32_t _STRIDE=1, ssize_t _OFFSET, typename _T>
+template <typename _V, int32_t _STRIDE, ssize_t _OFFSET, typename _T>
 _V
 cftal::load_strided(const _T* src)
 {
