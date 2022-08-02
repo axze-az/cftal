@@ -67,7 +67,6 @@ namespace cftal {
             from(const _T* src, const vec<_I, _N>& iv, ssize_t offset);
         };
 
-
         template <typename _T, size_t _N, typename _STRIDE_TYPE>
         struct load_strided<vec<_T, _N>, _STRIDE_TYPE> {
             struct alignas(128) data {
