@@ -30,29 +30,49 @@ namespace cftal {
         struct load_indices {
         };
 
+	template <typename _VEC, typename _STRIDE_TYPE>
+	struct indices_from_stride {
+	};
+	
         // struct using a stride to load a vector
         template <typename _VEC, typename _STRIDE_TYPE>
         struct load_strided {
         };
     }
 
+    // load a vector _VEC containing the elements
+    // r[i] = src[indices[i] + offset] for i=[0, indices.size())
     template <typename _VEC, typename _T, typename _INDEX_VEC>
     _VEC
     load_indices(const _T* src, const _INDEX_VEC& indices,
                  ssize_t offset=0);
 
+    // create an index vector from stride
+    template <typename _INDEX_VEC>
+    _INDEX_VEC
+    make_indices_from_stride(int32_t stride);
+
+    // create an index vector from stride
+    template <typename _INDEX_VEC>
+    _INDEX_VEC
+    make_indices_from_stride(int64_t stride);
+    
+    // load a vector _VEC containing the elements
+    // r[i] = src[offset + i * stride] for i=[0, _VEC.size())
     template <typename _VEC, typename _T>
     _VEC
     load_strided(const _T* src, int32_t stride, ssize_t offset=0);
 
+    // load a vector _VEC containing the elements
+    // r[i] = src[offset + i * stride] for i=[0, _VEC.size())
     template <typename _VEC, typename _T>
     _VEC
     load_strided(const _T* src, int64_t stride, ssize_t offset=0);
 
     // load an object of type _V with _STRIDE and _OFFSET from p
     // using indices of type _IDX_TYPE resulting in an object
-    // containing the elements i=0..._N
-    // _V[i] = p[_OFFSET + i * _STRIDE]
+    // containing the elements i=[0,__VEC.size())
+    // r[i] = src[_OFFSET + i * _STRIDE]
     template <typename _V, int32_t _STRIDE=1, ssize_t _OFFSET=0,
               typename _T>
     _V
@@ -67,15 +87,21 @@ namespace cftal {
             from(const _T* src, const vec<_I, _N>& iv, ssize_t offset);
         };
 
-        template <typename _T, size_t _N, typename _STRIDE_TYPE>
-        struct load_strided<vec<_T, _N>, _STRIDE_TYPE> {
-            struct alignas(128) data {
-                static constexpr size_t _NN=16+1;
-                // stores the strides from 0 to _NN-1
-                _STRIDE_TYPE _v[_NN*_N];
+        template <typename _I, size_t _N>
+        struct indices_from_stride<vec<_I, _N>, _I> {
+            struct alignas(vec<_I, _N>) data {
+                // stores only stride 1
+                _I _v[_N];
                 data();
             };
             static const data _dta;
+            static
+            vec<_I, _N>
+            create(_I stride);
+        };
+	
+        template <typename _T, size_t _N, typename _STRIDE_TYPE>
+        struct load_strided<vec<_T, _N>, _STRIDE_TYPE> {
             static
             vec<_T, _N>
             from(const _T* src, const _STRIDE_TYPE& s, ssize_t offset);
@@ -89,6 +115,21 @@ _VEC
 cftal::load_indices(const _T* src, const _INDEX_VEC& indices, ssize_t offset)
 {
     return impl::load_indices<_VEC, _INDEX_VEC>::from(src, indices, offset);
+}
+
+template <typename _INDEX_VEC>
+_INDEX_VEC
+cftal::make_indices_from_stride(int32_t stride)
+{
+    return impl::indices_from_stride<_INDEX_VEC, int32_t>::create(stride);
+}
+
+// create an index vector from stride
+template <typename _INDEX_VEC>
+_INDEX_VEC
+cftal::make_indices_from_stride(int64_t stride) 
+{
+    return impl::indices_from_stride<_INDEX_VEC, int64_t>::create(stride);
 }
 
 template <typename _VEC, typename _T>
@@ -121,19 +162,29 @@ from(const _T* src, const vec<_I, _N>& iv, ssize_t offset)
     return lck.from(src+offset);
 }
 
-template <typename _T, size_t _N, typename _STRIDE_TYPE>
-cftal::impl::load_strided<cftal::vec<_T, _N>, _STRIDE_TYPE>::data::data()
+template <typename _I, size_t _N>
+cftal::impl::indices_from_stride<cftal::vec<_I, _N>, _I>::
+data::data()
 {
-    for (size_t s=0, o=0; s <_NN; ++s) {
-        for (size_t i=0; i<_N; ++i, ++o) {
-            _v[o] = _STRIDE_TYPE(s)* _STRIDE_TYPE(i);
-        }
+    for (size_t i=0; i<_N; ++i) {
+	_v[i] = _I(i);
     }
 }
 
-template <typename _T, size_t _N, typename _STRIDE_TYPE>
-const typename cftal::impl::load_strided<cftal::vec<_T, _N>, _STRIDE_TYPE>::data
-cftal::impl::load_strided<cftal::vec<_T, _N>, _STRIDE_TYPE>::_dta{};
+template <typename _I, size_t _N>
+cftal::vec<_I, _N>
+cftal::impl::indices_from_stride<cftal::vec<_I, _N>, _I>::
+create(_I stride)
+{
+    vec<_I, _N> r=mem<vec<_I, _N> >::load(_dta._v, _N);
+    return r*stride;
+}
+
+template <typename _I, size_t _N>
+const typename
+cftal::impl::
+indices_from_stride<cftal::vec<_I, _N>, _I>::data
+cftal::impl::indices_from_stride<cftal::vec<_I, _N>, _I>::_dta{};
 
 template <typename _T, size_t _N, typename _STRIDE_TYPE>
 cftal::vec<_T, _N>
@@ -141,25 +192,17 @@ cftal::impl::load_strided<cftal::vec<_T, _N>, _STRIDE_TYPE>::
 from(const _T* src, const _STRIDE_TYPE& s, ssize_t offset)
 {
     using v_t = vec<_T, _N>;
-    using vi_t =vec<_STRIDE_TYPE, _N>;
-    using u_t=std::make_unsigned_t<_STRIDE_TYPE>;
-    if (u_t(s) < data::_NN) {
-        // scalar load for stride 0
-        if (s == 0) {
-            _T v=src[offset];
-            return vec<_T, _N>(v);
-        }
-        // standard vector load for stride 1
-        if (s == 1) {
-            return mem<vec<_T, _N> >::load(src+offset, _N);
-        }
-        // use direct index load for 2 ... NN-1
-        auto iv=mem<vi_t>::load(_dta._v + s * _N);
-        return load_indices<v_t, vi_t>::from(src, iv, offset);
+    using vi_t = vec<_STRIDE_TYPE, _N>;
+    // scalar load for stride 0
+    if (s == 0) {
+	_T v=src[offset];
+	return v_t(v);
     }
-    // load index 1 with 0, 1, 2, 3, 4, ... _N-1
-    auto iv=mem<vi_t>::load(_dta._v + 1 * _N);
-    iv *= s;
+    // standard vector load for stride 1
+    if (s == 1) {
+	return mem<v_t>::load(src+offset, _N);
+    }
+    auto iv=indices_from_stride<vi_t, _STRIDE_TYPE>::create(s);
     return load_indices<v_t, vi_t>::from(src, iv, offset);
 }
 
