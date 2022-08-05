@@ -51,11 +51,14 @@ bool cftal::test::strided_loads()
               << load_indices<int32_t, 8, -4>() << '\n'
               << load_indices<int32_t, 8, -8>() << '\n';
 #endif
-    std::array<float, 32*(8-1)+33+1> vp;
-    for (size_t i=0; i<vp.size(); ++i) {
-        vp[i]=float(i);
+    constexpr const int S=32;
+    constexpr const int N=8;
+    constexpr const int K=S*(N-1)+S+1;
+    std::array<float, 2*K+1> vp;
+    for (ssize_t i=0; i<ssize_t(vp.size()); ++i) {
+        vp[i]=float(i-K);
     }
-    const float* p= &vp[0];
+    const float* p= &vp[K];
 
     auto cmp=[](const v8f32& res, const v8f32& expected)->bool {
         std::cout << res << '\n';
@@ -64,7 +67,7 @@ bool cftal::test::strided_loads()
 
     bool rc=true;
 
-    std::cout << std::setprecision(3) << std::scientific;
+    std::cout << std::setprecision(2) << std::showpos << std::scientific;
     std::cout << "checking strided loads without offset\n";
     v8f32 r;
     r=v8f32{0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}*0.0f;
@@ -300,9 +303,8 @@ bool cftal::test::strided_loads()
         rc=false;
     }
 
-    std::cout << std::setprecision(3) << std::scientific;
     std::cout << "checking flexible strided loads without offset\n";
-    for (int i=0; i<=16; ++i) {
+    for (int i=-S; i<=S; ++i) {
         r=v8f32{0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}*float(i);
         if (cmp(load_strided<v8f32>(p, i), r)==false) {
             std::cout << "load_strided<v8f32>(p, " << i
@@ -311,9 +313,8 @@ bool cftal::test::strided_loads()
             rc=false;
         }
     }
-    std::cout << std::setprecision(3) << std::scientific;
     std::cout << "checking flexible strided loads with offset\n";
-    for (int i=0; i<=32; ++i) {
+    for (int i=-S; i<=S; ++i) {
         r=v8f32{0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f}*float(i) +
             float(i+1);
         if (cmp(load_strided<v8f32>(p, i, i+1), r)==false) {
