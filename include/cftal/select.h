@@ -89,7 +89,7 @@ inline
 bool
 cftal::any_of(bool b)
 {
-    return b;
+    return b==true;
 }
 
 inline
@@ -103,7 +103,7 @@ inline
 bool
 cftal::all_of(bool b)
 {
-    return b;
+    return b==true;
 }
 
 // Local variables:
