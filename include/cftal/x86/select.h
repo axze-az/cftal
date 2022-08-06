@@ -633,13 +633,14 @@ cftal::x86::
 select_v8u16<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m128i a, __m128i b)
 {
 #if defined (__SSE4_1__)
+#if defined (__AVX2__)
     if (_P0 == _P1 && _P2 == _P3 && _P4 == _P5 && _P6 == _P7) {
         enum { sm=csel4<_P0, _P2, _P4, _P6>::val };
         return _mm_blend_epi32(b, a, sm);
-    } else {
-        enum { sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val };
-        return _mm_blend_epi16(b, a, sm);
     }
+#endif
+    enum { sm=csel8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::val };
+    return _mm_blend_epi16(b, a, sm);
 #else
     typedef const_v8u16<
         uint16_t(_P0 ? -1 : 0), uint16_t(_P1 ? -1 : 0),
