@@ -48,11 +48,13 @@ namespace cftal {
                  ssize_t offset=0);
 
     // create an index vector from stride
+    // r[i] = i * stride for i=[0, _INDEX_VEC.size())
     template <typename _INDEX_VEC>
     _INDEX_VEC
     make_indices_from_stride(int32_t stride);
 
     // create an index vector from stride
+    // r[i] = i * stride for i=[0, _INDEX_VEC.size())
     template <typename _INDEX_VEC>
     _INDEX_VEC
     make_indices_from_stride(int64_t stride);
@@ -80,6 +82,7 @@ namespace cftal {
 
     namespace impl {
 
+        // load indices specialization for vec<_T, _N> and vec<_I, _N>
         template <typename _T, typename _I, size_t _N>
         struct load_indices<vec<_T, _N>, vec<_I, _N> > {
             static
@@ -87,6 +90,7 @@ namespace cftal {
             from(const _T* src, const vec<_I, _N>& iv, ssize_t offset);
         };
 
+        // indices_from_strides pecialization forvec<_I, _N> and _I
         template <typename _I, size_t _N>
         struct indices_from_stride<vec<_I, _N>, _I> {
             struct alignas(vec<_I, _N>) data {
@@ -100,6 +104,7 @@ namespace cftal {
             create(_I stride);
         };
 
+        // load indices specialization for vec<_T, _N> and _STRIDE_TYPE
         template <typename _T, size_t _N, typename _STRIDE_TYPE>
         struct load_strided<vec<_T, _N>, _STRIDE_TYPE> {
             static
