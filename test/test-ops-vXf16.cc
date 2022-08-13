@@ -122,7 +122,7 @@ namespace cftal {
         uint16_t expect= expected ? uint16_t(-1) : uint16_t(0);
         for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
             const f16_t& ai= *b;
-            uint16_t aii=as<uint32_t>(ai);
+            uint16_t aii=as<uint16_t>(ai);
             if (cmp(aii, expect) == false) {
                 std::cerr << msg << " element " << i
                         << " failed: " << ai << " expected: "
