@@ -84,6 +84,8 @@ set(CFTAL_GCC_TUNE "skylake" CACHE STRING "argument for gcc option -mtune=")
 if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
         CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        # please note that -Os does not work for unknown reasons
+        # whereas -O0, -O1, -O2, -O3 do
         set (CMAKE_CXX_FLAGS_RELEASE
             "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=${CFTAL_GCC_ARCH}")
         set (CMAKE_CXX_FLAGS_DEBUG
