@@ -351,7 +351,7 @@ bool cftal::test::test_cvt_f32_f16(exec_stats<_M>& st)
 {
     bool r=true;
     uint64_t t0, t1;
-    for (uint64_t i=0; i<0x100000000u; i+=_N) {
+    for (uint64_t i=0; i<0x10000000u; i+=_N) {
         uint32_t a[_N];
         for (uint64_t j=0; j<_N; ++j)
             a[j] = i+j;
@@ -412,6 +412,7 @@ int main(int argc, char** argv)
     // r &=cftal::test::test_ref_cvt_f32_f16();
     r &=cftal::test::test_f16_to_f32();
     r &=cftal::test::test_f32_to_f16();
+    std::cout << "testing cvt f16 --> f32\n" << std::flush;
     cftal::test::exec_stats<32> f16_f32;
     r &= cftal::test::test_cvt_f16_f32<1>(f16_f32);
     r &= cftal::test::test_cvt_f16_f32<2>(f16_f32);
@@ -420,7 +421,7 @@ int main(int argc, char** argv)
     r &= cftal::test::test_cvt_f16_f32<16>(f16_f32);
     r &= cftal::test::test_cvt_f16_f32<32>(f16_f32);
     std::cout << "cvt f16 --> f32 " << f16_f32;
-
+    std::cout << "testing cvt f32 --> f16\n" << std::flush;
     cftal::test::exec_stats<32> f32_f16;
     r &= cftal::test::test_cvt_f32_f16<1>(f32_f16);
     r &= cftal::test::test_cvt_f32_f16<2>(f32_f16);
