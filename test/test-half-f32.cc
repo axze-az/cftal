@@ -249,7 +249,7 @@ namespace cftal {
         };
 
         template <typename _T>
-        struct check_rsqrt {
+        struct check_half_rsqrt {
             template <std::size_t _N>
             static
             vec<_T, _N>
@@ -273,7 +273,7 @@ namespace cftal {
         };
 
         template <typename _T>
-        struct check_sqrt {
+        struct check_half_sqrt {
             template <std::size_t _N>
             static
             vec<_T, _N>
@@ -576,7 +576,7 @@ int main_rsqrt(const cftal::test::pgm_args& ags)
     auto us=std::make_shared<ulp_stats>();
     exec_stats<_N> st;
     rc &= of_fp_func_up_to<
-        ftype, _N, check_rsqrt<ftype> >::v(st, d,
+        ftype, _N, check_half_rsqrt<ftype> >::v(st, d,
                                                 ags._speed_only,
                                                 ags._mt,
                                                 cmp_ulp<ftype>(ulp, us),
@@ -605,11 +605,11 @@ int main_sqrt(const cftal::test::pgm_args& ags)
     auto us=std::make_shared<ulp_stats>();
     exec_stats<_N> st;
     rc &= of_fp_func_up_to<
-        ftype, _N, check_sqrt<ftype> >::v(st, d,
-                                                ags._speed_only,
-                                                ags._mt,
-                                                cmp_ulp<ftype>(ulp, us),
-                                                ags._cnt, true);
+        ftype, _N, check_half_sqrt<ftype> >::v(st, d,
+					       ags._speed_only,
+					       ags._mt,
+					       cmp_ulp<ftype>(ulp, us),
+					       ags._cnt, true);
     std::cout << "ulps: "
               << std::fixed << std::setprecision(4)
               << ulp_stats_to_stream(*us, true) << std::endl;
