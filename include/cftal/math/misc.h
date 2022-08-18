@@ -426,7 +426,7 @@ cftal::math::impl::root_r2::order7(_T x, _T y)
         _C(3.0/8.0),
         _C(-0.5)
     };
-    _T d= z*horner(z, ci);
+    _T d= z*horner2(z, _T(z*z), ci);
     _T xn= x + x*d;
     return xn;
 }
@@ -445,7 +445,7 @@ cftal::math::impl::root_r2::order8(_T x, _T y)
         _C(3.0/8.0),
         _C(-0.5)
     };
-    _T d= z*horner(z, ci);
+    _T d= z*horner2(z, _T(z*z), ci);
     _T xn= x + x*d;
     return xn;
 }
