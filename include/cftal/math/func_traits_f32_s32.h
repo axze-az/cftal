@@ -32,8 +32,10 @@ namespace cftal {
             : public d_real_traits<float> {
             using vf_type = float;
             using vi_type = int32_t;
+            using vu_type = uint32_t;
             using vmf_type = bool;
             using vmi_type = bool;
+            using vmu_type = bool;
             union ud_t {
                 float _d;
                 uint32_t _u;

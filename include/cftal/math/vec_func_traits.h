@@ -40,12 +40,14 @@ namespace cftal {
             using vi_type = vec<int32_t, _N>;
             using vmi_type = typename vec<int32_t, _N>::mask_type;
             using vu_type = vec<uint32_t, _N>;
+            using vmu_type = typename vec<uint32_t, _N>::mask_type;
             // integer vector with the same length as vf_type
             using vi2_type = vec<int32_t, 2*_N >;
             using vmi2_type = typename vec<int32_t, 2* _N>::mask_type;
-
             using vli_type = vec<int64_t, _N>;
             using vmli_type= typename vec<int64_t, _N>::mask_type;
+            using vlu_type = vec<uint64_t, _N>;
+            using vmlu_type= typename vec<uint64_t, _N>::mask_type;
 
             using vdf_type = d_real<vf_type>;
 

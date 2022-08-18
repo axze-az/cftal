@@ -34,8 +34,13 @@ namespace cftal {
             using vf_type = double;
             using vi_type = int32_t;
             using vli_type = int64_t;
+            using vu_type= uint32_t;
+            using vlu_type= uint64_t;
             using vmf_type = bool;
             using vmi_type = bool;
+            using vmu_type = bool;
+            using vmli_type = bool;
+            using vmlu_type = bool;
             union ud_t {
                 double _d;
                 uint64_t _u;
