@@ -579,19 +579,19 @@ cftal::v8f32 cftal::mulsign(const v8f32& x, const v8f32& y)
 inline
 bool cftal::all_of(const v8f32::mask_type& a)
 {
-    return x86::read_signs_f32(a()) == 0xff;
+    return x86::all_of_f32(a());
 }
 
 inline
 bool cftal::any_of(const v8f32::mask_type& a)
 {
-    return x86::read_signs_f32(a()) != 0;
+    return x86::any_of_f32(a());
 }
 
 inline
 bool cftal::none_of(const v8f32::mask_type& a)
 {
-    return x86::read_signs_f32(a()) == 0;
+    return x86::any_of_f32(a());
 }
 #endif
 

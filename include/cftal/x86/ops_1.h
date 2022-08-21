@@ -179,7 +179,14 @@ namespace cftal {
         // return the mask itself
         uint32_t read_signs_f64(__mmask8 i);
 #endif
-
+        // check the sign bits of v4f32
+        bool all_of_f32(__m128 a);
+        bool any_of_f32(__m128 a);
+        bool none_of_f32(__m128 a);
+        // check the sign bits of v2f64
+        bool all_of_f64(__m128d a);
+        bool any_of_f64(__m128d a);
+        bool none_of_f64(__m128d a);
         // check the sign bits of v16s8
         bool all_of_s8(__m128i a);
         bool any_of_s8(__m128i a);
@@ -196,7 +203,16 @@ namespace cftal {
         bool all_of_s64(__m128i a);
         bool any_of_s64(__m128i a);
         bool none_of_s64(__m128i a);
-
+#if defined (__AVX__)
+        // check the sign bits of v8f32
+        bool all_of_f32(__m256 a);
+        bool any_of_f32(__m256 a);
+        bool none_of_f32(__m256 a);
+        // check the sign bits of v4f64
+        bool all_of_f64(__m256d a);
+        bool any_of_f64(__m256d a);
+        bool none_of_f64(__m256d a);
+#endif
 #if defined (__AVX2__)
         // check the sign bits of v16s16
         bool all_of_s8(__m256i a);
@@ -454,6 +470,78 @@ cftal::uint32_t cftal::x86::read_signs_f64(__mmask8 a)
 #endif
 
 inline
+bool cftal::x86::all_of_f32(__m128 a)
+{
+#if defined (__AVX__)
+    const __m128 msk=  v_sign_v4f32_msk::fv();
+    // test if (~a & msk) are all zero
+    return _mm_testc_ps(a, msk);
+#else
+    return compress_mask_f32(a) == 0x0f;
+#endif
+}
+
+inline
+bool cftal::x86::none_of_f32(__m128 a)
+{
+#if defined (__AVX__)
+    const __m128 msk=  v_sign_v4f32_msk::fv();
+    // test if (a & msk) are all zero
+    return _mm_testz_ps(a, msk);
+#else
+    return compress_mask_f32(a) == 0x00;
+#endif
+}
+
+inline
+bool cftal::x86::any_of_f32(__m128 a)
+{
+#if defined (__AVX__)
+    const __m128 msk=  v_sign_v4f32_msk::fv();
+    // test if (a & msk) are all zero
+    return !_mm_testz_ps(a, msk);
+#else
+    return compress_mask_f32(a) != 0x00;
+#endif
+}
+
+inline
+bool cftal::x86::all_of_f64(__m128d a)
+{
+#if defined (__AVX__)
+    const __m128d msk=  v_sign_v2f64_msk::dv();
+    // test if (~a & msk) are all zero
+    return _mm_testc_pd(a, msk);
+#else
+    return compress_mask_f64(a) == 0x03;
+#endif
+}
+
+inline
+bool cftal::x86::none_of_f64(__m128d a)
+{
+#if defined (__AVX__)
+    const __m128d msk=  v_sign_v2f64_msk::dv();
+    // test if (a & msk) are all zero
+    return _mm_testz_pd(a, msk);
+#else
+    return compress_mask_f64(a) == 0x00;
+#endif
+}
+
+inline
+bool cftal::x86::any_of_f64(__m128d a)
+{
+#if defined (__AVX__)
+    const __m128d msk=  v_sign_v2f64_msk::dv();
+    // test if (a & msk) are all zero
+    return !_mm_testz_pd(a, msk);
+#else
+    return compress_mask_f64(a) != 0x00;
+#endif
+}
+
+inline
 bool cftal::x86::all_of_s8(__m128i a)
 {
 #if defined (__SSE4_1__)
@@ -597,6 +685,56 @@ bool cftal::x86::any_of_s64(__m128i a)
     return compress_mask_u64(a) != 0x00;
 #endif
 }
+
+#if defined (__AVX__)
+inline
+bool cftal::x86::all_of_f32(__m256 a)
+{
+    const __m256 msk= _mm256_set1_ps(sign_f32_msk::v.f32());
+    // test if (~a & msk) are all zero
+    return _mm256_testc_ps(a, msk);
+}
+
+inline
+bool cftal::x86::none_of_f32(__m256 a)
+{
+    const __m256 msk= _mm256_set1_ps(sign_f32_msk::v.f32());
+    // test if (a & msk) are all zero
+    return _mm256_testz_ps(a, msk);
+}
+
+inline
+bool cftal::x86::any_of_f32(__m256 a)
+{
+    const __m256 msk= _mm256_set1_ps(sign_f32_msk::v.f32());
+    // test if (a & msk) are all zero
+    return !_mm256_testz_ps(a, msk);
+}
+
+inline
+bool cftal::x86::all_of_f64(__m256d a)
+{
+    const __m256d msk= _mm256_set1_pd(sign_f64_msk::v.f64());
+    // test if (~a & msk) are all zero
+    return _mm256_testc_pd(a, msk);
+}
+
+inline
+bool cftal::x86::none_of_f64(__m256d a)
+{
+    const __m256d msk= _mm256_set1_pd(sign_f64_msk::v.f64());
+    // test if (a & msk) are all zero
+    return _mm256_testz_pd(a, msk);
+}
+
+inline
+bool cftal::x86::any_of_f64(__m256d a)
+{
+    const __m256d msk= _mm256_set1_pd(sign_f64_msk::v.f64());
+    // test if (a & msk) are all zero
+    return !_mm256_testz_pd(a, msk);
+}
+#endif
 
 #if defined (__AVX2__)
 

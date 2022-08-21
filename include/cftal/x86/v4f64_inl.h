@@ -522,21 +522,21 @@ cftal::v4f64 cftal::mulsign(const v4f64& x, const v4f64& y)
 inline
 bool cftal::any_of(const vec<double, 4>::mask_type& s)
 {
-    return x86::read_signs_f64(s()) != 0;
+    return x86::any_of_f64(s());
 }
 
 inline
 bool
 cftal::all_of(const vec<double, 4>::mask_type& s)
 {
-    return x86::read_signs_f64(s()) == 0xf;
+    return x86::all_of_f64(s());
 }
 
 inline
 bool
 cftal::none_of(const vec<double, 4>::mask_type& s)
 {
-    return x86::read_signs_f64(s()) == 0;
+    return x86::none_of_f64(s());
 }
 #endif
 

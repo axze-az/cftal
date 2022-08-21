@@ -548,21 +548,21 @@ inline
 bool
 cftal::any_of(const vec<double, 2>::mask_type& s)
 {
-    return x86::read_signs_f64(s()) != 0;
+    return x86::any_of_f64(s());
 }
 
 inline
 bool
 cftal::all_of(const vec<double, 2>::mask_type& s)
 {
-    return x86::read_signs_f64(s()) == 0x3;
+    return x86::all_of_f64(s());
 }
 
 inline
 bool
 cftal::none_of(const vec<double, 2>::mask_type& s)
 {
-    return x86::read_signs_f64(s()) == 0;
+    return x86::none_of_f64(s());
 }
 #endif
 
