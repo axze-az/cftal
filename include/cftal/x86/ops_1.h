@@ -418,8 +418,15 @@ cftal::x86::compress_mask_u16(__m256i m)
                                        1,  3,  5,  7,  9, 11, 13, 15,
                                        -1, -1, -1, -1, -1, -1, -1, -1);
     __m256i as= _mm256_shuffle_epi8(m, m0);
+#if 1
+    // and use vpermq concentrate the values in the low half
+    const int p=shuffle4<0, 2, 1, 3>::val;
+    as =_mm256_permute4x64_epi64(as, p);
+    uint32_t r=_mm_movemask_epi8(_mm256_castsi256_si128(as));
+#else
     uint32_t r= _mm256_movemask_epi8(as);
     r = (r>>(16-8)) | (r & 0xFF);
+#endif
     return r;
 }
 
