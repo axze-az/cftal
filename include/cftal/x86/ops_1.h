@@ -214,7 +214,7 @@ namespace cftal {
         bool none_of_f64(__m256d a);
 #endif
 #if defined (__AVX2__)
-        // check the sign bits of v16s16
+        // check the sign bits of v32s8
         bool all_of_s8(__m256i a);
         bool any_of_s8(__m256i a);
         bool none_of_s8(__m256i a);
