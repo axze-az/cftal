@@ -47,7 +47,7 @@ namespace cftal {
         template <>
         struct perm1_v2f64< 1, 1> : public vunpckhpd {};
         template <>
-        struct perm1_v2f64< 0, 0> : public vunpcklpd {};
+        struct perm1_v2f64< 0, 0> : public vmovddup {};
         template <>
         struct perm1_v2f64<-1, 0>
             : public exec_int< vpslldq<8> > {};
@@ -96,6 +96,10 @@ namespace cftal {
         struct perm1_v4f32<2,3,2,3> : public exec_f64<vunpckhpd> {};
         template <>
         struct perm1_v4f32<0,0,1,1> : public vunpcklps {};
+        template <>
+        struct perm1_v4f32<0,0,2,2> : public vmovsldup {};
+        template <>
+        struct perm1_v4f32<1,1,3,3> : public vmovshdup {};
         template <>
         struct perm1_v4f32<2,2,3,3> : public vunpckhps {};
 
@@ -570,7 +574,7 @@ namespace cftal {
             : public select_arg_1<__m256d> {};
         template <>
         struct perm1_v4f64<0, 0, 2, 2>
-            : public vunpcklpd {};
+            : public vmovddup {};
         template <>
         struct perm1_v4f64<0,-1, 2,-1>
             : public fixed_arg_2<__m256d, make_zero_v4f64,
@@ -754,6 +758,14 @@ namespace cftal {
         template <>
         struct perm1_v8f32<0, 0, 1, 1, 4, 4, 5, 5>
             : public vunpcklps {};
+
+        template <>
+        struct perm1_v8f32<0, 0, 2, 2, 4, 4, 6, 6>
+            : public vmovsldup {};
+
+        template <>
+        struct perm1_v8f32<1, 1, 3, 3, 5, 5, 7, 7>
+            : public vmovshdup {};
 
         template <>
         struct perm1_v8f32<0, -1, 1, -1, 4, -1, 5, -1>

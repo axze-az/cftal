@@ -288,6 +288,53 @@ namespace cftal {
         };
 #endif
 
+        struct vmovddup {
+            static __m128d v(__m128d a) {
+#if defined (__SSE3__)
+                return _mm_movedup_pd(a);
+#else
+                return _mm_unpacklo_pd(a, a);
+#endif
+            }
+#if defined (__AVX__)
+            static __m256d v(__m256d a) {
+                return _mm256_movedup_pd(a);
+            }
+#endif
+        };
+
+        struct vmovsldup {
+            static __m128 v(__m128 a) {
+#if defined (__SSE3__)
+                return _mm_moveldup_ps(a);
+#else
+                constexpr const int msk=shuffle4<0, 0, 2, 2>::val;
+                return _mm_shuffle_ps(a, a, msk);
+#endif
+            }
+#if defined (__AVX__)
+            static __m256 v(__m256 a) {
+                return _mm256_moveldup_ps(a);
+            }
+#endif
+        };
+
+        struct vmovshdup {
+            static __m128 v(__m128 a) {
+#if defined (__SSE3__)
+                return _mm_movehdup_ps(a);
+#else
+                constexpr const int msk=shuffle4<1, 1, 3, 3>::val;
+                return _mm_shuffle_ps(a, a, msk);
+#endif
+            }
+#if defined (__AVX__)
+            static __m256 v(__m256 a) {
+                return _mm256_movehdup_ps(a);
+            }
+#endif
+        };
+
         template <unsigned _P0, unsigned _P1>
         struct vshufpd {
             static __m128d v(__m128d a, __m128d b) {
