@@ -607,7 +607,6 @@ namespace cftal {
         // specialization of permutations of two double
         // vectors
         template <>
-
         struct perm2_v4f64<-1,-1,-1,-1>
             : public make_zero_v4f64 {};
         template <>
