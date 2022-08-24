@@ -27,6 +27,38 @@ namespace cftal::test {
 
     bool of_emul_vpshufb();
 
+    template <typename _T, size_t _N>
+    struct expand_and_compress {
+        static
+        uint64_t mask(uint64_t msk);
+    };
+
+    template <>
+    struct expand_and_compress<int8_t, 16> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v16u8(msk);
+            return x86::compress_mask_u8(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<uint8_t, 16> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v16u8(msk);
+            return x86::compress_mask_u8(t);
+        }
+    };
+
+
+    template <typename _T, size_t _N>
+    bool
+    expand_and_compress_mask();
+
+    bool
+    expand_and_compress_masks();
+
 }
 
 bool
@@ -80,9 +112,49 @@ cftal::test::of_emul_vpshufb()
 #endif
 }
 
+template <typename _T, size_t _N>
+bool
+cftal::test::expand_and_compress_mask()
+{
+    return true;
+}
+
+bool
+cftal::test::expand_and_compress_masks()
+{
+    bool r=true;
+    r &= expand_and_compress_mask<int8_t, 16>();
+    r &= expand_and_compress_mask<uint8_t, 16>();
+    r &= expand_and_compress_mask<int16_t, 8>();
+    r &= expand_and_compress_mask<uint16_t, 8>();
+    r &= expand_and_compress_mask<int32_t, 4>();
+    r &= expand_and_compress_mask<uint32_t, 4>();
+    r &= expand_and_compress_mask<int64_t, 2>();
+    r &= expand_and_compress_mask<uint64_t, 2>();
+    r &= expand_and_compress_mask<float, 4>();
+    r &= expand_and_compress_mask<double, 2>();
+#if defined (__AVX__)
+    r &= expand_and_compress_mask<float, 8>();
+    r &= expand_and_compress_mask<double, 4>();
+#endif
+#if defined (__AVX2__)
+    r &= expand_and_compress_mask<int8_t, 32>();
+    r &= expand_and_compress_mask<uint8_t, 32>();
+    r &= expand_and_compress_mask<int16_t, 16>();
+    r &= expand_and_compress_mask<uint16_t, 16>();
+    r &= expand_and_compress_mask<int32_t, 8>();
+    r &= expand_and_compress_mask<uint32_t, 8>();
+    r &= expand_and_compress_mask<int64_t, 4>();
+    r &= expand_and_compress_mask<uint64_t, 4>();
+#endif
+    return r;
+}
+
 int main()
 {
-    return cftal::test::of_emul_vpshufb()==true;
+    bool r=cftal::test::of_emul_vpshufb();
+    r &= cftal::test::expand_and_compress_masks();
+    return r==true;
 }
 
 #else
