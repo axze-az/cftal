@@ -147,6 +147,24 @@ namespace cftal {
         uint32_t compress_mask_u32(__m256i m);
         uint32_t compress_mask_u64(__m256i m);
 #endif
+
+    __m128 expand_mask_v4f32(uint32_t msk4);
+    __m128d expand_mask_v2f64(uint32_t msk2);
+    __m128i expand_mask_v16u8(uint32_t msk16);
+    __m128i expand_mask_v8u16(uint32_t msk8);
+    __m128i expand_mask_v4u32(uint32_t msk4);
+    __m128i expand_mask_v2u64(uint32_t msk2);
+
+#if defined (__AVX__)
+    __m256 expand_mask_v8f32(uint32_t msk8);
+    __m256d expand_mask_v4f64(uint32_t msk4);
+#endif
+#if defined (__AVX2__)
+    __m256i expand_mask_v32u8(uint32_t msk32);
+    __m256i expand_mask_v16u16(uint32_t msk16);
+    __m256i expand_mask_v8u32(uint32_t msk8);
+    __m256i expand_mask_v4u64(uint32_t msk4);
+#endif
         // read the sign bits of all elements into a bit mask
         uint32_t read_signs_f32(__m128 i);
         // read the sign bits of all elements into a bit mask
@@ -442,6 +460,158 @@ uint32_t cftal::x86::compress_mask_u64(__m256i m)
 {
     return compress_mask_f64(_mm256_castsi256_pd(m));
 }
+
+inline
+__m128
+cftal::x86::expand_mask_v4f32(uint32_t msk4)
+{
+    return _mm_castsi128_ps(expand_mask_v4u32(msk4));
+}
+
+inline
+__m128d
+cftal::x86::expand_mask_v2f64(uint32_t msk2)
+{
+    return _mm_castsi128_pd(expand_mask_v2u64(msk2));
+}
+
+inline
+__m128i
+cftal::x86::expand_mask_v16u8(uint32_t msk16)
+{
+    const __m128i sm=_mm_setr_epi8( 0, 0, 0, 0, 0, 0, 0, 0,
+                                    1, 1, 1, 1, 1, 1, 1, 1);
+    const __m128i bm=_mm_setr_epi8( 1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u,
+                                    1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u);
+    __m128i r=_mm_cvtsi32_si128(msk16);
+    r = _mm_shuffle_epi8(r, sm);
+    r = _mm_and_si128(r, bm);
+    r = _mm_cmpeq_epi8(r, bm);
+    return r;
+}
+
+inline
+__m128i
+cftal::x86::expand_mask_v8u16(uint32_t msk8)
+{
+    const __m128i bm=_mm_setr_epi16( 1, 2, 4, 8, 16, 32, 64, 128);
+    __m128i r=_mm_set1_epi8(msk8);
+    r = _mm_and_si128(r, bm);
+    r = _mm_cmpeq_epi16(r, bm);
+    return r;
+}
+
+inline
+__m128i
+cftal::x86::expand_mask_v4u32(uint32_t msk4)
+{
+    const __m128i bm=_mm_setr_epi32( 1, 2, 4, 8);
+    __m128i r=_mm_set1_epi32(msk4);
+    r = _mm_and_si128(r, bm);
+    r = _mm_cmpeq_epi32(r, bm);
+    return r;
+}
+
+inline
+__m128i
+cftal::x86::expand_mask_v2u64(uint32_t msk2)
+{
+    const __m128i bm=_mm_setr_epi32( 1, 0, 2, 0);
+    __m128i r=_mm_set1_epi32(msk2);
+    r = _mm_and_si128(r, bm);
+    r = _mm_cmpeq_epi64(r, bm);
+    return r;
+}
+
+#if defined (__AVX__)
+inline
+__m256
+cftal::x86::expand_mask_v8f32(uint32_t msk8)
+{
+#if defined (__AVX2__)
+    return _mm256_castsi256_ps(expand_mask_v8u32(msk8));
+#else
+    __m128 l=expand_mask_v4f32(msk & 7);
+    __m128 h=expand_mask_v4f64(msk >> 4);
+    __m256 r=_mm256_castps128_ps256(l);
+    r =_mm256_insertf128_ps(r, h, 1);
+    return r;
+#endif
+}
+
+inline
+__m256d
+cftal::x86::expand_mask_v4f64(uint32_t msk4)
+{
+#if defined (__AVX2__)
+    return _mm256_castsi256_pd(expand_mask_v4u64(msk4));
+#else
+    __m128d l=expand_mask_v2f64(msk & 3);
+    __m128d h=expand_mask_v2f64(msk >> 2);
+    __m256d r=_mm256_castpd128_pd256(l);
+    r =_mm256_insertf128_pd(r, h, 1);
+    return r;
+#endif
+}
+#endif
+
+#if defined (__AVX2__)
+inline
+__m256i
+cftal::x86::expand_mask_v32u8(uint32_t msk32)
+{
+    const __m256i sm=_mm256_setr_epi8( 0, 0, 0, 0, 0, 0, 0, 0,
+                                       1, 1, 1, 1, 1, 1, 1, 1,
+                                       2, 2, 2, 2, 2, 2, 2, 2,
+                                       3, 3, 3, 3, 3, 3, 3, 3);
+    const __m256i bm=_mm256_setr_epi8( 1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u,
+                                       1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u,
+                                       1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u,
+                                       1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u);
+    __m256i r=_mm256_set1_epi32(msk32);
+    r = _mm256_shuffle_epi8(r, sm);
+    r = _mm256_and_si256(r, bm);
+    r = _mm256_cmpeq_epi8(r, bm);
+    return r;
+}
+
+inline
+__m256i
+cftal::x86::expand_mask_v16u16(uint32_t msk16)
+{
+    const __m256i bm=_mm256_setr_epi16( 0x0001u, 0x0002u, 0x0004u, 0x0008u,
+                                        0x0010u, 0x0020u, 0x0040u, 0x0080u,
+                                        0x0100u, 0x0200u, 0x0400u, 0x0800u,
+                                        0x1000u, 0x2000u, 0x4000u, 0x8000u);
+    __m256i r=_mm256_set1_epi16(msk16);
+    r = _mm256_and_si256(r, bm);
+    r = _mm256_cmpeq_epi16(r, bm);
+    return r;
+}
+
+inline
+__m256i
+cftal::x86::expand_mask_v8u32(uint32_t msk8)
+{
+    const __m256i bm=_mm256_setr_epi32( 1, 2, 4, 8, 16, 32, 64, 128);
+    __m256i r=_mm256_set1_epi32(msk8);
+    r = _mm256_and_si256(r, bm);
+    r = _mm256_cmpeq_epi32(r, bm);
+    return r;
+}
+
+inline
+__m256i
+cftal::x86::expand_mask_v4u64(uint32_t msk4)
+{
+    const __m256i bm=_mm256_setr_epi32( 1, 0, 2, 0, 4, 0, 8, 0);
+    __m256i r=_mm256_set1_epi64x(msk4);
+    r = _mm256_and_si256(r, bm);
+    r = _mm256_cmpeq_epi64(r, bm);
+    return r;
+}
+#endif
+
 
 inline
 cftal::uint32_t cftal::x86::read_signs_s8(__m256i a)
