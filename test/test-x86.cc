@@ -51,6 +51,168 @@ namespace cftal::test {
         }
     };
 
+    template <>
+    struct expand_and_compress<int16_t, 8> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v8u16(msk);
+            return x86::compress_mask_u16(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<uint16_t, 8> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v8u16(msk);
+            return x86::compress_mask_u16(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<int32_t, 4> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v4u32(msk);
+            return x86::compress_mask_u32(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<uint32_t, 4> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v4u32(msk);
+            return x86::compress_mask_u32(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<int64_t, 2> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v2u64(msk);
+            return x86::compress_mask_u64(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<uint64_t, 2> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v2u64(msk);
+            return x86::compress_mask_u64(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<float, 4> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v4f32(msk);
+            return x86::compress_mask_f32(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<double, 2> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v2f64(msk);
+            return x86::compress_mask_f64(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<int8_t, 32> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v32u8(msk);
+            return x86::compress_mask_u8(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<uint8_t, 32> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v32u8(msk);
+            return x86::compress_mask_u8(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<int16_t, 16> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v16u16(msk);
+            return x86::compress_mask_u16(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<uint16_t, 16> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v16u16(msk);
+            return x86::compress_mask_u16(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<int32_t, 8> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v8u32(msk);
+            return x86::compress_mask_u32(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<uint32_t, 8> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v8u32(msk);
+            return x86::compress_mask_u32(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<int64_t, 4> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v4u64(msk);
+            return x86::compress_mask_u64(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<uint64_t, 4> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v4u64(msk);
+            return x86::compress_mask_u64(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<float, 8> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v8f32(msk);
+            return x86::compress_mask_f32(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<double, 4> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v4f64(msk);
+            return x86::compress_mask_f64(t);
+        }
+    };
+
 
     template <typename _T, size_t _N>
     bool
@@ -116,7 +278,29 @@ template <typename _T, size_t _N>
 bool
 cftal::test::expand_and_compress_mask()
 {
-    return true;
+    bool r=true;
+    uint64_t c0=1<<_N/2, c1=1<<(_N-_N/2);
+    for (uint64_t i0=0; i0<c0; ++i0) {
+        // std::cout << std::setw(12) << i0 << '\r' << std::flush;
+        for (uint64_t i1=0; i1<c1; ++i1) {
+            uint64_t msk= (i0 << (_N-_N/2)) + i1;
+            uint64_t rmsk=expand_and_compress<_T, _N>::mask(msk);
+            if (msk != rmsk) {
+                std::cerr << __PRETTY_FUNCTION__
+                          << " FAILURE: "
+                          << std::hex << rmsk
+                          << " expected: "
+                          << msk
+                          << '\n';
+                r=false;
+                break;
+            }
+        }
+    }
+    if (r==true) {
+        std::cout << "test of\n" << __PRETTY_FUNCTION__ << "\npassed\n";
+    }
+    return r;
 }
 
 bool
