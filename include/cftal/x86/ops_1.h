@@ -495,7 +495,7 @@ __m128i
 cftal::x86::expand_mask_v8u16(uint32_t msk8)
 {
     const __m128i bm=_mm_setr_epi16( 1, 2, 4, 8, 16, 32, 64, 128);
-    __m128i r=_mm_set1_epi8(msk8);
+    __m128i r=_mm_set1_epi16(msk8);
     r = _mm_and_si128(r, bm);
     r = _mm_cmpeq_epi16(r, bm);
     return r;
