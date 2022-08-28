@@ -280,7 +280,79 @@ namespace cftal {
             public select_arg_1<__m256i> {
         };
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 
+        // general case f64
+        template <bool _P0, bool _P1, bool _P2, bool _P3,
+                  bool _P4, bool _P5, bool _P6, bool _P7>
+        struct select_v8f64 {
+            static __m512d v(__m512d a, __m512d b);
+        };
+        // f64 specializations
+        template <>
+        struct select_v8f64<0,0,0,0,0,0,0,0> :
+            public select_arg_2<__m512d> {
+        };
+        template <>
+        struct select_v8f64<1,1,1,1,1,1,1,1> :
+            public select_arg_1<__m512d> {
+        };
+
+        // general case f32
+        template <bool _P00, bool _P01, bool _P02, bool _P03,
+                  bool _P04, bool _P05, bool _P06, bool _P07,
+                  bool _P08, bool _P09, bool _P10, bool _P11,
+                  bool _P12, bool _P13, bool _P14, bool _P15>
+        struct select_v16f32 {
+            static __m512 v(__m512 a, __m512 b);
+        };
+        // f32 specializations
+        template <>
+        struct select_v16f32<0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0>
+            : public select_arg_2<__m512> {
+        };
+        template <>
+        struct select_v16f32<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1>
+            : public select_arg_1<__m512> {
+        };
+
+        // general case u64
+        template <bool _P0, bool _P1, bool _P2, bool _P3,
+                  bool _P4, bool _P5, bool _P6, bool _P7>
+        struct select_v8u64 {
+            static __m512i v(__m512i a, __m512i b);
+        };
+        // u64 specialisations
+        template <>
+        struct select_v8u64<0,0,0,0,0,0,0,0> :
+            public select_arg_2<__m512i> {
+        };
+        template <>
+        struct select_v8u64<1,1,1,1,1,1,1,1> :
+            public select_arg_1<__m512i> {
+        };
+
+        // general case u32
+        template <bool _P00, bool _P01, bool _P02, bool _P03,
+                  bool _P04, bool _P05, bool _P06, bool _P07,
+                  bool _P08, bool _P09, bool _P10, bool _P11,
+                  bool _P12, bool _P13, bool _P14, bool _P15>
+        struct select_v16u32 {
+            static __m512i v(__m512i a, __m512i b);
+        };
+        // u32 specializations
+        template <>
+        struct select_v16u32<0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0>
+            : public select_arg_2<__m512i> {
+        };
+        template <>
+        struct select_v16u32<1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1>
+            : public select_arg_1<__m512i> {
+        };
+
+#endif
+        // ---------------------------------------------------------
+        // function definitions for select
 
         template <bool _P0, bool _P1>
         __m128d select_f64(__m128d a, __m128d b);
@@ -335,6 +407,30 @@ namespace cftal {
                   bool _P24, bool _P25, bool _P26, bool _P27,
                   bool _P28, bool _P29, bool _P30, bool _P31>
         __m256i select_u8(__m256i a, __m256i b);
+#endif
+
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+
+        template <bool _P0, bool _P1, bool _P2, bool _P3,
+                  bool _P4, bool _P5, bool _P6, bool _P7>
+        __m512d select_f64(__m512d a, __m512d b);
+
+        template <bool _P00, bool _P01, bool _P02, bool _P03,
+                  bool _P04, bool _P05, bool _P06, bool _P07,
+                  bool _P08, bool _P09, bool _P10, bool _P11,
+                  bool _P12, bool _P13, bool _P14, bool _P15>
+        __m512 select_f32(__m512 a, __m512 b);
+
+        template <bool _P0, bool _P1, bool _P2, bool _P3,
+                  bool _P4, bool _P5, bool _P6, bool _P7>
+        __m512i select_u64(__m512d a, __m512d b);
+
+        template <bool _P00, bool _P01, bool _P02, bool _P03,
+                  bool _P04, bool _P05, bool _P06, bool _P07,
+                  bool _P08, bool _P09, bool _P10, bool _P11,
+                  bool _P12, bool _P13, bool _P14, bool _P15>
+        __m512i select_u32(__m512 a, __m512 b);
+
 #endif
     }
 }
@@ -850,6 +946,116 @@ v(__m256i a, __m256i b)
 }
 #endif
 
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+
+template<bool _P0, bool _P1, bool _P2, bool _P3,
+         bool _P4, bool _P5, bool _P6, bool _P7>
+inline __m512d
+cftal::x86::
+select_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::
+v(__m512d a, __m512d b)
+{
+    constexpr const uint32_t p0=_P0 ? 0x00001 : 0x00000;
+    constexpr const uint32_t p1=_P1 ? 0x00002 : 0x00000;
+    constexpr const uint32_t p2=_P2 ? 0x00004 : 0x00000;
+    constexpr const uint32_t p3=_P3 ? 0x00008 : 0x00000;
+    constexpr const uint32_t p4=_P4 ? 0x00010 : 0x00000;
+    constexpr const uint32_t p5=_P5 ? 0x00020 : 0x00000;
+    constexpr const uint32_t p6=_P6 ? 0x00040 : 0x00000;
+    constexpr const uint32_t p7=_P7 ? 0x00080 : 0x00000;
+    constexpr __mmask8 msk= p0|p1|p2|p3|p4|p5|p6|p7;
+
+    return _mm512_mask_blend_pd(msk, b, a);
+}
+
+template <bool _P00, bool _P01, bool _P02, bool _P03,
+          bool _P04, bool _P05, bool _P06, bool _P07,
+          bool _P08, bool _P09, bool _P10, bool _P11,
+          bool _P12, bool _P13, bool _P14, bool _P15>
+inline __m512
+cftal::x86::
+select_v16f32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+              _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+v(__m512 a, __m512 b)
+{
+    constexpr const uint32_t p00=_P00 ? 0x00001 : 0x00000;
+    constexpr const uint32_t p01=_P01 ? 0x00002 : 0x00000;
+    constexpr const uint32_t p02=_P02 ? 0x00004 : 0x00000;
+    constexpr const uint32_t p03=_P03 ? 0x00008 : 0x00000;
+    constexpr const uint32_t p04=_P04 ? 0x00010 : 0x00000;
+    constexpr const uint32_t p05=_P05 ? 0x00020 : 0x00000;
+    constexpr const uint32_t p06=_P06 ? 0x00040 : 0x00000;
+    constexpr const uint32_t p07=_P07 ? 0x00080 : 0x00000;
+    constexpr const uint32_t p08=_P08 ? 0x00100 : 0x00000;
+    constexpr const uint32_t p09=_P09 ? 0x00200 : 0x00000;
+    constexpr const uint32_t p10=_P10 ? 0x00400 : 0x00000;
+    constexpr const uint32_t p11=_P11 ? 0x00800 : 0x00000;
+    constexpr const uint32_t p12=_P12 ? 0x01000 : 0x00000;
+    constexpr const uint32_t p13=_P13 ? 0x02000 : 0x00000;
+    constexpr const uint32_t p14=_P14 ? 0x04000 : 0x00000;
+    constexpr const uint32_t p15=_P15 ? 0x08000 : 0x00000;
+
+    constexpr __mmask16 msk= p00|p01|p02|p03|p04|p05|p06|p07|
+                             p08|p09|p10|p11|p12|p13|p14|p15;
+    return _mm512_mask_blend_ps(msk, b, a);
+}
+
+
+template<bool _P0, bool _P1, bool _P2, bool _P3,
+         bool _P4, bool _P5, bool _P6, bool _P7>
+inline __m512i
+cftal::x86::
+select_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::
+v(__m512i a, __m512i b)
+{
+    constexpr const uint32_t p0=_P0 ? 0x00001 : 0x00000;
+    constexpr const uint32_t p1=_P1 ? 0x00002 : 0x00000;
+    constexpr const uint32_t p2=_P2 ? 0x00004 : 0x00000;
+    constexpr const uint32_t p3=_P3 ? 0x00008 : 0x00000;
+    constexpr const uint32_t p4=_P4 ? 0x00010 : 0x00000;
+    constexpr const uint32_t p5=_P5 ? 0x00020 : 0x00000;
+    constexpr const uint32_t p6=_P6 ? 0x00040 : 0x00000;
+    constexpr const uint32_t p7=_P7 ? 0x00080 : 0x00000;
+
+    constexpr __mmask8 msk= p0|p1|p2|p3|p4|p5|p6|p7;
+    return _mm512_mask_blend_epi64(msk, b, a);
+}
+
+
+template <bool _P00, bool _P01, bool _P02, bool _P03,
+          bool _P04, bool _P05, bool _P06, bool _P07,
+          bool _P08, bool _P09, bool _P10, bool _P11,
+          bool _P12, bool _P13, bool _P14, bool _P15>
+inline __m512i
+cftal::x86::
+select_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+              _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+v(__m512i a, __m512i b)
+{
+    constexpr const uint32_t p00=_P00 ? 0x00001 : 0x00000;
+    constexpr const uint32_t p01=_P01 ? 0x00002 : 0x00000;
+    constexpr const uint32_t p02=_P02 ? 0x00004 : 0x00000;
+    constexpr const uint32_t p03=_P03 ? 0x00008 : 0x00000;
+    constexpr const uint32_t p04=_P04 ? 0x00010 : 0x00000;
+    constexpr const uint32_t p05=_P05 ? 0x00020 : 0x00000;
+    constexpr const uint32_t p06=_P06 ? 0x00040 : 0x00000;
+    constexpr const uint32_t p07=_P07 ? 0x00080 : 0x00000;
+    constexpr const uint32_t p08=_P08 ? 0x00100 : 0x00000;
+    constexpr const uint32_t p09=_P09 ? 0x00200 : 0x00000;
+    constexpr const uint32_t p10=_P10 ? 0x00400 : 0x00000;
+    constexpr const uint32_t p11=_P11 ? 0x00800 : 0x00000;
+    constexpr const uint32_t p12=_P12 ? 0x01000 : 0x00000;
+    constexpr const uint32_t p13=_P13 ? 0x02000 : 0x00000;
+    constexpr const uint32_t p14=_P14 ? 0x04000 : 0x00000;
+    constexpr const uint32_t p15=_P15 ? 0x08000 : 0x00000;
+
+    constexpr __mmask16 msk= p00|p01|p02|p03|p04|p05|p06|p07|
+                             p08|p09|p10|p11|p12|p13|p14|p15;
+    return _mm512_mask_blend_epi32(msk, b, a);
+}
+
+#endif
+
 template <bool _P0, bool _P1>
 inline
 __m128d cftal::x86::select_f64(__m128d a, __m128d b)
@@ -966,8 +1172,53 @@ __m256i cftal::x86::select_u8(__m256i a, __m256i b)
                         _P24, _P25, _P26, _P27,
                         _P28, _P29, _P30, _P31>::v(a, b);
 }
+#endif
+
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+
+template <bool _P0, bool _P1, bool _P2, bool _P3,
+          bool _P4, bool _P5, bool _P6, bool _P7>
+inline
+__m512d cftal::x86::select_f64(__m512d a, __m512d b)
+{
+    return select_v8f64<_P0, _P1, _P2, _P3,
+                        _P4, _P5, _P6, _P7>::v(a, b);
+}
+
+template <bool _P00, bool _P01, bool _P02, bool _P03,
+          bool _P04, bool _P05, bool _P06, bool _P07,
+          bool _P08, bool _P09, bool _P10, bool _P11,
+          bool _P12, bool _P13, bool _P14, bool _P15>
+__m512 cftal::x86::select_f32(__m512 a, __m512 b)
+{
+    return select_v16f32<_P00, _P01, _P02, _P03,
+                         _P04, _P05, _P06, _P07,
+                         _P08, _P09, _P10, _P11,
+                         _P12, _P13, _P14, _P15>::v(a, b);
+}
+
+template <bool _P0, bool _P1, bool _P2, bool _P3,
+          bool _P4, bool _P5, bool _P6, bool _P7>
+__m512i cftal::x86::select_u64(__m512d a, __m512d b)
+{
+    return select_v8u64<_P0, _P1, _P2, _P3,
+                        _P4, _P5, _P6, _P7>::v(a, b);
+}
+
+template <bool _P00, bool _P01, bool _P02, bool _P03,
+          bool _P04, bool _P05, bool _P06, bool _P07,
+          bool _P08, bool _P09, bool _P10, bool _P11,
+          bool _P12, bool _P13, bool _P14, bool _P15>
+__m512i cftal::x86::select_u32(__m512 a, __m512 b)
+{
+    return select_v16u32<_P00, _P01, _P02, _P03,
+                         _P04, _P05, _P06, _P07,
+                         _P08, _P09, _P10, _P11,
+                         _P12, _P13, _P14, _P15>::v(a, b);
+}
 
 #endif
+
 
 // Local variables:
 // mode: c++

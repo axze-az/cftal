@@ -3588,7 +3588,7 @@ perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
 #endif
     const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
     const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
-    const bool do_zero= m2 != 0xFFFFFFFF;
+    // const bool do_zero= m2 != 0xFFFFFFFF;
 
     if (m2 == 0xFFFFFFFF)
         return _mm512_setzero_pd();
