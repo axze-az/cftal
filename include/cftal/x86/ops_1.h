@@ -479,10 +479,10 @@ inline
 __m128i
 cftal::x86::expand_mask_v16u8(uint32_t msk16)
 {
-    const __m128i sm=_mm_setr_epi8( 0, 0, 0, 0, 0, 0, 0, 0,
-                                    1, 1, 1, 1, 1, 1, 1, 1);
-    const __m128i bm=_mm_setr_epi8( 1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u,
-                                    1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u);
+    const __m128i sm=const_v16u8< 0, 0, 0, 0, 0, 0, 0, 0,
+                                  1, 1, 1, 1, 1, 1, 1, 1>::iv();
+    const __m128i bm=const_v16u8< 1, 2, 4, 8, 16, 32, 64, 128,
+                                  1, 2, 4, 8, 16, 32, 64, 128>::iv();
     __m128i r=_mm_cvtsi32_si128(msk16);
     r = _mm_shuffle_epi8(r, sm);
     r = _mm_and_si128(r, bm);
@@ -494,7 +494,7 @@ inline
 __m128i
 cftal::x86::expand_mask_v8u16(uint32_t msk8)
 {
-    const __m128i bm=_mm_setr_epi16( 1, 2, 4, 8, 16, 32, 64, 128);
+    const __m128i bm=const_v8u16< 1, 2, 4, 8, 16, 32, 64, 128>::iv();
     __m128i r=_mm_set1_epi16(msk8);
     r = _mm_and_si128(r, bm);
     r = _mm_cmpeq_epi16(r, bm);
@@ -505,7 +505,7 @@ inline
 __m128i
 cftal::x86::expand_mask_v4u32(uint32_t msk4)
 {
-    const __m128i bm=_mm_setr_epi32( 1, 2, 4, 8);
+    const __m128i bm=const_v4u32< 1, 2, 4, 8>::iv();
     __m128i r=_mm_set1_epi32(msk4);
     r = _mm_and_si128(r, bm);
     r = _mm_cmpeq_epi32(r, bm);
@@ -516,7 +516,7 @@ inline
 __m128i
 cftal::x86::expand_mask_v2u64(uint32_t msk2)
 {
-    const __m128i bm=_mm_setr_epi32( 1, 0, 2, 0);
+    const __m128i bm=const_v4u32< 1, 0, 2, 0>::iv();
     __m128i r=_mm_set1_epi32(msk2);
     r = _mm_and_si128(r, bm);
     r = _mm_cmpeq_epi64(r, bm);
@@ -560,14 +560,14 @@ inline
 __m256i
 cftal::x86::expand_mask_v32u8(uint32_t msk32)
 {
-    const __m256i sm=_mm256_setr_epi8( 0, 0, 0, 0, 0, 0, 0, 0,
-                                       1, 1, 1, 1, 1, 1, 1, 1,
-                                       2, 2, 2, 2, 2, 2, 2, 2,
-                                       3, 3, 3, 3, 3, 3, 3, 3);
-    const __m256i bm=_mm256_setr_epi8( 1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u,
-                                       1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u,
-                                       1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u,
-                                       1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u);
+    const __m256i sm=const_v32u8< 0, 0, 0, 0, 0, 0, 0, 0,
+                                  1, 1, 1, 1, 1, 1, 1, 1,
+                                  2, 2, 2, 2, 2, 2, 2, 2,
+                                  3, 3, 3, 3, 3, 3, 3, 3>::iv();
+    const __m256i bm=const_v32u8< 1, 2, 4, 8, 16, 32, 64, 128,
+                                  1, 2, 4, 8, 16, 32, 64, 128,
+                                  1, 2, 4, 8, 16, 32, 64, 128,
+                                  1, 2, 4, 8, 16, 32, 64, 128>::iv();
     __m256i r=_mm256_set1_epi32(msk32);
     r = _mm256_shuffle_epi8(r, sm);
     r = _mm256_and_si256(r, bm);
@@ -579,10 +579,10 @@ inline
 __m256i
 cftal::x86::expand_mask_v16u16(uint32_t msk16)
 {
-    const __m256i bm=_mm256_setr_epi16( 0x0001u, 0x0002u, 0x0004u, 0x0008u,
-                                        0x0010u, 0x0020u, 0x0040u, 0x0080u,
-                                        0x0100u, 0x0200u, 0x0400u, 0x0800u,
-                                        0x1000u, 0x2000u, 0x4000u, 0x8000u);
+    const __m256i bm=const_v16u16< 0x0001, 0x0002, 0x0004, 0x0008,
+                                   0x0010, 0x0020, 0x0040, 0x0080,
+                                   0x0100, 0x0200, 0x0400, 0x0800,
+                                   0x1000, 0x2000, 0x4000, 0x8000>::iv();
     __m256i r=_mm256_set1_epi16(msk16);
     r = _mm256_and_si256(r, bm);
     r = _mm256_cmpeq_epi16(r, bm);
@@ -593,7 +593,7 @@ inline
 __m256i
 cftal::x86::expand_mask_v8u32(uint32_t msk8)
 {
-    const __m256i bm=_mm256_setr_epi32( 1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i bm=const_v8u32< 1, 2, 4, 8, 16, 32, 64, 128>::iv();
     __m256i r=_mm256_set1_epi32(msk8);
     r = _mm256_and_si256(r, bm);
     r = _mm256_cmpeq_epi32(r, bm);
@@ -604,7 +604,7 @@ inline
 __m256i
 cftal::x86::expand_mask_v4u64(uint32_t msk4)
 {
-    const __m256i bm=_mm256_setr_epi32( 1, 0, 2, 0, 4, 0, 8, 0);
+    const __m256i bm=const_v8u32< 1, 0, 2, 0, 4, 0, 8, 0>::iv();
     __m256i r=_mm256_set1_epi64x(msk4);
     r = _mm256_and_si256(r, bm);
     r = _mm256_cmpeq_epi64(r, bm);

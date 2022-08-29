@@ -938,10 +938,10 @@ v(__m256i a, __m256i b)
     constexpr const uint8_t p29 = _P29 ? -1 : 0;
     constexpr const uint8_t p30 = _P30 ? -1 : 0;
     constexpr const uint8_t p31 = _P31 ? -1 : 0;
-    const __m256i msk=_mm256_setr_epi8(p00, p01, p02, p03, p04, p05, p06, p07,
-                                       p08, p09, p10, p11, p12, p13, p14, p15,
-                                       p16, p17, p18, p19, p20, p21, p22, p23,
-                                       p24, p25, p26, p27, p28, p29, p30, p31);
+    const __m256i msk=const_v32u8<p00, p01, p02, p03, p04, p05, p06, p07,
+                                  p08, p09, p10, p11, p12, p13, p14, p15,
+                                  p16, p17, p18, p19, p20, p21, p22, p23,
+                                  p24, p25, p26, p27, p28, p29, p30, p31>::iv();
     return select_u8(msk, a, b);
 }
 #endif
