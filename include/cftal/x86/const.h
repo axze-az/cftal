@@ -107,6 +107,26 @@ namespace cftal {
             static const __m256d& dv();
         };
 
+        // static constants consisting of 16 uint16_t
+        template <uint16_t _P00, uint16_t _P01,
+                  uint16_t _P02, uint16_t _P03,
+                  uint16_t _P04, uint16_t _P05,
+                  uint16_t _P06, uint16_t _P07,
+                  uint16_t _P08, uint16_t _P09,
+                  uint16_t _P10, uint16_t _P11,
+                  uint16_t _P12, uint16_t _P13,
+                  uint16_t _P14, uint16_t _P15>
+        class const_v16u16 {
+            using u_t = vecunion<uint16_t, 16, __m256, __m256d, __m256i>;
+            static __attribute__((__aligned__(32),
+                                  __visibility__("hidden")))
+            const u_t _msk;
+        public:
+            static const __m256i& iv();
+            static const __m256& fv();
+            static const __m256d& dv();
+        };
+
         // static constants consisting of 32 uint8_t
         template <uint8_t _P00, uint8_t _P01,
                   uint8_t _P02, uint8_t _P03,
@@ -414,10 +434,12 @@ template <cftal::uint8_t _P00, cftal::uint8_t _P01,
           cftal::uint8_t _P12, cftal::uint8_t _P13,
           cftal::uint8_t _P14, cftal::uint8_t _P15>
 const typename
-cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::u_t
-cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::_msk= {{
+cftal::x86::
+const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::u_t
+cftal::x86::
+const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::_msk= {{
         _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
         _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15
     }
@@ -433,8 +455,9 @@ template <cftal::uint8_t _P00, cftal::uint8_t _P01,
           cftal::uint8_t _P14, cftal::uint8_t _P15>
 inline
 const __m128i&
-cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
+cftal::x86::
+const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
 {
     return _msk._vi;
 }
@@ -449,8 +472,9 @@ template <cftal::uint8_t _P00, cftal::uint8_t _P01,
           cftal::uint8_t _P14, cftal::uint8_t _P15>
 inline
 const __m128&
-cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
+cftal::x86::
+const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
 {
     return _msk._vf;
 }
@@ -465,8 +489,9 @@ template <cftal::uint8_t _P00, cftal::uint8_t _P01,
           cftal::uint8_t _P14, cftal::uint8_t _P15>
 inline
 const __m128d&
-cftal::x86::const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
-                        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
+cftal::x86::
+const_v16u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
 {
     return _msk._vd;
 }
@@ -478,8 +503,10 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
           cftal::uint32_t _P4, cftal::uint32_t _P5,
           cftal::uint32_t _P6, cftal::uint32_t _P7>
 const typename
-cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
-cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
+cftal::x86::
+const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::u_t
+cftal::x86::
+const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::_msk= {{
         _P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7
     }
 };
@@ -490,7 +517,8 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
           cftal::uint32_t _P6, cftal::uint32_t _P7>
 inline
 const __m256i&
-cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
+cftal::x86::
+const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::iv()
 {
     return _msk._vi;
 }
@@ -501,7 +529,8 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
           cftal::uint32_t _P6, cftal::uint32_t _P7>
 inline
 const __m256&
-cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
+cftal::x86::
+const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::fv()
 {
     return _msk._vf;
 }
@@ -513,6 +542,77 @@ template <cftal::uint32_t _P0, cftal::uint32_t _P1,
 inline
 const __m256d&
 cftal::x86::const_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::dv()
+{
+    return _msk._vd;
+}
+
+template <cftal::uint16_t _P00, cftal::uint16_t _P01,
+          cftal::uint16_t _P02, cftal::uint16_t _P03,
+          cftal::uint16_t _P04, cftal::uint16_t _P05,
+          cftal::uint16_t _P06, cftal::uint16_t _P07,
+          cftal::uint16_t _P08, cftal::uint16_t _P09,
+          cftal::uint16_t _P10, cftal::uint16_t _P11,
+          cftal::uint16_t _P12, cftal::uint16_t _P13,
+          cftal::uint16_t _P14, cftal::uint16_t _P15>
+const typename
+cftal::x86::
+const_v16u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::u_t
+cftal::x86::
+const_v16u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::_msk= {{
+        _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15
+    }
+};
+
+template <cftal::uint16_t _P00, cftal::uint16_t _P01,
+          cftal::uint16_t _P02, cftal::uint16_t _P03,
+          cftal::uint16_t _P04, cftal::uint16_t _P05,
+          cftal::uint16_t _P06, cftal::uint16_t _P07,
+          cftal::uint16_t _P08, cftal::uint16_t _P09,
+          cftal::uint16_t _P10, cftal::uint16_t _P11,
+          cftal::uint16_t _P12, cftal::uint16_t _P13,
+          cftal::uint16_t _P14, cftal::uint16_t _P15>
+inline
+const __m256i&
+cftal::x86::
+const_v16u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
+{
+    return _msk._vi;
+}
+
+template <cftal::uint16_t _P00, cftal::uint16_t _P01,
+          cftal::uint16_t _P02, cftal::uint16_t _P03,
+          cftal::uint16_t _P04, cftal::uint16_t _P05,
+          cftal::uint16_t _P06, cftal::uint16_t _P07,
+          cftal::uint16_t _P08, cftal::uint16_t _P09,
+          cftal::uint16_t _P10, cftal::uint16_t _P11,
+          cftal::uint16_t _P12, cftal::uint16_t _P13,
+          cftal::uint16_t _P14, cftal::uint16_t _P15>
+inline
+const __m256&
+cftal::x86::
+const_v16u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
+{
+    return _msk._vf;
+}
+
+template <cftal::uint16_t _P00, cftal::uint16_t _P01,
+          cftal::uint16_t _P02, cftal::uint16_t _P03,
+          cftal::uint16_t _P04, cftal::uint16_t _P05,
+          cftal::uint16_t _P06, cftal::uint16_t _P07,
+          cftal::uint16_t _P08, cftal::uint16_t _P09,
+          cftal::uint16_t _P10, cftal::uint16_t _P11,
+          cftal::uint16_t _P12, cftal::uint16_t _P13,
+          cftal::uint16_t _P14, cftal::uint16_t _P15>
+inline
+const __m256d&
+cftal::x86::
+const_v16u16<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
 {
     return _msk._vd;
 }
