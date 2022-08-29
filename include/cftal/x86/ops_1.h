@@ -317,13 +317,14 @@ cftal::uint32_t
 cftal::x86::compress_mask_u16(__m128i a)
 {
 #if defined (__SSSE3__)
-    const __m128i msk = _mm_setr_epi8( 1,  3,  5,  7,  9, 11, 13, 15,
-                                      -1, -1, -1, -1, -1, -1, -1, -1);
+    const __m128i msk = const_v16u8< 1,  3,  5,  7,  9, 11, 13, 15,
+                                     0xff, 0xff, 0xff, 0xff,
+                                     0xff, 0xff, 0xff, 0xff>::iv();
     return _mm_movemask_epi8(_mm_shuffle_epi8(a, msk));
 #else
     // move the sign bit to all bits
     __m128i sa=_mm_srai_epi16(a, 15);
-    const __m128i msk = _mm_setr_epi16( 1, 2, 4, 8, 16, 32, 64, 128);
+    const __m128i msk = const_v8u16< 1, 2, 4, 8, 16, 32, 64, 128>::iv();
     sa = _mm_and_si128(sa, msk);
     // combine the bits from the upper 4 elements with the bits from the
     // lower
