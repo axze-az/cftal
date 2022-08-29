@@ -636,8 +636,8 @@ cftal::uint32_t cftal::x86::read_signs_s64(__m256i a)
 {
     return compress_mask_u64(a);
 }
-
 #endif
+
 #if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 inline
 cftal::uint32_t cftal::x86::read_signs_f64(__mmask8 a)
