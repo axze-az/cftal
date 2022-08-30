@@ -2223,15 +2223,19 @@ v(__m128i a)
     if (no_perm) {
         if (zero_elements==false)
             return a;
-        const __m128i msk=_mm_setr_epi8(
-            _P00<0 ? 0 : 0xff, _P01<0 ? 0 : 0xff,
-            _P02<0 ? 0 : 0xff, _P03<0 ? 0 : 0xff,
-            _P04<0 ? 0 : 0xff, _P05<0 ? 0 : 0xff,
-            _P06<0 ? 0 : 0xff, _P07<0 ? 0 : 0xff,
-            _P08<0 ? 0 : 0xff, _P09<0 ? 0 : 0xff,
-            _P10<0 ? 0 : 0xff, _P11<0 ? 0 : 0xff,
-            _P12<0 ? 0 : 0xff, _P13<0 ? 0 : 0xff,
-            _P14<0 ? 0 : 0xff, _P15<0 ? 0 : 0xff);
+        constexpr const uint8_t
+            n00=_P00<0 ? 0 : 0xff, n01=_P01<0 ? 0 : 0xff,
+            n02=_P02<0 ? 0 : 0xff, n03=_P03<0 ? 0 : 0xff,
+            n04=_P04<0 ? 0 : 0xff, n05=_P05<0 ? 0 : 0xff,
+            n06=_P06<0 ? 0 : 0xff, n07=_P07<0 ? 0 : 0xff,
+            n08=_P08<0 ? 0 : 0xff, n09=_P09<0 ? 0 : 0xff,
+            n10=_P10<0 ? 0 : 0xff, n11=_P11<0 ? 0 : 0xff,
+            n12=_P12<0 ? 0 : 0xff, n13=_P13<0 ? 0 : 0xff,
+            n14=_P14<0 ? 0 : 0xff, n15=_P15<0 ? 0 : 0xff;
+        const __m128i msk=const_v16u8<n00, n01, n02, n03,
+                                      n04, n05, n06, n07,
+                                      n08, n09, n10, n11,
+                                      n12, n13, n14, n15>::iv();
         return _mm_and_si128(a, msk);
     }
 
@@ -2373,9 +2377,10 @@ v(__m128i a, __m128i b)
             z10 = _P10 < 0 ? 0x00: 0xff, z11 = _P11 < 0 ? 0x00: 0xff,
             z12 = _P12 < 0 ? 0x00: 0xff, z13 = _P13 < 0 ? 0x00: 0xff,
             z14 = _P14 < 0 ? 0x00: 0xff, z15 = _P15 < 0 ? 0x00: 0xff;
-        const __m128i zm=_mm_setr_epi8(
-            z00, z01, z02, z03, z04, z05, z06, z07,
-            z08, z09, z10, z11, z12, z13, z14, z15);
+        const __m128i zm=const_v16u8<z00, z01, z02, z03,
+                                     z04, z05, z06, z07,
+                                     z08, z09, z10, z11,
+                                     z12, z13, z14, z15>::iv();
         return _mm_and_si128(rs, zm);
     }
     const __m128i ap=perm1_v16u8<

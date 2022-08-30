@@ -710,12 +710,12 @@ setup_msk(const vec<int32_t, 4>& idx)
 #else
     vec<int32_t, 4> idx4 = idx<<2;
     const __m128i u8u32 =
-        _mm_setr_epi8( 0, 0, 0, 0,  4,  4,  4,  4,
-                       8, 8, 8, 8, 12, 12, 12, 12);
+        x86::const_v16u8< 0, 0, 0, 0,  4,  4,  4,  4,
+                          8, 8, 8, 8, 12, 12, 12, 12>::iv();
     __m128i m=_mm_shuffle_epi8(idx4(), u8u32);
     const __m128i offs=
-        _mm_setr_epi8( 0, 1, 2, 3, 0, 1, 2, 3,
-                       0, 1, 2, 3, 0, 1, 2, 3);
+        x86::const_v16u8< 0, 1, 2, 3, 0, 1, 2, 3,
+                          0, 1, 2, 3, 0, 1, 2, 3>::iv();
     m = _mm_add_epi8(m, offs);
     return m;
 #endif

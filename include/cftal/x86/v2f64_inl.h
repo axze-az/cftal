@@ -732,12 +732,12 @@ setup_msk(const vec<int32_t, 2>& idx)
     vec<int32_t, 4> idx4(idx, idx);
     idx4 <<= 3;
     const __m128i u8u32 =
-        _mm_setr_epi8( 0, 0, 0, 0, 0, 0, 0, 0,
-                       4, 4, 4, 4, 4, 4, 4, 4);
+        x86::const_v16u8< 0, 0, 0, 0, 0, 0, 0, 0,
+                          4, 4, 4, 4, 4, 4, 4, 4>::iv();
     __m128i m=_mm_shuffle_epi8(idx4(), u8u32);
     const __m128i offs=
-        _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7,
-                       0, 1, 2, 3, 4, 5, 6, 7);
+        x86::const_v16u8< 0, 1, 2, 3, 4, 5, 6, 7,
+                          0, 1, 2, 3, 4, 5, 6, 7>::iv();
     m = _mm_add_epi8(m, offs);
     return m;
 #endif
@@ -777,7 +777,7 @@ setup_msk(const vec<int32_t, 2>& idx)
     vec<int32_t, 4> t(idx, idx);
     t += t;
     t=permute<0, 0, 1, 1>(t);
-    const __m128i offs=_mm_setr_epi32(0, 1, 0, 1);
+    const __m128i offs=x86::const_v4u32<0, 1, 0, 1>::iv();
     __m128i r=_mm_add_epi32(t(), offs);
     return r;
 }
