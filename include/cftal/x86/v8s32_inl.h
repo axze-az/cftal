@@ -336,7 +336,7 @@ cftal::vec<cftal::int32_t, 8>::vec(const vec<uint32_t, 8>& v)
 
 inline
 cftal::vec<cftal::int32_t, 8>::vec(int32_t v)
-    : base_type(_mm256_setr_epi32(v, v, v, v, v, v, v, v))
+    : base_type(_mm256_set1_epi32(v))
 {
 }
 
@@ -347,7 +347,6 @@ cftal::vec<cftal::int32_t, 8>::vec(const vec<int32_t, 4>& l,
                     _mm256_castsi128_si256(l()), h(), 1))
 {
 }
-
 
 inline
 cftal::vec<cftal::int32_t, 8>::

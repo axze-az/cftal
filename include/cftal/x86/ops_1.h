@@ -432,10 +432,14 @@ inline
 cftal::uint32_t
 cftal::x86::compress_mask_u16(__m256i m)
 {
-    const __m256i m0= _mm256_setr_epi8(1,  3,  5,  7,  9, 11, 13, 15,
-                                       -1, -1, -1, -1, -1, -1, -1, -1,
-                                       1,  3,  5,  7,  9, 11, 13, 15,
-                                       -1, -1, -1, -1, -1, -1, -1, -1);
+    const __m256i m0= const_v32u8<  1,   3,   5,  7,
+                                    9,  11,  13, 15,
+                                  255, 255, 255, 255,
+                                  255, 255, 255, 255,
+                                    1,   3,   5,   7,
+                                    9,  11,  13,  15,
+                                  255, 255, 255, 255,
+                                  255, 255, 255, 255>::iv();
     __m256i as= _mm256_shuffle_epi8(m, m0);
 #if 1
     // and use vpermq concentrate the values in the low half

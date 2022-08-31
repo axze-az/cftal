@@ -1672,7 +1672,7 @@ namespace cftal {
 
             static
             __m256i v(int32_t i) {
-                return _mm256_setr_epi32(i, i, i, i, i, i, i, i);
+                return _mm256_set1_epi32(i);
             }
         };
 

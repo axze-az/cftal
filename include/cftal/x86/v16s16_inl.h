@@ -312,11 +312,9 @@ cftal::vec<cftal::int16_t, 16>::vec(const vec<uint16_t, 16>& v)
 
 inline
 cftal::vec<cftal::int16_t, 16>::vec(int16_t v)
-    : base_type(_mm256_setr_epi16(v, v, v, v, v, v, v, v,
-                                  v, v, v, v, v, v, v, v))
+    : base_type(_mm256_set1_epi16(v))
 {
 }
-
 
 inline
 cftal::vec<cftal::int16_t, 16>::

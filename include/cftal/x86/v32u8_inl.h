@@ -288,13 +288,9 @@ cftal::vec<cftal::uint8_t, 32>::vec(const vec<int8_t, 32>& v)
 
 inline
 cftal::vec<cftal::uint8_t, 32>::vec(uint8_t v)
-    : base_type(_mm256_setr_epi8(v, v, v, v, v, v, v, v,
-                                 v, v, v, v, v, v, v, v,
-                                 v, v, v, v, v, v, v, v,
-                                 v, v, v, v, v, v, v, v))
+    : base_type(_mm256_set1_epi8(v))
 {
 }
-
 
 inline
 cftal::vec<cftal::uint8_t, 32>::
