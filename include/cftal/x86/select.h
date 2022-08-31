@@ -875,8 +875,10 @@ v(__m256i a, __m256i b)
     constexpr const uint16_t p13 = _P13 ? -1 : 0;
     constexpr const uint16_t p14 = _P14 ? -1 : 0;
     constexpr const uint16_t p15 = _P15 ? -1 : 0;
-    const __m256i msk=_mm256_setr_epi16(p00, p01, p02, p03, p04, p05, p06, p07,
-                                        p08, p09, p10, p11, p12, p13, p14, p15);
+    const __m256i msk=const_v16u16<p00, p01, p02, p03,
+                                   p04, p05, p06, p07,
+                                   p08, p09, p10, p11,
+                                   p12, p13, p14, p15>::iv();
     return select_u16(msk, a, b);
 }
 

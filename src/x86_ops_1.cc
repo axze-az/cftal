@@ -322,10 +322,10 @@ __m128i cftal::x86::div_u16::v(__m128i x, __m128i y, __m128i* rem)
 #endif
     __m256i qi=_mm256_cvttps_epi32(qf);
     const __m256i msk=
-        _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13,
-                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                         0, 1, 4, 5, 8, 9, 12, 13,
-                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
+        const_v32u8<0, 1, 4, 5, 8, 9, 12, 13,
+                    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                    0, 1, 4, 5, 8, 9, 12, 13,
+                    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff>::iv();
     qi= vpshufb::v(qi, msk);
     qi= perm1_v8u32<0, 1, 4, 5, 0, 1, 4, 5>::v(qi);
     __m128i q=_mm256_castsi256_si128(qi);
@@ -443,10 +443,10 @@ __m128i cftal::x86::div_s16::v(__m128i x, __m128i y, __m128i* rem)
 #endif
     __m256i qi=_mm256_cvttps_epi32(qf);
     const __m256i msk=
-        _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13,
-                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                         0, 1, 4, 5, 8, 9, 12, 13,
-                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
+        const_v32u8<0, 1, 4, 5, 8, 9, 12, 13,
+                    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                    0, 1, 4, 5, 8, 9, 12, 13,
+                    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff>::iv();
     qi= vpshufb::v(qi, msk);
     qi= perm1_v8u32<0, 1, 4, 5, 0, 1, 4, 5>::v(qi);
     __m128i q=_mm256_castsi256_si128(qi);

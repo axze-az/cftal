@@ -731,7 +731,7 @@ setup_msk(const vec<int32_t, 4>& idx)
     vec<int32_t, 8> t(i2, i2);
     t=permute<0, 0, 1, 1, 6, 6, 7, 7>(t);
 #endif
-    const __m256i offs=_mm256_setr_epi32(0, 1, 0, 1, 0, 1, 0, 1);
+    const __m256i offs=x86::const_v8u32<0, 1, 0, 1, 0, 1, 0, 1>::iv();
     __m256i r=_mm256_add_epi32(t(), offs);
     return r;
 }

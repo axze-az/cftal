@@ -1937,10 +1937,10 @@ __m256i cftal::x86::vpsraq::v(__m256i a, unsigned shift)
 inline
 __m128i cftal::x86::vpsxxvw::v(__m256i i)
 {
-    const __m256i m= _mm256_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13,
-                                      0, 1, 4, 5, 8, 9, 12, 13,
-                                      0, 1, 4, 5, 8, 9, 12, 13,
-                                      0, 1, 4, 5, 8, 9, 12, 13);
+    const __m256i m= const_v32u8<0, 1, 4, 5, 8, 9, 12, 13,
+                                 0, 1, 4, 5, 8, 9, 12, 13,
+                                 0, 1, 4, 5, 8, 9, 12, 13,
+                                 0, 1, 4, 5, 8, 9, 12, 13>::iv();
     // shuffle the interesting bytes into the low/high halfes of the
     // two lanes
     __m256i it=_mm256_shuffle_epi8(i, m);

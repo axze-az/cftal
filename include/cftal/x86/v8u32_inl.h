@@ -409,7 +409,7 @@ cftal::mem<cftal::vec<uint32_t, 8> >::load(const uint32_t* p, std::size_t s)
                               p[0], p[0], p[0], p[0]);
         break;
     case 0:
-        v = _mm256_setr_epi32(0, 0, 0, 0, 0, 0, 0, 0);
+        v = _mm256_set1_epi32(0);
         break;
     }
     return v;

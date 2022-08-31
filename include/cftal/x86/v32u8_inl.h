@@ -336,7 +336,7 @@ cftal::mem<cftal::vec<uint8_t, 32> >::load(const uint8_t* p, std::size_t s)
         v = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p));
         break;
     case 0:
-        v = _mm256_setr_epi32(0, 0, 0, 0, 0, 0, 0, 0);
+        v = _mm256_set1_epi32(0);
         break;
     default: {
             x86::vecunion<int8_t, 32, __m256, __m256d, __m256i> st;
