@@ -505,7 +505,7 @@ cftal::select_zero_or_val(const v2u64::mask_type& m,
                           const v2u64& on_false)
 {
 #if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
-    return _mm_and_si128(m(), on_true());
+    return _mm_andnot_si128(m(), on_false());
 #else
     return _mm_maskz_mov_epi64(_knot_mask8(m()), on_false());
 #endif
