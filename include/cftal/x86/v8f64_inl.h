@@ -41,7 +41,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
                 constexpr const bytes8 all_one{-1, -1};
-                const full_type all_set(all_one._f64);
+                const full_type all_set(all_one.f64());
                 return _mm512_xor_pd(a(), all_set());
             }
         };
@@ -128,7 +128,7 @@ namespace cftal {
             static
             full_type
             v(const full_type& a) {
-                const full_type neg_bits(sign_f64_msk::v._f64);
+                const full_type neg_bits(sign_f64_msk::v.f64());
                 return _mm512_xor_pd(a(), neg_bits());
             }
         };
@@ -308,11 +308,11 @@ vec(const vec<double, 4>& lh, const vec<double, 4>& hh)
 {
 }
 
-template <template <class _U, std::size_t _M> class _OP,
-          class _L, class _R>
+template <template <class _U> class _OP,
+	  class _L, class _R>
 inline
-cftal::
-vec<double, 8>::vec(const expr<_OP<double, 8>, _L, _R>& r)
+cftal::vec<double, 8>::
+vec(const expr<_OP<vec<double, 8> >, _L, _R>& r)
     : vec(eval(r))
 {
 }
@@ -356,8 +356,7 @@ cftal::mem<cftal::vec<double, 8> >::load(const double* p, std::size_t s)
                            p[0], p[0], p[0], p[0]);
         break;
     case 0:
-        v = _mm512_setr_pd(0, 0, 0, 0,
-                           0, 0, 0, 0);
+        v = _mm512_set1_pd(0.0);
         break;
     }
     return v;
@@ -413,7 +412,7 @@ cftal::v8f64 cftal::sqrt(const v8f64& a)
 inline
 cftal::v8f64 cftal::abs(const v8f64& a)
 {
-    const v8f64 msk(not_sign_f64_msk::v._f64);
+    const v8f64 msk(not_sign_f64_msk::v.f64());
     return _mm512_and_pd(a(), msk());
 }
 
@@ -484,7 +483,7 @@ inline
 cftal::v8f64 cftal::copysign(const v8f64& x, const v8f64& y)
 {
     // return abs(x) * sgn(y)
-    const v8f64 msk(not_sign_f64_msk::v._f64);
+    const v8f64 msk(not_sign_f64_msk::v.f64());
     v8f64 abs_x(x & msk);
     v8f64 sgn_y(andnot(msk, y));
     return abs_x | sgn_y;
@@ -493,7 +492,7 @@ cftal::v8f64 cftal::copysign(const v8f64& x, const v8f64& y)
 inline
 cftal::v8f64 cftal::mulsign(const v8f64& x, const v8f64& y)
 {
-    const v8f64 msk(sign_f64_msk::v._f64);
+    const v8f64 msk(sign_f64_msk::v.f64());
     v8f64 sgn_y = y & msk;
     return x ^ sgn_y;
 }
@@ -519,19 +518,19 @@ cftal::v8f64 cftal::x86::round(const v8f64& a, rounding_mode::type m)
     v8f64 r;
     switch (m) {
     case rounding_mode::nearest:
-        r= _mm512_roundscale_round_pd(a(), 0, 0+8);
+        r= _mm512_roundscale_round_pd(a(), 0, 8);
         break;
     case rounding_mode::downward:
-        r= _mm512_roundscale_round_pd(a(), 0, 1+8);
+        r= _mm512_roundscale_round_pd(a(), 1, 8);
         break;
     case rounding_mode::upward:
-        r= _mm512_roundscale_round_pd(a(), 0, 2+8);
+        r= _mm512_roundscale_round_pd(a(), 2, 8);
         break;
     case rounding_mode::towardzero:
-        r= _mm512_roundscale_round_pd(a(), 0, 3+8);
+        r= _mm512_roundscale_round_pd(a(), 3, 8);
         break;
     case rounding_mode::current:
-        r= _mm512_roundscale_round_pd(a(), 0, 4+8);
+        r= _mm512_roundscale_round_pd(a(), 4, 8);
         break;
     }
     return r;
@@ -561,30 +560,32 @@ cftal::v8f64 cftal::trunc(const v8f64& a)
     return x86::round(a, rounding_mode::towardzero);
 }
 
-template <bool _I0, bool _I1, bool _I2, bool _I3>
+template <bool _P0, bool _P1, bool _P2, bool _P3,
+          bool _P4, bool _P5, bool _P6, bool _P7>
 inline
-cftal::vec<double, 8>
-cftal::select(const vec<double, 8>& l, const vec<double, 8>& r)
+cftal::v8f64 cftal::select(const v8f64& a, const v8f64& b)
 {
-    return x86::select_f64<_I0, _I1, _I2, _I3>(l(), r());
+    return x86::select_f64<_P0, _P1, _P2, _P3,
+                           _P4, _P5, _P6, _P7> (a(), b());
 }
 
-template <int _I0, int _I1, int _I2, int _I3>
+template <int _P0, int _P1, int _P2, int _P3,
+          int _P4, int _P5, int _P6, int _P7>
 inline
-cftal::vec<double, 8>
-cftal::permute(const vec<double, 8>& v)
+cftal::v8f64 cftal::permute(const v8f64& a)
 {
-    return x86::perm_f64<_I0, _I1, _I2, _I3>(v());
+    return x86::perm_v8f64<_P0, _P1, _P2, _P3,
+                           _P4, _P5, _P6, _P7>(a());
 }
 
-template <int _I0, int _I1, int _I2, int _I3>
+template <int _P0, int _P1, int _P2, int _P3,
+          int _P4, int _P5, int _P6, int _P7>
 inline
-cftal::vec<double, 8>
-cftal::permute(const vec<double, 8>& l, const vec<double, 8>& r)
+cftal::v8f64 cftal::permute(const v8f64& a, const v8f64& b)
 {
-    return x86::perm_f64<_I0, _I1, _I2, _I3>(l(), r());
+    return x86::perm_v8f64<_P0, _P1, _P2, _P3,
+                           _P4, _P5, _P6, _P7>(a(), b());
 }
-
 
 #endif // __AVX512F__
 

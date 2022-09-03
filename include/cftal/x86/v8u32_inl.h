@@ -512,7 +512,11 @@ cftal::v8u32
 cftal::select_val_or_zero(const v8u32::mask_type& m,
                           const v8u32& on_true)
 {
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     return _mm256_and_si256(m(), on_true());
+#else
+    return _mm256_maskz_mov_epi32(m(), on_true());
+#endif
 }
 
 inline
@@ -520,7 +524,11 @@ cftal::v8u32
 cftal::select_zero_or_val(const v8u32::mask_type& m,
                           const v8u32& on_false)
 {
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     return _mm256_andnot_si256(m(), on_false());
+#else
+    return _mm256_maskz_mov_epi32(_knot_mask8(m()), on_false());
+#endif
 }
 
 template <bool _P0, bool _P1, bool _P2, bool _P3,

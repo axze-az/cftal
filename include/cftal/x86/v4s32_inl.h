@@ -536,7 +536,11 @@ cftal::v4s32
 cftal::select_val_or_zero(const v4s32::mask_type& m,
                           const v4s32& on_true)
 {
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     return _mm_and_si128(m(), on_true());
+#else
+    return _mm_maskz_mov_epi32(m(), on_true());
+#endif
 }
 
 inline
@@ -544,7 +548,11 @@ cftal::v4s32
 cftal::select_zero_or_val(const v4s32::mask_type& m,
                           const v4s32& on_false)
 {
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     return _mm_andnot_si128(m(), on_false());
+#else
+    return _mm_maskz_mov_epi32(_knot_mask8(m()), on_false());
+#endif
 }
 
 template <bool _I0, bool _I1, bool _I2, bool _I3>
@@ -567,7 +575,6 @@ cftal::v4s32 cftal::permute(const v4s32& a, const v4s32& b)
 {
     return x86::perm_v4u32<_I0, _I1, _I2, _I3>(a(), b());
 }
-
 
 inline
 std::pair<cftal::v4s32, cftal::v4s32>
