@@ -405,8 +405,12 @@ cftal::v2f64
 cftal::select_val_or_zero(const v2f64::mask_type& m,
                           const v2f64& on_true)
 {
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     // we know that all mask bits are 1
     return _mm_and_pd(m(), on_true());
+#else
+    return _mm_maskz_mov_pd(m(), on_true());
+#endif
 }
 
 inline
@@ -414,8 +418,12 @@ cftal::v2f64
 cftal::select_zero_or_val(const v2f64::mask_type& m,
                           const v2f64& on_false)
 {
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     // we know that all mask bits are 1
     return _mm_andnot_pd(m(), on_false());
+#else
+    return _mm_maskz_mov_pd(_knot_mask8(m()), on_false());
+#endif
 }
 
 inline
