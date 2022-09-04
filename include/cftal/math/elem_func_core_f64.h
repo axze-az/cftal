@@ -676,6 +676,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
     // clamp nn to [-4096, 4096]
     vi2_type nn= min(vi2_type(4096), max(n, vi2_type(-4096)));
     vi2_type re= xe + nn;
+    re=copy_odd_to_even(re);
 
     // 3 cases exist:
     // 0 < re < 0x7ff normal result
@@ -691,12 +692,12 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
 
     // overflow handling
     vmi2_type i_is_inf = re > vi2_type(0x7fe);
-    vmf_type f_is_inf = _T::vmi2_to_vmf(copy_odd_to_even(i_is_inf));
+    vmf_type f_is_inf = _T::vmi2_to_vmf(i_is_inf);
     vf_type r_inf = copysign(vf_type(_T::pinf()), x);
     r = _T::sel(f_is_inf, r_inf, r);
 
     // underflow handling
-    vmi2_type i_is_near_z = copy_odd_to_even(vi2_type(re < vi2_type (1)));
+    vmi2_type i_is_near_z = re < vi2_type (1);
     if (_T::any_of_v(i_is_near_z)) {
         // create m*0x1.0p-1022
         vi2_type mhu= mh | vi2_type(1<<20);
