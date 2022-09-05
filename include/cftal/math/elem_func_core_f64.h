@@ -666,7 +666,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi2_type> n)
     // input denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
-    vi2_type eo= _T::sel_val_or_zero(i_is_denom, vi2_type(-54));
+    vi2_type eo= _T::sel_val_or_zero_vi2(i_is_denom, vi2_type(-54));
     // split mantissa
     vi2_type ml, mh;
     _T::extract_words_vi2(ml, mh, xs);
@@ -740,10 +740,10 @@ nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc)
     vmli_type opp_sgn=
         vli_type((ux^uy) & sign_f64_msk::v.s64()) != z;
     constexpr const int64_t one=1;
-    vli_type r= _T::sel((ax > ay) | opp_sgn, ux_dec, ux_inc);
-    vli_type r0= _T::sel(ay == 0, uy, (uy & sign_f64_msk::v.s64()) | one);
-    r = _T::sel(ax == 0, r0, r);
-    r = _T::sel(ux == uy, uy, r);
+    vli_type r= _T::sel_vli((ax > ay) | opp_sgn, ux_dec, ux_inc);
+    vli_type r0= _T::sel_vli(ay == 0, uy, (uy & sign_f64_msk::v.s64()) | one);
+    r = _T::sel_vli(ax == 0, r0, r);
+    r = _T::sel_vli(ux == uy, uy, r);
     vf_type rf=_T::as_vf(r);
     return rf;
 }
@@ -759,8 +759,8 @@ __frexp_k(vf_type& m, arg_t<vf_type> x)
     vf_type xn=_T::sel(is_denom, x*0x1p54, x);
     const int32_t neg_bias_p_1=-_T::bias()+1;
     const int32_t neg_bias_p_1_m_54=neg_bias_p_1 - 54;
-    vi2_type e=_T::sel(_T::vmf_to_vmi2(is_denom),
-                       neg_bias_p_1_m_54, neg_bias_p_1);
+    vi2_type e=_T::sel_vi2(_T::vmf_to_vmi2(is_denom),
+                           neg_bias_p_1_m_54, neg_bias_p_1);
     vi2_type ix=as<vi2_type>(xn);
     e += ((ix>>20) & _T::e_mask());
     vli_type mx=as<vli_type>(xn);
@@ -793,12 +793,12 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     vmf_type f_inz=isinf(x) | isnan(x) | (x==vf_type(0.0));
     m = _T::sel(f_inz, x, m);
     if (ve != nullptr) {
-        vi2_type e=_T::sel(_T::vmf_to_vmi2(is_denom),
-                           neg_bias_p_1_m_54, neg_bias_p_1);
+        vi2_type e=_T::sel_vi2(_T::vmf_to_vmi2(is_denom),
+                               neg_bias_p_1_m_54, neg_bias_p_1);
         vi2_type ix=as<vi2_type>(xn);
         e += ((ix>>20) & _T::e_mask());
         vmi2_type i_inz=_T::vmf_to_vmi2(f_inz);
-        e = _T::sel_zero_or_val(i_inz, e);
+        e = _T::sel_zero_or_val_vi2(i_inz, e);
         *ve=_T::vi2_odd_to_vi(e);
     }
     return m;
@@ -816,7 +816,7 @@ ilogbp1_k(arg_t<vf_type> x)
     // denormal handling
     xs= _T::sel(is_denom, xs*vf_type(0x1.p54), xs);
     vmi2_type i_is_denom= _T::vmf_to_vmi2(is_denom);
-    vi2_type eo= _T::sel_val_or_zero(i_is_denom, vi2_type(-54));
+    vi2_type eo= _T::sel_val_or_zero_vi2(i_is_denom, vi2_type(-54));
     // reinterpret as integer
     vi2_type hi_word, lo_word;
     _T::extract_words_vi2(lo_word, hi_word, xs);
@@ -843,13 +843,13 @@ ilogb(arg_t<vf_type> d)
     vi2_type e(ilogbp1_k(d) - vi2_type(1));
     vmf_type mf= d == 0.0;
     vmi2_type mi= _T::vmf_to_vmi2(mf);
-    e = _T::sel(mi, vi2_type(FP_ILOGB0), e);
+    e = _T::sel_vi2(mi, vi2_type(FP_ILOGB0), e);
     mf = isinf(d);
     mi = _T::vmf_to_vmi2(mf);
-    e = _T::sel(mi, vi2_type(0x7fffffff), e);
+    e = _T::sel_vi2(mi, vi2_type(0x7fffffff), e);
     mf = isnan(d);
     mi = _T::vmf_to_vmi2(mf);
-    e = _T::sel(mi, vi2_type(FP_ILOGBNAN), e);
+    e = _T::sel_vi2(mi, vi2_type(FP_ILOGBNAN), e);
     return _T::vi2_odd_to_vi(e);
 }
 
@@ -874,12 +874,12 @@ cbrt_k(arg_t<vf_type> xc)
     // the final exponent:
 #if 1
     vmi2_type r_gt_z = r > 0;
-    vi2_type e3c= e3 + _T::sel_val_or_zero(r_gt_z, 1);
+    vi2_type e3c= e3 + _T::sel_val_or_zero_vi2(r_gt_z, 1);
 #else
-    vi_type e3c= _T::sel(r==-2, e3, e3);
-    e3c=_T::sel(r==-1, e3, e3c);
-    e3c=_T::sel(r==1, e3+1, e3c);
-    e3c=_T::sel(r==2, e3+1, e3c);
+    vi_type e3c= _T::sel_vi(r==-2, e3, e3);
+    e3c=_T::sel_vi(r==-1, e3, e3c);
+    e3c=_T::sel_vi(r==1, e3+1, e3c);
+    e3c=_T::sel_vi(r==2, e3+1, e3c);
 #endif
     // correction of mm0 in dependence of r
     // r    scale   log_2(scale) r - 3
@@ -889,7 +889,7 @@ cbrt_k(arg_t<vf_type> xc)
     // -1   0.5     -1           -4
     // -2   0.25    -2           -5
 #if 1
-    vi2_type rc= r + _T::sel_val_or_zero(r_gt_z, -3);
+    vi2_type rc= r + _T::sel_val_or_zero_vi2(r_gt_z, -3);
     rc <<= 20;
     vli_type rc_l=as<vli_type>(rc) & msk64;
     vi2_type rc_exp=as<vi2_type>(rc_l);
@@ -1029,12 +1029,12 @@ rcbrt_k(arg_t<vf_type> xc)
     // the final exponent:
 #if 1
     vmi2_type r_gt_z = r > 0;
-    vi2_type e3c= e3 + _T::sel_val_or_zero(r_gt_z, 1);
+    vi2_type e3c= e3 + _T::sel_val_or_zero_vi2(r_gt_z, 1);
 #else
-    vi_type e3c= _T::sel(r==-2, e3, e3);
-    e3c=_T::sel(r==-1, e3, e3c);
-    e3c=_T::sel(r==1, e3+1, e3c);
-    e3c=_T::sel(r==2, e3+1, e3c);
+    vi_type e3c= _T::sel_vi(r==-2, e3, e3);
+    e3c=_T::sel_vi(r==-1, e3, e3c);
+    e3c=_T::sel_vi(r==1, e3+1, e3c);
+    e3c=_T::sel_vi(r==2, e3+1, e3c);
 #endif
     // correction of mm0 in dependence of r
     // r    scale   log_2(scale) r - 3
@@ -1044,7 +1044,7 @@ rcbrt_k(arg_t<vf_type> xc)
     // -1   0.5     -1           -4
     // -2   0.25    -2           -5
 #if 1
-    vi2_type rc= r + _T::sel_val_or_zero(r_gt_z, -3);
+    vi2_type rc= r + _T::sel_val_or_zero_vi2(r_gt_z, -3);
     rc <<= 20;
     vli_type rc_l=as<vli_type>(rc) & msk64;
     vi2_type rc_exp=as<vi2_type>(rc_l);
@@ -1163,7 +1163,7 @@ root12_k(arg_t<vf_type> xc)
     // if we have a positive remainder we have to correct
     // the final exponent:
     vmi2_type r_gt_z = r > 0;
-    vi2_type e12c= e12 + _T::sel_val_or_zero(r_gt_z, 1);
+    vi2_type e12c= e12 + _T::sel_val_or_zero_vi2(r_gt_z, 1);
     // correction of mm0 in dependence of r
     // r    scale   log_2(scale) r - 12
     // 1    ...     -11          -11
@@ -1180,7 +1180,7 @@ root12_k(arg_t<vf_type> xc)
     // 0    1.0     -0            0
     // -1   0.5     -1           -4
     // -2   0.25    -2           -5
-    vi2_type rc= r + _T::sel_val_or_zero(r_gt_z, -12);
+    vi2_type rc= r + _T::sel_val_or_zero_vi2(r_gt_z, -12);
     rc <<= 20;
     vli_type rc_l= as<vli_type>(rc) & msk64;
     vi2_type rc_exp= as<vi2_type>(rc_l);
@@ -2303,9 +2303,9 @@ __reduce_log_arg(vf_type& xr,
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi2_type k=_T::sel(_T::vmf_to_vmi2(is_denom),
-                       vi2_type(-54-_T::bias()),
-                       vi2_type(-_T::bias()));
+    vi2_type k=_T::sel_vi2(_T::vmf_to_vmi2(is_denom),
+                           vi2_type(-54-_T::bias()),
+                           vi2_type(-_T::bias()));
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
     constexpr const int64_t one=0x3ff0000000000000LL;
@@ -2331,10 +2331,9 @@ __reduce_log_arg(vf_type& xr,
     using fc = func_constants<double>;
     vmf_type is_denom=xc <= fc::max_denormal();
     vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi2_type k=_T::sel(_T::vmf_to_vmi2(is_denom),
-                       vi2_type(-54-_T::bias()),
-                       vi2_type(-_T::bias()));
-
+    vi2_type k=_T::sel_vi2(_T::vmf_to_vmi2(is_denom),
+                           vi2_type(-54-_T::bias()),
+                           vi2_type(-_T::bias()));
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
     constexpr const int64_t one=0x3ff0000000000000LL;
@@ -3056,7 +3055,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrl, arg_t<vf_type> x)
         // mask out not required values to avoid subnormals
         vf_type xl=_T::sel_val_or_zero(v_large_arg, x);
         vi_type ql=payne_hanek_pi_over_2<double, _T>::rem(xrhl, xrll, xl);
-        q = _T::sel(_T::vmf_to_vmi(v_large_arg), ql, q);
+        q = _T::sel_vi(_T::vmf_to_vmi(v_large_arg), ql, q);
         xrh = _T::sel(v_large_arg, xrhl, xrh);
         xrl = _T::sel(v_large_arg, xrll, xrl);
 #else

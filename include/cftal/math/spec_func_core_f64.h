@@ -1378,13 +1378,13 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     if (_T::any_of_vmf(x_lt_0)) {
         // tiny
         vmf_type t= x_lt_0 & xa_in_tiny;
-        sgn = _T::sel(_T::vmf_to_vmi(t), -1, sgn);
+        sgn = _T::sel_vi(_T::vmf_to_vmi(t), -1, sgn);
         // small
         t = x_lt_0 & xa_in_small;
         if (_T::any_of_vmf(t)) {
             vf_type sgn_g=copysign(vf_type(1.0), sst._f[0]);
             vi_type si= _T::cvt_f_to_i(sgn_g);
-            sgn=_T::sel(_T::vmf_to_vmi(t), si, sgn);
+            sgn=_T::sel_vi(_T::vmf_to_vmi(t), si, sgn);
         }
         // lanczos
         t = x_lt_0 & xa_in_lanczos;
@@ -1409,7 +1409,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
             lgh = _T::sel(t, lg_n[0], lgh);
             vmf_type s_lt_0 = (s[0] >= 0.0) & t;
             vmi_type i_s_lt_0 = _T::vmf_to_vmi(s_lt_0);
-            sgn = _T::sel(i_s_lt_0, -1, sgn);
+            sgn = _T::sel_vi(i_s_lt_0, -1, sgn);
         }
         // no large handling because xc is integer anyway
     }
@@ -1484,7 +1484,7 @@ __reduce_trig_arg(vf_type& xrh, vf_type& xrm, vf_type& xrl,
         vf_type xl=_T::sel_val_or_zero(v_large_arg, x);
         vi_type ql=payne_hanek_pi_over_2<double, _T>::
             rem3(xrhl, xrml, xrll, xl);
-        q = _T::sel(_T::vmf_to_vmi(v_large_arg), ql, q);
+        q = _T::sel_vi(_T::vmf_to_vmi(v_large_arg), ql, q);
         xrh = _T::sel(v_large_arg, xrhl, xrh);
         xrm = _T::sel(v_large_arg, xrml, xrm);
         xrl = _T::sel(v_large_arg, xrll, xrl);
@@ -1593,7 +1593,7 @@ __j01y01_small_tbl_k(arg_t<vf_type> xc,
     i1 = min(i1, vi_type(tbl_t::ELEMS*(tbl_t::INTERVALS-1)));
     vmf_type xb_in_i1= xb > xr_i0;
     vmi_type sel_i1 = _T::vmf_to_vmi(xb_in_i1);
-    idx=_T::sel(sel_i1, i1, i0);
+    idx=_T::sel_vi(sel_i1, i1, i0);
     // and update the lookup table
     __check_tbl_idx(idx, xb, tb, tbl_t::ELEMS);
     lk=make_variable_lookup_table<double>(idx);
@@ -2853,7 +2853,7 @@ __j01y01_large_phase_amplitude_k(arg_t<vf_type> xc,
     vf_type d0=_T::sel(is_x_lt_z, pi_4_0, -pi_4_0);
     vf_type d1=_T::sel(is_x_lt_z, pi_4_1, -pi_4_1);
     vf_type d2=_T::sel(is_x_lt_z, pi_4_2, -pi_4_2);
-    q = _T::sel(i_is_x_lt_z, q - 1, q);
+    q = _T::sel_vi2(i_is_x_lt_z, q - 1, q);
     t_ops::add33cond(xrh, xrm, xrl,
                      xrh, xrm, xrl,
                      d0, d1, d2);

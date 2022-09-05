@@ -153,7 +153,7 @@ lgamma(arg_t<vf_type> xc, vi_type* signp)
         vmf_type is_int = xc == floor(xc);
         vmf_type is_int_lt_0 = is_int & x_lt_0;
         lg = _TRAITS_T::sel(is_int_lt_0, _TRAITS_T::pinf(), lg);
-        si = _TRAITS_T::sel(_TRAITS_T::vmf_to_vmi(is_int_lt_0), 1, si);
+        si = _TRAITS_T::sel_vi(_TRAITS_T::vmf_to_vmi(is_int_lt_0), 1, si);
     }
     vmf_type t;
     if (_TRAITS_T::any_of_vmf(t=xc==vf_type(0.0))) {
@@ -161,7 +161,7 @@ lgamma(arg_t<vf_type> xc, vi_type* signp)
         vmi_type ti=_TRAITS_T::vmf_to_vmi(t);
         vf_type sgn=copysign(vf_type(1.0), xc);
         vi_type ni=_TRAITS_T::cvt_f_to_i(sgn);
-        si = _TRAITS_T::sel(ti, ni, si);
+        si = _TRAITS_T::sel_vi(ti, ni, si);
     }
     lg = _TRAITS_T::sel(isnan(xc), xc, lg);
     if (signp != nullptr) {

@@ -97,17 +97,17 @@ namespace cftal {
             }
 
             static
-            vi_type sel(const vmi_type& msk,
+            vi_type sel_vi(const vmi_type& msk,
                         const vi_type& t, const vi_type& f) {
                 return msk ? t : f;
             }
             static
-            vi_type sel_val_or_zero(const vmi_type& msk,
+            vi_type sel_val_or_zero_vi(const vmi_type& msk,
                                     const vi_type& t) {
                 return msk ? t : vi_type(0);
             }
             static
-            vi_type sel_zero_or_val(const vmi_type& msk,
+            vi_type sel_zero_or_val_vi(const vmi_type& msk,
                                     const vi_type& f) {
                 return msk ? vi_type(0) : f;
             }
