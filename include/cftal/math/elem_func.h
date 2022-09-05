@@ -910,7 +910,7 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 
     vmf_type special = y_zero | x_inf | y_inf | x_zero | x_nan | y_nan;
 
-    if (_T::any_of_v(special)) {
+    if (_T::any_of_vmf(special)) {
         vf_type y_sgn =  copysign(_FLOAT_T(1), y);
         vmf_type y_p= y_sgn == _FLOAT_T(1.0);
         vmf_type y_n= y_sgn == _FLOAT_T(-1.0);

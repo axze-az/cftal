@@ -76,47 +76,47 @@ namespace cftal {
             };
 
             static
-            bool any_of_v(const vmf_type& b) {
+            bool any_of_vmf(const vmf_type& b) {
                 return any_of(b);
             }
 
             static
-            bool all_of_v(const vmf_type& b) {
+            bool all_of_vmf(const vmf_type& b) {
                 return all_of(b);
             }
 
             static
-            bool none_of_v(const vmf_type& b) {
+            bool none_of_vmf(const vmf_type& b) {
                 return none_of(b);
             }
 
             static
-            bool any_of_v(const vmi_type& b) {
+            bool any_of_vmi(const vmi_type& b) {
                 return any_of(b);
             }
 
             static
-            bool all_of_v(const vmi_type& b) {
+            bool all_of_vmi(const vmi_type& b) {
                 return all_of(b);
             }
 
             static
-            bool none_of_v(const vmi_type& b) {
+            bool none_of_vmi(const vmi_type& b) {
                 return none_of(b);
             }
 
             static
-            bool any_of_v(const vmi2_type& b) {
+            bool any_of_vmi2(const vmi2_type& b) {
                 return any_of(b);
             }
 
             static
-            bool all_of_v(const vmi2_type& b) {
+            bool all_of_vmi2(const vmi2_type& b) {
                 return all_of(b);
             }
 
             static
-            bool none_of_v(const vmi2_type& b) {
+            bool none_of_vmi2(const vmi2_type& b) {
                 return none_of(b);
             }
 
@@ -350,32 +350,32 @@ namespace cftal {
             }
 
             static
-            bool any_of_v(const vmf_type& b) {
+            bool any_of_vmf(const vmf_type& b) {
                 return any_of(b);
             }
 
             static
-            bool all_of_v(const vmf_type& b) {
+            bool all_of_vmf(const vmf_type& b) {
                 return all_of(b);
             }
 
             static
-            bool none_of_v(const vmf_type& b) {
+            bool none_of_vmf(const vmf_type& b) {
                 return none_of(b);
             }
 
             static
-            bool any_of_v(const vmi_type& b) {
+            bool any_of_vmi(const vmi_type& b) {
                 return any_of(b);
             }
 
             static
-            bool all_of_v(const vmi_type& b) {
+            bool all_of_vmi(const vmi_type& b) {
                 return all_of(b);
             }
 
             static
-            bool none_of_v(const vmi_type& b) {
+            bool none_of_vmi(const vmi_type& b) {
                 return none_of(b);
             }
 

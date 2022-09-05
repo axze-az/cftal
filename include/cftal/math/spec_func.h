@@ -118,8 +118,8 @@ tgamma(arg_t<vf_type> xc)
     vf_type r= base_type::tgamma_k(xc, xc_lt_0);
     using fc= func_constants<_FLOAT_T>;
     r = _TRAITS_T::sel(xc >= fc::tgamma_hi_inf(), _TRAITS_T::pinf(), r);
-    if (_TRAITS_T::any_of_v(xc_lt_0)) {
-        if (_TRAITS_T::any_of_v(xc <= fc::tgamma_lo_zero())) {
+    if (_TRAITS_T::any_of_vmf(xc_lt_0)) {
+        if (_TRAITS_T::any_of_vmf(xc <= fc::tgamma_lo_zero())) {
             // tgamma(x) = -0 for -odd < x <= -even
             const vf_type half(0.5);
             vmf_type is_even=
@@ -149,14 +149,14 @@ lgamma(arg_t<vf_type> xc, vi_type* signp)
 
     using fc= func_constants<_FLOAT_T>;
     lg = _TRAITS_T::sel(xc >= fc::lgamma_hi_inf(), _TRAITS_T::pinf(), lg);
-    if (_TRAITS_T::any_of_v(x_lt_0)) {
+    if (_TRAITS_T::any_of_vmf(x_lt_0)) {
         vmf_type is_int = xc == floor(xc);
         vmf_type is_int_lt_0 = is_int & x_lt_0;
         lg = _TRAITS_T::sel(is_int_lt_0, _TRAITS_T::pinf(), lg);
         si = _TRAITS_T::sel(_TRAITS_T::vmf_to_vmi(is_int_lt_0), 1, si);
     }
     vmf_type t;
-    if (_TRAITS_T::any_of_v(t=xc==vf_type(0.0))) {
+    if (_TRAITS_T::any_of_vmf(t=xc==vf_type(0.0))) {
         lg = _TRAITS_T::sel(t, _TRAITS_T::pinf(), lg);
         vmi_type ti=_TRAITS_T::vmf_to_vmi(t);
         vf_type sgn=copysign(vf_type(1.0), xc);

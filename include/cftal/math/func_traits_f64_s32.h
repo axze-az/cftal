@@ -70,18 +70,34 @@ namespace cftal {
             vmi_type vmf_to_vmi(const vmf_type& mf) {
                 return mf;
             }
+
             static
-            bool any_of_v(const vmf_type& b) {
+            bool any_of_vmf(const vmf_type& b) {
                 return any_of(b);
             }
 
             static
-            bool all_of_v(const vmf_type& b) {
+            bool all_of_vmf(const vmf_type& b) {
                 return all_of(b);
             }
 
             static
-            bool none_of_v(const vmf_type& b) {
+            bool none_of_vmf(const vmf_type& b) {
+                return none_of(b);
+            }
+
+            static
+            bool any_of_vmi(const vmi_type& b) {
+                return any_of(b);
+            }
+
+            static
+            bool all_of_vmi(const vmi_type& b) {
+                return all_of(b);
+            }
+
+            static
+            bool none_of_vmi(const vmi_type& b) {
                 return none_of(b);
             }
 
@@ -115,6 +131,7 @@ namespace cftal {
                                     const vf_type& f) {
                 return msk ? vf_type(0) : f;
             }
+#if 0
             static
             vf_type gather(const double* p, vi_type idx, int sc) {
                 const char* pc=
@@ -123,6 +140,7 @@ namespace cftal {
                 vf_type r(*reinterpret_cast<const double*>(d));
                 return r;
             }
+#endif
             static
             vf_type insert_exp(const vi_type& e) {
                 ud_t t;
