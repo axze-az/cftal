@@ -404,6 +404,22 @@ cftal::select(const v8f64::mask_type& m,
 }
 
 inline
+cftal::v8f64
+cftal::select_val_or_zero(const v8f64::mask_type& m,
+                          const v8f64& on_true)
+{
+    return _mm512_maskz_mov_pd(m(), on_true());
+}
+
+inline
+cftal::v8f64
+cftal::select_zero_or_val(const v8f64::mask_type& m,
+                          const v8f64& on_false)
+{
+    return _mm512_maskz_mov_pd(_knot_mask8(m()), on_false());
+}
+
+inline
 cftal::v8f64 cftal::sqrt(const v8f64& a)
 {
     return _mm512_sqrt_pd(a());
