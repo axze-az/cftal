@@ -119,9 +119,7 @@ namespace cftal {
     v8f64 max(const v8f64& a, const v8f64& b);
     v8f64 min(const v8f64& a, const v8f64& b);
     v8f64 abs(const v8f64& a);
-    v8f64 fabs(const v8f64& a);
     v8f64 sqrt(const v8f64& a);
-    v8f64 cbrt(arg<v8f64>::type a);
 
     namespace x86 {
         v8f64 round(const v8f64& v, rounding_mode::type m);

@@ -513,6 +513,20 @@ bool cftal::elements_equal(const v8f64& a)
 }
 
 inline
+cftal::v8f64
+cftal::max(const v8f64& a, const v8f64& b)
+{
+    return _mm512_max_pd(a(), b());
+}
+
+inline
+cftal::v8f64
+cftal::min(const v8f64& a, const v8f64& b)
+{
+    return _mm512_min_pd(a(), b());
+}
+
+inline
 cftal::v8f64 cftal::x86::round(const v8f64& a, rounding_mode::type m)
 {
     v8f64 r;
