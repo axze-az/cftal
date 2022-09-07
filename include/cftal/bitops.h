@@ -24,6 +24,7 @@
     (defined (_M_AMD64) && defined (_MSC_VER))
 #include <cftal/x86/intrin.h>
 #endif
+#include <type_traits>
 
 namespace cftal {
 
@@ -49,6 +50,27 @@ namespace cftal {
     unsigned lzcnt(uint16_t x);
     unsigned lzcnt(uint32_t x);
     unsigned lzcnt(uint64_t x);
+
+    namespace impl {
+
+	template <typename _U>
+	std::enable_if_t<std::is_unsigned_v<_U>, _U>
+	bit_unpack(const _U& b, const _U& mask);
+	
+	template <typename _U>
+	std::enable_if_t<std::is_unsigned_v<_U>, _U>
+	bit_pack(const _U& b, const _U& mask);
+    }
+    
+    // unpack the low bits of b into the positions of one bits in mask
+    // in the result, other bits are set to 0
+    uint32_t bit_unpack(uint32_t b, uint32_t mask);
+    uint64_t bit_unpack(uint64_t b, uint64_t mask);
+
+    // pack the bits in the positions of one bits in mask from b to
+    // the low bits of the result, other bits are set to 0
+    uint32_t bit_pack(uint32_t b, uint32_t mask);
+    uint64_t bit_pack(uint64_t b, uint64_t mask);
 }
 
 inline
@@ -295,6 +317,108 @@ unsigned cftal::lzcnt(uint64_t x)
     return popcnt(~x);
 #endif
 }
+
+template <typename _U>
+std::enable_if_t<std::is_unsigned_v<_U>, _U>
+cftal::impl::bit_unpack(const _U& b, const _U& mask)
+{
+    _U r=0;
+    // source mask
+    _U s=1;
+    // destination mask
+    _U d=1;
+    // current mask
+    _U m=mask;
+    for (uint32_t i=0; i<sizeof(_U)*8; ++i) {
+	if (d & m) {
+	    if (s & b) {
+		r |= d;
+	    }
+	    // next source bit
+	    s <<=1;
+	}
+	// if no mask bits are left, leave early
+	m &= ~d;
+	if (m==0)
+	    break;
+	// next destination bit
+	d <<=1;
+    }
+    return r;
+}
+	
+template <typename _U>
+std::enable_if_t<std::is_unsigned_v<_U>, _U>
+bit_pack(const _U& b, const _U& mask)
+{
+    _U r=0;
+    // source mask
+    _U s=1;
+    // destination mask
+    _U d=1;
+    _U m=mask;
+    for (uint32_t i=0; i<sizeof(_U)*8; ++i) {
+	if (s & m) {
+	    if (s & b) {
+		r |= d;
+	    }
+	    // next destination bit
+	    d <<=1;
+	}
+	// if no mask bits are left, leave early
+	m &= ~s;
+	if (m==0)
+	    break;
+	// next source bit
+	s <<=1;
+    }
+    return r;
+}
+
+inline
+cftal::uint32_t
+cftal::bit_unpack(uint32_t b, uint32_t mask)
+{
+#if defined (__BMI2__)
+    return _pdep_u32(b, mask);
+#else
+    return impl::bit_unpack(b, mask);
+#endif
+}
+
+inline
+cftal::uint64_t
+cftal::bit_unpack(uint64_t b, uint64_t mask)
+{
+#if defined (__BMI2__)
+    return _pdep_u64(b, mask);
+#else
+    return impl::bit_unpack(b, mask);
+#endif
+}
+
+inline
+cftal::uint32_t
+cftal::bit_pack(uint32_t b, uint32_t mask)
+{
+#if defined (__BMI2__)
+    return _pext_u32(b, mask);
+#else
+    return impl::bit_pack(b, mask);
+#endif
+}
+
+inline
+cftal::uint64_t
+cftal::bit_pack(uint64_t b, uint64_t mask)
+{
+#if defined (__BMI2__)
+    return _pext_u64(b, mask);
+#else
+    return impl::bit_pack(b, mask);
+#endif
+}
+
 
 // Local variables:
 // mode: c++
