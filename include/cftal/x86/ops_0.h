@@ -2682,7 +2682,7 @@ v(__m256 src, const float* base, __m256i idx, __m256 msk)
 
 #endif
 
-#if 0 defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+#if 0 // defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
 template <std::size_t _SCALE>
 inline
 __m256d
