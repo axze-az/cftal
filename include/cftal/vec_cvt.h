@@ -21,6 +21,7 @@
 
 #include <cftal/vec.h>
 #include <cftal/as.h>
+#include <cftal/bitops.h>
 #include <utility>
 
 namespace cftal {
@@ -42,6 +43,58 @@ namespace cftal {
         }
     };
 
+    // conversion from vec<bit, _N> to vec<int32_t, _N/2>
+    template <size_t _N>
+    struct cvt_mask<vec<bit, _N/2>, vec<bit, _N> > {
+	static
+	const vec<bit, _N/2>
+	v(const vec<bit, _N>& s) {
+	    uint64_t sm=s();
+	    constexpr const uint64_t msk=0x5555555555555555ULL;
+	    vec<bit, _N/2> r=bit_pack(sm, msk);
+	    return r;
+	}
+    };
+
+    // conversion from vec<bit, _N> to vec<int32_t, 2*_N>
+    template <size_t _N>
+    struct cvt_mask<vec<bit, 2*_N>, vec<bit, _N> > {
+	static
+	const vec<bit, 2*_N>
+	v(const vec<bit, _N>& s) {
+	    uint64_t sm=s();
+	    const uint64_t em=0x5555555555555555ULL;
+	    const uint64_t om=0xAAAAAAAAAAAAAAAAULL;
+	    vec<bit, 2*_N> r=
+		bit_unpack(sm, em)|bit_unpack(sm, om);
+	    return r;
+	}
+    };
+
+    // conversion from vec<bit, 2> to vec<int32_t, 2>
+    template <>
+    struct cvt_mask<vec<int32_t, 2>, vec<bit, 2> > {
+        static
+        vec<int32_t, 2>
+        v(const vec<bit, 2>& s) {
+	    int32_t l=(s() & 1) ? -1 : 0;
+	    int32_t h=(s() & 2) ? -1 : 0;
+            return vec<int32_t, 2>(l, h);
+        }
+    };
+
+    // conversion from vec<int32_t, 2> to vec<bit, 2> 
+    template <>
+    struct cvt_mask<vec<bit, 2>, vec<int32_t, 2> > {
+        static
+        vec<bit, 2>
+        v(const vec<int32_t, 2>& s) {
+	    int32_t l= low_half(s)() < 0 ? 1 : 0;
+	    int32_t h= high_half(s)() < 0 ? 2 : 0;
+	    return vec<bit, 2>(l|h);
+        }
+    };   
+    
     // conversion from vec<bit, 1> to vec<int32_t, 2>
     template <>
     struct cvt_mask<vec<int32_t, 2>, vec<bit, 1> > {
