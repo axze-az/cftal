@@ -1424,7 +1424,7 @@ namespace cftal {
             template <std::size_t _SCALE>
             static __m512d
             v(__m512d src, const double* base,
-              __m256i idx, __mask8 msk);
+              __m256i idx, __mmask8 msk);
         };
 
         // specialization for __m512, __m512i
@@ -1437,7 +1437,7 @@ namespace cftal {
             template <std::size_t _SCALE>
             static __m512
             v(__m512 src, const float* base,
-              __m512i idx, __mask16 msk);
+              __m512i idx, __mmask16 msk);
         };
 #endif
 	
