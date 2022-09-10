@@ -2682,85 +2682,48 @@ v(__m256 src, const float* base, __m256i idx, __m256 msk)
 
 #endif
 
-#if 0 // defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
 template <std::size_t _SCALE>
 inline
-__m256d
+__m512d
 cftal::x86::
-vgatherdpd<__m256d, __m128i>::v(const double* base, __m128i idx)
+vgatherdpd<__m512d, __m256i>::v(const double* base, __m256i idx)
 {
-#if defined (__AVX2__)
-    const __m256d msk=_mm256_castsi256_pd(_mm256_set_epi64x(-1, -1, -1, -1));
-    const __m256d src=_mm256_setzero_pd();
-    // const __m256d msk=_mm256_cmp_pd(src, src, _CMP_EQ_OQ);
-    return _mm256_mask_i32gather_pd(src, base, idx, msk, _SCALE);
-    // return _mm256_i32gather_pd(base, idx, _SCALE);
-#else
-    int32_t i0, i1, i2, i3;
-    extract(i0, i1, i2, i3, idx);
-    const double* p0=vsib_addr<_SCALE>(base, i0);
-    const double* p1=vsib_addr<_SCALE>(base, i1);
-    const double* p2=vsib_addr<_SCALE>(base, i2);
-    const double* p3=vsib_addr<_SCALE>(base, i3);
-    return _mm256_setr_pd(*p0, *p1, *p2, *p3);
-#endif
+    const __mmask8 msk=0xff;
+    const __m512d src=_mm512_setzero_pd();
+    return _mm512_mask_i32gather_pd(src, msk, idx, base, _SCALE);
 }
 
 template <std::size_t _SCALE>
 inline
-__m256d
+__m512d
 cftal::x86::
-vgatherdpd<__m256d, __m128i>::
-v(__m256d src, const double* base, __m128i idx, __m256d msk)
+vgatherdpd<__m512d, __m256i>::
+v(__m512d src, const double* base, __m256i idx, __mmask8 msk)
 {
-#if defined (__AVX2__)
-    return _mm256_mask_i32gather_pd(src, base, idx, msk, _SCALE);
-#else
-    __m256d l=v<_SCALE>(base, idx);
-    __m256d r=select_f64(msk, l, src);
-    return r;
-#endif
+    return _mm512_mask_i32gather_pd(src, msk, idx, base, _SCALE);
 }
 
 template <std::size_t _SCALE>
 inline
-__m256
+__m512
 cftal::x86::
-vgatherdps<__m256, __m256i>::
-v(const float* base, __m256i idx)
+vgatherdps<__m512, __m512i>::
+v(const float* base, __m512i idx)
 {
-#if defined (__AVX2__)
-    const __m256 msk=_mm256_castsi256_ps(_mm256_set_epi32(-1, -1, -1, -1,
-                                                          -1, -1, -1, -1));
-    const __m256 src=_mm256_setzero_ps();
-    // const __m256 msk=_mm256_cmp_ps(src, src, _CMP_EQ_OQ);
-    return _mm256_mask_i32gather_ps(src, base, idx, msk, _SCALE);
-    // return _mm256_i32gather_ps(base, idx, _SCALE);
-#else
-    __m128i idxh=_mm256_extracti128_si256(idx, 1);
-    __m128i idxl=_mm256_castsi256_si128(idx);
-    __m128 rh=v<_SCALE>(base, idxl);
-    __m128 rl=v<_SCALE>(base, idxh);
-    __m256 r=_mm256_castps128_ps256(rl);
-    r = _mm256_insertf128_ps(r, rh, 1);
-    return r;
-#endif
+    const __mmask16 msk=0xffff;
+    const __m512 src=_mm512_setzero_ps();
+    return _mm512_mask_i32gather_ps(src, msk, idx, base, _SCALE);
 }
 
 template <std::size_t _SCALE>
 inline
-__m256
+__m512
 cftal::x86::
-vgatherdps<__m256, __m256i>::
-v(__m256 src, const float* base, __m256i idx, __m256 msk)
+vgatherdps<__m512, __m512i>::
+v(__m512 src, const float* base, __m512i idx, __mmask16 msk)
 {
-#if defined (__AVX2__)
-    return _mm256_mask_i32gather_ps(src, base, idx, msk, _SCALE);
-#else
-    __m256 l=v<_SCALE>(base, idx);
-    __m256 r=select_f32(msk, l, src);
-    return r;
-#endif
+    return _mm512_mask_i32gather_ps(src, msk, idx, base, _SCALE);
 }
 
 #endif
