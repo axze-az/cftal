@@ -617,6 +617,21 @@ cftal::v8f64 cftal::permute(const v8f64& a, const v8f64& b)
                            _P4, _P5, _P6, _P7>(a(), b());
 }
 
+inline
+cftal::variable_vec_lookup_table<double, int32_t, 8>::
+variable_vec_lookup_table(const vec<int32_t, 8>& idx)
+    : _msk(idx)
+{
+}
+
+inline
+cftal::vec<double, 8>
+cftal::variable_vec_lookup_table<double, int32_t, 8>::
+from(const double* tbl) const
+{
+    return x86::vgatherdpd<__m512d, __m256i>::v<sizeof(double)>(tbl, _msk());
+}
+
 #endif // __AVX512F__
 
 // Local variables:
