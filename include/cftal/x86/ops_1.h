@@ -98,6 +98,10 @@ namespace cftal {
             static __m256i v(__m256i a, __m256i b,
                              __m256i* rem=nullptr);
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m512i b,
+                             __m512i* rem=nullptr);
+#endif
         };
 
         struct div_s32 : public div_ref<int32_t, 4> {

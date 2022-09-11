@@ -77,7 +77,7 @@
 // #include <cftal/x86/v8s64.h>
 // #include <cftal/x86/v8u64.h>
 #include <cftal/x86/v16s32.h>
-// #include <cftal/x86/v16u32.h>
+#include <cftal/x86/v16u32.h>
 // #include <cftal/x86/v32s16.h>
 // #include <cftal/x86/v32u16.h>
 // #include <cftal/x86/v64s8.h>
@@ -86,7 +86,7 @@
 // #include <cftal/x86/v8s64_inl.h>
 // #include <cftal/x86/v8u64_inl.h>
 #include <cftal/x86/v16s32_inl.h>
-// #include <cftal/x86/v16u32_inl.h>
+#include <cftal/x86/v16u32_inl.h>
 // #include <cftal/x86/v32s16_inl.h>
 // #include <cftal/x86/v32u16_inl.h>
 // #include <cftal/x86/v64s8_inl.h>
