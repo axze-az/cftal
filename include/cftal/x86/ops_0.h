@@ -1232,6 +1232,11 @@ namespace cftal {
                 return _mm256_mullo_epi32(a, b);
             }
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m512i b) {
+                return _mm512_mullo_epi32(a, b);
+            }
+#endif
         };
 
         struct vpmulhud {
@@ -1440,7 +1445,7 @@ namespace cftal {
               __m512i idx, __mmask16 msk);
         };
 #endif
-	
+
 #if defined (__AVX__)
         struct make_zero_v4f64 {
             static __m256d v() {
