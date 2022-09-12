@@ -152,8 +152,62 @@ namespace cftal {
 
         uint64_t extract_u64(__m256i r, size_t i);
         __m256i insert_u64(__m256i r, uint64_t v, size_t i);
+#endif
 
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+        // extract insert f32
+        template <unsigned _IDX>
+        float extract_f32(__m512 r);
+        template <unsigned _IDX>
+        __m512 insert_f32(__m512 r, float v);
 
+        float extract_f32(__m512 r, size_t i);
+        __m512 insert_f32(__m512 r, float v, size_t i);
+
+        // extract insert f64
+        template <unsigned _IDX>
+        double extract_f64(__m512d r);
+        template <unsigned _IDX>
+        __m512d insert_f64(__m512d r, double v);
+
+        double extract_f64(__m512d r, size_t i);
+        __m512d insert_f64(__m512d r, double v, size_t i);
+
+        // extract/insert uint8_t
+        template <unsigned _IDX>
+        uint8_t extract_u8(__m512i v);
+        template <unsigned _IDX>
+        __m512i insert_u8(__m512i r, uint8_t v);
+
+        uint8_t extract_u8(__m512i r, size_t i);
+        __m512i insert_u8(__m512i r, uint8_t v, size_t i);
+
+        // extract/insert uint16_t
+        template <unsigned _IDX>
+        uint16_t extract_u16(__m512i v);
+        template <unsigned _IDX>
+        __m512i insert_u16(__m512i r, uint16_t v);
+
+        uint16_t extract_u16(__m512i r, size_t i);
+        __m512i insert_u16(__m512i r, uint16_t v, size_t i);
+
+        // extract/insert uint32_t
+        template <unsigned _IDX>
+        uint32_t extract_u32(__m512i v);
+        template <unsigned _IDX>
+        __m512i insert_u32(__m512i r, uint32_t v);
+
+        uint32_t extract_u32(__m512i r, size_t i);
+        __m512i insert_u32(__m512i r, uint32_t v, size_t i);
+
+        // extract/insert uint64_t
+        template <unsigned _IDX>
+        uint64_t extract_u64(__m512i v);
+        template <unsigned _IDX>
+        __m512i insert_u64(__m512i r, uint64_t v);
+
+        uint64_t extract_u64(__m512i r, size_t i);
+        __m512i insert_u64(__m512i r, uint64_t v, size_t i);
 #endif
     }
 }
@@ -727,7 +781,7 @@ inline
 __m256 cftal::x86::insert_f32(__m256 v, float d)
 {
     const bool cond = _IDX < 8;
-    static_assert(cond, "cftal::x86::insert_f32 _IDX < 4");
+    static_assert(cond, "cftal::x86::insert_f32 _IDX < 8");
     __m256 r = v;
     __m256 vv;
     vv = _mm256_set1_ps(d);
@@ -1106,6 +1160,333 @@ __m256i cftal::x86::insert_u64(__m256i v, uint64_t d, size_t i)
     return select_u64(msk, vf, v);
 }
 
+
+#endif
+
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+
+template <unsigned _IDX>
+inline
+float cftal::x86::extract_f32(__m512 v)
+{
+    const bool cond = _IDX < 8;
+    static_assert(cond, "cftal::x86::extract_f32 _IDX < 16");
+    __m128 vv;
+    if (_IDX<4) {
+        vv = _mm512_castps512_ps128(v);
+    } else if (_IDX<8) {
+        vv = _mm512_extractf32x4_ps(v, 1);
+    } else if (_IDX<12) {
+        vv = _mm512_extractf32x4_ps(v, 2);
+    } else {
+        vv = _mm512_extractf32x4_ps(v, 3);
+    }
+    return extract_f32<_IDX&3>(vv);
+}
+
+template <unsigned _IDX>
+inline
+__m512 cftal::x86::insert_f32(__m512 v, float d)
+{
+    constexpr const bool cond = _IDX < 16;
+    static_assert(cond, "cftal::x86::insert_f32 _IDX < 16");
+    const __mmask16 m=1 << _IDX;
+    __m512 vv=_mm512_set1_ps(d);
+    return select_f32(m, vv, v);
+}
+
+inline
+float cftal::x86::extract_f32(__m512 v, size_t i)
+{
+    __m128 vv;
+    if (i<4) {
+        vv = _mm512_castps512_ps128(v);
+    } else if (i<8) {
+        vv = _mm512_extractf32x4_ps(v, 1);
+    } else if (i<12) {
+        vv = _mm512_extractf32x4_ps(v, 2);
+    } else {
+        vv = _mm512_extractf32x4_ps(v, 3);
+    }
+    return extract_f32(vv, i&3);
+}
+
+inline
+__m512 cftal::x86::insert_f32(__m512 v, float f, size_t i)
+{
+    __m512 vf=_mm512_set1_ps(f);
+    const __mmask16 msk= 1 << i;
+    return select_f32(msk, vf, v);
+}
+
+template <unsigned _IDX>
+inline
+double cftal::x86::extract_f64(__m512d v)
+{
+    const bool cond = _IDX < 4;
+    static_assert(cond, "cftal::x86::extract_f64 _IDX < 8");
+    __m128d vv;
+    if (_IDX<2) {
+        vv = _mm512_castpd512_pd128(v);
+    } else if (_IDX<4) {
+        vv = _mm512_extractf64x2_pd(v, 1);
+    } else if (_IDX<6) {
+        vv = _mm512_extractf64x2_pd(v, 2);
+    } else {
+        vv = _mm512_extractf64x2_pd(v, 3);
+    }
+    return extract_f64<_IDX&1>(vv);
+}
+
+template <unsigned _IDX>
+inline
+__m512d cftal::x86::insert_f64(__m512d v, double d)
+{
+    constexpr const bool cond = _IDX < 8;
+    static_assert(cond, "cftal::x86::insert_f64 _IDX < 8");
+    constexpr const __mmask8 msk=1<< _IDX;
+    __m512d vv= _mm512_set1_pd(d);
+    return select_f64(msk, vv, v);
+}
+
+inline
+double cftal::x86::extract_f64(__m512d v, size_t i)
+{
+    __m128 vv;
+    if (i<2) {
+        vv = _mm512_castpd512_pd128(v);
+    } else if (i<4) {
+        vv = _mm512_extractf64x2_pd(v, 1);
+    } else if (i<6) {
+        vv = _mm512_extractf64x2_pd(v, 2);
+    } else {
+        vv = _mm512_extractf64x2_pd(v, 3);
+    }
+    return extract_f64(vv, i);
+}
+
+inline
+__m512d cftal::x86::insert_f64(__m512d v, double d, size_t i)
+{
+    __m512d vf=_mm512_set1_pd(d);
+    const __mmask8 msk=1<<i;
+    return select_f64(msk, vf, v);
+}
+
+template <unsigned _IDX>
+inline
+cftal::uint8_t cftal::x86::extract_u8(__m512i v)
+{
+    const bool cond = _IDX < 64;
+    static_assert(cond, "cftal::x86::extract_u8 _IDX < 64");
+    __m128i vv;
+    if (_IDX<16) {
+        vv = _mm512_castsi512_si128(v);
+    } else if (_IDX < 2*16) {
+        vv = _mm512_extracti32x4_epi32(v, 1);
+    } else if (_IDX < 3*16) {
+        vv = _mm512_extracti32x4_epi32(v, 2);
+    } else {
+        vv = _mm512_extracti32x4_epi32(v, 3);
+    }
+    return extract_u8<_IDX & 0xf>(vv);
+}
+
+template <unsigned _IDX>
+inline
+__m512i cftal::x86::insert_u8(__m512i v, uint8_t d)
+{
+    const bool cond = _IDX < 64;
+    static_assert(cond, "cftal::x86::insert_u8 _IDX < 64");
+    return insert_u8(v, d, _IDX);
+}
+
+inline
+std::uint8_t cftal::x86::extract_u8(__m512i v, size_t i)
+{
+    __m128i vv;
+    if (i<16) {
+        vv = _mm512_castsi512_si128(v);
+    } else if (i < 2*16) {
+        vv = _mm512_extracti32x4_epi32(v, 1);
+    } else if (i < 3*16) {
+        vv = _mm512_extracti32x4_epi32(v, 2);
+    } else {
+        vv = _mm512_extracti32x4_epi32(v, 3);
+    }
+    return extract_u8(vv, i & 0xf);
+}
+
+inline
+__m512i cftal::x86::insert_u8(__m512i v, uint8_t f, size_t i)
+{
+    __m512i vf=_mm512_set1_epi8(f);
+    const __mmask64 msk= 1L<<i;
+    return select_u8(msk, vf, v);
+}
+
+template <unsigned _IDX>
+inline
+cftal::uint16_t cftal::x86::extract_u16(__m512i v)
+{
+    const bool cond = _IDX < 32;
+    static_assert(cond, "cftal::x86::extract_u16 _IDX < 32");
+    constexpr const unsigned _N=8;
+    __m128i vv;
+    if (_IDX<_N) {
+        vv = _mm512_castsi512_si128(v);
+    } else if (_IDX < 2*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 1);
+    } else if (_IDX < 3*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 2);
+    } else {
+        vv = _mm512_extracti32x4_epi32(v, 3);
+    }
+    return extract_u16<_IDX & 0x7>(vv);
+}
+
+template <unsigned _IDX>
+inline
+__m512i cftal::x86::insert_u16(__m512i v, uint16_t d)
+{
+    const bool cond = _IDX < 16;
+    static_assert(cond, "cftal::x86::insert_u16 _IDX < 16");
+    return insert_u16(v, d, _IDX);
+}
+
+inline
+std::uint16_t cftal::x86::extract_u16(__m512i v, size_t i)
+{
+    constexpr const unsigned _N=8;
+    __m128i vv;
+    if (i<_N) {
+        vv = _mm512_castsi512_si128(v);
+    } else if (i < 2*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 1);
+    } else if (i < 3*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 2);
+    } else {
+        vv = _mm512_extracti32x4_epi32(v, 3);
+    }
+    return extract_u16(vv, i & 0x7);
+}
+
+inline
+__m512i cftal::x86::insert_u16(__m512i v, uint16_t f, size_t i)
+{
+    __m512i vf=_mm512_set1_epi16(f);
+    const __mmask32 msk= 1L<<i;
+    return select_u16(msk, vf, v);
+}
+
+template <unsigned _IDX>
+inline
+cftal::uint32_t cftal::x86::extract_u32(__m512i v)
+{
+    const bool cond = _IDX < 16;
+    static_assert(cond, "cftal::x86::extract_u32 _IDX < 16");
+    constexpr const unsigned _N=4;
+    __m128i vv;
+    if (_IDX<_N) {
+        vv = _mm512_castsi512_si128(v);
+    } else if (_IDX < 2*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 1);
+    } else if (_IDX < 3*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 2);
+    } else {
+        vv = _mm512_extracti32x4_epi32(v, 3);
+    }
+    return extract_u32<_IDX&3>(vv);
+}
+
+
+template <unsigned _IDX>
+inline
+__m512i cftal::x86::insert_u32(__m512i v, uint32_t d)
+{
+    const bool cond = _IDX < 16;
+    static_assert(cond, "cftal::x86::insert_u32 _IDX < 16");
+    return insert_u32(v, d, _IDX);
+}
+
+inline
+std::uint32_t cftal::x86::extract_u32(__m512i v, size_t i)
+{
+    constexpr const unsigned _N=4;
+    __m128i vv;
+    if (i<_N) {
+        vv = _mm512_castsi512_si128(v);
+    } else if (i < 2*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 1);
+    } else if (i < 3*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 2);
+    } else {
+        vv = _mm512_extracti32x4_epi32(v, 3);
+    }
+    return extract_u32(vv, i&3);
+}
+
+inline
+__m512i cftal::x86::insert_u32(__m512i v, uint32_t f, size_t i)
+{
+    __m512i vf=_mm512_set1_epi32(f);
+    const __mmask16 msk=1U<<i;
+    return select_u32(msk, vf, v);
+}
+
+template <unsigned _IDX>
+inline
+uint64_t cftal::x86::extract_u64(__m512i v)
+{
+    const bool cond = _IDX < 8;
+    static_assert(cond, "cftal::x86::extract_u64 _IDX < 8");
+    constexpr const unsigned _N=2;
+    __m128i vv;
+    if (_IDX<_N) {
+        vv = _mm512_castsi512_si128(v);
+    } else if (_IDX < 2*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 1);
+    } else if (_IDX < 3*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 2);
+    } else {
+        vv = _mm512_extracti32x4_epi32(v, 3);
+    }
+    return extract_u64<_IDX&1>(vv);
+}
+
+template <unsigned _IDX>
+inline
+__m512i cftal::x86::insert_u64(__m512i v, uint64_t d)
+{
+    __m512i vf=_mm512_set1_epi64(d);
+    constexpr const __mmask16 msk=1U<<_IDX;
+    return select_u32(msk, vf, v);
+}
+
+inline
+std::uint64_t cftal::x86::extract_u64(__m512i v, size_t i)
+{
+    constexpr const unsigned _N=2;
+    __m128i vv;
+    if (i<_N) {
+        vv = _mm512_castsi512_si128(v);
+    } else if (i < 2*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 1);
+    } else if (i < 3*_N) {
+        vv = _mm512_extracti32x4_epi32(v, 2);
+    } else {
+        vv = _mm512_extracti32x4_epi32(v, 3);
+    }
+    return extract_u64(vv, i&1);
+}
+
+inline
+__m512i cftal::x86::insert_u64(__m512i v, uint64_t d, size_t i)
+{
+    __m512i vf=_mm512_set1_epi64(d);
+    const __mmask8 msk=1<<i;
+    return select_u64(msk, vf, v);
+}
 
 #endif
 
