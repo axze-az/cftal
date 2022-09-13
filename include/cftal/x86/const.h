@@ -159,7 +159,7 @@ namespace cftal {
 
 #if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
 
-	// static constants consisting of 16 uint32_t
+        // static constants consisting of 16 uint32_t
         template <uint32_t _P00, uint32_t _P01,
                   uint32_t _P02, uint32_t _P03,
                   uint32_t _P04, uint32_t _P05,
@@ -171,8 +171,8 @@ namespace cftal {
         class const_v16u32 {
             using u_t = vecunion<uint32_t, 16, __m512, __m512d, __m512i>;
             static
-	    // __attribute__((__aligned__(64),
-	    //		   __visibility__("hidden")))
+            __attribute__((__aligned__(64),
+                          __visibility__("hidden")))
             const u_t _msk;
         public:
             static const __m512i& iv();
@@ -181,7 +181,7 @@ namespace cftal {
         };
 
 #endif
-	
+
         template <int _P0, int _P1, int _P2, int _P3>
         struct shuffle4 {
             enum {
