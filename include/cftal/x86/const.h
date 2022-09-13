@@ -157,6 +157,31 @@ namespace cftal {
 
 #endif
 
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+
+	// static constants consisting of 16 uint32_t
+        template <uint32_t _P00, uint32_t _P01,
+                  uint32_t _P02, uint32_t _P03,
+                  uint32_t _P04, uint32_t _P05,
+                  uint32_t _P06, uint32_t _P07,
+                  uint32_t _P08, uint32_t _P09,
+                  uint32_t _P10, uint32_t _P11,
+                  uint32_t _P12, uint32_t _P13,
+                  uint32_t _P14, uint32_t _P15>
+        class const_v16u32 {
+            using u_t = vecunion<uint32_t, 16, __m512, __m512d, __m512i>;
+            static
+	    // __attribute__((__aligned__(64),
+	    //		   __visibility__("hidden")))
+            const u_t _msk;
+        public:
+            static const __m512i& iv();
+            static const __m512& fv();
+            static const __m512d& dv();
+        };
+
+#endif
+	
         template <int _P0, int _P1, int _P2, int _P3>
         struct shuffle4 {
             enum {
@@ -699,9 +724,82 @@ const_v32u8<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
 {
     return _msk._vd;
 }
-
-
 #endif // __AVX__
+
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+
+template <cftal::uint32_t _P00, cftal::uint32_t _P01,
+          cftal::uint32_t _P02, cftal::uint32_t _P03,
+          cftal::uint32_t _P04, cftal::uint32_t _P05,
+          cftal::uint32_t _P06, cftal::uint32_t _P07,
+          cftal::uint32_t _P08, cftal::uint32_t _P09,
+          cftal::uint32_t _P10, cftal::uint32_t _P11,
+          cftal::uint32_t _P12, cftal::uint32_t _P13,
+          cftal::uint32_t _P14, cftal::uint32_t _P15>
+const typename
+cftal::x86::
+const_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::u_t
+cftal::x86::
+const_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::_msk= {{
+        _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+        _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15
+    }
+};
+
+template <cftal::uint32_t _P00, cftal::uint32_t _P01,
+          cftal::uint32_t _P02, cftal::uint32_t _P03,
+          cftal::uint32_t _P04, cftal::uint32_t _P05,
+          cftal::uint32_t _P06, cftal::uint32_t _P07,
+          cftal::uint32_t _P08, cftal::uint32_t _P09,
+          cftal::uint32_t _P10, cftal::uint32_t _P11,
+          cftal::uint32_t _P12, cftal::uint32_t _P13,
+          cftal::uint32_t _P14, cftal::uint32_t _P15>
+inline
+const __m512i&
+cftal::x86::
+const_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::iv()
+{
+    return _msk._vi;
+}
+
+template <cftal::uint32_t _P00, cftal::uint32_t _P01,
+          cftal::uint32_t _P02, cftal::uint32_t _P03,
+          cftal::uint32_t _P04, cftal::uint32_t _P05,
+          cftal::uint32_t _P06, cftal::uint32_t _P07,
+          cftal::uint32_t _P08, cftal::uint32_t _P09,
+          cftal::uint32_t _P10, cftal::uint32_t _P11,
+          cftal::uint32_t _P12, cftal::uint32_t _P13,
+          cftal::uint32_t _P14, cftal::uint32_t _P15>
+inline
+const __m512&
+cftal::x86::
+const_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::fv()
+{
+    return _msk._vf;
+}
+
+template <cftal::uint32_t _P00, cftal::uint32_t _P01,
+          cftal::uint32_t _P02, cftal::uint32_t _P03,
+          cftal::uint32_t _P04, cftal::uint32_t _P05,
+          cftal::uint32_t _P06, cftal::uint32_t _P07,
+          cftal::uint32_t _P08, cftal::uint32_t _P09,
+          cftal::uint32_t _P10, cftal::uint32_t _P11,
+          cftal::uint32_t _P12, cftal::uint32_t _P13,
+          cftal::uint32_t _P14, cftal::uint32_t _P15>
+inline
+const __m512d&
+cftal::x86::
+const_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::dv()
+{
+    return _msk._vd;
+}
+
+#endif
 
 // Local variables:
 // mode: c++
