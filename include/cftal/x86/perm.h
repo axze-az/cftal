@@ -1185,6 +1185,7 @@ namespace cftal {
                            60, 61, 28, 29, 62, 63, 30, 31>
             : public swap_ab<__m256i, vpunpckhwd> {};
 #endif // __AVX2__
+
 #if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         // generic permutation of one v8f64 vector
         template <int _P0, int _P1, int _P2, int _P3,
@@ -1198,6 +1199,24 @@ namespace cftal {
                   int _P4, int _P5, int _P6, int _P7>
         struct perm2_v8f64 {
             static __m512d v(__m512d a, __m512d b);
+        };
+
+        // generic permutation of one v16u8 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        struct perm1_v16u32 {
+            static __m512i v(__m512i a);
+        };
+
+        // generic permutation of one v16u8 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        struct perm2_v16u32 {
+            static __m512i v(__m512i a, __m512i b);
         };
 #endif
 
@@ -1276,6 +1295,20 @@ namespace cftal {
         template <int _P0, int _P1, int _P2, int _P3,
                   int _P4, int _P5, int _P6, int _P7>
         __m512d perm_v8f64(__m512d a, __m512d b);
+
+        // generic permutation of one v16u32 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        __m512i perm_v16u32(__m512i a);
+
+        // generic permutation of one v16u32 vector
+        template <int _P00, int _P01, int _P02, int _P03,
+                  int _P04, int _P05, int _P06, int _P07,
+                  int _P08, int _P09, int _P10, int _P11,
+                  int _P12, int _P13, int _P14, int _P15>
+        __m512i perm_v16u32(__m512i a, __m512i b);
 #endif
 
         // generic permutation of one v16u8 vector
@@ -1313,6 +1346,8 @@ namespace cftal {
                   int _P28, int _P29, int _P30, int _P31>
         __m256i perm_v32u8(__m256i a, __m256i b);
 #endif
+
+
     }
 }
 
@@ -3618,6 +3653,7 @@ v(__m256i a, __m256i b)
 
 #endif // __AVX2__
 #if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+
 template <int _P0, int _P1, int _P2, int _P3,
           int _P4, int _P5, int _P6, int _P7>
 inline
@@ -3744,6 +3780,193 @@ perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
 #pragma clang diagnostic pop
 #endif
 }
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+inline
+__m512i
+cftal::x86::
+perm1_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+v(__m512i a)
+{
+    constexpr const bool zero_elements=
+        (_P00 < 0) || (_P01 < 0) || (_P02 < 0) || (_P03 < 0) ||
+        (_P04 < 0) || (_P05 < 0) || (_P06 < 0) || (_P07 < 0) ||
+        (_P08 < 0) || (_P09 < 0) || (_P10 < 0) || (_P11 < 0) ||
+        (_P12 < 0) || (_P13 < 0) || (_P14 < 0) || (_P15 < 0);
+    constexpr const bool no_perm=
+        (_P00<0 || _P00==0) && (_P01<0 || _P01==1) &&
+        (_P02<0 || _P02==2) && (_P03<0 || _P03==3) &&
+        (_P04<0 || _P04==4) && (_P05<0 || _P05==5) &&
+        (_P06<0 || _P06==6) && (_P07<0 || _P07==7) &&
+        (_P08<0 || _P08==8) && (_P09<0 || _P09==9) &&
+        (_P10<0 || _P10==10) && (_P11<0 || _P11==11) &&
+        (_P12<0 || _P12==12) && (_P13<0 || _P13==13) &&
+        (_P14<0 || _P14==14) && (_P15<0 || _P15==15);
+
+    __m512i r=a;
+    if (no_perm==true && zero_elements==false)
+	return r;
+    if (!no_perm) {
+	constexpr const uint32_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
+        constexpr const uint32_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
+	constexpr const uint32_t c02 = (_P02 < 0) ? -1 : _P02 & 15;
+	constexpr const uint32_t c03 = (_P03 < 0) ? -1 : _P03 & 15;
+	constexpr const uint32_t c04 = (_P04 < 0) ? -1 : _P04 & 15;
+	constexpr const uint32_t c05 = (_P05 < 0) ? -1 : _P05 & 15;
+	constexpr const uint32_t c06 = (_P06 < 0) ? -1 : _P06 & 15;
+	constexpr const uint32_t c07 = (_P07 < 0) ? -1 : _P07 & 15;
+	constexpr const uint32_t c08 = (_P08 < 0) ? -1 : _P08 & 15;
+	constexpr const uint32_t c09 = (_P09 < 0) ? -1 : _P09 & 15;
+	constexpr const uint32_t c10 = (_P10 < 0) ? -1 : _P10 & 15;
+	constexpr const uint32_t c11 = (_P11 < 0) ? -1 : _P11 & 15;
+	constexpr const uint32_t c12 = (_P12 < 0) ? -1 : _P12 & 15;
+	constexpr const uint32_t c13 = (_P13 < 0) ? -1 : _P13 & 15;
+	constexpr const uint32_t c14 = (_P14 < 0) ? -1 : _P14 & 15;
+	constexpr const uint32_t c15 = (_P15 < 0) ? -1 : _P15 & 15;
+	const __m512i msk=const_v16u32<c00, c01, c02, c03,
+				       c04, c05, c06, c07,
+				       c08, c09, c10, c11,
+				       c12, c13, c14, c15>::iv();
+	r=_mm512_permutevar_epi32(r, msk);
+    }
+    if (zero_elements) {
+        constexpr const uint32_t
+            n00=_P00<0 ? 0 : -1, n01=_P01<0 ? 0 : -1,
+            n02=_P02<0 ? 0 : -1, n03=_P03<0 ? 0 : -1,
+            n04=_P04<0 ? 0 : -1, n05=_P05<0 ? 0 : -1,
+            n06=_P06<0 ? 0 : -1, n07=_P07<0 ? 0 : -1,
+            n08=_P08<0 ? 0 : -1, n09=_P09<0 ? 0 : -1,
+            n10=_P10<0 ? 0 : -1, n11=_P11<0 ? 0 : -1,
+            n12=_P12<0 ? 0 : -1, n13=_P13<0 ? 0 : -1,
+            n14=_P14<0 ? 0 : -1, n15=_P15<0 ? 0 : -1;
+        const __m512i msk=const_v16u32<n00, n01, n02, n03,
+				       n04, n05, n06, n07,
+				       n08, n09, n10, n11,
+				       n12, n13, n14, n15>::iv();
+        r=_mm512_and_si512(r, msk);
+    }
+    return r;
+}
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+inline
+__m512i
+cftal::x86::
+perm2_v16u32<_P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+	     _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::
+v(__m512i a, __m512i b)
+{
+    constexpr const uint32_t
+        _UP00=_P00, _UP01=_P01, _UP02=_P02, _UP03=_P03,
+        _UP04=_P04, _UP05=_P05, _UP06=_P06, _UP07=_P07,
+        _UP08=_P08, _UP09=_P09, _UP10=_P10, _UP11=_P11,
+        _UP12=_P12, _UP13=_P13, _UP14=_P14, _UP15=_P15;
+
+    constexpr const bool a_only=
+        (_P00 < 16) && (_P01 < 16) && (_P02 < 16) && (_P03 < 16) &&
+        (_P04 < 16) && (_P05 < 16) && (_P06 < 16) && (_P07 < 16) &&
+        (_P08 < 16) && (_P09 < 16) && (_P10 < 16) && (_P11 < 16) &&
+        (_P12 < 16) && (_P13 < 16) && (_P14 < 16) && (_P15 < 16);
+    constexpr const bool b_only=
+        (_UP00 > 15) && (_UP01 > 15) && (_UP02 > 15) && (_UP03 > 15) &&
+        (_UP04 > 15) && (_UP05 > 15) && (_UP06 > 15) && (_UP07 > 15) &&
+        (_UP08 > 15) && (_UP09 > 15) && (_UP10 > 15) && (_UP11 > 15) &&
+        (_UP12 > 15) && (_UP13 > 15) && (_UP14 > 15) && (_UP15 > 15);
+
+    constexpr const bool zero_elements=
+        (_P00 < 0) || (_P01 < 0) || (_P02 < 0) || (_P03 < 0) ||
+        (_P04 < 0) || (_P05 < 0) || (_P06 < 0) || (_P07 < 0) ||
+        (_P08 < 0) || (_P09 < 0) || (_P10 < 0) || (_P11 < 0) ||
+        (_P12 < 0) || (_P13 < 0) || (_P14 < 0) || (_P15 < 0);
+
+    constexpr const bool no_perm=
+        (_P00<0 || _P00==0 || _P00==16) &&
+        (_P01<0 || _P01==1 || _P01==17) &&
+        (_P02<0 || _P02==2 || _P02==18) &&
+        (_P03<0 || _P03==3 || _P03==19) &&
+        (_P04<0 || _P04==4 || _P04==20) &&
+        (_P05<0 || _P05==5 || _P05==21) &&
+        (_P06<0 || _P06==6 || _P06==22) &&
+        (_P07<0 || _P07==7 || _P07==23) &&
+        (_P08<0 || _P08==8 || _P08==24) &&
+        (_P09<0 || _P09==9 || _P09==25) &&
+        (_P10<0 || _P10==10 || _P10==26) &&
+        (_P11<0 || _P11==11 || _P11==27) &&
+        (_P12<0 || _P12==12 || _P12==28) &&
+        (_P13<0 || _P13==13 || _P13==29) &&
+        (_P14<0 || _P14==14 || _P14==30) &&
+        (_P15<0 || _P15==15 || _P15==31);
+
+
+    if (a_only) {
+        const __m512i ap=perm1_v16u32<
+            _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
+            _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::v(a);
+        return ap;
+    }
+    if (b_only) {
+	// elements to select from vector b or zero
+	constexpr const int32_t
+	    b00 = _P00 < 16 ? -1 : _P00-16, b01 = _P01 < 16 ? -1 : _P01-16,
+	    b02 = _P02 < 16 ? -1 : _P02-16, b03 = _P03 < 16 ? -1 : _P03-16,
+	    b04 = _P04 < 16 ? -1 : _P04-16, b05 = _P05 < 16 ? -1 : _P05-16,
+	    b06 = _P06 < 16 ? -1 : _P06-16, b07 = _P07 < 16 ? -1 : _P07-16,
+	    b08 = _P08 < 16 ? -1 : _P08-16, b09 = _P09 < 16 ? -1 : _P09-16,
+	    b10 = _P10 < 16 ? -1 : _P10-16, b11 = _P11 < 16 ? -1 : _P11-16,
+	    b12 = _P12 < 16 ? -1 : _P12-16, b13 = _P13 < 16 ? -1 : _P13-16,
+	    b14 = _P14 < 16 ? -1 : _P14-16, b15 = _P15 < 16 ? -1 : _P15-16;
+        const __m512i bp=perm1_v16u32<
+            b00, b01, b02, b03, b04, b05, b06, b07,
+            b08, b09, b10, b11, b12, b13, b14, b15>::v(b);
+        return bp;
+    }
+    __m512i r;
+    if (no_perm) {
+        constexpr const bool
+            s00 = _P00 < 16 ? true: false, s01 = _P01 < 16 ? true: false,
+            s02 = _P02 < 16 ? true: false, s03 = _P03 < 16 ? true: false,
+            s04 = _P04 < 16 ? true: false, s05 = _P05 < 16 ? true: false,
+            s06 = _P06 < 16 ? true: false, s07 = _P07 < 16 ? true: false,
+            s08 = _P08 < 16 ? true: false, s09 = _P09 < 16 ? true: false,
+            s10 = _P10 < 16 ? true: false, s11 = _P11 < 16 ? true: false,
+            s12 = _P12 < 16 ? true: false, s13 = _P13 < 16 ? true: false,
+            s14 = _P14 < 16 ? true: false, s15 = _P15 < 16 ? true: false;
+        r=select_v16u32<
+            s00, s01, s02, s03, s04, s05, s06, s07,
+            s08, s09, s10, s11, s12, s13, s14, s15>::v(a, b);
+    } else {
+	const __m512i msk=const_v16u32<_P00, _P01, _P02, _P03,
+				       _P04, _P05, _P06, _P07,
+				       _P08, _P09, _P10, _P11,
+				       _P12, _P13, _P14, _P15>::iv();
+	r = _mm512_permutex2var_epi32(a, msk, b);
+    }
+    if (zero_elements) {
+        constexpr const uint32_t
+            z00 = _P00 < 0 ? 0x00: -1, z01 = _P01 < 0 ? 0x00: -1,
+            z02 = _P02 < 0 ? 0x00: -1, z03 = _P03 < 0 ? 0x00: -1,
+            z04 = _P04 < 0 ? 0x00: -1, z05 = _P05 < 0 ? 0x00: -1,
+            z06 = _P06 < 0 ? 0x00: -1, z07 = _P07 < 0 ? 0x00: -1,
+            z08 = _P08 < 0 ? 0x00: -1, z09 = _P09 < 0 ? 0x00: -1,
+            z10 = _P10 < 0 ? 0x00: -1, z11 = _P11 < 0 ? 0x00: -1,
+            z12 = _P12 < 0 ? 0x00: -1, z13 = _P13 < 0 ? 0x00: -1,
+            z14 = _P14 < 0 ? 0x00: -1, z15 = _P15 < 0 ? 0x00: -1;
+        const __m512i zm=const_v16u32<z00, z01, z02, z03,
+				      z04, z05, z06, z07,
+				      z08, z09, z10, z11,
+				      z12, z13, z14, z15>::iv();
+        r=_mm512_and_si512(r, zm);
+    }
+    return r;
+}
+
 #endif
 
 
@@ -4409,6 +4632,97 @@ __m256i cftal::x86::perm_v8u32(__m256i a, __m256i b)
     static_assert(_P7 < 16,
                   "cftal::x86::perm_v8u32(a, b) : _P7 < 16");
     return perm2_v8u32<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(a, b);
+}
+#endif
+
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+__m512i cftal::x86::perm_v16u32(__m512i a)
+{
+    static_assert(_P00 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P00 < 16");
+    static_assert(_P01 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P01 < 16");
+    static_assert(_P02 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P02 < 16");
+    static_assert(_P03 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P03 < 16");
+    static_assert(_P04 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P04 < 16");
+    static_assert(_P05 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P05 < 16");
+    static_assert(_P06 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P06 < 16");
+    static_assert(_P07 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P07 < 16");
+    static_assert(_P08 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P08 < 16");
+    static_assert(_P09 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P09 < 16");
+    static_assert(_P10 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P10 < 16");
+    static_assert(_P11 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P11 < 16");
+    static_assert(_P12 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P12 < 16");
+    static_assert(_P13 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P13 < 16");
+    static_assert(_P14 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P14 < 16");
+    static_assert(_P15 < 16,
+                  "cftal::x86::perm_v16u32(a) : _P15 < 16");
+    return perm1_v16u32<_P00, _P01, _P02, _P03,
+			_P04, _P05, _P06, _P07,
+			_P08, _P09, _P10, _P11,
+			_P12, _P13, _P14, _P15>::v(a);
+}
+
+template <int _P00, int _P01, int _P02, int _P03,
+          int _P04, int _P05, int _P06, int _P07,
+          int _P08, int _P09, int _P10, int _P11,
+          int _P12, int _P13, int _P14, int _P15>
+__m512i cftal::x86::perm_v16u32(__m512i a, __m512i b)
+{
+    static_assert(_P00 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P00 < 32");
+    static_assert(_P01 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P01 < 32");
+    static_assert(_P02 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P02 < 32");
+    static_assert(_P03 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P03 < 32");
+    static_assert(_P04 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P04 < 32");
+    static_assert(_P05 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P05 < 32");
+    static_assert(_P06 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P06 < 32");
+    static_assert(_P07 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P07 < 32");
+    static_assert(_P08 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P08 < 32");
+    static_assert(_P09 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P09 < 32");
+    static_assert(_P10 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P10 < 32");
+    static_assert(_P11 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P11 < 32");
+    static_assert(_P12 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P12 < 32");
+    static_assert(_P13 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P13 < 32");
+    static_assert(_P14 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P14 < 32");
+    static_assert(_P15 < 32,
+                  "cftal::x86::perm_v16u32(a, b) : _P15 < 32");
+    return perm2_v16u32<_P00, _P01, _P02, _P03,
+			_P04, _P05, _P06, _P07,
+			_P08, _P09, _P10, _P11,
+			_P12, _P13, _P14, _P15>::v(a, b);
 }
 #endif
 
