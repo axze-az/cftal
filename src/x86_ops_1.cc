@@ -630,6 +630,35 @@ __m256i cftal::x86::div_s32::v(__m256i x, __m256i y, __m256i* rem)
 }
 #endif
 
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+__m512i cftal::x86::div_s32::v(__m512i x, __m512i y, __m512i* rem)
+{
+    __m256i xh = _mm512_extracti32x8_epi32(x, 1);
+    __m256i yh = _mm512_extracti32x8_epi32(y, 1);
+
+    __m512d xf = _mm512_cvtepi32_pd(_mm512_castsi512_si256(x));
+    __m512d yf = _mm512_cvtepi32_pd(_mm512_castsi512_si256(y));
+    __m512d t = _mm512_div_pd(xf, yf);
+    __m256i rl = _mm512_cvttpd_epi32(t);
+    xf = _mm512_cvtepi32_pd(xh);
+    yf = _mm512_cvtepi32_pd(yh);
+    t = _mm512_div_pd(xf, yf);
+    __m256i rh = _mm512_cvttpd_epi32(t);
+
+    __m512i q= _mm512_inserti32x8(_mm512_castsi256_si512(rl), rh, 1);
+    // set quotient to -1 where divisor is zero
+    __mmask16 eqz = _mm512_cmpeq_epi32_mask(y, _mm512_setzero_si512());
+    __m512i m1=_mm512_set1_epi32(-1);
+    q = _mm512_mask_blend_epi32 (eqz, q, m1);
+    if (rem != nullptr) {
+        __m512i r= _mm512_mullo_epi32(q, y);
+        r= _mm512_sub_epi32(x, r);
+        _mm512_store_si512(rem, r);
+    }
+    return q;
+}
+#endif
+
 __m128i cftal::x86::div_u32::v(__m128i x, __m128i y, __m128i* rem)
 {
 #if defined (__AVX2__)
@@ -833,8 +862,37 @@ __m256i cftal::x86::div_u32::v(__m256i x, __m256i y, __m256i* rem)
     }
     return qi;
 }
-
 #endif
+
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+__m512i cftal::x86::div_u32::v(__m512i x, __m512i y, __m512i* rem)
+{
+    __m256i xh = _mm512_extracti32x8_epi32(x, 1);
+    __m256i yh = _mm512_extracti32x8_epi32(y, 1);
+
+    __m512d xf = _mm512_cvtepu32_pd(_mm512_castsi512_si256(x));
+    __m512d yf = _mm512_cvtepu32_pd(_mm512_castsi512_si256(y));
+    __m512d t = _mm512_div_pd(xf, yf);
+    __m256i rl = _mm512_cvttpd_epu32(t);
+    xf = _mm512_cvtepu32_pd(xh);
+    yf = _mm512_cvtepu32_pd(yh);
+    t = _mm512_div_pd(xf, yf);
+    __m256i rh = _mm512_cvttpd_epu32(t);
+
+    __m512i q= _mm512_inserti32x8(_mm512_castsi256_si512(rl), rh, 1);
+    // set quotient to -1 where divisor is zero
+    __mmask16 eqz = _mm512_cmpeq_epu32_mask(y, _mm512_setzero_si512());
+    __m512i m1=_mm512_set1_epi32(-1);
+    q = _mm512_mask_blend_epi32 (eqz, q, m1);
+    if (rem != nullptr) {
+        __m512i r= _mm512_mullo_epi32(q, y);
+        r= _mm512_sub_epi32(x, r);
+        _mm512_store_si512(rem, r);
+    }
+    return q;
+}
+#endif
+
 
 #endif
 
