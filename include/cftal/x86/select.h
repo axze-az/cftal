@@ -568,28 +568,28 @@ inline
 __m512d
 cftal::x86::select_f64(__mmask8 msk, __m512d on_one, __m512d on_zero)
 {
-    return _mm512_mask_blend_pd (msk, on_one, on_zero);
+    return _mm512_mask_blend_pd (msk, on_zero, on_one);
 }
 
 inline
 __m512
 cftal::x86::select_f32(__mmask16 msk, __m512 on_one, __m512 on_zero)
 {
-    return _mm512_mask_blend_ps (msk, on_one, on_zero);
+    return _mm512_mask_blend_ps (msk, on_zero, on_one);
 }
 
 inline
 __m512i
 cftal::x86::select_u64(__mmask8 msk, __m512i on_one, __m512i on_zero)
 {
-    return _mm512_mask_blend_epi64 (msk, on_one, on_zero);
+    return _mm512_mask_blend_epi64 (msk, on_zero, on_one);
 }
 
 inline
 __m512i
 cftal::x86::select_u32(__mmask16 msk, __m512i on_one, __m512i on_zero)
 {
-    return _mm512_mask_blend_epi32 (msk, on_one, on_zero);
+    return _mm512_mask_blend_epi32 (msk, on_zero, on_one);
 }
 #endif
 
