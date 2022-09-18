@@ -28,8 +28,13 @@
 #include <cmath>
 #include <cstring>
 
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+#define USE_TYPE_AS_MASK 0
+#define USE_BOOL_AS_MASK 0
+#else
 #define USE_TYPE_AS_MASK 1
 #define USE_BOOL_AS_MASK 0
+#endif
 
 namespace cftal {
 
