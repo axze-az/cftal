@@ -19,6 +19,8 @@
 #include "cftal/vxf16.h"
 #include "cftal/test/of_ops.h"
 
+#if !defined (__AVX512F__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
+
 namespace cftal {
     namespace test {
         template <>
@@ -151,4 +153,13 @@ int main()
     return rc==true ? 0 : 1;
 }
 
+#else
+
+int main()
+{
+    std::cout << "not testing vXf16 (missing implementation)" << std::endl;
+    return 0;
+}
+
+#endif
 

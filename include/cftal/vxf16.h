@@ -23,6 +23,7 @@
 #include <cftal/f16.h>
 #include <cftal/f16_t.h>
 
+#if !defined (__AVX512F__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
 
 namespace cftal {
 
@@ -907,6 +908,8 @@ cftal::select_zero_or_val(const typename vec<f16_t, _N>::mask_type& m ,
     auto r=select_zero_or_val(m(), on_false());
     return vec<f16_t, _N>::mask_type::cvt_from_rep(r);
 }
+
+#endif
 
 // Local variables:
 // mode: c++
