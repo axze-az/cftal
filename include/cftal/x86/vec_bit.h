@@ -86,7 +86,6 @@ namespace cftal {
             : base_type((l() & 0xf) | (__mmask8(h() & 0xf) << 4)) {}
     };
 
-#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
     template <>
     class vec<bit, 16> : public x86::vreg<__mmask16> {
     public:
@@ -105,7 +104,6 @@ namespace cftal {
         vec(const vec<bit, 8>& l, const vec<bit, 8>& h)
             : base_type((l() & 0xff) | (__mmask16(h() & 0xff) << 8)) {}
     };
-#endif
 
 #if defined (__AVX512VL__) && defined (__AVX512BW__)  \
     && (__CFTAL_CFG_ENABLE_AVX512__ > 0)

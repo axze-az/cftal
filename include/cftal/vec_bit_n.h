@@ -63,6 +63,8 @@ namespace cftal {
             utype(vec<bit, _N/2>::mask);
             // utype((uint64_t(1) << _N)-1);
         using value_type = bit;
+        using mask_value_type = bit;
+        using mask_type = vec<mask_value_type, _N>;
         vec() = default;
         vec(const vec&) = default;
         vec(vec&&) = default;
@@ -86,7 +88,10 @@ namespace cftal {
     public:
         using utype = uint8_t;
         using value_type = bit;
+        using mask_value_type = bit;
+        using mask_type = vec<mask_value_type, 1>;
         static constexpr const utype mask = 1;
+
         vec() = default;
         vec(const vec&) = default;
         vec(vec&&) = default;
@@ -178,7 +183,7 @@ namespace cftal {
 
     bool
     none_of(const vec<bit, 1>& a);
-    
+
     template <std::size_t _N>
     vec<bit, _N>
     select(const vec<bit, _N>&  m,
