@@ -604,6 +604,22 @@ __m128i cftal::x86::div_s32::lh(__m128i x, __m128i y, __m128i* rem)
 #if defined (__AVX2__)
 __m256i cftal::x86::div_s32::v(__m256i x, __m256i y, __m256i* rem)
 {
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+    __m512d xf = _mm512_cvtepi32_pd(x);
+    __m512d yf = _mm512_cvtepi32_pd(y);
+    __m512d t = _mm512_div_pd(xf, yf);
+    __m256i q = _mm512_cvttpd_epi32(t);
+    // set quotient to -1 where divisor is zero
+    __mmask8 eqz = _mm256_cmpeq_epi32_mask(y, _mm256_setzero_si256());
+    __m256i m1=_mm256_set1_epi32(-1);
+    q = _mm256_mask_blend_epi32 (eqz, q, m1);
+    if (rem != nullptr) {
+        __m256i r= _mm256_mullo_epi32(q, y);
+        r= _mm256_sub_epi32(x, r);
+        _mm256_store_si256(rem, r);
+    }
+    return q;
+#else
     __m128i xh = _mm256_extractf128_si256(x, 1);
     __m128i yh = _mm256_extractf128_si256(y, 1);
 
@@ -627,6 +643,7 @@ __m256i cftal::x86::div_s32::v(__m256i x, __m256i y, __m256i* rem)
         _mm256_store_si256(rem, r);
     }
     return q;
+#endif
 }
 #endif
 
@@ -798,6 +815,22 @@ __m128i cftal::x86::div_u32::lh(__m128i x, __m128i y, __m128i* rem)
 #if defined (__AVX2__)
 __m256i cftal::x86::div_u32::v(__m256i x, __m256i y, __m256i* rem)
 {
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+    __m512d xf = _mm512_cvtepu32_pd(x);
+    __m512d yf = _mm512_cvtepu32_pd(y);
+    __m512d t = _mm512_div_pd(xf, yf);
+    __m256i q = _mm512_cvttpd_epu32(t);
+    // set quotient to -1 where divisor is zero
+    __mmask8 eqz = _mm256_cmpeq_epu32_mask(y, _mm256_setzero_si256());
+    __m256i m1=_mm256_set1_epi32(-1);
+    q = _mm256_mask_blend_epi32 (eqz, q, m1);
+    if (rem != nullptr) {
+        __m256i r= _mm256_mullo_epi32(q, y);
+        r= _mm256_sub_epi32(x, r);
+        _mm256_store_si256(rem, r);
+    }
+    return q;
+#else
     // add 2^31
     __m256i xs = _mm256_add_epi32(x, v_sign_v8s32_msk::iv());
     __m256i ys = _mm256_add_epi32(y, v_sign_v8s32_msk::iv());
@@ -861,6 +894,7 @@ __m256i cftal::x86::div_u32::v(__m256i x, __m256i y, __m256i* rem)
         _mm256_store_si256(rem, r);
     }
     return qi;
+#endif
 }
 #endif
 
