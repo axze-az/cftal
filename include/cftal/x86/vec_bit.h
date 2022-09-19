@@ -81,6 +81,7 @@ namespace cftal {
         // explicit vec(bool v) : base_type(v ? 0xff : 0) {}
         // vec(std::initializer_list<bool> l);
         // vec(init_list<bool> l);
+        constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0U) {}
         vec(__mmask8 v) : base_type(v) {}
         vec(const vec<bit, 4>& l, const vec<bit, 4>& h)
             : base_type((l() & 0xf) | (__mmask8(h() & 0xf) << 4)) {}
@@ -100,6 +101,7 @@ namespace cftal {
         // explicit vec(bool v) : base_type(v ? 0xffff : 0) {}
         // vec(std::initializer_list<bool> l);
         // vec(init_list<bool> l);
+        constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0U) {}
         vec(__mmask16 v) : base_type(v) {}
         vec(const vec<bit, 8>& l, const vec<bit, 8>& h)
             : base_type((l() & 0xff) | (__mmask16(h() & 0xff) << 8)) {}
@@ -121,6 +123,7 @@ namespace cftal {
         // explicit vec(bool v) : base_type(v ? 0xffffffff : 0) {}
         // vec(std::initializer_list<bool> l);
         // vec(init_list<bool> l);
+        constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0U) {}
         vec(__mmask32 v) : base_type(v) {}
         vec(const vec<bit, 16>& l, const vec<bit, 16>& h)
             : base_type((l() & 0xffff) | (__mmask32(h() & 0xffff) << 16)) {}
@@ -140,6 +143,7 @@ namespace cftal {
         // explicit vec(bool v) : base_type(v ? 0xffffffffffffffffLL : 0) {}
         // vec(std::initializer_list<bool> l);
         // vec(init_list<bool> l);
+        constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0ULL) {}
         vec(__mmask64 v) : base_type(v) {}
         vec(const vec<bit, 16>& l, const vec<bit, 16>& h)
             : base_type((l() & 0xffffffff) |
