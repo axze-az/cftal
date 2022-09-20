@@ -437,7 +437,7 @@ namespace cftal {
                   bool _P04, bool _P05, bool _P06, bool _P07,
                   bool _P08, bool _P09, bool _P10, bool _P11,
                   bool _P12, bool _P13, bool _P14, bool _P15>
-        __m512i select_u32(__m512 a, __m512 b);
+        __m512i select_u32(__m512i a, __m512i b);
 
 #endif
     }
@@ -1259,7 +1259,7 @@ template <bool _P00, bool _P01, bool _P02, bool _P03,
           bool _P04, bool _P05, bool _P06, bool _P07,
           bool _P08, bool _P09, bool _P10, bool _P11,
           bool _P12, bool _P13, bool _P14, bool _P15>
-__m512i cftal::x86::select_u32(__m512 a, __m512 b)
+__m512i cftal::x86::select_u32(__m512i a, __m512i b)
 {
     return select_v16u32<_P00, _P01, _P02, _P03,
                          _P04, _P05, _P06, _P07,

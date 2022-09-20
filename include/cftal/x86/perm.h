@@ -3831,7 +3831,7 @@ v(__m512i a)
 				       c04, c05, c06, c07,
 				       c08, c09, c10, c11,
 				       c12, c13, c14, c15>::iv();
-	r=_mm512_permutevar_epi32(r, msk);
+	r=_mm512_permutexvar_epi32(msk, r);
     }
     if (zero_elements) {
         constexpr const uint32_t

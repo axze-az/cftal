@@ -41,7 +41,7 @@ namespace cftal {
         bit(_b b) : _v(b != _0 ? _1 : _0) {}
         bit(bool b) : _v(b ? _1 : _0) {}
         // bit(uint32_t v) : _v (v ? _1: _0) {}
-        uint32_t operator()() const { return uint32_t(_v); }
+        constexpr uint32_t operator()() const { return uint32_t(_v); }
     private:
         _b _v;
     };

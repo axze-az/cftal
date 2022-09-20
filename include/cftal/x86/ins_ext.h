@@ -1252,7 +1252,7 @@ __m512d cftal::x86::insert_f64(__m512d v, double d)
 inline
 double cftal::x86::extract_f64(__m512d v, size_t i)
 {
-    __m128 vv;
+    __m128d vv;
     if (i<2) {
         vv = _mm512_castpd512_pd128(v);
     } else if (i<4) {
