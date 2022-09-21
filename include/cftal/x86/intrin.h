@@ -41,7 +41,9 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wuninitialized"
+#if !defined (__clang__)
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #include <x86intrin.h>
 #pragma GCC diagnostic pop
 
