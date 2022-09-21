@@ -174,6 +174,153 @@ namespace cftal {
             }
         };
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+        // cast to __m128d from __m512d
+        template <>
+        struct cast_bits<__m128d, __m512d> {
+            static __m128d v(const __m512d& r) {
+                return _mm512_castpd512_pd128(r);
+            }
+        };
+
+        // cast to __m512d from __m128d
+        template <>
+        struct cast_bits<__m512d, __m128d> {
+            static __m512d v(const __m128d& r) {
+                return _mm512_castpd128_pd512(r);
+            }
+        };
+
+        // cast to __m256d from __m512d
+        template <>
+        struct cast_bits<__m256d, __m512d> {
+            static __m256d v(const __m512d& r) {
+                return _mm512_castpd512_pd256(r);
+            }
+        };
+
+        // cast to __m512d from __m256d
+        template <>
+        struct cast_bits<__m512d, __m256d> {
+            static __m512d v(const __m256d& r) {
+                return _mm512_castpd256_pd512(r);
+            }
+        };
+
+	
+        // cast to __m128 from __m512
+        template <>
+        struct cast_bits<__m128, __m512> {
+            static __m128 v(const __m512& r) {
+                return _mm512_castps512_ps128(r);
+            }
+        };
+
+        // cast to __m512 from __m128
+        template <>
+        struct cast_bits<__m512, __m128> {
+            static __m512 v(const __m128& r) {
+                return _mm512_castps128_ps512(r);
+            }
+        };
+
+        // cast to __m256 from __m512
+        template <>
+        struct cast_bits<__m256, __m512> {
+            static __m256 v(const __m512& r) {
+                return _mm512_castps512_ps256(r);
+            }
+        };
+
+        // cast to __m512 from __m256
+        template <>
+        struct cast_bits<__m512, __m256> {
+            static __m512 v(const __m256& r) {
+                return _mm512_castps256_ps512(r);
+            }
+        };
+
+        // cast to __m128i from __m512i
+        template <>
+        struct cast_bits<__m128i, __m512i> {
+            static __m128i v(const __m512i& r) {
+                return _mm512_castsi512_si128(r);
+            }
+        };
+
+        // cast to __m512i from __m128i
+        template <>
+        struct cast_bits<__m512i, __m128i> {
+            static __m512i v(const __m128i& r) {
+                return _mm512_castsi128_si512(r);
+            }
+        };
+
+        // cast to __m256i from __m512i
+        template <>
+        struct cast_bits<__m256i, __m512i> {
+            static __m256i v(const __m512i& r) {
+                return _mm512_castsi512_si256(r);
+            }
+        };
+
+        // cast to __m512i from __m256i
+        template <>
+        struct cast_bits<__m512i, __m256i> {
+            static __m512i v(const __m256i& r) {
+                return _mm512_castsi256_si512(r);
+            }
+        };
+	
+        // cast to __m512d from __m512
+        template <>
+        struct cast_bits<__m512d, __m512> {
+            static __m512d v(const __m512& r) {
+                return _mm512_castps_pd(r);
+            }
+        };
+
+        // cast to __m512d from __m512i
+        template <>
+        struct cast_bits<__m512d, __m512i> {
+            static __m512d v(const __m512i& r) {
+                return _mm512_castsi512_pd(r);
+            }
+        };
+
+        // cast to __m512i from __m512d
+        template <>
+        struct cast_bits<__m512i, __m512d> {
+            static __m512i v(const __m512d& r) {
+                return _mm512_castpd_si512(r);
+            }
+        };
+
+        // cast to __m512i from __m512
+        template <>
+        struct cast_bits<__m512i, __m512> {
+            static __m512i v(const __m512& r) {
+                return _mm512_castps_si512(r);
+            }
+        };
+
+        // cast to __m512 from __m512d
+        template <>
+        struct cast_bits<__m512, __m512d> {
+            static __m512 v(const __m512d& r) {
+                return _mm512_castpd_ps(r);
+            }
+        };
+
+        // cast to __m512 from __m512i
+        template <>
+        struct cast_bits<__m512, __m512i> {
+            static __m512 v(const __m512i& r) {
+                return _mm512_castsi512_ps(r);
+            }
+        };
+	
+#endif
 
     } // namespace impl
 #endif // __SSE2__
