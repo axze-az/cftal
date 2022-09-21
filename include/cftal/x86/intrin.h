@@ -39,7 +39,11 @@
 #define __POPCNT__
 #endif
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #include <x86intrin.h>
+#pragma GCC diagnostic pop
 
 // Local variables:
 // mode: c++
