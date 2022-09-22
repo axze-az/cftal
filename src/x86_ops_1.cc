@@ -1028,7 +1028,65 @@ __m256i cftal::x86::div_s64::v(__m256i x, __m256i y, __m256i* rem)
                                  rem_ptr<int64_t, 3>(rem));
     return _mm256_set_epi64x(q3, q2, q1, q0);
 }
+#endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+__m512i cftal::x86::div_u64::v(__m512i x, __m512i y, __m512i* rem)
+{
+    uint64_t q0 = do_div<uint64_t>(extract_u64<0>(x),
+                                   extract_u64<0>(y),
+                                   rem_ptr<uint64_t, 0>(rem));
+    uint64_t q1 = do_div<uint64_t>(extract_u64<1>(x),
+                                   extract_u64<1>(y),
+                                   rem_ptr<uint64_t, 1>(rem));
+    uint64_t q2 = do_div<uint64_t>(extract_u64<2>(x),
+                                   extract_u64<2>(y),
+                                   rem_ptr<uint64_t, 2>(rem));
+    uint64_t q3 = do_div<uint64_t>(extract_u64<3>(x),
+                                   extract_u64<3>(y),
+                                   rem_ptr<uint64_t, 3>(rem));
+    uint64_t q4 = do_div<uint64_t>(extract_u64<4>(x),
+                                   extract_u64<4>(y),
+                                   rem_ptr<uint64_t, 4>(rem));
+    uint64_t q5 = do_div<uint64_t>(extract_u64<5>(x),
+                                   extract_u64<5>(y),
+                                   rem_ptr<uint64_t, 5>(rem));
+    uint64_t q6 = do_div<uint64_t>(extract_u64<6>(x),
+                                   extract_u64<6>(y),
+                                   rem_ptr<uint64_t, 6>(rem));
+    uint64_t q7 = do_div<uint64_t>(extract_u64<7>(x),
+                                   extract_u64<7>(y),
+                                   rem_ptr<uint64_t, 7>(rem));
+    return _mm512_setr_epi64(q0, q1, q2, q3, q4, q5, q6, q7);
+}
 
+__m512i cftal::x86::div_s64::v(__m512i x, __m512i y, __m512i* rem)
+{
+    int64_t q0 = do_div<int64_t>(extract_u64<0>(x),
+                                 extract_u64<0>(y),
+                                 rem_ptr<int64_t, 0>(rem));
+    int64_t q1 = do_div<int64_t>(extract_u64<1>(x),
+                                 extract_u64<1>(y),
+                                 rem_ptr<int64_t, 1>(rem));
+    int64_t q2 = do_div<int64_t>(extract_u64<2>(x),
+                                 extract_u64<2>(y),
+                                 rem_ptr<int64_t, 2>(rem));
+    int64_t q3 = do_div<int64_t>(extract_u64<3>(x),
+                                 extract_u64<3>(y),
+                                 rem_ptr<int64_t, 3>(rem));
+    int64_t q4 = do_div<int64_t>(extract_u64<4>(x),
+                                 extract_u64<4>(y),
+                                 rem_ptr<int64_t, 4>(rem));
+    int64_t q5 = do_div<int64_t>(extract_u64<5>(x),
+                                 extract_u64<5>(y),
+                                 rem_ptr<int64_t, 5>(rem));
+    int64_t q6 = do_div<int64_t>(extract_u64<6>(x),
+                                 extract_u64<6>(y),
+                                 rem_ptr<int64_t, 6>(rem));
+    int64_t q7 = do_div<int64_t>(extract_u64<7>(x),
+                                 extract_u64<7>(y),
+                                 rem_ptr<int64_t, 7>(rem));
+    return _mm512_setr_epi64(q0, q1, q2, q3, q4, q5, q6, q7);
+}
 #endif
 #else
 
