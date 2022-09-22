@@ -350,8 +350,8 @@ cftal::mem<cftal::vec<uint32_t, 16> >::load(const uint32_t* p, std::size_t s)
         break;
     default: {
             x86::vecunion<uint32_t, 16, __m512, __m512d, __m512i> st;
-            std::uint32_t si=s & 15;
-            int16_t pi=p[0];
+            uint32_t si=s & 15;
+            uint32_t pi=p[0];
             st._s[0]=pi;
             for (uint32_t i=1; i<si; ++i) {
                 pi=p[i];
