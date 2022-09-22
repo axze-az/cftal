@@ -127,6 +127,10 @@ namespace cftal {
             static __m256i v(__m256i a, __m256i b,
                              __m256i* rem=nullptr);
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m512i b,
+                             __m512i* rem=nullptr);
+#endif
         };
 
         struct div_s64 : public div_ref<int64_t, 2> {
@@ -136,6 +140,10 @@ namespace cftal {
 #if defined (__AVX2__)
             static __m256i v(__m256i a, __m256i b,
                              __m256i* rem=nullptr);
+#endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m512i b,
+                             __m512i* rem=nullptr);
 #endif
         };
 

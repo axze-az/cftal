@@ -844,6 +844,15 @@ namespace cftal {
                 return v(a, sh);
             }
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m128i shift) {
+                return _mm512_sll_epi64(a, shift);
+            }
+            static __m512i v(__m512i a, unsigned shift) {
+                __m128i sh= _mm_cvtsi32_si128(shift);
+                return v(a, sh);
+            }
+#endif
         };
 
         template <unsigned _P>
@@ -940,6 +949,15 @@ namespace cftal {
                 return v(a, sh);
             }
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m128i shift) {
+                return _mm512_srl_epi64(a, shift);
+            }
+            static __m512i v(__m512i a, unsigned shift) {
+                __m128i sh= _mm_cvtsi32_si128(shift);
+                return v(a, sh);
+            }
+#endif
         };
 
         template <unsigned _P>
@@ -1020,6 +1038,15 @@ namespace cftal {
             static __m256i v(__m256i a, __m128i shift) {
                 unsigned sh= _mm_cvtsi128_si32(shift);
                 return v(a, sh);
+            }
+#endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, unsigned shift) {
+		__m128i sh=_mm_cvtsi32_si128(shift);
+		return _mm512_sra_epi64(a, sh);
+	    }
+            static __m512i v(__m512i a, __m128i shift) {
+		return _mm512_sra_epi64(a, shift);
             }
 #endif
         };
@@ -1163,6 +1190,11 @@ namespace cftal {
                 return _mm256_sllv_epi64(a, s);
             }
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m512i s) {
+                return _mm512_sllv_epi64(a, s);
+            }
+#endif
         };
 
         struct vpsrlvq {
@@ -1172,12 +1204,22 @@ namespace cftal {
                 return _mm256_srlv_epi64(a, s);
             }
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m512i s) {
+                return _mm512_srlv_epi64(a, s);
+            }
+#endif
         };
 
         struct vpsravq {
             static __m128i v(__m128i a, __m128i s);
 #if defined (__AVX2__)
             static __m256i v(__m256i a, __m256i s);
+#endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m512i s) {
+		return _mm512_srav_epi64(a, s);
+	    }
 #endif
         };
 
@@ -1251,6 +1293,11 @@ namespace cftal {
             static __m128i v(__m128i a, __m128i b);
 #if defined (__AVX2__)
             static __m256i v(__m256i a, __m256i b);
+#endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a, __m512i b) {
+		return _mm512_mullo_epi64(a, b);
+	    }
 #endif
         };
 

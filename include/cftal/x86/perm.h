@@ -1296,6 +1296,13 @@ namespace cftal {
                   int _P4, int _P5, int _P6, int _P7>
         __m512d perm_v8f64(__m512d a, __m512d b);
 
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        __m512i perm_v8u64(__m512i a);
+        template <int _P0, int _P1, int _P2, int _P3,
+                  int _P4, int _P5, int _P6, int _P7>
+        __m512i perm_v8u64(__m512i a, __m512i b);
+
         // generic permutation of one v16u32 vector
         template <int _P00, int _P01, int _P02, int _P03,
                   int _P04, int _P05, int _P06, int _P07,
