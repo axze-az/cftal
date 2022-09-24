@@ -347,6 +347,12 @@ if (CFTAL_FULL_TEST)
   test_prog(test-v16u16)
   test_prog(test-v32s8)
   test_prog(test-v32u8)
+
+  test_prog(test-v16s32)
+  test_prog(test-v16u32)
+  test_prog(test-v8s64)
+  test_prog(test-v8u64)
+
 endif()
 
 #add_executable(dev-func dev-func.cc)
