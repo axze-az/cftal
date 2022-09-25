@@ -211,6 +211,8 @@ namespace cftal {
 #endif
 #if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
         // return the mask itself
+        uint32_t read_signs_f32(__mmask16 i);
+        // return the mask itself
         uint32_t read_signs_f64(__mmask8 i);
 #endif
         // check the sign bits of v4f32
