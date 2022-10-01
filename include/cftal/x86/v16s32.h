@@ -37,7 +37,7 @@ namespace cftal {
 
         using value_type = int32_t;
         using mask_value_type = bit;
-        using mask_type= vec<mask_value_type, 8>;
+        using mask_type= vec<mask_value_type, 16>;
 
         using base_type::base_type;
         vec() = default;
