@@ -3962,7 +3962,7 @@ v(__m512 a, __m512 b)
 
 
     if (a_only) {
-        const __m512i ap=perm1_v16f32<
+        const __m512 ap=perm1_v16f32<
             _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::v(a);
         return ap;
@@ -3978,7 +3978,7 @@ v(__m512 a, __m512 b)
 	    b10 = _P10 < 16 ? -1 : _P10-16, b11 = _P11 < 16 ? -1 : _P11-16,
 	    b12 = _P12 < 16 ? -1 : _P12-16, b13 = _P13 < 16 ? -1 : _P13-16,
 	    b14 = _P14 < 16 ? -1 : _P14-16, b15 = _P15 < 16 ? -1 : _P15-16;
-        const __m512i bp=perm1_v16f32<
+        const __m512 bp=perm1_v16f32<
             b00, b01, b02, b03, b04, b05, b06, b07,
             b08, b09, b10, b11, b12, b13, b14, b15>::v(b);
         return bp;
@@ -4237,7 +4237,7 @@ perm1_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512i a)
     // const bool do_zero= m2 != 0xFFFFFFFF;
 
     if (m2 == 0xFFFFFFFF)
-        return _mm512_setzero_pd();
+        return _mm512_setzero_si512();
 
     const __mmask8 zm=
         ((_P0 >= 0 ? (1<<0) : 0)) |
