@@ -3749,7 +3749,7 @@ perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
                           _P5 & 7,
                           _P6 & 7,
                           _P7 & 7);
-    if (zm != 0) {
+    if (zm != 0xFF) {
         return _mm512_maskz_permutexvar_pd(zm, pperm, a);
     }
     return _mm512_permutexvar_pd(pperm, a);
@@ -3822,7 +3822,7 @@ perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
                           _P5 & 15,
                           _P6 & 15,
                           _P7 & 15);
-    if (zm != 0) {
+    if (zm != 0xFF) {
         return _mm512_maskz_permutex2var_pd(zm, a, pperm, b);
     }
     return _mm512_permutex2var_pd(a, pperm, b);
@@ -3859,49 +3859,53 @@ v(__m512 a)
         (_P12<0 || _P12==12) && (_P13<0 || _P13==13) &&
         (_P14<0 || _P14==14) && (_P15<0 || _P15==15);
 
-    __m512i r=a;
-    if (no_perm==true && zero_elements==false)
-	return r;
-    if (!no_perm) {
-	constexpr const uint32_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
-        constexpr const uint32_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
-	constexpr const uint32_t c02 = (_P02 < 0) ? -1 : _P02 & 15;
-	constexpr const uint32_t c03 = (_P03 < 0) ? -1 : _P03 & 15;
-	constexpr const uint32_t c04 = (_P04 < 0) ? -1 : _P04 & 15;
-	constexpr const uint32_t c05 = (_P05 < 0) ? -1 : _P05 & 15;
-	constexpr const uint32_t c06 = (_P06 < 0) ? -1 : _P06 & 15;
-	constexpr const uint32_t c07 = (_P07 < 0) ? -1 : _P07 & 15;
-	constexpr const uint32_t c08 = (_P08 < 0) ? -1 : _P08 & 15;
-	constexpr const uint32_t c09 = (_P09 < 0) ? -1 : _P09 & 15;
-	constexpr const uint32_t c10 = (_P10 < 0) ? -1 : _P10 & 15;
-	constexpr const uint32_t c11 = (_P11 < 0) ? -1 : _P11 & 15;
-	constexpr const uint32_t c12 = (_P12 < 0) ? -1 : _P12 & 15;
-	constexpr const uint32_t c13 = (_P13 < 0) ? -1 : _P13 & 15;
-	constexpr const uint32_t c14 = (_P14 < 0) ? -1 : _P14 & 15;
-	constexpr const uint32_t c15 = (_P15 < 0) ? -1 : _P15 & 15;
-	const __m512i msk=const_v16u32<c00, c01, c02, c03,
-				       c04, c05, c06, c07,
-				       c08, c09, c10, c11,
-				       c12, c13, c14, c15>::iv();
-	r=_mm512_permutexvar_ps(msk, r);
+    const __mmask16 zm=
+        ((_P00 >= 0 ? (1<<0) : 0)) |
+        ((_P01 >= 0 ? (1<<1) : 0)) |
+        ((_P02 >= 0 ? (1<<2) : 0)) |
+        ((_P03 >= 0 ? (1<<3) : 0)) |
+        ((_P04 >= 0 ? (1<<4) : 0)) |
+        ((_P05 >= 0 ? (1<<5) : 0)) |
+        ((_P06 >= 0 ? (1<<6) : 0)) |
+        ((_P07 >= 0 ? (1<<7) : 0)) |
+        ((_P08 >= 0 ? (1<<8) : 0)) |
+        ((_P09 >= 0 ? (1<<9) : 0)) |
+        ((_P10 >= 0 ? (1<<10) : 0)) |
+        ((_P11 >= 0 ? (1<<11) : 0)) |
+        ((_P12 >= 0 ? (1<<12) : 0)) |
+        ((_P13 >= 0 ? (1<<13) : 0)) |
+        ((_P14 >= 0 ? (1<<14) : 0)) |
+        ((_P15 >= 0 ? (1<<15) : 0));
+    
+    if (no_perm) {
+	if (!zero_elements)
+	    return a;
+	return _mm512_maskz_mov_ps(zm, a);
     }
-    if (zero_elements) {
-        constexpr const uint32_t
-            n00=_P00<0 ? 0 : -1, n01=_P01<0 ? 0 : -1,
-            n02=_P02<0 ? 0 : -1, n03=_P03<0 ? 0 : -1,
-            n04=_P04<0 ? 0 : -1, n05=_P05<0 ? 0 : -1,
-            n06=_P06<0 ? 0 : -1, n07=_P07<0 ? 0 : -1,
-            n08=_P08<0 ? 0 : -1, n09=_P09<0 ? 0 : -1,
-            n10=_P10<0 ? 0 : -1, n11=_P11<0 ? 0 : -1,
-            n12=_P12<0 ? 0 : -1, n13=_P13<0 ? 0 : -1,
-            n14=_P14<0 ? 0 : -1, n15=_P15<0 ? 0 : -1;
-        const __m512 msk=const_v16u32<n00, n01, n02, n03,
-				      n04, n05, n06, n07,
-				      n08, n09, n10, n11,
-				      n12, n13, n14, n15>::fv();
-        r=_mm512_and_ps(r, msk);
+    constexpr const uint32_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
+    constexpr const uint32_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
+    constexpr const uint32_t c02 = (_P02 < 0) ? -1 : _P02 & 15;
+    constexpr const uint32_t c03 = (_P03 < 0) ? -1 : _P03 & 15;
+    constexpr const uint32_t c04 = (_P04 < 0) ? -1 : _P04 & 15;
+    constexpr const uint32_t c05 = (_P05 < 0) ? -1 : _P05 & 15;
+    constexpr const uint32_t c06 = (_P06 < 0) ? -1 : _P06 & 15;
+    constexpr const uint32_t c07 = (_P07 < 0) ? -1 : _P07 & 15;
+    constexpr const uint32_t c08 = (_P08 < 0) ? -1 : _P08 & 15;
+    constexpr const uint32_t c09 = (_P09 < 0) ? -1 : _P09 & 15;
+    constexpr const uint32_t c10 = (_P10 < 0) ? -1 : _P10 & 15;
+    constexpr const uint32_t c11 = (_P11 < 0) ? -1 : _P11 & 15;
+    constexpr const uint32_t c12 = (_P12 < 0) ? -1 : _P12 & 15;
+    constexpr const uint32_t c13 = (_P13 < 0) ? -1 : _P13 & 15;
+    constexpr const uint32_t c14 = (_P14 < 0) ? -1 : _P14 & 15;
+    constexpr const uint32_t c15 = (_P15 < 0) ? -1 : _P15 & 15;
+    const __m512i msk=const_v16u32<c00, c01, c02, c03,
+				   c04, c05, c06, c07,
+				   c08, c09, c10, c11,
+				   c12, c13, c14, c15>::iv();
+    if (zm != 0xFFFF) {
+	return _mm512_maskz_permutexvar_ps(zm, msk, a);
     }
-    return r;
+    return _mm512_permutexvar_ps(msk, a);
 }
 
 template <int _P00, int _P01, int _P02, int _P03,
@@ -3958,7 +3962,7 @@ v(__m512 a, __m512 b)
 
 
     if (a_only) {
-        const __m512 ap=perm1_v16u32<
+        const __m512i ap=perm1_v16f32<
             _P00, _P01, _P02, _P03, _P04, _P05, _P06, _P07,
             _P08, _P09, _P10, _P11, _P12, _P13, _P14, _P15>::v(a);
         return ap;
@@ -3974,13 +3978,13 @@ v(__m512 a, __m512 b)
 	    b10 = _P10 < 16 ? -1 : _P10-16, b11 = _P11 < 16 ? -1 : _P11-16,
 	    b12 = _P12 < 16 ? -1 : _P12-16, b13 = _P13 < 16 ? -1 : _P13-16,
 	    b14 = _P14 < 16 ? -1 : _P14-16, b15 = _P15 < 16 ? -1 : _P15-16;
-        const __m512 bp=perm1_v16u32<
+        const __m512i bp=perm1_v16f32<
             b00, b01, b02, b03, b04, b05, b06, b07,
             b08, b09, b10, b11, b12, b13, b14, b15>::v(b);
         return bp;
     }
-    __m512 r;
-    if (no_perm) {
+
+    if (no_perm && zero_elements==false) {
         constexpr const bool
             s00 = _P00 < 16 ? true: false, s01 = _P01 < 16 ? true: false,
             s02 = _P02 < 16 ? true: false, s03 = _P03 < 16 ? true: false,
@@ -3990,33 +3994,36 @@ v(__m512 a, __m512 b)
             s10 = _P10 < 16 ? true: false, s11 = _P11 < 16 ? true: false,
             s12 = _P12 < 16 ? true: false, s13 = _P13 < 16 ? true: false,
             s14 = _P14 < 16 ? true: false, s15 = _P15 < 16 ? true: false;
-        r=select_v16u32<
+        return select_v16f32<
             s00, s01, s02, s03, s04, s05, s06, s07,
             s08, s09, s10, s11, s12, s13, s14, s15>::v(a, b);
-    } else {
-	const __m512i msk=const_v16u32<_P00, _P01, _P02, _P03,
-				       _P04, _P05, _P06, _P07,
-				       _P08, _P09, _P10, _P11,
-				       _P12, _P13, _P14, _P15>::iv();
-	r = _mm512_permutex2var_ps(a, msk, b);
     }
-    if (zero_elements) {
-        constexpr const uint32_t
-            z00 = _P00 < 0 ? 0x00: -1, z01 = _P01 < 0 ? 0x00: -1,
-            z02 = _P02 < 0 ? 0x00: -1, z03 = _P03 < 0 ? 0x00: -1,
-            z04 = _P04 < 0 ? 0x00: -1, z05 = _P05 < 0 ? 0x00: -1,
-            z06 = _P06 < 0 ? 0x00: -1, z07 = _P07 < 0 ? 0x00: -1,
-            z08 = _P08 < 0 ? 0x00: -1, z09 = _P09 < 0 ? 0x00: -1,
-            z10 = _P10 < 0 ? 0x00: -1, z11 = _P11 < 0 ? 0x00: -1,
-            z12 = _P12 < 0 ? 0x00: -1, z13 = _P13 < 0 ? 0x00: -1,
-            z14 = _P14 < 0 ? 0x00: -1, z15 = _P15 < 0 ? 0x00: -1;
-        const __m512 zm=const_v16u32<z00, z01, z02, z03,
-				      z04, z05, z06, z07,
-				      z08, z09, z10, z11,
-				      z12, z13, z14, z15>::fv();
-        r=_mm512_and_ps(r, zm);
+    
+    const __mmask16 zm=
+        ((_P00 >= 0 ? (1<<0) : 0)) |
+        ((_P01 >= 0 ? (1<<1) : 0)) |
+        ((_P02 >= 0 ? (1<<2) : 0)) |
+        ((_P03 >= 0 ? (1<<3) : 0)) |
+        ((_P04 >= 0 ? (1<<4) : 0)) |
+        ((_P05 >= 0 ? (1<<5) : 0)) |
+        ((_P06 >= 0 ? (1<<6) : 0)) |
+        ((_P07 >= 0 ? (1<<7) : 0)) |
+        ((_P08 >= 0 ? (1<<8) : 0)) |
+        ((_P09 >= 0 ? (1<<9) : 0)) |
+        ((_P10 >= 0 ? (1<<10) : 0)) |
+        ((_P11 >= 0 ? (1<<11) : 0)) |
+        ((_P12 >= 0 ? (1<<12) : 0)) |
+        ((_P13 >= 0 ? (1<<13) : 0)) |
+        ((_P14 >= 0 ? (1<<14) : 0)) |
+        ((_P15 >= 0 ? (1<<15) : 0));
+    const __m512i msk=const_v16u32<_P00, _P01, _P02, _P03,
+				   _P04, _P05, _P06, _P07,
+				   _P08, _P09, _P10, _P11,
+				   _P12, _P13, _P14, _P15>::iv();
+    if (zm != 0xFFFF) {
+        return _mm512_maskz_permutex2var_ps(zm, a, msk, b);
     }
-    return r;
+    return _mm512_permutex2var_ps(a, msk, b);
 }
 
 template <int _P00, int _P01, int _P02, int _P03,
@@ -4045,49 +4052,53 @@ v(__m512i a)
         (_P12<0 || _P12==12) && (_P13<0 || _P13==13) &&
         (_P14<0 || _P14==14) && (_P15<0 || _P15==15);
 
-    __m512i r=a;
-    if (no_perm==true && zero_elements==false)
-	return r;
-    if (!no_perm) {
-	constexpr const uint32_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
-        constexpr const uint32_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
-	constexpr const uint32_t c02 = (_P02 < 0) ? -1 : _P02 & 15;
-	constexpr const uint32_t c03 = (_P03 < 0) ? -1 : _P03 & 15;
-	constexpr const uint32_t c04 = (_P04 < 0) ? -1 : _P04 & 15;
-	constexpr const uint32_t c05 = (_P05 < 0) ? -1 : _P05 & 15;
-	constexpr const uint32_t c06 = (_P06 < 0) ? -1 : _P06 & 15;
-	constexpr const uint32_t c07 = (_P07 < 0) ? -1 : _P07 & 15;
-	constexpr const uint32_t c08 = (_P08 < 0) ? -1 : _P08 & 15;
-	constexpr const uint32_t c09 = (_P09 < 0) ? -1 : _P09 & 15;
-	constexpr const uint32_t c10 = (_P10 < 0) ? -1 : _P10 & 15;
-	constexpr const uint32_t c11 = (_P11 < 0) ? -1 : _P11 & 15;
-	constexpr const uint32_t c12 = (_P12 < 0) ? -1 : _P12 & 15;
-	constexpr const uint32_t c13 = (_P13 < 0) ? -1 : _P13 & 15;
-	constexpr const uint32_t c14 = (_P14 < 0) ? -1 : _P14 & 15;
-	constexpr const uint32_t c15 = (_P15 < 0) ? -1 : _P15 & 15;
-	const __m512i msk=const_v16u32<c00, c01, c02, c03,
-				       c04, c05, c06, c07,
-				       c08, c09, c10, c11,
-				       c12, c13, c14, c15>::iv();
-	r=_mm512_permutexvar_epi32(msk, r);
+    const __mmask16 zm=
+        ((_P00 >= 0 ? (1<<0) : 0)) |
+        ((_P01 >= 0 ? (1<<1) : 0)) |
+        ((_P02 >= 0 ? (1<<2) : 0)) |
+        ((_P03 >= 0 ? (1<<3) : 0)) |
+        ((_P04 >= 0 ? (1<<4) : 0)) |
+        ((_P05 >= 0 ? (1<<5) : 0)) |
+        ((_P06 >= 0 ? (1<<6) : 0)) |
+        ((_P07 >= 0 ? (1<<7) : 0)) |
+        ((_P08 >= 0 ? (1<<8) : 0)) |
+        ((_P09 >= 0 ? (1<<9) : 0)) |
+        ((_P10 >= 0 ? (1<<10) : 0)) |
+        ((_P11 >= 0 ? (1<<11) : 0)) |
+        ((_P12 >= 0 ? (1<<12) : 0)) |
+        ((_P13 >= 0 ? (1<<13) : 0)) |
+        ((_P14 >= 0 ? (1<<14) : 0)) |
+        ((_P15 >= 0 ? (1<<15) : 0));
+    
+    if (no_perm) {
+	if (!zero_elements)
+	    return a;
+	return _mm512_maskz_mov_epi32(zm, a);
     }
-    if (zero_elements) {
-        constexpr const uint32_t
-            n00=_P00<0 ? 0 : -1, n01=_P01<0 ? 0 : -1,
-            n02=_P02<0 ? 0 : -1, n03=_P03<0 ? 0 : -1,
-            n04=_P04<0 ? 0 : -1, n05=_P05<0 ? 0 : -1,
-            n06=_P06<0 ? 0 : -1, n07=_P07<0 ? 0 : -1,
-            n08=_P08<0 ? 0 : -1, n09=_P09<0 ? 0 : -1,
-            n10=_P10<0 ? 0 : -1, n11=_P11<0 ? 0 : -1,
-            n12=_P12<0 ? 0 : -1, n13=_P13<0 ? 0 : -1,
-            n14=_P14<0 ? 0 : -1, n15=_P15<0 ? 0 : -1;
-        const __m512i msk=const_v16u32<n00, n01, n02, n03,
-				       n04, n05, n06, n07,
-				       n08, n09, n10, n11,
-				       n12, n13, n14, n15>::iv();
-        r=_mm512_and_si512(r, msk);
+    constexpr const uint32_t c00 = (_P00 < 0) ? -1 : _P00 & 15;
+    constexpr const uint32_t c01 = (_P01 < 0) ? -1 : _P01 & 15;
+    constexpr const uint32_t c02 = (_P02 < 0) ? -1 : _P02 & 15;
+    constexpr const uint32_t c03 = (_P03 < 0) ? -1 : _P03 & 15;
+    constexpr const uint32_t c04 = (_P04 < 0) ? -1 : _P04 & 15;
+    constexpr const uint32_t c05 = (_P05 < 0) ? -1 : _P05 & 15;
+    constexpr const uint32_t c06 = (_P06 < 0) ? -1 : _P06 & 15;
+    constexpr const uint32_t c07 = (_P07 < 0) ? -1 : _P07 & 15;
+    constexpr const uint32_t c08 = (_P08 < 0) ? -1 : _P08 & 15;
+    constexpr const uint32_t c09 = (_P09 < 0) ? -1 : _P09 & 15;
+    constexpr const uint32_t c10 = (_P10 < 0) ? -1 : _P10 & 15;
+    constexpr const uint32_t c11 = (_P11 < 0) ? -1 : _P11 & 15;
+    constexpr const uint32_t c12 = (_P12 < 0) ? -1 : _P12 & 15;
+    constexpr const uint32_t c13 = (_P13 < 0) ? -1 : _P13 & 15;
+    constexpr const uint32_t c14 = (_P14 < 0) ? -1 : _P14 & 15;
+    constexpr const uint32_t c15 = (_P15 < 0) ? -1 : _P15 & 15;
+    const __m512i msk=const_v16u32<c00, c01, c02, c03,
+				   c04, c05, c06, c07,
+				   c08, c09, c10, c11,
+				   c12, c13, c14, c15>::iv();
+    if (zm != 0xFFFF) {
+	return _mm512_maskz_permutexvar_epi32(zm, msk, a);
     }
-    return r;
+    return _mm512_permutexvar_epi32(msk, a);
 }
 
 template <int _P00, int _P01, int _P02, int _P03,
@@ -4165,8 +4176,8 @@ v(__m512i a, __m512i b)
             b08, b09, b10, b11, b12, b13, b14, b15>::v(b);
         return bp;
     }
-    __m512i r;
-    if (no_perm) {
+
+    if (no_perm && zero_elements==false) {
         constexpr const bool
             s00 = _P00 < 16 ? true: false, s01 = _P01 < 16 ? true: false,
             s02 = _P02 < 16 ? true: false, s03 = _P03 < 16 ? true: false,
@@ -4176,33 +4187,36 @@ v(__m512i a, __m512i b)
             s10 = _P10 < 16 ? true: false, s11 = _P11 < 16 ? true: false,
             s12 = _P12 < 16 ? true: false, s13 = _P13 < 16 ? true: false,
             s14 = _P14 < 16 ? true: false, s15 = _P15 < 16 ? true: false;
-        r=select_v16u32<
+        return select_v16u32<
             s00, s01, s02, s03, s04, s05, s06, s07,
             s08, s09, s10, s11, s12, s13, s14, s15>::v(a, b);
-    } else {
-	const __m512i msk=const_v16u32<_P00, _P01, _P02, _P03,
-				       _P04, _P05, _P06, _P07,
-				       _P08, _P09, _P10, _P11,
-				       _P12, _P13, _P14, _P15>::iv();
-	r = _mm512_permutex2var_epi32(a, msk, b);
     }
-    if (zero_elements) {
-        constexpr const uint32_t
-            z00 = _P00 < 0 ? 0x00: -1, z01 = _P01 < 0 ? 0x00: -1,
-            z02 = _P02 < 0 ? 0x00: -1, z03 = _P03 < 0 ? 0x00: -1,
-            z04 = _P04 < 0 ? 0x00: -1, z05 = _P05 < 0 ? 0x00: -1,
-            z06 = _P06 < 0 ? 0x00: -1, z07 = _P07 < 0 ? 0x00: -1,
-            z08 = _P08 < 0 ? 0x00: -1, z09 = _P09 < 0 ? 0x00: -1,
-            z10 = _P10 < 0 ? 0x00: -1, z11 = _P11 < 0 ? 0x00: -1,
-            z12 = _P12 < 0 ? 0x00: -1, z13 = _P13 < 0 ? 0x00: -1,
-            z14 = _P14 < 0 ? 0x00: -1, z15 = _P15 < 0 ? 0x00: -1;
-        const __m512i zm=const_v16u32<z00, z01, z02, z03,
-				      z04, z05, z06, z07,
-				      z08, z09, z10, z11,
-				      z12, z13, z14, z15>::iv();
-        r=_mm512_and_si512(r, zm);
+    
+    const __mmask16 zm=
+        ((_P00 >= 0 ? (1<<0) : 0)) |
+        ((_P01 >= 0 ? (1<<1) : 0)) |
+        ((_P02 >= 0 ? (1<<2) : 0)) |
+        ((_P03 >= 0 ? (1<<3) : 0)) |
+        ((_P04 >= 0 ? (1<<4) : 0)) |
+        ((_P05 >= 0 ? (1<<5) : 0)) |
+        ((_P06 >= 0 ? (1<<6) : 0)) |
+        ((_P07 >= 0 ? (1<<7) : 0)) |
+        ((_P08 >= 0 ? (1<<8) : 0)) |
+        ((_P09 >= 0 ? (1<<9) : 0)) |
+        ((_P10 >= 0 ? (1<<10) : 0)) |
+        ((_P11 >= 0 ? (1<<11) : 0)) |
+        ((_P12 >= 0 ? (1<<12) : 0)) |
+        ((_P13 >= 0 ? (1<<13) : 0)) |
+        ((_P14 >= 0 ? (1<<14) : 0)) |
+        ((_P15 >= 0 ? (1<<15) : 0));
+    const __m512i pperm=const_v16u32<_P00, _P01, _P02, _P03,
+				     _P04, _P05, _P06, _P07,
+				     _P08, _P09, _P10, _P11,
+				     _P12, _P13, _P14, _P15>::iv();
+    if (zm != 0xFFFF) {
+        return _mm512_maskz_permutex2var_epi32(zm, a, pperm, b);
     }
-    return r;
+    return _mm512_permutex2var_epi32(a, pperm, b);
 }
 
 template <int _P0, int _P1, int _P2, int _P3,
@@ -4249,7 +4263,7 @@ perm1_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512i a)
                           _P5 & 7,
                           _P6 & 7,
                           _P7 & 7);
-    if (zm != 0) {
+    if (zm != 0xFF) {
         return _mm512_maskz_permutexvar_epi64(zm, pperm, a);
     }
     return _mm512_permutexvar_epi64(pperm, a);
@@ -4322,7 +4336,7 @@ perm2_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512i a, __m512i b)
                           _P5 & 15,
                           _P6 & 15,
                           _P7 & 15);
-    if (zm != 0) {
+    if (zm != 0xFF) {
         return _mm512_maskz_permutex2var_epi64(zm, a, pperm, b);
     }
     return _mm512_permutex2var_epi64(a, pperm, b);
