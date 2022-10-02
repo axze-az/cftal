@@ -44,7 +44,7 @@ namespace cftal {
         // vec(init_list<bool> l);
         vec(__mmask8 v) : base_type(v) {}
         vec(const vec<bit, 1>& l, const vec<bit, 1>& h)
-            : base_type((l() & 0x1) | (__mmask8(h() & 0x1) << 1)) {}
+            : base_type((l() & 0x1) | (__mmask8(h()) << 1)) {}
     };
 
     template <>
@@ -63,7 +63,7 @@ namespace cftal {
         // vec(init_list<bool> l);
         vec(__mmask8 v) : base_type(v) {}
         vec(const vec<bit, 2>& l, const vec<bit, 2>& h)
-            : base_type((l() & 0x3) | (__mmask8(h() & 0x3) << 2)) {}
+            : base_type((l() & 0x3) | (__mmask8(h()) << 2)) {}
     };
 #endif
 
@@ -84,7 +84,7 @@ namespace cftal {
         constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0U) {}
         vec(__mmask8 v) : base_type(v) {}
         vec(const vec<bit, 4>& l, const vec<bit, 4>& h)
-            : base_type((l() & 0xf) | (__mmask8(h() & 0xf) << 4)) {}
+            : base_type((l() & 0xf) | (__mmask8(h()) << 4)) {}
     };
 
     template <>
@@ -104,7 +104,7 @@ namespace cftal {
         constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0U) {}
         vec(__mmask16 v) : base_type(v) {}
         vec(const vec<bit, 8>& l, const vec<bit, 8>& h)
-            : base_type((l() & 0xff) | (__mmask16(h() & 0xff) << 8)) {}
+            : base_type((l() & 0xff) | (__mmask16(h()) << 8)) {}
     };
 
 #if defined (__AVX512VL__) && defined (__AVX512BW__)  \
@@ -126,7 +126,7 @@ namespace cftal {
         constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0U) {}
         vec(__mmask32 v) : base_type(v) {}
         vec(const vec<bit, 16>& l, const vec<bit, 16>& h)
-            : base_type((l() & 0xffff) | (__mmask32(h() & 0xffff) << 16)) {}
+            : base_type((l() & 0xffff) | (__mmask32(h()) << 16)) {}
     };
 
     template <>
@@ -147,7 +147,7 @@ namespace cftal {
         vec(__mmask64 v) : base_type(v) {}
         vec(const vec<bit, 16>& l, const vec<bit, 16>& h)
             : base_type((l() & 0xffffffff) |
-                        (__mmask64(h() & 0xffffffff) << 32)) {}
+                        (__mmask64(h()) << 32)) {}
     };
 #endif
 #endif
