@@ -3718,8 +3718,8 @@ perm1_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
 #endif
-    const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
-    const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+    const uint32_t m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
+    const uint32_t m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
     // const bool do_zero= m2 != 0xFFFFFFFF;
 
     if (m2 == 0xFFFFFFFF)
@@ -3774,9 +3774,9 @@ perm2_v8f64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512d a, __m512d b)
 #endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
-    const unsigned m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
+    const uint32_t m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
     // Mask to zero out negative indexes
-    const unsigned m2 = zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+    const uint32_t m2 = zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
 
     if ((m1 & 0x88888888 & m2) == 0) {
         // no elements from b
@@ -4232,8 +4232,8 @@ perm1_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512i a)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
 #endif
-    const int m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
-    const int m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+    const uint32_t m1= pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 7>::m;
+    const uint32_t m2= zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
     // const bool do_zero= m2 != 0xFFFFFFFF;
 
     if (m2 == 0xFFFFFFFF)
@@ -4288,9 +4288,9 @@ perm2_v8u64<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::v(__m512i a, __m512i b)
 #endif
     // Combine all the indexes into a single bitfield, with 4 bits
     // for each
-    const unsigned m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
+    const uint32_t m1 = pos_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7, 15>::m;
     // Mask to zero out negative indexes
-    const unsigned m2 = zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
+    const uint32_t m2 = zero_msk_8<_P0, _P1, _P2, _P3, _P4, _P5, _P6, _P7>::m;
 
     if ((m1 & 0x88888888 & m2) == 0) {
         // no elements from b
