@@ -145,7 +145,7 @@ namespace cftal {
         // vec(init_list<bool> l);
         constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0ULL) {}
         vec(__mmask64 v) : base_type(v) {}
-        vec(const vec<bit, 16>& l, const vec<bit, 16>& h)
+        vec(const vec<bit, 32>& l, const vec<bit, 32>& h)
             : base_type((l() & 0xffffffff) |
                         (__mmask64(h()) << 32)) {}
     };
