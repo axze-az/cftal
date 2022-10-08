@@ -497,25 +497,29 @@ inline
 std::pair<cftal::v16u32, cftal::v16u32>
 cftal::mul_lo_hi(const v16u32& x, const v16u32& y)
 {
-#if 0
-    // p0l p0h p2l p2h
+    // p0l p0h p2l p2h p4l p4h p6l p6h
     v16u32 e= _mm512_mul_epu32(x(), y());
-    // p1l p1h p3l p3h
+    // p1l p1h p3l p3h p5l p5h p7l p7h
     v16u32 o= _mm512_mul_epu32(x86::vpshufd<1, 0, 3, 2>::v(x()),
-                              x86::vpshufd<1, 0, 3, 2>::v(y()));
+			       x86::vpshufd<1, 0, 3, 2>::v(y()));
     // --------------------------------------
-    v8s32 l= permute<0, 0+8,
-                     2, 2+8,
-                     4, 4+8,
-                     6, 6+8>(e, o);
-    v8s32 h= permute<1, 1+8,
-                     3, 3+8,
-                     5, 5+8,
-                     7, 7+8>(e, o);
+    v16u32 l= permute<0, 0+16,
+		      2, 2+16,
+		      4, 4+16,
+		      6, 6+16,
+		      8, 8+16,
+		      10, 10+16,
+		      12, 12+16,
+		      14, 14+16>(e, o);
+    v16u32 h= permute<1, 1+16,
+		      3, 3+16,
+		      5, 5+16,
+		      7, 7+16,
+		      9, 9+16,
+		      11, 11+16,
+		      13, 13+16,
+		      15, 15+16>(e, o);
     return std::make_pair(l, h);
-#else
-    return std::make_pair(x, y);
-#endif
 }
 
 // Local variables:
