@@ -427,6 +427,11 @@ namespace cftal {
                 return _mm256_shuffle_epi32(a, m);
             }
 #endif
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
+            static __m512i v(__m512i a) {
+                return _mm512_shuffle_epi32(a, m);
+            }
+#endif
         };
 
         template <>
