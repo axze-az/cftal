@@ -153,8 +153,6 @@ namespace cftal {
 #endif
 }
 
-
-
 // Local variables:
 // mode: c++
 // end:
