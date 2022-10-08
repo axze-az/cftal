@@ -86,7 +86,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return _mm512_cmp_pd_mask(a(), b(), _CMP_UNORD_Q);
+                return _mm512_cmp_pd_mask(a(), b(), _CMP_NEQ_UQ);
             }
         };
 
