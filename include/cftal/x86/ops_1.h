@@ -509,7 +509,7 @@ cftal::x86::expand_mask_v16u8(uint32_t msk16)
     const __m128i bm=const_v16u8< 1, 2, 4, 8, 16, 32, 64, 128,
                                   1, 2, 4, 8, 16, 32, 64, 128>::iv();
     __m128i r=_mm_cvtsi32_si128(msk16);
-    r = _mm_shuffle_epi8(r, sm);
+    r = vpshufb::v(r, sm);
     r = _mm_and_si128(r, bm);
     r = _mm_cmpeq_epi8(r, bm);
     return r;
