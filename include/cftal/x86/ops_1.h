@@ -544,7 +544,15 @@ cftal::x86::expand_mask_v2u64(uint32_t msk2)
     const __m128i bm=const_v4u32< 1, 0, 2, 0>::iv();
     __m128i r=_mm_set1_epi32(msk2);
     r = _mm_and_si128(r, bm);
+#if defined (__SSE4_1__)
     r = _mm_cmpeq_epi64(r, bm);
+#else
+    // a == b : a_h == b_h && a_l == b_l
+    r = _mm_cmpeq_epi32(r, bm);
+    __m128i c32s = vpsllq_const<32>::v(r);
+    r = _mm_and_si128(r, c32s);
+    r = vpshufd<1, 1, 3, 3>::v(r);
+#endif
     return r;
 }
 
