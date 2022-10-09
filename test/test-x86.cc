@@ -123,6 +123,27 @@ namespace cftal::test {
         }
     };
 
+#if defined (__AVX__)
+    template <>
+    struct expand_and_compress<float, 8> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v8f32(msk);
+            return x86::compress_mask_f32(t);
+        }
+    };
+
+    template <>
+    struct expand_and_compress<double, 4> {
+        static
+        uint64_t mask(uint64_t msk) {
+            auto t=x86::expand_mask_v4f64(msk);
+            return x86::compress_mask_f64(t);
+        }
+    };
+#endif
+
+#if defined (__AVX2__)
     template <>
     struct expand_and_compress<int8_t, 32> {
         static
@@ -194,25 +215,7 @@ namespace cftal::test {
             return x86::compress_mask_u64(t);
         }
     };
-
-    template <>
-    struct expand_and_compress<float, 8> {
-        static
-        uint64_t mask(uint64_t msk) {
-            auto t=x86::expand_mask_v8f32(msk);
-            return x86::compress_mask_f32(t);
-        }
-    };
-
-    template <>
-    struct expand_and_compress<double, 4> {
-        static
-        uint64_t mask(uint64_t msk) {
-            auto t=x86::expand_mask_v4f64(msk);
-            return x86::compress_mask_f64(t);
-        }
-    };
-
+#endif
 
     template <typename _T, size_t _N>
     bool

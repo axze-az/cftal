@@ -484,6 +484,8 @@ uint32_t cftal::x86::compress_mask_u64(__m256i m)
     return compress_mask_f64(_mm256_castsi256_pd(m));
 }
 
+#endif
+
 inline
 __m128
 cftal::x86::expand_mask_v4f32(uint32_t msk4)
@@ -554,8 +556,8 @@ cftal::x86::expand_mask_v8f32(uint32_t msk8)
 #if defined (__AVX2__)
     return _mm256_castsi256_ps(expand_mask_v8u32(msk8));
 #else
-    __m128 l=expand_mask_v4f32(msk & 7);
-    __m128 h=expand_mask_v4f64(msk >> 4);
+    __m128 l=expand_mask_v4f32(msk8 & 7);
+    __m128 h=expand_mask_v4f32(msk8 >> 4);
     __m256 r=_mm256_castps128_ps256(l);
     r =_mm256_insertf128_ps(r, h, 1);
     return r;
@@ -569,8 +571,8 @@ cftal::x86::expand_mask_v4f64(uint32_t msk4)
 #if defined (__AVX2__)
     return _mm256_castsi256_pd(expand_mask_v4u64(msk4));
 #else
-    __m128d l=expand_mask_v2f64(msk & 3);
-    __m128d h=expand_mask_v2f64(msk >> 2);
+    __m128d l=expand_mask_v2f64(msk4 & 3);
+    __m128d h=expand_mask_v2f64(msk4 >> 2);
     __m256d r=_mm256_castpd128_pd256(l);
     r =_mm256_insertf128_pd(r, h, 1);
     return r;
@@ -633,8 +635,6 @@ cftal::x86::expand_mask_v4u64(uint32_t msk4)
     r = _mm256_cmpeq_epi64(r, bm);
     return r;
 }
-#endif
-
 
 inline
 cftal::uint32_t cftal::x86::read_signs_s8(__m256i a)
