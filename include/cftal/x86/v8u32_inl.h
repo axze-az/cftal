@@ -566,11 +566,11 @@ cftal::mul_lo_hi(const v8u32& x, const v8u32& y)
     v8u32 o= _mm256_mul_epu32(x86::vpshufd<1, 0, 3, 2>::v(x()),
                               x86::vpshufd<1, 0, 3, 2>::v(y()));
     // --------------------------------------
-    v8s32 l= permute<0, 0+8,
+    v8u32 l= permute<0, 0+8,
                      2, 2+8,
                      4, 4+8,
                      6, 6+8>(e, o);
-    v8s32 h= permute<1, 1+8,
+    v8u32 h= permute<1, 1+8,
                      3, 3+8,
                      5, 5+8,
                      7, 7+8>(e, o);
