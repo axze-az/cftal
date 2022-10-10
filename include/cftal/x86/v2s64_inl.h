@@ -81,15 +81,7 @@ namespace cftal {
 #if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmpeq_epi64_mask(a(), b());
 #else
-#if defined (__SSE4_1__)
-                return _mm_cmpeq_epi64(a(), b());
-#else
-                // a == b : a_h == b_h && a_l == b_l
-                __m128i r= _mm_cmpeq_epi32(a(), b());
-                __m128i c32s = x86::vpsllq_const<32>::v(r);
-                r = _mm_and_si128(r, c32s);
-                return x86::vpshufd<1, 1, 3, 3>::v(r);
-#endif
+		return x86::vpcmpeqq::v(a(), b());
 #endif
             }
         };

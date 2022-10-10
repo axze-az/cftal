@@ -1307,6 +1307,21 @@ namespace cftal {
 #endif
         };
 
+	struct vpcmpeqq {
+            static __m128i v(__m128i a, __m128i b) {
+#if defined (__SSE4_1__)
+		__m128i r = _mm_cmpeq_epi64(a, b);
+#else
+		// a == b : a_h == b_h && a_l == b_l
+		__m128i r = _mm_cmpeq_epi32(a, b);
+		__m128i c32s = vpsllq_const<32>::v(r);
+		r = _mm_and_si128(r, c32s);
+		r = vpshufd<1, 1, 3, 3>::v(r);
+#endif
+		return r;
+	    }
+	};
+
         struct pavgb {
             static
             __m128i v(__m128i a, __m128i b) {
