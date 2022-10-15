@@ -18,6 +18,7 @@
 #include "cftal/vec.h"
 #include "cftal/vxf16.h"
 #include "cftal/test/of_ops.h"
+#include "cftal/test/cpu_times.h"
 
 #if !defined (__AVX512F__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
 
@@ -145,6 +146,7 @@ namespace cftal {
 
 int main()
 {
+    cftal::test::cpu_times_to_stdout tt;
     std::cout << "testing vXf16" << std::endl;
     using cftal::f16_t;
     bool rc=cftal::test::of_ops_up_to<f16_t, 16>::v();

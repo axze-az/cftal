@@ -16,9 +16,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include "cftal/test/of_ops.h"
+#include "cftal/test/cpu_times.h"
 
 int main()
 {
+    cpu_times_to_stdout tt;
     bool rc=true;
     std::cout << "testing vXf64" << std::endl;
     rc=cftal::test::of_ops_up_to<double, 8>::v();

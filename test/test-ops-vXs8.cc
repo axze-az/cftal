@@ -16,9 +16,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include "cftal/test/of_ops.h"
+#include "cftal/test/cpu_times.h"
 
 int main()
 {
+    cftal::test::cpu_times_to_stdout tt;
     std::cout << "testing vXs8" << std::endl;
     bool rc=cftal::test::of_ops_up_to<int8_t, 64>::v();
     if (rc==false)

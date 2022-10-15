@@ -51,7 +51,7 @@ namespace cftal {
             cpu_times_to_stdout();
             ~cpu_times_to_stdout();
         };
-        
+
     }
 }
 
