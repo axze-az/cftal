@@ -54,9 +54,11 @@ namespace cftal {
     template <typename _T>
     struct d_real_traits {};
 
-    // helper call defining the existance of fused multiply and and
+    // helper call defining the existance of fused multiply and add
     template <typename _T>
-    struct has_fma {};
+    struct has_fma {
+        static constexpr bool fma=false;
+    };
 
     // fma available specialized for double
     template <>

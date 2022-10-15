@@ -432,6 +432,7 @@ namespace cftal {
     operator/=(f16_t& a,
                const expr<_OP<f16_t>, _L, _R>& b);
 
+    f16_t fma(const f16_t& a, const f16_t& b, const f16_t& c);
     f16_t sqrt(const f16_t& v);
     bool isnan(const f16_t& v);
     bool isinf(const f16_t& v);
@@ -791,6 +792,12 @@ cftal::operator/=(f16_t& a,
 {
     a = a / b;
     return a;
+}
+
+inline
+cftal::f16_t cftal::fma(const f16_t& a, const f16_t& b, const f16_t& c)
+{
+    return f16_t(float(a)*float(b)+float(c));
 }
 
 inline

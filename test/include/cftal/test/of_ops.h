@@ -274,15 +274,27 @@ cftal::test::of_ops<_T, _N>::v(_T ai, _T bi)
     vr = va; vr /= vb;
     rc &= check(vr, r, "a/=b");
 
-    r = a * a  + b;
+    if (has_fma<_T>::fma) {
+        r = fma(a, a, b);
+    } else {
+        r = a * a  + b;
+    }
     vr = va * va + b;
     rc &= check(vr, r, "a*a +b");
 
-    r=  a* a - b;
+    if (has_fma<_T>::fma) {
+        r = fma(a, a, -b);
+    } else {
+        r=  a* a - b;
+    }
     vr = va * va  -b;
     rc &= check(vr, r, "a*a -b");
 
-    r= b -a*a;
+    if (has_fma<_T>::fma) {
+        r = fma(-a, a, b);
+    } else {
+        r= b -a*a;
+    }
     vr = b - va * va;
     rc &= check(vr, r, "b - a * a");
 
