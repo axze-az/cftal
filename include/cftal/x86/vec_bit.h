@@ -43,6 +43,7 @@ namespace cftal {
         // vec(std::initializer_list<bool> l);
         // vec(init_list<bool> l);
         vec(__mmask8 v) : base_type(v) {}
+        constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0U) {}
         vec(const vec<bit, 1>& l, const vec<bit, 1>& h)
             : base_type((l() & 0x1) | (__mmask8(h()) << 1)) {}
     };
@@ -62,6 +63,7 @@ namespace cftal {
         // vec(std::initializer_list<bool> l);
         // vec(init_list<bool> l);
         vec(__mmask8 v) : base_type(v) {}
+        constexpr vec(const bit& v) : base_type(v()!=0 ? mask : 0U) {}
         vec(const vec<bit, 2>& l, const vec<bit, 2>& h)
             : base_type((l() & 0x3) | (__mmask8(h()) << 2)) {}
     };
