@@ -81,6 +81,15 @@ namespace cftal {
         utype _v;
     };
 
+    template <>
+    struct is_vec_specialized<vec<bit, 64> > : public std::true_type {};
+    template <>
+    struct is_vec_specialized<vec<bit, 32> > : public std::true_type {};
+    template <>
+    struct is_vec_specialized<vec<bit, 16> > : public std::true_type {};
+    template <>
+    struct is_vec_specialized<vec<bit, 8> > : public std::true_type {};
+
     // full specialization for length 1 required because vec<_T, 1>
     // and vec<bit, _N> are equal qualified for instantiation of
     // vec<bit, 1>
@@ -104,6 +113,9 @@ namespace cftal {
     private:
         utype _v;
     };
+
+    template <>
+    struct is_vec_specialized<vec<bit, 1> > : public std::true_type {};
 
     template <>
     struct mem< vec<bit, 1> > {
