@@ -2929,7 +2929,7 @@ __m256i cftal::x86::perm1_v4u64<_P0, _P1, _P2, _P3>::v(__m256i a)
             return res;
         }
         const int sel= csel4<_P0, _P1, _P2, _P3>::val;
-        res= res= _mm256_castpd_si256(
+        res= _mm256_castpd_si256(
             _mm256_permute_pd(_mm256_castsi256_pd(a), sel & 0xf));
     } else if ( ((m1 & m2) == (0x1032 & m2)) ) {
         res= _mm256_permute2x128_si256(a, a, 0x01);
