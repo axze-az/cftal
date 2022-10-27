@@ -58,7 +58,7 @@ namespace cftal {
             using vmi2_type = typename f64_traits::vmi2_type;
 
             using f64_core = spec_func_core<double, f64_traits>;
-            using base_type::log_func;
+            using typename base_type::log_func;
 #endif
 
             using base_type::sinpi_cospi_k;
@@ -935,10 +935,10 @@ __lgamma_reduce_small_k(arg_t<vhf_type> xc)
 
     auto t= x>vhf_type(ir);
 
-    if (_T::vhf_traits::any_of_v(t)) {
+    if (_T::vhf_traits::any_of_vmf(t)) {
         x -= f64_traits::sel_val_or_zero(t, 1.0);
         f0= f64_traits::sel(t, x, 1.0);
-        while (_T::vhf_traits::any_of_v(t= x>vhf_type(ir))) {
+        while (_T::vhf_traits::any_of_vmf(t= x>vhf_type(ir))) {
             x -= f64_traits::sel_val_or_zero(t, 1.0);
             f0 *= f64_traits::sel(t, x, vhf_type(1.0));
 #if 0
@@ -954,16 +954,16 @@ __lgamma_reduce_small_k(arg_t<vhf_type> xc)
     }
     t= x<vhf_type(il);
     vmhf_type inv_f=t;
-    if (_T::vhf_traits::any_of_v(t)) {
+    if (_T::vhf_traits::any_of_vmf(t)) {
         vhf_type& q0 = f0;
         q0=f64_traits::sel(t, x, q0);
         x += f64_traits::sel_val_or_zero(t, 1.0);
-        while(_T::vhf_traits::any_of_v(t= x<vhf_type(il))) {
+        while(_T::vhf_traits::any_of_vmf(t= x<vhf_type(il))) {
             q0 *= f64_traits::sel(t, x, 1.0);
             x += f64_traits::sel_val_or_zero(t, 1.0);
 #if 0
             // avoid overflows in q0
-            if (_T::vhf_traits::any_of_v(t=abs(q0[0]) > 0x1p60f)) {
+            if (_T::vhf_traits::any_of_vmf(t=abs(q0[0]) > 0x1p60f)) {
                 vf_type h=_T::sel(t, 0x1p-61f, 1.0f);
                 q0[1] *= h;
                 q0[0] *= h;
@@ -1248,7 +1248,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         ((x >= x_small_left) & (x <= x_small_right) & (xa >= x_tiny));
 
     vhf_type base=xa;
-    if (_T::vhf_traits::any_of_v(xa_in_small)) {
+    if (_T::vhf_traits::any_of_vmf(xa_in_small)) {
         vhf_type xs=f64_traits::sel(xa_in_small, x, 1.5);
         sst = __lgamma_reduce_small_k(xs);
         vhf_type log_a=abs(sst._f);
@@ -1258,7 +1258,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     using lanczos_ratfunc=lanczos_table_g_4_35169_N5;
     vmhf_type xa_in_lanczos =
         (((x < x_small_left) | (x > x_small_right)) & (xa < x_large));
-    if (_T::vhf_traits::any_of_v(xa_in_lanczos)) {
+    if (_T::vhf_traits::any_of_vmf(xa_in_lanczos)) {
         vhf_type t= xa + lanczos_ratfunc::gm0_5();
         base= f64_traits::sel(xa_in_lanczos, t, base);
     }
@@ -1268,12 +1268,12 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     vhf_type lb= f64_core::log_k(base);
     vhf_type lg=0.0;
     vmhf_type xa_in_large = (xa >= x_large);
-    if (_T::vhf_traits::any_of_v(xa_in_large)) {
+    if (_T::vhf_traits::any_of_vmf(xa_in_large)) {
         // log(gamma(x)) = xa * (log(xa) - 1.0), xa >> 1
         vhf_type t=(lb -1.0)*xa;
         lg = f64_traits::sel(xa_in_large, t, lg);
     }
-    if (_T::vhf_traits::any_of_v(xa_in_lanczos)) {
+    if (_T::vhf_traits::any_of_vmf(xa_in_lanczos)) {
         // lanczos sum:
         auto pq=lanczos_rational_at(xa,
                                     lanczos_ratfunc::p,
@@ -1285,7 +1285,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
         vhf_type t= (z * lb) - base + ls;
         lg = f64_traits::sel(xa_in_lanczos, t, lg);
     }
-    if (_T::vhf_traits::any_of_v(xa_in_small)) {
+    if (_T::vhf_traits::any_of_vmf(xa_in_small)) {
         vhf_type lg12=__lgamma_1_2_k(sst._xr);
         vhf_type slb= f64_traits::sel(sst._inv_f, -lb, lb);
         vhf_type t= lg12 + slb;
@@ -1298,20 +1298,20 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
     // reflection part
     vi_type sgn=1;
     vmhf_type x_lt_0 = x < 0.0;
-    if (_T::vhf_traits::any_of_v(x_lt_0)) {
+    if (_T::vhf_traits::any_of_vmf(x_lt_0)) {
         // tiny
         vmhf_type t= x_lt_0 & xa_in_tiny;
-        sgn = _T::sel(f64_traits::vmf_to_vmi(t), -1, sgn);
+        sgn = _T::sel_vi(f64_traits::vmf_to_vmi(t), -1, sgn);
         // small
         t = x_lt_0 & xa_in_small;
-        if (_T::vhf_traits::any_of_v(t)) {
+        if (_T::vhf_traits::any_of_vmf(t)) {
             vhf_type sgn_g=copysign(vhf_type(1.0), sst._f);
             vi_type si= f64_traits::cvt_f_to_i(sgn_g);
-            sgn=_T::sel(f64_traits::vmf_to_vmi(t), si, sgn);
+            sgn=_T::sel_vi(f64_traits::vmf_to_vmi(t), si, sgn);
         }
         // lanczos
         t = x_lt_0 & xa_in_lanczos;
-        if (_T::vhf_traits::any_of_v(t)) {
+        if (_T::vhf_traits::any_of_vmf(t)) {
             // G(-z) = -pi/[sin(pi*z)*z * G(z)]
             vhf_type s;
             f64_core::sinpi_cospi_k(xa, &s, nullptr);
@@ -1327,7 +1327,7 @@ lgamma_k(arg_t<vf_type> xc, vi_type* signp)
             lg = f64_traits::sel(t, lg_n, lg);
             vmhf_type s_lt_0 = (s >= 0.0) & t;
             vmi_type i_s_lt_0 = f64_traits::vmf_to_vmi(s_lt_0);
-            sgn = _T::sel(i_s_lt_0, -1, sgn);
+            sgn = _T::sel_vi(i_s_lt_0, -1, sgn);
         }
         // no large handling because xc is integer anyway
     }
