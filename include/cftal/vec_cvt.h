@@ -46,29 +46,29 @@ namespace cftal {
     // conversion from vec<bit, _N> to vec<int32_t, _N/2>
     template <size_t _N>
     struct cvt_mask<vec<bit, _N/2>, vec<bit, _N> > {
-	static
-	const vec<bit, _N/2>
-	v(const vec<bit, _N>& s) {
-	    uint64_t sm=s();
-	    constexpr const uint64_t msk=0x5555555555555555ULL;
-	    vec<bit, _N/2> r=bit_pack(sm, msk);
-	    return r;
-	}
+        static
+        const vec<bit, _N/2>
+        v(const vec<bit, _N>& s) {
+            uint64_t sm=s();
+            constexpr const uint64_t msk=0x5555555555555555ULL;
+            vec<bit, _N/2> r=bit_pack(sm, msk);
+            return r;
+        }
     };
 
     // conversion from vec<bit, _N> to vec<int32_t, 2*_N>
     template <size_t _N>
     struct cvt_mask<vec<bit, 2*_N>, vec<bit, _N> > {
-	static
-	const vec<bit, 2*_N>
-	v(const vec<bit, _N>& s) {
-	    uint64_t sm=s();
-	    const uint64_t em=0x5555555555555555ULL;
-	    const uint64_t om=0xAAAAAAAAAAAAAAAAULL;
-	    vec<bit, 2*_N> r=
-		bit_unpack(sm, em)|bit_unpack(sm, om);
-	    return r;
-	}
+        static
+        const vec<bit, 2*_N>
+        v(const vec<bit, _N>& s) {
+            uint64_t sm=s();
+            const uint64_t em=0x5555555555555555ULL;
+            const uint64_t om=0xAAAAAAAAAAAAAAAAULL;
+            vec<bit, 2*_N> r=
+                bit_unpack(sm, em)|bit_unpack(sm, om);
+            return r;
+        }
     };
 
     // conversion from vec<bit, 2> to vec<int32_t, 2>
@@ -77,8 +77,8 @@ namespace cftal {
         static
         vec<int32_t, 2>
         v(const vec<bit, 2>& s) {
-	    int32_t l=(s() & 1) ? -1 : 0;
-	    int32_t h=(s() & 2) ? -1 : 0;
+            int32_t l=(s() & 1) ? -1 : 0;
+            int32_t h=(s() & 2) ? -1 : 0;
             return vec<int32_t, 2>(l, h);
         }
     };
@@ -89,9 +89,9 @@ namespace cftal {
         static
         vec<bit, 2>
         v(const vec<int32_t, 2>& s) {
-	    int32_t l= low_half(s)() < 0 ? 1 : 0;
-	    int32_t h= high_half(s)() < 0 ? 2 : 0;
-	    return vec<bit, 2>(l|h);
+            int32_t l= low_half(s)() < 0 ? 1 : 0;
+            int32_t h= high_half(s)() < 0 ? 2 : 0;
+            return vec<bit, 2>(l|h);
         }
     };
 
@@ -683,71 +683,71 @@ namespace cftal {
         };
 
 #if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__>0)
-	template <>
-	struct cvt<v8f64, v8f32> {
-	    static v8f64 v(const v8f32& s) {
-		return _mm512_cvtps_pd(s());
-	    }
-	};
-	template <>
-	struct cvt<v8f32, v8f64> {
-	    static v8f32 v(const v8f64& s) {
-		return _mm512_cvtpd_ps(s());
-	    }
-	};
+        template <>
+        struct cvt<v8f64, v8f32> {
+            static v8f64 v(const v8f32& s) {
+                return _mm512_cvtps_pd(s());
+            }
+        };
+        template <>
+        struct cvt<v8f32, v8f64> {
+            static v8f32 v(const v8f64& s) {
+                return _mm512_cvtpd_ps(s());
+            }
+        };
 
-	template <>
-	struct cvt<v8f64, v8s32> {
-	    static v8f64 v(const v8s32& s) {
-		return _mm512_cvtepi32_pd(s());
-	    }
-	};
-	template <>
-	struct cvt<v8s32, v8f64> {
-	    static v8s32 v(const v8f64& s) {
-		return _mm512_cvtpd_epi32(s());
-	    }
-	};
+        template <>
+        struct cvt<v8f64, v8s32> {
+            static v8f64 v(const v8s32& s) {
+                return _mm512_cvtepi32_pd(s());
+            }
+        };
+        template <>
+        struct cvt<v8s32, v8f64> {
+            static v8s32 v(const v8f64& s) {
+                return _mm512_cvtpd_epi32(s());
+            }
+        };
 
-	template <>
-	struct cvt<v8f64, v8u32> {
-	    static v8f64 v(const v8u32& s) {
-		return _mm512_cvtepu32_pd(s());
-	    }
-	};
-	template <>
-	struct cvt<v8u32, v8f64> {
-	    static v8u32 v(const v8f64& s) {
-		return _mm512_cvtpd_epu32(s());
-	    }
-	};
+        template <>
+        struct cvt<v8f64, v8u32> {
+            static v8f64 v(const v8u32& s) {
+                return _mm512_cvtepu32_pd(s());
+            }
+        };
+        template <>
+        struct cvt<v8u32, v8f64> {
+            static v8u32 v(const v8f64& s) {
+                return _mm512_cvtpd_epu32(s());
+            }
+        };
 
-	template <>
-	struct cvt<v16f32, v16s32> {
-	    static v16f32 v(const v16s32& s) {
-		return _mm512_cvtepi32_ps(s());
-	    }
-	};
-	template <>
-	struct cvt<v16s32, v16f32> {
-	    static v16s32 v(const v16f32& s) {
-		return _mm512_cvtps_epi32(s());
-	    }
-	};
+        template <>
+        struct cvt<v16f32, v16s32> {
+            static v16f32 v(const v16s32& s) {
+                return _mm512_cvtepi32_ps(s());
+            }
+        };
+        template <>
+        struct cvt<v16s32, v16f32> {
+            static v16s32 v(const v16f32& s) {
+                return _mm512_cvtps_epi32(s());
+            }
+        };
 
-	template <>
-	struct cvt<v16f32, v16u32> {
-	    static v16f32 v(const v16u32& s) {
-		return _mm512_cvtepu32_ps(s());
-	    }
-	};
-	template <>
-	struct cvt<v16u32, v16f32> {
-	    static v16u32 v(const v16f32& s) {
-		return _mm512_cvtps_epu32(s());
-	    }
-	};
-	
+        template <>
+        struct cvt<v16f32, v16u32> {
+            static v16f32 v(const v16u32& s) {
+                return _mm512_cvtepu32_ps(s());
+            }
+        };
+        template <>
+        struct cvt<v16u32, v16f32> {
+            static v16u32 v(const v16f32& s) {
+                return _mm512_cvtps_epu32(s());
+            }
+        };
+
 #endif
 
 #endif // __SSE2__
