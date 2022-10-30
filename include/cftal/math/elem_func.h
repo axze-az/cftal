@@ -64,6 +64,15 @@ namespace cftal {
         struct elem_func_core {
         };
 
+        // low precision core implementation of elementary
+        // and base functions exports exp_k, exp2_k ...
+        // may be specialized for different _FLOAT_T
+        // precision should be high enough to return faithfully
+        // rounded result for the next shorter float type
+        template <typename _FLOAT_T, typename _TRAITS_T>
+        struct elem_func_loprec_core {
+        };
+
         // wrapper for core implementation of elementary and base
         // functions, may be specialized to switch elem func_core
         // implementations or only some functions
