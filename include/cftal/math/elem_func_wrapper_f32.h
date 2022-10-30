@@ -31,6 +31,10 @@
 #define __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF64_FOR_VF32_EXP2_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF64_FOR_VF32_EXP10_FUNCS__ 1
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_LOG__ 1
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_LOG2__ 1
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_LOG10__ 1
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_POW_FUNCS__ 1
 
 namespace cftal {
     namespace math {
@@ -98,6 +102,21 @@ namespace cftal {
             static
             vf_type
             exp10_px2_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_LOG__ >0
+            static
+            vf_type
+            log_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_LOG2__ >0
+            static
+            vf_type
+            log2_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_LOG10__ >0
+            static
+            vf_type
+            log10_k(arg_t<vf_type> x);
 #endif
         };
     }
@@ -256,6 +275,48 @@ exp10_px2_k(arg_t<vf_type> x)
     using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
     return y;
+}
+#endif
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_LOG__ >0
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+log_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type rd=f64_core::template __log_k<f64_core::log_func::c_log_e>(xd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
+#endif
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_LOG2__ >0
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+log2_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type rd=f64_core::template __log_k<f64_core::log_func::c_log_2>(xd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
+#endif
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_LOG10__ >0
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+log10_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type rd=f64_core::template __log_k<f64_core::log_func::c_log_10>(xd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
 }
 #endif
 
