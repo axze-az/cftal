@@ -31,7 +31,8 @@ namespace cftal {
         // specialization of elem_func_wrapper for float and different
         // traits
         template <typename _T>
-        struct elem_func_wrapper<float, _T> {
+        struct elem_func_wrapper<float, _T>
+            : public elem_func_core<float, _T> {
         };
     }
 }
