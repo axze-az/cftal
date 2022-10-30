@@ -219,7 +219,7 @@ namespace cftal {
             static constexpr float
             sig_hi_one() {
                 // log(0x1p26)
-                return 18.0218257904052734375;
+                return 18.0218257904052734375f;
             }
             static constexpr float
             sig_le_eq_exp() {
