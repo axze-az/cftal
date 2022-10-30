@@ -26,16 +26,25 @@ namespace cftal {
 
     namespace math {
 
+
         template <typename _FLOAT_T, typename _TRAITS_T>
         struct spec_func_core {
             // specializations contain the implementation of
             // special functions
         };
 
+        // wrapper for core implementation of special
+        // functions, may be specialized to switch special func_core
+        // implementations or only some functions
+        template <typename _FLOAT_T, typename _TRAITS_T>
+        struct spec_func_wrapper :
+            public spec_func_core<_FLOAT_T, _TRAITS_T> {
+        };
+
         // common code for special functions
         template <typename _FLOAT_T, typename _TRAITS_T>
-        struct spec_func : public spec_func_core<_FLOAT_T, _TRAITS_T> {
-            using base_type = spec_func_core<_FLOAT_T, _TRAITS_T>;
+        struct spec_func : public spec_func_wrapper<_FLOAT_T, _TRAITS_T> {
+            using base_type = spec_func_wrapper<_FLOAT_T, _TRAITS_T>;
             using vf_type = typename _TRAITS_T::vf_type;
             using vmf_type = typename _TRAITS_T::vmf_type;
             using vi_type = typename _TRAITS_T::vi_type;
