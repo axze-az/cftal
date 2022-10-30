@@ -91,8 +91,6 @@ namespace cftal {
             using vi_type = typename base_type::vi_type;
             using vmf_type = typename base_type::vmf_type;
             using vmi_type = typename base_type::vmi_type;
-            using vdf_type = typename base_type::vdf_type;
-            using d_ops = typename base_type::d_ops;
 
             using base_type::frexp;
             using base_type::ldexp;
@@ -1095,41 +1093,8 @@ typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 sig(arg_t<vf_type> x)
 {
-
     using fc= func_constants<_FLOAT_T>;
-    //
-    // constexpr const double xh=36.7368005696771013991133;
-    // constexpr const double xl=-xh-5.0;
-    // log(0x1p54);
-    // constexpr const double xh=37.42994775023704676404168579;
-    // constexpr const double xl=-xh;
-    // log(0x1p23)
-    // const float xh=15.9423847198486328125f;
-    // const float xl=-xh;
-    constexpr const _FLOAT_T lgf_lo_eq_exp= fc::sig_le_eq_exp();
-    vmf_type xm= x>lgf_lo_eq_exp;
-    vf_type xe= _TRAITS_T::sel(xm, -x, x);
-    vf_type xrh, xrl;
-    vi_type idx, ki;
-    base_type::__reduce_exp_arg(xrh, xrl, idx, ki, xe);
-    vf_type el, eh=base_type::template
-        __exp_tbl_k<base_type::result_prec::medium>(xrh, xrl, idx, &el);
-    auto sc=base_type::__two_pow(ki);
-    eh *= sc.f0();
-    eh *= sc.f1();
-    constexpr const _FLOAT_T lgf_hi_one=  fc::sig_hi_one();
-    vmf_type x_not_hi= x < lgf_hi_one;
-    vf_type rh, rl;
-    // avoid multiplication of subnormal numbers
-    vmf_type avoid_sn= xm & x_not_hi;
-    vf_type th=_TRAITS_T::sel_val_or_zero(avoid_sn, eh);
-    vf_type tl=_TRAITS_T::sel_val_or_zero(avoid_sn, el);
-    tl *= sc.f0();
-    tl *= sc.f1();
-    d_ops::add122cond(rh, rl, _FLOAT_T(1.0), th, tl);
-    d_ops::rcp21(rh, rh, rl);
-    vf_type r = _TRAITS_T::sel(xm, rh, eh);
-    r = _TRAITS_T::sel(x_not_hi, r, _FLOAT_T(1.0));
+    vf_type r=base_type::sig_k(x);
     constexpr const _FLOAT_T neg_exp_hi_inf= -fc::exp_hi_inf();
     r = _TRAITS_T::sel(x<= neg_exp_hi_inf, _FLOAT_T(0.0), r);
     r = _TRAITS_T::sel(isnan(x), x, r);

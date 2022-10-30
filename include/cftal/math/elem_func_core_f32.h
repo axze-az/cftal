@@ -451,6 +451,11 @@ namespace cftal {
             vf_type
             exp10_px2_k(arg_t<vf_type> x);
 
+            // returns 1/(1+exp(-x))
+            static
+            vf_type
+            sig_k(arg_t<vf_type> x);
+
             enum hyperbolic_func {
                 c_sinh,
                 c_cosh,
@@ -2342,6 +2347,41 @@ exp10_px2_k(arg_t<vf_type> xc)
     y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
     return y;
 }
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+sig_k(arg_t<vf_type> x)
+{
+    using fc= func_constants<float>;
+    constexpr const float lgf_lo_eq_exp= fc::sig_le_eq_exp();
+    vmf_type xm= x>lgf_lo_eq_exp;
+    vf_type xe= _T::sel(xm, -x, x);
+    vf_type xrh, xrl;
+    vi_type idx, ki;
+    __reduce_exp_arg(xrh, xrl, idx, ki, xe);
+    vf_type el, eh=
+        __exp_tbl_k<result_prec::medium>(xrh, xrl, idx, &el);
+    auto sc=__two_pow(ki);
+    eh *= sc.f0();
+    eh *= sc.f1();
+    constexpr const float lgf_hi_one=  fc::sig_hi_one();
+    vmf_type x_not_hi= x < lgf_hi_one;
+    vf_type rh, rl;
+    // avoid multiplication of subnormal numbers
+    vmf_type avoid_sn= xm & x_not_hi;
+    vf_type th=_T::sel_val_or_zero(avoid_sn, eh);
+    vf_type tl=_T::sel_val_or_zero(avoid_sn, el);
+    tl *= sc.f0();
+    tl *= sc.f1();
+    d_ops::add122cond(rh, rl, float(1.0), th, tl);
+    d_ops::rcp21(rh, rh, rl);
+    vf_type r = _T::sel(xm, rh, eh);
+    r = _T::sel(x_not_hi, r, float(1.0));
+    return r;
+}
+
 
 template <typename _T>
 template <enum cftal::math::elem_func_core<float, _T>::hyperbolic_func _F>

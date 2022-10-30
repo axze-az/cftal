@@ -28,6 +28,7 @@
 #include <cftal/math/impl_d_real_constants_f64.h>
 
 #define __CFTAL_CFG_USE_VF64_FOR_VF32_RSQRT__ 0
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_EXPM1_ 1
 
 namespace cftal {
     namespace math {
@@ -39,9 +40,11 @@ namespace cftal {
               private elem_func_loprec_core<double, typename _T::vhf_traits> {
             using base_type = elem_func_core<float, _T>;
             using vf_type = typename base_type::vf_type;
+            using vmi_type = typename base_type::vmi_type;
+            using vmf_type = typename base_type::vmf_type;
 
             using f64_traits = typename _T::vhf_traits;
-            using hp_base_type = elem_func_loprec_core<double, f64_traits>;
+            using f64_core = elem_func_loprec_core<double, f64_traits>;
             using vhf_type = typename f64_traits::vf_type;
             using vmhf_type = typename f64_traits::vmf_type;
             using vi2_type = typename f64_traits::vi2_type;
@@ -51,6 +54,12 @@ namespace cftal {
             static
             vf_type
             rsqrt_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_EXPM1_ >0
+            template <bool _EXP_M1>
+            static
+            vf_type
+            exp_k(arg_t<vf_type> x);
 #endif
         };
     }
@@ -65,6 +74,21 @@ rsqrt_k(arg_t<vf_type> x)
 {
     vhf_type xd=cvt<vhf_type>(x);
     vhf_type rd=1.0/sqrt(xd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
+#endif
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_EXPM1_ >0
+template <typename _T>
+template <bool _EXP_M1>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+exp_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type rd=f64_core::template exp_k<_EXP_M1>(xd);
     vf_type r=cvt<vf_type>(rd);
     return r;
 }
