@@ -20,7 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/math/spec_func.h>
-#include <cftal/math/elem_func_core_f32.h>
+#include <cftal/math/elem_func_wrapper_f32.h>
 #include <cftal/math/func_traits_f32_s32.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/lanczos.h>

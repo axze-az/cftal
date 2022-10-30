@@ -129,6 +129,11 @@ namespace cftal {
             vi_type
             ilogb(arg_t<vf_type> x);
 
+            // calculates x^-(1/2)
+            static
+            vf_type
+            rsqrt_k(arg_t<vf_type> x);
+
             // calculates x^(1/3)
             static
             vf_type
@@ -851,6 +856,25 @@ ilogb(arg_t<vf_type> d)
     mi = _T::vmf_to_vmi2(mf);
     e = _T::sel_vi2(mi, vi2_type(FP_ILOGBNAN), e);
     return _T::vi2_odd_to_vi(e);
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<double, _T>::vf_type
+cftal::math::elem_func_core<double, _T>::
+rsqrt_k(arg_t<vf_type> x)
+{
+    constexpr
+    const double one=1.0;
+    vf_type y= vf_type(one/sqrt(x));
+#if 0
+    // use this code if f32 should not produce any error in the tests if
+    // your processor supports fma
+    vf_type z = y*(y*x) - one;
+    y = y + y*(z*horner(z, _FLOAT_T(3.0/8.0), _FLOAT_T(-0.5)));
+#endif
+    y = impl::root_r2::order2<double, true>(y, x);
+    return y;
 }
 
 template <typename _T>

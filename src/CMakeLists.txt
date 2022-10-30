@@ -147,6 +147,8 @@ SET (HDRS
     ../include/cftal/math/func_data.h
     ../include/cftal/math/impl_d_real_constants_f32.h
     ../include/cftal/math/vec_func_traits.h
+    ../include/cftal/math/elem_func_wrapper_f32.h
+    ../include/cftal/math/elem_func_loprec_core_f64.h
     ../include/cftal/vec_bit_n.h
     ../include/cftal/types.h
     ../include/cftal/constants.h

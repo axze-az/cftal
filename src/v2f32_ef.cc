@@ -17,7 +17,7 @@
 //
 #include "cftal/vec.h"
 #include "cftal/math/vec_func_traits.h"
-#include "cftal/math/elem_func_core_f32.h"
+#include "cftal/math/elem_func_wrapper_f32.h"
 #include "vec_def_math_elem_funcs.h"
 
 #if V2F32_FUNCS>0

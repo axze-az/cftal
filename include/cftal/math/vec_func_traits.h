@@ -51,6 +51,9 @@ namespace cftal {
 
             using vdf_type = d_real<vf_type>;
 
+            using vlf_traits = func_traits<vec<float, _N>,
+                                           vec<int32_t, _N> >;
+
             static
             vmf_type
             vmi_to_vmf(const vmi_type& mi) {
