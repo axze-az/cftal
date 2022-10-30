@@ -130,6 +130,15 @@ namespace cftal {
             vf_type
             exp_k(arg_t<vf_type> x);
 
+            template <bool _EXP2_M1>
+            static
+            vf_type
+            exp2_k(arg_t<vf_type> x);
+
+            template <bool _EXP2_M1>
+            static
+            vf_type
+            exp10_k(arg_t<vf_type> x);
         };
     }
 }
@@ -297,6 +306,32 @@ exp_k(arg_t<vf_type> xc)
         __reduce_exp_arg(xr, kf, xc);
         yd=__exp_k<_EXP_M1>(xr, kf, xc);
     }
+    return yd;
+}
+
+template <typename _T>
+template <bool _EXP2_M1>
+inline
+typename cftal::math::elem_func_loprec_core<double, _T>::vf_type
+cftal::math::elem_func_loprec_core<double, _T>::
+exp2_k(arg_t<vf_type> xc)
+{
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type xd=xc*ctbl::m_ln2[0];
+    vf_type yd=exp_k<_EXP2_M1>(xd);
+    return yd;
+}
+
+template <typename _T>
+template <bool _EXP10_M1>
+inline
+typename cftal::math::elem_func_loprec_core<double, _T>::vf_type
+cftal::math::elem_func_loprec_core<double, _T>::
+exp10_k(arg_t<vf_type> xc)
+{
+    using ctbl = impl::d_real_constants<d_real<double>, double>;
+    vf_type xd=xc*ctbl::m_ln10[0];
+    vf_type yd=exp_k<_EXP10_M1>(xd);
     return yd;
 }
 

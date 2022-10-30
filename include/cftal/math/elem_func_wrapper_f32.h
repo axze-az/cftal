@@ -28,7 +28,9 @@
 #include <cftal/math/impl_d_real_constants_f64.h>
 
 #define __CFTAL_CFG_USE_VF64_FOR_VF32_RSQRT__ 0
-#define __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_EXPM1_ 1
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_FUNCS__ 1
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_EXP2_FUNCS__ 1
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_EXP10_FUNCS__ 1
 
 namespace cftal {
     namespace math {
@@ -55,11 +57,47 @@ namespace cftal {
             vf_type
             rsqrt_k(arg_t<vf_type> x);
 #endif
-#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_EXPM1_ >0
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_FUNCS__ >0
             template <bool _EXP_M1>
             static
             vf_type
             exp_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp_mx2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp_px2_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP2_FUNCS__ >0
+            template <bool _EXP2_M1>
+            static
+            vf_type
+            exp2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp2_mx2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp2_px2_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP10_FUNCS__ >0
+            template <bool _EXP10_M1>
+            static
+            vf_type
+            exp10_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp10_mx2_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            exp10_px2_k(arg_t<vf_type> x);
 #endif
         };
     }
@@ -79,7 +117,7 @@ rsqrt_k(arg_t<vf_type> x)
 }
 #endif
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_EXPM1_ >0
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP_FUNCS__ >0
 template <typename _T>
 template <bool _EXP_M1>
 inline
@@ -91,6 +129,133 @@ exp_k(arg_t<vf_type> x)
     vhf_type rd=f64_core::template exp_k<_EXP_M1>(xd);
     vf_type r=cvt<vf_type>(rd);
     return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+exp_mx2_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type x2d=-xd*xd;
+    vhf_type yd=f64_core::template exp_k<false>(x2d);
+    vf_type x2h=cvt<vf_type>(x2d);
+    vf_type y=cvt<vf_type>(yd);
+    using fc_t = math::func_constants<float>;
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp_lo_zero(), y);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+exp_px2_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type x2d=xd*xd;
+    vhf_type yd=f64_core::template exp_k<false>(x2d);
+    vf_type x2h=cvt<vf_type>(x2d);
+    vf_type y=cvt<vf_type>(yd);
+    using fc_t = math::func_constants<float>;
+    // NOT >= because of rounding:
+    y= _T::sel(x2h > fc_t::exp_hi_inf(), _T::pinf(), y);
+    return y;
+}
+#endif
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP2_FUNCS__ >0
+template <typename _T>
+template <bool _EXP2_M1>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+exp2_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type rd=f64_core::template exp2_k<_EXP2_M1>(xd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+exp2_mx2_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type x2d=-xd*xd;
+    vf_type x2h=cvt<vf_type>(x2d);
+    vhf_type yd=f64_core::template exp2_k<false>(x2d);
+    vf_type y=cvt<vf_type>(yd);
+    using fc_t = math::func_constants<float>;
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+exp2_px2_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type x2d=xd*xd;
+    vhf_type yd=f64_core::template exp2_k<false>(x2d);
+    vf_type x2h=cvt<vf_type>(x2d);
+    vf_type y=cvt<vf_type>(yd);
+    using fc_t = math::func_constants<float>;
+    y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
+    return y;
+}
+#endif
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_EXP10_FUNCS__ >0
+template <typename _T>
+template <bool _EXP10_M1>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+exp10_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type rd=f64_core::template exp10_k<_EXP10_M1>(xd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+exp10_mx2_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type x2d=-xd*xd;
+    vf_type x2h=cvt<vf_type>(x2d);
+    vhf_type yd=f64_core::template exp10_k<false>(x2d);
+    vf_type y=cvt<vf_type>(yd);
+    using fc_t = math::func_constants<float>;
+    y= _T::sel_zero_or_val(x2h <= fc_t::exp10_lo_zero(), y);
+    return y;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+exp10_px2_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type x2d=xd*xd;
+    vhf_type yd=f64_core::template exp10_k<false>(x2d);
+    vf_type x2h=cvt<vf_type>(x2d);
+    vf_type y=cvt<vf_type>(yd);
+    using fc_t = math::func_constants<float>;
+    y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
+    return y;
 }
 #endif
 
