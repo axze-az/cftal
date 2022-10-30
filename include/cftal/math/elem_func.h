@@ -62,20 +62,22 @@ namespace cftal {
         // must be specialized for different _FLOAT_T
         template <typename _FLOAT_T, typename _TRAITS_T>
         struct elem_func_core {
-            using vf_type = typename _TRAITS_T::vf_type;
-            using vi_type = typename _TRAITS_T::vi_type;
-            using vmf_type = typename _TRAITS_T::vmf_type;
-            using vmi_type = typename _TRAITS_T::vmi_type;
-            using vdf_type = typename _TRAITS_T::vdf_type;
+        };
+
+        // wrapper for core implementation of elementary and base
+        // functions, may be specialized to switch elem func_core
+        // implementations or only some functions
+        template <typename _FLOAT_T, typename _TRAITS_T>
+        struct elem_func_wrapper :
+            public elem_func_core<_FLOAT_T, _TRAITS_T> {
         };
 
         // common implementation of base and elementary functions
         // special argument handling like inf, nan, overflow, underflow
         // is done here
         template <typename _FLOAT_T, typename _TRAITS_T>
-        struct elem_func : public elem_func_core< _FLOAT_T, _TRAITS_T> {
-            using base_type = elem_func_core<_FLOAT_T, _TRAITS_T>;
-            using my_type = elem_func<_FLOAT_T, _TRAITS_T>;
+        struct elem_func : public elem_func_wrapper< _FLOAT_T, _TRAITS_T> {
+            using base_type = elem_func_wrapper<_FLOAT_T, _TRAITS_T>;
             using vf_type = typename base_type::vf_type;
             using vi_type = typename base_type::vi_type;
             using vmf_type = typename base_type::vmf_type;
@@ -681,7 +683,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     //                (x < 0 && y is an integer)
 
     __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
-    vf_type res=my_type::pow_k(x, y);
+    vf_type res=base_type::pow_k(x, y);
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=_FLOAT_T(0.5) *y;
     vmf_type y_is_odd = y_is_int & (rint(y_half) != y_half);
