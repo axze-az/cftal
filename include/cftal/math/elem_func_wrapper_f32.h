@@ -42,8 +42,7 @@ namespace cftal {
         // traits
         template <typename _T>
         struct elem_func_wrapper<float, _T>
-            : public elem_func_core<float, _T>,
-              private elem_func_loprec_core<double, typename _T::vhf_traits> {
+            : public elem_func_core<float, _T> {
             using base_type = elem_func_core<float, _T>;
             using vf_type = typename base_type::vf_type;
             using vi_type = typename base_type::vi_type;
@@ -128,9 +127,6 @@ namespace cftal {
             static
             vf_type
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
-#else
-            using base_type::pow_k;
-            using base_type::powi_k;
 #endif
 
         };

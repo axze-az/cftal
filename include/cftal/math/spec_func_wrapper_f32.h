@@ -35,8 +35,7 @@ namespace cftal {
         // traits
         template <typename _T>
         struct spec_func_wrapper<float, _T>
-            : public spec_func_core<float, _T>,
-              private spec_func_loprec_core<double, typename _T::vhf_traits> {
+            : public spec_func_core<float, _T> {
             using base_type = spec_func_core<float, _T>;
             using vf_type = typename base_type::vf_type;
             using vmi_type = typename base_type::vmi_type;
