@@ -46,6 +46,7 @@ namespace cftal {
               private elem_func_loprec_core<double, typename _T::vhf_traits> {
             using base_type = elem_func_core<float, _T>;
             using vf_type = typename base_type::vf_type;
+            using vi_type = typename base_type::vi_type;
             using vmi_type = typename base_type::vmi_type;
             using vmf_type = typename base_type::vmf_type;
 
@@ -118,6 +119,20 @@ namespace cftal {
             vf_type
             log10_k(arg_t<vf_type> x);
 #endif
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_POW_FUNCS__ >0
+            static
+            vf_type
+            pow_k(arg_t<vf_type> x, arg_t<vf_type> y);
+
+            template <bool _CALC_ROOT>
+            static
+            vf_type
+            powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
+#else
+            using base_type::pow_k;
+            using base_type::powi_k;
+#endif
+
         };
     }
 }
@@ -318,6 +333,53 @@ log10_k(arg_t<vf_type> x)
     vf_type r=cvt<vf_type>(rd);
     return r;
 }
+#endif
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_POW_FUNCS__ >0
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type yd=cvt<vhf_type>(y);
+    vhf_type ylnx;
+    vhf_type rd=f64_core::pow_k(xd, yd, &ylnx);
+    vf_type r=cvt<vf_type>(rd);
+    using fc=func_constants<float>;
+    const vf_type d= cvt<vf_type>(ylnx);
+    constexpr
+    const float exp_hi_inf= fc::exp_hi_inf();
+    constexpr
+    const float exp_lo_zero= fc::exp_lo_zero();
+    r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
+    r = _T::sel(d >= exp_hi_inf, _T::pinf(), r);
+    return r;
+}
+
+template <typename _T>
+template <bool _CALC_ROOT>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type ylnx;
+    vhf_type rd=f64_core::template powi_k<_CALC_ROOT>(xd, e, &ylnx);
+    vf_type r=cvt<vf_type>(rd);
+    using fc=func_constants<float>;
+    const vf_type d= cvt<vf_type>(ylnx);
+    constexpr
+    const float exp_hi_inf= fc::exp_hi_inf();
+    constexpr
+    const float exp_lo_zero= fc::exp_lo_zero();
+    r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
+    r = _T::sel(d >= exp_hi_inf, _T::pinf(), r);
+    return r;
+}
+
 #endif
 
 #endif

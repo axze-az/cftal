@@ -161,6 +161,17 @@ namespace cftal {
             vf_type
             __log_k12(arg_t<vf_type> xc);
 
+            static
+            vf_type
+            pow_k(arg_t<vf_type> x, arg_t<vf_type> y,
+                  vf_type* p_ylnx=nullptr);
+
+            template <bool _CALC_ROOT>
+            static
+            vf_type
+            powi_k(arg_t<vf_type> x, arg_t<vi_type> e,
+                  vf_type* p_ylnx=nullptr);
+
         };
     }
 }
@@ -517,7 +528,7 @@ __log_k12(arg_t<vf_type> xc)
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
-    vf_type ll=r*p;
+    vf_type ll=r+r2*p;
     vf_type lh;
     using ctbl=impl::d_real_constants<d_real<double>, double>;
     if (_LFUNC==log_func::c_log_e) {
@@ -528,6 +539,48 @@ __log_k12(arg_t<vf_type> xc)
         lh = kf * ctbl::m_lg2[0] + ll * ctbl::m_1_ln10[0];
     }
     return lh;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_loprec_core<double, _T>::vf_type
+cftal::math::elem_func_loprec_core<double, _T>::
+pow_k(arg_t<vf_type> x, arg_t<vf_type> y, vf_type* p_ylnx)
+{
+    vf_type ylnx=y*__log_k12<log_func::c_log_e>(abs(x));
+    if (p_ylnx != nullptr) {
+        *p_ylnx = ylnx;
+    }
+    vi_type idx, ki;
+    vf_type xr;
+    __reduce_exp_arg(xr, idx, ki, ylnx);
+    vf_type r=__exp_tbl_k(xr, idx, ki);
+    return r;
+}
+
+template <typename _T>
+template <bool _CALC_ROOT>
+inline
+typename cftal::math::elem_func_loprec_core<double, _T>::vf_type
+cftal::math::elem_func_loprec_core<double, _T>::
+powi_k(arg_t<vf_type> x, arg_t<vi_type> e, vf_type* p_ylnx)
+{
+    vf_type lnx=__log_k12<log_func::c_log_e>(abs(x));
+    vf_type y=cvt<vf_type>(e);
+    vf_type ylnx;
+    if (_CALC_ROOT==true) {
+        ylnx = lnx/y;
+    } else {
+        ylnx = lnx*y;
+    }
+    if (p_ylnx != nullptr) {
+        *p_ylnx = ylnx;
+    }
+    vi_type idx, ki;
+    vf_type xr;
+    __reduce_exp_arg(xr, idx, ki, ylnx);
+    vf_type r=__exp_tbl_k(xr, idx, ki);
+    return r;
 }
 
 #endif // __CFTAL_MATH_ELEM_FUNC_CORE_LOPREC_F64_H__
