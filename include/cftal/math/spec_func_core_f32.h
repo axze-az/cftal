@@ -58,7 +58,6 @@ namespace cftal {
             using vmi2_type = typename f64_traits::vmi2_type;
 
             using f64_core = spec_func_core<double, f64_traits>;
-            using typename base_type::log_func;
 #endif
 
             using base_type::sinpi_cospi_k;

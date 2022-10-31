@@ -39,12 +39,6 @@
 #include <cftal/math/horner.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
 #include <cftal/math/payne_hanek.h>
-#if  __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-#include <cftal/vec_cvt.h>
-#include <cftal/math/elem_func_core_f64.h>
-#include <cftal/math/func_traits_f64_s32.h>
-#include <cftal/math/impl_d_real_constants_f64.h>
-#endif
 #include <cftal/mem.h>
 
 namespace cftal {
@@ -60,15 +54,6 @@ namespace cftal {
             using vmf_type = typename _T::vmf_type;
             using vmi_type = typename _T::vmi_type;
             using vdf_type = typename _T::vdf_type;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-            using f64_traits = typename _T::vhf_traits;
-            using vhf_type = typename f64_traits::vf_type;
-            using vmhf_type = typename f64_traits::vmf_type;
-            using vi2_type = typename f64_traits::vi2_type;
-            using vmi2_type = typename f64_traits::vmi2_type;
-
-            using f64_core = elem_func_core<double, f64_traits>;
-#endif
             using d_ops=d_real_ops<vf_type,
                                    d_real_traits<vf_type>::fma>;
 
@@ -92,18 +77,6 @@ namespace cftal {
                              arg_t<vf_type> y,
                              _SCALAR_FUNC f);
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-            // convert to vhf_type i.e vec<float> hi, lo --> vec<double>
-            static
-            vhf_type
-            cvt_to_vhf(arg_t<vf_type> xh, arg_t<vf_type> xl);
-
-            // convert to vdf_type i.e. vec<double> --> d_real<vec<float> >
-            static
-            vdf_type
-            cvt_to_vdf(arg_t<vhf_type> x);
-
-#endif
             // unsigned integer __fmod
             template <unsigned _U>
             static
@@ -207,18 +180,6 @@ namespace cftal {
                           arg_t<vf_type> yl,
                           arg_t<vf_type> k);
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-            // return y*2^k
-            static
-            vhf_type
-            __mul_two_pow(arg_t<vhf_type> y, arg_t<vi_type> k);
-
-            // return y*2^k
-            static
-            vhf_type
-            __mul_two_pow(arg_t<vhf_type> y, arg_t<vhf_type> k);
-#endif
-
             // arguments are the reduced xrh, xrl in
             // [-log(2)/2, log(2)/2], and the argument
             // k as argument for __mul_two_pow
@@ -253,33 +214,6 @@ namespace cftal {
                         arg_t<vi_type> idx, arg_t<vi_type> ki,
                         vf_type* expl=nullptr);
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-            // arguments are the reduced xr in
-            // [-log(2)/2, log(2)/2], and the argument
-            // k as argument for __mul_two_pow
-            // x is the unreduced argument
-            // calculates %e^(xrh)*2^k - 1 if exp_m1 is true,
-            // %e^(xrh+xrl)*2^k otherwise
-            template <bool _EXP_M1>
-            static
-            vhf_type
-            __exp_k(arg_t<vhf_type> xr,
-                    arg_t<vhf_type> kfd, arg_t<vhf_type> x);
-
-            // calculates %e^xr for xr in [-log(2)/(2*N),
-            // log(2)/(2*N)], idx is the table index
-            static
-            vhf_type
-            __exp_tbl_k(arg_t<vhf_type> xr,
-                        arg_t<vi_type> idx);
-            // calculates 2^k*%e^xr for xr in [-log(2)/(2*N),
-            // log(2)/(2*N)], idx is the table index,
-            static
-            vhf_type
-            __exp_tbl_k(arg_t<vhf_type> xr,
-                        arg_t<vi_type> idx,
-                        arg_t<vi_type> k);
-#endif
             // argument reduction for %e^x and %e^x-1
             // return 2^k * (xrh + xrl) with xrh in
             // [-log(2)/2, log(2)/2] for calling __exp_k
@@ -324,33 +258,6 @@ namespace cftal {
                              arg_t<vf_type> xh,
                              arg_t<vf_type> xl);
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-            // argument reduction for %e^(x)
-            // return 2^k * (xr) with xr in
-            // [-log(2)/2, log(2)/2] for calling __exp_k
-            static
-            void
-            __reduce_exp_arg(vhf_type& xr,
-                             vhf_type& kf,
-                             arg_t<vhf_type> x);
-
-            // argument reduction for %e^(x)
-            // return 2^k * (xr) with xr in
-            // [-log(2)/(2*N), log(2)/(2*N)] for calling __exp_tbl_k
-            static
-            void
-            __reduce_exp_arg(vhf_type& xr,
-                             vi_type& idx,
-                             vi_type& k,
-                             arg_t<vhf_type> x);
-
-            // calculates %e^x-1 if exp_m1 == true %e^x otherwise
-            template <bool _EXP_M1>
-            static
-            vhf_type
-            exp_k(arg_t<vhf_type> x);
-
-#endif
             // calculates %e^x-1 if exp_m1 == true %e^x otherwise
             template <bool _EXP_M1>
             static
@@ -527,25 +434,6 @@ namespace cftal {
             vdf_type
             __log_tbl_k12(arg_t<vf_type> xc);
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-
-            enum log_func {
-                c_log_e,
-                c_log_2,
-                c_log_10
-            };
-
-            template <log_func _LFUNC>
-            static
-            vf_type
-            __log_k_d(arg_t<vf_type> xc);
-
-
-            template <log_func _LFUNC>
-            static
-            vhf_type
-            __log_k12_d(arg_t<vf_type> xc);
-#endif
             static
             vf_type
             __log1p_poly_k(arg_t<vf_type> x);
@@ -735,34 +623,6 @@ call_scalar_func(arg_t<vf_type> x, arg_t<vf_type> y, _SCALAR_FUNC f)
     }
     return r;
 }
-
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-
-template <typename _T>
-inline
-typename
-cftal::math::elem_func_core<float, _T>::vhf_type
-cftal::math::elem_func_core<float, _T>::
-cvt_to_vhf(arg_t<vf_type> xh, arg_t<vf_type> xl)
-{
-    return cvt<vhf_type>(xh) + cvt<vhf_type>(xl);
-}
-
-template <typename _T>
-inline
-typename
-cftal::math::elem_func_core<float, _T>::vdf_type
-cftal::math::elem_func_core<float, _T>::
-cvt_to_vdf(arg_t<vhf_type> x)
-{
-    vf_type xh=cvt<vf_type>(x);
-    vhf_type xhd=cvt<vhf_type>(xh);
-    vhf_type xld=x-xhd;
-    vf_type xl=cvt<vf_type>(xld);
-    return vdf_type(xh, xl);
-}
-
-#endif
 
 template <typename _T>
 template <unsigned _U>
@@ -1402,35 +1262,6 @@ __mul_two_pow(arg_t<vf_type> yh, arg_t<vf_type> yl, arg_t<vf_type> k)
     return __mul_two_pow(yh, yl, _T::cvt_f_to_i(k));
 }
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-
-template <typename _T>
-inline
-__attribute__((__always_inline__))
-typename cftal::math::elem_func_core<float, _T>::vhf_type
-cftal::math::elem_func_core<float, _T>::
-__mul_two_pow(arg_t<vhf_type> y, arg_t<vi_type> k)
-{
-    vi_type ep(k << 20);
-    vi2_type ir=combine_zeroeven_odd(ep);
-    vi2_type yi=as<vi2_type>(y) + ir;
-    vhf_type ys = as<vhf_type>(yi);
-    return ys;
-}
-
-template <typename _T>
-inline
-__attribute__((__always_inline__))
-typename cftal::math::elem_func_core<float, _T>::vhf_type
-cftal::math::elem_func_core<float, _T>::
-__mul_two_pow(arg_t<vhf_type> y, arg_t<vhf_type> kf)
-{
-    vi_type k=f64_traits::cvt_f_to_i(kf);
-    return __mul_two_pow(y, k);
-}
-
-#endif
-
 template <typename _T>
 template <bool _EXP_M1>
 inline
@@ -1630,98 +1461,6 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     return y;
 }
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-
-template <typename _T>
-template <bool _EXP_M1>
-typename cftal::math::elem_func_core<float, _T>::vhf_type
-cftal::math::elem_func_core<float, _T>::
-__exp_k(arg_t<vhf_type> xrd, arg_t<vhf_type> kfd,
-        arg_t<vhf_type> x)
-{
-    // [-0.3465735912322998046875, 0.3465735912322998046875] : | p - f | <= 2^-33.65625
-    // coefficients for exp generated by sollya
-    // x^0 : +0x8p-3
-    constexpr
-    const double exp_c0=+1.0000000000000000000000e+00;
-    // x^1 : +0x8p-3
-    constexpr
-    const double exp_c1=+1.0000000000000000000000e+00;
-    // x^2 : +0x8.000001d0d64b8p-4
-    constexpr
-    const double exp_c2=+5.0000000676426992196610e-01;
-    // x^3 : +0xa.aaaaa21b31aep-6
-    constexpr
-    const double exp_c3=+1.6666665869413577194535e-01;
-    // x^4 : +0xa.aaa46ec513648p-8
-    constexpr
-    const double exp_c4=+4.1666295092978318514998e-02;
-    // x^5 : +0x8.88938475a673p-10
-    constexpr
-    const double exp_c5=+8.3334970089822928140944e-03;
-    // x^6 : +0xb.6c679f8263a88p-13
-    constexpr
-    const double exp_c6=+1.3944648636194554528617e-03;
-    // x^7 : +0xc.f8452631b28p-16
-    constexpr
-    const double exp_c7=+1.9790352070606781476059e-04;
-    static_assert(exp_c0 == 1.0, "oops");
-    static_assert(exp_c1 == 1.0, "oops");
-
-    constexpr
-    static const double ci[]= {
-        exp_c7, exp_c6, exp_c5, exp_c4, exp_c3, exp_c2
-    };
-    vhf_type xrd2=xrd * xrd;
-    vhf_type yd= horner2(xrd, xrd2, ci)*xrd2 + xrd;
-    yd+= exp_c0;
-    yd=__mul_two_pow(yd, kfd);
-    if (_EXP_M1 == true) {
-        yd -= exp_c0;
-        yd= f64_traits::sel(abs(x) < 0x1p-25, x, yd);
-    }
-    return yd;
-}
-
-template <typename _T>
-typename cftal::math::elem_func_core<float, _T>::vhf_type
-cftal::math::elem_func_core<float, _T>::
-__exp_tbl_k(arg_t<vhf_type> xr, arg_t<vi_type> idx)
-{
-    auto lk=make_variable_lookup_table<double>(idx);
-    const auto& tbl=exp_data<double>::_tbl;
-    vhf_type th=lk.from(tbl._2_pow_i_n_h);
-
-    // [-1.0830424726009368896484375e-2, 1.0830424726009368896484375e-2] : | p - f | <= 2^-32.6875
-    // coefficients for exp generated by sollya
-    // x^1 : +0x8p-3
-    constexpr
-    const double exp_c1=+1.0000000000000000000000e+00;
-    // x^2 : +0x8.0003d76f37bf8p-4
-    constexpr
-    const double exp_c2=+5.0000366357879488798943e-01;
-    // x^3 : +0xa.aaac332fabb6p-6
-    constexpr
-    const double exp_c3=+1.6666703222898193725854e-01;
-    static_assert(exp_c1==1.0, "oops");
-    vhf_type x2=xr*xr;
-    vhf_type p= horner(xr, exp_c3, exp_c2);
-    vhf_type eh=xr + x2*p;
-    vhf_type yd=th + th*eh;
-    return yd;
-}
-
-template <typename _T>
-typename cftal::math::elem_func_core<float, _T>::vhf_type
-cftal::math::elem_func_core<float, _T>::
-__exp_tbl_k(arg_t<vhf_type> xr, arg_t<vi_type> idx, arg_t<vi_type> ki)
-{
-    vhf_type yd=__exp_tbl_k(xr, idx);
-    return __mul_two_pow(yd, ki);
-}
-
-#endif
-
 template <typename _T>
 inline
 void
@@ -1842,67 +1581,6 @@ __reduce_exp_arg(vf_type& xrh,
                      neg_kfln2h, neg_kfln2l);
 }
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-
-template <typename _T>
-void
-cftal::math::elem_func_core<float, _T>::
-__reduce_exp_arg(vhf_type& xr,
-                 vhf_type& kf,
-                 arg_t<vhf_type> xd)
-{
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    kf= rint(vhf_type(xd * ctbl::m_1_ln2[0]));
-    xr= xd - kf * ctbl::m_ln2[0];
-}
-
-template <typename _T>
-void
-cftal::math::elem_func_core<float, _T>::
-__reduce_exp_arg(vhf_type& xr,
-                 vi_type& idx,
-                 vi_type& k,
-                 arg_t<vhf_type> xd)
-{
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    static_assert(exp_data<double>::EXP_N==32,
-                 "exp_data<double>::EXP_N==32");
-    // N
-    const double _N=exp_data<double>::EXP_N;
-    // N/ln(2)
-    const double _32_ln2=_N * ctbl::m_1_ln2[0];
-    // ln2/N;
-    const double _ln2_32=ctbl::m_ln2[0] * (1.0/_N);
-    vhf_type kf= rint(vhf_type(xd * _32_ln2));
-    xr= xd - kf * _ln2_32;
-    vi_type ki=cvt<vi_type>(kf);
-    idx = ki & exp_data<double>::EXP_IDX_MASK;
-    k = ki >> exp_data<double>::EXP_SHIFT;
-}
-
-template <typename _T>
-template <bool _EXP_M1>
-inline
-typename cftal::math::elem_func_core<float, _T>::vhf_type
-cftal::math::elem_func_core<float, _T>::
-exp_k(arg_t<vhf_type> xc)
-{
-    vhf_type yd;
-    if (_EXP_M1==false) {
-        vi_type idx, ki;
-        vhf_type xrd;
-        __reduce_exp_arg(xrd, idx, ki, xc);
-        yd=__exp_tbl_k(xrd, idx, ki);
-    } else {
-        vhf_type xr, kf;
-        __reduce_exp_arg(xr, kf, xc);
-        yd=__exp_k<_EXP_M1>(xr, kf, xc);
-    }
-    return yd;
-}
-
-#endif
-
 template <typename _T>
 template <bool _EXP_M1>
 inline
@@ -1911,10 +1589,6 @@ cftal::math::elem_func_core<float, _T>::
 exp_k(arg_t<vf_type> xc)
 {
     vf_type y;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-    vhf_type yd=exp_k<_EXP_M1>(cvt<vhf_type>(xc));
-    y=cvt<vf_type>(yd);
-#else
     // float vector only code
     vf_type xrh, xrl;
     if (_EXP_M1==false) {
@@ -1932,7 +1606,6 @@ exp_k(arg_t<vf_type> xc)
         __reduce_exp_arg(xrh, xrl, kf, xc);
         y=__exp_k<_EXP_M1>(xrh, xrl, kf, xc);
     }
-#endif
     return y;
 }
 
@@ -1955,13 +1628,6 @@ cftal::math::elem_func_core<float, _T>::
 exp_mx2_k(arg_t<vf_type> xc)
 {
     vf_type y;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    vhf_type xd=cvt<vhf_type>(xc);
-    vhf_type x2d=-xd*xd;
-    vhf_type yd=exp_k<false>(x2d);
-    vf_type x2h=cvt<vf_type>(x2d);
-    y=cvt<vf_type>(yd);
-#else
     vf_type x2h, x2l;
     if (d_real_traits<vf_type>::fma==true) {
         d_ops::mul12(x2h, x2l, xc, -xc);
@@ -1974,7 +1640,6 @@ exp_mx2_k(arg_t<vf_type> xc)
     vi_type idx, ki;
     __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
     y=__exp_tbl_k(xrh, xrl, idx, ki);
-#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp_lo_zero(), y);
     return y;
@@ -1988,14 +1653,6 @@ exp_px2_k(arg_t<vf_type> xc)
 {
     vf_type y;
     using fc_t = math::func_constants<float>;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    vhf_type xd=cvt<vhf_type>(xc);
-    vhf_type x2d=xd*xd;
-    vhf_type yd=exp_k<false>(x2d);
-    vf_type x2h=cvt<vf_type>(x2d);
-    y=cvt<vf_type>(yd);
-    y= _T::sel(x2h > fc_t::exp_hi_inf(), _T::pinf(), y);
-#else
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
     vmf_type border_case = (x2h == fc_t::exp_hi_inf()) &
@@ -2009,7 +1666,6 @@ exp_px2_k(arg_t<vf_type> xc)
     __reduce_exp_arg(xrh, xrl, idx, ki, x2h, x2l);
     y=__exp_tbl_k(xrh, xrl, idx, ki);
     y= _T::sel(x2h >= fc_t::exp_hi_inf(), _T::pinf(), y);
-#endif
     return y;
 }
 
@@ -2080,13 +1736,6 @@ cftal::math::elem_func_core<float, _T>::
 exp2_k(arg_t<vf_type> x)
 {
     vf_type y;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vhf_type xd=cvt<vhf_type>(x);
-    xd *= ctbl::m_ln2[0];
-    vhf_type yd=exp_k<_EXP2_M1>(xd);
-    y=cvt<vf_type>(yd);
-#else
     vf_type xrh, xrl;
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     if (_EXP2_M1==false) {
@@ -2100,7 +1749,6 @@ exp2_k(arg_t<vf_type> x)
         d_ops::mul122(xrh, xrl, xr, ctbl::m_ln2[0], ctbl::m_ln2[1]);
         y=__exp_k<_EXP2_M1>(xrh, xrl, kf, x*ctbl::m_ln2[0]);
     }
-#endif
     return y;
 }
 
@@ -2111,15 +1759,6 @@ cftal::math::elem_func_core<float, _T>::
 exp2_mx2_k(arg_t<vf_type> xc)
 {
     vf_type y;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vhf_type x2d=cvt<vhf_type>(xc);
-    x2d *= -x2d;
-    vf_type x2h=cvt<vf_type>(x2d);
-    x2d *= ctbl::m_ln2[0];
-    vhf_type yd=exp_k<false>(x2d);
-    y=cvt<vf_type>(yd);
-#else
     vf_type x2h, x2l;
     if (d_real_traits<vf_type>::fma==true) {
         d_ops::mul12(x2h, x2l, xc, -xc);
@@ -2133,7 +1772,6 @@ exp2_mx2_k(arg_t<vf_type> xc)
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
     y=__exp_tbl_k(xrh, xrl, idx, ki);
-#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp2_lo_zero(), y);
     return y;
@@ -2146,15 +1784,6 @@ cftal::math::elem_func_core<float, _T>::
 exp2_px2_k(arg_t<vf_type> xc)
 {
     vf_type y;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vhf_type x2d=cvt<vhf_type>(xc);
-    x2d *= x2d;
-    vf_type x2h=cvt<vf_type>(x2d);
-    x2d *= ctbl::m_ln2[0];
-    vhf_type yd=exp_k<false>(x2d);
-    y=cvt<vf_type>(yd);
-#else
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
 
@@ -2162,7 +1791,6 @@ exp2_px2_k(arg_t<vf_type> xc)
     vi_type idx, ki;
     __reduce_exp2_arg(xrh, xrl, idx, ki, x2h, x2l);
     y=__exp_tbl_k(xrh, xrl, idx, ki);
-#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp2_hi_inf(), _T::pinf(), y);
     return y;
@@ -2254,13 +1882,6 @@ cftal::math::elem_func_core<float, _T>::
 exp10_k(arg_t<vf_type> x)
 {
     vf_type y;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vhf_type xd=cvt<vhf_type>(x);
-    xd *= ctbl::m_ln10[0];
-    vhf_type yd=exp_k<_EXP10_M1>(xd);
-    y=cvt<vf_type>(yd);
-#else
     vf_type xrh, xrl;
     if (_EXP10_M1==false) {
         vi_type idx, ki;
@@ -2280,7 +1901,6 @@ exp10_k(arg_t<vf_type> x)
         // d_ops::add12(xrh, xrl, xrh, xrl);
         y=__exp_k<_EXP10_M1>(xrh, xrl, kf, x*ctbl::m_ln10[0]);
     }
-#endif
     return y;
 }
 
@@ -2291,15 +1911,6 @@ cftal::math::elem_func_core<float, _T>::
 exp10_mx2_k(arg_t<vf_type> xc)
 {
     vf_type y;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vhf_type x2d=cvt<vhf_type>(xc);
-    x2d *= -x2d;
-    vf_type x2h=cvt<vf_type>(x2d);
-    x2d *= ctbl::m_ln10[0];
-    vhf_type yd=exp_k<false>(x2d);
-    y=cvt<vf_type>(yd);
-#else
     vf_type x2h, x2l;
     if (d_real_traits<vf_type>::fma==true) {
         d_ops::mul12(x2h, x2l, xc, -xc);
@@ -2313,7 +1924,6 @@ exp10_mx2_k(arg_t<vf_type> xc)
     vi_type idx, ki;
     __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
     y=__exp_tbl_k(xrh, xrl, idx, ki);
-#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel_zero_or_val(x2h <= fc_t::exp10_lo_zero(), y);
     return y;
@@ -2326,15 +1936,6 @@ cftal::math::elem_func_core<float, _T>::
 exp10_px2_k(arg_t<vf_type> xc)
 {
     vf_type y;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    using ctbl = impl::d_real_constants<d_real<double>, double>;
-    vhf_type x2d=cvt<vhf_type>(xc);
-    x2d *= x2d;
-    vf_type x2h=cvt<vf_type>(x2d);
-    x2d *= ctbl::m_ln10[0];
-    vhf_type yd=exp_k<false>(x2d);
-    y=cvt<vf_type>(yd);
-#else
     vf_type x2h, x2l;
     d_ops::sqr12(x2h, x2l, xc);
 
@@ -2342,7 +1943,6 @@ exp10_px2_k(arg_t<vf_type> xc)
     vi_type idx, ki;
     __reduce_exp10_arg(xrh, xrl, idx, ki, x2h, x2l);
     y=__exp_tbl_k(xrh, xrl, idx, ki);
-#endif
     using fc_t = math::func_constants<float>;
     y= _T::sel(x2h >= fc_t::exp10_hi_inf(), _T::pinf(), y);
     return y;
@@ -2907,162 +2507,6 @@ __log_tbl_k12(arg_t<vf_type> xc)
     return vdf_type(lh, ll);
 }
 
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-
-template <typename _T>
-template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC>
-inline
-typename cftal::math::elem_func_core<float, _T>::vf_type
-cftal::math::elem_func_core<float, _T>::
-__log_k_d(arg_t<vf_type> xc)
-{
-    vf_type xr;
-    vi_type ki=__reduce_log_arg(xr, xc);
-    vf_type r;
-    r = xr - 1.0f;
-#if 1
-    // [-0.292893230915069580078125, 0.41421353816986083984375] : | p - f | <= 2^-29.390625
-    // coefficients for log generated by sollya
-    // x^1 : +0xf.fffffffd3046p-4
-    constexpr
-    const double log_c1=+9.9999999995908828154256e-01;
-    // x^2 : -0xf.ffffc1217c6bp-5
-    constexpr
-    const double log_c2=-4.9999988289699837107349e-01;
-    // x^3 : +0xa.aaaa83416f8a8p-5
-    constexpr
-    const double log_c3=+3.3333325992451651176296e-01;
-    // x^4 : -0x8.002145c45f9fp-5
-    constexpr
-    const double log_c4=-2.5001586557754140738297e-01;
-    // x^5 : +0xc.cd1f5e066525p-6
-    constexpr
-    const double log_c5=+2.0001968557478938537386e-01;
-    // x^6 : -0xa.a1387ca90d9cp-6
-    constexpr
-    const double log_c6=-1.6609012769569075906873e-01;
-    // x^7 : +0x9.138d3cd84f5p-6
-    constexpr
-    const double log_c7=+1.4181834165468831798762e-01;
-    // x^8 : -0x8.79cf021e5c7e8p-6
-    constexpr
-    const double log_c8=-1.3243460852522295767564e-01;
-    // x^9 : +0x8.424ce7ea5f5b8p-6
-    constexpr
-    const double log_c9=+1.2904665611266860625328e-01;
-    // x^10 : -0x9.c14a282383dep-7
-    constexpr
-    const double log_c10=-7.6211232756604851967808e-02;
-    constexpr
-    static const double ci[]={
-        log_c10,
-        log_c9, log_c8, log_c7, log_c6,
-        log_c5, log_c4, log_c3, log_c2, log_c1
-    };
-    vhf_type rd= cvt<vhf_type>(r);
-    vhf_type r2d=rd*rd;
-    vhf_type pd=horner2(rd, r2d, ci);
-    vhf_type kf=cvt<vhf_type>(ki);
-    vhf_type ll=rd*pd;
-#else
-
-    vf_type r2= r*r;
-    vhf_type rd= cvt<vhf_type>(r);
-    vhf_type r2d=rd*rd;
-    vf_type p = __log_poly_k_poly(r, r2);
-    vhf_type pd= cvt<vhf_type>(p);
-
-    vhf_type ll=(rd - 0.5 * r2d) + r2d* (rd*pd);
-    vhf_type kf=cvt<vhf_type>(ki);
-#endif
-    vhf_type lh;
-    using ctbl=impl::d_real_constants<d_real<double>, double>;
-    if (_LFUNC==log_func::c_log_e) {
-        lh = (kf * ctbl::m_ln2[0]) + ll;
-    } else if (_LFUNC==log_func::c_log_2) {
-        lh = kf + ll * ctbl::m_1_ln2[0];
-    } else if (_LFUNC==log_func::c_log_10) {
-        lh = kf * ctbl::m_lg2[0] + ll * ctbl::m_1_ln10[0];
-    }
-    return cvt<vf_type>(lh);
-}
-
-template <typename _T>
-template <typename cftal::math::elem_func_core<float, _T>::log_func _LFUNC>
-inline
-typename cftal::math::elem_func_core<float, _T>::vhf_type
-cftal::math::elem_func_core<float, _T>::
-__log_k12_d(arg_t<vf_type> xc)
-{
-    vf_type xr;
-    vi_type ki=__reduce_log_arg(xr, xc);
-    vf_type r;
-    r = xr - 1.0f;
-
-    // [-0.292893230915069580078125, 0.41421353816986083984375] : | p - f | <= 2^-34.65625
-    // coefficients for log generated by sollya
-    // x^1 : +0x8p-3
-    constexpr
-    const double log_c1=+1.0000000000000000000000e+00;
-    // x^2 : -0x8.000000c3473cp-4
-    constexpr
-    const double log_c2=-5.0000000284167267494695e-01;
-    // x^3 : +0xa.aaaaa36a67dbp-5
-    constexpr
-    const double log_c3=+3.3333331982725711295501e-01;
-    // x^4 : -0xf.fffd6786b4f1p-6
-    constexpr
-    const double log_c4=-2.4999938116054837289326e-01;
-    // x^5 : +0xc.ccd0d882e603p-6
-    constexpr
-    const double log_c5=+2.0000096458133514998323e-01;
-    // x^6 : -0xa.ab4437fb0c538p-6
-    constexpr
-    const double log_c6=-1.6670327631817835611905e-01;
-    // x^7 : +0x9.24919a40f1ebp-6
-    constexpr
-    const double log_c7=+1.4285697997891472210696e-01;
-    // x^8 : -0xf.e3600a9c1c398p-7
-    constexpr
-    const double log_c8=-1.2412643926674764294216e-01;
-    // x^9 : +0xe.1b644643830a8p-7
-    constexpr
-    const double log_c9=+1.1021092825742358212171e-01;
-    // x^10 : -0xd.ea0bac440641p-7
-    constexpr
-    const double log_c10=-1.0870500480091219164258e-01;
-    // x^11 : +0xd.bb064f4d63e08p-7
-    constexpr
-    const double log_c11=+1.0727003929312585450706e-01;
-    // x^12 : -0xf.58521b5ab5cd8p-8
-    constexpr
-    const double log_c12=-5.9941417387299376906551e-02;
-    static_assert(log_c1 == 1.0, "constraint violated");
-
-    static const double ci[]={
-        log_c12, log_c11, log_c10,
-        log_c9, log_c8, log_c7, log_c6,
-        log_c5, log_c4, log_c3, log_c2
-    };
-    vhf_type rd= cvt<vhf_type>(r);
-    vhf_type r2d=rd*rd;
-    vhf_type kf=cvt<vhf_type>(ki);
-    vhf_type pd=horner2(rd, r2d, ci);
-
-    vhf_type ll=rd + r2d*pd;
-    vhf_type lh;
-    using ctbl=impl::d_real_constants<d_real<double>, double>;
-    if (_LFUNC==log_func::c_log_e) {
-        lh = (kf * ctbl::m_ln2[0]) + ll;
-    } else if (_LFUNC==log_func::c_log_2) {
-        lh = kf + ll * ctbl::m_1_ln2[0];
-    } else if (_LFUNC==log_func::c_log_10) {
-        lh = kf * ctbl::m_lg2[0] + ll * ctbl::m_1_ln10[0];
-    }
-    return lh;
-}
-#endif
-
 template <typename _T>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
@@ -3135,12 +2579,8 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log_k(arg_t<vf_type> xc)
 {
-#if 0 // __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    return __log_k_d<log_func::c_log_e>(xc);
-#else
     // return __log_tbl_k<log_func::c_log_e>(xc);
     return __log_poly_k(xc);
-#endif
 }
 
 template <typename _T>
@@ -3149,9 +2589,6 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log2_k(arg_t<vf_type> xc)
 {
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    return __log_k_d<log_func::c_log_2>(xc);
-#else
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
@@ -3194,7 +2631,6 @@ log2_k(arg_t<vf_type> xc)
     d_ops::add12(res, t, kf, l0);
     res += t +(l1+l2+l3);
     return res;
-#endif
 }
 
 template <typename _T>
@@ -3203,9 +2639,6 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 log10_k(arg_t<vf_type> xc)
 {
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    return __log_k_d<log_func::c_log_10>(xc);
-#else
     vf_type xr;
     vi_type ki=__reduce_log_arg(xr, xc);
     vf_type kf=_T::cvt_i_to_f(ki);
@@ -3250,7 +2683,6 @@ log10_k(arg_t<vf_type> xc)
     d_ops::add12(res, t, kf*ctbl::m_lg2_cw[0], l0);
     res += (t +(l1+l2+l3)) + kf * ctbl::m_lg2_cw[1];
     return res;
-#endif
 }
 
 template <typename _T>
@@ -3259,24 +2691,6 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    vhf_type yd=cvt<vhf_type>(y);
-    vhf_type ylnx=yd*__log_k12_d<log_func::c_log_e>(abs(x));
-    vi_type idx, ki;
-    vhf_type xrd;
-    __reduce_exp_arg(xrd, idx, ki, ylnx);
-    vhf_type rd=__exp_tbl_k(xrd, idx, ki);
-    vf_type r=cvt<vf_type>(rd);
-    using fc=func_constants<float>;
-    const vf_type d= cvt<vf_type>(ylnx);
-    constexpr
-    const float exp_hi_inf= fc::exp_hi_inf();
-    constexpr
-    const float exp_lo_zero= fc::exp_lo_zero();
-    r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
-    r = _T::sel(d >= exp_hi_inf, _T::pinf(), r);
-    return r;
-#else
     vf_type abs_x= abs(x);
     vdf_type lnx= __log_tbl_k12(abs_x);
     vdf_type ylnx;
@@ -3307,7 +2721,6 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
                                ((~abs_x_lt_1) & (~y_gt_1))),
                               res);
     return res;
-#endif
 }
 
 template <typename _T>
@@ -3337,30 +2750,6 @@ typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
 powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
 {
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__>0
-    vhf_type lnx=__log_k12_d<log_func::c_log_e>(abs(x));
-    vhf_type yd=cvt<vhf_type>(e);
-    vhf_type ylnx;
-    if (_CALC_ROOT==true) {
-        ylnx = lnx/yd;
-    } else {
-        ylnx = lnx*yd;
-    }
-    vi_type idx, ki;
-    vhf_type xrd;
-    __reduce_exp_arg(xrd, idx, ki, ylnx);
-    vhf_type rd=__exp_tbl_k(xrd, idx, ki);
-    vf_type r=cvt<vf_type>(rd);
-    using fc=func_constants<float>;
-    const vf_type d= cvt<vf_type>(ylnx);
-    constexpr
-    const float exp_hi_inf= fc::exp_hi_inf();
-    constexpr
-    const float exp_lo_zero= fc::exp_lo_zero();
-    r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
-    r = _T::sel(d >= exp_hi_inf, _T::pinf(), r);
-    return r;
-#else
     vf_type abs_x= abs(x);
     vdf_type lnx= __log_tbl_k12(abs_x);
     vi_type eh=e & 0xffff0000, el= e - eh;
@@ -3390,7 +2779,6 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     res = _T::sel_zero_or_val(d <= exp_lo_zero, res);
     res = _T::sel(d >= exp_hi_inf, _T::pinf(), res);
     return res;
-#endif
 }
 
 template <typename _T>
