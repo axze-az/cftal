@@ -762,60 +762,6 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     vf_type xa=abs(x);
     // using lanczos_ratfunc=lanczos_table_g_5_59172_N6;
     using lanczos_ratfunc=lanczos_table_g_4_35169_N5;
-#if __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
-    vhf_type xd=cvt<vhf_type>(x);
-    vhf_type xad=abs(xd);
-    vhf_type pqd=lanczos_rational_at(xad,
-                                     lanczos_ratfunc::p,
-                                     lanczos_ratfunc::q);
-    vhf_type sum = pqd;
-    vhf_type base = xad + lanczos_ratfunc::gm0_5();
-    vhf_type z = xad - 0.5;
-
-    // using f64_core = spec_func_core<double, typename _T::vhf_traits>;
-    vhf_type g = f64_core::template exp_k<false>(-base);
-    g = g * sum;
-    if (_T::any_of_vmf(x_lt_zero)) {
-        vhf_type s;
-        f64_core::sinpi_cospi_k(xad, &s, nullptr);
-        using ctbl = impl::d_real_constants<d_real<double>, double>;
-        vhf_type q = xad * g;
-        const vhf_type p= -ctbl::m_pi[0];
-        q = q * s;
-        // auto qh=base_type::cvt_to_vdf(q);
-        // q = base_type::cvt_to_vhf(qh[0], qh[1]);
-        vhf_type gn= p/q;
-        auto x_lt_z= xd < 0.0;
-        g = _T::vhf_traits::sel(x_lt_z, gn, g);
-        z = _T::vhf_traits::sel(x_lt_z, -z, z);
-    }
-    auto abase = abs(base);
-
-    vhf_type lnx=f64_core::log_k(abase);
-    vhf_type ylnx=lnx*z;
-    vhf_type xrh, xrl;
-    vi_type idx, ki;
-    f64_core::__reduce_exp_arg(xrh, xrl, idx, ki, ylnx);
-    vhf_type p=f64_core::template
-        __exp_tbl_k<f64_core::result_prec::normal>(xrh, xrl, idx);
-#if 1
-    vi_type ep(ki << 20);
-    typename f64_traits::vi2_type ir=combine_zeroeven_odd(ep);
-    typename f64_traits::vi2_type pi=as<
-        typename f64_traits::vi2_type>(p) + ir;
-    p = as<vhf_type>(pi);
-    g*= p;
-    vf_type gh=cvt<vf_type>(g);
-#else
-    auto sc=base_type::__scale_exp_k(ki);
-    // multiplication before scaling:
-    g *= p;
-    // scale at the end after the conversion
-    vf_type gh=cvt<vf_type>(g);
-    gh *= sc.f0();
-    gh *= sc.f1();
-#endif
-#else
     auto pq=lanczos_rational_at(xa,
                                 lanczos_ratfunc::pdf,
                                 lanczos_ratfunc::qf);
@@ -853,7 +799,6 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     const auto& sc=p_sc.second;
     gh *= sc.f0();
     gh *= sc.f1();
-#endif
     gh = _T::sel(xa < 0x1p-24f, 1.0f/x, gh);
     return gh;
 }

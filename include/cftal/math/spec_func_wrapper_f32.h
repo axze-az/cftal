@@ -27,7 +27,7 @@
 #include <cftal/math/func_traits_f64_s32.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
 
-#define __CFTAL_CFG_USE_VF64_FOR_VF32_J0__ 1
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_TGAMMA__ 1
 
 namespace cftal {
     namespace math {
@@ -47,9 +47,31 @@ namespace cftal {
             using vmhf_type = typename f64_traits::vmf_type;
             using vi2_type = typename f64_traits::vi2_type;
             using vmi2_type = typename f64_traits::vmi2_type;
+
+#if  __CFTAL_CFG_USE_VF64_FOR_VF32_TGAMMA__>0
+            static
+            vf_type
+            tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_0);
+#endif
        };
     }
 }
+
+#if  __CFTAL_CFG_USE_VF64_FOR_VF32_TGAMMA__>0
+template <typename _T>
+inline
+typename cftal::math::spec_func_wrapper<float, _T>::vf_type
+cftal::math::spec_func_wrapper<float, _T>::
+tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_0)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vmi_type x_lt_0_i=_T::vmf_to_vmi(x_lt_0);
+    vmhf_type x_lt_0_d= f64_traits::vmi_to_vmf(x_lt_0_i);
+    vmhf_type rd=f64_core::tgamma_k(xd, x_lt_0_d);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
+#endif
 
 #endif // __CFTAL_CFG_USE_VF64_FOR_VF32__
 #endif // __CFTAL_MATH_SPEC_FUNC_WRAPPER_F32_H__
