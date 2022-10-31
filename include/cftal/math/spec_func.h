@@ -26,11 +26,22 @@ namespace cftal {
 
     namespace math {
 
-
+        // core implementation of special
+        // functions exports j0_k, j1_k ...
+        // must be specialized for different _FLOAT_T
         template <typename _FLOAT_T, typename _TRAITS_T>
         struct spec_func_core {
             // specializations contain the implementation of
             // special functions
+        };
+
+        // low precision core implementation of special
+        // functions
+        // may be specialized for different _FLOAT_T
+        // precision should be high enough to return faithfully
+        // rounded result for the next shorter float type
+        template <typename _FLOAT_T, typename _TRAITS_T>
+        struct spec_func_loprec_core {
         };
 
         // wrapper for core implementation of special

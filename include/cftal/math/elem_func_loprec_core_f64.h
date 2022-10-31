@@ -1,4 +1,3 @@
-
 //
 // Copyright (C) 2010-2022 Axel Zeuner
 //
@@ -17,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #if !defined (__CFTAL_MATH_ELEM_FUNC_LOPREC_CORE_F64_H__)
-#define __CFTAL_MATH_ELEM_FUNC_CORE_LOPREC_F64_H__ 1
+#define __CFTAL_MATH_ELEM_FUNC_LOPREC_CORE_F64_H__ 1
 
 // This code uses code from sun libm:
 /*
