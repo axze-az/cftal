@@ -32,7 +32,7 @@ int main(int argc, char** argv)
             mpfr_cache::use(mpfr_gamma, "tgamma", 0.0);
         }
     }
-    const int ulp=12;
+    const int ulp=1;
     const int _N=8;
     bool rc=true;
 
