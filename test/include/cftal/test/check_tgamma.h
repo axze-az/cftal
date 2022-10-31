@@ -47,7 +47,7 @@ namespace cftal {
                 return std::tgamma(a);
             }
             static
-            const char* fname() { return "gamma"; }
+            const char* fname() { return "tgamma"; }
         };
 
     }
