@@ -124,7 +124,7 @@ tgamma_k(arg_t<vf_type> x, arg_t<vmf_type> x_lt_zero)
     vf_type z = xa - 0.5;
 
     // using f64_core = spec_func_core<double, typename _T::vhf_traits>;
-    vf_type g = f64_core::template exp_k<false>(-base);
+    vf_type g = base_type::template exp_k<false>(-base);
     g = g * sum;
     if (_T::any_of_vmf(x_lt_zero)) {
         vf_type s;
@@ -267,6 +267,7 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
+__attribute__((__force_inline__))
 typename cftal::math::spec_func_loprec_core<double, _T>::vf_type
 cftal::math::spec_func_loprec_core<double, _T>::
 lgamma_k(arg_t<vf_type> x, vi_type* signp)
