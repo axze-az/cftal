@@ -281,6 +281,8 @@ lgamma_k(arg_t<vf_type> x, vi_type* signp)
     constexpr const double x_large= 0x1p25;
 
     reduced_small_gamma_args sst;
+    // note the calls to f64_core::log_k are required,
+    // base_type::template __log_k<..::c_log_e> is not precise enough
 
     // the reflection implementation below works only if the
     // reflection for really tiny values is delegated to __lgamma_small_k
