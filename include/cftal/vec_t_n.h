@@ -279,6 +279,13 @@ namespace cftal {
     vec<_T, 16>
     permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1);
 
+    // permutation of one vector using indices in idx
+    // idx<0 means set the element to zero
+    template <typename _T, size_t _N>
+    vec<_T, _N>
+    permute(const vec<_T, _N>& v,
+            const vec<int32_t, _N>& idx);
+
     // helper function for even_elements, odd_elements: returns even
     // elements in low half, odd elements in high half
     template <typename _T>
@@ -1322,6 +1329,51 @@ cftal::permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1)
     vec<_T, 16> r( ri | rj);
     return r;
 }
+
+template <typename _T, cftal::size_t _N>
+cftal::vec<_T, _N>
+cftal::permute(const vec<_T, _N>& v, const vec<int32_t, _N>& idx)
+{
+    using idx_t=vec<int32_t, _N>;
+    using idx_msk_t=typename vec<int32_t, _N>::mask_type;
+    using v_t=vec<_T, 1>;
+    const idx_t il=low_half(idx);
+    const idx_t ih=high_half(idx);
+    const v_t vl=low_half(v);
+    const v_t vh=high_half(v);
+
+    constexpr const int32_t _N2=_N/2;
+    const int32_t minus1(-1);
+
+    // low half:
+    idx_t il_minus_N2=il-_N2;
+    // rll: elements for low half from low half or zero
+    idx_msk_t m_ill=il < _N2;
+    idx_t ill=select(m_ill, il, minus1);
+    v_t rll=permute(vl, ill);
+    // rlh: elements for low half from high half or zero
+    idx_msk_t m_ilh=il > _N2;
+    idx_t ilh=select(m_ilh, il_minus_N2, minus1);
+    v_t rlh=permute(vh, ilh);
+    // elements for low half
+    v_t rl=rll|rlh;
+
+    // high half:
+    idx_t ih_minus_N2=ih-_N2;
+    // rhl: elements for high half from low half or zero
+    idx_msk_t m_ihl=ih < _N2;
+    idx_t ihl=select(m_ihl, ih, minus1);
+    v_t rhl=permute(vl, ihl);
+    // rlh: elements for high half from high half or zero
+    idx_msk_t m_ihh=il > _N2;
+    idx_t ihh=select(m_ihh, ih_minus_N2, minus1);
+    v_t rhh=permute(vh, ihh);
+    // elements for high half
+    v_t rh=rhl|rhh;
+
+    return vec<_T, _N>(rl, rh);
+}
+
 
 template <typename _T>
 cftal::vec<_T, 4>
