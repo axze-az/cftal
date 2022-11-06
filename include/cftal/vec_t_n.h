@@ -27,6 +27,7 @@
 #include <cftal/impl/masks.h>
 #include <cftal/type_traits.h>
 #include <iosfwd>
+#include <iostream>
 #include <algorithm>
 
 
@@ -1352,7 +1353,7 @@ cftal::permute(const vec<_T, _N>& v, const vec<int32_t, _N>& idx)
     idx_t ill=select(m_ill, il, minus1);
     v_t rll=permute(vl, ill);
     // rlh: elements for low half from high half or zero
-    idx_msk_t m_ilh=il > _N2;
+    idx_msk_t m_ilh=il >= _N2;
     idx_t ilh=select(m_ilh, il_minus_N2, minus1);
     v_t rlh=permute(vh, ilh);
     // elements for low half
@@ -1365,15 +1366,13 @@ cftal::permute(const vec<_T, _N>& v, const vec<int32_t, _N>& idx)
     idx_t ihl=select(m_ihl, ih, minus1);
     v_t rhl=permute(vl, ihl);
     // rlh: elements for high half from high half or zero
-    idx_msk_t m_ihh=il > _N2;
+    idx_msk_t m_ihh=ih >= _N2;
     idx_t ihh=select(m_ihh, ih_minus_N2, minus1);
     v_t rhh=permute(vh, ihh);
     // elements for high half
     v_t rh=rhl|rhh;
-
     return vec<_T, _N>(rl, rh);
 }
-
 
 template <typename _T>
 cftal::vec<_T, 4>
