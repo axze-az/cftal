@@ -282,10 +282,17 @@ namespace cftal {
 
     // permutation of one vector using indices in idx
     // idx<0 means set the element to zero
-    template <typename _T, size_t _N>
-    vec<_T, _N>
+    template <typename _T, typename _I, size_t _N>
+    std::enable_if_t<std::is_signed_v<_I>, vec<_T, _N>>
     permute(const vec<_T, _N>& v,
-            const vec<int32_t, _N>& idx);
+            const vec<_I, _N>& idx);
+
+    // permutation of two vector using indices in idx
+    // idx<0 means set the element to zero
+    template <typename _T, typename _I, size_t _N>
+    std::enable_if_t<std::is_signed_v<_I>, vec<_T, _N>>
+    permute(const vec<_T, _N>& vl, const vec<_T, _N>& vh,
+            const vec<_I, _N>& idx);
 
     // helper function for even_elements, odd_elements: returns even
     // elements in low half, odd elements in high half
@@ -1331,48 +1338,46 @@ cftal::permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1)
     return r;
 }
 
-template <typename _T, cftal::size_t _N>
-cftal::vec<_T, _N>
-cftal::permute(const vec<_T, _N>& v, const vec<int32_t, _N>& idx)
+template <typename _T, typename _I, cftal::size_t _N>
+std::enable_if_t<std::is_signed_v<_I>, cftal::vec<_T, _N>>
+cftal::permute(const vec<_T, _N>& vl,
+               const vec<_T, _N>& vh,
+               const vec<_I, _N>& idx)
+{
+    using idx_t=vec<_I, _N>;
+    using idx_msk_t=typename vec<_I, _N>::mask_type;
+    using v_t=vec<_T, _N>;
+    const idx_t minus1(_I(-1));
+    idx_t idx_minus_N=idx-_N;
+    // rl: elements from vl or zero
+    idx_msk_t m_il=idx < _N;
+    idx_t il=select(m_il, idx, minus1);
+    v_t rl=permute(vl, il);
+    // rh: elements from vh or zero
+    // idx_msk_t m_ih=idx >= _N;
+    // idx_t ih=select(m_ih, idx_minus_N, minus1);
+    idx_t ih=select(m_il, minus1, idx_minus_N);
+    v_t rh=permute(vh, ih);
+    // combine vectors
+    v_t r=rl|rh;
+    return r;
+}
+
+template <typename _T, typename _I, cftal::size_t _N>
+std::enable_if_t<std::is_signed_v<_I>, cftal::vec<_T, _N>>
+cftal::permute(const vec<_T, _N>& v, const vec<_I, _N>& idx)
 {
     constexpr const int32_t _N2=_N/2;
-    using idx_t=vec<int32_t, _N2>;
-    using idx_msk_t=typename vec<int32_t, _N2>::mask_type;
+    using idx_t=vec<_I, _N2>;
     using v_t=vec<_T, _N2>;
     const idx_t il=low_half(idx);
     const idx_t ih=high_half(idx);
     const v_t vl=low_half(v);
     const v_t vh=high_half(v);
-
-    const idx_t minus1(-1);
-
-    // low half:
-    idx_t il_minus_N2=il-_N2;
-    // rll: elements for low half from low half or zero
-    idx_msk_t m_ill=il < _N2;
-    idx_t ill=select(m_ill, il, minus1);
-    v_t rll=permute(vl, ill);
-    // rlh: elements for low half from high half or zero
-    // idx_msk_t m_ilh=il >= _N2;
-    // idx_t ilh=select(m_ilh, il_minus_N2, minus1);
-    idx_t ilh=select(m_ill, minus1, il_minus_N2);
-    v_t rlh=permute(vh, ilh);
-    // elements for low half
-    v_t rl=rll|rlh;
-
-    // high half:
-    idx_t ih_minus_N2=ih-_N2;
-    // rhl: elements for high half from low half or zero
-    idx_msk_t m_ihl=ih < _N2;
-    idx_t ihl=select(m_ihl, ih, minus1);
-    v_t rhl=permute(vl, ihl);
-    // rlh: elements for high half from high half or zero
-    // idx_msk_t m_ihh=ih >= _N2;
-    // idx_t ihh=select(m_ihh, ih_minus_N2, minus1);
-    idx_t ihh=select(m_ihl, minus1, ih_minus_N2);
-    v_t rhh=permute(vh, ihh);
+    // elements for low half:
+    v_t rl=permute(vl, vh, il);
     // elements for high half
-    v_t rh=rhl|rhh;
+    v_t rh=permute(vl, vh, ih);
     return vec<_T, _N>(rl, rh);
 }
 
