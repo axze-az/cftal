@@ -1334,15 +1334,15 @@ template <typename _T, cftal::size_t _N>
 cftal::vec<_T, _N>
 cftal::permute(const vec<_T, _N>& v, const vec<int32_t, _N>& idx)
 {
-    using idx_t=vec<int32_t, _N>;
-    using idx_msk_t=typename vec<int32_t, _N>::mask_type;
-    using v_t=vec<_T, 1>;
+    constexpr const int32_t _N2=_N/2;
+    using idx_t=vec<int32_t, _N2>;
+    using idx_msk_t=typename vec<int32_t, _N2>::mask_type;
+    using v_t=vec<_T, _N2>;
     const idx_t il=low_half(idx);
     const idx_t ih=high_half(idx);
     const v_t vl=low_half(v);
     const v_t vh=high_half(v);
 
-    constexpr const int32_t _N2=_N/2;
     const int32_t minus1(-1);
 
     // low half:
