@@ -1343,7 +1343,7 @@ cftal::permute(const vec<_T, _N>& v, const vec<int32_t, _N>& idx)
     const v_t vl=low_half(v);
     const v_t vh=high_half(v);
 
-    const int32_t minus1(-1);
+    const idx_t minus1(-1);
 
     // low half:
     idx_t il_minus_N2=il-_N2;
