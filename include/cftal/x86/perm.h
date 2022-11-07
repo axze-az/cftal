@@ -27,6 +27,30 @@ namespace cftal {
 
     namespace x86 {
 
+	// permute s8/u8 using s8 indices
+	__m128i
+	permute_v16u8_v16s8(__m128i s, __m128i msk);
+
+	// permute s16/u16 using s16 indices
+	__m128i
+	permute_v8u16_v8s16(__m128i s, __m128i msk);
+
+	// permute s32/u32 using s32 indices
+	__m128i
+	permute_v4u32_v4s32(__m128i s, __m128i msk);
+	
+	// permute s64/u64 using s64 indices
+	__m128i
+	permute_v2u64_v2s64(__m128i s, __m128i msk);
+
+	// permute f32 using s32 indices
+	__m128
+	permute_v4f32_v4s32(__m128 s, __m128i msk);
+	
+	// permute f64 using i64 indices
+	__m128d
+	permute_v2f64_v2s64(__m128d s, __m128i msk);
+	
         // generic permutation of one double vector
         template <int _P0, int _P1>
         struct perm1_v2f64 {
@@ -1400,6 +1424,83 @@ namespace cftal {
 
 
     }
+}
+
+// permute s8/u8 using s8 indices
+inline
+__m128i
+cftal::x86::permute_v16u8_v16s8(__m128i s, __m128i msk)
+{
+    return vpshufb::v(s, msk);
+}
+
+// permute s16/u16 using s16 indices
+inline
+__m128i
+cftal::x86::permute_v8u16_v8s16(__m128i s, __m128i msk)
+{
+    // multiply mask with two, shuffle it to low/high bytes
+    // and add 1 to the high bytes
+    __m128i m=vpsllw_const<1>::v(msk);
+    const __m128i& p=const_v16u8< 0,  0,  2,  2,  4,  4,  6,  6,
+				  8,  8, 10, 10, 12, 12, 14, 14>::iv();
+    const __m128i& o=const_v16u8< 0,  1,  0,  1,  0,  1,  0,  1,
+				  0,  1,  0,  1,  0,  1,  0,  1>::iv();
+    m=vpshufb::v(m, p);
+    m=_mm_add_epi8(m, o);
+    return permute_v16u8_v16s8(s, m);
+}
+
+// permute s32/u32 using s32 indices
+inline
+__m128i
+cftal::x86::permute_v4u32_v4s32(__m128i s, __m128i msk)
+{
+    // multiply mask with 4, shuffle it to dwords
+    // and add 0, 1, 2, 3 to the bytes.
+    __m128i m=vpslld_const<2>::v(msk);
+    const __m128i& p=const_v16u8< 0,  0,  0,  0,  4,  4,  4,  4,
+				  8,  8,  8,  8, 12, 12, 12, 12>::iv();
+    const __m128i& o=const_v16u8< 0,  1,  2,  3,  0,  1,  2,  3,
+				  0,  1,  2,  3,  0,  1,  2,  3>::iv();
+    m=vpshufb::v(m, p);
+    m=_mm_add_epi8(m, o);
+    return permute_v16u8_v16s8(s, m);
+}
+	
+// permute s64/u64 using s64 indices
+inline
+__m128i
+cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i msk)
+{
+    // multiply mask with 8, shuffle it to qwords
+    // and add 0, 1, 2, 3, 4, 5, 6, 7 to the bytes.
+    __m128i m=vpsllq_const<4>::v(msk);
+    const __m128i& p=const_v16u8< 0,  0,  0,  0,  0,  0,  0,  0,
+				  8,  8,  8,  8,  8,  8,  8,  8>::iv();
+    const __m128i& o=const_v16u8< 0,  1,  2,  3,  4,  5,  6,  7,
+				  0,  1,  2,  3,  4,  5,  6,  7>::iv();
+    m=vpshufb::v(m, p);
+    m=_mm_add_epi8(m, o);
+    return permute_v16u8_v16s8(s, m);
+}
+
+// permute f32 using s32 indices
+inline
+__m128
+cftal::x86::permute_v4f32_v4s32(__m128 s, __m128i msk)
+{
+    return _mm_castsi128_ps(
+	permute_v4u32_v4s32(_mm_castps_si128(s), msk));
+}
+	
+// permute f64 using s64 indices
+inline
+__m128d
+cftal::x86::permute_v2f64_v2s64(__m128d s, __m128i msk)
+{
+    return _mm_castsi128_pd(
+	permute_v2u64_v2s64(_mm_castpd_si128(s), msk));
 }
 
 template <int _P0, int _P1>
