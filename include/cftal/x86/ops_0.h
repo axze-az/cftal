@@ -1826,39 +1826,22 @@ namespace cftal {
 inline
 __m128i cftal::x86::vpshufb::emul(__m128i a, __m128i msk)
 {
-#if 1
     vecunion <uint8_t, 16, __m128, __m128d, __m128i> res, offs, src;
     _mm_store_si128(&src._vi, a);
     // create the mask of elements to keep, i.e. all elements >-1
-    __m128i minus_1=_mm_cmpeq_epi8(msk, msk);
-    __m128i vkm=_mm_cmpgt_epi8(msk, minus_1);
-    _mm_store_si128(&res._vi, vkm);
+    const __m128i minus_1=_mm_cmpeq_epi8(msk, msk);
+    __m128i pos=_mm_cmpgt_epi8(msk, minus_1);
     // maximize the offsets with 0xf/15
     const __m128i m15=_mm_set1_epi8(0x0f);
     __m128i voffs=_mm_and_si128(msk, m15);
     _mm_store_si128(&offs._vi, voffs);
 #pragma GCC unroll 1
 #pragma clang unroll(1)
-    for (int i=0; i<16; ++i) {
-        if (res._s[i]!=0) {
-            uint32_t offs_i= offs._s[i];
-            res._s[i] = src._s[offs_i];
-        }
+    for (uint32_t i=0; i<16; ++i) {
+        uint32_t offs_i= offs._s[i];
+        res._s[i] = src._s[offs_i];
     }
-    __m128i r=_mm_load_si128(&res._vi);
-    return r;
-#else
-    vecunion <int8_t, 16, __m128, __m128d, __m128i> s, m, d;
-    _mm_store_si128(&s._vi, a);
-    _mm_store_si128(&m._vi, msk);
-    for (int i=0; i<16; ++i) {
-        int8_t mi=m._s[i];
-        int8_t offs=mi & 15;
-        int8_t msk=~(mi>>7);
-        d._s[i] =  s._s[offs] & msk;
-    }
-    __m128i r=_mm_load_si128(&d._vi);
-#endif
+    __m128i r=_mm_and_si128(pos, res._vi);
     return r;
 }
 
