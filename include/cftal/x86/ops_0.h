@@ -1835,8 +1835,8 @@ __m128i cftal::x86::vpshufb::emul(__m128i a, __m128i msk)
     const __m128i m15=_mm_set1_epi8(0x0f);
     __m128i voffs=_mm_and_si128(msk, m15);
     _mm_store_si128(&offs._vi, voffs);
-#pragma GCC unroll 1
-#pragma clang unroll(1)
+#pragma GCC unroll 2
+#pragma clang unroll(2)
     for (uint32_t i=0; i<16; ++i) {
         uint32_t offs_i= offs._s[i];
         res._s[i] = src._s[offs_i];
