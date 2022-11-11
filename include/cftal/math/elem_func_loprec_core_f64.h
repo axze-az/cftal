@@ -139,6 +139,21 @@ namespace cftal {
             vf_type
             exp10_k(arg_t<vf_type> x);
 
+            enum hyperbolic_func {
+                c_sinh,
+                c_cosh,
+                c_tanh
+            };
+
+            template <hyperbolic_func _F>
+            static
+            vf_type
+            sinh_cosh_k(arg_t<vf_type> xc);
+
+            static
+            vf_type
+            tanh_k(arg_t<vf_type> xc);
+
             static
             vi2_type
             __reduce_log_arg(vf_type& xr,
@@ -366,6 +381,44 @@ exp10_k(arg_t<vf_type> xc)
     vf_type xd=xc*ctbl::m_ln10[0];
     vf_type yd=exp_k<_EXP10_M1>(xd);
     return yd;
+}
+
+template <typename _T>
+template <enum cftal::math::elem_func_loprec_core<double, _T>::hyperbolic_func _F>
+inline
+typename cftal::math::elem_func_loprec_core<double, _T>::vf_type
+cftal::math::elem_func_loprec_core<double, _T>::
+sinh_cosh_k(arg_t<vf_type> xc)
+{
+    static_assert(_F != hyperbolic_func::c_tanh);
+
+    vf_type x= abs(xc);
+    vf_type xr;
+    vi_type k, idx;
+    __reduce_exp_arg(xr, idx, k, x);
+    // 1/2
+    k -= 1;
+    vf_type y = __exp_tbl_k(xr, idx, k);
+    // fpprec: 32
+    // bfloat(rhs(solve(2^-30*%e^x=%e^(-x), x)[2]));
+    constexpr const double
+    x_medium_max = 1.0397207708399179641258481821873e1;
+    vmf_type x_medium= x <= x_medium_max;
+    if (__likely(_T::any_of_vmf(x_medium))) {
+        // vf_type ny=0.5/(2.0*y);
+        vf_type ny=0.25/y;
+        vf_type z;
+        if (_F == hyperbolic_func::c_sinh)
+            z = y - ny;
+        else
+            z = y + ny;
+        y= _T::sel(x_medium, z, y);
+    }
+    vf_type res=y;
+    if (_F==hyperbolic_func::c_sinh) {
+        res = copysign(res, xc);
+    }
+    return res;
 }
 
 template <typename _T>
