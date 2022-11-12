@@ -33,6 +33,19 @@ b = [|0, 1|]@b;
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const double exp_c", "exp", b, c);
 
+/* polynomial for sinh where (e^x-e^x)/2 fails */
+f = sinh(x);
+i = [0x1p-512, log(2)/4];
+d = guessdegree(f, i, 0x1p-28);
+d;
+b = [|1, 3, 5|];
+c = [|D...|];
+p = fpminimax(f, b, c, i, relative, floating);
+write_approx_prec(p, f, i);
+write_coeffs(p, "constexpr\n    const double sinh_c", "sinh", b, c);
+write_coeff(sup(i), "", "constexpr\n    const double sinh_i0_right",
+            double);
+
 /* log1p for log implementation with 29 bits precision */
 f= log1p(x);
 ib=single(sqrt(2)/2);
