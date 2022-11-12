@@ -267,7 +267,7 @@ __lgamma_reduce_small_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-__attribute__((__force_inline__))
+__attribute__((__always_inline__))
 typename cftal::math::spec_func_loprec_core<double, _T>::vf_type
 cftal::math::spec_func_loprec_core<double, _T>::
 lgamma_k(arg_t<vf_type> x, vi_type* signp)
