@@ -85,6 +85,7 @@ cftal::test::perm_v2()
                           << "src: " << s << '\n'
                           << "exp: " << rr << '\n'
                           << "res: " << r << '\n';
+                std::cerr << __PRETTY_FUNCTION__ << " FAILED\n";
                 return false;
 
             }
@@ -115,6 +116,7 @@ cftal::test::perm_v4()
                                 << "src: " << s << '\n'
                                 << "exp: " << rr << '\n'
                                 << "res: " << r << '\n';
+                        std::cerr << __PRETTY_FUNCTION__ << " FAILED\n";
                         return false;
                     }
                 }
@@ -154,6 +156,8 @@ cftal::test::perm_v8()
                                                 << "src: " << s << '\n'
                                                 << "exp: " << rr << '\n'
                                                 << "res: " << r << '\n';
+                                        std::cerr << __PRETTY_FUNCTION__
+                                                  << " FAILED\n";
                                         return false;
                                     }
                                 }
@@ -200,6 +204,7 @@ cftal::test::perm_vn()
                     << "src: " << s << '\n'
                     << "exp: " << rr << '\n'
                     << "res: " << r << '\n';
+            std::cerr << __PRETTY_FUNCTION__ << " FAILED\n";
             return false;
         }
         if ((t & MSK)==MSK) {

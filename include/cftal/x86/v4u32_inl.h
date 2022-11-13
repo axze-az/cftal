@@ -562,6 +562,12 @@ cftal::v4u32 cftal::permute(const v4u32& a, const v4u32& b)
 }
 
 inline
+cftal::v4u32 cftal::permute(const v4u32& s, const v4s32& idx)
+{
+    return x86::permute_v4u32_v4s32(s(), idx());
+}
+
+inline
 std::pair<cftal::v4u32, cftal::v4u32>
 cftal::mul_lo_hi(const v4u32& x, const v4u32& y)
 {

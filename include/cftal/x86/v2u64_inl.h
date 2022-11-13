@@ -525,6 +525,12 @@ cftal::v2u64 cftal::permute(const v2u64& a, const v2u64& b)
 }
 
 inline
+cftal::v2u64 cftal::permute(const v2u64& s, const v2s64& idx)
+{
+    return x86::permute_v2u64_v2s64(s(), idx());
+}
+
+inline
 std::pair<cftal::v2u64, cftal::v2u64>
 cftal::mul_lo_hi(const v2u64& x, const v2u64& y)
 {

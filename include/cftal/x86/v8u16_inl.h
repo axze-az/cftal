@@ -559,6 +559,13 @@ cftal::v8u16 cftal::permute(const v8u16& a, const v8u16& b)
 }
 
 inline
+cftal::vec<uint16_t, 8>
+cftal::permute(const vec<uint16_t, 8>& s, const vec<int16_t, 8>& idx)
+{
+    return x86::permute_v8u16_v8s16(s(), idx());
+}
+
+inline
 std::pair<cftal::v8u16, cftal::v8u16>
 cftal::mul_lo_hi(const v8u16& x, const v8u16& y)
 {

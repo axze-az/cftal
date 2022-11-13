@@ -173,6 +173,9 @@ namespace cftal {
     permute(const vec<float, 4>& s0,
             const vec<float, 4>& s1);
 
+    vec<float, 4>
+    permute(const vec<float, 4>& s, const vec<int32_t, 4>& idx);
+
 #if defined (__AVX2__)
     template <>
     class variable_vec_lookup_table<float, int32_t, 4> {

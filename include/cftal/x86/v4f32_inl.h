@@ -454,6 +454,13 @@ cftal::v4f32 cftal::permute(const v4f32& a, const v4f32& b)
 }
 
 inline
+cftal::v4f32
+cftal::permute(const v4f32& s, const v4s32& idx)
+{
+    return x86::permute_v4f32_v4s32(s(), idx());
+}
+
+inline
 cftal::v2f32 cftal::sqrt(const v2f32& a)
 {
     v4f32 s=sqrt(v4f32(a, a));

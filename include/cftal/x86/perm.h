@@ -1503,7 +1503,7 @@ cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i msk)
 {
 #if defined (__AVX__)
     __m128i r=_mm_castpd_si128(
-        _mm_permutevar_pd(_mm_castsi128_pd(s), msk));
+        _mm_permutevar_pd(_mm_castsi128_pd(s), msk+msk));
     const __m128i& m1=const_v4u32<0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff>::iv();
     __m128i pos=_mm_cmpgt_epi64(msk, m1);
@@ -1547,7 +1547,7 @@ __m128d
 cftal::x86::permute_v2f64_v2s64(__m128d s, __m128i msk)
 {
 #if defined (__AVX__)
-    __m128d r=_mm_permutevar_pd(s, msk);
+    __m128d r=_mm_permutevar_pd(s, msk+msk);
     const __m128i& m1=const_v4u32<0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff>::iv();
     __m128i pos=_mm_cmpgt_epi64(msk, m1);
