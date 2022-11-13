@@ -327,10 +327,10 @@ namespace cftal {
 
     // permutation using a variable index,
     // return _T(0) if idx < 0 or v
-    template <typename _T>
-    vec<_T, 1>
+    template <typename _T, typename _I>
+    std::enable_if_t<std::is_signed_v<_I>, cftal::vec<_T, 1>>
     permute(const vec<_T, 1>& v,
-            const vec<int32_t, 1>& idx);
+            const vec<_I, 1>& idx);
 
 
     template <typename _T>
@@ -1027,9 +1027,9 @@ cftal::permute(const vec<_T, 1>& v0, const vec<_T, 1>& v1)
     return _I0 == 1 ? v1 : v0;
 }
 
-template <typename _T>
-cftal::vec<_T, 1>
-cftal::permute(const vec<_T, 1>& v, const vec<int32_t, 1>& idx)
+template <typename _T, typename _I>
+std::enable_if_t<std::is_signed_v<_I>, cftal::vec<_T, 1>>
+cftal::permute(const vec<_T, 1>& v, const vec<_I, 1>& idx)
 {
     return idx() < 0 ? vec<_T, 1>(_T(0)) : v;
 }
