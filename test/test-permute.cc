@@ -216,6 +216,34 @@ cftal::test::perm_vn()
     return true;
 }
 
+cftal::vec<double, 2>
+test_perm(cftal::arg_t<cftal::vec<double, 2>> s,
+          cftal::arg_t<cftal::vec<int64_t, 2>> idx)
+{
+    return permute(s, idx);
+}
+
+cftal::vec<double, 4>
+test_perm(cftal::arg_t<cftal::vec<double, 4>> s,
+          cftal::arg_t<cftal::vec<int64_t, 4>> idx)
+{
+    return permute(s, idx);
+}
+
+cftal::vec<float, 4>
+test_perm(cftal::arg_t<cftal::vec<float, 4>> s,
+          cftal::arg_t<cftal::vec<int32_t, 4>> idx)
+{
+    return permute(s, idx);
+}
+
+cftal::vec<float, 8>
+test_perm(cftal::arg_t<cftal::vec<float, 8>> s,
+          cftal::arg_t<cftal::vec<int32_t, 8>> idx)
+{
+    return permute(s, idx);
+}
+
 int main()
 {
     using namespace cftal;
