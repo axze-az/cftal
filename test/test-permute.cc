@@ -181,7 +181,7 @@ cftal::test::perm_vn()
 
     // setup an index vector
     alignas(v_t) _T as[_N];
-    for (int i=0; i<_N; ++i)
+    for (uint32_t i=0; i<_N; ++i)
         as[i]=_T(i+1);
     v_t s=mem<v_t>::load(as);
     alignas(v_idx_t) _I aidx[_N];
@@ -191,7 +191,7 @@ cftal::test::perm_vn()
     constexpr const size_t CNT=1LL<<POWER;
     constexpr const size_t MSK=(1LL<<(POWER-4))-1;
     for (size_t t=0; t<CNT; ++t) {
-        for (int i=0; i<_N; ++i) {
+        for (uint32_t i=0; i<_N; ++i) {
             aidx[i]=d_m1_N(rnd);
         }
         v_idx_t idx=mem<v_idx_t>::load(aidx);
