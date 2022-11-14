@@ -180,6 +180,9 @@ namespace cftal {
             const vec<double, 4>& s1);
 
 #if defined (__AVX2__)
+    vec<double, 4>
+    permute(const vec<double, 4>& s, const vec<int64_t, 4>& idx);
+
     template <>
     class variable_vec_lookup_table<double, int32_t, 4> {
     private:

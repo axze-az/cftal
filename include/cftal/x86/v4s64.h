@@ -134,6 +134,9 @@ namespace cftal {
     permute(const vec<int64_t, 4>& s0,
             const vec<int64_t, 4>& s1);
 
+    vec<int64_t, 4>
+    permute(const vec<int64_t, 4>& s, const vec<int64_t, 4>& idx);
+
     std::pair<vec<int64_t, 4>, vec<int64_t, 4> >
     mul_lo_hi(const vec<int64_t, 4>& a, const vec<int64_t, 4>& b);
 

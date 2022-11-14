@@ -66,7 +66,7 @@ namespace cftal {
 
         // permute f64 using s64 indices
         __m256d
-        permute_vf64_v4s64(__m256d s, __m256i msk);
+        permute_v4f64_v4s64(__m256d s, __m256i msk);
 #endif
 
         // generic permutation of one double vector
@@ -1582,7 +1582,7 @@ cftal::x86::permute_v4u64_v4s64(__m256i s, __m256i msk)
 {
     __m256i msk32=perm1_v8u32<0, 0, 2, 2, 4, 4, 6, 6>::v(msk+msk);
     const __m256i& mskc=const_v8u32<0, 1, 0, 1, 0, 1, 0, 1>::iv();
-    msk32 = _mm256_add_epi32(msk, mskc);
+    msk32 = _mm256_add_epi32(msk32, mskc);
     return permute_v8u32_v8s32(s, msk32);
 }
 
@@ -1604,7 +1604,7 @@ cftal::x86::permute_v8f32_v8s32(__m256 s, __m256i msk)
 // permute f64 using s64 indices
 inline
 __m256d
-cftal::x86::permute_vf64_v4s64(__m256d s, __m256i msk)
+cftal::x86::permute_v4f64_v4s64(__m256d s, __m256i msk)
 {
     return _mm256_castsi256_pd(permute_v4u64_v4s64(
         _mm256_castpd_si256(s), msk));

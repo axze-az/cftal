@@ -477,6 +477,15 @@ cftal::v8f32 cftal::permute(const v8f32& a, const v8f32& b)
                            _P4, _P5, _P6, _P7>(a(), b());
 }
 
+#if defined (__AVX2__)
+inline
+cftal::v8f32
+cftal::permute(const v8f32& s, const v8s32& idx)
+{
+    return x86::permute_v8f32_v8s32(s(), idx());
+}
+#endif
+
 inline
 cftal::v8f32 cftal::sqrt(const v8f32& a)
 {

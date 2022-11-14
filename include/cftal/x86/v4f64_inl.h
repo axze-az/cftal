@@ -670,6 +670,13 @@ cftal::permute(const vec<double, 4>& l, const vec<double, 4>& r)
 
 #if defined (__AVX2__)
 inline
+cftal::vec<double, 4>
+cftal::permute(const vec<double, 4>& s, const vec<int64_t, 4>& idx)
+{
+    return x86::permute_v4f64_v4s64(s(), idx());
+}
+
+inline
 cftal::variable_vec_lookup_table<double, int32_t, 4>::
 variable_vec_lookup_table(const vec<int32_t, 4>& idx)
     : _msk(idx)
