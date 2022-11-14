@@ -1509,10 +1509,15 @@ cftal::x86::permute_v2u64_v2s64(__m128i s, __m128i msk)
 #if defined (__AVX__)
     __m128i r=_mm_castpd_si128(
         _mm_permutevar_pd(_mm_castsi128_pd(s), msk+msk));
+#if 0
     const __m128i& m1=const_v4u32<0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff>::iv();
     __m128i pos=_mm_cmpgt_epi64(msk, m1);
     r = _mm_and_si128(r, pos);
+#else
+    __m128i neg=_mm_cmpgt_epi64(_mm_setzero_si128(), msk);
+    r = _mm_andnot_si128(neg, r);
+#endif
     return r;
 #else
     // multiply mask with 8, shuffle it to qwords
@@ -1558,10 +1563,15 @@ cftal::x86::permute_v2f64_v2s64(__m128d s, __m128i msk)
 {
 #if defined (__AVX__)
     __m128d r=_mm_permutevar_pd(s, msk+msk);
+#if 0
     const __m128i& m1=const_v4u32<0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff>::iv();
     __m128i pos=_mm_cmpgt_epi64(msk, m1);
     r = _mm_and_pd(r, _mm_castsi128_pd(pos));
+#else
+    __m128i neg=_mm_cmpgt_epi64(_mm_setzero_si128(), msk);
+    r = _mm_castsi128_pd(_mm_andnot_si128(neg, _mm_castpd_si128(r)));
+#endif
     return r;
 #else
     return _mm_castsi128_pd(
