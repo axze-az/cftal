@@ -1477,11 +1477,16 @@ cftal::x86::permute_v4u32_v4s32(__m128i s, __m128i msk)
 #if defined (__AVX__)
     __m128i r=_mm_castps_si128(
         _mm_permutevar_ps(_mm_castsi128_ps(s), msk));
+#if 0
     const __m128i& m1=const_v4u32<0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff>::iv();
     __m128i pos=_mm_cmpgt_epi32(msk, m1);
     r = _mm_and_si128(r, pos);
+#else
+    __m128i z_e=_mm_srai_epi32(msk, 31);
+    r = _mm_andnot_si128(z_e, r);
     return r;
+#endif
 #else
     // multiply mask with 4, shuffle it to dwords
     // and add 0, 1, 2, 3 to the bytes.
@@ -1530,10 +1535,15 @@ cftal::x86::permute_v4f32_v4s32(__m128 s, __m128i msk)
 {
 #if defined (__AVX__)
     __m128 r=_mm_permutevar_ps(s, msk);
+#if 0
     const __m128i& m1=const_v4u32<0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff>::iv();
     __m128i pos=_mm_cmpgt_epi32(msk, m1);
     r = _mm_and_ps(r, _mm_castsi128_ps(pos));
+#else
+    __m128i z_e=_mm_srai_epi32(msk, 31);
+    r = _mm_castsi128_ps(_mm_andnot_si128(z_e, _mm_castps_si128(r)));
+#endif
     return r;
 #else
     return _mm_castsi128_ps(
@@ -1566,12 +1576,17 @@ __m256i
 cftal::x86::permute_v8u32_v8s32(__m256i s, __m256i msk)
 {
     __m256i r=_mm256_permutevar8x32_epi32(s, msk);
+#if 0
     const __m256i& m1=const_v8u32<0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff>::iv();
     __m256i pos=_mm256_cmpgt_epi32(msk, m1);
     r=_mm256_and_si256(r, pos);
+#else
+    __m256i z_e=_mm256_srai_epi32(msk, 31);
+    r = _mm256_andnot_si256(z_e, r);
+#endif
     return r;
 }
 
@@ -1592,12 +1607,17 @@ __m256
 cftal::x86::permute_v8f32_v8s32(__m256 s, __m256i msk)
 {
     __m256 r=_mm256_permutevar8x32_ps(s, msk);
+#if 0
     const __m256i& m1=const_v8u32<0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff,
                                   0xffffffff, 0xffffffff>::iv();
     __m256i pos=_mm256_cmpgt_epi32(msk, m1);
     r=_mm256_and_ps(r, _mm256_castsi256_ps(pos));
+#else
+    __m256i z_e=_mm256_srai_epi32(msk, 31);
+    r = _mm256_castsi256_ps(_mm256_andnot_si256(z_e, _mm256_castps_si256(r)));
+#endif
     return r;
 }
 
