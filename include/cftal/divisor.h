@@ -278,10 +278,10 @@ namespace cftal {
 
         template <typename _U, typename _V>
         struct div_sel {
-            using type = typename
-                std::conditional<cftal::is_signed<_V>::value,
-                                 sdiv<_U, _V>,
-                                 udiv<_U, _V> >::type;
+            using type = 
+                select_t<cftal::is_signed<_V>::value,
+			 sdiv<_U, _V>,
+			 udiv<_U, _V> >;
         };
     }
 

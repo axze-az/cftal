@@ -30,10 +30,10 @@ namespace cftal {
     template <typename _T>
     struct arg {
         // using type = const _T&;
-        using type= typename
-            std::conditional<(sizeof(_T) > sizeof(double)),
-                            const _T&,
-                            _T>::type;
+        using type= 
+            select_t<(sizeof(_T) > sizeof(double)),
+		     const _T&,
+		     _T>;
     };
 
     // abbreviation for typename arg::type

@@ -74,6 +74,13 @@ namespace cftal {
 
     template< class T >
     using make_unsigned_t = typename make_unsigned<T>::type;
+
+    // same as std::conditional_t
+    template <bool _B, typename _TRUE, typename _FALSE>
+    using select_t =
+	typename std::conditional<_B, _TRUE, _FALSE>::type;
+    
+    
 }
 
 #endif

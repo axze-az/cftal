@@ -313,12 +313,12 @@ cftal::round_to_nearest_even_last_bits(const  vec<_T, _N>& v)
     static_assert(_BITS>0 && _BITS < sizeof(_T)*8);
 
     using int_type =
-        std::conditional_t<
-            std::is_same_v<_T, double>,
-                           int64_t,
-                           std::conditional_t<std::is_same_v<_T, float>,
-                                              int32_t,
-                                              _T> >;
+        select_t<std::is_same_v<_T, double>,
+		 int64_t,
+		 select_t<std::is_same_v<_T, float>,
+			  int32_t,
+			  _T>
+		 >;
     using vi_type = vec<int_type, _N>;
     using vmi_type = typename vec<int_type, _N>::mask_type;
     return impl::round_to_nearest_even_last_bits<vec<_T, _N>, _T,
@@ -355,12 +355,12 @@ cftal::round_to_zero_last_bits(const vec<_T, _N>& v)
     static_assert(_BITS>0 && _BITS < sizeof(_T)*8);
 
     using int_type =
-        std::conditional_t<
-            std::is_same_v<_T, double>,
-                           int64_t,
-                           std::conditional_t<std::is_same_v<_T, float>,
-                                              int32_t,
-                                              _T> >;
+        select_t<std::is_same_v<_T, double>,
+		 int64_t,
+		 select_t<std::is_same_v<_T, float>,
+			  int32_t,
+			  _T>
+		 >;
     return impl::round_to_zero_last_bits<vec<_T, _N>, _T,
                                          vec<int_type, _N>, int_type,
                                          _BITS>(v);

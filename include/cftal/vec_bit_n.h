@@ -53,11 +53,16 @@ namespace cftal {
     class vec<bit, _N> {
     public:
         static_assert(_N > 0 && _N <= 64, "_N must be element of [1, 64]]");
-        using utype = typename
-            std::conditional<(_N>32), uint64_t,
-            typename std::conditional<(_N>16), uint32_t,
-            typename std::conditional<(_N>8), uint16_t,
-            uint8_t>::type >::type >::type;
+        using utype = 
+            select_t<(_N>32),
+		     uint64_t,
+		     select_t<(_N>16),
+			      uint32_t,
+			      select_t<(_N>8),
+				       uint16_t,
+				       uint8_t>
+			      >
+		     >;
         static constexpr const utype mask =
             (utype(vec<bit, _N/2>::mask) << _N/2) |
             utype(vec<bit, _N/2>::mask);
