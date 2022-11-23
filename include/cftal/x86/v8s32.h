@@ -102,6 +102,9 @@ namespace cftal {
     any_of(const vec<int32_t, 8>::mask_type& v);
     bool
     none_of(const vec<int32_t, 8>::mask_type& v);
+
+    vec<cftal::bit, 8>
+    compress_mask(const vec<int32_t, 8>::mask_type& v);
 #endif
 
     v8s32 max(const v8s32& a, const v8s32& b);

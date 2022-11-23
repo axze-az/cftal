@@ -138,6 +138,9 @@ namespace cftal {
     any_of(const vec<uint64_t, 2>::mask_type& v);
     bool
     none_of(const vec<uint64_t, 2>::mask_type& v);
+
+    vec<bit, 2>
+    compress_mask(const vec<uint64_t, 2>::mask_type& m);
 #endif
 }
 

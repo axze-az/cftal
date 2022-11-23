@@ -106,6 +106,9 @@ namespace cftal {
     all_of(const vec<double, 4>::mask_type& s);
     bool
     none_of(const vec<double, 4>::mask_type& s);
+
+    vec<bit, 4>
+    compress_mask(const vec<double, 4>::mask_type& m);
 #endif
 
     template <std::size_t _I>

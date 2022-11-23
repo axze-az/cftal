@@ -423,6 +423,14 @@ bool cftal::none_of(const vec<uint8_t, 32>::mask_type& v)
 }
 
 inline
+cftal::vec<cftal::bit, 32>
+cftal::compress_mask(const vec<uint8_t, 32>::mask_type& v)
+{
+    return x86::compress_mask_u8(v());
+}
+
+
+inline
 cftal::v32u8 cftal::max(const v32u8& a, const v32u8& b)
 {
     return _mm256_max_epu8(a(), b());

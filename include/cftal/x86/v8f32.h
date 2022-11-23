@@ -121,6 +121,9 @@ namespace cftal {
 
     bool
     none_of(const vec<float, 8>::mask_type& a);
+
+    vec<bit, 8>
+    compress_mask(const vec<float, 8>::mask_type& a);
 #endif
 
     unsigned

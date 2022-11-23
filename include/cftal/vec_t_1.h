@@ -270,6 +270,10 @@ namespace cftal {
     bool none_of(const vec<_T, 1>& v);
 
     template <typename _T>
+    vec<bit, 1>
+    compress_mask(const vec<_T, 1>& v);
+
+    template <typename _T>
     std::enable_if_t<cftal::is_integral<_T>::value,
                      std::pair<vec<_T, 1>, vec<_T, 1> > >
     mul_lo_hi(const vec<_T, 1>& a, const vec<_T, 1>& b);
@@ -884,6 +888,15 @@ cftal::none_of(const vec<_T, 1>& v)
     using it= impl::xxx_of<_T,
                            typename cftal::is_floating_point<_T>::type>;
     return it::none(v);
+}
+
+template <class _T>
+inline
+cftal::vec<cftal::bit, 1>
+cftal::compress_mask(const vec<_T, 1>& v)
+{
+    bit b=impl::mask_to_bool<_T>::v(v());
+    return vec<bit, 1>(b);
 }
 
 template <class _T>

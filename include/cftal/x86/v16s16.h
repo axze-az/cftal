@@ -81,6 +81,9 @@ namespace cftal {
     bool
     none_of(const vec<int16_t, 16>::mask_type& v);
 
+    vec<bit, 16>
+    compress_mask(const vec<int16_t, 16>::mask_type& m);
+
     template <size_t _I>
     int16_t
     extract(const vec<int16_t, 16>& v);

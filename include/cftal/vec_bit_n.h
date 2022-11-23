@@ -53,7 +53,7 @@ namespace cftal {
     class vec<bit, _N> {
     public:
         static_assert(_N > 0 && _N <= 64, "_N must be element of [1, 64]]");
-        using utype = 
+        using utype =
             select_t<(_N>32),
 		     uint64_t,
 		     select_t<(_N>16),
@@ -202,6 +202,15 @@ namespace cftal {
 
     bool
     none_of(const vec<bit, 1>& a);
+
+    // compress any _T to a vec<bit, _N> using all bits set in _T as true
+    template <typename _T, size_t _N>
+    vec<bit, _N>
+    compress_mask(const vec<_T, _N>& s);
+
+    template <size_t _N>
+    const vec<bit, _N>&
+    compress_mask(const vec<bit, _N>& s);
 
     template <std::size_t _N>
     vec<bit, _N>
@@ -363,6 +372,22 @@ cftal::none_of(const vec<bit, 1>& a)
     return a() == 0;
 }
 
+template <typename _T, cftal::size_t _N>
+inline
+cftal::vec<cftal::bit, _N>
+cftal::compress_mask(const vec<_T, _N>& s)
+{
+    return vec<bit, _N>(compress_mask(low_half(s)),
+                        compress_mask(high_half(s)));
+}
+
+template <cftal::size_t _N>
+inline
+const cftal::vec<cftal::bit, _N>&
+cftal::compress_mask(const vec<bit, _N>& s)
+{
+    return s;
+}
 
 template <std::size_t _N>
 inline

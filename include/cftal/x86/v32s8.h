@@ -95,6 +95,9 @@ namespace cftal {
     bool
     none_of(const vec<int8_t, 32>::mask_type& v);
 
+    vec<bit, 32>
+    compress_mask(const vec<int8_t, 32>::mask_type& m);
+
     v32s8 max(const v32s8& a, const v32s8& b);
     v32s8 min(const v32s8& a, const v32s8& b);
     v32s8 abs(const v32s8& a);

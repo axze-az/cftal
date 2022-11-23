@@ -101,6 +101,9 @@ namespace cftal {
     any_of(const vec<int32_t, 4>::mask_type& v);
     bool
     none_of(const vec<int32_t, 4>::mask_type& v);
+
+    vec<bit, 4>
+    compress_mask(const vec<int32_t, 4>::mask_type& m);
 #endif
 
     v4s32 max(const v4s32& a, const v4s32& b);

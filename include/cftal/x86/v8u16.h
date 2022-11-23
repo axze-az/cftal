@@ -94,6 +94,9 @@ namespace cftal {
     bool
     none_of(const vec<uint16_t, 8>::mask_type& v);
 
+    vec<cftal::bit, 8>
+    compress_mask(const vec<uint16_t, 8>::mask_type& v);
+
     v8u16 max(const v8u16& a, const v8u16& b);
     v8u16 min(const v8u16& a, const v8u16& b);
 

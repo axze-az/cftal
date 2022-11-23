@@ -487,6 +487,14 @@ bool cftal::none_of(const vec<int32_t, 8>::mask_type& v)
 {
     return x86::none_of_s32(v());
 }
+
+inline
+cftal::vec<cftal::bit, 8>
+cftal::compress_mask(const vec<int32_t, 8>::mask_type& v)
+{
+    return x86::compress_mask_u32(v());
+}
+
 #endif
 
 inline

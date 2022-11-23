@@ -546,6 +546,14 @@ cftal::none_of(const vec<double, 4>::mask_type& s)
 {
     return x86::none_of_f64(s());
 }
+
+inline
+cftal::vec<cftal::bit, 4>
+cftal::compress_mask(const vec<double, 4>::mask_type& v)
+{
+    return x86::compress_mask_f64(v());
+}
+
 #endif
 
 inline

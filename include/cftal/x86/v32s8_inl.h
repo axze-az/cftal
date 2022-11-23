@@ -420,6 +420,13 @@ bool cftal::none_of(const vec<int8_t, 32>::mask_type& v)
 }
 
 inline
+cftal::vec<cftal::bit, 32>
+cftal::compress_mask(const vec<int8_t, 32>::mask_type& v)
+{
+    return x86::compress_mask_u8(v());
+}
+
+inline
 cftal::v32s8 cftal::max(const v32s8& a, const v32s8& b)
 {
     return _mm256_max_epi8(a(), b());
