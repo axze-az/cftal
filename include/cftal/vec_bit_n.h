@@ -428,7 +428,7 @@ cftal::expand_mask<cftal::vec<_T, _N> >::
 from(const vec<bit, _N>& s)
 {
     using v_t=vec<_T, _N>;
-    using h_t=decltype(low_half(v_t()));
+    using h_t=std::remove_cvref_t<decltype(low_half(v_t()))>;
     h_t lh=expand_mask<h_t>::from(low_half(s));
     h_t hh=expand_mask<h_t>::from(high_half(s));
     return v_t(lh, hh);
