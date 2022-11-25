@@ -274,6 +274,13 @@ namespace cftal {
     compress_mask(const vec<_T, 1>& v);
 
     template <typename _T>
+    struct expand_mask<vec<_T, 1> > {
+        static
+        vec<_T, 1>
+        from(const vec<bit, 1>& s);
+    };
+
+    template <typename _T>
     std::enable_if_t<cftal::is_integral<_T>::value,
                      std::pair<vec<_T, 1>, vec<_T, 1> > >
     mul_lo_hi(const vec<_T, 1>& a, const vec<_T, 1>& b);
@@ -897,6 +904,16 @@ cftal::compress_mask(const vec<_T, 1>& v)
 {
     bit b=impl::mask_to_bool<_T>::v(v());
     return vec<bit, 1>(b);
+}
+
+template <class _T>
+inline
+cftal::vec<_T, 1>
+cftal::expand_mask<cftal::vec<_T, 1> >::from(const vec<bit, 1>& s)
+{
+    bool m=s() != 0;
+    vec<_T, 1> r(impl::bool_to_mask<_T>::v(m));
+    return r;
 }
 
 template <class _T>

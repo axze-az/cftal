@@ -212,6 +212,29 @@ namespace cftal {
     const vec<bit, _N>&
     compress_mask(const vec<bit, _N>& s);
 
+    // structure containing a static method from for creation of
+    // mask types from vec<bit, _N>
+    template <typename _V>
+    struct expand_mask {};
+
+    template <size_t _N>
+    struct expand_mask<vec<bit, _N> > {
+        static
+        const vec<bit, _N>&
+        from(const vec<bit, _N>& s);
+    };
+
+    template <typename _T, size_t _N>
+    struct expand_mask<vec<_T, _N> > {
+        static
+        vec<_T, _N>
+        from(const vec<bit, _N>& s);
+    };
+
+    template <typename _V, size_t _N>
+    _V
+    expand_mask_to(const vec<bit, _N>& s);
+
     template <std::size_t _N>
     vec<bit, _N>
     select(const vec<bit, _N>&  m,
@@ -387,6 +410,36 @@ const cftal::vec<cftal::bit, _N>&
 cftal::compress_mask(const vec<bit, _N>& s)
 {
     return s;
+}
+
+template <cftal::size_t _N>
+inline
+const cftal::vec<cftal::bit, _N>&
+cftal::expand_mask<cftal::vec<cftal::bit, _N> >::
+from(const vec<bit, _N>& s)
+{
+    return s;
+}
+
+template <typename _T, cftal::size_t _N>
+inline
+cftal::vec<_T, _N>
+cftal::expand_mask<cftal::vec<_T, _N> >::
+from(const vec<bit, _N>& s)
+{
+    using v_t=vec<_T, _N>;
+    using h_t=decltype(low_half(v_t()));
+    h_t lh=expand_mask<h_t>::from(low_half(s));
+    h_t hh=expand_mask<h_t>::from(high_half(s));
+    return v_t(lh, hh);
+}
+
+template <typename _V, cftal::size_t _N>
+inline
+_V
+cftal::expand_mask_to(const vec<bit, _N>& s)
+{
+    return expand_mask<_V>::from(s);
 }
 
 template <std::size_t _N>
