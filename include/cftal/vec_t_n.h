@@ -24,6 +24,7 @@
 #include <cftal/init_list.h>
 #include <cftal/arg.h>
 #include <cftal/mem.h>
+#include <cftal/mask.h>
 #include <cftal/impl/masks.h>
 #include <cftal/type_traits.h>
 #include <iosfwd>
@@ -94,6 +95,11 @@ namespace cftal {
 
     template <typename _T>
     struct is_vec_specialized : public std::false_type {};
+
+    template <typename _T, size_t _N>
+    struct mask<vec<_T, _N> > {
+        using type = typename vec<_T, _N>::mask_type;
+    };
 
     using v1f64 = vec<double, 1>;
     using v2f64 = vec<double, 2>;
