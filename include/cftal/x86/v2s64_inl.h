@@ -583,6 +583,14 @@ cftal::compress_mask(const vec<int64_t, 2>::mask_type& v)
     return x86::compress_mask_u64(v());
 }
 
+inline
+cftal::vec<int64_t, 2>
+cftal::expand_mask<cftal::vec<int64_t, 2> >::
+from(const vec<bit, 2>& s)
+{
+    return x86::expand_mask_v2u64(s());
+}
+
 #endif
 
 // Local variables:

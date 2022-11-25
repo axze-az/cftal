@@ -104,6 +104,13 @@ namespace cftal {
 
     vec<bit, 4>
     compress_mask(const vec<int64_t, 4>::mask_type& m);
+
+    template<>
+    struct expand_mask<vec<int64_t, 4> > {
+        static
+        vec<int64_t, 4>
+        from(const vec<bit, 4>& s);
+    };
 #endif
 
     v4s64 max(const v4s64& a, const v4s64& b);

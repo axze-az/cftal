@@ -465,6 +465,14 @@ cftal::compress_mask(const vec<uint16_t, 16>::mask_type& v)
 }
 
 inline
+cftal::vec<cftal::uint16_t, 16>
+cftal::expand_mask<cftal::vec<uint16_t, 16> >::
+from(const vec<bit, 16>& s)
+{
+    return x86::expand_mask_v16u16(s());
+}
+
+inline
 cftal::v16u16 cftal::max(const v16u16& a, const v16u16& b)
 {
 #if defined (__SSE4_1__)

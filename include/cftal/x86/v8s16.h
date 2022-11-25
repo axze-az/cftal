@@ -84,6 +84,13 @@ namespace cftal {
     vec<bit, 8>
     compress_mask(const vec<int16_t, 8>::mask_type& v);
 
+    template<>
+    struct expand_mask<vec<int16_t, 8> > {
+        static
+        vec<int16_t, 8>
+        from(const vec<bit, 8>& s);
+    };
+
     template <size_t _I>
     int16_t
     extract(const vec<int16_t, 8>& v);

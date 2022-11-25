@@ -124,6 +124,13 @@ namespace cftal {
 
     vec<bit, 8>
     compress_mask(const vec<float, 8>::mask_type& a);
+
+    template<>
+    struct expand_mask<vec<float, 8> > {
+        static
+        vec<float, 8>
+        from(const vec<bit, 8>& s);
+    };
 #endif
 
     unsigned

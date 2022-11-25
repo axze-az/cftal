@@ -97,6 +97,13 @@ namespace cftal {
     vec<cftal::bit, 8>
     compress_mask(const vec<uint16_t, 8>::mask_type& v);
 
+    template<>
+    struct expand_mask<vec<uint16_t, 8> > {
+        static
+        vec<uint16_t, 8>
+        from(const vec<bit, 8>& s);
+    };
+
     v8u16 max(const v8u16& a, const v8u16& b);
     v8u16 min(const v8u16& a, const v8u16& b);
 

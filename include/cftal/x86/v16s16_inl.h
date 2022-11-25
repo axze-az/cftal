@@ -455,6 +455,14 @@ cftal::compress_mask(const vec<int16_t, 16>::mask_type& v)
 }
 
 inline
+cftal::vec<cftal::int16_t, 16>
+cftal::expand_mask<cftal::vec<int16_t, 16> >::
+from(const vec<bit, 16>& s)
+{
+    return x86::expand_mask_v16u16(s());
+}
+
+inline
 cftal::v16s16 cftal::max(const v16s16& a, const v16s16& b)
 {
     return _mm256_max_epi16(a(), b());

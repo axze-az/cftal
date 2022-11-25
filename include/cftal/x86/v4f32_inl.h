@@ -600,6 +600,14 @@ cftal::compress_mask(const vec<float, 4>::mask_type& v)
     return x86::compress_mask_f32(v());
 }
 
+inline
+cftal::vec<float, 4>
+cftal::expand_mask<cftal::vec<float, 4> >::
+from(const vec<bit, 4>& s)
+{
+    return x86::expand_mask_v4f32(s());
+}
+
 #endif
 
 inline

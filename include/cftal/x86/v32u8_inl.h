@@ -429,6 +429,13 @@ cftal::compress_mask(const vec<uint8_t, 32>::mask_type& v)
     return x86::compress_mask_u8(v());
 }
 
+inline
+cftal::vec<uint8_t, 32>
+cftal::expand_mask<cftal::vec<uint8_t, 32> >::
+from(const vec<bit, 32>& s)
+{
+    return x86::expand_mask_v32u8(s());
+}
 
 inline
 cftal::v32u8 cftal::max(const v32u8& a, const v32u8& b)

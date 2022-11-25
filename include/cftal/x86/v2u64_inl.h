@@ -591,6 +591,14 @@ cftal::compress_mask(const vec<uint64_t, 2>::mask_type& v)
     return x86::compress_mask_u64(v());
 }
 
+inline
+cftal::vec<uint64_t, 2>
+cftal::expand_mask<cftal::vec<uint64_t, 2> >::
+from(const vec<bit, 2>& s)
+{
+    return x86::expand_mask_v2u64(s());
+}
+
 #endif
 
 
