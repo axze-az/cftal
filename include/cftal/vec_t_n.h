@@ -300,6 +300,26 @@ namespace cftal {
     permute(const vec<_T, _N>& vl, const vec<_T, _N>& vh,
             const vec<_I, _N>& idx);
 
+    // this defines a preferred index type for the variable permute
+    // functions above
+    template <typename _T>
+    struct preferred_index_type {
+        using type =
+            select_t<sizeof(_T)==1,
+                     int8_t,
+                     select_t<sizeof(_T)==2,
+                              int16_t,
+                              select_t<sizeof(_T)==4,
+                                       int32_t,
+                                       int64_t>
+                              >
+                     >;
+    };
+
+    template <typename _T>
+    using preferred_index_type_t = typename preferred_index_type<_T>::type;
+
+    
     // helper function for even_elements, odd_elements: returns even
     // elements in low half, odd elements in high half
     template <typename _T>
