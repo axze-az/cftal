@@ -431,7 +431,23 @@ sinh_cosh_k(arg_t<vf_type> xc)
         vmf_type x_medium= x <= x_medium_max;
         if (_F == hyperbolic_func::c_sinh)
             x_medium &= (x > sinh_i0_right);
-
+#if 0
+        // check the probability in our test set that only half
+        // of the elements of the vectors are filled
+        uint32_t n=popcnt(compress_mask(x_medium)());
+        uint32_t nv=size(x_medium);
+        static uint64_t full=0, half=0;
+        if (n>0 && n<=(nv>>1)) {
+            ++half;
+            double r=half;
+            r /= full;
+            std::cout << n << " of " << nv
+                      << " full: "  << full << " half: " << half
+                      << " ratio " << r
+                      << '\n';
+        } else {
+            ++full;
+        }
         if (__likely(_T::any_of_vmf(x_medium))) {
 #if 0
             vf_type nxr;
