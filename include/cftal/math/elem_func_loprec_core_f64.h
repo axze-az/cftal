@@ -437,17 +437,24 @@ sinh_cosh_k(arg_t<vf_type> xc)
         uint32_t n=popcnt(compress_mask(x_medium)());
         uint32_t nv=size(x_medium);
         static uint64_t full=0, half=0;
-        if (n>0 && n<=(nv>>1)) {
+        // if (nv==16) {
+        //     std::cout << "size " << nv << '\n';
+        // }
+        if (n<=(nv>>1)) {
             ++half;
-            double r=half;
-            r /= full;
-            std::cout << n << " of " << nv
-                      << " full: "  << full << " half: " << half
-                      << " ratio " << r
-                      << '\n';
+            if (nv>1) {
+                double h=half;
+                double f=full;
+                double r = h/(h+f);
+                std::cout << n << " of " << nv
+                        << " full: "  << full << " half: " << half
+                        << " ratio " << r
+                        << '\n';
+            }
         } else {
             ++full;
         }
+#endif
         if (__likely(_T::any_of_vmf(x_medium))) {
 #if 0
             vf_type nxr;
