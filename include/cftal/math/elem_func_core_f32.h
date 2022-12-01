@@ -2048,7 +2048,13 @@ sinh_cosh_k(arg_t<vf_type> xc)
             // perform the scaling also for the low part
             yl *= sc.f0();
             yl *= sc.f1();
-
+#if 0
+            // slower than the lookups
+            vf_type nyh, nyl;
+            float dv= _F == hyperbolic_func::c_sinh ? -0.25f : 0.25f;
+            d_ops::div122(nyh, nyl, dv, yh, yl);
+            static_cast<void>(k0);
+#else
             vf_type nxrh, nxrl;
             vi_type nk, nidx;
             // base_type::__reduce_exp_arg(nxrh, nxrl, nidx, nk, -x);
@@ -2069,7 +2075,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
             vf_type nsc=_T::insert_exp(bias_with_sgn + nk);
             nyh *= nsc;
             nyl *= nsc;
-
+#endif
             vf_type zh, zl;
             d_ops::add12(zh, zl, yh, nyh);
             zh += (zl + yl + nyl);
