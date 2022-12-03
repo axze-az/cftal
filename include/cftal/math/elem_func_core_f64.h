@@ -2273,7 +2273,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
 
             vf_type xs2, xs2l;
             d_ops::sqr12(xs2, xs2l, x);
-#if 1
+#if 0
             constexpr
             static const double cs[]= {
                 cosh_c16, cosh_c14, cosh_c12, cosh_c10, cosh_c8,
@@ -2286,7 +2286,7 @@ sinh_cosh_k(arg_t<vf_type> xc)
             horner_comp_quick(ph, pl, xs2, p, cosh_c4);
             d_ops::unorm_mul22(ph, pl, ph, pl, xs4, xs4l);
 #else
-            // less precision and not that much faster
+            // less precision and but faster
             constexpr
             static const double cs[]= {
                 cosh_c16, cosh_c14, cosh_c12, cosh_c10, cosh_c8,
