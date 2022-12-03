@@ -112,6 +112,10 @@ namespace cftal {
             static
             vf_type
             cosh_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            tanh_k(arg_t<vf_type> x);
 #endif
 #if __CFTAL_CFG_USE_VF64_FOR_VF32_LOG__ >0
             static
@@ -329,6 +333,21 @@ cosh_k(arg_t<vf_type> x)
     y=_T::sel(isnan(x), x, y);
     return y;
 }
+
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+tanh_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type yd=f64_core::tanh_k(xd);
+    vf_type y=cvt<vf_type>(yd);
+    y=_T::sel(isnan(x), x, y);
+    return y;
+}
+
 #endif
 
 #if __CFTAL_CFG_USE_VF64_FOR_VF32_LOG__ >0
