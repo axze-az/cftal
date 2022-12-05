@@ -1148,6 +1148,15 @@ namespace cftal {
     sig(arg_t<vec<double, 8> > x);
 
 #endif
+
+    namespace native {
+
+        template <size_t _N>
+        vec<double, _N>
+        rsqrt_11b(const vec<double, _N>& x);
+
+    }
+
 }
 
 
@@ -1944,6 +1953,21 @@ cftal::sig(const vec<double, _N>& x)
     return r;
 }
 
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::native::rsqrt_11b(const vec<double, _N>& x)
+{
+    using vf_type = vec<double, _N>;
+    using vu_type = vec<uint64_t, _N>;
+    vu_type m=as<vu_type>(x);
+    const vu_type magic=0x5fe6eb50c7b537a9ULL;
+    // const vu_type magic=0x5fe6ec85e7de30daULL;
+    vu_type mi= magic - (m >> 1);
+    vf_type y=as<vf_type>(mi);
+    y = math::impl::root_r2::order4<double, false>(y, x);
+    return y;
+}
 // local variables:
 // mode: c++
 // end:

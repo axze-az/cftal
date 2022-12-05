@@ -1322,6 +1322,27 @@ namespace cftal {
 
 #endif
 
+    namespace native {
+#if defined (__SSE__)
+        vec<float, 1>
+        rsqrt_11b(const vec<float, 1>& x);
+
+        vec<float, 2>
+        rsqrt_11b(const vec<float, 2>& x);
+
+        vec<float, 4>
+        rsqrt_11b(const vec<float, 4>& x);
+#if defined (__AVX__)
+        vec<float, 8>
+        rsqrt_11b(const vec<float, 8>& x);
+#endif
+#endif
+
+        template <size_t _N>
+        vec<float, _N>
+        rsqrt_11b(const vec<float, _N>& x);
+    }
+
     // namespace for functions with reduced range and precision
     // similiar to opencl c++ 2.0
     namespace half_math {
@@ -2349,6 +2370,60 @@ cftal::sig(const vec<float, _N>& x)
     return r;
 }
 
+#if defined(__SSE__)
+inline
+cftal::vec<float, 1>
+cftal::native::rsqrt_11b(const vec<float, 1>& x)
+{
+    return _mm_cvtss_f32(_mm_rsqrt_ps(_mm_set1_ps(x())));
+}
+
+inline
+cftal::vec<float, 2>
+cftal::native::rsqrt_11b(const vec<float, 2>& x)
+{
+    vec<float, 4> xx(x, x);
+    vec<float, 4> y =_mm_rsqrt_ps(xx());
+    return low_half(y);
+}
+
+inline
+cftal::vec<float, 4>
+cftal::native::rsqrt_11b(const vec<float, 4>& x)
+{
+    return _mm_rsqrt_ps(x());
+}
+
+#if defined (__AVX__)
+inline
+cftal::vec<float, 8>
+cftal::native::rsqrt_11b(const vec<float, 8>& x)
+{
+    return _mm256_rsqrt_ps(x());
+}
+#endif
+
+#endif // __SSE__
+
+template <std::size_t _N>
+inline
+cftal::vec<float, _N>
+cftal::native::rsqrt_11b(const vec<float, _N>& x)
+{
+#if defined (__SSE__)
+    return vec<float, _N>(rsqrt_11b(low_half(x)),
+			  rsqrt_11b(high_half(x)));
+#else
+    using vf_type = vec<float, _N>;
+    using vi_type = vec<int32_t, _N>;
+    vi_type m=as<vi_type>(x);
+    const vi_type magic = 0x5f3759df;
+    vi_type mi= magic - (m >> 1);
+    vf_type y=as<vf_type>(mi);
+    y = math::impl::root_r2::order3<float, false>(y, x);
+    return y;
+#endif
+}
 
 template <std::size_t _N>
 cftal::vec<float, _N>
