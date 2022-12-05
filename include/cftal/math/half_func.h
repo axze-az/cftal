@@ -644,7 +644,7 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
 half_rsqrt(arg_t<vf_type> x)
 {
-#if 1
+#if 0
     vf_type y=1.0f/sqrt(x);
 #else
     vf_type y=::cftal::native::rsqrt_11b(x);
@@ -658,7 +658,13 @@ typename cftal::math::half_func<float, _T>::vf_type
 cftal::math::half_func<float, _T>::
 half_sqrt(arg_t<vf_type> x)
 {
+#if 1
     return sqrt(x);
+#else
+    vf_type y=::cftal::native::rsqrt_11b(x);
+    y = impl::root_r2::order2<float, false>(y, x)*x;
+    return y;
+#endif
 }
 
 // local variables:
