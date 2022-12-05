@@ -306,7 +306,7 @@ exp10_px2_k(arg_t<vf_type> x)
 #if __CFTAL_CFG_USE_VF64_FOR_VF32_HYPERBOLIC_FUNCS__>0
 template <typename _T>
 inline
-__attribute__((__always_inline__))
+__attribute__((__always_inline__,__flatten__))
 typename cftal::math::elem_func_wrapper<float, _T>::vf_type
 cftal::math::elem_func_wrapper<float, _T>::
 sinh_k(arg_t<vf_type> x)
@@ -321,7 +321,7 @@ sinh_k(arg_t<vf_type> x)
 
 template <typename _T>
 inline
-__attribute__((__always_inline__))
+__attribute__((__always_inline__,__flatten__))
 typename cftal::math::elem_func_wrapper<float, _T>::vf_type
 cftal::math::elem_func_wrapper<float, _T>::
 cosh_k(arg_t<vf_type> x)

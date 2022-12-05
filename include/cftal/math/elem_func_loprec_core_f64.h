@@ -516,7 +516,14 @@ sinh_cosh_k(arg_t<vf_type> xc)
             vf_type ny = __exp_tbl_k(nxr, nidx, nk);
 #else
             // vf_type ny=0.5/(2.0*y);
+#if 0
+            const auto divide=[](const auto& v)->auto {
+                return decltype(v)(0.25/v);
+            };
+            vf_type ny=compress_exec_expand(divide, x_medium, y);
+#else
             vf_type ny=0.25/y;
+#endif
 #endif
             vf_type z;
             if (_F == hyperbolic_func::c_sinh)

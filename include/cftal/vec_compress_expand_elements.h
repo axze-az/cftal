@@ -290,6 +290,28 @@ namespace cftal {
 	};
 #endif
     }
+
+    // execute ag(a) only to the left n elements rounded up to the next
+    // multiple of 2
+    template <typename _T, size_t _N, typename _ALG>
+    vec<_T, _N>
+    exec_compressed(const _ALG& ag, size_t n, const vec<_T, _N>& a);
+
+    // execute ag(a) if n > 0
+    template <typename _T, typename _ALG>
+    vec<_T, 1>
+    exec_compressed(const _ALG& ag, size_t n, const vec<_T, 1>& a);
+
+    template <typename _T, size_t _N, typename _ALG>
+    vec<_T, _N>
+    compress_exec_expand(const _ALG& alg,
+                         const mask_t<vec<_T, _N> >& m,
+                         const vec<_T, _N>& a);
+
+    template <typename _T, typename _ALG>
+    vec<_T, 1>
+    compress_exec_expand(const _ALG& ag, const mask_t<vec<_T, 1> >& m,
+                         const vec<_T, 1>& a);
 }
 
 template <typename _T, size_t _N>
@@ -497,6 +519,73 @@ expand(const vec<_T, 4>& src,
     return std::make_pair(r, n);
 }
 #endif
+
+template <typename _T, cftal::size_t _N, typename _ALG>
+cftal::vec<_T, _N>
+cftal::
+exec_compressed(const _ALG& alg,
+                size_t n,
+                const vec<_T, _N>& a)
+{
+    constexpr const size_t _N2 = _N>>1;
+    using v_t = vec<_T, _N>;
+    using vh_t = vec<_T, _N2>;
+    if (n > _N2) {
+        return alg(a);
+    }
+    const vh_t hh(_T(0));
+    vh_t lh=exec_compressed(alg, n, low_half(a));
+    return v_t(lh, hh);
+}
+
+template <typename _T, typename _ALG>
+cftal::vec<_T, 1>
+cftal::
+exec_compressed(const _ALG& alg,
+                size_t n,
+                const vec<_T, 1>& a)
+{
+    if (n)
+        return alg(a);
+    return vec<_T, 1>(_T(0));
+}
+
+template <typename _T, cftal::size_t _N, typename _ALG>
+cftal::vec<_T, _N>
+cftal::
+compress_exec_expand(const _ALG& alg,
+                     const mask_t<vec<_T, _N> >& m,
+                     const vec<_T, _N>& a)
+{
+    constexpr const size_t _N2 = _N>>1;
+    using v_t = vec<_T, _N>;
+    using vh_t =  vec<_T, _N2>;
+
+    vec<bit, _N> mc=compress_mask(m);
+    size_t elems=popcnt(mc());
+    if (elems > _N2) {
+        return alg(a);
+    }
+    std::pair<v_t, size_t> ca_s=compress_elements(a, m);
+    const vh_t hh(_T(0));
+    vh_t lh=exec_compressed(alg, elems, low_half(ca_s.first));
+    v_t cr(lh, hh);
+    return expand_elements(cr, m).first;
+}
+
+template <typename _T, typename _ALG>
+cftal::vec<_T, 1>
+cftal::
+compress_exec_expand(const _ALG& alg,
+                     const mask_t<vec<_T, 1> >& m,
+                     const vec<_T, 1>& a)
+{
+    if (impl::mask_to_bool<_T>::v(m())==true) {
+        // if the mask is true, execute alg
+        return alg(a);
+    }
+    return vec<_T, 1>(_T(0));
+}
 
 /*
  * Local variables:
