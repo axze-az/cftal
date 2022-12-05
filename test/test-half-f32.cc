@@ -302,7 +302,7 @@ namespace cftal {
 int main_exp(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -329,7 +329,7 @@ int main_exp(const cftal::test::pgm_args& ags)
 int main_exp2(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -356,7 +356,7 @@ int main_exp2(const cftal::test::pgm_args& ags)
 int main_exp10(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -384,7 +384,7 @@ int main_exp10(const cftal::test::pgm_args& ags)
 int main_log(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -414,7 +414,7 @@ int main_log(const cftal::test::pgm_args& ags)
 int main_log2(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -445,7 +445,7 @@ int main_log2(const cftal::test::pgm_args& ags)
 int main_log10(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -477,7 +477,7 @@ int main_log10(const cftal::test::pgm_args& ags)
 int main_sin(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -507,7 +507,7 @@ int main_sin(const cftal::test::pgm_args& ags)
 int main_cos(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -534,7 +534,7 @@ int main_cos(const cftal::test::pgm_args& ags)
 int main_tan(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -562,7 +562,7 @@ int main_tan(const cftal::test::pgm_args& ags)
 int main_rsqrt(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -591,7 +591,7 @@ int main_rsqrt(const cftal::test::pgm_args& ags)
 int main_sqrt(const cftal::test::pgm_args& ags)
 {
     using namespace cftal::test;
-    cpu_times_to_stdout tt;    
+    cpu_times_to_stdout tt;
     std::cout << std::setprecision(18) << std::scientific;
     std::cerr << std::setprecision(18) << std::scientific;
 
@@ -639,7 +639,7 @@ int main(int argc, char** argv)
     r |= main_rsqrt(ags);
     r |= main_sqrt(ags);
 #else
-    r |= main_exp(ags);
+    r |= main_sqrt(ags);
 #endif
     return r;
 }
