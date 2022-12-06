@@ -2587,7 +2587,8 @@ __reduce_log_arg(vf_type& xr,
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
     constexpr const int64_t one=0x3ff0000000000000LL;
-    h += (one - offs.s64());
+    constexpr const int64_t delta=one - offs.s64();
+    h += delta;
     vi2_type h2=as<vi2_type>(h);
     constexpr const int64_t msk=0x000fffffffffffffLL;
     h = (h & msk) + offs.s64();
@@ -2615,7 +2616,8 @@ __reduce_log_arg(vf_type& xr,
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
     vli_type h=as<vli_type>(x);
     constexpr const int64_t one=0x3ff0000000000000LL;
-    h += (one - offs.s64());
+    constexpr const int64_t delta=one - offs.s64();
+    h += delta;
     vi2_type h2=as<vi2_type>(h);
     constexpr const int64_t msk=0x000fffffffffffffLL;
     h &= msk;

@@ -2368,7 +2368,8 @@ __reduce_log_arg(vf_type& xr,
                          vi_type(-_T::bias()));
     vi_type hx = _T::as_int(x);
     /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    hx += (0x3f800000 - offs.s32());
+    constexpr const int32_t delta=0x3f800000 - offs.s32();
+    hx += delta;
     k += (hx>>23);
     hx = (hx&0x007fffff) + offs.s32();
     xr = _T::as_float(hx);
@@ -2395,7 +2396,8 @@ __reduce_log_arg(vf_type& xr,
                          vi_type(-_T::bias()));
     vi_type hx = _T::as_int(x);
     // reduce x into [offs, 2*offs]
-    hx += (0x3f800000 - offs.s32());
+    constexpr const int32_t delta=0x3f800000 - offs.s32();
+    hx += delta;
     k += (hx>>23);
     vi_type m = (hx&0x007fffff);
     hx = m + offs.s32();
