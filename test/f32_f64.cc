@@ -46,6 +46,121 @@ float cftal::test::make_float(unsigned sgn, unsigned exp, uint32_t sig)
     return t._d;
 }
 
+cftal::test::ulp_stats::deviations::deviations()
+{
+#if __USE_ARRAY_DEVIATIONS>0
+    for (int i=1; i<32; ++i) {
+        int32_t k=(1 << (32-i));
+        _v[i].first = -k;
+        _v[_size-1-i].first = k;
+    }
+    _v[_zero_offset].first=0;
+    for (int i=1; i<=lin_max; ++i) {
+        _v[_zero_offset + i].first = i;
+        _v[_zero_offset - i].first =-i;
+    }
+#endif
+}
+
+void
+cftal::test::ulp_stats::deviations::inc(int32_t ulp)
+{
+#if __USE_ARRAY_DEVIATIONS>0
+    int32_t aulp=std::abs(ulp);
+    int32_t rulp;
+    if (__likely(aulp <= lin_max)) {
+        // std::numeric_limits<int32_t>::min() also lands here
+        rulp = ulp;
+    } else {
+        // round up/down to the next power of 2
+        uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1));
+        rulp = ulp < 0 ?
+               -int32_t(log2_u)-lin_max : int32_t(log2_u)+lin_max;
+    }
+    ++_v[_zero_offset + rulp].second;
+#else
+    int32_t aulp=std::abs(ulp);
+    int32_t rulp;
+    if (__likely(aulp <= lin_max)) {
+        // std::numeric_limits<int32_t>::min() also lands here
+        rulp = ulp;
+    } else {
+        // round up/down to the next power of 2
+        uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1));
+        rulp= 1U << log2_u;
+        rulp= ulp < 0 ? -rulp : rulp;
+    }
+    std::lock_guard<lock_type> _lck(_mtx);
+    _v[rulp] += 1;
+#endif
+}
+
+bool
+cftal::test::ulp_stats::deviations::empty()
+    const
+{
+#if __USE_ARRAY_DEVIATIONS>0
+    for (int i=0; i<std::size(_v); ++i) {
+        if (_v[i].second != 0)
+            return false;
+    }
+    return true;
+#else
+    return _v.empty();
+#endif
+}
+
+cftal::test::ulp_stats::deviations::const_iterator
+cftal::test::ulp_stats::deviations::begin()
+    const
+{
+    return std::cbegin(_v);
+}
+
+cftal::test::ulp_stats::deviations::const_iterator
+cftal::test::ulp_stats::deviations::end()
+    const
+{
+    return std::cend(_v);
+}
+
+cftal::test::ulp_stats::deviations::const_iterator
+cftal::test::ulp_stats::deviations::min_ulp()
+    const
+{
+#if __USE_ARRAY_DEVIATIONS>0
+    const_iterator p=nullptr;
+    for (int i=0; i<std::size(_v); ++i) {
+        if (_v[i].second != 0) {
+            p= _v+i;
+            break;
+        }
+    }
+    return p;
+#else
+    return std::cbegin(_v);
+#endif
+}
+
+cftal::test::ulp_stats::deviations::const_iterator
+cftal::test::ulp_stats::deviations::max_ulp()
+    const
+{
+#if __USE_ARRAY_DEVIATIONS>0
+    const value_type* p=nullptr;
+    for (int i=std::size(_v); i>0; --i) {
+        int o=i-1;
+        if (_v[o].second != 0) {
+            p= _v+o;
+            break;
+        }
+    }
+    return p;
+#else
+    return std::prev(std::cend(_v));
+#endif
+}
+
 void
 cftal::test::ulp_stats::
 inc(int32_t ulp, bool is_nan,
@@ -62,19 +177,7 @@ inc(int32_t ulp, bool is_nan,
         if (nan_unexpected)
             _nans_unexpected += 1;
     } else {
-        int32_t aulp=std::abs(ulp);
-        int32_t rulp;
-        if (__likely(aulp <= lin_max)) {
-            // std::numeric_limits<int32_t>::min() also lands here
-            rulp = ulp;
-        } else {
-            // round up/down to the next power of 2
-            uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1));
-            rulp= 1U << log2_u;
-            rulp= ulp < 0 ? -rulp : rulp;
-        }
-        std::lock_guard<lock_type> _lck(_mtx_devs);
-        _devs[rulp] += 1;
+        _devs.inc(ulp);
     }
 }
 
@@ -118,9 +221,11 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats_to_stream& uss)
       << us._nans_unexpected << '\n';
     double _ulps=0.0;
     for (const auto& t : us._devs) {
+        if (!t.second)
+            continue;
         if (pr_hist) {
             int32_t tfa=std::abs(t.first);
-            if (tfa <= us.lin_max) {
+            if (tfa <= us._devs.lin_max) {
                 // std::numeric_limits<int32_t>::min() also lands here
                 s << std::setw(27) << t.first << " "
                   << std::setw(11) << t.second << '\n';
@@ -144,9 +249,9 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats_to_stream& uss)
     s << "ulps: " << _ulps;
     if (!us._devs.empty()) {
         s << " , max delta: "
-          << std::begin(us._devs)->first
+          << us._devs.min_ulp()->first
           << " / "
-          << std::prev(std::end(us._devs))->first
+          << us._devs.max_ulp()->first
           << " bits\n";
     } else {
         s << '\n';

@@ -42,9 +42,6 @@ namespace cftal {
         float make_float(unsigned sgn, unsigned exp, uint32_t sig);
 
         struct alignas(64) ulp_stats {
-
-            using lock_type = spinlock;
-
             // count of operations with nonzero ulp
             std::atomic<uint64_t> _ulps;
             char _pad0[64-sizeof(_ulps)];
@@ -64,16 +61,42 @@ namespace cftal {
             //                   bit 1 not tested/tested (1/0)
             std::atomic<uint32_t> _faithful;
             char _pad5[64-sizeof(_faithful)];
-            // mutex protecting _devs;
-            lock_type _mtx_devs;
-            char _pad6[64-sizeof(_mtx_devs)];
-            // deviations of x ulp's n times, deviations larger/smaller
-            // than lin_max are grouped together into ranges (2^(n-1), 2^n]
-            // where 2^(n-1) < x <= 2^n if x positive ....
-            static const int32_t lin_max=32;
-            static_assert((lin_max & (lin_max-1))==0,
-                          "lin_max must be a power of 2");
-            std::map<int32_t, uint64_t> _devs;
+#define __USE_ARRAY_DEVIATIONS 1
+            struct alignas(64) deviations {
+                // deviations of x ulp's n times, deviations larger/smaller
+                // than lin_max are grouped together into ranges (2^(n-1), 2^n]
+                // where 2^(n-1) < x <= 2^n if x positive ....
+                static const int32_t lin_max=32;
+                static_assert((lin_max & (lin_max-1))==0,
+                            "lin_max must be a power of 2");
+#if __USE_ARRAY_DEVIATIONS > 0
+                struct alignas(64) value_type {
+                    std::atomic<uint64_t> second;
+                    int32_t first;
+                };
+                constexpr static
+                const uint32_t _zero_offset =31 + lin_max + 1;
+                constexpr static
+                const uint32_t _size= 2*_zero_offset + 1;
+                value_type _v[_size];
+                using const_iterator= const value_type*;
+#else
+                using lock_type = spinlock;
+                lock_type _mtx;
+                char _pad6[64-sizeof(_mtx)];
+                using map_type=std::map<int32_t, uint64_t>;
+                map_type _v;
+                using const_iterator=map_type::const_iterator;
+#endif
+                deviations();
+                void inc(int32_t ulp);
+                const_iterator begin() const;
+                const_iterator end() const;
+                bool empty() const;
+                const_iterator min_ulp() const;
+                const_iterator max_ulp() const;
+            };
+            deviations _devs;
             // constructor.
             ulp_stats()
                 : _ulps(0), _nans(0),
@@ -81,7 +104,6 @@ namespace cftal {
                   _nans_not_calculated(0),
                   _cnt(0),
                   _faithful(3),
-                  _mtx_devs(),
                   _devs() {};
             // inrecrement the _ulps, ...
             void inc(int32_t ulp,
