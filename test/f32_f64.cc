@@ -49,8 +49,8 @@ float cftal::test::make_float(unsigned sgn, unsigned exp, uint32_t sig)
 cftal::test::ulp_stats::deviations::deviations()
 {
 #if __USE_ARRAY_DEVIATIONS>0
-    for (int i=1; i<32; ++i) {
-        int32_t k=(1 << (32-i));
+    for (int i=0; i<32; ++i) {
+        int64_t k=(1LL << (31-i));
         _v[i].first = -k;
         _v[_size-1-i].first = k;
     }
@@ -73,14 +73,14 @@ cftal::test::ulp_stats::deviations::inc(int32_t ulp)
         rulp = ulp;
     } else {
         // round up/down to the next power of 2
-        uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1));
+        uint32_t log2_u= sizeof(int32_t)*8-lzcnt(uint32_t(aulp-1))+1;
         rulp = ulp < 0 ?
                -int32_t(log2_u)-lin_max : int32_t(log2_u)+lin_max;
     }
     ++_v[_zero_offset + rulp].second;
 #else
     int32_t aulp=std::abs(ulp);
-    int32_t rulp;
+    int64_t rulp;
     if (__likely(aulp <= lin_max)) {
         // std::numeric_limits<int32_t>::min() also lands here
         rulp = ulp;
@@ -224,18 +224,18 @@ cftal::test::operator<<(std::ostream& s, const ulp_stats_to_stream& uss)
         if (!t.second)
             continue;
         if (pr_hist) {
-            int32_t tfa=std::abs(t.first);
+            int64_t tfa=std::abs(t.first);
             if (tfa <= us._devs.lin_max) {
                 // std::numeric_limits<int32_t>::min() also lands here
                 s << std::setw(27) << t.first << " "
                   << std::setw(11) << t.second << '\n';
             } else if (t.first < 0) {
-                int32_t ts= -((tfa>>1)+1);
+                int64_t ts= -((tfa>>1)+1);
                 s << std::setw(11) << t.first << " ... "
                   << std::setw(11) << ts << " "
                   << std::setw(11) << t.second << '\n';
             } else if (t.first > 0) {
-                int32_t ts= (tfa>>1)+1;
+                int64_t ts= (tfa>>1)+1;
                 s << std::setw(11) << ts << " ... "
                   << std::setw(11) << t.first << " "
                   << std::setw(11) << t.second << '\n';

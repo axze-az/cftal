@@ -72,7 +72,7 @@ namespace cftal {
 #if __USE_ARRAY_DEVIATIONS > 0
                 struct alignas(64) value_type {
                     std::atomic<uint64_t> second;
-                    int32_t first;
+                    int64_t first;
                 };
                 constexpr static
                 const uint32_t _zero_offset =31 + lin_max + 1;
@@ -84,7 +84,7 @@ namespace cftal {
                 using lock_type = spinlock;
                 lock_type _mtx;
                 char _pad6[64-sizeof(_mtx)];
-                using map_type=std::map<int32_t, uint64_t>;
+                using map_type=std::map<int64_t, uint64_t>;
                 map_type _v;
                 using const_iterator=map_type::const_iterator;
 #endif

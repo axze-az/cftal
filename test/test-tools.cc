@@ -16,12 +16,54 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include <iostream>
+#include <iomanip>
 #include <cftal/test/f32_f64.h>
+#include <cftal/test/cpu_times.h>
 
-int main(int argc, char** argv)
+namespace cftal{
+    namespace test {
+
+	bool
+	test_ulp_stats();
+
+	bool
+	test_distance();
+    }
+}
+
+bool
+cftal::test::test_ulp_stats()
 {
-    using cftal::test::distance;
+    bool rc=true;
+    ulp_stats st;
+    for (uint64_t i=0; i<0x100000000ULL; ++i) {
+	if ((i & 0xFFFFFFFULL)==0xFFFFFFFULL) {
+	    std::cout << i << '\r' << std::flush;
+	}
+	int32_t ii=i;
+	st.inc(ii, false, false, false);
+    }
+    std::cout << std::endl;
+    uint64_t s=0;
+#if 0
+    for (size_t i=0; i<ulp_stats::deviations::_size; ++i) {
+	std::cout << std::setw(2) << i << ' '
+		  << std::setw(20) << st._devs._v[i].first
+		  << ' '  << st._devs._v[i].second << '\n';
+	s+= st._devs._v[i].second;
+    }
+    if (s != 0x100000000ULL) {
+	std::cerr << __PRETTY_FUNCTION__ << " failed\n";
+	rc=false;
+    }
+#endif
+    std::cout << st << std::endl;
+    return rc;
+}
 
+bool
+cftal::test::test_distance()
+{
     std::cout << "float: zero distances\n";
     std::cout << distance(+0.0f, +0.0f) << std::endl;
     std::cout << distance(+0.0f, -0.0f) << std::endl;
@@ -93,7 +135,14 @@ int main(int argc, char** argv)
         std::cout << distance(-min_d, min_d) << std::endl;
         min_d*= 2.0;
     }
+    return true;
+}
 
-
-    return 0 /* test_rsqrt_table()*/;
+int main(int argc, char** argv)
+{
+    cftal::test::cpu_times_to_stdout tt;
+    bool rc=true;
+    rc &= cftal::test::test_distance();
+    rc &= cftal::test::test_ulp_stats();
+    return rc==true ? 0 : 1;
 }
