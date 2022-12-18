@@ -23,6 +23,7 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
+    cpu_times_to_stdout tt;
 
     const int ulp2=1;
     const int ulp=1;
