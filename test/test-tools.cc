@@ -44,8 +44,8 @@ cftal::test::test_ulp_stats()
 	st.inc(ii, false, false, false);
     }
     std::cout << std::endl;
-    uint64_t s=0;
 #if 0
+    uint64_t s=0;
     for (size_t i=0; i<ulp_stats::deviations::_size; ++i) {
 	std::cout << std::setw(2) << i << ' '
 		  << std::setw(20) << st._devs._v[i].first
