@@ -1785,7 +1785,11 @@ namespace cftal {
         struct vbroadcastq<__m128i> {
             static
             __m128i v(__m128i a) {
+#if defined (__AVX2__)
+                return _mm_broadcastq_epi64(a);
+#else
                 return vpshufd<0, 1, 0, 1>::v(a);
+#endif
             }
             static
             __m128i v(int64_t i) {
