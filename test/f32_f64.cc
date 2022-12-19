@@ -100,7 +100,7 @@ cftal::test::ulp_stats::deviations::empty()
     const
 {
 #if __USE_ARRAY_DEVIATIONS>0
-    for (int i=0; i<std::size(_v); ++i) {
+    for (size_t i=0; i<std::size(_v); ++i) {
         if (_v[i].second != 0)
             return false;
     }
@@ -130,7 +130,7 @@ cftal::test::ulp_stats::deviations::min_ulp()
 {
 #if __USE_ARRAY_DEVIATIONS>0
     const_iterator p=nullptr;
-    for (int i=0; i<std::size(_v); ++i) {
+    for (size_t i=0; i<std::size(_v); ++i) {
         if (_v[i].second != 0) {
             p= _v+i;
             break;
