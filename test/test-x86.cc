@@ -18,6 +18,7 @@
 #if defined (__SSE2__)
 #include <iostream>
 #include <cftal/test/f32_f64.h>
+#include <cftal/test/cpu_times.h>
 #include <cftal/vec.h>
 #include <random>
 #include <sstream>
@@ -224,6 +225,7 @@ namespace cftal::test {
     bool
     expand_and_compress_masks();
 
+    bool of_bit_pack_unpack();
 }
 
 bool
@@ -337,10 +339,58 @@ cftal::test::expand_and_compress_masks()
     return r;
 }
 
+
+bool
+cftal::test::of_bit_pack_unpack()
+{
+#if !defined (__BMI2__)
+    std::cout << "test of pdep/pext emulation not possible\n";
+    return true;
+#else
+    static const uint32_t bits[]= {
+        0x55555555,
+        0xAAAAAAAA,
+        0x33333333,
+        0xCCCCCCCC,
+        0x0F0F0F0F,
+        0xF0F0F0F0
+    };
+    const uint64_t mcnt=0x1'0000'0000U;
+    const double f=100.0/double(mcnt);
+    std::cout << mcnt << " masks to check\n";
+    std::cout << std::fixed << std::setprecision(3);
+    for (uint64_t m=0; m<mcnt; ++m) {
+        uint32_t mu32=m;
+        for (auto b=std::cbegin(bits), e=std::cend(bits); b!= e; ++b) {
+            uint32_t v=*b;
+            uint32_t ref=_pdep_u32(_pext_u32(v, mu32), mu32);
+            uint32_t res=::cftal::impl::bit_unpack(
+                ::cftal::impl::bit_pack(v, mu32), mu32);
+            if (ref != res) {
+                std::cout << std::hex
+                          << "value: " << v <<  "mask: "
+                          << " expected: " << ref
+                          << " got: " << res
+                          << std::endl;
+                return false;
+            }
+        }
+        if ( (m & 0x1FFFFF) == 0x1FFFFF) {
+            std::cout << std::setw(8)
+                      << double(m)*f << "%\r" << std::flush;
+        }
+    }
+    std::cout << '\n' << __PRETTY_FUNCTION__   << " passed\n";
+    return true;
+#endif
+}
+
 int main()
 {
+    cftal::test::cpu_times_to_stdout tt;
     bool r=cftal::test::of_emul_vpshufb();
     r &= cftal::test::expand_and_compress_masks();
+    r &= cftal::test::of_bit_pack_unpack();
     return r==true;
 }
 

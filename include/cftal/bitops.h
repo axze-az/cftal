@@ -56,12 +56,12 @@ namespace cftal {
 	template <typename _U>
 	std::enable_if_t<std::is_unsigned_v<_U>, _U>
 	bit_unpack(const _U& b, const _U& mask);
-	
+
 	template <typename _U>
 	std::enable_if_t<std::is_unsigned_v<_U>, _U>
 	bit_pack(const _U& b, const _U& mask);
     }
-    
+
     // unpack the low bits of b into the positions of one bits in mask
     // in the result, other bits are set to 0
     uint32_t bit_unpack(uint32_t b, uint32_t mask);
@@ -323,40 +323,100 @@ std::enable_if_t<std::is_unsigned_v<_U>, _U>
 cftal::impl::bit_unpack(const _U& b, const _U& mask)
 {
     _U r=0;
+#if 1
+    _U s=b;
+    _U d=1;
+    _U m=mask;
+    for (uint32_t i=0; i<sizeof(_U)*8; ++i) {
+#if 1
+        _U m1= m&1;
+        _U m1s = m1 & s;
+        r = m1s ? r|d : r;
+        s = m1 ? s>>1 : s;
+#else
+	if (m & 1) {
+	    if (s & 1) {
+		r |= d;
+	    }
+	    // next source bit
+	    s >>=1;
+	}
+#endif
+	m >>=1;
+        if ((m|s)==0)
+            break;
+	// next destination bit
+	d <<=1;
+    }
+    return r;
+#else
     // source mask
     _U s=1;
     // destination mask
     _U d=1;
     // current mask
     _U m=mask;
+#pragma GCC unroll 1
+#pragma clang unroll(1)
     for (uint32_t i=0; i<sizeof(_U)*8; ++i) {
 	if (d & m) {
 	    if (s & b) {
 		r |= d;
 	    }
+	    // clear bit i in m
+	    m ^= d;
+            // if no mask bits are left, leave early
+            if (m==0)
+                break;
 	    // next source bit
 	    s <<=1;
 	}
-	// if no mask bits are left, leave early
-	m &= ~d;
-	if (m==0)
-	    break;
 	// next destination bit
 	d <<=1;
     }
     return r;
+#endif
 }
-	
+
 template <typename _U>
 std::enable_if_t<std::is_unsigned_v<_U>, _U>
-bit_pack(const _U& b, const _U& mask)
+cftal::impl::bit_pack(const _U& b, const _U& mask)
 {
     _U r=0;
+#if 1
+    _U m=mask;
+    _U s=b;
+    _U d=1;
+    for (uint32_t i=0; i<sizeof(_U)*8; ++i) {
+#if 1
+        _U m1= m & 1;
+        _U m1s= m1 & s;
+        r = m1s ? r|d : r;
+        d = m1 ? d<<1 : d;
+#else
+	if (m & 1) {
+	    if (s & 1) {
+		r |= d;
+	    }
+	    // next destination bit
+	    d <<=1;
+	}
+#endif
+	// next source bit
+	s >>=1;
+        m >>=1;
+        if ((m|s)==0)
+            break;
+    }
+    return r;
+#else
     // source mask
     _U s=1;
     // destination mask
     _U d=1;
     _U m=mask;
+#pragma GCC unroll 1
+#pragma clang unroll(1)
     for (uint32_t i=0; i<sizeof(_U)*8; ++i) {
 	if (s & m) {
 	    if (s & b) {
@@ -364,15 +424,17 @@ bit_pack(const _U& b, const _U& mask)
 	    }
 	    // next destination bit
 	    d <<=1;
+            // clear bit i in m
+            m ^=s;
+            // if no mask bits are left, leave early
+            if (m==0)
+                break;
 	}
-	// if no mask bits are left, leave early
-	m &= ~s;
-	if (m==0)
-	    break;
 	// next source bit
 	s <<=1;
     }
     return r;
+#endif
 }
 
 inline
