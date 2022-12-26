@@ -327,26 +327,33 @@ cftal::impl::bit_unpack(const _U& b, const _U& mask)
     _U s=b;
     _U d=1;
     _U m=mask;
+#pragma GCC unroll 1
+#pragma clang unroll(1)
     for (uint32_t i=0; i<sizeof(_U)*8; ++i) {
 #if 1
-        _U m1= m&1;
-        _U m1s = m1 & s;
-        r = m1s ? r|d : r;
-        s = m1 ? s>>1 : s;
-#else
-	if (m & 1) {
-	    if (s & 1) {
-		r |= d;
-	    }
-	    // next source bit
-	    s >>=1;
-	}
-#endif
-	m >>=1;
-        if ((m|s)==0)
+        _U m_and_s = m & s;
+        _U r_or_d = r|d;
+        _U s_shr_1 = s>>1;
+        r = (m_and_s & 1) ==1 ? r_or_d : r;
+        s = (m & 1) ==1 ? s_shr_1 : s;
+        if (s==0)
             break;
-	// next destination bit
-	d <<=1;
+#else
+        if (m & 1) {
+            if (s & 1) {
+                r |= d;
+            }
+            // next source bit
+            s >>=1;
+            if (s==0)
+                break;
+        }
+#endif
+        m >>=1;
+        if (m==0)
+            break;
+        // next destination bit
+        d <<=1;
     }
     return r;
 #else
@@ -387,25 +394,30 @@ cftal::impl::bit_pack(const _U& b, const _U& mask)
     _U m=mask;
     _U s=b;
     _U d=1;
+#pragma GCC unroll 1
+#pragma clang unroll(1)
     for (uint32_t i=0; i<sizeof(_U)*8; ++i) {
 #if 1
-        _U m1= m & 1;
-        _U m1s= m1 & s;
-        r = m1s ? r|d : r;
-        d = m1 ? d<<1 : d;
+        _U m_and_s= m & s;
+        _U r_or_d = r|d;
+        _U d_shl_1 = d<<1;
+        r = (m_and_s & 1) ==1 ? r_or_d : r;
+        d = (m & 1) == 1? d_shl_1: d;
 #else
-	if (m & 1) {
-	    if (s & 1) {
-		r |= d;
-	    }
-	    // next destination bit
-	    d <<=1;
-	}
+        if (m & 1) {
+            if (s & 1) {
+                r |= d;
+            }
+            // next destination bit
+            d <<=1;
+        }
 #endif
-	// next source bit
-	s >>=1;
+        // next source bit
+        s >>=1;
+        if (s==0)
+            break;
         m >>=1;
-        if ((m|s)==0)
+        if (m==0)
             break;
     }
     return r;

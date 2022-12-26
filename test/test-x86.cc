@@ -368,7 +368,8 @@ cftal::test::of_bit_pack_unpack()
                 ::cftal::impl::bit_pack(v, mu32), mu32);
             if (ref != res) {
                 std::cout << std::hex
-                          << "value: " << v <<  "mask: "
+                          << " value: " << v
+                          <<  " mask: "  << mu32
                           << " expected: " << ref
                           << " got: " << res
                           << std::endl;
