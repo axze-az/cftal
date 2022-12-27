@@ -25,8 +25,8 @@ int main(int argc, char** argv)
 #if 1
     using namespace cftal::test;
     const func_domain<double> di[]={
-        // std::make_pair(-19.5, 19.5)
-        std::make_pair(-1.0, 1.0)
+        std::make_pair(-19.5, 19.5)
+        // std::make_pair(-1.0, 1.0)
     };
     const int shifts[]={0};
     int r=program<check_tanh<double>, 8, 1, 0x8000>(argc,
