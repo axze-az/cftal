@@ -1,14 +1,12 @@
 [Buildset]
-BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\n\x00c\x00f\x00t\x00a\x00l)
 
 [CMake]
-Build Directory Count=6
-Current Build Directory Index=0
+Build Directory Count=2
 Current Build Directory Index-Host System=0
-ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
-Build Directory Path=/home/axel/projects/cpplib/cftal/clang
+Build Directory Path=/home/axdev/projects/cpplib/cftal/clang
 Build Type=release
 CMake Binary=/usr/bin/cmake
 CMake Executable=/usr/bin/cmake
@@ -18,7 +16,7 @@ Install Directory=/usr/local
 Runtime=Host System
 
 [CMake][CMake Build Directory 1]
-Build Directory Path=/home/axel/projects/cpplib/cftal/gcc12
+Build Directory Path=/home/axdev/projects/cpplib/cftal/gcc12
 Build Type=release
 CMake Binary=/usr/bin/cmake
 CMake Executable=/usr/bin/cmake
@@ -26,90 +24,6 @@ Environment Profile=
 Extra Arguments=
 Install Directory=/usr/local
 Runtime=Host System
-
-[CMake][CMake Build Directory 2]
-Build Directory Path=/home/axel/projects/cpplib/cftal/distcc
-Build Type=release
-CMake Binary=/usr/bin/cmake
-CMake Executable=/usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=/usr/local
-Runtime=Host System
-
-[CMake][CMake Build Directory 3]
-Build Directory Path=/home/axel/projects/cpplib/cftal/debug
-Build Type=debug
-CMake Binary=/usr/bin/cmake
-CMake Executable=/usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=/usr/local
-Runtime=Host System
-
-[CMake][CMake Build Directory 4]
-Build Directory Path=/home/axel/projects/cpplib/cftal/avx512
-Build Type=release
-CMake Binary=/usr/bin/cmake
-CMake Executable=/usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=/usr/local
-Runtime=Host System
-
-[CMake][CMake Build Directory 5]
-Build Directory Path=/home/axel/projects/cpplib/cftal/f64f32-clang
-Build Type=release
-CMake Binary=/usr/bin/cmake
-CMake Executable=/usr/bin/cmake
-Environment Profile=
-Extra Arguments=
-Install Directory=/usr/local
-Runtime=Host System
-
-[Cppcheck]
-checkConfig=true
-checkInformation=true
-checkPerformance=true
-checkPortability=true
-checkStyle=true
-checkUnusedFunction=true
-extraParameters=--language=c++ --std=c++20
-forceCheck=true
-inconclusiveAnalysis=true
-useSystemIncludes=true
-
-[CustomDefinesAndIncludes][ProjectPath0]
-Path=.
-parseAmbiguousAsCPP=true
-parserArguments=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=c++2a
-parserArgumentsC=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=gnu11
-parserArgumentsCuda=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=c++14
-parserArgumentsOpenCL=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -cl-std=CL2.0
-
-[CustomDefinesAndIncludes][ProjectPath0][Compiler]
-Name=g++-12
-
-[Defines And Includes][Compiler]
-Name=GCC
-Path=gcc
-Type=GCC
-
-[Launch]
-Launch Configurations=
-
-[MakeBuilder]
-Additional Options=-s
-Number Of Jobs=12
 
 [Project]
 VersionControlSupport=kdevsubversion
-
-[SourceFormatter]
-text/x-c++hdr=kdevastyle||1TBS
-text/x-c++src=kdevastyle||1TBS
-text/x-chdr=kdevastyle||1TBS
-text/x-csharp=kdevastyle||1TBS
-text/x-csrc=kdevastyle||1TBS
-text/x-java=kdevastyle||1TBS
-text/x-objcsrc=kdevcustomscript||GNU_indent_GNU
