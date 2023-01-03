@@ -570,7 +570,7 @@ tanh_k(arg_t<vf_type> xc)
     }
     vmf_type x_medium=(xa > tanh_i0_right) & (xa<fc::tanh_one());
     if (__likely(_T::any_of_vmf(x_medium))) {
-        constexpr const float tmax=2.0*fc::tanh_one();
+        constexpr const double tmax=2.0*fc::tanh_one();
         vf_type xae=min(vf_type(xa+xa), vf_type(tmax));
         vf_type xr;
         vi_type k, idx;
@@ -585,6 +585,7 @@ tanh_k(arg_t<vf_type> xc)
     tanh_x=copysign(tanh_x, xc);
     return tanh_x;
 }
+
 template <typename _T>
 inline
 typename cftal::math::elem_func_loprec_core<double, _T>::vi2_type
