@@ -267,8 +267,10 @@ namespace cftal {
             // calculates %e^(xh+xl) into eh, el
             static
             void
-            exp_k2(vf_type& eh, vf_type& el,
-                   arg_t<vf_type> xh, arg_t<vf_type> xl);
+            exp_k2(vf_type& __restrict eh,
+                   vf_type& __restrict el,
+                   arg_t<vf_type> xh,
+                   arg_t<vf_type> xl);
 
             // calculates %e^(-x*x)
             static
@@ -1612,7 +1614,7 @@ exp_k(arg_t<vf_type> xc)
 template <typename _T>
 void
 cftal::math::elem_func_core<float, _T>::
-exp_k2(vf_type& eh, vf_type& el,
+exp_k2(vf_type& __restrict eh, vf_type& __restrict el,
        arg_t<vf_type> xh, arg_t<vf_type> xl)
 {
     vf_type xrh, xrl;
