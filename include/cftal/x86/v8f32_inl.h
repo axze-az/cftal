@@ -608,7 +608,7 @@ bool cftal::any_of(const v8f32::mask_type& a)
 inline
 bool cftal::none_of(const v8f32::mask_type& a)
 {
-    return x86::any_of_f32(a());
+    return x86::none_of_f32(a());
 }
 
 inline
