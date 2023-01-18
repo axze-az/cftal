@@ -33,11 +33,11 @@ namespace cftal {
             };
             struct table_t {
                 // 2^(i/n) = H + L = H*(1+F)
-                const _F _2_pow_i_n_f[EXP_N];
+                alignas(64) const _F _2_pow_i_n_f[EXP_N];
                 // 2^(i/n) high part
-                const _F _2_pow_i_n_h[EXP_N];
+                alignas(64) const _F _2_pow_i_n_h[EXP_N];
                 // 2^(i/n) low part
-                const _F _2_pow_i_n_l[EXP_N];
+                alignas(64) const _F _2_pow_i_n_l[EXP_N];
             };
             static
             const table_t _tbl;
@@ -64,11 +64,11 @@ namespace cftal {
             };
             struct table_t {
                 // 1/c for logarithm calculations in pow function
-                const _T _p_inv_c[LOG_N];
+                alignas(64) const _T _p_inv_c[LOG_N];
                 // log(c) for pow function high part
-                const _T _p_log_c_h[LOG_N];
+                alignas(64) const _T _p_log_c_h[LOG_N];
                 // log(c) for pow function low part
-                const _T _p_log_c_l[LOG_N];
+                alignas(64) const _T _p_log_c_l[LOG_N];
             };
             static
             const table_t _tbl;
@@ -100,7 +100,7 @@ namespace cftal {
                 // c0 is stored as c0h + c0l
                 ENTRIES=COUNT*(POLY_ORDER+2)
             };
-            static const double _tbl[ENTRIES];
+            alignas(64) static const double _tbl[ENTRIES];
         };
 
         template <>
@@ -113,7 +113,7 @@ namespace cftal {
                 // c0 is stored as c0h + c0l
                 ENTRIES=COUNT*(POLY_ORDER+2)
             };
-            static const float _tbl[ENTRIES];
+            alignas(64) static const float _tbl[ENTRIES];
         };
 
         extern template struct erfc_data<float>;
@@ -138,7 +138,7 @@ namespace cftal {
                 ELEMS_PER_INTERVAL=(POLY_ORDER+1)+DD_COEFFS,
                 ENTRIES = COUNT * ELEMS_PER_INTERVAL
             };
-            static const double _12_tbl[ENTRIES];
+            alignas(64) static const double _12_tbl[ENTRIES];
         };
 
         template <>
@@ -155,7 +155,7 @@ namespace cftal {
                 ELEMS_PER_INTERVAL=(POLY_ORDER+1)+DD_COEFFS,
                 ENTRIES = COUNT * ELEMS_PER_INTERVAL
             };
-            static const float _12_tbl[ENTRIES];
+            alignas(64) static const float _12_tbl[ENTRIES];
         };
 
         extern template struct lngamma_data<double>;
@@ -196,16 +196,16 @@ namespace cftal {
                 ENTRIES=INTERVALS*ELEMS
             };
             static const double _max_small_j0;
-            static const double _j0_coeffs[ENTRIES];
+            alignas(64) static const double _j0_coeffs[ENTRIES];
 
             static const double _max_small_j1;
-            static const double _j1_coeffs[ENTRIES];
+            alignas(64) static const double _j1_coeffs[ENTRIES];
 
             static const double _max_small_y0;
-            static const double _y0_coeffs[ENTRIES];
+            alignas(64) static const double _y0_coeffs[ENTRIES];
 
             static const double _max_small_y1;
-            static const double _y1_coeffs[ENTRIES];
+            alignas(64) static const double _y1_coeffs[ENTRIES];
         };
 
         extern template struct j01y01_data<double>;
@@ -234,16 +234,16 @@ namespace cftal {
                 ENTRIES=INTERVALS*ELEMS
             };
             static const float _max_small_j0;
-            static const float _j0_coeffs[ENTRIES];
+            alignas(64) static const float _j0_coeffs[ENTRIES];
 
             static const float _max_small_j1;
-            static const float _j1_coeffs[ENTRIES];
+            alignas(64) static const float _j1_coeffs[ENTRIES];
 
             static const float _max_small_y0;
-            static const float _y0_coeffs[ENTRIES];
+            alignas(64) static const float _y0_coeffs[ENTRIES];
 
             static const float _max_small_y1;
-            static const float _y1_coeffs[ENTRIES];
+            alignas(64) static const float _y1_coeffs[ENTRIES];
         };
 
         extern template struct j01y01_data<float>;

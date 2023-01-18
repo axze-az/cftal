@@ -17,7 +17,7 @@
 //
 #include "cftal/math/func_data.h"
 
-const float
+alignas(64) const float
 cftal::math::erfc_data<float>::
 _tbl[cftal::math::erfc_data<float>::ENTRIES]={
 // const float erfc_table[]={

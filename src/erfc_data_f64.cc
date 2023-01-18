@@ -17,7 +17,7 @@
 //
 #include "cftal/math/func_data.h"
 
-const double
+alignas(64) const double
 cftal::math::erfc_data<double>::
 _tbl[cftal::math::erfc_data<double>::ENTRIES]={
 // const double erfc_table[]={

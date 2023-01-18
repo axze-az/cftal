@@ -19,7 +19,7 @@
 
 const float
 cftal::math::j01y01_data<float>::_max_small_y0=+6.2829814911e+01f;
-const float
+alignas(64) const float
 cftal::math::j01y01_data<float>::_y0_coeffs[j01y01_data<float>::ENTRIES]={
     // 0
     // +1.5453591347e+00f

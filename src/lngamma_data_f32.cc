@@ -19,7 +19,7 @@
 
 template struct cftal::math::lngamma_data<float>;
 
-const float
+alignas(64) const float
 cftal::math::lngamma_data<float>::
 _12_tbl[cftal::math::lngamma_data<float>::ENTRIES]={
 // const float lngamma_12_table[]={

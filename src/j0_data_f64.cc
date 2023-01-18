@@ -19,7 +19,7 @@
 
 const double
 cftal::math::j01y01_data<double>::_max_small_j0=+1.2566272380587477641711e+02;
-const double
+alignas(64) const double
 cftal::math::j01y01_data<double>::_j0_coeffs[j01y01_data<double>::ENTRIES]={
     // 0
     // +1.2024127788478864431454e+00
