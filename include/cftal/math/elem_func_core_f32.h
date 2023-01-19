@@ -1369,6 +1369,7 @@ __exp_tbl_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
     vf_type x2=xrh*xrh;
     vf_type p2=horner(xrh, exp_c3, exp_c2);
     vf_type xrlp=xrl+x2*p2;
+    // auto lk=make_fixed_lookup_table<exp_data<float>::EXP_N, float>(idx);
     auto lk=make_variable_lookup_table<float>(idx);
     const auto& tbl=exp_data<float>::_tbl;
     vf_type tf=lk.from(tbl._2_pow_i_n_f);

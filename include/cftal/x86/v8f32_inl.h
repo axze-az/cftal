@@ -786,19 +786,30 @@ cftal::v8f32
 cftal::impl::fixed_vec_lookup_table<32, float, int32_t, 8>::
 fromp(const float* tbl) const
 {
-    vec<float, 8> r0=mem<vec<float, 8> >::load(tbl, 8);
-    vec<float, 8> r1=mem<vec<float, 8> >::load(tbl+8, 8);
-    vec<float, 8> r2=mem<vec<float, 8> >::load(tbl+16, 8);
-    vec<float, 8> r3=mem<vec<float, 8> >::load(tbl+24, 8);
-    r0=_mm256_permutevar8x32_ps(r0(), _msk);
-    r1=_mm256_permutevar8x32_ps(r1(), _msk);
-    r2=_mm256_permutevar8x32_ps(r2(), _msk);
-    r3=_mm256_permutevar8x32_ps(r3(), _msk);
+    vec<float, 8> r0, r1, r2, r3;
+    if (__likely(is_aligned_to<32>(tbl))) {
+        r0=_mm256_permutevar8x32_ps(
+            *(reinterpret_cast<const __m256*>(tbl+0)), _msk);
+        r1=_mm256_permutevar8x32_ps(
+            *(reinterpret_cast<const __m256*>(tbl+8)), _msk);
+        r2=_mm256_permutevar8x32_ps(
+            *(reinterpret_cast<const __m256*>(tbl+16)), _msk);
+        r3=_mm256_permutevar8x32_ps(
+            *(reinterpret_cast<const __m256*>(tbl+24)), _msk);
+    } else {
+        r0=mem<vec<float, 8> >::load(tbl, 8);
+        r1=mem<vec<float, 8> >::load(tbl+8, 8);
+        r2=mem<vec<float, 8> >::load(tbl+16, 8);
+        r3=mem<vec<float, 8> >::load(tbl+24, 8);
+        r0=_mm256_permutevar8x32_ps(r0(), _msk);
+        r1=_mm256_permutevar8x32_ps(r1(), _msk);
+        r2=_mm256_permutevar8x32_ps(r2(), _msk);
+        r3=_mm256_permutevar8x32_ps(r3(), _msk);
+    }
     __m256i r0i=_mm256_castps_si256(r0());
     __m256i r1i=_mm256_castps_si256(r1());
     __m256i r2i=_mm256_castps_si256(r2());
     __m256i r3i=_mm256_castps_si256(r3());
-
     __m256i r01i=x86::select_u32(_idx_gt_7, r1i, r0i);
     __m256i r23i=x86::select_u32(_idx_gt_23, r3i, r2i);
     __m256i ri=x86::select_u32(_idx_gt_15, r23i, r01i);

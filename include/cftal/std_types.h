@@ -39,6 +39,9 @@ namespace cftal {
     using std::size_t;
     using std::ptrdiff_t;
     using ssize_t = ptrdiff_t;
+
+    using std::intptr_t;
+    using std::uintptr_t;
 }
 
 // Local variables:

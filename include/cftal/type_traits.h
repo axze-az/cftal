@@ -19,6 +19,7 @@
 #define __CFTAL_TYPE_TRAITS_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/std_types.h>
 #include <type_traits>
 
 namespace cftal {
@@ -80,7 +81,21 @@ namespace cftal {
     using select_t =
 	typename std::conditional<_B, _TRUE, _FALSE>::type;
     
-    
+    // is the pointer aligned to _A bytes? _A must be
+    // a power of 2
+    template <size_t _A>
+    bool
+    is_aligned_to(const void* p);
+
+}
+
+template <cftal::size_t _A>
+inline
+bool
+cftal::is_aligned_to(const void* p)
+{
+    static_assert((_A & (_A-1))==0, "_A must be a power of 2");
+    return (intptr_t(p) & (_A-1))==0;
 }
 
 #endif

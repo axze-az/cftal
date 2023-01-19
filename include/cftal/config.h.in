@@ -56,7 +56,6 @@
 #endif
 
 #if !defined (__GNUC__) && !defined(__clang__) || (IN_KDEVELOP_PARSER>0)
-#define alignas(X)
 #define __SSSE3__
 #define __SSE41__
 #define __SSE42__
