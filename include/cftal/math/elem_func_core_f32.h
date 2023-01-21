@@ -3444,11 +3444,10 @@ tanpi_k(arg_t<vf_type> xc)
     auto q= __reduce_trigpi_arg(xrh, xrl, xc);
     vf_type t=__tan_k(xrh, xrl, q);
     vf_type xc2=xc+xc;
-    t = _T::sel(rint(xc2)==xc2 & xc != rint(xc), _T::pinf(), t);
     vf_type xn= xc - 0.5f;
     vf_type xn05=0.5f*xn;
-    vmf_type is_even_xn=rint(xn05)==xn05 & rint(xn)==xn;
-    t = _T::sel(rint(xc2)==xc2 & xc != rint(xc),
+    vmf_type is_even_xn=(rint(xn05)==xn05) & (rint(xn)==xn);
+    t = _T::sel((rint(xc2)==xc2) & (xc != rint(xc)),
 		_T::sel(is_even_xn, _T::pinf(), -_T::pinf()), t);
 
     vf_type xc05=0.5f*xc;
