@@ -408,53 +408,6 @@ calc_log2::operator()(mpfr_t y, mpfr_rnd_t rm)
 
 int
 cftal::test::mpfr_ext::
-exp10(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
-{
-    auto f=[](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
-        fpn_handle xln10(mpfr_get_prec(xx));
-        fpn_handle ln10(mpfr_get_prec(xx));
-        const_log10.load(ln10(), rm);
-        mpfr_mul(xln10(), xx, ln10(), rm);
-        int r=mpfr_exp(rr, xln10(), rm);
-        return r;
-    };
-    int r= call_ziv_func(res, x, rm, f);
-    return r;
-}
-
-int
-cftal::test::mpfr_ext::
-exp2m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
-{
-    auto f=[](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
-        fpn_handle xln2(mpfr_get_prec(xx));
-        fpn_handle ln2(mpfr_get_prec(xx));
-        const_log2.load(ln2(), rm);
-        mpfr_mul(xln2(), xx, ln2(), rm);
-        int r=mpfr_expm1(rr, xln2(), rm);
-        return r;
-    };
-    int r= call_ziv_func(res, src, rm, f);
-    return r;
-}
-
-int
-cftal::test::mpfr_ext::
-exp10m1(mpfr_t res, const mpfr_t src, mpfr_rnd_t rm)
-{
-    auto f=[](mpfr_t rr, const mpfr_t xx, mpfr_rnd_t rm)->int {
-        fpn_handle xln10(mpfr_get_prec(xx));
-        fpn_handle ln10(mpfr_get_prec(xx));
-        const_log10.load(ln10(), rm);
-        mpfr_mul(xln10(), xx, ln10(), rm);
-        int r=mpfr_expm1(rr, xln10(), rm);
-        return r;
-    };
-    return call_ziv_func(res, src, rm, f);
-}
-
-int
-cftal::test::mpfr_ext::
 exp_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
 {
     fpn_handle px2(2*mpfr_get_prec(x)+2);
@@ -506,7 +459,7 @@ exp10_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
     fpn_handle px2(2*mpfr_get_prec(x)+2);
     // exact:
     mpfr_sqr(px2(), x, MPFR_RNDN);
-    int r=exp10(res, px2(), rm);
+    int r=mpfr_exp10(res, px2(), rm);
     return r;
 }
 
@@ -518,7 +471,7 @@ exp10_mx2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm)
     // exact:
     mpfr_sqr(mx2(), x, MPFR_RNDN);
     mpfr_neg(mx2(), mx2(), MPFR_RNDN);
-    int r=exp10(res, mx2(), rm);
+    int r=mpfr_exp10(res, mx2(), rm);
     return r;
 }
 
@@ -573,39 +526,6 @@ rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm)
     return r;
 }
 
-int
-cftal::test::mpfr_ext::
-sinpi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
-{
-    int r=-1;
-    if (mpfr_nan_p(x)) {
-        r=mpfr_set(y, x, rm);
-    } else if (mpfr_inf_p(x)) {
-        mpfr_set_nan(y);
-        r=0;
-    } else {
-        if (mpfr_integer_p(x)) {
-            fpn_handle z(0.0, mpfr_get_prec(y));
-            r=mpfr_copysign(y, z(), x, rm);
-        } else {
-            auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
-                       mpfr_exp_t emax=mpfr_get_emax();
-                       mpfr_exp_t nemax=mpfr_get_emax_max();
-                       nemax = std::min(emax<<2, nemax);
-                       mpfr_set_emax(nemax);
-                       fpn_handle xxpi(mpfr_get_prec(xx));
-                       fpn_handle pi(mpfr_get_prec(xx)*2);
-                       mpfr_const_pi(pi(), MPFR_RNDN);
-                       mpfr_mul(xxpi(), xx, pi(), MPFR_RNDN);
-                       int r=mpfr_sin(yy, xxpi(), rm);
-                       mpfr_set_emax(emax);
-                       return r;
-                   };
-            r=call_ziv_func(y, x, rm, f);
-        }
-    }
-    return r;
-}
 
 bool
 cftal::test::mpfr_ext::
@@ -618,80 +538,6 @@ is_half_integer(const mpfr_t x)
     fpn_handle axmh(mpfr_get_prec(x));
     mpfr_sub_d(axmh(), ax(), 0.5, MPFR_RNDN);
     return mpfr_integer_p(axmh());
-}
-
-int
-cftal::test::mpfr_ext::
-cospi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
-{
-    int r=-1;
-    if (mpfr_nan_p(x)) {
-        r=mpfr_set(y, x, rm);
-    } else if (mpfr_inf_p(x)) {
-        mpfr_set_nan(y);
-        r=0;
-    } else {
-        if (is_half_integer(x)) {
-            fpn_handle o(0.0, mpfr_get_prec(y));
-            r=mpfr_set(y, o(), rm);
-        } else {
-            auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
-                       mpfr_exp_t emax=mpfr_get_emax();
-                       mpfr_exp_t nemax=mpfr_get_emax_max();
-                       nemax = std::min(emax<<2, nemax);
-                       mpfr_set_emax(nemax);
-                       fpn_handle xxpi(mpfr_get_prec(xx));
-                       fpn_handle pi(mpfr_get_prec(xx));
-                       mpfr_const_pi(pi(), MPFR_RNDN);
-                       mpfr_mul(xxpi(), xx, pi(), MPFR_RNDN);
-                       int r=mpfr_cos(yy, xxpi(), rm);
-                       mpfr_set_emax(emax);
-                       return r;
-                   };
-            r=call_ziv_func(y, x, rm, f);
-        }
-    }
-    return r;
-}
-
-int
-cftal::test::mpfr_ext::
-tanpi(mpfr_t y, const mpfr_t x, mpfr_rnd_t rm)
-{
-    int r=-1;
-    if (mpfr_nan_p(x)) {
-        r=mpfr_set(y, x, rm);
-    } else if (mpfr_inf_p(x)) {
-        mpfr_set_nan(y);
-        r=0;
-    } else {
-        // x * 2 ==rint(x*2) -> copysign(inf, x);
-        // x == rint(x) -> copysign(0, x);
-        if (mpfr_integer_p(x)) {
-            fpn_handle z(0.0, mpfr_get_prec(y));
-            r=mpfr_copysign(y, z(), x, rm);
-        } else if (is_half_integer(x)) {
-            fpn_handle inf(mpfr_get_prec(y));
-            mpfr_set_inf(inf(), MPFR_RNDN);
-            r=mpfr_copysign(y, inf(), x, rm);
-        } else {
-            auto f=[](mpfr_t yy, const mpfr_t xx, mpfr_rnd_t rm)->int {
-                       mpfr_exp_t emax=mpfr_get_emax();
-                       mpfr_exp_t nemax=mpfr_get_emax_max();
-                       nemax = std::min(emax<<2, nemax);
-                       mpfr_set_emax(nemax);
-                       fpn_handle xxpi(mpfr_get_prec(xx));
-                       fpn_handle pi(mpfr_get_prec(xx)*2);
-                       mpfr_const_pi(pi(), MPFR_RNDN);
-                       mpfr_mul(xxpi(), xx, pi(), MPFR_RNDN);
-                       int r=mpfr_tan(yy, xxpi(), rm);
-                       mpfr_set_emax(emax);
-                       return r;
-                   };
-            r=call_ziv_func(y, x, rm, f);
-        }
-    }
-    return r;
 }
 
 int cftal::test::mpfr_ext::

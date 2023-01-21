@@ -27,9 +27,9 @@ int main(int argc, char** argv)
         std::make_pair(-0x1.5p54, 0x1.5p54)
     };
     const int shifts[]={0};
-    int r=program<check_tanpi<double>, 1, 1, 0x80>(argc,
+    int r=program<check_tanpi<double>, 8, 1, 0x8000>(argc,
                                                      argv,
-                                                     mpfr_ext::tanpi,
+                                                     mpfr_tanpi,
                                                      di,
                                                      shifts);
     return r;

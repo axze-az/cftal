@@ -312,17 +312,17 @@ cftal::test::distance(double a, double b)
         else
             d=-2;
     }
-    // +-Inf gives min max
+    // +-Inf gives +- max-2
     if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0x7FF0'0000'0000'0000L)) {
         if (sgn_a)
-            d=std::numeric_limits<int32_t>::max();
+            d=(std::numeric_limits<int32_t>::max()-2);
         else
-            d=std::numeric_limits<int32_t>::min();
+            d=-(std::numeric_limits<int32_t>::max()-2);
     }
     // saturate d
-    static const auto d_min=int64_t(std::numeric_limits<int32_t>::min());
+    static const auto d_min=-int64_t(std::numeric_limits<int32_t>::max()-2);
     d = std::max(d, d_min);
-    static const auto d_max=int64_t(std::numeric_limits<int32_t>::max());
+    static const auto d_max=int64_t(std::numeric_limits<int32_t>::max()-2);
     d = std::min(d, d_max);
     return d;
 }
@@ -354,12 +354,12 @@ cftal::test::distance(float a, float b)
         else
             d=-2;
     }
-    // +-Inf gives min max
+    // +-Inf gives +-max-2
     if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0x7F800000)) {
         if (sgn_a)
-            d=std::numeric_limits<int32_t>::max();
+            d=std::numeric_limits<int32_t>::max()-2;
         else
-            d=std::numeric_limits<int32_t>::min();
+            d=-(std::numeric_limits<int32_t>::max()-2);
     }
     return d;
 }

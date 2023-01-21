@@ -37,11 +37,7 @@ namespace cftal {
             std::tuple<_T, _T, _T>
             r(const _T& a) {
                 std::pair<_T, _T> i;
-#if MPFR_VERSION >= MPFR_VERSION_NUM(4, 2, 0)
                 _T v=call_mpfr::func(a, mpfr_tanpi, &i);
-#else
-                _T v=call_mpfr::func(a, mpfr_ext::tanpi, &i);
-#endif
                 return std::make_tuple(v, i.first, i.second);
             }
             static

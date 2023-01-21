@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     };
     int r=program<check_exp10m1<float>, 16, 1, 0x8000>(argc,
                                                        argv,
-                                                       mpfr_ext::exp10m1,
+                                                       mpfr_exp10m1,
                                                        di,
                                                        shifts);
     return r;

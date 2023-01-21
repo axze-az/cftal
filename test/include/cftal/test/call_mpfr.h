@@ -189,18 +189,6 @@ namespace cftal {
         operator/(const fpn_handle& a, const fpn_handle& b);
 
         namespace mpfr_ext {
-            // return exp10 with res precision bits
-            int
-            exp10(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-
-            // return exp2m1 with res precision bits
-            int
-            exp2m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-
-            // return exp10m1 with res precision bits
-            int
-            exp10m1(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-
             // return exp(x*x) with res precision bits
             int
             exp_px2(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
@@ -241,18 +229,6 @@ namespace cftal {
             // return true if x is an half integer
             bool
             is_half_integer(const mpfr_t x);
-
-            // return sin(pi* x)
-            int
-            sinpi(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-
-            // return cos(pi* x)
-            int
-            cospi(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
-
-            // return tan(pi* x)
-            int
-            tanpi(mpfr_t res, const mpfr_t x, mpfr_rnd_t rm);
 
             // 1/(1+exp(-x))
             int

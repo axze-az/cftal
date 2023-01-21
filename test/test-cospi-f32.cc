@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     const int shifts[]={0};
     int r=program<check_cospi<float>, 16, 1, 0x8000>(argc,
                                                      argv,
-                                                     mpfr_ext::cospi,
+                                                     mpfr_cospi,
                                                      di,
                                                      shifts);
     return r;
