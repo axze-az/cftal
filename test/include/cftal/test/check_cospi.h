@@ -37,7 +37,11 @@ namespace cftal {
             auto
             r(const _T& a) {
                 std::pair<_T, _T> i;
+#if MPFR_VERSION >= MPFR_VERSION_NUM(4, 2, 0)
+                _T v=call_mpfr::func(a, mpfr_cospi, &i);
+#else
                 _T v=call_mpfr::func(a, mpfr_ext::cospi, &i);
+#endif
                 return std::make_tuple(v, i.first, i.second);
                 // return call_mpfr::func(a, mpfr_log2);
             }
