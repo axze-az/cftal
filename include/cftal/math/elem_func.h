@@ -816,20 +816,32 @@ template <typename _FLOAT_T, typename _TRAITS_T>
 inline
 void
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
-sinpicospi(arg_t<vf_type> d, vf_type* psin, vf_type* pcos)
+sinpicospi(arg_t<vf_type> xc, vf_type* psin, vf_type* pcos)
 {
     if ((psin!=nullptr) || (pcos!=nullptr)) {
-        vmf_type inf_nan=isinf(d) | isnan(d);
-        base_type::sinpi_cospi_k(d, psin, pcos);
+        vmf_type inf_nan=isinf(xc) | isnan(xc);
+        base_type::sinpi_cospi_k(xc, psin, pcos);
+        vf_type xci=rint(xc);
+        vmf_type xc_is_int=xci==xc;
         if (psin!=nullptr) {
+            vf_type s=*psin;
+            s=_TRAITS_T::sel(xc_is_int, copysign(vf_type(0.0), xc), s);
             *psin= _TRAITS_T::sel(inf_nan,
-                                  copysign(_TRAITS_T::nan(), d),
-                                  *psin);
+                                  copysign(_TRAITS_T::nan(), xc),
+                                  s);
         }
         if (pcos!=nullptr) {
+            vf_type c=*pcos;
+            vf_type xc2=xc+xc;
+            vmf_type is_half=(xci != xc) & (rint(xc2)==xc2);
+            c=_TRAITS_T::sel(is_half, _FLOAT_T(0.0), c);
+            vf_type xc05=_FLOAT_T(0.5)*xc;
+            vmf_type _is_even=rint(xc05)==xc05;
+            vf_type pm1=_TRAITS_T::sel(_is_even, _FLOAT_T(1.0), _FLOAT_T(-1.0));
+            c=_TRAITS_T::sel(xc_is_int, pm1, c);
             *pcos= _TRAITS_T::sel(inf_nan,
                                   _TRAITS_T::nan(),
-                                  *pcos);
+                                  c);
         }
     }
 }
@@ -841,10 +853,7 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 sinpi(arg_t<vf_type> d)
 {
     vf_type s;
-    base_type::sinpi_cospi_k(d, &s, nullptr);
-    s = _TRAITS_T::sel(isinf(d) | isnan(d),
-                       copysign(_TRAITS_T::nan(), d),
-                       s);
+    sinpicospi(d, &s, nullptr);
     return s;
 }
 
@@ -855,10 +864,7 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 cospi(arg_t<vf_type> d)
 {
     vf_type c;
-    base_type::sinpi_cospi_k(d, nullptr, &c);
-    c = _TRAITS_T::sel(isinf(d) | isnan(d),
-                       _TRAITS_T::nan(),
-                       c);
+    sinpicospi(d, nullptr, &c);
     return c;
 }
 
@@ -866,11 +872,26 @@ template <typename _FLOAT_T, typename _TRAITS_T>
 inline
 typename cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
-tanpi(arg_t<vf_type> d)
+tanpi(arg_t<vf_type> xc)
 {
-    vf_type t=base_type::tanpi_k(d);
-    t = _TRAITS_T::sel(isinf(d) | isnan(d),
-                       copysign(_TRAITS_T::nan(), d),
+    vf_type t=base_type::tanpi_k(xc);
+    vf_type xc2=xc+xc;
+    vf_type xn= xc - _FLOAT_T(0.5);
+    vf_type xn05=_FLOAT_T(0.5)*xn;
+    vmf_type is_even_xn=(rint(xn05)==xn05) & (rint(xn)==xn);
+    t = _TRAITS_T::sel((rint(xc2)==xc2) & (xc != rint(xc)),
+		        _TRAITS_T::sel(is_even_xn,
+                                       _TRAITS_T::pinf(),
+                                       -_TRAITS_T::pinf()),
+                       t);
+    vf_type xc05=_FLOAT_T(0.5)*xc;
+    vmf_type _is_even=rint(xc05)==xc05;
+    vf_type ev=copysign(vf_type(0.0), xc);
+    vf_type ov=-ev;
+    vmf_type is_int=rint(xc)==xc;
+    t = _TRAITS_T::sel(is_int, _TRAITS_T::sel(_is_even, ev, ov), t);
+    t = _TRAITS_T::sel(isinf(xc) | isnan(xc),
+                       copysign(_TRAITS_T::nan(), xc),
                        t);
     return t;
 }

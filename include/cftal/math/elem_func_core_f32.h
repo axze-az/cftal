@@ -3420,18 +3420,6 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
     vf_type xrh, xrl;
     auto q=__reduce_trigpi_arg(xrh, xrl, xc);
     __sin_cos_k(xrh, xrl, q, ps, pc);
-    if (ps != nullptr) {
-        vf_type s=*ps;
-        *ps=_T::sel(rint(xc)==xc, copysign(vf_type(0.0f), xc), s);
-    }
-    if (pc != nullptr) {
-        vf_type c=*pc;
-        vf_type xi=rint(xc);
-        vf_type xc2=xc+xc;
-        vmf_type is_half=(xi != xc) & (rint(xc2)==xc2);
-        c=_T::sel(is_half, 0.0f, c);
-        *pc=_T::sel((xi==xc) & (abs(xc)>=0x1p25f), 1.0, c);
-    }
 }
 
 template <typename _T>
@@ -3443,20 +3431,6 @@ tanpi_k(arg_t<vf_type> xc)
     vf_type xrh, xrl;
     auto q= __reduce_trigpi_arg(xrh, xrl, xc);
     vf_type t=__tan_k(xrh, xrl, q);
-    vf_type xc2=xc+xc;
-    vf_type xn= xc - 0.5f;
-    vf_type xn05=0.5f*xn;
-    vmf_type is_even_xn=(rint(xn05)==xn05) & (rint(xn)==xn);
-    t = _T::sel((rint(xc2)==xc2) & (xc != rint(xc)),
-		_T::sel(is_even_xn, _T::pinf(), -_T::pinf()), t);
-
-    vf_type xc05=0.5f*xc;
-    vmf_type _is_even=rint(xc05)==xc05;
-    vf_type ev=copysign(vf_type(0.0), xc);
-    vf_type ov=-ev;
-    vmf_type is_int=rint(xc)==xc;
-    t = _T::sel(is_int, _T::sel(_is_even, ev, ov), t);
-
     return t;
 }
 
