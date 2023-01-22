@@ -3886,17 +3886,21 @@ sinpi_cospi_k(arg_t<vf_type> xc, vf_type* ps, vf_type* pc)
     vf_type xrh, xrl;
     auto q=__reduce_trigpi_arg(xrh, xrl, xc);
     __sin_cos_k(xrh, xrl, q, ps, pc);
+    vf_type xci=rint(xc);
+    vmf_type xc_is_int=xci==xc;
     if (ps != nullptr) {
         vf_type s=*ps;
-        *ps=_T::sel(rint(xc)==xc, copysign(vf_type(0.0), xc), s);
+        *ps=_T::sel(xc_is_int, copysign(vf_type(0.0), xc), s);
     }
     if (pc != nullptr) {
         vf_type c=*pc;
-        vf_type xi=rint(xc);
         vf_type xc2=xc+xc;
-        vmf_type is_half=(xi != xc) & (rint(xc2)==xc2);
+        vmf_type is_half=(xci != xc) & (rint(xc2)==xc2);
         c=_T::sel(is_half, 0.0, c);
-        *pc=_T::sel((xi==xc) & (abs(xc)>=0x1p54), 1.0, c);
+        vf_type xc05=0.5*xc;
+        vmf_type _is_even=rint(xc05)==xc05;
+        vf_type pm1=_T::sel(_is_even, 1.0, -1.0);
+        *pc=_T::sel(xc_is_int, pm1, c);
     }
 }
 
