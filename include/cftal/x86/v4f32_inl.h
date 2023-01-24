@@ -797,6 +797,53 @@ fromp(const float* tbl) const
     return low_half(r);
 }
 
+inline
+cftal::impl::fixed_vec_lookup_table<32, float, int32_t, 4>::
+fixed_vec_lookup_table(const vec<int32_t, 4>& idx)
+    : _msk(idx()),
+      _idx_gt_7(_mm_cmpgt_epi32(idx(), _mm_set1_epi32(7))),
+      _idx_gt_15(_mm_cmpgt_epi32(idx(), _mm_set1_epi32(15))),
+      _idx_gt_23(_mm_cmpgt_epi32(idx(), _mm_set1_epi32(23)))
+{
+}
+
+inline
+cftal::v4f32
+cftal::impl::fixed_vec_lookup_table<32, float, int32_t, 4>::
+fromp(const float* tbl) const
+{
+    __m256i m=_mm256_castsi128_si256(_msk);
+    __m256 r0, r1, r2, r3;
+    if (__likely(is_aligned_to<32>(tbl))) {
+        r0=_mm256_permutevar8x32_ps(
+            *(reinterpret_cast<const __m256*>(tbl+0)), m);
+        r1=_mm256_permutevar8x32_ps(
+            *(reinterpret_cast<const __m256*>(tbl+8)), m);
+        r2=_mm256_permutevar8x32_ps(
+            *(reinterpret_cast<const __m256*>(tbl+16)), m);
+        r3=_mm256_permutevar8x32_ps(
+            *(reinterpret_cast<const __m256*>(tbl+24)), m);
+    } else {
+        r0=_mm256_loadu_ps(tbl);
+        r1=_mm256_loadu_ps(tbl+8);
+        r2=_mm256_loadu_ps(tbl+16);
+        r3=_mm256_loadu_ps(tbl+24);
+        r0=_mm256_permutevar8x32_ps(r0, m);
+        r1=_mm256_permutevar8x32_ps(r1, m);
+        r2=_mm256_permutevar8x32_ps(r2, m);
+        r3=_mm256_permutevar8x32_ps(r3, m);
+    }
+    __m128i r0i=_mm256_castsi256_si128(_mm256_castps_si256(r0));
+    __m128i r1i=_mm256_castsi256_si128(_mm256_castps_si256(r1));
+    __m128i r2i=_mm256_castsi256_si128(_mm256_castps_si256(r2));
+    __m128i r3i=_mm256_castsi256_si128(_mm256_castps_si256(r3));
+    __m128i r01i=x86::select_u32(_idx_gt_7, r1i, r0i);
+    __m128i r23i=x86::select_u32(_idx_gt_23, r3i, r2i);
+    __m128i ri=x86::select_u32(_idx_gt_15, r23i, r01i);
+    vec<float, 4> r(_mm_castsi128_ps(ri));
+    return r;
+}
+
 #endif
 
 

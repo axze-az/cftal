@@ -233,6 +233,20 @@ namespace cftal {
             vec<float, 4>
             fromp(const float*) const;
         };
+
+        template <>
+        class fixed_vec_lookup_table<32, float, int32_t, 4> {
+        private:
+            __m128i _msk;
+            __m128i _idx_gt_7;
+            __m128i _idx_gt_15;
+            __m128i _idx_gt_23;
+        public:
+            fixed_vec_lookup_table(const vec<int32_t, 4>& idx);
+            vec<float, 4>
+            fromp(const float* tbl) const;
+        };
+
     }
 #endif
 
