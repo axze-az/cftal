@@ -312,7 +312,7 @@ vec(init_list<float> l)
 inline
 cftal::vec<float, 2>::
 vec(const vec<float, 1>& lh, const vec<float, 1>& hh)
-    : vec{lh(), hh()}
+    : _v(_mm_setr_ps(lh(), hh(), 0.0f, 0.0f))
 {
 }
 
@@ -332,12 +332,6 @@ cftal::mem<cftal::vec<float, 2> >::load(const float* p, std::size_t s)
     __m128 v;
     switch (s) {
     default:
-    case 4:
-        v = _mm_loadu_ps(p);
-        break;
-    case 3:
-        v = _mm_setr_ps(p[0], p[1], p[2], p[2]);
-        break;
     case 2:
         v = _mm_setr_ps(p[0], p[1], p[1], p[1]);
         break;
@@ -359,7 +353,9 @@ inline
 void
 cftal::mem<cftal::vec<float, 2>>::store(float* p, const vec<float, 2>& v)
 {
-    _mm_storeu_ps(p, v());
+    double d=_mm_cvtsd_f64(_mm_castps_pd(v()));
+    double* pp=reinterpret_cast<double*>(p);
+    *pp = d;
 }
 
 inline
