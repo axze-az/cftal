@@ -19,6 +19,9 @@
 #define __CFTAL_X86_V2F32_INL__ 1
 
 #include <cftal/config.h>
+
+#if __CFTAL_CFG_USE_X86_V2F32__ > 0
+
 #include <cftal/types.h>
 #include <cftal/constants.h>
 #include <cftal/math/misc.h>
@@ -849,8 +852,7 @@ fromp(const float* tbl) const
 }
 
 #endif
-
-
+#endif
 // Local variables:
 // mode: c++
 // end:

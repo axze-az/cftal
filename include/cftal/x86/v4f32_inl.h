@@ -302,7 +302,7 @@ vec(init_list<float> l)
 {
 }
 
-#if __CFTAL_CFG_USE_V2F32__==0
+#if __CFTAL_CFG_USE_X86_V2F32__==0
 inline
 cftal::vec<float, 4>::
 vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
@@ -371,7 +371,7 @@ inline
 cftal::vec<float, 2>
 cftal::low_half(const vec<float, 4>& v)
 {
-#if __CFTAL_CFG_USE_V2F32__==0
+#if __CFTAL_CFG_USE_X86_V2F32__==0
     return vec<float, 2>{extract<0>(v), extract<1>(v)};
 #else
     return v();
@@ -382,7 +382,7 @@ inline
 cftal::vec<float, 2>
 cftal::high_half(const vec<float, 4>& v)
 {
-#if __CFTAL_CFG_USE_V2F32__==0
+#if __CFTAL_CFG_USE_X86_V2F32__==0
     return vec<float, 2>{extract<2>(v), extract<3>(v)};
 #else
     return permute<2, 3, 2, 3>(v)();
@@ -479,7 +479,7 @@ cftal::permute(const v4f32& s, const v4s32& idx)
     return x86::permute_v4f32_v4s32(s(), idx());
 }
 
-#if __CFTAL_CFG_USE_V2F32__==0
+#if __CFTAL_CFG_USE_X86_V2F32__==0
 inline
 cftal::v2f32 cftal::sqrt(const v2f32& a)
 {
