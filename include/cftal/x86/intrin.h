@@ -85,9 +85,9 @@ __m128d
 cftal::x86::
 _mm_cvtf64_sd(double v)
 {
-#if defined (__x86_64__) && (defined (__GCC__) || defined (__clang__))
+#if defined (__x86_64__) && (defined (__GNUC__) && !defined (__clang__))
     __m128d r;
-    __asm__ __volatile__ ("" : "=x"(r) : "x"(v) );
+    __asm__ __volatile__ ("" : "=x"(r) : "0"(v) );
     return r;
 #else
     return _mm_setr_pd(v, 0.0);
@@ -107,9 +107,9 @@ __m128
 cftal::x86::
 _mm_cvtf32_ss(float v)
 {
-#if defined (__x86_64__) && (defined (__GCC__) || defined (__clang__))
+#if defined (__x86_64__) && (defined (__GNU__) && !defined (__clang__))
     __m128d r;
-    __asm__ __volatile__ ("" : "=x"(r) : "x"(v) );
+    __asm__ __volatile__ ("" : "=x"(r) : "0"(v) );
     return r;
 #else
     return _mm_setr_ps(v, 0.0f, 0.0f, 0.0f);

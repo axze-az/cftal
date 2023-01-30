@@ -35,16 +35,19 @@ namespace cftal {
         union rep {
             double _d;
             float _f[2];
-            rep(double d) : _d(d) {}
+            // rep(double d) : _d(d) {}
             rep(float l, float h) : _f{l, h} {}
             rep(__m128 v) : _d(_mm_cvtsd_f64(_mm_castps_pd(v))) {}
             rep() = default;
+	    __m128 operator()() const {
+		return _mm_castpd_ps(x86::_mm_cvtf64_sd(_d));
+	    }
         };
         rep _v;
     public:
         // using base_type = x86::vreg<__m128>;
         __m128 operator()() const {
-            return x86::_mm_cvtf64_sd(_v._d);
+            return _v();
         }
 
         using value_type = float;

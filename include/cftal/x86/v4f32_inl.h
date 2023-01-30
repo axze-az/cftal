@@ -302,6 +302,7 @@ vec(init_list<float> l)
 {
 }
 
+#if __CFTAL_CFG_USE_V2F32__==0
 inline
 cftal::vec<float, 4>::
 vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
@@ -309,6 +310,16 @@ vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
           low_half(hh)(), high_half(hh)()}
 {
 }
+#else
+inline
+cftal::vec<float, 4>::
+vec(const vec<float, 2>& lh, const vec<float, 2>& hh)
+    : base_type(_mm_castpd_ps(
+        _mm_unpacklo_pd(_mm_castps_pd(lh()),
+                        _mm_castps_pd(hh()))))
+{
+}
+#endif
 
 template <template <class _U> class _OP,
           class _L, class _R>
@@ -360,14 +371,22 @@ inline
 cftal::vec<float, 2>
 cftal::low_half(const vec<float, 4>& v)
 {
+#if __CFTAL_CFG_USE_V2F32__==0
     return vec<float, 2>{extract<0>(v), extract<1>(v)};
+#else
+    return v();
+#endif
 }
 
 inline
 cftal::vec<float, 2>
 cftal::high_half(const vec<float, 4>& v)
 {
+#if __CFTAL_CFG_USE_V2F32__==0
     return vec<float, 2>{extract<2>(v), extract<3>(v)};
+#else
+    return permute<2, 3, 2, 3>(v)();
+#endif
 }
 
 template <cftal::size_t _I>

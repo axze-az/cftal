@@ -332,9 +332,11 @@ cftal::mem<cftal::vec<float, 2> >::load(const float* p, std::size_t s)
     __m128 v;
     switch (s) {
     default:
-    case 2:
-        v = _mm_setr_ps(p[0], p[1], p[1], p[1]);
+    case 2: {
+        const double* dp=reinterpret_cast<const double*>(p);
+        v = _mm_cvtpd_ps(_mm_load_sd(dp));
         break;
+    }
     case 1:
 #if defined (__AVX__)
         v = _mm_broadcast_ss(p);
@@ -353,9 +355,9 @@ inline
 void
 cftal::mem<cftal::vec<float, 2>>::store(float* p, const vec<float, 2>& v)
 {
-    double d=_mm_cvtsd_f64(_mm_castps_pd(v()));
-    double* pp=reinterpret_cast<double*>(p);
-    *pp = d;
+    // double d=_mm_cvtsd_f64(_mm_castps_pd(v()));
+    double* pd=reinterpret_cast<double*>(p);
+    _mm_storel_pd(pd, v());
 }
 
 inline
@@ -555,7 +557,6 @@ cftal::nfms(const v2f32& a, const v2f32& b, const v2f32& c)
 #endif
 }
 
-
 inline
 cftal::v2f32 cftal::copysign(const v2f32& x, const v2f32& y)
 {
@@ -578,26 +579,29 @@ cftal::v2f32 cftal::mulsign(const v2f32& x, const v2f32& y)
 inline
 bool cftal::all_of(const v2f32::mask_type& a)
 {
-    return x86::all_of_f32(a());
+    // return x86::all_of_f32(a());
+    return (x86::compress_mask_f32(a()) & 0x03) == 0x03;
 }
 
 inline
 bool cftal::any_of(const v2f32::mask_type& a)
 {
-    return x86::any_of_f32(a());
+    // return x86::any_of_f32(a());
+    return (x86::compress_mask_f32(a()) & 0x03) != 0x00;
 }
 
 inline
 bool cftal::none_of(const v2f32::mask_type& a)
 {
-    return x86::none_of_f32(a());
+    // return x86::none_of_f32(a());
+    return (x86::compress_mask_f32(a()) & 0x03) != 0x00;
 }
 
 inline
 cftal::vec<cftal::bit, 2>
 cftal::compress_mask(const vec<float, 2>::mask_type& v)
 {
-    return x86::compress_mask_f32(v());
+    return x86::compress_mask_f32(v()) & 0x03;
 }
 
 inline
