@@ -100,6 +100,9 @@
 
 // floating point vector specializations
 #if defined (__SSE2__)
+#if __CFTAL_CFG_USE_V2F32__>0
+#include <cftal/x86/v2f32.h>
+#endif
 #include <cftal/x86/v4f32.h>
 #include <cftal/x86/v2f64.h>
 #endif
@@ -113,6 +116,9 @@
 #endif
 // floating point vector specialization implementations
 #if defined (__SSE2__)
+#if __CFTAL_CFG_USE_V2F32__>0
+#include <cftal/x86/v2f32_inl.h>
+#endif
 #include <cftal/x86/v4f32_inl.h>
 #include <cftal/x86/v2f64_inl.h>
 #endif

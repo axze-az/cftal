@@ -55,6 +55,8 @@
 #endif
 #endif
 
+#define __CFTAL_CFG_USE_V2F32__ 1
+
 #if !defined (__GNUC__) && !defined(__clang__) || (IN_KDEVELOP_PARSER>0)
 #define __SSSE3__
 #define __SSE41__
