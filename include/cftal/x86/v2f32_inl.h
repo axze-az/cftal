@@ -360,7 +360,7 @@ cftal::mem<cftal::vec<float, 2>>::store(float* p, const vec<float, 2>& v)
 {
     // double d=_mm_cvtsd_f64(_mm_castps_pd(v()));
     double* pd=reinterpret_cast<double*>(p);
-    _mm_storel_pd(pd, v());
+    _mm_storel_pd(pd, _mm_castps_pd(v()));
 }
 
 inline
