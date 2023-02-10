@@ -100,6 +100,15 @@ if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
             set (CMAKE_CXX_FLAGS_PROFILE
                 "${CMAKE_CXX_FLAGS_PROFILE} -mtune=${CFTAL_GCC_TUNE}")
             if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+                # undefine the tune flag from arch
+                if (NOT (CFTAL_GCC_ARCH STREQUAL ""))
+                    set (CMAKE_CXX_FLAGS_RELEASE
+                        "${CMAKE_CXX_FLAGS_RELEASE} -U__tune_${CFTAL_GCC_ARCH}__")
+                    set (CMAKE_CXX_FLAGS_DEBUG
+                        "${CMAKE_CXX_FLAGS_DEBUG} -U__tune_${CFTAL_GCC_ARCH}__")
+                    set (CMAKE_CXX_FLAGS_PROFILE
+                        "${CMAKE_CXX_FLAGS_PROFILE} -U__tune_${CFTAL_GCC_ARCH}__")
+                endif()
                 set (CMAKE_CXX_FLAGS_RELEASE
                     "${CMAKE_CXX_FLAGS_RELEASE} -D__tune_${CFTAL_GCC_TUNE}__=1")
                 set (CMAKE_CXX_FLAGS_DEBUG
