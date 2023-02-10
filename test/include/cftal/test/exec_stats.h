@@ -86,7 +86,54 @@ std::ostream&
 cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
 {
     std::size_t n= _N + 1;
-    s << "execution statistics\n";
+#if 1
+    s << "execution statistics:"
+      << std::setw(42) << "relative"
+      << std::setw(13) << "relative\n";
+    s << std::setw(28) << "calls"
+      << std::setw(12) << "tics/call"
+      << std::setw(12) << "tics/elem"
+      << std::setw(12) << "tics/call"
+      << std::setw(12) << "tics/elem"
+      << '\n';
+    for (std::size_t i=0; i<n; i=((i==0) ? 1: i*2)) {
+        double t=st._tics[i]._v;
+        uint64_t ei=st._evals[i]._v;
+        double tc=ei ? t/double(ei) : 0.0;
+        double te=i ? tc/i : tc;
+
+        double t0=st._tics[0]._v;
+        uint64_t ei0=st._evals[0]._v;
+        double tc0=ei0 ? t0/double(ei0) : 0.0;
+        double rtc=tc0 != 0.0 ? tc/tc0 : 0.0;
+        double rte=i ? rtc/i : rtc;
+
+        if (i==0) {
+            s << "reference:  ";
+        } else {
+            s << "vec-len " << std::setw(2) << i << ": ";
+        }
+        s << std::setw(16) << ei << ' '
+          << std::setprecision(1)
+          << std::fixed
+          << std::setw(11)
+          << tc
+          << ' '
+          << std::setw(11)
+          << te
+          << ' '
+          << std::setw(11)
+          << std::setprecision(4)
+          << rtc
+          << ' '
+          << std::setw(11)
+          << rte
+          << std::scientific
+          << std::setprecision(22)
+          << '\n';
+    }
+#else
+    s << "execution statistics:\n";
     for (std::size_t i=0; i<n; i=((i==0) ? 1: i*2)) {
         double t=st._tics[i]._v;
         uint64_t ei=st._evals[i]._v;
@@ -109,6 +156,7 @@ cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
           << std::setprecision(22)
           << '\n';
     }
+#endif
     return s;
 }
 
