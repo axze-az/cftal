@@ -29,7 +29,7 @@ cftal::test::operator<<(std::ostream& s, const cpu_times& ct)
     auto fmt=stream_save_fmt(s);
 
     constexpr const double to_sec= 1e-9;
-    
+
     double uu=double(ct._user);
     double ss=double(ct._sys);
     double tt=double(ct._elapsed);
@@ -43,7 +43,7 @@ cftal::test::operator<<(std::ostream& s, const cpu_times& ct)
     double seconds=double(r)*to_sec;
 
     double ratio=(tt == 0.0) ? 0.0 : (uu+ss)/tt;
-        
+
     s << std::fixed;
     s << std::setprecision(2) << u_s << "user "
       << std::setprecision(2) << s_s << "system "
@@ -67,7 +67,7 @@ namespace {
     to_int(const timeval& tv) {
         return (int64_t(tv.tv_sec)*1'000'000LL + tv.tv_usec)*1'000LL;
     }
-    
+
 }
 
 cftal::test::cpu_times
@@ -83,7 +83,7 @@ cftal::test::cpu_timer::now()
     timespec ts;
     if (clock_gettime(CLOCK_REALTIME, &ts)==0) {
         r._elapsed=to_int(ts);
-    } 
+    }
     return r;
 }
 
