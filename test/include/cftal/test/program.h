@@ -50,7 +50,7 @@ namespace cftal {
             // the count of tests to perform
             std::size_t _cnt;
             pgm_args(std::size_t c=0x80000);
-	};
+        };
 
         std::ostream&
         operator<<(std::ostream& s, const pgm_args& ags);
@@ -84,7 +84,8 @@ namespace cftal {
 }
 
 template <typename _CHECK,
-          std::size_t _N,int _ULP,
+          std::size_t _N,
+          int _ULP,
           std::size_t _CNT,
           std::size_t _M>
 int
@@ -149,7 +150,8 @@ cftal::test::program(int argc, char** argv,
 }
 
 template <typename _CHECK,
-          std::size_t _N,int _ULP,
+          std::size_t _N,
+          int _ULP,
           std::size_t _CNT,
           std::size_t _M>
 int
