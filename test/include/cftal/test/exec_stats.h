@@ -89,8 +89,9 @@ cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
 #if 1
     s << "execution statistics:"
       << std::setw(42) << "relative"
-      << std::setw(13) << "relative\n";
-    s << std::setw(28) << "calls"
+      << std::setw(12) << "relative"
+      << '\n'
+      << std::setw(28) << "calls"
       << std::setw(12) << "tics/call"
       << std::setw(12) << "tics/elem"
       << std::setw(12) << "tics/call"
