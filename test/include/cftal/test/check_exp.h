@@ -21,11 +21,42 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain.h>
 #include <cmath>
 #include <tuple>
 
 namespace cftal {
     namespace test {
+
+        template <typename _T>
+        struct domain_exp {};
+
+        template <>
+        struct domain_exp<double> {
+            constexpr static
+            const func_domain<double> domains[]={
+                std::make_pair(-750.0, 710.0),
+                // check the denormal result range
+                std::make_pair(-750.0, -7.083964185322641924358322e+02)
+            };
+            constexpr static
+            const int shifts[]= {
+                0,
+                -3
+            };
+        };
+
+        template <>
+        struct domain_exp<float> {
+            constexpr static
+            const func_domain<float> domains[]={
+                std::make_pair(-104.0f, 89.0f)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
 
         template <typename _T>
         struct check_exp {

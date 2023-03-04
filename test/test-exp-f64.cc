@@ -21,20 +21,11 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-
-    const func_domain<double> di[]={
-        std::make_pair(-750.0, 710.0),
-        // check the denormal result range
-        std::make_pair(-750.0, -7.083964185322641924358322e+02)
-    };
-    const int shifts[]= {
-        0,
-        -3
-    };
-    int r=program<check_exp<double>, 8, 1, 0x8000>(argc,
-                                                   argv,
-                                                   mpfr_exp,
-                                                   di,
-                                                   shifts);
+    int r=program<check_exp<double>, 8, 1, 0x8000>(
+        argc,
+	argv,
+        mpfr_exp,
+        domain_exp<double>::domains,
+        domain_exp<double>::shifts);
     return r;
 }

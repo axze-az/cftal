@@ -21,16 +21,11 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const func_domain<float> di[]={
-        std::make_pair(-104.0f, 89.0f)
-    };
-    const int shifts[]={
-        0
-    };
-    int r=program<check_exp<float>, 16, 1, 0x8000>(argc,
-                                                   argv,
-                                                   mpfr_exp,
-                                                   di,
-                                                   shifts);
+    int r=program<check_exp<float>, 16, 1, 0x8000>(
+        argc,
+        argv,
+        mpfr_exp,
+        domain_exp<float>::domains,
+        domain_exp<float>::shifts);
     return r;
 }
