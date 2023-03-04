@@ -28,28 +28,7 @@ namespace cftal {
     namespace test {
 
         template <typename _T>
-        struct domain_log {};
-
-        template <>
-        struct domain_log<double> {
-            constexpr static
-            const func_domain<double> domains[]={
-                std::make_pair(0.0, std::numeric_limits< double >::max())
-            };
-            constexpr static
-            const int shifts[]={0};
-        };
-
-        template <>
-        struct domain_log<float> {
-            constexpr static
-            const func_domain<float> domains[]={
-                std::make_pair(0.0f,
-                            std::numeric_limits< float >::max())
-            };
-            constexpr static
-            const int shifts[]={0};
-        };
+        struct domain_log : public domain_positive_x_axis<_T> {};
 
         template <typename _T>
         struct check_log {

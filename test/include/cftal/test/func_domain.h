@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <tuple>
+#include <limits>
 
 namespace cftal {
     namespace test {
@@ -27,6 +28,30 @@ namespace cftal {
         // domain of a functions
         template <typename _T>
         using func_domain = std::pair<_T, _T>;
+
+
+        template <typename _T>
+        struct domain_full_x_axis {
+            constexpr static
+            const func_domain<_T> domains[]={
+                std::make_pair(-std::numeric_limits<_T>::max(),
+                                std::numeric_limits<_T>::max())
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
+
+        template <typename _T>
+        struct domain_positive_x_axis {
+            constexpr static
+            const func_domain<_T> domains[]={
+                std::make_pair(_T(0),
+                                std::numeric_limits<_T>::max())
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
+
     }
 }
 
