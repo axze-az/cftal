@@ -27,6 +27,18 @@ namespace cftal {
     namespace test {
 
         template <typename _T>
+        struct domain_acosh {
+            constexpr static
+            const func_domain<_T> domains[]={
+                std::make_pair(_T(1.0), std::numeric_limits<_T>::max())
+            };
+            constexpr static
+            const int shifts[]= {
+                0
+            };
+        };
+
+        template <typename _T>
         struct check_acosh {
             template <std::size_t _N>
             static

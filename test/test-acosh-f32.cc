@@ -23,16 +23,11 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const func_domain<float> di[]={
-        std::make_pair(1.0f, std::numeric_limits<float>::max())
-    };
-    const int shifts[]= {
-        0
-    };
-    int r=program<check_acosh<float>, 16, 1, 0x8000>(argc,
-                                                     argv,
-                                                     mpfr_acosh,
-                                                     di,
-                                                     shifts);
+    int r=program<check_acosh<float>, 16, 1, 0x8000>(
+        argc,
+        argv,
+        mpfr_acosh,
+        domain_acosh<float>::domains,
+        domain_acosh<float>::shifts);
     return r;
 }
