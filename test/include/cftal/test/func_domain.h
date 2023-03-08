@@ -52,6 +52,16 @@ namespace cftal {
             const int shifts[]={0};
         };
 
+        template <typename _T>
+        struct domain_minus_1_to_1 {
+            constexpr static
+            const func_domain<_T> domains[]={
+                std::make_pair(-_T(1), _T(1))
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
+
     }
 }
 

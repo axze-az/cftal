@@ -21,10 +21,14 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
+
+        template <typename _T>
+        struct domain_atanh : public domain_minus_1_to_1<_T> {};
 
         template <typename _T>
         struct check_atanh {
