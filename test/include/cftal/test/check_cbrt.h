@@ -21,10 +21,15 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
+
+        template <typename _T>
+        struct domain_cbrt : public domain_full_x_axis<_T> {};
+
 
         template <typename _T>
         struct check_cbrt {
