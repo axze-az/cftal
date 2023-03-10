@@ -21,10 +21,15 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
+
+        template <typename _T>
+        using domain_cos=domain_sin_cos_tan<_T>;
+
         template <typename _T>
         struct check_cos {
             template <std::size_t _N>

@@ -62,6 +62,26 @@ namespace cftal {
             const int shifts[]={0};
         };
 
+        template <typename _T>
+        struct domain_sin_cos_tan {};
+
+        template <>
+        struct domain_sin_cos_tan<double> : public domain_full_x_axis<double> {
+            constexpr static
+            const func_domain<double> domains2[]={
+                std::make_pair(-0x1p45, 0x1p45)
+            };
+        };
+
+        template <>
+        struct domain_sin_cos_tan<float> : public domain_full_x_axis<float> {
+            constexpr static
+            const func_domain<float> domains2[]={
+                std::make_pair(-0x1p18f, 0x1p18f)
+            };
+        };
+
+
     }
 }
 
