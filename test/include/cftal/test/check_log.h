@@ -28,7 +28,7 @@ namespace cftal {
     namespace test {
 
         template <typename _T>
-        struct domain_log : public domain_positive_x_axis<_T> {};
+        using domain_log = domain_positive_x_axis<_T>;
 
         template <typename _T>
         struct check_log {
