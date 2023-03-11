@@ -20,7 +20,6 @@
 
 #include <cftal/config.h>
 #include <tuple>
-#include <limits>
 
 namespace cftal {
     namespace test {
@@ -28,58 +27,6 @@ namespace cftal {
         // domain of a functions
         template <typename _T>
         using func_domain = std::pair<_T, _T>;
-
-
-        template <typename _T>
-        struct domain_full_x_axis {
-            constexpr static
-            const func_domain<_T> domains[]={
-                std::make_pair(-std::numeric_limits<_T>::max(),
-                                std::numeric_limits<_T>::max())
-            };
-            constexpr static
-            const int shifts[]={0};
-        };
-
-        template <typename _T>
-        struct domain_positive_x_axis {
-            constexpr static
-            const func_domain<_T> domains[]={
-                std::make_pair(_T(0),
-                                std::numeric_limits<_T>::max())
-            };
-            constexpr static
-            const int shifts[]={0};
-        };
-
-        template <typename _T>
-        struct domain_minus_1_to_1 {
-            constexpr static
-            const func_domain<_T> domains[]={
-                std::make_pair(-_T(1), _T(1))
-            };
-            constexpr static
-            const int shifts[]={0};
-        };
-
-        template <typename _T>
-        struct domain_sin_cos_tan {};
-
-        template <>
-        struct domain_sin_cos_tan<double> : public domain_full_x_axis<double> {
-            constexpr static
-            const func_domain<double> domains2[]={
-                std::make_pair(-0x1p45, 0x1p45)
-            };
-        };
-
-        template <>
-        struct domain_sin_cos_tan<float> : public domain_full_x_axis<float> {
-            constexpr static
-            const func_domain<float> domains2[]={
-                std::make_pair(-0x1p18f, 0x1p18f)
-            };
-        };
 
 
     }
