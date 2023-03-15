@@ -28,7 +28,6 @@ namespace cftal {
         template <typename _T>
         using func_domain = std::pair<_T, _T>;
 
-
     }
 }
 

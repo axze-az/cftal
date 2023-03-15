@@ -77,6 +77,29 @@ namespace cftal {
         };
 
 
+        template <typename _T>
+        struct domain_sinh_cosh {};
+
+        template <>
+        struct domain_sinh_cosh<double> {
+            constexpr static
+            const func_domain<double> domains[]={
+                std::make_pair(-710.5, 710.5)
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
+
+        template <>
+        struct domain_sinh_cosh<float> {
+            constexpr static
+            const func_domain<float> domains[]={
+                std::make_pair(-90.0f, 90.0f)
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
+
     }
 }
 
