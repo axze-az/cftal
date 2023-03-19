@@ -23,14 +23,11 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const func_domain<float> di[]={
-        std::make_pair(-0x1.5p25f, 0x1.5p25f)
-    };
-    const int shifts[]={0};
-    int r=program<check_tanpi<float>, 16, 1, 0x8000>(argc,
-                                                     argv,
-                                                     mpfr_tanpi,
-                                                     di,
-                                                     shifts);
+    int r=program<check_tanpi<float>, 16, 1, 0x8000>(
+        argc,
+        argv,
+        mpfr_tanpi,
+        domain_tanpi<float>::domains,
+        domain_tanpi<float>::shifts);
     return r;
 }

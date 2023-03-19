@@ -100,6 +100,28 @@ namespace cftal {
             const int shifts[]={0};
         };
 
+        template <typename _T>
+        struct domain_sinpi_cospi_tanpi {};
+
+        template <>
+        struct domain_sinpi_cospi_tanpi<double> {
+            constexpr static
+            const func_domain<double> domains[]={
+                std::make_pair(-0x1.5p54, 0x1.5p54)
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
+
+        template <>
+        struct domain_sinpi_cospi_tanpi<float> {
+            constexpr static
+            const func_domain<float> domains[]={
+                std::make_pair(-0x1.5p25f, 0x1.5p25f)
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
     }
 }
 

@@ -21,10 +21,15 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain_common.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
+
+        template <typename _T>
+        using domain_tanpi=domain_sinpi_cospi_tanpi<_T>;
+
         template <typename _T>
         struct check_tanpi {
             template <std::size_t _N>

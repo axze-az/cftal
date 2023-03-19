@@ -23,14 +23,11 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    const func_domain<float> di[]={
-        std::make_pair(-0x1.5p25f, 0x1.5p25f)
-    };
-    const int shifts[]={0};
-    int r=program<check_sinpi<float>, 16, 1, 0x8000>(argc,
-                                                     argv,
-						     mpfr_sinpi,
-                                                     di,
-                                                     shifts);
+    int r=program<check_sinpi<float>, 16, 1, 0x8000>(
+        argc,
+        argv,
+        mpfr_sinpi,
+        domain_sinpi<float>::domains,
+        domain_sinpi<float>::shifts);
     return r;
 }
