@@ -94,7 +94,7 @@ horner2_idx(const _X& x, const _X& x2,
     _X c1= lck.from(tbl+1);
     _X r0= c0;
     _X r1= c1;
-    const std::size_t _NE= _N & ~std::size_t(1);
+    constexpr const std::size_t _NE= _N & ~std::size_t(1);
 #pragma GCC unroll 256
 #pragma clang unroll(256)
     for (std::size_t i=2; i<_NE; i+=2) {
@@ -128,7 +128,7 @@ horner4_idx(const _X& x, const _X& x2, const _X& x4,
     _X r1= c1;
     _X r2= c2;
     _X r3= c3;
-    const std::size_t _NE= _N & ~std::size_t(3);
+    constexpr const std::size_t _NE= _N & ~std::size_t(3);
 #pragma GCC unroll 256
 #pragma clang unroll(256)
     for (std::size_t i=4; i<_NE; i+=4) {
@@ -144,7 +144,7 @@ horner4_idx(const _X& x, const _X& x2, const _X& x4,
     _X r02 = horner(x2, r0, r2);
     _X r13 = horner(x2, r1, r3);
     _X r= horner(x, r02, r13);
-    const std::size_t _NR= _N & std::size_t(3);
+    constexpr const std::size_t _NR= _N & std::size_t(3);
     if (_NR == 3) {
         _X cnm2=lck.from(tbl+_N-2);
         _X cnm3=lck.from(tbl+_N-3);
