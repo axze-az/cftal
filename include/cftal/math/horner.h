@@ -552,7 +552,7 @@ horner2(const _X& x, const _X& x2, const _C* pa)
     static_assert(_N > 1, "invalid call to horner2(x, x2, ptr)");
     _X r0= _X(pa[0]);
     _X r1= _X(pa[1]);
-    const std::size_t _NE= _N & ~(std::size_t(1));
+    constexpr const std::size_t _NE= _N & ~(std::size_t(1));
 #pragma GCC unroll 256
 #pragma clang unroll(256)
     for (std::size_t i=2; i<_NE; i+=2) {
@@ -585,7 +585,7 @@ horner3(const _X& x, const _X& x3, const _C* pa)
     _X r0= _X(pa[0]);
     _X r1= _X(pa[1]);
     _X r2= _X(pa[2]);
-    const std::size_t _NE= (_N / 3) * 3;
+    constexpr const std::size_t _NE= (_N / 3) * 3;
 #pragma GCC unroll 256
 #pragma clang unroll(256)
     for (std::size_t i=3; i<_NE; i+=3) {
@@ -594,7 +594,7 @@ horner3(const _X& x, const _X& x3, const _C* pa)
         r2= horner(x3, r2, pa[i+2]);
     }
     _X r = horner(x, r0, r1, r2);
-    const std::size_t _NR= _N - _NE;
+    constexpr const std::size_t _NR= _N - _NE;
     switch (_NR) {
     case 2:
         r = horner(x, r, pa[_N-2], pa[_N-1]);
@@ -628,7 +628,7 @@ horner4(const _X& x, const _X& x2, const _X& x4, const _C* pa)
     _X r1= _X(pa[1]);
     _X r2= _X(pa[2]);
     _X r3= _X(pa[3]);
-    const std::size_t _NE= _N & ~std::size_t(3);
+    constexpr const std::size_t _NE= _N & ~std::size_t(3);
 #pragma GCC unroll 256
 #pragma clang unroll(256)
     for (std::size_t i=4; i<_NE; i+=4) {
@@ -640,7 +640,7 @@ horner4(const _X& x, const _X& x2, const _X& x4, const _C* pa)
     _X r02 = horner(x2, r0, r2);
     _X r13 = horner(x2, r1, r3);
     _X r= horner(x, r02, r13);
-    const std::size_t _NR= _N & std::size_t(3);
+    constexpr const std::size_t _NR= _N & std::size_t(3);
     if (_NR == 3) {
         _X a = horner(x2, r, pa[_N-2]);
         _X b = horner(x2, pa[_N-3], pa[_N-1]);
@@ -751,7 +751,7 @@ horner2_n2(_X& ya, _X& yb,
     _X r1a= _X(pa[1]);
     _X r0b= _X(pb[0]);
     _X r1b= _X(pb[1]);
-    const std::size_t _NE= _N & ~(std::size_t(1));
+    constexpr const std::size_t _NE= _N & ~(std::size_t(1));
     for (std::size_t i=2; i<_NE; i+=2) {
         r0a= horner(x2, r0a, pa[i]);
         r1a= horner(x2, r1a, pa[i+1]);
