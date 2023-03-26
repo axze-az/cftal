@@ -31,11 +31,14 @@
 #endif
 
 namespace cftal::test::call_mpfr {
-    constexpr mpfr_exp_t double_emin=-1022-(53-1)+1;
-    constexpr mpfr_exp_t double_emax=1023+1;
+    constexpr const mpfr_exp_t double_emin=-1022-(53-1)+1;
+    constexpr const mpfr_exp_t double_emax=1023+1;
 
-    constexpr mpfr_exp_t float_emin=-126-(24-1)+1;
-    constexpr mpfr_exp_t float_emax=127+1;
+    constexpr const mpfr_exp_t float_emin=-126-(24-1)+1;
+    constexpr const mpfr_exp_t float_emax=127+1;
+
+    constexpr const mpfr_exp_t half_emin=-14-(11-1)+1;
+    constexpr const mpfr_exp_t half_emax=15+1;
 
     class set_emin_emax {
         mpfr_exp_t _emin;
@@ -61,6 +64,11 @@ namespace cftal::test::call_mpfr {
     class float_emin_emax : public set_emin_emax {
     public:
         float_emin_emax() : set_emin_emax(float_emin, float_emax) {}
+    };
+
+    class half_emin_emax : public set_emin_emax {
+    public:
+        half_emin_emax() : set_emin_emax(half_emin, half_emax) {}
     };
 
 }
@@ -509,7 +517,7 @@ rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm)
                    fpn_handle rn(mpfr_get_prec(xx));
 #if MPFR_VERSION_MAJOR<4
                    int r=mpfr_root(rn(), xx, ai, rm);
-#else                   
+#else
                    int r=mpfr_rootn_ui(rn(), xx, ai, rm);
 #endif
                    if (ni >= 0) {
