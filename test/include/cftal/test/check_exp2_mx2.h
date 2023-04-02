@@ -21,10 +21,38 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain_common.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
+
+        template <typename _T>
+        struct domain_exp2_mx2 {};
+
+        template <>
+        struct domain_exp2_mx2<double> {
+            constexpr static
+            const func_domain<double> domains[]={
+                std::make_pair(0.0, 33.0)
+            };
+            constexpr static
+            const int shifts[]= {
+                0
+            };
+        };
+
+        template <>
+        struct domain_exp2_mx2<float> {
+            constexpr static
+            const func_domain<float> domains[]={
+                std::make_pair(0.0f, 12.3f)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
 
         template <typename _T>
         struct check_exp2_mx2 {
