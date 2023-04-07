@@ -22,27 +22,38 @@
 #include <cftal/vec.h>
 #include <cftal/math/func_constants.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain_common.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
 
-        template <typename _U>
-        struct scale {
+        template <typename _T>
+        struct domain_exp_mx2 {};
+
+        template <>
+        struct domain_exp_mx2<double> {
+            constexpr static
+            const func_domain<double> domains[]={
+                std::make_pair(0.0, 27.3)
+            };
+            constexpr static
+            const int shifts[]= {
+                0
+            };
         };
 
         template <>
-        struct scale<double> {
-            static constexpr double up() { return 0x1p512; }
-            static constexpr double down() { return 0x1p-512; }
+        struct domain_exp_mx2<float> {
+            constexpr static
+            const func_domain<float> domains[]={
+                std::make_pair(0.0f, 10.2f)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
         };
-
-        template <>
-        struct scale<float> {
-            static constexpr float up() { return 0x1p64f; }
-            static constexpr float down() { return 0x1p-64f; }
-        };
-
 
         template <typename _T>
         struct check_exp_mx2 {
@@ -74,6 +85,22 @@ namespace cftal {
 
             static
             const char* fname() { return "exp_mx2"; }
+        };
+
+        template <typename _U>
+        struct scale {
+        };
+
+        template <>
+        struct scale<double> {
+            static constexpr double up() { return 0x1p512; }
+            static constexpr double down() { return 0x1p-512; }
+        };
+
+        template <>
+        struct scale<float> {
+            static constexpr float up() { return 0x1p64f; }
+            static constexpr float down() { return 0x1p-64f; }
         };
 
     }
