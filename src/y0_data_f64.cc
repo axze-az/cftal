@@ -18,7 +18,7 @@
 #include "cftal/math/func_data.h"
 
 const double
-cftal::math::j01y01_data<double>::_max_small_y0=+1.2566269893792735956595e+02;
+cftal::math::j01y01_data<double>::_max_small_y0;
 alignas(64) const double
 cftal::math::j01y01_data<double>::_y0_coeffs[j01y01_data<double>::ENTRIES]={
     // 0

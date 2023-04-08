@@ -195,16 +195,20 @@ namespace cftal {
                 POLY_ORD=16,
                 ENTRIES=INTERVALS*ELEMS
             };
-            static const double _max_small_j0;
+            constexpr
+            static const double _max_small_j0=+1.2566272380587477641711e+02;
             alignas(64) static const double _j0_coeffs[ENTRIES];
 
-            static const double _max_small_j1;
+            constexpr
+            static const double _max_small_j1=+1.2565871964045223307949e+02;
             alignas(64) static const double _j1_coeffs[ENTRIES];
 
-            static const double _max_small_y0;
+            constexpr
+            static const double _max_small_y0=+1.2566269893792735956595e+02;
             alignas(64) static const double _y0_coeffs[ENTRIES];
 
-            static const double _max_small_y1;
+            constexpr
+            static const double _max_small_y1=+1.2565874452021265028634e+02;
             alignas(64) static const double _y1_coeffs[ENTRIES];
         };
 
@@ -233,16 +237,20 @@ namespace cftal {
                 POLY_ORD=8,
                 ENTRIES=INTERVALS*ELEMS
             };
-            static const float _max_small_j0;
+            constexpr
+            static const float _max_small_j0=+6.2829914093e+01f;
             alignas(64) static const float _j0_coeffs[ENTRIES];
 
-            static const float _max_small_j1;
+            constexpr
+            static const float _max_small_j1=+6.2821853638e+01f;
             alignas(64) static const float _j1_coeffs[ENTRIES];
 
-            static const float _max_small_y0;
+            constexpr
+            static const float _max_small_y0=+6.2829814911e+01f;
             alignas(64) static const float _y0_coeffs[ENTRIES];
 
-            static const float _max_small_y1;
+            constexpr
+            static const float _max_small_y1=+6.2821952820e+01f;
             alignas(64) static const float _y1_coeffs[ENTRIES];
         };
 
