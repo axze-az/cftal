@@ -21,10 +21,14 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain_common.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
+
+        template <typename _T>
+        using domain_log10 = domain_positive_x_axis<_T>;
 
         template <typename _T>
         struct check_log10 {
@@ -50,7 +54,7 @@ namespace cftal {
             static
             const char* fname() { return "log10"; }
         };
-        
+
     }
 }
 

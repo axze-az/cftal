@@ -21,11 +21,24 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain_common.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
-        
+
+        template <typename _T>
+        struct domain_log1p {
+            constexpr static
+            const func_domain<_T> domains[]={
+                std::make_pair(_T(-1.0), std::numeric_limits<_T>::max())
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
+
         template <typename _T>
         struct check_log1p {
             template <std::size_t _N>
