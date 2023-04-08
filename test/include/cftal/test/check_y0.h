@@ -20,11 +20,33 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cftal/math/func_data.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain_common.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
+
+        template <typename _T>
+        struct domain_y0 {
+            constexpr
+            static const func_domain<_T> domains[]={
+                std::make_pair(_T(0),
+                               std::numeric_limits<_T>::max()),
+                std::make_pair(math::j01y01_data<_T>::_max_small_y0,
+                               _T(2)*math::j01y01_data<_T>::_max_small_y0),
+                std::make_pair(_T(0),
+                                math::j01y01_data<_T>::_max_small_y0)
+            };
+
+            constexpr
+            static const int shifts[]={
+                0,
+                -2,
+                -2
+            };
+        };
 
         template <typename _T>
         struct check_y0 {

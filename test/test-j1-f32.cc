@@ -22,27 +22,14 @@
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
-    using namespace cftal::math;
     const int _N= 16;
-    const int _ULP=3;
-    const func_domain<float> di[]={
-        std::make_pair(-std::numeric_limits<float>::max(),
-                       std::numeric_limits<float>::max()),
-        std::make_pair(j01y01_data<float>::_max_small_j1,
-                       2*j01y01_data<float>::_max_small_j1),
-        std::make_pair(-j01y01_data<float>::_max_small_j1,
-                        j01y01_data<float>::_max_small_j1)
-    };
-    const int shifts[]= {
-        0,
-        -2,
-        -2
-    };
-    int r=program<check_j1<float>, _N, _ULP, 0x8000>(argc,
-                                                     argv,
-                                                     mpfr_j1,
-                                                     di,
-                                                     shifts);
+    const int _ULP=1;
+    int r=program<check_j1<float>, _N, _ULP, 0x8000>(
+        argc,
+        argv,
+        mpfr_j1,
+        domain_j1<float>::domains,
+        domain_j1<float>::shifts);
     return r;
 }
 
