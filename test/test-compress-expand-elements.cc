@@ -106,6 +106,7 @@ bool
 cftal::test::compress_expand_elements_vec()
 {
     using vec_t = vec<_T, _N>;
+    using mask_vec_t=typename vec_t::mask_type;
     alignas(vec_t) _T a[_N];
     for (uint32_t i=0; i<_N; ++i) {
         a[i]= _T(i+1);
@@ -117,7 +118,7 @@ cftal::test::compress_expand_elements_vec()
     for (uint64_t i=0; i<_PERMS; ++i) {
         // typename vec_t::mask_type m=x86::expand_mask_v2u64(i);
         vec<bit, _N> mi(i);
-        mask_t<vec_t> m=expand_mask_to<vec_t>(mi);
+        mask_t<vec_t> m=expand_mask_to<mask_vec_t>(mi);
         vec_t ref_i=select(m, ref0, zero);
         std::pair<vec_t, size_t> compressed=compress_elements(ref_i, m);
         std::pair<vec_t, size_t> res=expand_elements(compressed.first, m);
