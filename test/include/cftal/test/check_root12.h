@@ -21,10 +21,15 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain_common.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
+
+        template <typename _T>
+        using domain_root12 = domain_positive_x_axis<_T>;
+
         template <typename _T>
         struct check_root12 {
             template <std::size_t _N>
