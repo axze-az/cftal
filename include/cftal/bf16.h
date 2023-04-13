@@ -30,22 +30,22 @@ namespace cftal {
     using mf_bf16_t = uint16_t;
 
     namespace impl {
-        
+
         // round f32 to bf16 using round to nearest even rounding
         template <std::size_t _N>
         vec<float, _N>
         _rne_f32_to_bf16(const vec<float, _N>& v);
-        
-        // convert  vec<f32, _N> to vec<mf_bf16_t, _N> using 
+
+        // convert  vec<f32, _N> to vec<mf_bf16_t, _N> using
         // round to nearest even rounding
         template <std::size_t _N>
         vec<mf_bf16_t, _N>
         _cvt_f32_to_bf16(const vec<float, _N>& v);
-        
+
         // round f32 to bf16 using round to zero rounding
         template <std::size_t _N>
         vec<float, _N>
-        _rz_f32_to_bf16(const vec<float, _N>& v);        
+        _rz_f32_to_bf16(const vec<float, _N>& v);
 
         // convert vec<f32, _N> to vec<mf_bf16_t, _N> using
         // round to zero rounding
@@ -53,40 +53,40 @@ namespace cftal {
         vec<mf_bf16_t, _N>
         _cvt_f32_to_bf16_rz(const vec<float, _N>& v);
 
-        // convert vec<mf_bf16_t, _N> to vec<f32, _N> 
+        // convert vec<mf_bf16_t, _N> to vec<f32, _N>
         template <std::size_t _N>
         vec<float, _N>
         _cvt_bf16_to_f32(const vec<mf_bf16_t, _N>& v);
 
     }
 
-    // convert  vec<f32, _N> to vec<mf_bf16_t, _N> using 
+    // convert  vec<f32, _N> to vec<mf_bf16_t, _N> using
     // round to nearest even rounding
     template <std::size_t _N>
     vec<mf_bf16_t, _N>
     cvt_f32_to_bf16(const vec<float, _N>& v);
 
-    // convert  vec<f32, 1> to vec<mf_bf16_t, 1> using 
+    // convert  vec<f32, 1> to vec<mf_bf16_t, 1> using
     // round to nearest even rounding
     vec<mf_bf16_t, 1>
     cvt_f32_to_bf16(const vec<float, 1>& v);
 
-    // convert  vec<f32, 2> to vec<mf_bf16_t, 2> using 
+    // convert  vec<f32, 2> to vec<mf_bf16_t, 2> using
     // round to nearest even rounding
     vec<mf_bf16_t, 2>
     cvt_f32_to_bf16(const vec<float, 2>& v);
 
-    // convert  vec<f32, 4> to vec<mf_bf16_t, 4> using 
+    // convert  vec<f32, 4> to vec<mf_bf16_t, 4> using
     // round to nearest even rounding
     vec<mf_bf16_t, 4>
     cvt_f32_to_bf16(const vec<float, 4>& v);
 
-    // convert  vec<f32, 8> to vec<mf_bf16_t, 8> using 
+    // convert  vec<f32, 8> to vec<mf_bf16_t, 8> using
     // round to nearest even rounding
     vec<mf_bf16_t, 8>
     cvt_f32_to_bf16(const vec<float, 8>& v);
 
-    // convert  vec<f32, 16> to vec<mf_bf16_t, 16> using 
+    // convert  vec<f32, 16> to vec<mf_bf16_t, 16> using
     // round to nearest even rounding
     vec<mf_bf16_t, 16>
     cvt_f32_to_bf16(const vec<float, 16>& v);
@@ -121,29 +121,29 @@ namespace cftal {
     // round to zero rounding
     vec<mf_bf16_t, 16>
     cvt_f32_to_bf16_rz(const vec<float, 16>& v);
-    
-    // convert vec<mf_bf16_t, _N> to vec<f32, _N> 
+
+    // convert vec<mf_bf16_t, _N> to vec<f32, _N>
     template <std::size_t _N>
     vec<float, _N>
     cvt_bf16_to_f32(const vec<mf_bf16_t, _N>& v);
 
-    // convert vec<mf_bf16_t, 1> to vec<f32, 1> 
+    // convert vec<mf_bf16_t, 1> to vec<f32, 1>
     vec<float, 1>
     cvt_bf16_to_f32(const vec<mf_bf16_t, 1>& v);
 
-    // convert vec<mf_bf16_t, 2> to vec<f32, 2> 
+    // convert vec<mf_bf16_t, 2> to vec<f32, 2>
     vec<float, 2>
     cvt_bf16_to_f32(const vec<mf_bf16_t, 2>& v);
 
-    // convert vec<mf_bf16_t, 4> to vec<f32, 4> 
+    // convert vec<mf_bf16_t, 4> to vec<f32, 4>
     vec<float, 4>
     cvt_bf16_to_f32(const vec<mf_bf16_t, 4>& v);
 
-    // convert vec<mf_bf16_t, 8> to vec<f32, 8> 
+    // convert vec<mf_bf16_t, 8> to vec<f32, 8>
     vec<float, 8>
     cvt_bf16_to_f32(const vec<mf_bf16_t, 8>& v);
 
-    // convert vec<mf_bf16_t, 16> to vec<f32, 16> 
+    // convert vec<mf_bf16_t, 16> to vec<f32, 16>
     vec<float, 16>
     cvt_bf16_to_f32(const vec<mf_bf16_t, 16>& v);
 }
@@ -176,7 +176,7 @@ cftal::impl::_rz_f32_to_bf16(const vec<float, _N>& v)
 {
     // zero the last 16 bits
     auto vne=round_to_zero_last_bits<16>(v);
-    return vne;    
+    return vne;
 }
 
 template <std::size_t _N>
