@@ -33,7 +33,11 @@ namespace cftal {
         using base_type = x86::vreg<__m128i>;
 
         using value_type = int8_t;
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+        using mask_value_type = bit;
+#else
         using mask_value_type = int8_t;
+#endif
         using mask_type= vec<mask_value_type, 16>;
 
         using base_type::base_type;
