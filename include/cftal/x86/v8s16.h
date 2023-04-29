@@ -77,7 +77,7 @@ namespace cftal {
     vec<int16_t, 4> low_half(const vec<int16_t, 8>& a);
     vec<int16_t, 4> high_half(const vec<int16_t, 8>& a);
 
-
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     bool
     all_of(const vec<int16_t, 8>::mask_type& v);
     bool
@@ -94,6 +94,7 @@ namespace cftal {
         vec<int16_t, 8>
         from(const vec<bit, 8>& s);
     };
+#endif
 
     template <size_t _I>
     int16_t

@@ -401,6 +401,7 @@ cftal::insert(vec<int8_t, 32>& v, const int8_t& vi, size_t i)
     v = x86::insert_u8(v(), vi, i);
 }
 
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
 inline
 bool cftal::all_of(const vec<int8_t, 32>::mask_type& v)
 {
@@ -433,6 +434,7 @@ from(const vec<bit, 32>& s)
 {
     return x86::expand_mask_v32u8(s());
 }
+#endif
 
 inline
 cftal::v32s8 cftal::max(const v32s8& a, const v32s8& b)
