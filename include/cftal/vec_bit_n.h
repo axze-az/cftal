@@ -224,6 +224,13 @@ namespace cftal {
         from(const vec<bit, _N>& s);
     };
 
+    template <>
+    struct expand_mask<vec<bit, 1> > {
+        static
+        const vec<bit, 1>&
+        from(const vec<bit, 1>& s);
+    };
+
     template <typename _T, size_t _N>
     struct expand_mask<vec<_T, _N> > {
         static
@@ -417,6 +424,14 @@ inline
 const cftal::vec<cftal::bit, _N>&
 cftal::expand_mask<cftal::vec<cftal::bit, _N> >::
 from(const vec<bit, _N>& s)
+{
+    return s;
+}
+
+inline
+const cftal::vec<cftal::bit, 1>&
+cftal::expand_mask<cftal::vec<cftal::bit, 1> >::
+from(const vec<bit, 1>& s)
 {
     return s;
 }
