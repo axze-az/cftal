@@ -48,7 +48,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+                return _mm_cmplt_epi8_mask(a(), b());
+#else
                 return _mm_cmpgt_epi8(b(), a());
+#endif
             }
         };
 
@@ -59,6 +63,9 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+                return _mm_cmple_epi8_mask(a(), b());
+#else
 #if defined (__SSE4_1__)
                 __m128i min_ab = _mm_min_epi8(b(), a());
                 return _mm_cmpeq_epi8(a(), min_ab);
@@ -66,6 +73,7 @@ namespace cftal {
                 mask_type b_gt_a(lt<vec<int8_t, 16>>::v(b(), a()));
                 const mask_type all_set(uint8_t(-1));
                 return _mm_xor_si128(b_gt_a(), all_set());
+#endif
 #endif
             }
         };
@@ -77,7 +85,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+                return _mm_cmpeq_epi8_mask(a(), b());
+#else
                 return _mm_cmpeq_epi8(a(), b());
+#endif
             }
         };
 
@@ -88,8 +100,12 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+                return _mm_cmpneq_epi8_mask(a(), b());
+#else
                 mask_type a_eq_b(eq<vec<int8_t, 16>>::v(a, b));
                 return bit_not<vec<int8_t, 16>>::v(a_eq_b);
+#endif
             }
         };
 
@@ -100,6 +116,9 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+                return _mm_cmpge_epi8_mask(a(), b());
+#else
 #if defined (__SSE4_1__)
                 // a>= b: a == max(a, b);
                 __m128i max_ab = _mm_max_epi8(b(), a());
@@ -107,6 +126,7 @@ namespace cftal {
 #else
                 mask_type a_lt_b( lt<vec<int8_t, 16>>::v(a(), b()));
                 return bit_not<vec<int8_t, 16>>::v(a_lt_b);
+#endif
 #endif
             }
         };
@@ -118,7 +138,11 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
+#if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+                return _mm_cmpgt_epi8_mask(a(), b());
+#else
                 return _mm_cmpgt_epi8(a(), b());
+#endif
             }
         };
 
@@ -510,6 +534,7 @@ cftal::insert(vec<int8_t, 16>& v, const int8_t& vi, size_t i)
     v = x86::insert_u8(v(), vi, i);
 }
 
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
 inline
 bool cftal::all_of(const vec<int8_t, 16>::mask_type& v)
 {
@@ -542,6 +567,7 @@ from(const vec<bit, 16>& s)
 {
     return x86::expand_mask_v16u8(s());
 }
+#endif
 
 inline
 cftal::v16s8 cftal::max(const v16s8& a, const v16s8& b)
@@ -592,7 +618,11 @@ cftal::v16s8
 cftal::select_val_or_zero(const v16s8::mask_type& m,
                           const v16s8& on_true)
 {
+#if !defined (__AVX512VL__)  || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     return _mm_and_si128(m(), on_true());
+#else
+    return _mm_maskz_mov_epi8(m(), on_true());
+#endif
 }
 
 inline
@@ -600,7 +630,11 @@ cftal::v16s8
 cftal::select_zero_or_val(const v16s8::mask_type& m,
                           const v16s8& on_false)
 {
+#if !defined (__AVX512VL__)  || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     return _mm_andnot_si128(m(), on_false());
+#else
+    return _mm_maskz_mov_epi8(_knot_mask16(m()), on_false());
+#endif
 }
 
 template <bool _P00, bool _P01, bool _P02, bool _P03,

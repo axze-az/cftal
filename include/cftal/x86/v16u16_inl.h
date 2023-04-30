@@ -439,6 +439,7 @@ cftal::insert(vec<uint16_t, 16>& v, const uint16_t& vi, size_t i)
     v= x86::insert_u16(v(), vi, i);
 }
 
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
 inline
 bool cftal::all_of(const vec<uint16_t, 16>::mask_type& v)
 {
@@ -471,6 +472,7 @@ from(const vec<bit, 16>& s)
 {
     return x86::expand_mask_v16u16(s());
 }
+#endif
 
 inline
 cftal::v16u16 cftal::max(const v16u16& a, const v16u16& b)
@@ -507,7 +509,11 @@ cftal::v16u16
 cftal::select_val_or_zero(const v16u16::mask_type& m,
                           const v16u16& on_true)
 {
+#if !defined (__AVX512VL__)  || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     return _mm256_and_si256(m(), on_true());
+#else
+    return _mm256_maskz_mov_epi16(m(), on_true());
+#endif
 }
 
 inline
@@ -515,7 +521,11 @@ cftal::v16u16
 cftal::select_zero_or_val(const v16u16::mask_type& m,
                           const v16u16& on_false)
 {
+#if !defined (__AVX512VL__)  || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     return _mm256_andnot_si256(m(), on_false());
+#else
+    return _mm256_maskz_mov_epi16(_knot_mask16(m()), on_false());
+#endif
 }
 
 template <bool _P00, bool _P01, bool _P02, bool _P03,
