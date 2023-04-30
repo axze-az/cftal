@@ -31,7 +31,7 @@ namespace cftal {
     template <>
     class vec<bit, 2> : public x86::vreg<__mmask8> {
     public:
-        static constexpr const __mmask8 mask=0x3;
+        static constexpr const __mmask8 mask=0x3u;
         using value_type = bit;
         using mask_value_type = bit;
         using mask_type= vec<mask_value_type, 2>;
@@ -51,7 +51,7 @@ namespace cftal {
     template <>
     class vec<bit, 4> : public x86::vreg<__mmask8> {
     public:
-        static constexpr const __mmask8 mask=0xf;
+        static constexpr const __mmask8 mask=0xfu;
         using value_type = bit;
         using mask_value_type = bit;
         using mask_type= vec<mask_value_type, 4>;
@@ -72,7 +72,7 @@ namespace cftal {
     template <>
     class vec<bit, 8> : public x86::vreg<__mmask8> {
     public:
-        static constexpr const __mmask8 mask=0xff;
+        static constexpr const __mmask8 mask=0xffu;
         using value_type = bit;
         using mask_value_type = bit;
         using mask_type= vec<mask_value_type, 8>;
@@ -92,7 +92,7 @@ namespace cftal {
     template <>
     class vec<bit, 16> : public x86::vreg<__mmask16> {
     public:
-        static constexpr const __mmask16 mask=0xffff;
+        static constexpr const __mmask16 mask=0xffffu;
         using value_type = bit;
         using mask_value_type = bit;
         using mask_type= vec<mask_value_type, 16>;
@@ -111,10 +111,11 @@ namespace cftal {
 
 #if defined (__AVX512VL__) && defined (__AVX512BW__)  \
     && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+
     template <>
     class vec<bit, 32> : public x86::vreg<__mmask32> {
     public:
-        static constexpr const __mmask32 mask=0xffffffff;
+        static constexpr const __mmask32 mask=0xffffffffu;
         using value_type = bit;
         using mask_value_type = bit;
         using mask_type= vec<mask_value_type, 32>;
@@ -151,6 +152,7 @@ namespace cftal {
             : base_type((l() & 0xffffffff) |
                         (__mmask64(h()) << 32)) {}
     };
+
 #endif
 #endif
 }

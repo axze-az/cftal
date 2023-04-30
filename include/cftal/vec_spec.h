@@ -32,6 +32,9 @@
 #include <cftal/arm/v2u32_inl.h>
 #endif
 
+#if defined (__AVX512F__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
+#include <cftal/x86/vec_bit.h>
+#endif
 #if defined (__SSE2__)
 // include 128 bit integer vector specializations
 #include <cftal/x86/v2s64.h>

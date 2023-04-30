@@ -60,8 +60,9 @@ namespace cftal {
 			      uint32_t,
 			      select_t<(_N>8),
 				       uint16_t,
-				       uint8_t>
-			      >
+				       uint8_t
+				      >
+                             >
 		     >;
         static constexpr const utype mask =
             (utype(vec<bit, _N/2>::mask) << _N/2) |
