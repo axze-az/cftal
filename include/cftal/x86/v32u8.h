@@ -92,6 +92,7 @@ namespace cftal {
     void
     insert(vec<uint8_t, 32>& v, const uint8_t& vi, size_t i);
 
+#if !defined (__AVX512VL__) || (__CFTAL_CFG_ENABLE_AVX512__ == 0)
     bool
     all_of(const vec<uint8_t, 32>::mask_type& v);
     bool
@@ -108,6 +109,7 @@ namespace cftal {
         vec<uint8_t, 32>
         from(const vec<bit, 32>& s);
     };
+#endif
 
     v32u8 max(const v32u8& a, const v32u8& b);
     v32u8 min(const v32u8& a, const v32u8& b);

@@ -82,7 +82,7 @@ namespace cftal {
             : _v((utype(l())) |
                  ((utype(h()) << (_N/2)))) {}
         constexpr vec(utype v) : _v( v & mask) {}
-        utype operator()() const { return _v; }
+        const utype& operator()() const { return _v; }
     private:
         utype _v;
     };
@@ -357,6 +357,7 @@ cftal::operator&=(vec<bit, _N>& a, const vec<bit, _N>& b)
     a = a & b;
     return a;
 }
+
 
 template <std::size_t _N>
 inline

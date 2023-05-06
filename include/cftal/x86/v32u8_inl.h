@@ -463,7 +463,6 @@ from(const vec<bit, 32>& s)
 }
 #endif
 
-
 inline
 cftal::v32u8 cftal::max(const v32u8& a, const v32u8& b)
 {
@@ -509,13 +508,13 @@ cftal::select_zero_or_val(const v32u8::mask_type& m,
 }
 
 template <bool _P00, bool _P01, bool _P02, bool _P03,
-	      bool _P04, bool _P05, bool _P06, bool _P07,
-	      bool _P08, bool _P09, bool _P10, bool _P11,
-	      bool _P12, bool _P13, bool _P14, bool _P15,
-	      bool _P16, bool _P17, bool _P18, bool _P19,
-	      bool _P20, bool _P21, bool _P22, bool _P23,
-	      bool _P24, bool _P25, bool _P26, bool _P27,
-	      bool _P28, bool _P29, bool _P30, bool _P31>
+          bool _P04, bool _P05, bool _P06, bool _P07,
+          bool _P08, bool _P09, bool _P10, bool _P11,
+          bool _P12, bool _P13, bool _P14, bool _P15,
+          bool _P16, bool _P17, bool _P18, bool _P19,
+          bool _P20, bool _P21, bool _P22, bool _P23,
+          bool _P24, bool _P25, bool _P26, bool _P27,
+          bool _P28, bool _P29, bool _P30, bool _P31>
 inline
 cftal::v32u8 cftal::select(const v32u8& a, const v32u8& b)
 {
