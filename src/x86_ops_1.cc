@@ -930,7 +930,6 @@ __m512i cftal::x86::div_u32::v(__m512i x, __m512i y, __m512i* rem)
 
 #endif
 
-#if !defined (__AVX__)
 #if defined (__tune_amdfam10__)
 #define SLOW_DIV 1
 #endif
@@ -942,7 +941,6 @@ __m512i cftal::x86::div_u32::v(__m512i x, __m512i y, __m512i* rem)
 #endif
 #if defined (__tune_atom__)
 #define SLOW_DIV 1
-#endif
 #endif
 
 #if !SLOW_DIV
@@ -1094,54 +1092,46 @@ __m512i cftal::x86::div_s64::v(__m512i x, __m512i y, __m512i* rem)
 
 namespace {
 
-    void udiv64(uint64_t& q0, uint64_t& r0, uint64_t x0, uint64_t y0,
-                uint64_t& q1, uint64_t& r1, uint64_t x1, uint64_t y1)
+    void udiv64(uint64_t& q, uint64_t& r, uint64_t x, uint64_t y)
     {
-        uint64_t inv(0), nv(0);
-        unsigned l_z(0);
-        if (y0 != 0) {
-            l_z = cftal::lzcnt(y0);
-            nv = y0 << l_z;
-            inv = cftal::impl::udiv_2by1_rcp_64::
+        if (y != 0) {
+            unsigned l_z = cftal::lzcnt(y);
+            uint64_t nv = y << l_z;
+            uint64_t inv = cftal::impl::udiv_2by1_rcp_64::
                 reciprocal_word(nv);
             cftal::impl::udiv_result<uint64_t> qr(
                 cftal::impl::
-                udiv_2by1_rcp_64::d(x0, 0, nv, inv, l_z));
-            q0 = qr._q0;
-            r0 = qr._r;
+                udiv_2by1_rcp_64::d(x, 0, nv, inv, l_z));
+            q = qr._q0;
+            r = qr._r;
         } else {
-            q0 = uint64_t(-1);
-            r0 = x0;
+            q = uint64_t(-1);
+            r = x;
         }
-        if (y1 != 0) {
-            if (y1 != y0) {
-                l_z = cftal::lzcnt(y1);
-                nv = y1 << l_z;
-                inv = cftal::impl::udiv_2by1_rcp_64::
-                    reciprocal_word(nv);
-            }
-            cftal::impl::udiv_result<uint64_t> qr(
-                cftal::impl::
-                udiv_2by1_rcp_64::d(x1, 0, nv, inv, l_z));
-            q1 = qr._q0;
-            r1 = qr._r;
-        } else {
-            q1 = uint64_t(-1);
-            r1 = x1;
-        }
+    }
+
+    void sdiv64(int64_t& q, int64_t& r, int64_t x, int64_t y)
+    {
+        int sx(x<0), sy(y<0);
+        uint64_t ux(sx ? -x : x), uy(sy ? -y : y);
+        uint64_t uq, ur;
+        udiv64(uq, ur, ux, uy);
+        q = uq;
+        if (y && sx^sy)
+            q = -q;
+        r=ur;
+        if (y && sx)
+            r = -r;
     }
 
 }
 
 __m128i cftal::x86::div_u64::v(__m128i x, __m128i y, __m128i* rem)
 {
-    // cftal::impl::udiv_2by1_rcp_64
-    uint64_t x0= extract_u64<0>(x);
-    uint64_t y0= extract_u64<0>(y);
-    uint64_t x1= extract_u64<1>(x);
-    uint64_t y1= extract_u64<1>(y);
-    uint64_t q0, r0, q1, r1;
-    udiv64(q0, r0, x0, y0, q1, r1, x1, y1);
+    uint64_t q0, r0;
+    udiv64(q0, r0, extract_u64<0>(x), extract_u64<0>(y));
+    uint64_t q1, r1;
+    udiv64(q1, r1, extract_u64<1>(x), extract_u64<1>(y));
     if (rem)
         _mm_store_si128(rem, _mm_set_epi64x(r1, r0));
     return _mm_set_epi64x(q1, q0);
@@ -1149,33 +1139,47 @@ __m128i cftal::x86::div_u64::v(__m128i x, __m128i y, __m128i* rem)
 
 __m128i cftal::x86::div_s64::v(__m128i x, __m128i y, __m128i* rem)
 {
-    int64_t x0= extract_u64<0>(x);
-    int64_t y0= extract_u64<0>(y);
-    int64_t x1= extract_u64<1>(x);
-    int64_t y1= extract_u64<1>(y);
-
-    int sx0(x0<0), sy0(y0<0), sx1(x1<0), sy1(y1<0);
-    uint64_t ux0(sx0 ? -x0 : x0), uy0(sy0 ? -y0 : y0);
-    uint64_t ux1(sx1 ? -x1 : x1), uy1(sy1 ? -y1 : y1);
-
-    uint64_t uq0, ur0, uq1, ur1;
-    udiv64(uq0, ur0, ux0, uy0, uq1, ur1, ux1, uy1);
-
-    int64_t q0(uq0), q1(uq1);
-    if (y0 && sx0^sy0)
-        q0 = -q0;
-    if (y1 && sx1^sy1)
-        q1 = -q1;
-    if (rem) {
-        int64_t r0(ur0), r1(ur1);
-        if (y0 && sx0)
-            r0 = -r0;
-        if (y1 && sx1)
-            r1 = -r1;
+    int64_t q0, r0;
+    sdiv64(q0, r0, extract_u64<0>(x), extract_u64<0>(y));
+    int64_t q1, r1;
+    sdiv64(q1, r1, extract_u64<1>(x), extract_u64<1>(y));
+    if (rem)
         _mm_store_si128(rem, _mm_set_epi64x(r1, r0));
-    }
     return _mm_set_epi64x(q1, q0);
 }
+
+#if defined (__AVX2__)
+__m256i cftal::x86::div_u64::v(__m256i x, __m256i y, __m256i* rem)
+{
+    uint64_t q0, r0;
+    udiv64(q0, r0, extract_u64<0>(x), extract_u64<0>(y));
+    uint64_t q1, r1;
+    udiv64(q1, r1, extract_u64<1>(x), extract_u64<1>(y));
+    uint64_t q2, r2;
+    udiv64(q2, r2, extract_u64<2>(x), extract_u64<2>(y));
+    uint64_t q3, r3;
+    udiv64(q3, r3, extract_u64<3>(x), extract_u64<3>(y));
+    if (rem)
+        _mm256_store_si256(rem, _mm256_set_epi64x(r3, r2, r1, r0));
+    return _mm256_set_epi64x(q3, q2, q1, q0);
+}
+
+__m256i cftal::x86::div_s64::v(__m256i x, __m256i y, __m256i* rem)
+{
+    int64_t q0, r0;
+    sdiv64(q0, r0, extract_u64<0>(x), extract_u64<0>(y));
+    int64_t q1, r1;
+    sdiv64(q1, r1, extract_u64<1>(x), extract_u64<1>(y));
+    int64_t q2, r2;
+    sdiv64(q2, r2, extract_u64<2>(x), extract_u64<2>(y));
+    int64_t q3, r3;
+    sdiv64(q3, r3, extract_u64<3>(x), extract_u64<3>(y));
+    if (rem)
+        _mm256_store_si256(rem, _mm256_set_epi64x(r3, r2, r1, r0));
+    return _mm256_set_epi64x(q3, q2, q1, q0);
+}
+#endif
+
 #endif
 
 #endif // __SSE2__
