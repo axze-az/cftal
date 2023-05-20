@@ -930,6 +930,7 @@ __m512i cftal::x86::div_u32::v(__m512i x, __m512i y, __m512i* rem)
 
 #endif
 
+#if (__CFTAL_CFG_USE_RCP_DIV64__)
 #if defined (__tune_amdfam10__)
 #define SLOW_DIV 1
 #endif
@@ -941,6 +942,7 @@ __m512i cftal::x86::div_u32::v(__m512i x, __m512i y, __m512i* rem)
 #endif
 #if defined (__tune_atom__)
 #define SLOW_DIV 1
+#endif
 #endif
 
 #if !SLOW_DIV
