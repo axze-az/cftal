@@ -1966,6 +1966,7 @@ cftal::native::rsqrt_11b(const vec<double, _N>& x)
     vu_type mi= magic - (m >> 1);
     vf_type y=as<vf_type>(mi);
     y = math::impl::root_r2::order3<double, false>(y, x);
+    y = math::impl::root_r2::order4<double, false>(y, x);
     return y;
 }
 // local variables:
