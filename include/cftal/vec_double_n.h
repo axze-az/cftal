@@ -1965,8 +1965,17 @@ cftal::native::rsqrt_11b(const vec<double, _N>& x)
     // const vu_type magic=0x5fe6ec85e7de30daULL;
     vu_type mi= magic - (m >> 1);
     vf_type y=as<vf_type>(mi);
-    y = math::impl::root_r2::order3<double, false>(y, x);
+    // bits in [1.0, 4.0)
+    // X * 3 * 5 = 52 (faithful) X ~ 3.4
+    // i.e. for 11 bits order 4 is required
+    // r = math::impl::root_r2::order3<double, false>(r, v);
+    // r = math::impl::root_r2::order5<double, false>(r, v);
     y = math::impl::root_r2::order4<double, false>(y, x);
+    // X * 4 * 3 * 2 produces no detected differences in
+    // [1.0, 4.0)
+    // r = math::impl::root_r2::order4<double, false>(r, v);
+    // r = math::impl::root_r2::order3<double, false>(r, v);
+    // r = math::impl::root_r2::order2<double, true>(r, v);
     return y;
 }
 // local variables:
