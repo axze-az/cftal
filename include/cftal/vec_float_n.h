@@ -2402,7 +2402,6 @@ cftal::native::rsqrt_11b(const vec<float, 8>& x)
     return _mm256_rsqrt_ps(x());
 }
 #endif
-
 #endif // __SSE__
 
 template <std::size_t _N>
@@ -2420,6 +2419,10 @@ cftal::native::rsqrt_11b(const vec<float, _N>& x)
     const vi_type magic = 0x5f3759df;
     vi_type mi= magic - (m >> 1);
     vf_type y=as<vf_type>(mi);
+    // bits in [1.0, 4.0)
+    // X * 3 * 2 = 23 (faithful) X ~ 3.4
+    // y = math::impl::root_r2::order3<_T, false>(y, x);
+    // y = math::impl::root_r2::order2<_T, true/false>(y, x);
     y = math::impl::root_r2::order3<float, false>(y, x);
     return y;
 #endif
