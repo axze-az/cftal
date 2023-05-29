@@ -2420,7 +2420,7 @@ cftal::native::rsqrt_11b(const vec<float, _N>& x)
     vi_type mi= magic - (m >> 1);
     vf_type y=as<vf_type>(mi);
     // bits in [1.0, 4.0)
-    // X * 3 * 2 = 23 (faithful) X ~ 3.4
+    // X * 3 * 2 = 23 (faithful) X ~ 3.8
     // y = math::impl::root_r2::order3<_T, false>(y, x);
     // y = math::impl::root_r2::order2<_T, true/false>(y, x);
     y = math::impl::root_r2::order3<float, false>(y, x);
