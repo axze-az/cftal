@@ -3089,6 +3089,13 @@ __log1p_poly_k(arg_t<vf_type> xc)
     e += ei;
     d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
     e += ei;
+    // assume y == xrh, x == xrl:
+    // f(x) := log(1+y+x);
+    // f(x) := log(1 + y + x)
+    // taylor(f(x), x, 0, 1);
+    //                      x
+    // /T/   log(y + 1) + ----- + . . .
+    ///                   y + 1
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-xc), xc-(u-1.0));
     c_k_2 /= u;
