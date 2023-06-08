@@ -2734,7 +2734,8 @@ __log1p_poly_k(arg_t<vf_type> xc)
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0f), 1.0f-(u-x), x-(u-1.0f));
     c_k_2 /= u;
-    vf_type c = _T::sel_val_or_zero(kf < vf_type(25.0f), c_k_2);
+    // vf_type c = _T::sel_val_or_zero(kf < vf_type(25.0f), c_k_2);
+    vf_type c = c_k_2;
 
     d_ops::add12(l, ei, l, c);
     e += ei;

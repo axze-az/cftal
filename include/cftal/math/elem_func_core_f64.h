@@ -3026,6 +3026,7 @@ cftal::math::elem_func_core<double, _T>::
 __log1p_poly_k(arg_t<vf_type> xc)
 {
 #if 0
+    // this code is much slower than the code below:
     vf_type u, ul;
     d_ops::add12cond(u, ul, xc, 1.0);
     vf_type xr;
@@ -3054,15 +3055,6 @@ __log1p_poly_k(arg_t<vf_type> xc)
     d_ops::add12(l, ei, l, kf*ctbl::m_ln2_cw[1]);
     e += ei;
 
-#if 0
-    /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
-    vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-xc), xc-(u-1.0));
-    c_k_2 /= u;
-    vf_type c = _T::sel_val_or_zero(kf < vf_type(54.0), c_k_2);
-
-    d_ops::add12(l, ei, l, c);
-    e += ei;
-#endif
     vf_type ll=e + r2*(r*p);
     return l+ll;
 
@@ -3099,7 +3091,8 @@ __log1p_poly_k(arg_t<vf_type> xc)
     /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
     vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-xc), xc-(u-1.0));
     c_k_2 /= u;
-    vf_type c = _T::sel_val_or_zero(kf < vf_type(54.0), c_k_2);
+    // vf_type c = _T::sel_val_or_zero(kf < vf_type(54.0), c_k_2);
+    vf_type c = c_k_2;
 
     d_ops::add12(l, ei, l, c);
     e += ei;
