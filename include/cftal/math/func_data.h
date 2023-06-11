@@ -32,11 +32,12 @@ namespace cftal {
                 EXP_IDX_MASK=EXP_N-1
             };
             struct table_t {
-                // 2^(i/n) = H + L = H*(1+F)
+                // 2^(i/n) = h + l = h*(1+f)
+                // 2^(i/n) correction factor part f
                 alignas(64) const _F _2_pow_i_n_f[EXP_N];
-                // 2^(i/n) high part
+                // 2^(i/n) high part h
                 alignas(64) const _F _2_pow_i_n_h[EXP_N];
-                // 2^(i/n) low part
+                // 2^(i/n) low part l
                 alignas(64) const _F _2_pow_i_n_l[EXP_N];
             };
             static
