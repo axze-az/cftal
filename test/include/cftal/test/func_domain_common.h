@@ -122,6 +122,19 @@ namespace cftal {
             constexpr static
             const int shifts[]={0};
         };
+
+        template <typename _T>
+        struct domain_logx1p {
+            constexpr static
+            const func_domain<_T> domains[]={
+                std::make_pair(_T(-1.0), std::numeric_limits<_T>::max())
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
+
     }
 }
 

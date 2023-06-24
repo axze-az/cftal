@@ -353,6 +353,14 @@ namespace cftal {
     vec<double, 1>
     log2(arg_t<vec<double, 1> > v);
 
+    // log2p1, these functions are exact to +-1 ulp
+    template <std::size_t _N>
+    vec<double, _N>
+    log2p1(const vec<double, _N>& v);
+
+    vec<double, 1>
+    log2p1(arg_t<vec<double, 1> > v);
+
     // pow, these functions are exact to +-1 ulp
     template <std::size_t _N>
     vec<double, _N>
@@ -697,6 +705,9 @@ namespace cftal {
     log2(arg_t<vec<double, 2> > d);
 
     vec<double, 2>
+    log2p1(arg_t<vec<double, 2> > d);
+
+    vec<double, 2>
     pow(arg_t<vec<double, 2> > b, arg_t<vec<double, 2> > e);
 
     vec<double, 2>
@@ -868,6 +879,9 @@ namespace cftal {
 
     vec<double, 4>
     log2(arg_t<vec<double, 4> > d);
+
+    vec<double, 4>
+    log2p1(arg_t<vec<double, 4> > d);
 
     vec<double, 4>
     pow(arg_t<vec<double, 4> > b, arg_t<vec<double, 4> > e);
@@ -1043,6 +1057,9 @@ namespace cftal {
 
     vec<double, 8>
     log2(arg_t<vec<double, 8> > d);
+
+    vec<double, 8>
+    log2p1(arg_t<vec<double, 8> > d);
 
     vec<double, 8>
     pow(arg_t<vec<double, 8> > b, arg_t<vec<double, 8> > e);
@@ -1694,6 +1711,15 @@ cftal::vec<double, _N>
 cftal::log2(const vec<double, _N>& v)
 {
     vec<double, _N> r(log2(low_half(v)), log2(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<double, _N>
+cftal::log2p1(const vec<double, _N>& v)
+{
+    vec<double, _N> r(log2p1(low_half(v)), log2p1(high_half(v)));
     return r;
 }
 
