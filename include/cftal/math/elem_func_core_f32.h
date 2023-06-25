@@ -2871,9 +2871,9 @@ log2p1_k(arg_t<vf_type> xc)
     vi_type ki=__reduce_log_arg(xr, u);
     vf_type kf=_T::cvt_i_to_f(ki);
     vf_type r=xr-1.0f;
-#if 1
-    // log(x) = kf*ln2 + r + r2*c2 + r3*p
-    vmf_type xc_near_zero=abs(xc) < 0x1.8p-23f;
+
+    // log2p1(x) = kf + (r + r2*c2 + r3*p)/ln2
+    vmf_type xc_near_zero=abs(xc) < 0x1p-3f;
     r = _T::sel(xc_near_zero, xc, r);
 
     vf_type r2, r2l;
@@ -2904,50 +2904,6 @@ log2p1_k(arg_t<vf_type> xc)
     vf_type ll=e + r2*(r*p);
 
     vf_type res=__mul_invln2_add_kf(l, ll, kf);
-#else
-    // log(x) = kf*ln2 + r + r2*c2 + r3*p
-    vf_type r2, r2l;
-    d_ops::sqr12(r2, r2l, r);
-    vf_type p= __log_poly_k_poly(r, r2);
-
-    constexpr const float log_c2 = -0.5f;
-    vf_type l, e;
-    vf_type r2c2=log_c2 * r2;
-    d_ops::add12(l, e, r, r2c2);
-    e += log_c2*r2l;
-    // assume y == xrh, x == xrl:
-    // f(x) := log(1+y+x);
-    // f(x) := log(1 + y + x)
-    // taylor(f(x), x, 0, 1);
-    //                      x
-    // /T/   log(y + 1) + ----- + . . .
-    ///                   y + 1
-    /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
-    vf_type c_k_2 = _T::sel(kf >= vf_type(2.0f), 1.0f-(u-xc), xc-(u-1.0f));
-    c_k_2 /= u;
-    // vf_type c = _T::sel_val_or_zero(kf < vf_type(25.0f), c_k_2);
-    vf_type c = c_k_2;
-    vf_type ei;
-    d_ops::add12(l, ei, l, c);
-    e += ei;
-    vf_type ll=e + r2*(r*p);
-
-    vmf_type xcnz=abs(xc) < 0x1.8p-23f;
-    if (any_of(xcnz)) {
-        vf_type xc2, xc2l;
-        d_ops::sqr12(xc2, xc2l, xc);
-        vf_type ps= __log_poly_k_poly(xc, xc2);
-        vf_type ls, es;
-        vf_type xc2c2=log_c2 * xc2;
-        d_ops::add12(ls, es, xc, xc2c2);
-        es += log_c2*xc2l;
-        vf_type lls=es + xc2*(xc*ps);
-        l = _T::sel(xcnz, ls, l);
-        ll = _T::sel(xcnz, lls, ll);
-    }
-
-    vf_type res=__mul_invln2_add_kf(l, ll, kf);
-#endif
     return res;
 }
 
@@ -3026,7 +2982,7 @@ log10p1_k(arg_t<vf_type> xc)
     vf_type kf=_T::cvt_i_to_f(ki);
     vf_type r=xr-1.0f;
 
-    vmf_type xc_near_zero=abs(xc) < 0x1.8p-23f;
+    vmf_type xc_near_zero=abs(xc) < 0x1p-3f;
     r = _T::sel(xc_near_zero, xc, r);
 
     vf_type r2, r2l;
