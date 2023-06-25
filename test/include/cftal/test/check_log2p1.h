@@ -22,6 +22,8 @@
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/func_domain_common.h>
+#include <cftal/math/impl_d_real_constants_f32.h>
+#include <cftal/math/impl_d_real_constants_f64.h>
 #include <cmath>
 
 namespace cftal {
@@ -49,7 +51,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::log2(1+a);
+                using ctbl=math::impl::d_real_constants<d_real<_T>, _T>;
+                return std::log1p(a)*ctbl::m_1_ln2[0];
             }
             static
             const char* fname() { return "log2p1"; }
