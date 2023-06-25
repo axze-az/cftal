@@ -3085,43 +3085,6 @@ __log1p_poly_k(arg_t<vf_type> xc)
     vi2_type ki=__reduce_log_arg(xr, u);
     vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
     vf_type r=xr-1.0;
-#if 0
-    // logp1(x) = kf*ln2 + (r + r2*c2 + r3*p)
-    vmf_type xc_near_zero=abs(xc) < 0x1p-3;
-    r = _T::sel(xc_near_zero, xc, r);
-    // log2p1(x) = kf + (r + r2*c2 + r3*p)/ln2
-    vf_type r2, r2l;
-    d_ops::sqr12(r2, r2l, r);
-    vf_type p= __log_poly_k_poly(r, r2);
-
-    constexpr const double log_c2 = -0.5;
-    vf_type l, e;
-    vf_type r2c2=log_c2 * r2;
-    d_ops::add12(l, e, r, r2c2);
-    e += log_c2*r2l;
-    // assume y == xrh, x == xrl:
-    // f(x) := log(1+y+x);
-    // f(x) := log(1 + y + x)
-    // taylor(f(x), x, 0, 1);
-    //                      x
-    // /T/   log(y + 1) + ----- + . . .
-    ///                   y + 1
-    /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
-    vf_type c_k_2 = _T::sel(kf >= vf_type(2.0), 1.0-(u-xc), xc-(u-1.0));
-    c_k_2 /= u;
-    // vf_type c = _T::sel_val_or_zero(kf < vf_type(54.0), c_k_2);
-    vf_type c = _T::sel_zero_or_val(xc_near_zero, c_k_2);
-    vf_type ei;
-    d_ops::add12(l, ei, l, c);
-    e += ei;
-    vf_type ll=e + r2*(r*p);
-
-    using ctbl=impl::d_real_constants<d_real<double>, double>;
-    vf_type res, t;
-    d_ops::add12(res, t, kf*ctbl::m_ln2_cw[0], l);
-    res += ((t + ll) + kf * ctbl::m_ln2_cw[1]);
-    return res;
-#else
 #if 1
     // log(x) = kf*ln2 + r + r2*c2 + r3*p
     vf_type r2, r2l;
@@ -3172,7 +3135,6 @@ __log1p_poly_k(arg_t<vf_type> xc)
     d_ops::add12(lh, ll, kf*ctbl::m_ln2_cw[0], r);
     lh+= p*r2+(c+(ll + kf * ctbl::m_ln2_cw[1]));
     return lh;
-#endif
 #endif
 #endif
 }
