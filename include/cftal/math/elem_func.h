@@ -187,6 +187,11 @@ namespace cftal {
             vf_type
             log10(arg_t<vf_type> vf);
 
+            // base 10 logarithmus of 1+x function with error handling
+            static
+            vf_type
+            log10p1(arg_t<vf_type> vf);
+
             // base 2 logarithmus function with error handling
             static
             vf_type
@@ -611,6 +616,33 @@ log10(arg_t<vf_type> d)
     x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == _FLOAT_T(0.0), ninf, x);
+    return x;
+}
+
+template <typename _FLOAT_T, typename _T>
+inline
+typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
+cftal::math::elem_func<_FLOAT_T, _T>::
+log10p1(arg_t<vf_type> d)
+{
+    vf_type x=base_type::log10p1_k(d);
+    // double log1p(double x)
+    // {
+    //    double u = 1.+x;
+    //    if (u == 1.)
+    //        return x;
+    //    else
+    //        return log(u)*x/(u-1.);
+    // }
+    const _FLOAT_T pinf=_T::pinf();
+    const _FLOAT_T ninf=_T::ninf();
+    x = _T::sel(d==pinf, pinf, x);
+    // if ((d < -1.0)|isnan(d)) x = NAN;
+    x = _T::sel((d < _FLOAT_T(-1.0))|isnan(d), _T::nan(), x);
+    // if (d == -1.0) x = -INFINITY;
+    x = _T::sel(d == _FLOAT_T(-1.0), ninf, x);
+    x = _T::sel(d == _FLOAT_T(0.0), d, x);
+    x = _T::sel(x==0.0, copysign(x, d), x);
     return x;
 }
 

@@ -464,7 +464,17 @@ namespace cftal {
 
             static
             vf_type
+            __mul_invln10_add_kflg2(arg_t<vf_type> lnh,
+                                    arg_t<vf_type> lnl,
+                                    arg_t<vf_type> kf);
+
+            static
+            vf_type
             log10_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            log10p1_k(arg_t<vf_type> x);
 
             // calculation of x^y
             static
@@ -2945,23 +2955,10 @@ template <typename _T>
 inline
 typename cftal::math::elem_func_core<float, _T>::vf_type
 cftal::math::elem_func_core<float, _T>::
-log10_k(arg_t<vf_type> xc)
+__mul_invln10_add_kflg2(arg_t<vf_type> l,
+                        arg_t<vf_type> ll,
+                        arg_t<vf_type> kf)
 {
-    vf_type xr;
-    vi_type ki=__reduce_log_arg(xr, xc);
-    vf_type kf=_T::cvt_i_to_f(ki);
-    vf_type r=xr-1.0;
-
-    // log10(x) = kf*lg(2) + (r + r2*c2 + r3*p)/ln10;
-    vf_type r2, r2l;
-    d_ops::sqr12(r2, r2l, r);
-    vf_type p= __log_poly_k_poly(r, r2);
-    constexpr const double log_c2=-0.5;
-    vf_type l= log_c2*r2;
-    vf_type ei;
-    d_ops::add12(l, ei, r, l);
-    vf_type ll=(ei + log_c2*r2l) + r2*(r*p);
-
     // x^ : +0xd.e6p-5f
     constexpr
     const float invln10hi=+4.3432617188e-01f;
@@ -2990,6 +2987,76 @@ log10_k(arg_t<vf_type> xc)
     vf_type res, t;
     d_ops::add12(res, t, kf*ctbl::m_lg2_cw[0], l0);
     res += (t +(l1+l2+l3)) + kf * ctbl::m_lg2_cw[1];
+    return res;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+log10_k(arg_t<vf_type> xc)
+{
+    vf_type xr;
+    vi_type ki=__reduce_log_arg(xr, xc);
+    vf_type kf=_T::cvt_i_to_f(ki);
+    vf_type r=xr-1.0;
+
+    // log10(x) = kf*lg(2) + (r + r2*c2 + r3*p)/ln10;
+    vf_type r2, r2l;
+    d_ops::sqr12(r2, r2l, r);
+    vf_type p= __log_poly_k_poly(r, r2);
+    constexpr const double log_c2=-0.5;
+    vf_type l= log_c2*r2;
+    vf_type ei;
+    d_ops::add12(l, ei, r, l);
+    vf_type ll=(ei + log_c2*r2l) + r2*(r*p);
+    vf_type res=__mul_invln10_add_kflg2(l, ll, kf);
+    return res;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_core<float, _T>::vf_type
+cftal::math::elem_func_core<float, _T>::
+log10p1_k(arg_t<vf_type> xc)
+{
+    vf_type u=1.0f+xc;
+    vf_type xr;
+    vi_type ki=__reduce_log_arg(xr, u);
+    vf_type kf=_T::cvt_i_to_f(ki);
+    vf_type r=xr-1.0f;
+
+    vmf_type xc_near_zero=abs(xc) < 0x1.8p-23f;
+    r = _T::sel(xc_near_zero, xc, r);
+
+    vf_type r2, r2l;
+    d_ops::sqr12(r2, r2l, r);
+    vf_type p= __log_poly_k_poly(r, r2);
+
+    constexpr const float log_c2 = -0.5f;
+    vf_type l, e;
+    vf_type r2c2=log_c2 * r2;
+    d_ops::add12(l, e, r, r2c2);
+    e += log_c2*r2l;
+    // assume y == xrh, x == xrl:
+    // f(x) := log(1+y+x);
+    // f(x) := log(1 + y + x)
+    // taylor(f(x), x, 0, 1);
+    //                      x
+    // /T/   log(y + 1) + ----- + . . .
+    ///                   y + 1
+    /* correction term ~ log(1+x)-log(u), avoid underflow in c/u */
+    vf_type c_k_2 = _T::sel(kf >= vf_type(2.0f), 1.0f-(u-xc), xc-(u-1.0f));
+    c_k_2 /= u;
+    // vf_type c = _T::sel_val_or_zero(kf < vf_type(25.0f), c_k_2);
+    vf_type c = _T::sel_zero_or_val(xc_near_zero, c_k_2);
+
+    vf_type ei;
+    d_ops::add12(l, ei, l, c);
+    e += ei;
+    vf_type ll=e + r2*(r*p);
+
+    vf_type res=__mul_invln10_add_kflg2(l, ll, kf);
     return res;
 }
 

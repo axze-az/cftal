@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #if !defined(__CFTAL_TEST_CHECK_LOG2P1_H__)
-#define __CFTAL_TEST_CHECK_LOG2P1_H__ 1
+#define __CFTAL_TEST_CHECK_LOG10P1_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
@@ -28,31 +28,31 @@ namespace cftal {
     namespace test {
 
         template <typename _T>
-        using domain_log2p1 = domain_logx1p<_T>;
+        using domain_log10p1 = domain_logx1p<_T>;
 
         template <typename _T>
-        struct check_log2p1 {
+        struct check_log10p1 {
             template <std::size_t _N>
             static
             vec<_T, _N>
             v(const vec<_T, _N>& a) {
-                return log2p1(a);
+                return log10p1(a);
             }
             static
             auto
             r(const _T& a) {
                 std::pair<_T, _T> i;
-                _T v=call_mpfr::func(a, mpfr_log2p1, &i);
+                _T v=call_mpfr::func(a, mpfr_log10p1, &i);
                 return std::make_tuple(v, i.first, i.second);
                 // return call_mpfr::func(a, mpfr_log);
             }
             static
             _T
             s(const _T& a) {
-                return std::log2(1+a);
+                return std::log10(1+a);
             }
             static
-            const char* fname() { return "log2p1"; }
+            const char* fname() { return "log10p1"; }
         };
 
     }

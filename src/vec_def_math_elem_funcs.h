@@ -198,6 +198,14 @@
                                                                         \
     nsr::vec_float                                                      \
     __attribute__((__flatten__))                                        \
+    ns::log10p1(arg<vec_float>::type d)                                 \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::log10p1(d);                                      \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::log2(arg<vec_float>::type d)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
