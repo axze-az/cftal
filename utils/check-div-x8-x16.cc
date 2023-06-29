@@ -20,12 +20,13 @@
 #include <cftal/config.h>
 #include <cftal/x86/intrin.h>
 #include <cftal/as.h>
+#include <cftal/types.h>
 
 namespace cftal {
     namespace test {
         void
         div_su8();
-        
+
         float
         raw_div_x8(float a, float b);
         
