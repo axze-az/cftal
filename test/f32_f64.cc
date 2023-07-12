@@ -404,10 +404,8 @@ namespace {
             ((b0!=b0) || (b1!=b1) || (b2!=b2))) {
             return true;
         }
-        if (b0==0 && b1==0 && b2==0 && a!=0) {
-            return false;
-        }
-        return a == b0 || a == b1 || a == b2;
+        using cftal::test::f_eq;
+        return  f_eq(a, b0) || f_eq(a, b1) || f_eq(a, b2);
     }
 }
 
