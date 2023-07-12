@@ -401,8 +401,12 @@ namespace {
         _T b0, b1, b2;
         std::tie(b0, b1, b2) = b;
         if ((a!=a) &&
-            ((b0!=b0) || (b1!=b1) || (b2!=b2)))
+            ((b0!=b0) || (b1!=b1) || (b2!=b2))) {
             return true;
+        }
+        if (b0==0 && b1==0 && b2==0 && a!=0) {
+            return false;
+        }
         return a == b0 || a == b1 || a == b2;
     }
 }
