@@ -3270,7 +3270,7 @@ log2p1_k(arg_t<vf_type> xc)
     vf_type res=__mul_invln2_add_kf(l, ll, kf);
 
     vmf_type xc_tiny= abs_xc <=
-        2.0*func_constants<double>::max_denormal();
+        0x1p2*func_constants<double>::max_denormal();
     using ctbl = impl::d_real_constants<d_real<double>, double>;
     vf_type t=xc * ctbl::m_1_ln2[0];
     res= _T::sel(xc_tiny, t, res);
