@@ -19,6 +19,7 @@
 #define __CFTAL_MATH_FUNC_CONSTANTS_H__ 1
 
 #include <cftal/config.h>
+#include <limits>
 
 namespace cftal {
 
@@ -29,6 +30,9 @@ namespace cftal {
 
         template <>
         struct func_constants<double> {
+            static constexpr double
+            min_normal() { return std::numeric_limits<double>::min(); }
+
             static constexpr double
             max_denormal() { return 2.225073858507200889024587e-308; }
             // exp(x) == +inf for x >=
@@ -132,6 +136,9 @@ namespace cftal {
 
         template <>
         struct func_constants<float> {
+            static constexpr float
+            min_normal() { return std::numeric_limits<float>::min(); }
+
             static constexpr float
             max_denormal() { return 1.175494210692441075487029e-38f; }
 
