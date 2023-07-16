@@ -2906,8 +2906,8 @@ log2p1_k(arg_t<vf_type> xc)
 
     vf_type res=__mul_invln2_add_kf(l, ll, kf);
 
-    vmf_type xc_tiny= abs_xc <=
-        2.0f*func_constants<float>::max_denormal();
+    vmf_type xc_tiny= abs_xc <
+        0x1p2f*func_constants<float>::min_normal();
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type t=xc * ctbl::m_1_ln2[0];
     res= _T::sel(xc_tiny, t, res);
@@ -3022,8 +3022,8 @@ log10p1_k(arg_t<vf_type> xc)
 
     vf_type res=__mul_invln10_add_kflg2(l, ll, kf);
 
-    vmf_type xc_tiny= abs_xc <=
-        2.0f*func_constants<float>::max_denormal();
+    vmf_type xc_tiny= abs_xc <
+        0x1p1f*func_constants<float>::min_normal();
     using ctbl = impl::d_real_constants<d_real<float>, float>;
     vf_type t=xc * ctbl::m_1_ln10[0];
     res= _T::sel(xc_tiny, t, res);
