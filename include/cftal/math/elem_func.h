@@ -729,7 +729,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     // domain of pow: (x > 0) || (x == 0 && y > 0) ||
     //                (x < 0 && y is an integer)
 
-    __asm__ volatile("# LLVM-MCA-BEGIN\n\t");
+    __asm__ volatile("# LLVM-MCA-BEGIN pow\n\t");
     vf_type res=base_type::pow_k(x, y);
     vmf_type y_is_int = rint(y) == y;
     vf_type y_half=_FLOAT_T(0.5) *y;
@@ -760,7 +760,7 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     res = _T::sel(x_inf_or_zero, t, res);
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
     res = _T::sel((y==_FLOAT_T(0)) | (x==_FLOAT_T(1)), _FLOAT_T(1), res);
-    __asm__ volatile("# LLVM-MCA-END\n\t");
+    __asm__ volatile("# LLVM-MCA-END pow\n\t");
     return res;
 #endif
 }
