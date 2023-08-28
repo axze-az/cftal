@@ -559,6 +559,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 log(arg_t<vf_type> d)
 {
+    __asm__ volatile("# LLVM-MCA-BEGIN log\n\t");
 #if 0
     auto f=[](_FLOAT_T xx)->_FLOAT_T {
         return std::log(xx);
@@ -575,6 +576,7 @@ log(arg_t<vf_type> d)
     // if (d == 0) x = -INFINITY;
     x = _T::sel(d == _FLOAT_T(0.0), ninf, x);
 #endif
+    __asm__ volatile("# LLVM-MCA-END log\n\t");
     return x;
 }
 
@@ -584,6 +586,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 log1p(arg_t<vf_type> d)
 {
+    __asm__ volatile("# LLVM-MCA-BEGIN log1p\n\t");
     vf_type x=base_type::log1p_k(d);
     // double log1p(double x)
     // {
@@ -601,6 +604,7 @@ log1p(arg_t<vf_type> d)
     // if (d == -1.0) x = -INFINITY;
     x = _T::sel(d == _FLOAT_T(-1.0), ninf, x);
     x = _T::sel(d == _FLOAT_T(0.0), d, x);
+    __asm__ volatile("# LLVM-MCA-END log1p\n\t");
     return x;
 }
 
@@ -671,6 +675,7 @@ typename cftal::math::elem_func<_FLOAT_T, _T>::vf_type
 cftal::math::elem_func<_FLOAT_T, _T>::
 log2p1(arg_t<vf_type> d)
 {
+    __asm__ volatile("# LLVM-MCA-BEGIN log2p1\n\t");
     vf_type x=base_type::log2p1_k(d);
     // double log1p(double x)
     // {
@@ -688,6 +693,7 @@ log2p1(arg_t<vf_type> d)
     // if (d == -1.0) x = -INFINITY;
     x = _T::sel(d == _FLOAT_T(-1.0), ninf, x);
     x = _T::sel(d == _FLOAT_T(0.0), d, x);
+    __asm__ volatile("# LLVM-MCA-END log2p1\n\t");
     return x;
 }
 
