@@ -151,7 +151,7 @@ option(CFTAL_USE_CXX23 "use C++23" ON)
 # C++20 ?
 option(CFTAL_USE_CXX20 "use C++20" ON)
 if (CFTAL_USE_CXX2A)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++23")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++2b")
 else()
     if(CFTAL_USE_CXX20)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++20")
