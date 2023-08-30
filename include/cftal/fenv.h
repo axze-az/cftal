@@ -36,7 +36,7 @@ namespace cftal {
         };
     };
 
-    // switch on flush to zero and denormals are zero of intel
+    // switch on flush to zero and denormals are zero of x86
     // processors until the destructor is called
     class scoped_ftz_daz_mode {
 #if defined (__SSE__)
