@@ -41,6 +41,7 @@ namespace cftal {
     class scoped_ftz_daz_mode {
 #if defined (__SSE__)
         uint32_t _csr;
+        bool _restore;
 #endif
     public:
         scoped_ftz_daz_mode();
@@ -57,14 +58,16 @@ namespace cftal {
 inline
 cftal::scoped_ftz_daz_mode::scoped_ftz_daz_mode()
 #if defined (__SSE__)
-    : _csr(_mm_getcsr())
+    : _csr(_mm_getcsr()), _restore(false)
 #endif
 {
 #if defined (__SSE__)
     constexpr const uint32_t _MM_DAZ_MASK=1<<6;
     uint32_t ncsr=_csr | _MM_FLUSH_ZERO_MASK | _MM_DAZ_MASK;
-    if (ncsr != _csr)
+    if (ncsr != _csr) {
         _mm_setcsr(ncsr);
+        _restore=true;
+    }
 #endif
 }
 
@@ -72,7 +75,8 @@ inline
 cftal::scoped_ftz_daz_mode::~scoped_ftz_daz_mode()
 {
 #if defined (__SSE__)
-    if (_mm_getcsr()!=_csr)
+    // if (_mm_getcsr()!=_csr)
+    if (_restore)
         _mm_setcsr(_csr);
 #endif
 }
