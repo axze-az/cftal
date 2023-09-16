@@ -17,23 +17,28 @@ are not tested.
 
 ### Dependencies
 
-* the reproduction of the used constants in the code requires
+- the reproduction of the used constants in the code requires
   sollya (https://www.sollya.org) and libsollya-dev to build
   extensions to sollya
-* the test code uses mpfr (https://www.mpfr.org) and requires
+- the test code uses mpfr (https://www.mpfr.org) and requires
   libmpfr-dev to compile the test programs
-* the documentation in the doc directory requires pdflatex
-* only linux as build system was tested and
-* gcc or clang are the only compilers are used to date
+- the documentation in the doc directory requires pdflatex
+- only linux as build system was tested and
+- gcc or clang are the only compilers are used to date
 
 ### Configuration
 
-create a build directory in the root directory of the project
-       mkdir build
-       cd build
-       CC=clang-16 CXX=clang++-16 cmake -DCMAKE_BUILD_TYPE=release ..
+* create a build directory in the root directory of the project
+
+mkdir build
+
+cd build
+
+CC=clang-16 CXX=clang++-16 cmake -DCMAKE_BUILD_TYPE=release ..
+
 or
-       CC=gcc-13 CXX=g++-13 cmake -DCMAKE_BUILD_TYPE=release ..
+
+CC=gcc-13 CXX=g++-13 cmake -DCMAKE_BUILD_TYPE=release ..
 
 ### Build and test
 
