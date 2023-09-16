@@ -28,7 +28,7 @@ are not tested.
 
 ### Configuration
 
-* create a build directory in the root directory of the project
+create a build directory in the root directory of the project
 
 mkdir build
 
@@ -42,8 +42,8 @@ CC=gcc-13 CXX=g++-13 cmake -DCMAKE_BUILD_TYPE=release ..
 
 ### Build and test
 
-During the build a number of test programs are build in ./test and
-a pdf containing some documentation is created in ./doc.
+During the build a number of test programs are built in ./test and
+a pdf is created in ./doc containing some documentation.
 
 ## License
 
