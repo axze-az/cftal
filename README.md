@@ -1,17 +1,19 @@
 # cftal
 
-A c++-17 template short vector library with faithfully rounded elementary
+A c++-17 template based short vector library with faithfully rounded elementary
 functions.
 
 ## Description
 
-Cftal is a c++-17 template short vector library with specializations
-using intrinsic functions. It contains a library with faithfully rounded
-elementary functions and special functions (erf, erfc,
-tgamma, lgamma, j0, y0, j1 and y1) in single and double precision,
+Cftal is a c++-17 template based short vector library with specializations
+using intrinsic functions.
+It also contains a library with faithfully rounded elementary functions and
+special functions (erf, erfc, tgamma, lgamma, j0, y0, j1 and y1) in
+single and double precision,
 
-Specializations for processors with AVX2 extensions are implemented.
-The specializations for processors with AVX512 extension are not tested.
+Specializations for x86 processors with AVX2 and older extensions are
+implemented.
+The specializations for processors with AVX512 extensions are not tested yet.
 
 ## Getting Started
 
