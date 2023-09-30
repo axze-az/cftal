@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include "cftal/vec.h"
-#include "cftal/vxf16.h"
+#include "cftal/vec_f16.h"
 #include "cftal/test/of_ops.h"
 #include "cftal/test/cpu_times.h"
 
