@@ -529,7 +529,11 @@ rootn(mpfr_t y, const mpfr_t x, long int n, mpfr_rnd_t rm)
                };
         r=call_ziv_func(y, x, rm, f);
     } else {
+#if MPFR_VERSION_MAJOR<4
+        r=mpfr_root(y, x, n, rm);
+#else
         r=mpfr_rootn_ui(y, x, n, rm);
+#endif
     }
     return r;
 }
