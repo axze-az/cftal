@@ -32,17 +32,16 @@ The specializations for processors with AVX512 extensions are not tested yet.
 
 ### Configuration
 
-create a build directory in the root directory of the project
+create a build directory in the root directory of the project, configure and
+build
 
-mkdir build
+1. mkdir build
+2. cd build
+3. CC=clang-16 CXX=clang++-16 cmake -DCMAKE_BUILD_TYPE=release ..
 
-cd build
+You may also use gcc instead of clang:
 
-CC=clang-16 CXX=clang++-16 cmake -DCMAKE_BUILD_TYPE=release ..
-
-or
-
-CC=gcc-13 CXX=g++-13 cmake -DCMAKE_BUILD_TYPE=release ..
+3. CC=gcc-13 CXX=g++-13 cmake -DCMAKE_BUILD_TYPE=release ..
 
 ### Build and test
 
