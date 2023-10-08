@@ -286,14 +286,14 @@ namespace cftal {
     vec<_T, 16>
     permute(const vec<_T, 16>& v0, const vec<_T, 16>& v1);
 
-    // permutation of one vector using indices in idx
+    // permutation of one vector using indices in idx,
     // idx<0 means set the element to zero
     template <typename _T, typename _I, size_t _N>
     std::enable_if_t<std::is_signed_v<_I>, vec<_T, _N>>
     permute(const vec<_T, _N>& v,
             const vec<_I, _N>& idx);
 
-    // permutation of two vector using indices in idx
+    // permutation of two vectors using indices in idx,
     // idx<0 means set the element to zero
     template <typename _T, typename _I, size_t _N>
     std::enable_if_t<std::is_signed_v<_I>, vec<_T, _N>>
