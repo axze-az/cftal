@@ -331,10 +331,157 @@ func(float a, int ib, f2fi_t f, std::pair<float, float>* ulp1i)
     float_emin_emax g;
     MPFR_DECL_INIT(ai, 24);
     MPFR_DECL_INIT(r, 24);
-    mpfr_set_d(ai, a, GMP_RNDN);
+    mpfr_set_flt(ai, a, GMP_RNDN);
     int mpres=f(r, ai, ib, GMP_RNDN);
     mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
     float dr=mpfr_get_flt(r, GMP_RNDN);
+    if (ulp1i != nullptr) {
+        *ulp1i=ulp1_interval(dr, mpres);
+    }
+    return dr;
+}
+
+cftal::f16_t
+cftal::test::call_mpfr::
+func(f16_t a, f1_t f, std::pair<f16_t, f16_t>* ulp1i)
+{
+    mpfr_cache::f1_mpfr_result<f16_t> c;
+    // auto pf= mpfr_cache::result(a, f, c);
+    auto pf=nullptr;
+    if (pf == nullptr) {
+        half_emin_emax g;
+        MPFR_DECL_INIT(ai, 11);
+        MPFR_DECL_INIT(r, 11);
+        float fa=cvt_f16_to_f32(a());
+        mpfr_set_flt(ai, fa, MPFR_RNDN);
+        int mpres=f(r, ai, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
+        float fdr=mpfr_get_flt(r, MPFR_RNDN);
+        c._mpfr_res= mpres;
+        c._res = f16_t(fdr);
+        // mpfr_cache::update(a, f, c);
+    }
+    f16_t dr=c._res;
+    int mpres=c._mpfr_res;
+    if (ulp1i != nullptr) {
+        *ulp1i=ulp1_interval(dr, mpres);
+    }
+    return dr;
+}
+
+std::pair<cftal::f16_t, cftal::f16_t>
+cftal::test::call_mpfr::
+func(f16_t a, f1p_t f,
+     std::pair<f16_t, f16_t>* ulp1i0,
+     std::pair<f16_t, f16_t>* ulp1i1)
+{
+    half_emin_emax g;
+    MPFR_DECL_INIT(ai, 11);
+    MPFR_DECL_INIT(r0, 11);
+    MPFR_DECL_INIT(r1, 11);
+    float fa=cvt_f16_to_f32(a());
+    mpfr_set_flt(ai, fa, MPFR_RNDN);
+    int i01=f(r0, r1, ai, MPFR_RNDN);
+
+    int i0 = i01 & 3;
+    i0 = i0 > 1 ? -1 : i0;
+    i0=mpfr_subnormalize(r0, i0, MPFR_RNDN);
+    int i1 = (i01 >> 2) & 3;
+    i1 = i1 > 1 ? -1 : i1;
+    i1=mpfr_subnormalize(r1, i1, MPFR_RNDN);
+
+    float fd0, fd1;
+    fd0 = mpfr_get_flt(r0, MPFR_RNDN);
+    fd1 = mpfr_get_flt(r1, MPFR_RNDN);
+    f16_t d0(fd0), d1(fd1);
+
+    if (ulp1i0 != nullptr) {
+        *ulp1i0= ulp1_interval(d0, i0);
+    }
+    if (ulp1i1 != nullptr) {
+        *ulp1i1= ulp1_interval(d1, i1);
+    }
+    return std::make_pair(d0, d1);
+}
+
+cftal::f16_t
+cftal::test::call_mpfr::
+func(int32_t* ip, f16_t a, f1i_t f, std::pair<f16_t, f16_t>* ulp1i)
+{
+    mpfr_cache::f1i_mpfr_result<std::pair<f16_t, int32_t> > c;
+    // auto pf= mpfr_cache::result(a, f, c);
+    auto pf=nullptr;
+    if (pf == nullptr) {
+        half_emin_emax g;
+        MPFR_DECL_INIT(ai, 11);
+        MPFR_DECL_INIT(r, 11);
+        int32_t i;
+        float fa=cvt_f16_to_f32(a());
+        mpfr_set_flt(ai, fa, MPFR_RNDN);
+        int mpres=f(r, &i, ai, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
+        float fdr=mpfr_get_flt(r, MPFR_RNDN);
+        f16_t dr(fdr);
+        c._mpfr_res= mpres;
+        c._res = std::make_pair(dr, i);
+        // mpfr_cache::update(a, f, c);
+    }
+    if (ip != nullptr) {
+        *ip = c._res.second;
+    }
+    f16_t dr=c._res.first;
+    int mpres=c._mpfr_res;
+    if (ulp1i != nullptr) {
+        *ulp1i=ulp1_interval(dr, mpres);
+    }
+    return dr;
+}
+
+cftal::f16_t
+cftal::test::call_mpfr::
+func(f16_t a, f16_t b, f2_t f, std::pair<f16_t, f16_t>* ulp1i)
+{
+    mpfr_cache::f2_mpfr_result<f16_t> c;
+    // auto pf= mpfr_cache::result(a, b, f, c);
+    auto pf=nullptr;
+    if (pf == nullptr) {
+        half_emin_emax g;
+        MPFR_DECL_INIT(ai, 11);
+        MPFR_DECL_INIT(bi, 11);
+        MPFR_DECL_INIT(r, 11);
+        float fa=cvt_f16_to_f32(a());
+        float fb=cvt_f16_to_f32(b());
+        mpfr_set_flt(ai, fa, MPFR_RNDN);
+        mpfr_set_flt(bi, fb, MPFR_RNDN);
+        int mpres=f(r, ai, bi, MPFR_RNDN);
+        mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
+        float fdr=mpfr_get_flt(r, MPFR_RNDN);
+        f16_t dr(fdr);
+        c._mpfr_res= mpres;
+        c._res = dr;
+        // mpfr_cache::update(a, b, f, c);
+    }
+    f16_t dr=c._res;
+    int mpres=c._mpfr_res;
+    if (ulp1i != nullptr) {
+        *ulp1i=ulp1_interval(dr, mpres);
+    }
+    return dr;
+}
+
+cftal::f16_t
+cftal::test::call_mpfr::
+func(f16_t a, int ib, f2fi_t f, std::pair<f16_t, f16_t>* ulp1i)
+{
+    half_emin_emax g;
+    MPFR_DECL_INIT(ai, 11);
+    MPFR_DECL_INIT(r, 11);
+    float fa=cvt_f16_to_f32(a());
+    mpfr_set_flt(ai, fa, GMP_RNDN);
+    int mpres=f(r, ai, ib, GMP_RNDN);
+    mpres=mpfr_subnormalize(r, mpres, MPFR_RNDN);
+    float fdr=mpfr_get_flt(r, GMP_RNDN);
+    f16_t dr(fdr);
     if (ulp1i != nullptr) {
         *ulp1i=ulp1_interval(dr, mpres);
     }

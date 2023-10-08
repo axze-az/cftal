@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/std_types.h>
+#include <cftal/f16_t.h>
 #include <cftal/d_real.h>
 #include <cftal/t_real.h>
 #include <utility>
@@ -116,6 +117,37 @@ namespace cftal {
             float
             func(float a, int ib, f2fi_t f,
                  std::pair<float, float>* ulp1i= nullptr);
+
+            // call f(a), returns also the interval
+            // containing the unrounded result
+            f16_t
+            func(f16_t a, f1_t f,
+                 std::pair<f16_t, f16_t>* ulp1i= nullptr);
+
+            // call f(a), returns also the intervals
+            // containing the unrounded results
+            std::pair<f16_t, f16_t>
+            func(f16_t a, f1p_t f,
+                 std::pair<f16_t, f16_t>* ulp1i0 = nullptr,
+                 std::pair<f16_t, f16_t>* ulp1i1 = nullptr);
+
+            // call f(a, i), returns also the interval
+            // containing the unrounded result
+            f16_t
+            func(int32_t* ip, f16_t a, f1i_t f,
+                 std::pair<f16_t, f16_t>* ulp1i= nullptr);
+
+            // call f(a, b), returns also the interval
+            // containing the unrounded result
+            f16_t
+            func(f16_t a, f16_t b, f2_t f,
+                 std::pair<f16_t, f16_t>* ulp1i= nullptr);
+
+            // call f(a), returns also the interval
+            // containing the unrounded result
+            f16_t
+            func(f16_t a, int ib, f2fi_t f,
+                 std::pair<f16_t, f16_t>* ulp1i= nullptr);
 
             // mpfr result to interval conversion:
             // returns [nextafter(res, -inf), res] for mpfr_res > 0
