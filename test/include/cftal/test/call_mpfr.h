@@ -461,10 +461,12 @@ cftal::test::call_mpfr::ulp1_interval(_T res, int mpres)
     const _T down=-std::numeric_limits<_T>::max();
     if (mpres > 0) {
         // res is greater than the real value
-        pr.first = std::nextafter(res, down);
+        using std::nextafter;
+        pr.first = nextafter(res, down);
     } else if (mpres < 0) {
         // res is smaller than the real value
-        pr.second = std::nextafter(res, up);
+        using std::nextafter;
+        pr.second = nextafter(res, up);
     } else if (mpres == 0) {
         // res is exact:
         // pr.first = std::nextafter(res, down);
