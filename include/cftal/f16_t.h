@@ -444,8 +444,9 @@ namespace cftal {
 
 
     // math functions for f16_t are missing
+    f16_t
+    nextafter(f16_t a, f16_t b);
 }
-
 
 inline
 bool cftal::operator<(const f16_t& a, const f16_t& b)
@@ -854,7 +855,6 @@ std::istream& cftal::operator>>(std::istream& s, f16_t& v)
     return s;
 }
 
-
 namespace std {
 
     template <>
@@ -893,6 +893,29 @@ namespace std {
         static cftal::f16_t signaling_NaN() { return cftal::f16_t::cvt_from_rep(0x7e00); }
         static cftal::f16_t denorm_min() { return cftal::f16_t::cvt_from_rep(0x1); }
     };
+}
+
+// keep this function after the specialization of std::numeric_limits<f16_t>
+inline
+cftal::f16_t
+cftal::nextafter(f16_t xc, f16_t yc)
+{
+    uint16_t ux=xc();
+    uint16_t uy=yc();
+    uint16_t ax= ux & not_sign_f16_msk;
+    uint16_t ay= uy & not_sign_f16_msk;
+    uint16_t ux_inc= ux + 1;
+    uint16_t ux_dec= ux - 1;
+    // decrement required if ax > ay or (ux^uy & sgn) != 0
+    bool opp_sgn=
+        uint16_t((ux^uy) & sign_f16_msk) != uint16_t(0);
+    uint16_t r= ((ax > ay) | opp_sgn) ? ux_dec : ux_inc;
+    uint16_t r0= ay == 0 ? uy : (uy & sign_f32_msk::v.s32()) | 1;
+    r = ax == 0 ? r0 : r;
+    r = ux == uy ? uy : r;
+    f16_t rf= f16_t::cvt_from_rep(r);
+    rf = isnan(xc) | isnan(yc) ? std::numeric_limits<f16_t>::quiet_NaN() : rf;
+    return rf;
 }
 
 // Local variables:
