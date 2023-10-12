@@ -442,8 +442,10 @@ namespace cftal {
     std::ostream& operator<<(std::ostream& s, const f16_t& v);
     std::istream& operator>>(std::istream& s, f16_t& v);
 
-
     // math functions for f16_t are missing
+    f16_t
+    copysign(f16_t a, f16_t b);
+
     f16_t
     nextafter(f16_t a, f16_t b);
 }
@@ -853,6 +855,18 @@ std::istream& cftal::operator>>(std::istream& s, f16_t& v)
     s >> fv;
     v = f16_t(fv);
     return s;
+}
+
+inline
+cftal::f16_t
+cftal::copysign(f16_t x, f16_t y)
+{
+    const uint16_t abs_msk=not_sign_f16_msk;
+    uint16_t abs_x=x() & abs_msk;
+    const uint16_t sgn_msk=sign_f16_msk;
+    uint16_t sgn_y=y() & sgn_msk;
+    uint16_t r= abs_x | sgn_y;
+    return f16_t::cvt_from_rep(r);
 }
 
 namespace std {
