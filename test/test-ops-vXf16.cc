@@ -34,14 +34,15 @@ namespace cftal {
             f16_t _min;
             f16_t _max;
             f16_t _range;
-            float _f32_min;
-            float _f32_max;
-            float _f32_range;
+            f16_t _f16_min;
+            f16_t _f16_max;
+            f16_t _f16_range;
             bool _use_int;
 
             static
             f16_t
             trunc_max_val(const f16_t m) {
+                using std::sqrt;
                 const f16_t _max_val= sqrt(std::numeric_limits<f16_t>::max());
                 using std::min;
                 return min(m, _max_val);
@@ -50,6 +51,7 @@ namespace cftal {
             static
             f16_t
             trunc_min_val(f16_t m) {
+                using std::sqrt;
                 const f16_t _min_val= -sqrt(std::numeric_limits<f16_t>::max());
                 using std::max;
                 return max(m, _min_val);
@@ -65,8 +67,8 @@ namespace cftal {
                  : _i_dist(),
                   _min(amin), _max(amax),
                   _range(_max - _min),
-                  _f32_min(_min), _f32_max(_max),
-                  _f32_range(_range),
+                  _f16_min(_min), _f16_max(_max),
+                  _f16_range(_range),
                   _use_int((trunc_min_val(amin) != amin) ||
                            (trunc_max_val(amax) != amax))
             {
@@ -95,52 +97,15 @@ namespace cftal {
                         break;
                     }
                 } else {
-                    float t=_f32_range;
-                    float rnd= std::generate_canonical<
-                        float, std::numeric_limits<f16_t>::digits, _G>(g);
+                    f16_t t=_f16_range;
+                    f16_t rnd= std::generate_canonical<
+                        f16_t, std::numeric_limits<f16_t>::digits, _G>(g);
                     t *= rnd;
-                    r = t + _f32_min;
+                    r = t + _f16_min;
                 }
                 return r;
             }
         };
-
-        template <>
-        struct cmp_t<f16_t> {
-            cmp_t() {}
-            bool operator()(f16_t a, f16_t b) const {
-                return f_eq(float(a), float(b));
-            }
-        };
-
-    }
-
-    template <std::size_t _N>
-    bool
-    check_cmp(const f16_t(&a)[_N], bool expected , const char* msg)
-    {
-        bool r=true;
-        std::size_t i=0;
-        const test::cmp_t<uint16_t> cmp;
-        uint16_t expect= expected ? uint16_t(-1) : uint16_t(0);
-        for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
-            const f16_t& ai= *b;
-            uint16_t aii=as<uint16_t>(ai);
-            if (cmp(aii, expect) == false) {
-                std::cerr << msg << " element " << i
-                        << " failed: " << ai << " expected: "
-                        << expect << std::endl;
-                r = false;
-            }
-        }
-        return r;
-    }
-
-
-    inline
-    f16_t do_div(f16_t u, f16_t v)
-    {
-        return u/v;
     }
 }
 

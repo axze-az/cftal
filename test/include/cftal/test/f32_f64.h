@@ -24,6 +24,7 @@
 #include <cftal/mem.h>
 #include <cftal/select.h>
 #include <cftal/bitops.h>
+#include <cftal/f16_t.h>
 #include <cftal/test/spinlock.h>
 #include <iostream>
 #include <sstream>
@@ -134,6 +135,7 @@ namespace cftal {
         // == NAN
         bool f_eq(double a, double b);
         bool f_eq(float a, float b);
+        bool f_eq(f16_t a, f16_t b);
         // same a above, but allows also deviations up to and including +-ulp
         bool f_eq_ulp(double a, double b, uint32_t ulp, ulp_stats* us);
         bool f_eq_ulp(float a, float b, uint32_t ulp, ulp_stats* us);
@@ -207,6 +209,23 @@ namespace cftal {
         };
 
         template <>
+        struct cmp_t<f16_t> {
+            cmp_t() {}
+            bool operator()(f16_t a, f16_t b) const {
+                return f_eq(a, b);
+            }
+        };
+
+        template <>
+        struct cmp_t<std::pair<f16_t, f16_t> > {
+            cmp_t() {}
+            bool operator()(const std::pair<f16_t, f16_t>& a,
+                            const std::pair<f16_t, f16_t>& b) const {
+                return f_eq(a.first, b.first) && f_eq(a.second, b.second);
+            }
+        };
+
+        template <>
         struct cmp_t<bit> {
             cmp_t() {}
             bool operator()(bit a, bit b) const {
@@ -263,6 +282,9 @@ namespace cftal {
 
         template <std::size_t _N>
         bool check_cmp(const float(&a)[_N], bool expected, const char* msg);
+
+        template <std::size_t _N>
+        bool check_cmp(const f16_t(&a)[_N], bool expected, const char* msg);
 
         // check a against expected, a contains the result of
         // a comparison
@@ -522,6 +544,27 @@ cftal::test::check_cmp(const float(&a)[_N], bool expected , const char* msg)
     for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
         const float& ai= *b;
         uint32_t aii=as<uint32_t>(ai);
+        if (cmp(aii, expect) == false) {
+            std::cerr << msg << " element " << i
+                      << " failed: " << ai << " expected: "
+                      << expect << std::endl;
+            r = false;
+        }
+    }
+    return r;
+}
+
+template <std::size_t _N>
+bool
+cftal::test::check_cmp(const f16_t(&a)[_N], bool expected , const char* msg)
+{
+    bool r=true;
+    std::size_t i=0;
+    const cmp_t<uint16_t> cmp;
+    uint16_t expect= expected ? uint16_t(-1) : uint16_t(0);
+    for (auto b=std::begin(a), e= std::end(a); b!=e; ++b, ++i) {
+        const f16_t& ai= *b;
+        uint32_t aii=as<uint16_t>(ai);
         if (cmp(aii, expect) == false) {
             std::cerr << msg << " element " << i
                       << " failed: " << ai << " expected: "

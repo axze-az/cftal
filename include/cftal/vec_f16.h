@@ -47,7 +47,7 @@ namespace cftal {
         vec(vec&& r) = default;
         vec& operator=(const vec& r) = default;
         vec& operator=(vec&& r) = default;
-        vec(const f16_t& v) : _v(v()) {}
+        vec(const f16_t& v) : _v(read_bits(v)) {}
         const vec<mf_f16_t, 1>& operator()() const { return _v; }
         template <template <class _U> class _OP,
                   class _L, class _R>

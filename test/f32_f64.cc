@@ -285,6 +285,21 @@ bool cftal::test::f_eq(float a, float b)
          (std::copysign(1.0f, a) == std::copysign(1.0f, b)));
 }
 
+namespace cftal {
+    namespace test {
+        const f16_t _0=static_cast<f16_t>(0.0f);
+        const f16_t _1=static_cast<f16_t>(1.0f);
+    }
+}
+
+bool cftal::test::f_eq(f16_t a, f16_t b)
+{
+    using std::copysign;
+    return ((a !=_0) && (a == b)) || ((a != a) && (b != b)) ||
+        ((a==b) && (a==_0) &&
+         (copysign(_1, a) == copysign(_1, b)));
+}
+
 cftal::int32_t
 cftal::test::distance(double a, double b)
 {

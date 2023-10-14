@@ -21,6 +21,12 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/f16.h>
+#if __has_include(<stdfloat>)
+#include <stdfloat>
+#if defined(__STDCPP_FLOAT16_T__)
+#define __USE_STDCPP_FLOAT16_T__ 1
+#endif
+#endif
 
 namespace cftal {
 
@@ -33,6 +39,18 @@ namespace cftal {
     // const uint16_t exp_shift_f16 = 10;
     // const uint16_t exp_msk_f16 = 0x1f;
 
+#if defined(__USE_STDCPP_FLOAT16_T__)
+    using f16_t = std::float16_t;
+
+    template <>
+    struct is_floating_point<f16_t> : public std::true_type {};
+
+    inline
+    mf_f16_t read_bits(f16_t v) {
+        return as<mf_f16_t>(v);
+    }
+
+#else
     // a 16 bit IEEE floating point number
     class f16_t {
     private:
@@ -434,13 +452,15 @@ namespace cftal {
 
     f16_t fma(const f16_t& a, const f16_t& b, const f16_t& c);
     f16_t sqrt(const f16_t& v);
+
+    std::ostream& operator<<(std::ostream& s, const f16_t& v);
+    std::istream& operator>>(std::istream& s, f16_t& v);
+#endif
+
     bool isnan(const f16_t& v);
     bool isinf(const f16_t& v);
     f16_t abs(const f16_t& v);
     bool signbit(const f16_t& v);
-
-    std::ostream& operator<<(std::ostream& s, const f16_t& v);
-    std::istream& operator>>(std::istream& s, f16_t& v);
 
     // math functions for f16_t are missing
     f16_t
@@ -449,6 +469,8 @@ namespace cftal {
     f16_t
     nextafter(f16_t a, f16_t b);
 }
+
+#if !defined(__USE_STDCPP_FLOAT16_T__)
 
 inline
 bool cftal::operator<(const f16_t& a, const f16_t& b)
@@ -810,37 +832,6 @@ cftal::f16_t cftal::sqrt(const f16_t& v)
 }
 
 inline
-bool cftal::isnan(const f16_t& v)
-{
-    const mf_f16_t& vi= v();
-    mf_f16_t abs_vi= vi & not_sign_f16_msk;
-    return abs_vi > exp_f16_msk;
-}
-
-inline
-bool cftal::isinf(const f16_t& v)
-{
-    const mf_f16_t& vi= v();
-    mf_f16_t abs_vi= vi & not_sign_f16_msk;
-    return abs_vi == exp_f16_msk;
-}
-
-inline
-cftal::f16_t cftal::abs(const f16_t& v)
-{
-    const mf_f16_t& vi= v();
-    mf_f16_t abs_vi= vi & not_sign_f16_msk;
-    return f16_t::cvt_from_rep(abs_vi);
-}
-
-inline
-bool cftal::signbit(const f16_t& v)
-{
-    const mf_f16_t& vi= v();
-    return (vi & sign_f16_msk) == sign_f16_msk;
-}
-
-inline
 std::ostream& cftal::operator<<(std::ostream& s, const f16_t& v)
 {
     float fv(v);
@@ -857,18 +848,52 @@ std::istream& cftal::operator>>(std::istream& s, f16_t& v)
     return s;
 }
 
+#endif // !__USE_STDCPP_FLOAT16_T__
+
+inline
+bool cftal::isnan(const f16_t& v)
+{
+    const mf_f16_t& vi= read_bits(v);
+    mf_f16_t abs_vi= vi & not_sign_f16_msk;
+    return abs_vi > exp_f16_msk;
+}
+
+inline
+bool cftal::isinf(const f16_t& v)
+{
+    const mf_f16_t& vi= read_bits(v);
+    mf_f16_t abs_vi= vi & not_sign_f16_msk;
+    return abs_vi == exp_f16_msk;
+}
+
+inline
+cftal::f16_t cftal::abs(const f16_t& v)
+{
+    const mf_f16_t& vi= read_bits(v);
+    mf_f16_t abs_vi= vi & not_sign_f16_msk;
+    return as<f16_t>(abs_vi);
+}
+
+inline
+bool cftal::signbit(const f16_t& v)
+{
+    const mf_f16_t& vi= read_bits(v);
+    return (vi & sign_f16_msk) == sign_f16_msk;
+}
+
 inline
 cftal::f16_t
 cftal::copysign(f16_t x, f16_t y)
 {
     const uint16_t abs_msk=not_sign_f16_msk;
-    uint16_t abs_x=x() & abs_msk;
+    uint16_t abs_x=read_bits(x) & abs_msk;
     const uint16_t sgn_msk=sign_f16_msk;
-    uint16_t sgn_y=y() & sgn_msk;
+    uint16_t sgn_y=read_bits(y) & sgn_msk;
     uint16_t r= abs_x | sgn_y;
-    return f16_t::cvt_from_rep(r);
+    return as<f16_t>(r);
 }
 
+#if !defined (__USE_STDCPP_FLOAT16_T__)
 namespace std {
 
     template <>
@@ -908,14 +933,15 @@ namespace std {
         static cftal::f16_t denorm_min() { return cftal::f16_t::cvt_from_rep(0x1); }
     };
 }
+#endif // !__STDCPP_FLOAT16_T__
 
 // keep this function after the specialization of std::numeric_limits<f16_t>
 inline
 cftal::f16_t
 cftal::nextafter(f16_t xc, f16_t yc)
 {
-    uint16_t ux=xc();
-    uint16_t uy=yc();
+    uint16_t ux=read_bits(xc);
+    uint16_t uy=read_bits(yc);
     uint16_t ax= ux & not_sign_f16_msk;
     uint16_t ay= uy & not_sign_f16_msk;
     uint16_t ux_inc= ux + 1;
@@ -924,10 +950,11 @@ cftal::nextafter(f16_t xc, f16_t yc)
     bool opp_sgn=
         uint16_t((ux^uy) & sign_f16_msk) != uint16_t(0);
     uint16_t r= ((ax > ay) | opp_sgn) ? ux_dec : ux_inc;
-    uint16_t r0= ay == 0 ? uy : (uy & sign_f32_msk::v.s32()) | 1;
+    uint16_t r0= ay == 0 ? uy : (uy & sign_f16_msk) | 1;
     r = ax == 0 ? r0 : r;
     r = ux == uy ? uy : r;
-    f16_t rf= f16_t::cvt_from_rep(r);
+    // f16_t rf= f16_t::cvt_from_rep(r);
+    f16_t rf=as<f16_t>(r);
     rf = isnan(xc) | isnan(yc) ? std::numeric_limits<f16_t>::quiet_NaN() : rf;
     return rf;
 }
