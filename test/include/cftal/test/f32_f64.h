@@ -139,11 +139,14 @@ namespace cftal {
         // same a above, but allows also deviations up to and including +-ulp
         bool f_eq_ulp(double a, double b, uint32_t ulp, ulp_stats* us);
         bool f_eq_ulp(float a, float b, uint32_t ulp, ulp_stats* us);
+        bool f_eq_ulp(f16_t a, f16_t b, uint32_t ulp, ulp_stats* us);
 
         // b contains value, interval low, interval high
         bool f_eq_ulp(double a, const std::tuple<double, double, double>& b,
                       uint32_t ulp, ulp_stats* us);
         bool f_eq_ulp(float a, const std::tuple<float, float, float>& b,
+                      uint32_t ulp, ulp_stats* us);
+        bool f_eq_ulp(f16_t a, const std::tuple<f16_t, f16_t, f16_t>& b,
                       uint32_t ulp, ulp_stats* us);
 
         int32_t
@@ -151,6 +154,9 @@ namespace cftal {
 
         int32_t
         distance(float a, float b);
+
+        int32_t
+        distance(f16_t a, f16_t b);
 
         template <typename _I, typename _T>
         std::ostream&

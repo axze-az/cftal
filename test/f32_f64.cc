@@ -285,19 +285,12 @@ bool cftal::test::f_eq(float a, float b)
          (std::copysign(1.0f, a) == std::copysign(1.0f, b)));
 }
 
-namespace cftal {
-    namespace test {
-        const f16_t _0=static_cast<f16_t>(0.0f);
-        const f16_t _1=static_cast<f16_t>(1.0f);
-    }
-}
-
 bool cftal::test::f_eq(f16_t a, f16_t b)
 {
     using std::copysign;
-    return ((a !=_0) && (a == b)) || ((a != a) && (b != b)) ||
-        ((a==b) && (a==_0) &&
-         (copysign(_1, a) == copysign(_1, b)));
+    return ((a !=0.0_f16) && (a == b)) || ((a != a) && (b != b)) ||
+        ((a==b) && (a==0.0_f16) &&
+         (copysign(1.0_f16, a) == copysign(1.0_f16, b)));
 }
 
 cftal::int32_t
@@ -379,6 +372,44 @@ cftal::test::distance(float a, float b)
     return d;
 }
 
+cftal::int32_t
+cftal::test::distance(f16_t a, f16_t b)
+{
+    int16_t ai = as<int16_t>(a);
+    int16_t bi = as<int16_t>(b);
+    int16_t abs_ai = ai & ~(1U<<15);
+    int16_t abs_bi = bi & ~(1U<<15);
+    bool sgn_a = abs_ai != ai;
+    bool sgn_b = abs_bi != bi;
+    int16_t d=0;
+    if ((sgn_a == sgn_b) || ((abs_ai|abs_bi) == 0)) {
+        d= abs_bi - abs_ai;
+    } else {
+        // a < 0 | b < 0 --> d = abs_ai + abs_bi
+        d= abs_bi + abs_ai;
+    }
+    // a < b positive sign
+    // a > b negative sign
+    if (sgn_b)
+        d = -d;
+    // +-0 gives 2
+    if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0)) {
+        if (sgn_a)
+            d=+2;
+        else
+            d=-2;
+    }
+    // +-Inf gives +-max-2
+    if ((sgn_a != sgn_b) && ((abs_ai|abs_bi) == 0x7c00)) {
+        if (sgn_a)
+            d=std::numeric_limits<int16_t>::max()-2;
+        else
+            d=-(std::numeric_limits<int16_t>::max()-2);
+    }
+    return d;
+}
+
+
 namespace {
 
     template <typename _T>
@@ -434,6 +465,11 @@ bool cftal::test::f_eq_ulp(float a, float b, uint32_t ulp, ulp_stats* us)
     return cmp_ulp(a, b, ulp, us);
 }
 
+bool cftal::test::f_eq_ulp(f16_t a, f16_t b, uint32_t ulp, ulp_stats* us)
+{
+    return cmp_ulp(a, b, ulp, us);
+}
+
 bool cftal::test::f_eq_ulp(double a,
                            const std::tuple<double, double, double>& b,
                            uint32_t ulp, ulp_stats* us)
@@ -468,4 +504,20 @@ bool cftal::test::f_eq_ulp(float a,
     return r;
 }
 
+bool cftal::test::f_eq_ulp(f16_t a,
+                           const std::tuple<f16_t, f16_t, f16_t>& b,
+                           uint32_t ulp, ulp_stats* us)
+{
+    bool r=cmp_ulp(a, std::get<0>(b), ulp, us);
+    if (us != nullptr) {
+        bool f= is_faithful(a, b);
+#if 0
+        if (f==false) {
+            r=false;
+        }
+#endif
+        us->faithful(f);
+    }
+    return r;
+}
 
