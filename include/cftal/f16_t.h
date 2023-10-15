@@ -966,7 +966,7 @@ cftal::nextafter(f16_t xc, f16_t yc)
     r = ux == uy ? uy : r;
     // f16_t rf= f16_t::cvt_from_rep(r);
     f16_t rf=as<f16_t>(r);
-    rf = isnan(xc) | isnan(yc) ? std::numeric_limits<f16_t>::quiet_NaN() : rf;
+    rf = (isnan(xc) || isnan(yc)) ? std::numeric_limits<f16_t>::quiet_NaN() : rf;
     return rf;
 }
 
