@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cstdint>
+#include <cstddef>
 
 namespace cftal {
 

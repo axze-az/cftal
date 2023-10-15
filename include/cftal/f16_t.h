@@ -28,6 +28,9 @@
 #if !defined(__STDCPP_FLOAT16_T__)
 #undef __USE_STDCPP_FLOAT16_T__
 #endif
+#else
+// no stdfloat
+#undef __USE_STDCPP_FLOAT16_T__
 #endif
 #endif
 

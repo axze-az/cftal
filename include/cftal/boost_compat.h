@@ -20,7 +20,15 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#if defined (_LIBCPP_VERSION)
+#define _HAS_AUTO_PTR_ETC 0
+#define BOOST_NO_CXX98_FUNCTION_BASE 1
+#endif
 #include <boost/numeric/odeint.hpp>
+#if defined (_LIBCPP_VERSION)
+#undef BOOST_NO_CXX98_FUNCTION_BASE
+#undef _HAS_AUTO_PTR_ETC
+#endif
 
 namespace boost {
     namespace numeric {
