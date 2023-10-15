@@ -21,10 +21,13 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/f16.h>
+#define __USE_STDCPP_FLOAT16_T__ 1
+#if (__USE_STDCPP_FLOAT16_T__ > 0)
 #if __has_include(<stdfloat>)
 #include <stdfloat>
-#if defined(__STDCPP_FLOAT16_T__)
-#define __USE_STDCPP_FLOAT16_T__ 1
+#if !defined(__STDCPP_FLOAT16_T__)
+#undef __USE_STDCPP_FLOAT16_T__
+#endif
 #endif
 #endif
 
@@ -39,7 +42,7 @@ namespace cftal {
     // const uint16_t exp_shift_f16 = 10;
     // const uint16_t exp_msk_f16 = 0x1f;
 
-#if defined(__USE_STDCPP_FLOAT16_T__)
+#if (__USE_STDCPP_FLOAT16_T__>0)
     using f16_t = std::float16_t;
 
     template <>
@@ -455,7 +458,10 @@ namespace cftal {
 
     std::ostream& operator<<(std::ostream& s, const f16_t& v);
     std::istream& operator>>(std::istream& s, f16_t& v);
-#endif
+#endif // (__USE_STDCPP_FLOAT16_T__>0)
+
+    // use a user defined operator to avoid overriding f16
+    f16_t operator ""_f16(long double);
 
     bool isnan(const f16_t& v);
     bool isinf(const f16_t& v);
@@ -470,7 +476,7 @@ namespace cftal {
     nextafter(f16_t a, f16_t b);
 }
 
-#if !defined(__USE_STDCPP_FLOAT16_T__)
+#if (__USE_STDCPP_FLOAT16_T__==0)
 
 inline
 bool cftal::operator<(const f16_t& a, const f16_t& b)
@@ -847,8 +853,13 @@ std::istream& cftal::operator>>(std::istream& s, f16_t& v)
     v = f16_t(fv);
     return s;
 }
+#endif // __USE_STDCPP_FLOAT16_T__==0
 
-#endif // !__USE_STDCPP_FLOAT16_T__
+inline
+cftal::f16_t cftal::operator ""_f16(long double d)
+{
+    return f16_t(static_cast<float>(d));
+}
 
 inline
 bool cftal::isnan(const f16_t& v)
@@ -893,7 +904,7 @@ cftal::copysign(f16_t x, f16_t y)
     return as<f16_t>(r);
 }
 
-#if !defined (__USE_STDCPP_FLOAT16_T__)
+#if (__USE_STDCPP_FLOAT16_T__==0)
 namespace std {
 
     template <>
@@ -933,7 +944,7 @@ namespace std {
         static cftal::f16_t denorm_min() { return cftal::f16_t::cvt_from_rep(0x1); }
     };
 }
-#endif // !__STDCPP_FLOAT16_T__
+#endif // __USE_STDCPP_FLOAT16_T__ == 0
 
 // keep this function after the specialization of std::numeric_limits<f16_t>
 inline

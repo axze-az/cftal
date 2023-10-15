@@ -98,8 +98,8 @@ namespace cftal {
                     }
                 } else {
                     f16_t t=_f16_range;
-                    f16_t rnd= std::generate_canonical<
-                        f16_t, std::numeric_limits<f16_t>::digits, _G>(g);
+                    f16_t rnd= static_cast<f16_t>(std::generate_canonical<
+                        float, std::numeric_limits<f16_t>::digits, _G>(g));
                     t *= rnd;
                     r = t + _f16_min;
                 }
