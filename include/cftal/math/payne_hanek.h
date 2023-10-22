@@ -21,6 +21,8 @@
 #include <cftal/config.h>
 #include <cftal/arg.h>
 #include <cftal/d_real.h>
+#include <cftal/d_real_traits_f32.h>
+#include <cftal/d_real_traits_f64.h>
 #include <cftal/math/func_traits.h>
 #include <cftal/math/func_constants.h>
 #include <cftal/math/impl_d_real_constants_f32.h>

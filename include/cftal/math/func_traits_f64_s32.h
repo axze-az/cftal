@@ -20,7 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
-#include <cftal/std_types.h>
+#include <cftal/d_real_traits_f64.h>
 #include <cftal/math/func_traits.h>
 #include <limits>
 

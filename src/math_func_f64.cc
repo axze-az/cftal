@@ -22,6 +22,7 @@
 #include <cftal/types.h>
 #include <cftal/as.h>
 #include <cftal/d_real.h>
+#include <cftal/d_real_traits_f64.h>
 #include <cstring>
 
 /*

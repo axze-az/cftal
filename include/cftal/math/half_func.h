@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/arg.h>
 #include <cftal/d_real.h>
+#include <cftal/d_real_traits_f32.h>
 #include <cftal/math/elem_func_core_f32.h>
 
 namespace cftal {

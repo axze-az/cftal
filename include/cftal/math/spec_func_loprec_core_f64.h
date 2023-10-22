@@ -31,6 +31,7 @@
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
+#include <cftal/d_real_traits_f64.h>
 #include <cftal/as.h>
 #include <cftal/std_types.h>
 #include <cftal/math/spec_func.h>

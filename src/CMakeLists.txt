@@ -77,6 +77,9 @@ SET (HDRS
     ../include/cftal/vec_math_funcs.h
     ../include/cftal/vec_misc.h
     ../include/cftal/d_real.h
+    ../include/cftal/d_real_traits.h
+    ../include/cftal/d_real_traits_f64.h
+    ../include/cftal/d_real_traits_f32.h
     ../include/cftal/fenv.h
     ../include/cftal/as.h
     ../include/cftal/vec_mask.h

@@ -15,14 +15,26 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#include "cftal/math/vec_func_traits.h"
-#include "cftal/math/func.h"
-#include "cftal/math/spec_func_wrapper_f32.h"
-#include "vec_def_math_spec_funcs.h"
+#if !defined (__CFTAL_D_REAL_TRAITS_H__)
+#define __CFTAL_D_REAL_TRAITS_H__ 1
 
-#if V8F32_FUNCS>0
-DEF_SPEC_FUNCS(cftal, cftal, v8f32, v8s32, float)
-#endif
-#if V8F32_SLOW_SPEC_FUNCS>0
-DEF_SLOW_SPEC_FUNCS(cftal, cftal, v8f32, v8s32, float)
+#include <cftal/config.h>
+
+namespace cftal {
+
+    // traits structure for d_real class
+    template <typename _T>
+    struct d_real_traits {};
+
+    // helper call defining the existance of fused multiply and add
+    template <typename _T>
+    struct has_fma {
+        static constexpr bool fma=false;
+    };
+
+}
+
+// Local variables:
+// mode: c++
+// end:
 #endif

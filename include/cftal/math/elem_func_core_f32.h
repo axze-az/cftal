@@ -31,6 +31,7 @@
 
 #include <cftal/config.h>
 #include <cftal/d_real.h>
+#include <cftal/d_real_traits_f32.h>
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f32_s32.h>

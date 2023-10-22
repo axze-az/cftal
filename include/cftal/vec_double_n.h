@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/vec_spec.h>
 #include <cftal/d_real.h>
+#include <cftal/vec_d_real_traits.h>
 #include <cftal/vec_math_funcs.h>
 #include <cmath>
 

@@ -21,6 +21,8 @@
 #include <cftal/config.h>
 #include <cftal/vec_t_n.h>
 #include <cftal/d_real.h>
+#include <cftal/d_real_traits_f32.h>
+#include <cftal/d_real_traits_f64.h>
 
 namespace cftal {
 
