@@ -22,6 +22,8 @@
 #include <cftal/std_types.h>
 #include <cftal/f16_t.h>
 #include <cftal/d_real.h>
+#include <cftal/d_real_traits_f32.h>
+#include <cftal/d_real_traits_f64.h>
 #include <cftal/t_real.h>
 #include <utility>
 #include <cmath>
