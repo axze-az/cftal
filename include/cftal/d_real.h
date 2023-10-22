@@ -177,6 +177,17 @@ namespace cftal {
         // veltkamp split of a float
         static
         void split(float a, float& hi, float& lo) {
+            const uint32_t msk=
+                const_u32<0xfffff000U>::v.u32();
+            const float h = as<float>(as<uint32_t>(a) & msk);
+            const float l = a - h;
+            hi = h;
+            lo = l;
+        }
+
+        // veltkamp split of a float
+        static
+        void veltkamp_plit(float a, float& hi, float& lo) {
             // 2^13 + 1
             constexpr const float split_val=8193.0f;
             // 2^115 = 2^{127-14+1}
