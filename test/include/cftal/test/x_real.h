@@ -51,12 +51,12 @@ namespace cftal {
 
         template <template <typename _T> class _X, typename _T>
         struct check_x_real_traits;
-        
+
         template <>
         struct check_x_real_traits<d_real, double> {
             static
             double eps() {
-                return std::ldexp(1.0, -104);
+                return 0x1.0p-104; // std::ldexp(1.0, -104);
             }
 
             template <typename _D, typename _RND>
@@ -79,7 +79,7 @@ namespace cftal {
         struct check_x_real_traits<t_real, double> {
             static
             double eps() {
-                return std::ldexp(1.0, -156);
+                return 0x1.0p-156; // std::ldexp(1.0, -156);
             }
 
             template <typename _D, typename _RND>
@@ -105,14 +105,14 @@ namespace cftal {
         template <>
         struct check_x_real_traits<d_real, float> {
             static
-            double eps() {
-                return std::ldexp(1.0, -47);
+            float eps() {
+                return 0x1.0p-47f; // std::ldexp(1.0, -47);
             }
             template <typename _D, typename _RND>
             static
             d_real<float> make_rnd(_D& d, _RND& rnd) {
                 float h=d(rnd);
-                float l=h*1e-8;
+                float l=h*1e-8f;
                 mpfr_real<64> t=h;
                 t += mpfr_real<64>(l);
                 float hn= float(t);
@@ -129,7 +129,7 @@ namespace cftal {
             static
             double eps() {
                 // return std::pow(2, -64);
-                return std::ldexp(1.0, -65);
+                return 0x1.0p-65f; //std::ldexp(1.0, -65);
             }
             template <typename _D, typename _RND>
             static
@@ -189,7 +189,7 @@ ops(const _X<_T>& a0, const _X<_T>& b0)
     _R a = make_ref(a0);
     _R b = make_ref(b0);
     _R r;
-    const _X<_T> va=a0; 
+    const _X<_T> va=a0;
     const _X<_T> vb=b0;
     _X<_T> vr;
     bool rc=true;
@@ -245,7 +245,7 @@ ops(const _X<_T>& a0, const _X<_T>& b0)
     r = min(a, b);
     vr = min(va, vb);
     rc &= check(vr, r, "min");
-    
+
     r = a > _R(0.0) ? a : -a;
     vr = abs(va);
     rc &= check(vr, r, "abs");
