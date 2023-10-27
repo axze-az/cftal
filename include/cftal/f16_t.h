@@ -477,6 +477,9 @@ namespace cftal {
 
     f16_t
     nextafter(f16_t a, f16_t b);
+
+    f16_t frexp(f16_t x, int* e);
+    f16_t ldexp(f16_t x, int e);
 }
 
 #if (__USE_STDCPP_FLOAT16_T__==0)
@@ -971,6 +974,26 @@ cftal::nextafter(f16_t xc, f16_t yc)
     f16_t rf=as<f16_t>(r);
     rf = (isnan(xc) || isnan(yc)) ? std::numeric_limits<f16_t>::quiet_NaN() : rf;
     return rf;
+}
+
+inline
+cftal::f16_t
+cftal::frexp(f16_t x, int* e)
+{
+    float fx=static_cast<float>(x);
+    using std::frexp;
+    float m=frexp(fx, e);
+    return f16_t(m);
+}
+
+inline
+cftal::f16_t
+cftal::ldexp(f16_t x, int e)
+{
+    float fx=static_cast<float>(x);
+    using std::ldexp;
+    float r=ldexp(fx, e);
+    return f16_t(r);
 }
 
 // Local variables:
