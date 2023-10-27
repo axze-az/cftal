@@ -127,7 +127,7 @@ namespace cftal {
         template <>
         struct check_x_real_traits<t_real, float> {
             static
-            double eps() {
+            float eps() {
                 // return std::pow(2, -64);
                 return 0x1.0p-65f; //std::ldexp(1.0, -65);
             }
