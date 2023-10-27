@@ -169,6 +169,7 @@ namespace cftal {
             fpn_handle(const mpfr_t t);
             fpn_handle(double x, std::size_t prec);
             fpn_handle(float x, std::size_t prec);
+            fpn_handle(f16_t x, std::size_t prec);
             fpn_handle(const fpn_handle& r);
             fpn_handle(fpn_handle&& r);
             fpn_handle& operator=(const mpfr_t r);
@@ -540,6 +541,12 @@ cftal::test::fpn_handle::fpn_handle(float f, std::size_t prec)
 {
     mpfr_init2(_v, prec);
     mpfr_set_flt(_v, f, MPFR_RNDN);
+}
+
+inline
+cftal::test::fpn_handle::fpn_handle(f16_t h, std::size_t prec)
+    : fpn_handle(float(h), prec)
+{
 }
 
 inline
