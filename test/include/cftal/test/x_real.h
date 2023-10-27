@@ -19,6 +19,11 @@
 #define __CFTAL_TEST_X_REAL_H__ 1
 
 #include <cftal/config.h>
+#include <cftal/d_real.h>
+#include <cftal/t_real.h>
+#include <cftal/d_real_traits_f64.h>
+#include <cftal/d_real_traits_f32.h>
+#include <cftal/d_real_traits_f16.h>
 #include <cftal/test/uniform_distribution.h>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/f32_f64.h>
@@ -149,6 +154,30 @@ namespace cftal {
             }
             constexpr static const bool check_div = false;
         };
+
+        template <>
+        struct check_x_real_traits<d_real, f16_t> {
+            static
+            float eps() {
+                return 0x1.0p-21f; // std::ldexp(1.0, -47);
+            }
+
+            template <typename _D, typename _RND>
+            static
+            d_real<f16_t> make_rnd(_D& d, _RND& rnd) {
+                f16_t h=d(rnd);
+                f16_t l=h*1e-4_f16;
+                mpfr_real<32> t=float(h);
+                t += mpfr_real<32>(float(l));
+                f16_t hn= float(t);
+                t -= mpfr_real<32>(float(hn));
+                f16_t ln= float(t);
+                return d_real<f16_t>(hn, ln);
+            }
+
+            constexpr static const bool check_div = false;
+        };
+
 
     }
 }

@@ -35,6 +35,11 @@ int main()
     std::cerr << "d_real<float>:\n";
     bool rf= cftal::test::check_x_real<cftal::d_real, float,
                                        mpfr_real<64> >::v();
-    bool r = rd == true && rf == true;
+
+    std::cerr << "d_real<f16_t>:\n";
+    bool rh= cftal::test::check_x_real<cftal::d_real, cftal::f16_t,
+                                       mpfr_real<32> >::v();
+
+    bool r = rd == true && rf == true && rh == true;
     return r == true ? 0 : 1;
 }
