@@ -37,7 +37,6 @@ namespace cftal {
     // d_real_traits specialization for double
     template <>
     struct d_real_traits<double> : public has_fma<double> {
-        constexpr d_real_traits<double>() = default;
         // result of a comparison operator
         using cmp_result_type = bool;
         // corresponding integer type for ldexp, frexp
@@ -105,6 +104,7 @@ namespace cftal {
         constexpr
         double
         scale_div_threshold() {
+            // -1022 + 53
             return 0x1.p-969;
         }
 

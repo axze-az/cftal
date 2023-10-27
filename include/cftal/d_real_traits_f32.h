@@ -34,11 +34,9 @@ namespace cftal {
 #endif
     };
 
-
     // d_real_traits specialization for float
     template <>
     struct d_real_traits<float> : public has_fma<float> {
-        constexpr d_real_traits<float>() = default;
         // result of a comparison operator
         using cmp_result_type = bool;
         // corresponding integer type for ldexp, frexp
