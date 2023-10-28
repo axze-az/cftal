@@ -19,8 +19,7 @@
 #define __CFTAL_F16_T_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/vec.h>
-#include <cftal/f16.h>
+#include <cftal/cvt_f16.h>
 #define __USE_STDCPP_FLOAT16_T__ 1
 #if (__USE_STDCPP_FLOAT16_T__ > 0)
 #if __has_include(<stdfloat>)
@@ -32,6 +31,12 @@
 // no stdfloat
 #undef __USE_STDCPP_FLOAT16_T__
 #endif
+#endif
+
+#if __USE_STDCPP_FLOAT16_T__==0
+#include <cftal/expr.h>
+#include <cmath>
+#include <iostream>
 #endif
 
 namespace cftal {

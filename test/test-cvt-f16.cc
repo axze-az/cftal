@@ -18,7 +18,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cftal/test/of_fp_funcs.h>
-#include <cftal/f16.h>
+#include <cftal/vec_cvt_f16.h>
 
 namespace cftal {
 
