@@ -169,9 +169,9 @@ namespace cftal {
                 f16_t l=h*1e-4_f16;
                 mpfr_real<32> t=float(h);
                 t += mpfr_real<32>(float(l));
-                f16_t hn= float(t);
+                f16_t hn=static_cast<f16_t>(float(t));
                 t -= mpfr_real<32>(float(hn));
-                f16_t ln= float(t);
+                f16_t ln=static_cast<f16_t>(float(t));
                 return d_real<f16_t>(hn, ln);
             }
 
@@ -313,7 +313,7 @@ cftal::test::check_x_real<_X, _T, _R>::ops()
     }
     std::mt19937 rnd;
     // avoid underflows if we test higher fp expansions
-    _T l0= std::ldexp(1.0,
+    _T l0= std::ldexp(_T(1.0),
                       std::numeric_limits<_T>::min_exponent/5);
     uniform_real_distribution<_T>
         distrib(l0,
