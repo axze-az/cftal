@@ -35,9 +35,9 @@
 
 #if __USE_STDCPP_FLOAT16_T__==0
 #include <cftal/expr.h>
-#include <cmath>
 #include <iostream>
 #endif
+#include <cmath>
 
 namespace cftal {
 
