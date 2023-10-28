@@ -48,9 +48,6 @@ namespace cftal {
 #if (__USE_STDCPP_FLOAT16_T__>0)
     using f16_t = std::float16_t;
 
-    template <>
-    struct is_floating_point<f16_t> : public std::true_type {};
-
     inline
     mf_f16_t read_bits(f16_t v) {
         return as<mf_f16_t>(v);
@@ -83,8 +80,6 @@ namespace cftal {
             return f16_t(f, cvt_from_rep_tag());
         }
     };
-    template <>
-    struct is_floating_point<f16_t> : public std::true_type {};
 
     inline
     mf_f16_t read_bits(f16_t v) {
@@ -462,6 +457,9 @@ namespace cftal {
     std::ostream& operator<<(std::ostream& s, const f16_t& v);
     std::istream& operator>>(std::istream& s, f16_t& v);
 #endif // (__USE_STDCPP_FLOAT16_T__>0)
+
+    template <>
+    struct is_floating_point<f16_t> : public std::true_type {};
 
     // use a user defined operator to avoid overriding f16
     f16_t operator ""_f16(long double);
