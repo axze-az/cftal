@@ -67,7 +67,7 @@ namespace cftal {
         constexpr
         fp_expansion(const _T& h, const _T& l) : _e{h, l} {}
         constexpr
-        fp_expansion(const _T& h) : _e{h, _T{0.0}} {}
+        fp_expansion(const _T& h) : _e{h, _T(0.0)} {}
 
         constexpr
         const _T& operator[](std::size_t i) const {
