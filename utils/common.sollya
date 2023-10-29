@@ -38,6 +38,27 @@ write_f_hex = proc(c) {
     write(s);
 };
 
+write_h = proc(c) {
+    var f, s, v;
+    f = halfprecision(c);
+    v = verbosity!;
+    verbosity = 0!;
+    s = bashevaluate("/usr/bin/printf %+.5e_f16 " @ f);
+    verbosity = v!;
+    write(s);
+};
+
+write_h_hex = proc(c) {
+    var f, s, v;
+    f = halfprecision(c);
+    v = verbosity!;
+    verbosity = 0!;
+    s=bashevaluate("/usr/bin/printf %+a_f16 " @ f)!;
+    verbosity = v!;
+    write(s);
+};
+
+
 write_dd_h = proc(c) {
     write_d(c);
 };
@@ -82,6 +103,27 @@ write_df_l_hex = proc(c) {
     write_f_hex(dl);
 };
 
+write_dh_h = proc(c) {
+   write_h(c);
+};
+
+write_dh_h_hex = proc(c) {
+   write_h_hex(c);
+};
+
+write_dh_l = proc(c) {
+    var dh, dl;
+    dh = c;
+    dl = dh - halfprecision(c);
+    write_f(dl);
+};
+
+write_dh_l_hex = proc(c) {
+    var dh, dl;
+    dh = c;
+    dl = dh - halfprecision(c);
+    write_f_hex(dl);
+};
 
 write_td_h = proc(c) {
     write_d(c);
@@ -255,6 +297,30 @@ write_coeff = proc(c, i, pfx, fmt) {
          write("\n");
          write("    ", pfx, i, "l=");
          write_tf_l(c);
+         write(";\n");
+     }
+     halfprecision:
+     {
+         write("    // x^", i, " : ");
+         write_h_hex(c);
+         write("\n");
+         write("    ", pfx, i, "=");
+         write_h(c);
+         write(";\n");
+     }
+     23:
+     {
+         write("    // x^", i, " h: ");
+         write_dh_h_hex(c);
+         write("\n");
+         write("    ", pfx, i, "h=");
+         write_dh_h(c);
+         write(";\n");
+         write("    // x^", i, " l: ");
+         write_dh_l_hex(c);
+         write("\n");
+         write("    ", pfx, i, "l=");
+         write_dh_l(c);
          write(";\n");
      }
      default:
@@ -577,6 +643,14 @@ write_coeff_table = proc(L, prefix, fmt) {
             write("\n");
             write("    ");
             write_f_hex(v);
+        }
+        halfprecision:
+        {
+            write("    // ");
+            write_h(v);
+            write("\n");
+            write("    ");
+            write_h_hex(v);
         }
         default:
         {
