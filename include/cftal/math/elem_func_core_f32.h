@@ -3099,8 +3099,8 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     vf_type abs_x= abs(x);
     vdf_type lnx= __log_tbl_k12(abs_x);
     vi_type eh=e & 0xffff0000, el= e - eh;
-    vf_type yh=cvt<vf_type>(eh);
-    vf_type yl=cvt<vf_type>(el);
+    vf_type yh=_T::cvt_i_to_f(eh);
+    vf_type yl=_T::cvt_i_to_f(el);
     d_ops::add12(yh, yl, yh, yl);
     vdf_type ylnx;
     if (_CALC_ROOT==true) {
