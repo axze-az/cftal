@@ -691,6 +691,17 @@ exp_table = proc(n, fmt) {
             } else {
                 f = 0.0;
             };
+        }
+        halfprecision: {
+            th=halfprecision(fxi);
+            fxi= fxi - th;
+            tl=halfprecision(fxi);
+            if (th != 0) then {
+                f = fxi/th;
+                f = halfprecision(f);
+            } else {
+                f = 0.0;
+            };
         };
         lh=lh:.th;
         ll=ll:.tl;
