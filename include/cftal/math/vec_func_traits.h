@@ -20,7 +20,8 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
-#include <cftal/vec_d_real_traits.h>
+#include <cftal/vec_d_real_traits_f64.h>
+#include <cftal/vec_d_real_traits_f32.h>
 #include <cftal/math/func_traits_f32_s32.h>
 #include <cftal/math/func_traits_f64_s32.h>
 #include <cftal/divisor.h>

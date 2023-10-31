@@ -161,7 +161,6 @@ namespace cftal {
         using type = vec<f16_t, _N>;
     };
 
-
     std::ostream&
     operator<<(std::ostream& s, const vec<f16_t, 1>& v);
 
