@@ -61,10 +61,10 @@ namespace cftal {
     struct const_u64 {
         constexpr const_u64() {} // keep clang happy
         static
-        const bytes8 v;
+        constexpr const bytes8 v{_L, _H};
     };
     template <uint32_t _L, uint32_t _H>
-    const bytes8 const_u64<_L, _H>::v{_L, _H};
+    constexpr const bytes8 const_u64<_L, _H>::v;
 
     // 4 byte union
     union __attribute__((__visibility__("hidden"))) bytes4 {
@@ -97,12 +97,12 @@ namespace cftal {
     struct const_u32 {
         constexpr const_u32() {} // keep clang happy
         static
-        const bytes4 v;
+        constexpr const bytes4 v{_N};
     };
 
 
     template <uint32_t _N>
-    const bytes4 const_u32<_N>::v{_N};
+    constexpr const bytes4 const_u32<_N>::v;
 
     // 2 byte compile time union
     class bytes2 {
@@ -118,15 +118,15 @@ namespace cftal {
     struct const_u16 {
         constexpr const_u16() {}
         static
-        const bytes2 v;
+        constexpr const bytes2 v{_N};
     };
 
     template <uint16_t _N>
-    const bytes2 const_u16<_N>::v{_N};
+    const bytes2 const_u16<_N>::v;
 
     using sign_s8_msk = const_u32<0x80808080>;
     using not_sign_s8_msk = const_u32<0x7f7f7f7f>;
-    
+
     using sign_s16_msk = const_u32<0x80008000>;
     using not_sign_s16_msk = const_u32<0x7fff7fff>;
 
