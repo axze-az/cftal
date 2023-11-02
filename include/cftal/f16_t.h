@@ -467,7 +467,7 @@ namespace cftal {
     struct is_floating_point<f16_t> : public std::true_type {};
 
     // use a user defined operator to avoid overriding f16
-    f16_t operator ""_f16(long double);
+    constexpr f16_t operator ""_f16(long double);
 
     bool isnan(const f16_t& v);
     bool isinf(const f16_t& v);
@@ -865,7 +865,7 @@ std::istream& cftal::operator>>(std::istream& s, f16_t& v)
 #endif // __USE_STDCPP_FLOAT16_T__==0
 
 inline
-cftal::f16_t cftal::operator ""_f16(long double d)
+constexpr cftal::f16_t cftal::operator ""_f16(long double d)
 {
     return f16_t(static_cast<float>(d));
 }
