@@ -28,6 +28,8 @@ namespace cftal {
 
     // memory format for IEEE f16_t types
     using mf_f16_t = uint16_t;
+
+    constexpr
     inline
     uint16_t read_bits(mf_f16_t v) {
         return v;
@@ -42,9 +44,11 @@ namespace cftal {
 
     namespace impl {
 
+        constexpr
         mf_f16_t
         _cvt_f32_to_f16(f32_t f);
 
+        constexpr
         f32_t
         _cvt_f16_to_f32(mf_f16_t f);
 
@@ -52,6 +56,7 @@ namespace cftal {
 }
 
 inline
+constexpr
 cftal::f32_t
 cftal::impl::_cvt_f16_to_f32(mf_f16_t t)
 {
@@ -75,6 +80,7 @@ cftal::impl::_cvt_f16_to_f32(mf_f16_t t)
 }
 
 inline
+constexpr
 cftal::mf_f16_t
 cftal::impl::_cvt_f32_to_f16(f32_t ff)
 {
