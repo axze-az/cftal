@@ -58,7 +58,8 @@ namespace cftal {
         static
         void split(f16_t a, f16_t& hi, f16_t& lo) {
             const uint16_t msk=0xffc0;
-            const f16_t h = as<f16_t>(as<uint16_t>(a) & msk);
+            const uint16_t t=as<uint16_t>(a) & msk;
+            const f16_t h = as<f16_t>(t);
             const f16_t l = a - h;
             hi = h;
             lo = l;

@@ -420,19 +420,16 @@ inline
 cftal::vec<uint32_t, 2>
 cftal::low_half(const vec<uint32_t, 4>& v)
 {
-    uint32_t e0= _mm_cvtsi128_si32(v());
-    vec<uint32_t, 4> t= permute<1, 0, 2, 3>(v);
-    uint32_t e1= _mm_cvtsi128_si32(t());
-    vec<uint32_t, 2> r={e0, e1};
-    return r;
+    auto t=x86::extract_u64<0>(v());
+    return as<vec<uint32_t, 2> >(t);
 }
 
 inline
 cftal::vec<uint32_t, 2>
 cftal::high_half(const vec<uint32_t, 4>& v)
 {
-    vec<uint32_t, 4> h= permute<2, 3, 0, 1>(v);
-    return low_half(h);
+    auto t=x86::extract_u64<1>(v());
+    return as<vec<uint32_t, 2> >(t);
 }
 
 template <cftal::size_t _I>

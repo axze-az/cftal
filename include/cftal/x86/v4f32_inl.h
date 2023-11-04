@@ -360,14 +360,16 @@ inline
 cftal::vec<float, 2>
 cftal::low_half(const vec<float, 4>& v)
 {
-    return vec<float, 2>{extract<0>(v), extract<1>(v)};
+    auto t=x86::extract_u64<0>(_mm_castps_si128(v()));
+    return as<vec<float, 2> >(t);
 }
 
 inline
 cftal::vec<float, 2>
 cftal::high_half(const vec<float, 4>& v)
 {
-    return vec<float, 2>{extract<2>(v), extract<3>(v)};
+    auto t=x86::extract_u64<1>(_mm_castps_si128(v()));
+    return as<vec<float, 2> >(t);
 }
 
 template <cftal::size_t _I>

@@ -19,20 +19,25 @@
 #define __CFTAL_AS_H__ 1
 
 #include <cftal/config.h>
+#if 0
+#if __has_include(<bit>)
+#include <bit>
+#define USE_BIT_CAST 1
+#endif
+#endif
+
 
 namespace cftal {
 
     // as: reinterpret cast to _D from _S, name similiar to opencl
     // forwarder function to impl::cast_bits<_D, _S>::v
     template <typename _D, typename _S>
-    constexpr
     _D as(const _S& s);
 
     // bit_cast: reinterpret cast to _D from _S, name similiar
     // std::bit_cast
     // forwarder function to impl::cast_bits<_D, _S>::v
     template <typename _D, typename _S>
-    constexpr
     _D bit_cast(const _S& s);
 
     namespace impl {
@@ -40,25 +45,17 @@ namespace cftal {
         // generic working class for cftal::as
         template <typename _D, typename _S>
         struct cast_bits {
-#if 1
             static
-            constexpr
             _D v(const _S& s) {
+#if USE_BIT_CAST>0
+                return std::bit_cast<_D>(s);
+#else
+                static_assert(sizeof(D)==sizeof(S),
+                              "size differences in cast_bits::v");
                 const _D& ds=reinterpret_cast<const _D&>(s);
                 return ds;
-            }
-#else
-            union ds {
-                _D _d;
-                _S _s;
-                ds(const _S& s) : _s{s} {}
-            };
-
-            static _D v(const _S& s) {
-                ds c{s};
-                return c._d;
-            }
 #endif
+            }
         };
 
         // specialization for cftal::as<_T, _T>
@@ -75,7 +72,6 @@ namespace cftal {
 }
 
 template <typename _D, typename _S>
-constexpr
 inline
 _D
 cftal::as(const _S& s)
@@ -84,7 +80,6 @@ cftal::as(const _S& s)
 }
 
 template <typename _D, typename _S>
-constexpr
 inline
 _D
 cftal::bit_cast(const _S& s)
@@ -92,6 +87,9 @@ cftal::bit_cast(const _S& s)
     return impl::cast_bits<_D, _S>::v(s);
 }
 
+#if defined (USE_BIT_CAST)
+#undef USE_BIT_CAST
+#endif
 
 // Local variables:
 // mode: c++

@@ -412,14 +412,14 @@ inline
 cftal::vec<int64_t, 1>
 cftal::low_half(const vec<int64_t, 2>& v)
 {
-    return as<vec<int64_t,1> >(v);
+    return vec<int64_t, 1>(extract<0>(v));
 }
 
 inline
 cftal::vec<int64_t, 1>
 cftal::high_half(const vec<int64_t, 2>& v)
 {
-    return x86::extract_u64<1>(v());
+    return vec<int64_t, 1>(extract<1>(v));
 }
 
 template <cftal::size_t _I>

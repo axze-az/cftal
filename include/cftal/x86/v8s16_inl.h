@@ -441,15 +441,16 @@ inline
 cftal::vec<int16_t, 4>
 cftal::low_half(const vec<int16_t, 8>& v)
 {
-    return as<vec<int16_t,4> >(v);
+    auto t=x86::extract_u64<0>(v());
+    return as<vec<int16_t,4> >(t);
 }
 
 inline
 cftal::vec<int16_t, 4>
 cftal::high_half(const vec<int16_t, 8>& v)
 {
-    vec<int16_t, 8> h= permute<4, 5, 6, 7, 0, 1, 2, 3>(v);
-    return as<vec<int16_t, 4> >(h);
+    auto t=x86::extract_u64<1>(v());
+    return as<vec<int16_t,4> >(t);
 }
 
 template <cftal::size_t _I>
