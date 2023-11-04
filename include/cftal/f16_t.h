@@ -20,7 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/cvt_f16.h>
-#define __USE_STDCPP_FLOAT16_T__ 1
+#define __USE_STDCPP_FLOAT16_T__ 0
 #if (__USE_STDCPP_FLOAT16_T__ > 0)
 #if __has_include(<stdfloat>)
 #include <stdfloat>
@@ -36,7 +36,11 @@
 #if __USE_STDCPP_FLOAT16_T__==0
 #include <cftal/expr.h>
 #include <iostream>
+#define f16_constexpr
+#else
+#define f16_constexpr constexpr
 #endif
+
 #include <cmath>
 
 namespace cftal {
@@ -67,6 +71,7 @@ namespace cftal {
         constexpr f16_t(mf_f16_t f, const cvt_from_rep_tag& ) : _f(f) {}
     public:
         constexpr const mf_f16_t& operator()() const { return _f; }
+
         f16_t(float v) : _f(cvt_f32_to_f16(v)) {}
         explicit operator float() const { return cvt_f16_to_f32(_f); }
 
@@ -467,7 +472,8 @@ namespace cftal {
     struct is_floating_point<f16_t> : public std::true_type {};
 
     // use a user defined operator to avoid overriding f16
-    constexpr f16_t operator ""_f16(long double);
+    f16_constexpr
+    f16_t operator ""_f16(long double);
 
     bool isnan(const f16_t& v);
     bool isinf(const f16_t& v);
@@ -865,9 +871,14 @@ std::istream& cftal::operator>>(std::istream& s, f16_t& v)
 #endif // __USE_STDCPP_FLOAT16_T__==0
 
 inline
-constexpr cftal::f16_t cftal::operator ""_f16(long double d)
+f16_constexpr
+cftal::f16_t cftal::operator ""_f16(long double d)
 {
+#if __USE_STDCPP_FLOAT16_T__>0
     return f16_t(static_cast<float>(d));
+#else
+    return f16_t::cvt_from_rep(impl::_cvt_f32_to_f16(static_cast<float>(d)));
+#endif
 }
 
 inline
