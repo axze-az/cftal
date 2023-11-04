@@ -20,10 +20,11 @@
 
 #include <cftal/config.h>
 #include <iostream>
+#include <cftal/f16_t.h>
 
 namespace cftal {
     namespace test {
-        
+
         template <typename _T>
         struct out_prec { };
 
@@ -39,6 +40,13 @@ namespace cftal {
             constexpr static const int val= 13;
             constexpr static const int width= 18;
             constexpr static const char* suffix() { return "f"; }
+        };
+
+        template <>
+        struct out_prec<f16_t> {
+            constexpr static const int val= 8;
+            constexpr static const int width= 13;
+            constexpr static const char* suffix() { return "_f16"; }
         };
 
 

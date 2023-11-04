@@ -37,28 +37,29 @@ namespace cftal {
         template <typename _T>
         struct check_inf {
             bool operator()(_T a) const {
-                return std::isinf(a);
+                using std::isinf;
+                return isinf(a);
             }
         };
 
         template <typename _T>
         struct check_zero {
             bool operator()(_T a) const {
-                return a == 0.0;
+                return a == _T(0.0);
             }
         };
 
         template <typename _T>
         struct check_minus_one {
             bool operator()(_T a) const {
-                return a == -1.0;
+                return a == _T(-1.0);
             }
         };
 
         template <typename _T>
         struct check_one {
             bool operator()(_T a) const {
-                return a == 1.0;
+                return a == _T(1.0);
             }
         };
 
@@ -143,6 +144,9 @@ namespace cftal {
         void csplit(float (&r)[_N], const mpfr_real<_B>& v,
                     std::size_t low_bits_to_clear);
 
+        template <std::size_t _N, std::size_t _B>
+        void csplit(f16_t (&r)[_N], const mpfr_real<_B>& v,
+                    std::size_t low_bits_to_clear);
 
         template <typename _T, std::size_t _N, std::size_t _B>
         void
@@ -335,6 +339,24 @@ cftal::test::csplit(float (&r)[_N], const mpfr_real<_B>& v,
         vv -= mpfr_real<_B>(tt);
     }
     r[_N-1]= float(vv);
+}
+
+template <std::size_t _N, std::size_t _B>
+void
+cftal::test::csplit(f16_t (&r)[_N], const mpfr_real<_B>& v,
+                    std::size_t low_bits_to_clear)
+{
+    uint16_t msk=const_u16<0xffffU>::v.u16() << low_bits_to_clear;
+    mpfr_real<_B> vv(v);
+    for (std::size_t i=0; i<_N-1; ++i) {
+        f16_t t= static_cast<f16_t>(float(vv));
+        uint16_t u=as<uint16_t>(t);
+        u &= msk;
+        f16_t tt=as<f16_t>(u);
+        r[i] = tt;
+        vv -= mpfr_real<_B>(float(tt));
+    }
+    r[_N-1]= f16_t(float(vv));
 }
 
 template <typename _T, std::size_t _N, std::size_t _B>
@@ -604,16 +626,24 @@ int main(int argc, char** argv)
 {
     bool gen_double=true;
     bool gen_float=true;
+    bool gen_f16=true;
     if (argc > 1) {
         const std::string argv1=argv[1];
-        if (argv1 == "--float") {
+        if (argv1 == "--double") {
+            gen_float= false;
+            gen_f16=false;
+        } else if (argv1 == "--float") {
             gen_double =false;
-        } else if (argv1 == "--no-float") {
+            gen_f16=false;
+        } else if (argv1 == "--f16") {
+            gen_double =false;
             gen_float = false;
         } else if (argv1 == "--no-double") {
             gen_double = false;
-        } else if (argv1 == "--double") {
-            gen_float= false;
+        } else if (argv1 == "--no-float") {
+            gen_float = false;
+        } else if (argv1 == "--no-f16") {
+            gen_f16 = false;
         }
     }
 
@@ -817,7 +847,7 @@ int main(int argc, char** argv)
 
         dp=std::make_pair(1.0f, std::numeric_limits<float>::max());
         gen_constant(dp, "const float rqsrt_", mpfr_rec_sqrt,
-                     check_zero<double>(), "zero");
+                     check_zero<float>(), "zero");
 
         // lgamma
         auto lngp=std::make_pair(174.0f, std::numeric_limits<float>::max());
@@ -863,5 +893,123 @@ int main(int argc, char** argv)
                                "t_real_constants<_T, float>");
 
     }
+
+    if (gen_f16) {
+        auto make_f16pair=[](f16_t a, f16_t b) -> auto {
+            return std::make_pair(a, b);
+        };
+
+        std::pair<f16_t, f16_t> dp=make_f16pair(0.0_f16, 200.0_f16);
+        gen_constant(dp, "const f16_t sinh_hi", mpfr_sinh,
+                     check_inf<f16_t>(), "inf");
+        std::pair<f16_t, f16_t> dm=make_f16pair(-200.0_f16, 0.0_f16);
+        gen_constant(dm, "const f16_t sinh_lo", mpfr_sinh,
+                     check_inf<f16_t>(), "inf");
+        // exp constants
+        gen_constant(dp, "const f16_t exp_hi", mpfr_exp,
+                     check_inf<f16_t>(), "inf");
+        gen_constant(dm, "const f16_t exp_lo", mpfr_exp,
+                     check_zero<f16_t>(), "m_0");
+        gen_constant(dm, "const f16_t exp_lo_den", mpfr_exp,
+                     check_max_denormal<f16_t>(), "nom");
+        // exp1
+        gen_constant(dp, "const f16_t expm1_hi", mpfr_expm1,
+                     check_inf<f16_t>(), "inf");
+        gen_constant(dm, "const f16_t expm1_lo", mpfr_expm1,
+                     check_minus_one<f16_t>(), "m_1");
+
+        gen_constant(dp, "const f16_t cosh_hi", mpfr_cosh,
+                     check_inf<f16_t>(), "inf");
+        gen_constant(dm, "const f16_t cosh_lo", mpfr_cosh,
+                     check_inf<f16_t>(), "inf");
+
+        gen_constant(make_f16pair(.0_f16, 0.001_f16), "const f16_t log_lo",
+                     mpfr_log, check_inf<f16_t>(), "inf");
+
+        dp=make_f16pair(0.0_f16, 200.0_f16);
+        dm=make_f16pair(-200.0_f16, 0.0_f16);
+        gen_constant(dp, "const f16_t exp2_hi", mpfr_exp2,
+                     check_inf<f16_t>(), "inf");
+        gen_constant(dm, "const f16_t exp2_lo", mpfr_exp2,
+                     check_zero<f16_t>(), "m_0");
+        // exp2m1
+        gen_constant(dp, "const f16_t exp2m1_hi", mpfr_exp2m1,
+                     check_inf<f16_t>(), "inf");
+        gen_constant(dm, "const f16_t exp2m1_lo", mpfr_exp2m1,
+                     check_minus_one<f16_t>(), "m_1");
+
+        // exp10
+        gen_constant(dp, "const f16_t exp10_hi", mpfr_exp10,
+                     check_inf<f16_t>(), "inf");
+        gen_constant(dm, "const f16_t exp10_lo", mpfr_exp10,
+                     check_zero<f16_t>(), "m_0");
+
+        // exp10m1
+        gen_constant(dp, "const f16_t exp10m1_hi", mpfr_exp10m1,
+                     check_inf<f16_t>(), "inf");
+        gen_constant(dm, "const f16_t exp10m1_lo", mpfr_exp10m1,
+                     check_minus_one<f16_t>(), "m_1");
+
+        gen_constant(dp, "const f16_t erf_lt_one", mpfr_erf,
+                     check_one<f16_t>(), "1");
+        gen_constant(dp, "const f16_t erfc_gt_zero", mpfr_erfc,
+                     check_zero<f16_t>(), "zzz");
+        gen_constant(dp, "const f16_t erfc_lo_den", mpfr_erfc,
+                     check_max_denormal<f16_t>(), "nom");
+        // tgamma
+        auto gm=make_f16pair(10.0_f16, 200.0_f16);
+        gen_constant(gm, "const f16_t tgamma_hi", mpfr_gamma,
+                     check_inf<f16_t>(), "inf");
+
+        dp=make_f16pair(1.0_f16, std::numeric_limits<f16_t>::max());
+        gen_constant(dp, "const f16_t rqsrt_", mpfr_rec_sqrt,
+                     check_zero<f16_t>(), "zero");
+
+        // lgamma
+        std::pair<f16_t, f16_t> lngp=
+            make_f16pair(174.0_f16, std::numeric_limits<f16_t>::max());
+        gen_constant(lngp, "const f16_t lgamma_hi", mpfr_lngamma,
+                     check_inf<f16_t>(), "inf");
+
+        dp=make_f16pair(1.0f, std::numeric_limits<f16_t>::max());
+        gen_constant(dp, "const double atan_pi_2", mpfr_atan,
+                     check_pi_half<f16_t>(), "equal");
+
+        gen_constant(make_f16pair(1.0_f16, 80.0_f16), "const f16_t tanh",
+                     mpfr_tanh, check_one<f16_t>(), "one");
+
+        gen_constant(make_f16pair(1.0_f16, 1024.0_f16), "const f16_t sig",
+                     mpfr_ext::sig, check_one<f16_t>(), "one");
+
+        gen_constant(make_f16pair(-1024.0_f16, -1.0_f16), "const f16_t sig",
+                     mpfr_ext::sig, check_zero<f16_t>(), "zero");
+
+        std::cout << "const f16_t max_denormal= "
+                  <<  as<f16_t>(sig_f16_msk::v.u16()) << ";\n\n";
+
+        f16_t a[2];
+        mpfr_real<512> ln2=2.0;
+        ln2=log(ln2);
+        csplit(a, ln2, 4);
+        // std::cout << std::hexf16_t;
+        for (std::size_t i=0; i<2; ++i) {
+            std::cout << "const f16_t m_ln2_" << i << "= "
+                      << a[i]
+                      << "_f16;\n";
+        }
+#if 0
+        gen_math_constants<128,
+                           d_real<f16_t>,
+                           math::impl::d_real_constants >(
+                               std::cout,
+                               "d_real_constants<_T, f16_t>");
+        gen_math_constants<256,
+                           t_real<f16_t>,
+                           math::impl::t_real_constants >(
+                               std::cout,
+                               "t_real_constants<_T, f16_t>");
+#endif
+    }
+
     return 0;
 }
