@@ -50,8 +50,8 @@ namespace cftal {
 #if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmplt_epu16_mask(a(), b());
 #else
-                v8u16 ta(a ^ full_type(sign_s16_msk::v.u16l()));
-                v8u16 tb(b ^ full_type(sign_s16_msk::v.u16l()));
+                v8u16 ta(a ^ full_type(sign_s16_msk::v.u16()));
+                v8u16 tb(b ^ full_type(sign_s16_msk::v.u16()));
                 return _mm_cmpgt_epi16(tb(), ta());
 #endif
             }
@@ -139,8 +139,8 @@ namespace cftal {
 #if defined (__AVX512VL__) && (__CFTAL_CFG_ENABLE_AVX512__ > 0)
                 return _mm_cmpgt_epu16_mask(a(), b());
 #else
-                v8u16 ta(a ^ full_type(sign_s16_msk::v.u16l()));
-                v8u16 tb(b ^ full_type(sign_s16_msk::v.u16l()));
+                v8u16 ta(a ^ full_type(sign_s16_msk::v.u16()));
+                v8u16 tb(b ^ full_type(sign_s16_msk::v.u16()));
                 return _mm_cmpgt_epi16(ta(), tb());
 #endif
             }
@@ -163,7 +163,7 @@ namespace cftal {
             full_type
             v(const full_type& a) {
 #if defined (__SSSE3__)
-                const full_type sgn(sign_s16_msk::v.u16l());
+                const full_type sgn(sign_s16_msk::v.u16());
                 return _mm_sign_epi16(a(), sgn());
 #else
                 const full_type zero(0);

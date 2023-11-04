@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/cvt_f16.h>
+#include <cftal/constants.h>
 #define __USE_STDCPP_FLOAT16_T__ 0
 #if (__USE_STDCPP_FLOAT16_T__ > 0)
 #if __has_include(<stdfloat>)
@@ -44,15 +45,6 @@
 #include <cmath>
 
 namespace cftal {
-
-    const uint16_t not_sign_f16_msk = 0x7fffu;
-    const uint16_t sign_f16_msk=  0x8000u;
-    const uint16_t exp_f16_msk = 0x7c00u;
-    // const uint16_t not_exp16_msk = ~exp_f16_msk;
-    // const uint16_t sig_f16_msk = 0x03ff;
-    // const uint16_t bias_f16 = 0xf;
-    // const uint16_t exp_shift_f16 = 10;
-    // const uint16_t exp_msk_f16 = 0x1f;
 
 #if (__USE_STDCPP_FLOAT16_T__>0)
     using f16_t = std::float16_t;
@@ -885,23 +877,23 @@ inline
 bool cftal::isnan(const f16_t& v)
 {
     const mf_f16_t& vi= read_bits(v);
-    mf_f16_t abs_vi= vi & not_sign_f16_msk;
-    return abs_vi > exp_f16_msk;
+    mf_f16_t abs_vi= vi & not_sign_f16_msk::v.u16();
+    return abs_vi > exp_f16_msk::v.u16();
 }
 
 inline
 bool cftal::isinf(const f16_t& v)
 {
     const mf_f16_t& vi= read_bits(v);
-    mf_f16_t abs_vi= vi & not_sign_f16_msk;
-    return abs_vi == exp_f16_msk;
+    mf_f16_t abs_vi= vi & not_sign_f16_msk::v.u16();
+    return abs_vi == exp_f16_msk::v.u16();
 }
 
 inline
 cftal::f16_t cftal::abs(const f16_t& v)
 {
     const mf_f16_t& vi= read_bits(v);
-    mf_f16_t abs_vi= vi & not_sign_f16_msk;
+    mf_f16_t abs_vi= vi & not_sign_f16_msk::v.u16();
     return as<f16_t>(abs_vi);
 }
 
@@ -909,16 +901,16 @@ inline
 bool cftal::signbit(const f16_t& v)
 {
     const mf_f16_t& vi= read_bits(v);
-    return (vi & sign_f16_msk) == sign_f16_msk;
+    return (vi & sign_f16_msk::v.u16()) == sign_f16_msk::v.u16();
 }
 
 inline
 cftal::f16_t
 cftal::copysign(f16_t x, f16_t y)
 {
-    const uint16_t abs_msk=not_sign_f16_msk;
+    const uint16_t abs_msk=not_sign_f16_msk::v.u16();
     uint16_t abs_x=read_bits(x) & abs_msk;
-    const uint16_t sgn_msk=sign_f16_msk;
+    const uint16_t sgn_msk=sign_f16_msk::v.u16();
     uint16_t sgn_y=read_bits(y) & sgn_msk;
     uint16_t r= abs_x | sgn_y;
     return as<f16_t>(r);
@@ -973,15 +965,15 @@ cftal::nextafter(f16_t xc, f16_t yc)
 {
     uint16_t ux=read_bits(xc);
     uint16_t uy=read_bits(yc);
-    uint16_t ax= ux & not_sign_f16_msk;
-    uint16_t ay= uy & not_sign_f16_msk;
+    uint16_t ax= ux & not_sign_f16_msk::v.u16();
+    uint16_t ay= uy & not_sign_f16_msk::v.u16();
     uint16_t ux_inc= ux + 1;
     uint16_t ux_dec= ux - 1;
     // decrement required if ax > ay or (ux^uy & sgn) != 0
     bool opp_sgn=
-        uint16_t((ux^uy) & sign_f16_msk) != uint16_t(0);
+        uint16_t((ux^uy) & sign_f16_msk::v.u16()) != uint16_t(0);
     uint16_t r= ((ax > ay) | opp_sgn) ? ux_dec : ux_inc;
-    uint16_t r0= ay == 0 ? uy : (uy & sign_f16_msk) | 1;
+    uint16_t r0= ay == 0 ? uy : (uy & sign_f16_msk::v.u16()) | 1;
     r = ax == 0 ? r0 : r;
     r = ux == uy ? uy : r;
     // f16_t rf= f16_t::cvt_from_rep(r);

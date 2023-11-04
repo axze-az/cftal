@@ -127,8 +127,16 @@ namespace cftal {
     using sign_s8_msk = const_u32<0x80808080>;
     using not_sign_s8_msk = const_u32<0x7f7f7f7f>;
 
-    using sign_s16_msk = const_u32<0x80008000>;
-    using not_sign_s16_msk = const_u32<0x7fff7fff>;
+    using sign_s16_msk = const_u16<0x8000>;
+    using not_sign_s16_msk = const_u16<0x7fff>;
+    using sign_f16_msk=sign_s16_msk;
+    using not_sign_f16_msk = not_sign_s16_msk;
+    using exp_f16_msk= const_u16<0x7c00>;
+    using not_exp16_msk = const_u16<uint16_t(~0x7c00)>;
+    using sig_f16_msk = const_u16<0x03ff>;
+    const int bias_f16 = 0xf;
+    const int exp_shift_f16 = 10;
+    const int exp_msk_f16 = 0x1f;
 
     using sign_s32_msk = const_u32<0x80000000>;
     using not_sign_s32_msk = const_u32<0x7fffffff>;
@@ -150,6 +158,7 @@ namespace cftal {
     const int bias_f64 = 0x3ff;
     const int exp_shift_f64 = 52;
     const int exp_msk_f64 = 0x7ff;
+
 
     namespace const_shift {
         constexpr static const const_u32<0> _0;
