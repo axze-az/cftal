@@ -50,7 +50,7 @@ namespace cftal {
 #if USE_BIT_CAST>0
                 return std::bit_cast<_D>(s);
 #else
-                static_assert(sizeof(D)==sizeof(S),
+                static_assert(sizeof(_D)==sizeof(_S),
                               "size differences in cast_bits::v");
                 const _D& ds=reinterpret_cast<const _D&>(s);
                 return ds;
