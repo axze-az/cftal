@@ -21,7 +21,9 @@
 #include <cftal/config.h>
 #if __has_include(<bit>)
 #include <bit>
+#if __cpp_lib_bit_cast > 0
 #define USE_BIT_CAST 1
+#endif
 #endif
 
 namespace cftal {
@@ -29,12 +31,18 @@ namespace cftal {
     // as: reinterpret cast to _D from _S, name similiar to opencl
     // forwarder function to impl::cast_bits<_D, _S>::v
     template <typename _D, typename _S>
+#if USE_BIT_CAST > 0
+    constexpr
+#endif
     _D as(const _S& s);
 
     // bit_cast: reinterpret cast to _D from _S, name similiar
     // std::bit_cast
     // forwarder function to impl::cast_bits<_D, _S>::v
     template <typename _D, typename _S>
+#if USE_BIT_CAST > 0
+    constexpr
+#endif
     _D bit_cast(const _S& s);
 
     namespace impl {
@@ -43,6 +51,9 @@ namespace cftal {
         template <typename _D, typename _S>
         struct cast_bits {
             static
+#if USE_BIT_CAST > 0
+            constexpr
+#endif
             _D v(const _S& s) {
 #if USE_BIT_CAST>0
                 return std::bit_cast<_D>(s);
@@ -70,6 +81,9 @@ namespace cftal {
 
 template <typename _D, typename _S>
 inline
+#if USE_BIT_CAST > 0
+constexpr
+#endif
 _D
 cftal::as(const _S& s)
 {
@@ -78,6 +92,9 @@ cftal::as(const _S& s)
 
 template <typename _D, typename _S>
 inline
+#if USE_BIT_CAST > 0
+constexpr
+#endif
 _D
 cftal::bit_cast(const _S& s)
 {
