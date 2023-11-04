@@ -19,13 +19,10 @@
 #define __CFTAL_AS_H__ 1
 
 #include <cftal/config.h>
-#if 0
 #if __has_include(<bit>)
 #include <bit>
 #define USE_BIT_CAST 1
 #endif
-#endif
-
 
 namespace cftal {
 
