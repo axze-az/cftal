@@ -44,11 +44,9 @@ namespace cftal {
 
     namespace impl {
 
-        constexpr
         mf_f16_t
         _cvt_f32_to_f16(f32_t f);
 
-        constexpr
         f32_t
         _cvt_f16_to_f32(mf_f16_t f);
 
@@ -56,7 +54,6 @@ namespace cftal {
 }
 
 inline
-constexpr
 cftal::f32_t
 cftal::impl::_cvt_f16_to_f32(mf_f16_t t)
 {
@@ -80,12 +77,12 @@ cftal::impl::_cvt_f16_to_f32(mf_f16_t t)
 }
 
 inline
-constexpr
 cftal::mf_f16_t
 cftal::impl::_cvt_f32_to_f16(f32_t ff)
 {
-    const f32_t inf= std::numeric_limits<float>::infinity();
-    const uint32_t inf_u= as<uint32_t>(inf);
+    // const f32_t inf= std::numeric_limits<float>::infinity();
+    // const uint32_t inf_u= as<uint32_t>(inf);
+    const uint32_t inf_u=  exp_f32_msk::v.u32();
     const uint32_t max_f16_u = (127+16)<<23;
     const f32_t denom_magic= 0.5f;
 
