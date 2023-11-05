@@ -19,10 +19,15 @@
 #define __CFTAL_AS_H__ 1
 
 #include <cftal/config.h>
+#if !defined (USE_BIT_CAST)
+#define USE_BIT_CAST 1
+#endif
+#if USE_BIT_CAST > 0
 #if __has_include(<bit>)
 #include <bit>
-#if __cpp_lib_bit_cast > 0
-#define USE_BIT_CAST 1
+#if __cpp_lib_bit_cast == 0
+#undef USE_BIT_CASE
+#endif
 #endif
 #endif
 
