@@ -148,19 +148,19 @@ namespace cftal {
                 }
             };
             using int_type =
-		select_t<sizeof(_T)==8,
-			 int64_t,
-			 select_t<sizeof(_T)==4,
-				  int32_t,
-				  select_t<sizeof(_T)==2,
-					   int16_t,
-					   select_t<sizeof(_T)==1,
-						    int8_t,
-						    fall_back_t
-						    >
-					   >
-				  >
-			 >;
+                select_t<sizeof(_T)==8,
+                         int64_t,
+                         select_t<sizeof(_T)==4,
+                                  int32_t,
+                                  select_t<sizeof(_T)==2,
+                                           int16_t,
+                                           select_t<sizeof(_T)==1,
+                                                    int8_t,
+                                                    fall_back_t
+                                                    >
+                                           >
+                                  >
+                         >;
             static
             _T
             v(bool t) {
