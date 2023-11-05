@@ -54,7 +54,7 @@ namespace cftal {
             return s ? on_true : on_false;
         }
 
-        // veltkamp split of a float
+        // split of a f16_t
         static
         void split(f16_t a, f16_t& hi, f16_t& lo) {
             const uint16_t msk=0xffc0;
@@ -66,7 +66,7 @@ namespace cftal {
         }
 
         static
-        // constexpr
+        f16_constexpr
         f16_t
         scale_div_threshold() {
             // -14 + 11
