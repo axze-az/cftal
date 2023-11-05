@@ -420,7 +420,7 @@ int main(int argc, char** argv)
     r &= cftal::test::test_cvt_f16_f32<8>(f16_f32);
     r &= cftal::test::test_cvt_f16_f32<16>(f16_f32);
     r &= cftal::test::test_cvt_f16_f32<32>(f16_f32);
-    std::cout << "cvt f16 --> f32 " << f16_f32;
+    std::cout << "cvt f16 --> f32\n" << f16_f32;
     std::cout << "testing cvt f32 --> f16\n" << std::flush;
     cftal::test::exec_stats<32> f32_f16;
     r &= cftal::test::test_cvt_f32_f16<1>(f32_f16);
@@ -429,7 +429,7 @@ int main(int argc, char** argv)
     r &= cftal::test::test_cvt_f32_f16<8>(f32_f16);
     r &= cftal::test::test_cvt_f32_f16<16>(f32_f16);
     r &= cftal::test::test_cvt_f32_f16<32>(f32_f16);
-    std::cout << "cvt f32 -> f16 " << f32_f16;
+    std::cout << "cvt f32 -> f16\n" << f32_f16;
     return r==true ? 0 : 1;
 
 }
