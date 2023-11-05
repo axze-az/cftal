@@ -18,7 +18,7 @@
 #include "cftal/test/of_math_funcs.h"
 #include "cftal/math/horner.h"
 #include "cftal/vec.h"
-#include "cftal/math/vec_func_traits.h"
+#include "cftal/math/vec_func_traits_f64.h"
 #include "cftal/test/call_mpfr.h"
 #include <tuple>
 #include <iostream>

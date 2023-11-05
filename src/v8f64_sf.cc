@@ -12,11 +12,11 @@
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
+// License along with this library; if not, (cftal, cftal, v4f64, v4s32, double)write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include "cftal/vec.h"
-#include "cftal/math/vec_func_traits.h"
+#include "cftal/math/vec_func_traits_f64.h"
 #include "cftal/math/spec_func_core_f64.h"
 #include "vec_def_math_spec_funcs.h"
 

@@ -15,7 +15,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#include "cftal/math/vec_func_traits.h"
+#include "cftal/math/vec_func_traits_f32.h"
+#include "cftal/math/vec_func_traits_f64.h"
 
 #if 0
 const cftal::v4s32
