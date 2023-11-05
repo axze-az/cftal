@@ -107,8 +107,8 @@ cftal::impl::_cvt_f32_to_f16(vec<f32_t, _N> ff)
 
     // inf or nan handling
     auto inf_or_nan = f >= max_f16_u;
-    i32vec r_nan = i32vec(0x7e00) /*| ((f & sig_f32_msk::v.u32()) >> 13)*/;
-    i32vec r_inf = i32vec(0x7c00);
+    const i32vec r_nan(0x7e00) /*| ((f & sig_f32_msk::v.u32()) >> 13)*/;
+    const i32vec r_inf(0x7c00);
     i32vec r_inf_nan = select(f > inf_u, r_nan, r_inf);
     // denormal handling
     auto denom= f < i32vec(113<<23);
