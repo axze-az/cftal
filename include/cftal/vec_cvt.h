@@ -18,6 +18,7 @@
 #if !defined (__CFTAL_VEC_CVT_H__)
 #define __CFTAL_VEC_CVT_H__ 1
 
+#include <cftal/cvt.h>
 #include <cftal/vec.h>
 #include <cftal/as.h>
 #include <cftal/bitops.h>
@@ -250,22 +251,6 @@ namespace cftal {
     };
 
     namespace impl {
-
-        // convert according to current rounding mode
-        // to _D from _S
-        template <typename _D, typename _S>
-        struct cvt {
-            static
-            _D v(const _S& s);
-        };
-
-        // convert with truncation (i.e. round to zero)
-        // to _D from _S
-        template <typename _D, typename _S>
-        struct cvt_rz {
-            static
-            _D v(const _S& s);
-        };
 
         // conversion from vector<_S, _N>  to vector<_D, _N>
         // using truncation, i.e. round towards zero
@@ -751,27 +736,6 @@ namespace cftal {
 
 #endif // __SSE2__
     }
-
-    template <class _D, class _S>
-    _D cvt(const _S& s);
-
-    template <class _D, class _S>
-    _D cvt_rz(const _S& s);
-
-}
-
-template <class _D, class _S>
-inline
-_D cftal::cvt(const _S& s)
-{
-    return impl::cvt<_D, _S>::v(s);
-}
-
-template <class _D, class _S>
-inline
-_D cftal::cvt_rz(const _S& s)
-{
-    return impl::cvt_rz<_D, _S>::v(s);
 }
 
 // Local variables:
