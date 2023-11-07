@@ -34,8 +34,8 @@
 #include <cftal/vec_t_1.h>
 #include <cftal/vec_spec.h>
 #include <cftal/vec_compress_expand_elements.h>
-#include <cftal/vec_double_n.h>
-#include <cftal/vec_float_n.h>
+#include <cftal/vec_f64.h>
+#include <cftal/vec_f32.h>
 #include <cftal/vec_math_funcs.h>
 #include <cftal/vec_cvt.h>
 #include <cftal/vec_cast_bits.h>

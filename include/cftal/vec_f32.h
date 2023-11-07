@@ -15,8 +15,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#if !defined (__CFTAL_VEC_FLOAT_N_H__)
-#define __CFTAL_VEC_FLOAT_N_H__ 1
+#if !defined (__CFTAL_VEC_F32_H__)
+#define __CFTAL_VEC_F32_H__ 1
 
 #include <cftal/config.h>
 #include <cftal/vec_spec.h>
