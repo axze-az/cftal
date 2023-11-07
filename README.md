@@ -43,6 +43,10 @@ You may also use gcc instead of clang:
 
 3. CC=gcc-13 CXX=g++-13 cmake -DCMAKE_BUILD_TYPE=release ..
 
+If you want to use vectors of double's for the calculation of some elementary
+float functions, use -DCFTAL_CONFIG_USE_VF64_FOR_VF32=1 as an additional
+argument for cmake.
+
 ### Build and test
 
 During the build a number of test programs are built in ./test and
