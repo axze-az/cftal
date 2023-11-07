@@ -22,7 +22,6 @@
 #include <cftal/math/elem_func_core_f32.h>
 #if  __CFTAL_CFG_USE_VF64_FOR_VF32__ > 0
 #include <cftal/vec_cvt.h>
-#include <cftal/math/elem_func_core_f64.h>
 #include <cftal/math/elem_func_loprec_core_f64.h>
 #include <cftal/math/func_traits_f64_s32.h>
 #include <cftal/math/impl_d_real_constants_f64.h>
