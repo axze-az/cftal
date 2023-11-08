@@ -113,6 +113,8 @@ SET (HDRS
     ../include/cftal/math/elem_func.h
     ../include/cftal/math/elem_func_loprec_core_f64.h
     ../include/cftal/math/elem_func_wrapper_f32.h
+    ../include/cftal/math/func_constants_f32.h
+    ../include/cftal/math/func_constants_f64.h
     ../include/cftal/math/func_constants.h
     ../include/cftal/math/func_data.h
     ../include/cftal/math/func.h

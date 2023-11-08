@@ -22,7 +22,7 @@
 #include <cftal/d_real.h>
 #include <cftal/d_real_traits_f32.h>
 #include <cftal/std_types.h>
-#include <cftal/math/func_constants.h>
+#include <cftal/math/func_constants_f32.h>
 
 namespace cftal {
     namespace math {

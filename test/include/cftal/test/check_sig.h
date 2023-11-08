@@ -21,6 +21,8 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/math/func_constants.h>
+#include <cftal/math/func_constants_f32.h>
+#include <cftal/math/func_constants_f64.h>
 #include <cftal/test/call_mpfr.h>
 #include <cmath>
 
