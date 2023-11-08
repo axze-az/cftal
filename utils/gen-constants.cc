@@ -93,6 +93,15 @@ namespace cftal {
             }
         };
 
+        template <>
+        struct check_max_denormal<f16_t> {
+            bool operator() (f16_t a) const  {
+                const f16_t flt_max_denormal=
+                    nextafter(std::numeric_limits<f16_t>::min(), 0.0_f16);
+                return abs(a) <= flt_max_denormal;
+            }
+        };
+
         template <typename _T>
         struct check_atan_eq_x  {
             bool operator() (_T a) const {
@@ -271,18 +280,19 @@ cftal::test::to_stream(d_real<_T>& d, const mpfr_real<_B>& v,
 {
     d = d_real<_T>(v);
     _T h=d[0], l=d[1];
+    using std::nextafter;
     if (normalize && ((h*l)<0.0)) {
         if (h > 0) {
             while (l < 0.0) {
                 // std::cout << h << std::endl;
-                h = std::nextafter(h, -std::numeric_limits<_T>::max());
+                h = nextafter(h, -std::numeric_limits<_T>::max());
                 mpfr_real<_B> s(v);
                 s -= mpfr_real<_B>(h);
                 l = _T(s);
             }
         } else if (h < 0) {
             while (l > 0.0) {
-                h = std::nextafter(h, std::numeric_limits<_T>::max());
+                h = nextafter(h, std::numeric_limits<_T>::max());
                 mpfr_real<_B> s(v);
                 s -= mpfr_real<_B>(h);
                 l = _T(s);
@@ -398,11 +408,49 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     using value_type = typename _X::value_type;
 
     _X d;
+    enum class f_type {
+        e_16,
+        e_32,
+        e_64
+    };
 
-    bool is_double = std::numeric_limits<double>::max() ==
-        std::numeric_limits<value_type>::max();
+    auto get_f_type=[]()->f_type {
+        if (sizeof(value_type) == 8)
+            return f_type::e_64;
+        if (sizeof(value_type) == 4)
+            return f_type::e_32;
+        if (sizeof(value_type) == 2)
+            return f_type::e_16;
+        throw std::runtime_error("get_f_type");
+    };
 
-    std::size_t low_bits_to_clear= is_double ? 21 : 9;
+    auto get_low_bits_to_clear=[&get_f_type]()->size_t {
+        switch (get_f_type()) {
+        case f_type::e_64:
+            return 21;
+        case f_type::e_32:
+            return 9;
+        case f_type::e_16:
+            return 4;
+        default:
+            throw std::runtime_error("get_low_bits_to_clear");
+        }
+    };
+
+    auto get_f_type_name=[&get_f_type]()->std::string {
+        switch (get_f_type()) {
+        case f_type::e_64:
+            return "double";
+        case f_type::e_32:
+            return "float";
+        case f_type::e_16:
+            return "f16_t";
+        default:
+            throw std::runtime_error("get_f_type_name");
+        }
+    };
+
+    std::size_t low_bits_to_clear= get_low_bits_to_clear();
     // mpfr_set_default_prec(_B);
     f_t v, x;
 
@@ -411,7 +459,7 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     x=2.0;
     v=log(x);
     csplit(ln2_cw, v, low_bits_to_clear);
-    s << "template <class _T>\nconst " << (is_double ? "double" : "float")
+    s << "template <class _T>\nconst " << get_f_type_name()
       << "\n"
       << "cftal::math::impl::" << pfx << "::\nm_ln2_cw["
       << ln2_bits << "]={\n";
@@ -427,9 +475,8 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     value_type ld2_cw[ld2_bits];
     x=2.0;
     v=log10(x);
-    low_bits_to_clear = is_double ? 21 : 9;
     csplit(ld2_cw, v, low_bits_to_clear);
-    s << "template <class _T>\nconst " << (is_double ? "double" : "float")
+    s << "template <class _T>\nconst " << get_f_type_name()
       << "\n"
       << "cftal::math::impl::" << pfx << "::\nm_ld2_cw["
       << ld2_bits << "]={\n";
@@ -446,9 +493,8 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
     v *= x;
     const int pi_2_bits=3;
     value_type pi_2_cw[pi_2_bits];
-    low_bits_to_clear = is_double ? 21 : 9;
     csplit(pi_2_cw, v, low_bits_to_clear);
-    s << "template <class _T>\nconst " << (is_double ? "double" : "float")
+    s << "template <class _T>\nconst " << get_f_type_name()
       << "\n"
       << "cftal::math::impl::" << pfx << "::\nm_pi_2_cw["
       << pi_2_bits << "]={\n";
@@ -532,7 +578,17 @@ cftal::test::gen_math_constants(std::ostream& s, const std::string& pfx)
       << ");\n"
       << std::endl;
 
-    x = is_double ? 0x1p106 : 0x1p48;
+    switch (get_f_type()) {
+    case f_type::e_64:
+        x=0x1p106;
+        break;
+    case f_type::e_32:
+        x=0x1p48;
+        break;
+    case f_type::e_16:
+        x=0x1p22;
+        break;
+    }
     v = log(x);
     s << "template <class _T>\nconst _T\n"
       << "cftal::math::impl::" << pfx << "::m_ln_small_arg("
