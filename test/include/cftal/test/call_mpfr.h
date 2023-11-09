@@ -159,6 +159,52 @@ namespace cftal {
             std::pair<_T, _T>
             ulp1_interval(_T res, int mpfr_res);
 
+
+            class set_emin_emax {
+                mpfr_exp_t _emin;
+                mpfr_exp_t _emax;
+            protected:
+                static
+                constexpr const mpfr_exp_t double_emin=-1022-(53-1)+1;
+                static
+                constexpr const mpfr_exp_t double_emax=1023+1;
+
+                static
+                constexpr const mpfr_exp_t float_emin=-126-(24-1)+1;
+                static
+                constexpr const mpfr_exp_t float_emax=127+1;
+
+                static
+                constexpr const mpfr_exp_t half_emin=-14-(11-1)+1;
+                static
+                constexpr const mpfr_exp_t half_emax=15+1;
+
+                set_emin_emax(mpfr_exp_t emin, mpfr_exp_t emax)
+                    : _emin(mpfr_get_emin()), _emax(mpfr_get_emax()) {
+                    mpfr_set_emin(emin);
+                    mpfr_set_emax(emax);
+                }
+            public:
+                ~set_emin_emax() {
+                    mpfr_set_emin(_emin);
+                    mpfr_set_emax(_emax);
+                }
+            };
+
+            class double_emin_emax : public set_emin_emax {
+            public:
+                double_emin_emax() : set_emin_emax(double_emin, double_emax) {}
+            };
+
+            class float_emin_emax : public set_emin_emax {
+            public:
+                float_emin_emax() : set_emin_emax(float_emin, float_emax) {}
+            };
+
+            class half_emin_emax : public set_emin_emax {
+            public:
+                half_emin_emax() : set_emin_emax(half_emin, half_emax) {}
+            };
         }
 
         // wrapper around a mpfr_t
@@ -183,10 +229,13 @@ namespace cftal {
             mpfr_prec_t prec() const { return mpfr_get_prec(_v); }
             explicit operator double() const;
             explicit operator float() const;
+            explicit operator f16_t() const;
             template <std::size_t _N>
             explicit operator fp_expansion<double, _N>() const;
             template <std::size_t _N>
             explicit operator fp_expansion<float, _N>() const;
+            template <std::size_t _N>
+            explicit operator fp_expansion<f16_t, _N>() const;
         };
 
         bool
@@ -667,6 +716,35 @@ cftal::test::fpn_handle::operator fp_expansion<float, _N>() const
         fpn_handle ti(ri, prec());
         mpfr_sub(t(), t(), ti(), MPFR_RNDN);
         ri=float(t);
+        r[i] = ri;
+    }
+    return r;
+}
+
+inline
+cftal::test::fpn_handle::operator f16_t() const
+{
+    call_mpfr::half_emin_emax g;
+    MPFR_DECL_INIT(t, 11);
+    int mpres=mpfr_set(t, _v, MPFR_RNDN);
+    mpres=mpfr_subnormalize(t, mpres, MPFR_RNDN);
+    float fr=mpfr_get_flt(t, MPFR_RNDN);
+    f16_t r(fr);
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::test::fpn_handle::operator fp_expansion<f16_t, _N>() const
+{
+    fp_expansion<f16_t, _N> r;
+    fpn_handle t(*this);
+    f16_t ri=f16_t(t);
+    r[0] = ri;
+    for (std::size_t i=1; i<_N; ++i) {
+        fpn_handle ti(ri, prec());
+        mpfr_sub(t(), t(), ti(), MPFR_RNDN);
+        ri=f16_t(t);
         r[i] = ri;
     }
     return r;

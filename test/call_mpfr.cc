@@ -30,49 +30,6 @@
 #include <iomanip>
 #endif
 
-namespace cftal::test::call_mpfr {
-    constexpr const mpfr_exp_t double_emin=-1022-(53-1)+1;
-    constexpr const mpfr_exp_t double_emax=1023+1;
-
-    constexpr const mpfr_exp_t float_emin=-126-(24-1)+1;
-    constexpr const mpfr_exp_t float_emax=127+1;
-
-    constexpr const mpfr_exp_t half_emin=-14-(11-1)+1;
-    constexpr const mpfr_exp_t half_emax=15+1;
-
-    class set_emin_emax {
-        mpfr_exp_t _emin;
-        mpfr_exp_t _emax;
-    protected:
-        set_emin_emax(mpfr_exp_t emin, mpfr_exp_t emax)
-            : _emin(mpfr_get_emin()), _emax(mpfr_get_emax()) {
-            mpfr_set_emin(emin);
-            mpfr_set_emax(emax);
-        }
-    public:
-        ~set_emin_emax() {
-            mpfr_set_emin(_emin);
-            mpfr_set_emax(_emax);
-        }
-    };
-
-    class double_emin_emax : public set_emin_emax {
-    public:
-        double_emin_emax() : set_emin_emax(double_emin, double_emax) {}
-    };
-
-    class float_emin_emax : public set_emin_emax {
-    public:
-        float_emin_emax() : set_emin_emax(float_emin, float_emax) {}
-    };
-
-    class half_emin_emax : public set_emin_emax {
-    public:
-        half_emin_emax() : set_emin_emax(half_emin, half_emax) {}
-    };
-
-}
-
 double
 cftal::test::call_mpfr::
 func(double a, f1_t f, std::pair<double, double>* ulp1i)
