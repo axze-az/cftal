@@ -342,6 +342,7 @@ namespace cftal {
             mpfr_real() : fpn_handle(_B) {}
             mpfr_real(double x) : fpn_handle(x, _B) {}
             mpfr_real(float f) : fpn_handle(f, _B) {}
+            mpfr_real(f16_t f) : fpn_handle(f, _B) {}
             template <class _F>
             mpfr_real(const d_real<_F>& d) : fpn_handle(d, _B) {}
             template <class _F>
