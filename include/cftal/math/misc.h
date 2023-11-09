@@ -26,7 +26,6 @@
 #include <cftal/divisor.h>
 #include <cftal/constants.h>
 #include <cftal/mem.h>
-#include <cftal/math/func_constants.h>
 #include <cftal/math/horner.h>
 #include <cftal/type_traits.h>
 #include <limits>
