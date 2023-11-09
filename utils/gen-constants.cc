@@ -1053,7 +1053,7 @@ int main(int argc, char** argv)
                       << a[i]
                       << "_f16;\n";
         }
-#if 0
+
         gen_math_constants<128,
                            d_real<f16_t>,
                            math::impl::d_real_constants >(
@@ -1064,7 +1064,6 @@ int main(int argc, char** argv)
                            math::impl::t_real_constants >(
                                std::cout,
                                "t_real_constants<_T, f16_t>");
-#endif
     }
 
     return 0;
