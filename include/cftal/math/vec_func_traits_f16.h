@@ -15,56 +15,43 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#if !defined (__CFTAL_MATH_FUNC_TRAIT_F16_S16_H__)
-#define __CFTAL_MATH_FUNC_TRAIT_F16_S16_H__ 1
+#if !defined (__CFTAL_MATH_VEC_FUNC_TRAITS_F16_H__)
+#define __CFTAL_MATH_VEC_FUNC_TRAITS_F16_H__ 1
 
 #include <cftal/config.h>
-#include <cftal/d_real.h>
-#include <cftal/d_real_traits_f16.h>
-#include <cftal/std_types.h>
-#include <cftal/math/func_traits.h>
-#include <limits>
+#include <cftal/vec.h>
+#include <cftal/vec_d_real_traits_f16.h>
+#include <cftal/math/func_traits_f16_s16.h>
+#include <cftal/divisor.h>
+#include <cftal/vec_cvt.h>
+#include <cftal/constants.h>
+#include <cftal/x86/cast_bits.h>
+#include <cftal/math/vec_func_traits_f32.h>
 
 namespace cftal {
+
     namespace math {
 
-        template <>
-        struct func_traits<f16_t, int16_t>
-            : public d_real_traits<f16_t> {
-            using vf_type = f16_t;
-            using vi_type = int16_t;
-            using vu_type = uint16_t;
-            using vmf_type = bool;
-            using vmi_type = bool;
-            using vmu_type = bool;
-            union ud_t {
-                f16_t _d;
-                uint16_t _u;
-            };
+        template <std::size_t _N>
+        struct vec_func_traits_f16 : public func_traits<f16_t, int16_t> {
+            using vf_type = vec<f16_t, _N>;
+            using vmf_type = typename vf_type::mask_type;
+            using vi_type = vec<int16_t, _N>;
+            using vu_type = vec<uint16_t, _N>;
+            using vmi_type = typename vi_type::mask_type;
 
-            static constexpr int16_t bias() { return 15; }
-            static constexpr int16_t e_max() { return 15; }
-            static constexpr int16_t e_min() { return -14; }
-            static constexpr int16_t e_mask() { return 0x1f; }
-            static constexpr int16_t bits() { return 10; }
-            static constexpr int16_t vec_len() { return 1; }
+            using vdf_type = d_real<vf_type>;
 
-            static f16_constexpr f16_t pinf() {
-                return std::numeric_limits<vf_type>::infinity();
-            }
-            static f16_constexpr f16_t ninf() {
-                return -std::numeric_limits<vf_type>::infinity();
-            }
-            static f16_t_constexpr f16_t nan() {
-                return std::numeric_limits<vf_type>::quiet_NaN();
-            }
+            using vhf_traits = func_traits<vec<float, _N>,
+                                           vec<int32_t, _N> >;
+
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {
-                return mi;
+                return as<vmf_type>(mi);
             }
             static
             vmi_type vmf_to_vmi(const vmf_type& mf) {
-                return mf;
+                return as<vmi_type>(mf);
             }
 
             static
@@ -99,82 +86,85 @@ namespace cftal {
 
             static
             vi_type sel_vi(const vmi_type& msk,
-                        const vi_type& t, const vi_type& f) {
-                return msk ? t : f;
+                           const vi_type& t, const vi_type& f) {
+                return select(msk, t, f);
             }
             static
             vi_type sel_val_or_zero_vi(const vmi_type& msk,
-                                    const vi_type& t) {
-                return msk ? t : vi_type(0);
+                                       const vi_type& t) {
+                return select_val_or_zero(msk, t);
             }
             static
             vi_type sel_zero_or_val_vi(const vmi_type& msk,
-                                    const vi_type& f) {
-                return msk ? vi_type(0) : f;
+                                       const vi_type& f) {
+                return select_zero_or_val(msk, f);
             }
-
             static
             vf_type sel(const vmf_type& msk,
                         const vf_type& t, const vf_type& f) {
-                return msk ? t : f;
+                return select(msk, t, f);
             }
             static
             vf_type sel_val_or_zero(const vmf_type& msk,
                                     const vf_type& t) {
-                return msk ? t : vf_type(0);
+                return select_val_or_zero(msk, t);
             }
+            static
             vf_type sel_zero_or_val(const vmf_type& msk,
                                     const vf_type& f) {
-                return msk ? vf_type(0) : f;
+                return select_zero_or_val(msk, f);
             }
             static
             vf_type insert_exp(const vi_type& e) {
-                ud_t t;
-                t._u = uint16_t(e) << bits();
-                return t._d;
+                vi_type ep(e << 23);
+                return as<vf_type>(ep);
             }
+
             static
             vi_type extract_exp(const vf_type& d) {
-                ud_t t;
-                t._d = d;
-                return (t._u >> bits()) & e_mask();
+                const vu_type msk(exp_f16_msk::v.u16());
+                vu_type i=as_int(d);
+                vu_type e(i & msk);
+                e >>= 10;
+                return e;
             }
+
             static
             vf_type cvt_i_to_f(const vi_type& i) {
-                return static_cast<vf_type>(i);
+                return cvt<vf_type>(i);
             }
-            // including rounding to nearest.
+
             static
             vi_type cvt_f_to_i(const vf_type& f) {
-                return f < 0 ?
-                    static_cast<vi_type>(f - 0.5_f16) :
-                    static_cast<vi_type>(f + 0.5_f16);
+                return cvt<vi_type>(f);
             }
+
             // including rounding towards zero
             static
             vi_type cvt_rz_f_to_i(const vf_type& f) {
-                return static_cast<vi_type>(f);
+                return cvt_rz<vi_type>(f);
             }
 
             static
             vi_type as_int(const vf_type& f) {
-                ud_t t;
-                t._d = f;
-                return t._u;
+                return as<vi_type>(f);
             }
 
             static
             vf_type as_float(const vi_type& i) {
-                ud_t t;
-                t._u = i;
-                return t._d;
+                return as<vf_type>(i);
             }
+
         };
+
+        template <std::size_t _N>
+        struct func_traits<vec<f16_t, _N>, vec<int16_t, _N> >
+            : public vec_func_traits_f16<_N> {};
+
     }
 }
 
-
-// Local Variables:
+// Local variables:
 // mode: c++
 // end:
 #endif
