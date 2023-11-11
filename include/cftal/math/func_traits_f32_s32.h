@@ -141,19 +141,19 @@ namespace cftal {
             }
             static
             vf_type cvt_i_to_f(const vi_type& i) {
-                return vf_type(i);
+                return static_cast<vf_type>(i);
             }
             // including rounding to nearest.
             static
             vi_type cvt_f_to_i(const vf_type& f) {
                 return f < 0 ?
-                           (vi_type)(f - 0.5) :
-                    (vi_type)(f + 0.5);
+                    static_cast<vi_type>(f - 0.5) :
+                    static_cast<vi_type>(f + 0.5);
             }
             // including rounding towards zero
             static
             vi_type cvt_rz_f_to_i(const vf_type& f) {
-                return (vi_type)f;
+                return static_cast<vi_type>(f);
             }
 
             static
