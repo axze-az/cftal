@@ -1515,7 +1515,7 @@ namespace cftal {
 #endif
 
 #if defined (__AVX2__)
-        // template for vgatherwph
+        // template for vgatherwph, using int16_t indices
         template <class _T, class _I>
         struct vgatherwph {
             template <std::size_t _SCALE>
@@ -1551,6 +1551,44 @@ namespace cftal {
             v(__m256i src, const uint16_t* base,
               __m256i idx, __m256i msk);
         };
+
+        // template for vgatheruwph, using uint16_t indices
+        template <class _T, class _I>
+        struct vgatheruwph {
+            template <std::size_t _SCALE>
+            static _T
+            v(const uint16_t* base, const _I& idx);
+
+            template <std::size_t _SCALE>
+            static _T
+            v(const _T& src, const float* base,
+              const _I& idx, const _T& msk);
+        };
+
+        template <>
+        struct vgatheruwph<__m128i, __m128i> {
+            template <std::size_t _SCALE>
+            static __m128i
+            v(const uint16_t* base, __m128i idx);
+
+            template <std::size_t _SCALE>
+            static __m128i
+            v(__m128i src, const uint16_t* base,
+              __m128i idx, __m128i msk);
+        };
+
+        template <>
+        struct vgatheruwph<__m256i, __m256i> {
+            template <std::size_t _SCALE>
+            static __m256i
+            v(const uint16_t* base, __m256i idx);
+
+            template <std::size_t _SCALE>
+            static __m256i
+            v(__m256i src, const uint16_t* base,
+              __m256i idx, __m256i msk);
+        };
+
 #endif
 
 #if defined (__AVX__)
@@ -2887,6 +2925,72 @@ inline
 __m256i
 cftal::x86::
 vgatherwph<__m256i, __m256i>::
+v(__m256i src, const uint16_t* base, __m256i idx, __m256i msk)
+{
+    __m256i r=v<_SCALE>(base, idx);
+    r=select_u16(msk, r, src);
+    return r;
+}
+
+template <std::size_t _SCALE>
+inline
+__m128i
+cftal::x86::
+vgatheruwph<__m128i, __m128i>::
+v(const uint16_t* base, __m128i idx)
+{
+    __m256i i32=_mm256_cvtepu16_epi32(idx);
+    __m256 f=vgatherdps<__m256, __m256i>::v<_SCALE>(base, i32);
+    __m256i fi=_mm256_castps_si256(f);
+    const __m256i si=_mm256_setr_epi8(
+        // low half^
+        0, 1, 4, 5, 8, 9, 12, 13,
+        -1, -1, -1, -1, -1, -1, -1, -1,
+        // high half:
+        -1, -1, -1, -1, -1, -1, -1, -1,
+        0, 1, 4, 5, 8, 9, 12, 13
+    );
+    fi=_mm256_shuffle_epi8(fi, si);
+    __m128i fih=_mm256_extractf128_si256(fi, 1);
+    __m128i fil=_mm256_castsi256_si128(fi);
+    __m128i r=_mm_or_si128(fil, fih);
+    return r;
+}
+
+template <std::size_t _SCALE>
+inline
+__m128i
+cftal::x86::
+vgatheruwph<__m128i, __m128i>::
+v(__m128i src, const uint16_t* base, __m128i idx, __m128i msk)
+{
+    __m128i r=v<_SCALE>(base, idx);
+    r=select_u16(msk, r, src);
+    return r;
+}
+
+
+template <std::size_t _SCALE>
+inline
+__m256i
+cftal::x86::
+vgatheruwph<__m256i, __m256i>::
+v(const uint16_t* base, __m256i idx)
+{
+    __m128i idxh=_mm256_extractf128_si256(idx, 1);
+    __m128i idxl=_mm256_castsi256_si128(idx);
+    __m128i rh=vgatheruwph<__m128i, __m128i>::v<_SCALE>(base, idxh);
+    __m128i rl=vgatheruwph<__m128i, __m128i>::v<_SCALE>(base, idxl);
+    __m256i r=_mm256_castsi128_si256(rl);
+    r = _mm256_insertf128_si256(r, rh, 1);
+    return r;
+}
+
+template <std::size_t _SCALE>
+inline
+__m256i
+cftal::x86::
+vgatheruwph<__m256i, __m256i>::
 v(__m256i src, const uint16_t* base, __m256i idx, __m256i msk)
 {
     __m256i r=v<_SCALE>(base, idx);
