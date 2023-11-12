@@ -2874,7 +2874,8 @@ vgatherwph<__m128i, __m128i>::
 v(const uint16_t* base, __m128i idx)
 {
     __m256i i32=_mm256_cvtepi16_epi32(idx);
-    __m256 f=vgatherdps<__m256, __m256i>::v<_SCALE>(base, i32);
+    const float* pf=reinterpret_cast<const float*>(pf);
+    __m256 f=vgatherdps<__m256, __m256i>::v<_SCALE>(pf, i32);
     __m256i fi=_mm256_castps_si256(f);
     const __m256i si=_mm256_setr_epi8(
         // low half^
