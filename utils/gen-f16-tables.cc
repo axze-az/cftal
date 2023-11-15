@@ -17,7 +17,9 @@
 //
 #include <cftal/config.h>
 #include <cftal/test/call_mpfr.h>
+#include <string>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 
 namespace cftal {
@@ -53,26 +55,35 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
             const std::string& tblname,
             uint32_t b, uint32_t e)
 {
-    uint32_t s=e-b;
-    std::cout << "const cftal::uint16_t " << tblname
-              << '[' << s << "] = {\n";
-    char fc=std::cout.fill();
-    std::cout << std::scientific << std::setprecision(8)
-              << std::hex;
+    uint32_t size=e-b;
+
+    std::string fname=tblname + ".cc";
+    std::ofstream s(fname.c_str(), std::ios::out|std::ios::trunc);
+
+    s << "const cftal::uint16_t " << tblname
+              << '[' << size << "] = {\n";
+    char fc=s.fill();
+    s << std::scientific << std::setprecision(8)
+      << std::hex;
     for (; b!=e; ++b) {
         uint16_t bs=b;
         f16_t x=as<f16_t>(bs);
         f16_t v=test::call_mpfr::func(x, f);
+        if (isnan(x) && isnan(v)) {
+            f16_t n=copysign(std::numeric_limits<f16_t>::quiet_NaN(),
+                             x);
+            v=n;
+        }
         uint16_t vt=as<uint16_t>(v);
-        std::cout << "    // " << x << " " << v << '\n'
-                  << "    0x" << std::setw(4) << std::setfill('0')
-                  << vt << std::setfill(fc);
+        s << "    // 0x" << std::setw(4) << std::setfill('0') << bs
+          << " " << x << " " << v << '\n'
+          << "    0x" << std::setw(4) << std::setfill('0')
+          << vt << std::setfill(fc);
         if (b+1<e)
-            std::cout << ',';
-        std::cout << '\n';
+            s << ',';
+        s << '\n';
     }
-    std::cout << "};\n" << std::dec;
-
+    s << "};\n\n" << std::dec;
 }
 
 void
@@ -95,11 +106,21 @@ void
 cftal::utils::
 gen_f16_tbls()
 {
+    gen_f16_tbl_pos(mpfr_sqrt, "f16_sqrt");
+    gen_f16_tbl_pos(mpfr_cbrt, "f16_cbrt");
+
     gen_f16_tbl_pos(mpfr_sin, "f16_sin");
-    std::cout << "\n";
     gen_f16_tbl_pos(mpfr_cos, "f16_cos");
-    std::cout << "\n";
     gen_f16_tbl_pos(mpfr_tan, "f16_tan");
+
+
+    gen_f16_tbl_pos(mpfr_j0, "f16_j0");
+    gen_f16_tbl_pos(mpfr_j1, "f16_j1");
+    gen_f16_tbl_pos(mpfr_y0, "f16_y0");
+    gen_f16_tbl_pos(mpfr_y1, "f16_y1");
+
+    gen_f16_tbl_full(mpfr_gamma, "f16_tgamma");
+
 }
 
 int main()
