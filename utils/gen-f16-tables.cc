@@ -65,8 +65,8 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
     char fc=s.fill();
     s << std::scientific << std::setprecision(8)
       << std::hex;
-    for (; b!=e; ++b) {
-        uint16_t bs=b;
+    for (uint32_t o=0; b!=e; ++b, ++o) {
+        int16_t bs=b;
         f16_t x=as<f16_t>(bs);
         f16_t v=test::call_mpfr::func(x, f);
         if (isnan(x) && isnan(v)) {
@@ -75,8 +75,10 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
             v=n;
         }
         uint16_t vt=as<uint16_t>(v);
-        s << "    // 0x" << std::setw(4) << std::setfill('0') << bs
-          << " " << x << " " << v << '\n'
+        s << "    // " << std::setw(6) << std::dec << bs << std::hex
+          << " " << x << " " << v
+          << " offs: 0x" << std::setw(4) << std::setfill('0')
+          << o << std::setfill(fc) << '\n'
           << "    0x" << std::setw(4) << std::setfill('0')
           << vt << std::setfill(fc);
         if (b+1<e)
@@ -91,7 +93,7 @@ cftal::utils::
 gen_f16_tbl_full(test::call_mpfr::f1_t f,
                  const std::string& tblname)
 {
-    gen_f16_tbl(f, tblname, 0x0000, 0x10000);
+    gen_f16_tbl(f, tblname, -32768, 0x8000);
 }
 
 void
