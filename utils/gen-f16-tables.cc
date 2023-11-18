@@ -57,16 +57,23 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
 {
     uint32_t size=e-b;
 
-    std::string fname=tblname + ".cc";
+    std::string class_name=tblname + "_data";
+    std::string fname=class_name + ".cc";
+    std::string hname=class_name + ".h";
     std::ofstream s(fname.c_str(), std::ios::out|std::ios::trunc);
 
-    s << "const cftal::uint16_t " << tblname
-              << '[' << size << "] = {\n";
+    s << "#include \"cftal/math/" << hname << "\"\n\n"
+      << "const cftal::uint16_t\n"
+      << "cftal::math::" << class_name << "::_tbl"
+      << '[' << size << "] = {\n";
     char fc=s.fill();
     s << std::scientific << std::setprecision(8)
       << std::hex;
+    uint32_t zero_offset=0;
     for (uint32_t o=0; b!=e; ++b, ++o) {
         int16_t bs=b;
+        if (bs==0)
+            zero_offset=o;
         f16_t x=as<f16_t>(bs);
         f16_t v=test::call_mpfr::func(x, f);
         if (isnan(x) && isnan(v)) {
@@ -86,6 +93,30 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
         s << '\n';
     }
     s << "};\n\n" << std::dec;
+
+    std::ofstream h(hname.c_str(), std::ios::out|std::ios::trunc);
+    std::string guard="__CFTAL_MATH_" + class_name;
+    std::transform(std::begin(guard), std::end(guard),
+                   std::begin(guard),
+                   [](unsigned char c){ return std::toupper(c); });
+    h << "#if !defined (" << guard << ")\n"
+      << "#define " << guard << " 1\n\n"
+      << "#include <cftal/config.h>\n"
+      << "#include <cftal/types.h>\n"
+      << "#include <cftal/f16_t.h>\n\n"
+      << "namespace cftal {\n"
+      << "    namespace math {\n\n"
+      << "        struct " << class_name << " {\n"
+      << "            constexpr const uint32_t zero_offset="
+      << zero_offset << ";\n"
+      << "            static const uint16_t _tbl[" <<  size << "];\n"
+      << "            static constexpr const f16_t* tbl() {\n"
+      << "                return reinterpret_cast<f16_t*>(_tbl);\n"
+      << "            }\n"
+      << "        };\n\n"
+      << "    }\n"
+      << "}\n\n"
+      << "#endif // " << guard << "\n";
 }
 
 void
