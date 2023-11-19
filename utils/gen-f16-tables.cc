@@ -26,43 +26,82 @@ namespace cftal {
 
     namespace utils {
 
+        extern const
+        std::string header_name;
+
+        extern const
+        std::string header_guard;
+
+        void
+        prepare_header(std::ostream& h);
+
+        void
+        finalize_header(std::ostream& h);
+
         // generate a table for f with f16 numbers between
         // l and high
         void
         gen_f16_tbl(test::call_mpfr::f1_t f,
-                    const std::string& tblname,
+                    const std::string& tblname, std::ostream& h,
                     uint32_t b, uint32_t e);
 
         // generate a table for f with all f16 numbers
         void
         gen_f16_tbl_full(test::call_mpfr::f1_t f,
-                         const std::string& tblname);
+                         const std::string& tblname, std::ostream& h);
 
         // generate a table for f with all positive f16 numbers
         void
         gen_f16_tbl_pos(test::call_mpfr::f1_t f,
-                        const std::string& tblname);
+                        const std::string& tblname, std::ostream& h);
 
         void
         gen_f16_tbls();
 
     }
 }
+const std::string
+cftal::utils::header_name="f16_tables.h";
+
+const std::string
+cftal::utils::header_guard="__CFTAL_MATH_F16_TABLES_H__";
+
+void
+cftal::utils::
+prepare_header(std::ostream& h)
+{
+    h << "#if !defined (" << header_guard << ")\n"
+      << "#define " << header_guard << " 1\n\n"
+      << "#include <cftal/config.h>\n"
+      << "#include <cftal/types.h>\n"
+      << "#include <cftal/f16_t.h>\n\n"
+      << "namespace cftal {\n"
+      << "    namespace math {\n\n";
+}
+
+void
+cftal::utils::
+finalize_header(std::ostream& h)
+{
+    h << "    }\n"
+      << "}\n\n"
+      << "#endif // " << header_guard << "\n";
+}
+
 
 void
 cftal::utils::
 gen_f16_tbl(test::call_mpfr::f1_t f,
-            const std::string& tblname,
+            const std::string& tblname, std::ostream& h,
             uint32_t b, uint32_t e)
 {
     uint32_t size=e-b;
 
     std::string class_name=tblname + "_data";
     std::string fname=class_name + ".cc";
-    std::string hname=class_name + ".h";
     std::ofstream s(fname.c_str(), std::ios::out|std::ios::trunc);
 
-    s << "#include \"cftal/math/" << hname << "\"\n\n"
+    s << "#include \"cftal/math/" << header_name << "\"\n\n"
       << "const cftal::uint16_t\n"
       << "cftal::math::" << class_name << "::_tbl"
       << '[' << size << "] = {\n";
@@ -94,66 +133,56 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
     }
     s << "};\n\n" << std::dec;
 
-    std::ofstream h(hname.c_str(), std::ios::out|std::ios::trunc);
-    std::string guard="__CFTAL_MATH_" + class_name;
-    std::transform(std::begin(guard), std::end(guard),
-                   std::begin(guard),
-                   [](unsigned char c){ return std::toupper(c); });
-    h << "#if !defined (" << guard << ")\n"
-      << "#define " << guard << " 1\n\n"
-      << "#include <cftal/config.h>\n"
-      << "#include <cftal/types.h>\n"
-      << "#include <cftal/f16_t.h>\n\n"
-      << "namespace cftal {\n"
-      << "    namespace math {\n\n"
-      << "        struct " << class_name << " {\n"
+    h << "        struct " << class_name << " {\n"
       << "            constexpr const uint32_t zero_offset="
       << zero_offset << ";\n"
       << "            static const uint16_t _tbl[" <<  size << "];\n"
       << "            static constexpr const f16_t* tbl() {\n"
       << "                return reinterpret_cast<f16_t*>(_tbl);\n"
       << "            }\n"
-      << "        };\n\n"
-      << "    }\n"
-      << "}\n\n"
-      << "#endif // " << guard << "\n";
+      << "        };\n\n";
 }
 
 void
 cftal::utils::
 gen_f16_tbl_full(test::call_mpfr::f1_t f,
-                 const std::string& tblname)
+                 const std::string& tblname, std::ostream& h)
 {
-    gen_f16_tbl(f, tblname, -32768, 0x8000);
+    gen_f16_tbl(f, tblname, h, -32768, 0x8000);
 }
 
 void
 cftal::utils::
 gen_f16_tbl_pos(test::call_mpfr::f1_t f,
-                const std::string& tblname)
+                const std::string& tblname, std::ostream& h)
 {
-    gen_f16_tbl(f, tblname, 0x0000, 0x8000);
+    gen_f16_tbl(f, tblname, h, 0x0000, 0x8000);
 }
 
 void
 cftal::utils::
 gen_f16_tbls()
 {
-    gen_f16_tbl_pos(mpfr_sqrt, "f16_sqrt");
-    gen_f16_tbl_pos(mpfr_cbrt, "f16_cbrt");
+    std::ofstream h(header_name.c_str(), std::ios::out|std::ios::trunc);
 
-    gen_f16_tbl_pos(mpfr_sin, "f16_sin");
-    gen_f16_tbl_pos(mpfr_cos, "f16_cos");
-    gen_f16_tbl_pos(mpfr_tan, "f16_tan");
+    prepare_header(h);
+
+    gen_f16_tbl_pos(mpfr_sqrt, "f16_sqrt", h);
+    gen_f16_tbl_pos(mpfr_cbrt, "f16_cbrt", h);
+
+    gen_f16_tbl_pos(mpfr_sin, "f16_sin", h);
+    gen_f16_tbl_pos(mpfr_cos, "f16_cos", h);
+    gen_f16_tbl_pos(mpfr_tan, "f16_tan", h);
 
 
-    gen_f16_tbl_pos(mpfr_j0, "f16_j0");
-    gen_f16_tbl_pos(mpfr_j1, "f16_j1");
-    gen_f16_tbl_pos(mpfr_y0, "f16_y0");
-    gen_f16_tbl_pos(mpfr_y1, "f16_y1");
+    gen_f16_tbl_pos(mpfr_j0, "f16_j0", h);
+    gen_f16_tbl_pos(mpfr_j1, "f16_j1", h);
+    gen_f16_tbl_pos(mpfr_y0, "f16_y0", h);
+    gen_f16_tbl_pos(mpfr_y1, "f16_y1", h);
 
-    gen_f16_tbl_full(mpfr_gamma, "f16_tgamma");
+    gen_f16_tbl_full(mpfr_gamma, "f16_tgamma", h);
 
+    finalize_header(h);
 }
 
 int main()
