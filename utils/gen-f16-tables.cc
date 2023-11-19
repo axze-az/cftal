@@ -102,9 +102,9 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
     std::ofstream s(fname.c_str(), std::ios::out|std::ios::trunc);
 
     s << "#include \"cftal/math/" << header_name << "\"\n\n"
-      << "const cftal::uint16_t\n"
+      << "alignas(64) const cftal::uint16_t\n"
       << "cftal::math::" << class_name << "::_tbl"
-      << '[' << size << "] = {\n";
+      << '[' << size << "+2] = {\n";
     char fc=s.fill();
     s << std::scientific << std::setprecision(8)
       << std::hex;
@@ -136,9 +136,13 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
     h << "        struct " << class_name << " {\n"
       << "            constexpr const uint32_t zero_offset="
       << zero_offset << ";\n"
-      << "            static const uint16_t _tbl[" <<  size << "];\n"
+      << "            alignas(64) static const uint16_t _tbl["
+      <<  size << "+2];\n\n"
       << "            static constexpr const f16_t* tbl() {\n"
-      << "                return reinterpret_cast<f16_t*>(_tbl);\n"
+      << "                return reinterpret_cast<const f16_t*>(_tbl);\n"
+      << "            }\n\n"
+      << "            static constexpr const f16_t* tbl_zero() {\n"
+      << "                return tbl() + zero_offset;\n"
       << "            }\n"
       << "        };\n\n";
 }
