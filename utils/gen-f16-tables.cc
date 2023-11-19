@@ -169,11 +169,16 @@ gen_f16_tbls()
 
     gen_f16_tbl_pos(mpfr_sqrt, "f16_sqrt", h);
     gen_f16_tbl_pos(mpfr_cbrt, "f16_cbrt", h);
+    gen_f16_tbl_pos(mpfr_rec_sqrt, "f16_rsqrt", h);
+    gen_f16_tbl_pos(test::mpfr_ext::rcbrt, "f16_rcbrt", h);
+
+    gen_f16_tbl_pos(mpfr_log, "f16_log", h);
+    gen_f16_tbl_pos(mpfr_log2, "f16_log2", h);
+    gen_f16_tbl_pos(mpfr_log10, "f16_log10", h);
 
     gen_f16_tbl_pos(mpfr_sin, "f16_sin", h);
     gen_f16_tbl_pos(mpfr_cos, "f16_cos", h);
     gen_f16_tbl_pos(mpfr_tan, "f16_tan", h);
-
 
     gen_f16_tbl_pos(mpfr_j0, "f16_j0", h);
     gen_f16_tbl_pos(mpfr_j1, "f16_j1", h);
