@@ -22,6 +22,7 @@
 #include <cftal/vec.h>
 #include <cftal/vec_cvt_f16.h>
 #include <cftal/f16_t.h>
+#include <cftal/vec_lookup.h>
 
 #if !defined (__AVX512F__) || (__CFTAL_CFG_ENABLE_AVX512__==0)
 
@@ -723,6 +724,54 @@ namespace cftal {
             }
         };
     } // end namespace op
+
+#if defined (__AVX2__)
+    template <>
+    class variable_vec_lookup_table<f16_t, int16_t, 4> {
+        vec<int16_t, 4> _idx;
+    public:
+        variable_vec_lookup_table(const vec<int16_t, 4>& idx) : _idx(idx) {}
+        vec<f16_t, 4>
+        from(const f16_t* tbl) const {
+            uint64_t i64=as<uint64_t>(_idx);
+            __m128i i=_mm_cvtsi64_si128(i64);
+            const uint16_t* p=reinterpret_cast<const uint16_t*>(tbl);
+            // TODO: add a method gathering only 4 values to
+            // vgatherwph<__m128i, __m128i>
+            __m128i r0=x86::vgatherwph<__m128i, __m128i>::v<2>(p, i);
+            uint64_t r1=_mm_cvtsi128_si64(r0);
+            vec<mf_f16_t, 4> r2=as<vec<mf_f16_t, 4> >(r1);
+            return vec<f16_t, 4>::cvt_from_rep(r2);
+        }
+    };
+
+    template <>
+    class variable_vec_lookup_table<f16_t, int16_t, 8> {
+        vec<int16_t, 8> _idx;
+    public:
+        variable_vec_lookup_table(const vec<int16_t, 8>& idx) : _idx(idx) {}
+        vec<f16_t, 8>
+        from(const f16_t* tbl) const {
+            const uint16_t* p=reinterpret_cast<const uint16_t*>(tbl);
+            __m128i r=x86::vgatherwph<__m128i, __m128i>::v<2>(p, _idx());
+            return vec<f16_t, 8>::cvt_from_rep(r);
+        }
+    };
+
+    template <>
+    class variable_vec_lookup_table<f16_t, int16_t, 16> {
+        vec<int16_t, 16> _idx;
+    public:
+        variable_vec_lookup_table(const vec<int16_t, 16>& idx) : _idx(idx) {}
+        vec<f16_t, 16>
+        from(const f16_t* tbl) const {
+            const uint16_t* p=reinterpret_cast<const uint16_t*>(tbl);
+            __m256i r=x86::vgatherwph<__m256i, __m256i>::v<2>(p, _idx());
+            return vec<f16_t, 16>::cvt_from_rep(r);
+        }
+    };
+
+#endif
 
     // vector math functions for vxf16
 
