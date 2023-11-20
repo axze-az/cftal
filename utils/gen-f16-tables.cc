@@ -27,6 +27,9 @@ namespace cftal {
     namespace utils {
 
         extern const
+        std::string copyright;
+
+        extern const
         std::string header_name;
 
         extern const
@@ -60,6 +63,27 @@ namespace cftal {
 
     }
 }
+
+const std::string
+cftal::utils::copyright=
+"//\n"
+"// Copyright (C) 2010-2023 Axel Zeuner\n"
+"//\n"
+"// This library is free software; you can redistribute it and/or\n"
+"// modify it under the terms of the GNU Lesser General Public\n"
+"// License as published by the Free Software Foundation; either\n"
+"// version 2.1 of the License, or (at your option) any later version.\n"
+"//\n"
+"// This library is distributed in the hope that it will be useful,\n"
+"// but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n"
+"// Lesser General Public License for more details.\n"
+"//\n"
+"// You should have received a copy of the GNU Lesser General Public\n"
+"// License along with this library; if not, write to the Free Software\n"
+"// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA\n"
+"//\n";
+
 const std::string
 cftal::utils::header_name="f16_tables.h";
 
@@ -70,7 +94,8 @@ void
 cftal::utils::
 prepare_header(std::ostream& h)
 {
-    h << "#if !defined (" << header_guard << ")\n"
+    h << copyright
+      << "#if !defined (" << header_guard << ")\n"
       << "#define " << header_guard << " 1\n\n"
       << "#include <cftal/config.h>\n"
       << "#include <cftal/types.h>\n"
@@ -88,7 +113,6 @@ finalize_header(std::ostream& h)
       << "#endif // " << header_guard << "\n";
 }
 
-
 void
 cftal::utils::
 gen_f16_tbl(test::call_mpfr::f1_t f,
@@ -101,7 +125,8 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
     std::string fname=class_name + ".cc";
     std::ofstream s(fname.c_str(), std::ios::out|std::ios::trunc);
 
-    s << "#include \"cftal/math/" << header_name << "\"\n\n"
+    s << copyright
+      << "#include \"cftal/math/" << header_name << "\"\n\n"
       << "alignas(64) const cftal::uint16_t\n"
       << "cftal::math::" << class_name << "::_tbl"
       << '[' << size << "+2] = {\n";
