@@ -152,14 +152,14 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
           << o << std::setfill(fc) << '\n'
           << "    0x" << std::setw(4) << std::setfill('0')
           << vt << std::setfill(fc);
-        if (b+1<e)
+        if (b+1!=e)
             s << ',';
         s << '\n';
     }
     s << "};\n\n" << std::dec;
 
     h << "        struct " << class_name << " {\n"
-      << "            constexpr const uint32_t zero_offset="
+      << "            static constexpr const uint32_t zero_offset="
       << zero_offset << ";\n"
       << "            alignas(64) static const uint16_t _tbl["
       <<  size << "+2];\n\n"

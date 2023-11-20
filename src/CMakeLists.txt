@@ -67,6 +67,22 @@ set (CSRCS
     v16f32_ef.cc
     v16f32_sf.cc
     v16f32_hf.cc
+    # f16 data
+    f16_cbrt_data.cc
+    f16_cos_data.cc
+    f16_j0_data.cc
+    f16_j1_data.cc
+    f16_log10_data.cc
+    f16_log2_data.cc
+    f16_log_data.cc
+    f16_rcbrt_data.cc
+    f16_rsqrt_data.cc
+    f16_sin_data.cc
+    f16_sqrt_data.cc
+    f16_tan_data.cc
+    f16_tgamma_data.cc
+    f16_y0_data.cc
+    f16_y1_data.cc
 )
 
 # only for ides
