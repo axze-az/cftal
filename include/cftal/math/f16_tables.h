@@ -29,11 +29,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -42,11 +42,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -55,11 +55,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -68,11 +68,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -81,11 +81,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -94,11 +94,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -107,11 +107,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -120,11 +120,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -133,11 +133,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -146,11 +146,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -159,11 +159,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -172,11 +172,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -185,11 +185,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -198,11 +198,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=0;
             alignas(64) static const uint16_t _tbl[32768+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };
@@ -211,11 +211,11 @@ namespace cftal {
             static constexpr const uint32_t zero_offset=32768;
             alignas(64) static const uint16_t _tbl[65536+2];
 
-            static constexpr const f16_t* tbl() {
+            static const f16_t* tbl() {
                 return reinterpret_cast<const f16_t*>(_tbl);
             }
 
-            static constexpr const f16_t* tbl_zero() {
+            static const f16_t* tbl_zero() {
                 return tbl() + zero_offset;
             }
         };

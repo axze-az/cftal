@@ -163,10 +163,10 @@ gen_f16_tbl(test::call_mpfr::f1_t f,
       << zero_offset << ";\n"
       << "            alignas(64) static const uint16_t _tbl["
       <<  size << "+2];\n\n"
-      << "            static constexpr const f16_t* tbl() {\n"
+      << "            static const f16_t* tbl() {\n"
       << "                return reinterpret_cast<const f16_t*>(_tbl);\n"
       << "            }\n\n"
-      << "            static constexpr const f16_t* tbl_zero() {\n"
+      << "            static const f16_t* tbl_zero() {\n"
       << "                return tbl() + zero_offset;\n"
       << "            }\n"
       << "        };\n\n";
