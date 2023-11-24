@@ -210,6 +210,15 @@ namespace cftal {
     vec<f16_t, _N>
     abs(const vec<f16_t, _N>& a);
 
+    // sigbnit
+    vec<f16_t, 1>::mask_type
+    signbit(const vec<f16_t, 1>& a);
+
+    // signbit
+    template <size_t _N>
+    typename vec<f16_t, _N>::mask_type
+    signbit(const vec<f16_t, _N>& a);
+
     // max
     vec<f16_t, 1>
     max(const vec<f16_t, 1>& a, const vec<f16_t, 1>& b);
@@ -920,13 +929,6 @@ cftal::isinf(const vec<f16_t, _N>& a)
     return m_t::cvt_from_rep(v_is_inf);
 }
 
-inline
-cftal::vec<cftal::f16_t, 1>
-cftal::abs(const vec<f16_t, 1>& a)
-{
-    vec<mf_f16_t, 1> t= a() & not_sign_f16_msk::v.u16();
-    return vec<f16_t, 1>::cvt_from_rep(t);
-}
 
 inline
 cftal::vec<cftal::f16_t, 1>
@@ -954,12 +956,40 @@ cftal::copysign(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y)
     return vec<f16_t, _N>::cvt_from_rep(r);
 }
 
+inline
+cftal::vec<cftal::f16_t, 1>
+cftal::abs(const vec<f16_t, 1>& a)
+{
+    vec<mf_f16_t, 1> t= a() & not_sign_f16_msk::v.u16();
+    return vec<f16_t, 1>::cvt_from_rep(t);
+}
+
 template <std::size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::abs(const vec<f16_t, _N>& a)
 {
     vec<mf_f16_t, _N> t= a() & not_sign_f16_msk::v.u16();
     return vec<f16_t, _N>::cvt_from_rep(t);
+}
+
+inline
+cftal::vec<cftal::f16_t, 1>::mask_type
+cftal::signbit(const vec<f16_t, 1>& a)
+{
+    const auto msk=sign_f16_msk::v.u16();
+    vec<mf_f16_t, 1> sm= a() & msk;
+    vec<mf_f16_t, 1>::mask_type t= sm == msk;
+    return vec<f16_t, 1>::mask_type::cvt_from_rep(t);
+}
+
+template <std::size_t _N>
+typename cftal::vec<cftal::f16_t, _N>::mask_type
+cftal::signbit(const vec<f16_t, _N>& a)
+{
+    const auto msk=sign_f16_msk::v.u16();
+    vec<mf_f16_t, _N> sm= a() & msk;
+    typename vec<mf_f16_t, _N>::mask_type t= sm == msk;
+    return typename vec<f16_t, _N>::mask_type::cvt_from_rep(t);
 }
 
 inline
