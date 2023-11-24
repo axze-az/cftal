@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/cvt_f16.h>
 #include <cftal/constants.h>
+#include <cftal/type_traits.h>
 #define __USE_STDCPP_FLOAT16_T__ 0
 #if (__USE_STDCPP_FLOAT16_T__ > 0)
 #if __has_include(<stdfloat>)
@@ -66,6 +67,12 @@ namespace cftal {
 
         f16_t(float v) : _f(cvt_f32_to_f16(v)) {}
         explicit operator float() const { return cvt_f16_to_f32(_f); }
+        explicit operator short int() const {
+            return static_cast<short int>(cvt_f16_to_f32(_f));
+        }
+        explicit operator int() const {
+            return static_cast<int>(cvt_f16_to_f32(_f));
+        }
 
         f16_t()=default;
         f16_t(const f16_t&)=default;
