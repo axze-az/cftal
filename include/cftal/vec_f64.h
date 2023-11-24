@@ -56,6 +56,10 @@ namespace cftal {
     andnot(const vec<double, _N>& a, const vec<double, _N>& b);
 
     template <std::size_t _N>
+    typename vec<double, _N>::mask_type
+    signbit(const vec<double, _N>& v);
+
+    template <std::size_t _N>
     vec<double, _N>
     copysign(const vec<double, _N>& x, const vec<double, _N>& y);
 
@@ -1210,6 +1214,18 @@ cftal::vec<double, _N>
 cftal::andnot(const vec<double, _N>& a, const vec<double, _N>& b)
 {
     return vec<double, _N>((~a) & b);
+}
+
+template <std::size_t _N>
+inline
+typename cftal::vec<double, _N>::mask_type
+cftal::signbit(const vec<double, _N>& x)
+{
+    using vf_type = vec<double, _N>;
+    using vi_type = vec<int64_t, _N>;
+    vi_type xi=as<vi_type>(x);
+    typename vi_type::mask_type ri= xi < vi_type(0);
+    return as<typename vf_type::mask_type>(ri);
 }
 
 template <std::size_t _N>
