@@ -406,6 +406,7 @@ sqrt(arg_t<vf_type> xc)
         make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(f16_sqrt_data::tbl_zero());
     y=copysign(y, xc);
+    y=_T::sel(y < 0, _T::nan(), y);
     return y;
 }
 
