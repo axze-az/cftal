@@ -761,6 +761,7 @@ namespace cftal {
     } // end namespace op
 
 #if defined (__AVX2__)
+#if 0
     template <>
     class variable_vec_lookup_table<f16_t, int16_t, 4> {
         vec<int16_t, 4> _idx;
@@ -779,7 +780,7 @@ namespace cftal {
             return vec<f16_t, 4>::cvt_from_rep(r2);
         }
     };
-
+#endif
     template <>
     class variable_vec_lookup_table<f16_t, int16_t, 8> {
         vec<int16_t, 8> _idx;

@@ -30,6 +30,17 @@ namespace cftal {
     vec<f16_t, 1>
     sqrt(arg_t<vec<f16_t, 1> > x);
 
+    vec<f16_t, 2>
+    sqrt(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 4>
+    sqrt(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 8>
+    sqrt(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 16>
+    sqrt(arg_t<vec<f16_t, 16> > x);
 
     using v1f16 = vec<f16_t, 1>;
     using v2f16 = vec<f16_t, 2>;
@@ -55,6 +66,43 @@ cftal::sqrt(arg_t<v1f16> x)
     using func_t = cftal::math::elem_func<f16_t, traits_t>;
     return func_t::sqrt(x);
 }
+
+__attribute__((__flatten__))
+cftal::v2f16
+cftal::sqrt(arg_t<v2f16> x)
+{
+    using traits_t = cftal::math::func_traits<v2f16, v2s16>;
+    using func_t = cftal::math::elem_func<f16_t, traits_t>;
+    return func_t::sqrt(x);
+}
+
+__attribute__((__flatten__))
+cftal::v4f16
+cftal::sqrt(arg_t<v4f16> x)
+{
+    using traits_t = cftal::math::func_traits<v4f16, v4s16>;
+    using func_t = cftal::math::elem_func<f16_t, traits_t>;
+    return func_t::sqrt(x);
+}
+
+__attribute__((__flatten__))
+cftal::v8f16
+cftal::sqrt(arg_t<v8f16> x)
+{
+    using traits_t = cftal::math::func_traits<v8f16, v8s16>;
+    using func_t = cftal::math::elem_func<f16_t, traits_t>;
+    return func_t::sqrt(x);
+}
+
+__attribute__((__flatten__))
+cftal::v16f16
+cftal::sqrt(arg_t<v16f16> x)
+{
+    using traits_t = cftal::math::func_traits<v16f16, v16s16>;
+    using func_t = cftal::math::elem_func<f16_t, traits_t>;
+    return func_t::sqrt(x);
+}
+
 
 int main(int argc, char** argv)
 {
