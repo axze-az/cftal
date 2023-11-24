@@ -112,11 +112,25 @@ namespace cftal {
     using v8f32 = vec<float, 8>;
     using v16f32= vec<float, 16>;
 
+    using v1s8= vec<int8_t, 1>;
+    using v1u8= vec<uint8_t, 1>;
+    using v2s8= vec<int8_t, 2>;
+    using v2u8= vec<uint8_t, 2>;
+    using v4s8= vec<int8_t, 4>;
+    using v4u8= vec<uint8_t, 4>;
+    using v8s8= vec<int8_t, 8>;
+    using v8u8= vec<uint8_t, 8>;
     using v16s8= vec<int8_t, 16>;
     using v16u8= vec<uint8_t, 16>;
     using v32s8= vec<int8_t, 32>;
     using v32u8= vec<uint8_t, 32>;
 
+    using v1s16 = vec<int16_t, 1>;
+    using v1u16 = vec<uint16_t, 1>;
+    using v2s16 = vec<int16_t, 2>;
+    using v2u16 = vec<uint16_t, 2>;
+    using v4s16 = vec<int16_t, 4>;
+    using v4u16 = vec<uint16_t, 4>;
     using v8s16 = vec<int16_t, 8>;
     using v8u16 = vec<uint16_t, 8>;
     using v16s16= vec<int16_t, 16>;
@@ -319,7 +333,7 @@ namespace cftal {
     template <typename _T>
     using preferred_index_type_t = typename preferred_index_type<_T>::type;
 
-    
+
     // helper function for even_elements, odd_elements: returns even
     // elements in low half, odd elements in high half
     template <typename _T>
