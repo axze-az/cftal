@@ -730,7 +730,7 @@ cftal::test::fpn_handle::operator f16_t() const
     int mpres=mpfr_set(t, _v, MPFR_RNDN);
     mpres=mpfr_subnormalize(t, mpres, MPFR_RNDN);
     float fr=mpfr_get_flt(t, MPFR_RNDN);
-    f16_t r(fr);
+    f16_t r=static_cast<f16_t>(fr);
     return r;
 }
 
@@ -740,12 +740,12 @@ cftal::test::fpn_handle::operator fp_expansion<f16_t, _N>() const
 {
     fp_expansion<f16_t, _N> r;
     fpn_handle t(*this);
-    f16_t ri=f16_t(t);
+    f16_t ri=static_cast<f16_t>(t);
     r[0] = ri;
     for (std::size_t i=1; i<_N; ++i) {
         fpn_handle ti(ri, prec());
         mpfr_sub(t(), t(), ti(), MPFR_RNDN);
-        ri=f16_t(t);
+        ri=static_cast<f16_t>(t);
         r[i] = ri;
     }
     return r;
