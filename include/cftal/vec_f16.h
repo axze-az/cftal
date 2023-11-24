@@ -976,20 +976,20 @@ inline
 cftal::vec<cftal::f16_t, 1>::mask_type
 cftal::signbit(const vec<f16_t, 1>& a)
 {
-    const auto msk=sign_f16_msk::v.u16();
-    vec<mf_f16_t, 1> sm= a() & msk;
-    vec<mf_f16_t, 1>::mask_type t= sm == msk;
-    return vec<f16_t, 1>::mask_type::cvt_from_rep(t);
+    const int16_t z(0);
+    vec<int16_t, 1> ai=as<vec<int16_t, 1> >(a);
+    vec<int16_t, 1>::mask_type r=ai < z;
+    return as<vec<f16_t, 1>::mask_type>(r);
 }
 
 template <std::size_t _N>
 typename cftal::vec<cftal::f16_t, _N>::mask_type
 cftal::signbit(const vec<f16_t, _N>& a)
 {
-    const auto msk=sign_f16_msk::v.u16();
-    vec<mf_f16_t, _N> sm= a() & msk;
-    typename vec<mf_f16_t, _N>::mask_type t= sm == msk;
-    return typename vec<f16_t, _N>::mask_type::cvt_from_rep(t);
+    const int16_t z(0);
+    vec<int16_t, _N> ai=as<vec<int16_t, _N> >(a);
+    typename vec<int16_t, _N>::mask_type r=ai < z;
+    return as<typename vec<f16_t, _N>::mask_type>(r);
 }
 
 inline
