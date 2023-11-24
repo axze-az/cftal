@@ -2899,8 +2899,6 @@ v(const uint16_t* base, __m256i i32)
     return r;
 }
 
-
-
 template <std::size_t _SCALE>
 inline
 __m128i
