@@ -398,16 +398,21 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 sqrt(arg_t<vf_type> xc)
 {
+#if 0
+    using vf_t=typename _T::vhf_traits::vf_type;
+    vf_t xf=cvt<vf_t>(xc);
+    vf_t rf=cftal::sqrt(xf);
+    vf_type r=cvt<vf_type>(rf);
+    return r;
+#else
     vf_type xp=abs(xc);
     vi_type idx=_T::as_int(xp);
-    // auto lk=make_variable_lookup_table<f16_t>(idx);
-    const int _N= sizeof(xp)/sizeof(f16_t);
-    variable_vec_lookup_table<f16_t, int16_t, _N> lk=
-        make_variable_lookup_table<f16_t>(idx);
+    auto lk=make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(f16_sqrt_data::tbl_zero());
     y=copysign(y, xc);
     y=_T::sel(y < 0, _T::nan(), y);
     return y;
+#endif
 }
 
 template <typename _T>

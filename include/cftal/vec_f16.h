@@ -808,6 +808,42 @@ namespace cftal {
     };
 
 #endif
+    namespace impl {
+        template <size_t _N>
+        struct cvt<vec<float, _N>, vec<f16_t, _N> > {
+            static
+            vec<float, _N> v(const vec<f16_t, _N>& s) {
+                return cvt_f16_to_f32(s());
+            }
+        };
+
+        template <size_t _N>
+        struct cvt<vec<f16_t, _N>, vec<float, _N> > {
+            static
+            vec<f16_t, _N> v(const vec<float, _N>& s) {
+                auto t=cvt_f32_to_f16(s);
+                return vec<f16_t, _N>::cvt_from_rep(t);
+            }
+        };
+
+        template <>
+        struct cvt<vec<float, 1>, vec<f16_t, 1> > {
+            static
+            vec<float, 1> v(const vec<f16_t, 1>& s) {
+                return cvt_f16_to_f32(s());
+            }
+        };
+
+        template <>
+        struct cvt<vec<f16_t, 1>, vec<float, 1> > {
+            static
+            vec<f16_t, 1> v(const vec<float, 1>& s) {
+                auto t=cvt_f32_to_f16(s);
+                return vec<f16_t, 1>::cvt_from_rep(t);
+            }
+        };
+
+    }
 
     // vector math functions for vxf16
 }
