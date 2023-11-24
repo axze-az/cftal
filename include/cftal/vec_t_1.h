@@ -96,8 +96,8 @@ namespace cftal {
 
         template <typename _T, typename _C>
         struct xxx_of {
-            static const unsigned shift= (sizeof(_T)*8-1);
-            static const _T msk = _T(1) << shift;
+            constexpr static const unsigned shift= (sizeof(_T)*8-1);
+            constexpr static const _T msk = _T(1) << shift;
             static
             bool
             any(const vec<_T, 1>& v) {
@@ -873,7 +873,7 @@ bool
 cftal::all_of(const vec<_T, 1>& v)
 {
     using it= impl::xxx_of<_T,
-                           typename cftal::is_floating_point<_T>::type>;
+                           typename is_floating_point<_T>::type>;
     return it::all(v);
 }
 
@@ -883,7 +883,7 @@ bool
 cftal::any_of(const vec<_T, 1>& v)
 {
     using it= impl::xxx_of<_T,
-                           typename cftal::is_floating_point<_T>::type>;
+                           typename is_floating_point<_T>::type>;
     return it::any(v);
 }
 
@@ -893,7 +893,7 @@ bool
 cftal::none_of(const vec<_T, 1>& v)
 {
     using it= impl::xxx_of<_T,
-                           typename cftal::is_floating_point<_T>::type>;
+                           typename is_floating_point<_T>::type>;
     return it::none(v);
 }
 
