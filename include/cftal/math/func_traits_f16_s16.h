@@ -55,7 +55,7 @@ namespace cftal {
             static f16_constexpr f16_t ninf() {
                 return -std::numeric_limits<vf_type>::infinity();
             }
-            static f16_t_constexpr f16_t nan() {
+            static f16_constexpr f16_t nan() {
                 return std::numeric_limits<vf_type>::quiet_NaN();
             }
             static
