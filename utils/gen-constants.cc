@@ -98,6 +98,7 @@ namespace cftal {
             bool operator() (f16_t a) const  {
                 const f16_t flt_max_denormal=
                     nextafter(std::numeric_limits<f16_t>::min(), 0.0_f16);
+                using std::abs;
                 return abs(a) <= flt_max_denormal;
             }
         };
@@ -185,7 +186,7 @@ cftal::test::gen_constant(func_domain<_T> d, const std::string& pfx,
     }
     std::cout << std::setprecision(20) << std::scientific;
     while (l != r) {
-        _T ln= (l+r)*0.5;
+        _T ln= (l+r)*_T(0.5);
         if (ln == l || ln == r)
             break;
         fn= call_mpfr::func(ln, f);
@@ -1027,7 +1028,7 @@ int main(int argc, char** argv)
         gen_constant(lngp, "const f16_t lgamma_hi", mpfr_lngamma,
                      check_inf<f16_t>(), "inf");
 
-        dp=make_f16pair(1.0f, std::numeric_limits<f16_t>::max());
+        dp=make_f16pair(1.0_f16, std::numeric_limits<f16_t>::max());
         gen_constant(dp, "const double atan_pi_2", mpfr_atan,
                      check_pi_half<f16_t>(), "equal");
 
