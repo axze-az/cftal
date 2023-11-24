@@ -163,6 +163,11 @@ namespace cftal {
         using type = vec<f16_t, _N>;
     };
 
+    template <>
+    struct arg< vec<f16_t, 1> > {
+        using type = vec<f16_t, 1>;
+    };
+
     std::ostream&
     operator<<(std::ostream& s, const vec<f16_t, 1>& v);
 
@@ -186,6 +191,15 @@ namespace cftal {
     template <size_t _N>
     typename vec<f16_t, _N>::mask_type
     isinf(const vec<f16_t, _N>& a);
+
+    // copysign
+    vec<f16_t, 1>
+    copysign(const vec<f16_t, 1>& a, const vec<f16_t, 1>& b);
+
+    // copysign
+    template <size_t _N>
+    vec<f16_t, _N>
+    copysign(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b);
 
     // abs
     vec<f16_t, 1>
@@ -249,6 +263,27 @@ namespace cftal {
     vec<f16_t, _N>
     select_zero_or_val(const typename vec<f16_t, _N>::mask_type& m ,
                        const vec<f16_t, _N>& on_false);
+
+    bool
+    all_of(const vec<f16_t, 1>::mask_type& m);
+
+    template <std::size_t _N>
+    bool
+    all_of(const typename vec<f16_t, _N>::mask_type& m);
+
+    bool
+    any_of(const vec<f16_t, 1>::mask_type& m);
+
+    template <std::size_t _N>
+    bool
+    any_of(const typename vec<f16_t, _N>::mask_type& m);
+
+    bool
+    none_of(const vec<f16_t, 1>::mask_type& m);
+
+    template <std::size_t _N>
+    bool
+    none_of(const typename vec<f16_t, _N>::mask_type& m);
 
     namespace op {
 
@@ -774,8 +809,6 @@ namespace cftal {
 #endif
 
     // vector math functions for vxf16
-
-
 }
 
 template <std::size_t _N>
@@ -856,6 +889,32 @@ cftal::abs(const vec<f16_t, 1>& a)
 {
     vec<mf_f16_t, 1> t= a() & not_sign_f16_msk::v.u16();
     return vec<f16_t, 1>::cvt_from_rep(t);
+}
+
+inline
+cftal::vec<cftal::f16_t, 1>
+cftal::copysign(const vec<f16_t, 1>& x, const vec<f16_t, 1>& y)
+{
+    const mf_f16_t abs_msk=not_sign_f16_msk::v.u16();
+    auto xi=x(), yi=y();
+    vec<mf_f16_t, 1> abs_x= xi & abs_msk;
+    const mf_f16_t sgn_msk=sign_f16_msk::v.u16();
+    vec<mf_f16_t, 1> sgn_y= yi & sgn_msk;
+    vec<mf_f16_t, 1> r= abs_x | sgn_y;
+    return vec<f16_t, 1>::cvt_from_rep(r);
+}
+
+template <size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::copysign(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y)
+{
+    const mf_f16_t abs_msk=not_sign_f16_msk::v.u16();
+    auto xi=x(), yi=y();
+    vec<mf_f16_t, _N> abs_x= xi & abs_msk;
+    const mf_f16_t sgn_msk=sign_f16_msk::v.u16();
+    vec<mf_f16_t, _N> sgn_y= yi & sgn_msk;
+    vec<mf_f16_t, _N> r= abs_x | sgn_y;
+    return vec<f16_t, _N>::cvt_from_rep(r);
 }
 
 template <std::size_t _N>
@@ -957,6 +1016,52 @@ cftal::select_zero_or_val(const typename vec<f16_t, _N>::mask_type& m ,
     auto r=select_zero_or_val(m(), on_false());
     return vec<f16_t, _N>::mask_type::cvt_from_rep(r);
 }
+
+inline
+bool
+cftal::all_of(const vec<f16_t, 1>::mask_type& v)
+{
+    return all_of(v());
+}
+
+template <size_t _N>
+inline
+bool
+cftal::all_of(const typename vec<f16_t, _N>::mask_type& v)
+{
+    return all_of(v());
+}
+
+inline
+bool
+cftal::any_of(const vec<f16_t, 1>::mask_type& v)
+{
+    return any_of(v());
+}
+
+template <size_t _N>
+inline
+bool
+cftal::any_of(const typename vec<f16_t, _N>::mask_type& v)
+{
+    return any_of(v());
+}
+
+inline
+bool
+cftal::none_of(const vec<f16_t, 1>::mask_type& v)
+{
+    return none_of(v());
+}
+
+template <size_t _N>
+inline
+bool
+cftal::none_of(const typename vec<f16_t, _N>::mask_type& v)
+{
+    return none_of(v());
+}
+
 
 #endif
 
