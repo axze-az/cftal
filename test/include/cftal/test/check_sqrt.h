@@ -48,7 +48,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::sqrt(a);
+                using std::sqrt;
+                return sqrt(a);
             }
             static
             const char* fname() { return "sqrt"; }

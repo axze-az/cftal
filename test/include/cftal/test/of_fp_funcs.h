@@ -918,7 +918,8 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
     _T plus1= std::min(_T(1), domain.second);
     if (minus1 < plus1 && (minus1 != domain.first || plus1 != domain.second)) {
         std::cout << std::endl;
-        _T nplus1=std::nextafter(plus1, _T(2)*plus1);
+        using std::nextafter;
+        _T nplus1=nextafter(plus1, _T(2)*plus1);
         uniform_real_distribution<_T>
             distrib1(minus1, nplus1);
         std::cout << "[" << minus1 << ", " << nplus1 << ")\n";
@@ -959,7 +960,8 @@ cftal::test::of_fp_func<_T, _N, _F>::v(exec_stats<_N>& st,
     _T plus1= std::min(_T(1), domain.second);
     if (minus1 < plus1 && (minus1 != domain.first || plus1 != domain.second)) {
         std::cout << std::endl;
-        _T nplus1=std::nextafter(plus1, _T(2)*plus1);
+        using std::nextafter;
+        _T nplus1=nextafter(plus1, _T(2)*plus1);
         uniform_real_distribution<_T>
             distrib1(minus1, nplus1);
         std::cout << "[" << minus1 << ", " << nplus1 << ")\n";
@@ -1227,12 +1229,15 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         std::cout << std::endl;
     }
     const bool is_T1_fp=is_floating_point<_T1>::value;
-    _T1 a_minus1= std::max(_T1(-1), domain_1.first);
-    _T1 a_plus1= std::min(_T1(1), domain_1.second);
+    using std::max;
+    using std::min;
+    using std::nextafter;
+    _T1 a_minus1= max(_T1(-1), domain_1.first);
+    _T1 a_plus1= min(_T1(1), domain_1.second);
     if (is_T1_fp && a_minus1 < a_plus1 &&
         (a_minus1 != domain_1.first || a_plus1 != domain_1.second)) {
         std::cout << std::endl;
-        _T1 a_nplus1=std::nextafter(a_plus1, _T1(2)*a_plus1);
+        _T1 a_nplus1=nextafter(a_plus1, _T1(2)*a_plus1);
         uniform_real_distribution<_T1>
             distrib_1_1(a_minus1, a_nplus1);
         uniform_real_distribution<_T2>
@@ -1264,12 +1269,12 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         }
     }
     const bool is_T2_fp=is_floating_point<_T2>::value;
-    _T2 b_minus1= std::max(_T2(-1), domain_2.first);
-    _T2 b_plus1= std::min(_T2(1), domain_2.second);
+    _T2 b_minus1= max(_T2(-1), domain_2.first);
+    _T2 b_plus1= min(_T2(1), domain_2.second);
     if (is_T2_fp && b_minus1 < b_plus1 &&
         (b_minus1 != domain_2.first || b_plus1 != domain_2.second)) {
         std::cout << std::endl;
-        _T2 b_nplus1=std::nextafter(b_plus1, _T2(2)*b_plus1);
+        _T2 b_nplus1=nextafter(b_plus1, _T2(2)*b_plus1);
         uniform_real_distribution<_T1>
             distrib_1_1(domain_1.first, domain_1.second);
         uniform_real_distribution<_T2>
@@ -1304,8 +1309,8 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         (a_minus1 != domain_1.first || a_plus1 != domain_1.second ||
          b_minus1 != domain_2.first || b_plus1 != domain_2.second)) {
         std::cout << std::endl;
-        _T1 a_nplus1=std::nextafter(a_plus1, _T1(2)*a_plus1);
-        _T2 b_nplus1=std::nextafter(b_plus1, _T2(2)*b_plus1);
+        _T1 a_nplus1=nextafter(a_plus1, _T1(2)*a_plus1);
+        _T2 b_nplus1=nextafter(b_plus1, _T2(2)*b_plus1);
         uniform_real_distribution<_T1>
             distrib_1_1(a_minus1, a_nplus1);
         uniform_real_distribution<_T2>
@@ -1351,14 +1356,17 @@ of_fp_func_2<_T, _N, _F, _T1, _T2>::v(exec_stats<_N>& st,
         }
         std::cout << std::endl;
     }
-    _T1 a_minus1= std::max(_T1(-1), domain_1.first);
-    _T1 a_plus1= std::min(_T1(1), domain_1.second);
-    _T2 b_minus1= std::max(_T2(-1), domain_2.first);
-    _T2 b_plus1= std::min(_T2(1), domain_2.second);
+    using std::max;
+    using std::min;
+    using std::nextafter;
+    _T1 a_minus1= max(_T1(-1), domain_1.first);
+    _T1 a_plus1= min(_T1(1), domain_1.second);
+    _T2 b_minus1= max(_T2(-1), domain_2.first);
+    _T2 b_plus1= min(_T2(1), domain_2.second);
     if (a_minus1 < a_plus1 && b_minus1 < b_plus1) {
         std::cout << std::endl;
-        _T1 a_nplus1=std::nextafter(a_plus1, _T1(2)*a_plus1);
-        _T2 b_nplus1=std::nextafter(b_plus1, _T2(2)*b_plus1);
+        _T1 a_nplus1=nextafter(a_plus1, _T1(2)*a_plus1);
+        _T2 b_nplus1=nextafter(b_plus1, _T2(2)*b_plus1);
         uniform_real_distribution<_T1>
             distrib_1_1(a_minus1, a_nplus1);
         uniform_real_distribution<_T2>
