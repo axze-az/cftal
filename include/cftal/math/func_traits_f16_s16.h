@@ -147,8 +147,8 @@ namespace cftal {
             static
             vi_type cvt_f_to_i(const vf_type& f) {
                 return f < 0 ?
-                    static_cast<vi_type>(f - 0.5_f16) :
-                    static_cast<vi_type>(f + 0.5_f16);
+                    static_cast<vi_type>(vf_type(f - 0.5_f16)) :
+                    static_cast<vi_type>(vf_type(f + 0.5_f16));
             }
             // including rounding towards zero
             static
