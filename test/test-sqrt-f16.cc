@@ -18,7 +18,7 @@
 #include "cftal/test/program.h"
 #include "cftal/test/check_sqrt.h"
 #include "cftal/vec_f16.h"
-#include "cftal/math/elem_func_core_f16.h"
+#include "cftal/math/elem_func_wrapper_f16.h"
 #include "cftal/math/vec_func_traits_f16.h"
 
 namespace cftal {
@@ -102,7 +102,6 @@ cftal::sqrt(arg_t<v16f16> x)
     using func_t = cftal::math::elem_func<f16_t, traits_t>;
     return func_t::sqrt(x);
 }
-
 
 int main(int argc, char** argv)
 {
