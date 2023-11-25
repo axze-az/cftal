@@ -25,6 +25,16 @@
 // configuration options
 #define __CFTAL_CFG_USE_VF64_FOR_VF32__ @CFTAL_CFG_USE_VF64_FOR_VF32@
 
+#define __CFTAL_CFG_USE_VF32_FOR_VF16__ @CFTAL_CFG_USE_VF32_FOR_VF16@
+
+#define __CFTAL_CFG_ENABLE_AVX512__ @CFTAL_CFG_ENABLE_AVX512@
+#if __CFTAL_CFG_ENABLE_AVX512__ > 0
+#if defined (__AVX512F__)
+// #error "AVX512 support is not yet implemented"
+// #pragma GCC warning "AVX512 support is not well tested"
+#endif
+#endif
+
 #if defined (__ARM_NEON)
 #if !defined (__ARM_NEON__)
 #define __ARM_NEON__ 1
@@ -47,13 +57,6 @@
 #endif
 #endif
 
-#define __CFTAL_CFG_ENABLE_AVX512__ @CFTAL_CFG_ENABLE_AVX512@
-#if __CFTAL_CFG_ENABLE_AVX512__ > 0
-#if defined (__AVX512F__)
-// #error "AVX512 support is not yet implemented"
-// #pragma GCC warning "AVX512 support is not well tested"
-#endif
-#endif
 
 #if !defined (__GNUC__) && !defined(__clang__) || (IN_KDEVELOP_PARSER>0)
 #define __SSSE3__
