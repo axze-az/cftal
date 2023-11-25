@@ -27,7 +27,7 @@
 #include <cftal/math/impl_d_real_constants_f32.h>
 
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_SQRT__ 1
-#define __CFTAL_CFG_USE_VF32_FOR_VF16_RSQRT__ 0
+#define __CFTAL_CFG_USE_VF32_FOR_VF16_RSQRT__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP_FUNCS__ 0
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP2_FUNCS__ 0
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP10_FUNCS__ 0
@@ -173,9 +173,9 @@ typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
 rsqrt_k(arg_t<vf_type> x)
 {
-    vhf_type xd=cvt<vhf_type>(x);
-    vhf_type rd=1.0/sqrt(xd);
-    vf_type r=cvt<vf_type>(rd);
+    vhf_type xf=cvt<vhf_type>(x);
+    vhf_type rf=f32_core::rsqrt_k(xf);
+    vf_type r=cvt<vf_type>(rf);
     return r;
 }
 #endif

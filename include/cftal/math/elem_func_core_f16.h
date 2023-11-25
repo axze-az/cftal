@@ -414,13 +414,6 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 sqrt(arg_t<vf_type> xc)
 {
-#if 0
-    using vf_t=typename _T::vhf_traits::vf_type;
-    vf_t xf=cvt<vf_t>(xc);
-    vf_t rf=cftal::sqrt(xf);
-    vf_type r=cvt<vf_type>(rf);
-    return r;
-#else
     vf_type xp=abs(xc);
     vi_type idx=_T::as_int(xp);
     auto lk=make_variable_lookup_table<f16_t>(idx);
@@ -428,7 +421,6 @@ sqrt(arg_t<vf_type> xc)
     y=_T::sel(signbit(y), _T::nan(), y);
     y=_T::sel(is_zero(xc), xc, y);
     return y;
-#endif
 }
 
 template <typename _T>
@@ -436,21 +428,13 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 rsqrt_k(arg_t<vf_type> x)
 {
-#if 1
-    return x;
-#else
-    constexpr
-    const f16_t one=1.0f;
-    vf_type y= vf_type(one/sqrt(x));
-#if 0
-    // use this code if f32 should not produce any error in the tests if
-    // your processor supports fma
-    vf_type z = y*(y*x) - one;
-    y = y + y*(z*horner(z, 3.0f/8.0f, -0.5f));
-#endif
-    y = impl::root_r2::order2<cftal::f16_t, true>(y, x);
+    vf_type xp=abs(x);
+    vi_type idx=_T::as_int(xp);
+    auto lk=make_variable_lookup_table<f16_t>(idx);
+    vf_type y=lk.from(f16_rsqrt_data::tbl_zero());
+    // y=_T::sel(signbit(y), _T::nan(), y);
+    // y=_T::sel(is_zero(xc), xc, y);
     return y;
-#endif
 }
 
 template <typename _T>

@@ -55,7 +55,8 @@ namespace cftal {
                 if (a==0) {
                     return std::numeric_limits<_T>::infinity();
                 }
-                return _T(1.0)/std::sqrt(a);
+                using std::sqrt;
+                return _T(1.0)/sqrt(a);
             }
             static
             const char* fname() { return "rsqrt"; }

@@ -27,6 +27,7 @@
 #include <cftal/constants.h>
 #include <cftal/x86/cast_bits.h>
 #include <cftal/math/vec_func_traits_f64.h>
+#include <cftal/math/vec_func_traits_f16.h>
 
 namespace cftal {
 
@@ -44,6 +45,9 @@ namespace cftal {
 
             using vhf_traits = func_traits<vec<double, _N>,
                                            vec<int32_t, _N> >;
+
+            using vlf_traits = func_traits<vec<f16_t, _N>,
+                                           vec<int16_t, _N> >;
 
             static
             vmf_type vmi_to_vmf(const vmi_type& mi) {

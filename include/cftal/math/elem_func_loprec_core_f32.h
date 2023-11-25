@@ -52,12 +52,8 @@ namespace cftal {
         struct elem_func_loprec_core<float, _T> {
             using vf_type = typename _T::vf_type;
             using vi_type = typename _T::vi_type;
-            using vli_type = typename _T::vli_type;
-            using vi2_type = typename _T::vi2_type;
             using vmf_type = typename _T::vmf_type;
             using vmi_type = typename _T::vmi_type;
-            using vmli_type = typename _T::vmli_type;
-            using vmi2_type = typename _T::vmi2_type;
             using vdf_type = typename _T::vdf_type;
 
             using d_ops=d_real_ops<vf_type,
@@ -66,6 +62,10 @@ namespace cftal {
             using f16_traits= typename _T::vlf_traits;
             using vlf_type = typename f16_traits::vf_type;
             using vmlf_type = typename f16_traits::vmf_type;
+
+            static
+            vf_type
+            rsqrt_k(arg_t<vf_type> x);
 
             // return y*2^k
             static
@@ -155,7 +155,7 @@ namespace cftal {
             tanh_k(arg_t<vf_type> xc);
 
             static
-            vi2_type
+            vi_type
             __reduce_log_arg(vf_type& xr,
                              arg_t<vf_type> x);
 
@@ -191,6 +191,17 @@ namespace cftal {
     }
 }
 
+template <typename _T>
+inline
+__attribute__((__always_inline__))
+typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
+cftal::math::elem_func_loprec_core<float, _T>::
+rsqrt_k(arg_t<vf_type> x)
+{
+    vf_type y=::cftal::native::rsqrt_11b(x);
+    y = impl::root_r2::order2<float, false>(y, x);
+    return y;
+}
 
 template <typename _T>
 inline
@@ -199,9 +210,8 @@ typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
 cftal::math::elem_func_loprec_core<float, _T>::
 __mul_two_pow(arg_t<vf_type> y, arg_t<vi_type> k)
 {
-    vi_type ep(k << 20);
-    vi2_type ir=combine_zeroeven_odd(ep);
-    vi2_type yi=as<vi2_type>(y) + ir;
+    vi_type ep(k << 23);
+    vi_type yi=as<vi_type>(y) + ep;
     vf_type ys = as<vf_type>(yi);
     return ys;
 }
@@ -588,34 +598,11 @@ tanh_k(arg_t<vf_type> xc)
 
 template <typename _T>
 inline
-typename cftal::math::elem_func_loprec_core<float, _T>::vi2_type
+typename cftal::math::elem_func_loprec_core<float, _T>::vi_type
 cftal::math::elem_func_loprec_core<float, _T>::
 __reduce_log_arg(vf_type& xr, arg_t<vf_type> xc)
 {
-    // round(sqrt(2)/2, 53-32, RD);
-    // 0.70710659027099609375
-    constexpr
-    const bytes8 offs=int64_t(0x3fe6a09e00000000LL);
-#if 0
-    using fc = func_constants<float>;
-    vmf_type is_denom=xc <= fc::max_denormal();
-    vf_type x=_T::sel(is_denom, xc*0x1p54, xc);
-    vi2_type k=_T::sel_vi2(_T::vmf_to_vmi2(is_denom),
-                           vi2_type(-54-_T::bias()),
-                           vi2_type(-_T::bias()));
-#else
-    vi2_type k=-_T::bias();
-#endif
-    /* reduce x into [sqrt(2)/2, sqrt(2)] */
-    vli_type h=as<vli_type>(xc);
-    constexpr const int64_t one=0x3ff0000000000000LL;
-    h += (one - offs.s64());
-    vi2_type h2=as<vi2_type>(h);
-    constexpr const int64_t msk=0x000fffffffffffffLL;
-    h = (h & msk) + offs.s64();
-    k += (h2>>20);
-    xr = as<vf_type>(h);
-    return k;
+    return vi_type(0);
 }
 
 
@@ -629,7 +616,7 @@ cftal::math::elem_func_loprec_core<float, _T>::
 __log_k(arg_t<vf_type> xc)
 {
     vf_type xr;
-    vi2_type ki=__reduce_log_arg(xr, xc);
+    vi_type ki=__reduce_log_arg(xr, xc);
     vf_type r;
     r = xr - 1.0;
 
@@ -673,7 +660,7 @@ __log_k(arg_t<vf_type> xc)
     };
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
-    vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
+    vf_type kf=_T::cvt_i_to_f(ki);
     vf_type ll=r*p;
     vf_type lh;
     using ctbl=impl::d_real_constants<d_real<float>, float>;
@@ -696,7 +683,7 @@ cftal::math::elem_func_loprec_core<float, _T>::
 __log_k12(arg_t<vf_type> xc)
 {
     vf_type xr;
-    vi2_type ki=__reduce_log_arg(xr, xc);
+    vi_type ki=__reduce_log_arg(xr, xc);
     vf_type r;
     r = xr - 1.0;
 
@@ -747,7 +734,7 @@ __log_k12(arg_t<vf_type> xc)
     };
     vf_type r2=r*r;
     vf_type p=horner2(r, r2, ci);
-    vf_type kf=_T::cvt_i_to_f(_T::vi2_odd_to_vi(ki));
+    vf_type kf=_T::cvt_i_to_f(ki);
     vf_type ll=r+r2*p;
     vf_type lh;
     using ctbl=impl::d_real_constants<d_real<float>, float>;
