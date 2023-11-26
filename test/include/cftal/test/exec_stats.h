@@ -88,8 +88,7 @@ template <std::size_t _N>
 std::ostream&
 cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
 {
-    std::size_t n= _N + 1;
-#if 1
+    constexpr std::size_t n= _N + 1;
     s << "execution statistics:"
       << std::setw(42) << "relative"
       << std::setw(12) << "relative"
@@ -136,31 +135,6 @@ cftal::test::operator<<(std::ostream& s, const exec_stats<_N>& st)
           << std::setprecision(22)
           << '\n';
     }
-#else
-    s << "execution statistics:\n";
-    for (std::size_t i=0; i<n; i=((i==0) ? 1: i*2)) {
-        double t=st._tics[i]._v;
-        uint64_t ei=st._evals[i]._v;
-        double tc=ei ? t/double(ei) : 0.0;
-        double te=i ? tc/i : tc;
-        if (i==0) {
-            s << "reference:  calls: ";
-        } else {
-            s << "vec-len: " << std::setw(2) << i << " calls: ";
-        }
-        s << std::setw(16) << ei << " tics/call: "
-          << std::setprecision(1)
-          << std::fixed
-          << std::setw(9)
-          << tc
-          << " tics/elem: "
-          << std::setw(7)
-          << te
-          << std::scientific
-          << std::setprecision(22)
-          << '\n';
-    }
-#endif
     return s;
 }
 
