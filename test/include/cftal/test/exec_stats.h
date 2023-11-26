@@ -54,7 +54,10 @@ namespace cftal {
                 //     tb = 0;
                 //     // ta - tb --> tics_after - tics_before
                 // }
-                uint64_t d=ta - tb;
+                uint64_t d= ta - tb;
+                if (ta < tb) {
+                    d = tb - ta;
+                }
                 _tics[idx]._v += d;
                 ++(_evals[idx]._v);
             }
