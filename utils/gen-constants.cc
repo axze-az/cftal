@@ -1014,7 +1014,7 @@ int main(int argc, char** argv)
         gen_constant(dp, "const f16_t erfc_lo_den", mpfr_erfc,
                      check_max_denormal<f16_t>(), "nom");
         // tgamma
-        auto gm=make_f16pair(10.0_f16, 200.0_f16);
+        auto gm=make_f16pair(1.0_f16, 50.0_f16);
         gen_constant(gm, "const f16_t tgamma_hi", mpfr_gamma,
                      check_inf<f16_t>(), "inf");
 
