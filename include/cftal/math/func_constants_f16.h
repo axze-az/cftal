@@ -37,7 +37,7 @@ namespace cftal {
 
             // exp(x) == +inf for x >=
             static f16_constexpr f16_t
-            exp_hi_inf() { return .109375000000000000000000e+01_f16; }
+            exp_hi_inf() { return 1.109375000000000000000000e+01_f16; }
             // exp(x) == 0 for x <=
             static f16_constexpr f16_t
             exp_lo_zero() { return -1.734375000000000000000000e+01_f16; }

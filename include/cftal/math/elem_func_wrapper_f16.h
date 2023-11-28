@@ -25,10 +25,11 @@
 #include <cftal/math/elem_func_loprec_core_f32.h>
 #include <cftal/math/func_traits_f32_s32.h>
 #include <cftal/math/impl_d_real_constants_f32.h>
+#include <cftal/math/func_constants_f16.h>
 
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_SQRT__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_RSQRT__ 1
-#define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP_FUNCS__ 0
+#define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP2_FUNCS__ 0
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP10_FUNCS__ 0
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_HYPERBOLIC_FUNCS__ 0

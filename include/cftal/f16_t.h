@@ -462,6 +462,7 @@ namespace cftal {
 
     f16_t fma(const f16_t& a, const f16_t& b, const f16_t& c);
     f16_t sqrt(const f16_t& v);
+    f16_t exp(const f16_t& v);
 
     std::ostream& operator<<(std::ostream& s, const f16_t& v);
     std::istream& operator>>(std::istream& s, f16_t& v);
@@ -849,6 +850,12 @@ inline
 cftal::f16_t cftal::sqrt(const f16_t& v)
 {
     return f16_t(std::sqrt(float(v)));
+}
+
+inline
+cftal::f16_t cftal::exp(const f16_t& v)
+{
+    return f16_t(std::exp(float(v)));
 }
 
 inline

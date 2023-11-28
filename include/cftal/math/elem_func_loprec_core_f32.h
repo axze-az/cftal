@@ -274,7 +274,11 @@ typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
 cftal::math::elem_func_loprec_core<float, _T>::
 __exp_tbl_k(arg_t<vf_type> xr, arg_t<vi_type> idx)
 {
+#if defined (__tune_znver2__) || defined(__tune_znver3__)
+    auto lk=make_fixed_lookup_table<exp_data<float>::EXP_N, float>(idx);
+#else
     auto lk=make_variable_lookup_table<float>(idx);
+#endif
     const auto& tbl=exp_data<float>::_tbl;
     vf_type th=lk.from(tbl._2_pow_i_n_h);
 
@@ -284,10 +288,11 @@ __exp_tbl_k(arg_t<vf_type> xr, arg_t<vi_type> idx)
     constexpr
     const float exp_c1=+1.0000000000e+00f;
     static_assert(exp_c1==1.0f, "oops");
-    vf_type x2=xr*xr;
+    // vf_type x2=xr*xr;
     // vf_type p= horner(xr, exp_c3, exp_c2);
-    vf_type p= xr;
-    vf_type eh=xr + x2*p;
+    // vf_type p= xr;
+    // vf_type eh=xr + x2*p;
+    vf_type eh=xr;
     vf_type yd=th + th*eh;
     return yd;
 }

@@ -58,6 +58,22 @@ namespace cftal {
             };
         };
 
+        template <>
+        struct domain_exp<f16_t> {
+            // TODO: fix the missing constexpr for f16_t literals
+            static
+            const func_domain<f16_t> domains[];
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
+
+        const func_domain<f16_t>
+        domain_exp<f16_t>::domains[]= {
+            std::make_pair(-18.0_f16, 12.0_f16)
+        };
+
         template <typename _T>
         struct check_exp {
             template <std::size_t _N>
@@ -77,7 +93,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::exp(a);
+                using std::exp;
+                return exp(a);
             }
             static
             const char* fname() { return "exp"; }
