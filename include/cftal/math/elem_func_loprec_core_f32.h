@@ -345,7 +345,7 @@ cftal::math::elem_func_loprec_core<float, _T>::
 exp_k(arg_t<vf_type> xc)
 {
     vf_type yd;
-    if (_EXP_M1==false) {
+    if (0 /*_EXP_M1==false*/) {
         vi_type idx, ki;
         vf_type xrd;
         __reduce_exp_arg(xrd, idx, ki, xc);
