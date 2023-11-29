@@ -172,12 +172,6 @@ namespace cftal {
         using type = vec<f16_t, 1>;
     };
 
-    std::ostream&
-    operator<<(std::ostream& s, const vec<f16_t, 1>& v);
-
-    template <size_t _N>
-    std::ostream& operator<<(std::ostream& s, const vec<f16_t, _N>& v);
-
     // nan
     typename vec<f16_t, 1>::mask_type
     isnan(const vec<f16_t, 1>& a);
@@ -873,24 +867,6 @@ cftal::vec<cftal::f16_t, _N/2>
 cftal::high_half(const vec<f16_t, _N>& s)
 {
     return s.hh();
-}
-
-inline
-std::ostream&
-cftal::operator<<(std::ostream& s, const vec<f16_t, 1>& v)
-{
-    vec<float, 1> fv=cvt_f16_to_f32(v());
-    s << fv;
-    return s;
-}
-
-template <std::size_t _N>
-std::ostream&
-cftal::operator<<(std::ostream& s, const vec<f16_t, _N>& v)
-{
-    vec<float, _N> fv=cvt_f16_to_f32(v());
-    s << fv;
-    return s;
 }
 
 inline
