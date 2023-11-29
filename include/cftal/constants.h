@@ -35,7 +35,7 @@ namespace cftal {
     };
 
     // 8 byte union
-    union __attribute__((__visibility__("hidden"))) bytes8  {
+    union /* __attribute__((__visibility__("hidden"))) */ bytes8  {
     private:
         const double _f64;
         const uint64_t _u64;
@@ -67,7 +67,7 @@ namespace cftal {
     constexpr const bytes8 const_u64<_L, _H>::v;
 
     // 4 byte union
-    union __attribute__((__visibility__("hidden"))) bytes4 {
+    union /* __attribute__((__visibility__("hidden"))) */ bytes4 {
     private:
         const float _f32;
         const uint32_t _u32;
@@ -99,7 +99,6 @@ namespace cftal {
         static
         constexpr const bytes4 v{_N};
     };
-
 
     template <uint32_t _N>
     constexpr const bytes4 const_u32<_N>::v;
@@ -158,7 +157,6 @@ namespace cftal {
     const int bias_f64 = 0x3ff;
     const int exp_shift_f64 = 52;
     const int exp_msk_f64 = 0x7ff;
-
 
     namespace const_shift {
         constexpr static const const_u32<0> _0;
