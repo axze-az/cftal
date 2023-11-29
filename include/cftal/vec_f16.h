@@ -160,7 +160,11 @@ namespace cftal {
 
     template <size_t _N>
     struct arg< vec<f16_t, _N> > {
-        using type = vec<f16_t, _N>;
+        using type = std::conditional_t<
+            std::is_same_v<vec<mf_f16_t, _N>, arg_t<vec<mf_f16_t, _N> > >,
+            vec<f16_t, _N>,
+            const vec<f16_t, _N>&
+        >;
     };
 
     template <>
