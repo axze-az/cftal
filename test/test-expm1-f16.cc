@@ -16,18 +16,18 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include "cftal/test/program.h"
-#include "cftal/test/check_exp.h"
+#include "cftal/test/check_expm1.h"
 #include "cftal/vec_f16.h"
 
 int main(int argc, char** argv)
 {
     using namespace cftal::test;
     using cftal::f16_t;
-    int r=program<check_exp<f16_t>, 32, 1, 0x4000>(
+    int r=program<check_expm1<f16_t>, 32, 1, 0x4000>(
         argc,
         argv,
-        mpfr_exp,
-        domain_exp<f16_t>::domains,
-        domain_exp<f16_t>::shifts);
+        mpfr_expm1,
+        domain_expm1<f16_t>::domains,
+        domain_expm1<f16_t>::shifts);
     return r;
 }

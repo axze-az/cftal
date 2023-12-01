@@ -456,6 +456,14 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::exp(a);                                          \
     }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::expm1(arg<vec_float>::type a)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::expm1(a);                                        \
+    }                                                                   \
 
 
 // Local variables:
