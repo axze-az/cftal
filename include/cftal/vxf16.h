@@ -27,6 +27,16 @@
 
 namespace cftal {
 
+#if (V4F32_SPECIALIZED>0) || ((V2F32_SPECIALIZED>0) && (V2S32_SPECIALIZED>0))
+#define V4F16_SPECIALIZED 1
+#endif
+#if (V8F32_SPECIALIZED>0) || ((V4F32_SPECIALIZED>0) && (V4S32_SPECIALIZED>0))
+#define V8F16_SPECIALIZED 1
+#endif
+#if (V16F32_SPECIALIZED>0) || ((V8F32_SPECIALIZED>0) && (V8S32_SPECIALIZED>0))
+#define V16F16_SPECIALIZED 1
+#endif
+
     template <>
     class vec<f16_t, 1> {
         vec<mf_f16_t, 1> _v;
@@ -102,11 +112,6 @@ namespace cftal {
         vec(const expr<_OP<vec<f16_t, _N>>, _L, _R>& r) : vec(eval(r)) {}
     };
 
-    using v1f16 = vec<f16_t, 1>;
-    using v2f16 = vec<f16_t, 2>;
-    using v4f16 = vec<f16_t, 4>;
-    using v8f16 = vec<f16_t, 8>;
-    using v16f16 = vec<f16_t, 16>;
 
     template <>
     struct mem< vec<f16_t, 1> > {

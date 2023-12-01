@@ -23,39 +23,6 @@
 
 namespace cftal {
 
-    template <size_t _N>
-    vec<f16_t, _N>
-    rsqrt(const vec<f16_t, _N>& x);
-
-    vec<f16_t, 1>
-    rsqrt(arg_t<vec<f16_t, 1> > x);
-
-    vec<f16_t, 2>
-    rsqrt(arg_t<vec<f16_t, 2> > x);
-
-    vec<f16_t, 4>
-    rsqrt(arg_t<vec<f16_t, 4> > x);
-
-    vec<f16_t, 8>
-    rsqrt(arg_t<vec<f16_t, 8> > x);
-
-    vec<f16_t, 16>
-    rsqrt(arg_t<vec<f16_t, 16> > x);
-
-    using v1f16 = vec<f16_t, 1>;
-    using v2f16 = vec<f16_t, 2>;
-    using v4f16 = vec<f16_t, 4>;
-    using v8f16 = vec<f16_t, 8>;
-    using v16f16 = vec<f16_t, 16>;
-}
-
-template <std::size_t _N>
-inline
-cftal::vec<cftal::f16_t, _N>
-cftal::rsqrt(const vec<cftal::f16_t, _N>& v)
-{
-    vec<f16_t, _N> r(rsqrt(low_half(v)), rsqrt(high_half(v)));
-    return r;
 }
 
 __attribute__((__flatten__))

@@ -24,30 +24,6 @@
 
 namespace cftal {
 
-    template <size_t _N>
-    vec<f16_t, _N>
-    exp(const vec<f16_t, _N>& x);
-
-    vec<f16_t, 1>
-    exp(arg_t<vec<f16_t, 1> > x);
-
-    vec<f16_t, 2>
-    exp(arg_t<vec<f16_t, 2> > x);
-
-    vec<f16_t, 4>
-    exp(arg_t<vec<f16_t, 4> > x);
-
-    vec<f16_t, 8>
-    exp(arg_t<vec<f16_t, 8> > x);
-
-    vec<f16_t, 16>
-    exp(arg_t<vec<f16_t, 16> > x);
-
-    using v1f16 = vec<f16_t, 1>;
-    using v2f16 = vec<f16_t, 2>;
-    using v4f16 = vec<f16_t, 4>;
-    using v8f16 = vec<f16_t, 8>;
-    using v16f16 = vec<f16_t, 16>;
 }
 
 template <std::size_t _N>
