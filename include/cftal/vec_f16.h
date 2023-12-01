@@ -129,6 +129,15 @@ cftal::rsqrt(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::exp(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(exp(low_half(v)), exp(high_half(v)));
+    return r;
+}
+
 
 // Local variables:
 // mode: c++

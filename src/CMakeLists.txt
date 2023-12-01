@@ -83,6 +83,21 @@ set (CSRCS
     f16_tgamma_data.cc
     f16_y0_data.cc
     f16_y1_data.cc
+    # vec <f16_t, 1>
+    v1f16_ef.cc
+    #v1f16_sf.cc
+    # vec <f16_t, 2>
+    v2f16_ef.cc
+    #v2f16_sf.cc
+    # vec <f16_t, 4>
+    v4f16_ef.cc
+    #v4f16_sf.cc
+    # vec <f16_t, 8>
+    v8f16_ef.cc
+    #v8f16_sf.cc
+    # vec <f16_t, 16>
+    v16f16_ef.cc
+    #v16f16_sf.cc
 )
 
 # only for ides

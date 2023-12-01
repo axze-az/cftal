@@ -431,6 +431,33 @@
     }
 
 
+#define DEF_ELEM_FUNCS_F16(nsr, ns, vec_float, vec_int, real_type)      \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::sqrt(arg<vec_float>::type a)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::sqrt(a);                                         \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::rsqrt(arg<vec_float>::type a)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::rsqrt(a);                                        \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::exp(arg<vec_float>::type a)                                     \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp(a);                                          \
+    }                                                                   \
+
+
 // Local variables:
 // mode: c++
 // end:

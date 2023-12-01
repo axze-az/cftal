@@ -15,19 +15,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
-#include "cftal/test/program.h"
-#include "cftal/test/check_sqrt.h"
 #include "cftal/vec_f16.h"
+#include "cftal/math/vec_func_traits_f16.h"
+#include "cftal/math/elem_func_wrapper_f16.h"
+#include "vec_def_math_elem_funcs.h"
 
-int main(int argc, char** argv)
-{
-    using namespace cftal::test;
-    using cftal::f16_t;
-    int r=program<check_sqrt<f16_t>, 32, 1, 0x4000>(
-        argc,
-        argv,
-        mpfr_sqrt,
-        domain_sqrt<f16_t>::domains,
-        domain_sqrt<f16_t>::shifts);
-    return r;
-}
+#if V2F16_FUNCS>0
+DEF_ELEM_FUNCS_F16(cftal, cftal, v2f16, v2s16, f16_t)
+#endif

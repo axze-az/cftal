@@ -18,57 +18,6 @@
 #include "cftal/test/program.h"
 #include "cftal/test/check_rsqrt.h"
 #include "cftal/vec_f16.h"
-#include "cftal/math/elem_func_wrapper_f16.h"
-#include "cftal/math/vec_func_traits_f16.h"
-
-namespace cftal {
-
-}
-
-__attribute__((__flatten__))
-cftal::v1f16
-cftal::rsqrt(arg_t<v1f16> x)
-{
-    using traits_t = cftal::math::func_traits<v1f16, v1s16>;
-    using func_t = cftal::math::elem_func<f16_t, traits_t>;
-    return func_t::rsqrt(x);
-}
-
-__attribute__((__flatten__))
-cftal::v2f16
-cftal::rsqrt(arg_t<v2f16> x)
-{
-    using traits_t = cftal::math::func_traits<v2f16, v2s16>;
-    using func_t = cftal::math::elem_func<f16_t, traits_t>;
-    return func_t::rsqrt(x);
-}
-
-__attribute__((__flatten__))
-cftal::v4f16
-cftal::rsqrt(arg_t<v4f16> x)
-{
-    using traits_t = cftal::math::func_traits<v4f16, v4s16>;
-    using func_t = cftal::math::elem_func<f16_t, traits_t>;
-    return func_t::rsqrt(x);
-}
-
-__attribute__((__flatten__))
-cftal::v8f16
-cftal::rsqrt(arg_t<v8f16> x)
-{
-    using traits_t = cftal::math::func_traits<v8f16, v8s16>;
-    using func_t = cftal::math::elem_func<f16_t, traits_t>;
-    return func_t::rsqrt(x);
-}
-
-__attribute__((__flatten__))
-cftal::v16f16
-cftal::rsqrt(arg_t<v16f16> x)
-{
-    using traits_t = cftal::math::func_traits<v16f16, v16s16>;
-    using func_t = cftal::math::elem_func<f16_t, traits_t>;
-    return func_t::rsqrt(x);
-}
 
 int main(int argc, char** argv)
 {
