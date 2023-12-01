@@ -34,7 +34,14 @@
 namespace cftal {
 
 
-
+#if V2F16_FUNCS>0
+#endif
+#if V4F16_FUNCS>0
+#endif
+#if V8F16_FUNCS>0
+#endif
+#if V16F16_FUNCS>0
+#endif
 
 }
 
