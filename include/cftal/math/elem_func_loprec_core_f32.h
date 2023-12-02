@@ -251,8 +251,8 @@ __exp_k(arg_t<vf_type> xrd, arg_t<vf_type> kfd,
     // x^4 : +0xa.9130dp-8f
     constexpr
     const float exp_c4=+4.1277933866e-02f;
-    static_assert(exp_c0 == 1.0, "oops");
-    static_assert(exp_c1 == 1.0, "oops");
+    static_assert(exp_c0 == 1.0f, "oops");
+    static_assert(exp_c1 == 1.0f, "oops");
 
     constexpr
     static const float ci[]= {
@@ -264,7 +264,7 @@ __exp_k(arg_t<vf_type> xrd, arg_t<vf_type> kfd,
     yd=__mul_two_pow(yd, kfd);
     if (_EXP_M1 == true) {
         yd -= exp_c0;
-        yd= _T::sel(abs(x) < 0x1p-15, x, yd);
+        yd= _T::sel(abs(x) < 0x1p-11f, x, yd);
     }
     return yd;
 }
