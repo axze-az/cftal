@@ -55,6 +55,14 @@ namespace cftal {
     vec<f16_t, _N>
     expm1(const vec<f16_t, _N>& x);
 
+    template <size_t _N>
+    vec<f16_t, _N>
+    exp2(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    exp2m1(const vec<f16_t, _N>& x);
+
     vec<f16_t, 1>
     sqrt(arg_t<vec<f16_t, 1> > x);
 
@@ -66,6 +74,12 @@ namespace cftal {
 
     vec<f16_t, 1>
     expm1(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    exp2(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    exp2m1(arg_t<vec<f16_t, 1> > x);
 
 #if V2F16_FUNCS>0
 
@@ -80,6 +94,12 @@ namespace cftal {
 
     vec<f16_t, 2>
     expm1(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    exp2(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    exp2m1(arg_t<vec<f16_t, 2> > x);
 
 #endif
 
@@ -97,6 +117,12 @@ namespace cftal {
     vec<f16_t, 4>
     expm1(arg_t<vec<f16_t, 4> > x);
 
+    vec<f16_t, 4>
+    exp2(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    exp2m1(arg_t<vec<f16_t, 4> > x);
+
 #endif
 #if V8F16_FUNCS>0
 
@@ -112,6 +138,12 @@ namespace cftal {
     vec<f16_t, 8>
     expm1(arg_t<vec<f16_t, 8> > x);
 
+    vec<f16_t, 8>
+    exp2(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    exp2m1(arg_t<vec<f16_t, 8> > x);
+
 #endif
 #if V16F16_FUNCS>0
 
@@ -126,6 +158,12 @@ namespace cftal {
 
     vec<f16_t, 16>
     expm1(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    exp2(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    exp2m1(arg_t<vec<f16_t, 16> > x);
 
 #endif
 }
@@ -163,6 +201,24 @@ cftal::vec<cftal::f16_t, _N>
 cftal::expm1(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(expm1(low_half(v)), expm1(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::exp2(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(exp2(low_half(v)), exp2(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::exp2m1(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(ex2pm1(low_half(v)), ex2pm1(high_half(v)));
     return r;
 }
 
