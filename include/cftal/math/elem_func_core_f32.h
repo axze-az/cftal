@@ -1360,7 +1360,7 @@ __exp_k(arg_t<vf_type> xrh, arg_t<vf_type> xrl,
         ye += ye;
         y = 2.0f*y + ye;
         // x small, required for handling of subnormal numbers
-        y = _T::sel((abs(x) < 0x1p-25f), x, y);
+        y = _T::sel((abs(x) < 0x1p-24f), x, y);
     }
     return y;
 }
