@@ -218,7 +218,7 @@ inline
 cftal::vec<cftal::f16_t, _N>
 cftal::exp2m1(const vec<cftal::f16_t, _N>& v)
 {
-    vec<f16_t, _N> r(ex2pm1(low_half(v)), ex2pm1(high_half(v)));
+    vec<f16_t, _N> r(exp2m1(low_half(v)), exp2m1(high_half(v)));
     return r;
 }
 
