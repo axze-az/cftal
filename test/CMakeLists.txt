@@ -339,6 +339,7 @@ test_prog(test-exp2m1-f16)
 test_prog(test-log-f16)
 test_prog(test-log2-f16)
 test_prog(test-log10-f16)
+test_prog(test-log1p-f16)
 
 test_prog(test-permute)
 test_prog(test-compress-expand-elements)

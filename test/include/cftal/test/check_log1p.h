@@ -49,7 +49,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::log1p(a);
+                using std::log1p;
+                return log1p(a);
             }
             static
             const char* fname() { return "log1p"; }
