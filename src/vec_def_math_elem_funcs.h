@@ -504,6 +504,14 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::log10(a);                                        \
     }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::log1p(arg<vec_float>::type a)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::log1p(a);                                        \
+    }                                                                   \
 
 
 // Local variables:

@@ -75,6 +75,10 @@ namespace cftal {
     vec<f16_t, _N>
     log10(const vec<f16_t, _N>& x);
 
+    template <size_t _N>
+    vec<f16_t, _N>
+    log1p(const vec<f16_t, _N>& x);
+
     vec<f16_t, 1>
     sqrt(arg_t<vec<f16_t, 1> > x);
 
@@ -101,6 +105,9 @@ namespace cftal {
 
     vec<f16_t, 1>
     log10(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    log1p(arg_t<vec<f16_t, 1> > x);
 
 #if V2F16_FUNCS>0
 
@@ -130,6 +137,9 @@ namespace cftal {
 
     vec<f16_t, 2>
     log10(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    log1p(arg_t<vec<f16_t, 2> > x);
 
 #endif
 
@@ -162,6 +172,9 @@ namespace cftal {
     vec<f16_t, 4>
     log10(arg_t<vec<f16_t, 4> > x);
 
+    vec<f16_t, 4>
+    log1p(arg_t<vec<f16_t, 4> > x);
+
 #endif
 #if V8F16_FUNCS>0
 
@@ -192,6 +205,9 @@ namespace cftal {
     vec<f16_t, 8>
     log10(arg_t<vec<f16_t, 8> > x);
 
+    vec<f16_t, 8>
+    log1p(arg_t<vec<f16_t, 8> > x);
+
 #endif
 #if V16F16_FUNCS>0
 
@@ -221,6 +237,9 @@ namespace cftal {
 
     vec<f16_t, 16>
     log10(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    log1p(arg_t<vec<f16_t, 16> > x);
 
 #endif
 }
@@ -303,6 +322,15 @@ cftal::vec<cftal::f16_t, _N>
 cftal::log10(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(log10(low_half(v)), log10(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::log1p(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(log1p(low_half(v)), log1p(high_half(v)));
     return r;
 }
 

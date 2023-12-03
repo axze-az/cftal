@@ -127,6 +127,11 @@ namespace cftal {
             static
             vf_type
             log_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            log1p_k(arg_t<vf_type> x);
+
 #endif
 #if __CFTAL_CFG_USE_VF32_FOR_VF16_LOG2__ >0
             static
@@ -382,6 +387,19 @@ log_k(arg_t<vf_type> x)
     vf_type r=cvt<vf_type>(rd);
     return r;
 }
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
+log1p_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type rd=f32_core::template __log1p_k<f32_core::log_func::c_log_e>(xd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
+
 #endif
 
 #if __CFTAL_CFG_USE_VF32_FOR_VF16_LOG2__ >0

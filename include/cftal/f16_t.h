@@ -468,6 +468,7 @@ namespace cftal {
     f16_t log(const f16_t& v);
     f16_t log2(const f16_t& v);
     f16_t log10(const f16_t& v);
+    f16_t log1p(const f16_t& v);
 
     std::ostream& operator<<(std::ostream& s, const f16_t& v);
     std::istream& operator>>(std::istream& s, f16_t& v);
@@ -891,6 +892,12 @@ inline
 cftal::f16_t cftal::log10(const f16_t& v)
 {
     return f16_t(std::log10(float(v)));
+}
+
+inline
+cftal::f16_t cftal::log1p(const f16_t& v)
+{
+    return f16_t(std::log1p(float(v)));
 }
 
 inline
