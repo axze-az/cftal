@@ -67,6 +67,14 @@ namespace cftal {
     vec<f16_t, _N>
     log(const vec<f16_t, _N>& x);
 
+    template <size_t _N>
+    vec<f16_t, _N>
+    log2(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    log10(const vec<f16_t, _N>& x);
+
     vec<f16_t, 1>
     sqrt(arg_t<vec<f16_t, 1> > x);
 
@@ -87,6 +95,12 @@ namespace cftal {
 
     vec<f16_t, 1>
     log(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    log2(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    log10(arg_t<vec<f16_t, 1> > x);
 
 #if V2F16_FUNCS>0
 
@@ -110,6 +124,12 @@ namespace cftal {
 
     vec<f16_t, 2>
     log(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    log2(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    log10(arg_t<vec<f16_t, 2> > x);
 
 #endif
 
@@ -136,6 +156,12 @@ namespace cftal {
     vec<f16_t, 4>
     log(arg_t<vec<f16_t, 4> > x);
 
+    vec<f16_t, 4>
+    log2(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    log10(arg_t<vec<f16_t, 4> > x);
+
 #endif
 #if V8F16_FUNCS>0
 
@@ -160,6 +186,12 @@ namespace cftal {
     vec<f16_t, 8>
     log(arg_t<vec<f16_t, 8> > x);
 
+    vec<f16_t, 8>
+    log2(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    log10(arg_t<vec<f16_t, 8> > x);
+
 #endif
 #if V16F16_FUNCS>0
 
@@ -183,6 +215,12 @@ namespace cftal {
 
     vec<f16_t, 16>
     log(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    log2(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    log10(arg_t<vec<f16_t, 16> > x);
 
 #endif
 }
@@ -247,6 +285,24 @@ cftal::vec<cftal::f16_t, _N>
 cftal::log(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(log(low_half(v)), log(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::log2(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(log2(low_half(v)), log2(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::log10(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(log10(low_half(v)), log10(high_half(v)));
     return r;
 }
 
