@@ -49,6 +49,10 @@ namespace cftal {
 
     template <size_t _N>
     vec<f16_t, _N>
+    cbrt(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
     exp(const vec<f16_t, _N>& x);
 
     template <size_t _N>
@@ -86,6 +90,9 @@ namespace cftal {
     rsqrt(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
+    cbrt(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
     exp(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
@@ -116,6 +123,9 @@ namespace cftal {
 
     vec<f16_t, 2>
     rsqrt(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    cbrt(arg_t<vec<f16_t, 2> > x);
 
     vec<f16_t, 2>
     exp(arg_t<vec<f16_t, 2> > x);
@@ -152,6 +162,9 @@ namespace cftal {
     rsqrt(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
+    cbrt(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
     exp(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
@@ -185,6 +198,9 @@ namespace cftal {
     rsqrt(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
+    cbrt(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
     exp(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
@@ -216,6 +232,9 @@ namespace cftal {
 
     vec<f16_t, 16>
     rsqrt(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    cbrt(arg_t<vec<f16_t, 16> > x);
 
     vec<f16_t, 16>
     exp(arg_t<vec<f16_t, 16> > x);
@@ -259,6 +278,15 @@ cftal::vec<cftal::f16_t, _N>
 cftal::rsqrt(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(rsqrt(low_half(v)), rsqrt(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::cbrt(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(cbrt(low_half(v)), cbrt(high_half(v)));
     return r;
 }
 

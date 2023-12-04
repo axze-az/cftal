@@ -29,6 +29,7 @@
 
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_SQRT__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_RSQRT__ 1
+#define __CFTAL_CFG_USE_VF32_FOR_VF16_CBRT__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP2_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_EXP10_FUNCS__ 0
@@ -67,6 +68,11 @@ namespace cftal {
             static
             vf_type
             rsqrt_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_CBRT__>0
+            static
+            vf_type
+            cbrt_k(arg_t<vf_type> x);
 #endif
 #if __CFTAL_CFG_USE_VF32_FOR_VF16_EXP_FUNCS__ >0
             template <bool _EXP_M1>
@@ -189,6 +195,20 @@ rsqrt_k(arg_t<vf_type> x)
 {
     vhf_type xf=cvt<vhf_type>(x);
     vhf_type rf=f32_core::rsqrt_k(xf);
+    vf_type r=cvt<vf_type>(rf);
+    return r;
+}
+#endif
+
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_CBRT__>0
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
+cbrt_k(arg_t<vf_type> x)
+{
+    vhf_type xf=cvt<vhf_type>(x);
+    vhf_type rf=f32_core::cbrt_k(xf);
     vf_type r=cvt<vf_type>(rf);
     return r;
 }

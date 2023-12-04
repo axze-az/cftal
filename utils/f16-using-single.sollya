@@ -117,34 +117,15 @@ b = [|1|]@b;
 write_approx_prec(p, f, i);
 write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
 
-/* f32: table based logarithm */
-L=7;
-e_1_128=exp(1/128);
-ir = round(e_1_128, L, RU)-1;
-il = round(1-(e_1_128-1), L, RD)-1;
-if ( ir < 2*2^-L ) then {
-    ir = 2*2^-L;
-};
-if ( il > 2*2^-L ) then {
-    il = -2*2^-L;
-};
-i=[il, ir];
-f=log1p(x);
-d = guessdegree(f, i, 0x1p-14);
-d;
-b = [|2|];
-c = [|SG...|];
-p = fpminimax(f, b, c, i, relative, floating, x);
-b = [|0, 1|]@b;
-write_approx_prec(p, f, i);
-write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
 
-b = [|2, ..., 3|];
-p = fpminimax(f, b, c, i, relative, floating, x);
-b = [|1|]@b;
+/* cbrt(x) f32, 5 bits precision  */
+i = [2^-3, 1];
+f = (x)^(1/3);
+b= [|0,...,2|];
+c= [|SG...|];
+p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "constexpr\n    const float log_hp_c", "log_hp", b, c);
-
+write_coeffs(p, "constexpr\n    const float cbrt_c", "cbrt", b, c);
 
 /*
  * Local variables:
