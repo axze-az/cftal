@@ -289,14 +289,14 @@ cbrt_k(arg_t<vf_type> xc)
     };
     vf_type mm = horner(mm0, ci);
     // round mm to 3 bits = int(11/3)
-    mm=round_to_nearest_even_last_bits<24-11/3>(mm);
-    // second iteration
-    mm = impl::root_3::order5<float>(mm, mm0);
+    // mm=round_to_nearest_even_last_bits<24-3>(mm);
+    // iterate once
+    mm = impl::root_3::order4<float>(mm, mm0);
     // no denormal results are possible
     vi_type e3c_exp=(e3c<<23);
     vi_type mmi=as<vi_type>(mm) + e3c_exp;
     mm=as<vf_type>(mmi);
-    mm = copysign(mm, xc);
+    mm |= (xc & sign_f32_msk::v.f32());
     return mm;
 }
 

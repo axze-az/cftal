@@ -52,7 +52,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::cbrt(a);
+                using std::cbrt;
+                return cbrt(a);
             }
             static
             const char* fname() { return "cbrt"; }

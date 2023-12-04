@@ -27,18 +27,21 @@ namespace cftal {
 
         template <typename _T>
         struct domain_full_x_axis {
-            constexpr static
-            const func_domain<_T> domains[]={
-                std::make_pair(-std::numeric_limits<_T>::max(),
-                                std::numeric_limits<_T>::max())
-            };
+            static
+            const func_domain<_T> domains[];
+
             constexpr static
             const int shifts[]={0};
         };
 
         template <typename _T>
-        struct domain_positive_x_axis {
+        const func_domain<_T> domain_full_x_axis<_T>::domains[]={
+            std::make_pair(-std::numeric_limits<_T>::max(),
+                            std::numeric_limits<_T>::max())
+        };
 
+        template <typename _T>
+        struct domain_positive_x_axis {
             static
             const func_domain<_T> domains[];
 
@@ -49,8 +52,8 @@ namespace cftal {
 
         template <typename _T>
         const func_domain<_T> domain_positive_x_axis<_T>::domains[]={
-                std::make_pair(_T(0),
-                                std::numeric_limits<_T>::max())
+            std::make_pair(_T(0),
+                            std::numeric_limits<_T>::max())
         };
 
         template <typename _T>

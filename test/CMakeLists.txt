@@ -332,6 +332,7 @@ test_prog(test-half-f32)
 
 test_prog(test-sqrt-f16)
 test_prog(test-rsqrt-f16)
+test_prog(test-cbrt-f16)
 test_prog(test-exp-f16)
 test_prog(test-expm1-f16)
 test_prog(test-exp2-f16)
