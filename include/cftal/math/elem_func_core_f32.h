@@ -982,7 +982,8 @@ cbrt_k(arg_t<vf_type> xc)
     vf_type t= _T::insert_exp(_T::bias()+e3c);
     mm *=t;
 #endif
-    mm = copysign(mm, xc);
+    // mm = copysign(mm, xc);
+    mm |= (xc & sign_f32_msk::v.f32());
     return mm;
 }
 
@@ -1080,7 +1081,8 @@ rcbrt_k(arg_t<vf_type> xc)
     vf_type t= _T::insert_exp(_T::bias()-e3c);
     mm *=t;
 #endif
-    mm = copysign(mm, xc);
+    // mm = copysign(mm, xc);
+    mm |= (xc & sign_f32_msk::v.f32());
     return mm;
 }
 
