@@ -148,7 +148,6 @@ namespace cftal {
     double min_element(const v2f64& v);
 
     v2f64 abs(const v2f64& a);
-    v2f64 fabs(const v2f64& a);
     v2f64 sqrt(const v2f64& a);
 
     namespace x86 {
