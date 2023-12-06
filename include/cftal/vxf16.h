@@ -148,8 +148,8 @@ namespace cftal {
         typename vec<f16_t, _N>::mask_type
         cvt_f32_msk_to_f16_msk(const typename vec<f32_t, _N>::mask_type& m) {
             const vec<mf_f16_t, 2*_N> mv=as<const vec<mf_f16_t, 2*_N> >(m);
-            vec<mf_f16_t, _N> ee(odd_elements(mv));
-            return vec<f16_t, _N>::cvt_from_rep(ee);
+            auto oe=odd_elements(mv);
+            return vec<f16_t, _N>::cvt_from_rep(oe);
         }
 
     }
