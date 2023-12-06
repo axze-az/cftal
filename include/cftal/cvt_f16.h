@@ -27,11 +27,11 @@
 namespace cftal {
 
     // memory format for IEEE f16_t types
-    using mf_f16_t = uint16_t;
+    using mf_f16_t = int16_t;
 
     constexpr
     inline
-    uint16_t read_bits(mf_f16_t v) {
+    int16_t read_bits(mf_f16_t v) {
         return v;
     }
 
