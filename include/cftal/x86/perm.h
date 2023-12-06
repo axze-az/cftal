@@ -70,11 +70,11 @@ namespace cftal {
 
         // return odd numbered elements
         __m128i
-        odd_elements_v16s16(__m256i);
+        odd_elements_v16u16(__m256i);
 
         // return even numbered elements
         __m128i
-        even_elements_v16s16(__m256i);
+        even_elements_v16u16(__m256i);
 
 #endif
 
@@ -1652,7 +1652,7 @@ cftal::x86::permute_v4f64_v4s64(__m256d s, __m256i msk)
 // return odd elements
 inline
 __m128i
-cftal::x86::odd_elements_v16s16(__m256i s)
+cftal::x86::odd_elements_v16u16(__m256i s)
 {
     // 1 3 5 7 --> 2 6 10 14
     const __m256i& p=const_v32u8< 2,  3,  6,  7,  10,  11, 14, 15,
@@ -1667,7 +1667,7 @@ cftal::x86::odd_elements_v16s16(__m256i s)
 // return even elements
 inline
 __m128i
-cftal::x86::even_elements_v16s16(__m256i s)
+cftal::x86::even_elements_v16u16(__m256i s)
 {
     // 0 2 4 6 --> 0 4 8 12
     const __m256i& p=const_v32u8< 0,  1,  4,  5,  8,  9, 12, 13,
