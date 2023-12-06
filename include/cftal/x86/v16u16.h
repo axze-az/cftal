@@ -159,6 +159,12 @@ namespace cftal {
 
     vec<uint16_t, 16>
     average(const vec<uint16_t, 16>& a, const vec<uint16_t, 16>& b);
+
+    vec<uint16_t, 8>
+    odd_elements(const vec<uint16_t, 16>& a);
+
+    vec<uint16_t, 8>
+    even_elements(const vec<uint16_t, 16>& a);
 }
 
 

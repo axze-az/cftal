@@ -621,6 +621,19 @@ cftal::average(const vec<uint16_t, 16>& a, const vec<uint16_t, 16>& b)
     return x86::pavgw::v(a(), b());
 }
 
+inline
+cftal::vec<uint16_t, 8>
+cftal::odd_elements(const vec<uint16_t, 16>& a)
+{
+    return x86::odd_elements_v16u16(a());
+}
+
+inline
+cftal::vec<uint16_t, 8>
+cftal::even_elements(const vec<uint16_t, 16>& a)
+{
+    return x86::odd_elements_v16u16(a());
+}
 
 // Local variables:
 // mode: c++
