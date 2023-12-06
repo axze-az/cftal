@@ -67,6 +67,15 @@ namespace cftal {
         // permute f64 using s64 indices
         __m256d
         permute_v4f64_v4s64(__m256d s, __m256i msk);
+
+        // return odd numbered elements
+        __m128i
+        odd_elements_v16s16(__m256i);
+
+        // return even numbered elements
+        __m128i
+        even_elements_v16s16(__m256i);
+
 #endif
 
         // generic permutation of one double vector
@@ -1639,6 +1648,37 @@ cftal::x86::permute_v4f64_v4s64(__m256d s, __m256i msk)
     return _mm256_castsi256_pd(permute_v4u64_v4s64(
         _mm256_castpd_si256(s), msk));
 }
+
+// return odd elements
+inline
+__m128i
+cftal::x86::odd_elements_v16s16(__m256i s)
+{
+    // 1 3 5 7 --> 2 6 10 14
+    const __m256i& p=const_v32u8< 2,  3,  6,  7,  10,  11, 14, 15,
+                                  0,  0,  0,  0,   0,   0,  0,  0,
+                                  2,  3,  6,  7,  10,  11, 14, 15,
+                                  0,  0,  0,  0,   0,   0,  0,  0>::iv();
+    __m256i r=vpshufb::v(s, p);
+    r = perm1_v4u64<0, 2, 1, 3>::v(r);
+    return _mm256_castsi256_si128(r);
+}
+
+// return even elements
+inline
+__m128i
+cftal::x86::even_elements_v16s16(__m256i s)
+{
+    // 0 2 4 6 --> 0 4 8 12
+    const __m256i& p=const_v32u8< 0,  1,  4,  5,  8,  9, 12, 13,
+                                  0,  0,  0,  0,  0,  0,  0,  0,
+                                  0,  1,  4,  5,  8,  9, 12, 13,
+                                  0,  0,  0,  0,  0,  0,  0,  0>::iv();
+    __m256i r=vpshufb::v(s, p);
+    r = perm1_v4u64<0, 2, 1, 3>::v(r);
+    return _mm256_castsi256_si128(r);
+}
+
 #endif
 
 template <int _P0, int _P1>
