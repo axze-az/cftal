@@ -336,7 +336,7 @@ rsqrt(arg_t<vf_type> x)
     vf_type y= base_type::rsqrt_k(x);
     // y=_T::sel(x == _T::pinf(), vf_type(0), y);
     y=_T::sel_val_or_zero(x != _T::pinf(), y);
-    y=_T::sel(x == _FLOAT_T(0.0), _T::pinf(), y);
+    y=_T::sel(iszero(x), _T::pinf(), y);
     y=_T::sel((x < _FLOAT_T(0.0)) | isnan(x), _T::nan(), y);
     return y;
 }
@@ -353,7 +353,7 @@ cbrt(arg_t<vf_type> x)
     // __asm volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type r=base_type::cbrt_k(x);
     vmf_type is_zero_or_inf_or_nan=
-        (x == _FLOAT_T(0.0)) | isinf(x) | isnan(x);
+        iszero(x) | isinf(x) | isnan(x);
     r=_T::sel(is_zero_or_inf_or_nan, x, r);
     // __asm volatile("# LLVM-MCA-END\n\t");
     return r;
@@ -372,7 +372,7 @@ rcbrt(arg_t<vf_type> x)
     vf_type y=base_type::rcbrt_k(x);
     y=_T::sel_val_or_zero(x != _T::pinf(), y);
     y=_T::sel(x == _T::ninf(), -0.0, y);
-    y=_T::sel(x == _FLOAT_T(0.0), copysign(_T::pinf(), x), y);
+    y=_T::sel(iszero(x), copysign(_T::pinf(), x), y);
     y=_T::sel(isnan(x), x, y);
     // __asm volatile("# LLVM-MCA-END\n\t");
     return y;
@@ -574,7 +574,7 @@ log(arg_t<vf_type> d)
     // if ((d < 0)|isnan(d)) x = NAN;
     x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), _T::nan(), x);
     // if (d == 0) x = -INFINITY;
-    x = _T::sel(d == _FLOAT_T(0.0), ninf, x);
+    x = _T::sel(iszero(d), ninf, x);
 #endif
     __asm__ volatile("# LLVM-MCA-END log\n\t");
     return x;
@@ -603,7 +603,7 @@ log1p(arg_t<vf_type> d)
     x = _T::sel((d < _FLOAT_T(-1.0))|isnan(d), _T::nan(), x);
     // if (d == -1.0) x = -INFINITY;
     x = _T::sel(d == _FLOAT_T(-1.0), ninf, x);
-    x = _T::sel(d == _FLOAT_T(0.0), d, x);
+    x = _T::sel(iszero(d), d, x);
     __asm__ volatile("# LLVM-MCA-END log1p\n\t");
     return x;
 }
@@ -621,7 +621,7 @@ log10(arg_t<vf_type> d)
     // if ((d < 0)|isnan(d)) x = NAN;
     x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
-    x = _T::sel(d == _FLOAT_T(0.0), ninf, x);
+    x = _T::sel(iszero(d), ninf, x);
     return x;
 }
 
@@ -647,8 +647,8 @@ log10p1(arg_t<vf_type> d)
     x = _T::sel((d < _FLOAT_T(-1.0))|isnan(d), _T::nan(), x);
     // if (d == -1.0) x = -INFINITY;
     x = _T::sel(d == _FLOAT_T(-1.0), ninf, x);
-    x = _T::sel(d == _FLOAT_T(0.0), d, x);
-    x = _T::sel(x==0.0, copysign(x, d), x);
+    // x = _T::sel(iszero(d), d, x);
+    // x = _T::sel(iszero(x), copysign(x, d), x);
     return x;
 }
 
@@ -665,7 +665,7 @@ log2(arg_t<vf_type> d)
     // if ((d < 0)|isnan(d)) x = NAN;
     x = _T::sel((d < _FLOAT_T(0.0))|isnan(d), vf_type(_T::nan()), x);
     // if (d == 0) x = -INFINITY;
-    x = _T::sel(d == _FLOAT_T(0.0), ninf, x);
+    x = _T::sel(iszero(d), ninf, x);
     return x;
 }
 
@@ -692,7 +692,7 @@ log2p1(arg_t<vf_type> d)
     x = _T::sel((d < _FLOAT_T(-1.0))|isnan(d), _T::nan(), x);
     // if (d == -1.0) x = -INFINITY;
     x = _T::sel(d == _FLOAT_T(-1.0), ninf, x);
-    x = _T::sel(d == _FLOAT_T(0.0), d, x);
+    // x = _T::sel(iszero(d), d, x);
     __asm__ volatile("# LLVM-MCA-END log2p1\n\t");
     return x;
 }
@@ -751,21 +751,21 @@ pow(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type efx = mulsign(vf_type(abs(x)-_FLOAT_T(1)), y);
 
     vmf_type y_inf= isinf(y);
-    vf_type t= _T::sel(efx==_FLOAT_T(0), _FLOAT_T(1), _T::pinf());
+    vf_type t= _T::sel(iszero(efx), _FLOAT_T(1), _T::pinf());
     t = _T::sel_zero_or_val(efx < _FLOAT_T(0), t);
     res = _T::sel(y_inf, t, res);
 
     // if y==1, res==x
     res = _T::sel(y==_FLOAT_T(1), x, res);
 
-    vmf_type x_zero = x == _FLOAT_T(0);
+    vmf_type x_zero = iszero(x);
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     t= _T::sel(x_zero, -y, y);
     t= _T::sel_zero_or_val(t < _FLOAT_T(0), _T::pinf());
     t = _T::sel(y_is_odd, mulsign(t, x), t);
     res = _T::sel(x_inf_or_zero, t, res);
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
-    res = _T::sel((y==_FLOAT_T(0)) | (x==_FLOAT_T(1)), _FLOAT_T(1), res);
+    res = _T::sel(iszero(y) | (x==_FLOAT_T(1)), _FLOAT_T(1), res);
     __asm__ volatile("# LLVM-MCA-END pow\n\t");
     return res;
 #endif
@@ -786,7 +786,7 @@ pow(arg_t<vf_type> x, arg_t<vi_type> e)
     vmf_type res_neg = vmf_type(sgn_x < _FLOAT_T(0)) & e_is_odd;
     res = _T::sel(res_neg, -res, res);
 
-    vmf_type x_zero = x == _FLOAT_T(0.0);
+    vmf_type x_zero = iszero(x);
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     vf_type t= _T::sel(x_zero, -y, y);
     t= _T::sel_zero_or_val(t < _FLOAT_T(0.0), _T::pinf());
@@ -797,7 +797,7 @@ pow(arg_t<vf_type> x, arg_t<vi_type> e)
     vmf_type e_is_one = _T::vmi_to_vmf(ei_is_one);
     res = _T::sel(e_is_one, x, res);
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
-    res = _T::sel((y==_FLOAT_T(0.0)) | (x==_FLOAT_T(1.0)), _FLOAT_T(1), res);
+    res = _T::sel(iszero(y) | (x==_FLOAT_T(1.0)), _FLOAT_T(1), res);
     return res;
 }
 
@@ -818,7 +818,7 @@ rootn(arg_t<vf_type> x, arg_t<vi_type> e)
     vmf_type e_is_zero=_T::vmi_to_vmf(ei_is_zero);
     vmi_type ei_is_pos= e>0;
     vmf_type e_is_pos= _T::vmi_to_vmf(ei_is_pos);
-    vmf_type x_zero=x==0;
+    vmf_type x_zero=iszero(x);
     res = _T::sel(x_zero, copysign(_T::pinf(), x), res);
     res = _T::sel(x_zero & e_is_even, _T::pinf(), res);
     res = _T::sel(x_zero & e_is_pos, x, res);
@@ -854,7 +854,7 @@ sin(arg_t<vf_type> d)
 {
     vf_type s;
     base_type::sin_cos_k(d, &s, nullptr);
-    s = _TRAITS_T::sel(d==_FLOAT_T(0), d, s);
+    s = _TRAITS_T::sel(iszero(d), d, s);
     return s;
 }
 
@@ -879,7 +879,7 @@ tan(arg_t<vf_type> d)
     t = _TRAITS_T::sel(isinf(d) | isnan(d),
                        copysign(_TRAITS_T::nan(), d),
                        t);
-    t = _TRAITS_T::sel(d==_FLOAT_T(0), d, t);
+    t = _TRAITS_T::sel(iszero(d), d, t);
     return t;
 }
 
@@ -977,10 +977,10 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 
     using _T = _TRAITS_T;
 
-    vmf_type y_zero = y==_FLOAT_T(0);
+    vmf_type y_zero = iszero(y);
     vmf_type x_inf = isinf(x);
     vmf_type y_inf = isinf(y);
-    vmf_type x_zero = x==_FLOAT_T(0);
+    vmf_type x_zero = iszero(x);
     vmf_type x_nan = isnan(x);
     vmf_type y_nan = isnan(y);
 
@@ -1053,7 +1053,7 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atan(arg_t<vf_type> x)
 {
     vf_type r= base_type::atan_k(x);
-    r=_TRAITS_T::sel(x==_FLOAT_T(0), x, r);
+    r=_TRAITS_T::sel(iszero(x), x, r);
     r=_TRAITS_T::sel(isinf(x), copysign(_FLOAT_T(M_PI/2), x) , r);
     r=_TRAITS_T::sel(isnan(x), x, r);
     return r;
@@ -1082,7 +1082,7 @@ acos(arg_t<vf_type> x)
     vf_type r=base_type::acos_k(x);
     r = _TRAITS_T::sel(x == _FLOAT_T(-1), M_PI, r);
     r = _TRAITS_T::sel_zero_or_val(x == _FLOAT_T(1), r);
-    r = _TRAITS_T::sel(x == _FLOAT_T(0), M_PI/2, r);
+    r = _TRAITS_T::sel(iszero(x), M_PI/2, r);
     r = _TRAITS_T::sel(x < _FLOAT_T(-1), -_TRAITS_T::nan(), r);
     r = _TRAITS_T::sel((x > _FLOAT_T(1))|isnan(x), _TRAITS_T::nan(), r);
     return r;

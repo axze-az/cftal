@@ -106,8 +106,7 @@ erf(arg_t<vf_type> x)
     using fc=func_constants<_FLOAT_T>;
     r = _TRAITS_T::sel(x < -fc::erf_lt_one_fin(), vf_type(-1.0), r);
     r = _TRAITS_T::sel(x > fc::erf_lt_one_fin(), vf_type(1.0), r);
-    r = _TRAITS_T::sel(x == 0, x, r);
-    r = _TRAITS_T::sel(isnan(x), x, r);
+    r = _TRAITS_T::sel(iszero(x)|isnan(x), x, r);
     return r;
 }
 
@@ -122,7 +121,7 @@ erfc(arg_t<vf_type> x)
     using fc=func_constants<_FLOAT_T>;
     r = _TRAITS_T::sel_zero_or_val(x > fc::erfc_gt_zero_fin(), r);
     r = _TRAITS_T::sel(x < -fc::erfc_gt_zero_fin(), vf_type(2.0), r);
-    r = _TRAITS_T::sel(x == 0, vf_type(1.0), r);
+    r = _TRAITS_T::sel(iszero(x), vf_type(1.0), r);
     r = _TRAITS_T::sel(isnan(x), x, r);
     __asm__ volatile("# LLVM-MCA-END\n\t");
     return r;
@@ -176,7 +175,7 @@ lgamma(arg_t<vf_type> xc, vi_type* signp)
         si = _TRAITS_T::sel_vi(_TRAITS_T::vmf_to_vmi(is_int_lt_0), 1, si);
     }
     vmf_type t;
-    if (_TRAITS_T::any_of_vmf(t=xc==vf_type(0.0))) {
+    if (_TRAITS_T::any_of_vmf(t=iszero(xc))) {
         lg = _TRAITS_T::sel(t, _TRAITS_T::pinf(), lg);
         vmi_type ti=_TRAITS_T::vmf_to_vmi(t);
         vf_type sgn=copysign(vf_type(1.0), xc);
@@ -234,7 +233,7 @@ y0(arg_t<vf_type> xc)
     y = _TRAITS_T::sel(isnan(xc), xc, y);
     y = _TRAITS_T::sel_zero_or_val(isinf(xc), y);
     y = _TRAITS_T::sel(xc < 0, _TRAITS_T::nan(), y);
-    y = _TRAITS_T::sel(xc == 0, -_TRAITS_T::pinf(), y);
+    y = _TRAITS_T::sel(iszero(xc), -_TRAITS_T::pinf(), y);
 #endif
     return y;
 }
@@ -248,10 +247,9 @@ y1(arg_t<vf_type> xc)
     y = _TRAITS_T::sel(isnan(xc), xc, y);
     y = _TRAITS_T::sel_zero_or_val(isinf(xc), y);
     y = _TRAITS_T::sel(xc < 0, _TRAITS_T::nan(), y);
-    y = _TRAITS_T::sel(xc == 0, -_TRAITS_T::pinf(), y);
+    y = _TRAITS_T::sel(iszero(xc), -_TRAITS_T::pinf(), y);
     return y;
 }
-
 
 // Local Variables:
 // mode: c++

@@ -185,6 +185,10 @@ namespace cftal {
     vec<f16_t, _N>
     abs(const vec<f16_t, _N>& a);
 
+    template <size_t _N>
+    typename vec<f16_t, _N>::mask_type
+    iszero(const vec<f16_t, _N>& a);
+
     // nan
     typename vec<f16_t, 1>::mask_type
     isnan(const vec<f16_t, 1>& a);
@@ -896,6 +900,17 @@ cftal::abs(const vec<f16_t, _N>& a)
 {
     vec<mf_f16_t, _N> t= a() & not_sign_f16_msk::v.u16();
     return vec<f16_t, _N>::cvt_from_rep(t);
+}
+
+template <std::size_t _N>
+typename cftal::vec<cftal::f16_t, _N>::mask_type
+cftal::iszero(const vec<f16_t, _N>& a)
+{
+    vec<mf_f16_t, _N> t= a();
+    t += t;
+    auto v_is_zero = t == mf_f16_t(0);
+    using m_t = typename vec<f16_t, _N>::mask_type;
+    return m_t::cvt_from_rep(v_is_zero);
 }
 
 inline
