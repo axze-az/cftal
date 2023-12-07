@@ -466,6 +466,9 @@ namespace cftal {
     f16_t exp(const f16_t& v);
     f16_t expm1(const f16_t& v);
     f16_t exp2(const f16_t& v);
+    f16_t sinh(const f16_t& v);
+    f16_t cosh(const f16_t& v);
+    f16_t tanh(const f16_t& v);
     f16_t log(const f16_t& v);
     f16_t log2(const f16_t& v);
     f16_t log10(const f16_t& v);
@@ -881,6 +884,24 @@ inline
 cftal::f16_t cftal::exp2(const f16_t& v)
 {
     return f16_t(std::exp2(float(v)));
+}
+
+inline
+cftal::f16_t cftal::sinh(const f16_t& v)
+{
+    return f16_t(std::sinh(float(v)));
+}
+
+inline
+cftal::f16_t cftal::cosh(const f16_t& v)
+{
+    return f16_t(std::cosh(float(v)));
+}
+
+inline
+cftal::f16_t cftal::tanh(const f16_t& v)
+{
+    return f16_t(std::tanh(float(v)));
 }
 
 inline
