@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     int r=program<check_exp10<f16_t>, 32, 1, 0x4000>(
         argc,
         argv,
-        mpfr_exp2,
+        mpfr_exp10,
         domain_exp10<f16_t>::domains,
         domain_exp10<f16_t>::shifts);
     return r;
