@@ -50,13 +50,30 @@ namespace cftal {
             constexpr static
             const func_domain<float> domains[]={
                 std::make_pair(-8.0f, 39.0f),
-                std::make_pair(-0x1p-4, 0x1p-4)
+                std::make_pair(-0x1p-4f, 0x1p-4f)
             };
             constexpr static
             const int shifts[]={
                 0,
                 -2
             };
+        };
+
+        template <>
+        struct domain_exp10m1<f16_t> {
+            static
+            const func_domain<f16_t> domains[];
+            constexpr static
+            const int shifts[]={
+                0,
+                -2
+            };
+        };
+
+        const func_domain<f16_t>
+        domain_exp10m1<f16_t>::domains[]={
+            std::make_pair(-3.7_f16, 4.9_f16),
+            std::make_pair(-0x1p-3_f16, 0x1p-3_f16)
         };
 
         template <typename _T>
@@ -82,7 +99,8 @@ namespace cftal {
             _T
             s(const _T& a) {
                 const _T log10=_T(+2.3025850929940459010936e+00);
-                return std::expm1(a*log10);
+                using std::expm1;
+                return expm1(a*log10);
             }
             static
             const char* fname() { return "exp10m1"; }
