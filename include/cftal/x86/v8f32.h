@@ -143,7 +143,6 @@ namespace cftal {
     v8f32 max(const v8f32& a, const v8f32& b);
     v8f32 min(const v8f32& a, const v8f32& b);
     v8f32 abs(const v8f32& a);
-    v8f32 fabs(const v8f32& a);
     v8f32 sqrt(const v8f32& a);
 
     namespace x86 {

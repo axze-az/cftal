@@ -140,7 +140,6 @@ namespace cftal {
     v4f32 max(const v4f32& a, const v4f32& b);
     v4f32 min(const v4f32& a, const v4f32& b);
     v4f32 abs(const v4f32& a);
-    v4f32 fabs(const v4f32& a);
     v2f32 sqrt(const v2f32& a);
     v4f32 sqrt(const v4f32& a);
 

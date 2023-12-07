@@ -89,6 +89,10 @@ namespace cftal {
 
     template <std::size_t _N>
     typename vec<double, _N>::mask_type
+    iszero(const vec<double, _N>& v);
+
+    template <std::size_t _N>
+    typename vec<double, _N>::mask_type
     isinf(const vec<double, _N>& v);
 
     template <std::size_t _N>
@@ -1297,11 +1301,9 @@ cftal::nmad(const vec<double, _N>& a, const vec<double, _N>& b,
 template <std::size_t _N>
 inline
 typename cftal::vec<double, _N>::mask_type
-cftal::isnan(const vec<double, _N>& x)
+cftal::iszero(const vec<double, _N>& x)
 {
-    // exponent = 0x7FF and significand !=0
-    // x != x  if x == NAN
-    return x != x;
+    return x == 0.0;
 }
 
 template <std::size_t _N>
@@ -1312,6 +1314,16 @@ cftal::isinf(const vec<double, _N>& x)
     vec<double, _N> absx(abs(x));
     const double vm=exp_f64_msk::v.f64();
     return absx == vm;
+}
+
+template <std::size_t _N>
+inline
+typename cftal::vec<double, _N>::mask_type
+cftal::isnan(const vec<double, _N>& x)
+{
+    // exponent = 0x7FF and significand !=0
+    // x != x  if x == NAN
+    return x != x;
 }
 
 template <std::size_t _N>
