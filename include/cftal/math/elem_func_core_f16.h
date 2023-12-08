@@ -77,10 +77,6 @@ namespace cftal {
             vf_type
             nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
 
-            static
-            vmf_type
-            is_zero(arg_t<vf_type> x);
-
             // as frexp but without checking for 0, inf, nan
             static
             vi_type
@@ -207,18 +203,6 @@ nextafter_k(arg_t<vf_type> xc, arg_t<vf_type> yc)
     r = _T::sel_vi(ux == uy, uy, r);
     vf_type rf=_T::as_float(r);
     return rf;
-}
-
-template <typename _T>
-inline
-typename cftal::math::elem_func_core<cftal::f16_t, _T>::vmf_type
-cftal::math::elem_func_core<cftal::f16_t, _T>::
-is_zero(arg_t<vf_type> xc)
-{
-    vi_type t=_T::as_int(xc);
-    t = t+t;
-    vmi_type m= t == vi_type(0);
-    return _T::vmi_to_vmf(m);
 }
 
 template <typename _T>
@@ -419,7 +403,7 @@ sqrt(arg_t<vf_type> xc)
     auto lk=make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(f16_sqrt_data::tbl_zero());
     y=_T::sel(signbit(y), _T::nan(), y);
-    y=_T::sel(is_zero(xc), xc, y);
+    y=_T::sel(iszero(xc), xc, y);
     return y;
 }
 
@@ -433,7 +417,7 @@ rsqrt_k(arg_t<vf_type> x)
     auto lk=make_variable_lookup_table<f16_t>(idx);
     vf_type y=lk.from(f16_rsqrt_data::tbl_zero());
     // y=_T::sel(signbit(y), _T::nan(), y);
-    // y=_T::sel(is_zero(xc), xc, y);
+    // y=_T::sel(iszero(xc), xc, y);
     return y;
 }
 
