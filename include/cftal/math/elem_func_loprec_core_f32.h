@@ -516,9 +516,6 @@ sinh_cosh_k(arg_t<vf_type> xc)
             // x^5 : +0x8.d6c43p-10f
             constexpr
             const float sinh_c5=+8.6317686364e-03f;
-            // x^ : +0x8p-3f
-            constexpr
-            const float sinh_i0_right=+1.0000000000e+00f;
 
             static const float ci[]={
                 sinh_c5, sinh_c3, sinh_c1

@@ -77,6 +77,18 @@ namespace cftal {
 
     template <size_t _N>
     vec<f16_t, _N>
+    sinh(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    cosh(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    tanh(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
     log(const vec<f16_t, _N>& x);
 
     template <size_t _N>
@@ -119,6 +131,15 @@ namespace cftal {
     exp10m1(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
+    sinh(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    cosh(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    tanh(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
     log(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
@@ -158,6 +179,15 @@ namespace cftal {
 
     vec<f16_t, 2>
     exp10m1(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    sinh(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    cosh(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    tanh(arg_t<vec<f16_t, 2> > x);
 
     vec<f16_t, 2>
     log(arg_t<vec<f16_t, 2> > x);
@@ -203,6 +233,15 @@ namespace cftal {
     exp10m1(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
+    sinh(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    cosh(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    tanh(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
     log(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
@@ -245,6 +284,15 @@ namespace cftal {
     exp10m1(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
+    sinh(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    cosh(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    tanh(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
     log(arg_t<vec<f16_t, 8> > x);
 
     vec<f16_t, 8>
@@ -285,6 +333,15 @@ namespace cftal {
 
     vec<f16_t, 16>
     exp10m1(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    sinh(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    cosh(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    tanh(arg_t<vec<f16_t, 16> > x);
 
     vec<f16_t, 16>
     log(arg_t<vec<f16_t, 16> > x);
@@ -379,6 +436,33 @@ cftal::vec<cftal::f16_t, _N>
 cftal::exp10m1(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(exp10m1(low_half(v)), exp10m1(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::sinh(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(sinh(low_half(v)), sinh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::cosh(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(cosh(low_half(v)), cosh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::tanh(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(tanh(low_half(v)), tanh(high_half(v)));
     return r;
 }
 

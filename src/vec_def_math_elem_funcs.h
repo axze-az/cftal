@@ -507,6 +507,30 @@
                                                                         \
     nsr::vec_float                                                      \
     __attribute__((__flatten__))                                        \
+    ns::sinh(arg<vec_float>::type a)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::sinh(a);                                         \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::cosh(arg<vec_float>::type a)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::cosh(a);                                         \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::tanh(arg<vec_float>::type a)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::tanh(a);                                         \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::log(arg<vec_float>::type a)                                     \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
