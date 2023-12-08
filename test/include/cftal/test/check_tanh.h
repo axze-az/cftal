@@ -21,10 +21,55 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/test/call_mpfr.h>
+#include <cftal/test/func_domain_common.h>
 #include <cmath>
 
 namespace cftal {
     namespace test {
+
+
+        template <typename _T>
+        struct domain_tanh {};
+
+        template <>
+        struct domain_tanh<double> {
+            constexpr static
+            const func_domain<double> domains[]={
+                std::make_pair(-19.5, 19.5)
+            };
+            constexpr static
+            const int shifts[]= {
+                0
+            };
+        };
+
+        template <>
+        struct domain_tanh<float> {
+            constexpr static
+            const func_domain<float> domains[]={
+                std::make_pair(-9.25f, 9.25f)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
+
+        template <>
+        struct domain_tanh<f16_t> {
+            static
+            const func_domain<f16_t> domains[];
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
+
+        const func_domain<f16_t>
+        domain_tanh<f16_t>::domains[]= {
+            std::make_pair(-4.6_f16, 4.6_f16)
+        };
+
 
         template <typename _T>
         struct check_tanh {
@@ -44,7 +89,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::tanh(a);
+                using std::tanh;
+                return tanh(a);
             }
             static
             const char* fname() { return "tanh"; }

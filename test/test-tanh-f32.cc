@@ -22,15 +22,12 @@ int main(int argc, char** argv)
 {
 #if 1
     using namespace cftal::test;
-    const func_domain<float> di[]={
-        std::make_pair(-9.25f, 9.25f)
-    };
-    const int shifts[]={0};
-    int r=program<check_tanh<float>, 16, 1, 0x8000>(argc,
-                                                    argv,
-                                                    mpfr_tanh,
-                                                    di,
-                                                    shifts);
+    int r=program<check_tanh<float>, 16, 1, 0x8000>(
+        argc,
+        argv,
+        mpfr_tanh,
+        domain_tanh<float>::domains,
+        domain_tanh<float>::shifts);
     return r;
 #else
     using namespace cftal::test;

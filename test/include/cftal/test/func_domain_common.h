@@ -109,6 +109,19 @@ namespace cftal {
             const int shifts[]={0};
         };
 
+        template <>
+        struct domain_sinh_cosh<f16_t> {
+            static
+            const func_domain<f16_t> domains[];
+
+            constexpr static
+            const int shifts[]={0};
+        };
+
+        const func_domain<f16_t> domain_sinh_cosh<f16_t>::domains[]={
+            std::make_pair(-11.9_f16, 11.9_f16)
+        };
+
         template <typename _T>
         struct domain_sinpi_cospi_tanpi {};
 

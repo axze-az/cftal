@@ -50,7 +50,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::sinh(a);
+                using std::sinh;
+                return sinh(a);
             }
 
             static
