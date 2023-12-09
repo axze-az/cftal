@@ -817,10 +817,16 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e, vf_type* p_ylnx)
     if (p_ylnx != nullptr) {
         *p_ylnx = ylnx;
     }
+#if 0
     vi_type idx, ki;
     vf_type xr;
     __reduce_exp_arg(xr, idx, ki, ylnx);
     vf_type r=__exp_tbl_k(xr, idx, ki);
+#else
+    vf_type xr, kf;
+    __reduce_exp_arg(xr, kf, ylnx);
+    vf_type r=exp_k<false>(xr, kf, ylnx);
+#endif
     return r;
 }
 
