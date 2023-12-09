@@ -453,7 +453,6 @@ cftal::x86::compress_mask_u16(__m256i m)
 #if defined (__BMI2__) && \
     !defined(__tune_bdver4__) && \
     !defined(__tune_znver1__) && \
-    !defined(__tune_znver1__) && \
     !defined(__tune_znver2__)
     uint32_t r=_mm256_movemask_epi8(m);
     constexpr const uint32_t mm=0xAAAA'AAAA;
