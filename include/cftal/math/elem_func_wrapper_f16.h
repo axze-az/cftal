@@ -37,7 +37,7 @@
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_LOG__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_LOG2__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_LOG10__ 1
-#define __CFTAL_CFG_USE_VF32_FOR_VF16_POW_FUNCS__ 0
+#define __CFTAL_CFG_USE_VF32_FOR_VF16_POW_FUNCS__ 1
 
 namespace cftal {
     namespace math {
@@ -497,9 +497,9 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type r=cvt<vf_type>(rd);
     using fc=func_constants<f16_t>;
     const vf_type d= cvt<vf_type>(ylnx);
-    constexpr
+    f16_constexpr
     const f16_t exp_hi_inf= fc::exp_hi_inf();
-    constexpr
+    f16_constexpr
     const f16_t exp_lo_zero= fc::exp_lo_zero();
     r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
     r = _T::sel(d >= exp_hi_inf, _T::pinf(), r);
@@ -519,9 +519,9 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     vf_type r=cvt<vf_type>(rd);
     using fc=func_constants<f16_t>;
     const vf_type d= cvt<vf_type>(ylnx);
-    constexpr
+    f16_constexpr
     const f16_t exp_hi_inf= fc::exp_hi_inf();
-    constexpr
+    f16_constexpr
     const f16_t exp_lo_zero= fc::exp_lo_zero();
     r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
     r = _T::sel(d >= exp_hi_inf, _T::pinf(), r);
