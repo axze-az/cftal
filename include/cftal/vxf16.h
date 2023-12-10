@@ -863,9 +863,6 @@ namespace cftal {
     vec<f16_t, _N>
     rint(const vec<f16_t, _N>& x);
 
-    // vec<f16_t, 1>
-    // rint(const vec<f16_t, 1>& x);
-
 }
 
 template <cftal::size_t _N>
