@@ -103,6 +103,18 @@ namespace cftal {
     vec<f16_t, _N>
     log1p(const vec<f16_t, _N>& x);
 
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    pow(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y);
+
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    pow(const vec<f16_t, _N>& x, const vec<int16_t, _N>& y);
+
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    rootn(const vec<f16_t, _N>& x, const vec<int16_t, _N>& y);
+
     vec<f16_t, 1>
     sqrt(arg_t<vec<f16_t, 1> > x);
 
@@ -150,6 +162,15 @@ namespace cftal {
 
     vec<f16_t, 1>
     log1p(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    pow(arg_t<vec<f16_t, 1> > x, arg_t<vec<f16_t, 1> > y);
+
+    vec<f16_t, 1>
+    pow(arg_t<vec<f16_t, 1> > x, arg_t<vec<int16_t, 1> > y);
+
+    vec<f16_t, 1>
+    rootn(arg_t<vec<f16_t, 1> > x, arg_t<vec<int16_t, 1> > y);
 
 #if V2F16_FUNCS>0
 
@@ -200,6 +221,15 @@ namespace cftal {
 
     vec<f16_t, 2>
     log1p(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    pow(arg_t<vec<f16_t, 2> > x, arg_t<vec<f16_t, 2> > y);
+
+    vec<f16_t, 2>
+    pow(arg_t<vec<f16_t, 2> > x, arg_t<vec<int16_t, 2> > y);
+
+    vec<f16_t, 2>
+    rootn(arg_t<vec<f16_t, 2> > x, arg_t<vec<int16_t, 2> > y);
 
 #endif
 
@@ -253,6 +283,15 @@ namespace cftal {
     vec<f16_t, 4>
     log1p(arg_t<vec<f16_t, 4> > x);
 
+    vec<f16_t, 4>
+    pow(arg_t<vec<f16_t, 4> > x, arg_t<vec<f16_t, 4> > y);
+
+    vec<f16_t, 4>
+    pow(arg_t<vec<f16_t, 4> > x, arg_t<vec<int16_t, 4> > y);
+
+    vec<f16_t, 4>
+    rootn(arg_t<vec<f16_t, 4> > x, arg_t<vec<int16_t, 4> > y);
+
 #endif
 #if V8F16_FUNCS>0
 
@@ -304,6 +343,15 @@ namespace cftal {
     vec<f16_t, 8>
     log1p(arg_t<vec<f16_t, 8> > x);
 
+    vec<f16_t, 8>
+    pow(arg_t<vec<f16_t, 8> > x, arg_t<vec<f16_t, 8> > y);
+
+    vec<f16_t, 8>
+    pow(arg_t<vec<f16_t, 8> > x, arg_t<vec<int16_t, 8> > y);
+
+    vec<f16_t, 8>
+    rootn(arg_t<vec<f16_t, 8> > x, arg_t<vec<int16_t, 8> > y);
+
 #endif
 #if V16F16_FUNCS>0
 
@@ -354,6 +402,15 @@ namespace cftal {
 
     vec<f16_t, 16>
     log1p(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    pow(arg_t<vec<f16_t, 16> > x, arg_t<vec<f16_t, 16> > y);
+
+    vec<f16_t, 16>
+    pow(arg_t<vec<f16_t, 16> > x, arg_t<vec<int16_t, 16> > y);
+
+    vec<f16_t, 16>
+    rootn(arg_t<vec<f16_t, 16> > x, arg_t<vec<int16_t, 16> > y);
 
 #endif
 }
@@ -499,6 +556,36 @@ cftal::vec<cftal::f16_t, _N>
 cftal::log1p(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(log1p(low_half(v)), log1p(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::pow(const vec<cftal::f16_t, _N>& x, const vec<cftal::f16_t, _N>& y)
+{
+    vec<f16_t, _N> r(pow(low_half(x), low_half(y)),
+                     pow(high_half(x), high_half(y)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::pow(const vec<cftal::f16_t, _N>& x, const vec<cftal::int16_t, _N>& y)
+{
+    vec<f16_t, _N> r(pow(low_half(x), low_half(y)),
+                     pow(high_half(x), high_half(y)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::rootn(const vec<cftal::f16_t, _N>& x, const vec<cftal::int16_t, _N>& y)
+{
+    vec<f16_t, _N> r(rootn(low_half(x), low_half(y)),
+                     rootn(high_half(x), high_half(y)));
     return r;
 }
 

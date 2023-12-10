@@ -560,6 +560,30 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::log1p(a);                                        \
     }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::pow(arg<vec_float>::type b, arg<vec_float>::type e)             \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::pow(b, e);                                       \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::pow(arg<vec_float>::type b, arg<vec_int>::type e)               \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::pow(b, e);                                       \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::rootn(arg<vec_float>::type b, arg<vec_int>::type e)             \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::rootn(b, e);                                     \
+    }                                                                   \
 
 
 // Local variables:

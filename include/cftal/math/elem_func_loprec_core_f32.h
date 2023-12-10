@@ -825,7 +825,7 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e, vf_type* p_ylnx)
 #else
     vf_type xr, kf;
     __reduce_exp_arg(xr, kf, ylnx);
-    vf_type r=exp_k<false>(xr, kf, ylnx);
+    vf_type r=__exp_k<false>(xr, kf, ylnx);
 #endif
     return r;
 }

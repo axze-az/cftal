@@ -205,6 +205,19 @@ namespace cftal {
     vec<f16_t, _N>
     copysign(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b);
 
+    template <size_t _N>
+    vec<f16_t, _N>
+    copysign(const f16_t& a, const vec<f16_t, _N>& b);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    copysign(const vec<f16_t, _N>& a, const f16_t& b);
+
+    // mulsign
+    template <size_t _N>
+    vec<f16_t, _N>
+    mulsign(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b);
+
     // signbit
     template <size_t _N>
     typename vec<f16_t, _N>::mask_type
@@ -846,23 +859,30 @@ namespace cftal {
     }
 
     // vector math functions for vxf16
+    template <size_t _N>
+    vec<f16_t, _N>
+    rint(const vec<f16_t, _N>& x);
+
+    // vec<f16_t, 1>
+    // rint(const vec<f16_t, 1>& x);
+
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N/2>
 cftal::low_half(const vec<f16_t, _N>& s)
 {
     return s.lh();
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N/2>
 cftal::high_half(const vec<f16_t, _N>& s)
 {
     return s.hh();
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::abs(const vec<f16_t, _N>& a)
 {
@@ -870,7 +890,7 @@ cftal::abs(const vec<f16_t, _N>& a)
     return vec<f16_t, _N>::cvt_from_rep(t);
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 typename cftal::vec<cftal::f16_t, _N>::mask_type
 cftal::iszero(const vec<f16_t, _N>& a)
 {
@@ -886,7 +906,7 @@ cftal::iszero(const vec<f16_t, _N>& a)
     return m_t::cvt_from_rep(v_is_zero);
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 typename cftal::vec<cftal::f16_t, _N>::mask_type
 cftal::isnan(const vec<f16_t, _N>& a)
 {
@@ -896,7 +916,7 @@ cftal::isnan(const vec<f16_t, _N>& a)
     return m_t::cvt_from_rep(v_is_nan);
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 typename cftal::vec<cftal::f16_t, _N>::mask_type
 cftal::isinf(const vec<f16_t, _N>& a)
 {
@@ -907,7 +927,7 @@ cftal::isinf(const vec<f16_t, _N>& a)
 }
 
 
-template <std::size_t _N>
+template <cftal::size_t _N>
 typename cftal::vec<cftal::f16_t, _N>::mask_type
 cftal::isfinite(const vec<f16_t, _N>& a)
 {
@@ -917,7 +937,7 @@ cftal::isfinite(const vec<f16_t, _N>& a)
     return m_t::cvt_from_rep(v_is_finite);
 }
 
-template <size_t _N>
+template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::copysign(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y)
 {
@@ -930,7 +950,35 @@ cftal::copysign(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y)
     return vec<f16_t, _N>::cvt_from_rep(r);
 }
 
-template <std::size_t _N>
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::copysign(const f16_t& x, const vec<f16_t, _N>& y)
+{
+    vec<f16_t, _N> vx=x;
+    return copysign(vx, y);
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::copysign(const vec<f16_t, _N>& x, const f16_t& y)
+{
+    vec<f16_t, _N> vy=y;
+    return copysign(x, vy);
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::mulsign(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y)
+{
+    using v_t = vec<mf_f16_t, _N>;
+    const int16_t msk=sign_f16_msk::v.s16();
+    v_t sgn_y = y() & msk;
+    v_t r=x() ^ sgn_y;
+    return vec<f16_t, _N>::cvt_from_rep(r);
+}
+
+template <cftal::size_t _N>
 typename cftal::vec<cftal::f16_t, _N>::mask_type
 cftal::signbit(const vec<f16_t, _N>& a)
 {
@@ -948,7 +996,7 @@ cftal::max(const vec<f16_t, 1>& a, const vec<f16_t, 1>& b)
     return vec<f16_t, 1>::cvt_from_rep(cvt_f32_to_f16(f32_max));
 }
 
-template <size_t _N>
+template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::max(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
 {
@@ -964,7 +1012,7 @@ cftal::min(const vec<f16_t, 1>& a, const vec<f16_t, 1>& b)
     return vec<f16_t, 1>::cvt_from_rep(cvt_f32_to_f16(f32_min));
 }
 
-template <size_t _N>
+template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::min(const vec<f16_t, _N>& a, const vec<f16_t, _N>& b)
 {
@@ -983,7 +1031,7 @@ select(const typename vec<f16_t, 1>::mask_type& m ,
     return vec<f16_t, 1>::mask_type::cvt_from_rep(r);
 }
 
-template <size_t _N>
+template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::
 select(const typename vec<f16_t, _N>::mask_type& m ,
@@ -1004,7 +1052,7 @@ select_val_or_zero(const typename vec<f16_t, 1>::mask_type& m ,
     return vec<f16_t, 1>::mask_type::cvt_from_rep(r);
 }
 
-template <size_t _N>
+template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::
 select_val_or_zero(const typename vec<f16_t, _N>::mask_type& m ,
@@ -1023,7 +1071,7 @@ cftal::select_zero_or_val(const typename vec<f16_t, 1>::mask_type& m ,
     return vec<f16_t, 1>::mask_type::cvt_from_rep(r);
 }
 
-template <size_t _N>
+template <cftal::size_t _N>
 cftal::vec<cftal::f16_t, _N>
 cftal::select_zero_or_val(const typename vec<f16_t, _N>::mask_type& m ,
                           const vec<f16_t, _N>& on_false)
@@ -1039,7 +1087,7 @@ cftal::all_of(const vec<f16_t, 1>::mask_type& v)
     return all_of(v());
 }
 
-template <size_t _N>
+template <cftal::size_t _N>
 inline
 bool
 cftal::all_of(const typename vec<f16_t, _N>::mask_type& v)
@@ -1054,7 +1102,7 @@ cftal::any_of(const vec<f16_t, 1>::mask_type& v)
     return any_of(v());
 }
 
-template <size_t _N>
+template <cftal::size_t _N>
 inline
 bool
 cftal::any_of(const typename vec<f16_t, _N>::mask_type& v)
@@ -1069,7 +1117,7 @@ cftal::none_of(const vec<f16_t, 1>::mask_type& v)
     return none_of(v());
 }
 
-template <size_t _N>
+template <cftal::size_t _N>
 inline
 bool
 cftal::none_of(const typename vec<f16_t, _N>::mask_type& v)
@@ -1077,6 +1125,15 @@ cftal::none_of(const typename vec<f16_t, _N>::mask_type& v)
     return none_of(v());
 }
 
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::rint(const vec<f16_t, _N>& a)
+{
+    vec<float, _N> af=cvt_f16_to_f32(a());
+    vec<float, _N> rf=rint(af);
+    return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(rf));
+}
 
 #endif
 

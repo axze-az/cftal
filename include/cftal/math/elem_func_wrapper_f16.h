@@ -514,8 +514,9 @@ cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
 powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
 {
     vhf_type xd=cvt<vhf_type>(x);
+    vhi_type ed=cvt<vhi_type>(e);
     vhf_type ylnx;
-    vhf_type rd=f32_core::template powi_k<_CALC_ROOT>(xd, e, &ylnx);
+    vhf_type rd=f32_core::template powi_k<_CALC_ROOT>(xd, ed, &ylnx);
     vf_type r=cvt<vf_type>(rd);
     using fc=func_constants<f16_t>;
     const vf_type d= cvt<vf_type>(ylnx);
