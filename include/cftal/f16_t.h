@@ -461,6 +461,12 @@ namespace cftal {
                const expr<_OP<f16_t>, _L, _R>& b);
 
     f16_t fma(const f16_t& a, const f16_t& b, const f16_t& c);
+
+    f16_t rint(const f16_t& v);
+    f16_t floor(const f16_t& v);
+    f16_t ceil(const f16_t& v);
+    f16_t trunc(const f16_t& v);
+
     f16_t sqrt(const f16_t& v);
     f16_t cbrt(const f16_t& v);
     f16_t exp(const f16_t& v);
@@ -855,6 +861,30 @@ inline
 cftal::f16_t cftal::fma(const f16_t& a, const f16_t& b, const f16_t& c)
 {
     return f16_t(float(a)*float(b)+float(c));
+}
+
+inline
+cftal::f16_t cftal::rint(const f16_t& v)
+{
+    return f16_t(std::rint(float(v)));
+}
+
+inline
+cftal::f16_t cftal::floor(const f16_t& v)
+{
+    return f16_t(std::floor(float(v)));
+}
+
+inline
+cftal::f16_t cftal::ceil(const f16_t& v)
+{
+    return f16_t(std::ceil(float(v)));
+}
+
+inline
+cftal::f16_t cftal::trunc(const f16_t& v)
+{
+    return f16_t(std::trunc(float(v)));
 }
 
 inline

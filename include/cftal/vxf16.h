@@ -863,6 +863,18 @@ namespace cftal {
     vec<f16_t, _N>
     rint(const vec<f16_t, _N>& x);
 
+    template <size_t _N>
+    vec<f16_t, _N>
+    floor(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    ceil(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
+    vec<f16_t, _N>
+    trunc(const vec<f16_t, _N>& x);
+
 }
 
 template <cftal::size_t _N>
@@ -1129,6 +1141,36 @@ cftal::rint(const vec<f16_t, _N>& a)
 {
     vec<float, _N> af=cvt_f16_to_f32(a());
     vec<float, _N> rf=rint(af);
+    return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(rf));
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::floor(const vec<f16_t, _N>& a)
+{
+    vec<float, _N> af=cvt_f16_to_f32(a());
+    vec<float, _N> rf=floor(af);
+    return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(rf));
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::ceil(const vec<f16_t, _N>& a)
+{
+    vec<float, _N> af=cvt_f16_to_f32(a());
+    vec<float, _N> rf=ceil(af);
+    return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(rf));
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::trunc(const vec<f16_t, _N>& a)
+{
+    vec<float, _N> af=cvt_f16_to_f32(a());
+    vec<float, _N> rf=trunc(af);
     return vec<f16_t, _N>::cvt_from_rep(cvt_f32_to_f16(rf));
 }
 
