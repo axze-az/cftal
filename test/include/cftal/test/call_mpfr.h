@@ -542,8 +542,8 @@ std::pair<_T, _T>
 cftal::test::call_mpfr::ulp1_interval(_T res, int mpres)
 {
     std::pair<_T, _T> pr(res, res);
-    const _T up=std::numeric_limits<_T>::max();
-    const _T down=-std::numeric_limits<_T>::max();
+    const _T up=std::numeric_limits<_T>::infinity();
+    const _T down=-std::numeric_limits<_T>::infinity();
     if (mpres > 0) {
         // res is greater than the real value
         using std::nextafter;
