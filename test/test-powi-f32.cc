@@ -38,8 +38,8 @@ int main(int argc, char** argv)
     func_domain<float> da=std::make_pair(-std::numeric_limits<float>::max(),
                                          std::numeric_limits<float>::max());
     func_domain<int32_t> db=
-        std::make_pair(double(std::numeric_limits<int32_t>::min()),
-                       double(std::numeric_limits<int32_t>::max()));
+        std::make_pair(std::numeric_limits<int32_t>::min(),
+                       std::numeric_limits<int32_t>::max());
     auto us=std::make_shared<ulp_stats>();
     exec_stats<_N> st;
     rc &= of_fp_func_2_up_to<
