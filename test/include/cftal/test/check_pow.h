@@ -46,7 +46,8 @@ namespace cftal {
             static
             _T
             s(const _T& a, const _T& b) {
-                return std::pow(a, b);
+                using std::pow;
+                return pow(a, b);
             }
 
             static

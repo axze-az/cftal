@@ -128,6 +128,13 @@ namespace cftal {
         };
 
         template <>
+        class uniform_real_distribution<int16_t>
+            : public std::uniform_int_distribution<int16_t> {
+            using base_type=std::uniform_int_distribution<int16_t>;
+            using base_type::base_type;
+        };
+
+        template <>
         class uniform_real_distribution<f16_t> {
 
             using int_type = uint16_t;

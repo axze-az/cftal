@@ -1067,7 +1067,7 @@ calc(const array_1_t& a, const array_2_t& b,
     bool c;
     if (speed_only) {
         // typename std::result_of<decltype(&_F::s)(_T, _T)>::type r[_N];
-        typename std::invoke_result<decltype(&_F::s),_T, _T>::type r[_N];
+        typename std::invoke_result<decltype(&_F::s),_T1, _T2>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i]=exec_stats<_N>::hr_timer();
             r[i] = _F::s(a[i], b[i]);
@@ -1076,7 +1076,7 @@ calc(const array_1_t& a, const array_2_t& b,
         c= check(vr, r, _F::fname(), false, cmp);
     } else {
         // typename std::result_of<decltype(&_F::r)(_T, _T)>::type r[_N];
-        typename std::invoke_result<decltype(&_F::r), _T, _T>::type r[_N];
+        typename std::invoke_result<decltype(&_F::r), _T1, _T2>::type r[_N];
         for (std::size_t i=0; i<_N; ++i) {
             t0i[i]=exec_stats<_N>::hr_timer();
             r[i] = _F::r(a[i], b[i]);

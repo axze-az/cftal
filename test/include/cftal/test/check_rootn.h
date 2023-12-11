@@ -26,7 +26,7 @@
 namespace cftal {
     namespace test {
 
-        template <typename _T>
+        template <typename _T, typename _I=int32_t>
         struct check_rootn {
             template <std::size_t _N>
             static
@@ -35,9 +35,16 @@ namespace cftal {
                 return rootn(a, ib);
             }
 
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a, const vec<int16_t, _N>& ib) {
+                return rootn(a, ib);
+            }
+
             static
             auto
-            r(const _T& a, const int32_t& b) {
+            r(const _T& a, const _I& b) {
                 std::pair<_T, _T> i;
                 _T v=call_mpfr::func(a, b, mpfr_ext::rootn, &i);
                 return std::make_tuple(v, i.first, i.second);
@@ -45,10 +52,11 @@ namespace cftal {
 
             static
             _T
-            s(const _T& a, const int32_t& b) {
+            s(const _T& a, const _I& b) {
                 double db=1.0/double(b);
                 _T tb=_T(db);
-                return std::pow(a, tb);
+                using std::pow;
+                return pow(a, tb);
             }
 
             static

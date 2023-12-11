@@ -825,7 +825,7 @@ rootn(arg_t<vf_type> x, arg_t<vi_type> e)
     res = _T::sel(x_zero & e_is_pos & e_is_even, _FLOAT_T(0.0), res);
 
     vmf_type x_inf=isinf(x);
-    res = _T::sel(x_inf, copysign(vf_type(0.0), x), res);
+    res = _T::sel(x_inf, copysign(vf_type(_FLOAT_T(0.0)), x), res);
     res = _T::sel(x_inf & e_is_pos, x, res);
 
     res = _T::sel(((x < 0) & e_is_even)|isnan(x)|e_is_zero, _T::nan(), res);

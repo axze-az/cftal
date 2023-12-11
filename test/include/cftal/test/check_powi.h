@@ -26,7 +26,7 @@
 namespace cftal {
     namespace test {
 
-        template <typename _T>
+        template <typename _T, typename _I=int32_t>
         struct check_powi {
             template <std::size_t _N>
             static
@@ -35,18 +35,26 @@ namespace cftal {
                 return pow(a, b);
             }
 
+            template <std::size_t _N>
+            static
+            vec<_T, _N>
+            v(const vec<_T, _N>& a, const vec<int16_t, _N>& b) {
+                return pow(a, b);
+            }
+
             static
             auto
-            r(const _T& a, const int32_t& b) {
+            r(const _T& a, const _I& b) {
                 std::pair<_T, _T> i;
-                _T v=call_mpfr::func(a, b, mpfr_pow_si, &i);
+                _T v=call_mpfr::func(a, int32_t(b), mpfr_pow_si, &i);
                 return std::make_tuple(v, i.first, i.second);
             }
 
             static
             _T
-            s(const _T& a, const int32_t& b) {
-                return std::pow(a, b);
+            s(const _T& a, const _I& b) {
+                using std::pow;
+                return pow(a, b);
             }
 
             static
