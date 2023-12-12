@@ -481,6 +481,10 @@ namespace cftal {
     f16_t log1p(const f16_t& v);
     f16_t pow(const f16_t& a, const f16_t& b);
 
+    f16_t sin(const f16_t& v);
+    f16_t cos(const f16_t& v);
+    f16_t tan(const f16_t& v);
+
     std::ostream& operator<<(std::ostream& s, const f16_t& v);
     std::istream& operator>>(std::istream& s, f16_t& v);
 #endif // (__USE_STDCPP_FLOAT16_T__>0)
@@ -963,6 +967,24 @@ inline
 cftal::f16_t cftal::pow(const f16_t& a, const f16_t& b)
 {
     return f16_t(std::pow(float(a), float(b)));
+}
+
+inline
+cftal::f16_t cftal::sin(const f16_t& v)
+{
+    return f16_t(std::sin(float(v)));
+}
+
+inline
+cftal::f16_t cftal::cos(const f16_t& v)
+{
+    return f16_t(std::cos(float(v)));
+}
+
+inline
+cftal::f16_t cftal::tan(const f16_t& v)
+{
+    return f16_t(std::tan(float(v)));
 }
 
 inline
