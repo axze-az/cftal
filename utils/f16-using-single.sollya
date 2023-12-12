@@ -111,7 +111,7 @@ printsingle(ib);
 i= [ib-1, (ib*2)-1];
 d = guessdegree(f, i, 0x1p-14);
 d;
-b = [|2, ..., 6|];
+b = [|2, ..., 8|];
 c = [|SG, SG...|];
 p = fpminimax(f, b, c, i, relative, floating, x);
 b = [|1|]@b;
