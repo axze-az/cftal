@@ -502,7 +502,7 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     f16_constexpr
     const f16_t exp_lo_zero= fc::exp_lo_zero();
     r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
-    r = _T::sel(d >= exp_hi_inf, _T::pinf(), r);
+    r = _T::sel(d > exp_hi_inf, _T::pinf(), r);
     return r;
 }
 
@@ -525,7 +525,7 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     f16_constexpr
     const f16_t exp_lo_zero= fc::exp_lo_zero();
     r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
-    r = _T::sel(d >= exp_hi_inf, _T::pinf(), r);
+    r = _T::sel(d > exp_hi_inf, _T::pinf(), r);
     return r;
 }
 
