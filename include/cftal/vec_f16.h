@@ -115,6 +115,24 @@ namespace cftal {
     vec<f16_t, _N>
     rootn(const vec<f16_t, _N>& x, const vec<int16_t, _N>& y);
 
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    sin(const vec<f16_t, _N>& x);
+
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    cos(const vec<f16_t, _N>& x);
+
+    template <std::size_t _N>
+    void
+    sincos(const vec<f16_t, _N>& x,
+           vec<f16_t, _N>* s, vec<f16_t, _N>* c);
+
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    tan(const vec<f16_t, _N>& x);
+
+// #if V1F16_FUNCS > 0
     vec<f16_t, 1>
     sqrt(arg_t<vec<f16_t, 1> > x);
 
@@ -172,6 +190,20 @@ namespace cftal {
     vec<f16_t, 1>
     rootn(arg_t<vec<f16_t, 1> > x, arg_t<vec<int16_t, 1> > y);
 
+    vec<f16_t, 1>
+    sin(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    cos(arg_t<vec<f16_t, 1> > x);
+
+    void
+    sincos(arg_t<vec<f16_t, 1> > x,
+           vec<f16_t, 1>* s, vec<f16_t, 1>* c);
+
+    vec<f16_t, 1>
+    tan(arg_t<vec<f16_t, 1> > x);
+
+// #endif
 #if V2F16_FUNCS>0
 
     vec<f16_t, 2>
@@ -230,6 +262,19 @@ namespace cftal {
 
     vec<f16_t, 2>
     rootn(arg_t<vec<f16_t, 2> > x, arg_t<vec<int16_t, 2> > y);
+
+    vec<f16_t, 2>
+    sin(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    cos(arg_t<vec<f16_t, 2> > x);
+
+    void
+    sincos(arg_t<vec<f16_t, 2> > x,
+           vec<f16_t, 2>* s, vec<f16_t, 2>* c);
+
+    vec<f16_t, 2>
+    tan(arg_t<vec<f16_t, 2> > x);
 
 #endif
 
@@ -292,6 +337,19 @@ namespace cftal {
     vec<f16_t, 4>
     rootn(arg_t<vec<f16_t, 4> > x, arg_t<vec<int16_t, 4> > y);
 
+    vec<f16_t, 4>
+    sin(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    cos(arg_t<vec<f16_t, 4> > x);
+
+    void
+    sincos(arg_t<vec<f16_t, 4> > x,
+           vec<f16_t, 4>* s, vec<f16_t, 4>* c);
+
+    vec<f16_t, 4>
+    tan(arg_t<vec<f16_t, 4> > x);
+
 #endif
 #if V8F16_FUNCS>0
 
@@ -352,6 +410,19 @@ namespace cftal {
     vec<f16_t, 8>
     rootn(arg_t<vec<f16_t, 8> > x, arg_t<vec<int16_t, 8> > y);
 
+    vec<f16_t, 8>
+    sin(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    cos(arg_t<vec<f16_t, 8> > x);
+
+    void
+    sincos(arg_t<vec<f16_t, 8> > x,
+           vec<f16_t, 8>* s, vec<f16_t, 8>* c);
+
+    vec<f16_t, 8>
+    tan(arg_t<vec<f16_t, 8> > x);
+
 #endif
 #if V16F16_FUNCS>0
 
@@ -411,6 +482,19 @@ namespace cftal {
 
     vec<f16_t, 16>
     rootn(arg_t<vec<f16_t, 16> > x, arg_t<vec<int16_t, 16> > y);
+
+    vec<f16_t, 16>
+    sin(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    cos(arg_t<vec<f16_t, 16> > x);
+
+    void
+    sincos(arg_t<vec<f16_t, 16> > x,
+           vec<f16_t, 16>* s, vec<f16_t, 16>* c);
+
+    vec<f16_t, 16>
+    tan(arg_t<vec<f16_t, 16> > x);
 
 #endif
 }
@@ -588,6 +672,53 @@ cftal::rootn(const vec<cftal::f16_t, _N>& x, const vec<cftal::int16_t, _N>& y)
                      rootn(high_half(x), high_half(y)));
     return r;
 }
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::sin(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(sin(low_half(v)), sin(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::cos(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(cos(low_half(v)), cos(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+void
+cftal::sincos(const vec<cftal::f16_t, _N>& v,
+              vec<cftal::f16_t, _N>* s, vec<cftal::f16_t, _N>* c)
+{
+    if (s != nullptr && c != nullptr) {
+        vec<double, _N/2> sl, sh, cl, ch;
+        sincos(low_half(v), &sl, &cl);
+        sincos(high_half(v), &sh, &ch);
+        *s= vec<double, _N>(sl, sh);
+        *c= vec<double, _N>(cl, ch);
+    } else if (s != nullptr) {
+        *s = sin(v);
+    } else if (c != nullptr) {
+        *c = cos(v);
+    }
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::tan(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(tan(low_half(v)), tan(high_half(v)));
+    return r;
+}
+
 
 // Local variables:
 // mode: c++
