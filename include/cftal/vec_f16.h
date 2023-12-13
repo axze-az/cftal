@@ -698,11 +698,11 @@ cftal::sincos(const vec<cftal::f16_t, _N>& v,
               vec<cftal::f16_t, _N>* s, vec<cftal::f16_t, _N>* c)
 {
     if (s != nullptr && c != nullptr) {
-        vec<double, _N/2> sl, sh, cl, ch;
+        vec<f16_t, _N/2> sl, sh, cl, ch;
         sincos(low_half(v), &sl, &cl);
         sincos(high_half(v), &sh, &ch);
-        *s= vec<double, _N>(sl, sh);
-        *c= vec<double, _N>(cl, ch);
+        *s= vec<f16_t, _N>(sl, sh);
+        *c= vec<f16_t, _N>(cl, ch);
     } else if (s != nullptr) {
         *s = sin(v);
     } else if (c != nullptr) {

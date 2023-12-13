@@ -66,6 +66,14 @@ namespace cftal {
             }
 
             static
+            std::pair<f16_t, f16_t>
+            __sincos(f16_t a) {
+                float s, c;
+                ::sincosf(float(a), &s, &c);
+                return std::make_pair(f16_t(s), f16_t(c));
+            }
+
+            static
             std::pair<_T, _T>
             s(const _T& a) {
                 return __sincos(a);
@@ -94,7 +102,8 @@ namespace cftal {
                 static
                 _T
                 s(const _T& a) {
-                    return std::sin(a);
+                    using std::sin;
+                    return sin(a);
                 }
                 static
                 const char* fname() { return "sincos: sin"; }
@@ -120,7 +129,8 @@ namespace cftal {
                 static
                 _T
                 s(const _T& a) {
-                    return std::cos(a);
+                    using std::cos;
+                    return cos(a);
                 }
                 static
                 const char* fname() { return "sincos: cos"; }

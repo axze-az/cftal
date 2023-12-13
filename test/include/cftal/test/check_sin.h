@@ -49,7 +49,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::sin(a);
+                using std::sin;
+                return sin(a);
             }
             static
             const char* fname() { return "sin"; }
