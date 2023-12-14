@@ -17,6 +17,7 @@ set (TEST_SRCS
   program.cc
   cpu_times.cc
   func_domain_common.cc
+  func_domain_f16.cc
 )
 include_directories(../..)
 include_directories(../include)
