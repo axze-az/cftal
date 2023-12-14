@@ -18,6 +18,9 @@
 #include "cftal/test/check_exp.h"
 #include "cftal/test/check_exp10.h"
 #include "cftal/test/check_exp2.h"
+#include "cftal/test/check_exp10m1.h"
+#include "cftal/test/check_exp2m1.h"
+#include "cftal/test/check_expm1.h"
 
 // non constexpr f16_t function domains not defined in func_domain_common.cc
 const cftal::test::func_domain<cftal::f16_t>
@@ -34,4 +37,23 @@ const cftal::test::func_domain<cftal::f16_t>
 cftal::test::domain_exp2<cftal::f16_t>::domains[1]={
     std::make_pair(-25.5_f16, 16.5_f16)
 };
+
+const cftal::test::func_domain<cftal::f16_t>
+cftal::test::domain_exp10m1<cftal::f16_t>::domains[2]={
+    std::make_pair(-3.7_f16, 4.9_f16),
+    std::make_pair(-0x1p-3_f16, 0x1p-3_f16)
+};
+
+const cftal::test::func_domain<cftal::f16_t>
+cftal::test::domain_exp2m1<cftal::f16_t>::domains[2]={
+    std::make_pair(-26.5_f16, 16.5_f16),
+    std::make_pair(-0x1p-3_f16, 0x1p-3_f16)
+};
+
+const cftal::test::func_domain<cftal::f16_t>
+cftal::test::domain_expm1<cftal::f16_t>::domains[2]={
+    std::make_pair(-8.5_f16, 11.5_f16),
+    std::make_pair(-0x1p-3_f16, 0x1p-3_f16)
+};
+
 
