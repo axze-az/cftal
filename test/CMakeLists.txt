@@ -16,6 +16,7 @@ set (TEST_SRCS
   spinlock.cc
   program.cc
   cpu_times.cc
+  func_domain_common.cc
 )
 include_directories(../..)
 include_directories(../include)
