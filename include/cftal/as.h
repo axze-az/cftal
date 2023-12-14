@@ -26,7 +26,7 @@
 #if __has_include(<bit>)
 #include <bit>
 #if __cpp_lib_bit_cast == 0
-#undef USE_BIT_CASE
+#undef USE_BIT_CAST
 #endif
 #endif
 #endif
