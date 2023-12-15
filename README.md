@@ -1,6 +1,6 @@
 # cftal
 
-A c++-17 template based short vector library with faithfully rounded elementary
+A c++-20 template based short vector library with faithfully rounded elementary
 functions.
 
 ## Description
