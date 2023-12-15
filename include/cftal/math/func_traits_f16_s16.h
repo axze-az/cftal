@@ -49,13 +49,13 @@ namespace cftal {
             static constexpr int16_t bits() { return 10; }
             static constexpr int16_t vec_len() { return 1; }
 
-            static f16_constexpr f16_t pinf() {
+            static constexpr f16_t pinf() {
                 return std::numeric_limits<vf_type>::infinity();
             }
-            static f16_constexpr f16_t ninf() {
+            static constexpr f16_t ninf() {
                 return -std::numeric_limits<vf_type>::infinity();
             }
-            static f16_constexpr f16_t nan() {
+            static constexpr f16_t nan() {
                 return std::numeric_limits<vf_type>::quiet_NaN();
             }
             static

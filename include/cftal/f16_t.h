@@ -38,9 +38,6 @@
 #if __USE_STDCPP_FLOAT16_T__==0
 #include <cftal/expr.h>
 #include <iostream>
-#define f16_constexpr
-#else
-#define f16_constexpr constexpr
 #endif
 
 #include <cmath>
@@ -50,6 +47,7 @@ namespace cftal {
 #if (__USE_STDCPP_FLOAT16_T__>0)
     using f16_t = std::float16_t;
 
+    constexpr
     inline
     mf_f16_t read_bits(f16_t v) {
         return as<mf_f16_t>(v);
@@ -65,7 +63,7 @@ namespace cftal {
     public:
         constexpr const mf_f16_t& operator()() const { return _f; }
 
-        f16_t(float v) : _f(cvt_f32_to_f16(v)) {}
+        constexpr f16_t(float v) : _f(impl::_cvt_f32_to_f16(v)) {}
         explicit operator float() const { return cvt_f16_to_f32(_f); }
         explicit operator short int() const {
             return static_cast<short int>(cvt_f16_to_f32(_f));
@@ -74,9 +72,9 @@ namespace cftal {
             return static_cast<int>(cvt_f16_to_f32(_f));
         }
 
-        f16_t()=default;
-        f16_t(const f16_t&)=default;
-        f16_t(f16_t&&)=default;
+        constexpr f16_t()=default;
+        constexpr f16_t(const f16_t&)=default;
+        constexpr f16_t(f16_t&&)=default;
         f16_t& operator=(const f16_t&)=default;
         f16_t& operator=(f16_t&&)=default;
 
@@ -90,6 +88,7 @@ namespace cftal {
         }
     };
 
+    constexpr
     inline
     mf_f16_t read_bits(f16_t v) {
         return v();
@@ -303,10 +302,11 @@ namespace cftal {
     bool operator>=(const f16_t& a, const f16_t& b);
     bool operator>(const f16_t& a, const f16_t& b);
 
+    constexpr
     const f16_t& operator+(const f16_t& a);
 
-    expr<op::neg<f16_t>, f16_t, void>
-    operator-(const f16_t& v);
+    constexpr
+    f16_t operator-(const f16_t& v);
 
     // unary minus: expr
     template <template <typename _T1> class _OP,
@@ -493,7 +493,7 @@ namespace cftal {
     struct is_floating_point<f16_t> : public std::true_type {};
 
     // use a user defined operator to avoid overriding f16
-    f16_constexpr
+    constexpr
     f16_t operator ""_f16(long double);
 
     bool isnan(const f16_t& v);
@@ -550,6 +550,7 @@ bool cftal::operator>(const f16_t& a, const f16_t& b)
     return float(a) > float(b);
 }
 
+constexpr
 inline
 const cftal::f16_t&
 cftal::operator+(const f16_t& v)
@@ -557,12 +558,13 @@ cftal::operator+(const f16_t& v)
     return v;
 }
 
+constexpr
 inline
-cftal::expr<cftal::op::neg<cftal::f16_t>,
-            cftal::f16_t, void>
+cftal::f16_t
 cftal::operator-(const f16_t& v)
 {
-    return expr<op:: neg <f16_t>, f16_t, void>(v);
+    mf_f16_t t=read_bits(v) ^ sign_f16_msk::v.s16();
+    return f16_t::cvt_from_rep(t);
 }
 
 template <template <typename _T1> class _OP,
@@ -1006,7 +1008,7 @@ std::istream& cftal::operator>>(std::istream& s, f16_t& v)
 #endif // __USE_STDCPP_FLOAT16_T__==0
 
 inline
-f16_constexpr
+constexpr
 cftal::f16_t cftal::operator ""_f16(long double d)
 {
 #if __USE_STDCPP_FLOAT16_T__>0
@@ -1088,15 +1090,41 @@ namespace std {
         static const bool traps = true;
         static const bool tinyness_before = false;
 
-        static cftal::f16_t (min)() { return cftal::f16_t::cvt_from_rep(0x400); }
-        static cftal::f16_t lowest() { return cftal::f16_t::cvt_from_rep(0xfbff); }
-        static cftal::f16_t (max)() { return cftal::f16_t::cvt_from_rep(0x7bff); }
-        static cftal::f16_t epsilon() { return cftal::f16_t::cvt_from_rep(0x0800); }
-        static cftal::f16_t round_error() { return cftal::f16_t(float(0.5)); }
-        static cftal::f16_t infinity() { return cftal::f16_t::cvt_from_rep(0x7c00); }
-        static cftal::f16_t quiet_NaN() { return cftal::f16_t::cvt_from_rep(0x7e00); }
-        static cftal::f16_t signaling_NaN() { return cftal::f16_t::cvt_from_rep(0x7e00); }
-        static cftal::f16_t denorm_min() { return cftal::f16_t::cvt_from_rep(0x1); }
+        constexpr
+        static cftal::f16_t (min)() {
+            return cftal::f16_t::cvt_from_rep(0x400);
+        }
+        constexpr
+        static cftal::f16_t lowest() {
+            return cftal::f16_t::cvt_from_rep(0xfbff);
+        }
+        constexpr
+        static cftal::f16_t (max)() {
+            return cftal::f16_t::cvt_from_rep(0x7bff);
+        }
+        constexpr
+        static cftal::f16_t epsilon() {
+            return cftal::f16_t::cvt_from_rep(0x0800);
+        }
+        static cftal::f16_t round_error() {
+            return cftal::f16_t(float(0.5));
+        }
+        constexpr
+        static cftal::f16_t infinity() {
+            return cftal::f16_t::cvt_from_rep(0x7c00);
+        }
+        constexpr
+        static cftal::f16_t quiet_NaN() {
+            return cftal::f16_t::cvt_from_rep(0x7e00);
+        }
+        constexpr
+        static cftal::f16_t signaling_NaN() {
+            return cftal::f16_t::cvt_from_rep(0x7e00);
+        }
+        constexpr
+        static cftal::f16_t denorm_min() {
+            return cftal::f16_t::cvt_from_rep(0x1);
+        }
     };
 }
 #endif // __USE_STDCPP_FLOAT16_T__ == 0

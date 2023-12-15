@@ -174,9 +174,9 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 __fmod(arg_t<vf_type> v)
 {
-    f16_constexpr const f16_t sd=1.0f/_U;
-    f16_constexpr const f16_t su=_U;
-    f16_constexpr const f16_t nsu=-su;
+    constexpr const f16_t sd=1.0f/_U;
+    constexpr const f16_t su=_U;
+    constexpr const f16_t nsu=-su;
     vf_type i= rint(vf_type(v*sd));
     vf_type r= i*nsu + v;
     return r;

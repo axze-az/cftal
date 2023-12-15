@@ -44,15 +44,20 @@ namespace cftal {
 
     namespace impl {
 
+        constexpr
         mf_f16_t
         _cvt_f32_to_f16(f32_t f);
 
+        constexpr
         f32_t
         _cvt_f16_to_f32(mf_f16_t f);
 
     }
 }
 
+#if __cpp_lib_bit_cast>0
+constexpr
+#endif
 inline
 cftal::f32_t
 cftal::impl::_cvt_f16_to_f32(mf_f16_t t)
@@ -76,6 +81,9 @@ cftal::impl::_cvt_f16_to_f32(mf_f16_t t)
     return as<f32_t>(r);
 }
 
+#if __cpp_lib_bit_cast>0
+constexpr
+#endif
 inline
 cftal::mf_f16_t
 cftal::impl::_cvt_f32_to_f16(f32_t ff)

@@ -508,9 +508,9 @@ pow_k(arg_t<vf_type> x, arg_t<vf_type> y)
     vf_type r=cvt<vf_type>(rd);
     using fc=func_constants<f16_t>;
     const vf_type d= cvt<vf_type>(ylnx);
-    f16_constexpr
+    constexpr
     const f16_t exp_hi_inf= fc::exp_hi_inf();
-    f16_constexpr
+    constexpr
     const f16_t exp_lo_zero= fc::exp_lo_zero();
     r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
     r = _T::sel(d > exp_hi_inf, _T::pinf(), r);
@@ -531,9 +531,9 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     vf_type r=cvt<vf_type>(rd);
     using fc=func_constants<f16_t>;
     const vf_type d= cvt<vf_type>(ylnx);
-    f16_constexpr
+    constexpr
     const f16_t exp_hi_inf= fc::exp_hi_inf();
-    f16_constexpr
+    constexpr
     const f16_t exp_lo_zero= fc::exp_lo_zero();
     r = _T::sel_zero_or_val(d <= exp_lo_zero, r);
     r = _T::sel(d > exp_hi_inf, _T::pinf(), r);

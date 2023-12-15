@@ -66,7 +66,7 @@ namespace cftal {
         }
 
         static
-        f16_constexpr
+        constexpr
         f16_t
         scale_div_threshold() {
             // -14 + 11
