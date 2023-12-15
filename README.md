@@ -5,10 +5,11 @@ functions.
 
 ## Description
 
-Cftal is a c++-17 template based short vector library with specializations
+Cftal is a c++-20 template based short vector library with specializations
 using intrinsic functions.
 Part of the library are vectorized elementary and special functions
 (erf, erfc, tgamma, lgamma, j0, y0, j1 and y1) in single and double precision.
+Vectorized half precision functions are work in progress.
 The elementary functions are faithfully rounded.
 
 Specializations for x86 processors with instructions set extensions up to AVX2
