@@ -61,9 +61,11 @@ namespace cftal {
 
         template <>
         struct domain_exp2m1<f16_t> {
-            static
-            const func_domain<f16_t> domains[2];
-
+            constexpr static
+            const func_domain<f16_t> domains[]={
+                std::make_pair(-26.5_f16, 16.5_f16),
+                std::make_pair(-0x1p-3_f16, 0x1p-3_f16)
+            };
             constexpr static
             const int shifts[]={
                 0,
