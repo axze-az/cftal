@@ -25,8 +25,6 @@ set (CSRCS
     y0_data_f32.cc
     j1_data_f32.cc
     y1_data_f32.cc
-    math_func_f32.cc
-    math_func_f64.cc
     math_common.cc
     payne_hanek.cc
     lanczos.cc

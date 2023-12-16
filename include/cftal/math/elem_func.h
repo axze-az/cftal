@@ -31,32 +31,6 @@ namespace cftal {
 
     namespace math {
 
-        namespace impl {
-
-            // argument reduction routine for large doubles
-            int
-            __kernel_rem_pio2(double xr[2], double x);
-
-            // argument reduction routine for large doubles
-            int
-            __kernel_rem_pio2(double xr[2], double x, double xl);
-
-            // argument reduction routine for large floats
-            int
-            __kernel_rem_pio2(float xr[2], float x);
-
-            // declared here to allow the float routine above to
-            // use the faster double version
-            // same routine as from sun but uses internal tables
-            __attribute__((__visibility__("internal")))
-            int
-            __kernel_rem_pio2(double* x,
-                              double* y,
-                              int e0,
-                              int nx,
-                              int prec);
-        }
-
         // core implementation of elementary and base
         // functions exports exp_k, exp2_k ...
         // must be specialized for different _FLOAT_T
