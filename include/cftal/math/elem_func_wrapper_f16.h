@@ -39,6 +39,7 @@
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_LOG10__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_POW_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_TRIG_FUNCS__ 1
+#define __CFTAL_CFG_USE_VF32_FOR_VF16_HYPOT__ 1
 
 namespace cftal {
     namespace math {
@@ -178,6 +179,12 @@ namespace cftal {
             static
             vf_type
             tan_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_HYPOT__ >0
+            static
+            vf_type
+            hypot_k(arg_t<vf_type> x, arg_t<vf_type> y);
+
 #endif
         };
     }
@@ -569,6 +576,21 @@ tan_k(arg_t<vf_type> x)
 {
     vhf_type xd=cvt<vhf_type>(x);
     vhf_type rd=f32_core::tan_k(xd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
+#endif
+
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_HYPOT__ >0
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
+hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type yd=cvt<vhf_type>(y);
+    vhf_type rd=f32_core::hypot_k(xd, yd);
     vf_type r=cvt<vf_type>(rd);
     return r;
 }

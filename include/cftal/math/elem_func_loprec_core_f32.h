@@ -214,6 +214,10 @@ namespace cftal {
             vf_type
             tan_k(arg_t<vf_type> x);
 
+            static
+            vf_type
+            hypot_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
+
         };
     }
 }
@@ -1020,6 +1024,19 @@ tan_k(arg_t<vf_type> x)
     vf_type ct=-1.0f/t;
     t = _T::sel(fqm1, ct, t);
     return t;
+}
+
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
+cftal::math::elem_func_loprec_core<float, _T>::
+hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    vf_type x2=x*x;
+    vf_type y2=y*y;
+    vf_type r=sqrt(x2+y2);
+    return r;
 }
 
 #endif // __CFTAL_MATH_ELEM_FUNC_CORE_LOPREC_F32_H__
