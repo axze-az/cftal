@@ -24,6 +24,7 @@
 #include <cftal/std_types.h>
 #include <cftal/math/elem_func.h>
 #include <cftal/math/func_traits_f16_s16.h>
+#include <cftal/math/func_constants_f16.h>
 #include <cftal/math/func_data.h>
 #include <cftal/math/misc.h>
 #include <cftal/math/horner.h>
@@ -174,7 +175,7 @@ cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 __fmod(arg_t<vf_type> v)
 {
-    constexpr const f16_t sd=1.0f/_U;
+    constexpr const f16_t sd=1.0_f16/_U;
     constexpr const f16_t su=_U;
     constexpr const f16_t nsu=-su;
     vf_type i= rint(vf_type(v*sd));
@@ -211,7 +212,7 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
 {
-#if 1
+#if 0
     return x;
 #else
     vf_type xs=x;
@@ -219,16 +220,16 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     vmf_type is_denom= abs(x) <= fc::max_denormal();
 
     // input denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p12_f16), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    vi_type eo= _T::sel_val_or_zero_vi(i_is_denom, vi_type(-25));
+    vi_type eo= _T::sel_val_or_zero_vi(i_is_denom, vi_type(-12));
     // mantissa
     vi_type m=_T::as_int(xs);
-    vi_type xe=((m>>23) & 0xff) + eo;
+    vi_type xe=((m>>10) & 0x1f) + eo;
 
     // determine the exponent of the result
     // clamp nn to [-4096, 4096]
-    vi_type nn= min(vi_type(4096), max(n, vi_type(-4096)));
+    vi_type nn= min(vi_type(256), max(n, vi_type(-256)));
     vi_type re= xe + nn;
 
     // 3 cases exist:
@@ -237,14 +238,14 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     //     re <= 0 subnormal or 0 (underflow)
 
     // clear exponent bits from m
-    m &= vi_type(~0x7f800000);
+    m &= vi_type(~0x7c00);
 
     // mantissa for normal results:
-    vi_type mn= m | ((re & vi_type(0xff)) << 23);
-    vf_type r= _T::as_f16_t(mn);
+    vi_type mn= m | ((re & vi_type(0x1f)) << 10);
+    vf_type r= _T::as_float(mn);
 
     // overflow handling
-    vmi_type i_is_inf = re > vi_type(0xfe);
+    vmi_type i_is_inf = re > vi_type(0xf);
     vmf_type f_is_inf = _T::vmi_to_vmf(i_is_inf);
     vf_type r_inf = copysign(vf_type(_T::pinf()), x);
     r = _T::sel(f_is_inf, r_inf, r);
@@ -252,18 +253,18 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     // underflow handling
     vmi_type i_is_near_z = re < vi_type (1);
     if (_T::any_of_vmi(i_is_near_z)) {
-        // create m*0x1.0p-126
-        vi_type mu= m | vi_type(1<<23);
-        vf_type r_u= _T::as_f16_t(mu);
+        // create m*0x1.0p-14
+        vi_type mu= m | vi_type(1<<10);
+        vf_type r_u= _T::as_float(mu);
         // create a scaling factor
         vi_type ue= max(vi_type(re + (_T::bias()-1)), vi_type(1));
-        vf_type s_u= _T::as_f16_t(vi_type(ue << 23));
+        vf_type s_u= _T::as_float(vi_type(ue << 10));
         r_u *= s_u;
         vmf_type f_is_near_z = _T::vmi_to_vmf(i_is_near_z);
         r = _T::sel(f_is_near_z, r_u, r);
     }
     // handle special cases:
-    r = _T::sel(isinf(x) | isnan(x) | (x==vf_type(0.0)), x, r);
+    r = _T::sel(isinf(x) | isnan(x) | iszero(x), x, r);
     return r;
 #endif
 }
