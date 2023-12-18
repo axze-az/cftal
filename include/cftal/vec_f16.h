@@ -41,6 +41,10 @@ namespace cftal {
 
     template <size_t _N>
     vec<f16_t, _N>
+    ldexp(const vec<f16_t, _N>& a, const vec<int16_t, _N>& e);
+
+    template <size_t _N>
+    vec<f16_t, _N>
     sqrt(const vec<f16_t, _N>& x);
 
     template <size_t _N>
@@ -134,6 +138,9 @@ namespace cftal {
 
 // #if V1F16_FUNCS > 0
     vec<f16_t, 1>
+    ldexp(arg_t<vec<f16_t, 1> > a, arg_t<vec<int16_t, 1> > e);
+
+    vec<f16_t, 1>
     sqrt(arg_t<vec<f16_t, 1> > x);
 
     vec<f16_t, 1>
@@ -205,6 +212,9 @@ namespace cftal {
 
 // #endif
 #if V2F16_FUNCS>0
+
+    vec<f16_t, 2>
+    ldexp(arg_t<vec<f16_t, 2> > a, arg_t<vec<int16_t, 2> > e);
 
     vec<f16_t, 2>
     sqrt(arg_t<vec<f16_t, 2> > x);
@@ -281,6 +291,9 @@ namespace cftal {
 #if V4F16_FUNCS>0
 
     vec<f16_t, 4>
+    ldexp(arg_t<vec<f16_t, 4> > a, arg_t<vec<int16_t, 4> > e);
+
+    vec<f16_t, 4>
     sqrt(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
@@ -352,6 +365,9 @@ namespace cftal {
 
 #endif
 #if V8F16_FUNCS>0
+
+    vec<f16_t, 8>
+    ldexp(arg_t<vec<f16_t, 8> > a, arg_t<vec<int16_t, 8> > e);
 
     vec<f16_t, 8>
     sqrt(arg_t<vec<f16_t, 8> > x);
@@ -427,6 +443,9 @@ namespace cftal {
 #if V16F16_FUNCS>0
 
     vec<f16_t, 16>
+    ldexp(arg_t<vec<f16_t, 16> > a, arg_t<vec<int16_t, 16> > e);
+
+    vec<f16_t, 16>
     sqrt(arg_t<vec<f16_t, 16> > x);
 
     vec<f16_t, 16>
@@ -497,6 +516,17 @@ namespace cftal {
     tan(arg_t<vec<f16_t, 16> > x);
 
 #endif
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::
+ldexp(const vec<cftal::f16_t, _N>& v, const vec<cftal::int16_t, _N>& e)
+{
+    vec<f16_t, _N> r(ldexp(low_half(v), low_half(e)),
+                     ldexp(high_half(v), low_half(e)));
+    return r;
 }
 
 template <std::size_t _N>
