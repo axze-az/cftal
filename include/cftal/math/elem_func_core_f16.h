@@ -233,8 +233,8 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     vi_type re= xe + nn;
 
     // 3 cases exist:
-    // 0 < re < 0xff normal result
-    //     re >= 0xff inf result (overflow)
+    // 0 < re < 0x1f normal result
+    //     re >= 0x1f inf result (overflow)
     //     re <= 0 subnormal or 0 (underflow)
 
     // clear exponent bits from m
@@ -245,7 +245,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     vf_type r= _T::as_float(mn);
 
     // overflow handling
-    vmi_type i_is_inf = re > vi_type(0xf);
+    vmi_type i_is_inf = re > vi_type(0x1e);
     vmf_type f_is_inf = _T::vmi_to_vmf(i_is_inf);
     vf_type r_inf = copysign(vf_type(_T::pinf()), x);
     r = _T::sel(f_is_inf, r_inf, r);
