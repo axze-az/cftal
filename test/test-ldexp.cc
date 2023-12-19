@@ -149,7 +149,7 @@ int main()
     bool rf=cftal::test::check_ldexp_up_to<float, int32_t, 16>::v();
     if (rf==false)
         std::cerr<< "float test failed" << std::endl;
-    rh=true;
+    bool rh=true;
 #else
     bool rd=true, rf=true;
     using cftal::f16_t;
