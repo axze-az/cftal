@@ -29,42 +29,43 @@
 namespace cftal {
     namespace test {
 
-        template <typename _T, std::size_t _N>
+        template <typename _T, typename _I, std::size_t _N>
         class check_ldexp {
 
             static
-            bool v(_T a, int32_t e);
+            bool v(_T a, _I e);
 
         public:
             static
             bool v();
         };
 
-        template <class _T, std::size_t _N>
+        template <class _T, typename _I, std::size_t _N>
         struct check_ldexp_up_to {
             static bool v() {
-                bool r=check_ldexp<_T, _N>::v();
-                r &= check_ldexp_up_to<_T, _N/2>::v();
+                bool r=check_ldexp<_T, _I, _N>::v();
+                r &= check_ldexp_up_to<_T, _I, _N/2>::v();
                 return r;
             }
         };
 
-        template <class _T>
-        struct check_ldexp_up_to<_T, 1> {
+        template <class _T, typename _I>
+        struct check_ldexp_up_to<_T, _I, 1> {
             static bool v() {
-                return check_ldexp<_T, 1>::v();
+                return check_ldexp<_T, _I, 1>::v();
             }
         };
     }
 }
 
-template <typename _T, std::size_t _N>
+template <typename _T, typename _I, std::size_t _N>
 bool
-cftal::test::check_ldexp<_T, _N>::v(_T a, int32_t e)
+cftal::test::check_ldexp<_T, _I, _N>::v(_T a, _I e)
 {
     vec<_T, _N> va=a;
-    _T r= std::ldexp(a, e);
-    vec<int32_t, _N> ve=e;
+    using std::ldexp;
+    _T r= ldexp(a, e);
+    vec<_I, _N> ve=e;
     vec<_T, _N> vr= ldexp(va, ve);
     bool rc=check(vr, r, "ldexp");
     if (rc==false) {
@@ -80,16 +81,16 @@ cftal::test::check_ldexp<_T, _N>::v(_T a, int32_t e)
     return rc;
 }
 
-template <typename _T, std::size_t _N>
+template <typename _T, typename _I, std::size_t _N>
 bool
-cftal::test::check_ldexp<_T, _N>::v()
+cftal::test::check_ldexp<_T, _I, _N>::v()
 {
     std::mt19937 rnd;
     uniform_real_distribution<_T>
         distrib(0, std::numeric_limits<_T>::max());
 
-    const int32_t min_exp = 3* std::numeric_limits<_T>::min_exponent;
-    const int32_t max_exp = 3*std::numeric_limits<_T>::max_exponent;
+    const _I min_exp = 3*std::numeric_limits<_T>::min_exponent;
+    const _I max_exp = 3*std::numeric_limits<_T>::max_exponent;
 
     bool rc=true;
 
@@ -109,7 +110,7 @@ cftal::test::check_ldexp<_T, _N>::v()
     for (auto b=std::begin(inf_nan_args), e=std::end(inf_nan_args);
          b!=e; ++b) {
         const auto& ah= *b;
-        for (int32_t i= min_exp; i < max_exp; ++i) {
+        for (_I i= min_exp; i < max_exp; ++i) {
             rc &= v(ah, i);
             rc &= v(-ah, i);
         }
@@ -120,7 +121,7 @@ cftal::test::check_ldexp<_T, _N>::v()
         if ((i & (N0-1)) == (N0-1))
             std::cout << '.' << std::flush;
         _T ah=distrib(rnd);
-        for (int32_t i= min_exp; i < max_exp; ++i) {
+        for (_I i= min_exp; i < max_exp; ++i) {
             rc &= v(ah, i);
             rc &= v(-ah, i);
         }
@@ -139,11 +140,11 @@ int main()
 {
     std::cerr << std::setprecision(22) << std::hexfloat;
     std::cout << "testing ldexp vXf64" << std::endl;
-    bool rd=cftal::test::check_ldexp_up_to<double, 8>::v();
+    bool rd=cftal::test::check_ldexp_up_to<double, int32_t, 8>::v();
     if (rd==false)
         std::cerr << "double test failed" << std::endl;
     std::cout << "testing ldexp vXf32" << std::endl;
-    bool rf=cftal::test::check_ldexp_up_to<float, 16>::v();
+    bool rf=cftal::test::check_ldexp_up_to<float, int32_t, 16>::v();
     if (rf==false)
         std::cerr<< "float test failed" << std::endl;
     bool rc = rd && rf;
