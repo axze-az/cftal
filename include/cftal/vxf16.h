@@ -961,7 +961,6 @@ cftal::insert(vec<f16_t, _N>& v, const f16_t& vi, size_t i)
     v = vec<f16_t, _N>::cvt_from_rep(r);
 }
 
-
 template <cftal::size_t _I>
 inline
 cftal::f16_t

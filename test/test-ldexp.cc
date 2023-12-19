@@ -20,6 +20,7 @@
 #include <cftal/test/uniform_distribution.h>
 #include <cftal/test/of_math_funcs.h>
 #include <cftal/math/func_constants.h>
+#include <cftal/vec_f16.h>
 #include <cmath>
 #include <random>
 #include <iostream>
@@ -138,6 +139,7 @@ cftal::test::check_ldexp<_T, _I, _N>::v()
 
 int main()
 {
+#if 1
     std::cerr << std::setprecision(22) << std::hexfloat;
     std::cout << "testing ldexp vXf64" << std::endl;
     bool rd=cftal::test::check_ldexp_up_to<double, int32_t, 8>::v();
@@ -147,6 +149,15 @@ int main()
     bool rf=cftal::test::check_ldexp_up_to<float, int32_t, 16>::v();
     if (rf==false)
         std::cerr<< "float test failed" << std::endl;
-    bool rc = rd && rf;
+    rh=true;
+#else
+    bool rd=true, rf=true;
+    using cftal::f16_t;
+    std::cout << "testing ldexp vXf16" << std::endl;
+    bool rh=cftal::test::check_ldexp_up_to<f16_t, int16_t, 1>::v();
+    if (rh==false)
+        std::cerr<< "f16_t test failed" << std::endl;
+#endif
+    bool rc = rd && rf && rh;
     return rc==true ? 0 : 1;
 }
