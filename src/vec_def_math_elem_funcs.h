@@ -443,6 +443,14 @@
                                                                         \
     nsr::vec_float                                                      \
     __attribute__((__flatten__))                                        \
+    ns::nextafter(arg<vec_float>::type b, arg<vec_float>::type e)       \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::nextafter(b, e);                                 \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::sqrt(arg<vec_float>::type a)                                    \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
