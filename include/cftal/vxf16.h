@@ -176,6 +176,36 @@ namespace cftal {
         using type = vec<f16_t, 1>;
     };
 
+    template <size_t _I, size_t _N>
+    f16_t
+    extract(const vec<f16_t, _N>& v);
+
+    template <size_t _N>
+    f16_t
+    extract(const vec<f16_t, _N>& v, size_t i);
+
+    template <size_t _I, size_t _N>
+    void
+    insert(vec<f16_t, _N>& v, const f16_t& vi);
+
+    template <size_t _I, size_t _N>
+    void
+    insert(vec<f16_t, _N>& v, const f16_t& vi, size_t i);
+
+    template <size_t _I>
+    f16_t
+    extract(const vec<f16_t, 1>& v);
+
+    f16_t
+    extract(const vec<f16_t, 1>& v, size_t i);
+
+    template <size_t _I>
+    void
+    insert(vec<f16_t, 1>& v, const f16_t& vi);
+
+    void
+    insert(vec<f16_t, 1>& v, const f16_t& vi, size_t i);
+
     // abs
     template <size_t _N>
     vec<f16_t, _N>
@@ -889,6 +919,82 @@ cftal::vec<cftal::f16_t, _N/2>
 cftal::high_half(const vec<f16_t, _N>& s)
 {
     return s.hh();
+}
+
+template <cftal::size_t _I, size_t _N>
+inline
+cftal::f16_t
+cftal::extract(const vec<f16_t, _N>& v)
+{
+    mf_f16_t ri=extract<_I>(v());
+    return as<f16_t>(ri);
+}
+
+template <cftal::size_t _N>
+inline
+cftal::f16_t
+cftal::extract(const vec<f16_t, _N>& v, size_t i)
+{
+    mf_f16_t ri=extract(v(), i);
+    return as<f16_t>(ri);
+}
+
+template <cftal::size_t _I, size_t _N>
+inline
+void
+cftal::insert(vec<f16_t, _N>& v, const f16_t& vi)
+{
+    mf_f16_t vii=read_bits(vi);
+    vec<mf_f16_t, _N> r=v();
+    insert<_I>(r, vii);
+    v = vec<f16_t, _N>::cvt_from_rep(r);
+}
+
+template <cftal::size_t _N>
+inline
+void
+cftal::insert(vec<f16_t, _N>& v, const f16_t& vi, size_t i)
+{
+    mf_f16_t vii=read_bits(vi);
+    vec<mf_f16_t, _N> r=v();
+    insert(r, vii, i);
+    v = vec<f16_t, _N>::cvt_from_rep(r);
+}
+
+
+template <cftal::size_t _I>
+inline
+cftal::f16_t
+cftal::extract(const vec<f16_t, 1>& v)
+{
+    mf_f16_t ri=v()();
+    return as<f16_t>(ri);
+}
+
+inline
+cftal::f16_t
+cftal::extract(const vec<f16_t, 1>& v, size_t i)
+{
+    mf_f16_t ri=v()();
+    return as<f16_t>(ri);
+}
+
+template <cftal::size_t _I>
+inline
+void
+cftal::insert(vec<f16_t, 1>& v, const f16_t& vi)
+{
+    mf_f16_t vii=read_bits(vi);
+    v= vec<f16_t, 1>::cvt_from_rep(vii);
+}
+
+inline
+void
+cftal::insert(vec<f16_t, 1>& v, const f16_t& vi, size_t i)
+{
+    static_cast<void>(i);
+    mf_f16_t vii=read_bits(vi);
+    v= vec<f16_t, 1>::cvt_from_rep(vii);
 }
 
 template <cftal::size_t _N>
