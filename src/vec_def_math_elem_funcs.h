@@ -475,6 +475,14 @@
                                                                         \
     nsr::vec_float                                                      \
     __attribute__((__flatten__))                                        \
+    ns::hypot(arg<vec_float>::type b, arg<vec_float>::type e)           \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::hypot(b, e);                                     \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::exp(arg<vec_float>::type a)                                     \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \

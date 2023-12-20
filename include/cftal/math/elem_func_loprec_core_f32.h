@@ -1035,7 +1035,7 @@ hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vf_type x2=x*x;
     vf_type y2=y*y;
-    vf_type r=sqrt(x2+y2);
+    vf_type r=sqrt(vf_type(x2+y2));
     return r;
 }
 

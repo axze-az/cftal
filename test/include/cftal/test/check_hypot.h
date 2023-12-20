@@ -47,7 +47,8 @@ namespace cftal {
             static
             _T
             s(const _T& a, const _T& b) {
-                return std::hypot(a, b);
+                using std::hypot;
+                return hypot(a, b);
             }
 
             static

@@ -354,6 +354,8 @@ test_prog(test-cos-f16)
 test_prog(test-tan-f16)
 test_prog(test-sincos-f16)
 
+test_prog(test-hypot-f16)
+
 test_prog(test-permute)
 test_prog(test-compress-expand-elements)
 test_prog(test-v2)

@@ -469,6 +469,9 @@ namespace cftal {
 
     f16_t sqrt(const f16_t& v);
     f16_t cbrt(const f16_t& v);
+
+    f16_t hypot(const f16_t& a, const f16_t& b);
+
     f16_t exp(const f16_t& v);
     f16_t expm1(const f16_t& v);
     f16_t exp2(const f16_t& v);
@@ -903,6 +906,12 @@ inline
 cftal::f16_t cftal::cbrt(const f16_t& v)
 {
     return f16_t(std::cbrt(float(v)));
+}
+
+inline
+cftal::f16_t cftal::hypot(const f16_t& x, const f16_t& y)
+{
+    return f16_t(std::hypot(float(x), float(y)));
 }
 
 inline
