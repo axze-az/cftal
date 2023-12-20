@@ -187,6 +187,10 @@ namespace cftal {
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e,
                   vf_type* p_ylnx=nullptr);
 
+            static
+            vf_type
+            hypot_k(arg_t<vf_type> xc, arg_t<vf_type> yc);
+
         };
     }
 }
@@ -800,6 +804,18 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e, vf_type* p_ylnx)
     vf_type xr;
     __reduce_exp_arg(xr, idx, ki, ylnx);
     vf_type r=__exp_tbl_k(xr, idx, ki);
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_loprec_core<double, _T>::vf_type
+cftal::math::elem_func_loprec_core<double, _T>::
+hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    vf_type x2=x*x;
+    vf_type y2=y*y;
+    vf_type r=sqrt(vf_type(x2+y2));
     return r;
 }
 

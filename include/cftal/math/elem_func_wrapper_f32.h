@@ -35,6 +35,7 @@
 #define __CFTAL_CFG_USE_VF64_FOR_VF32_LOG2__ 1
 #define __CFTAL_CFG_USE_VF64_FOR_VF32_LOG10__ 1
 #define __CFTAL_CFG_USE_VF64_FOR_VF32_POW_FUNCS__ 1
+#define __CFTAL_CFG_USE_VF64_FOR_VF32_HYPOT__ 1
 
 namespace cftal {
     namespace math {
@@ -141,7 +142,11 @@ namespace cftal {
             vf_type
             powi_k(arg_t<vf_type> x, arg_t<vi_type> e);
 #endif
-
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_HYPOT__ >0
+            static
+            vf_type
+            hypot_k(arg_t<vf_type> x, arg_t<vf_type> y);
+#endif
         };
     }
 }
@@ -436,6 +441,21 @@ powi_k(arg_t<vf_type> x, arg_t<vi_type> e)
     return r;
 }
 
+#endif
+
+#if __CFTAL_CFG_USE_VF64_FOR_VF32_HYPOT__ >0
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<float, _T>::vf_type
+cftal::math::elem_func_wrapper<float, _T>::
+hypot_k(arg_t<vf_type> x, arg_t<vf_type> y)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type yd=cvt<vhf_type>(y);
+    vhf_type rd=f64_core::hypot_k(xd, yd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
 #endif
 
 #endif
