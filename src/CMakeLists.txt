@@ -285,6 +285,8 @@ endif(LIBM)
 if ("${CMAKE_LIBRARY_ARCHITECTURE}" MATCHES ^x86_64* )
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         #set (CMAKE_CXX_FLAGS_RELEASE
+        #     "${CMAKE_CXX_FLAGS_RELEASE} -save-temps -fverbose-asm")
+        #set (CMAKE_CXX_FLAGS_RELEASE
         #     "${CMAKE_CXX_FLAGS_RELEASE} -Winline")
         #set (CMAKE_CXX_FLAGS_RELEASE
         #     "${CMAKE_CXX_FLAGS_RELEASE} --param inline-unit-growth=4000")
