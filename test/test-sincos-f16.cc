@@ -23,6 +23,7 @@ int main(int argc, char** argv)
 {
     using namespace cftal::test;
     using cftal::f16_t;
+    using cftal::operator ""_f16;
     cpu_times_to_stdout tt;
     pgm_args ags=parse(argc, argv, 0x4000);
 
@@ -51,7 +52,7 @@ int main(int argc, char** argv)
               << std::fixed << std::setprecision(4) << *us_cos << std::endl;
     std::cout << st << std::endl;
 
-    auto dp2=std::make_pair(-0x1p18f, 0x1p18f);
+    auto dp2=std::make_pair(-6.28_f16, 6.28_f16);
     auto us_sin2=std::make_shared<ulp_stats>();
     auto us_cos2=std::make_shared<ulp_stats>();
     exec_stats<_N> st2;
