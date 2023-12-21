@@ -188,7 +188,7 @@ namespace cftal {
     void
     insert(vec<f16_t, _N>& v, const f16_t& vi);
 
-    template <size_t _I, size_t _N>
+    template <size_t _N>
     void
     insert(vec<f16_t, _N>& v, const f16_t& vi, size_t i);
 
