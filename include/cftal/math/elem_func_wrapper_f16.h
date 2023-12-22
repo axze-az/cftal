@@ -39,6 +39,7 @@
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_LOG10__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_POW_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_TRIG_FUNCS__ 1
+#define __CFTAL_CFG_USE_VF32_FOR_VF16_TRIGPI_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_HYPOT__ 1
 
 namespace cftal {
@@ -174,11 +175,22 @@ namespace cftal {
             static
             void
             sin_cos_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
-            // core tan calculation
 
+            // core tan calculation
             static
             vf_type
             tan_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_TRIGPI_FUNCS__ >0
+            // core sine, cosine calculation
+            static
+            void
+            sinpi_cospi_k(arg_t<vf_type> x, vf_type* s, vf_type* c);
+
+            // core tan calculation
+            static
+            vf_type
+            tanpi_k(arg_t<vf_type> x);
 #endif
 #if __CFTAL_CFG_USE_VF32_FOR_VF16_HYPOT__ >0
             static
@@ -576,6 +588,39 @@ tan_k(arg_t<vf_type> x)
 {
     vhf_type xd=cvt<vhf_type>(x);
     vhf_type rd=f32_core::tan_k(xd);
+    vf_type r=cvt<vf_type>(rd);
+    return r;
+}
+#endif
+
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_TRIGPI_FUNCS__ >0
+template <typename _T>
+inline
+void
+cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
+sinpi_cospi_k(arg_t<vf_type> x, vf_type* s, vf_type* c)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type sd, cd;
+    vhf_type* ps= s != nullptr ? &sd : nullptr;
+    vhf_type* pc= c != nullptr ? &cd : nullptr;
+    f32_core::sinpi_cospi_k(xd, ps, pc);
+    if (s != nullptr) {
+        *s = cvt<vf_type>(sd);
+    }
+    if (c != nullptr) {
+        *c = cvt<vf_type>(cd);
+    }
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
+tanpi_k(arg_t<vf_type> x)
+{
+    vhf_type xd=cvt<vhf_type>(x);
+    vhf_type rd=f32_core::tanpi_k(xd);
     vf_type r=cvt<vf_type>(rd);
     return r;
 }
