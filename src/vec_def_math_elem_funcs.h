@@ -641,6 +641,39 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::tan(d);                                          \
     }                                                                   \
+                                                                        \
+    void                                                                \
+    __attribute__((__flatten__))                                        \
+    ns::sinpicospi(arg<vec_float>::type d,                              \
+                   vec_float* psin, vec_float* pcos)                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::sinpicospi(d, psin, pcos);                       \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::sinpi(arg<vec_float>::type d)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::sinpi(d);                                        \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::cospi(arg<vec_float>::type d)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::cospi(d);                                        \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::tanpi(arg<vec_float>::type d)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::tanpi(d);                                        \
+    }                                                                   \
 
 
 // Local variables:

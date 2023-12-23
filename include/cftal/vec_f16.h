@@ -144,6 +144,23 @@ namespace cftal {
     vec<f16_t, _N>
     tan(const vec<f16_t, _N>& x);
 
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    sinpi(const vec<f16_t, _N>& x);
+
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    cospi(const vec<f16_t, _N>& x);
+
+    template <std::size_t _N>
+    void
+    sinpicospi(const vec<f16_t, _N>& x,
+               vec<f16_t, _N>* s, vec<f16_t, _N>* c);
+
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    tanpi(const vec<f16_t, _N>& x);
+
 // #if V1F16_FUNCS > 0
     vec<f16_t, 1>
     ldexp(arg_t<vec<f16_t, 1> > a, arg_t<vec<int16_t, 1> > e);
@@ -223,6 +240,19 @@ namespace cftal {
 
     vec<f16_t, 1>
     tan(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    sinpi(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    cospi(arg_t<vec<f16_t, 1> > x);
+
+    void
+    sinpicospi(arg_t<vec<f16_t, 1> > x,
+               vec<f16_t, 1>* s, vec<f16_t, 1>* c);
+
+    vec<f16_t, 1>
+    tanpi(arg_t<vec<f16_t, 1> > x);
 
 // #endif
 #if V2F16_FUNCS>0
@@ -306,6 +336,19 @@ namespace cftal {
     vec<f16_t, 2>
     tan(arg_t<vec<f16_t, 2> > x);
 
+
+    vec<f16_t, 2>
+    sinpi(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    cospi(arg_t<vec<f16_t, 2> > x);
+
+    void
+    sinpicospi(arg_t<vec<f16_t, 2> > x,
+               vec<f16_t, 2>* s, vec<f16_t, 2>* c);
+
+    vec<f16_t, 2>
+    tanpi(arg_t<vec<f16_t, 2> > x);
 #endif
 
 #if V4F16_FUNCS>0
@@ -389,6 +432,19 @@ namespace cftal {
     vec<f16_t, 4>
     tan(arg_t<vec<f16_t, 4> > x);
 
+    vec<f16_t, 4>
+    sinpi(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    cospi(arg_t<vec<f16_t, 4> > x);
+
+    void
+    sinpicospi(arg_t<vec<f16_t, 4> > x,
+               vec<f16_t, 4>* s, vec<f16_t, 4>* c);
+
+    vec<f16_t, 4>
+    tanpi(arg_t<vec<f16_t, 4> > x);
+
 #endif
 #if V8F16_FUNCS>0
 
@@ -471,6 +527,19 @@ namespace cftal {
     vec<f16_t, 8>
     tan(arg_t<vec<f16_t, 8> > x);
 
+    vec<f16_t, 8>
+    sinpi(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    cospi(arg_t<vec<f16_t, 8> > x);
+
+    void
+    sinpicospi(arg_t<vec<f16_t, 8> > x,
+               vec<f16_t, 8>* s, vec<f16_t, 8>* c);
+
+    vec<f16_t, 8>
+    tanpi(arg_t<vec<f16_t, 8> > x);
+
 #endif
 #if V16F16_FUNCS>0
 
@@ -552,6 +621,19 @@ namespace cftal {
 
     vec<f16_t, 16>
     tan(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    sinpi(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    cospi(arg_t<vec<f16_t, 16> > x);
+
+    void
+    sinpicospi(arg_t<vec<f16_t, 16> > x,
+               vec<f16_t, 16>* s, vec<f16_t, 16>* c);
+
+    vec<f16_t, 16>
+    tanpi(arg_t<vec<f16_t, 16> > x);
 
 #endif
 }
@@ -809,6 +891,51 @@ cftal::tan(const vec<cftal::f16_t, _N>& v)
     return r;
 }
 
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::sinpi(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(sinpi(low_half(v)), sinpi(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::cospi(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(cospi(low_half(v)), cospi(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+void
+cftal::sinpicospi(const vec<cftal::f16_t, _N>& v,
+                  vec<cftal::f16_t, _N>* s, vec<cftal::f16_t, _N>* c)
+{
+    if (s != nullptr && c != nullptr) {
+        vec<f16_t, _N/2> sl, sh, cl, ch;
+        sinpicospi(low_half(v), &sl, &cl);
+        sinpicospi(high_half(v), &sh, &ch);
+        *s= vec<f16_t, _N>(sl, sh);
+        *c= vec<f16_t, _N>(cl, ch);
+    } else if (s != nullptr) {
+        *s = sinpi(v);
+    } else if (c != nullptr) {
+        *c = cospi(v);
+    }
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::tanpi(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(tanpi(low_half(v)), tanpi(high_half(v)));
+    return r;
+}
 
 // Local variables:
 // mode: c++
