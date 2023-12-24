@@ -145,13 +145,52 @@ namespace cftal {
     namespace impl {
 
         template <std::size_t _N>
-        typename vec<f16_t, _N>::mask_type
-        cvt_f32_msk_to_f16_msk(const typename vec<f32_t, _N>::mask_type& m) {
+        std::enable_if_t<
+            std::is_same_v<
+                vec<f16_t, _N>,
+                typename vec<f16_t, _N>::mask_type
+            >,
+            vec<f16_t, _N>
+        >
+        cvt_f32_msk_to_f16_msk(const vec<f32_t, _N>& m) {
             const vec<mf_f16_t, 2*_N> mv=as<const vec<mf_f16_t, 2*_N> >(m);
             auto oe=odd_elements(mv);
             return vec<f16_t, _N>::cvt_from_rep(oe);
         }
 
+#if defined (__SSE2__)
+        inline
+        vec<f16_t, 4>
+        cvt_f32_msk_to_f16_msk(const vec<f32_t, 4>& m) {
+            __m128i mi=_mm_castps_si128(m());
+            __m128i ri=_mm_packs_epi32(mi, mi);
+            vec<mf_f16_t, 8> r(ri);
+            return vec<f16_t, 4>::cvt_from_rep(low_half(r));
+        }
+
+        inline
+        vec<f16_t, 8>
+        cvt_f32_msk_to_f16_msk(const vec<f32_t, 8>& m) {
+            __m128i mhi=_mm_castps_si128(high_half(m)());
+            __m128i mli=_mm_castps_si128(low_half(m)());
+            __m128i ri=_mm_packs_epi32(mli, mhi);
+            vec<mf_f16_t, 8> r(ri);
+            return vec<f16_t, 8>::cvt_from_rep(r);
+        }
+
+#if defined (__AVX2__)
+        inline
+        vec<f16_t, 16>
+        cvt_f32_msk_to_f16_msk(const vec<f32_t, 16>& m) {
+            __m256i mhi=_mm256_castps_si256(high_half(m)());
+            __m256i mli=_mm256_castps_si256(low_half(m)());
+            __m256i ri=_mm256_packs_epi32(mli, mhi);
+            ri=x86::perm_v4u64<0, 2, 1, 3>(ri);
+            vec<mf_f16_t, 16> r(ri);
+            return vec<f16_t, 16>::cvt_from_rep(r);
+        }
+#endif
+#endif
     }
 
     template <size_t _N>
@@ -337,7 +376,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<1>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) < cvt_f16_to_f32(b()));
             }
         };
@@ -349,7 +388,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<_N>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) < cvt_f16_to_f32(b()));
             }
         };
@@ -361,7 +400,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<1>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) <= cvt_f16_to_f32(b()));
             }
         };
@@ -373,7 +412,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<_N>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) <= cvt_f16_to_f32(b()));
             }
         };
@@ -385,7 +424,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<1>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) == cvt_f16_to_f32(b()));
             }
         };
@@ -397,7 +436,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<_N>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) == cvt_f16_to_f32(b()));
             }
         };
@@ -409,7 +448,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<1>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) != cvt_f16_to_f32(b()));
             }
         };
@@ -421,7 +460,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<_N>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) != cvt_f16_to_f32(b()));
             }
         };
@@ -433,7 +472,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<1>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) >= cvt_f16_to_f32(b()));
             }
         };
@@ -445,7 +484,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<_N>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) >= cvt_f16_to_f32(b()));
             }
         };
@@ -457,7 +496,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<1>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) > cvt_f16_to_f32(b()));
             }
         };
@@ -469,7 +508,7 @@ namespace cftal {
             static
             mask_type
             v(const full_type& a, const full_type& b) {
-                return impl::cvt_f32_msk_to_f16_msk<_N>(
+                return impl::cvt_f32_msk_to_f16_msk(
                     cvt_f16_to_f32(a()) > cvt_f16_to_f32(b()));
             }
         };
