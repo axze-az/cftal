@@ -368,6 +368,7 @@ __mul_two_pow(arg_t<vf_type> y, arg_t<vf_type> kf)
 
 template <typename _T>
 template <bool _EXP_M1>
+inline
 typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
 cftal::math::elem_func_loprec_core<float, _T>::
 __exp_k(arg_t<vf_type> xrd, arg_t<vf_type> kfd,
