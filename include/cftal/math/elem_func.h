@@ -756,14 +756,14 @@ pow(arg_t<vf_type> x, arg_t<vi_type> e)
     vmi_type ei_is_odd= vi_type(e & 1)==vi_type(1);
     vmf_type e_is_odd = _T::vmi_to_vmf(ei_is_odd);
     // result is negative if x < 0 & y is odd
-    vf_type sgn_x= copysign(_FLOAT_T(1.0), x);
+    vf_type sgn_x= copysign(_FLOAT_T(1), x);
     vmf_type res_neg = vmf_type(sgn_x < _FLOAT_T(0)) & e_is_odd;
     res = _T::sel(res_neg, -res, res);
 
     vmf_type x_zero = iszero(x);
     vmf_type x_inf_or_zero= isinf(x) | x_zero;
     vf_type t= _T::sel(x_zero, -y, y);
-    t= _T::sel_zero_or_val(t < _FLOAT_T(0.0), _T::pinf());
+    t= _T::sel_zero_or_val(t < _FLOAT_T(0), _T::pinf());
     vf_type t1=_T::sel(e_is_odd, sgn_x, vf_type(1));
     t1 *= t;
     res = _T::sel(x_inf_or_zero, t1, res);
@@ -771,7 +771,7 @@ pow(arg_t<vf_type> x, arg_t<vi_type> e)
     vmf_type e_is_one = _T::vmi_to_vmf(ei_is_one);
     res = _T::sel(e_is_one, x, res);
     res = _T::sel(isnan(x) | isnan(y), _T::nan(), res);
-    res = _T::sel(iszero(y) | (x==_FLOAT_T(1.0)), _FLOAT_T(1), res);
+    res = _T::sel(iszero(y) | (x==_FLOAT_T(1)), _FLOAT_T(1), res);
     return res;
 }
 
@@ -882,7 +882,7 @@ sinpicospi(arg_t<vf_type> xc, vf_type* psin, vf_type* pcos)
             c=_TRAITS_T::sel(is_half, _FLOAT_T(0.0), c);
             vf_type xc05=_FLOAT_T(0.5)*xc;
             vmf_type _is_even=rint(xc05)==xc05;
-            vf_type pm1=_TRAITS_T::sel(_is_even, _FLOAT_T(1.0), _FLOAT_T(-1.0));
+            vf_type pm1=_TRAITS_T::sel(_is_even, _FLOAT_T(1), _FLOAT_T(-1));
             c=_TRAITS_T::sel(xc_is_int, pm1, c);
             *pcos= _TRAITS_T::sel(inf_nan,
                                   _TRAITS_T::nan(),
@@ -962,8 +962,8 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
 
     if (_T::any_of_vmf(special)) {
         vf_type y_sgn =  copysign(_FLOAT_T(1), y);
-        vmf_type y_p= y_sgn == _FLOAT_T(1.0);
-        vmf_type y_n= y_sgn == _FLOAT_T(-1.0);
+        vmf_type y_p= y_sgn == _FLOAT_T(1);
+        vmf_type y_n= y_sgn == _FLOAT_T(-1);
         vmf_type y_p_zero = y_p & y_zero;
         vmf_type y_n_zero = y_n & y_zero;
         vmf_type y_gt_z = y>_FLOAT_T(0);
@@ -972,8 +972,8 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
         vmf_type y_n_inf = y_inf & y_n;
 
         vf_type x_sgn = copysign(_FLOAT_T(1), x);
-        vmf_type x_p= x_sgn == _FLOAT_T(1.0);
-        vmf_type x_n= x_sgn == _FLOAT_T(-1.0);
+        vmf_type x_p= x_sgn == _FLOAT_T(1);
+        vmf_type x_n= x_sgn == _FLOAT_T(-1);
         vmf_type x_p_zero = x_p & x_zero;
         vmf_type x_n_zero = x_n & x_zero;
         vmf_type x_p_inf = x_p & x_inf;
@@ -1080,7 +1080,7 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 acosh(arg_t<vf_type> x)
 {
     vf_type r=base_type::acosh_k(x);
-    r = _TRAITS_T::sel(x < _FLOAT_T(1.0), _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x < _FLOAT_T(1), _TRAITS_T::nan(), r);
     r = _TRAITS_T::sel((x== _TRAITS_T::pinf())|isnan(x), x, r);
     return r;
 }
@@ -1092,10 +1092,10 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 atanh(arg_t<vf_type> x)
 {
     vf_type r=base_type::atanh_k(x);
-    r = _TRAITS_T::sel(x == _FLOAT_T(-1.0), _TRAITS_T::ninf(), r);
-    r = _TRAITS_T::sel(x < _FLOAT_T(-1.0), -_TRAITS_T::nan(), r);
-    r = _TRAITS_T::sel(x == _FLOAT_T(1.0), _TRAITS_T::pinf(), r);
-    r = _TRAITS_T::sel((x > _FLOAT_T(1.0))|isnan(x), _TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(-1), _TRAITS_T::ninf(), r);
+    r = _TRAITS_T::sel(x < _FLOAT_T(-1), -_TRAITS_T::nan(), r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(1), _TRAITS_T::pinf(), r);
+    r = _TRAITS_T::sel((x > _FLOAT_T(1))|isnan(x), _TRAITS_T::nan(), r);
     return r;
 }
 
