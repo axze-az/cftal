@@ -209,9 +209,13 @@ typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
 sqrt(arg_t<vf_type> x)
 {
-    vhf_type xd=cvt<vhf_type>(x);
-    vhf_type rd=cftal::sqrt(xd);
-    vf_type r=cvt<vf_type>(rd);
+    vhf_type xf=cvt<vhf_type>(x);
+#if 1
+    vhf_type rf=cftal::sqrt(xf);
+#else
+    vhf_type rf=f32_core::rsqrt_k(xf)*xf;
+#endif
+    vf_type r=cvt<vf_type>(rf);
     return r;
 }
 #endif
