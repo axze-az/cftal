@@ -144,7 +144,13 @@ namespace cftal {
 
     namespace impl {
 
-        template <std::size_t _N>
+        template <size_t _N>
+        const vec<bit, _N>&
+        cvt_f32_msk_to_f16_msk(const vec<bit, _N>& m) {
+            return m;
+        }
+
+        template <size_t _N>
         std::enable_if_t<
             std::is_same_v<
                 vec<f16_t, _N>,
