@@ -353,6 +353,10 @@ test_prog(test-sin-f16)
 test_prog(test-cos-f16)
 test_prog(test-tan-f16)
 test_prog(test-sincos-f16)
+test_prog(test-sinpi-f16)
+test_prog(test-cospi-f16)
+test_prog(test-sinpicospi-f16)
+test_prog(test-tanpi-f16)
 
 test_prog(test-hypot-f16)
 
