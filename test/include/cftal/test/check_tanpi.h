@@ -48,7 +48,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::tan(a*M_PI);
+                using std::tan;
+                return tan(a*M_PI);
             }
             static
             const char* fname() { return "tanpi"; }

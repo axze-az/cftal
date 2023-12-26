@@ -72,6 +72,17 @@ namespace cftal {
             }
 
             static
+            std::pair<f16_t, f16_t>
+            __sinpicospi(f16_t a) {
+                float af=static_cast<float>(a)*M_PI;
+                float sf, cf;
+                ::sincosf(af, &sf, &cf);
+                f16_t s=static_cast<f16_t>(sf);
+                f16_t c=static_cast<f16_t>(cf);
+                return std::make_pair(s, c);
+            }
+
+            static
             std::pair<_T, _T>
             s(const _T& a) {
                 return __sinpicospi(a);

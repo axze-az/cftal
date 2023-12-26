@@ -143,6 +143,16 @@ namespace cftal {
             const int shifts[]={0};
         };
 
+        template <>
+        struct domain_sinpi_cospi_tanpi<f16_t> {
+            constexpr static
+            const func_domain<f16_t> domains[]={
+                std::make_pair(-0x1.5p12_f16, 0x1.5p12_f16)
+            };
+            constexpr static
+            const int shifts[]={0};
+        };
+
         template <typename _T>
         struct domain_logx1p {
             constexpr static

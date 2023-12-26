@@ -49,7 +49,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::cos(a*M_PI);
+                using std::cos;
+                return cos(a*M_PI);
             }
             static
             const char* fname() { return "cospi"; }

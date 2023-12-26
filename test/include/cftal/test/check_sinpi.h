@@ -49,7 +49,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::sin(a*M_PI);
+                using std::sin;
+                return sin(a*M_PI);
             }
 
             static
