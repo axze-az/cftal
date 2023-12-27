@@ -345,7 +345,7 @@ rcbrt(arg_t<vf_type> x)
     // __asm volatile("# LLVM-MCA-BEGIN\n\t");
     vf_type y=base_type::rcbrt_k(x);
     y=_T::sel_val_or_zero(x != _T::pinf(), y);
-    y=_T::sel(x == _T::ninf(), -0.0, y);
+    y=_T::sel(x == _T::ninf(), _FLOAT_T(-0.0), y);
     y=_T::sel(iszero(x), copysign(_T::pinf(), x), y);
     y=_T::sel(isnan(x), x, y);
     // __asm volatile("# LLVM-MCA-END\n\t");
