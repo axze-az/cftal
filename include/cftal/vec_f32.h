@@ -1993,8 +1993,7 @@ inline
 cftal::vec<float, _N>
 cftal::j0(const vec<float, _N>& x)
 {
-    vec<float, _N> r(j0(low_half(x)),
-                     j0(high_half(x)));
+    vec<float, _N> r(j0(low_half(x)), j0(high_half(x)));
     return r;
 }
 
@@ -2003,8 +2002,7 @@ inline
 cftal::vec<float, _N>
 cftal::j1(const vec<float, _N>& x)
 {
-    vec<float, _N> r(j1(low_half(x)),
-                     j1(high_half(x)));
+    vec<float, _N> r(j1(low_half(x)), j1(high_half(x)));
     return r;
 }
 
@@ -2013,8 +2011,7 @@ inline
 cftal::vec<float, _N>
 cftal::y0(const vec<float, _N>& x)
 {
-    vec<float, _N> r(y0(low_half(x)),
-                     y0(high_half(x)));
+    vec<float, _N> r(y0(low_half(x)), y0(high_half(x)));
     return r;
 }
 
@@ -2023,8 +2020,7 @@ inline
 cftal::vec<float, _N>
 cftal::y1(const vec<float, _N>& x)
 {
-    vec<float, _N> r(y1(low_half(x)),
-                     y1(high_half(x)));
+    vec<float, _N> r(y1(low_half(x)), y1(high_half(x)));
     return r;
 }
 
