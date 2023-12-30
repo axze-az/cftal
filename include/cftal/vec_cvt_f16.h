@@ -172,8 +172,8 @@ template <std::size_t _N>
 cftal::vec<cftal::mf_f16_t, _N>
 cftal::cvt_f32_to_f16(const vec<f32_t, _N>& s)
 {
-    vec<cftal::mf_f16_t, _N/2> rl=cvt_f32_to_f16(low_half(s));
     vec<cftal::mf_f16_t, _N/2> rh=cvt_f32_to_f16(high_half(s));
+    vec<cftal::mf_f16_t, _N/2> rl=cvt_f32_to_f16(low_half(s));
     return vec<cftal::mf_f16_t, _N>(rl, rh);
 }
 
@@ -233,8 +233,8 @@ template <std::size_t _N>
 cftal::vec<cftal::f32_t, _N>
 cftal::cvt_f16_to_f32(const vec<mf_f16_t, _N>& s)
 {
-    vec<f32_t, _N/2> rl= cvt_f16_to_f32(low_half(s));
     vec<f32_t, _N/2> rh= cvt_f16_to_f32(high_half(s));
+    vec<f32_t, _N/2> rl= cvt_f16_to_f32(low_half(s));
     return vec<f32_t, _N>(rl, rh);
 }
 
