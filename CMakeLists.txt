@@ -221,10 +221,10 @@ set(CFTAL_CFG_ENABLE_AVX512 0)
 option(CFTAL_CONFIG_ENABLE_AVX512
        "allow usage of AVX512XX" OFF)
 if (CFTAL_CONFIG_ENABLE_AVX512)
-    message("using avx512: yes")
+    message("use avx512: yes")
     set(CFTAL_CFG_ENABLE_AVX512 1)
 else()
-    message("using avx512: no")
+    message("use avx512: no")
 endif()
 
 include_directories(include)
