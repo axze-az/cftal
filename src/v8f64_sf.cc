@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2010-2023 Axel Zeuner
+// Copyright (C) 2010-2024 Axel Zeuner
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -12,7 +12,7 @@
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, (cftal, cftal, v4f64, v4s32, double)write to the Free Software
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 //
 #include "cftal/vec.h"
