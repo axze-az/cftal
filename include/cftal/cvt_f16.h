@@ -62,8 +62,8 @@ inline
 cftal::f32_t
 cftal::impl::_cvt_f16_to_f32(mf_f16_t t)
 {
-    uint32_t tt= read_bits(t);
-    const uint32_t exp_msk = 0x7c00 << 13;
+    const uint32_t tt= read_bits(t);
+    constexpr const uint32_t exp_msk = 0x7c00 << 13;
     uint32_t r= (tt & 0x7fff) << 13;
     uint32_t s= (tt & 0x8000) << 16;
     uint32_t e= exp_msk & r;
@@ -90,11 +90,11 @@ cftal::impl::_cvt_f32_to_f16(f32_t ff)
 {
     // const f32_t inf= std::numeric_limits<float>::infinity();
     // const uint32_t inf_u= as<uint32_t>(inf);
-    const uint32_t inf_u=  exp_f32_msk::v.u32();
-    const uint32_t max_f16_u = (127+16)<<23;
-    const f32_t denom_magic= 0.5f;
+    constexpr const uint32_t inf_u=  exp_f32_msk::v.u32();
+    constexpr const uint32_t max_f16_u = (127+16)<<23;
+    constexpr const f32_t denom_magic= 0.5f;
 
-    const uint32_t sgn_msk = 0x80000000u;
+    constexpr const uint32_t sgn_msk = 0x80000000u;
 
     uint32_t f=as<uint32_t>(ff);
     uint32_t s=(f & sgn_msk);
