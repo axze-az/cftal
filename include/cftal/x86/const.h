@@ -311,8 +311,6 @@ namespace cftal {
                             0x7f800000, 0x7f800000,
                             0x7f800000, 0x7f800000> v_exp_v8f32_msk;
 #endif
-        typedef const_v4u32<0x807fffff, 0x807fffff,
-                            0x807fffff, 0x807fffff> v_not_exp_f32_msk;
         typedef const_v4u32<0x007fffff, 0x007fffff,
                             0x007fffff, 0x007fffff> v_sig_f32_msk;
         const int sign_f32_msk = 0x0f;
@@ -344,8 +342,6 @@ namespace cftal {
 
         typedef const_v4u32<0x00000000,0x7ff00000,
                             0x00000000,0x7ff00000> v_exp_v2f64_msk;
-        typedef const_v4u32<0xffffffff,0x800fffff,
-                            0xffffffff,0x800fffff> v_not_exp_v2f64_msk;
         typedef const_v4u32<0xffffffff,0x000fffff,
                             0xffffffff,0x000fffff> v_sig_v2f64_msk;
         const int sign_f64_msk = 0x03;
