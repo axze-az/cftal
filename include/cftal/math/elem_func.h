@@ -988,31 +988,31 @@ atan2(arg_t<vf_type> y, arg_t<vf_type> x)
         //  atan2(-0, x>=0) = -0
         r = _T::sel(y_n_zero & x_ge_p_z, y, r);
         //  atan2(+0, x<=-0) = +Pi
-        r = _T::sel(y_p_zero & x_le_n_z, +M_PI, r);
+        r = _T::sel(y_p_zero & x_le_n_z, _FLOAT_T(+M_PI), r);
         //  atan2(-0, x<=-0) = -Pi
-        r = _T::sel(y_n_zero & x_le_n_z, -M_PI, r);
+        r = _T::sel(y_n_zero & x_le_n_z, _FLOAT_T(-M_PI), r);
         //  atan2(y>0, 0) = +Pi/2
-        r = _T::sel(y_gt_z & x_zero, +M_PI/2, r);
+        r = _T::sel(y_gt_z & x_zero, _FLOAT_T(+M_PI/2), r);
         //  atan2(y<0, 0) = -Pi/2
-        r = _T::sel(y_lt_z & x_zero, -M_PI/2, r);
+        r = _T::sel(y_lt_z & x_zero, _FLOAT_T(-M_PI/2), r);
         //  atan2(y, +Inf) = copysign(0, y);
         r = _T::sel(x_p_inf, copysign(_FLOAT_T(0), y), r);
         //  atan2(y>0, -Inf) = +Pi
-        r = _T::sel(y_gt_z & x_n_inf, M_PI, r);
+        r = _T::sel(y_gt_z & x_n_inf, _FLOAT_T(M_PI), r);
         //  atan2(y<0, -Inf) = -Pi
-        r = _T::sel(y_lt_z & x_n_inf, -M_PI, r);
+        r = _T::sel(y_lt_z & x_n_inf, _FLOAT_T(-M_PI), r);
         //  atan2(+Inf, x) = +Pi/2
-        r = _T::sel(y_p_inf, M_PI/2, r);
+        r = _T::sel(y_p_inf, _FLOAT_T(M_PI/2), r);
         //  atan2(-Inf, x) = -Pi/2
-        r= _T::sel(y_n_inf, -M_PI/2, r);
+        r= _T::sel(y_n_inf, _FLOAT_T(-M_PI/2), r);
         //  atan2(+Inf, +Inf) = +Pi/4
-        r = _T::sel(y_p_inf & x_p_inf, +M_PI/4, r);
+        r = _T::sel(y_p_inf & x_p_inf, _FLOAT_T(+M_PI/4), r);
         //  atan2(-Inf, +Inf) = -Pi/4
-        r = _T::sel(y_n_inf & x_p_inf, -M_PI/4, r);
+        r = _T::sel(y_n_inf & x_p_inf, _FLOAT_T(-M_PI/4), r);
         //  atan2(+Inf, -Inf) = 3Pi/4
-        r = _T::sel(y_p_inf & x_n_inf, (3*M_PI)/4, r);
+        r = _T::sel(y_p_inf & x_n_inf, _FLOAT_T((3*M_PI)/4), r);
         //  atan2(-Inf, -Inf) = -3Pi/4
-        r = _T::sel(y_n_inf & x_n_inf, -(3*M_PI)/4, r);
+	r = _T::sel(y_n_inf & x_n_inf, _FLOAT_T(-(3*M_PI)/4), r);
         //  atan2(y, NaN) = NaN
         //  atan2(NaN, x) = NaN
         r = _T::sel(x_nan | y_nan, _T::nan(), r);
@@ -1040,8 +1040,8 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 asin(arg_t<vf_type> x)
 {
     vf_type r=base_type::asin_k(x);
-    r = _TRAITS_T::sel(x == _FLOAT_T(-1), -M_PI/2, r);
-    r = _TRAITS_T::sel(x == _FLOAT_T(1), M_PI/2, r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(-1), _FLOAT_T(-M_PI/2), r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(1), _FLOAT_T(M_PI/2), r);
     r = _TRAITS_T::sel(x < _FLOAT_T(-1), -_TRAITS_T::nan(), r);
     r = _TRAITS_T::sel((x > _FLOAT_T(1))|isnan(x), _TRAITS_T::nan(), r);
     return r;
@@ -1054,9 +1054,9 @@ cftal::math::elem_func<_FLOAT_T, _TRAITS_T>::
 acos(arg_t<vf_type> x)
 {
     vf_type r=base_type::acos_k(x);
-    r = _TRAITS_T::sel(x == _FLOAT_T(-1), M_PI, r);
+    r = _TRAITS_T::sel(x == _FLOAT_T(-1), _FLOAT_T(M_PI), r);
     r = _TRAITS_T::sel_zero_or_val(x == _FLOAT_T(1), r);
-    r = _TRAITS_T::sel(iszero(x), M_PI/2, r);
+    r = _TRAITS_T::sel(iszero(x), _FLOAT_T(M_PI/2), r);
     r = _TRAITS_T::sel(x < _FLOAT_T(-1), -_TRAITS_T::nan(), r);
     r = _TRAITS_T::sel((x > _FLOAT_T(1))|isnan(x), _TRAITS_T::nan(), r);
     return r;
