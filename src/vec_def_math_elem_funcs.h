@@ -674,6 +674,38 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::tanpi(d);                                        \
     }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::atan2(arg<vec_float>::type x, arg<vec_float>::type y)           \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::atan2(x, y);                                     \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::atan(arg<vec_float>::type d)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::atan(d);                                         \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::asin(arg<vec_float>::type d)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::asin(d);                                         \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::acos(arg<vec_float>::type d)                                    \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::acos(d);                                         \
+    }                                                                   \
 
 
 // Local variables:

@@ -669,7 +669,7 @@ atan2_k(arg_t<vf_type> x, arg_t<vf_type> y)
 {
     vhf_type xf=cvt<vhf_type>(x);
     vhf_type yf=cvt<vhf_type>(y);
-    vhf_type rf=f32_core::asin_k(xf, yf);
+    vhf_type rf=f32_core::atan2_k(xf, yf);
     vf_type r=cvt<vf_type>(rf);
     return r;
 }
