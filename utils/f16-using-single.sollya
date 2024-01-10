@@ -227,7 +227,7 @@ b = [|0, 2, 4, 6|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "constexpr\n    const vf_type asin_c", "asin", b, c);
+write_coeffs(p, "constexpr\n    const float asin_c", "asin", b, c);
 // plot((p(x)-f(x))/f(x), p(x)-f(x), i, postscriptfile, "asin-f16");
 
 

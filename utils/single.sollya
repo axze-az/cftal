@@ -21,32 +21,32 @@ write_approx_prec(p, f1, i);
 write_coeffs(p, "constexpr\n    const float exp_c", "exp", b, c);
 
 /* N/ln(2) */
-write_coeff(N/log(2), "", "const float _32_ln2", single);
+write_coeff(N/log(2), "", "constexpr\n    const float _32_ln2", single);
 /* ln(2)/N Cody and Waite */
 c1h=round(log(2)/N, 24-7-5, RN);
 c1l=log(2)/N-c1h;
-write_coeff(c1h, "", "const float _ln2_32_cw_h", single);
-write_coeff(c1l, "", "const float _ln2_32_cw_l", single);
+write_coeff(c1h, "", "constexpr\n    const float _ln2_32_cw_h", single);
+write_coeff(c1l, "", "constexpr\n    const float _ln2_32_cw_l", single);
 /* ln(2)/N */
 c1h=single(log(2)/N);
 c1l=log(2)/N-c1h;
-write_coeff(c1h, "", "const float _ln2_32_h", single);
-write_coeff(c1l, "", "const float _ln2_32_l", single);
+write_coeff(c1h, "", "constexpr\n    const float _ln2_32_h", single);
+write_coeff(c1l, "", "constexpr\n    const float _ln2_32_l", single);
 
 /* log_10(x) = lg(10) */
 /* N/lg(2) */
-write_coeff(N/(log(2)/log(10)), "", "const float _32_lg2", single);
+write_coeff(N/(log(2)/log(10)), "", "constexpr\n    const float _32_lg2", single);
 /* lg(2)/N Cody and Waite */
 lg_2_N=log(2)/(log(10))/N;
 c1h=round(lg_2_N, 24-7-5, RN);
 c1l=lg_2_N-c1h;
-write_coeff(c1h, "", "const float _lg2_32_cw_h", single);
-write_coeff(c1l, "", "const float _lg2_32_cw_l", single);
+write_coeff(c1h, "", "constexpr\n    const float _lg2_32_cw_h", single);
+write_coeff(c1l, "", "constexpr\n    const float _lg2_32_cw_l", single);
 /* lg(2)/N */
 c1h=single(lg_2_N);
 c1l=lg_2_N-c1h;
-write_coeff(c1h, "", "const float _lg2_32_h", single);
-write_coeff(c1l, "", "const float _lg2_32_l", single);
+write_coeff(c1h, "", "constexpr\n    const float _lg2_32_h", single);
+write_coeff(c1l, "", "constexpr\n    const float _lg2_32_l", single);
 
 quit;
 
@@ -57,8 +57,8 @@ b = [|0, 2, 4|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p-2, "const vf_type exp_c", "exp", b, c);
-// print_f_poly_coeffs(p-2, "const vf_type exp_c", "exp");
+write_coeffs(p-2, "constexpr\n    const float exp_c", "exp", b, c);
+// print_f_poly_coeffs(p-2, "constexpr\n    const float exp_c", "exp");
 plot((p(x)-f(x))/f(x), [0, log(2)/2],
                        postscriptfile, "exp-f32");
 
@@ -69,7 +69,7 @@ d;
 b = [|0, 2, 4|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
-write_coeffs(p, "const vf_type expn_c", "expn", b, c);
+write_coeffs(p, "constexpr\n    const float expn_c", "expn", b, c);
 plot((p(x)-f(x))/f(x), i,
                        postscriptfile, "exp-n-f32");
 
@@ -82,7 +82,7 @@ b = [|0, ..., 7|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type exp_c", "exp", b, c);
+write_coeffs(p, "constexpr\n    const float exp_c", "exp", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "exp-f32");
 
 /* a simple polynomial for higher precision exp f32 */
@@ -101,7 +101,7 @@ plot((p(x)-f(x))/f(x), i, postscriptfile, "pow-exp-f32");
 f= 6*((x*(exp(x)+1)/(exp(x)-1))-2)/(x^2);
 p = fpminimax(f, [|2, 4 |], [|SG...|], [0x1p-512, log(2)/2], 1.0,
                  relative, floating);
-print_f_poly_coeffs_pow_i(p-1, "const vf_type expm1_c", "expm1");
+print_f_poly_coeffs_pow_i(p-1, "constexpr\n    const float expm1_c", "expm1");
 plot((p(x)-f(x))/f(x), p(x)-f(x), [0x1p-58, log(2)/2],
      postscriptfile, "expm1-f32");
 
@@ -114,7 +114,7 @@ b = [|0, ... , 6|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type exp2_c", "exp2", b, c);
+write_coeffs(p, "constexpr\n    const float exp2_c", "exp2", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
      postscriptfile, "exp2-f32");
 
@@ -128,9 +128,9 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type exp10_c", "exp10", b, c);
-write_coeff(log(10), "", "const vf_type log10", single);
-write_coeff(log(10)*log(10), "", "const vf_type log10sqr", single);
+write_coeffs(p, "constexpr\n    const float exp10_c", "exp10", b, c);
+write_coeff(log(10), "", "constexpr\n    const float log10", single);
+write_coeff(log(10)*log(10), "", "constexpr\n    const float log10sqr", single);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
      postscriptfile, "exp10-f32");
 
@@ -170,7 +170,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type log_c", "log", b, c);
+write_coeffs(p, "constexpr\n    const float log_c", "log", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
      postscriptfile, "log-f32");
 
@@ -185,7 +185,7 @@ c = [|SG, SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type pow_log_c", "pow_log", b, c);
+write_coeffs(p, "constexpr\n    const float pow_log_c", "pow_log", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "pow-log-f32");
@@ -204,7 +204,7 @@ c = [|SG, 49, SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float pow_log_hp_c", "pow_log_hp", b, c);
+write_coeffs(p, "constexpr\n    const float pow_log_hp_c", "pow_log_hp", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "pow-log-hp-f32");
@@ -218,7 +218,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i, 1.0,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type sin_c", "sin", b, c);
+write_coeffs(p, "constexpr\n    const float sin_c", "sin", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "sin-f32");
 
@@ -229,7 +229,7 @@ b = [|4,6,8,10|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type cos_c", "cos", b, c);
+write_coeffs(p, "constexpr\n    const float cos_c", "cos", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cos-f32");
 
@@ -243,7 +243,7 @@ c = [|SG, SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float tan_c", "tan", b, c);
+write_coeffs(p, "constexpr\n    const float tan_c", "tan", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "tan-f32");
 
@@ -255,7 +255,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i, 1.0,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type tan_sun_c", "tan", b, c);
+write_coeffs(p, "constexpr\n    const float tan_sun_c", "tan", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "tan-sun-f32");
 
@@ -269,7 +269,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float atan_i0_c", "atan_0", b, c);
+write_coeffs(p, "constexpr\n    const float atan_i0_c", "atan_0", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "atan_i0-f32");
 
@@ -289,10 +289,10 @@ c = [|49, SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 p;
 write_approx_prec_shift(p, f, i, im);
-write_coeffs(p, "const float atan_i1_c", "atan_i1", b, c);
-write_coeff(il, "", "const float atan_i1_left", single);
-write_coeff(ir, "", "const float atan_i1_right", single);
-write_coeff(x0, "", "const float atan_i1_x0", single);
+write_coeffs(p, "constexpr\n    const float atan_i1_c", "atan_i1", b, c);
+write_coeff(il, "", "constexpr\n    const float atan_i1_left", single);
+write_coeff(ir, "", "constexpr\n    const float atan_i1_right", single);
+write_coeff(x0, "", "constexpr\n    const float atan_i1_x0", single);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "atan_i1-f32");
 
 /* asin(x) f32 */
@@ -302,7 +302,7 @@ b = [|0, 2, 4, 6, 8, 10, 12|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type asin_c", "asin", b, c);
+write_coeffs(p, "constexpr\n    const float asin_c", "asin", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "asin-f32");
 
@@ -324,7 +324,7 @@ b= [|0,...,1|];
 c= [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const vf_type cbrt_c", "cbrt", b, c);
+write_coeffs(p, "constexpr\n    const float cbrt_c", "cbrt", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cbrt-f32");
 */
@@ -402,8 +402,8 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float rsqrt_i0_c", "rsqrt", b, c);
-/* write_coeff(inf(i), "", "const float rsqrt_i0_left", single); */
+write_coeffs(p, "constexpr\n    const float rsqrt_i0_c", "rsqrt", b, c);
+/* write_coeff(inf(i), "", "constexpr\n    const float rsqrt_i0_left", single); */
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "rsqrt-i0-f32");
@@ -417,8 +417,8 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float rsqrt_i1_c", "rsqrt", b, c);
-write_coeff(inf(i), "", "const float rsqrt_i1_left", single);
+write_coeffs(p, "constexpr\n    const float rsqrt_i1_c", "rsqrt", b, c);
+write_coeff(inf(i), "", "constexpr\n    const float rsqrt_i1_left", single);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "rsqrt-i1-f32");
@@ -433,7 +433,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float root12_i0_c", "root12_i0", b, c);
+write_coeffs(p, "constexpr\n    const float root12_i0_c", "root12_i0", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "root12-i0-f32");
@@ -448,7 +448,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float root12_i1_c", "root12_i1", b, c);
+write_coeffs(p, "constexpr\n    const float root12_i1_c", "root12_i1", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "root12-i1-f32");
@@ -463,7 +463,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float root12_i2_c", "root12_i2", b, c);
+write_coeffs(p, "constexpr\n    const float root12_i2_c", "root12_i2", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "root12-i2-f32");
@@ -478,7 +478,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float root12_i3_c", "root12_i3", b, c);
+write_coeffs(p, "constexpr\n    const float root12_i3_c", "root12_i3", b, c);
 plot((p(x)-f(x))/f(x), p(x)-f(x),
                        i,
                        postscriptfile, "root12-i3-f32");
@@ -494,7 +494,7 @@ c = [|SG, SG, SG...|];
 p = fpminimax(f, b, c, i,
               relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float sin_c", "sin", b, c);
+write_coeffs(p, "constexpr\n    const float sin_c", "sin", b, c);
 /*implementpoly(p, i, 0x1p-29, single, "__sin_k", "sin32.c");*/
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "sin-f32-ep");
@@ -508,7 +508,7 @@ b = [|0, 2, 4, 6, 8, 10, 12|];
 c = [|SG, SG, SG, SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float cos_c", "cos", b, c);
+write_coeffs(p, "constexpr\n    const float cos_c", "cos", b, c);
 /*implementpoly(p, i, 0x1p-29, single, "__cos_k", "cos32.c");*/
 plot((p(x)-f(x))/f(x), p(x)-f(x), i,
                        postscriptfile, "cos-f32-ep");
@@ -523,7 +523,7 @@ b = [|1, 3, 5, 7, 9, 11, 13, 15|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float asinh_i0_c", "asinh_i0", b, c);
+write_coeffs(p, "constexpr\n    const float asinh_i0_c", "asinh_i0", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "asinh_i0-f32");
 
 il= sqrt(2)/2;
@@ -542,10 +542,10 @@ c = [|49, SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 p;
 write_approx_prec_shift(p, f, i, im);
-write_coeffs(p, "const float asinh_i1_c", "asinh_i1", b, c);
-write_coeff(il, "", "const float asinh_i1_left", single);
-write_coeff(ir, "", "const float asinh_i1_right", single);
-write_coeff(x0, "", "const float asinh_i1_x0", single);
+write_coeffs(p, "constexpr\n    const float asinh_i1_c", "asinh_i1", b, c);
+write_coeff(il, "", "constexpr\n    const float asinh_i1_left", single);
+write_coeff(ir, "", "constexpr\n    const float asinh_i1_right", single);
+write_coeff(x0, "", "constexpr\n    const float asinh_i1_x0", single);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "asinh_i1-f32");
 
 /* acosh f32 */
@@ -557,7 +557,7 @@ b = [|0, ..., 7|];
 c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float acosh_i0_c", "acosh_i0", b, c);
+write_coeffs(p, "constexpr\n    const float acosh_i0_c", "acosh_i0", b, c);
 plot((p(x)-f(x))/f(x), i,
                        postscriptfile, "acosh_i0-f32");
 
@@ -577,10 +577,10 @@ c = [|49, SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 p;
 write_approx_prec_shift(p, f, i, im);
-write_coeffs(p, "const float acosh_i1_c", "acosh_i1", b, c);
-write_coeff(il, "", "const float acosh_i1_left", single);
-write_coeff(ir, "", "const float acosh_i1_right", single);
-write_coeff(x0, "", "const float acosh_i1_x0", single);
+write_coeffs(p, "constexpr\n    const float acosh_i1_c", "acosh_i1", b, c);
+write_coeff(il, "", "constexpr\n    const float acosh_i1_left", single);
+write_coeff(ir, "", "constexpr\n    const float acosh_i1_right", single);
+write_coeff(x0, "", "constexpr\n    const float acosh_i1_x0", single);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "acosh_i1-f32");
 
 /* atanh(x) piecewise polynomial approximations */
@@ -593,7 +593,7 @@ c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 p;
 write_approx_prec(p, f, i);
-write_coeffs(p, "const float atanh_i0_c", "atanh_i0", b, c);
+write_coeffs(p, "constexpr\n    const float atanh_i0_c", "atanh_i0", b, c);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "atanh_i0-f32");
 
 il= 0.5;
@@ -612,9 +612,9 @@ c = [|49, SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 p;
 write_approx_prec_shift(p, f, i, im);
-write_coeffs(p, "const float atanh_i1_c", "atanh_i1", b, c);
-write_coeff(il, "", "const float atanh_i1_left", single);
-write_coeff(x0, "", "const float atanh_i1_x0", single);
+write_coeffs(p, "constexpr\n    const float atanh_i1_c", "atanh_i1", b, c);
+write_coeff(il, "", "constexpr\n    const float atanh_i1_left", single);
+write_coeff(x0, "", "constexpr\n    const float atanh_i1_x0", single);
 plot((p(x)-f(x))/f(x), i, postscriptfile, "atanh_i1-f32");
 
 /*
