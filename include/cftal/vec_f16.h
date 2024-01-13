@@ -163,7 +163,7 @@ namespace cftal {
 
     template <std::size_t _N>
     vec<f16_t, _N>
-    atan2(const vec<f16_t, _N>& x, const vec<int16_t, _N>& y);
+    atan2(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y);
 
     template <std::size_t _N>
     vec<f16_t, _N>
