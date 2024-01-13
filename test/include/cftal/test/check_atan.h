@@ -49,7 +49,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::atan(a);
+                using std::atan;
+                return atan(a);
             }
             static
             const char* fname() { return "atan"; }

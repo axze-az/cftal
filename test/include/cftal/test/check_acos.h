@@ -54,6 +54,18 @@ namespace cftal {
             };
         };
 
+        template <>
+        struct domain_acos<f16_t> {
+            constexpr static
+            const func_domain<f16_t> domains[]={
+                std::make_pair(-1.001_f16, +1.001_f16)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
+
         template <typename _T>
         struct check_acos {
             template <std::size_t _N>
@@ -75,7 +87,8 @@ namespace cftal {
             static
             _T
             s(const _T& a) {
-                return std::acos(a);
+                using std::acos;
+                return acos(a);
             }
             static
             const char* fname() { return "acos"; }
