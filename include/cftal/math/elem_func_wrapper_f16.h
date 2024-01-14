@@ -41,6 +41,7 @@
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_TRIG_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_TRIGPI_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_INV_TRIG_FUNCS__ 1
+#define __CFTAL_CFG_USE_VF32_FOR_VF16_INV_HYPERBOLIC_FUNCS__ 1
 #define __CFTAL_CFG_USE_VF32_FOR_VF16_HYPOT__ 1
 
 namespace cftal {
@@ -209,6 +210,19 @@ namespace cftal {
             static
             vf_type
             acos_k(arg_t<vf_type> x);
+#endif
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_INV_HYPERBOLIC_FUNCS__ >0
+            static
+            vf_type
+            asinh_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            acosh_k(arg_t<vf_type> x);
+
+            static
+            vf_type
+            atanh_k(arg_t<vf_type> x);
 #endif
 #if __CFTAL_CFG_USE_VF32_FOR_VF16_HYPOT__ >0
             static
@@ -694,6 +708,45 @@ acos_k(arg_t<vf_type> x)
 {
     vhf_type xf=cvt<vhf_type>(x);
     vhf_type rf=f32_core::acos_k(xf);
+    vf_type r=cvt<vf_type>(rf);
+    return r;
+}
+
+#endif
+
+#if __CFTAL_CFG_USE_VF32_FOR_VF16_INV_HYPERBOLIC_FUNCS__ >0
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
+asinh_k(arg_t<vf_type> x)
+{
+    vhf_type xf=cvt<vhf_type>(x);
+    vhf_type rf=f32_core::asinh_k(xf);
+    vf_type r=cvt<vf_type>(rf);
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
+acosh_k(arg_t<vf_type> x)
+{
+    vhf_type xf=cvt<vhf_type>(x);
+    vhf_type rf=f32_core::acosh_k(xf);
+    vf_type r=cvt<vf_type>(rf);
+    return r;
+}
+
+template <typename _T>
+inline
+typename cftal::math::elem_func_wrapper<cftal::f16_t, _T>::vf_type
+cftal::math::elem_func_wrapper<cftal::f16_t, _T>::
+atanh_k(arg_t<vf_type> x)
+{
+    vhf_type xf=cvt<vhf_type>(x);
+    vhf_type rf=f32_core::atanh_k(xf);
     vf_type r=cvt<vf_type>(rf);
     return r;
 }
