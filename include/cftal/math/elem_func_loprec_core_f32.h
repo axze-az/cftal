@@ -1508,7 +1508,7 @@ asinh_k(arg_t<vf_type> xc)
         vf_type log_arg=_T::sel(x_huge,
                                 x,
                                 2.0f * x+ 1.0f/(sqrt(vf_type(x*x+1.0f))+x));
-        vf_type yl= log_k(log_arg);
+        vf_type yl= __log_k<c_log_e>(log_arg);
         yl += add_2_log;
         y = _T::sel(sel, yl, y);
     }
@@ -1642,7 +1642,7 @@ acosh_k(arg_t<vf_type> xc)
         vf_type log_arg=_T::sel(x_huge,
                                 x,
                                 2.0f*x - 1.0f/(x+sqrt(vf_type(x*x-1.0f))));
-        vf_type yl= log_k(log_arg);
+        vf_type yl= __log_k<log_func::c_log_e>(log_arg);
         yl += add_2_log;
         y= _T::sel(sel, yl, y);
     }
@@ -1752,7 +1752,7 @@ atanh_k(arg_t<vf_type> xc)
     }
     if (_T::any_of_vmf(sel = x>0.75f)) {
         vf_type log1p_arg= 2.0f*(x/(1.0f-x));
-        vf_type yl= 0.5f*log1p_k(log1p_arg);
+        vf_type yl= 0.5f*__log1p_k<log_func::c_log_e>(log1p_arg);
         y = _T::sel(sel, yl, y);
     }
     y = copysign(y, xc);

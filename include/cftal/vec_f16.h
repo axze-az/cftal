@@ -177,6 +177,18 @@ namespace cftal {
     vec<f16_t, _N>
     atan(const vec<f16_t, _N>& x);
 
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    asinh(const vec<f16_t, _N>& x);
+
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    acosh(const vec<f16_t, _N>& x);
+
+    template <std::size_t _N>
+    vec<f16_t, _N>
+    atanh(const vec<f16_t, _N>& x);
+
 // #if V1F16_FUNCS > 0
     vec<f16_t, 1>
     ldexp(arg_t<vec<f16_t, 1> > a, arg_t<vec<int16_t, 1> > e);
@@ -281,6 +293,15 @@ namespace cftal {
 
     vec<f16_t, 1>
     atan(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    asinh(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    acosh(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    atanh(arg_t<vec<f16_t, 1> > x);
 
 // #endif
 #if V2F16_FUNCS>0
@@ -389,6 +410,16 @@ namespace cftal {
 
     vec<f16_t, 2>
     atan(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    asinh(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    acosh(arg_t<vec<f16_t, 2> > x);
+
+    vec<f16_t, 2>
+    atanh(arg_t<vec<f16_t, 2> > x);
+
 #endif
 
 #if V4F16_FUNCS>0
@@ -497,6 +528,15 @@ namespace cftal {
     vec<f16_t, 4>
     atan(arg_t<vec<f16_t, 4> > x);
 
+    vec<f16_t, 4>
+    asinh(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    acosh(arg_t<vec<f16_t, 4> > x);
+
+    vec<f16_t, 4>
+    atanh(arg_t<vec<f16_t, 4> > x);    
+
 #endif
 #if V8F16_FUNCS>0
 
@@ -604,6 +644,15 @@ namespace cftal {
     vec<f16_t, 8>
     atan(arg_t<vec<f16_t, 8> > x);
 
+    vec<f16_t, 8>
+    asinh(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    acosh(arg_t<vec<f16_t, 8> > x);
+
+    vec<f16_t, 8>
+    atanh(arg_t<vec<f16_t, 8> > x);
+
 #endif
 #if V16F16_FUNCS>0
 
@@ -710,6 +759,15 @@ namespace cftal {
 
     vec<f16_t, 16>
     atan(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    asinh(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    acosh(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    atanh(arg_t<vec<f16_t, 16> > x);
 
 #endif
 }
