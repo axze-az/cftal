@@ -118,7 +118,7 @@ namespace cftal {
 
             constexpr static f16_t
             sig_hi_one() {
-                // log(0x1p26)
+                // ~log(0x1p12)
                 return 8.320312500000000000000000e+00_f16;
             }
             constexpr static f16_t
