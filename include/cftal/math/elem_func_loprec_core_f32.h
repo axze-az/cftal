@@ -1334,33 +1334,9 @@ typename cftal::math::elem_func_loprec_core<float, _T>::vf_type
 cftal::math::elem_func_loprec_core<float, _T>::
 acos_k(arg_t<vf_type> xc)
 {
-    vf_type x= xc;
-
-    vmf_type x_lt_m_1_2 = x < -0.5f;
-    vmf_type x_gt_1_2 = x>0.5f;
-    vmf_type abs_x_le_1_2 = abs(x) <= 0.5f;
-
-    vf_type z= _T::sel(x_lt_m_1_2, (1.0f+x)*0.5f, (1.0f-x)*0.5f);
-    vf_type s= sqrt(z);
-    vf_type x2=x*x;
-    vf_type xr= _T::sel(abs_x_le_1_2, x2, z);
-    vf_type r= asin_k_poly(xr);
-
-    // x in [-0.5, 0.5]
+    vf_type as=asin_k(xc);
     using ctbl=impl::d_real_constants<d_real<float>, float>;
-    vf_type ac = ctbl::m_pi_2[0] - (x - (ctbl::m_pi_2[1]-x*r));
-    // x in [-1.0, -0.5]
-    vf_type wn = r*s - ctbl::m_pi_2[1];
-    vf_type ac1= 2*(ctbl::m_pi_2[0] - (s+wn));
-    ac = _T::sel(x_lt_m_1_2, ac1, ac);
-    // x in [0.5, 1.0]
-    vi_type t=_T::as_int(s);
-    t &= 0xfffff000;
-    vf_type df= _T::as_float(t);
-    vf_type c= (z-df*df)/(s+df);
-    vf_type wp= r*s+c;
-    vf_type ac2=2.0f*(df+wp);
-    ac = _T::sel(x_gt_1_2, ac2, ac);
+    vf_type ac= ctbl::m_pi_2[0] - as;
     return ac;
 }
 
