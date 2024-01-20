@@ -1321,16 +1321,8 @@ asin_k(arg_t<vf_type> xc)
     vf_type xr=_T::sel(x_lt_1_2, x2, z);
     vf_type r=asin_k_poly(xr);
     vf_type as0= x + x*r;
-    // default: x>0.975
-    // vf_type as = ctbl::m_pi_2[0] - (2*(s+s*r) - ctbl::m_pi_2[1]);
-    // x in [0, 1]
-    vi_type t=_T::as_int(s);
-    t &= 0xfffff000;
-    vf_type f=_T::as_float(t);
-    vf_type c= (z-f*f)/(s+f);
-    vf_type as1= 0.5f * ctbl::m_pi_2[0] -
-                         (2.0f*s*r - (ctbl::m_pi_2[1] -2.0f *c) -
-                          (0.5f*ctbl::m_pi_2[0]-2.0f*f));
+    // x>= 1/2
+    vf_type as1= ctbl::m_pi_2[0] - 2.0f *(s+s*r);
     vf_type as=_T::sel(x_lt_1_2, as0, as1);
     as = copysign(as, xc);
     return as;
