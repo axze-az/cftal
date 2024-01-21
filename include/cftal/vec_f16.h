@@ -535,7 +535,7 @@ namespace cftal {
     acosh(arg_t<vec<f16_t, 4> > x);
 
     vec<f16_t, 4>
-    atanh(arg_t<vec<f16_t, 4> > x);    
+    atanh(arg_t<vec<f16_t, 4> > x);
 
 #endif
 #if V8F16_FUNCS>0
@@ -1105,6 +1105,33 @@ cftal::vec<cftal::f16_t, _N>
 cftal::atan(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(atan(low_half(v)), atan(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::asinh(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(asinh(low_half(v)), asinh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::acosh(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(acosh(low_half(v)), acosh(high_half(v)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::atanh(const vec<cftal::f16_t, _N>& v)
+{
+    vec<f16_t, _N> r(atanh(low_half(v)), atanh(high_half(v)));
     return r;
 }
 

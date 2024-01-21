@@ -361,6 +361,9 @@ test_prog(test-asin-f16)
 test_prog(test-acos-f16)
 test_prog(test-atan-f16)
 test_prog(test-atan2-f16)
+test_prog(test-asinh-f16)
+test_prog(test-acosh-f16)
+test_prog(test-atanh-f16)
 
 test_prog(test-hypot-f16)
 
