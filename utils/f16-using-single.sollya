@@ -288,7 +288,7 @@ f = acosh(x+x0);
 d = guessdegree(f, i, 0x1p-14);
 d;
 b = [|0, ..., 5|];
-c = [|49, SG...|];
+c = [|SG...|];
 p = fpminimax(f, b, c, i, relative, floating);
 p;
 write_approx_prec_shift(p, f, i, im);
