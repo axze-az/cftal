@@ -4146,7 +4146,7 @@ acosh_k(arg_t<vf_type> xc)
         vf_type xm1h, xm1l;
         d_ops::add12(xm1h, xm1l, x, -1.0f);
         vf_type sqrt2xm1h, sqrt2xm1l;
-        d_ops::sqrt2(sqrt2xm1h, sqrt2xm1l, xm1h+xm1h, xm1l*xm1l);
+        d_ops::sqrt2(sqrt2xm1h, sqrt2xm1l, xm1h+xm1h, xm1l+xm1l);
         // acosh(x) = sqrt(2*x) * [1-1/12*x+3/160*x^2-5/896*x^3+ ...]
 
         // [9.31322574615478515625e-10, 1] : | p - f | <= 2^-31.4921875
