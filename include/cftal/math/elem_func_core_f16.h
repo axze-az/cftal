@@ -328,7 +328,7 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     mi |= half;
     vf_type m= _T::as_f16_t(mi);
     // inf, nan, zero
-    vmf_type f_inz=isinf(x) | isnan(x) | (x==vf_type(0.0));
+    vmf_type f_inz=isinf(x) | isnan(x) | iszero(x);
     m = _T::sel(f_inz, x, m);
     if (ve != nullptr) {
         vi_type e=_T::sel_vi(_T::vmf_to_vmi(is_denom),
