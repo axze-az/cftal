@@ -212,9 +212,6 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vf_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
 {
-#if 0
-    return x;
-#else
     vf_type xs=x;
     using fc=func_constants<f16_t>;
     vmf_type is_denom= abs(x) <= fc::max_denormal();
@@ -266,7 +263,6 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     // handle special cases:
     r = _T::sel(isinf(x) | isnan(x) | iszero(x), x, r);
     return r;
-#endif
 }
 
 template <typename _T>
