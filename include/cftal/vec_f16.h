@@ -45,6 +45,10 @@ namespace cftal {
 
     template <size_t _N>
     vec<f16_t, _N>
+    frexp(const vec<f16_t, _N>& a, vec<int16_t, _N>* e);
+
+    template <size_t _N>
+    vec<f16_t, _N>
     nextafter(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y);
 
     template <size_t _N>
@@ -194,6 +198,9 @@ namespace cftal {
     ldexp(arg_t<vec<f16_t, 1> > a, arg_t<vec<int16_t, 1> > e);
 
     vec<f16_t, 1>
+    frexp(arg_t<vec<f16_t, 1> > a, vec<int16_t, 1>* e);
+
+    vec<f16_t, 1>
     nextafter(arg_t<vec<f16_t, 1> > x, arg_t<vec<f16_t, 1> > y);
 
     vec<f16_t, 1>
@@ -308,6 +315,9 @@ namespace cftal {
 
     vec<f16_t, 2>
     ldexp(arg_t<vec<f16_t, 2> > a, arg_t<vec<int16_t, 2> > e);
+
+    vec<f16_t, 2>
+    frexp(arg_t<vec<f16_t, 2> > a, vec<int16_t, 2>* e);
 
     vec<f16_t, 2>
     nextafter(arg_t<vec<f16_t, 2> > x, arg_t<vec<f16_t, 2> > y);
@@ -428,6 +438,9 @@ namespace cftal {
     ldexp(arg_t<vec<f16_t, 4> > a, arg_t<vec<int16_t, 4> > e);
 
     vec<f16_t, 4>
+    frexp(arg_t<vec<f16_t, 4> > a, vec<int16_t, 4>* e);
+
+    vec<f16_t, 4>
     nextafter(arg_t<vec<f16_t, 4> > x, arg_t<vec<f16_t, 4> > y);
 
     vec<f16_t, 4>
@@ -544,6 +557,9 @@ namespace cftal {
     ldexp(arg_t<vec<f16_t, 8> > a, arg_t<vec<int16_t, 8> > e);
 
     vec<f16_t, 8>
+    frexp(arg_t<vec<f16_t, 8> > a, vec<int16_t, 8>* e);
+
+    vec<f16_t, 8>
     nextafter(arg_t<vec<f16_t, 8> > x, arg_t<vec<f16_t, 8> > y);
 
     vec<f16_t, 8>
@@ -658,6 +674,9 @@ namespace cftal {
 
     vec<f16_t, 16>
     ldexp(arg_t<vec<f16_t, 16> > a, arg_t<vec<int16_t, 16> > e);
+
+    vec<f16_t, 16>
+    frexp(arg_t<vec<f16_t, 16> > a, vec<int16_t, 16>* e);
 
     vec<f16_t, 16>
     nextafter(arg_t<vec<f16_t, 16> > x, arg_t<vec<f16_t, 16> > y);
@@ -780,6 +799,25 @@ ldexp(const vec<cftal::f16_t, _N>& v, const vec<cftal::int16_t, _N>& e)
 {
     vec<f16_t, _N> r(ldexp(low_half(v), low_half(e)),
                      ldexp(high_half(v), low_half(e)));
+    return r;
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::f16_t, _N>
+cftal::frexp(const vec<cftal::f16_t, _N>& a, vec<int16_t, _N>* e)
+{
+    vec<f16_t, _N> r;
+    if (e != nullptr) {
+	vec<int16_t, _N/2> el, eh;
+	r=vec<f16_t, _N>(frexp(low_half(a), &el),
+			 frexp(high_half(a), &eh));
+        vec<int16_t, _N> er(el, eh);
+        *e = er;
+    } else {
+	r=vec<f16_t, _N>(frexp(low_half(a), nullptr),
+			 frexp(high_half(a), nullptr));
+    }
     return r;
 }
 

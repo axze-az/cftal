@@ -443,6 +443,14 @@
                                                                         \
     nsr::vec_float                                                      \
     __attribute__((__flatten__))                                        \
+    ns::frexp(arg<vec_float>::type d, vec_int* pe)                      \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::frexp(d, pe);                                    \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
     ns::nextafter(arg<vec_float>::type b, arg<vec_float>::type e)       \
     {                                                                   \
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \

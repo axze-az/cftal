@@ -326,7 +326,7 @@ frexp(arg_t<vf_type> x, vi_type* ve)
     // insert exponent
     vi_type mi = i & clear_exp_msk;
     mi |= half;
-    vf_type m= _T::as_f16_t(mi);
+    vf_type m= _T::as_float(mi);
     // inf, nan, zero
     vmf_type f_inz=isinf(x) | isnan(x) | iszero(x);
     m = _T::sel(f_inz, x, m);
