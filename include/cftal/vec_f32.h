@@ -2288,18 +2288,21 @@ cftal::acos(const vec<float, _N>& x)
     return r;
 }
 
-
 template <cftal::size_t _N>
 inline
 cftal::vec<float, _N>
 cftal::frexp(const vec<float, _N>& a, vec<int32_t, _N>* e)
 {
-    vec<int32_t, _N/2> el, eh;
-    vec<float, _N> r(frexp(low_half(a), &el),
-                     frexp(high_half(a), &eh));
+    vec<float, _N> r;
     if (e != nullptr) {
+	vec<int32_t, _N/2> el, eh;
+	r=vec<float, _N>(frexp(low_half(a), &el),
+			 frexp(high_half(a), &eh));
         vec<int32_t, _N> er(el, eh);
         *e = er;
+    } else {
+	r=vec<float, _N>(frexp(low_half(a), nullptr),
+			 frexp(high_half(a), nullptr));
     }
     return r;
 }
