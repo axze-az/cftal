@@ -67,8 +67,10 @@ bool cftal::test::check_frexp(typename _FV::value_type vp,
     real_type ref[FN];
     int_type e_ref[FN];
 
-    for (int i=0; i<FN; ++i)
-        ref[i] = std::frexp(arg._d[i], &e_ref[i]);
+    for (int i=0; i<FN; ++i) {
+        using std::frexp;
+        ref[i] = frexp(arg._d[i], &e_ref[i]);
+    }
 
     v_d res;
     v_i e;
