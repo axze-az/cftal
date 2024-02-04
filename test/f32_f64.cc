@@ -46,6 +46,19 @@ float cftal::test::make_float(unsigned sgn, unsigned exp, uint32_t sig)
     return t._d;
 }
 
+cftal::f16_t cftal::test::make_f16(unsigned sgn, unsigned exp, uint16_t sig)
+{
+    uint16_t _sgn= uint64_t(sgn & 1) << 15;
+    uint16_t _exp= uint64_t(exp & 0x3F) << 10;
+    uint16_t _sig= sig & 0x003ff;
+    union {
+        uint16_t _u;
+        f16_t _d;
+    } t;
+    t._u = _sgn | _exp | _sig;
+    return t._d;
+}
+
 cftal::test::ulp_stats::deviations::deviations()
 {
 #if __USE_ARRAY_DEVIATIONS>0

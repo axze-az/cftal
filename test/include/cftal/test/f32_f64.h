@@ -41,6 +41,9 @@ namespace cftal {
         // construct a float from sign &1, exponent with bias and
         // significant
         float make_float(unsigned sgn, unsigned exp, uint32_t sig);
+        // construct a f16_t from sign &1, exponent with bias and
+        // significant
+        f16_t make_f16(unsigned sgn, unsigned exp, uint16_t sig);
 
         struct alignas(64) ulp_stats {
             // count of operations with nonzero ulp
