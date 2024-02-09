@@ -143,9 +143,9 @@ bool cftal::test::check_frexp_f32()
                                 make_float(1, 0xFF, 0));
     // check +-nan
     for (int i=0; i<23; ++i) {
-        uint64_t sig= uint64_t(1) << i;
-        rc &= check_frexp<_FV, _IV>(make_float(0, 0x7FF, sig),
-                                    make_float(1, 0x7FF, sig));
+        uint32_t sig= uint32_t(1) << i;
+        rc &= check_frexp<_FV, _IV>(make_float(0, 0xFF, sig),
+                                    make_float(1, 0xFF, sig));
     }
     // denormals and normals
     for (int e=0; e<=0xff; ++e) {
