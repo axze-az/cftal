@@ -148,7 +148,7 @@ bool cftal::test::check_frexp_f32()
                                     make_float(1, 0x7FF, sig));
     }
     // denormals and normals
-    for (int e=0; e<=0x7ff; ++e) {
+    for (int e=0; e<=0xff; ++e) {
         for (int i=0; i<24; ++i) {
             uint32_t sig= uint32_t(1) << i;
             vp = make_float(0, e, sig);
