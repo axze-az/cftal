@@ -521,6 +521,7 @@ namespace cftal {
     nextafter(f16_t a, f16_t b);
 
     f16_t frexp(f16_t x, int* e);
+    f16_t frexp(f16_t x, int16_t* e);
     f16_t ldexp(f16_t x, int e);
 }
 
@@ -1220,6 +1221,21 @@ cftal::frexp(f16_t x, int* e)
     float fx=static_cast<float>(x);
     using std::frexp;
     float m=frexp(fx, e);
+    return f16_t(m);
+}
+
+inline
+cftal::f16_t
+cftal::frexp(f16_t x, int16_t* e)
+{
+    float fx=static_cast<float>(x);
+    int ei;
+    int* pei= e!= nullptr ? &ei : nullptr;
+    using std::frexp;
+    float m=frexp(fx, pei);
+    if (e != nullptr) {
+        *e = ei;
+    }
     return f16_t(m);
 }
 

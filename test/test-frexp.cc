@@ -17,6 +17,7 @@
 //
 #include <cftal/vec.h>
 #include <cftal/test/f32_f64.h>
+#include <cftal/vec_f16.h>
 #include <cstring>
 #include <iomanip>
 
@@ -32,6 +33,9 @@ namespace cftal {
 
         template <class _FV, class _IV>
         bool check_frexp_f32();
+
+        template <class _FV, class _IV>
+        bool check_frexp_f16();
     }
 
 }
@@ -158,6 +162,35 @@ bool cftal::test::check_frexp_f32()
     return rc;
 }
 
+template <class _FV, class _IV>
+bool cftal::test::check_frexp_f16()
+{
+    bool rc= true;
+    // check zero
+    f16_t vp = make_f16(0, 0, 0);
+    rc &= check_frexp<_FV, _IV>(vp, -vp);
+    vp = make_f16(1, 0, 0);
+    rc &= check_frexp<_FV, _IV>(vp, -vp);
+    // check +- inf
+    rc &= check_frexp<_FV, _IV>(make_f16(0, 0x3F, 0),
+                                make_f16(1, 0x3F, 0));
+    // check +-nan
+    for (int i=0; i<11; ++i) {
+        uint16_t sig= uint32_t(1) << i;
+        rc &= check_frexp<_FV, _IV>(make_f16(0, 0x3F, sig),
+                                    make_f16(1, 0x3F, sig));
+    }
+    // denormals and normals
+    for (int e=0; e<=0xff; ++e) {
+        for (int i=0; i<11; ++i) {
+            uint16_t sig= uint16_t(1) << i;
+            vp = make_f16(0, e, sig);
+            rc &=  check_frexp<_FV, _IV>(vp, -vp);
+        }
+    }
+    return rc;
+}
+
 int main()
 {
     int rc=true;
@@ -183,5 +216,19 @@ int main()
     std::cout << "testing frexp v16f32" << std::endl;
     rc &= cftal::test::check_frexp_f32<cftal::v16f32,
                                        cftal::v16s32>();
+
+    std::cout << "testing frexp v2f16" << std::endl;
+    rc &= cftal::test::check_frexp_f16<cftal::v2f16,
+                                       cftal::v2s16>();
+    std::cout << "testing frexp v4f16" << std::endl;
+    rc &= cftal::test::check_frexp_f16<cftal::v4f16,
+                                       cftal::v4s16>();
+    std::cout << "testing frexp v8f16" << std::endl;
+    rc &= cftal::test::check_frexp_f16<cftal::v8f16,
+                                       cftal::v8s16>();
+    std::cout << "testing frexp v16f16" << std::endl;
+    rc &= cftal::test::check_frexp_f16<cftal::v16f16,
+                                       cftal::v16s16>();
+
     return rc==true ? 0 : 1;
 }
