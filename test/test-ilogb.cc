@@ -32,6 +32,10 @@ namespace cftal {
 
         template <class _FV, class _IV>
         bool check_ilogb_f32();
+
+        template <class _FV, class _IV>
+        bool check_ilogb_f16();
+
     }
 
 }
@@ -66,9 +70,10 @@ bool cftal::test::check_ilogb(typename _FV::value_type vp,
 
     int_type e_ref[FN];
 
-    for (int i=0; i<FN; ++i)
-        e_ref[i] = std::ilogb(arg._d[i]);
-
+    for (int i=0; i<FN; ++i) {
+        using std::ilogb;
+        e_ref[i] = ilogb(arg._d[i]);
+    }
     v_i e;
     e._v = ilogb(arg._v);
 
@@ -114,7 +119,7 @@ bool cftal::test::check_ilogb_f64()
     }
     // denormals and normals
     for (int e=0; e<=0x7ff; ++e) {
-        for (int i=0; i<52; ++i) {
+        for (int i=0; i<53; ++i) {
             uint64_t sig= uint64_t(1) << i;
             vp = make_double(0, e, sig);
             rc &= check_ilogb<_FV, _IV>(vp, -vp);
@@ -136,16 +141,45 @@ bool cftal::test::check_ilogb_f32()
     rc &= check_ilogb<_FV, _IV>(make_float(0, 0xFF, 0),
                                 make_float(1, 0xFF, 0));
     // check +-nan
-    for (int i=0; i<23; ++i) {
-        uint64_t sig= uint64_t(1) << i;
-        rc &= check_ilogb<_FV, _IV>(make_float(0, 0x7FF, sig),
-                                    make_float(1, 0x7FF, sig));
+    for (int i=0; i<24; ++i) {
+        uint32_t sig= uint32_t(1) << i;
+        rc &= check_ilogb<_FV, _IV>(make_float(0, 0xFF, sig),
+                                    make_float(1, 0xFF, sig));
     }
     // denormals and normals
     for (int e=0; e<=0x7ff; ++e) {
-        for (int i=0; i<23; ++i) {
+        for (int i=0; i<24; ++i) {
             uint32_t sig= uint32_t(1) << i;
             vp = make_float(0, e, sig);
+            rc &=  check_ilogb<_FV, _IV>(vp, -vp);
+        }
+    }
+    return rc;
+}
+
+template <class _FV, class _IV>
+bool cftal::test::check_ilogb_f16()
+{
+    bool rc= true;
+    // check zero
+    f16_t vp = make_f16(0, 0, 0);
+    rc &= check_frexp<_FV, _IV>(vp, -vp);
+    vp = make_f16(1, 0, 0);
+    rc &= check_frexp<_FV, _IV>(vp, -vp);
+    // check +- inf
+    rc &= check_ilogb<_FV, _IV>(make_f16(0, 0x3F, 0),
+                                make_f16(1, 0x3F, 0));
+    // check +-nan
+    for (int i=0; i<11; ++i) {
+        uint16_t sig= uint32_t(1) << i;
+        rc &= check_ilogb<_FV, _IV>(make_f16(0, 0x3F, sig),
+                                    make_f16(1, 0x3F, sig));
+    }
+    // denormals and normals
+    for (int e=0; e<=0xff; ++e) {
+        for (int i=0; i<11; ++i) {
+            uint16_t sig= uint16_t(1) << i;
+            vp = make_f16(0, e, sig);
             rc &=  check_ilogb<_FV, _IV>(vp, -vp);
         }
     }
@@ -156,6 +190,7 @@ int main()
 {
     int rc=true;
     std::cout << std::setprecision(20);
+    std::cout << "checking double precision vectors:\n";
     std::cout << "testing ilogb v2f64" << std::endl;
     rc &= cftal::test::check_ilogb_f64<cftal::v2f64,
                                        cftal::v2s32>();
@@ -165,16 +200,18 @@ int main()
     std::cout << "testing ilogb v8f64" << std::endl;
     rc &= cftal::test::check_ilogb_f64<cftal::v8f64,
                                        cftal::v8s32>();
-#if 0
+    std::cout << "checking single precision vectors:\n";
     std::cout << "testing ilogb v2f32" << std::endl;
     rc &= cftal::test::check_ilogb_f32<cftal::v2f32,
                                        cftal::v2s32>();
-#endif
     std::cout << "testing ilogb v4f32" << std::endl;
     rc &= cftal::test::check_ilogb_f32<cftal::v4f32,
                                        cftal::v4s32>();
     std::cout << "testing ilogb v8f32" << std::endl;
     rc &= cftal::test::check_ilogb_f32<cftal::v8f32,
                                        cftal::v8s32>();
+    std::cout << "testing ilogb v16f32" << std::endl;
+    rc &= cftal::test::check_ilogb_f32<cftal::v16f32,
+                                       cftal::v16s32>();
     return rc==true ? 0 : 1;
 }
