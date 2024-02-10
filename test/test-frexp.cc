@@ -195,6 +195,7 @@ int main()
 {
     int rc=true;
     std::cout << std::setprecision(20);
+    std::cout << "checking double precision vectors:\n";
     std::cout << "testing frexp v2f64" << std::endl;
     rc &= cftal::test::check_frexp_f64<cftal::v2f64,
                                        cftal::v2s32>();
@@ -204,6 +205,7 @@ int main()
     std::cout << "testing frexp v8f64" << std::endl;
     rc &= cftal::test::check_frexp_f64<cftal::v8f64,
                                        cftal::v8s32>();
+    std::cout << "checking single precision vectors:\n";
     std::cout << "testing frexp v2f32" << std::endl;
     rc &= cftal::test::check_frexp_f32<cftal::v2f32,
                                        cftal::v2s32>();
@@ -216,7 +218,7 @@ int main()
     std::cout << "testing frexp v16f32" << std::endl;
     rc &= cftal::test::check_frexp_f32<cftal::v16f32,
                                        cftal::v16s32>();
-
+    std::cout << "checking half precision vectors:\n";
     std::cout << "testing frexp v2f16" << std::endl;
     rc &= cftal::test::check_frexp_f16<cftal::v2f16,
                                        cftal::v2s16>();
