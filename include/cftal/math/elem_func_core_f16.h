@@ -225,7 +225,7 @@ ldexp_k(arg_t<vf_type> x, arg_t<vi_type> n)
     vi_type xe=((m>>10) & 0x1f) + eo;
 
     // determine the exponent of the result
-    // clamp nn to [-4096, 4096]
+    // clamp nn to [-256, 256]
     vi_type nn= min(vi_type(256), max(n, vi_type(-256)));
     vi_type re= xe + nn;
 
@@ -348,23 +348,19 @@ typename cftal::math::elem_func_core<cftal::f16_t, _T>::vi_type
 cftal::math::elem_func_core<cftal::f16_t, _T>::
 ilogbp1(arg_t<vf_type> x)
 {
-#if 1
-    return vi_type(0);
-#else
     vf_type xs=x;
     using fc=func_constants<f16_t>;
     vmf_type is_denom= abs(x) <= fc::max_denormal();
     vi_type eo=vi_type(0);
     // denormal handling
-    xs= _T::sel(is_denom, xs*vf_type(0x1.p25f), xs);
+    xs= _T::sel(is_denom, xs*vf_type(0x1.p12_f16), xs);
     vmi_type i_is_denom= _T::vmf_to_vmi(is_denom);
-    eo= _T::sel_vi(i_is_denom, vi_type(-25), eo);
+    eo= _T::sel_vi(i_is_denom, vi_type(-12), eo);
     // reinterpret as integer
     vi_type i=_T::as_int(xs);
     // exponent:
-    vi_type e=((i >> 23) & 0xff) + eo - vi_type(_T::bias()-1);
+    vi_type e=((i >> 10) & 0x3f) + eo - vi_type(_T::bias()-1);
     return e;
-#endif
 }
 
 template <typename _T>
@@ -379,7 +375,7 @@ ilogb(arg_t<vf_type> d)
     e = _T::sel_vi(mi, vi_type(FP_ILOGB0), e);
     mf = isinf(d);
     mi = _T::vmf_to_vmi(mf);
-    e = _T::sel_vi(mi, vi_type(0x7fffffff), e);
+    e = _T::sel_vi(mi, vi_type(0x7fff), e);
     mf = isnan(d);
     mi = _T::vmf_to_vmi(mf);
     e = _T::sel_vi(mi, vi_type(FP_ILOGBNAN), e);
