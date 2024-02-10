@@ -523,6 +523,7 @@ namespace cftal {
     f16_t frexp(f16_t x, int* e);
     f16_t frexp(f16_t x, int16_t* e);
     f16_t ldexp(f16_t x, int e);
+    int16_t ilogb(f16_t x);
 }
 
 #if (__USE_STDCPP_FLOAT16_T__==0)
@@ -1247,6 +1248,16 @@ cftal::ldexp(f16_t x, int e)
     using std::ldexp;
     float r=ldexp(fx, e);
     return f16_t(r);
+}
+
+inline
+cftal::int16_t
+cftal::ilogb(f16_t x)
+{
+    float fx=static_cast<float>(x);
+    using std::ilogb;
+    int16_t r=ilogb(fx);
+    return r;
 }
 
 // Local variables:
