@@ -457,6 +457,14 @@
         return func_t::nextafter(b, e);                                 \
     }                                                                   \
                                                                         \
+    nsr::vec_int                                                        \
+    __attribute__((__flatten__))                                        \
+    ns::ilogb(arg<vec_float>::type d)                                   \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::ilogb(d);                                        \
+    }                                                                   \
+                                                                        \
     nsr::vec_float                                                      \
     __attribute__((__flatten__))                                        \
     ns::sqrt(arg<vec_float>::type a)                                    \

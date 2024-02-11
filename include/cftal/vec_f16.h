@@ -52,6 +52,10 @@ namespace cftal {
     nextafter(const vec<f16_t, _N>& x, const vec<f16_t, _N>& y);
 
     template <size_t _N>
+    vec<int16_t, _N>
+    ilogb(const vec<f16_t, _N>& x);
+
+    template <size_t _N>
     vec<f16_t, _N>
     sqrt(const vec<f16_t, _N>& x);
 
@@ -203,6 +207,9 @@ namespace cftal {
     vec<f16_t, 1>
     nextafter(arg_t<vec<f16_t, 1> > x, arg_t<vec<f16_t, 1> > y);
 
+    vec<int16_t, 1>
+    ilogb(arg_t<vec<f16_t, 1> > x);
+
     vec<f16_t, 1>
     sqrt(arg_t<vec<f16_t, 1> > x);
 
@@ -321,6 +328,9 @@ namespace cftal {
 
     vec<f16_t, 2>
     nextafter(arg_t<vec<f16_t, 2> > x, arg_t<vec<f16_t, 2> > y);
+
+    vec<int16_t, 2>
+    ilogb(arg_t<vec<f16_t, 2> > x);
 
     vec<f16_t, 2>
     sqrt(arg_t<vec<f16_t, 2> > x);
@@ -443,6 +453,9 @@ namespace cftal {
     vec<f16_t, 4>
     nextafter(arg_t<vec<f16_t, 4> > x, arg_t<vec<f16_t, 4> > y);
 
+    vec<int16_t, 4>
+    ilogb(arg_t<vec<f16_t, 4> > x);
+
     vec<f16_t, 4>
     sqrt(arg_t<vec<f16_t, 4> > x);
 
@@ -562,6 +575,9 @@ namespace cftal {
     vec<f16_t, 8>
     nextafter(arg_t<vec<f16_t, 8> > x, arg_t<vec<f16_t, 8> > y);
 
+    vec<int16_t, 8>
+    ilogb(arg_t<vec<f16_t, 8> > x);
+
     vec<f16_t, 8>
     sqrt(arg_t<vec<f16_t, 8> > x);
 
@@ -680,6 +696,9 @@ namespace cftal {
 
     vec<f16_t, 16>
     nextafter(arg_t<vec<f16_t, 16> > x, arg_t<vec<f16_t, 16> > y);
+
+    vec<int16_t, 16>
+    ilogb(arg_t<vec<f16_t, 16> > x);
 
     vec<f16_t, 16>
     sqrt(arg_t<vec<f16_t, 16> > x);
@@ -829,6 +848,15 @@ nextafter(const vec<cftal::f16_t, _N>& x, const vec<cftal::f16_t, _N>& y)
 {
     vec<f16_t, _N> r(nextafter(low_half(x), low_half(y)),
                      nextafter(high_half(x), high_half(y)));
+    return r;
+}
+
+template <std::size_t _N>
+inline
+cftal::vec<cftal::int16_t, _N>
+cftal::ilogb(const vec<cftal::f16_t, _N>& v)
+{
+    vec<int16_t, _N> r(ilogb(low_half(v)), ilogb(high_half(v)));
     return r;
 }
 

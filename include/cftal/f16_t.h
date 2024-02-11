@@ -1257,6 +1257,8 @@ cftal::ilogb(f16_t x)
     float fx=static_cast<float>(x);
     using std::ilogb;
     int16_t r=ilogb(fx);
+    if (isinf(x))
+        r=std::numeric_limits<int16_t>::max();
     return r;
 }
 
