@@ -590,6 +590,10 @@ namespace cftal {
     vec<double, 1>
     y1(arg_t<vec<double, 1> > x);
 
+    template <size_t _N>
+    vec<int32_t, _N>
+    ilogbp1(const vec<double, _N>& x);
+
     // ilogbp1
     vec<int32_t, 1>
     ilogbp1(arg_t<vec<double, 1> > v);
@@ -1600,6 +1604,15 @@ cftal::vec<double, _N>
 cftal::y1(const vec<double, _N>& x)
 {
     vec<double, _N> r(y1(low_half(x)), y1(high_half(x)));
+    return r;
+}
+
+template <cftal::size_t _N>
+inline
+cftal::vec<cftal::int32_t, _N>
+cftal::ilogbp1(const vec<double, _N>& x)
+{
+    vec<int32_t, _N> r(ilogbp1(low_half(x)), ilogbp1(high_half(x)));
     return r;
 }
 
