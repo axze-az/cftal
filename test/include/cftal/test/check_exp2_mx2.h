@@ -20,6 +20,7 @@
 
 #include <cftal/config.h>
 #include <cftal/vec.h>
+#include <cftal/vec_f16.h>
 #include <cftal/test/call_mpfr.h>
 #include <cftal/test/func_domain_common.h>
 #include <cmath>

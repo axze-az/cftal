@@ -21,6 +21,7 @@
 #include <cftal/config.h>
 #include <cftal/vec.h>
 #include <cftal/math/func_constants.h>
+#include <cftal/math/func_constants_f16.h>
 #include <cftal/math/func_constants_f32.h>
 #include <cftal/math/func_constants_f64.h>
 #include <cftal/test/call_mpfr.h>
@@ -57,6 +58,19 @@ namespace cftal {
             };
         };
 
+        template <>
+        struct domain_exp_mx2<f16_t> {
+            constexpr static
+            const func_domain<f16_t> domains[]={
+                std::make_pair(0.0_f16, 3.5_f16)
+            };
+            constexpr static
+            const int shifts[]={
+                0
+            };
+        };
+
+
         template <typename _T>
         struct check_exp_mx2 {
             template <std::size_t _N>
@@ -74,9 +88,19 @@ namespace cftal {
                 return std::make_tuple(v, i.first, i.second);
             }
 
+            template <typename _F>
             static
-            _T
-            __exp_mx2(_T a);
+            _F
+            __exp_mx2(_F a);
+
+            static
+            f16_t
+            __exp_mx2(f16_t a) {
+                auto af=static_cast<float>(a);
+                using std::exp;
+                float rf=exp(-af*af);
+                return f16_t(rf);
+            }
 
             static
             _T
@@ -105,12 +129,19 @@ namespace cftal {
             static constexpr float down() { return 0x1p-64f; }
         };
 
+        template <>
+        struct scale<f16_t> {
+            static constexpr f16_t up() { return 0x1p24_f16; }
+            static constexpr f16_t down() { return 0x1p-24_f16; }
+        };
+
     }
 }
 
+template <typename _F>
 template <typename _T>
 _T
-cftal::test::check_exp_mx2<_T>::__exp_mx2(_T x)
+cftal::test::check_exp_mx2<_F>::__exp_mx2(_T x)
 {
     using std::isnan;
     _T y;
