@@ -197,6 +197,36 @@ namespace cftal {
     vec<f16_t, _N>
     atanh(const vec<f16_t, _N>& x);
 
+    // exp_mx2, calculates $ e^{-x^2} $ these functions are exact to +-1 ulp
+    template <size_t _N>
+    vec<f16_t, _N>
+    exp_mx2(const vec<f16_t, _N>& x);
+
+    // exp_px2, calculates $ e^{+x^2} $ these functions are exact to +-1 ulp
+    template <size_t _N>
+    vec<f16_t, _N>
+    exp_px2(const vec<f16_t, _N>& x);
+
+    // exp2_mx2, calculates $ 2^{-x^2} $ these functions are exact to +-1 ulp
+    template <size_t _N>
+    vec<f16_t, _N>
+    exp2_mx2(const vec<f16_t, _N>& x);
+
+    // exp2_px2, calculates $ 2^{+x^2} $ these functions are exact to +-1 ulp
+    template <size_t _N>
+    vec<f16_t, _N>
+    exp2_px2(const vec<f16_t, _N>& x);
+
+    // exp10_mx2, calculates $ 10^{-x^2} $ these functions are exact to +-1 ulp
+    template <size_t _N>
+    vec<f16_t, _N>
+    exp10_mx2(const vec<f16_t, _N>& x);
+
+    // exp10_px2, calculates $ 10^{+x^2} $ these functions are exact to +-1 ulp
+    template <size_t _N>
+    vec<f16_t, _N>
+    exp10_px2(const vec<f16_t, _N>& x);
+
 // #if V1F16_FUNCS > 0
     vec<f16_t, 1>
     ldexp(arg_t<vec<f16_t, 1> > a, arg_t<vec<int16_t, 1> > e);
@@ -316,6 +346,24 @@ namespace cftal {
 
     vec<f16_t, 1>
     atanh(arg_t<vec<f16_t, 1> > x);
+
+    vec<f16_t, 1>
+    exp_mx2(arg_t<vec<f16_t, 1> > d);
+
+    vec<f16_t, 1>
+    exp_px2(arg_t<vec<f16_t, 1> > d);
+
+    vec<f16_t, 1>
+    exp2_mx2(arg_t<vec<f16_t, 1> > d);
+
+    vec<f16_t, 1>
+    exp2_px2(arg_t<vec<f16_t, 1> > d);
+
+    vec<f16_t, 1>
+    exp10_mx2(arg_t<vec<f16_t, 1> > d);
+
+    vec<f16_t, 1>
+    exp10_px2(arg_t<vec<f16_t, 1> > d);
 
 // #endif
 #if V2F16_FUNCS>0
@@ -440,6 +488,24 @@ namespace cftal {
     vec<f16_t, 2>
     atanh(arg_t<vec<f16_t, 2> > x);
 
+    vec<f16_t, 2>
+    exp_mx2(arg_t<vec<f16_t, 2> > d);
+
+    vec<f16_t, 2>
+    exp_px2(arg_t<vec<f16_t, 2> > d);
+
+    vec<f16_t, 2>
+    exp2_mx2(arg_t<vec<f16_t, 2> > d);
+
+    vec<f16_t, 2>
+    exp2_px2(arg_t<vec<f16_t, 2> > d);
+
+    vec<f16_t, 2>
+    exp10_mx2(arg_t<vec<f16_t, 2> > d);
+
+    vec<f16_t, 2>
+    exp10_px2(arg_t<vec<f16_t, 2> > d);
+
 #endif
 
 #if V4F16_FUNCS>0
@@ -563,6 +629,24 @@ namespace cftal {
     vec<f16_t, 4>
     atanh(arg_t<vec<f16_t, 4> > x);
 
+    vec<f16_t, 4>
+    exp_mx2(arg_t<vec<f16_t, 4> > d);
+
+    vec<f16_t, 4>
+    exp_px2(arg_t<vec<f16_t, 4> > d);
+
+    vec<f16_t, 4>
+    exp2_mx2(arg_t<vec<f16_t, 4> > d);
+
+    vec<f16_t, 4>
+    exp2_px2(arg_t<vec<f16_t, 4> > d);
+
+    vec<f16_t, 4>
+    exp10_mx2(arg_t<vec<f16_t, 4> > d);
+
+    vec<f16_t, 4>
+    exp10_px2(arg_t<vec<f16_t, 4> > d);
+
 #endif
 #if V8F16_FUNCS>0
 
@@ -685,6 +769,24 @@ namespace cftal {
     vec<f16_t, 8>
     atanh(arg_t<vec<f16_t, 8> > x);
 
+    vec<f16_t, 8>
+    exp_mx2(arg_t<vec<f16_t, 8> > d);
+
+    vec<f16_t, 8>
+    exp_px2(arg_t<vec<f16_t, 8> > d);
+
+    vec<f16_t, 8>
+    exp2_mx2(arg_t<vec<f16_t, 8> > d);
+
+    vec<f16_t, 8>
+    exp2_px2(arg_t<vec<f16_t, 8> > d);
+
+    vec<f16_t, 8>
+    exp10_mx2(arg_t<vec<f16_t, 8> > d);
+
+    vec<f16_t, 8>
+    exp10_px2(arg_t<vec<f16_t, 8> > d);
+
 #endif
 #if V16F16_FUNCS>0
 
@@ -806,6 +908,24 @@ namespace cftal {
 
     vec<f16_t, 16>
     atanh(arg_t<vec<f16_t, 16> > x);
+
+    vec<f16_t, 16>
+    exp_mx2(arg_t<vec<f16_t, 16> > d);
+
+    vec<f16_t, 16>
+    exp_px2(arg_t<vec<f16_t, 16> > d);
+
+    vec<f16_t, 16>
+    exp2_mx2(arg_t<vec<f16_t, 16> > d);
+
+    vec<f16_t, 16>
+    exp2_px2(arg_t<vec<f16_t, 16> > d);
+
+    vec<f16_t, 16>
+    exp10_mx2(arg_t<vec<f16_t, 16> > d);
+
+    vec<f16_t, 16>
+    exp10_px2(arg_t<vec<f16_t, 16> > d);
 
 #endif
 }
@@ -1199,6 +1319,54 @@ cftal::atanh(const vec<cftal::f16_t, _N>& v)
 {
     vec<f16_t, _N> r(atanh(low_half(v)), atanh(high_half(v)));
     return r;
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::exp_mx2(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(exp_mx2(low_half(x)),
+			  exp_mx2(high_half(x)));
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::exp_px2(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(exp_px2(low_half(x)),
+			  exp_px2(high_half(x)));
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::exp2_mx2(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(exp2_mx2(low_half(x)),
+			  exp2_mx2(high_half(x)));
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::exp2_px2(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(exp2_px2(low_half(x)),
+			  exp2_px2(high_half(x)));
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::exp10_mx2(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(exp10_mx2(low_half(x)),
+			  exp10_mx2(high_half(x)));
+}
+
+template <cftal::size_t _N>
+cftal::vec<cftal::f16_t, _N>
+cftal::exp10_px2(const vec<f16_t, _N>& x)
+{
+    return vec<f16_t, _N>(exp10_px2(low_half(x)),
+			  exp10_px2(high_half(x)));
 }
 
 // Local variables:

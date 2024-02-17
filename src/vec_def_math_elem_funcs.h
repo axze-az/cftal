@@ -746,6 +746,54 @@
         DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
         return func_t::acosh(d);                                        \
     }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::exp_mx2(arg<vec_float>::type d)                                 \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp_mx2(d);                                      \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::exp_px2(arg<vec_float>::type d)                                 \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp_px2(d);                                      \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::exp2_mx2(arg<vec_float>::type d)                                \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp2_mx2(d);                                     \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::exp2_px2(arg<vec_float>::type d)                                \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp2_px2(d);                                     \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::exp10_mx2(arg<vec_float>::type d)                               \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp10_mx2(d);                                    \
+    }                                                                   \
+                                                                        \
+    nsr::vec_float                                                      \
+    __attribute__((__flatten__))                                        \
+    ns::exp10_px2(arg<vec_float>::type d)                               \
+    {                                                                   \
+        DEF_TRAITS_FUNC(vec_float, vec_int, real_type);                 \
+        return func_t::exp10_px2(d);                                    \
+    }                                                                   \
 
 
 // Local variables:
